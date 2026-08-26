@@ -70,7 +70,7 @@ $js->set("js/functions.js");
 if($source != 'index'){
     $js->set("js/toc.js");
 }
-// $js->set("comment/comment.js");
+$js->set("comment/comment.js");
 $js->set("js/share.js");
 $js->set("js/apps.js");
 echo $js->get();

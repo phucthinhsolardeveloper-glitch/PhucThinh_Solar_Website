@@ -14,3 +14,8 @@ imap/
 *.log
 .env
 .env.*
+.claude/
+domains/phucthinhsolar.com/.htpasswd/
+domains/phucthinhsolar.com/awstats/
+domains/phucthinhsolar.com/logs/
+domains/phucthinhsolar.com/private_html/

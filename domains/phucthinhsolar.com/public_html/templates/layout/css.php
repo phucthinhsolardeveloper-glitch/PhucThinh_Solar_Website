@@ -110,7 +110,7 @@
     // $css->set("fileuploader/font-fileuploader.css");
     // $css->set("fileuploader/jquery.fileuploader.min.css");
     // $css->set("fileuploader/jquery.fileuploader-theme-dragdrop.css");
-    // $css->set("comment/comment.css");
+    $css->set("comment/comment.css");
     $css->set("css/style.css");
     echo $css->get();
 ?>

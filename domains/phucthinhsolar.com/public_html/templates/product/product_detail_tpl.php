@@ -165,6 +165,10 @@
         </div>
     </div>
 </div>
+
+<div class="box-detail mg-top-30">
+    <?php include TEMPLATE."product/comment.php"; ?>
+</div>
 <?php if(!empty($product)) {?>
 <div class="box-detail mg-top-30">
     <div class="title-product-orther"><span>Sản phẩm liên quan</span></div>
