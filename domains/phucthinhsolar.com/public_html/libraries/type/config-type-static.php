@@ -1,0 +1,179 @@
+<?php
+
+    /* Sứ mệnh - tầm nhìn-giá trị */
+    $nametype = "su-menh";
+    $config['static'][$nametype]['title_main'] = "Sứ mệnh - Tầm nhìn - Giá trị (title)";
+    $config['static'][$nametype]['check'] = array("hienthi" => "Hiển thị");
+    $config['static'][$nametype]['images'] = false;
+    $config['static'][$nametype]['namkinhnghiem'] = false;
+    $config['static'][$nametype]['name'] = true;
+    $config['static'][$nametype]['desc'] = false;
+    $config['static'][$nametype]['desc_cke'] = false;
+    $config['static'][$nametype]['content'] = false;
+    $config['static'][$nametype]['content_cke'] = false;
+    $config['static'][$nametype]['seo'] = false;
+    $config['static'][$nametype]['width'] = 470;
+    $config['static'][$nametype]['height'] = 470;
+    $config['static'][$nametype]['img_type'] = '.jpg|.gif|.png|.jpeg|.gif';
+    $config['static'][$nametype]['file_type'] = '.doc|.docx|.pdf|.rar|.zip|.ppt|.pptx|.xls|.xlsx|.jpg|.png|.gif';
+
+    /* Bài giới thiệu đại lý 1 */
+    $nametype = "dai-ly-1";
+    $config['static'][$nametype]['title_main'] = "Bài giới thiệu 1";
+    $config['static'][$nametype]['check'] = array("hienthi" => "Hiển thị");
+    $config['static'][$nametype]['images'] = true;
+    $config['static'][$nametype]['namkinhnghiem'] = false;
+    $config['static'][$nametype]['name'] = true;
+    $config['static'][$nametype]['desc'] = true;
+    $config['static'][$nametype]['desc_cke'] = true;
+    $config['static'][$nametype]['content'] = false;
+    $config['static'][$nametype]['content_cke'] = false;
+    $config['static'][$nametype]['seo'] = false;
+    $config['static'][$nametype]['width'] = 470;
+    $config['static'][$nametype]['height'] = 470;
+    $config['static'][$nametype]['img_type'] = '.jpg|.gif|.png|.jpeg|.gif';
+    $config['static'][$nametype]['file_type'] = '.doc|.docx|.pdf|.rar|.zip|.ppt|.pptx|.xls|.xlsx|.jpg|.png|.gif';
+
+    /* Bài giới thiệu đại lý 2 */
+    $nametype = "dai-ly-2";
+    $config['static'][$nametype]['title_main'] = "Bài giới thiệu 2";
+    $config['static'][$nametype]['check'] = array("hienthi" => "Hiển thị");
+    $config['static'][$nametype]['images'] = false;
+    $config['static'][$nametype]['namkinhnghiem'] = false;
+    $config['static'][$nametype]['name'] = true;
+    $config['static'][$nametype]['desc'] = true;
+    $config['static'][$nametype]['desc_cke'] = true;
+    $config['static'][$nametype]['content'] = false;
+    $config['static'][$nametype]['content_cke'] = false;
+    $config['static'][$nametype]['seo'] = false;
+    $config['static'][$nametype]['width'] = 470;
+    $config['static'][$nametype]['height'] = 470;
+    $config['static'][$nametype]['img_type'] = '.jpg|.gif|.png|.jpeg|.gif';
+    $config['static'][$nametype]['file_type'] = '.doc|.docx|.pdf|.rar|.zip|.ppt|.pptx|.xls|.xlsx|.jpg|.png|.gif';
+
+    /* Bài giới thiệu đại lý 3 */
+    $nametype = "dai-ly-3";
+    $config['static'][$nametype]['title_main'] = "Bài giới thiệu 3";
+    $config['static'][$nametype]['check'] = array("hienthi" => "Hiển thị");
+    $config['static'][$nametype]['images'] = false;
+    $config['static'][$nametype]['namkinhnghiem'] = false;
+    $config['static'][$nametype]['name'] = true;
+    $config['static'][$nametype]['desc'] = true;
+    $config['static'][$nametype]['desc_cke'] = true;
+    $config['static'][$nametype]['content'] = false;
+    $config['static'][$nametype]['content_cke'] = false;
+    $config['static'][$nametype]['seo'] = false;
+    $config['static'][$nametype]['width'] = 470;
+    $config['static'][$nametype]['height'] = 470;
+    $config['static'][$nametype]['img_type'] = '.jpg|.gif|.png|.jpeg|.gif';
+    $config['static'][$nametype]['file_type'] = '.doc|.docx|.pdf|.rar|.zip|.ppt|.pptx|.xls|.xlsx|.jpg|.png|.gif';
+
+    /* Cấu trúc cơ cấu */
+    $nametype = "loi-ich";
+    $config['static'][$nametype]['title_main'] = "Tiêu đề trang chủ";
+    $config['static'][$nametype]['check'] = array("hienthi" => "Hiển thị");
+    $config['static'][$nametype]['images'] = false;
+    $config['static'][$nametype]['namkinhnghiem'] = false;
+    $config['static'][$nametype]['name'] = true;
+    $config['static'][$nametype]['desc'] = true;
+    $config['static'][$nametype]['desc_cke'] = false;
+    $config['static'][$nametype]['content'] = false;
+    $config['static'][$nametype]['content_cke'] = false;
+    $config['static'][$nametype]['seo'] = false;
+    $config['static'][$nametype]['width'] = 470;
+    $config['static'][$nametype]['height'] = 470;
+    $config['static'][$nametype]['img_type'] = '.jpg|.gif|.png|.jpeg|.gif';
+    $config['static'][$nametype]['file_type'] = '.doc|.docx|.pdf|.rar|.zip|.ppt|.pptx|.xls|.xlsx|.jpg|.png|.gif';
+
+    /* Giới thiệu */
+    $nametype = "gioi-thieu";
+    $config['static'][$nametype]['title_main'] = "Giới thiệu trang chủ";
+    $config['static'][$nametype]['check'] = array("hienthi" => "Hiển thị");
+    $config['static'][$nametype]['images'] = true;
+    $config['static'][$nametype]['namkinhnghiem'] = true;
+    $config['static'][$nametype]['name'] = true;
+    $config['static'][$nametype]['desc'] = true;
+    $config['static'][$nametype]['desc_cke'] = true;
+    $config['static'][$nametype]['content'] = false;
+    $config['static'][$nametype]['content_cke'] = false;
+    $config['static'][$nametype]['seo'] = false;
+    $config['static'][$nametype]['width'] = 470;
+    $config['static'][$nametype]['height'] = 470;
+    $config['static'][$nametype]['img_type'] = '.jpg|.gif|.png|.jpeg|.gif';
+    $config['static'][$nametype]['file_type'] = '.doc|.docx|.pdf|.rar|.zip|.ppt|.pptx|.xls|.xlsx|.jpg|.png|.gif';
+
+    /* Đối tác công nghệ */
+    $nametype = "doi-tac-cong-nghe";
+    $config['static'][$nametype]['title_main'] = "Đối tác công nghệ";
+    $config['static'][$nametype]['check'] = array("hienthi" => "Hiển thị");
+    $config['static'][$nametype]['images'] = true;
+    $config['static'][$nametype]['namkinhnghiem'] = false;
+    $config['static'][$nametype]['name'] = true;
+    $config['static'][$nametype]['desc'] = true;
+    $config['static'][$nametype]['desc_cke'] = true;
+    $config['static'][$nametype]['content'] = false;
+    $config['static'][$nametype]['content_cke'] = false;
+    $config['static'][$nametype]['seo'] = false;
+    $config['static'][$nametype]['width'] = 470;
+    $config['static'][$nametype]['height'] = 470;
+    $config['static'][$nametype]['img_type'] = '.jpg|.gif|.png|.jpeg|.gif';
+    $config['static'][$nametype]['file_type'] = '.doc|.docx|.pdf|.rar|.zip|.ppt|.pptx|.xls|.xlsx|.jpg|.png|.gif';
+
+    /* Tóm tắt giới thiệu */
+    // $nametype = "tom-tat-gioi-thieu";
+    // $config['static'][$nametype]['title_main'] = "Tóm tắt giới thiệu";
+    // $config['static'][$nametype]['check'] = array("hienthi" => "Hiển thị");
+    // $config['static'][$nametype]['images'] = false;
+    // $config['static'][$nametype]['namkinhnghiem'] = false;
+    // $config['static'][$nametype]['name'] = true;
+    // $config['static'][$nametype]['desc'] = true;
+    // $config['static'][$nametype]['desc_cke'] = true;
+    // $config['static'][$nametype]['content'] = false;
+    // $config['static'][$nametype]['content_cke'] = false;
+    // $config['static'][$nametype]['seo'] = false;
+    // $config['static'][$nametype]['width'] = 470;
+    // $config['static'][$nametype]['height'] = 470;
+    // $config['static'][$nametype]['img_type'] = '.jpg|.gif|.png|.jpeg|.gif';
+    // $config['static'][$nametype]['file_type'] = '.doc|.docx|.pdf|.rar|.zip|.ppt|.pptx|.xls|.xlsx|.jpg|.png|.gif';
+
+    /* Giới thiệu sản phẩm */
+    // $nametype = "gioi-thieu-san-pham";
+    // $config['static'][$nametype]['title_main'] = "Giới thiệu sản phẩm";
+    // $config['static'][$nametype]['check'] = array("hienthi" => "Hiển thị");
+    // $config['static'][$nametype]['images'] = true;
+    // $config['static'][$nametype]['file'] = true;
+    // $config['static'][$nametype]['name'] = true;
+    // $config['static'][$nametype]['desc'] = true;
+    // $config['static'][$nametype]['desc_cke'] = false;
+    // $config['static'][$nametype]['content'] = true;
+    // $config['static'][$nametype]['content_cke'] = true;
+    // $config['static'][$nametype]['seo'] = true;
+    // $config['static'][$nametype]['width'] = 300;
+    // $config['static'][$nametype]['height'] = 200;
+    // $config['static'][$nametype]['img_type'] = '.jpg|.gif|.png|.jpeg|.gif';
+    // $config['static'][$nametype]['file_type'] = '.doc|.docx|.pdf|.rar|.zip|.ppt|.pptx|.xls|.xlsx|.jpg|.png|.gif';
+
+    // /* Slogan */
+    $nametype = "lienhe";
+    $config['static'][$nametype]['title_main'] = "Liên hệ";
+    $config['static'][$nametype]['check'] = array("hienthi" => "Hiển thị");
+    $config['static'][$nametype]['name'] = false;
+    $config['static'][$nametype]['content'] = true;
+    $config['static'][$nametype]['content_cke'] = true;
+
+    /* Liên hệ */
+    $nametype = "footer";
+    $config['static'][$nametype]['title_main'] = "Footer";
+    $config['static'][$nametype]['check'] = array("hienthi" => "Hiển thị");
+    $config['static'][$nametype]['content'] = true;
+    $config['static'][$nametype]['content_cke'] = true;
+    $config['static'][$nametype]['name'] = true;
+
+    // /* Bộ công thương */
+    $nametype = "bct";
+    $config['static'][$nametype]['title_main'] = "Bộ công thương";
+    $config['static'][$nametype]['check'] = array("hienthi" => "Hiển thị");
+    $config['static'][$nametype]['name'] = false;
+    $config['static'][$nametype]['content'] = true;
+    $config['static'][$nametype]['content_cke'] = true;
+?>

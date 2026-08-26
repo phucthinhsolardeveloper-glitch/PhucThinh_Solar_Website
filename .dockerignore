@@ -1,0 +1,11 @@
+.git
+.agents
+.codex
+backup
+domains/phucthinhsolar.com/public_html/wp-content
+domains/phucthinhsolar.com/public_html/logs
+domains/phucthinhsolar.com/public_html/caches
+domains/phucthinhsolar.com/public_html/*.sql
+domains/phucthinhsolar.com/public_html/*.zip
+domains/phucthinhsolar.com/public_html/*:Zone.Identifier
+docs

@@ -1,0 +1,16 @@
+# Data & secrets — never commit
+*.sql
+*.sql:Zone.Identifier
+backup/
+domains/phucthinhsolar.com/public_html/caches/
+domains/phucthinhsolar.com/public_html/logs/
+domains/phucthinhsolar.com/public_html/upload/
+domains/phucthinhsolar.com/public_html/thumbs/
+domains/phucthinhsolar.com/public_html/watermark/
+domains/phucthinhsolar.com/public_html/wp-content/
+domains/phucthinhsolar.com/public_html/libraries/config.php
+domains/phucthinhsolar.com/public_html/libraries/config.php.orig
+imap/
+*.log
+.env
+.env.*
