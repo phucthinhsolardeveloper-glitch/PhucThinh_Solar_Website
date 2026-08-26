@@ -45,11 +45,14 @@
                             <li class="w-clear">
                                 <label class="attr-label-pro-detail"><?=gia?>:</label>
                                 <div class="attr-content-pro-detail">
-                                    <?php if($rowDetail['sale_price']) { ?>
+                                    <?php if($rowDetail['sale_price']) { $discountPercent = ($rowDetail['regular_price'] > $rowDetail['sale_price']) ? round((($rowDetail['regular_price'] - $rowDetail['sale_price']) / $rowDetail['regular_price']) * 100) : 0; ?>
                                     <span
                                         class="price-new-pro-detail"><?=$func->formatMoney($rowDetail['sale_price'])?></span>
                                     <span
                                         class="price-old-pro-detail"><?=$func->formatMoney($rowDetail['regular_price'])?></span>
+                                    <?php if($discountPercent > 0) { ?>
+                                    <span class="badge-discount" style="display:inline-block;background:#e53935;color:#fff;font-weight:700;font-size:13px;padding:2px 8px;border-radius:4px;margin-left:6px;">-<?=$discountPercent?>%</span>
+                                    <?php } ?>
                                     <?php } else { ?>
                                     <span
                                         class="price-new-pro-detail"><?=($rowDetail['regular_price']) ? $func->formatMoney($rowDetail['regular_price']) : lienhe?></span>
@@ -179,10 +182,13 @@
             data-touchdrag="1"
             data-navtext="<svg xmlns='http://www.w3.org/2000/svg' class='icon icon-tabler icon-tabler-chevron-left' width='44' height='45' viewBox='0 0 24 24' stroke-width='1.5' stroke='#2c3e50' fill='none' stroke-linecap='round' stroke-linejoin='round'><path stroke='none' d='M0 0h24v24H0z' fill='none'/><polyline points='15 6 9 12 15 18' /></svg>|<svg xmlns='http://www.w3.org/2000/svg' class='icon icon-tabler icon-tabler-chevron-right' width='44' height='45' viewBox='0 0 24 24' stroke-width='1.5' stroke='#2c3e50' fill='none' stroke-linecap='round' stroke-linejoin='round'><path stroke='none' d='M0 0h24v24H0z' fill='none'/><polyline points='9 6 15 12 9 18' /></svg>"
             data-navcontainer=".control-pro-detail2">
-            <?php foreach($product as $k => $v) { ?>
+            <?php foreach($product as $k => $v) { $discountPercent = (!empty($v['sale_price']) && $v['regular_price'] > $v['sale_price']) ? round((($v['regular_price'] - $v['sale_price']) / $v['regular_price']) * 100) : 0; ?>
             <div>
                 <a class="product-item" href="product/<?=$v[$sluglang]?>/" title="<?=$v['name'.$lang]?>">
-                    <div class="img">
+                    <div class="img" style="position:relative;">
+                        <?php if($discountPercent > 0) { ?>
+                        <span class="badge-discount" style="position:absolute;top:8px;right:8px;z-index:2;background:#e53935;color:#fff;font-weight:700;font-size:13px;padding:3px 8px;border-radius:4px;">-<?=$discountPercent?>%</span>
+                        <?php } ?>
                         <?= $func->getImage(['class' => 'lazy w-100', 'sizes' => '300x300x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $v['photo'], 'alt' => $v['name' . $lang]]) ?>
                     </div>
                     <div class="caption">

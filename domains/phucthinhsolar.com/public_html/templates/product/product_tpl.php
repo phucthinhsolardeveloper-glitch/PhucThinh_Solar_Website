@@ -84,10 +84,13 @@
             <div id="show-product">
                 <?php if(!empty($product)) {?>
                 <div class="grid-product grid-product-3">
-                    <?php foreach($product as $k => $v) {  ?>
+                    <?php foreach($product as $k => $v) { $discountPercent = (!empty($v['sale_price']) && $v['regular_price'] > $v['sale_price']) ? round((($v['regular_price'] - $v['sale_price']) / $v['regular_price']) * 100) : 0; ?>
                     <div>
                         <a class="product-item" href="product/<?=$v[$sluglang]?>/" title="<?=$v['name'.$lang]?>">
-                            <div class="img">
+                            <div class="img" style="position:relative;">
+                                <?php if($discountPercent > 0) { ?>
+                                <span class="badge-discount" style="position:absolute;top:8px;right:8px;z-index:2;background:#e53935;color:#fff;font-weight:700;font-size:13px;padding:3px 8px;border-radius:4px;">-<?=$discountPercent?>%</span>
+                                <?php } ?>
                                 <?= $func->getImage(['class' => 'lazy w-100', 'sizes' => '300x300x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $v['photo'], 'alt' => $v['name' . $lang]]) ?>
                             </div>
                             <div class="caption">
