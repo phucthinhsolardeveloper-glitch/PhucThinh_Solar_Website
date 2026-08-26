@@ -102,6 +102,10 @@
                                 <?php } ?>
                             </p>
                         </a>
+                        <div class="quick-cart-btn d-flex" style="gap:8px;padding:0 10px 10px;">
+                            <button type="button" class="addcart btn btn-sm btn-outline-primary" data-id="<?=$v['id']?>" data-action="addnow" title="Thêm vào giỏ hàng">Thêm giỏ hàng</button>
+                            <button type="button" class="addcart btn btn-sm btn-primary" data-id="<?=$v['id']?>" data-action="buynow" title="Mua ngay">Mua ngay</button>
+                        </div>
                     </div>
                     <?php } ?>
                 </div>

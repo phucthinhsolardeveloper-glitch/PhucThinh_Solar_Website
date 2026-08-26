@@ -331,6 +331,13 @@
 			$seo->set('type','object');
 			break;
 
+		case 'cam-on':
+			$source = "thankyou";
+			$template = 'order/thanks';
+			$titleMain = "Đặt hàng thành công";
+			$seo->set('type','object');
+			break;
+
 		case 'account':
 			$source = "user";
 			break;

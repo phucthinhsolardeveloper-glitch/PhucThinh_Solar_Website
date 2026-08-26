@@ -288,27 +288,30 @@
 	    );
 	    $emailVals = $emailer->addAttrs($emailVals, $emailDefaultAttrs['vals']);
 
-		/* Send email admin */
-		$arrayEmail = null;
-		$subject = "Thông tin đơn hàng từ ".$setting['name'.$lang];
-		$message = str_replace($emailVars, $emailVals, $emailer->markdown('order/admin', ['shipPrice' => $ship_price]));
-		$file = '';
-		$emailer->send("admin", $arrayEmail, $subject, $message, $file);
+		/* Send email admin + customer (không để lỗi SMTP làm vỡ luồng đặt hàng) */
+		try
+		{
+			$arrayEmail = null;
+			$subject = "Thông tin đơn hàng từ ".$setting['name'.$lang];
+			$message = str_replace($emailVars, $emailVals, $emailer->markdown('order/admin', ['shipPrice' => $ship_price]));
+			$file = '';
+			$emailer->send("admin", $arrayEmail, $subject, $message, $file);
 
-		/* Send email customer */
-		$arrayEmail = array(
-			"dataEmail" => array(
-				"name" => $fullname,
-				"email" => $email
-			)
-		);
-		$subject = "Thông tin đơn hàng từ ".$setting['name'.$lang];
-		$message = str_replace($emailVars, $emailVals, $emailer->markdown('order/customer', ['shipPrice' => $ship_price]));
-		$file = '';
-		$emailer->send("customer", $arrayEmail, $subject, $message, $file);
+			$arrayEmail = array(
+				"dataEmail" => array(
+					"name" => $fullname,
+					"email" => $email
+				)
+			);
+			$subject = "Thông tin đơn hàng từ ".$setting['name'.$lang];
+			$message = str_replace($emailVars, $emailVals, $emailer->markdown('order/customer', ['shipPrice' => $ship_price]));
+			$file = '';
+			$emailer->send("customer", $arrayEmail, $subject, $message, $file);
+		}
+		catch(Exception $e) {}
 
 	    /* Xóa giỏ hàng */
         unset($_SESSION['cart']);
-		$func->transfer("Thông tin đơn hàng đã được gửi thành công.", $configBase);
+		$func->redirect("cam-on/?code=".$code);
 	}
 ?>
