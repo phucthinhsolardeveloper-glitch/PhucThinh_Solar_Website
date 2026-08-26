@@ -41,6 +41,28 @@
     $config['news'][$nametype]['thumb_list'] = '100x100x1';
     $config['news'][$nametype]['img_type_list'] = '.jpg|.gif|.png|.jpeg|.gif';
 
+    /* Chính sách (hiển thị link riêng ở chân trang, không cần menu tuong lai) */
+    $nametype = "chinh-sach";
+    $config['news'][$nametype]['title_main'] = "Chính sách";
+    $config['news'][$nametype]['dropdown'] = false;
+    $config['news'][$nametype]['list'] = false;
+    $config['news'][$nametype]['cat'] = false;
+    $config['news'][$nametype]['item'] = false;
+    $config['news'][$nametype]['sub'] = false;
+    $config['news'][$nametype]['tags'] = false;
+    $config['news'][$nametype]['view'] = true;
+    $config['news'][$nametype]['copy'] = false;
+    $config['news'][$nametype]['copy_image'] = false;
+    $config['news'][$nametype]['comment'] = false;
+    $config['news'][$nametype]['slug'] = true;
+    $config['news'][$nametype]['check'] = array("hienthi" => "Hiển thị");
+    $config['news'][$nametype]['images'] = false;
+    $config['news'][$nametype]['show_images'] = false;
+    $config['news'][$nametype]['desc'] = false;
+    $config['news'][$nametype]['content'] = true;
+    $config['news'][$nametype]['content_cke'] = true;
+    $config['news'][$nametype]['seo'] = true;
+
     /* Dự án */
     $nametype = "du-an";
     $config['news'][$nametype]['title_main'] = "Dự án";
