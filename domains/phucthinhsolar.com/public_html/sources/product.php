@@ -41,6 +41,61 @@
 				break;
 		}
 	}
+
+	/* Lọc công suất + mức giá (mục 2 checklist ads) - dùng chung cho các khối liệt kê sản phẩm */
+	function productExtraFilters()
+	{
+		$extraWhere = '';
+		$extraParams = array();
+
+		/* Công suất (W) */
+		$idCongSuat = (isset($_GET['is_congsuat']) && $_GET['is_congsuat'] != '') ? $_GET['is_congsuat'] : '';
+		if($idCongSuat != '')
+		{
+			$congSuatArr = array_values(array_filter(array_map('floatval', explode(',', $idCongSuat))));
+			if(!empty($congSuatArr))
+			{
+				$extraWhere .= " and cong_suat in (".implode(',', array_fill(0, count($congSuatArr), '?')).")";
+				$extraParams = array_merge($extraParams, $congSuatArr);
+			}
+		}
+
+		/* Mức giá (áp theo sale_price nếu có, ngược lại regular_price) */
+		$idPrice = (isset($_GET['is_price']) && $_GET['is_price'] != '') ? $_GET['is_price'] : '';
+		if($idPrice != '')
+		{
+			$priceRanges = array(
+				'1' => array(0, 500000),
+				'2' => array(500000, 1000000),
+				'3' => array(1000000, 2000000),
+				'4' => array(2000000, null),
+			);
+			$priceConds = array();
+			foreach(explode(',', $idPrice) as $pb)
+			{
+				if(!isset($priceRanges[$pb])) continue;
+				list($min, $max) = $priceRanges[$pb];
+				if($max === null)
+				{
+					$priceConds[] = "(if(sale_price>0,sale_price,regular_price) >= ?)";
+					$extraParams[] = $min;
+				}
+				else
+				{
+					$priceConds[] = "(if(sale_price>0,sale_price,regular_price) >= ? and if(sale_price>0,sale_price,regular_price) < ?)";
+					$extraParams[] = $min;
+					$extraParams[] = $max;
+				}
+			}
+			if(!empty($priceConds))
+			{
+				$extraWhere .= " and (".implode(' or ', $priceConds).")";
+			}
+		}
+
+		return array($extraWhere, $extraParams);
+	}
+
 	if($id!='')
 	{
 		/* Lấy sản phẩm detail */
@@ -184,8 +239,8 @@
 		/* Lấy sản phẩm */
 		$where = "";
 		$where = "id_list = ? and type = ? and find_in_set('hienthi',status)";
-		$idBrand = (isset($_GET['is_brand']) && $_GET['is_brand'] != '') ? htmlspecialchars($_GET['is_brand']) : '';
-		$idXuatXu = (isset($_GET['is_origin']) && $_GET['is_origin'] != '') ? htmlspecialchars($_GET['is_origin']) : '';
+		$idBrand = (isset($_GET['is_brand']) && $_GET['is_brand'] != '' && preg_match('/^[0-9,]+$/',$_GET['is_brand'])) ? $_GET['is_brand'] : '';
+		$idXuatXu = (isset($_GET['is_origin']) && $_GET['is_origin'] != '' && preg_match('/^[0-9,]+$/',$_GET['is_origin'])) ? $_GET['is_origin'] : '';
 		if($idBrand !="")
 		{
 			$where .= " and id_brand in (".$idBrand.")";
@@ -194,9 +249,11 @@
 		{
 			$where .= " and id_xuatxu in (".$idXuatXu.")";
 		}
+		list($extraWhere, $extraParams) = productExtraFilters();
+		$where .= $extraWhere;
 
-		
 		$params = array($idl,$type);
+		$params = array_merge($params, $extraParams);
 
 		$curPage = $getPage;
 		$perPage = 18;
@@ -227,8 +284,8 @@
 		/* Lấy sản phẩm */
 		$where = "";
 		$where = "id_cat = ? and type = ? and find_in_set('hienthi',status)";
-		$idBrand = (isset($_GET['is_brand']) && $_GET['is_brand'] != '') ? htmlspecialchars($_GET['is_brand']) : '';
-		$idXuatXu = (isset($_GET['is_origin']) && $_GET['is_origin'] != '') ? htmlspecialchars($_GET['is_origin']) : '';
+		$idBrand = (isset($_GET['is_brand']) && $_GET['is_brand'] != '' && preg_match('/^[0-9,]+$/',$_GET['is_brand'])) ? $_GET['is_brand'] : '';
+		$idXuatXu = (isset($_GET['is_origin']) && $_GET['is_origin'] != '' && preg_match('/^[0-9,]+$/',$_GET['is_origin'])) ? $_GET['is_origin'] : '';
 		if($idBrand !="")
 		{
 			$where .= " and id_brand in (".$idBrand.")";
@@ -237,7 +294,11 @@
 		{
 			$where .= " and id_xuatxu in (".$idXuatXu.")";
 		}
+		list($extraWhere, $extraParams) = productExtraFilters();
+		$where .= $extraWhere;
+
 		$params = array($idc,$type);
+		$params = array_merge($params, $extraParams);
 
 		$curPage = $getPage;
 		$perPage = 18;
@@ -480,8 +541,8 @@
 		$where = "";
 		$where = "type = ? and find_in_set('hienthi',status)";
 
-		$idBrand = (isset($_GET['is_brand']) && $_GET['is_brand'] != '') ? htmlspecialchars($_GET['is_brand']) : '';
-		$idXuatXu = (isset($_GET['is_origin']) && $_GET['is_origin'] != '') ? htmlspecialchars($_GET['is_origin']) : '';
+		$idBrand = (isset($_GET['is_brand']) && $_GET['is_brand'] != '' && preg_match('/^[0-9,]+$/',$_GET['is_brand'])) ? $_GET['is_brand'] : '';
+		$idXuatXu = (isset($_GET['is_origin']) && $_GET['is_origin'] != '' && preg_match('/^[0-9,]+$/',$_GET['is_origin'])) ? $_GET['is_origin'] : '';
 		if($idBrand !="")
 		{
 			$where .= " and id_brand in (".$idBrand.")";
@@ -490,9 +551,11 @@
 		{
 			$where .= " and id_xuatxu in (".$idXuatXu.")";
 		}
-
+		list($extraWhere, $extraParams) = productExtraFilters();
+		$where .= $extraWhere;
 
 		$params = array($type);
+		$params = array_merge($params, $extraParams);
 
 		$curPage = $getPage;
 		$perPage = 18;

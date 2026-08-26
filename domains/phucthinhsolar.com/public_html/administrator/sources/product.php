@@ -346,6 +346,7 @@
 			$data['regular_price'] = (isset($data['regular_price']) && $data['regular_price'] != '') ? str_replace(",","",$data['regular_price']) : 0;
 			$data['sale_price'] = (isset($data['sale_price']) && $data['sale_price'] != '') ? str_replace(",","",$data['sale_price']) : 0;
 			$data['discount'] = (isset($data['discount']) && $data['discount'] != '') ? $data['discount'] : 0;
+			if(isset($data['cong_suat'])) $data['cong_suat'] = ($data['cong_suat'] != '') ? (float) str_replace(",",".",$data['cong_suat']) : null;
 			$data['type'] = $type;
 		}
 

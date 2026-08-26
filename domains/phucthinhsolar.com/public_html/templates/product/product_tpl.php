@@ -77,6 +77,68 @@
                 </div>
             </div>
 
+            <?php if(count($congSuatList)) { ?>
+            <div class="product-pages__price mb20">
+                <div class="product-pages__price-aside">
+                    <span class="product-pages__price-name">Công suất</span>
+                </div>
+
+                <div class="wrappers-aside__filter-scroll">
+                    <ul class="product-pages__price-nav">
+                        <?php
+                            $congsuat_get = [];
+                            if(isset($_GET['is_congsuat'])){
+                                $congsuat_get = explode(",", $_GET['is_congsuat']);
+                            }
+                        ?>
+                        <?php foreach($congSuatList as $k => $v) { $congSuatValue = rtrim(rtrim(number_format($v['cong_suat'],1,'.',''),'0'),'.'); ?>
+                        <li class="product-pages__price-items">
+                            <label class="mg0 cs-pointer checker product-pages__price-label d-flex p-relative">
+                                <input type="checkbox" onchange="fetch_product()" <?=(in_array($v['cong_suat'],$congsuat_get))?'checked':''?> name="car_congsuat" id="car_congsuat<?=$k?>"
+                                    value="<?=$v['cong_suat']?>">
+                                <label class="mg0 checked-fake" for="car_congsuat<?=$k?>"></label>
+                                <span class=" ml10" for="car_congsuat<?=$k?>"><?=$congSuatValue?>W</span>
+                            </label>
+                        </li>
+                        <?php } ?>
+                    </ul>
+                </div>
+            </div>
+            <?php } ?>
+
+            <div class="product-pages__price mb20">
+                <div class="product-pages__price-aside">
+                    <span class="product-pages__price-name">Mức giá</span>
+                </div>
+
+                <div class="wrappers-aside__filter-scroll">
+                    <ul class="product-pages__price-nav">
+                        <?php
+                            $price_get = [];
+                            if(isset($_GET['is_price'])){
+                                $price_get = explode(",", $_GET['is_price']);
+                            }
+                            $priceOptions = array(
+                                '1' => 'Dưới 500.000đ',
+                                '2' => '500.000đ - 1.000.000đ',
+                                '3' => '1.000.000đ - 2.000.000đ',
+                                '4' => 'Trên 2.000.000đ',
+                            );
+                        ?>
+                        <?php foreach($priceOptions as $pk => $pv) { ?>
+                        <li class="product-pages__price-items">
+                            <label class="mg0 cs-pointer checker product-pages__price-label d-flex p-relative">
+                                <input type="checkbox" onchange="fetch_product()" <?=(in_array($pk,$price_get))?'checked':''?> name="car_price" id="car_price<?=$pk?>"
+                                    value="<?=$pk?>">
+                                <label class="mg0 checked-fake" for="car_price<?=$pk?>"></label>
+                                <span class=" ml10" for="car_price<?=$pk?>"><?=$pv?></span>
+                            </label>
+                        </li>
+                        <?php } ?>
+                    </ul>
+                </div>
+            </div>
+
         </div>
     </div>
     <div class="product-right col-lg-9">

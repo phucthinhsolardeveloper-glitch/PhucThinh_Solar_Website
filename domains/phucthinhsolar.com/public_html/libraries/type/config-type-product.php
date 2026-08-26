@@ -57,6 +57,7 @@
         // )
     );
     $config['product'][$nametype]['code'] = true;
+    $config['product'][$nametype]['cong_suat'] = true;
     $config['product'][$nametype]['khoanggia'] = false;
     $config['product'][$nametype]['regular_price'] = true;
     $config['product'][$nametype]['sale_price'] = true;

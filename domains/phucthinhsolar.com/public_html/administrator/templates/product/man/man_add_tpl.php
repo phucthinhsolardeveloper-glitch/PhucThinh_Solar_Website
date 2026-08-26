@@ -281,6 +281,17 @@
 	                        <input type="text" class="form-control text-sm" name="data[code]" id="code" placeholder="Mã sản phẩm" value="<?=(!empty($flash->has('code'))) ? $flash->get('code') : @$item['code']?>">
 	                    </div>
 	                <?php } ?>
+					<?php if(isset($config['product'][$type]['cong_suat']) && $config['product'][$type]['cong_suat'] == true) { ?>
+				    	<div class="form-group col-md-4">
+	                        <label class="d-block" for="cong_suat">Công suất:</label>
+	                        <div class="input-group">
+	                        	<input type="text" class="form-control text-sm" name="data[cong_suat]" id="cong_suat" placeholder="Công suất" value="<?=(!empty($flash->has('cong_suat'))) ? $flash->get('cong_suat') : @$item['cong_suat']?>">
+	                        	<div class="input-group-append">
+	                        		<div class="input-group-text"><strong>W</strong></div>
+	                        	</div>
+	                        </div>
+	                    </div>
+				    <?php } ?>
 					<?php if(isset($config['product'][$type]['regular_price']) && $config['product'][$type]['regular_price'] == true) { ?>
 				    	<div class="form-group col-md-4">
 	                        <label class="d-block" for="regular_price">Giá bán:</label>

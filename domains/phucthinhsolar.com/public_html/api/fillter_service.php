@@ -8,10 +8,11 @@
 	$eShow = htmlspecialchars($_GET['eShow']);
 	$idList = (isset($_GET['id_list']) && $_GET['id_list'] != '') ? htmlspecialchars($_GET['id_list']) : 0;
 	$idCat = (isset($_GET['id_cat']) && $_GET['id_cat'] != '') ? htmlspecialchars($_GET['id_cat']) : 0;
-	$idBrand = (isset($_GET['is_brand']) && $_GET['is_brand'] != '') ? htmlspecialchars($_GET['is_brand']) : '';
-	$idXuatXu = (isset($_GET['is_origin']) && $_GET['is_origin'] != '') ? htmlspecialchars($_GET['is_origin']) : '';
+	$idBrand = (isset($_GET['is_brand']) && $_GET['is_brand'] != '' && preg_match('/^[0-9,]+$/',$_GET['is_brand'])) ? $_GET['is_brand'] : '';
+	$idXuatXu = (isset($_GET['is_origin']) && $_GET['is_origin'] != '' && preg_match('/^[0-9,]+$/',$_GET['is_origin'])) ? $_GET['is_origin'] : '';
 	$orderby = (isset($_GET['is_orderby']) && $_GET['is_orderby'] != '') ? htmlspecialchars($_GET['is_orderby']) : '';
     $gia = (isset($_GET['is_price']) && $_GET['is_price'] != '') ? htmlspecialchars($_GET['is_price']) : '';
+    $idCongSuat = (isset($_GET['is_congsuat']) && $_GET['is_congsuat'] != '') ? htmlspecialchars($_GET['is_congsuat']) : '';
 	$idType = 'dich-vu';
 	$p = (isset($_GET['p']) && $_GET['p'] > 0) ? htmlspecialchars($_GET['p']) : 1;
 	$start = ($p-1) * $pagingAjax->perpage;
@@ -42,6 +43,47 @@
 	{
 		$tempLink .= "&is_origin=".$idXuatXu;
 		$where .= " and id_xuatxu in (".$idXuatXu.")";
+	}
+	if($idCongSuat !="")
+	{
+		$tempLink .= "&is_congsuat=".$idCongSuat;
+		$congSuatArr = array_values(array_filter(array_map('floatval', explode(',', $idCongSuat))));
+		if(!empty($congSuatArr))
+		{
+			$where .= " and cong_suat in (".implode(',', array_fill(0, count($congSuatArr), '?')).")";
+			$params = array_merge($params, $congSuatArr);
+		}
+	}
+	if($gia !="")
+	{
+		$tempLink .= "&is_price=".$gia;
+		$priceRanges = array(
+			'1' => array(0, 500000),
+			'2' => array(500000, 1000000),
+			'3' => array(1000000, 2000000),
+			'4' => array(2000000, null),
+		);
+		$priceConds = array();
+		foreach(explode(',', $gia) as $pb)
+		{
+			if(!isset($priceRanges[$pb])) continue;
+			list($min, $max) = $priceRanges[$pb];
+			if($max === null)
+			{
+				$priceConds[] = "(if(sale_price>0,sale_price,regular_price) >= ?)";
+				$params[] = $min;
+			}
+			else
+			{
+				$priceConds[] = "(if(sale_price>0,sale_price,regular_price) >= ? and if(sale_price>0,sale_price,regular_price) < ?)";
+				$params[] = $min;
+				$params[] = $max;
+			}
+		}
+		if(!empty($priceConds))
+		{
+			$where .= " and (".implode(' or ', $priceConds).")";
+		}
 	}
 	if($orderby !="")
 	{

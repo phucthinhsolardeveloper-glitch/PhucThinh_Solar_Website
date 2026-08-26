@@ -18,12 +18,20 @@ function fetch_product(t=1) {
       , c = ""
       , r = ""
       , x = ""
+      , w = ""
+      , p = ""
       , s = $("#opensideBar-product");
     s.hasClass("active") && 0 != s.length && s.trigger("click");
     c = $('input[name="car_brand"]:checked').map(function() {
         return this.value
     }).get().join(","),
     x = $('input[name="car_xuatxu"]:checked').map(function() {
+        return this.value
+    }).get().join(","),
+    w = $('input[name="car_congsuat"]:checked').map(function() {
+        return this.value
+    }).get().join(","),
+    p = $('input[name="car_price"]:checked').map(function() {
         return this.value
     }).get().join(","),
     i = $('select[name="orderby"] option:selected').map(function() {
@@ -43,6 +51,8 @@ function fetch_product(t=1) {
     "0" != c2 && (n += "id_cat=" + c2 + "&"),
     "" != c && (n += "is_brand=" + c + "&"),
     "" != x && (n += "is_origin=" + x + "&"),
+    "" != w && (n += "is_congsuat=" + w + "&"),
+    "" != p && (n += "is_price=" + p + "&"),
     "" != i && (n += "is_orderby=" + i + "&"),
     pushState({}, "", a + "?" + n.substr(0, n.length - 1)),
     doSearch({
@@ -52,6 +62,8 @@ function fetch_product(t=1) {
         is_orderby: i,
         is_brand: c,
         is_origin: x,
+        is_congsuat: w,
+        is_price: p,
         idl: r
     })
 }

@@ -6,6 +6,7 @@
     $logo = $cache->get("select id, photo, options from #_photo where type = ? and act = ? limit 0,1", array('logo','photo_static'), 'fetch', 7200);
     $logof = $cache->get("select id, photo, options from #_photo where type = ? and act = ? limit 0,1", array('logo-footer','photo_static'), 'fetch', 7200);
     $brand = $cache->get("select name$lang, slugvi, slugen, id, photo from #_product_brand where type = ? and find_in_set('hienthi',status) order by numb,id desc", array('san-pham'), 'result', 7200);
+    $congSuatList = $cache->get("select distinct cong_suat from #_product where type = ? and cong_suat is not null and find_in_set('hienthi',status) order by cong_suat asc", array('san-pham'), 'result', 7200);
     $bct = $cache->get("select photo, link from #_photo where type = ? and act = ? and find_in_set('hienthi',status) limit 0,1", array('bct','photo_static'), 'fetch', 7200);
     // $slogan = $cache->get("select name$lang from #_static where type = ? limit 0,1", array('slogan'), 'fetch', 7200);
     $slider = $cache->get("select name$lang, photo, link, show_stt, video from #_photo where type = ? and find_in_set('hienthi',status) order by numb,id desc", array('slide'), 'result', 7200);
