@@ -259,6 +259,8 @@
 					$data[$column] = htmlspecialchars($this->func->sanitize($value));
 				}
 
+				$orderCode = (!empty($data['order_code'])) ? trim($data['order_code']) : '';
+				unset($data['order_code']);
 				$data['status'] = 'new-admin';
 				$data['date_posted'] = time();
 
@@ -310,6 +312,29 @@
 				if(isset($data['email']) && !empty($data['email']) && !$this->func->isEmail($data['email']))
 				{
 					$this->errors[] = 'Email không hợp lệ';
+				}
+
+				/* Chỉ nhận review khi mã đơn + điện thoại + email khớp sản phẩm đã mua */
+				if(empty($orderCode))
+				{
+					$this->errors[] = 'Chưa nhập mã đơn hàng';
+				}
+				else
+				{
+					$orderMatch = $this->d->rawQueryOne("select o.phone, o.email from #_order o inner join #_order_detail od on od.id_order = o.id where o.code = ? and od.id_product = ? limit 0,1", array($orderCode, (int) $data['id_variant']));
+					$phoneInput = preg_replace('/[^0-9]/', '', $data['phone']);
+					$phoneOrder = preg_replace('/[^0-9]/', '', (!empty($orderMatch['phone']) ? $orderMatch['phone'] : ''));
+					$emailInput = strtolower(trim($data['email']));
+					$emailOrder = strtolower(trim(!empty($orderMatch['email']) ? $orderMatch['email'] : ''));
+
+					if(empty($orderMatch) || $phoneInput === '' || $phoneInput !== $phoneOrder || $emailInput === '' || $emailInput !== $emailOrder)
+					{
+						$this->errors[] = 'Không tìm thấy đơn hàng phù hợp với sản phẩm và thông tin liên hệ';
+					}
+					else
+					{
+						$data['status'] = 'new-admin,verified-purchase';
+					}
 				}
 
 				if(!empty($dataPhoto) && count($dataPhoto) > 3)

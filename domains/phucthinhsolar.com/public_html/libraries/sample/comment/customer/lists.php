@@ -2,6 +2,9 @@
 	<div class="comment-item-poster">
 		<div class="comment-item-letter"><?=$this->subName($params['lists']['fullname'])?></div>
 		<div class="comment-item-name"><?=$params['lists']['fullname']?></div>
+		<?php if(in_array('verified-purchase', explode(',', $params['lists']['status']), true)) { ?>
+		<span class="badge badge-success ml-2">Đã mua hàng</span>
+		<?php } ?>
 		<div class="comment-item-posttime"><?=$this->timeAgo($params['lists']['date_posted'])?></div>
 	</div>
 	<div class="comment-item-information">

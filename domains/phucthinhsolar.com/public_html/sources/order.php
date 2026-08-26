@@ -310,8 +310,28 @@
 		}
 		catch(Exception $e) {}
 
+		/* Token trang cảm ơn: ràng buộc session và chỉ phát conversion một lần */
+		$thanksToken = bin2hex(random_bytes(24));
+		if(empty($_SESSION['order_thanks']) || !is_array($_SESSION['order_thanks']))
+		{
+			$_SESSION['order_thanks'] = array();
+		}
+		foreach($_SESSION['order_thanks'] as $token => $orderSession)
+		{
+			if(empty($orderSession['created_at']) || time() - $orderSession['created_at'] > 7200)
+			{
+				unset($_SESSION['order_thanks'][$token]);
+			}
+		}
+		$_SESSION['order_thanks'][$thanksToken] = array(
+			'id' => (int) $id_insert,
+			'code' => $code,
+			'created_at' => time(),
+			'conversion_pending' => true
+		);
+
 	    /* Xóa giỏ hàng */
         unset($_SESSION['cart']);
-		$func->redirect("cam-on/?code=".$code);
+		$func->redirect("cam-on/?token=".rawurlencode($thanksToken));
 	}
 ?>

@@ -117,6 +117,10 @@
 							<div class="form-group">
 								<label>4. Thông tin liên hệ:</label>
 								<div class="form-row">
+									<div class="col-12 mb-2">
+										<input type="text" class="form-control text-sm" name="dataReview[order_code]" id="review-order-code" placeholder="Mã đơn hàng đã mua sản phẩm *">
+										<small class="form-text text-muted">Mã đơn nằm trên trang cảm ơn hoặc email xác nhận đặt hàng.</small>
+									</div>
 									<div class="col-4">
 										<input type="text" class="form-control text-sm" name="dataReview[fullname]" id="review-fullname" placeholder="Nhập họ tên liên hệ *">
 									</div>

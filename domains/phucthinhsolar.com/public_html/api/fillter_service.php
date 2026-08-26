@@ -135,16 +135,19 @@
 ?>
 <?php if(count($items)){ ?>
 <div class="grid-product grid-product-3" id="search-body">
-    <?php foreach($items as $k => $v) {  ?>
+    <?php foreach($items as $k => $v) { $discountPercent = (!empty($v['sale_price']) && $v['regular_price'] > $v['sale_price']) ? round((($v['regular_price'] - $v['sale_price']) / $v['regular_price']) * 100) : 0; ?>
     <div>
         <a class="product-item" href="product/<?=$v[$sluglang]?>/" title="<?=$v['name'.$lang]?>">
-            <div class="img">
+            <div class="img" style="position:relative;">
+                <?php if($discountPercent > 0) { ?>
+                <span class="badge-discount" style="position:absolute;top:8px;right:8px;z-index:2;background:#e53935;color:#fff;font-weight:700;font-size:13px;padding:3px 8px;border-radius:4px;">-<?=$discountPercent?>%</span>
+                <?php } ?>
                 <?= $func->getImage(['class' => 'lazy w-100', 'sizes' => '300x300x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $v['photo'], 'alt' => $v['name' . $lang]]) ?>
             </div>
             <div class="caption">
                 <p class="name"><?=$v['name'.$lang]?></p>
             </div>
-			<p class="price-product">
+            <p class="price-product">
                 <?php if($v['sale_price']) { ?>
                     <span class="price-new"><?=$func->formatMoney($v['sale_price'])?></span>
                     <span class="price-old"><?=$func->formatMoney($v['regular_price'])?></span>
@@ -153,6 +156,10 @@
                 <?php } ?>
             </p>
         </a>
+        <div class="quick-cart-btn" style="display:flex;gap:6px;padding:0 10px 12px;">
+            <a href="javascript:void(0)" class="addcart" data-id="<?=$v['id']?>" data-action="buynow" title="Mua ngay" style="flex:1;text-align:center;padding:8px 4px;font-size:13px;font-weight:700;border-radius:4px;background:var(--bg_button);color:#fff;">Mua ngay</a>
+            <a href="javascript:void(0)" class="addcart" data-id="<?=$v['id']?>" data-action="addnow" title="Thêm vào giỏ hàng" style="flex:1;text-align:center;padding:8px 4px;font-size:13px;font-weight:700;border-radius:4px;border:1px solid var(--color-primary);color:var(--color-primary);">Thêm giỏ</a>
+        </div>
     </div>
     <?php } ?>
 </div>

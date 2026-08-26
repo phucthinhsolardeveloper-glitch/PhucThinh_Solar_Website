@@ -109,7 +109,7 @@
     $config['places']['placesship'] = false;
 
     /* Quản lý giỏ hàng */
-    $config['order']['active'] = false;
+    $config['order']['active'] = true;
     $config['order']['search'] = true;
     $config['order']['excel'] = true;
     $config['order']['word'] = true;

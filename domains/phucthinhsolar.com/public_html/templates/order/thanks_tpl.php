@@ -8,7 +8,7 @@
     <a href="san-pham/" class="btn btn-primary" style="margin-top:20px;">Tiếp tục mua sắm</a>
 </div>
 
-<?php if(!empty($orderThanks)) { ?>
+<?php if(!empty($orderThanks) && !empty($fireOrderConversion)) { ?>
 <script>
     window.dataLayer = window.dataLayer || [];
     dataLayer.push({
