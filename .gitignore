@@ -1,6 +1,7 @@
 # Data & secrets — never commit
 *.sql
 *.sql:Zone.Identifier
+!migrations/*.sql
 backup/
 domains/phucthinhsolar.com/public_html/caches/
 domains/phucthinhsolar.com/public_html/logs/
