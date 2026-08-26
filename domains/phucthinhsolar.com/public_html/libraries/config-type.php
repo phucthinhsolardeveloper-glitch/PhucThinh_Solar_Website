@@ -4,7 +4,7 @@
         "Giới thiệu" => array(
             // "product" => array("san-pham"),
             // "tags" => array("san-pham"),
-            "static" => array("su-menh","gioi-thieu","tom-tat-gioi-thieu"),
+            "static" => array("su-menh","gioi-thieu"),
             "news" => array("thong-tin-lien-he","lich-su","su-menh","ly-do-chon-chung-toi"),
             "photo" => array("chungnhan")
         ),
