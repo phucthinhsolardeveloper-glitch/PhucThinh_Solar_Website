@@ -816,7 +816,7 @@ $(document).ready(function(){
     GA_FRAMEWORK.Cart();
     GA_FRAMEWORK.Videos();
     GA_FRAMEWORK.Photobox();
-    // GA_FRAMEWORK.Comment();
+    GA_FRAMEWORK.Comment();
     GA_FRAMEWORK.Search();
     GA_FRAMEWORK.DomChange();
     GA_FRAMEWORK.TickerScroll();

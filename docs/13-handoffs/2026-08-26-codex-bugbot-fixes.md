@@ -46,3 +46,16 @@ Rollback code bằng revert commit chứa thay đổi này. Thay đổi này kh�
 - Cần Security Review riêng trước production, đặc biệt các controller admin cũ, CSRF và upload.
 - Chưa làm video/mô tả mở rộng, giấy chứng nhận; nội dung dự án/chính sách vẫn cần dữ liệu thật.
 - 42 sản phẩm chưa có công suất chuẩn hóa cần rà soát thủ công.
+
+## Follow-up: sửa tương tác frontend không chạy
+
+Phát hiện sau khi kiểm thử thao tác thực tế: các helper `holdonOpen()`, `confirmDialog()` và `showNotify()` được gọi trong giỏ hàng/review nhưng JavaScript tương ứng đã bị comment trong layout. Vì vậy nút **Thêm giỏ** dừng ở `HoldOn is not defined` trước khi gửi AJAX; review và xóa giỏ cũng có lỗi tương tự.
+
+Đã bật lại `HoldOn.js`, confirm, simple-notify và fileuploader cùng CSS tương ứng; bật `GA_FRAMEWORK.Comment()` và sửa tên namespace lazy-load sai trong module comment.
+
+Kiểm thử sau rebuild Docker:
+
+- Các asset tương tác đều được nạp HTTP 200.
+- Request thêm giỏ với session mới trả `max=1`.
+- Trang `/gio-hang/` trong cùng session hiển thị đúng sản phẩm vừa thêm.
+- Log Apache/PHP không có lỗi trong luồng test.

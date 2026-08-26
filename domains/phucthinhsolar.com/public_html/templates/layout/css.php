@@ -91,6 +91,10 @@
     </style>
 <?php
     $css->set("holdon/HoldOn-style.css");
+    $css->set("confirm/confirm.css");
+    $css->set("simplenotify/simple-notify.css");
+    $css->set("fileuploader/font-fileuploader.css");
+    $css->set("fileuploader/jquery.fileuploader.min.css");
     $css->set("css/jssor.css");
     $css->set("fancybox3/jquery.fancybox.css");
     $css->set("fancybox3/jquery.fancybox.style.css");

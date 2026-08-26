@@ -288,7 +288,7 @@ $.fn.comments = function(options){
                     $loadResult.append(response.data);
                     $loadControl.find(".limit-from").val(limitFrom + limitGet);
                     mediaSlid();
-                    BM_FRAMEWORK.Lazys();
+                    GA_FRAMEWORK.Lazys();
                 }
 
                 /* Check to remove load more button */
@@ -342,7 +342,7 @@ $.fn.comments = function(options){
                 {
                     $loadResult.append(response.data);
                     $loadControl.find(".limit-from").val(limitFrom + limitGet);
-                    BM_FRAMEWORK.Lazys();
+                    GA_FRAMEWORK.Lazys();
                 }
 
                 /* Check to remove load more button */
