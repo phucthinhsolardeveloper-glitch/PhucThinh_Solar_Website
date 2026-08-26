@@ -167,9 +167,9 @@
                                 <?php } ?>
                             </p>
                         </a>
-                        <div class="quick-cart-btn d-flex" style="gap:8px;padding:0 10px 10px;">
-                            <button type="button" class="addcart btn btn-sm btn-outline-primary" data-id="<?=$v['id']?>" data-action="addnow" title="Thêm vào giỏ hàng">Thêm giỏ hàng</button>
-                            <button type="button" class="addcart btn btn-sm btn-primary" data-id="<?=$v['id']?>" data-action="buynow" title="Mua ngay">Mua ngay</button>
+                        <div class="quick-cart-btn" style="display:flex;gap:6px;padding:0 10px 12px;">
+                            <a href="javascript:void(0)" class="addcart" data-id="<?=$v['id']?>" data-action="buynow" title="Mua ngay" style="flex:1;text-align:center;padding:8px 4px;font-size:13px;font-weight:700;border-radius:4px;background:var(--bg_button);color:#fff;">Mua ngay</a>
+                            <a href="javascript:void(0)" class="addcart" data-id="<?=$v['id']?>" data-action="addnow" title="Thêm vào giỏ hàng" style="flex:1;text-align:center;padding:8px 4px;font-size:13px;font-weight:700;border-radius:4px;border:1px solid var(--color-primary);color:var(--color-primary);">Thêm giỏ</a>
                         </div>
                     </div>
                     <?php } ?>

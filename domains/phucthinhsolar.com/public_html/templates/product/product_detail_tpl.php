@@ -97,9 +97,11 @@
                             <?php } ?>
                         </div>
                         <div class="btn-product-detail">
-                            <button type="button" class="addcart" data-id="<?=$rowDetail['id']?>" data-action="addnow" title="Thêm vào giỏ hàng">Thêm giỏ hàng</button>
-                            <button type="button" class="addcart" data-id="<?=$rowDetail['id']?>" data-action="buynow" title="Mua ngay">Mua ngay</button>
-                            <a href="dai-ly/" target="_blank" title="Liên hệ">Đăng ký đại lý</a>
+                            <a href="javascript:void(0)" class="addcart" data-id="<?=$rowDetail['id']?>" data-action="buynow" title="Mua ngay">Mua ngay</a>
+                            <a href="javascript:void(0)" class="addcart" data-id="<?=$rowDetail['id']?>" data-action="addnow" title="Thêm vào giỏ hàng">Thêm giỏ hàng</a>
+                        </div>
+                        <div class="btn-product-detail">
+                            <a href="dai-ly/" target="_blank" title="Liên hệ" style="width:100%;">Đăng ký đại lý</a>
                         </div>
                         <?php if(count($tc)){ ?>
                         <div id="CRlist_endow_sidebar" class="CRdef_sidebar_pd">
