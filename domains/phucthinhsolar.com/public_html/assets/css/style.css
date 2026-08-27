@@ -52,6 +52,49 @@ footer{background-color:var(--color-navy-deep) !important;background-image:none 
 .CRlist_social a{color:#c7cede;}
 .CRlist_social a:hover{color:var(--color-gold-light);}
 .CRlist_social svg path{fill:currentColor;}
+
+/* ===== Giai đoạn 2 - Trang chủ: giữ nguyên cấu trúc/section đặc trưng, chỉ đổi màu/kiểu chữ theo bảng mới ===== */
+.section-title{text-align:center;margin-bottom:34px;}
+.section-title p{color:var(--color-gold-dark);font-size:13px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;margin-bottom:8px;}
+.section-title h3{color:var(--color-primary);font-weight:800;text-transform:uppercase;position:relative;padding-bottom:16px;margin:0;}
+.section-title h3:after{content:"";position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:60px;height:3px;background:var(--bg_button);}
+.section-title.section-title-white p{color:var(--color-gold-light);}
+.section-title.section-title-white h3{color:#fff;}
+
+/* Tab switcher (sản phẩm nổi bật / giải pháp / dự án) */
+.sw-tab-cat .swiper-slide a,.tab-switcher ul li a{color:var(--color-primary);font-weight:700;border:1px solid #dfe3ea;border-radius:30px;padding:8px 20px;display:inline-block;transition:all .2s;}
+.sw-tab-cat .swiper-slide.swiper-slide-active a,.tab-switcher ul li.uk-active a,.tab-switcher ul li.tab-project.uk-active a{background:var(--bg_button);border-color:var(--bg_button);color:#fff;}
+
+/* Nút CTA link dùng chung trong các section trang chủ */
+.btn-about,.btn-view-all a,.btn-all,.view-more .text{color:var(--bg_button);font-weight:700;}
+.btn-about:hover,.btn-view-all a:hover,.btn-all:hover{color:var(--color-gold-dark);}
+.btn-style{color:var(--bg_button);}
+.link_arrow{color:var(--bg_button);}
+
+/* Lợi ích - icon active */
+.icon-utility.active{filter:drop-shadow(0 0 0 var(--bg_button));}
+
+/* Nền tối cho section Con số/Quy trình - chuyển sang gradient navy thay ảnh nền cũ */
+.home-4,.home-7{background-image:none !important;background:linear-gradient(160deg, var(--color-navy-deep), var(--color-primary)) !important;}
+.home-4 .number,.home-4 .text{color:#fff;}
+.home-4 .number{color:var(--color-gold-light);font-weight:800;}
+
+/* Đối tác - logo hover */
+.inf_item_partner .wrap{filter:grayscale(60%);opacity:.85;transition:all .2s;}
+.inf_item_partner:hover .wrap{filter:grayscale(0%);opacity:1;}
+
+/* Dự án - card + link */
+.slider_6_slick .project .name a{color:var(--color-primary);font-weight:700;}
+.slider_6_slick .project:hover .name a{color:var(--color-gold-dark);}
+
+/* Tin tức - ngày tháng badge */
+.inf_item_news .date_wrap{background:var(--bg_button);color:#fff;}
+.inf_item_news .title{color:var(--color-primary);font-weight:700;}
+.inf_item_news:hover .title{color:var(--color-gold-dark);}
+
+/* Giới thiệu (About) trang chủ */
+.about-content span{color:var(--color-gold-dark);font-weight:700;text-transform:uppercase;font-size:13px;}
+.about-content .name-about{color:var(--color-primary);font-weight:800;}
 body{font-size: 16px;font-family: "Plus Jakarta Sans", sans-serif;font-family: "Mulish", sans-serif;top: 0px !important;}
 .wow{visibility: hidden;}
 #google_language_translator{
