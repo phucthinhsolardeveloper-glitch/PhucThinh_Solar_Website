@@ -3843,3 +3843,39 @@ body,p{font-size:15px;line-height:1.6;color:#333;}
 .inf_item_postSlide h3{color:var(--color-primary);font-weight:700;font-size:15px;padding:0 14px;}
 .inf_item_postSlide .CRbox{padding:12px 14px 0;color:var(--color-gray);font-size:12px;}
 .inf_item_postSlide .date_content,.inf_item_postSlide .author_post{color:var(--color-gray);}
+
+/* ===== Trang giỏ hàng / thanh toán ===== */
+.section-cart,.top-cart .group-cart-od{background:#fff;border:1px solid #eee;border-radius:10px;padding:22px;}
+.title-cart{color:var(--color-primary);font-weight:800;text-transform:uppercase;font-size:15px;border-bottom:2px solid var(--bg_button);padding-bottom:10px;margin-bottom:16px;}
+.title-cart i{color:var(--color-gold-dark);margin-right:6px;}
+.input-cart .form-control{border:1px solid #dfe3ea;border-radius:6px;padding:10px 14px;height:auto;}
+.payments-cart{border:1px solid #eee;border-radius:8px;padding:12px 14px;margin-bottom:10px;}
+.payments-cart .payments-label{color:var(--color-primary);font-weight:700;}
+.btn-cart{background:var(--bg_button);border:0;border-radius:6px;font-weight:700;padding:12px;}
+.btn-cart:disabled{opacity:.5;}
+.procart{border:1px solid #eee;border-radius:8px;margin-bottom:10px;}
+.name-procart a{color:var(--color-primary);font-weight:700;}
+.price-new-cart{color:var(--color-red);font-weight:700;}
+.price-old-cart{color:var(--color-gray);font-size:12px;text-decoration:line-through;}
+.quantity-counter-procart{border:1px solid #dfe3ea;border-radius:6px;overflow:hidden;width:110px;flex:0 0 110px;}
+.quantity-counter-procart .counter-procart{background:#faf8f3;cursor:pointer;padding:4px 10px;flex:0 0 auto;}
+.quantity-procart{border:0 !important;text-align:center;width:44px !important;flex:0 0 44px;min-width:0;padding:0 !important;}
+.del-procart{color:var(--color-red);font-size:12px;}
+.money-procart{border-top:1px solid #eee;margin-top:14px;padding-top:14px;}
+.money-procart .total-price{color:var(--color-primary);font-weight:700;}
+.empty-cart{display:block;text-align:center;padding:60px 20px;background:#faf8f3;border-radius:10px;}
+.empty-cart i{font-size:48px;color:var(--color-gold-light);}
+.empty-cart p{color:var(--color-primary);font-weight:700;margin:14px 0 6px;}
+.empty-cart span{color:var(--color-gold-dark);font-weight:600;}
+
+/* Fix: rule chuẩn hoá p{color:#333} (Giai đoạn font) đè lên chữ trắng trên nền tối
+   ở section Tầm nhìn/Sứ mệnh/Giá trị cốt lõi (trang Về chúng tôi) khiến chữ mất
+   tương phản trên nền navy - trả lại màu trắng riêng cho đúng section này. */
+.inf_item_vision h4,.inf_item_vision .content p{color:#fff !important;}
+.inf_item_vision .content p{opacity:.85;}
+
+/* Safety-net cho toàn site: bất kỳ đâu dùng class .text-white (Bootstrap) của theme
+   gốc để hiện chữ trắng trên nền tối, đảm bảo rule p{color:#333} phía trên không
+   đè lên nữa - đây là nơi bị lộ ra rõ nhất: section "Giải pháp" trang chủ
+   (.inner.text-white, các dòng "24 giờ/ngày"...). */
+.text-white,.text-white p,.text-white h1,.text-white h2,.text-white h3,.text-white h4,.text-white span{color:#fff !important;}

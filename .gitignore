@@ -16,6 +16,7 @@ imap/
 .env
 .env.*
 .claude/
+.playwright-mcp/
 domains/phucthinhsolar.com/.htpasswd/
 domains/phucthinhsolar.com/awstats/
 domains/phucthinhsolar.com/logs/
