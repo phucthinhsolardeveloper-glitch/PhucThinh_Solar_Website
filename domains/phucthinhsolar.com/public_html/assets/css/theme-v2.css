@@ -43,7 +43,7 @@ body,p,button,input,select,textarea,a,span,strong,h1,h2,h3,h4,h5,h6{font-family:
 .header-right-style{display:flex;align-items:center;justify-content:flex-end;gap:18px;flex:1;min-width:0;}
 .menu{flex:1;}
 .menu>div>ul{justify-content:center!important;gap:18px;margin:0;}
-.menu>div>ul>li>a{font-size:13px!important;font-weight:750!important;color:var(--pts-navy)!important;letter-spacing:.015em;padding:15px 0!important;white-space:nowrap;}
+.menu>div>ul>li>a{font-size:15px!important;font-weight:750!important;color:var(--pts-navy)!important;letter-spacing:.015em;padding:15px 0!important;white-space:nowrap;}
 .menu>div>ul>li>a:hover,.menu>div>ul>li>a.active{color:var(--pts-gold-dark)!important;}
 .menu ul li ul{border:1px solid #eef0f4!important;border-radius:8px!important;box-shadow:0 18px 45px rgba(6,21,55,.16)!important;padding:8px 0!important;background:#fff!important;}
 .menu ul li ul li a{color:#334155!important;font-size:13px!important;padding:10px 16px!important;background:#fff!important;}
@@ -81,6 +81,8 @@ body,p,button,input,select,textarea,a,span,strong,h1,h2,h3,h4,h5,h6{font-family:
 .section-title p{color:var(--pts-gold-dark)!important;font-size:11px!important;font-weight:850!important;letter-spacing:.15em!important;text-transform:uppercase;}
 .section-title h3{color:var(--pts-navy)!important;font-size:clamp(25px,2.35vw,34px)!important;font-weight:900!important;letter-spacing:-.02em;line-height:1.18;}
 .section-title h3:after{background:var(--pts-gold)!important;width:48px!important;height:3px!important;}
+.section-title-white h3,.section-title.text-white h3,.section-title h3.text-white{color:#fff!important;}
+.section-title-white p,.section-title.text-white p{color:var(--pts-gold-light)!important;}
 .wrap-cat-highlight{margin:0!important;padding:64px 0!important;background:#fff;}
 .wrap-cat-highlight .section-title{margin-bottom:34px;}
 .cat-highlight-row{margin-left:-12px;margin-right:-12px;}
@@ -99,6 +101,7 @@ body,p,button,input,select,textarea,a,span,strong,h1,h2,h3,h4,h5,h6{font-family:
 /* Product cards */
 .grid-product{gap:20px!important;}
 .product-card{position:relative;border:1px solid var(--pts-line)!important;border-radius:12px!important;padding:13px!important;overflow:visible!important;box-shadow:none!important;}
+.product-card .product-item{border:0!important;padding:0!important;}
 .product-card:hover{border-color:var(--pts-gold)!important;box-shadow:0 16px 34px rgba(6,21,55,.11)!important;transform:translateY(-5px)!important;}
 .product-card-img{border-radius:9px!important;background:linear-gradient(145deg,#fffbeb,#f8fafc)!important;margin-bottom:10px;overflow:hidden!important;}
 .product-card-img img{object-fit:contain!important;padding:8px;transition:transform .25s;}
@@ -131,7 +134,7 @@ body,p,button,input,select,textarea,a,span,strong,h1,h2,h3,h4,h5,h6{font-family:
 
 @media(max-width:1200px){
     .menu>div>ul{gap:12px;}
-    .menu>div>ul>li>a{font-size:12px!important;}
+    .menu>div>ul>li>a{font-size:13px!important;}
     .pts-brand-copy{display:none;}
     .footer_top>.container>.row{grid-template-columns:130px 1fr 1.2fr;}
 }
@@ -336,7 +339,7 @@ body,p,button,input,select,textarea,a,span,strong,h1,h2,h3,h4,h5,h6{font-family:
 .home-2 .tabs-container .wrapper>.img>img{width:100%!important;height:100%!important;object-fit:cover!important;}
 
 .wrap-promo-banners{padding:12px 0 64px!important;background:#fff!important;}
-.promo-banner{min-height:180px!important;border-radius:16px!important;padding:36px 48px!important;background:linear-gradient(115deg,var(--pts-gold),#e4b94e)!important;box-shadow:0 18px 40px rgba(156,116,32,.18)!important;}
+.promo-banner{min-height:110px!important;border-radius:16px!important;padding:22px 48px!important;background:linear-gradient(115deg,var(--pts-gold),#e4b94e)!important;box-shadow:0 18px 40px rgba(156,116,32,.18)!important;}
 .promo-banner:after{content:"";position:absolute;right:-60px;top:-120px;width:340px;height:340px;border:52px solid rgba(255,255,255,.14);border-radius:50%;}
 .promo-eyebrow{color:var(--pts-navy)!important;font-size:12px!important;font-weight:900!important;letter-spacing:.14em!important;}
 .promo-title{color:var(--pts-navy-deep)!important;font-size:clamp(28px,3.2vw,43px)!important;font-weight:950!important;}
