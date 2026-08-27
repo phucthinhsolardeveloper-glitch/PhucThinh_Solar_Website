@@ -21,7 +21,7 @@
 html{scroll-behavior:smooth;}
 body{color:var(--pts-ink);background:#fff;font-family:"Plus Jakarta Sans","Mulish",Arial,sans-serif;line-height:1.6;}
 body,p,button,input,select,textarea,a,span,strong,h1,h2,h3,h4,h5,h6{font-family:"Plus Jakarta Sans","Mulish",Arial,sans-serif;}
-.wrap-content,.wrap-main,.uk-container,.container{width:100%;max-width:var(--pts-container);margin-left:auto;margin-right:auto;padding-left:24px;padding-right:24px;}
+.wrap-content,.wrap-main,.uk-container,.container{box-sizing:border-box;width:100%;max-width:var(--pts-container);margin-left:auto;margin-right:auto;padding-left:24px;padding-right:24px;}
 .wrap-home{max-width:none;padding:0;}
 .wap-all-page{overflow:clip;}
 
