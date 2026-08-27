@@ -35,8 +35,11 @@
 .icon-cart-header svg path,.icon-cart-header svg circle{transition:all .2s;}
 .icon-cart-header:hover svg path,.icon-cart-header:hover svg circle{stroke:var(--bg_button);fill:var(--bg_button);}
 
-.menu ul li ul{border-top:2px solid var(--bg_button);}
+.menu ul li ul{border-top:3px solid var(--bg_button);background-color:#fff !important;border-radius:0 0 10px 10px;box-shadow:0 12px 30px rgba(10,34,81,.15) !important;overflow:hidden;padding:6px 0;}
+.menu ul li ul li a{padding:11px 18px !important;border-bottom:1px solid #f2f2f2 !important;}
+.menu ul li ul li a:before{content:"\f105";font-family:"Font Awesome 5 Free";font-weight:900;color:var(--color-gold-dark);margin-right:8px;opacity:.7;}
 .menu ul li ul li a.active,.menu ul li ul li:hover > a{color:var(--color-primary);background:#faf6ec;}
+.menu ul li ul li ul{border-radius:10px;top:-6px;}
 
 footer{background-color:var(--color-navy-deep) !important;background-image:none !important;}
 .footer_top{padding-top:50px;padding-bottom:30px;}

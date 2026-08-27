@@ -31,7 +31,7 @@
     <div class="uk-container">
         <div class="section-title uk-text-center">
             <p>Khám phá ngay</p>
-            <h3>Các dòng sản phẩm chủ lực</h3>
+            <h3>Danh mục sản phẩm</h3>
         </div>
         <div class="row cat-highlight-row">
             <?php $catCount = 0; foreach($splist as $vcathl) { if($catCount >= 3) break; $catCount++; ?>
