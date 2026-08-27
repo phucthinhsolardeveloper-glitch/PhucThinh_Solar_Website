@@ -4,7 +4,7 @@
 	/* Paginations */
 	include LIBRARIES."class/class.PaginationsAjax.php";
 	$pagingAjax = new PaginationsAjax();
-	$pagingAjax->perpage = (!empty($_GET['perpage'])) ? htmlspecialchars($_GET['perpage']) : 18;
+	$pagingAjax->perpage = (!empty($_GET['perpage'])) ? htmlspecialchars($_GET['perpage']) : 12;
 	$eShow = htmlspecialchars($_GET['eShow']);
 	$idList = (isset($_GET['id_list']) && $_GET['id_list'] != '') ? htmlspecialchars($_GET['id_list']) : 0;
 	$idCat = (isset($_GET['id_cat']) && $_GET['id_cat'] != '') ? htmlspecialchars($_GET['id_cat']) : 0;
@@ -13,6 +13,7 @@
 	$orderby = (isset($_GET['is_orderby']) && $_GET['is_orderby'] != '') ? htmlspecialchars($_GET['is_orderby']) : '';
     $gia = (isset($_GET['is_price']) && $_GET['is_price'] != '') ? htmlspecialchars($_GET['is_price']) : '';
     $idCongSuat = (isset($_GET['is_congsuat']) && $_GET['is_congsuat'] != '') ? htmlspecialchars($_GET['is_congsuat']) : '';
+    $idCatFilter = (isset($_GET['is_cat']) && $_GET['is_cat'] != '') ? htmlspecialchars($_GET['is_cat']) : '';
 	$idType = 'dich-vu';
 	$p = (isset($_GET['p']) && $_GET['p'] > 0) ? htmlspecialchars($_GET['p']) : 1;
 	$start = ($p-1) * $pagingAjax->perpage;
@@ -52,6 +53,16 @@
 		{
 			$where .= " and cong_suat in (".implode(',', array_fill(0, count($congSuatArr), '?')).")";
 			$params = array_merge($params, $congSuatArr);
+		}
+	}
+	if($idCatFilter !="")
+	{
+		$tempLink .= "&is_cat=".$idCatFilter;
+		$catFilterArr = array_values(array_filter(array_map('intval', explode(',', $idCatFilter))));
+		if(!empty($catFilterArr))
+		{
+			$where .= " and id_cat in (".implode(',', array_fill(0, count($catFilterArr), '?')).")";
+			$params = array_merge($params, $catFilterArr);
 		}
 	}
 	if($gia !="")

@@ -60,6 +60,18 @@
 			}
 		}
 
+		/* Loại sản phẩm (danh mục con) */
+		$idCatFilter = (isset($_GET['is_cat']) && $_GET['is_cat'] != '') ? $_GET['is_cat'] : '';
+		if($idCatFilter != '')
+		{
+			$catArr = array_values(array_filter(array_map('intval', explode(',', $idCatFilter))));
+			if(!empty($catArr))
+			{
+				$extraWhere .= " and id_cat in (".implode(',', array_fill(0, count($catArr), '?')).")";
+				$extraParams = array_merge($extraParams, $catArr);
+			}
+		}
+
 		/* Mức giá (áp theo sale_price nếu có, ngược lại regular_price) */
 		$idPrice = (isset($_GET['is_price']) && $_GET['is_price'] != '') ? $_GET['is_price'] : '';
 		if($idPrice != '')
@@ -256,7 +268,7 @@
 		$params = array_merge($params, $extraParams);
 
 		$curPage = $getPage;
-		$perPage = 18;
+		$perPage = 12;
 		$startpoint = ($curPage * $perPage) - $perPage;
 		$limit = " limit ".$startpoint.",".$perPage;
 		$sql = "select * from #_product where $where $order_by $limit";
@@ -301,7 +313,7 @@
 		$params = array_merge($params, $extraParams);
 
 		$curPage = $getPage;
-		$perPage = 18;
+		$perPage = 12;
 		$startpoint = ($curPage * $perPage) - $perPage;
 		$limit = " limit ".$startpoint.",".$perPage;
 		$sql = "select * from #_product where $where $order_by $limit";
@@ -358,7 +370,7 @@
 		$params = array($idi,$type);
 
 		$curPage = $getPage;
-		$perPage = 18;
+		$perPage = 12;
 		$startpoint = ($curPage * $perPage) - $perPage;
 		$limit = " limit ".$startpoint.",".$perPage;
 		$sql = "select * from #_product where $where $order_by $limit";
@@ -419,7 +431,7 @@
 		$params = array($ids,$type);
 
 		$curPage = $getPage;
-		$perPage = 18;
+		$perPage = 12;
 		$startpoint = ($curPage * $perPage) - $perPage;
 		$limit = " limit ".$startpoint.",".$perPage;
 		$sql = "select * from #_product where $where $order_by $limit";
@@ -495,7 +507,7 @@
 		$params = array($productBrand['id'],$type);
 
 		$curPage = $getPage;
-		$perPage = 18;
+		$perPage = 12;
 		$startpoint = ($curPage * $perPage) - $perPage;
 		$limit = " limit ".$startpoint.",".$perPage;
 		$sql = "select * from #_product where $where $order_by $limit";
@@ -558,7 +570,7 @@
 		$params = array_merge($params, $extraParams);
 
 		$curPage = $getPage;
-		$perPage = 18;
+		$perPage = 12;
 		$startpoint = ($curPage * $perPage) - $perPage;
 		$limit = " limit ".$startpoint.",".$perPage;
 		$sql = "select * from #_product where $where $order_by $limit";

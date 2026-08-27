@@ -1295,12 +1295,16 @@
 		}
 
 		/* Lấy getCurrentPageURL */
-		public function getCurrentPageURL() 
+		public function getCurrentPageURL()
 		{
 			$pageURL = 'http';
-			if(array_key_exists('HTTPS', $_SERVER) && $_SERVER["HTTPS"] == "on") $pageURL .= "s";
+			$isHttps = (array_key_exists('HTTPS', $_SERVER) && $_SERVER["HTTPS"] == "on");
+			if($isHttps) $pageURL .= "s";
 			$pageURL .= "://";
-			$pageURL .= $_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
+			$port = (!empty($_SERVER["SERVER_PORT"])) ? $_SERVER["SERVER_PORT"] : '';
+			$isDefaultPort = ($port == '' || ($isHttps && $port == '443') || (!$isHttps && $port == '80'));
+			$host = $_SERVER["SERVER_NAME"].(($isDefaultPort) ? '' : ':'.$port);
+			$pageURL .= $host.$_SERVER["REQUEST_URI"];
 			$urlpos = strpos($pageURL, "?p");
 			$pageURL = ($urlpos) ? explode("?p=", $pageURL) : explode("&p=", $pageURL);
 			return $pageURL[0];

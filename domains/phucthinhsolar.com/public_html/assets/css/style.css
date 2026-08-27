@@ -3759,3 +3759,8 @@ body,p{font-size:15px;line-height:1.6;color:#333;}
 @media (min-width: 1200px){
     .uk-container{max-width:1440px !important;}
 }
+
+/* Grid sản phẩm danh mục: đúng 4 cột/hàng theo mẫu (trước đây .grid-product-3 đè xuống 3 cột) */
+@media (min-width: 992px){
+    .product-right .grid-product.grid-product-3{grid-template-columns:repeat(4, 1fr) !important;}
+}

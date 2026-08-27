@@ -151,6 +151,39 @@ document.addEventListener('DOMContentLoaded', function(){
             </div>
             <?php } ?>
 
+            <?php
+                $catFilterListId = (!empty($productList['id'])) ? $productList['id'] : 0;
+                $catFilterList = ($catFilterListId) ? $d->rawQuery("select name$lang, id from #_product_cat where id_list = ? and find_in_set('hienthi',status) order by numb,id desc",array($catFilterListId)) : array();
+            ?>
+            <?php if(count($catFilterList)) { ?>
+            <div class="product-pages__price mb20">
+                <div class="product-pages__price-aside">
+                    <span class="product-pages__price-name">Loại sản phẩm</span>
+                </div>
+
+                <div class="wrappers-aside__filter-scroll">
+                    <ul class="product-pages__price-nav">
+                        <?php
+                            $cat_get = [];
+                            if(isset($_GET['is_cat'])){
+                                $cat_get = explode(",", $_GET['is_cat']);
+                            }
+                        ?>
+                        <?php foreach($catFilterList as $k => $v) { ?>
+                        <li class="product-pages__price-items">
+                            <label class="mg0 cs-pointer checker product-pages__price-label d-flex p-relative">
+                                <input type="checkbox" onchange="fetch_product()" <?=(in_array($v['id'],$cat_get))?'checked':''?> name="car_cat" id="car_cat<?=$k?>"
+                                    value="<?=$v['id']?>">
+                                <label class="mg0 checked-fake" for="car_cat<?=$k?>"></label>
+                                <span class=" ml10" for="car_cat<?=$k?>"><?=$v['name'.$lang]?></span>
+                            </label>
+                        </li>
+                        <?php } ?>
+                    </ul>
+                </div>
+            </div>
+            <?php } ?>
+
             <div class="product-pages__price mb20">
                 <div class="product-pages__price-aside">
                     <span class="product-pages__price-name">Mức giá</span>
