@@ -3764,3 +3764,41 @@ body,p{font-size:15px;line-height:1.6;color:#333;}
 @media (min-width: 992px){
     .product-right .grid-product.grid-product-3{grid-template-columns:repeat(4, 1fr) !important;}
 }
+
+/* ===== Giai đoạn 4 - Chi tiết sản phẩm ===== */
+.left-pro-detail{background:#faf9f6;border:1px solid #eee;border-radius:10px;padding:16px;}
+.left-pro-detail .MagicZoom img{object-fit:contain;}
+.thumb-pro-detail{border:1px solid #eee;border-radius:6px;overflow:hidden;}
+.thumb-pro-detail.active,.thumb-pro-detail:hover{border-color:var(--bg_button);}
+
+.title-pro-detail{color:var(--color-primary);font-weight:800;font-size:22px;}
+.attr-label-pro-detail{color:var(--color-gray);font-weight:600;}
+.price-new-pro-detail{color:var(--color-red);font-weight:800;font-size:26px;}
+.price-old-pro-detail{color:var(--color-gray);font-size:15px;text-decoration:line-through;margin-left:8px;}
+.product-info .pro-type span{color:var(--color-gray);}
+.product-info .pro-type .title{color:var(--color-primary);font-weight:700;}
+
+.quantity-pro-detail{display:flex;align-items:center;gap:10px;margin:14px 0;}
+.quantity-pro-detail label{margin:0;}
+.quantity-pro-detail span{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border:1px solid #dfe3ea;border-radius:6px;cursor:pointer;font-weight:700;color:var(--color-primary);user-select:none;}
+.quantity-pro-detail span:hover{border-color:var(--bg_button);color:var(--bg_button);}
+.quantity-pro-detail .qty-pro{width:60px;height:32px;text-align:center;border:1px solid #dfe3ea;border-radius:6px;}
+
+.CRdef_sidebar_pd ul,.CRnew_list_icon_def_pd{display:flex;flex-wrap:wrap;gap:10px;list-style:none;padding:0;margin:14px 0;}
+.CRdef_sidebar_pd li,.item_icon_box{display:flex;align-items:center;gap:8px;background:#faf8f3;border:1px solid #eee;border-radius:20px;padding:6px 14px;font-size:13px;color:var(--color-primary);}
+.CRdef_sidebar_pd li p,.item_icon_box p{margin:0;}
+.item_icon_box .content_icon_box{display:flex;align-items:center;gap:8px;}
+
+/* Tabs mô tả/thông số/video/chứng nhận/chính sách - dạng pill thay Bootstrap mặc định */
+#tabsProDetail{border-bottom:1px solid #eee;gap:6px;flex-wrap:wrap;}
+#tabsProDetail .nav-link{border:1px solid #dfe3ea;border-radius:20px;color:var(--color-primary);font-weight:700;font-size:13px;padding:8px 18px;margin-bottom:8px;}
+#tabsProDetail .nav-link.active{background:var(--bg_button);border-color:var(--bg_button);color:#fff;}
+#tskt-pro-detail table th{background:var(--color-primary);color:#fff;font-weight:700;}
+#tskt-pro-detail table td,#tskt-pro-detail table th{padding:10px 14px;}
+
+.title-product-orther span{color:var(--color-primary);font-weight:800;text-transform:uppercase;font-size:18px;border-bottom:2px solid var(--bg_button);padding-bottom:8px;display:inline-block;}
+
+/* Modal tư vấn & báo giá */
+#exampleModal .title-pro-detail{margin-bottom:16px;}
+#exampleModal .form-control{border-radius:6px;border:1px solid #dfe3ea;padding:10px 14px;height:auto;}
+#exampleModal .newsletter-button input[type="submit"]{background:var(--bg_button);border:0;border-radius:6px;padding:10px 24px;font-weight:700;}

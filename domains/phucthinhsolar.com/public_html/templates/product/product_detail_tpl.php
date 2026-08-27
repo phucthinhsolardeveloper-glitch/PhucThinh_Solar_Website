@@ -127,6 +127,12 @@ $certificateContent = (!empty($rowDetail['certificate'.$lang])) ? htmlspecialcha
                             </li>
                             <?php } ?>
                         </ul>
+                        <div class="quantity-pro-detail">
+                            <label class="attr-label-pro-detail d-block">Số lượng:</label>
+                            <span>-</span>
+                            <input type="number" class="qty-pro" value="1" min="1">
+                            <span>+</span>
+                        </div>
                         <div class=" product-info">
                             <?php if(!empty($productList)){ ?>
                             <div class="pro-type">
