@@ -2,7 +2,7 @@
 	<div class="wrap-content d-flex align-items-center justify-content-between">
 		<div class="top-utility-left">
 			<?php if(!empty($optsetting['hotline'])) { ?>
-			<span><i class="fas fa-phone-alt"></i> Hotline: <a href="tel:<?=$func->parsePhone($optsetting['hotline'])?>"><?=$func->formatPhone($optsetting['hotline'])?></a></span>
+			<span><i class="fas fa-phone-alt"></i> Hotline: <a href="tel:<?=$func->parsePhone($optsetting['hotline'])?>"><?=$optsetting['hotline']?></a></span>
 			<?php } ?>
 			<?php if(!empty($optsetting['email'])) { ?>
 			<span class="hide-mobile"><i class="fas fa-envelope"></i> <?=$optsetting['email']?></span>

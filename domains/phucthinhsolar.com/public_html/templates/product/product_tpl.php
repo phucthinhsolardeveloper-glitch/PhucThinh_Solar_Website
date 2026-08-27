@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', function(){
             <?php if(!empty($optsetting['hotline'])) { ?>
             <div class="sidebar-consult-box">
                 <span class="sc-label">Cần tư vấn chọn sản phẩm?</span>
-                <a class="sc-phone" href="tel:<?=$func->parsePhone($optsetting['hotline'])?>"><?=$func->formatPhone($optsetting['hotline'])?></a>
+                <a class="sc-phone" href="tel:<?=$func->parsePhone($optsetting['hotline'])?>"><?=$optsetting['hotline']?></a>
                 <a class="sc-btn" href="lien-he/">Yêu cầu tư vấn miễn phí</a>
             </div>
             <?php } ?>
