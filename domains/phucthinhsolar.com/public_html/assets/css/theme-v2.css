@@ -19,10 +19,25 @@
     --pts-shadow:0 14px 36px rgba(6,21,55,.10);
 }
 html{scroll-behavior:smooth;}
-body{color:var(--pts-ink);background:#fff;font-family:"Plus Jakarta Sans","Mulish",Arial,sans-serif;line-height:1.6;}
-body,p,button,input,select,textarea,a,span,strong,h1,h2,h3,h4,h5,h6{font-family:"Plus Jakarta Sans","Mulish",Arial,sans-serif;}
+
+/* Foundation — nguồn chuẩn DUY NHẤT cho font/typography/container toàn site.
+   Không định nghĩa lại các rule này ở style.css hay CSS legacy: theme-v2.css
+   nạp sau cùng nên mọi !important đặt ở file trước sẽ đè ngược lên đây và
+   phá vỡ hệ thống (đã từng xảy ra với font + container width).
+   Icon font (.fa*/.lnr/.mdi) được loại trừ khỏi rule font để không vỡ icon. */
+body{color:var(--pts-ink);background:#fff;line-height:1.6;}
+body,p,button,input,select,textarea,a,strong,h1,h2,h3,h4,h5,h6,div,li,td,th,label,
+span:not([class*="fa"]):not([class*="lnr"]):not([class*="icon-"]):not([class*="mdi"]){
+    font-family:"Plus Jakarta Sans","Mulish",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+}
+body,p{font-size:15px;line-height:1.6;}
+h1{font-size:32px;font-weight:800;line-height:1.3;}
+h2{font-size:26px;font-weight:800;line-height:1.35;}
+h3{font-size:20px;font-weight:800;line-height:1.4;}
+h4{font-size:17px;font-weight:700;line-height:1.4;}
+
 .wrap-content,.wrap-main,.uk-container,.container{box-sizing:border-box;width:100%;max-width:var(--pts-container);margin-left:auto;margin-right:auto;padding-left:24px;padding-right:24px;}
-.wrap-home{max-width:none!important;padding:0!important;margin-left:0!important;margin-right:0!important;}
+.wrap-home{max-width:none;padding:0;margin-left:0;margin-right:0;}
 .wap-all-page{overflow:clip;}
 
 /* Header */
