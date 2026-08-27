@@ -65,7 +65,7 @@
                             <?php foreach($partner as $k => $v){ ?>
                             <div class="inf_item_partner">
                                 <div class="wrap">
-                                    <?=$func->getImage(['class' => 'lazy','size-error' => '183x78x1', 'upload' => UPLOAD_PHOTO_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
+                                    <?=$func->getImage(['isLazy' => false,'size-error' => '183x78x1', 'upload' => UPLOAD_PHOTO_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
                                 </div>
                             </div>
                             <?php } ?>
@@ -89,7 +89,7 @@
                         <div class="CRitem_certification inf_item_certification">
                             <div class="CRcertification wrap">
                                 <div class="img_personnel">
-                                    <?=$func->getImage(['class' => 'lazy','size-error' => '183x78x1', 'upload' => UPLOAD_PHOTO_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
+                                    <?=$func->getImage(['isLazy' => false,'size-error' => '183x78x1', 'upload' => UPLOAD_PHOTO_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
                                 </div>
                                 <p class="des"><?=$v['name'.$lang]?></p>
                             </div>
