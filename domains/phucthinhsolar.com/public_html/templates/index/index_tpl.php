@@ -465,7 +465,7 @@
                                                 <div class="img">
                                                     <a href="store-manager/<?=$c[$sluglang]?>/"
                                                         title="<?=$c['name'.$lang]?>">
-                                                        <?=$func->getImage(['class' => 'lazy','size-error' => '183x78x1', 'upload' => UPLOAD_NEWS_L, 'image' => $c['photo'], 'alt' => $c['name'.$lang]])?>
+                                                        <?=$func->getImage(['isLazy' => false, 'size-error' => '183x78x1', 'upload' => UPLOAD_NEWS_L, 'image' => $c['photo'], 'alt' => $c['name'.$lang]])?>
                                                     </a>
                                                 </div>
                                                 <div class="group_content">
