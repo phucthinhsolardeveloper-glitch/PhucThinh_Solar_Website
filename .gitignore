@@ -21,3 +21,6 @@ domains/phucthinhsolar.com/.htpasswd/
 domains/phucthinhsolar.com/awstats/
 domains/phucthinhsolar.com/logs/
 domains/phucthinhsolar.com/private_html
+
+# Backup website của bên thứ ba - KHÔNG commit
+domains/phucthinhsolar.com/public_html/*.zip
