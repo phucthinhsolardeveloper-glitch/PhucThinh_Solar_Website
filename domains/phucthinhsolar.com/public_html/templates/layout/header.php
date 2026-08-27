@@ -29,8 +29,12 @@
 					<a id="hamburger" href="#menu" title="Menu"><span></span></a>
 				</div>
 			</div>
-			<a class="logo-header" href="">
+			<a class="logo-header pts-brand" href="" aria-label="Phúc Thịnh Solar">
 				<?=$func->getImage(['class' => '','size-error' => '108x63x2', 'upload' => UPLOAD_PHOTO_L, 'image' => $logo['photo'], 'alt' => $setting['name'.$lang]])?>
+				<span class="pts-brand-copy">
+					<strong>PHÚC THỊNH</strong>
+					<small>SOLAR</small>
+				</span>
 			</a>
 			<div class="header-right-style">
 				<?php include TEMPLATE.LAYOUT."menu.php"; ?>

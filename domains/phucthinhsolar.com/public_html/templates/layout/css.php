@@ -116,6 +116,7 @@
     // $css->set("fileuploader/jquery.fileuploader-theme-dragdrop.css");
     $css->set("comment/comment.css");
     $css->set("css/style.css");
+    $css->set("css/theme-v2.css");
     echo $css->get();
 ?>
 <script type="text/javascript" src="assets/js/jquery.min.js?v=NMr3JZBT0U"></script>

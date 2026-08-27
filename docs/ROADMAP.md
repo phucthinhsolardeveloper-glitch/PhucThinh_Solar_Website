@@ -1,5 +1,15 @@
 # Roadmap
 
+## Theme V2 - ưu tiên trước quảng cáo
+
+- [x] Đọc lịch sử thay đổi và đối chiếu source PHP với `solar-light-web`.
+- [x] Tách lớp giao diện mới vào `assets/css/theme-v2.css` để dễ rollback.
+- [x] Nâng header, logo wordmark và Home Hero.
+- [x] Nâng Hero danh mục, bộ lọc, lưới và thẻ sản phẩm.
+- [x] Nâng bố cục trang chi tiết, gallery, giá, CTA và thông số.
+- [ ] Tinh chỉnh trực quan sau khi đối chiếu thủ công trên desktop/mobile.
+- [ ] Thay dần các section trang chủ legacy còn lại bằng cấu trúc Theme V2.
+
 ## Trước khi chạy quảng cáo / production
 
 - Nhập và duyệt nội dung thật cho 5 chính sách.
@@ -16,9 +26,8 @@
 - Admin đơn hàng, admin chính sách.
 - Video YouTube, thông số có cấu trúc và chứng nhận sản phẩm.
 
-## Sau đợt ads
+## Sau khi chốt Theme V2
 
-- Port giao diện `solar-light-web` sang PHP Theme V2, giữ URL/backend.
 - Thêm smoke/E2E, CI/CD và staging.
 - Data cleanup/legacy asset archival sau xác minh.
 - Nâng cấp PHP/dependency/database theo test baseline.

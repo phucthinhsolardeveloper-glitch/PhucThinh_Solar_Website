@@ -1,30 +1,3 @@
-
-<?php if(!empty($about)){ ?>
-<div class="wrap-about w-100">
-    <div class="wrap-content">
-        <div class="box-about">
-            <div class="row align-items-center">
-                <div class="col-md-5">
-                    <div class="about-content">
-                        <span>Giới thiệu</span>
-                        <div class="name-about"><?=$about['name'.$lang]?></div>
-                        <div class="desc-about"><?=htmlspecialchars_decode($about['desc'.$lang])?></div>
-                        <a href="ve-chung-toi/" class="btn-about">
-                            Xem thêm
-                        </a>
-                    </div>
-                </div>
-                <div class="col-md-7">
-                    <div class="photo-about">
-                        <?=$func->getImage(['class' => 'lazy','size-error' => '600x600x1', 'upload' => UPLOAD_NEWS_L, 'image' => $about['photo'], 'alt' => $about['name'.$lang]])?>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<?php } ?>
-
 <?php if(count($splist)) { ?>
 <!-- Danh mục nổi bật -->
 <section class="wrap-cat-highlight uk-section-large" style="padding-top:20px;">

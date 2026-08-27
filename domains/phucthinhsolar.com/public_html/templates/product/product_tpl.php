@@ -1,3 +1,23 @@
+<?php
+    $ptsCategoryTitle = 'Sản phẩm năng lượng mặt trời';
+    if(!empty($productCat['name'.$lang])) {
+        $ptsCategoryTitle = $productCat['name'.$lang];
+    } elseif(!empty($productList['name'.$lang])) {
+        $ptsCategoryTitle = $productList['name'.$lang];
+    }
+?>
+<section class="pts-category-hero">
+    <div class="pts-category-sun" aria-hidden="true"><i class="far fa-sun"></i></div>
+    <div class="pts-category-copy">
+        <span>PHÚC THỊNH SOLAR</span>
+        <h2><?=htmlspecialchars($ptsCategoryTitle, ENT_QUOTES, 'UTF-8')?></h2>
+        <p>Thiết bị năng lượng mặt trời chính hãng, tư vấn đúng nhu cầu và đồng hành kỹ thuật trên toàn quốc.</p>
+        <?php if(!empty($optsetting['hotline'])) { ?>
+        <a href="tel:<?=$func->parsePhone($optsetting['hotline'])?>"><i class="fas fa-phone-alt"></i> Gọi ngay <?=$optsetting['hotline']?></a>
+        <?php } ?>
+    </div>
+</section>
+
 <div class="trust-badge-strip category-trust-strip">
     <div class="row">
         <div class="col-md-3 trust-badge-item"><i class="fas fa-certificate"></i><span>Cam kết chính hãng</span></div>
@@ -246,8 +266,7 @@ document.addEventListener('DOMContentLoaded', function(){
                             </p>
                         </a>
                         <div class="product-card-btns">
-                            <a href="javascript:void(0)" class="addcart btn-gold" data-id="<?=$v['id']?>" data-action="buynow" title="Mua ngay">Mua ngay</a>
-                            <a href="javascript:void(0)" class="addcart btn-navy-outline" data-id="<?=$v['id']?>" data-action="addnow" title="Thêm vào giỏ hàng">Thêm giỏ</a>
+                            <a href="javascript:void(0)" class="addcart pts-card-add" data-id="<?=$v['id']?>" data-action="addnow" title="Thêm vào giỏ hàng" aria-label="Thêm vào giỏ hàng"><i class="fas fa-plus"></i></a>
                         </div>
                     </div>
                     <?php } ?>

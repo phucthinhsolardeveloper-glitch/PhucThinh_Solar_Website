@@ -1,4 +1,34 @@
-<?php if(count($slider)) { ?>
+<section class="pts-home-hero">
+    <div class="pts-hero-glow" aria-hidden="true"></div>
+    <div class="pts-hero-accent" aria-hidden="true"></div>
+    <div class="wrap-content pts-hero-inner">
+        <div class="pts-hero-copy">
+            <span class="pts-hero-eyebrow"><i class="fas fa-sun"></i> Đèn dự án · Đèn công trình</span>
+            <h1>NĂNG LƯỢNG MẶT TRỜI<br><strong>CHO MỌI CÔNG TRÌNH</strong></h1>
+            <p>Phúc Thịnh Solar — thiết bị năng lượng mặt trời chính hãng, thi công trọn gói và đồng hành kỹ thuật trên toàn quốc.</p>
+            <div class="pts-hero-actions">
+                <a class="pts-btn pts-btn-gold" href="san-pham/">MUA NGAY</a>
+                <a class="pts-btn pts-btn-ghost" href="giai-phap/">XEM GIẢI PHÁP</a>
+            </div>
+            <div class="pts-hero-stats">
+                <div>
+                    <strong>10.000+</strong>
+                    <span>Khách hàng tin dùng</span>
+                </div>
+                <div>
+                    <strong>50+</strong>
+                    <span>Nhân sự đồng hành</span>
+                </div>
+                <div>
+                    <strong>5+</strong>
+                    <span>Năm kinh nghiệm</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<?php /* Slider legacy được giữ lại để rollback, Theme V2 không render. */ ?>
+<?php if(false && count($slider)) { ?>
 <div class="slideshow">
     <div id="jssor_1"
         style="position:relative;margin:0 auto;top:0px;left:0px;width:1920px;height:780px;overflow:hidden;visibility:hidden;">
