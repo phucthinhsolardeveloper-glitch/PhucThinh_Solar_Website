@@ -3802,3 +3802,44 @@ body,p{font-size:15px;line-height:1.6;color:#333;}
 #exampleModal .title-pro-detail{margin-bottom:16px;}
 #exampleModal .form-control{border-radius:6px;border:1px solid #dfe3ea;padding:10px 14px;height:auto;}
 #exampleModal .newsletter-button input[type="submit"]{background:var(--bg_button);border:0;border-radius:6px;padding:10px 24px;font-weight:700;}
+
+/* ===== Giai đoạn 5 - Về chúng tôi / Liên hệ / Đại lý / Tin tức / Dự án ===== */
+.CRstyle_title{color:var(--color-primary);font-weight:800;text-transform:uppercase;text-align:center;position:relative;padding-bottom:16px;margin-bottom:30px;}
+.CRstyle_title:after{content:"";position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:60px;height:3px;background:var(--bg_button);}
+
+/* Form liên hệ / đăng ký đại lý (wpcf7 legacy markup) */
+.wpcf7-form-control{border:1px solid #dfe3ea !important;border-radius:6px !important;padding:10px 14px !important;width:100%;}
+.wpcf7-submit{background:var(--bg_button) !important;color:#fff !important;border:0 !important;border-radius:6px !important;padding:11px 26px !important;font-weight:700;}
+.inf_input label{color:var(--color-primary);font-weight:600;font-size:13px;margin-bottom:4px;display:block;}
+
+/* Trang giới thiệu - chứng nhận/lý do chọn */
+.CRitem_certification .wrap,.inf_ico_intro_home .wrap{background:#fff;border:1px solid #eee;border-radius:10px;padding:16px;text-align:center;transition:all .2s;}
+.CRitem_certification .wrap:hover,.inf_ico_intro_home .wrap:hover{box-shadow:0 8px 20px rgba(10,34,81,.1);}
+.CRitem_certification .des{color:var(--color-primary);font-weight:600;margin-top:10px;}
+
+/* Trang liên hệ */
+.custContContact li a{color:var(--color-primary);font-weight:600;}
+.formContact{background:#faf9f6;border:1px solid #eee;border-radius:12px;padding:30px;}
+.officeContact li{border:1px solid #eee;border-radius:8px;padding:14px 16px;margin-bottom:12px;}
+.officeContact li b{color:var(--color-primary);}
+.view_maps{color:var(--color-gold-dark);font-weight:700;font-size:13px;}
+
+/* Trang đại lý */
+.agency_1 .inf_default_form{background:rgba(255,255,255,.97);border-radius:12px;}
+.agency_4 .item{background:#fff;border:1px solid #eee;border-radius:10px;padding:20px;border-top:3px solid var(--bg_button);}
+.agency_4 .name{color:var(--color-primary);font-weight:800;}
+.agency_4 .sub{color:var(--color-gold-dark);font-size:13px;font-weight:600;}
+.agency_5{background-image:none !important;background:linear-gradient(160deg, var(--color-navy-deep), var(--color-primary)) !important;}
+.agency_5 .name,.agency_5 .cont{color:#fff;}
+.agency_5 .name{color:var(--color-gold-light);}
+
+/* Danh sách tin tức / dự án - category chip + card */
+.CRitem_term_blog .content{border:1px solid #eee;border-radius:30px;padding:8px 16px;text-align:center;transition:all .2s;}
+.CRitem_term_blog .content.active,.CRitem_term_blog .content:hover{background:var(--bg_button);border-color:var(--bg_button);}
+.CRitem_term_blog .content.active h2,.CRitem_term_blog .content:hover h2{color:#fff;}
+.CRitem_term_blog h2{font-size:13px;font-weight:700;color:var(--color-primary);margin:0;}
+.inf_item_postSlide .wrap{border:1px solid #eee;border-radius:10px;overflow:hidden;transition:all .2s;}
+.inf_item_postSlide .wrap:hover{box-shadow:0 8px 20px rgba(10,34,81,.1);transform:translateY(-3px);}
+.inf_item_postSlide h3{color:var(--color-primary);font-weight:700;font-size:15px;padding:0 14px;}
+.inf_item_postSlide .CRbox{padding:12px 14px 0;color:var(--color-gray);font-size:12px;}
+.inf_item_postSlide .date_content,.inf_item_postSlide .author_post{color:var(--color-gray);}
