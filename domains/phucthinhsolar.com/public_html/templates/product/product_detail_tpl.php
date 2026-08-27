@@ -1,3 +1,49 @@
+<?php
+$videoEmbedUrl = '';
+if(!empty($rowDetail['video_url']))
+{
+    $videoUrl = trim(htmlspecialchars_decode($rowDetail['video_url'], ENT_QUOTES));
+    $videoParts = parse_url($videoUrl);
+    $videoHost = (!empty($videoParts['host'])) ? strtolower($videoParts['host']) : '';
+    $videoId = '';
+
+    if(in_array($videoHost, array('youtu.be', 'www.youtu.be'), true))
+    {
+        $videoId = trim((!empty($videoParts['path'])) ? $videoParts['path'] : '', '/');
+    }
+    else if(in_array($videoHost, array('youtube.com', 'www.youtube.com', 'm.youtube.com', 'youtube-nocookie.com', 'www.youtube-nocookie.com'), true))
+    {
+        if(!empty($videoParts['query']))
+        {
+            parse_str($videoParts['query'], $videoQuery);
+            $videoId = (!empty($videoQuery['v'])) ? $videoQuery['v'] : '';
+        }
+
+        if(empty($videoId) && !empty($videoParts['path']) && preg_match('~/(?:embed|shorts)/([A-Za-z0-9_-]{11})~', $videoParts['path'], $videoMatches))
+            $videoId = $videoMatches[1];
+    }
+
+    if(preg_match('/^[A-Za-z0-9_-]{11}$/', $videoId))
+        $videoEmbedUrl = 'https://www.youtube-nocookie.com/embed/'.$videoId;
+}
+
+$structuredSpecLabels = array(
+    'battery_capacity' => 'Dung lượng pin',
+    'panel_power' => 'Công suất tấm pin',
+    'material' => 'Chất liệu',
+    'charging_time' => 'Thời gian sạc',
+    'lighting_time' => 'Thời gian chiếu sáng',
+    'waterproof_rating' => 'Chỉ số chống nước',
+    'led_chip' => 'Loại chip LED',
+    'lighting_area' => 'Diện tích phủ sáng'
+);
+$structuredSpecs = array();
+foreach($structuredSpecLabels as $field => $label)
+{
+    if(!empty($rowDetail[$field])) $structuredSpecs[$label] = $rowDetail[$field];
+}
+$certificateContent = (!empty($rowDetail['certificate'.$lang])) ? htmlspecialchars_decode($rowDetail['certificate'.$lang]) : '';
+?>
 <div class="box-detail">
     <div class="">
         <div class="">
@@ -152,6 +198,18 @@
                 <a class="nav-link" id="tskt-pro-detail-tab" data-toggle="tab" href="#tskt-pro-detail" role="tab">Thông
                     số kỹ thuật</a>
             </li>
+            <?php if(!empty($videoEmbedUrl)) { ?>
+            <li class="nav-item">
+                <a class="nav-link" id="video-pro-detail-tab" data-toggle="tab" href="#video-pro-detail"
+                    role="tab">Video thực tế</a>
+            </li>
+            <?php } ?>
+            <?php if(!empty($certificateContent)) { ?>
+            <li class="nav-item">
+                <a class="nav-link" id="certificate-pro-detail-tab" data-toggle="tab" href="#certificate-pro-detail"
+                    role="tab">Chứng nhận</a>
+            </li>
+            <?php } ?>
             <li class="nav-item">
                 <a class="nav-link" id="cs-pro-detail-tab" data-toggle="tab" href="#cs-pro-detail" role="tab">Chính sách
                     mua hàng</a>
@@ -161,10 +219,39 @@
             <div class="tab-pane fade show active" id="info-pro-detail" role="tabpanel">
                 <?=htmlspecialchars_decode($rowDetail['content'.$lang])?>
             </div>
-            <div class="tab-pane fade show" id="tskt-pro-detail" role="tabpanel">
+            <div class="tab-pane fade" id="tskt-pro-detail" role="tabpanel">
+                <?php if(!empty($structuredSpecs)) { ?>
+                    <div class="table-responsive mb-4">
+                        <table class="table table-bordered table-striped mb-0">
+                            <tbody>
+                                <?php foreach($structuredSpecs as $label => $value) { ?>
+                                    <tr>
+                                        <th style="width:35%;"><?=$label?></th>
+                                        <td><?=htmlspecialchars(htmlspecialchars_decode($value, ENT_QUOTES), ENT_QUOTES, 'UTF-8')?></td>
+                                    </tr>
+                                <?php } ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php } ?>
                 <?=htmlspecialchars_decode($rowDetail['thongsokythuat'.$lang])?>
             </div>
-            <div class="tab-pane fade show" id="cs-pro-detail" role="tabpanel">
+            <?php if(!empty($videoEmbedUrl)) { ?>
+            <div class="tab-pane fade" id="video-pro-detail" role="tabpanel">
+                <div class="embed-responsive embed-responsive-16by9">
+                    <iframe class="embed-responsive-item" src="<?=htmlspecialchars($videoEmbedUrl, ENT_QUOTES, 'UTF-8')?>"
+                        title="Video thực tế <?=$rowDetail['name'.$lang]?>" loading="lazy"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen></iframe>
+                </div>
+            </div>
+            <?php } ?>
+            <?php if(!empty($certificateContent)) { ?>
+            <div class="tab-pane fade" id="certificate-pro-detail" role="tabpanel">
+                <?=$certificateContent?>
+            </div>
+            <?php } ?>
+            <div class="tab-pane fade" id="cs-pro-detail" role="tabpanel">
                 <?=htmlspecialchars_decode($rowDetail['chinhsachmuahang'.$lang])?>
             </div>
         </div>

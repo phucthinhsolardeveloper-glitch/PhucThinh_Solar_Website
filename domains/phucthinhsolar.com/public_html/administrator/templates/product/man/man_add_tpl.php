@@ -124,6 +124,12 @@
 		                                            <textarea class="form-control text-sm <?=(isset($config['product'][$type]['chinhsachmuahang_cke']) && $config['product'][$type]['chinhsachmuahang_cke'] == true)?'form-control-ckeditor':''?>" name="data[chinhsachmuahang<?=$k?>]" id="chinhsachmuahang<?=$k?>" rows="5" placeholder="Chính sách mua hàng (<?=$k?>)"><?=htmlspecialchars_decode((!empty($flash->has('chinhsachmuahang'.$k))) ? $flash->get('chinhsachmuahang'.$k) : @$item['chinhsachmuahang'.$k])?></textarea>
 		                                        </div>
 		                                    <?php } ?>
+                                            <?php if(isset($config['product'][$type]['certificate']) && $config['product'][$type]['certificate'] == true) { ?>
+                                                <div class="form-group">
+                                                    <label for="certificate<?=$k?>">Giấy chứng nhận / kiểm nghiệm (<?=$k?>):</label>
+                                                    <textarea class="form-control text-sm <?=(isset($config['product'][$type]['certificate_cke']) && $config['product'][$type]['certificate_cke'] == true)?'form-control-ckeditor':''?>" name="data[certificate<?=$k?>]" id="certificate<?=$k?>" rows="5" placeholder="Nhập mô tả và chèn ảnh chứng nhận thật (nếu có)"><?=htmlspecialchars_decode((!empty($flash->has('certificate'.$k))) ? $flash->get('certificate'.$k) : @$item['certificate'.$k])?></textarea>
+                                                </div>
+                                            <?php } ?>
 		                                </div>
 		                            <?php } ?>
 		                        </div>
@@ -131,6 +137,53 @@
 		                </div>
 		            </div>
 		        </div>
+            <?php if(
+                (!empty($config['product'][$type]['video'])) ||
+                (!empty($config['product'][$type]['structured_specs']))
+            ) { ?>
+                <div class="card card-primary card-outline text-sm">
+                    <div class="card-header">
+                        <h3 class="card-title">Dữ liệu chi tiết phục vụ bán hàng / quảng cáo</h3>
+                    </div>
+                    <div class="card-body">
+                        <?php if(!empty($config['product'][$type]['video'])) { ?>
+                            <div class="form-group">
+                                <label for="video_url">Video thực tế sản phẩm (YouTube):</label>
+                                <input type="url" class="form-control text-sm" name="data[video_url]" id="video_url"
+                                    placeholder="https://www.youtube.com/watch?v=..."
+                                    value="<?=(!empty($flash->has('video_url'))) ? $flash->get('video_url') : @$item['video_url']?>">
+                                <small class="form-text text-muted">Chỉ nhận URL YouTube/youtu.be. Không dán mã iframe.</small>
+                            </div>
+                        <?php } ?>
+                        <?php if(!empty($config['product'][$type]['structured_specs'])) { ?>
+                            <div class="row">
+                                <?php
+                                $structuredSpecFields = array(
+                                    'battery_capacity' => 'Dung lượng pin',
+                                    'panel_power' => 'Công suất tấm pin',
+                                    'material' => 'Chất liệu',
+                                    'charging_time' => 'Thời gian sạc',
+                                    'lighting_time' => 'Thời gian chiếu sáng',
+                                    'waterproof_rating' => 'Chỉ số chống nước',
+                                    'led_chip' => 'Loại chip LED',
+                                    'lighting_area' => 'Diện tích phủ sáng'
+                                );
+                                foreach($structuredSpecFields as $field => $label) { ?>
+                                    <div class="form-group col-md-6">
+                                        <label for="<?=$field?>"><?=$label?>:</label>
+                                        <input type="text" class="form-control text-sm" name="data[<?=$field?>]" id="<?=$field?>"
+                                            placeholder="<?=$label?>"
+                                            value="<?=(!empty($flash->has($field))) ? $flash->get($field) : @$item[$field]?>">
+                                    </div>
+                                <?php } ?>
+                            </div>
+                            <div class="alert alert-info mb-0">
+                                Chỉ nhập thông số có tài liệu thật. Phần giải thích, ứng dụng và lý do lựa chọn tiếp tục nhập trong “Nội dung” và “Thông số kỹ thuật”.
+                            </div>
+                        <?php } ?>
+                    </div>
+                </div>
+            <?php } ?>
 	        </div>
         	<div class="<?=$colRight?>">
         		<?php if(

@@ -68,6 +68,10 @@
     $config['product'][$nametype]['content_cke'] = true;
     $config['product'][$nametype]['thongsokythuat'] = true;
     $config['product'][$nametype]['thongsokythuat_cke'] = true;
+    $config['product'][$nametype]['video'] = true;
+    $config['product'][$nametype]['structured_specs'] = true;
+    $config['product'][$nametype]['certificate'] = true;
+    $config['product'][$nametype]['certificate_cke'] = true;
     $config['product'][$nametype]['chinhsachmuahang'] = true;
     $config['product'][$nametype]['chinhsachmuahang_cke'] = true;
     $config['product'][$nametype]['seo'] = true;

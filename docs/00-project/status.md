@@ -1,25 +1,33 @@
 # Current status
 
-## WORKING
+Cập nhật gần nhất: 2026-08-27. Mọi thay đổi bên dưới mới ở Git + Docker local, chưa triển khai production.
 
-- Production homepage/category HTTP 200; server-rendered routing/templates/SEO.
-- Product, news, project, static and contact data paths.
+## WORKING ON LOCAL
 
-## PARTIAL
+- Trang sản phẩm có giá gốc/giá khuyến mãi/% giảm giá.
+- Bộ lọc thương hiệu, công suất và mức giá.
+- Giỏ hàng, Mua ngay, checkout COD/chuyển khoản và trang cảm ơn.
+- Review sản phẩm, ảnh feedback và nhãn “Đã mua hàng”.
+- Admin quản lý đơn hàng và admin chỉnh sửa 5 trang chính sách.
+- Video YouTube, 8 thông số có cấu trúc và nội dung chứng nhận theo từng sản phẩm.
+- 4 dự án hiện có đều có ảnh và nội dung.
 
-- Commerce, reviews, member và RBAC có code/schema nhưng các cờ CMS tương ứng đang tắt hoặc chưa smoke test.
-- Filter chỉ có brand/sort; backup có snapshot bàn giao nhưng chưa biết schedule/restore.
+## PARTIAL / CHỜ DỮ LIỆU THẬT
 
-## BROKEN / inconsistent
+- 5 trang chính sách đã có URL nhưng nội dung đang rỗng.
+- Chứng nhận và video chỉ hiển thị khi admin nhập dữ liệu thật.
+- 42 sản phẩm chưa có công suất chuẩn hóa cần rà thủ công.
+- Nội dung mô tả chi tiết từng sản phẩm cần biên tập theo tài liệu kỹ thuật thật.
+- SMTP production và extension `calendar` trên hosting chưa được xác minh.
 
-- Menu admin tham chiếu `tom-tat-gioi-thieu` trong khi module bị comment, có nguy cơ undefined/null offset.
-- Dump có dữ liệu mẫu/legacy và sản phẩm nhân bản; cần data audit.
-- `index.html` là placeholder domain khác nhưng `DirectoryIndex index.php` đang che nó.
+## DEFERRED SECURITY
 
-## MISSING
+- Security Review ngày 2026-08-27 phát hiện các finding P0-P2; chủ project yêu cầu tạm hoãn xử lý.
+- Không được coi nhánh hiện tại là sẵn sàng production cho tới khi audit được xử lý và retest.
+- Xem `docs/10-audits/2026-08-27-security-review.md`.
 
-- App tests, CI/CD, migrations, `.env.example`, health check, deploy/rollback runbook, thank-you page.
+## STILL MISSING
 
-## NEEDS VERIFICATION
-
-- PHP extensions/ini, SMTP/reCAPTCHA, system cron, module usage, off-server backup, legacy assets.
+- Nội dung chính sách được doanh nghiệp phê duyệt.
+- Nội dung/ảnh/video/chứng nhận thật cho sản phẩm.
+- CI/CD, E2E, staging và quy trình deploy/rollback production đã diễn tập.

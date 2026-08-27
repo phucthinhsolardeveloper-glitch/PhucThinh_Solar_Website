@@ -314,7 +314,7 @@
 		{
 			foreach($data as $column => $value)
 			{
-                if(strpos($column, 'content') !== false || strpos($column, 'desc') !== false 	|| strpos($column, 'thongsokythuat') !== false || strpos($column, 'chinhsachmuahang') !== false)
+                if(strpos($column, 'content') !== false || strpos($column, 'desc') !== false 	|| strpos($column, 'thongsokythuat') !== false || strpos($column, 'chinhsachmuahang') !== false || strpos($column, 'certificate') !== false)
 				{
 					$data[$column] = htmlspecialchars($func->sanitize($value, 'iframe'));
 				}
@@ -324,6 +324,26 @@
 				}
 			}
 
+            if(!empty($data['video_url']))
+            {
+                $videoUrl = trim(htmlspecialchars_decode($data['video_url'], ENT_QUOTES));
+                $videoParts = parse_url($videoUrl);
+                $videoHost = (!empty($videoParts['host'])) ? strtolower($videoParts['host']) : '';
+                $allowedVideoHosts = array(
+                    'youtube.com',
+                    'www.youtube.com',
+                    'm.youtube.com',
+                    'youtu.be',
+                    'www.youtu.be',
+                    'youtube-nocookie.com',
+                    'www.youtube-nocookie.com'
+                );
+
+                if(!filter_var($videoUrl, FILTER_VALIDATE_URL) || !in_array($videoHost, $allowedVideoHosts, true))
+                    $response['messages'][] = 'Video sản phẩm chỉ chấp nhận URL YouTube hợp lệ';
+                else
+                    $data['video_url'] = htmlspecialchars($videoUrl, ENT_QUOTES, 'UTF-8');
+            }
 		    if(!empty($config['product'][$type]['slug']))
 		    {
 		    	if(!empty($_POST['slugvi'])) $data['slugvi'] = $func->changeTitle(htmlspecialchars($_POST['slugvi']));

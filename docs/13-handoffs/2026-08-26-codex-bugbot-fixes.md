@@ -59,3 +59,30 @@ Kiểm thử sau rebuild Docker:
 - Request thêm giỏ với session mới trả `max=1`.
 - Trang `/gio-hang/` trong cùng session hiển thị đúng sản phẩm vừa thêm.
 - Log Apache/PHP không có lỗi trong luồng test.
+
+## Follow-up 2026-08-27: video, thông số và chứng nhận sản phẩm
+
+Đã thêm migration `migrations/003_add_product_ads_content.sql` với URL video YouTube, 8 thông số có cấu trúc và nội dung chứng nhận VI/EN.
+
+Admin sản phẩm có thêm:
+
+- URL video thực tế (chỉ chấp nhận YouTube/youtu.be).
+- Dung lượng pin, công suất tấm pin, chất liệu, thời gian sạc/chiếu sáng, chống nước, chip LED và diện tích phủ sáng.
+- Editor “Giấy chứng nhận / kiểm nghiệm” để nhập mô tả và chèn ảnh thật.
+
+Frontend:
+
+- Chỉ hiện tab Video/Chứng nhận khi có dữ liệu.
+- Video dùng `youtube-nocookie.com`; host ngoài whitelist không được embed.
+- Thông số có cấu trúc hiển thị dạng bảng trước nội dung kỹ thuật cũ.
+- Sản phẩm chưa nhập dữ liệu không xuất hiện tab rỗng.
+
+Test Docker local:
+
+- Migration đủ 11 cột.
+- PHP 7.4 lint đạt trên 4 file PHP thay đổi.
+- Trang test HTTP 200, render đúng video + bảng thông số + chứng nhận.
+- URL video host ngoài không xuất hiện trong HTML.
+- Dữ liệu sản phẩm giả dùng để test đã hoàn nguyên.
+
+Dữ liệu hiện có: 4/4 dự án có ảnh và nội dung; 5/5 chính sách có URL nhưng nội dung rỗng. Không tự điền điều khoản/chứng nhận không có nguồn thật.
