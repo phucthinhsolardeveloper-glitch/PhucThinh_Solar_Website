@@ -3732,3 +3732,11 @@ label.checker input[type="checkbox"]:checked+label.checked-fake:before {
 /* Thu gọn 2 nút thêm giỏ/mua ngay cho nhẹ hơn */
 .product-card-btns{padding:0 10px 12px;gap:5px;}
 .product-card-btns a{padding:6px 4px;font-size:12px;border-radius:4px;}
+
+/* ===== Nới container toàn site theo đúng bề rộng bản demo (1440px) =====
+   Trước đây .wrap-content/.wrap-main/.uk-container bị khoá cứng 1200px
+   (từ theme legacy) -> màn hình lớn bị dư nhiều khoảng trống 2 bên. */
+.wrap-main,.wrap-content,.uk-container{max-width:1440px !important;}
+@media (min-width: 1200px){
+    .uk-container{max-width:1440px !important;}
+}
