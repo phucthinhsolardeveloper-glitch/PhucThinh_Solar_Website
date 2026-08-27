@@ -141,7 +141,7 @@
     <div class="footer_bottom">
         <div class="container">
             <div class="box text-center">
-                <div class="copyright">© 2025
+                <div class="copyright">© <?=date('Y')?>
                     <?=$setting['name'.$lang]?> <br />
                 </div>
             </div>

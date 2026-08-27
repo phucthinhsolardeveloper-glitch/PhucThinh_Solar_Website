@@ -17,6 +17,41 @@
 .stat-counter{text-align:center;color:#fff;}
 .stat-counter .so{font-size:34px;font-weight:800;color:var(--color-gold-light);display:block;}
 .stat-counter .stat-label{font-size:14px;opacity:.85;}
+
+/* ===== Giai đoạn 1 - Header / Top bar / Menu / Footer ===== */
+.top-utility-bar{background:var(--color-navy-deep);color:#fff;font-size:13px;}
+.top-utility-bar .wrap-content{padding:7px 15px;}
+.top-utility-left span{margin-right:20px;display:inline-block;}
+.top-utility-left i{color:var(--color-gold-light);margin-right:5px;}
+.top-utility-left a{color:#fff;text-decoration:none;}
+.top-utility-left a:hover{color:var(--color-gold-light);}
+.top-utility-right a{color:#fff;text-decoration:none;margin-left:16px;opacity:.9;}
+.top-utility-right a:hover{color:var(--color-gold-light);opacity:1;}
+@media (max-width: 767px){
+	.top-utility-bar .hide-mobile{display:none;}
+	.top-utility-left span{margin-right:12px;}
+}
+
+.icon-cart-header svg path,.icon-cart-header svg circle{transition:all .2s;}
+.icon-cart-header:hover svg path,.icon-cart-header:hover svg circle{stroke:var(--bg_button);fill:var(--bg_button);}
+
+.menu ul li ul{border-top:2px solid var(--bg_button);}
+.menu ul li ul li a.active,.menu ul li ul li:hover > a{color:var(--color-primary);background:#faf6ec;}
+
+footer{background-color:var(--color-navy-deep) !important;background-image:none !important;}
+.footer_top{padding-top:50px;padding-bottom:30px;}
+.footer-title{position:relative;padding-bottom:10px;}
+.footer-title:after{content:"";position:absolute;left:0;bottom:0;width:36px;height:2px;background:var(--bg_button);}
+.policy_menu li a,.content_cn .item_cn a{color:#c7cede;text-decoration:none;transition:color .2s;}
+.policy_menu li a:hover,.content_cn .item_cn a:hover{color:var(--color-gold-light);}
+.content_cn .name_cn{color:#fff;font-size:15px;}
+.content_cn .name_cn i{color:var(--color-gold-light);margin-right:6px;}
+.content_cn .address{color:#c7cede;font-size:13px;display:block;margin-top:2px;}
+.footer_bottom{border-top:1px solid rgba(255,255,255,.12);margin-top:20px;}
+.footer_bottom .copyright{color:#c7cede;font-size:13px;}
+.CRlist_social a{color:#c7cede;}
+.CRlist_social a:hover{color:var(--color-gold-light);}
+.CRlist_social svg path{fill:currentColor;}
 body{font-size: 16px;font-family: "Plus Jakarta Sans", sans-serif;font-family: "Mulish", sans-serif;top: 0px !important;}
 .wow{visibility: hidden;}
 #google_language_translator{
