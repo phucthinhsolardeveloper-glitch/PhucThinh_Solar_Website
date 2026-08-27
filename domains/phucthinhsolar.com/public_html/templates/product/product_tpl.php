@@ -1,14 +1,3 @@
-<?php $catHeroName = (!empty($productList['name'.$lang])) ? $productList['name'.$lang] : ((!empty($productCat['name'.$lang])) ? $productCat['name'.$lang] : 'Sản phẩm'); ?>
-<div class="category-hero">
-    <div class="category-hero-text">
-        <h2><?=$catHeroName?></h2>
-        <p>Sản phẩm chính hãng - Đội ngũ kỹ thuật hỗ trợ tận tâm - Chính sách bảo hành rõ ràng.</p>
-        <?php if(!empty($optsetting['hotline'])) { ?>
-        <a class="btn-gold" href="tel:<?=$func->parsePhone($optsetting['hotline'])?>"><i class="fas fa-phone-alt"></i> Gọi ngay <?=$func->formatPhone($optsetting['hotline'])?></a>
-        <?php } ?>
-    </div>
-</div>
-
 <div class="trust-badge-strip category-trust-strip">
     <div class="row">
         <div class="col-md-3 trust-badge-item"><i class="fas fa-certificate"></i><span>Cam kết chính hãng</span></div>
