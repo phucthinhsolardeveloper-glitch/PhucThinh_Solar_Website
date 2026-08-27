@@ -1,3 +1,11 @@
+<div class="trust-badge-strip category-trust-strip">
+    <div class="row">
+        <div class="col-md-3 trust-badge-item"><i class="fas fa-certificate"></i><span>Cam kết chính hãng</span></div>
+        <div class="col-md-3 trust-badge-item"><i class="fas fa-tools"></i><span>Đội ngũ kỹ thuật giàu kinh nghiệm</span></div>
+        <div class="col-md-3 trust-badge-item"><i class="fas fa-shield-alt"></i><span>Chính sách bảo hành rõ ràng</span></div>
+        <div class="col-md-3 trust-badge-item"><i class="fas fa-truck"></i><span>Giao hàng toàn quốc</span></div>
+    </div>
+</div>
 <div class="filter_product">
     <span class="name_title">Sản phẩm</span>
     <select name="orderby" onchange="fetch_product()" class="orderby" aria-label="Đơn hàng của cửa hàng">
@@ -13,6 +21,13 @@
 <div class="product-row row">
     <div class="product-left col-lg-3">
         <div class="mb40">
+            <?php if(!empty($optsetting['hotline'])) { ?>
+            <div class="sidebar-consult-box">
+                <span class="sc-label">Cần tư vấn chọn sản phẩm?</span>
+                <a class="sc-phone" href="tel:<?=$func->parsePhone($optsetting['hotline'])?>"><?=$func->formatPhone($optsetting['hotline'])?></a>
+                <a class="sc-btn" href="lien-he/">Yêu cầu tư vấn miễn phí</a>
+            </div>
+            <?php } ?>
             <?php if(count($splist)){ ?>
             <div class="aside-item aside-filter collection-category">
                 <div class="aside-title aside-title-f">
@@ -147,11 +162,11 @@
                 <?php if(!empty($product)) {?>
                 <div class="grid-product grid-product-3">
                     <?php foreach($product as $k => $v) { $discountPercent = (!empty($v['sale_price']) && $v['regular_price'] > $v['sale_price']) ? round((($v['regular_price'] - $v['sale_price']) / $v['regular_price']) * 100) : 0; ?>
-                    <div>
+                    <div class="product-card">
                         <a class="product-item" href="product/<?=$v[$sluglang]?>/" title="<?=$v['name'.$lang]?>">
-                            <div class="img" style="position:relative;">
+                            <div class="product-card-img">
                                 <?php if($discountPercent > 0) { ?>
-                                <span class="badge-discount" style="position:absolute;top:8px;right:8px;z-index:2;background:#e53935;color:#fff;font-weight:700;font-size:13px;padding:3px 8px;border-radius:4px;">-<?=$discountPercent?>%</span>
+                                <span class="badge-discount">-<?=$discountPercent?>%</span>
                                 <?php } ?>
                                 <?= $func->getImage(['class' => 'lazy w-100', 'sizes' => '300x300x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $v['photo'], 'alt' => $v['name' . $lang]]) ?>
                             </div>
@@ -167,9 +182,9 @@
                                 <?php } ?>
                             </p>
                         </a>
-                        <div class="quick-cart-btn" style="display:flex;gap:6px;padding:0 10px 12px;">
-                            <a href="javascript:void(0)" class="addcart" data-id="<?=$v['id']?>" data-action="buynow" title="Mua ngay" style="flex:1;text-align:center;padding:8px 4px;font-size:13px;font-weight:700;border-radius:4px;background:var(--bg_button);color:#fff;">Mua ngay</a>
-                            <a href="javascript:void(0)" class="addcart" data-id="<?=$v['id']?>" data-action="addnow" title="Thêm vào giỏ hàng" style="flex:1;text-align:center;padding:8px 4px;font-size:13px;font-weight:700;border-radius:4px;border:1px solid var(--color-primary);color:var(--color-primary);">Thêm giỏ</a>
+                        <div class="product-card-btns">
+                            <a href="javascript:void(0)" class="addcart btn-gold" data-id="<?=$v['id']?>" data-action="buynow" title="Mua ngay">Mua ngay</a>
+                            <a href="javascript:void(0)" class="addcart btn-navy-outline" data-id="<?=$v['id']?>" data-action="addnow" title="Thêm vào giỏ hàng">Thêm giỏ</a>
                         </div>
                     </div>
                     <?php } ?>

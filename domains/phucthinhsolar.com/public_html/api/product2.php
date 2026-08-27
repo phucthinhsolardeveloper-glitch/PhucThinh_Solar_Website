@@ -46,9 +46,9 @@
 		<svg fill='rgba(51, 51, 51, 0.5)' width='20px' height='20px' viewBox='-77 0 512 512' xmlns='http://www.w3.org/2000/svg' ><title>right</title><path d='M98 460L64 426 227 262 64 98 98 64 294 262 98 460Z' /></svg>"
         data-navcontainer=".control-prodcthome">
         <?php foreach($items as $v) { $discountPercent = (!empty($v['sale_price']) && $v['regular_price'] > $v['sale_price']) ? round((($v['regular_price'] - $v['sale_price']) / $v['regular_price']) * 100) : 0; ?>
-        <div>
+        <div class="product-card">
             <a class="product-item" href="product/<?=$v[$sluglang]?>/" title="<?=$v['name'.$lang]?>">
-                <div class="img" style="position:relative;">
+                <div class="product-card-img">
                     <?php if($discountPercent > 0) { ?>
                     <span class="badge-discount">-<?=$discountPercent?>%</span>
                     <?php } ?>
@@ -66,9 +66,9 @@
                     <?php } ?>
                 </p>
             </a>
-            <div class="quick-cart-btn" style="display:flex;gap:6px;padding:0 10px 12px;">
-                <a href="javascript:void(0)" class="addcart" data-id="<?=$v['id']?>" data-action="buynow" title="Mua ngay" style="flex:1;text-align:center;padding:8px 4px;font-size:13px;font-weight:700;border-radius:4px;background:var(--bg_button);color:#fff;">Mua ngay</a>
-                <a href="javascript:void(0)" class="addcart" data-id="<?=$v['id']?>" data-action="addnow" title="Thêm vào giỏ hàng" style="flex:1;text-align:center;padding:8px 4px;font-size:13px;font-weight:700;border-radius:4px;border:1px solid var(--color-primary);color:var(--color-primary);">Thêm giỏ</a>
+            <div class="product-card-btns">
+                <a href="javascript:void(0)" class="addcart btn-gold" data-id="<?=$v['id']?>" data-action="buynow" title="Mua ngay">Mua ngay</a>
+                <a href="javascript:void(0)" class="addcart btn-navy-outline" data-id="<?=$v['id']?>" data-action="addnow" title="Thêm vào giỏ hàng">Thêm giỏ</a>
             </div>
         </div>
         <?php } ?>
