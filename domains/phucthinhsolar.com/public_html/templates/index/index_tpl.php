@@ -68,7 +68,7 @@
     <div class="wrap-adv w-100">
         <div class="uk-container">
             <div class="owl-page owl-carousel owl-theme" data-xsm-items="1:20" data-sm-items="1:20"
-                data-md-items="1:20" data-lg-items="1:20" data-xlg-items="2:30" data-rewind="1" data-autoplay="1"
+                data-md-items="1:20" data-lg-items="1:20" data-xlg-items="1:30" data-rewind="1" data-autoplay="1"
                 data-loop="0" data-lazyload="0" data-mousedrag="1" data-touchdrag="1" data-smartspeed="500"
                 data-autoplayspeed="3500" data-dots="0" data-nav="1"
                 data-navtext="<svg xmlns='http://www.w3.org/2000/svg' class='icon icon-tabler icon-tabler-arrow-narrow-left' width='50' height='37' viewBox='0 0 24 24' stroke-width='1' stroke='#ffffff' fill='none' stroke-linecap='round' stroke-linejoin='round'><path stroke='none' d='M0 0h24v24H0z' fill='none'/><line x1='5' y1='12' x2='19' y2='12' /><line x1='5' y1='12' x2='9' y2='16' /><line x1='5' y1='12' x2='9' y2='8' /></svg>|<svg xmlns='http://www.w3.org/2000/svg' class='icon icon-tabler icon-tabler-arrow-narrow-right' width='50' height='37' viewBox='0 0 24 24' stroke-width='1' stroke='#ffffff' fill='none' stroke-linecap='round' stroke-linejoin='round'><path stroke='none' d='M0 0h24v24H0z' fill='none'/><line x1='5' y1='12' x2='19' y2='12' /><line x1='15' y1='16' x2='19' y2='12' /><line x1='15' y1='8' x2='19' y2='12' /></svg>"
@@ -276,7 +276,7 @@
                                 <div class="container">
                                     <div class="row">
                                         <div class="col-12">
-                                            <div class="content inf_list_circle_content inf_dots">
+                                            <div class="content pts-benefit-grid">
                                                 <?php foreach($loiich as $k => $v){ ?>
                                                 <div class="item_utilities_destroy">
                                                     <div class="wrap">

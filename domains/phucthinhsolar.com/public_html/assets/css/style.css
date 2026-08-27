@@ -3826,9 +3826,11 @@ body,p{font-size:15px;line-height:1.6;color:#333;}
 
 /* Trang đại lý */
 .agency_1 .inf_default_form{background:rgba(255,255,255,.97);border-radius:12px;}
-.agency_4 .item{background:#fff;border:1px solid #eee;border-radius:10px;padding:20px;border-top:3px solid var(--bg_button);}
-.agency_4 .name{color:var(--color-primary);font-weight:800;}
-.agency_4 .sub{color:var(--color-gold-dark);font-size:13px;font-weight:600;}
+.agency_4 .item{background:#fff;border:1px solid #eee;border-radius:10px;padding:20px;border-top:3px solid var(--bg_button);color:#475569 !important;}
+.agency_4 .name{color:var(--color-primary) !important;font-weight:800;}
+.agency_4 .sub{color:var(--color-gold-dark) !important;font-size:13px;font-weight:600;}
+.agency_4 .cont{color:#475569 !important;}
+.agency_4 .list_item:before{display:none;}
 .agency_5{background-image:none !important;background:linear-gradient(160deg, var(--color-navy-deep), var(--color-primary)) !important;}
 .agency_5 .name,.agency_5 .cont{color:#fff;}
 .agency_5 .name{color:var(--color-gold-light);}
