@@ -243,15 +243,8 @@
 <div class="wrap-promo-banners">
     <div class="uk-container">
         <div class="row">
-            <div class="col-md-6">
-                <a href="lien-he/" class="promo-banner promo-banner-navy">
-                    <span class="promo-eyebrow">Dịch vụ lắp đặt tại nhà</span>
-                    <span class="promo-title">Khảo sát &amp; thi công tận nơi</span>
-                    <span class="promo-btn">Liên hệ ngay</span>
-                </a>
-            </div>
-            <div class="col-md-6">
-                <a href="dai-ly/" class="promo-banner promo-banner-gold">
+            <div class="col-12">
+                <a href="dai-ly/" class="promo-banner promo-banner-gold promo-banner-single">
                     <span class="promo-eyebrow">Trở thành đối tác phân phối</span>
                     <span class="promo-title">Tuyển đại lý toàn quốc</span>
                     <span class="promo-btn">Đăng ký ngay</span>
