@@ -1,3 +1,14 @@
+<?php $catHeroName = (!empty($productList['name'.$lang])) ? $productList['name'.$lang] : ((!empty($productCat['name'.$lang])) ? $productCat['name'.$lang] : 'Sản phẩm'); ?>
+<div class="category-hero">
+    <div class="category-hero-text">
+        <h2><?=$catHeroName?></h2>
+        <p>Sản phẩm chính hãng - Đội ngũ kỹ thuật hỗ trợ tận tâm - Chính sách bảo hành rõ ràng.</p>
+        <?php if(!empty($optsetting['hotline'])) { ?>
+        <a class="btn-gold" href="tel:<?=$func->parsePhone($optsetting['hotline'])?>"><i class="fas fa-phone-alt"></i> Gọi ngay <?=$func->formatPhone($optsetting['hotline'])?></a>
+        <?php } ?>
+    </div>
+</div>
+
 <div class="trust-badge-strip category-trust-strip">
     <div class="row">
         <div class="col-md-3 trust-badge-item"><i class="fas fa-certificate"></i><span>Cam kết chính hãng</span></div>
@@ -8,7 +19,22 @@
 </div>
 <div class="filter_product">
     <span class="name_title">Sản phẩm</span>
-    <select name="orderby" onchange="fetch_product()" class="orderby" aria-label="Đơn hàng của cửa hàng">
+    <div class="sort-pill-group">
+        <?php
+            $sortOptions = array(
+                '' => 'Sắp xếp',
+                'abc' => 'Tên A → Z',
+                'abc-desc' => 'Tên Z → A',
+                'price' => 'Giá tăng dần',
+                'price-desc' => 'Giá giảm dần',
+            );
+            $currentSort = (isset($_GET['is_orderby'])) ? $_GET['is_orderby'] : '';
+        ?>
+        <?php foreach($sortOptions as $sk => $sv) { ?>
+        <a href="javascript:void(0)" class="sort-pill <?=($currentSort==$sk)?'active':''?>" data-sort="<?=$sk?>"><?=$sv?></a>
+        <?php } ?>
+    </div>
+    <select name="orderby" onchange="fetch_product()" class="orderby" aria-label="Đơn hàng của cửa hàng" style="display:none;">
         <option value="">Sắp xếp</option>
         <option value="abc">A → Z</option>
         <option value="abc-desc">Z → A</option>
@@ -18,6 +44,21 @@
         <option value="new-desc">Hàng cũ nhất</option>
     </select>
 </div>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    var pills = document.querySelectorAll('.sort-pill');
+    var select = document.querySelector('select[name="orderby"]');
+    if(!select) return;
+    pills.forEach(function(p){
+        p.addEventListener('click', function(){
+            pills.forEach(function(x){ x.classList.remove('active'); });
+            p.classList.add('active');
+            select.value = p.getAttribute('data-sort');
+            if(typeof fetch_product === 'function') fetch_product();
+        });
+    });
+});
+</script>
 <div class="product-row row">
     <div class="product-left col-lg-3">
         <div class="mb40">
