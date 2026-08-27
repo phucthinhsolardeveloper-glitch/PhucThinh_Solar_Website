@@ -22,7 +22,7 @@ html{scroll-behavior:smooth;}
 body{color:var(--pts-ink);background:#fff;font-family:"Plus Jakarta Sans","Mulish",Arial,sans-serif;line-height:1.6;}
 body,p,button,input,select,textarea,a,span,strong,h1,h2,h3,h4,h5,h6{font-family:"Plus Jakarta Sans","Mulish",Arial,sans-serif;}
 .wrap-content,.wrap-main,.uk-container,.container{box-sizing:border-box;width:100%;max-width:var(--pts-container);margin-left:auto;margin-right:auto;padding-left:24px;padding-right:24px;}
-.wrap-home{max-width:none;padding:0;}
+.wrap-home{max-width:none!important;padding:0!important;margin-left:0!important;margin-right:0!important;}
 .wap-all-page{overflow:clip;}
 
 /* Header */
@@ -343,17 +343,7 @@ body,p,button,input,select,textarea,a,span,strong,h1,h2,h3,h4,h5,h6{font-family:
 .promo-btn{border-radius:7px!important;background:var(--pts-navy)!important;color:#fff!important;padding:11px 22px!important;}
 
 .home_loi_ich{background:#f8fafc!important;}
-.home_loi_ich .utilities{display:none!important;}
-.home_loi_ich #inf_circle_utilities_destroy{display:block!important;}
-.home_loi_ich #inf_circle_utilities_destroy .row{margin:0!important;}
-.home_loi_ich #inf_circle_utilities_destroy .col-12{padding:0!important;}
-.home_loi_ich .pts-benefit-grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px!important;margin-top:34px!important;}
-.home_loi_ich .item_utilities_destroy{width:auto!important;margin:0!important;}
-.home_loi_ich .item_utilities_destroy .wrap{height:100%;min-height:190px;border:1px solid var(--pts-line);border-radius:14px;background:#fff;padding:24px!important;text-align:left!important;box-shadow:none!important;}
-.home_loi_ich .item_utilities_destroy .icon{display:flex!important;width:46px!important;height:46px!important;align-items:center;justify-content:center;border-radius:11px;background:var(--pts-cream)!important;margin:0 0 18px!important;}
-.home_loi_ich .item_utilities_destroy .icon img{max-width:25px!important;max-height:25px!important;}
-.home_loi_ich .title_wrap{color:var(--pts-navy)!important;font-size:16px!important;font-weight:900!important;}
-.home_loi_ich .des{color:#64748b!important;font-size:13px!important;line-height:1.65!important;}
+.home_loi_ich #inf_circle_utilities_destroy{display:none!important;}
 
 .home-4{position:relative;background:linear-gradient(135deg,var(--pts-navy-deep),var(--pts-navy-light))!important;}
 .home-4:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 80% 20%,rgba(201,150,46,.22),transparent 35%);pointer-events:none;}
@@ -426,12 +416,10 @@ body,p,button,input,select,textarea,a,span,strong,h1,h2,h3,h4,h5,h6{font-family:
     .home-2 .tabs-container .wrapper{min-height:360px;}
     .home-2 .tabs-container .content{border-radius:18px 18px 0 0!important;padding:34px!important;}
     .home-2 .tabs-container .wrapper>.img{border-radius:0 0 18px 18px!important;}
-    .home_loi_ich .pts-benefit-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
 }
 @media(max-width:768px){
     .adv-info{padding:28px!important;}
     .promo-banner{padding:30px 25px!important;}
-    .home_loi_ich .pts-benefit-grid{grid-template-columns:1fr;}
     .home-4 .wrapper .item{border-right:0;}
     .home-6 .project .img{height:260px!important;}
     .home-7 .process-slider .inner{padding:22px!important;}
