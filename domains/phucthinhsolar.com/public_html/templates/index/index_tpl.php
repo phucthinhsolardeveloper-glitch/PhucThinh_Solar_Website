@@ -24,6 +24,32 @@
     </div>
 </div>
 <?php } ?>
+
+<?php if(count($splist)) { ?>
+<!-- Danh mục nổi bật -->
+<section class="wrap-cat-highlight uk-section-large" style="padding-top:20px;">
+    <div class="uk-container">
+        <div class="section-title uk-text-center">
+            <p>Khám phá ngay</p>
+            <h3>Các dòng sản phẩm chủ lực</h3>
+        </div>
+        <div class="row cat-highlight-row">
+            <?php $catCount = 0; foreach($splist as $vcathl) { if($catCount >= 3) break; $catCount++; ?>
+            <div class="col-md-4">
+                <a class="cat-highlight-card" href="danh-muc-san-pham/<?=$vcathl[$sluglang]?>/" title="<?=$vcathl['name'.$lang]?>">
+                    <div class="cat-highlight-img">
+                        <?=$func->getImage(['class' => 'lazy', 'size-error' => '400x300x2', 'upload' => UPLOAD_PHOTO_L, 'image' => $vcathl['photo'], 'alt' => $vcathl['name'.$lang]])?>
+                    </div>
+                    <div class="cat-highlight-name"><?=$vcathl['name'.$lang]?></div>
+                    <span class="cat-highlight-link">Xem thêm <i class="fas fa-arrow-right"></i></span>
+                </a>
+            </div>
+            <?php } ?>
+        </div>
+    </div>
+</section>
+<?php } ?>
+
 <!-- San pham -->
 <section class="home-3 uk-section-large" style="background-image: url();padding-top:40px;">
     <div class="uk-container">
@@ -53,6 +79,17 @@
         </div>
     </div>
 </section>
+
+<div class="trust-badge-strip">
+    <div class="uk-container">
+        <div class="row">
+            <div class="col-md-3 trust-badge-item"><i class="fas fa-certificate"></i><span>Cam kết chính hãng</span></div>
+            <div class="col-md-3 trust-badge-item"><i class="fas fa-tools"></i><span>Đội ngũ kỹ thuật giàu kinh nghiệm</span></div>
+            <div class="col-md-3 trust-badge-item"><i class="fas fa-shield-alt"></i><span>Chính sách bảo hành rõ ràng</span></div>
+            <div class="col-md-3 trust-badge-item"><i class="fas fa-truck"></i><span>Giao hàng toàn quốc</span></div>
+        </div>
+    </div>
+</div>
 
 <?php if(count($adv)){ ?>
     <div class="wrap-adv w-100">
@@ -203,6 +240,27 @@
 </section>
 <?php } ?>
 
+<div class="wrap-promo-banners">
+    <div class="uk-container">
+        <div class="row">
+            <div class="col-md-6">
+                <a href="lien-he/" class="promo-banner promo-banner-navy">
+                    <span class="promo-eyebrow">Dịch vụ lắp đặt tại nhà</span>
+                    <span class="promo-title">Khảo sát &amp; thi công tận nơi</span>
+                    <span class="promo-btn">Liên hệ ngay</span>
+                </a>
+            </div>
+            <div class="col-md-6">
+                <a href="dai-ly/" class="promo-banner promo-banner-gold">
+                    <span class="promo-eyebrow">Trở thành đối tác phân phối</span>
+                    <span class="promo-title">Tuyển đại lý toàn quốc</span>
+                    <span class="promo-btn">Đăng ký ngay</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
 <?php if(count($loiich)){ ?>
 <!-- Loi ich -->
 <div class="Module Module-320">
@@ -305,6 +363,9 @@
                     </div>
                     <?php } ?>
                 </div>
+                <div class="text-center con-so-cta">
+                    <a href="ve-chung-toi/" class="btn-gold">Xem hành trình của chúng tôi</a>
+                </div>
             </div>
         </section>
     </div>
@@ -340,6 +401,29 @@
         </section>
     </div>
 </div>
+<?php } ?>
+
+<?php if(count($testimonial)){ ?>
+<!-- Testimonial - phản hồi đại lý/khách hàng thật đã có sẵn trong DB -->
+<section class="wrap-testimonial uk-section-large">
+    <div class="uk-container">
+        <div class="section-title uk-text-center">
+            <p>Khách hàng nói gì</p>
+            <h3>Sự hài lòng của khách hàng, đối tác</h3>
+        </div>
+        <div class="row">
+            <?php foreach($testimonial as $v) { ?>
+            <div class="col-md-4">
+                <div class="testimonial-card">
+                    <p class="testimonial-name"><?=$v['name'.$lang]?></p>
+                    <p class="testimonial-role"><?=trim($v['desc'.$lang])?></p>
+                    <div class="testimonial-content"><?=htmlspecialchars_decode($v['content'.$lang])?></div>
+                </div>
+            </div>
+            <?php } ?>
+        </div>
+    </div>
+</section>
 <?php } ?>
 
 <?php if(count($dalist)){ ?>
@@ -523,33 +607,53 @@
 </div>
 <?php } ?>
 
-<?php if(count($newsnb)){ ?>
-<!-- Tin  tuc -->
+<?php if(count($newsnb) || count($dahoatdong)){ ?>
+<!-- Tin tuc + Hoat dong du an (2 cot, mix theo demo) -->
 <div class="Module Module-333">
     <div class="ModuleContent">
         <section class="home-8 uk-section-large">
             <div class="uk-container">
                 <div class="section-title uk-text-center">
-                    <p>MỚI NHẤT TỪ PHÚC THỊNH SOLAR</p>
-                    <h3>TIN TỨC & SỰ KIỆN</h3>
+                    <p>CẬP NHẬT MỚI NHẤT</p>
+                    <h3>Hoạt động &amp; kiến thức Phúc Thịnh Solar</h3>
                 </div>
-                <div id="inf_list_news_related" class="active inf_dots">
-                    <?php foreach($newsnb as $v){ ?>
-                    <div class="inf_item_news none">
-                        <div class="wrap">
-                            <a href="<?=$v[$sluglang]?>/"
-                                title="<?=$v['name'.$lang]?>"></a>
-                            <div class="thumbnail">
-                                <?=$func->getImage(['class' => 'lazy','size-error' => '500x500x1', 'upload' => UPLOAD_NEWS_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
-                            </div>
-                            <div class="content">
-                                <div class="date_wrap">
-                                    <div class="date"><?=date('d',$v['date_created'])?></div>
-                                    <div class="month"><?=date('m-y',$v['date_created'])?></div>
-                                </div>
-                                <h3 class="title"><?=$v['name'.$lang]?></h3>
-                            </div>
+                <div class="row blog-2col-row">
+                    <?php if(count($dahoatdong)) { ?>
+                    <div class="col-md-6 blog-2col-item">
+                        <div class="blog-2col-heading">
+                            <h4>Hoạt động dự án</h4>
+                            <a href="du-an-da-thuc-hien/" class="blog-2col-viewall">Xem tất cả</a>
                         </div>
+                        <?php foreach($dahoatdong as $v) { ?>
+                        <a class="blog-2col-row-item" href="store-manager/<?=$v[$sluglang]?>/" title="<?=$v['name'.$lang]?>">
+                            <div class="blog-2col-thumb">
+                                <?=$func->getImage(['class' => 'lazy', 'size-error' => '120x90x2', 'upload' => UPLOAD_NEWS_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
+                            </div>
+                            <div class="blog-2col-info">
+                                <p class="blog-2col-title"><?=$v['name'.$lang]?></p>
+                                <span class="blog-2col-date"><?=date('d/m/Y',$v['date_created'])?></span>
+                            </div>
+                        </a>
+                        <?php } ?>
+                    </div>
+                    <?php } ?>
+                    <?php if(count($newsnb)) { ?>
+                    <div class="col-md-6 blog-2col-item">
+                        <div class="blog-2col-heading">
+                            <h4>Kiến thức năng lượng</h4>
+                            <a href="tin-tuc/" class="blog-2col-viewall">Xem tất cả</a>
+                        </div>
+                        <?php foreach($newsnb as $v) { ?>
+                        <a class="blog-2col-row-item" href="<?=$v[$sluglang]?>/" title="<?=$v['name'.$lang]?>">
+                            <div class="blog-2col-thumb">
+                                <?=$func->getImage(['class' => 'lazy', 'size-error' => '120x90x2', 'upload' => UPLOAD_NEWS_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
+                            </div>
+                            <div class="blog-2col-info">
+                                <p class="blog-2col-title"><?=$v['name'.$lang]?></p>
+                                <span class="blog-2col-date"><?=date('d/m/Y',$v['date_created'])?></span>
+                            </div>
+                        </a>
+                        <?php } ?>
                     </div>
                     <?php } ?>
                 </div>

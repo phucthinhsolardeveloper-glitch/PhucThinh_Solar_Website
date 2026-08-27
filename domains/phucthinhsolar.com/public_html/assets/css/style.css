@@ -3621,3 +3621,51 @@ label.checker input[type="checkbox"]:checked+label.checked-fake:before {
 	.cart-pro-detail a:first-child{margin-right:0px;margin-bottom:0.5rem;}
 	.cart-pro-detail a i{display:none;}
 }
+
+/* ===== Giai đoạn 2 (revised) - section MỚI ghép vào trang chủ theo mẫu demo ===== */
+
+/* 3 thẻ danh mục nổi bật */
+.cat-highlight-row{display:flex;flex-wrap:wrap;gap:20px 0;}
+.cat-highlight-card{display:block;border:1px solid #eee;border-radius:10px;overflow:hidden;text-decoration:none;transition:all .25s;box-shadow:0 2px 8px rgba(0,0,0,.04);}
+.cat-highlight-card:hover{box-shadow:0 8px 20px rgba(10,34,81,.12);transform:translateY(-4px);}
+.cat-highlight-img{aspect-ratio:4/3;overflow:hidden;background:#f6f6f6;}
+.cat-highlight-img img{width:100%;height:100%;object-fit:cover;}
+.cat-highlight-name{padding:16px 16px 4px;font-weight:800;color:var(--color-primary);text-transform:uppercase;font-size:15px;}
+.cat-highlight-link{display:block;padding:0 16px 16px;color:var(--color-gold-dark);font-size:13px;font-weight:600;}
+
+/* Dải trust badge */
+.trust-badge-strip{background:var(--color-primary);padding:22px 0;}
+.trust-badge-item{display:flex;align-items:center;gap:10px;color:#fff;font-size:14px;font-weight:600;padding:6px 10px;}
+.trust-badge-item i{color:var(--color-gold-light);font-size:20px;}
+
+/* 2 banner CTA */
+.wrap-promo-banners{padding:40px 0;}
+.promo-banner{display:flex;flex-direction:column;justify-content:center;gap:6px;border-radius:12px;padding:34px 30px;min-height:150px;text-decoration:none;transition:all .25s;}
+.promo-banner:hover{transform:translateY(-3px);}
+.promo-banner-navy{background:linear-gradient(120deg, var(--color-navy-deep), var(--color-primary));}
+.promo-banner-gold{background:linear-gradient(120deg, var(--color-gold-dark), var(--bg_button));}
+.promo-eyebrow{color:rgba(255,255,255,.75);font-size:12px;text-transform:uppercase;font-weight:700;letter-spacing:.04em;}
+.promo-title{color:#fff;font-size:22px;font-weight:800;}
+.promo-btn{display:inline-block;margin-top:8px;background:#fff;color:var(--color-primary);font-weight:700;font-size:13px;padding:8px 18px;border-radius:6px;width:fit-content;}
+
+/* Con số ấn tượng - nút CTA thêm */
+.con-so-cta{margin-top:30px;}
+
+/* Blog 2 cột (Hoạt động dự án + Kiến thức năng lượng) */
+.blog-2col-heading{display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid var(--bg_button);padding-bottom:10px;margin-bottom:14px;}
+.blog-2col-heading h4{color:var(--color-primary);font-weight:800;text-transform:uppercase;font-size:16px;margin:0;}
+.blog-2col-viewall{color:var(--color-gold-dark);font-size:13px;font-weight:700;text-decoration:none;}
+.blog-2col-row-item{display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid #eee;text-decoration:none;}
+.blog-2col-row-item:last-child{border-bottom:0;}
+.blog-2col-thumb{width:70px;height:52px;flex:0 0 70px;border-radius:6px;overflow:hidden;background:#f4f4f4;}
+.blog-2col-thumb img{width:100%;height:100%;object-fit:cover;}
+.blog-2col-title{color:var(--color-black);font-size:14px;font-weight:600;margin:0 0 4px;line-height:1.4;}
+.blog-2col-row-item:hover .blog-2col-title{color:var(--color-gold-dark);}
+.blog-2col-date{color:var(--color-gray);font-size:12px;}
+
+/* Testimonial */
+.wrap-testimonial{background:#faf8f3;}
+.testimonial-card{background:#fff;border-radius:10px;padding:24px;height:100%;box-shadow:0 2px 10px rgba(0,0,0,.05);border-top:3px solid var(--bg_button);}
+.testimonial-name{color:var(--color-primary);font-weight:800;margin:0;}
+.testimonial-role{color:var(--color-gold-dark);font-size:13px;font-weight:600;margin:0 0 12px;}
+.testimonial-content{color:#555;font-size:14px;line-height:1.6;font-style:italic;}
