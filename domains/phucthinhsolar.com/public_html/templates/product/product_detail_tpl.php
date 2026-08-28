@@ -127,12 +127,20 @@ $certificateContent = (!empty($rowDetail['certificate'.$lang])) ? htmlspecialcha
                             </li>
                             <?php } ?>
                         </ul>
+                        <?php
+                            /* Sản phẩm chưa niêm yết giá (hiển thị "Liên hệ"): không cho đặt
+                               số lượng và không hiện nút mua - thay bằng CTA gọi báo giá,
+                               tránh khách bấm mua rồi giỏ hàng hiện giá 0đ. */
+                            $isContactPrice = empty($rowDetail['sale_price']) && empty($rowDetail['regular_price']);
+                        ?>
+                        <?php if(!$isContactPrice) { ?>
                         <div class="quantity-pro-detail">
                             <label class="attr-label-pro-detail d-block">Số lượng:</label>
                             <span>-</span>
                             <input type="number" class="qty-pro" value="1" min="1">
                             <span>+</span>
                         </div>
+                        <?php } ?>
                         <div class=" product-info">
                             <?php if(!empty($productList)){ ?>
                             <div class="pro-type">
@@ -148,10 +156,17 @@ $certificateContent = (!empty($rowDetail['certificate'.$lang])) ? htmlspecialcha
                             </div>
                             <?php } ?>
                         </div>
+                        <?php if($isContactPrice) { ?>
+                        <div class="btn-product-detail btn-contact-price">
+                            <a href="tel:<?=preg_replace('/[^0-9]/','',$optsetting['hotline'])?>" title="Gọi tư vấn báo giá"><i class="fas fa-phone-alt"></i> Gọi báo giá: <?=$optsetting['hotline']?></a>
+                            <a href="lien-he/" title="Gửi yêu cầu báo giá">Gửi yêu cầu báo giá</a>
+                        </div>
+                        <?php } else { ?>
                         <div class="btn-product-detail">
                             <a href="javascript:void(0)" class="addcart" data-id="<?=$rowDetail['id']?>" data-action="buynow" title="Mua ngay">Mua ngay</a>
                             <a href="javascript:void(0)" class="addcart" data-id="<?=$rowDetail['id']?>" data-action="addnow" title="Thêm vào giỏ hàng">Thêm giỏ hàng</a>
                         </div>
+                        <?php } ?>
                         <div class="btn-product-detail">
                             <a href="dai-ly/" target="_blank" title="Liên hệ" style="width:100%;">Đăng ký đại lý</a>
                         </div>

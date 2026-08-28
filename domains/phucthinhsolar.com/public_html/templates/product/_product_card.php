@@ -55,7 +55,12 @@ $pcDiscount = (!empty($v['sale_price']) && !empty($v['regular_price']) && $v['re
             <?php } ?>
         </p>
     </a>
+    <?php /* Chưa niêm yết giá -> không cho thêm giỏ, chuyển sang nút gọi tư vấn */ ?>
     <div class="product-card-btns">
+        <?php if(empty($v['sale_price']) && empty($v['regular_price'])) { ?>
+        <a href="product/<?=$v[$sluglang]?>/" class="pts-card-ask" title="Liên hệ báo giá" aria-label="Liên hệ báo giá"><i class="fas fa-phone-alt"></i></a>
+        <?php } else { ?>
         <a href="javascript:void(0)" class="addcart pts-card-add" data-id="<?=$v['id']?>" data-action="addnow" title="Thêm vào giỏ hàng" aria-label="Thêm vào giỏ hàng"><i class="fas fa-plus"></i></a>
+        <?php } ?>
     </div>
 </div>

@@ -7,6 +7,8 @@
     --pts-navy-deep:#061537;
     --pts-navy-light:#123a7a;
     --pts-gold:#c9962e;
+    /* Vàng kim gốc của theme - dùng cho nút/tab đang chọn, đẹp hơn màu phẳng */
+    --pts-gold-metal:linear-gradient(90deg,#b67d2e 0%,#e1b94f 48%,#f4dc81 100%);
     --pts-gold-light:#e0b654;
     --pts-gold-dark:#9c7420;
     --pts-ink:#171717;
@@ -290,6 +292,15 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 .product-card-btns{position:absolute;right:13px;bottom:13px;display:block!important;padding:0!important;z-index:4;}
 .product-card-btns .pts-card-add{display:flex!important;width:36px!important;height:36px!important;min-height:36px!important;align-items:center!important;justify-content:center!important;border:0!important;border-radius:50%!important;background:var(--pts-gold)!important;color:#fff!important;box-shadow:0 6px 14px rgba(156,116,32,.28);padding:0!important;}
 .product-card-btns .pts-card-add:hover{background:var(--pts-gold-dark)!important;transform:translateY(-2px);}
+/* Sản phẩm chưa niêm yết giá: nút gọi tư vấn thay cho nút thêm giỏ */
+.product-card-btns .pts-card-ask{display:flex!important;width:36px!important;height:36px!important;align-items:center!important;justify-content:center!important;border:1px solid var(--pts-navy)!important;border-radius:50%!important;background:#fff!important;color:var(--pts-navy)!important;padding:0!important;font-size:12px;transition:.18s;}
+.product-card-btns .pts-card-ask:hover{background:var(--pts-navy)!important;color:#fff!important;transform:translateY(-2px);}
+/* CTA báo giá ở trang chi tiết */
+.btn-contact-price{grid-template-columns:1fr 1fr!important;}
+.btn-contact-price a:first-child{border-color:transparent!important;background:var(--pts-gold-metal)!important;color:var(--pts-navy)!important;box-shadow:0 6px 18px rgba(182,125,46,.28);}
+.btn-contact-price a:first-child i{margin-right:8px;}
+.btn-contact-price a:last-child{border:2px solid var(--pts-navy)!important;background:#fff!important;color:var(--pts-navy)!important;}
+.btn-contact-price a:last-child:hover{background:var(--pts-navy)!important;color:#fff!important;}
 .product-card-btns .pts-card-add i{font-size:12px;}
 .pagination-home a,.pagination-ajax a,.pagination-home span,.pagination-ajax span{border-radius:7px!important;}
 
@@ -477,14 +488,21 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 .grid-pro-detail>.row{display:grid!important;grid-template-columns:minmax(380px,1fr) minmax(0,1.25fr);gap:38px;margin:0!important;align-items:start;}
 .grid-pro-detail .left-pro-detail,.grid-pro-detail .right-pro-detail{width:auto!important;max-width:none!important;flex:none!important;padding:0!important;}
 /* Khung ảnh chi tiết: bỏ nền kem + giảm đệm để ảnh chiếm gần trọn khung */
-.left-pro-detail{border:1px solid var(--pts-line)!important;border-radius:16px!important;background:#fff!important;padding:6px!important;overflow:hidden;}
+/* .left-pro-detail có viền, mà MagicZoom bên trong CŨNG có viền riêng -> 2 viền
+   lồng nhau cách đúng 1px, rất lộ. Bỏ viền/nền của lớp bao, chỉ giữ MỘT viền
+   duy nhất trên chính khung ảnh. */
+.left-pro-detail{border:0!important;background:transparent!important;padding:0!important;overflow:visible;}
+.left-pro-detail>a.MagicZoom{border:1px solid var(--pts-line)!important;border-radius:16px!important;background:#fff!important;padding:6px!important;}
+.left-pro-detail .mz-figure{border:0!important;}
 .left-pro-detail>a.MagicZoom{display:flex!important;aspect-ratio:1/1;align-items:center;justify-content:center;border-radius:12px;overflow:hidden;background:transparent;}
 .left-pro-detail>a.MagicZoom>img{width:100%!important;height:100%!important;object-fit:contain!important;padding:0!important;}
 .gallery-thumb-pro{margin-top:14px;}
 .thumb-pro-detail{display:flex!important;aspect-ratio:1/1;align-items:center;justify-content:center;border:2px solid #f1f3f6!important;border-radius:10px!important;background:#fff;}
 .thumb-pro-detail:hover,.thumb-pro-detail.active{border-color:var(--pts-gold)!important;}
 .thumb-pro-detail img{width:100%!important;height:100%!important;object-fit:contain!important;padding:4px;}
-.right-pro-detail{border:1px solid var(--pts-line);border-radius:16px;background:#fff;padding:24px!important;}
+/* Cột thông tin: bỏ viền bao ngoài vì bên trong đã có nhiều khối tự có viền
+   (hộp giá, dải bảo đảm, hàng icon) -> viền chồng viền nhìn rối. */
+.right-pro-detail{border:0!important;background:transparent!important;padding:0 0 0 4px!important;}
 .title-pro-detail{color:var(--pts-navy)!important;font-size:clamp(22px,2.2vw,30px)!important;font-weight:900!important;line-height:1.25!important;margin:0 0 10px!important;}
 .desc-pro-detail{color:#64748b!important;font-size:14px!important;line-height:1.65;margin-bottom:16px;}
 .attr-pro-detail{list-style:none;padding:0;margin:0;}
@@ -631,7 +649,8 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 .tab-switcher ul.swiper-wrapper>li>a{width:100%;}
 .tab-switcher a{display:inline-flex!important;min-height:42px;align-items:center;justify-content:center;border:1px solid var(--pts-line)!important;border-radius:999px!important;background:#fff!important;color:#64748b!important;padding:0 20px!important;font-size:13.5px!important;font-weight:800!important;text-decoration:none!important;transition:.18s;}
 .tab-switcher a:hover{border-color:var(--pts-gold)!important;color:var(--pts-navy)!important;}
-.tab-switcher li.uk-active a,.tab-switcher li.uk-active a span{border-color:var(--pts-gold)!important;background:var(--pts-gold)!important;color:var(--pts-navy)!important;}
+.tab-switcher li.uk-active a{border-color:transparent!important;background:var(--pts-gold-metal)!important;box-shadow:0 6px 18px rgba(182,125,46,.28);}
+.tab-switcher li.uk-active a,.tab-switcher li.uk-active a span{color:var(--pts-navy)!important;}
 .home-2 .tabs-container .item{max-width:var(--pts-container);margin:0 auto;padding:0 24px;}
 .home-2 .tabs-container .wrapper{min-height:430px;}
 .home-2 .tabs-container .content{height:100%;border-radius:18px 0 0 18px!important;background:linear-gradient(135deg,var(--pts-navy-deep),var(--pts-navy))!important;padding:50px!important;}
@@ -714,7 +733,7 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 /* Bước đang chọn là .swiper-slide-thumb-active (Swiper thumbs), KHÔNG phải
    .swiper-slide-active (vị trí cuộn) - dùng nhầm khiến màu vàng kẹt mãi ở
    bước "01. Khảo sát" dù đang xem bước khác. */
-.home-7 .icon-slider .swiper-slide-thumb-active .text{background:var(--pts-gold)!important;border-color:var(--pts-gold)!important;}
+.home-7 .icon-slider .swiper-slide-thumb-active .text{background:var(--pts-gold-metal)!important;border-color:transparent!important;box-shadow:0 6px 18px rgba(182,125,46,.35);}
 .home-7 .icon-slider .swiper-slide-thumb-active .text span{color:var(--pts-navy)!important;}
 .home-7 .process-slider{margin-top:28px!important;}
 .home-7 .process-slider .inner{border:1px solid rgba(255,255,255,.1)!important;border-radius:18px!important;background:rgba(255,255,255,.04)!important;padding:34px!important;overflow:hidden;}
@@ -819,3 +838,91 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
     .inf_default_form ul{grid-template-columns:1fr;}
     .hts-wrapper{grid-template-columns:1fr;}
 }
+
+/* =====================================================================
+   CHUẨN HOÁ CUỐI CÙNG — NÚT & VIỀN
+   Đặt ở cuối file để là tiếng nói sau cùng, tránh phải sửa rải rác.
+   ===================================================================== */
+
+/* --- 1. Vàng kim cho MỌI nút hành động ---
+   Trước đây nút dùng màu vàng phẳng (--pts-gold / --bg_button) rải rác ở ~20
+   nơi. Gom về một chỗ dùng gradient vàng kim của theme cho đồng nhất.
+   LƯU Ý: chỉ áp cho NÚT. Các gạch chân trang trí (.section-title h3:after,
+   .footer-title:after...) vẫn giữ vàng phẳng vì gradient trên vạch 3px
+   không nhìn ra và chỉ làm rối. */
+.pts-btn-gold,
+.btn-gold,
+.product-card-btns .pts-card-add,
+.btn-product-detail a:first-child,
+.btn-contact-price a:first-child,
+.adv-info .btn-style,
+.con-so-cta .btn-gold,
+.home-6 .btn-all,
+.promo-banner .promo-btn.promo-btn-gold,
+.inf_button input.wpcf7-submit,
+.wpcf7-submit,
+.sidebar-consult-box .sc-btn,
+.sort-pill.active,
+#tabsProDetail .nav-link.active,
+.tab-switcher li.uk-active a,
+.home-7 .icon-slider .swiper-slide-thumb-active .text,
+.CRitem_term_blog .content.active,
+.CRitem_term_blog .content:hover,
+.pts-catblock-all:hover,
+#popup-cart .btn-cart.btn-buy,
+.comment-statistic .btn-primary,
+#comment-product .btn-primary{
+    background-image:var(--pts-gold-metal)!important;
+    background-color:transparent!important;
+    border-color:transparent!important;
+    color:var(--pts-navy)!important;
+    box-shadow:0 6px 18px rgba(182,125,46,.28);
+}
+.pts-btn-gold:hover,
+.btn-gold:hover,
+.product-card-btns .pts-card-add:hover,
+.btn-product-detail a:first-child:hover,
+.btn-contact-price a:first-child:hover,
+.adv-info .btn-style:hover,
+.con-so-cta .btn-gold:hover,
+.home-6 .btn-all:hover,
+.inf_button input.wpcf7-submit:hover,
+.wpcf7-submit:hover,
+.sidebar-consult-box .sc-btn:hover{
+    filter:brightness(1.06);
+    box-shadow:0 10px 24px rgba(182,125,46,.38);
+    color:var(--pts-navy)!important;
+}
+/* icon bên trong nút vàng phải là navy cho đọc được */
+.product-card-btns .pts-card-add i,
+.btn-contact-price a:first-child i,
+.adv-info .btn-style svg path{color:var(--pts-navy)!important;fill:var(--pts-navy)!important;}
+
+/* --- 2. Thống nhất kiểu viền (border hiện đại) ---
+   Theme cũ trộn nhiều kiểu: viền đen mờ Bootstrap (rgba(0,0,0,.125)), viền
+   xám #ddd/#e5e5e5, bo góc 3/4/6/10/16px lẫn lộn, có chỗ viền lồng viền.
+   Quy về MỘT chuẩn: 1px var(--pts-line), bo 14px, không đổ bóng khi nghỉ. */
+.card,
+.aside-filter,
+.product-pages__price,
+.formContact,
+.officeContact li,
+.blog-2col-item,
+.item_cont_post_slider,
+.inf_item_project>.wrap,
+.product-card,
+.cat-highlight-card,
+.testimonial-card,
+.tabs-pro-detail,
+.CRitem_term_blog .content{
+    border:1px solid var(--pts-line)!important;
+    border-radius:14px!important;
+    box-shadow:none!important;
+}
+/* nút/pill giữ bo tròn hoàn toàn, không bị rule trên ép về 14px */
+.tab-switcher a,.sort-pill,.pts-catblock-all,.CRitem_term_blog .content,
+.product-card-btns .pts-card-add,.product-card-btns .pts-card-ask,
+.home-7 .icon-slider .text{border-radius:999px!important;}
+/* không để phần tử con vẽ thêm viền bên trong khối đã có viền */
+.tabs-pro-detail .card,
+.right-pro-detail .card{border:0!important;}
