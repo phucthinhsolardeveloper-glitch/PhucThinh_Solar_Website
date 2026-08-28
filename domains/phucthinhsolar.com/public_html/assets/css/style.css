@@ -66,7 +66,10 @@ footer{background-color:var(--color-navy-deep) !important;background-image:none 
 
 /* Tab switcher (sản phẩm nổi bật / giải pháp / dự án) */
 .sw-tab-cat .swiper-slide a,.tab-switcher ul li a{color:var(--color-primary);font-weight:700;border:1px solid #dfe3ea;border-radius:30px;padding:8px 20px;display:inline-block;transition:all .2s;}
-.sw-tab-cat .swiper-slide.swiper-slide-active a,.tab-switcher ul li.uk-active a,.tab-switcher ul li.tab-project.uk-active a{background:var(--bg_button);border-color:var(--bg_button);color:#fff;}
+/* KHÔNG tô .swiper-slide-active: đó là vị trí cuộn của Swiper, không phải tab
+   người dùng chọn. Tô nó khiến 2 nút cùng vàng, và nút đầu kẹt vàng vĩnh viễn
+   khi bấm sang tab khác. Dấu chọn đúng là .uk-active (UIkit switcher). */
+.tab-switcher ul li.uk-active a,.tab-switcher ul li.tab-project.uk-active a{background:var(--bg_button);border-color:var(--bg_button);color:#fff;}
 
 /* Nút CTA link dùng chung trong các section trang chủ */
 .btn-about,.btn-view-all a,.btn-all,.view-more .text{color:var(--bg_button);font-weight:700;}
@@ -3838,7 +3841,10 @@ label.checker input[type="checkbox"]:checked+label.checked-fake:before {
 .price-old-cart{color:var(--color-gray);font-size:12px;text-decoration:line-through;}
 .quantity-counter-procart{border:1px solid #dfe3ea;border-radius:6px;overflow:hidden;width:110px;flex:0 0 110px;}
 .quantity-counter-procart .counter-procart{background:#faf8f3;cursor:pointer;padding:4px 10px;flex:0 0 auto;}
-.quantity-procart{border:0 !important;text-align:center;width:44px !important;flex:0 0 44px;min-width:0;padding:0 !important;}
+/* Chú ý: class .quantity-procart được dùng CHO CẢ cột bao (div.col-md-2) lẫn ô
+   nhập số lượng (input). Phải giới hạn selector vào input, nếu không cột bị ép
+   còn 44px làm vỡ lưới bảng giỏ hàng. */
+input.quantity-procart{border:0 !important;text-align:center;width:44px !important;flex:0 0 44px;min-width:0;padding:0 !important;}
 .del-procart{color:var(--color-red);font-size:12px;}
 .money-procart{border-top:1px solid #eee;margin-top:14px;padding-top:14px;}
 .money-procart .total-price{color:var(--color-primary);font-weight:700;}
