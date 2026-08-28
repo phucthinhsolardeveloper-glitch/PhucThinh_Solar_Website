@@ -35,27 +35,8 @@
 	$pagingItems = $pagingAjax->getAllPageLinks($countItems, $pageLink, $eShow);
 ?>
 <?php if($countItems) { ?>
-<div class="grid-product">
-    <?php foreach($items as $v) { ?>
-    <div>
-        <a class="product-item" href="product/<?=$v[$sluglang]?>/" title="<?=$v['name'.$lang]?>">
-            <div class="img">
-                <?= $func->getImage(['class' => 'lazy w-100', 'sizes' => '300x300x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $v['photo'], 'alt' => $v['name' . $lang]]) ?>
-            </div>
-            <div class="caption">
-                <p class="name"><?=$v['name'.$lang]?></p>
-            </div>
-			<p class="price-product">
-                <?php if($v['sale_price']) { ?>
-                    <span class="price-new"><?=$func->formatMoney($v['sale_price'])?></span>
-                    <span class="price-old"><?=$func->formatMoney($v['regular_price'])?></span>
-                <?php } else { ?>
-                    <span class="price-new"><?=($v['regular_price']) ? $func->formatMoney($v['regular_price']) : lienhe?></span>
-                <?php } ?>
-            </p>
-        </a>
-    </div>
-    <?php } ?>
+<div class="grid-product grid-product-3">
+    <?php foreach($items as $v) { include ROOT."templates/product/_product_card.php"; } ?>
 </div>
 <div class="pagination-ajax"><?=$pagingItems?></div>
 <?php } ?>

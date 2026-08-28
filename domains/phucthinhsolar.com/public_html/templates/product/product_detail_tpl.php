@@ -277,33 +277,7 @@ $certificateContent = (!empty($rowDetail['certificate'.$lang])) ? htmlspecialcha
             data-touchdrag="1"
             data-navtext="<svg xmlns='http://www.w3.org/2000/svg' class='icon icon-tabler icon-tabler-chevron-left' width='44' height='45' viewBox='0 0 24 24' stroke-width='1.5' stroke='#2c3e50' fill='none' stroke-linecap='round' stroke-linejoin='round'><path stroke='none' d='M0 0h24v24H0z' fill='none'/><polyline points='15 6 9 12 15 18' /></svg>|<svg xmlns='http://www.w3.org/2000/svg' class='icon icon-tabler icon-tabler-chevron-right' width='44' height='45' viewBox='0 0 24 24' stroke-width='1.5' stroke='#2c3e50' fill='none' stroke-linecap='round' stroke-linejoin='round'><path stroke='none' d='M0 0h24v24H0z' fill='none'/><polyline points='9 6 15 12 9 18' /></svg>"
             data-navcontainer=".control-pro-detail2">
-            <?php foreach($product as $k => $v) { $discountPercent = (!empty($v['sale_price']) && $v['regular_price'] > $v['sale_price']) ? round((($v['regular_price'] - $v['sale_price']) / $v['regular_price']) * 100) : 0; ?>
-            <div class="product-card">
-                <a class="product-item" href="product/<?=$v[$sluglang]?>/" title="<?=$v['name'.$lang]?>">
-                    <div class="product-card-img">
-                        <?php if($discountPercent > 0) { ?>
-                        <span class="badge-discount">-<?=$discountPercent?>%</span>
-                        <?php } ?>
-                        <?= $func->getImage(['class' => 'lazy w-100', 'sizes' => '300x300x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $v['photo'], 'alt' => $v['name' . $lang]]) ?>
-                    </div>
-                    <div class="caption">
-                        <p class="name"><?=$v['name'.$lang]?></p>
-                    </div>
-                    <p class="price-product">
-                        <?php if($v['sale_price']) { ?>
-                        <span class="price-new"><?=$func->formatMoney($v['sale_price'])?></span>
-                        <span class="price-old"><?=$func->formatMoney($v['regular_price'])?></span>
-                        <?php } else { ?>
-                        <span
-                            class="price-new"><?=($v['regular_price']) ? $func->formatMoney($v['regular_price']) : lienhe?></span>
-                        <?php } ?>
-                    </p>
-                </a>
-                <div class="product-card-btns">
-                    <a href="javascript:void(0)" class="addcart pts-card-add" data-id="<?=$v['id']?>" data-action="addnow" title="Thêm vào giỏ hàng" aria-label="Thêm vào giỏ hàng"><i class="fas fa-plus"></i></a>
-                </div>
-            </div>
-            <?php } ?>
+            <?php foreach($product as $k => $v) { include ROOT."templates/product/_product_card.php"; } ?>
         </div>
         <div class="control-pro-detail2 control-owl transition"></div>
     </div>

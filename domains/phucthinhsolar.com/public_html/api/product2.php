@@ -45,32 +45,7 @@
 		|
 		<svg fill='rgba(51, 51, 51, 0.5)' width='20px' height='20px' viewBox='-77 0 512 512' xmlns='http://www.w3.org/2000/svg' ><title>right</title><path d='M98 460L64 426 227 262 64 98 98 64 294 262 98 460Z' /></svg>"
         data-navcontainer=".control-prodcthome">
-        <?php foreach($items as $v) { $discountPercent = (!empty($v['sale_price']) && $v['regular_price'] > $v['sale_price']) ? round((($v['regular_price'] - $v['sale_price']) / $v['regular_price']) * 100) : 0; ?>
-        <div class="product-card">
-            <a class="product-item" href="product/<?=$v[$sluglang]?>/" title="<?=$v['name'.$lang]?>">
-                <div class="product-card-img">
-                    <?php if($discountPercent > 0) { ?>
-                    <span class="badge-discount">-<?=$discountPercent?>%</span>
-                    <?php } ?>
-                    <?= $func->getImage(['class' => 'lazy w-100', 'size-error' => '300x300x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $v['photo'], 'alt' => $v['name' . $lang]]) ?>
-                </div>
-                <div class="caption">
-                    <p class="name"><?=$v['name'.$lang]?></p>
-                </div>
-                <p class="price-product">
-                    <?php if($v['sale_price']) { ?>
-                        <span class="price-new"><?=$func->formatMoney($v['sale_price'])?></span>
-                        <span class="price-old"><?=$func->formatMoney($v['regular_price'])?></span>
-                    <?php } else { ?>
-                        <span class="price-new"><?=($v['regular_price']) ? $func->formatMoney($v['regular_price']) : lienhe?></span>
-                    <?php } ?>
-                </p>
-            </a>
-            <div class="product-card-btns">
-                <a href="javascript:void(0)" class="addcart pts-card-add" data-id="<?=$v['id']?>" data-action="addnow" title="Thêm vào giỏ hàng" aria-label="Thêm vào giỏ hàng"><i class="fas fa-plus"></i></a>
-            </div>
-        </div>
-        <?php } ?>
+        <?php foreach($items as $v) { include ROOT."templates/product/_product_card.php"; } ?>
     </div>
     <div class="control-prodcthome control-owl transition"></div>
 </div>

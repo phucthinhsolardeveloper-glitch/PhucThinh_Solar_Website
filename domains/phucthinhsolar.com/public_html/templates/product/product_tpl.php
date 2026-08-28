@@ -244,32 +244,7 @@ document.addEventListener('DOMContentLoaded', function(){
             <div id="show-product">
                 <?php if(!empty($product)) {?>
                 <div class="grid-product grid-product-3">
-                    <?php foreach($product as $k => $v) { $discountPercent = (!empty($v['sale_price']) && $v['regular_price'] > $v['sale_price']) ? round((($v['regular_price'] - $v['sale_price']) / $v['regular_price']) * 100) : 0; ?>
-                    <div class="product-card">
-                        <a class="product-item" href="product/<?=$v[$sluglang]?>/" title="<?=$v['name'.$lang]?>">
-                            <div class="product-card-img">
-                                <?php if($discountPercent > 0) { ?>
-                                <span class="badge-discount">-<?=$discountPercent?>%</span>
-                                <?php } ?>
-                                <?= $func->getImage(['class' => 'lazy w-100', 'sizes' => '300x300x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $v['photo'], 'alt' => $v['name' . $lang]]) ?>
-                            </div>
-                            <div class="caption">
-                                <p class="name"><?=$v['name'.$lang]?></p>
-                            </div>
-                            <p class="price-product">
-                                <?php if($v['sale_price']) { ?>
-                                    <span class="price-new"><?=$func->formatMoney($v['sale_price'])?></span>
-                                    <span class="price-old"><?=$func->formatMoney($v['regular_price'])?></span>
-                                <?php } else { ?>
-                                    <span class="price-new"><?=($v['regular_price']) ? $func->formatMoney($v['regular_price']) : lienhe?></span>
-                                <?php } ?>
-                            </p>
-                        </a>
-                        <div class="product-card-btns">
-                            <a href="javascript:void(0)" class="addcart pts-card-add" data-id="<?=$v['id']?>" data-action="addnow" title="Thêm vào giỏ hàng" aria-label="Thêm vào giỏ hàng"><i class="fas fa-plus"></i></a>
-                        </div>
-                    </div>
-                    <?php } ?>
+                    <?php foreach($product as $k => $v) { include ROOT."templates/product/_product_card.php"; } ?>
                 </div>
                 <?php } else { ?>
                 <div class="col-12">

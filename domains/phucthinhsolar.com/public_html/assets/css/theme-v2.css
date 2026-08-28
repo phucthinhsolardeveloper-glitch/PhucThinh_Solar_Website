@@ -282,6 +282,23 @@ h4{font-size:17px;font-weight:700;line-height:1.4;}
     .grid-product.grid-product-3{gap:10px!important;}
 }
 
+/* Trang /san-pham/ - danh sách theo từng danh mục (product_list_tpl) */
+.pts-catblock{margin-bottom:52px;}
+.pts-catblock:last-child{margin-bottom:0;}
+.pts-catblock-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:24px;}
+.pts-catblock-head .section-title{margin:0;text-align:left;}
+.pts-catblock-head .section-title h3{margin:0!important;padding-bottom:12px!important;text-align:left;}
+.pts-catblock-head .section-title h3:after{left:0!important;transform:none!important;}
+.pts-catblock-all{display:inline-flex;align-items:center;gap:8px;flex:0 0 auto;border:1px solid var(--pts-line);border-radius:999px;background:#fff;color:var(--pts-navy)!important;padding:9px 20px;font-size:13px;font-weight:800;text-decoration:none!important;transition:.18s;}
+.pts-catblock-all:hover{border-color:var(--pts-gold);background:var(--pts-gold);color:var(--pts-navy)!important;}
+.pts-catblock-all i{font-size:11px;transition:transform .18s;}
+.pts-catblock-all:hover i{transform:translateX(3px);}
+.pts-catblock .pagination-ajax{margin-top:22px;}
+@media(max-width:576px){
+    .pts-catblock{margin-bottom:38px;}
+    .pts-catblock-head{margin-bottom:18px;}
+}
+
 /* Product detail composition */
 .box-detail{margin-bottom:24px;}
 .grid-pro-detail>.row{display:grid!important;grid-template-columns:minmax(340px,430px) minmax(0,1fr);gap:38px;margin:0!important;align-items:start;}
