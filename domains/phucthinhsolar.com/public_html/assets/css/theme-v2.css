@@ -282,6 +282,138 @@ h4{font-size:17px;font-weight:700;line-height:1.4;}
     .grid-product.grid-product-3{gap:10px!important;}
 }
 
+/* ===== Card bài viết dùng chung (canonical) =====
+   Dùng ở /tin-tuc/, /giai-phap/, /du-an-da-thuc-hien/ và trang danh mục con.
+   Theme gốc đặt khối chữ ĐÈ LÊN ảnh (position:absolute) khiến tiêu đề chìm
+   hoàn toàn vào ảnh nền, gần như không đọc được. Đưa chữ xuống dưới ảnh theo
+   đúng ngôn ngữ thiết kế mới (ảnh 4:3 bo góc + khối chữ nền trắng bên dưới).
+   Hai biến thể markup của theme cũ được gom về cùng một diện mạo:
+     A. .item_cont_post_slider  (tin tức, giải pháp)
+     B. .inf_item_project > .wrap (dự án) */
+.item_cont_post_slider,
+.inf_item_project>.wrap{
+    position:relative;display:flex;flex-direction:column;height:100%;
+    background:#fff!important;border:1px solid var(--pts-line)!important;
+    border-radius:16px!important;padding:12px!important;overflow:hidden!important;
+    box-shadow:none!important;transition:transform .2s,box-shadow .2s,border-color .2s;
+}
+.item_cont_post_slider:hover,
+.inf_item_project>.wrap:hover{
+    transform:translateY(-4px);box-shadow:var(--pts-shadow)!important;
+    border-color:rgba(201,150,46,.45)!important;
+}
+/* lớp phủ gradient đen của theme cũ (làm nền cho chữ đè lên ảnh) nay thừa */
+.item_cont_post_slider:after,.item_cont_post_slider:before,
+.inf_item_project>.wrap:after,.inf_item_project>.wrap:before{content:none!important;display:none!important;}
+
+/* link phủ toàn card */
+.item_cont_post_slider>a,
+.inf_item_project>.wrap>a{position:absolute!important;inset:0!important;z-index:4;width:auto!important;height:auto!important;}
+
+/* vùng ảnh */
+.CRthumb_post,
+.inf_item_project .thumbnail{
+    position:relative!important;width:100%;aspect-ratio:4/3;margin:0 0 14px!important;
+    border-radius:12px!important;overflow:hidden!important;
+    background:linear-gradient(145deg,var(--pts-cream),var(--pts-surface))!important;
+}
+.CRthumb_post img,
+.inf_item_project .thumbnail img{
+    width:100%!important;height:100%!important;object-fit:cover!important;
+    transition:transform .3s ease;
+}
+.item_cont_post_slider:hover .CRthumb_post img,
+.inf_item_project>.wrap:hover .thumbnail img{transform:scale(1.05);}
+
+/* khối chữ - ép về luồng thường thay vì đè lên ảnh */
+.CRcont_post,.box_cont_post_slider,
+.inf_item_project .content{
+    position:static!important;inset:auto!important;
+    background:none!important;background-color:transparent!important;
+    padding:0 4px 4px!important;margin:0!important;
+    width:auto!important;height:auto!important;min-height:0!important;
+    transform:none!important;opacity:1!important;visibility:visible!important;
+}
+.CRcont_post h3,
+.inf_item_project .box_title,
+.inf_item_project h4.title{
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+    color:var(--pts-navy)!important;font-size:15px!important;font-weight:800!important;
+    line-height:1.45!important;margin:0!important;text-transform:none!important;
+    text-shadow:none!important;
+}
+/* dòng ngày / tác giả */
+.CRcont_post .CRbox{
+    display:flex!important;align-items:center;gap:6px;flex-wrap:wrap;
+    margin:0 0 8px!important;padding:0!important;
+}
+.CRcont_post .CRbox p{
+    margin:0!important;color:#94a3b8!important;font-size:11.5px!important;
+    font-weight:600!important;text-shadow:none!important;
+}
+.CRcont_post .CRbox i{margin-right:4px;color:var(--pts-gold-dark)!important;}
+
+/* lưới 3 cột đều nhau */
+.CRrow_term_bottom{display:flex;flex-wrap:wrap;}
+.CRrow_term_bottom>[class*="col-"]{display:flex;margin-bottom:24px;}
+.CRrow_term_bottom>[class*="col-"]>.wrap{width:100%;}
+.inf_item_project{display:flex;margin-bottom:24px;}
+/* .wrap co theo nội dung ảnh -> card rộng hẹp khác nhau trong cùng một hàng */
+.inf_item_project>.wrap{width:100%!important;max-width:none!important;}
+
+/* Nhóm chỉ có DUY NHẤT 1 bài (hay gặp ở /giai-phap/): card 1/3 chiều rộng
+   nằm lọt thỏm giữa 2/3 khoảng trống nhìn rất thưa. Đổi sang thẻ ngang
+   nổi bật chiếm trọn hàng - thích ứng theo dữ liệu, không cần sửa PHP. */
+.CRrow_term_bottom>[class*="col-"]:only-child{flex:0 0 100%!important;max-width:100%!important;}
+.CRrow_term_bottom>[class*="col-"]:only-child .item_cont_post_slider{flex-direction:row;align-items:stretch;padding:14px!important;gap:22px;}
+.CRrow_term_bottom>[class*="col-"]:only-child .CRthumb_post{flex:0 0 40%;max-width:40%;aspect-ratio:16/10;margin:0!important;}
+.CRrow_term_bottom>[class*="col-"]:only-child .CRcont_post{display:flex;flex-direction:column;justify-content:center;flex:1;padding:4px 8px 4px 0!important;}
+.CRrow_term_bottom>[class*="col-"]:only-child .CRcont_post h3{font-size:20px!important;-webkit-line-clamp:3;}
+@media(max-width:768px){
+    .CRrow_term_bottom>[class*="col-"]:only-child .item_cont_post_slider{flex-direction:column;gap:0;padding:12px!important;}
+    .CRrow_term_bottom>[class*="col-"]:only-child .CRthumb_post{flex:none;max-width:none;aspect-ratio:4/3;margin:0 0 14px!important;}
+    .CRrow_term_bottom>[class*="col-"]:only-child .CRcont_post{padding:0 4px 4px!important;}
+    .CRrow_term_bottom>[class*="col-"]:only-child .CRcont_post h3{font-size:16px!important;}
+}
+
+/* tiêu đề nhóm (Doanh nghiệp / Hộ gia đình / ...) */
+.title_term{
+    position:relative;color:var(--pts-navy)!important;font-size:clamp(20px,2vw,26px)!important;
+    font-weight:900!important;text-transform:uppercase;letter-spacing:-.01em;
+    padding-bottom:12px!important;margin:0 0 22px!important;
+}
+.title_term:after{content:"";position:absolute;left:0;bottom:0;width:48px;height:3px;border-radius:99px;background:var(--pts-gold);}
+.CRrow_term_top{margin-bottom:0!important;}
+.CRrow_term_blog_box{margin-bottom:46px;}
+.CRrow_term_blog_box:last-child{margin-bottom:0;}
+
+/* chip danh mục đầu trang */
+.CRlist_term_blog_box{display:flex!important;flex-wrap:wrap;justify-content:center;gap:12px;margin:0!important;}
+.CRitem_term_blog{width:auto!important;max-width:none!important;flex:0 0 auto!important;padding:0!important;}
+.CRitem_term_blog .content{
+    display:flex;align-items:center;gap:10px;min-height:52px;
+    border:1px solid var(--pts-line)!important;border-radius:999px!important;
+    background:#fff!important;padding:10px 22px!important;box-shadow:none!important;
+    transition:.18s;position:relative;
+}
+.CRitem_term_blog .content:hover,.CRitem_term_blog .content.active{
+    border-color:var(--pts-gold)!important;background:var(--pts-gold)!important;
+}
+.CRitem_term_blog .content>a{position:absolute;inset:0;z-index:3;}
+.CRitem_term_blog .ico{width:24px!important;height:24px!important;margin:0!important;flex:0 0 24px;}
+.CRitem_term_blog .ico img{width:100%!important;height:100%!important;object-fit:contain!important;}
+.CRitem_term_blog h2{
+    margin:0!important;color:var(--pts-navy)!important;font-size:13.5px!important;
+    font-weight:800!important;white-space:nowrap;text-transform:none!important;
+}
+.CRlist_term_blog{padding:26px 0 8px!important;}
+
+@media(max-width:576px){
+    .CRitem_term_blog .content{padding:9px 16px!important;min-height:44px;}
+    .CRitem_term_blog h2{font-size:12.5px!important;}
+    .CRrow_term_blog_box{margin-bottom:32px;}
+}
+
 /* Trang /san-pham/ - danh sách theo từng danh mục (product_list_tpl) */
 .pts-catblock{margin-bottom:52px;}
 .pts-catblock:last-child{margin-bottom:0;}
