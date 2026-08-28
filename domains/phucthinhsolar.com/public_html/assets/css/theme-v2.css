@@ -56,8 +56,37 @@ h4{font-size:17px;font-weight:700;line-height:1.4;}
 .blog-2col-row{margin-left:0!important;margin-right:0!important;display:grid!important;grid-template-columns:1fr 1fr;gap:24px;}
 .blog-2col-item{width:auto!important;max-width:none!important;flex:0 0 auto!important;}
 
-/* Trang đại lý - form định vị absolute nên bỏ qua padding của container */
-.agency_1 .form_agency{left:var(--pts-gutter)!important;}
+/* Trang đại lý: form ĐK và banner đều position:absolute trong .container cao
+   cố định -> form tràn khỏi section 68px và bị overflow:hidden cắt mất nút
+   "Đăng ký ngay" (khách không bấm đăng ký được). Đưa cả hai về luồng thường
+   dạng lưới 2 cột như bản demo, chiều cao tự giãn theo nội dung. */
+.agency_1{overflow:visible!important;height:auto!important;}
+.agency_1 .container{
+    display:grid!important;grid-template-columns:minmax(300px,380px) 1fr;
+    gap:32px;align-items:center;padding-top:56px!important;padding-bottom:56px!important;
+}
+.agency_1 .form_agency{
+    position:static!important;left:auto!important;top:auto!important;
+    width:100%!important;max-width:none!important;margin:0!important;
+    border-radius:16px!important;box-shadow:var(--pts-shadow)!important;
+}
+.agency_1 .inner_content{
+    position:static!important;width:auto!important;height:auto!important;
+    min-height:360px;display:flex!important;align-items:center;
+    border-radius:16px!important;overflow:hidden!important;
+    background-size:cover!important;background-position:center!important;
+}
+/* ảnh nền banner sáng -> chữ trắng thiếu tương phản, phủ lớp navy mờ */
+.agency_1 .inner_content{position:relative!important;}
+.agency_1 .inner_content:before{content:"";position:absolute;inset:0;background:linear-gradient(100deg,rgba(6,21,55,.82),rgba(10,34,81,.55));z-index:1;}
+.agency_1 .inner{position:relative;z-index:2;width:100%;padding:40px!important;}
+.agency_1 .inner .content.text h3{color:#fff!important;font-size:clamp(22px,2.3vw,32px)!important;font-weight:900!important;line-height:1.25!important;margin:0 0 14px!important;}
+.agency_1 .inner .content.text,.agency_1 .inner .content.text p,.agency_1 .inner .content.text li{color:#e8eefc!important;}
+@media(max-width:991px){
+    .agency_1 .container{grid-template-columns:1fr;gap:24px;padding-top:38px!important;padding-bottom:38px!important;}
+    .agency_1 .inner{padding:28px!important;}
+    .agency_1 .inner_content{min-height:260px;}
+}
 
 /* Trang tin tức - .row lồng trong wrapper đã có margin âm -> cộng dồn -20px */
 .CRrow_term_bottom>.row{margin-left:0!important;margin-right:0!important;}
