@@ -441,16 +441,19 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 
 /* chip danh mục đầu trang */
 .CRlist_term_blog_box{display:flex!important;flex-wrap:wrap;justify-content:center;gap:12px;margin:0!important;}
-.CRitem_term_blog{width:auto!important;max-width:none!important;flex:0 0 auto!important;padding:0!important;}
+/* theme cũ kẻ vách ngăn dọc giữa các chip - bỏ, dùng khoảng cách thay đường kẻ */
+.CRitem_term_blog{width:auto!important;max-width:none!important;flex:0 0 auto!important;padding:0!important;border:0!important;}
+/* Dải chip danh mục: theme cũ đặt box-shadow 0 0 38px lên cả dải trắng
+   full-width, nhìn ra thành một vệt xám vắt ngang dưới chip. Bỏ hẳn dải +
+   bóng, chip dùng nền xám nhạt thay cho viền cho gọn (bớt một lớp đường kẻ). */
+.CRlist_term_blog{background:transparent!important;box-shadow:none!important;border:0!important;}
 .CRitem_term_blog .content{
-    display:flex;align-items:center;gap:10px;min-height:52px;
-    border:1px solid var(--pts-line)!important;border-radius:999px!important;
-    background:#fff!important;padding:10px 22px!important;box-shadow:none!important;
+    display:flex;align-items:center;gap:10px;min-height:46px;
+    border:0!important;border-radius:999px!important;
+    background:#eef1f6!important;padding:10px 22px!important;box-shadow:none!important;
     transition:.18s;position:relative;
 }
-.CRitem_term_blog .content:hover,.CRitem_term_blog .content.active{
-    border-color:var(--pts-gold)!important;background:var(--pts-gold)!important;
-}
+.CRitem_term_blog .content:hover{background:#e3e8f0!important;}
 .CRitem_term_blog .content>a{position:absolute;inset:0;z-index:3;}
 .CRitem_term_blog .ico{width:24px!important;height:24px!important;margin:0!important;flex:0 0 24px;}
 .CRitem_term_blog .ico img{width:100%!important;height:100%!important;object-fit:contain!important;}
@@ -913,8 +916,7 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 .product-card,
 .cat-highlight-card,
 .testimonial-card,
-.tabs-pro-detail,
-.CRitem_term_blog .content{
+.tabs-pro-detail{
     border:1px solid var(--pts-line)!important;
     border-radius:14px!important;
     box-shadow:none!important;
@@ -923,6 +925,7 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 .tab-switcher a,.sort-pill,.pts-catblock-all,.CRitem_term_blog .content,
 .product-card-btns .pts-card-add,.product-card-btns .pts-card-ask,
 .home-7 .icon-slider .text{border-radius:999px!important;}
+.CRitem_term_blog .content{border:0!important;}
 /* không để phần tử con vẽ thêm viền bên trong khối đã có viền */
 .tabs-pro-detail .card,
 .right-pro-detail .card{border:0!important;}
