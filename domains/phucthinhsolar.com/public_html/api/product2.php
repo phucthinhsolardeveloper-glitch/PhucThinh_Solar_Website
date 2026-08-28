@@ -45,6 +45,7 @@
 		|
 		<svg fill='rgba(51, 51, 51, 0.5)' width='20px' height='20px' viewBox='-77 0 512 512' xmlns='http://www.w3.org/2000/svg' ><title>right</title><path d='M98 460L64 426 227 262 64 98 98 64 294 262 98 460Z' /></svg>"
         data-navcontainer=".control-prodcthome">
+        <?php $pcNoLazy = true; /* card nằm trong Owl carousel - xem chú thích ở partial */ ?>
         <?php foreach($items as $v) { include ROOT."templates/product/_product_card.php"; } ?>
     </div>
     <div class="control-prodcthome control-owl transition"></div>

@@ -462,7 +462,7 @@ h4{font-size:17px;font-weight:700;line-height:1.4;}
 
 /* Product detail composition */
 .box-detail{margin-bottom:24px;}
-.grid-pro-detail>.row{display:grid!important;grid-template-columns:minmax(340px,430px) minmax(0,1fr);gap:38px;margin:0!important;align-items:start;}
+.grid-pro-detail>.row{display:grid!important;grid-template-columns:minmax(380px,1fr) minmax(0,1.25fr);gap:38px;margin:0!important;align-items:start;}
 .grid-pro-detail .left-pro-detail,.grid-pro-detail .right-pro-detail{width:auto!important;max-width:none!important;flex:none!important;padding:0!important;}
 .left-pro-detail{border:1px solid #edf0f4!important;border-radius:16px!important;background:linear-gradient(145deg,#fffbeb,#f8fafc)!important;padding:16px!important;overflow:hidden;}
 .left-pro-detail>a.MagicZoom{display:flex!important;aspect-ratio:1/1;align-items:center;justify-content:center;border-radius:12px;overflow:hidden;background:transparent;}
@@ -495,23 +495,59 @@ h4{font-size:17px;font-weight:700;line-height:1.4;}
 .btn-product-detail a{display:flex!important;width:auto!important;min-height:46px!important;align-items:center!important;justify-content:center!important;margin:0!important;border:2px solid var(--pts-navy)!important;border-radius:8px!important;background:#fff!important;color:var(--pts-navy)!important;font-size:13px!important;font-weight:850!important;text-decoration:none!important;}
 .btn-product-detail a:first-child{border-color:var(--pts-gold)!important;background:var(--pts-gold)!important;color:var(--pts-navy)!important;}
 .btn-product-detail a:hover{background:var(--pts-navy)!important;color:#fff!important;}
-.btn-product-detail+ .btn-product-detail{display:block!important;}
-.btn-product-detail+ .btn-product-detail a{width:100%!important;background:var(--pts-navy)!important;color:#fff!important;}
-.CRdef_sidebar_pd ul,.CRnew_list_icon_def_pd{display:grid!important;grid-template-columns:repeat(3,1fr);gap:8px!important;border-top:1px solid #f1f3f6;padding-top:16px!important;margin-top:16px!important;}
-.CRdef_sidebar_pd li,.item_icon_box{justify-content:center!important;text-align:center;background:#fff!important;border:0!important;border-radius:0!important;padding:5px!important;font-size:10px!important;flex-direction:column;}
-.CRdef_sidebar_pd li img,.item_icon_box img{width:22px!important;height:22px!important;object-fit:contain;}
-/* hộp cam kết chỉ rộng 101px trong ô lưới 302px -> nằm rời rạc, lệch nhau */
-.CRnew_list_icon_def_pd .item_icon_box,
+/* "Đăng ký đại lý" là CTA phụ - trước đây to đậm ngang 2 nút mua chính,
+   làm loãng trọng tâm. Hạ xuống dạng liên kết viền mảnh. */
+.btn-product-detail+ .btn-product-detail{display:block!important;margin-top:8px!important;}
+.btn-product-detail+ .btn-product-detail a{
+    width:100%!important;min-height:38px!important;
+    border:1px dashed #cbd5e1!important;background:transparent!important;
+    color:#64748b!important;font-size:12.5px!important;font-weight:750!important;
+}
+.btn-product-detail+ .btn-product-detail a:hover{border-color:var(--pts-gold)!important;background:var(--pts-cream)!important;color:var(--pts-navy)!important;}
+/* ===== Khối cam kết trong buy box =====
+   Trang có SẴN 2 khối cam kết trùng ý nhau (5 icon dịch vụ + 3 hộp bảo đảm)
+   xếp chồng, hai kiểu style khác nhau -> tổng 8 mục, gây rối và đẩy nội dung
+   quan trọng xuống dưới. Gom về một cụm gọn: hàng icon dịch vụ mảnh phía
+   trên, thanh bảo đảm nền kem một dải phía dưới. */
+.CRdef_sidebar_pd ul{
+    display:grid!important;grid-template-columns:repeat(5,1fr);gap:4px!important;
+    border-top:1px solid #f1f3f6;padding:14px 0 0!important;margin:16px 0 0!important;list-style:none;
+}
+.CRdef_sidebar_pd li{
+    display:flex!important;flex-direction:column;align-items:center!important;justify-content:flex-start!important;
+    text-align:center;background:transparent!important;border:0!important;padding:2px!important;gap:6px;
+}
+.CRdef_sidebar_pd li img{width:20px!important;height:20px!important;object-fit:contain;}
+.CRdef_sidebar_pd li p{margin:0!important;font-size:10.5px!important;line-height:1.35!important;color:#64748b!important;}
+
+/* thanh bảo đảm: một dải liền, 3 mục nằm ngang icon+chữ */
+.CRnew_list_icon_def_pd{
+    display:grid!important;grid-template-columns:repeat(3,1fr);gap:0!important;
+    margin:14px 0 0!important;padding:0!important;
+    border:1px solid #f3e8c8!important;border-radius:12px!important;
+    background:var(--pts-cream)!important;overflow:hidden;
+}
 .CRnew_list_icon_def_pd>div{width:100%!important;max-width:none!important;}
 .CRnew_list_icon_def_pd .item_icon_box{
-    min-height:96px;border:1px solid var(--pts-line)!important;border-radius:12px!important;
-    background:var(--pts-cream)!important;padding:14px 10px!important;
+    width:100%!important;max-width:none!important;min-height:0!important;
+    border:0!important;border-right:1px solid #f3e8c8!important;border-radius:0!important;
+    background:transparent!important;padding:12px 10px!important;
 }
-.item_icon_box .content_icon_box{flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:6px!important;text-align:center!important;}
-.item_icon_box .img_icon_box_sec{display:flex!important;align-items:center;justify-content:center;}
-.item_icon_box .img_icon_box_sec img{width:22px!important;height:22px!important;object-fit:contain;}
-.item_icon_box p{margin:0!important;font-size:11px!important;line-height:1.4!important;color:#475569!important;}
-.tabs-pro-detail{margin-top:38px!important;}
+.CRnew_list_icon_def_pd>div:last-child .item_icon_box{border-right:0!important;}
+.item_icon_box .content_icon_box{
+    display:flex!important;flex-direction:row!important;align-items:center!important;
+    justify-content:flex-start!important;gap:9px!important;text-align:left!important;
+}
+.item_icon_box .img_icon_box_sec{display:flex!important;align-items:center;justify-content:center;flex:0 0 20px;}
+.item_icon_box .img_icon_box_sec img{width:20px!important;height:20px!important;object-fit:contain;}
+.item_icon_box p{margin:0!important;font-size:11px!important;line-height:1.35!important;color:var(--pts-navy)!important;font-weight:700!important;}
+/* Khu nội dung: dòng chữ kéo dài hết 1440px rất khó đọc -> giới hạn bề rộng
+   và bọc trong khung trắng cho tách bạch với phần mua hàng phía trên. */
+.tabs-pro-detail{margin-top:38px!important;border:1px solid var(--pts-line);border-radius:16px;background:#fff;padding:22px 26px 8px!important;}
+.tabs-pro-detail .tab-content>.tab-pane{max-width:900px;}
+.tabs-pro-detail .tab-content p,.tabs-pro-detail .tab-content li{font-size:14.5px!important;line-height:1.75!important;color:#475569!important;}
+.tabs-pro-detail .tab-content h2,.tabs-pro-detail .tab-content h3{color:var(--pts-navy)!important;margin-top:26px!important;}
+@media(max-width:576px){.tabs-pro-detail{padding:16px!important;}}
 #tabsProDetail{gap:8px!important;border-bottom:1px solid #eef0f4!important;padding-bottom:12px;}
 #tabsProDetail .nav-link{border-radius:8px!important;padding:10px 18px!important;}
 .tabs-pro-detail .tab-content{padding:24px 0;}
@@ -520,6 +556,22 @@ h4{font-size:17px;font-weight:700;line-height:1.4;}
 #tskt-pro-detail table td{border:0!important;color:#64748b!important;}
 #tskt-pro-detail table td:last-child{color:var(--pts-navy)!important;font-weight:800;}
 .product-video-embed{border-radius:14px;overflow:hidden;}
+/* Khối đánh giá còn dùng Bootstrap card mặc định (viền đen mờ, bo 4px, header
+   nền xám) -> lệch hẳn với khung nội dung bo 16px phía trên. */
+.comment-statistic .card,#comment-product .card,.comment-list .card{
+    border:1px solid var(--pts-line)!important;border-radius:16px!important;
+    box-shadow:none!important;overflow:hidden;
+}
+.comment-statistic .card-header,#comment-product .card-header{
+    background:#fff!important;border-bottom:1px solid #f1f3f6!important;
+    padding:18px 24px!important;
+}
+.comment-statistic .card-header strong,#comment-product .card-header strong{
+    color:var(--pts-navy)!important;font-size:15px!important;font-weight:900!important;letter-spacing:.02em;
+}
+.comment-statistic .card-body,#comment-product .card-body{padding:24px!important;}
+.comment-statistic .btn,#comment-product .btn{border-radius:8px!important;font-weight:800!important;}
+
 .title-product-orther{margin-top:52px!important;}
 .title-product-orther span{font-size:21px!important;color:var(--pts-navy)!important;border:0!important;position:relative;}
 .title-product-orther span:after{content:"";position:absolute;left:0;bottom:-8px;width:48px;height:3px;border-radius:99px;background:var(--pts-gold);}
@@ -531,7 +583,10 @@ h4{font-size:17px;font-weight:700;line-height:1.4;}
 @media(max-width:576px){
     .right-pro-detail{padding:18px!important;}
     .btn-product-detail{grid-template-columns:1fr;}
-    .CRdef_sidebar_pd ul,.CRnew_list_icon_def_pd{grid-template-columns:1fr 1fr;}
+    .CRdef_sidebar_pd ul{grid-template-columns:repeat(3,1fr);gap:10px 4px!important;}
+    .CRnew_list_icon_def_pd{grid-template-columns:1fr;}
+    .CRnew_list_icon_def_pd .item_icon_box{border-right:0!important;border-bottom:1px solid #f3e8c8!important;}
+    .CRnew_list_icon_def_pd>div:last-child .item_icon_box{border-bottom:0!important;}
 }
 
 /* Home V2 content sections */

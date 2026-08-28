@@ -15,6 +15,14 @@
  *   $lang      string - hậu tố ngôn ngữ ('' | 'en')
  *   $func      object - Functions (getImage, formatMoney)
  *
+ * Tuỳ chọn:
+ *   $pcNoLazy  bool   - đặt true khi card nằm trong CAROUSEL (Owl/Slick).
+ *     Thư viện lazy-load của theme chạy theo sự kiện cuộn trang, không nhận
+ *     biết slide bị carousel dời/nhân bản ra ngoài khung nhìn -> ảnh ở các
+ *     slide sau kẹt vĩnh viễn ở data-src + visibility:hidden (đo được chỉ
+ *     4/16 ảnh tải ở carousel trang chủ, 0/15 ở sản phẩm liên quan).
+ *     Lưới tĩnh thì cứ để lazy bình thường.
+ *
  * Include bằng đường dẫn tuyệt đối để chạy được cả từ /templates lẫn /api:
  *   include ROOT."templates/product/_product_card.php";
  */
@@ -29,7 +37,11 @@ $pcDiscount = (!empty($v['sale_price']) && !empty($v['regular_price']) && $v['re
             <?php if($pcDiscount > 0) { ?>
             <span class="badge-discount">-<?=$pcDiscount?>%</span>
             <?php } ?>
+            <?php if(!empty($pcNoLazy)) { ?>
+            <?=$func->getImage(['isLazy' => false, 'class' => 'w-100', 'sizes' => '300x300x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
+            <?php } else { ?>
             <?=$func->getImage(['class' => 'lazy w-100', 'sizes' => '300x300x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
+            <?php } ?>
         </div>
         <div class="caption">
             <p class="name"><?=$v['name'.$lang]?></p>
