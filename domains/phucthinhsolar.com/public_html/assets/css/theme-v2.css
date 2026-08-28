@@ -939,7 +939,16 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
    LƯU Ý: gallery là Slick carousel -> chỉ tạo dáng, không đụng
    display/width của .slick-list/.slick-track.
    ===================================================================== */
-#inf_single_project{padding:44px 0 56px;}
+/* Theme cũ tô nền trắng cho cả #inf_single_project trải đúng bề rộng container
+   nhưng KHÔNG có đệm ngang -> nhìn ra một dải/khung trắng thừa và chữ dính sát
+   mép. Bỏ nền đó, cho nội dung nằm trên nền trang; riêng khối ảnh giữ thẻ
+   trắng của nó nên vẫn có điểm nhấn. */
+#inf_single_project{background:transparent!important;padding:44px 0 56px!important;}
+#inf_single_project>div,#inf_single_project>div>div{background:transparent!important;}
+#inf_single_project .left,#inf_single_project .right{
+    width:100%;max-width:var(--pts-container);margin:0 auto;
+    padding-left:var(--pts-gutter);padding-right:var(--pts-gutter);box-sizing:border-box;
+}
 #inf_single_project .content{max-width:none;}
 
 /* tiêu đề */
@@ -983,7 +992,11 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 #inf_single_project .des_wrap strong,#inf_single_project .des_wrap b{color:var(--pts-navy)!important;}
 
 /* khối gallery/video */
-#inf_single_project .tabs-pro-detail{margin-top:34px!important;}
+#inf_single_project .tabs-pro-detail{
+    margin-top:34px!important;background:#fff;
+    border:1px solid var(--pts-line);border-radius:16px;padding:22px 26px!important;
+}
+#inf_single_project .tabs-pro-detail .tab-content{padding-bottom:6px!important;}
 /* giới hạn 900px chỉ dành cho khối CHỮ (mô tả sản phẩm) - lưới ảnh dự án
    phải chiếm trọn bề ngang, nếu không thừa một mảng trống bên phải */
 #inf_single_project .tabs-pro-detail .tab-content>.tab-pane{max-width:none!important;}
