@@ -828,14 +828,24 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 .inf_button input.wpcf7-submit{border:0!important;border-radius:8px!important;background:var(--pts-gold)!important;color:var(--pts-navy)!important;font-weight:900!important;font-size:13px!important;padding:12px 30px!important;cursor:pointer;transition:.15s;}
 .inf_button input.wpcf7-submit:hover{background:var(--pts-gold-dark)!important;color:#fff!important;}
 #top_content h2.text-center.mt-4{margin-top:56px!important;text-align:center;}
-.hts-wrapper{display:grid!important;grid-template-columns:340px 1fr;gap:22px;margin-top:26px;align-items:start;}
+/* Theme cũ dựng khu bản đồ bằng absolute overlay: .hts-fixed-wrap phủ nửa
+   trái (position:absolute;width:50%), iframe phủ nửa phải (absolute;width:50%).
+   Cách này xung đột với lưới nên bản đồ bị bóp còn 340px cao 600px. Đưa cả
+   hai về luồng thường trong lưới 2 cột. */
+.hts-wrapper{display:grid!important;grid-template-columns:360px 1fr;gap:22px;margin-top:26px;align-items:start;
+    position:static!important;background:transparent!important;}
+.hts-fixed-wrap{position:static!important;width:auto!important;height:auto!important;
+    padding:0!important;background:transparent!important;}
+#maps{height:auto!important;min-height:460px;position:relative!important;
+    border-radius:14px;overflow:hidden;border:1px solid var(--pts-line);}
+#maps iframe{position:static!important;width:100%!important;height:460px!important;
+    min-height:460px;border:0!important;display:block;}
 .officeContact{list-style:none;padding:0;margin:0;display:grid;gap:14px;}
 .officeContact li{border:1px solid var(--pts-line);border-radius:14px;background:#fff;padding:16px 18px;}
 .officeContact li .wrap p{margin:0 0 6px;color:#334155;font-size:13px;display:flex;align-items:center;gap:8px;}
 .officeContact li .wrap p i{color:var(--pts-gold-dark);width:14px;text-align:center;}
 .officeContact li .view_maps{display:inline-flex;align-items:center;gap:4px;color:var(--pts-gold-dark);font-size:12px;font-weight:800;text-decoration:none;margin-top:6px;}
-#maps{border-radius:14px;overflow:hidden;border:1px solid var(--pts-line);min-height:360px;}
-#maps iframe{width:100%!important;height:100%!important;min-height:360px;}
+
 @media(max-width:768px){
     .formContact{padding:22px!important;}
     .inf_default_form ul{grid-template-columns:1fr;}
