@@ -85,7 +85,11 @@
                     <div class="tab-content pt-4 pb-4" id="tabsProDetailContent">
                         <div class="tab-pane fade show active" id="info-pro-detail" role="tabpanel">
 
-                            <div class="slick-hinhanh album-gallery">
+                            <?php /* Bỏ class .slick-hinhanh: Slick cấu hình slidesToShow:1 +
+                                   centerMode nên chỉ hiện 1 ảnh lớn kèm 2 nửa ảnh ló hai bên,
+                                   với album 10 ảnh dự án thì lưới thumbnail dễ xem hơn nhiều.
+                                   Giữ .album-gallery để lightbox photobox vẫn hoạt động. */ ?>
+                            <div class="album-gallery pts-project-gallery">
                                 <?php if(!empty($rowDetailPhoto)) { foreach($rowDetailPhoto as $k => $v) { ?>
                                     <div class="album-item none album-gallery-photo">
                                         <a class="album-image mb-0"  href="<?=ASSET.UPLOAD_NEWS_L.$v['photo']?>" title="<?=$rowDetail['name'.$lang]?>">
@@ -120,3 +124,21 @@
         </div>
     </div>
 </div>
+
+<?php /* Dải CTA cuối trang dự án: trước đây trang kết thúc đột ngột ngay sau
+       album ảnh, không dẫn khách đi tiếp. Dùng đúng dữ liệu đã có. */ ?>
+<section class="pts-project-cta">
+    <div class="wrap-content">
+        <div class="pts-project-cta-inner">
+            <div class="pts-project-cta-copy">
+                <span>Bạn có công trình tương tự?</span>
+                <h3>Nhận tư vấn &amp; báo giá miễn phí</h3>
+                <p>Đội ngũ kỹ thuật Phúc Thịnh Solar khảo sát tận nơi, thiết kế phương án phù hợp với hiện trạng công trình của bạn.</p>
+            </div>
+            <div class="pts-project-cta-actions">
+                <a class="pts-btn pts-btn-gold" href="tel:<?=preg_replace('/[^0-9]/','',$optsetting['hotline'])?>"><i class="fas fa-phone-alt"></i> <?=$optsetting['hotline']?></a>
+                <a class="pts-btn pts-btn-ghost" href="lien-he/">Gửi yêu cầu tư vấn</a>
+            </div>
+        </div>
+    </div>
+</section>

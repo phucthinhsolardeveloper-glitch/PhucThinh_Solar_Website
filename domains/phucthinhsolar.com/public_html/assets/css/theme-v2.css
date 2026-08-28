@@ -929,3 +929,98 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 /* không để phần tử con vẽ thêm viền bên trong khối đã có viền */
 .tabs-pro-detail .card,
 .right-pro-detail .card{border:0!important;}
+
+/* =====================================================================
+   TRANG CHI TIẾT DỰ ÁN  (/store-manager/...)
+   Trang còn nguyên kiểu cũ: tiêu đề nhỏ không phân cấp, khối "Khách hàng /
+   Địa chỉ" kẻ gạch chân dài hết dòng (1115px) theo lối form thời xưa, chữ
+   nội dung tràn hết 1312px khó đọc. Dựng lại theo ngôn ngữ hiện tại:
+   phân tách bằng nền và khoảng trắng, không dùng đường kẻ.
+   LƯU Ý: gallery là Slick carousel -> chỉ tạo dáng, không đụng
+   display/width của .slick-list/.slick-track.
+   ===================================================================== */
+#inf_single_project{padding:44px 0 56px;}
+#inf_single_project .content{max-width:none;}
+
+/* tiêu đề */
+#inf_single_project .title_wrap{margin-bottom:26px;}
+#inf_single_project .title_wrap p{
+    color:var(--pts-gold-dark)!important;font-size:12.5px!important;font-weight:850!important;
+    letter-spacing:.16em;text-transform:uppercase;margin:0 0 10px!important;
+}
+#inf_single_project .title_wrap h1{
+    position:relative;color:var(--pts-navy)!important;
+    font-size:clamp(26px,2.6vw,38px)!important;font-weight:900!important;
+    line-height:1.22!important;letter-spacing:-.02em;margin:0 0 18px!important;padding-bottom:16px;
+}
+#inf_single_project .title_wrap h1:after{content:"";position:absolute;left:0;bottom:0;width:52px;height:3px;border-radius:99px;background:var(--pts-gold);}
+
+/* Khách hàng / Địa chỉ: bỏ gạch chân, chuyển thành 2 thẻ meta nền nhạt */
+/* meta: 2 hộp to chiếm trọn hàng nhìn trống trải -> chip gọn nằm ngang */
+#inf_single_project .client_wrap{
+    display:flex;flex-wrap:wrap;gap:10px;margin:0 0 28px!important;
+}
+#inf_single_project .client_wrap>div{
+    border:0!important;border-radius:999px;background:var(--pts-surface);
+    padding:9px 18px!important;margin:0!important;width:auto!important;
+}
+#inf_single_project .client_wrap p{
+    display:flex;align-items:baseline;gap:8px;margin:0!important;
+    color:#94a3b8!important;font-size:11.5px!important;font-weight:800!important;
+    text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;
+}
+#inf_single_project .client_wrap p b{
+    color:var(--pts-navy)!important;font-size:15px!important;font-weight:800!important;
+    text-transform:none;letter-spacing:0;
+}
+
+/* nội dung mô tả: giới hạn bề ngang cho dễ đọc */
+#inf_single_project .des_wrap{max-width:900px;}
+#inf_single_project .des_wrap,
+#inf_single_project .des_wrap p,
+#inf_single_project .des_wrap li{color:#475569!important;font-size:16px!important;line-height:1.85!important;}
+#inf_single_project .des_wrap p{margin-bottom:12px!important;}
+#inf_single_project .des_wrap strong,#inf_single_project .des_wrap b{color:var(--pts-navy)!important;}
+
+/* khối gallery/video */
+#inf_single_project .tabs-pro-detail{margin-top:34px!important;}
+/* giới hạn 900px chỉ dành cho khối CHỮ (mô tả sản phẩm) - lưới ảnh dự án
+   phải chiếm trọn bề ngang, nếu không thừa một mảng trống bên phải */
+#inf_single_project .tabs-pro-detail .tab-content>.tab-pane{max-width:none!important;}
+/* Gallery dự án: lưới thumbnail đều nhau, bấm mở lightbox (photobox) */
+.pts-project-gallery{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:6px;}
+.pts-project-gallery .album-item{padding:0!important;width:auto!important;display:block!important;}
+.pts-project-gallery .album-image{display:block;border-radius:14px;overflow:hidden;background:var(--pts-surface);margin:0!important;}
+.pts-project-gallery .album-image img{width:100%!important;aspect-ratio:4/3;object-fit:cover!important;display:block;transition:transform .3s;}
+.pts-project-gallery .album-image:hover img{transform:scale(1.05);}
+@media(max-width:768px){.pts-project-gallery{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}}
+@media(max-width:480px){.pts-project-gallery{grid-template-columns:1fr;}}
+#inf_single_project .row-project .video-image{border-radius:14px;overflow:hidden;}
+#inf_single_project .row-project .video-name{color:var(--pts-navy)!important;font-size:14.5px!important;font-weight:800!important;margin-top:10px;}
+
+@media(max-width:768px){
+    #inf_single_project{padding:28px 0 40px;}
+    #inf_single_project .client_wrap{grid-template-columns:1fr;}
+}
+
+/* Tiêu đề khối ảnh + dải CTA cuối trang dự án */
+#inf_single_project #tabsProDetail{margin-bottom:4px;}
+.pts-project-cta{padding:0 0 64px;}
+.pts-project-cta-inner{
+    display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:26px;
+    border-radius:18px;padding:38px 44px;
+    background:linear-gradient(120deg,var(--pts-navy-deep),var(--pts-navy) 60%,var(--pts-navy-light));
+    position:relative;overflow:hidden;
+}
+.pts-project-cta-inner:after{content:"";position:absolute;right:-60px;top:-90px;width:280px;height:280px;border-radius:50%;background:rgba(201,150,46,.16);}
+.pts-project-cta-copy{position:relative;z-index:2;max-width:640px;}
+.pts-project-cta-copy span{display:block;color:var(--pts-gold-light)!important;font-size:12px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px;}
+.pts-project-cta-copy h3{color:#fff!important;font-size:clamp(22px,2.2vw,30px)!important;font-weight:900!important;margin:0 0 10px!important;}
+.pts-project-cta-copy p{color:#dbeafe!important;font-size:15px!important;line-height:1.7!important;margin:0!important;}
+.pts-project-cta-actions{position:relative;z-index:2;display:flex;flex-wrap:wrap;gap:12px;}
+.pts-project-cta-actions .pts-btn i{margin-right:8px;}
+@media(max-width:768px){
+    .pts-project-cta-inner{padding:28px 24px;}
+    .pts-project-cta-actions{width:100%;}
+    .pts-project-cta-actions .pts-btn{flex:1 1 100%;}
+}
