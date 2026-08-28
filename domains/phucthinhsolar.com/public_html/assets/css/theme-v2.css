@@ -620,8 +620,15 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 .home-2 .heading,.home-6 .heading{align-items:flex-end!important;justify-content:space-between!important;gap:25px!important;margin-bottom:28px!important;}
 /* Tab pill dùng chung cho MỌI section (trước chỉ phủ .home-2/.home-6 nên
    tab sản phẩm ở .home-3 không có màu cho trạng thái đang chọn). */
-.tab-switcher ul{display:flex!important;flex-wrap:wrap;gap:8px!important;margin:0!important;}
-.tab-switcher li{margin:0!important;}
+/* CHÚ Ý: ở khối sản phẩm (.sw-tab-cat) chính <ul> này là .swiper-wrapper -
+   Swiper tự đặt width/transform cho từng slide. Nếu ép display:flex + wrap
+   lên nó thì các tab xuống dòng so le, vỡ hoàn toàn. Chỉ áp layout flex cho
+   switcher KHÔNG dùng Swiper; còn lại để Swiper tự lo, ta chỉ tạo dáng cho <a>. */
+.tab-switcher ul:not(.swiper-wrapper){display:flex!important;flex-wrap:wrap;gap:8px!important;margin:0!important;}
+.tab-switcher ul:not(.swiper-wrapper) li{margin:0!important;}
+.tab-switcher ul.swiper-wrapper{align-items:center;}
+.tab-switcher ul.swiper-wrapper>li{height:auto!important;display:flex;}
+.tab-switcher ul.swiper-wrapper>li>a{width:100%;}
 .tab-switcher a{display:inline-flex!important;min-height:42px;align-items:center;justify-content:center;border:1px solid var(--pts-line)!important;border-radius:999px!important;background:#fff!important;color:#64748b!important;padding:0 20px!important;font-size:13.5px!important;font-weight:800!important;text-decoration:none!important;transition:.18s;}
 .tab-switcher a:hover{border-color:var(--pts-gold)!important;color:var(--pts-navy)!important;}
 .tab-switcher li.uk-active a,.tab-switcher li.uk-active a span{border-color:var(--pts-gold)!important;background:var(--pts-gold)!important;color:var(--pts-navy)!important;}
@@ -688,13 +695,27 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 
 .home-7{background:linear-gradient(135deg,var(--pts-navy-deep),var(--pts-navy))!important;}
 .home-7 .icon-slider{margin-top:30px!important;}
-.home-7 .icon-slider .item{border-radius:999px!important;background:rgba(255,255,255,.06)!important;}
+/* Nút bước quy trình: phần NHÌN THẤY được là .text (có viền, cao 48px), còn
+   .item/.content chỉ là 2 lớp bao trong suốt cao 69px. Trước tô nền lên .item
+   nên mảng vàng to hơn hẳn viền nút. Tô đúng vào .text.
+   slidesPerView:'auto' -> Swiper lấy chiều rộng từ CSS, đặt width cố định để
+   4 nút bằng nhau thay vì co theo độ dài chữ (136/129/211/220px). */
+.home-7 .icon-slider .item{background:transparent!important;border:0!important;}
+.home-7 .icon-slider .swiper-slide{width:232px!important;}
+.home-7 .icon-slider .item,.home-7 .icon-slider .content{display:flex!important;align-items:center;justify-content:center;width:100%;height:auto!important;}
+.home-7 .icon-slider .text{
+    display:flex!important;align-items:center;justify-content:center;
+    width:100%!important;min-height:48px;padding:0 18px!important;
+    border:1px solid rgba(255,255,255,.28)!important;border-radius:999px!important;
+    background:rgba(255,255,255,.06)!important;transition:.18s;
+}
+.home-7 .icon-slider .text span{color:#dbeafe!important;font-size:14px!important;font-weight:800!important;line-height:1.25;text-align:center;}
+.home-7 .icon-slider .swiper-slide:hover .text{border-color:var(--pts-gold-light)!important;}
 /* Bước đang chọn là .swiper-slide-thumb-active (Swiper thumbs), KHÔNG phải
    .swiper-slide-active (vị trí cuộn) - dùng nhầm khiến màu vàng kẹt mãi ở
    bước "01. Khảo sát" dù đang xem bước khác. */
-.home-7 .icon-slider .swiper-slide-thumb-active .item{background:var(--pts-gold)!important;}
-.home-7 .icon-slider .swiper-slide-thumb-active .item,
-.home-7 .icon-slider .swiper-slide-thumb-active .item *{color:var(--pts-navy)!important;}
+.home-7 .icon-slider .swiper-slide-thumb-active .text{background:var(--pts-gold)!important;border-color:var(--pts-gold)!important;}
+.home-7 .icon-slider .swiper-slide-thumb-active .text span{color:var(--pts-navy)!important;}
 .home-7 .process-slider{margin-top:28px!important;}
 .home-7 .process-slider .inner{border:1px solid rgba(255,255,255,.1)!important;border-radius:18px!important;background:rgba(255,255,255,.04)!important;padding:34px!important;overflow:hidden;}
 .home-7 .process-slider .text{color:var(--pts-gold-light)!important;font-size:25px!important;font-weight:900!important;}
@@ -729,6 +750,9 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
     .home-4 .wrapper .item{border-right:0;}
     .home-6 .project .img{height:260px!important;}
     .home-7 .process-slider .inner{padding:22px!important;}
+    .home-7 .icon-slider .swiper-slide{width:auto!important;}
+    .home-7 .icon-slider .text{min-height:42px;padding:0 14px!important;}
+    .home-7 .icon-slider .text span{font-size:12.5px!important;}
     .blog-2col-row{grid-template-columns:1fr!important;gap:18px;}
 }
 
