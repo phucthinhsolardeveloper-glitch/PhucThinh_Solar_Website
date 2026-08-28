@@ -1037,3 +1037,45 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
     .pts-project-cta-actions{width:100%;}
     .pts-project-cta-actions .pts-btn{flex:1 1 100%;}
 }
+
+/* =====================================================================
+   THANH TÌM KIẾM (header)
+   Bản cũ: hộp trắng vuông góc (radius 0), nút tìm navy vuông dính sát mép,
+   đổ bóng xám kiểu cũ, trôi lơ lửng đè lên hero. Dựng lại theo ngôn ngữ
+   hiện tại: viên thuốc bo tròn, viền mảnh, nút tròn vàng kim bên trong.
+   ===================================================================== */
+.search-res .icon-search{
+    display:flex!important;align-items:center;justify-content:center;
+    width:40px;height:40px;border-radius:50%;cursor:pointer;transition:.18s;
+}
+.search-res .icon-search:hover{background:var(--pts-surface);}
+.search-res .icon-search svg path{fill:var(--pts-navy);}
+
+.search-grid{
+    display:flex!important;align-items:center;gap:6px;
+    width:auto!important;min-width:330px;height:52px!important;
+    top:calc(100% + 10px)!important;right:0!important;left:auto!important;
+    padding:0 6px 0 18px!important;
+    background:#fff!important;border:1px solid var(--pts-line)!important;
+    border-radius:999px!important;
+    box-shadow:0 18px 40px rgba(6,21,55,.16)!important;
+}
+.search-grid input#keyword-res{
+    flex:1;width:auto!important;height:40px!important;
+    border:0!important;background:transparent!important;outline:none!important;
+    color:var(--pts-navy)!important;font-size:14.5px!important;padding:0!important;
+}
+.search-grid input#keyword-res::placeholder{color:#94a3b8;}
+/* nút tìm: tròn, vàng kim, nằm gọn trong viên thuốc */
+.search-grid p[onclick]{
+    flex:0 0 40px;display:flex!important;align-items:center;justify-content:center;
+    width:40px!important;height:40px!important;margin:0!important;cursor:pointer;
+    border-radius:50%!important;background-image:var(--pts-gold-metal)!important;
+    background-color:transparent!important;transition:.18s;
+}
+.search-grid p[onclick]:hover{filter:brightness(1.06);}
+.search-grid p[onclick] svg path{fill:var(--pts-navy)!important;}
+
+@media(max-width:576px){
+    .search-grid{min-width:0;width:calc(100vw - 30px)!important;right:-8px!important;}
+}
