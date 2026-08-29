@@ -17,11 +17,16 @@ Phạm vi: Docker local, chưa triển khai production và không thay đổi sc
 - Newsletter/tư vấn/đại lý: tìm theo tên, email, điện thoại, công ty; lọc tình trạng xử lý và giữ filter khi phân trang.
 - Bulk sản phẩm: CSV/XLS/XLSX tối đa 5 MB và 500 dòng; kiểm tra extension/MIME/header; create/update/upsert/archive/skip; kiểm tra ID, mã, slug, danh mục, giá và trạng thái; chống CSV formula injection; sanitize HTML; CSRF; preview hết hạn sau 30 phút; xác nhận `CAP_NHAT`; kiểm tra optimistic timestamp; tạo SEO khi tạo sản phẩm; phục hồi các dòng đã xử lý nếu một dòng sau thất bại.
 - Tiêu đề cột Excel/CSV xuất ra dùng tiếng Việt và được tự ánh xạ về field nội bộ khi nhập lại. Import vẫn nhận tên cột kỹ thuật cũ để tương thích ngược.
+- File nghiệp vụ không còn bắt buộc cột Thao tác/Mốc cập nhật. Hệ thống tự nhận diện: ID hoặc mã đã tồn tại là cập nhật; ID trống và mã mới là tạo mới. Tạo mới bắt buộc mã và tên; ID và mã chỉ đến hai sản phẩm khác nhau sẽ bị từ chối.
+- Workbook Excel có sheet `SanPham`, `HuongDan`, `DanhMuc` và sheet `_HeThong` ẩn hoàn toàn. Snapshot trong `_HeThong` cho phép so sánh dữ liệu lúc export, dữ liệu website hiện tại và dữ liệu Excel.
+- Khi website và Excel cùng sửa một ô, preview mặc định giữ website và cho quản trị viên chọn riêng từng ô cần dùng dữ liệu Excel. Danh mục/thương hiệu có danh sách chọn; ID và tên ảnh hiện tại được khóa để đối chiếu.
 
 ## Kiểm thử 2026-08-29
 
 - PHP 7.4 lint: đạt trên 14 file PHP thuộc thay đổi.
 - `scripts/test-product-bulk.php`: đạt toàn bộ kiểm tra đọc CSV, preview, create, update, archive, chống trùng, bắt buộc ID và sanitize HTML.
+- Workbook thực tế 81 sản phẩm: export/import round-trip đạt, đọc đủ snapshot 81/81, không sinh lỗi hoặc xung đột giả; dropdown và sheet hệ thống ẩn được xác minh.
+- Test tự nhận diện tạo/cập nhật theo ID/mã, từ chối ID–mã lệch nhau, phát hiện three-way conflict, mặc định giữ website và commit lựa chọn ghi đè từng ô: đạt.
 - Dữ liệu sản phẩm thử đã được xóa; tổng số sản phẩm trước/sau test không đổi.
 - `git diff --check`: đạt.
 - Audit Admin trước đó đã render 65/65 route và kiểm tra filter/query state ở các module chính.
@@ -30,6 +35,7 @@ Phạm vi: Docker local, chưa triển khai production và không thay đổi sc
 
 - Database MyISAM không hỗ trợ transaction; bulk dùng compensating rollback trong code, không có tính atomic tuyệt đối nếu process/server dừng đột ngột.
 - Bulk chưa quản lý ảnh; cột `photo` chỉ đọc. Không dùng bulk để thay upload/media.
+- Sheet `_HeThong` được ẩn và khóa để tránh sửa nhầm nhưng không phải chữ ký mật mã. File chỉ nên trao đổi trong nhóm quản lý sản phẩm đáng tin cậy.
 - Chưa chạy SMTP/reCAPTCHA thật; cần site key và mailbox staging riêng để tránh gửi dữ liệu ngoài ý muốn.
 - Mutation Admin legacy khác vẫn thiếu CSRF/authorization theo action; thay đổi này không giải quyết toàn bộ Security Review.
 - Cần smoke lại bằng browser sau build sạch trước khi deploy.

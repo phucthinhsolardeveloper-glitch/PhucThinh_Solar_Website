@@ -4,23 +4,23 @@ if (!defined('SOURCES')) die('Error');
 function productBulkColumns()
 {
     return array(
-        'action' => array('label' => 'Thao tác', 'kind' => 'control'),
+        'action' => array('label' => 'Thao tác', 'kind' => 'control', 'export' => false),
         'id' => array('label' => 'ID sản phẩm', 'kind' => 'control'),
-        'expected_updated_at' => array('label' => 'Mốc cập nhật', 'kind' => 'control'),
+        'expected_updated_at' => array('label' => 'Mốc cập nhật', 'kind' => 'control', 'export' => false),
         'code' => array('label' => 'Mã sản phẩm', 'kind' => 'text', 'db' => 'code', 'max' => 30),
         'namevi' => array('label' => 'Tên sản phẩm', 'kind' => 'text', 'db' => 'namevi', 'max' => 255),
-        'slugvi' => array('label' => 'Đường dẫn', 'kind' => 'slug', 'db' => 'slugvi', 'max' => 255),
-        'id_list' => array('label' => 'ID danh mục cấp 1', 'kind' => 'category', 'db' => 'id_list'),
-        '_list_name' => array('label' => 'Tên danh mục cấp 1 (chỉ đọc)', 'kind' => 'readonly'),
-        'id_cat' => array('label' => 'ID danh mục cấp 2', 'kind' => 'category', 'db' => 'id_cat'),
-        '_cat_name' => array('label' => 'Tên danh mục cấp 2 (chỉ đọc)', 'kind' => 'readonly'),
-        'id_brand' => array('label' => 'ID thương hiệu', 'kind' => 'category', 'db' => 'id_brand'),
-        '_brand_name' => array('label' => 'Tên thương hiệu (chỉ đọc)', 'kind' => 'readonly'),
+        'slugvi' => array('label' => 'Đường dẫn', 'kind' => 'slug', 'db' => 'slugvi', 'max' => 255, 'export' => false),
+        'id_list' => array('label' => 'ID danh mục cấp 1', 'kind' => 'category', 'db' => 'id_list', 'export' => false),
+        '_list_name' => array('label' => 'Danh mục cấp 1', 'kind' => 'category_name', 'target' => 'id_list'),
+        'id_cat' => array('label' => 'ID danh mục cấp 2', 'kind' => 'category', 'db' => 'id_cat', 'export' => false),
+        '_cat_name' => array('label' => 'Danh mục cấp 2', 'kind' => 'category_name', 'target' => 'id_cat'),
+        'id_brand' => array('label' => 'ID thương hiệu', 'kind' => 'category', 'db' => 'id_brand', 'export' => false),
+        '_brand_name' => array('label' => 'Thương hiệu', 'kind' => 'category_name', 'target' => 'id_brand'),
         'cong_suat' => array('label' => 'Công suất (W)', 'kind' => 'decimal', 'db' => 'cong_suat'),
         'regular_price' => array('label' => 'Giá gốc', 'kind' => 'money', 'db' => 'regular_price'),
         'sale_price' => array('label' => 'Giá bán/khuyến mãi', 'kind' => 'money', 'db' => 'sale_price'),
-        'status' => array('label' => 'Trạng thái', 'kind' => 'status', 'db' => 'status'),
-        'numb' => array('label' => 'Thứ tự', 'kind' => 'integer', 'db' => 'numb'),
+        'status' => array('label' => 'Tình trạng website', 'kind' => 'status', 'db' => 'status'),
+        'numb' => array('label' => 'Thứ tự', 'kind' => 'integer', 'db' => 'numb', 'export' => false),
         'descvi' => array('label' => 'Mô tả ngắn', 'kind' => 'html', 'db' => 'descvi'),
         'contentvi' => array('label' => 'Nội dung', 'kind' => 'html', 'db' => 'contentvi'),
         'thongsokythuatvi' => array('label' => 'Thông số kỹ thuật', 'kind' => 'html', 'db' => 'thongsokythuatvi'),
@@ -37,6 +37,22 @@ function productBulkColumns()
         'certificatevi' => array('label' => 'Chứng nhận/kiểm nghiệm', 'kind' => 'html', 'db' => 'certificatevi'),
         'photo' => array('label' => 'Tên ảnh hiện tại (chỉ đọc)', 'kind' => 'readonly')
     );
+}
+
+function productBulkVisibleColumns()
+{
+    return array_filter(productBulkColumns(), function ($meta) {
+        return !isset($meta['export']) || $meta['export'] !== false;
+    });
+}
+
+function productBulkEditableFields()
+{
+    $fields = array();
+    foreach (productBulkColumns() as $meta) {
+        if (!empty($meta['db'])) $fields[$meta['db']] = true;
+    }
+    return array_keys($fields);
 }
 
 function productBulkNormalizeHeader($value)
@@ -149,7 +165,7 @@ function productBulkCellValue($value)
 
 function productBulkReadUpload($file)
 {
-    $result = array('headers' => array(), 'rows' => array(), 'errors' => array());
+    $result = array('headers' => array(), 'rows' => array(), 'baseline' => array(), 'errors' => array());
     if (empty($file) || !isset($file['error']) || $file['error'] !== UPLOAD_ERR_OK) {
         $result['errors'][] = 'Không nhận được file hoặc file upload bị lỗi.';
         return $result;
@@ -205,6 +221,24 @@ function productBulkReadUpload($file)
                 }
                 $rawRows[] = $cells;
             }
+            $systemSheet = $excel->getSheetByName('_HeThong');
+            if ($systemSheet) {
+                $systemHighestRow = min((int) $systemSheet->getHighestRow(), 502);
+                $systemHighestColumn = PHPExcel_Cell::columnIndexFromString($systemSheet->getHighestColumn());
+                $systemHeaders = array();
+                for ($column = 0; $column < $systemHighestColumn; $column++) {
+                    $key = trim((string) $systemSheet->getCellByColumnAndRow($column, 1)->getValue());
+                    if ($key !== '') $systemHeaders[$column] = $key;
+                }
+                for ($row = 2; $row <= $systemHighestRow; $row++) {
+                    $baselineRow = array();
+                    foreach ($systemHeaders as $column => $key) {
+                        $baselineRow[$key] = (string) $systemSheet->getCellByColumnAndRow($column, $row)->getValue();
+                    }
+                    $baselineId = !empty($baselineRow['id']) ? (int) $baselineRow['id'] : 0;
+                    if ($baselineId > 0) $result['baseline'][$baselineId] = $baselineRow;
+                }
+            }
             $excel->disconnectWorksheets();
             unset($excel);
         } catch (Exception $e) {
@@ -230,7 +264,7 @@ function productBulkReadUpload($file)
         if (isset($headers[$key])) $result['errors'][] = 'Tiêu đề cột bị lặp: '.$displayHeader;
         $headers[$key] = $index;
     }
-    if (!isset($headers['action'])) $result['errors'][] = 'Thiếu cột bắt buộc Thao tác.';
+    if (!isset($headers['id']) && !isset($headers['code'])) $result['errors'][] = 'File phải có cột ID sản phẩm hoặc Mã sản phẩm.';
     if (!empty($result['errors'])) return $result;
     $result['headers'] = array_keys($headers);
     $limit = min(count($rawRows), 501);
@@ -249,10 +283,31 @@ function productBulkReadUpload($file)
     return $result;
 }
 
-function productBulkValidateRows($rawRows, $type)
+function productBulkFindCategoryIdByName($rows, $name)
+{
+    $name = mb_strtolower(trim((string) $name), 'UTF-8');
+    if ($name === '') return 0;
+    $matches = array();
+    foreach ($rows as $id => $row) {
+        if (mb_strtolower(trim((string) $row['namevi']), 'UTF-8') === $name) $matches[] = (int) $id;
+    }
+    return count($matches) === 1 ? $matches[0] : (count($matches) > 1 ? -1 : 0);
+}
+
+function productBulkComparableValue($value, $kind = '')
+{
+    if ($value === null) return '';
+    $value = trim(htmlspecialchars_decode((string) $value, ENT_QUOTES));
+    if (in_array($kind, array('money', 'decimal', 'integer', 'category'), true) && $value !== '' && is_numeric($value)) {
+        return rtrim(rtrim(number_format((float) $value, 10, '.', ''), '0'), '.');
+    }
+    return $value;
+}
+
+function productBulkValidateRows($rawRows, $type, $baseline = array(), $overwriteChoices = array())
 {
     global $func, $config;
-    $result = array('rows' => array(), 'errors' => 0, 'warnings' => 0, 'counts' => array('create' => 0, 'update' => 0, 'archive' => 0, 'skip' => 0));
+    $result = array('rows' => array(), 'errors' => 0, 'warnings' => 0, 'conflicts' => 0, 'counts' => array('create' => 0, 'update' => 0, 'archive' => 0, 'skip' => 0, 'unchanged' => 0));
     $products = productBulkProductMaps($type);
     $categories = productBulkCategoryMaps($type);
     $slugOwners = productBulkSlugOwners();
@@ -263,9 +318,11 @@ function productBulkValidateRows($rawRows, $type)
     $seenSlugs = array();
     $allowedStatus = !empty($config['product'][$type]['check']) ? array_keys($config['product'][$type]['check']) : array('hienthi');
     foreach ($rawRows as $raw) {
-        $item = array('row' => (int) $raw['_row_number'], 'action' => productBulkNormalizeAction(isset($raw['action']) ? $raw['action'] : ''), 'id' => 0, 'code' => '', 'name' => '', 'data' => array(), 'existing' => null, 'errors' => array(), 'warnings' => array());
-        if (!in_array($item['action'], array('create', 'update', 'upsert', 'archive', 'skip'), true)) {
-            $item['errors'][] = 'action phải là create, update, upsert, archive hoặc skip.';
+        $requestedAction = productBulkNormalizeAction(isset($raw['action']) ? $raw['action'] : '');
+        $item = array('row' => (int) $raw['_row_number'], 'action' => $requestedAction, 'id' => 0, 'code' => '', 'name' => '', 'data' => array(), 'existing' => null, 'errors' => array(), 'warnings' => array(), 'conflicts' => array(), 'changes' => array());
+        if ($item['action'] === '') $item['action'] = 'auto';
+        if (!in_array($item['action'], array('auto', 'create', 'update', 'upsert', 'archive', 'skip'), true)) {
+            $item['errors'][] = 'Thao tác không hợp lệ.';
         }
         if ($item['action'] === 'skip') {
             $result['counts']['skip']++;
@@ -287,18 +344,27 @@ function productBulkValidateRows($rawRows, $type)
             if (isset($seenCodes[$codeKey])) $item['errors'][] = 'Mã sản phẩm bị lặp trong file (đã có ở dòng '.$seenCodes[$codeKey].').';
             $seenCodes[$codeKey] = $item['row'];
         }
-        if ($item['action'] === 'create' && $item['id'] > 0) $item['errors'][] = 'Dòng create không được nhập ID.';
+        if ($item['action'] === 'create' && $item['id'] > 0) $item['errors'][] = 'Dòng tạo mới không được nhập ID.';
         if (in_array($item['action'], array('update', 'archive'), true) && $item['id'] <= 0) $item['errors'][] = 'Dòng update/archive bắt buộc có ID để tránh cập nhật nhầm.';
-        $existing = $item['id'] > 0 && isset($products['id'][$item['id']]) ? $products['id'][$item['id']] : null;
-        if (!$existing && $item['action'] === 'upsert' && $codeKey !== '' && isset($products['code'][$codeKey])) $existing = $products['code'][$codeKey];
+        $existingById = $item['id'] > 0 && isset($products['id'][$item['id']]) ? $products['id'][$item['id']] : null;
+        $existingByCode = $codeKey !== '' && isset($products['code'][$codeKey]) ? $products['code'][$codeKey] : null;
+        if ($existingById && $existingByCode && (int) $existingById['id'] !== (int) $existingByCode['id']) {
+            $item['errors'][] = 'ID và mã sản phẩm đang chỉ đến hai sản phẩm khác nhau.';
+        }
+        $existing = $existingById ?: $existingByCode;
+        if ($item['action'] === 'auto') {
+            $item['action'] = $existing ? 'update' : 'create';
+            if (!$existingById && $existingByCode) $item['warnings'][] = 'Đã nhận diện sản phẩm hiện có theo mã và sẽ cập nhật.';
+        }
+        if (!$existing && $item['action'] === 'upsert' && $existingByCode) $existing = $existingByCode;
         if (in_array($item['action'], array('update', 'archive'), true) && !$existing) $item['errors'][] = 'Không tìm thấy sản phẩm thuộc đúng loại với ID này.';
-        if ($item['action'] === 'create' && $codeKey !== '' && isset($products['code'][$codeKey])) $item['errors'][] = 'Mã sản phẩm đã tồn tại trong database.';
+        if ($item['action'] === 'create' && $existingByCode) $item['errors'][] = 'Mã sản phẩm đã tồn tại trong database.';
         if ($existing && $codeKey !== '' && isset($products['code'][$codeKey]) && (int) $products['code'][$codeKey]['id'] !== (int) $existing['id']) {
             $item['errors'][] = 'Mã sản phẩm đang thuộc về một sản phẩm khác.';
         }
         $item['existing'] = $existing;
         if ($existing) $item['id'] = (int) $existing['id'];
-        if ($existing && !empty($raw['expected_updated_at']) && (int) $raw['expected_updated_at'] !== (int) $existing['date_updated']) {
+        if ($existing && empty($baseline) && !empty($raw['expected_updated_at']) && (int) $raw['expected_updated_at'] !== (int) $existing['date_updated']) {
             $item['errors'][] = 'Sản phẩm đã thay đổi sau khi export; hãy export lại trước khi cập nhật.';
         }
         if ($item['action'] === 'archive') {
@@ -317,6 +383,13 @@ function productBulkValidateRows($rawRows, $type)
         $isCreate = $item['action'] === 'create' || ($item['action'] === 'upsert' && !$existing);
         $resolvedAction = $isCreate ? 'create' : 'update';
         $item['action'] = $resolvedAction;
+        foreach (array('_list_name' => array('list', 'id_list'), '_cat_name' => array('cat', 'id_cat'), '_brand_name' => array('brand', 'id_brand')) as $sourceKey => $definition) {
+            if (!array_key_exists($sourceKey, $raw) || trim((string) $raw[$sourceKey]) === '') continue;
+            $resolvedId = productBulkFindCategoryIdByName($categories[$definition[0]], $raw[$sourceKey]);
+            if ($resolvedId === -1) $item['errors'][] = productBulkColumns()[$sourceKey]['label'].' bị trùng tên trong hệ thống; hãy chọn lại trong file mới.';
+            elseif ($resolvedId === 0) $item['errors'][] = productBulkColumns()[$sourceKey]['label'].' không tồn tại.';
+            else $raw[$definition[1]] = $resolvedId;
+        }
         foreach ($columns as $key => $meta) {
             if (empty($meta['db']) || !isset($databaseColumns[$meta['db']]) || !array_key_exists($key, $raw)) continue;
             $value = trim((string) $raw[$key]);
@@ -344,7 +417,13 @@ function productBulkValidateRows($rawRows, $type)
             } elseif ($meta['kind'] === 'slug') {
                 $item['data'][$meta['db']] = $func->changeTitle($value);
             } elseif ($meta['kind'] === 'status') {
-                $statuses = array_values(array_unique(array_filter(array_map('trim', explode(',', $value)))));
+                $statusMap = array('hiển thị' => 'hienthi', 'bán chạy' => 'banchay', 'tạm ẩn' => '', 'hienthi' => 'hienthi', 'banchay' => 'banchay');
+                $statuses = array();
+                foreach (array_map('trim', explode(',', $value)) as $statusValue) {
+                    $normalizedStatus = mb_strtolower($statusValue, 'UTF-8');
+                    $statuses[] = array_key_exists($normalizedStatus, $statusMap) ? $statusMap[$normalizedStatus] : $statusValue;
+                }
+                $statuses = array_values(array_unique(array_filter($statuses)));
                 foreach ($statuses as $status) if (!in_array($status, $allowedStatus, true)) $item['errors'][] = 'Trạng thái không hỗ trợ: '.$status;
                 $item['data'][$meta['db']] = implode(',', $statuses);
             } elseif ($meta['kind'] === 'youtube') {
@@ -361,7 +440,8 @@ function productBulkValidateRows($rawRows, $type)
         }
         $name = isset($item['data']['namevi']) ? $item['data']['namevi'] : ($existing ? $existing['namevi'] : '');
         $item['name'] = $name;
-        if ($isCreate && trim($name) === '') $item['errors'][] = 'Dòng tạo mới bắt buộc có namevi.';
+        if ($isCreate && trim($name) === '') $item['errors'][] = 'Dòng tạo mới bắt buộc có Tên sản phẩm.';
+        if ($isCreate && $code === '') $item['errors'][] = 'Dòng tạo mới bắt buộc có Mã sản phẩm.';
         if ($isCreate && !isset($item['data']['slugvi']) && $name !== '') $item['data']['slugvi'] = $func->changeTitle($name);
         $slug = isset($item['data']['slugvi']) ? strtolower(trim($item['data']['slugvi'])) : ($existing ? strtolower(trim($existing['slugvi'])) : '');
         if ($slug === '') $item['errors'][] = 'Slug không được trống.';
@@ -387,17 +467,51 @@ function productBulkValidateRows($rawRows, $type)
         $regular = isset($item['data']['regular_price']) ? (float) $item['data']['regular_price'] : ($existing ? (float) $existing['regular_price'] : 0);
         $sale = isset($item['data']['sale_price']) ? (float) $item['data']['sale_price'] : ($existing ? (float) $existing['sale_price'] : 0);
         if ($regular > 0 && $sale > $regular) $item['errors'][] = 'Giá bán/khuyến mãi không được lớn hơn giá gốc.';
-        if ($regular > 0 && $sale > 0) $item['data']['discount'] = max(0, min(100, round((($regular - $sale) / $regular) * 100)));
-        elseif (isset($item['data']['regular_price']) || isset($item['data']['sale_price'])) $item['data']['discount'] = 0;
+        if (!$isCreate && $existing) {
+            $baselineRow = isset($baseline[(int) $existing['id']]) ? $baseline[(int) $existing['id']] : null;
+            foreach ($item['data'] as $field => $incomingValue) {
+                if ($field === 'date_updated' || !array_key_exists($field, $existing)) continue;
+                $fieldKind = isset($columns[$field]['kind']) ? $columns[$field]['kind'] : ($field === 'discount' ? 'money' : '');
+                $currentValue = productBulkComparableValue($existing[$field], $fieldKind);
+                $incomingComparable = productBulkComparableValue($incomingValue, $fieldKind);
+                if ($currentValue === $incomingComparable) {
+                    unset($item['data'][$field]);
+                    continue;
+                }
+                if ($baselineRow && array_key_exists($field, $baselineRow)) {
+                    $baseValue = productBulkComparableValue($baselineRow[$field], $fieldKind);
+                    if ($currentValue !== $baseValue) {
+                        if ($incomingComparable === $baseValue) {
+                            unset($item['data'][$field]);
+                            continue;
+                        }
+                        $choiceKey = $item['row'].':'.$field;
+                        $conflict = array('key' => $choiceKey, 'field' => $field, 'label' => isset($columns[$field]['label']) ? $columns[$field]['label'] : $field, 'base' => $baseValue, 'current' => $currentValue, 'incoming' => $incomingComparable);
+                        $item['conflicts'][] = $conflict;
+                        if (empty($overwriteChoices[$choiceKey])) {
+                            unset($item['data'][$field]);
+                        }
+                    }
+                }
+                if (isset($item['data'][$field])) $item['changes'][$field] = array('label' => isset($columns[$field]['label']) ? $columns[$field]['label'] : $field, 'current' => $currentValue, 'incoming' => $incomingComparable);
+            }
+            if (count($item['data']) === 1 && isset($item['data']['date_updated'])) unset($item['data']['date_updated']);
+        }
+        if ($isCreate || isset($item['data']['regular_price']) || isset($item['data']['sale_price'])) {
+            $effectiveRegular = isset($item['data']['regular_price']) ? (float) $item['data']['regular_price'] : ($existing ? (float) $existing['regular_price'] : 0);
+            $effectiveSale = isset($item['data']['sale_price']) ? (float) $item['data']['sale_price'] : ($existing ? (float) $existing['sale_price'] : 0);
+            $item['data']['discount'] = ($effectiveRegular > 0 && $effectiveSale > 0) ? max(0, min(100, round((($effectiveRegular - $effectiveSale) / $effectiveRegular) * 100))) : 0;
+        }
         if ($isCreate) {
             $item['data'] += array('id_list' => 0, 'id_cat' => 0, 'id_item' => 0, 'id_sub' => 0, 'id_brand' => 0, 'regular_price' => 0, 'sale_price' => 0, 'discount' => 0, 'cong_suat' => 0, 'numb' => 0, 'status' => 'hienthi', 'type' => $type, 'date_created' => time(), 'date_updated' => 0, 'view' => 0);
-            if ($code === '') $item['warnings'][] = 'Sản phẩm mới chưa có mã; lần cập nhật sau phải dùng ID được export.';
         } else {
-            $item['data']['date_updated'] = time();
+            if (!empty($item['data'])) $item['data']['date_updated'] = time();
         }
-        $result['counts'][$resolvedAction]++;
+        if (!$isCreate && empty($item['data'])) $result['counts']['unchanged']++;
+        else $result['counts'][$resolvedAction]++;
         $result['errors'] += count($item['errors']);
         $result['warnings'] += count($item['warnings']);
+        $result['conflicts'] += count($item['conflicts']);
         $result['rows'][] = $item;
     }
     return $result;
@@ -417,11 +531,11 @@ function productBulkPreview()
         return;
     }
     global $type;
-    $bulkPreview = productBulkValidateRows($parsed['rows'], $type);
+    $bulkPreview = productBulkValidateRows($parsed['rows'], $type, $parsed['baseline']);
     if ($bulkPreview['errors'] === 0) {
         $token = bin2hex(random_bytes(24));
         $path = rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.'pts-product-bulk-'.$token.'.json';
-        $payload = array('type' => $type, 'created_at' => time(), 'rows' => $parsed['rows']);
+        $payload = array('type' => $type, 'created_at' => time(), 'rows' => $parsed['rows'], 'baseline' => $parsed['baseline']);
         if (file_put_contents($path, json_encode($payload, JSON_UNESCAPED_UNICODE)) === false) {
             $bulkMessage = array('type' => 'danger', 'text' => 'Không thể tạo dữ liệu xem trước trên máy chủ.');
             return;
@@ -488,7 +602,11 @@ function productBulkCommit()
         $bulkMessage = array('type' => 'danger', 'text' => 'Không đọc được dữ liệu xem trước.');
         return;
     }
-    $bulkPreview = productBulkValidateRows($payload['rows'], $type);
+    $overwriteChoices = array();
+    foreach (!empty($_POST['overwrite_conflict']) && is_array($_POST['overwrite_conflict']) ? $_POST['overwrite_conflict'] : array() as $choice) {
+        if (preg_match('/^\d+:[a-zA-Z0-9_]+$/', $choice)) $overwriteChoices[$choice] = true;
+    }
+    $bulkPreview = productBulkValidateRows($payload['rows'], $type, !empty($payload['baseline']) ? $payload['baseline'] : array(), $overwriteChoices);
     if ($bulkPreview['errors'] > 0) {
         $bulkMessage = array('type' => 'danger', 'text' => 'Dữ liệu hoặc database đã thay đổi sau bước xem trước. Chưa có dữ liệu nào được ghi.');
         return;
@@ -496,7 +614,7 @@ function productBulkCommit()
     $applied = array();
     try {
         foreach ($bulkPreview['rows'] as $row) {
-            if ($row['action'] === 'skip') continue;
+            if ($row['action'] === 'skip' || empty($row['data'])) continue;
             $saveData = productBulkPrepareDataForSave($row['data']);
             if ($row['action'] === 'create') {
                 if (!$d->insert('product', $saveData)) throw new Exception('Không thể tạo sản phẩm tại dòng '.$row['row']);
@@ -530,6 +648,14 @@ function productBulkExportValue($key, $row, $categories)
     if ($key === '_list_name') return !empty($categories['list'][(int) $row['id_list']]['namevi']) ? $categories['list'][(int) $row['id_list']]['namevi'] : '';
     if ($key === '_cat_name') return !empty($categories['cat'][(int) $row['id_cat']]['namevi']) ? $categories['cat'][(int) $row['id_cat']]['namevi'] : '';
     if ($key === '_brand_name') return !empty($categories['brand'][(int) $row['id_brand']]['namevi']) ? $categories['brand'][(int) $row['id_brand']]['namevi'] : '';
+    if ($key === 'status') {
+        $labels = array('hienthi' => 'Hiển thị', 'banchay' => 'Bán chạy');
+        $values = array();
+        foreach (array_filter(array_map('trim', explode(',', isset($row['status']) ? $row['status'] : ''))) as $status) {
+            $values[] = isset($labels[$status]) ? $labels[$status] : $status;
+        }
+        return empty($values) ? 'Tạm ẩn' : implode(', ', $values);
+    }
     return isset($row[$key]) ? htmlspecialchars_decode((string) $row[$key], ENT_QUOTES) : '';
 }
 
@@ -545,7 +671,8 @@ function productBulkExport($templateOnly = false)
     global $d, $type, $setting;
     $format = !empty($_GET['format']) ? strtolower($_GET['format']) : 'xlsx';
     if (!in_array($format, array('xlsx', 'csv'), true)) $format = 'xlsx';
-    $columns = productBulkColumns();
+    $allColumns = productBulkColumns();
+    $columns = productBulkVisibleColumns();
     $headers = array_keys($columns);
     $displayHeaders = array_map(function ($column) { return $column['label']; }, $columns);
     $categories = productBulkCategoryMaps($type);
@@ -578,7 +705,7 @@ function productBulkExport($templateOnly = false)
     $excel = new PHPExcel();
     $excel->getProperties()->setCreator(!empty($setting['namevi']) ? $setting['namevi'] : 'Phuc Thinh Solar')->setTitle('Quản lý sản phẩm');
     $sheet = $excel->setActiveSheetIndex(0);
-    $sheet->setTitle('Products');
+    $sheet->setTitle('SanPham');
     foreach ($headers as $columnIndex => $key) {
         $coordinate = PHPExcel_Cell::stringFromColumnIndex($columnIndex).'1';
         $sheet->setCellValueExplicit($coordinate, $columns[$key]['label'], PHPExcel_Cell_DataType::TYPE_STRING);
@@ -598,13 +725,21 @@ function productBulkExport($templateOnly = false)
         }
         $rowIndex++;
     }
+    $sheet->getProtection()->setSheet(true);
+    foreach ($headers as $columnIndex => $key) {
+        $letter = PHPExcel_Cell::stringFromColumnIndex($columnIndex);
+        $locked = in_array($key, array('id', 'photo'), true);
+        $sheet->getStyle($letter.'2:'.$letter.'501')->getProtection()->setLocked($locked ? PHPExcel_Style_Protection::PROTECTION_PROTECTED : PHPExcel_Style_Protection::PROTECTION_UNPROTECTED);
+        if ($locked) $sheet->getStyle($letter.'1:'.$letter.'501')->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setRGB('E9ECEF');
+    }
     $guide = $excel->createSheet();
     $guide->setTitle('HuongDan');
     $guide->fromArray(array(
         array('Quy tắc', 'Chi tiết'),
-        array('Thao tác', 'Có thể nhập tiếng Việt: Tạo mới, Cập nhật, Ẩn, Bỏ qua. Hệ thống vẫn nhận create, update, upsert, archive, skip.'),
-        array('Ô trống', 'Khi update: giữ nguyên dữ liệu cũ. Dùng __CLEAR__ để xóa giá trị. Khi create: dùng giá trị mặc định.'),
-        array('Chống trùng', 'ID là khóa cập nhật chính. Mã sản phẩm và slug được kiểm tra trùng trong file và database.'),
+        array('Tạo mới / cập nhật', 'Có ID hoặc mã đã tồn tại: cập nhật. ID trống và mã chưa tồn tại: tạo mới. Sản phẩm mới bắt buộc có mã và tên.'),
+        array('Ô trống', 'Khi cập nhật: giữ nguyên dữ liệu hiện tại. Khi tạo mới: dùng giá trị mặc định.'),
+        array('Chống trùng', 'Hệ thống đối chiếu ID trước, sau đó đến mã sản phẩm. ID và mã chỉ đến hai sản phẩm khác nhau sẽ bị từ chối.'),
+        array('Xung đột', 'Sheet ẩn _HeThong lưu dữ liệu lúc export. Nếu website và Excel cùng sửa một ô, hệ thống sẽ yêu cầu chọn giữ website hoặc dùng Excel.'),
         array('Giá sale', 'regular_price là giá gốc; sale_price là giá bán/khuyến mãi và không được lớn hơn giá gốc.'),
         array('Trạng thái', 'hienthi,banchay. archive sẽ gỡ hienthi và banchay nhưng không xóa vĩnh viễn.'),
         array('Hình ảnh', 'Cột photo chỉ để đối chiếu. Hình vẫn quản lý tại trang chi tiết sản phẩm.'),
@@ -616,16 +751,49 @@ function productBulkExport($templateOnly = false)
     $guide->getStyle('A1:B20')->getAlignment()->setWrapText(true)->setVertical(PHPExcel_Style_Alignment::VERTICAL_TOP);
     $reference = $excel->createSheet();
     $reference->setTitle('DanhMuc');
-    $reference->fromArray(array(array('kind', 'id', 'parent_id', 'name', 'slug')));
-    $referenceRow = 2;
-    foreach ($categories as $kind => $rows) {
-        foreach ($rows as $row) {
-            $reference->fromArray(array(array($kind, (int) $row['id'], isset($row['id_list']) ? (int) $row['id_list'] : 0, $row['namevi'], $row['slugvi'])), null, 'A'.$referenceRow);
-            $referenceRow++;
+    $reference->fromArray(array(array('ID cấp 1', 'Danh mục cấp 1', '', 'ID cấp 2', 'ID cấp 1 cha', 'Danh mục cấp 2', '', 'ID thương hiệu', 'Thương hiệu')));
+    $listRow = $catRow = $brandRow = 2;
+    foreach ($categories['list'] as $row) {
+        $reference->fromArray(array(array((int) $row['id'], $row['namevi'])), null, 'A'.$listRow++);
+    }
+    foreach ($categories['cat'] as $row) {
+        $reference->fromArray(array(array((int) $row['id'], (int) $row['id_list'], $row['namevi'])), null, 'D'.$catRow++);
+    }
+    foreach ($categories['brand'] as $row) {
+        $reference->fromArray(array(array((int) $row['id'], $row['namevi'])), null, 'H'.$brandRow++);
+    }
+    $reference->getStyle('A1:I1')->getFont()->setBold(true);
+    foreach (range('A', 'I') as $column) $reference->getColumnDimension($column)->setWidth(in_array($column, array('B', 'F', 'I'), true) ? 40 : 18);
+    $dropdownRanges = array(
+        '_list_name' => '$B$2:$B$'.max(2, $listRow - 1),
+        '_cat_name' => '$F$2:$F$'.max(2, $catRow - 1),
+        '_brand_name' => '$I$2:$I$'.max(2, $brandRow - 1)
+    );
+    foreach ($headers as $columnIndex => $key) {
+        $letter = PHPExcel_Cell::stringFromColumnIndex($columnIndex);
+        if (isset($dropdownRanges[$key])) {
+            $validation = $sheet->getCell($letter.'2')->getDataValidation();
+            $validation->setType(PHPExcel_Cell_DataValidation::TYPE_LIST)->setErrorStyle(PHPExcel_Cell_DataValidation::STYLE_STOP)->setAllowBlank(true)->setShowErrorMessage(true)->setErrorTitle('Giá trị không hợp lệ')->setError('Hãy chọn một giá trị có trong sheet DanhMuc.')->setShowDropDown(true)->setFormula1("DanhMuc!".$dropdownRanges[$key]);
+            for ($validationRow = 3; $validationRow <= 501; $validationRow++) $sheet->getCell($letter.$validationRow)->setDataValidation(clone $validation);
+        } elseif ($key === 'status') {
+            $validation = $sheet->getCell($letter.'2')->getDataValidation();
+            $validation->setType(PHPExcel_Cell_DataValidation::TYPE_LIST)->setAllowBlank(true)->setShowErrorMessage(true)->setFormula1('"Hiển thị,Bán chạy,Tạm ẩn"');
+            for ($validationRow = 3; $validationRow <= 501; $validationRow++) $sheet->getCell($letter.$validationRow)->setDataValidation(clone $validation);
         }
     }
-    $reference->getStyle('A1:E1')->getFont()->setBold(true);
-    foreach (range('A', 'E') as $column) $reference->getColumnDimension($column)->setWidth($column === 'D' ? 40 : 18);
+    $system = $excel->createSheet();
+    $system->setTitle('_HeThong');
+    $systemHeaders = array_merge(array('id', 'date_updated'), productBulkEditableFields());
+    foreach ($systemHeaders as $columnIndex => $key) $system->setCellValueExplicitByColumnAndRow($columnIndex, 1, $key, PHPExcel_Cell_DataType::TYPE_STRING);
+    $systemRow = 2;
+    foreach ($products as $product) {
+        foreach ($systemHeaders as $columnIndex => $key) {
+            $system->setCellValueExplicitByColumnAndRow($columnIndex, $systemRow, isset($product[$key]) ? (string) $product[$key] : '', PHPExcel_Cell_DataType::TYPE_STRING);
+        }
+        $systemRow++;
+    }
+    $system->setSheetState(PHPExcel_Worksheet::SHEETSTATE_VERYHIDDEN);
+    $system->getProtection()->setSheet(true);
     $excel->setActiveSheetIndex(0);
     header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     header('Content-Disposition: attachment; filename="'.$suffix.'.xlsx"');

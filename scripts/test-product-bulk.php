@@ -19,14 +19,41 @@ function testAssert($condition, $message)
     echo "PASS: ", $message, PHP_EOL;
 }
 
-function commitRowsForTest($rows, $token)
+if (!empty($argv[1]) && $argv[1] === '--export-workbook') {
+    $_GET['format'] = 'xlsx';
+    productBulkExport(false);
+}
+
+if (!empty($argv[1]) && $argv[1] === '--inspect-workbook' && !empty($argv[2])) {
+    require_once LIBRARIES.'PHPExcel.php';
+    require_once LIBRARIES.'PHPExcel/IOFactory.php';
+    $workbook = PHPExcel_IOFactory::load($argv[2]);
+    $productSheet = $workbook->getSheetByName('SanPham');
+    $systemSheet = $workbook->getSheetByName('_HeThong');
+    testAssert($productSheet !== null && $systemSheet !== null, 'Workbook có sheet sản phẩm và sheet hệ thống');
+    testAssert($productSheet->getCell('A1')->getValue() === 'ID sản phẩm', 'Sheet sản phẩm dùng tiêu đề nghiệp vụ tiếng Việt');
+    testAssert($systemSheet->getSheetState() === PHPExcel_Worksheet::SHEETSTATE_VERYHIDDEN, 'Sheet hệ thống được ẩn hoàn toàn');
+    testAssert($systemSheet->getCell('A2')->getValue() !== '', 'Sheet hệ thống chứa snapshot để so sánh xung đột');
+    $headerColumns = array();
+    foreach ($productSheet->getRowIterator(1, 1)->current()->getCellIterator() as $cell) $headerColumns[$cell->getValue()] = $cell->getColumn();
+    testAssert(!empty($headerColumns['Danh mục cấp 1']) && $productSheet->getCell($headerColumns['Danh mục cấp 1'].'2')->getDataValidation()->getType() === PHPExcel_Cell_DataValidation::TYPE_LIST, 'Danh mục có danh sách chọn trong Excel');
+    $parsedWorkbook = productBulkReadUpload(array('error' => UPLOAD_ERR_OK, 'size' => filesize($argv[2]), 'name' => 'san-pham.xlsx', 'tmp_name' => $argv[2]));
+    testAssert(empty($parsedWorkbook['errors']) && !empty($parsedWorkbook['rows']), 'Đọc lại được workbook vừa xuất');
+    testAssert(count($parsedWorkbook['baseline']) === count($parsedWorkbook['rows']), 'Đọc đủ snapshot hệ thống cho các sản phẩm xuất ra');
+    $roundTripPreview = productBulkValidateRows($parsedWorkbook['rows'], $type, $parsedWorkbook['baseline']);
+    testAssert($roundTripPreview['errors'] === 0 && $roundTripPreview['conflicts'] === 0, 'Workbook xuất ra có thể nhập lại không lỗi/xung đột giả');
+    testAssert($roundTripPreview['counts']['unchanged'] === count($parsedWorkbook['rows']), 'Workbook chưa chỉnh sửa không tạo cập nhật thừa');
+    exit;
+}
+
+function commitRowsForTest($rows, $token, $baseline = array(), $overwriteChoices = array())
 {
     global $type, $bulkMessage, $bulkResult, $bulkPreview;
     $path = sys_get_temp_dir().DIRECTORY_SEPARATOR.'pts-bulk-test-'.$token.'.json';
-    file_put_contents($path, json_encode(array('type' => $type, 'created_at' => time(), 'rows' => $rows), JSON_UNESCAPED_UNICODE));
+    file_put_contents($path, json_encode(array('type' => $type, 'created_at' => time(), 'rows' => $rows, 'baseline' => $baseline), JSON_UNESCAPED_UNICODE));
     $_SESSION['product_bulk_preview'][$token] = array('path' => $path, 'type' => $type, 'created_at' => time());
     $_SESSION['product_bulk_csrf'] = 'test-csrf';
-    $_POST = array('product_bulk_csrf' => 'test-csrf', 'confirm_bulk' => 'CAP_NHAT', 'preview_token' => $token);
+    $_POST = array('product_bulk_csrf' => 'test-csrf', 'confirm_bulk' => 'CAP_NHAT', 'preview_token' => $token, 'overwrite_conflict' => $overwriteChoices);
     $bulkMessage = null;
     $bulkResult = null;
     $bulkPreview = null;
@@ -40,13 +67,14 @@ $createdId = 0;
 try {
     $csvPath = tempnam(sys_get_temp_dir(), 'pts-csv-');
     $csv = fopen($csvPath, 'wb');
-    fputcsv($csv, array('Thao tác', 'Mã sản phẩm', 'Tên sản phẩm', 'Giá gốc', 'Giá bán/khuyến mãi'));
-    fputcsv($csv, array('Tạo mới', $code, 'Sản phẩm kiểm thử bulk', '1000', '900'));
+    fputcsv($csv, array('Mã sản phẩm', 'Tên sản phẩm', 'Giá gốc', 'Giá bán/khuyến mãi'));
+    fputcsv($csv, array($code, 'Sản phẩm kiểm thử bulk', '1000', '900'));
     fclose($csv);
     $parsed = productBulkReadUpload(array('error' => UPLOAD_ERR_OK, 'size' => filesize($csvPath), 'name' => 'test.csv', 'tmp_name' => $csvPath));
-    testAssert(empty($parsed['errors']) && count($parsed['rows']) === 1, 'Đọc CSV với tiêu đề và thao tác tiếng Việt'.(!empty($parsed['errors']) ? ': '.implode(' ', $parsed['errors']) : ''));
-    testAssert(isset($parsed['rows'][0]['code']) && $parsed['rows'][0]['action'] === 'Tạo mới', 'Ánh xạ tiêu đề tiếng Việt về field nội bộ');
-    testAssert(productBulkNormalizeAction($parsed['rows'][0]['action']) === 'create', 'Ánh xạ thao tác tiếng Việt về lệnh tạo mới');
+    testAssert(empty($parsed['errors']) && count($parsed['rows']) === 1, 'Đọc CSV với tiêu đề tiếng Việt'.(!empty($parsed['errors']) ? ': '.implode(' ', $parsed['errors']) : ''));
+    testAssert(isset($parsed['rows'][0]['code']) && !isset($parsed['rows'][0]['action']), 'Ánh xạ tiêu đề tiếng Việt về field nội bộ');
+    $autoCreatePreview = productBulkValidateRows($parsed['rows'], $type);
+    testAssert($autoCreatePreview['errors'] === 0 && $autoCreatePreview['counts']['create'] === 1, 'Tự nhận diện dòng không có ID và mã mới là tạo mới');
     @unlink($csvPath);
 
     $legacyCsvPath = tempnam(sys_get_temp_dir(), 'pts-csv-legacy-');
@@ -66,6 +94,30 @@ try {
     testAssert(!empty($created['id']), 'Sản phẩm thử đã được tạo');
     testAssert(stripos(htmlspecialchars_decode($created['descvi']), '<script') === false, 'HTML nguy hiểm bị loại bỏ');
     $createdId = (int) $created['id'];
+
+    $autoUpdate = productBulkValidateRows(array(array('_row_number' => 8, 'code' => $code, 'material' => 'Nhôm')), $type);
+    testAssert($autoUpdate['errors'] === 0 && $autoUpdate['counts']['update'] === 1 && $autoUpdate['rows'][0]['id'] === $createdId, 'Tự match sản phẩm hiện có theo mã');
+
+    $baseline = array($createdId => $created);
+    $d->rawQuery('update #_product set material = ?, date_updated = ? where id = ? and type = ?', array('Website mới', time() + 1, $createdId, $type));
+    $conflictRows = array(array('_row_number' => 9, 'id' => $createdId, 'code' => $code, 'material' => 'Excel mới'));
+    $conflictPreview = productBulkValidateRows($conflictRows, $type, $baseline);
+    testAssert($conflictPreview['errors'] === 0 && $conflictPreview['conflicts'] === 1 && !isset($conflictPreview['rows'][0]['data']['material']), 'Phát hiện xung đột và mặc định giữ dữ liệu website');
+    $overwritePreview = productBulkValidateRows($conflictRows, $type, $baseline, array('9:material' => true));
+    testAssert($overwritePreview['conflicts'] === 1 && $overwritePreview['rows'][0]['data']['material'] === 'Excel mới', 'Cho phép chọn ghi đè từng ô bằng dữ liệu Excel');
+    commitRowsForTest($conflictRows, bin2hex(random_bytes(12)), $baseline, array('9:material'));
+    $conflictUpdated = $d->rawQueryOne('select material from #_product where id = ? and type = ?', array($createdId, $type));
+    testAssert($conflictUpdated['material'] === 'Excel mới', 'Commit áp dụng đúng lựa chọn ghi đè xung đột');
+    $d->rawQuery('update #_product set material = ?, date_updated = ? where id = ? and type = ?', array($created['material'], $created['date_updated'], $createdId, $type));
+
+    $anotherProduct = $d->rawQueryOne("select id, code from #_product where type = ? and id <> ? and code <> '' limit 0,1", array($type, $createdId));
+    if (!empty($anotherProduct)) {
+        $identityMismatch = productBulkValidateRows(array(array('_row_number' => 10, 'id' => $createdId, 'code' => $anotherProduct['code'], 'namevi' => 'Sai định danh')), $type);
+        testAssert($identityMismatch['errors'] > 0, 'Từ chối khi ID và mã chỉ đến hai sản phẩm khác nhau');
+    }
+
+    $visibleColumns = productBulkVisibleColumns();
+    testAssert(!isset($visibleColumns['action']) && !isset($visibleColumns['expected_updated_at']) && isset($visibleColumns['id']), 'Ẩn cột thao tác/mốc cập nhật khỏi file nghiệp vụ');
 
     $updateRows = array(array('_row_number' => 2, 'action' => 'update', 'id' => $createdId, 'expected_updated_at' => (int) $created['date_updated'], 'sale_price' => '800'));
     $preview = productBulkValidateRows($updateRows, $type);
