@@ -1,13 +1,16 @@
 <?php
 
-    if((isset($_GET['month']) && $_GET['month'] != '') && (isset($_GET['year']) && $_GET['year'] != ''))
+    $selectedMonth = isset($_GET['month']) ? (int) $_GET['month'] : 0;
+    $selectedYear = isset($_GET['year']) ? (int) $_GET['year'] : 0;
+
+    if($selectedMonth >= 1 && $selectedMonth <= 12 && $selectedYear >= 2000 && $selectedYear <= (int) date('Y') + 20)
     {
-        $time = $_GET['year'].'-'.$_GET['month'].'-1';
+        $time = $selectedYear.'-'.$selectedMonth.'-1';
         $date = strtotime($time);
     }
     else
     {
-        $date = strtotime(date('y-m-d')); 
+        $date = time();
     }
 
     $day = date('d', $date);
@@ -16,7 +19,7 @@
     $firstDay = mktime(0,0,0,$month, 1, $year);
     $title = strftime('%B', $firstDay);
     $dayOfWeek = date('D', $firstDay);
-    $daysInMonth = cal_days_in_month(0, $month, $year);
+    $daysInMonth = (int) date('t', $date);
     $timestamp = strtotime('next Sunday');
     $weekDays = array();
 
@@ -30,80 +33,48 @@
     $doanhthu = array();
 
 
+    $monthStart = strtotime($year.'-'.$month.'-01 00:00:00');
+    $monthEnd = strtotime('+1 month', $monthStart);
+    $visitorByDay = array();
+    $revenueByDay = array();
+
+    $visitorRows = $d->rawQuery(
+        "select day(from_unixtime(tm)) as day_number, count(*) as total from #_counter where tm >= ? and tm < ? group by day_number",
+        array($monthStart, $monthEnd)
+    );
+    foreach($visitorRows as $row) $visitorByDay[(int) $row['day_number']] = (int) $row['total'];
+
+    $revenueRows = $d->rawQuery(
+        "select day(from_unixtime(date_created)) as day_number, coalesce(sum(total_price), 0) as total from #_order where date_created >= ? and date_created < ? group by day_number",
+        array($monthStart, $monthEnd)
+    );
+    foreach($revenueRows as $row) $revenueByDay[(int) $row['day_number']] = (float) $row['total'];
+
     for($i=1; $i<=$daysInMonth; $i++)
     {
-        $k = $i+1;
-        $begin = strtotime($year.'-'.$month.'-'.$i);
-        $end = strtotime($year.'-'.$month.'-'.$k);
-        $todayrc = $d->rawQueryOne("select count(*) as todayrecord from #_counter where tm >= ? and tm < ?",array($begin,$end));
-        $today_visitors = $todayrc['todayrecord'];
-        $charts['series'][] = $today_visitors;
+        $todayVisitors = isset($visitorByDay[$i]) ? $visitorByDay[$i] : 0;
+        $todayRevenue = isset($revenueByDay[$i]) ? $revenueByDay[$i] : 0;
+        $charts['series'][] = $todayVisitors;
         $charts['labels'][] = 'D'.$i;
-
-
-
-
-        // $query =   "SELECT COUNT(*) AS todayrecord_dh FROM #_counter WHERE tm>='$begin' and tm<'$end'"; 
-
-        // $todayrc_dh  = $d->rawQueryOne($query); 
-
-        // $today_visitors_dh     =    $todayrc_dh['todayrecord_dh']; 
-
-        array_push($gth,$today_visitors);
-
-        $start_day = date('Y-m-d',$begin).' 00:00:00';
-
-        $end_day = date('Y-m-d',$end).' 00:00:00';
-
-        $query_t =    "SELECT sum(total_price) AS total FROM #_order WHERE date_created >= UNIX_TIMESTAMP('".$start_day."') and date_created <= UNIX_TIMESTAMP('".$end_day."')";
-
-        $today_r  = $d->rawQueryOne($query_t);
-
-        $toc = (!$today_r['total']) ? '0':$today_r['total'];
-
-        array_push($doanhthu,$toc);
+        $gth[] = $todayVisitors;
+        $doanhthu[] = $todayRevenue;
     }
 
-    // phần cart
-    
-    $sql_order = "SELECT * from #_order where order_status=? order by id desc limit 0,10";
+    /* Hàng đợi nghiệp vụ: chỉ đếm, không lấy PII. */
+    $dashboardNewOrders = $d->rawQueryOne("select count(id) as total from #_order where order_status = ?", array(1));
+    $dashboardNewConsults = $d->rawQueryOne("select count(id) as total from #_newsletter where type = ? and (confirm_status is null or confirm_status = '' or confirm_status = '0')", array('dangkynhantin'));
+    $dashboardNewDealers = $d->rawQueryOne("select count(id) as total from #_newsletter where type = ? and (confirm_status is null or confirm_status = '' or confirm_status = '0')", array('dangkynhantin2'));
+    $dashboardPendingReviews = $d->rawQueryOne("select count(id) as total from #_comment where id_parent = 0 and find_in_set('new-admin', status)");
+    $dashboardMissingWattage = $d->rawQueryOne("select count(id) as total from #_product where type = ? and (cong_suat is null or cong_suat <= 0)", array('san-pham'));
+    $dashboardPolicies = $d->rawQueryOne("select count(id) as total, sum(case when trim(coalesce(contentvi, '')) <> '' and find_in_set('hienthi', status) then 1 else 0 end) as completed from #_news where type = ?", array('chinh-sach'));
 
-    $items = $d->rawQuery($sql_order,array(1));
-
-    $sql_setting = "SELECT * from #_setting limit 0,1";
-
-    $items_setting = $d->rawQueryOne($sql_setting);
-
-    $sql_order = "SELECT sum(quantity) as total, name from #_order_detail where id_order in (select id from #_order where order_status=3) group by id_product order by id desc limit 0,10";
-
-    $items_product = $d->rawQuery($sql_order);
-
-
-
-
-    $sql_order = "select sum(total_price) as total from #_order where order_status=4";
-
-    $total_price = $d->rawQueryOne($sql_order);
-
-
-
-    $sql_order = "select count(id) as total from #_order where order_status=4 and payment_status=1";
-
-    $order_success = $d->rawQueryOne($sql_order);
-
-
-
-    $sql_order = "select count(id) as total from #_order where order_status=5";
-
-    $order_return = $d->rawQueryOne($sql_order);
-
-
-
-    $sql_order = "select count(id) as total from #_order where order_status=5";
-
-    $order_cancel = $d->rawQueryOne($sql_order);
-    // end cart
-   // die('ssssss');
+    $dashboardNewOrders = (int) $dashboardNewOrders['total'];
+    $dashboardNewConsults = (int) $dashboardNewConsults['total'];
+    $dashboardNewDealers = (int) $dashboardNewDealers['total'];
+    $dashboardPendingReviews = (int) $dashboardPendingReviews['total'];
+    $dashboardMissingWattage = (int) $dashboardMissingWattage['total'];
+    $dashboardPolicyTotal = (int) $dashboardPolicies['total'];
+    $dashboardPolicyCompleted = (int) $dashboardPolicies['completed'];
 ?>
 <section class="content mb-3">
     <div class="container-fluid">
@@ -151,6 +122,56 @@
 </section>
 <!-- Main content -->
 
+<section class="content mb-3">
+    <div class="container-fluid">
+        <h5 class="pb-2">Việc cần xử lý</h5>
+        <div class="row text-sm">
+            <div class="col-12 col-sm-6 col-lg-4 col-xl-2">
+                <a class="info-box" href="index.php?com=order&act=man&order_status=1" title="Xem đơn hàng mới">
+                    <span class="info-box-icon bg-danger"><i class="fas fa-shopping-bag"></i></span>
+                    <div class="info-box-content text-dark"><span class="info-box-text">Đơn hàng mới</span><span class="info-box-number"><?=$dashboardNewOrders?></span></div>
+                </a>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-4 col-xl-2">
+                <a class="info-box" href="index.php?com=newsletter&act=man&type=dangkynhantin&confirm_status=pending" title="Xem yêu cầu tư vấn chưa xử lý">
+                    <span class="info-box-icon bg-warning"><i class="fas fa-headset"></i></span>
+                    <div class="info-box-content text-dark"><span class="info-box-text">Yêu cầu tư vấn</span><span class="info-box-number"><?=$dashboardNewConsults?></span></div>
+                </a>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-4 col-xl-2">
+                <a class="info-box" href="index.php?com=newsletter&act=man&type=dangkynhantin2&confirm_status=pending" title="Xem đăng ký đại lý chưa xử lý">
+                    <span class="info-box-icon bg-info"><i class="fas fa-store"></i></span>
+                    <div class="info-box-content text-dark"><span class="info-box-text">Đăng ký đại lý</span><span class="info-box-number"><?=$dashboardNewDealers?></span></div>
+                </a>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-4 col-xl-2">
+                <a class="info-box" href="index.php?com=product&act=man&type=san-pham&comment_status=new" title="Xem đánh giá chờ duyệt">
+                    <span class="info-box-icon bg-primary"><i class="fas fa-star"></i></span>
+                    <div class="info-box-content text-dark"><span class="info-box-text">Đánh giá chờ duyệt</span><span class="info-box-number"><?=$dashboardPendingReviews?></span></div>
+                </a>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-4 col-xl-2">
+                <a class="info-box" href="index.php?com=product&act=man&type=san-pham&data_status=missing_wattage" title="Xem sản phẩm thiếu công suất">
+                    <span class="info-box-icon bg-secondary"><i class="fas fa-bolt"></i></span>
+                    <div class="info-box-content text-dark"><span class="info-box-text">Thiếu công suất</span><span class="info-box-number"><?=$dashboardMissingWattage?></span></div>
+                </a>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-4 col-xl-2">
+                <a class="info-box" href="index.php?com=news&act=man&type=chinh-sach" title="Kiểm tra nội dung chính sách">
+                    <span class="info-box-icon bg-success"><i class="fas fa-file-contract"></i></span>
+                    <div class="info-box-content text-dark">
+                        <span class="info-box-text">Chính sách hoàn chỉnh</span>
+                        <span class="info-box-number"><?=$dashboardPolicyCompleted?>/<?=$dashboardPolicyTotal?></span>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="alert alert-light border mb-0 py-2">
+            <i class="fas fa-info-circle text-primary mr-1"></i>
+            Dashboard chỉ hiển thị số lượng công việc, không hiển thị thông tin cá nhân khách hàng.
+        </div>
+    </div>
+</section>
 
 <section class="content pb-4">
    <div class="container-fluid">
