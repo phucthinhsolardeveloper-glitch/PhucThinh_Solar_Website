@@ -195,21 +195,13 @@
                                 </td>
                                 <td class="align-middle"><?=date("h:i:s A - d/m/Y", $items[$i]['date_created'])?></td>
                                 <td class="align-middle">
-                                    <?php $order_payment = $func->getInfoDetail('namevi', 'news', $items[$i]['order_payment']); ?>
-                                    <span class="text-info"><?=$order_payment['namevi']?></span>
+                                    <span class="text-info"><?=htmlspecialchars($items[$i]['order_payment_name'], ENT_QUOTES, 'UTF-8')?></span>
                                 </td>
                                 <td class="align-middle">
                                     <span class="text-danger font-weight-bold"><?=$func->formatMoney($items[$i]['total_price'])?></span>
                                 </td>
                                 <td class="align-middle">
-                                    <?php
-                                        if(isset($items[$i]['order_status']) && $items[$i]['order_status'] > 0)
-                                        {
-                                            $id_order_status = $items[$i]['order_status'];
-                                            $order_status = $d->rawQueryOne("select namevi, class_order from #_order_status where id = ?",array($id_order_status));
-                                        }
-                                    ?>
-                                    <span class="<?=$order_status['class_order']?> text-capitalize"><?=$order_status['namevi']?></span>
+                                    <span class="<?=htmlspecialchars($items[$i]['class_order'], ENT_QUOTES, 'UTF-8')?> text-capitalize"><?=htmlspecialchars($items[$i]['order_status_name'], ENT_QUOTES, 'UTF-8')?></span>
                                 </td>
                                 <?php if(
                                     (isset($config['order']['excel']) && $config['order']['excel'] == true) || 

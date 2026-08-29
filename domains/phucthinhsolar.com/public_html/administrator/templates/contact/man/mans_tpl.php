@@ -2,6 +2,8 @@
 	$linkMan = "index.php?com=contact&act=man";
 	$linkEdit = "index.php?com=contact&act=edit";
 	$linkDelete = "index.php?com=contact&act=delete";
+	$linkSearch = $linkMan.(!empty($_GET['contact_status']) ? '&contact_status='.urlencode($_GET['contact_status']) : '');
+	$linkStatus = $linkMan.(!empty($_GET['keyword']) ? '&keyword='.urlencode($_GET['keyword']) : '');
 ?>
 
 <!-- Content Header -->
@@ -22,14 +24,20 @@
         <a class="btn btn-sm bg-gradient-danger text-white" id="delete-all" data-url="<?=$linkDelete?>" title="Xóa tất cả"><i class="far fa-trash-alt mr-2"></i>Xóa tất cả</a>
         <div class="form-inline form-search d-inline-block align-middle ml-3">
             <div class="input-group input-group-sm">
-                <input class="form-control form-control-navbar text-sm" type="search" id="keyword" placeholder="Tìm kiếm" aria-label="Tìm kiếm" value="<?=(isset($_GET['keyword'])) ? $_GET['keyword'] : ''?>" onkeypress="doEnter(event,'keyword','<?=$linkMan?>')">
+                <input class="form-control form-control-navbar text-sm" type="search" id="keyword" placeholder="Tên, SĐT, email hoặc chủ đề" aria-label="Tìm kiếm" value="<?=isset($_GET['keyword']) ? htmlspecialchars($_GET['keyword'], ENT_QUOTES, 'UTF-8') : ''?>" onkeypress="doEnter(event,'keyword','<?=$linkSearch?>')">
                 <div class="input-group-append bg-primary rounded-right">
-                    <button class="btn btn-navbar text-white" type="button" onclick="onSearch('keyword','<?=$linkMan?>')">
+                    <button class="btn btn-navbar text-white" type="button" onclick="onSearch('keyword','<?=$linkSearch?>')">
                         <i class="fas fa-search"></i>
                     </button>
                 </div>
             </div>
         </div>
+        <div class="form-inline d-inline-block align-middle ml-2">
+            <select class="custom-select custom-select-sm text-sm" onchange="window.location.href='<?=$linkStatus?>&contact_status='+encodeURIComponent(this.value)">
+                <option value="">Tất cả trạng thái</option>
+                <option value="pending" <?=(isset($_GET['contact_status']) && $_GET['contact_status'] === 'pending') ? 'selected' : ''?>>Chưa xác nhận</option>
+                <option value="confirmed" <?=(isset($_GET['contact_status']) && $_GET['contact_status'] === 'confirmed') ? 'selected' : ''?>>Đã xác nhận</option>
+            </select></div>
     </div>
     <div class="card card-primary card-outline text-sm mb-0">
         <div class="card-header">
@@ -49,6 +57,8 @@
                         <th class="align-middle">Họ tên</th>
                         <th class="align-middle">Điện thoại</th>
                         <th class="align-middle">Email</th>
+                        <th class="align-middle">Chủ đề</th>
+                        <th class="align-middle text-center text-nowrap">Gửi lúc</th>
                         <?php if(isset($config['contact']['check'])) { foreach($config['contact']['check'] as $key => $value) { ?>
                             <th class="align-middle text-center"><?=$value?></th>
                         <?php } } ?>
@@ -79,6 +89,8 @@
                                 <td class="align-middle">
                                     <a class="text-dark text-break" href="<?=$linkEdit?>&id=<?=$items[$i]['id']?>" title="<?=$items[$i]['email']?>"><?=$items[$i]['email']?></a>
                                 </td>
+                                <td class="align-middle text-break"><?=htmlspecialchars($items[$i]['subject'], ENT_QUOTES, 'UTF-8')?></td>
+                                <td class="align-middle text-center text-nowrap"><?=(!empty($items[$i]['date_created'])) ? date('d/m/Y H:i', $items[$i]['date_created']) : '-'?></td>
                                 <?php $status_array = (!empty($items[$i]['status'])) ? explode(',', $items[$i]['status']) : array(); ?>
                                 <?php if(isset($config['contact']['check'])) { foreach($config['contact']['check'] as $key => $value) { ?>
                                     <td class="align-middle text-center">

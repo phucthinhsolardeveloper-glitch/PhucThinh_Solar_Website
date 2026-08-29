@@ -13,6 +13,9 @@
 		$func->transfer("Trang không tồn tại", "index.php", false);	
 	}
 
+	/* Công cụ nhập/xuất sản phẩm an toàn theo ID, mã và slug */
+	require_once SOURCES.'product_bulk.php';
+
 	/* Cấu hình đường dẫn trả về */
 	$strUrl = "";
 	$arrUrl = array('id_list','id_cat','id_item','id_sub','id_brand');
@@ -35,11 +38,31 @@
 		}
 
 		if(!empty($_REQUEST['comment_status'])) $strUrl .= "&comment_status=".htmlspecialchars($_REQUEST['comment_status']);
+		if(!empty($_REQUEST['data_status'])) $strUrl .= "&data_status=".urlencode($_REQUEST['data_status']);
 		if(isset($_REQUEST['keyword'])) $strUrl .= "&keyword=".htmlspecialchars($_REQUEST['keyword']);
 	}
 
 	switch($act)
 	{
+		/* Bulk import/export */
+		case "bulk":
+			$template = "product/man/bulk";
+			break;
+		case "bulk_preview":
+			productBulkPreview();
+			$template = "product/man/bulk";
+			break;
+		case "bulk_commit":
+			productBulkCommit();
+			$template = "product/man/bulk";
+			break;
+		case "bulk_template":
+			productBulkExport(true);
+			break;
+		case "bulk_export":
+			productBulkExport(false);
+			break;
+
 		/* Man */
 		case "man":
 			viewMans();
@@ -218,37 +241,50 @@
 		global $d, $func, $comment, $strUrl, $curPage, $items, $paging, $type;
 
 		$where = "";
-		$idlist = (isset($_REQUEST['id_list'])) ? htmlspecialchars($_REQUEST['id_list']) : 0;
-		$idcat = (isset($_REQUEST['id_cat'])) ? htmlspecialchars($_REQUEST['id_cat']) : 0;
-		$iditem = (isset($_REQUEST['id_item'])) ? htmlspecialchars($_REQUEST['id_item']) : 0;
-		$idsub = (isset($_REQUEST['id_sub'])) ? htmlspecialchars($_REQUEST['id_sub']) : 0;
-		$idbrand = (isset($_REQUEST['id_brand'])) ? htmlspecialchars($_REQUEST['id_brand']) : 0;
-		$comment_status = (!empty($_REQUEST['comment_status'])) ? htmlspecialchars($_REQUEST['comment_status']) : '';
+		$params = array($type);
+		$filters = array(
+			'id_list' => isset($_REQUEST['id_list']) ? (int) $_REQUEST['id_list'] : 0,
+			'id_cat' => isset($_REQUEST['id_cat']) ? (int) $_REQUEST['id_cat'] : 0,
+			'id_item' => isset($_REQUEST['id_item']) ? (int) $_REQUEST['id_item'] : 0,
+			'id_sub' => isset($_REQUEST['id_sub']) ? (int) $_REQUEST['id_sub'] : 0,
+			'id_brand' => isset($_REQUEST['id_brand']) ? (int) $_REQUEST['id_brand'] : 0
+		);
 
-		if($idlist) $where .= " and id_list=$idlist";
-		if($idcat) $where .= " and id_cat=$idcat";
-		if($iditem) $where .= " and id_item=$iditem";
-		if($idsub) $where .= " and id_sub=$idsub";
-		if($idbrand) $where .= " and id_brand=$idbrand";
-		if($comment_status == 'new')
+		foreach($filters as $column => $value)
 		{
-			$comment = $d->rawQuery("select distinct id_variant from #_comment where type = ? and find_in_set('new-admin',status)", array($type));
-			$idcomment = (!empty($comment)) ? $func->joinCols($comment, 'id_variant') : 0;
-			$where .= " and id in ($idcomment)";
+			if($value > 0)
+			{
+				$where .= " and p.".$column." = ?";
+				$params[] = $value;
+			}
 		}
-		if(isset($_REQUEST['keyword']))
+
+		$comment_status = !empty($_REQUEST['comment_status']) ? $_REQUEST['comment_status'] : '';
+		if($comment_status === 'new')
 		{
-			$keyword = htmlspecialchars($_REQUEST['keyword']);
-			$where .= " and (namevi LIKE '%$keyword%' or nameen LIKE '%$keyword%')";
+			$where .= " and exists (select 1 from #_comment c where c.id_variant = p.id and c.type = ? and find_in_set('new-admin', c.status))";
+			$params[] = $type;
+		}
+
+		$dataStatus = !empty($_REQUEST['data_status']) ? $_REQUEST['data_status'] : '';
+		if($dataStatus === 'missing_wattage') $where .= " and (p.cong_suat is null or p.cong_suat <= 0)";
+
+		if(isset($_REQUEST['keyword']) && trim($_REQUEST['keyword']) !== '')
+		{
+			$keyword = '%'.trim($_REQUEST['keyword']).'%';
+			$where .= " and (p.namevi LIKE ? or p.nameen LIKE ? or p.code LIKE ?)";
+			$params[] = $keyword;
+			$params[] = $keyword;
+			$params[] = $keyword;
 		}
 
 		$perPage = 10;
-		$startpoint = ($curPage * $perPage) - $perPage;
+		$startpoint = max(0, (((int) $curPage) * $perPage) - $perPage);
 		$limit = " limit ".$startpoint.",".$perPage;
-		$sql = "select * from #_product where type = ? $where order by numb,id desc $limit";
-		$items = $d->rawQuery($sql,array($type));
-		$sqlNum = "select count(*) as 'num' from #_product where type = ? $where order by numb,id desc";
-		$count = $d->rawQueryOne($sqlNum,array($type));
+		$sql = "select p.* from #_product p where p.type = ? $where order by p.numb,p.id desc $limit";
+		$items = $d->rawQuery($sql,$params);
+		$sqlNum = "select count(*) as 'num' from #_product p where p.type = ? $where";
+		$count = $d->rawQueryOne($sqlNum,$params);
 		$total = (!empty($count)) ? $count['num'] : 0;
 		$url = "index.php?com=product&act=man".$strUrl."&type=".$type;
 		$paging = $func->pagination($total,$perPage,$curPage,$url);

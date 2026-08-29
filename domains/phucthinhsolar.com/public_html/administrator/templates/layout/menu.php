@@ -514,6 +514,15 @@
                         </a>
                     </li>
                 <?php } ?>
+                <!-- Contact -->
+                <?php $active = ($com == 'contact') ? 'active' : ''; ?>
+                <li class="nav-item <?=$active?>">
+                    <a class="nav-link <?=$active?>" href="index.php?com=contact&act=man" title="Quản lý liên hệ">
+                        <i class="nav-icon text-sm fas fa-inbox"></i>
+                        <p>Liên hệ khách hàng</p>
+                    </a>
+                </li>
+
 
                 <!-- Tags -->
                 <?php if(isset($config['tags'])) { ?>

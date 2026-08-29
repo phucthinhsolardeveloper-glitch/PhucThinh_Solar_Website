@@ -27,22 +27,39 @@
 		global $d, $func, $curPage, $items, $paging;
 
 		$where = "";
+		$keyword = '';
+		$params = array();
 
-		if(isset($_REQUEST['keyword']))
+		if(!empty($_REQUEST['keyword']))
 		{
-			$keyword = htmlspecialchars($_REQUEST['keyword']);
-			$where .= " and fullname LIKE '%$keyword%'";
+			$keyword = trim($_REQUEST['keyword']);
+			$where .= " and (fullname LIKE ? or phone LIKE ? or email LIKE ? or subject LIKE ?)";
+			$keywordLike = '%'.$keyword.'%';
+			$params = array($keywordLike, $keywordLike, $keywordLike, $keywordLike);
+		}
+
+		$contactStatus = isset($_REQUEST['contact_status']) ? $_REQUEST['contact_status'] : '';
+		if($contactStatus === 'pending')
+		{
+			$where .= " and (status is null or status = '')";
+		}
+		elseif($contactStatus === 'confirmed')
+		{
+			$where .= " and find_in_set(?, status)";
+			$params[] = 'hienthi';
 		}
 
 		$perPage = 10;
 		$startpoint = ($curPage * $perPage) - $perPage;
 		$limit = " limit ".$startpoint.",".$perPage;
 		$sql = "select * from #_contact where id<>0 $where order by numb,id desc $limit";
-		$items = $d->rawQuery($sql);
-		$sqlNum = "select count(*) as 'num' from #_contact where id<>0 $where order by numb,id desc";
-		$count = $d->rawQueryOne($sqlNum);
+		$items = $d->rawQuery($sql, $params);
+		$sqlNum = "select count(*) as 'num' from #_contact where id<>0 $where";
+		$count = $d->rawQueryOne($sqlNum, $params);
 		$total = (!empty($count)) ? $count['num'] : 0;
 		$url = "index.php?com=contact&act=man";
+		if(!empty($keyword)) $url .= "&keyword=".urlencode($keyword);
+		if(!empty($contactStatus)) $url .= "&contact_status=".urlencode($contactStatus);
 		$paging = $func->pagination($total,$perPage,$curPage,$url);
 	}
 

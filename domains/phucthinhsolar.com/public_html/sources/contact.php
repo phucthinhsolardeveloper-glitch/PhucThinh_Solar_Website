@@ -3,12 +3,12 @@
 
 	if(!empty($_POST['submit-contact']))
 	{
-        $responseCaptcha = $_POST['recaptcha_response_contact'];
+        $responseCaptcha = isset($_POST['recaptcha_response_contact']) ? $_POST['recaptcha_response_contact'] : '';
         $resultCaptcha = $func->checkRecaptcha($responseCaptcha);
         $scoreCaptcha = (!empty($resultCaptcha['score'])) ? $resultCaptcha['score'] : 0;
         $actionCaptcha = (!empty($resultCaptcha['action'])) ? $resultCaptcha['action'] : '';
         $testCaptcha = (!empty($resultCaptcha['test'])) ? $resultCaptcha['test'] : false;
-        $dataContact = (!empty($_POST['dataContact'])) ? $_POST['dataContact'] : null;
+        $dataContact = (!empty($_POST['dataContact']) && is_array($_POST['dataContact'])) ? $_POST['dataContact'] : array();
 
         /* Valid data */
 		if(empty($dataContact['fullname']))
@@ -24,11 +24,6 @@
 		if(!empty($dataContact['phone']) && !$func->isPhone($dataContact['phone']))
 		{
 			$response['messages'][] = 'Số điện thoại không hợp lệ';
-		}
-
-		if(empty($dataContact['address']))
-		{
-			$response['messages'][] = 'Địa chỉ không được trống';
 		}
 
 		if(empty($dataContact['email']))
@@ -79,7 +74,7 @@
 			$data['fullname'] = htmlspecialchars($dataContact['fullname']);
 			$data['email'] = htmlspecialchars($dataContact['email']);
 			$data['phone'] = htmlspecialchars($dataContact['phone']);
-			$data['address'] = htmlspecialchars($dataContact['address']);
+			$data['address'] = isset($dataContact['address']) ? htmlspecialchars($dataContact['address']) : '';
 			$data['subject'] = htmlspecialchars($dataContact['subject']);
 			$data['content'] = htmlspecialchars($dataContact['content']);
 		    $data['date_created'] = time(); 

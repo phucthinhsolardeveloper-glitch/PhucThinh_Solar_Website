@@ -7,6 +7,7 @@
     $linkDelete = "index.php?com=product&act=delete&type=".$type;
     $linkMulti = "index.php?com=product&act=man_photo&kind=man&type=".$type;
     $linkComment = "index.php?com=comment&act=man&variant=product&type=".$type;
+    $linkBulk = "index.php?com=product&act=bulk&type=".$type;
     $copyImg = (isset($config['product'][$type]['copy_image']) && $config['product'][$type]['copy_image'] == true) ? TRUE : FALSE;
 ?>
 <!-- Content Header -->
@@ -26,9 +27,10 @@
     <div class="card-footer text-sm sticky-top">
     	<a class="btn btn-sm bg-gradient-primary text-white" href="<?=$linkAdd?>" title="Thêm mới"><i class="fas fa-plus mr-2"></i>Thêm mới</a>
         <a class="btn btn-sm bg-gradient-danger text-white" id="delete-all" data-url="<?=$linkDelete?><?=$strUrl?>" title="Xóa tất cả"><i class="far fa-trash-alt mr-2"></i>Xóa tất cả</a>
+        <a class="btn btn-sm bg-gradient-success text-white" href="<?=$linkBulk?>" title="Nhập xuất Excel/CSV"><i class="fas fa-file-excel mr-2"></i>Nhập / Xuất</a>
         <div class="form-inline form-search d-inline-block align-middle ml-3">
             <div class="input-group input-group-sm">
-                <input class="form-control form-control-navbar text-sm" type="search" id="keyword" placeholder="Tìm kiếm" aria-label="Tìm kiếm" value="<?=(isset($_GET['keyword'])) ? $_GET['keyword'] : ''?>" onkeypress="doEnter(event,'keyword','<?=$linkMan?>')">
+                <input class="form-control form-control-navbar text-sm" type="search" id="keyword" placeholder="Tìm kiếm" aria-label="Tìm kiếm" value="<?=isset($_GET['keyword']) ? htmlspecialchars($_GET['keyword'], ENT_QUOTES, 'UTF-8') : ''?>" onkeypress="doEnter(event,'keyword','<?=$linkMan?>')">
                 <div class="input-group-append bg-primary rounded-right">
                     <button class="btn btn-navbar text-white" type="button" onclick="onSearch('keyword','<?=$linkMan?>')">
                         <i class="fas fa-search"></i>
@@ -37,6 +39,15 @@
             </div>
         </div>
     </div>
+    <?php if(!empty($_GET['data_status']) || !empty($_GET['comment_status'])) { ?>
+        <div class="alert alert-warning d-flex align-items-center justify-content-between text-sm mx-0 mb-2">
+            <span>
+                <i class="fas fa-filter mr-1"></i>
+                <?=(!empty($_GET['data_status']) && $_GET['data_status'] === 'missing_wattage') ? 'Đang lọc sản phẩm chưa nhập công suất.' : 'Đang lọc sản phẩm có đánh giá mới chờ duyệt.'?>
+            </span>
+            <a class="btn btn-sm btn-outline-dark" href="<?=$linkMan?>" title="Bỏ bộ lọc">Bỏ lọc</a>
+        </div>
+    <?php } ?>
     <?php if(
         (isset($config['product'][$type]['dropdown']) && $config['product'][$type]['dropdown'] == true) || 
         (isset($config['product'][$type]['brand']) && $config['product'][$type]['brand'] == true)
@@ -192,5 +203,6 @@
     <div class="card-footer text-sm">
     	<a class="btn btn-sm bg-gradient-primary text-white" href="<?=$linkAdd?>" title="Thêm mới"><i class="fas fa-plus mr-2"></i>Thêm mới</a>
         <a class="btn btn-sm bg-gradient-danger text-white" id="delete-all" data-url="<?=$linkDelete?><?=$strUrl?>" title="Xóa tất cả"><i class="far fa-trash-alt mr-2"></i>Xóa tất cả</a>
+        <a class="btn btn-sm bg-gradient-success text-white" href="<?=$linkBulk?>" title="Nhập xuất Excel/CSV"><i class="fas fa-file-excel mr-2"></i>Nhập / Xuất</a>
     </div>
 </section>

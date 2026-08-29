@@ -84,23 +84,43 @@
 	{
 		global $d, $func, $curPage, $items, $paging, $type;
 
-		$where = "";	
-		
-		if(isset($_REQUEST['keyword']))
+		$where = "";
+		$params = array($type);
+		$queryParams = array();
+
+		$confirmStatus = isset($_REQUEST['confirm_status']) ? trim($_REQUEST['confirm_status']) : '';
+		if($confirmStatus === 'pending')
 		{
-			$keyword = htmlspecialchars($_REQUEST['keyword']);
-			$where .= " and (fullname LIKE '%$keyword%' or email LIKE '%$keyword%')";
+			$where .= " and (confirm_status is null or confirm_status = '' or confirm_status = '0')";
+			$queryParams['confirm_status'] = 'pending';
+		}
+		else if($confirmStatus !== '' && ctype_digit($confirmStatus))
+		{
+			$where .= " and confirm_status = ?";
+			$params[] = $confirmStatus;
+			$queryParams['confirm_status'] = $confirmStatus;
+		}
+
+		if(isset($_REQUEST['keyword']) && trim($_REQUEST['keyword']) !== '')
+		{
+			$keyword = '%'.trim($_REQUEST['keyword']).'%';
+			$where .= " and (fullname LIKE ? or email LIKE ? or phone LIKE ? or company LIKE ?)";
+			$params[] = $keyword;
+			$params[] = $keyword;
+			$params[] = $keyword;
+			$params[] = $keyword;
+			$queryParams['keyword'] = trim($_REQUEST['keyword']);
 		}
 
 		$perPage = 10;
-		$startpoint = ($curPage * $perPage) - $perPage;
+		$startpoint = max(0, (((int) $curPage) * $perPage) - $perPage);
 		$limit = " limit ".$startpoint.",".$perPage;
 		$sql = "select * from #_newsletter where type = ? $where order by numb,id desc $limit";
-		$items = $d->rawQuery($sql,array($type));
-		$sqlNum = "select count(*) as 'num' from #_newsletter where type = ? $where order by numb,id desc";
-		$count = $d->rawQueryOne($sqlNum,array($type));
+		$items = $d->rawQuery($sql,$params);
+		$sqlNum = "select count(*) as 'num' from #_newsletter where type = ? $where";
+		$count = $d->rawQueryOne($sqlNum,$params);
 		$total = (!empty($count)) ? $count['num'] : 0;
-		$url = "index.php?com=newsletter&act=man&type=".$type;
+		$url = "index.php?com=newsletter&act=man&type=".$type.(!empty($queryParams) ? '&'.http_build_query($queryParams) : '');
 		$paging = $func->pagination($total,$perPage,$curPage,$url);
 	}
 

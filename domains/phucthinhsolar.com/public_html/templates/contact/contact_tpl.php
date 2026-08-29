@@ -157,12 +157,13 @@
                                                         placeholder="Nhập tin nhắn..."></textarea></span></div>
                                         </li>
                                         <li class="inf_default_row inf_row_full">
-                                            <div class="inf_input inf_button"><input type="submit" value="Gửi ngay"
+                                            <div class="inf_input inf_button"><input type="submit" name="submit-contact" value="Gửi ngay"
                                                     class="wpcf7-form-control has-spinner wpcf7-submit"><span
                                                     class="wpcf7-spinner"></span></div>
                                         </li>
                                     </ul>
                                 </div>
+                                <input type="hidden" name="recaptcha_response_contact" id="recaptchaResponseContact">
                             </form>
                         </div>
                     </div>

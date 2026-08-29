@@ -7,15 +7,12 @@
 	/* Cấu hình đường dẫn trả về */
 
 	$strUrl = "";
-	$strUrl .= (isset($_REQUEST['order_status'])) ? "&order_status=".htmlspecialchars($_REQUEST['order_status']) : "";
-	$strUrl .= (isset($_REQUEST['payment_status'])) ? "&payment_status=".htmlspecialchars($_REQUEST['payment_status']) : "";
-	$strUrl .= (isset($_REQUEST['order_payment'])) ? "&order_payment=".htmlspecialchars($_REQUEST['order_payment']) : "";
-	$strUrl .= (isset($_REQUEST['order_date'])) ? "&order_date=".htmlspecialchars($_REQUEST['order_date']) : "";
-	$strUrl .= (isset($_REQUEST['range_price'])) ? "&range_price=".htmlspecialchars($_REQUEST['range_price']) : "";
-	$strUrl .= (isset($_REQUEST['city'])) ? "&city=".htmlspecialchars($_REQUEST['city']) : "";
-	$strUrl .= (isset($_REQUEST['district'])) ? "&district=".htmlspecialchars($_REQUEST['district']) : "";
-	$strUrl .= (isset($_REQUEST['ward'])) ? "&ward=".htmlspecialchars($_REQUEST['ward']) : "";
-	$strUrl .= (isset($_REQUEST['keyword'])) ? "&keyword=".htmlspecialchars($_REQUEST['keyword']) : "";
+	$urlParams = array();
+	foreach(array('order_status', 'payment_status', 'order_payment', 'order_date', 'range_price', 'id_city', 'id_district', 'id_ward', 'keyword') as $param)
+	{
+		if(isset($_REQUEST[$param]) && $_REQUEST[$param] !== '') $urlParams[$param] = $_REQUEST[$param];
+	}
+	if(!empty($urlParams)) $strUrl = '&'.http_build_query($urlParams);
 	switch($act)
 	{
 		case "man":
@@ -40,86 +37,101 @@
 	function viewMans()
 	{
 		global $d, $func, $strUrl, $curPage, $items, $paging, $minTotal, $maxTotal, $price_from, $price_to, $allNewOrder, $totalNewOrder, $allConfirmOrder, $totalConfirmOrder, $allDeliveriedOrder, $totalDeliveriedOrder, $allCanceledOrder, $totalCanceledOrder;
-		
+
 		$where = "";
+		$params = array();
+		$order_status = isset($_REQUEST['order_status']) && $_REQUEST['order_status'] !== '' ? (int) $_REQUEST['order_status'] : null;
+		$payment_status = isset($_REQUEST['payment_status']) && $_REQUEST['payment_status'] !== '' ? (int) $_REQUEST['payment_status'] : null;
+		$order_payment = isset($_REQUEST['order_payment']) && $_REQUEST['order_payment'] !== '' ? (int) $_REQUEST['order_payment'] : null;
+		$order_date = isset($_REQUEST['order_date']) ? trim($_REQUEST['order_date']) : '';
+		$range_price = isset($_REQUEST['range_price']) ? trim($_REQUEST['range_price']) : '';
+		$city = isset($_REQUEST['id_city']) ? (int) $_REQUEST['id_city'] : 0;
+		$district = isset($_REQUEST['id_district']) ? (int) $_REQUEST['id_district'] : 0;
+		$ward = isset($_REQUEST['id_ward']) ? (int) $_REQUEST['id_ward'] : 0;
 
-		$order_status = (isset($_REQUEST['order_status'])) ? htmlspecialchars($_REQUEST['order_status']) : 0;
-		$payment_status = (isset($_REQUEST['payment_status'])) ? htmlspecialchars($_REQUEST['payment_status']) : 0;
-		$order_payment = (isset($_REQUEST['order_payment'])) ? htmlspecialchars($_REQUEST['order_payment']) : 0;
-		$order_date = (isset($_REQUEST['order_date'])) ? htmlspecialchars($_REQUEST['order_date']) : 0;
-		$range_price = (isset($_REQUEST['range_price'])) ? htmlspecialchars($_REQUEST['range_price']) : 0;
-		$city = (isset($_REQUEST['id_city'])) ? htmlspecialchars($_REQUEST['id_city']) : 0;
-		$district = (isset($_REQUEST['id_district'])) ? htmlspecialchars($_REQUEST['id_district']) : 0;
-		$ward = (isset($_REQUEST['id_ward'])) ? htmlspecialchars($_REQUEST['id_ward']) : 0;
+		if($order_status !== null && $order_status > 0)
+		{
+			$where .= " and o.order_status = ?";
+			$params[] = $order_status;
+		}
+		if($payment_status !== null)
+		{
+			$where .= " and o.payment_status = ?";
+			$params[] = $payment_status;
+		}
+		if($order_payment !== null && $order_payment > 0)
+		{
+			$where .= " and o.order_payment = ?";
+			$params[] = $order_payment;
+		}
+		if($order_date !== '')
+		{
+			$dateParts = explode(' - ', $order_date);
+			if(count($dateParts) === 2)
+			{
+				$date_from = strtotime(str_replace('/', '-', trim($dateParts[0])).' 00:00:00');
+				$date_to = strtotime(str_replace('/', '-', trim($dateParts[1])).' 23:59:59');
+				if($date_from !== false && $date_to !== false && $date_from <= $date_to)
+				{
+					$where .= " and o.date_created >= ? and o.date_created <= ?";
+					$params[] = $date_from;
+					$params[] = $date_to;
+				}
+			}
+		}
+		if($range_price !== '')
+		{
+			$priceParts = explode(';', $range_price);
+			if(count($priceParts) === 2)
+			{
+				$price_from = max(0, (float) $priceParts[0]);
+				$price_to = max($price_from, (float) $priceParts[1]);
+				$where .= " and o.total_price >= ? and o.total_price <= ?";
+				$params[] = $price_from;
+				$params[] = $price_to;
+			}
+		}
+		foreach(array('city' => $city, 'district' => $district, 'ward' => $ward) as $column => $value)
+		{
+			if($value > 0)
+			{
+				$where .= " and o.".$column." = ?";
+				$params[] = $value;
+			}
+		}
+		if(isset($_REQUEST['keyword']) && trim($_REQUEST['keyword']) !== '')
+		{
+			$keyword = '%'.trim($_REQUEST['keyword']).'%';
+			$where .= " and (o.fullname LIKE ? or o.email LIKE ? or o.phone LIKE ? or o.code LIKE ?)";
+			$params[] = $keyword;
+			$params[] = $keyword;
+			$params[] = $keyword;
+			$params[] = $keyword;
+		}
 
-		if($order_status) $where .= " and order_status=$order_status";
-		if($payment_status) $where .= " and payment_status=$payment_status";
-		if($order_payment) $where .= " and order_payment=$order_payment";
-		if($order_date)
-		{
-			$order_date = explode("-",$order_date);
-			$date_from = trim($order_date[0].' 12:00:00 AM');
-			$date_to = trim($order_date[1].' 11:59:59 PM');
-			$date_from = strtotime(str_replace("/","-",$date_from));
-			$date_to = strtotime(str_replace("/","-",$date_to));
-			$where .= " and date_created<=$date_to and date_created>=$date_from";
-		}
-		if($range_price)
-		{
-			$range_price = explode(";",$range_price);
-			$price_from = trim($range_price[0]);
-			$price_to = trim($range_price[1]);
-			$where .= " and total_price<=$price_to and total_price>=$price_from";
-		}
-		if($city) $where .= " and city=$city";
-		if($district) $where .= " and district=$district";
-		if($ward) $where .= " and ward=$ward";
-		if(isset($_REQUEST['keyword']))
-		{
-			$keyword = htmlspecialchars($_REQUEST['keyword']);
-			$where .= " and (fullname LIKE '%$keyword%' or email LIKE '%$keyword%' or phone LIKE '%$keyword%' or code LIKE '%$keyword%')";
-		}
-		//echo $where;
 		$perPage = 10;
-		$startpoint = ($curPage * $perPage) - $perPage;
+		$startpoint = max(0, (((int) $curPage) * $perPage) - $perPage);
 		$limit = " limit ".$startpoint.",".$perPage;
-		$sql = "select * from #_order where id<>0 $where order by date_created desc $limit";
-		$items = $d->rawQuery($sql);
-		$sqlNum = "select count(*) as 'num' from #_order where id<>0 $where order by date_created desc";
-		$count = $d->rawQueryOne($sqlNum);
+		$sql = "select o.*, os.namevi as order_status_name, os.class_order, pay.namevi as order_payment_name from #_order o left join #_order_status os on os.id = o.order_status left join #_news pay on pay.id = o.order_payment where o.id<>0 $where order by o.date_created desc $limit";
+		$items = $d->rawQuery($sql,$params);
+		$sqlNum = "select count(*) as 'num' from #_order o where o.id<>0 $where";
+		$count = $d->rawQueryOne($sqlNum,$params);
 		$total = (!empty($count)) ? $count['num'] : 0;
 		$url = "index.php?com=order&act=man".$strUrl;
 		$paging = $func->pagination($total,$perPage,$curPage,$url);
 
-		/* Lấy tổng giá min */
-		$minTotal = $d->rawQueryOne("select min(total_price) from #_order");
-		if($minTotal['min(total_price)']) $minTotal = $minTotal['min(total_price)'];
-		else $minTotal = 0;
+		$priceRange = $d->rawQueryOne("select coalesce(min(total_price), 0) as min_total, coalesce(max(total_price), 0) as max_total from #_order");
+		$minTotal = (float) $priceRange['min_total'];
+		$maxTotal = (float) $priceRange['max_total'];
 
-		/* Lấy tổng giá max */
-		$maxTotal = $d->rawQueryOne("select max(total_price) from #_order");
-		if($maxTotal['max(total_price)']) $maxTotal = $maxTotal['max(total_price)'];
-		else $maxTotal = 0;
+		$orderStats = array(1 => array(0, 0), 2 => array(0, 0), 4 => array(0, 0), 5 => array(0, 0));
+		$statRows = $d->rawQuery("select order_status, count(id) as total, coalesce(sum(total_price), 0) as amount from #_order where order_status in (1,2,4,5) group by order_status");
+		foreach($statRows as $row) $orderStats[(int) $row['order_status']] = array((int) $row['total'], (float) $row['amount']);
 
-		/* Lấy đơn hàng - mới đặt */
-		$order_count = $d->rawQueryOne("select count(id), sum(total_price) from #_order where order_status = 1");
-		$allNewOrder = $order_count['count(id)'];
-		$totalNewOrder = $order_count['sum(total_price)'];
-
-		/* Lấy đơn hàng - đã xác nhận */
-		$order_count = $d->rawQueryOne("select count(id), sum(total_price) from #_order where order_status = 2");
-		$allConfirmOrder = $order_count['count(id)'];
-		$totalConfirmOrder = $order_count['sum(total_price)'];
-
-		/* Lấy đơn hàng - đã giao */
-		$order_count = $d->rawQueryOne("select count(id), sum(total_price) from #_order where order_status = 4");
-		$allDeliveriedOrder = $order_count['count(id)'];
-		$totalDeliveriedOrder = $order_count['sum(total_price)'];
-
-		/* Lấy đơn hàng - đã hủy */
-		$order_count = $d->rawQueryOne("select count(id), sum(total_price) from #_order where order_status = 5");
-		$allCanceledOrder = $order_count['count(id)'];
-		$totalCanceledOrder = $order_count['sum(total_price)'];
+		list($allNewOrder, $totalNewOrder) = $orderStats[1];
+		list($allConfirmOrder, $totalConfirmOrder) = $orderStats[2];
+		list($allDeliveriedOrder, $totalDeliveriedOrder) = $orderStats[4];
+		list($allCanceledOrder, $totalCanceledOrder) = $orderStats[5];
 	}
 
 	/* Edit order */

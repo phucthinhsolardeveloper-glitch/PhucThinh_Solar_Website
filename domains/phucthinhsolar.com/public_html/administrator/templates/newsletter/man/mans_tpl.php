@@ -3,6 +3,8 @@
     $linkAdd = "index.php?com=newsletter&act=add&type=".$type;
     $linkEdit = "index.php?com=newsletter&act=edit&type=".$type;
     $linkDelete = "index.php?com=newsletter&act=delete&type=".$type;
+	$linkSearch = $linkMan.(!empty($_GET['confirm_status']) ? '&confirm_status='.urlencode($_GET['confirm_status']) : '');
+	$linkConfirmStatus = $linkMan.(!empty($_GET['keyword']) ? '&keyword='.urlencode($_GET['keyword']) : '');
 ?>
 <!-- Content Header -->
 <section class="content-header text-sm">
@@ -24,11 +26,23 @@
         <?php } ?>
         <a class="btn btn-sm bg-gradient-primary text-white" href="<?=$linkAdd?>" title="Thêm mới"><i class="fas fa-plus mr-2"></i>Thêm mới</a>
         <a class="btn btn-sm bg-gradient-danger text-white" id="delete-all" data-url="<?=$linkDelete?>" title="Xóa tất cả"><i class="far fa-trash-alt mr-2"></i>Xóa tất cả</a>
+        <?php $currentConfirmStatus = isset($_GET['confirm_status']) ? (string) $_GET['confirm_status'] : ''; ?>
+        <?php if(!empty($config['newsletter'][$type]['confirm_status'])) { ?>
+        <div class="form-inline d-inline-block align-middle ml-3">
+            <select class="form-control form-control-sm" aria-label="Lọc tình trạng xử lý" onchange="window.location.href='<?=$linkConfirmStatus?>&confirm_status='+encodeURIComponent(this.value)">
+                <option value="" <?=$currentConfirmStatus === '' ? 'selected' : ''?>>Tất cả tình trạng</option>
+                <option value="pending" <?=$currentConfirmStatus === 'pending' ? 'selected' : ''?>>Chưa xử lý</option>
+                <?php foreach($config['newsletter'][$type]['confirm_status'] as $statusKey => $statusLabel) { ?>
+                    <option value="<?=$statusKey?>" <?=$currentConfirmStatus === (string) $statusKey ? 'selected' : ''?>><?=$statusLabel?></option>
+                <?php } ?>
+            </select>
+        </div>
+        <?php } ?>
         <div class="form-inline form-search d-inline-block align-middle ml-3">
             <div class="input-group input-group-sm">
-                <input class="form-control form-control-navbar text-sm" type="search" id="keyword" placeholder="Tìm kiếm" aria-label="Tìm kiếm" value="<?=(isset($_GET['keyword'])) ? $_GET['keyword'] : ''?>" onkeypress="doEnter(event,'keyword','<?=$linkMan?>')">
+                <input class="form-control form-control-navbar text-sm" type="search" id="keyword" placeholder="Tên, email, điện thoại, công ty" aria-label="Tìm kiếm" value="<?=(isset($_GET['keyword'])) ? htmlspecialchars($_GET['keyword'], ENT_QUOTES, 'UTF-8') : ''?>" onkeypress="doEnter(event,'keyword','<?=$linkSearch?>')">
                 <div class="input-group-append bg-primary rounded-right">
-                    <button class="btn btn-navbar text-white" type="button" onclick="onSearch('keyword','<?=$linkMan?>')">
+                    <button class="btn btn-navbar text-white" type="button" onclick="onSearch('keyword','<?=$linkSearch?>')">
                         <i class="fas fa-search"></i>
                     </button>
                 </div>

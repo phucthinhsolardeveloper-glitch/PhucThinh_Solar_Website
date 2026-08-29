@@ -10,6 +10,7 @@
 - `07-features/README.md`: feature inventory.
 - `08-integrations/README.md`: tích hợp.
 - `10-audits/initial-handover-audit.md`: audit bàn giao.
+- `13-handoffs/2026-08-29-admin-operations-followup.md`: trạng thái nâng cấp filter, liên hệ và bulk sản phẩm trong Admin.
 - `11-workflows/development-workflow.md`: workflow.
 - `12-ai/context-map.md`, `agent-workflow.md`, `task-template.md`: AI context.
 - `CHANGELOG.md`, `ROADMAP.md`: lịch sử tài liệu và ưu tiên.
