@@ -1216,3 +1216,15 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 @media(max-width:576px){
     #CRintro_home #CRicos_intro_home{grid-template-columns:1fr;}
 }
+
+/* Trạng thái rỗng dùng chung cho danh mục tin tức/giải pháp/dự án khi chưa
+   có bài viết được gán vào -> trước đây im lặng hoàn toàn (if(count($news))
+   không có else), trang co ngắn lại và chạm footer ngay dưới hàng chip. */
+.pts-empty-state{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:14px;padding:64px 24px;margin:8px 0 24px;width:100%!important;
+    background:var(--pts-surface);border-radius:16px;text-align:center;
+}
+.CRrow_term_bottom .col-12,.CRrow_term_bottom>.row>.col-12{flex:0 0 100%!important;max-width:100%!important;}
+.pts-empty-state i{font-size:34px;color:#cbd5e1;}
+.pts-empty-state p{margin:0;color:#94a3b8;font-size:14.5px;font-weight:700;}

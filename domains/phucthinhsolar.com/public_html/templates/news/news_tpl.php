@@ -43,7 +43,14 @@
                             </div>
                         </div>
                     </div>
-                    <?php }} ?>
+                    <?php } } else { ?>
+                    <div class="col-12">
+                        <div class="pts-empty-state">
+                            <i class="fas fa-newspaper"></i>
+                            <p><?=khongtimthayketqua?></p>
+                        </div>
+                    </div>
+                    <?php } ?>
                     <div class="col-12">
                         <div class="pagination-home w-100"><?=(!empty($paging)) ? $paging : ''?></div>
                     </div>

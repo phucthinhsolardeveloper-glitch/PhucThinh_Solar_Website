@@ -36,7 +36,14 @@
                             </div>
                         </div>
                     </div>
-                    <?php }} ?>
+                    <?php } } else { ?>
+                    <div class="col-12">
+                        <div class="pts-empty-state">
+                            <i class="fas fa-image"></i>
+                            <p><?=khongtimthayketqua?></p>
+                        </div>
+                    </div>
+                    <?php } ?>
                 </div>
             </div>
         </div>
