@@ -2,6 +2,8 @@
 
 Phạm vi hiện tại là Git và Docker local. Chưa được phép triển khai hoặc ghi dữ liệu production.
 
+Checklist triển khai theo thứ tự ưu tiên, điều kiện Go/No-Go và rollback được chốt tại [Báo cáo sẵn sàng đưa website lên hosting](../06-operations/hosting-readiness-2026-08-29.md). Tất cả mục P0 trong tài liệu đó phải đạt trước khi mở production.
+
 ## A. Chốt batch thông số và Excel hiện tại
 
 - [x] Mở rộng 19 trường thông số chuẩn và `additional_specs`.
