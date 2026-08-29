@@ -309,6 +309,7 @@ $certificateContent = (!empty($rowDetail['certificate'.$lang])) ? htmlspecialcha
                         <div class="form-register">
                             <form class="validation-newsletter" novalidate method="post" action=""
                                 enctype="multipart/form-data">
+                                <input type="hidden" name="form_csrf" value="<?=htmlspecialchars(formCsrfToken(), ENT_QUOTES, 'UTF-8')?>">
                                 <div class="newsletter-input">
                                     <label for="fullname-newsletter">Tên của bạn*</label>
                                     <input type="text" class="form-control" id="fullname-newsletter"

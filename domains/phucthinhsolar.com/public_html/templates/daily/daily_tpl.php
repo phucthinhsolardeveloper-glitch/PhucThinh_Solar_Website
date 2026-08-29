@@ -8,6 +8,7 @@
                     <ul></ul>
                 </div>
                 <form action="" method="post" class="wpcf7-form init" data-status="init">
+                    <input type="hidden" name="form_csrf" value="<?=htmlspecialchars(formCsrfToken(), ENT_QUOTES, 'UTF-8')?>">
                     <div class="inf_default_form">
                         <h4 class="title">Đăng ký làm đối tác phân phối Đèn năng lượng mặt trời!</h4>
                         <ul>

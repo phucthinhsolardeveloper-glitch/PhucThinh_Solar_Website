@@ -48,6 +48,7 @@
             <div class="col-lg-7">
                 <form class="contact-form validation-contact" method="post" action=""
                     enctype="multipart/form-data">
+                    <input type="hidden" name="form_csrf" value="<?=htmlspecialchars(formCsrfToken(), ENT_QUOTES, 'UTF-8')?>">
                     <div class="form-row">
                         <div class="contact-input col-sm-6">
                             <input type="text" class="form-control text-sm" id="fullname-contact"
@@ -117,6 +118,7 @@
                                 <ul></ul>
                             </div>
                             <form action="" method="post" class="wpcf7-form init" data-status="init">
+                                <input type="hidden" name="form_csrf" value="<?=htmlspecialchars(formCsrfToken(), ENT_QUOTES, 'UTF-8')?>">
                                 <div class="inf_default_form">
                                     <h4 class="title">Gửi tin nhắn cho chúng tôi</h4>
                                     <p class="des">Chúng tôi sẵn sàng phục vụ bạn!</p>

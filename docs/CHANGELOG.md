@@ -21,3 +21,4 @@
 - Thêm validation server-side cho CRUD sản phẩm: định dạng giá/công suất, giá không âm và giá mới không vượt giá bán; không thay đổi dữ liệu sản phẩm hiện có.
 - Khóa mass-assignment khi Admin cập nhật đơn: chỉ nhận bốn field nghiệp vụ được phép và xác minh trạng thái đơn/thanh toán phía server.
 - Sửa upload đính kèm liên hệ dùng validator tài liệu; mở allowlist MIME cho PDF/Office/archive/ảnh, vẫn từ chối PHP giả, MIME sai và file vượt dung lượng.
+- Bổ sung CSRF cho liên hệ, tư vấn sản phẩm và đăng ký đại lý; request thiếu token bị chặn trước khi ghi DB.

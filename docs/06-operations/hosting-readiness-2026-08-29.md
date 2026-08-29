@@ -77,6 +77,7 @@ Website chỉ được mở traffic/chạy quảng cáo khi toàn bộ mục **P
 - [ ] Test xem/thêm/sửa/xóa và gọi API trực tiếp cho từng vai trò.
 - [ ] Chỉ bật `permission.active` trên staging sau khi ma trận quyền đạt; chưa bật thẳng production.
 - [x] Test local CSRF: đủ 42/42 form; thiếu token trả 403, token hợp lệ đi qua lớp bảo vệ.
+- [x] Contact và hai form newsletter public phát CSRF; HTTP test xác nhận thiếu token không ghi dữ liệu.
 - [ ] Test session hết hạn, đăng nhập lại, hai tab Admin và hai thiết bị.
 - [ ] Xác minh trên HTTPS staging cookie Admin có `Secure`; local đã đạt `HttpOnly`, `SameSite=Lax` và đổi session ID sau đăng nhập.
 - [x] Bổ sung rate limit login bền vững theo IP và hash tài khoản; không tin forwarded IP ngoài trusted proxy.

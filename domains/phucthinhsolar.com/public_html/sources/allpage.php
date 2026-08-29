@@ -29,6 +29,7 @@
     /* Newsletter */
     if(!empty($_POST['submit-newsletter']))
     {
+        if(!formCsrfValid(isset($_POST['form_csrf']) ? $_POST['form_csrf'] : '')) $func->transfer("Phiên đăng ký không hợp lệ. Vui lòng tải lại trang.", $configBase, false);
         $publicIp = formClientIp($_SERVER, isset($config['login']['trusted-proxies']) ? $config['login']['trusted-proxies'] : array());
         if(!formPersistentRateLimit($d, 'newsletter-consulting', $publicIp, 5, 600)) $func->transfer("Bạn đăng ký quá nhanh. Vui lòng thử lại sau.", $configBase, false);
         $responseCaptcha = $_POST['recaptcha_response_newsletter'];
@@ -75,6 +76,7 @@
 
     if(!empty($_POST['submit-newsletter2']))
     {
+        if(!formCsrfValid(isset($_POST['form_csrf']) ? $_POST['form_csrf'] : '')) $func->transfer("Phiên đăng ký không hợp lệ. Vui lòng tải lại trang.", $configBase, false);
         $publicIp = formClientIp($_SERVER, isset($config['login']['trusted-proxies']) ? $config['login']['trusted-proxies'] : array());
         if(!formPersistentRateLimit($d, 'newsletter-dealer', $publicIp, 5, 600)) $func->transfer("Bạn đăng ký quá nhanh. Vui lòng thử lại sau.", $configBase, false);
         $responseCaptcha = $_POST['recaptcha_response_newsletter2'];
