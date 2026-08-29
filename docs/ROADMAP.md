@@ -1,5 +1,7 @@
 # Roadmap
 
+Checklist thực thi hiện hành: `docs/13-handoffs/2026-08-29-next-work-checklist.md`.
+
 ## Theme V2 - ưu tiên trước quảng cáo
 
 - [x] Đọc lịch sử thay đổi và đối chiếu source PHP với `solar-light-web`.
@@ -12,11 +14,12 @@
 
 ## Trước khi chạy quảng cáo / production
 
-- Nhập và duyệt nội dung thật cho 5 chính sách.
-- Nhập video, thông số, mô tả và chứng nhận thật cho nhóm sản phẩm chạy ads.
-- Rà 42 sản phẩm chưa có công suất chuẩn hóa.
-- Xử lý Security Review 2026-08-27 rồi retest.
-- Xác minh SMTP, PHP `calendar`, backup và rollback trên hosting.
+- [ ] Nhận, preview và kiểm tra file Excel dữ liệu thật trên local/staging; không chạy migration 006 apply.
+- [ ] Nhập và duyệt nội dung thật cho 5 chính sách.
+- [ ] Duyệt video, mô tả và chứng nhận thật cho nhóm sản phẩm chạy ads.
+- [ ] Xử lý phần Security Review còn lại rồi retest.
+- [ ] Xác minh SMTP, reCAPTCHA, PHP `calendar`, backup/restore và rollback trên hosting/staging.
+- [ ] Chạy commerce smoke đầy đủ và chỉ deploy khi có phê duyệt.
 
 ## Đã hoàn thành trên local
 
@@ -24,7 +27,8 @@
 - Giỏ hàng, Mua ngay, checkout, trang cảm ơn và conversion một lần.
 - Review/ảnh feedback/xác minh đã mua hàng.
 - Admin đơn hàng, admin chính sách.
-- Video YouTube, thông số có cấu trúc và chứng nhận sản phẩm.
+- Video YouTube, 19 trường thông số có cấu trúc, thông số riêng và chứng nhận sản phẩm.
+- Import/export sản phẩm CSV/XLS/XLSX có preview, đối soát xung đột và rollback trong lượt xử lý.
 
 ## Sau khi chốt Theme V2
 

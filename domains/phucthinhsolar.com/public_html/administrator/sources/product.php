@@ -345,6 +345,21 @@
 		$dataTags = (!empty($_POST['dataTags'])) ? $_POST['dataTags'] : null;
 		$dataColor = (!empty($_POST['dataColor'])) ? $_POST['dataColor'] : null;
 		$dataSize = (!empty($_POST['dataSize'])) ? $_POST['dataSize'] : null;
+		$additionalSpecs = array();
+		if(isset($_POST['additional_specs_text']))
+		{
+			$additionalSpecsText = (string) $_POST['additional_specs_text'];
+			$parsedAdditionalSpecs = productBulkParseSpecLines($additionalSpecsText);
+			foreach($parsedAdditionalSpecs['errors'] as $specError) $response['messages'][] = 'Thông số riêng '.$specError;
+			foreach($parsedAdditionalSpecs['specs'] as $spec)
+			{
+				$additionalSpecs[] = array(
+					'label' => trim(strip_tags($func->sanitize($spec['label']))),
+					'value' => trim(strip_tags($func->sanitize($spec['value'])))
+				);
+			}
+			$data['additional_specs'] = $additionalSpecs ? json_encode($additionalSpecs, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : null;
+		}
 
 		if($data)
 		{
@@ -468,6 +483,7 @@
 
 		if(!empty($response))
 		{
+			if(isset($additionalSpecsText)) $flash->set('additional_specs_text', $additionalSpecsText);
 			/* Flash data */
 			if(!empty($data))
 			{

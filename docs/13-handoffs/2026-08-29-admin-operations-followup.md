@@ -1,6 +1,6 @@
 # Bàn giao nâng cấp vận hành Admin — 2026-08-29
 
-Phạm vi: Docker local, chưa triển khai production và không thay đổi schema.
+Phạm vi ban đầu: Docker local, chưa triển khai production. Follow-up thông số sản phẩm ngày 2026-08-29 có bổ sung migration schema 004–006 nhưng chưa triển khai production.
 
 ## Mục tiêu
 
@@ -40,8 +40,16 @@ Phạm vi: Docker local, chưa triển khai production và không thay đổi sc
 - Mutation Admin legacy khác vẫn thiếu CSRF/authorization theo action; thay đổi này không giải quyết toàn bộ Security Review.
 - Cần smoke lại bằng browser sau build sạch trước khi deploy.
 
+## Follow-up: thông số sản phẩm có cấu trúc
+
+- Mở rộng từ 8 lên 19 trường thông số chuẩn và thêm danh sách `additional_specs` cho các thông số riêng.
+- Admin và bulk CSV/XLS/XLSX dùng chung parser `Tên | Giá trị`; frontend dựng bảng từ dữ liệu cấu trúc và fallback về HTML cũ khi cần.
+- Migration 004 thêm schema; migration 005 tách bảng HTML cũ; migration 006 chuẩn hóa nhãn đồng nghĩa và giữ dòng trùng bằng hậu tố. Hai script dữ liệu mặc định dry-run và không xóa HTML cũ.
+- Test tích hợp bổ sung XLS legacy, round-trip workbook, `__CLEAR__`, lỗi giữa batch/rollback, JSON lỗi và nhãn trùng; toàn bộ đạt trên PHP 7.4 local.
+- Migration 006 mới được xác minh dry-run, chưa được phép áp dụng lên production.
+
 ## Deploy và rollback
 
 - Chưa được phép deploy production. Trước deploy phải backup code/DB, build staging sạch và smoke product/order/contact/newsletter.
-- Thay đổi không có migration database.
+- Phần nâng cấp Admin ban đầu không có migration; follow-up thông số phải chạy migration 004–006 đúng thứ tự sau backup và duyệt dry-run.
 - Rollback bằng revert commit chứa các file trong bàn giao này. Nếu bulk đã được dùng sau deploy, phải đối chiếu export/backup DB trước khi rollback code; rollback code không tự đảo dữ liệu sản phẩm đã nhập.

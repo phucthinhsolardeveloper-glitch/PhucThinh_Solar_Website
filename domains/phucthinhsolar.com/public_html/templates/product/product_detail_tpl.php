@@ -27,21 +27,10 @@ if(!empty($rowDetail['video_url']))
         $videoEmbedUrl = 'https://www.youtube-nocookie.com/embed/'.$videoId;
 }
 
-$structuredSpecLabels = array(
-    'battery_capacity' => 'Dung lượng pin',
-    'panel_power' => 'Công suất tấm pin',
-    'material' => 'Chất liệu',
-    'charging_time' => 'Thời gian sạc',
-    'lighting_time' => 'Thời gian chiếu sáng',
-    'waterproof_rating' => 'Chỉ số chống nước',
-    'led_chip' => 'Loại chip LED',
-    'lighting_area' => 'Diện tích phủ sáng'
-);
-$structuredSpecs = array();
-foreach($structuredSpecLabels as $field => $label)
-{
-    if(!empty($rowDetail[$field])) $structuredSpecs[$label] = $rowDetail[$field];
-}
+require_once LIBRARIES.'product_specs.php';
+$structuredSpecResult = productStructuredSpecs($rowDetail, $lang);
+$structuredSpecs = $structuredSpecResult['specs'];
+$useLegacySpecs = $structuredSpecResult['use_legacy'];
 $certificateContent = (!empty($rowDetail['certificate'.$lang])) ? htmlspecialchars_decode($rowDetail['certificate'.$lang]) : '';
 ?>
 <div class="box-detail">
@@ -245,17 +234,19 @@ $certificateContent = (!empty($rowDetail['certificate'.$lang])) ? htmlspecialcha
                     <div class="table-responsive mb-4">
                         <table class="table table-bordered table-striped mb-0">
                             <tbody>
-                                <?php foreach($structuredSpecs as $label => $value) { ?>
+                                <?php foreach($structuredSpecs as $spec) { ?>
                                     <tr>
-                                        <th style="width:35%;"><?=$label?></th>
-                                        <td><?=htmlspecialchars(htmlspecialchars_decode($value, ENT_QUOTES), ENT_QUOTES, 'UTF-8')?></td>
+                                        <th style="width:35%;"><?=htmlspecialchars($spec['label'], ENT_QUOTES, 'UTF-8')?></th>
+                                        <td><?=htmlspecialchars(htmlspecialchars_decode($spec['value'], ENT_QUOTES), ENT_QUOTES, 'UTF-8')?></td>
                                     </tr>
                                 <?php } ?>
                             </tbody>
                         </table>
                     </div>
                 <?php } ?>
-                <?=htmlspecialchars_decode($rowDetail['thongsokythuat'.$lang])?>
+                <?php if($useLegacySpecs) { ?>
+                    <?=htmlspecialchars_decode($rowDetail['thongsokythuat'.$lang])?>
+                <?php } ?>
             </div>
             <?php if(!empty($videoEmbedUrl)) { ?>
             <div class="tab-pane fade" id="video-pro-detail" role="tabpanel">

@@ -59,8 +59,11 @@ Thứ tự hiện tại:
 1. `001_add_product_cong_suat.sql`
 2. `002_backfill_product_cong_suat.php`
 3. `003_add_product_ads_content.sql`
+4. `004_expand_product_structured_specs.sql`
+5. `005_migrate_product_structured_specs.php` (dry-run trước, sau đó thêm `--apply`)
+6. `006_normalize_product_additional_specs.php` (dry-run; gộp nhãn đồng nghĩa và giữ nhãn trùng bằng hậu tố)
 
-Migration 003 bổ sung URL video YouTube, 8 thông số sản phẩm có cấu trúc và nội dung chứng nhận VI/EN. Luôn backup DB trước khi chạy migration production.
+Migration 003 bổ sung URL video YouTube, 8 thông số sản phẩm có cấu trúc và nội dung chứng nhận VI/EN. Migration 004–005 mở rộng bộ thông số, chuyển bảng HTML cũ sang từng trường và giữ các thông số riêng dưới dạng danh sách tên/giá trị. Migration 006 chuẩn hóa một số nhãn đồng nghĩa và đổi tên nhãn legacy bị trùng để không mất dòng khi hiển thị/import lại. Các script không xóa `thongsokythuatvi/en`, nên dữ liệu gốc vẫn còn để đối chiếu và rollback. Luôn backup DB trước khi chạy migration production.
 
 ## Tính năng nâng cấp local
 

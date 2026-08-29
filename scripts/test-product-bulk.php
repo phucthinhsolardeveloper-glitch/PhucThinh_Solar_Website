@@ -12,6 +12,7 @@ $func = new Functions($d, $cache);
 require LIBRARIES.'config-type.php';
 $type = 'san-pham';
 require SOURCES.'product_bulk.php';
+require LIBRARIES.'product_specs.php';
 
 function testAssert($condition, $message)
 {
@@ -24,19 +25,46 @@ if (!empty($argv[1]) && $argv[1] === '--export-workbook') {
     productBulkExport(false);
 }
 
+if (!empty($argv[1]) && $argv[1] === '--export-csv') {
+    $_GET['format'] = 'csv';
+    productBulkExport(false);
+}
+
 if (!empty($argv[1]) && $argv[1] === '--inspect-workbook' && !empty($argv[2])) {
     require_once LIBRARIES.'PHPExcel.php';
     require_once LIBRARIES.'PHPExcel/IOFactory.php';
     $workbook = PHPExcel_IOFactory::load($argv[2]);
     $productSheet = $workbook->getSheetByName('SanPham');
     $systemSheet = $workbook->getSheetByName('_HeThong');
-    testAssert($productSheet !== null && $systemSheet !== null, 'Workbook có sheet sản phẩm và sheet hệ thống');
+    $guideSheet = $workbook->getSheetByName('HuongDan');
+    testAssert($productSheet !== null && $systemSheet !== null && $guideSheet !== null, 'Workbook có sheet sản phẩm, hướng dẫn và hệ thống');
     testAssert($productSheet->getCell('A1')->getValue() === 'ID sản phẩm', 'Sheet sản phẩm dùng tiêu đề nghiệp vụ tiếng Việt');
     testAssert($systemSheet->getSheetState() === PHPExcel_Worksheet::SHEETSTATE_VERYHIDDEN, 'Sheet hệ thống được ẩn hoàn toàn');
     testAssert($systemSheet->getCell('A2')->getValue() !== '', 'Sheet hệ thống chứa snapshot để so sánh xung đột');
     $headerColumns = array();
     foreach ($productSheet->getRowIterator(1, 1)->current()->getCellIterator() as $cell) $headerColumns[$cell->getValue()] = $cell->getColumn();
+    testAssert(
+        !empty($headerColumns['Mã sản phẩm']) && !empty($headerColumns['Tên sản phẩm'])
+        && $productSheet->getStyle($headerColumns['Mã sản phẩm'].'1')->getFill()->getStartColor()->getRGB() === 'FDE68A'
+        && $productSheet->getStyle($headerColumns['Tên sản phẩm'].'1')->getFill()->getStartColor()->getRGB() === 'FDE68A',
+        'Hai cột bắt buộc khi tạo mới được tô màu vàng'
+    );
+    testAssert(strpos((string) $guideSheet->getCell('B2')->getValue(), 'Mã sản phẩm và Tên sản phẩm') !== false, 'Sheet hướng dẫn nêu rõ dữ liệu bắt buộc');
+    testAssert(strpos((string) $guideSheet->getCell('B3')->getValue(), 'ô trống sẽ giữ') !== false, 'Sheet hướng dẫn giải thích cách cập nhật tối giản');
+    testAssert(strpos((string) $guideSheet->getCell('B17')->getValue(), 'Model | JD-T200') !== false, 'Sheet hướng dẫn có ví dụ thông số khác');
+    testAssert(strpos((string) $guideSheet->getCell('B21')->getValue(), 'Bước 1') !== false && strpos((string) $guideSheet->getCell('B21')->getValue(), 'CAP_NHAT') !== false, 'Sheet hướng dẫn có quy trình import từng bước');
     testAssert(!empty($headerColumns['Danh mục cấp 1']) && $productSheet->getCell($headerColumns['Danh mục cấp 1'].'2')->getDataValidation()->getType() === PHPExcel_Cell_DataValidation::TYPE_LIST, 'Danh mục có danh sách chọn trong Excel');
+    $htmlFree = true;
+    foreach(array('Mô tả ngắn', 'Nội dung', 'Chính sách mua hàng', 'Chứng nhận/kiểm nghiệm') as $header) {
+        if(empty($headerColumns[$header])) continue;
+        for($rowNumber = 2; $rowNumber <= $productSheet->getHighestRow(); $rowNumber++) {
+            if(preg_match('~<[a-z][^>]*>~iu', (string) $productSheet->getCell($headerColumns[$header].$rowNumber)->getValue())) {
+                $htmlFree = false;
+                break 2;
+            }
+        }
+    }
+    testAssert($htmlFree, 'Các cột nội dung trong Excel không còn thẻ HTML');
     $parsedWorkbook = productBulkReadUpload(array('error' => UPLOAD_ERR_OK, 'size' => filesize($argv[2]), 'name' => 'san-pham.xlsx', 'tmp_name' => $argv[2]));
     testAssert(empty($parsedWorkbook['errors']) && !empty($parsedWorkbook['rows']), 'Đọc lại được workbook vừa xuất');
     testAssert(count($parsedWorkbook['baseline']) === count($parsedWorkbook['rows']), 'Đọc đủ snapshot hệ thống cho các sản phẩm xuất ra');
@@ -58,7 +86,23 @@ function commitRowsForTest($rows, $token, $baseline = array(), $overwriteChoices
     $bulkResult = null;
     $bulkPreview = null;
     productBulkCommit();
-    testAssert(!empty($bulkMessage) && $bulkMessage['type'] === 'success', 'Commit batch thành công');
+    testAssert(!empty($bulkMessage) && $bulkMessage['type'] === 'success', 'Commit batch thành công'.(!empty($bulkMessage['text']) ? ': '.$bulkMessage['text'] : ''));
+}
+
+function failCommitRowsForTest($rows, $token, $failAfter)
+{
+    global $type, $bulkMessage, $productBulkTestFailAfter;
+    $path = sys_get_temp_dir().DIRECTORY_SEPARATOR.'pts-bulk-test-'.$token.'.json';
+    file_put_contents($path, json_encode(array('type' => $type, 'created_at' => time(), 'rows' => $rows, 'baseline' => array()), JSON_UNESCAPED_UNICODE));
+    $_SESSION['product_bulk_preview'][$token] = array('path' => $path, 'type' => $type, 'created_at' => time());
+    $_SESSION['product_bulk_csrf'] = 'test-csrf';
+    $_POST = array('product_bulk_csrf' => 'test-csrf', 'confirm_bulk' => 'CAP_NHAT', 'preview_token' => $token);
+    $productBulkTestFailAfter = $failAfter;
+    $bulkMessage = null;
+    productBulkCommit();
+    $productBulkTestFailAfter = null;
+    @unlink($path);
+    testAssert(!empty($bulkMessage) && $bulkMessage['type'] === 'danger', 'Batch lỗi giữa chừng trả về trạng thái thất bại');
 }
 
 $before = (int) $d->rawQueryOne('select count(*) as total from #_product where type = ?', array($type))['total'];
@@ -67,14 +111,24 @@ $createdId = 0;
 try {
     $csvPath = tempnam(sys_get_temp_dir(), 'pts-csv-');
     $csv = fopen($csvPath, 'wb');
-    fputcsv($csv, array('Mã sản phẩm', 'Tên sản phẩm', 'Giá gốc', 'Giá bán/khuyến mãi'));
-    fputcsv($csv, array($code, 'Sản phẩm kiểm thử bulk', '1000', '900'));
+    fputcsv($csv, array('Mã sản phẩm', 'Tên sản phẩm', 'Giá gốc', 'Giá bán/khuyến mãi', 'Nguồn sáng', 'Thông số khác (Tên | Giá trị)'));
+    fputcsv($csv, array($code, 'Sản phẩm kiểm thử bulk', '1000', '900', 'LED SMD', "Model | CODEX-T200\nGóc chiếu | 120°"));
     fclose($csv);
     $parsed = productBulkReadUpload(array('error' => UPLOAD_ERR_OK, 'size' => filesize($csvPath), 'name' => 'test.csv', 'tmp_name' => $csvPath));
     testAssert(empty($parsed['errors']) && count($parsed['rows']) === 1, 'Đọc CSV với tiêu đề tiếng Việt'.(!empty($parsed['errors']) ? ': '.implode(' ', $parsed['errors']) : ''));
     testAssert(isset($parsed['rows'][0]['code']) && !isset($parsed['rows'][0]['action']), 'Ánh xạ tiêu đề tiếng Việt về field nội bộ');
     $autoCreatePreview = productBulkValidateRows($parsed['rows'], $type);
     testAssert($autoCreatePreview['errors'] === 0 && $autoCreatePreview['counts']['create'] === 1, 'Tự nhận diện dòng không có ID và mã mới là tạo mới');
+    $parsedSpecs = json_decode($autoCreatePreview['rows'][0]['data']['additional_specs'], true);
+    testAssert($autoCreatePreview['rows'][0]['data']['light_source'] === 'LED SMD' && count($parsedSpecs) === 2 && $parsedSpecs[1]['value'] === '120°', 'Đọc thông số chuẩn và danh sách thông số riêng từ từng ô');
+    $duplicateSpecs = productBulkValidateRows(array(array('_row_number' => 3, 'code' => $code.'-DUP', 'namevi' => 'Sản phẩm trùng thông số', 'additional_specs' => "Model | A\nmodel | B")), $type);
+    testAssert($duplicateSpecs['errors'] > 0, 'Từ chối tên thông số riêng bị trùng');
+    $formSpecs = productBulkParseSpecLines("Model | TEST\nMàu | Trắng");
+    testAssert(empty($formSpecs['errors']) && count($formSpecs['specs']) === 2, 'Parser dùng chung cho CRUD form đọc đủ thông số riêng');
+    $duplicateRender = productStructuredSpecs(array('additional_specs' => '[{"label":"Cánh quạt","value":"5 cánh"},{"label":"Cánh quạt","value":"16 inch"}]'), 'vi');
+    testAssert(!$duplicateRender['use_legacy'] && count($duplicateRender['specs']) === 2, 'Frontend giữ đủ thông số legacy trùng nhãn');
+    $legacyRender = productStructuredSpecs(array('additional_specs' => '{json lỗi', 'thongsokythuatvi' => '<table><tr><td>Legacy</td></tr></table>'), 'vi');
+    testAssert($legacyRender['use_legacy'] && empty($legacyRender['specs']), 'Frontend fallback về HTML cũ khi JSON thông số lỗi');
     @unlink($csvPath);
 
     $legacyCsvPath = tempnam(sys_get_temp_dir(), 'pts-csv-legacy-');
@@ -86,14 +140,29 @@ try {
     testAssert(empty($legacyParsed['errors']) && isset($legacyParsed['rows'][0]['namevi']), 'Vẫn đọc được tiêu đề kỹ thuật của file cũ');
     @unlink($legacyCsvPath);
 
-    $createRows = array(array('_row_number' => 2, 'action' => 'create', 'code' => $code, 'namevi' => 'Sản phẩm kiểm thử bulk', 'regular_price' => '1000', 'sale_price' => '900', 'status' => 'hienthi', 'descvi' => '<script>alert(1)</script><p>Nội dung hợp lệ</p>'));
+    require_once LIBRARIES.'PHPExcel.php';
+    require_once LIBRARIES.'PHPExcel/IOFactory.php';
+    $legacyXlsPath = tempnam(sys_get_temp_dir(), 'pts-xls-');
+    $legacyBook = new PHPExcel();
+    $legacyBook->getActiveSheet()->fromArray(array(array('Mã sản phẩm', 'Tên sản phẩm'), array($code.'-XLS', 'File XLS cũ')));
+    $legacyErrorReporting = error_reporting();
+    error_reporting($legacyErrorReporting & ~E_DEPRECATED);
+    PHPExcel_IOFactory::createWriter($legacyBook, 'Excel5')->save($legacyXlsPath);
+    error_reporting($legacyErrorReporting);
+    $legacyXlsParsed = productBulkReadUpload(array('error' => UPLOAD_ERR_OK, 'size' => filesize($legacyXlsPath), 'name' => 'legacy.xls', 'tmp_name' => $legacyXlsPath));
+    testAssert(empty($legacyXlsParsed['errors']) && $legacyXlsParsed['rows'][0]['code'] === $code.'-XLS', 'Đọc được định dạng XLS legacy');
+    @unlink($legacyXlsPath);
+
+    $createRows = array(array('_row_number' => 2, 'action' => 'create', 'code' => $code, 'namevi' => 'Sản phẩm kiểm thử bulk', 'regular_price' => '1000', 'sale_price' => '900', 'status' => 'hienthi', 'descvi' => '<script>alert(1)</script><p>Nội dung hợp lệ</p>', 'light_source' => 'LED SMD', 'additional_specs' => "Model | CODEX-T200\nGóc chiếu | 120°"));
     $preview = productBulkValidateRows($createRows, $type);
     testAssert($preview['errors'] === 0 && $preview['counts']['create'] === 1, 'Preview tạo mới hợp lệ');
     commitRowsForTest($createRows, bin2hex(random_bytes(12)));
     $created = $d->rawQueryOne('select * from #_product where type = ? and code = ? limit 0,1', array($type, $code));
     testAssert(!empty($created['id']), 'Sản phẩm thử đã được tạo');
-    testAssert(stripos(htmlspecialchars_decode($created['descvi']), '<script') === false, 'HTML nguy hiểm bị loại bỏ');
     $createdId = (int) $created['id'];
+    testAssert(stripos(htmlspecialchars_decode($created['descvi']), '<script') === false, 'HTML nguy hiểm bị loại bỏ');
+    $savedSpecs = json_decode(htmlspecialchars_decode($created['additional_specs'], ENT_QUOTES), true);
+    testAssert($created['light_source'] === 'LED SMD' && count($savedSpecs) === 2 && $savedSpecs[0]['label'] === 'Model', 'Lưu đúng thông số cấu trúc và JSON thông số riêng');
 
     $autoUpdate = productBulkValidateRows(array(array('_row_number' => 8, 'code' => $code, 'material' => 'Nhôm')), $type);
     testAssert($autoUpdate['errors'] === 0 && $autoUpdate['counts']['update'] === 1 && $autoUpdate['rows'][0]['id'] === $createdId, 'Tự match sản phẩm hiện có theo mã');
@@ -126,7 +195,24 @@ try {
     $updated = $d->rawQueryOne('select * from #_product where id = ? and type = ?', array($createdId, $type));
     testAssert((float) $updated['sale_price'] === 800.0 && $updated['namevi'] === $created['namevi'], 'Ô trống giữ nguyên và giá được cập nhật');
 
-    $archiveRows = array(array('_row_number' => 2, 'action' => 'archive', 'id' => $createdId, 'expected_updated_at' => (int) $updated['date_updated']));
+    $clearRows = array(array('_row_number' => 3, 'action' => 'update', 'id' => $createdId, 'light_source' => '__CLEAR__', 'additional_specs' => '__CLEAR__'));
+    $clearPreview = productBulkValidateRows($clearRows, $type);
+    testAssert($clearPreview['errors'] === 0 && array_key_exists('light_source', $clearPreview['rows'][0]['data']) && $clearPreview['rows'][0]['data']['light_source'] === null, '__CLEAR__ được chuyển thành giá trị rỗng có chủ ý');
+    commitRowsForTest($clearRows, bin2hex(random_bytes(12)));
+    $cleared = $d->rawQueryOne('select light_source,additional_specs from #_product where id = ? and type = ?', array($createdId, $type));
+    testAssert($cleared['light_source'] === null && $cleared['additional_specs'] === null, '__CLEAR__ xóa đúng dữ liệu khi commit');
+
+    $beforeRollbackName = $d->rawQueryOne('select namevi from #_product where id = ? and type = ?', array($createdId, $type))['namevi'];
+    $rollbackRows = array(
+        array('_row_number' => 20, 'action' => 'update', 'id' => $createdId, 'namevi' => 'Tên không được lưu'),
+        array('_row_number' => 21, 'action' => 'create', 'code' => $code.'-ROLLBACK', 'namevi' => 'Sản phẩm rollback')
+    );
+    failCommitRowsForTest($rollbackRows, bin2hex(random_bytes(12)), 1);
+    $afterRollbackName = $d->rawQueryOne('select namevi from #_product where id = ? and type = ?', array($createdId, $type))['namevi'];
+    $rollbackCreated = $d->rawQueryOne('select id from #_product where code = ? and type = ?', array($code.'-ROLLBACK', $type));
+    testAssert($afterRollbackName === $beforeRollbackName && empty($rollbackCreated), 'Transaction rollback không để lại cập nhật/tạo mới dở dang');
+
+    $archiveRows = array(array('_row_number' => 2, 'action' => 'archive', 'id' => $createdId));
     $preview = productBulkValidateRows($archiveRows, $type);
     testAssert($preview['errors'] === 0 && $preview['counts']['archive'] === 1, 'Preview archive hợp lệ');
     commitRowsForTest($archiveRows, bin2hex(random_bytes(12)));

@@ -7,8 +7,8 @@ function productBulkColumns()
         'action' => array('label' => 'Thao tác', 'kind' => 'control', 'export' => false),
         'id' => array('label' => 'ID sản phẩm', 'kind' => 'control'),
         'expected_updated_at' => array('label' => 'Mốc cập nhật', 'kind' => 'control', 'export' => false),
-        'code' => array('label' => 'Mã sản phẩm', 'kind' => 'text', 'db' => 'code', 'max' => 30),
-        'namevi' => array('label' => 'Tên sản phẩm', 'kind' => 'text', 'db' => 'namevi', 'max' => 255),
+        'code' => array('label' => 'Mã sản phẩm', 'kind' => 'text', 'db' => 'code', 'max' => 30, 'required_create' => true),
+        'namevi' => array('label' => 'Tên sản phẩm', 'kind' => 'text', 'db' => 'namevi', 'max' => 255, 'required_create' => true),
         'slugvi' => array('label' => 'Đường dẫn', 'kind' => 'slug', 'db' => 'slugvi', 'max' => 255, 'export' => false),
         'id_list' => array('label' => 'ID danh mục cấp 1', 'kind' => 'category', 'db' => 'id_list', 'export' => false),
         '_list_name' => array('label' => 'Danh mục cấp 1', 'kind' => 'category_name', 'target' => 'id_list'),
@@ -23,9 +23,12 @@ function productBulkColumns()
         'numb' => array('label' => 'Thứ tự', 'kind' => 'integer', 'db' => 'numb', 'export' => false),
         'descvi' => array('label' => 'Mô tả ngắn', 'kind' => 'html', 'db' => 'descvi'),
         'contentvi' => array('label' => 'Nội dung', 'kind' => 'html', 'db' => 'contentvi'),
-        'thongsokythuatvi' => array('label' => 'Thông số kỹ thuật', 'kind' => 'html', 'db' => 'thongsokythuatvi'),
         'chinhsachmuahangvi' => array('label' => 'Chính sách mua hàng', 'kind' => 'html', 'db' => 'chinhsachmuahangvi'),
         'video_url' => array('label' => 'Video YouTube', 'kind' => 'youtube', 'db' => 'video_url', 'max' => 500),
+        'light_source' => array('label' => 'Nguồn sáng', 'kind' => 'text', 'db' => 'light_source', 'max' => 255),
+        'lamp_dimensions' => array('label' => 'Kích thước đèn', 'kind' => 'text', 'db' => 'lamp_dimensions', 'max' => 150),
+        'color_temperature' => array('label' => 'Nhiệt độ màu (CCT)', 'kind' => 'text', 'db' => 'color_temperature', 'max' => 100),
+        'light_color' => array('label' => 'Màu ánh sáng', 'kind' => 'text', 'db' => 'light_color', 'max' => 100),
         'battery_capacity' => array('label' => 'Dung lượng pin', 'kind' => 'text', 'db' => 'battery_capacity', 'max' => 100),
         'panel_power' => array('label' => 'Công suất tấm pin', 'kind' => 'text', 'db' => 'panel_power', 'max' => 100),
         'material' => array('label' => 'Chất liệu', 'kind' => 'text', 'db' => 'material', 'max' => 255),
@@ -34,6 +37,13 @@ function productBulkColumns()
         'waterproof_rating' => array('label' => 'Chuẩn chống nước', 'kind' => 'text', 'db' => 'waterproof_rating', 'max' => 50),
         'led_chip' => array('label' => 'Chip LED', 'kind' => 'text', 'db' => 'led_chip', 'max' => 100),
         'lighting_area' => array('label' => 'Diện tích chiếu sáng', 'kind' => 'text', 'db' => 'lighting_area', 'max' => 100),
+        'installation_height' => array('label' => 'Độ cao lắp đặt', 'kind' => 'text', 'db' => 'installation_height', 'max' => 100),
+        'panel_dimensions' => array('label' => 'Kích thước tấm pin', 'kind' => 'text', 'db' => 'panel_dimensions', 'max' => 150),
+        'package_contents' => array('label' => 'Bộ sản phẩm gồm', 'kind' => 'text', 'db' => 'package_contents'),
+        'carton_quantity' => array('label' => 'Số lượng / thùng', 'kind' => 'text', 'db' => 'carton_quantity', 'max' => 100),
+        'carton_dimensions' => array('label' => 'Kích thước thùng', 'kind' => 'text', 'db' => 'carton_dimensions', 'max' => 150),
+        'warranty' => array('label' => 'Bảo hành', 'kind' => 'text', 'db' => 'warranty', 'max' => 150),
+        'additional_specs' => array('label' => 'Thông số khác (Tên | Giá trị)', 'kind' => 'spec_lines', 'db' => 'additional_specs'),
         'certificatevi' => array('label' => 'Chứng nhận/kiểm nghiệm', 'kind' => 'html', 'db' => 'certificatevi'),
         'photo' => array('label' => 'Tên ảnh hiện tại (chỉ đọc)', 'kind' => 'readonly')
     );
@@ -97,6 +107,30 @@ function productBulkNormalizeAction($value)
         'boqua' => 'skip', 'bỏ qua' => 'skip', 'không nhập' => 'skip'
     );
     return isset($map[$value]) ? $map[$value] : $value;
+}
+
+function productBulkParseSpecLines($value)
+{
+    $result = array('specs' => array(), 'errors' => array());
+    $labels = array();
+    foreach(preg_split('/\R/u', (string) $value) as $lineNumber => $line) {
+        if(trim($line) === '') continue;
+        $parts = explode('|', $line, 2);
+        if(count($parts) !== 2 || trim($parts[0]) === '' || trim($parts[1]) === '') {
+            $result['errors'][] = 'Dòng '.($lineNumber + 1).' phải theo mẫu: Tên thông số | Giá trị';
+            continue;
+        }
+        $label = trim(strip_tags($parts[0]));
+        $value = trim(strip_tags($parts[1]));
+        $key = mb_strtolower(preg_replace('/\s+/u', ' ', $label), 'UTF-8');
+        if(isset($labels[$key])) {
+            $result['errors'][] = 'Tên thông số bị trùng: '.$label;
+            continue;
+        }
+        $labels[$key] = true;
+        $result['specs'][] = array('label' => $label, 'value' => $value);
+    }
+    return $result;
 }
 
 function productBulkDatabaseColumns()
@@ -294,10 +328,45 @@ function productBulkFindCategoryIdByName($rows, $name)
     return count($matches) === 1 ? $matches[0] : (count($matches) > 1 ? -1 : 0);
 }
 
+function productBulkHtmlToText($value)
+{
+    $value = html_entity_decode((string) $value, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    if(strpos($value, '&lt;') !== false) $value = html_entity_decode($value, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    $value = preg_replace('~<br\s*/?>~iu', "\n", $value);
+    $value = preg_replace('~</(?:p|div|h[1-6]|tr|li)>~iu', "\n", $value);
+    $value = preg_replace('~<li\b[^>]*>~iu', '- ', $value);
+    $value = strip_tags($value);
+    $value = html_entity_decode($value, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    $lines = array();
+    foreach(preg_split('/\R/u', $value) as $line) {
+        $line = trim(preg_replace('/[\t ]+/u', ' ', $line));
+        if($line !== '') $lines[] = $line;
+    }
+    return implode("\n", $lines);
+}
+
 function productBulkComparableValue($value, $kind = '')
 {
     if ($value === null) return '';
     $value = trim(htmlspecialchars_decode((string) $value, ENT_QUOTES));
+    if ($kind === 'html') return productBulkHtmlToText($value);
+    if ($kind === 'spec_lines' && $value !== '') {
+        $specs = json_decode($value, true);
+        if (is_array($specs)) {
+            $canonical = array();
+            $labelCounts = array();
+            foreach ($specs as $spec) {
+                if (empty($spec['label']) || !isset($spec['value'])) continue;
+                $label = trim((string) $spec['label']);
+                $specKey = mb_strtolower(preg_replace('/\s+/u', ' ', $label), 'UTF-8');
+                if ($specKey === '') continue;
+                $labelCounts[$specKey] = isset($labelCounts[$specKey]) ? $labelCounts[$specKey] + 1 : 1;
+                if($labelCounts[$specKey] > 1) $label .= ' ('.$labelCounts[$specKey].')';
+                $canonical[] = array('label' => $label, 'value' => trim((string) $spec['value']));
+            }
+            return json_encode($canonical, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        }
+    }
     if (in_array($kind, array('money', 'decimal', 'integer', 'category'), true) && $value !== '' && is_numeric($value)) {
         return rtrim(rtrim(number_format((float) $value, 10, '.', ''), '0'), '.');
     }
@@ -426,6 +495,10 @@ function productBulkValidateRows($rawRows, $type, $baseline = array(), $overwrit
                 $statuses = array_values(array_unique(array_filter($statuses)));
                 foreach ($statuses as $status) if (!in_array($status, $allowedStatus, true)) $item['errors'][] = 'Trạng thái không hỗ trợ: '.$status;
                 $item['data'][$meta['db']] = implode(',', $statuses);
+            } elseif ($meta['kind'] === 'spec_lines') {
+                $parsedSpecs = productBulkParseSpecLines($value);
+                foreach($parsedSpecs['errors'] as $specError) $item['errors'][] = $meta['label'].': '.$specError.'.';
+                $item['data'][$meta['db']] = $parsedSpecs['specs'] ? json_encode($parsedSpecs['specs'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : null;
             } elseif ($meta['kind'] === 'youtube') {
                 if ($value !== '') {
                     $parts = parse_url($value);
@@ -582,7 +655,7 @@ function productBulkRollback($applied, $type)
 
 function productBulkCommit()
 {
-    global $d, $cache, $type, $bulkPreview, $bulkMessage, $bulkResult;
+    global $d, $cache, $type, $bulkPreview, $bulkMessage, $bulkResult, $productBulkTestFailAfter;
     if (!productBulkCheckCsrf()) {
         $bulkMessage = array('type' => 'danger', 'text' => 'Phiên làm việc không hợp lệ. Vui lòng tải lại trang.');
         return;
@@ -612,7 +685,11 @@ function productBulkCommit()
         return;
     }
     $applied = array();
+    $transactionStarted = false;
+    $writesApplied = 0;
     try {
+        $d->startTransaction();
+        $transactionStarted = true;
         foreach ($bulkPreview['rows'] as $row) {
             if ($row['action'] === 'skip' || empty($row['data'])) continue;
             $saveData = productBulkPrepareDataForSave($row['data']);
@@ -628,7 +705,12 @@ function productBulkCommit()
                 $d->where('type', $type);
                 if (!$d->update('product', $saveData)) throw new Exception('Không thể cập nhật sản phẩm tại dòng '.$row['row']);
             }
+            $writesApplied++;
+            if(isset($productBulkTestFailAfter) && $productBulkTestFailAfter > 0 && $writesApplied >= $productBulkTestFailAfter)
+                throw new Exception('Lỗi mô phỏng để kiểm tra rollback');
         }
+        $d->commit();
+        $transactionStarted = false;
         $cache->delete();
         $bulkResult = $bulkPreview['counts'];
         $bulkMessage = array('type' => 'success', 'text' => 'Đã áp dụng dữ liệu hàng loạt thành công.');
@@ -636,6 +718,9 @@ function productBulkCommit()
         unset($_SESSION['product_bulk_preview'][$token]);
         $bulkPreview = null;
     } catch (Exception $e) {
+        if($transactionStarted) $d->rollback();
+        // Một số bản bàn giao dùng engine không transactional. Luôn phục hồi thủ
+        // công sau rollback; thao tác này idempotent nếu transaction đã hoàn tác.
         productBulkRollback($applied, $type);
         $bulkMessage = array('type' => 'danger', 'text' => $e->getMessage().'. Hệ thống đã phục hồi các dòng đã xử lý trong lượt này.');
     }
@@ -656,6 +741,25 @@ function productBulkExportValue($key, $row, $categories)
         }
         return empty($values) ? 'Tạm ẩn' : implode(', ', $values);
     }
+    if ($key === 'additional_specs' && !empty($row[$key])) {
+        $lines = array();
+        $labelCounts = array();
+        $specs = json_decode(htmlspecialchars_decode((string) $row[$key], ENT_QUOTES), true);
+        if (is_array($specs)) foreach ($specs as $spec) {
+            if (!empty($spec['label']) && isset($spec['value'])) {
+                $specKey = mb_strtolower(preg_replace('/\s+/u', ' ', trim((string) $spec['label'])), 'UTF-8');
+                if ($specKey === '') continue;
+                $labelCounts[$specKey] = isset($labelCounts[$specKey]) ? $labelCounts[$specKey] + 1 : 1;
+                $label = trim((string) $spec['label']);
+                if($labelCounts[$specKey] > 1) $label .= ' ('.$labelCounts[$specKey].')';
+                $lines[] = $label.' | '.trim((string) $spec['value']);
+            }
+        }
+        return implode("\n", $lines);
+    }
+    $columns = productBulkColumns();
+    if(isset($columns[$key]) && $columns[$key]['kind'] === 'html')
+        return isset($row[$key]) ? productBulkHtmlToText($row[$key]) : '';
     return isset($row[$key]) ? htmlspecialchars_decode((string) $row[$key], ENT_QUOTES) : '';
 }
 
@@ -709,10 +813,18 @@ function productBulkExport($templateOnly = false)
     foreach ($headers as $columnIndex => $key) {
         $coordinate = PHPExcel_Cell::stringFromColumnIndex($columnIndex).'1';
         $sheet->setCellValueExplicit($coordinate, $columns[$key]['label'], PHPExcel_Cell_DataType::TYPE_STRING);
-        $sheet->getColumnDimension(PHPExcel_Cell::stringFromColumnIndex($columnIndex))->setWidth(in_array($key, array('descvi', 'contentvi', 'thongsokythuatvi', 'chinhsachmuahangvi', 'certificatevi'), true) ? 45 : 18);
+        $sheet->getColumnDimension(PHPExcel_Cell::stringFromColumnIndex($columnIndex))->setWidth(in_array($key, array('descvi', 'contentvi', 'chinhsachmuahangvi', 'certificatevi', 'additional_specs'), true) ? 45 : 18);
     }
     $lastColumn = PHPExcel_Cell::stringFromColumnIndex(count($headers) - 1);
     $sheet->getStyle('A1:'.$lastColumn.'1')->applyFromArray(array('font' => array('bold' => true, 'color' => array('rgb' => 'FFFFFF')), 'fill' => array('type' => PHPExcel_Style_Fill::FILL_SOLID, 'color' => array('rgb' => '0B2A5B')), 'alignment' => array('wrap' => true)));
+    foreach($headers as $columnIndex => $key) {
+        if(empty($columns[$key]['required_create'])) continue;
+        $letter = PHPExcel_Cell::stringFromColumnIndex($columnIndex);
+        $sheet->getStyle($letter.'1')->applyFromArray(array(
+            'font' => array('bold' => true, 'color' => array('rgb' => '1F2937')),
+            'fill' => array('type' => PHPExcel_Style_Fill::FILL_SOLID, 'color' => array('rgb' => 'FDE68A'))
+        ));
+    }
     $sheet->freezePane('A2');
     $sheet->setAutoFilter('A1:'.$lastColumn.'1');
     $rowIndex = 2;
@@ -735,20 +847,46 @@ function productBulkExport($templateOnly = false)
     $guide = $excel->createSheet();
     $guide->setTitle('HuongDan');
     $guide->fromArray(array(
-        array('Quy tắc', 'Chi tiết'),
-        array('Tạo mới / cập nhật', 'Có ID hoặc mã đã tồn tại: cập nhật. ID trống và mã chưa tồn tại: tạo mới. Sản phẩm mới bắt buộc có mã và tên.'),
-        array('Ô trống', 'Khi cập nhật: giữ nguyên dữ liệu hiện tại. Khi tạo mới: dùng giá trị mặc định.'),
-        array('Chống trùng', 'Hệ thống đối chiếu ID trước, sau đó đến mã sản phẩm. ID và mã chỉ đến hai sản phẩm khác nhau sẽ bị từ chối.'),
-        array('Xung đột', 'Sheet ẩn _HeThong lưu dữ liệu lúc export. Nếu website và Excel cùng sửa một ô, hệ thống sẽ yêu cầu chọn giữ website hoặc dùng Excel.'),
-        array('Giá sale', 'regular_price là giá gốc; sale_price là giá bán/khuyến mãi và không được lớn hơn giá gốc.'),
-        array('Trạng thái', 'hienthi,banchay. archive sẽ gỡ hienthi và banchay nhưng không xóa vĩnh viễn.'),
-        array('Hình ảnh', 'Cột photo chỉ để đối chiếu. Hình vẫn quản lý tại trang chi tiết sản phẩm.'),
-        array('Giới hạn', 'Tối đa 500 dòng và 5 MB mỗi lần import. Luôn xem trước trước khi xác nhận.')
+        array('HƯỚNG DẪN NHANH', 'Chỉ nhập những ô cần thiết; không cần điền hết các cột.'),
+        array('Tạo sản phẩm mới', 'Chỉ bắt buộc Mã sản phẩm và Tên sản phẩm (hai cột màu vàng). Các ô khác có thể để trống.'),
+        array('Sửa sản phẩm', 'Giữ nguyên ID hoặc Mã sản phẩm. Chỉ sửa các ô muốn thay đổi; ô trống sẽ giữ dữ liệu đang có trên website.'),
+        array('Hệ thống tự làm', 'Tự nhận biết tạo mới/cập nhật, tạo đường dẫn từ tên, tính chiết khấu, giữ ngày hệ thống và dùng mặc định cho ô không nhập.'),
+        array('Muốn xóa một ô', 'Nhập đúng __CLEAR__ vào ô đó. Không dùng __CLEAR__ cho ID hoặc Mã sản phẩm.'),
+        array('1. TẠO MỚI', 'Ví dụ tối thiểu: Mã sản phẩm = JD-T200; Tên sản phẩm = Đèn pha JD-T200. Có thể nhập thêm giá, danh mục, trạng thái và thông số nếu đã có.'),
+        array('Mã sản phẩm', 'Mỗi sản phẩm dùng một mã duy nhất, tối đa 30 ký tự. Không dùng lại mã của sản phẩm khác.'),
+        array('Giá sản phẩm', 'Giá gốc và Giá bán/khuyến mãi nhập bằng số, không nhập chữ “đ” hoặc “VNĐ”. Giá khuyến mãi không được lớn hơn giá gốc.'),
+        array('Tình trạng mặc định', 'Nếu tạo mới và để trống, sản phẩm mặc định Hiển thị. Có thể chọn: Hiển thị, Bán chạy hoặc Tạm ẩn.'),
+        array('2. CẬP NHẬT', 'Nên dùng file vừa xuất từ website. Giữ nguyên ID/Mã; chỉ thay những ô cần sửa. Không cần xóa dữ liệu cũ trong các ô khác.'),
+        array('Ô để trống', 'Khi sửa sản phẩm: giữ nguyên giá trị trên website. Khi tạo mới: hệ thống dùng mặc định hoặc để trống nếu trường không bắt buộc.'),
+        array('Xóa giá trị cũ', 'Nhập __CLEAR__ vào ô cần xóa. Ví dụ nhập __CLEAR__ ở cột Bảo hành để xóa nội dung bảo hành hiện tại.'),
+        array('Xung đột dữ liệu', 'Nếu website đã được người khác sửa sau lúc xuất Excel, màn hình xem trước sẽ báo từng ô. Chỉ chọn ghi đè khi chắc chắn dùng dữ liệu Excel.'),
+        array('3. DANH MỤC', 'Chọn Danh mục cấp 1, cấp 2 và Thương hiệu từ danh sách có sẵn. Không tự gõ tên mới nếu tên đó chưa có trong hệ thống.'),
+        array('Quan hệ danh mục', 'Danh mục cấp 2 phải thuộc đúng Danh mục cấp 1. Nếu không dùng danh mục cấp 2 hoặc thương hiệu thì có thể để trống.'),
+        array('4. THÔNG SỐ', 'Thông số phổ biến nhập vào đúng cột riêng như Công suất, Pin, Chất liệu, Chống nước, Kích thước, Bảo hành…'),
+        array('Thông số khác', "Thông số chưa có cột riêng nhập mỗi dòng theo mẫu Tên | Giá trị. Ví dụ:\nModel | JD-T200\nGóc chiếu | 120°"),
+        array('Quy tắc thông số', 'Không lặp tên thông số trong cùng một sản phẩm. Không dán bảng HTML. Nội dung giải thích dài nên nhập ở cột Nội dung.'),
+        array('5. TRẠNG THÁI', 'Hiển thị = công khai; Bán chạy = thuộc nhóm bán chạy; có thể chọn đồng thời cả hai. Tạm ẩn = bỏ cả hai nhưng không xóa sản phẩm.'),
+        array('Archive', 'Dùng thao tác archive khi cần ẩn hàng loạt. Archive không xóa vĩnh viễn sản phẩm, hình ảnh hoặc lịch sử liên quan.'),
+        array('6. QUY TRÌNH NHẬP', 'Bước 1: Xuất file mới nhất. Bước 2: Sửa dữ liệu. Bước 3: Tải file lên. Bước 4: đọc màn hình Xem trước. Bước 5: nhập CAP_NHAT để xác nhận.'),
+        array('Khi có lỗi', 'Không dòng nào được ghi nếu file còn lỗi. Sửa đúng dòng/cột được báo rồi tải lại file; không cần chia file trừ khi vượt giới hạn.'),
+        array('Giới hạn', 'Tối đa 500 sản phẩm và 5 MB mỗi lần. Hỗ trợ XLSX, XLS và CSV; nên dùng XLSX để giữ danh sách chọn và dữ liệu chống xung đột.'),
+        array('Màu cột', 'Vàng: bắt buộc khi tạo mới. Xám: chỉ đọc, không sửa. Xanh: tùy chọn.'),
+        array('KHÔNG NÊN LÀM', 'Không xóa/đổi tiêu đề cột, không sửa sheet ẩn _HeThong, không đổi ID, không sao chép ID sang sản phẩm khác và không nhập công thức Excel.'),
+        array('Hình ảnh', 'Cột ảnh chỉ để đối chiếu. Thêm, đổi hoặc xóa hình tại trang chi tiết sản phẩm trong admin.'),
+        array('An toàn', 'Luôn kiểm tra số dòng Tạo mới/Cập nhật/Tạm ẩn trên màn hình xem trước trước khi xác nhận.')
     ));
     $guide->getStyle('A1:B1')->getFont()->setBold(true);
-    $guide->getColumnDimension('A')->setWidth(22);
-    $guide->getColumnDimension('B')->setWidth(100);
-    $guide->getStyle('A1:B20')->getAlignment()->setWrapText(true)->setVertical(PHPExcel_Style_Alignment::VERTICAL_TOP);
+    $guide->getStyle('A1:B1')->getFill()->setFillType(PHPExcel_Style_Fill::FILL_SOLID)->getStartColor()->setRGB('FDE68A');
+    $guide->getColumnDimension('A')->setWidth(24);
+    $guide->getColumnDimension('B')->setWidth(95);
+    $guide->getStyle('A1:B30')->getAlignment()->setWrapText(true)->setVertical(PHPExcel_Style_Alignment::VERTICAL_TOP);
+    foreach(array(1, 6, 10, 14, 16, 19, 21, 25) as $guideHeadingRow) {
+        $guide->getStyle('A'.$guideHeadingRow.':B'.$guideHeadingRow)->applyFromArray(array(
+            'font' => array('bold' => true, 'color' => array('rgb' => '1F2937')),
+            'fill' => array('type' => PHPExcel_Style_Fill::FILL_SOLID, 'color' => array('rgb' => 'FDE68A'))
+        ));
+    }
+    for($guideRow = 1; $guideRow <= 27; $guideRow++) $guide->getRowDimension($guideRow)->setRowHeight($guideRow === 17 ? 45 : 30);
     $reference = $excel->createSheet();
     $reference->setTitle('DanhMuc');
     $reference->fromArray(array(array('ID cấp 1', 'Danh mục cấp 1', '', 'ID cấp 2', 'ID cấp 1 cha', 'Danh mục cấp 2', '', 'ID thương hiệu', 'Thương hiệu')));

@@ -112,12 +112,6 @@
 		                                            <textarea class="form-control for-seo text-sm <?=(isset($config['product'][$type]['content_cke']) && $config['product'][$type]['content_cke'] == true)?'form-control-ckeditor':''?>" name="data[content<?=$k?>]" id="content<?=$k?>" rows="5" placeholder="Nội dung (<?=$k?>)"><?=htmlspecialchars_decode((!empty($flash->has('content'.$k))) ? $flash->get('content'.$k) : @$item['content'.$k])?></textarea>
 		                                        </div>
 		                                    <?php } ?>
-											<?php if(isset($config['product'][$type]['thongsokythuat']) && $config['product'][$type]['thongsokythuat'] == true) { ?>
-		                                        <div class="form-group">
-		                                            <label for="thongsokythuat<?=$k?>">Thông số kỹ thuật (<?=$k?>):</label>
-		                                            <textarea class="form-control text-sm <?=(isset($config['product'][$type]['thongsokythuat_cke']) && $config['product'][$type]['thongsokythuat_cke'] == true)?'form-control-ckeditor':''?>" name="data[thongsokythuat<?=$k?>]" id="thongsokythuat<?=$k?>" rows="5" placeholder="Thông số kỹ thuật (<?=$k?>)"><?=htmlspecialchars_decode((!empty($flash->has('thongsokythuat'.$k))) ? $flash->get('thongsokythuat'.$k) : @$item['thongsokythuat'.$k])?></textarea>
-		                                        </div>
-		                                    <?php } ?>
 											<?php if(isset($config['product'][$type]['chinhsachmuahang']) && $config['product'][$type]['chinhsachmuahang'] == true) { ?>
 		                                        <div class="form-group">
 		                                            <label for="chinhsachmuahang<?=$k?>">Chính sách mua hàng (<?=$k?>):</label>
@@ -159,6 +153,11 @@
                             <div class="row">
                                 <?php
                                 $structuredSpecFields = array(
+                                    'cong_suat' => 'Công suất',
+                                    'light_source' => 'Nguồn sáng',
+                                    'lamp_dimensions' => 'Kích thước đèn',
+                                    'color_temperature' => 'Nhiệt độ màu (CCT)',
+                                    'light_color' => 'Màu ánh sáng',
                                     'battery_capacity' => 'Dung lượng pin',
                                     'panel_power' => 'Công suất tấm pin',
                                     'material' => 'Chất liệu',
@@ -166,7 +165,13 @@
                                     'lighting_time' => 'Thời gian chiếu sáng',
                                     'waterproof_rating' => 'Chỉ số chống nước',
                                     'led_chip' => 'Loại chip LED',
-                                    'lighting_area' => 'Diện tích phủ sáng'
+                                    'lighting_area' => 'Diện tích chiếu sáng',
+                                    'installation_height' => 'Độ cao lắp đặt',
+                                    'panel_dimensions' => 'Kích thước tấm pin',
+                                    'package_contents' => 'Bộ sản phẩm gồm',
+                                    'carton_quantity' => 'Số lượng / thùng',
+                                    'carton_dimensions' => 'Kích thước thùng',
+                                    'warranty' => 'Bảo hành'
                                 );
                                 foreach($structuredSpecFields as $field => $label) { ?>
                                     <div class="form-group col-md-6">
@@ -177,8 +182,25 @@
                                     </div>
                                 <?php } ?>
                             </div>
+                            <?php
+                            $additionalSpecLines = array();
+                            if($flash->has('additional_specs_text')) {
+                                $additionalSpecLines = preg_split('/\R/u', (string) $flash->get('additional_specs_text'));
+                            } elseif(!empty($item['additional_specs'])) {
+                                $additionalSpecRows = json_decode(htmlspecialchars_decode($item['additional_specs'], ENT_QUOTES), true);
+                                if(is_array($additionalSpecRows)) foreach($additionalSpecRows as $spec) {
+                                    if(!empty($spec['label']) && isset($spec['value'])) $additionalSpecLines[] = $spec['label'].' | '.$spec['value'];
+                                }
+                            }
+                            ?>
+                            <div class="form-group">
+                                <label for="additional_specs_text">Thông số riêng khác:</label>
+                                <textarea class="form-control text-sm" name="additional_specs_text" id="additional_specs_text" rows="8"
+                                    placeholder="Mỗi dòng: Tên thông số | Giá trị"><?=htmlspecialchars(implode("\n", $additionalSpecLines), ENT_QUOTES, 'UTF-8')?></textarea>
+                                <small class="form-text text-muted">Ví dụ: Model | JD-T200. Dùng cho thông số riêng của inverter, tấm pin, phụ kiện…</small>
+                            </div>
                             <div class="alert alert-info mb-0">
-                                Chỉ nhập thông số có tài liệu thật. Phần giải thích, ứng dụng và lý do lựa chọn tiếp tục nhập trong “Nội dung” và “Thông số kỹ thuật”.
+                                Mỗi thông số nhập vào một ô riêng. Phần giải thích và ứng dụng tiếp tục nhập trong “Nội dung”; không cần soạn bảng HTML.
                             </div>
                         <?php } ?>
                     </div>
@@ -322,6 +344,9 @@
 		                    </div>
                         </div>
 					<?php } } ?>
+                    <small class="form-text text-muted d-block">
+                        “Hiển thị” cho phép sản phẩm xuất hiện công khai; “Bán chạy” đưa sản phẩm vào nhóm bán chạy. Có thể chọn đồng thời cả hai; bỏ “Hiển thị” sẽ ẩn sản phẩm khỏi website.
+                    </small>
                 </div>
                 <div class="form-group">
                     <label for="numb" class="d-inline-block align-middle mb-0 mr-2">Số thứ tự:</label>
@@ -334,17 +359,6 @@
 	                        <input type="text" class="form-control text-sm" name="data[code]" id="code" placeholder="Mã sản phẩm" value="<?=(!empty($flash->has('code'))) ? $flash->get('code') : @$item['code']?>">
 	                    </div>
 	                <?php } ?>
-					<?php if(isset($config['product'][$type]['cong_suat']) && $config['product'][$type]['cong_suat'] == true) { ?>
-				    	<div class="form-group col-md-4">
-	                        <label class="d-block" for="cong_suat">Công suất:</label>
-	                        <div class="input-group">
-	                        	<input type="text" class="form-control text-sm" name="data[cong_suat]" id="cong_suat" placeholder="Công suất" value="<?=(!empty($flash->has('cong_suat'))) ? $flash->get('cong_suat') : @$item['cong_suat']?>">
-	                        	<div class="input-group-append">
-	                        		<div class="input-group-text"><strong>W</strong></div>
-	                        	</div>
-	                        </div>
-	                    </div>
-				    <?php } ?>
 					<?php if(isset($config['product'][$type]['regular_price']) && $config['product'][$type]['regular_price'] == true) { ?>
 				    	<div class="form-group col-md-4">
 	                        <label class="d-block" for="regular_price">Giá bán:</label>
