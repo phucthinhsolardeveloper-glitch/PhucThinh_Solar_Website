@@ -1089,3 +1089,58 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 @media(max-width:576px){
     .search-grid{min-width:0;width:calc(100vw - 30px)!important;right:-8px!important;}
 }
+
+/* =====================================================================
+   TRANG VỀ CHÚNG TÔI
+   ===================================================================== */
+
+/* BUG: .inf_item_vision .content bị khoá height/max-height 96px + overflow
+   hidden trong khi nội dung cần 168px (Tầm nhìn) và 140px (Sứ mệnh)
+   -> mất tương ứng 72px và 44px chữ, câu đứt giữa chừng. Cho chữ chạy đủ,
+   các thẻ tự cân bằng chiều cao bằng flex thay vì ép số cứng. */
+.inf_item_vision .content{
+    height:auto!important;max-height:none!important;overflow:visible!important;
+    /* thủ phạm thật: -webkit-line-clamp:4 cắt cứng 4 dòng (không phải height) */
+    -webkit-line-clamp:unset!important;line-clamp:unset!important;
+    display:block!important;-webkit-box-orient:unset!important;
+}
+.inf_item_vision{display:flex;flex-direction:column;height:100%;}
+.inf_item_vision .content,.inf_item_vision .content p{
+    color:#e8eefc!important;font-size:15px!important;line-height:1.8!important;
+}
+.inf_item_vision h4{
+    color:#fff!important;font-size:19px!important;font-weight:900!important;
+    letter-spacing:.02em;margin-bottom:14px!important;
+}
+/* khối "Giá trị cốt lõi" chữ dài đặc -> giới hạn bề ngang cho dễ đọc */
+.inf_item_vision:last-child .content{max-width:1000px;margin-left:auto;margin-right:auto;}
+
+/* Đối tác: logo đang xám nhạt và bé, nâng độ rõ */
+#inf_partner #inf_list_partner .wrap{width:150px!important;height:64px!important;filter:grayscale(1);opacity:.62;transition:.2s;}
+#inf_partner #inf_list_partner .wrap:hover{filter:none;opacity:1;}
+
+/* "Tại sao nên chọn": theme cũ chia ô bằng đường kẻ mảnh -> bỏ kẻ, dùng
+   thẻ nền nhạt + khoảng cách, đúng nguyên tắc không lạm dụng đường kẻ. */
+#CRintro_home #CRicos_intro_home{
+    display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px!important;margin-top:28px!important;
+}
+#CRintro_home .inf_ico_intro_home{width:auto!important;margin:0!important;border:0!important;}
+#CRintro_home .inf_ico_intro_home .wrap{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;
+    height:100%;min-height:132px;border:0!important;border-radius:14px;
+    background:var(--pts-surface);padding:24px 18px!important;transition:.18s;
+}
+#CRintro_home .inf_ico_intro_home .wrap:hover{background:var(--pts-cream);transform:translateY(-3px);}
+#CRintro_home .inf_ico_intro_home img{width:38px!important;height:38px!important;object-fit:contain;}
+#CRintro_home .inf_ico_intro_home p{
+    margin:0!important;color:var(--pts-navy)!important;font-size:14.5px!important;
+    font-weight:800!important;line-height:1.45!important;text-align:center;
+}
+#CRintro_home{padding:56px 0!important;}
+
+@media(max-width:991px){
+    #CRintro_home #CRicos_intro_home{grid-template-columns:repeat(2,minmax(0,1fr));}
+}
+@media(max-width:576px){
+    #CRintro_home #CRicos_intro_home{grid-template-columns:1fr;}
+}
