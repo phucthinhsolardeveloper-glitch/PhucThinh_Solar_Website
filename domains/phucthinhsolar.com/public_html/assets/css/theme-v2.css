@@ -1136,7 +1136,12 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
     margin:0!important;color:var(--pts-navy)!important;font-size:14.5px!important;
     font-weight:800!important;line-height:1.45!important;text-align:center;
 }
-#CRintro_home{padding:56px 0!important;}
+/* BUG: #CRintro_home .content đặt position:absolute nên KHÔNG đóng góp chiều
+   cao -> khối cha co còn 1px, footer bắt đầu ngay sau và đè lên 193px nội
+   dung (hàng thẻ thứ 2 bị che mất). Đưa về luồng thường. */
+#CRintro_home .content{position:static!important;height:auto!important;width:auto!important;
+    top:auto!important;left:auto!important;right:auto!important;bottom:auto!important;transform:none!important;}
+#CRintro_home{padding:56px 0!important;overflow:visible!important;}
 
 @media(max-width:991px){
     #CRintro_home #CRicos_intro_home{grid-template-columns:repeat(2,minmax(0,1fr));}
