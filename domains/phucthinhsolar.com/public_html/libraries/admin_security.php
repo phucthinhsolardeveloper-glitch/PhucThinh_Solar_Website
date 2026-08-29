@@ -13,6 +13,19 @@ if(!function_exists('adminCsrfToken'))
         return is_string($token) && $token !== '' && hash_equals(adminCsrfToken(), $token);
     }
 
+    function adminCsrfField()
+    {
+        return '<input type="hidden" name="admin_csrf" value="'.htmlspecialchars(adminCsrfToken(), ENT_QUOTES, 'UTF-8').'">';
+    }
+
+    function adminLegacyMutationNeedsCsrf($com, $act, $method, $post = array())
+    {
+        if(strtoupper((string)$method) !== 'POST') return preg_match('/^(?:delete|save|upload|sync$|create$)/i', (string)$act) === 1;
+        if(preg_match('/^(?:delete|save|upload)/i', (string)$act)) return true;
+        if(in_array($act, array('sync', 'create'), true)) return true;
+        return $com === 'newsletter' && $act === 'man' && !empty($post['listemail']);
+    }
+
     function adminRequirePostCsrf($json = false)
     {
         $valid = isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST'
@@ -57,10 +70,15 @@ if(!function_exists('adminCsrfToken'))
         return is_string($filename) && $filename !== '' && basename($filename) === $filename;
     }
 
+    function adminAllowedDatabaseAction($action)
+    {
+        return in_array(strtoupper((string)$action), array('ANALYZE', 'OPTIMIZE', 'CHECK', 'REPAIR'), true);
+    }
+
     function adminMutationPermissionKey($table, $capability, $type = '', $com = '')
     {
         $type = is_string($type) && preg_match('/^[a-zA-Z0-9_-]{1,100}$/', $type) ? $type : '';
-        $actions = array('status' => 'edit', 'numb' => 'edit', 'copy' => 'add');
+        $actions = array('status' => 'edit', 'numb' => 'edit', 'copy' => 'add', 'database' => 'update');
         $suffixes = array(
             'product' => array('product', ''), 'product_list' => array('product', 'list'),
             'product_cat' => array('product', 'cat'), 'product_item' => array('product', 'item'),
@@ -72,7 +90,7 @@ if(!function_exists('adminCsrfToken'))
             'newsletter' => array('newsletter', ''), 'photo' => array('photo', 'photo'),
             'city' => array('places', 'city'), 'district' => array('places', 'district'),
             'ward' => array('places', 'ward'), 'order' => array('order', ''),
-            'pushonesignal' => array('pushOnesignal', '')
+            'pushonesignal' => array('pushOnesignal', ''), 'setting' => array('setting', '')
         );
 
         if($table === 'gallery' && in_array($com, array('product', 'news'), true))
@@ -88,7 +106,7 @@ if(!function_exists('adminCsrfToken'))
         $suffix = $suffixes[$table][1];
         $parts = array($module, $action);
         if($suffix !== '') $parts[] = $suffix;
-        if(!in_array($module, array('order', 'places', 'pushOnesignal'), true))
+        if(!in_array($module, array('order', 'places', 'pushOnesignal', 'setting'), true))
         {
             if($type === '') return null;
             $parts[] = $type;

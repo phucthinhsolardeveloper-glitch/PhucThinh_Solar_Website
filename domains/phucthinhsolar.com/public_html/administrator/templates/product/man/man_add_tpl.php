@@ -55,6 +55,7 @@
 <!-- Main content -->
 <section class="content">
     <form class="validation-form" novalidate method="post" action="<?=$linkSave?>" enctype="multipart/form-data">
+        <?=adminCsrfField()?>
         <div class="card-footer text-sm sticky-top">
             <button type="submit" class="btn btn-sm bg-gradient-primary submit-check" disabled><i class="far fa-save mr-2"></i>Lưu</button>
             <button type="submit" class="btn btn-sm bg-gradient-success submit-check" name="save-here" disabled><i class="far fa-save mr-2"></i>Lưu tại trang</button>

@@ -20,12 +20,15 @@ Trạng thái: **ĐANG XỬ LÝ trên Docker local**, chưa sửa production.
 - API gallery/filer yêu cầu CSRF cho sửa thứ tự, sửa chú thích và xóa; ID phải thuộc đúng sản phẩm/bài viết đang mở, thư mục upload được ánh xạ phía server và filename có path bị từ chối.
 - API xóa sortable phụ đã yêu cầu CSRF và ép ID về số nguyên.
 - API mutation `status`, `numb`, `copy`, upload và filer đã ánh xạ sang quyền action hiện có; khi RBAC bật, quyền được nạp lại từ DB và endpoint trả 403 nếu sai module/type hoặc chưa có mapping. RBAC vẫn đang tắt để tránh thay đổi vận hành trước khi test tài khoản nhân viên.
+- 42 form POST Admin có CSRF field phía server; controller legacy chặn GET/thiếu token cho `save/delete/upload/sync/create`, gửi newsletter và preview watermark.
+- API comment, ba API kéo-thả sortable và bảo trì database yêu cầu POST + CSRF; database action giới hạn `ANALYZE/OPTIMIZE/CHECK/REPAIR`, không còn đưa input tùy ý vào câu SQL.
+- File manager legacy và API save sortable không còn call site đã bị chặn trực tiếp bằng 404 nhưng chưa xóa code để giữ khả năng đối chiếu/rollback.
 
 Vẫn còn trước production:
 
 - CAPTCHA/rate limit bền vững theo IP/tài khoản cho checkout/review; rate limit hiện tại chỉ theo session nên có thể bị né bằng session mới.
 - Kiểm thử ma trận tài khoản/nhóm quyền trên staging rồi mới bật RBAC toàn hệ thống; authorization cho API mutation chính đã sẵn sàng nhưng cấu hình hiện vẫn tắt.
-- Rà và bổ sung CSRF cho các mutation `save/update` legacy còn lại; batch hiện tại đã đóng nhánh `delete` và filer.
+- Retest thao tác lưu thực tế theo từng module trên staging với dữ liệu kiểm soát; CSRF đã phủ các form save/upload và API mutation đang dùng.
 - Retest upload thực tế qua UI Admin/review với các kích thước và định dạng video thật trước production.
 
 ## Findings ban đầu (lưu để đối chiếu lịch sử)

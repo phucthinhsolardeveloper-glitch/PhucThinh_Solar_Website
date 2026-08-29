@@ -34,6 +34,12 @@ securityAssert(adminPermissionGranted(false, 1, false, null, array()), 'RBAC t�
 securityAssert(adminPermissionGranted(true, 3, false, null, array()), 'Tài khoản developer role 3 giữ quyền quản trị');
 securityAssert(adminPermissionGranted(true, 1, false, 'product_edit_san-pham', array('product_edit_san-pham')), 'RBAC cho phép đúng quyền được cấp');
 securityAssert(!adminPermissionGranted(true, 1, false, 'product_edit_san-pham', array('news_edit_tin-tuc')), 'RBAC từ chối quyền khác module');
+securityAssert(adminMutationPermissionKey('setting', 'database') === 'setting_update', 'Bảo trì database yêu cầu quyền cấu hình hệ thống');
+securityAssert(adminLegacyMutationNeedsCsrf('product', 'save', 'POST', array()), 'Mutation save legacy yêu cầu CSRF');
+securityAssert(adminLegacyMutationNeedsCsrf('pushOnesignal', 'sync', 'GET', array()), 'Mutation OneSignal GET cũ bị từ chối để chuyển sang POST');
+securityAssert(adminLegacyMutationNeedsCsrf('newsletter', 'man', 'POST', array('listemail' => '1')), 'Gửi email từ màn danh sách yêu cầu CSRF');
+securityAssert(!adminLegacyMutationNeedsCsrf('product', 'man', 'GET', array()), 'Request đọc danh sách không bị yêu cầu CSRF');
+securityAssert(adminAllowedDatabaseAction('optimize') && !adminAllowedDatabaseAction('DROP TABLE table_user'), 'Bảo trì database chỉ nhận action allowlist');
 
 $formToken = formCsrfToken();
 securityAssert(strlen($formToken) === 64 && formCsrfValid($formToken), 'CSRF frontend sinh và xác minh token đúng');

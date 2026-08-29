@@ -1,11 +1,13 @@
 <?php
 	include "config.php";
+	adminRequirePostCsrf(true);
+	adminRequireMutationPermission('setting', 'database', '', '', true);
 
-	$action = (!empty($_POST['action'])) ? htmlspecialchars($_POST['action']) : '';
+	$action = (!empty($_POST['action'])) ? strtoupper((string)$_POST['action']) : '';
 	$result = array();
 	$tables = array();
 
-	if($action)
+	if(adminAllowedDatabaseAction($action))
 	{
 		$tables = $d->rawQuery("SHOW TABLES");
 
@@ -14,6 +16,7 @@
 			$result = $func->databaseMaintenance($action, $tables);
 		}
 	}
+	else http_response_code(400);
 
 	echo json_encode($result);
 ?>

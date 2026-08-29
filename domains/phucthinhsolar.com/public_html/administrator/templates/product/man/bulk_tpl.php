@@ -47,6 +47,7 @@ $bulkCsrf = productBulkCsrfToken();
         </div>
         <div class="col-lg-6">
             <form method="post" action="<?=$bulkBase?>&act=bulk_preview" enctype="multipart/form-data">
+        <?=adminCsrfField()?>
                 <input type="hidden" name="product_bulk_csrf" value="<?=htmlspecialchars($bulkCsrf)?>">
                 <div class="card card-primary card-outline text-sm h-100">
                     <div class="card-header"><h3 class="card-title"><i class="fas fa-file-import mr-2"></i>Nhập dữ liệu</h3></div>
@@ -118,6 +119,7 @@ $bulkCsrf = productBulkCsrfToken();
             <div class="card-footer">
                 <?php if ($bulkPreview['errors'] === 0 && !empty($bulkPreview['token'])) { ?>
                     <form method="post" action="<?=$bulkBase?>&act=bulk_commit" class="form-inline">
+        <?=adminCsrfField()?>
                         <input type="hidden" name="product_bulk_csrf" value="<?=htmlspecialchars($bulkCsrf)?>">
                         <input type="hidden" name="preview_token" value="<?=htmlspecialchars($bulkPreview['token'])?>">
                         <?php if (!empty($bulkPreview['conflicts'])) { ?>

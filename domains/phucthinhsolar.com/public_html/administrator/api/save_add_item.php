@@ -1,4 +1,6 @@
 <?php 
+	http_response_code(404);
+	exit();
 	include "config.php";
 	$table = (!empty($_POST['table'])) ? htmlspecialchars($_POST['table']) : '';
 	echo $id = (!empty($_POST['id'])) ? htmlspecialchars($_POST['id']) : 0;

@@ -216,11 +216,10 @@ function updateDropReorder() {
     $('ul.reorder-gallery li').each(function() {
         item_order.push($(this).attr("id"));
     });
-    var order_string = 'order='+item_order;
     $.ajax({
-        type: "GET",
+        type: "POST",
         url: "api/update_sttMenu.php",
-        data: order_string,
+        data: {order: item_order.join(','), admin_csrf: ADMIN_CSRF},
         cache: false,
         success: function(data){            
         }
@@ -231,11 +230,10 @@ function updateDropReorder_Index() {
     $('ul.reorder-gallery-index li').each(function() {
         item_order.push($(this).attr("id"));
     });
-    var order_string = 'order='+item_order;
     $.ajax({
-        type: "GET",
+        type: "POST",
         url: "api/update_sttIndex.php",
-        data: order_string,
+        data: {order: item_order.join(','), admin_csrf: ADMIN_CSRF},
         cache: false,
         success: function(data){            
         }
@@ -246,11 +244,10 @@ function updateDropReorder_Detail() {
     $('ul.reorder-gallery-detail li').each(function() {
         item_order.push($(this).attr("id"));
     });
-    var order_string = 'order='+item_order;
     $.ajax({
-        type: "GET",
+        type: "POST",
         url: "api/update_sttDetail.php",
-        data: order_string,
+        data: {order: item_order.join(','), admin_csrf: ADMIN_CSRF},
         cache: false,
         success: function(data){            
         }
@@ -466,7 +463,7 @@ function deleteAllFiler(folder)
 /* Push OneSignal */
 function pushOneSignal(url)
 {
-	document.location = url;
+	submitAdminMutation(url, {});
 }
 
 /* HoldOn */
@@ -1191,6 +1188,7 @@ function previewWatermark()
 	var formData = new FormData();
 	formData.append('file', $('#file')[0].files[0]);
 	formData.append('data', $o.serialize());
+	formData.append('admin_csrf', ADMIN_CSRF);
 
 	$.ajax({
 		type:'POST',
@@ -1697,7 +1695,8 @@ $(document).ready(function(){
 					type: 'POST',
 					dataType: 'json',
 					data: {
-						action: action
+						action: action,
+						admin_csrf: ADMIN_CSRF
 					},
 					error: function()
 					{

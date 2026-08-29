@@ -1,4 +1,8 @@
 <?php
+/* File manager legacy không còn call site trong Admin: chặn truy cập trực tiếp, giữ code để đối chiếu/rollback. */
+http_response_code(404);
+exit();
+
 /**
  * PHP File Manager (2017-08-07)
  * 

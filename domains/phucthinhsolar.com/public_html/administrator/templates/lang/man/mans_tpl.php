@@ -20,7 +20,7 @@
 <!-- Main content -->
 <section class="content">
     <div class="card-footer text-sm sticky-top">
-        <a class="btn btn-sm bg-gradient-success text-white" href="<?=$linkCreate?>" title="Tạo tập tin"><i class="fas fa-file-export mr-2"></i>Tạo tập tin</a>
+        <a class="btn btn-sm bg-gradient-success text-white" href="<?=$linkCreate?>" onclick="event.preventDefault(); submitAdminMutation(this.href, {});" title="Tạo tập tin"><i class="fas fa-file-export mr-2"></i>Tạo tập tin</a>
         <a class="btn btn-sm bg-gradient-primary text-white" href="<?=$linkAdd?>" title="Thêm mới"><i class="fas fa-plus mr-2"></i>Thêm mới</a>
         <a class="btn btn-sm bg-gradient-danger text-white" id="delete-all" data-url="<?=$linkDelete?>" title="Xóa tất cả"><i class="far fa-trash-alt mr-2"></i>Xóa tất cả</a>
         <div class="form-inline form-search d-inline-block align-middle ml-3">

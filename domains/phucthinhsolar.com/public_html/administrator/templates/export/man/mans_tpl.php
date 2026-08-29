@@ -16,6 +16,7 @@
 <!-- Main content -->
 <section class="content">
     <form method="post" action="<?=$linkExportExcel?>" enctype="multipart/form-data">
+        <?=adminCsrfField()?>
         <div class="card card-primary card-outline text-sm mb-0">
             <div class="card-header">
                 <h3 class="card-title">Export danh sách dữ liệu</h3>

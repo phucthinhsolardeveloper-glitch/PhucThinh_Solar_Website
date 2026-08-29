@@ -150,6 +150,7 @@
     <?php if(isset($config['newsletter'][$type]['is_send']) && $config['newsletter'][$type]['is_send'] == true) { ?>
         <div class="card card-primary card-outline text-sm mb-0 <?=(!$paging)?'mt-3':'';?>">
             <form name="frmsendemail" method="post" action="<?=$linkMan?>" enctype="multipart/form-data">
+        <?=adminCsrfField()?>
                 <div class="card-header">
                     <h3 class="card-title">Gửi email đến danh sách được chọn</h3>
                 </div>

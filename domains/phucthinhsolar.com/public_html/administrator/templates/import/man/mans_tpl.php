@@ -20,6 +20,7 @@
 <section class="content">
 	<?php if(isset($config['import']['images']) && $config['import']['images'] == true) { ?>
 		<form method="post" action="<?=$linkUploadImg?>" enctype="multipart/form-data">
+        <?=adminCsrfField()?>
 	        <div class="card card-primary card-outline text-sm mb-0">
 	            <div class="card-header">
 	                <h3 class="card-title">Hình ảnh import</h3>
@@ -109,6 +110,7 @@
 		<?php } ?>
 	<?php } ?>
     <form method="post" action="<?=$linkUploadExcel?>" enctype="multipart/form-data">
+        <?=adminCsrfField()?>
         <div class="card card-primary card-outline text-sm mb-0">
             <div class="card-header">
                 <h3 class="card-title">Import danh sách dữ liệu</h3>

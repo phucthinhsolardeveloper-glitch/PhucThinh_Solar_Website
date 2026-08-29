@@ -37,7 +37,9 @@ Quy ước giá giữ như hệ thống cũ: ô giá trống khi cập nhật th
 - [x] Chuyển action xóa Admin legacy sang POST + CSRF; khóa filer theo đúng context và bỏ đường dẫn upload do client cung cấp.
 - [x] Ánh xạ quyền action cho API status/numb/copy/upload/filer; mặc định từ chối mapping không xác định khi RBAC bật.
 - [ ] Tạo ma trận tài khoản kiểm thử và retest đầy đủ trước khi bật `permission.active`; RBAC hiện vẫn tắt.
-- [ ] Bổ sung CSRF cho mutation save/update legacy còn lại và rate limit bền vững theo IP/tài khoản.
+- [x] Bổ sung CSRF cho 42 form POST, controller save/upload/sync/create, comment, sortable và bảo trì database.
+- [x] Chuyển tạo file ngôn ngữ và đẩy OneSignal từ GET sang POST; chặn file manager/API legacy không còn usage.
+- [ ] Bổ sung rate limit bền vững theo IP/tài khoản.
 - [ ] Retest toàn bộ Security Review và cập nhật finding đã đóng/còn mở.
 - [ ] Xác minh SMTP production bằng mailbox kiểm thử và cấu hình reCAPTCHA thật.
 - [ ] Xác minh PHP extension, đặc biệt `calendar`, trên hosting.

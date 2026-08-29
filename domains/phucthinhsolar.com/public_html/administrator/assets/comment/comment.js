@@ -102,7 +102,8 @@ $.fn.comments = function(options){
             async: false,
             data: {
                 id: id,
-                status: status
+                status: status,
+                admin_csrf: ADMIN_CSRF
             },
             success: function(response){
                 if(response.errors)
@@ -152,7 +153,8 @@ $.fn.comments = function(options){
                             dataType: 'json',
                             async: false,
                             data: {
-                                id: id
+                                id: id,
+                                admin_csrf: ADMIN_CSRF
                             },
                             beforeSend: function(){
                                 holdonOpen();
@@ -339,6 +341,7 @@ $.fn.comments = function(options){
         e.preventDefault();
         var form = $(this);
         var formData = new FormData(form[0]);
+		formData.append('admin_csrf', ADMIN_CSRF);
         var responseEle = form.find(".response-reply");
         var content = form.find("#reply-content");
         var contentDataName = content.data('name');

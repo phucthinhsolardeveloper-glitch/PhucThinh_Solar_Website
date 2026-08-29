@@ -16,6 +16,7 @@
 <!-- Main content -->
 <section class="content">
     <form method="post" action="<?=$linkSaveImg?>" enctype="multipart/form-data">
+        <?=adminCsrfField()?>
         <div class="card card-primary card-outline text-sm">
             <div class="card-header">
                 <h3 class="card-title">Chi tiết hình ảnh import</h3>

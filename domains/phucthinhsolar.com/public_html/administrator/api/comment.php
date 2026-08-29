@@ -6,6 +6,7 @@
 
     if(!empty($route))
     {
+		if($routes[$route][1] === 'POST') adminRequirePostCsrf(true);
         $comment = new Comments($d, $func);
         $method = $routes[$route][0];
         $requestType = $routes[$route][1];
