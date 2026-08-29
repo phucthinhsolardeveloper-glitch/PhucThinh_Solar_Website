@@ -81,7 +81,8 @@ Website chỉ được mở traffic/chạy quảng cáo khi toàn bộ mục **P
 - [ ] Xác minh trên HTTPS staging cookie Admin có `Secure`; local đã đạt `HttpOnly`, `SameSite=Lax` và đổi session ID sau đăng nhập.
 - [x] Bổ sung rate limit login bền vững theo IP và hash tài khoản; không tin forwarded IP ngoài trusted proxy.
 - [x] Bổ sung rate limit DB theo IP, tách bucket cho checkout, review, contact và hai loại newsletter; mặc định 5 lượt/10 phút.
-- [ ] Retest upload ảnh/video thật, file sai MIME, file quá dung lượng và tên file kép.
+- [x] Retest local upload ảnh/PDF, sai MIME, PHP giả PDF/tên kép và vượt dung lượng; file test được dọn sạch.
+- [ ] Retest video MP4/MKV dung lượng thực qua UI staging theo giới hạn hosting.
 - [ ] Xác nhận endpoint legacy đã khóa vẫn trả 404 trên staging/production.
 
 #### E. Nội dung và tích hợp

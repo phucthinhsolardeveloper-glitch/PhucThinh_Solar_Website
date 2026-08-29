@@ -29,7 +29,7 @@ Vẫn còn trước production:
 
 - Kiểm thử ma trận tài khoản/nhóm quyền trên staging rồi mới bật RBAC toàn hệ thống; authorization cho API mutation chính đã sẵn sàng nhưng cấu hình hiện vẫn tắt.
 - Retest thao tác lưu thực tế theo từng module trên staging với dữ liệu kiểm soát; CSRF đã phủ các form save/upload và API mutation đang dùng.
-- Retest upload thực tế qua UI Admin/review với các kích thước và định dạng video thật trước production.
+- Đã retest local ảnh/PDF thật, MIME giả, PHP giả PDF/tên kép và vượt dung lượng; còn retest video MP4/MKV dung lượng thực qua UI staging.
 - Xác minh cookie `Secure`, forwarded proxy chain và các ngưỡng rate limit trên HTTPS staging thực tế.
 
 ## Findings ban đầu (lưu để đối chiếu lịch sử)

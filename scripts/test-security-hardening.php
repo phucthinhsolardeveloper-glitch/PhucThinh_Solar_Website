@@ -84,4 +84,25 @@ securityAssert($rejected === false && !is_file(sys_get_temp_dir().'/security-inv
 @unlink($validPath);
 @unlink($invalidPath);
 
+$validPdf = tempnam(sys_get_temp_dir(), 'pts-valid-pdf-');
+$fakePdf = tempnam(sys_get_temp_dir(), 'pts-fake-pdf-');
+file_put_contents($validPdf, "%PDF-1.4\n1 0 obj\n<<>>\nendobj\ntrailer\n<<>>\n%%EOF");
+file_put_contents($fakePdf, '<?php echo "unsafe";');
+$_FILES['security_file'] = array('name' => 'tai-lieu.pdf', 'type' => 'application/pdf', 'tmp_name' => $validPdf, 'error' => UPLOAD_ERR_OK, 'size' => filesize($validPdf));
+$savedPdf = $func->uploadFile('security_file', '.pdf|.docx', sys_get_temp_dir().'/', 'security-document');
+securityAssert($savedPdf === 'security-document.pdf' && is_file(sys_get_temp_dir().'/'.$savedPdf), 'Upload tài liệu chấp nhận PDF có MIME thực');
+@unlink(sys_get_temp_dir().'/'.$savedPdf);
+$_FILES['security_file'] = array('name' => 'shell.php.pdf', 'type' => 'application/pdf', 'tmp_name' => $fakePdf, 'error' => UPLOAD_ERR_OK, 'size' => filesize($fakePdf));
+ob_start();
+$fakePdfResult = $func->uploadFile('security_file', '.pdf', sys_get_temp_dir().'/', $func->uploadName($_FILES['security_file']['name']));
+ob_end_clean();
+securityAssert($fakePdfResult === false, 'Upload tài liệu từ chối file PHP giả PDF và tên kép');
+$_FILES['security_image'] = array('name' => 'large.png', 'type' => 'image/png', 'tmp_name' => $validPdf, 'error' => UPLOAD_ERR_OK, 'size' => PHP_INT_MAX);
+ob_start();
+$oversized = $func->uploadImage('security_image', '.png', sys_get_temp_dir().'/', 'security-large');
+ob_end_clean();
+securityAssert($oversized === false, 'Upload ảnh từ chối dung lượng vượt giới hạn trước khi lưu');
+@unlink($validPdf);
+@unlink($fakePdf);
+
 echo "Security hardening tests completed.\n";

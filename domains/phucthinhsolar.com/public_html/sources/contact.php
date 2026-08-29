@@ -91,7 +91,7 @@
 					$fileUpdate = array();
 					$file_name = $func->uploadName($_FILES['file_attach']["name"]);
 
-					if($file_attach = $func->uploadImage("file_attach", '.doc|.docx|.pdf|.rar|.zip|.ppt|.pptx|.DOC|.DOCX|.PDF|.RAR|.ZIP|.PPT|.PPTX|.xls|.xlsx|.jpg|.png|.gif|.JPG|.PNG|.GIF', UPLOAD_FILE_L, $file_name))
+					if($file_attach = $func->uploadFile("file_attach", '.doc|.docx|.pdf|.rar|.zip|.ppt|.pptx|.xls|.xlsx|.jpg|.jpeg|.png|.gif', UPLOAD_FILE_L, $file_name))
 					{
 						$fileUpdate['file_attach'] = $file_attach;
 						$d->where('id', $id_insert);

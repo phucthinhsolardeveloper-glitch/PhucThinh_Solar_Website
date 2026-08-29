@@ -76,12 +76,26 @@
 				$finfo = function_exists('finfo_open') ? finfo_open(FILEINFO_MIME_TYPE) : false;
 				$mime = $finfo ? finfo_file($finfo, $_FILES[$file]['tmp_name']) : '';
 				if($finfo) finfo_close($finfo);
-				$allowedMimes = array('mp4' => array('video/mp4','application/mp4'), 'mkv' => array('video/x-matroska','application/octet-stream'));
+				$allowedMimes = array(
+					'mp4' => array('video/mp4','application/mp4'),
+					'mkv' => array('video/x-matroska','application/octet-stream'),
+					'pdf' => array('application/pdf'),
+					'doc' => array('application/msword','application/CDFV2'),
+					'docx' => array('application/vnd.openxmlformats-officedocument.wordprocessingml.document','application/zip'),
+					'xls' => array('application/vnd.ms-excel','application/CDFV2'),
+					'xlsx' => array('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet','application/zip'),
+					'ppt' => array('application/vnd.ms-powerpoint','application/CDFV2'),
+					'pptx' => array('application/vnd.openxmlformats-officedocument.presentationml.presentation','application/zip'),
+					'zip' => array('application/zip'),
+					'rar' => array('application/vnd.rar','application/x-rar','application/x-rar-compressed'),
+					'jpg' => array('image/jpeg'), 'jpeg' => array('image/jpeg'), 'png' => array('image/png'), 'gif' => array('image/gif')
+				);
 				if(!isset($allowedMimes[$ext]) || !in_array(strtolower((string) $mime), $allowedMimes[$ext], true))
 				{
 					$this->alert('Nội dung tập tin không đúng định dạng cho phép.');
 					return false;
 				}
+				if(in_array($ext, array('jpg','jpeg','png','gif'), true) && !@getimagesize($_FILES[$file]['tmp_name'])) return false;
 
 				if($newname=='' && file_exists($folder.$_FILES[$file]['name']))
 					for($i=0; $i<100; $i++)
