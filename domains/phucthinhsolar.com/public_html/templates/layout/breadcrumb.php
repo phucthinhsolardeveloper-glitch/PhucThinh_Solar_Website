@@ -31,6 +31,6 @@
             </span>
         </div>
         <div class="line-page"></div>
-        <div class="breadCrumbs"><div class=""><?=$breadcrumbs?></div></div>
+        <nav class="breadCrumbs" aria-label="Breadcrumb"><div><?=$breadcrumbs?></div></nav>
     </div>
 </div>

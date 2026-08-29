@@ -27,8 +27,14 @@
     </div>
 </div>
 <div class="filter_product">
-    <span class="name_title">Sản phẩm</span>
-    <div class="sort-pill-group">
+    <div class="filter-heading">
+        <span class="filter-heading-icon" aria-hidden="true"><i class="fas fa-sliders-h"></i></span>
+        <span>
+            <strong class="name_title">Sản phẩm</strong>
+            <small>Sắp xếp danh sách theo nhu cầu</small>
+        </span>
+    </div>
+    <div class="sort-pill-group" role="group" aria-label="Sắp xếp sản phẩm">
         <?php
             $sortOptions = array(
                 '' => 'Sắp xếp',
@@ -40,7 +46,7 @@
             $currentSort = (isset($_GET['is_orderby'])) ? $_GET['is_orderby'] : '';
         ?>
         <?php foreach($sortOptions as $sk => $sv) { ?>
-        <a href="javascript:void(0)" class="sort-pill <?=($currentSort==$sk)?'active':''?>" data-sort="<?=$sk?>"><?=$sv?></a>
+        <a href="javascript:void(0)" class="sort-pill <?=($currentSort==$sk)?'active':''?>" data-sort="<?=$sk?>" aria-pressed="<?=($currentSort==$sk)?'true':'false'?>"><?=$sv?></a>
         <?php } ?>
     </div>
     <select name="orderby" onchange="fetch_product()" class="orderby" aria-label="Đơn hàng của cửa hàng" style="display:none;">
@@ -62,6 +68,7 @@ document.addEventListener('DOMContentLoaded', function(){
         p.addEventListener('click', function(){
             pills.forEach(function(x){ x.classList.remove('active'); });
             p.classList.add('active');
+            pills.forEach(function(x){ x.setAttribute('aria-pressed', x === p ? 'true' : 'false'); });
             select.value = p.getAttribute('data-sort');
             if(typeof fetch_product === 'function') fetch_product();
         });

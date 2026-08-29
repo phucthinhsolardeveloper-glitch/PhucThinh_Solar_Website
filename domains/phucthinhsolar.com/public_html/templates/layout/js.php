@@ -47,7 +47,8 @@ $js->set("wp-content/themes/local/js/luminous-master/dist/Luminous.min080f.js");
 $js->set("wp-content/plugins/variation-swatches-for-woocommerce/assets/js/frontend5b7f.js");
 $js->set("wp-includes/js/wp-embed.min080f.js");
 $js->set("js/lazyload.min.js");
-$js->set("js/scroll.js");
+// Native browser scrolling is used. The legacy wheel smoother cached page heights
+// and could stop before the footer after lazy-loaded content changed the layout.
 $js->set("bootstrap/bootstrap.js");
 $js->set("js/jssor.slider.min.js");
 // $js->set("js/wow.min.js");

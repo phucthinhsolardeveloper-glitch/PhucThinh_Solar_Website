@@ -68,7 +68,18 @@
 
 <?php if(count($news)){ ?>
 <div id="CRsingle_blog_related">
-    <p class="title">Tin liên quan</p>
+    <div class="related-heading">
+        <div>
+            <span class="related-eyebrow">Khám phá thêm</span>
+            <h2 class="title">Tin liên quan</h2>
+        </div>
+        <div class="CRcustom_arrow_related" aria-label="Điều hướng tin liên quan">
+            <div class="box">
+                <button type="button" class="customm_arrow left" aria-label="Tin trước"><i class="fa fa-angle-left" aria-hidden="true"></i></button>
+                <button type="button" class="customm_arrow right" aria-label="Tin tiếp theo"><i class="fa fa-angle-right" aria-hidden="true"></i></button>
+            </div>
+        </div>
+    </div>
     <div id="CRsingle_list_related" class="row active_slider CRstyle_arrow">
         <?php foreach($news as $k => $v){ ?>
         <div data-id="<?=$v['id']?>" class="CRfix_width_slider hover_ef_img item_post col-lg-3 col-md-6 col-sm-6 col-12">
@@ -90,12 +101,6 @@
             </div>
         </div>
         <?php } ?>
-    </div>
-</div>
-<div class="CRcustom_arrow_related">
-    <div class="box">
-        <div class='customm_arrow left'><i class='fa fa-angle-left' aria-hidden='true'></i></div>
-        <div class='customm_arrow right'><i class='fa fa-angle-right' aria-hidden='true'></i></div>
     </div>
 </div>
 <?php } ?>

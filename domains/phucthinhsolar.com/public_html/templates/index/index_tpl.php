@@ -1,30 +1,5 @@
-<?php if(count($splist)) { ?>
-<!-- Danh mục nổi bật -->
-<section class="wrap-cat-highlight uk-section-large" style="padding-top:20px;">
-    <div class="uk-container">
-        <div class="section-title uk-text-center">
-            <p>Khám phá ngay</p>
-            <h3>Danh mục sản phẩm</h3>
-        </div>
-        <div class="row cat-highlight-row">
-            <?php $catCount = 0; foreach($splist as $vcathl) { if($catCount >= 3) break; $catCount++; ?>
-            <div class="col-md-4">
-                <a class="cat-highlight-card" href="danh-muc-san-pham/<?=$vcathl[$sluglang]?>/" title="<?=$vcathl['name'.$lang]?>">
-                    <div class="cat-highlight-img">
-                        <?=$func->getImage(['class' => 'lazy', 'size-error' => '400x300x2', 'upload' => UPLOAD_PHOTO_L, 'image' => $vcathl['photo'], 'alt' => $vcathl['name'.$lang]])?>
-                    </div>
-                    <div class="cat-highlight-name"><?=$vcathl['name'.$lang]?></div>
-                    <span class="cat-highlight-link">Xem thêm <i class="fas fa-arrow-right"></i></span>
-                </a>
-            </div>
-            <?php } ?>
-        </div>
-    </div>
-</section>
-<?php } ?>
-
 <!-- San pham -->
-<section class="home-3 uk-section-large" style="background-image: url();padding-top:40px;">
+<section class="home-3 home-products-featured uk-section-large" style="background-image: url();">
     <div class="uk-container">
         <div class="Module Module-324">
             <div class="ModuleContent">
@@ -218,8 +193,10 @@
         <div class="row">
             <div class="col-12">
                 <a href="dai-ly/" class="promo-banner promo-banner-gold promo-banner-single">
-                    <span class="promo-eyebrow">Trở thành đối tác phân phối</span>
-                    <span class="promo-title">Tuyển đại lý toàn quốc</span>
+                    <span class="promo-copy">
+                        <span class="promo-eyebrow">Trở thành đối tác phân phối</span>
+                        <span class="promo-title">Tuyển đại lý toàn quốc</span>
+                    </span>
                     <span class="promo-btn">Đăng ký ngay</span>
                 </a>
             </div>

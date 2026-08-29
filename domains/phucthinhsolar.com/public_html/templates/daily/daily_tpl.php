@@ -63,7 +63,7 @@
             </div>
         </div>
         <div class="inner_content rocket-lazyload lazyloaded"
-            style="background-image: url(<?=UPLOAD_NEWS_L.$about1['photo']?>);" data-ll-status="loaded">
+            style="--agency-bg: url(<?=ASSET.UPLOAD_NEWS_L.$about1['photo']?>);" data-ll-status="loaded">
             <div class="inner">
                 <div class="content text">
                     <h3><?=$about1['name'.$lang]?></h3>
