@@ -8,7 +8,7 @@
 
 - Admin password MD5 với salt tĩnh; credential/config secret nằm trong code/DB option.
 - RBAC granular đang tắt.
-- Không tìm thấy CSRF app-wide; CKFinder có CSRF riêng.
+- CSRF đã có cho các API Admin chính, upload, filer, xóa/lưu đơn, action xóa legacy, checkout và review; các mutation save/update legacy còn lại chưa được phủ app-wide.
 - Một số SQL ghép input đã `htmlspecialchars` nhưng không bind, ví dụ brand/origin filter; blacklist `AntiSQLInjection` không thay thế parameterization.
 
 ## P2

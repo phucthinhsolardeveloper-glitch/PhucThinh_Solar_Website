@@ -24,6 +24,8 @@ securityAssert(adminAllowedMutationTable('product', 'status') && !adminAllowedMu
 securityAssert(adminAllowedMutationTable('news', 'copy') && !adminAllowedMutationTable('user', 'copy'), 'Allowlist copy chỉ nhận product/news');
 securityAssert(adminAllowedCategoryTable('product_cat') && !adminAllowedCategoryTable('user'), 'Allowlist category chặn identifier tùy ý');
 securityAssert(adminAllowedPlaceTable('district') && !adminAllowedPlaceTable('product'), 'Allowlist place chặn identifier tùy ý');
+securityAssert(adminGalleryUploadFolder('product') === 'product' && adminGalleryUploadFolder('../../') === null, 'Gallery chỉ ánh xạ thư mục upload phía server');
+securityAssert(adminSafeUploadBasename('safe-image.jpg') && !adminSafeUploadBasename('../config.php'), 'Gallery từ chối filename có path traversal');
 
 $formToken = formCsrfToken();
 securityAssert(strlen($formToken) === 64 && formCsrfValid($formToken), 'CSRF frontend sinh và xác minh token đúng');

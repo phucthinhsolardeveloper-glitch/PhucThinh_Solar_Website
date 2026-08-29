@@ -45,4 +45,15 @@ if(!function_exists('adminCsrfToken'))
     {
         return in_array($table, array('district','ward'), true);
     }
+
+    function adminGalleryUploadFolder($com)
+    {
+        $folders = array('product' => 'product', 'news' => 'news');
+        return isset($folders[$com]) ? $folders[$com] : null;
+    }
+
+    function adminSafeUploadBasename($filename)
+    {
+        return is_string($filename) && $filename !== '' && basename($filename) === $filename;
+    }
 }

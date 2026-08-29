@@ -105,7 +105,7 @@
                 </li>
                 <div class="dropdown-divider"></div>
                 <li>
-                    <a href="index.php?com=cache&act=delete" class="dropdown-item">
+                    <a href="index.php?com=cache&act=delete" class="dropdown-item" onclick="event.preventDefault(); submitAdminMutation(this.href, {});">
                         <i class="far fa-trash-alt"></i>
                         <span>Xóa bộ nhớ tạm</span>
                     </a>

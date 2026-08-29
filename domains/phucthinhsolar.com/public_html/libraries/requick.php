@@ -95,6 +95,9 @@
 
 	require_once LIBRARIES.'admin_security.php';
 
+	/* Mọi thao tác xóa trong controller legacy phải dùng POST và CSRF. */
+	if(preg_match('/^delete/i', $act)) adminRequirePostCsrf();
+
 	/* Delete gallery */
 	$func->deleteGallery();
 

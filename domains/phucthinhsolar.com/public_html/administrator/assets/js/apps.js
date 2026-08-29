@@ -172,8 +172,7 @@ function sendEmail()
 function deleteItem(url)
 {
 	holdonOpen();
-	if(COM === 'order') submitAdminMutation(url, {});
-	else document.location = url;
+	submitAdminMutation(url, {});
 }
 
 /* Delete all */
@@ -194,14 +193,14 @@ function deleteAll(url)
     }
 
     holdonOpen();
-	if(COM === 'order') submitAdminMutation(url, {listid: listid});
-	else document.location = url+"&listid="+listid;
+	submitAdminMutation(url, {listid: listid});
 }
 
 function submitAdminMutation(url, fields)
 {
 	var queryIndex = url.indexOf('?');
-	var action = queryIndex >= 0 ? url.substring(0, queryIndex) : url;
+	/* Giữ query string cho source legacy còn đọc $_GET; đồng thời gửi lại qua POST. */
+	var action = url;
 	var params = new URLSearchParams(queryIndex >= 0 ? url.substring(queryIndex + 1) : '');
 	var form = $('<form>', {method: 'post', action: action});
 	params.forEach(function(value, key){ form.append($('<input>', {type: 'hidden', name: key, value: value})); });
@@ -301,7 +300,8 @@ function createSortFiler()
 						type: type,
 						colfiler: colfiler,
 						cmd: 'updateNumb',
-						hash: HASH
+						hash: HASH,
+						admin_csrf: ADMIN_CSRF
 					},
 					success: function(result)
 					{
@@ -390,7 +390,6 @@ function deleteFiler(string)
 {
 	var str = string.split(",");
 	var id = str[0];
-	var folder = str[1];
 	var cmd = 'delete';
 
 	$.ajax({
@@ -398,8 +397,13 @@ function deleteFiler(string)
 		url: 'api/filer.php',
 		data: {
 			id: id,
-			folder: folder,
-			cmd: cmd
+			id_parent: ID,
+			com: COM,
+			kind: $(".act-filer").val(),
+			type: TYPE,
+			cmd: cmd,
+			hash: HASH,
+			admin_csrf: ADMIN_CSRF
 		}
 	});
 
@@ -434,8 +438,13 @@ function deleteAllFiler(folder)
 		url: 'api/filer.php',
 		data: {
 			listid: listid,
-			folder: folder,
-			cmd: cmd
+			id_parent: ID,
+			com: COM,
+			kind: $(".act-filer").val(),
+			type: TYPE,
+			cmd: cmd,
+			hash: HASH,
+			admin_csrf: ADMIN_CSRF
 		}
 	});
 
@@ -2163,7 +2172,8 @@ $(document).ready(function(){
 				type: type,
 				colfiler: colfiler,
 				cmd: cmd,
-				hash: HASH
+				hash: HASH,
+				admin_csrf: ADMIN_CSRF
 			},
 			success: function(result)
 			{
@@ -2643,7 +2653,7 @@ $(document).on('click','.xoa_item',function(){
 		$.ajax({
 			type:'post',
 			url:'api/delete_add_item.php',
-			data:{id:id,item:item},
+			data:{id:id,item:item,admin_csrf:ADMIN_CSRF},
 			success:function(kq){
 				
 			}

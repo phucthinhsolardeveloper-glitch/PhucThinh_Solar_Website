@@ -16,12 +16,15 @@ Trạng thái: **ĐANG XỬ LÝ trên Docker local**, chưa sửa production.
 - API Admin `status`, `numb`, `copy`, `category`, `place` dùng allowlist bảng/identifier; ID và số thứ tự được ép kiểu, query ID được parameterized.
 - Upload ảnh kiểm extension chính xác, kích thước, nội dung ảnh/MIME thực; upload video dùng allowlist MIME riêng. Upload gallery lỗi không để lại record rỗng.
 - Bootstrap bảo đảm thư mục `upload/` tắt thực thi CGI/PHP và chặn truy cập các đuôi script phía Apache.
+- Toàn bộ action xóa qua controller Admin legacy đã chuyển sang POST + CSRF; link xóa cache và các nút xóa danh sách dùng form POST tương thích source cũ.
+- API gallery/filer yêu cầu CSRF cho sửa thứ tự, sửa chú thích và xóa; ID phải thuộc đúng sản phẩm/bài viết đang mở, thư mục upload được ánh xạ phía server và filename có path bị từ chối.
+- API xóa sortable phụ đã yêu cầu CSRF và ép ID về số nguyên.
 
 Vẫn còn trước production:
 
 - CAPTCHA/rate limit bền vững theo IP/tài khoản cho checkout/review; rate limit hiện tại chỉ theo session nên có thể bị né bằng session mới.
 - Authorization theo từng action cho API mutation Admin; hiện đã có login, CSRF và allowlist nhưng RBAC toàn hệ thống vẫn tắt.
-- Rà các mutation/delete legacy ngoài đơn hàng để chuyển đồng bộ sang POST + CSRF.
+- Rà và bổ sung CSRF cho các mutation `save/update` legacy còn lại; batch hiện tại đã đóng nhánh `delete` và filer.
 - Retest upload thực tế qua UI Admin/review với các kích thước và định dạng video thật trước production.
 
 ## Findings ban đầu (lưu để đối chiếu lịch sử)
