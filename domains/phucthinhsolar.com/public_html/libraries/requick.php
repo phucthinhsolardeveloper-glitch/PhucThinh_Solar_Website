@@ -22,7 +22,8 @@
 
 		$sessionhash = md5(sha1($row['password'].$row['username']));
 
-		if($_SESSION[$loginAdmin]['login_session'] != $sessionhash || ($timenow - $row['lastlogin']) > 3600 || !isset($_SESSION[TOKEN]))
+		$sessionTimeout = !empty($config['login']['timeout']) ? max(300, (int)$config['login']['timeout']) : 3600;
+		if($_SESSION[$loginAdmin]['login_session'] != $sessionhash || ($timenow - $row['lastlogin']) > $sessionTimeout || !isset($_SESSION[TOKEN]))
 		{
 			if(!empty($_SESSION[TOKEN])) unset($_SESSION[TOKEN]);
 			unset($_SESSION[$loginAdmin]);

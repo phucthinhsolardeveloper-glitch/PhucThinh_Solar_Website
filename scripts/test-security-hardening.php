@@ -10,6 +10,7 @@ $cache = new Cache($d);
 $func = new Functions($d, $cache);
 require LIBRARIES.'admin_security.php';
 require LIBRARIES.'form_security.php';
+require LIBRARIES.'login_security.php';
 
 function securityAssert($condition, $message)
 {
@@ -40,6 +41,8 @@ securityAssert(adminLegacyMutationNeedsCsrf('pushOnesignal', 'sync', 'GET', arra
 securityAssert(adminLegacyMutationNeedsCsrf('newsletter', 'man', 'POST', array('listemail' => '1')), 'Gửi email từ màn danh sách yêu cầu CSRF');
 securityAssert(!adminLegacyMutationNeedsCsrf('product', 'man', 'GET', array()), 'Request đọc danh sách không bị yêu cầu CSRF');
 securityAssert(adminAllowedDatabaseAction('optimize') && !adminAllowedDatabaseAction('DROP TABLE table_user'), 'Bảo trì database chỉ nhận action allowlist');
+securityAssert(adminLoginClientIp(array('REMOTE_ADDR' => '198.51.100.1', 'HTTP_X_FORWARDED_FOR' => '203.0.113.1'), array()) === '198.51.100.1', 'Login không tin forwarded IP khi proxy chưa được cấu hình');
+securityAssert(count(adminLoginLimitDescriptors('198.51.100.1', 'Admin', 5, 20)) === 2, 'Rate limit đăng nhập kết hợp IP và tài khoản băm');
 
 $formToken = formCsrfToken();
 securityAssert(strlen($formToken) === 64 && formCsrfValid($formToken), 'CSRF frontend sinh và xác minh token đúng');

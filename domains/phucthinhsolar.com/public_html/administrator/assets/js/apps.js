@@ -1244,7 +1244,7 @@ function login()
 		dataType: 'json',
 		url: 'api/login.php',
 		async: false,
-		data: {username:username,password:password},
+		data: {username:username,password:password,admin_csrf:ADMIN_CSRF},
 		success: function(result)
 		{
 			if(result.success)

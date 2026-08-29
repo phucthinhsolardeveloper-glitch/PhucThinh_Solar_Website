@@ -1,5 +1,6 @@
 <?php
-	session_start();
+	require_once __DIR__.'/../libraries/session_security.php';
+	startSecureSession();
 	define('LIBRARIES','../libraries/');
 	define('SOURCES','./sources/');
 	define('TEMPLATE','./templates/');

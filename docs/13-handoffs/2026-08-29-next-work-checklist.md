@@ -38,10 +38,14 @@ Quy ước giá giữ như hệ thống cũ: ô giá trống khi cập nhật th
 - [x] Thêm allowlist identifier cho API Admin chính và hardening upload MIME/size/non-executable storage.
 - [x] Chuyển action xóa Admin legacy sang POST + CSRF; khóa filer theo đúng context và bỏ đường dẫn upload do client cung cấp.
 - [x] Ánh xạ quyền action cho API status/numb/copy/upload/filer; mặc định từ chối mapping không xác định khi RBAC bật.
-- [ ] Tạo ma trận tài khoản kiểm thử và retest đầy đủ trước khi bật `permission.active`; RBAC hiện vẫn tắt.
+- [x] Tạo ma trận và tài khoản tạm local cho nhóm sản phẩm, đơn hàng, nội dung, chỉ xem; test quyền đúng phạm vi và từ chối chéo module, sau đó dọn sạch.
+- [ ] Lặp lại ma trận bằng tài khoản staging trước khi bật `permission.active`; RBAC hiện vẫn tắt.
 - [x] Bổ sung CSRF cho 42 form POST, controller save/upload/sync/create, comment, sortable và bảo trì database.
 - [x] Chuyển tạo file ngôn ngữ và đẩy OneSignal từ GET sang POST; chặn file manager/API legacy không còn usage.
-- [ ] Bổ sung rate limit bền vững theo IP/tài khoản.
+- [x] Bổ sung rate limit login bền vững theo IP/hash tài khoản, trusted-proxy allowlist và thông báo lỗi không phân biệt tài khoản.
+- [x] Harden session Admin: strict cookie, `HttpOnly`, `SameSite=Lax`, session ID regeneration và timeout cấu hình.
+- [x] Retest tự động đủ 42/42 form POST Admin có CSRF và luồng HTTP thiếu/hợp lệ.
+- [ ] Retest trình duyệt trên staging các thao tác nghiệp vụ của 42 form; local mới xác minh cấu trúc và luồng đại diện.
 - [ ] Retest toàn bộ Security Review và cập nhật finding đã đóng/còn mở.
 - [ ] Xác minh SMTP production bằng mailbox kiểm thử và cấu hình reCAPTCHA thật.
 - [ ] Xác minh PHP extension, đặc biệt `calendar`, trên hosting.

@@ -19,12 +19,15 @@ Website chỉ được mở traffic/chạy quảng cáo khi toàn bộ mục **P
 - API bảo trì database chỉ nhận `ANALYZE`, `OPTIMIZE`, `CHECK`, `REPAIR`, có CSRF và yêu cầu quyền cấu hình khi RBAC bật.
 - File manager và API legacy không còn call site đã bị chặn HTTP 404 nhưng chưa xóa code để hỗ trợ rollback/đối chiếu.
 - Build Docker sạch, PHP 7.4 lint, JavaScript check, security regression, Excel regression và frontend smoke đều đạt; dữ liệu sản phẩm thử còn lại bằng 0.
+- Hoàn thành test local ma trận RBAC tạm cho nhóm sản phẩm, đơn hàng, nội dung và chỉ xem; test từ chối quyền chéo module và tự dọn tài khoản/nhóm test.
+- Login Admin đã có POST + CSRF, thông báo lỗi chung, rate limit DB theo IP và hash tài khoản, trusted-proxy allowlist, session ID regeneration và cookie `HttpOnly`/`SameSite=Lax`.
+- Retest tự động xác nhận 42/42 form POST Admin có CSRF; request thiếu token trả 403, token hợp lệ đi qua lớp bảo vệ và form authenticated render token.
 
 ## 3. Điểm chưa hoàn thành và rủi ro còn lại
 
-- RBAC vẫn đang tắt. Mapping API đã sẵn sàng nhưng chưa có ma trận tài khoản/nhóm quyền và chưa retest theo từng vai trò.
+- RBAC vẫn đang tắt. Ma trận bằng tài khoản tạm đã đạt trên local nhưng chưa được lặp lại với tài khoản/quy trình thật trên staging.
 - Rate limit checkout/review hiện chủ yếu theo session, có thể bị né bằng session mới; contact/newsletter cũng cần giới hạn bền vững.
-- Chưa retest đầy đủ bằng trình duyệt trên staging cho toàn bộ form Admin sau khi phủ CSRF.
+- Đã kiểm tự động cấu trúc 42 form và luồng HTTP đại diện; chưa retest thao tác nghiệp vụ đầy đủ bằng trình duyệt trên staging.
 - Chưa xác minh cấu hình hosting thật: PHP extension, rewrite/`.htaccess`, quyền thư mục, giới hạn upload, cron, timezone và proxy/header.
 - Chưa xác minh SMTP production và reCAPTCHA bằng thông tin thật.
 - Chưa nhận/preview/import file Excel dữ liệu thật trên local hoặc staging.
@@ -69,14 +72,15 @@ Website chỉ được mở traffic/chạy quảng cáo khi toàn bộ mục **P
 
 #### D. Security và tài khoản Admin
 
-- [ ] Lập ma trận vai trò: chủ hệ thống, sản phẩm, đơn hàng, nội dung và quyền tối thiểu của từng nhóm.
+- [x] Lập và test tự động ma trận local: sản phẩm, đơn hàng, nội dung, chỉ xem và từ chối chéo module.
 - [ ] Tạo tài khoản staging cho từng vai trò; không dùng chung tài khoản production.
 - [ ] Test xem/thêm/sửa/xóa và gọi API trực tiếp cho từng vai trò.
 - [ ] Chỉ bật `permission.active` trên staging sau khi ma trận quyền đạt; chưa bật thẳng production.
-- [ ] Test CSRF: request hợp lệ hoạt động, thiếu/sai token trả 403 và không ghi dữ liệu.
+- [x] Test local CSRF: đủ 42/42 form; thiếu token trả 403, token hợp lệ đi qua lớp bảo vệ.
 - [ ] Test session hết hạn, đăng nhập lại, hai tab Admin và hai thiết bị.
-- [ ] Xác minh cookie Admin `Secure`, `HttpOnly`, `SameSite` và session ID được đổi sau đăng nhập.
-- [ ] Bổ sung hoặc cấu hình rate limit theo IP/tài khoản cho checkout, review, contact, newsletter và login.
+- [ ] Xác minh trên HTTPS staging cookie Admin có `Secure`; local đã đạt `HttpOnly`, `SameSite=Lax` và đổi session ID sau đăng nhập.
+- [x] Bổ sung rate limit login bền vững theo IP và hash tài khoản; không tin forwarded IP ngoài trusted proxy.
+- [ ] Bổ sung/cấu hình rate limit bền vững cho checkout, review, contact và newsletter.
 - [ ] Retest upload ảnh/video thật, file sai MIME, file quá dung lượng và tên file kép.
 - [ ] Xác nhận endpoint legacy đã khóa vẫn trả 404 trên staging/production.
 
@@ -139,4 +143,3 @@ Website chỉ được mở traffic/chạy quảng cáo khi toàn bộ mục **P
 - Upload: phục hồi snapshot upload tương ứng với database.
 - Import Excel: khôi phục DB trước import hoặc dùng báo cáo/backup của batch; revert code không tự hoàn tác dữ liệu.
 - Sau rollback: clear cache có mục tiêu, chạy lại smoke commerce và xác nhận log sạch trước khi mở traffic.
-

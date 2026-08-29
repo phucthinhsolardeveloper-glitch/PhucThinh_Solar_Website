@@ -120,6 +120,22 @@ if(!function_exists('adminCsrfToken'))
         return is_string($permission) && $permission !== '' && is_array($permissions) && in_array($permission, $permissions, true);
     }
 
+    function adminLoadPermissions($d, $idUser)
+    {
+        $permissions = array();
+        $group = (int)$idUser > 0 ? $d->rawQueryOne("select id_permission from #_user where id = ? and find_in_set('hienthi',status) limit 0,1", array((int)$idUser)) : array();
+        if(!empty($group['id_permission']))
+        {
+            $activeGroup = $d->rawQueryOne("select id from #_permission_group where id = ? and find_in_set('hienthi',status) limit 0,1", array((int)$group['id_permission']));
+            if(!empty($activeGroup['id']))
+            {
+                $rows = $d->rawQuery("select permission from #_permission where id_permission_group = ?", array((int)$activeGroup['id']));
+                foreach($rows as $row) if(!empty($row['permission'])) $permissions[] = $row['permission'];
+            }
+        }
+        return array_values(array_unique($permissions));
+    }
+
     function adminRequireMutationPermission($table, $capability, $type = '', $com = '', $json = false)
     {
         global $config, $loginAdmin, $d;
@@ -132,12 +148,7 @@ if(!function_exists('adminCsrfToken'))
         if($active && $role !== 3 && !$debugDeveloper)
         {
             $idUser = isset($_SESSION[$loginAdmin]['id']) ? (int)$_SESSION[$loginAdmin]['id'] : 0;
-            $group = $idUser > 0 ? $d->rawQueryOne("select id_permission from #_user where id = ? and find_in_set('hienthi',status) limit 0,1", array($idUser)) : array();
-            if(!empty($group['id_permission']))
-            {
-                $rows = $d->rawQuery("select permission from #_permission where id_permission_group = ?", array((int)$group['id_permission']));
-                foreach($rows as $row) if(!empty($row['permission'])) $permissions[] = $row['permission'];
-            }
+			$permissions = adminLoadPermissions($d, $idUser);
         }
 
         if(adminPermissionGranted($active, $role, $debugDeveloper, $permission, $permissions)) return;
