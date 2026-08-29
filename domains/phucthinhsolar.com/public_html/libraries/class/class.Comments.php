@@ -103,16 +103,16 @@
 		public function limitLists()
 		{
 			/* Request data */
-			$limitFrom = (!empty($_GET['limitFrom'])) ? $this->func->sanitize($_GET['limitFrom']) : 0;
-			$limitGet = (!empty($_GET['limitGet'])) ? $this->func->sanitize($_GET['limitGet']) : 0;
-			$is_admin = (!empty($_GET['isAdmin'])) ? true : false;
-			$this->id_variant = (!empty($_GET['idVariant'])) ? $this->func->sanitize($_GET['idVariant']) : 0;
-			$this->type = (!empty($_GET['type'])) ? $this->func->sanitize($_GET['type']) : '';
+			$limitFrom = isset($_GET['limitFrom']) ? max(0, (int) $_GET['limitFrom']) : 0;
+			$limitGet = isset($_GET['limitGet']) ? max(1, min(20, (int) $_GET['limitGet'])) : $this->limitParentGet;
+			$is_admin = (!empty($_GET['isAdmin']) && $this->func->checkLoginAdmin());
+			$this->id_variant = isset($_GET['idVariant']) ? max(0, (int) $_GET['idVariant']) : 0;
+			$this->type = (!empty($_GET['type']) && preg_match('/^[a-z0-9-]{1,50}$/', $_GET['type'])) ? $_GET['type'] : '';
 			$markdownType = (!empty($is_admin)) ? 'admin' : 'customer';
 
 			/* Get data */
 			$where = (!empty($is_admin)) ? "" : "find_in_set('hienthi',status) and";
-			$rows = $this->d->rawQuery("select * from #_comment where $where id_parent = 0 and id_variant = ? and type = ? order by date_posted desc limit $limitFrom,$limitGet", array($this->id_variant, $this->type));
+			$rows = $this->d->rawQuery("select * from #_comment where $where id_parent = 0 and id_variant = ? and type = ? order by date_posted desc limit ".(int) $limitFrom.",".(int) $limitGet, array($this->id_variant, $this->type));
 
 			/* Export data */
 			$result = array();
@@ -165,17 +165,17 @@
 		public function limitReplies()
 		{
 			/* Request data */
-			$limitFrom = (!empty($_GET['limitFrom'])) ? $this->func->sanitize($_GET['limitFrom']) : 0;
-			$limitGet = (!empty($_GET['limitGet'])) ? $this->func->sanitize($_GET['limitGet']) : 0;
-			$id_parent = (!empty($_GET['idParent'])) ? $this->func->sanitize($_GET['idParent']) : 0;
-			$id_variant = (!empty($_GET['idVariant'])) ? $this->func->sanitize($_GET['idVariant']) : 0;
-			$type = (!empty($_GET['type'])) ? $this->func->sanitize($_GET['type']) : '';
-			$is_admin = (!empty($_GET['isAdmin'])) ? true : false;
+			$limitFrom = isset($_GET['limitFrom']) ? max(0, (int) $_GET['limitFrom']) : 0;
+			$limitGet = isset($_GET['limitGet']) ? max(1, min(20, (int) $_GET['limitGet'])) : $this->limitChildGet;
+			$id_parent = isset($_GET['idParent']) ? max(0, (int) $_GET['idParent']) : 0;
+			$id_variant = isset($_GET['idVariant']) ? max(0, (int) $_GET['idVariant']) : 0;
+			$type = (!empty($_GET['type']) && preg_match('/^[a-z0-9-]{1,50}$/', $_GET['type'])) ? $_GET['type'] : '';
+			$is_admin = (!empty($_GET['isAdmin']) && $this->func->checkLoginAdmin());
 			$markdownType = (!empty($is_admin)) ? 'admin' : 'customer';
 
 			/* Get data */
 			$where = (!empty($is_admin)) ? "" : "find_in_set('hienthi',status) and";
-			$rows = $this->d->rawQuery("select * from #_comment where $where id_parent = ? and id_variant = ? and type = ? order by date_posted desc limit $limitFrom,$limitGet", array($id_parent, $id_variant, $type));
+			$rows = $this->d->rawQuery("select * from #_comment where $where id_parent = ? and id_variant = ? and type = ? order by date_posted desc limit ".(int) $limitFrom.",".(int) $limitGet, array($id_parent, $id_variant, $type));
 			
 			/* Export data */
 			$result = array();
@@ -243,6 +243,11 @@
 			}
 
 			return $result;
+		}
+
+		public function escape($value)
+		{
+			return htmlspecialchars(htmlspecialchars_decode((string) $value, ENT_QUOTES), ENT_QUOTES, 'UTF-8');
 		}
 
 		public function add()

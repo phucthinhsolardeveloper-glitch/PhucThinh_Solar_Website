@@ -1,8 +1,8 @@
 <div class="comment-item">
 	<div class="comment-item-poster">
-		<div class="comment-item-letter"><?=$this->subName($params['lists']['fullname'])?></div>
-		<div class="comment-item-name"><?=$params['lists']['fullname']?></div>
-		<div class="comment-item-email text-secondary"><?=$params['lists']['email']?></div>
+		<div class="comment-item-letter"><?=$this->escape($this->subName($params['lists']['fullname']))?></div>
+		<div class="comment-item-name"><?=$this->escape($params['lists']['fullname'])?></div>
+		<div class="comment-item-email text-secondary"><?=$this->escape($params['lists']['email'])?></div>
 		<div class="comment-item-phone text-secondary mb-1"><?=$this->func->formatPhone($params['lists']['phone'])?></div>
 		<div class="comment-item-posttime"><?=$this->timeAgo($params['lists']['date_posted'])?></div>
 	</div>
@@ -22,13 +22,13 @@
 					<i class="fas fa-star"></i>
 				</span>
 			</div>
-			<div class="comment-item-title"><?=htmlspecialchars_decode($params['lists']['title'])?><?=(strpos($params['lists']['status'], 'new-admin') !== false) ? '<strong class="comment-new bg-danger rounded text-white small ml-2 px-2 py-1">Mới</strong>' : ''?></div>
+			<div class="comment-item-title"><?=$this->escape($params['lists']['title'])?><?=(strpos($params['lists']['status'], 'new-admin') !== false) ? '<strong class="comment-new bg-danger rounded text-white small ml-2 px-2 py-1">Mới</strong>' : ''?></div>
 		</div>
 
-		<div class="comment-item-content mb-2"><?=nl2br(htmlspecialchars_decode($params['lists']['content']))?></div>
+		<div class="comment-item-content mb-2"><?=nl2br($this->escape($params['lists']['content']))?></div>
 
 		<div class="comment-action mb-2">
-			<a class="btn btn-sm btn-info btn-reply-comment mr-1" href="javascript:void(0)" data-name="<?=$params['lists']['fullname']?>">Trả lời</a>
+			<a class="btn btn-sm btn-info btn-reply-comment mr-1" href="javascript:void(0)" data-name="<?=$this->escape($params['lists']['fullname'])?>">Trả lời</a>
 			<a class="btn btn-sm <?=(strpos($params['lists']['status'], 'hienthi') !== false) ? 'btn-warning' : 'btn-primary'?> btn-status-comment mr-1" href="javascript:void(0)" data-id="<?=$params['lists']['id']?>" data-new-sibling="comment-item-rating" data-status="hienthi"><?=(strpos($params['lists']['status'], 'hienthi') !== false) ? 'Bỏ duyệt' : 'Duyệt'?></a>
 			<a class="btn btn-sm btn-danger btn-delete-comment" href="javascript:void(0)" data-id="<?=$params['lists']['id']?>" data-class="comment-item" data-parents="comment-lists">Xóa</a>
 		</div>

@@ -4,10 +4,10 @@
 	/* Paginations */
 	include LIBRARIES."class/class.PaginationsAjax.php";
 	$pagingAjax = new PaginationsAjax();
-	$pagingAjax->perpage = (!empty($_GET['perpage'])) ? htmlspecialchars($_GET['perpage']) : 12;
-	$eShow = htmlspecialchars($_GET['eShow']);
-	$idList = (isset($_GET['id_list']) && $_GET['id_list'] != '') ? htmlspecialchars($_GET['id_list']) : 0;
-	$idCat = (isset($_GET['id_cat']) && $_GET['id_cat'] != '') ? htmlspecialchars($_GET['id_cat']) : 0;
+	$pagingAjax->perpage = isset($_GET['perpage']) ? max(1, min(48, (int) $_GET['perpage'])) : 12;
+	$eShow = isset($_GET['eShow']) ? max(1, min(10, (int) $_GET['eShow'])) : 5;
+	$idList = isset($_GET['id_list']) ? max(0, (int) $_GET['id_list']) : 0;
+	$idCat = isset($_GET['id_cat']) ? max(0, (int) $_GET['id_cat']) : 0;
 	$idBrand = (isset($_GET['is_brand']) && $_GET['is_brand'] != '' && preg_match('/^[0-9,]+$/',$_GET['is_brand'])) ? $_GET['is_brand'] : '';
 	$idXuatXu = (isset($_GET['is_origin']) && $_GET['is_origin'] != '' && preg_match('/^[0-9,]+$/',$_GET['is_origin'])) ? $_GET['is_origin'] : '';
 	$orderby = (isset($_GET['is_orderby']) && $_GET['is_orderby'] != '') ? htmlspecialchars($_GET['is_orderby']) : '';
@@ -15,7 +15,7 @@
     $idCongSuat = (isset($_GET['is_congsuat']) && $_GET['is_congsuat'] != '') ? htmlspecialchars($_GET['is_congsuat']) : '';
     $idCatFilter = (isset($_GET['is_cat']) && $_GET['is_cat'] != '') ? htmlspecialchars($_GET['is_cat']) : '';
 	$idType = 'dich-vu';
-	$p = (isset($_GET['p']) && $_GET['p'] > 0) ? htmlspecialchars($_GET['p']) : 1;
+	$p = (isset($_GET['p']) && (int) $_GET['p'] > 0) ? (int) $_GET['p'] : 1;
 	$start = ($p-1) * $pagingAjax->perpage;
 	$pageLink = "api/fillter_service.php?perpage=".$pagingAjax->perpage;
 	$tempLink = "";
@@ -27,23 +27,27 @@
 	if($idList > 0)
 	{
 		$tempLink .= "&id_list=".$idList;
-		$where .= " and id_list = ".$idList;
+		$where .= " and id_list = ?";
+		$params[] = $idList;
 	}
 	if($idCat > 0)
 	{
 		$tempLink .= "&id_cat=".$idCat;
-		$where .= " and id_cat = ".$idCat;
+		$where .= " and id_cat = ?";
+		$params[] = $idCat;
 	}
 	if($idBrand !="")
 	{
 		$tempLink .= "&is_brand=".$idBrand;
-		$where .= " and id_brand in (".$idBrand.")";
+		$brandIds = array_values(array_filter(array_map('intval', explode(',', $idBrand))));
+		if(!empty($brandIds)) { $where .= " and id_brand in (".implode(',', array_fill(0, count($brandIds), '?')).")"; $params = array_merge($params, $brandIds); }
 	}
 
 	if($idXuatXu !="")
 	{
 		$tempLink .= "&is_origin=".$idXuatXu;
-		$where .= " and id_xuatxu in (".$idXuatXu.")";
+		$originIds = array_values(array_filter(array_map('intval', explode(',', $idXuatXu))));
+		if(!empty($originIds)) { $where .= " and id_xuatxu in (".implode(',', array_fill(0, count($originIds), '?')).")"; $params = array_merge($params, $originIds); }
 	}
 	if($idCongSuat !="")
 	{
@@ -135,7 +139,7 @@
 
 	/* Get data */
 	$sql = "select * from #_product where type='san-pham' $where and find_in_set('hienthi',status) $order";
-	$sqlCache = $sql." limit $start, $pagingAjax->perpage";
+	$sqlCache = $sql." limit ".(int) $start.",".(int) $pagingAjax->perpage;
     $items = $cache->get($sqlCache, $params, 'result', 7200);
 
 	/* Count all data */

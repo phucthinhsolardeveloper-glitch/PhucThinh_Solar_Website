@@ -1,7 +1,7 @@
 <div class="comment-item">
 	<div class="comment-item-poster">
-		<div class="comment-item-letter"><?=$this->subName($params['lists']['fullname'])?></div>
-		<div class="comment-item-name"><?=$params['lists']['fullname']?></div>
+		<div class="comment-item-letter"><?=$this->escape($this->subName($params['lists']['fullname']))?></div>
+		<div class="comment-item-name"><?=$this->escape($params['lists']['fullname'])?></div>
 		<?php if(in_array('verified-purchase', explode(',', $params['lists']['status']), true)) { ?>
 		<span class="badge badge-success ml-2">Đã mua hàng</span>
 		<?php } ?>
@@ -23,12 +23,12 @@
 					<i class="fas fa-star"></i>
 				</span>
 			</div>
-			<div class="comment-item-title"><?=htmlspecialchars_decode($params['lists']['title'])?></div>
+			<div class="comment-item-title"><?=$this->escape($params['lists']['title'])?></div>
 		</div>
 
-		<div class="comment-item-content mb-2"><?=nl2br(htmlspecialchars_decode($params['lists']['content']))?></div>
+		<div class="comment-item-content mb-2"><?=nl2br($this->escape($params['lists']['content']))?></div>
 
-		<a class="btn-reply-comment d-inline-block align-top text-decoration-none text-primary mb-2" href="javascript:void(0)" data-name="<?=$params['lists']['fullname']?>">Trả lời</a>
+		<a class="btn-reply-comment d-inline-block align-top text-decoration-none text-primary mb-2" href="javascript:void(0)" data-name="<?=$this->escape($params['lists']['fullname'])?>">Trả lời</a>
 		
 		<?php
 			if($this->hasMedia && (!empty($params['lists']['photo']) || !empty($params['lists']['video'])))
