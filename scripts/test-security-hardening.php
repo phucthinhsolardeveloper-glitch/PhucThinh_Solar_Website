@@ -11,6 +11,7 @@ $func = new Functions($d, $cache);
 require LIBRARIES.'admin_security.php';
 require LIBRARIES.'form_security.php';
 require LIBRARIES.'login_security.php';
+require LIBRARIES.'order_security.php';
 
 function securityAssert($condition, $message)
 {
@@ -44,6 +45,10 @@ securityAssert(adminAllowedDatabaseAction('optimize') && !adminAllowedDatabaseAc
 securityAssert(adminLoginClientIp(array('REMOTE_ADDR' => '198.51.100.1', 'HTTP_X_FORWARDED_FOR' => '203.0.113.1'), array()) === '198.51.100.1', 'Login không tin forwarded IP khi proxy chưa được cấu hình');
 securityAssert(count(adminLoginLimitDescriptors('198.51.100.1', 'Admin', 5, 20)) === 2, 'Rate limit đăng nhập kết hợp IP và tài khoản băm');
 securityAssert(formClientIp(array('REMOTE_ADDR' => '198.51.100.2', 'HTTP_X_FORWARDED_FOR' => '203.0.113.2'), array()) === '198.51.100.2', 'Form public không tin forwarded IP ngoài trusted proxy');
+$orderUpdate = prepareAdminOrderUpdate($d, array('order_status' => 1, 'payment_status' => 0, 'notes' => 'test', 'total_price' => 1, 'code' => 'overwrite'), array(0 => 'Chưa thanh toán', 1 => 'Đã thanh toán'));
+securityAssert(empty($orderUpdate['errors']) && !isset($orderUpdate['data']['total_price']) && !isset($orderUpdate['data']['code']), 'Cập nhật đơn chỉ nhận field nghiệp vụ allowlist');
+$invalidOrderUpdate = prepareAdminOrderUpdate($d, array('order_status' => 999999, 'payment_status' => 200), array(0 => 'Chưa thanh toán', 1 => 'Đã thanh toán'));
+securityAssert(count($invalidOrderUpdate['errors']) === 2, 'Cập nhật đơn từ chối trạng thái không tồn tại và placeholder thanh toán');
 
 $formToken = formCsrfToken();
 securityAssert(strlen($formToken) === 64 && formCsrfValid($formToken), 'CSRF frontend sinh và xác minh token đúng');

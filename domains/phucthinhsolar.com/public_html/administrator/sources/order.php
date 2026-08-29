@@ -3,6 +3,7 @@
 
 	/* Kiểm tra active đơn hàng */
 	if(!isset($config['order']['active']) || $config['order']['active'] == false) $func->transfer("Trang không tồn tại", "index.php", false);
+	require_once LIBRARIES.'order_security.php';
 
 	/* Cấu hình đường dẫn trả về */
 
@@ -164,7 +165,7 @@
 	/* Save order */
 	function saveMan()
 	{
-		global $d, $func, $curPage;
+		global $d, $func, $curPage, $config;
 
 		/* Check post */
 		if(empty($_POST))
@@ -176,14 +177,9 @@
 
 		/* Post dữ liệu */
 		$id = (!empty($_POST['id'])) ? htmlspecialchars($_POST['id']) : 0;
-		$data = (!empty($_POST['data'])) ? $_POST['data'] : null;
-		if($data)
-		{
-			foreach($data as $column => $value)
-			{
-				$data[$column] = htmlspecialchars($func->sanitize($value));
-			}
-		}
+		$prepared = prepareAdminOrderUpdate($d, isset($_POST['data']) ? $_POST['data'] : array(), isset($config['order']['payment']) ? $config['order']['payment'] : array());
+		$data = $prepared['data'];
+		if(!empty($prepared['errors'])) $func->transfer(implode('. ', $prepared['errors']), "index.php?com=order&act=edit&id=".(int)$id."&p=".$curPage, false);
 
 		/* Save data */
 		if($id)

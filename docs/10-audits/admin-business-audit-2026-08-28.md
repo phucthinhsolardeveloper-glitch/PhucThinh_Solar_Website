@@ -21,7 +21,7 @@
 | Dashboard | Có thống kê truy cập/doanh thu và hàng đợi nghiệp vụ → HTML hàng đợi bị chèn trong `<select>`; chart legacy tham chiếu `$items_product` không tồn tại và container đã bỏ → Đã sửa cấu trúc section, bỏ block chart mồ côi; verify desktop/mobile và console → **P0 đã sửa** |
 | Sản phẩm | CRUD, category/brand/gallery, search, filter, pagination và review theo từng sản phẩm đều có → Đã thêm validation server cho định dạng giá/công suất và chặn giá mới vượt giá bán; nhiều sản phẩm local vẫn thiếu công suất → Hoàn thiện dữ liệu bằng Excel khi nhận file thật → **P1 dữ liệu còn lại** |
 | Đánh giá | Admin truy cập review từ từng dòng sản phẩm, backend comment còn hoạt động → Không có inbox review toàn cục; dashboard chỉ dẫn về danh sách sản phẩm có filter → Thiết kế queue review toàn cục nếu vận hành cần, chưa triển khai → **P2** |
-| Đơn hàng | Danh sách/detail, trạng thái, thanh toán, search/filter/pagination hoạt động → Chưa có lịch sử ai đổi trạng thái; mutation vẫn theo kiến trúc cũ → Thêm audit trail và ràng buộc transition sau khi chốt workflow → **P1** |
+| Đơn hàng | Danh sách/detail, trạng thái, thanh toán, search/filter/pagination hoạt động → Đã khóa mass-assignment bằng allowlist và xác minh status; chưa có lịch sử ai đổi trạng thái → Thêm audit trail và ràng buộc transition sau khi chốt workflow → **P1 còn lại** |
 | Liên hệ | Admin có search, trạng thái, chủ đề, thời gian; frontend đã đi đúng marker submit/backend → Chưa test SMTP/reCAPTCHA thật để tránh phát sinh mail/dữ liệu ngoài ý muốn → Test staging bằng mailbox và site-key riêng → **P1** |
 | Tư vấn/đại lý/nhận tin | Ba type newsletter có danh sách, search, lọc trạng thái và pagination → Các type dùng chung bảng nhưng nhãn/workflow xử lý chưa thống nhất → Chuẩn hóa trạng thái và người phụ trách trước khi thêm automation → **P2** |
 | Tin tức/giải pháp/dự án/chính sách | CRUD theo type/category, SEO, ảnh, search và pagination có sẵn → Nhiều type legacy còn dữ liệu nhưng config/menu bị tắt; khó biết loại nào còn là nguồn chính thức → Lập mapping owner/URL rồi archive hoặc phục hồi menu có kiểm soát → **P2** |
@@ -57,6 +57,7 @@
 - Allowlist bảng/field cho API `status`, `numb`, `copy`, `category`, `place`.
 - Hardening upload: extension chính xác, MIME, size theo loại, filename và non-executable storage.
 - **Đã sửa:** validation server-side cho giá và công suất sản phẩm; còn cần chốt transition trạng thái đơn.
+- **Đã sửa:** cập nhật đơn chỉ nhận requirements/notes/order status/payment status; từ chối status không tồn tại và placeholder thanh toán.
 - Khôi phục khả năng quản lý hình thức thanh toán nếu xác nhận checkout đang sử dụng.
 - Audit log cho thay đổi trạng thái đơn hàng; test SMTP/reCAPTCHA trên staging.
 

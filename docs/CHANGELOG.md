@@ -19,3 +19,4 @@
 - Bổ sung regression test security cho token, allowlist, rate limit, ảnh hợp lệ/file giả ảnh; HTTP test xác nhận request thiếu token bị chặn và token hợp lệ vẫn đi qua validation nghiệp vụ.
 - Chuyển rate limit checkout/review từ session sang DB và bổ sung cho contact, tư vấn sản phẩm, đăng ký đại lý; tách bucket băm theo form/IP, mặc định 5 lượt/10 phút và không lưu nội dung form.
 - Thêm validation server-side cho CRUD sản phẩm: định dạng giá/công suất, giá không âm và giá mới không vượt giá bán; không thay đổi dữ liệu sản phẩm hiện có.
+- Khóa mass-assignment khi Admin cập nhật đơn: chỉ nhận bốn field nghiệp vụ được phép và xác minh trạng thái đơn/thanh toán phía server.
