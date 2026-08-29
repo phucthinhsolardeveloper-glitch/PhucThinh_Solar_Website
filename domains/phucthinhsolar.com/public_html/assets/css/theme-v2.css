@@ -1232,3 +1232,57 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 .CRrow_term_bottom .col-12,.CRrow_term_bottom>.row>.col-12{flex:0 0 100%!important;max-width:100%!important;}
 .pts-empty-state i{font-size:34px;color:#cbd5e1;}
 .pts-empty-state p{margin:0;color:#94a3b8;font-size:14.5px;font-weight:700;}
+
+/* =====================================================================
+   SIDEBAR FILTER DANH MỤC SẢN PHẨM
+   Trước đây mỗi khối filter (Danh mục/Thương hiệu/Công suất/Loại SP/Mức
+   giá) là 1 khung viền riêng (5 viền chồng nhau) VÀ tiêu đề mỗi khối vẫn
+   giữ nguyên style cũ chưa từng đụng tới: khối nền xám #f7f7f7 + viền trái
+   xanh 4px kiểu form thời xưa. Gộp về 1 thẻ card duy nhất, phân cách bằng
+   đường kẻ mảnh giữa các khối, tiêu đề đổi thành chữ đậm navy sạch.
+   ===================================================================== */
+.pts-filter-card{
+    border:1px solid var(--pts-line)!important;border-radius:14px!important;
+    background:#fff;padding:20px 20px 4px!important;
+}
+/* mỗi khối bên trong: bỏ viền/nền riêng, dùng đường kẻ dưới làm ranh giới */
+.pts-filter-card .aside-filter,
+.pts-filter-card .product-pages__price{
+    border:0!important;border-radius:0!important;background:transparent!important;
+    padding:0 0 18px!important;margin:0 0 18px!important;
+    border-bottom:1px solid var(--pts-line)!important;
+}
+.pts-filter-card .aside-filter:last-child,
+.pts-filter-card .product-pages__price:last-child{
+    border-bottom:0!important;margin-bottom:0!important;padding-bottom:2px!important;
+}
+/* tiêu đề khối: bỏ khối xám + viền trái xanh, chữ đậm navy sạch */
+.pts-filter-card .title-head,
+.pts-filter-card .product-pages__price-name{
+    background:transparent!important;border-left:0!important;
+    color:var(--pts-navy)!important;font-size:13px!important;font-weight:900!important;
+    letter-spacing:.03em;text-transform:uppercase;
+    padding:0!important;margin:0 0 12px!important;
+}
+.pts-filter-card .aside-title-f{margin-bottom:12px!important;}
+/* checkbox custom vốn đã có (label.checker) - chỉ tinh chỉnh khoảng cách/màu */
+.pts-filter-card .product-pages__price-label{
+    padding:6px 0!important;font-size:13.5px!important;color:#475569!important;
+    text-transform:none!important;font-weight:500!important;
+}
+.pts-filter-card .product-pages__price-label:hover{color:var(--pts-navy)!important;}
+.pts-filter-card label.checker label{
+    height:18px!important;width:18px!important;border-radius:4px;
+    border-color:var(--pts-line)!important;
+}
+.pts-filter-card label.checker label::before{color:var(--pts-gold-dark)!important;font-size:10px!important;}
+/* danh mục: link đơn giản, item đang chọn dùng chữ vàng đồng đậm thay vì
+   nền xanh nổi bật khác tông với phần còn lại của sidebar */
+.pts-filter-card .filter-item a{color:#475569!important;font-size:13.5px!important;text-decoration:none!important;padding:6px 0;display:block;}
+.pts-filter-card .filter-item a:hover{color:var(--pts-navy)!important;}
+.pts-filter-card .filter-item.checked>a{color:var(--pts-gold-dark)!important;font-weight:800!important;}
+/* Công suất thường liệt kê rất nhiều mức -> giới hạn chiều cao, cuộn riêng
+   thay vì kéo dài cả sidebar */
+.pts-filter-card .product-pages__price:has(#car_congsuat0) .wrappers-aside__filter-scroll{
+    max-height:260px;overflow-y:auto;padding-right:6px;
+}

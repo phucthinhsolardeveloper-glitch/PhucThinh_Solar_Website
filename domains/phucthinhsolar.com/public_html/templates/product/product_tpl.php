@@ -85,6 +85,10 @@ document.addEventListener('DOMContentLoaded', function(){
                 <a class="sc-btn" href="lien-he/">Yêu cầu tư vấn miễn phí</a>
             </div>
             <?php } ?>
+            <?php /* Gộp toàn bộ khối filter vào 1 thẻ card duy nhất thay vì mỗi
+                khối một khung viền riêng (5 viền chồng nhau nhìn rối) - dùng
+                đường phân cách mảnh giữa các khối, đúng như bản thiết kế mẫu. */ ?>
+            <div class="pts-filter-card">
             <?php if(count($splist)){ ?>
             <div class="aside-item aside-filter collection-category">
                 <div class="aside-title aside-title-f">
@@ -242,6 +246,7 @@ document.addEventListener('DOMContentLoaded', function(){
                         <?php } ?>
                     </ul>
                 </div>
+            </div>
             </div>
 
         </div>
