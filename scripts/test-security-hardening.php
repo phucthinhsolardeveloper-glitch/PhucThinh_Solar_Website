@@ -43,10 +43,24 @@ securityAssert(!adminLegacyMutationNeedsCsrf('product', 'man', 'GET', array()), 
 securityAssert(adminAllowedDatabaseAction('optimize') && !adminAllowedDatabaseAction('DROP TABLE table_user'), 'Bảo trì database chỉ nhận action allowlist');
 securityAssert(adminLoginClientIp(array('REMOTE_ADDR' => '198.51.100.1', 'HTTP_X_FORWARDED_FOR' => '203.0.113.1'), array()) === '198.51.100.1', 'Login không tin forwarded IP khi proxy chưa được cấu hình');
 securityAssert(count(adminLoginLimitDescriptors('198.51.100.1', 'Admin', 5, 20)) === 2, 'Rate limit đăng nhập kết hợp IP và tài khoản băm');
+securityAssert(formClientIp(array('REMOTE_ADDR' => '198.51.100.2', 'HTTP_X_FORWARDED_FOR' => '203.0.113.2'), array()) === '198.51.100.2', 'Form public không tin forwarded IP ngoài trusted proxy');
 
 $formToken = formCsrfToken();
 securityAssert(strlen($formToken) === 64 && formCsrfValid($formToken), 'CSRF frontend sinh và xác minh token đúng');
 securityAssert(formRateLimit('test-security', 2, 60) && formRateLimit('test-security', 2, 60) && !formRateLimit('test-security', 2, 60), 'Rate limit chặn lượt vượt ngưỡng');
+$persistentIp = '198.51.100.'.random_int(100, 199);
+$persistentKey = 'form:'.sha1('security-test|'.$persistentIp);
+try
+{
+    securityAssert(formPersistentRateLimit($d, 'security-test', $persistentIp, 2, 60, 1000), 'Rate limit DB nhận lượt đầu');
+    securityAssert(formPersistentRateLimit($d, 'security-test', $persistentIp, 2, 60, 1001), 'Rate limit DB nhận lượt trong ngưỡng');
+    securityAssert(!formPersistentRateLimit($d, 'security-test', $persistentIp, 2, 60, 1002), 'Rate limit DB chặn vượt ngưỡng qua session mới');
+    securityAssert(formPersistentRateLimit($d, 'security-test', $persistentIp, 2, 60, 1062), 'Rate limit DB mở lại sau cửa sổ');
+}
+finally
+{
+    $d->rawQuery("delete from #_user_limit where login_ip = ?", array($persistentKey));
+}
 
 $validPath = tempnam(sys_get_temp_dir(), 'pts-valid-image-');
 $invalidPath = tempnam(sys_get_temp_dir(), 'pts-invalid-image-');

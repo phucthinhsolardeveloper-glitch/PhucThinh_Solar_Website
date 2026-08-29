@@ -29,6 +29,8 @@
     /* Newsletter */
     if(!empty($_POST['submit-newsletter']))
     {
+        $publicIp = formClientIp($_SERVER, isset($config['login']['trusted-proxies']) ? $config['login']['trusted-proxies'] : array());
+        if(!formPersistentRateLimit($d, 'newsletter-consulting', $publicIp, 5, 600)) $func->transfer("Bạn đăng ký quá nhanh. Vui lòng thử lại sau.", $configBase, false);
         $responseCaptcha = $_POST['recaptcha_response_newsletter'];
         $resultCaptcha = $func->checkRecaptcha($responseCaptcha);
         $scoreCaptcha = (!empty($resultCaptcha['score'])) ? $resultCaptcha['score'] : 0;
@@ -73,6 +75,8 @@
 
     if(!empty($_POST['submit-newsletter2']))
     {
+        $publicIp = formClientIp($_SERVER, isset($config['login']['trusted-proxies']) ? $config['login']['trusted-proxies'] : array());
+        if(!formPersistentRateLimit($d, 'newsletter-dealer', $publicIp, 5, 600)) $func->transfer("Bạn đăng ký quá nhanh. Vui lòng thử lại sau.", $configBase, false);
         $responseCaptcha = $_POST['recaptcha_response_newsletter2'];
         $resultCaptcha = $func->checkRecaptcha($responseCaptcha);
         $scoreCaptcha = (!empty($resultCaptcha['score'])) ? $resultCaptcha['score'] : 0;

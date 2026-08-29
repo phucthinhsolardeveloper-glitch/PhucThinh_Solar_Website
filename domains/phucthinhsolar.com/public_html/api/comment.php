@@ -6,7 +6,8 @@
 
     if(!empty($route))
     {
-		if($route === 'add' && (!formCsrfValid(isset($_POST['form_csrf']) ? $_POST['form_csrf'] : '') || !formRateLimit('review', 5, 600)))
+        $publicIp = formClientIp($_SERVER, isset($config['login']['trusted-proxies']) ? $config['login']['trusted-proxies'] : array());
+        if($route === 'add' && (!formCsrfValid(isset($_POST['form_csrf']) ? $_POST['form_csrf'] : '') || !formPersistentRateLimit($d, 'review', $publicIp, 5, 600)))
 		{
 			http_response_code(403);
 			header('Content-Type: application/json; charset=UTF-8');

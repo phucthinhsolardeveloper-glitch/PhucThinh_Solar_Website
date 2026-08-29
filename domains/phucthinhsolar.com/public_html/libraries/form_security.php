@@ -22,4 +22,30 @@ if(!function_exists('formCsrfToken'))
         $_SESSION['form_rate_limit'][$key] = $bucket;
         return true;
     }
+
+    function formClientIp($server, $trustedProxies = array())
+    {
+        $remote = isset($server['REMOTE_ADDR']) && filter_var($server['REMOTE_ADDR'], FILTER_VALIDATE_IP) ? $server['REMOTE_ADDR'] : '0.0.0.0';
+        if(in_array($remote, $trustedProxies, true) && !empty($server['HTTP_X_FORWARDED_FOR']))
+        {
+            $forwarded = trim(explode(',', $server['HTTP_X_FORWARDED_FOR'])[0]);
+            if(filter_var($forwarded, FILTER_VALIDATE_IP)) return $forwarded;
+        }
+        return $remote;
+    }
+
+    function formPersistentRateLimit($d, $form, $ip, $limit, $seconds, $now = null)
+    {
+        $now = $now === null ? time() : (int)$now;
+        $limit = max(1, (int)$limit);
+        $seconds = max(1, (int)$seconds);
+        $key = 'form:'.sha1(strtolower(trim((string)$form)).'|'.(string)$ip);
+        $row = $d->rawQueryOne("select id, login_attempts, attempt_time from #_user_limit where login_ip = ? order by id desc limit 1", array($key));
+        $attempts = !empty($row['id']) && (int)$row['attempt_time'] > $now - $seconds ? (int)$row['login_attempts'] : 0;
+        if($attempts >= $limit) return false;
+        $attempts++;
+        if(!empty($row['id'])) $d->rawQuery("update #_user_limit set login_attempts = ?, attempt_time = ?, locked_time = 0 where id = ?", array($attempts, $now, (int)$row['id']));
+        else $d->rawQuery("insert into #_user_limit (login_ip, login_attempts, attempt_time, locked_time) values (?,?,?,0)", array($key, $attempts, $now));
+        return true;
+    }
 }

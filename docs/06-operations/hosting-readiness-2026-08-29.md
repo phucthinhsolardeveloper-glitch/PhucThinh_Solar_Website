@@ -80,7 +80,7 @@ Website chỉ được mở traffic/chạy quảng cáo khi toàn bộ mục **P
 - [ ] Test session hết hạn, đăng nhập lại, hai tab Admin và hai thiết bị.
 - [ ] Xác minh trên HTTPS staging cookie Admin có `Secure`; local đã đạt `HttpOnly`, `SameSite=Lax` và đổi session ID sau đăng nhập.
 - [x] Bổ sung rate limit login bền vững theo IP và hash tài khoản; không tin forwarded IP ngoài trusted proxy.
-- [ ] Bổ sung/cấu hình rate limit bền vững cho checkout, review, contact và newsletter.
+- [x] Bổ sung rate limit DB theo IP, tách bucket cho checkout, review, contact và hai loại newsletter; mặc định 5 lượt/10 phút.
 - [ ] Retest upload ảnh/video thật, file sai MIME, file quá dung lượng và tên file kép.
 - [ ] Xác nhận endpoint legacy đã khóa vẫn trả 404 trên staging/production.
 
@@ -114,7 +114,7 @@ Website chỉ được mở traffic/chạy quảng cáo khi toàn bộ mục **P
 
 ## 5. P1 — Nên hoàn thành trước khi chạy quảng cáo
 
-- [ ] Rate limit dùng storage chung, có log tối thiểu và không lưu nội dung nhạy cảm.
+- [x] Rate limit login/form public dùng DB chung, chỉ lưu khóa băm theo form/IP và bộ đếm, không lưu nội dung form.
 - [ ] Retest toàn bộ Security Review và đóng/mở lại finding theo bằng chứng staging.
 - [ ] Xác nhận quy trình xử lý đơn hàng và menu cho nhân viên vận hành.
 - [ ] Kiểm tra SEO: canonical, sitemap, robots, metadata, redirect và URL/slug cũ.

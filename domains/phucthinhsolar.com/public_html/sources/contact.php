@@ -3,6 +3,8 @@
 
 	if(!empty($_POST['submit-contact']))
 	{
+        $publicIp = formClientIp($_SERVER, isset($config['login']['trusted-proxies']) ? $config['login']['trusted-proxies'] : array());
+        if(!formPersistentRateLimit($d, 'contact', $publicIp, 5, 600)) $func->transfer("Bạn gửi liên hệ quá nhanh. Vui lòng thử lại sau.", "lien-he", false);
         $responseCaptcha = isset($_POST['recaptcha_response_contact']) ? $_POST['recaptcha_response_contact'] : '';
         $resultCaptcha = $func->checkRecaptcha($responseCaptcha);
         $scoreCaptcha = (!empty($resultCaptcha['score'])) ? $resultCaptcha['score'] : 0;

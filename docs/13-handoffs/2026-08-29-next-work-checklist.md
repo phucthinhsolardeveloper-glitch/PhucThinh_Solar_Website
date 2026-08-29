@@ -43,6 +43,7 @@ Quy ước giá giữ như hệ thống cũ: ô giá trống khi cập nhật th
 - [x] Bổ sung CSRF cho 42 form POST, controller save/upload/sync/create, comment, sortable và bảo trì database.
 - [x] Chuyển tạo file ngôn ngữ và đẩy OneSignal từ GET sang POST; chặn file manager/API legacy không còn usage.
 - [x] Bổ sung rate limit login bền vững theo IP/hash tài khoản, trusted-proxy allowlist và thông báo lỗi không phân biệt tài khoản.
+- [x] Bổ sung rate limit DB cho checkout, review, contact và newsletter; tách bucket, không lưu nội dung khách gửi.
 - [x] Harden session Admin: strict cookie, `HttpOnly`, `SameSite=Lax`, session ID regeneration và timeout cấu hình.
 - [x] Retest tự động đủ 42/42 form POST Admin có CSRF và luồng HTTP thiếu/hợp lệ.
 - [ ] Retest trình duyệt trên staging các thao tác nghiệp vụ của 42 form; local mới xác minh cấu trúc và luồng đại diện.

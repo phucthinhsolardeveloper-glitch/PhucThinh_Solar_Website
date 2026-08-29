@@ -20,7 +20,8 @@
 		{
 			$func->transfer("Phiên đặt hàng không hợp lệ. Vui lòng tải lại trang.", "gio-hang/", false);
 		}
-		if(!formRateLimit('checkout', 5, 600))
+		$publicIp = formClientIp($_SERVER, isset($config['login']['trusted-proxies']) ? $config['login']['trusted-proxies'] : array());
+		if(!formPersistentRateLimit($d, 'checkout', $publicIp, 5, 600))
 		{
 			$func->transfer("Bạn thao tác quá nhanh. Vui lòng thử lại sau.", "gio-hang/", false);
 		}
