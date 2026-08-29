@@ -22,3 +22,4 @@
 - Khóa mass-assignment khi Admin cập nhật đơn: chỉ nhận bốn field nghiệp vụ được phép và xác minh trạng thái đơn/thanh toán phía server.
 - Sửa upload đính kèm liên hệ dùng validator tài liệu; mở allowlist MIME cho PDF/Office/archive/ảnh, vẫn từ chối PHP giả, MIME sai và file vượt dung lượng.
 - Bổ sung CSRF cho liên hệ, tư vấn sản phẩm và đăng ký đại lý; request thiếu token bị chặn trước khi ghi DB.
+- Thêm `scripts/predeploy-local.sh` làm cổng kiểm tra một lệnh trước deploy: build, lint, security/RBAC/Excel regression, frontend smoke, log và cleanup.

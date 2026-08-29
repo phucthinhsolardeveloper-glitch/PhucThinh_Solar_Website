@@ -62,7 +62,8 @@ Quy ước giá giữ như hệ thống cũ: ô giá trống khi cập nhật th
 
 - [ ] Tinh chỉnh Theme V2 bằng đối chiếu trực quan desktop/mobile.
 - [ ] Hoàn thiện các section/trang nội dung legacy còn lại nếu vẫn nằm trong phạm vi kinh doanh.
-- [ ] Thêm smoke/E2E tự động và CI tối thiểu.
+- [x] Thêm lệnh pre-deploy local tự động: build, lint, regression, frontend smoke, log và cleanup DB.
+- [ ] Đưa lệnh pre-deploy vào CI/staging runner khi có môi trường triển khai.
 - [ ] Thiết kế audit trail thay đổi trạng thái đơn hàng.
 - [ ] Thiết kế/enforce RBAC trước khi mở thêm tài khoản Admin.
 - [ ] Lập mapping usage trước khi archive route, media hoặc asset legacy.
