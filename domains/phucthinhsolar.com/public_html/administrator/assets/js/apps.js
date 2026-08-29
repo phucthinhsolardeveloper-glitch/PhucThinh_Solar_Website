@@ -1934,7 +1934,9 @@ $(document).ready(function(){
 					admin_csrf: ADMIN_CSRF,
 					id: id,
 					table: table,
-					attr: attr
+					attr: attr,
+					type: TYPE,
+					com: COM
 				},
 				success: function()
 				{
@@ -1963,7 +1965,9 @@ $(document).ready(function(){
 					admin_csrf: ADMIN_CSRF,
 					id: id,
 					table: table,
-					value: value
+					value: value,
+					type: TYPE,
+					com: COM
 				}
 			});
 
@@ -2038,7 +2042,8 @@ $(document).ready(function(){
 					admin_csrf: ADMIN_CSRF,
 					id: id,
 					table: table,
-					copyimg: copyimg
+					copyimg: copyimg,
+					type: TYPE
 				},
 				success: function(){
 					holdonClose();

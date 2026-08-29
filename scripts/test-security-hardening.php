@@ -26,6 +26,14 @@ securityAssert(adminAllowedCategoryTable('product_cat') && !adminAllowedCategory
 securityAssert(adminAllowedPlaceTable('district') && !adminAllowedPlaceTable('product'), 'Allowlist place chặn identifier tùy ý');
 securityAssert(adminGalleryUploadFolder('product') === 'product' && adminGalleryUploadFolder('../../') === null, 'Gallery chỉ ánh xạ thư mục upload phía server');
 securityAssert(adminSafeUploadBasename('safe-image.jpg') && !adminSafeUploadBasename('../config.php'), 'Gallery từ chối filename có path traversal');
+securityAssert(adminMutationPermissionKey('product_cat', 'status', 'san-pham') === 'product_edit_cat_san-pham', 'RBAC ánh xạ status danh mục sản phẩm sang quyền edit tương ứng');
+securityAssert(adminMutationPermissionKey('gallery', 'delete', 'san-pham', 'product') === 'product_delete_photo_san-pham', 'RBAC ánh xạ xóa gallery theo module và type');
+securityAssert(adminMutationPermissionKey('news', 'copy', 'tin-tuc') === 'news_add_tin-tuc', 'RBAC yêu cầu quyền add khi sao chép nội dung');
+securityAssert(adminMutationPermissionKey('user', 'status', '') === null, 'RBAC từ chối mutation chưa có mapping quyền');
+securityAssert(adminPermissionGranted(false, 1, false, null, array()), 'RBAC tắt giữ nguyên hành vi hiện tại');
+securityAssert(adminPermissionGranted(true, 3, false, null, array()), 'Tài khoản developer role 3 giữ quyền quản trị');
+securityAssert(adminPermissionGranted(true, 1, false, 'product_edit_san-pham', array('product_edit_san-pham')), 'RBAC cho phép đúng quyền được cấp');
+securityAssert(!adminPermissionGranted(true, 1, false, 'product_edit_san-pham', array('news_edit_tin-tuc')), 'RBAC từ chối quyền khác module');
 
 $formToken = formCsrfToken();
 securityAssert(strlen($formToken) === 64 && formCsrfValid($formToken), 'CSRF frontend sinh và xác minh token đúng');

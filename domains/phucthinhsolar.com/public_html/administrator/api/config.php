@@ -10,6 +10,7 @@
     $d = new PDODb($config['database']);
     $cache = new Cache($d);
     $func = new Functions($d, $cache);
+	require_once LIBRARIES."config-type.php";
 
     if($func->checkLoginAdmin()==false) { die(); }
     require_once LIBRARIES.'admin_security.php';

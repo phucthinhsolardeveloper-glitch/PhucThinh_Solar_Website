@@ -35,7 +35,9 @@ Quy ước giá giữ như hệ thống cũ: ô giá trống khi cập nhật th
 - [x] Thêm CSRF cho xóa/lưu đơn, checkout và review; xóa đơn chuyển sang POST.
 - [x] Thêm allowlist identifier cho API Admin chính và hardening upload MIME/size/non-executable storage.
 - [x] Chuyển action xóa Admin legacy sang POST + CSRF; khóa filer theo đúng context và bỏ đường dẫn upload do client cung cấp.
-- [ ] Hoàn thiện authorization theo action/RBAC, CSRF cho mutation save/update legacy còn lại và rate limit bền vững theo IP/tài khoản.
+- [x] Ánh xạ quyền action cho API status/numb/copy/upload/filer; mặc định từ chối mapping không xác định khi RBAC bật.
+- [ ] Tạo ma trận tài khoản kiểm thử và retest đầy đủ trước khi bật `permission.active`; RBAC hiện vẫn tắt.
+- [ ] Bổ sung CSRF cho mutation save/update legacy còn lại và rate limit bền vững theo IP/tài khoản.
 - [ ] Retest toàn bộ Security Review và cập nhật finding đã đóng/còn mở.
 - [ ] Xác minh SMTP production bằng mailbox kiểm thử và cấu hình reCAPTCHA thật.
 - [ ] Xác minh PHP extension, đặc biệt `calendar`, trên hosting.

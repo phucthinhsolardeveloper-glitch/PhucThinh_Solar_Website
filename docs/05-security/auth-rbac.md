@@ -12,4 +12,4 @@ Permission strings nằm trong `table_permission`, nhóm trong `table_permission
 
 `sources/user.php` có đăng ký, login, activation, forgot password, profile, order history/return/cancel; session member được kiểm tra trong `Functions`. Config admin đặt `user.active = false`; usage production NEEDS VERIFICATION.
 
-Rủi ro: password hashing legacy, secret trong code, RBAC tắt, chưa thấy session cookie hardening/CSRF chung. Không xem việc ẩn menu là authorization.
+Rủi ro: password hashing legacy, secret trong code và RBAC vẫn tắt. API mutation chính đã kiểm quyền action khi RBAC được bật; cần test ma trận tài khoản trên staging trước khi đổi cấu hình. CSRF chưa phủ hết mutation save/update legacy. Không xem việc ẩn menu là authorization.

@@ -19,11 +19,12 @@ Trạng thái: **ĐANG XỬ LÝ trên Docker local**, chưa sửa production.
 - Toàn bộ action xóa qua controller Admin legacy đã chuyển sang POST + CSRF; link xóa cache và các nút xóa danh sách dùng form POST tương thích source cũ.
 - API gallery/filer yêu cầu CSRF cho sửa thứ tự, sửa chú thích và xóa; ID phải thuộc đúng sản phẩm/bài viết đang mở, thư mục upload được ánh xạ phía server và filename có path bị từ chối.
 - API xóa sortable phụ đã yêu cầu CSRF và ép ID về số nguyên.
+- API mutation `status`, `numb`, `copy`, upload và filer đã ánh xạ sang quyền action hiện có; khi RBAC bật, quyền được nạp lại từ DB và endpoint trả 403 nếu sai module/type hoặc chưa có mapping. RBAC vẫn đang tắt để tránh thay đổi vận hành trước khi test tài khoản nhân viên.
 
 Vẫn còn trước production:
 
 - CAPTCHA/rate limit bền vững theo IP/tài khoản cho checkout/review; rate limit hiện tại chỉ theo session nên có thể bị né bằng session mới.
-- Authorization theo từng action cho API mutation Admin; hiện đã có login, CSRF và allowlist nhưng RBAC toàn hệ thống vẫn tắt.
+- Kiểm thử ma trận tài khoản/nhóm quyền trên staging rồi mới bật RBAC toàn hệ thống; authorization cho API mutation chính đã sẵn sàng nhưng cấu hình hiện vẫn tắt.
 - Rà và bổ sung CSRF cho các mutation `save/update` legacy còn lại; batch hiện tại đã đóng nhánh `delete` và filer.
 - Retest upload thực tế qua UI Admin/review với các kích thước và định dạng video thật trước production.
 

@@ -28,6 +28,7 @@
 		echo json_encode(array('success' => false, 'msg' => 'Thông tin upload không hợp lệ'));
 		exit();
 	}
+	adminRequireMutationPermission('gallery', 'upload', $type, $com, true);
 	$_FILES['file'] = array('name' => $myFile['name'][0],'type' => isset($myFile['type'][0]) ? $myFile['type'][0] : '','tmp_name' => $myFile['tmp_name'][0],'error' => $myFile['error'][0],'size' => $myFile['size'][0]);
 	$file_name = $func->uploadName($_FILES['file']['name']);
 	

@@ -7,7 +7,10 @@
 		$table = (!empty($_POST['table'])) ? (string) $_POST['table'] : '';
 		$id = (!empty($_POST['id'])) ? (int) $_POST['id'] : 0;
 		$value = isset($_POST['value']) ? max(0, (int) $_POST['value']) : 0;
+		$type = (!empty($_POST['type'])) ? (string) $_POST['type'] : '';
+		$com = (!empty($_POST['com'])) ? (string) $_POST['com'] : '';
 		if(!$id || !adminAllowedMutationTable($table, 'numb')) { http_response_code(400); exit(); }
+		adminRequireMutationPermission($table, 'numb', $type, $com);
 
 		$data['numb'] = $value;
 		

@@ -19,6 +19,7 @@
 	if(!preg_match('/^[a-zA-Z0-9_-]{0,100}$/', $type)) exit();
 	if(!preg_match('/^[a-zA-Z0-9 _-]{0,50}$/', $colfiler)) $colfiler = '';
 	if($hash !== '' && !preg_match('/^[a-zA-Z0-9]{1,64}$/', $hash)) exit();
+	if(in_array($cmd, array('info', 'updateNumb', 'delete', 'delete-all'), true)) adminRequireMutationPermission('gallery', $cmd, $type, $com);
 
 	function filerGalleryRows($d, $id_parent, $hash, $com, $type, $kind, $columns = 'numb, id, photo, namevi')
 	{

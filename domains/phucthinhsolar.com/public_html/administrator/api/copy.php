@@ -9,7 +9,9 @@
 		$id = (!empty($_POST['id'])) ? (int) $_POST['id'] : 0;
 		$table = (!empty($_POST['table'])) ? (string) $_POST['table'] : '';
 		$copyimg = (!empty($_POST['copyimg'])) ? htmlspecialchars($_POST['copyimg']) : false;
+		$type = (!empty($_POST['type'])) ? (string) $_POST['type'] : '';
 		if(!$id || !adminAllowedMutationTable($table, 'copy')) { http_response_code(400); exit(); }
+		adminRequireMutationPermission($table, 'copy', $type);
 		
 		if($id)
 		{
