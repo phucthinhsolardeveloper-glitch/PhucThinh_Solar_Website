@@ -40,12 +40,23 @@ $createdId = 0;
 try {
     $csvPath = tempnam(sys_get_temp_dir(), 'pts-csv-');
     $csv = fopen($csvPath, 'wb');
-    fputcsv($csv, array('action', 'code', 'namevi', 'regular_price', 'sale_price'));
-    fputcsv($csv, array('create', $code, 'Sản phẩm kiểm thử bulk', '1000', '900'));
+    fputcsv($csv, array('Thao tác', 'Mã sản phẩm', 'Tên sản phẩm', 'Giá gốc', 'Giá bán/khuyến mãi'));
+    fputcsv($csv, array('Tạo mới', $code, 'Sản phẩm kiểm thử bulk', '1000', '900'));
     fclose($csv);
     $parsed = productBulkReadUpload(array('error' => UPLOAD_ERR_OK, 'size' => filesize($csvPath), 'name' => 'test.csv', 'tmp_name' => $csvPath));
-    testAssert(empty($parsed['errors']) && count($parsed['rows']) === 1, 'Đọc CSV đúng header và dữ liệu');
+    testAssert(empty($parsed['errors']) && count($parsed['rows']) === 1, 'Đọc CSV với tiêu đề và thao tác tiếng Việt'.(!empty($parsed['errors']) ? ': '.implode(' ', $parsed['errors']) : ''));
+    testAssert(isset($parsed['rows'][0]['code']) && $parsed['rows'][0]['action'] === 'Tạo mới', 'Ánh xạ tiêu đề tiếng Việt về field nội bộ');
+    testAssert(productBulkNormalizeAction($parsed['rows'][0]['action']) === 'create', 'Ánh xạ thao tác tiếng Việt về lệnh tạo mới');
     @unlink($csvPath);
+
+    $legacyCsvPath = tempnam(sys_get_temp_dir(), 'pts-csv-legacy-');
+    $legacyCsv = fopen($legacyCsvPath, 'wb');
+    fputcsv($legacyCsv, array('action', 'code', 'namevi'));
+    fputcsv($legacyCsv, array('skip', 'LEGACY', 'File cũ'));
+    fclose($legacyCsv);
+    $legacyParsed = productBulkReadUpload(array('error' => UPLOAD_ERR_OK, 'size' => filesize($legacyCsvPath), 'name' => 'legacy.csv', 'tmp_name' => $legacyCsvPath));
+    testAssert(empty($legacyParsed['errors']) && isset($legacyParsed['rows'][0]['namevi']), 'Vẫn đọc được tiêu đề kỹ thuật của file cũ');
+    @unlink($legacyCsvPath);
 
     $createRows = array(array('_row_number' => 2, 'action' => 'create', 'code' => $code, 'namevi' => 'Sản phẩm kiểm thử bulk', 'regular_price' => '1000', 'sale_price' => '900', 'status' => 'hienthi', 'descvi' => '<script>alert(1)</script><p>Nội dung hợp lệ</p>'));
     $preview = productBulkValidateRows($createRows, $type);

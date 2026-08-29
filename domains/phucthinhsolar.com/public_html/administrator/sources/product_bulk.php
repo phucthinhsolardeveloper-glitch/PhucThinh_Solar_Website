@@ -39,6 +39,24 @@ function productBulkColumns()
     );
 }
 
+function productBulkNormalizeHeader($value)
+{
+    $value = preg_replace('/^\xEF\xBB\xBF/', '', (string) $value);
+    $value = preg_replace('/\s+/u', ' ', trim($value));
+    return mb_strtolower($value, 'UTF-8');
+}
+
+function productBulkHeaderMap()
+{
+    $map = array();
+    foreach (productBulkColumns() as $key => $meta) {
+        // Giữ tương thích với file kỹ thuật đã tải trước đây.
+        $map[productBulkNormalizeHeader($key)] = $key;
+        $map[productBulkNormalizeHeader($meta['label'])] = $key;
+    }
+    return $map;
+}
+
 function productBulkCsrfToken()
 {
     if (empty($_SESSION['product_bulk_csrf'])) {
@@ -55,12 +73,12 @@ function productBulkCheckCsrf()
 
 function productBulkNormalizeAction($value)
 {
-    $value = strtolower(trim((string) $value));
+    $value = mb_strtolower(trim((string) $value), 'UTF-8');
     $map = array(
-        'add' => 'create', 'them' => 'create', 'tạo' => 'create',
-        'edit' => 'update', 'sua' => 'update', 'sửa' => 'update',
-        'xoa' => 'archive', 'xóa' => 'archive', 'delete' => 'archive',
-        'boqua' => 'skip', 'bỏ qua' => 'skip'
+        'add' => 'create', 'them' => 'create', 'tạo' => 'create', 'tạo mới' => 'create',
+        'edit' => 'update', 'sua' => 'update', 'sửa' => 'update', 'cập nhật' => 'update',
+        'xoa' => 'archive', 'xóa' => 'archive', 'delete' => 'archive', 'ẩn' => 'archive', 'ẩn sản phẩm' => 'archive',
+        'boqua' => 'skip', 'bỏ qua' => 'skip', 'không nhập' => 'skip'
     );
     return isset($map[$value]) ? $map[$value] : $value;
 }
@@ -199,17 +217,20 @@ function productBulkReadUpload($file)
         return $result;
     }
     $headers = array();
+    $headerMap = productBulkHeaderMap();
     foreach ($rawRows[0] as $index => $header) {
-        $header = strtolower(trim(preg_replace('/^\xEF\xBB\xBF/', '', (string) $header)));
-        if ($header === '') continue;
-        if (isset($headers[$header])) $result['errors'][] = 'Tiêu đề cột bị lặp: '.$header;
-        $headers[$header] = $index;
+        $displayHeader = preg_replace('/\s+/u', ' ', trim(preg_replace('/^\xEF\xBB\xBF/', '', (string) $header)));
+        if ($displayHeader === '') continue;
+        $normalizedHeader = productBulkNormalizeHeader($displayHeader);
+        if (!isset($headerMap[$normalizedHeader])) {
+            $result['errors'][] = 'Cột không được hỗ trợ: '.$displayHeader;
+            continue;
+        }
+        $key = $headerMap[$normalizedHeader];
+        if (isset($headers[$key])) $result['errors'][] = 'Tiêu đề cột bị lặp: '.$displayHeader;
+        $headers[$key] = $index;
     }
-    $known = productBulkColumns();
-    foreach ($headers as $header => $index) {
-        if (!isset($known[$header])) $result['errors'][] = 'Cột không được hỗ trợ: '.$header;
-    }
-    if (!isset($headers['action'])) $result['errors'][] = 'Thiếu cột bắt buộc action.';
+    if (!isset($headers['action'])) $result['errors'][] = 'Thiếu cột bắt buộc Thao tác.';
     if (!empty($result['errors'])) return $result;
     $result['headers'] = array_keys($headers);
     $limit = min(count($rawRows), 501);
@@ -526,6 +547,7 @@ function productBulkExport($templateOnly = false)
     if (!in_array($format, array('xlsx', 'csv'), true)) $format = 'xlsx';
     $columns = productBulkColumns();
     $headers = array_keys($columns);
+    $displayHeaders = array_map(function ($column) { return $column['label']; }, $columns);
     $categories = productBulkCategoryMaps($type);
     $products = $templateOnly ? array() : $d->rawQuery('select * from #_product where type = ? order by numb,id desc', array($type));
     $suffix = $templateOnly ? 'mau-nhap-san-pham' : 'san-pham-'.date('Ymd-His');
@@ -535,7 +557,7 @@ function productBulkExport($templateOnly = false)
         header('Cache-Control: no-store, no-cache, must-revalidate');
         $output = fopen('php://output', 'wb');
         fwrite($output, "\xEF\xBB\xBF");
-        fputcsv($output, $headers);
+        fputcsv($output, $displayHeaders);
         foreach ($products as $product) {
             $values = array();
             foreach ($headers as $key) $values[] = productBulkCsvSafe(productBulkExportValue($key, $product, $categories));
@@ -559,7 +581,7 @@ function productBulkExport($templateOnly = false)
     $sheet->setTitle('Products');
     foreach ($headers as $columnIndex => $key) {
         $coordinate = PHPExcel_Cell::stringFromColumnIndex($columnIndex).'1';
-        $sheet->setCellValueExplicit($coordinate, $key, PHPExcel_Cell_DataType::TYPE_STRING);
+        $sheet->setCellValueExplicit($coordinate, $columns[$key]['label'], PHPExcel_Cell_DataType::TYPE_STRING);
         $sheet->getColumnDimension(PHPExcel_Cell::stringFromColumnIndex($columnIndex))->setWidth(in_array($key, array('descvi', 'contentvi', 'thongsokythuatvi', 'chinhsachmuahangvi', 'certificatevi'), true) ? 45 : 18);
     }
     $lastColumn = PHPExcel_Cell::stringFromColumnIndex(count($headers) - 1);
@@ -580,7 +602,7 @@ function productBulkExport($templateOnly = false)
     $guide->setTitle('HuongDan');
     $guide->fromArray(array(
         array('Quy tắc', 'Chi tiết'),
-        array('action', 'create: tạo mới; update: cập nhật theo ID; upsert: cập nhật theo ID/mã hoặc tạo mới; archive: ẩn khỏi website; skip: bỏ qua.'),
+        array('Thao tác', 'Có thể nhập tiếng Việt: Tạo mới, Cập nhật, Ẩn, Bỏ qua. Hệ thống vẫn nhận create, update, upsert, archive, skip.'),
         array('Ô trống', 'Khi update: giữ nguyên dữ liệu cũ. Dùng __CLEAR__ để xóa giá trị. Khi create: dùng giá trị mặc định.'),
         array('Chống trùng', 'ID là khóa cập nhật chính. Mã sản phẩm và slug được kiểm tra trùng trong file và database.'),
         array('Giá sale', 'regular_price là giá gốc; sale_price là giá bán/khuyến mãi và không được lớn hơn giá gốc.'),
