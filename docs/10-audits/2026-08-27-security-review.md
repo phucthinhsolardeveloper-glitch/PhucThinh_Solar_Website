@@ -12,7 +12,8 @@ Trạng thái: **ĐANG XỬ LÝ trên Docker local**, chưa sửa production.
 - P1 stored XSS review: fullname/title/content/reply được escape ở template customer và Admin. Regression bằng record local chứa script/img handler không render HTML thực thi; record test đã xóa.
 - Dynamic SQL trong filter quản trị đơn hàng đã được parameterized trong commit nâng cấp vận hành Admin.
 - Xóa đơn hàng chuyển sang POST và yêu cầu CSRF theo session; lưu trạng thái đơn cũng kiểm CSRF.
-- Checkout và gửi review yêu cầu CSRF; thêm giới hạn 5 lượt/10 phút theo session để giảm spam cơ bản.
+- Checkout và gửi review yêu cầu CSRF; checkout, review, contact và hai form newsletter dùng giới hạn DB riêng theo IP, 5 lượt/10 phút, không thể né chỉ bằng session mới.
+- Login Admin dùng rate limit DB theo IP/hash tài khoản, POST + CSRF, thông báo lỗi chung, trusted-proxy allowlist và regenerate session ID.
 - API Admin `status`, `numb`, `copy`, `category`, `place` dùng allowlist bảng/identifier; ID và số thứ tự được ép kiểu, query ID được parameterized.
 - Upload ảnh kiểm extension chính xác, kích thước, nội dung ảnh/MIME thực; upload video dùng allowlist MIME riêng. Upload gallery lỗi không để lại record rỗng.
 - Bootstrap bảo đảm thư mục `upload/` tắt thực thi CGI/PHP và chặn truy cập các đuôi script phía Apache.
@@ -26,10 +27,10 @@ Trạng thái: **ĐANG XỬ LÝ trên Docker local**, chưa sửa production.
 
 Vẫn còn trước production:
 
-- CAPTCHA/rate limit bền vững theo IP/tài khoản cho checkout/review; rate limit hiện tại chỉ theo session nên có thể bị né bằng session mới.
 - Kiểm thử ma trận tài khoản/nhóm quyền trên staging rồi mới bật RBAC toàn hệ thống; authorization cho API mutation chính đã sẵn sàng nhưng cấu hình hiện vẫn tắt.
 - Retest thao tác lưu thực tế theo từng module trên staging với dữ liệu kiểm soát; CSRF đã phủ các form save/upload và API mutation đang dùng.
 - Retest upload thực tế qua UI Admin/review với các kích thước và định dạng video thật trước production.
+- Xác minh cookie `Secure`, forwarded proxy chain và các ngưỡng rate limit trên HTTPS staging thực tế.
 
 ## Findings ban đầu (lưu để đối chiếu lịch sử)
 

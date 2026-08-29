@@ -1,6 +1,26 @@
 <?php
 if (!defined('SOURCES')) die('Error');
 
+function productValidateCommercialFields($data)
+{
+    $errors = array();
+    $values = array();
+    foreach(array('regular_price' => 'Giá bán', 'sale_price' => 'Giá mới') as $field => $label)
+    {
+        $raw = isset($data[$field]) ? trim((string)$data[$field]) : '';
+        $normalized = str_replace(',', '', $raw);
+        if($raw !== '' && !preg_match('/^[0-9]+$/', $normalized)) $errors[] = $label.' không hợp lệ';
+        $values[$field] = $raw === '' || !is_numeric($normalized) ? 0 : (float)$normalized;
+    }
+    if($values['regular_price'] > 0 && $values['sale_price'] > $values['regular_price']) $errors[] = 'Giá mới không được lớn hơn giá bán';
+    if(isset($data['cong_suat']) && trim((string)$data['cong_suat']) !== '')
+    {
+        $wattage = str_replace(',', '.', trim((string)$data['cong_suat']));
+        if(!is_numeric($wattage) || (float)$wattage < 0) $errors[] = 'Công suất không hợp lệ';
+    }
+    return $errors;
+}
+
 function productBulkColumns()
 {
     return array(

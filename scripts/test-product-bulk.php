@@ -20,6 +20,9 @@ function testAssert($condition, $message)
     echo "PASS: ", $message, PHP_EOL;
 }
 
+testAssert(empty(productValidateCommercialFields(array('regular_price' => '1,000,000', 'sale_price' => '900,000', 'cong_suat' => '12,5'))), 'Validation CRUD chấp nhận giá và công suất hợp lệ');
+testAssert(count(productValidateCommercialFields(array('regular_price' => '100000', 'sale_price' => '120000', 'cong_suat' => 'abc'))) === 2, 'Validation CRUD chặn giá mới vượt giá bán và công suất sai');
+
 if (!empty($argv[1]) && $argv[1] === '--export-workbook') {
     $_GET['format'] = 'xlsx';
     productBulkExport(false);

@@ -363,6 +363,7 @@
 
 		if($data)
 		{
+			foreach(productValidateCommercialFields($data) as $commercialError) $response['messages'][] = $commercialError;
 			foreach($data as $column => $value)
 			{
                 if(strpos($column, 'content') !== false || strpos($column, 'desc') !== false 	|| strpos($column, 'thongsokythuat') !== false || strpos($column, 'chinhsachmuahang') !== false || strpos($column, 'certificate') !== false)
