@@ -8,6 +8,7 @@
     $lang = $_SESSION['lang'];
 
     require_once LIBRARIES."config.php";
+    require_once LIBRARIES."form_security.php";
     require_once LIBRARIES.'autoload.php';
     new AutoLoad();
     $d = new PDODb($config['database']);

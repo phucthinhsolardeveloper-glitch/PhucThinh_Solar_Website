@@ -12,4 +12,5 @@
     $func = new Functions($d, $cache);
 
     if($func->checkLoginAdmin()==false) { die(); }
+    require_once LIBRARIES.'admin_security.php';
 ?>

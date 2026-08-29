@@ -2,6 +2,7 @@
 <script type="text/javascript">
 	var CONFIG_BASE = '<?=$configBase?>';
 	var TOKEN = '<?=TOKEN?>';
+	var ADMIN_CSRF = '<?=htmlspecialchars(adminCsrfToken(), ENT_QUOTES, 'UTF-8')?>';
     var ADMIN = '<?=ADMIN?>';
     var ASSET = '<?=ASSET?>';
 	var LINK_FILTER = '<?=(!empty($linkFilter)) ? $linkFilter : ''?>';

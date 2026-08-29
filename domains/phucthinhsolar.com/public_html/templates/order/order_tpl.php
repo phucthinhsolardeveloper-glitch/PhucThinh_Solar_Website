@@ -3,6 +3,7 @@
 	.group-cart-od{position: sticky;top: 0;z-index: 999}
 </style>
 <form class="form-cart validation-cart" novalidate method="post" action="" enctype="multipart/form-data">
+	<input type="hidden" name="form_csrf" value="<?=htmlspecialchars(formCsrfToken(), ENT_QUOTES, 'UTF-8')?>">
 	<div class="wrap-cart">
 		<?=$flash->getMessages("frontend")?>
 		<div class="row">

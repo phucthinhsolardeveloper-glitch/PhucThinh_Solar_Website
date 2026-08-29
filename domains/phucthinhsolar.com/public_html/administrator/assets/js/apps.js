@@ -172,7 +172,8 @@ function sendEmail()
 function deleteItem(url)
 {
 	holdonOpen();
-    document.location = url;
+	if(COM === 'order') submitAdminMutation(url, {});
+	else document.location = url;
 }
 
 /* Delete all */
@@ -193,7 +194,21 @@ function deleteAll(url)
     }
 
     holdonOpen();
-    document.location = url+"&listid="+listid;
+	if(COM === 'order') submitAdminMutation(url, {listid: listid});
+	else document.location = url+"&listid="+listid;
+}
+
+function submitAdminMutation(url, fields)
+{
+	var queryIndex = url.indexOf('?');
+	var action = queryIndex >= 0 ? url.substring(0, queryIndex) : url;
+	var params = new URLSearchParams(queryIndex >= 0 ? url.substring(queryIndex + 1) : '');
+	var form = $('<form>', {method: 'post', action: action});
+	params.forEach(function(value, key){ form.append($('<input>', {type: 'hidden', name: key, value: value})); });
+	form.append($('<input>', {type: 'hidden', name: 'admin_csrf', value: ADMIN_CSRF}));
+	$.each(fields || {}, function(key, value){ form.append($('<input>', {type: 'hidden', name: key, value: value})); });
+	$('body').append(form);
+	form.trigger('submit');
 }
 // ui-sortable-handle
 
@@ -1907,6 +1922,7 @@ $(document).ready(function(){
 				type: 'POST',
 				dataType: 'html',
 				data: {
+					admin_csrf: ADMIN_CSRF,
 					id: id,
 					table: table,
 					attr: attr
@@ -1935,6 +1951,7 @@ $(document).ready(function(){
 				type: 'POST',
 				dataType: 'html',
 				data: {
+					admin_csrf: ADMIN_CSRF,
 					id: id,
 					table: table,
 					value: value
@@ -2009,6 +2026,7 @@ $(document).ready(function(){
 				dataType: 'html',
 				async: false,
 				data: {
+					admin_csrf: ADMIN_CSRF,
 					id: id,
 					table: table,
 					copyimg: copyimg
@@ -2210,9 +2228,9 @@ $(document).ready(function(){
 	            	if(!$(this).hasClass(colClass)) $("li.jFiler-item").addClass(colClass);
 	        	});
 	        },
-	        uploadFile: {
+			uploadFile: {
 				url: "api/upload.php",
-				data: $("#filer-gallery").data(),
+				data: $.extend({}, $("#filer-gallery").data(), {admin_csrf: ADMIN_CSRF}),
 				type: 'POST',
 				enctype: 'multipart/form-data',
 				dataType: 'json',

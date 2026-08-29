@@ -90,6 +90,7 @@
 			<div class="card-header text-uppercase"><strong>Gửi nhận xét của bạn</strong></div>
 			<div class="card-body">
 				<form id="form-comment" action="" method="post" enctype="multipart/form-data">
+					<input type="hidden" name="form_csrf" value="<?=htmlspecialchars(formCsrfToken(), ENT_QUOTES, 'UTF-8')?>">
 					<div class="response-review"></div>
 					<div class="row">
 						<div class="col-12 col-lg-6">

@@ -4,10 +4,12 @@
 	if(!empty($_POST["id"]))
 	{
 		$level = (!empty($_POST["level"])) ? htmlspecialchars($_POST["level"]) : 0;
-		$table = (!empty($_POST["table"])) ? htmlspecialchars($_POST["table"]) : '';
-		$id = (!empty($_POST["id"])) ? htmlspecialchars($_POST["id"]) : 0;
+		$table = (!empty($_POST["table"])) ? (string) $_POST["table"] : '';
+		$table = preg_replace('/^#_/', '', $table);
+		$id = (!empty($_POST["id"])) ? (int) $_POST["id"] : 0;
 		$type = (!empty($_POST["type"])) ? htmlspecialchars($_POST["type"]) : '';
 		$row = null;
+		if(!adminAllowedCategoryTable($table)) { http_response_code(400); exit('error ajax'); }
 
 		switch($level)
 		{
@@ -31,7 +33,7 @@
 
 		if($id)
 		{
-			$row = $d->rawQuery("select namevi, id from $table where $id_temp = ? and type = ? order by numb,id desc",array($id,$type));
+			$row = $d->rawQuery("select namevi, id from #_{$table} where {$id_temp} = ? and type = ? order by numb,id desc",array($id,$type));
 		}
 
 		$str = '<option value="0">Chọn danh mục</option>';
@@ -39,7 +41,7 @@
 		{
 			foreach($row as $v)
 			{
-				$str .= '<option value='.$v["id"].'>'.$v["namevi"].'</option>';
+				$str .= '<option value="'.(int) $v["id"].'">'.htmlspecialchars($v["namevi"], ENT_QUOTES, 'UTF-8').'</option>';
 			}
 		}
 	}

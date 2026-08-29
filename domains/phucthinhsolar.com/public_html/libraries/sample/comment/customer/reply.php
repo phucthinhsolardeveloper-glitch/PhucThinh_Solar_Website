@@ -1,4 +1,5 @@
 <form class="mt-3" id="form-reply" action="" method="post" enctype="multipart/form-data">
+	<input type="hidden" name="form_csrf" value="<?=htmlspecialchars(formCsrfToken(), ENT_QUOTES, 'UTF-8')?>">
 	<div class="response-reply"></div>
 	<div class="form-group">
 		<textarea class="form-control text-sm" placeholder="Viết câu trả lời của bạn" name="dataReview[content]" id="reply-content" data-name="@<?=$this->escape($params['lists']['fullname'])?>:" rows="5"></textarea>

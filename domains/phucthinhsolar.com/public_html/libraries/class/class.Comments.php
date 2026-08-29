@@ -420,7 +420,7 @@
 							/* File */
 							$file_name = $this->func->uploadName($_FILES["review-file-video"]["name"]);
 
-							if($video = $this->func->uploadImage("review-file-video", implode("|", $config['website']['video']['extension']), ROOT.UPLOAD_VIDEO_L, $file_name))
+							if($video = $this->func->uploadFile("review-file-video", implode("|", $config['website']['video']['extension']), ROOT.UPLOAD_VIDEO_L, $file_name))
 							{
 								$dataTemp['video'] = $video;
 							}

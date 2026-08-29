@@ -14,6 +14,41 @@
 			$this->cache = $cache;
 		}
 
+		private function uploadAllowedExtensions($extension)
+		{
+			$allowed = array();
+			foreach(preg_split('/[|,\s]+/', strtolower((string) $extension)) as $item)
+			{
+				$item = ltrim(trim($item), '.');
+				if($item !== '') $allowed[$item] = true;
+			}
+			return array_keys($allowed);
+		}
+
+		private function uploadLimitBytes()
+		{
+			$value = trim((string) ini_get('post_max_size'));
+			if(!preg_match('/^(\d+(?:\.\d+)?)\s*([KMG])?$/i', $value, $match)) return 5 * 1048576;
+			$bytes = (float) $match[1];
+			$unit = !empty($match[2]) ? strtoupper($match[2]) : '';
+			if($unit === 'G') $bytes *= 1073741824;
+			elseif($unit === 'M') $bytes *= 1048576;
+			elseif($unit === 'K') $bytes *= 1024;
+			return (int) $bytes;
+		}
+
+		private function validImageUpload($file, $extension)
+		{
+			if(empty($_FILES[$file]['tmp_name']) || !is_uploaded_file($_FILES[$file]['tmp_name']) && PHP_SAPI !== 'cli') return false;
+			if((int) $_FILES[$file]['size'] <= 0 || (int) $_FILES[$file]['size'] > $this->uploadLimitBytes()) return false;
+			$ext = strtolower((string) pathinfo($_FILES[$file]['name'], PATHINFO_EXTENSION));
+			if(!in_array($ext, $this->uploadAllowedExtensions($extension), true)) return false;
+			$image = @getimagesize($_FILES[$file]['tmp_name']);
+			if(!$image || empty($image['mime'])) return false;
+			$mimes = array('jpg' => array('image/jpeg'), 'jpeg' => array('image/jpeg'), 'png' => array('image/png'), 'gif' => array('image/gif'), 'webp' => array('image/webp'));
+			return isset($mimes[$ext]) && in_array(strtolower($image['mime']), $mimes[$ext], true);
+		}
+
 		/* Upload images */
 		public function uploadFile($file='', $extension='', $folder='', $newname='')
 		{
@@ -21,11 +56,8 @@
 
 			if(isset($_FILES[$file]) && !$_FILES[$file]['error'])
 			{
-				// $postMaxSize = ini_get('post_max_size');
-				$postMaxSize = ini_set('memory_limit', '1024M');
-				$MaxSize = explode('M', $postMaxSize);
-				$MaxSize = $MaxSize[0];
-				if($_FILES[$file]['size'] > $MaxSize*1048576)
+				$postMaxSize = ini_get('post_max_size');
+				if((int) $_FILES[$file]['size'] <= 0 || (int) $_FILES[$file]['size'] > $this->uploadLimitBytes())
 				{
 					$this->alert('Dung lượng file không được vượt quá '.$postMaxSize);
 					return false;
@@ -35,9 +67,19 @@
 				$ext = strtolower($ext[count($ext)-1]);
 				$name = basename($_FILES[$file]['name'], '.'.$ext);
 
-				if(strpos($extension, $ext)===false)
+				if(!in_array($ext, $this->uploadAllowedExtensions($extension), true))
 				{
 					$this->alert('Chỉ hỗ trợ upload file dạng '.$extension);
+					return false;
+				}
+
+				$finfo = function_exists('finfo_open') ? finfo_open(FILEINFO_MIME_TYPE) : false;
+				$mime = $finfo ? finfo_file($finfo, $_FILES[$file]['tmp_name']) : '';
+				if($finfo) finfo_close($finfo);
+				$allowedMimes = array('mp4' => array('video/mp4','application/mp4'), 'mkv' => array('video/x-matroska','application/octet-stream'));
+				if(!isset($allowedMimes[$ext]) || !in_array(strtolower((string) $mime), $allowedMimes[$ext], true))
+				{
+					$this->alert('Nội dung tập tin không đúng định dạng cho phép.');
 					return false;
 				}
 
@@ -62,16 +104,6 @@
 						return false;
 					}
 				}
-
-				/* Fix correct Image Orientation */
-				$this->correctImageOrientation($folder.$_FILES[$file]['name']);
-
-				/* Resize image if width origin > config max width */
-				$array = getimagesize($folder.$_FILES[$file]['name']);
-				list($image_w, $image_h) = $array;
-				$maxWidth = $config['website']['upload']['max-width'];
-				$maxHeight = $config['website']['upload']['max-height'];
-				if($image_w > $maxWidth) $this->smartResizeImage($folder.$_FILES[$file]['name'],null,$maxWidth,$maxHeight,true);
 
 				return $_FILES[$file]['name'];
 			}
@@ -1636,6 +1668,11 @@
 
 			if(isset($_FILES[$file]) && !$_FILES[$file]['error'])
 			{
+				if(!$this->validImageUpload($file, $extension))
+				{
+					$this->alert('File ảnh không hợp lệ, sai định dạng hoặc vượt quá dung lượng cho phép.');
+					return false;
+				}
 				$postMaxSize = ini_get('post_max_size');
 				$MaxSize = explode('M', $postMaxSize);
 				$MaxSize = $MaxSize[0];
@@ -1649,7 +1686,7 @@
 				$ext = strtolower($ext[count($ext)-1]);
 				$name = basename($_FILES[$file]['name'], '.'.$ext);
 
-				if(strpos($extension, $ext)===false)
+				if(!in_array($ext, $this->uploadAllowedExtensions($extension), true))
 				{
 					$this->alert('Chỉ hỗ trợ upload file dạng '.$extension);
 					return false;
@@ -1681,7 +1718,8 @@
 				$this->correctImageOrientation($folder.$_FILES[$file]['name']);
 
 				/* Resize image if width origin > config max width */
-				$array = getimagesize($folder.$_FILES[$file]['name']);
+				$array = @getimagesize($folder.$_FILES[$file]['name']);
+				if(!$array) { $this->deleteFile($folder.$_FILES[$file]['name']); return false; }
 				list($image_w, $image_h) = $array;
 				$maxWidth = $config['website']['upload']['max-width'];
 				$maxHeight = $config['website']['upload']['max-height'];

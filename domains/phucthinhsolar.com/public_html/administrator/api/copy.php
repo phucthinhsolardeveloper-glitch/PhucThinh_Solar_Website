@@ -1,13 +1,15 @@
 <?php
 	include "config.php";
+	adminRequirePostCsrf();
 	include LIBRARIES."type/config-type-product.php";
 	include LIBRARIES."type/config-type-news.php";
 
 	if(!empty($_POST['id']))
 	{
-		$id = (!empty($_POST['id'])) ? htmlspecialchars($_POST['id']) : 0;
-		$table = (!empty($_POST['table'])) ? htmlspecialchars($_POST['table']) : '';
+		$id = (!empty($_POST['id'])) ? (int) $_POST['id'] : 0;
+		$table = (!empty($_POST['table'])) ? (string) $_POST['table'] : '';
 		$copyimg = (!empty($_POST['copyimg'])) ? htmlspecialchars($_POST['copyimg']) : false;
+		if(!$id || !adminAllowedMutationTable($table, 'copy')) { http_response_code(400); exit(); }
 		
 		if($id)
 		{

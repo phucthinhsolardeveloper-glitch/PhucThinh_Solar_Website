@@ -1,5 +1,6 @@
 <?php
 	include "config.php";
+	adminRequirePostCsrf(true);
 	require_once LIBRARIES."config-type.php";
 
 	/* Xử lý params */
@@ -20,9 +21,15 @@
 
 	/* Xử lý $_FILE - Path image */
 	$myFile = (!empty($_FILES['files'])) ? $_FILES['files'] : null;
-	$_FILES['file'] = array('name' => $myFile['name'][0],'type' => $myFile['type'][0],'tmp_name' => $myFile['tmp_name'][0],'error' => $myFile['error'][0],'size' => $myFile['size'][0]);
-	$file_name = $func->uploadName($_FILES['file']['name']);
 	$upload_path = array("product" => UPLOAD_PRODUCT, "news" => UPLOAD_NEWS);
+	if(!in_array($com, array_keys($upload_path), true) || empty($config[$com][$type]['img_type']) || !$myFile || empty($myFile['name'][0]) || !isset($myFile['tmp_name'][0], $myFile['error'][0], $myFile['size'][0]))
+	{
+		http_response_code(400);
+		echo json_encode(array('success' => false, 'msg' => 'Thông tin upload không hợp lệ'));
+		exit();
+	}
+	$_FILES['file'] = array('name' => $myFile['name'][0],'type' => isset($myFile['type'][0]) ? $myFile['type'][0] : '','tmp_name' => $myFile['tmp_name'][0],'error' => $myFile['error'][0],'size' => $myFile['size'][0]);
+	$file_name = $func->uploadName($_FILES['file']['name']);
 	
 	/* Xử lý lưu image */
 	if(!empty($config[$com][$type]['img_type']))
@@ -54,14 +61,23 @@
 			{
 				$photoUpdate = array();
 
-				if($photo = $func->uploadImage("file", $config[$com][$type]['img_type'], '../'.$upload_path[$com], $file_name))
+				ob_start();
+				$photo = $func->uploadImage("file", $config[$com][$type]['img_type'], '../'.$upload_path[$com], $file_name);
+				ob_end_clean();
+				if($photo)
 				{
 					$photoUpdate['photo'] = $photo;
 					$d->where('id', $id_insert);
 					$d->update('gallery', $photoUpdate);
 					unset($photoUpdate);
 				}
+				else
+				{
+					$d->rawQuery("delete from #_gallery where id = ?", array($id_insert));
+					$flag = false;
+				}
 			}
+			else { $d->rawQuery("delete from #_gallery where id = ?", array($id_insert)); $flag = false; }
 		}
 		else
 		{

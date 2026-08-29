@@ -32,7 +32,9 @@ Quy ước giá giữ như hệ thống cũ: ô giá trống khi cập nhật th
 
 - [ ] Chốt và duyệt nội dung thật cho 5 trang chính sách.
 - [ ] Duyệt video, mô tả, ảnh và chứng nhận của nhóm sản phẩm chạy quảng cáo.
-- [ ] Xử lý phần Security Review còn lại: CSRF cho xóa đơn/checkout/review; allowlist và authorization API mutation Admin; hardening upload MIME/size/filename/non-executable storage.
+- [x] Thêm CSRF cho xóa/lưu đơn, checkout và review; xóa đơn chuyển sang POST.
+- [x] Thêm allowlist identifier cho API Admin chính và hardening upload MIME/size/non-executable storage.
+- [ ] Hoàn thiện authorization theo action/RBAC, CSRF cho mutation legacy còn lại và rate limit bền vững theo IP/tài khoản.
 - [ ] Retest toàn bộ Security Review và cập nhật finding đã đóng/còn mở.
 - [ ] Xác minh SMTP production bằng mailbox kiểm thử và cấu hình reCAPTCHA thật.
 - [ ] Xác minh PHP extension, đặc biệt `calendar`, trên hosting.

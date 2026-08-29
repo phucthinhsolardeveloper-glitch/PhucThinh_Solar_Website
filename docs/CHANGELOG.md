@@ -15,3 +15,5 @@
 - Bulk commit dùng transaction kèm rollback thủ công cho database engine legacy; bổ sung test XLS, CSV, `__CLEAR__`, fault rollback và fallback HTML cũ.
 - Thêm migration 006 dry-run để chuyển nhãn đồng nghĩa vào trường chuẩn và đổi tên nhãn trùng mà không mất giá trị.
 - Tối giản trải nghiệm Excel: chỉ mã/tên bắt buộc khi tạo mới, tô màu cột theo vai trò và viết lại sheet hướng dẫn ngắn gọn về ô trống, dữ liệu tự động, `__CLEAR__` và trạng thái website.
+- Hardening local: xóa đơn POST-only; CSRF cho mutation đơn hàng, checkout và review; allowlist API Admin; kiểm MIME/size upload và chặn thực thi script trong `upload/`.
+- Bổ sung regression test security cho token, allowlist, rate limit, ảnh hợp lệ/file giả ảnh; HTTP test xác nhận request thiếu token bị chặn và token hợp lệ vẫn đi qua validation nghiệp vụ.

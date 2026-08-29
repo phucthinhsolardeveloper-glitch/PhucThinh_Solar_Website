@@ -171,6 +171,7 @@
 		{
 			$func->transfer("Không nhận được dữ liệu", "index.php?com=order&act=man&p=".$curPage, false);
 		}
+		adminRequirePostCsrf();
 
 
 		/* Post dữ liệu */
@@ -208,7 +209,8 @@
 	{
 		global $d, $func, $curPage;
 
-		$id = (!empty($_GET['id'])) ? htmlspecialchars($_GET['id']) : 0;
+		adminRequirePostCsrf();
+		$id = (!empty($_POST['id'])) ? (int) $_POST['id'] : 0;
 
 		if($id)
 		{
@@ -225,13 +227,13 @@
 				$func->transfer("Xóa dữ liệu bị lỗi", "index.php?com=order&act=man&p=".$curPage, false);
 			}
 		}
-		elseif(isset($_GET['listid']))
+		elseif(isset($_POST['listid']))
 		{
-			$listid = explode(",",$_GET['listid']);
+			$listid = array_values(array_filter(array_map('intval', explode(",", (string) $_POST['listid']))));
 			
 			for($i=0;$i<count($listid);$i++)
 			{
-				$id = htmlspecialchars($listid[$i]);
+				$id = (int) $listid[$i];
 				$row = $d->rawQueryOne("select id from #_order where id = ? limit 0,1",array($id));
 
 				if(!empty($row))

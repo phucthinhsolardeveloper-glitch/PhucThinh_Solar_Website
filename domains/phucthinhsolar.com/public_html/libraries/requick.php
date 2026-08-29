@@ -93,6 +93,8 @@
 		$func->redirect("index.php?com=user&act=login");
 	}
 
+	require_once LIBRARIES.'admin_security.php';
+
 	/* Delete gallery */
 	$func->deleteGallery();
 

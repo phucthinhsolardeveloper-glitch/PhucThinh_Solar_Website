@@ -16,17 +16,15 @@
 	if(file_exists(ROOT.$upload_const) && $array_const)
 	{
 		$path_htaccess = ROOT.$upload_const.'/.htaccess';
-		if(!file_exists($path_htaccess))
+		$content_htaccess = 'Options -ExecCGI'.PHP_EOL;
+		$content_htaccess .= 'RemoveHandler .php .php3 .php4 .php5 .php7 .php8 .phtml .phar .cgi .pl'.PHP_EOL;
+		$content_htaccess .= '<FilesMatch "\.(?:inc|sql|php[0-9]?|phtml|phar|cgi|pl|asp|aspx|jsp|shtml)$">'.PHP_EOL;
+		$content_htaccess .= '<IfModule mod_authz_core.c>Require all denied</IfModule>'.PHP_EOL;
+		$content_htaccess .= '<IfModule !mod_authz_core.c>Order allow,deny'.PHP_EOL.'Deny from all</IfModule>'.PHP_EOL;
+		$content_htaccess .= '</FilesMatch>'.PHP_EOL;
+		if(!file_exists($path_htaccess) || file_get_contents($path_htaccess) !== $content_htaccess)
 		{
-			$content_htaccess = '';
-			$content_htaccess .= '<Files ~ "\.(inc|sql|php|cgi|pl|php4|php5|asp|aspx|jsp|txt|kid|cbg|nok|shtml)$">'.PHP_EOL;
-			$content_htaccess .= 'order allow,deny'.PHP_EOL;
-			$content_htaccess .= 'deny from all'.PHP_EOL;
-			$content_htaccess .= '</Files>';
-
-			$file_htaccess = fopen($path_htaccess, "w") or die("Unable to open file");
-			fwrite($file_htaccess, $content_htaccess);
-			fclose($file_htaccess);
+			file_put_contents($path_htaccess, $content_htaccess, LOCK_EX);
 		}
 
 		foreach($array_const as $vconst)

@@ -16,6 +16,14 @@
 
 	if(!empty($_POST['thanhtoan']))
 	{
+		if(!formCsrfValid(isset($_POST['form_csrf']) ? $_POST['form_csrf'] : ''))
+		{
+			$func->transfer("Phiên đặt hàng không hợp lệ. Vui lòng tải lại trang.", "gio-hang/", false);
+		}
+		if(!formRateLimit('checkout', 5, 600))
+		{
+			$func->transfer("Bạn thao tác quá nhanh. Vui lòng thử lại sau.", "gio-hang/", false);
+		}
 		/* Check order */
 		if(empty($_SESSION['cart']))
 		{
