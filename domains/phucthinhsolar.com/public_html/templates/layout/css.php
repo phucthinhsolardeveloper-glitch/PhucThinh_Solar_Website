@@ -5,12 +5,6 @@
 <?php } ?>
 <!-- Css Files -->
 <?php
-    $isProductDetail = ($template === 'product/product_detail');
-    $usesPhotobox = in_array($template, array('news/project_detail', 'album/album_detail'), true);
-    $usesFancybox = in_array($template, array('news/project_detail', 'video/video'), true);
-    $usesJssor = ($source === 'index');
-    $usesOwlCarousel = $usesJssor || $isProductDetail;
-
     $css->set("bootstrap/bootstrap.css");
     $css->set("css/style.min080f.css");
     $css->set("css/vendors-style6b00.css");
@@ -99,37 +93,28 @@
     $css->set("holdon/HoldOn-style.css");
     $css->set("confirm/confirm.css");
     $css->set("simplenotify/simple-notify.css");
-    if($isProductDetail)
-    {
-        $css->set("fileuploader/font-fileuploader.css");
-        $css->set("fileuploader/jquery.fileuploader.min.css");
-    }
-    if($usesJssor) $css->set("css/jssor.css");
-    if($usesFancybox)
-    {
-        $css->set("fancybox3/jquery.fancybox.css");
-        $css->set("fancybox3/jquery.fancybox.style.css");
-    }
+    $css->set("fileuploader/font-fileuploader.css");
+    $css->set("fileuploader/jquery.fileuploader.min.css");
+    $css->set("css/jssor.css");
+    $css->set("fancybox3/jquery.fancybox.css");
+    $css->set("fancybox3/jquery.fancybox.style.css");
     // $css->set("css/account.css");
     $css->set("mmenu/mmenu.css");
-    if($usesPhotobox) $css->set("photobox/photobox.css");
+    $css->set("photobox/photobox.css");
     $css->set("slick/slick.css");
     $css->set("slick/slick-theme.css");
     $css->set("slick/slick-style.css");
     // $css->set("fotorama/fotorama.css");
     // $css->set("fotorama/fotorama-style.css");
-    if($isProductDetail) $css->set("magiczoomplus/magiczoomplus.css");
+    $css->set("magiczoomplus/magiczoomplus.css");
     // $css->set("datetimepicker/jquery.datetimepicker.css");
-    if($usesOwlCarousel)
-    {
-        $css->set("owlcarousel2/owl.carousel.css");
-        $css->set("owlcarousel2/owl.theme.default.css");
-    }
+    $css->set("owlcarousel2/owl.carousel.css");
+    $css->set("owlcarousel2/owl.theme.default.css");
     // $css->set("simplenotify/simple-notify.css");
     // $css->set("fileuploader/font-fileuploader.css");
     // $css->set("fileuploader/jquery.fileuploader.min.css");
     // $css->set("fileuploader/jquery.fileuploader-theme-dragdrop.css");
-    if($isProductDetail) $css->set("comment/comment.css");
+    $css->set("comment/comment.css");
     $css->set("css/style.css");
     $css->set("css/theme-v2.css");
     echo $css->get();

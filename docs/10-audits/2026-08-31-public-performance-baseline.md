@@ -34,3 +34,7 @@ Inventory HTML cho thấy 76 file CSS/JS local duy nhất trên toàn sitemap; r
 Đợt 2 giới hạn Jssor vào trang chủ và Fancybox vào Video/chi tiết Dự án. Sau hai đợt, trang chủ còn 63 CSS/JS local và khoảng 2,88 MB trước gzip: giảm tổng cộng 12 request và khoảng 428 KB so với baseline. Danh sách Tin tức còn 62 asset/2,82 MB; chi tiết Dự án vẫn tải đủ Fancybox và Photobox. Pre-deploy đạt sau thay đổi.
 
 Đợt 3 giới hạn Owl Carousel vào trang chủ và chi tiết sản phẩm, là hai ngữ cảnh duy nhất tạo carousel hoặc gọi API trả markup carousel. Danh sách Tin tức giảm thêm 3 request, còn 59 asset và khoảng 2,77 MB trước gzip. Trang chủ/chi tiết sản phẩm vẫn giữ Owl và toàn bộ pre-deploy đạt.
+
+Ba đợt conditional loading được hoàn nguyên sau phản hồi visual cho thấy hình ảnh/tính năng không còn giống baseline mong muốn. Các thư viện chuyên biệt được đưa về tải global cho đến khi có browser regression kiểm tra DOM sau JavaScript, console, network và tương tác thực tế. Số liệu giảm request ở trên chỉ là kết quả thử nghiệm, không còn là cấu hình release hiện tại.
+
+Sau hoàn nguyên, kiểm tra local ghi nhận trang chủ tải 76 asset CSS/JS local (3.313.622 byte trước gzip); Tin tức, Dự án và Sản phẩm cùng tải 77 asset (3.315.209 byte). Toàn bộ 85 URL ảnh legacy trong runtime inventory trả HTTP 200 và pre-deploy regression đạt. Đây là baseline tương thích mới để các đợt tối ưu tiếp theo không được làm suy giảm chức năng hoặc nội dung.

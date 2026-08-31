@@ -50,20 +50,20 @@ $js->set("js/lazyload.min.js");
 // Native browser scrolling is used. The legacy wheel smoother cached page heights
 // and could stop before the footer after lazy-loaded content changed the layout.
 $js->set("bootstrap/bootstrap.js");
-if($usesJssor) $js->set("js/jssor.slider.min.js");
+$js->set("js/jssor.slider.min.js");
 // $js->set("js/wow.min.js");
 $js->set("confirm/confirm.js");
 $js->set("holdon/HoldOn.js");
 $js->set("mmenu/mmenu.js");
 // $js->set("easyticker/easy-ticker.js");
 // $js->set("fotorama/fotorama.js");
-if($usesOwlCarousel) $js->set("owlcarousel2/owl.carousel.js");
-if($isProductDetail) $js->set("magiczoomplus/magiczoomplus.js");
+$js->set("owlcarousel2/owl.carousel.js");
+$js->set("magiczoomplus/magiczoomplus.js");
 $js->set("slick/slick.js");
-if($usesFancybox) $js->set("fancybox3/jquery.fancybox.js");
-if($usesPhotobox) $js->set("photobox/photobox.js");
+$js->set("fancybox3/jquery.fancybox.js");
+$js->set("photobox/photobox.js");
 $js->set("simplenotify/simple-notify.js");
-if($isProductDetail) $js->set("fileuploader/jquery.fileuploader.min.js");
+$js->set("fileuploader/jquery.fileuploader.min.js");
 // $js->set("datetimepicker/php-date-formatter.min.js");
 // $js->set("datetimepicker/jquery.mousewheel.js");
 // $js->set("datetimepicker/jquery.datetimepicker.js");
@@ -71,11 +71,15 @@ $js->set("js/functions.js");
 if($source != 'index'){
     $js->set("js/toc.js");
 }
-if($isProductDetail) $js->set("comment/comment.js");
+$js->set("comment/comment.js");
 $js->set("js/share.js");
 $js->set("js/apps.js");
 echo $js->get();
 ?>
+<script>
+    $('.album-gallery').photobox('.album-item:not(.slick-cloned) a', { thumbs: true, loop: false });
+</script>
+
 <script>
 $('.view_maps').click(function() {
     var map = $(this).data('map');

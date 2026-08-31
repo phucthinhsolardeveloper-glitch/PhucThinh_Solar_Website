@@ -62,9 +62,10 @@ Phạm vi tối ưu áp dụng cho toàn bộ project, gồm frontend public, Ad
 - [ ] Rà CSS/JS/ảnh/video legacy, xác minh tham chiếu trước khi loại hoặc tách khỏi gói release.
 - [x] Audit media 137 trang: phát hiện 85 URL WordPress cũ trả 404; giữ media legacy trong release và bổ sung fallback extension allowlist thay vì đánh đổi ảnh để giảm archive.
 - [x] Inventory 76 CSS/JS local không thiếu file; xác nhận gzip/cache local và thêm regression header static asset.
-- [x] Conditional loading đợt 1: trang chủ giảm 9 request CSS/JS và khoảng 347 KB trước gzip; giữ đủ asset cho sản phẩm/dự án và pre-deploy đạt.
-- [x] Conditional loading đợt 2: giới hạn Jssor/Fancybox; trang chủ giảm lũy kế 12 request và khoảng 428 KB, pre-deploy đạt.
-- [x] Conditional loading đợt 3: giới hạn Owl Carousel; trang Tin tức giảm thêm 3 request, trang chủ/sản phẩm giữ nguyên chức năng và pre-deploy đạt.
+- [x] Thử nghiệm conditional loading đợt 1 (đã hoàn nguyên): trang chủ từng giảm 9 request CSS/JS và khoảng 347 KB trước gzip.
+- [x] Thử nghiệm conditional loading đợt 2 (đã hoàn nguyên): giới hạn Jssor/Fancybox, trang chủ từng giảm lũy kế 12 request và khoảng 428 KB.
+- [x] Thử nghiệm conditional loading đợt 3 (đã hoàn nguyên): giới hạn Owl Carousel, trang Tin tức từng giảm thêm 3 request.
+- [x] Hoàn nguyên ba đợt conditional loading sau phản hồi visual; không dùng giảm request làm tiêu chí đạt khi chưa có browser regression đầy đủ.
 - [ ] Kiểm tra cache/compression ảnh và static asset trên staging/hosting.
 - [ ] Chạy lại toàn bộ regression chức năng và visual sau mỗi đợt tối ưu.
 
