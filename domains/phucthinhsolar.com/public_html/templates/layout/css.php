@@ -9,6 +9,7 @@
     $usesPhotobox = in_array($template, array('news/project_detail', 'album/album_detail'), true);
     $usesFancybox = in_array($template, array('news/project_detail', 'video/video'), true);
     $usesJssor = ($source === 'index');
+    $usesOwlCarousel = $usesJssor || $isProductDetail;
 
     $css->set("bootstrap/bootstrap.css");
     $css->set("css/style.min080f.css");
@@ -119,8 +120,11 @@
     // $css->set("fotorama/fotorama-style.css");
     if($isProductDetail) $css->set("magiczoomplus/magiczoomplus.css");
     // $css->set("datetimepicker/jquery.datetimepicker.css");
-    $css->set("owlcarousel2/owl.carousel.css");
-    $css->set("owlcarousel2/owl.theme.default.css");
+    if($usesOwlCarousel)
+    {
+        $css->set("owlcarousel2/owl.carousel.css");
+        $css->set("owlcarousel2/owl.theme.default.css");
+    }
     // $css->set("simplenotify/simple-notify.css");
     // $css->set("fileuploader/font-fileuploader.css");
     // $css->set("fileuploader/jquery.fileuploader.min.css");

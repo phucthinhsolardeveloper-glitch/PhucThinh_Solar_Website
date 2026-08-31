@@ -57,7 +57,7 @@ $js->set("holdon/HoldOn.js");
 $js->set("mmenu/mmenu.js");
 // $js->set("easyticker/easy-ticker.js");
 // $js->set("fotorama/fotorama.js");
-$js->set("owlcarousel2/owl.carousel.js");
+if($usesOwlCarousel) $js->set("owlcarousel2/owl.carousel.js");
 if($isProductDetail) $js->set("magiczoomplus/magiczoomplus.js");
 $js->set("slick/slick.js");
 if($usesFancybox) $js->set("fancybox3/jquery.fancybox.js");
