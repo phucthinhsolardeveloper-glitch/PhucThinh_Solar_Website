@@ -21,10 +21,12 @@
 				break;
 
 			case 'price':
+				if(!publicProductPricesVisible()) break;
 				$order_by = " order by regular_price asc";
 				break;
 
 			case 'price-desc':
+				if(!publicProductPricesVisible()) break;
 				$order_by = " order by regular_price desc";
 				break;
 
@@ -73,7 +75,7 @@
 		}
 
 		/* Mức giá (áp theo sale_price nếu có, ngược lại regular_price) */
-		$idPrice = (isset($_GET['is_price']) && $_GET['is_price'] != '') ? $_GET['is_price'] : '';
+		$idPrice = publicProductPricesVisible() && isset($_GET['is_price']) && $_GET['is_price'] != '' ? $_GET['is_price'] : '';
 		if($idPrice != '')
 		{
 			$priceRanges = array(

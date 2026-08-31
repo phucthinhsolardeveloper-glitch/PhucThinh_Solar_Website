@@ -1,5 +1,10 @@
 <?php
 	if(!defined('SOURCES')) die("Error");		
+	if(!publicProductPricesVisible())
+	{
+		unset($_SESSION['cart']);
+		if(!empty($_POST['thanhtoan'])) $func->transfer("Sản phẩm hiện nhận báo giá trực tiếp. Vui lòng liên hệ để được tư vấn.", "lien-he/", false);
+	}
 
 	/* SEO */
 	$seo->set('title',$titleMain);

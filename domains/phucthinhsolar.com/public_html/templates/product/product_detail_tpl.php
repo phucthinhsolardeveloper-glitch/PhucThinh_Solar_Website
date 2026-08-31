@@ -80,7 +80,9 @@ $certificateContent = (!empty($rowDetail['certificate'.$lang])) ? htmlspecialcha
                             <li class="w-clear">
                                 <label class="attr-label-pro-detail"><?=gia?>:</label>
                                 <div class="attr-content-pro-detail">
-                                    <?php if($rowDetail['sale_price']) { $discountPercent = ($rowDetail['regular_price'] > $rowDetail['sale_price']) ? round((($rowDetail['regular_price'] - $rowDetail['sale_price']) / $rowDetail['regular_price']) * 100) : 0; ?>
+                                    <?php if(publicProductRequiresQuote($rowDetail)) { ?>
+                                    <span class="price-new-pro-detail"><?=lienhe?></span>
+                                    <?php } elseif($rowDetail['sale_price']) { $discountPercent = ($rowDetail['regular_price'] > $rowDetail['sale_price']) ? round((($rowDetail['regular_price'] - $rowDetail['sale_price']) / $rowDetail['regular_price']) * 100) : 0; ?>
                                     <span
                                         class="price-new-pro-detail"><?=$func->formatMoney($rowDetail['sale_price'])?></span>
                                     <span
@@ -120,7 +122,7 @@ $certificateContent = (!empty($rowDetail['certificate'.$lang])) ? htmlspecialcha
                             /* Sản phẩm chưa niêm yết giá (hiển thị "Liên hệ"): không cho đặt
                                số lượng và không hiện nút mua - thay bằng CTA gọi báo giá,
                                tránh khách bấm mua rồi giỏ hàng hiện giá 0đ. */
-                            $isContactPrice = empty($rowDetail['sale_price']) && empty($rowDetail['regular_price']);
+                            $isContactPrice = publicProductRequiresQuote($rowDetail);
                         ?>
                         <?php if(!$isContactPrice) { ?>
                         <div class="quantity-pro-detail">

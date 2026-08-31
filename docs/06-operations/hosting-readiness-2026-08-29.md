@@ -90,7 +90,8 @@ Website chỉ được mở traffic/chạy quảng cáo khi toàn bộ mục **P
 
 - [ ] Chủ project duyệt 5 trang chính sách và thông tin doanh nghiệp/hotline/địa chỉ.
 - [ ] Duyệt ảnh, video, mô tả, giá và chứng nhận của sản phẩm chạy quảng cáo.
-- [ ] Kiểm tra đúng quy ước: giá trống khi import giữ giá cũ; giá bằng 0 hiển thị “Liên hệ”.
+- [x] Chế độ hiện tại ẩn toàn bộ giá public và hiển thị “Liên hệ”; giá Admin/Excel vẫn được giữ nội bộ.
+- [ ] Chỉ đổi `PUBLIC_PRODUCT_PRICES` sang `true` khi công ty duyệt chính sách niêm yết và đã retest cart/checkout.
 - [ ] Xác minh SMTP production bằng mailbox kiểm thử; kiểm tra email đơn hàng/liên hệ.
 - [ ] Xác minh reCAPTCHA thật và hành vi khi CAPTCHA lỗi/hết hạn.
 - [ ] Xác minh OneSignal nếu production tiếp tục sử dụng; không gửi thử đến tập khách hàng thật.
@@ -98,7 +99,7 @@ Website chỉ được mở traffic/chạy quảng cáo khi toàn bộ mục **P
 #### F. Smoke test bắt buộc
 
 - [ ] Commerce: danh mục → sản phẩm → giỏ hàng → checkout → confirmation → Admin đơn hàng.
-- [ ] Kiểm tra sản phẩm có giá, giá 0/“Liên hệ”, thông số chuẩn và fallback legacy.
+- [x] Local smoke xác nhận sản phẩm có giá nội bộ vẫn chỉ hiện “Liên hệ”, không xuất Offer schema/nút mua và API cart trả 409.
 - [ ] Admin: tạo/sửa/xóa sản phẩm, danh mục, bài viết, gallery và trạng thái đơn.
 - [ ] Form: contact, newsletter, review và email bằng dữ liệu test có kiểm soát.
 - [ ] Kiểm tra desktop/mobile, menu, tìm kiếm, filter, console trình duyệt và log PHP/Apache.

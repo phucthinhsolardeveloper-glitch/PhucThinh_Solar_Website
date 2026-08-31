@@ -11,7 +11,7 @@
 	$idBrand = (isset($_GET['is_brand']) && $_GET['is_brand'] != '' && preg_match('/^[0-9,]+$/',$_GET['is_brand'])) ? $_GET['is_brand'] : '';
 	$idXuatXu = (isset($_GET['is_origin']) && $_GET['is_origin'] != '' && preg_match('/^[0-9,]+$/',$_GET['is_origin'])) ? $_GET['is_origin'] : '';
 	$orderby = (isset($_GET['is_orderby']) && $_GET['is_orderby'] != '') ? htmlspecialchars($_GET['is_orderby']) : '';
-    $gia = (isset($_GET['is_price']) && $_GET['is_price'] != '') ? htmlspecialchars($_GET['is_price']) : '';
+    $gia = (publicProductPricesVisible() && isset($_GET['is_price']) && $_GET['is_price'] != '') ? htmlspecialchars($_GET['is_price']) : '';
     $idCongSuat = (isset($_GET['is_congsuat']) && $_GET['is_congsuat'] != '') ? htmlspecialchars($_GET['is_congsuat']) : '';
     $idCatFilter = (isset($_GET['is_cat']) && $_GET['is_cat'] != '') ? htmlspecialchars($_GET['is_cat']) : '';
 	$idType = 'dich-vu';
@@ -113,10 +113,12 @@
 				break;
 
 			case 'price':
+				if(!publicProductPricesVisible()) break;
 				$order = " order by regular_price asc";
 				break;
 
 			case 'price-desc':
+				if(!publicProductPricesVisible()) break;
 				$order = " order by regular_price desc";
 				break;
 

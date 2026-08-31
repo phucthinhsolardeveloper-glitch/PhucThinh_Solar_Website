@@ -12,6 +12,7 @@ require LIBRARIES.'admin_security.php';
 require LIBRARIES.'form_security.php';
 require LIBRARIES.'login_security.php';
 require LIBRARIES.'order_security.php';
+require LIBRARIES.'public_pricing.php';
 
 function securityAssert($condition, $message)
 {
@@ -49,6 +50,7 @@ $orderUpdate = prepareAdminOrderUpdate($d, array('order_status' => 1, 'payment_s
 securityAssert(empty($orderUpdate['errors']) && !isset($orderUpdate['data']['total_price']) && !isset($orderUpdate['data']['code']), 'Cập nhật đơn chỉ nhận field nghiệp vụ allowlist');
 $invalidOrderUpdate = prepareAdminOrderUpdate($d, array('order_status' => 999999, 'payment_status' => 200), array(0 => 'Chưa thanh toán', 1 => 'Đã thanh toán'));
 securityAssert(count($invalidOrderUpdate['errors']) === 2, 'Cập nhật đơn từ chối trạng thái không tồn tại và placeholder thanh toán');
+securityAssert(!publicProductPricesVisible() && publicProductRequiresQuote(array('regular_price' => 999999, 'sale_price' => 888888)), 'Chế độ báo giá ẩn cả sản phẩm đang có giá nội bộ');
 
 $formToken = formCsrfToken();
 securityAssert(strlen($formToken) === 64 && formCsrfValid($formToken), 'CSRF frontend sinh và xác minh token đúng');

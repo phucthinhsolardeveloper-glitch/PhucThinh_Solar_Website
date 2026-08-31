@@ -57,6 +57,11 @@ curl -fsS -L -o /tmp/pts-predeploy-product.html "$base_url/$product_slug"
 rg -q '<title>' /tmp/pts-predeploy-home.html
 rg -q 'name="form_csrf"' /tmp/pts-predeploy-contact.html
 rg -q 'title-pro-detail' /tmp/pts-predeploy-product.html
+rg -q 'Gọi báo giá' /tmp/pts-predeploy-product.html
+if rg -q 'class="addcart"|"priceCurrency"|"price"[[:space:]]*:' /tmp/pts-predeploy-product.html; then
+    echo "FAIL: Trang sản phẩm còn lộ giá hoặc nút mua khi chế độ báo giá đang bật" >&2
+    exit 1
+fi
 
 remaining="$(docker compose -f "$compose_file" exec -T db mariadb -N -B -upts_local -ppts_local_only phucthinhs_local -e "SELECT (SELECT COUNT(*) FROM table_product WHERE code LIKE 'CODEX-BULK-%') + (SELECT COUNT(*) FROM table_user WHERE username LIKE 'codex-rbac-%') + (SELECT COUNT(*) FROM table_permission_group WHERE name LIKE 'CODEX-RBAC-%') + (SELECT COUNT(*) FROM table_user_limit WHERE login_ip LIKE 'form:%');")"
 if [ "$remaining" != "0" ]; then

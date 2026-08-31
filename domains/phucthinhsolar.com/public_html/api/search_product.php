@@ -35,7 +35,9 @@
                                 </p>
                                 <h3 class="name-product text-split">'.$v['name'.$lang].'</h3>
                                 <p class="price-product">';
-                                     if($v['discount']) { 
+                                     if(!publicProductPricesVisible()) {
+                                       $html['res'] .=' <span class="price-new">'.lienhe.'</span>';
+                                     } elseif($v['discount']) {
                                      $html['res'] .='   <span class="price-new">'.$func->formatMoney($v['sale_price']).'</span>
                                         <span class="price-old">'.$func->formatMoney($v['regular_price']).'</span>
                                         <span class="price-per">'.'-'.$v['discount'].'%'.'</span>';
@@ -45,8 +47,7 @@
                                $html['res'] .=' </p>
                             </a>
                             <p class="cart-product w-clear">
-                                <span class="cart-add addcart transition" data-id="'.$v['id'].'" data-action="addnow">Thêm vào giỏ hàng</span>
-                                <span class="cart-buy addcart transition" data-id="'.$v['id'].'" data-action="buynow">Mua ngay</span>
+                                '.(publicProductPricesVisible() ? '<span class="cart-add addcart transition" data-id="'.$v['id'].'" data-action="addnow">Thêm vào giỏ hàng</span><span class="cart-buy addcart transition" data-id="'.$v['id'].'" data-action="buynow">Mua ngay</span>' : '<a href="lien-he/">Liên hệ báo giá</a>').'
                             </p>
                         </div> ';
 

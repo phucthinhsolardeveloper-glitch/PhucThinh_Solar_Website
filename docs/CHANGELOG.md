@@ -23,3 +23,4 @@
 - Sửa upload đính kèm liên hệ dùng validator tài liệu; mở allowlist MIME cho PDF/Office/archive/ảnh, vẫn từ chối PHP giả, MIME sai và file vượt dung lượng.
 - Bổ sung CSRF cho liên hệ, tư vấn sản phẩm và đăng ký đại lý; request thiếu token bị chặn trước khi ghi DB.
 - Thêm `scripts/predeploy-local.sh` làm cổng kiểm tra một lệnh trước deploy: build, lint, security/RBAC/Excel regression, frontend smoke, log và cleanup.
+- Thêm chế độ báo giá toàn website: giữ giá nội bộ, frontend/API/schema không công khai giá, gỡ lọc/sắp xếp giá và chặn cart/checkout cho đến khi được duyệt niêm yết.

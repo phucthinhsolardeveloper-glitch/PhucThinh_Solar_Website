@@ -8,6 +8,14 @@
 	$quantity = (!empty($_POST['quantity'])) ? htmlspecialchars($_POST['quantity']) : 1;
 	$code = (!empty($_POST['code'])) ? htmlspecialchars($_POST['code']) : '';
 	$ward = (!empty($_POST['ward'])) ? htmlspecialchars($_POST['ward']) : 0;
+	if(!publicProductPricesVisible())
+	{
+		unset($_SESSION['cart']);
+		http_response_code(409);
+		header('Content-Type: application/json; charset=UTF-8');
+		echo json_encode(array('error' => 'Sản phẩm hiện nhận báo giá trực tiếp.', 'contactUrl' => 'lien-he/'));
+		exit();
+	}
 
 	if($cmd == 'add-cart' && $id > 0)
 	{

@@ -14,7 +14,7 @@ Checklist triển khai theo thứ tự ưu tiên, điều kiện Go/No-Go và ro
 - [x] Rà diff cuối và tạo commit riêng cho batch thông số/Excel.
 - [x] Chốt không chạy migration 006 `--apply`; dữ liệu chuẩn sẽ được nhận từ file Excel bên ngoài.
 
-Quy ước giá giữ như hệ thống cũ: ô giá trống khi cập nhật thì giữ nguyên; cả giá gốc và giá khuyến mãi bằng `0` thì frontend hiển thị “Liên hệ”. Không thêm cột chế độ giá mới.
+Quy ước dữ liệu Excel vẫn giữ nguyên: ô giá trống khi cập nhật thì giữ giá nội bộ cũ. Frontend hiện bật chế độ báo giá toàn website nên không công khai giá dù DB có giá; không thêm cột chế độ giá vào Excel.
 
 ## B. Khi nhận file Excel dữ liệu thật
 
@@ -34,6 +34,7 @@ Quy ước giá giữ như hệ thống cũ: ô giá trống khi cập nhật th
 
 - [ ] Chốt và duyệt nội dung thật cho 5 trang chính sách.
 - [ ] Duyệt video, mô tả, ảnh và chứng nhận của nhóm sản phẩm chạy quảng cáo.
+- [x] Ẩn toàn bộ giá public; gỡ filter/sort giá và Offer schema, đổi CTA sang báo giá, chặn cart/checkout khi chưa niêm yết.
 - [x] Thêm CSRF cho xóa/lưu đơn, checkout và review; xóa đơn chuyển sang POST.
 - [x] Thêm allowlist identifier cho API Admin chính và hardening upload MIME/size/non-executable storage.
 - [x] Chuyển action xóa Admin legacy sang POST + CSRF; khóa filer theo đúng context và bỏ đường dẫn upload do client cung cấp.

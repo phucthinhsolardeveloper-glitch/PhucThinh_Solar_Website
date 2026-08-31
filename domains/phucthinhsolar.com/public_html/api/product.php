@@ -38,7 +38,7 @@
 					<?=$func->getImage(['class' => 'lazy dt-width-100 img-hover hidden-xs bigloaded','sizes' => '300x300x1', 'upload' => UPLOAD_PRODUCT_L, 'image' => $v['photo2'], 'alt' => $v['name'.$lang]])?>
                 	<?php } ?>
 				</a>
-				<?php if($v['discount']) { ?>
+				<?php if(publicProductPricesVisible() && $v['discount']) { ?>
 				<div class="product-sale"><span><?='-'.$v['discount'].'%'?></span></div>
 				<?php } ?>
             </div>
@@ -46,7 +46,9 @@
                 <h3 class="pro-name"><a href="<?=$v[$sluglang]?>" title="<?=$v['name'.$lang]?>"><?=$v['name'.$lang]?></a></h3>
                 <div class="box-pro-prices">
                     <p class="pro-price">
-						<?php if($v['discount']) { ?>
+						<?php if(!publicProductPricesVisible()) { ?>
+							<span><?=lienhe?></span>
+						<?php } elseif($v['discount']) { ?>
 							<span><?=$func->formatMoney($v['sale_price'],'đ')?> </span>
 							<del class="compare-price"><?=$func->formatMoney($v['regular_price'],'đ')?></del>
 						<?php } else { ?>

@@ -40,8 +40,6 @@
                 '' => 'Sắp xếp',
                 'abc' => 'Tên A → Z',
                 'abc-desc' => 'Tên Z → A',
-                'price' => 'Giá tăng dần',
-                'price-desc' => 'Giá giảm dần',
             );
             $currentSort = (isset($_GET['is_orderby'])) ? $_GET['is_orderby'] : '';
         ?>
@@ -53,8 +51,6 @@
         <option value="">Sắp xếp</option>
         <option value="abc">A → Z</option>
         <option value="abc-desc">Z → A</option>
-        <option value="price">Giá tăng dần</option>
-        <option value="price-desc">Giá giảm dần</option>
         <option value="new">Hàng mới nhất</option>
         <option value="new-desc">Hàng cũ nhất</option>
     </select>
@@ -125,6 +121,7 @@ document.addEventListener('DOMContentLoaded', function(){
             </div>
             <?php } ?>
 
+            <?php if(publicProductPricesVisible()) { ?>
             <div class="product-pages__price mb20">
                 <div class="product-pages__price-aside">
                     <span class="product-pages__price-name">Thương hiệu</span>
@@ -247,6 +244,7 @@ document.addEventListener('DOMContentLoaded', function(){
                     </ul>
                 </div>
             </div>
+            <?php } ?>
             </div>
 
         </div>

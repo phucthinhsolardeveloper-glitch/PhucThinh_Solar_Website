@@ -38,6 +38,7 @@
                 "ratingValue": "4.4",
                 "reviewCount": "89"
             },
+            <?php if(publicProductPricesVisible()) { ?>
             "offers":
             {
                 "@type": "Offer",
@@ -53,6 +54,9 @@
                     "name": "Executive Objects"
                 }
             }
+            <?php } else { ?>
+            "url": "<?=$func->getCurrentPageURL_CANO()?>"
+            <?php } ?>
         }
     </script>
 <?php } else if($template == 'news/news_detail') { ?>
