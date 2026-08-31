@@ -77,6 +77,7 @@ Phạm vi tối ưu áp dụng cho toàn bộ project, gồm frontend public, Ad
 - [x] Gom query gallery Giải pháp và dự án nổi bật trang chủ: warm request giảm tiếp từ 45 xuống 43 query, markup đối chứng giữ nguyên.
 - [x] Audit icon public: 57/57 glyph Font Awesome và 10/10 ảnh icon tĩnh tồn tại; thêm regression cho icon gọi ở header/card cùng các font thiết yếu.
 - [x] Loại N+1 kiểm tra nhóm rỗng tại `/san-pham/`: giảm từ 51 xuống 43 query (15,7%); ba danh mục nội dung không có query theo từng card.
+- [x] Loại tối đa 20 query đếm đánh giá ở danh sách Sản phẩm Admin bằng một query batch; số liệu 10 sản phẩm đối chứng khớp hoàn toàn.
 - [ ] Audit N+1 ở menu, trang chủ, danh mục và Admin bằng profiling trên bộ dữ liệu gần production.
 - [ ] Rà slow query log, PHP OPcache, memory và process limits trên staging/hosting.
 

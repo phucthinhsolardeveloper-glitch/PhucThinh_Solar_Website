@@ -110,6 +110,9 @@ try
     }
     readinessAssert($postForms === 42 && $csrfFields === $postForms, 'Đủ CSRF field cho 42 form POST Admin');
 
+    $productListTemplate = file_get_contents('/var/www/html/administrator/templates/product/man/mans_tpl.php');
+    readinessAssert(strpos($productListTemplate, 'totalByID(') === false && strpos($productListTemplate, '$commentTotals') !== false, 'Danh sách sản phẩm dùng thống kê đánh giá theo batch');
+
     $base = 'http://127.0.0.1/administrator/';
     $loginPage = readinessHttp($base.'index.php?com=user&act=login');
     list($oldCookie, $loginSetCookie) = readinessSessionCookie($loginPage['cookies']);

@@ -16,6 +16,8 @@ PHP lint, full pre-deploy, security, Admin, Excel, public smoke và kiểm tra l
 
 Profiling bốn trang danh mục cho thấy Tin tức, Giải pháp và Dự án cùng ở mức 43 query, không phát sinh query theo từng card. Riêng `/san-pham/` chạy 51 query do chín nhóm sản phẩm thực hiện từng câu `select ... where id_list = ...` chỉ để xác định trạng thái rỗng. Thay bằng một truy vấn `distinct id_list` có cache đưa request về 43 query, giảm 8 query (15,7%); markup block danh mục đối chứng không đổi.
 
+Danh sách Sản phẩm trong Admin phân trang 10 dòng nhưng trước đây gọi `totalByID()` và `newPost()` cho từng dòng, tạo tối đa 20 query đếm đánh giá. Source hiện gom cả hai số liệu bằng một query parameterized theo tập ID và `GROUP BY id_variant`. Đối chiếu với cách tính cũ trên 10 sản phẩm đại diện cho `mismatches = 0`; PHP lint, Admin readiness và full pre-deploy đều đạt. Các màn Admin còn lại không có truy vấn nằm trực tiếp trong vòng lặp danh sách qua static audit, nhưng vẫn cần profiling authenticated trên dataset staging trước khi kết luận hiệu năng hosting.
+
 ## Rollback
 
 Hoàn nguyên thay đổi trong `sources/allpage.php`, `templates/layout/menu.php` và `templates/layout/mmenu.php`. Không cần rollback database.

@@ -238,7 +238,7 @@
 	/* View man */
 	function viewMans()
 	{
-		global $d, $func, $comment, $strUrl, $curPage, $items, $paging, $type;
+		global $d, $func, $comment, $commentTotals, $commentNewTotals, $strUrl, $curPage, $items, $paging, $type;
 
 		$where = "";
 		$params = array($type);
@@ -286,6 +286,21 @@
 		$sqlNum = "select count(*) as 'num' from #_product p where p.type = ? $where";
 		$count = $d->rawQueryOne($sqlNum,$params);
 		$total = (!empty($count)) ? $count['num'] : 0;
+		$commentTotals = array();
+		$commentNewTotals = array();
+		if(!empty($items))
+		{
+			$productIds = array_map(function($item) { return (int)$item['id']; }, $items);
+			$placeholders = implode(',', array_fill(0, count($productIds), '?'));
+			$commentParams = array_merge(array($type), $productIds);
+			$commentRows = $d->rawQuery("select id_variant, sum(case when id_parent = 0 then 1 else 0 end) as total_comments, sum(case when find_in_set('new-admin',status) then 1 else 0 end) as new_comments from #_comment where type = ? and id_variant in ($placeholders) group by id_variant", $commentParams);
+			foreach($commentRows as $commentRow)
+			{
+				$productId = (int)$commentRow['id_variant'];
+				$commentTotals[$productId] = (int)$commentRow['total_comments'];
+				$commentNewTotals[$productId] = (int)$commentRow['new_comments'];
+			}
+		}
 		$url = "index.php?com=product&act=man".$strUrl."&type=".$type;
 		$paging = $func->pagination($total,$perPage,$curPage,$url);
 

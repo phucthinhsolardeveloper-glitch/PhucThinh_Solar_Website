@@ -133,11 +133,12 @@
                                 <td class="align-middle">
                                     <a class="text-dark text-break" href="<?=$linkEdit?><?=$linkID?>&id=<?=$items[$i]['id']?>" title="<?=$items[$i]['namevi']?>"><?=$items[$i]['namevi']?></a>
                                     <div class="tool-action mt-2 w-clear">
-                                        <?php if(isset($config['product'][$type]['comment']) && $config['product'][$type]['comment'] == true) { ?>
-                                            <?php
-                                                $items[$i]['totalComment'] = $comment->totalByID($items[$i]['id'], $items[$i]['type'], true);
-                                                $items[$i]['newComment'] = $comment->newPost($items[$i]['id'], $items[$i]['type'], 'new-admin');
-                                            ?>
+										<?php if(isset($config['product'][$type]['comment']) && $config['product'][$type]['comment'] == true) { ?>
+											<?php
+												$productId = (int)$items[$i]['id'];
+												$items[$i]['totalComment'] = isset($commentTotals[$productId]) ? $commentTotals[$productId] : 0;
+												$items[$i]['newComment'] = isset($commentNewTotals[$productId]) ? $commentNewTotals[$productId] : 0;
+											?>
                                             <a class="text-primary mr-3" href="<?=$linkComment?>&id=<?=$items[$i]['id']?>" title="<?=$items[$i]['namevi']?>"><i class="fas fa-comments mr-1"></i>(<?=$items[$i]['totalComment']?>) Comment <?=(!empty($items[$i]['newComment'])) ? '<span class="badge badge-danger align-top">'.$items[$i]['newComment'].'</span>' : ''?></a>
                                         <?php } ?>
                                     	<?php if(isset($config['product'][$type]['view']) && $config['product'][$type]['view'] == true) { ?>
