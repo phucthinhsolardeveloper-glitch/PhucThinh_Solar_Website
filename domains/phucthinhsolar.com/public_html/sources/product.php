@@ -9,6 +9,12 @@
 	@$idb = htmlspecialchars($_GET['idb']);
 	$orderby = (isset($_GET['is_orderby']) && $_GET['is_orderby'] != '') ? htmlspecialchars($_GET['is_orderby']) : '';
 	$order_by = ' order by numb,id desc';
+	$productListHasItems = array();
+	if($template === 'product/product_list')
+	{
+		$productListRows = $cache->get("select distinct id_list from #_product where type = ? and find_in_set('hienthi',status)", array($type), 'result', 7200);
+		foreach($productListRows as $productListRow) $productListHasItems[(int)$productListRow['id_list']] = true;
+	}
 	if($orderby !="")
 	{
 		switch ($orderby) {

@@ -14,6 +14,8 @@ PHP lint, full pre-deploy, security, Admin, Excel, public smoke và kiểm tra l
 
 Đợt tiếp theo gom gallery của Giải pháp và dự án nổi bật theo tập dữ liệu, sau đó nhóm theo `id_parent`/`id_list`. Request trang chủ warm giảm tiếp từ 45 xuống 43 query; markup block Giải pháp trước/sau giống nhau. Các truy vấn template theo từng card/tab không còn chạy trong vòng lặp.
 
+Profiling bốn trang danh mục cho thấy Tin tức, Giải pháp và Dự án cùng ở mức 43 query, không phát sinh query theo từng card. Riêng `/san-pham/` chạy 51 query do chín nhóm sản phẩm thực hiện từng câu `select ... where id_list = ...` chỉ để xác định trạng thái rỗng. Thay bằng một truy vấn `distinct id_list` có cache đưa request về 43 query, giảm 8 query (15,7%); markup block danh mục đối chứng không đổi.
+
 ## Rollback
 
 Hoàn nguyên thay đổi trong `sources/allpage.php`, `templates/layout/menu.php` và `templates/layout/mmenu.php`. Không cần rollback database.

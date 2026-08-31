@@ -1,5 +1,5 @@
-<?php if(count($splist)){foreach($splist as $v){$proByList = $d->rawQuery("select id from #_product where id_list = ".$v['id']." and find_in_set('hienthi',status) order by numb,id desc limit 0,4"); ?>
-    <?php if(count($proByList)){ ?>
+<?php if(count($splist)){foreach($splist as $v){ ?>
+    <?php if(isset($productListHasItems[(int)$v['id']])){ ?>
     <section class="pts-catblock">
         <div class="pts-catblock-head">
             <div class="section-title">
