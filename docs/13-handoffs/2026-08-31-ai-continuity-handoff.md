@@ -111,6 +111,10 @@ Không dùng “giảm request/query/dung lượng” làm tiêu chí thành cô
 - `/san-pham/`: 51 xuống 43 query.
 - Admin danh sách Sản phẩm: thay tối đa 20 query đếm review bằng một query batch; dữ liệu đối chứng không sai khác.
 - Authenticated Admin local: bốn danh sách không còn N+1 theo dòng; Đơn hàng bỏ hai query địa giới rỗng khi chưa chọn parent.
+- Chi tiết sản phẩm public: `Comments::countStar()` 5 query → 1 `GROUP BY star` (44→40 query trang chi tiết ORIANA).
+- Danh sách tỉnh `table_city` (63 dòng) chuyển sang query cache 7200s ở `allpage.php` + `order.php` — bỏ 1 query uncached khỏi mọi trang `[a:com]/` (giỏ hàng 41→39).
+- Tồn đọng đã ghi nhận: `$requick` (`libraries/router.php`) dò slug tuần tự ~17 lookup index cho trang chi tiết; cần task riêng, không sửa lẻ vì ảnh hưởng toàn bộ routing.
+- Profiling method: bật `general_log`+`log_output=TABLE` trên MariaDB local, warm 2 lần, `TRUNCATE mysql.general_log`, hit 1 lần, đếm/nhóm theo pattern chuẩn hoá. Nhớ `SET GLOBAL general_log='OFF'` sau khi đo.
 
 Ba thử nghiệm conditional loading CSS/JS đã được hoàn nguyên vì phản hồi visual cho thấy giao diện/tính năng không còn giống baseline. Asset chuyên biệt hiện tải global để ưu tiên tương thích. Không lặp lại cách tối ưu này nếu chưa có browser regression đầy đủ.
 
@@ -119,13 +123,13 @@ Ba thử nghiệm conditional loading CSS/JS đã được hoàn nguyên vì ph�
 `HEAD` hiện tại:
 
 ```text
+8d3a3d7 perf(public): collapse review star N+1 and cache city list
+b45179e docs(handoff): update HEAD marker after price toggle + import commits
 b66bcaa chore(data): headless product bulk import tooling + session state
 0c3cc8c fix(product): fall back to placeholder on imageless detail gallery
 b27a9f0 feat(admin): add public price visibility toggle
 fd9f675 test(browser): add reviewed visual baselines
 1b01100 test(browser): cover public layout interactions
-929bfbe docs(assets): map legacy dependency usage
-d57d3b6 perf(admin): skip empty place lookups
 ```
 
 Các commit `be1b3d6`, `4314123`, `ad4520e` là lịch sử thử nghiệm conditional loading và đã bị `793e3eb` thay thế. Không cherry-pick hoặc tái áp dụng riêng các commit đó.
@@ -154,11 +158,10 @@ Browser test đã phát hiện `.htaccess` trong `/upload` sinh sai cú pháp kh
 
 ## 8. Việc tiếp theo theo ưu tiên
 
-### Có thể tiếp tục trên local
-
-1. Mở rộng browser regression cho popup/trạng thái rỗng và các tương tác chỉ xuất hiện khi có dữ liệu/config staging.
-2. Chỉ thử conditional loading hoặc xử lý asset dung lượng lớn theo từng commit nhỏ, dùng 5 screenshot baseline và full suite làm cổng bắt buộc.
-3. Lặp lại profiling Admin trên dataset staging gần production; local đã xác nhận bốn danh sách không còn N+1 theo dòng nhưng chưa đủ kết luận capacity hosting.
+1. Refactor `$requick` trong `libraries/router.php`: hiện dò slug tuần tự qua ~26 bảng (mỗi trang chi tiết ~17 lookup). Cân nhắc bảng ánh xạ `slug -> (table, type, id)` hoặc một truy vấn UNION. Blast radius toàn routing → cần đọc kỹ + regression đầy đủ trước khi đụng.
+2. Duyệt thẩm mỹ thủ công phần chưa tự động hoá được: popup tư vấn sản phẩm, menu mega desktop, trạng thái rỗng danh mục, khoảng cách/tràn ngang trên nhiều breakpoint.
+3. Chỉ thử conditional loading hoặc xử lý asset dung lượng lớn theo từng commit nhỏ, dùng 5 screenshot baseline và full suite làm cổng bắt buộc.
+4. Lặp lại profiling Admin trên dataset staging gần production; local đã xác nhận bốn danh sách không còn N+1 theo dòng nhưng chưa đủ kết luận capacity hosting.
 
 ### Chờ dữ liệu thật
 

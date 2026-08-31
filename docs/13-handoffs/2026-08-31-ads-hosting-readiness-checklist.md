@@ -86,6 +86,7 @@ Phạm vi tối ưu áp dụng cho toàn bộ project, gồm frontend public, Ad
 - [x] Loại N+1 kiểm tra nhóm rỗng tại `/san-pham/`: giảm từ 51 xuống 43 query (15,7%); ba danh mục nội dung không có query theo từng card.
 - [x] Loại tối đa 20 query đếm đánh giá ở danh sách Sản phẩm Admin bằng một query batch; số liệu 10 sản phẩm đối chứng khớp hoàn toàn.
 - [x] Profile authenticated local bốn danh sách Admin: 21/24/17/18 query, không có N+1 theo dòng; bỏ 2 query địa giới rỗng ở Đơn hàng.
+- [x] Profiling `general_log` các luồng còn lại (giỏ hàng, chi tiết tin tức/giải pháp/dự án/sản phẩm, filter/search AJAX). Sửa 2 N+1: `Comments::countStar()` 5 query → 1 `GROUP BY star`; danh sách tỉnh (`table_city`) chuyển sang query cache ở `allpage.php` + `order.php`. Chi tiết sản phẩm 44→40 query, giỏ hàng 41→39. Còn tồn: `$requick` trong `router.php` dò slug tuần tự ~17 query index/1 dòng cho trang chi tiết — cần task riêng (bảng ánh xạ slug hoặc UNION), không sửa trong lượt này vì blast radius toàn router.
 - [ ] Audit N+1 ở menu, trang chủ, danh mục và Admin bằng profiling trên bộ dữ liệu gần production.
 - [ ] Rà slow query log, PHP OPcache, memory và process limits trên staging/hosting.
 
