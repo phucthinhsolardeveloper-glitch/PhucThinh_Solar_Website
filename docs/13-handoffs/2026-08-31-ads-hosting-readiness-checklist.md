@@ -63,7 +63,7 @@ Phạm vi tối ưu áp dụng cho toàn bộ project, gồm frontend public, Ad
 ## 6. Hiệu năng và dung lượng
 
 - [x] Đo baseline local ba lượt cho bảy trang public trọng yếu; TTFB warm 20–32 ms, HTML khoảng 60–161 KB. Hosting vẫn phải đo lại riêng.
-- [ ] Rà CSS/JS/ảnh/video legacy, xác minh tham chiếu trước khi loại hoặc tách khỏi gói release.
+- [x] Lập dependency/usage map CSS/JS/ảnh/video legacy; phân tách asset Git, upload, thumbnail, cache và WordPress root. Chưa loại/tách khi chưa đủ visual/staging evidence.
 - [x] Audit media 137 trang: phát hiện 85 URL WordPress cũ trả 404; giữ media legacy trong release và bổ sung fallback extension allowlist thay vì đánh đổi ảnh để giảm archive.
 - [x] Inventory 76 CSS/JS local không thiếu file; xác nhận gzip/cache local và thêm regression header static asset.
 - [x] Thử nghiệm conditional loading đợt 1 (đã hoàn nguyên): trang chủ từng giảm 9 request CSS/JS và khoảng 347 KB trước gzip.

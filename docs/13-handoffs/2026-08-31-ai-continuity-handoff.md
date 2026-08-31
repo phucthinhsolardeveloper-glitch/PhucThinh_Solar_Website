@@ -147,8 +147,8 @@ Browser test đã phát hiện `.htaccess` trong `/upload` sinh sai cú pháp kh
 
 ### Có thể tiếp tục trên local
 
-1. Lập dependency/usage map cho CSS, JS, media và video legacy; không xóa/tách khi chưa có visual regression.
-2. Mở rộng Playwright sang chi tiết sản phẩm, menu/breadcrumb/footer/popup/trạng thái rỗng và các tương tác; tạo screenshot baseline có kiểm duyệt trước đợt tối ưu frontend mới.
+1. Mở rộng Playwright sang chi tiết sản phẩm, menu/breadcrumb/footer/popup/trạng thái rỗng và các tương tác; tạo screenshot baseline có kiểm duyệt trước đợt tối ưu frontend mới.
+2. Đối chiếu thủ công screenshot baseline desktop/mobile trước khi thử conditional loading hoặc xử lý asset dung lượng lớn.
 3. Lặp lại profiling Admin trên dataset staging gần production; local đã xác nhận bốn danh sách không còn N+1 theo dòng nhưng chưa đủ kết luận capacity hosting.
 
 ### Chờ dữ liệu thật

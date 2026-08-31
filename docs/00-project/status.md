@@ -23,6 +23,7 @@ Cập nhật gần nhất: 2026-08-31. Mọi thay đổi bên dưới mới ở 
 - Ba thử nghiệm conditional loading CSS/JS đã được hoàn nguyên để giữ tương thích visual và tính năng.
 - Đã cài Playwright Chromium trong `tools/visual-tests`; 16/16 browser smoke desktop/mobile đạt cho bảy trang public và icon chính.
 - Đã sửa cú pháp `.htaccess` upload từng làm ảnh/logo trả HTTP 500; pre-deploy kiểm tra trực tiếp media để chống tái phát.
+- Đã lập dependency/usage map CSS, JS, media và bốn luồng video legacy; chưa xóa/tách asset khi chưa đủ browser/staging evidence.
 
 ## PARTIAL / CHỜ DỮ LIỆU THẬT
 
