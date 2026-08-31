@@ -59,6 +59,7 @@ Mọi hạng mục phải đồng thời hướng tới website nhẹ và phản
 - [x] Đo baseline local ba lượt cho bảy trang public trọng yếu; TTFB warm 20–32 ms, HTML khoảng 60–161 KB. Hosting vẫn phải đo lại riêng.
 - [ ] Rà CSS/JS/ảnh/video legacy, xác minh tham chiếu trước khi loại hoặc tách khỏi gói release.
 - [x] Audit 137 trang, source và SQL: tách `assets/wp-content/uploads` không được tham chiếu khỏi archive; gói thử giảm khoảng 183 MB xuống 49 MB, không xóa source.
+- [x] Inventory 76 CSS/JS local không thiếu file; xác nhận gzip/cache local và thêm regression header static asset.
 - [ ] Kiểm tra cache/compression ảnh và static asset trên staging/hosting.
 - [ ] Chạy lại toàn bộ regression chức năng và visual sau mỗi đợt tối ưu.
 

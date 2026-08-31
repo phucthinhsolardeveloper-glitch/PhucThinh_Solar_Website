@@ -134,6 +134,9 @@ if rg -qi '^X-Powered-By:' /tmp/pts-predeploy-headers.txt; then
     echo "FAIL: Response còn lộ X-Powered-By" >&2
     exit 1
 fi
+curl -fsS -H 'Accept-Encoding: gzip, deflate' -D /tmp/pts-predeploy-static-headers.txt -o /dev/null "$base_url/assets/css/theme-v2.css"
+rg -qi '^Content-Encoding: gzip' /tmp/pts-predeploy-static-headers.txt
+rg -qi '^Cache-Control: .*max-age=' /tmp/pts-predeploy-static-headers.txt
 
 remaining="$(docker compose -f "$compose_file" exec -T db mariadb -N -B -upts_local -ppts_local_only phucthinhs_local -e "SELECT (SELECT COUNT(*) FROM table_product WHERE code LIKE 'CODEX-BULK-%') + (SELECT COUNT(*) FROM table_user WHERE username LIKE 'codex-rbac-%') + (SELECT COUNT(*) FROM table_permission_group WHERE name LIKE 'CODEX-RBAC-%') + (SELECT COUNT(*) FROM table_user_limit WHERE login_ip LIKE 'form:%');")"
 if [ "$remaining" != "0" ]; then
