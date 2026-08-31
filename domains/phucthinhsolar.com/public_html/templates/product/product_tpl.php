@@ -119,7 +119,7 @@ document.addEventListener('DOMContentLoaded', function(){
             </div>
             <?php } ?>
 
-            <?php if(publicProductPricesVisible()) { ?>
+            <?php /* Thương hiệu / Công suất / Loại sản phẩm luôn hiển thị; chỉ "Mức giá" phụ thuộc chế độ giá công khai. */ ?>
             <div class="product-pages__price mb20">
                 <div class="product-pages__price-aside">
                     <span class="product-pages__price-name">Thương hiệu</span>
@@ -210,6 +210,7 @@ document.addEventListener('DOMContentLoaded', function(){
             </div>
             <?php } ?>
 
+            <?php if(publicProductPricesVisible()) { ?>
             <div class="product-pages__price mb20">
                 <div class="product-pages__price-aside">
                     <span class="product-pages__price-name">Mức giá</span>
