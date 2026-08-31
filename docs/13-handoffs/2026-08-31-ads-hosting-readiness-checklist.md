@@ -6,6 +6,8 @@ Phạm vi thực hiện hiện tại là source, Git và Docker local PHP 7.4. K
 
 Tài liệu này là checklist cha và là ưu tiên triển khai chính cho đến khi website đủ điều kiện cập nhật hosting. Các yêu cầu phát sinh về giao diện, nội dung hoặc lỗi trong quá trình thực hiện là task con: xử lý trong phạm vi phù hợp rồi quay lại mục đang làm của checklist này. Chỉ đổi ưu tiên khi chủ project yêu cầu rõ ràng.
 
+Mọi hạng mục phải đồng thời hướng tới website nhẹ và phản hồi nhanh nhưng không được đánh đổi tính năng, giao diện, dữ liệu hoặc độ ổn định. Tối ưu chỉ được áp dụng sau khi có baseline, xác minh phạm vi ảnh hưởng và regression tương ứng.
+
 ## 1. Giao diện và thương hiệu
 
 - [ ] Kiểm tra trang chủ, danh mục, chi tiết sản phẩm, giải pháp, dự án, tin tức và liên hệ trên desktop/mobile.
@@ -27,6 +29,7 @@ Tài liệu này là checklist cha và là ưu tiên triển khai chính cho đ�
 
 - [x] CSRF, rate limit, upload validation, session hardening và RBAC regression đạt trên local.
 - [x] Canonical, noindex trang nội bộ, robots và sitemap đạt trên local.
+- [x] Crawl 141 URL sitemap; loại 4 URL 404 do danh mục ẩn/trang tuyển dụng chưa hoạt động và thêm regression chống tái phát.
 - [x] Chặn file nhạy cảm và bổ sung HTTP security headers trên local.
 - [ ] Retest tài khoản và phân quyền nghiệp vụ trên staging trước khi bật RBAC.
 - [ ] Xác minh HTTPS, cookie Secure, proxy chain, HSTS và header trên hosting.
@@ -50,6 +53,13 @@ Tài liệu này là checklist cha và là ưu tiên triển khai chính cho đ�
 - [x] Có công cụ tạo release từ commit Git, danh sách file, checksum, metadata và hướng dẫn rollback; commit deploy cuối cùng chỉ chốt sát thời điểm bàn giao.
 - [ ] Xác minh document root, PHP extension, quyền ghi, upload limit và rewrite trên staging.
 - [ ] Chỉ cập nhật production sau khi toàn bộ P0 đạt và chủ project phê duyệt.
+
+## 6. Hiệu năng và dung lượng
+
+- [x] Đo baseline local ba lượt cho bảy trang public trọng yếu; TTFB warm 20–32 ms, HTML khoảng 60–161 KB. Hosting vẫn phải đo lại riêng.
+- [ ] Rà CSS/JS/ảnh/video legacy, xác minh tham chiếu trước khi loại hoặc tách khỏi gói release.
+- [ ] Kiểm tra cache/compression ảnh và static asset trên staging/hosting.
+- [ ] Chạy lại toàn bộ regression chức năng và visual sau mỗi đợt tối ưu.
 
 ## Điều kiện kết luận
 

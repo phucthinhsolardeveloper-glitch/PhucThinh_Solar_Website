@@ -195,7 +195,7 @@
 
 			if(!empty($type) && !in_array($table, ['photo', 'static']))
 			{
-				$where = 'type = ?';
+				$where = "type = ? and find_in_set('hienthi',status)";
 				$where .= ($table != 'static') ? 'order by '.$orderby.' desc' : '';
 				$sitemap = $this->d->rawQuery("select slug$lang, date_created from #_$table where $where",array($type));
 			}

@@ -109,6 +109,14 @@ rg -q 'pts-card-grid' /tmp/pts-predeploy-solutions.html
 rg -q 'pts-card-grid' /tmp/pts-predeploy-projects.html
 rg -q '^Sitemap: https://phucthinhsolar.com/sitemap.xml$' /tmp/pts-predeploy-robots.txt
 rg -q '<urlset ' /tmp/pts-predeploy-sitemap.xml
+if rg -q '/(bien-tan-huawei|thiet-bi-lap-dat-nang-luong-mat-troi|unistar|tuyen-dung)</loc>' /tmp/pts-predeploy-sitemap.xml; then
+    echo "FAIL: Sitemap còn xuất bản URL ẩn hoặc chưa có trang hoạt động" >&2
+    exit 1
+fi
+if rg -q 'href="tuyen-dung"' /tmp/pts-predeploy-home.html; then
+    echo "FAIL: Menu public còn liên kết đến trang tuyển dụng chưa hoạt động" >&2
+    exit 1
+fi
 
 for sensitive_path in administrator/elfinder/debug.log phucthinhsolar_com.sql codientumanhdat.com.zip; do
     sensitive_status="$(curl -sS -o /dev/null -w '%{http_code}' "$base_url/$sensitive_path")"
