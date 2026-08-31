@@ -119,20 +119,18 @@ Ba thử nghiệm conditional loading CSS/JS đã được hoàn nguyên vì ph�
 `HEAD` hiện tại:
 
 ```text
+b66bcaa chore(data): headless product bulk import tooling + session state
+0c3cc8c fix(product): fall back to placeholder on imageless detail gallery
+b27a9f0 feat(admin): add public price visibility toggle
 fd9f675 test(browser): add reviewed visual baselines
 1b01100 test(browser): cover public layout interactions
 929bfbe docs(assets): map legacy dependency usage
 d57d3b6 perf(admin): skip empty place lookups
-7379730 test(browser): add public visual regression
-054ceb6 docs(handoff): preserve AI work continuity
-c4f0710 perf(admin): batch product review counts
 ```
 
 Các commit `be1b3d6`, `4314123`, `ad4520e` là lịch sử thử nghiệm conditional loading và đã bị `793e3eb` thay thế. Không cherry-pick hoặc tái áp dụng riêng các commit đó.
 
-Chưa commit (working tree): công tắc “Hiển thị giá sản phẩm” trong Admin. File thay đổi: `libraries/public_pricing.php`, `administrator/sources/setting.php`, `administrator/templates/setting/man/man_add_tpl.php`, `scripts/test-security-hardening.php`, `docs/07-features/public-price-mode.md` cùng các doc handoff/status/ops liên quan. Thêm hai script chưa commit: `scripts/preview-product-bulk-file.php` và `scripts/commit-product-bulk-file.php` (chạy pipeline import headless cho file Excel thật). Toàn bộ test dưới đã đạt; chờ chủ project duyệt trước khi commit.
-
-Thay đổi DB local (không nằm trong Git): đã import `artifacts/san-pham-20260831-da-bo-sung-oriana.xlsx` — +70 sản phẩm ORIANA (id 467–536, `numb=2` xếp cuối), cập nhật #321/#311; tổng `table_product` type `san-pham` = 151. Backup trước import: `backup/local/20260831-132554`. 70 sản phẩm mới còn thiếu ảnh + `descvi` + `contentvi`.
+Thay đổi DB local (không nằm trong Git): đã import `artifacts/san-pham-20260831-da-bo-sung-oriana.xlsx` — +70 sản phẩm ORIANA (id 467–536, `numb=2` xếp cuối), cập nhật #321/#311; tổng `table_product` type `san-pham` = 151. Backup trước import: `backup/local/20260831-132554`. 70 sản phẩm mới còn thiếu ảnh + `descvi` + `contentvi`. Chạy lại được bằng `scripts/preview-product-bulk-file.php` / `scripts/commit-product-bulk-file.php`.
 
 ## 7. Trạng thái kiểm thử gần nhất
 
