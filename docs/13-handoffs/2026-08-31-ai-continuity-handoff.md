@@ -139,7 +139,7 @@ Các commit `be1b3d6`, `4314123`, `ad4520e` là lịch sử thử nghiệm condi
 - Public smoke, SEO, static cache/compression headers và log PHP: PASS.
 - Local không còn dữ liệu test theo pre-deploy cleanup.
 
-Playwright `1.62.1` và Chromium đã được cài riêng trong `tools/visual-tests`; browser nằm ở thư mục `.browsers` đã gitignore. Chạy bằng `cd tools/visual-tests && npm test`. Bộ hiện tại đạt 20/20 trên desktop/mobile cho bảy route public, chi tiết sản phẩm, header/menu, breadcrumb, footer, gallery/CTA báo giá, icon gọi, lỗi console/page, request local lỗi, ảnh hỏng và tràn ngang.
+Playwright `1.62.1` và Chromium đã được cài riêng trong `tools/visual-tests`; browser nằm ở thư mục `.browsers` đã gitignore. Chạy bằng `cd tools/visual-tests && npm test`. Full suite hiện đạt 25 test và 1 skip có chủ ý: smoke/interaction desktop-mobile cùng 5 screenshot baseline đã review cho trang chủ, danh mục và chi tiết sản phẩm desktop. Pixel test chặn riêng GTranslate CDN để tránh DOM đổi ngôn ngữ không xác định; mobile MagicZoom vẫn có DOM/ảnh/CTA regression nhưng bỏ element screenshot vì canvas gây Chromium GPU/tile overflow.
 
 Browser test đã phát hiện `.htaccess` trong `/upload` sinh sai cú pháp khiến ảnh/logo trả HTTP 500. Generator và pre-deploy regression đã được sửa; full pre-deploy và Playwright đều đạt sau khi build lại. Kiểm tra tự động này chưa thay thế việc duyệt thẩm mỹ thủ công cho khoảng cách, popup, trạng thái rỗng và toàn bộ tương tác.
 
@@ -147,8 +147,8 @@ Browser test đã phát hiện `.htaccess` trong `/upload` sinh sai cú pháp kh
 
 ### Có thể tiếp tục trên local
 
-1. Tạo và đối chiếu thủ công screenshot baseline desktop/mobile trước khi thử conditional loading hoặc xử lý asset dung lượng lớn.
-2. Mở rộng browser regression cho popup/trạng thái rỗng và các tương tác chỉ xuất hiện khi có dữ liệu/config staging.
+1. Mở rộng browser regression cho popup/trạng thái rỗng và các tương tác chỉ xuất hiện khi có dữ liệu/config staging.
+2. Chỉ thử conditional loading hoặc xử lý asset dung lượng lớn theo từng commit nhỏ, dùng 5 screenshot baseline và full suite làm cổng bắt buộc.
 3. Lặp lại profiling Admin trên dataset staging gần production; local đã xác nhận bốn danh sách không còn N+1 theo dòng nhưng chưa đủ kết luận capacity hosting.
 
 ### Chờ dữ liệu thật

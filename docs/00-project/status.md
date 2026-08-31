@@ -21,7 +21,7 @@ Cập nhật gần nhất: 2026-08-31. Mọi thay đổi bên dưới mới ở 
 - Đã loại N+1 ở menu, block trang chủ, danh mục Sản phẩm và thống kê review trong danh sách Sản phẩm Admin; full pre-deploy đạt.
 - Profiling authenticated bốn danh sách Admin không còn N+1 theo từng dòng; dropdown địa giới Đơn hàng bỏ query quận/phường khi chưa chọn parent.
 - Ba thử nghiệm conditional loading CSS/JS đã được hoàn nguyên để giữ tương thích visual và tính năng.
-- Đã cài Playwright Chromium trong `tools/visual-tests`; 20/20 browser smoke desktop/mobile đạt cho bảy trang public, chi tiết sản phẩm, menu/breadcrumb/footer, CTA báo giá và icon chính.
+- Đã cài Playwright Chromium trong `tools/visual-tests`; full suite đạt 25 test, 1 skip có chủ ý. Có 5 screenshot baseline đã review cho trang chủ/danh mục desktop-mobile và chi tiết sản phẩm desktop.
 - Đã sửa cú pháp `.htaccess` upload từng làm ảnh/logo trả HTTP 500; pre-deploy kiểm tra trực tiếp media để chống tái phát.
 - Đã lập dependency/usage map CSS, JS, media và bốn luồng video legacy; chưa xóa/tách asset khi chưa đủ browser/staging evidence.
 
