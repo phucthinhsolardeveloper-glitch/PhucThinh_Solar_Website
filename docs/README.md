@@ -12,6 +12,8 @@
 - `10-audits/initial-handover-audit.md`: audit bàn giao.
 - `13-handoffs/2026-08-29-admin-operations-followup.md`: trạng thái nâng cấp filter, liên hệ và bulk sản phẩm trong Admin.
 - `13-handoffs/2026-08-29-next-work-checklist.md`: checklist chốt batch Excel, nhận dữ liệu thật và chuẩn bị production.
+- `13-handoffs/2026-08-31-ai-continuity-handoff.md`: điểm vào khi chuyển tab/tài khoản AI, phương pháp làm việc, trạng thái và bước tiếp theo.
+- `13-handoffs/2026-08-31-ads-hosting-readiness-checklist.md`: checklist cha đang điều phối toàn bộ công việc readiness.
 - `11-workflows/development-workflow.md`: workflow.
 - `12-ai/context-map.md`, `agent-workflow.md`, `task-template.md`: AI context.
 - `CHANGELOG.md`, `ROADMAP.md`: lịch sử tài liệu và ưu tiên.

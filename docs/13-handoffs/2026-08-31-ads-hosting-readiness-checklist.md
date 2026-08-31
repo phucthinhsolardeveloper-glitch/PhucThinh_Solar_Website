@@ -2,6 +2,8 @@
 
 Phạm vi thực hiện hiện tại là source, Git và Docker local PHP 7.4. Không deploy, không ghi production và không nhập dữ liệu thật khi chưa có phê duyệt riêng.
 
+Khi chuyển tab/tài khoản AI hoặc người thực hiện, bắt đầu tại [Bàn giao liên tục cho AI/developer](2026-08-31-ai-continuity-handoff.md), sau đó quay lại checklist này.
+
 ## Nguyên tắc điều phối
 
 Tài liệu này là checklist cha và là ưu tiên triển khai chính cho đến khi website đủ điều kiện cập nhật hosting. Các yêu cầu phát sinh về giao diện, nội dung hoặc lỗi trong quá trình thực hiện là task con: xử lý trong phạm vi phù hợp rồi quay lại mục đang làm của checklist này. Chỉ đổi ưu tiên khi chủ project yêu cầu rõ ràng.

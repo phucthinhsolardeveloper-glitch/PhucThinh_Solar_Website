@@ -16,6 +16,10 @@ Cập nhật gần nhất: 2026-08-31. Mọi thay đổi bên dưới mới ở 
 - Canonical, Twitter metadata, robots, sitemap, HTTP security headers và chặn file nhạy cảm đã có regression local.
 - Wordmark “Phúc Thịnh Solar” trong template public dùng vàng kim gradient.
 - Có script backup database/upload local kèm checksum; restore rehearsal đạt 49 bảng và 775 file upload.
+- Media fallback đã phục hồi 85/85 URL ảnh WordPress legacy; package release vẫn giữ các asset đang được tham chiếu.
+- Migration 007 thêm index route; lookup local dùng index thay cho full scan nhỏ.
+- Đã loại N+1 ở menu, block trang chủ, danh mục Sản phẩm và thống kê review trong danh sách Sản phẩm Admin; full pre-deploy đạt.
+- Ba thử nghiệm conditional loading CSS/JS đã được hoàn nguyên để giữ tương thích visual và tính năng.
 
 ## PARTIAL / CHỜ DỮ LIỆU THẬT
 
