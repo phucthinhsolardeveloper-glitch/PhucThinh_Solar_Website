@@ -15,6 +15,17 @@
     $gplist = $cache->get("select name$lang, slugvi, slugen, id, photo from #_news_list where type = ? and find_in_set('hienthi',status) order by numb,id desc", array('giai-phap'), 'result', 7200);
     $ttlist = $cache->get("select name$lang, slugvi, slugen, id from #_news_list where type = ? and find_in_set('hienthi',status) order by numb,id desc", array('tin-tuc'), 'result', 7200);
     $dalist = $cache->get("select name$lang, slugvi, slugen, id, photo from #_news_list where type = ? and find_in_set('hienthi',status) order by numb,id desc", array('du-an'), 'result', 7200);
+    $groupMenuRows = function($rows, $parentKey) {
+        $grouped = array();
+        foreach($rows as $row) $grouped[(int)$row[$parentKey]][] = $row;
+        return $grouped;
+    };
+    $productMenuCats = $groupMenuRows($cache->get("select name$lang, slugvi, slugen, id, id_list from #_product_cat where type = ? and find_in_set('hienthi',status) order by numb,id desc", array('san-pham'), 'result', 7200), 'id_list');
+    $productMenuItems = $groupMenuRows($cache->get("select name$lang, slugvi, slugen, id, id_cat from #_product_item where type = ? and find_in_set('hienthi',status) order by numb,id desc", array('san-pham'), 'result', 7200), 'id_cat');
+    $productMenuSubs = $groupMenuRows($cache->get("select name$lang, slugvi, slugen, id, id_item from #_product_sub where type = ? and find_in_set('hienthi',status) order by numb,id desc", array('san-pham'), 'result', 7200), 'id_item');
+    $newsMenuCats = $groupMenuRows($cache->get("select name$lang, slugvi, slugen, id, id_list from #_news_cat where type in (?, ?) and find_in_set('hienthi',status) order by numb,id desc", array('giai-phap', 'tin-tuc'), 'result', 7200), 'id_list');
+    $newsMenuItems = $groupMenuRows($cache->get("select name$lang, slugvi, slugen, id, id_cat from #_news_item where type in (?, ?) and find_in_set('hienthi',status) order by numb,id desc", array('giai-phap', 'tin-tuc'), 'result', 7200), 'id_cat');
+    $newsMenuSubs = $groupMenuRows($cache->get("select name$lang, slugvi, slugen, id, id_item from #_news_sub where type in (?, ?) and find_in_set('hienthi',status) order by numb,id desc", array('giai-phap', 'tin-tuc'), 'result', 7200), 'id_item');
     // $bct = $cache->get("select name$lang, content$lang from #_static where type = ? and find_in_set('hienthi',status) limit 0,1", array('bct'), 'fetch', 7200);
     // $tagsProduct = $cache->get("select name$lang, slugvi, slugen, id from #_tags where type = ? and find_in_set('noibat',status) and find_in_set('hienthi',status) order by numb,id desc", array('san-pham'), 'result', 7200);
     // $tagsNews = $cache->get("select name$lang, slugvi, slugen, id from #_tags where type = ? and find_in_set('noibat',status) and find_in_set('hienthi',status) order by numb,id desc", array('tin-tuc'), 'result', 7200);
