@@ -32,7 +32,7 @@
     $policy = $cache->get("select name$lang, slugvi, slugen, id, photo from #_news where type = ? and find_in_set('hienthi',status) order by numb,id desc", array('chinh-sach'), 'result', 7200);
     $cn = $cache->get("select name$lang, address, id, photo, ggmap from #_news where type = ? and find_in_set('hienthi',status) order by numb,id desc", array('he-thong-dai-ly'), 'result', 7200);
     $footer = $cache->get("select name$lang, content$lang,photo from #_static where type = ? and find_in_set('hienthi',status) limit 0,1", array('footer'), 'fetch', 7200);
-    $city = $d->rawQuery("select name, id from #_city order by id asc");
+    $city = $cache->get("select name, id from #_city order by id asc", null, 'result', 7200);
     /* Get statistic */
     $counter = $statistic->getCounter();
     $online = $statistic->getOnline();

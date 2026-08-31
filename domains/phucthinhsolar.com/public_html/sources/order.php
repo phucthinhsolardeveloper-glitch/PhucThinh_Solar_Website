@@ -14,7 +14,7 @@
 	$breadcrumbs = $breadcr->get();
 
 	/* Tỉnh thành */
-	$city = $d->rawQuery("select name, id from #_city order by id asc");
+	$city = $cache->get("select name, id from #_city order by id asc", null, 'result', 7200);
 
 	/* Hình thức thanh toán */
 	$payments_info = $d->rawQuery("select name$lang, desc$lang, id from #_news where type = ? order by numb,id desc",array('hinh-thuc-thanh-toan'));

@@ -51,20 +51,20 @@
 
 		public function countStar()
 		{
-			$count = array();
+			$count = array(1 => 0, 2 => 0, 3 => 0, 4 => 0, 5 => 0);
 
-			for($i=1; $i<=5; $i++)
+			$rows = $this->d->rawQuery("select star, count(id) as num from #_comment where find_in_set('hienthi',status) and id_variant = ? and type = ? group by star", array($this->id_variant, $this->type));
+
+			if(!empty($rows))
 			{
-				$count[$i] = $this->getStar($i);
+				foreach($rows as $row)
+				{
+					$star = (int) $row['star'];
+					if($star >= 1 && $star <= 5) $count[$star] = (int) $row['num'];
+				}
 			}
 
 			return json_encode($count);
-		}
-
-		private function getStar($star=1)
-		{
-			$row = $this->d->rawQueryOne("select count(id) as num from #_comment where find_in_set('hienthi',status) and id_variant = ? and type = ? and star = ?", array($this->id_variant, $this->type, $star));
-			return (!empty($row)) ? $row['num'] : 0;
 		}
 
 		private function totalStar()
