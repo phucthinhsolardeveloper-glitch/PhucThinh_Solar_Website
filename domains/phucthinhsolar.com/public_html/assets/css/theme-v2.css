@@ -1694,3 +1694,29 @@ h4{font-size:21px!important;font-weight:800!important;}
 @media(max-width:1180px){
     .hdr-call .hdr-call-txt{display:none;}
 }
+
+/* =====================================================================
+   HEADER — hạ chiều cao về mức gọn, gộp dải công suất vào header
+   Nguyên nhân header cao bất thường: style.css đặt `.menu > div > ul > li
+   { padding: 40px 0 }` (mỗi mục menu +80px). Ghi đè để chiều cao do
+   padding của thẻ <a> quyết định.
+   ===================================================================== */
+.menu>div>ul>li{padding:0!important;}
+.menu>div>ul>li>a{padding:12px 0!important;}
+.header-bottom .wrap-content{min-height:70px!important;padding-top:6px!important;padding-bottom:6px!important;}
+.menu>div>ul>li.menu-catalog>a{padding:8px 13px!important;}
+.header-bottom .logo img,.header .logo img,#logo img{max-height:46px!important;}
+.hdr-call .hdr-call-ic{width:34px!important;height:34px!important;font-size:14px!important;}
+
+/* Dải công suất: gọn như phần bụng của header, không còn là "bar" riêng */
+.header-quickfilter{background:#fff!important;border-top:1px solid var(--pts-line)!important;border-bottom:1px solid var(--pts-line)!important;}
+.header-quickfilter .wrap-content{min-height:0!important;padding-top:7px!important;padding-bottom:7px!important;gap:14px!important;}
+.hqf-list a{padding:4px 12px!important;font-size:12.5px!important;}
+.hqf-label{font-size:12px!important;}
+
+@media(max-width:640px){
+    .header-bottom .wrap-content{min-height:58px!important;}
+    .header-quickfilter .wrap-content{padding-top:6px!important;padding-bottom:6px!important;}
+}
+.header-quickfilter .wrap-content{padding-right:70px!important;}
+@media(max-width:640px){ .header-quickfilter .wrap-content{padding-right:16px!important;} }

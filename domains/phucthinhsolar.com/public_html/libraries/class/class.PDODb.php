@@ -1800,8 +1800,11 @@ class PDODb
 
         if (!is_dir($logsfile))
         {
-            mkdir($logsfile, 0777, true);
-            chmod($logsfile, 0777);
+            /* Race-safe: một request song song có thể đã tạo thư mục giữa is_dir() và mkdir(). */
+            if (@mkdir($logsfile, 0777, true) || is_dir($logsfile))
+            {
+                @chmod($logsfile, 0777);
+            }
         }
 
         $ip_user = $this->getClientIP();
