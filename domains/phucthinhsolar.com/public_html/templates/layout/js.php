@@ -58,12 +58,12 @@ $js->set("mmenu/mmenu.js");
 // $js->set("easyticker/easy-ticker.js");
 // $js->set("fotorama/fotorama.js");
 $js->set("owlcarousel2/owl.carousel.js");
-$js->set("magiczoomplus/magiczoomplus.js");
+if($isProductDetail) $js->set("magiczoomplus/magiczoomplus.js");
 $js->set("slick/slick.js");
 $js->set("fancybox3/jquery.fancybox.js");
-$js->set("photobox/photobox.js");
+if($usesPhotobox) $js->set("photobox/photobox.js");
 $js->set("simplenotify/simple-notify.js");
-$js->set("fileuploader/jquery.fileuploader.min.js");
+if($isProductDetail) $js->set("fileuploader/jquery.fileuploader.min.js");
 // $js->set("datetimepicker/php-date-formatter.min.js");
 // $js->set("datetimepicker/jquery.mousewheel.js");
 // $js->set("datetimepicker/jquery.datetimepicker.js");
@@ -71,16 +71,11 @@ $js->set("js/functions.js");
 if($source != 'index'){
     $js->set("js/toc.js");
 }
-$js->set("comment/comment.js");
+if($isProductDetail) $js->set("comment/comment.js");
 $js->set("js/share.js");
 $js->set("js/apps.js");
 echo $js->get();
 ?>
-<script>
-    $('.album-gallery').photobox('.album-item:not(.slick-cloned) a', { thumbs: true, loop: false });
-
-</script>
-
 <script>
 $('.view_maps').click(function() {
     var map = $(this).data('map');

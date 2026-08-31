@@ -100,6 +100,16 @@ rg -q '<title>[^<]+</title>' /tmp/pts-predeploy-solution-detail.html
 rg -q 'class="box-detail-news"' /tmp/pts-predeploy-solution-detail.html
 rg -q '<title>[^<]+</title>' /tmp/pts-predeploy-project-detail.html
 rg -q 'id="inf_single_project"' /tmp/pts-predeploy-project-detail.html
+rg -q 'assets/photobox/photobox.css' /tmp/pts-predeploy-project-detail.html
+rg -q 'assets/photobox/photobox.js' /tmp/pts-predeploy-project-detail.html
+rg -q 'assets/magiczoomplus/magiczoomplus.css' /tmp/pts-predeploy-product.html
+rg -q 'assets/magiczoomplus/magiczoomplus.js' /tmp/pts-predeploy-product.html
+rg -q 'assets/fileuploader/jquery.fileuploader.min.js' /tmp/pts-predeploy-product.html
+rg -q 'assets/comment/comment.js' /tmp/pts-predeploy-product.html
+if rg -q 'assets/(photobox|magiczoomplus|fileuploader|comment)/' /tmp/pts-predeploy-home.html; then
+    echo "FAIL: Trang chủ còn tải asset chỉ dùng cho gallery hoặc chi tiết sản phẩm" >&2
+    exit 1
+fi
 rg -q 'name="twitter:title"' /tmp/pts-predeploy-product-filtered.html
 rg -q 'rel="canonical" href="http://localhost:8080/san-pham/"' /tmp/pts-predeploy-product-filtered.html
 rg -q 'name="robots" content="noindex,nofollow"' /tmp/pts-predeploy-search.html

@@ -85,10 +85,6 @@
                     <div class="tab-content pt-4 pb-4" id="tabsProDetailContent">
                         <div class="tab-pane fade show active" id="info-pro-detail" role="tabpanel">
 
-                            <?php /* Bỏ class .slick-hinhanh: Slick cấu hình slidesToShow:1 +
-                                   centerMode nên chỉ hiện 1 ảnh lớn kèm 2 nửa ảnh ló hai bên,
-                                   với album 10 ảnh dự án thì lưới thumbnail dễ xem hơn nhiều.
-                                   Giữ .album-gallery để lightbox photobox vẫn hoạt động. */ ?>
                             <div class="album-gallery pts-project-gallery">
                                 <?php if(!empty($rowDetailPhoto)) { foreach($rowDetailPhoto as $k => $v) { ?>
                                     <div class="album-item none album-gallery-photo">
