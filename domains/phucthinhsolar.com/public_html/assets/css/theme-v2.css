@@ -1542,3 +1542,47 @@ h4{font-size:21px!important;font-weight:800!important;}
     .grid-product.grid-product-3{grid-template-columns:1fr!important;}
     .product-card .caption .name{min-height:0!important;}
 }
+
+/* =====================================================================
+   CHI TIẾT SẢN PHẨM — GALLERY TRÊN MOBILE
+   Lỗi nặng: trên mobile .left-pro-detail (col-md-5) mất ràng buộc bề
+   rộng, cộng với .MagicZoom {display:flex; aspect-ratio:1/1} tạo vòng lặp
+   tính kích thước -> khung ảnh phình tới ~33.5M px, để lại khoảng trắng
+   khổng lồ trước phần thông tin. Bỏ flex + aspect-ratio ở mobile, cho ảnh
+   chảy theo bề rộng cột; dải thumbnail vẫn là carousel owl có nút chuyển.
+   ===================================================================== */
+@media(max-width:991px){
+    .grid-pro-detail>.row{display:flex!important;flex-direction:column!important;grid-template-columns:none!important;}
+    /* Bề rộng ĐỊNH LƯỢNG theo viewport (selector nâng đặc hiệu để chắc
+       chắn thắng), phá vòng lặp phình khung của owl/MagicZoom. */
+    html body .grid-pro-detail .left-pro-detail,
+    html body .grid-pro-detail .left-pro-detail.col-md-5{
+        width:calc(100vw - 32px)!important;max-width:480px!important;margin:0 auto!important;
+        flex:0 0 auto!important;min-width:0!important;overflow:hidden!important;box-sizing:border-box!important;
+        contain:layout!important;
+    }
+    .left-pro-detail>a.MagicZoom{
+        display:block!important;aspect-ratio:auto!important;
+        width:100%!important;max-width:100%!important;padding:6px!important;box-sizing:border-box!important;
+    }
+    .left-pro-detail>a.MagicZoom>img,
+    .left-pro-detail .mz-figure,
+    .left-pro-detail .mz-figure>img,
+    .left-pro-detail .mz-figure>.mz-image{
+        width:100%!important;height:auto!important;max-width:100%!important;
+        aspect-ratio:auto!important;object-fit:contain!important;
+    }
+    /* Owl thumbnail: ép về dải cuộn ngang đơn giản, vô hiệu hoá stage
+       transform khổng lồ mà owl.js tính sai khi container chưa có bề rộng. */
+    .gallery-thumb-pro{width:100%!important;max-width:100%!important;overflow:hidden!important;margin-top:12px;}
+    .gallery-thumb-pro .owl-pro-detail,
+    .gallery-thumb-pro .owl-stage-outer{width:100%!important;max-width:100%!important;overflow-x:auto!important;overflow-y:hidden!important;}
+    .gallery-thumb-pro .owl-stage{
+        width:auto!important;max-width:none!important;transform:none!important;
+        display:flex!important;gap:8px!important;
+    }
+    .gallery-thumb-pro .owl-item{width:68px!important;min-width:68px!important;flex:0 0 68px!important;margin:0!important;}
+    .gallery-thumb-pro .thumb-pro-detail{aspect-ratio:1/1!important;}
+    .gallery-thumb-pro .owl-nav,
+    .gallery-thumb-pro .owl-dots{display:none!important;}
+}
