@@ -109,6 +109,7 @@ Không dùng “giảm request/query/dung lượng” làm tiêu chí thành cô
 - Block Giải pháp/Dự án trang chủ: 45 xuống 43 query.
 - `/san-pham/`: 51 xuống 43 query.
 - Admin danh sách Sản phẩm: thay tối đa 20 query đếm review bằng một query batch; dữ liệu đối chứng không sai khác.
+- Authenticated Admin local: bốn danh sách không còn N+1 theo dòng; Đơn hàng bỏ hai query địa giới rỗng khi chưa chọn parent.
 
 Ba thử nghiệm conditional loading CSS/JS đã được hoàn nguyên vì phản hồi visual cho thấy giao diện/tính năng không còn giống baseline. Asset chuyên biệt hiện tải global để ưu tiên tương thích. Không lặp lại cách tối ưu này nếu chưa có browser regression đầy đủ.
 
@@ -146,9 +147,9 @@ Browser test đã phát hiện `.htaccess` trong `/upload` sinh sai cú pháp kh
 
 ### Có thể tiếp tục trên local
 
-1. Hoàn tất audit authenticated Admin bằng profiling runtime cho Sản phẩm, Đơn hàng, Liên hệ và Tin tức; static audit đã xử lý N+1 review sản phẩm nhưng chưa đủ để đóng mục staging.
-2. Lập dependency/usage map cho CSS, JS, media và video legacy; không xóa/tách khi chưa có visual regression.
-3. Mở rộng Playwright sang chi tiết sản phẩm, menu/breadcrumb/footer/popup/trạng thái rỗng và các tương tác; tạo screenshot baseline có kiểm duyệt trước đợt tối ưu frontend mới.
+1. Lập dependency/usage map cho CSS, JS, media và video legacy; không xóa/tách khi chưa có visual regression.
+2. Mở rộng Playwright sang chi tiết sản phẩm, menu/breadcrumb/footer/popup/trạng thái rỗng và các tương tác; tạo screenshot baseline có kiểm duyệt trước đợt tối ưu frontend mới.
+3. Lặp lại profiling Admin trên dataset staging gần production; local đã xác nhận bốn danh sách không còn N+1 theo dòng nhưng chưa đủ kết luận capacity hosting.
 
 ### Chờ dữ liệu thật
 

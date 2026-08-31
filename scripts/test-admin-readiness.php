@@ -113,6 +113,12 @@ try
     $productListTemplate = file_get_contents('/var/www/html/administrator/templates/product/man/mans_tpl.php');
     readinessAssert(strpos($productListTemplate, 'totalByID(') === false && strpos($productListTemplate, '$commentTotals') !== false, 'Danh sách sản phẩm dùng thống kê đánh giá theo batch');
 
+    unset($_REQUEST['id_city'], $_REQUEST['id_district']);
+    $emptyDistrict = $func->getAjaxPlace('district');
+    $emptyWard = $func->getAjaxPlace('ward');
+    readinessAssert(strpos($emptyDistrict, 'id="id_district"') !== false && substr_count($emptyDistrict, '<option') === 1, 'Dropdown quận không truy vấn dữ liệu khi chưa chọn tỉnh');
+    readinessAssert(strpos($emptyWard, 'id="id_ward"') !== false && substr_count($emptyWard, '<option') === 1, 'Dropdown phường không truy vấn dữ liệu khi chưa chọn quận');
+
     $base = 'http://127.0.0.1/administrator/';
     $loginPage = readinessHttp($base.'index.php?com=user&act=login');
     list($oldCookie, $loginSetCookie) = readinessSessionCookie($loginPage['cookies']);

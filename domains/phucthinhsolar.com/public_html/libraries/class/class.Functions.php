@@ -2650,6 +2650,7 @@
 	    {
 	    	$where = '';
 	    	$params = array('0');
+			$loadRows = true;
 	    	$id_parent = 'id_'.$table;
 	    	$data_level = '';
 	    	$data_table = '';
@@ -2670,6 +2671,7 @@
 	    		$idcity = (isset($_REQUEST['id_city'])) ? htmlspecialchars($_REQUEST['id_city']) : 0;
 	    		$where .= ' and id_city = ?';
 	    		array_push($params, $idcity);
+				$loadRows = ((int)$idcity > 0);
 	    	}
 	    	else if($table == 'ward')
 	    	{
@@ -2684,9 +2686,10 @@
 	    		$iddistrict = (isset($_REQUEST['id_district'])) ? htmlspecialchars($_REQUEST['id_district']) : 0;
 	    		$where .= ' and id_district = ?';
 	    		array_push($params, $iddistrict);
+				$loadRows = ((int)$idcity > 0 && (int)$iddistrict > 0);
 	    	}
 
-	        $rows = $this->cache->get("select name, id from #_".$table." where id <> ? ".$where." order by id asc", $params, "result", 7200);
+	        $rows = $loadRows ? $this->cache->get("select name, id from #_".$table." where id <> ? ".$where." order by id asc", $params, "result", 7200) : array();
 
 	        $str = '<select id="'.$id_parent.'" name="data['.$id_parent.']" '.$data_level.' '.$data_table.' '.$data_child.' class="form-control select2 select-place"><option value="0">'.$title_select.'</option>';
 	        foreach($rows as $v)
