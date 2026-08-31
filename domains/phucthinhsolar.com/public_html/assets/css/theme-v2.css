@@ -1450,3 +1450,95 @@ h4{font-size:21px!important;font-weight:800!important;}
     #inf_single_project .title_wrap{margin-bottom:16px!important;}
     #inf_single_project .client_wrap{margin-bottom:22px!important;}
 }
+
+/* =====================================================================
+   ROUND 2B — RÀ SOÁT RESPONSIVE MOBILE
+   Sửa các lỗi bố cục trên điện thoại: nút liên hệ nổi đè nội dung,
+   lề trang quá rộng, chữ canh đều gây rối, chữ desktop quá lớn khi thu
+   nhỏ, khoảng cách các khối chưa hợp lý.
+   ===================================================================== */
+@media(max-width:640px){
+    /* Lề trang về mức hợp lý cho màn hình hẹp (32px desktop -> 16px) */
+    :root{--pts-gutter:16px;}
+    .wrap-content,.wrap-main,.uk-container,.container,
+    #inf_single_project .left,#inf_single_project .right,
+    .inf_about_history .container-fluid{
+        padding-left:16px!important;padding-right:16px!important;
+    }
+
+    /* Thu nhỏ thang chữ desktop cho vừa điện thoại */
+    body,p{font-size:15.5px!important;line-height:1.66!important;}
+    h1{font-size:25px!important;} h2{font-size:22px!important;}
+    h3{font-size:19px!important;} h4{font-size:17px!important;}
+    .section-title h3,
+    .CRstyle_title,
+    #inf_vision_intro .CRstyle_title,
+    #inf_partner_cert .CRstyle_title,
+    .inf_intro_page #CRintro_home .CRstyle_title{font-size:22px!important;line-height:1.25!important;}
+    .page-title{min-height:132px!important;}
+    .page-title .wrap-content2{padding-top:24px!important;padding-bottom:24px!important;}
+    .title-page span{font-size:23px!important;}
+    .breadCrumbs .breadcrumb-item a{font-size:12.5px!important;}
+
+    /* Không canh đều chữ trên màn hình hẹp (tránh khoảng trắng răng cưa) */
+    p,.des,.des p,.des_wrap,.des_wrap p,.des_wrap li,
+    .inf_item_vision .content,.inf_item_vision .content p,
+    #CRcontent_single_news,.box-detail-news,.box-detail-news p{text-align:left!important;}
+
+    /* NÚT LIÊN HỆ NỔI (#button-contact-vr): thu nhỏ, đưa hẳn về góc dưới
+       phải, không còn đè lên tiêu đề / nội dung */
+    #button-contact-vr{bottom:14px!important;right:10px!important;}
+    #button-contact-vr .button-contact{margin-top:-10px!important;}
+    #button-contact-vr .button-contact .phone-vr{width:56px!important;height:56px!important;}
+    #button-contact-vr .phone-vr-circle-fill{width:42px!important;height:42px!important;top:7px!important;left:7px!important;}
+    #button-contact-vr .phone-vr-img-circle{width:30px!important;height:30px!important;top:13px!important;left:13px!important;}
+    #button-contact-vr .phone-vr-img-circle img{max-height:15px!important;max-width:17px!important;}
+    .progress-wrap{right:14px!important;bottom:76px!important;width:38px!important;height:38px!important;}
+
+    /* Chi tiết dự án: card thoáng hơn, tiêu đề vừa phải */
+    #inf_single_project{padding:24px 0 36px!important;}
+    #inf_single_project .title_wrap h1{font-size:23px!important;padding-bottom:12px!important;}
+    #inf_single_project .title_wrap{margin-bottom:14px!important;}
+    #inf_single_project .client_wrap{gap:8px!important;margin-bottom:18px!important;}
+    #inf_single_project .client_wrap>div{padding:9px 14px!important;}
+    #inf_single_project .client_wrap p b{font-size:14.5px!important;}
+    #inf_single_project .des_wrap{padding:20px 18px!important;}
+    #inf_single_project .des_wrap,
+    #inf_single_project .des_wrap p,
+    #inf_single_project .des_wrap li{font-size:15.5px!important;line-height:1.75!important;}
+
+    /* Form liên hệ trên mobile */
+    #inf_contact_page{padding:32px 0 44px!important;}
+    #top_content h2{padding:0 4px!important;font-size:20px!important;}
+    .formContact{padding:24px 16px!important;}
+    .inf_default_form .title{font-size:21px!important;}
+    .inf_default_form .des{font-size:15px!important;margin-bottom:20px!important;}
+    .inf_default_form ul{gap:16px!important;}
+    .inf_default_form input:not([type=submit]),
+    .inf_default_form select{height:50px!important;font-size:15px!important;}
+    .inf_default_form textarea{height:140px!important;}
+    .inf_default_form input[type=submit]{height:52px!important;font-size:16px!important;}
+
+    /* Đại lý: form và banner xếp dọc, chữ vừa phải */
+    .agency_1 .container{padding-top:28px!important;padding-bottom:28px!important;gap:20px!important;}
+    .agency_1 .inner{padding:22px!important;}
+    .agency_1 .inner .content.text h3{font-size:22px!important;}
+
+    /* Về chúng tôi: khối lịch sử xếp dọc, ảnh trên - chữ dưới */
+    .inf_about_history{padding:32px 0!important;}
+    .inf_about_history .right .content>h3,
+    .inf_about_history .right h3{font-size:21px!important;margin-bottom:12px!important;}
+    .inf_about_history .right .des,
+    .inf_about_history .right .des p{font-size:15.5px!important;}
+    #inf_vision_intro,#inf_partner_cert{padding:36px 0!important;}
+
+    /* Header mobile: chừa chỗ, không cho logo quá to */
+    .header-bottom .logo img,.header .logo img,#logo img{max-height:44px!important;}
+    .top-utility-bar{font-size:12px!important;}
+}
+
+/* Màn hình rất hẹp: card sản phẩm 1 cột cho dễ đọc */
+@media(max-width:390px){
+    .grid-product.grid-product-3{grid-template-columns:1fr!important;}
+    .product-card .caption .name{min-height:0!important;}
+}
