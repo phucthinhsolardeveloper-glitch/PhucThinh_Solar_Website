@@ -1252,3 +1252,201 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 .pts-filter-card .product-pages__price:has(#car_congsuat0) .wrappers-aside__filter-scroll{
     max-height:260px;overflow-y:auto;padding-right:6px;
 }
+
+/* =====================================================================
+   ROUND 2 — Phóng to & hoàn thiện giao diện public
+   Yêu cầu chủ project: layout đang nhỏ/nhẹ, cần to & rõ hơn cho khách;
+   header chữ nhỏ; footer dòng hotline/email lệch màu; trang Liên hệ /
+   Đại lý / Về chúng tôi bố cục chưa chuẩn, khoảng cách chỗ to chỗ nhỏ.
+   Khối này nạp sau cùng nên thắng mọi rule trước đó.
+   ===================================================================== */
+
+/* --- Container: rộng hơn để trang có sức nặng, không "nhỏ nhẹ" --- */
+:root{--pts-container:1560px;--pts-gutter:32px;}
+
+/* --- Thang chữ nền tảng: to & chắc, dễ đọc từ xa --- */
+body,p{font-size:18px!important;line-height:1.75!important;}
+h1{font-size:clamp(38px,3.8vw,52px)!important;font-weight:900!important;}
+h2{font-size:clamp(30px,3.1vw,42px)!important;font-weight:850!important;}
+h3{font-size:clamp(23px,2.2vw,30px)!important;font-weight:850!important;}
+h4{font-size:21px!important;font-weight:800!important;}
+
+/* --- Thanh tiện ích trên cùng (hotline / email / giờ làm việc) --- */
+.top-utility-bar{font-size:13.5px!important;}
+.top-utility-bar .wrap-content{min-height:40px!important;padding-top:8px!important;padding-bottom:8px!important;}
+
+/* --- Header: menu chính to & chắc hơn --- */
+.header-bottom .wrap-content{min-height:100px!important;gap:30px!important;}
+.menu>div>ul{gap:26px!important;}
+.menu>div>ul>li>a{
+    font-size:17.5px!important;font-weight:800!important;
+    letter-spacing:.005em!important;padding:20px 0!important;
+}
+.menu ul li ul li a{font-size:14.5px!important;padding:12px 20px!important;}
+.header-right-style{gap:24px!important;}
+.header-bottom .logo img,.header .logo img,#logo img{max-height:64px!important;width:auto!important;}
+.icon-cart-header svg,.header-right-style .search-toggle svg,.header-right-style svg{width:24px!important;height:24px!important;}
+
+/* --- Tiêu đề trang (hero ảnh + tên trang): to & choán chỗ hơn --- */
+.page-title{min-height:250px!important;}
+.page-title .wrap-content2{padding-top:40px!important;padding-bottom:40px!important;}
+.title-page span{font-size:clamp(36px,4vw,56px)!important;font-weight:900!important;}
+
+/* --- Breadcrumb (Trang chủ > ...): đang quá nhỏ, phóng to --- */
+.breadCrumbs .breadcrumb-item a{font-size:15.5px!important;line-height:24px!important;font-weight:700!important;}
+.breadCrumbs .breadcrumb-item+.breadcrumb-item{padding-left:26px!important;}
+.breadCrumbs .breadcrumb-item+.breadcrumb-item:before{font-size:14px!important;left:9px!important;}
+@media(max-width:768px){
+    .page-title{min-height:168px!important;}
+    .title-page span{font-size:28px!important;}
+    .breadCrumbs .breadcrumb-item a{font-size:13.5px!important;}
+}
+
+/* --- Tiêu đề section chung: to & đậm hơn --- */
+.section-title h3{font-size:clamp(34px,3.4vw,52px)!important;font-weight:900!important;}
+.section-title .eyebrow,.section-eyebrow{font-size:13px!important;letter-spacing:.14em!important;}
+.CRstyle_title,
+#inf_vision_intro .CRstyle_title,
+#inf_partner_cert .CRstyle_title,
+.inf_intro_page #CRintro_home .CRstyle_title{
+    font-size:clamp(32px,3.3vw,48px)!important;font-weight:900!important;
+    line-height:1.18!important;color:var(--pts-navy)!important;
+    text-transform:none!important;letter-spacing:-.015em!important;
+}
+#inf_vision_intro .CRstyle_title,
+#inf_partner_cert #inf_partner .CRstyle_title,
+#inf_partner_cert #CRcertification_intro .CRstyle_title{color:#fff!important;}
+
+/* --- Nút bấm chung: cao & rõ hơn --- */
+.btn,button.btn,.pts-btn,.pts-btn-gold,input[type=submit],button[type=submit],
+.pts-btn-gold,.btn-contact-price a{
+    font-size:16.5px!important;font-weight:800!important;letter-spacing:.02em!important;
+}
+.pts-btn,.pts-btn-gold{padding:16px 30px!important;}
+
+/* =====================================================================
+   FOOTER — đồng bộ màu dòng Hotline / Email với phần còn lại
+   ===================================================================== */
+.CRlist_office_center,
+.CRlist_office_center p,
+.CRlist_office_center span,
+.CRlist_office_center a{
+    color:#c3dbf7!important;font-size:14px!important;line-height:1.85!important;
+}
+.CRlist_office_center a{text-decoration:none!important;transition:color .15s;}
+.CRlist_office_center a:hover{color:var(--pts-gold-light)!important;}
+.footer-title{font-size:15px!important;}
+.CRlist_office_center,.CRlist_office_center p,.footer-link a,.content_cn a,.content_cn span{font-size:13.5px!important;}
+
+/* =====================================================================
+   TRANG LIÊN HỆ — to & cân đối phần FORM (giữ nguyên khu "Hệ thống cửa hàng")
+   ===================================================================== */
+#inf_contact_page{padding:56px 0 72px!important;}
+#top_content>.container{max-width:1400px!important;}
+#top_content h2{font-size:clamp(26px,2.5vw,36px)!important;font-weight:900!important;line-height:1.3!important;margin:0 auto 14px!important;max-width:900px;padding:0 40px;}
+.custContContact li a{font-size:16px!important;}
+.formContact{padding:52px 56px!important;margin-top:34px!important;border-radius:20px!important;}
+.inf_default_form .title{font-size:clamp(26px,2.4vw,34px)!important;}
+.inf_default_form .des{font-size:16.5px!important;margin-bottom:28px!important;}
+
+/* Form 2 cột đều nhau: input/select/textarea phải LẤP ĐẦY ô lưới.
+   Nguyên nhân lệch: .wpcf7-form-control-wrap là <span> inline nên
+   width:100% của input tính theo bề rộng co lại của span -> ô nhập bé,
+   dồn về trái, chừa khoảng trống giữa. Ép cả wrapper về block full width. */
+.inf_default_form ul{gap:24px 28px!important;align-items:start!important;}
+.inf_default_form li,
+.inf_default_form .inf_default_row{width:auto!important;padding:0!important;margin:0!important;}
+.inf_default_form .inf_input,
+.inf_default_form .wpcf7-form-control-wrap{display:block!important;width:100%!important;}
+.inf_default_form input:not([type=submit]),
+.inf_default_form textarea,
+.inf_default_form select{
+    width:100%!important;box-sizing:border-box!important;
+    font-size:16px!important;height:56px!important;padding:0 18px!important;border-radius:10px!important;
+}
+.inf_default_form textarea{height:180px!important;padding:16px 18px!important;}
+.inf_default_form label{font-size:15.5px!important;font-weight:800!important;margin-bottom:9px!important;}
+.inf_default_form .inf_button{grid-column:1/-1;margin-top:6px;}
+.inf_default_form input[type=submit]{
+    width:100%!important;min-width:0!important;height:60px!important;border-radius:12px!important;font-size:17px!important;
+}
+@media(max-width:768px){
+    .inf_default_form ul{grid-template-columns:1fr!important;}
+    .formContact{padding:32px 22px!important;}
+}
+
+/* =====================================================================
+   TRANG ĐẠI LÝ — form to hơn, banner chữ mạnh hơn
+   ===================================================================== */
+.agency_1 .container{
+    grid-template-columns:minmax(340px,440px) 1fr!important;gap:40px!important;
+    padding-top:60px!important;padding-bottom:60px!important;
+}
+.agency_1 .inner .content.text h3{font-size:clamp(26px,2.7vw,40px)!important;}
+.agency_1 .inner .content.text,
+.agency_1 .inner .content.text p,
+.agency_1 .inner .content.text li{font-size:16px!important;line-height:1.75!important;}
+.agency_1 .form_agency .inf_default_form .title{font-size:24px!important;}
+.agency_1 .form_agency input:not([type=submit]),
+.agency_1 .form_agency select,
+.agency_1 .form_agency textarea{font-size:15px!important;min-height:46px!important;}
+.agency_1 .form_agency input[type=submit]{font-size:16px!important;padding:14px 20px!important;}
+@media(max-width:991px){
+    .agency_1 .container{grid-template-columns:1fr!important;gap:26px!important;}
+}
+
+/* =====================================================================
+   TRANG VỀ CHÚNG TÔI — bố cục lịch sử & khối nội dung
+   ===================================================================== */
+.inf_about_history .container-fluid{max-width:var(--pts-container)!important;margin:0 auto!important;padding-left:var(--pts-gutter)!important;padding-right:var(--pts-gutter)!important;}
+.inf_about_history{padding:52px 0!important;}
+.inf_about_history .row{align-items:center!important;}
+.inf_about_history .right .content>h3,
+.inf_about_history .right h3{
+    font-size:clamp(24px,2.5vw,34px)!important;font-weight:900!important;
+    color:var(--pts-navy)!important;line-height:1.25!important;margin-bottom:16px!important;
+}
+.inf_about_history .right .des,
+.inf_about_history .right .des p{font-size:16px!important;line-height:1.85!important;color:#334155!important;}
+.inf_about_history .left .content img{border-radius:16px!important;box-shadow:var(--pts-shadow)!important;width:100%!important;object-fit:cover!important;}
+#inf_vision_intro{padding:60px 0!important;}
+#inf_partner_cert{padding:56px 0!important;}
+.inf_item_vision h4{font-size:21px!important;}
+.inf_item_vision .content,.inf_item_vision .content p{font-size:16px!important;}
+#CRcertification_intro .CRitem_certification .wrap{background:#fff!important;border:1px solid var(--pts-line)!important;border-radius:14px!important;padding:14px!important;}
+#CRcertification_intro .des{font-size:14.5px!important;font-weight:800!important;color:var(--pts-navy)!important;margin-top:10px!important;}
+#CRintro_home .inf_ico_intro_home p{font-size:15.5px!important;}
+
+/* =====================================================================
+   TRANG CHI TIẾT DỰ ÁN — cụm "Khách hàng / Địa chỉ" phải bám ngay dưới
+   tiêu đề, không trôi ra giữa cột khi nội dung bên phải dài.
+   Cách làm: thêm 1 hàng trống 1fr dưới cụm meta để phần thừa chiều cao
+   của .des_wrap (span 3 hàng) rơi vào đó, meta giữ nguyên vị trí trên.
+   ===================================================================== */
+#inf_single_project .left>.content{
+    grid-template-columns:minmax(0,.86fr) minmax(0,1.14fr)!important;
+    grid-template-rows:auto auto 1fr!important;
+    grid-template-areas:
+        "title       description"
+        "meta        description"
+        ".           description"!important;
+    column-gap:48px!important;align-content:start!important;align-items:start!important;
+}
+#inf_single_project .title_wrap{margin-bottom:20px!important;}
+#inf_single_project .title_wrap h1{font-size:clamp(30px,3vw,44px)!important;}
+#inf_single_project .client_wrap{align-self:start!important;margin:0 0 8px!important;gap:12px!important;}
+#inf_single_project .client_wrap>div{padding:11px 20px!important;}
+#inf_single_project .client_wrap p{font-size:12px!important;}
+#inf_single_project .client_wrap p b{font-size:16px!important;}
+#inf_single_project .des_wrap{align-self:start!important;padding:32px 34px!important;}
+#inf_single_project .des_wrap:before{font-size:12px!important;margin-bottom:16px!important;}
+#inf_single_project .des_wrap,
+#inf_single_project .des_wrap p,
+#inf_single_project .des_wrap li{font-size:16.5px!important;}
+@media(max-width:991px){
+    #inf_single_project .left>.content{
+        display:block!important;
+    }
+    #inf_single_project .title_wrap{margin-bottom:16px!important;}
+    #inf_single_project .client_wrap{margin-bottom:22px!important;}
+}
