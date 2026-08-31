@@ -19,8 +19,13 @@
 		$content_htaccess = 'Options -ExecCGI'.PHP_EOL;
 		$content_htaccess .= 'RemoveHandler .php .php3 .php4 .php5 .php7 .php8 .phtml .phar .cgi .pl'.PHP_EOL;
 		$content_htaccess .= '<FilesMatch "\.(?:inc|sql|php[0-9]?|phtml|phar|cgi|pl|asp|aspx|jsp|shtml)$">'.PHP_EOL;
-		$content_htaccess .= '<IfModule mod_authz_core.c>Require all denied</IfModule>'.PHP_EOL;
-		$content_htaccess .= '<IfModule !mod_authz_core.c>Order allow,deny'.PHP_EOL.'Deny from all</IfModule>'.PHP_EOL;
+		$content_htaccess .= '<IfModule mod_authz_core.c>'.PHP_EOL;
+		$content_htaccess .= 'Require all denied'.PHP_EOL;
+		$content_htaccess .= '</IfModule>'.PHP_EOL;
+		$content_htaccess .= '<IfModule !mod_authz_core.c>'.PHP_EOL;
+		$content_htaccess .= 'Order allow,deny'.PHP_EOL;
+		$content_htaccess .= 'Deny from all'.PHP_EOL;
+		$content_htaccess .= '</IfModule>'.PHP_EOL;
 		$content_htaccess .= '</FilesMatch>'.PHP_EOL;
 		if(!file_exists($path_htaccess) || file_get_contents($path_htaccess) !== $content_htaccess)
 		{

@@ -15,10 +15,12 @@ Phạm vi tối ưu áp dụng cho toàn bộ project, gồm frontend public, Ad
 ## 1. Giao diện và thương hiệu
 
 - [ ] Kiểm tra trang chủ, danh mục, chi tiết sản phẩm, giải pháp, dự án, tin tức và liên hệ trên desktop/mobile.
+- [x] Playwright Chromium smoke đạt 16/16 trên desktop/mobile cho bảy trang public, icon gọi và CTA báo giá; không có page error, request local HTTP >= 400, ảnh hỏng hoặc tràn ngang.
 - [ ] Kiểm tra header, menu, breadcrumb, CTA, footer, popup và trạng thái rỗng.
 - [x] Chuẩn hóa mọi wordmark “Phúc Thịnh Solar” trong template public sang vàng kim gradient, có màu fallback.
 - [x] Khóa lưới Tin tức, Giải pháp và Dự án theo 3/2/1 cột; card đơn không kéo giãn toàn hàng.
 - [ ] Kiểm tra ảnh, font, icon, khoảng cách, tràn ngang và console trình duyệt.
+- [x] Sửa generator `.htaccess` upload sai cú pháp làm ảnh/logo HTTP 500 và thêm regression media trực tiếp vào pre-deploy.
 - [ ] Kiểm tra landing page sản phẩm chạy quảng cáo sau khi có danh sách sản phẩm được duyệt.
 
 ## 2. Tính năng cốt lõi
@@ -69,7 +71,7 @@ Phạm vi tối ưu áp dụng cho toàn bộ project, gồm frontend public, Ad
 - [x] Thử nghiệm conditional loading đợt 3 (đã hoàn nguyên): giới hạn Owl Carousel, trang Tin tức từng giảm thêm 3 request.
 - [x] Hoàn nguyên ba đợt conditional loading sau phản hồi visual; không dùng giảm request làm tiêu chí đạt khi chưa có browser regression đầy đủ.
 - [ ] Kiểm tra cache/compression ảnh và static asset trên staging/hosting.
-- [ ] Chạy lại toàn bộ regression chức năng và visual sau mỗi đợt tối ưu.
+- [x] Có browser regression Playwright local cho route public trọng yếu; tiếp tục mở rộng tương tác và screenshot baseline trước đợt tối ưu frontend mới.
 
 ## 7. Backend và database
 

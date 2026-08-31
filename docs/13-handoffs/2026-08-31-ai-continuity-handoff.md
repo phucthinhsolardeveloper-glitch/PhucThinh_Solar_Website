@@ -138,7 +138,9 @@ Các commit `be1b3d6`, `4314123`, `ad4520e` là lịch sử thử nghiệm condi
 - Public smoke, SEO, static cache/compression headers và log PHP: PASS.
 - Local không còn dữ liệu test theo pre-deploy cleanup.
 
-HTTP/HTML smoke không thay thế browser visual. Máy hiện tại chưa có browser automation được xác nhận, nên các checkbox visual/console vẫn mở.
+Playwright `1.62.1` và Chromium đã được cài riêng trong `tools/visual-tests`; browser nằm ở thư mục `.browsers` đã gitignore. Chạy bằng `cd tools/visual-tests && npm test`. Bộ hiện tại đạt 16/16 trên desktop/mobile cho bảy route public, icon gọi, lỗi console/page, request local lỗi, ảnh hỏng và tràn ngang.
+
+Browser test đã phát hiện `.htaccess` trong `/upload` sinh sai cú pháp khiến ảnh/logo trả HTTP 500. Generator và pre-deploy regression đã được sửa; full pre-deploy và Playwright đều đạt sau khi build lại. Kiểm tra tự động này chưa thay thế việc duyệt thẩm mỹ thủ công cho khoảng cách, popup, trạng thái rỗng và toàn bộ tương tác.
 
 ## 8. Việc tiếp theo theo ưu tiên
 
@@ -146,7 +148,7 @@ HTTP/HTML smoke không thay thế browser visual. Máy hiện tại chưa có br
 
 1. Hoàn tất audit authenticated Admin bằng profiling runtime cho Sản phẩm, Đơn hàng, Liên hệ và Tin tức; static audit đã xử lý N+1 review sản phẩm nhưng chưa đủ để đóng mục staging.
 2. Lập dependency/usage map cho CSS, JS, media và video legacy; không xóa/tách khi chưa có visual regression.
-3. Chuẩn bị bộ browser visual checklist desktop/mobile: trang chủ, danh mục, chi tiết sản phẩm, Giải pháp, Dự án, Tin tức, Liên hệ; header/menu/breadcrumb/CTA/footer/popup/trạng thái rỗng; icon/ảnh/font/tràn ngang/console/network.
+3. Mở rộng Playwright sang chi tiết sản phẩm, menu/breadcrumb/footer/popup/trạng thái rỗng và các tương tác; tạo screenshot baseline có kiểm duyệt trước đợt tối ưu frontend mới.
 
 ### Chờ dữ liệu thật
 

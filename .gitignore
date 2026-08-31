@@ -17,6 +17,11 @@ imap/
 .env.*
 .claude/
 .playwright-mcp/
+tools/visual-tests/node_modules/
+tools/visual-tests/.browsers/
+tools/visual-tests/test-results/
+tools/visual-tests/playwright-report/
+tools/visual-tests/screenshots/
 domains/phucthinhsolar.com/.htpasswd/
 domains/phucthinhsolar.com/awstats/
 domains/phucthinhsolar.com/logs/

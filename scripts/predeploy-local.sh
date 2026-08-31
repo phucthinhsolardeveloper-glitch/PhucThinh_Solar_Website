@@ -151,6 +151,11 @@ for legacy_media_path in \
     wp-content/uploads/2023/07/chung-nhan-1086x1536.jpg; do
     curl -fsS -o /dev/null "$base_url/$legacy_media_path"
 done
+for upload_media_path in \
+    upload/photo/logo-moi-1-1-1649.png \
+    upload/photo/banner4-1-33501.jpg; do
+    curl -fsS -o /dev/null "$base_url/$upload_media_path"
+done
 curl -fsS -D /tmp/pts-predeploy-headers.txt -o /dev/null "$base_url/"
 rg -qi '^X-Content-Type-Options: nosniff' /tmp/pts-predeploy-headers.txt
 rg -qi '^X-Frame-Options: SAMEORIGIN' /tmp/pts-predeploy-headers.txt

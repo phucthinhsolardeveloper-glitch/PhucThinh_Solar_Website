@@ -1,0 +1,13 @@
+{
+  "name": "pts-visual-tests",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test": "PLAYWRIGHT_BROWSERS_PATH=.browsers playwright test",
+    "test:headed": "PLAYWRIGHT_BROWSERS_PATH=.browsers playwright test --headed",
+    "report": "PLAYWRIGHT_BROWSERS_PATH=.browsers playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.62.1"
+  }
+}
