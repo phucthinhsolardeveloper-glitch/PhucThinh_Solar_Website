@@ -22,6 +22,21 @@
     $about = $cache->get("select name$lang, desc$lang,photo from #_static where type = ? and find_in_set('hienthi',status) limit 0,1", array('gioi-thieu'), 'fetch', 7200);
     $doitaccongnghe = $cache->get("select name$lang, desc$lang,photo, namkinhnghiem from #_static where type = ? and find_in_set('hienthi',status) limit 0,1", array('doi-tac-cong-nghe'), 'fetch', 7200);
     $tieuchi = $cache->get("select name$lang, slugvi, slugen, desc$lang, date_created, id, photo from #_news where type = ? and find_in_set('hienthi',status) order by numb,id desc", array('tieu-chi'), 'result', 7200);
+    $solutionTabs = array();
+    $solutionRows = $cache->get("select name$lang, title_index$lang, slugvi, slugen, desc$lang, date_created, id, id_list, photo1 from #_news where type = ? and find_in_set('noibat',status) and find_in_set('hienthi',status) order by numb,id desc", array('giai-phap'), 'result', 7200);
+    foreach($solutionRows as $solutionRow) $solutionTabs[(int)$solutionRow['id_list']][] = $solutionRow;
+
+    $solutionGallery = array();
+    $solutionGalleryRows = $cache->get("select g.photo, g.id, g.id_parent, g.solieu$lang, g.donvi$lang, g.name$lang from #_gallery g inner join #_news n on n.id = g.id_parent where g.com = ? and g.type = ? and g.kind = ? and g.val = ? and find_in_set('hienthi',g.status) and n.type = ? and find_in_set('noibat',n.status) and find_in_set('hienthi',n.status) order by g.numb,g.id desc", array('news', 'giai-phap', 'man', 'thongtinphu', 'giai-phap'), 'result', 7200);
+    foreach($solutionGalleryRows as $solutionGalleryRow)
+    {
+        $solutionId = (int)$solutionGalleryRow['id_parent'];
+        if(!isset($solutionGallery[$solutionId]) || count($solutionGallery[$solutionId]) < 4) $solutionGallery[$solutionId][] = $solutionGalleryRow;
+    }
+
+    $featuredProjects = array();
+    $featuredProjectRows = $cache->get("select name$lang, address, ngayhopdong, tenkhachhang, slugvi, slugen, desc$lang, date_created, id, id_list, photo from #_news where type = ? and find_in_set('noibat',status) and find_in_set('hienthi',status) order by numb,id desc", array('du-an'), 'result', 7200);
+    foreach($featuredProjectRows as $featuredProjectRow) $featuredProjects[(int)$featuredProjectRow['id_list']][] = $featuredProjectRow;
     /* SEO */
     $seoDB = $seo->getOnDB(0,'setting','update','setting');
     if(!empty($seoDB['title'.$seolang])) $seo->set('h1',$seoDB['title'.$seolang]);

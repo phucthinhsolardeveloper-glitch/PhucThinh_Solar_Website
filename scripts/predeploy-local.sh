@@ -87,9 +87,15 @@ done
 rg -q '<title>' /tmp/pts-predeploy-home.html
 rg -q 'pts-brand-copy pts-brand-text' /tmp/pts-predeploy-home.html
 rg -q '<span class="pts-brand-text">PHÚC THỊNH SOLAR</span>' /tmp/pts-predeploy-home.html
+rg -q '<i class="fas fa-phone-alt"></i> Hotline:' /tmp/pts-predeploy-home.html
 rg -q 'name="form_csrf"' /tmp/pts-predeploy-contact.html
 rg -q 'title-pro-detail' /tmp/pts-predeploy-product.html
 rg -q 'Gọi báo giá' /tmp/pts-predeploy-product.html
+rg -q 'class="pts-card-ask"[^>]*><i class="fas fa-phone-alt"></i>' /tmp/pts-predeploy-product.html
+test -s domains/phucthinhsolar.com/public_html/assets/fontawesome512/all.css
+test -s domains/phucthinhsolar.com/public_html/assets/fonts/awesome/fa-solid-900.woff2
+test -s domains/phucthinhsolar.com/public_html/assets/fonts/awesome/fa-brands-400.woff2
+test -s domains/phucthinhsolar.com/public_html/assets/themes/local/fonts/Linearicons/fonts/Linearicons-Free54e9.woff2
 if rg -q 'class="addcart"|"priceCurrency"|"price"[[:space:]]*:' /tmp/pts-predeploy-product.html; then
     echo "FAIL: Trang sản phẩm còn lộ giá hoặc nút mua khi chế độ báo giá đang bật" >&2
     exit 1

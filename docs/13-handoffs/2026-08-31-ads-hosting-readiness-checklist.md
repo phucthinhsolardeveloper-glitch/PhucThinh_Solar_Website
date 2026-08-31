@@ -74,6 +74,8 @@ Phạm vi tối ưu áp dụng cho toàn bộ project, gồm frontend public, Ad
 - [x] Audit route public: 11 bảng thiếu index slug/type và đang full scan.
 - [x] Thêm migration 007 idempotent; lookup route local giảm từ scan 81–82 dòng xuống index lookup ước tính 1 dòng.
 - [x] Loại N+1 ở menu desktop/mobile: request trang chủ giảm từ 77 xuống 45 query (41,6%), markup menu giữ nguyên và full regression đạt.
+- [x] Gom query gallery Giải pháp và dự án nổi bật trang chủ: warm request giảm tiếp từ 45 xuống 43 query, markup đối chứng giữ nguyên.
+- [x] Audit icon public: 57/57 glyph Font Awesome và 10/10 ảnh icon tĩnh tồn tại; thêm regression cho icon gọi ở header/card cùng các font thiết yếu.
 - [ ] Audit N+1 ở menu, trang chủ, danh mục và Admin bằng profiling trên bộ dữ liệu gần production.
 - [ ] Rà slow query log, PHP OPcache, memory và process limits trên staging/hosting.
 

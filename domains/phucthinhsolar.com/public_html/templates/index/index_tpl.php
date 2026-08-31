@@ -97,7 +97,7 @@
     </div>
     <div class="tabs-container uk-switcher" style="touch-action: pan-y pinch-zoom;">
         <?php if(count($gplist)){foreach($gplist as $k => $v){
-            $gp_tab = $cache->get("select name$lang, title_index$lang, slugvi, slugen, desc$lang, date_created, id, photo1 from #_news where id_list = ".$v['id']." and type = ? and find_in_set('noibat',status) and find_in_set('hienthi',status) order by numb,id desc", array('giai-phap'), 'result', 7200);
+            $gp_tab = isset($solutionTabs[(int)$v['id']]) ? $solutionTabs[(int)$v['id']] : array();
         ?>
         <div class="tab-content <?=($k==0)?'uk-active':''?>">
             <div class="Module Module-322">
@@ -107,7 +107,7 @@
                             <ul class="uk-slider-items uk-grid uk-child-width-1-1"
                                 style="transform: translate3d(-1230px, 0px, 0px);">
                                 <?php if(count($gp_tab)){foreach($gp_tab as $kk => $c){
-                                $rowDetailPhoto = $d->rawQuery("select photo, id, solieu$lang, donvi$lang, name$lang from #_gallery where id_parent = ? and com='news' and type = ? and kind='man' and val = ? and find_in_set('hienthi',status) order by numb,id desc limit 0,4",array($c['id'],'giai-phap','thongtinphu'));
+                                $rowDetailPhoto = isset($solutionGallery[(int)$c['id']]) ? $solutionGallery[(int)$c['id']] : array();
                                 ?>
                                 <li tabindex="-1" class="<?=($kk == 0)?'uk-active':''?>">
                                     <div class="item uk-grid uk-grid-collapse uk-child-width-1-2@l uk-grid-match"
@@ -401,7 +401,7 @@
         <div class="uk-container">
             <div class="projects-switcher uk-switcher">
                 <?php if(count($dalist)){foreach($dalist as $k => $v){
-                    $projectnb = $d->rawQuery("select name$lang, address, ngayhopdong, tenkhachhang, slugvi, slugen, desc$lang, date_created, id, photo from #_news where id_list = ".$v['id']." and type = ? and find_in_set('noibat',status) and find_in_set('hienthi',status) order by numb,id desc", array('du-an'));
+                    $projectnb = isset($featuredProjects[(int)$v['id']]) ? $featuredProjects[(int)$v['id']] : array();
                 ?>
                 <div class="tab-content <?=($k==0)?'uk-active':''?>">
                     <div class=" Module Module-330">
