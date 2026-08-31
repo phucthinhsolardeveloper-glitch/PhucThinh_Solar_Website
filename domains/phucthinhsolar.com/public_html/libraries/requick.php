@@ -97,7 +97,7 @@
 	require_once LIBRARIES.'admin_security.php';
 
 
-	/* Mutation controller legacy phải dùng POST và CSRF; request đọc không bị ảnh hưởng. */
+	/* Kiểm tra POST và CSRF cho các thao tác thay đổi dữ liệu. */
 	if(adminLegacyMutationNeedsCsrf($com, $act, isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : '', $_POST)) adminRequirePostCsrf();
 
 	/* Delete gallery */

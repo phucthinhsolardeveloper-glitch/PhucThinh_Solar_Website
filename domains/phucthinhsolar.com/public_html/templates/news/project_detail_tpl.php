@@ -125,8 +125,7 @@
     </div>
 </div>
 
-<?php /* Dải CTA cuối trang dự án: trước đây trang kết thúc đột ngột ngay sau
-       album ảnh, không dẫn khách đi tiếp. Dùng đúng dữ liệu đã có. */ ?>
+<?php /* CTA tư vấn cuối trang dự án. */ ?>
 <section class="pts-project-cta">
     <div class="wrap-content">
         <div class="pts-project-cta-inner">

@@ -3,7 +3,7 @@
 /* Main */
 :root{--color-primary: #0a2251;--colorshophover: #c9962e;--bgfooter: #ffffff;--bg_button: #c9962e;--color-red: red;--color-medium-red:#cc2c32;--color-dark-red:#c31829;--color-green:#28a745;--color-dark-green:#207d36;--color-black:#212529;--color-gray:#6c757d;--color-navy-deep: #061537;--color-gold-light: #e0b654;--color-gold-dark: #9c7420;}
 
-/* ===== Giai đoạn 0 - component dùng chung theo bảng màu mới (navy + vàng đồng) ===== */
+/* ===== Component dùng chung: navy và vàng đồng ===== */
 .badge-discount{position:absolute;top:8px;right:8px;z-index:2;background:var(--color-red);color:#fff;font-weight:700;font-size:13px;padding:3px 8px;border-radius:4px;}
 .badge-cert{position:absolute;top:8px;left:8px;z-index:2;background:#fff;color:var(--color-primary);font-weight:700;font-size:11px;padding:3px 8px;border-radius:4px;box-shadow:0 1px 4px rgba(0,0,0,.15);}
 .btn-gold{display:inline-block;padding:10px 24px;background:var(--bg_button);color:#fff;font-weight:700;font-size:14px;border-radius:6px;border:1px solid var(--bg_button);text-align:center;transition:all .2s;}
@@ -56,7 +56,7 @@ footer{background-color:var(--color-navy-deep) !important;background-image:none 
 .CRlist_social a:hover{color:var(--color-gold-light);}
 .CRlist_social svg path{fill:currentColor;}
 
-/* ===== Giai đoạn 2 - Trang chủ: giữ nguyên cấu trúc/section đặc trưng, chỉ đổi màu/kiểu chữ theo bảng mới ===== */
+/* ===== Giao diện trang chủ ===== */
 .section-title{text-align:center;margin-bottom:34px;}
 .section-title p{color:var(--color-gold-dark);font-size:13px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;margin-bottom:8px;}
 .section-title h3{color:var(--color-primary);font-weight:800;text-transform:uppercase;position:relative;padding-bottom:16px;margin:0;}
@@ -3628,7 +3628,7 @@ label.checker input[type="checkbox"]:checked+label.checked-fake:before {
 	.cart-pro-detail a i{display:none;}
 }
 
-/* ===== Giai đoạn 2 (revised) - section MỚI ghép vào trang chủ theo mẫu demo ===== */
+/* ===== Các section bổ sung trên trang chủ ===== */
 /* Nhịp khoảng cách chung: mỗi section mới cách nhau đều, không dính sát nhau */
 .wrap-cat-highlight,.trust-badge-strip,.wrap-promo-banners,.wrap-testimonial{margin:56px 0;}
 .wrap-cat-highlight .section-title,.wrap-testimonial .section-title{margin-bottom:40px;}
@@ -3680,7 +3680,7 @@ label.checker input[type="checkbox"]:checked+label.checked-fake:before {
 
 /* Giãn cách section trang chủ: xem theme-v2.css (canonical, 64px) */
 
-/* ===== Giai đoạn 3 - Danh mục sản phẩm: card sản phẩm chuẩn hoá dùng chung (danh mục/trang chủ/liên quan) ===== */
+/* ===== Danh mục và card sản phẩm dùng chung ===== */
 .product-card{border:1px solid #eee;border-radius:10px;overflow:hidden;transition:all .25s;background:#fff;display:flex;flex-direction:column;height:100%;}
 .product-card:hover{box-shadow:0 10px 24px rgba(10,34,81,.12);transform:translateY(-4px);border-color:transparent;}
 .product-card .product-item{text-decoration:none;display:block;flex:1;}
@@ -3735,17 +3735,13 @@ label.checker input[type="checkbox"]:checked+label.checked-fake:before {
 .product-card-img{background:#faf9f6;padding:12px;}
 .product-card-img img{object-fit:contain;}
 
-/* Thu gọn 2 nút thêm giỏ/mua ngay cho nhẹ hơn */
+/* Kiểu nút mua hàng trên card sản phẩm. */
 .product-card-btns{padding:0 10px 12px;gap:5px;}
 .product-card-btns a{padding:6px 4px;font-size:12px;border-radius:4px;}
 
-/* ===== FOUNDATION đã chuyển sang assets/css/theme-v2.css =====
-   Font, thang tiêu đề, container width và grid sản phẩm trước đây được
-   định nghĩa ở đây bằng !important, đè ngược lên theme-v2.css (nạp sau,
-   là nguồn chuẩn của giao diện mới) -> gây xung đột cascade. Đã gom về
-   một nguồn duy nhất trong theme-v2.css, xem mục "Foundation". */
+/* Foundation được định nghĩa trong theme-v2.css. */
 
-/* ===== Giai đoạn 4 - Chi tiết sản phẩm ===== */
+/* ===== Chi tiết sản phẩm ===== */
 .left-pro-detail{background:#faf9f6;border:1px solid #eee;border-radius:10px;padding:16px;}
 .left-pro-detail .MagicZoom img{object-fit:contain;}
 .thumb-pro-detail{border:1px solid #eee;border-radius:6px;overflow:hidden;}

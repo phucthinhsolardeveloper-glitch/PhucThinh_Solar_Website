@@ -1,30 +1,7 @@
 <?php
 /**
- * Card sản phẩm - PARTIAL DÙNG CHUNG (canonical)
- *
- * Đây là nguồn DUY NHẤT cho markup card sản phẩm. Trước đây markup này bị
- * copy-paste ở 5 nơi (product_tpl, product_detail_tpl, api/product2,
- * api/product3, api/fillter_service) và đã trôi dạt: api/product3 (trang
- * /san-pham/) còn kẹt ở markup đời cũ nên card trang đó không khớp trang
- * danh mục. Mọi thay đổi card từ nay chỉ sửa ở file này.
- *
- * Biến cần có trước khi include:
- *   $v         array  - 1 dòng sản phẩm (cần: id, photo, name{lang}, slug{lang},
- *                       regular_price, sale_price)
- *   $sluglang  string - 'slugvi' | 'slugen'
- *   $lang      string - hậu tố ngôn ngữ ('' | 'en')
- *   $func      object - Functions (getImage, formatMoney)
- *
- * Tuỳ chọn:
- *   $pcNoLazy  bool   - đặt true khi card nằm trong CAROUSEL (Owl/Slick).
- *     Thư viện lazy-load của theme chạy theo sự kiện cuộn trang, không nhận
- *     biết slide bị carousel dời/nhân bản ra ngoài khung nhìn -> ảnh ở các
- *     slide sau kẹt vĩnh viễn ở data-src + visibility:hidden (đo được chỉ
- *     4/16 ảnh tải ở carousel trang chủ, 0/15 ở sản phẩm liên quan).
- *     Lưới tĩnh thì cứ để lazy bình thường.
- *
- * Include bằng đường dẫn tuyệt đối để chạy được cả từ /templates lẫn /api:
- *   include ROOT."templates/product/_product_card.php";
+ * Partial hiển thị card sản phẩm dùng chung.
+ * $pcNoLazy tắt lazy-load cho card nằm trong carousel.
  */
 
 $pcDiscount = publicProductPricesVisible() && (!empty($v['sale_price']) && !empty($v['regular_price']) && $v['regular_price'] > $v['sale_price'])
@@ -57,7 +34,7 @@ $pcDiscount = publicProductPricesVisible() && (!empty($v['sale_price']) && !empt
             <?php } ?>
         </p>
     </a>
-    <?php /* Chưa niêm yết giá -> không cho thêm giỏ, chuyển sang nút gọi tư vấn */ ?>
+    <?php /* Hiển thị CTA báo giá khi giá công khai bị ẩn. */ ?>
     <div class="product-card-btns">
         <?php if(publicProductRequiresQuote($v)) { ?>
         <a href="product/<?=$v[$sluglang]?>/" class="pts-card-ask" title="Liên hệ báo giá" aria-label="Liên hệ báo giá"><i class="fas fa-phone-alt"></i></a>

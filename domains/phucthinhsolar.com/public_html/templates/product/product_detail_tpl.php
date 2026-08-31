@@ -119,9 +119,7 @@ $certificateContent = (!empty($rowDetail['certificate'.$lang])) ? htmlspecialcha
                             <?php } ?>
                         </ul>
                         <?php
-                            /* Sản phẩm chưa niêm yết giá (hiển thị "Liên hệ"): không cho đặt
-                               số lượng và không hiện nút mua - thay bằng CTA gọi báo giá,
-                               tránh khách bấm mua rồi giỏ hàng hiện giá 0đ. */
+                            /* Chuyển sang CTA báo giá khi giá công khai bị ẩn. */
                             $isContactPrice = publicProductRequiresQuote($rowDetail);
                         ?>
                         <?php if(!$isContactPrice) { ?>

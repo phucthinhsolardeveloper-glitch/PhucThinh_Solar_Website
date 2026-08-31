@@ -16,7 +16,7 @@
     $config['product'][$nametype]['view'] = true;
     $config['product'][$nametype]['copy'] = true;
     $config['product'][$nametype]['copy_image'] = true;
-    // Frontend đã nhận đánh giá; bật lối vào Admin để duyệt, ẩn và phản hồi.
+    // Bật quản lý đánh giá sản phẩm trong Admin.
     $config['product'][$nametype]['comment'] = true;
     $config['product'][$nametype]['slug'] = true;
     $config['product'][$nametype]['check'] = array("banchay" => "Bán chạy", "hienthi" => "Hiển thị");

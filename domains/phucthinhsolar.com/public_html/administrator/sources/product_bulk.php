@@ -96,7 +96,7 @@ function productBulkHeaderMap()
 {
     $map = array();
     foreach (productBulkColumns() as $key => $meta) {
-        // Giữ tương thích với file kỹ thuật đã tải trước đây.
+        // Hỗ trợ cả mã cột và nhãn cột trong file import.
         $map[productBulkNormalizeHeader($key)] = $key;
         $map[productBulkNormalizeHeader($meta['label'])] = $key;
     }
@@ -739,8 +739,7 @@ function productBulkCommit()
         $bulkPreview = null;
     } catch (Exception $e) {
         if($transactionStarted) $d->rollback();
-        // Một số bản bàn giao dùng engine không transactional. Luôn phục hồi thủ
-        // công sau rollback; thao tác này idempotent nếu transaction đã hoàn tác.
+        // Phục hồi thủ công khi database engine không hỗ trợ transaction.
         productBulkRollback($applied, $type);
         $bulkMessage = array('type' => 'danger', 'text' => $e->getMessage().'. Hệ thống đã phục hồi các dòng đã xử lý trong lượt này.');
     }
@@ -819,7 +818,7 @@ function productBulkExport($templateOnly = false)
     }
     require_once LIBRARIES.'PHPExcel.php';
     require_once LIBRARIES.'PHPExcel/IOFactory.php';
-    // Source bàn giao có Comments.php rỗng; writer vẫn cần class này dù workbook không dùng comment.
+    // Bổ sung writer part khi PHPExcel không khai báo lớp xử lý comment.
     if (!class_exists('PHPExcel_Writer_Excel2007_Comments', true)) {
         class PHPExcel_Writer_Excel2007_Comments extends PHPExcel_Writer_Excel2007_WriterPart
         {

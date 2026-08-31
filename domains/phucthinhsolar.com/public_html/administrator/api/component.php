@@ -1,5 +1,5 @@
 <?php
-/* File manager legacy không còn call site trong Admin: chặn truy cập trực tiếp, giữ code để đối chiếu/rollback. */
+/* Vô hiệu hóa endpoint file manager legacy. */
 http_response_code(404);
 exit();
 

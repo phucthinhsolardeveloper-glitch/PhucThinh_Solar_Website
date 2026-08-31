@@ -1,7 +1,6 @@
 <?php
 /**
- * Tự dò công suất (W) từ tên sản phẩm và điền vào cột cong_suat
- * (đã thêm bởi 001_add_product_cong_suat.sql).
+ * Tự dò công suất (W) từ tên sản phẩm và điền vào cột cong_suat.
  *
  * Mặc định chạy DRY-RUN (chỉ in ra, không ghi DB). Thêm --apply để ghi thật.
  *
@@ -9,8 +8,7 @@
  *   php ../../../migrations/002_backfill_product_cong_suat.php          # xem trước
  *   php ../../../migrations/002_backfill_product_cong_suat.php --apply  # ghi DB
  *
- * Sau khi chạy --apply, vào admin rà lại các sản phẩm KHÔNG dò được
- * (cong_suat vẫn NULL) hoặc dò sai, sửa tay từng cái.
+ * Sau khi apply, cần kiểm tra các giá trị NULL hoặc kết quả nhận diện sai.
  */
 
 define('LIBRARIES', './libraries/');

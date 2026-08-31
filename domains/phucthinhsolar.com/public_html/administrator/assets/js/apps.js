@@ -199,7 +199,7 @@ function deleteAll(url)
 function submitAdminMutation(url, fields)
 {
 	var queryIndex = url.indexOf('?');
-	/* Giữ query string cho source legacy còn đọc $_GET; đồng thời gửi lại qua POST. */
+	/* Chuyển tham số URL sang POST cho thao tác mutation. */
 	var action = url;
 	var params = new URLSearchParams(queryIndex >= 0 ? url.substring(queryIndex + 1) : '');
 	var form = $('<form>', {method: 'post', action: action});

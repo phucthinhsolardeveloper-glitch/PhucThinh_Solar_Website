@@ -27,7 +27,7 @@
         </div>
     </div>
 </section>
-<?php /* Slider legacy được giữ lại để rollback, Theme V2 không render. */ ?>
+<?php /* Theme V2 không render slider legacy. */ ?>
 <?php if(false && count($slider)) { ?>
 <div class="slideshow">
     <div id="jssor_1"

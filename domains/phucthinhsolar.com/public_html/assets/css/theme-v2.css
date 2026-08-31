@@ -71,18 +71,13 @@ html{scroll-behavior:smooth;}
     .related-heading .customm_arrow{width:34px;height:34px;}
 }
 
-/* Foundation — nguồn chuẩn DUY NHẤT cho font/typography/container toàn site.
-   Không định nghĩa lại các rule này ở style.css hay CSS legacy: theme-v2.css
-   nạp sau cùng nên mọi !important đặt ở file trước sẽ đè ngược lên đây và
-   phá vỡ hệ thống (đã từng xảy ra với font + container width).
-   Icon font (.fa*/.lnr/.mdi) được loại trừ khỏi rule font để không vỡ icon. */
+/* Typography và container nền tảng; loại trừ các lớp icon font. */
 body{color:var(--pts-ink);background:#fff;line-height:1.6;}
 body,p,button,input,select,textarea,a,strong,h1,h2,h3,h4,h5,h6,div,li,td,th,label,
 span:not([class*="fa"]):not([class*="lnr"]):not([class*="icon-"]):not([class*="mdi"]){
     font-family:"Plus Jakarta Sans","Mulish",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
 }
-/* Thang chữ: nâng một nấc so với bản trước - nội dung 15px đọc bị nhỏ trên
-   màn hình rộng 1440px. */
+/* Thang chữ tối ưu cho màn hình desktop rộng. */
 body,p{font-size:16.5px;line-height:1.7;}
 h1{font-size:36px;font-weight:800;line-height:1.25;}
 h2{font-size:29px;font-weight:800;line-height:1.3;}
@@ -93,13 +88,7 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 .wrap-home{max-width:none;padding:0;margin-left:0;margin-right:0;}
 .wap-all-page{overflow:clip;}
 
-/* ===== Canh mép nội dung chuẩn =====
-   Mép chuẩn toàn site = mép trong của container (--pts-gutter).
-   Lỗi lặp lại nhiều nơi: một .row/wrapper đặt margin âm để tạo rãnh giữa
-   các cột, nhưng phần tử NHÌN THẤY ĐƯỢC (có nền/viền) lại chính là cột đó
-   hoặc nằm trực tiếp trong wrapper âm -> viền hộp thò ra ngoài mép chuẩn
-   15-24px so với tiêu đề section ngay phía trên. Các rule dưới đây kéo
-   những hộp đó về đúng mép, không đụng tới rãnh giữa các cột. */
+/* Căn các khối nội dung theo gutter chuẩn của container. */
 
 /* Trang chủ - hàng tab danh mục: swiper bù margin âm nhưng pill có nền */
 .tab-switcher .swiper-container{margin-left:0!important;}
@@ -225,8 +214,7 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 .product-card{position:relative;border:1px solid var(--pts-line)!important;border-radius:12px!important;padding:13px!important;overflow:visible!important;box-shadow:none!important;}
 .product-card .product-item{border:0!important;padding:0!important;}
 .product-card:hover{border-color:var(--pts-gold)!important;box-shadow:0 16px 34px rgba(6,21,55,.11)!important;transform:translateY(-5px)!important;}
-/* Ảnh sản phẩm: bỏ nền kem + đệm để ảnh lấp trọn khung (trước đây nền kem
-   viền quanh chiếm chỗ khiến ảnh nhìn bé). */
+/* Ảnh sản phẩm hiển thị trọn khung trên nền trắng. */
 .product-card-img{border-radius:9px!important;background:#fff!important;margin-bottom:10px;overflow:hidden!important;}
 .product-card-img img{object-fit:contain!important;padding:0!important;transition:transform .25s;}
 .product-card:hover .product-card-img img{transform:scale(1.035);}
@@ -400,7 +388,7 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
     transform:translateY(-4px);box-shadow:var(--pts-shadow)!important;
     border-color:rgba(201,150,46,.45)!important;
 }
-/* lớp phủ gradient đen của theme cũ (làm nền cho chữ đè lên ảnh) nay thừa */
+/* Tắt lớp phủ gradient của card legacy. */
 .item_cont_post_slider:after,.item_cont_post_slider:before,
 .inf_item_project>.wrap:after,.inf_item_project>.wrap:before{content:none!important;display:none!important;}
 
@@ -451,11 +439,7 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 }
 .CRcont_post .CRbox i{margin-right:4px;color:var(--pts-gold-dark)!important;}
 
-/* lưới 3 cột đều nhau.
-   Lưu ý: trang /danh-muc-giai-phap/... có THÊM một cấp .row lồng bên trong
-   .CRrow_term_bottom. Nếu không ép .row chiếm trọn bề ngang, nó thành flex
-   item co theo nội dung (đo được 329px) và cột 33% bên trong chỉ còn 110px
-   -> card thành dải dọc hẹp. */
+/* Lưới ba cột hỗ trợ một cấp row lồng nhau. */
 .CRrow_term_bottom{display:flex;flex-wrap:wrap;}
 .CRrow_term_bottom>.row{flex:1 1 100%;width:100%;display:flex;flex-wrap:wrap;}
 .CRrow_term_bottom>[class*="col-"],
@@ -463,12 +447,10 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 .CRrow_term_bottom>[class*="col-"]>.wrap,
 .CRrow_term_bottom>.row>[class*="col-"]>.wrap{width:100%;}
 .inf_item_project{display:flex;margin-bottom:24px;}
-/* .wrap co theo nội dung ảnh -> card rộng hẹp khác nhau trong cùng một hàng */
+/* Đồng nhất chiều rộng card dự án. */
 .inf_item_project>.wrap{width:100%!important;max-width:none!important;}
 
-/* Nhóm chỉ có DUY NHẤT 1 bài (hay gặp ở /giai-phap/): card 1/3 chiều rộng
-   nằm lọt thỏm giữa 2/3 khoảng trống nhìn rất thưa. Đổi sang thẻ ngang
-   nổi bật chiếm trọn hàng - thích ứng theo dữ liệu, không cần sửa PHP. */
+/* Card duy nhất trong nhóm hiển thị ngang và chiếm trọn hàng. */
 .CRrow_term_bottom>[class*="col-"]:only-child,
 .CRrow_term_bottom>.row>[class*="col-"]:only-child{flex:0 0 100%!important;max-width:100%!important;}
 .CRrow_term_bottom [class*="col-"]:only-child .item_cont_post_slider{flex-direction:row;align-items:stretch;padding:14px!important;gap:22px;}
@@ -495,11 +477,9 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 
 /* chip danh mục đầu trang */
 .CRlist_term_blog_box{display:flex!important;flex-wrap:wrap;justify-content:center;gap:12px;margin:0!important;}
-/* theme cũ kẻ vách ngăn dọc giữa các chip - bỏ, dùng khoảng cách thay đường kẻ */
+/* Phân tách chip bằng khoảng cách thay cho đường viền. */
 .CRitem_term_blog{width:auto!important;max-width:none!important;flex:0 0 auto!important;padding:0!important;border:0!important;}
-/* Dải chip danh mục: theme cũ đặt box-shadow 0 0 38px lên cả dải trắng
-   full-width, nhìn ra thành một vệt xám vắt ngang dưới chip. Bỏ hẳn dải +
-   bóng, chip dùng nền xám nhạt thay cho viền cho gọn (bớt một lớp đường kẻ). */
+/* Dải chip dùng nền trong suốt, không viền hoặc đổ bóng. */
 .CRlist_term_blog{background:transparent!important;box-shadow:none!important;border:0!important;}
 .CRitem_term_blog .content{
     display:flex;align-items:center;gap:10px;min-height:46px;
@@ -544,10 +524,7 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 .box-detail{margin-bottom:24px;}
 .grid-pro-detail>.row{display:grid!important;grid-template-columns:minmax(380px,1fr) minmax(0,1.25fr);gap:38px;margin:0!important;align-items:start;}
 .grid-pro-detail .left-pro-detail,.grid-pro-detail .right-pro-detail{width:auto!important;max-width:none!important;flex:none!important;padding:0!important;}
-/* Khung ảnh chi tiết: bỏ nền kem + giảm đệm để ảnh chiếm gần trọn khung */
-/* .left-pro-detail có viền, mà MagicZoom bên trong CŨNG có viền riêng -> 2 viền
-   lồng nhau cách đúng 1px, rất lộ. Bỏ viền/nền của lớp bao, chỉ giữ MỘT viền
-   duy nhất trên chính khung ảnh. */
+/* Khung ảnh chi tiết chỉ dùng viền của MagicZoom. */
 .left-pro-detail{border:0!important;background:transparent!important;padding:0!important;overflow:visible;}
 .left-pro-detail>a.MagicZoom{border:1px solid var(--pts-line)!important;border-radius:16px!important;background:#fff!important;padding:6px!important;}
 .left-pro-detail .mz-figure{border:0!important;}
@@ -557,8 +534,7 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 .thumb-pro-detail{display:flex!important;aspect-ratio:1/1;align-items:center;justify-content:center;border:2px solid #f1f3f6!important;border-radius:10px!important;background:#fff;}
 .thumb-pro-detail:hover,.thumb-pro-detail.active{border-color:var(--pts-gold)!important;}
 .thumb-pro-detail img{width:100%!important;height:100%!important;object-fit:contain!important;padding:4px;}
-/* Cột thông tin: bỏ viền bao ngoài vì bên trong đã có nhiều khối tự có viền
-   (hộp giá, dải bảo đảm, hàng icon) -> viền chồng viền nhìn rối. */
+/* Cột thông tin không dùng viền bao ngoài. */
 .right-pro-detail{border:0!important;background:transparent!important;padding:0 0 0 4px!important;}
 .title-pro-detail{color:var(--pts-navy)!important;font-size:clamp(22px,2.2vw,30px)!important;font-weight:900!important;line-height:1.25!important;margin:0 0 10px!important;}
 .desc-pro-detail{color:#64748b!important;font-size:14px!important;line-height:1.65;margin-bottom:16px;}
@@ -583,8 +559,7 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 .btn-product-detail a{display:flex!important;width:auto!important;min-height:46px!important;align-items:center!important;justify-content:center!important;margin:0!important;border:2px solid var(--pts-navy)!important;border-radius:8px!important;background:#fff!important;color:var(--pts-navy)!important;font-size:13px!important;font-weight:850!important;text-decoration:none!important;}
 .btn-product-detail a:first-child{border-color:var(--pts-gold)!important;background:var(--pts-gold)!important;color:var(--pts-navy)!important;}
 .btn-product-detail a:hover{background:var(--pts-navy)!important;color:#fff!important;}
-/* "Đăng ký đại lý" là CTA phụ - trước đây to đậm ngang 2 nút mua chính,
-   làm loãng trọng tâm. Hạ xuống dạng liên kết viền mảnh. */
+/* CTA đăng ký đại lý dùng kiểu viền phụ. */
 .btn-product-detail+ .btn-product-detail{display:block!important;margin-top:8px!important;}
 .btn-product-detail+ .btn-product-detail a{
     width:100%!important;min-height:38px!important;
@@ -693,12 +668,7 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 
 .home-2{background:#fff!important;}
 .home-2 .heading,.home-6 .heading{align-items:flex-end!important;justify-content:space-between!important;gap:25px!important;margin-bottom:28px!important;}
-/* Tab pill dùng chung cho MỌI section (trước chỉ phủ .home-2/.home-6 nên
-   tab sản phẩm ở .home-3 không có màu cho trạng thái đang chọn). */
-/* CHÚ Ý: ở khối sản phẩm (.sw-tab-cat) chính <ul> này là .swiper-wrapper -
-   Swiper tự đặt width/transform cho từng slide. Nếu ép display:flex + wrap
-   lên nó thì các tab xuống dòng so le, vỡ hoàn toàn. Chỉ áp layout flex cho
-   switcher KHÔNG dùng Swiper; còn lại để Swiper tự lo, ta chỉ tạo dáng cho <a>. */
+/* Tab pill dùng chung; Swiper tiếp tục quản lý layout của wrapper. */
 .tab-switcher ul:not(.swiper-wrapper){display:flex!important;flex-wrap:wrap;gap:8px!important;margin:0!important;}
 .tab-switcher ul:not(.swiper-wrapper) li{margin:0!important;}
 .tab-switcher ul.swiper-wrapper{align-items:center;}
@@ -719,10 +689,7 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 .home-2 .tabs-container .wrapper>.img{height:100%;border-radius:0 18px 18px 0!important;overflow:hidden;}
 .home-2 .tabs-container .wrapper>.img>img{width:100%!important;height:100%!important;object-fit:cover!important;}
 
-/* BUG: legacy style.css cộng thêm margin:56px 0 lên CẢ 3 selector này, chồng
-   lên padding riêng ở đây -> khoảng cách trên/dưới banner lệch nhau
-   (68px trên, 120px dưới) thay vì nhịp 64px đều 2 phía như các section khác.
-   Khoá margin về 0, đưa padding về đối xứng 64px. */
+/* Chuẩn hóa khoảng cách dọc của banner khuyến mại. */
 .wrap-promo-banners{margin:0!important;padding:64px 0!important;background:#fff!important;}
 .promo-banner{min-height:110px!important;border-radius:16px!important;padding:22px 48px!important;background:linear-gradient(115deg,var(--pts-gold),#e4b94e)!important;box-shadow:0 18px 40px rgba(156,116,32,.18)!important;}
 .promo-banner:after{content:"";position:absolute;right:-60px;top:-120px;width:340px;height:340px;border:52px solid rgba(255,255,255,.14);border-radius:50%;}
@@ -792,9 +759,7 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 }
 .home-7 .icon-slider .text span{color:#dbeafe!important;font-size:14px!important;font-weight:800!important;line-height:1.25;text-align:center;}
 .home-7 .icon-slider .swiper-slide:hover .text{border-color:var(--pts-gold-light)!important;}
-/* Bước đang chọn là .swiper-slide-thumb-active (Swiper thumbs), KHÔNG phải
-   .swiper-slide-active (vị trí cuộn) - dùng nhầm khiến màu vàng kẹt mãi ở
-   bước "01. Khảo sát" dù đang xem bước khác. */
+/* Đánh dấu bước đang chọn theo trạng thái thumbnail của Swiper. */
 .home-7 .icon-slider .swiper-slide-thumb-active .text{background:var(--pts-gold-metal)!important;border-color:transparent!important;box-shadow:0 6px 18px rgba(182,125,46,.35);}
 .home-7 .icon-slider .swiper-slide-thumb-active .text span{color:var(--pts-navy)!important;}
 .home-7 .process-slider{margin-top:28px!important;}
@@ -850,8 +815,7 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
     .price-procart-rp{display:block;width:100%;margin-bottom:10px;}
     .procart-label .quantity-procart p:last-child{display:block;}
 }
-/* Popup dính sát đầu trang (class .modal-dialog-top của theme) -> căn giữa
-   màn hình cho cân, và giới hạn chiều cao để danh sách dài tự cuộn bên trong. */
+/* Căn giữa popup giỏ hàng và cuộn nội dung khi vượt chiều cao màn hình. */
 #popup-cart .modal-dialog{display:flex!important;align-items:center;min-height:calc(100% - 3.5rem);margin:1.75rem auto!important;}
 #popup-cart .modal-content{width:100%;max-height:calc(100vh - 3.5rem);border:0!important;border-radius:16px!important;overflow:hidden;box-shadow:0 24px 60px rgba(6,21,55,.24)!important;}
 #popup-cart .modal-body{overflow-y:auto;}
@@ -889,10 +853,7 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 .inf_button input.wpcf7-submit{border:0!important;border-radius:8px!important;background:var(--pts-gold)!important;color:var(--pts-navy)!important;font-weight:900!important;font-size:13px!important;padding:12px 30px!important;cursor:pointer;transition:.15s;}
 .inf_button input.wpcf7-submit:hover{background:var(--pts-gold-dark)!important;color:#fff!important;}
 #top_content h2.text-center.mt-4{margin-top:56px!important;text-align:center;}
-/* Theme cũ dựng khu bản đồ bằng absolute overlay: .hts-fixed-wrap phủ nửa
-   trái (position:absolute;width:50%), iframe phủ nửa phải (absolute;width:50%).
-   Cách này xung đột với lưới nên bản đồ bị bóp còn 340px cao 600px. Đưa cả
-   hai về luồng thường trong lưới 2 cột. */
+/* Khu bản đồ dùng lưới hai cột trong luồng tài liệu. */
 .hts-wrapper{display:grid!important;grid-template-columns:360px 1fr;gap:22px;margin-top:26px;align-items:start;
     position:static!important;background:transparent!important;}
 .hts-fixed-wrap{position:static!important;width:auto!important;height:auto!important;
@@ -914,16 +875,10 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 }
 
 /* =====================================================================
-   CHUẨN HOÁ CUỐI CÙNG — NÚT & VIỀN
-   Đặt ở cuối file để là tiếng nói sau cùng, tránh phải sửa rải rác.
+   Nút và đường viền dùng chung
    ===================================================================== */
 
-/* --- 1. Vàng kim cho MỌI nút hành động ---
-   Trước đây nút dùng màu vàng phẳng (--pts-gold / --bg_button) rải rác ở ~20
-   nơi. Gom về một chỗ dùng gradient vàng kim của theme cho đồng nhất.
-   LƯU Ý: chỉ áp cho NÚT. Các gạch chân trang trí (.section-title h3:after,
-   .footer-title:after...) vẫn giữ vàng phẳng vì gradient trên vạch 3px
-   không nhìn ra và chỉ làm rối. */
+/* Nút hành động dùng gradient vàng kim; chi tiết trang trí giữ màu phẳng. */
 .pts-btn-gold,
 .btn-gold,
 .product-card-btns .pts-card-add,
@@ -1010,10 +965,7 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
    LƯU Ý: gallery là Slick carousel -> chỉ tạo dáng, không đụng
    display/width của .slick-list/.slick-track.
    ===================================================================== */
-/* Theme cũ tô nền trắng cho cả #inf_single_project trải đúng bề rộng container
-   nhưng KHÔNG có đệm ngang -> nhìn ra một dải/khung trắng thừa và chữ dính sát
-   mép. Bỏ nền đó, cho nội dung nằm trên nền trang; riêng khối ảnh giữ thẻ
-   trắng của nó nên vẫn có điểm nhấn. */
+/* Nội dung dự án dùng nền trang; gallery giữ bề mặt thẻ riêng. */
 #inf_single_project{background:transparent!important;padding:44px 0 56px!important;}
 #inf_single_project>div,#inf_single_project>div>div{background:transparent!important;}
 #inf_single_project .left,#inf_single_project .right{
@@ -1040,8 +992,7 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 }
 #inf_single_project .title_wrap h1:after{content:"";position:absolute;left:0;bottom:0;width:52px;height:3px;border-radius:99px;background:var(--pts-gold);}
 
-/* Khách hàng / Địa chỉ: bỏ gạch chân, chuyển thành 2 thẻ meta nền nhạt */
-/* meta: 2 hộp to chiếm trọn hàng nhìn trống trải -> chip gọn nằm ngang */
+/* Thông tin khách hàng và địa chỉ hiển thị dạng chip. */
 #inf_single_project .client_wrap{
     grid-area:meta;display:flex;flex-wrap:wrap;gap:10px;margin:0 0 28px!important;
 }
@@ -1074,8 +1025,7 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
     border:1px solid var(--pts-line);border-radius:16px;padding:22px 26px!important;
 }
 #inf_single_project .tabs-pro-detail .tab-content{padding-bottom:6px!important;}
-/* giới hạn 900px chỉ dành cho khối CHỮ (mô tả sản phẩm) - lưới ảnh dự án
-   phải chiếm trọn bề ngang, nếu không thừa một mảng trống bên phải */
+/* Gallery dự án chiếm trọn bề ngang khối nội dung. */
 #inf_single_project .tabs-pro-detail .tab-content>.tab-pane{max-width:none!important;}
 /* Gallery dự án: lưới thumbnail đều nhau, bấm mở lightbox (photobox) */
 .pts-project-gallery{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:6px;}
@@ -1165,13 +1115,10 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
    TRANG VỀ CHÚNG TÔI
    ===================================================================== */
 
-/* BUG: .inf_item_vision .content bị khoá height/max-height 96px + overflow
-   hidden trong khi nội dung cần 168px (Tầm nhìn) và 140px (Sứ mệnh)
-   -> mất tương ứng 72px và 44px chữ, câu đứt giữa chừng. Cho chữ chạy đủ,
-   các thẻ tự cân bằng chiều cao bằng flex thay vì ép số cứng. */
+/* Hiển thị đầy đủ nội dung tầm nhìn và sứ mệnh. */
 .inf_item_vision .content{
     height:auto!important;max-height:none!important;overflow:visible!important;
-    /* thủ phạm thật: -webkit-line-clamp:4 cắt cứng 4 dòng (không phải height) */
+    /* Bỏ giới hạn số dòng. */
     -webkit-line-clamp:unset!important;line-clamp:unset!important;
     display:block!important;-webkit-box-orient:unset!important;
 }
@@ -1190,8 +1137,7 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 #inf_partner #inf_list_partner .wrap{width:150px!important;height:64px!important;filter:grayscale(1);opacity:.62;transition:.2s;}
 #inf_partner #inf_list_partner .wrap:hover{filter:none;opacity:1;}
 
-/* "Tại sao nên chọn": theme cũ chia ô bằng đường kẻ mảnh -> bỏ kẻ, dùng
-   thẻ nền nhạt + khoảng cách, đúng nguyên tắc không lạm dụng đường kẻ. */
+/* Các lợi ích hiển thị bằng thẻ nền nhạt. */
 #CRintro_home #CRicos_intro_home{
     display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px!important;margin-top:28px!important;
 }
@@ -1207,9 +1153,7 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
     margin:0!important;color:var(--pts-navy)!important;font-size:14.5px!important;
     font-weight:800!important;line-height:1.45!important;text-align:center;
 }
-/* BUG: #CRintro_home .content đặt position:absolute nên KHÔNG đóng góp chiều
-   cao -> khối cha co còn 1px, footer bắt đầu ngay sau và đè lên 193px nội
-   dung (hàng thẻ thứ 2 bị che mất). Đưa về luồng thường. */
+/* Đặt nội dung giới thiệu trong luồng tài liệu để giữ đúng chiều cao khối. */
 #CRintro_home .content{position:static!important;height:auto!important;width:auto!important;
     top:auto!important;left:auto!important;right:auto!important;bottom:auto!important;transform:none!important;}
 #CRintro_home{padding:56px 0!important;overflow:visible!important;}
@@ -1221,9 +1165,7 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
     #CRintro_home #CRicos_intro_home{grid-template-columns:1fr;}
 }
 
-/* Trạng thái rỗng dùng chung cho danh mục tin tức/giải pháp/dự án khi chưa
-   có bài viết được gán vào -> trước đây im lặng hoàn toàn (if(count($news))
-   không có else), trang co ngắn lại và chạm footer ngay dưới hàng chip. */
+/* Trạng thái rỗng cho danh mục tin tức, giải pháp và dự án. */
 .pts-empty-state{
     display:flex;flex-direction:column;align-items:center;justify-content:center;
     gap:14px;padding:64px 24px;margin:8px 0 24px;width:100%!important;
