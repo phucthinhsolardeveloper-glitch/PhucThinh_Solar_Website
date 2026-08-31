@@ -21,4 +21,6 @@ Sitemap sau sửa có 137 URL hoạt động đã được xuất bản. Lượt
 - `assets/wp-content/uploads/` có 839 file legacy, khoảng 143 MB trước nén.
 - Webroot làm việc còn chứa dữ liệu runtime/backup cục bộ rất lớn, nhưng công cụ package đã loại chúng khỏi archive release.
 
-Chưa xóa hoặc di chuyển asset legacy vì nội dung database có thể tham chiếu đường dẫn động. Bước tiếp theo là lập inventory URL asset thực tế từ HTML và nội dung database, sau đó mới đề xuất tách hoặc loại file không dùng. Mọi thay đổi phải chạy lại pre-deploy và visual smoke.
+Inventory 137 trang, source và SQL local không tìm thấy tham chiếu tới `assets/wp-content/uploads`; nhánh này được loại khỏi archive release nhưng vẫn giữ nguyên trong repository để rollback/đối chiếu. Việc loại thử làm archive giảm từ khoảng 183 MB xuống khoảng 49 MB. Nội dung public vẫn có 109 đường dẫn riêng dưới `/wp-content/uploads`, vì vậy dữ liệu runtime đó phải được bảo toàn trên hosting. Có 15 JS/CSS dưới `assets/wp-content` đang được HTML sử dụng nên phần còn lại của cây asset chưa được loại.
+
+Phát hiện 41 nhóm trùng nội dung với 85 file trong nhánh upload legacy. Chưa xóa file trong repository. Bước tiếp theo là rà tải CSS/JS thực tế, dependency và lỗi tài nguyên trước khi đề xuất tối ưu tiếp. Mọi thay đổi phải chạy lại pre-deploy và visual smoke.

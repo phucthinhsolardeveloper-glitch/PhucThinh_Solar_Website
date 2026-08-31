@@ -1,6 +1,6 @@
 # Gói release đưa lên hosting
 
-Script `scripts/package-hosting-release.sh` tạo gói source từ đúng một commit Git, đặt ngoài webroot tại `backup/releases/`. Gói không lấy file chưa được Git theo dõi nên không chứa cấu hình thật, dữ liệu upload, log, cache, backup hoặc thư mục bàn giao cục bộ.
+Script `scripts/package-hosting-release.sh` tạo gói source từ đúng một commit Git, đặt ngoài webroot tại `backup/releases/`. Gói không lấy file chưa được Git theo dõi nên không chứa cấu hình thật, dữ liệu upload, log, cache, backup hoặc thư mục bàn giao cục bộ. Nhánh `assets/wp-content/uploads` cũng được loại sau khi audit source, database và 137 trang public xác nhận không có tham chiếu; các JS/CSS còn dùng trong `assets/wp-content` vẫn được giữ.
 
 ## Tạo và kiểm tra gói
 
@@ -16,6 +16,7 @@ Mỗi release gồm archive `public_html-<commit>.tar.gz`, danh sách file, meta
 
 - Giải nén thử vào thư mục staging độc lập; không giải nén trực tiếp đè production.
 - Giữ nguyên `libraries/config.php` và các thư mục dữ liệu runtime của hosting: `upload`, `thumbs`, `watermark`, `caches`, `logs`.
+- Giữ nguyên `/wp-content/uploads` trên hosting vì nội dung public cũ vẫn tham chiếu dữ liệu runtime này; không nhầm với bản sao không dùng tại `/assets/wp-content/uploads`.
 - Backup code, database và upload production trước cutover; xác minh checksum trước khi dùng gói.
 - Các file trong `migrations/` không nằm trong archive webroot. Chỉ chạy migration riêng sau khi đọc nội dung, backup database và xác nhận migration nào production còn thiếu.
 - Sau triển khai, chạy smoke P0, kiểm tra log và chỉ mở traffic khi kết quả sạch.
@@ -23,4 +24,3 @@ Mỗi release gồm archive `public_html-<commit>.tar.gz`, danh sách file, meta
 ## Rollback
 
 Triển khai lại archive release trước có checksum đã lưu. Không tự động rollback database: chỉ phục hồi từ backup pre-deploy đã kiểm chứng nếu release thực sự thay đổi schema/data và việc hoàn nguyên đã được đánh giá. Giữ nguyên upload phát sinh sau cutover, trừ khi có kế hoạch đối soát riêng.
-
