@@ -22,6 +22,7 @@ Phạm vi tối ưu áp dụng cho toàn bộ project, gồm frontend public, Ad
 - [x] Chuẩn hóa mọi wordmark “Phúc Thịnh Solar” trong template public sang vàng kim gradient, có màu fallback.
 - [x] Khóa lưới Tin tức, Giải pháp và Dự án theo 3/2/1 cột; card đơn không kéo giãn toàn hàng.
 - [ ] Kiểm tra ảnh, font, icon, khoảng cách, tràn ngang và console trình duyệt.
+- [x] Rà soát responsive 16 loại trang (desktop + mobile 390px): 0 tràn ngang, 0 lỗi console/ảnh. Sửa: nút liên hệ nổi đè nội dung, gutter mobile, canh chữ, footer mobile hiển thị đủ, **khung ảnh chi tiết sản phẩm mobile phình ~33.5M px** (owl stage + aspect-ratio vòng lặp), khôi phục bộ lọc Thương hiệu/Công suất/Loại SP ở listing (bị `publicProductPricesVisible()` bọc nhầm).
 - [x] Sửa generator `.htaccess` upload sai cú pháp làm ảnh/logo HTTP 500 và thêm regression media trực tiếp vào pre-deploy.
 - [ ] Kiểm tra landing page sản phẩm chạy quảng cáo sau khi có danh sách sản phẩm được duyệt.
 

@@ -90,6 +90,16 @@ Không dùng “giảm request/query/dung lượng” làm tiêu chí thành cô
 ### Giao diện và SEO
 
 - Theme V2, wordmark vàng kim, nội dung/form dễ đọc hơn.
+- **Đợt phóng to & rà soát responsive (2026-08-31)** — toàn bộ trong `assets/css/theme-v2.css` + 1 sửa template:
+  - Phóng to thang chữ/container/header/breadcrumb/section title cho desktop; footer đồng bộ màu dòng hotline/email.
+  - Form liên hệ: ép `.wpcf7-form-control-wrap` về block full-width (trước là `<span>` inline nên ô nhập không lấp cột).
+  - Chi tiết dự án: chip "Khách hàng/Địa chỉ" bám dưới tiêu đề (thêm hàng lưới `1fr` hút phần thừa của card).
+  - Mobile: gutter 16px, hạ thang chữ ở ≤640px, bỏ canh đều chữ, nút liên hệ nổi `#button-contact-vr` thu nhỏ + ghim góc.
+  - **Chi tiết sản phẩm mobile**: sửa lỗi `.left-pro-detail` phình ~33.5M px (owl stage 80M + aspect-ratio vòng lặp) → neo `calc(100vw-32px)` + `contain:layout`; owl thumbnail thành dải cuộn ngang.
+  - Bộ lọc listing: khôi phục Thương hiệu/Công suất/Loại SP (trước bị `publicProductPricesVisible()` bọc nhầm cả cụm); chỉ "Mức giá" còn theo chế độ giá.
+  - Footer mobile: bỏ accordion, hiển thị đủ.
+  - 5 pixel-baseline đã regenerate cho type scale mới.
+- Phân tích đối thủ Kitawa + lộ trình nâng cấp e-commerce: `docs/07-features/ecommerce-upgrade-proposal.md` (chờ chủ project chốt phạm vi).
 - Grid Tin tức/Giải pháp/Dự án được khóa 3/2/1.
 - Sitemap đã loại 4 URL ẩn/không hoạt động; hiện còn 137 URL hợp lệ từ lần crawl local.
 - 85 URL ảnh WordPress legacy từng 404 đã có fallback media an toàn; 85/85 trả HTTP 200.
@@ -123,16 +133,16 @@ Ba thử nghiệm conditional loading CSS/JS đã được hoàn nguyên vì ph�
 `HEAD` hiện tại:
 
 ```text
+8bd8262 style(theme-v2): show the full footer on mobile
+a1bfedc fix(product): restore brand/power/type filters in listing sidebar
+7b950c0 fix(theme-v2): repair product detail gallery on mobile
+9a3df63 style(theme-v2): mobile responsive audit pass
+04b793b style(theme-v2): scale up public UI and rebalance contact/project
+75f25a4 docs: record N+1 profiling results and remaining router finding
 8d3a3d7 perf(public): collapse review star N+1 and cache city list
-b45179e docs(handoff): update HEAD marker after price toggle + import commits
-b66bcaa chore(data): headless product bulk import tooling + session state
-0c3cc8c fix(product): fall back to placeholder on imageless detail gallery
-b27a9f0 feat(admin): add public price visibility toggle
-fd9f675 test(browser): add reviewed visual baselines
-1b01100 test(browser): cover public layout interactions
 ```
 
-Các commit `be1b3d6`, `4314123`, `ad4520e` là lịch sử thử nghiệm conditional loading và đã bị `793e3eb` thay thế. Không cherry-pick hoặc tái áp dụng riêng các commit đó.
+Toàn bộ đã push lên `origin/master` (branch `master` track upstream). Các commit `be1b3d6`, `4314123`, `ad4520e` là lịch sử thử nghiệm conditional loading và đã bị `793e3eb` thay thế. Không cherry-pick hoặc tái áp dụng riêng các commit đó.
 
 Thay đổi DB local (không nằm trong Git): đã import `artifacts/san-pham-20260831-da-bo-sung-oriana.xlsx` — +70 sản phẩm ORIANA (id 467–536, `numb=2` xếp cuối), cập nhật #321/#311; tổng `table_product` type `san-pham` = 151. Backup trước import: `backup/local/20260831-132554`. 70 sản phẩm mới còn thiếu ảnh + `descvi` + `contentvi`. Chạy lại được bằng `scripts/preview-product-bulk-file.php` / `scripts/commit-product-bulk-file.php`.
 
@@ -158,10 +168,11 @@ Browser test đã phát hiện `.htaccess` trong `/upload` sinh sai cú pháp kh
 
 ## 8. Việc tiếp theo theo ưu tiên
 
-1. Refactor `$requick` trong `libraries/router.php`: hiện dò slug tuần tự qua ~26 bảng (mỗi trang chi tiết ~17 lookup). Cân nhắc bảng ánh xạ `slug -> (table, type, id)` hoặc một truy vấn UNION. Blast radius toàn routing → cần đọc kỹ + regression đầy đủ trước khi đụng.
-2. Duyệt thẩm mỹ thủ công phần chưa tự động hoá được: popup tư vấn sản phẩm, menu mega desktop, trạng thái rỗng danh mục, khoảng cách/tràn ngang trên nhiều breakpoint.
-3. Chỉ thử conditional loading hoặc xử lý asset dung lượng lớn theo từng commit nhỏ, dùng 5 screenshot baseline và full suite làm cổng bắt buộc.
-4. Lặp lại profiling Admin trên dataset staging gần production; local đã xác nhận bốn danh sách không còn N+1 theo dòng nhưng chưa đủ kết luận capacity hosting.
+1. **Nâng cấp e-commerce** theo `docs/07-features/ecommerce-upgrade-proposal.md` (chờ chủ project chốt). Nhóm A (lọc nhanh công suất ở header, nổi bật catalog, trang chủ nhiều danh mục, bộ lọc mobile dạng drawer) rủi ro thấp, ~1 ngày. Sau đó B3 So sánh sản phẩm.
+2. Refactor `$requick` trong `libraries/router.php`: hiện dò slug tuần tự qua ~26 bảng (mỗi trang chi tiết ~17 lookup). Cân nhắc bảng ánh xạ `slug -> (table, type, id)` hoặc một truy vấn UNION. Blast radius toàn routing → cần đọc kỹ + regression đầy đủ trước khi đụng.
+3. Duyệt thẩm mỹ thủ công phần chưa tự động hoá được: popup tư vấn sản phẩm, menu mega desktop, trạng thái rỗng danh mục, khoảng cách/tràn ngang trên nhiều breakpoint.
+4. Chỉ thử conditional loading hoặc xử lý asset dung lượng lớn theo từng commit nhỏ, dùng 5 screenshot baseline và full suite làm cổng bắt buộc.
+5. Lặp lại profiling Admin trên dataset staging gần production; local đã xác nhận bốn danh sách không còn N+1 theo dòng nhưng chưa đủ kết luận capacity hosting.
 
 ### Chờ dữ liệu thật
 
