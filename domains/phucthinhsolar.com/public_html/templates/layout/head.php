@@ -10,7 +10,8 @@
 <meta name="description" content="<?=$seo->get('description')?>"/>
 
 <!-- Robots -->
-<meta name="robots" content="index,follow" />
+<?php $robotsContent = in_array($com, array('tim-kiem', 'gio-hang', 'cam-on', 'account', 'ngon-ngu'), true) ? 'noindex,nofollow' : 'index,follow'; ?>
+<meta name="robots" content="<?=$robotsContent?>" />
 
 <!-- Favicon -->
 <link href="thumbs/50x50x2/<?=UPLOAD_PHOTO_L.$favicon['photo']?>" rel="shortcut icon" type="image/x-icon" />
@@ -43,15 +44,12 @@
 
 <!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:site" content="<?=$optsetting['email']?>" />
-<meta name="twitter:creator" content="<?=$setting['name'.$lang]?>" />
-<meta property="og:url" content="<?=$seo->get('url')?>" />
-<meta property="og:title" content="<?=$seo->get('title')?>" />
-<meta property="og:description" content="<?=$seo->get('description')?>" />
-<meta property="og:image" content="<?=$seo->get('photo')?>" />
+<meta name="twitter:title" content="<?=$seo->get('title')?>" />
+<meta name="twitter:description" content="<?=$seo->get('description')?>" />
+<meta name="twitter:image" content="<?=$seo->get('photo')?>" />
 
 <!-- Canonical -->
-<link rel="canonical" href="<?=$func->getCurrentPageURL()?>" />
+<link rel="canonical" href="<?=$func->getCurrentPageURL_CANO()?>" />
 
 <!-- Chống đổi màu trên IOS -->
 <meta name="format-detection" content="telephone=no">

@@ -1359,17 +1359,11 @@
 		/* Lấy getCurrentPageURL Cano */
 		public function getCurrentPageURL_CANO()
 		{
-			$pageURL = 'http';
-			if(array_key_exists('HTTPS', $_SERVER) && $_SERVER["HTTPS"] == "on") $pageURL .= "s";
-			$pageURL .= "://";
-			$pageURL .= $_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
+			$pageURL = $this->getCurrentPageURL();
 			$pageURL = str_replace("amp/", "", $pageURL);
-			$urlpos = strpos($pageURL, "?p");
-			$pageURL = ($urlpos) ? explode("?p=", $pageURL) : explode("&p=", $pageURL);
-			$pageURL = explode("?", $pageURL[0]);
-			$pageURL = explode("#", $pageURL[0]);
-			$pageURL = explode("index", $pageURL[0]);
-			return $pageURL[0];
+			$pageURL = explode("?", $pageURL, 2)[0];
+			$pageURL = explode("#", $pageURL, 2)[0];
+			return preg_replace('~/index(?:\.php)?/?$~', '/', $pageURL);
 		}
 
 		/* Has file */

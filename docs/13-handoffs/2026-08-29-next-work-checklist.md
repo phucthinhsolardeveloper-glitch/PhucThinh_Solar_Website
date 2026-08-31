@@ -57,6 +57,7 @@ Quy ước dữ liệu Excel vẫn giữ nguyên: ô giá trống khi cập nh�
 - [ ] Build staging sạch và smoke: category → product → cart → checkout → confirmation → admin order.
 - [ ] Smoke contact/newsletter/review bằng dữ liệu test có kiểm soát và dọn sạch sau test.
 - [ ] Kiểm tra desktop/mobile, menu, filter, console và log PHP/Apache.
+- [x] Kiểm tra SEO kỹ thuật local: canonical bỏ query, Twitter metadata, noindex trang nội bộ, robots và sitemap; đã thêm regression pre-deploy.
 - [ ] Chỉ deploy production khi chủ project phê duyệt rõ ràng.
 
 ## D. Sau khi dữ liệu và production checklist đã chốt
