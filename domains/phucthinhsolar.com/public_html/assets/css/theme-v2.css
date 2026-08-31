@@ -446,19 +446,22 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 }
 .CRcont_post .CRbox i{margin-right:4px;color:var(--pts-gold-dark)!important;}
 
-/* Lưới ba cột hỗ trợ một cấp row lồng nhau. */
-.CRrow_term_bottom{display:flex;flex-wrap:wrap;}
-.CRrow_term_bottom>.row{flex:1 1 100%;width:100%;display:flex;flex-wrap:wrap;}
-.CRrow_term_bottom>[class*="col-"],
-.CRrow_term_bottom>.row>[class*="col-"]{display:flex;margin-bottom:24px;}
-.CRrow_term_bottom>[class*="col-"]>.wrap,
-.CRrow_term_bottom>.row>[class*="col-"]>.wrap{width:100%;}
+/* Lưới card tin tức, giải pháp và dự án. */
+.pts-card-grid{
+    display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:24px!important;width:100%;margin:0!important;
+}
+.pts-card-grid>[class*="col-"]{
+    display:flex!important;width:auto!important;max-width:none!important;
+    min-width:0;flex:none!important;margin:0!important;padding:0!important;
+}
+.pts-card-grid>[class*="col-"]>.wrap{width:100%;}
+.pts-card-grid>.pts-grid-full{grid-column:1/-1;display:block!important;}
+@media(max-width:991px){.pts-card-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(max-width:576px){.pts-card-grid{grid-template-columns:1fr;gap:16px!important;}}
 .inf_item_project{display:flex;margin-bottom:24px;}
 /* Đồng nhất chiều rộng card dự án. */
 .inf_item_project>.wrap{width:100%!important;max-width:none!important;}
-
-.CRrow_term_bottom>[class*="col-"]:only-child,
-.CRrow_term_bottom>.row>[class*="col-"]:only-child{flex-grow:0!important;}
 
 /* tiêu đề nhóm (Doanh nghiệp / Hộ gia đình / ...) */
 .title_term{
@@ -1193,7 +1196,6 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
     gap:14px;padding:64px 24px;margin:8px 0 24px;width:100%!important;
     background:var(--pts-surface);border-radius:16px;text-align:center;
 }
-.CRrow_term_bottom .col-12,.CRrow_term_bottom>.row>.col-12{flex:0 0 100%!important;max-width:100%!important;}
 .pts-empty-state i{font-size:34px;color:#cbd5e1;}
 .pts-empty-state p{margin:0;color:#94a3b8;font-size:14.5px;font-weight:700;}
 

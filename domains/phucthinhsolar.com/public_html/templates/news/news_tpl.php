@@ -24,7 +24,7 @@
     <div class="container">
         <div class="CRrow_term_blog_box">
             <div class="CRrow_term_bottom">
-                <div id="inf_loadmore_post" class="row">
+                <div id="inf_loadmore_post" class="row pts-card-grid">
                     <?php if(count($news)) { foreach($news as $v) { ?>
                     <div data-id="<?=$v['id']?>" class="inf_item_postSlide item_post_slider col-lg-4 col-md-4 col-sm-6 col-12">
                         <div class="wrap item_cont_post_slider">
@@ -44,14 +44,14 @@
                         </div>
                     </div>
                     <?php } } else { ?>
-                    <div class="col-12">
+                    <div class="col-12 pts-grid-full">
                         <div class="pts-empty-state">
                             <i class="fas fa-newspaper"></i>
                             <p><?=khongtimthayketqua?></p>
                         </div>
                     </div>
                     <?php } ?>
-                    <div class="col-12">
+                    <div class="col-12 pts-grid-full">
                         <div class="pagination-home w-100"><?=(!empty($paging)) ? $paging : ''?></div>
                     </div>
                 </div>

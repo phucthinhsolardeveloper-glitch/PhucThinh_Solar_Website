@@ -16,7 +16,7 @@ Không deploy hoặc ghi dữ liệu production trong đợt kiểm tra này.
 - Chuẩn hóa wordmark “Phúc Thịnh Solar” sang vàng kim gradient, có màu fallback.
 - Tăng typography và khoảng đọc cho trang nội dung/bài viết.
 - Mở rộng và cân đối form liên hệ, input, textarea và CTA.
-- Bỏ biến thể kéo ngang khi danh sách tin tức/dự án chỉ có một card; giữ kích thước card nhất quán theo lưới.
+- Tin tức, Giải pháp và Dự án dùng grid độc lập 3/2/1 cột; đã loại bỏ rule `.col-12` khiến card desktop bị kéo toàn hàng.
 - HTTP smoke desktop/mobile đạt cho trang chủ, sản phẩm, giải pháp, dự án, tin tức, giới thiệu và liên hệ.
 
 ### Tính năng và bảo mật

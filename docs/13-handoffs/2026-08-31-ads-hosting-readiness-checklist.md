@@ -7,6 +7,7 @@ Phạm vi thực hiện hiện tại là source, Git và Docker local PHP 7.4. K
 - [ ] Kiểm tra trang chủ, danh mục, chi tiết sản phẩm, giải pháp, dự án, tin tức và liên hệ trên desktop/mobile.
 - [ ] Kiểm tra header, menu, breadcrumb, CTA, footer, popup và trạng thái rỗng.
 - [x] Chuẩn hóa mọi wordmark “Phúc Thịnh Solar” trong template public sang vàng kim gradient, có màu fallback.
+- [x] Khóa lưới Tin tức, Giải pháp và Dự án theo 3/2/1 cột; card đơn không kéo giãn toàn hàng.
 - [ ] Kiểm tra ảnh, font, icon, khoảng cách, tràn ngang và console trình duyệt.
 - [ ] Kiểm tra landing page sản phẩm chạy quảng cáo sau khi có danh sách sản phẩm được duyệt.
 

@@ -57,6 +57,9 @@ curl -fsS -L -o /tmp/pts-predeploy-product.html "$base_url/$product_slug"
 curl -fsS -L -o /tmp/pts-predeploy-product-filtered.html "$base_url/san-pham/?brand=1&sort=price-asc"
 curl -fsS -L -o /tmp/pts-predeploy-search.html "$base_url/tim-kiem?keyword=den"
 curl -fsS -L -o /tmp/pts-predeploy-cart.html "$base_url/gio-hang"
+curl -fsS -L -o /tmp/pts-predeploy-news.html "$base_url/tin-tuc/"
+curl -fsS -L -o /tmp/pts-predeploy-solutions.html "$base_url/giai-phap/"
+curl -fsS -L -o /tmp/pts-predeploy-projects.html "$base_url/du-an/"
 curl -fsS -o /tmp/pts-predeploy-robots.txt "$base_url/robots.txt"
 curl -fsS -o /tmp/pts-predeploy-sitemap.xml "$base_url/sitemap.xml"
 
@@ -83,6 +86,9 @@ rg -q 'name="twitter:title"' /tmp/pts-predeploy-product-filtered.html
 rg -q 'rel="canonical" href="http://localhost:8080/san-pham/"' /tmp/pts-predeploy-product-filtered.html
 rg -q 'name="robots" content="noindex,nofollow"' /tmp/pts-predeploy-search.html
 rg -q 'name="robots" content="noindex,nofollow"' /tmp/pts-predeploy-cart.html
+rg -q 'pts-card-grid' /tmp/pts-predeploy-news.html
+rg -q 'pts-card-grid' /tmp/pts-predeploy-solutions.html
+rg -q 'pts-card-grid' /tmp/pts-predeploy-projects.html
 rg -q '^Sitemap: https://phucthinhsolar.com/sitemap.xml$' /tmp/pts-predeploy-robots.txt
 rg -q '<urlset ' /tmp/pts-predeploy-sitemap.xml
 

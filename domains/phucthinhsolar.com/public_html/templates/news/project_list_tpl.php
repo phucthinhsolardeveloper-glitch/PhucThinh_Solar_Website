@@ -25,7 +25,7 @@
                     <div class="title_term"><?=$v['name'.$lang]?></div>
                 </div>
             </div>
-            <div class="CRrow_term_bottom row deactivate">
+            <div class="CRrow_term_bottom row deactivate pts-card-grid">
                 <?php if(count($da_item)){foreach($da_item as $c) { ?>
                 <div class="inf_item_project col-lg-4 col-md-4 col-sm-6 col-12">
                     <div class="wrap">

@@ -21,7 +21,7 @@
     <div class="container">
         <div class="CRrow_term_blog_box">
             <div class="CRrow_term_bottom">
-                <div id="inf_loadmore_post" class="row">
+                <div id="inf_loadmore_post" class="row pts-card-grid">
                     <?php if(count($news)) { foreach($news as $v) { ?>
                     <div class="inf_item_project col-lg-4 col-md-4 col-sm-6 col-12">
                         <div class="wrap">
@@ -37,7 +37,7 @@
                         </div>
                     </div>
                     <?php } } else { ?>
-                    <div class="col-12">
+                    <div class="col-12 pts-grid-full">
                         <div class="pts-empty-state">
                             <i class="fas fa-image"></i>
                             <p><?=khongtimthayketqua?></p>
