@@ -54,6 +54,18 @@ if [ -z "$product_slug" ]; then
     exit 1
 fi
 curl -fsS -L -o /tmp/pts-predeploy-product.html "$base_url/$product_slug"
+
+declare -A content_slugs
+for content_type in tin-tuc giai-phap du-an; do
+    content_slugs[$content_type]="$(docker compose -f "$compose_file" exec -T db mariadb -N -B -upts_local -ppts_local_only phucthinhs_local -e "SELECT slugvi FROM table_news WHERE type='$content_type' AND FIND_IN_SET('hienthi',status) AND slugvi<>'' ORDER BY id DESC LIMIT 1;")"
+    if [ -z "${content_slugs[$content_type]}" ]; then
+        echo "FAIL: DB local không có nội dung $content_type hiển thị để smoke" >&2
+        exit 1
+    fi
+done
+curl -fsS -L -o /tmp/pts-predeploy-news-detail.html "$base_url/${content_slugs[tin-tuc]}"
+curl -fsS -L -o /tmp/pts-predeploy-solution-detail.html "$base_url/${content_slugs[giai-phap]}"
+curl -fsS -L -o /tmp/pts-predeploy-project-detail.html "$base_url/${content_slugs[du-an]}"
 curl -fsS -L -o /tmp/pts-predeploy-product-filtered.html "$base_url/san-pham/?brand=1&sort=price-asc"
 curl -fsS -L -o /tmp/pts-predeploy-search.html "$base_url/tim-kiem?keyword=den"
 curl -fsS -L -o /tmp/pts-predeploy-cart.html "$base_url/gio-hang"
@@ -82,6 +94,12 @@ if rg -q 'class="addcart"|"priceCurrency"|"price"[[:space:]]*:' /tmp/pts-predepl
     echo "FAIL: Trang sản phẩm còn lộ giá hoặc nút mua khi chế độ báo giá đang bật" >&2
     exit 1
 fi
+rg -q '<title>[^<]+</title>' /tmp/pts-predeploy-news-detail.html
+rg -q 'class="box-detail-news"' /tmp/pts-predeploy-news-detail.html
+rg -q '<title>[^<]+</title>' /tmp/pts-predeploy-solution-detail.html
+rg -q 'class="box-detail-news"' /tmp/pts-predeploy-solution-detail.html
+rg -q '<title>[^<]+</title>' /tmp/pts-predeploy-project-detail.html
+rg -q 'id="inf_single_project"' /tmp/pts-predeploy-project-detail.html
 rg -q 'name="twitter:title"' /tmp/pts-predeploy-product-filtered.html
 rg -q 'rel="canonical" href="http://localhost:8080/san-pham/"' /tmp/pts-predeploy-product-filtered.html
 rg -q 'name="robots" content="noindex,nofollow"' /tmp/pts-predeploy-search.html

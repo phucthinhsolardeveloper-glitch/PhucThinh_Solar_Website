@@ -2,6 +2,10 @@
 
 Phạm vi thực hiện hiện tại là source, Git và Docker local PHP 7.4. Không deploy, không ghi production và không nhập dữ liệu thật khi chưa có phê duyệt riêng.
 
+## Nguyên tắc điều phối
+
+Tài liệu này là checklist cha và là ưu tiên triển khai chính cho đến khi website đủ điều kiện cập nhật hosting. Các yêu cầu phát sinh về giao diện, nội dung hoặc lỗi trong quá trình thực hiện là task con: xử lý trong phạm vi phù hợp rồi quay lại mục đang làm của checklist này. Chỉ đổi ưu tiên khi chủ project yêu cầu rõ ràng.
+
 ## 1. Giao diện và thương hiệu
 
 - [ ] Kiểm tra trang chủ, danh mục, chi tiết sản phẩm, giải pháp, dự án, tin tức và liên hệ trên desktop/mobile.
@@ -43,7 +47,7 @@ Phạm vi thực hiện hiện tại là source, Git và Docker local PHP 7.4. K
 - [x] Kiểm tra script backup không ghi file vào webroot và không ghi credential vào metadata.
 - [x] Tạo backup local kiểm thử gồm database, upload và metadata checksum.
 - [x] Diễn tập restore vào database/thư mục tạm độc lập và đối chiếu checksum: 49 bảng, 775 file upload.
-- [ ] Chốt release commit, danh sách thay đổi và lệnh rollback.
+- [x] Có công cụ tạo release từ commit Git, danh sách file, checksum, metadata và hướng dẫn rollback; commit deploy cuối cùng chỉ chốt sát thời điểm bàn giao.
 - [ ] Xác minh document root, PHP extension, quyền ghi, upload limit và rewrite trên staging.
 - [ ] Chỉ cập nhật production sau khi toàn bộ P0 đạt và chủ project phê duyệt.
 
