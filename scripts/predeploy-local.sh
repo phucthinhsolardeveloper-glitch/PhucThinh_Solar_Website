@@ -180,6 +180,12 @@ if [ "$remaining" != "0" ]; then
     exit 1
 fi
 
+route_index_count="$(docker compose -f "$compose_file" exec -T db mariadb -N -B -upts_local -ppts_local_only information_schema -e "SELECT COUNT(DISTINCT CONCAT(TABLE_NAME, ':', INDEX_NAME)) FROM STATISTICS WHERE TABLE_SCHEMA='phucthinhs_local' AND INDEX_NAME IN ('idx_route_type_slug','idx_type_numb_id');")"
+if [ "$route_index_count" != "22" ]; then
+    echo "FAIL: Migration 007 chưa tạo đủ index route/listing trên DB local" >&2
+    exit 1
+fi
+
 if docker compose -f "$compose_file" logs --since=15m web 2>&1 | rg -n 'PHP (Warning|Notice|Fatal|Parse)|Uncaught'; then
     echo "FAIL: Log web có lỗi PHP" >&2
     exit 1

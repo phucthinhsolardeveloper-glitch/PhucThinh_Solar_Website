@@ -68,6 +68,13 @@ Phạm vi tối ưu áp dụng cho toàn bộ project, gồm frontend public, Ad
 - [ ] Kiểm tra cache/compression ảnh và static asset trên staging/hosting.
 - [ ] Chạy lại toàn bộ regression chức năng và visual sau mỗi đợt tối ưu.
 
+## 7. Backend và database
+
+- [x] Audit route public: 11 bảng thiếu index slug/type và đang full scan.
+- [x] Thêm migration 007 idempotent; lookup route local giảm từ scan 81–82 dòng xuống index lookup ước tính 1 dòng.
+- [ ] Audit N+1 ở menu, trang chủ, danh mục và Admin bằng profiling trên bộ dữ liệu gần production.
+- [ ] Rà slow query log, PHP OPcache, memory và process limits trên staging/hosting.
+
 ## Điều kiện kết luận
 
 - **Sẵn sàng local:** toàn bộ test tự động và smoke local đạt, không có log lỗi, dữ liệu test được dọn sạch.
