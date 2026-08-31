@@ -16,6 +16,11 @@ test('header, menu, breadcrumb and footer remain usable', async ({ page, isMobil
     await page.keyboard.press('Escape');
   } else {
     await expect(page.locator('#headerscroll .menu').first()).toBeVisible();
+    const catalogMenu = page.locator('#headerscroll .menu-catalog');
+    const catalogSubmenu = catalogMenu.locator(':scope > ul');
+    await expect(catalogSubmenu).toBeAttached();
+    await catalogMenu.hover();
+    await expect(catalogSubmenu).toBeVisible();
   }
 
   await page.locator('footer').scrollIntoViewIfNeeded();
@@ -39,4 +44,26 @@ test('product detail keeps gallery and quote-only CTA', async ({ page }) => {
   await expect(page.locator('.btn-contact-price')).toBeVisible();
   await expect(page.locator('.btn-contact-price a[href^="tel:"]')).toBeVisible();
   await expect(page.locator('.btn-product-detail .addcart')).toHaveCount(0);
+});
+
+test('quote request CTA opens the protected consultation form', async ({ page }) => {
+  await page.goto('/san-pham/', { waitUntil: 'domcontentloaded' });
+  const href = await page.locator('.grid-product a[href]').filter({ has: page.locator('img') }).first().getAttribute('href');
+  expect(href).toBeTruthy();
+
+  await page.goto(href, { waitUntil: 'domcontentloaded' });
+  const modal = page.locator('#exampleModal');
+  await expect(modal).not.toBeVisible();
+  await page.locator('.btn-contact-price [data-target="#exampleModal"]').click();
+  await expect(modal).toBeVisible();
+  await expect(modal.locator('#quoteRequestModalLabel')).toContainText('Tư vấn & báo giá');
+
+  const form = modal.locator('form.validation-newsletter');
+  await expect(form.locator('input[name="form_csrf"]')).toHaveCount(1);
+  await expect(form.locator('[name="dataNewsletter[fullname]"]')).toBeVisible();
+  await expect(form.locator('[name="dataNewsletter[phone]"]')).toBeVisible();
+  await expect(form.locator('[name="submit-newsletter"]')).toBeVisible();
+
+  await modal.locator('[data-dismiss="modal"]').click();
+  await expect(modal).not.toBeVisible();
 });

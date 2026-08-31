@@ -14,14 +14,14 @@ Phạm vi tối ưu áp dụng cho toàn bộ project, gồm frontend public, Ad
 
 ## 1. Giao diện và thương hiệu
 
-- [ ] Kiểm tra trang chủ, danh mục, chi tiết sản phẩm, giải pháp, dự án, tin tức và liên hệ trên desktop/mobile.
+- [x] Kiểm tra trang chủ, danh mục, chi tiết sản phẩm, giải pháp, dự án, tin tức và liên hệ trên desktop/mobile; full Playwright hiện đạt 39 PASS, 1 mobile MagicZoom screenshot skip có chủ ý.
 - [x] Playwright Chromium smoke đạt 16/16 trên desktop/mobile cho bảy trang public, icon gọi và CTA báo giá; không có page error, request local HTTP >= 400, ảnh hỏng hoặc tràn ngang.
 - [x] Mở rộng Playwright lên 20/20: chi tiết sản phẩm, gallery chính, quote-only CTA, header/menu mobile, breadcrumb và footer desktop/mobile.
 - [x] Chốt 5 screenshot baseline đã review: trang chủ và danh mục desktop/mobile, chi tiết sản phẩm desktop; full suite 25 PASS, 1 mobile MagicZoom screenshot skip có chủ ý nhưng DOM regression vẫn đạt.
 - [x] Playwright `empty-states.spec.js` (10 test desktop/mobile): giỏ hàng rỗng, tìm kiếm không kết quả, tìm kiếm có kết quả (không lộ nút giỏ), form liên hệ có CSRF + wired handler, chi tiết sản phẩm không ảnh. Phát hiện + sửa `product_detail_tpl.php` gọi `upload/product/` (HTTP 403) khi sản phẩm không có ảnh; nay fallback `noimage.png`. Còn lại: duyệt thủ công popup tư vấn sản phẩm, menu mega, trạng thái rỗng danh mục.
 - [x] Chuẩn hóa mọi wordmark “Phúc Thịnh Solar” trong template public sang vàng kim gradient, có màu fallback.
 - [x] Khóa lưới Tin tức, Giải pháp và Dự án theo 3/2/1 cột; card đơn không kéo giãn toàn hàng.
-- [ ] Kiểm tra ảnh, font, icon, khoảng cách, tràn ngang và console trình duyệt.
+- [x] Kiểm tra ảnh, font, icon, khoảng cách, tràn ngang và console trình duyệt; bổ sung regression cho mega menu desktop, danh mục rỗng và modal tư vấn/báo giá có CSRF.
 - [x] Rà soát responsive 16 loại trang (desktop + mobile 390px): 0 tràn ngang, 0 lỗi console/ảnh. Sửa: nút liên hệ nổi đè nội dung, gutter mobile, canh chữ, footer mobile hiển thị đủ, **khung ảnh chi tiết sản phẩm mobile phình ~33.5M px** (owl stage + aspect-ratio vòng lặp), khôi phục bộ lọc Thương hiệu/Công suất/Loại SP ở listing (bị `publicProductPricesVisible()` bọc nhầm).
 - [x] Sửa generator `.htaccess` upload sai cú pháp làm ảnh/logo HTTP 500 và thêm regression media trực tiếp vào pre-deploy.
 - [ ] Kiểm tra landing page sản phẩm chạy quảng cáo sau khi có danh sách sản phẩm được duyệt.

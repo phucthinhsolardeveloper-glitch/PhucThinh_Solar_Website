@@ -75,6 +75,7 @@ Không dùng “giảm request/query/dung lượng” làm tiêu chí thành cô
 
 - Import/export CSV/XLS/XLSX có preview, conflict detection, lựa chọn ghi đè từng ô, transaction rollback, archive và `__CLEAR__`. Đã dùng pipeline này import file thật lô ORIANA vào DB local (xem mục 6).
 - Sửa `templates/product/product_detail_tpl.php`: khi sản phẩm không có ảnh, MagicZoom `href` fallback `assets/images/noimage.png` thay vì gọi `upload/product/` (HTTP 403). Phát hiện qua `empty-states.spec.js`.
+- CTA “Gửi yêu cầu báo giá” trên chi tiết sản phẩm mở modal “Tư vấn & báo giá” hiện có; modal dùng form newsletter có CSRF và được regression mở/đóng trên desktop/mobile.
 - 19 trường thông số chuẩn, thông số riêng, fallback HTML kỹ thuật cũ, video và chứng nhận tùy dữ liệu.
 - Validation giá/công suất, lọc Admin, danh sách liên hệ/đơn/newsletter, CSRF và quyền API.
 - Public quote-only giữ nguyên giá nội bộ nhưng không lộ giá hoặc thao tác mua hàng. Có công tắc Admin (`public_product_prices` = `1`/`0`); lưu xong `setting.php` gọi `$cache->delete()` để đổi trạng thái ngay; `public_pricing.php` fallback về hằng `PUBLIC_PRODUCT_PRICES` khi khóa vắng.
@@ -160,7 +161,7 @@ Thay đổi DB local (không nằm trong Git): đã import `artifacts/san-pham-2
 
 Môi trường hiện tại không có binary `rg` (Claude Code chỉ cấp qua shell function); `predeploy-local.sh` cần `rg`. Cách chạy: tạo shim `rg` gọi `exec -a rg "$CLAUDE_CODE_EXECPATH"` rồi prepend vào `PATH`. Không sửa script vì đây là hạn chế môi trường, không phải lỗi script.
 
-Playwright `1.62.1` và Chromium đã được cài riêng trong `tools/visual-tests`; browser nằm ở thư mục `.browsers` đã gitignore. Chạy bằng `cd tools/visual-tests && npm test`. Full suite hiện đạt 35 test và 1 skip có chủ ý: smoke/interaction desktop-mobile, `empty-states.spec.js` (10 test: giỏ rỗng, tìm kiếm không/có kết quả, form liên hệ có CSRF, chi tiết sản phẩm không ảnh), cùng 5 screenshot baseline đã review cho trang chủ, danh mục và chi tiết sản phẩm desktop. `empty-states.spec.js` chặn GTranslate CDN như visual-baseline.
+Playwright `1.62.1` và Chromium đã được cài riêng trong `tools/visual-tests`; browser nằm ở thư mục `.browsers` đã gitignore. Chạy bằng `cd tools/visual-tests && npm test`. Full suite hiện đạt 39 test và 1 skip có chủ ý: smoke/interaction desktop-mobile, giỏ rỗng, tìm kiếm không/có kết quả, form liên hệ có CSRF, chi tiết sản phẩm không ảnh, danh mục rỗng, mega menu desktop, modal tư vấn/báo giá, cùng 5 screenshot baseline đã review. `empty-states.spec.js` chặn GTranslate CDN như visual-baseline.
 
 Ghi chú `templates/contact/contact_tpl.php`: form liên hệ **đang chạy** là block dùng class `wpcf7-*` (leftover WordPress) nhưng đã wired đúng cho PHP — có `form_csrf`, field `dataContact[...]`, `submit-contact`, `recaptcha_response_contact`; handler `sources/contact.php` xử lý đúng. Block ở dòng 1–98 (`contact-form validation-contact`) là bản redesign cũ **bị comment `<!-- ... -->`** từ baseline; nên xoá hẳn block chết + đổi tên class `wpcf7-*` khi có dịp, không phải bug chức năng. Pixel test chặn riêng GTranslate CDN để tránh DOM đổi ngôn ngữ không xác định; mobile MagicZoom vẫn có DOM/ảnh/CTA regression nhưng bỏ element screenshot vì canvas gây Chromium GPU/tile overflow.
 

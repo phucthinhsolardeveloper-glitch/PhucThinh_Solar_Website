@@ -149,7 +149,7 @@ $certificateContent = (!empty($rowDetail['certificate'.$lang])) ? htmlspecialcha
                         <?php if($isContactPrice) { ?>
                         <div class="btn-product-detail btn-contact-price">
                             <a href="tel:<?=preg_replace('/[^0-9]/','',$optsetting['hotline'])?>" title="Gọi tư vấn báo giá"><i class="fas fa-phone-alt"></i> Gọi báo giá: <?=$optsetting['hotline']?></a>
-                            <a href="lien-he/" title="Gửi yêu cầu báo giá">Gửi yêu cầu báo giá</a>
+                            <a href="#exampleModal" data-toggle="modal" data-target="#exampleModal" title="Gửi yêu cầu báo giá">Gửi yêu cầu báo giá</a>
                         </div>
                         <?php } else { ?>
                         <div class="btn-product-detail">
@@ -293,7 +293,7 @@ $certificateContent = (!empty($rowDetail['certificate'.$lang])) ? htmlspecialcha
 </div>
 <?php } ?>
 
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModal" aria-hidden="true">
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="quoteRequestModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-body">
@@ -304,7 +304,7 @@ $certificateContent = (!empty($rowDetail['certificate'.$lang])) ? htmlspecialcha
                         <line x1="6" y1="6" x2="18" y2="18" />
                     </svg>
                 </button>
-                <p class="title-pro-detail">Tư vấn & báo giá</p>
+                <p class="title-pro-detail" id="quoteRequestModalLabel">Tư vấn & báo giá</p>
                 <div class=" w-100">
                     <div class="">
                         <div class="form-register">

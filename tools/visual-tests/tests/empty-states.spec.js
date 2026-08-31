@@ -63,6 +63,21 @@ test('search with no match shows the not-found notice', async ({ page, baseURL }
   await expect(page.locator('.breadCrumbs')).toBeVisible();
 });
 
+test('empty product category keeps navigation, filters and consultation entry points', async ({ page, baseURL, isMobile }) => {
+  await collectHealth(page, baseURL, async () => {
+    const response = await page.goto('/den-ac/', { waitUntil: 'domcontentloaded' });
+    expect(response && response.ok()).toBeTruthy();
+  });
+  await expect(page.locator('.alert-warning')).toContainText('Không tìm thấy kết quả');
+  await expect(page.locator('.product-item')).toHaveCount(0);
+  await expect(page.locator('.filter_product')).toBeVisible();
+  await expect(page.locator('.breadCrumbs')).toBeVisible();
+  if (!isMobile) {
+    await expect(page.locator('.sidebar-consult-box')).toBeVisible();
+    await expect(page.locator('.sidebar-consult-box .sc-btn')).toHaveAttribute('href', /lien-he\/?$/);
+  }
+});
+
 test('search with matches lists product cards', async ({ page, baseURL }) => {
   await collectHealth(page, baseURL, async () => {
     const response = await page.goto('/tim-kiem/?keyword=ORIANA', { waitUntil: 'domcontentloaded' });
