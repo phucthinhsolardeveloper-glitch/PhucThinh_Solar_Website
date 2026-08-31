@@ -150,7 +150,7 @@ GA_FRAMEWORK.Menu = function(){
         $('nav#menu').mmenu({
             // "extensions": ["border-full", "position-left", "position-front"],
              navbar: {
-                title: "Kim Thiên Bảo"
+                title: (typeof WEBSITE_NAME !== "undefined" && WEBSITE_NAME) ? WEBSITE_NAME : "Phúc Thịnh Solar"
             }
         });
     }
