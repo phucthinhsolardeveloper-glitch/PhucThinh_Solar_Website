@@ -9,7 +9,7 @@
 <section class="pts-category-hero">
     <div class="pts-category-sun" aria-hidden="true"><i class="far fa-sun"></i></div>
     <div class="pts-category-copy">
-        <span>PHÚC THỊNH SOLAR</span>
+        <span class="pts-brand-text">PHÚC THỊNH SOLAR</span>
         <h2><?=htmlspecialchars($ptsCategoryTitle, ENT_QUOTES, 'UTF-8')?></h2>
         <p>Thiết bị năng lượng mặt trời chính hãng, tư vấn đúng nhu cầu và đồng hành kỹ thuật trên toàn quốc.</p>
         <?php if(!empty($optsetting['hotline'])) { ?>

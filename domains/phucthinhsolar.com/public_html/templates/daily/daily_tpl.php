@@ -160,7 +160,7 @@
     data-ll-status="loaded">
     <div class="container">
         <div class="section-title uk-text-center">
-            <h3 class="CRstyle_title">TỰ HÀO Phúc Thịnh SOLAR!</h3>
+            <h3 class="CRstyle_title">TỰ HÀO <span class="pts-brand-text">Phúc Thịnh Solar</span>!</h3>
         </div>
         <div class="list_item">
             <?php foreach($solieudaily as $v){ ?>

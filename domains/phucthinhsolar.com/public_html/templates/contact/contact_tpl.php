@@ -101,7 +101,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-xl-12 col-lg-12 col-md-12">
-                    <h2 class="text-center">Công ty TNHH Công Nghệ - Thương Mại và Dịch Vụ Phúc Thịnh Solar</h2>
+                    <h2 class="text-center">Công ty TNHH Công Nghệ - Thương Mại và Dịch Vụ <span class="pts-brand-text">Phúc Thịnh Solar</span></h2>
                     <center>
                         <ul class="custContContact mb-4">
                             <li><a href="tel:<?=preg_replace('/[^0-9]/','',$optsetting['hotline']);?>">Hotline: <b><?=$optsetting['hotline']?></b></a></li>

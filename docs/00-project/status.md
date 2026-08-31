@@ -1,6 +1,6 @@
 # Current status
 
-Cập nhật gần nhất: 2026-08-29. Mọi thay đổi bên dưới mới ở Git + Docker local, chưa triển khai production.
+Cập nhật gần nhất: 2026-08-31. Mọi thay đổi bên dưới mới ở Git + Docker local, chưa triển khai production.
 
 ## WORKING ON LOCAL
 
@@ -12,20 +12,25 @@ Cập nhật gần nhất: 2026-08-29. Mọi thay đổi bên dưới mới ở 
 - Video YouTube, 19 trường thông số có cấu trúc, danh sách thông số riêng và nội dung chứng nhận theo từng sản phẩm.
 - Admin và Excel CSV/XLS/XLSX nhập/xuất từng thông số; frontend dựng bảng từ dữ liệu cấu trúc và vẫn fallback về HTML kỹ thuật cũ.
 - 4 dự án hiện có đều có ảnh và nội dung.
+- Toàn bộ giá public đang ẩn theo chế độ báo giá; Admin và Excel vẫn giữ giá nội bộ.
+- Canonical, Twitter metadata, robots, sitemap, HTTP security headers và chặn file nhạy cảm đã có regression local.
+- Wordmark “Phúc Thịnh Solar” trong template public dùng vàng kim gradient.
+- Có script backup database/upload local kèm checksum; restore rehearsal đạt 49 bảng và 775 file upload.
 
 ## PARTIAL / CHỜ DỮ LIỆU THẬT
 
 - 5 trang chính sách đã có URL nhưng nội dung đang rỗng.
+- 78 sản phẩm thiếu mô tả ngắn, 6 thiếu nội dung chi tiết và 16 thiếu thông số kỹ thuật.
 - Chứng nhận và video chỉ hiển thị khi admin nhập dữ liệu thật.
-- Local còn 29/81 sản phẩm chưa có công suất chuẩn hóa; dữ liệu sau migration 005–006 vẫn cần được chủ dữ liệu duyệt trước khi áp dụng trên production.
+- Dữ liệu kỹ thuật thật sẽ được cập nhật từ file Excel bên ngoài; không chạy migration 006 apply nếu chưa có phê duyệt riêng.
 - Nội dung mô tả chi tiết từng sản phẩm cần biên tập theo tài liệu kỹ thuật thật.
 - SMTP production và extension `calendar` trên hosting chưa được xác minh.
 
-## DEFERRED SECURITY
+## SECURITY
 
-- Security Review ngày 2026-08-27 phát hiện các finding P0-P2; chủ project yêu cầu tạm hoãn xử lý.
-- Không được coi nhánh hiện tại là sẵn sàng production cho tới khi audit được xử lý và retest.
-- Xem `docs/10-audits/2026-08-27-security-review.md`.
+- Các finding code chính của Security Review ngày 2026-08-27 đã được xử lý và regression đạt trên local.
+- RBAC vẫn tắt; cần test tài khoản nghiệp vụ, HTTPS, cookie Secure, proxy, SMTP, reCAPTCHA và upload video trên staging.
+- Không coi nhánh hiện tại là sẵn sàng production cho tới khi cổng staging và backup hosting đạt.
 
 ## STILL MISSING
 

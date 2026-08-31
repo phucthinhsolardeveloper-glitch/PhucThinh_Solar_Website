@@ -26,7 +26,7 @@ Website chỉ được mở traffic/chạy quảng cáo khi toàn bộ mục **P
 ## 3. Điểm chưa hoàn thành và rủi ro còn lại
 
 - RBAC vẫn đang tắt. Ma trận bằng tài khoản tạm đã đạt trên local nhưng chưa được lặp lại với tài khoản/quy trình thật trên staging.
-- Rate limit checkout/review hiện chủ yếu theo session, có thể bị né bằng session mới; contact/newsletter cũng cần giới hạn bền vững.
+- Rate limit checkout, review, contact và newsletter đã dùng bộ đếm DB theo IP/bucket; cần xác minh proxy chain và ngưỡng thực tế trên staging.
 - Đã kiểm tự động cấu trúc 42 form và luồng HTTP đại diện; chưa retest thao tác nghiệp vụ đầy đủ bằng trình duyệt trên staging.
 - Chưa xác minh cấu hình hosting thật: PHP extension, rewrite/`.htaccess`, quyền thư mục, giới hạn upload, cron, timezone và proxy/header.
 - Chưa xác minh SMTP production và reCAPTCHA bằng thông tin thật.

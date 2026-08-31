@@ -59,7 +59,19 @@ curl -fsS -L -o /tmp/pts-predeploy-search.html "$base_url/tim-kiem?keyword=den"
 curl -fsS -L -o /tmp/pts-predeploy-cart.html "$base_url/gio-hang"
 curl -fsS -o /tmp/pts-predeploy-robots.txt "$base_url/robots.txt"
 curl -fsS -o /tmp/pts-predeploy-sitemap.xml "$base_url/sitemap.xml"
+
+public_paths=("/" "/san-pham/" "/giai-phap/" "/du-an/" "/tin-tuc/" "/gioi-thieu/" "/lien-he/")
+for public_path in "${public_paths[@]}"; do
+    path_key="$(echo "$public_path" | tr '/-' '__')"
+    curl -fsS -L -A 'Mozilla/5.0 (X11; Linux x86_64) Chrome/120' -o "/tmp/pts-desktop-${path_key}.html" "$base_url$public_path"
+    curl -fsS -L -A 'Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 Mobile Safari/537.36' -o "/tmp/pts-mobile-${path_key}.html" "$base_url$public_path"
+    rg -q '<title>' "/tmp/pts-desktop-${path_key}.html"
+    rg -q '<meta name="viewport"' "/tmp/pts-mobile-${path_key}.html"
+done
+
 rg -q '<title>' /tmp/pts-predeploy-home.html
+rg -q 'pts-brand-copy pts-brand-text' /tmp/pts-predeploy-home.html
+rg -q '<span class="pts-brand-text">PHÚC THỊNH SOLAR</span>' /tmp/pts-predeploy-home.html
 rg -q 'name="form_csrf"' /tmp/pts-predeploy-contact.html
 rg -q 'title-pro-detail' /tmp/pts-predeploy-product.html
 rg -q 'Gọi báo giá' /tmp/pts-predeploy-product.html
@@ -73,6 +85,23 @@ rg -q 'name="robots" content="noindex,nofollow"' /tmp/pts-predeploy-search.html
 rg -q 'name="robots" content="noindex,nofollow"' /tmp/pts-predeploy-cart.html
 rg -q '^Sitemap: https://phucthinhsolar.com/sitemap.xml$' /tmp/pts-predeploy-robots.txt
 rg -q '<urlset ' /tmp/pts-predeploy-sitemap.xml
+
+for sensitive_path in administrator/elfinder/debug.log phucthinhsolar_com.sql codientumanhdat.com.zip; do
+    sensitive_status="$(curl -sS -o /dev/null -w '%{http_code}' "$base_url/$sensitive_path")"
+    if [ "$sensitive_status" != "403" ] && [ "$sensitive_status" != "404" ]; then
+        echo "FAIL: File nhạy cảm $sensitive_path trả HTTP $sensitive_status" >&2
+        exit 1
+    fi
+done
+curl -fsS -D /tmp/pts-predeploy-headers.txt -o /dev/null "$base_url/"
+rg -qi '^X-Content-Type-Options: nosniff' /tmp/pts-predeploy-headers.txt
+rg -qi '^X-Frame-Options: SAMEORIGIN' /tmp/pts-predeploy-headers.txt
+rg -qi '^Referrer-Policy: strict-origin-when-cross-origin' /tmp/pts-predeploy-headers.txt
+rg -qi '^Cache-Control: no-store, no-cache, must-revalidate' /tmp/pts-predeploy-headers.txt
+if rg -qi '^X-Powered-By:' /tmp/pts-predeploy-headers.txt; then
+    echo "FAIL: Response còn lộ X-Powered-By" >&2
+    exit 1
+fi
 
 remaining="$(docker compose -f "$compose_file" exec -T db mariadb -N -B -upts_local -ppts_local_only phucthinhs_local -e "SELECT (SELECT COUNT(*) FROM table_product WHERE code LIKE 'CODEX-BULK-%') + (SELECT COUNT(*) FROM table_user WHERE username LIKE 'codex-rbac-%') + (SELECT COUNT(*) FROM table_permission_group WHERE name LIKE 'CODEX-RBAC-%') + (SELECT COUNT(*) FROM table_user_limit WHERE login_ip LIKE 'form:%');")"
 if [ "$remaining" != "0" ]; then

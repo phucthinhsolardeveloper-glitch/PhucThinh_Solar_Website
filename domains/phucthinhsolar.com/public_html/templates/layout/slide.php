@@ -5,7 +5,7 @@
         <div class="pts-hero-copy">
             <span class="pts-hero-eyebrow"><i class="fas fa-sun"></i> Đèn dự án · Đèn công trình</span>
             <h1>NĂNG LƯỢNG MẶT TRỜI<br><strong>CHO MỌI CÔNG TRÌNH</strong></h1>
-            <p>Phúc Thịnh Solar — thiết bị năng lượng mặt trời chính hãng, thi công trọn gói và đồng hành kỹ thuật trên toàn quốc.</p>
+            <p><span class="pts-brand-text">Phúc Thịnh Solar</span> — thiết bị năng lượng mặt trời chính hãng, thi công trọn gói và đồng hành kỹ thuật trên toàn quốc.</p>
             <div class="pts-hero-actions">
                 <a class="pts-btn pts-btn-gold" href="san-pham/">MUA NGAY</a>
                 <a class="pts-btn pts-btn-ghost" href="giai-phap/">XEM GIẢI PHÁP</a>

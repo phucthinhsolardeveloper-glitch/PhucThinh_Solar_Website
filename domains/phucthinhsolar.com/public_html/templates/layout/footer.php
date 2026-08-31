@@ -33,7 +33,7 @@
                 </div>
                 <div class="ft_mn ft_mn_left col-md-5">
                     <div class="item">
-                        <p class="footer-title">
+                        <p class="footer-title pts-brand-text">
                             <?=$footer['name'.$lang]?>
                         </p>
                         <div class="CRcont_nav_mobile">

@@ -1,0 +1,53 @@
+# Checklist sẵn sàng chạy quảng cáo và cập nhật hosting — 2026-08-31
+
+Phạm vi thực hiện hiện tại là source, Git và Docker local PHP 7.4. Không deploy, không ghi production và không nhập dữ liệu thật khi chưa có phê duyệt riêng.
+
+## 1. Giao diện và thương hiệu
+
+- [ ] Kiểm tra trang chủ, danh mục, chi tiết sản phẩm, giải pháp, dự án, tin tức và liên hệ trên desktop/mobile.
+- [ ] Kiểm tra header, menu, breadcrumb, CTA, footer, popup và trạng thái rỗng.
+- [x] Chuẩn hóa mọi wordmark “Phúc Thịnh Solar” trong template public sang vàng kim gradient, có màu fallback.
+- [ ] Kiểm tra ảnh, font, icon, khoảng cách, tràn ngang và console trình duyệt.
+- [ ] Kiểm tra landing page sản phẩm chạy quảng cáo sau khi có danh sách sản phẩm được duyệt.
+
+## 2. Tính năng cốt lõi
+
+- [x] Smoke danh mục → sản phẩm → CTA báo giá trong chế độ ẩn giá trên local.
+- [x] Xác nhận không lộ giá, Offer schema hoặc thao tác mua hàng khi `PUBLIC_PRODUCT_PRICES=false`.
+- [x] Regression local đạt cho tìm kiếm/bộ lọc, phân trang, CSRF và rate limit của form public.
+- [x] Regression local đạt cho đăng nhập Admin, sản phẩm, Excel, quyền API và đơn hàng đại diện.
+- [ ] Kiểm tra email SMTP và reCAPTCHA trên staging bằng thông tin thật.
+
+## 3. Bảo mật
+
+- [x] CSRF, rate limit, upload validation, session hardening và RBAC regression đạt trên local.
+- [x] Canonical, noindex trang nội bộ, robots và sitemap đạt trên local.
+- [x] Chặn file nhạy cảm và bổ sung HTTP security headers trên local.
+- [ ] Retest tài khoản và phân quyền nghiệp vụ trên staging trước khi bật RBAC.
+- [ ] Xác minh HTTPS, cookie Secure, proxy chain, HSTS và header trên hosting.
+- [ ] Retest video upload thật và toàn bộ endpoint legacy trên staging.
+
+## 4. Dữ liệu
+
+- [x] Import/export Excel có preview, xác nhận, conflict detection và rollback trong lượt xử lý.
+- [x] Chế độ báo giá chỉ ẩn giá public; giá nội bộ trong Admin/Excel được giữ nguyên.
+- [ ] Nhận file Excel thật, lưu checksum và chỉ preview lần đầu.
+- [ ] Đối chiếu sản phẩm quảng cáo: mã, slug, danh mục, trạng thái, thông số, ảnh và nội dung.
+- [x] Local không còn dữ liệu test, mã/slug trùng, ảnh đại diện thiếu hoặc liên kết danh mục mồ côi.
+- [ ] Bổ sung 5 chính sách, 78 mô tả ngắn, 6 nội dung chi tiết và 16 bộ thông số còn thiếu.
+- [ ] Xác nhận không còn dữ liệu test, mã trùng hoặc import dở dang trên staging.
+
+## 5. Backup, deploy và rollback
+
+- [x] Kiểm tra script backup không ghi file vào webroot và không ghi credential vào metadata.
+- [x] Tạo backup local kiểm thử gồm database, upload và metadata checksum.
+- [x] Diễn tập restore vào database/thư mục tạm độc lập và đối chiếu checksum: 49 bảng, 775 file upload.
+- [ ] Chốt release commit, danh sách thay đổi và lệnh rollback.
+- [ ] Xác minh document root, PHP extension, quyền ghi, upload limit và rewrite trên staging.
+- [ ] Chỉ cập nhật production sau khi toàn bộ P0 đạt và chủ project phê duyệt.
+
+## Điều kiện kết luận
+
+- **Sẵn sàng local:** toàn bộ test tự động và smoke local đạt, không có log lỗi, dữ liệu test được dọn sạch.
+- **Sẵn sàng staging:** tích hợp thật, phân quyền, HTTPS, upload và restore đạt trên staging.
+- **Sẵn sàng production:** có backup phục hồi được, release/rollback rõ ràng và phê duyệt triển khai.

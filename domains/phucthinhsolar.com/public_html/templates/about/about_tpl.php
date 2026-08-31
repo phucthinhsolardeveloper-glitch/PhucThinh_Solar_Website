@@ -108,7 +108,7 @@
             <div class="row">
                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
                     <div class="content">
-                        <h2 class="CRstyle_title">Tại sao nên chọn Phúc Thịnh Solar?</h2>
+                        <h2 class="CRstyle_title">Tại sao nên chọn <span class="pts-brand-text">Phúc Thịnh Solar</span>?</h2>
                         <div id="CRicos_intro_home" class="inf_dots">
                             <?php foreach($lydo as $k => $v){ ?>
                             <div class="inf_ico_intro_home">

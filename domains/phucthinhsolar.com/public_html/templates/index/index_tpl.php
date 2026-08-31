@@ -78,8 +78,8 @@
             <div class="ModuleContent">
                 <div class="heading uk-flex">
                     <div class="section-title">
-                        <p>PHÚC THỊNH SOLAR CUNG CẤP GIẢI PHÁP TỐI ƯU </p>
-                        <h3>GIẢI PHÁP PHÚC THỊNH SOLAR</h3>
+                        <p><span class="pts-brand-text">PHÚC THỊNH SOLAR</span> CUNG CẤP GIẢI PHÁP TỐI ƯU</p>
+                        <h3>GIẢI PHÁP <span class="pts-brand-text">PHÚC THỊNH SOLAR</span></h3>
                     </div>
                     <div class="heading-right">
                         <div class="tab-switcher">
@@ -558,7 +558,7 @@
             <div class="uk-container">
                 <div class="section-title uk-text-center">
                     <p>CẬP NHẬT MỚI NHẤT</p>
-                    <h3>Hoạt động &amp; kiến thức Phúc Thịnh Solar</h3>
+                    <h3>Hoạt động &amp; kiến thức <span class="pts-brand-text">Phúc Thịnh Solar</span></h3>
                 </div>
                 <div class="row blog-2col-row">
                     <?php if(count($dahoatdong)) { ?>

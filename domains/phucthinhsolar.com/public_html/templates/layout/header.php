@@ -31,7 +31,7 @@
 			</div>
 			<a class="logo-header pts-brand" href="" aria-label="Phúc Thịnh Solar">
 				<?=$func->getImage(['class' => '','size-error' => '108x63x2', 'upload' => UPLOAD_PHOTO_L, 'image' => $logo['photo'], 'alt' => $setting['name'.$lang]])?>
-				<span class="pts-brand-copy">
+				<span class="pts-brand-copy pts-brand-text">
 					<strong>PHÚC THỊNH</strong>
 					<small>SOLAR</small>
 				</span>
