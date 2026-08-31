@@ -39,9 +39,10 @@ $certificateContent = (!empty($rowDetail['certificate'.$lang])) ? htmlspecialcha
             <div class="grid-pro-detail w-clear">
                 <div class="row">
                     <div class="left-pro-detail col-md-5 col-lg-5">
+                        <?php $detailZoomHref = !empty($rowDetail['photo']) ? UPLOAD_PRODUCT_L.$rowDetail['photo'] : 'assets/images/noimage.png'; ?>
                         <a id="Zoom-1" class="MagicZoom"
                             data-options="zoomMode: on; hint: off; rightClick: true; selectorTrigger: hover; expandCaption: false; history: false;"
-                            href="<?=UPLOAD_PRODUCT_L.$rowDetail['photo']?>" title="<?=$rowDetail['name'.$lang]?>">
+                            href="<?=$detailZoomHref?>" title="<?=$rowDetail['name'.$lang]?>">
                             <?=$func->getImage(['isLazy' => false, 'sizes' => '600x600x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $rowDetail['photo'], 'alt' => $rowDetail['name'.$lang]])?>
                         </a>
                         <?php if($rowDetailPhoto) { if(count($rowDetailPhoto) > 0) { ?>
@@ -53,7 +54,7 @@ $certificateContent = (!empty($rowDetail['certificate'.$lang])) ? htmlspecialcha
                                 data-navcontainer=".control-pro-detail">
                                 <div>
                                     <a class="thumb-pro-detail" data-zoom-id="Zoom-1"
-                                        href="<?=UPLOAD_PRODUCT_L.$rowDetail['photo']?>"
+                                        href="<?=$detailZoomHref?>"
                                         title="<?=$rowDetail['name'.$lang]?>">
                                         <?=$func->getImage(['isLazy' => false, 'sizes' => '600x600x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $rowDetail['photo'], 'alt' => $rowDetail['name'.$lang]])?>
                                     </a>
@@ -61,7 +62,7 @@ $certificateContent = (!empty($rowDetail['certificate'.$lang])) ? htmlspecialcha
                                 <?php foreach($rowDetailPhoto as $v) { ?>
                                 <div>
                                     <a class="thumb-pro-detail" data-zoom-id="Zoom-1"
-                                        href="<?=UPLOAD_PRODUCT_L.$v['photo']?>" title="<?=$rowDetail['name'.$lang]?>">
+                                        href="<?=!empty($v['photo']) ? UPLOAD_PRODUCT_L.$v['photo'] : 'assets/images/noimage.png'?>" title="<?=$rowDetail['name'.$lang]?>">
                                         <?=$func->getImage(['isLazy' => false, 'sizes' => '600x600x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $v['photo'], 'alt' => $rowDetail['name'.$lang]])?>
                                     </a>
                                 </div>
