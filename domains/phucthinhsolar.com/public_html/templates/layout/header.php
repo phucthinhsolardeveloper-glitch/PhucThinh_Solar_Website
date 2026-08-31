@@ -51,7 +51,14 @@
 					</div>
 					*/?>
 					<div class="gtranslate_wrapper"></div>
+					<?php if(!empty($optsetting['hotline'])) { ?>
+					<a class="hdr-call" href="tel:<?=$func->parsePhone($optsetting['hotline'])?>" title="Gọi mua hàng">
+						<span class="hdr-call-ic"><i class="fas fa-headset"></i></span>
+						<span class="hdr-call-txt"><small>Gọi mua hàng</small><b><?=$optsetting['hotline']?></b></span>
+					</a>
+					<?php } ?>
 					<a href="gio-hang/" class="icon-cart-header" title="Giỏ hàng" style="position:relative;display:inline-flex;align-items:center;margin-right:10px;">
+						<span class="hdr-cart-txt">Giỏ hàng</span>
 						<svg width="22px" height="22px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 4h2l1 12h11l1.6-8H7" stroke="#0D0D0D" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="20" r="1.5" fill="#0D0D0D"/><circle cx="16" cy="20" r="1.5" fill="#0D0D0D"/></svg>
 						<span class="count-cart" style="position:absolute;top:-6px;right:-8px;background:var(--color-red,#e53935);color:#fff;font-size:11px;font-weight:700;min-width:16px;height:16px;line-height:16px;border-radius:50%;text-align:center;padding:0 3px;"><?=(!empty($_SESSION['cart'])) ? count($_SESSION['cart']) : 0?></span>
 					</a>
@@ -70,4 +77,23 @@
 			</div>
 		</div>
 	</div>
+	<?php
+		$headlineWatts = array(60,100,150,200,300,400,500,600,800,1000);
+		$availWatts = array();
+		if(!empty($congSuatList)) foreach($congSuatList as $csRow) $availWatts[(int)$csRow['cong_suat']] = true;
+		$quickWatts = array_values(array_filter($headlineWatts, function($w) use ($availWatts){ return isset($availWatts[$w]); }));
+	?>
+	<?php if(!empty($quickWatts)) { ?>
+	<div class="header-quickfilter">
+		<div class="wrap-content">
+			<span class="hqf-label"><i class="fas fa-bolt"></i> Chọn theo công suất</span>
+			<div class="hqf-list">
+				<?php foreach($quickWatts as $w) { ?>
+				<a href="danh-muc-san-pham/den-nlmt/?is_congsuat=<?=$w?>"><?=$w?>W</a>
+				<?php } ?>
+				<a class="hqf-all" href="danh-muc-san-pham/den-nlmt/">Xem tất cả <i class="fas fa-angle-right"></i></a>
+			</div>
+		</div>
+	</div>
+	<?php } ?>
 </div>

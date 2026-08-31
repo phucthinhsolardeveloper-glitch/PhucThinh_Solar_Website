@@ -12,8 +12,8 @@
 
             <li><a class="<?php if($com=='gioi-thieu' || $com=='ve-chung-toi') echo 'active'; ?> transition" href="ve-chung-toi/" title="Về chúng tôi">Về chúng tôi</a></li>
 
-            <li>
-                <a class="has-child <?php if($com=='san-pham') echo 'active'; ?> transition" href="san-pham/" title="Sản phẩm">Sản phẩm</a>
+            <li class="menu-catalog">
+                <a class="has-child <?php if($com=='san-pham') echo 'active'; ?> transition" href="san-pham/" title="Sản phẩm"><i class="fas fa-th-large"></i> Sản phẩm</a>
                 <?php if(count($splist)) { ?>
                     <ul>
                         <?php foreach($splist as $klist => $vlist) {
