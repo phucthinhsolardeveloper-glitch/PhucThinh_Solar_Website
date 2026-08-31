@@ -26,6 +26,12 @@ RewriteRule ^$ /? [R=301,L]
 <IfModule mod_rewrite.c>
 	RewriteEngine On
 	RewriteRule ^index\.php$ - [L]
+	RewriteCond %{DOCUMENT_ROOT}/assets/wp-content/uploads/$1 -f
+	RewriteRule ^wp-content/uploads/(.+\.(?:jpe?g|png|gif|webp|svg|mp4|webm|pdf))$ assets/wp-content/uploads/$1 [L,NC]
+	RewriteCond %{DOCUMENT_ROOT}/assets/wp-content/uploads/$1.$2 -f
+	RewriteRule ^wp-content/uploads/(.+)-[0-9]+x[0-9]+\.(jpe?g|png|gif|webp)$ assets/wp-content/uploads/$1.$2 [L,NC]
+	RewriteCond %{DOCUMENT_ROOT}/assets/wp-content/uploads/$1-scaled.$2 -f
+	RewriteRule ^wp-content/uploads/(.+)-[0-9]+x[0-9]+\.(jpe?g|png|gif|webp)$ assets/wp-content/uploads/$1-scaled.$2 [L,NC]
 	RewriteCond %{REQUEST_FILENAME} !-f
 	RewriteCond %{REQUEST_FILENAME} !-d
 	RewriteRule . index.php [L]

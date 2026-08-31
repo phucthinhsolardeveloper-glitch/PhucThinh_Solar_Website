@@ -21,7 +21,9 @@ Sitemap sau sửa có 137 URL hoạt động đã được xuất bản. Lượt
 - `assets/wp-content/uploads/` có 839 file legacy, khoảng 143 MB trước nén.
 - Webroot làm việc còn chứa dữ liệu runtime/backup cục bộ rất lớn, nhưng công cụ package đã loại chúng khỏi archive release.
 
-Inventory 137 trang, source và SQL local không tìm thấy tham chiếu tới `assets/wp-content/uploads`; nhánh này được loại khỏi archive release nhưng vẫn giữ nguyên trong repository để rollback/đối chiếu. Việc loại thử làm archive giảm từ khoảng 183 MB xuống khoảng 49 MB. Nội dung public vẫn có 109 đường dẫn riêng dưới `/wp-content/uploads`, vì vậy dữ liệu runtime đó phải được bảo toàn trên hosting. Có 15 JS/CSS dưới `assets/wp-content` đang được HTML sử dụng nên phần còn lại của cây asset chưa được loại.
+Inventory 137 trang, source và SQL local không tham chiếu trực tiếp `assets/wp-content/uploads`, nhưng HTML có 85 URL media duy nhất dưới `/wp-content/uploads` và toàn bộ trả 404 trên local. Trong kho legacy có 31 file đúng tên, 39 ảnh gốc thay cho biến thể resize và 15 ảnh `-scaled` thay cho biến thể resize. Fallback rewrite giới hạn extension media và yêu cầu file đích tồn tại được dùng để phục hồi các URL này. Vì vậy thử nghiệm loại nhánh legacy để giảm archive từ 183 MB xuống 49 MB đã bị hủy; release phải giữ media cho đến khi có manifest chọn lọc và visual regression.
+
+Sau fallback, 85/85 URL media trả HTTP 200. Ba trường hợp đại diện (đúng tên, fallback ảnh gốc và fallback `-scaled`) đã được thêm vào pre-deploy. Toàn bộ regression đạt và không mở rewrite cho định dạng thực thi.
 
 Phát hiện 41 nhóm trùng nội dung với 85 file trong nhánh upload legacy. Chưa xóa file trong repository. Bước tiếp theo là rà tải CSS/JS thực tế, dependency và lỗi tài nguyên trước khi đề xuất tối ưu tiếp. Mọi thay đổi phải chạy lại pre-deploy và visual smoke.
 

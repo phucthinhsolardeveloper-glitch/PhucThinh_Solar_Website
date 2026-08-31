@@ -155,6 +155,12 @@ for sensitive_path in administrator/elfinder/debug.log phucthinhsolar_com.sql co
         exit 1
     fi
 done
+for legacy_media_path in \
+    wp-content/uploads/2022/04/2-13.png \
+    wp-content/uploads/2022/04/2-13-600x576.png \
+    wp-content/uploads/2023/07/chung-nhan-1086x1536.jpg; do
+    curl -fsS -o /dev/null "$base_url/$legacy_media_path"
+done
 curl -fsS -D /tmp/pts-predeploy-headers.txt -o /dev/null "$base_url/"
 rg -qi '^X-Content-Type-Options: nosniff' /tmp/pts-predeploy-headers.txt
 rg -qi '^X-Frame-Options: SAMEORIGIN' /tmp/pts-predeploy-headers.txt

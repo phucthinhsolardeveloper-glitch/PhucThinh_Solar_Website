@@ -24,14 +24,12 @@ mkdir -p "$release_dir"
 
 git archive --format=tar.gz --prefix=public_html/ \
     --output="$release_dir/$archive_name" \
-    "${release_commit}:${webroot_tree}" \
-    . ':(exclude)assets/wp-content/uploads'
+    "${release_commit}:${webroot_tree}"
 
 tar -tzf "$release_dir/$archive_name" > "$release_dir/FILES.txt"
 
 for forbidden in \
     '^public_html/(backup|artifacts|caches|logs|upload|thumbs|watermark)/' \
-    '^public_html/assets/wp-content/uploads/' \
     '^public_html/libraries/config\.php$' \
     '\.(sql|zip|7z|bak|log|env)$'; do
     if rg -i "$forbidden" "$release_dir/FILES.txt"; then
@@ -48,7 +46,7 @@ source_tree=$webroot_tree
 archive=$archive_name
 configuration=preserve hosting libraries/config.php
 runtime_data=preserve hosting upload, thumbs, watermark, caches and logs
-legacy_assets=assets/wp-content/uploads excluded after source, database and 137-page reference audit
+legacy_assets=assets/wp-content/uploads included for WordPress media fallback
 database=backup and review migrations separately before any schema change
 rollback=redeploy the previous checksummed release; restore database only from a verified pre-deploy backup when required
 EOF
