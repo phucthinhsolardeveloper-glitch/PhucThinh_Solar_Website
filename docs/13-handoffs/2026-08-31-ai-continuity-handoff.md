@@ -61,7 +61,7 @@ Không dùng “giảm request/query/dung lượng” làm tiêu chí thành cô
 
 ## 4. Các quyết định sản phẩm đã chốt
 
-- Public đang dùng chế độ báo giá toàn website: không công khai giá, Offer schema, giỏ hàng hoặc checkout; giá nội bộ vẫn giữ trong Admin/Excel.
+- Public đang dùng chế độ báo giá toàn website: không công khai giá, Offer schema, giỏ hàng hoặc checkout; giá nội bộ vẫn giữ trong Admin/Excel. Chuyển trạng thái bằng công tắc Admin → Thiết lập thông tin → “Hiển thị giá sản phẩm” (khóa `public_product_prices` trong `table_setting.options`), mặc định dữ liệu cũ là báo giá; chi tiết trong `docs/07-features/public-price-mode.md`.
 - Ô Excel trống khi cập nhật nghĩa là giữ dữ liệu website; `__CLEAR__` mới là xóa có chủ ý. Lần đầu nhận file thật chỉ preview, lưu checksum và chưa commit dữ liệu.
 - Không chạy migration 006 `--apply`; dữ liệu kỹ thuật thật sẽ đến từ file Excel bên ngoài.
 - Wordmark “Phúc Thịnh Solar” trên public luôn dùng vàng kim gradient và có màu fallback.
@@ -73,10 +73,11 @@ Không dùng “giảm request/query/dung lượng” làm tiêu chí thành cô
 
 ### Admin, dữ liệu và chế độ báo giá
 
-- Import/export CSV/XLS/XLSX có preview, conflict detection, lựa chọn ghi đè từng ô, transaction rollback, archive và `__CLEAR__`.
+- Import/export CSV/XLS/XLSX có preview, conflict detection, lựa chọn ghi đè từng ô, transaction rollback, archive và `__CLEAR__`. Đã dùng pipeline này import file thật lô ORIANA vào DB local (xem mục 6).
+- Sửa `templates/product/product_detail_tpl.php`: khi sản phẩm không có ảnh, MagicZoom `href` fallback `assets/images/noimage.png` thay vì gọi `upload/product/` (HTTP 403). Phát hiện qua `empty-states.spec.js`.
 - 19 trường thông số chuẩn, thông số riêng, fallback HTML kỹ thuật cũ, video và chứng nhận tùy dữ liệu.
 - Validation giá/công suất, lọc Admin, danh sách liên hệ/đơn/newsletter, CSRF và quyền API.
-- Public quote-only giữ nguyên giá nội bộ nhưng không lộ giá hoặc thao tác mua hàng.
+- Public quote-only giữ nguyên giá nội bộ nhưng không lộ giá hoặc thao tác mua hàng. Có công tắc Admin (`public_product_prices` = `1`/`0`); lưu xong `setting.php` gọi `$cache->delete()` để đổi trạng thái ngay; `public_pricing.php` fallback về hằng `PUBLIC_PRODUCT_PRICES` khi khóa vắng.
 
 ### Bảo mật
 
@@ -115,31 +116,41 @@ Ba thử nghiệm conditional loading CSS/JS đã được hoàn nguyên vì ph�
 
 ## 6. Mốc Git gần nhất
 
-Tại thời điểm lập tài liệu, `HEAD` dự kiến là:
+`HEAD` hiện tại:
 
 ```text
+fd9f675 test(browser): add reviewed visual baselines
+1b01100 test(browser): cover public layout interactions
+929bfbe docs(assets): map legacy dependency usage
+d57d3b6 perf(admin): skip empty place lookups
+7379730 test(browser): add public visual regression
+054ceb6 docs(handoff): preserve AI work continuity
 c4f0710 perf(admin): batch product review counts
-7c22dae perf(products): batch category occupancy query
-bd88d50 perf(home): batch featured content queries
-dee6d0d perf(menu): eliminate hierarchy query loops
-793e3eb fix(frontend): restore global asset compatibility
-8e2c8d2 perf(database): index public route lookups
-f344c41 fix(media): restore legacy WordPress assets safely
 ```
 
 Các commit `be1b3d6`, `4314123`, `ad4520e` là lịch sử thử nghiệm conditional loading và đã bị `793e3eb` thay thế. Không cherry-pick hoặc tái áp dụng riêng các commit đó.
 
+Chưa commit (working tree): công tắc “Hiển thị giá sản phẩm” trong Admin. File thay đổi: `libraries/public_pricing.php`, `administrator/sources/setting.php`, `administrator/templates/setting/man/man_add_tpl.php`, `scripts/test-security-hardening.php`, `docs/07-features/public-price-mode.md` cùng các doc handoff/status/ops liên quan. Thêm hai script chưa commit: `scripts/preview-product-bulk-file.php` và `scripts/commit-product-bulk-file.php` (chạy pipeline import headless cho file Excel thật). Toàn bộ test dưới đã đạt; chờ chủ project duyệt trước khi commit.
+
+Thay đổi DB local (không nằm trong Git): đã import `artifacts/san-pham-20260831-da-bo-sung-oriana.xlsx` — +70 sản phẩm ORIANA (id 467–536, `numb=2` xếp cuối), cập nhật #321/#311; tổng `table_product` type `san-pham` = 151. Backup trước import: `backup/local/20260831-132554`. 70 sản phẩm mới còn thiếu ảnh + `descvi` + `contentvi`.
+
 ## 7. Trạng thái kiểm thử gần nhất
 
-- `./scripts/predeploy-local.sh`: PASS.
+- `./scripts/predeploy-local.sh`: PASS (bao gồm assert front-end không lộ giá/nút mua ở chế độ mặc định).
 - PHP 7.4 lint các file thay đổi: PASS.
-- Security hardening: PASS.
+- Security hardening: PASS, gồm 4 assert mới cho công tắc giá (mặc định an toàn, bật `1` hiện giá, sản phẩm giá 0 vẫn báo giá, tắt `0` ẩn lại).
 - Admin readiness/RBAC/CSRF/session: PASS.
 - Excel/import transaction và cleanup: PASS.
 - Public smoke, SEO, static cache/compression headers và log PHP: PASS.
+- E2E công tắc giá trên DB local: bật `1` → trang sản phẩm hiện giá + `priceCurrency` + nút giỏ; `0`/vắng khóa → “Liên hệ”, không Offer, `api/cart.php` trả HTTP 409. DB local đã trả về chế độ báo giá (xóa hẳn khóa).
+- Import Excel thật: preview 0 lỗi/0 xung đột; commit transaction 70 create + 2 update; `predeploy-local.sh` và Playwright (5 pixel-baseline + smoke/interaction) vẫn PASS sau import và sau khi đặt `numb=2` cho sản phẩm mới.
 - Local không còn dữ liệu test theo pre-deploy cleanup.
 
-Playwright `1.62.1` và Chromium đã được cài riêng trong `tools/visual-tests`; browser nằm ở thư mục `.browsers` đã gitignore. Chạy bằng `cd tools/visual-tests && npm test`. Full suite hiện đạt 25 test và 1 skip có chủ ý: smoke/interaction desktop-mobile cùng 5 screenshot baseline đã review cho trang chủ, danh mục và chi tiết sản phẩm desktop. Pixel test chặn riêng GTranslate CDN để tránh DOM đổi ngôn ngữ không xác định; mobile MagicZoom vẫn có DOM/ảnh/CTA regression nhưng bỏ element screenshot vì canvas gây Chromium GPU/tile overflow.
+Môi trường hiện tại không có binary `rg` (Claude Code chỉ cấp qua shell function); `predeploy-local.sh` cần `rg`. Cách chạy: tạo shim `rg` gọi `exec -a rg "$CLAUDE_CODE_EXECPATH"` rồi prepend vào `PATH`. Không sửa script vì đây là hạn chế môi trường, không phải lỗi script.
+
+Playwright `1.62.1` và Chromium đã được cài riêng trong `tools/visual-tests`; browser nằm ở thư mục `.browsers` đã gitignore. Chạy bằng `cd tools/visual-tests && npm test`. Full suite hiện đạt 35 test và 1 skip có chủ ý: smoke/interaction desktop-mobile, `empty-states.spec.js` (10 test: giỏ rỗng, tìm kiếm không/có kết quả, form liên hệ có CSRF, chi tiết sản phẩm không ảnh), cùng 5 screenshot baseline đã review cho trang chủ, danh mục và chi tiết sản phẩm desktop. `empty-states.spec.js` chặn GTranslate CDN như visual-baseline.
+
+Ghi chú `templates/contact/contact_tpl.php`: form liên hệ **đang chạy** là block dùng class `wpcf7-*` (leftover WordPress) nhưng đã wired đúng cho PHP — có `form_csrf`, field `dataContact[...]`, `submit-contact`, `recaptcha_response_contact`; handler `sources/contact.php` xử lý đúng. Block ở dòng 1–98 (`contact-form validation-contact`) là bản redesign cũ **bị comment `<!-- ... -->`** từ baseline; nên xoá hẳn block chết + đổi tên class `wpcf7-*` khi có dịp, không phải bug chức năng. Pixel test chặn riêng GTranslate CDN để tránh DOM đổi ngôn ngữ không xác định; mobile MagicZoom vẫn có DOM/ảnh/CTA regression nhưng bỏ element screenshot vì canvas gây Chromium GPU/tile overflow.
 
 Browser test đã phát hiện `.htaccess` trong `/upload` sinh sai cú pháp khiến ảnh/logo trả HTTP 500. Generator và pre-deploy regression đã được sửa; full pre-deploy và Playwright đều đạt sau khi build lại. Kiểm tra tự động này chưa thay thế việc duyệt thẩm mỹ thủ công cho khoảng cách, popup, trạng thái rỗng và toàn bộ tương tác.
 
@@ -153,9 +164,10 @@ Browser test đã phát hiện `.htaccess` trong `/upload` sinh sai cú pháp kh
 
 ### Chờ dữ liệu thật
 
-- File Excel: lưu bản gốc/checksum, backup rồi chỉ preview lần đầu.
+- Ảnh + `descvi` + `contentvi` cho 70 sản phẩm ORIANA vừa import (id 467–536); sau khi đủ thì đưa `numb` về 0/1 để lên đầu danh mục.
+- Xác nhận danh mục cấp 2 của lô ORIANA (36 Đèn Pha, 28 Đèn Đường, 6 chỉ có cấp 1).
 - Chốt sản phẩm/landing page chạy quảng cáo; đối chiếu mã, slug, danh mục, trạng thái, thông số, ảnh và nội dung.
-- Bổ sung 5 chính sách, 78 mô tả ngắn, 6 nội dung chi tiết và 16 bộ thông số.
+- Bổ sung 5 chính sách và các mô tả/nội dung/thông số còn thiếu cho sản phẩm cũ.
 
 ### Chờ staging/hosting và phê duyệt
 

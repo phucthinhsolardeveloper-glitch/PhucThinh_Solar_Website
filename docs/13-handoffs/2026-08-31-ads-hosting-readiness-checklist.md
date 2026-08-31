@@ -18,7 +18,7 @@ Phạm vi tối ưu áp dụng cho toàn bộ project, gồm frontend public, Ad
 - [x] Playwright Chromium smoke đạt 16/16 trên desktop/mobile cho bảy trang public, icon gọi và CTA báo giá; không có page error, request local HTTP >= 400, ảnh hỏng hoặc tràn ngang.
 - [x] Mở rộng Playwright lên 20/20: chi tiết sản phẩm, gallery chính, quote-only CTA, header/menu mobile, breadcrumb và footer desktop/mobile.
 - [x] Chốt 5 screenshot baseline đã review: trang chủ và danh mục desktop/mobile, chi tiết sản phẩm desktop; full suite 25 PASS, 1 mobile MagicZoom screenshot skip có chủ ý nhưng DOM regression vẫn đạt.
-- [ ] Kiểm tra header, menu, breadcrumb, CTA, footer, popup và trạng thái rỗng.
+- [x] Playwright `empty-states.spec.js` (10 test desktop/mobile): giỏ hàng rỗng, tìm kiếm không kết quả, tìm kiếm có kết quả (không lộ nút giỏ), form liên hệ có CSRF + wired handler, chi tiết sản phẩm không ảnh. Phát hiện + sửa `product_detail_tpl.php` gọi `upload/product/` (HTTP 403) khi sản phẩm không có ảnh; nay fallback `noimage.png`. Còn lại: duyệt thủ công popup tư vấn sản phẩm, menu mega, trạng thái rỗng danh mục.
 - [x] Chuẩn hóa mọi wordmark “Phúc Thịnh Solar” trong template public sang vàng kim gradient, có màu fallback.
 - [x] Khóa lưới Tin tức, Giải pháp và Dự án theo 3/2/1 cột; card đơn không kéo giãn toàn hàng.
 - [ ] Kiểm tra ảnh, font, icon, khoảng cách, tràn ngang và console trình duyệt.
@@ -29,6 +29,7 @@ Phạm vi tối ưu áp dụng cho toàn bộ project, gồm frontend public, Ad
 
 - [x] Smoke danh mục → sản phẩm → CTA báo giá trong chế độ ẩn giá trên local.
 - [x] Xác nhận không lộ giá, Offer schema hoặc thao tác mua hàng khi `PUBLIC_PRODUCT_PRICES=false`.
+- [x] Thêm công tắc Admin “Hiển thị giá sản phẩm” (`public_product_prices` trong `table_setting.options`, mặc định báo giá, lưu xong xóa cache); e2e local xác nhận bật/tắt đổi đúng giá, Offer schema và HTTP 409 của `api/cart.php`.
 - [x] Regression local đạt cho tìm kiếm/bộ lọc, phân trang, CSRF và rate limit của form public.
 - [x] Regression local đạt cho đăng nhập Admin, sản phẩm, Excel, quyền API và đơn hàng đại diện.
 - [ ] Kiểm tra email SMTP và reCAPTCHA trên staging bằng thông tin thật.
@@ -47,8 +48,8 @@ Phạm vi tối ưu áp dụng cho toàn bộ project, gồm frontend public, Ad
 
 - [x] Import/export Excel có preview, xác nhận, conflict detection và rollback trong lượt xử lý.
 - [x] Chế độ báo giá chỉ ẩn giá public; giá nội bộ trong Admin/Excel được giữ nguyên.
-- [ ] Nhận file Excel thật, lưu checksum và chỉ preview lần đầu.
-- [ ] Đối chiếu sản phẩm quảng cáo: mã, slug, danh mục, trạng thái, thông số, ảnh và nội dung.
+- [x] Nhận file Excel thật `san-pham-20260831-da-bo-sung-oriana.xlsx`: lưu `artifacts/` + checksum, backup local, preview qua pipeline (0 lỗi/cảnh báo/xung đột), commit vào DB local (+70 ORIANA id 467–536, cập nhật #321/#311, tổng 151). 70 sp mới `numb=2` xếp cuối danh mục.
+- [ ] Đối chiếu sản phẩm quảng cáo: mã, slug, danh mục, trạng thái, thông số, ảnh và nội dung. *(70 sp mới còn thiếu ảnh + mô tả ngắn + nội dung chi tiết — chờ bổ sung.)*
 - [x] Local không còn dữ liệu test, mã/slug trùng, ảnh đại diện thiếu hoặc liên kết danh mục mồ côi.
 - [ ] Bổ sung 5 chính sách, 78 mô tả ngắn, 6 nội dung chi tiết và 16 bộ thông số còn thiếu.
 - [ ] Xác nhận không còn dữ liệu test, mã trùng hoặc import dở dang trên staging.

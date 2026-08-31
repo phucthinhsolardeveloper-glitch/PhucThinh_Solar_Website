@@ -12,7 +12,7 @@ Cập nhật gần nhất: 2026-08-31. Mọi thay đổi bên dưới mới ở 
 - Video YouTube, 19 trường thông số có cấu trúc, danh sách thông số riêng và nội dung chứng nhận theo từng sản phẩm.
 - Admin và Excel CSV/XLS/XLSX nhập/xuất từng thông số; frontend dựng bảng từ dữ liệu cấu trúc và vẫn fallback về HTML kỹ thuật cũ.
 - 4 dự án hiện có đều có ảnh và nội dung.
-- Toàn bộ giá public đang ẩn theo chế độ báo giá; Admin và Excel vẫn giữ giá nội bộ.
+- Toàn bộ giá public đang ẩn theo chế độ báo giá; Admin và Excel vẫn giữ giá nội bộ. Có công tắc Admin → Thiết lập thông tin → “Hiển thị giá sản phẩm” (khóa `public_product_prices`), mặc định “Liên hệ báo giá”, lưu xong tự xóa cache.
 - Canonical, Twitter metadata, robots, sitemap, HTTP security headers và chặn file nhạy cảm đã có regression local.
 - Wordmark “Phúc Thịnh Solar” trong template public dùng vàng kim gradient.
 - Có script backup database/upload local kèm checksum; restore rehearsal đạt 49 bảng và 775 file upload.
@@ -29,6 +29,7 @@ Cập nhật gần nhất: 2026-08-31. Mọi thay đổi bên dưới mới ở 
 
 - 5 trang chính sách đã có URL nhưng nội dung đang rỗng.
 - 78 sản phẩm thiếu mô tả ngắn, 6 thiếu nội dung chi tiết và 16 thiếu thông số kỹ thuật.
+- Đã import file Excel thật `artifacts/san-pham-20260831-da-bo-sung-oriana.xlsx` vào DB local (preview 0 lỗi, backup `backup/local/20260831-132554`): +70 sản phẩm ORIANA (id 467–536), cập nhật #321/#311. Tổng 81 → 151. 70 sản phẩm mới còn thiếu ảnh + mô tả ngắn + nội dung; đã đặt `numb=2` để xếp cuối danh mục, chờ bổ sung ảnh/nội dung rồi mới đưa lên đầu.
 - Chứng nhận và video chỉ hiển thị khi admin nhập dữ liệu thật.
 - Dữ liệu kỹ thuật thật sẽ được cập nhật từ file Excel bên ngoài; không chạy migration 006 apply nếu chưa có phê duyệt riêng.
 - Nội dung mô tả chi tiết từng sản phẩm cần biên tập theo tài liệu kỹ thuật thật.
