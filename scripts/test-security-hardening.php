@@ -50,7 +50,13 @@ $orderUpdate = prepareAdminOrderUpdate($d, array('order_status' => 1, 'payment_s
 securityAssert(empty($orderUpdate['errors']) && !isset($orderUpdate['data']['total_price']) && !isset($orderUpdate['data']['code']), 'Cập nhật đơn chỉ nhận field nghiệp vụ allowlist');
 $invalidOrderUpdate = prepareAdminOrderUpdate($d, array('order_status' => 999999, 'payment_status' => 200), array(0 => 'Chưa thanh toán', 1 => 'Đã thanh toán'));
 securityAssert(count($invalidOrderUpdate['errors']) === 2, 'Cập nhật đơn từ chối trạng thái không tồn tại và placeholder thanh toán');
-securityAssert(!publicProductPricesVisible() && publicProductRequiresQuote(array('regular_price' => 999999, 'sale_price' => 888888)), 'Chế độ báo giá ẩn cả sản phẩm đang có giá nội bộ');
+$optsetting = array();
+securityAssert(!publicProductPricesVisible() && publicProductRequiresQuote(array('regular_price' => 999999, 'sale_price' => 888888)), 'Mặc định an toàn giữ chế độ báo giá khi chưa có thiết lập');
+$optsetting['public_product_prices'] = '1';
+securityAssert(publicProductPricesVisible() && !publicProductRequiresQuote(array('regular_price' => 999999, 'sale_price' => 888888)), 'Thiết lập Admin bật giá cho sản phẩm có giá nội bộ');
+securityAssert(publicProductRequiresQuote(array('regular_price' => 0, 'sale_price' => 0)), 'Sản phẩm không có giá vẫn yêu cầu báo giá khi bật giá công khai');
+$optsetting['public_product_prices'] = '0';
+securityAssert(!publicProductPricesVisible() && publicProductRequiresQuote(array('regular_price' => 999999, 'sale_price' => 888888)), 'Thiết lập Admin tắt giá trên toàn website');
 
 $formToken = formCsrfToken();
 securityAssert(strlen($formToken) === 64 && formCsrfValid($formToken), 'CSRF frontend sinh và xác minh token đúng');

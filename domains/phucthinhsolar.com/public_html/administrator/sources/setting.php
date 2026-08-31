@@ -26,7 +26,7 @@
 	/* Save setting */
 	function saveSetting()
 	{
-		global $d, $func,$emailer, $flash, $config, $com;
+		global $d, $func,$emailer, $flash, $config, $com, $cache;
 
 		/* Check post */
 		if(empty($_POST))
@@ -40,6 +40,7 @@
 		$id = (!empty($_POST['id'])) ? htmlspecialchars($_POST['id']) : 0;
 		$row = $d->rawQueryOne("select id, options,	web_as from #_setting where id = ? limit 0,1",array($id));
 		$option = json_decode($row['options'],true);
+		if(!is_array($option)) $option = array();
 		$data = (!empty($_POST['data'])) ? $_POST['data'] : null;
 		if($data)
 		{
@@ -49,7 +50,11 @@
 				{
 					foreach($value as $k2 => $v2)
 					{
-						if($k2 == 'coords_iframe')
+						if($k2 == 'public_product_prices')
+						{
+							$option[$k2] = ((string)$v2 === '1') ? '1' : '0';
+						}
+						else if($k2 == 'coords_iframe')
 						{
 							$option[$k2] = $func->sanitize($v2, 'iframe');
 						}
@@ -208,7 +213,7 @@
 		{
 			$d->where('id',$id);
 			if($d->update('setting',$data))
-			{	
+			{
 				/* SEO */
 				$d->rawQuery("delete from #_seo where id_parent = ? and com = ? and act = ? and type = ?",array(0,$com,'update',$com));
 				$dataSeo['id_parent'] = 0;
@@ -216,6 +221,7 @@
 				$dataSeo['act'] = 'update';
 				$dataSeo['type'] = $com;
 				$d->insert('seo',$dataSeo);
+				if(isset($cache)) $cache->delete();
 				$func->transfer("Cập nhật dữ liệu thành công", "index.php?com=setting&act=update");
 			}
 			else
@@ -234,6 +240,7 @@
 				$dataSeo['type'] = $com;
 				$d->insert('seo',$dataSeo);
 
+				if(isset($cache)) $cache->delete();
 				$func->transfer("Thêm dữ liệu thành công", "index.php?com=setting&act=update");
 			}
 			else

@@ -114,6 +114,25 @@
 		<?php } ?>
 		<div class="card card-primary card-outline text-sm">
 			<div class="card-header">
+				<h3 class="card-title">Hiển thị giá sản phẩm</h3>
+			</div>
+			<div class="card-body">
+				<?php $publicProductPrices = isset($options['public_product_prices']) && (string)$options['public_product_prices'] === '1'; ?>
+				<div class="form-group mb-2">
+					<div class="custom-control custom-radio mb-2">
+						<input class="custom-control-input" type="radio" id="public-product-prices-quote" name="data[options][public_product_prices]" value="0" <?=!$publicProductPrices ? 'checked' : ''?>>
+						<label for="public-product-prices-quote" class="custom-control-label font-weight-normal"><strong>Liên hệ báo giá</strong> — ẩn giá, bộ lọc giá và thao tác mua hàng trên website</label>
+					</div>
+					<div class="custom-control custom-radio">
+						<input class="custom-control-input" type="radio" id="public-product-prices-show" name="data[options][public_product_prices]" value="1" <?=$publicProductPrices ? 'checked' : ''?>>
+						<label for="public-product-prices-show" class="custom-control-label font-weight-normal"><strong>Hiển thị giá</strong> — công khai giá và bật lại giỏ hàng, đặt hàng</label>
+					</div>
+				</div>
+				<small class="text-muted">Thiết lập áp dụng cho toàn bộ sản phẩm. Sản phẩm không có giá vẫn hiển thị “Liên hệ”.</small>
+			</div>
+		</div>
+		<div class="card card-primary card-outline text-sm">
+			<div class="card-header">
 				<h3 class="card-title">Thông tin chung</h3>
 			</div>
 			<div class="card-body">

@@ -91,7 +91,7 @@ Website chỉ được mở traffic/chạy quảng cáo khi toàn bộ mục **P
 - [ ] Chủ project duyệt 5 trang chính sách và thông tin doanh nghiệp/hotline/địa chỉ.
 - [ ] Duyệt ảnh, video, mô tả, giá và chứng nhận của sản phẩm chạy quảng cáo.
 - [x] Chế độ hiện tại ẩn toàn bộ giá public và hiển thị “Liên hệ”; giá Admin/Excel vẫn được giữ nội bộ.
-- [ ] Chỉ đổi `PUBLIC_PRODUCT_PRICES` sang `true` khi công ty duyệt chính sách niêm yết và đã retest cart/checkout.
+- [ ] Chỉ chọn “Hiển thị giá” ở Admin → Thiết lập thông tin (khóa `public_product_prices`) khi công ty duyệt chính sách niêm yết và đã retest cart/checkout.
 - [ ] Xác minh SMTP production bằng mailbox kiểm thử; kiểm tra email đơn hàng/liên hệ.
 - [ ] Xác minh reCAPTCHA thật và hành vi khi CAPTCHA lỗi/hết hạn.
 - [ ] Xác minh OneSignal nếu production tiếp tục sử dụng; không gửi thử đến tập khách hàng thật.
