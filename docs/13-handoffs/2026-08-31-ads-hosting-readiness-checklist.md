@@ -61,6 +61,7 @@ Mọi hạng mục phải đồng thời hướng tới website nhẹ và phản
 - [x] Audit 137 trang, source và SQL: tách `assets/wp-content/uploads` không được tham chiếu khỏi archive; gói thử giảm khoảng 183 MB xuống 49 MB, không xóa source.
 - [x] Inventory 76 CSS/JS local không thiếu file; xác nhận gzip/cache local và thêm regression header static asset.
 - [x] Conditional loading đợt 1: trang chủ giảm 9 request CSS/JS và khoảng 347 KB trước gzip; giữ đủ asset cho sản phẩm/dự án và pre-deploy đạt.
+- [x] Conditional loading đợt 2: giới hạn Jssor/Fancybox; trang chủ giảm lũy kế 12 request và khoảng 428 KB, pre-deploy đạt.
 - [ ] Kiểm tra cache/compression ảnh và static asset trên staging/hosting.
 - [ ] Chạy lại toàn bộ regression chức năng và visual sau mỗi đợt tối ưu.
 

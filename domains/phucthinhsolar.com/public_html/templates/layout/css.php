@@ -7,6 +7,8 @@
 <?php
     $isProductDetail = ($template === 'product/product_detail');
     $usesPhotobox = in_array($template, array('news/project_detail', 'album/album_detail'), true);
+    $usesFancybox = in_array($template, array('news/project_detail', 'video/video'), true);
+    $usesJssor = ($source === 'index');
 
     $css->set("bootstrap/bootstrap.css");
     $css->set("css/style.min080f.css");
@@ -101,9 +103,12 @@
         $css->set("fileuploader/font-fileuploader.css");
         $css->set("fileuploader/jquery.fileuploader.min.css");
     }
-    $css->set("css/jssor.css");
-    $css->set("fancybox3/jquery.fancybox.css");
-    $css->set("fancybox3/jquery.fancybox.style.css");
+    if($usesJssor) $css->set("css/jssor.css");
+    if($usesFancybox)
+    {
+        $css->set("fancybox3/jquery.fancybox.css");
+        $css->set("fancybox3/jquery.fancybox.style.css");
+    }
     // $css->set("css/account.css");
     $css->set("mmenu/mmenu.css");
     if($usesPhotobox) $css->set("photobox/photobox.css");

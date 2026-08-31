@@ -50,7 +50,7 @@ $js->set("js/lazyload.min.js");
 // Native browser scrolling is used. The legacy wheel smoother cached page heights
 // and could stop before the footer after lazy-loaded content changed the layout.
 $js->set("bootstrap/bootstrap.js");
-$js->set("js/jssor.slider.min.js");
+if($usesJssor) $js->set("js/jssor.slider.min.js");
 // $js->set("js/wow.min.js");
 $js->set("confirm/confirm.js");
 $js->set("holdon/HoldOn.js");
@@ -60,7 +60,7 @@ $js->set("mmenu/mmenu.js");
 $js->set("owlcarousel2/owl.carousel.js");
 if($isProductDetail) $js->set("magiczoomplus/magiczoomplus.js");
 $js->set("slick/slick.js");
-$js->set("fancybox3/jquery.fancybox.js");
+if($usesFancybox) $js->set("fancybox3/jquery.fancybox.js");
 if($usesPhotobox) $js->set("photobox/photobox.js");
 $js->set("simplenotify/simple-notify.js");
 if($isProductDetail) $js->set("fileuploader/jquery.fileuploader.min.js");

@@ -102,12 +102,24 @@ rg -q '<title>[^<]+</title>' /tmp/pts-predeploy-project-detail.html
 rg -q 'id="inf_single_project"' /tmp/pts-predeploy-project-detail.html
 rg -q 'assets/photobox/photobox.css' /tmp/pts-predeploy-project-detail.html
 rg -q 'assets/photobox/photobox.js' /tmp/pts-predeploy-project-detail.html
+rg -q 'assets/fancybox3/jquery.fancybox.css' /tmp/pts-predeploy-project-detail.html
+rg -q 'assets/fancybox3/jquery.fancybox.js' /tmp/pts-predeploy-project-detail.html
 rg -q 'assets/magiczoomplus/magiczoomplus.css' /tmp/pts-predeploy-product.html
 rg -q 'assets/magiczoomplus/magiczoomplus.js' /tmp/pts-predeploy-product.html
 rg -q 'assets/fileuploader/jquery.fileuploader.min.js' /tmp/pts-predeploy-product.html
 rg -q 'assets/comment/comment.js' /tmp/pts-predeploy-product.html
 if rg -q 'assets/(photobox|magiczoomplus|fileuploader|comment)/' /tmp/pts-predeploy-home.html; then
     echo "FAIL: Trang chủ còn tải asset chỉ dùng cho gallery hoặc chi tiết sản phẩm" >&2
+    exit 1
+fi
+rg -q 'assets/css/jssor.css' /tmp/pts-predeploy-home.html
+rg -q 'assets/js/jssor.slider.min.js' /tmp/pts-predeploy-home.html
+if rg -q 'assets/fancybox3/' /tmp/pts-predeploy-home.html; then
+    echo "FAIL: Trang chủ còn tải Fancybox chỉ dùng cho video hoặc chi tiết dự án" >&2
+    exit 1
+fi
+if rg -q 'assets/(css/jssor.css|js/jssor.slider.min.js)' /tmp/pts-predeploy-news.html; then
+    echo "FAIL: Trang danh sách tin còn tải Jssor chỉ dùng cho slider trang chủ" >&2
     exit 1
 fi
 rg -q 'name="twitter:title"' /tmp/pts-predeploy-product-filtered.html
