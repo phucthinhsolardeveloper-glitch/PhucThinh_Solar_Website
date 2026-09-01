@@ -54,6 +54,7 @@ $optsetting = array();
 securityAssert(!publicProductPricesVisible() && publicProductRequiresQuote(array('regular_price' => 999999, 'sale_price' => 888888)), 'Mặc định an toàn giữ chế độ báo giá khi chưa có thiết lập');
 $optsetting['public_product_prices'] = '1';
 securityAssert(publicProductPricesVisible() && !publicProductRequiresQuote(array('regular_price' => 999999, 'sale_price' => 888888)), 'Thiết lập Admin bật giá cho sản phẩm có giá nội bộ');
+securityAssert(publicProductRequiresQuote(array('regular_price' => 999999, 'sale_price' => 888888, 'status' => 'hienthi,baogia')), 'Sản phẩm có checkbox báo giá vẫn ẩn giá khi toàn website đang bật giá');
 securityAssert(publicProductRequiresQuote(array('regular_price' => 0, 'sale_price' => 0)), 'Sản phẩm không có giá vẫn yêu cầu báo giá khi bật giá công khai');
 $optsetting['public_product_prices'] = '0';
 securityAssert(!publicProductPricesVisible() && publicProductRequiresQuote(array('regular_price' => 999999, 'sale_price' => 888888)), 'Thiết lập Admin tắt giá trên toàn website');

@@ -97,7 +97,7 @@
 		}
 		if(!empty($priceConds))
 		{
-			$where .= " and (".implode(' or ', $priceConds).")";
+			$where .= " and not find_in_set('baogia',status) and (".implode(' or ', $priceConds).")";
 		}
 	}
 	if($orderby !="")

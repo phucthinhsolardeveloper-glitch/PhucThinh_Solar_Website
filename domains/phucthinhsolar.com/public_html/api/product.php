@@ -18,7 +18,7 @@
 	$pageLink .= $tempLink;
 
 	/* Get data */
-	$sql = "select name$lang, slugvi, slugen, id, photo, photo2, regular_price, sale_price, discount, type,khoanggia from #_product where type='san-pham' $where and find_in_set('hienthi',status) and find_in_set('banchay',status) order by numb,id desc";
+	$sql = "select name$lang, slugvi, slugen, id, photo, photo2, regular_price, sale_price, discount, type, khoanggia, status from #_product where type='san-pham' $where and find_in_set('hienthi',status) and find_in_set('banchay',status) order by numb,id desc";
 	$sqlCache = $sql." limit $start, $pagingAjax->perpage";
     $items = $cache->get($sqlCache, $params, 'result', 7200);
 	/* Count all data */
@@ -38,7 +38,7 @@
 					<?=$func->getImage(['class' => 'lazy dt-width-100 img-hover hidden-xs bigloaded','sizes' => '300x300x1', 'upload' => UPLOAD_PRODUCT_L, 'image' => $v['photo2'], 'alt' => $v['name'.$lang]])?>
                 	<?php } ?>
 				</a>
-				<?php if(publicProductPricesVisible() && $v['discount']) { ?>
+                <?php if(!publicProductRequiresQuote($v) && $v['discount']) { ?>
 				<div class="product-sale"><span><?='-'.$v['discount'].'%'?></span></div>
 				<?php } ?>
             </div>
@@ -46,7 +46,7 @@
                 <h3 class="pro-name"><a href="<?=$v[$sluglang]?>" title="<?=$v['name'.$lang]?>"><?=$v['name'.$lang]?></a></h3>
                 <div class="box-pro-prices">
                     <p class="pro-price">
-						<?php if(!publicProductPricesVisible()) { ?>
+						<?php if(publicProductRequiresQuote($v)) { ?>
 							<span><?=lienhe?></span>
 						<?php } elseif($v['discount']) { ?>
 							<span><?=$func->formatMoney($v['sale_price'],'đ')?> </span>

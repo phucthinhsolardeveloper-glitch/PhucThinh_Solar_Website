@@ -19,6 +19,14 @@
 
 	if($cmd == 'add-cart' && $id > 0)
 	{
+		$quoteProduct = $cart->getProductInfo($id);
+		if(empty($quoteProduct) || publicProductRequiresQuote($quoteProduct))
+		{
+			http_response_code(409);
+			header('Content-Type: application/json; charset=UTF-8');
+			echo json_encode(array('error' => 'Sản phẩm này nhận báo giá trực tiếp.', 'contactUrl' => 'lien-he/'));
+			exit();
+		}
 		$cart->addToCart($quantity,$id,$color,$size);
 		$max = (!empty($_SESSION['cart'])) ? count($_SESSION['cart']) : 0;
 		$data = array('max' => $max);

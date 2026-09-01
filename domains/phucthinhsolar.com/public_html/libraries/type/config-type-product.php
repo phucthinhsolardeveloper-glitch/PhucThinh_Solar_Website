@@ -19,7 +19,7 @@
     // Bật quản lý đánh giá sản phẩm trong Admin.
     $config['product'][$nametype]['comment'] = true;
     $config['product'][$nametype]['slug'] = true;
-    $config['product'][$nametype]['check'] = array("banchay" => "Bán chạy", "hienthi" => "Hiển thị");
+    $config['product'][$nametype]['check'] = array("banchay" => "Bán chạy", "hienthi" => "Hiển thị", "baogia" => "Liên hệ báo giá");
     $config['product'][$nametype]['images'] = true;
     $config['product'][$nametype]['images2'] = false;
     $config['product'][$nametype]['show_images'] = true;

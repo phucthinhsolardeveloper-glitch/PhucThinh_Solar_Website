@@ -59,7 +59,7 @@ if (!empty($argv[1]) && $argv[1] === '--inspect-workbook' && !empty($argv[2])) {
     testAssert(strpos((string) $guideSheet->getCell('B17')->getValue(), 'Model | JD-T200') !== false, 'Sheet hướng dẫn có ví dụ thông số khác');
     testAssert(strpos((string) $guideSheet->getCell('B21')->getValue(), 'Bước 1') !== false && strpos((string) $guideSheet->getCell('B21')->getValue(), 'CAP_NHAT') !== false, 'Sheet hướng dẫn có quy trình import từng bước');
     testAssert(!empty($headerColumns['Danh mục cấp 1']) && $productSheet->getCell($headerColumns['Danh mục cấp 1'].'2')->getDataValidation()->getType() === PHPExcel_Cell_DataValidation::TYPE_LIST, 'Danh mục có danh sách chọn trong Excel');
-    testAssert(!empty($headerColumns['Hiển thị (1/0)']) && !empty($headerColumns['Bán chạy (1/0)']), 'Template dùng hai cột trạng thái boolean thay cho text thủ công');
+    testAssert(!empty($headerColumns['Hiển thị (1/0)']) && !empty($headerColumns['Bán chạy (1/0)']) && !empty($headerColumns['Liên hệ báo giá (1/0)']), 'Template dùng các cột trạng thái boolean thay cho text thủ công');
     testAssert($productSheet->getCell($headerColumns['Hiển thị (1/0)'].'2')->getDataValidation()->getFormula1() === '"1,0"', 'Cột Hiển thị chỉ cho chọn 1 hoặc 0');
     $htmlFree = true;
     foreach(array('Mô tả ngắn', 'Nội dung', 'Chính sách mua hàng', 'Chứng nhận/kiểm nghiệm') as $header) {
@@ -311,8 +311,8 @@ try {
     testAssert(empty($rollbackBrand), 'Rollback xóa thương hiệu mới nếu batch sản phẩm thất bại');
 
     $archiveRows = array(array('_row_number' => 2, 'action' => 'archive', 'id' => $createdId));
-    $booleanStatusPreview = productBulkValidateRows(array(array('_row_number' => 2, 'action' => 'update', 'id' => $createdId, 'is_visible' => '0', 'is_featured' => '1')), $type);
-    testAssert($booleanStatusPreview['errors'] === 0 && $booleanStatusPreview['counts']['hide_update'] === 1 && $booleanStatusPreview['rows'][0]['data']['status'] === 'banchay', 'Trạng thái 1/0 được đổi đúng sang trạng thái nội bộ');
+    $booleanStatusPreview = productBulkValidateRows(array(array('_row_number' => 2, 'action' => 'update', 'id' => $createdId, 'is_visible' => '0', 'is_featured' => '1', 'requires_quote' => '1')), $type);
+    testAssert($booleanStatusPreview['errors'] === 0 && $booleanStatusPreview['counts']['hide_update'] === 1 && $booleanStatusPreview['rows'][0]['data']['status'] === 'banchay,baogia', 'Trạng thái 1/0 được đổi đúng sang trạng thái nội bộ, gồm báo giá riêng');
     $invalidBooleanStatus = productBulkValidateRows(array(array('_row_number' => 2, 'action' => 'update', 'id' => $createdId, 'is_visible' => 'Có')), $type);
     testAssert($invalidBooleanStatus['errors'] > 0, 'Trạng thái boolean từ chối text nhập thủ công');
     $preview = productBulkValidateRows($archiveRows, $type);

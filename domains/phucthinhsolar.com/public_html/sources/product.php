@@ -109,7 +109,7 @@
 			}
 			if(!empty($priceConds))
 			{
-				$extraWhere .= " and (".implode(' or ', $priceConds).")";
+				$extraWhere .= " and not find_in_set('baogia',status) and (".implode(' or ', $priceConds).")";
 			}
 		}
 

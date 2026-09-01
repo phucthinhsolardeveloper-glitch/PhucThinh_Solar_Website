@@ -15,5 +15,6 @@ function publicProductPricesVisible()
 
 function publicProductRequiresQuote($product = array())
 {
-    return !publicProductPricesVisible() || (empty($product['regular_price']) && empty($product['sale_price']));
+    $statuses = array_filter(array_map('trim', explode(',', isset($product['status']) ? (string)$product['status'] : '')));
+    return !publicProductPricesVisible() || in_array('baogia', $statuses, true) || (empty($product['regular_price']) && empty($product['sale_price']));
 }

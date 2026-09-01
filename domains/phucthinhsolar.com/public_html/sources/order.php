@@ -35,6 +35,14 @@
 		{
 			$func->transfer("Đơn hàng không hợp lệ. Vui lòng thử lại sau.", $configBase, false);
 		}
+		foreach($_SESSION['cart'] as $cartItem)
+		{
+			$checkoutProduct = $cart->getProductInfo((int)$cartItem['productid']);
+			if(empty($checkoutProduct) || publicProductRequiresQuote($checkoutProduct))
+			{
+				$func->transfer("Giỏ hàng có sản phẩm đã chuyển sang liên hệ báo giá. Vui lòng gửi yêu cầu tư vấn.", "lien-he/", false);
+			}
+		}
 
 		/* Data */
 		$dataOrder = (!empty($_POST['dataOrder'])) ? $_POST['dataOrder'] : null;

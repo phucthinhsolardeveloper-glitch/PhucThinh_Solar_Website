@@ -346,7 +346,7 @@
                         </div>
 					<?php } } ?>
                     <small class="form-text text-muted d-block">
-                        “Hiển thị” cho phép sản phẩm xuất hiện công khai; “Bán chạy” đưa sản phẩm vào nhóm bán chạy. Có thể chọn đồng thời cả hai; bỏ “Hiển thị” sẽ ẩn sản phẩm khỏi website.
+                        “Hiển thị” cho phép sản phẩm xuất hiện công khai; “Bán chạy” đưa sản phẩm vào nhóm bán chạy. Bật “Liên hệ báo giá” để giữ sản phẩm công khai nhưng ẩn giá và thao tác mua riêng sản phẩm đó. Bỏ “Hiển thị” mới là ẩn toàn bộ sản phẩm.
                     </small>
                 </div>
                 <div class="form-group">

@@ -25,7 +25,7 @@
 	$pageLink .= $tempLink;
 
 	/* Get data */
-	$sql = "select name$lang, slugvi, slugen, id, photo, regular_price, sale_price, discount, type from #_product where type='san-pham' $where and find_in_set('hienthi',status) order by numb,id desc";
+	$sql = "select name$lang, slugvi, slugen, id, photo, regular_price, sale_price, discount, type, status from #_product where type='san-pham' $where and find_in_set('hienthi',status) order by numb,id desc";
 	$sqlCache = $sql." limit $start, $pagingAjax->perpage";
     $items = $cache->get($sqlCache, $params, 'result', 7200);
 

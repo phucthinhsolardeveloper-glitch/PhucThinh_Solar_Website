@@ -38,7 +38,7 @@
                 "ratingValue": "4.4",
                 "reviewCount": "89"
             },
-            <?php if(publicProductPricesVisible()) { ?>
+            <?php if(!publicProductRequiresQuote(isset($rowDetail) ? $rowDetail : array())) { ?>
             "offers":
             {
                 "@type": "Offer",
