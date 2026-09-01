@@ -343,7 +343,7 @@
             <div class="container">
                 <div class="row">
                     <div class="col">
-                        <div id="inf_list_partner" class="active_slider inf_dots">
+                        <div id="inf_list_partner" class="inf_dots"><?php /* Theme V2: lưới logo tĩnh (flex-wrap), không dùng slick để tránh kéo tràn qua logo cuối. */ ?>
                             <?php foreach($partner as $v){ ?>
                             <div class="inf_item_partner">
                                 <div class="wrap">

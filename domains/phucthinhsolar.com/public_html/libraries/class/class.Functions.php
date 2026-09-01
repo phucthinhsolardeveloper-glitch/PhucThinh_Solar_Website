@@ -1976,22 +1976,24 @@
 
 			switch($array['mime'])
 			{
+				/* Chặn warning libpng/GD của ảnh gốc lỗi profile (vd iCCP sRGB sai)
+				   không cho in ra output làm hỏng header ảnh thumbnail. */
 				case 'image/jpeg':
 				case 'image/jpg':
-					$image = imagecreatefromjpeg($image_url);
+					$image = @imagecreatefromjpeg($image_url);
 					$func='imagejpeg';
 					$mime_type = 'jpeg';
 					break;
 
 				case 'image/x-ms-bmp':
 				case 'image/png':
-					$image = imagecreatefrompng($image_url);
+					$image = @imagecreatefrompng($image_url);
 					$func='imagepng';
 					$mime_type = 'png';
 					break;
 
 				case 'image/gif':
-					$image = imagecreatefromgif($image_url);
+					$image = @imagecreatefromgif($image_url);
 					$func='imagegif';
 					$mime_type = 'png';
 					break;

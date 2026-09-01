@@ -1826,9 +1826,32 @@ body .home-3 .tab-switcher ul.pts-home-category-grid{
 /* =====================================================================
    NGÔN NGỮ TRONG SIDEBAR MOBILE (mmenu)
    ===================================================================== */
-.mm-lang{display:flex!important;align-items:center;justify-content:space-between;gap:12px;padding:14px 20px!important;}
-.mm-lang .mm-lang-title{color:#475569;font-size:15px;font-weight:700;}
-.mm-lang .gtranslate_wrapper{display:inline-flex;align-items:center;min-height:28px;}
+.mm-lang{
+    display:flex!important;flex-wrap:wrap!important;align-items:center;
+    gap:8px 12px;padding:14px 20px!important;
+}
+.mm-lang .mm-lang-title{flex:0 0 auto;color:#475569;font-size:15px;font-weight:700;}
+/* Khung chứa widget GTranslate: không cho tràn khỏi hàng, thu về kích thước gọn */
+.mm-lang .gtranslate_wrapper{
+    flex:1 1 auto;min-width:0;max-width:100%;
+    display:flex!important;align-items:center;overflow:hidden;
+}
+.mm-lang .gtranslate_wrapper *{max-width:100%!important;box-sizing:border-box;}
+.mm-lang .gtranslate_wrapper select,
+.mm-lang .gtranslate_wrapper .gt_selector,
+.mm-lang .gtranslate_wrapper .gt-selector,
+.mm-lang .gtranslate_wrapper .gtranslate-selector{
+    width:100%!important;max-width:180px!important;height:36px!important;
+    padding:0 8px!important;border:1px solid var(--pts-line)!important;border-radius:8px!important;
+    font-size:13px!important;background:#fff!important;
+}
+.mm-lang .gtranslate_wrapper a,
+.mm-lang .gtranslate_wrapper .gt_float_switcher,
+.mm-lang .gtranslate_wrapper .gt-container{
+    position:static!important;transform:none!important;box-shadow:none!important;
+    float:none!important;white-space:nowrap;
+}
+.mm-lang .gtranslate_wrapper img{width:20px!important;height:auto!important;}
 /* Ẩn công tắc ngôn ngữ ở header khi vào chế độ mobile (đã chuyển vào sidebar) */
 @media(max-width:991px){
     .flex-search-lang>.gtranslate_wrapper{display:none!important;}
@@ -1838,3 +1861,21 @@ body .home-3 .tab-switcher ul.pts-home-category-grid{
 .hqf-label{flex:0 0 auto;gap:0!important;color:var(--pts-gold-dark)!important;font-size:0!important;}
 .hqf-label i{font-size:15px!important;}
 @media(max-width:640px){ .hqf-label i{font-size:14px!important;} }
+
+/* =====================================================================
+   HERO TRANG TRONG — hạ chiều cao, bỏ tiêu đề lớn
+   Chủ project: banner đầu trang quá cao và chữ "GIẢI PHÁP/…" quá to.
+   Giữ lại breadcrumb làm ngữ cảnh; <span> tiêu đề không phải <h1> nên
+   ẩn không ảnh hưởng SEO (đã có thẻ <title> + h1 trong nội dung).
+   ===================================================================== */
+.page-title{min-height:96px!important;display:flex!important;align-items:center!important;}
+.page-title .wrap-content2{padding-top:0!important;padding-bottom:0!important;}
+.page-title .title-page,
+.page-title .line-page{display:none!important;}
+.page-title:before{background:linear-gradient(90deg,rgba(6,21,55,.92),rgba(10,34,81,.78))!important;}
+.breadCrumbs{margin:0!important;}
+.breadCrumbs .breadcrumb-item a{font-size:14px!important;}
+@media(max-width:768px){
+    .page-title{min-height:72px!important;}
+    .breadCrumbs .breadcrumb-item a{font-size:12.5px!important;}
+}

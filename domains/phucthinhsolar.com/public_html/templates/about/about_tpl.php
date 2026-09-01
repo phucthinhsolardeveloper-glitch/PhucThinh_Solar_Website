@@ -61,7 +61,7 @@
                 <div class="row">
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
                         <h4 class="CRstyle_title">Đối tác chiến lược</h4>
-                        <div id="inf_list_partner" class="active_slider inf_dots">
+                        <div id="inf_list_partner" class="inf_dots"><?php /* Theme V2: lưới logo tĩnh (flex-wrap), không dùng slick. */ ?>
                             <?php foreach($partner as $k => $v){ ?>
                             <div class="inf_item_partner">
                                 <div class="wrap">
