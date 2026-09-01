@@ -216,6 +216,26 @@ try
         'Lưu liên hệ thành công khi địa chỉ để trống'
     );
 
+    // ADM-P2-001: bảng điều khiển nạp dữ liệu ở controller sources/index.php, template chỉ render.
+    $dashboard = readinessHttp($base.'index.php', 'GET', array(), $newCookie);
+    $dashboardNoPhpError = true;
+    foreach(array('Notice:', 'Warning:', 'Fatal error', 'Undefined variable') as $needle)
+        if(strpos($dashboard['body'], $needle) !== false) $dashboardNoPhpError = false;
+    $dashboardClean = $dashboard['status'] === 200
+        && strpos($dashboard['body'], 'Việc cần xử lý') !== false
+        && $dashboardNoPhpError;
+    readinessAssert($dashboardClean, 'Bảng điều khiển render 200 không PHP notice/warning');
+
+    $expectedQueue = array(
+        'orders' => (int) $d->rawQueryOne("select count(id) as t from #_order where order_status = ?", array(1))['t'],
+        'reviews' => (int) $d->rawQueryOne("select count(id) as t from #_comment where id_parent = 0 and find_in_set('new-admin', status)")['t'],
+        'wattage' => (int) $d->rawQueryOne("select count(id) as t from #_product where type = ? and (cong_suat is null or cong_suat <= 0)", array('san-pham'))['t'],
+    );
+    $queueMatches = strpos($dashboard['body'], '>'.$expectedQueue['orders'].'</span>') !== false
+        && strpos($dashboard['body'], '>'.$expectedQueue['wattage'].'</span>') !== false;
+    readinessAssert($queueMatches, 'Ô hàng đợi bảng điều khiển khớp số liệu truy vấn trực tiếp');
+    readinessAssert(preg_match('/data:\s*\[[0-9,\s]*\]/', $dashboard['body']) === 1, 'Chart bảng điều khiển vẫn nhận mảng dữ liệu ngày');
+
     echo "Admin readiness tests completed.\n";
 }
 finally

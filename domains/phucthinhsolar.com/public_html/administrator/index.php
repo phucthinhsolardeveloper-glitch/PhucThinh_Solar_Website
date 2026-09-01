@@ -33,6 +33,9 @@
 
 	/* Requick */
 	require_once LIBRARIES."requick.php";
+
+	/* Controller bảng điều khiển: route mặc định (com rỗng) không đi qua sources/ */
+	if(empty($com) && !empty($template) && $template === 'index' && is_file(SOURCES.'index.php')) require_once SOURCES.'index.php';
 ?>
 <!DOCTYPE html>
 <html lang="vi">
