@@ -15,34 +15,42 @@ $bulkCsrf = productBulkCsrfToken();
 </section>
 
 <section class="content">
-    <?php if (!empty($bulkMessage)) { ?>
+    <style>
+        .pts-bulk-hero{background:linear-gradient(135deg,#17385f,#245d8f);border-radius:12px;color:#fff;padding:20px 24px;margin-bottom:16px;box-shadow:0 8px 22px rgba(18,52,86,.14)}
+        .pts-bulk-steps{display:flex;flex-wrap:wrap;gap:10px;margin-top:15px}.pts-bulk-step{display:flex;align-items:center;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);border-radius:20px;padding:6px 12px;font-size:12px}.pts-bulk-step b{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;margin-right:7px;border-radius:50%;background:#fff;color:#245d8f}
+        .pts-bulk-card{border:0;border-radius:12px;box-shadow:0 5px 18px rgba(31,45,61,.08);overflow:hidden}.pts-bulk-card .card-header{border-bottom:1px solid #edf1f5;background:#fff;padding:16px 18px}.pts-bulk-card .card-body{padding:18px}.pts-bulk-primary-action{min-height:42px}.pts-bulk-help{border:1px solid #e5e9ef;border-radius:10px;background:#fff}.pts-bulk-help summary{cursor:pointer;padding:13px 16px;font-weight:600;color:#34495e}.pts-bulk-help[open] summary{border-bottom:1px solid #edf1f5}.pts-bulk-result{border:0;border-radius:12px;box-shadow:0 5px 18px rgba(40,167,69,.13)}
+        @media(max-width:767px){.pts-bulk-hero{padding:18px}.pts-bulk-steps{display:none}}
+    </style>
+    <div class="pts-bulk-hero">
+        <div class="d-flex flex-wrap align-items-center justify-content-between">
+            <div><h2 class="h5 font-weight-bold mb-1">Nhập và xuất sản phẩm</h2><div class="text-white-50">Cập nhật hàng loạt với bước xem trước và khả năng phục hồi khi có lỗi.</div></div>
+            <a class="btn btn-sm btn-light mt-2 mt-md-0" href="index.php?com=product&act=man&type=<?=$type?>"><i class="fas fa-arrow-left mr-1"></i>Danh sách sản phẩm</a>
+        </div>
+        <div class="pts-bulk-steps"><span class="pts-bulk-step"><b>1</b>Chuẩn bị file</span><span class="pts-bulk-step"><b>2</b>Tải lên</span><span class="pts-bulk-step"><b>3</b>Kiểm tra thay đổi</span><span class="pts-bulk-step"><b>4</b>Xác nhận áp dụng</span></div>
+    </div>
+    <?php if (!empty($bulkMessage) && empty($bulkResult)) { ?>
         <div class="alert alert-<?=$bulkMessage['type']?> text-sm"><?=htmlspecialchars($bulkMessage['text'])?></div>
     <?php } ?>
     <?php if (!empty($bulkResult)) { ?>
-        <div class="alert alert-success text-sm">
-            Tạo mới: <strong><?=(int) $bulkResult['create']?></strong> ·
-            Hãng mới: <strong><?=!empty($bulkResult['brand_create']) ? (int) $bulkResult['brand_create'] : 0?></strong> ·
-            Cập nhật: <strong><?=(int) $bulkResult['update']?></strong> ·
-            Ẩn khỏi website: <strong><?=(int) $bulkResult['archive']?></strong> ·
-            Bỏ qua: <strong><?=(int) $bulkResult['skip']?></strong>
+        <div class="alert alert-success pts-bulk-result text-sm d-flex flex-wrap align-items-center mb-3">
+            <i class="fas fa-check-circle fa-2x mr-3"></i>
+            <div class="mr-auto"><strong class="d-block mb-1"><?=htmlspecialchars(!empty($bulkMessage['text']) ? $bulkMessage['text'] : 'Đã áp dụng dữ liệu thành công.')?></strong><span>Tạo <?=(int) $bulkResult['create']?> · Hãng mới <?=!empty($bulkResult['brand_create']) ? (int) $bulkResult['brand_create'] : 0?> · Cập nhật <?=(int) $bulkResult['update']?> · Ẩn <?=(int) $bulkResult['archive']?> · Bỏ qua <?=(int) $bulkResult['skip']?></span></div>
+            <a class="btn btn-sm btn-success border-white mt-2 mt-md-0" href="index.php?com=product&act=man&type=<?=$type?>">Xem danh sách</a>
         </div>
     <?php } ?>
 
     <div class="row">
         <div class="col-lg-6">
-            <div class="card card-primary card-outline text-sm h-100">
-                <div class="card-header"><h3 class="card-title"><i class="fas fa-file-download mr-2"></i>Tải mẫu và xuất dữ liệu</h3></div>
+            <div class="card pts-bulk-card text-sm h-100">
+                <div class="card-header"><h3 class="card-title font-weight-bold"><i class="fas fa-file-export text-primary mr-2"></i>Chuẩn bị dữ liệu</h3></div>
                 <div class="card-body">
-                    <p>Excel có sheet hướng dẫn, danh mục đối chiếu và sheet hệ thống ẩn để phát hiện xung đột. Nên dùng Excel khi gửi qua lại giữa các bộ phận.</p>
-                    <div class="mb-3">
-                        <a class="btn btn-sm btn-outline-primary mr-2 mb-2" href="<?=$bulkBase?>&act=bulk_template&format=xlsx"><i class="far fa-file-excel mr-1"></i>Mẫu Excel</a>
-                        <a class="btn btn-sm btn-outline-secondary mb-2" href="<?=$bulkBase?>&act=bulk_template&format=csv"><i class="fas fa-file-csv mr-1"></i>Mẫu CSV</a>
+                    <p class="text-muted">Cập nhật dữ liệu đang có bằng bản Excel xuất từ hệ thống; tạo danh sách mới bằng file mẫu trống.</p>
+                    <div class="d-flex flex-wrap align-items-center">
+                        <a class="btn btn-primary pts-bulk-primary-action mr-2 mb-2" href="<?=$bulkBase?>&act=bulk_export&format=xlsx"><i class="fas fa-file-export mr-2"></i>Xuất Excel hiện tại</a>
+                        <a class="btn btn-outline-primary pts-bulk-primary-action mr-2 mb-2" href="<?=$bulkBase?>&act=bulk_template&format=xlsx"><i class="far fa-file-excel mr-2"></i>Tải file mẫu</a>
+                        <div class="dropdown mb-2"><button class="btn btn-light border pts-bulk-primary-action dropdown-toggle" type="button" data-toggle="dropdown">Tùy chọn CSV</button><div class="dropdown-menu dropdown-menu-right"><a class="dropdown-item" href="<?=$bulkBase?>&act=bulk_export&format=csv">Xuất toàn bộ CSV</a><a class="dropdown-item" href="<?=$bulkBase?>&act=bulk_template&format=csv">Tải mẫu CSV</a></div></div>
                     </div>
-                    <div>
-                        <a class="btn btn-sm bg-gradient-success mr-2 mb-2" href="<?=$bulkBase?>&act=bulk_export&format=xlsx"><i class="fas fa-file-export mr-1"></i>Xuất toàn bộ Excel</a>
-                        <a class="btn btn-sm bg-gradient-info mb-2" href="<?=$bulkBase?>&act=bulk_export&format=csv"><i class="fas fa-file-csv mr-1"></i>Xuất toàn bộ CSV</a>
-                    </div>
-                    <small class="text-muted d-block mt-2">Để bổ sung/cập nhật sản phẩm hiện có, hãy dùng “Xuất toàn bộ Excel” để giữ snapshot kiểm tra xung đột. “Mẫu Excel” phù hợp tạo sản phẩm mới.</small>
+                    <small class="text-muted d-block mt-2"><i class="fas fa-shield-alt mr-1"></i>Excel xuất từ hệ thống có snapshot để phát hiện người khác đã sửa dữ liệu trong lúc bạn làm việc.</small>
                 </div>
             </div>
         </div>
@@ -50,27 +58,27 @@ $bulkCsrf = productBulkCsrfToken();
             <form method="post" action="<?=$bulkBase?>&act=bulk_preview" enctype="multipart/form-data">
         <?=adminCsrfField()?>
                 <input type="hidden" name="product_bulk_csrf" value="<?=htmlspecialchars($bulkCsrf)?>">
-                <div class="card card-primary card-outline text-sm h-100">
-                    <div class="card-header"><h3 class="card-title"><i class="fas fa-file-import mr-2"></i>Nhập dữ liệu</h3></div>
+                <div class="card pts-bulk-card text-sm h-100">
+                    <div class="card-header"><h3 class="card-title font-weight-bold"><i class="fas fa-cloud-upload-alt text-primary mr-2"></i>Tải file lên kiểm tra</h3></div>
                     <div class="card-body">
                         <div class="form-group">
-                            <label for="product_bulk_file">File Excel hoặc CSV</label>
+                            <label for="product_bulk_file">Chọn file Excel hoặc CSV</label>
                             <div class="custom-file my-custom-file">
                                 <input required type="file" class="custom-file-input" name="product_bulk_file" id="product_bulk_file" accept=".csv,.xls,.xlsx">
                                 <label class="custom-file-label" for="product_bulk_file">Chọn file tối đa 5 MB</label>
                             </div>
-                            <small class="form-text text-muted">Tối đa 500 dòng/lần. Hệ thống chỉ phân tích và hiển thị bản xem trước, chưa ghi database.</small>
+                            <small class="form-text text-muted"><i class="fas fa-info-circle mr-1"></i>Tối đa 500 dòng và 5 MB. Bước này chỉ phân tích, chưa thay đổi dữ liệu.</small>
                         </div>
+                        <button class="btn btn-primary pts-bulk-primary-action btn-block"><i class="fas fa-search mr-2"></i>Kiểm tra file và xem thay đổi</button>
                     </div>
-                    <div class="card-footer"><button class="btn btn-sm bg-gradient-primary"><i class="fas fa-search mr-2"></i>Kiểm tra và xem trước</button></div>
                 </div>
             </form>
         </div>
     </div>
 
-    <div class="card card-warning card-outline text-sm mt-3">
-        <div class="card-header"><h3 class="card-title">Quy tắc an toàn</h3></div>
-        <div class="card-body py-2">
+    <details class="pts-bulk-help text-sm mt-3">
+        <summary><i class="far fa-question-circle text-primary mr-2"></i>Cần trợ giúp khi chuẩn bị file?</summary>
+        <div class="p-3">
             <ul class="mb-0 pl-3">
                 <li>Có ID hoặc mã đã tồn tại: cập nhật. ID trống và mã mới: tạo sản phẩm; sản phẩm mới bắt buộc có mã và tên.</li>
                 <li>Ô trống giữ nguyên dữ liệu hiện tại. Hệ thống không tự xóa dữ liệu chỉ vì ô Excel để trống.</li>
@@ -79,7 +87,7 @@ $bulkCsrf = productBulkCsrfToken();
                 <li>Thương hiệu chưa có trong hệ thống sẽ được liệt kê ở bước xem trước để chọn tạo mới, ghép với hãng có sẵn hoặc bỏ trống.</li>
             </ul>
         </div>
-    </div>
+    </details>
 
     <?php if (!empty($bulkPreview)) { ?>
         <div class="card card-primary card-outline text-sm mt-3">
@@ -221,7 +229,4 @@ $bulkCsrf = productBulkCsrfToken();
         </div>
     <?php } ?>
 
-    <div class="card-footer px-0 text-sm">
-        <a class="btn btn-sm btn-outline-secondary" href="index.php?com=product&act=man&type=<?=$type?>"><i class="fas fa-arrow-left mr-2"></i>Quay lại danh sách sản phẩm</a>
-    </div>
 </section>
