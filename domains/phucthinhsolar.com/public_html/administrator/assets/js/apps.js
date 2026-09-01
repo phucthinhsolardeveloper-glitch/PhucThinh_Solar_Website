@@ -1975,35 +1975,38 @@ $(document).ready(function(){
 			var $rows = $('.show-checkbox[data-attr="'+attr+'"]');
 			var ids = $rows.map(function(){ return $(this).data('id'); }).get();
 			var label = $.trim($master.closest('th').find('div:first').text());
+			var total = parseInt($master.data('total'), 10) || ids.length;
+			var filter = $master.data('filter') || {};
 			if(!ids.length) return;
 			$master.prop('checked', !checked).prop('indeterminate', false);
+			function applyBulkStatus(scope)
+			{
+				$master.prop('disabled', true);
+				var requestData = $.extend({}, scope === 'filtered' ? filter : {}, {
+					admin_csrf: ADMIN_CSRF, ids: ids.join(','), scope: scope, table: table,
+					attr: attr, value: checked ? 1 : 0, type: TYPE, com: COM
+				});
+				$.ajax({
+					url: 'api/status.php', type: 'POST', dataType: 'json', data: requestData,
+					success: function(response){
+						if(response && response.success) {
+							$rows.prop('checked', checked);
+							syncPageStatusMaster(attr);
+							showNotify(response.message || ('Đã cập nhật '+response.updated+' sản phẩm.'));
+						} else showNotify(response && response.message ? response.message : 'Cập nhật chưa hoàn tất. Vui lòng tải lại trang.', 'Lỗi', 'error');
+					},
+					error: function(){ showNotify('Không thể kết nối để cập nhật trạng thái.', 'Lỗi', 'error'); },
+					complete: function(){ $master.prop('disabled', false); }
+				});
+			}
+			var bulkButtons = {page: {text: 'Trang này ('+ids.length+')', btnClass: 'btn-outline-primary', action: function(){ applyBulkStatus('selected'); }}};
+			if(total > ids.length) bulkButtons.filtered = {text: 'Toàn bộ kết quả ('+total+')', btnClass: 'btn-primary', action: function(){ applyBulkStatus('filtered'); }};
+			bulkButtons.cancel = {text: 'Hủy'};
 			$.confirm({
 				title: 'Cập nhật hàng loạt',
-				content: (checked ? 'Bật ' : 'Tắt ')+'“'+label+'” cho '+ids.length+' sản phẩm trên trang này?',
+				content: (checked ? 'Bật ' : 'Tắt ')+'“'+label+'”. Chọn phạm vi muốn áp dụng:',
 				type: checked ? 'blue' : 'orange',
-				buttons: {
-					confirm: {
-						text: 'Áp dụng',
-						btnClass: 'btn-primary',
-						action: function(){
-							$master.prop('disabled', true);
-							$.ajax({
-								url: 'api/status.php', type: 'POST', dataType: 'json',
-								data: {admin_csrf: ADMIN_CSRF, ids: ids.join(','), table: table, attr: attr, value: checked ? 1 : 0, type: TYPE, com: COM},
-								success: function(response){
-									if(response && response.success) {
-										$rows.prop('checked', checked);
-										syncPageStatusMaster(attr);
-										showNotify('Đã cập nhật '+response.updated+' sản phẩm.');
-									} else showNotify('Cập nhật chưa hoàn tất. Vui lòng tải lại trang.', 'Lỗi', 'error');
-								},
-								error: function(){ showNotify('Không thể kết nối để cập nhật trạng thái.', 'Lỗi', 'error'); },
-								complete: function(){ $master.prop('disabled', false); }
-							});
-						}
-					},
-					cancel: {text: 'Hủy'}
-				}
+				buttons: bulkButtons
 			});
 		});
 	}

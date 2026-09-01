@@ -238,7 +238,7 @@
 	/* View man */
 	function viewMans()
 	{
-		global $d, $func, $comment, $commentTotals, $commentNewTotals, $strUrl, $curPage, $items, $paging, $type;
+		global $d, $func, $comment, $commentTotals, $commentNewTotals, $strUrl, $curPage, $items, $paging, $type, $productStatusFilter, $productStatusFilterTotal;
 
 		$where = "";
 		$params = array($type);
@@ -286,6 +286,13 @@
 		$sqlNum = "select count(*) as 'num' from #_product p where p.type = ? $where";
 		$count = $d->rawQueryOne($sqlNum,$params);
 		$total = (!empty($count)) ? $count['num'] : 0;
+		$productStatusFilterTotal = (int)$total;
+		$productStatusFilter = array(
+			'id_list' => $filters['id_list'], 'id_cat' => $filters['id_cat'], 'id_item' => $filters['id_item'],
+			'id_sub' => $filters['id_sub'], 'id_brand' => $filters['id_brand'],
+			'comment_status' => $comment_status, 'data_status' => $dataStatus,
+			'keyword' => isset($_REQUEST['keyword']) ? trim((string)$_REQUEST['keyword']) : ''
+		);
 		$commentTotals = array();
 		$commentNewTotals = array();
 		if(!empty($items))

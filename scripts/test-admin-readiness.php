@@ -50,9 +50,21 @@ $prefix = 'CODEX-RBAC-'.bin2hex(random_bytes(4));
 $createdUsers = array();
 $createdGroups = array();
 $rateKeys = array();
+$createdProductIds = array();
 
 try
 {
+    // Dọn fixture từ lượt test bị ngắt cứng trước khi PHP kịp chạy finally.
+    foreach($d->rawQuery("select id from #_user where username like ?", array('codex-rbac-%')) as $staleUser)
+    {
+        $d->rawQuery("delete from #_user_log where id_user = ?", array((int)$staleUser['id']));
+        $d->rawQuery("delete from #_user where id = ?", array((int)$staleUser['id']));
+    }
+    foreach($d->rawQuery("select id from #_permission_group where name like ?", array('CODEX-RBAC-%')) as $staleGroup)
+    {
+        $d->rawQuery("delete from #_permission where id_permission_group = ?", array((int)$staleGroup['id']));
+        $d->rawQuery("delete from #_permission_group where id = ?", array((int)$staleGroup['id']));
+    }
     $matrix = array(
         'product' => array('product_man_san-pham','product_add_san-pham','product_edit_san-pham','product_delete_san-pham','product_add_photo_san-pham','product_edit_photo_san-pham','product_delete_photo_san-pham'),
         'order' => array('order_man','order_edit'),
@@ -149,10 +161,20 @@ try
     $apiInvalidPayload = json_decode($apiInvalidStatus['body'], true);
     readinessAssert($apiInvalidStatus['status'] === 200 && empty($apiInvalidPayload['success']), 'API trạng thái hàng loạt từ chối thuộc tính ngoài cấu hình');
 
+    $bulkStatusCode = 'CODEX-BULK-STATUS-'.bin2hex(random_bytes(4));
+    $d->insert('product', array('code' => $bulkStatusCode, 'namevi' => 'Sản phẩm kiểm thử trạng thái lọc', 'slugvi' => strtolower($bulkStatusCode), 'type' => 'san-pham', 'status' => 'hienthi', 'numb' => 0, 'cong_suat' => 0, 'regular_price' => 0, 'sale_price' => 0, 'discount' => 0, 'id_list' => 0, 'id_cat' => 0, 'id_item' => 0, 'id_sub' => 0, 'id_brand' => 0, 'date_created' => time(), 'date_updated' => 0, 'view' => 0));
+    $bulkStatusProductId = (int)$d->getLastInsertId();
+    $createdProductIds[] = $bulkStatusProductId;
+    $apiFilteredStatus = readinessHttp($base.'api/status.php', 'POST', array('admin_csrf' => $authenticatedToken[1], 'scope' => 'filtered', 'table' => 'product', 'attr' => 'baogia', 'value' => '1', 'type' => 'san-pham', 'com' => 'product', 'keyword' => $bulkStatusCode), $newCookie);
+    $apiFilteredPayload = json_decode($apiFilteredStatus['body'], true);
+    $bulkStatusRow = $d->rawQueryOne('select status from #_product where id = ?', array($bulkStatusProductId));
+    readinessAssert($apiFilteredStatus['status'] === 200 && !empty($apiFilteredPayload['success']) && (int)$apiFilteredPayload['updated'] === 1 && strpos(','.$bulkStatusRow['status'].',', ',baogia,') !== false, 'API trạng thái áp dụng được toàn bộ kết quả theo bộ lọc');
+
     echo "Admin readiness tests completed.\n";
 }
 finally
 {
+    foreach($createdProductIds as $productId) $d->rawQuery("delete from #_product where id = ?", array($productId));
     foreach($createdUsers as $user) $d->rawQuery("delete from #_user_log where id_user = ?", array($user['id']));
     foreach($createdUsers as $user) $d->rawQuery("delete from #_user where id = ?", array($user['id']));
     foreach($createdGroups as $groupId) $d->rawQuery("delete from #_permission where id_permission_group = ?", array($groupId));
