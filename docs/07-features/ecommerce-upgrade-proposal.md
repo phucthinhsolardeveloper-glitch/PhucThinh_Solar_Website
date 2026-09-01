@@ -67,3 +67,15 @@ Sau khi website đã deploy và vận hành ổn định, có thể chọn **B3 
 
 - Không bê nguyên header Kitawa: rủi ro vỡ layout toàn site, mất nhận diện thương hiệu vàng kim hiện có. Chỉ mượn ý tưởng (lọc nhanh, nổi bật catalog), giữ khung theme V2.
 - Không thêm giá/gạch giá khi chưa bật chế độ "Hiển thị giá".
+
+## 6. Việc tồn đọng đã ghi nhận (chưa fix theo yêu cầu chủ project)
+
+- **Đổi ngôn ngữ trên mobile (sidebar) chưa hoạt động đúng như desktop.**
+  Hiện: hàng "Ngôn ngữ" trong drawer sinh 5 link (VI/EN/中文/한국어/日本語) đọc từ
+  `window.gtranslateSettings.languages`, bấm sẽ set cookie `googtrans=/vi/<lang>`
+  rồi reload. Chưa xác nhận GTranslate popup.js áp dụng cookie này để dịch thật
+  (Playwright chặn CDN `cdn.gtranslate.net` nên không test được). Widget nhúng
+  `.gtranslate_wrapper` trong drawer trước đó bị tràn layout nên đã bỏ.
+  Khi cần fix: kiểm tra định dạng cookie GTranslate.io mong đợi, hoặc gọi hàm
+  toàn cục mà popup.js expose (vd `doGTranslate`), hoặc nhúng lại widget với
+  CSS ràng buộc chặt trong `.mm-lang`.
