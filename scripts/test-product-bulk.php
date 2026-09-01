@@ -16,10 +16,12 @@ require LIBRARIES.'product_specs.php';
 
 function testAssert($condition, $message)
 {
+    global $quietTestOutput;
     if (!$condition) throw new Exception($message);
-    echo "PASS: ", $message, PHP_EOL;
+    if (empty($quietTestOutput)) echo "PASS: ", $message, PHP_EOL;
 }
 
+$quietTestOutput = !empty($argv[1]) && in_array($argv[1], array('--export-workbook', '--export-csv'), true);
 testAssert(empty(productValidateCommercialFields(array('regular_price' => '1,000,000', 'sale_price' => '900,000', 'cong_suat' => '12,5'))), 'Validation CRUD chấp nhận giá và công suất hợp lệ');
 testAssert(count(productValidateCommercialFields(array('regular_price' => '100000', 'sale_price' => '120000', 'cong_suat' => 'abc'))) === 2, 'Validation CRUD chặn giá mới vượt giá bán và công suất sai');
 
@@ -57,6 +59,8 @@ if (!empty($argv[1]) && $argv[1] === '--inspect-workbook' && !empty($argv[2])) {
     testAssert(strpos((string) $guideSheet->getCell('B17')->getValue(), 'Model | JD-T200') !== false, 'Sheet hướng dẫn có ví dụ thông số khác');
     testAssert(strpos((string) $guideSheet->getCell('B21')->getValue(), 'Bước 1') !== false && strpos((string) $guideSheet->getCell('B21')->getValue(), 'CAP_NHAT') !== false, 'Sheet hướng dẫn có quy trình import từng bước');
     testAssert(!empty($headerColumns['Danh mục cấp 1']) && $productSheet->getCell($headerColumns['Danh mục cấp 1'].'2')->getDataValidation()->getType() === PHPExcel_Cell_DataValidation::TYPE_LIST, 'Danh mục có danh sách chọn trong Excel');
+    testAssert(!empty($headerColumns['Hiển thị (1/0)']) && !empty($headerColumns['Bán chạy (1/0)']), 'Template dùng hai cột trạng thái boolean thay cho text thủ công');
+    testAssert($productSheet->getCell($headerColumns['Hiển thị (1/0)'].'2')->getDataValidation()->getFormula1() === '"1,0"', 'Cột Hiển thị chỉ cho chọn 1 hoặc 0');
     $htmlFree = true;
     foreach(array('Mô tả ngắn', 'Nội dung', 'Chính sách mua hàng', 'Chứng nhận/kiểm nghiệm') as $header) {
         if(empty($headerColumns[$header])) continue;
@@ -307,6 +311,10 @@ try {
     testAssert(empty($rollbackBrand), 'Rollback xóa thương hiệu mới nếu batch sản phẩm thất bại');
 
     $archiveRows = array(array('_row_number' => 2, 'action' => 'archive', 'id' => $createdId));
+    $booleanStatusPreview = productBulkValidateRows(array(array('_row_number' => 2, 'action' => 'update', 'id' => $createdId, 'is_visible' => '0', 'is_featured' => '1')), $type);
+    testAssert($booleanStatusPreview['errors'] === 0 && $booleanStatusPreview['counts']['hide_update'] === 1 && $booleanStatusPreview['rows'][0]['data']['status'] === 'banchay', 'Trạng thái 1/0 được đổi đúng sang trạng thái nội bộ');
+    $invalidBooleanStatus = productBulkValidateRows(array(array('_row_number' => 2, 'action' => 'update', 'id' => $createdId, 'is_visible' => 'Có')), $type);
+    testAssert($invalidBooleanStatus['errors'] > 0, 'Trạng thái boolean từ chối text nhập thủ công');
     $preview = productBulkValidateRows($archiveRows, $type);
     testAssert($preview['errors'] === 0 && $preview['counts']['archive'] === 1, 'Preview archive hợp lệ');
     commitRowsForTest($archiveRows, bin2hex(random_bytes(12)), array(), array(), array(), array(), false, false);

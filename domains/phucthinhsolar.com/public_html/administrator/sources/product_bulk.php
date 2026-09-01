@@ -39,7 +39,10 @@ function productBulkColumns()
         'cong_suat' => array('label' => 'Công suất (W)', 'kind' => 'decimal', 'db' => 'cong_suat'),
         'regular_price' => array('label' => 'Giá gốc', 'kind' => 'money', 'db' => 'regular_price'),
         'sale_price' => array('label' => 'Giá bán/khuyến mãi', 'kind' => 'money', 'db' => 'sale_price'),
-        'status' => array('label' => 'Tình trạng website', 'kind' => 'status', 'db' => 'status'),
+        // Giữ cột text cũ ở chế độ import-only để các file đã phát hành vẫn dùng được.
+        'status' => array('label' => 'Tình trạng website', 'kind' => 'status', 'db' => 'status', 'export' => false),
+        'is_visible' => array('label' => 'Hiển thị (1/0)', 'kind' => 'boolean_status'),
+        'is_featured' => array('label' => 'Bán chạy (1/0)', 'kind' => 'boolean_status'),
         'numb' => array('label' => 'Thứ tự', 'kind' => 'integer', 'db' => 'numb', 'export' => false),
         'descvi' => array('label' => 'Mô tả ngắn', 'kind' => 'html', 'db' => 'descvi'),
         'contentvi' => array('label' => 'Nội dung', 'kind' => 'html', 'db' => 'contentvi'),
@@ -417,6 +420,11 @@ function productBulkComparableValue($value, $kind = '')
     if ($value === null) return '';
     $value = trim(htmlspecialchars_decode((string) $value, ENT_QUOTES));
     if ($kind === 'html') return productBulkHtmlToText($value);
+    if ($kind === 'status') {
+        $statuses = array_values(array_unique(array_filter(array_map('trim', explode(',', $value)))));
+        sort($statuses, SORT_STRING);
+        return implode(',', $statuses);
+    }
     if ($kind === 'spec_lines' && $value !== '') {
         $specs = json_decode($value, true);
         if (is_array($specs)) {
@@ -555,6 +563,24 @@ function productBulkValidateRows($rawRows, $type, $baseline = array(), $overwrit
         $isCreate = $item['action'] === 'create' || ($item['action'] === 'upsert' && !$existing);
         $resolvedAction = $isCreate ? 'create' : 'update';
         $item['action'] = $resolvedAction;
+        $hasBooleanStatus = false;
+        $booleanStatusValues = array();
+        foreach (array('is_visible', 'is_featured') as $booleanStatusKey) {
+            if (!array_key_exists($booleanStatusKey, $raw) || trim((string) $raw[$booleanStatusKey]) === '') continue;
+            $booleanStatusValue = trim((string) $raw[$booleanStatusKey]);
+            if (!in_array($booleanStatusValue, array('0', '1'), true)) {
+                $item['errors'][] = productBulkColumns()[$booleanStatusKey]['label'].' chỉ nhận 1 hoặc 0.';
+                continue;
+            }
+            $hasBooleanStatus = true;
+            $booleanStatusValues[$booleanStatusKey] = $booleanStatusValue === '1';
+        }
+        if ($hasBooleanStatus) {
+            $baseStatuses = $existing ? array_filter(array_map('trim', explode(',', (string) $existing['status']))) : array('hienthi');
+            $visible = array_key_exists('is_visible', $booleanStatusValues) ? $booleanStatusValues['is_visible'] : in_array('hienthi', $baseStatuses, true);
+            $featured = array_key_exists('is_featured', $booleanStatusValues) ? $booleanStatusValues['is_featured'] : in_array('banchay', $baseStatuses, true);
+            $raw['status'] = implode(',', array_filter(array($visible ? 'hienthi' : '', $featured ? 'banchay' : '')));
+        }
         foreach (array('_list_name' => array('list', 'id_list'), '_cat_name' => array('cat', 'id_cat'), '_brand_name' => array('brand', 'id_brand')) as $sourceKey => $definition) {
             if (!array_key_exists($sourceKey, $raw) || trim((string) $raw[$sourceKey]) === '') continue;
             $resolvedId = productBulkFindCategoryIdByName($categories[$definition[0]], $raw[$sourceKey]);
@@ -919,6 +945,8 @@ function productBulkExportValue($key, $row, $categories)
     if ($key === '_list_name') return !empty($categories['list'][(int) $row['id_list']]['namevi']) ? $categories['list'][(int) $row['id_list']]['namevi'] : '';
     if ($key === '_cat_name') return !empty($categories['cat'][(int) $row['id_cat']]['namevi']) ? $categories['cat'][(int) $row['id_cat']]['namevi'] : '';
     if ($key === '_brand_name') return !empty($categories['brand'][(int) $row['id_brand']]['namevi']) ? $categories['brand'][(int) $row['id_brand']]['namevi'] : '';
+    if ($key === 'is_visible') return in_array('hienthi', array_filter(array_map('trim', explode(',', isset($row['status']) ? $row['status'] : ''))), true) ? 1 : 0;
+    if ($key === 'is_featured') return in_array('banchay', array_filter(array_map('trim', explode(',', isset($row['status']) ? $row['status'] : ''))), true) ? 1 : 0;
     if ($key === 'status') {
         $labels = array('hienthi' => 'Hiển thị', 'banchay' => 'Bán chạy');
         $values = array();
@@ -1041,7 +1069,7 @@ function productBulkExport($templateOnly = false)
         array('1. TẠO MỚI', 'Ví dụ tối thiểu: Mã sản phẩm = JD-T200; Tên sản phẩm = Đèn pha JD-T200. Có thể nhập thêm giá, danh mục, trạng thái và thông số nếu đã có.'),
         array('Mã sản phẩm', 'Mỗi sản phẩm dùng một mã duy nhất, tối đa 30 ký tự. Không dùng lại mã của sản phẩm khác.'),
         array('Giá sản phẩm', 'Giá gốc và Giá bán/khuyến mãi nhập bằng số, không nhập chữ “đ” hoặc “VNĐ”. Giá khuyến mãi không được lớn hơn giá gốc.'),
-        array('Tình trạng mặc định', 'Nếu tạo mới và để trống, sản phẩm mặc định Hiển thị. Có thể chọn: Hiển thị, Bán chạy hoặc Tạm ẩn.'),
+        array('Tình trạng mặc định', 'Hai cột Hiển thị và Bán chạy dùng 1 = bật, 0 = tắt. Nếu tạo mới và để trống, sản phẩm mặc định hiển thị.'),
         array('2. CẬP NHẬT', 'Nên dùng file vừa xuất từ website. Giữ nguyên ID/Mã; chỉ thay những ô cần sửa. Không cần xóa dữ liệu cũ trong các ô khác.'),
         array('Ô để trống', 'Khi sửa sản phẩm: giữ nguyên giá trị trên website. Khi tạo mới: hệ thống dùng mặc định hoặc để trống nếu trường không bắt buộc.'),
         array('Xóa giá trị cũ', 'Nhập __CLEAR__ vào ô cần xóa. Ví dụ nhập __CLEAR__ ở cột Bảo hành để xóa nội dung bảo hành hiện tại.'),
@@ -1051,7 +1079,7 @@ function productBulkExport($templateOnly = false)
         array('4. THÔNG SỐ', 'Thông số phổ biến nhập vào đúng cột riêng như Công suất, Pin, Chất liệu, Chống nước, Kích thước, Bảo hành…'),
         array('Thông số khác', "Thông số chưa có cột riêng nhập mỗi dòng theo mẫu Tên | Giá trị. Ví dụ:\nModel | JD-T200\nGóc chiếu | 120°"),
         array('Quy tắc thông số', 'Không lặp tên thông số trong cùng một sản phẩm. Không dán bảng HTML. Nội dung giải thích dài nên nhập ở cột Nội dung.'),
-        array('5. TRẠNG THÁI', 'Hiển thị = công khai; Bán chạy = thuộc nhóm bán chạy; có thể chọn đồng thời cả hai. Tạm ẩn = bỏ cả hai nhưng không xóa sản phẩm.'),
+        array('5. TRẠNG THÁI', 'Hiển thị (1/0) điều khiển công khai; Bán chạy (1/0) điều khiển nhóm nổi bật. Đặt cả hai bằng 0 để tạm ẩn nhưng không xóa sản phẩm.'),
         array('Archive', 'Dùng thao tác archive khi cần ẩn hàng loạt. Archive không xóa vĩnh viễn sản phẩm, hình ảnh hoặc lịch sử liên quan.'),
         array('6. QUY TRÌNH NHẬP', 'Bước 1: Xuất file mới nhất. Bước 2: Sửa dữ liệu. Bước 3: Tải file lên. Bước 4: đọc màn hình Xem trước. Bước 5: nhập CAP_NHAT để xác nhận.'),
         array('Khi có lỗi', 'Không dòng nào được ghi nếu file còn lỗi. Sửa đúng dòng/cột được báo rồi tải lại file; không cần chia file trừ khi vượt giới hạn.'),
@@ -1099,9 +1127,9 @@ function productBulkExport($templateOnly = false)
             $validation = $sheet->getCell($letter.'2')->getDataValidation();
             $validation->setType(PHPExcel_Cell_DataValidation::TYPE_LIST)->setErrorStyle(PHPExcel_Cell_DataValidation::STYLE_STOP)->setAllowBlank(true)->setShowErrorMessage(true)->setErrorTitle('Giá trị không hợp lệ')->setError('Hãy chọn một giá trị có trong sheet DanhMuc.')->setShowDropDown(true)->setFormula1("DanhMuc!".$dropdownRanges[$key]);
             for ($validationRow = 3; $validationRow <= 501; $validationRow++) $sheet->getCell($letter.$validationRow)->setDataValidation(clone $validation);
-        } elseif ($key === 'status') {
+        } elseif (in_array($key, array('is_visible', 'is_featured'), true)) {
             $validation = $sheet->getCell($letter.'2')->getDataValidation();
-            $validation->setType(PHPExcel_Cell_DataValidation::TYPE_LIST)->setAllowBlank(true)->setShowErrorMessage(true)->setFormula1('"Hiển thị,Bán chạy,Tạm ẩn"');
+            $validation->setType(PHPExcel_Cell_DataValidation::TYPE_LIST)->setAllowBlank(true)->setShowErrorMessage(true)->setErrorTitle('Giá trị không hợp lệ')->setError('Chỉ chọn 1 (bật) hoặc 0 (tắt).')->setFormula1('"1,0"');
             for ($validationRow = 3; $validationRow <= 501; $validationRow++) $sheet->getCell($letter.$validationRow)->setDataValidation(clone $validation);
         }
     }
