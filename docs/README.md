@@ -5,6 +5,7 @@
 - `02-development/local-setup.md`, `testing.md`: phát triển/kiểm thử.
 - `03-data/database.md`, `data-safety.md`: database/backup.
 - `03-data/product-pricing-invariant.md`: invariant giá sản phẩm dùng chung cho CRUD Admin và bulk import.
+- `03-data/checkout-write-path.md`: đường ghi checkout, hoàn tác bù trừ MyISAM và giới hạn trước ADM-P1-004.
 - `04-api/overview.md`: API/AJAX.
 - `05-security/security-model.md`, `auth-rbac.md`: security/auth.
 - `06-operations/deployment.md`, `backup-restore.md`: vận hành.

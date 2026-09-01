@@ -1,5 +1,78 @@
 <?php
 	if(!defined('SOURCES')) die("Error");		
+
+	if(!function_exists('checkoutPersistOrder'))
+	{
+		function checkoutPersistOrder($d, $cart, $cartItems, $orderData, $lang, $faultInjector = null)
+		{
+			$idInsert = 0;
+			$transactionStarted = false;
+			$detailCount = 0;
+			$cleanupState = (object)array('active' => false, 'id' => 0);
+			try
+			{
+				$d->startTransaction();
+				$transactionStarted = true;
+				if(is_callable($faultInjector) && $faultInjector('order', 0)) throw new Exception('Không thể tạo đơn hàng.');
+				$idInsert = (int)$d->insert('order', $orderData);
+				if($idInsert <= 0) throw new Exception('Không thể tạo đơn hàng.');
+				$cleanupState->active = true;
+				$cleanupState->id = $idInsert;
+				register_shutdown_function(function() use ($d, $cleanupState) {
+					if(!$cleanupState->active || $cleanupState->id <= 0) return;
+					$d->rawQuery("delete from #_order_detail where id_order = ?", array($cleanupState->id));
+					$d->rawQuery("delete from #_order where id = ?", array($cleanupState->id));
+				});
+
+				foreach(array_values($cartItems) as $index => $cartItem)
+				{
+					$pid = !empty($cartItem['productid']) ? (int)$cartItem['productid'] : 0;
+					$quantity = !empty($cartItem['qty']) ? (int)$cartItem['qty'] : 0;
+					$product = $pid > 0 ? $cart->getProductInfo($pid) : null;
+					if(empty($product) || $quantity <= 0) throw new Exception('Không thể đọc đủ thông tin sản phẩm trong giỏ hàng.');
+
+					$detail = array(
+						'id_product' => $pid,
+						'id_order' => $idInsert,
+						'photo' => $product['photo'],
+						'name' => $product['name'.$lang],
+						'code' => $orderData['code'],
+						'color' => $cart->getProductColor(!empty($cartItem['color']) ? $cartItem['color'] : 0),
+						'size' => $cart->getProductSize(!empty($cartItem['size']) ? $cartItem['size'] : 0),
+						'regular_price' => $product['regular_price'],
+						'sale_price' => $product['sale_price'],
+						'quantity' => $quantity
+					);
+					if(is_callable($faultInjector) && $faultInjector('detail', $index)) throw new Exception('Không thể lưu đầy đủ sản phẩm trong đơn hàng.');
+					if(!$d->insert('order_detail', $detail)) throw new Exception('Không thể lưu đầy đủ sản phẩm trong đơn hàng.');
+					$detailCount++;
+				}
+
+				if($detailCount !== count($cartItems)) throw new Exception('Số dòng chi tiết đơn hàng không khớp giỏ hàng.');
+				$d->commit();
+				$transactionStarted = false;
+				$cleanupState->active = false;
+				return array('success' => true, 'id' => $idInsert, 'detail_count' => $detailCount);
+			}
+			catch(Exception $e)
+			{
+				if($transactionStarted)
+				{
+					try { $d->rollback(); } catch(Exception $rollbackError) {}
+				}
+				if($idInsert > 0)
+				{
+					$d->rawQuery("delete from #_order_detail where id_order = ?", array($idInsert));
+					$d->rawQuery("delete from #_order where id = ?", array($idInsert));
+				}
+				$cleanupState->active = false;
+				return array('success' => false, 'id' => 0, 'detail_count' => 0, 'error' => $e->getMessage());
+			}
+		}
+	}
+
+	if(defined('CHECKOUT_ATOMICITY_FUNCTIONS_ONLY')) return;
+
 	if(!publicProductPricesVisible())
 	{
 		unset($_SESSION['cart']);
@@ -246,38 +319,13 @@
 		$data_donhang['district'] = $district;
 		$data_donhang['ward'] = $ward;
 		$data_donhang['numb'] = 1;
-		$id_insert = $d->insert('order',$data_donhang);
-
-		/* lưu đơn hàng chi tiết */
-		if($id_insert)
+		$faultInjector = isset($checkoutAtomicityFault) && is_callable($checkoutAtomicityFault) ? $checkoutAtomicityFault : null;
+		$persistedOrder = checkoutPersistOrder($d, $cart, $_SESSION['cart'], $data_donhang, $lang, $faultInjector);
+		if(empty($persistedOrder['success']))
 		{
-			for($i=0;$i<$max;$i++)
-			{
-				$pid = $_SESSION['cart'][$i]['productid'];
-				$q = $_SESSION['cart'][$i]['qty'];
-				$proinfo = $cart->getProductInfo($pid);
-				$regular_price = $proinfo['regular_price'];
-				$sale_price = $proinfo['sale_price'];
-				$color = $cart->getProductColor($_SESSION['cart'][$i]['color']);
-				$size = $cart->getProductSize($_SESSION['cart'][$i]['size']);
-				$code_order = $_SESSION['cart'][$i]['code'];
-				
-				if($q==0) continue;
-
-				$data_donhangchitiet = array();
-				$data_donhangchitiet['id_product'] = $pid;
-				$data_donhangchitiet['id_order'] = $id_insert;
-				$data_donhangchitiet['photo'] = $proinfo['photo'];
-				$data_donhangchitiet['name'] = $proinfo['name'.$lang];
-				$data_donhangchitiet['code'] = $code;
-				$data_donhangchitiet['color'] = $color;
-				$data_donhangchitiet['size'] = $size;
-				$data_donhangchitiet['regular_price'] = $regular_price;
-				$data_donhangchitiet['sale_price'] = $sale_price;
-				$data_donhangchitiet['quantity'] = $q;
-				$d->insert('order_detail',$data_donhangchitiet);
-			}
+			$func->transfer("Có lỗi khi lưu đơn hàng. Giỏ hàng của bạn vẫn được giữ nguyên, vui lòng thử lại.", "gio-hang/", false);
 		}
+		$id_insert = (int)$persistedOrder['id'];
 
 		/* Defaults attributes email */
 	    $emailDefaultAttrs = $emailer->defaultAttrs();

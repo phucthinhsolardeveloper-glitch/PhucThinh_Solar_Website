@@ -99,6 +99,8 @@ Hệ quả:
 
 ### 5. Checkout không atomic — VERIFIED
 
+Trạng thái triển khai 2026-09-01: **MITIGATED ON LOCAL (INTERIM)** bởi ADM-P0-001. Checkout đã kiểm tra order và từng order detail, đọc lại product, dùng transaction best-effort và xóa bù trừ khóa theo order ID; email/thanks/cart clear chỉ chạy sau khi đủ N detail. Shutdown cleanup bảo vệ thêm đường PDODb `die()`. Atomicity thật vẫn chờ chuyển commerce sang InnoDB trong ADM-P1-004.
+
 `sources/order.php` thực hiện tuần tự:
 
 1. Insert `table_order`.

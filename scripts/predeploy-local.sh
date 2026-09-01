@@ -29,6 +29,7 @@ docker cp scripts/test-security-hardening.php "$web_container:/tmp/test-security
 docker cp scripts/test-admin-readiness.php "$web_container:/tmp/test-admin-readiness.php"
 docker cp scripts/test-product-bulk.php "$web_container:/tmp/test-product-bulk.php"
 docker cp scripts/test-product-pricing-admin-http.php "$web_container:/tmp/test-product-pricing-admin-http.php"
+docker cp scripts/test-checkout-atomicity.php "$web_container:/tmp/test-checkout-atomicity.php"
 
 docker compose -f "$compose_file" exec -T web sh -lc '
 set -eu
@@ -46,6 +47,7 @@ php /tmp/test-security-hardening.php
 php /tmp/test-admin-readiness.php
 php /tmp/test-product-bulk.php
 php /tmp/test-product-pricing-admin-http.php
+php /tmp/test-checkout-atomicity.php
 '
 
 node --check domains/phucthinhsolar.com/public_html/administrator/assets/js/apps.js
