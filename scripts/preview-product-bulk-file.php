@@ -53,17 +53,47 @@ echo "cột nhận diện: ".implode(', ', $parsed['headers'])."\n";
 echo "số dòng có dữ liệu: ".count($parsed['rows'])."\n";
 echo "baseline snapshot (_HeThong): ".count($parsed['baseline'])." sản phẩm\n\n";
 
+$statusValues = array();
+foreach ($parsed['rows'] as $parsedRow) {
+    $status = isset($parsedRow['status']) ? trim((string)$parsedRow['status']) : '';
+    $statusKey = $status === '' ? '(trống)' : $status;
+    if (!isset($statusValues[$statusKey])) $statusValues[$statusKey] = 0;
+    $statusValues[$statusKey]++;
+}
+echo "== GIÁ TRỊ TRẠNG THÁI TRONG FILE ==\n";
+foreach ($statusValues as $status => $count) echo "  $status: $count\n";
+echo "\n";
+
 $preview = productBulkValidateRows($parsed['rows'], $type, $parsed['baseline']);
 
 echo "== TỔNG HỢP ==\n";
 echo "create   : ".$preview['counts']['create']."\n";
 echo "update   : ".$preview['counts']['update']."\n";
 echo "archive  : ".$preview['counts']['archive']."\n";
+echo "draft new: ".$preview['counts']['draft_create']."\n";
+echo "hide upd : ".$preview['counts']['hide_update']."\n";
+echo "show upd : ".$preview['counts']['show_update']."\n";
 echo "skip     : ".$preview['counts']['skip']."\n";
 echo "unchanged: ".$preview['counts']['unchanged']."\n";
 echo "errors   : ".$preview['errors']."\n";
 echo "warnings : ".$preview['warnings']."\n";
 echo "conflicts: ".$preview['conflicts']."\n\n";
+
+if (!empty($preview['product_matches'])) {
+    echo "== TRÙNG URL CẦN QUYẾT ĐỊNH (".count($preview['product_matches']).") ==\n";
+    foreach ($preview['product_matches'] as $match) {
+        echo "  {$match['slug']} — file: {$match['incoming_name']} | website #{$match['existing_id']}: {$match['existing_name']}\n";
+    }
+    echo "\n";
+}
+
+if (!empty($preview['new_brands'])) {
+    echo "== THƯƠNG HIỆU MỚI CẦN QUYẾT ĐỊNH (".count($preview['new_brands']).") ==\n";
+    foreach ($preview['new_brands'] as $brand) {
+        echo "  {$brand['name']}: ".count($brand['rows'])." dòng\n";
+    }
+    echo "\n";
+}
 
 $errRows = array();
 $warnRows = array();

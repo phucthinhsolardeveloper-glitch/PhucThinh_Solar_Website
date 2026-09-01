@@ -340,6 +340,11 @@ class PHPExcel_Reader_Excel2007 extends PHPExcel_Reader_Abstract implements PHPE
                 ),
                 $contents
             );
+            if (preg_match('/xmlns:([A-Za-z_][A-Za-z0-9_.-]*)="http:\/\/schemas\.openxmlformats\.org\/spreadsheetml\/2006\/main"/', $contents, $namespaceMatch)) {
+                $prefix = preg_quote($namespaceMatch[1], '/');
+                $contents = preg_replace('/(<\/?)[ ]*'.$prefix.':/', '$1', $contents);
+                $contents = str_replace($namespaceMatch[0], 'xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"', $contents);
+            }
         }
 
         return $contents;
@@ -528,7 +533,10 @@ class PHPExcel_Reader_Excel2007 extends PHPExcel_Reader_Abstract implements PHPE
                     $styles     = array();
                     $cellStyles = array();
                     $xpath = self::getArrayItem($relsWorkbook->xpath("rel:Relationship[@Type='http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles']"));
-                    $xmlStyles = simplexml_load_string($this->securityScan($this->getFromZipArchive($zip, "$dir/$xpath[Target]")), 'SimpleXMLElement', PHPExcel_Settings::getLibXmlLoaderOptions());
+                    $xmlStyles = null;
+                    if ($xpath && isset($xpath['Target'])) {
+                        $xmlStyles = simplexml_load_string($this->securityScan($this->getFromZipArchive($zip, "$dir/{$xpath['Target']}")), 'SimpleXMLElement', PHPExcel_Settings::getLibXmlLoaderOptions());
+                    }
                     //~ http://schemas.openxmlformats.org/spreadsheetml/2006/main");
 
                     $numFmts = null;

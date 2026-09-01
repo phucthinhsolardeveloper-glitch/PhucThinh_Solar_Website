@@ -77,19 +77,21 @@ if (!empty($argv[1]) && $argv[1] === '--inspect-workbook' && !empty($argv[2])) {
     exit;
 }
 
-function commitRowsForTest($rows, $token, $baseline = array(), $overwriteChoices = array(), $brandChoices = array())
+function commitRowsForTest($rows, $token, $baseline = array(), $overwriteChoices = array(), $brandChoices = array(), $productChoices = array(), $confirmHidden = true, $expectSuccess = true)
 {
     global $type, $bulkMessage, $bulkResult, $bulkPreview;
     $path = sys_get_temp_dir().DIRECTORY_SEPARATOR.'pts-bulk-test-'.$token.'.json';
     file_put_contents($path, json_encode(array('type' => $type, 'created_at' => time(), 'rows' => $rows, 'baseline' => $baseline), JSON_UNESCAPED_UNICODE));
     $_SESSION['product_bulk_preview'][$token] = array('path' => $path, 'type' => $type, 'created_at' => time());
     $_SESSION['product_bulk_csrf'] = 'test-csrf';
-    $_POST = array('product_bulk_csrf' => 'test-csrf', 'confirm_bulk' => 'CAP_NHAT', 'preview_token' => $token, 'overwrite_conflict' => $overwriteChoices, 'brand_resolution' => $brandChoices);
+    $_POST = array('product_bulk_csrf' => 'test-csrf', 'confirm_bulk' => 'CAP_NHAT', 'preview_token' => $token, 'overwrite_conflict' => $overwriteChoices, 'brand_resolution' => $brandChoices, 'product_resolution' => $productChoices);
+    if ($confirmHidden) $_POST['confirm_hidden_products'] = '1';
     $bulkMessage = null;
     $bulkResult = null;
     $bulkPreview = null;
     productBulkCommit();
-    testAssert(!empty($bulkMessage) && $bulkMessage['type'] === 'success', 'Commit batch thành công'.(!empty($bulkMessage['text']) ? ': '.$bulkMessage['text'] : ''));
+    if ($expectSuccess) testAssert(!empty($bulkMessage) && $bulkMessage['type'] === 'success', 'Commit batch thành công'.(!empty($bulkMessage['text']) ? ': '.$bulkMessage['text'] : ''));
+    else testAssert(!empty($bulkMessage) && $bulkMessage['type'] === 'danger', 'Commit nguy hiểm bị chặn khi thiếu xác nhận riêng');
 }
 
 function failCommitRowsForTest($rows, $token, $failAfter, $brandChoices = array())
@@ -218,11 +220,22 @@ try {
     $savedSpecs = json_decode(htmlspecialchars_decode($created['additional_specs'], ENT_QUOTES), true);
     testAssert($created['light_source'] === 'LED SMD' && count($savedSpecs) === 2 && $savedSpecs[0]['label'] === 'Model', 'Lưu đúng thông số cấu trúc và JSON thông số riêng');
 
+    $slugMatchRows = array(array('_row_number' => 6, 'action' => 'create', 'code' => $code.'-NEW-CODE', 'namevi' => $created['namevi'], 'slugvi' => $created['slugvi']));
+    $slugMatchKey = productBulkProductMatchKey(6, $created['slugvi'], $createdId);
+    $slugMatchPreview = productBulkValidateRows($slugMatchRows, $type);
+    testAssert($slugMatchPreview['errors'] === 0 && isset($slugMatchPreview['product_matches'][$slugMatchKey]), 'Preview gom sản phẩm trùng URL để xử lý tại Admin');
+    $slugMatchMissingChoice = productBulkValidateRows($slugMatchRows, $type, array(), array(), array(), false, array(), true);
+    testAssert($slugMatchMissingChoice['errors'] > 0, 'Commit từ chối sản phẩm trùng URL chưa có lựa chọn');
+    $slugUpdatePreview = productBulkValidateRows($slugMatchRows, $type, array(), array(), array(), false, array($slugMatchKey => 'update:'.$createdId), true);
+    testAssert($slugUpdatePreview['errors'] === 0 && $slugUpdatePreview['rows'][0]['action'] === 'update' && $slugUpdatePreview['rows'][0]['id'] === $createdId, 'Cho phép cập nhật sản phẩm hiện có khi trùng URL');
+    $slugCreatePreview = productBulkValidateRows($slugMatchRows, $type, array(), array(), array(), false, array($slugMatchKey => 'create'), true);
+    testAssert($slugCreatePreview['errors'] === 0 && $slugCreatePreview['rows'][0]['action'] === 'create' && $slugCreatePreview['rows'][0]['data']['slugvi'] !== $created['slugvi'], 'Cho phép tạo sản phẩm mới với URL tự sinh không trùng');
+
     $newBrandName = 'Codex Solar '.date('His');
     $newBrandKey = productBulkBrandKey($newBrandName);
     $brandRows = array(array('_row_number' => 7, 'action' => 'update', 'id' => $createdId, '_brand_name' => $newBrandName));
     $brandPreview = productBulkValidateRows($brandRows, $type);
-    testAssert($brandPreview['errors'] === 0 && isset($brandPreview['new_brands'][$newBrandKey]) && $brandPreview['warnings'] > 0, 'Preview gom thương hiệu mới để quản trị viên xác nhận');
+    testAssert($brandPreview['errors'] === 0 && isset($brandPreview['new_brands'][$newBrandKey]), 'Preview gom thương hiệu mới để quản trị viên xác nhận');
     $brandMissingChoice = productBulkValidateRows($brandRows, $type, array(), array(), array(), true);
     testAssert($brandMissingChoice['errors'] > 0, 'Commit từ chối thương hiệu mới chưa có lựa chọn xử lý');
     commitRowsForTest($brandRows, bin2hex(random_bytes(12)), array(), array(), array($newBrandKey => 'create'));
@@ -296,6 +309,7 @@ try {
     $archiveRows = array(array('_row_number' => 2, 'action' => 'archive', 'id' => $createdId));
     $preview = productBulkValidateRows($archiveRows, $type);
     testAssert($preview['errors'] === 0 && $preview['counts']['archive'] === 1, 'Preview archive hợp lệ');
+    commitRowsForTest($archiveRows, bin2hex(random_bytes(12)), array(), array(), array(), array(), false, false);
     commitRowsForTest($archiveRows, bin2hex(random_bytes(12)));
     $archived = $d->rawQueryOne('select status from #_product where id = ? and type = ?', array($createdId, $type));
     testAssert(strpos(','.$archived['status'].',', ',hienthi,') === false, 'Archive gỡ trạng thái hiển thị');

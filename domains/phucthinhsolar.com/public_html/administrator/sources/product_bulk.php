@@ -366,6 +366,35 @@ function productBulkBrandChoicesFromPost()
     return $choices;
 }
 
+function productBulkProductChoicesFromPost()
+{
+    $choices = array();
+    $posted = !empty($_POST['product_resolution']) && is_array($_POST['product_resolution']) ? $_POST['product_resolution'] : array();
+    foreach ($posted as $key => $choice) {
+        if (!preg_match('/^[a-f0-9]{64}$/', (string) $key)) continue;
+        $choice = trim((string) $choice);
+        if ($choice === 'create' || $choice === 'skip' || preg_match('/^update:[1-9][0-9]*$/', $choice)) $choices[$key] = $choice;
+    }
+    return $choices;
+}
+
+function productBulkProductMatchKey($row, $slug, $productId)
+{
+    return hash('sha256', (int) $row.'|'.strtolower(trim((string) $slug)).'|'.(int) $productId);
+}
+
+function productBulkUniqueSlug($baseSlug, $slugOwners, $seenSlugs = array())
+{
+    $baseSlug = strtolower(trim((string) $baseSlug));
+    $slug = $baseSlug;
+    $suffix = 1;
+    while (!empty($slugOwners[$slug]) || isset($seenSlugs[$slug])) {
+        $suffix++;
+        $slug = $baseSlug.'-'.$suffix;
+    }
+    return $slug;
+}
+
 function productBulkHtmlToText($value)
 {
     $value = html_entity_decode((string) $value, ENT_QUOTES | ENT_HTML5, 'UTF-8');
@@ -411,10 +440,10 @@ function productBulkComparableValue($value, $kind = '')
     return $value;
 }
 
-function productBulkValidateRows($rawRows, $type, $baseline = array(), $overwriteChoices = array(), $brandChoices = array(), $requireBrandChoices = false)
+function productBulkValidateRows($rawRows, $type, $baseline = array(), $overwriteChoices = array(), $brandChoices = array(), $requireBrandChoices = false, $productChoices = array(), $requireProductChoices = false)
 {
     global $func, $config;
-    $result = array('rows' => array(), 'errors' => 0, 'warnings' => 0, 'conflicts' => 0, 'new_brands' => array(), 'available_brands' => array(), 'counts' => array('create' => 0, 'update' => 0, 'archive' => 0, 'skip' => 0, 'unchanged' => 0));
+    $result = array('rows' => array(), 'errors' => 0, 'warnings' => 0, 'conflicts' => 0, 'new_brands' => array(), 'product_matches' => array(), 'available_brands' => array(), 'counts' => array('create' => 0, 'update' => 0, 'archive' => 0, 'skip' => 0, 'unchanged' => 0, 'draft_create' => 0, 'hide_update' => 0, 'show_update' => 0));
     $products = productBulkProductMaps($type);
     $categories = productBulkCategoryMaps($type);
     $result['available_brands'] = $categories['brand'];
@@ -427,7 +456,7 @@ function productBulkValidateRows($rawRows, $type, $baseline = array(), $overwrit
     $allowedStatus = !empty($config['product'][$type]['check']) ? array_keys($config['product'][$type]['check']) : array('hienthi');
     foreach ($rawRows as $raw) {
         $requestedAction = productBulkNormalizeAction(isset($raw['action']) ? $raw['action'] : '');
-        $item = array('row' => (int) $raw['_row_number'], 'action' => $requestedAction, 'id' => 0, 'code' => '', 'name' => '', 'data' => array(), 'existing' => null, 'pending_brand_key' => '', 'errors' => array(), 'warnings' => array(), 'conflicts' => array(), 'changes' => array());
+        $item = array('row' => (int) $raw['_row_number'], 'action' => $requestedAction, 'id' => 0, 'code' => '', 'name' => '', 'data' => array(), 'existing' => null, 'pending_brand_key' => '', 'pending_product_key' => '', 'errors' => array(), 'warnings' => array(), 'conflicts' => array(), 'changes' => array());
         if ($item['action'] === '') $item['action'] = 'auto';
         if (!in_array($item['action'], array('auto', 'create', 'update', 'upsert', 'archive', 'skip'), true)) {
             $item['errors'][] = 'Thao tác không hợp lệ.';
@@ -460,9 +489,44 @@ function productBulkValidateRows($rawRows, $type, $baseline = array(), $overwrit
             $item['errors'][] = 'ID và mã sản phẩm đang chỉ đến hai sản phẩm khác nhau.';
         }
         $existing = $existingById ?: $existingByCode;
+        $candidateSlug = !empty($raw['slugvi']) ? $func->changeTitle($raw['slugvi']) : (!empty($raw['namevi']) ? $func->changeTitle($raw['namevi']) : '');
+        if (!$existing && $candidateSlug !== '' && !empty($slugOwners[$candidateSlug]) && in_array($item['action'], array('auto', 'create', 'upsert'), true)) {
+            $matchedProductIds = array();
+            $hasOtherOwner = false;
+            foreach ($slugOwners[$candidateSlug] as $owner) {
+                if ($owner['table'] === 'product') $matchedProductIds[(int) $owner['id']] = true;
+                else $hasOtherOwner = true;
+            }
+            if (!$hasOtherOwner && count($matchedProductIds) === 1) {
+                $matchedProductId = (int) key($matchedProductIds);
+                if (!empty($products['id'][$matchedProductId])) {
+                    $matchedProduct = $products['id'][$matchedProductId];
+                    $matchKey = productBulkProductMatchKey($item['row'], $candidateSlug, $matchedProductId);
+                    $result['product_matches'][$matchKey] = array('key' => $matchKey, 'row' => $item['row'], 'slug' => $candidateSlug, 'incoming_code' => $code, 'incoming_name' => isset($raw['namevi']) ? trim((string) $raw['namevi']) : '', 'existing_id' => $matchedProductId, 'existing_code' => (string) $matchedProduct['code'], 'existing_name' => (string) $matchedProduct['namevi']);
+                    $choice = isset($productChoices[$matchKey]) ? $productChoices[$matchKey] : '';
+                    if ($choice === 'update:'.$matchedProductId) {
+                        $existing = $matchedProduct;
+                        $item['id'] = $matchedProductId;
+                        $item['action'] = 'update';
+                    } elseif ($choice === 'create') {
+                        $raw['slugvi'] = productBulkUniqueSlug($candidateSlug, $slugOwners, $seenSlugs);
+                    } elseif ($choice === 'skip') {
+                        $item['action'] = 'skip';
+                        $item['name'] = isset($raw['namevi']) ? trim((string) $raw['namevi']) : '';
+                        $result['counts']['skip']++;
+                        $result['rows'][] = $item;
+                        continue;
+                    } elseif ($requireProductChoices) {
+                        $item['errors'][] = 'Chưa chọn cách xử lý sản phẩm trùng slug “'.$candidateSlug.'”.';
+                        $item['pending_product_key'] = $matchKey;
+                    } else {
+                        $item['pending_product_key'] = $matchKey;
+                    }
+                }
+            }
+        }
         if ($item['action'] === 'auto') {
             $item['action'] = $existing ? 'update' : 'create';
-            if (!$existingById && $existingByCode) $item['warnings'][] = 'Đã nhận diện sản phẩm hiện có theo mã và sẽ cập nhật.';
         }
         if (!$existing && $item['action'] === 'upsert' && $existingByCode) $existing = $existingByCode;
         if (in_array($item['action'], array('update', 'archive'), true) && !$existing) $item['errors'][] = 'Không tìm thấy sản phẩm thuộc đúng loại với ID này.';
@@ -512,8 +576,6 @@ function productBulkValidateRows($rawRows, $type, $baseline = array(), $overwrit
                     $item['warnings'][] = 'Thương hiệu “'.$brandName.'” sẽ ghép vào “'.$categories['brand'][(int) $match[1]]['namevi'].'”.';
                 } elseif ($requireBrandChoices) {
                     $item['errors'][] = 'Chưa chọn cách xử lý thương hiệu mới “'.$brandName.'”.';
-                } else {
-                    $item['warnings'][] = 'Phát hiện thương hiệu mới “'.$brandName.'”; cần chọn tạo mới, ghép hoặc bỏ trống trước khi áp dụng.';
                 }
             }
             elseif ($resolvedId === 0) $item['errors'][] = productBulkColumns()[$sourceKey]['label'].' không tồn tại.';
@@ -583,7 +645,7 @@ function productBulkValidateRows($rawRows, $type, $baseline = array(), $overwrit
             $seenSlugs[$slug] = $item['row'];
             if (!empty($slugOwners[$slug])) {
                 foreach ($slugOwners[$slug] as $owner) {
-                    if (!($owner['table'] === 'product' && $existing && $owner['id'] === (int) $existing['id'])) {
+                    if ($item['pending_product_key'] === '' && !($owner['table'] === 'product' && $existing && $owner['id'] === (int) $existing['id'])) {
                         $item['errors'][] = 'Slug đã được sử dụng trong hệ thống.';
                         break;
                     }
@@ -639,6 +701,17 @@ function productBulkValidateRows($rawRows, $type, $baseline = array(), $overwrit
             $item['data'] += array('id_list' => 0, 'id_cat' => 0, 'id_item' => 0, 'id_sub' => 0, 'id_brand' => 0, 'regular_price' => 0, 'sale_price' => 0, 'discount' => 0, 'cong_suat' => 0, 'numb' => 0, 'status' => 'hienthi', 'type' => $type, 'date_created' => time(), 'date_updated' => 0, 'view' => 0);
         } else {
             if ($item['pending_brand_key'] !== '' || !empty($item['data'])) $item['data']['date_updated'] = time();
+        }
+        if ($isCreate) {
+            $createdStatuses = array_filter(array_map('trim', explode(',', (string) $item['data']['status'])));
+            if (!in_array('hienthi', $createdStatuses, true)) $result['counts']['draft_create']++;
+        } elseif ($existing && array_key_exists('status', $item['data'])) {
+            $currentStatuses = array_filter(array_map('trim', explode(',', (string) $existing['status'])));
+            $incomingStatuses = array_filter(array_map('trim', explode(',', (string) $item['data']['status'])));
+            $currentlyVisible = in_array('hienthi', $currentStatuses, true);
+            $willBeVisible = in_array('hienthi', $incomingStatuses, true);
+            if ($currentlyVisible && !$willBeVisible) $result['counts']['hide_update']++;
+            elseif (!$currentlyVisible && $willBeVisible) $result['counts']['show_update']++;
         }
         if (!$isCreate && empty($item['data'])) $result['counts']['unchanged']++;
         else $result['counts'][$resolvedAction]++;
@@ -780,9 +853,15 @@ function productBulkCommit()
         if (preg_match('/^\d+:[a-zA-Z0-9_]+$/', $choice)) $overwriteChoices[$choice] = true;
     }
     $brandChoices = productBulkBrandChoicesFromPost();
-    $bulkPreview = productBulkValidateRows($payload['rows'], $type, !empty($payload['baseline']) ? $payload['baseline'] : array(), $overwriteChoices, $brandChoices, true);
+    $productChoices = productBulkProductChoicesFromPost();
+    $bulkPreview = productBulkValidateRows($payload['rows'], $type, !empty($payload['baseline']) ? $payload['baseline'] : array(), $overwriteChoices, $brandChoices, true, $productChoices, true);
     if ($bulkPreview['errors'] > 0) {
         $bulkMessage = array('type' => 'danger', 'text' => 'Dữ liệu hoặc database đã thay đổi sau bước xem trước. Chưa có dữ liệu nào được ghi.');
+        return;
+    }
+    $hiddenProductCount = (int) $bulkPreview['counts']['draft_create'] + (int) $bulkPreview['counts']['hide_update'] + (int) $bulkPreview['counts']['archive'];
+    if ($hiddenProductCount > 0 && empty($_POST['confirm_hidden_products'])) {
+        $bulkMessage = array('type' => 'danger', 'text' => 'Có '.$hiddenProductCount.' sản phẩm sẽ ở trạng thái Tạm ẩn. Hãy đánh dấu xác nhận riêng rồi áp dụng lại; chưa có dữ liệu nào được ghi.');
         return;
     }
     $applied = array();

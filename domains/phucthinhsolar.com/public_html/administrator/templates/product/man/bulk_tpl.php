@@ -89,12 +89,21 @@ $bulkCsrf = productBulkCsrfToken();
                     <span class="badge badge-success mr-1">Tạo <?=(int) $bulkPreview['counts']['create']?></span>
                     <span class="badge badge-primary mr-1">Sửa <?=(int) $bulkPreview['counts']['update']?></span>
                     <span class="badge badge-warning mr-1">Ẩn <?=(int) $bulkPreview['counts']['archive']?></span>
+                    <?php if (!empty($bulkPreview['counts']['draft_create'])) { ?><span class="badge badge-dark mr-1">Tạo tạm ẩn <?=(int) $bulkPreview['counts']['draft_create']?></span><?php } ?>
+                    <?php if (!empty($bulkPreview['counts']['hide_update'])) { ?><span class="badge badge-danger mr-1">Chuyển sang ẩn <?=(int) $bulkPreview['counts']['hide_update']?></span><?php } ?>
+                    <?php if (!empty($bulkPreview['counts']['show_update'])) { ?><span class="badge badge-success mr-1">Chuyển hiển thị <?=(int) $bulkPreview['counts']['show_update']?></span><?php } ?>
                     <span class="badge badge-secondary mr-1">Không đổi <?=(int) $bulkPreview['counts']['unchanged']?></span>
                     <span class="badge badge-info mr-1">Xung đột <?=(int) $bulkPreview['conflicts']?></span>
                     <span class="badge badge-danger">Lỗi <?=(int) $bulkPreview['errors']?></span>
                 </div>
             </div>
-            <div class="card-body table-responsive p-0" style="max-height:560px">
+            <div class="card-body pb-2">
+                <?php if (!empty($bulkPreview['product_matches']) || !empty($bulkPreview['new_brands'])) { ?>
+                    <div class="alert alert-warning mb-2"><i class="fas fa-magic mr-2"></i>Hệ thống đã gom các trường hợp cần quyết định ở phần xác nhận bên dưới. Không cần sửa rồi tải lại file Excel.</div>
+                <?php } ?>
+                <details <?=!empty($bulkPreview['errors']) ? 'open' : ''?>>
+                    <summary class="font-weight-bold cs-pointer">Xem chi tiết <?=(int) count($bulkPreview['rows'])?> dòng sản phẩm</summary>
+                    <div class="table-responsive mt-2" style="max-height:560px">
                 <table class="table table-hover table-sm mb-0">
                     <thead class="thead-light sticky-top">
                         <tr><th>Dòng</th><th>Thao tác</th><th>ID</th><th>Mã</th><th>Sản phẩm</th><th>Kết quả</th></tr>
@@ -117,6 +126,8 @@ $bulkCsrf = productBulkCsrfToken();
                     <?php } ?>
                     </tbody>
                 </table>
+                    </div>
+                </details>
             </div>
             <div class="card-footer">
                 <?php if ($bulkPreview['errors'] === 0 && !empty($bulkPreview['token'])) { ?>
@@ -124,6 +135,30 @@ $bulkCsrf = productBulkCsrfToken();
         <?=adminCsrfField()?>
                         <input type="hidden" name="product_bulk_csrf" value="<?=htmlspecialchars($bulkCsrf)?>">
                         <input type="hidden" name="preview_token" value="<?=htmlspecialchars($bulkPreview['token'])?>">
+                        <?php if (!empty($bulkPreview['product_matches'])) { ?>
+                            <div class="w-100 mb-3">
+                                <div class="alert alert-info py-2 mb-2"><strong>Sản phẩm đã có cùng URL:</strong> hệ thống mặc định cập nhật đúng sản phẩm hiện có. Anh có thể đổi sang tạo bản mới hoặc bỏ qua từng dòng.</div>
+                                <div class="table-responsive"><table class="table table-sm table-bordered bg-white mb-0">
+                                    <thead><tr><th>Dòng</th><th>Trong Excel</th><th>Sản phẩm đang có</th><th>Cách xử lý</th></tr></thead>
+                                    <tbody>
+                                    <?php foreach ($bulkPreview['product_matches'] as $matchKey => $match) { ?>
+                                        <tr>
+                                            <td><?=(int) $match['row']?></td>
+                                            <td><strong><?=htmlspecialchars($match['incoming_name'])?></strong><br><small>Mã: <?=htmlspecialchars($match['incoming_code'])?> · URL: <?=htmlspecialchars($match['slug'])?></small></td>
+                                            <td><strong>#<?=(int) $match['existing_id']?> — <?=htmlspecialchars($match['existing_name'])?></strong><br><small>Mã hiện tại: <?=htmlspecialchars($match['existing_code'] !== '' ? $match['existing_code'] : '(đang trống)')?></small></td>
+                                            <td>
+                                                <select required class="form-control form-control-sm" name="product_resolution[<?=htmlspecialchars($matchKey)?>]">
+                                                    <option selected value="update:<?=(int) $match['existing_id']?>">Cập nhật sản phẩm hiện có (khuyến nghị)</option>
+                                                    <option value="create">Tạo sản phẩm mới với URL khác</option>
+                                                    <option value="skip">Bỏ qua dòng này</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                    <?php } ?>
+                                    </tbody>
+                                </table></div>
+                            </div>
+                        <?php } ?>
                         <?php if (!empty($bulkPreview['new_brands'])) { ?>
                             <div class="w-100 mb-3">
                                 <div class="alert alert-warning py-2 mb-2"><strong>Thương hiệu mới trong file:</strong> hãy xác nhận từng tên. Hệ thống không tự tạo để tránh trùng do cách viết khác nhau.</div>
@@ -136,8 +171,7 @@ $bulkCsrf = productBulkCsrfToken();
                                             <td><?=htmlspecialchars(implode(', ', array_unique($newBrand['rows'])))?></td>
                                             <td>
                                                 <select required class="form-control form-control-sm" name="brand_resolution[<?=htmlspecialchars($brandKey)?>]">
-                                                    <option value="">-- Chọn cách xử lý --</option>
-                                                    <option value="create">Tạo thương hiệu mới “<?=htmlspecialchars($newBrand['name'])?>”</option>
+                                                    <option selected value="create">Tạo thương hiệu mới “<?=htmlspecialchars($newBrand['name'])?>” (khuyến nghị)</option>
                                                     <?php foreach ($bulkPreview['available_brands'] as $existingBrand) { ?>
                                                         <option value="existing:<?=(int) $existingBrand['id']?>">Ghép vào <?=htmlspecialchars($existingBrand['namevi'])?></option>
                                                     <?php } ?>
@@ -168,6 +202,13 @@ $bulkCsrf = productBulkCsrfToken();
                                     <?php } } ?>
                                     </tbody>
                                 </table></div>
+                            </div>
+                        <?php } ?>
+                        <?php $hiddenProductCount = (int) $bulkPreview['counts']['draft_create'] + (int) $bulkPreview['counts']['hide_update'] + (int) $bulkPreview['counts']['archive']; ?>
+                        <?php if ($hiddenProductCount > 0) { ?>
+                            <div class="w-100 alert alert-danger py-2 mb-3">
+                                <div><strong><i class="fas fa-eye-slash mr-1"></i>Excel yêu cầu <?=$hiddenProductCount?> sản phẩm ở trạng thái Tạm ẩn:</strong> tạo mới tạm ẩn <?=(int) $bulkPreview['counts']['draft_create']?>, chuyển sản phẩm đang hiển thị sang ẩn <?=(int) $bulkPreview['counts']['hide_update']?>, thao tác ẩn riêng <?=(int) $bulkPreview['counts']['archive']?>.</div>
+                                <label class="mb-0 mt-2"><input required type="checkbox" name="confirm_hidden_products" value="1"> Tôi đã kiểm tra và đồng ý áp dụng các thay đổi trạng thái này.</label>
                             </div>
                         <?php } ?>
                         <label class="mr-2" for="confirm_bulk">Nhập <code class="mx-1">CAP_NHAT</code> để xác nhận:</label>
