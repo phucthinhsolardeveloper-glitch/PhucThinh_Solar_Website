@@ -168,7 +168,7 @@ $bulkCsrf = productBulkCsrfToken();
                                     <?php foreach ($bulkPreview['new_brands'] as $brandKey => $newBrand) { ?>
                                         <tr>
                                             <td><strong><?=htmlspecialchars($newBrand['name'])?></strong></td>
-                                            <td><?=htmlspecialchars(implode(', ', array_unique($newBrand['rows'])))?></td>
+                                            <td><span class="badge badge-light border"><?=(int) count(array_unique($newBrand['rows']))?> dòng</span></td>
                                             <td>
                                                 <select required class="form-control form-control-sm" name="brand_resolution[<?=htmlspecialchars($brandKey)?>]">
                                                     <option selected value="create">Tạo thương hiệu mới “<?=htmlspecialchars($newBrand['name'])?>” (khuyến nghị)</option>
