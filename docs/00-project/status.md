@@ -34,6 +34,7 @@ Cập nhật gần nhất: 2026-08-31. Mọi thay đổi bên dưới mới ở 
 - Đã lập dependency/usage map CSS, JS, media và bốn luồng video legacy; chưa xóa/tách asset khi chưa đủ browser/staging evidence.
 - ADM-P1-012: sửa liên hệ trong Admin không còn bắt buộc trường địa chỉ (đồng bộ với form liên hệ Theme V2 đã bỏ trường này); `test-admin-readiness.php` phủ thêm case lưu liên hệ khi địa chỉ trống.
 - ADM-P1-013: `docker-compose.local.yml` bind-mount webroot cho service `web`, sửa code không cần build lại image; `caches`/`upload`/`thumbs` chuyển sang named volume. Xem `docs/02-development/local-setup.md`.
+- ADM-P2-001: 8 truy vấn + tính toán của bảng điều khiển chuyển từ `templates/index_tpl.php` sang controller `administrator/sources/index.php` (route mặc định nạp qua `administrator/index.php`); template chỉ render. Kết quả query và mảng chart giữ nguyên (characterization + 3 assertion trong `test-admin-readiness.php`).
 
 ## PARTIAL / CHỜ DỮ LIỆU THẬT
 
