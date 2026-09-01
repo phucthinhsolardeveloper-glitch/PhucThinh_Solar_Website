@@ -54,8 +54,8 @@
                         <input type="text" class="form-control text-sm" name="data[phone]" id="phone" placeholder="Điện thoại" value="<?=(!empty($flash->has('phone'))) ? $flash->get('phone') : @$item['phone']?>" required>
                     </div>
                     <div class="form-group col-md-4">
-                        <label for="address">Địa chỉ:</label>
-                        <input type="text" class="form-control text-sm" name="data[address]" id="address" placeholder="Địa chỉ" value="<?=(!empty($flash->has('address'))) ? $flash->get('address') : @$item['address']?>" required>
+                        <label for="address">Địa chỉ (nếu có):</label>
+                        <input type="text" class="form-control text-sm" name="data[address]" id="address" placeholder="Địa chỉ" value="<?=(!empty($flash->has('address'))) ? $flash->get('address') : @$item['address']?>">
                     </div>
                     <div class="form-group col-md-4">
                         <label for="subject">Chủ đề:</label>

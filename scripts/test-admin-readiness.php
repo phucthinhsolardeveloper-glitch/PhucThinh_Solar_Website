@@ -51,6 +51,7 @@ $createdUsers = array();
 $createdGroups = array();
 $rateKeys = array();
 $createdProductIds = array();
+$createdContactIds = array();
 
 try
 {
@@ -170,10 +171,56 @@ try
     $bulkStatusRow = $d->rawQueryOne('select status from #_product where id = ?', array($bulkStatusProductId));
     readinessAssert($apiFilteredStatus['status'] === 200 && !empty($apiFilteredPayload['success']) && (int)$apiFilteredPayload['updated'] === 1 && strpos(','.$bulkStatusRow['status'].',', ',baogia,') !== false, 'API trạng thái áp dụng được toàn bộ kết quả theo bộ lọc');
 
+    // ADM-P1-012: form liên hệ Theme V2 đã bỏ trường địa chỉ; Admin phải lưu được liên hệ khi địa chỉ trống.
+    $contactFixtureCode = 'CODEX-CONTACT-'.bin2hex(random_bytes(4));
+    $d->insert('contact', array(
+        'fullname' => 'Khách kiểm thử '.$contactFixtureCode,
+        'email' => strtolower($contactFixtureCode).'@example.com',
+        'phone' => '0900000000',
+        'address' => '',
+        'subject' => 'Chủ đề kiểm thử',
+        'content' => 'Nội dung kiểm thử',
+        'status' => '',
+        'date_created' => time(),
+        'date_updated' => 0,
+        'numb' => 1,
+    ));
+    $contactFixtureId = (int)$d->getLastInsertId();
+    $createdContactIds[] = $contactFixtureId;
+
+    $contactForm = readinessHttp($base.'index.php?com=contact&act=edit&id='.$contactFixtureId, 'GET', array(), $newCookie);
+    readinessAssert(
+        $contactForm['status'] === 200 && preg_match('/name="admin_csrf"\s+value="([^"]+)"/', $contactForm['body'], $contactToken) === 1,
+        'Form sửa liên hệ authenticated render CSRF field'
+    );
+
+    $contactSave = readinessHttp($base.'index.php?com=contact&act=save', 'POST', array(
+        'admin_csrf' => $contactToken[1],
+        'id' => $contactFixtureId,
+        'data' => array(
+            'fullname' => 'Khách kiểm thử '.$contactFixtureCode,
+            'email' => strtolower($contactFixtureCode).'@example.com',
+            'phone' => '0900000000',
+            'address' => '',
+            'subject' => 'Chủ đề kiểm thử đã sửa',
+            'content' => 'Nội dung kiểm thử đã sửa',
+        ),
+    ), $newCookie);
+    $contactRow = $d->rawQueryOne('select subject, address, date_updated from #_contact where id = ?', array($contactFixtureId));
+    readinessAssert(
+        in_array($contactSave['status'], array(200, 302), true)
+            && $contactRow
+            && (int)$contactRow['date_updated'] > 0
+            && $contactRow['subject'] === 'Chủ đề kiểm thử đã sửa'
+            && (string)$contactRow['address'] === '',
+        'Lưu liên hệ thành công khi địa chỉ để trống'
+    );
+
     echo "Admin readiness tests completed.\n";
 }
 finally
 {
+    foreach($createdContactIds as $contactId) $d->rawQuery("delete from #_contact where id = ?", array($contactId));
     foreach($createdProductIds as $productId) $d->rawQuery("delete from #_product where id = ?", array($productId));
     foreach($createdUsers as $user) $d->rawQuery("delete from #_user_log where id_user = ?", array($user['id']));
     foreach($createdUsers as $user) $d->rawQuery("delete from #_user where id = ?", array($user['id']));

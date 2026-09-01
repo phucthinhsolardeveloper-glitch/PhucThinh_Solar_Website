@@ -136,10 +136,7 @@
 			$response['messages'][] = 'Số điện thoại không hợp lệ';
 		}
 
-		if(empty($data['address']))
-		{
-			$response['messages'][] = 'Địa chỉ không được trống';
-		}
+		/* Địa chỉ không bắt buộc: form liên hệ Theme V2 không còn trường này. */
 
 		if(empty($data['email']))
 		{

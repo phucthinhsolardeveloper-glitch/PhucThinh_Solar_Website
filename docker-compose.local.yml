@@ -38,9 +38,20 @@ services:
       TZ: Asia/Ho_Chi_Minh
     ports:
       - "8080:80"
+    volumes:
+      # Source sống cho dev local: sửa .php/.js/.css xong xem được ngay, không cần build lại image.
+      - ./domains/phucthinhsolar.com/public_html:/var/www/html
+      # Thư mục runtime giữ trong named volume để Apache (www-data) ghi được và không làm bẩn cây git.
+      # Lần đầu chạy, volume được seed từ nội dung có sẵn trong image (đã COPY upload/thumbs lúc build).
+      - pts_web_caches:/var/www/html/caches
+      - pts_web_upload:/var/www/html/upload
+      - pts_web_thumbs:/var/www/html/thumbs
     depends_on:
       db:
         condition: service_healthy
 
 volumes:
   pts_mariadb_data:
+  pts_web_caches:
+  pts_web_upload:
+  pts_web_thumbs:

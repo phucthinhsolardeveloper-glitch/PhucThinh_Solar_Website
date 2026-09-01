@@ -31,6 +31,8 @@ Cập nhật gần nhất: 2026-08-31. Mọi thay đổi bên dưới mới ở 
 - A4 e-commerce hoàn tất: trang danh mục có nút “Bộ lọc” trên mobile/tablet, drawer trượt có backdrop, khóa cuộn, Escape/focus/ARIA và tự đóng sau khi lọc AJAX; desktop giữ sidebar hiện hữu.
 - Đã sửa cú pháp `.htaccess` upload từng làm ảnh/logo trả HTTP 500; pre-deploy kiểm tra trực tiếp media để chống tái phát.
 - Đã lập dependency/usage map CSS, JS, media và bốn luồng video legacy; chưa xóa/tách asset khi chưa đủ browser/staging evidence.
+- ADM-P1-012: sửa liên hệ trong Admin không còn bắt buộc trường địa chỉ (đồng bộ với form liên hệ Theme V2 đã bỏ trường này); `test-admin-readiness.php` phủ thêm case lưu liên hệ khi địa chỉ trống.
+- ADM-P1-013: `docker-compose.local.yml` bind-mount webroot cho service `web`, sửa code không cần build lại image; `caches`/`upload`/`thumbs` chuyển sang named volume. Xem `docs/02-development/local-setup.md`.
 
 ## PARTIAL / CHỜ DỮ LIỆU THẬT
 
