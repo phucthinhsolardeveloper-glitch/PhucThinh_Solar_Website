@@ -77,14 +77,14 @@ if (!empty($argv[1]) && $argv[1] === '--inspect-workbook' && !empty($argv[2])) {
     exit;
 }
 
-function commitRowsForTest($rows, $token, $baseline = array(), $overwriteChoices = array())
+function commitRowsForTest($rows, $token, $baseline = array(), $overwriteChoices = array(), $brandChoices = array())
 {
     global $type, $bulkMessage, $bulkResult, $bulkPreview;
     $path = sys_get_temp_dir().DIRECTORY_SEPARATOR.'pts-bulk-test-'.$token.'.json';
     file_put_contents($path, json_encode(array('type' => $type, 'created_at' => time(), 'rows' => $rows, 'baseline' => $baseline), JSON_UNESCAPED_UNICODE));
     $_SESSION['product_bulk_preview'][$token] = array('path' => $path, 'type' => $type, 'created_at' => time());
     $_SESSION['product_bulk_csrf'] = 'test-csrf';
-    $_POST = array('product_bulk_csrf' => 'test-csrf', 'confirm_bulk' => 'CAP_NHAT', 'preview_token' => $token, 'overwrite_conflict' => $overwriteChoices);
+    $_POST = array('product_bulk_csrf' => 'test-csrf', 'confirm_bulk' => 'CAP_NHAT', 'preview_token' => $token, 'overwrite_conflict' => $overwriteChoices, 'brand_resolution' => $brandChoices);
     $bulkMessage = null;
     $bulkResult = null;
     $bulkPreview = null;
@@ -92,14 +92,14 @@ function commitRowsForTest($rows, $token, $baseline = array(), $overwriteChoices
     testAssert(!empty($bulkMessage) && $bulkMessage['type'] === 'success', 'Commit batch thành công'.(!empty($bulkMessage['text']) ? ': '.$bulkMessage['text'] : ''));
 }
 
-function failCommitRowsForTest($rows, $token, $failAfter)
+function failCommitRowsForTest($rows, $token, $failAfter, $brandChoices = array())
 {
     global $type, $bulkMessage, $productBulkTestFailAfter;
     $path = sys_get_temp_dir().DIRECTORY_SEPARATOR.'pts-bulk-test-'.$token.'.json';
     file_put_contents($path, json_encode(array('type' => $type, 'created_at' => time(), 'rows' => $rows, 'baseline' => array()), JSON_UNESCAPED_UNICODE));
     $_SESSION['product_bulk_preview'][$token] = array('path' => $path, 'type' => $type, 'created_at' => time());
     $_SESSION['product_bulk_csrf'] = 'test-csrf';
-    $_POST = array('product_bulk_csrf' => 'test-csrf', 'confirm_bulk' => 'CAP_NHAT', 'preview_token' => $token);
+    $_POST = array('product_bulk_csrf' => 'test-csrf', 'confirm_bulk' => 'CAP_NHAT', 'preview_token' => $token, 'brand_resolution' => $brandChoices);
     $productBulkTestFailAfter = $failAfter;
     $bulkMessage = null;
     productBulkCommit();
@@ -111,6 +111,7 @@ function failCommitRowsForTest($rows, $token, $failAfter)
 $before = (int) $d->rawQueryOne('select count(*) as total from #_product where type = ?', array($type))['total'];
 $code = 'CODEX-BULK-'.date('His');
 $createdId = 0;
+$createdBrandId = 0;
 try {
     $csvPath = tempnam(sys_get_temp_dir(), 'pts-csv-');
     $csv = fopen($csvPath, 'wb');
@@ -167,6 +168,26 @@ try {
     $savedSpecs = json_decode(htmlspecialchars_decode($created['additional_specs'], ENT_QUOTES), true);
     testAssert($created['light_source'] === 'LED SMD' && count($savedSpecs) === 2 && $savedSpecs[0]['label'] === 'Model', 'Lưu đúng thông số cấu trúc và JSON thông số riêng');
 
+    $newBrandName = 'Codex Solar '.date('His');
+    $newBrandKey = productBulkBrandKey($newBrandName);
+    $brandRows = array(array('_row_number' => 7, 'action' => 'update', 'id' => $createdId, '_brand_name' => $newBrandName));
+    $brandPreview = productBulkValidateRows($brandRows, $type);
+    testAssert($brandPreview['errors'] === 0 && isset($brandPreview['new_brands'][$newBrandKey]) && $brandPreview['warnings'] > 0, 'Preview gom thương hiệu mới để quản trị viên xác nhận');
+    $brandMissingChoice = productBulkValidateRows($brandRows, $type, array(), array(), array(), true);
+    testAssert($brandMissingChoice['errors'] > 0, 'Commit từ chối thương hiệu mới chưa có lựa chọn xử lý');
+    commitRowsForTest($brandRows, bin2hex(random_bytes(12)), array(), array(), array($newBrandKey => 'create'));
+    $createdBrand = $d->rawQueryOne('select id,namevi from #_product_brand where type = ? and namevi = ? limit 0,1', array($type, $newBrandName));
+    $createdBrandId = !empty($createdBrand['id']) ? (int) $createdBrand['id'] : 0;
+    $productBrand = $d->rawQueryOne('select id_brand from #_product where id = ? and type = ?', array($createdId, $type));
+    testAssert($createdBrandId > 0 && (int) $productBrand['id_brand'] === $createdBrandId, 'Tạo brand và gán sản phẩm trong cùng lượt commit');
+    $existingBrand = $d->rawQueryOne('select id,namevi from #_product_brand where type = ? and id <> ? limit 0,1', array($type, $createdBrandId));
+    $existingBrandPreview = productBulkValidateRows(array(array('_row_number' => 8, 'action' => 'update', 'id' => $createdId, '_brand_name' => mb_strtolower($existingBrand['namevi'], 'UTF-8'))), $type);
+    testAssert($existingBrandPreview['errors'] === 0 && empty($existingBrandPreview['new_brands']), 'Tên brand có sẵn được ghép không phân biệt hoa thường');
+    $aliasName = 'Alias chưa có '.date('His');
+    $aliasKey = productBulkBrandKey($aliasName);
+    $aliasPreview = productBulkValidateRows(array(array('_row_number' => 9, 'action' => 'update', 'id' => $createdId, '_brand_name' => $aliasName)), $type, array(), array(), array($aliasKey => 'existing:'.(int) $existingBrand['id']), true);
+    testAssert($aliasPreview['errors'] === 0 && (int) $aliasPreview['rows'][0]['data']['id_brand'] === (int) $existingBrand['id'], 'Cho phép ghép tên brand mới vào brand chuẩn có sẵn');
+
     $autoUpdate = productBulkValidateRows(array(array('_row_number' => 8, 'code' => $code, 'material' => 'Nhôm')), $type);
     testAssert($autoUpdate['errors'] === 0 && $autoUpdate['counts']['update'] === 1 && $autoUpdate['rows'][0]['id'] === $createdId, 'Tự match sản phẩm hiện có theo mã');
 
@@ -215,6 +236,13 @@ try {
     $rollbackCreated = $d->rawQueryOne('select id from #_product where code = ? and type = ?', array($code.'-ROLLBACK', $type));
     testAssert($afterRollbackName === $beforeRollbackName && empty($rollbackCreated), 'Transaction rollback không để lại cập nhật/tạo mới dở dang');
 
+    $rollbackBrandName = 'Codex Rollback Brand '.date('His');
+    $rollbackBrandKey = productBulkBrandKey($rollbackBrandName);
+    $rollbackBrandRows = array(array('_row_number' => 22, 'action' => 'update', 'id' => $createdId, '_brand_name' => $rollbackBrandName, 'namevi' => 'Tên rollback brand'));
+    failCommitRowsForTest($rollbackBrandRows, bin2hex(random_bytes(12)), 1, array($rollbackBrandKey => 'create'));
+    $rollbackBrand = $d->rawQueryOne('select id from #_product_brand where type = ? and namevi = ? limit 0,1', array($type, $rollbackBrandName));
+    testAssert(empty($rollbackBrand), 'Rollback xóa thương hiệu mới nếu batch sản phẩm thất bại');
+
     $archiveRows = array(array('_row_number' => 2, 'action' => 'archive', 'id' => $createdId));
     $preview = productBulkValidateRows($archiveRows, $type);
     testAssert($preview['errors'] === 0 && $preview['counts']['archive'] === 1, 'Preview archive hợp lệ');
@@ -233,6 +261,11 @@ try {
     if ($createdId > 0) {
         $d->rawQuery('delete from #_seo where id_parent = ? and com = ? and type = ?', array($createdId, 'product', $type));
         $d->rawQuery('delete from #_product where id = ? and type = ?', array($createdId, $type));
+    }
+    if ($createdBrandId > 0) {
+        $d->rawQuery('update #_product set id_brand = 0 where id_brand = ? and type = ?', array($createdBrandId, $type));
+        $d->rawQuery('delete from #_seo where id_parent = ? and com = ? and act = ? and type = ?', array($createdBrandId, 'product', 'man_brand', $type));
+        $d->rawQuery('delete from #_product_brand where id = ? and type = ?', array($createdBrandId, $type));
     }
     $after = (int) $d->rawQueryOne('select count(*) as total from #_product where type = ?', array($type))['total'];
     testAssert($after === $before, 'Dữ liệu thử đã được dọn sạch, tổng sản phẩm không đổi');

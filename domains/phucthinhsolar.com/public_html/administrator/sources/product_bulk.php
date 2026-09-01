@@ -348,6 +348,24 @@ function productBulkFindCategoryIdByName($rows, $name)
     return count($matches) === 1 ? $matches[0] : (count($matches) > 1 ? -1 : 0);
 }
 
+function productBulkBrandKey($name)
+{
+    $normalized = mb_strtolower(trim(preg_replace('/\s+/u', ' ', (string) $name)), 'UTF-8');
+    return hash('sha256', $normalized);
+}
+
+function productBulkBrandChoicesFromPost()
+{
+    $choices = array();
+    $posted = !empty($_POST['brand_resolution']) && is_array($_POST['brand_resolution']) ? $_POST['brand_resolution'] : array();
+    foreach ($posted as $key => $choice) {
+        if (!preg_match('/^[a-f0-9]{64}$/', (string) $key)) continue;
+        $choice = trim((string) $choice);
+        if ($choice === 'create' || $choice === 'blank' || preg_match('/^existing:[1-9][0-9]*$/', $choice)) $choices[$key] = $choice;
+    }
+    return $choices;
+}
+
 function productBulkHtmlToText($value)
 {
     $value = html_entity_decode((string) $value, ENT_QUOTES | ENT_HTML5, 'UTF-8');
@@ -393,12 +411,13 @@ function productBulkComparableValue($value, $kind = '')
     return $value;
 }
 
-function productBulkValidateRows($rawRows, $type, $baseline = array(), $overwriteChoices = array())
+function productBulkValidateRows($rawRows, $type, $baseline = array(), $overwriteChoices = array(), $brandChoices = array(), $requireBrandChoices = false)
 {
     global $func, $config;
-    $result = array('rows' => array(), 'errors' => 0, 'warnings' => 0, 'conflicts' => 0, 'counts' => array('create' => 0, 'update' => 0, 'archive' => 0, 'skip' => 0, 'unchanged' => 0));
+    $result = array('rows' => array(), 'errors' => 0, 'warnings' => 0, 'conflicts' => 0, 'new_brands' => array(), 'available_brands' => array(), 'counts' => array('create' => 0, 'update' => 0, 'archive' => 0, 'skip' => 0, 'unchanged' => 0));
     $products = productBulkProductMaps($type);
     $categories = productBulkCategoryMaps($type);
+    $result['available_brands'] = $categories['brand'];
     $slugOwners = productBulkSlugOwners();
     $databaseColumns = productBulkDatabaseColumns();
     $columns = productBulkColumns();
@@ -408,7 +427,7 @@ function productBulkValidateRows($rawRows, $type, $baseline = array(), $overwrit
     $allowedStatus = !empty($config['product'][$type]['check']) ? array_keys($config['product'][$type]['check']) : array('hienthi');
     foreach ($rawRows as $raw) {
         $requestedAction = productBulkNormalizeAction(isset($raw['action']) ? $raw['action'] : '');
-        $item = array('row' => (int) $raw['_row_number'], 'action' => $requestedAction, 'id' => 0, 'code' => '', 'name' => '', 'data' => array(), 'existing' => null, 'errors' => array(), 'warnings' => array(), 'conflicts' => array(), 'changes' => array());
+        $item = array('row' => (int) $raw['_row_number'], 'action' => $requestedAction, 'id' => 0, 'code' => '', 'name' => '', 'data' => array(), 'existing' => null, 'pending_brand_key' => '', 'errors' => array(), 'warnings' => array(), 'conflicts' => array(), 'changes' => array());
         if ($item['action'] === '') $item['action'] = 'auto';
         if (!in_array($item['action'], array('auto', 'create', 'update', 'upsert', 'archive', 'skip'), true)) {
             $item['errors'][] = 'Thao tác không hợp lệ.';
@@ -476,6 +495,27 @@ function productBulkValidateRows($rawRows, $type, $baseline = array(), $overwrit
             if (!array_key_exists($sourceKey, $raw) || trim((string) $raw[$sourceKey]) === '') continue;
             $resolvedId = productBulkFindCategoryIdByName($categories[$definition[0]], $raw[$sourceKey]);
             if ($resolvedId === -1) $item['errors'][] = productBulkColumns()[$sourceKey]['label'].' bị trùng tên trong hệ thống; hãy chọn lại trong file mới.';
+            elseif ($resolvedId === 0 && $sourceKey === '_brand_name') {
+                $brandName = trim(preg_replace('/\s+/u', ' ', (string) $raw[$sourceKey]));
+                $brandKey = productBulkBrandKey($brandName);
+                if (!isset($result['new_brands'][$brandKey])) $result['new_brands'][$brandKey] = array('key' => $brandKey, 'name' => $brandName, 'rows' => array());
+                $result['new_brands'][$brandKey]['rows'][] = $item['row'];
+                $choice = isset($brandChoices[$brandKey]) ? $brandChoices[$brandKey] : '';
+                if ($choice === 'create') {
+                    $item['pending_brand_key'] = $brandKey;
+                    $item['warnings'][] = 'Sẽ tạo thương hiệu mới “'.$brandName.'” khi xác nhận.';
+                } elseif ($choice === 'blank') {
+                    $raw['id_brand'] = 0;
+                    $item['warnings'][] = 'Thương hiệu “'.$brandName.'” sẽ được bỏ trống theo lựa chọn.';
+                } elseif (preg_match('/^existing:([1-9][0-9]*)$/', $choice, $match) && !empty($categories['brand'][(int) $match[1]])) {
+                    $raw['id_brand'] = (int) $match[1];
+                    $item['warnings'][] = 'Thương hiệu “'.$brandName.'” sẽ ghép vào “'.$categories['brand'][(int) $match[1]]['namevi'].'”.';
+                } elseif ($requireBrandChoices) {
+                    $item['errors'][] = 'Chưa chọn cách xử lý thương hiệu mới “'.$brandName.'”.';
+                } else {
+                    $item['warnings'][] = 'Phát hiện thương hiệu mới “'.$brandName.'”; cần chọn tạo mới, ghép hoặc bỏ trống trước khi áp dụng.';
+                }
+            }
             elseif ($resolvedId === 0) $item['errors'][] = productBulkColumns()[$sourceKey]['label'].' không tồn tại.';
             else $raw[$definition[1]] = $resolvedId;
         }
@@ -598,7 +638,7 @@ function productBulkValidateRows($rawRows, $type, $baseline = array(), $overwrit
         if ($isCreate) {
             $item['data'] += array('id_list' => 0, 'id_cat' => 0, 'id_item' => 0, 'id_sub' => 0, 'id_brand' => 0, 'regular_price' => 0, 'sale_price' => 0, 'discount' => 0, 'cong_suat' => 0, 'numb' => 0, 'status' => 'hienthi', 'type' => $type, 'date_created' => time(), 'date_updated' => 0, 'view' => 0);
         } else {
-            if (!empty($item['data'])) $item['data']['date_updated'] = time();
+            if ($item['pending_brand_key'] !== '' || !empty($item['data'])) $item['data']['date_updated'] = time();
         }
         if (!$isCreate && empty($item['data'])) $result['counts']['unchanged']++;
         else $result['counts'][$resolvedAction]++;
@@ -655,7 +695,42 @@ function productBulkPrepareDataForSave($data)
     return $data;
 }
 
-function productBulkRollback($applied, $type)
+function productBulkCreateBrands($newBrands, $brandChoices, $type, &$appliedBrands)
+{
+    global $d, $func;
+    $ids = array();
+    $slugOwners = productBulkSlugOwners();
+    $reservedSlugs = array();
+    foreach ($newBrands as $key => $brand) {
+        if (empty($brandChoices[$key]) || $brandChoices[$key] !== 'create') continue;
+        $name = trim(preg_replace('/\s+/u', ' ', (string) $brand['name']));
+        if ($name === '' || mb_strlen($name, 'UTF-8') > 255) throw new Exception('Tên thương hiệu mới không hợp lệ');
+        $existingId = productBulkFindCategoryIdByName(productBulkCategoryMaps($type)['brand'], $name);
+        if ($existingId > 0) {
+            $ids[$key] = $existingId;
+            continue;
+        }
+        $baseSlug = $func->changeTitle($name);
+        if ($baseSlug === '') throw new Exception('Không thể tạo slug cho thương hiệu “'.$name.'”');
+        $slug = $baseSlug;
+        $suffix = 1;
+        while (!empty($slugOwners[$slug]) || isset($reservedSlugs[$slug])) {
+            $suffix++;
+            $slug = $baseSlug.'-thuong-hieu'.($suffix > 2 ? '-'.$suffix : '');
+        }
+        $safeName = htmlspecialchars($func->sanitize($name));
+        $data = array('namevi' => $safeName, 'nameen' => $safeName, 'slugvi' => $slug, 'slugen' => $slug, 'numb' => 0, 'status' => 'hienthi', 'type' => $type, 'date_created' => time(), 'date_updated' => 0);
+        if (!$d->insert('product_brand', $data)) throw new Exception('Không thể tạo thương hiệu “'.$name.'”');
+        $id = (int) $d->getLastInsertId();
+        $appliedBrands[] = $id;
+        $ids[$key] = $id;
+        $reservedSlugs[$slug] = true;
+        if (!$d->insert('seo', array('id_parent' => $id, 'com' => 'product', 'act' => 'man_brand', 'type' => $type))) throw new Exception('Không thể tạo SEO cho thương hiệu “'.$name.'”');
+    }
+    return $ids;
+}
+
+function productBulkRollback($applied, $type, $appliedBrands = array())
 {
     global $d;
     for ($index = count($applied) - 1; $index >= 0; $index--) {
@@ -670,6 +745,11 @@ function productBulkRollback($applied, $type)
             $d->where('type', $type);
             $d->update('product', $restore);
         }
+    }
+    for ($index = count($appliedBrands) - 1; $index >= 0; $index--) {
+        $brandId = (int) $appliedBrands[$index];
+        $d->rawQuery('delete from #_seo where id_parent = ? and com = ? and act = ? and type = ?', array($brandId, 'product', 'man_brand', $type));
+        $d->rawQuery('delete from #_product_brand where id = ? and type = ?', array($brandId, $type));
     }
 }
 
@@ -699,20 +779,28 @@ function productBulkCommit()
     foreach (!empty($_POST['overwrite_conflict']) && is_array($_POST['overwrite_conflict']) ? $_POST['overwrite_conflict'] : array() as $choice) {
         if (preg_match('/^\d+:[a-zA-Z0-9_]+$/', $choice)) $overwriteChoices[$choice] = true;
     }
-    $bulkPreview = productBulkValidateRows($payload['rows'], $type, !empty($payload['baseline']) ? $payload['baseline'] : array(), $overwriteChoices);
+    $brandChoices = productBulkBrandChoicesFromPost();
+    $bulkPreview = productBulkValidateRows($payload['rows'], $type, !empty($payload['baseline']) ? $payload['baseline'] : array(), $overwriteChoices, $brandChoices, true);
     if ($bulkPreview['errors'] > 0) {
         $bulkMessage = array('type' => 'danger', 'text' => 'Dữ liệu hoặc database đã thay đổi sau bước xem trước. Chưa có dữ liệu nào được ghi.');
         return;
     }
     $applied = array();
+    $appliedBrands = array();
     $transactionStarted = false;
     $writesApplied = 0;
     try {
         $d->startTransaction();
         $transactionStarted = true;
+        $createdBrandIds = productBulkCreateBrands($bulkPreview['new_brands'], $brandChoices, $type, $appliedBrands);
+        $bulkPreview['counts']['brand_create'] = count($appliedBrands);
         foreach ($bulkPreview['rows'] as $row) {
             if ($row['action'] === 'skip' || empty($row['data'])) continue;
             $saveData = productBulkPrepareDataForSave($row['data']);
+            if (!empty($row['pending_brand_key'])) {
+                if (empty($createdBrandIds[$row['pending_brand_key']])) throw new Exception('Không xác định được thương hiệu mới tại dòng '.$row['row']);
+                $saveData['id_brand'] = (int) $createdBrandIds[$row['pending_brand_key']];
+            }
             if ($row['action'] === 'create') {
                 if (!$d->insert('product', $saveData)) throw new Exception('Không thể tạo sản phẩm tại dòng '.$row['row']);
                 $id = (int) $d->getLastInsertId();
@@ -740,7 +828,7 @@ function productBulkCommit()
     } catch (Exception $e) {
         if($transactionStarted) $d->rollback();
         // Phục hồi thủ công khi database engine không hỗ trợ transaction.
-        productBulkRollback($applied, $type);
+        productBulkRollback($applied, $type, $appliedBrands);
         $bulkMessage = array('type' => 'danger', 'text' => $e->getMessage().'. Hệ thống đã phục hồi các dòng đã xử lý trong lượt này.');
     }
 }

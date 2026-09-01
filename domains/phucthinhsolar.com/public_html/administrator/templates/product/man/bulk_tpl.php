@@ -21,6 +21,7 @@ $bulkCsrf = productBulkCsrfToken();
     <?php if (!empty($bulkResult)) { ?>
         <div class="alert alert-success text-sm">
             Tạo mới: <strong><?=(int) $bulkResult['create']?></strong> ·
+            Hãng mới: <strong><?=!empty($bulkResult['brand_create']) ? (int) $bulkResult['brand_create'] : 0?></strong> ·
             Cập nhật: <strong><?=(int) $bulkResult['update']?></strong> ·
             Ẩn khỏi website: <strong><?=(int) $bulkResult['archive']?></strong> ·
             Bỏ qua: <strong><?=(int) $bulkResult['skip']?></strong>
@@ -75,6 +76,7 @@ $bulkCsrf = productBulkCsrfToken();
                 <li>Ô trống giữ nguyên dữ liệu hiện tại. Hệ thống không tự xóa dữ liệu chỉ vì ô Excel để trống.</li>
                 <li>ID và tên ảnh nền xám chỉ để đối chiếu. Không sửa/xóa sheet ẩn <code>_HeThong</code> nếu muốn kiểm tra xung đột.</li>
                 <li>Giá bán không được lớn hơn giá gốc; video chỉ nhận YouTube. Ảnh vẫn upload riêng trong trang sản phẩm.</li>
+                <li>Thương hiệu chưa có trong hệ thống sẽ được liệt kê ở bước xem trước để chọn tạo mới, ghép với hãng có sẵn hoặc bỏ trống.</li>
             </ul>
         </div>
     </div>
@@ -122,6 +124,32 @@ $bulkCsrf = productBulkCsrfToken();
         <?=adminCsrfField()?>
                         <input type="hidden" name="product_bulk_csrf" value="<?=htmlspecialchars($bulkCsrf)?>">
                         <input type="hidden" name="preview_token" value="<?=htmlspecialchars($bulkPreview['token'])?>">
+                        <?php if (!empty($bulkPreview['new_brands'])) { ?>
+                            <div class="w-100 mb-3">
+                                <div class="alert alert-warning py-2 mb-2"><strong>Thương hiệu mới trong file:</strong> hãy xác nhận từng tên. Hệ thống không tự tạo để tránh trùng do cách viết khác nhau.</div>
+                                <div class="table-responsive"><table class="table table-sm table-bordered bg-white mb-0">
+                                    <thead><tr><th>Thương hiệu trong Excel</th><th>Dòng sử dụng</th><th>Cách xử lý khi áp dụng</th></tr></thead>
+                                    <tbody>
+                                    <?php foreach ($bulkPreview['new_brands'] as $brandKey => $newBrand) { ?>
+                                        <tr>
+                                            <td><strong><?=htmlspecialchars($newBrand['name'])?></strong></td>
+                                            <td><?=htmlspecialchars(implode(', ', array_unique($newBrand['rows'])))?></td>
+                                            <td>
+                                                <select required class="form-control form-control-sm" name="brand_resolution[<?=htmlspecialchars($brandKey)?>]">
+                                                    <option value="">-- Chọn cách xử lý --</option>
+                                                    <option value="create">Tạo thương hiệu mới “<?=htmlspecialchars($newBrand['name'])?>”</option>
+                                                    <?php foreach ($bulkPreview['available_brands'] as $existingBrand) { ?>
+                                                        <option value="existing:<?=(int) $existingBrand['id']?>">Ghép vào <?=htmlspecialchars($existingBrand['namevi'])?></option>
+                                                    <?php } ?>
+                                                    <option value="blank">Bỏ trống thương hiệu</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                    <?php } ?>
+                                    </tbody>
+                                </table></div>
+                            </div>
+                        <?php } ?>
                         <?php if (!empty($bulkPreview['conflicts'])) { ?>
                             <div class="w-100 mb-3">
                                 <div class="alert alert-info py-2">Website và Excel cùng thay đổi các ô dưới đây. Mặc định hệ thống giữ dữ liệu website; đánh dấu ô nếu muốn dùng dữ liệu Excel.</div>
