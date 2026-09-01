@@ -295,7 +295,7 @@ function productBulkReadUpload($file)
             }
             $excel->disconnectWorksheets();
             unset($excel);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $result['errors'][] = 'Không thể đọc file Excel: '.$e->getMessage();
             return $result;
         }

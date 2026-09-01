@@ -365,6 +365,12 @@ class PHPExcel_Reader_Excel2007 extends PHPExcel_Reader_Abstract implements PHPE
                         $xmlTheme = $xmlTheme->children("http://schemas.openxmlformats.org/drawingml/2006/main");
                         $themeName = (string)$xmlThemeName['name'];
 
+                        // Some generators keep a theme relationship but omit the optional
+                        // colour scheme. Data-only imports do not need theme colours, so
+                        // skip that malformed/incomplete theme instead of dereferencing null.
+                        if (!isset($xmlTheme->themeElements) || !isset($xmlTheme->themeElements->clrScheme)) {
+                            break;
+                        }
                         $colourScheme = $xmlTheme->themeElements->clrScheme->attributes();
                         $colourSchemeName = (string)$colourScheme['name'];
                         $colourScheme = $xmlTheme->themeElements->clrScheme->children("http://schemas.openxmlformats.org/drawingml/2006/main");

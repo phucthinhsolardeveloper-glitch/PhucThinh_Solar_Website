@@ -75,6 +75,7 @@ Không dùng “giảm request/query/dung lượng” làm tiêu chí thành cô
 
 - Import/export CSV/XLS/XLSX có preview, conflict detection, lựa chọn ghi đè từng ô, transaction rollback, archive và `__CLEAR__`. Đã dùng pipeline này import file thật lô ORIANA vào DB local (xem mục 6).
 - Brand mới trong Excel không còn buộc tạo thủ công trước: preview bắt buộc chọn tạo mới, ghép với brand hiện có hoặc bỏ trống. Tên có sẵn được match không phân biệt hoa thường; brand tạo mới có slug/SEO và được rollback cùng sản phẩm nếu batch lỗi. Importer vẫn không tự tạo brand khi chưa có xác nhận.
+- Đã sửa PHPExcel reader cho file XLSX từ generator có theme không đầy đủ (thiếu `themeElements/clrScheme`): data-only import bỏ qua theme, không còn fatal `attributes() on null`; mọi `Throwable` khi parse được trả thành lỗi preview thay vì làm sập Admin.
 - Sửa `templates/product/product_detail_tpl.php`: khi sản phẩm không có ảnh, MagicZoom `href` fallback `assets/images/noimage.png` thay vì gọi `upload/product/` (HTTP 403). Phát hiện qua `empty-states.spec.js`.
 - CTA “Gửi yêu cầu báo giá” trên chi tiết sản phẩm mở modal “Tư vấn & báo giá” hiện có; modal dùng form newsletter có CSRF và được regression mở/đóng trên desktop/mobile.
 - A3 e-commerce: bỏ Swiper che bớt danh mục trang chủ, hiển thị đủ 9 danh mục bằng lưới responsive 5/3/2; ảnh lấy từ Admin, thiếu ảnh dùng icon Font Awesome theo loại và click vẫn tải sản phẩm qua AJAX cũ.

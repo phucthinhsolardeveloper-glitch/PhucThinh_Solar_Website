@@ -157,6 +157,23 @@ try {
     testAssert(empty($legacyXlsParsed['errors']) && $legacyXlsParsed['rows'][0]['code'] === $code.'-XLS', 'Đọc được định dạng XLS legacy');
     @unlink($legacyXlsPath);
 
+    $incompleteThemePath = tempnam(sys_get_temp_dir(), 'pts-xlsx-theme-');
+    $themeBook = new PHPExcel();
+    $themeBook->getActiveSheet()->fromArray(array(array('Mã sản phẩm', 'Tên sản phẩm'), array($code.'-THEME', 'File XLSX theme thiếu')));
+    if (!class_exists('PHPExcel_Writer_Excel2007_Comments', true)) {
+        class PHPExcel_Writer_Excel2007_Comments extends PHPExcel_Writer_Excel2007_WriterPart
+        {
+        }
+    }
+    PHPExcel_IOFactory::createWriter($themeBook, 'Excel2007')->save($incompleteThemePath);
+    $themeZip = new ZipArchive();
+    testAssert($themeZip->open($incompleteThemePath) === true, 'Mở workbook để mô phỏng theme không đầy đủ');
+    $themeZip->addFromString('xl/theme/theme1.xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><a:theme xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" name="Incomplete"></a:theme>');
+    $themeZip->close();
+    $incompleteThemeParsed = productBulkReadUpload(array('error' => UPLOAD_ERR_OK, 'size' => filesize($incompleteThemePath), 'name' => 'incomplete-theme.xlsx', 'tmp_name' => $incompleteThemePath));
+    testAssert(empty($incompleteThemeParsed['errors']) && $incompleteThemeParsed['rows'][0]['code'] === $code.'-THEME', 'XLSX thiếu colour scheme vẫn đọc được ở chế độ data-only');
+    @unlink($incompleteThemePath);
+
     $createRows = array(array('_row_number' => 2, 'action' => 'create', 'code' => $code, 'namevi' => 'Sản phẩm kiểm thử bulk', 'regular_price' => '1000', 'sale_price' => '900', 'status' => 'hienthi', 'descvi' => '<script>alert(1)</script><p>Nội dung hợp lệ</p>', 'light_source' => 'LED SMD', 'additional_specs' => "Model | CODEX-T200\nGóc chiếu | 120°"));
     $preview = productBulkValidateRows($createRows, $type);
     testAssert($preview['errors'] === 0 && $preview['counts']['create'] === 1, 'Preview tạo mới hợp lệ');
