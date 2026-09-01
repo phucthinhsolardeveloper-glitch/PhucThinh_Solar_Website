@@ -2009,3 +2009,40 @@ body .home-6 .btn-all:hover{
     filter:none!important;box-shadow:0 8px 20px rgba(182,125,46,.28)!important;
 }
 body .home-6 .btn-all:hover i{transform:translateX(3px);}
+
+/* =====================================================================
+   FORM "GỬI NHẬN XÉT" — nút chọn ảnh / chọn video / gửi về đúng bộ màu
+   (trước: "Chọn Ảnh" xanh Bootstrap, "Chọn" xám, "Gửi nhận xét" vàng amber)
+   ===================================================================== */
+/* Nút "Chọn Ảnh" — .review-fileuploader-button (đang mang class btn-primary) */
+#comment-write .review-fileuploader-button,
+#comment-write .review-fileuploader-button.btn-primary{
+    background:var(--pts-navy)!important;background-image:none!important;
+    border:1px solid var(--pts-navy)!important;color:#fff!important;
+    font-weight:800!important;border-radius:8px!important;box-shadow:none!important;
+    cursor:pointer;
+}
+#comment-write .review-fileuploader-button:hover{
+    background:var(--pts-navy-deep)!important;border-color:var(--pts-navy-deep)!important;
+}
+
+/* Nút "Chọn" của input file video (Bootstrap custom-file) */
+#comment-write .custom-file-label::after,
+.custom-file-input#review-file-video ~ .custom-file-label::after{
+    background:var(--pts-navy)!important;color:#fff!important;
+    border-color:var(--pts-navy)!important;font-weight:700!important;
+}
+#comment-write .custom-file-input:hover ~ .custom-file-label::after{
+    background:var(--pts-navy-deep)!important;
+}
+#comment-write .custom-file-label{border-color:var(--pts-line)!important;}
+
+/* Nút "Gửi nhận xét" (btn-warning) -> vàng kim của theme */
+#comment-write .btn.btn-warning,
+#form-comment button[type="submit"].btn-warning{
+    background:var(--pts-gold-metal)!important;background-image:var(--pts-gold-metal)!important;
+    background-color:transparent!important;border:0!important;color:var(--pts-navy-deep)!important;
+    font-weight:900!important;border-radius:8px!important;
+    box-shadow:0 6px 18px rgba(182,125,46,.28)!important;
+}
+#comment-write .btn.btn-warning:hover{filter:brightness(1.05);}
