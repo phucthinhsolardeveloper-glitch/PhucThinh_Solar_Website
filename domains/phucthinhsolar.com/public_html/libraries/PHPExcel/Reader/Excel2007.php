@@ -320,6 +320,28 @@ class PHPExcel_Reader_Excel2007 extends PHPExcel_Reader_Abstract implements PHPE
             );
         }
 
+        // PHPExcel 1.x only recognises Transitional OOXML namespaces. Some
+        // modern generators emit Strict OOXML, which otherwise makes the
+        // workbook appear to contain zero sheets. Normalising namespaces is
+        // safe here because this reader already maps the same OOXML elements.
+        if (is_string($contents) && (substr($fileName, -4) === '.xml' || substr($fileName, -5) === '.rels')) {
+            $contents = str_replace(
+                array(
+                    'http://purl.oclc.org/ooxml/spreadsheetml/main',
+                    'http://purl.oclc.org/ooxml/officeDocument/relationships',
+                    'http://purl.oclc.org/ooxml/package/relationships',
+                    'http://purl.oclc.org/ooxml/drawingml/main'
+                ),
+                array(
+                    'http://schemas.openxmlformats.org/spreadsheetml/2006/main',
+                    'http://schemas.openxmlformats.org/officeDocument/2006/relationships',
+                    'http://schemas.openxmlformats.org/package/2006/relationships',
+                    'http://schemas.openxmlformats.org/drawingml/2006/main'
+                ),
+                $contents
+            );
+        }
+
         return $contents;
     }
 
@@ -438,6 +460,9 @@ class PHPExcel_Reader_Excel2007 extends PHPExcel_Reader_Abstract implements PHPE
                                 $propertyName = (string) $cellDataOfficeAttributes['name'];
                                 $cellDataOfficeChildren = $xmlProperty->children('http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes');
                                 $attributeType = $cellDataOfficeChildren->getName();
+                                if ($attributeType === '' || !isset($cellDataOfficeChildren->{$attributeType})) {
+                                    continue;
+                                }
                                 $attributeValue = (string) $cellDataOfficeChildren->{$attributeType};
                                 $attributeValue = PHPExcel_DocumentProperties::convertProperty($attributeValue, $attributeType);
                                 $attributeType = PHPExcel_DocumentProperties::convertPropertyType($attributeType);
@@ -460,7 +485,10 @@ class PHPExcel_Reader_Excel2007 extends PHPExcel_Reader_Abstract implements PHPE
 
                     $sharedStrings = array();
                     $xpath = self::getArrayItem($relsWorkbook->xpath("rel:Relationship[@Type='http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings']"));
-                    $xmlStrings = simplexml_load_string($this->securityScan($this->getFromZipArchive($zip, "$dir/$xpath[Target]")), 'SimpleXMLElement', PHPExcel_Settings::getLibXmlLoaderOptions());  //~ http://schemas.openxmlformats.org/spreadsheetml/2006/main");
+                    $xmlStrings = null;
+                    if ($xpath && isset($xpath['Target'])) {
+                        $xmlStrings = simplexml_load_string($this->securityScan($this->getFromZipArchive($zip, "$dir/{$xpath['Target']}")), 'SimpleXMLElement', PHPExcel_Settings::getLibXmlLoaderOptions());  //~ http://schemas.openxmlformats.org/spreadsheetml/2006/main");
+                    }
                     if (isset($xmlStrings) && isset($xmlStrings->si)) {
                         foreach ($xmlStrings->si as $val) {
                             if (isset($val->t)) {

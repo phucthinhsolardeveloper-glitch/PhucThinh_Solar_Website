@@ -174,6 +174,39 @@ try {
     testAssert(empty($incompleteThemeParsed['errors']) && $incompleteThemeParsed['rows'][0]['code'] === $code.'-THEME', 'XLSX thiếu colour scheme vẫn đọc được ở chế độ data-only');
     @unlink($incompleteThemePath);
 
+    $strictThemePath = tempnam(sys_get_temp_dir(), 'pts-xlsx-strict-');
+    $strictBook = new PHPExcel();
+    $strictBook->getActiveSheet()->fromArray(array(array('Mã sản phẩm', 'Tên sản phẩm'), array($code.'-STRICT', 'File Strict OOXML')));
+    PHPExcel_IOFactory::createWriter($strictBook, 'Excel2007')->save($strictThemePath);
+    $strictZip = new ZipArchive();
+    testAssert($strictZip->open($strictThemePath) === true, 'Mở workbook để mô phỏng Strict OOXML');
+    $strictEntryCount = $strictZip->numFiles;
+    for ($zipIndex = 0; $zipIndex < $strictEntryCount; $zipIndex++) {
+        $entryName = $strictZip->getNameIndex($zipIndex);
+        if (!preg_match('/(?:\.xml|\.rels)$/', $entryName)) continue;
+        $entryContents = $strictZip->getFromIndex($zipIndex);
+        $entryContents = str_replace(
+            array(
+                'http://schemas.openxmlformats.org/spreadsheetml/2006/main',
+                'http://schemas.openxmlformats.org/officeDocument/2006/relationships',
+                'http://schemas.openxmlformats.org/package/2006/relationships',
+                'http://schemas.openxmlformats.org/drawingml/2006/main'
+            ),
+            array(
+                'http://purl.oclc.org/ooxml/spreadsheetml/main',
+                'http://purl.oclc.org/ooxml/officeDocument/relationships',
+                'http://purl.oclc.org/ooxml/package/relationships',
+                'http://purl.oclc.org/ooxml/drawingml/main'
+            ),
+            $entryContents
+        );
+        $strictZip->addFromString($entryName, $entryContents);
+    }
+    $strictZip->close();
+    $strictParsed = productBulkReadUpload(array('error' => UPLOAD_ERR_OK, 'size' => filesize($strictThemePath), 'name' => 'strict.xlsx', 'tmp_name' => $strictThemePath));
+    testAssert(empty($strictParsed['errors']) && $strictParsed['rows'][0]['code'] === $code.'-STRICT', 'Strict OOXML được chuẩn hóa và đọc đủ sheet');
+    @unlink($strictThemePath);
+
     $createRows = array(array('_row_number' => 2, 'action' => 'create', 'code' => $code, 'namevi' => 'Sản phẩm kiểm thử bulk', 'regular_price' => '1000', 'sale_price' => '900', 'status' => 'hienthi', 'descvi' => '<script>alert(1)</script><p>Nội dung hợp lệ</p>', 'light_source' => 'LED SMD', 'additional_specs' => "Model | CODEX-T200\nGóc chiếu | 120°"));
     $preview = productBulkValidateRows($createRows, $type);
     testAssert($preview['errors'] === 0 && $preview['counts']['create'] === 1, 'Preview tạo mới hợp lệ');
