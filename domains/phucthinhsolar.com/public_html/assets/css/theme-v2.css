@@ -1988,3 +1988,24 @@ body .home-3 .tab-switcher ul.pts-home-category-grid{
     .btn-contact-price a:first-child{flex-wrap:wrap;}
     .btn-product-detail{gap:10px!important;margin-bottom:10px!important;}
 }
+
+/* =====================================================================
+   NÚT "XEM TẤT CẢ" SECTION DỰ ÁN (.home-6 .btn-all)
+   Đổi từ nút vàng gradient (lạc thiết kế) sang pill viền vàng, nền trắng,
+   chữ vàng, có mũi tên — đồng bộ với các nút "Xem tất cả" khác.
+   ===================================================================== */
+body .home-6 .btn-all{
+    display:inline-flex!important;align-items:center;gap:8px;
+    border:1.5px solid var(--pts-gold)!important;border-radius:999px!important;
+    background:#fff!important;background-image:none!important;
+    color:var(--pts-gold-dark)!important;
+    padding:9px 22px!important;font-size:13px!important;font-weight:800!important;
+    box-shadow:none!important;text-decoration:none!important;transition:.18s!important;
+}
+body .home-6 .btn-all i{font-size:11px;transition:transform .18s;}
+body .home-6 .btn-all:hover{
+    background:var(--pts-gold-metal)!important;background-image:var(--pts-gold-metal)!important;
+    border-color:transparent!important;color:var(--pts-navy-deep)!important;
+    filter:none!important;box-shadow:0 8px 20px rgba(182,125,46,.28)!important;
+}
+body .home-6 .btn-all:hover i{transform:translateX(3px);}

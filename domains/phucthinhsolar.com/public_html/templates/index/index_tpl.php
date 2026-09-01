@@ -403,7 +403,7 @@
                             </ul>
                         </div>
                         <div class="desktop">
-                            <a class="btn-all" href="du-an-da-thuc-hien/">Xem tất cả</a>
+                            <a class="btn-all" href="du-an-da-thuc-hien/">Xem tất cả <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
                         </div>
                     </div>
                 </div>
@@ -470,7 +470,7 @@
             </div>
         </div>
         <div class="mobile text-center">
-            <a class="btn-all" href="du-an-da-thuc-hien/">Xem tất cả</a>
+            <a class="btn-all" href="du-an-da-thuc-hien/">Xem tất cả <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
         </div>
     </div>
 </section>
