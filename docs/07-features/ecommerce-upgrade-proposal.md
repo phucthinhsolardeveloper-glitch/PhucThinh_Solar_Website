@@ -24,13 +24,13 @@ Ngày lập: 2026-08-31. Trạng thái: chờ chủ project chốt phạm vi.
 - Header tối giản kiểu doanh nghiệp: hotline/email/giờ ở thanh trên; logo + menu + icon giỏ + tìm kiếm dạng nút bung. Không có lọc nhanh công suất, không có slot banner.
 - Trang chủ đã có hàng icon danh mục nhưng nhỏ; số danh mục hiển thị bị giới hạn.
 - Đang ở chế độ **báo giá** → không có giá/gạch giá/% giảm, nên "flash sale kiểu Kitawa" chỉ áp dụng khi bật giá công khai.
-- Chưa có so sánh sản phẩm.
+- Chưa có so sánh sản phẩm; đây là tính năng mở rộng sau deploy, không chặn readiness hiện tại.
 - Bộ lọc sidebar (Thương hiệu/Công suất/Loại SP) từng bị ẩn nhầm — **đã khôi phục** (commit `a1bfedc`); mức giá vẫn ẩn theo chế độ báo giá.
 - Mobile footer **đã bỏ accordion**, hiển thị đủ (commit `8bd8262`).
 
 ## 3. Đề xuất theo ưu tiên
 
-Trạng thái triển khai local: Nhóm A đã hoàn thành. A1/A2 cải thiện header; A3 hiển thị đủ 9 danh mục 5/3/2 cột với ảnh Admin/icon fallback; A4 cung cấp drawer bộ lọc mobile có hỗ trợ bàn phím, ARIA và tự đóng sau lọc AJAX. Mục đề xuất tiếp theo là B3.
+Trạng thái triển khai local: Nhóm A đã hoàn thành. A1/A2 cải thiện header; A3 hiển thị đủ 9 danh mục 5/3/2 cột với ảnh Admin/icon fallback; A4 cung cấp drawer bộ lọc mobile có hỗ trợ bàn phím, ARIA và tự đóng sau lọc AJAX. Theo quyết định chủ project ngày 2026-09-01, B3 là tính năng mở rộng chỉ xem xét sau khi deploy và ổn định website; không thuộc phạm vi readiness trước deploy.
 
 ### Nhóm A — Nhanh, rủi ro thấp, làm được ngay
 | Mục | Mô tả | Công sức |
@@ -57,7 +57,7 @@ Trạng thái triển khai local: Nhóm A đã hoàn thành. A1/A2 cải thiện
 
 Làm **Nhóm A trọn gói** trước (1 ngày, rủi ro thấp, tác động thấy ngay: header bán hàng hơn, lọc nhanh, mobile lọc được, trang chủ nhiều sản phẩm hơn).
 
-Sau đó chọn **B3 (So sánh sản phẩm)** vì tận dụng đúng thế mạnh dữ liệu thông số cấu trúc và không phụ thuộc chế độ giá.
+Sau khi website đã deploy và vận hành ổn định, có thể chọn **B3 (So sánh sản phẩm)** vì tận dụng đúng thế mạnh dữ liệu thông số cấu trúc và không phụ thuộc chế độ giá. B3 không chặn deploy hiện tại.
 
 **B1/B2 (banner + chiến dịch)** làm khi chốt được quy trình nhập liệu ở Admin và định dạng chiến dịch.
 

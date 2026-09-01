@@ -170,11 +170,13 @@ Browser test đã phát hiện `.htaccess` trong `/upload` sinh sai cú pháp kh
 
 ## 8. Việc tiếp theo theo ưu tiên
 
-1. **Nâng cấp e-commerce**: Nhóm A đã hoàn thành local, gồm lọc nhanh công suất, header catalog, đủ danh mục trang chủ và drawer bộ lọc mobile. Mục đề xuất tiếp theo là B3 So sánh sản phẩm; cần chủ project chốt thiết kế trước khi triển khai.
+1. **Hoàn tất readiness trước deploy** theo checklist cha: ưu tiên dữ liệu/nội dung sản phẩm quảng cáo và 5 trang chính sách khi chủ project cung cấp/chốt dữ liệu; sau đó thực hiện các bước staging/hosting có phê duyệt.
 2. Refactor `$requick` trong `libraries/router.php`: hiện dò slug tuần tự qua ~26 bảng (mỗi trang chi tiết ~17 lookup). Cân nhắc bảng ánh xạ `slug -> (table, type, id)` hoặc một truy vấn UNION. Blast radius toàn routing → cần đọc kỹ + regression đầy đủ trước khi đụng.
 3. Duyệt thẩm mỹ thủ công phần chưa tự động hoá được: popup tư vấn sản phẩm, menu mega desktop, trạng thái rỗng danh mục, khoảng cách/tràn ngang trên nhiều breakpoint.
-4. Chỉ thử conditional loading hoặc xử lý asset dung lượng lớn theo từng commit nhỏ, dùng 5 screenshot baseline và full suite làm cổng bắt buộc.
+4. Chỉ thử conditional loading hoặc xử lý asset dung lượng lớn theo từng commit nhỏ, dùng 7 screenshot baseline và full suite làm cổng bắt buộc.
 5. Lặp lại profiling Admin trên dataset staging gần production; local đã xác nhận bốn danh sách không còn N+1 theo dòng nhưng chưa đủ kết luận capacity hosting.
+
+B3 **So sánh sản phẩm** được chủ project phân loại là tính năng mở rộng: chỉ xem xét sau khi production đã deploy và vận hành ổn định; không tiếp tục triển khai trong giai đoạn readiness hiện tại và không phải điều kiện chặn deploy.
 
 ### Chờ dữ liệu thật
 
