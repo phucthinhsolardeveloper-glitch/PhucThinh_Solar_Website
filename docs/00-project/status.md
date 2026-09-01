@@ -22,8 +22,9 @@ Cập nhật gần nhất: 2026-08-31. Mọi thay đổi bên dưới mới ở 
 - Đã loại N+1 ở menu, block trang chủ, danh mục Sản phẩm và thống kê review trong danh sách Sản phẩm Admin; full pre-deploy đạt.
 - Profiling authenticated bốn danh sách Admin không còn N+1 theo từng dòng; dropdown địa giới Đơn hàng bỏ query quận/phường khi chưa chọn parent.
 - Ba thử nghiệm conditional loading CSS/JS đã được hoàn nguyên để giữ tương thích visual và tính năng.
-- Đã cài Playwright Chromium trong `tools/visual-tests`; full suite đạt 39 test, 1 skip có chủ ý. Có 5 screenshot baseline đã review cho trang chủ/danh mục desktop-mobile và chi tiết sản phẩm desktop; regression phủ thêm mega menu, danh mục rỗng và modal tư vấn/báo giá.
+- Đã cài Playwright Chromium trong `tools/visual-tests`; full suite đạt 43 test, 1 skip có chủ ý. Có 7 screenshot baseline đã review, gồm lưới danh mục trang chủ desktop/mobile; regression phủ thêm mega menu, danh mục rỗng, modal tư vấn/báo giá và AJAX chuyển nhóm sản phẩm.
 - CTA “Gửi yêu cầu báo giá” ở chi tiết sản phẩm đã nối vào modal tư vấn hiện có; form có CSRF và backend newsletter, không còn là UI không thể mở.
+- A3 e-commerce hoàn tất: trang chủ hiển thị đủ 9 danh mục nổi bật thành lưới 5/3/2 cột; ưu tiên ảnh Admin và dùng icon vàng khi danh mục chưa có ảnh, không thêm query DB.
 - Đã sửa cú pháp `.htaccess` upload từng làm ảnh/logo trả HTTP 500; pre-deploy kiểm tra trực tiếp media để chống tái phát.
 - Đã lập dependency/usage map CSS, JS, media và bốn luồng video legacy; chưa xóa/tách asset khi chưa đủ browser/staging evidence.
 

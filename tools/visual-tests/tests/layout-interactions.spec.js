@@ -67,3 +67,24 @@ test('quote request CTA opens the protected consultation form', async ({ page })
   await modal.locator('[data-dismiss="modal"]').click();
   await expect(modal).not.toBeVisible();
 });
+
+test('home exposes every featured category and switches its product grid', async ({ page }) => {
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  const categories = page.locator('.pts-home-category-grid > li');
+  expect(await categories.count()).toBeGreaterThanOrEqual(9);
+  await expect(categories).toHaveCount(await categories.count());
+
+  for (const category of await categories.all()) {
+    await category.scrollIntoViewIfNeeded();
+    await expect(category).toBeVisible();
+    await expect(category.locator('.pts-home-category-image').locator('img, i')).toBeVisible();
+  }
+
+  const secondCategory = categories.nth(1);
+  const listId = await secondCategory.locator('a').getAttribute('data-list');
+  expect(listId).toBeTruthy();
+  const productResponse = page.waitForResponse(response => response.url().includes(`api/product2.php?perpage=16&idList=${listId}`) && response.ok());
+  await secondCategory.locator('a').click();
+  await productResponse;
+  await expect(secondCategory).toHaveClass(/uk-active/);
+});

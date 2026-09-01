@@ -36,6 +36,22 @@ for (const [name, path] of [['home', '/'], ['products', '/san-pham/']]) {
   });
 }
 
+test('home featured categories visual baseline', async ({ page }) => {
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await settlePage(page);
+  const categories = page.locator('.pts-home-category-wrap');
+  await categories.scrollIntoViewIfNeeded();
+  await page.locator('.top-utility-bar, #headerscroll, #button-contact-vr').evaluateAll(elements => elements.forEach(element => {
+    element.style.setProperty('display', 'none', 'important');
+  }));
+  await page.waitForTimeout(300);
+  await expect(categories).toHaveScreenshot('home-featured-categories.png', {
+    animations: 'disabled',
+    maxDiffPixelRatio: 0.01,
+    timeout: 15000
+  });
+});
+
 test('product detail visual baseline', async ({ page, isMobile }) => {
   test.skip(isMobile, 'MagicZoom detail is covered by DOM regression on mobile; its element canvas is not screenshot-stable.');
   await page.goto('/san-pham/', { waitUntil: 'domcontentloaded' });

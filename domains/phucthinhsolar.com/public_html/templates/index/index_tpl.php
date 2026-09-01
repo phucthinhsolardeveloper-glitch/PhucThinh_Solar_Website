@@ -8,11 +8,25 @@
                     <h3>SẢN PHẨM NỔI BẬT </h3>
                 </div>
                 <div class="tab-switcher">
-                    <div class="swiper-container sw-tab-cat">
-                        <ul class="swiper-wrapper" uk-switcher="connect: .product-tabs-container">
+                    <div class="pts-home-category-wrap">
+                        <ul class="pts-home-category-grid" uk-switcher="connect: .product-tabs-container">
                             <?php if(count($splistnb)){foreach($splistnb as $k => $v){ ?>
-                            <li class="swiper-slide">
-                                <a href="javascript:" class="get-product-category" data-list="<?=$v['id']?>">
+                            <li>
+                                <a href="javascript:void(0)" class="get-product-category" data-list="<?=$v['id']?>">
+                                    <span class="pts-home-category-image">
+                                        <?php if(!empty($v['photo'])) { ?>
+                                        <?=$func->getImage(['class' => 'lazy', 'sizes' => '180x120x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
+                                        <?php } else {
+                                            $categoryIcon = 'fa-lightbulb';
+                                            $categorySlug = isset($v[$sluglang]) ? $v[$sluglang] : '';
+                                            if(strpos($categorySlug, 'tam-pin') !== false) $categoryIcon = 'fa-solar-panel';
+                                            else if(strpos($categorySlug, 'tru-den') !== false) $categoryIcon = 'fa-broadcast-tower';
+                                            else if(strpos($categorySlug, 'san-vuon') !== false) $categoryIcon = 'fa-seedling';
+                                            else if(strpos($categorySlug, 'quat') !== false) $categoryIcon = 'fa-fan';
+                                        ?>
+                                        <i class="fas <?=$categoryIcon?>" aria-hidden="true"></i>
+                                        <?php } ?>
+                                    </span>
                                     <span><?=$v['name'.$lang]?></span>
                                 </a>
                             </li>
