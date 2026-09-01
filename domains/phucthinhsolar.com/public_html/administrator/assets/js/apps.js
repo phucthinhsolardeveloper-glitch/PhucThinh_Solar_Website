@@ -1919,6 +1919,14 @@ $(document).ready(function(){
 	/* Change status */
 	if($(".show-checkbox").length)
 	{
+		function syncPageStatusMaster(attr)
+		{
+			var $rows = $('.show-checkbox[data-attr="'+attr+'"]');
+			var checkedCount = $rows.filter(':checked').length;
+			var $master = $('.status-select-page[data-attr="'+attr+'"]');
+			$master.prop('checked', $rows.length > 0 && checkedCount === $rows.length);
+			$master.prop('indeterminate', checkedCount > 0 && checkedCount < $rows.length);
+		}
 		$('body').on('change','.show-checkbox',function(){
 			var id = $(this).attr('data-id');
 			var table = $(this).attr('data-table');
@@ -1946,20 +1954,18 @@ $(document).ready(function(){
 						$this.prop('checked', !checked);
 						showNotify('Không thể cập nhật trạng thái. Vui lòng thử lại.', 'Lỗi', 'error');
 					}
+					syncPageStatusMaster(attr);
 				},
 				error: function(){
 					$this.prop('checked', !checked);
+					syncPageStatusMaster(attr);
 					showNotify('Không thể kết nối để cập nhật trạng thái.', 'Lỗi', 'error');
 				},
 				complete: function(){ $this.prop('disabled', false); }
 			});
 		});
 
-		$('.status-select-page').each(function(){
-			var attr = $(this).data('attr');
-			var $rows = $('.show-checkbox[data-attr="'+attr+'"]');
-			$(this).prop('checked', $rows.length > 0 && $rows.filter(':checked').length === $rows.length);
-		});
+		$('.status-select-page').each(function(){ syncPageStatusMaster($(this).data('attr')); });
 
 		$('body').on('change', '.status-select-page', function(){
 			var $master = $(this);
@@ -1970,7 +1976,7 @@ $(document).ready(function(){
 			var ids = $rows.map(function(){ return $(this).data('id'); }).get();
 			var label = $.trim($master.closest('th').find('div:first').text());
 			if(!ids.length) return;
-			$master.prop('checked', !checked);
+			$master.prop('checked', !checked).prop('indeterminate', false);
 			$.confirm({
 				title: 'Cập nhật hàng loạt',
 				content: (checked ? 'Bật ' : 'Tắt ')+'“'+label+'” cho '+ids.length+' sản phẩm trên trang này?',
@@ -1987,7 +1993,7 @@ $(document).ready(function(){
 								success: function(response){
 									if(response && response.success) {
 										$rows.prop('checked', checked);
-										$master.prop('checked', checked);
+										syncPageStatusMaster(attr);
 										showNotify('Đã cập nhật '+response.updated+' sản phẩm.');
 									} else showNotify('Cập nhật chưa hoàn tất. Vui lòng tải lại trang.', 'Lỗi', 'error');
 								},

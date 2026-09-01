@@ -95,9 +95,10 @@
 						<?php if(isset($config['product'][$type]['check'])) { foreach($config['product'][$type]['check'] as $key => $value) { ?>
 							<th class="align-middle text-center">
                                 <div><?=$value?></div>
-                                <label class="mb-0 mt-1 text-xs font-weight-normal" title="Bật hoặc tắt cho tất cả sản phẩm đang hiển thị trên trang này">
-                                    <input type="checkbox" class="status-select-page" data-table="product" data-attr="<?=$key?>"> cả trang
-                                </label>
+                                <div class="custom-control custom-switch d-inline-block mt-1" title="Bật hoặc tắt cho tất cả sản phẩm trên trang này">
+                                    <input type="checkbox" class="custom-control-input status-select-page" id="status-page-<?=$key?>" data-table="product" data-attr="<?=$key?>">
+                                    <label class="custom-control-label text-xs font-weight-normal" for="status-page-<?=$key?>">Cả trang</label>
+                                </div>
                             </th>
 						<?php } } ?>
                         <th class="align-middle text-center">Thao tác</th>

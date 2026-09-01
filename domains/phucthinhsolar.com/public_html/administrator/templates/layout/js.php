@@ -47,4 +47,4 @@
 <script src="assets/apexcharts/apexcharts.min.js"></script>
 <script src="assets/simplenotify/simple-notify.js"></script>
 <script src="assets/comment/comment.js"></script>
-<script src="assets/js/apps.js"></script>
+<script src="assets/js/apps.js?v=<?=@filemtime(ROOT.'administrator/assets/js/apps.js')?>"></script>
