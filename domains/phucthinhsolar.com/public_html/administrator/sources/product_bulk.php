@@ -861,8 +861,8 @@ function productBulkCommit()
         $bulkMessage = array('type' => 'danger', 'text' => 'Phiên làm việc không hợp lệ. Vui lòng tải lại trang.');
         return;
     }
-    if (empty($_POST['confirm_bulk']) || trim($_POST['confirm_bulk']) !== 'CAP_NHAT') {
-        $bulkMessage = array('type' => 'danger', 'text' => 'Bạn chưa nhập đúng CAP_NHAT để xác nhận.');
+    if (empty($_POST['confirm_bulk_apply'])) {
+        $bulkMessage = array('type' => 'danger', 'text' => 'Hãy xác nhận đã kiểm tra bản xem trước trước khi áp dụng.');
         return;
     }
     $token = isset($_POST['preview_token']) ? preg_replace('/[^a-f0-9]/', '', $_POST['preview_token']) : '';
@@ -1084,7 +1084,7 @@ function productBulkExport($templateOnly = false)
         array('Quy tắc thông số', 'Không lặp tên thông số trong cùng một sản phẩm. Không dán bảng HTML. Nội dung giải thích dài nên nhập ở cột Nội dung.'),
         array('5. TRẠNG THÁI', 'Hiển thị điều khiển công khai; Bán chạy điều khiển nhóm nổi bật; Liên hệ báo giá ẩn giá và nút mua riêng sản phẩm. Đặt Hiển thị = 0 mới là tạm ẩn.'),
         array('Archive', 'Dùng thao tác archive khi cần ẩn hàng loạt. Archive không xóa vĩnh viễn sản phẩm, hình ảnh hoặc lịch sử liên quan.'),
-        array('6. QUY TRÌNH NHẬP', 'Bước 1: Xuất file mới nhất. Bước 2: Sửa dữ liệu. Bước 3: Tải file lên. Bước 4: đọc màn hình Xem trước. Bước 5: nhập CAP_NHAT để xác nhận.'),
+        array('6. QUY TRÌNH NHẬP', 'Bước 1: Xuất file mới nhất. Bước 2: Sửa dữ liệu. Bước 3: Tải file lên. Bước 4: đọc màn hình Xem trước. Bước 5: đánh dấu đã kiểm tra và áp dụng.'),
         array('Khi có lỗi', 'Không dòng nào được ghi nếu file còn lỗi. Sửa đúng dòng/cột được báo rồi tải lại file; không cần chia file trừ khi vượt giới hạn.'),
         array('Giới hạn', 'Tối đa 500 sản phẩm và 5 MB mỗi lần. Hỗ trợ XLSX, XLS và CSV; nên dùng XLSX để giữ danh sách chọn và dữ liệu chống xung đột.'),
         array('Màu cột', 'Vàng: bắt buộc khi tạo mới. Xám: chỉ đọc, không sửa. Xanh: tùy chọn.'),

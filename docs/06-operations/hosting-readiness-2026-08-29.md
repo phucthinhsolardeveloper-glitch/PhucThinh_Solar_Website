@@ -9,7 +9,7 @@ Website chỉ được mở traffic/chạy quảng cáo khi toàn bộ mục **P
 ## 2. Trạng thái đã hoàn thành
 
 - Hoàn thiện thông số sản phẩm có cấu trúc, form Admin, frontend và nhập/xuất CSV/XLS/XLSX; vẫn giữ fallback HTML legacy.
-- Quy trình Excel có preview, kiểm tra ID/mã/slug/danh mục/giá, phát hiện xung đột, xác nhận `CAP_NHAT`, transaction rollback và cleanup dữ liệu thử.
+- Quy trình Excel có preview, kiểm tra ID/mã/slug/danh mục/giá, phát hiện xung đột, checkbox xác nhận đã kiểm tra, transaction rollback và cleanup dữ liệu thử.
 - Không chạy migration 006 apply; dữ liệu chuẩn sẽ nhận từ file Excel bên ngoài.
 - Parameterized các truy vấn quan trọng đã phát hiện trong filter public, comment và quản trị đơn hàng.
 - Bổ sung CSRF cho checkout, review, đơn hàng và toàn bộ 42 form POST Admin.
@@ -67,7 +67,7 @@ Website chỉ được mở traffic/chạy quảng cáo khi toàn bộ mục **P
 - [ ] Khi nhận Excel: lưu file gốc + checksum, chỉ preview lần đầu, chưa commit.
 - [ ] Rà số dòng tạo/sửa/ẩn/không đổi, lỗi, cảnh báo và xung đột.
 - [ ] Đối chiếu sản phẩm mẫu: ID, mã, tên, slug, danh mục, giá, trạng thái, thông số và ảnh.
-- [ ] Chỉ nhập `CAP_NHAT` trên staging sau khi preview sạch và có backup.
+- [ ] Chỉ đánh dấu xác nhận và áp dụng trên staging sau khi preview sạch và có backup.
 - [ ] Xác nhận không có mã trùng, dòng test hoặc dữ liệu import dở dang.
 
 #### D. Security và tài khoản Admin

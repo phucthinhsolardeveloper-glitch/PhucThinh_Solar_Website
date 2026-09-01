@@ -25,7 +25,7 @@ Quy ước dữ liệu Excel vẫn giữ nguyên: ô giá trống khi cập nh�
 - [ ] Rà số dòng tạo/sửa/ẩn/không đổi, lỗi, cảnh báo và xung đột.
 - [ ] Đối chiếu mẫu các sản phẩm quan trọng: mã, tên, danh mục, giá, trạng thái và thông số.
 - [ ] Sửa lỗi trong Excel rồi tải lại; chỉ chọn “Dùng Excel” cho xung đột đã xác minh.
-- [ ] Nhập `CAP_NHAT` và áp dụng trên local/staging sau khi preview sạch.
+- [ ] Đánh dấu xác nhận và áp dụng trên local/staging sau khi preview sạch.
 - [ ] Kiểm tra DB sau import và xác nhận không có mã trùng/dòng test.
 - [ ] Smoke category → product; kiểm tra sản phẩm có giá, “Liên hệ”, thông số chuẩn và fallback legacy.
 - [ ] Lưu báo cáo import: file nguồn, thời điểm, số dòng và kết quả.

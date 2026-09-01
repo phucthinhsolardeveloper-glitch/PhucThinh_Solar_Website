@@ -26,7 +26,7 @@
 <section class="content">
     <div class="card-footer text-sm sticky-top">
     	<a class="btn btn-sm bg-gradient-primary text-white" href="<?=$linkAdd?>" title="Thêm mới"><i class="fas fa-plus mr-2"></i>Thêm mới</a>
-        <a class="btn btn-sm bg-gradient-danger text-white" id="delete-all" data-url="<?=$linkDelete?><?=$strUrl?>" title="Xóa tất cả"><i class="far fa-trash-alt mr-2"></i>Xóa tất cả</a>
+        <a class="btn btn-sm bg-gradient-danger text-white" id="delete-all" data-url="<?=$linkDelete?><?=$strUrl?>" title="Xóa sản phẩm đã chọn"><i class="far fa-trash-alt mr-2"></i>Xóa mục đã chọn</a>
         <a class="btn btn-sm bg-gradient-success text-white" href="<?=$linkBulk?>" title="Nhập xuất Excel/CSV"><i class="fas fa-file-excel mr-2"></i>Nhập / Xuất</a>
         <div class="form-inline form-search d-inline-block align-middle ml-3">
             <div class="input-group input-group-sm">
@@ -93,7 +93,12 @@
 							<th class="align-middle">Gallery</th>
 						<?php } ?>
 						<?php if(isset($config['product'][$type]['check'])) { foreach($config['product'][$type]['check'] as $key => $value) { ?>
-							<th class="align-middle text-center"><?=$value?></th>
+							<th class="align-middle text-center">
+                                <div><?=$value?></div>
+                                <label class="mb-0 mt-1 text-xs font-weight-normal" title="Bật hoặc tắt cho tất cả sản phẩm đang hiển thị trên trang này">
+                                    <input type="checkbox" class="status-select-page" data-table="product" data-attr="<?=$key?>"> cả trang
+                                </label>
+                            </th>
 						<?php } } ?>
                         <th class="align-middle text-center">Thao tác</th>
                     </tr>
@@ -144,17 +149,6 @@
                                     	<?php if(isset($config['product'][$type]['view']) && $config['product'][$type]['view'] == true) { ?>
                                     		<a class="text-primary mr-3" href="<?=$linkView?><?=$items[$i]['slugvi']?>" target="_blank" title="<?=$items[$i]['namevi']?>"><i class="far fa-eye mr-1"></i>View</a>
                                     	<?php } ?>
-                                    	<a class="text-info mr-3" href="<?=$linkEdit?><?=$linkID?>&id=<?=$items[$i]['id']?>" title="<?=$items[$i]['namevi']?>"><i class="far fa-edit mr-1"></i>Edit</a>
-                                    	<?php if(isset($config['product'][$type]['copy']) && $config['product'][$type]['copy'] == true) { ?>
-                                    		<div class="dropdown">
-			                            		<a id="dropdownCopy" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle text-success p-0 pr-3"><i class="far fa-clone mr-1"></i>Copy</a>
-									            <ul aria-labelledby="dropdownCopy" class="dropdown-menu border-0 shadow">
-									                <li><a href="#" class="dropdown-item copy-now" data-id="<?=$items[$i]['id']?>" data-table="product" data-copyimg="<?=$copyImg?>"><i class="far fa-caret-square-right text-secondary mr-2"></i>Sao chép ngay</a></li>
-									                <li><a href="<?=$linkCopy?><?=$linkID?>&id_copy=<?=$items[$i]['id']?>" class="dropdown-item"><i class="far fa-caret-square-right text-secondary mr-2"></i>Chỉnh sửa thông tin</a></li>
-									            </ul>
-			                            	</div>
-                                    	<?php } ?>
-                                    	<a class="text-danger" id="delete-item" data-url="<?=$linkDelete?><?=$linkID?>&id=<?=$items[$i]['id']?>" title="<?=$items[$i]['namevi']?>"><i class="far fa-trash-alt mr-1"></i>Delete</a>
                                     </div>
                                 </td>
                                 <?php if(isset($config['product'][$type]['gallery']) && count($config['product'][$type]['gallery']) > 0) { ?>
@@ -201,9 +195,4 @@
     <?php if($paging) { ?>
         <div class="card-footer text-sm pb-0"><?=$paging?></div>
     <?php } ?>
-    <div class="card-footer text-sm">
-    	<a class="btn btn-sm bg-gradient-primary text-white" href="<?=$linkAdd?>" title="Thêm mới"><i class="fas fa-plus mr-2"></i>Thêm mới</a>
-        <a class="btn btn-sm bg-gradient-danger text-white" id="delete-all" data-url="<?=$linkDelete?><?=$strUrl?>" title="Xóa tất cả"><i class="far fa-trash-alt mr-2"></i>Xóa tất cả</a>
-        <a class="btn btn-sm bg-gradient-success text-white" href="<?=$linkBulk?>" title="Nhập xuất Excel/CSV"><i class="fas fa-file-excel mr-2"></i>Nhập / Xuất</a>
-    </div>
 </section>

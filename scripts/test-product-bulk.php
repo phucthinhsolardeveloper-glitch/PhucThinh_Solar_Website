@@ -57,7 +57,7 @@ if (!empty($argv[1]) && $argv[1] === '--inspect-workbook' && !empty($argv[2])) {
     testAssert(strpos((string) $guideSheet->getCell('B2')->getValue(), 'Mã sản phẩm và Tên sản phẩm') !== false, 'Sheet hướng dẫn nêu rõ dữ liệu bắt buộc');
     testAssert(strpos((string) $guideSheet->getCell('B3')->getValue(), 'ô trống sẽ giữ') !== false, 'Sheet hướng dẫn giải thích cách cập nhật tối giản');
     testAssert(strpos((string) $guideSheet->getCell('B17')->getValue(), 'Model | JD-T200') !== false, 'Sheet hướng dẫn có ví dụ thông số khác');
-    testAssert(strpos((string) $guideSheet->getCell('B21')->getValue(), 'Bước 1') !== false && strpos((string) $guideSheet->getCell('B21')->getValue(), 'CAP_NHAT') !== false, 'Sheet hướng dẫn có quy trình import từng bước');
+    testAssert(strpos((string) $guideSheet->getCell('B21')->getValue(), 'Bước 1') !== false && strpos((string) $guideSheet->getCell('B21')->getValue(), 'đã kiểm tra') !== false, 'Sheet hướng dẫn có quy trình import từng bước');
     testAssert(!empty($headerColumns['Danh mục cấp 1']) && $productSheet->getCell($headerColumns['Danh mục cấp 1'].'2')->getDataValidation()->getType() === PHPExcel_Cell_DataValidation::TYPE_LIST, 'Danh mục có danh sách chọn trong Excel');
     testAssert(!empty($headerColumns['Hiển thị (1/0)']) && !empty($headerColumns['Bán chạy (1/0)']) && !empty($headerColumns['Liên hệ báo giá (1/0)']), 'Template dùng các cột trạng thái boolean thay cho text thủ công');
     testAssert($productSheet->getCell($headerColumns['Hiển thị (1/0)'].'2')->getDataValidation()->getFormula1() === '"1,0"', 'Cột Hiển thị chỉ cho chọn 1 hoặc 0');
@@ -88,7 +88,7 @@ function commitRowsForTest($rows, $token, $baseline = array(), $overwriteChoices
     file_put_contents($path, json_encode(array('type' => $type, 'created_at' => time(), 'rows' => $rows, 'baseline' => $baseline), JSON_UNESCAPED_UNICODE));
     $_SESSION['product_bulk_preview'][$token] = array('path' => $path, 'type' => $type, 'created_at' => time());
     $_SESSION['product_bulk_csrf'] = 'test-csrf';
-    $_POST = array('product_bulk_csrf' => 'test-csrf', 'confirm_bulk' => 'CAP_NHAT', 'preview_token' => $token, 'overwrite_conflict' => $overwriteChoices, 'brand_resolution' => $brandChoices, 'product_resolution' => $productChoices);
+    $_POST = array('product_bulk_csrf' => 'test-csrf', 'confirm_bulk_apply' => '1', 'preview_token' => $token, 'overwrite_conflict' => $overwriteChoices, 'brand_resolution' => $brandChoices, 'product_resolution' => $productChoices);
     if ($confirmHidden) $_POST['confirm_hidden_products'] = '1';
     $bulkMessage = null;
     $bulkResult = null;
@@ -105,7 +105,7 @@ function failCommitRowsForTest($rows, $token, $failAfter, $brandChoices = array(
     file_put_contents($path, json_encode(array('type' => $type, 'created_at' => time(), 'rows' => $rows, 'baseline' => array()), JSON_UNESCAPED_UNICODE));
     $_SESSION['product_bulk_preview'][$token] = array('path' => $path, 'type' => $type, 'created_at' => time());
     $_SESSION['product_bulk_csrf'] = 'test-csrf';
-    $_POST = array('product_bulk_csrf' => 'test-csrf', 'confirm_bulk' => 'CAP_NHAT', 'preview_token' => $token, 'brand_resolution' => $brandChoices);
+    $_POST = array('product_bulk_csrf' => 'test-csrf', 'confirm_bulk_apply' => '1', 'preview_token' => $token, 'brand_resolution' => $brandChoices);
     $productBulkTestFailAfter = $failAfter;
     $bulkMessage = null;
     productBulkCommit();

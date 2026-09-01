@@ -211,8 +211,7 @@ $bulkCsrf = productBulkCsrfToken();
                                 <label class="mb-0 mt-2"><input required type="checkbox" name="confirm_hidden_products" value="1"> Tôi đã kiểm tra và đồng ý áp dụng các thay đổi trạng thái này.</label>
                             </div>
                         <?php } ?>
-                        <label class="mr-2" for="confirm_bulk">Nhập <code class="mx-1">CAP_NHAT</code> để xác nhận:</label>
-                        <input required class="form-control form-control-sm mr-2" type="text" id="confirm_bulk" name="confirm_bulk" autocomplete="off">
+                        <label class="mr-3 mb-0"><input required type="checkbox" name="confirm_bulk_apply" value="1"> Tôi đã kiểm tra số lượng tạo mới, cập nhật và trạng thái ở trên.</label>
                         <button class="btn btn-sm bg-gradient-danger"><i class="fas fa-database mr-2"></i>Áp dụng vào database</button>
                     </form>
                 <?php } else { ?>
