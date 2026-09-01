@@ -16,7 +16,7 @@ RUN apt-get update \
 COPY docker/php74/local-php.ini /usr/local/etc/php/conf.d/99-pts-local.ini
 COPY domains/phucthinhsolar.com/public_html/ /var/www/html/
 
-RUN mkdir -p /var/www/html/caches \
-    && chown -R www-data:www-data /var/www/html/caches /var/www/html/upload /var/www/html/thumbs
+RUN mkdir -p /var/www/html/caches /var/www/html/logs \
+    && chown -R www-data:www-data /var/www/html/caches /var/www/html/logs /var/www/html/upload /var/www/html/thumbs
 
 WORKDIR /var/www/html

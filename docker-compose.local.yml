@@ -44,6 +44,7 @@ services:
       # Thư mục runtime giữ trong named volume để Apache (www-data) ghi được và không làm bẩn cây git.
       # Lần đầu chạy, volume được seed từ nội dung có sẵn trong image (đã COPY upload/thumbs lúc build).
       - pts_web_caches:/var/www/html/caches
+      - pts_web_logs:/var/www/html/logs
       - pts_web_upload:/var/www/html/upload
       - pts_web_thumbs:/var/www/html/thumbs
     depends_on:
@@ -53,5 +54,6 @@ services:
 volumes:
   pts_mariadb_data:
   pts_web_caches:
+  pts_web_logs:
   pts_web_upload:
   pts_web_thumbs:

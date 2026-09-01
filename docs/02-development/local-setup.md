@@ -8,7 +8,7 @@ docker compose -f docker-compose.local.yml up -d
 
 Web `http://localhost:8080`, admin `http://localhost:8080/administrator/`. DB MariaDB 10.4 trong service `db` (`phucthinhs_local` / `pts_local` / `pts_local_only`).
 
-Từ 2026-09-01, service `web` bind-mount `domains/phucthinhsolar.com/public_html` vào `/var/www/html`, nên **sửa file `.php` / `.js` / `.css` là thấy ngay, không cần `docker compose build web`**. Các thư mục runtime (`caches`, `upload`, `thumbs`) nằm trong named volume để Apache (`www-data`) ghi được và không làm bẩn cây git; lần đầu chạy chúng được seed từ nội dung image.
+Từ 2026-09-01, service `web` bind-mount `domains/phucthinhsolar.com/public_html` vào `/var/www/html`, nên **sửa file `.php` / `.js` / `.css` là thấy ngay, không cần `docker compose build web`**. Các thư mục runtime (`caches`, `logs`, `upload`, `thumbs`) nằm trong named volume để Apache (`www-data`) ghi được và không làm bẩn cây git; lần đầu chạy chúng được seed từ nội dung image (Dockerfile `mkdir` + `chown` sẵn `caches` và `logs`).
 
 - Chỉ build lại image khi đổi `docker/php74/Dockerfile`, `docker/php74/local-php.ini` hoặc phiên bản PHP.
 - Sau khi kéo compose mới lần đầu: `docker compose -f docker-compose.local.yml up -d --force-recreate web`.
