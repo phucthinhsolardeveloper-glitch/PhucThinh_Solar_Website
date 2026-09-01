@@ -162,7 +162,7 @@ Thay đổi DB local (không nằm trong Git): đã import `artifacts/san-pham-2
 
 Môi trường hiện tại không có binary `rg` (Claude Code chỉ cấp qua shell function); `predeploy-local.sh` cần `rg`. Cách chạy: tạo shim `rg` gọi `exec -a rg "$CLAUDE_CODE_EXECPATH"` rồi prepend vào `PATH`. Không sửa script vì đây là hạn chế môi trường, không phải lỗi script.
 
-Playwright `1.62.1` và Chromium đã được cài riêng trong `tools/visual-tests`; browser nằm ở thư mục `.browsers` đã gitignore. Chạy bằng `cd tools/visual-tests && npm test`. Full suite hiện đạt 43 test và 1 skip có chủ ý: smoke/interaction desktop-mobile, giỏ rỗng, tìm kiếm không/có kết quả, form liên hệ có CSRF, chi tiết sản phẩm không ảnh, danh mục rỗng, mega menu desktop, modal tư vấn/báo giá, AJAX danh mục trang chủ, cùng 7 screenshot baseline đã review. `empty-states.spec.js` chặn GTranslate CDN như visual-baseline.
+Playwright `1.62.1` và Chromium đã được cài riêng trong `tools/visual-tests`; browser nằm ở thư mục `.browsers` đã gitignore. Chạy bằng `cd tools/visual-tests && npm test`. Full suite hiện đạt 44 test và 2 skip có chủ ý: smoke/interaction desktop-mobile, giỏ rỗng, tìm kiếm không/có kết quả, form liên hệ có CSRF, chi tiết sản phẩm không ảnh, danh mục rỗng, mega menu desktop, modal tư vấn/báo giá, AJAX danh mục trang chủ, drawer bộ lọc mobile, cùng 7 screenshot baseline đã review. `empty-states.spec.js` chặn GTranslate CDN như visual-baseline.
 
 Ghi chú `templates/contact/contact_tpl.php`: form liên hệ **đang chạy** là block dùng class `wpcf7-*` (leftover WordPress) nhưng đã wired đúng cho PHP — có `form_csrf`, field `dataContact[...]`, `submit-contact`, `recaptcha_response_contact`; handler `sources/contact.php` xử lý đúng. Block ở dòng 1–98 (`contact-form validation-contact`) là bản redesign cũ **bị comment `<!-- ... -->`** từ baseline; nên xoá hẳn block chết + đổi tên class `wpcf7-*` khi có dịp, không phải bug chức năng. Pixel test chặn riêng GTranslate CDN để tránh DOM đổi ngôn ngữ không xác định; mobile MagicZoom vẫn có DOM/ảnh/CTA regression nhưng bỏ element screenshot vì canvas gây Chromium GPU/tile overflow.
 
@@ -170,7 +170,7 @@ Browser test đã phát hiện `.htaccess` trong `/upload` sinh sai cú pháp kh
 
 ## 8. Việc tiếp theo theo ưu tiên
 
-1. **Nâng cấp e-commerce** theo `docs/07-features/ecommerce-upgrade-proposal.md` (chờ chủ project chốt). Nhóm A (lọc nhanh công suất ở header, nổi bật catalog, trang chủ nhiều danh mục, bộ lọc mobile dạng drawer) rủi ro thấp, ~1 ngày. Sau đó B3 So sánh sản phẩm.
+1. **Nâng cấp e-commerce**: Nhóm A đã hoàn thành local, gồm lọc nhanh công suất, header catalog, đủ danh mục trang chủ và drawer bộ lọc mobile. Mục đề xuất tiếp theo là B3 So sánh sản phẩm; cần chủ project chốt thiết kế trước khi triển khai.
 2. Refactor `$requick` trong `libraries/router.php`: hiện dò slug tuần tự qua ~26 bảng (mỗi trang chi tiết ~17 lookup). Cân nhắc bảng ánh xạ `slug -> (table, type, id)` hoặc một truy vấn UNION. Blast radius toàn routing → cần đọc kỹ + regression đầy đủ trước khi đụng.
 3. Duyệt thẩm mỹ thủ công phần chưa tự động hoá được: popup tư vấn sản phẩm, menu mega desktop, trạng thái rỗng danh mục, khoảng cách/tràn ngang trên nhiều breakpoint.
 4. Chỉ thử conditional loading hoặc xử lý asset dung lượng lớn theo từng commit nhỏ, dùng 5 screenshot baseline và full suite làm cổng bắt buộc.

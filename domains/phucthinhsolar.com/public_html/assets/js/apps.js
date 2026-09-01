@@ -822,9 +822,25 @@ $(document).ready(function(){
     GA_FRAMEWORK.TickerScroll();
     GA_FRAMEWORK.DatePicker();
     GA_FRAMEWORK.loadNameInputFile();
-     $(document).on('click', '.toggle-sidebar', function (event) {
-        $('.product-left').toggleClass('show');
-        $('.mask-sidebar').toggleClass('show');
+    function setProductFilterDrawer(open) {
+        $('.product-left').toggleClass('show', open).attr('aria-hidden', open ? 'false' : 'true');
+        $('.mask-sidebar').toggleClass('show', open);
+        $('#opensideBar-product').toggleClass('active', open).attr('aria-expanded', open ? 'true' : 'false');
+        $('body').toggleClass('pts-filter-drawer-open', open);
+        if(open) $('.pts-filter-drawer-close').trigger('focus');
+    }
+    if(window.matchMedia && window.matchMedia('(max-width: 1001px)').matches) {
+        $('.product-left').attr('aria-hidden', 'true');
+    }
+    $(document).on('click', '.toggle-sidebar', function (event) {
+        event.preventDefault();
+        setProductFilterDrawer(!$('.product-left').hasClass('show'));
+    });
+    $(document).on('keydown', function (event) {
+        if(event.key === 'Escape' && $('.product-left').hasClass('show')) {
+            setProductFilterDrawer(false);
+            $('#opensideBar-product').trigger('focus');
+        }
     });
     $(document).ready(function () {
         "use strict";

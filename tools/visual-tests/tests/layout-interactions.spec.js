@@ -88,3 +88,41 @@ test('home exposes every featured category and switches its product grid', async
   await productResponse;
   await expect(secondCategory).toHaveClass(/uk-active/);
 });
+
+test('mobile product filters open as an accessible drawer and close after filtering', async ({ page, isMobile }) => {
+  test.skip(!isMobile, 'The filter drawer is a mobile/tablet interaction.');
+  await page.goto('/danh-muc-san-pham/den-nlmt/', { waitUntil: 'domcontentloaded' });
+
+  const trigger = page.locator('#opensideBar-product');
+  const drawer = page.locator('#product-filter-drawer');
+  await expect(trigger).toBeVisible();
+  await expect(trigger).toHaveAttribute('aria-expanded', 'false');
+  await expect(drawer).not.toHaveClass(/show/);
+  await expect(drawer).toHaveAttribute('aria-hidden', 'true');
+
+  await trigger.click();
+  await expect(trigger).toHaveAttribute('aria-expanded', 'true');
+  await expect(drawer).toHaveClass(/show/);
+  await expect(drawer).toHaveAttribute('aria-hidden', 'false');
+  await expect(page.locator('body')).toHaveClass(/pts-filter-drawer-open/);
+  await expect(drawer.locator('.pts-filter-drawer-close')).toBeFocused();
+
+  await page.keyboard.press('Escape');
+  await expect(trigger).toBeFocused();
+  await expect(trigger).toHaveAttribute('aria-expanded', 'false');
+  await expect(drawer).not.toHaveClass(/show/);
+
+  await trigger.click();
+  await expect(drawer).toHaveClass(/show/);
+  const firstBrand = drawer.locator('input[name="car_brand"]').first();
+  await expect(firstBrand).toBeAttached();
+  const filteredResponse = page.waitForResponse(response => response.url().includes('/api/fillter_service.php?') && response.ok());
+  await firstBrand.evaluate(input => {
+    input.checked = true;
+    input.dispatchEvent(new Event('change', { bubbles: true }));
+  });
+  await filteredResponse;
+  await expect(drawer).not.toHaveClass(/show/);
+  await expect(trigger).toHaveAttribute('aria-expanded', 'false');
+  await expect(page.locator('body')).not.toHaveClass(/pts-filter-drawer-open/);
+});

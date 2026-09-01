@@ -47,6 +47,9 @@
         <a href="javascript:void(0)" class="sort-pill <?=($currentSort==$sk)?'active':''?>" data-sort="<?=$sk?>" aria-pressed="<?=($currentSort==$sk)?'true':'false'?>"><?=$sv?></a>
         <?php } ?>
     </div>
+    <button type="button" class="btn-filter-product toggle-sidebar" id="opensideBar-product" aria-controls="product-filter-drawer" aria-expanded="false">
+        <i class="fas fa-filter" aria-hidden="true"></i> Bộ lọc
+    </button>
     <select name="orderby" onchange="fetch_product()" class="orderby" aria-label="Đơn hàng của cửa hàng" style="display:none;">
         <option value="">Sắp xếp</option>
         <option value="abc">A → Z</option>
@@ -72,7 +75,11 @@ document.addEventListener('DOMContentLoaded', function(){
 });
 </script>
 <div class="product-row row">
-    <div class="product-left col-lg-3">
+    <div class="product-left col-lg-3" id="product-filter-drawer" aria-hidden="false">
+        <div class="pts-filter-drawer-head">
+            <strong><i class="fas fa-filter" aria-hidden="true"></i> Bộ lọc sản phẩm</strong>
+            <button type="button" class="pts-filter-drawer-close toggle-sidebar" aria-label="Đóng bộ lọc"><i class="fas fa-times" aria-hidden="true"></i></button>
+        </div>
         <div class="mb40">
             <?php if(!empty($optsetting['hotline'])) { ?>
             <div class="sidebar-consult-box">
@@ -278,4 +285,4 @@ document.addEventListener('DOMContentLoaded', function(){
 <input type="hidden" name="idl-tpl" value="">
 <input type="hidden" name="id_list" value="<?= (isset($id_list)) ? $id_list : 0 ?>">
 <input type="hidden" name="id_cat" value="<?= (isset($id_cat)) ? $id_cat : 0 ?>">
-<div class="mask-sidebar toggle-sidebar"></div>
+<button type="button" class="mask-sidebar toggle-sidebar" aria-label="Đóng bộ lọc" tabindex="-1"></button>

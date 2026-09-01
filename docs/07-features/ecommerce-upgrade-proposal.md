@@ -30,7 +30,7 @@ Ngày lập: 2026-08-31. Trạng thái: chờ chủ project chốt phạm vi.
 
 ## 3. Đề xuất theo ưu tiên
 
-Trạng thái triển khai local: A1 và A2 đã hoàn thành ở header; A3 đã hoàn thành với lưới đủ 9 danh mục 5/3/2 cột, ảnh Admin và icon fallback. A4 là mục tiếp theo.
+Trạng thái triển khai local: Nhóm A đã hoàn thành. A1/A2 cải thiện header; A3 hiển thị đủ 9 danh mục 5/3/2 cột với ảnh Admin/icon fallback; A4 cung cấp drawer bộ lọc mobile có hỗ trợ bàn phím, ARIA và tự đóng sau lọc AJAX. Mục đề xuất tiếp theo là B3.
 
 ### Nhóm A — Nhanh, rủi ro thấp, làm được ngay
 | Mục | Mô tả | Công sức |
@@ -38,7 +38,7 @@ Trạng thái triển khai local: A1 và A2 đã hoàn thành ở header; A3 đ�
 | A1 | **Dải lọc nhanh công suất** dưới thanh tìm ở header (60W…1000W) → link `/danh-muc-san-pham/den-nlmt/?is_congsuat=60`. Dữ liệu `$congSuatList` đã có. | ~2–3h |
 | A2 | **Nổi bật "Danh mục sản phẩm"** + ô Gọi/Giỏ trong header; hạ nhẹ menu phụ. Chủ yếu CSS + markup nhỏ. | ~2h |
 | A3 | **Trang chủ: hàng icon danh mục lớn hơn, hiện đủ danh mục** — đã hoàn thành local, không thêm query DB. | ~3h |
-| A4 | **Bộ lọc mobile**: nút "Bộ lọc" mở sidebar dạng drawer trượt (hiện sidebar đang ẩn hẳn trên mobile). | ~4h |
+| A4 | **Bộ lọc mobile**: nút "Bộ lọc" mở sidebar dạng drawer trượt — đã hoàn thành local. | ~4h |
 
 ### Nhóm B — Trung bình, cần thống nhất thiết kế
 | Mục | Mô tả | Công sức | Ghi chú |
