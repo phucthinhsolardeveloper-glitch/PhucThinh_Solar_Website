@@ -2046,3 +2046,16 @@ body .home-6 .btn-all:hover i{transform:translateX(3px);}
     box-shadow:0 6px 18px rgba(182,125,46,.28)!important;
 }
 #comment-write .btn.btn-warning:hover{filter:brightness(1.05);}
+
+/* Khối "Đánh giá sản phẩm" — nút "Viết nhận xét của bạn" + số điểm về bộ màu */
+.comment-statistic .btn.btn-warning,
+.comment-statistic .btn-write-comment{
+    background:var(--pts-gold-metal)!important;background-image:var(--pts-gold-metal)!important;
+    background-color:transparent!important;border:0!important;color:var(--pts-navy-deep)!important;
+    font-weight:900!important;border-radius:8px!important;
+    box-shadow:0 6px 18px rgba(182,125,46,.28)!important;
+}
+.comment-statistic .btn.btn-warning:hover,
+.comment-statistic .btn-write-comment:hover{filter:brightness(1.05);}
+.comment-statistic .comment-point,
+.comment-statistic .comment-point strong{color:var(--pts-navy)!important;}
