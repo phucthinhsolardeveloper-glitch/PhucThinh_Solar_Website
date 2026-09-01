@@ -86,7 +86,7 @@
 	<?php if(!empty($quickWatts)) { ?>
 	<div class="header-quickfilter">
 		<div class="wrap-content">
-			<span class="hqf-label"><i class="fas fa-bolt"></i> Chọn theo công suất</span>
+			<span class="hqf-label" aria-label="Chọn theo công suất"><i class="fas fa-bolt"></i></span>
 			<div class="hqf-list">
 				<?php foreach($quickWatts as $w) { ?>
 				<a href="danh-muc-san-pham/den-nlmt/?is_congsuat=<?=$w?>"><?=$w?>W</a>

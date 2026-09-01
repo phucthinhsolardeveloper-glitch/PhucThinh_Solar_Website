@@ -1785,3 +1785,56 @@ body .home-3 .tab-switcher ul.pts-home-category-grid{
     .home-3 .pts-home-category-image{height:82px;}
     .home-3 .pts-home-category-grid>li>a>span:last-child{font-size:12.5px;}
 }
+
+/* =====================================================================
+   THANH SẮP XẾP / BỘ LỌC LISTING — gọn lại
+   Bỏ icon + tiêu đề "Sản phẩm / Sắp xếp danh sách theo nhu cầu".
+   Sắp xếp = combobox (đủ tuỳ chọn) thay cho dãy pill.
+   ===================================================================== */
+.filter_product{
+    padding:12px 16px!important;margin-bottom:18px!important;gap:12px!important;
+    justify-content:flex-end!important;box-shadow:0 4px 14px rgba(15,23,42,.04)!important;
+}
+.filter_product .filter-heading,
+.filter_product .sort-pill-group,
+.filter_product .name_title{display:none!important;}
+
+.filter_product .fp-sort{display:flex;align-items:center;gap:9px;}
+.filter_product .fp-sort label{
+    margin:0;color:#64748b;font-size:13px;font-weight:700;white-space:nowrap;
+}
+.filter_product select.orderby{
+    display:inline-block!important;appearance:none;-webkit-appearance:none;
+    min-height:40px;padding:0 34px 0 14px;border:1px solid var(--pts-line);border-radius:9px;
+    background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%230a2251' stroke-width='3' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 12px center;
+    color:var(--pts-navy);font-size:13.5px;font-weight:750;cursor:pointer;
+    min-width:150px;
+}
+.filter_product select.orderby:focus{outline:none;border-color:var(--pts-gold);}
+
+/* Nút mở bộ lọc (mobile): bo góc nhỏ */
+.btn-filter-product{border-radius:8px!important;}
+
+@media(max-width:991px){
+    .filter_product{justify-content:space-between!important;flex-wrap:nowrap!important;align-items:center!important;}
+    .filter_product .fp-sort{flex:1 1 auto;justify-content:flex-end;}
+    .filter_product .fp-sort label{display:none;}
+    .filter_product select.orderby{min-width:0;width:auto;max-width:170px;}
+    .btn-filter-product{width:auto!important;flex:0 0 auto;order:0!important;}
+}
+
+/* =====================================================================
+   NGÔN NGỮ TRONG SIDEBAR MOBILE (mmenu)
+   ===================================================================== */
+.mm-lang{display:flex!important;align-items:center;justify-content:space-between;gap:12px;padding:14px 20px!important;}
+.mm-lang .mm-lang-title{color:#475569;font-size:15px;font-weight:700;}
+.mm-lang .gtranslate_wrapper{display:inline-flex;align-items:center;min-height:28px;}
+/* Ẩn công tắc ngôn ngữ ở header khi vào chế độ mobile (đã chuyển vào sidebar) */
+@media(max-width:991px){
+    .flex-search-lang>.gtranslate_wrapper{display:none!important;}
+}
+
+/* Dải công suất: chỉ còn icon sấm sét, bỏ chữ "Chọn theo công suất" */
+.hqf-label{flex:0 0 auto;gap:0!important;color:var(--pts-gold-dark)!important;font-size:0!important;}
+.hqf-label i{font-size:15px!important;}
+@media(max-width:640px){ .hqf-label i{font-size:14px!important;} }

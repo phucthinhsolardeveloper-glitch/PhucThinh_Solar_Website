@@ -143,5 +143,10 @@
             <li><a class="<?php if($com=='dai-ly') echo 'active'; ?> transition" href="dai-ly" title="Đại lý">Đại lý</a></li>
 
             <li><a class="<?php if($com=='lien-he') echo 'active'; ?> transition" href="lien-he" title="<?=lienhe?>"><?=lienhe?></a></li>
+
+            <li class="mm-lang">
+                <span class="mm-lang-title">Ngôn ngữ</span>
+                <span class="gtranslate_wrapper mm-gt"></span>
+            </li>
     </ul>
 </nav>

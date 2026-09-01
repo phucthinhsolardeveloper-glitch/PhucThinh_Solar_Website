@@ -26,54 +26,33 @@
         <div class="col-md-3 trust-badge-item"><i class="fas fa-truck"></i><span>Giao hàng toàn quốc</span></div>
     </div>
 </div>
+<?php $currentSort = (isset($_GET['is_orderby'])) ? $_GET['is_orderby'] : ''; ?>
 <div class="filter_product">
-    <div class="filter-heading">
-        <span class="filter-heading-icon" aria-hidden="true"><i class="fas fa-sliders-h"></i></span>
-        <span>
-            <strong class="name_title">Sản phẩm</strong>
-            <small>Sắp xếp danh sách theo nhu cầu</small>
-        </span>
-    </div>
-    <div class="sort-pill-group" role="group" aria-label="Sắp xếp sản phẩm">
-        <?php
-            $sortOptions = array(
-                '' => 'Sắp xếp',
-                'abc' => 'Tên A → Z',
-                'abc-desc' => 'Tên Z → A',
-            );
-            $currentSort = (isset($_GET['is_orderby'])) ? $_GET['is_orderby'] : '';
-        ?>
-        <?php foreach($sortOptions as $sk => $sv) { ?>
-        <a href="javascript:void(0)" class="sort-pill <?=($currentSort==$sk)?'active':''?>" data-sort="<?=$sk?>" aria-pressed="<?=($currentSort==$sk)?'true':'false'?>"><?=$sv?></a>
-        <?php } ?>
-    </div>
     <button type="button" class="btn-filter-product toggle-sidebar" id="opensideBar-product" aria-controls="product-filter-drawer" aria-expanded="false">
         <i class="fas fa-filter" aria-hidden="true"></i> Bộ lọc
     </button>
-    <select name="orderby" onchange="fetch_product()" class="orderby" aria-label="Đơn hàng của cửa hàng" style="display:none;">
-        <option value="">Sắp xếp</option>
-        <option value="abc">A → Z</option>
-        <option value="abc-desc">Z → A</option>
-        <option value="new">Hàng mới nhất</option>
-        <option value="new-desc">Hàng cũ nhất</option>
-    </select>
+    <div class="fp-sort">
+        <label for="pts-sort">Sắp xếp</label>
+        <select id="pts-sort" name="orderby" onchange="fetch_product()" class="orderby" aria-label="Sắp xếp sản phẩm">
+            <?php
+                $sortOptions = array(
+                    ''         => 'Mặc định',
+                    'abc'      => 'Tên A → Z',
+                    'abc-desc' => 'Tên Z → A',
+                    'new'      => 'Mới nhất',
+                    'new-desc' => 'Cũ nhất',
+                );
+                if(publicProductPricesVisible()) {
+                    $sortOptions['price']      = 'Giá tăng dần';
+                    $sortOptions['price-desc'] = 'Giá giảm dần';
+                }
+            ?>
+            <?php foreach($sortOptions as $sk => $sv) { ?>
+            <option value="<?=$sk?>" <?=($currentSort==$sk)?'selected':''?>><?=$sv?></option>
+            <?php } ?>
+        </select>
+    </div>
 </div>
-<script>
-document.addEventListener('DOMContentLoaded', function(){
-    var pills = document.querySelectorAll('.sort-pill');
-    var select = document.querySelector('select[name="orderby"]');
-    if(!select) return;
-    pills.forEach(function(p){
-        p.addEventListener('click', function(){
-            pills.forEach(function(x){ x.classList.remove('active'); });
-            p.classList.add('active');
-            pills.forEach(function(x){ x.setAttribute('aria-pressed', x === p ? 'true' : 'false'); });
-            select.value = p.getAttribute('data-sort');
-            if(typeof fetch_product === 'function') fetch_product();
-        });
-    });
-});
-</script>
 <div class="product-row row">
     <div class="product-left col-lg-3" id="product-filter-drawer" aria-hidden="false">
         <div class="pts-filter-drawer-head">
