@@ -385,7 +385,6 @@
 
 		if($data)
 		{
-			foreach(productValidateCommercialFields($data) as $commercialError) $response['messages'][] = $commercialError;
 			foreach($data as $column => $value)
 			{
                 if(strpos($column, 'content') !== false || strpos($column, 'desc') !== false 	|| strpos($column, 'thongsokythuat') !== false || strpos($column, 'chinhsachmuahang') !== false || strpos($column, 'certificate') !== false)
@@ -437,10 +436,17 @@
 				$data['status'] = "";
 			}
 
-			$data['regular_price'] = (isset($data['regular_price']) && $data['regular_price'] != '') ? str_replace(",","",$data['regular_price']) : 0;
-			$data['sale_price'] = (isset($data['sale_price']) && $data['sale_price'] != '') ? str_replace(",","",$data['sale_price']) : 0;
-			$data['discount'] = (isset($data['discount']) && $data['discount'] != '') ? $data['discount'] : 0;
-			if(isset($data['cong_suat'])) $data['cong_suat'] = ($data['cong_suat'] != '') ? (float) str_replace(",",".",$data['cong_suat']) : null;
+			$pricing = adminNormalizeProductPricing($data);
+			$data['regular_price'] = $pricing['values']['regular_price'];
+			$data['sale_price'] = $pricing['values']['sale_price'];
+			$data['discount'] = $pricing['values']['discount'];
+			foreach($pricing['errors'] as $pricingError) $response['messages'][] = $pricingError;
+			if(isset($data['cong_suat']))
+			{
+				$wattage = str_replace(",",".",$data['cong_suat']);
+				if($wattage !== '' && (!is_numeric($wattage) || (float)$wattage < 0)) $response['messages'][] = 'Công suất không hợp lệ';
+				else $data['cong_suat'] = ($wattage !== '') ? (float)$wattage : null;
+			}
 			$data['type'] = $type;
 		}
 
@@ -487,21 +493,6 @@
 					$response['messages'][] = 'Đường dẫn ('.$v.') không được trống';
 				}
 			}
-		}
-
-		if(!empty($data['regular_price']) && !$func->isNumber($data['regular_price']))
-		{
-			$response['messages'][] = 'Giá bán không hợp lệ';
-		}
-
-		if(!empty($data['sale_price']) && !$func->isNumber($data['sale_price']))
-		{
-			$response['messages'][] = 'Giá mới không hợp lệ';
-		}
-
-		if(!empty($data['discount']) && !$func->isNumber($data['discount']))
-		{
-			$response['messages'][] = 'Chiết khấu không hợp lệ';
 		}
 
 		if(!empty($response))

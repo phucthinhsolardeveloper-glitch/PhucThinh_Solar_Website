@@ -28,6 +28,7 @@ fi
 docker cp scripts/test-security-hardening.php "$web_container:/tmp/test-security-hardening.php"
 docker cp scripts/test-admin-readiness.php "$web_container:/tmp/test-admin-readiness.php"
 docker cp scripts/test-product-bulk.php "$web_container:/tmp/test-product-bulk.php"
+docker cp scripts/test-product-pricing-admin-http.php "$web_container:/tmp/test-product-pricing-admin-http.php"
 
 docker compose -f "$compose_file" exec -T web sh -lc '
 set -eu
@@ -35,6 +36,7 @@ php -l administrator/api/login.php
 php -l administrator/sources/order.php
 php -l administrator/sources/product.php
 php -l administrator/sources/product_bulk.php
+php -l libraries/admin_product_pricing.php
 php -l libraries/admin_security.php
 php -l libraries/form_security.php
 php -l libraries/login_security.php
@@ -43,6 +45,7 @@ php -l libraries/session_security.php
 php /tmp/test-security-hardening.php
 php /tmp/test-admin-readiness.php
 php /tmp/test-product-bulk.php
+php /tmp/test-product-pricing-admin-http.php
 '
 
 node --check domains/phucthinhsolar.com/public_html/administrator/assets/js/apps.js

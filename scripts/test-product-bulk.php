@@ -24,6 +24,12 @@ function testAssert($condition, $message)
 $quietTestOutput = !empty($argv[1]) && in_array($argv[1], array('--export-workbook', '--export-csv'), true);
 testAssert(empty(productValidateCommercialFields(array('regular_price' => '1,000,000', 'sale_price' => '900,000', 'cong_suat' => '12,5'))), 'Validation CRUD chấp nhận giá và công suất hợp lệ');
 testAssert(count(productValidateCommercialFields(array('regular_price' => '100000', 'sale_price' => '120000', 'cong_suat' => 'abc'))) === 2, 'Validation CRUD chặn giá mới vượt giá bán và công suất sai');
+$pricingDiscount = adminNormalizeProductPricing(array('regular_price' => '500,000', 'sale_price' => '450,000', 'discount' => ''));
+testAssert(empty($pricingDiscount['errors']) && $pricingDiscount['values']['discount'] === 10.0, 'Validator chung tự đồng bộ phần trăm giảm giá');
+$pricingEqual = adminNormalizeProductPricing(array('regular_price' => '500000', 'sale_price' => '500000', 'discount' => '99'));
+testAssert(empty($pricingEqual['errors']) && (float)$pricingEqual['values']['discount'] === 0.0, 'Validator chung đưa giá bằng nhau về giảm giá 0%');
+$pricingInvalid = adminNormalizeProductPricing(array('regular_price' => '500000', 'sale_price' => '550000', 'discount' => '10'));
+testAssert(count($pricingInvalid['errors']) === 1, 'Validator chung chặn giá mới lớn hơn giá bán');
 
 if (!empty($argv[1]) && $argv[1] === '--export-workbook') {
     $_GET['format'] = 'xlsx';

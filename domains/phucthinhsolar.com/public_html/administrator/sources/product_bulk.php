@@ -1,18 +1,12 @@
 <?php
 if (!defined('SOURCES')) die('Error');
 
+require_once LIBRARIES.'admin_product_pricing.php';
+
 function productValidateCommercialFields($data)
 {
-    $errors = array();
-    $values = array();
-    foreach(array('regular_price' => 'Giá bán', 'sale_price' => 'Giá mới') as $field => $label)
-    {
-        $raw = isset($data[$field]) ? trim((string)$data[$field]) : '';
-        $normalized = str_replace(',', '', $raw);
-        if($raw !== '' && !preg_match('/^[0-9]+$/', $normalized)) $errors[] = $label.' không hợp lệ';
-        $values[$field] = $raw === '' || !is_numeric($normalized) ? 0 : (float)$normalized;
-    }
-    if($values['regular_price'] > 0 && $values['sale_price'] > $values['regular_price']) $errors[] = 'Giá mới không được lớn hơn giá bán';
+    $pricing = adminNormalizeProductPricing($data);
+    $errors = $pricing['errors'];
     if(isset($data['cong_suat']) && trim((string)$data['cong_suat']) !== '')
     {
         $wattage = str_replace(',', '.', trim((string)$data['cong_suat']));
@@ -687,9 +681,11 @@ function productBulkValidateRows($rawRows, $type, $baseline = array(), $overwrit
         if ($effectiveCat > 0 && empty($categories['cat'][$effectiveCat])) $item['errors'][] = 'ID danh mục cấp 2 không tồn tại.';
         if ($effectiveCat > 0 && !empty($categories['cat'][$effectiveCat]) && $effectiveList > 0 && (int) $categories['cat'][$effectiveCat]['id_list'] !== $effectiveList) $item['errors'][] = 'Danh mục cấp 2 không thuộc danh mục cấp 1 đã chọn.';
         if ($effectiveBrand > 0 && empty($categories['brand'][$effectiveBrand])) $item['errors'][] = 'ID thương hiệu không tồn tại.';
-        $regular = isset($item['data']['regular_price']) ? (float) $item['data']['regular_price'] : ($existing ? (float) $existing['regular_price'] : 0);
-        $sale = isset($item['data']['sale_price']) ? (float) $item['data']['sale_price'] : ($existing ? (float) $existing['sale_price'] : 0);
-        if ($regular > 0 && $sale > $regular) $item['errors'][] = 'Giá bán/khuyến mãi không được lớn hơn giá gốc.';
+        $effectivePricing = adminNormalizeProductPricing(array(
+            'regular_price' => isset($item['data']['regular_price']) ? $item['data']['regular_price'] : ($existing ? $existing['regular_price'] : 0),
+            'sale_price' => isset($item['data']['sale_price']) ? $item['data']['sale_price'] : ($existing ? $existing['sale_price'] : 0)
+        ));
+        foreach($effectivePricing['errors'] as $pricingError) $item['errors'][] = $pricingError;
         if (!$isCreate && $existing) {
             $baselineRow = isset($baseline[(int) $existing['id']]) ? $baseline[(int) $existing['id']] : null;
             foreach ($item['data'] as $field => $incomingValue) {
@@ -721,9 +717,7 @@ function productBulkValidateRows($rawRows, $type, $baseline = array(), $overwrit
             if (count($item['data']) === 1 && isset($item['data']['date_updated'])) unset($item['data']['date_updated']);
         }
         if ($isCreate || isset($item['data']['regular_price']) || isset($item['data']['sale_price'])) {
-            $effectiveRegular = isset($item['data']['regular_price']) ? (float) $item['data']['regular_price'] : ($existing ? (float) $existing['regular_price'] : 0);
-            $effectiveSale = isset($item['data']['sale_price']) ? (float) $item['data']['sale_price'] : ($existing ? (float) $existing['sale_price'] : 0);
-            $item['data']['discount'] = ($effectiveRegular > 0 && $effectiveSale > 0) ? max(0, min(100, round((($effectiveRegular - $effectiveSale) / $effectiveRegular) * 100))) : 0;
+            $item['data']['discount'] = $effectivePricing['values']['discount'];
         }
         if ($isCreate) {
             $item['data'] += array('id_list' => 0, 'id_cat' => 0, 'id_item' => 0, 'id_sub' => 0, 'id_brand' => 0, 'regular_price' => 0, 'sale_price' => 0, 'discount' => 0, 'cong_suat' => 0, 'numb' => 0, 'status' => 'hienthi', 'type' => $type, 'date_created' => time(), 'date_updated' => 0, 'view' => 0);
