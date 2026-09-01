@@ -1826,35 +1826,120 @@ body .home-3 .tab-switcher ul.pts-home-category-grid{
 /* =====================================================================
    NGÔN NGỮ TRONG SIDEBAR MOBILE (mmenu)
    ===================================================================== */
-.mm-lang{
-    display:flex!important;flex-wrap:wrap!important;align-items:center;
-    gap:8px 12px;padding:14px 20px!important;
+/* Hàng "Ngôn ngữ" trong drawer: link ngôn ngữ (đọc từ gtranslateSettings) */
+.mm-lang{display:flex!important;flex-wrap:wrap!important;align-items:center;gap:8px 12px;padding:12px 20px 16px!important;}
+.mm-lang .mm-lang-title{
+    flex:0 0 auto;
+    font-family:"Plus Jakarta Sans","Mulish",sans-serif!important;
+    color:#1f2937;font-size:15px;font-weight:650;
 }
-.mm-lang .mm-lang-title{flex:0 0 auto;color:#475569;font-size:15px;font-weight:700;}
-/* Khung chứa widget GTranslate: không cho tràn khỏi hàng, thu về kích thước gọn */
-.mm-lang .gtranslate_wrapper{
-    flex:1 1 auto;min-width:0;max-width:100%;
-    display:flex!important;align-items:center;overflow:hidden;
+.mm-lang .mm-lang-links{display:flex;flex-wrap:wrap;gap:6px;}
+.mm-lang .mm-lang-links a{
+    display:inline-flex;align-items:center;justify-content:center;
+    min-width:38px;height:32px;padding:0 9px;border:1px solid var(--pts-line);border-radius:8px;
+    color:#475569;font-size:12.5px;font-weight:800;text-decoration:none;letter-spacing:.02em;line-height:1;
 }
-.mm-lang .gtranslate_wrapper *{max-width:100%!important;box-sizing:border-box;}
-.mm-lang .gtranslate_wrapper select,
-.mm-lang .gtranslate_wrapper .gt_selector,
-.mm-lang .gtranslate_wrapper .gt-selector,
-.mm-lang .gtranslate_wrapper .gtranslate-selector{
-    width:100%!important;max-width:180px!important;height:36px!important;
-    padding:0 8px!important;border:1px solid var(--pts-line)!important;border-radius:8px!important;
-    font-size:13px!important;background:#fff!important;
-}
-.mm-lang .gtranslate_wrapper a,
-.mm-lang .gtranslate_wrapper .gt_float_switcher,
-.mm-lang .gtranslate_wrapper .gt-container{
-    position:static!important;transform:none!important;box-shadow:none!important;
-    float:none!important;white-space:nowrap;
-}
-.mm-lang .gtranslate_wrapper img{width:20px!important;height:auto!important;}
+.mm-lang .mm-lang-links a.active{background:var(--pts-navy);border-color:var(--pts-navy);color:#fff;}
+.mm-lang .mm-lang-links a:active{opacity:.75;}
 /* Ẩn công tắc ngôn ngữ ở header khi vào chế độ mobile (đã chuyển vào sidebar) */
 @media(max-width:991px){
     .flex-search-lang>.gtranslate_wrapper{display:none!important;}
+}
+
+/* =====================================================================
+   FONT & GIAO DIỆN SIDEBAR MOBILE (mmenu v8)
+   ===================================================================== */
+.mm-menu{
+    --mm-color-text:#1f2937;
+    --mm-color-text-dimmed:#94a3b8;
+    --mm-color-border:#eef0f4;
+    --mm-color-background-highlight:#fffaf0;
+    --mm-listitem-size:52px;
+    font-family:"Plus Jakarta Sans","Mulish",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif!important;
+}
+.mm-menu .mm-listitem__text,
+.mm-menu .mm-listitem a,
+.mm-menu .mm-navbar__title{
+    font-family:inherit!important;
+}
+.mm-menu .mm-listitem__text{font-size:15px!important;font-weight:650!important;letter-spacing:.005em;}
+.mm-menu .mm-navbar__title{font-weight:900!important;font-size:15px!important;color:var(--pts-navy)!important;}
+.mm-menu .mm-listitem_selected>.mm-listitem__text{color:var(--pts-gold-dark)!important;font-weight:800!important;}
+.mm-menu .mm-listitem:after{left:20px!important;}
+
+/* =====================================================================
+   BREADCRUMB DÀI TRÊN MOBILE — cắt gọn cấp cuối, không xuống dòng lộn xộn
+   ===================================================================== */
+@media(max-width:768px){
+    .breadCrumbs .breadcrumb{flex-wrap:nowrap!important;overflow:hidden;align-items:center;}
+    .breadCrumbs .breadcrumb-item{flex:0 0 auto;white-space:nowrap;}
+    .breadCrumbs .breadcrumb-item.active{
+        flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+    }
+    .breadCrumbs .breadcrumb-item.active a{
+        display:inline-block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:bottom;
+    }
+    /* nếu có >2 cấp thì ẩn cấp giữa, chỉ giữ Trang chủ › ... › [hiện tại] */
+    .breadCrumbs .breadcrumb-item:not(:first-child):not(.active):not(:nth-last-child(2)){display:none;}
+}
+
+/* =====================================================================
+   HOME "GIẢI PHÁP" (.home-2) — hộp thông số bị ép hẹp, chữ xuống dòng vô lý
+   ===================================================================== */
+.home-2 .tabs-container .inner{max-width:none!important;}
+/* Bỏ mọi ràng buộc lưới/legacy làm hộp bị bóp; tự dựng flex 2-up/1-up. */
+.home-2 .fullcontent ul{
+    display:flex!important;flex-wrap:wrap!important;grid-template-columns:none!important;
+    gap:12px!important;margin:0!important;padding:0!important;list-style:none;
+}
+.home-2 .fullcontent ul>li{
+    flex:1 1 calc(50% - 6px)!important;min-width:158px!important;max-width:none!important;
+    width:auto!important;margin:0!important;box-sizing:border-box!important;
+    padding:14px 16px!important;
+}
+.home-2 .fullcontent .small-text{
+    font-size:12px!important;font-weight:700!important;line-height:1.35!important;
+    word-break:keep-all;overflow-wrap:normal;
+}
+.home-2 .fullcontent .number{
+    font-size:22px!important;line-height:1.15!important;white-space:nowrap;word-break:keep-all;
+}
+.home-2 .fullcontent .number small{font-size:11px!important;white-space:nowrap;display:inline-block;}
+@media(max-width:560px){
+    .home-2 .fullcontent ul>li{flex:1 1 100%!important;min-width:0!important;}
+}
+/* mũi tên slider: gọn, tinh tế, không đè nội dung */
+.home-2 .uk-slidenav{
+    background:rgba(255,255,255,.92)!important;border-radius:50%!important;
+    width:34px!important;height:34px!important;box-shadow:0 4px 12px rgba(6,21,55,.16)!important;
+    display:flex!important;align-items:center;justify-content:center;
+}
+.home-2 .uk-slidenav-previous{left:6px!important;}
+.home-2 .uk-slidenav-next{right:6px!important;}
+@media(max-width:991px){
+    .home-2 .fullcontent .number{font-size:20px!important;}
+    .home-2 .uk-slidenav{width:30px!important;height:30px!important;}
+}
+
+/* =====================================================================
+   HOME "SẢN PHẨM NỔI BẬT" (.home-3) — mobile: cuộn ngang thay vì lưới cao
+   ===================================================================== */
+@media(max-width:640px){
+    body .home-3 .tab-switcher ul.pts-home-category-grid{
+        display:flex!important;flex-wrap:nowrap!important;grid-template-columns:none!important;
+        overflow-x:auto!important;overflow-y:hidden!important;-webkit-overflow-scrolling:touch;
+        gap:10px!important;padding-bottom:8px!important;
+        scroll-snap-type:x proximity;
+        scrollbar-width:thin;
+    }
+    .home-3 .pts-home-category-grid>li{
+        flex:0 0 132px!important;scroll-snap-align:start;
+    }
+    .home-3 .pts-home-category-grid>li>a{min-height:150px;}
+    .home-3 .pts-home-category-wrap{
+        margin-left:calc(-1 * var(--pts-gutter));margin-right:calc(-1 * var(--pts-gutter));
+        padding-left:var(--pts-gutter);padding-right:var(--pts-gutter);
+    }
 }
 
 /* Dải công suất: chỉ còn icon sấm sét, bỏ chữ "Chọn theo công suất" */

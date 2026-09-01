@@ -118,8 +118,7 @@
                 <div class="ModuleContent">
                     <div class="uk-position-relative">
                         <div uk-slider=" " class="uk-slider uk-slider-container">
-                            <ul class="uk-slider-items uk-grid uk-child-width-1-1"
-                                style="transform: translate3d(-1230px, 0px, 0px);">
+                            <ul class="uk-slider-items uk-grid uk-child-width-1-1">
                                 <?php if(count($gp_tab)){foreach($gp_tab as $kk => $c){
                                 $rowDetailPhoto = isset($solutionGallery[(int)$c['id']]) ? $solutionGallery[(int)$c['id']] : array();
                                 ?>
