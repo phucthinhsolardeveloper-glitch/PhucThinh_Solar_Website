@@ -78,28 +78,28 @@ Hai endpoint legacy đã bị vô hiệu hóa bằng HTTP 404:
 
 Các endpoint còn lại chủ yếu dùng session DB check; mutation chính đã có CSRF, permission và allowlist. Response contract vẫn không đồng nhất: JSON, HTML fragment, plain text, empty response và `die()`/`exit()` cùng tồn tại.
 
-### 4. DB engine, index và ràng buộc — VERIFIED
+### 4. DB engine, index và ràng buộc — RESOLVED ON LOCAL FOR COMMERCE
 
-`SHOW TABLE STATUS` xác nhận database local có 49 bảng và toàn bộ đều dùng MyISAM.
+Baseline audit xác nhận database local có 49 bảng và toàn bộ dùng MyISAM. Ngày 2026-09-02, migration 008 đã chuyển riêng `table_order` và `table_order_detail` sang InnoDB trên Docker local; các bảng khác không đổi.
 
 Index đáng chú ý:
 
 - `table_product` và các bảng phân cấp route đã có `idx_route_type_slug` và `idx_type_numb_id` từ migration 007.
 - `table_user` chỉ có primary key `id`.
 - `table_order` chỉ có primary key `id`.
-- `table_order_detail` chỉ có primary key `id`.
+- `table_order_detail` có primary key `id`, `idx_order_detail_order (id_order)` và `idx_order_detail_product (id_product)` sau migration 008.
 - Không có foreign key.
 
 Hệ quả:
 
 - Lookup AJAX theo `table_user.secret_key` không có index phù hợp. Local chỉ có một user nên chưa thể hiện chi phí scale.
-- `table_order_detail` không có index cho `id_order` hoặc `id_product`.
+- Lookup `table_order_detail` theo `id_order` và `id_product` đã có index trên local.
 - Quan hệ order/product/hierarchy chỉ được bảo vệ bằng code.
-- Transaction PDO không cung cấp rollback thực trên MyISAM.
+- Transaction PDO nay rollback thật cho hai bảng commerce trên local; production chưa được migrate.
 
-### 5. Checkout không atomic — VERIFIED
+### 5. Checkout atomicity — RESOLVED ON LOCAL
 
-Trạng thái triển khai 2026-09-01: **MITIGATED ON LOCAL (INTERIM)** bởi ADM-P0-001. Checkout đã kiểm tra order và từng order detail, đọc lại product, dùng transaction best-effort và xóa bù trừ khóa theo order ID; email/thanks/cart clear chỉ chạy sau khi đủ N detail. Shutdown cleanup bảo vệ thêm đường PDODb `die()`. Atomicity thật vẫn chờ chuyển commerce sang InnoDB trong ADM-P1-004.
+Trạng thái triển khai 2026-09-02: **RESOLVED ON LOCAL** bởi ADM-P0-001 và ADM-P1-004. Checkout kiểm tra order và từng order detail, đọc lại product, dùng transaction thật trên InnoDB và vẫn xóa bù trừ theo order ID; email/thanks/cart clear chỉ chạy sau khi đủ N detail. Shutdown cleanup bảo vệ thêm đường PDODb `die()`. `scripts/test-commerce-transaction.php` đã chứng minh rollback xóa cả order/detail và không đổi tổng dữ liệu. Production chưa chạy migration 008.
 
 `sources/order.php` thực hiện tuần tự:
 
@@ -248,9 +248,9 @@ Các ứng viên cần điều tra trước khi triển khai, không được cl
 
 - Full-page auth luôn đọc và cập nhật `table_user` khi session active.
 - AJAX auth đọc `table_user` nhưng không chạy đường xoay token của `requick.php`.
-- Toàn bộ 49 bảng local dùng MyISAM.
+- Baseline có 49 bảng MyISAM; local hiện đã chuyển riêng hai bảng commerce sang InnoDB bằng migration 008.
 - Thiếu FK và thiếu index nghiệp vụ ở commerce/auth.
-- Checkout không atomic.
+- Checkout production chưa atomic cho đến khi migration 008 được phê duyệt và áp dụng; Docker local đã có transaction thật.
 - Có đúng một discount mismatch; không có price relation sai.
 - Các orphan/duplicate đã kiểm tra đều bằng 0.
 - API/error format không đồng nhất.

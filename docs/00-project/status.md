@@ -1,6 +1,6 @@
 # Current status
 
-Cập nhật gần nhất: 2026-08-31. Mọi thay đổi bên dưới mới ở Git + Docker local, chưa triển khai production.
+Cập nhật gần nhất: 2026-09-02. Mọi thay đổi bên dưới mới ở Git + Docker local, chưa triển khai production.
 
 ## WORKING ON LOCAL
 
@@ -26,7 +26,7 @@ Cập nhật gần nhất: 2026-08-31. Mọi thay đổi bên dưới mới ở 
 - CTA “Gửi yêu cầu báo giá” ở chi tiết sản phẩm đã nối vào modal tư vấn hiện có; form có CSRF và backend newsletter, không còn là UI không thể mở.
 - Import Excel sản phẩm xử lý được thương hiệu chưa có: preview gom tên mới và bắt quản trị viên chọn tạo mới, ghép hãng hiện hữu hoặc bỏ trống; brand mới và sản phẩm được áp dụng cùng lượt, có rollback thủ công cho MyISAM.
 - Giá sản phẩm trong CRUD Admin và bulk import dùng chung một validator: chặn giá khuyến mãi lớn hơn giá gốc và luôn tính lại phần trăm giảm; bản ghi local #316 đã được sửa qua form Admin từ discount 0 thành 10.
-- Checkout public đã có transaction best-effort và xóa bù trừ order/detail khi insert hoặc đọc sản phẩm thất bại; email, trang cảm ơn và xóa cart chỉ chạy sau khi đủ N dòng chi tiết. Atomic transaction thật vẫn chờ InnoDB/ADM-P1-004.
+- ADM-P1-004: `table_order` và `table_order_detail` đã chuyển sang InnoDB trên Docker local bằng migration 008; `order_detail` có index theo order/product. Regression xác nhận rollback thật xóa cả order/detail và không đổi tổng dữ liệu. Production chưa chạy migration; vẫn phải backup, kiểm orphan và dừng checkout trong thời gian ALTER.
 - Reader XLSX data-only đã bỏ qua theme/custom property/sharedStrings không đầy đủ và chuẩn hóa Strict OOXML sang namespace PHPExcel hỗ trợ; lỗi parser còn lại được bắt thành thông báo Admin có kiểm soát.
 - A3 e-commerce hoàn tất: trang chủ hiển thị đủ 9 danh mục nổi bật thành lưới 5/3/2 cột; ưu tiên ảnh Admin và dùng icon vàng khi danh mục chưa có ảnh, không thêm query DB.
 - A4 e-commerce hoàn tất: trang danh mục có nút “Bộ lọc” trên mobile/tablet, drawer trượt có backdrop, khóa cuộn, Escape/focus/ARIA và tự đóng sau khi lọc AJAX; desktop giữ sidebar hiện hữu.
