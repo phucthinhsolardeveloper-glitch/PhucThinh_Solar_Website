@@ -328,6 +328,10 @@ select.form-control option:disabled{color:#b8babb;font-style:italic;}
 /* Pagination */
 .pagination{flex-wrap:wrap;}
 
+/* Admin action bar: thanh đầu form bám khi cuộn, bộ nút legacy lặp ở cuối được ẩn bằng JS. */
+.content > form > .card-footer.sticky-top,.content > .card-footer.sticky-top{z-index:1020;box-shadow:0 2px 5px rgba(0,0,0,.08);}
+.admin-action-bar-duplicate{display:none!important;}
+
 /* Responsive */
 @media(max-width:1201px){
 	.watermark-position{max-width:300px;height:300px;}

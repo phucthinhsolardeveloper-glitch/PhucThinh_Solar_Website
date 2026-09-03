@@ -39,6 +39,59 @@ function getLen(str)
     return (/^\s*$/.test(str)) ? 0 : str.length;
 }
 
+/* Giữ một thanh thao tác duy nhất trên các trang Admin legacy. */
+function compactAdminActionBars()
+{
+	function actionSignatures(element)
+	{
+		return $(element).find('button, a.btn').map(function(){
+			var item = $(this);
+			return [
+				this.tagName.toLowerCase(),
+				item.attr('type') || '',
+				item.attr('name') || '',
+				item.attr('href') || '',
+				$.trim(item.text()).replace(/\s+/g, ' ')
+			].join('|');
+		}).get();
+	}
+
+	function containsActions(primaryActions, candidateActions)
+	{
+		if(!candidateActions.length || candidateActions.length > primaryActions.length) return false;
+
+		var remaining = primaryActions.slice();
+		for(var i = 0; i < candidateActions.length; i++)
+		{
+			var index = remaining.indexOf(candidateActions[i]);
+			if(index === -1) return false;
+			remaining.splice(index, 1);
+		}
+
+		return true;
+	}
+
+	$('.card-footer.sticky-top').each(function(){
+		var primary = $(this);
+		var primaryActions = actionSignatures(primary);
+		if(!primaryActions.length) return;
+
+		var scope = primary.closest('form');
+		if(!scope.length) scope = primary.closest('section.content');
+		if(!scope.length) return;
+
+		scope.find('.card-footer').not(primary).each(function(){
+			var duplicate = $(this);
+			var candidateActions = actionSignatures(duplicate);
+			if(primary[0].compareDocumentPosition(this) & Node.DOCUMENT_POSITION_FOLLOWING && containsActions(primaryActions, candidateActions))
+			{
+				duplicate.addClass('admin-action-bar-duplicate').attr('aria-hidden', 'true');
+				duplicate.find('button, a').attr('tabindex', '-1');
+			}
+		});
+	});
+}
+
 /* onChange Category */
 function filterCategory(url)
 {
@@ -1312,6 +1365,8 @@ function loadPermissions()
 }
 
 $(document).ready(function(){
+	compactAdminActionBars();
+
 	/* Loader */
 	if($(".loader-wrapper").length)
 	{
