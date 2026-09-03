@@ -184,6 +184,18 @@ try
         'Các page load trong throttle không xoay token hoặc ghi lại activity'
     );
 
+	$emptyCategoryOptions = readinessHttp($base.'api/category.php', 'POST', array('id'=>0, 'level'=>0, 'table'=>'product_cat', 'type'=>'san-pham'), $newCookie);
+	readinessAssert($emptyCategoryOptions['status'] === 200 && strpos($emptyCategoryOptions['body'], '<option value="0">Chọn danh mục</option>') !== false, 'API danh mục giữ HTML fragment tương thích khi parent rỗng');
+	$invalidCategoryLevel = readinessHttp($base.'api/category.php', 'POST', array('id'=>1, 'level'=>9, 'table'=>'product_cat', 'type'=>'san-pham'), $newCookie);
+	$invalidCategoryPayload = json_decode($invalidCategoryLevel['body'], true);
+	readinessAssert($invalidCategoryLevel['status'] === 400 && empty($invalidCategoryPayload['ok']) && $invalidCategoryPayload['code'] === 'INVALID_CATEGORY_LEVEL', 'API danh mục trả lỗi JSON 400 cho cấp ngoài allowlist');
+	$invalidPlaceTable = readinessHttp($base.'api/place.php', 'POST', array('id'=>1, 'level'=>0, 'table'=>'product'), $newCookie);
+	$invalidPlacePayload = json_decode($invalidPlaceTable['body'], true);
+	readinessAssert($invalidPlaceTable['status'] === 400 && empty($invalidPlacePayload['ok']) && $invalidPlacePayload['code'] === 'INVALID_PLACE_TABLE', 'API địa giới trả lỗi JSON 400 cho bảng ngoài allowlist');
+	$invalidCategoryMethod = readinessHttp($base.'api/category.php', 'GET', array(), $newCookie);
+	$invalidCategoryMethodPayload = json_decode($invalidCategoryMethod['body'], true);
+	readinessAssert($invalidCategoryMethod['status'] === 405 && empty($invalidCategoryMethodPayload['ok']) && $invalidCategoryMethodPayload['code'] === 'METHOD_NOT_ALLOWED', 'API dropdown từ chối phương thức ngoài POST bằng contract rõ ràng');
+
     foreach(array('single', 'bulk') as $gallerySuffix)
     {
         $d->insert('gallery', array(

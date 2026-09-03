@@ -57,6 +57,7 @@ Cập nhật gần nhất: 2026-09-03. Mọi thay đổi bên dưới mới ở 
 - Admin API batch 11: kéo-thả gallery đổi từ cập nhật tuần tự từng ảnh sang một câu `UPDATE ... CASE` parameterized, giới hạn 200 ID và bắt buộc danh sách khớp toàn bộ album. API xác minh kết quả, trả envelope JSON nhưng giữ `id`/`numb` legacy; client báo lỗi và tải lại thứ tự server khi request thất bại. Integration test bao phủ reorder thành công và từ chối ID trùng không ghi dở.
 - Admin API batch 12: sửa tiêu đề/số thứ tự từng ảnh gallery chỉ nhận field allowlist, số thứ tự 1–9 chữ số, xác minh DB rồi trả HTML mới trong envelope JSON. Client chỉ render lại album sau thành công và phục hồi từ server khi lỗi. Renderer API đóng riêng output buffer legacy phát sinh để HTML không làm hỏng JSON; integration test bao phủ cập nhật tiêu đề và từ chối số sai định dạng.
 - Admin API batch 13: bootstrap AJAX không còn `die()` rỗng khi thiếu/hết phiên; mọi endpoint dùng chung trả HTTP 401 với code `AUTH_REQUIRED`. JavaScript có handler toàn cục báo hết phiên và chuyển về trang đăng nhập một lần, tránh người dùng tưởng mutation im lặng thành công. Integration test xác nhận contract trên cả API JSON và endpoint HTML fragment.
+- Admin API batch 14: dropdown danh mục/địa giới giữ HTML fragment khi thành công nhưng từ chối method, bảng, type và level sai bằng HTTP 400/405 + JSON envelope. Client giữ dropdown hiện tại và báo lỗi thay vì chèn chuỗi lỗi vào form. Integration test bao phủ parent rỗng tương thích, level/table ngoài allowlist và method ngoài POST.
 
 ## PARTIAL / CHỜ DỮ LIỆU THẬT
 

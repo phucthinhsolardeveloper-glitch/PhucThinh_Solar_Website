@@ -1641,6 +1641,12 @@ $(document).ready(function(){
 							$("#id_sub").html(op);
 						}
 						$("#"+child).html(result);
+					},
+					error: function(xhr)
+					{
+						if(xhr.status === 401) return;
+						var result = xhr.responseJSON || {};
+						notifyDialog(result.message || "Không thể tải danh mục");
 					}
 				});
 
@@ -1682,6 +1688,12 @@ $(document).ready(function(){
 							$("#id_ward").html(op);
 						}
 						$("#"+child).html(result);
+					},
+					error: function(xhr)
+					{
+						if(xhr.status === 401) return;
+						var result = xhr.responseJSON || {};
+						notifyDialog(result.message || "Không thể tải địa giới");
 					}
 				});
 			}

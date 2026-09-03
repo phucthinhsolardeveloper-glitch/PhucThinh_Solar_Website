@@ -1,15 +1,27 @@
 <?php
 	include "config.php";
 
+	function categoryApiError($message, $code, $status = 400)
+	{
+		http_response_code($status);
+		header('Content-Type: application/json; charset=UTF-8');
+		echo json_encode(adminApiEnvelope(false, $message, $code, array(), array('success'=>false)));
+		exit();
+	}
+
+	if(!isset($_SERVER['REQUEST_METHOD']) || $_SERVER['REQUEST_METHOD'] !== 'POST') categoryApiError('Phương thức request không hợp lệ.', 'METHOD_NOT_ALLOWED', 405);
+	header('Content-Type: text/html; charset=UTF-8');
+
 	if(!empty($_POST["id"]))
 	{
-		$level = (!empty($_POST["level"])) ? htmlspecialchars($_POST["level"]) : 0;
+		$level = isset($_POST["level"]) ? (string)$_POST["level"] : '';
 		$table = (!empty($_POST["table"])) ? (string) $_POST["table"] : '';
 		$table = preg_replace('/^#_/', '', $table);
 		$id = (!empty($_POST["id"])) ? (int) $_POST["id"] : 0;
-		$type = (!empty($_POST["type"])) ? htmlspecialchars($_POST["type"]) : '';
+		$type = (!empty($_POST["type"])) ? trim((string)$_POST["type"]) : '';
 		$row = null;
-		if(!adminAllowedCategoryTable($table)) { http_response_code(400); exit('error ajax'); }
+		if(!adminAllowedCategoryTable($table)) categoryApiError('Bảng danh mục không hợp lệ.', 'INVALID_CATEGORY_TABLE');
+		if(!preg_match('/^[a-zA-Z0-9_-]{1,100}$/', $type)) categoryApiError('Loại danh mục không hợp lệ.', 'INVALID_CATEGORY_TYPE');
 
 		switch($level)
 		{
@@ -26,8 +38,7 @@
 				break;
 
 			default:
-				echo 'error ajax';
-				exit();
+				categoryApiError('Cấp danh mục không hợp lệ.', 'INVALID_CATEGORY_LEVEL');
 				break;
 		}
 
