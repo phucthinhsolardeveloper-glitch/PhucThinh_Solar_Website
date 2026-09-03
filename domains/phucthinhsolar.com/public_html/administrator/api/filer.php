@@ -13,14 +13,6 @@
 	$cmd = !empty($_POST['cmd']) ? (string)$_POST['cmd'] : '';
 	$hash = !empty($_POST['hash']) ? (string)$_POST['hash'] : '';
 
-	if(in_array($cmd, array('info', 'updateNumb', 'delete', 'delete-all'), true)) adminRequirePostCsrf();
-	if(!in_array($com, array('product', 'news'), true)) exit();
-	if(!preg_match('/^[a-zA-Z0-9_-]{0,100}$/', $kind)) exit();
-	if(!preg_match('/^[a-zA-Z0-9_-]{0,100}$/', $type)) exit();
-	if(!preg_match('/^[a-zA-Z0-9 _-]{0,50}$/', $colfiler)) $colfiler = '';
-	if($hash !== '' && !preg_match('/^[a-zA-Z0-9]{1,64}$/', $hash)) exit();
-	if(in_array($cmd, array('info', 'updateNumb', 'delete', 'delete-all'), true)) adminRequireMutationPermission('gallery', $cmd, $type, $com);
-
 	function filerGalleryRows($d, $id_parent, $hash, $com, $type, $kind, $columns = 'numb, id, photo, namevi')
 	{
 		if($id_parent > 0) return $d->rawQuery("select ".$columns." from #_gallery where id_parent = ? and com = ? and type = ? and kind = ? and val = ? order by numb,id desc", array($id_parent,$com,$type,$kind,$type));
@@ -65,10 +57,24 @@
 		exit();
 	}
 
+	if(!isset($_SERVER['REQUEST_METHOD']) || $_SERVER['REQUEST_METHOD'] !== 'POST') filerJsonResponse(false, 'Phương thức request không hợp lệ.', 'METHOD_NOT_ALLOWED', array(), array('success'=>false), 405);
+	if(!in_array($cmd, array('refresh', 'info', 'updateNumb', 'delete', 'delete-all'), true)) filerJsonResponse(false, 'Thao tác gallery không hợp lệ.', 'INVALID_GALLERY_COMMAND', array(), array('success'=>false), 400);
+	if(!in_array($com, array('product', 'news'), true)) filerJsonResponse(false, 'Module gallery không hợp lệ.', 'INVALID_GALLERY_MODULE', array(), array('success'=>false), 400);
+	if(!preg_match('/^[a-zA-Z0-9_-]{0,100}$/', $kind) || !preg_match('/^[a-zA-Z0-9_-]{0,100}$/', $type)) filerJsonResponse(false, 'Phạm vi gallery không hợp lệ.', 'INVALID_GALLERY_SCOPE', array(), array('success'=>false), 400);
+	if(!preg_match('/^[a-zA-Z0-9 _-]{0,50}$/', $colfiler)) filerJsonResponse(false, 'Cấu hình hiển thị gallery không hợp lệ.', 'INVALID_GALLERY_LAYOUT', array(), array('success'=>false), 400);
+	if($hash !== '' && !preg_match('/^[a-zA-Z0-9]{1,64}$/', $hash)) filerJsonResponse(false, 'Mã gallery không hợp lệ.', 'INVALID_GALLERY_HASH', array(), array('success'=>false), 400);
+	if($id_parent <= 0 && $hash === '') filerJsonResponse(false, 'Thiếu phạm vi album.', 'MISSING_GALLERY_CONTEXT', array(), array('success'=>false), 400);
+	if(in_array($cmd, array('info', 'updateNumb', 'delete', 'delete-all'), true))
+	{
+		adminRequirePostCsrf();
+		adminRequireMutationPermission('gallery', $cmd, $type, $com, true);
+	}
+
 	if($cmd === 'refresh' && ($id_parent > 0 || $hash !== ''))
 	{
 		$gallery = filerGalleryRows($d, $id_parent, $hash, $com, $type, $kind);
-		if($gallery) filerRenderGallery($gallery, $func, $com, $colfiler);
+		header('Content-Type: text/html; charset=UTF-8');
+		if($gallery) echo filerGalleryHtml($gallery, $func, $com, $colfiler);
 	}
 	else if($cmd === 'info' && $id > 0 && ($id_parent > 0 || $hash !== ''))
 	{
@@ -164,4 +170,5 @@
 		$cache->delete();
 		filerJsonResponse(true, 'Đã xóa các ảnh được chọn.', 'GALLERY_ITEMS_DELETED', array('ids'=>$deleted, 'deleted'=>count($deleted)), array('success'=>true, 'id'=>$deleted));
 	}
+	else filerJsonResponse(false, 'Dữ liệu thao tác gallery không hợp lệ.', 'INVALID_GALLERY_REQUEST', array(), array('success'=>false), 400);
 ?>

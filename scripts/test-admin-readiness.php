@@ -212,6 +212,18 @@ try
         ));
         $createdGalleryIds[] = (int)$d->getLastInsertId();
     }
+	$galleryRefresh = readinessHttp($base.'api/filer.php', 'POST', array('cmd'=>'refresh', 'id_parent'=>987654, 'com'=>'product', 'kind'=>'man', 'type'=>'san-pham', 'colfiler'=>'col-6'), $newCookie);
+	readinessAssert($galleryRefresh['status'] === 200 && strpos($galleryRefresh['body'], 'CODEX-GALLERY-single') !== false && strpos($galleryRefresh['body'], 'CODEX-GALLERY-bulk') !== false, 'API gallery refresh giữ HTML fragment và render đủ album hợp lệ');
+	$galleryInvalidCommand = readinessHttp($base.'api/filer.php', 'POST', array('cmd'=>'tu-che', 'id_parent'=>987654, 'com'=>'product', 'kind'=>'man', 'type'=>'san-pham'), $newCookie);
+	$galleryInvalidCommandPayload = json_decode($galleryInvalidCommand['body'], true);
+	readinessAssert($galleryInvalidCommand['status'] === 400 && empty($galleryInvalidCommandPayload['ok']) && $galleryInvalidCommandPayload['code'] === 'INVALID_GALLERY_COMMAND', 'API gallery từ chối command ngoài allowlist bằng JSON 400');
+	$galleryMissingContext = readinessHttp($base.'api/filer.php', 'POST', array('cmd'=>'refresh', 'com'=>'product', 'kind'=>'man', 'type'=>'san-pham'), $newCookie);
+	$galleryMissingContextPayload = json_decode($galleryMissingContext['body'], true);
+	readinessAssert($galleryMissingContext['status'] === 400 && empty($galleryMissingContextPayload['ok']) && $galleryMissingContextPayload['code'] === 'MISSING_GALLERY_CONTEXT', 'API gallery từ chối request thiếu parent/hash thay vì trả rỗng');
+	$galleryInvalidModule = readinessHttp($base.'api/filer.php', 'POST', array('cmd'=>'refresh', 'id_parent'=>987654, 'com'=>'user', 'kind'=>'man', 'type'=>'san-pham'), $newCookie);
+	$galleryInvalidModulePayload = json_decode($galleryInvalidModule['body'], true);
+	readinessAssert($galleryInvalidModule['status'] === 400 && empty($galleryInvalidModulePayload['ok']) && $galleryInvalidModulePayload['code'] === 'INVALID_GALLERY_MODULE', 'API gallery từ chối module ngoài allowlist bằng lỗi rõ ràng');
+
     $galleryInfoUpdate = readinessHttp($base.'api/filer.php', 'POST', array('admin_csrf'=>$authenticatedToken[1], 'cmd'=>'info', 'info'=>'name', 'value'=>'Tiêu đề ảnh kiểm thử', 'id'=>$createdGalleryIds[0], 'id_parent'=>987654, 'com'=>'product', 'kind'=>'man', 'type'=>'san-pham', 'colfiler'=>'col-6'), $newCookie);
     $galleryInfoPayload = json_decode($galleryInfoUpdate['body'], true);
     $galleryInfoRow = $d->rawQueryOne('select namevi from #_gallery where id = ?', array($createdGalleryIds[0]));

@@ -382,6 +382,12 @@ function refreshFilerIfEmpty()
 			+'</ul></div></div>';
 			$("#filer-gallery").parents(".form-group").after($tmp);
 			createSortFiler();
+		},
+		error: function(xhr)
+		{
+			if(xhr.status === 401) return;
+			var result = xhr.responseJSON || {};
+			notifyDialog(result.message || "Không thể tải lại album");
 		}
 	});
 }
