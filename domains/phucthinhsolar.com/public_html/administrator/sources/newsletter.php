@@ -82,7 +82,7 @@
 	/* View newsletter */
 	function viewMans()
 	{
-		global $d, $func, $curPage, $items, $paging, $type;
+		global $d, $func, $curPage, $items, $paging, $type, $config, $newsletterStatusCounts;
 
 		$where = "";
 		$params = array($type);
@@ -94,7 +94,7 @@
 			$where .= " and (confirm_status is null or confirm_status = '' or confirm_status = '0')";
 			$queryParams['confirm_status'] = 'pending';
 		}
-		else if($confirmStatus !== '' && ctype_digit($confirmStatus))
+		else if($confirmStatus !== '' && isset($config['newsletter'][$type]['confirm_status'][$confirmStatus]))
 		{
 			$where .= " and confirm_status = ?";
 			$params[] = $confirmStatus;
@@ -115,13 +115,24 @@
 		$perPage = 10;
 		$startpoint = max(0, (((int) $curPage) * $perPage) - $perPage);
 		$limit = " limit ".$startpoint.",".$perPage;
-		$sql = "select * from #_newsletter where type = ? $where order by numb,id desc $limit";
+		$sql = "select * from #_newsletter where type = ? $where order by case when confirm_status is null or confirm_status = '' or confirm_status = '0' then 0 else 1 end, date_created desc, id desc $limit";
 		$items = $d->rawQuery($sql,$params);
 		$sqlNum = "select count(*) as 'num' from #_newsletter where type = ? $where";
 		$count = $d->rawQueryOne($sqlNum,$params);
 		$total = (!empty($count)) ? $count['num'] : 0;
 		$url = "index.php?com=newsletter&act=man&type=".$type.(!empty($queryParams) ? '&'.http_build_query($queryParams) : '');
 		$paging = $func->pagination($total,$perPage,$curPage,$url);
+
+		$newsletterStatusCounts = array('all' => 0, 'pending' => 0);
+		foreach($config['newsletter'][$type]['confirm_status'] as $statusKey => $statusLabel) $newsletterStatusCounts[(string)$statusKey] = 0;
+		foreach($d->rawQuery("select coalesce(nullif(confirm_status,''),'0') as workflow_status, count(*) as total from #_newsletter where type = ? group by coalesce(nullif(confirm_status,''),'0')", array($type)) as $statusRow)
+		{
+			$statusKey = (string)$statusRow['workflow_status'];
+			$statusTotal = (int)$statusRow['total'];
+			$newsletterStatusCounts['all'] += $statusTotal;
+			if($statusKey === '0') $newsletterStatusCounts['pending'] += $statusTotal;
+			elseif(isset($newsletterStatusCounts[$statusKey])) $newsletterStatusCounts[$statusKey] += $statusTotal;
+		}
 	}
 
 	/* Edit newsletter */
@@ -161,7 +172,10 @@
 		$message = '';
 		$response = array();
 		$id = (!empty($_POST['id'])) ? htmlspecialchars($_POST['id']) : 0;
-		$data = (!empty($_POST['data'])) ? $_POST['data'] : null;
+		$rawData = (!empty($_POST['data']) && is_array($_POST['data'])) ? $_POST['data'] : array();
+		$data = array();
+		$allowedFields = array('fullname','company','email','phone','loaihinh','congsuat','address','subject','content','notes','confirm_status','numb');
+		foreach($allowedFields as $field) if(array_key_exists($field, $rawData)) $data[$field] = $rawData[$field];
 		if($data)
 		{
 			foreach($data as $column => $value)
@@ -171,6 +185,11 @@
 
 			$data['status'] = (!empty($data['confirm_status'])) ? 'hienthi' : '';
 			$data['type'] = $type;
+		}
+		$confirmStatus = isset($data['confirm_status']) ? (string)$data['confirm_status'] : '0';
+		if($confirmStatus !== '0' && !isset($config['newsletter'][$type]['confirm_status'][$confirmStatus]))
+		{
+			$response['messages'][] = 'Tình trạng xử lý không hợp lệ';
 		}
 
 		/* Valid data */

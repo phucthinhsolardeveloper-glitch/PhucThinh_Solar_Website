@@ -52,6 +52,7 @@ $createdGroups = array();
 $rateKeys = array();
 $createdProductIds = array();
 $createdContactIds = array();
+$createdNewsletterIds = array();
 
 try
 {
@@ -69,7 +70,7 @@ try
     foreach($d->rawQuery("select id from #_product where code like ? or code like ?", array('CODEX-BULK-STATUS-%', 'CODEX-BS-%')) as $staleProduct)
         $d->rawQuery("delete from #_product where id = ?", array((int)$staleProduct['id']));
     $matrix = array(
-        'product' => array('product_man_san-pham','product_add_san-pham','product_edit_san-pham','product_delete_san-pham','product_add_photo_san-pham','product_edit_photo_san-pham','product_delete_photo_san-pham'),
+        'product' => array('product_man_san-pham','product_add_san-pham','product_edit_san-pham','product_delete_san-pham','product_add_photo_san-pham','product_edit_photo_san-pham','product_delete_photo_san-pham','newsletter_man_dangkynhantin','newsletter_edit_dangkynhantin'),
         'order' => array('order_man','order_edit'),
         'content' => array('news_man_tin-tuc','news_add_tin-tuc','news_edit_tin-tuc','news_delete_tin-tuc'),
         'viewer' => array('product_man_san-pham')
@@ -270,6 +271,81 @@ try
         'Lưu liên hệ thành công khi địa chỉ để trống'
     );
 
+    // Pipeline yêu cầu tư vấn: danh sách, bộ đếm và lưu trạng thái phải dùng cùng allowlist cấu hình.
+    $newsletterFixtureCode = 'CODEX-NEWSLETTER-'.bin2hex(random_bytes(4));
+    foreach(array('', '2') as $fixtureStatus)
+    {
+        $d->insert('newsletter', array(
+            'fullname' => 'Khách tư vấn '.$newsletterFixtureCode.'-'.$fixtureStatus,
+            'email' => strtolower($newsletterFixtureCode).'-'.($fixtureStatus === '' ? 'new' : 'active').'@example.com',
+            'phone' => '0900000000',
+            'address' => 'Địa chỉ kiểm thử',
+            'notes' => '',
+            'confirm_status' => $fixtureStatus,
+            'type' => 'dangkynhantin',
+            'status' => $fixtureStatus === '' ? '' : 'hienthi',
+            'date_created' => time(),
+            'date_updated' => 0,
+            'numb' => 0,
+        ));
+        $createdNewsletterIds[] = (int)$d->getLastInsertId();
+    }
+
+    $newsletterList = readinessHttp($base.'index.php?com=newsletter&act=man&type=dangkynhantin&keyword='.urlencode($newsletterFixtureCode), 'GET', array(), $newCookie);
+    readinessAssert(
+        $newsletterList['status'] === 200
+            && strpos($newsletterList['body'], 'Yêu cầu tư vấn') !== false
+            && strpos($newsletterList['body'], 'Mới / chưa xử lý') !== false
+            && strpos($newsletterList['body'], 'Đang tư vấn') !== false
+            && substr_count($newsletterList['body'], $newsletterFixtureCode) >= 2,
+        'Pipeline yêu cầu tư vấn render bộ đếm, lọc và kết quả tìm kiếm'
+    );
+
+    $pendingNewsletter = readinessHttp($base.'index.php?com=newsletter&act=man&type=dangkynhantin&confirm_status=pending&keyword='.urlencode($newsletterFixtureCode), 'GET', array(), $newCookie);
+    readinessAssert(
+        $pendingNewsletter['status'] === 200
+            && strpos($pendingNewsletter['body'], $newsletterFixtureCode.'-2') === false
+            && strpos($pendingNewsletter['body'], $newsletterFixtureCode.'-') !== false,
+        'Bộ lọc yêu cầu mới không lẫn trạng thái đang tư vấn'
+    );
+
+    $newsletterEdit = readinessHttp($base.'index.php?com=newsletter&act=edit&type=dangkynhantin&id='.$createdNewsletterIds[0], 'GET', array(), $newCookie);
+    readinessAssert(
+        $newsletterEdit['status'] === 200 && preg_match('/name="admin_csrf"\s+value="([^"]+)"/', $newsletterEdit['body'], $newsletterToken) === 1,
+        'Form yêu cầu tư vấn authenticated render CSRF field'
+    );
+    $newsletterSaveData = array(
+        'fullname' => 'Khách tư vấn '.$newsletterFixtureCode.'-',
+        'email' => strtolower($newsletterFixtureCode).'-new@example.com',
+        'phone' => '0900000000',
+        'address' => 'Địa chỉ kiểm thử',
+        'notes' => 'Đã gọi xác nhận nhu cầu',
+        'confirm_status' => '2',
+        'numb' => '0',
+    );
+    $newsletterSave = readinessHttp($base.'index.php?com=newsletter&act=save&type=dangkynhantin', 'POST', array(
+        'admin_csrf' => $newsletterToken[1],
+        'id' => $createdNewsletterIds[0],
+        'data' => $newsletterSaveData,
+    ), $newCookie);
+    $newsletterRow = $d->rawQueryOne('select notes, confirm_status, status from #_newsletter where id = ?', array($createdNewsletterIds[0]));
+    readinessAssert(
+        in_array($newsletterSave['status'], array(200, 302), true)
+            && $newsletterRow['notes'] === 'Đã gọi xác nhận nhu cầu'
+            && (string)$newsletterRow['confirm_status'] === '2'
+            && $newsletterRow['status'] === 'hienthi',
+        'Lưu ghi chú và trạng thái pipeline yêu cầu tư vấn hợp lệ'
+    );
+
+    $newsletterSaveData['confirm_status'] = 'trang-thai-tu-che';
+    readinessHttp($base.'index.php?com=newsletter&act=save&type=dangkynhantin', 'POST', array(
+        'admin_csrf' => $newsletterToken[1],
+        'id' => $createdNewsletterIds[0],
+        'data' => $newsletterSaveData,
+    ), $newCookie);
+    $newsletterRejectedRow = $d->rawQueryOne('select confirm_status from #_newsletter where id = ?', array($createdNewsletterIds[0]));
+    readinessAssert((string)$newsletterRejectedRow['confirm_status'] === '2', 'Pipeline từ chối trạng thái ngoài allowlist cấu hình');
+
     // ADM-P2-001: bảng điều khiển nạp dữ liệu ở controller sources/index.php, template chỉ render.
     $dashboard = readinessHttp($base.'index.php', 'GET', array(), $newCookie);
     $dashboardNoPhpError = true;
@@ -294,6 +370,7 @@ try
 }
 finally
 {
+    foreach($createdNewsletterIds as $newsletterId) $d->rawQuery("delete from #_newsletter where id = ?", array($newsletterId));
     foreach($createdContactIds as $contactId) $d->rawQuery("delete from #_contact where id = ?", array($contactId));
     foreach($createdProductIds as $productId) $d->rawQuery("delete from #_product where id = ?", array($productId));
     foreach($createdUsers as $user) $d->rawQuery("delete from #_user_log where id_user = ?", array($user['id']));

@@ -447,7 +447,7 @@
 				}
 			}
 
-			if($loai == '') $loai="Đang chờ duyệt...";
+			if($loai == '') $loai="Mới / chưa xử lý";
 
 			return $loai;
 		}

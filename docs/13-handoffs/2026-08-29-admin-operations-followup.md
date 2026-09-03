@@ -14,7 +14,7 @@ Phạm vi ban đầu: Docker local, chưa triển khai production. Follow-up th�
 - Sản phẩm: query filter parameterized; tìm theo tên/mã; lọc thiếu công suất và đánh giá mới; bật lối vào quản trị đánh giá.
 - Đơn hàng: parameterized toàn bộ trạng thái, thanh toán, ngày, giá, địa phương và từ khóa; giữ đúng trạng thái thanh toán `0`; lấy sẵn tên trạng thái/phương thức bằng join.
 - Liên hệ: tìm theo tên, điện thoại, email, chủ đề; lọc chưa/đã xác nhận; thêm menu Admin; form Theme V2 gửi đúng `submit-contact` và token reCAPTCHA, địa chỉ không còn bắt buộc vì form mới không có trường này.
-- Newsletter/tư vấn/đại lý: tìm theo tên, email, điện thoại, công ty; lọc tình trạng xử lý và giữ filter khi phân trang.
+- Newsletter/tư vấn/đại lý: tìm theo tên, email, điện thoại, công ty; lọc tình trạng xử lý và giữ filter khi phân trang. Danh sách yêu cầu tư vấn/đăng ký đại lý có thêm bộ đếm pipeline, ưu tiên yêu cầu mới, ghi chú nội bộ và trạng thái nghiệp vụ; lưu chỉ nhận field allowlist và từ chối trạng thái ngoài cấu hình.
 - Bulk sản phẩm: CSV/XLS/XLSX tối đa 5 MB và 500 dòng; kiểm tra extension/MIME/header; create/update/upsert/archive/skip; kiểm tra ID, mã, slug, danh mục, giá và trạng thái; chống CSV formula injection; sanitize HTML; CSRF; preview hết hạn sau 30 phút; checkbox xác nhận đã kiểm tra; kiểm tra optimistic timestamp; tạo SEO khi tạo sản phẩm; phục hồi các dòng đã xử lý nếu một dòng sau thất bại. Từ 2026-09-01, brand chưa tồn tại được gom ở preview để quản trị viên chọn tạo mới/ghép hãng có sẵn/bỏ trống; không tự tạo âm thầm.
 - Tiêu đề cột Excel/CSV xuất ra dùng tiếng Việt và được tự ánh xạ về field nội bộ khi nhập lại. Import vẫn nhận tên cột kỹ thuật cũ để tương thích ngược.
 - File nghiệp vụ không còn bắt buộc cột Thao tác/Mốc cập nhật. Hệ thống tự nhận diện: ID hoặc mã đã tồn tại là cập nhật; ID trống và mã mới là tạo mới. Tạo mới bắt buộc mã và tên; ID và mã chỉ đến hai sản phẩm khác nhau sẽ bị từ chối.
@@ -30,6 +30,7 @@ Phạm vi ban đầu: Docker local, chưa triển khai production. Follow-up th�
 - Dữ liệu sản phẩm thử đã được xóa; tổng số sản phẩm trước/sau test không đổi.
 - `git diff --check`: đạt.
 - Audit Admin trước đó đã render 65/65 route và kiểm tra filter/query state ở các module chính.
+- Integration pipeline newsletter đạt: render bộ đếm/tìm kiếm, lọc riêng yêu cầu mới, lưu ghi chú + trạng thái hợp lệ, từ chối trạng thái tự chế; fixture được dọn sạch trong `finally`.
 
 ## Rủi ro còn lại
 

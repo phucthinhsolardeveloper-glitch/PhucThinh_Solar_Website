@@ -42,6 +42,7 @@ Cập nhật gần nhất: 2026-09-03. Mọi thay đổi bên dưới mới ở 
 - UX export luôn giữ nút “Xuất tất cả sản phẩm”; khi vào từ filter có nút riêng “Xuất nhóm đang lọc”. Dropdown nhóm thiếu không còn bị card cắt và có cuộn khi viewport thấp.
 - ADM-P1-005 (batch 3): màn nhập/xuất hàng loạt nhận ZIP ảnh đặt tên theo mã sản phẩm, bắt buộc xem trước và xác nhận trước khi ghi. Chỉ bổ sung ảnh đại diện đang thiếu; không thay/xóa ảnh hiện hữu. ZIP bị giới hạn 20 MB/200 ảnh, từng ảnh 5 MB, kiểm tra extension + MIME + kích thước thực, chặn thư mục/path traversal và tổng giải nén quá 100 MB; commit kiểm tra lại mã, ảnh trống và mốc cập nhật, có rollback DB/file theo lượt.
 - ADM-P1-001: `PDODb` không còn render HTML rồi `die()` tại 15 nhánh lỗi connect/prepare/query/query-builder. Data layer ném `PDODbException` có message công khai trung tính; controller có thể catch/rollback, chẩn đoán chỉ giữ query template không ghép tham số. Regression xác nhận kết nối dùng lại được sau catch + rollback và toàn bộ pre-deploy giữ hành vi thành công như cũ.
+- Quản trị yêu cầu tư vấn/đăng ký đại lý có pipeline theo cấu hình: ưu tiên yêu cầu mới, bộ đếm và lọc theo trạng thái, tìm theo thông tin khách, ghi chú nội bộ và trạng thái `Mới → Đã tiếp nhận/Đang xử lý → Hoàn tất`. Controller chỉ nhận field nghiệp vụ và từ chối trạng thái ngoài allowlist; integration test tạo fixture tạm, kiểm tra danh sách/lưu/từ chối rồi dọn sạch.
 
 ## PARTIAL / CHỜ DỮ LIỆU THẬT
 

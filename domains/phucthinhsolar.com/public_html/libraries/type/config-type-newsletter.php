@@ -1,7 +1,7 @@
 <?php
     /* Đăng ký nhận tin */
     $nametype = "dangkynhantin";
-    $config['newsletter'][$nametype]['title_main'] = "Đăng ký nhận tin";
+    $config['newsletter'][$nametype]['title_main'] = "Yêu cầu tư vấn";
     $config['newsletter'][$nametype]['file'] = false;
     $config['newsletter'][$nametype]['email'] = true;
     $config['newsletter'][$nametype]['is_send'] = false;
@@ -12,8 +12,9 @@
     $config['newsletter'][$nametype]['address'] = true;
     $config['newsletter'][$nametype]['subject'] = false;
     $config['newsletter'][$nametype]['content'] = false;
-    $config['newsletter'][$nametype]['notes'] = false;
-    $config['newsletter'][$nametype]['confirm_status'] = array("1" => "Đã xem", "2" => "Đã liên hệ", "3" => "Đã thông báo");
+    $config['newsletter'][$nametype]['notes'] = true;
+    $config['newsletter'][$nametype]['pipeline'] = true;
+    $config['newsletter'][$nametype]['confirm_status'] = array("1" => "Đã tiếp nhận", "2" => "Đang tư vấn", "3" => "Hoàn tất");
     $config['newsletter'][$nametype]['show_name'] = true;
     $config['newsletter'][$nametype]['show_phone'] = true;
     $config['newsletter'][$nametype]['show_date'] = true;
@@ -32,8 +33,9 @@
     $config['newsletter'][$nametype]['address'] = true;
     $config['newsletter'][$nametype]['company'] = true;
     $config['newsletter'][$nametype]['content'] = false;
-    $config['newsletter'][$nametype]['notes'] = false;
-    $config['newsletter'][$nametype]['confirm_status'] = array("1" => "Đã xem", "2" => "Đã liên hệ", "3" => "Đã thông báo");
+    $config['newsletter'][$nametype]['notes'] = true;
+    $config['newsletter'][$nametype]['pipeline'] = true;
+    $config['newsletter'][$nametype]['confirm_status'] = array("1" => "Đã tiếp nhận", "2" => "Đang xử lý", "3" => "Hoàn tất");
     $config['newsletter'][$nametype]['show_name'] = true;
     $config['newsletter'][$nametype]['show_phone'] = true;
     $config['newsletter'][$nametype]['show_date'] = true;

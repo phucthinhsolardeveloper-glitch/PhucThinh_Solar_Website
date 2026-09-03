@@ -12,7 +12,7 @@
         <div class="row">
             <ol class="breadcrumb float-sm-left">
                 <li class="breadcrumb-item"><a href="index.php" title="Bảng điều khiển">Bảng điều khiển</a></li>
-                <li class="breadcrumb-item active">Quản lý nhận tin</li>
+                <li class="breadcrumb-item active"><?=htmlspecialchars($config['newsletter'][$type]['title_main'], ENT_QUOTES, 'UTF-8')?></li>
             </ol>
         </div>
     </div>
@@ -20,6 +20,25 @@
 
 <!-- Main content -->
 <section class="content">
+    <?php if(!empty($config['newsletter'][$type]['pipeline']) && isset($newsletterStatusCounts)) { ?>
+    <div class="row mb-3">
+        <?php
+            $pipelineCards = array(
+                'all' => array('Tất cả', 'primary', ''),
+                'pending' => array('Mới', 'danger', 'pending')
+            );
+            foreach($config['newsletter'][$type]['confirm_status'] as $statusKey => $statusLabel)
+                $pipelineCards[(string)$statusKey] = array($statusLabel, $statusKey === '3' ? 'success' : 'info', (string)$statusKey);
+        ?>
+        <?php foreach($pipelineCards as $cardKey => $pipelineCard) { $cardUrl = $linkMan.($pipelineCard[2] !== '' ? '&confirm_status='.urlencode($pipelineCard[2]) : ''); ?>
+        <div class="col-6 col-lg">
+            <a class="small-box bg-<?=$pipelineCard[1]?> text-white mb-2" href="<?=$cardUrl?>">
+                <div class="inner py-3"><h3><?=(int)$newsletterStatusCounts[$cardKey]?></h3><p class="mb-0"><?=htmlspecialchars($pipelineCard[0], ENT_QUOTES, 'UTF-8')?></p></div>
+            </a>
+        </div>
+        <?php } ?>
+    </div>
+    <?php } ?>
     <div class="card-footer text-sm sticky-top">
         <?php if(isset($config['newsletter'][$type]['is_send']) && $config['newsletter'][$type]['is_send'] == true) { ?>
            <a class="btn btn-sm bg-gradient-success text-white" id="send-email" title="Gửi email"><i class="fas fa-paper-plane mr-2"></i>Gửi email</a>
@@ -31,7 +50,7 @@
         <div class="form-inline d-inline-block align-middle ml-3">
             <select class="form-control form-control-sm" aria-label="Lọc tình trạng xử lý" onchange="window.location.href='<?=$linkConfirmStatus?>&confirm_status='+encodeURIComponent(this.value)">
                 <option value="" <?=$currentConfirmStatus === '' ? 'selected' : ''?>>Tất cả tình trạng</option>
-                <option value="pending" <?=$currentConfirmStatus === 'pending' ? 'selected' : ''?>>Chưa xử lý</option>
+                <option value="pending" <?=$currentConfirmStatus === 'pending' ? 'selected' : ''?>>Mới / chưa xử lý</option>
                 <?php foreach($config['newsletter'][$type]['confirm_status'] as $statusKey => $statusLabel) { ?>
                     <option value="<?=$statusKey?>" <?=$currentConfirmStatus === (string) $statusKey ? 'selected' : ''?>><?=$statusLabel?></option>
                 <?php } ?>
@@ -105,16 +124,16 @@
                                 </td>
                                 <?php if(isset($config['newsletter'][$type]['show_name']) && $config['newsletter'][$type]['show_name'] == true) { ?>
                                     <td class="align-middle">
-                                        <a class="text-dark text-break" href="<?=$linkEdit?>&id=<?=$items[$i]['id']?>" title="<?=$items[$i]['fullname']?>"><?=$items[$i]['fullname']?></a>
+                                        <a class="text-dark text-break" href="<?=$linkEdit?>&id=<?=$items[$i]['id']?>" title="<?=htmlspecialchars($items[$i]['fullname'], ENT_QUOTES, 'UTF-8')?>"><?=htmlspecialchars($items[$i]['fullname'], ENT_QUOTES, 'UTF-8')?></a>
                                     </td>
                                 <?php } ?>
                                 <?php if(isset($config['newsletter'][$type]['email']) && $config['newsletter'][$type]['email'] == true) { ?>
                                     <td class="align-middle">
-                                        <a class="text-dark text-break" href="<?=$linkEdit?>&id=<?=$items[$i]['id']?>" title="<?=$items[$i]['email']?>"><?=$items[$i]['email']?></a>
+                                        <a class="text-dark text-break" href="mailto:<?=htmlspecialchars($items[$i]['email'], ENT_QUOTES, 'UTF-8')?>" title="Gửi email"><?=htmlspecialchars($items[$i]['email'], ENT_QUOTES, 'UTF-8')?></a>
                                     </td>
                                 <?php } ?>
                                 <?php if(isset($config['newsletter'][$type]['show_phone']) && $config['newsletter'][$type]['show_phone'] == true) { ?>
-                                    <td class="align-middle"><?=$items[$i]['phone']?></td>
+                                    <td class="align-middle"><a href="tel:<?=htmlspecialchars(preg_replace('/[^0-9+]/', '', $items[$i]['phone']), ENT_QUOTES, 'UTF-8')?>"><?=htmlspecialchars($items[$i]['phone'], ENT_QUOTES, 'UTF-8')?></a></td>
                                 <?php } ?>
                                 <?php if(isset($config['newsletter'][$type]['file']) && $config['newsletter'][$type]['file'] == true) { ?>
                                     <td class="align-middle">
