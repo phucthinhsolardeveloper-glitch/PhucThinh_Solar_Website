@@ -1,6 +1,7 @@
 <?php
 	include "config.php";
 	adminRequirePostCsrf();
+	require_once LIBRARIES.'admin_product_completeness.php';
 
 	$result = array('success' => false, 'updated' => 0, 'message' => 'Yêu cầu cập nhật không hợp lệ.');
 	$table = (!empty($_POST['table'])) ? (string) $_POST['table'] : '';
@@ -30,7 +31,8 @@
 				$where .= " and exists (select 1 from #_comment c where c.id_variant = p.id and c.type = ? and find_in_set('new-admin', c.status))";
 				$params[] = $type;
 			}
-			if(isset($_POST['data_status']) && $_POST['data_status'] === 'missing_wattage') $where .= " and (p.cong_suat is null or p.cong_suat <= 0)";
+			$dataStatusDefinition = adminProductDataStatus(isset($_POST['data_status']) ? (string)$_POST['data_status'] : '');
+			if($dataStatusDefinition) $where .= ' and '.$dataStatusDefinition['sql'];
 			if(isset($_POST['keyword']) && trim((string)$_POST['keyword']) !== '')
 			{
 				$keyword = '%'.trim((string)$_POST['keyword']).'%';

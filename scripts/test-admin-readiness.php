@@ -184,13 +184,22 @@ try
 
     $bulkStatusPrefix = 'CODEX-BS-'.bin2hex(random_bytes(4));
     $bulkStatusCode = $bulkStatusPrefix.'-1';
-    $d->insert('product', array('code' => $bulkStatusCode, 'namevi' => 'Sản phẩm kiểm thử trạng thái lọc', 'slugvi' => strtolower($bulkStatusCode), 'type' => 'san-pham', 'status' => 'hienthi', 'numb' => 0, 'cong_suat' => 0, 'regular_price' => 0, 'sale_price' => 0, 'discount' => 0, 'id_list' => 0, 'id_cat' => 0, 'id_item' => 0, 'id_sub' => 0, 'id_brand' => 0, 'date_created' => time(), 'date_updated' => 0, 'view' => 0));
+    $d->insert('product', array('code' => $bulkStatusCode, 'namevi' => 'Sản phẩm kiểm thử trạng thái lọc', 'slugvi' => strtolower($bulkStatusCode), 'type' => 'san-pham', 'status' => 'hienthi', 'photo' => 'codex-fixture.png', 'descvi' => 'Đã có mô tả', 'contentvi' => 'Đã có nội dung', 'light_source' => 'LED', 'numb' => 0, 'cong_suat' => 0, 'regular_price' => 0, 'sale_price' => 0, 'discount' => 0, 'id_list' => 0, 'id_cat' => 0, 'id_item' => 0, 'id_sub' => 0, 'id_brand' => 0, 'date_created' => time(), 'date_updated' => 0, 'view' => 0));
     $bulkStatusProductId = (int)$d->getLastInsertId();
     $createdProductIds[] = $bulkStatusProductId;
     $secondBulkStatusCode = $bulkStatusPrefix.'-2';
     $d->insert('product', array('code' => $secondBulkStatusCode, 'namevi' => 'Sản phẩm kiểm thử set-based', 'slugvi' => strtolower($secondBulkStatusCode), 'type' => 'san-pham', 'status' => '', 'numb' => 0, 'cong_suat' => 0, 'regular_price' => 0, 'sale_price' => 0, 'discount' => 0, 'id_list' => 0, 'id_cat' => 0, 'id_item' => 0, 'id_sub' => 0, 'id_brand' => 0, 'date_created' => time(), 'date_updated' => 0, 'view' => 0));
     $secondBulkStatusProductId = (int)$d->getLastInsertId();
     $createdProductIds[] = $secondBulkStatusProductId;
+    $missingDescriptionPage = readinessHttp($base.'index.php?com=product&act=man&type=san-pham&data_status=missing_desc&keyword='.urlencode($bulkStatusPrefix), 'GET', array(), $newCookie);
+    readinessAssert(
+        $missingDescriptionPage['status'] === 200
+            && strpos($missingDescriptionPage['body'], 'Sản phẩm kiểm thử set-based') !== false
+            && strpos($missingDescriptionPage['body'], 'Sản phẩm kiểm thử trạng thái lọc') === false
+            && strpos($missingDescriptionPage['body'], 'Thiếu Mô tả') !== false
+            && strpos($missingDescriptionPage['body'], 'Điền ngay') !== false,
+        'Bộ lọc điền nhanh chỉ hiện sản phẩm thiếu mô tả và có chỉ báo thao tác'
+    );
     $apiSelectedStatus = readinessHttp($base.'api/status.php', 'POST', array('admin_csrf' => $authenticatedToken[1], 'ids' => $bulkStatusProductId.','.$secondBulkStatusProductId, 'scope' => 'selected', 'table' => 'product', 'attr' => 'baogia', 'value' => '1', 'type' => 'san-pham', 'com' => 'product'), $newCookie);
     $apiSelectedPayload = json_decode($apiSelectedStatus['body'], true);
     $selectedStatusRows = $d->rawQuery('select id, status from #_product where id in (?, ?)', array($bulkStatusProductId, $secondBulkStatusProductId));

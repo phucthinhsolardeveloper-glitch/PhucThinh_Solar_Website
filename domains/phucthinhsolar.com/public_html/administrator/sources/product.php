@@ -15,6 +15,7 @@
 
 	/* Công cụ nhập/xuất sản phẩm an toàn theo ID, mã và slug */
 	require_once SOURCES.'product_bulk.php';
+	require_once LIBRARIES.'admin_product_completeness.php';
 
 	/* Cấu hình đường dẫn trả về */
 	$strUrl = "";
@@ -266,8 +267,10 @@
 			$params[] = $type;
 		}
 
-		$dataStatus = !empty($_REQUEST['data_status']) ? $_REQUEST['data_status'] : '';
-		if($dataStatus === 'missing_wattage') $where .= " and (p.cong_suat is null or p.cong_suat <= 0)";
+		$dataStatus = !empty($_REQUEST['data_status']) ? (string)$_REQUEST['data_status'] : '';
+		$dataStatusDefinition = adminProductDataStatus($dataStatus);
+		if($dataStatusDefinition) $where .= ' and '.$dataStatusDefinition['sql'];
+		else $dataStatus = '';
 
 		if(isset($_REQUEST['keyword']) && trim($_REQUEST['keyword']) !== '')
 		{

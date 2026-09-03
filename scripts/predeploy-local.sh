@@ -40,6 +40,7 @@ php -l administrator/sources/order.php
 php -l administrator/sources/product.php
 php -l administrator/sources/product_bulk.php
 php -l libraries/admin_product_pricing.php
+php -l libraries/admin_product_completeness.php
 php -l libraries/admin_security.php
 php -l libraries/form_security.php
 php -l libraries/login_security.php

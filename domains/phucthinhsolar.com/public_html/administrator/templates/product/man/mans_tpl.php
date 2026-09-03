@@ -28,6 +28,14 @@
     	<a class="btn btn-sm bg-gradient-primary text-white" href="<?=$linkAdd?>" title="Thêm mới"><i class="fas fa-plus mr-2"></i>Thêm mới</a>
         <a class="btn btn-sm bg-gradient-danger text-white" id="delete-all" data-url="<?=$linkDelete?><?=$strUrl?>" title="Xóa sản phẩm đã chọn"><i class="far fa-trash-alt mr-2"></i>Xóa mục đã chọn</a>
         <a class="btn btn-sm bg-gradient-success text-white" href="<?=$linkBulk?>" title="Nhập xuất Excel/CSV"><i class="fas fa-file-excel mr-2"></i>Nhập / Xuất</a>
+        <div class="dropdown d-inline-block ml-2">
+            <button class="btn btn-sm btn-outline-warning dropdown-toggle" type="button" data-toggle="dropdown"><i class="fas fa-tasks mr-1"></i>Điền dữ liệu thiếu</button>
+            <div class="dropdown-menu">
+                <?php foreach(adminProductDataStatusDefinitions() as $statusKey => $statusDefinition) { ?>
+                    <a class="dropdown-item" href="<?=$linkMan?>&data_status=<?=urlencode($statusKey)?>"><?=htmlspecialchars($statusDefinition['label'], ENT_QUOTES, 'UTF-8')?></a>
+                <?php } ?>
+            </div>
+        </div>
         <div class="form-inline form-search d-inline-block align-middle ml-3">
             <div class="input-group input-group-sm">
                 <input class="form-control form-control-navbar text-sm" type="search" id="keyword" placeholder="Tìm kiếm" aria-label="Tìm kiếm" value="<?=isset($_GET['keyword']) ? htmlspecialchars($_GET['keyword'], ENT_QUOTES, 'UTF-8') : ''?>" onkeypress="doEnter(event,'keyword','<?=$linkMan?>')">
@@ -43,7 +51,8 @@
         <div class="alert alert-warning d-flex align-items-center justify-content-between text-sm mx-0 mb-2">
             <span>
                 <i class="fas fa-filter mr-1"></i>
-                <?=(!empty($_GET['data_status']) && $_GET['data_status'] === 'missing_wattage') ? 'Đang lọc sản phẩm chưa nhập công suất.' : 'Đang lọc sản phẩm có đánh giá mới chờ duyệt.'?>
+                <?php $activeDataStatus = adminProductDataStatus(!empty($_GET['data_status']) ? (string)$_GET['data_status'] : ''); ?>
+                <?=$activeDataStatus ? 'Đang lọc: '.htmlspecialchars($activeDataStatus['label'], ENT_QUOTES, 'UTF-8').'.' : 'Đang lọc sản phẩm có đánh giá mới chờ duyệt.'?>
             </span>
             <a class="btn btn-sm btn-outline-dark" href="<?=$linkMan?>" title="Bỏ bộ lọc">Bỏ lọc</a>
         </div>
@@ -138,6 +147,12 @@
                                 <?php } ?>
                                 <td class="align-middle">
                                     <a class="text-dark text-break" href="<?=$linkEdit?><?=$linkID?>&id=<?=$items[$i]['id']?>" title="<?=$items[$i]['namevi']?>"><?=$items[$i]['namevi']?></a>
+                                    <?php $missingLabels = adminProductMissingLabels($items[$i]); if($missingLabels) { ?>
+                                        <div class="mt-1" aria-label="Dữ liệu còn thiếu">
+                                            <?php foreach($missingLabels as $missingLabel) { ?><span class="badge badge-warning mr-1">Thiếu <?=htmlspecialchars($missingLabel, ENT_QUOTES, 'UTF-8')?></span><?php } ?>
+                                            <a class="text-primary text-xs" href="<?=$linkEdit?><?=$linkID?>&id=<?=$items[$i]['id']?>">Điền ngay</a>
+                                        </div>
+                                    <?php } ?>
                                     <div class="tool-action mt-2 w-clear">
 										<?php if(isset($config['product'][$type]['comment']) && $config['product'][$type]['comment'] == true) { ?>
 											<?php
