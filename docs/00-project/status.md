@@ -40,6 +40,7 @@ Cập nhật gần nhất: 2026-09-03. Mọi thay đổi bên dưới mới ở 
 - ADM-P1-008 (batch 1): danh sách Sản phẩm có menu “Điền dữ liệu thiếu”, lọc allowlist theo ảnh đại diện/mô tả/nội dung/thông số/công suất, hiển thị badge thiếu và liên kết thẳng tới form sửa. Bulk status dùng chung điều kiện filter để không cập nhật lệch phạm vi.
 - ADM-P1-005/P1-008 (batch 2): từ danh sách đang lọc dữ liệu thiếu có thể mở màn bulk và xuất Excel/CSV đúng tập con; workbook vẫn có snapshot/conflict detection và cột ảnh chỉ đọc. Scope tùy ý bị bỏ qua, chỉ năm trạng thái thiếu dữ liệu trong allowlist được áp dụng.
 - UX export luôn giữ nút “Xuất tất cả sản phẩm”; khi vào từ filter có nút riêng “Xuất nhóm đang lọc”. Dropdown nhóm thiếu không còn bị card cắt và có cuộn khi viewport thấp.
+- ADM-P1-005 (batch 3): màn nhập/xuất hàng loạt nhận ZIP ảnh đặt tên theo mã sản phẩm, bắt buộc xem trước và xác nhận trước khi ghi. Chỉ bổ sung ảnh đại diện đang thiếu; không thay/xóa ảnh hiện hữu. ZIP bị giới hạn 20 MB/200 ảnh, từng ảnh 5 MB, kiểm tra extension + MIME + kích thước thực, chặn thư mục/path traversal và tổng giải nén quá 100 MB; commit kiểm tra lại mã, ảnh trống và mốc cập nhật, có rollback DB/file theo lượt.
 
 ## PARTIAL / CHỜ DỮ LIỆU THẬT
 

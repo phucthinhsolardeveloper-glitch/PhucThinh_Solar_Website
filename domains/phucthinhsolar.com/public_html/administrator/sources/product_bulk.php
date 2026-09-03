@@ -116,6 +116,244 @@ function productBulkCheckCsrf()
         && hash_equals($_SESSION['product_bulk_csrf'], (string) $_POST['product_bulk_csrf']);
 }
 
+function productBulkImageUploadDirectory()
+{
+    return rtrim(ROOT, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.'upload'.DIRECTORY_SEPARATOR.'product'.DIRECTORY_SEPARATOR;
+}
+
+function productBulkImageRemovePreviewDirectory($path)
+{
+    $root = realpath(sys_get_temp_dir());
+    $resolved = is_dir($path) ? realpath($path) : false;
+    if(!$root || !$resolved || dirname($resolved) !== $root || strpos(basename($resolved), 'pts-product-images-') !== 0) return;
+    foreach(scandir($resolved) as $name) {
+        if($name === '.' || $name === '..') continue;
+        $file = $resolved.DIRECTORY_SEPARATOR.$name;
+        if(is_file($file)) @unlink($file);
+    }
+    @rmdir($resolved);
+}
+
+function productBulkImageValidateFile($path, $extension, $declaredSize = 0)
+{
+    global $config;
+    $allowed = array('jpg' => 'image/jpeg', 'jpeg' => 'image/jpeg', 'png' => 'image/png', 'webp' => 'image/webp');
+    if(!isset($allowed[$extension])) return 'Chỉ hỗ trợ JPG, PNG hoặc WEBP.';
+    $size = is_file($path) ? filesize($path) : 0;
+    if($size <= 0 || $size > 5 * 1024 * 1024 || ($declaredSize > 0 && $size !== (int)$declaredSize)) return 'Ảnh rỗng, vượt 5 MB hoặc dữ liệu ZIP không đầy đủ.';
+    $image = @getimagesize($path);
+    if(!$image || empty($image['mime']) || strtolower($image['mime']) !== $allowed[$extension]) return 'Nội dung ảnh không khớp phần mở rộng.';
+    if(empty($image[0]) || empty($image[1]) || $image[0] > 12000 || $image[1] > 12000 || $image[0] * $image[1] > 24000000) return 'Kích thước ảnh không hợp lệ hoặc vượt giới hạn xử lý.';
+    $maxWidth = !empty($config['website']['upload']['max-width']) ? (int)$config['website']['upload']['max-width'] : 1920;
+    $maxHeight = !empty($config['website']['upload']['max-height']) ? (int)$config['website']['upload']['max-height'] : 1920;
+    if($extension === 'webp' && ($image[0] > $maxWidth || $image[1] > $maxHeight)) return 'Ảnh WEBP phải không quá '.$maxWidth.'×'.$maxHeight.' px.';
+    return '';
+}
+
+function productBulkImageFinalizeFile($path, $extension)
+{
+    global $func, $config;
+    if($extension === 'jpg' || $extension === 'jpeg') $func->correctImageOrientation($path);
+    $image = @getimagesize($path);
+    if(!$image) return false;
+    $maxWidth = !empty($config['website']['upload']['max-width']) ? (int)$config['website']['upload']['max-width'] : 1920;
+    $maxHeight = !empty($config['website']['upload']['max-height']) ? (int)$config['website']['upload']['max-height'] : 1920;
+    if($image[0] <= $maxWidth && $image[1] <= $maxHeight) return true;
+    // Bộ resize legacy chưa ghi được WEBP; từ chối ảnh WEBP quá cỡ thay vì đổi định dạng ngầm.
+    if($extension === 'webp') return false;
+    return $func->smartResizeImage($path, null, $maxWidth, $maxHeight, true);
+}
+
+function productBulkReadImageArchive($file, $type)
+{
+    global $d;
+    $result = array('rows' => array(), 'errors' => array(), 'counts' => array('ready' => 0, 'existing' => 0, 'missing_product' => 0));
+    if(!class_exists('ZipArchive')) {
+        $result['errors'][] = 'Máy chủ chưa bật ZipArchive.';
+        return $result;
+    }
+    if(empty($file) || !isset($file['error']) || $file['error'] !== UPLOAD_ERR_OK) {
+        $result['errors'][] = 'Không nhận được file ZIP hoặc file upload bị lỗi.';
+        return $result;
+    }
+    if((int)$file['size'] <= 0 || (int)$file['size'] > 20 * 1024 * 1024 || strtolower(pathinfo($file['name'], PATHINFO_EXTENSION)) !== 'zip') {
+        $result['errors'][] = 'File phải là ZIP từ 1 byte đến 20 MB.';
+        return $result;
+    }
+    $mime = (new finfo(FILEINFO_MIME_TYPE))->file($file['tmp_name']);
+    if(!in_array($mime, array('application/zip', 'application/x-zip-compressed', 'application/octet-stream'), true)) {
+        $result['errors'][] = 'Nội dung file không phải ZIP hợp lệ.';
+        return $result;
+    }
+    $zip = new ZipArchive();
+    if($zip->open($file['tmp_name']) !== true) {
+        $result['errors'][] = 'Không thể mở file ZIP.';
+        return $result;
+    }
+    if($zip->numFiles < 1 || $zip->numFiles > 200) {
+        $result['errors'][] = 'ZIP phải chứa từ 1 đến 200 ảnh.';
+        $zip->close();
+        return $result;
+    }
+    $previewDir = sys_get_temp_dir().DIRECTORY_SEPARATOR.'pts-product-images-'.bin2hex(random_bytes(16));
+    if(!mkdir($previewDir, 0700)) {
+        $result['errors'][] = 'Không thể tạo vùng xem trước an toàn.';
+        $zip->close();
+        return $result;
+    }
+    $products = array();
+    foreach($d->rawQuery('select id, code, namevi, photo, date_updated from #_product where type = ?', array($type)) as $product) {
+        $key = mb_strtolower(trim((string)$product['code']), 'UTF-8');
+        if($key !== '') $products[$key] = $product;
+    }
+    $seen = array();
+    $totalSize = 0;
+    for($index = 0; $index < $zip->numFiles; $index++) {
+        $stat = $zip->statIndex($index);
+        $entry = isset($stat['name']) ? (string)$stat['name'] : '';
+        if($entry === '' || substr($entry, -1) === '/') continue;
+        if(basename($entry) !== $entry || strpos($entry, "\0") !== false) {
+            $result['errors'][] = 'ZIP không được chứa thư mục hoặc đường dẫn lồng nhau: '.$entry;
+            continue;
+        }
+        $extension = strtolower(pathinfo($entry, PATHINFO_EXTENSION));
+        $code = trim(pathinfo($entry, PATHINFO_FILENAME));
+        $key = mb_strtolower($code, 'UTF-8');
+        $size = !empty($stat['size']) ? (int)$stat['size'] : 0;
+        $totalSize += $size;
+        if($totalSize > 100 * 1024 * 1024) {
+            $result['errors'][] = 'Tổng dung lượng giải nén vượt 100 MB.';
+            break;
+        }
+        $row = array('entry' => $entry, 'code' => $code, 'extension' => $extension, 'status' => 'error', 'message' => '', 'product' => null, 'path' => '');
+        if($code === '' || isset($seen[$key])) {
+            $row['message'] = $code === '' ? 'Tên file phải là mã sản phẩm.' : 'Mã sản phẩm bị lặp trong ZIP.';
+            $result['errors'][] = $entry.': '.$row['message'];
+            $result['rows'][] = $row;
+            continue;
+        }
+        $seen[$key] = true;
+        $target = $previewDir.DIRECTORY_SEPARATOR.str_pad((string)$index, 4, '0', STR_PAD_LEFT).'.'.$extension;
+        $stream = $zip->getStream($entry);
+        $output = $stream ? fopen($target, 'xb') : false;
+        if(!$stream || !$output) {
+            if($stream) fclose($stream);
+            if($output) fclose($output);
+            $row['message'] = 'Không thể đọc ảnh trong ZIP.';
+            $result['errors'][] = $entry.': '.$row['message'];
+            $result['rows'][] = $row;
+            continue;
+        }
+        stream_copy_to_stream($stream, $output, 5 * 1024 * 1024 + 1);
+        fclose($stream);
+        fclose($output);
+        $validationError = productBulkImageValidateFile($target, $extension, $size);
+        if($validationError !== '') {
+            @unlink($target);
+            $row['message'] = $validationError;
+            $result['errors'][] = $entry.': '.$validationError;
+        } elseif(empty($products[$key])) {
+            @unlink($target);
+            $row['status'] = 'missing_product';
+            $row['message'] = 'Không tìm thấy mã sản phẩm.';
+            $result['counts']['missing_product']++;
+        } else {
+            $row['product'] = $products[$key];
+            if(trim((string)$products[$key]['photo']) !== '') {
+                @unlink($target);
+                $row['status'] = 'existing';
+                $row['message'] = 'Sản phẩm đã có ảnh; hệ thống sẽ không thay thế.';
+                $result['counts']['existing']++;
+            } else {
+                $row['status'] = 'ready';
+                $row['message'] = 'Sẵn sàng bổ sung ảnh.';
+                $row['path'] = $target;
+                $result['counts']['ready']++;
+            }
+        }
+        $result['rows'][] = $row;
+    }
+    $zip->close();
+    if(!empty($result['errors']) || $result['counts']['ready'] === 0) {
+        if($result['counts']['ready'] === 0 && empty($result['errors'])) $result['errors'][] = 'Không có ảnh nào đủ điều kiện bổ sung.';
+        productBulkImageRemovePreviewDirectory($previewDir);
+        $result['preview_dir'] = '';
+    } else $result['preview_dir'] = $previewDir;
+    return $result;
+}
+
+function productBulkImagePreview()
+{
+    global $type, $bulkImagePreview, $bulkMessage;
+    $bulkImagePreview = null;
+    if(!productBulkCheckCsrf()) {
+        $bulkMessage = array('type' => 'danger', 'text' => 'Phiên làm việc không hợp lệ. Vui lòng tải lại trang.');
+        return;
+    }
+    $bulkImagePreview = productBulkReadImageArchive(isset($_FILES['product_bulk_images']) ? $_FILES['product_bulk_images'] : null, $type);
+    if(!empty($bulkImagePreview['errors'])) {
+        $bulkMessage = array('type' => 'danger', 'text' => 'ZIP còn lỗi nên chưa thể xác nhận.');
+        return;
+    }
+    $token = bin2hex(random_bytes(24));
+    $payloadRows = array();
+    foreach($bulkImagePreview['rows'] as $row) if($row['status'] === 'ready') {
+        $payloadRows[] = array('id' => (int)$row['product']['id'], 'code' => $row['code'], 'name' => $row['product']['namevi'], 'date_updated' => (int)$row['product']['date_updated'], 'extension' => $row['extension'], 'path' => $row['path']);
+    }
+    $_SESSION['product_bulk_image_preview'][$token] = array('type' => $type, 'created_at' => time(), 'directory' => $bulkImagePreview['preview_dir'], 'rows' => $payloadRows);
+    $bulkImagePreview['token'] = $token;
+}
+
+function productBulkImageCommit()
+{
+    global $d, $cache, $func, $type, $bulkMessage, $bulkImageResult;
+    if(!productBulkCheckCsrf() || empty($_POST['confirm_bulk_images'])) {
+        $bulkMessage = array('type' => 'danger', 'text' => 'Phiên làm việc hoặc xác nhận bổ sung ảnh không hợp lệ.');
+        return;
+    }
+    $token = isset($_POST['image_preview_token']) ? preg_replace('/[^a-f0-9]/', '', $_POST['image_preview_token']) : '';
+    $state = !empty($_SESSION['product_bulk_image_preview'][$token]) ? $_SESSION['product_bulk_image_preview'][$token] : null;
+    if(!$state || $state['type'] !== $type || time() - (int)$state['created_at'] > 1800 || !is_dir($state['directory'])) {
+        $bulkMessage = array('type' => 'danger', 'text' => 'Bản xem trước ảnh đã hết hạn hoặc không hợp lệ.');
+        return;
+    }
+    $uploadDir = productBulkImageUploadDirectory();
+    $createdFiles = array();
+    $updatedRows = array();
+    try {
+        foreach($state['rows'] as $row) {
+            $current = $d->rawQueryOne('select id, code, photo, date_updated from #_product where id = ? and type = ? limit 0,1', array((int)$row['id'], $type));
+            if(empty($current) || trim((string)$current['photo']) !== '' || trim((string)$current['code']) !== $row['code'] || (int)$current['date_updated'] !== (int)$row['date_updated']) throw new Exception('Sản phẩm mã '.$row['code'].' đã thay đổi sau bước xem trước');
+            $validationError = productBulkImageValidateFile($row['path'], $row['extension']);
+            if($validationError !== '') throw new Exception('Ảnh của mã '.$row['code'].' không còn hợp lệ');
+            $base = $func->uploadName($row['code'].'.'.$row['extension']);
+            $filename = $base.'.'.$row['extension'];
+            while(file_exists($uploadDir.$filename)) $filename = $base.'-'.bin2hex(random_bytes(3)).'.'.$row['extension'];
+            if(!copy($row['path'], $uploadDir.$filename)) throw new Exception('Không thể lưu ảnh cho mã '.$row['code']);
+            @chmod($uploadDir.$filename, 0644);
+            $createdFiles[] = $uploadDir.$filename;
+            if(!productBulkImageFinalizeFile($uploadDir.$filename, $row['extension'])) throw new Exception('Không thể chuẩn hóa kích thước ảnh cho mã '.$row['code']);
+            $d->where('id', (int)$row['id']);
+            $d->where('type', $type);
+            if(!$d->update('product', array('photo' => $filename, 'date_updated' => time()))) throw new Exception('Không thể cập nhật ảnh cho mã '.$row['code']);
+            $updatedRows[] = array('id' => (int)$row['id'], 'date_updated' => (int)$row['date_updated']);
+        }
+        $cache->delete();
+        $bulkImageResult = array('updated' => count($updatedRows));
+        $bulkMessage = array('type' => 'success', 'text' => 'Đã bổ sung '.count($updatedRows).' ảnh đại diện; không thay hoặc xóa ảnh cũ.');
+        productBulkImageRemovePreviewDirectory($state['directory']);
+        unset($_SESSION['product_bulk_image_preview'][$token]);
+    } catch(Exception $e) {
+        foreach($updatedRows as $updatedRow) {
+            $d->where('id', $updatedRow['id']);
+            $d->where('type', $type);
+            $d->update('product', array('photo' => '', 'date_updated' => $updatedRow['date_updated']));
+        }
+        foreach($createdFiles as $file) if(is_file($file)) @unlink($file);
+        $bulkMessage = array('type' => 'danger', 'text' => $e->getMessage().'. Các ảnh trong lượt này đã được phục hồi.');
+    }
+}
+
 function productBulkNormalizeAction($value)
 {
     $value = mb_strtolower(trim((string) $value), 'UTF-8');

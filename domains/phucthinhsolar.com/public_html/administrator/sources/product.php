@@ -57,6 +57,14 @@
 			productBulkCommit();
 			$template = "product/man/bulk";
 			break;
+		case "bulk_image_preview":
+			productBulkImagePreview();
+			$template = "product/man/bulk";
+			break;
+		case "bulk_image_commit":
+			productBulkImageCommit();
+			$template = "product/man/bulk";
+			break;
 		case "bulk_template":
 			productBulkExport(true);
 			break;

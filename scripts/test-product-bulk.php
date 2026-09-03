@@ -125,6 +125,7 @@ $before = (int) $d->rawQueryOne('select count(*) as total from #_product where t
 $code = 'CODEX-BULK-'.date('His');
 $createdId = 0;
 $createdBrandId = 0;
+$createdImagePath = '';
 try {
     $csvPath = tempnam(sys_get_temp_dir(), 'pts-csv-');
     $csv = fopen($csvPath, 'wb');
@@ -317,6 +318,38 @@ try {
     $rollbackBrand = $d->rawQueryOne('select id from #_product_brand where type = ? and namevi = ? limit 0,1', array($type, $rollbackBrandName));
     testAssert(empty($rollbackBrand), 'Rollback xóa thương hiệu mới nếu batch sản phẩm thất bại');
 
+    $imageZipPath = tempnam(sys_get_temp_dir(), 'pts-image-zip-');
+    $imageZip = new ZipArchive();
+    testAssert($imageZip->open($imageZipPath, ZipArchive::OVERWRITE) === true, 'Tạo ZIP ảnh kiểm thử');
+    $imageZip->addFromString($code.'.png', base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII='));
+    $imageZip->close();
+    $imagePreview = productBulkReadImageArchive(array('error' => UPLOAD_ERR_OK, 'size' => filesize($imageZipPath), 'name' => 'images.zip', 'tmp_name' => $imageZipPath), $type);
+    testAssert(empty($imagePreview['errors']) && $imagePreview['counts']['ready'] === 1, 'ZIP hợp lệ ghép ảnh với sản phẩm đang thiếu theo mã');
+    $imageToken = bin2hex(random_bytes(12));
+    $readyImage = null;
+    foreach($imagePreview['rows'] as $imageRow) if($imageRow['status'] === 'ready') $readyImage = $imageRow;
+    $_SESSION['product_bulk_image_preview'][$imageToken] = array('type' => $type, 'created_at' => time(), 'directory' => $imagePreview['preview_dir'], 'rows' => array(array('id' => $createdId, 'code' => $code, 'name' => $created['namevi'], 'date_updated' => (int)$readyImage['product']['date_updated'], 'extension' => 'png', 'path' => $readyImage['path'])));
+    $_SESSION['product_bulk_csrf'] = 'test-csrf';
+    $_POST = array('product_bulk_csrf' => 'test-csrf', 'confirm_bulk_images' => '1', 'image_preview_token' => $imageToken);
+    $bulkMessage = null;
+    $bulkImageResult = null;
+    productBulkImageCommit();
+    $imageProduct = $d->rawQueryOne('select photo from #_product where id = ? and type = ?', array($createdId, $type));
+    $createdImagePath = productBulkImageUploadDirectory().$imageProduct['photo'];
+    testAssert(!empty($bulkImageResult['updated']) && is_file($createdImagePath), 'Commit ảnh cập nhật DB và lưu file ảnh bằng tên do server sinh');
+    $existingImagePreview = productBulkReadImageArchive(array('error' => UPLOAD_ERR_OK, 'size' => filesize($imageZipPath), 'name' => 'images.zip', 'tmp_name' => $imageZipPath), $type);
+    testAssert($existingImagePreview['counts']['existing'] === 1 && $existingImagePreview['counts']['ready'] === 0, 'ZIP không thay thế sản phẩm đã có ảnh');
+    @unlink($imageZipPath);
+
+    $unsafeZipPath = tempnam(sys_get_temp_dir(), 'pts-image-unsafe-');
+    $unsafeZip = new ZipArchive();
+    $unsafeZip->open($unsafeZipPath, ZipArchive::OVERWRITE);
+    $unsafeZip->addFromString('../'.$code.'.png', base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII='));
+    $unsafeZip->close();
+    $unsafePreview = productBulkReadImageArchive(array('error' => UPLOAD_ERR_OK, 'size' => filesize($unsafeZipPath), 'name' => 'unsafe.zip', 'tmp_name' => $unsafeZipPath), $type);
+    testAssert(!empty($unsafePreview['errors']), 'Từ chối đường dẫn lồng nhau trong ZIP ảnh');
+    @unlink($unsafeZipPath);
+
     $archiveRows = array(array('_row_number' => 2, 'action' => 'archive', 'id' => $createdId));
     $booleanStatusPreview = productBulkValidateRows(array(array('_row_number' => 2, 'action' => 'update', 'id' => $createdId, 'is_visible' => '0', 'is_featured' => '1', 'requires_quote' => '1')), $type);
     testAssert($booleanStatusPreview['errors'] === 0 && $booleanStatusPreview['counts']['hide_update'] === 1 && $booleanStatusPreview['rows'][0]['data']['status'] === 'banchay,baogia', 'Trạng thái 1/0 được đổi đúng sang trạng thái nội bộ, gồm báo giá riêng');
@@ -337,6 +370,7 @@ try {
     $missingId = productBulkValidateRows(array(array('_row_number' => 2, 'action' => 'update', 'namevi' => 'Không có ID')), $type);
     testAssert($missingId['errors'] > 0, 'Từ chối update không có ID');
 } finally {
+    if ($createdImagePath !== '' && is_file($createdImagePath)) @unlink($createdImagePath);
     if ($createdId > 0) {
         $d->rawQuery('delete from #_seo where id_parent = ? and com = ? and type = ?', array($createdId, 'product', $type));
         $d->rawQuery('delete from #_product where id = ? and type = ?', array($createdId, $type));

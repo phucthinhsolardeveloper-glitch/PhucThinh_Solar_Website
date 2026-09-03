@@ -31,7 +31,7 @@ $bulkScopeQuery = $bulkDataStatusDefinition ? '&data_status='.urlencode($bulkDat
         </div>
         <div class="pts-bulk-steps"><span class="pts-bulk-step"><b>1</b>Chuẩn bị file</span><span class="pts-bulk-step"><b>2</b>Tải lên</span><span class="pts-bulk-step"><b>3</b>Kiểm tra thay đổi</span><span class="pts-bulk-step"><b>4</b>Xác nhận áp dụng</span></div>
     </div>
-    <?php if (!empty($bulkMessage) && empty($bulkResult)) { ?>
+    <?php if (!empty($bulkMessage) && empty($bulkResult) && empty($bulkImageResult)) { ?>
         <div class="alert alert-<?=$bulkMessage['type']?> text-sm"><?=htmlspecialchars($bulkMessage['text'])?></div>
     <?php } ?>
     <?php if (!empty($bulkResult)) { ?>
@@ -40,6 +40,9 @@ $bulkScopeQuery = $bulkDataStatusDefinition ? '&data_status='.urlencode($bulkDat
             <div class="mr-auto"><strong class="d-block mb-1"><?=htmlspecialchars(!empty($bulkMessage['text']) ? $bulkMessage['text'] : 'Đã áp dụng dữ liệu thành công.')?></strong><span>Tạo <?=(int) $bulkResult['create']?> · Hãng mới <?=!empty($bulkResult['brand_create']) ? (int) $bulkResult['brand_create'] : 0?> · Cập nhật <?=(int) $bulkResult['update']?> · Ẩn <?=(int) $bulkResult['archive']?> · Bỏ qua <?=(int) $bulkResult['skip']?></span></div>
             <a class="btn btn-sm btn-success border-white mt-2 mt-md-0" href="index.php?com=product&act=man&type=<?=$type?>">Xem danh sách</a>
         </div>
+    <?php } ?>
+    <?php if (!empty($bulkImageResult)) { ?>
+        <div class="alert alert-success text-sm"><i class="fas fa-images mr-2"></i>Đã bổ sung <strong><?=(int)$bulkImageResult['updated']?></strong> ảnh đại diện. Không ảnh cũ nào bị thay hoặc xóa.</div>
     <?php } ?>
 
     <div class="row">
@@ -99,6 +102,31 @@ $bulkScopeQuery = $bulkDataStatusDefinition ? '&data_status='.urlencode($bulkDat
             </ul>
         </div>
     </details>
+
+    <div class="card pts-bulk-card text-sm mt-3">
+        <div class="card-header"><h3 class="card-title font-weight-bold"><i class="far fa-images text-primary mr-2"></i>Bổ sung ảnh đại diện còn thiếu bằng ZIP</h3></div>
+        <div class="card-body">
+            <div class="alert alert-info py-2"><strong>Quy tắc tên file:</strong> đặt đúng theo mã sản phẩm, ví dụ <code>JD-T200.jpg</code>. Chỉ bổ sung sản phẩm chưa có ảnh; hệ thống không thay hay xóa ảnh hiện hữu.</div>
+            <form method="post" action="<?=$bulkBase?>&act=bulk_image_preview" enctype="multipart/form-data" class="form-row align-items-end">
+                <?=adminCsrfField()?>
+                <input type="hidden" name="product_bulk_csrf" value="<?=htmlspecialchars($bulkCsrf)?>">
+                <div class="form-group col-lg-8 mb-lg-0"><label for="product_bulk_images">Chọn file ZIP</label><div class="custom-file"><input required type="file" class="custom-file-input" name="product_bulk_images" id="product_bulk_images" accept=".zip,application/zip"><label class="custom-file-label" for="product_bulk_images">Tối đa 20 MB, 200 ảnh</label></div><small class="form-text text-muted">Mỗi ảnh tối đa 5 MB; JPG, PNG hoặc WEBP. ZIP không chứa thư mục con.</small></div>
+                <div class="col-lg-4"><button class="btn btn-outline-primary btn-block"><i class="fas fa-search mr-2"></i>Kiểm tra ZIP trước</button></div>
+            </form>
+        </div>
+    </div>
+
+    <?php if (!empty($bulkImagePreview)) { ?>
+        <div class="card card-primary card-outline text-sm mt-3">
+            <div class="card-header"><h3 class="card-title">Xem trước ảnh</h3><div class="card-tools"><span class="badge badge-success">Sẵn sàng <?=(int)$bulkImagePreview['counts']['ready']?></span> <span class="badge badge-secondary">Đã có ảnh <?=(int)$bulkImagePreview['counts']['existing']?></span> <span class="badge badge-warning">Không thấy mã <?=(int)$bulkImagePreview['counts']['missing_product']?></span></div></div>
+            <div class="card-body table-responsive p-0" style="max-height:420px"><table class="table table-sm table-hover mb-0"><thead class="thead-light sticky-top"><tr><th>File</th><th>Mã</th><th>Sản phẩm</th><th>Kết quả</th></tr></thead><tbody>
+            <?php foreach($bulkImagePreview['rows'] as $row) { ?><tr><td><?=htmlspecialchars($row['entry'])?></td><td><code><?=htmlspecialchars($row['code'])?></code></td><td><?=!empty($row['product']) ? htmlspecialchars($row['product']['namevi']) : '—'?></td><td class="<?=$row['status'] === 'ready' ? 'text-success' : ($row['status'] === 'existing' ? 'text-muted' : 'text-warning')?>"><?=htmlspecialchars($row['message'])?></td></tr><?php } ?>
+            </tbody></table></div>
+            <div class="card-footer">
+                <?php if(empty($bulkImagePreview['errors']) && !empty($bulkImagePreview['token'])) { ?><form method="post" action="<?=$bulkBase?>&act=bulk_image_commit" class="d-flex flex-wrap align-items-center"><?=adminCsrfField()?><input type="hidden" name="product_bulk_csrf" value="<?=htmlspecialchars($bulkCsrf)?>"><input type="hidden" name="image_preview_token" value="<?=htmlspecialchars($bulkImagePreview['token'])?>"><label class="mr-3 mb-2"><input required type="checkbox" name="confirm_bulk_images" value="1"> Tôi xác nhận chỉ bổ sung <?=(int)$bulkImagePreview['counts']['ready']?> ảnh còn thiếu.</label><button class="btn btn-sm btn-success mb-2"><i class="fas fa-check mr-2"></i>Bổ sung ảnh</button></form><?php } else { ?><span class="text-danger">ZIP còn lỗi; chưa có file hay database nào được thay đổi.</span><?php } ?>
+            </div>
+        </div>
+    <?php } ?>
 
     <?php if (!empty($bulkPreview)) { ?>
         <div class="card card-primary card-outline text-sm mt-3">

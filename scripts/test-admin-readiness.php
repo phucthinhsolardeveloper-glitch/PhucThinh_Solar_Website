@@ -123,7 +123,7 @@ try
         $postForms += preg_match_all('/<form[^>]*method="post"/i', $source, $unused);
         $csrfFields += substr_count($source, 'adminCsrfField()');
     }
-    readinessAssert($postForms === 42 && $csrfFields === $postForms, 'Đủ CSRF field cho 42 form POST Admin');
+    readinessAssert($postForms >= 42 && $csrfFields === $postForms, 'Mọi form POST Admin đều có CSRF field');
 
     $productListTemplate = file_get_contents('/var/www/html/administrator/templates/product/man/mans_tpl.php');
     readinessAssert(strpos($productListTemplate, 'totalByID(') === false && strpos($productListTemplate, '$commentTotals') !== false, 'Danh sách sản phẩm dùng thống kê đánh giá theo batch');
