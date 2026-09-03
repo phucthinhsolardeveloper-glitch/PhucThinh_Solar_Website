@@ -732,11 +732,13 @@
 						"#_tags"
 					);
 
-					$where = (!empty($data['id']) && empty($data['copy'])) ? "id != ".$data['id']." and " : "";
+					$excludeId = (!empty($data['id']) && empty($data['copy'])) ? (int)$data['id'] : 0;
 
 					foreach($table as $v)
 					{
-						$check = $this->d->rawQueryOne("select id from $v where $where (slugvi = ? or slugen = ?) limit 0,1", array($data['slug'], $data['slug']));
+						$where = $excludeId > 0 ? "id != ? and " : "";
+						$params = $excludeId > 0 ? array($excludeId, $data['slug'], $data['slug']) : array($data['slug'], $data['slug']);
+						$check = $this->d->rawQueryOne("select id from $v where $where (slugvi = ? or slugen = ?) limit 0,1", $params);
 
 						if(!empty($check['id']))
 						{

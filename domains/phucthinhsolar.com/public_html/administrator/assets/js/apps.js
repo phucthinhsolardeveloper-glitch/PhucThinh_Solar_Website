@@ -973,7 +973,7 @@ function slugCheck()
 				$.ajax({
 					url: 'api/slug.php',
 					type: 'POST',
-					dataType: 'html',
+					dataType: 'json',
 					async: false,
 					data: {
 						slug: slug,
@@ -981,7 +981,7 @@ function slugCheck()
 						copy: copy
 					},
 					success: function(result){
-						slugAlert(result,lang);
+						slugAlert(result && result.data ? (result.data.available ? 1 : 0) : result,lang);
 					}
 				});
 			}
