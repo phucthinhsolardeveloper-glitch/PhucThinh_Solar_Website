@@ -145,6 +145,13 @@ try
     readinessAssert(stripos($loginSetCookie, 'HttpOnly') !== false && stripos($loginSetCookie, 'SameSite=Lax') !== false, 'Cookie login có HttpOnly và SameSite=Lax');
     readinessAssert(preg_match("/ADMIN_CSRF\s*=\s*'([^']+)'/", $loginPage['body'], $tokenMatch) === 1, 'Trang login phát hành CSRF token');
 
+	$unauthenticatedJsonApi = readinessHttp($base.'api/status.php', 'POST', array('id'=>999999, 'table'=>'product', 'attr'=>'hienthi', 'type'=>'san-pham', 'com'=>'product'), $oldCookie);
+	$unauthenticatedJsonPayload = json_decode($unauthenticatedJsonApi['body'], true);
+	readinessAssert($unauthenticatedJsonApi['status'] === 401 && empty($unauthenticatedJsonPayload['ok']) && $unauthenticatedJsonPayload['code'] === 'AUTH_REQUIRED', 'Admin API JSON trả 401 rõ ràng khi phiên chưa đăng nhập');
+	$unauthenticatedHtmlApi = readinessHttp($base.'api/category.php', 'POST', array('id'=>1, 'level'=>0, 'table'=>'product_cat', 'type'=>'san-pham'), $oldCookie);
+	$unauthenticatedHtmlPayload = json_decode($unauthenticatedHtmlApi['body'], true);
+	readinessAssert($unauthenticatedHtmlApi['status'] === 401 && empty($unauthenticatedHtmlPayload['ok']) && $unauthenticatedHtmlPayload['code'] === 'AUTH_REQUIRED', 'Admin API HTML fragment cũng trả 401 chuẩn để client nhận biết hết phiên');
+
     $missingCsrf = readinessHttp($base.'api/login.php', 'POST', array('username' => $createdUsers['product']['username'], 'password' => $createdUsers['product']['password']), $oldCookie);
     readinessAssert($missingCsrf['status'] === 403, 'Login thiếu CSRF bị từ chối');
 

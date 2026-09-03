@@ -20,6 +20,15 @@ function validateForm(ele)
 /* Validation form chung */
 validateForm("validation-form");
 
+var adminSessionRedirecting = false;
+$(document).ajaxError(function(event, xhr){
+	if(xhr.status !== 401 || adminSessionRedirecting || LOGIN_PAGE) return;
+	adminSessionRedirecting = true;
+	var result = xhr.responseJSON || {};
+	notifyDialog(result.message || "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
+	setTimeout(function(){ window.location.href = 'index.php?com=user&act=login'; }, 1200);
+});
+
 function isExist(ele)
 {
     return ele.length;

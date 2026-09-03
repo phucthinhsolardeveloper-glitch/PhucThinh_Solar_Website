@@ -39,7 +39,7 @@ Characterization test phủ session hợp lệ/hết hạn, token khớp/khác, 
 
 ### 2. AJAX Admin dùng bootstrap khác — PARTIALLY VERIFIED
 
-`administrator/api/config.php` không include `libraries/requick.php`, nên AJAX Admin không cập nhật `lastlogin` hoặc xoay `user_token` theo đường full-page.
+`administrator/api/config.php` không include `libraries/requick.php`, nên AJAX Admin không cập nhật `lastlogin` hoặc xoay `user_token` theo đường full-page. Bootstrap local nay trả HTTP 401 + `AUTH_REQUIRED` khi phiên không hợp lệ; client có handler chung cảnh báo và chuyển về đăng nhập thay vì để request thất bại với body rỗng.
 
 Tuy nhiên, bootstrap AJAX gọi `Functions::checkLoginAdmin()`, thực hiện:
 
