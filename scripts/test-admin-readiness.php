@@ -207,6 +207,12 @@ try
             && strpos($scopedBulkPage['body'], 'data_status=missing_desc') !== false,
         'Màn bulk giữ phạm vi export sản phẩm thiếu mô tả'
     );
+    readinessAssert(
+        strpos($scopedBulkPage['body'], 'Xuất tất cả sản phẩm') !== false
+            && strpos($scopedBulkPage['body'], 'Xuất nhóm đang lọc') !== false
+            && strpos($scopedBulkPage['body'], 'pts-bulk-prepare-card') !== false,
+        'Màn bulk luôn tách rõ xuất tất cả, xuất nhóm lọc và dropdown không bị cắt'
+    );
     $apiSelectedStatus = readinessHttp($base.'api/status.php', 'POST', array('admin_csrf' => $authenticatedToken[1], 'ids' => $bulkStatusProductId.','.$secondBulkStatusProductId, 'scope' => 'selected', 'table' => 'product', 'attr' => 'baogia', 'value' => '1', 'type' => 'san-pham', 'com' => 'product'), $newCookie);
     $apiSelectedPayload = json_decode($apiSelectedStatus['body'], true);
     $selectedStatusRows = $d->rawQuery('select id, status from #_product where id in (?, ?)', array($bulkStatusProductId, $secondBulkStatusProductId));

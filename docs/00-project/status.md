@@ -39,6 +39,7 @@ Cập nhật gần nhất: 2026-09-03. Mọi thay đổi bên dưới mới ở 
 - ADM-P1-014: status API cập nhật set-based cho tối đa 500 dòng được chọn khi client gửi trạng thái đích 0/1; vẫn kiểm tra đủ ID tồn tại, RBAC/CSRF/table/attribute allowlist. Toggle legacy không có giá trị đích giữ hành vi tuần tự để tương thích.
 - ADM-P1-008 (batch 1): danh sách Sản phẩm có menu “Điền dữ liệu thiếu”, lọc allowlist theo ảnh đại diện/mô tả/nội dung/thông số/công suất, hiển thị badge thiếu và liên kết thẳng tới form sửa. Bulk status dùng chung điều kiện filter để không cập nhật lệch phạm vi.
 - ADM-P1-005/P1-008 (batch 2): từ danh sách đang lọc dữ liệu thiếu có thể mở màn bulk và xuất Excel/CSV đúng tập con; workbook vẫn có snapshot/conflict detection và cột ảnh chỉ đọc. Scope tùy ý bị bỏ qua, chỉ năm trạng thái thiếu dữ liệu trong allowlist được áp dụng.
+- UX export luôn giữ nút “Xuất tất cả sản phẩm”; khi vào từ filter có nút riêng “Xuất nhóm đang lọc”. Dropdown nhóm thiếu không còn bị card cắt và có cuộn khi viewport thấp.
 
 ## PARTIAL / CHỜ DỮ LIỆU THẬT
 

@@ -21,7 +21,7 @@ $bulkScopeQuery = $bulkDataStatusDefinition ? '&data_status='.urlencode($bulkDat
     <style>
         .pts-bulk-hero{background:linear-gradient(135deg,#17385f,#245d8f);border-radius:12px;color:#fff;padding:20px 24px;margin-bottom:16px;box-shadow:0 8px 22px rgba(18,52,86,.14)}
         .pts-bulk-steps{display:flex;flex-wrap:wrap;gap:10px;margin-top:15px}.pts-bulk-step{display:flex;align-items:center;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);border-radius:20px;padding:6px 12px;font-size:12px}.pts-bulk-step b{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;margin-right:7px;border-radius:50%;background:#fff;color:#245d8f}
-        .pts-bulk-card{border:0;border-radius:12px;box-shadow:0 5px 18px rgba(31,45,61,.08);overflow:hidden}.pts-bulk-card .card-header{border-bottom:1px solid #edf1f5;background:#fff;padding:16px 18px}.pts-bulk-card .card-body{padding:18px}.pts-bulk-primary-action{min-height:42px}.pts-bulk-help{border:1px solid #e5e9ef;border-radius:10px;background:#fff}.pts-bulk-help summary{cursor:pointer;padding:13px 16px;font-weight:600;color:#34495e}.pts-bulk-help[open] summary{border-bottom:1px solid #edf1f5}.pts-bulk-result{border:0;border-radius:12px;box-shadow:0 5px 18px rgba(40,167,69,.13)}
+        .pts-bulk-card{border:0;border-radius:12px;box-shadow:0 5px 18px rgba(31,45,61,.08);overflow:hidden}.pts-bulk-card .card-header{border-bottom:1px solid #edf1f5;background:#fff;padding:16px 18px}.pts-bulk-card .card-body{padding:18px}.pts-bulk-prepare-card{overflow:visible;position:relative;z-index:20}.pts-bulk-export-menu{max-height:min(360px,65vh);overflow-y:auto;z-index:1050}.pts-bulk-primary-action{min-height:42px}.pts-bulk-help{border:1px solid #e5e9ef;border-radius:10px;background:#fff}.pts-bulk-help summary{cursor:pointer;padding:13px 16px;font-weight:600;color:#34495e}.pts-bulk-help[open] summary{border-bottom:1px solid #edf1f5}.pts-bulk-result{border:0;border-radius:12px;box-shadow:0 5px 18px rgba(40,167,69,.13)}
         @media(max-width:767px){.pts-bulk-hero{padding:18px}.pts-bulk-steps{display:none}}
     </style>
     <div class="pts-bulk-hero">
@@ -44,17 +44,20 @@ $bulkScopeQuery = $bulkDataStatusDefinition ? '&data_status='.urlencode($bulkDat
 
     <div class="row">
         <div class="col-lg-6">
-            <div class="card pts-bulk-card text-sm h-100">
+            <div class="card pts-bulk-card pts-bulk-prepare-card text-sm h-100">
                 <div class="card-header"><h3 class="card-title font-weight-bold"><i class="fas fa-file-export text-primary mr-2"></i>Chuẩn bị dữ liệu</h3></div>
                 <div class="card-body">
                     <p class="text-muted">Cập nhật dữ liệu đang có bằng bản Excel xuất từ hệ thống; tạo danh sách mới bằng file mẫu trống.</p>
                     <div class="d-flex flex-wrap align-items-center">
-                        <a class="btn btn-primary pts-bulk-primary-action mr-2 mb-2" href="<?=$bulkBase?>&act=bulk_export&format=xlsx<?=$bulkScopeQuery?>"><i class="fas fa-file-export mr-2"></i><?=$bulkDataStatusDefinition ? 'Xuất Excel: '.htmlspecialchars($bulkDataStatusDefinition['label'], ENT_QUOTES, 'UTF-8') : 'Xuất Excel hiện tại'?></a>
+                        <a class="btn btn-primary pts-bulk-primary-action mr-2 mb-2" href="<?=$bulkBase?>&act=bulk_export&format=xlsx"><i class="fas fa-file-export mr-2"></i>Xuất tất cả sản phẩm</a>
+                        <?php if($bulkDataStatusDefinition) { ?><a class="btn btn-warning pts-bulk-primary-action mr-2 mb-2" href="<?=$bulkBase?>&act=bulk_export&format=xlsx<?=$bulkScopeQuery?>"><i class="fas fa-filter mr-2"></i>Xuất nhóm đang lọc</a><?php } ?>
                         <a class="btn btn-outline-primary pts-bulk-primary-action mr-2 mb-2" href="<?=$bulkBase?>&act=bulk_template&format=xlsx"><i class="far fa-file-excel mr-2"></i>Tải file mẫu</a>
-                        <div class="dropdown mb-2"><button class="btn btn-light border pts-bulk-primary-action dropdown-toggle" type="button" data-toggle="dropdown">Tùy chọn xuất</button><div class="dropdown-menu dropdown-menu-right">
+                        <div class="dropdown mb-2"><button class="btn btn-light border pts-bulk-primary-action dropdown-toggle" type="button" data-toggle="dropdown">Xuất theo dữ liệu thiếu</button><div class="dropdown-menu dropdown-menu-right pts-bulk-export-menu">
                             <?php foreach(adminProductDataStatusDefinitions() as $statusKey => $statusDefinition) { ?><a class="dropdown-item" href="<?=$bulkBase?>&act=bulk_export&format=xlsx&data_status=<?=urlencode($statusKey)?>">Excel: <?=htmlspecialchars($statusDefinition['label'], ENT_QUOTES, 'UTF-8')?></a><?php } ?>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="<?=$bulkBase?>&act=bulk_export&format=csv<?=$bulkScopeQuery?>"><?=$bulkDataStatusDefinition ? 'CSV: '.htmlspecialchars($bulkDataStatusDefinition['label'], ENT_QUOTES, 'UTF-8') : 'Xuất toàn bộ CSV'?></a><a class="dropdown-item" href="<?=$bulkBase?>&act=bulk_template&format=csv">Tải mẫu CSV</a>
+                            <a class="dropdown-item" href="<?=$bulkBase?>&act=bulk_export&format=csv">CSV: Tất cả sản phẩm</a>
+                            <?php if($bulkDataStatusDefinition) { ?><a class="dropdown-item" href="<?=$bulkBase?>&act=bulk_export&format=csv<?=$bulkScopeQuery?>">CSV: Nhóm đang lọc</a><?php } ?>
+                            <a class="dropdown-item" href="<?=$bulkBase?>&act=bulk_template&format=csv">Tải mẫu CSV</a>
                         </div></div>
                     </div>
                     <small class="text-muted d-block mt-2"><i class="fas fa-shield-alt mr-1"></i>Excel xuất từ hệ thống có snapshot để phát hiện người khác đã sửa dữ liệu trong lúc bạn làm việc.</small>
