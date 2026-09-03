@@ -149,9 +149,27 @@ try
     readinessAssert($newCookie !== '' && $newCookie !== $oldCookie, 'Session ID được regenerate sau đăng nhập');
     readinessAssert(stripos($authenticatedSetCookie, 'HttpOnly') !== false && stripos($authenticatedSetCookie, 'SameSite=Lax') !== false, 'Cookie sau đăng nhập giữ thuộc tính bảo mật');
 
+    $authStateAfterLogin = $d->rawQueryOne('select lastlogin, user_token from #_user where id = ?', array($createdUsers['product']['id']));
+    $forcedLastLogin = max(1, (int)$authStateAfterLogin['lastlogin'] - 61);
+    $d->rawQuery('update #_user set lastlogin = ? where id = ?', array($forcedLastLogin, $createdUsers['product']['id']));
+
     $adminForm = readinessHttp($base.'index.php?com=product&act=add&type=san-pham', 'GET', array(), $newCookie);
     readinessAssert($adminForm['status'] === 200 && strpos($adminForm['body'], 'name="admin_csrf"') !== false, 'Form sản phẩm authenticated render CSRF field');
     readinessAssert(preg_match("/ADMIN_CSRF\s*=\s*'([^']+)'/", $adminForm['body'], $authenticatedToken) === 1, 'Phiên authenticated phát hành token mới');
+    $authStateAfterRefresh = $d->rawQueryOne('select lastlogin, user_token from #_user where id = ?', array($createdUsers['product']['id']));
+    readinessAssert(
+        $authStateAfterRefresh['user_token'] === $authStateAfterLogin['user_token']
+            && (int)$authStateAfterRefresh['lastlogin'] > $forcedLastLogin,
+        'Page load đến hạn cập nhật activity nhưng giữ nguyên token phiên'
+    );
+    $adminList = readinessHttp($base.'index.php?com=product&act=man&type=san-pham', 'GET', array(), $newCookie);
+    $authStateAfterPages = $d->rawQueryOne('select lastlogin, user_token from #_user where id = ?', array($createdUsers['product']['id']));
+    readinessAssert($adminList['status'] === 200, 'Phiên Admin mở liên tiếp hai trang authenticated');
+    readinessAssert(
+        $authStateAfterPages['user_token'] === $authStateAfterRefresh['user_token']
+            && (int)$authStateAfterPages['lastlogin'] === (int)$authStateAfterRefresh['lastlogin'],
+        'Các page load trong throttle không xoay token hoặc ghi lại activity'
+    );
 
     $apiMissing = readinessHttp($base.'api/status.php', 'POST', array('id' => 999999, 'table' => 'product', 'attr' => 'hienthi', 'type' => 'san-pham', 'com' => 'product'), $newCookie);
     readinessAssert($apiMissing['status'] === 403, 'API mutation thiếu CSRF trả 403');

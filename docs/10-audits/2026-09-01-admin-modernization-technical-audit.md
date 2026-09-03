@@ -16,7 +16,7 @@ Trạng thái khi audit:
 
 ## Kết luận chính
 
-### 1. Auth Admin tạo write coupling trên mọi full-page request — VERIFIED
+### 1. Auth Admin tạo write coupling trên mọi full-page request — RESOLVED ON LOCAL
 
 Luồng full-page Admin:
 
@@ -25,20 +25,17 @@ administrator/index.php
   -> libraries/requick.php
   -> SELECT table_user theo id
   -> kiểm tra session hash, timeout và user_token
-  -> sinh token mới
-  -> UPDATE table_user(lastlogin, user_token)
+  -> nếu đủ 60 giây: conditional UPDATE table_user(lastlogin)
 ```
 
-Khi session Admin active, `libraries/requick.php` luôn cập nhật `lastlogin` và `user_token`, kể cả trang nghiệp vụ chỉ dùng để xem. Vì vậy request Admin authenticated không phải read-only về database.
+Baseline audit xác nhận `libraries/requick.php` từng cập nhật `lastlogin` và `user_token` trên mọi page load. Ngày 2026-09-03, auth full-page local đã được đổi theo contract sau:
 
-Tác động:
+- `user_token` chỉ được sinh khi login thành công; page load chỉ so sánh token để phát hiện một login khác.
+- `lastlogin` chỉ được cập nhật tối đa một lần mỗi 60 giây.
+- Activity update dùng điều kiện `id` + giá trị `lastlogin` đã đọc, nên hai request đồng thời không cùng ghi đè.
+- Session hash, timeout tối thiểu 300 giây và cảnh báo concurrent login được giữ nguyên.
 
-- Mỗi full-page request có thêm một auth `SELECT` và một auth `UPDATE` ngoài query nghiệp vụ.
-- Token bị xoay theo từng page load.
-- Hai request song song có thể cùng đọc token cũ rồi ghi hai token mới; session cuối cùng chỉ giữ một token, tạo khả năng cảnh báo concurrent-login giả hoặc lệch token ở request tiếp theo.
-- Không thể dùng full-page authenticated request làm phép đo hoàn toàn read-only nếu chưa cô lập hoặc snapshot database.
-
-Ảnh hưởng concurrency là suy luận trực tiếp từ thứ tự đọc–ghi trong code; chưa chạy test song song vì test đó sẽ ghi DB.
+Characterization test phủ session hợp lệ/hết hạn, token khớp/khác, mốc throttle và câu update không chứa `user_token`. HTTP integration bằng fixture local xác nhận hai full-page request liên tiếp trả 200 mà không đổi `lastlogin` hoặc `user_token`.
 
 ### 2. AJAX Admin dùng bootstrap khác — PARTIALLY VERIFIED
 
@@ -55,7 +52,7 @@ WHERE secret_key = ?
 
 Phân biệt chính xác:
 
-- Full-page Admin: auth `SELECT` + auth `UPDATE`.
+- Full-page Admin: auth `SELECT`; conditional activity `UPDATE` tối đa mỗi 60 giây.
 - AJAX Admin: ít nhất một auth `SELECT`, không xoay token.
 - Login endpoint: cập nhật `login_session`, `lastlogin`, `user_token` và `secret_key`.
 
@@ -69,7 +66,7 @@ Static inventory tại thời điểm audit:
 - 70 Admin template `*_tpl.php`.
 - 18 file trong `administrator/api/`, gồm bootstrap `config.php`.
 - 13 public API endpoint.
-- Handoff trước ghi nhận 65/65 route Admin đã render; audit này không render lại vì không muốn tạo auth write không cần thiết.
+- Handoff trước ghi nhận 65/65 route Admin đã render; audit ban đầu không render lại vì auth khi đó còn ghi DB trên mọi page load.
 
 Hai endpoint legacy đã bị vô hiệu hóa bằng HTTP 404:
 
@@ -101,13 +98,13 @@ Hệ quả:
 
 Trạng thái triển khai 2026-09-02: **RESOLVED ON LOCAL** bởi ADM-P0-001 và ADM-P1-004. Checkout kiểm tra order và từng order detail, đọc lại product, dùng transaction thật trên InnoDB và vẫn xóa bù trừ theo order ID; email/thanks/cart clear chỉ chạy sau khi đủ N detail. Shutdown cleanup bảo vệ thêm đường PDODb `die()`. `scripts/test-commerce-transaction.php` đã chứng minh rollback xóa cả order/detail và không đổi tổng dữ liệu. Production chưa chạy migration 008.
 
-`sources/order.php` thực hiện tuần tự:
+`sources/order.php` thực hiện tuần tự trong một transaction:
 
 1. Insert `table_order`.
 2. Lặp cart và insert từng `table_order_detail`.
 3. Tiếp tục xử lý email và session.
 
-Không có transaction thực và không kiểm tra thành công của từng insert detail. Nếu một lần insert detail lỗi, database có thể giữ order thiếu dòng hoặc thiếu một phần chi tiết.
+Mỗi insert đều được kiểm tra; lỗi ở bất kỳ detail nào rollback toàn bộ transaction trên InnoDB local và chạy cleanup phòng vệ. Production chỉ có bảo đảm này sau khi migration 008 được duyệt và áp dụng.
 
 Product bulk có gọi transaction nhưng code đã nhận biết engine legacy không rollback được và thực hiện phục hồi thủ công. Đây là cơ chế bù trừ có test, không phải atomic transaction từ database.
 
@@ -171,7 +168,7 @@ Các kết quả đã được audit trước và được đối chiếu với 
 
 Phần còn lại:
 
-- Mỗi full-page Admin có auth write ngoài query nghiệp vụ.
+- Mỗi full-page Admin có auth `SELECT`; auth `UPDATE` chỉ phát sinh tối đa mỗi 60 giây.
 - Status API ở scope selected vẫn đọc rồi update theo từng ID, tối đa 500 ID.
 - Gallery/sortable reorder update tuần tự theo từng row.
 - `FIND_IN_SET()` trên status xuất hiện rộng và khó tận dụng index.
@@ -191,7 +188,7 @@ Các mutation Admin quan trọng đã được cải thiện bằng:
 - ID normalization và giới hạn batch.
 - Parameterized values trong các đường đã harden.
 
-Khoảng trống quan trọng là invariant không thống nhất giữa CRUD thủ công và bulk importer, nổi bật ở quan hệ giá và discount. Validation không nên chỉ tồn tại trong từng controller riêng lẻ nếu nhiều đường có thể ghi cùng entity.
+Invariant giá đã dùng chung helper giữa CRUD thủ công và bulk importer. Các entity khác vẫn cần được đánh giá theo từng đường ghi trước khi gom validation rộng hơn.
 
 ### 10. Error handling — VERIFIED
 
@@ -215,10 +212,10 @@ Các endpoint còn dùng nhiều `exit()` không body hoặc plain-text error. C
 
 Khoảng trống:
 
-- Chưa có test auth token race/concurrent full-page request.
-- Chưa có test checkout partial write hoặc idempotency.
+- Đã có characterization cho token ổn định/throttle và HTTP integration cho full-page request liên tiếp; chưa có stress test request song song thật.
+- Đã có test checkout partial write/shutdown; chưa có idempotency key bền vững giữa session/client khác nhau.
 - Chưa có contract test thống nhất cho lỗi API.
-- Chưa có test xác nhận CRUD thủ công và bulk importer áp cùng invariant sản phẩm.
+- Đã có test xác nhận CRUD thủ công và bulk importer áp cùng invariant giá sản phẩm.
 - Chưa profile Admin trên dataset staging gần production.
 
 ### 12. Legacy và duplication candidates — NEEDS IMPLEMENTATION INVESTIGATION
@@ -236,8 +233,8 @@ Các ứng viên cần điều tra trước khi triển khai, không được cl
 ## Docs ↔ code gaps
 
 - `docs/04-api/overview.md` nói chưa có CSRF chung; đúng ở cấp kiến trúc, nhưng mutation Admin chính hiện đã được harden đáng kể. Tài liệu nên phân biệt phần đã phủ và endpoint còn thiếu.
-- Tài liệu auth chưa ghi việc full-page Admin xoay token và ghi `table_user` trên mỗi authenticated request.
-- Tài liệu performance chưa tính auth write vào query/runtime profile.
+- Tài liệu status và audit đã ghi contract token ổn định + activity throttle của full-page Admin.
+- Performance profile staging cần tính auth `SELECT` ở mọi request và auth `UPDATE` định kỳ.
 - Tài liệu DB mô tả dump ban đầu có 48 bảng; DB local hiện có 49 bảng và route indexes từ migration 007.
 - Chưa có tài liệu về invariant khác nhau giữa CRUD sản phẩm thủ công và bulk importer.
 - Không có báo cáo Claude Admin modernization riêng để kiểm chứng toàn bộ. Các giả thuyết kỹ thuật tìm thấy trong status/handoff đã được đối chiếu trực tiếp với code và DB.
@@ -246,7 +243,7 @@ Các ứng viên cần điều tra trước khi triển khai, không được cl
 
 ### VERIFIED
 
-- Full-page auth luôn đọc và cập nhật `table_user` khi session active.
+- Full-page auth luôn đọc `table_user`; local chỉ cập nhật `lastlogin` khi đủ 60 giây và không xoay token theo page load.
 - AJAX auth đọc `table_user` nhưng không chạy đường xoay token của `requick.php`.
 - Baseline có 49 bảng MyISAM; local hiện đã chuyển riêng hai bảng commerce sang InnoDB bằng migration 008.
 - Thiếu FK và thiếu index nghiệp vụ ở commerce/auth.
@@ -257,7 +254,6 @@ Các ứng viên cần điều tra trước khi triển khai, không được cl
 
 ### PARTIALLY VERIFIED
 
-- Nguy cơ token race/concurrent-login giả: được code path chứng minh về mặt thứ tự đọc–ghi, chưa chạy runtime concurrency test vì sẽ ghi DB.
 - Capacity Admin: local không còn N+1 trên bốn danh sách đã đo, nhưng dataset quá nhỏ để suy rộng lên hosting.
 
 ### NOT VERIFIED
@@ -267,23 +263,17 @@ Các ứng viên cần điều tra trước khi triển khai, không được cl
 
 ### NEEDS IMPLEMENTATION INVESTIGATION
 
-- Thiết kế heartbeat hoặc throttling thay cho auth write trên mọi page load.
-- Quy tắc concurrent session/token rõ ràng và test race.
-- Chuyển engine/index/FK theo migration có rollback.
-- Checkout atomicity và idempotency.
-- Hợp nhất validation/invariant CRUD và bulk.
+- Thiết kế FK sau khi có contract xóa/cascade rõ ràng.
+- Checkout idempotency bền vững giữa session/client.
 - Exception boundary và API response contract.
 - Batch/set-based update cho status/reorder khi phù hợp.
 
 ## Ưu tiên kỹ thuật đề xuất
 
-1. Tách xác thực request khỏi việc xoay token; chỉ cập nhật activity theo khoảng thời gian hoặc cơ chế heartbeat có điều kiện.
-2. Đưa invariant sản phẩm dùng chung vào một validator/service được cả CRUD và bulk gọi.
-3. Thiết kế migration InnoDB + index/FK cho commerce trên clone/staging; không đổi engine trực tiếp production.
-4. Làm checkout atomic và idempotent trước khi mở commerce production.
-5. Chuẩn hóa error boundary/JSON response cho Admin API.
-6. Bổ sung test concurrency, partial failure và contract test trước refactor lớn.
-7. Profile lại Admin trên staging có dataset gần production.
+1. Hoàn thiện idempotency checkout trước khi mở commerce production.
+2. Chuẩn hóa error boundary/JSON response cho Admin API.
+3. Bổ sung contract/concurrency test trước refactor lớn.
+4. Profile lại Admin trên staging có dataset gần production.
 
 ## Test và giới hạn
 

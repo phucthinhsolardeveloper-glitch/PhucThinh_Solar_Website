@@ -1,6 +1,37 @@
 <?php
 if(!function_exists('adminLoginLimitDescriptors'))
 {
+    function adminSessionInvalid($row, $session, $tokenPresent, $now, $timeout)
+    {
+        if(empty($row['username']) || !isset($row['password'], $row['lastlogin'])) return true;
+        $sessionHash = md5(sha1($row['password'].$row['username']));
+        return empty($session['login_session'])
+            || !hash_equals($sessionHash, (string)$session['login_session'])
+            || ((int)$now - (int)$row['lastlogin']) > max(300, (int)$timeout)
+            || !$tokenPresent;
+    }
+
+    function adminSessionHasConcurrentLogin($row, $session)
+    {
+        return !isset($row['user_token'], $session['login_token'])
+            || !hash_equals((string)$row['user_token'], (string)$session['login_token']);
+    }
+
+    function adminSessionActivityDue($lastLogin, $now, $interval)
+    {
+        return (int)$lastLogin <= (int)$now - max(30, (int)$interval);
+    }
+
+    function adminTouchSessionActivity($d, $idUser, $lastLogin, $now, $interval = 60)
+    {
+        if(!adminSessionActivityDue($lastLogin, $now, $interval)) return false;
+        $d->rawQuery(
+            "update #_user set lastlogin = ? where id = ? and lastlogin = ?",
+            array((int)$now, (int)$idUser, (int)$lastLogin)
+        );
+        return true;
+    }
+
     function adminLoginClientIp($server, $trustedProxies = array())
     {
         $remote = isset($server['REMOTE_ADDR']) && filter_var($server['REMOTE_ADDR'], FILTER_VALIDATE_IP) ? $server['REMOTE_ADDR'] : '0.0.0.0';

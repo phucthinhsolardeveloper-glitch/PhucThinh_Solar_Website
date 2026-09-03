@@ -1,6 +1,6 @@
 # Current status
 
-Cập nhật gần nhất: 2026-09-02. Mọi thay đổi bên dưới mới ở Git + Docker local, chưa triển khai production.
+Cập nhật gần nhất: 2026-09-03. Mọi thay đổi bên dưới mới ở Git + Docker local, chưa triển khai production.
 
 ## WORKING ON LOCAL
 
@@ -35,6 +35,7 @@ Cập nhật gần nhất: 2026-09-02. Mọi thay đổi bên dưới mới ở 
 - ADM-P1-012: sửa liên hệ trong Admin không còn bắt buộc trường địa chỉ (đồng bộ với form liên hệ Theme V2 đã bỏ trường này); `test-admin-readiness.php` phủ thêm case lưu liên hệ khi địa chỉ trống.
 - ADM-P1-013: `docker-compose.local.yml` bind-mount webroot cho service `web`, sửa code không cần build lại image; `caches`/`upload`/`thumbs` chuyển sang named volume. Xem `docs/02-development/local-setup.md`.
 - ADM-P2-001: 8 truy vấn + tính toán của bảng điều khiển chuyển từ `templates/index_tpl.php` sang controller `administrator/sources/index.php` (route mặc định nạp qua `administrator/index.php`); template chỉ render. Kết quả query và mảng chart giữ nguyên (characterization + 3 assertion trong `test-admin-readiness.php`).
+- Auth full-page Admin không còn xoay `user_token` ở mỗi page load; token chỉ đổi khi đăng nhập mới để giữ phát hiện concurrent login mà không tạo race giữa request cùng phiên. `lastlogin` được throttle 60 giây và update có điều kiện; HTTP integration xác nhận hai page load liên tiếp không ghi lại auth state.
 
 ## PARTIAL / CHỜ DỮ LIỆU THẬT
 

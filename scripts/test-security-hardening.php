@@ -45,6 +45,23 @@ securityAssert(!adminLegacyMutationNeedsCsrf('product', 'man', 'GET', array()), 
 securityAssert(adminAllowedDatabaseAction('optimize') && !adminAllowedDatabaseAction('DROP TABLE table_user'), 'Bảo trì database chỉ nhận action allowlist');
 securityAssert(adminLoginClientIp(array('REMOTE_ADDR' => '198.51.100.1', 'HTTP_X_FORWARDED_FOR' => '203.0.113.1'), array()) === '198.51.100.1', 'Login không tin forwarded IP khi proxy chưa được cấu hình');
 securityAssert(count(adminLoginLimitDescriptors('198.51.100.1', 'Admin', 5, 20)) === 2, 'Rate limit đăng nhập kết hợp IP và tài khoản băm');
+$sessionRow = array('username' => 'admin', 'password' => 'password-hash', 'lastlogin' => 1000, 'user_token' => 'stable-token');
+$sessionState = array('login_session' => md5(sha1('password-hashadmin')), 'login_token' => 'stable-token');
+securityAssert(!adminSessionInvalid($sessionRow, $sessionState, true, 1059, 3600), 'Phiên Admin hợp lệ giữ nguyên trong timeout');
+securityAssert(adminSessionInvalid($sessionRow, $sessionState, true, 4601, 3600), 'Phiên Admin hết hạn theo lastlogin');
+securityAssert(adminSessionInvalid($sessionRow, $sessionState, false, 1059, 3600), 'Phiên Admin thiếu session token bị từ chối');
+securityAssert(!adminSessionHasConcurrentLogin($sessionRow, $sessionState), 'Token cùng phiên không cảnh báo đăng nhập đồng thời');
+$otherLoginState = $sessionState;
+$otherLoginState['login_token'] = 'older-token';
+securityAssert(adminSessionHasConcurrentLogin($sessionRow, $otherLoginState), 'Token bị login khác thay thế vẫn phát cảnh báo');
+securityAssert(!adminSessionActivityDue(1000, 1059, 60) && adminSessionActivityDue(1000, 1060, 60), 'Activity write chỉ đến hạn sau khoảng throttle');
+$activityDb = new class {
+    public $queries = array();
+    public function rawQuery($sql, $params) { $this->queries[] = array($sql, $params); return true; }
+};
+securityAssert(!adminTouchSessionActivity($activityDb, 7, 1000, 1059, 60) && count($activityDb->queries) === 0, 'Request trong throttle không ghi table_user');
+securityAssert(adminTouchSessionActivity($activityDb, 7, 1000, 1060, 60) && count($activityDb->queries) === 1, 'Request đến hạn chỉ cập nhật lastlogin');
+securityAssert(strpos($activityDb->queries[0][0], 'user_token') === false && $activityDb->queries[0][1] === array(1060, 7, 1000), 'Activity update không xoay token và có điều kiện chống race');
 securityAssert(formClientIp(array('REMOTE_ADDR' => '198.51.100.2', 'HTTP_X_FORWARDED_FOR' => '203.0.113.2'), array()) === '198.51.100.2', 'Form public không tin forwarded IP ngoài trusted proxy');
 $orderUpdate = prepareAdminOrderUpdate($d, array('order_status' => 1, 'payment_status' => 0, 'notes' => 'test', 'total_price' => 1, 'code' => 'overwrite'), array(0 => 'Chưa thanh toán', 1 => 'Đã thanh toán'));
 securityAssert(empty($orderUpdate['errors']) && !isset($orderUpdate['data']['total_price']) && !isset($orderUpdate['data']['code']), 'Cập nhật đơn chỉ nhận field nghiệp vụ allowlist');

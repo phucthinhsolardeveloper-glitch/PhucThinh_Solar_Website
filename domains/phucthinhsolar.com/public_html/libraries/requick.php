@@ -15,29 +15,26 @@
 	/* Kiểm tra 2 máy đăng nhập cùng 1 tài khoản */
 	if(!empty($_SESSION[$loginAdmin]['active']))
 	{
+		require_once LIBRARIES.'login_security.php';
 		$id_user = (int)$_SESSION[$loginAdmin]['id'];
 		$timenow = time();
 
 		$row = $d->rawQueryOne("select username, password, lastlogin, user_token from #_user WHERE id = ? limit 0,1",array($id_user));
 
-		$sessionhash = md5(sha1($row['password'].$row['username']));
-
 		$sessionTimeout = !empty($config['login']['timeout']) ? max(300, (int)$config['login']['timeout']) : 3600;
-		if($_SESSION[$loginAdmin]['login_session'] != $sessionhash || ($timenow - $row['lastlogin']) > $sessionTimeout || !isset($_SESSION[TOKEN]))
+		if(adminSessionInvalid($row, $_SESSION[$loginAdmin], isset($_SESSION[TOKEN]), $timenow, $sessionTimeout))
 		{
 			if(!empty($_SESSION[TOKEN])) unset($_SESSION[TOKEN]);
 			unset($_SESSION[$loginAdmin]);
 			$func->redirect("index.php?com=user&act=login");
 		}
 
-		if($_SESSION[$loginAdmin]['login_token'] !== $row['user_token']) $alertlogin = 'Có người đang đăng nhập tài khoản của bạn.';
+		if(adminSessionHasConcurrentLogin($row, $_SESSION[$loginAdmin])) $alertlogin = 'Có người đang đăng nhập tài khoản của bạn.';
 		else $alertlogin ='';
 
-		$token = md5(time());
-		$_SESSION[$loginAdmin]['login_token'] = $token;
-
-		/* Cập nhật lại thời gian hoạt động và token */
-		$d->rawQuery("update #_user set lastlogin = ?, user_token = ? where id = ?",array($timenow,$token,$id_user));
+		/* Giới hạn auth write và giữ token ổn định giữa các request song song. */
+		$activityInterval = !empty($config['login']['activity-interval']) ? max(30, (int)$config['login']['activity-interval']) : 60;
+		adminTouchSessionActivity($d, $id_user, (int)$row['lastlogin'], $timenow, $activityInterval);
 	}
 
 	/* Kiểm tra phân quyền */

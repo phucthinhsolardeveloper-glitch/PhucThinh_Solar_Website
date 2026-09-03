@@ -42,6 +42,7 @@ php -l libraries/admin_product_pricing.php
 php -l libraries/admin_security.php
 php -l libraries/form_security.php
 php -l libraries/login_security.php
+php -l libraries/requick.php
 php -l libraries/order_security.php
 php -l libraries/session_security.php
 php /tmp/test-security-hardening.php

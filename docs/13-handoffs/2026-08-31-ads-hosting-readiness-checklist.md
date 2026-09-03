@@ -89,6 +89,7 @@ Phạm vi tối ưu áp dụng cho toàn bộ project, gồm frontend public, Ad
 - [x] Loại tối đa 20 query đếm đánh giá ở danh sách Sản phẩm Admin bằng một query batch; số liệu 10 sản phẩm đối chứng khớp hoàn toàn.
 - [x] Profile authenticated local bốn danh sách Admin: 21/24/17/18 query, không có N+1 theo dòng; bỏ 2 query địa giới rỗng ở Đơn hàng.
 - [x] ADM-P1-004 trên Docker local: migration 008 chuyển `table_order`/`table_order_detail` sang InnoDB và thêm index theo order/product; regression chứng minh rollback thật, không để lại dữ liệu test. Production chưa chạy migration và phải qua backup/preflight/downtime riêng.
+- [x] Auth full-page Admin giữ `user_token` ổn định theo phiên và throttle `lastlogin` 60 giây bằng conditional update; unit + HTTP integration xác nhận page load liên tiếp không còn tạo auth write/token race.
 - [x] Profiling `general_log` các luồng còn lại (giỏ hàng, chi tiết tin tức/giải pháp/dự án/sản phẩm, filter/search AJAX). Sửa 2 N+1: `Comments::countStar()` 5 query → 1 `GROUP BY star`; danh sách tỉnh (`table_city`) chuyển sang query cache ở `allpage.php` + `order.php`. Chi tiết sản phẩm 44→40 query, giỏ hàng 41→39. Còn tồn: `$requick` trong `router.php` dò slug tuần tự ~17 query index/1 dòng cho trang chi tiết — cần task riêng (bảng ánh xạ slug hoặc UNION), không sửa trong lượt này vì blast radius toàn router.
 - [ ] Audit N+1 ở menu, trang chủ, danh mục và Admin bằng profiling trên bộ dữ liệu gần production.
 - [ ] Rà slow query log, PHP OPcache, memory và process limits trên staging/hosting.
