@@ -54,6 +54,7 @@ $createdProductIds = array();
 $createdContactIds = array();
 $createdNewsletterIds = array();
 $createdSortableIds = array('sortable'=>array(), 'sortable_index'=>array(), 'sortable_detail'=>array());
+$createdCommentIds = array();
 
 try
 {
@@ -218,6 +219,28 @@ try
     $invalidDeletePayload = json_decode($invalidDeleteResponse['body'], true);
     $retainedSortableRow = $d->rawQueryOne('select id from #_sortable where id = ?', array($createdSortableIds['sortable'][1]));
     readinessAssert($invalidDeleteResponse['status'] === 400 && empty($invalidDeletePayload['ok']) && $invalidDeletePayload['code'] === 'INVALID_SORTABLE_ITEM' && !empty($retainedSortableRow['id']), 'API xóa từ chối nhóm ngoài allowlist và giữ nguyên dữ liệu');
+
+    $commentMarker = 'CODEX-COMMENT-'.bin2hex(random_bytes(4));
+    $d->insert('comment', array('id_parent'=>0, 'id_variant'=>123456, 'star'=>5, 'content'=>'Nội dung kiểm thử', 'fullname'=>$commentMarker, 'status'=>'new-admin', 'type'=>'san-pham', 'date_posted'=>time()));
+    $commentId = (int)$d->getLastInsertId();
+    $createdCommentIds[] = $commentId;
+    $commentStatusResponse = readinessHttp($base.'api/comment.php?get=status', 'POST', array('admin_csrf'=>$authenticatedToken[1], 'id'=>$commentId, 'status'=>'hienthi'), $newCookie);
+    $commentStatusPayload = json_decode($commentStatusResponse['body'], true);
+    $commentStatusRow = $d->rawQueryOne('select status from #_comment where id = ?', array($commentId));
+    readinessAssert($commentStatusResponse['status'] === 200 && !empty($commentStatusPayload['ok']) && $commentStatusPayload['code'] === 'COMMENT_UPDATED' && $commentStatusRow['status'] === 'hienthi', 'API bình luận duyệt trạng thái allowlist và trả envelope JSON');
+    $invalidCommentStatus = readinessHttp($base.'api/comment.php?get=status', 'POST', array('admin_csrf'=>$authenticatedToken[1], 'id'=>$commentId, 'status'=>'tu-che'), $newCookie);
+    $invalidCommentPayload = json_decode($invalidCommentStatus['body'], true);
+    $unchangedCommentRow = $d->rawQueryOne('select status from #_comment where id = ?', array($commentId));
+    readinessAssert($invalidCommentStatus['status'] === 200 && empty($invalidCommentPayload['ok']) && $unchangedCommentRow['status'] === 'hienthi', 'API bình luận từ chối trạng thái ngoài allowlist');
+    $commentReplyResponse = readinessHttp($base.'api/comment.php?get=addAdmin', 'POST', array('admin_csrf'=>$authenticatedToken[1], 'dataReview'=>array('content'=>'Phản hồi kiểm thử', 'id_parent'=>$commentId, 'id_variant'=>999999, 'type'=>'gia-mao', 'status'=>'new-admin')), $newCookie);
+    $commentReplyPayload = json_decode($commentReplyResponse['body'], true);
+    $commentReplyRow = $d->rawQueryOne('select id, id_variant, type, status, poster from #_comment where id_parent = ? order by id desc limit 0,1', array($commentId));
+    if(!empty($commentReplyRow['id'])) $createdCommentIds[] = (int)$commentReplyRow['id'];
+    readinessAssert($commentReplyResponse['status'] === 200 && !empty($commentReplyPayload['ok']) && (int)$commentReplyRow['id_variant'] === 123456 && $commentReplyRow['type'] === 'san-pham' && $commentReplyRow['status'] === 'hienthi' && $commentReplyRow['poster'] === 'admin', 'API phản hồi lấy phạm vi từ bình luận gốc và bỏ field ngoài allowlist');
+    $commentDeleteResponse = readinessHttp($base.'api/comment.php?get=delete', 'POST', array('admin_csrf'=>$authenticatedToken[1], 'id'=>$commentId), $newCookie);
+    $commentDeletePayload = json_decode($commentDeleteResponse['body'], true);
+    $remainingComments = $d->rawQueryOne('select count(id) as num from #_comment where id = ? or id_parent = ?', array($commentId, $commentId));
+    readinessAssert($commentDeleteResponse['status'] === 200 && !empty($commentDeletePayload['ok']) && (int)$remainingComments['num'] === 0, 'API xóa bình luận gốc cùng phản hồi và xác minh kết quả');
 
     $bulkStatusPrefix = 'CODEX-BS-'.bin2hex(random_bytes(4));
     $bulkStatusCode = $bulkStatusPrefix.'-1';
@@ -430,6 +453,7 @@ try
 }
 finally
 {
+    foreach($createdCommentIds as $commentId) $d->rawQuery('delete from #_comment where id = ? or id_parent = ?', array($commentId, $commentId));
     foreach($createdSortableIds as $sortableTable => $sortableIds)
         foreach($sortableIds as $sortableId) $d->rawQuery("delete from #_{$sortableTable} where id = ?", array($sortableId));
     foreach($createdNewsletterIds as $newsletterId) $d->rawQuery("delete from #_newsletter where id = ?", array($newsletterId));

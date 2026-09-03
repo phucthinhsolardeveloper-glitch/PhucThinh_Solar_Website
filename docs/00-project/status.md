@@ -51,6 +51,7 @@ Cập nhật gần nhất: 2026-09-03. Mọi thay đổi bên dưới mới ở 
 - Admin API batch 5: kiểm tra slug trả envelope JSON, xác thực định dạng/độ dài và ép kiểu ID. Điều kiện loại trừ bản ghi trong `Functions::checkSlug()` dùng parameterized query; integration test bao phủ slug trùng, slug của chính bản ghi, slug mới, ID bất thường và input sai định dạng.
 - Admin API batch 6: ba endpoint kéo-thả menu/index/detail dùng chung validation ID, allowlist bảng, giới hạn 500 dòng và transaction; trả JSON envelope thay vì response rỗng. Client báo lỗi request, mapping RBAC `sortable_update` được đồng bộ với menu và integration test bao phủ cả ba bảng cùng trường hợp ID trùng.
 - Admin API batch 7: sửa thao tác xóa sortable từng dùng sai selector nên có thể xóa nhầm bảng menu khi thao tác index/detail. Endpoint ánh xạ `menu/index/detail` qua allowlist, xác minh kết quả xóa và trả JSON; client chỉ gỡ dòng sau khi server xác nhận. Integration test bao phủ đúng cả ba bảng và trường hợp nhóm giả mạo.
+- Admin API batch 8: mutation bình luận kiểm tra RBAC theo type lấy từ bản ghi gốc, trạng thái chỉ nhận `hienthi` và phản hồi Admin chỉ ghi các cột allowlist. Xóa bình luận xác minh lại DB, response giữ field legacy đồng thời thêm envelope; route/phương thức sai trả lỗi JSON rõ ràng. Integration test bao phủ duyệt, từ chối trạng thái tự chế, chống giả mạo phạm vi phản hồi và xóa cả luồng cha/con.
 
 ## PARTIAL / CHỜ DỮ LIỆU THẬT
 

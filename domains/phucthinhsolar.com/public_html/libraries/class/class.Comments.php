@@ -37,6 +37,7 @@
 
 		private function response()
 		{
+			$response = array();
 			if(!empty($this->errors))
 			{
 				$response['errors'] = $this->errors;
@@ -46,6 +47,11 @@
 				$response['success'] = true;
 			}
 
+			if(function_exists('adminApiEnvelope'))
+			{
+				$ok = empty($this->errors);
+				return json_encode(adminApiEnvelope($ok, $ok ? 'Thao tác bình luận thành công.' : implode(' ', $this->errors), $ok ? 'COMMENT_UPDATED' : 'COMMENT_FAILED', array(), $response));
+			}
 			return json_encode($response);
 		}
 
@@ -448,14 +454,30 @@
 
 			if(!empty($data))
 			{
+				$allowed = array('content', 'fullname_parent', 'poster', 'id_parent', 'id_variant', 'type');
+				$data = array_intersect_key($data, array_flip($allowed));
 				foreach($data as $column => $value)
 				{
 					$data[$column] = htmlspecialchars($this->func->sanitize($value));
+				}
+				$data['id_parent'] = isset($data['id_parent']) ? max(0, (int)$data['id_parent']) : 0;
+				$data['id_variant'] = isset($data['id_variant']) ? max(0, (int)$data['id_variant']) : 0;
+				$data['type'] = isset($data['type']) && preg_match('/^[a-z0-9-]{1,30}$/', $data['type']) ? $data['type'] : '';
+				if($data['id_parent'] > 0)
+				{
+					$parent = $this->d->rawQueryOne('select id_variant, type from #_comment where id = ? limit 0,1', array($data['id_parent']));
+					if(empty($parent)) $this->errors[] = 'Bình luận gốc không tồn tại';
+					else
+					{
+						$data['id_variant'] = (int)$parent['id_variant'];
+						$data['type'] = $parent['type'];
+					}
 				}
 
 				$data['fullname'] = (!empty($_SESSION[$loginAdmin]['fullname'])) ? $_SESSION[$loginAdmin]['fullname'] : '';
 				$data['phone'] = (!empty($_SESSION[$loginAdmin]['phone'])) ? $_SESSION[$loginAdmin]['phone'] : '';
 				$data['email'] = (!empty($_SESSION[$loginAdmin]['email'])) ? $_SESSION[$loginAdmin]['email'] : '';
+				$data['poster'] = 'admin';
 				$data['status'] = 'hienthi';
 				$data['date_posted'] = time();
 
@@ -488,11 +510,11 @@
 		public function status()
 		{
 			/* Request data */
-			$id = (!empty($_POST['id'])) ? $this->func->sanitize($_POST['id']) : 0;
-			$status = (!empty($_POST['status'])) ? $this->func->sanitize($_POST['status']) : '';
+			$id = (!empty($_POST['id'])) ? (int)$_POST['id'] : 0;
+			$status = (!empty($_POST['status']) && $_POST['status'] === 'hienthi') ? 'hienthi' : '';
 
 			/* Get detail */
-			if(!empty($id))
+			if($id > 0 && $status !== '')
 			{
 				$row = $this->d->rawQueryOne("select id, status from #_comment where id = ? limit 0,1", array($id));
 
@@ -542,10 +564,10 @@
 		public function delete()
 		{
 			/* Request data */
-			$id = (!empty($_POST['id'])) ? $this->func->sanitize($_POST['id']) : 0;
+			$id = (!empty($_POST['id'])) ? (int)$_POST['id'] : 0;
 
 			/* Get detail */
-			if(!empty($id))
+			if($id > 0)
 			{
 				$row = $this->d->rawQueryOne("select id, id_parent from #_comment where id = ? limit 0,1", array($id));
 
@@ -584,9 +606,10 @@
 					}
 
 					/* Delete main */
-					$result = $this->d->rawQuery("delete from #_comment where id = ?",array($id));
+					$this->d->rawQuery("delete from #_comment where id = ?",array($id));
+					$remaining = $this->d->rawQueryOne("select id from #_comment where id = ? limit 0,1", array($id));
 
-					if(!empty($result))
+					if(!empty($remaining['id']))
 					{
 						$this->errors[] = 'Xóa bình luận thất bại. Vui lòng thử lại sau';
 					}

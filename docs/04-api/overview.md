@@ -18,3 +18,5 @@ Response/error format chưa đồng nhất giữa JSON, HTML fragment và scalar
 Ba endpoint `update_sttMenu.php`, `update_sttIndex.php`, `update_sttDetail.php` trả envelope JSON và cập nhật thứ tự trong transaction. Danh sách bị giới hạn 500 ID dương, không trùng, phải tồn tại đủ trong bảng allowlist; JavaScript hiển thị lỗi nếu server không xác nhận thành công.
 
 `delete_add_item.php` nhận nhóm `menu/index/detail` qua allowlist để chọn đúng bảng sortable, trả JSON và xác minh bản ghi đã được xóa. Client giữ nguyên dòng nếu request thất bại; dòng mới chưa lưu (`id=0`) chỉ được gỡ khỏi DOM và không gọi API.
+
+Mutation trong `comment.php` giữ `success/errors` cho plugin cũ và thêm envelope chuẩn. Quyền edit/delete được suy ra từ `type` của bình luận trong DB; trạng thái có allowlist, dữ liệu phản hồi Admin có allowlist cột và luôn kế thừa `id_variant/type` từ bình luận gốc.

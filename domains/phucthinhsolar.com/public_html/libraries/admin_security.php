@@ -118,6 +118,11 @@ if(!function_exists('adminCsrfToken'))
     {
         $type = is_string($type) && preg_match('/^[a-zA-Z0-9_-]{1,100}$/', $type) ? $type : '';
         if($table === 'sortable' && in_array($capability, array('numb', 'delete'), true)) return 'sortable_update';
+        if($table === 'comment' && $type !== '')
+        {
+            if(in_array($capability, array('add', 'status'), true)) return 'product_edit_'.$type;
+            if($capability === 'delete') return 'product_delete_'.$type;
+        }
         $actions = array('status' => 'edit', 'numb' => 'edit', 'copy' => 'add', 'database' => 'update');
         $suffixes = array(
             'product' => array('product', ''), 'product_list' => array('product', 'list'),
