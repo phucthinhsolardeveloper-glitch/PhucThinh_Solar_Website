@@ -92,6 +92,7 @@ Phạm vi tối ưu áp dụng cho toàn bộ project, gồm frontend public, Ad
 - [x] Auth full-page Admin giữ `user_token` ổn định theo phiên và throttle `lastlogin` 60 giây bằng conditional update; unit + HTTP integration xác nhận page load liên tiếp không còn tạo auth write/token race.
 - [x] ADM-P1-014: status API cập nhật set-based cho tối đa 500 ID được chọn khi có trạng thái đích; giữ RBAC/CSRF/allowlist, xác nhận đủ ID và integration test hai trạng thái ban đầu khác nhau.
 - [x] ADM-P1-008 batch 1: Admin lọc và đánh dấu sản phẩm thiếu ảnh/mô tả/nội dung/thông số/công suất, có CTA “Điền ngay”; integration test xác nhận filter không lẫn sản phẩm đã đủ trường tương ứng.
+- [x] ADM-P1-005/P1-008 batch 2: export Excel/CSV theo đúng nhóm dữ liệu thiếu với allowlist; giữ snapshot, preview/conflict/rollback hiện có và không cho bulk sửa đường dẫn ảnh.
 - [x] Profiling `general_log` các luồng còn lại (giỏ hàng, chi tiết tin tức/giải pháp/dự án/sản phẩm, filter/search AJAX). Sửa 2 N+1: `Comments::countStar()` 5 query → 1 `GROUP BY star`; danh sách tỉnh (`table_city`) chuyển sang query cache ở `allpage.php` + `order.php`. Chi tiết sản phẩm 44→40 query, giỏ hàng 41→39. Còn tồn: `$requick` trong `router.php` dò slug tuần tự ~17 query index/1 dòng cho trang chi tiết — cần task riêng (bảng ánh xạ slug hoặc UNION), không sửa trong lượt này vì blast radius toàn router.
 - [ ] Audit N+1 ở menu, trang chủ, danh mục và Admin bằng profiling trên bộ dữ liệu gần production.
 - [ ] Rà slow query log, PHP OPcache, memory và process limits trên staging/hosting.

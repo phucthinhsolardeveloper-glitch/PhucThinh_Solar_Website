@@ -7,7 +7,7 @@
     $linkDelete = "index.php?com=product&act=delete&type=".$type;
     $linkMulti = "index.php?com=product&act=man_photo&kind=man&type=".$type;
     $linkComment = "index.php?com=comment&act=man&variant=product&type=".$type;
-    $linkBulk = "index.php?com=product&act=bulk&type=".$type;
+    $linkBulk = "index.php?com=product&act=bulk&type=".$type.$strUrl;
     $copyImg = (isset($config['product'][$type]['copy_image']) && $config['product'][$type]['copy_image'] == true) ? TRUE : FALSE;
 ?>
 <!-- Content Header -->

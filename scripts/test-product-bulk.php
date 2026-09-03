@@ -30,6 +30,7 @@ $pricingEqual = adminNormalizeProductPricing(array('regular_price' => '500000', 
 testAssert(empty($pricingEqual['errors']) && (float)$pricingEqual['values']['discount'] === 0.0, 'Validator chung đưa giá bằng nhau về giảm giá 0%');
 $pricingInvalid = adminNormalizeProductPricing(array('regular_price' => '500000', 'sale_price' => '550000', 'discount' => '10'));
 testAssert(count($pricingInvalid['errors']) === 1, 'Validator chung chặn giá mới lớn hơn giá bán');
+testAssert(adminProductDataStatus('missing_desc')['label'] === 'Thiếu mô tả ngắn' && adminProductDataStatus('custom_sql') === null, 'Phạm vi export dữ liệu thiếu dùng allowlist cố định');
 
 if (!empty($argv[1]) && $argv[1] === '--export-workbook') {
     $_GET['format'] = 'xlsx';

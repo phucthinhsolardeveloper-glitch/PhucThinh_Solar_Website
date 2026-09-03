@@ -200,6 +200,13 @@ try
             && strpos($missingDescriptionPage['body'], 'Điền ngay') !== false,
         'Bộ lọc điền nhanh chỉ hiện sản phẩm thiếu mô tả và có chỉ báo thao tác'
     );
+    $scopedBulkPage = readinessHttp($base.'index.php?com=product&act=bulk&type=san-pham&data_status=missing_desc', 'GET', array(), $newCookie);
+    readinessAssert(
+        $scopedBulkPage['status'] === 200
+            && strpos($scopedBulkPage['body'], 'Phạm vi xuất hiện tại') !== false
+            && strpos($scopedBulkPage['body'], 'data_status=missing_desc') !== false,
+        'Màn bulk giữ phạm vi export sản phẩm thiếu mô tả'
+    );
     $apiSelectedStatus = readinessHttp($base.'api/status.php', 'POST', array('admin_csrf' => $authenticatedToken[1], 'ids' => $bulkStatusProductId.','.$secondBulkStatusProductId, 'scope' => 'selected', 'table' => 'product', 'attr' => 'baogia', 'value' => '1', 'type' => 'san-pham', 'com' => 'product'), $newCookie);
     $apiSelectedPayload = json_decode($apiSelectedStatus['body'], true);
     $selectedStatusRows = $d->rawQuery('select id, status from #_product where id in (?, ?)', array($bulkStatusProductId, $secondBulkStatusProductId));

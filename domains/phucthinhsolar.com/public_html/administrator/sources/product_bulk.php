@@ -2,6 +2,7 @@
 if (!defined('SOURCES')) die('Error');
 
 require_once LIBRARIES.'admin_product_pricing.php';
+require_once LIBRARIES.'admin_product_completeness.php';
 
 function productValidateCommercialFields($data)
 {
@@ -991,8 +992,16 @@ function productBulkExport($templateOnly = false)
     $headers = array_keys($columns);
     $displayHeaders = array_map(function ($column) { return $column['label']; }, $columns);
     $categories = productBulkCategoryMaps($type);
-    $products = $templateOnly ? array() : $d->rawQuery('select * from #_product where type = ? order by numb,id desc', array($type));
-    $suffix = $templateOnly ? 'mau-nhap-san-pham' : 'san-pham-'.date('Ymd-His');
+    $dataStatus = !$templateOnly && !empty($_GET['data_status']) ? (string)$_GET['data_status'] : '';
+    $dataStatusDefinition = adminProductDataStatus($dataStatus);
+    if(!$dataStatusDefinition) $dataStatus = '';
+    $products = array();
+    if(!$templateOnly)
+    {
+        $where = $dataStatusDefinition ? ' and '.$dataStatusDefinition['sql'] : '';
+        $products = $d->rawQuery("select p.* from #_product p where p.type = ?$where order by p.numb,p.id desc", array($type));
+    }
+    $suffix = $templateOnly ? 'mau-nhap-san-pham' : 'san-pham'.($dataStatus !== '' ? '-'.$dataStatus : '').'-'.date('Ymd-His');
     if ($format === 'csv') {
         header('Content-Type: text/csv; charset=UTF-8');
         header('Content-Disposition: attachment; filename="'.$suffix.'.csv"');

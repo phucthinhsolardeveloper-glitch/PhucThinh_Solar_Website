@@ -38,6 +38,7 @@ Cập nhật gần nhất: 2026-09-03. Mọi thay đổi bên dưới mới ở 
 - Auth full-page Admin không còn xoay `user_token` ở mỗi page load; token chỉ đổi khi đăng nhập mới để giữ phát hiện concurrent login mà không tạo race giữa request cùng phiên. `lastlogin` được throttle 60 giây và update có điều kiện; HTTP integration xác nhận hai page load liên tiếp không ghi lại auth state.
 - ADM-P1-014: status API cập nhật set-based cho tối đa 500 dòng được chọn khi client gửi trạng thái đích 0/1; vẫn kiểm tra đủ ID tồn tại, RBAC/CSRF/table/attribute allowlist. Toggle legacy không có giá trị đích giữ hành vi tuần tự để tương thích.
 - ADM-P1-008 (batch 1): danh sách Sản phẩm có menu “Điền dữ liệu thiếu”, lọc allowlist theo ảnh đại diện/mô tả/nội dung/thông số/công suất, hiển thị badge thiếu và liên kết thẳng tới form sửa. Bulk status dùng chung điều kiện filter để không cập nhật lệch phạm vi.
+- ADM-P1-005/P1-008 (batch 2): từ danh sách đang lọc dữ liệu thiếu có thể mở màn bulk và xuất Excel/CSV đúng tập con; workbook vẫn có snapshot/conflict detection và cột ảnh chỉ đọc. Scope tùy ý bị bỏ qua, chỉ năm trạng thái thiếu dữ liệu trong allowlist được áp dụng.
 
 ## PARTIAL / CHỜ DỮ LIỆU THẬT
 

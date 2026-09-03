@@ -1,6 +1,9 @@
 <?php
 $bulkBase = 'index.php?com=product&type='.$type;
 $bulkCsrf = productBulkCsrfToken();
+$bulkDataStatus = !empty($_GET['data_status']) ? (string)$_GET['data_status'] : '';
+$bulkDataStatusDefinition = adminProductDataStatus($bulkDataStatus);
+$bulkScopeQuery = $bulkDataStatusDefinition ? '&data_status='.urlencode($bulkDataStatus) : '';
 ?>
 <section class="content-header text-sm">
     <div class="container-fluid">
@@ -46,11 +49,16 @@ $bulkCsrf = productBulkCsrfToken();
                 <div class="card-body">
                     <p class="text-muted">Cập nhật dữ liệu đang có bằng bản Excel xuất từ hệ thống; tạo danh sách mới bằng file mẫu trống.</p>
                     <div class="d-flex flex-wrap align-items-center">
-                        <a class="btn btn-primary pts-bulk-primary-action mr-2 mb-2" href="<?=$bulkBase?>&act=bulk_export&format=xlsx"><i class="fas fa-file-export mr-2"></i>Xuất Excel hiện tại</a>
+                        <a class="btn btn-primary pts-bulk-primary-action mr-2 mb-2" href="<?=$bulkBase?>&act=bulk_export&format=xlsx<?=$bulkScopeQuery?>"><i class="fas fa-file-export mr-2"></i><?=$bulkDataStatusDefinition ? 'Xuất Excel: '.htmlspecialchars($bulkDataStatusDefinition['label'], ENT_QUOTES, 'UTF-8') : 'Xuất Excel hiện tại'?></a>
                         <a class="btn btn-outline-primary pts-bulk-primary-action mr-2 mb-2" href="<?=$bulkBase?>&act=bulk_template&format=xlsx"><i class="far fa-file-excel mr-2"></i>Tải file mẫu</a>
-                        <div class="dropdown mb-2"><button class="btn btn-light border pts-bulk-primary-action dropdown-toggle" type="button" data-toggle="dropdown">Tùy chọn CSV</button><div class="dropdown-menu dropdown-menu-right"><a class="dropdown-item" href="<?=$bulkBase?>&act=bulk_export&format=csv">Xuất toàn bộ CSV</a><a class="dropdown-item" href="<?=$bulkBase?>&act=bulk_template&format=csv">Tải mẫu CSV</a></div></div>
+                        <div class="dropdown mb-2"><button class="btn btn-light border pts-bulk-primary-action dropdown-toggle" type="button" data-toggle="dropdown">Tùy chọn xuất</button><div class="dropdown-menu dropdown-menu-right">
+                            <?php foreach(adminProductDataStatusDefinitions() as $statusKey => $statusDefinition) { ?><a class="dropdown-item" href="<?=$bulkBase?>&act=bulk_export&format=xlsx&data_status=<?=urlencode($statusKey)?>">Excel: <?=htmlspecialchars($statusDefinition['label'], ENT_QUOTES, 'UTF-8')?></a><?php } ?>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="<?=$bulkBase?>&act=bulk_export&format=csv<?=$bulkScopeQuery?>"><?=$bulkDataStatusDefinition ? 'CSV: '.htmlspecialchars($bulkDataStatusDefinition['label'], ENT_QUOTES, 'UTF-8') : 'Xuất toàn bộ CSV'?></a><a class="dropdown-item" href="<?=$bulkBase?>&act=bulk_template&format=csv">Tải mẫu CSV</a>
+                        </div></div>
                     </div>
                     <small class="text-muted d-block mt-2"><i class="fas fa-shield-alt mr-1"></i>Excel xuất từ hệ thống có snapshot để phát hiện người khác đã sửa dữ liệu trong lúc bạn làm việc.</small>
+                    <?php if($bulkDataStatusDefinition) { ?><div class="alert alert-warning py-2 mt-3 mb-0"><i class="fas fa-filter mr-1"></i>Phạm vi xuất hiện tại: <strong><?=htmlspecialchars($bulkDataStatusDefinition['label'], ENT_QUOTES, 'UTF-8')?></strong>. File chỉ chứa các sản phẩm phù hợp tại thời điểm tải xuống.</div><?php } ?>
                 </div>
             </div>
         </div>
