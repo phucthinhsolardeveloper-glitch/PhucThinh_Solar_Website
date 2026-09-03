@@ -200,7 +200,7 @@ Trạng thái triển khai 2026-09-03: ADM-P1-001 đã thay toàn bộ 15 nhánh
 
 Data layer không còn tự render HTML hoặc kết thúc request, nên controller hiện có có thể rollback/bù trừ. Bootstrap Admin API local nay có exception boundary chung: rollback transaction đang mở, log chi tiết nội bộ và trả HTTP 500 `INTERNAL_ERROR` trung tính. Endpoint vẫn có thể bắt lỗi riêng khi cần mã lỗi nghiệp vụ cụ thể.
 
-Các batch local đã chuẩn hóa dần mutation JSON, gồm `login/status/upload`, database, numb, copy, slug, sortable, comment và gallery. Gallery nay xác minh sửa metadata/xóa/reorder trước khi client cập nhật DOM, chuẩn hóa mọi request sai và cô lập output buffer legacy để HTML fragment không phá JSON. Hai endpoint dropdown category/place giữ HTML thành công nhưng trả JSON 400/405 cho input sai. Exception ngoài dự kiến đã có boundary cấp bootstrap; một số endpoint scalar/legacy và API router chung vẫn chưa chuẩn hóa.
+Các batch local đã chuẩn hóa mutation JSON, gồm `login/status/upload`, database, numb, copy, slug, sortable, comment và gallery. Gallery nay xác minh sửa metadata/xóa/reorder trước khi client cập nhật DOM, chuẩn hóa mọi request sai và cô lập output buffer legacy để HTML fragment không phá JSON. Hai endpoint dropdown category/place giữ HTML thành công nhưng trả JSON 400/405 cho input sai; hai endpoint legacy bị khóa trả JSON 404. Exception ngoài dự kiến đã có boundary cấp bootstrap. Batch 18 bổ sung assertion schema dùng chung cho lỗi đại diện của auth, fragment, legacy, validation, CSRF, gallery và sortable; public API router vẫn là phạm vi riêng chưa chuẩn hóa.
 
 ### 11. Testability — VERIFIED
 
@@ -215,7 +215,7 @@ Khoảng trống:
 
 - Đã có characterization cho token ổn định/throttle và HTTP integration cho full-page request liên tiếp; chưa có stress test request song song thật.
 - Đã có test checkout partial write/shutdown, replay và hai tiến trình ghi đồng thời bằng idempotency key bền vững trong database; chưa có stress test qua hai HTTP request thật trên staging.
-- Chưa có contract test thống nhất cho lỗi API.
+- Đã có contract test schema thống nhất cho các nhóm lỗi Admin API đại diện; public API chưa dùng contract chung.
 - Đã có test xác nhận CRUD thủ công và bulk importer áp cùng invariant giá sản phẩm.
 - Chưa profile Admin trên dataset staging gần production.
 
@@ -272,7 +272,7 @@ Các ứng viên cần điều tra trước khi triển khai, không được cl
 ## Ưu tiên kỹ thuật đề xuất
 
 1. Stress test checkout đồng thời trên staging sau khi áp dụng migration 008/009.
-2. Tiếp tục chuẩn hóa các endpoint scalar/legacy của Admin API.
+2. Đánh giá contract public API theo từng consumer; không đổi HTML fragment sang JSON nếu chưa có kế hoạch version/migration.
 3. Bổ sung contract/concurrency test trước refactor lớn.
 4. Profile lại Admin trên staging có dataset gần production.
 

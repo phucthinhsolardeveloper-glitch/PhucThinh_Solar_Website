@@ -17,6 +17,21 @@ function readinessAssert($condition, $message)
     echo "PASS: {$message}\n";
 }
 
+function readinessAssertApiEnvelope($payload, $message)
+{
+    $valid = is_array($payload)
+        && array_key_exists('ok', $payload)
+        && is_bool($payload['ok'])
+        && isset($payload['message'])
+        && is_string($payload['message'])
+        && isset($payload['code'])
+        && is_string($payload['code'])
+        && $payload['code'] !== ''
+        && array_key_exists('data', $payload)
+        && is_array($payload['data']);
+    readinessAssert($valid, $message);
+}
+
 function readinessHttp($url, $method = 'GET', $data = array(), $cookie = '')
 {
     $headers = array('User-Agent: PTS-Local-Readiness-Test');
@@ -162,6 +177,8 @@ try
 	$unauthenticatedHtmlApi = readinessHttp($base.'api/category.php', 'POST', array('id'=>1, 'level'=>0, 'table'=>'product_cat', 'type'=>'san-pham'), $oldCookie);
 	$unauthenticatedHtmlPayload = json_decode($unauthenticatedHtmlApi['body'], true);
 	readinessAssert($unauthenticatedHtmlApi['status'] === 401 && empty($unauthenticatedHtmlPayload['ok']) && $unauthenticatedHtmlPayload['code'] === 'AUTH_REQUIRED', 'Admin API HTML fragment cũng trả 401 chuẩn để client nhận biết hết phiên');
+	readinessAssertApiEnvelope($unauthenticatedJsonPayload, 'Lỗi hết phiên của API JSON giữ đủ schema envelope');
+	readinessAssertApiEnvelope($unauthenticatedHtmlPayload, 'Lỗi hết phiên của API HTML fragment giữ đủ schema envelope');
 	foreach(array('component.php', 'save_add_item.php') as $disabledEndpoint)
 	{
 		$disabledApi = readinessHttp($base.'api/'.$disabledEndpoint, 'POST', array(), $oldCookie);
@@ -172,6 +189,7 @@ try
 				&& $disabledPayload['code'] === 'LEGACY_API_DISABLED',
 			'Endpoint legacy '.$disabledEndpoint.' giữ trạng thái vô hiệu hóa và trả lỗi JSON rõ ràng'
 		);
+		readinessAssertApiEnvelope($disabledPayload, 'Endpoint legacy '.$disabledEndpoint.' giữ đủ schema envelope');
 	}
 
     $missingCsrf = readinessHttp($base.'api/login.php', 'POST', array('username' => $createdUsers['product']['username'], 'password' => $createdUsers['product']['password']), $oldCookie);
@@ -211,6 +229,7 @@ try
 	$invalidCategoryLevel = readinessHttp($base.'api/category.php', 'POST', array('id'=>1, 'level'=>9, 'table'=>'product_cat', 'type'=>'san-pham'), $newCookie);
 	$invalidCategoryPayload = json_decode($invalidCategoryLevel['body'], true);
 	readinessAssert($invalidCategoryLevel['status'] === 400 && empty($invalidCategoryPayload['ok']) && $invalidCategoryPayload['code'] === 'INVALID_CATEGORY_LEVEL', 'API danh mục trả lỗi JSON 400 cho cấp ngoài allowlist');
+	readinessAssertApiEnvelope($invalidCategoryPayload, 'Lỗi validation API dropdown giữ đủ schema envelope');
 	$invalidPlaceTable = readinessHttp($base.'api/place.php', 'POST', array('id'=>1, 'level'=>0, 'table'=>'product'), $newCookie);
 	$invalidPlacePayload = json_decode($invalidPlaceTable['body'], true);
 	readinessAssert($invalidPlaceTable['status'] === 400 && empty($invalidPlacePayload['ok']) && $invalidPlacePayload['code'] === 'INVALID_PLACE_TABLE', 'API địa giới trả lỗi JSON 400 cho bảng ngoài allowlist');
@@ -239,6 +258,7 @@ try
 	$galleryInvalidCommand = readinessHttp($base.'api/filer.php', 'POST', array('cmd'=>'tu-che', 'id_parent'=>987654, 'com'=>'product', 'kind'=>'man', 'type'=>'san-pham'), $newCookie);
 	$galleryInvalidCommandPayload = json_decode($galleryInvalidCommand['body'], true);
 	readinessAssert($galleryInvalidCommand['status'] === 400 && empty($galleryInvalidCommandPayload['ok']) && $galleryInvalidCommandPayload['code'] === 'INVALID_GALLERY_COMMAND', 'API gallery từ chối command ngoài allowlist bằng JSON 400');
+	readinessAssertApiEnvelope($galleryInvalidCommandPayload, 'Lỗi gallery giữ đủ schema envelope');
 	$galleryMissingContext = readinessHttp($base.'api/filer.php', 'POST', array('cmd'=>'refresh', 'com'=>'product', 'kind'=>'man', 'type'=>'san-pham'), $newCookie);
 	$galleryMissingContextPayload = json_decode($galleryMissingContext['body'], true);
 	readinessAssert($galleryMissingContext['status'] === 400 && empty($galleryMissingContextPayload['ok']) && $galleryMissingContextPayload['code'] === 'MISSING_GALLERY_CONTEXT', 'API gallery từ chối request thiếu parent/hash thay vì trả rỗng');
@@ -317,6 +337,7 @@ try
     readinessAssert($apiMissing['status'] === 403, 'API mutation thiếu CSRF trả 403');
     $apiMissingPayload = json_decode($apiMissing['body'], true);
     readinessAssert(isset($apiMissingPayload['ok'], $apiMissingPayload['code']) && $apiMissingPayload['ok'] === false && $apiMissingPayload['code'] === 'INVALID_CSRF', 'Lỗi CSRF API dùng envelope chuẩn');
+	readinessAssertApiEnvelope($apiMissingPayload, 'Lỗi CSRF giữ đủ schema envelope');
     $apiValid = readinessHttp($base.'api/status.php', 'POST', array('admin_csrf' => $authenticatedToken[1], 'id' => 999999, 'table' => 'product', 'attr' => 'hienthi', 'type' => 'san-pham', 'com' => 'product'), $newCookie);
     $apiValidPayload = json_decode($apiValid['body'], true);
     readinessAssert($apiValid['status'] === 200 && is_array($apiValidPayload) && array_key_exists('success', $apiValidPayload), 'API mutation có CSRF hợp lệ và trả JSON rõ ràng');
@@ -344,6 +365,7 @@ try
     $invalidSortResponse = readinessHttp($base.'api/update_sttMenu.php', 'POST', array('admin_csrf'=>$authenticatedToken[1], 'order'=>$createdSortableIds['sortable'][0].','.$createdSortableIds['sortable'][0]), $newCookie);
     $invalidSortPayload = json_decode($invalidSortResponse['body'], true);
     readinessAssert($invalidSortResponse['status'] === 400 && empty($invalidSortPayload['ok']) && $invalidSortPayload['code'] === 'INVALID_SORT_ORDER', 'API sắp xếp từ chối ID trùng mà không cập nhật dữ liệu');
+	readinessAssertApiEnvelope($invalidSortPayload, 'Lỗi sortable giữ đủ schema envelope');
     foreach(array('sortable'=>'menu', 'sortable_index'=>'index', 'sortable_detail'=>'detail') as $sortableTable => $sortableItem)
     {
         $deleteSortableId = $createdSortableIds[$sortableTable][0];

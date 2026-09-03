@@ -61,6 +61,7 @@ Cập nhật gần nhất: 2026-09-03. Mọi thay đổi bên dưới mới ở 
 - Admin API batch 15: `filer.php` chuẩn hóa nốt method/command/module/scope/layout/hash/context sai thành HTTP 400/405 + JSON envelope; mutation gallery trả lỗi quyền dạng JSON. Refresh hợp lệ vẫn trả HTML và đóng đúng output buffer, client báo lỗi mà không dựng lại album giả. Integration test bao phủ refresh đủ fixture và ba nhóm request sai trước đây từng trả body rỗng.
 - Admin API batch 16: bootstrap AJAX cài exception boundary chung; lỗi DB/runtime chưa được endpoint bắt riêng sẽ rollback transaction đang mở, ghi chi tiết vào error log và trả HTTP 500 với envelope `INTERNAL_ERROR` trung tính, không lộ SQL/stack cho trình duyệt.
 - Admin API batch 17: hai endpoint legacy `component.php` và `save_add_item.php` tiếp tục bị vô hiệu hóa HTTP 404 nhưng nay trả contract JSON `LEGACY_API_DISABLED`; không khôi phục file manager hoặc đường ghi sortable cũ.
+- Admin API batch 18: integration test dùng assertion schema chung để khóa đủ `ok/message/code/data` và kiểu dữ liệu cho lỗi hết phiên, endpoint fragment/legacy, validation, CSRF, gallery và sortable; tài liệu API được đồng bộ với trạng thái code hiện tại.
 - Checkout idempotency local: form phát token ngẫu nhiên 256-bit, migration 009 thêm unique index trên đơn hàng; request replay trả lại đúng đơn đã commit, không tạo detail hoặc gửi email lần hai. Token được kiểm tra cùng session và chỉ xoay sau khi đã tạo trạng thái trang cảm ơn; regression hai tiến trình đồng thời cùng nhận một order ID.
 
 ## PARTIAL / CHỜ DỮ LIỆU THẬT

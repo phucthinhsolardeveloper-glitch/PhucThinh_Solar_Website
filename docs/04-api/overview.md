@@ -11,7 +11,7 @@ Các endpoint là PHP file, không phải REST API versioned và không có Open
 - `api/addons.php`: lazy-loaded blocks.
 - `administrator/api/*`: login, upload, status/order/category/component/sort/delete helpers; dựa vào CMS session/bootstrap theo từng file.
 
-Response/error format chưa đồng nhất giữa JSON, HTML fragment và scalar. Admin JSON object (`login.php`, `status.php`, `upload.php`) và `database.php` đã có envelope tương thích ngược `ok/message/code/data`; lỗi CSRF/quyền JSON dùng cùng contract. JavaScript bảo trì database đọc được cả root-array cũ và envelope mới. Các endpoint fragment/scalar cần xử lý theo batch riêng. Trước khi tạo React/static frontend, cần quyết định giữ HTML-fragment AJAX hay xây JSON API có version/auth/validation thống nhất.
+Response thành công vẫn có chủ ý gồm JSON hoặc HTML fragment theo consumer legacy. Toàn bộ lỗi Admin API đã chuẩn hóa dần về envelope tương thích ngược `ok/message/code/data`; lỗi hết phiên, CSRF/quyền, validation, endpoint legacy bị khóa và exception ngoài dự kiến đều có HTTP status + mã lỗi rõ ràng. Integration test dùng một assertion schema chung trên các nhóm lỗi đại diện. Trước khi tạo React/static frontend, cần quyết định giữ HTML-fragment AJAX hay xây JSON API có version/auth/validation thống nhất.
 
 `administrator/api/numb.php`, `copy.php` và `slug.php` đã chuyển sang envelope JSON. Client phục hồi thứ tự cũ khi lỗi, chỉ reload sau khi copy thành công và đọc `data.available` khi kiểm tra slug. Copy dùng vòng lặp slug có giới hạn, lấy đúng `lastInsertId`, chuẩn hóa field số và bắt exception DB. Kiểm tra slug xác thực định dạng, ép kiểu ID và parameterize điều kiện loại trừ bản ghi. Các endpoint fragment vẫn giữ contract legacy.
 
