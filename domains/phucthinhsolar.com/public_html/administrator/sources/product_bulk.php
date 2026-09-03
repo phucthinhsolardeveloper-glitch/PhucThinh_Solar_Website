@@ -164,10 +164,29 @@ function productBulkImageFinalizeFile($path, $extension)
     return $func->smartResizeImage($path, null, $maxWidth, $maxHeight, true);
 }
 
+function productBulkImageEntryIdentity($entry)
+{
+    $extension = strtolower(pathinfo($entry, PATHINFO_EXTENSION));
+    $stem = trim(pathinfo($entry, PATHINFO_FILENAME));
+    $code = $stem;
+    $sequence = 1;
+    if(preg_match('/^(.*)-(\d{2,3})$/u', $stem, $match)) {
+        $code = trim($match[1]);
+        $sequence = (int)$match[2];
+    }
+    return array(
+        'code' => $code,
+        'sequence' => $sequence,
+        'role' => $sequence === 1 ? 'main' : 'gallery',
+        'extension' => $extension,
+        'filename' => $code.'-'.str_pad((string)$sequence, 2, '0', STR_PAD_LEFT).'.'.$extension
+    );
+}
+
 function productBulkReadImageArchive($file, $type)
 {
     global $d;
-    $result = array('rows' => array(), 'errors' => array(), 'counts' => array('ready' => 0, 'existing' => 0, 'missing_product' => 0));
+    $result = array('rows' => array(), 'errors' => array(), 'counts' => array('ready' => 0, 'ready_main' => 0, 'ready_gallery' => 0, 'existing' => 0, 'missing_product' => 0));
     if(!class_exists('ZipArchive')) {
         $result['errors'][] = 'Máy chủ chưa bật ZipArchive.';
         return $result;
@@ -206,6 +225,10 @@ function productBulkReadImageArchive($file, $type)
         $key = mb_strtolower(trim((string)$product['code']), 'UTF-8');
         if($key !== '') $products[$key] = $product;
     }
+    $existingGallery = array();
+    foreach($d->rawQuery('select id_parent, photo from #_gallery where com = ? and type = ? and kind = ? and val = ?', array('product', $type, 'man', $type)) as $gallery) {
+        $existingGallery[(int)$gallery['id_parent'].'|'.mb_strtolower(trim((string)$gallery['photo']), 'UTF-8')] = true;
+    }
     $seen = array();
     $totalSize = 0;
     for($index = 0; $index < $zip->numFiles; $index++) {
@@ -216,23 +239,25 @@ function productBulkReadImageArchive($file, $type)
             $result['errors'][] = 'ZIP không được chứa thư mục hoặc đường dẫn lồng nhau: '.$entry;
             continue;
         }
-        $extension = strtolower(pathinfo($entry, PATHINFO_EXTENSION));
-        $code = trim(pathinfo($entry, PATHINFO_FILENAME));
+        $identity = productBulkImageEntryIdentity($entry);
+        $extension = $identity['extension'];
+        $code = $identity['code'];
         $key = mb_strtolower($code, 'UTF-8');
+        $seenKey = $key.'|'.$identity['sequence'];
         $size = !empty($stat['size']) ? (int)$stat['size'] : 0;
         $totalSize += $size;
         if($totalSize > 100 * 1024 * 1024) {
             $result['errors'][] = 'Tổng dung lượng giải nén vượt 100 MB.';
             break;
         }
-        $row = array('entry' => $entry, 'code' => $code, 'extension' => $extension, 'status' => 'error', 'message' => '', 'product' => null, 'path' => '');
-        if($code === '' || isset($seen[$key])) {
-            $row['message'] = $code === '' ? 'Tên file phải là mã sản phẩm.' : 'Mã sản phẩm bị lặp trong ZIP.';
+        $row = array_merge($identity, array('entry' => $entry, 'status' => 'error', 'message' => '', 'product' => null, 'path' => ''));
+        if($code === '' || $identity['sequence'] < 1 || isset($seen[$seenKey])) {
+            $row['message'] = $code === '' ? 'Tên file phải có mã sản phẩm.' : 'Mã và số thứ tự ảnh bị lặp trong ZIP.';
             $result['errors'][] = $entry.': '.$row['message'];
             $result['rows'][] = $row;
             continue;
         }
-        $seen[$key] = true;
+        $seen[$seenKey] = true;
         $target = $previewDir.DIRECTORY_SEPARATOR.str_pad((string)$index, 4, '0', STR_PAD_LEFT).'.'.$extension;
         $stream = $zip->getStream($entry);
         $output = $stream ? fopen($target, 'xb') : false;
@@ -259,16 +284,23 @@ function productBulkReadImageArchive($file, $type)
             $result['counts']['missing_product']++;
         } else {
             $row['product'] = $products[$key];
-            if(trim((string)$products[$key]['photo']) !== '') {
+            $galleryKey = (int)$products[$key]['id'].'|'.mb_strtolower($identity['filename'], 'UTF-8');
+            if($identity['role'] === 'main' && trim((string)$products[$key]['photo']) !== '') {
                 @unlink($target);
                 $row['status'] = 'existing';
-                $row['message'] = 'Sản phẩm đã có ảnh; hệ thống sẽ không thay thế.';
+                $row['message'] = 'Sản phẩm đã có ảnh đại diện; hệ thống sẽ không thay thế.';
+                $result['counts']['existing']++;
+            } elseif($identity['role'] === 'gallery' && isset($existingGallery[$galleryKey])) {
+                @unlink($target);
+                $row['status'] = 'existing';
+                $row['message'] = 'Ảnh phụ cùng tên đã có trong album.';
                 $result['counts']['existing']++;
             } else {
                 $row['status'] = 'ready';
-                $row['message'] = 'Sẵn sàng bổ sung ảnh.';
+                $row['message'] = $identity['role'] === 'main' ? 'Sẵn sàng bổ sung ảnh đại diện.' : 'Sẵn sàng thêm vào album ảnh phụ.';
                 $row['path'] = $target;
                 $result['counts']['ready']++;
+                $result['counts'][$identity['role'] === 'main' ? 'ready_main' : 'ready_gallery']++;
             }
         }
         $result['rows'][] = $row;
@@ -298,7 +330,7 @@ function productBulkImagePreview()
     $token = bin2hex(random_bytes(24));
     $payloadRows = array();
     foreach($bulkImagePreview['rows'] as $row) if($row['status'] === 'ready') {
-        $payloadRows[] = array('id' => (int)$row['product']['id'], 'code' => $row['code'], 'name' => $row['product']['namevi'], 'date_updated' => (int)$row['product']['date_updated'], 'extension' => $row['extension'], 'path' => $row['path']);
+        $payloadRows[] = array('id' => (int)$row['product']['id'], 'code' => $row['code'], 'name' => $row['product']['namevi'], 'date_updated' => (int)$row['product']['date_updated'], 'extension' => $row['extension'], 'path' => $row['path'], 'sequence' => (int)$row['sequence'], 'role' => $row['role'], 'filename' => $row['filename']);
     }
     $_SESSION['product_bulk_image_preview'][$token] = array('type' => $type, 'created_at' => time(), 'directory' => $bulkImagePreview['preview_dir'], 'rows' => $payloadRows);
     $bulkImagePreview['token'] = $token;
@@ -320,30 +352,48 @@ function productBulkImageCommit()
     $uploadDir = productBulkImageUploadDirectory();
     $createdFiles = array();
     $updatedRows = array();
+    $updatedProductIds = array();
+    $insertedGalleryIds = array();
     try {
         foreach($state['rows'] as $row) {
             $current = $d->rawQueryOne('select id, code, photo, date_updated from #_product where id = ? and type = ? limit 0,1', array((int)$row['id'], $type));
-            if(empty($current) || trim((string)$current['photo']) !== '' || trim((string)$current['code']) !== $row['code'] || (int)$current['date_updated'] !== (int)$row['date_updated']) throw new Exception('Sản phẩm mã '.$row['code'].' đã thay đổi sau bước xem trước');
+            $role = !empty($row['role']) ? $row['role'] : 'main';
+            $sequence = !empty($row['sequence']) ? (int)$row['sequence'] : 1;
+            $filename = !empty($row['filename']) ? $row['filename'] : $row['code'].'-'.str_pad((string)$sequence, 2, '0', STR_PAD_LEFT).'.'.$row['extension'];
+            $updatedInThisBatch = isset($updatedProductIds[(int)$row['id']]);
+            if(empty($current) || trim((string)$current['code']) !== $row['code'] || (!$updatedInThisBatch && (int)$current['date_updated'] !== (int)$row['date_updated'])) throw new Exception('Sản phẩm mã '.$row['code'].' đã thay đổi sau bước xem trước');
+            if($role === 'main' && trim((string)$current['photo']) !== '') throw new Exception('Sản phẩm mã '.$row['code'].' đã có ảnh đại diện sau bước xem trước');
+            if($role === 'gallery' && $d->rawQueryOne('select id from #_gallery where id_parent = ? and com = ? and type = ? and kind = ? and val = ? and photo = ? limit 0,1', array((int)$row['id'], 'product', $type, 'man', $type, $filename))) throw new Exception('Ảnh phụ '.$filename.' đã có sau bước xem trước');
             $validationError = productBulkImageValidateFile($row['path'], $row['extension']);
             if($validationError !== '') throw new Exception('Ảnh của mã '.$row['code'].' không còn hợp lệ');
-            $base = $func->uploadName($row['code'].'.'.$row['extension']);
-            $filename = $base.'.'.$row['extension'];
-            while(file_exists($uploadDir.$filename)) $filename = $base.'-'.bin2hex(random_bytes(3)).'.'.$row['extension'];
+            if($filename === '' || basename($filename) !== $filename || file_exists($uploadDir.$filename)) throw new Exception('Tên ảnh '.$filename.' không an toàn hoặc đã tồn tại');
             if(!copy($row['path'], $uploadDir.$filename)) throw new Exception('Không thể lưu ảnh cho mã '.$row['code']);
             @chmod($uploadDir.$filename, 0644);
             $createdFiles[] = $uploadDir.$filename;
             if(!productBulkImageFinalizeFile($uploadDir.$filename, $row['extension'])) throw new Exception('Không thể chuẩn hóa kích thước ảnh cho mã '.$row['code']);
-            $d->where('id', (int)$row['id']);
-            $d->where('type', $type);
-            if(!$d->update('product', array('photo' => $filename, 'date_updated' => time()))) throw new Exception('Không thể cập nhật ảnh cho mã '.$row['code']);
-            $updatedRows[] = array('id' => (int)$row['id'], 'date_updated' => (int)$row['date_updated']);
+            $finalValidation = productBulkImageValidateFile($uploadDir.$filename, $row['extension']);
+            if($finalValidation !== '') throw new Exception('Ảnh '.$filename.' không đạt giới hạn sau khi chuẩn hóa: '.$finalValidation);
+            if($role === 'main') {
+                $d->where('id', (int)$row['id']);
+                $d->where('type', $type);
+                $d->where('photo', '');
+                if(!$d->update('product', array('photo' => $filename, 'date_updated' => time()))) throw new Exception('Không thể cập nhật ảnh cho mã '.$row['code']);
+                $updatedRows[] = array('id' => (int)$row['id'], 'date_updated' => (int)$row['date_updated']);
+                $updatedProductIds[(int)$row['id']] = true;
+            } else {
+                if(!$d->insert('gallery', array('id_parent'=>(int)$row['id'], 'photo'=>$filename, 'namevi'=>'', 'numb'=>$sequence, 'type'=>$type, 'com'=>'product', 'kind'=>'man', 'val'=>$type, 'status'=>'hienthi', 'date_created'=>time(), 'date_updated'=>0))) throw new Exception('Không thể thêm ảnh phụ cho mã '.$row['code']);
+                $galleryId = (int)$d->getLastInsertId();
+                if(!$galleryId) throw new Exception('Không xác định được ảnh phụ vừa thêm cho mã '.$row['code']);
+                $insertedGalleryIds[] = $galleryId;
+            }
         }
         $cache->delete();
-        $bulkImageResult = array('updated' => count($updatedRows));
-        $bulkMessage = array('type' => 'success', 'text' => 'Đã bổ sung '.count($updatedRows).' ảnh đại diện; không thay hoặc xóa ảnh cũ.');
+        $bulkImageResult = array('updated' => count($updatedRows), 'gallery' => count($insertedGalleryIds));
+        $bulkMessage = array('type' => 'success', 'text' => 'Đã bổ sung '.count($updatedRows).' ảnh đại diện và '.count($insertedGalleryIds).' ảnh phụ; không thay hoặc xóa ảnh cũ.');
         productBulkImageRemovePreviewDirectory($state['directory']);
         unset($_SESSION['product_bulk_image_preview'][$token]);
     } catch(Exception $e) {
+        foreach($insertedGalleryIds as $galleryId) $d->rawQuery('delete from #_gallery where id = ?', array($galleryId));
         foreach($updatedRows as $updatedRow) {
             $d->where('id', $updatedRow['id']);
             $d->where('type', $type);

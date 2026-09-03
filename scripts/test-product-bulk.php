@@ -126,6 +126,8 @@ $code = 'CODEX-BULK-'.date('His');
 $createdId = 0;
 $createdBrandId = 0;
 $createdImagePath = '';
+$createdGalleryPath = '';
+$createdGalleryId = 0;
 try {
     $csvPath = tempnam(sys_get_temp_dir(), 'pts-csv-');
     $csv = fopen($csvPath, 'wb');
@@ -322,13 +324,14 @@ try {
     $imageZip = new ZipArchive();
     testAssert($imageZip->open($imageZipPath, ZipArchive::OVERWRITE) === true, 'Tạo ZIP ảnh kiểm thử');
     $imageZip->addFromString($code.'.png', base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII='));
+    $imageZip->addFromString($code.'-02.png', base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII='));
     $imageZip->close();
     $imagePreview = productBulkReadImageArchive(array('error' => UPLOAD_ERR_OK, 'size' => filesize($imageZipPath), 'name' => 'images.zip', 'tmp_name' => $imageZipPath), $type);
-    testAssert(empty($imagePreview['errors']) && $imagePreview['counts']['ready'] === 1, 'ZIP hợp lệ ghép ảnh với sản phẩm đang thiếu theo mã');
+    testAssert(empty($imagePreview['errors']) && $imagePreview['counts']['ready_main'] === 1 && $imagePreview['counts']['ready_gallery'] === 1, 'ZIP hợp lệ nhận diện đồng thời ảnh chính và ảnh phụ theo mã');
     $imageToken = bin2hex(random_bytes(12));
-    $readyImage = null;
-    foreach($imagePreview['rows'] as $imageRow) if($imageRow['status'] === 'ready') $readyImage = $imageRow;
-    $_SESSION['product_bulk_image_preview'][$imageToken] = array('type' => $type, 'created_at' => time(), 'directory' => $imagePreview['preview_dir'], 'rows' => array(array('id' => $createdId, 'code' => $code, 'name' => $created['namevi'], 'date_updated' => (int)$readyImage['product']['date_updated'], 'extension' => 'png', 'path' => $readyImage['path'])));
+    $readyImages = array();
+    foreach($imagePreview['rows'] as $imageRow) if($imageRow['status'] === 'ready') $readyImages[] = array('id'=>$createdId, 'code'=>$code, 'name'=>$created['namevi'], 'date_updated'=>(int)$imageRow['product']['date_updated'], 'extension'=>$imageRow['extension'], 'path'=>$imageRow['path'], 'sequence'=>$imageRow['sequence'], 'role'=>$imageRow['role'], 'filename'=>$imageRow['filename']);
+    $_SESSION['product_bulk_image_preview'][$imageToken] = array('type' => $type, 'created_at' => time(), 'directory' => $imagePreview['preview_dir'], 'rows' => $readyImages);
     $_SESSION['product_bulk_csrf'] = 'test-csrf';
     $_POST = array('product_bulk_csrf' => 'test-csrf', 'confirm_bulk_images' => '1', 'image_preview_token' => $imageToken);
     $bulkMessage = null;
@@ -336,9 +339,12 @@ try {
     productBulkImageCommit();
     $imageProduct = $d->rawQueryOne('select photo from #_product where id = ? and type = ?', array($createdId, $type));
     $createdImagePath = productBulkImageUploadDirectory().$imageProduct['photo'];
-    testAssert(!empty($bulkImageResult['updated']) && is_file($createdImagePath), 'Commit ảnh cập nhật DB và lưu file ảnh bằng tên do server sinh');
+    $createdGallery = $d->rawQueryOne('select id, photo, numb, status from #_gallery where id_parent = ? and com = ? and type = ? and kind = ? and val = ? and photo = ? limit 0,1', array($createdId, 'product', $type, 'man', $type, $code.'-02.png'));
+    $createdGalleryId = !empty($createdGallery['id']) ? (int)$createdGallery['id'] : 0;
+    $createdGalleryPath = $createdGalleryId ? productBulkImageUploadDirectory().$createdGallery['photo'] : '';
+    testAssert(!empty($bulkImageResult['updated']) && !empty($bulkImageResult['gallery']) && basename($createdImagePath) === $code.'-01.png' && is_file($createdImagePath) && is_file($createdGalleryPath), 'Commit cùng lượt ảnh chính và ảnh phụ bằng tên chuẩn');
     $existingImagePreview = productBulkReadImageArchive(array('error' => UPLOAD_ERR_OK, 'size' => filesize($imageZipPath), 'name' => 'images.zip', 'tmp_name' => $imageZipPath), $type);
-    testAssert($existingImagePreview['counts']['existing'] === 1 && $existingImagePreview['counts']['ready'] === 0, 'ZIP không thay thế sản phẩm đã có ảnh');
+    testAssert($existingImagePreview['counts']['existing'] === 2 && $existingImagePreview['counts']['ready'] === 0, 'ZIP nhập lại không thay ảnh chính hoặc nhân đôi ảnh phụ');
     @unlink($imageZipPath);
 
     $unsafeZipPath = tempnam(sys_get_temp_dir(), 'pts-image-unsafe-');
@@ -370,6 +376,8 @@ try {
     $missingId = productBulkValidateRows(array(array('_row_number' => 2, 'action' => 'update', 'namevi' => 'Không có ID')), $type);
     testAssert($missingId['errors'] > 0, 'Từ chối update không có ID');
 } finally {
+    if ($createdGalleryId > 0) $d->rawQuery('delete from #_gallery where id = ?', array($createdGalleryId));
+    if ($createdGalleryPath !== '' && is_file($createdGalleryPath)) @unlink($createdGalleryPath);
     if ($createdImagePath !== '' && is_file($createdImagePath)) @unlink($createdImagePath);
     if ($createdId > 0) {
         $d->rawQuery('delete from #_seo where id_parent = ? and com = ? and type = ?', array($createdId, 'product', $type));

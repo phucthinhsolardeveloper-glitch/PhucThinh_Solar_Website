@@ -42,7 +42,7 @@ $bulkScopeQuery = $bulkDataStatusDefinition ? '&data_status='.urlencode($bulkDat
         </div>
     <?php } ?>
     <?php if (!empty($bulkImageResult)) { ?>
-        <div class="alert alert-success text-sm"><i class="fas fa-images mr-2"></i>Đã bổ sung <strong><?=(int)$bulkImageResult['updated']?></strong> ảnh đại diện. Không ảnh cũ nào bị thay hoặc xóa.</div>
+        <div class="alert alert-success text-sm"><i class="fas fa-images mr-2"></i>Đã bổ sung <strong><?=(int)$bulkImageResult['updated']?></strong> ảnh đại diện và <strong><?=(int)($bulkImageResult['gallery'] ?? 0)?></strong> ảnh phụ. Không ảnh cũ nào bị thay hoặc xóa.</div>
     <?php } ?>
 
     <div class="row">
@@ -104,9 +104,9 @@ $bulkScopeQuery = $bulkDataStatusDefinition ? '&data_status='.urlencode($bulkDat
     </details>
 
     <div class="card pts-bulk-card text-sm mt-3">
-        <div class="card-header"><h3 class="card-title font-weight-bold"><i class="far fa-images text-primary mr-2"></i>Bổ sung ảnh đại diện còn thiếu bằng ZIP</h3></div>
+        <div class="card-header"><h3 class="card-title font-weight-bold"><i class="far fa-images text-primary mr-2"></i>Bổ sung ảnh sản phẩm bằng ZIP</h3></div>
         <div class="card-body">
-            <div class="alert alert-info py-2"><strong>Quy tắc tên file:</strong> đặt đúng theo mã sản phẩm, ví dụ <code>JD-T200.jpg</code>. Chỉ bổ sung sản phẩm chưa có ảnh; hệ thống không thay hay xóa ảnh hiện hữu.</div>
+            <div class="alert alert-info py-2"><strong>Quy tắc tên file:</strong> <code>JD-T200-01.jpg</code> là ảnh đại diện; <code>JD-T200-02.jpg</code>, <code>-03</code>... là ảnh phụ. Tên cũ <code>JD-T200.jpg</code> vẫn được hiểu là ảnh đại diện. Hệ thống không thay hay xóa ảnh hiện hữu.</div>
             <form method="post" action="<?=$bulkBase?>&act=bulk_image_preview" enctype="multipart/form-data" class="form-row align-items-end">
                 <?=adminCsrfField()?>
                 <input type="hidden" name="product_bulk_csrf" value="<?=htmlspecialchars($bulkCsrf)?>">
@@ -118,12 +118,12 @@ $bulkScopeQuery = $bulkDataStatusDefinition ? '&data_status='.urlencode($bulkDat
 
     <?php if (!empty($bulkImagePreview)) { ?>
         <div class="card card-primary card-outline text-sm mt-3">
-            <div class="card-header"><h3 class="card-title">Xem trước ảnh</h3><div class="card-tools"><span class="badge badge-success">Sẵn sàng <?=(int)$bulkImagePreview['counts']['ready']?></span> <span class="badge badge-secondary">Đã có ảnh <?=(int)$bulkImagePreview['counts']['existing']?></span> <span class="badge badge-warning">Không thấy mã <?=(int)$bulkImagePreview['counts']['missing_product']?></span></div></div>
-            <div class="card-body table-responsive p-0" style="max-height:420px"><table class="table table-sm table-hover mb-0"><thead class="thead-light sticky-top"><tr><th>File</th><th>Mã</th><th>Sản phẩm</th><th>Kết quả</th></tr></thead><tbody>
-            <?php foreach($bulkImagePreview['rows'] as $row) { ?><tr><td><?=htmlspecialchars($row['entry'])?></td><td><code><?=htmlspecialchars($row['code'])?></code></td><td><?=!empty($row['product']) ? htmlspecialchars($row['product']['namevi']) : '—'?></td><td class="<?=$row['status'] === 'ready' ? 'text-success' : ($row['status'] === 'existing' ? 'text-muted' : 'text-warning')?>"><?=htmlspecialchars($row['message'])?></td></tr><?php } ?>
+            <div class="card-header"><h3 class="card-title">Xem trước ảnh</h3><div class="card-tools"><span class="badge badge-success">Ảnh chính <?=(int)$bulkImagePreview['counts']['ready_main']?></span> <span class="badge badge-info">Ảnh phụ <?=(int)$bulkImagePreview['counts']['ready_gallery']?></span> <span class="badge badge-secondary">Đã có <?=(int)$bulkImagePreview['counts']['existing']?></span> <span class="badge badge-warning">Không thấy mã <?=(int)$bulkImagePreview['counts']['missing_product']?></span></div></div>
+            <div class="card-body table-responsive p-0" style="max-height:420px"><table class="table table-sm table-hover mb-0"><thead class="thead-light sticky-top"><tr><th>File</th><th>Mã</th><th>Vai trò</th><th>Sản phẩm</th><th>Kết quả</th></tr></thead><tbody>
+            <?php foreach($bulkImagePreview['rows'] as $row) { ?><tr><td><?=htmlspecialchars($row['entry'])?></td><td><code><?=htmlspecialchars($row['code'])?></code></td><td><?=$row['role'] === 'main' ? 'Ảnh chính' : 'Ảnh phụ #'.(int)$row['sequence']?></td><td><?=!empty($row['product']) ? htmlspecialchars($row['product']['namevi']) : '—'?></td><td class="<?=$row['status'] === 'ready' ? 'text-success' : ($row['status'] === 'existing' ? 'text-muted' : 'text-warning')?>"><?=htmlspecialchars($row['message'])?></td></tr><?php } ?>
             </tbody></table></div>
             <div class="card-footer">
-                <?php if(empty($bulkImagePreview['errors']) && !empty($bulkImagePreview['token'])) { ?><form method="post" action="<?=$bulkBase?>&act=bulk_image_commit" class="d-flex flex-wrap align-items-center"><?=adminCsrfField()?><input type="hidden" name="product_bulk_csrf" value="<?=htmlspecialchars($bulkCsrf)?>"><input type="hidden" name="image_preview_token" value="<?=htmlspecialchars($bulkImagePreview['token'])?>"><label class="mr-3 mb-2"><input required type="checkbox" name="confirm_bulk_images" value="1"> Tôi xác nhận chỉ bổ sung <?=(int)$bulkImagePreview['counts']['ready']?> ảnh còn thiếu.</label><button class="btn btn-sm btn-success mb-2"><i class="fas fa-check mr-2"></i>Bổ sung ảnh</button></form><?php } else { ?><span class="text-danger">ZIP còn lỗi; chưa có file hay database nào được thay đổi.</span><?php } ?>
+                <?php if(empty($bulkImagePreview['errors']) && !empty($bulkImagePreview['token'])) { ?><form method="post" action="<?=$bulkBase?>&act=bulk_image_commit" class="d-flex flex-wrap align-items-center"><?=adminCsrfField()?><input type="hidden" name="product_bulk_csrf" value="<?=htmlspecialchars($bulkCsrf)?>"><input type="hidden" name="image_preview_token" value="<?=htmlspecialchars($bulkImagePreview['token'])?>"><label class="mr-3 mb-2"><input required type="checkbox" name="confirm_bulk_images" value="1"> Tôi xác nhận bổ sung <?=(int)$bulkImagePreview['counts']['ready_main']?> ảnh chính và <?=(int)$bulkImagePreview['counts']['ready_gallery']?> ảnh phụ.</label><button class="btn btn-sm btn-success mb-2"><i class="fas fa-check mr-2"></i>Bổ sung ảnh</button></form><?php } else { ?><span class="text-danger">ZIP còn lỗi; chưa có file hay database nào được thay đổi.</span><?php } ?>
             </div>
         </div>
     <?php } ?>
