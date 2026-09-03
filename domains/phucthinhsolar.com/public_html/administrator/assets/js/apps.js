@@ -2711,15 +2711,25 @@ $(document).on('click','.add_item',function(){
 	
 $(document).on('click','.xoa_item',function(){
 	if(confirm('Do you really mean to delete this item')){
-		var id = $(this).attr('href');
-		var item = $(this).parents('.tbl_add_item').data('item');
-		$(this).parents('.dong').remove();
+		var link = $(this);
+		var id = parseInt(link.attr('href'), 10) || 0;
+		var item = link.closest('[data-item]').data('item');
+		if(id === 0){
+			link.closest('.dong').remove();
+			return false;
+		}
 		$.ajax({
 			type:'post',
 			url:'api/delete_add_item.php',
+			dataType:'json',
 			data:{id:id,item:item,admin_csrf:ADMIN_CSRF},
-			success:function(kq){
-				
+			success:function(result){
+				if(result && result.ok) link.closest('.dong').remove();
+				else notifyDialog(result && result.message ? result.message : 'Không thể xóa mục');
+			},
+			error:function(xhr){
+				var result = xhr.responseJSON || {};
+				notifyDialog(result.message || 'Không thể xóa mục');
 			}
 		});
 		

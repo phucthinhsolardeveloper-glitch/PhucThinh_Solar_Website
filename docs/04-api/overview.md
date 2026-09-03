@@ -16,3 +16,5 @@ Response/error format chưa đồng nhất giữa JSON, HTML fragment và scalar
 `administrator/api/numb.php`, `copy.php` và `slug.php` đã chuyển sang envelope JSON. Client phục hồi thứ tự cũ khi lỗi, chỉ reload sau khi copy thành công và đọc `data.available` khi kiểm tra slug. Copy dùng vòng lặp slug có giới hạn, lấy đúng `lastInsertId`, chuẩn hóa field số và bắt exception DB. Kiểm tra slug xác thực định dạng, ép kiểu ID và parameterize điều kiện loại trừ bản ghi. Các endpoint fragment vẫn giữ contract legacy.
 
 Ba endpoint `update_sttMenu.php`, `update_sttIndex.php`, `update_sttDetail.php` trả envelope JSON và cập nhật thứ tự trong transaction. Danh sách bị giới hạn 500 ID dương, không trùng, phải tồn tại đủ trong bảng allowlist; JavaScript hiển thị lỗi nếu server không xác nhận thành công.
+
+`delete_add_item.php` nhận nhóm `menu/index/detail` qua allowlist để chọn đúng bảng sortable, trả JSON và xác minh bản ghi đã được xóa. Client giữ nguyên dòng nếu request thất bại; dòng mới chưa lưu (`id=0`) chỉ được gỡ khỏi DOM và không gọi API.

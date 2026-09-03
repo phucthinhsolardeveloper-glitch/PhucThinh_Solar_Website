@@ -117,7 +117,7 @@ if(!function_exists('adminCsrfToken'))
     function adminMutationPermissionKey($table, $capability, $type = '', $com = '')
     {
         $type = is_string($type) && preg_match('/^[a-zA-Z0-9_-]{1,100}$/', $type) ? $type : '';
-        if($table === 'sortable' && $capability === 'numb') return 'sortable_update';
+        if($table === 'sortable' && in_array($capability, array('numb', 'delete'), true)) return 'sortable_update';
         $actions = array('status' => 'edit', 'numb' => 'edit', 'copy' => 'add', 'database' => 'update');
         $suffixes = array(
             'product' => array('product', ''), 'product_list' => array('product', 'list'),

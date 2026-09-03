@@ -206,6 +206,18 @@ try
     $invalidSortResponse = readinessHttp($base.'api/update_sttMenu.php', 'POST', array('admin_csrf'=>$authenticatedToken[1], 'order'=>$createdSortableIds['sortable'][0].','.$createdSortableIds['sortable'][0]), $newCookie);
     $invalidSortPayload = json_decode($invalidSortResponse['body'], true);
     readinessAssert($invalidSortResponse['status'] === 400 && empty($invalidSortPayload['ok']) && $invalidSortPayload['code'] === 'INVALID_SORT_ORDER', 'API sắp xếp từ chối ID trùng mà không cập nhật dữ liệu');
+    foreach(array('sortable'=>'menu', 'sortable_index'=>'index', 'sortable_detail'=>'detail') as $sortableTable => $sortableItem)
+    {
+        $deleteSortableId = $createdSortableIds[$sortableTable][0];
+        $deleteSortableResponse = readinessHttp($base.'api/delete_add_item.php', 'POST', array('admin_csrf'=>$authenticatedToken[1], 'id'=>$deleteSortableId, 'item'=>$sortableItem), $newCookie);
+        $deleteSortablePayload = json_decode($deleteSortableResponse['body'], true);
+        $deletedSortableRow = $d->rawQueryOne("select id from #_{$sortableTable} where id = ?", array($deleteSortableId));
+        readinessAssert($deleteSortableResponse['status'] === 200 && !empty($deleteSortablePayload['ok']) && $deleteSortablePayload['code'] === 'SORTABLE_ITEM_DELETED' && empty($deletedSortableRow), 'API xóa đúng bảng sortable cho nhóm '.$sortableItem);
+    }
+    $invalidDeleteResponse = readinessHttp($base.'api/delete_add_item.php', 'POST', array('admin_csrf'=>$authenticatedToken[1], 'id'=>$createdSortableIds['sortable'][1], 'item'=>'unknown'), $newCookie);
+    $invalidDeletePayload = json_decode($invalidDeleteResponse['body'], true);
+    $retainedSortableRow = $d->rawQueryOne('select id from #_sortable where id = ?', array($createdSortableIds['sortable'][1]));
+    readinessAssert($invalidDeleteResponse['status'] === 400 && empty($invalidDeletePayload['ok']) && $invalidDeletePayload['code'] === 'INVALID_SORTABLE_ITEM' && !empty($retainedSortableRow['id']), 'API xóa từ chối nhóm ngoài allowlist và giữ nguyên dữ liệu');
 
     $bulkStatusPrefix = 'CODEX-BS-'.bin2hex(random_bytes(4));
     $bulkStatusCode = $bulkStatusPrefix.'-1';

@@ -50,6 +50,7 @@ Cập nhật gần nhất: 2026-09-03. Mọi thay đổi bên dưới mới ở 
 - Admin API batch 4: sao chép product/news bỏ đệ quy slug không giới hạn, trả JSON và chỉ reload khi thành công. Sửa lấy sai ID từ boolean `insert()`, chuẩn hóa `cong_suat`/giá cho MariaDB strict mode và bắt lỗi DB thành response trung tính; integration test tạo bản nháp slug mới rồi cleanup về 0 fixture.
 - Admin API batch 5: kiểm tra slug trả envelope JSON, xác thực định dạng/độ dài và ép kiểu ID. Điều kiện loại trừ bản ghi trong `Functions::checkSlug()` dùng parameterized query; integration test bao phủ slug trùng, slug của chính bản ghi, slug mới, ID bất thường và input sai định dạng.
 - Admin API batch 6: ba endpoint kéo-thả menu/index/detail dùng chung validation ID, allowlist bảng, giới hạn 500 dòng và transaction; trả JSON envelope thay vì response rỗng. Client báo lỗi request, mapping RBAC `sortable_update` được đồng bộ với menu và integration test bao phủ cả ba bảng cùng trường hợp ID trùng.
+- Admin API batch 7: sửa thao tác xóa sortable từng dùng sai selector nên có thể xóa nhầm bảng menu khi thao tác index/detail. Endpoint ánh xạ `menu/index/detail` qua allowlist, xác minh kết quả xóa và trả JSON; client chỉ gỡ dòng sau khi server xác nhận. Integration test bao phủ đúng cả ba bảng và trường hợp nhóm giả mạo.
 
 ## PARTIAL / CHỜ DỮ LIỆU THẬT
 
