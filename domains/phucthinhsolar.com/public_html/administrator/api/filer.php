@@ -84,13 +84,31 @@
 		$rows = filerGalleryRows($d, $id_parent, $hash, $com, $type, $kind, 'id, numb');
 		$allowed = array();
 		foreach($rows as $row) $allowed[(int)$row['id']] = (int)$row['numb'];
-		if(!$ids || count($ids) !== count($rows)) exit();
-		foreach($ids as $galleryId) if(!isset($allowed[$galleryId])) exit();
+		if(!$ids || count($ids) > 200 || count($ids) !== count($rows)) filerJsonResponse(false, 'Danh sách sắp xếp không hợp lệ.', 'INVALID_GALLERY_ORDER', array(), array('success'=>false), 400);
+		foreach($ids as $galleryId)
+			if(!isset($allowed[$galleryId])) filerJsonResponse(false, 'Danh sách sắp xếp không thuộc album hiện tại.', 'INVALID_GALLERY_ORDER', array(), array('success'=>false), 400);
+
 		$arrNumb = array_values($allowed);
-		foreach($ids as $index => $galleryId) { $d->where('id',$galleryId); $d->update('gallery',array('numb' => $arrNumb[$index])); }
+		$caseSql = array();
+		$params = array();
+		foreach($ids as $index => $galleryId)
+		{
+			$caseSql[] = 'when ? then ?';
+			$params[] = $galleryId;
+			$params[] = $arrNumb[$index];
+		}
+		$placeholders = implode(',', array_fill(0, count($ids), '?'));
+		$params = array_merge($params, $ids);
+		$d->rawQuery('update #_gallery set numb = case id '.implode(' ', $caseSql).' end where id in ('.$placeholders.')', $params);
+
+		$updatedRows = filerGalleryRows($d, $id_parent, $hash, $com, $type, $kind, 'id, numb');
+		$updated = array();
+		foreach($updatedRows as $row) $updated[(int)$row['id']] = (int)$row['numb'];
+		foreach($ids as $index => $galleryId)
+			if(!isset($updated[$galleryId]) || $updated[$galleryId] !== $arrNumb[$index]) filerJsonResponse(false, 'Không thể cập nhật thứ tự album.', 'GALLERY_ORDER_FAILED', array(), array('success'=>false), 500);
+
 		$cache->delete();
-		header('Content-Type: application/json; charset=UTF-8');
-		echo json_encode(array('id' => $ids, 'numb' => $arrNumb));
+		filerJsonResponse(true, 'Đã cập nhật thứ tự album.', 'GALLERY_ORDER_UPDATED', array('ids'=>$ids, 'numb'=>$arrNumb, 'updated'=>count($ids)), array('success'=>true, 'id'=>$ids, 'numb'=>$arrNumb));
 	}
 	else if($cmd === 'delete' && $id > 0 && ($id_parent > 0 || $hash !== ''))
 	{

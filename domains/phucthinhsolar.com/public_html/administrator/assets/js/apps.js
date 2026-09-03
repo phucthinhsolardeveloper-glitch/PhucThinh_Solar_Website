@@ -290,9 +290,16 @@ function createSortFiler()
 					},
 					success: function(result)
 					{
+						if(!result.ok) return notifyDialog(result.message || "Không thể cập nhật thứ tự album");
 						var arrid = result.id;
 						var arrnumb = result.numb;
 						for(var i=0;i<arrid.length;i++) $('.my-jFiler-item-'+arrid[i]).find("input[type=number]").val(arrnumb[i]);
+					},
+					error: function(xhr)
+					{
+						var result = xhr.responseJSON || {};
+						notifyDialog(result.message || "Không thể cập nhật thứ tự album");
+						refreshFilerIfEmpty();
 					}
 				});
 			},

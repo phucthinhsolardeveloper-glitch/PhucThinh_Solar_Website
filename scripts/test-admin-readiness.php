@@ -208,6 +208,37 @@ try
     $galleryBulkDeletedRow = $d->rawQueryOne('select id from #_gallery where id = ?', array($createdGalleryIds[1]));
     readinessAssert($galleryBulkDelete['status'] === 200 && !empty($galleryBulkPayload['ok']) && $galleryBulkPayload['code'] === 'GALLERY_ITEMS_DELETED' && (int)$galleryBulkPayload['data']['deleted'] === 1 && empty($galleryBulkDeletedRow), 'API gallery xóa danh sách hợp lệ và trả envelope JSON');
 
+    $galleryOrderIds = array();
+    foreach(array(10, 20) as $galleryOrder)
+    {
+        $d->insert('gallery', array(
+            'id_parent'=>987655,
+            'photo'=>'',
+            'namevi'=>'CODEX-GALLERY-ORDER-'.$galleryOrder,
+            'numb'=>$galleryOrder,
+            'type'=>'san-pham',
+            'com'=>'product',
+            'kind'=>'man',
+            'val'=>'san-pham',
+            'status'=>'hienthi',
+            'date_created'=>time(),
+        ));
+        $galleryOrderIds[] = (int)$d->getLastInsertId();
+        $createdGalleryIds[] = (int)$d->getLastInsertId();
+    }
+    $reversedGalleryIds = array_reverse($galleryOrderIds);
+    $galleryOrderUpdate = readinessHttp($base.'api/filer.php', 'POST', array('admin_csrf'=>$authenticatedToken[1], 'cmd'=>'updateNumb', 'listid'=>$reversedGalleryIds, 'id_parent'=>987655, 'com'=>'product', 'kind'=>'man', 'type'=>'san-pham'), $newCookie);
+    $galleryOrderPayload = json_decode($galleryOrderUpdate['body'], true);
+    $galleryOrderRows = $d->rawQuery('select id, numb from #_gallery where id in (?, ?)', $galleryOrderIds);
+    $galleryOrders = array();
+    foreach($galleryOrderRows as $galleryOrderRow) $galleryOrders[(int)$galleryOrderRow['id']] = (int)$galleryOrderRow['numb'];
+    readinessAssert($galleryOrderUpdate['status'] === 200 && !empty($galleryOrderPayload['ok']) && $galleryOrderPayload['code'] === 'GALLERY_ORDER_UPDATED' && (int)$galleryOrderPayload['data']['updated'] === 2 && $galleryOrders[$reversedGalleryIds[0]] === 10 && $galleryOrders[$reversedGalleryIds[1]] === 20, 'API gallery cập nhật thứ tự set-based và giữ payload client cũ');
+
+    $galleryInvalidOrder = readinessHttp($base.'api/filer.php', 'POST', array('admin_csrf'=>$authenticatedToken[1], 'cmd'=>'updateNumb', 'listid'=>array($galleryOrderIds[0], $galleryOrderIds[0]), 'id_parent'=>987655, 'com'=>'product', 'kind'=>'man', 'type'=>'san-pham'), $newCookie);
+    $galleryInvalidOrderPayload = json_decode($galleryInvalidOrder['body'], true);
+    $galleryOrderAfterReject = $d->rawQueryOne('select numb from #_gallery where id = ?', array($galleryOrderIds[0]));
+    readinessAssert($galleryInvalidOrder['status'] === 400 && empty($galleryInvalidOrderPayload['ok']) && $galleryInvalidOrderPayload['code'] === 'INVALID_GALLERY_ORDER' && (int)$galleryOrderAfterReject['numb'] === 20, 'API gallery từ chối danh sách thứ tự trùng ID mà không ghi dở');
+
     $sortableSettingBefore = $d->rawQueryOne('select id, hotline, phone, email, options from #_setting_sort order by id asc limit 0,1');
     $sortableInvalidMarker = 'CODEX-SORTABLE-INVALID-'.bin2hex(random_bytes(4));
     $sortableInvalidSave = readinessHttp($base.'index.php?com=sortable&act=save', 'POST', array(

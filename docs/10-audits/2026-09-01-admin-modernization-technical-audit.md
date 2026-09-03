@@ -170,7 +170,7 @@ Phần còn lại:
 
 - Mỗi full-page Admin có auth `SELECT`; auth `UPDATE` chỉ phát sinh tối đa mỗi 60 giây.
 - Status API dùng một count + một update set-based cho scope selected có trạng thái đích, tối đa 500 ID; toggle legacy không có giá trị đích vẫn tuần tự để giữ tương thích.
-- Gallery/sortable reorder update tuần tự theo từng row.
+- Gallery reorder đã chuyển sang một `UPDATE ... CASE` parameterized, giới hạn 200 ID, kiểm tra đúng toàn bộ album và xác minh kết quả; ba bảng sortable menu/index/detail dùng transaction với validation danh sách.
 - `FIND_IN_SET()` trên status xuất hiện rộng và khó tận dụng index.
 - Dataset local nhỏ; chưa đủ kết luận capacity hosting.
 
