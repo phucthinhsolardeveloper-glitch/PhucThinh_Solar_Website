@@ -32,6 +32,7 @@ docker cp scripts/test-pdodb-exceptions.php "$web_container:/tmp/test-pdodb-exce
 docker cp scripts/test-product-pricing-admin-http.php "$web_container:/tmp/test-product-pricing-admin-http.php"
 docker cp scripts/test-checkout-atomicity.php "$web_container:/tmp/test-checkout-atomicity.php"
 docker cp scripts/test-commerce-transaction.php "$web_container:/tmp/test-commerce-transaction.php"
+docker cp scripts/test-public-route-resolver.php "$web_container:/tmp/test-public-route-resolver.php"
 
 docker compose -f "$compose_file" exec -T web sh -lc '
 set -eu
@@ -49,6 +50,7 @@ php -l libraries/login_security.php
 php -l libraries/requick.php
 php -l libraries/order_security.php
 php -l libraries/session_security.php
+php -l libraries/public_route_resolver.php
 php /tmp/test-security-hardening.php
 php /tmp/test-admin-readiness.php
 php /tmp/test-product-bulk.php
@@ -56,6 +58,7 @@ php /tmp/test-pdodb-exceptions.php
 php /tmp/test-product-pricing-admin-http.php
 php /tmp/test-checkout-atomicity.php
 php /tmp/test-commerce-transaction.php
+php /tmp/test-public-route-resolver.php
 '
 
 node --check domains/phucthinhsolar.com/public_html/administrator/assets/js/apps.js

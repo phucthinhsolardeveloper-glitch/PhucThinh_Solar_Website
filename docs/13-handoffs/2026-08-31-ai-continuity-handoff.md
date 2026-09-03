@@ -180,7 +180,7 @@ Browser test đã phát hiện `.htaccess` trong `/upload` sinh sai cú pháp kh
 ## 8. Việc tiếp theo theo ưu tiên
 
 1. **Hoàn tất readiness trước deploy** theo checklist cha: ưu tiên dữ liệu/nội dung sản phẩm quảng cáo và 5 trang chính sách khi chủ project cung cấp/chốt dữ liệu; sau đó thực hiện các bước staging/hosting có phê duyệt.
-2. Refactor `$requick` trong `libraries/router.php`: hiện dò slug tuần tự qua ~26 bảng (mỗi trang chi tiết ~17 lookup). Cân nhắc bảng ánh xạ `slug -> (table, type, id)` hoặc một truy vấn UNION. Blast radius toàn routing → cần đọc kỹ + regression đầy đủ trước khi đụng.
+2. ~~Refactor `$requick` trong `libraries/router.php`~~: đã chuyển sang một query `UNION ALL`, giữ thứ tự ưu tiên legacy và đối chứng 503/503 slug public. Cần đo lại general log trên staging; user DB local không có quyền `SUPER` để bật log.
 3. Duyệt thẩm mỹ thủ công phần chưa tự động hoá được: popup tư vấn sản phẩm, menu mega desktop, trạng thái rỗng danh mục, khoảng cách/tràn ngang trên nhiều breakpoint.
 4. Chỉ thử conditional loading hoặc xử lý asset dung lượng lớn theo từng commit nhỏ, dùng 7 screenshot baseline và full suite làm cổng bắt buộc.
 5. Lặp lại profiling Admin trên dataset staging gần production; local đã xác nhận bốn danh sách không còn N+1 theo dòng nhưng chưa đủ kết luận capacity hosting.

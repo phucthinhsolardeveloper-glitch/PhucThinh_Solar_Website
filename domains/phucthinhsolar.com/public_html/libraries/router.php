@@ -152,25 +152,12 @@
 	/* Find data */
 	if(!empty($com) && !in_array($com, ['tim-kiem', 'account', 'sitemap']))
 	{
-		foreach($requick as $k => $v)
+		require_once LIBRARIES.'public_route_resolver.php';
+		$routeMatch = publicRouteResolveSlug($d, $com, $sluglang, $requick);
+		if(!empty($routeMatch['id']))
 		{
-			$urlTbl = (!empty($v['tbl'])) ? $v['tbl'] : '';
-			$urlTblTag = (!empty($v['tbltag'])) ? $v['tbltag'] : '';
-			$urlType = (!empty($v['type'])) ? $v['type'] : '';
-			$urlField = (!empty($v['field'])) ? $v['field'] : '';
-			$urlCom = (!empty($v['com'])) ? $v['com'] : '';
-			
-			if(!empty($urlTbl) && !in_array($urlTbl, ['static', 'photo']))
-			{
-				$row = $d->rawQueryOne("select id from #_$urlTbl where $sluglang = ? and type = ? and find_in_set('hienthi',status) limit 0,1",array($com,$urlType));
-				
-				if(!empty($row['id']))
-				{
-					$_GET[$urlField] = $row['id'];
-					$com = $urlCom;
-					break;
-				}
-			}
+			$_GET[$routeMatch['route_field']] = $routeMatch['id'];
+			$com = $routeMatch['route_com'];
 		}
 	}
 
