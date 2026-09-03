@@ -75,6 +75,19 @@ foreach($argv as $argument)
     exit(24);
 }
 
+foreach($argv as $argument)
+{
+	if(strpos($argument, '--idempotency-child=') !== 0) continue;
+	$payload = json_decode(base64_decode(substr($argument, strlen('--idempotency-child='))), true);
+	if(!is_array($payload) || empty($payload['code']) || empty($payload['token']) || empty($payload['barrier'])) exit(31);
+	$deadline = microtime(true) + 5;
+	while(!file_exists($payload['barrier']) && microtime(true) < $deadline) usleep(1000);
+	if(!file_exists($payload['barrier'])) exit(32);
+	$result = checkoutPersistOrder($d, $cart, $items, checkoutTestOrderData($payload['code'], $payload['token']), 'vi');
+	echo json_encode(array('success'=>!empty($result['success']), 'id'=>isset($result['id']) ? (int)$result['id'] : 0, 'reused'=>!empty($result['reused'])));
+	exit(empty($result['success']) ? 33 : 0);
+}
+
 try
 {
     $happyCode = $prefix.'H';
@@ -136,6 +149,45 @@ try
 			&& $idempotencyOrders === 1 && $idempotencyDetails === count($items),
 		'Replay cùng checkout token tái sử dụng đúng đơn đã commit và không nhân đôi detail'
 	);
+
+	$concurrentCode = $prefix.'C';
+	$concurrentToken = bin2hex(random_bytes(32));
+	$barrier = tempnam(sys_get_temp_dir(), 'pts-checkout-barrier-');
+	if($barrier === false) throw new RuntimeException('Không thể tạo barrier concurrency test');
+	unlink($barrier);
+	$childPayload = base64_encode(json_encode(array('code'=>$concurrentCode, 'token'=>$concurrentToken, 'barrier'=>$barrier)));
+	$command = escapeshellarg(PHP_BINARY).' '.escapeshellarg(__FILE__).' '.escapeshellarg('--idempotency-child='.$childPayload);
+	$descriptors = array(0=>array('pipe', 'r'), 1=>array('pipe', 'w'), 2=>array('pipe', 'w'));
+	$processes = array();
+	for($childIndex = 0; $childIndex < 2; $childIndex++)
+	{
+		$pipes = array();
+		$process = proc_open($command, $descriptors, $pipes);
+		if(!is_resource($process)) throw new RuntimeException('Không thể mở tiến trình concurrency test');
+		fclose($pipes[0]);
+		$processes[] = array('process'=>$process, 'stdout'=>$pipes[1], 'stderr'=>$pipes[2]);
+	}
+	touch($barrier);
+	$concurrentResults = array();
+	foreach($processes as $child)
+	{
+		$stdout = stream_get_contents($child['stdout']);
+		$stderr = stream_get_contents($child['stderr']);
+		fclose($child['stdout']);
+		fclose($child['stderr']);
+		$exitCode = proc_close($child['process']);
+		$jsonOffset = strrpos($stdout, '{');
+		$concurrentResults[] = array('exit'=>$exitCode, 'payload'=>$jsonOffset === false ? null : json_decode(substr($stdout, $jsonOffset), true), 'stderr'=>$stderr);
+	}
+	if(file_exists($barrier)) unlink($barrier);
+	$concurrentOrders = $d->rawQuery('select id from #_order where checkout_token = ?', array($concurrentToken));
+	$concurrentOrderId = count($concurrentOrders) === 1 ? (int)$concurrentOrders[0]['id'] : 0;
+	$concurrentOk = $concurrentOrderId > 0;
+	foreach($concurrentResults as $childResult)
+	{
+		if($childResult['exit'] !== 0 || empty($childResult['payload']['success']) || (int)$childResult['payload']['id'] !== $concurrentOrderId) $concurrentOk = false;
+	}
+	checkoutAssert($concurrentOk, 'Hai tiến trình checkout đồng thời nhận cùng một order ID và chỉ tạo một đơn');
 }
 finally
 {

@@ -60,7 +60,7 @@ Cập nhật gần nhất: 2026-09-03. Mọi thay đổi bên dưới mới ở 
 - Admin API batch 14: dropdown danh mục/địa giới giữ HTML fragment khi thành công nhưng từ chối method, bảng, type và level sai bằng HTTP 400/405 + JSON envelope. Client giữ dropdown hiện tại và báo lỗi thay vì chèn chuỗi lỗi vào form. Integration test bao phủ parent rỗng tương thích, level/table ngoài allowlist và method ngoài POST.
 - Admin API batch 15: `filer.php` chuẩn hóa nốt method/command/module/scope/layout/hash/context sai thành HTTP 400/405 + JSON envelope; mutation gallery trả lỗi quyền dạng JSON. Refresh hợp lệ vẫn trả HTML và đóng đúng output buffer, client báo lỗi mà không dựng lại album giả. Integration test bao phủ refresh đủ fixture và ba nhóm request sai trước đây từng trả body rỗng.
 - Admin API batch 16: bootstrap AJAX cài exception boundary chung; lỗi DB/runtime chưa được endpoint bắt riêng sẽ rollback transaction đang mở, ghi chi tiết vào error log và trả HTTP 500 với envelope `INTERNAL_ERROR` trung tính, không lộ SQL/stack cho trình duyệt.
-- Checkout idempotency local: form phát token ngẫu nhiên 256-bit, migration 009 thêm unique index trên đơn hàng; request replay trả lại đúng đơn đã commit, không tạo detail hoặc gửi email lần hai. Token được kiểm tra cùng session và chỉ xoay sau khi đã tạo trạng thái trang cảm ơn.
+- Checkout idempotency local: form phát token ngẫu nhiên 256-bit, migration 009 thêm unique index trên đơn hàng; request replay trả lại đúng đơn đã commit, không tạo detail hoặc gửi email lần hai. Token được kiểm tra cùng session và chỉ xoay sau khi đã tạo trạng thái trang cảm ơn; regression hai tiến trình đồng thời cùng nhận một order ID.
 
 ## PARTIAL / CHỜ DỮ LIỆU THẬT
 

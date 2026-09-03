@@ -212,7 +212,7 @@ Các batch local đã chuẩn hóa dần mutation JSON, gồm `login/status/uplo
 Khoảng trống:
 
 - Đã có characterization cho token ổn định/throttle và HTTP integration cho full-page request liên tiếp; chưa có stress test request song song thật.
-- Đã có test checkout partial write/shutdown và replay bằng idempotency key bền vững trong database; chưa có stress test hai HTTP request thực sự đồng thời.
+- Đã có test checkout partial write/shutdown, replay và hai tiến trình ghi đồng thời bằng idempotency key bền vững trong database; chưa có stress test qua hai HTTP request thật trên staging.
 - Chưa có contract test thống nhất cho lỗi API.
 - Đã có test xác nhận CRUD thủ công và bulk importer áp cùng invariant giá sản phẩm.
 - Chưa profile Admin trên dataset staging gần production.
