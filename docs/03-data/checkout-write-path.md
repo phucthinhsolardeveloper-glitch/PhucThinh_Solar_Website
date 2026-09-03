@@ -10,7 +10,7 @@ Hai bảng commerce `table_order` và `table_order_detail` đã dùng InnoDB tr�
 - Mọi giá trị trả về từ insert order/detail đều được kiểm tra.
 - Mỗi sản phẩm được đọc lại trước khi insert detail; thiếu sản phẩm hoặc quantity không hợp lệ làm hủy checkout.
 - Khi lỗi sau khi đã có order ID, hệ thống xóa `order_detail` theo đúng `id_order`, rồi xóa chính order đó.
-- Shutdown cleanup xử lý trường hợp PDODb dừng request bằng `die()` giữa chuỗi insert.
+- Controller bắt exception để rollback; shutdown cleanup vẫn là lớp phòng vệ cuối nếu request dừng bất thường giữa chuỗi insert.
 - Email, token cảm ơn, conversion state và xóa cart chỉ chạy sau khi toàn bộ dòng DB được lưu thành công.
 - Khi thất bại, cart được giữ nguyên và khách được đưa về giỏ hàng với thông báo lỗi.
 

@@ -1,4 +1,26 @@
 <?php
+class PDODbException extends RuntimeException
+{
+    private $operation;
+    private $sqlState;
+    private $driverMessage;
+    private $queryTemplate;
+
+    public function __construct($operation, $sqlState = '', $driverMessage = '', $queryTemplate = '', Throwable $previous = null)
+    {
+        parent::__construct('Database operation failed: '.(string)$operation, 0, $previous);
+        $this->operation = (string)$operation;
+        $this->sqlState = (string)$sqlState;
+        $this->driverMessage = (string)$driverMessage;
+        $this->queryTemplate = (string)$queryTemplate;
+    }
+
+    public function getOperation() { return $this->operation; }
+    public function getSqlState() { return $this->sqlState; }
+    public function getDriverMessage() { return $this->driverMessage; }
+    public function getQueryTemplate() { return $this->queryTemplate; }
+}
+
 class PDODb
 {
     /**
@@ -316,7 +338,7 @@ class PDODb
                     }
                 break;
                 default:
-                    die($this->sendException('Insert/Update Query', '***', 'Wrong operation', $this->query));
+                    $this->throwException('Insert/Update Query', '***', 'Wrong operation', $this->query);
             }
         }
         $this->query = rtrim($this->query, ', ');
@@ -360,7 +382,7 @@ class PDODb
 
         if ($this->lastError[1] > 0)
         {
-            die($this->sendException('SQL Prepare Error', $this->lastError[0], $this->lastError[2], $this->query));
+            $this->throwException('SQL Prepare Error', $this->lastError[0], $this->lastError[2], $this->query);
         }
 
         $this->createLogs(@$_SESSION[$loginAdmin]['username'], 'insert', $tableName, $this->pdo()
@@ -644,7 +666,7 @@ class PDODb
         {
             if (empty($this->connectionParams['type']))
             {
-                die($this->sendException('Database Connect', '***', 'DB Type is not set', '***'));
+                $this->throwException('Database Connect', '***', 'DB Type is not set', '***');
             }
             $connectionString = $this->connectionParams['type'] . ':';
             $connectionParams = ['host', 'dbname', 'port', 'charset'];
@@ -660,7 +682,7 @@ class PDODb
         }
         catch(Exception $e)
         {
-            die($this->sendException('Database Connection Failed', 1049, $e->getMessage() , ''));
+            $this->throwException('Database Connection Failed', 1049, $e->getMessage(), '', $e);
         }
     }
     /**
@@ -684,7 +706,7 @@ class PDODb
     {
         if (!is_numeric($num))
         {
-            die($this->sendException('Generates Decrimental', '***', 'Argument supplied to dec must be a number', '***'));
+            $this->throwException('Generates Decrimental', '***', 'Argument supplied to dec must be a number', '***');
         }
         return array(
             "[I]" => "-" . $num
@@ -720,7 +742,7 @@ class PDODb
 
         if ($this->lastError[1] > 0)
         {
-            die($this->sendException('SQL Prepare Error', $this->lastError[0], $this->lastError[2], $this->query));
+            $this->throwException('SQL Prepare Error', $this->lastError[0], $this->lastError[2], $this->query);
         }
 
         $this->rowCount = $stmt->rowCount();
@@ -958,7 +980,7 @@ class PDODb
 
         if ($this->lastError[1] > 0)
         {
-            die($this->sendException('SQL Prepare Error', $this->lastError[0], $this->lastError[2], $this->query));
+            $this->throwException('SQL Prepare Error', $this->lastError[0], $this->lastError[2], $this->query);
         }
 
         $this->rowCount = $stmt->rowCount();
@@ -1042,7 +1064,7 @@ class PDODb
     {
         if (!is_numeric($num))
         {
-            die($this->sendException('Generates Incremental', '***', 'Argument supplied to inc must be a number', '***'));
+            $this->throwException('Generates Incremental', '***', 'Argument supplied to inc must be a number', '***');
         }
         return ["[I]" => "+" . $num];
     }
@@ -1090,7 +1112,7 @@ class PDODb
             }
             if (!in_array($type, array_keys($types)))
             {
-                die($this->sendException('Generated Interval', '***', "invalid interval type in '{$diff}'", '***'));
+                $this->throwException('Generated Interval', '***', "invalid interval type in '{$diff}'", '***');
             }
             $func .= " " . $incr . " interval " . $items . " " . $types[$type] . " ";
         }
@@ -1119,7 +1141,7 @@ class PDODb
         $joinType = strtoupper(trim($joinType));
         if ($joinType && !in_array($joinType, $allowedTypes))
         {
-            die($this->sendException('Concatenate Joins For The Final SQL Statement', '***', 'Wrong JOIN type: ' . $joinType, '***'));
+            $this->throwException('Concatenate Joins For The Final SQL Statement', '***', 'Wrong JOIN type: ' . $joinType, '***');
         }
         if (!is_object($joinTable))
         {
@@ -1187,7 +1209,7 @@ class PDODb
         $orderByField = preg_replace('/(\`)([`a-zA-Z0-9_]*\.)/', '\1' . $this->prefix . '\2', $orderByField);
         if (empty($orderbyDirection) || !in_array($orderbyDirection, $allowedDirection))
         {
-            die($this->sendException('Specify Multiple ORDER BY Statements For SQL Queries', '***', 'Wrong order direction: ' . $orderbyDirection, '***'));
+            $this->throwException('Specify Multiple ORDER BY Statements For SQL Queries', '***', 'Wrong order direction: ' . $orderbyDirection, '***');
         }
         if (is_array($customFields))
         {
@@ -1256,7 +1278,7 @@ class PDODb
         }
         if (!$this->pdo)
         {
-            die($this->sendException('Database Connect', '***', 'Cannot connect to db', '***'));
+            $this->throwException('Database Connect', '***', 'Cannot connect to db', '***');
         }
         return $this->pdo;
     }
@@ -1279,7 +1301,7 @@ class PDODb
 
             if ($this->lastError[1] > 0)
             {
-                die($this->sendException('SQL Prepare Error', $this->lastError[0], $this->lastError[2], $this->query));
+                $this->throwException('SQL Prepare Error', $this->lastError[0], $this->lastError[2], $this->query);
             }
 
             return null;
@@ -1315,7 +1337,7 @@ class PDODb
 
             if ($this->lastError[1] > 0)
             {
-                die($this->sendException('SQL Prepare Error', $this->lastError[0], $this->lastError[2], $this->query));
+                $this->throwException('SQL Prepare Error', $this->lastError[0], $this->lastError[2], $this->query);
             }
 
             $result = $this->buildResult($stmt);
@@ -1478,7 +1500,7 @@ class PDODb
             $option = strtoupper($option);
             if (!in_array($option, $allowedOptions))
             {
-                die($this->sendException('Specify Multiple Options For SQL Queries', '***', 'Wrong query option: ' . $option, '***'));
+                $this->throwException('Specify Multiple Options For SQL Queries', '***', 'Wrong query option: ' . $option, '***');
             }
             if ($option == 'MYSQLI_NESTJOIN')
             {
@@ -1708,7 +1730,7 @@ class PDODb
 
         if ($this->lastError[1] > 0)
         {
-            die($this->sendException('SQL Prepare Error', $this->lastError[0], $this->lastError[2], $this->query));
+            $this->throwException('SQL Prepare Error', $this->lastError[0], $this->lastError[2], $this->query);
         }
 
         $wherelogs = json_encode($this->where);
@@ -1754,29 +1776,11 @@ class PDODb
         $this->setQueryOption('SQL_CALC_FOUND_ROWS');
         return $this;
     }
-    /* Exception */
-    private function sendException($name, $errorNumber = '', $erroMessage='', $sql = '')
+    /* Exception: không render HTML hoặc kết thúc request ở data layer. */
+    private function throwException($name, $errorNumber = '', $errorMessage = '', $sql = '', Throwable $previous = null)
     {
-        $exceptions = array();
-        $exceptions['vars'] = array(
-            '{name}',
-            '{errornumber}',
-            '{errormessage}',
-            '{sqlquery}'
-        );
-        $exceptions['vals'] = array(
-            $name,
-            $errorNumber,
-            $erroMessage,
-            $sql
-        );
-
-        ob_start();
-        include dirname(__DIR__)."/sample/pdo/exception.php";
-        $template = ob_get_contents();
-        ob_clean();
-
-        return str_replace($exceptions['vars'], $exceptions['vals'], $template);
+        $this->reset();
+        throw new PDODbException($name, $errorNumber, $errorMessage, $sql, $previous);
     }
     /* Create logs */
     public function insertParamsLogs($query, $params = null)

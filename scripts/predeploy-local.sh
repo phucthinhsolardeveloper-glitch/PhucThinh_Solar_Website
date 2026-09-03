@@ -28,6 +28,7 @@ fi
 docker cp scripts/test-security-hardening.php "$web_container:/tmp/test-security-hardening.php"
 docker cp scripts/test-admin-readiness.php "$web_container:/tmp/test-admin-readiness.php"
 docker cp scripts/test-product-bulk.php "$web_container:/tmp/test-product-bulk.php"
+docker cp scripts/test-pdodb-exceptions.php "$web_container:/tmp/test-pdodb-exceptions.php"
 docker cp scripts/test-product-pricing-admin-http.php "$web_container:/tmp/test-product-pricing-admin-http.php"
 docker cp scripts/test-checkout-atomicity.php "$web_container:/tmp/test-checkout-atomicity.php"
 docker cp scripts/test-commerce-transaction.php "$web_container:/tmp/test-commerce-transaction.php"
@@ -39,6 +40,7 @@ php -l administrator/api/status.php
 php -l administrator/sources/order.php
 php -l administrator/sources/product.php
 php -l administrator/sources/product_bulk.php
+php -l libraries/class/class.PDODb.php
 php -l libraries/admin_product_pricing.php
 php -l libraries/admin_product_completeness.php
 php -l libraries/admin_security.php
@@ -50,6 +52,7 @@ php -l libraries/session_security.php
 php /tmp/test-security-hardening.php
 php /tmp/test-admin-readiness.php
 php /tmp/test-product-bulk.php
+php /tmp/test-pdodb-exceptions.php
 php /tmp/test-product-pricing-admin-http.php
 php /tmp/test-checkout-atomicity.php
 php /tmp/test-commerce-transaction.php

@@ -190,14 +190,11 @@ Các mutation Admin quan trọng đã được cải thiện bằng:
 
 Invariant giá đã dùng chung helper giữa CRUD thủ công và bulk importer. Các entity khác vẫn cần được đánh giá theo từng đường ghi trước khi gom validation rộng hơn.
 
-### 10. Error handling — VERIFIED
+### 10. Error handling — RESOLVED ON LOCAL (DATA LAYER)
 
-`class.PDODb.php` gọi `die()` khi connect, prepare hoặc query lỗi. Điều này tạo các vấn đề:
+Trạng thái triển khai 2026-09-03: ADM-P1-001 đã thay toàn bộ 15 nhánh `die()` trong `class.PDODb.php` bằng `PDODbException`. Exception có message công khai trung tính, giữ operation/SQLSTATE/driver message/query template riêng cho lớp xử lý lỗi và không ghép giá trị bind. Regression chứng minh lỗi SQL có thể được catch, rollback và tiếp tục dùng kết nối; full pre-deploy đạt.
 
-- API có thể trả HTML lỗi thay vì JSON contract.
-- Controller không có exception boundary để rollback/bù trừ hoặc chọn HTTP status phù hợp.
-- Data layer trực tiếp quyết định output HTTP.
-- Negative-path integration test khó kiểm soát.
+Data layer không còn tự render HTML hoặc kết thúc request, nên controller hiện có có thể rollback/bù trừ. Việc chuẩn hóa error envelope và exception boundary theo từng nhóm API vẫn là backlog riêng.
 
 Các endpoint còn dùng nhiều `exit()` không body hoặc plain-text error. Chưa có error envelope, exception boundary hoặc API router chung.
 
