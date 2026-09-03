@@ -169,7 +169,7 @@ Các kết quả đã được audit trước và được đối chiếu với 
 Phần còn lại:
 
 - Mỗi full-page Admin có auth `SELECT`; auth `UPDATE` chỉ phát sinh tối đa mỗi 60 giây.
-- Status API ở scope selected vẫn đọc rồi update theo từng ID, tối đa 500 ID.
+- Status API dùng một count + một update set-based cho scope selected có trạng thái đích, tối đa 500 ID; toggle legacy không có giá trị đích vẫn tuần tự để giữ tương thích.
 - Gallery/sortable reorder update tuần tự theo từng row.
 - `FIND_IN_SET()` trên status xuất hiện rộng và khó tận dụng index.
 - Dataset local nhỏ; chưa đủ kết luận capacity hosting.
@@ -266,7 +266,7 @@ Các ứng viên cần điều tra trước khi triển khai, không được cl
 - Thiết kế FK sau khi có contract xóa/cascade rõ ràng.
 - Checkout idempotency bền vững giữa session/client.
 - Exception boundary và API response contract.
-- Batch/set-based update cho status/reorder khi phù hợp.
+- Batch/set-based update cho sortable/reorder khi phù hợp; status có giá trị đích đã được xử lý.
 
 ## Ưu tiên kỹ thuật đề xuất
 

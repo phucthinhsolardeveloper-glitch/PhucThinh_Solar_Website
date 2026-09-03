@@ -66,6 +66,8 @@ try
         $d->rawQuery("delete from #_permission where id_permission_group = ?", array((int)$staleGroup['id']));
         $d->rawQuery("delete from #_permission_group where id = ?", array((int)$staleGroup['id']));
     }
+    foreach($d->rawQuery("select id from #_product where code like ? or code like ?", array('CODEX-BULK-STATUS-%', 'CODEX-BS-%')) as $staleProduct)
+        $d->rawQuery("delete from #_product where id = ?", array((int)$staleProduct['id']));
     $matrix = array(
         'product' => array('product_man_san-pham','product_add_san-pham','product_edit_san-pham','product_delete_san-pham','product_add_photo_san-pham','product_edit_photo_san-pham','product_delete_photo_san-pham'),
         'order' => array('order_man','order_edit'),
@@ -180,14 +182,26 @@ try
     $apiInvalidPayload = json_decode($apiInvalidStatus['body'], true);
     readinessAssert($apiInvalidStatus['status'] === 200 && empty($apiInvalidPayload['success']), 'API trạng thái hàng loạt từ chối thuộc tính ngoài cấu hình');
 
-    $bulkStatusCode = 'CODEX-BULK-STATUS-'.bin2hex(random_bytes(4));
+    $bulkStatusPrefix = 'CODEX-BS-'.bin2hex(random_bytes(4));
+    $bulkStatusCode = $bulkStatusPrefix.'-1';
     $d->insert('product', array('code' => $bulkStatusCode, 'namevi' => 'Sản phẩm kiểm thử trạng thái lọc', 'slugvi' => strtolower($bulkStatusCode), 'type' => 'san-pham', 'status' => 'hienthi', 'numb' => 0, 'cong_suat' => 0, 'regular_price' => 0, 'sale_price' => 0, 'discount' => 0, 'id_list' => 0, 'id_cat' => 0, 'id_item' => 0, 'id_sub' => 0, 'id_brand' => 0, 'date_created' => time(), 'date_updated' => 0, 'view' => 0));
     $bulkStatusProductId = (int)$d->getLastInsertId();
     $createdProductIds[] = $bulkStatusProductId;
-    $apiFilteredStatus = readinessHttp($base.'api/status.php', 'POST', array('admin_csrf' => $authenticatedToken[1], 'scope' => 'filtered', 'table' => 'product', 'attr' => 'baogia', 'value' => '1', 'type' => 'san-pham', 'com' => 'product', 'keyword' => $bulkStatusCode), $newCookie);
+    $secondBulkStatusCode = $bulkStatusPrefix.'-2';
+    $d->insert('product', array('code' => $secondBulkStatusCode, 'namevi' => 'Sản phẩm kiểm thử set-based', 'slugvi' => strtolower($secondBulkStatusCode), 'type' => 'san-pham', 'status' => '', 'numb' => 0, 'cong_suat' => 0, 'regular_price' => 0, 'sale_price' => 0, 'discount' => 0, 'id_list' => 0, 'id_cat' => 0, 'id_item' => 0, 'id_sub' => 0, 'id_brand' => 0, 'date_created' => time(), 'date_updated' => 0, 'view' => 0));
+    $secondBulkStatusProductId = (int)$d->getLastInsertId();
+    $createdProductIds[] = $secondBulkStatusProductId;
+    $apiSelectedStatus = readinessHttp($base.'api/status.php', 'POST', array('admin_csrf' => $authenticatedToken[1], 'ids' => $bulkStatusProductId.','.$secondBulkStatusProductId, 'scope' => 'selected', 'table' => 'product', 'attr' => 'baogia', 'value' => '1', 'type' => 'san-pham', 'com' => 'product'), $newCookie);
+    $apiSelectedPayload = json_decode($apiSelectedStatus['body'], true);
+    $selectedStatusRows = $d->rawQuery('select id, status from #_product where id in (?, ?)', array($bulkStatusProductId, $secondBulkStatusProductId));
+    $selectedStatusApplied = count($selectedStatusRows) === 2;
+    foreach($selectedStatusRows as $selectedStatusRow)
+        if(strpos(','.$selectedStatusRow['status'].',', ',baogia,') === false) $selectedStatusApplied = false;
+    readinessAssert($apiSelectedStatus['status'] === 200 && !empty($apiSelectedPayload['success']) && (int)$apiSelectedPayload['updated'] === 2 && $selectedStatusApplied, 'API trạng thái cập nhật set-based các dòng được chọn');
+    $apiFilteredStatus = readinessHttp($base.'api/status.php', 'POST', array('admin_csrf' => $authenticatedToken[1], 'scope' => 'filtered', 'table' => 'product', 'attr' => 'baogia', 'value' => '1', 'type' => 'san-pham', 'com' => 'product', 'keyword' => $bulkStatusPrefix), $newCookie);
     $apiFilteredPayload = json_decode($apiFilteredStatus['body'], true);
     $bulkStatusRow = $d->rawQueryOne('select status from #_product where id = ?', array($bulkStatusProductId));
-    readinessAssert($apiFilteredStatus['status'] === 200 && !empty($apiFilteredPayload['success']) && (int)$apiFilteredPayload['updated'] === 1 && strpos(','.$bulkStatusRow['status'].',', ',baogia,') !== false, 'API trạng thái áp dụng được toàn bộ kết quả theo bộ lọc');
+    readinessAssert($apiFilteredStatus['status'] === 200 && !empty($apiFilteredPayload['success']) && (int)$apiFilteredPayload['updated'] === 2 && strpos(','.$bulkStatusRow['status'].',', ',baogia,') !== false, 'API trạng thái áp dụng được toàn bộ kết quả theo bộ lọc');
 
     // ADM-P1-012: form liên hệ Theme V2 đã bỏ trường địa chỉ; Admin phải lưu được liên hệ khi địa chỉ trống.
     $contactFixtureCode = 'CODEX-CONTACT-'.bin2hex(random_bytes(4));

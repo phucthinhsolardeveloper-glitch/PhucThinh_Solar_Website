@@ -35,6 +35,7 @@ docker cp scripts/test-commerce-transaction.php "$web_container:/tmp/test-commer
 docker compose -f "$compose_file" exec -T web sh -lc '
 set -eu
 php -l administrator/api/login.php
+php -l administrator/api/status.php
 php -l administrator/sources/order.php
 php -l administrator/sources/product.php
 php -l administrator/sources/product_bulk.php

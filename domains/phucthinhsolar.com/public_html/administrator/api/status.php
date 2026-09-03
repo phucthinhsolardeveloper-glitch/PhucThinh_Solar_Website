@@ -60,18 +60,34 @@
 		adminRequireMutationPermission($table, 'status', $type, $com);
 		if($table !== 'product' || (!empty($config['product'][$type]['check']) && array_key_exists($attr, $config['product'][$type]['check'])))
 		{
-			foreach($ids as $id)
+			if($hasExplicitValue)
 			{
-				$status_detail = $d->rawQueryOne("select status from #_{$table} where id = ? limit 0,1", array($id));
-				if(!$status_detail) continue;
-				$status_array = array_values(array_unique(array_filter(array_map('trim', explode(',', (string)$status_detail['status'])))));
-				$enabled = in_array($attr, $status_array, true);
-				$shouldEnable = $hasExplicitValue ? $explicitValue : !$enabled;
-				if($shouldEnable && !$enabled) $status_array[] = $attr;
-				if(!$shouldEnable && $enabled) $status_array = array_values(array_diff($status_array, array($attr)));
-				if($shouldEnable === $enabled) { $result['updated']++; continue; }
-				$d->where('id', $id);
-				if($d->update($table, array('status' => implode(',', $status_array)))) $result['updated']++;
+				$placeholders = implode(',', array_fill(0, count($ids), '?'));
+				$countRow = $d->rawQueryOne("select count(*) as total from #_{$table} where id in ($placeholders)", $ids);
+				$targetCount = !empty($countRow['total']) ? (int)$countRow['total'] : 0;
+				if($targetCount === count($ids))
+				{
+					if($explicitValue)
+						$sql = "update #_{$table} set status = trim(both ',' from concat(status, if(status = '', '', ','), ?)) where id in ($placeholders) and not find_in_set(?,status)";
+					else
+						$sql = "update #_{$table} set status = trim(both ',' from replace(concat(',',status,','), concat(',',?,','), ',')) where id in ($placeholders) and find_in_set(?,status)";
+					$d->rawQuery($sql, array_merge(array($attr), $ids, array($attr)));
+					$result['updated'] = $targetCount;
+				}
+			}
+			else
+			{
+				foreach($ids as $id)
+				{
+					$status_detail = $d->rawQueryOne("select status from #_{$table} where id = ? limit 0,1", array($id));
+					if(!$status_detail) continue;
+					$status_array = array_values(array_unique(array_filter(array_map('trim', explode(',', (string)$status_detail['status'])))));
+					$enabled = in_array($attr, $status_array, true);
+					if($enabled) $status_array = array_values(array_diff($status_array, array($attr)));
+					else $status_array[] = $attr;
+					$d->where('id', $id);
+					if($d->update($table, array('status' => implode(',', $status_array)))) $result['updated']++;
+				}
 			}
 			$result['success'] = $result['updated'] === count($ids);
 			$result['message'] = $result['success'] ? 'Đã cập nhật các sản phẩm được chọn.' : 'Một số sản phẩm chưa được cập nhật.';
