@@ -55,6 +55,7 @@ $createdContactIds = array();
 $createdNewsletterIds = array();
 $createdSortableIds = array('sortable'=>array(), 'sortable_index'=>array(), 'sortable_detail'=>array());
 $createdCommentIds = array();
+$createdGalleryIds = array();
 
 try
 {
@@ -175,6 +176,37 @@ try
             && (int)$authStateAfterPages['lastlogin'] === (int)$authStateAfterRefresh['lastlogin'],
         'Các page load trong throttle không xoay token hoặc ghi lại activity'
     );
+
+    foreach(array('single', 'bulk') as $gallerySuffix)
+    {
+        $d->insert('gallery', array(
+            'id_parent'=>987654,
+            'photo'=>'',
+            'namevi'=>'CODEX-GALLERY-'.$gallerySuffix,
+            'numb'=>0,
+            'type'=>'san-pham',
+            'com'=>'product',
+            'kind'=>'man',
+            'val'=>'san-pham',
+            'status'=>'hienthi',
+            'date_created'=>time(),
+        ));
+        $createdGalleryIds[] = (int)$d->getLastInsertId();
+    }
+    $galleryDelete = readinessHttp($base.'api/filer.php', 'POST', array('admin_csrf'=>$authenticatedToken[1], 'cmd'=>'delete', 'id'=>$createdGalleryIds[0], 'id_parent'=>987654, 'com'=>'product', 'kind'=>'man', 'type'=>'san-pham'), $newCookie);
+    $galleryDeletePayload = json_decode($galleryDelete['body'], true);
+    $galleryDeletedRow = $d->rawQueryOne('select id from #_gallery where id = ?', array($createdGalleryIds[0]));
+    readinessAssert($galleryDelete['status'] === 200 && !empty($galleryDeletePayload['ok']) && $galleryDeletePayload['code'] === 'GALLERY_ITEM_DELETED' && empty($galleryDeletedRow), 'API gallery chỉ xác nhận sau khi xóa đúng ảnh trong album');
+
+    $galleryInvalidBulk = readinessHttp($base.'api/filer.php', 'POST', array('admin_csrf'=>$authenticatedToken[1], 'cmd'=>'delete-all', 'listid'=>$createdGalleryIds[1].',999999', 'id_parent'=>987654, 'com'=>'product', 'kind'=>'man', 'type'=>'san-pham'), $newCookie);
+    $galleryInvalidPayload = json_decode($galleryInvalidBulk['body'], true);
+    $galleryRetainedRow = $d->rawQueryOne('select id from #_gallery where id = ?', array($createdGalleryIds[1]));
+    readinessAssert($galleryInvalidBulk['status'] === 400 && empty($galleryInvalidPayload['ok']) && $galleryInvalidPayload['code'] === 'INVALID_GALLERY_SELECTION' && !empty($galleryRetainedRow), 'API gallery từ chối toàn bộ danh sách lẫn ID ngoài album và giữ dữ liệu');
+
+    $galleryBulkDelete = readinessHttp($base.'api/filer.php', 'POST', array('admin_csrf'=>$authenticatedToken[1], 'cmd'=>'delete-all', 'listid'=>(string)$createdGalleryIds[1], 'id_parent'=>987654, 'com'=>'product', 'kind'=>'man', 'type'=>'san-pham'), $newCookie);
+    $galleryBulkPayload = json_decode($galleryBulkDelete['body'], true);
+    $galleryBulkDeletedRow = $d->rawQueryOne('select id from #_gallery where id = ?', array($createdGalleryIds[1]));
+    readinessAssert($galleryBulkDelete['status'] === 200 && !empty($galleryBulkPayload['ok']) && $galleryBulkPayload['code'] === 'GALLERY_ITEMS_DELETED' && (int)$galleryBulkPayload['data']['deleted'] === 1 && empty($galleryBulkDeletedRow), 'API gallery xóa danh sách hợp lệ và trả envelope JSON');
 
     $sortableSettingBefore = $d->rawQueryOne('select id, hotline, phone, email, options from #_setting_sort order by id asc limit 0,1');
     $sortableInvalidMarker = 'CODEX-SORTABLE-INVALID-'.bin2hex(random_bytes(4));
@@ -464,6 +496,7 @@ try
 }
 finally
 {
+    foreach($createdGalleryIds as $galleryId) $d->rawQuery('delete from #_gallery where id = ?', array($galleryId));
     foreach($createdCommentIds as $commentId) $d->rawQuery('delete from #_comment where id = ? or id_parent = ?', array($commentId, $commentId));
     foreach($createdSortableIds as $sortableTable => $sortableIds)
         foreach($sortableIds as $sortableId) $d->rawQuery("delete from #_{$sortableTable} where id = ?", array($sortableId));

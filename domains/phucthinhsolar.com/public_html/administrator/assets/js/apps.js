@@ -380,6 +380,7 @@ function deleteFiler(string)
 	$.ajax({
 		type: 'POST',
 		url: 'api/filer.php',
+		dataType: 'json',
 		data: {
 			id: id,
 			id_parent: ID,
@@ -389,15 +390,19 @@ function deleteFiler(string)
 			cmd: cmd,
 			hash: HASH,
 			admin_csrf: ADMIN_CSRF
+		},
+		success: function(result)
+		{
+			if(!result.ok) return notifyDialog(result.message || "Không thể xóa ảnh");
+			$('.my-jFiler-item-'+id).remove();
+			if($(".my-jFiler-items ul li").length==0) $(".form-group-gallery").remove();
+		},
+		error: function(xhr)
+		{
+			var result = xhr.responseJSON || {};
+			notifyDialog(result.message || "Không thể xóa ảnh");
 		}
 	});
-
-	$('.my-jFiler-item-'+id).remove();
-
-	if($(".my-jFiler-items ul li").length==0)
-	{
-		$(".form-group-gallery").remove();
-	}
 }
 
 /* Delete all filer */
@@ -421,6 +426,7 @@ function deleteAllFiler(folder)
 	$.ajax({
 		type: 'POST',
 		url: 'api/filer.php',
+		dataType: 'json',
 		data: {
 			listid: listid,
 			id_parent: ID,
@@ -430,22 +436,21 @@ function deleteAllFiler(folder)
 			cmd: cmd,
 			hash: HASH,
 			admin_csrf: ADMIN_CSRF
+		},
+		success: function(result)
+		{
+			if(!result.ok) return notifyDialog(result.message || "Không thể xóa ảnh đã chọn");
+			var deletedIds = result.data && result.data.ids ? result.data.ids : [];
+			for(var i=0;i<deletedIds.length;i++) $('.my-jFiler-item-'+deletedIds[i]).remove();
+			if($(".my-jFiler-items ul li").length==0) $(".form-group-gallery").remove();
+			refreshFiler();
+		},
+		error: function(xhr)
+		{
+			var result = xhr.responseJSON || {};
+			notifyDialog(result.message || "Không thể xóa ảnh đã chọn");
 		}
 	});
-
-	listid = listid.split(",");
-
-	for(var i=0;i<listid.length;i++)
-	{
-		$('.my-jFiler-item-'+listid[i]).remove();
-	}
-
-	if($(".my-jFiler-items ul li").length==0)
-	{
-		$(".form-group-gallery").remove();
-	}
-
-	refreshFiler();
 }
 
 /* Push OneSignal */

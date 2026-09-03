@@ -48,6 +48,14 @@
 		$func->deleteFile('../../upload/'.$folder.'/'.$photo);
 	}
 
+	function filerJsonResponse($ok, $message, $code, $data = array(), $legacy = array(), $status = 200)
+	{
+		http_response_code($status);
+		header('Content-Type: application/json; charset=UTF-8');
+		echo json_encode(adminApiEnvelope($ok, $message, $code, $data, $legacy));
+		exit();
+	}
+
 	if($cmd === 'refresh' && ($id_parent > 0 || $hash !== ''))
 	{
 		$gallery = filerGalleryRows($d, $id_parent, $hash, $com, $type, $kind);
@@ -87,26 +95,41 @@
 	else if($cmd === 'delete' && $id > 0 && ($id_parent > 0 || $hash !== ''))
 	{
 		$rows = filerGalleryRows($d, $id_parent, $hash, $com, $type, $kind, 'id, photo, com');
+		$target = null;
 		foreach($rows as $row) if((int)$row['id'] === $id)
 		{
-			filerDeletePhoto($func, $row['com'], $row['photo']);
-			$d->rawQuery("delete from #_gallery where id = ?",array($id));
-			$cache->delete();
+			$target = $row;
 			break;
 		}
+		if(!$target) filerJsonResponse(false, 'Ảnh không tồn tại trong album này.', 'GALLERY_ITEM_NOT_FOUND', array(), array('success'=>false), 404);
+		$d->rawQuery("delete from #_gallery where id = ?", array($id));
+		if($d->rawQueryOne("select id from #_gallery where id = ?", array($id))) filerJsonResponse(false, 'Không thể xóa ảnh.', 'GALLERY_DELETE_FAILED', array(), array('success'=>false), 500);
+		filerDeletePhoto($func, $target['com'], $target['photo']);
+		$cache->delete();
+		filerJsonResponse(true, 'Đã xóa ảnh.', 'GALLERY_ITEM_DELETED', array('ids'=>array($id), 'deleted'=>1), array('success'=>true, 'id'=>$id));
 	}
 	else if($cmd === 'delete-all' && ($id_parent > 0 || $hash !== ''))
 	{
 		$ids = filerNormalizeIds($listid);
 		$rows = filerGalleryRows($d, $id_parent, $hash, $com, $type, $kind, 'id, photo, com');
+		$allowed = array();
+		foreach($rows as $row) $allowed[(int)$row['id']] = $row;
+		if(!$ids) filerJsonResponse(false, 'Chưa chọn ảnh cần xóa.', 'EMPTY_GALLERY_SELECTION', array(), array('success'=>false), 400);
+		foreach($ids as $galleryId)
+			if(!isset($allowed[$galleryId])) filerJsonResponse(false, 'Danh sách ảnh không thuộc album hiện tại.', 'INVALID_GALLERY_SELECTION', array(), array('success'=>false), 400);
+
 		$selected = array_fill_keys($ids, true);
+		$deleted = array();
 		foreach($rows as $row)
 		{
 			$galleryId = (int)$row['id'];
 			if(!isset($selected[$galleryId])) continue;
+			$d->rawQuery("delete from #_gallery where id = ?", array($galleryId));
+			if($d->rawQueryOne("select id from #_gallery where id = ?", array($galleryId))) filerJsonResponse(false, 'Không thể xóa toàn bộ ảnh đã chọn.', 'GALLERY_BULK_DELETE_FAILED', array('ids'=>$deleted, 'deleted'=>count($deleted)), array('success'=>false), 500);
 			filerDeletePhoto($func, $row['com'], $row['photo']);
-			$d->rawQuery("delete from #_gallery where id = ?",array($galleryId));
+			$deleted[] = $galleryId;
 		}
-		if($ids) $cache->delete();
+		$cache->delete();
+		filerJsonResponse(true, 'Đã xóa các ảnh được chọn.', 'GALLERY_ITEMS_DELETED', array('ids'=>$deleted, 'deleted'=>count($deleted)), array('success'=>true, 'id'=>$deleted));
 	}
 ?>
