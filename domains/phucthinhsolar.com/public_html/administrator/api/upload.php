@@ -25,7 +25,8 @@
 	if(!in_array($com, array_keys($upload_path), true) || empty($config[$com][$type]['img_type']) || !$myFile || empty($myFile['name'][0]) || !isset($myFile['tmp_name'][0], $myFile['error'][0], $myFile['size'][0]))
 	{
 		http_response_code(400);
-		echo json_encode(array('success' => false, 'msg' => 'Thông tin upload không hợp lệ'));
+		$message = 'Thông tin upload không hợp lệ';
+		echo json_encode(adminApiEnvelope(false, $message, 'INVALID_UPLOAD', array(), array('success'=>false, 'msg'=>$message)));
 		exit();
 	}
 	adminRequireMutationPermission('gallery', 'upload', $type, $com, true);
@@ -95,5 +96,6 @@
 		$data = array('success' => false, 'msg' => 'Upload thất bại');
 	}
 
-	echo json_encode($data);
+	$uploadOk = !empty($data['success']);
+	echo json_encode(adminApiEnvelope($uploadOk, $data['msg'], $uploadOk ? 'UPLOAD_OK' : 'UPLOAD_FAILED', array(), $data));
 ?>

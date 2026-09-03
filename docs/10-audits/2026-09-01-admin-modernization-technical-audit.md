@@ -196,7 +196,7 @@ Trạng thái triển khai 2026-09-03: ADM-P1-001 đã thay toàn bộ 15 nhánh
 
 Data layer không còn tự render HTML hoặc kết thúc request, nên controller hiện có có thể rollback/bù trừ. Việc chuẩn hóa error envelope và exception boundary theo từng nhóm API vẫn là backlog riêng.
 
-Các endpoint còn dùng nhiều `exit()` không body hoặc plain-text error. Chưa có error envelope, exception boundary hoặc API router chung.
+Các endpoint còn dùng nhiều `exit()` không body hoặc plain-text error. Batch 1 đã có error envelope tương thích ngược cho `login/status/upload`; chưa chuẩn hóa endpoint HTML/scalar, database array, exception boundary hoặc API router chung.
 
 ### 11. Testability — VERIFIED
 

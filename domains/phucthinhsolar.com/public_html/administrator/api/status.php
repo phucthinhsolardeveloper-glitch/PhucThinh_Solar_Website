@@ -98,5 +98,5 @@
 	}
 
 	header('Content-Type: application/json; charset=UTF-8');
-	echo json_encode($result);
+	echo json_encode(adminApiEnvelope(!empty($result['success']), $result['message'], !empty($result['success']) ? 'STATUS_UPDATED' : 'INVALID_STATUS_REQUEST', array('updated'=>(int)$result['updated']), $result));
 ?>

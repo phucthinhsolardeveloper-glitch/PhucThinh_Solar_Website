@@ -16,7 +16,8 @@
 	if(!isset($_SERVER['REQUEST_METHOD']) || $_SERVER['REQUEST_METHOD'] !== 'POST' || !adminCsrfValid(isset($_POST['admin_csrf']) ? $_POST['admin_csrf'] : ''))
 	{
 		http_response_code(403);
-		echo json_encode(array('success' => '', 'error' => 'Phiên đăng nhập không hợp lệ. Vui lòng tải lại trang.'));
+		$message = 'Phiên đăng nhập không hợp lệ. Vui lòng tải lại trang.';
+		echo json_encode(adminApiEnvelope(false, $message, 'INVALID_CSRF', array(), array('success'=>'', 'error'=>$message)));
 		exit();
 	}
 
@@ -83,5 +84,6 @@
 		}
 	}
 
-	echo json_encode(array('success' => $success, 'error' => $error));
+	$loginOk = $success !== '';
+	echo json_encode(adminApiEnvelope($loginOk, $loginOk ? $success : $error, $loginOk ? 'LOGIN_OK' : 'LOGIN_FAILED', array(), array('success'=>$success, 'error'=>$error)));
 ?>

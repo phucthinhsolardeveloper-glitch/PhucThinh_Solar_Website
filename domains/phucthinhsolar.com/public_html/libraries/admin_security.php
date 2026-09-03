@@ -18,6 +18,11 @@ if(!function_exists('adminCsrfToken'))
         return '<input type="hidden" name="admin_csrf" value="'.htmlspecialchars(adminCsrfToken(), ENT_QUOTES, 'UTF-8').'">';
     }
 
+    function adminApiEnvelope($ok, $message = '', $code = '', $data = array(), $legacy = array())
+    {
+        return array_merge(array('ok'=>(bool)$ok, 'message'=>(string)$message, 'code'=>(string)$code, 'data'=>is_array($data) ? $data : array()), is_array($legacy) ? $legacy : array());
+    }
+
     function adminLegacyMutationNeedsCsrf($com, $act, $method, $post = array())
     {
         if(strtoupper((string)$method) !== 'POST') return preg_match('/^(?:delete|save|upload|sync$|create$)/i', (string)$act) === 1;

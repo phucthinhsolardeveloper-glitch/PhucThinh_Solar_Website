@@ -179,6 +179,7 @@ try
     $apiValid = readinessHttp($base.'api/status.php', 'POST', array('admin_csrf' => $authenticatedToken[1], 'id' => 999999, 'table' => 'product', 'attr' => 'hienthi', 'type' => 'san-pham', 'com' => 'product'), $newCookie);
     $apiValidPayload = json_decode($apiValid['body'], true);
     readinessAssert($apiValid['status'] === 200 && is_array($apiValidPayload) && array_key_exists('success', $apiValidPayload), 'API mutation có CSRF hợp lệ và trả JSON rõ ràng');
+    readinessAssert(array_key_exists('ok', $apiValidPayload) && isset($apiValidPayload['code'], $apiValidPayload['data']['updated']), 'API status trả envelope chuẩn và giữ payload legacy');
     $apiInvalidStatus = readinessHttp($base.'api/status.php', 'POST', array('admin_csrf' => $authenticatedToken[1], 'ids' => '999998,999999', 'table' => 'product', 'attr' => 'trang-thai-tu-che', 'value' => '1', 'type' => 'san-pham', 'com' => 'product'), $newCookie);
     $apiInvalidPayload = json_decode($apiInvalidStatus['body'], true);
     readinessAssert($apiInvalidStatus['status'] === 200 && empty($apiInvalidPayload['success']), 'API trạng thái hàng loạt từ chối thuộc tính ngoài cấu hình');
