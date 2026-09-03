@@ -24,6 +24,7 @@ $adminToken = adminCsrfToken();
 securityAssert(strlen($adminToken) === 64 && adminCsrfValid($adminToken), 'CSRF Admin sinh token ngẫu nhiên và xác minh đúng');
 $apiEnvelope = adminApiEnvelope(true, 'Đã xử lý', 'TEST_OK', array('id'=>1), array('success'=>'legacy'));
 securityAssert($apiEnvelope['ok'] === true && $apiEnvelope['code'] === 'TEST_OK' && $apiEnvelope['success'] === 'legacy' && $apiEnvelope['data']['id'] === 1, 'Envelope API chuẩn giữ tương thích field legacy');
+securityAssert(adminApiEnvelope(false, 'Không có quyền', 'FORBIDDEN')['ok'] === false, 'Envelope API biểu diễn lỗi bằng boolean ổn định');
 securityAssert(!adminCsrfValid('sai-token'), 'CSRF Admin từ chối token sai');
 securityAssert(adminAllowedMutationTable('product', 'status') && !adminAllowedMutationTable('order_detail', 'status'), 'Allowlist status không nhận bảng ngoài phạm vi');
 securityAssert(adminAllowedMutationTable('news', 'copy') && !adminAllowedMutationTable('user', 'copy'), 'Allowlist copy chỉ nhận product/news');

@@ -39,7 +39,8 @@ if(!function_exists('adminCsrfToken'))
         http_response_code(403);
         if($json) {
             header('Content-Type: application/json; charset=UTF-8');
-            echo json_encode(array('success' => false, 'msg' => 'Phiên xác nhận không hợp lệ. Vui lòng tải lại trang.'));
+            $message = 'Phiên xác nhận không hợp lệ. Vui lòng tải lại trang.';
+            echo json_encode(adminApiEnvelope(false, $message, 'INVALID_CSRF', array(), array('success'=>false, 'msg'=>$message)));
         }
         exit();
     }
@@ -161,7 +162,8 @@ if(!function_exists('adminCsrfToken'))
         if($json)
         {
             header('Content-Type: application/json; charset=UTF-8');
-            echo json_encode(array('success' => false, 'msg' => 'Tài khoản không có quyền thực hiện thao tác này.'));
+            $message = 'Tài khoản không có quyền thực hiện thao tác này.';
+            echo json_encode(adminApiEnvelope(false, $message, 'FORBIDDEN', array(), array('success'=>false, 'msg'=>$message)));
         }
         exit();
     }

@@ -45,6 +45,7 @@ Cập nhật gần nhất: 2026-09-03. Mọi thay đổi bên dưới mới ở 
 - Quản trị yêu cầu tư vấn/đăng ký đại lý có pipeline theo cấu hình: ưu tiên yêu cầu mới, bộ đếm và lọc theo trạng thái, tìm theo thông tin khách, ghi chú nội bộ và trạng thái `Mới → Đã tiếp nhận/Đang xử lý → Hoàn tất`. Controller chỉ nhận field nghiệp vụ và từ chối trạng thái ngoài allowlist; integration test tạo fixture tạm, kiểm tra danh sách/lưu/từ chối rồi dọn sạch.
 - Router public đã thay chuỗi lookup `$requick` tuần tự bằng một resolver `UNION ALL` parameterized, chỉ nhận table/field từ allowlist và giữ thứ tự ưu tiên route cũ. Test đối chứng đạt 503/503 slug và xác nhận mỗi slug chỉ gọi resolver DB một lần; Playwright chức năng đạt 37 PASS, 1 skip. Screenshot danh mục hiện lệch baseline vì DB local đang hiển thị nhóm sản phẩm thiếu ảnh, nên chưa cập nhật ảnh chuẩn.
 - Chuẩn hóa Admin API batch 1: `login`, `status`, `upload` trả thêm envelope `ok/message/code/data` nhưng giữ nguyên field legacy cho JavaScript hiện tại. Security và authenticated Admin integration test đạt; endpoint HTML/scalar và database array chưa đổi.
+- Admin API batch 2: lỗi CSRF/quyền JSON và `database.php` dùng cùng envelope; JavaScript bảo trì database hỗ trợ song song định dạng cũ/mới. Endpoint HTML fragment và scalar vẫn giữ nguyên để tránh phá consumer legacy.
 
 ## PARTIAL / CHỜ DỮ LIỆU THẬT
 

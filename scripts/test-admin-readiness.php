@@ -176,6 +176,8 @@ try
 
     $apiMissing = readinessHttp($base.'api/status.php', 'POST', array('id' => 999999, 'table' => 'product', 'attr' => 'hienthi', 'type' => 'san-pham', 'com' => 'product'), $newCookie);
     readinessAssert($apiMissing['status'] === 403, 'API mutation thiếu CSRF trả 403');
+    $apiMissingPayload = json_decode($apiMissing['body'], true);
+    readinessAssert(isset($apiMissingPayload['ok'], $apiMissingPayload['code']) && $apiMissingPayload['ok'] === false && $apiMissingPayload['code'] === 'INVALID_CSRF', 'Lỗi CSRF API dùng envelope chuẩn');
     $apiValid = readinessHttp($base.'api/status.php', 'POST', array('admin_csrf' => $authenticatedToken[1], 'id' => 999999, 'table' => 'product', 'attr' => 'hienthi', 'type' => 'san-pham', 'com' => 'product'), $newCookie);
     $apiValidPayload = json_decode($apiValid['body'], true);
     readinessAssert($apiValid['status'] === 200 && is_array($apiValidPayload) && array_key_exists('success', $apiValidPayload), 'API mutation có CSRF hợp lệ và trả JSON rõ ràng');

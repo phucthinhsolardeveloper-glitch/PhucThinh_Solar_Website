@@ -1704,17 +1704,18 @@ $(document).ready(function(){
 					},
 					success: function(result)
 					{
-						if(result)
+						var rows = $.isArray(result) ? result : (result && result.data && $.isArray(result.data.results) ? result.data.results : []);
+						if(rows.length)
 						{
 							$(".result-database").html('');
-							for(var i=0; i<result.length; i++)
+							for(var i=0; i<rows.length; i++)
 							{
 								$str = '';
 								$str += '<div class="col-md-4">';
 								$str += '<div class="alert alert-success alert-dismissible bg-gradient-success">';
-								$str += '<h6><strong>'+result[i].table+'</strong></h6>';
-								$str += '<div><strong>Action:</strong> '+result[i].action+'</div>';
-								$str += '<div><strong>Status:</strong> '+result[i].text+'</div>';
+								$str += '<h6><strong>'+rows[i].table+'</strong></h6>';
+								$str += '<div><strong>Action:</strong> '+rows[i].action+'</div>';
+								$str += '<div><strong>Status:</strong> '+rows[i].text+'</div>';
 								$str += '</div>';
 								$str += '</div>';
 								$(".result-database").append($str);

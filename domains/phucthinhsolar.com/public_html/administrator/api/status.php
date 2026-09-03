@@ -1,6 +1,6 @@
 <?php
 	include "config.php";
-	adminRequirePostCsrf();
+	adminRequirePostCsrf(true);
 	require_once LIBRARIES.'admin_product_completeness.php';
 
 	$result = array('success' => false, 'updated' => 0, 'message' => 'Yêu cầu cập nhật không hợp lệ.');
