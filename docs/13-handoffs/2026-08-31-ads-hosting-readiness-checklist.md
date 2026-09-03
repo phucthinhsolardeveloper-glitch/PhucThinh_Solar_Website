@@ -89,6 +89,7 @@ Phạm vi tối ưu áp dụng cho toàn bộ project, gồm frontend public, Ad
 - [x] Loại tối đa 20 query đếm đánh giá ở danh sách Sản phẩm Admin bằng một query batch; số liệu 10 sản phẩm đối chứng khớp hoàn toàn.
 - [x] Profile authenticated local bốn danh sách Admin: 21/24/17/18 query, không có N+1 theo dòng; bỏ 2 query địa giới rỗng ở Đơn hàng.
 - [x] ADM-P1-004 trên Docker local: migration 008 chuyển `table_order`/`table_order_detail` sang InnoDB và thêm index theo order/product; regression chứng minh rollback thật, không để lại dữ liệu test. Production chưa chạy migration và phải qua backup/preflight/downtime riêng.
+- [x] Checkout idempotency trên local: migration 009 thêm token 256-bit + unique index; replay dùng lại đúng đơn đã commit, không tạo detail/email lần hai. Production phải áp dụng migration 008 rồi 009 trước source và stress test request đồng thời trên staging.
 - [x] Auth full-page Admin giữ `user_token` ổn định theo phiên và throttle `lastlogin` 60 giây bằng conditional update; unit + HTTP integration xác nhận page load liên tiếp không còn tạo auth write/token race.
 - [x] ADM-P1-014: status API cập nhật set-based cho tối đa 500 ID được chọn khi có trạng thái đích; giữ RBAC/CSRF/allowlist, xác nhận đủ ID và integration test hai trạng thái ban đầu khác nhau.
 - [x] ADM-P1-008 batch 1: Admin lọc và đánh dấu sản phẩm thiếu ảnh/mô tả/nội dung/thông số/công suất, có CTA “Điền ngay”; integration test xác nhận filter không lẫn sản phẩm đã đủ trường tương ứng.

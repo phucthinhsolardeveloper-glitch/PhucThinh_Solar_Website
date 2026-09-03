@@ -27,6 +27,10 @@ $indexes = $d->rawQuery(
 );
 commerceTransactionAssert(count($indexes) === 2, 'order_detail có index theo order và product');
 
+$idempotencyColumn = $d->rawQueryOne("select count(*) as total from information_schema.columns where table_schema = database() and table_name = ? and column_name = ?", array('table_order', 'checkout_token'));
+$idempotencyIndex = $d->rawQueryOne("select count(*) as total from information_schema.statistics where table_schema = database() and table_name = ? and index_name = ? and non_unique = 0", array('table_order', 'ux_order_checkout_token'));
+commerceTransactionAssert((int)$idempotencyColumn['total'] === 1 && (int)$idempotencyIndex['total'] === 1, 'order có cột và unique index cho checkout idempotency');
+
 $code = 'CODXTX'.strtoupper(bin2hex(random_bytes(4)));
 $beforeOrder = (int)$d->rawQueryOne('select count(*) as total from #_order')['total'];
 $beforeDetail = (int)$d->rawQueryOne('select count(*) as total from #_order_detail')['total'];

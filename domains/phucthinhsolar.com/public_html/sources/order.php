@@ -3,12 +3,45 @@
 
 	if(!function_exists('checkoutPersistOrder'))
 	{
+		function checkoutFindPersistedOrder($d, $checkoutToken, $expectedDetailCount = null)
+		{
+			if(!is_string($checkoutToken) || preg_match('/^[a-f0-9]{64}$/', $checkoutToken) !== 1) return null;
+			$order = $d->rawQueryOne(
+				"select o.id, o.code, count(od.id) as detail_count from #_order o left join #_order_detail od on od.id_order = o.id where o.checkout_token = ? group by o.id, o.code limit 0,1",
+				array($checkoutToken)
+			);
+			if(empty($order['id']) || (int)$order['detail_count'] < 1) return null;
+			if($expectedDetailCount !== null && (int)$order['detail_count'] !== (int)$expectedDetailCount) return null;
+			return array('success' => true, 'id' => (int)$order['id'], 'code' => (string)$order['code'], 'detail_count' => (int)$order['detail_count'], 'reused' => true);
+		}
+
+		function checkoutRegisterThanks($orderId, $orderCode)
+		{
+			$thanksToken = bin2hex(random_bytes(24));
+			if(empty($_SESSION['order_thanks']) || !is_array($_SESSION['order_thanks'])) $_SESSION['order_thanks'] = array();
+			foreach($_SESSION['order_thanks'] as $token => $orderSession)
+			{
+				if(empty($orderSession['created_at']) || time() - $orderSession['created_at'] > 7200) unset($_SESSION['order_thanks'][$token]);
+			}
+			$_SESSION['order_thanks'][$thanksToken] = array(
+				'id' => (int)$orderId,
+				'code' => (string)$orderCode,
+				'created_at' => time(),
+				'conversion_pending' => true
+			);
+			return $thanksToken;
+		}
+
 		function checkoutPersistOrder($d, $cart, $cartItems, $orderData, $lang, $faultInjector = null)
 		{
 			$idInsert = 0;
 			$transactionStarted = false;
 			$detailCount = 0;
 			$cleanupState = (object)array('active' => false, 'id' => 0);
+			$checkoutToken = isset($orderData['checkout_token']) ? (string)$orderData['checkout_token'] : '';
+			$existingOrder = checkoutFindPersistedOrder($d, $checkoutToken, count($cartItems));
+			if($existingOrder) return $existingOrder;
+			if(preg_match('/^[a-f0-9]{64}$/', $checkoutToken) !== 1) $orderData['checkout_token'] = bin2hex(random_bytes(32));
 			try
 			{
 				$d->startTransaction();
@@ -52,9 +85,9 @@
 				$d->commit();
 				$transactionStarted = false;
 				$cleanupState->active = false;
-				return array('success' => true, 'id' => $idInsert, 'detail_count' => $detailCount);
+				return array('success' => true, 'id' => $idInsert, 'code' => (string)$orderData['code'], 'detail_count' => $detailCount, 'reused' => false);
 			}
-			catch(Exception $e)
+			catch(Throwable $e)
 			{
 				if($transactionStarted)
 				{
@@ -66,6 +99,8 @@
 					$d->rawQuery("delete from #_order where id = ?", array($idInsert));
 				}
 				$cleanupState->active = false;
+				$existingOrder = checkoutFindPersistedOrder($d, $checkoutToken, count($cartItems));
+				if($existingOrder) return $existingOrder;
 				return array('success' => false, 'id' => 0, 'detail_count' => 0, 'error' => $e->getMessage());
 			}
 		}
@@ -97,6 +132,23 @@
 		if(!formCsrfValid(isset($_POST['form_csrf']) ? $_POST['form_csrf'] : ''))
 		{
 			$func->transfer("Phiên đặt hàng không hợp lệ. Vui lòng tải lại trang.", "gio-hang/", false);
+		}
+		$checkoutToken = isset($_POST['checkout_token']) ? (string)$_POST['checkout_token'] : '';
+		if(!checkoutIdempotencyTokenFormatValid($checkoutToken))
+		{
+			$func->transfer("Phiên gửi đơn hàng không hợp lệ. Vui lòng tải lại trang.", "gio-hang/", false);
+		}
+		$replayedOrder = checkoutFindPersistedOrder($d, $checkoutToken);
+		if($replayedOrder)
+		{
+			$thanksToken = checkoutRegisterThanks($replayedOrder['id'], $replayedOrder['code']);
+			checkoutRotateIdempotencyToken();
+			unset($_SESSION['cart']);
+			$func->redirect("cam-on/?token=".rawurlencode($thanksToken));
+		}
+		if(!checkoutIdempotencyTokenValid($checkoutToken))
+		{
+			$func->transfer("Phiên gửi đơn hàng không hợp lệ. Vui lòng tải lại trang.", "gio-hang/", false);
 		}
 		$publicIp = formClientIp($_SERVER, isset($config['login']['trusted-proxies']) ? $config['login']['trusted-proxies'] : array());
 		if(!formPersistentRateLimit($d, 'checkout', $publicIp, 5, 600))
@@ -304,6 +356,7 @@
 		$data_donhang = array();
 		$data_donhang['id_user'] = (!empty($_SESSION[$loginMember]['id'])) ? $_SESSION[$loginMember]['id'] : 0;
 		$data_donhang['code'] = $code;
+		$data_donhang['checkout_token'] = (string)$_POST['checkout_token'];
 		$data_donhang['fullname'] = $fullname;
 		$data_donhang['phone'] = $phone;
 		$data_donhang['address'] = $address;
@@ -326,6 +379,7 @@
 			$func->transfer("Có lỗi khi lưu đơn hàng. Giỏ hàng của bạn vẫn được giữ nguyên, vui lòng thử lại.", "gio-hang/", false);
 		}
 		$id_insert = (int)$persistedOrder['id'];
+		$code = (string)$persistedOrder['code'];
 
 		/* Defaults attributes email */
 	    $emailDefaultAttrs = $emailer->defaultAttrs();
@@ -359,46 +413,33 @@
 	    $emailVals = $emailer->addAttrs($emailVals, $emailDefaultAttrs['vals']);
 
 		/* Send email admin + customer (không để lỗi SMTP làm vỡ luồng đặt hàng) */
-		try
+		if(empty($persistedOrder['reused']))
 		{
-			$arrayEmail = null;
-			$subject = "Thông tin đơn hàng từ ".$setting['name'.$lang];
-			$message = str_replace($emailVars, $emailVals, $emailer->markdown('order/admin', ['shipPrice' => $ship_price]));
-			$file = '';
-			$emailer->send("admin", $arrayEmail, $subject, $message, $file);
+			try
+			{
+				$arrayEmail = null;
+				$subject = "Thông tin đơn hàng từ ".$setting['name'.$lang];
+				$message = str_replace($emailVars, $emailVals, $emailer->markdown('order/admin', ['shipPrice' => $ship_price]));
+				$file = '';
+				$emailer->send("admin", $arrayEmail, $subject, $message, $file);
 
-			$arrayEmail = array(
-				"dataEmail" => array(
-					"name" => $fullname,
-					"email" => $email
-				)
-			);
-			$subject = "Thông tin đơn hàng từ ".$setting['name'.$lang];
-			$message = str_replace($emailVars, $emailVals, $emailer->markdown('order/customer', ['shipPrice' => $ship_price]));
-			$file = '';
-			$emailer->send("customer", $arrayEmail, $subject, $message, $file);
+				$arrayEmail = array(
+					"dataEmail" => array(
+						"name" => $fullname,
+						"email" => $email
+					)
+				);
+				$subject = "Thông tin đơn hàng từ ".$setting['name'.$lang];
+				$message = str_replace($emailVars, $emailVals, $emailer->markdown('order/customer', ['shipPrice' => $ship_price]));
+				$file = '';
+				$emailer->send("customer", $arrayEmail, $subject, $message, $file);
+			}
+			catch(Exception $e) {}
 		}
-		catch(Exception $e) {}
 
 		/* Token trang cảm ơn: ràng buộc session và chỉ phát conversion một lần */
-		$thanksToken = bin2hex(random_bytes(24));
-		if(empty($_SESSION['order_thanks']) || !is_array($_SESSION['order_thanks']))
-		{
-			$_SESSION['order_thanks'] = array();
-		}
-		foreach($_SESSION['order_thanks'] as $token => $orderSession)
-		{
-			if(empty($orderSession['created_at']) || time() - $orderSession['created_at'] > 7200)
-			{
-				unset($_SESSION['order_thanks'][$token]);
-			}
-		}
-		$_SESSION['order_thanks'][$thanksToken] = array(
-			'id' => (int) $id_insert,
-			'code' => $code,
-			'created_at' => time(),
-			'conversion_pending' => true
-		);
+		$thanksToken = checkoutRegisterThanks($id_insert, $code);
+		checkoutRotateIdempotencyToken();
 
 	    /* Xóa giỏ hàng */
         unset($_SESSION['cart']);

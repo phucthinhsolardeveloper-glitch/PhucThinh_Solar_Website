@@ -4,6 +4,7 @@
 </style>
 <form class="form-cart validation-cart" novalidate method="post" action="" enctype="multipart/form-data">
 	<input type="hidden" name="form_csrf" value="<?=htmlspecialchars(formCsrfToken(), ENT_QUOTES, 'UTF-8')?>">
+	<input type="hidden" name="checkout_token" value="<?=htmlspecialchars(checkoutIdempotencyToken(), ENT_QUOTES, 'UTF-8')?>">
 	<div class="wrap-cart">
 		<?=$flash->getMessages("frontend")?>
 		<div class="row">

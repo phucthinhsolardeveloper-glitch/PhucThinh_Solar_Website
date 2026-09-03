@@ -16,9 +16,9 @@ function checkoutAssert($condition, $message)
     echo 'PASS: ', $message, PHP_EOL;
 }
 
-function checkoutTestOrderData($code)
+function checkoutTestOrderData($code, $checkoutToken = null)
 {
-    return array(
+	$data = array(
         'id_user' => 0,
         'code' => $code,
         'fullname' => 'Checkout atomicity test',
@@ -37,6 +37,8 @@ function checkoutTestOrderData($code)
         'ward' => 0,
         'numb' => 1
     );
+	if($checkoutToken !== null) $data['checkout_token'] = $checkoutToken;
+	return $data;
 }
 
 function checkoutTestCleanup($d, $prefix)
@@ -54,6 +56,9 @@ $beforeOrder = (int)$d->rawQueryOne('select count(*) as total from #_order')['to
 $beforeDetail = (int)$d->rawQueryOne('select count(*) as total from #_order_detail')['total'];
 $products = $d->rawQuery("select id from #_product where type = ? and regular_price > 0 order by id limit 2", array('san-pham'));
 checkoutAssert(count($products) === 2, 'Có hai sản phẩm local để test checkout');
+$thanksToken = checkoutRegisterThanks(123, 'TEST-CODE');
+checkoutAssert(isset($_SESSION['order_thanks'][$thanksToken]) && (int)$_SESSION['order_thanks'][$thanksToken]['id'] === 123, 'Checkout đăng ký trạng thái trang cảm ơn theo order đã xác minh');
+unset($_SESSION['order_thanks']);
 $items = array(
     array('productid' => (int)$products[0]['id'], 'qty' => 1, 'color' => 0, 'size' => 0, 'code' => 'atomic-1'),
     array('productid' => (int)$products[1]['id'], 'qty' => 2, 'color' => 0, 'size' => 0, 'code' => 'atomic-2')
@@ -97,7 +102,7 @@ try
     exec(escapeshellarg(PHP_BINARY).' '.escapeshellarg(__FILE__).' '.escapeshellarg('--fatal-child='.$fatalCode), $fatalOutput, $fatalExit);
     $fatalOrders = (int)$d->rawQueryOne('select count(*) as total from #_order where code = ?', array($fatalCode))['total'];
     $fatalDetails = (int)$d->rawQueryOne('select count(*) as total from #_order_detail where code = ?', array($fatalCode))['total'];
-    checkoutAssert($fatalExit === 23 && $fatalOrders === 0 && $fatalDetails === 0, 'Shutdown cleanup bù trừ khi request chết giữa insert detail');
+    checkoutAssert($fatalExit === 23 && $fatalOrders === 0 && $fatalDetails === 0, 'Shutdown cleanup bù trừ khi request chết giữa insert detail (exit='.$fatalExit.', orders='.$fatalOrders.', details='.$fatalDetails.')');
 
     $missingCode = $prefix.'M';
     $missingItems = $items;
@@ -115,6 +120,22 @@ try
     $second = !empty($sessionCart) ? checkoutPersistOrder($d, $cart, $sessionCart, checkoutTestOrderData($doubleCode), 'vi') : array('success' => false);
     $doubleOrders = (int)$d->rawQueryOne('select count(*) as total from #_order where code = ?', array($doubleCode))['total'];
     checkoutAssert(!empty($first['success']) && empty($second['success']) && $doubleOrders === 1, 'Double-submit cùng session tạo tối đa một order sau khi cart được xóa');
+
+	$idempotencyCode = $prefix.'I';
+	$idempotencyToken = bin2hex(random_bytes(32));
+	$idempotencyData = checkoutTestOrderData($idempotencyCode, $idempotencyToken);
+	$idempotencyFirst = checkoutPersistOrder($d, $cart, $items, $idempotencyData, 'vi');
+	$idempotencyReplay = checkoutPersistOrder($d, $cart, $items, $idempotencyData, 'vi');
+	$idempotencyOrders = (int)$d->rawQueryOne('select count(*) as total from #_order where checkout_token = ?', array($idempotencyToken))['total'];
+	$idempotencyDetails = (int)$d->rawQueryOne('select count(*) as total from #_order_detail where id_order = ?', array((int)$idempotencyFirst['id']))['total'];
+	checkoutAssert(
+		!empty($idempotencyFirst['success']) && empty($idempotencyFirst['reused'])
+			&& !empty($idempotencyReplay['success']) && !empty($idempotencyReplay['reused'])
+			&& (int)$idempotencyReplay['id'] === (int)$idempotencyFirst['id']
+			&& $idempotencyReplay['code'] === $idempotencyCode
+			&& $idempotencyOrders === 1 && $idempotencyDetails === count($items),
+		'Replay cùng checkout token tái sử dụng đúng đơn đã commit và không nhân đôi detail'
+	);
 }
 finally
 {

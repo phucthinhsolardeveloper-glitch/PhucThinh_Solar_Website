@@ -16,6 +16,6 @@ Hai bảng commerce `table_order` và `table_order_detail` đã dùng InnoDB tr�
 
 Trên local, InnoDB là lớp bảo đảm atomic chính; xóa bù trừ và shutdown cleanup là phòng vệ bổ sung. Production vẫn dùng trạng thái hiện hữu cho đến khi được phép chạy `migrations/008_convert_commerce_to_innodb.sql`; trước khi ALTER phải backup/restore-check, xác nhận orphan bằng 0 và dừng checkout. Rollback về MyISAM sẽ làm mất transaction thật.
 
-Double-submit hiện không thêm token mới: PHP session khóa tuần tự request cùng session; request thành công xóa cart trước redirect nên request POST kế tiếp gặp cart rỗng. CSRF và persistent rate limit tiếp tục giữ nguyên.
+Checkout phát token ngẫu nhiên 256-bit theo session/form và lưu vào `table_order.checkout_token` với unique index từ migration 009. Request lặp lại cùng token nhận lại đúng ID/code của đơn đã commit, không insert detail hoặc gửi email lần hai; token chỉ được xoay sau khi đã tạo token trang cảm ơn. PHP session lock, CSRF và persistent rate limit vẫn là các lớp bảo vệ bổ sung.
 
-Regression: `scripts/test-checkout-atomicity.php` kiểm happy path, partial detail failure, missing product, shutdown giữa insert, double-submit model, cleanup count và orphan. `scripts/test-commerce-transaction.php` kiểm engine/index và chứng minh `ROLLBACK` xóa thật cả order lẫn detail mà không đổi tổng dữ liệu.
+Regression: `scripts/test-checkout-atomicity.php` kiểm happy path, partial detail failure, missing product, shutdown giữa insert, double-submit model, replay token bền vững, cleanup count và orphan. `scripts/test-commerce-transaction.php` kiểm engine/index idempotency và chứng minh `ROLLBACK` xóa thật cả order lẫn detail mà không đổi tổng dữ liệu.

@@ -81,6 +81,12 @@ securityAssert(!publicProductPricesVisible() && publicProductRequiresQuote(array
 
 $formToken = formCsrfToken();
 securityAssert(strlen($formToken) === 64 && formCsrfValid($formToken), 'CSRF frontend sinh và xác minh token đúng');
+$checkoutToken = checkoutIdempotencyToken();
+securityAssert(strlen($checkoutToken) === 64 && checkoutIdempotencyTokenValid($checkoutToken), 'Checkout phát và xác minh token idempotency 256-bit');
+securityAssert(!checkoutIdempotencyTokenValid(str_repeat('0', 64)), 'Checkout từ chối token idempotency không thuộc phiên hiện tại');
+securityAssert(checkoutIdempotencyTokenFormatValid(str_repeat('a', 64)) && !checkoutIdempotencyTokenFormatValid('../token'), 'Checkout chỉ tra cứu replay với token hex đúng 256-bit');
+checkoutRotateIdempotencyToken();
+securityAssert(checkoutIdempotencyToken() !== $checkoutToken, 'Checkout xoay token idempotency sau khi hoàn tất đơn');
 securityAssert(formRateLimit('test-security', 2, 60) && formRateLimit('test-security', 2, 60) && !formRateLimit('test-security', 2, 60), 'Rate limit chặn lượt vượt ngưỡng');
 $persistentIp = '198.51.100.'.random_int(100, 199);
 $persistentKey = 'form:'.sha1('security-test|'.$persistentIp);

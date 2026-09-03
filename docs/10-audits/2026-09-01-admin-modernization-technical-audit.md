@@ -94,7 +94,7 @@ Hệ quả:
 - Quan hệ order/product/hierarchy chỉ được bảo vệ bằng code.
 - Transaction PDO nay rollback thật cho hai bảng commerce trên local; production chưa được migrate.
 
-### 5. Checkout atomicity — RESOLVED ON LOCAL
+### 5. Checkout atomicity và idempotency — RESOLVED ON LOCAL
 
 Trạng thái triển khai 2026-09-02: **RESOLVED ON LOCAL** bởi ADM-P0-001 và ADM-P1-004. Checkout kiểm tra order và từng order detail, đọc lại product, dùng transaction thật trên InnoDB và vẫn xóa bù trừ theo order ID; email/thanks/cart clear chỉ chạy sau khi đủ N detail. Shutdown cleanup bảo vệ thêm đường PDODb `die()`. `scripts/test-commerce-transaction.php` đã chứng minh rollback xóa cả order/detail và không đổi tổng dữ liệu. Production chưa chạy migration 008.
 
@@ -105,6 +105,8 @@ Trạng thái triển khai 2026-09-02: **RESOLVED ON LOCAL** bởi ADM-P0-001 v�
 3. Tiếp tục xử lý email và session.
 
 Mỗi insert đều được kiểm tra; lỗi ở bất kỳ detail nào rollback toàn bộ transaction trên InnoDB local và chạy cleanup phòng vệ. Production chỉ có bảo đảm này sau khi migration 008 được duyệt và áp dụng.
+
+Ngày 2026-09-03, migration 009 và checkout local bổ sung token idempotency 256-bit có unique index. Replay cùng token tái sử dụng ID/code của đơn đã commit, không tạo thêm order detail hoặc gửi email lần hai. Source checkout mới chỉ được deploy sau khi migration 008 và 009 đã áp dụng; production quote-only hiện chưa bị tác động.
 
 Product bulk có gọi transaction nhưng code đã nhận biết engine legacy không rollback được và thực hiện phục hồi thủ công. Đây là cơ chế bù trừ có test, không phải atomic transaction từ database.
 
@@ -210,7 +212,7 @@ Các batch local đã chuẩn hóa dần mutation JSON, gồm `login/status/uplo
 Khoảng trống:
 
 - Đã có characterization cho token ổn định/throttle và HTTP integration cho full-page request liên tiếp; chưa có stress test request song song thật.
-- Đã có test checkout partial write/shutdown; chưa có idempotency key bền vững giữa session/client khác nhau.
+- Đã có test checkout partial write/shutdown và replay bằng idempotency key bền vững trong database; chưa có stress test hai HTTP request thực sự đồng thời.
 - Chưa có contract test thống nhất cho lỗi API.
 - Đã có test xác nhận CRUD thủ công và bulk importer áp cùng invariant giá sản phẩm.
 - Chưa profile Admin trên dataset staging gần production.
@@ -261,14 +263,14 @@ Các ứng viên cần điều tra trước khi triển khai, không được cl
 ### NEEDS IMPLEMENTATION INVESTIGATION
 
 - Thiết kế FK sau khi có contract xóa/cascade rõ ràng.
-- Checkout idempotency bền vững giữa session/client.
+- Stress test checkout đồng thời trên staging sau khi áp dụng migration 008/009.
 - Exception boundary và API response contract.
 - Batch/set-based update cho sortable/reorder khi phù hợp; status có giá trị đích đã được xử lý.
 
 ## Ưu tiên kỹ thuật đề xuất
 
-1. Hoàn thiện idempotency checkout trước khi mở commerce production.
-2. Chuẩn hóa error boundary/JSON response cho Admin API.
+1. Stress test checkout đồng thời trên staging sau khi áp dụng migration 008/009.
+2. Tiếp tục chuẩn hóa các endpoint scalar/legacy của Admin API.
 3. Bổ sung contract/concurrency test trước refactor lớn.
 4. Profile lại Admin trên staging có dataset gần production.
 

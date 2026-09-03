@@ -12,6 +12,29 @@ if(!function_exists('formCsrfToken'))
         return is_string($token) && $token !== '' && hash_equals(formCsrfToken(), $token);
     }
 
+    function checkoutIdempotencyToken()
+    {
+        if(empty($_SESSION['checkout_idempotency_token']) || !preg_match('/^[a-f0-9]{64}$/', (string)$_SESSION['checkout_idempotency_token']))
+            $_SESSION['checkout_idempotency_token'] = bin2hex(random_bytes(32));
+        return $_SESSION['checkout_idempotency_token'];
+    }
+
+    function checkoutIdempotencyTokenValid($token)
+    {
+        return checkoutIdempotencyTokenFormatValid($token)
+            && hash_equals(checkoutIdempotencyToken(), $token);
+    }
+
+    function checkoutIdempotencyTokenFormatValid($token)
+    {
+        return is_string($token) && preg_match('/^[a-f0-9]{64}$/', $token) === 1;
+    }
+
+    function checkoutRotateIdempotencyToken()
+    {
+        unset($_SESSION['checkout_idempotency_token']);
+    }
+
     function formRateLimit($key, $limit, $seconds)
     {
         $now = time();
