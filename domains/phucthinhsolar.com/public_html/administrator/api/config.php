@@ -13,6 +13,7 @@
 	$func = new Functions($d, $cache);
 	require_once LIBRARIES."config-type.php";
 	require_once LIBRARIES.'admin_security.php';
+	adminInstallApiExceptionHandler();
 
 	if($func->checkLoginAdmin() == false)
 	{

@@ -46,6 +46,17 @@ function readinessSessionCookie($setCookies)
     return array('', '');
 }
 
+$apiExceptionPayload = adminApiExceptionEnvelope();
+readinessAssert(
+    empty($apiExceptionPayload['ok'])
+        && $apiExceptionPayload['code'] === 'INTERNAL_ERROR'
+        && empty($apiExceptionPayload['success'])
+        && strpos(json_encode($apiExceptionPayload), 'SQLSTATE') === false,
+    'Exception boundary Admin API trả lỗi trung tính theo contract JSON'
+);
+$apiBootstrapSource = file_get_contents('/var/www/html/administrator/api/config.php');
+readinessAssert(strpos($apiBootstrapSource, 'adminInstallApiExceptionHandler();') !== false, 'Bootstrap chung cài exception boundary cho mọi Admin API');
+
 $prefix = 'CODEX-RBAC-'.bin2hex(random_bytes(4));
 $createdUsers = array();
 $createdGroups = array();

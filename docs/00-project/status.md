@@ -59,6 +59,7 @@ Cập nhật gần nhất: 2026-09-03. Mọi thay đổi bên dưới mới ở 
 - Admin API batch 13: bootstrap AJAX không còn `die()` rỗng khi thiếu/hết phiên; mọi endpoint dùng chung trả HTTP 401 với code `AUTH_REQUIRED`. JavaScript có handler toàn cục báo hết phiên và chuyển về trang đăng nhập một lần, tránh người dùng tưởng mutation im lặng thành công. Integration test xác nhận contract trên cả API JSON và endpoint HTML fragment.
 - Admin API batch 14: dropdown danh mục/địa giới giữ HTML fragment khi thành công nhưng từ chối method, bảng, type và level sai bằng HTTP 400/405 + JSON envelope. Client giữ dropdown hiện tại và báo lỗi thay vì chèn chuỗi lỗi vào form. Integration test bao phủ parent rỗng tương thích, level/table ngoài allowlist và method ngoài POST.
 - Admin API batch 15: `filer.php` chuẩn hóa nốt method/command/module/scope/layout/hash/context sai thành HTTP 400/405 + JSON envelope; mutation gallery trả lỗi quyền dạng JSON. Refresh hợp lệ vẫn trả HTML và đóng đúng output buffer, client báo lỗi mà không dựng lại album giả. Integration test bao phủ refresh đủ fixture và ba nhóm request sai trước đây từng trả body rỗng.
+- Admin API batch 16: bootstrap AJAX cài exception boundary chung; lỗi DB/runtime chưa được endpoint bắt riêng sẽ rollback transaction đang mở, ghi chi tiết vào error log và trả HTTP 500 với envelope `INTERNAL_ERROR` trung tính, không lộ SQL/stack cho trình duyệt.
 
 ## PARTIAL / CHỜ DỮ LIỆU THẬT
 

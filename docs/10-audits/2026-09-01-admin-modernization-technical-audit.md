@@ -194,9 +194,9 @@ Invariant giá đã dùng chung helper giữa CRUD thủ công và bulk importer
 
 Trạng thái triển khai 2026-09-03: ADM-P1-001 đã thay toàn bộ 15 nhánh `die()` trong `class.PDODb.php` bằng `PDODbException`. Exception có message công khai trung tính, giữ operation/SQLSTATE/driver message/query template riêng cho lớp xử lý lỗi và không ghép giá trị bind. Regression chứng minh lỗi SQL có thể được catch, rollback và tiếp tục dùng kết nối; full pre-deploy đạt.
 
-Data layer không còn tự render HTML hoặc kết thúc request, nên controller hiện có có thể rollback/bù trừ. Việc chuẩn hóa error envelope và exception boundary theo từng nhóm API vẫn là backlog riêng.
+Data layer không còn tự render HTML hoặc kết thúc request, nên controller hiện có có thể rollback/bù trừ. Bootstrap Admin API local nay có exception boundary chung: rollback transaction đang mở, log chi tiết nội bộ và trả HTTP 500 `INTERNAL_ERROR` trung tính. Endpoint vẫn có thể bắt lỗi riêng khi cần mã lỗi nghiệp vụ cụ thể.
 
-Các endpoint còn dùng nhiều `exit()` không body hoặc plain-text error. Các batch local đã chuẩn hóa dần mutation JSON, gồm `login/status/upload`, database, numb, copy, slug, sortable, comment và gallery. Gallery nay xác minh sửa metadata/xóa/reorder trước khi client cập nhật DOM, chuẩn hóa mọi request sai và cô lập output buffer legacy để HTML fragment không phá JSON. Hai endpoint dropdown category/place giữ HTML thành công nhưng trả JSON 400/405 cho input sai. Một số endpoint scalar/legacy, exception boundary cấp API và API router chung vẫn chưa chuẩn hóa.
+Các batch local đã chuẩn hóa dần mutation JSON, gồm `login/status/upload`, database, numb, copy, slug, sortable, comment và gallery. Gallery nay xác minh sửa metadata/xóa/reorder trước khi client cập nhật DOM, chuẩn hóa mọi request sai và cô lập output buffer legacy để HTML fragment không phá JSON. Hai endpoint dropdown category/place giữ HTML thành công nhưng trả JSON 400/405 cho input sai. Exception ngoài dự kiến đã có boundary cấp bootstrap; một số endpoint scalar/legacy và API router chung vẫn chưa chuẩn hóa.
 
 ### 11. Testability — VERIFIED
 

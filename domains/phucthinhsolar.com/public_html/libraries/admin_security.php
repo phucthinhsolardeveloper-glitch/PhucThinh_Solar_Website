@@ -23,6 +23,37 @@ if(!function_exists('adminCsrfToken'))
         return array_merge(array('ok'=>(bool)$ok, 'message'=>(string)$message, 'code'=>(string)$code, 'data'=>is_array($data) ? $data : array()), is_array($legacy) ? $legacy : array());
     }
 
+    function adminApiExceptionEnvelope()
+    {
+        return adminApiEnvelope(false, 'Không thể xử lý yêu cầu. Vui lòng thử lại.', 'INTERNAL_ERROR', array(), array('success'=>false));
+    }
+
+    function adminInstallApiExceptionHandler()
+    {
+        set_exception_handler(function(Throwable $exception) {
+            if(isset($GLOBALS['d']) && is_object($GLOBALS['d']))
+            {
+                try { $GLOBALS['d']->rollback(); }
+                catch(Throwable $rollbackException) {}
+            }
+
+            $detail = $exception instanceof PDODbException
+                ? get_class($exception).' operation='.$exception->getOperation().' sqlstate='.$exception->getSqlState()
+                : get_class($exception);
+            error_log('Admin API unhandled exception: '.$detail.' at '.$exception->getFile().':'.$exception->getLine());
+
+            while(ob_get_level() > 0) ob_end_clean();
+
+            if(!headers_sent())
+            {
+                http_response_code(500);
+                header('Content-Type: application/json; charset=UTF-8');
+            }
+            echo json_encode(adminApiExceptionEnvelope());
+            exit();
+        });
+    }
+
     function adminUpdateSortOrder($d, $table, $order)
     {
         $tables = array('sortable', 'sortable_index', 'sortable_detail');
