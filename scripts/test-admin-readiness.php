@@ -176,6 +176,17 @@ try
         'Các page load trong throttle không xoay token hoặc ghi lại activity'
     );
 
+    $sortableSettingBefore = $d->rawQueryOne('select id, hotline, phone, email, options from #_setting_sort order by id asc limit 0,1');
+    $sortableInvalidMarker = 'CODEX-SORTABLE-INVALID-'.bin2hex(random_bytes(4));
+    $sortableInvalidSave = readinessHttp($base.'index.php?com=sortable&act=save', 'POST', array(
+        'admin_csrf'=>$authenticatedToken[1],
+        'id'=>(int)$sortableSettingBefore['id'],
+        'data'=>array('hotline'=>'1', 'phone'=>'1', 'email'=>'1', 'options'=>array('chinhsach'=>'Chính sách', 'dangky'=>'Đăng ký', 'fanpage'=>'Fanpage')),
+        'id_item_menu'=>array($sortableInvalidMarker),
+    ), $newCookie);
+    $sortableSettingAfter = $d->rawQueryOne('select id, hotline, phone, email, options from #_setting_sort order by id asc limit 0,1');
+    readinessAssert($sortableInvalidSave['status'] === 200 && strpos($sortableInvalidSave['body'], 'Cập nhật dữ liệu bị lỗi') !== false && strpos($sortableInvalidSave['body'], $sortableInvalidMarker) === false && $sortableSettingAfter === $sortableSettingBefore, 'Lưu sortable từ chối nhóm mảng thiếu, không lộ POST debug và không ghi dở dữ liệu');
+
     $apiMissing = readinessHttp($base.'api/status.php', 'POST', array('id' => 999999, 'table' => 'product', 'attr' => 'hienthi', 'type' => 'san-pham', 'com' => 'product'), $newCookie);
     readinessAssert($apiMissing['status'] === 403, 'API mutation thiếu CSRF trả 403');
     $apiMissingPayload = json_decode($apiMissing['body'], true);

@@ -20,3 +20,5 @@ Ba endpoint `update_sttMenu.php`, `update_sttIndex.php`, `update_sttDetail.php` 
 `delete_add_item.php` nhận nhóm `menu/index/detail` qua allowlist để chọn đúng bảng sortable, trả JSON và xác minh bản ghi đã được xóa. Client giữ nguyên dòng nếu request thất bại; dòng mới chưa lưu (`id=0`) chỉ được gỡ khỏi DOM và không gọi API.
 
 Mutation trong `comment.php` giữ `success/errors` cho plugin cũ và thêm envelope chuẩn. Quyền edit/delete được suy ra từ `type` của bình luận trong DB; trạng thái có allowlist, dữ liệu phản hồi Admin có allowlist cột và luôn kế thừa `id_variant/type` từ bình luận gốc.
+
+Form full-page `com=sortable&act=save` vẫn dùng response chuyển trang legacy nhưng đã kiểm tra quyền, allowlist field và validate các mảng item trước khi mở transaction. Ba nhóm item, cấu hình chung và SEO cùng commit hoặc rollback; payload POST không còn bị dump ra response.
