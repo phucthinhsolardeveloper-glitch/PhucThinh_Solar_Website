@@ -66,8 +66,9 @@ Cập nhật gần nhất: 2026-09-03. Mọi thay đổi bên dưới mới ở 
 ## PARTIAL / CHỜ DỮ LIỆU THẬT
 
 - 5 trang chính sách đã có URL nhưng nội dung đang rỗng.
-- 78 sản phẩm thiếu mô tả ngắn, 6 thiếu nội dung chi tiết và 16 thiếu thông số kỹ thuật.
-- Đã import file Excel thật `artifacts/san-pham-20260831-da-bo-sung-oriana.xlsx` vào DB local (preview 0 lỗi, backup `backup/local/20260831-132554`): +70 sản phẩm ORIANA (id 467–536), cập nhật #321/#311. Tổng 81 → 151. 70 sản phẩm mới còn thiếu ảnh + mô tả ngắn + nội dung; đã đặt `numb=2` để xếp cuối danh mục, chờ bổ sung ảnh/nội dung rồi mới đưa lên đầu.
+- DB local hiện có 445 sản phẩm, được chủ project xác nhận ngày 2026-09-03 là dữ liệu nhập có chủ ý. Không hoàn nguyên, tự ẩn hoặc đổi thứ tự lô này.
+- Ảnh, mô tả ngắn, nội dung chi tiết và thông số của bộ 445 sản phẩm đang được chủ project kiểm tra/bổ sung dần. Baseline đọc ngày 2026-09-03: 364 thiếu ảnh đại diện, 442 thiếu mô tả ngắn và 366 thiếu nội dung chi tiết; 0 nhóm trùng mã và 0 nhóm trùng slug.
+- Lịch sử gồm lô ORIANA `san-pham-20260831-da-bo-sung-oriana.xlsx` và file master `san-pham-master-fixed-2026-09-01.xlsx`; các file nằm trong `artifacts/`, tiếp tục được giữ ngoài Git/release.
 - Chứng nhận và video chỉ hiển thị khi admin nhập dữ liệu thật.
 - Dữ liệu kỹ thuật thật sẽ được cập nhật từ file Excel bên ngoài; không chạy migration 006 apply nếu chưa có phê duyệt riêng.
 - Nội dung mô tả chi tiết từng sản phẩm cần biên tập theo tài liệu kỹ thuật thật.

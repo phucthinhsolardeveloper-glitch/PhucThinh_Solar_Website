@@ -155,7 +155,7 @@ a1bfedc fix(product): restore brand/power/type filters in listing sidebar
 
 Toàn bộ đã push lên `origin/master` (branch `master` track upstream). Các commit `be1b3d6`, `4314123`, `ad4520e` là lịch sử thử nghiệm conditional loading và đã bị `793e3eb` thay thế. Không cherry-pick hoặc tái áp dụng riêng các commit đó.
 
-Thay đổi DB local (không nằm trong Git): đã import `artifacts/san-pham-20260831-da-bo-sung-oriana.xlsx` — +70 sản phẩm ORIANA (id 467–536, `numb=2` xếp cuối), cập nhật #321/#311; tổng `table_product` type `san-pham` = 151. Backup trước import: `backup/local/20260831-132554`. 70 sản phẩm mới còn thiếu ảnh + `descvi` + `contentvi`. Chạy lại được bằng `scripts/preview-product-bulk-file.php` / `scripts/commit-product-bulk-file.php`.
+Thay đổi DB local (không nằm trong Git): sau lô ORIANA và file master do chủ project nhập, `table_product` type `san-pham` hiện có 445 dòng. Chủ project xác nhận ngày 2026-09-03 đây là dữ liệu có chủ ý; không hoàn nguyên, tự ẩn hoặc đổi thứ tự. Ảnh/nội dung/thông số đang được bổ sung dần; baseline hiện tại có 364 ảnh đại diện, 442 mô tả ngắn và 366 nội dung chi tiết còn thiếu, không có nhóm trùng mã/slug. Chi tiết file và checksum trong `artifacts/README.txt`.
 
 ## 7. Trạng thái kiểm thử gần nhất
 
@@ -189,7 +189,7 @@ B3 **So sánh sản phẩm** được chủ project phân loại là tính năng
 
 ### Chờ dữ liệu thật
 
-- Ảnh + `descvi` + `contentvi` cho 70 sản phẩm ORIANA vừa import (id 467–536); sau khi đủ thì đưa `numb` về 0/1 để lên đầu danh mục.
+- Ảnh + `descvi` + `contentvi` + thông số cho bộ 445 sản phẩm đang được chủ project rà và bổ sung dần; không tự đổi trạng thái/thứ tự trong quá trình này.
 - Xác nhận danh mục cấp 2 của lô ORIANA (36 Đèn Pha, 28 Đèn Đường, 6 chỉ có cấp 1).
 - Chốt sản phẩm/landing page chạy quảng cáo; đối chiếu mã, slug, danh mục, trạng thái, thông số, ảnh và nội dung.
 - Bổ sung 5 chính sách và các mô tả/nội dung/thông số còn thiếu cho sản phẩm cũ.

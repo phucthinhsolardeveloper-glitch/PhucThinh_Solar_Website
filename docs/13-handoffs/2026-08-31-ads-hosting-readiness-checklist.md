@@ -48,12 +48,12 @@ Phạm vi tối ưu áp dụng cho toàn bộ project, gồm frontend public, Ad
 ## 4. Dữ liệu
 
 - [x] Import/export Excel có preview, xác nhận, conflict detection và rollback trong lượt xử lý; brand mới được chọn tạo/ghép/bỏ trống ở preview và rollback cùng batch.
-- [x] Importer hỗ trợ XLSX generator không chuẩn/Strict OOXML; trùng URL sản phẩm legacy được xử lý theo nhóm ngay tại preview và thay đổi hàng loạt sang `Tạm ẩn` có thống kê + xác nhận riêng. File master 385 dòng mới nhất đã preview chỉ-đọc 0 lỗi; chưa ghi DB.
+- [x] Importer hỗ trợ XLSX generator không chuẩn/Strict OOXML; trùng URL sản phẩm legacy được xử lý theo nhóm ngay tại preview và thay đổi hàng loạt sang `Tạm ẩn` có thống kê + xác nhận riêng. File master sau đó đã được chủ project nhập vào DB local; tổng hiện tại 445 sản phẩm và được xác nhận là dữ liệu có chủ ý.
 - [x] Chế độ báo giá chỉ ẩn giá public; giá nội bộ trong Admin/Excel được giữ nguyên.
 - [x] Nhận file Excel thật `san-pham-20260831-da-bo-sung-oriana.xlsx`: lưu `artifacts/` + checksum, backup local, preview qua pipeline (0 lỗi/cảnh báo/xung đột), commit vào DB local (+70 ORIANA id 467–536, cập nhật #321/#311, tổng 151). 70 sp mới `numb=2` xếp cuối danh mục.
-- [ ] Đối chiếu sản phẩm quảng cáo: mã, slug, danh mục, trạng thái, thông số, ảnh và nội dung. *(70 sp mới còn thiếu ảnh + mô tả ngắn + nội dung chi tiết — chờ bổ sung.)*
+- [ ] Đối chiếu sản phẩm quảng cáo: mã, slug, danh mục, trạng thái, thông số, ảnh và nội dung. *(Bộ 445 sản phẩm đang được chủ project kiểm tra/bổ sung ảnh và nội dung dần.)*
 - [x] Local không còn dữ liệu test, mã/slug trùng, ảnh đại diện thiếu hoặc liên kết danh mục mồ côi.
-- [ ] Bổ sung 5 chính sách, 78 mô tả ngắn, 6 nội dung chi tiết và 16 bộ thông số còn thiếu.
+- [ ] Bổ sung 5 chính sách và dữ liệu sản phẩm còn thiếu. Baseline local 2026-09-03: 364 ảnh đại diện, 442 mô tả ngắn và 366 nội dung chi tiết; số liệu sẽ giảm dần theo quá trình biên tập.
 - [ ] Xác nhận không còn dữ liệu test, mã trùng hoặc import dở dang trên staging.
 
 ## 5. Backup, deploy và rollback
