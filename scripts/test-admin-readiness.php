@@ -199,6 +199,12 @@ try
     $numbPayload = json_decode($numbUpdate['body'], true);
     $numbRow = $d->rawQueryOne('select numb from #_product where id = ?', array($secondBulkStatusProductId));
     readinessAssert($numbUpdate['status'] === 200 && !empty($numbPayload['ok']) && $numbPayload['code'] === 'NUMB_UPDATED' && (int)$numbRow['numb'] === 7, 'API thứ tự trả contract JSON và cập nhật đúng dữ liệu');
+    $copyResponse = readinessHttp($base.'api/copy.php', 'POST', array('admin_csrf'=>$authenticatedToken[1], 'id'=>$bulkStatusProductId, 'table'=>'product', 'copyimg'=>'0', 'type'=>'san-pham'), $newCookie);
+    $copyPayload = json_decode($copyResponse['body'], true);
+    $copyId = !empty($copyPayload['data']['id']) ? (int)$copyPayload['data']['id'] : 0;
+    if($copyId) $createdProductIds[] = $copyId;
+    $copyRow = $copyId ? $d->rawQueryOne('select namevi, slugvi, status from #_product where id = ?', array($copyId)) : array();
+    readinessAssert($copyResponse['status'] === 200 && !empty($copyPayload['ok']) && $copyPayload['code'] === 'COPY_CREATED' && !empty($copyRow) && $copyRow['status'] === '' && $copyRow['slugvi'] !== strtolower($bulkStatusCode), 'API sao chép tạo bản nháp với slug mới và contract JSON');
     $missingDescriptionPage = readinessHttp($base.'index.php?com=product&act=man&type=san-pham&data_status=missing_desc&keyword='.urlencode($bulkStatusPrefix), 'GET', array(), $newCookie);
     readinessAssert(
         $missingDescriptionPage['status'] === 200
@@ -231,7 +237,7 @@ try
     $apiFilteredStatus = readinessHttp($base.'api/status.php', 'POST', array('admin_csrf' => $authenticatedToken[1], 'scope' => 'filtered', 'table' => 'product', 'attr' => 'baogia', 'value' => '1', 'type' => 'san-pham', 'com' => 'product', 'keyword' => $bulkStatusPrefix), $newCookie);
     $apiFilteredPayload = json_decode($apiFilteredStatus['body'], true);
     $bulkStatusRow = $d->rawQueryOne('select status from #_product where id = ?', array($bulkStatusProductId));
-    readinessAssert($apiFilteredStatus['status'] === 200 && !empty($apiFilteredPayload['success']) && (int)$apiFilteredPayload['updated'] === 2 && strpos(','.$bulkStatusRow['status'].',', ',baogia,') !== false, 'API trạng thái áp dụng được toàn bộ kết quả theo bộ lọc');
+    readinessAssert($apiFilteredStatus['status'] === 200 && !empty($apiFilteredPayload['success']) && (int)$apiFilteredPayload['updated'] === 3 && strpos(','.$bulkStatusRow['status'].',', ',baogia,') !== false, 'API trạng thái áp dụng được toàn bộ kết quả theo bộ lọc');
 
     // ADM-P1-012: form liên hệ Theme V2 đã bỏ trường địa chỉ; Admin phải lưu được liên hệ khi địa chỉ trống.
     $contactFixtureCode = 'CODEX-CONTACT-'.bin2hex(random_bytes(4));

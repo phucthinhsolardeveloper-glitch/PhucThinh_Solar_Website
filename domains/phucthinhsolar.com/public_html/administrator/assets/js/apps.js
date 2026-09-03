@@ -2106,7 +2106,7 @@ $(document).ready(function(){
 			$.ajax({
 				url: 'api/copy.php',
 				type: 'POST',
-				dataType: 'html',
+				dataType: 'json',
 				async: false,
 				data: {
 					admin_csrf: ADMIN_CSRF,
@@ -2115,12 +2115,13 @@ $(document).ready(function(){
 					copyimg: copyimg,
 					type: TYPE
 				},
-				success: function(){
+				success: function(response){
 					holdonClose();
-				}
+					if(response && response.ok) window.location.reload(true);
+					else showNotify(response && response.message ? response.message : 'Không thể sao chép dữ liệu.', 'Lỗi', 'error');
+				},
+				error: function(){ holdonClose(); showNotify('Không thể kết nối để sao chép dữ liệu.', 'Lỗi', 'error'); }
 			});
-
-			window.location.reload(true);
 		});
 	}
 

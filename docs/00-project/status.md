@@ -47,6 +47,7 @@ Cập nhật gần nhất: 2026-09-03. Mọi thay đổi bên dưới mới ở 
 - Chuẩn hóa Admin API batch 1: `login`, `status`, `upload` trả thêm envelope `ok/message/code/data` nhưng giữ nguyên field legacy cho JavaScript hiện tại. Security và authenticated Admin integration test đạt; endpoint HTML/scalar và database array chưa đổi.
 - Admin API batch 2: lỗi CSRF/quyền JSON và `database.php` dùng cùng envelope; JavaScript bảo trì database hỗ trợ song song định dạng cũ/mới. Endpoint HTML fragment và scalar vẫn giữ nguyên để tránh phá consumer legacy.
 - Admin API batch 3: cập nhật `numb` trả JSON rõ ràng và kiểm tra kết quả DB; input Admin tự phục hồi giá trị cũ khi request lỗi. Integration test xác nhận mutation đúng và fixture được dọn sạch.
+- Admin API batch 4: sao chép product/news bỏ đệ quy slug không giới hạn, trả JSON và chỉ reload khi thành công. Sửa lấy sai ID từ boolean `insert()`, chuẩn hóa `cong_suat`/giá cho MariaDB strict mode và bắt lỗi DB thành response trung tính; integration test tạo bản nháp slug mới rồi cleanup về 0 fixture.
 
 ## PARTIAL / CHỜ DỮ LIỆU THẬT
 
