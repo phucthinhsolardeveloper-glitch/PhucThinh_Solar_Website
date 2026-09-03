@@ -32,6 +32,7 @@ Một sản phẩm dùng cùng thứ tự khối, khối không có dữ liệu 
 6. **Bộ sản phẩm / hướng dẫn lắp đặt** — ưu tiên field cấu trúc, chỉ hiện khi có dữ liệu.
 7. **Video thực tế** và **Chứng nhận** — tự hiện theo dữ liệu.
 8. **Chính sách mua hàng** — lấy từ nội dung chính sách dùng chung; chỉ cho override theo sản phẩm khi thật sự khác.
+9. **Dự án đã sử dụng sản phẩm** — chỉ hiện khi sản phẩm được liên kết với dự án; ảnh lấy từ gallery dự án và dẫn tới trang chi tiết dự án.
 
 Quy tắc biên tập:
 
@@ -54,7 +55,23 @@ Không chuyển đổi tự động 445 sản phẩm hiện có. Giữ nguyên `
 
 Không nên lưu toàn bộ layout thành một blob HTML mới. Dữ liệu nên tách khỏi cách trình bày để sau này đổi UI một lần cho toàn bộ sản phẩm.
 
-## 4. Phân nhóm công suất
+## 4. Quan hệ hai chiều Sản phẩm–Dự án
+
+Module Dự án hiện đã có trang chi tiết, ảnh đại diện, gallery ảnh và video. Chưa có quan hệ dữ liệu với sản phẩm; nếu nhập tên/mã/link sản phẩm bằng CKEditor thì dễ sai URL, sai tên sau khi đổi và không truy vấn ngược được.
+
+Thiết kế đề xuất:
+
+- Tạo bảng nối `product_project` gồm `id_product`, `id_project`, `numb`, trạng thái và unique key trên cặp ID. Không sao chép tên, slug hoặc ảnh vào bảng nối.
+- Điểm quản lý chính ở form **Dự án**: tìm theo tên/mã và chọn nhiều sản phẩm thực tế đã dùng. Chỉ chọn sản phẩm `type=san-pham`; backend xác minh ID tồn tại, quyền sửa Dự án và CSRF.
+- Form **Sản phẩm** hiển thị các dự án đã liên kết và cho đường dẫn sang form Dự án. Nếu cho sửa từ cả hai phía thì phải dùng cùng service/transaction, không có hai nguồn dữ liệu riêng.
+- Trang **Dự án** có khối “Sản phẩm sử dụng trong dự án”; mỗi tên/card lấy trực tiếp từ `table_product` và link bằng slug hiện tại tới trang sản phẩm. Sản phẩm ẩn không tạo link public.
+- Trang **Sản phẩm** có khối “Dự án thực tế”; dùng ảnh đại diện hoặc gallery của dự án, click ảnh/tên tới trang dự án. Chỉ hiện với dự án và sản phẩm đều `hienthi`.
+- “Sản phẩm nổi bật” có thể ưu tiên khối dự án ở vị trí cao hơn, nhưng quan hệ dự án không bị buộc vào status `noibat`: sản phẩm thường có dự án thật vẫn được phép liên kết và hiển thị.
+- Không upload lại ảnh dự án vào sản phẩm. Gallery Dự án là nguồn ảnh duy nhất để tránh trùng file và mô tả không đồng bộ.
+
+Để tránh N+1, source chi tiết tải toàn bộ sản phẩm/dự án liên quan bằng một query join theo trang; trang danh sách không truy vấn quan hệ theo từng card. Khi xóa/ẩn, cần kiểm tra orphan và có migration index cho cả chiều `id_product` lẫn `id_project`.
+
+## 5. Phân nhóm công suất
 
 Hiện tại `allpage.php` truy vấn từng giá trị `DISTINCT cong_suat`; sidebar gửi danh sách số và `sources/product.php` lọc bằng `IN`. Vì vậy xuất hiện 0W, 2W và quá nhiều lựa chọn lẻ.
 
@@ -66,7 +83,7 @@ Hiện tại `allpage.php` truy vấn từng giá trị `DISTINCT cong_suat`; si
 
 `0`/`NULL` là thiếu dữ liệu, không xuất hiện trong bộ lọc. UI gửi khóa allowlist (`under-60`, `60-200`, `over-200`), backend ánh xạ sang điều kiện parameterized/cố định; không nhận biểu thức SQL từ request. Trong giai đoạn chuyển tiếp có thể vẫn đọc URL số cũ để không làm hỏng link đã chia sẻ, nhưng header/sidebar mới chỉ sinh URL nhóm.
 
-## 5. Số dòng trên trang Admin
+## 6. Số dòng trên trang Admin
 
 Danh sách sản phẩm đang hard-code `$perPage = 10`. Bổ sung select **10 / 20 / 50 / 100 dòng** cạnh phân trang:
 
@@ -76,7 +93,7 @@ Danh sách sản phẩm đang hard-code `$perPage = 10`. Bổ sung select **10 /
 - Bulk “Trang này” dùng đúng số dòng đang hiển thị; bulk “Toàn bộ kết quả” vẫn dựa trên tổng bộ lọc, không phụ thuộc `per_page`.
 - Chưa áp dụng toàn Admin trong batch đầu. Làm và test ở danh sách sản phẩm trước, sau đó mới trích helper dùng chung cho order/news/contact nếu hành vi ổn định.
 
-## 6. Các batch triển khai
+## 7. Các batch triển khai
 
 ### Batch 1 — Bộ lọc W và phân trang sản phẩm
 
@@ -105,11 +122,19 @@ Danh sách sản phẩm đang hard-code `$perPage = 10`. Bổ sung select **10 /
 - Cho phép override có nhãn rõ ràng; dữ liệu per-product hiện tại vẫn là fallback.
 - Đo usage DB + DOM/network cho size/color/tags, `photo2`, gallery và các module media trước khi quyết định giữ, nối UI, archive hay tiếp tục tắt.
 
-## 7. Tiêu chí đạt và rollback
+### Batch 5 — Liên kết Sản phẩm–Dự án
+
+- Thêm migration bảng nối idempotent, index hai chiều và kiểm tra orphan.
+- Thêm bộ chọn sản phẩm vào form Dự án, danh sách liên kết ngược trong form Sản phẩm; save theo transaction và giữ CSRF/RBAC.
+- Render “Sản phẩm sử dụng” trên trang Dự án và “Dự án thực tế” trên trang Sản phẩm.
+- Regression sản phẩm/dự án ẩn, slug thay đổi, quan hệ rỗng/nhiều phần tử, ảnh thiếu và không phát sinh N+1.
+
+## 8. Tiêu chí đạt và rollback
 
 - Không thay slug/URL sản phẩm, trạng thái hiển thị, ảnh hoặc dữ liệu hiện có.
 - Không có khối/tab trống, HTML tràn ngang, inline style làm lệch theme hoặc nội dung bị lặp.
 - Công suất biên vào đúng một nhóm; 0/NULL không hiện.
 - Số bản ghi mỗi trang đúng lựa chọn, filter và bulk action không đổi phạm vi ngoài ý muốn.
+- Tên sản phẩm trên Dự án luôn lấy từ bản ghi hiện tại và link đúng slug; ảnh dự án trên Sản phẩm dùng media Dự án, không nhân bản upload.
 - PHP 7.4 lint, Admin readiness, public smoke, Playwright desktop/mobile và `predeploy-local.sh` đều PASS.
 - Mỗi batch là một commit độc lập. Rollback source bằng revert commit; migration mới chỉ thêm nullable field và không được DROP trong cùng đợt rollback nếu đã có dữ liệu người dùng.
