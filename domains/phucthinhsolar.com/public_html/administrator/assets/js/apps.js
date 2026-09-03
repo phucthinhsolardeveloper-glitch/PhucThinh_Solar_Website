@@ -2235,7 +2235,7 @@ $(document).ready(function(){
 
 		$.ajax({
 			type: 'POST',
-			dataType: 'html',
+			dataType: 'json',
 			url: 'api/filer.php',
 			async: false,
 			data: {
@@ -2253,9 +2253,16 @@ $(document).ready(function(){
 			},
 			success: function(result)
 			{
+				if(!result.ok) return notifyDialog(result.message || "Không thể cập nhật thông tin ảnh");
 				destroySortFiler();
-				$("#jFilerSortable").html(result);
+				$("#jFilerSortable").html(result.data.html);
 				createSortFiler();
+			},
+			error: function(xhr)
+			{
+				var result = xhr.responseJSON || {};
+				notifyDialog(result.message || "Không thể cập nhật thông tin ảnh");
+				refreshFilerIfEmpty();
 			}
 		});
 

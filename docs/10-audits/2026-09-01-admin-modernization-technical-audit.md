@@ -196,7 +196,7 @@ Trạng thái triển khai 2026-09-03: ADM-P1-001 đã thay toàn bộ 15 nhánh
 
 Data layer không còn tự render HTML hoặc kết thúc request, nên controller hiện có có thể rollback/bù trừ. Việc chuẩn hóa error envelope và exception boundary theo từng nhóm API vẫn là backlog riêng.
 
-Các endpoint còn dùng nhiều `exit()` không body hoặc plain-text error. Các batch local đã chuẩn hóa dần mutation JSON, gồm `login/status/upload`, database, numb, copy, slug, sortable, comment và xóa gallery. Riêng gallery nay kiểm tra toàn bộ ID thuộc đúng album trước khi xóa batch; client chỉ gỡ DOM sau khi server xác nhận. Endpoint HTML/scalar, exception boundary cấp API và API router chung vẫn chưa chuẩn hóa.
+Các endpoint còn dùng nhiều `exit()` không body hoặc plain-text error. Các batch local đã chuẩn hóa dần mutation JSON, gồm `login/status/upload`, database, numb, copy, slug, sortable, comment và gallery. Gallery nay xác minh sửa metadata/xóa/reorder trước khi client cập nhật DOM; renderer API cô lập output buffer legacy để HTML fragment không phá JSON. Endpoint HTML/scalar, exception boundary cấp API và API router chung vẫn chưa chuẩn hóa.
 
 ### 11. Testability — VERIFIED
 

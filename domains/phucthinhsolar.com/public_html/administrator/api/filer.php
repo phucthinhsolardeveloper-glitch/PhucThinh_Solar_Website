@@ -33,6 +33,15 @@
 		foreach($gallery as $item) echo $func->galleryFiler($item['numb'],$item['id'],$item['photo'],$item['namevi'],$com,$colfiler);
 	}
 
+	function filerGalleryHtml($gallery, $func, $com, $colfiler)
+	{
+		$html = '';
+		$bufferLevel = ob_get_level();
+		foreach($gallery as $item) $html .= $func->galleryFiler($item['numb'],$item['id'],$item['photo'],$item['namevi'],$com,$colfiler);
+		while(ob_get_level() > $bufferLevel) ob_end_clean();
+		return $html;
+	}
+
 	function filerNormalizeIds($value)
 	{
 		if(!is_array($value)) $value = explode(',', (string)$value);
@@ -65,18 +74,23 @@
 	{
 		$allowedRows = filerGalleryRows($d, $id_parent, $hash, $com, $type, $kind, 'id');
 		$allowedIds = array_map('intval', array_column($allowedRows, 'id'));
-		if(!in_array($id, $allowedIds, true)) exit();
+		if(!in_array($id, $allowedIds, true)) filerJsonResponse(false, 'Ảnh không tồn tại trong album này.', 'GALLERY_ITEM_NOT_FOUND', array(), array('success'=>false), 404);
 		$data = array();
-		if($info === 'numb') $data['numb'] = max(0, (int)$value);
+		if($info === 'numb' && preg_match('/^\d{1,9}$/', $value)) $data['numb'] = (int)$value;
 		if($info === 'name') $data['namevi'] = function_exists('mb_substr') ? mb_substr($value, 0, 255, 'UTF-8') : substr($value, 0, 255);
-		if(!$data) exit();
+		if(!$data) filerJsonResponse(false, 'Thông tin ảnh không hợp lệ.', 'INVALID_GALLERY_INFO', array(), array('success'=>false), 400);
 		$d->where('id',$id);
-		if($d->update('gallery',$data))
-		{
-			$gallery = filerGalleryRows($d, $id_parent, $hash, $com, $type, $kind);
-			if($gallery) filerRenderGallery($gallery, $func, $com, $colfiler);
-			$cache->delete();
-		}
+		$d->update('gallery',$data);
+		$saved = $d->rawQueryOne('select numb, namevi from #_gallery where id = ?', array($id));
+		$field = $info === 'numb' ? 'numb' : 'namevi';
+		$expected = $data[$field];
+		if(!$saved) filerJsonResponse(false, 'Không thể cập nhật thông tin ảnh.', 'GALLERY_INFO_UPDATE_FAILED', array(), array('success'=>false), 500);
+		$actual = $field === 'numb' ? (int)$saved[$field] : (string)$saved[$field];
+		if($actual !== $expected) filerJsonResponse(false, 'Không thể cập nhật thông tin ảnh.', 'GALLERY_INFO_UPDATE_FAILED', array(), array('success'=>false), 500);
+		$gallery = filerGalleryRows($d, $id_parent, $hash, $com, $type, $kind);
+		$html = filerGalleryHtml($gallery, $func, $com, $colfiler);
+		$cache->delete();
+		filerJsonResponse(true, 'Đã cập nhật thông tin ảnh.', 'GALLERY_INFO_UPDATED', array('id'=>$id, 'field'=>$field, 'value'=>$actual, 'html'=>$html), array('success'=>true, 'html'=>$html));
 	}
 	else if($cmd === 'updateNumb' && ($id_parent > 0 || $hash !== ''))
 	{

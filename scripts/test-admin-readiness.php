@@ -193,6 +193,16 @@ try
         ));
         $createdGalleryIds[] = (int)$d->getLastInsertId();
     }
+    $galleryInfoUpdate = readinessHttp($base.'api/filer.php', 'POST', array('admin_csrf'=>$authenticatedToken[1], 'cmd'=>'info', 'info'=>'name', 'value'=>'Tiêu đề ảnh kiểm thử', 'id'=>$createdGalleryIds[0], 'id_parent'=>987654, 'com'=>'product', 'kind'=>'man', 'type'=>'san-pham', 'colfiler'=>'col-6'), $newCookie);
+    $galleryInfoPayload = json_decode($galleryInfoUpdate['body'], true);
+    $galleryInfoRow = $d->rawQueryOne('select namevi from #_gallery where id = ?', array($createdGalleryIds[0]));
+    readinessAssert($galleryInfoUpdate['status'] === 200 && !empty($galleryInfoPayload['ok']) && $galleryInfoPayload['code'] === 'GALLERY_INFO_UPDATED' && $galleryInfoRow['namevi'] === 'Tiêu đề ảnh kiểm thử' && strpos($galleryInfoPayload['data']['html'], 'Tiêu đề ảnh kiểm thử') !== false, 'API gallery xác minh cập nhật tiêu đề và trả HTML mới trong envelope JSON');
+
+    $galleryInvalidInfo = readinessHttp($base.'api/filer.php', 'POST', array('admin_csrf'=>$authenticatedToken[1], 'cmd'=>'info', 'info'=>'numb', 'value'=>'khong-hop-le', 'id'=>$createdGalleryIds[0], 'id_parent'=>987654, 'com'=>'product', 'kind'=>'man', 'type'=>'san-pham'), $newCookie);
+    $galleryInvalidInfoPayload = json_decode($galleryInvalidInfo['body'], true);
+    $galleryInfoAfterReject = $d->rawQueryOne('select numb from #_gallery where id = ?', array($createdGalleryIds[0]));
+    readinessAssert($galleryInvalidInfo['status'] === 400 && empty($galleryInvalidInfoPayload['ok']) && $galleryInvalidInfoPayload['code'] === 'INVALID_GALLERY_INFO' && (int)$galleryInfoAfterReject['numb'] === 0, 'API gallery từ chối số thứ tự sai định dạng mà không thay dữ liệu');
+
     $galleryDelete = readinessHttp($base.'api/filer.php', 'POST', array('admin_csrf'=>$authenticatedToken[1], 'cmd'=>'delete', 'id'=>$createdGalleryIds[0], 'id_parent'=>987654, 'com'=>'product', 'kind'=>'man', 'type'=>'san-pham'), $newCookie);
     $galleryDeletePayload = json_decode($galleryDelete['body'], true);
     $galleryDeletedRow = $d->rawQueryOne('select id from #_gallery where id = ?', array($createdGalleryIds[0]));
