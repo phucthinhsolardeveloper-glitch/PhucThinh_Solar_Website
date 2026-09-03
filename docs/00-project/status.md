@@ -46,6 +46,7 @@ Cập nhật gần nhất: 2026-09-03. Mọi thay đổi bên dưới mới ở 
 - Router public đã thay chuỗi lookup `$requick` tuần tự bằng một resolver `UNION ALL` parameterized, chỉ nhận table/field từ allowlist và giữ thứ tự ưu tiên route cũ. Test đối chứng đạt 503/503 slug và xác nhận mỗi slug chỉ gọi resolver DB một lần; Playwright chức năng đạt 37 PASS, 1 skip. Screenshot danh mục hiện lệch baseline vì DB local đang hiển thị nhóm sản phẩm thiếu ảnh, nên chưa cập nhật ảnh chuẩn.
 - Chuẩn hóa Admin API batch 1: `login`, `status`, `upload` trả thêm envelope `ok/message/code/data` nhưng giữ nguyên field legacy cho JavaScript hiện tại. Security và authenticated Admin integration test đạt; endpoint HTML/scalar và database array chưa đổi.
 - Admin API batch 2: lỗi CSRF/quyền JSON và `database.php` dùng cùng envelope; JavaScript bảo trì database hỗ trợ song song định dạng cũ/mới. Endpoint HTML fragment và scalar vẫn giữ nguyên để tránh phá consumer legacy.
+- Admin API batch 3: cập nhật `numb` trả JSON rõ ràng và kiểm tra kết quả DB; input Admin tự phục hồi giá trị cũ khi request lỗi. Integration test xác nhận mutation đúng và fixture được dọn sạch.
 
 ## PARTIAL / CHỜ DỮ LIỆU THẬT
 

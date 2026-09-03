@@ -12,3 +12,5 @@ Các endpoint là PHP file, không phải REST API versioned và không có Open
 - `administrator/api/*`: login, upload, status/order/category/component/sort/delete helpers; dựa vào CMS session/bootstrap theo từng file.
 
 Response/error format chưa đồng nhất giữa JSON, HTML fragment và scalar. Admin JSON object (`login.php`, `status.php`, `upload.php`) và `database.php` đã có envelope tương thích ngược `ok/message/code/data`; lỗi CSRF/quyền JSON dùng cùng contract. JavaScript bảo trì database đọc được cả root-array cũ và envelope mới. Các endpoint fragment/scalar cần xử lý theo batch riêng. Trước khi tạo React/static frontend, cần quyết định giữ HTML-fragment AJAX hay xây JSON API có version/auth/validation thống nhất.
+
+`administrator/api/numb.php` cũng đã chuyển từ response rỗng sang envelope JSON; client phục hồi giá trị cũ và báo lỗi khi cập nhật thất bại. `copy.php`, `slug.php` và các endpoint fragment vẫn giữ contract legacy.

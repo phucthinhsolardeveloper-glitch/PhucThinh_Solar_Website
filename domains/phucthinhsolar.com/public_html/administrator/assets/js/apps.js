@@ -2015,7 +2015,9 @@ $(document).ready(function(){
 	/* Change numb */
 	if($("input.update-numb").length)
 	{
+		$('body').on('focus', 'input.update-numb', function(){ $(this).data('previous-numb', $(this).val()); });
 		$('body').on("change","input.update-numb",function(){
+			var $this = $(this);
 			var id = $(this).attr('data-id');
 			var table = $(this).attr('data-table');
 			var value = $(this).val();
@@ -2023,7 +2025,7 @@ $(document).ready(function(){
 			$.ajax({
 				url: 'api/numb.php',
 				type: 'POST',
-				dataType: 'html',
+				dataType: 'json',
 				data: {
 					admin_csrf: ADMIN_CSRF,
 					id: id,
@@ -2031,7 +2033,12 @@ $(document).ready(function(){
 					value: value,
 					type: TYPE,
 					com: COM
-				}
+				},
+				success: function(response){
+					if(response && response.ok) $this.data('previous-numb', value);
+					else { $this.val($this.data('previous-numb')); showNotify(response && response.message ? response.message : 'Không thể cập nhật thứ tự.', 'Lỗi', 'error'); }
+				},
+				error: function(){ $this.val($this.data('previous-numb')); showNotify('Không thể kết nối để cập nhật thứ tự.', 'Lỗi', 'error'); }
 			});
 
 			return false;

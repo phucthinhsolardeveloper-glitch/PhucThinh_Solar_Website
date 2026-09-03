@@ -195,6 +195,10 @@ try
     $d->insert('product', array('code' => $secondBulkStatusCode, 'namevi' => 'Sản phẩm kiểm thử set-based', 'slugvi' => strtolower($secondBulkStatusCode), 'type' => 'san-pham', 'status' => '', 'numb' => 0, 'cong_suat' => 0, 'regular_price' => 0, 'sale_price' => 0, 'discount' => 0, 'id_list' => 0, 'id_cat' => 0, 'id_item' => 0, 'id_sub' => 0, 'id_brand' => 0, 'date_created' => time(), 'date_updated' => 0, 'view' => 0));
     $secondBulkStatusProductId = (int)$d->getLastInsertId();
     $createdProductIds[] = $secondBulkStatusProductId;
+    $numbUpdate = readinessHttp($base.'api/numb.php', 'POST', array('admin_csrf'=>$authenticatedToken[1], 'id'=>$secondBulkStatusProductId, 'table'=>'product', 'value'=>7, 'type'=>'san-pham', 'com'=>'product'), $newCookie);
+    $numbPayload = json_decode($numbUpdate['body'], true);
+    $numbRow = $d->rawQueryOne('select numb from #_product where id = ?', array($secondBulkStatusProductId));
+    readinessAssert($numbUpdate['status'] === 200 && !empty($numbPayload['ok']) && $numbPayload['code'] === 'NUMB_UPDATED' && (int)$numbRow['numb'] === 7, 'API thứ tự trả contract JSON và cập nhật đúng dữ liệu');
     $missingDescriptionPage = readinessHttp($base.'index.php?com=product&act=man&type=san-pham&data_status=missing_desc&keyword='.urlencode($bulkStatusPrefix), 'GET', array(), $newCookie);
     readinessAssert(
         $missingDescriptionPage['status'] === 200
