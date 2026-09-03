@@ -23,6 +23,39 @@ if(!function_exists('adminCsrfToken'))
         return array_merge(array('ok'=>(bool)$ok, 'message'=>(string)$message, 'code'=>(string)$code, 'data'=>is_array($data) ? $data : array()), is_array($legacy) ? $legacy : array());
     }
 
+    function adminUpdateSortOrder($d, $table, $order)
+    {
+        $tables = array('sortable', 'sortable_index', 'sortable_detail');
+        if(!in_array($table, $tables, true)) throw new InvalidArgumentException('Invalid sortable table');
+        $rawIds = explode(',', (string)$order);
+        if(count($rawIds) < 1 || count($rawIds) > 500) throw new InvalidArgumentException('Invalid sortable order size');
+        $ids = array();
+        foreach($rawIds as $rawId)
+        {
+            if(!preg_match('/^[1-9][0-9]*$/', trim($rawId))) throw new InvalidArgumentException('Invalid sortable ID');
+            $ids[] = (int)trim($rawId);
+        }
+        if(count(array_unique($ids)) !== count($ids)) throw new InvalidArgumentException('Duplicate sortable ID');
+
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        $rows = $d->rawQuery("select id from #_{$table} where id in ({$placeholders})", $ids);
+        if(count($rows) !== count($ids)) throw new InvalidArgumentException('Unknown sortable ID');
+
+        $d->startTransaction();
+        try
+        {
+            foreach($ids as $position => $id)
+                $d->rawQuery("update #_{$table} set display_order = ? where id = ?", array($position, $id));
+            $d->commit();
+        }
+        catch(Throwable $e)
+        {
+            $d->rollback();
+            throw $e;
+        }
+        return count($ids);
+    }
+
     function adminLegacyMutationNeedsCsrf($com, $act, $method, $post = array())
     {
         if(strtoupper((string)$method) !== 'POST') return preg_match('/^(?:delete|save|upload|sync$|create$)/i', (string)$act) === 1;
@@ -84,6 +117,7 @@ if(!function_exists('adminCsrfToken'))
     function adminMutationPermissionKey($table, $capability, $type = '', $com = '')
     {
         $type = is_string($type) && preg_match('/^[a-zA-Z0-9_-]{1,100}$/', $type) ? $type : '';
+        if($table === 'sortable' && $capability === 'numb') return 'sortable_update';
         $actions = array('status' => 'edit', 'numb' => 'edit', 'copy' => 'add', 'database' => 'update');
         $suffixes = array(
             'product' => array('product', ''), 'product_list' => array('product', 'list'),

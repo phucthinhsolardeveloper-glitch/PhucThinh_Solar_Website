@@ -211,47 +211,35 @@ function submitAdminMutation(url, fields)
 }
 // ui-sortable-handle
 
-function updateDropReorder() {    
+function submitDropReorder(selector, endpoint)
+{
     var item_order = new Array();
-    $('ul.reorder-gallery li').each(function() {
+    $(selector+' li').each(function() {
         item_order.push($(this).attr("id"));
     });
     $.ajax({
         type: "POST",
-        url: "api/update_sttMenu.php",
+        url: endpoint,
+        dataType: "json",
         data: {order: item_order.join(','), admin_csrf: ADMIN_CSRF},
         cache: false,
-        success: function(data){            
+        success: function(result){
+            if(!result || !result.ok) notifyDialog(result && result.message ? result.message : "Không thể cập nhật thứ tự");
+        },
+        error: function(xhr){
+            var result = xhr.responseJSON || {};
+            notifyDialog(result.message || "Không thể cập nhật thứ tự");
         }
     });
+}
+function updateDropReorder() {
+    submitDropReorder('ul.reorder-gallery', 'api/update_sttMenu.php');
 }
 function updateDropReorder_Index() {    
-    var item_order = new Array();
-    $('ul.reorder-gallery-index li').each(function() {
-        item_order.push($(this).attr("id"));
-    });
-    $.ajax({
-        type: "POST",
-        url: "api/update_sttIndex.php",
-        data: {order: item_order.join(','), admin_csrf: ADMIN_CSRF},
-        cache: false,
-        success: function(data){            
-        }
-    });
+    submitDropReorder('ul.reorder-gallery-index', 'api/update_sttIndex.php');
 }
 function updateDropReorder_Detail() {    
-    var item_order = new Array();
-    $('ul.reorder-gallery-detail li').each(function() {
-        item_order.push($(this).attr("id"));
-    });
-    $.ajax({
-        type: "POST",
-        url: "api/update_sttDetail.php",
-        data: {order: item_order.join(','), admin_csrf: ADMIN_CSRF},
-        cache: false,
-        success: function(data){            
-        }
-    });
+    submitDropReorder('ul.reorder-gallery-detail', 'api/update_sttDetail.php');
 }
 /* Create sort filer */
 var sortable;

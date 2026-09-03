@@ -53,6 +53,7 @@ $rateKeys = array();
 $createdProductIds = array();
 $createdContactIds = array();
 $createdNewsletterIds = array();
+$createdSortableIds = array('sortable'=>array(), 'sortable_index'=>array(), 'sortable_detail'=>array());
 
 try
 {
@@ -185,6 +186,26 @@ try
     $apiInvalidStatus = readinessHttp($base.'api/status.php', 'POST', array('admin_csrf' => $authenticatedToken[1], 'ids' => '999998,999999', 'table' => 'product', 'attr' => 'trang-thai-tu-che', 'value' => '1', 'type' => 'san-pham', 'com' => 'product'), $newCookie);
     $apiInvalidPayload = json_decode($apiInvalidStatus['body'], true);
     readinessAssert($apiInvalidStatus['status'] === 200 && empty($apiInvalidPayload['success']), 'API trạng thái hàng loạt từ chối thuộc tính ngoài cấu hình');
+
+    $sortableEndpoints = array('sortable'=>'update_sttMenu.php', 'sortable_index'=>'update_sttIndex.php', 'sortable_detail'=>'update_sttDetail.php');
+    foreach($sortableEndpoints as $sortableTable => $sortableEndpoint)
+    {
+        foreach(array(8, 9) as $initialOrder)
+        {
+            $d->insert($sortableTable, array('name'=>'CODEX-SORT-'.bin2hex(random_bytes(4)), 'display_order'=>$initialOrder, 'created'=>date('Y-m-d H:i:s'), 'modified'=>date('Y-m-d H:i:s'), 'status'=>'1', 'type'=>'codex-test'));
+            $createdSortableIds[$sortableTable][] = (int)$d->getLastInsertId();
+        }
+        $orderedIds = array_reverse($createdSortableIds[$sortableTable]);
+        $sortResponse = readinessHttp($base.'api/'.$sortableEndpoint, 'POST', array('admin_csrf'=>$authenticatedToken[1], 'order'=>implode(',', $orderedIds)), $newCookie);
+        $sortPayload = json_decode($sortResponse['body'], true);
+        $sortRows = $d->rawQuery("select id, display_order from #_{$sortableTable} where id in (?, ?)", $orderedIds);
+        $sortPositions = array();
+        foreach($sortRows as $sortRow) $sortPositions[(int)$sortRow['id']] = (int)$sortRow['display_order'];
+        readinessAssert($sortResponse['status'] === 200 && !empty($sortPayload['ok']) && $sortPayload['code'] === 'SORT_ORDER_UPDATED' && (int)$sortPayload['data']['updated'] === 2 && $sortPositions[$orderedIds[0]] === 0 && $sortPositions[$orderedIds[1]] === 1, 'API '.$sortableTable.' cập nhật thứ tự bằng transaction và contract JSON');
+    }
+    $invalidSortResponse = readinessHttp($base.'api/update_sttMenu.php', 'POST', array('admin_csrf'=>$authenticatedToken[1], 'order'=>$createdSortableIds['sortable'][0].','.$createdSortableIds['sortable'][0]), $newCookie);
+    $invalidSortPayload = json_decode($invalidSortResponse['body'], true);
+    readinessAssert($invalidSortResponse['status'] === 400 && empty($invalidSortPayload['ok']) && $invalidSortPayload['code'] === 'INVALID_SORT_ORDER', 'API sắp xếp từ chối ID trùng mà không cập nhật dữ liệu');
 
     $bulkStatusPrefix = 'CODEX-BS-'.bin2hex(random_bytes(4));
     $bulkStatusCode = $bulkStatusPrefix.'-1';
@@ -397,6 +418,8 @@ try
 }
 finally
 {
+    foreach($createdSortableIds as $sortableTable => $sortableIds)
+        foreach($sortableIds as $sortableId) $d->rawQuery("delete from #_{$sortableTable} where id = ?", array($sortableId));
     foreach($createdNewsletterIds as $newsletterId) $d->rawQuery("delete from #_newsletter where id = ?", array($newsletterId));
     foreach($createdContactIds as $contactId) $d->rawQuery("delete from #_contact where id = ?", array($contactId));
     foreach($createdProductIds as $productId) $d->rawQuery("delete from #_product where id = ?", array($productId));
