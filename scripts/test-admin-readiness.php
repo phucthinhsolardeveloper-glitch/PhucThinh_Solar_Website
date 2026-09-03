@@ -162,6 +162,17 @@ try
 	$unauthenticatedHtmlApi = readinessHttp($base.'api/category.php', 'POST', array('id'=>1, 'level'=>0, 'table'=>'product_cat', 'type'=>'san-pham'), $oldCookie);
 	$unauthenticatedHtmlPayload = json_decode($unauthenticatedHtmlApi['body'], true);
 	readinessAssert($unauthenticatedHtmlApi['status'] === 401 && empty($unauthenticatedHtmlPayload['ok']) && $unauthenticatedHtmlPayload['code'] === 'AUTH_REQUIRED', 'Admin API HTML fragment cũng trả 401 chuẩn để client nhận biết hết phiên');
+	foreach(array('component.php', 'save_add_item.php') as $disabledEndpoint)
+	{
+		$disabledApi = readinessHttp($base.'api/'.$disabledEndpoint, 'POST', array(), $oldCookie);
+		$disabledPayload = json_decode($disabledApi['body'], true);
+		readinessAssert(
+			$disabledApi['status'] === 404
+				&& empty($disabledPayload['ok'])
+				&& $disabledPayload['code'] === 'LEGACY_API_DISABLED',
+			'Endpoint legacy '.$disabledEndpoint.' giữ trạng thái vô hiệu hóa và trả lỗi JSON rõ ràng'
+		);
+	}
 
     $missingCsrf = readinessHttp($base.'api/login.php', 'POST', array('username' => $createdUsers['product']['username'], 'password' => $createdUsers['product']['password']), $oldCookie);
     readinessAssert($missingCsrf['status'] === 403, 'Login thiếu CSRF bị từ chối');

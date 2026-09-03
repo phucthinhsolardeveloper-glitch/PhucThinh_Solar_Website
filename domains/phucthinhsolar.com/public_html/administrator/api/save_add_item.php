@@ -1,5 +1,14 @@
 <?php 
+	/* Vô hiệu hóa endpoint sortable cũ; luồng hiện tại dùng source có validation/transaction. */
 	http_response_code(404);
+	header('Content-Type: application/json; charset=UTF-8');
+	echo json_encode(array(
+		'ok' => false,
+		'message' => 'API không tồn tại.',
+		'code' => 'LEGACY_API_DISABLED',
+		'data' => array(),
+		'success' => false
+	));
 	exit();
 	include "config.php";
 	$table = (!empty($_POST['table'])) ? htmlspecialchars($_POST['table']) : '';

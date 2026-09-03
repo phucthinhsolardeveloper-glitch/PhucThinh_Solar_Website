@@ -73,6 +73,8 @@ Hai endpoint legacy đã bị vô hiệu hóa bằng HTTP 404:
 - `administrator/api/component.php`.
 - `administrator/api/save_add_item.php`.
 
+Ngày 2026-09-03, cả hai vẫn bị chặn trước bootstrap/code legacy và trả thêm JSON `LEGACY_API_DISABLED` để client/monitor không còn nhận body rỗng.
+
 Các endpoint còn lại chủ yếu dùng session DB check; mutation chính đã có CSRF, permission và allowlist. Response contract vẫn không đồng nhất: JSON, HTML fragment, plain text, empty response và `die()`/`exit()` cùng tồn tại.
 
 ### 4. DB engine, index và ràng buộc — RESOLVED ON LOCAL FOR COMMERCE
