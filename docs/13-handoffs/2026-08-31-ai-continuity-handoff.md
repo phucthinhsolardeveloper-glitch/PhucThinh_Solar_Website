@@ -112,6 +112,7 @@ Không dùng “giảm request/query/dung lượng” làm tiêu chí thành cô
   - Footer mobile: bỏ accordion, hiển thị đủ.
   - 5 pixel-baseline đã regenerate cho type scale mới.
 - Phân tích đối thủ Kitawa + lộ trình nâng cấp e-commerce: `docs/07-features/ecommerce-upgrade-proposal.md` (chờ chủ project chốt phạm vi).
+- Quy chuẩn nội dung sản phẩm, inventory Admin–UI và kế hoạch ba nhóm công suất + chọn số dòng Admin: `docs/07-features/product-content-admin-ui-plan.md`. Ưu tiên triển khai Batch 1 trước; kế thừa 445 sản phẩm bằng fallback, không backfill/ghi đè tự động.
 - Grid Tin tức/Giải pháp/Dự án được khóa 3/2/1.
 - Sitemap đã loại 4 URL ẩn/không hoạt động; hiện còn 137 URL hợp lệ từ lần crawl local.
 - 85 URL ảnh WordPress legacy từng 404 đã có fallback media an toàn; 85/85 trả HTTP 200.
