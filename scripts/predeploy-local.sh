@@ -33,6 +33,7 @@ docker cp scripts/test-product-pricing-admin-http.php "$web_container:/tmp/test-
 docker cp scripts/test-checkout-atomicity.php "$web_container:/tmp/test-checkout-atomicity.php"
 docker cp scripts/test-commerce-transaction.php "$web_container:/tmp/test-commerce-transaction.php"
 docker cp scripts/test-public-route-resolver.php "$web_container:/tmp/test-public-route-resolver.php"
+docker cp scripts/preflight-commerce-migrations.php "$web_container:/tmp/preflight-commerce-migrations.php"
 
 docker compose -f "$compose_file" exec -T web sh -lc '
 set -eu
@@ -59,6 +60,7 @@ php /tmp/test-product-pricing-admin-http.php
 php /tmp/test-checkout-atomicity.php
 php /tmp/test-commerce-transaction.php
 php /tmp/test-public-route-resolver.php
+php /tmp/preflight-commerce-migrations.php
 '
 
 node --check domains/phucthinhsolar.com/public_html/administrator/assets/js/apps.js

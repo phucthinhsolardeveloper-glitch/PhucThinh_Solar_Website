@@ -54,6 +54,7 @@ Quy ước dữ liệu Excel vẫn giữ nguyên: ô giá trống khi cập nh�
 - [ ] Xác nhận menu/quy trình xử lý đơn hàng cho nhân viên vận hành.
 - [ ] Backup code, DB và upload; ghi owner, thời điểm, checksum và vị trí lưu ngoài webroot.
 - [ ] Diễn tập restore trên staging và xác nhận rollback migration/code.
+- [x] Tích hợp preflight commerce chỉ đọc vào predeploy để kiểm engine/index, orphan, token trùng và trạng thái migration 008–009.
 - [ ] Build staging sạch và smoke: category → product → cart → checkout → confirmation → admin order.
 - [ ] Smoke contact/newsletter/review bằng dữ liệu test có kiểm soát và dọn sạch sau test.
 - [ ] Kiểm tra desktop/mobile, menu, filter, console và log PHP/Apache.

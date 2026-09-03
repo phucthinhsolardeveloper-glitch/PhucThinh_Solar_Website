@@ -19,3 +19,5 @@ Trên local, InnoDB là lớp bảo đảm atomic chính; xóa bù trừ và shu
 Checkout phát token ngẫu nhiên 256-bit theo session/form và lưu vào `table_order.checkout_token` với unique index từ migration 009. Request lặp lại cùng token nhận lại đúng ID/code của đơn đã commit, không insert detail hoặc gửi email lần hai; token chỉ được xoay sau khi đã tạo token trang cảm ơn. PHP session lock, CSRF và persistent rate limit vẫn là các lớp bảo vệ bổ sung.
 
 Regression: `scripts/test-checkout-atomicity.php` kiểm happy path, partial detail failure, missing product, shutdown giữa insert, double-submit model, replay token bền vững và hai tiến trình ghi đồng thời, cleanup count và orphan. `scripts/test-commerce-transaction.php` kiểm engine/index idempotency và chứng minh `ROLLBACK` xóa thật cả order lẫn detail mà không đổi tổng dữ liệu.
+
+Trước migration trên staging/production, chạy `scripts/preflight-commerce-migrations.php` bằng đúng webroot/config của môi trường. Script chỉ đọc, báo engine/index/trạng thái 008–009, token trùng và orphan order/product; exit code 2 nếu có blocker. Preflight PASS không thay thế backup có checksum, restore rehearsal hoặc cửa sổ dừng checkout.
