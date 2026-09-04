@@ -32,6 +32,16 @@
                 </div>
             </div>
         </div>
+        <form class="form-inline float-right" method="get" action="index.php">
+            <?php foreach($_GET as $queryKey => $queryValue) { if(in_array($queryKey, array('per_page','p'), true) || !is_scalar($queryValue)) continue; ?>
+                <input type="hidden" name="<?=htmlspecialchars($queryKey, ENT_QUOTES, 'UTF-8')?>" value="<?=htmlspecialchars((string)$queryValue, ENT_QUOTES, 'UTF-8')?>">
+            <?php } ?>
+            <label class="mr-2 mb-0" for="admin-per-page-list">Số dòng</label>
+            <select id="admin-per-page-list" name="per_page" class="custom-select custom-select-sm">
+                <?php foreach($adminPerPageOptions as $perPageOption) { ?><option value="<?=$perPageOption?>" <?=$adminPerPage===$perPageOption?'selected':''?>><?=$perPageOption?></option><?php } ?>
+            </select>
+            <button type="submit" class="btn btn-sm btn-outline-primary ml-1">Áp dụng</button>
+        </form>
     </div>
     <div class="card card-primary card-outline text-sm mb-0">
         <div class="card-header">
@@ -52,6 +62,7 @@
 							<th class="align-middle">Hình</th>
 						<?php } ?>
 						<th class="align-middle" style="width:30%">Tiêu đề</th>
+						<th class="align-middle text-center">Sản phẩm</th>
 						<?php if(isset($config['product'][$type]['gallery_list']) && count($config['product'][$type]['gallery_list']) > 0) { ?>
                             <th class="align-middle">Gallery</th>
                         <?php } ?>
@@ -86,6 +97,13 @@
                                 <td class="align-middle">
                                     <a class="text-dark text-break" href="<?=$linkEdit?>&id=<?=$items[$i]['id']?>" title="<?=$items[$i]['namevi']?>"><?=$items[$i]['namevi']?></a>
                                 </td>
+								<td class="align-middle text-center">
+									<?php if((int)$items[$i]['product_count'] > 0) { ?>
+										<span class="badge badge-success"><?=(int)$items[$i]['product_count']?> sản phẩm</span>
+									<?php } else { ?>
+										<span class="badge badge-warning" title="Danh mục chưa xuất hiện ở menu công khai vì chưa có sản phẩm">Chưa có sản phẩm</span>
+									<?php } ?>
+								</td>
                                 <?php if(isset($config['product'][$type]['gallery_list']) && count($config['product'][$type]['gallery_list']) > 0) { ?>
                                     <td class="align-middle">
                                         <div class="dropdown">

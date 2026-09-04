@@ -14,6 +14,8 @@
     $gia = (publicProductPricesVisible() && isset($_GET['is_price']) && $_GET['is_price'] != '') ? htmlspecialchars($_GET['is_price']) : '';
     $idCongSuat = (isset($_GET['is_congsuat']) && $_GET['is_congsuat'] != '') ? htmlspecialchars($_GET['is_congsuat']) : '';
     $idCatFilter = (isset($_GET['is_cat']) && $_GET['is_cat'] != '') ? htmlspecialchars($_GET['is_cat']) : '';
+	$keywordRaw = isset($_GET['keyword']) ? trim((string) $_GET['keyword']) : '';
+	$keyword = ($keywordRaw !== '' && strlen($keywordRaw) <= 100) ? $func->changeTitle($keywordRaw) : '';
 	$idType = 'dich-vu';
 	$p = (isset($_GET['p']) && (int) $_GET['p'] > 0) ? (int) $_GET['p'] : 1;
 	$start = ($p-1) * $pagingAjax->perpage;
@@ -35,6 +37,13 @@
 		$tempLink .= "&id_cat=".$idCat;
 		$where .= " and id_cat = ?";
 		$params[] = $idCat;
+	}
+	if($keyword !== '')
+	{
+		$tempLink .= "&keyword=".rawurlencode($keywordRaw);
+		$where .= " and (name$lang like ? or code like ? or slugvi like ? or slugen like ?)";
+		$keywordLike = "%".$keyword."%";
+		$params = array_merge($params, array($keywordLike, $keywordLike, $keywordLike, $keywordLike));
 	}
 	if($idBrand !="")
 	{

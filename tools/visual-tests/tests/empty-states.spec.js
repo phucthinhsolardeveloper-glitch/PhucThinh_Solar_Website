@@ -87,6 +87,14 @@ test('search with matches lists product cards', async ({ page, baseURL }) => {
   expect(await page.locator('.product-item').count()).toBeGreaterThan(0);
   // Quote-only mode: cards must not expose add-to-cart controls.
   await expect(page.locator('.product-card .addcart')).toHaveCount(0);
+
+  const filteredResponse = page.waitForResponse(response => response.url().includes('/api/fillter_service.php?') && response.ok());
+  await page.locator('select[name="orderby"]').selectOption('new');
+  await filteredResponse;
+  const filteredUrl = new URL(page.url());
+  expect(filteredUrl.pathname).toBe('/tim-kiem/');
+  expect(filteredUrl.searchParams.get('keyword')).toBe('ORIANA');
+  expect(await page.locator('.product-item').count()).toBeGreaterThan(0);
 });
 
 test('contact page serves a CSRF-protected lead form wired to the PHP handler', async ({ page, baseURL }) => {

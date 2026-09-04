@@ -10,17 +10,17 @@ function pushState(options,targetTitle,targetUrl) {
 
 }
 function fetch_product(t=1) {
-    var e = ""
-      , n = ""
+    var n = ""
       , a = ""
-      , o = ""
       , i = ""
       , c = ""
-      , r = ""
       , x = ""
       , w = ""
       , p = ""
       , g = ""
+      , k = ""
+      , l2 = ""
+      , c2 = ""
       , s = $("#opensideBar-product");
     s.hasClass("active") && 0 != s.length && s.trigger("click");
     c = $('input[name="car_brand"]:checked').map(function() {
@@ -41,36 +41,34 @@ function fetch_product(t=1) {
     i = $('select[name="orderby"] option:selected').map(function() {
         return this.value
     }).get().join(","),
+    k = $('input[name="keywords"]').val() || "",
     l2 = $('input[name="id_list"]').map(function() {
         return this.value
     }).get().join(","),
     c2 = $('input[name="id_cat"]').map(function() {
         return this.value
     }).get().join(","),
-    e = $('input[name="href"]').val(),
     a = $('input[name="alias"]').val(),
-    r = $('input[name="idl-tpl"]').val(),
-    // "0" != l && (n += "id_list=" + l + "&"),
     "0" != l2 && (n += "id_list=" + l2 + "&"),
     "0" != c2 && (n += "id_cat=" + c2 + "&"),
+    "" != k && (n += "keyword=" + encodeURIComponent(k) + "&"),
     "" != c && (n += "is_brand=" + c + "&"),
     "" != x && (n += "is_origin=" + x + "&"),
     "" != w && (n += "is_congsuat=" + w + "&"),
     "" != p && (n += "is_price=" + p + "&"),
     "" != g && (n += "is_cat=" + g + "&"),
     "" != i && (n += "is_orderby=" + i + "&"),
-    pushState({}, "", a + "?" + n.substr(0, n.length - 1)),
+    pushState({}, "", a + (n ? "?" + n.substr(0, n.length - 1) : "")),
     doSearch({
-        href: e,
         id_list: l2,
         id_cat: c2,
+        keyword: k,
         is_orderby: i,
         is_brand: c,
         is_origin: x,
         is_congsuat: w,
         is_price: p,
-        is_cat: g,
-        idl: r
+        is_cat: g
     })
 }
 function doSearch(t) {

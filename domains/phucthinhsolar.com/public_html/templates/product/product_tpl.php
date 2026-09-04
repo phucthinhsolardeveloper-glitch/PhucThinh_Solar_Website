@@ -167,7 +167,7 @@
 
             <?php
                 $catFilterListId = (!empty($productList['id'])) ? $productList['id'] : 0;
-                $catFilterList = ($catFilterListId) ? $d->rawQuery("select name$lang, id from #_product_cat where id_list = ? and find_in_set('hienthi',status) order by numb,id desc",array($catFilterListId)) : array();
+                $catFilterList = ($catFilterListId && empty($id_cat)) ? $d->rawQuery("select pc.name$lang, pc.id from #_product_cat pc where pc.id_list = ? and find_in_set('hienthi',pc.status) and exists (select 1 from #_product p where p.id_cat = pc.id and p.type = ? and find_in_set('hienthi',p.status)) order by pc.numb,pc.id desc",array($catFilterListId,'san-pham')) : array();
             ?>
             <?php if(count($catFilterList)) { ?>
             <div class="product-pages__price mb20">
@@ -259,11 +259,9 @@
     </div>
 
 </div>
-<input type="hidden" name="keywords" id="keyword" value="0">
-<input type="hidden" name="href" value="aHR0cHM6Ly9waHV0dW5nb3RvbXQuY29tL3Nhbi1waGFt">
-<input type="hidden" name="alias" value="danh-muc-san-pham/<?= (isset($slug_param)) ? $slug_param : 'san-pham' ?>">
-<input type="hidden" name="com-tpl" value="danh-muc-san-pham/<?= (isset($slug_param)) ? $slug_param : 'san-pham' ?>">
-<input type="hidden" name="idl-tpl" value="">
+<?php $productFilterPath = parse_url(isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '/san-pham/', PHP_URL_PATH); ?>
+<input type="hidden" name="keywords" id="keyword" value="<?=htmlspecialchars(isset($_GET['keyword']) ? $_GET['keyword'] : '',ENT_QUOTES,'UTF-8')?>">
+<input type="hidden" name="alias" value="<?=htmlspecialchars($productFilterPath ?: '/san-pham/',ENT_QUOTES,'UTF-8')?>">
 <input type="hidden" name="id_list" value="<?= (isset($id_list)) ? $id_list : 0 ?>">
 <input type="hidden" name="id_cat" value="<?= (isset($id_cat)) ? $id_cat : 0 ?>">
 <button type="button" class="mask-sidebar toggle-sidebar" aria-label="Đóng bộ lọc" tabindex="-1"></button>

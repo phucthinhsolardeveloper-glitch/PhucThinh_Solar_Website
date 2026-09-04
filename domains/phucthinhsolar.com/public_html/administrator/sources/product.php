@@ -1551,25 +1551,28 @@
 	/* View list */
 	function viewLists()
 	{
-		global $d, $func, $strUrl, $curPage, $items, $paging, $type;
+		global $d, $func, $strUrl, $curPage, $items, $paging, $type, $adminPerPage;
 		
 		$where = "";
+		$params = array($type);
 
-		if(isset($_REQUEST['keyword']))
+		if(isset($_REQUEST['keyword']) && trim((string)$_REQUEST['keyword']) !== '')
 		{
-			$keyword = htmlspecialchars($_REQUEST['keyword']);
-			$where .= " and (namevi LIKE '%$keyword%' or nameen LIKE '%$keyword%')";
+			$keyword = '%'.trim((string)$_REQUEST['keyword']).'%';
+			$where .= " and (pl.namevi LIKE ? or pl.nameen LIKE ?)";
+			$params[] = $keyword;
+			$params[] = $keyword;
 		}
 
-		$perPage = 10;
+		$perPage = $adminPerPage;
 		$startpoint = ($curPage * $perPage) - $perPage;
 		$limit = " limit ".$startpoint.",".$perPage;
-		$sql = "select * from #_product_list where type = ? $where order by numb,id desc $limit";
-		$items = $d->rawQuery($sql,array($type));
-		$sqlNum = "select count(*) as 'num' from #_product_list where type = ? $where order by numb,id desc";
-		$count = $d->rawQueryOne($sqlNum,array($type));
+		$sql = "select pl.*, (select count(*) from #_product p where p.id_list = pl.id and p.type = pl.type) as product_count from #_product_list pl where pl.type = ? $where order by pl.numb,pl.id desc $limit";
+		$items = $d->rawQuery($sql,$params);
+		$sqlNum = "select count(*) as 'num' from #_product_list pl where pl.type = ? $where";
+		$count = $d->rawQueryOne($sqlNum,$params);
 		$total = (!empty($count)) ? $count['num'] : 0;
-		$url = "index.php?com=product&act=man_list&type=".$type;
+		$url = "index.php?com=product&act=man_list&type=".$type.$strUrl;
 		$paging = $func->pagination($total,$perPage,$curPage,$url);
 	}
 
@@ -1925,25 +1928,28 @@
 	/* Get cat */
 	function viewCats()
 	{
-		global $d, $func, $strUrl, $curPage, $items, $paging, $type;
+		global $d, $func, $strUrl, $curPage, $items, $paging, $type, $adminPerPage;
 		
 		$where = "";
-		$idlist = (isset($_REQUEST['id_list'])) ? htmlspecialchars($_REQUEST['id_list']) : 0;
+		$idlist = isset($_REQUEST['id_list']) ? (int)$_REQUEST['id_list'] : 0;
+		$params = array($type);
 
-		if($idlist) $where .= " and id_list=$idlist";
-		if(isset($_REQUEST['keyword']))
+		if($idlist) { $where .= " and pc.id_list = ?"; $params[] = $idlist; }
+		if(isset($_REQUEST['keyword']) && trim((string)$_REQUEST['keyword']) !== '')
 		{
-			$keyword = htmlspecialchars($_REQUEST['keyword']);
-			$where .= " and (namevi LIKE '%$keyword%' or nameen LIKE '%$keyword%')";
+			$keyword = '%'.trim((string)$_REQUEST['keyword']).'%';
+			$where .= " and (pc.namevi LIKE ? or pc.nameen LIKE ?)";
+			$params[] = $keyword;
+			$params[] = $keyword;
 		}
 
-		$perPage = 10;
+		$perPage = $adminPerPage;
 		$startpoint = ($curPage * $perPage) - $perPage;
 		$limit = " limit ".$startpoint.",".$perPage;
-		$sql = "select * from #_product_cat where type = ? $where order by numb,id desc $limit";
-		$items = $d->rawQuery($sql,array($type));
-		$sqlNum = "select count(*) as 'num' from #_product_cat where type = ? $where order by numb,id desc";
-		$count = $d->rawQueryOne($sqlNum,array($type));
+		$sql = "select pc.*, (select count(*) from #_product p where p.id_cat = pc.id and p.type = pc.type) as product_count from #_product_cat pc where pc.type = ? $where order by pc.numb,pc.id desc $limit";
+		$items = $d->rawQuery($sql,$params);
+		$sqlNum = "select count(*) as 'num' from #_product_cat pc where pc.type = ? $where";
+		$count = $d->rawQueryOne($sqlNum,$params);
 		$total = (!empty($count)) ? $count['num'] : 0;
 		$url = "index.php?com=product&act=man_cat".$strUrl."&type=".$type;
 		$paging = $func->pagination($total,$perPage,$curPage,$url);

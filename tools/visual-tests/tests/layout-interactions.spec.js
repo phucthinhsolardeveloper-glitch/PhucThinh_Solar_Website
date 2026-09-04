@@ -7,6 +7,8 @@ test('header, menu, breadcrumb and footer remain usable', async ({ page, isMobil
   await page.goto('/san-pham/', { waitUntil: 'domcontentloaded' });
   await expect(page.locator('#headerscroll')).toBeVisible();
   await expect(page.locator('.breadCrumbs')).toBeVisible();
+  await expect(page.locator('#headerscroll .icon-cart-header')).toHaveCount(0);
+  await expect(page.locator('#headerscroll .hdr-call-txt')).toContainText('Tư vấn sản phẩm');
 
   if (isMobile) {
     const hamburger = page.locator('#hamburger');
@@ -78,7 +80,8 @@ test('quote request CTA opens the protected consultation form', async ({ page })
 test('home exposes every featured category and switches its product grid', async ({ page }) => {
   await page.goto('/', { waitUntil: 'domcontentloaded' });
   const categories = page.locator('.pts-home-category-grid > li');
-  expect(await categories.count()).toBeGreaterThanOrEqual(9);
+  expect(await categories.count()).toBeGreaterThan(0);
+  await expect(page.locator('.pts-home-category-grid a[href="danh-muc-san-pham/den-ac/"]')).toHaveCount(0);
   await expect(categories).toHaveCount(await categories.count());
 
   for (const category of await categories.all()) {
@@ -103,6 +106,9 @@ test('product category sidebar keeps child categories only in the type filter', 
   await expect(page.locator('.pts-filter-card .filter-cat > .aside-content > ul > li').first()).toBeVisible();
   await expect(page.locator('input[name="car_cat"]')).not.toHaveCount(0);
   await expect(page.locator('input[name="car_cat"]').first()).toBeAttached();
+
+  await page.goto('/den-op-tran/', { waitUntil: 'domcontentloaded' });
+  await expect(page.locator('input[name="car_cat"]')).toHaveCount(0);
 });
 
 test('mobile product filters open as an accessible drawer and close after filtering', async ({ page, isMobile }) => {

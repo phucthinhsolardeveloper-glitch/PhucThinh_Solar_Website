@@ -1,11 +1,11 @@
 <div class="toolbar">
     <ul>
-        <li>
+		<li>
             <a id="goidien" href="tel:<?=$func->parsePhone($optsetting['hotline'])?>" title="title">
                 <?=$func->getImage(['size-error' => '30x30x2', 'upload' => 'assets/images/', 'image' => 'icon-t1.png', 'alt' => 'Phone'])?><br>
                 <span>Gọi điện</span>
             </a>
-        </li>
+		</li>
         <li>
             <a id="nhantin" href="sms:<?=$func->parsePhone($optsetting['hotline'])?>" title="title">
                 <?=$func->getImage(['size-error' => '30x30x2', 'upload' => 'assets/images/', 'image' => 'icon-t2.png', 'alt' => 'Message'])?><br>
@@ -44,7 +44,7 @@
                 <span class="icon-hotdeal-new"><i class="fa fa-map-marker" aria-hidden="true"></i></span><span class="text-link-toolbar">Liên hệ</span>
             </a>
         </li>
-        <li>
+        <?php if(publicProductPricesVisible()) { ?><li>
             <a href="gio-hang">
                 <span class="icon-cart-mobile">
                     <span id="cart-total" class="cart-total-header cart-total-header-mobile">
@@ -53,7 +53,7 @@
                 </span>
                 <span class="text-link-toolbar">Giỏ hàng</span>
             </a>
-        </li>
+        </li><?php } ?>
     </ul>
 </div>
 

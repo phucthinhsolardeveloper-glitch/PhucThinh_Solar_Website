@@ -196,8 +196,15 @@
 			if(!empty($type) && !in_array($table, ['photo', 'static']))
 			{
 				$where = "type = ? and find_in_set('hienthi',status)";
+				$params = array($type);
+				$productHierarchy = array('product_list' => 'id_list', 'product_cat' => 'id_cat', 'product_item' => 'id_item', 'product_sub' => 'id_sub');
+				if(isset($productHierarchy[$table]))
+				{
+					$where .= " and exists (select 1 from #_product p where p.".$productHierarchy[$table]." = #_".$table.".id and p.type = ? and find_in_set('hienthi',p.status))";
+					$params[] = $type;
+				}
 				$where .= ($table != 'static') ? 'order by '.$orderby.' desc' : '';
-				$sitemap = $this->d->rawQuery("select slug$lang, date_created from #_$table where $where",array($type));
+				$sitemap = $this->d->rawQuery("select slug$lang, date_created from #_$table where $where",$params);
 			}
 
 			if($menu == true && $field == 'id')
