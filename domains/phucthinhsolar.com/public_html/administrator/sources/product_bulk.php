@@ -46,6 +46,7 @@ function productBulkColumns()
         'highlightsvi' => array('label' => 'Điểm nổi bật (Tiêu đề | Giải thích)', 'kind' => 'content_block_paired', 'db' => 'highlightsvi', 'limit' => 6),
         'applicationsvi' => array('label' => 'Ứng dụng phù hợp (mỗi dòng một ý)', 'kind' => 'content_block', 'db' => 'applicationsvi', 'limit' => 8),
         'installationvi' => array('label' => 'Bộ sản phẩm / hướng dẫn (mỗi dòng một ý)', 'kind' => 'content_block', 'db' => 'installationvi', 'limit' => 10),
+        'sectionsvi' => array('label' => 'Mô tả dài (khối) — ## tiêu đề, - danh sách, ![](file) ảnh', 'kind' => 'content_sections'),
         'chinhsachmuahangvi' => array('label' => 'Chính sách mua hàng', 'kind' => 'html', 'db' => 'chinhsachmuahangvi'),
         'video_url' => array('label' => 'Video YouTube', 'kind' => 'youtube', 'db' => 'video_url', 'max' => 500),
         'light_source' => array('label' => 'Nguồn sáng', 'kind' => 'text', 'db' => 'light_source', 'max' => 255),
@@ -752,7 +753,7 @@ function productBulkValidateRows($rawRows, $type, $baseline = array(), $overwrit
     $allowedStatus = !empty($config['product'][$type]['check']) ? array_keys($config['product'][$type]['check']) : array('hienthi');
     foreach ($rawRows as $raw) {
         $requestedAction = productBulkNormalizeAction(isset($raw['action']) ? $raw['action'] : '');
-        $item = array('row' => (int) $raw['_row_number'], 'action' => $requestedAction, 'id' => 0, 'code' => '', 'name' => '', 'data' => array(), 'existing' => null, 'pending_brand_key' => '', 'pending_product_key' => '', 'errors' => array(), 'warnings' => array(), 'conflicts' => array(), 'changes' => array());
+        $item = array('row' => (int) $raw['_row_number'], 'action' => $requestedAction, 'id' => 0, 'code' => '', 'name' => '', 'data' => array(), 'sections_raw' => '', 'existing' => null, 'pending_brand_key' => '', 'pending_product_key' => '', 'errors' => array(), 'warnings' => array(), 'conflicts' => array(), 'changes' => array());
         if ($item['action'] === '') $item['action'] = 'auto';
         if (!in_array($item['action'], array('auto', 'create', 'update', 'upsert', 'archive', 'skip'), true)) {
             $item['errors'][] = 'Thao tác không hợp lệ.';
@@ -896,6 +897,11 @@ function productBulkValidateRows($rawRows, $type, $baseline = array(), $overwrit
             elseif ($resolvedId === 0) $item['errors'][] = productBulkColumns()[$sourceKey]['label'].' không tồn tại.';
             else $raw[$definition[1]] = $resolvedId;
         }
+        if (array_key_exists('sectionsvi', $raw)) {
+            $sv = trim((string) $raw['sectionsvi']);
+            if ($sv === '__CLEAR__') $item['sections_raw'] = '__CLEAR__';
+            elseif ($sv !== '') $item['sections_raw'] = $sv;
+        }
         foreach ($columns as $key => $meta) {
             if (empty($meta['db']) || !isset($databaseColumns[$meta['db']]) || !array_key_exists($key, $raw)) continue;
             $value = trim((string) $raw[$key]);
@@ -1012,6 +1018,26 @@ function productBulkValidateRows($rawRows, $type, $baseline = array(), $overwrit
                 if (isset($item['data'][$field])) $item['changes'][$field] = array('label' => isset($columns[$field]['label']) ? $columns[$field]['label'] : $field, 'current' => $currentValue, 'incoming' => $incomingComparable);
             }
             if (count($item['data']) === 1 && isset($item['data']['date_updated'])) unset($item['data']['date_updated']);
+
+            /* Diff cột "Mô tả dài (khối)": so nội dung hiện tại với ô Excel. */
+            if ($item['sections_raw'] !== '' && !empty($existing['id'])) {
+                $curMd = '';
+                $curSec = $GLOBALS['d']->rawQueryOne("select mode, blocksvi from #_content_section where scope = 'product' and scope_id = ? limit 0,1", array((int) $existing['id']));
+                if ($curSec) $curMd = ($curSec['mode'] === 'hide') ? '[ẩn]' : productBlocksToMarkdown(productSectionsDecode($curSec['blocksvi']));
+                $incMd = ($item['sections_raw'] === '__CLEAR__') ? '' : $item['sections_raw'];
+                if (trim($curMd) === trim($incMd)) {
+                    $item['sections_raw'] = '';
+                } else {
+                    $item['changes']['sectionsvi'] = array(
+                        'label' => 'Mô tả dài (khối)',
+                        'current' => mb_substr($curMd, 0, 4000, 'UTF-8'),
+                        'incoming' => mb_substr($incMd, 0, 4000, 'UTF-8'),
+                    );
+                }
+            }
+        }
+        if ($isCreate && $item['sections_raw'] !== '' && $item['sections_raw'] !== '__CLEAR__') {
+            $item['changes']['sectionsvi'] = array('label' => 'Mô tả dài (khối)', 'current' => '(chưa có)', 'incoming' => mb_substr($item['sections_raw'], 0, 4000, 'UTF-8'));
         }
         if ($isCreate || isset($item['data']['regular_price']) || isset($item['data']['sale_price'])) {
             $item['data']['discount'] = $effectivePricing['values']['discount'];
@@ -1032,7 +1058,7 @@ function productBulkValidateRows($rawRows, $type, $baseline = array(), $overwrit
             if ($currentlyVisible && !$willBeVisible) $result['counts']['hide_update']++;
             elseif (!$currentlyVisible && $willBeVisible) $result['counts']['show_update']++;
         }
-        if (!$isCreate && empty($item['data'])) $result['counts']['unchanged']++;
+        if (!$isCreate && empty($item['data']) && $item['sections_raw'] === '') $result['counts']['unchanged']++;
         else $result['counts'][$resolvedAction]++;
         $result['errors'] += count($item['errors']);
         $result['warnings'] += count($item['warnings']);
@@ -1193,7 +1219,7 @@ function productBulkCommit()
         $createdBrandIds = productBulkCreateBrands($bulkPreview['new_brands'], $brandChoices, $type, $appliedBrands);
         $bulkPreview['counts']['brand_create'] = count($appliedBrands);
         foreach ($bulkPreview['rows'] as $row) {
-            if ($row['action'] === 'skip' || empty($row['data'])) continue;
+            if ($row['action'] === 'skip' || (empty($row['data']) && empty($row['sections_raw']))) continue;
             $saveData = productBulkPrepareDataForSave($row['data']);
             if (!empty($row['pending_brand_key'])) {
                 if (empty($createdBrandIds[$row['pending_brand_key']])) throw new Exception('Không xác định được thương hiệu mới tại dòng '.$row['row']);
@@ -1205,11 +1231,22 @@ function productBulkCommit()
                 $applied[] = array('action' => 'create', 'id' => $id, 'before' => null);
                 $seo = array('id_parent' => $id, 'com' => 'product', 'act' => 'man', 'type' => $type);
                 if (!$d->insert('seo', $seo)) throw new Exception('Không thể tạo SEO cho sản phẩm tại dòng '.$row['row']);
-            } else {
+            } elseif (!empty($saveData)) {
                 $applied[] = array('action' => $row['action'], 'id' => $row['id'], 'before' => $row['existing']);
                 $d->where('id', $row['id']);
                 $d->where('type', $type);
                 if (!$d->update('product', $saveData)) throw new Exception('Không thể cập nhật sản phẩm tại dòng '.$row['row']);
+            }
+            if (!empty($row['sections_raw'])) {
+                $sectionPid = ($row['action'] === 'create') ? (int) $id : (int) $row['id'];
+                $sraw = $row['sections_raw'];
+                if ($sraw === '[ẩn]' || $sraw === '[an]') {
+                    productContentSectionSetMode($d, $sectionPid, 'hide');
+                } elseif ($sraw === '__CLEAR__') {
+                    productContentSectionApplyBlocks($d, $sectionPid, array());
+                } else {
+                    productContentSectionApplyBlocks($d, $sectionPid, productMarkdownToBlocks($sraw));
+                }
             }
             $writesApplied++;
             if(isset($productBulkTestFailAfter) && $productBulkTestFailAfter > 0 && $writesApplied >= $productBulkTestFailAfter)
@@ -1267,6 +1304,8 @@ function productBulkExportValue($key, $row, $categories)
     }
     if (in_array($key, array('highlightsvi', 'applicationsvi', 'installationvi'), true))
         return productContentBlockLines(isset($row[$key]) ? $row[$key] : '', $key === 'highlightsvi');
+    if ($key === 'sectionsvi')
+        return isset($row['_sections_md']) ? (string) $row['_sections_md'] : '';
     $columns = productBulkColumns();
     if(isset($columns[$key]) && $columns[$key]['kind'] === 'html')
         return isset($row[$key]) ? productBulkHtmlToText($row[$key]) : '';
@@ -1298,6 +1337,18 @@ function productBulkExport($templateOnly = false)
     {
         $where = $dataStatusDefinition ? ' and '.$dataStatusDefinition['sql'] : '';
         $products = $d->rawQuery("select p.* from #_product p where p.type = ?$where order by p.numb,p.id desc", array($type));
+        /* Đính kèm mô tả khối (chỉ bản riêng của sản phẩm) cho cột sectionsvi. */
+        $sectionsByProduct = array();
+        foreach($d->rawQuery("select scope_id, mode, blocksvi from #_content_section where scope='product'") as $sec)
+            $sectionsByProduct[(int) $sec['scope_id']] = $sec;
+        foreach($products as &$productRef)
+        {
+            $sec = isset($sectionsByProduct[(int) $productRef['id']]) ? $sectionsByProduct[(int) $productRef['id']] : null;
+            if($sec && $sec['mode'] === 'own') $productRef['_sections_md'] = productBlocksToMarkdown(productSectionsDecode($sec['blocksvi']));
+            elseif($sec && $sec['mode'] === 'hide') $productRef['_sections_md'] = '[ẩn]';
+            else $productRef['_sections_md'] = '';
+        }
+        unset($productRef);
     }
     $suffix = $templateOnly ? 'mau-nhap-san-pham' : 'san-pham'.($dataStatus !== '' ? '-'.$dataStatus : '').'-'.date('Ymd-His');
     if ($format === 'csv') {

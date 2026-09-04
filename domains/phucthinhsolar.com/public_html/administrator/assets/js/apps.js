@@ -2920,3 +2920,263 @@ $(document).on('click','.xoa_item',function(){
 // 	});
 // 	return false;
 // });
+
+/* ============================================================
+   Composer khối nội dung mô tả (com=content_section, act=edit)
+   ============================================================ */
+$(function(){
+	var $composer = $('#pts-section-composer');
+	if(!$composer.length) return;
+
+	var uploadBase = $composer.data('upload') || 'upload/product/';
+	var uploadUrl = $composer.data('upload-url') || '';
+	var LABELS = { heading:'Tiêu đề', text:'Đoạn văn', image:'Ảnh', media:'Ảnh + mô tả', list:'Danh sách' };
+
+	function el(html){ return $(html); }
+
+	function photoSrc(photo){
+		photo = String(photo || '');
+		return photo.indexOf('/') !== -1 ? ('../' + photo.replace(/^\/+/, '')) : (uploadBase + photo);
+	}
+
+	function fileField(data){
+		var $wrap = el('<div class="form-group mb-2">');
+		$wrap.append('<label class="mb-1 d-block">Ảnh</label>');
+		$wrap.append('<input type="hidden" class="f-photo">');
+		$wrap.append('<input type="file" class="pts-block-file" accept="image/*">');
+		$wrap.append('<div class="pts-upload-status text-muted"></div>');
+		$wrap.append('<img class="pts-block-thumb" alt="">');
+		var photo = (data && data.photo) ? String(data.photo) : '';
+		$wrap.find('.f-photo').val(photo);
+		var $thumb = $wrap.find('.pts-block-thumb');
+		var $status = $wrap.find('.pts-upload-status');
+		if(photo){ $thumb.attr('src', photoSrc(photo)).addClass('show'); }
+
+		$wrap.find('.pts-block-file').on('change', function(){
+			var f = this.files && this.files[0];
+			if(!f) return;
+			$thumb.attr('src', URL.createObjectURL(f)).addClass('show');
+			if(!uploadUrl){ $status.text('Ảnh sẽ được tải lên khi bấm Lưu.').removeClass('text-danger text-success'); return; }
+			var fd = new FormData();
+			fd.append('image', f);
+			fd.append('admin_csrf', (typeof ADMIN_CSRF !== 'undefined') ? ADMIN_CSRF : '');
+			$status.text('Đang tải ảnh lên...').removeClass('text-danger text-success');
+			$.ajax({ url: uploadUrl, method: 'POST', data: fd, processData: false, contentType: false, dataType: 'json' })
+				.done(function(res){
+					if(res && res.ok){
+						$wrap.find('.f-photo').val(res.photo);
+						$status.text('Đã tải lên: ' + res.photo).addClass('text-success').removeClass('text-danger');
+					} else {
+						$status.text((res && res.msg) || 'Lỗi tải ảnh').addClass('text-danger').removeClass('text-success');
+					}
+				})
+				.fail(function(){ $status.text('Lỗi mạng khi tải ảnh — sẽ thử lại khi bấm Lưu.').addClass('text-danger'); });
+		});
+		return $wrap;
+	}
+
+	function blockCard(type, data){
+		data = data || {};
+		var $b = el('<div class="pts-section-block">').attr('data-type', type);
+		var $bar = el('<div class="pts-section-block__bar">')
+			.append('<span class="handle" title="Kéo để đổi thứ tự"><i class="fas fa-arrows-alt-v"></i></span>')
+			.append('<span class="type pts-block-collapse" title="Bấm để thu gọn / mở">' + (LABELS[type] || type) + '</span>')
+			.append('<span class="preview text-muted"></span>')
+			.append('<span class="spacer"></span>')
+			.append('<button type="button" class="btn btn-xs btn-outline-secondary pts-block-dup" title="Nhân đôi khối"><i class="far fa-copy"></i></button> ')
+			.append('<button type="button" class="btn btn-xs btn-outline-danger pts-block-del" title="Xoá khối"><i class="far fa-trash-alt"></i></button>');
+		var $body = el('<div class="pts-section-block__body">');
+
+		if(type === 'heading'){
+			$body.append('<div class="form-group mb-0"><input type="text" class="form-control form-control-sm f-text" placeholder="Tiêu đề mục"></div>');
+			$body.find('.f-text').val(data.text || '');
+		}
+		else if(type === 'text'){
+			$body.append('<div class="form-group mb-0"><textarea class="form-control form-control-sm f-text" rows="4" placeholder="Nội dung đoạn văn (cách 1 dòng trống để tách đoạn)"></textarea></div>');
+			$body.find('.f-text').val(data.text || '');
+		}
+		else if(type === 'list'){
+			var ordId = 'ord-' + Math.random().toString(36).slice(2);
+			$body.append('<div class="form-group mb-2"><textarea class="form-control form-control-sm f-items" rows="4" placeholder="Mỗi dòng một ý"></textarea></div>');
+			$body.append('<div class="custom-control custom-checkbox"><input type="checkbox" class="custom-control-input f-ordered" id="' + ordId + '"><label class="custom-control-label" for="' + ordId + '">Danh sách đánh số (1, 2, 3…)</label></div>');
+			$body.find('.f-items').val((data.items || []).join('\n'));
+			$body.find('.f-ordered').prop('checked', !!data.ordered);
+		}
+		else if(type === 'image'){
+			$body.append(fileField(data));
+			$body.append('<div class="form-group mb-0"><input type="text" class="form-control form-control-sm f-caption" placeholder="Chú thích ảnh (tuỳ chọn)"></div>');
+			$body.find('.f-caption').val(data.caption || '');
+		}
+		else if(type === 'media'){
+			var $grid = el('<div class="grid-2">');
+			var $left = el('<div>').append(fileField(data));
+			var $right = el('<div>');
+			$right.append('<div class="form-group mb-2"><input type="text" class="form-control form-control-sm f-title" placeholder="Tiêu đề nhỏ"></div>');
+			$right.append('<div class="form-group mb-2"><textarea class="form-control form-control-sm f-text" rows="3" placeholder="Mô tả"></textarea></div>');
+			$right.append('<div class="form-group mb-0"><label class="mb-1 d-block">Vị trí ảnh</label><select class="form-control form-control-sm f-side"><option value="left">Ảnh bên trái</option><option value="right">Ảnh bên phải</option><option value="center">Ảnh ở giữa (trên chữ)</option></select></div>');
+			$grid.append($left).append($right);
+			$body.append($grid);
+			$body.find('.f-title').val(data.title || '');
+			$body.find('.f-text').val(data.text || '');
+			$body.find('.f-side').val(['left', 'right', 'center'].indexOf(data.side) !== -1 ? data.side : 'left');
+		}
+
+		return $b.append($bar).append($body);
+	}
+
+	function refreshHint(){
+		$composer.find('.empty-hint').remove();
+		if(!$composer.children('.pts-section-block').length)
+			$composer.append('<div class="empty-hint">Chưa có khối nào. Bấm nút phía trên để thêm.</div>');
+	}
+
+	/* Nạp khối hiện có (JSON trong <script>, hoặc fallback attribute cũ) */
+	var initial = [];
+	try {
+		var raw = $('#pts-section-blocks').text() || $composer.attr('data-blocks') || '[]';
+		initial = JSON.parse(raw);
+	} catch(e){ initial = []; }
+	if(initial && initial.length){
+		initial.forEach(function(b){ if(b && b.type) $composer.append(blockCard(b.type, b)); });
+	}
+	refreshHint();
+
+	function serializeOne($b){
+		var type = $b.data('type'), o = { type: type };
+		if(type === 'heading') o.text = ($b.find('.f-text').val() || '').trim();
+		else if(type === 'text') o.text = $b.find('.f-text').val() || '';
+		else if(type === 'list'){
+			o.ordered = $b.find('.f-ordered').is(':checked');
+			o.items = ($b.find('.f-items').val() || '').split(/\r?\n/).map(function(s){ return s.trim(); }).filter(Boolean);
+		}
+		else if(type === 'image'){ o.photo = $b.find('.f-photo').val() || ''; o.caption = ($b.find('.f-caption').val() || '').trim(); }
+		else if(type === 'media'){
+			o.photo = $b.find('.f-photo').val() || '';
+			o.title = ($b.find('.f-title').val() || '').trim();
+			o.text = $b.find('.f-text').val() || '';
+			o.side = $b.find('.f-side').val() || 'left';
+		}
+		return o;
+	}
+
+	function addBlock(type, data, opts){
+		$composer.find('.empty-hint').remove();
+		var $card = blockCard(type, data || {});
+		$composer.append($card);
+		if(!opts || !opts.silent){
+			$card.get(0).scrollIntoView({ behavior: 'smooth', block: 'center' });
+			$card.find('input,textarea').filter(':visible').first().trigger('focus');
+		}
+		return $card;
+	}
+
+	/* Thêm khối */
+	$('[data-add]').on('click', function(){ addBlock($(this).data('add'), {}); });
+
+	/* Nhân đôi khối */
+	$composer.on('click', '.pts-block-dup', function(){
+		var $src = $(this).closest('.pts-section-block');
+		var $new = blockCard($src.data('type'), serializeOne($src));
+		$src.after($new);
+		$new.get(0).scrollIntoView({ behavior: 'smooth', block: 'center' });
+	});
+
+	/* Thu gọn / mở khối */
+	$composer.on('click', '.pts-block-collapse', function(){
+		var $b = $(this).closest('.pts-section-block').toggleClass('is-collapsed');
+		if($b.hasClass('is-collapsed')){
+			var o = serializeOne($b);
+			var t = [o.title, o.text, (o.items || []).join(' · '), o.caption, o.photo].filter(Boolean).join(' — ');
+			$b.find('.pts-section-block__bar .preview').text(t ? ('— ' + String(t).replace(/\s+/g, ' ').slice(0, 70)) : '');
+		} else $b.find('.pts-section-block__bar .preview').text('');
+	});
+
+	/* Dán nhanh: tách một đoạn văn bản thành nhiều khối */
+	$('#pts-paste-blocks').on('click', function(){
+		var raw = window.prompt('Dán nội dung (mỗi dòng trống = tách khối; nhóm dòng bắt đầu bằng - • * hoặc 1. = danh sách):');
+		if(!raw) return;
+		$composer.find('.empty-hint').remove();
+		var groups = raw.replace(/\r/g, '').split(/\n{2,}/);
+		var made = 0;
+		groups.forEach(function(g){
+			var lines = g.split('\n').map(function(s){ return s.trim(); }).filter(Boolean);
+			if(!lines.length) return;
+			var bullet = lines.length > 1 && lines.every(function(l){ return /^([-•*]|\d+[.)])\s+/.test(l); });
+			if(bullet){
+				addBlock('list', { items: lines.map(function(l){ return l.replace(/^([-•*]|\d+[.)])\s+/, ''); }), ordered: /^\d/.test(lines[0]) }, { silent: true });
+			} else if(lines.length === 1 && lines[0].length <= 60 && (/^#/.test(lines[0]) || lines[0] === lines[0].toUpperCase())){
+				addBlock('heading', { text: lines[0].replace(/^#+\s*/, '') }, { silent: true });
+			} else {
+				addBlock('text', { text: lines.join('\n') }, { silent: true });
+			}
+			made++;
+		});
+		window.alert('Đã tạo ' + made + ' khối từ nội dung dán. Rà lại rồi Lưu.');
+	});
+
+	/* Ctrl/Cmd + S = Lưu */
+	$('#pts-section-form').on('keydown', function(e){
+		if((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'Enter')){ e.preventDefault(); $('#pts-section-form').submit(); }
+	});
+
+	/* Chép khối đang kế thừa (hãng/danh mục) xuống làm nền */
+	$('#pts-copy-inherited').on('click', function(){
+		var url = $(this).data('url');
+		if($composer.children('.pts-section-block').length && !window.confirm('Chép các khối đang kế thừa (hãng / danh mục) vào cuối?')) return;
+		var $btn = $(this).prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i>...');
+		$.getJSON(url).done(function(res){
+			if(!res || !res.ok){ window.alert((res && res.msg) || 'Lỗi'); return; }
+			if(!res.blocks || !res.blocks.length){ window.alert('Sản phẩm này chưa có khối kế thừa nào (hãng / danh mục chưa soạn nội dung).'); return; }
+			$composer.find('.empty-hint').remove();
+			res.blocks.forEach(function(b){ if(b && b.type) addBlock(b.type, b, { silent: true }); });
+			window.alert('Đã chép ' + res.blocks.length + ' khối từ ' + (res.source === 'brand' ? 'thương hiệu' : 'danh mục') + '. Sửa lại rồi Lưu (khi lưu, sản phẩm sẽ chuyển sang chế độ "Nội dung riêng").');
+		}).fail(function(){ window.alert('Không tải được'); }).always(function(){
+			$btn.prop('disabled', false).html('<i class="fas fa-clone mr-1"></i>Chép khối kế thừa');
+		});
+	});
+
+	/* Nạp từ contentvi cũ (chỉ scope=product) */
+	$('#pts-import-legacy').on('click', function(){
+		var url = $(this).data('url');
+		if($composer.children('.pts-section-block').length && !window.confirm('Composer đang có khối. Nạp thêm các khối tách từ nội dung cũ vào cuối?')) return;
+		var $btn = $(this).prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i>Đang nạp...');
+		$.getJSON(url).done(function(res){
+			if(!res || !res.ok){ window.alert((res && res.msg) || 'Không đọc được nội dung cũ'); return; }
+			$composer.find('.empty-hint').remove();
+			(res.blocks || []).forEach(function(b){ if(b && b.type) $composer.append(blockCard(b.type, b)); });
+			var msg = 'Đã nạp ' + (res.blocks ? res.blocks.length : 0) + ' khối. Hãy rà lại rồi bấm Lưu.';
+			if(res.skipped_images) msg += '\nBỏ qua ' + res.skipped_images + ' ảnh không nằm trong thư mục sản phẩm — cần tải lại thủ công.';
+			window.alert(msg);
+		}).fail(function(){ window.alert('Không tải được nội dung cũ'); }).always(function(){
+			$btn.prop('disabled', false).html('<i class="fas fa-file-import mr-1"></i>Nạp từ nội dung mô tả cũ (contentvi)');
+		});
+	});
+
+	/* Xoá khối */
+	$composer.on('click', '.pts-block-del', function(){
+		$(this).closest('.pts-section-block').remove();
+		refreshHint();
+	});
+
+	/* Kéo đổi thứ tự */
+	if(window.Sortable){
+		Sortable.create($composer.get(0), { animation: 150, handle: '.handle', draggable: '.pts-section-block' });
+	}
+
+	/* Serialize khi submit. Ảnh đã upload AJAX (f-photo có giá trị) thì không
+	   gửi file lại; chỉ đặt name bf_<idx> khi f-photo còn trống (fallback). */
+	$('#pts-section-form').on('submit', function(){
+		var blocks = [];
+		$composer.find('.pts-section-block').each(function(idx){
+			var $b = $(this), o = serializeOne($b);
+			blocks.push(o);
+			if(($b.data('type') === 'image' || $b.data('type') === 'media')){
+				var $file = $b.find('.pts-block-file');
+				if(!o.photo && $file.get(0) && $file.get(0).files.length) $file.attr('name', 'bf_' + idx);
+				else $file.removeAttr('name');
+			}
+		});
+		$('#pts-section-json').val(JSON.stringify(blocks));
+		return true;
+	});
+});

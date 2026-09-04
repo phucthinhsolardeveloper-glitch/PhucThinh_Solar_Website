@@ -33,13 +33,15 @@ $structuredSpecResult = productStructuredSpecs($rowDetail, $lang);
 $structuredSpecs = $structuredSpecResult['specs'];
 $useLegacySpecs = $structuredSpecResult['use_legacy'];
 $certificateContent = (!empty($rowDetail['certificate'.$lang])) ? htmlspecialchars_decode($rowDetail['certificate'.$lang]) : '';
-$productHighlights = productContentBlockDecode(isset($rowDetail['highlights'.$lang]) ? $rowDetail['highlights'.$lang] : '');
-$productApplications = productContentBlockDecode(isset($rowDetail['applications'.$lang]) ? $rowDetail['applications'.$lang] : '');
-$productInstallation = productContentBlockDecode(isset($rowDetail['installation'.$lang]) ? $rowDetail['installation'.$lang] : '');
-$productLegacyContent = trim(isset($rowDetail['content'.$lang]) ? htmlspecialchars_decode($rowDetail['content'.$lang]) : '');
+/* Mô tả sản phẩm = MỘT loại: chip thông số (tự động) + khối content_section
+   (kế thừa sản phẩm > hãng > danh mục) + đoạn văn tự sinh khi chưa có khối. */
+$productSpecHighlights = productAutoHighlights($rowDetail, $lang, isset($type) ? $type : '');
 $productLegacySpecs = trim(isset($rowDetail['thongsokythuat'.$lang]) ? htmlspecialchars_decode($rowDetail['thongsokythuat'.$lang]) : '');
 $productPolicyOverride = trim(isset($rowDetail['chinhsachmuahang'.$lang]) ? htmlspecialchars_decode($rowDetail['chinhsachmuahang'.$lang]) : '');
-$hasProductDescription = $productHighlights || $productApplications || $productInstallation || $productLegacyContent !== '';
+$productSections = isset($productSections) ? $productSections : array('blocks' => array(), 'source' => '');
+$productSectionsHtml = (!empty($productSections['blocks'])) ? productRenderSections($productSections['blocks'], UPLOAD_PRODUCT_L, $func) : '';
+$productSpecParagraph = ($productSectionsHtml === '' && $productSections['source'] !== 'hide') ? productAutoDescription($rowDetail, $lang, isset($type) ? $type : '') : '';
+$hasProductDescription = $productSpecHighlights || $productSectionsHtml !== '' || $productSpecParagraph !== '';
 $hasProductSpecs = !empty($structuredSpecs) || ($useLegacySpecs && $productLegacySpecs !== '');
 $hasProductPolicy = $productPolicyOverride !== '' || !empty($policy);
 ?>
@@ -69,11 +71,11 @@ $hasProductPolicy = $productPolicyOverride !== '' || !empty($policy);
                                         <?=$func->getImage(['isLazy' => false, 'sizes' => '600x600x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $rowDetail['photo'], 'alt' => $rowDetail['name'.$lang]])?>
                                     </a>
                                 </div>
-                                <?php foreach($rowDetailPhoto as $v) { ?>
+                                <?php foreach($rowDetailPhoto as $v) { $thumbAlt = !empty($v['caption']) ? $v['caption'] : $rowDetail['name'.$lang]; ?>
                                 <div>
                                     <a class="thumb-pro-detail" data-zoom-id="Zoom-1"
-                                        href="<?=!empty($v['photo']) ? UPLOAD_PRODUCT_L.$v['photo'] : 'assets/images/noimage.png'?>" title="<?=$rowDetail['name'.$lang]?>">
-                                        <?=$func->getImage(['isLazy' => false, 'sizes' => '600x600x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $v['photo'], 'alt' => $rowDetail['name'.$lang]])?>
+                                        href="<?=!empty($v['photo']) ? UPLOAD_PRODUCT_L.$v['photo'] : 'assets/images/noimage.png'?>" title="<?=htmlspecialchars($thumbAlt, ENT_QUOTES, 'UTF-8')?>">
+                                        <?=$func->getImage(['isLazy' => false, 'sizes' => '600x600x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $v['photo'], 'alt' => $thumbAlt])?>
                                     </a>
                                 </div>
                                 <?php } ?>
@@ -239,10 +241,24 @@ $hasProductPolicy = $productPolicyOverride !== '' || !empty($policy);
         </ul>
         <div class="tab-content pt-4 pb-4" id="tabsProDetailContent">
             <?php if($hasProductDescription) { ?><div class="tab-pane fade <?=$activeProductTab==='info'?'show active':''?> pts-product-content" id="info-pro-detail" role="tabpanel">
-                <?php if($productHighlights) { ?><section class="pts-standard-block"><h2>Điểm nổi bật</h2><div class="pts-standard-grid"><?php foreach($productHighlights as $highlight) { if(!is_array($highlight) || empty($highlight['title'])) continue; ?><div class="pts-standard-item"><strong><?=htmlspecialchars($highlight['title'],ENT_QUOTES,'UTF-8')?></strong><span><?=htmlspecialchars(isset($highlight['text'])?$highlight['text']:'',ENT_QUOTES,'UTF-8')?></span></div><?php } ?></div></section><?php } ?>
-                <?php if($productApplications) { ?><section class="pts-standard-block"><h2>Ứng dụng phù hợp</h2><ul class="pts-standard-list"><?php foreach($productApplications as $application) { ?><li><?=htmlspecialchars($application,ENT_QUOTES,'UTF-8')?></li><?php } ?></ul></section><?php } ?>
-                <?php if($productLegacyContent !== '') { ?><section class="pts-standard-block pts-legacy-content"><?=$productLegacyContent?></section><?php } ?>
-                <?php if($productInstallation) { ?><section class="pts-standard-block"><h2>Bộ sản phẩm / hướng dẫn lắp đặt</h2><ol class="pts-standard-list"><?php foreach($productInstallation as $step) { ?><li><?=htmlspecialchars($step,ENT_QUOTES,'UTF-8')?></li><?php } ?></ol></section><?php } ?>
+            <div class="pts-product-desc">
+                <?php if($productSpecHighlights) { ?>
+                <section>
+                    <h2 class="pts-desc-title">Điểm nổi bật</h2>
+                    <ul class="pts-spec-chips">
+                        <?php foreach($productSpecHighlights as $chip) { ?><li><?=htmlspecialchars($chip,ENT_QUOTES,'UTF-8')?></li><?php } ?>
+                    </ul>
+                </section>
+                <?php } ?>
+                <?php if($productSpecParagraph !== '') { ?>
+                <section class="pts-desc-auto">
+                    <p class="pts-desc-para"><?=htmlspecialchars($productSpecParagraph, ENT_QUOTES, 'UTF-8')?></p>
+                </section>
+                <?php } ?>
+                <?php if($productSectionsHtml !== '') { ?>
+                <section class="pts-desc-sections"><?=$productSectionsHtml?></section>
+                <?php } ?>
+            </div>
             </div><?php } ?>
             <?php if($hasProductSpecs) { ?><div class="tab-pane fade <?=$activeProductTab==='specs'?'show active':''?>" id="tskt-pro-detail" role="tabpanel">
                 <?php if(!empty($structuredSpecs)) { ?>

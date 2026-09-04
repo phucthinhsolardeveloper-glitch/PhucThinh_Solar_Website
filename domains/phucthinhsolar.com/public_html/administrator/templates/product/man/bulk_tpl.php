@@ -197,6 +197,21 @@ $bulkScopeQuery = $bulkDataStatusDefinition ? '&data_status='.urlencode($bulkDat
                                 <?php foreach ($row['errors'] as $message) { ?><div class="text-danger"><i class="fas fa-times mr-1"></i><?=htmlspecialchars($message)?></div><?php } ?>
                                 <?php foreach ($row['warnings'] as $message) { ?><div class="text-warning"><i class="fas fa-exclamation-triangle mr-1"></i><?=htmlspecialchars($message)?></div><?php } ?>
                                 <?php if (!empty($row['conflicts'])) { ?><div class="text-info"><i class="fas fa-code-branch mr-1"></i><?=count($row['conflicts'])?> ô cần xác nhận bên dưới</div><?php } ?>
+                                <?php if (isset($row['changes']['sectionsvi'])) { $sc = $row['changes']['sectionsvi']; ?>
+                                <details class="mt-1">
+                                    <summary class="text-primary cs-pointer"><i class="fas fa-align-left mr-1"></i>Mô tả dài (khối): xem thay đổi</summary>
+                                    <div class="row no-gutters mt-1" style="font-size:12px">
+                                        <div class="col-6 pr-1">
+                                            <div class="text-muted font-weight-bold">Hiện tại</div>
+                                            <pre class="bg-light border rounded p-2 mb-0" style="max-height:220px;overflow:auto;white-space:pre-wrap;word-break:break-word;"><?=htmlspecialchars((string) $sc['current'], ENT_QUOTES, 'UTF-8')?></pre>
+                                        </div>
+                                        <div class="col-6 pl-1">
+                                            <div class="text-muted font-weight-bold">Sẽ đổi thành</div>
+                                            <pre class="bg-light border rounded p-2 mb-0" style="max-height:220px;overflow:auto;white-space:pre-wrap;word-break:break-word;"><?=htmlspecialchars((string) $sc['incoming'], ENT_QUOTES, 'UTF-8')?></pre>
+                                        </div>
+                                    </div>
+                                </details>
+                                <?php } ?>
                             </td>
                         </tr>
                     <?php } ?>

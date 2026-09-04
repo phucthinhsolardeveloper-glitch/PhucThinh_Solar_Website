@@ -107,29 +107,37 @@
 		                                            <textarea class="form-control for-seo text-sm <?=(isset($config['product'][$type]['desc_cke']) && $config['product'][$type]['desc_cke'] == true)?'form-control-ckeditor':''?>" name="data[desc<?=$k?>]" id="desc<?=$k?>" rows="5" placeholder="Mô tả (<?=$k?>)"><?=htmlspecialchars_decode((!empty($flash->has('desc'.$k))) ? $flash->get('desc'.$k) : @$item['desc'.$k])?></textarea>
 		                                        </div>
 		                                    <?php } ?>
-		                                    <?php if(isset($config['product'][$type]['content']) && $config['product'][$type]['content'] == true) { ?>
-		                                        <div class="form-group">
-		                                            <label for="content<?=$k?>">Nội dung (<?=$k?>):</label>
-		                                            <textarea class="form-control for-seo text-sm <?=(isset($config['product'][$type]['content_cke']) && $config['product'][$type]['content_cke'] == true)?'form-control-ckeditor':''?>" name="data[content<?=$k?>]" id="content<?=$k?>" rows="5" placeholder="Nội dung (<?=$k?>)"><?=htmlspecialchars_decode((!empty($flash->has('content'.$k))) ? $flash->get('content'.$k) : @$item['content'.$k])?></textarea>
-		                                        </div>
-		                                    <?php } ?>
-		                                    <?php
-		                                    require_once LIBRARIES.'product_content_blocks.php';
-		                                    $blockInputs = array(
-		                                        'highlights' => array('Điểm nổi bật', 'Mỗi dòng: Tiêu đề ngắn | Giải thích một câu', true),
-		                                        'applications' => array('Ứng dụng phù hợp', 'Mỗi dòng là một bối cảnh sử dụng', false),
-		                                        'installation' => array('Bộ sản phẩm / hướng dẫn lắp đặt', 'Mỗi dòng là một bước hoặc một thành phần', false)
-		                                    );
-		                                    foreach($blockInputs as $blockField => $blockMeta) {
-		                                        $blockPostKey = $blockField.'_text_'.$k;
-		                                        $blockValue = $flash->has($blockPostKey) ? $flash->get($blockPostKey) : productContentBlockLines(isset($item[$blockField.$k]) ? $item[$blockField.$k] : '', $blockMeta[2]); ?>
-		                                        <div class="form-group pts-content-block-input">
-		                                            <label for="<?=$blockPostKey?>"><?=$blockMeta[0]?> (<?=$k?>):</label>
-		                                            <textarea class="form-control text-sm" name="<?=$blockPostKey?>" id="<?=$blockPostKey?>" rows="4" placeholder="<?=$blockMeta[1]?>"><?=htmlspecialchars($blockValue, ENT_QUOTES, 'UTF-8')?></textarea>
-		                                            <small class="form-text text-muted"><?=$blockMeta[1]?>. Khối rỗng sẽ tự ẩn ngoài website.</small>
-		                                        </div>
-		                                    <?php } ?>
-		                                    <details class="mb-3"><summary class="text-primary">Xem trước bố cục nội dung chuẩn</summary><div class="border rounded p-3 mt-2 pts-content-block-preview" data-lang="<?=$k?>"><em class="text-muted">Nhập các khối phía trên để xem trước.</em></div></details>
+											<?php if($k === 'vi') {
+												$sectionMode = 'inherit';
+												if(!empty($item['id']) && isset($d)) { $__sm = $d->rawQueryOne("select mode from #_content_section where scope='product' and scope_id=? limit 0,1", array((int)$item['id'])); if(!empty($__sm['mode'])) $sectionMode = $__sm['mode']; }
+												if($flash->has('section_mode')) $sectionMode = $flash->get('section_mode');
+											?>
+											<div class="card card-outline card-primary text-sm mb-3">
+												<div class="card-header py-2"><h3 class="card-title" style="font-size:13px;font-weight:700;">Nội dung mô tả dài</h3></div>
+												<div class="card-body">
+													<div class="form-group mb-2">
+														<label class="mb-1">Chế độ:</label>
+														<select name="section_mode" class="form-control form-control-sm" style="max-width:420px">
+															<option value="inherit" <?=$sectionMode==='inherit'?'selected':''?>>Kế thừa từ thương hiệu / danh mục (mặc định)</option>
+															<option value="own" <?=$sectionMode==='own'?'selected':''?>>Nội dung riêng cho sản phẩm này</option>
+															<option value="hide" <?=$sectionMode==='hide'?'selected':''?>>Ẩn phần mô tả dài (chỉ hiện dải thông số)</option>
+														</select>
+														<small class="form-text text-muted">Dải thông số + đoạn giới thiệu tự sinh vẫn hiển thị ở chế độ "Kế thừa" và "Riêng". "Ẩn" tắt cả hai.</small>
+													</div>
+													<?php if(!empty($item['id'])) { ?>
+														<a class="btn btn-sm bg-gradient-primary text-white" href="index.php?com=content_section&act=edit&type=<?=htmlspecialchars($type, ENT_QUOTES, 'UTF-8')?>&scope=product&scope_id=<?=(int)$item['id']?>"><i class="far fa-edit mr-1"></i>Mở trình soạn khối cho sản phẩm này</a>
+														<span class="text-muted ml-2">Lưu form này sau khi đổi chế độ.</span>
+													<?php } else { ?>
+														<span class="text-muted">Lưu sản phẩm trước, rồi mở trình soạn khối.</span>
+													<?php } ?>
+												</div>
+											</div>
+											<?php } ?>
+											<?php $hasSideTabFields = (isset($config['product'][$type]['chinhsachmuahang']) && $config['product'][$type]['chinhsachmuahang'] == true) || (isset($config['product'][$type]['certificate']) && $config['product'][$type]['certificate'] == true); ?>
+											<?php if($hasSideTabFields) { ?>
+											<fieldset class="border rounded p-3 mb-3">
+												<legend class="w-auto px-2 mb-0 text-primary" style="font-size:13px;font-weight:700;">Tab riêng trên trang sản phẩm</legend>
+												<p class="text-muted text-sm mb-3">Mỗi mục hiển thị ở một tab riêng, không nằm trong &ldquo;Mô tả sản phẩm&rdquo;.</p>
 											<?php if(isset($config['product'][$type]['chinhsachmuahang']) && $config['product'][$type]['chinhsachmuahang'] == true) { ?>
 		                                        <div class="form-group">
 		                                            <label for="chinhsachmuahang<?=$k?>">Chính sách mua hàng (<?=$k?>):</label>
@@ -142,6 +150,8 @@
                                                     <textarea class="form-control text-sm <?=(isset($config['product'][$type]['certificate_cke']) && $config['product'][$type]['certificate_cke'] == true)?'form-control-ckeditor':''?>" name="data[certificate<?=$k?>]" id="certificate<?=$k?>" rows="5" placeholder="Nhập mô tả và chèn ảnh chứng nhận thật (nếu có)"><?=htmlspecialchars_decode((!empty($flash->has('certificate'.$k))) ? $flash->get('certificate'.$k) : @$item['certificate'.$k])?></textarea>
                                                 </div>
                                             <?php } ?>
+											</fieldset>
+											<?php } ?>
 		                                </div>
 		                            <?php } ?>
 		                        </div>
@@ -445,7 +455,10 @@
         		</div>
         		<div class="card-body">
         			<div class="form-group">
-        				<label for="filer-gallery" class="label-filer-gallery mb-3">Album hình: (<?=$config['product'][$type]['gallery'][$keyGallery]['img_type_photo']?>)</label>
+						<label for="filer-gallery" class="label-filer-gallery mb-2">Album hình: (<?=$config['product'][$type]['gallery'][$keyGallery]['img_type_photo']?>)</label>
+						<div class="alert alert-info text-sm">
+							Ảnh trong album hiển thị ở khu gallery (phóng to + dải thumbnail) của trang sản phẩm. Kéo để đổi thứ tự; đặt tên file có dấu, rõ nghĩa vì tên file được dùng làm alt/chú thích ảnh.
+						</div>
         				<input type="file" name="files[]" id="filer-gallery" multiple="multiple">
         				<input type="hidden" class="col-filer" value="col-xl-2 col-lg-3 col-md-3 col-sm-4 col-6">
         				<input type="hidden" class="act-filer" value="man">
@@ -453,7 +466,7 @@
         			</div>
         			<?php if(isset($gallery) && count($gallery) > 0) { ?>
         				<div class="form-group form-group-gallery">
-        					<label class="label-filer">Album hiện tại:</label>
+					<label class="label-filer">Album hiện tại — bấm tên từng ảnh để nhập chú thích:</label>
         					<div class="action-filer mb-3">
         						<a class="btn btn-sm bg-gradient-primary text-white check-all-filer mr-1"><i class="far fa-square mr-2"></i>Chọn tất cả</a>
         						<button type="button" class="btn btn-sm bg-gradient-success text-white sort-filer mr-1"><i class="fas fa-random mr-2"></i>Sắp xếp</button>

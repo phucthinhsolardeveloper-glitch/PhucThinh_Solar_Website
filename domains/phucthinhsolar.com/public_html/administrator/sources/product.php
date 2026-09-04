@@ -629,6 +629,8 @@
 			$d->where('type', $type);
 			if($d->update('product',$data))
 			{
+				require_once LIBRARIES.'product_content_blocks.php';
+				if(isset($_POST['section_mode'])) productContentSectionSetMode($d, $id, $_POST['section_mode']);
 				if(!empty($oldSlugRow['slugvi']) && $oldSlugRow['slugvi'] !== $data['slugvi']) productAdminRememberRedirect($d, 'san-pham/'.$oldSlugRow['slugvi'], 'product', $id);
 				/* Photo */
 				if($func->hasFile("file"))
@@ -789,6 +791,8 @@
 			if($d->insert('product',$data))
 			{
 				$id_insert = $d->getLastInsertId();
+				require_once LIBRARIES.'product_content_blocks.php';
+				if(isset($_POST['section_mode'])) productContentSectionSetMode($d, $id_insert, $_POST['section_mode']);
 
 				/* Photo */
 				if($func->hasFile("file"))
@@ -970,6 +974,7 @@
 				$func->deleteFile(UPLOAD_PRODUCT.$row['photo']);
 				$d->rawQuery("delete from #_product where id = ?",array($id));
 				$d->rawQuery("delete from #_product_project where id_product = ?", array($id));
+				$d->rawQuery("delete from #_content_section where scope = 'product' and scope_id = ?", array($id));
 
 				/* Xóa SEO */
 				$d->rawQuery("delete from #_seo where id_parent = ? and com = ? and act = ? and type = ?",array($id,$com,'man',$type));
@@ -1905,6 +1910,7 @@
 				/* Xóa chính */
 				$func->deleteFile(UPLOAD_PRODUCT.$row['photo']);
 				$d->rawQuery("delete from #_product_list where id = ?",array($id));
+				$d->rawQuery("delete from #_content_section where scope = 'list' and scope_id = ?", array($id));
 
 				/* Xóa SEO */
 				$d->rawQuery("delete from #_seo where id_parent = ? and com = ? and act = ? and type = ?",array($id,$com,'man_list',$type));
@@ -2277,6 +2283,7 @@
 				/* Xóa chính */
 				$func->deleteFile(UPLOAD_PRODUCT.$row['photo']);
 				$d->rawQuery("delete from #_product_cat where id = ?",array($id));
+				$d->rawQuery("delete from #_content_section where scope = 'cat' and scope_id = ?", array($id));
 
 				/* Xóa SEO */
 				$d->rawQuery("delete from #_seo where id_parent = ? and com = ? and act = ? and type = ?",array($id,$com,'man_cat',$type));
@@ -3301,6 +3308,7 @@
 				/* Xóa chính */
 				$func->deleteFile(UPLOAD_PRODUCT.$row['photo']);
 				$d->rawQuery("delete from #_product_brand where id = ?",array($id));
+				$d->rawQuery("delete from #_content_section where scope = 'brand' and scope_id = ?", array($id));
 
 				/* Xóa SEO */
 				$d->rawQuery("delete from #_seo where id_parent = ? and com = ? and act = ? and type = ?",array($id,$com,'man_brand',$type));

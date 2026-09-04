@@ -799,6 +799,31 @@ GA_FRAMEWORK.SlickPage = function(){
     }
 };
 
+GA_FRAMEWORK.HomeCategoryScroller = function(){
+    $('.pts-home-category-wrap').each(function(){
+        var wrap = $(this);
+        var track = wrap.find('.pts-home-category-grid').get(0);
+        var prev = wrap.find('.pts-category-scroll--prev');
+        var next = wrap.find('.pts-category-scroll--next');
+        if(!track) return;
+
+        function updateButtons(){
+            var maxScroll = Math.max(0, track.scrollWidth - track.clientWidth);
+            prev.prop('disabled', track.scrollLeft <= 2);
+            next.prop('disabled', track.scrollLeft >= maxScroll - 2);
+        }
+        function move(direction){
+            track.scrollBy({left: direction * Math.max(220, track.clientWidth * 0.78), behavior: 'smooth'});
+        }
+
+        prev.on('click', function(){ move(-1); });
+        next.on('click', function(){ move(1); });
+        $(track).on('scroll', updateButtons);
+        $(window).on('resize', updateButtons);
+        updateButtons();
+    });
+};
+
 /* Ready */
 $(document).ready(function(){
     GA_FRAMEWORK.Lazys();
@@ -807,6 +832,7 @@ $(document).ready(function(){
     GA_FRAMEWORK.Popup();
     // GA_FRAMEWORK.Wows();
     GA_FRAMEWORK.SlickPage();
+    GA_FRAMEWORK.HomeCategoryScroller();
     GA_FRAMEWORK.AltImg();
     GA_FRAMEWORK.Toc();
     // GA_FRAMEWORK.GoTop();

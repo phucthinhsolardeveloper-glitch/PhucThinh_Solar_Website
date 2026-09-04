@@ -54,6 +54,13 @@ test('product detail keeps gallery and quote-only CTA', async ({ page }) => {
   await expect(page.locator('.btn-contact-price')).toBeVisible();
   await expect(page.locator('.btn-contact-price a[href^="tel:"]')).toBeVisible();
   await expect(page.locator('.btn-product-detail .addcart')).toHaveCount(0);
+
+  // Tab "Mô tả sản phẩm": một cột, đã bỏ các khối story/duo/canvas rời rạc.
+  await expect(page.locator('.pts-story-card, .pts-detail-duo, .pts-description-canvas')).toHaveCount(0);
+  const descPane = page.locator('#info-pro-detail');
+  if (await descPane.count()) {
+    await expect(descPane.locator('.pts-product-desc')).toHaveCount(1);
+  }
 });
 
 test('quote request CTA opens the protected consultation form', async ({ page }) => {
@@ -84,6 +91,15 @@ test('home exposes every featured category and switches its product grid', async
   expect(await categories.count()).toBeGreaterThan(0);
   await expect(page.locator('.pts-home-category-grid a[href="danh-muc-san-pham/den-ac/"]')).toHaveCount(0);
   await expect(categories).toHaveCount(await categories.count());
+  const categoryTrack = page.locator('.pts-home-category-grid');
+  expect(await categoryTrack.evaluate(element => element.scrollWidth > element.clientWidth)).toBeTruthy();
+  if((page.viewportSize()?.width || 0) > 640) {
+    const nextButton = page.locator('.pts-category-scroll--next');
+    await expect(nextButton).toBeVisible();
+    await expect(nextButton).toBeEnabled();
+    await nextButton.click();
+    await expect.poll(() => categoryTrack.evaluate(element => element.scrollLeft)).toBeGreaterThan(0);
+  }
 
   for (const category of await categories.all()) {
     await category.scrollIntoViewIfNeeded();

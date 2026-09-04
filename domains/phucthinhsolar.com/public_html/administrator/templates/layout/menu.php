@@ -399,6 +399,16 @@
                     <?php } } ?>
                 <?php } ?>
 
+                <!-- Khối nội dung mô tả (soạn nội dung dài cho sản phẩm) -->
+                <?php if(isset($config['product'])) { $csType = array_key_first($config['product']); if($csType) { ?>
+                    <li class="nav-item">
+                        <a class="nav-link <?=($com=='content_section')?'active':''?>" href="index.php?com=content_section&act=man&type=<?=htmlspecialchars($csType, ENT_QUOTES, 'UTF-8')?>" title="Khối nội dung mô tả">
+                            <i class="nav-icon text-sm fas fa-layer-group"></i>
+                            <p>Khối nội dung mô tả</p>
+                        </a>
+                    </li>
+                <?php } } ?>
+
                 <!-- Bài viết (Có cấp) -->
                 <?php if(isset($config['news'])) { ?>
                     <?php foreach($config['news'] as $k => $v) { if(!isset($disabled['news'][$k])) { if(!empty($v['dropdown'])) { ?>
