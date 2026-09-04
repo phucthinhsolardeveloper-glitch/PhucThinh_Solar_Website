@@ -1,5 +1,6 @@
 <?php
 	if(!defined('SOURCES')) die("Error");
+	require_once LIBRARIES.'product_projects.php';
 
 	/* Kiểm tra active news */
 	if(isset($config['news']))
@@ -155,6 +156,14 @@
 			$template = "404";
 	}
 
+	$projectProducts = array();
+	$projectProductIds = array();
+	if($type === 'du-an' && in_array($act, array('add', 'edit'), true))
+	{
+		$projectProducts = $d->rawQuery("select id, code, namevi, status from #_product where type = ? order by namevi,id", array('san-pham'));
+		if(!empty($item['id'])) $projectProductIds = productProjectIdsForProject($d, $item['id']);
+	}
+
 	/* View man */
 	function viewMans()
 	{
@@ -248,6 +257,7 @@
 		$id = (!empty($_POST['id'])) ? htmlspecialchars($_POST['id']) : 0;
 		$data = !empty($_POST['data']) ? $_POST['data'] : null;
 		$dataTags = (!empty($_POST['dataTags'])) ? $_POST['dataTags'] : null;
+		$dataProjectProducts = ($type === 'du-an') ? productProjectNormalizeIds(isset($_POST['project_products']) ? $_POST['project_products'] : array()) : array();
 
 		if($data)
 		{
@@ -299,6 +309,8 @@
 		}
 
 		/* Valid data */
+		if($type === 'du-an' && !productProjectIdsExist($d, $dataProjectProducts))
+			$response['messages'][] = 'Danh sách sản phẩm liên kết có dữ liệu không hợp lệ';
 		$checkTitle = $func->checkTitle($data);
 
 		if(!empty($checkTitle))
@@ -386,6 +398,9 @@
 			$d->where('type', $type);
 			if($d->update('news',$data))
 			{
+				if($type === 'du-an' && !productProjectSync($d, $id, $dataProjectProducts))
+					$func->transfer("Dự án đã lưu nhưng liên kết sản phẩm bị lỗi", "index.php?com=news&act=edit&type=".$type."&p=".$curPage.$strUrl."&id=".$id, false);
+
 				/* Photo */
 				if($func->hasFile("file"))
 				{
@@ -489,6 +504,8 @@
 			if($d->insert('news',$data))
 			{
 				$id_insert = $d->getLastInsertId();
+				if($type === 'du-an' && !productProjectSync($d, $id_insert, $dataProjectProducts))
+					$func->transfer("Dự án đã lưu nhưng liên kết sản phẩm bị lỗi", "index.php?com=news&act=edit&type=".$type."&p=".$curPage.$strUrl."&id=".$id_insert, false);
 
 				/* Photo */
 				if($func->hasFile("file"))
@@ -619,6 +636,7 @@
 				/* Xóa chính */
 				$func->deleteFile(UPLOAD_NEWS.$row['photo']);
 				$d->rawQuery("delete from #_news where id = ?",array($id));
+				if($type === 'du-an') $d->rawQuery("delete from #_product_project where id_project = ?", array($id));
 
 				/* Xóa SEO */
 				$d->rawQuery("delete from #_seo where id_parent = ? and com = ? and act = ? and type = ?",array($id,$com,'man',$type));
@@ -706,6 +724,7 @@
 					/* Xóa chính */
 					$func->deleteFile(UPLOAD_NEWS.$row['photo']);
 					$d->rawQuery("delete from #_news where id = ?",array($id));
+					if($type === 'du-an') $d->rawQuery("delete from #_product_project where id_project = ?", array($id));
 
 					/* Xóa SEO */
 					$d->rawQuery("delete from #_seo where id_parent = ? and com = ? and act = ? and type = ?",array($id,$com,'man',$type));

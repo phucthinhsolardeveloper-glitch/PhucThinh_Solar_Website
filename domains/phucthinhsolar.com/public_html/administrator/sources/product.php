@@ -1,5 +1,6 @@
 <?php
 	if(!defined('SOURCES')) die("Error");
+	require_once LIBRARIES.'product_projects.php';
 
 	/* Kiểm tra active product */
 	if(isset($config['product']))
@@ -329,7 +330,7 @@
 	/* Edit man */
 	function editMan()
 	{
-		global $d, $func, $strUrl, $curPage, $item, $gallery, $type, $com, $act;
+		global $d, $func, $strUrl, $curPage, $item, $gallery, $linkedProjects, $type, $com, $act;
 
 		if(!empty($_GET['id'])) $id = htmlspecialchars($_GET['id']);
 		else if(!empty($_GET['id_copy'])) $id = htmlspecialchars($_GET['id_copy']);
@@ -349,6 +350,7 @@
 			}
 			else
 			{
+				$linkedProjects = $d->rawQuery("select n.id, n.namevi, n.status from #_product_project pp inner join #_news n on n.id = pp.id_project where pp.id_product = ? and n.type = ? order by pp.numb,pp.id", array($id, 'du-an'));
 				if($act != 'copy')
 				{
 					/* Get gallery */
@@ -902,6 +904,7 @@
 				/* Xóa chính */
 				$func->deleteFile(UPLOAD_PRODUCT.$row['photo']);
 				$d->rawQuery("delete from #_product where id = ?",array($id));
+				$d->rawQuery("delete from #_product_project where id_product = ?", array($id));
 
 				/* Xóa SEO */
 				$d->rawQuery("delete from #_seo where id_parent = ? and com = ? and act = ? and type = ?",array($id,$com,'man',$type));
@@ -992,6 +995,7 @@
 					/* Xóa chính */
 					$func->deleteFile(UPLOAD_PRODUCT.$row['photo']);
 					$d->rawQuery("delete from #_product where id = ?",array($id));
+					$d->rawQuery("delete from #_product_project where id_product = ?", array($id));
 
 					/* Xóa SEO */
 					$d->rawQuery("delete from #_seo where id_parent = ? and com = ? and act = ? and type = ?",array($id,$com,'man',$type));

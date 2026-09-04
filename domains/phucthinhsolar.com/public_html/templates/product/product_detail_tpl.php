@@ -274,6 +274,22 @@ $certificateContent = (!empty($rowDetail['certificate'.$lang])) ? htmlspecialcha
 <div class="box-detail mg-top-30">
     <?php include TEMPLATE."product/comment.php"; ?>
 </div>
+<?php if(!empty($productRelatedProjects)) { ?>
+<div class="box-detail mg-top-30 pts-related-showcase pts-product-projects">
+    <div class="title-product-orther"><span>Dự án thực tế sử dụng sản phẩm</span></div>
+    <div class="pts-related-grid">
+        <?php foreach($productRelatedProjects as $relatedProject) { ?>
+            <a class="pts-related-card" href="<?=$relatedProject[$sluglang]?>" title="<?=$relatedProject['name'.$lang]?>">
+                <?=$func->getImage(['class' => 'w-100', 'sizes' => '397x340x1', 'upload' => UPLOAD_NEWS_L, 'image' => $relatedProject['photo'], 'alt' => $relatedProject['name'.$lang]])?>
+                <span class="pts-related-card-body">
+                    <strong><?=$relatedProject['name'.$lang]?></strong>
+                    <?php if(!empty($relatedProject['address'])) { ?><small><i class="fas fa-map-marker-alt"></i> <?=$relatedProject['address']?></small><?php } ?>
+                </span>
+            </a>
+        <?php } ?>
+    </div>
+</div>
+<?php } ?>
 <?php if(!empty($product)) {?>
 <div class="box-detail mg-top-30">
     <div class="title-product-orther"><span>Sản phẩm liên quan</span></div>

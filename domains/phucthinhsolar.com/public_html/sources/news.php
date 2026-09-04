@@ -1,5 +1,6 @@
 <?php  
 	if(!defined('SOURCES')) die("Error");
+	require_once LIBRARIES.'product_projects.php';
 
 	@$id = htmlspecialchars($_GET['id']);
 	@$idl = htmlspecialchars($_GET['idl']);
@@ -31,6 +32,11 @@
 		$newsSub = $d->rawQueryOne("select id, name$lang, slugvi, slugen from #_news_sub where id = ? and type = ? and find_in_set('hienthi',status) limit 0,1",array($rowDetail['id_sub'],$type));
 		$rowDetailPhoto = $d->rawQuery("select photo from #_gallery where id_parent = ? and com='news' and type = ? and kind='man' and val = ? and find_in_set('hienthi',status) order by numb,id desc",array($rowDetail['id'],$type,$type));
 		$rowDetailVideo = $d->rawQuery("select photo, name$lang, link_video from #_gallery where id_parent = ? and com='news' and type = ? and kind='man' and val = ? and find_in_set('hienthi',status) order by numb,id desc",array($rowDetail['id'],$type,'video'));
+		$projectRelatedProducts = array();
+		if($type === 'du-an')
+		{
+			$projectRelatedProducts = $d->rawQuery("select p.id, p.name$lang, p.slugvi, p.slugen, p.photo, p.code from #_product_project pp inner join #_product p on p.id = pp.id_product where pp.id_project = ? and find_in_set('hienthi',pp.status) and p.type = ? and find_in_set('hienthi',p.status) order by pp.numb,pp.id", array($rowDetail['id'], 'san-pham'));
+		}
 		/* Lấy bài viết cùng loại */
 		$where = "";
 		$where = "id <> ? and id_list = ? and type = ? and find_in_set('hienthi',status)";

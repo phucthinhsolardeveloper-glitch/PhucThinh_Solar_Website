@@ -122,12 +122,14 @@ Danh sách sản phẩm đang hard-code `$perPage = 10`. Bổ sung select **10 /
 - Cho phép override có nhãn rõ ràng; dữ liệu per-product hiện tại vẫn là fallback.
 - Đo usage DB + DOM/network cho size/color/tags, `photo2`, gallery và các module media trước khi quyết định giữ, nối UI, archive hay tiếp tục tắt.
 
-### Batch 5 — Liên kết Sản phẩm–Dự án
+### Batch 5 — Liên kết Sản phẩm–Dự án — đã hoàn thành local
 
 - Thêm migration bảng nối idempotent, index hai chiều và kiểm tra orphan.
 - Thêm bộ chọn sản phẩm vào form Dự án, danh sách liên kết ngược trong form Sản phẩm; save theo transaction và giữ CSRF/RBAC.
 - Render “Sản phẩm sử dụng” trên trang Dự án và “Dự án thực tế” trên trang Sản phẩm.
 - Regression sản phẩm/dự án ẩn, slug thay đổi, quan hệ rỗng/nhiều phần tử, ảnh thiếu và không phát sinh N+1.
+
+Implementation dùng migration `010_add_product_project_links.sql` và helper `libraries/product_projects.php`. Migration 010 đã áp dụng trên Docker local; bảng đang rỗng sau regression và chưa có quan hệ dữ liệu thật. Khi deploy phải backup trước, chạy migration 010 trước source, rồi mới gán sản phẩm tại Admin Dự án.
 
 ## 8. Tiêu chí đạt và rollback
 

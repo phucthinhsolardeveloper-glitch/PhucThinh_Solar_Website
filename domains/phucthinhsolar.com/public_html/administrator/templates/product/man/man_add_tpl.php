@@ -208,7 +208,23 @@
                 </div>
             <?php } ?>
 	        </div>
-        	<div class="<?=$colRight?>">
+			<div class="<?=$colRight?>">
+			<?php if($act === 'edit' && !empty($linkedProjects)) { ?>
+				<div class="card card-primary card-outline text-sm">
+					<div class="card-header"><h3 class="card-title">Dự án đang liên kết</h3></div>
+					<div class="card-body">
+						<ul class="mb-0 pl-3">
+							<?php foreach($linkedProjects as $linkedProject) { ?>
+								<li class="mb-2">
+									<a href="index.php?com=news&amp;act=edit&amp;type=du-an&amp;id=<?=(int)$linkedProject['id']?>"><?=htmlspecialchars($linkedProject['namevi'], ENT_QUOTES, 'UTF-8')?></a>
+									<?=strpos((string)$linkedProject['status'], 'hienthi') === false ? '<span class="badge badge-secondary ml-1">Đang ẩn</span>' : ''?>
+								</li>
+							<?php } ?>
+						</ul>
+						<small class="form-text text-muted">Quan hệ được quản lý tại form Dự án để chỉ có một nguồn chỉnh sửa.</small>
+					</div>
+				</div>
+			<?php } ?>
         		<?php if(
         			(isset($config['product'][$type]['dropdown']) && $config['product'][$type]['dropdown'] == true) || 
         			(isset($config['product'][$type]['brand']) && $config['product'][$type]['brand'] == true) || 

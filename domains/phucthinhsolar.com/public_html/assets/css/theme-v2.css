@@ -21,6 +21,18 @@
     --pts-radius:12px;
     --pts-shadow:0 14px 36px rgba(6,21,55,.10);
 }
+
+/* Quan hệ Sản phẩm - Dự án dùng chung một kiểu card, dữ liệu ảnh thuộc Dự án. */
+.pts-related-showcase{margin-top:32px;margin-bottom:32px;}
+.pts-related-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;}
+.pts-related-card{display:block;overflow:hidden;border:1px solid #e5e8ec;border-radius:12px;background:#fff;color:#172033;box-shadow:0 6px 22px rgba(10,35,66,.07);transition:transform .2s ease,box-shadow .2s ease;}
+.pts-related-card:hover{color:#172033;transform:translateY(-3px);box-shadow:0 10px 28px rgba(10,35,66,.13);}
+.pts-related-card>img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;}
+.pts-related-card-body{display:flex;flex-direction:column;gap:6px;padding:14px 16px;}
+.pts-related-card-body strong{font-size:16px;line-height:1.45;}
+.pts-related-card-body small{color:#657184;line-height:1.45;}
+@media(max-width:767px){.pts-related-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;}}
+@media(max-width:480px){.pts-related-grid{grid-template-columns:1fr;}}
 html{scroll-behavior:smooth;}
 
 /* Compact page heading: retain the image identity without letting it dominate. */

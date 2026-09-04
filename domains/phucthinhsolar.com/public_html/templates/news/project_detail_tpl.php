@@ -121,6 +121,25 @@
     </div>
 </div>
 
+<?php if(!empty($projectRelatedProducts)) { ?>
+<section class="pts-related-showcase pts-project-products">
+    <div class="wrap-content">
+        <div class="title-product-orther"><span>Sản phẩm sử dụng trong dự án</span></div>
+        <div class="pts-related-grid">
+            <?php foreach($projectRelatedProducts as $relatedProduct) { ?>
+                <a class="pts-related-card" href="<?=$relatedProduct[$sluglang]?>" title="<?=$relatedProduct['name'.$lang]?>">
+                    <?=$func->getImage(['class' => 'w-100', 'sizes' => '300x300x1', 'upload' => UPLOAD_PRODUCT_L, 'image' => $relatedProduct['photo'], 'alt' => $relatedProduct['name'.$lang]])?>
+                    <span class="pts-related-card-body">
+                        <strong><?=$relatedProduct['name'.$lang]?></strong>
+                        <?php if(!empty($relatedProduct['code'])) { ?><small>Mã: <?=$relatedProduct['code']?></small><?php } ?>
+                    </span>
+                </a>
+            <?php } ?>
+        </div>
+    </div>
+</section>
+<?php } ?>
+
 <?php /* CTA tư vấn cuối trang dự án. */ ?>
 <section class="pts-project-cta">
     <div class="wrap-content">

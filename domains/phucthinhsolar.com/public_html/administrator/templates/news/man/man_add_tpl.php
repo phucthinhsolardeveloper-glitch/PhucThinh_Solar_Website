@@ -192,6 +192,30 @@
                         </div>
                     </div>
                 <?php } ?>
+
+                <?php if($type === 'du-an') { ?>
+                    <div class="card card-primary card-outline text-sm">
+                        <div class="card-header">
+                            <h3 class="card-title">Sản phẩm sử dụng trong dự án</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group mb-0">
+                                <label for="project-products">Chọn sản phẩm theo tên hoặc mã:</label>
+                                <select class="select2" name="project_products[]" id="project-products" multiple="multiple" data-placeholder="Tìm và chọn sản phẩm" style="width:100%;">
+                                    <?php foreach($projectProducts as $projectProduct) {
+                                        $productId = (int)$projectProduct['id'];
+                                        $productLabel = trim((string)$projectProduct['namevi']);
+                                        if(!empty($projectProduct['code'])) $productLabel .= ' — '.$projectProduct['code'];
+                                        if(strpos((string)$projectProduct['status'], 'hienthi') === false) $productLabel .= ' (đang ẩn)';
+                                    ?>
+                                        <option value="<?=$productId?>" <?=in_array($productId, $projectProductIds, true) ? 'selected' : ''?>><?=htmlspecialchars($productLabel, ENT_QUOTES, 'UTF-8')?></option>
+                                    <?php } ?>
+                                </select>
+                                <small class="form-text text-muted">Trang Dự án sẽ liên kết đến các sản phẩm đang hiển thị; trang Sản phẩm tự lấy ảnh từ gallery dự án này.</small>
+                            </div>
+                        </div>
+                    </div>
+                <?php } ?>
                 
                 <?php if(isset($config['news'][$type]['images']) && $config['news'][$type]['images'] == true) { ?>
                     <div class="card card-primary card-outline text-sm">
