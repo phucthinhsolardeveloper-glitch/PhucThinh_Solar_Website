@@ -79,7 +79,7 @@
                         <aside class="aside-item filter-cat">
                             <div class="aside-content filter-group">
                                 <ul>
-                                    <?php if(count($splist)){foreach($splist as $k => $v){$spcat = $d->rawQuery("select pc.name$lang, pc.slugvi, pc.slugen, pc.id from #_product_cat pc where pc.id_list = ? and find_in_set('hienthi',pc.status) and exists (select 1 from #_product p where p.id_cat = pc.id and p.type = ? and find_in_set('hienthi',p.status)) order by pc.numb,pc.id desc",array($v['id'],'san-pham')); ?>
+                                    <?php if(count($splist)){foreach($splist as $k => $v){ ?>
                                     <li class="filter-item filter-item--check-box filter-item--green <?=(isset($slug_param)&& $slug_param == $v[$sluglang])?'checked':''?>">
                                         <a href="danh-muc-san-pham/<?=$v[$sluglang]?>/">
                                             <span>
@@ -88,13 +88,6 @@
                                                 </label>
                                             </span>
                                         </a>
-                                        <?php if(count($spcat)){ ?>
-                                        <ul>
-                                            <?php foreach($spcat as $k => $c){ ?>
-                                            <li><a href="<?= $c[$sluglang] ?>"><?= $c['name'.$lang] ?></a></li>
-                                            <?php } ?>
-                                        </ul>
-                                        <?php } ?>
                                     </li>
                                     <?php }} ?>
                                 </ul>
