@@ -14,7 +14,7 @@ Phạm vi tối ưu áp dụng cho toàn bộ project, gồm frontend public, Ad
 
 ## 1. Giao diện và thương hiệu
 
-- [x] Kiểm tra trang chủ, danh mục, chi tiết sản phẩm, giải pháp, dự án, tin tức và liên hệ trên desktop/mobile; full Playwright hiện đạt 39 PASS, 1 mobile MagicZoom screenshot skip có chủ ý.
+- [x] Kiểm tra trang chủ, danh mục, chi tiết sản phẩm, giải pháp, dự án, tin tức và liên hệ trên desktop/mobile; lần chạy 2026-09-04 đạt 39 PASS, 1 skip. Hai visual baseline trang Sản phẩm desktop/mobile lệch do catalog hiện có ảnh thật thay cho placeholder cũ; kiểm thử chức năng, ảnh hỏng, console và bố cục vẫn PASS, chưa cập nhật snapshot khi dữ liệu ảnh còn đang bổ sung.
 - [x] Playwright Chromium smoke đạt 16/16 trên desktop/mobile cho bảy trang public, icon gọi và CTA báo giá; không có page error, request local HTTP >= 400, ảnh hỏng hoặc tràn ngang.
 - [x] Mở rộng Playwright lên 20/20: chi tiết sản phẩm, gallery chính, quote-only CTA, header/menu mobile, breadcrumb và footer desktop/mobile.
 - [x] Chốt 5 screenshot baseline đã review: trang chủ và danh mục desktop/mobile, chi tiết sản phẩm desktop; full suite 25 PASS, 1 mobile MagicZoom screenshot skip có chủ ý nhưng DOM regression vẫn đạt.
@@ -52,8 +52,8 @@ Phạm vi tối ưu áp dụng cho toàn bộ project, gồm frontend public, Ad
 - [x] Chế độ báo giá chỉ ẩn giá public; giá nội bộ trong Admin/Excel được giữ nguyên.
 - [x] Nhận file Excel thật `san-pham-20260831-da-bo-sung-oriana.xlsx`: lưu `artifacts/` + checksum, backup local, preview qua pipeline (0 lỗi/cảnh báo/xung đột), commit vào DB local (+70 ORIANA id 467–536, cập nhật #321/#311, tổng 151). 70 sp mới `numb=2` xếp cuối danh mục.
 - [ ] Đối chiếu sản phẩm quảng cáo: mã, slug, danh mục, trạng thái, thông số, ảnh và nội dung. *(Bộ 445 sản phẩm đang được chủ project kiểm tra/bổ sung ảnh và nội dung dần.)*
-- [x] Local không còn dữ liệu test, mã/slug trùng, ảnh đại diện thiếu hoặc liên kết danh mục mồ côi.
-- [ ] Bổ sung 5 chính sách và dữ liệu sản phẩm còn thiếu. Baseline local 2026-09-03: 364 ảnh đại diện, 442 mô tả ngắn và 366 nội dung chi tiết; số liệu sẽ giảm dần theo quá trình biên tập.
+- [x] Local không còn dữ liệu test, mã/slug trùng hoặc liên kết danh mục mồ côi.
+- [ ] Bổ sung 5 chính sách và dữ liệu sản phẩm còn thiếu. Đối chiếu local 2026-09-04 trên 445 sản phẩm đang hiển thị: 363 thiếu ảnh đại diện, 442 thiếu mô tả ngắn, 366 thiếu nội dung chi tiết, 40 thiếu cả thông số legacy/cấu trúc và 188 chưa có công suất hợp lệ. Cả 5 chính sách đang hiển thị nhưng nội dung còn rỗng.
 - [ ] Xác nhận không còn dữ liệu test, mã trùng hoặc import dở dang trên staging.
 
 ## 5. Backup, deploy và rollback

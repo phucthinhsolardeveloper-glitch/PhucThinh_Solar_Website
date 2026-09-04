@@ -158,7 +158,7 @@ a1bfedc fix(product): restore brand/power/type filters in listing sidebar
 
 Toàn bộ đã push lên `origin/master` (branch `master` track upstream). Các commit `be1b3d6`, `4314123`, `ad4520e` là lịch sử thử nghiệm conditional loading và đã bị `793e3eb` thay thế. Không cherry-pick hoặc tái áp dụng riêng các commit đó.
 
-Thay đổi DB local (không nằm trong Git): sau lô ORIANA và file master do chủ project nhập, `table_product` type `san-pham` hiện có 445 dòng. Chủ project xác nhận ngày 2026-09-03 đây là dữ liệu có chủ ý; không hoàn nguyên, tự ẩn hoặc đổi thứ tự. Ảnh/nội dung/thông số đang được bổ sung dần; baseline hiện tại có 364 ảnh đại diện, 442 mô tả ngắn và 366 nội dung chi tiết còn thiếu, không có nhóm trùng mã/slug. Chi tiết file và checksum trong `artifacts/README.txt`.
+Thay đổi DB local (không nằm trong Git): sau lô ORIANA và file master do chủ project nhập, `table_product` type `san-pham` hiện có 445 dòng và cả 445 đang hiển thị. Chủ project xác nhận đây là dữ liệu có chủ ý; không hoàn nguyên, tự ẩn hoặc đổi thứ tự. Đối chiếu 2026-09-04: 363 thiếu ảnh đại diện, 442 thiếu mô tả ngắn, 366 thiếu nội dung chi tiết, 40 thiếu cả thông số legacy/cấu trúc và 188 chưa có công suất hợp lệ; không có mã/slug trùng, slug rỗng hoặc liên kết danh mục cấp 1 mồ côi. Cả 5 chính sách public đang bật nhưng nội dung rỗng. Chi tiết file và checksum trong `artifacts/README.txt`.
 
 ## 7. Trạng thái kiểm thử gần nhất
 

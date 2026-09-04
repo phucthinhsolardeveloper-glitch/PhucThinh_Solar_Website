@@ -69,7 +69,7 @@ Cập nhật gần nhất: 2026-09-03. Mọi thay đổi bên dưới mới ở 
 
 - 5 trang chính sách đã có URL nhưng nội dung đang rỗng.
 - DB local hiện có 445 sản phẩm, được chủ project xác nhận ngày 2026-09-03 là dữ liệu nhập có chủ ý. Không hoàn nguyên, tự ẩn hoặc đổi thứ tự lô này.
-- Ảnh, mô tả ngắn, nội dung chi tiết và thông số của bộ 445 sản phẩm đang được chủ project kiểm tra/bổ sung dần. Baseline đọc ngày 2026-09-03: 364 thiếu ảnh đại diện, 442 thiếu mô tả ngắn và 366 thiếu nội dung chi tiết; 0 nhóm trùng mã và 0 nhóm trùng slug.
+- Ảnh, mô tả ngắn, nội dung chi tiết và thông số của bộ 445 sản phẩm đang được chủ project kiểm tra/bổ sung dần. Đối chiếu ngày 2026-09-04: 363 thiếu ảnh đại diện, 442 thiếu mô tả ngắn, 366 thiếu nội dung chi tiết, 40 thiếu cả thông số legacy/cấu trúc và 188 chưa có công suất hợp lệ; 0 nhóm trùng mã, 0 nhóm trùng slug, 0 slug rỗng và 0 liên kết danh mục cấp 1 mồ côi. Cả 5 chính sách public đang bật nhưng nội dung còn rỗng.
 - Lịch sử gồm lô ORIANA `san-pham-20260831-da-bo-sung-oriana.xlsx` và file master `san-pham-master-fixed-2026-09-01.xlsx`; các file nằm trong `artifacts/`, tiếp tục được giữ ngoài Git/release.
 - Chứng nhận và video chỉ hiển thị khi admin nhập dữ liệu thật.
 - Dữ liệu kỹ thuật thật sẽ được cập nhật từ file Excel bên ngoài; không chạy migration 006 apply nếu chưa có phê duyệt riêng.
