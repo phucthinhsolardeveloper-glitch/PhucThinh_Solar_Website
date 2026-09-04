@@ -1365,6 +1365,9 @@ function loadPermissions()
 }
 
 $(document).ready(function(){
+	$(document).on('change', '.admin-per-page-select', function(){
+		if(this.form) this.form.submit();
+	});
 	function renderProductContentBlockPreview(lang) {
 		var preview = $('.pts-content-block-preview[data-lang="' + lang + '"]');
 		if(!preview.length) return;

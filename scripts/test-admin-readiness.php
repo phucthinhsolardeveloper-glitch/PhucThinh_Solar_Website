@@ -466,6 +466,9 @@ try
     readinessAssert(
         $productPerPage['status'] === 200
             && strpos($productPerPage['body'], 'id="admin-per-page-product"') !== false
+            && strpos($productPerPage['body'], 'class="form-inline float-right admin-per-page-form"') !== false
+            && strpos($productPerPage['body'], 'name="per_page"') !== false
+            && strpos($productPerPage['body'], '>Áp dụng</button>') !== false
             && strpos($productPerPage['body'], 'value="50" selected') !== false
             && substr_count($productPerPage['body'], 'class="custom-control-input select-checkbox"') === 50,
         'Danh sách Sản phẩm chọn và render đúng 50 dòng'
@@ -480,6 +483,7 @@ try
     readinessAssert(
         $newsPerPage['status'] === 200
             && strpos($newsPerPage['body'], 'id="admin-per-page-news"') !== false
+            && strpos($newsPerPage['body'], 'class="form-inline float-right admin-per-page-form"') !== false
             && strpos($newsPerPage['body'], 'value="50" selected') !== false,
         'Danh sách Nội dung/Tin tức có lựa chọn số dòng dùng chung'
     );

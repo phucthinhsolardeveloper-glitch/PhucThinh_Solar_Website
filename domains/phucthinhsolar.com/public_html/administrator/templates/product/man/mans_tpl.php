@@ -46,12 +46,16 @@
                 </div>
             </div>
         </div>
-        <div class="form-inline float-right">
+        <form class="form-inline float-right admin-per-page-form" method="get" action="index.php">
+            <?php foreach($_GET as $queryKey => $queryValue) { if(in_array($queryKey, array('per_page','p'), true) || !is_scalar($queryValue)) continue; ?>
+                <input type="hidden" name="<?=htmlspecialchars($queryKey, ENT_QUOTES, 'UTF-8')?>" value="<?=htmlspecialchars((string)$queryValue, ENT_QUOTES, 'UTF-8')?>">
+            <?php } ?>
             <label class="mr-2 mb-0" for="admin-per-page-product">Số dòng</label>
-            <select id="admin-per-page-product" class="custom-select custom-select-sm" onchange="var url=new URL(window.location.href);url.searchParams.set('per_page',this.value);url.searchParams.set('p','1');window.location.href=url.toString();">
+            <select id="admin-per-page-product" name="per_page" class="custom-select custom-select-sm admin-per-page-select">
                 <?php foreach($adminPerPageOptions as $perPageOption) { ?><option value="<?=$perPageOption?>" <?=$adminPerPage===$perPageOption?'selected':''?>><?=$perPageOption?></option><?php } ?>
             </select>
-        </div>
+            <button type="submit" class="btn btn-sm btn-outline-primary ml-1">Áp dụng</button>
+        </form>
     </div>
     <?php if(!empty($_GET['data_status']) || !empty($_GET['comment_status'])) { ?>
         <div class="alert alert-warning d-flex align-items-center justify-content-between text-sm mx-0 mb-2">
