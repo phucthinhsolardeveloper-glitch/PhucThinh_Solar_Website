@@ -89,6 +89,17 @@ test('home exposes every featured category and switches its product grid', async
   await expect(secondCategory).toHaveClass(/uk-active/);
 });
 
+test('product category sidebar shows nested categories without hidden gaps', async ({ page }) => {
+  await page.goto('/danh-muc-san-pham/den-nlmt/', { waitUntil: 'domcontentloaded' });
+
+  const nestedLists = page.locator('.pts-filter-card .filter-cat li > ul');
+  expect(await nestedLists.count()).toBeGreaterThan(0);
+  await expect(nestedLists.first()).toBeVisible();
+  await expect(nestedLists.first().locator('a').first()).toBeVisible();
+  await expect(nestedLists.first()).toHaveCSS('opacity', '1');
+  await expect(nestedLists.first()).toHaveCSS('visibility', 'visible');
+});
+
 test('mobile product filters open as an accessible drawer and close after filtering', async ({ page, isMobile }) => {
   test.skip(!isMobile, 'The filter drawer is a mobile/tablet interaction.');
   await page.goto('/danh-muc-san-pham/den-nlmt/', { waitUntil: 'domcontentloaded' });

@@ -369,7 +369,7 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 .product-card-btns .pts-card-add i{font-size:12px;}
 .pagination-home a,.pagination-ajax a,.pagination-home span,.pagination-ajax span{border-radius:7px!important;}
 .mask-sidebar{display:none;margin:0;padding:0;border:0;}
-.pts-filter-card .filter-cat li>ul{position:static!important;display:block!important;width:auto!important;margin:7px 0 0 14px!important;padding:0 0 0 12px!important;border-left:2px solid var(--pts-line)!important;background:transparent!important;box-shadow:none!important;transform:none!important;}
+.pts-filter-card .filter-cat li>ul{position:static!important;display:block!important;width:auto!important;margin:7px 0 0 14px!important;padding:0 0 0 12px!important;border-left:2px solid var(--pts-line)!important;background:transparent!important;box-shadow:none!important;transform:none!important;opacity:1!important;visibility:visible!important;}
 .pts-filter-card .filter-cat li>ul li{display:block!important;width:auto!important;padding:5px 0!important;border:0!important;}
 .pts-filter-card .filter-cat li>ul a{display:block!important;padding:2px 0!important;font-size:13px!important;line-height:1.45!important;white-space:normal!important;}
 
@@ -1285,7 +1285,7 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 .pts-filter-card .filter-item.checked>a{color:var(--pts-gold-dark)!important;font-weight:800!important;}
 /* Công suất thường liệt kê rất nhiều mức -> giới hạn chiều cao, cuộn riêng
    thay vì kéo dài cả sidebar */
-.pts-filter-card .product-pages__price:has(#car_congsuat0) .wrappers-aside__filter-scroll{
+.pts-filter-card .product-pages__price:has(input[name="car_congsuat"]) .wrappers-aside__filter-scroll{
     max-height:260px;overflow-y:auto;padding-right:6px;
 }
 
