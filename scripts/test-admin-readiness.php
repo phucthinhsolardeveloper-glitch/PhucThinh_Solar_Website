@@ -71,6 +71,11 @@ readinessAssert(
 );
 $apiBootstrapSource = file_get_contents('/var/www/html/administrator/api/config.php');
     readinessAssert(strpos($apiBootstrapSource, 'adminInstallApiExceptionHandler();') !== false, 'Bootstrap chung cài exception boundary cho mọi Admin API');
+$adminBootstrapSource = file_get_contents('/var/www/html/libraries/requick.php');
+readinessAssert(
+    strpos($adminBootstrapSource, 'register_shutdown_function(function() use ($cache)') !== false,
+    'Mutation Admin xóa lại cache public sau khi controller hoàn tất'
+);
 
 $prefix = 'CODEX-RBAC-'.bin2hex(random_bytes(4));
 $createdUsers = array();

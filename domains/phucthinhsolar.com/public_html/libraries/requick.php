@@ -132,6 +132,10 @@
 		if(in_array($act, $cacheAction))
 		{
 			$cache->delete();
+			/* Xóa lại sau controller vì thao tác lưu có thể tạo cache mới trước khi DB cập nhật xong. */
+			register_shutdown_function(function() use ($cache) {
+				$cache->delete();
+			});
 		}
 	}
 	
