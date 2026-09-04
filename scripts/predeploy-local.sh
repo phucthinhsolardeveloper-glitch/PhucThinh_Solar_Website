@@ -161,10 +161,30 @@ rg -q 'pts-card-grid' /tmp/pts-predeploy-solutions.html
 rg -q 'pts-card-grid' /tmp/pts-predeploy-projects.html
 rg -q '^Sitemap: https://phucthinhsolar.com/sitemap.xml$' /tmp/pts-predeploy-robots.txt
 rg -q '<urlset ' /tmp/pts-predeploy-sitemap.xml
-if grep -Eq '/(bien-tan-huawei|thiet-bi-lap-dat-nang-luong-mat-troi|unistar|tuyen-dung)</loc>' /tmp/pts-predeploy-sitemap.xml; then
-    echo "FAIL: Sitemap còn xuất bản URL ẩn hoặc chưa có trang hoạt động" >&2
+# Trước đây check này dò một danh sách slug cứng đã lỗi thời: 3/4 slug không còn
+# tồn tại và slug còn lại giờ là danh mục thật đang hiển thị, nên guard không còn
+# bảo vệ gì. Thay bằng chính bất biến cần giữ: mọi URL trong sitemap phải mở được.
+sitemap_urls="$(grep -oE '<loc>[^<]*</loc>' /tmp/pts-predeploy-sitemap.xml | sed 's#</\?loc>##g')"
+sitemap_total="$(printf '%s\n' "$sitemap_urls" | grep -c .)"
+if [ "$sitemap_total" -lt 1 ]; then
+    echo "FAIL: Sitemap không có URL nào" >&2
     exit 1
 fi
+sitemap_checked=0
+sitemap_bad=0
+for sitemap_url in $(printf '%s\n' "$sitemap_urls" | awk 'NR%20==1'); do
+    sitemap_status="$(curl -s -o /dev/null -w '%{http_code}' -L "$sitemap_url")"
+    sitemap_checked=$((sitemap_checked + 1))
+    if [ "$sitemap_status" != "200" ]; then
+        echo "FAIL: Sitemap công bố URL không mở được ($sitemap_status): $sitemap_url" >&2
+        sitemap_bad=$((sitemap_bad + 1))
+    fi
+done
+if [ "$sitemap_bad" -ne 0 ]; then
+    echo "FAIL: $sitemap_bad/$sitemap_checked URL sitemap được lấy mẫu bị lỗi" >&2
+    exit 1
+fi
+echo "INFO: Sitemap $sitemap_total URL; đã lấy mẫu $sitemap_checked URL, tất cả trả 200."
 if grep -Eq 'href="tuyen-dung"' /tmp/pts-predeploy-home.html; then
     echo "FAIL: Menu public còn liên kết đến trang tuyển dụng chưa hoạt động" >&2
     exit 1

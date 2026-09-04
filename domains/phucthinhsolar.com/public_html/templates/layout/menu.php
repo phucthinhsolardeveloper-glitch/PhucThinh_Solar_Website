@@ -61,7 +61,7 @@
             </li>
 
             <li>
-                <a class="has-child <?php if($com=='giai-phap/') echo 'active'; ?> transition" href="giai-phap/" title="Giải pháp">Giải pháp</a>
+                <a class="has-child <?php if($com=='giai-phap') echo 'active'; ?> transition" href="giai-phap/" title="Giải pháp">Giải pháp</a>
                 <?php if(count($gplist)) { ?>
                     <ul>
                         <?php foreach($gplist as $klist => $vlist) {

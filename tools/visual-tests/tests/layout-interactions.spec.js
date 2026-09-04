@@ -137,10 +137,16 @@ test('legacy child category redirects permanently to its hierarchical canonical 
 });
 
 test('parent type query and legacy product links canonicalize without changing results', async ({ page, request }) => {
+  // Kết quả của URL dạng query phải trùng URL canonical. So sánh chính hai tập
+  // kết quả thay vì chốt cứng số sản phẩm — số đó đổi theo dữ liệu thật.
+  await page.goto('/danh-muc-san-pham/den-nlmt/den-op-tran/', { waitUntil: 'domcontentloaded' });
+  const canonicalHrefs = await page.locator('#show-product .product-item').evaluateAll(els => els.map(e => e.getAttribute('href')));
+  expect(canonicalHrefs.length).toBeGreaterThan(0);
+
   await page.goto('/danh-muc-san-pham/den-nlmt/?id_list=20&is_cat=24', { waitUntil: 'domcontentloaded' });
   expect(new URL(page.url()).pathname).toBe('/danh-muc-san-pham/den-nlmt/den-op-tran/');
   const cards = page.locator('#show-product .product-item');
-  expect(await cards.count()).toBe(2);
+  expect(await cards.evaluateAll(els => els.map(e => e.getAttribute('href')))).toEqual(canonicalHrefs);
   for(const card of await cards.all()) await expect(card).toHaveAttribute('href', /^san-pham\/[a-z0-9-]+$/);
   const legacyHref = 'product/' + (await cards.first().getAttribute('href')).replace(/^san-pham\//, '') + '/';
   const legacyProduct = await request.get('/' + legacyHref, { maxRedirects: 0 });
