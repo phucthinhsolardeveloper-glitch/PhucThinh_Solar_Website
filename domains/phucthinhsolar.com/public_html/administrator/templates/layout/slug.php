@@ -1,17 +1,19 @@
-<div class="card card-primary card-outline text-sm">
+<div class="card card-primary card-outline text-sm collapsed-card">
     <div class="card-header">
         <h3 class="card-title">Đường dẫn</h3>
-        <span class="pl-2 text-danger">(Vui lòng không nhập trùng tiêu đề)</span>
+        <span class="pl-2 text-muted">Tự sinh khi tạo mới, giữ nguyên khi sửa tên</span>
+        <div class="card-tools"><button type="button" class="btn btn-tool" data-card-widget="collapse" title="Mở thiết lập đường dẫn"><i class="fas fa-plus"></i></button></div>
     </div>
-    <div class="card-body card-slug">
+    <div class="card-body card-slug" style="display:none;">
         <?php if(isset($slugchange) && $slugchange == 1) { ?>
             <div class="form-group mb-2">
-                <label for="slugchange" class="d-inline-block align-middle text-info mb-0 mr-2">Thay đổi đường dẫn theo tiêu đề mới:</label>
+                <label for="slugchange" class="d-inline-block align-middle text-info mb-0 mr-2">Tạo lại đường dẫn theo tiêu đề mới:</label>
                 <div class="custom-control custom-checkbox d-inline-block align-middle">
                     <input type="checkbox" class="custom-control-input" name="slugchange" id="slugchange">
                     <label for="slugchange" class="custom-control-label"></label>
                 </div>
             </div>
+            <p class="text-warning mb-2"><i class="fas fa-exclamation-triangle mr-1"></i>Đổi đường dẫn sẽ tạo chuyển hướng 301 từ URL cũ.</p>
         <?php } ?>
 
         <input type="hidden" class="slug-id" value="<?=isset($id) ? $id : ''?>">

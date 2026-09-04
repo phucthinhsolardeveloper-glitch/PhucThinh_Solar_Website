@@ -13,7 +13,8 @@
     // define('TEMPLATE', ($deviceType == 'computer') ? './templates/' : './templates-mobile/');
 	define('TEMPLATE', './templates/');
 
-    /* Router */
+	/* Router */
+	require_once LIBRARIES.'product_category_urls.php';
     $router->setBasePath($config['database']['url']);
     $router->map('GET', array(ADMIN.'/', 'administrator'), function(){
     	global $func, $config;
@@ -28,6 +29,9 @@
     $router->map('GET|POST', '', 'index', 'home');
     $router->map('GET|POST', 'index.php', 'index', 'index');
     $router->map('GET|POST', 'sitemap.xml', 'sitemap', 'sitemap');
+	$router->map('GET', 'danh-muc-san-pham/[a:list]/[a:cat]/[a:item]/[a:sub]/?', 'productHierarchy', 'product-hierarchy-4');
+	$router->map('GET', 'danh-muc-san-pham/[a:list]/[a:cat]/[a:item]/?', 'productHierarchy', 'product-hierarchy-3');
+	$router->map('GET', 'danh-muc-san-pham/[a:list]/[a:cat]/?', 'productHierarchy', 'product-hierarchy-2');
     $router->map('GET|POST', '[a:com]', 'allpage', 'show');
 	$router->map('GET|POST', '[a:com]/', 'allpage', 'show1');
 	$router->map('GET|POST', '[a:sub]/[a:com]/', 'allpage', 'show2');
@@ -150,12 +154,47 @@
 	);
 
 	/* Find data */
+	if($_SERVER['REQUEST_METHOD'] === 'GET')
+	{
+		$requestPath = trim(parse_url(isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '', PHP_URL_PATH), '/');
+		try { $redirectRow = $d->rawQueryOne("select entity_table, entity_id from #_url_redirect where old_path = ? limit 1", array($requestPath)); }
+		catch(Exception $redirectException) { $redirectRow = array(); }
+		if(!empty($redirectRow))
+		{
+			$redirectPath = publicProductEntityPath($d, $redirectRow['entity_table'], $redirectRow['entity_id'], $lang);
+			if($redirectPath !== '' && trim($redirectPath, '/') !== $requestPath)
+			{
+				header('Location: '.$configBase.$redirectPath, true, 301);
+				exit;
+			}
+		}
+	}
+	if($com === 'productHierarchy')
+	{
+		$segments = array();
+		foreach(array('list','cat','item','sub') as $segment) if(!empty($match['params'][$segment])) $segments[] = $match['params'][$segment];
+		$hierarchy = publicResolveProductCategoryPath($d, $segments, $lang);
+		if(empty($hierarchy)) { header('HTTP/1.0 404 Not Found', true, 404); include('404.php'); exit; }
+		foreach(array('ids','idi','idc','idl') as $field) if(isset($hierarchy[$field])) { $_GET[$field] = $hierarchy[$field]; break; }
+		$com = 'san-pham';
+	}
 	if(!empty($com) && !in_array($com, ['tim-kiem', 'account', 'sitemap']))
 	{
 		require_once LIBRARIES.'public_route_resolver.php';
 		$routeMatch = publicRouteResolveSlug($d, $com, $sluglang, $requick);
 		if(!empty($routeMatch['id']))
 		{
+			$productHierarchyTables = array('idl'=>'product_list','idc'=>'product_cat','idi'=>'product_item','ids'=>'product_sub');
+			if(isset($productHierarchyTables[$routeMatch['route_field']]) && $routeMatch['route_field'] !== 'idl' && $_SERVER['REQUEST_METHOD'] === 'GET')
+			{
+				$legacyPath = publicProductEntityPath($d, $productHierarchyTables[$routeMatch['route_field']], $routeMatch['id'], 'vi');
+				if($legacyPath !== '')
+				{
+					$query = !empty($_SERVER['QUERY_STRING']) ? '?'.$_SERVER['QUERY_STRING'] : '';
+					header('Location: '.$configBase.$legacyPath.$query, true, 301);
+					exit;
+				}
+			}
 			$_GET[$routeMatch['route_field']] = $routeMatch['id'];
 			$com = $routeMatch['route_com'];
 		}

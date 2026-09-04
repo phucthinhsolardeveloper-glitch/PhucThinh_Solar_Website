@@ -55,6 +55,8 @@ php -l libraries/requick.php
 php -l libraries/order_security.php
 php -l libraries/session_security.php
 php -l libraries/public_route_resolver.php
+php -l libraries/product_category_urls.php
+php -l libraries/router.php
 php /tmp/test-security-hardening.php
 php /tmp/test-admin-readiness.php
 php /tmp/test-product-bulk.php
@@ -68,6 +70,12 @@ php /tmp/test-commerce-transaction.php
 php /tmp/test-public-route-resolver.php
 php /tmp/preflight-commerce-migrations.php
 '
+
+redirect_table="$(docker compose -f "$compose_file" exec -T db mariadb -N -B -upts_local -ppts_local_only phucthinhs_local -e "SHOW TABLES LIKE 'table_url_redirect';")"
+if [ "$redirect_table" != "table_url_redirect" ]; then
+    echo "FAIL: Chưa áp dụng migrations/012_add_public_url_redirects.sql trên DB local" >&2
+    exit 1
+fi
 
 node --check domains/phucthinhsolar.com/public_html/administrator/assets/js/apps.js
 

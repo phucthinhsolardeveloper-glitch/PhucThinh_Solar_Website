@@ -148,7 +148,7 @@
             </div>
         </div>
         <?php if(isset($flagGallery) && $flagGallery == true) { ?>
-            <div class="card card-primary card-outline text-sm">
+            <div class="card card-primary card-outline text-sm collapsed-card">
                 <div class="card-header">
                     <h3 class="card-title">Bộ sưu tập <?=$config['product'][$type]['title_main_list']?></h3>
                     <div class="card-tools">
@@ -187,8 +187,9 @@
                 <div class="card-header">
                     <h3 class="card-title">Nội dung SEO</h3>
                     <a class="btn btn-sm bg-gradient-success d-inline-block text-white float-right create-seo" title="Tạo SEO">Tạo SEO</a>
+                    <button type="button" class="btn btn-tool float-right" data-card-widget="collapse"><i class="fas fa-plus"></i></button>
                 </div>
-                <div class="card-body">
+                <div class="card-body" style="display:none;">
                     <?php
                         $seoDB = $seo->getOnDB($id,$com,'man_list',$type);
                         include TEMPLATE.LAYOUT."seo.php";

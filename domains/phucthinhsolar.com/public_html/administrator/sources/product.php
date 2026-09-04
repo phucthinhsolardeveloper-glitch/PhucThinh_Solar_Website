@@ -19,6 +19,40 @@
 	require_once SOURCES.'product_bulk.php';
 	require_once LIBRARIES.'admin_product_completeness.php';
 
+	function productAdminSeoDefaults($func, $data, $dataSeo)
+	{
+		$dataSeo = is_array($dataSeo) ? $dataSeo : array();
+		foreach(array('vi','en') as $langKey)
+		{
+			$name = !empty($data['name'.$langKey]) ? html_entity_decode($data['name'.$langKey], ENT_QUOTES, 'UTF-8') : '';
+			if($name === '') continue;
+			$descriptionSource = !empty($data['desc'.$langKey]) ? $data['desc'.$langKey] : $name.' chính hãng, tư vấn đúng nhu cầu, bảo hành rõ ràng và giao hàng toàn quốc.';
+			$description = trim(preg_replace('/\s+/', ' ', strip_tags(html_entity_decode($descriptionSource, ENT_QUOTES, 'UTF-8'))));
+			if(empty($dataSeo['title'.$langKey])) $dataSeo['title'.$langKey] = htmlspecialchars(mb_substr($name.' | Phúc Thịnh Solar', 0, 70), ENT_QUOTES, 'UTF-8');
+			if(empty($dataSeo['keywords'.$langKey])) $dataSeo['keywords'.$langKey] = htmlspecialchars(mb_substr($name, 0, 70), ENT_QUOTES, 'UTF-8');
+			if(empty($dataSeo['description'.$langKey])) $dataSeo['description'.$langKey] = htmlspecialchars(mb_substr($description, 0, 160), ENT_QUOTES, 'UTF-8');
+		}
+		return $dataSeo;
+	}
+	function productAdminRememberRedirect($d, $oldPath, $entityTable, $entityId)
+	{
+		$oldPath = trim((string)$oldPath, '/');
+		if($oldPath === '' || !in_array($entityTable, array('product','product_list','product_cat'), true) || !(int)$entityId) return;
+		$d->rawQuery("insert into #_url_redirect (old_path,entity_table,entity_id,date_created) values (?,?,?,?) on duplicate key update entity_table=values(entity_table),entity_id=values(entity_id)", array($oldPath,$entityTable,(int)$entityId,time()));
+	}
+	function productAdminCategoryDependency($d, $level, $id, $type)
+	{
+		$id = (int)$id;
+		if($level === 'list') {
+			$product = $d->rawQueryOne("select count(*) num from #_product where id_list=? and type=?", array($id,$type));
+			$child = $d->rawQueryOne("select count(*) num from #_product_cat where id_list=? and type=?", array($id,$type));
+		} else {
+			$product = $d->rawQueryOne("select count(*) num from #_product where id_cat=? and type=?", array($id,$type));
+			$child = $d->rawQueryOne("select count(*) num from #_product_item where id_cat=? and type=?", array($id,$type));
+		}
+		return (int)$product['num'] + (int)$child['num'];
+	}
+
 	/* Cấu hình đường dẫn trả về */
 	$strUrl = "";
 	$arrUrl = array('id_list','id_cat','id_item','id_sub','id_brand');
@@ -380,7 +414,8 @@
 		$message = '';
 		$response = array();
 		$savehere = (isset($_POST['save-here'])) ? true : false;
-		$id = (!empty($_POST['id'])) ? htmlspecialchars($_POST['id']) : 0;
+		$id = (!empty($_POST['id'])) ? (int)$_POST['id'] : 0;
+		$oldSlugRow = $id ? $d->rawQueryOne("select slugvi from #_product where id=? and type=? limit 1", array($id,$type)) : array();
 		$data = (!empty($_POST['data'])) ? $_POST['data'] : null;
 		$dataTags = (!empty($_POST['dataTags'])) ? $_POST['dataTags'] : null;
 		$dataColor = (!empty($_POST['dataColor'])) ? $_POST['dataColor'] : null;
@@ -496,6 +531,7 @@
 					$dataSeo[$column] = htmlspecialchars($func->sanitize($value));
 				}
 			}
+			$dataSeo = productAdminSeoDefaults($func, $data, isset($dataSeo) ? $dataSeo : array());
 		}
 
 		/* Valid data */
@@ -587,6 +623,7 @@
 			$d->where('type', $type);
 			if($d->update('product',$data))
 			{
+				if(!empty($oldSlugRow['slugvi']) && $oldSlugRow['slugvi'] !== $data['slugvi']) productAdminRememberRedirect($d, 'san-pham/'.$oldSlugRow['slugvi'], 'product', $id);
 				/* Photo */
 				if($func->hasFile("file"))
 				{
@@ -1617,7 +1654,9 @@
 		/* Post dữ liệu */
 		$message = '';
 		$response = array();
-		$id = (!empty($_POST['id'])) ? htmlspecialchars($_POST['id']) : 0;
+		$id = (!empty($_POST['id'])) ? (int)$_POST['id'] : 0;
+		$oldSlugRow = $id ? $d->rawQueryOne("select slugvi from #_product_list where id=? and type=? limit 1", array($id,$type)) : array();
+		$oldChildRows = $id ? $d->rawQuery("select id, slugvi from #_product_cat where id_list=? and type=?", array($id,$type)) : array();
 		$data = (!empty($_POST['data'])) ? $_POST['data'] : null;
 		if($data)
 		{
@@ -1666,6 +1705,7 @@
 					$dataSeo[$column] = htmlspecialchars($func->sanitize($value));
 				}
 			}
+			$dataSeo = productAdminSeoDefaults($func, $data, isset($dataSeo) ? $dataSeo : array());
 		}
 
 		/* Valid data */
@@ -1749,6 +1789,8 @@
 			$d->where('type', $type);
 			if($d->update('product_list',$data))
 			{
+				if(!empty($oldSlugRow['slugvi']) && $oldSlugRow['slugvi'] !== $data['slugvi']) productAdminRememberRedirect($d, 'danh-muc-san-pham/'.$oldSlugRow['slugvi'], 'product_list', $id);
+				if(!empty($oldSlugRow['slugvi']) && $oldSlugRow['slugvi'] !== $data['slugvi']) foreach($oldChildRows as $oldChildRow) productAdminRememberRedirect($d, 'danh-muc-san-pham/'.$oldSlugRow['slugvi'].'/'.$oldChildRow['slugvi'], 'product_cat', $oldChildRow['id']);
 				/* Photo */
 				if($func->hasFile("file"))
 				{
@@ -1848,6 +1890,7 @@
 
 		if($id)
 		{
+			if(productAdminCategoryDependency($d,'list',$id,$type)) $func->transfer("Không thể xóa: danh mục còn sản phẩm hoặc danh mục con. Hãy chuyển dữ liệu trước.", "index.php?com=product&act=man_list&type=".$type."&p=".$curPage.$strUrl, false);
 			/* Lấy dữ liệu */
 			$row = $d->rawQueryOne("select id, photo from #_product_list where id = ? and type = ? limit 0,1",array($id,$type));
 
@@ -1884,6 +1927,7 @@
 		elseif(isset($_GET['listid']))
 		{
 			$listid = explode(",",$_GET['listid']);
+			foreach($listid as $checkId) if(productAdminCategoryDependency($d,'list',(int)$checkId,$type)) $func->transfer("Không thể xóa hàng loạt: có danh mục còn sản phẩm hoặc danh mục con.", "index.php?com=product&act=man_list&type=".$type."&p=".$curPage.$strUrl, false);
 
 			for($i=0;$i<count($listid);$i++)
 			{
@@ -1991,7 +2035,8 @@
 		/* Post dữ liệu */
 		$message = '';
 		$response = array();
-		$id = (!empty($_POST['id'])) ? htmlspecialchars($_POST['id']) : 0;
+		$id = (!empty($_POST['id'])) ? (int)$_POST['id'] : 0;
+		$oldSlugRow = $id ? $d->rawQueryOne("select pc.slugvi, pc.id_list, pl.slugvi list_slugvi from #_product_cat pc join #_product_list pl on pl.id=pc.id_list where pc.id=? and pc.type=? limit 1", array($id,$type)) : array();
 		$data = (!empty($_POST['data'])) ? $_POST['data'] : null;
 		if($data)
 		{
@@ -2040,6 +2085,7 @@
 					$dataSeo[$column] = htmlspecialchars($func->sanitize($value));
 				}
 			}
+			$dataSeo = productAdminSeoDefaults($func, $data, isset($dataSeo) ? $dataSeo : array());
 		}
 
 		/* Valid data */
@@ -2123,6 +2169,7 @@
 			$d->where('type', $type);
 			if($d->update('product_cat',$data))
 			{
+				if(!empty($oldSlugRow['slugvi']) && ($oldSlugRow['slugvi'] !== $data['slugvi'] || (int)$data['id_list'] !== (int)$oldSlugRow['id_list'])) productAdminRememberRedirect($d, 'danh-muc-san-pham/'.$oldSlugRow['list_slugvi'].'/'.$oldSlugRow['slugvi'], 'product_cat', $id);
 				/* Photo */
 				if($func->hasFile("file"))
 				{
@@ -2215,6 +2262,7 @@
 
 		if($id)
 		{
+			if(productAdminCategoryDependency($d,'cat',$id,$type)) $func->transfer("Không thể xóa: danh mục còn sản phẩm hoặc danh mục con. Hãy chuyển dữ liệu trước.", "index.php?com=product&act=man_cat&type=".$type."&p=".$curPage.$strUrl, false);
 			/* Lấy dữ liệu */
 			$row = $d->rawQueryOne("select id, photo from #_product_cat where id = ? and type = ? limit 0,1",array($id,$type));
 
@@ -2237,6 +2285,7 @@
 		elseif(isset($_GET['listid']))
 		{
 			$listid = explode(",",$_GET['listid']);
+			foreach($listid as $checkId) if(productAdminCategoryDependency($d,'cat',(int)$checkId,$type)) $func->transfer("Không thể xóa hàng loạt: có danh mục còn sản phẩm hoặc danh mục con.", "index.php?com=product&act=man_cat&type=".$type."&p=".$curPage.$strUrl, false);
 
 			for($i=0;$i<count($listid);$i++)
 			{

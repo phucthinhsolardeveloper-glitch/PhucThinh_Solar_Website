@@ -30,6 +30,7 @@ test('header, menu, breadcrumb and footer remain usable', async ({ page, isMobil
     await expect(catalogParentWithChildren).toBeVisible();
     await catalogParentWithChildren.hover();
     await expect(catalogParentWithChildren.locator(':scope > ul')).toBeVisible();
+    await expect(catalogParentWithChildren.locator(':scope > ul a').first()).toHaveAttribute('href', /^danh-muc-san-pham\/[^/]+\/[^/]+\/$/);
   }
 
   await page.locator('footer').scrollIntoViewIfNeeded();
@@ -109,6 +110,14 @@ test('product category sidebar keeps child categories only in the type filter', 
 
   await page.goto('/den-op-tran/', { waitUntil: 'domcontentloaded' });
   await expect(page.locator('input[name="car_cat"]')).toHaveCount(0);
+});
+
+test('legacy child category redirects permanently to its hierarchical canonical URL', async ({ request }) => {
+  const legacy = await request.get('/den-op-tran/', { maxRedirects: 0 });
+  expect(legacy.status()).toBe(301);
+  expect(legacy.headers().location).toMatch(/\/danh-muc-san-pham\/den-nlmt\/den-op-tran\/$/);
+  const canonical = await request.get('/danh-muc-san-pham/den-nlmt/den-op-tran/');
+  expect(canonical.ok()).toBeTruthy();
 });
 
 test('mobile product filters open as an accessible drawer and close after filtering', async ({ page, isMobile }) => {

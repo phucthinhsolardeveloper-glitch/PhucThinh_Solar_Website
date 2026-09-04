@@ -204,7 +204,7 @@
 					$params[] = $type;
 				}
 				$where .= ($table != 'static') ? 'order by '.$orderby.' desc' : '';
-				$sitemap = $this->d->rawQuery("select slug$lang, date_created from #_$table where $where",$params);
+				$sitemap = $this->d->rawQuery("select id, slug$lang, date_created from #_$table where $where",$params);
 			}
 
 			if($menu == true && $field == 'id')
@@ -224,7 +224,9 @@
 				{
                     if(!empty($value['slug'.$lang]))
                     {
-                        $urlSm = $configBase.$value['slug'.$lang];
+						$hierarchyTables = array('product_list','product_cat','product_item','product_sub');
+						$hierarchyPath = in_array($table, $hierarchyTables, true) && function_exists('publicProductEntityPath') ? publicProductEntityPath($this->d, $table, $value['id'], $lang) : '';
+						$urlSm = $configBase.($hierarchyPath !== '' ? $hierarchyPath : $value['slug'.$lang]);
                         echo '<url>';
                         echo '<loc>'.$urlSm.'</loc>';
                         echo '<lastmod>'.date('c',$value['date_created']).'</lastmod>';
