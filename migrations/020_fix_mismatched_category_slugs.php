@@ -13,8 +13,9 @@
  * sang đường dẫn mới vào #_url_redirect — đúng cơ chế Admin dùng khi đổi slug,
  * đã kiểm chứng router trả 301. Không có URL nào bị mất.
  *
- * Slug ngắn gọn nhưng vẫn đúng chủ đề (ví dụ "Hệ thống điện" -> day-dien) được
- * liệt kê để chủ project tự quyết, script không tự đổi.
+ * Slug ngắn gọn nhưng vẫn đúng chủ đề được liệt kê để chủ project tự quyết,
+ * script không tự đổi. Các slug chủ project đã duyệt đổi được liệt kê trong
+ * $approvedRenames bên dưới và xử lý y hệt nhánh sai hẳn (kèm 301).
  *
  * BACKUP DB trước khi chạy --apply.
  * Rollback: đặt lại slugvi/slugen theo cột "cũ" in ra và xoá dòng #_url_redirect
@@ -65,6 +66,13 @@ foreach($pdo->query("select slugvi from {$p}product_list") as $r) $existingSlugs
 foreach($pdo->query("select slugvi from {$p}product_cat") as $r) $existingSlugs[$r['slugvi']] = true;
 foreach($pdo->query("select slugvi from {$p}product") as $r) $existingSlugs[$r['slugvi']] = true;
 
+/* Slug tuy vẫn đúng chủ đề nhưng chủ project đã duyệt đổi cho rõ nghĩa hơn.
+   Khoá theo slug hiện tại để chạy được trên mọi môi trường và không đổi nhầm
+   nếu danh mục đó đã được sửa từ trước. */
+$approvedRenames = array(
+	'day-dien' => 'he-thong-dien',   // "Hệ thống điện" — duyệt 2026-09-04
+);
+
 $updateSlug = $pdo->prepare("update {$p}product_list set slugvi = ?, slugen = ? where id = ? and type = ?");
 $addRedirect = $pdo->prepare("insert into {$p}url_redirect (old_path, entity_table, entity_id, date_created) values (?,?,?,?) on duplicate key update entity_table=values(entity_table), entity_id=values(entity_id)");
 
@@ -81,15 +89,16 @@ foreach($rows as $row)
 	$shared = false;
 	foreach($nameWords as $word) if(strpos($current, $word) !== false) { $shared = true; break; }
 
+	$approved = isset($approvedRenames[$current]);
 	if($current === $expected) { $ok++; continue; }
-	if($shared) { $partial[] = array($row['id'], $row['namevi'], $current, $expected); continue; }
+	if($shared && !$approved) { $partial[] = array($row['id'], $row['namevi'], $current, $expected); continue; }
 
-	$newSlug = $expected;
+	$newSlug = $approved ? $approvedRenames[$current] : $expected;
 	$suffix = 1;
 	while(isset($existingSlugs[$newSlug]) && $newSlug !== $current) { $suffix++; $newSlug = $expected.'-'.$suffix; }
 	$existingSlugs[$newSlug] = true;
 
-	printf("  #%-3d %s\n", $row['id'], $row['namevi']);
+	printf("  #%-3d %s%s\n", $row['id'], $row['namevi'], $approved ? '  [chủ project duyệt]' : '');
 	printf("       slug  %s  ->  %s\n", $current, $newSlug);
 	printf("       301   danh-muc-san-pham/%s  ->  danh-muc-san-pham/%s/\n", $current, $newSlug);
 	if($apply)

@@ -1,6 +1,6 @@
 <?php 
     $bg_page = $cache->get("select photo from #_photo where type = ? and act = ? and find_in_set('hienthi',status) limit 0,1", array('background-breadcrumb','photo_static'), 'fetch', 7200);
-    $banner_page = $cache->get("select photo from #_photo where type = ? and act = ? limit 0,1", array('banner-'.$com.'','photo_static'), 'fetch', 7200);
+    $banner_page = $cache->get("select photo from #_photo where type = ? and act = ? and find_in_set('hienthi',status) limit 0,1", array('banner-'.$com.'','photo_static'), 'fetch', 7200);
 ?>
 <?php if(!empty($banner_page)){ ?>
     <style>
