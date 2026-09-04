@@ -980,6 +980,9 @@ function productBulkValidateRows($rawRows, $type, $baseline = array(), $overwrit
         $effectiveList = isset($item['data']['id_list']) ? $item['data']['id_list'] : ($existing ? (int) $existing['id_list'] : 0);
         $effectiveCat = isset($item['data']['id_cat']) ? $item['data']['id_cat'] : ($existing ? (int) $existing['id_cat'] : 0);
         $effectiveBrand = isset($item['data']['id_brand']) ? $item['data']['id_brand'] : ($existing ? (int) $existing['id_brand'] : 0);
+        /* Sản phẩm không có danh mục cấp 1 vẫn lưu được nhưng không xuất hiện ở
+           bất kỳ trang danh mục nào và breadcrumb bị cụt -> chặn ngay khi tạo. */
+        if ($isCreate && $effectiveList <= 0) $item['errors'][] = 'Dòng tạo mới bắt buộc có Danh mục cấp 1.';
         if ($effectiveList > 0 && empty($categories['list'][$effectiveList])) $item['errors'][] = 'ID danh mục cấp 1 không tồn tại.';
         if ($effectiveCat > 0 && empty($categories['cat'][$effectiveCat])) $item['errors'][] = 'ID danh mục cấp 2 không tồn tại.';
         if ($effectiveCat > 0 && !empty($categories['cat'][$effectiveCat]) && $effectiveList > 0 && (int) $categories['cat'][$effectiveCat]['id_list'] !== $effectiveList) $item['errors'][] = 'Danh mục cấp 2 không thuộc danh mục cấp 1 đã chọn.';

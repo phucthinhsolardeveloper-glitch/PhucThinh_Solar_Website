@@ -52,6 +52,9 @@
 		} elseif($level === 'item') {
 			$product = $d->rawQueryOne("select count(*) num from #_product where id_item=? and type=?", array($id,$type));
 			$child = $d->rawQueryOne("select count(*) num from #_product_sub where id_item=? and type=?", array($id,$type));
+		} elseif($level === 'brand') {
+			$product = $d->rawQueryOne("select count(*) num from #_product where id_brand=? and type=?", array($id,$type));
+			$child = array('num'=>0);
 		} else {
 			$product = $d->rawQueryOne("select count(*) num from #_product where id_sub=? and type=?", array($id,$type));
 			$child = array('num'=>0);
@@ -3300,6 +3303,10 @@
 
 		if($id)
 		{
+			/* Xóa thương hiệu còn sản phẩm sẽ để lại id_brand mồ côi: sản phẩm mất
+			   nhãn thương hiệu và biến mất khỏi bộ lọc thương hiệu ngoài public. */
+			if(productAdminCategoryDependency($d,'brand',$id,$type)) $func->transfer("Không thể xóa: thương hiệu còn sản phẩm. Hãy chuyển sản phẩm sang thương hiệu khác trước.", "index.php?com=product&act=man_brand&type=".$type."&p=".$curPage.$strUrl, false);
+
 			/* Lấy dữ liệu */
 			$row = $d->rawQueryOne("select id, photo from #_product_brand where id = ? and type = ? limit 0,1",array($id,$type));
 

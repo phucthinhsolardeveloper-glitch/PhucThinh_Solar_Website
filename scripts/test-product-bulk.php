@@ -131,14 +131,19 @@ $createdGalleryId = 0;
 try {
     $csvPath = tempnam(sys_get_temp_dir(), 'pts-csv-');
     $csv = fopen($csvPath, 'wb');
-    fputcsv($csv, array('Mã sản phẩm', 'Tên sản phẩm', 'Giá gốc', 'Giá bán/khuyến mãi', 'Nguồn sáng', 'Thông số khác (Tên | Giá trị)'));
-    fputcsv($csv, array($code, 'Sản phẩm kiểm thử bulk', '1000', '900', 'LED SMD', "Model | CODEX-T200\nGóc chiếu | 120°"));
+    $firstListName = '';
+    foreach (productBulkCategoryMaps($type)['list'] as $listRow) { $firstListName = $listRow['namevi']; break; }
+    testAssert($firstListName !== '', 'Có danh mục cấp 1 để gán cho dòng tạo mới');
+    fputcsv($csv, array('Mã sản phẩm', 'Tên sản phẩm', 'Danh mục cấp 1', 'Giá gốc', 'Giá bán/khuyến mãi', 'Nguồn sáng', 'Thông số khác (Tên | Giá trị)'));
+    fputcsv($csv, array($code, 'Sản phẩm kiểm thử bulk', $firstListName, '1000', '900', 'LED SMD', "Model | CODEX-T200\nGóc chiếu | 120°"));
     fclose($csv);
     $parsed = productBulkReadUpload(array('error' => UPLOAD_ERR_OK, 'size' => filesize($csvPath), 'name' => 'test.csv', 'tmp_name' => $csvPath));
     testAssert(empty($parsed['errors']) && count($parsed['rows']) === 1, 'Đọc CSV với tiêu đề tiếng Việt'.(!empty($parsed['errors']) ? ': '.implode(' ', $parsed['errors']) : ''));
     testAssert(isset($parsed['rows'][0]['code']) && !isset($parsed['rows'][0]['action']), 'Ánh xạ tiêu đề tiếng Việt về field nội bộ');
     $autoCreatePreview = productBulkValidateRows($parsed['rows'], $type);
     testAssert($autoCreatePreview['errors'] === 0 && $autoCreatePreview['counts']['create'] === 1, 'Tự nhận diện dòng không có ID và mã mới là tạo mới');
+    $noCategoryCreate = productBulkValidateRows(array(array('_row_number' => 9, 'code' => $code.'-NOCAT', 'namevi' => 'Sản phẩm thiếu danh mục')), $type);
+    testAssert($noCategoryCreate['errors'] > 0, 'Chặn tạo mới sản phẩm không có danh mục cấp 1');
     $parsedSpecs = json_decode($autoCreatePreview['rows'][0]['data']['additional_specs'], true);
     testAssert($autoCreatePreview['rows'][0]['data']['light_source'] === 'LED SMD' && count($parsedSpecs) === 2 && $parsedSpecs[1]['value'] === '120°', 'Đọc thông số chuẩn và danh sách thông số riêng từ từng ô');
     $duplicateSpecs = productBulkValidateRows(array(array('_row_number' => 3, 'code' => $code.'-DUP', 'namevi' => 'Sản phẩm trùng thông số', 'additional_specs' => "Model | A\nmodel | B")), $type);
@@ -223,7 +228,7 @@ try {
     testAssert(empty($strictParsed['errors']) && $strictParsed['rows'][0]['code'] === $code.'-STRICT', 'Strict OOXML được chuẩn hóa và đọc đủ sheet');
     @unlink($strictThemePath);
 
-    $createRows = array(array('_row_number' => 2, 'action' => 'create', 'code' => $code, 'namevi' => 'Sản phẩm kiểm thử bulk', 'regular_price' => '1000', 'sale_price' => '900', 'status' => 'hienthi', 'descvi' => '<script>alert(1)</script><p>Nội dung hợp lệ</p>', 'light_source' => 'LED SMD', 'additional_specs' => "Model | CODEX-T200\nGóc chiếu | 120°"));
+    $createRows = array(array('_row_number' => 2, 'action' => 'create', 'code' => $code, 'namevi' => 'Sản phẩm kiểm thử bulk', '_list_name' => $firstListName, 'regular_price' => '1000', 'sale_price' => '900', 'status' => 'hienthi', 'descvi' => '<script>alert(1)</script><p>Nội dung hợp lệ</p>', 'light_source' => 'LED SMD', 'additional_specs' => "Model | CODEX-T200\nGóc chiếu | 120°"));
     $preview = productBulkValidateRows($createRows, $type);
     testAssert($preview['errors'] === 0 && $preview['counts']['create'] === 1, 'Preview tạo mới hợp lệ');
     commitRowsForTest($createRows, bin2hex(random_bytes(12)));
@@ -234,7 +239,7 @@ try {
     $savedSpecs = json_decode(htmlspecialchars_decode($created['additional_specs'], ENT_QUOTES), true);
     testAssert($created['light_source'] === 'LED SMD' && count($savedSpecs) === 2 && $savedSpecs[0]['label'] === 'Model', 'Lưu đúng thông số cấu trúc và JSON thông số riêng');
 
-    $slugMatchRows = array(array('_row_number' => 6, 'action' => 'create', 'code' => $code.'-NEW-CODE', 'namevi' => $created['namevi'], 'slugvi' => $created['slugvi']));
+    $slugMatchRows = array(array('_row_number' => 6, 'action' => 'create', 'code' => $code.'-NEW-CODE', 'namevi' => $created['namevi'], '_list_name' => $firstListName, 'slugvi' => $created['slugvi']));
     $slugMatchKey = productBulkProductMatchKey(6, $created['slugvi'], $createdId);
     $slugMatchPreview = productBulkValidateRows($slugMatchRows, $type);
     testAssert($slugMatchPreview['errors'] === 0 && isset($slugMatchPreview['product_matches'][$slugMatchKey]), 'Preview gom sản phẩm trùng URL để xử lý tại Admin');
@@ -306,7 +311,7 @@ try {
     $beforeRollbackName = $d->rawQueryOne('select namevi from #_product where id = ? and type = ?', array($createdId, $type))['namevi'];
     $rollbackRows = array(
         array('_row_number' => 20, 'action' => 'update', 'id' => $createdId, 'namevi' => 'Tên không được lưu'),
-        array('_row_number' => 21, 'action' => 'create', 'code' => $code.'-ROLLBACK', 'namevi' => 'Sản phẩm rollback')
+        array('_row_number' => 21, 'action' => 'create', 'code' => $code.'-ROLLBACK', 'namevi' => 'Sản phẩm rollback', '_list_name' => $firstListName)
     );
     failCommitRowsForTest($rollbackRows, bin2hex(random_bytes(12)), 1);
     $afterRollbackName = $d->rawQueryOne('select namevi from #_product where id = ? and type = ?', array($createdId, $type))['namevi'];
@@ -369,8 +374,8 @@ try {
     testAssert(strpos(','.$archived['status'].',', ',hienthi,') === false, 'Archive gỡ trạng thái hiển thị');
 
     $duplicates = productBulkValidateRows(array(
-        array('_row_number' => 2, 'action' => 'create', 'code' => 'DUPLICATE-CODE', 'namevi' => 'Trùng 1'),
-        array('_row_number' => 3, 'action' => 'create', 'code' => 'DUPLICATE-CODE', 'namevi' => 'Trùng 2')
+        array('_row_number' => 2, 'action' => 'create', 'code' => 'DUPLICATE-CODE', 'namevi' => 'Trùng 1', '_list_name' => $firstListName),
+        array('_row_number' => 3, 'action' => 'create', 'code' => 'DUPLICATE-CODE', 'namevi' => 'Trùng 2', '_list_name' => $firstListName)
     ), $type);
     testAssert($duplicates['errors'] > 0, 'Phát hiện mã trùng trong cùng file');
     $missingId = productBulkValidateRows(array(array('_row_number' => 2, 'action' => 'update', 'namevi' => 'Không có ID')), $type);
