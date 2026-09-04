@@ -21,6 +21,8 @@ test('header, menu, breadcrumb and footer remain usable', async ({ page, isMobil
     await expect(catalogSubmenu).toBeAttached();
     await catalogMenu.hover();
     await expect(catalogSubmenu).toBeVisible();
+    await expect(catalogSubmenu.locator('a[href="ac"]')).toHaveCount(0);
+    await expect(catalogSubmenu.locator('a[href="danh-muc-san-pham/den-ac/"]')).toHaveCount(0);
 
     const catalogParentWithChildren = catalogSubmenu.locator(':scope > li').filter({ has: page.locator(':scope > ul') }).first();
     await expect(catalogParentWithChildren).toBeVisible();
