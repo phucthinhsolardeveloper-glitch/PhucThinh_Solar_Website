@@ -280,7 +280,17 @@ $certificateContent = (!empty($rowDetail['certificate'.$lang])) ? htmlspecialcha
     <div class="pts-related-grid">
         <?php foreach($productRelatedProjects as $relatedProject) { ?>
             <a class="pts-related-card" href="<?=$relatedProject[$sluglang]?>" title="<?=$relatedProject['name'.$lang]?>">
-                <?=$func->getImage(['class' => 'w-100', 'sizes' => '397x340x1', 'upload' => UPLOAD_NEWS_L, 'image' => $relatedProject['photo'], 'alt' => $relatedProject['name'.$lang]])?>
+                <span class="pts-project-media">
+                    <?=$func->getImage(['class' => 'w-100 pts-project-media-main', 'sizes' => '397x340x1', 'upload' => UPLOAD_NEWS_L, 'image' => $relatedProject['photo'], 'alt' => $relatedProject['name'.$lang]])?>
+                    <?php $relatedGallery = isset($productProjectGallery[(int)$relatedProject['id']]) ? array_slice($productProjectGallery[(int)$relatedProject['id']], 0, 3) : array(); ?>
+                    <?php if($relatedGallery) { ?>
+                        <span class="pts-project-media-thumbs" aria-label="Ảnh thực tế dự án">
+                            <?php foreach($relatedGallery as $projectPhoto) { ?>
+                                <?=$func->getImage(['class' => 'w-100', 'sizes' => '160x120x1', 'upload' => UPLOAD_NEWS_L, 'image' => $projectPhoto, 'alt' => $relatedProject['name'.$lang]])?>
+                            <?php } ?>
+                        </span>
+                    <?php } ?>
+                </span>
                 <span class="pts-related-card-body">
                     <strong><?=$relatedProject['name'.$lang]?></strong>
                     <?php if(!empty($relatedProject['address'])) { ?><small><i class="fas fa-map-marker-alt"></i> <?=$relatedProject['address']?></small><?php } ?>

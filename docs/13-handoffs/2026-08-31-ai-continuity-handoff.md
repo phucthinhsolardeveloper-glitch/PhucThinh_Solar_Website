@@ -113,7 +113,7 @@ Không dùng “giảm request/query/dung lượng” làm tiêu chí thành cô
   - 5 pixel-baseline đã regenerate cho type scale mới.
 - Phân tích đối thủ Kitawa + lộ trình nâng cấp e-commerce: `docs/07-features/ecommerce-upgrade-proposal.md` (chờ chủ project chốt phạm vi).
 - Quy chuẩn nội dung sản phẩm, inventory Admin–UI và kế hoạch ba nhóm công suất + chọn số dòng Admin: `docs/07-features/product-content-admin-ui-plan.md`. Ưu tiên triển khai Batch 1 trước; kế thừa 445 sản phẩm bằng fallback, không backfill/ghi đè tự động.
-- Quan hệ Sản phẩm–Dự án đã có nền tảng local bằng migration 010: Admin Dự án chọn nhiều sản phẩm; Admin Sản phẩm xem liên kết ngược; public có link hai chiều và chỉ render khi hai đầu đang hiển thị. Regression helper transaction/ID giả/ẩn/orphan đã PASS; bảng local hiện rỗng. Audit sau triển khai xác nhận còn thiếu gallery Dự án trên trang Sản phẩm (hiện mới dùng ảnh đại diện), UI sắp thứ tự và HTTP/browser regression cho chọn–lưu–render; chưa coi batch hoàn tất và production chưa chạy migration.
+- Quan hệ Sản phẩm–Dự án đã hoàn tất trên local bằng migration 010: Admin Dự án tìm/chọn nhiều sản phẩm và kéo-thả thứ tự; Admin Sản phẩm xem liên kết ngược; public có link hai chiều, chỉ render khi hai đầu đang hiển thị và trang Sản phẩm dùng ảnh đại diện cùng tối đa ba ảnh gallery của Dự án. Regression HTTP đã đi qua đăng nhập Admin, CSRF, form chọn–lưu–đổi thứ tự, hai trang public, ID giả, bản ghi ẩn và orphan; bảng local hiện rỗng sau cleanup. Production chưa chạy migration và chưa có quan hệ dữ liệu thật.
 - Grid Tin tức/Giải pháp/Dự án được khóa 3/2/1.
 - Sitemap đã loại 4 URL ẩn/không hoạt động; hiện còn 137 URL hợp lệ từ lần crawl local.
 - 85 URL ảnh WordPress legacy từng 404 đã có fallback media an toàn; 85/85 trả HTTP 200.

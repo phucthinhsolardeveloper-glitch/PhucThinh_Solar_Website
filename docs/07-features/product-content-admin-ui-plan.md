@@ -57,7 +57,7 @@ Không nên lưu toàn bộ layout thành một blob HTML mới. Dữ liệu nê
 
 ## 4. Quan hệ hai chiều Sản phẩm–Dự án
 
-Module Dự án hiện đã có trang chi tiết, ảnh đại diện, gallery ảnh và video. Chưa có quan hệ dữ liệu với sản phẩm; nếu nhập tên/mã/link sản phẩm bằng CKEditor thì dễ sai URL, sai tên sau khi đổi và không truy vấn ngược được.
+Module Dự án có trang chi tiết, ảnh đại diện, gallery ảnh, video và quan hệ dữ liệu với sản phẩm qua bảng nối. Tên, mã, slug và ảnh vẫn lấy từ bản ghi nguồn, không nhập lặp bằng CKEditor.
 
 Thiết kế đề xuất:
 
@@ -122,14 +122,14 @@ Danh sách sản phẩm đang hard-code `$perPage = 10`. Bổ sung select **10 /
 - Cho phép override có nhãn rõ ràng; dữ liệu per-product hiện tại vẫn là fallback.
 - Đo usage DB + DOM/network cho size/color/tags, `photo2`, gallery và các module media trước khi quyết định giữ, nối UI, archive hay tiếp tục tắt.
 
-### Batch 5 — Liên kết Sản phẩm–Dự án — đã có nền tảng, chưa hoàn tất UX
+### Batch 5 — Liên kết Sản phẩm–Dự án — hoàn tất trên local
 
 - Thêm migration bảng nối idempotent, index hai chiều và kiểm tra orphan.
 - Thêm bộ chọn sản phẩm vào form Dự án, danh sách liên kết ngược trong form Sản phẩm; save theo transaction và giữ CSRF/RBAC.
 - Render “Sản phẩm sử dụng” trên trang Dự án và “Dự án thực tế” trên trang Sản phẩm.
 - Regression sản phẩm/dự án ẩn, slug thay đổi, quan hệ rỗng/nhiều phần tử, ảnh thiếu và không phát sinh N+1.
 
-Implementation dùng migration `010_add_product_project_links.sql` và helper `libraries/product_projects.php`. Migration 010 đã áp dụng trên Docker local; bảng đang rỗng sau regression và chưa có quan hệ dữ liệu thật. Admin đã chọn được nhiều sản phẩm và public đã có link hai chiều, nhưng trang Sản phẩm hiện chỉ dùng ảnh đại diện của Dự án, chưa hiển thị các ảnh trong gallery Dự án theo yêu cầu. Chưa có regression HTTP/browser cho thao tác chọn–lưu và render quan hệ có dữ liệu thật; thứ tự sản phẩm liên kết cũng chưa có UI sắp xếp rõ ràng. Vì vậy batch này chưa được coi là hoàn tất. Khi deploy phải backup trước, chạy migration 010 trước source, rồi mới gán sản phẩm tại Admin Dự án.
+Implementation dùng migration `010_add_product_project_links.sql` và helper `libraries/product_projects.php`. Migration 010 đã áp dụng trên Docker local; bảng đang rỗng sau regression và chưa có quan hệ dữ liệu thật. Admin Dự án có bộ tìm/chọn nhiều sản phẩm, kéo-thả thứ tự và xóa lựa chọn; form Sản phẩm hiển thị liên kết ngược. Public có link hai chiều, trang Sản phẩm dùng ảnh đại diện cùng tối đa ba ảnh gallery lấy trực tiếp từ Dự án. Regression HTTP đi qua đăng nhập Admin, CSRF, form chọn–lưu–đổi thứ tự và hai trang public; đồng thời kiểm tra ID sai, bản ghi ẩn và orphan. Khi deploy phải backup trước, chạy migration 010 trước source, rồi mới gán sản phẩm tại Admin Dự án.
 
 ## 8. Tiêu chí đạt và rollback
 

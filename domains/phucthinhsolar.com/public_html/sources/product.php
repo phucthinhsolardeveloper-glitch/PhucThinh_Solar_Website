@@ -177,6 +177,14 @@
 		/* Lấy hình ảnh con */
 		$rowDetailPhoto = $d->rawQuery("select photo from #_gallery where id_parent = ? and com='product' and type = ? and kind='man' and val = ? and find_in_set('hienthi',status) order by numb,id desc",array($rowDetail['id'],$type,$type));
 		$productRelatedProjects = $d->rawQuery("select n.id, n.name$lang, n.slugvi, n.slugen, n.photo, n.address from #_product_project pp inner join #_news n on n.id = pp.id_project where pp.id_product = ? and find_in_set('hienthi',pp.status) and n.type = ? and find_in_set('hienthi',n.status) order by pp.numb,pp.id", array($rowDetail['id'], 'du-an'));
+		$productProjectGallery = array();
+		if($productRelatedProjects)
+		{
+			$projectIds = array_map(function($project) { return (int)$project['id']; }, $productRelatedProjects);
+			$projectPlaceholders = implode(',', array_fill(0, count($projectIds), '?'));
+			$galleryRows = $d->rawQuery("select id_parent, photo from #_gallery where id_parent in ($projectPlaceholders) and com = ? and type = ? and kind = ? and val = ? and find_in_set('hienthi',status) order by numb,id desc", array_merge($projectIds, array('news', 'du-an', 'man', 'du-an')));
+			foreach($galleryRows as $galleryRow) $productProjectGallery[(int)$galleryRow['id_parent']][] = $galleryRow['photo'];
+		}
 
 		/* Lấy sản phẩm cùng loại */
 		$where = "";

@@ -200,18 +200,31 @@
                         </div>
                         <div class="card-body">
                             <div class="form-group mb-0">
-                                <label for="project-products">Chọn sản phẩm theo tên hoặc mã:</label>
-                                <select class="select2" name="project_products[]" id="project-products" multiple="multiple" data-placeholder="Tìm và chọn sản phẩm" style="width:100%;">
+                                <label for="project-product-picker">Thêm sản phẩm theo tên hoặc mã:</label>
+                                <select class="select2" id="project-product-picker" data-placeholder="Tìm và chọn sản phẩm" style="width:100%;">
+                                    <option value=""></option>
                                     <?php foreach($projectProducts as $projectProduct) {
                                         $productId = (int)$projectProduct['id'];
                                         $productLabel = trim((string)$projectProduct['namevi']);
                                         if(!empty($projectProduct['code'])) $productLabel .= ' — '.$projectProduct['code'];
                                         if(strpos((string)$projectProduct['status'], 'hienthi') === false) $productLabel .= ' (đang ẩn)';
                                     ?>
-                                        <option value="<?=$productId?>" <?=in_array($productId, $projectProductIds, true) ? 'selected' : ''?>><?=htmlspecialchars($productLabel, ENT_QUOTES, 'UTF-8')?></option>
+                                        <option value="<?=$productId?>" data-label="<?=htmlspecialchars($productLabel, ENT_QUOTES, 'UTF-8')?>" <?=in_array($productId, $projectProductIds, true) ? 'disabled' : ''?>><?=htmlspecialchars($productLabel, ENT_QUOTES, 'UTF-8')?></option>
                                     <?php } ?>
                                 </select>
-                                <small class="form-text text-muted">Trang Dự án sẽ liên kết đến các sản phẩm đang hiển thị; trang Sản phẩm tự lấy ảnh từ gallery dự án này.</small>
+                                <ul class="list-group mt-3" id="project-products-sortable">
+                                    <?php foreach($projectProductIds as $selectedProductId) {
+                                        foreach($projectProducts as $projectProduct) if((int)$projectProduct['id'] === $selectedProductId) {
+                                            $selectedLabel = trim((string)$projectProduct['namevi']).(!empty($projectProduct['code']) ? ' — '.$projectProduct['code'] : ''); ?>
+                                            <li class="list-group-item d-flex align-items-center" data-id="<?=$selectedProductId?>">
+                                                <i class="fas fa-grip-vertical text-muted mr-3 project-product-handle" aria-hidden="true"></i>
+                                                <span class="flex-grow-1"><?=htmlspecialchars($selectedLabel, ENT_QUOTES, 'UTF-8')?></span>
+                                                <button type="button" class="btn btn-sm btn-outline-danger project-product-remove" aria-label="Bỏ sản phẩm"><i class="fas fa-times"></i></button>
+                                                <input type="hidden" name="project_products[]" value="<?=$selectedProductId?>">
+                                            </li>
+                                    <?php break; } } ?>
+                                </ul>
+                                <small class="form-text text-muted">Kéo thả để sắp xếp. Trang Dự án liên kết tới sản phẩm đang hiển thị; trang Sản phẩm tự lấy gallery của dự án này.</small>
                             </div>
                         </div>
                     </div>

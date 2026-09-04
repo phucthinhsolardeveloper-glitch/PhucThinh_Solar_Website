@@ -1367,6 +1367,33 @@ function loadPermissions()
 $(document).ready(function(){
 	compactAdminActionBars();
 
+	if($('#project-products-sortable').length)
+	{
+		var projectProductList = document.getElementById('project-products-sortable');
+		new Sortable(projectProductList, {animation:150, handle:'.project-product-handle'});
+
+		$('#project-product-picker').on('change', function(){
+			var option = $(this).find('option:selected');
+			var id = option.val();
+			if(!id || projectProductList.querySelector('[data-id="' + id + '"]')) return;
+			var label = option.data('label') || option.text();
+			$('<li>', {'class':'list-group-item d-flex align-items-center', 'data-id':id})
+				.append('<i class="fas fa-grip-vertical text-muted mr-3 project-product-handle" aria-hidden="true"></i>')
+				.append($('<span>', {'class':'flex-grow-1', text:label}))
+				.append('<button type="button" class="btn btn-sm btn-outline-danger project-product-remove" aria-label="Bỏ sản phẩm"><i class="fas fa-times"></i></button>')
+				.append($('<input>', {type:'hidden', name:'project_products[]', value:id}))
+				.appendTo(projectProductList);
+			option.prop('disabled', true);
+			$(this).val('').trigger('change.select2');
+		});
+
+		$(projectProductList).on('click', '.project-product-remove', function(){
+			var item = $(this).closest('li');
+			$('#project-product-picker option[value="' + item.data('id') + '"]').prop('disabled', false);
+			item.remove();
+		});
+	}
+
 	/* Loader */
 	if($(".loader-wrapper").length)
 	{
