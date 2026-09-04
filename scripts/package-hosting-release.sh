@@ -32,7 +32,7 @@ for forbidden in \
     '^public_html/(backup|artifacts|caches|logs|upload|thumbs|watermark)/' \
     '^public_html/libraries/config\.php$' \
     '\.(sql|zip|7z|bak|log|env)$'; do
-    if rg -i "$forbidden" "$release_dir/FILES.txt"; then
+    if grep -Ei "$forbidden" "$release_dir/FILES.txt"; then
         echo "FAIL: Gói release chứa đường dẫn bị cấm: $forbidden" >&2
         exit 1
     fi

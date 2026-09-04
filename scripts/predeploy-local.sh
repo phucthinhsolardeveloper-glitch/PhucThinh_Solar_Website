@@ -128,7 +128,7 @@ test -s domains/phucthinhsolar.com/public_html/assets/fontawesome512/all.css
 test -s domains/phucthinhsolar.com/public_html/assets/fonts/awesome/fa-solid-900.woff2
 test -s domains/phucthinhsolar.com/public_html/assets/fonts/awesome/fa-brands-400.woff2
 test -s domains/phucthinhsolar.com/public_html/assets/themes/local/fonts/Linearicons/fonts/Linearicons-Free54e9.woff2
-if rg -q 'class="addcart"|"priceCurrency"|"price"[[:space:]]*:' /tmp/pts-predeploy-product.html; then
+if grep -Eq 'class="addcart"|"priceCurrency"|"price"[[:space:]]*:' /tmp/pts-predeploy-product.html; then
     echo "FAIL: Trang sản phẩm còn lộ giá hoặc nút mua khi chế độ báo giá đang bật" >&2
     exit 1
 fi
@@ -161,11 +161,11 @@ rg -q 'pts-card-grid' /tmp/pts-predeploy-solutions.html
 rg -q 'pts-card-grid' /tmp/pts-predeploy-projects.html
 rg -q '^Sitemap: https://phucthinhsolar.com/sitemap.xml$' /tmp/pts-predeploy-robots.txt
 rg -q '<urlset ' /tmp/pts-predeploy-sitemap.xml
-if rg -q '/(bien-tan-huawei|thiet-bi-lap-dat-nang-luong-mat-troi|unistar|tuyen-dung)</loc>' /tmp/pts-predeploy-sitemap.xml; then
+if grep -Eq '/(bien-tan-huawei|thiet-bi-lap-dat-nang-luong-mat-troi|unistar|tuyen-dung)</loc>' /tmp/pts-predeploy-sitemap.xml; then
     echo "FAIL: Sitemap còn xuất bản URL ẩn hoặc chưa có trang hoạt động" >&2
     exit 1
 fi
-if rg -q 'href="tuyen-dung"' /tmp/pts-predeploy-home.html; then
+if grep -Eq 'href="tuyen-dung"' /tmp/pts-predeploy-home.html; then
     echo "FAIL: Menu public còn liên kết đến trang tuyển dụng chưa hoạt động" >&2
     exit 1
 fi
@@ -193,7 +193,7 @@ rg -qi '^X-Content-Type-Options: nosniff' /tmp/pts-predeploy-headers.txt
 rg -qi '^X-Frame-Options: SAMEORIGIN' /tmp/pts-predeploy-headers.txt
 rg -qi '^Referrer-Policy: strict-origin-when-cross-origin' /tmp/pts-predeploy-headers.txt
 rg -qi '^Cache-Control: no-store, no-cache, must-revalidate' /tmp/pts-predeploy-headers.txt
-if rg -qi '^X-Powered-By:' /tmp/pts-predeploy-headers.txt; then
+if grep -Eqi '^X-Powered-By:' /tmp/pts-predeploy-headers.txt; then
     echo "FAIL: Response còn lộ X-Powered-By" >&2
     exit 1
 fi
@@ -213,7 +213,7 @@ if [ "$route_index_count" != "22" ]; then
     exit 1
 fi
 
-if docker compose -f "$compose_file" logs --since=15m web 2>&1 | rg -n 'PHP (Warning|Notice|Fatal|Parse)|Uncaught'; then
+if docker compose -f "$compose_file" logs --since=15m web 2>&1 | grep -En 'PHP (Warning|Notice|Fatal|Parse)|Uncaught'; then
     echo "FAIL: Log web có lỗi PHP" >&2
     exit 1
 fi
