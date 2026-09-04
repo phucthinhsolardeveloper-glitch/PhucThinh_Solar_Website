@@ -147,14 +147,14 @@
                             if(isset($_GET['is_congsuat'])){
                                 $congsuat_get = explode(",", $_GET['is_congsuat']);
                             }
+                            $powerGroups = array('under-60' => 'Dưới 60W', '60-200' => 'Từ 60W đến 200W', 'over-200' => 'Trên 200W');
                         ?>
-                        <?php foreach($congSuatList as $k => $v) { $congSuatValue = rtrim(rtrim(number_format($v['cong_suat'],1,'.',''),'0'),'.'); ?>
+                        <?php foreach($powerGroups as $powerKey => $powerLabel) { ?>
                         <li class="product-pages__price-items">
                             <label class="mg0 cs-pointer checker product-pages__price-label d-flex p-relative">
-                                <input type="checkbox" onchange="fetch_product()" <?=(in_array($v['cong_suat'],$congsuat_get))?'checked':''?> name="car_congsuat" id="car_congsuat<?=$k?>"
-                                    value="<?=$v['cong_suat']?>">
-                                <label class="mg0 checked-fake" for="car_congsuat<?=$k?>"></label>
-                                <span class=" ml10" for="car_congsuat<?=$k?>"><?=$congSuatValue?>W</span>
+                                <input type="checkbox" onchange="fetch_product()" <?=in_array($powerKey,$congsuat_get,true)?'checked':''?> name="car_congsuat" id="car_congsuat-<?=$powerKey?>" value="<?=$powerKey?>">
+                                <label class="mg0 checked-fake" for="car_congsuat-<?=$powerKey?>"></label>
+                                <span class="ml10"><?=htmlspecialchars($powerLabel, ENT_QUOTES, 'UTF-8')?></span>
                             </label>
                         </li>
                         <?php } ?>

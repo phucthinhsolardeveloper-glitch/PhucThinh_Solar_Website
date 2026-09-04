@@ -1,6 +1,7 @@
 <?php  
 	if(!defined('SOURCES')) die("Error");
 	require_once LIBRARIES.'product_projects.php';
+	require_once LIBRARIES.'product_power_filter.php';
 
 	@$id = htmlspecialchars($_GET['id']);
 	@$idl = htmlspecialchars($_GET['idl']);
@@ -61,12 +62,9 @@
 		$idCongSuat = (isset($_GET['is_congsuat']) && $_GET['is_congsuat'] != '') ? $_GET['is_congsuat'] : '';
 		if($idCongSuat != '')
 		{
-			$congSuatArr = array_values(array_filter(array_map('floatval', explode(',', $idCongSuat))));
-			if(!empty($congSuatArr))
-			{
-				$extraWhere .= " and cong_suat in (".implode(',', array_fill(0, count($congSuatArr), '?')).")";
-				$extraParams = array_merge($extraParams, $congSuatArr);
-			}
+			list($powerWhere, $powerParams) = productPowerFilterSql($idCongSuat);
+			$extraWhere .= $powerWhere;
+			$extraParams = array_merge($extraParams, $powerParams);
 		}
 
 		/* Loại sản phẩm (danh mục con) */

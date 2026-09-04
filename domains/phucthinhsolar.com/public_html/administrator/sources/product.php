@@ -43,6 +43,10 @@
 		if(!empty($_REQUEST['data_status'])) $strUrl .= "&data_status=".urlencode($_REQUEST['data_status']);
 		if(isset($_REQUEST['keyword'])) $strUrl .= "&keyword=".htmlspecialchars($_REQUEST['keyword']);
 	}
+	$adminPerPageOptions = array(10, 20, 50, 100);
+	$adminPerPage = isset($_REQUEST['per_page']) ? (int)$_REQUEST['per_page'] : 20;
+	if(!in_array($adminPerPage, $adminPerPageOptions, true)) $adminPerPage = 20;
+	$strUrl .= "&per_page=".$adminPerPage;
 
 	switch($act)
 	{
@@ -248,7 +252,7 @@
 	/* View man */
 	function viewMans()
 	{
-		global $d, $func, $comment, $commentTotals, $commentNewTotals, $strUrl, $curPage, $items, $paging, $type, $productStatusFilter, $productStatusFilterTotal;
+		global $d, $func, $comment, $commentTotals, $commentNewTotals, $strUrl, $curPage, $items, $paging, $type, $productStatusFilter, $productStatusFilterTotal, $adminPerPage;
 
 		$where = "";
 		$params = array($type);
@@ -290,7 +294,7 @@
 			$params[] = $keyword;
 		}
 
-		$perPage = 10;
+		$perPage = $adminPerPage;
 		$startpoint = max(0, (((int) $curPage) * $perPage) - $perPage);
 		$limit = " limit ".$startpoint.",".$perPage;
 		$sql = "select p.* from #_product p where p.type = ? $where order by p.numb,p.id desc $limit";

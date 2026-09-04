@@ -36,6 +36,12 @@
                 </div>
             </div>
         </div>
+        <div class="form-inline float-right">
+            <label class="mr-2 mb-0" for="admin-per-page-news">Số dòng</label>
+            <select id="admin-per-page-news" class="custom-select custom-select-sm" onchange="var url=new URL(window.location.href);url.searchParams.set('per_page',this.value);url.searchParams.set('p','1');window.location.href=url.toString();">
+                <?php foreach($adminPerPageOptions as $perPageOption) { ?><option value="<?=$perPageOption?>" <?=$adminPerPage===$perPageOption?'selected':''?>><?=$perPageOption?></option><?php } ?>
+            </select>
+        </div>
     </div>
     <?php if(isset($config['news'][$type]['dropdown']) && $config['news'][$type]['dropdown'] == true) { ?>
 	    <div class="card-footer form-group-category text-sm bg-light row">

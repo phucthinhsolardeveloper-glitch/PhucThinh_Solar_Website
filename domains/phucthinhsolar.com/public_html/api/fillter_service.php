@@ -52,12 +52,9 @@
 	if($idCongSuat !="")
 	{
 		$tempLink .= "&is_congsuat=".$idCongSuat;
-		$congSuatArr = array_values(array_filter(array_map('floatval', explode(',', $idCongSuat))));
-		if(!empty($congSuatArr))
-		{
-			$where .= " and cong_suat in (".implode(',', array_fill(0, count($congSuatArr), '?')).")";
-			$params = array_merge($params, $congSuatArr);
-		}
+		list($powerWhere, $powerParams) = productPowerFilterSql($idCongSuat);
+		$where .= $powerWhere;
+		$params = array_merge($params, $powerParams);
 	}
 	if($idCatFilter !="")
 	{

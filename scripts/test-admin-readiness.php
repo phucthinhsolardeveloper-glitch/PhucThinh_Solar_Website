@@ -462,6 +462,27 @@ try
             && strpos($scopedBulkPage['body'], 'Không gộp ảnh vào Excel') !== false,
         'Màn bulk có hướng dẫn bàn giao và hàng chọn ZIP căn chỉnh riêng'
     );
+    $productPerPage = readinessHttp($base.'index.php?com=product&act=man&type=san-pham&per_page=50', 'GET', array(), $newCookie);
+    readinessAssert(
+        $productPerPage['status'] === 200
+            && strpos($productPerPage['body'], 'id="admin-per-page-product"') !== false
+            && strpos($productPerPage['body'], 'value="50" selected') !== false
+            && substr_count($productPerPage['body'], 'class="custom-control-input select-checkbox"') === 50,
+        'Danh sách Sản phẩm chọn và render đúng 50 dòng'
+    );
+    $productInvalidPerPage = readinessHttp($base.'index.php?com=product&act=man&type=san-pham&per_page=999', 'GET', array(), $newCookie);
+    readinessAssert(
+        strpos($productInvalidPerPage['body'], 'value="20" selected') !== false
+            && substr_count($productInvalidPerPage['body'], 'class="custom-control-input select-checkbox"') === 20,
+        'Danh sách Sản phẩm đưa số dòng ngoài allowlist về mặc định 20'
+    );
+    $newsPerPage = readinessHttp($base.'index.php?com=news&act=man&type=tin-tuc&per_page=50', 'GET', array(), $newCookie);
+    readinessAssert(
+        $newsPerPage['status'] === 200
+            && strpos($newsPerPage['body'], 'id="admin-per-page-news"') !== false
+            && strpos($newsPerPage['body'], 'value="50" selected') !== false,
+        'Danh sách Nội dung/Tin tức có lựa chọn số dòng dùng chung'
+    );
     $apiSelectedStatus = readinessHttp($base.'api/status.php', 'POST', array('admin_csrf' => $authenticatedToken[1], 'ids' => $bulkStatusProductId.','.$secondBulkStatusProductId, 'scope' => 'selected', 'table' => 'product', 'attr' => 'baogia', 'value' => '1', 'type' => 'san-pham', 'com' => 'product'), $newCookie);
     $apiSelectedPayload = json_decode($apiSelectedStatus['body'], true);
     $selectedStatusRows = $d->rawQuery('select id, status from #_product where id in (?, ?)', array($bulkStatusProductId, $secondBulkStatusProductId));

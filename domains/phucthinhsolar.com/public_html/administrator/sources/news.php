@@ -38,6 +38,10 @@
 		if(!empty($_REQUEST['comment_status'])) $strUrl .= "&comment_status=".htmlspecialchars($_REQUEST['comment_status']);
 		if(isset($_REQUEST['keyword'])) $strUrl .= "&keyword=".htmlspecialchars($_REQUEST['keyword']);
 	}
+	$adminPerPageOptions = array(10, 20, 50, 100);
+	$adminPerPage = isset($_REQUEST['per_page']) ? (int)$_REQUEST['per_page'] : 20;
+	if(!in_array($adminPerPage, $adminPerPageOptions, true)) $adminPerPage = 20;
+	$strUrl .= "&per_page=".$adminPerPage;
 
 	switch($act)
 	{
@@ -167,7 +171,7 @@
 	/* View man */
 	function viewMans()
 	{
-		global $d, $func, $comment, $strUrl, $curPage, $items, $paging, $type;
+		global $d, $func, $comment, $strUrl, $curPage, $items, $paging, $type, $adminPerPage;
 
 		$where = "";
 		$idlist = (isset($_REQUEST['id_list'])) ? htmlspecialchars($_REQUEST['id_list']) : 0;
@@ -192,7 +196,7 @@
 			$where .= " and (namevi LIKE '%$keyword%' or nameen LIKE '%$keyword%')";
 		}
 
-		$perPage = 10;
+		$perPage = $adminPerPage;
 		$startpoint = ($curPage * $perPage) - $perPage;
 		$limit = " limit ".$startpoint.",".$perPage;
 		$sql = "select * from #_news where type = ? $where order by numb,id desc $limit";

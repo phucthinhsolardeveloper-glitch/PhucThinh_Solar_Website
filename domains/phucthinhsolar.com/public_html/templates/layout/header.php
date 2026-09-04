@@ -78,18 +78,15 @@
 		</div>
 	</div>
 	<?php
-		$headlineWatts = array(60,100,150,200,300,400,500,600,800,1000);
-		$availWatts = array();
-		if(!empty($congSuatList)) foreach($congSuatList as $csRow) $availWatts[(int)$csRow['cong_suat']] = true;
-		$quickWatts = array_values(array_filter($headlineWatts, function($w) use ($availWatts){ return isset($availWatts[$w]); }));
+		$quickPowerGroups = array('under-60' => 'Dưới 60W', '60-200' => '60–200W', 'over-200' => 'Trên 200W');
 	?>
-	<?php if(!empty($quickWatts)) { ?>
+	<?php if(!empty($congSuatList)) { ?>
 	<div class="header-quickfilter">
 		<div class="wrap-content">
 			<span class="hqf-label" aria-label="Chọn theo công suất"><i class="fas fa-bolt"></i></span>
 			<div class="hqf-list">
-				<?php foreach($quickWatts as $w) { ?>
-				<a href="danh-muc-san-pham/den-nlmt/?is_congsuat=<?=$w?>"><?=$w?>W</a>
+				<?php foreach($quickPowerGroups as $powerKey => $powerLabel) { ?>
+				<a href="danh-muc-san-pham/den-nlmt/?is_congsuat=<?=$powerKey?>"><?=$powerLabel?></a>
 				<?php } ?>
 				<a class="hqf-all" href="danh-muc-san-pham/den-nlmt/">Xem tất cả <i class="fas fa-angle-right"></i></a>
 			</div>
