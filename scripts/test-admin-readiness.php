@@ -646,6 +646,28 @@ try
     readinessAssert($queueMatches, 'Ô hàng đợi bảng điều khiển khớp số liệu truy vấn trực tiếp');
     readinessAssert(preg_match('/data:\s*\[[0-9,\s]*\]/', $dashboard['body']) === 1, 'Chart bảng điều khiển vẫn nhận mảng dữ liệu ngày');
 
+    /* Form sửa sản phẩm phải chọn sẵn danh mục/thương hiệu đang lưu. Thiếu bước
+       này thì mỗi lần bấm Lưu sẽ ghi đè id_list/id_cat/id_brand về 0 và sản phẩm
+       biến mất khỏi mọi trang danh mục. */
+    $taxonomyCat = $d->rawQueryOne("select pc.id, pc.id_list from #_product_cat pc join #_product_list pl on pl.id = pc.id_list where pc.type = ? and pl.type = ? and find_in_set('hienthi',pl.status) order by pc.id limit 1", array('san-pham', 'san-pham'));
+    $taxonomyList = !empty($taxonomyCat['id_list']) ? array('id' => (int)$taxonomyCat['id_list']) : array();
+    $taxonomyBrand = $d->rawQueryOne("select id from #_product_brand where type = ? order by id limit 1", array('san-pham'));
+    if(!empty($taxonomyList['id']) && !empty($taxonomyCat['id']) && !empty($taxonomyBrand['id']))
+    {
+        $taxonomyCode = 'CODEX-TAX-'.bin2hex(random_bytes(4));
+        $d->insert('product', array('code' => $taxonomyCode, 'namevi' => 'Sản phẩm kiểm thử danh mục', 'slugvi' => strtolower($taxonomyCode), 'type' => 'san-pham', 'status' => 'hienthi', 'numb' => 0, 'cong_suat' => 0, 'regular_price' => 0, 'sale_price' => 0, 'discount' => 0, 'id_list' => (int)$taxonomyList['id'], 'id_cat' => (int)$taxonomyCat['id'], 'id_item' => 0, 'id_sub' => 0, 'id_brand' => (int)$taxonomyBrand['id'], 'date_created' => time(), 'date_updated' => 0, 'view' => 0));
+        $taxonomyProductId = (int)$d->getLastInsertId();
+        $createdProductIds[] = $taxonomyProductId;
+        $editForm = readinessHttp($base.'index.php?com=product&act=edit&type=san-pham&id='.$taxonomyProductId, 'GET', array(), $newCookie);
+        $selectedOk = true;
+        foreach(array('id_list' => (int)$taxonomyList['id'], 'id_cat' => (int)$taxonomyCat['id'], 'id_brand' => (int)$taxonomyBrand['id']) as $selectId => $expectedValue)
+        {
+            if(!preg_match('#<select[^>]*id="'.$selectId.'".*?</select>#s', $editForm['body'], $selectMatch)) { $selectedOk = false; break; }
+            if(!preg_match('#<option value='.$expectedValue.' selected>#', $selectMatch[0])) { $selectedOk = false; break; }
+        }
+        readinessAssert($editForm['status'] === 200 && $selectedOk, 'Form sửa sản phẩm chọn sẵn danh mục cấp 1/cấp 2 và thương hiệu đang lưu');
+    }
+
     echo "Admin readiness tests completed.\n";
 }
 finally

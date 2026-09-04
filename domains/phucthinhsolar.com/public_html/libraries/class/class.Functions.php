@@ -2527,6 +2527,22 @@
 		}
 
 		/* Get category by ajax */
+		/**
+		 * Giá trị danh mục đang áp dụng cho ô select.
+		 *
+		 * Ưu tiên $_REQUEST (cascade AJAX và lần render lại sau lỗi validation đều
+		 * truyền qua URL), sau đó mới tới bản ghi đang sửa. Thiếu bước fallback này
+		 * thì form sửa sản phẩm không chọn sẵn danh mục/thương hiệu hiện có, và mỗi
+		 * lần Lưu sẽ ghi đè id_list/id_cat/id_brand về 0.
+		 */
+		protected function categoryFieldValue($field)
+		{
+			if(isset($_REQUEST[$field])) return (int) $_REQUEST[$field];
+			global $item;
+			if(isset($item) && is_array($item) && isset($item[$field])) return (int) $item[$field];
+			return 0;
+		}
+
 		public function getAjaxCategory($table='', $level='', $type='', $title_select='Chọn danh mục', $class_select='select-category')
 	    {
 	    	$where = '';
@@ -2549,7 +2565,7 @@
 		    	$data_table = 'data-table="#_'.$table.'_item"';
 		    	$data_child = 'data-child="id_item"';
 
-	    		$idlist = (isset($_REQUEST['id_list'])) ? htmlspecialchars($_REQUEST['id_list']) : 0;
+	    		$idlist = $this->categoryFieldValue('id_list');
 	    		$where .= ' and id_list = ?';
 	    		array_push($params, $idlist);
 	    	}
@@ -2559,11 +2575,11 @@
 		    	$data_table = 'data-table="#_'.$table.'_sub"';
 		    	$data_child = 'data-child="id_sub"';
 
-	    		$idlist = (isset($_REQUEST['id_list'])) ? htmlspecialchars($_REQUEST['id_list']) : 0;
+	    		$idlist = $this->categoryFieldValue('id_list');
 	    		$where .= ' and id_list = ?';
 	    		array_push($params, $idlist);
 
-	    		$idcat = (isset($_REQUEST['id_cat'])) ? htmlspecialchars($_REQUEST['id_cat']) : 0;
+	    		$idcat = $this->categoryFieldValue('id_cat');
 	    		$where .= ' and id_cat = ?';
 	    		array_push($params, $idcat);
 	    	}
@@ -2573,15 +2589,15 @@
 		    	$data_type = '';
 		    	$class_select = '';
 
-	    		$idlist = (isset($_REQUEST['id_list'])) ? htmlspecialchars($_REQUEST['id_list']) : 0;
+	    		$idlist = $this->categoryFieldValue('id_list');
 	    		$where .= ' and id_list = ?';
 	    		array_push($params, $idlist);
 	    		
-	    		$idcat = (isset($_REQUEST['id_cat'])) ? htmlspecialchars($_REQUEST['id_cat']) : 0;
+	    		$idcat = $this->categoryFieldValue('id_cat');
 	    		$where .= ' and id_cat = ?';
 	    		array_push($params, $idcat);
 
-	    		$iditem = (isset($_REQUEST['id_item'])) ? htmlspecialchars($_REQUEST['id_item']) : 0;
+	    		$iditem = $this->categoryFieldValue('id_item');
 	    		$where .= ' and id_item = ?';
 	    		array_push($params, $iditem);
 	    	}
@@ -2597,8 +2613,8 @@
 	        $str = '<select id="'.$id_parent.'" name="data['.$id_parent.']" '.$data_level.' '.$data_type.' '.$data_table.' '.$data_child.' class="form-control select2 '.$class_select.'"><option value="0">'.$title_select.'</option>';
 	        foreach($rows as $v)
 	        {
-	            if(isset($_REQUEST[$id_parent]) && ($v["id"] == (int)$_REQUEST[$id_parent])) $selected = "selected";
-	            else $selected = "";
+	            $selectedValue = $this->categoryFieldValue($id_parent);
+	            $selected = ($selectedValue > 0 && (int)$v["id"] === $selectedValue) ? "selected" : "";
 
 	            $str .= '<option value='.$v["id"].' '.$selected.'>'.$v["namevi"].'</option>';
 	        }
