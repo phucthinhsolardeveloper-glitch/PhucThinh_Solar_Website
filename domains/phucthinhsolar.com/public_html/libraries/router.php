@@ -29,6 +29,8 @@
     $router->map('GET|POST', '', 'index', 'home');
     $router->map('GET|POST', 'index.php', 'index', 'index');
     $router->map('GET|POST', 'sitemap.xml', 'sitemap', 'sitemap');
+	$router->map('GET', 'product/?', function(){ global $configBase; header('Location: '.$configBase.'san-pham/', true, 301); exit; }, 'legacy-product');
+	$router->map('GET', 'product/[a:product]/?', function($product){ global $d, $configBase; $row=$d->rawQueryOne("select slugvi from #_product where slugvi=? and type=? and find_in_set('hienthi',status) limit 1",array($product,'san-pham')); if(empty($row)){ header('HTTP/1.0 404 Not Found',true,404); include('404.php'); exit; } header('Location: '.$configBase.'san-pham/'.$row['slugvi'],true,301); exit; }, 'legacy-product-detail');
 	$router->map('GET', 'danh-muc-san-pham/[a:list]/[a:cat]/[a:item]/[a:sub]/?', 'productHierarchy', 'product-hierarchy-4');
 	$router->map('GET', 'danh-muc-san-pham/[a:list]/[a:cat]/[a:item]/?', 'productHierarchy', 'product-hierarchy-3');
 	$router->map('GET', 'danh-muc-san-pham/[a:list]/[a:cat]/?', 'productHierarchy', 'product-hierarchy-2');
@@ -299,7 +301,7 @@
 			{
 				$template = "product/product_detail";
 			}
-			if(isset($_GET['idl']))
+			if(isset($_GET['idl']) || isset($_GET['idc']) || isset($_GET['idi']) || isset($_GET['ids']))
 			{
 				$template = "product/product";
 			}

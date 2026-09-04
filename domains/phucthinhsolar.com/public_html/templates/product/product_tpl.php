@@ -167,7 +167,7 @@
 
             <?php
                 $catFilterListId = (!empty($productList['id'])) ? $productList['id'] : 0;
-                $catFilterList = ($catFilterListId && empty($id_cat)) ? $d->rawQuery("select pc.name$lang, pc.id from #_product_cat pc where pc.id_list = ? and find_in_set('hienthi',pc.status) and exists (select 1 from #_product p where p.id_cat = pc.id and p.type = ? and find_in_set('hienthi',p.status)) order by pc.numb,pc.id desc",array($catFilterListId,'san-pham')) : array();
+                $catFilterList = ($catFilterListId && empty($id_cat)) ? $d->rawQuery("select pc.name$lang, pc.id, pc.slugvi, pc.slugen, pl.slugvi list_slugvi, pl.slugen list_slugen from #_product_cat pc join #_product_list pl on pl.id=pc.id_list where pc.id_list = ? and find_in_set('hienthi',pc.status) and exists (select 1 from #_product p where p.id_cat = pc.id and p.type = ? and find_in_set('hienthi',p.status)) order by pc.numb,pc.id desc",array($catFilterListId,'san-pham')) : array();
             ?>
             <?php if(count($catFilterList)) { ?>
             <div class="product-pages__price mb20">
@@ -187,7 +187,7 @@
                         <li class="product-pages__price-items">
                             <label class="mg0 cs-pointer checker product-pages__price-label d-flex p-relative">
                                 <input type="checkbox" onchange="fetch_product()" <?=(in_array($v['id'],$cat_get))?'checked':''?> name="car_cat" id="car_cat<?=$k?>"
-                                    value="<?=$v['id']?>">
+                                    value="<?=$v['id']?>" data-url="<?=publicProductCategoryPath($v,'cat',$lang)?>">
                                 <label class="mg0 checked-fake" for="car_cat<?=$k?>"></label>
                                 <span class=" ml10" for="car_cat<?=$k?>"><?=$v['name'.$lang]?></span>
                             </label>

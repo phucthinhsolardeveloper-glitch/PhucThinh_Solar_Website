@@ -9,6 +9,19 @@
 	@$idi = htmlspecialchars($_GET['idi']);
 	@$ids = htmlspecialchars($_GET['ids']);
 	@$idb = htmlspecialchars($_GET['idb']);
+	if($idl !== '' && $_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['is_cat']) && preg_match('/^[1-9][0-9]*$/', (string)$_GET['is_cat']))
+	{
+		$canonicalCat = $d->rawQueryOne("select pc.id from #_product_cat pc where pc.id = ? and pc.id_list = ? and pc.type = ? and find_in_set('hienthi',pc.status) limit 1", array((int)$_GET['is_cat'],(int)$idl,'san-pham'));
+		if(!empty($canonicalCat))
+		{
+			$canonicalPath = publicProductEntityPath($d, 'product_cat', $canonicalCat['id'], $lang);
+			$queryParams = $_GET;
+			foreach(array('idl','id_list','idc','id_cat','is_cat') as $canonicalKey) unset($queryParams[$canonicalKey]);
+			$queryString = !empty($queryParams) ? '?'.http_build_query($queryParams) : '';
+			header('Location: '.$configBase.$canonicalPath.$queryString, true, 301);
+			exit;
+		}
+	}
 	$orderby = (isset($_GET['is_orderby']) && $_GET['is_orderby'] != '') ? htmlspecialchars($_GET['is_orderby']) : '';
 	$order_by = ' order by numb,id desc';
 	$productListHasItems = array();

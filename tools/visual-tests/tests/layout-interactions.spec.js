@@ -120,6 +120,18 @@ test('legacy child category redirects permanently to its hierarchical canonical 
   expect(canonical.ok()).toBeTruthy();
 });
 
+test('parent type query and legacy product links canonicalize without changing results', async ({ page, request }) => {
+  await page.goto('/danh-muc-san-pham/den-nlmt/?id_list=20&is_cat=24', { waitUntil: 'domcontentloaded' });
+  expect(new URL(page.url()).pathname).toBe('/danh-muc-san-pham/den-nlmt/den-op-tran/');
+  const cards = page.locator('#show-product .product-item');
+  expect(await cards.count()).toBe(2);
+  for(const card of await cards.all()) await expect(card).toHaveAttribute('href', /^san-pham\/[a-z0-9-]+$/);
+  const legacyHref = 'product/' + (await cards.first().getAttribute('href')).replace(/^san-pham\//, '') + '/';
+  const legacyProduct = await request.get('/' + legacyHref, { maxRedirects: 0 });
+  expect(legacyProduct.status()).toBe(301);
+  expect(legacyProduct.headers().location).toMatch(/\/san-pham\/[a-z0-9-]+$/);
+});
+
 test('mobile product filters open as an accessible drawer and close after filtering', async ({ page, isMobile }) => {
   test.skip(!isMobile, 'The filter drawer is a mobile/tablet interaction.');
   await page.goto('/danh-muc-san-pham/den-nlmt/', { waitUntil: 'domcontentloaded' });

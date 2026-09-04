@@ -21,6 +21,8 @@ function fetch_product(t=1) {
       , k = ""
       , l2 = ""
       , c2 = ""
+      , browserQuery = ""
+      , categoryUrl = ""
       , s = $("#opensideBar-product");
     s.hasClass("active") && 0 != s.length && s.trigger("click");
     c = $('input[name="car_brand"]:checked').map(function() {
@@ -58,7 +60,12 @@ function fetch_product(t=1) {
     "" != p && (n += "is_price=" + p + "&"),
     "" != g && (n += "is_cat=" + g + "&"),
     "" != i && (n += "is_orderby=" + i + "&"),
-    pushState({}, "", a + (n ? "?" + n.substr(0, n.length - 1) : "")),
+    browserQuery = n.substr(0, n.length - 1),
+    1 == $('input[name="car_cat"]:checked').length && (categoryUrl = $('input[name="car_cat"]:checked').attr("data-url") || ""),
+    "" != categoryUrl && (a = categoryUrl, browserQuery = browserQuery.split("&").filter(function(part) { return part.indexOf("id_list=") !== 0 && part.indexOf("id_cat=") !== 0 && part.indexOf("is_cat=") !== 0 }).join("&")),
+    "" != categoryUrl && (window.location.href = a + (browserQuery ? "?" + browserQuery : ""));
+    if(categoryUrl) return;
+    pushState({}, "", a + (browserQuery ? "?" + browserQuery : "")),
     doSearch({
         id_list: l2,
         id_cat: c2,

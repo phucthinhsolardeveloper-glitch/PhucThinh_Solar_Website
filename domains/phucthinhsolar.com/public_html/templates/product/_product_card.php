@@ -9,7 +9,7 @@ $pcDiscount = publicProductPricesVisible() && (!empty($v['sale_price']) && !empt
     : 0;
 ?>
 <div class="product-card">
-    <a class="product-item" href="product/<?=$v[$sluglang]?>/" title="<?=$v['name'.$lang]?>">
+    <a class="product-item" href="san-pham/<?=$v[$sluglang]?>" title="<?=$v['name'.$lang]?>">
         <div class="product-card-img">
             <?php if($pcDiscount > 0) { ?>
             <span class="badge-discount">-<?=$pcDiscount?>%</span>
@@ -37,7 +37,7 @@ $pcDiscount = publicProductPricesVisible() && (!empty($v['sale_price']) && !empt
     <?php /* Hiển thị CTA báo giá khi giá công khai bị ẩn. */ ?>
     <div class="product-card-btns">
         <?php if(publicProductRequiresQuote($v)) { ?>
-        <a href="product/<?=$v[$sluglang]?>/" class="pts-card-ask" title="Liên hệ báo giá" aria-label="Liên hệ báo giá"><i class="fas fa-phone-alt"></i></a>
+        <a href="san-pham/<?=$v[$sluglang]?>" class="pts-card-ask" title="Xem sản phẩm và liên hệ báo giá" aria-label="Xem sản phẩm và liên hệ báo giá"><i class="fas fa-phone-alt"></i></a>
         <?php } else { ?>
         <a href="javascript:void(0)" class="addcart pts-card-add" data-id="<?=$v['id']?>" data-action="addnow" title="Thêm vào giỏ hàng" aria-label="Thêm vào giỏ hàng"><i class="fas fa-plus"></i></a>
         <?php } ?>

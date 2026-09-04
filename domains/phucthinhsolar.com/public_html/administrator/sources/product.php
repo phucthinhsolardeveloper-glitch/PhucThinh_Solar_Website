@@ -37,7 +37,7 @@
 	function productAdminRememberRedirect($d, $oldPath, $entityTable, $entityId)
 	{
 		$oldPath = trim((string)$oldPath, '/');
-		if($oldPath === '' || !in_array($entityTable, array('product','product_list','product_cat'), true) || !(int)$entityId) return;
+		if($oldPath === '' || !in_array($entityTable, array('product','product_list','product_cat','product_item','product_sub'), true) || !(int)$entityId) return;
 		$d->rawQuery("insert into #_url_redirect (old_path,entity_table,entity_id,date_created) values (?,?,?,?) on duplicate key update entity_table=values(entity_table),entity_id=values(entity_id)", array($oldPath,$entityTable,(int)$entityId,time()));
 	}
 	function productAdminCategoryDependency($d, $level, $id, $type)
@@ -46,9 +46,15 @@
 		if($level === 'list') {
 			$product = $d->rawQueryOne("select count(*) num from #_product where id_list=? and type=?", array($id,$type));
 			$child = $d->rawQueryOne("select count(*) num from #_product_cat where id_list=? and type=?", array($id,$type));
-		} else {
+		} elseif($level === 'cat') {
 			$product = $d->rawQueryOne("select count(*) num from #_product where id_cat=? and type=?", array($id,$type));
 			$child = $d->rawQueryOne("select count(*) num from #_product_item where id_cat=? and type=?", array($id,$type));
+		} elseif($level === 'item') {
+			$product = $d->rawQueryOne("select count(*) num from #_product where id_item=? and type=?", array($id,$type));
+			$child = $d->rawQueryOne("select count(*) num from #_product_sub where id_item=? and type=?", array($id,$type));
+		} else {
+			$product = $d->rawQueryOne("select count(*) num from #_product where id_sub=? and type=?", array($id,$type));
+			$child = array('num'=>0);
 		}
 		return (int)$product['num'] + (int)$child['num'];
 	}
@@ -2378,7 +2384,8 @@
 		/* Post dữ liệu */
 		$message = '';
 		$response = array();
-		$id = (!empty($_POST['id'])) ? htmlspecialchars($_POST['id']) : 0;
+		$id = (!empty($_POST['id'])) ? (int)$_POST['id'] : 0;
+		$oldSlugRow = $id ? $d->rawQueryOne("select pi.slugvi, pi.id_list, pi.id_cat, pc.slugvi cat_slugvi, pl.slugvi list_slugvi from #_product_item pi join #_product_cat pc on pc.id=pi.id_cat join #_product_list pl on pl.id=pi.id_list where pi.id=? and pi.type=? limit 1", array($id,$type)) : array();
 		$data = (!empty($_POST['data'])) ? $_POST['data'] : null;
 		if($data)
 		{
@@ -2427,6 +2434,7 @@
 					$dataSeo[$column] = htmlspecialchars($func->sanitize($value));
 				}
 			}
+			$dataSeo = productAdminSeoDefaults($func, $data, isset($dataSeo) ? $dataSeo : array());
 		}
 
 		/* Valid data */
@@ -2510,6 +2518,7 @@
 			$d->where('type', $type);
 			if($d->update('product_item',$data))
 			{
+				if(!empty($oldSlugRow['slugvi']) && ($oldSlugRow['slugvi'] !== $data['slugvi'] || (int)$oldSlugRow['id_list'] !== (int)$data['id_list'] || (int)$oldSlugRow['id_cat'] !== (int)$data['id_cat'])) productAdminRememberRedirect($d, 'danh-muc-san-pham/'.$oldSlugRow['list_slugvi'].'/'.$oldSlugRow['cat_slugvi'].'/'.$oldSlugRow['slugvi'], 'product_item', $id);
 				/* Photo */
 				if($func->hasFile("file"))
 				{
@@ -2602,6 +2611,7 @@
 
 		if($id)
 		{
+			if(productAdminCategoryDependency($d,'item',$id,$type)) $func->transfer("Không thể xóa: danh mục còn sản phẩm hoặc danh mục con. Hãy chuyển dữ liệu trước.", "index.php?com=product&act=man_item&type=".$type."&p=".$curPage.$strUrl, false);
 			/* Lấy dữ liệu */
 			$row = $d->rawQueryOne("select id, photo from #_product_item where id = ? and type = ? limit 0,1",array($id,$type));
 
@@ -2624,6 +2634,7 @@
 		elseif(isset($_GET['listid']))
 		{
 			$listid = explode(",",$_GET['listid']);
+			foreach($listid as $checkId) if(productAdminCategoryDependency($d,'item',(int)$checkId,$type)) $func->transfer("Không thể xóa hàng loạt: có danh mục còn sản phẩm hoặc danh mục con.", "index.php?com=product&act=man_item&type=".$type."&p=".$curPage.$strUrl, false);
 
 			for($i=0;$i<count($listid);$i++)
 			{
@@ -2719,7 +2730,8 @@
 		/* Post dữ liệu */
 		$message = '';
 		$response = array();
-		$id = (!empty($_POST['id'])) ? htmlspecialchars($_POST['id']) : 0;
+		$id = (!empty($_POST['id'])) ? (int)$_POST['id'] : 0;
+		$oldSlugRow = $id ? $d->rawQueryOne("select ps.slugvi, ps.id_list, ps.id_cat, ps.id_item, pi.slugvi item_slugvi, pc.slugvi cat_slugvi, pl.slugvi list_slugvi from #_product_sub ps join #_product_item pi on pi.id=ps.id_item join #_product_cat pc on pc.id=ps.id_cat join #_product_list pl on pl.id=ps.id_list where ps.id=? and ps.type=? limit 1", array($id,$type)) : array();
 		$data = (!empty($_POST['data'])) ? $_POST['data'] : null;
 		if($data)
 		{
@@ -2768,6 +2780,7 @@
 					$dataSeo[$column] = htmlspecialchars($func->sanitize($value));
 				}
 			}
+			$dataSeo = productAdminSeoDefaults($func, $data, isset($dataSeo) ? $dataSeo : array());
 		}
 
 		/* Valid data */
@@ -2851,6 +2864,7 @@
 			$d->where('type', $type);
 			if($d->update('product_sub',$data))
 			{
+				if(!empty($oldSlugRow['slugvi']) && ($oldSlugRow['slugvi'] !== $data['slugvi'] || (int)$oldSlugRow['id_list'] !== (int)$data['id_list'] || (int)$oldSlugRow['id_cat'] !== (int)$data['id_cat'] || (int)$oldSlugRow['id_item'] !== (int)$data['id_item'])) productAdminRememberRedirect($d, 'danh-muc-san-pham/'.$oldSlugRow['list_slugvi'].'/'.$oldSlugRow['cat_slugvi'].'/'.$oldSlugRow['item_slugvi'].'/'.$oldSlugRow['slugvi'], 'product_sub', $id);
 				/* Photo */
 				if($func->hasFile("file"))
 				{
@@ -2943,6 +2957,7 @@
 
 		if($id)
 		{
+			if(productAdminCategoryDependency($d,'sub',$id,$type)) $func->transfer("Không thể xóa: danh mục còn sản phẩm. Hãy chuyển dữ liệu trước.", "index.php?com=product&act=man_sub&type=".$type."&p=".$curPage.$strUrl, false);
 			/* Lấy dữ liệu */
 			$row = $d->rawQueryOne("select id, photo from #_product_sub where id = ? and type = ? limit 0,1",array($id,$type));
 
@@ -2965,6 +2980,7 @@
 		elseif(isset($_GET['listid']))
 		{
 			$listid = explode(",",$_GET['listid']);
+			foreach($listid as $checkId) if(productAdminCategoryDependency($d,'sub',(int)$checkId,$type)) $func->transfer("Không thể xóa hàng loạt: có danh mục còn sản phẩm.", "index.php?com=product&act=man_sub&type=".$type."&p=".$curPage.$strUrl, false);
 
 			for($i=0;$i<count($listid);$i++)
 			{
