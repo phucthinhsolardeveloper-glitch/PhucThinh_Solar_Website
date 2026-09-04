@@ -75,13 +75,13 @@ Thiết kế đề xuất:
 
 Hiện tại `allpage.php` truy vấn từng giá trị `DISTINCT cong_suat`; sidebar gửi danh sách số và `sources/product.php` lọc bằng `IN`. Vì vậy xuất hiện 0W, 2W và quá nhiều lựa chọn lẻ.
 
-Đổi sang ba nhóm cố định:
+Đổi sang hai nhóm biên và giữ danh sách mức phổ biến:
 
 - **Dưới 60W**: `cong_suat > 0 AND cong_suat < 60`.
-- **Từ 60W đến 200W**: `cong_suat >= 60 AND cong_suat <= 200`.
-- **Trên 200W**: `cong_suat > 200`.
+- **Mức phổ biến**: `60, 100, 150, 200, 300, 400, 500, 600, 800, 1000W`; chỉ hiện mức đang có sản phẩm.
+- **Trên 1000W**: `cong_suat > 1000`.
 
-`0`/`NULL` là thiếu dữ liệu, không xuất hiện trong bộ lọc. UI gửi khóa allowlist (`under-60`, `60-200`, `over-200`), backend ánh xạ sang điều kiện parameterized/cố định; không nhận biểu thức SQL từ request. Trong giai đoạn chuyển tiếp có thể vẫn đọc URL số cũ để không làm hỏng link đã chia sẻ, nhưng header/sidebar mới chỉ sinh URL nhóm.
+`0`/`NULL` là thiếu dữ liệu, không xuất hiện trong bộ lọc. UI gửi khóa biên allowlist (`under-60`, `over-1000`) hoặc đúng một mức phổ biến; backend ánh xạ sang điều kiện parameterized/cố định, không nhận biểu thức SQL từ request. URL số cũ vẫn được đọc để không làm hỏng link đã chia sẻ, nhưng header/sidebar không liệt kê mọi giá trị lẻ trong database.
 
 ## 6. Số dòng trên trang Admin
 
@@ -97,9 +97,9 @@ Danh sách sản phẩm đang hard-code `$perPage = 10`. Bổ sung select **10 /
 
 ### Batch 1 — Bộ lọc W và phân trang sản phẩm
 
-- Thay danh sách W rời rạc bằng ba khoảng ở sidebar và header quick filter.
+- Giữ các mức W phổ biến, bổ sung hai nhóm biên `<60W` và `>1000W` ở sidebar/header; không liệt kê giá trị lẻ.
 - Thêm allowlist `per_page` và select 10/20/50/100.
-- Test boundary 0, 2, 59.9, 60, 200, 200.1; test kết hợp brand/category/search và AJAX.
+- Test boundary 0, 2, 59.9, 60, 1000, 1000.1; test kết hợp brand/category/search và AJAX.
 - Test URL/redirect/pagination giữ filter, số dòng và bulk scope.
 
 ### Batch 2 — Renderer nội dung chuẩn, chưa đổi schema

@@ -79,7 +79,7 @@
                         <aside class="aside-item filter-cat">
                             <div class="aside-content filter-group">
                                 <ul>
-                                    <?php if(count($splist)){foreach($splist as $k => $v){$spcat = $d->rawQuery("select name$lang, slugvi, slugen, id from #_product_cat where id_list = ? and find_in_set('hienthi',status) order by numb,id desc",array($v['id'])); ?>
+                                    <?php if(count($splist)){foreach($splist as $k => $v){$spcat = $d->rawQuery("select pc.name$lang, pc.slugvi, pc.slugen, pc.id from #_product_cat pc where pc.id_list = ? and find_in_set('hienthi',pc.status) and exists (select 1 from #_product p where p.id_cat = pc.id and p.type = ? and find_in_set('hienthi',p.status)) order by pc.numb,pc.id desc",array($v['id'],'san-pham')); ?>
                                     <li class="filter-item filter-item--check-box filter-item--green <?=(isset($slug_param)&& $slug_param == $v[$sluglang])?'checked':''?>">
                                         <a href="danh-muc-san-pham/<?=$v[$sluglang]?>/">
                                             <span>
@@ -147,9 +147,18 @@
                             if(isset($_GET['is_congsuat'])){
                                 $congsuat_get = explode(",", $_GET['is_congsuat']);
                             }
-                            $powerGroups = array('under-60' => 'Dưới 60W', '60-200' => 'Từ 60W đến 200W', 'over-200' => 'Trên 200W');
+                            $commonPowerValues = array(60,100,150,200,300,400,500,600,800,1000);
+                            $availablePowerValues = array();
+                            foreach($congSuatList as $powerRow) {
+                                $availablePowerValues[(int)$powerRow['cong_suat']] = true;
+                            }
+                            $powerOptions = array('under-60' => 'Dưới 60W');
+                            foreach($commonPowerValues as $powerValue) {
+                                if(isset($availablePowerValues[$powerValue])) $powerOptions[(string)$powerValue] = $powerValue.'W';
+                            }
+                            $powerOptions['over-1000'] = 'Trên 1000W';
                         ?>
-                        <?php foreach($powerGroups as $powerKey => $powerLabel) { ?>
+                        <?php foreach($powerOptions as $powerKey => $powerLabel) { ?>
                         <li class="product-pages__price-items">
                             <label class="mg0 cs-pointer checker product-pages__price-label d-flex p-relative">
                                 <input type="checkbox" onchange="fetch_product()" <?=in_array($powerKey,$congsuat_get,true)?'checked':''?> name="car_congsuat" id="car_congsuat-<?=$powerKey?>" value="<?=$powerKey?>">

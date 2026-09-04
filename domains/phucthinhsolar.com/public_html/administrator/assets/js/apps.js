@@ -1365,6 +1365,39 @@ function loadPermissions()
 }
 
 $(document).ready(function(){
+	function renderProductContentBlockPreview(lang) {
+		var preview = $('.pts-content-block-preview[data-lang="' + lang + '"]');
+		if(!preview.length) return;
+		preview.empty();
+		var sections = [
+			{ field: 'highlights', title: 'Điểm nổi bật', paired: true, limit: 6 },
+			{ field: 'applications', title: 'Ứng dụng phù hợp', paired: false, limit: 8 },
+			{ field: 'installation', title: 'Bộ sản phẩm / hướng dẫn lắp đặt', paired: false, limit: 10 }
+		];
+		var hasContent = false;
+		sections.forEach(function(section) {
+			var value = $('#'+section.field+'_text_'+lang).val() || '';
+			var lines = value.split(/\r?\n/).map(function(line){ return $.trim(line); }).filter(Boolean).slice(0, section.limit);
+			if(!lines.length) return;
+			hasContent = true;
+			var wrapper = $('<section class="mb-3">').append($('<h6>').text(section.title));
+			var list = $('<ul class="mb-0 pl-3">');
+			lines.forEach(function(line) {
+				var item = $('<li>');
+				if(section.paired && line.indexOf('|') !== -1) {
+					var parts = line.split('|');
+					item.append($('<strong>').text($.trim(parts.shift()) + ': ')).append(document.createTextNode($.trim(parts.join('|'))));
+				} else item.text(line);
+				list.append(item);
+			});
+			preview.append(wrapper.append(list));
+		});
+		if(!hasContent) preview.append($('<em class="text-muted">').text('Nhập các khối phía trên để xem trước.'));
+	}
+	$('.pts-content-block-preview').each(function(){ renderProductContentBlockPreview($(this).data('lang')); });
+	$(document).on('input', '[id^="highlights_text_"],[id^="applications_text_"],[id^="installation_text_"]', function(){
+		renderProductContentBlockPreview(this.id.substring(this.id.lastIndexOf('_') + 1));
+	});
 	compactAdminActionBars();
 
 	if($('#project-products-sortable').length)

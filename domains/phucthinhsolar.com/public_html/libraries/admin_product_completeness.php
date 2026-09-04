@@ -40,6 +40,14 @@ if(!function_exists('adminProductDataStatusDefinitions'))
         foreach(array('cong_suat','light_source','lamp_dimensions','color_temperature','light_color','battery_capacity','panel_power','material','charging_time','lighting_time','waterproof_rating','led_chip','lighting_area','installation_height','panel_dimensions','package_contents','carton_quantity','carton_dimensions','warranty') as $column)
             if(isset($product[$column]) && trim((string)$product[$column]) !== '') { $hasSpecs = true; break; }
         if(!$hasSpecs) $labels[] = 'Thông số';
+        if(!empty($product['_category_issue'])) $labels[] = ((int)$product['_category_issue'] === 2) ? 'Loại (liên kết lỗi)' : 'Loại sản phẩm';
         return $labels;
+    }
+
+    function adminProductHasStructuredContent($product)
+    {
+        foreach(array('highlightsvi', 'applicationsvi', 'installationvi') as $column)
+            if(trim(isset($product[$column]) ? (string)$product[$column] : '') !== '') return true;
+        return false;
     }
 }

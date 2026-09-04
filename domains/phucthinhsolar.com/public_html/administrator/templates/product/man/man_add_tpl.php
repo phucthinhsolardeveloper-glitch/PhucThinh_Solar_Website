@@ -113,6 +113,23 @@
 		                                            <textarea class="form-control for-seo text-sm <?=(isset($config['product'][$type]['content_cke']) && $config['product'][$type]['content_cke'] == true)?'form-control-ckeditor':''?>" name="data[content<?=$k?>]" id="content<?=$k?>" rows="5" placeholder="Nội dung (<?=$k?>)"><?=htmlspecialchars_decode((!empty($flash->has('content'.$k))) ? $flash->get('content'.$k) : @$item['content'.$k])?></textarea>
 		                                        </div>
 		                                    <?php } ?>
+		                                    <?php
+		                                    require_once LIBRARIES.'product_content_blocks.php';
+		                                    $blockInputs = array(
+		                                        'highlights' => array('Điểm nổi bật', 'Mỗi dòng: Tiêu đề ngắn | Giải thích một câu', true),
+		                                        'applications' => array('Ứng dụng phù hợp', 'Mỗi dòng là một bối cảnh sử dụng', false),
+		                                        'installation' => array('Bộ sản phẩm / hướng dẫn lắp đặt', 'Mỗi dòng là một bước hoặc một thành phần', false)
+		                                    );
+		                                    foreach($blockInputs as $blockField => $blockMeta) {
+		                                        $blockPostKey = $blockField.'_text_'.$k;
+		                                        $blockValue = $flash->has($blockPostKey) ? $flash->get($blockPostKey) : productContentBlockLines(isset($item[$blockField.$k]) ? $item[$blockField.$k] : '', $blockMeta[2]); ?>
+		                                        <div class="form-group pts-content-block-input">
+		                                            <label for="<?=$blockPostKey?>"><?=$blockMeta[0]?> (<?=$k?>):</label>
+		                                            <textarea class="form-control text-sm" name="<?=$blockPostKey?>" id="<?=$blockPostKey?>" rows="4" placeholder="<?=$blockMeta[1]?>"><?=htmlspecialchars($blockValue, ENT_QUOTES, 'UTF-8')?></textarea>
+		                                            <small class="form-text text-muted"><?=$blockMeta[1]?>. Khối rỗng sẽ tự ẩn ngoài website.</small>
+		                                        </div>
+		                                    <?php } ?>
+		                                    <details class="mb-3"><summary class="text-primary">Xem trước bố cục nội dung chuẩn</summary><div class="border rounded p-3 mt-2 pts-content-block-preview" data-lang="<?=$k?>"><em class="text-muted">Nhập các khối phía trên để xem trước.</em></div></details>
 											<?php if(isset($config['product'][$type]['chinhsachmuahang']) && $config['product'][$type]['chinhsachmuahang'] == true) { ?>
 		                                        <div class="form-group">
 		                                            <label for="chinhsachmuahang<?=$k?>">Chính sách mua hàng (<?=$k?>):</label>

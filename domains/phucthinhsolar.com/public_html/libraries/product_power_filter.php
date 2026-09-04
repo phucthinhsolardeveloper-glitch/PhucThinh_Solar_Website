@@ -5,8 +5,7 @@ if(!function_exists('productPowerFilterSql'))
     {
         $definitions = array(
             'under-60' => array("$column > 0 and $column < ?", array(60)),
-            '60-200' => array("$column >= ? and $column <= ?", array(60, 200)),
-            'over-200' => array("$column > ?", array(200))
+            'over-1000' => array("$column > ?", array(1000))
         );
         $conditions = array();
         $params = array();

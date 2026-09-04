@@ -78,7 +78,14 @@
 		</div>
 	</div>
 	<?php
-		$quickPowerGroups = array('under-60' => 'Dưới 60W', '60-200' => '60–200W', 'over-200' => 'Trên 200W');
+		$headlineWatts = array(60,100,150,200,300,400,500,600,800,1000);
+		$availWatts = array();
+		if(!empty($congSuatList)) foreach($congSuatList as $csRow) $availWatts[(int)$csRow['cong_suat']] = true;
+		$quickPowerGroups = array('under-60' => 'Dưới 60W');
+		foreach($headlineWatts as $powerValue) {
+			if(isset($availWatts[$powerValue])) $quickPowerGroups[(string)$powerValue] = $powerValue.'W';
+		}
+		$quickPowerGroups['over-1000'] = 'Trên 1000W';
 	?>
 	<?php if(!empty($congSuatList)) { ?>
 	<div class="header-quickfilter">

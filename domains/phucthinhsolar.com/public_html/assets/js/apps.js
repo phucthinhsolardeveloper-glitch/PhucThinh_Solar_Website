@@ -834,7 +834,14 @@ $(document).ready(function(){
     }
     $(document).on('click', '.toggle-sidebar', function (event) {
         event.preventDefault();
+        if(window.matchMedia && !window.matchMedia('(max-width: 1001px)').matches) {
+            setProductFilterDrawer(false);
+            return;
+        }
         setProductFilterDrawer(!$('.product-left').hasClass('show'));
+    });
+    $(window).on('resize', function () {
+        if(window.matchMedia && !window.matchMedia('(max-width: 1001px)').matches) setProductFilterDrawer(false);
     });
     $(document).on('keydown', function (event) {
         if(event.key === 'Escape' && $('.product-left').hasClass('show')) {

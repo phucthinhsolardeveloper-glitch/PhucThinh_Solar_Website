@@ -30,6 +30,7 @@ docker cp scripts/test-admin-readiness.php "$web_container:/tmp/test-admin-readi
 docker cp scripts/test-product-bulk.php "$web_container:/tmp/test-product-bulk.php"
 docker cp scripts/test-product-project-links.php "$web_container:/tmp/test-product-project-links.php"
 docker cp scripts/test-product-power-filter.php "$web_container:/tmp/test-product-power-filter.php"
+docker cp scripts/test-product-content-blocks.php "$web_container:/tmp/test-product-content-blocks.php"
 docker cp scripts/test-pdodb-exceptions.php "$web_container:/tmp/test-pdodb-exceptions.php"
 docker cp scripts/test-product-pricing-admin-http.php "$web_container:/tmp/test-product-pricing-admin-http.php"
 docker cp scripts/test-checkout-atomicity.php "$web_container:/tmp/test-checkout-atomicity.php"
@@ -59,6 +60,7 @@ php /tmp/test-admin-readiness.php
 php /tmp/test-product-bulk.php
 php /tmp/test-product-project-links.php
 php /tmp/test-product-power-filter.php
+php /tmp/test-product-content-blocks.php
 php /tmp/test-pdodb-exceptions.php
 php /tmp/test-product-pricing-admin-http.php
 php /tmp/test-checkout-atomicity.php

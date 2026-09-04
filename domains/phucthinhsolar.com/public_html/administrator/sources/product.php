@@ -1,6 +1,7 @@
 <?php
 	if(!defined('SOURCES')) die("Error");
 	require_once LIBRARIES.'product_projects.php';
+	require_once LIBRARIES.'product_content_blocks.php';
 
 	/* Kiểm tra active product */
 	if(isset($config['product']))
@@ -297,7 +298,7 @@
 		$perPage = $adminPerPage;
 		$startpoint = max(0, (((int) $curPage) * $perPage) - $perPage);
 		$limit = " limit ".$startpoint.",".$perPage;
-		$sql = "select p.* from #_product p where p.type = ? $where order by p.numb,p.id desc $limit";
+		$sql = "select p.*, case when p.id_cat = 0 then 1 when pc.id is null then 2 else 0 end as _category_issue from #_product p left join #_product_cat pc on pc.id = p.id_cat where p.type = ? $where order by p.numb,p.id desc $limit";
 		$items = $d->rawQuery($sql,$params);
 		$sqlNum = "select count(*) as 'num' from #_product p where p.type = ? $where";
 		$count = $d->rawQueryOne($sqlNum,$params);
@@ -384,6 +385,23 @@
 		$dataTags = (!empty($_POST['dataTags'])) ? $_POST['dataTags'] : null;
 		$dataColor = (!empty($_POST['dataColor'])) ? $_POST['dataColor'] : null;
 		$dataSize = (!empty($_POST['dataSize'])) ? $_POST['dataSize'] : null;
+		foreach($config['website']['lang'] as $blockLang => $blockLabel)
+		{
+			$blockDefinitions = array(
+				'highlights' => array(true, 6, 'Điểm nổi bật'),
+				'applications' => array(false, 8, 'Ứng dụng'),
+				'installation' => array(false, 10, 'Hướng dẫn')
+			);
+			foreach($blockDefinitions as $blockField => $blockDefinition)
+			{
+				$postKey = $blockField.'_text_'.$blockLang;
+				if(!isset($_POST[$postKey])) continue;
+				$parsedBlock = productContentBlockParse($_POST[$postKey], $blockDefinition[0], $blockDefinition[1]);
+				foreach($parsedBlock['errors'] as $blockError) $response['messages'][] = $blockDefinition[2].' ('.$blockLang.') '.$blockError;
+				$data[$blockField.$blockLang] = $parsedBlock['items'] ? json_encode($parsedBlock['items'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : null;
+				$flash->set($postKey, (string)$_POST[$postKey]);
+			}
+		}
 		$additionalSpecs = array();
 		if(isset($_POST['additional_specs_text']))
 		{

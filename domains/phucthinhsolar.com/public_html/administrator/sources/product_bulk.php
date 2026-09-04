@@ -3,6 +3,7 @@ if (!defined('SOURCES')) die('Error');
 
 require_once LIBRARIES.'admin_product_pricing.php';
 require_once LIBRARIES.'admin_product_completeness.php';
+require_once LIBRARIES.'product_content_blocks.php';
 
 function productValidateCommercialFields($data)
 {
@@ -42,6 +43,9 @@ function productBulkColumns()
         'numb' => array('label' => 'Thứ tự', 'kind' => 'integer', 'db' => 'numb', 'export' => false),
         'descvi' => array('label' => 'Mô tả ngắn', 'kind' => 'html', 'db' => 'descvi'),
         'contentvi' => array('label' => 'Nội dung', 'kind' => 'html', 'db' => 'contentvi'),
+        'highlightsvi' => array('label' => 'Điểm nổi bật (Tiêu đề | Giải thích)', 'kind' => 'content_block_paired', 'db' => 'highlightsvi', 'limit' => 6),
+        'applicationsvi' => array('label' => 'Ứng dụng phù hợp (mỗi dòng một ý)', 'kind' => 'content_block', 'db' => 'applicationsvi', 'limit' => 8),
+        'installationvi' => array('label' => 'Bộ sản phẩm / hướng dẫn (mỗi dòng một ý)', 'kind' => 'content_block', 'db' => 'installationvi', 'limit' => 10),
         'chinhsachmuahangvi' => array('label' => 'Chính sách mua hàng', 'kind' => 'html', 'db' => 'chinhsachmuahangvi'),
         'video_url' => array('label' => 'Video YouTube', 'kind' => 'youtube', 'db' => 'video_url', 'max' => 500),
         'light_source' => array('label' => 'Nguồn sáng', 'kind' => 'text', 'db' => 'light_source', 'max' => 255),
@@ -932,6 +936,10 @@ function productBulkValidateRows($rawRows, $type, $baseline = array(), $overwrit
                 $parsedSpecs = productBulkParseSpecLines($value);
                 foreach($parsedSpecs['errors'] as $specError) $item['errors'][] = $meta['label'].': '.$specError.'.';
                 $item['data'][$meta['db']] = $parsedSpecs['specs'] ? json_encode($parsedSpecs['specs'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : null;
+            } elseif ($meta['kind'] === 'content_block' || $meta['kind'] === 'content_block_paired') {
+                $parsedBlock = productContentBlockParse($value, $meta['kind'] === 'content_block_paired', $meta['limit']);
+                foreach($parsedBlock['errors'] as $blockError) $item['errors'][] = $meta['label'].': '.$blockError;
+                $item['data'][$meta['db']] = $parsedBlock['items'] ? json_encode($parsedBlock['items'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : null;
             } elseif ($meta['kind'] === 'youtube') {
                 if ($value !== '') {
                     $parts = parse_url($value);
@@ -1257,6 +1265,8 @@ function productBulkExportValue($key, $row, $categories)
         }
         return implode("\n", $lines);
     }
+    if (in_array($key, array('highlightsvi', 'applicationsvi', 'installationvi'), true))
+        return productContentBlockLines(isset($row[$key]) ? $row[$key] : '', $key === 'highlightsvi');
     $columns = productBulkColumns();
     if(isset($columns[$key]) && $columns[$key]['kind'] === 'html')
         return isset($row[$key]) ? productBulkHtmlToText($row[$key]) : '';
@@ -1321,7 +1331,7 @@ function productBulkExport($templateOnly = false)
     foreach ($headers as $columnIndex => $key) {
         $coordinate = PHPExcel_Cell::stringFromColumnIndex($columnIndex).'1';
         $sheet->setCellValueExplicit($coordinate, $columns[$key]['label'], PHPExcel_Cell_DataType::TYPE_STRING);
-        $sheet->getColumnDimension(PHPExcel_Cell::stringFromColumnIndex($columnIndex))->setWidth(in_array($key, array('descvi', 'contentvi', 'chinhsachmuahangvi', 'certificatevi', 'additional_specs'), true) ? 45 : 18);
+        $sheet->getColumnDimension(PHPExcel_Cell::stringFromColumnIndex($columnIndex))->setWidth(in_array($key, array('descvi', 'contentvi', 'highlightsvi', 'applicationsvi', 'installationvi', 'chinhsachmuahangvi', 'certificatevi', 'additional_specs'), true) ? 45 : 18);
     }
     $lastColumn = PHPExcel_Cell::stringFromColumnIndex(count($headers) - 1);
     $sheet->getStyle('A1:'.$lastColumn.'1')->applyFromArray(array('font' => array('bold' => true, 'color' => array('rgb' => 'FFFFFF')), 'fill' => array('type' => PHPExcel_Style_Fill::FILL_SOLID, 'color' => array('rgb' => '0B2A5B')), 'alignment' => array('wrap' => true)));

@@ -28,10 +28,20 @@ if(!empty($rowDetail['video_url']))
 }
 
 require_once LIBRARIES.'product_specs.php';
+require_once LIBRARIES.'product_content_blocks.php';
 $structuredSpecResult = productStructuredSpecs($rowDetail, $lang);
 $structuredSpecs = $structuredSpecResult['specs'];
 $useLegacySpecs = $structuredSpecResult['use_legacy'];
 $certificateContent = (!empty($rowDetail['certificate'.$lang])) ? htmlspecialchars_decode($rowDetail['certificate'.$lang]) : '';
+$productHighlights = productContentBlockDecode(isset($rowDetail['highlights'.$lang]) ? $rowDetail['highlights'.$lang] : '');
+$productApplications = productContentBlockDecode(isset($rowDetail['applications'.$lang]) ? $rowDetail['applications'.$lang] : '');
+$productInstallation = productContentBlockDecode(isset($rowDetail['installation'.$lang]) ? $rowDetail['installation'.$lang] : '');
+$productLegacyContent = trim(isset($rowDetail['content'.$lang]) ? htmlspecialchars_decode($rowDetail['content'.$lang]) : '');
+$productLegacySpecs = trim(isset($rowDetail['thongsokythuat'.$lang]) ? htmlspecialchars_decode($rowDetail['thongsokythuat'.$lang]) : '');
+$productPolicyOverride = trim(isset($rowDetail['chinhsachmuahang'.$lang]) ? htmlspecialchars_decode($rowDetail['chinhsachmuahang'.$lang]) : '');
+$hasProductDescription = $productHighlights || $productApplications || $productInstallation || $productLegacyContent !== '';
+$hasProductSpecs = !empty($structuredSpecs) || ($useLegacySpecs && $productLegacySpecs !== '');
+$hasProductPolicy = $productPolicyOverride !== '' || !empty($policy);
 ?>
 <div class="box-detail">
     <div class="">
@@ -198,39 +208,43 @@ $certificateContent = (!empty($rowDetail['certificate'.$lang])) ? htmlspecialcha
     </div>
 </div>
 
+<?php if($hasProductDescription || $hasProductSpecs || !empty($videoEmbedUrl) || !empty($certificateContent) || $hasProductPolicy) { $activeProductTab = $hasProductDescription ? 'info' : ($hasProductSpecs ? 'specs' : (!empty($videoEmbedUrl) ? 'video' : (!empty($certificateContent) ? 'certificate' : 'policy'))); ?>
 <div class="box-detail mg-top-30">
     <div class="tabs-pro-detail">
         <ul class="nav nav-tabs" id="tabsProDetail" role="tablist">
-            <li class="nav-item">
-                <a class="nav-link active" id="info-pro-detail-tab" data-toggle="tab" href="#info-pro-detail"
+            <?php if($hasProductDescription) { ?><li class="nav-item">
+                <a class="nav-link <?=$activeProductTab==='info'?'active':''?>" id="info-pro-detail-tab" data-toggle="tab" href="#info-pro-detail"
                     role="tab">Mô tả sản phẩm</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" id="tskt-pro-detail-tab" data-toggle="tab" href="#tskt-pro-detail" role="tab">Thông
+            </li><?php } ?>
+            <?php if($hasProductSpecs) { ?><li class="nav-item">
+                <a class="nav-link <?=$activeProductTab==='specs'?'active':''?>" id="tskt-pro-detail-tab" data-toggle="tab" href="#tskt-pro-detail" role="tab">Thông
                     số kỹ thuật</a>
-            </li>
+            </li><?php } ?>
             <?php if(!empty($videoEmbedUrl)) { ?>
             <li class="nav-item">
-                <a class="nav-link" id="video-pro-detail-tab" data-toggle="tab" href="#video-pro-detail"
+                <a class="nav-link <?=$activeProductTab==='video'?'active':''?>" id="video-pro-detail-tab" data-toggle="tab" href="#video-pro-detail"
                     role="tab">Video thực tế</a>
             </li>
             <?php } ?>
             <?php if(!empty($certificateContent)) { ?>
             <li class="nav-item">
-                <a class="nav-link" id="certificate-pro-detail-tab" data-toggle="tab" href="#certificate-pro-detail"
+                <a class="nav-link <?=$activeProductTab==='certificate'?'active':''?>" id="certificate-pro-detail-tab" data-toggle="tab" href="#certificate-pro-detail"
                     role="tab">Chứng nhận</a>
             </li>
             <?php } ?>
-            <li class="nav-item">
-                <a class="nav-link" id="cs-pro-detail-tab" data-toggle="tab" href="#cs-pro-detail" role="tab">Chính sách
+            <?php if($hasProductPolicy) { ?><li class="nav-item">
+                <a class="nav-link <?=$activeProductTab==='policy'?'active':''?>" id="cs-pro-detail-tab" data-toggle="tab" href="#cs-pro-detail" role="tab">Chính sách
                     mua hàng</a>
-            </li>
+            </li><?php } ?>
         </ul>
         <div class="tab-content pt-4 pb-4" id="tabsProDetailContent">
-            <div class="tab-pane fade show active" id="info-pro-detail" role="tabpanel">
-                <?=htmlspecialchars_decode($rowDetail['content'.$lang])?>
-            </div>
-            <div class="tab-pane fade" id="tskt-pro-detail" role="tabpanel">
+            <?php if($hasProductDescription) { ?><div class="tab-pane fade <?=$activeProductTab==='info'?'show active':''?> pts-product-content" id="info-pro-detail" role="tabpanel">
+                <?php if($productHighlights) { ?><section class="pts-standard-block"><h2>Điểm nổi bật</h2><div class="pts-standard-grid"><?php foreach($productHighlights as $highlight) { if(!is_array($highlight) || empty($highlight['title'])) continue; ?><div class="pts-standard-item"><strong><?=htmlspecialchars($highlight['title'],ENT_QUOTES,'UTF-8')?></strong><span><?=htmlspecialchars(isset($highlight['text'])?$highlight['text']:'',ENT_QUOTES,'UTF-8')?></span></div><?php } ?></div></section><?php } ?>
+                <?php if($productApplications) { ?><section class="pts-standard-block"><h2>Ứng dụng phù hợp</h2><ul class="pts-standard-list"><?php foreach($productApplications as $application) { ?><li><?=htmlspecialchars($application,ENT_QUOTES,'UTF-8')?></li><?php } ?></ul></section><?php } ?>
+                <?php if($productLegacyContent !== '') { ?><section class="pts-standard-block pts-legacy-content"><?=$productLegacyContent?></section><?php } ?>
+                <?php if($productInstallation) { ?><section class="pts-standard-block"><h2>Bộ sản phẩm / hướng dẫn lắp đặt</h2><ol class="pts-standard-list"><?php foreach($productInstallation as $step) { ?><li><?=htmlspecialchars($step,ENT_QUOTES,'UTF-8')?></li><?php } ?></ol></section><?php } ?>
+            </div><?php } ?>
+            <?php if($hasProductSpecs) { ?><div class="tab-pane fade <?=$activeProductTab==='specs'?'show active':''?>" id="tskt-pro-detail" role="tabpanel">
                 <?php if(!empty($structuredSpecs)) { ?>
                     <div class="table-responsive mb-4">
                         <table class="table table-bordered table-striped mb-0">
@@ -246,11 +260,11 @@ $certificateContent = (!empty($rowDetail['certificate'.$lang])) ? htmlspecialcha
                     </div>
                 <?php } ?>
                 <?php if($useLegacySpecs) { ?>
-                    <?=htmlspecialchars_decode($rowDetail['thongsokythuat'.$lang])?>
+                    <?=$productLegacySpecs?>
                 <?php } ?>
-            </div>
+            </div><?php } ?>
             <?php if(!empty($videoEmbedUrl)) { ?>
-            <div class="tab-pane fade" id="video-pro-detail" role="tabpanel">
+            <div class="tab-pane fade <?=$activeProductTab==='video'?'show active':''?>" id="video-pro-detail" role="tabpanel">
                 <div class="embed-responsive embed-responsive-16by9">
                     <iframe class="embed-responsive-item" src="<?=htmlspecialchars($videoEmbedUrl, ENT_QUOTES, 'UTF-8')?>"
                         title="Video thực tế <?=$rowDetail['name'.$lang]?>" loading="lazy"
@@ -260,16 +274,17 @@ $certificateContent = (!empty($rowDetail['certificate'.$lang])) ? htmlspecialcha
             </div>
             <?php } ?>
             <?php if(!empty($certificateContent)) { ?>
-            <div class="tab-pane fade" id="certificate-pro-detail" role="tabpanel">
+            <div class="tab-pane fade <?=$activeProductTab==='certificate'?'show active':''?> pts-product-content" id="certificate-pro-detail" role="tabpanel">
                 <?=$certificateContent?>
             </div>
             <?php } ?>
-            <div class="tab-pane fade" id="cs-pro-detail" role="tabpanel">
-                <?=htmlspecialchars_decode($rowDetail['chinhsachmuahang'.$lang])?>
-            </div>
+            <?php if($hasProductPolicy) { ?><div class="tab-pane fade <?=$activeProductTab==='policy'?'show active':''?> pts-product-content" id="cs-pro-detail" role="tabpanel">
+                <?php if($productPolicyOverride !== '') { ?><div class="alert alert-info py-2"><strong>Chính sách riêng của sản phẩm</strong></div><?=$productPolicyOverride?><?php } else { ?><p>Áp dụng chính sách chung hiện hành của Phúc Thịnh Solar:</p><div class="pts-policy-links"><?php foreach($policy as $policyItem) { ?><a href="ho-tro/<?=$policyItem[$sluglang]?>/"><i class="fas fa-shield-alt mr-2"></i><?=htmlspecialchars($policyItem['name'.$lang],ENT_QUOTES,'UTF-8')?></a><?php } ?></div><?php } ?>
+            </div><?php } ?>
         </div>
     </div>
 </div>
+<?php } ?>
 
 <div class="box-detail mg-top-30">
     <?php include TEMPLATE."product/comment.php"; ?>

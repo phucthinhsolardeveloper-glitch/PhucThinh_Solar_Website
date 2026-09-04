@@ -153,6 +153,7 @@
                                 <?php } ?>
                                 <td class="align-middle">
                                     <a class="text-dark text-break" href="<?=$linkEdit?><?=$linkID?>&id=<?=$items[$i]['id']?>" title="<?=$items[$i]['namevi']?>"><?=$items[$i]['namevi']?></a>
+                                    <span class="badge <?=adminProductHasStructuredContent($items[$i]) ? 'badge-success' : 'badge-secondary'?> ml-1"><?=adminProductHasStructuredContent($items[$i]) ? 'Nội dung chuẩn' : 'Nội dung legacy'?></span>
                                     <?php $missingLabels = adminProductMissingLabels($items[$i]); if($missingLabels) { ?>
                                         <div class="mt-1" aria-label="Dữ liệu còn thiếu">
                                             <?php foreach($missingLabels as $missingLabel) { ?><span class="badge badge-warning mr-1">Thiếu <?=htmlspecialchars($missingLabel, ENT_QUOTES, 'UTF-8')?></span><?php } ?>

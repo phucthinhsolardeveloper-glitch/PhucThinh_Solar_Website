@@ -11,7 +11,7 @@
     // $slogan = $cache->get("select name$lang from #_static where type = ? limit 0,1", array('slogan'), 'fetch', 7200);
     $slider = $cache->get("select name$lang, photo, link, show_stt, video from #_photo where type = ? and find_in_set('hienthi',status) order by numb,id desc", array('slide'), 'result', 7200);
     $social = $cache->get("select name$lang, photo, link from #_photo where type = ? and find_in_set('hienthi',status) order by numb,id desc", array('social'), 'result', 7200);
-    $splist = $cache->get("select name$lang, slugvi, slugen, id, photo from #_product_list where type = ? and find_in_set('hienthi',status) order by numb,id desc", array('san-pham'), 'result', 7200);
+    $splist = $cache->get("select pl.name$lang, pl.slugvi, pl.slugen, pl.id, pl.photo from #_product_list pl where pl.type = ? and find_in_set('hienthi',pl.status) and exists (select 1 from #_product p where p.id_list = pl.id and p.type = ? and find_in_set('hienthi',p.status)) order by pl.numb,pl.id desc", array('san-pham','san-pham'), 'result', 7200);
     $gplist = $cache->get("select name$lang, slugvi, slugen, id, photo from #_news_list where type = ? and find_in_set('hienthi',status) order by numb,id desc", array('giai-phap'), 'result', 7200);
     $ttlist = $cache->get("select name$lang, slugvi, slugen, id from #_news_list where type = ? and find_in_set('hienthi',status) order by numb,id desc", array('tin-tuc'), 'result', 7200);
     $dalist = $cache->get("select name$lang, slugvi, slugen, id, photo from #_news_list where type = ? and find_in_set('hienthi',status) order by numb,id desc", array('du-an'), 'result', 7200);
