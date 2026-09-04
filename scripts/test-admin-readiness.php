@@ -456,6 +456,12 @@ try
             && strpos($scopedBulkPage['body'], 'pts-bulk-prepare-card') !== false,
         'Màn bulk luôn tách rõ xuất tất cả, xuất nhóm lọc và dropdown không bị cắt'
     );
+    readinessAssert(
+        strpos($scopedBulkPage['body'], 'Hướng dẫn bàn giao: khi nào dùng Excel, khi nào dùng ZIP ảnh?') !== false
+            && strpos($scopedBulkPage['body'], 'pts-bulk-zip-action') !== false
+            && strpos($scopedBulkPage['body'], 'Không gộp ảnh vào Excel') !== false,
+        'Màn bulk có hướng dẫn bàn giao và hàng chọn ZIP căn chỉnh riêng'
+    );
     $apiSelectedStatus = readinessHttp($base.'api/status.php', 'POST', array('admin_csrf' => $authenticatedToken[1], 'ids' => $bulkStatusProductId.','.$secondBulkStatusProductId, 'scope' => 'selected', 'table' => 'product', 'attr' => 'baogia', 'value' => '1', 'type' => 'san-pham', 'com' => 'product'), $newCookie);
     $apiSelectedPayload = json_decode($apiSelectedStatus['body'], true);
     $selectedStatusRows = $d->rawQuery('select id, status from #_product where id in (?, ?)', array($bulkStatusProductId, $secondBulkStatusProductId));

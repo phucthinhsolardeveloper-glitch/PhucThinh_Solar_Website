@@ -21,7 +21,7 @@ $bulkScopeQuery = $bulkDataStatusDefinition ? '&data_status='.urlencode($bulkDat
     <style>
         .pts-bulk-hero{background:linear-gradient(135deg,#17385f,#245d8f);border-radius:12px;color:#fff;padding:20px 24px;margin-bottom:16px;box-shadow:0 8px 22px rgba(18,52,86,.14)}
         .pts-bulk-steps{display:flex;flex-wrap:wrap;gap:10px;margin-top:15px}.pts-bulk-step{display:flex;align-items:center;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);border-radius:20px;padding:6px 12px;font-size:12px}.pts-bulk-step b{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;margin-right:7px;border-radius:50%;background:#fff;color:#245d8f}
-        .pts-bulk-card{border:0;border-radius:12px;box-shadow:0 5px 18px rgba(31,45,61,.08);overflow:hidden}.pts-bulk-card .card-header{border-bottom:1px solid #edf1f5;background:#fff;padding:16px 18px}.pts-bulk-card .card-body{padding:18px}.pts-bulk-prepare-card{overflow:visible;position:relative;z-index:20}.pts-bulk-export-menu{max-height:min(360px,65vh);overflow-y:auto;z-index:1050}.pts-bulk-primary-action{min-height:42px}.pts-bulk-help{border:1px solid #e5e9ef;border-radius:10px;background:#fff}.pts-bulk-help summary{cursor:pointer;padding:13px 16px;font-weight:600;color:#34495e}.pts-bulk-help[open] summary{border-bottom:1px solid #edf1f5}.pts-bulk-result{border:0;border-radius:12px;box-shadow:0 5px 18px rgba(40,167,69,.13)}
+        .pts-bulk-card{border:0;border-radius:12px;box-shadow:0 5px 18px rgba(31,45,61,.08);overflow:hidden}.pts-bulk-card .card-header{border-bottom:1px solid #edf1f5;background:#fff;padding:16px 18px}.pts-bulk-card .card-body{padding:18px}.pts-bulk-prepare-card{overflow:visible;position:relative;z-index:20}.pts-bulk-export-menu{max-height:min(360px,65vh);overflow-y:auto;z-index:1050}.pts-bulk-primary-action{min-height:42px}.pts-bulk-help{border:1px solid #e5e9ef;border-radius:10px;background:#fff}.pts-bulk-help summary{cursor:pointer;padding:13px 16px;font-weight:600;color:#34495e}.pts-bulk-help[open] summary{border-bottom:1px solid #edf1f5}.pts-bulk-result{border:0;border-radius:12px;box-shadow:0 5px 18px rgba(40,167,69,.13)}.pts-bulk-zip-action .btn{height:38px}.pts-bulk-guide ol{padding-left:18px}.pts-bulk-guide li{margin-bottom:6px}.pts-bulk-guide code{white-space:nowrap}
         @media(max-width:767px){.pts-bulk-hero{padding:18px}.pts-bulk-steps{display:none}}
     </style>
     <div class="pts-bulk-hero">
@@ -103,15 +103,44 @@ $bulkScopeQuery = $bulkDataStatusDefinition ? '&data_status='.urlencode($bulkDat
         </div>
     </details>
 
+    <details class="pts-bulk-help pts-bulk-guide text-sm mt-3">
+        <summary><i class="fas fa-book-open text-primary mr-2"></i>Hướng dẫn bàn giao: khi nào dùng Excel, khi nào dùng ZIP ảnh?</summary>
+        <div class="p-3">
+            <div class="row">
+                <div class="col-lg-6">
+                    <h4 class="h6 font-weight-bold">A. Cập nhật nội dung bằng Excel</h4>
+                    <ol>
+                        <li>Chọn <strong>Xuất tất cả sản phẩm</strong>, hoặc xuất đúng nhóm đang thiếu dữ liệu.</li>
+                        <li>Chỉ sửa các ô nghiệp vụ trong sheet <code>SanPham</code>; giữ nguyên tiêu đề cột, ID và sheet ẩn <code>_HeThong</code>.</li>
+                        <li>Ô trống nghĩa là <strong>giữ dữ liệu hiện tại</strong>. Chỉ nhập <code>__CLEAR__</code> khi thật sự muốn xóa giá trị cũ.</li>
+                        <li>Tải file lên mục <strong>Tải file lên kiểm tra</strong>, đọc toàn bộ lỗi, cảnh báo và xung đột.</li>
+                        <li>Chỉ xác nhận áp dụng khi số lượng tạo/sửa/ẩn đúng với phiếu bàn giao. Xuất lại để đối chiếu sau khi hoàn tất.</li>
+                    </ol>
+                </div>
+                <div class="col-lg-6">
+                    <h4 class="h6 font-weight-bold">B. Bổ sung ảnh bằng ZIP</h4>
+                    <ol>
+                        <li>Dùng đúng <strong>mã sản phẩm</strong>: <code>JD-T200-01.jpg</code> là ảnh chính; <code>JD-T200-02.jpg</code>, <code>-03.jpg</code>... là ảnh phụ.</li>
+                        <li>Đặt tất cả ảnh ngay ở thư mục gốc của ZIP, không tạo thư mục con; chỉ dùng JPG, PNG hoặc WEBP.</li>
+                        <li>Mỗi ZIP tối đa 20 MB/200 ảnh; mỗi ảnh tối đa 5 MB. Nên chia thành nhiều ZIP nhỏ và ghi lại lô đã làm.</li>
+                        <li>Chọn <strong>Kiểm tra ZIP trước</strong>. Xử lý hết dòng “không thấy mã” hoặc lỗi tên file trước khi xác nhận.</li>
+                        <li>Hệ thống chỉ bổ sung chỗ còn thiếu, không thay/xóa ảnh hiện hữu. Kiểm tra lại ảnh chính và gallery trên trang sản phẩm sau mỗi lô.</li>
+                    </ol>
+                </div>
+            </div>
+            <div class="alert alert-warning py-2 mb-0"><strong>Không gộp ảnh vào Excel.</strong> Excel dùng cho dữ liệu chữ/thông số/trạng thái; ZIP dùng cho file ảnh. Luôn xem trước trước khi ghi và không giao tài khoản Admin dùng chung.</div>
+        </div>
+    </details>
+
     <div class="card pts-bulk-card text-sm mt-3">
         <div class="card-header"><h3 class="card-title font-weight-bold"><i class="far fa-images text-primary mr-2"></i>Bổ sung ảnh sản phẩm bằng ZIP</h3></div>
         <div class="card-body">
             <div class="alert alert-info py-2"><strong>Quy tắc tên file:</strong> <code>JD-T200-01.jpg</code> là ảnh đại diện; <code>JD-T200-02.jpg</code>, <code>-03</code>... là ảnh phụ. Tên cũ <code>JD-T200.jpg</code> vẫn được hiểu là ảnh đại diện. Hệ thống không thay hay xóa ảnh hiện hữu.</div>
-            <form method="post" action="<?=$bulkBase?>&act=bulk_image_preview" enctype="multipart/form-data" class="form-row align-items-end">
+            <form method="post" action="<?=$bulkBase?>&act=bulk_image_preview" enctype="multipart/form-data" class="form-row">
                 <?=adminCsrfField()?>
                 <input type="hidden" name="product_bulk_csrf" value="<?=htmlspecialchars($bulkCsrf)?>">
                 <div class="form-group col-lg-8 mb-lg-0"><label for="product_bulk_images">Chọn file ZIP</label><div class="custom-file"><input required type="file" class="custom-file-input" name="product_bulk_images" id="product_bulk_images" accept=".zip,application/zip"><label class="custom-file-label" for="product_bulk_images">Tối đa 20 MB, 200 ảnh</label></div><small class="form-text text-muted">Mỗi ảnh tối đa 5 MB; JPG, PNG hoặc WEBP. ZIP không chứa thư mục con.</small></div>
-                <div class="col-lg-4"><button class="btn btn-outline-primary btn-block"><i class="fas fa-search mr-2"></i>Kiểm tra ZIP trước</button></div>
+                <div class="form-group col-lg-4 mb-lg-0 pts-bulk-zip-action"><label class="d-none d-lg-block" aria-hidden="true">&nbsp;</label><button class="btn btn-outline-primary btn-block"><i class="fas fa-search mr-2"></i>Kiểm tra ZIP trước</button></div>
             </form>
         </div>
     </div>
