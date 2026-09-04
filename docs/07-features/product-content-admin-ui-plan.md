@@ -122,14 +122,14 @@ Danh sách sản phẩm đang hard-code `$perPage = 10`. Bổ sung select **10 /
 - Cho phép override có nhãn rõ ràng; dữ liệu per-product hiện tại vẫn là fallback.
 - Đo usage DB + DOM/network cho size/color/tags, `photo2`, gallery và các module media trước khi quyết định giữ, nối UI, archive hay tiếp tục tắt.
 
-### Batch 5 — Liên kết Sản phẩm–Dự án — đã hoàn thành local
+### Batch 5 — Liên kết Sản phẩm–Dự án — đã có nền tảng, chưa hoàn tất UX
 
 - Thêm migration bảng nối idempotent, index hai chiều và kiểm tra orphan.
 - Thêm bộ chọn sản phẩm vào form Dự án, danh sách liên kết ngược trong form Sản phẩm; save theo transaction và giữ CSRF/RBAC.
 - Render “Sản phẩm sử dụng” trên trang Dự án và “Dự án thực tế” trên trang Sản phẩm.
 - Regression sản phẩm/dự án ẩn, slug thay đổi, quan hệ rỗng/nhiều phần tử, ảnh thiếu và không phát sinh N+1.
 
-Implementation dùng migration `010_add_product_project_links.sql` và helper `libraries/product_projects.php`. Migration 010 đã áp dụng trên Docker local; bảng đang rỗng sau regression và chưa có quan hệ dữ liệu thật. Khi deploy phải backup trước, chạy migration 010 trước source, rồi mới gán sản phẩm tại Admin Dự án.
+Implementation dùng migration `010_add_product_project_links.sql` và helper `libraries/product_projects.php`. Migration 010 đã áp dụng trên Docker local; bảng đang rỗng sau regression và chưa có quan hệ dữ liệu thật. Admin đã chọn được nhiều sản phẩm và public đã có link hai chiều, nhưng trang Sản phẩm hiện chỉ dùng ảnh đại diện của Dự án, chưa hiển thị các ảnh trong gallery Dự án theo yêu cầu. Chưa có regression HTTP/browser cho thao tác chọn–lưu và render quan hệ có dữ liệu thật; thứ tự sản phẩm liên kết cũng chưa có UI sắp xếp rõ ràng. Vì vậy batch này chưa được coi là hoàn tất. Khi deploy phải backup trước, chạy migration 010 trước source, rồi mới gán sản phẩm tại Admin Dự án.
 
 ## 8. Tiêu chí đạt và rollback
 
