@@ -70,7 +70,7 @@ readinessAssert(
     'Exception boundary Admin API trả lỗi trung tính theo contract JSON'
 );
 $apiBootstrapSource = file_get_contents('/var/www/html/administrator/api/config.php');
-readinessAssert(strpos($apiBootstrapSource, 'adminInstallApiExceptionHandler();') !== false, 'Bootstrap chung cài exception boundary cho mọi Admin API');
+    readinessAssert(strpos($apiBootstrapSource, 'adminInstallApiExceptionHandler();') !== false, 'Bootstrap chung cài exception boundary cho mọi Admin API');
 
 $prefix = 'CODEX-RBAC-'.bin2hex(random_bytes(4));
 $createdUsers = array();
@@ -473,6 +473,7 @@ try
             && substr_count($productPerPage['body'], 'class="custom-control-input select-checkbox"') === 50,
         'Danh sách Sản phẩm chọn và render đúng 50 dòng'
     );
+    readinessAssert(substr_count($productPerPage['body'], 'title="Thêm mới"') === 1, 'Danh sách Sản phẩm chỉ render một thanh nút Thêm mới');
     $productInvalidPerPage = readinessHttp($base.'index.php?com=product&act=man&type=san-pham&per_page=999', 'GET', array(), $newCookie);
     readinessAssert(
         strpos($productInvalidPerPage['body'], 'value="20" selected') !== false
@@ -487,6 +488,7 @@ try
             && strpos($newsPerPage['body'], 'value="50" selected') !== false,
         'Danh sách Nội dung/Tin tức có lựa chọn số dòng dùng chung'
     );
+    readinessAssert(substr_count($newsPerPage['body'], 'title="Thêm mới"') === 1, 'Danh sách Nội dung/Tin tức không còn render thanh nút trùng ở cuối');
     $apiSelectedStatus = readinessHttp($base.'api/status.php', 'POST', array('admin_csrf' => $authenticatedToken[1], 'ids' => $bulkStatusProductId.','.$secondBulkStatusProductId, 'scope' => 'selected', 'table' => 'product', 'attr' => 'baogia', 'value' => '1', 'type' => 'san-pham', 'com' => 'product'), $newCookie);
     $apiSelectedPayload = json_decode($apiSelectedStatus['body'], true);
     $selectedStatusRows = $d->rawQuery('select id, status from #_product where id in (?, ?)', array($bulkStatusProductId, $secondBulkStatusProductId));
