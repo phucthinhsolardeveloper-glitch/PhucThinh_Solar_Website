@@ -57,4 +57,46 @@ function publicProductEntityPath($d, $table, $id, $lang = 'vi')
     }
     return '';
 }
+
+/**
+ * Đường dẫn chuẩn (canonical) của route công khai đã resolve.
+ *
+ * Router chấp nhận cùng một entity ở nhiều dạng URL: bare slug, tiền tố trang
+ * trí (`category/`, `ho-tro/`, `solution/`...) và dạng phân cấp. Trước đây thẻ
+ * canonical lấy thẳng REQUEST_URI nên mọi biến thể đều tự nhận là canonical.
+ * Hàm này trả về dạng chuẩn duy nhất cho entity; chuỗi rỗng nghĩa là route
+ * không map tới entity đã biết và caller giữ nguyên hành vi cũ.
+ */
+function publicCanonicalEntityPath($d, $com, array $params, $lang = 'vi')
+{
+    $slug = 'slug'.($lang === 'en' ? 'en' : 'vi');
+
+    $productRoutes = array('id' => 'product', 'ids' => 'product_sub', 'idi' => 'product_item', 'idc' => 'product_cat', 'idl' => 'product_list');
+    if($com === 'san-pham')
+    {
+        foreach($productRoutes as $key => $table)
+        {
+            if(empty($params[$key])) continue;
+            return publicProductEntityPath($d, $table, $params[$key], $lang);
+        }
+        return 'san-pham/';
+    }
+
+    /* Tin tức/giải pháp/dự án: template dùng nhiều tiền tố trang trí khác nhau
+       (category/, solution/, danh-muc-du-an/...) cho cùng một entity. Chuẩn hoá
+       về bare slug — đúng dạng sitemap đang công bố. Chỉ áp dụng khi URL trỏ tới
+       một entity cụ thể; trang danh sách giữ nguyên hành vi cũ. */
+    $newsComs = array('tin-tuc', 'giai-phap', 'du-an', 'du-an-da-thuc-hien', 'chinh-sach', 'he-thong-dai-ly');
+    if(in_array($com, $newsComs, true))
+    {
+        $newsRoutes = array('id' => 'news', 'ids' => 'news_sub', 'idi' => 'news_item', 'idc' => 'news_cat', 'idl' => 'news_list');
+        foreach($newsRoutes as $key => $table)
+        {
+            if(empty($params[$key])) continue;
+            $row = $d->rawQueryOne("select $slug from #_$table where id = ? limit 1", array((int) $params[$key]));
+            return !empty($row[$slug]) ? $row[$slug] : '';
+        }
+    }
+    return '';
+}
 ?>

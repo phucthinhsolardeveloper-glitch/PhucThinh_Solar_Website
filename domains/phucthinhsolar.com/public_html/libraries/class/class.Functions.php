@@ -224,7 +224,9 @@
 				{
                     if(!empty($value['slug'.$lang]))
                     {
-						$hierarchyTables = array('product_list','product_cat','product_item','product_sub');
+						/* Sitemap phải công bố đúng URL canonical mà site đang liên kết:
+						   sản phẩm là san-pham/<slug>, danh mục là dạng phân cấp. */
+						$hierarchyTables = array('product','product_list','product_cat','product_item','product_sub');
 						$hierarchyPath = in_array($table, $hierarchyTables, true) && function_exists('publicProductEntityPath') ? publicProductEntityPath($this->d, $table, $value['id'], $lang) : '';
 						$urlSm = $configBase.($hierarchyPath !== '' ? $hierarchyPath : $value['slug'.$lang]);
                         echo '<url>';

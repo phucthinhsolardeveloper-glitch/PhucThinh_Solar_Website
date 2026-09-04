@@ -49,7 +49,18 @@
 <meta name="twitter:image" content="<?=$seo->get('photo')?>" />
 
 <!-- Canonical -->
-<link rel="canonical" href="<?=$func->getCurrentPageURL_CANO()?>" />
+<?php
+	/* Ưu tiên canonical suy ra từ entity đã resolve; nếu route không map tới
+	   entity đã biết thì giữ nguyên hành vi cũ (theo URL đang truy cập). */
+	$canonicalHref = '';
+	if(function_exists('publicCanonicalEntityPath'))
+	{
+		$canonicalEntityPath = publicCanonicalEntityPath($d, isset($com) ? $com : '', $_GET, $lang);
+		if($canonicalEntityPath !== '') $canonicalHref = $configBase.$canonicalEntityPath;
+	}
+	if($canonicalHref === '') $canonicalHref = $func->getCurrentPageURL_CANO();
+?>
+<link rel="canonical" href="<?=htmlspecialchars($canonicalHref, ENT_QUOTES, 'UTF-8')?>" />
 
 <!-- Chống đổi màu trên IOS -->
 <meta name="format-detection" content="telephone=no">
