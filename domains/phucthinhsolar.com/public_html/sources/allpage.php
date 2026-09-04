@@ -12,9 +12,11 @@
     $slider = $cache->get("select name$lang, photo, link, show_stt, video from #_photo where type = ? and find_in_set('hienthi',status) order by numb,id desc", array('slide'), 'result', 7200);
     $social = $cache->get("select name$lang, photo, link from #_photo where type = ? and find_in_set('hienthi',status) order by numb,id desc", array('social'), 'result', 7200);
     $splist = $cache->get("select pl.name$lang, pl.slugvi, pl.slugen, pl.id, pl.photo from #_product_list pl where pl.type = ? and find_in_set('hienthi',pl.status) and exists (select 1 from #_product p where p.id_list = pl.id and p.type = ? and find_in_set('hienthi',p.status)) order by pl.numb,pl.id desc", array('san-pham','san-pham'), 'result', 7200);
-    $gplist = $cache->get("select name$lang, slugvi, slugen, id, photo from #_news_list where type = ? and find_in_set('hienthi',status) order by numb,id desc", array('giai-phap'), 'result', 7200);
-    $ttlist = $cache->get("select name$lang, slugvi, slugen, id from #_news_list where type = ? and find_in_set('hienthi',status) order by numb,id desc", array('tin-tuc'), 'result', 7200);
-    $dalist = $cache->get("select name$lang, slugvi, slugen, id, photo from #_news_list where type = ? and find_in_set('hienthi',status) order by numb,id desc", array('du-an'), 'result', 7200);
+    /* Ẩn danh mục rỗng khỏi điều hướng, cùng quy tắc đang áp cho $splist ở trên:
+       menu không nên dẫn tới trang danh mục không có bài nào. */
+    $gplist = $cache->get("select nl.name$lang, nl.slugvi, nl.slugen, nl.id, nl.photo from #_news_list nl where nl.type = ? and find_in_set('hienthi',nl.status) and exists (select 1 from #_news n where n.id_list = nl.id and n.type = ? and find_in_set('hienthi',n.status)) order by nl.numb,nl.id desc", array('giai-phap','giai-phap'), 'result', 7200);
+    $ttlist = $cache->get("select nl.name$lang, nl.slugvi, nl.slugen, nl.id from #_news_list nl where nl.type = ? and find_in_set('hienthi',nl.status) and exists (select 1 from #_news n where n.id_list = nl.id and n.type = ? and find_in_set('hienthi',n.status)) order by nl.numb,nl.id desc", array('tin-tuc','tin-tuc'), 'result', 7200);
+    $dalist = $cache->get("select nl.name$lang, nl.slugvi, nl.slugen, nl.id, nl.photo from #_news_list nl where nl.type = ? and find_in_set('hienthi',nl.status) and exists (select 1 from #_news n where n.id_list = nl.id and n.type = ? and find_in_set('hienthi',n.status)) order by nl.numb,nl.id desc", array('du-an','du-an'), 'result', 7200);
     $groupMenuRows = function($rows, $parentKey) {
         $grouped = array();
         foreach($rows as $row) $grouped[(int)$row[$parentKey]][] = $row;
