@@ -2074,3 +2074,9 @@ body .home-6 .btn-all:hover i{transform:translateX(3px);}
 .comment-statistic .btn-write-comment:hover{filter:brightness(1.05);}
 .comment-statistic .comment-point,
 .comment-statistic .comment-point strong{color:var(--pts-navy)!important;}
+#button-contact-vr{position:fixed;right:15px;bottom:130px;z-index:99999;}
+#button-contact-vr .button-contact{position:relative;margin-top:-5px;}
+#button-contact-vr .button-contact .phone-vr{position:relative;width:90px;height:90px;display:block;}
+#button-contact-vr .phone-vr-circle-fill{position:absolute;width:65px;height:65px;top:12px;left:12px;border-radius:50%;}
+#button-contact-vr .phone-vr-img-circle{position:absolute;width:40px;height:40px;top:25px;left:25px;border-radius:50%;overflow:hidden;display:flex;justify-content:center;}
+#button-contact-vr .phone-vr-img-circle img{position:absolute;max-width:27px;max-height:25px;top:50%;left:50%;transform:translate(-50%,-50%);}
