@@ -21,6 +21,11 @@ test('header, menu, breadcrumb and footer remain usable', async ({ page, isMobil
     await expect(catalogSubmenu).toBeAttached();
     await catalogMenu.hover();
     await expect(catalogSubmenu).toBeVisible();
+
+    const catalogParentWithChildren = catalogSubmenu.locator(':scope > li').filter({ has: page.locator(':scope > ul') }).first();
+    await expect(catalogParentWithChildren).toBeVisible();
+    await catalogParentWithChildren.hover();
+    await expect(catalogParentWithChildren.locator(':scope > ul')).toBeVisible();
   }
 
   await page.locator('footer').scrollIntoViewIfNeeded();

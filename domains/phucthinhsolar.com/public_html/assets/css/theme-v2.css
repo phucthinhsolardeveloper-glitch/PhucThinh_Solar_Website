@@ -1685,6 +1685,8 @@ h4{font-size:21px!important;font-weight:800!important;}
 .menu>div>ul>li.menu-catalog>a.active{color:var(--pts-navy-deep)!important;filter:brightness(1.05);}
 /* menu con của catalog không đổi */
 .menu>div>ul>li.menu-catalog ul li a{background:#fff!important;}
+.menu>div>ul>li.menu-catalog>ul{overflow:visible!important;}
+.menu>div>ul>li.menu-catalog>ul>li>ul{z-index:2;}
 
 /* --- Responsive --- */
 @media(max-width:1280px){
