@@ -8,6 +8,14 @@ base_url="http://localhost:8080"
 
 cd "$repo_dir"
 
+# ripgrep không có trên máy deploy (trong Claude Code nó chỉ là shell function
+# của phiên tương tác, script non-interactive không thấy). Mọi guard phải dùng
+# grep, nếu không script chết giữa chừng và assertion phía sau không chạy.
+if grep -n '^\s*rg -q' scripts/*.sh; then
+    echo "FAIL: Script deploy còn dùng ripgrep; chuyển sang grep -qF/-qE" >&2
+    exit 1
+fi
+
 git diff --check
 docker compose -f "$compose_file" build web
 docker compose -f "$compose_file" up -d web
@@ -112,18 +120,18 @@ for public_path in "${public_paths[@]}"; do
     path_key="$(echo "$public_path" | tr '/-' '__')"
     curl -fsS -L -A 'Mozilla/5.0 (X11; Linux x86_64) Chrome/120' -o "/tmp/pts-desktop-${path_key}.html" "$base_url$public_path"
     curl -fsS -L -A 'Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 Mobile Safari/537.36' -o "/tmp/pts-mobile-${path_key}.html" "$base_url$public_path"
-    rg -q '<title>' "/tmp/pts-desktop-${path_key}.html"
-    rg -q '<meta name="viewport"' "/tmp/pts-mobile-${path_key}.html"
+    grep -qF '<title>' "/tmp/pts-desktop-${path_key}.html"
+    grep -qF '<meta name="viewport"' "/tmp/pts-mobile-${path_key}.html"
 done
 
-rg -q '<title>' /tmp/pts-predeploy-home.html
-rg -q 'pts-brand-copy pts-brand-text' /tmp/pts-predeploy-home.html
-rg -q '<span class="pts-brand-text">PHÚC THỊNH SOLAR</span>' /tmp/pts-predeploy-home.html
-rg -q '<i class="fas fa-phone-alt"></i> Hotline:' /tmp/pts-predeploy-home.html
-rg -q 'name="form_csrf"' /tmp/pts-predeploy-contact.html
-rg -q 'title-pro-detail' /tmp/pts-predeploy-product.html
-rg -q 'Gọi báo giá' /tmp/pts-predeploy-product.html
-rg -q 'class="pts-card-ask"[^>]*><i class="fas fa-phone-alt"></i>' /tmp/pts-predeploy-product.html
+grep -qF '<title>' /tmp/pts-predeploy-home.html
+grep -qF 'pts-brand-copy pts-brand-text' /tmp/pts-predeploy-home.html
+grep -qF '<span class="pts-brand-text">PHÚC THỊNH SOLAR</span>' /tmp/pts-predeploy-home.html
+grep -qF '<i class="fas fa-phone-alt"></i> Hotline:' /tmp/pts-predeploy-home.html
+grep -qF 'name="form_csrf"' /tmp/pts-predeploy-contact.html
+grep -qF 'title-pro-detail' /tmp/pts-predeploy-product.html
+grep -qF 'Gọi báo giá' /tmp/pts-predeploy-product.html
+grep -qE 'class="pts-card-ask"[^>]*><i class="fas fa-phone-alt"></i>' /tmp/pts-predeploy-product.html
 test -s domains/phucthinhsolar.com/public_html/assets/fontawesome512/all.css
 test -s domains/phucthinhsolar.com/public_html/assets/fonts/awesome/fa-solid-900.woff2
 test -s domains/phucthinhsolar.com/public_html/assets/fonts/awesome/fa-brands-400.woff2
@@ -132,35 +140,35 @@ if grep -Eq 'class="addcart"|"priceCurrency"|"price"[[:space:]]*:' /tmp/pts-pred
     echo "FAIL: Trang sản phẩm còn lộ giá hoặc nút mua khi chế độ báo giá đang bật" >&2
     exit 1
 fi
-rg -q '<title>[^<]+</title>' /tmp/pts-predeploy-news-detail.html
-rg -q 'class="box-detail-news"' /tmp/pts-predeploy-news-detail.html
-rg -q '<title>[^<]+</title>' /tmp/pts-predeploy-solution-detail.html
-rg -q 'class="box-detail-news"' /tmp/pts-predeploy-solution-detail.html
-rg -q '<title>[^<]+</title>' /tmp/pts-predeploy-project-detail.html
-rg -q 'id="inf_single_project"' /tmp/pts-predeploy-project-detail.html
-rg -q 'assets/photobox/photobox.css' /tmp/pts-predeploy-project-detail.html
-rg -q 'assets/photobox/photobox.js' /tmp/pts-predeploy-project-detail.html
-rg -q 'assets/fancybox3/jquery.fancybox.css' /tmp/pts-predeploy-project-detail.html
-rg -q 'assets/fancybox3/jquery.fancybox.js' /tmp/pts-predeploy-project-detail.html
-rg -q 'assets/magiczoomplus/magiczoomplus.css' /tmp/pts-predeploy-product.html
-rg -q 'assets/magiczoomplus/magiczoomplus.js' /tmp/pts-predeploy-product.html
-rg -q 'assets/fileuploader/jquery.fileuploader.min.js' /tmp/pts-predeploy-product.html
-rg -q 'assets/comment/comment.js' /tmp/pts-predeploy-product.html
-rg -q 'assets/owlcarousel2/owl.carousel.css' /tmp/pts-predeploy-product.html
-rg -q 'assets/owlcarousel2/owl.carousel.js' /tmp/pts-predeploy-product.html
-rg -q 'assets/css/jssor.css' /tmp/pts-predeploy-home.html
-rg -q 'assets/js/jssor.slider.min.js' /tmp/pts-predeploy-home.html
-rg -q 'assets/owlcarousel2/owl.carousel.css' /tmp/pts-predeploy-home.html
-rg -q 'assets/owlcarousel2/owl.carousel.js' /tmp/pts-predeploy-home.html
-rg -q 'name="twitter:title"' /tmp/pts-predeploy-product-filtered.html
-rg -q 'rel="canonical" href="http://localhost:8080/san-pham/"' /tmp/pts-predeploy-product-filtered.html
-rg -q 'name="robots" content="noindex,nofollow"' /tmp/pts-predeploy-search.html
-rg -q 'name="robots" content="noindex,nofollow"' /tmp/pts-predeploy-cart.html
-rg -q 'pts-card-grid' /tmp/pts-predeploy-news.html
-rg -q 'pts-card-grid' /tmp/pts-predeploy-solutions.html
-rg -q 'pts-card-grid' /tmp/pts-predeploy-projects.html
-rg -q '^Sitemap: https://phucthinhsolar.com/sitemap.xml$' /tmp/pts-predeploy-robots.txt
-rg -q '<urlset ' /tmp/pts-predeploy-sitemap.xml
+grep -qE '<title>[^<]+</title>' /tmp/pts-predeploy-news-detail.html
+grep -qF 'class="box-detail-news"' /tmp/pts-predeploy-news-detail.html
+grep -qE '<title>[^<]+</title>' /tmp/pts-predeploy-solution-detail.html
+grep -qF 'class="box-detail-news"' /tmp/pts-predeploy-solution-detail.html
+grep -qE '<title>[^<]+</title>' /tmp/pts-predeploy-project-detail.html
+grep -qF 'id="inf_single_project"' /tmp/pts-predeploy-project-detail.html
+grep -qF 'assets/photobox/photobox.css' /tmp/pts-predeploy-project-detail.html
+grep -qF 'assets/photobox/photobox.js' /tmp/pts-predeploy-project-detail.html
+grep -qF 'assets/fancybox3/jquery.fancybox.css' /tmp/pts-predeploy-project-detail.html
+grep -qF 'assets/fancybox3/jquery.fancybox.js' /tmp/pts-predeploy-project-detail.html
+grep -qF 'assets/magiczoomplus/magiczoomplus.css' /tmp/pts-predeploy-product.html
+grep -qF 'assets/magiczoomplus/magiczoomplus.js' /tmp/pts-predeploy-product.html
+grep -qF 'assets/fileuploader/jquery.fileuploader.min.js' /tmp/pts-predeploy-product.html
+grep -qF 'assets/comment/comment.js' /tmp/pts-predeploy-product.html
+grep -qF 'assets/owlcarousel2/owl.carousel.css' /tmp/pts-predeploy-product.html
+grep -qF 'assets/owlcarousel2/owl.carousel.js' /tmp/pts-predeploy-product.html
+grep -qF 'assets/css/jssor.css' /tmp/pts-predeploy-home.html
+grep -qF 'assets/js/jssor.slider.min.js' /tmp/pts-predeploy-home.html
+grep -qF 'assets/owlcarousel2/owl.carousel.css' /tmp/pts-predeploy-home.html
+grep -qF 'assets/owlcarousel2/owl.carousel.js' /tmp/pts-predeploy-home.html
+grep -qF 'name="twitter:title"' /tmp/pts-predeploy-product-filtered.html
+grep -qF 'rel="canonical" href="http://localhost:8080/san-pham/"' /tmp/pts-predeploy-product-filtered.html
+grep -qF 'name="robots" content="noindex,nofollow"' /tmp/pts-predeploy-search.html
+grep -qF 'name="robots" content="noindex,nofollow"' /tmp/pts-predeploy-cart.html
+grep -qF 'pts-card-grid' /tmp/pts-predeploy-news.html
+grep -qF 'pts-card-grid' /tmp/pts-predeploy-solutions.html
+grep -qF 'pts-card-grid' /tmp/pts-predeploy-projects.html
+grep -qE '^Sitemap: https://phucthinhsolar.com/sitemap.xml$' /tmp/pts-predeploy-robots.txt
+grep -qF '<urlset ' /tmp/pts-predeploy-sitemap.xml
 # Trước đây check này dò một danh sách slug cứng đã lỗi thời: 3/4 slug không còn
 # tồn tại và slug còn lại giờ là danh mục thật đang hiển thị, nên guard không còn
 # bảo vệ gì. Thay bằng chính bất biến cần giữ: mọi URL trong sitemap phải mở được.
@@ -209,17 +217,17 @@ for upload_media_path in \
     curl -fsS -o /dev/null "$base_url/$upload_media_path"
 done
 curl -fsS -D /tmp/pts-predeploy-headers.txt -o /dev/null "$base_url/"
-rg -qi '^X-Content-Type-Options: nosniff' /tmp/pts-predeploy-headers.txt
-rg -qi '^X-Frame-Options: SAMEORIGIN' /tmp/pts-predeploy-headers.txt
-rg -qi '^Referrer-Policy: strict-origin-when-cross-origin' /tmp/pts-predeploy-headers.txt
-rg -qi '^Cache-Control: no-store, no-cache, must-revalidate' /tmp/pts-predeploy-headers.txt
+grep -qiE '^X-Content-Type-Options: nosniff' /tmp/pts-predeploy-headers.txt
+grep -qiE '^X-Frame-Options: SAMEORIGIN' /tmp/pts-predeploy-headers.txt
+grep -qiE '^Referrer-Policy: strict-origin-when-cross-origin' /tmp/pts-predeploy-headers.txt
+grep -qiE '^Cache-Control: no-store, no-cache, must-revalidate' /tmp/pts-predeploy-headers.txt
 if grep -Eqi '^X-Powered-By:' /tmp/pts-predeploy-headers.txt; then
     echo "FAIL: Response còn lộ X-Powered-By" >&2
     exit 1
 fi
 curl -fsS -H 'Accept-Encoding: gzip, deflate' -D /tmp/pts-predeploy-static-headers.txt -o /dev/null "$base_url/assets/css/theme-v2.css"
-rg -qi '^Content-Encoding: gzip' /tmp/pts-predeploy-static-headers.txt
-rg -qi '^Cache-Control: .*max-age=' /tmp/pts-predeploy-static-headers.txt
+grep -qiE '^Content-Encoding: gzip' /tmp/pts-predeploy-static-headers.txt
+grep -qiE '^Cache-Control: .*max-age=' /tmp/pts-predeploy-static-headers.txt
 
 remaining="$(docker compose -f "$compose_file" exec -T db mariadb -N -B -upts_local -ppts_local_only phucthinhs_local -e "SELECT (SELECT COUNT(*) FROM table_product WHERE code LIKE 'CODEX-BULK-%') + (SELECT COUNT(*) FROM table_user WHERE username LIKE 'codex-rbac-%') + (SELECT COUNT(*) FROM table_permission_group WHERE name LIKE 'CODEX-RBAC-%') + (SELECT COUNT(*) FROM table_user_limit WHERE login_ip LIKE 'form:%');")"
 if [ "$remaining" != "0" ]; then

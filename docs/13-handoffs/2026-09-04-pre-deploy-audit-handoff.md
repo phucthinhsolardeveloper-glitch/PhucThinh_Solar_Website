@@ -20,10 +20,23 @@ docker compose -f docker-compose.local.yml up -d                  # nếu chưa 
 git log --oneline -8
 ```
 
+**Nếu trả về 403 (thư mục `/var/www/html` rỗng trong container):** đây là do
+WSL chưa mount xong ổ đĩa lúc Docker tự khởi động container theo
+`restart: unless-stopped`, nên bind mount `./domains/...:/var/www/html` bám vào
+một thư mục rỗng tại thời điểm đó. Cách sửa — tạo lại container `web` (không
+đụng tới `db`, dữ liệu không mất vì nằm ở named volume riêng):
+
+```bash
+docker compose -f docker-compose.local.yml up -d --force-recreate web
+```
+
 ## 2. Trạng thái chốt phiên 2026-09-04
 
-Nhánh `feature/ecommerce-upgrade`, **chưa push**. Gói release đã đóng tại
+Nhánh `feature/ecommerce-upgrade`. Gói release đã đóng tại
 `backup/releases/20260904T154413Z-9d627a9b91f1`.
+
+**Cập nhật 2026-09-05:** đã push — local và `origin/feature/ecommerce-upgrade`
+khớp nhau ở `bf79e07`, xem mục 3.4.
 
 Kết quả kiểm thử tại thời điểm chốt:
 
@@ -77,9 +90,11 @@ cd tools/visual-tests && npx playwright test visual-baseline.spec.js --update-sn
 - **"Tin tuyển dụng"**: hiện ẩn khỏi menu vì chưa có bài nào. Đăng bài thuộc
   danh mục này là nó tự hiện lại, không cần sửa code.
 
-### 3.4 Push
+### 3.4 Push — đã xong
 
-30 commit chưa đẩy lên `origin/feature/ecommerce-upgrade`.
+Đã push 2026-09-04. Local và `origin/feature/ecommerce-upgrade` khớp nhau ở
+`bf79e07`, 0 commit còn lại. Việc còn lại là mở PR / merge khi chủ project
+sẵn sàng, không phải push thêm.
 
 ## 4. Bối cảnh cần biết trước khi sửa tiếp
 
@@ -106,9 +121,25 @@ này fail nếu ai đó revert bản vá.
   luồng Admin mới tự dọn). `migrations/020` làm mẫu đầy đủ cả hai bước.
 - **Danh mục rỗng bị ẩn khỏi điều hướng** bằng `exists (...)` trong
   `sources/allpage.php`, áp cho cả sản phẩm lẫn tin tức/giải pháp/dự án.
-- **Guard trong script deploy dùng `grep -E`, không dùng `rg`.** Trước đây
-  `if rg ...; then FAIL; fi` fail-open khi máy thiếu ripgrep, làm 6 kiểm tra an
-  toàn âm thầm PASS.
+- **Guard trong script deploy dùng `grep -qF`/`grep -qE`, không dùng `rg`.**
+  `rg` không tồn tại thật trên máy này — nó chỉ là shell function do Claude
+  Code chèn vào phiên tương tác (`type -a rg` → "rg is a function"), một shell
+  non-interactive (script `bash scripts/...sh`) không thấy nó. Phiên
+  2026-09-04 đã sửa 6/51 chỗ; phiên 2026-09-05 rà lại thì thấy còn **45 chỗ**
+  `rg -q` khác ở dòng 115–222, khiến `set -euo pipefail` làm script **chết
+  giữa chừng ở lần chạy đầu mỗi phiên mới** (không phải fail-open lần này —
+  script thoát lỗi luôn, nhưng 45 assertion phía sau chưa từng thực sự chạy
+  qua bất kỳ phiên nào trước đó). Đã chuyển hết sang `grep -qF`/`grep -qE`
+  (tuỳ dòng có cần regex thật hay không) và thêm một guard đầu file tự chặn
+  nếu ai đó lỡ thêm `rg -q` trở lại:
+  ```bash
+  if grep -n '^\s*rg -q' scripts/*.sh; then
+      echo "FAIL: Script deploy còn dùng ripgrep; chuyển sang grep -qF/-qE" >&2
+      exit 1
+  fi
+  ```
+  Chạy lại toàn bộ `scripts/predeploy-local.sh` sau khi sửa: tất cả 45
+  assertion mới kích hoạt đều **PASS thật** trên local, không phải giả định.
 
 ### 4.3 Migration mới viết theo mẫu nào
 
