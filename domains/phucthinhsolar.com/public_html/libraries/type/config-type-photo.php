@@ -52,28 +52,28 @@
     $config['photo']['photo_static'][$nametype]['img_type'] = '.jpg|.gif|.png|.jpeg|.gif';
 
     /* Watermark */
-    // $nametype = "watermark";
-    // $config['photo']['photo_static'][$nametype]['title_main'] = "Watermark";
-    // $config['photo']['photo_static'][$nametype]['check'] = array("hienthi" => "Hiển thị");
-    // $config['photo']['photo_static'][$nametype]['images'] = true;
-    // $config['photo']['photo_static'][$nametype]['watermark'] = true;
-    // $config['photo']['photo_static'][$nametype]['watermark-advanced'] = true;
-    // $config['photo']['photo_static'][$nametype]['width'] = 50;
-    // $config['photo']['photo_static'][$nametype]['height'] = 50;
-    // $config['photo']['photo_static'][$nametype]['thumb'] = '50x50x1';
-    // $config['photo']['photo_static'][$nametype]['img_type'] = '.png|.PNG|.Png';
+    $nametype = "watermark";
+    $config['photo']['photo_static'][$nametype]['title_main'] = "Watermark sản phẩm";
+    $config['photo']['photo_static'][$nametype]['check'] = array("hienthi" => "Hiển thị");
+    $config['photo']['photo_static'][$nametype]['images'] = true;
+    $config['photo']['photo_static'][$nametype]['watermark'] = true;
+    $config['photo']['photo_static'][$nametype]['watermark-advanced'] = true;
+    $config['photo']['photo_static'][$nametype]['width'] = 50;
+    $config['photo']['photo_static'][$nametype]['height'] = 50;
+    $config['photo']['photo_static'][$nametype]['thumb'] = '50x50x1';
+    $config['photo']['photo_static'][$nametype]['img_type'] = '.png|.PNG|.Png';
 
-    // /* Watermark tin tức */
-    // $nametype = "watermark-news";
-    // $config['photo']['photo_static'][$nametype]['title_main'] = "Watermark tin tức";
-    // $config['photo']['photo_static'][$nametype]['check'] = array("hienthi" => "Hiển thị");
-    // $config['photo']['photo_static'][$nametype]['images'] = true;
-    // $config['photo']['photo_static'][$nametype]['watermark'] = true;
-    // $config['photo']['photo_static'][$nametype]['watermark-advanced'] = true;
-    // $config['photo']['photo_static'][$nametype]['width'] = 50;
-    // $config['photo']['photo_static'][$nametype]['height'] = 50;
-    // $config['photo']['photo_static'][$nametype]['thumb'] = '50x50x1';
-    // $config['photo']['photo_static'][$nametype]['img_type'] = '.png|.PNG|.Png';
+    /* Watermark tin tức */
+    $nametype = "watermark-news";
+    $config['photo']['photo_static'][$nametype]['title_main'] = "Watermark tin tức";
+    $config['photo']['photo_static'][$nametype]['check'] = array("hienthi" => "Hiển thị");
+    $config['photo']['photo_static'][$nametype]['images'] = true;
+    $config['photo']['photo_static'][$nametype]['watermark'] = true;
+    $config['photo']['photo_static'][$nametype]['watermark-advanced'] = true;
+    $config['photo']['photo_static'][$nametype]['width'] = 50;
+    $config['photo']['photo_static'][$nametype]['height'] = 50;
+    $config['photo']['photo_static'][$nametype]['thumb'] = '50x50x1';
+    $config['photo']['photo_static'][$nametype]['img_type'] = '.png|.PNG|.Png';
 
     /* Video */
     // $nametype = "video";

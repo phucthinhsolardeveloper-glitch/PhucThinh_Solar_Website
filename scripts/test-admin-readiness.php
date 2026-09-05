@@ -11,6 +11,7 @@ require LIBRARIES.'admin_security.php';
 require LIBRARIES.'admin_product_completeness.php';
 require LIBRARIES.'login_security.php';
 require LIBRARIES.'session_security.php';
+require LIBRARIES.'config-type.php';
 
 function readinessAssert($condition, $message)
 {
@@ -70,6 +71,28 @@ readinessAssert(
         && strpos(json_encode($apiExceptionPayload), 'SQLSTATE') === false,
     'Exception boundary Admin API trả lỗi trung tính theo contract JSON'
 );
+$newsTypeConfigSource = file_get_contents('/var/www/html/libraries/type/config-type-news.php');
+readinessAssert(substr_count($newsTypeConfigSource, '$nametype = "chinh-sach";') === 1, 'Cấu hình Chính sách chỉ còn một khai báo đầy đủ');
+readinessAssert(
+    isset($config['news']['chinh-sach'])
+        && empty($config['news']['chinh-sach']['images'])
+        && !empty($config['news']['chinh-sach']['content'])
+        && !empty($config['news']['chinh-sach']['seo']),
+    'Cấu hình Chính sách giữ form nội dung/SEO và không hiện trường ảnh không dùng'
+);
+readinessAssert(
+    isset($config['news']['hinh-thuc-thanh-toan'])
+        && !empty($config['news']['hinh-thuc-thanh-toan']['desc'])
+        && empty($config['news']['hinh-thuc-thanh-toan']['slug'])
+        && empty($config['news']['hinh-thuc-thanh-toan']['images']),
+    'Cấu hình Hình thức thanh toán chỉ mở các trường đang được checkout sử dụng'
+);
+readinessAssert(
+    !empty($config['photo']['photo_static']['watermark']['watermark-advanced'])
+        && !empty($config['photo']['photo_static']['watermark-news']['watermark-advanced']),
+    'Cấu hình Admin khôi phục đủ watermark sản phẩm và tin tức'
+);
+readinessAssert(!isset($config['static']['tom-tat-gioi-thieu']), 'Không khôi phục type Tóm tắt giới thiệu khi template public chưa render dữ liệu này');
 $apiBootstrapSource = file_get_contents('/var/www/html/administrator/api/config.php');
     readinessAssert(strpos($apiBootstrapSource, 'adminInstallApiExceptionHandler();') !== false, 'Bootstrap chung cài exception boundary cho mọi Admin API');
 $adminBootstrapSource = file_get_contents('/var/www/html/libraries/requick.php');
@@ -225,6 +248,41 @@ try
             && strpos($adminForm['body'], 'data_status=campaign_active') !== false,
         'Sidebar gom banner, popup và lối vào sản phẩm có khung trong nhóm Chiến dịch hiển thị'
     );
+    readinessAssert(
+        strpos($adminForm['body'], 'Hình thức thanh toán') !== false
+            && strpos($adminForm['body'], 'Watermark sản phẩm') !== false
+            && strpos($adminForm['body'], 'Watermark tin tức') !== false,
+        'Sidebar có lối vào ba nguồn nội dung dùng chung vừa khôi phục'
+    );
+    $policyForm = readinessHttp($base.'index.php?com=news&act=add&type=chinh-sach', 'GET', array(), $newCookie);
+    readinessAssert(
+        $policyForm['status'] === 200
+            && strpos($policyForm['body'], 'name="data[contentvi]"') !== false
+            && strpos($policyForm['body'], 'name="dataSeo[titlevi]"') !== false
+            && strpos($policyForm['body'], 'name="file"') === false,
+        'Form Chính sách dùng đúng một cấu hình nội dung/SEO, không còn field ảnh bị ghi đè'
+    );
+    $paymentList = readinessHttp($base.'index.php?com=news&act=man&type=hinh-thuc-thanh-toan', 'GET', array(), $newCookie);
+    $paymentForm = readinessHttp($base.'index.php?com=news&act=add&type=hinh-thuc-thanh-toan', 'GET', array(), $newCookie);
+    readinessAssert(
+        $paymentList['status'] === 200
+            && strpos($paymentList['body'], 'Danh sách Hình thức thanh toán') !== false
+            && $paymentForm['status'] === 200
+            && strpos($paymentForm['body'], 'name="data[namevi]"') !== false
+            && strpos($paymentForm['body'], 'name="data[descvi]"') !== false,
+        'Danh sách và form Hình thức thanh toán authenticated hoạt động'
+    );
+    foreach(array('watermark'=>'Watermark sản phẩm', 'watermark-news'=>'Watermark tin tức') as $watermarkType => $watermarkTitle)
+    {
+        $watermarkForm = readinessHttp($base.'index.php?com=photo&act=photo_static&type='.$watermarkType, 'GET', array(), $newCookie);
+        readinessAssert(
+            $watermarkForm['status'] === 200
+                && strpos($watermarkForm['body'], $watermarkTitle) !== false
+                && strpos($watermarkForm['body'], 'name="data[options][watermark][position]"') !== false
+                && strpos($watermarkForm['body'], 'name="admin_csrf"') !== false,
+            'Form '.$watermarkTitle.' authenticated render đủ cấu hình nâng cao và CSRF'
+        );
+    }
     $campaignDataStatus = adminProductDataStatus('campaign_active');
     $campaignCount = !empty($campaignDataStatus['sql']) ? $d->rawQueryOne("select count(*) as total from #_product p where p.type = ? and ".$campaignDataStatus['sql'], array('san-pham')) : array();
     readinessAssert(!empty($campaignDataStatus['sql']) && strpos($campaignDataStatus['sql'], 'photo_khuyenmai') !== false && isset($campaignCount['total']), 'Bộ lọc chiến dịch chỉ lấy sản phẩm có khung đang bật và có SQL hợp lệ');

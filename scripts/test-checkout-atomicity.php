@@ -54,6 +54,12 @@ function checkoutTestCleanup($d, $prefix)
 $prefix = 'CODXAT'.strtoupper(bin2hex(random_bytes(3)));
 $beforeOrder = (int)$d->rawQueryOne('select count(*) as total from #_order')['total'];
 $beforeDetail = (int)$d->rawQueryOne('select count(*) as total from #_order_detail')['total'];
+$visiblePayments = checkoutVisiblePaymentMethods($d, 'vi');
+$expectedVisiblePayments = (int)$d->rawQueryOne("select count(*) as total from #_news where type = ? and find_in_set('hienthi',status)", array('hinh-thuc-thanh-toan'))['total'];
+checkoutAssert($expectedVisiblePayments > 0 && count($visiblePayments) === $expectedVisiblePayments, 'Checkout chỉ nạp các hình thức thanh toán đang hiển thị');
+$visiblePayment = checkoutVisiblePaymentMethod($d, (int)$visiblePayments[0]['id']);
+$wrongTypePayment = $d->rawQueryOne("select id from #_news where type <> ? order by id limit 1", array('hinh-thuc-thanh-toan'));
+checkoutAssert(!empty($visiblePayment['id']) && empty(checkoutVisiblePaymentMethod($d, (int)$wrongTypePayment['id'])), 'Checkout chỉ chấp nhận ID đúng type hình thức thanh toán');
 $products = $d->rawQuery("select id from #_product where type = ? and regular_price > 0 order by id limit 2", array('san-pham'));
 checkoutAssert(count($products) === 2, 'Có hai sản phẩm local để test checkout');
 $thanksToken = checkoutRegisterThanks(123, 'TEST-CODE');

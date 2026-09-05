@@ -32,6 +32,25 @@
 			return $thanksToken;
 		}
 
+		function checkoutVisiblePaymentMethods($d, $lang = 'vi')
+		{
+			$lang = in_array($lang, array('vi', 'en'), true) ? $lang : 'vi';
+			return $d->rawQuery(
+				"select name{$lang}, desc{$lang}, id from #_news where type = ? and find_in_set('hienthi',status) order by numb,id desc",
+				array('hinh-thuc-thanh-toan')
+			);
+		}
+
+		function checkoutVisiblePaymentMethod($d, $paymentId)
+		{
+			$paymentId = (int)$paymentId;
+			if($paymentId <= 0) return array();
+			return $d->rawQueryOne(
+				"select id, namevi from #_news where id = ? and type = ? and find_in_set('hienthi',status) limit 0,1",
+				array($paymentId, 'hinh-thuc-thanh-toan')
+			);
+		}
+
 		function checkoutPersistOrder($d, $cart, $cartItems, $orderData, $lang, $faultInjector = null)
 		{
 			$idInsert = 0;
@@ -125,7 +144,7 @@
 	$city = $cache->get("select name, id from #_city order by id asc", null, 'result', 7200);
 
 	/* Hình thức thanh toán */
-	$payments_info = $d->rawQuery("select name$lang, desc$lang, id from #_news where type = ? order by numb,id desc",array('hinh-thuc-thanh-toan'));
+	$payments_info = checkoutVisiblePaymentMethods($d, $lang);
 
 	if(!empty($_POST['thanhtoan']))
 	{
@@ -172,6 +191,10 @@
 		/* Data */
 		$dataOrder = (!empty($_POST['dataOrder'])) ? $_POST['dataOrder'] : null;
 
+		$order_payment = 0;
+		$order_payment_data = array();
+		$order_payment_text = '';
+
 		/* Check data */
 		if(!empty($dataOrder))
 		{
@@ -193,9 +216,9 @@
 		    $address = htmlspecialchars($dataOrder['address']).', '.$ward_text['name'].', '.$district_text['name'].', '.$city_text['name'];
 
 		    /* Payment */
-		    $order_payment = (!empty($dataOrder['payments'])) ? htmlspecialchars($dataOrder['payments']) : 0;
-		    $order_payment_data = $func->getInfoDetail('namevi', 'news', $order_payment);
-		    $order_payment_text = $order_payment_data['namevi'];
+		    $order_payment = (!empty($dataOrder['payments'])) ? (int)$dataOrder['payments'] : 0;
+		    $order_payment_data = checkoutVisiblePaymentMethod($d, $order_payment);
+		    $order_payment_text = !empty($order_payment_data['namevi']) ? $order_payment_data['namevi'] : '';
 
 		    /* Ship */
 		    if(!empty($config['order']['ship']))
@@ -218,9 +241,9 @@
 		}
 
 	    /* Valid data */
-		if(empty($dataOrder['payments']))
+		if(empty($order_payment_data['id']))
 		{
-			$response['messages'][] = 'Chưa chọn hình thức thanh toán';
+			$response['messages'][] = 'Hình thức thanh toán không hợp lệ hoặc đã ngừng sử dụng';
 		}
 
 		if(empty($dataOrder['fullname']))
