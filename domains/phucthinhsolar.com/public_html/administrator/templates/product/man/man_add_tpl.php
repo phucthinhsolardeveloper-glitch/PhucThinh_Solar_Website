@@ -368,29 +368,43 @@
 			        </div>
 		        <?php } ?>
 					<?php if(isset($config['product'][$type]['images_khuyenmai']) && $config['product'][$type]['images_khuyenmai'] == true) { ?>
+						<?php
+						$productCampaignFallback = array();
+						if(!empty($item))
+						{
+							$productWithoutLegacyFrame = $item;
+							$productWithoutLegacyFrame['photo_khuyenmai'] = '';
+							$productCampaignFallback = productPromoFrameResolve($productWithoutLegacyFrame, productPromoCampaigns($cache));
+						}
+						$effectivePromoFrame = !empty($item) ? productPromoFrameForCard($item, $cache) : array();
+						$individualFrameSrc = !empty($item['photo_khuyenmai']) ? UPLOAD_PRODUCT_L.$item['photo_khuyenmai'] : '';
+						$campaignFallbackSrc = !empty($productCampaignFallback['photo']) ? $productCampaignFallback['upload'].$productCampaignFallback['photo'] : '';
+						?>
 				        <div class="card card-primary card-outline text-sm">
 				            <div class="card-header">
-				                <h3 class="card-title">Khung khuyến mãi/sự kiện</h3>
+				                <h3 class="card-title">Khung riêng của sản phẩm (không bắt buộc)</h3>
 				                <div class="card-tools">
 				                <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
 				                </div>
 				            </div>
 				            <div class="card-body">
-				                <small class="d-block text-muted mb-2">Upload PNG nền trong suốt. Khi bật cờ “Khuyến mãi/Sự kiện”, khung này sẽ phủ lên trên nhưng vẫn giữ nguyên ảnh sản phẩm bên dưới. Nên dùng ảnh vuông, phần giữa trong suốt và chi tiết chỉ nằm sát mép.</small>
+				                <div class="alert alert-info py-2">
+				                    Khung chiến dịch nên tạo một lần trong <a href="index.php?com=product_campaign&act=man&type=<?=urlencode($type)?>"><strong>Thư viện khung chiến dịch</strong></a> rồi chọn phạm vi áp dụng. Chỉ upload ở đây khi sản phẩm này thật sự cần khung riêng khác chiến dịch.
+				                </div>
 				                <div class="pts-promo-frame-admin-preview mb-2" aria-label="Xem trước ảnh sản phẩm và khung khuyến mãi">
 				                    <?=$func->getImage(['isLazy' => false, 'class' => 'pts-promo-frame-admin-base', 'sizes' => '300x300x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => (!empty($item['photo'])) ? $item['photo'] : '', 'alt' => 'Ảnh sản phẩm'])?>
-				                    <img id="pts-promo-frame-admin-overlay" class="pts-promo-frame-admin-overlay<?=empty($item['photo_khuyenmai']) ? ' d-none' : ''?>" src="<?=!empty($item['photo_khuyenmai']) ? UPLOAD_PRODUCT_L.$item['photo_khuyenmai'] : ''?>" alt="" aria-hidden="true">
+				                    <img id="pts-promo-frame-admin-overlay" class="pts-promo-frame-admin-overlay<?=empty($effectivePromoFrame) ? ' d-none' : ''?>" src="<?=!empty($effectivePromoFrame) ? $effectivePromoFrame['upload'].$effectivePromoFrame['photo'] : ''?>" data-individual-src="<?=htmlspecialchars($individualFrameSrc, ENT_QUOTES, 'UTF-8')?>" data-campaign-src="<?=htmlspecialchars($campaignFallbackSrc, ENT_QUOTES, 'UTF-8')?>" alt="" aria-hidden="true">
 				                </div>
-				                <small class="d-block text-muted mb-2"><i class="fas fa-layer-group mr-1"></i>Xem trước ghép lớp: ảnh sản phẩm ở dưới, khung PNG ở trên.</small>
+				                <small class="d-block text-muted mb-2"><i class="fas fa-layer-group mr-1"></i>Khung đang xem: <?=!empty($effectivePromoFrame) ? ($effectivePromoFrame['source'] === 'product' ? 'khung riêng' : 'chiến dịch “'.htmlspecialchars($effectivePromoFrame['campaign_name'], ENT_QUOTES, 'UTF-8').'”') : 'chưa có'?>. Ảnh sản phẩm gốc luôn được giữ ở lớp dưới.</small>
 				                <?php if(!empty($item['photo_khuyenmai'])) { ?>
 				                <div class="custom-control custom-checkbox mb-2">
 				                    <input type="checkbox" class="custom-control-input" name="remove_photo_khuyenmai" id="remove_photo_khuyenmai" value="1">
-				                    <label class="custom-control-label" for="remove_photo_khuyenmai">Xoá khung khuyến mãi hiện tại</label>
+				                    <label class="custom-control-label" for="remove_photo_khuyenmai">Bỏ khung riêng (nếu có chiến dịch phù hợp sẽ tự dùng khung chiến dịch)</label>
 				                </div>
 				                <?php } ?>
 				                <div class="custom-file my-custom-file">
 				                    <input type="file" class="custom-file-input" name="file_khuyenmai" id="file_khuyenmai" lang="vi" accept=".png,image/png">
-				                    <label class="custom-file-label mb-0" data-browse="Chọn" for="file_khuyenmai">Chọn khung PNG trong suốt</label>
+				                    <label class="custom-file-label mb-0" data-browse="Chọn" for="file_khuyenmai">Chọn PNG override riêng</label>
 				                </div>
 				            </div>
 				        </div>

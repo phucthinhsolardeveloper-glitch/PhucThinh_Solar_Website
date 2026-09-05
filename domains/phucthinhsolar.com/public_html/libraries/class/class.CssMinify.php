@@ -49,7 +49,10 @@
 
 		public function get()
 		{
-			$this->init(md5(implode(",",$this->file)));
+			$signature = array();
+			foreach($this->path as $index => $path)
+				$signature[] = $this->file[$index].':'.(is_file($path['server']) ? filemtime($path['server']) : 0);
+			$this->init(md5(implode(",",$signature)));
 			if(empty($this->path)) die("No files to optimize");
 			return ($this->debug) ? $this->links() : $this->minify();
 		}

@@ -9,6 +9,7 @@ $cache = new Cache($d);
 $func = new Functions($d, $cache);
 require LIBRARIES.'admin_security.php';
 require LIBRARIES.'admin_product_completeness.php';
+require LIBRARIES.'product_promo.php';
 require LIBRARIES.'login_security.php';
 require LIBRARIES.'session_security.php';
 require LIBRARIES.'config-type.php';
@@ -56,6 +57,32 @@ function readinessHttp($url, $method = 'GET', $data = array(), $cookie = '')
     return array('status' => $status, 'body' => $body, 'cookies' => $setCookies);
 }
 
+function readinessHttpMultipart($url, $fields, $fileField, $fileName, $fileContent, $cookie = '')
+{
+    $boundary = '----PTSReadiness'.bin2hex(random_bytes(8));
+    $body = '';
+    foreach($fields as $name => $value)
+    {
+        foreach(is_array($value) ? $value : array($value) as $item)
+        {
+            $body .= '--'.$boundary."\r\n";
+            $body .= 'Content-Disposition: form-data; name="'.$name.'"'."\r\n\r\n".(string)$item."\r\n";
+        }
+    }
+    $body .= '--'.$boundary."\r\n";
+    $body .= 'Content-Disposition: form-data; name="'.$fileField.'"; filename="'.$fileName.'"'."\r\n";
+    $body .= "Content-Type: image/png\r\n\r\n".$fileContent."\r\n";
+    $body .= '--'.$boundary."--\r\n";
+    $headers = array('User-Agent: PTS-Local-Readiness-Test', 'Content-Type: multipart/form-data; boundary='.$boundary, 'Content-Length: '.strlen($body));
+    if($cookie !== '') $headers[] = 'Cookie: '.$cookie;
+    $context = stream_context_create(array('http'=>array('method'=>'POST', 'ignore_errors'=>true, 'timeout'=>20, 'header'=>implode("\r\n", $headers), 'content'=>$body)));
+    $responseBody = file_get_contents($url, false, $context);
+    $responseHeaders = isset($http_response_header) ? $http_response_header : array();
+    $status = 0;
+    foreach($responseHeaders as $header) if(preg_match('#^HTTP/\S+\s+(\d+)#i', $header, $match)) $status = (int)$match[1];
+    return array('status'=>$status, 'body'=>$responseBody, 'cookies'=>array());
+}
+
 function readinessSessionCookie($setCookies)
 {
     foreach($setCookies as $cookie)
@@ -92,6 +119,14 @@ readinessAssert(
         && !empty($config['photo']['photo_static']['watermark-news']['watermark-advanced']),
     'Cấu hình Admin khôi phục đủ watermark sản phẩm và tin tức'
 );
+$adminLayoutCssSource = file_get_contents('/var/www/html/administrator/templates/layout/css.php');
+$adminStyleSource = file_get_contents('/var/www/html/administrator/assets/css/adminlte-style.css');
+readinessAssert(
+    strpos(file_get_contents('/var/www/html/libraries/config-type.php'), 'product_campaign&act=man') !== false
+        && strpos($adminLayoutCssSource, 'filemtime(ROOT') !== false
+        && strpos($adminStyleSource, '.pts-admin-product-thumb{position:relative;display:inline-block;width:70px;height:55px;') !== false,
+    'Sidebar mở thư viện chiến dịch và CSS Admin có cache-busting theo phiên bản file'
+);
 readinessAssert(!isset($config['static']['tom-tat-gioi-thieu']), 'Không khôi phục type Tóm tắt giới thiệu khi template public chưa render dữ liệu này');
 $apiBootstrapSource = file_get_contents('/var/www/html/administrator/api/config.php');
     readinessAssert(strpos($apiBootstrapSource, 'adminInstallApiExceptionHandler();') !== false, 'Bootstrap chung cài exception boundary cho mọi Admin API');
@@ -111,6 +146,8 @@ $createdNewsletterIds = array();
 $createdSortableIds = array('sortable'=>array(), 'sortable_index'=>array(), 'sortable_detail'=>array());
 $createdCommentIds = array();
 $createdGalleryIds = array();
+$createdCampaignIds = array();
+$createdCampaignPhotos = array();
 
 try
 {
@@ -128,7 +165,7 @@ try
     foreach($d->rawQuery("select id from #_product where code like ? or code like ?", array('CODEX-BULK-STATUS-%', 'CODEX-BS-%')) as $staleProduct)
         $d->rawQuery("delete from #_product where id = ?", array((int)$staleProduct['id']));
     $matrix = array(
-        'product' => array('product_man_san-pham','product_add_san-pham','product_edit_san-pham','product_delete_san-pham','product_add_photo_san-pham','product_edit_photo_san-pham','product_delete_photo_san-pham','newsletter_man_dangkynhantin','newsletter_edit_dangkynhantin'),
+        'product' => array('product_man_san-pham','product_add_san-pham','product_edit_san-pham','product_delete_san-pham','product_add_photo_san-pham','product_edit_photo_san-pham','product_delete_photo_san-pham','product_campaign_man_san-pham','product_campaign_add_san-pham','product_campaign_edit_san-pham','newsletter_man_dangkynhantin','newsletter_edit_dangkynhantin'),
         'order' => array('order_man','order_edit'),
         'content' => array('news_man_tin-tuc','news_add_tin-tuc','news_edit_tin-tuc','news_delete_tin-tuc'),
         'viewer' => array('product_man_san-pham')
@@ -237,6 +274,7 @@ try
 
     $adminForm = readinessHttp($base.'index.php?com=product&act=add&type=san-pham', 'GET', array(), $newCookie);
     readinessAssert($adminForm['status'] === 200 && strpos($adminForm['body'], 'name="admin_csrf"') !== false, 'Form sản phẩm authenticated render CSRF field');
+    readinessAssert(preg_match('/adminlte-style\.css\?v=\d+/', $adminForm['body']) === 1, 'Trang Admin phát URL CSS có phiên bản để không giữ thumbnail khung bị phóng to');
     readinessAssert(
         strpos($adminForm['body'], 'pts-promo-frame-admin-preview') !== false
             && strpos($adminForm['body'], 'id="pts-promo-frame-admin-overlay"') !== false
@@ -245,8 +283,75 @@ try
     );
     readinessAssert(
         strpos($adminForm['body'], 'Chiến dịch hiển thị') !== false
-            && strpos($adminForm['body'], 'data_status=campaign_active') !== false,
-        'Sidebar gom banner, popup và lối vào sản phẩm có khung trong nhóm Chiến dịch hiển thị'
+            && strpos($adminForm['body'], 'data_status=campaign_active') !== false
+            && strpos($adminForm['body'], 'product_campaign&act=man') !== false,
+        'Sidebar gom banner, popup, thư viện khung và sản phẩm có khung trong nhóm Chiến dịch hiển thị'
+    );
+    $campaignListPage = readinessHttp($base.'index.php?com=product_campaign&act=man&type=san-pham', 'GET', array(), $newCookie);
+    $campaignAddPage = readinessHttp($base.'index.php?com=product_campaign&act=add&type=san-pham', 'GET', array(), $newCookie);
+    $campaignHasToken = preg_match('/name="admin_csrf"\s+value="([^"]+)"/', $campaignAddPage['body'], $campaignToken) === 1;
+    readinessAssert(
+        $campaignListPage['status'] === 200
+            && strpos($campaignListPage['body'], 'Danh sách chiến dịch') !== false
+            && $campaignAddPage['status'] === 200
+            && strpos($campaignAddPage['body'], 'name="scopes[product][]"') !== false
+            && $campaignHasToken,
+        'Thư viện chiến dịch render danh sách/form, chọn được sản phẩm riêng và có CSRF'
+    );
+    $campaignTargetCode = 'PTS-CAMP-'.bin2hex(random_bytes(4));
+    $d->insert('product', array(
+        'code'=>$campaignTargetCode, 'namevi'=>$campaignTargetCode, 'slugvi'=>strtolower($campaignTargetCode),
+        'type'=>'san-pham', 'status'=>'hienthi', 'numb'=>0, 'cong_suat'=>0, 'regular_price'=>0,
+        'sale_price'=>0, 'discount'=>0, 'id_list'=>0, 'id_cat'=>0, 'id_item'=>0, 'id_sub'=>0,
+        'id_brand'=>0, 'date_created'=>time(), 'date_updated'=>0, 'view'=>0
+    ));
+    $campaignTarget = array('id'=>(int)$d->getLastInsertId());
+    $createdProductIds[] = (int)$campaignTarget['id'];
+    readinessAssert(!empty($campaignTarget['id']), 'Tạo sản phẩm fixture riêng để kiểm tra phạm vi chiến dịch');
+    $campaignFixtureName = 'CODEX-CAMPAIGN-'.bin2hex(random_bytes(4));
+    $campaignPng = base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIHWP4z8DwHwAFgAI/ScL3WQAAAABJRU5ErkJggg==');
+    $campaignSave = readinessHttpMultipart($base.'index.php?com=product_campaign&act=save&type=san-pham', array(
+        'admin_csrf'=>$campaignToken[1], 'id'=>'0', 'data[name]'=>$campaignFixtureName, 'data[priority]'=>'77',
+        'data[start_at]'=>'', 'data[end_at]'=>'', 'enabled'=>'1', 'scopes[product][]'=>(string)$campaignTarget['id']
+    ), 'file', 'campaign-fixture.png', $campaignPng, $newCookie);
+    $savedCampaign = $d->rawQueryOne('select id, photo, priority, status from #_product_campaign where name = ? limit 1', array($campaignFixtureName));
+    if(!empty($savedCampaign['id']))
+    {
+        $createdCampaignIds[] = (int)$savedCampaign['id'];
+        if(!empty($savedCampaign['photo'])) $createdCampaignPhotos[] = $savedCampaign['photo'];
+    }
+    $savedCampaignScope = !empty($savedCampaign['id']) ? $d->rawQueryOne('select scope_type, scope_id from #_product_campaign_scope where id_campaign = ? limit 1', array((int)$savedCampaign['id'])) : array();
+    $campaignSaveValid = in_array($campaignSave['status'], array(200,302), true)
+        && !empty($savedCampaign['id'])
+        && strtolower(pathinfo($savedCampaign['photo'], PATHINFO_EXTENSION)) === 'png'
+        && (int)$savedCampaign['priority'] === 77
+        && $savedCampaign['status'] === 'hienthi'
+        && $savedCampaignScope['scope_type'] === 'product'
+        && (int)$savedCampaignScope['scope_id'] === (int)$campaignTarget['id'];
+    readinessAssert(
+        $campaignSaveValid,
+        'Lưu campaign upload PNG và phạm vi sản phẩm trong transaction'
+            .' [http='.(int)$campaignSave['status'].', row='.(empty($savedCampaign['id']) ? 'missing' : 'present').', scope='.(isset($savedCampaignScope['scope_type']) ? $savedCampaignScope['scope_type'] : 'missing').']'
+    );
+    $campaignPublicPage = readinessHttp('http://127.0.0.1/tim-kiem/?keyword='.rawurlencode($campaignTargetCode));
+    readinessAssert(
+        $campaignPublicPage['status'] === 200
+            && strpos($campaignPublicPage['body'], $campaignTargetCode) !== false
+            && strpos($campaignPublicPage['body'], 'pts-promo-frame') !== false
+            && strpos($campaignPublicPage['body'], $savedCampaign['photo']) !== false,
+        'Card public resolve đúng khung campaign cho riêng sản phẩm đã gán'
+    );
+    $campaignDisable = readinessHttp($base.'index.php?com=product_campaign&act=save&type=san-pham', 'POST', array(
+        'admin_csrf'=>$campaignToken[1], 'id'=>(int)$savedCampaign['id'],
+        'data'=>array('name'=>$campaignFixtureName, 'priority'=>'77', 'start_at'=>'', 'end_at'=>''),
+        'scopes'=>array('product'=>array((int)$campaignTarget['id']))
+    ), $newCookie);
+    $disabledCampaign = $d->rawQueryOne('select status, photo from #_product_campaign where id = ?', array((int)$savedCampaign['id']));
+    readinessAssert(
+        in_array($campaignDisable['status'], array(200,302), true)
+            && (string)$disabledCampaign['status'] === ''
+            && $disabledCampaign['photo'] === $savedCampaign['photo'],
+        'Tắt campaign không xóa artwork hoặc thay đổi phạm vi sản phẩm khác'
     );
     readinessAssert(
         strpos($adminForm['body'], 'Hình thức thanh toán') !== false
@@ -295,7 +400,7 @@ try
     );
     $adminList = readinessHttp($base.'index.php?com=product&act=man&type=san-pham', 'GET', array(), $newCookie);
     $campaignList = readinessHttp($base.'index.php?com=product&act=man&type=san-pham&data_status=campaign_active', 'GET', array(), $newCookie);
-    readinessAssert($campaignList['status'] === 200 && strpos($campaignList['body'], 'Đang lọc: Đang có khung campaign') !== false, 'Lối vào chiến dịch mở đúng danh sách sản phẩm đã lọc');
+    readinessAssert($campaignList['status'] === 200 && strpos($campaignList['body'], 'Đang lọc: Đang có khung chiến dịch') !== false, 'Lối vào chiến dịch mở đúng danh sách sản phẩm đã lọc');
 	$specialSearchKeyword = "O'Reilly % Đèn";
 	$specialSearchRoutes = array(
 		'Kích thước sản phẩm' => 'index.php?com=product&act=man_size&type=san-pham',
@@ -788,6 +893,12 @@ try
 }
 finally
 {
+    foreach($createdCampaignIds as $campaignId)
+    {
+        $d->rawQuery('delete from #_product_campaign_scope where id_campaign = ?', array($campaignId));
+        $d->rawQuery('delete from #_product_campaign where id = ?', array($campaignId));
+    }
+    foreach($createdCampaignPhotos as $campaignPhoto) $func->deleteFile(UPLOAD_PHOTO.$campaignPhoto);
     foreach($createdGalleryIds as $galleryId) $d->rawQuery('delete from #_gallery where id = ?', array($galleryId));
     foreach($createdCommentIds as $commentId) $d->rawQuery('delete from #_comment where id = ? or id_parent = ?', array($commentId, $commentId));
     foreach($createdSortableIds as $sortableTable => $sortableIds)

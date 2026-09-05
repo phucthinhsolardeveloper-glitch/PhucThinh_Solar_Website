@@ -56,11 +56,15 @@ Không còn lỗi P0/P1 nào đang mở.
 Backup database production trước, sau đó chạy migration **đúng thứ tự**:
 
 ```
-013 → 015 --apply → 016 → 017 → 018 → 019 → 020 → 021
+013 → 015 --apply → 016 → 017 → 018 → 019 → 020 → 021 → 022
 ```
 
 `021` (2026-09-05, thêm cột `photo_khuyenmai` cho ảnh khuyến mãi/sự kiện theo
 sản phẩm) chỉ thêm cột nullable, không cần dry-run, an toàn chạy trực tiếp.
+
+`022` tạo hai bảng InnoDB cho thư viện campaign và phạm vi áp dụng. Migration
+không backfill/đụng `table_product`; chạy trước source mới. Khi rollback code,
+giữ bảng và dữ liệu campaign, không DROP tự động.
 
 `018`, `019`, `020` **mặc định dry-run**. Phải chạy xem trước trên DB thật, đọc
 kết quả, rồi mới thêm `--apply`. Production nhiều khả năng có mức thiệt hại
@@ -69,18 +73,11 @@ dòng cần sửa sẽ khác.
 
 `014` là báo cáo chỉ đọc, chạy lúc nào cũng được.
 
-### 3.2 Cập nhật ảnh baseline visual
+### 3.2 Baseline visual — đã hoàn tất
 
-`tools/visual-tests/visual-baseline.spec.js` đang 2 fail / 1 pass
-(`home` desktop, `products` mobile). Ảnh lệch **từ trước phiên 2026-09-04** do
-giao diện đã thay đổi hợp lệ, không phải regression của phiên này.
-
-Chỉ chạy lệnh dưới **sau khi chủ project nhìn và xác nhận giao diện hiện tại là
-đúng** — nó chốt lại ảnh chuẩn:
-
-```bash
-cd tools/visual-tests && npx playwright test visual-baseline.spec.js --update-snapshots
-```
+Baseline đã được cập nhật sau khi xác nhận giao diện hiện tại. Lần chạy đầy đủ
+ngày 2026-09-05 đạt `54 passed, 2 skipped`; baseline trang chủ, danh sách sản
+phẩm, dải danh mục và chi tiết sản phẩm đều đạt trên các project được cấu hình.
 
 ### 3.2b Tính năng mới thêm 2026-09-05 (đã test, chưa dùng thật)
 
@@ -93,12 +90,10 @@ chuẩn bị theo từng đợt sự kiện:
   tắt là ẩn, ảnh vẫn lưu lại dùng cho đợt sau.
 - **Popup khi vào trang chủ**: Admin → Cài đặt hình ảnh → "Popup quảng cáo".
   Data cũ đã có sẵn trong DB (ai đó cấu hình trước đây), giờ có nút bật/tắt.
-- **Ảnh khuyến mãi/sự kiện theo từng sản phẩm**: sửa 1 sản phẩm → card "Ảnh
-  khuyến mãi/sự kiện" để upload + tick cờ "Khuyến mãi/Sự kiện" ở khối trạng
-  thái. Card sản phẩm sẽ ưu tiên hiện ảnh này thay ảnh thường. Áp dụng hàng
-  loạt: cột "Khuyến mãi/Sự kiện" tự xuất hiện ở trang danh sách sản phẩm
-  (checkbox từng dòng + nút "Cập nhật hàng loạt" theo trang/toàn bộ lọc) và
-  trong file Excel xuất/nhập hàng loạt (`administrator?com=product&act=export`).
+- **Khung card chiến dịch**: vào `Chiến dịch hiển thị → Thư viện khung chiến
+  dịch`, upload PNG một lần rồi chọn danh mục, thương hiệu hoặc sản phẩm cụ thể;
+  có lịch chạy, bật/tắt và mức ưu tiên khi trùng phạm vi. Ảnh/flag per-product
+  cũ vẫn được giữ làm override, không cần upload lặp cho chiến dịch mới.
 
 Nhân tiện rà soát phát hiện 2 chỗ Admin thiếu quyền chỉnh dù frontend đang
 hiển thị thật (ảnh + video trang "Về chúng tôi") — đã đăng ký lại, xem
@@ -112,11 +107,11 @@ migrations/021 và commit tương ứng.
 - **"Tin tuyển dụng"**: hiện ẩn khỏi menu vì chưa có bài nào. Đăng bài thuộc
   danh mục này là nó tự hiện lại, không cần sửa code.
 
-### 3.4 Push — đã xong
+### 3.4 Push — còn commit local chưa đẩy
 
-Đã push 2026-09-04. Local và `origin/feature/ecommerce-upgrade` khớp nhau ở
-`bf79e07`, 0 commit còn lại. Việc còn lại là mở PR / merge khi chủ project
-sẵn sàng, không phải push thêm.
+Remote hiện dừng ở `bf79e07`. Các thay đổi ngày 2026-09-05, gồm popup theo tab,
+khôi phục nguồn nội dung dùng chung và thư viện khung chiến dịch, đang ở local;
+chỉ push/mở PR khi chủ project yêu cầu.
 
 ## 4. Bối cảnh cần biết trước khi sửa tiếp
 

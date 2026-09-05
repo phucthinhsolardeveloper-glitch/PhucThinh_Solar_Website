@@ -12,7 +12,14 @@
             "photo_static" => array("banner-top", "popup"),
             "shortcut" => array(
                 array(
-                    "title" => "Sản phẩm có khung card",
+                    "title" => "Thư viện khung chiến dịch",
+                    "href" => "index.php?com=product_campaign&act=man&type=san-pham",
+                    "icon" => "fas fa-images",
+                    "permission" => array("product_campaign", "man", "san-pham"),
+                    "active" => array("com" => "product_campaign", "act" => "man", "type" => "san-pham")
+                ),
+                array(
+                    "title" => "Sản phẩm đang có khung",
                     "href" => "index.php?com=product&act=man&type=san-pham&data_status=campaign_active",
                     "icon" => "fas fa-layer-group",
                     "permission" => array("product", "man", "san-pham"),

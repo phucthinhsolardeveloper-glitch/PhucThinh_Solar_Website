@@ -17,4 +17,4 @@
 <link href="assets/simplenotify/simple-notify.css" rel="stylesheet">
 <link href="assets/comment/comment.css" rel="stylesheet">
 <link href="assets/css/adminlte.css" rel="stylesheet">
-<link href="assets/css/adminlte-style.css" rel="stylesheet">
+<link href="assets/css/adminlte-style.css?v=<?=@filemtime(ROOT.'administrator/assets/css/adminlte-style.css')?>" rel="stylesheet">

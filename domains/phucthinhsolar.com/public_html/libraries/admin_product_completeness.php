@@ -19,7 +19,10 @@ if(!function_exists('adminProductDataStatusDefinitions'))
             'missing_content' => array('label' => 'Thiếu nội dung chi tiết', 'sql' => "coalesce(trim(p.contentvi), '') = ''"),
             'missing_specs' => array('label' => 'Thiếu thông số kỹ thuật', 'sql' => '('.implode(' and ', $emptySpecs).')'),
             'missing_wattage' => array('label' => 'Thiếu công suất', 'sql' => '(p.cong_suat is null or p.cong_suat <= 0)'),
-            'campaign_active' => array('label' => 'Đang có khung campaign', 'sql' => "coalesce(trim(p.photo_khuyenmai), '') <> '' and find_in_set('khuyenmai', p.status)")
+            'campaign_active' => array(
+                'label' => 'Đang có khung chiến dịch',
+                'sql' => "((coalesce(trim(p.photo_khuyenmai), '') <> '' and find_in_set('khuyenmai', p.status)) or exists (select 1 from #_product_campaign c inner join #_product_campaign_scope pcs on pcs.id_campaign = c.id where find_in_set('hienthi',c.status) and coalesce(trim(c.photo), '') <> '' and (c.start_at = 0 or c.start_at <= unix_timestamp()) and (c.end_at = 0 or c.end_at >= unix_timestamp()) and (pcs.scope_type = 'all' or (pcs.scope_type = 'product' and pcs.scope_id = p.id) or (pcs.scope_type = 'cat' and pcs.scope_id = p.id_cat) or (pcs.scope_type = 'brand' and pcs.scope_id = p.id_brand) or (pcs.scope_type = 'list' and pcs.scope_id = p.id_list))))"
+            )
         );
     }
 

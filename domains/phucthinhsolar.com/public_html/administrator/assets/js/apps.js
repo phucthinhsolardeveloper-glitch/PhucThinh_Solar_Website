@@ -40,9 +40,22 @@ $(document).on('change', '#file_khuyenmai', function(){
 	}
 	var reader = new FileReader();
 	reader.onload = function(event){
-		$('#pts-promo-frame-admin-overlay').attr('src', event.target.result).removeClass('d-none');
+		$('#pts-promo-frame-admin-overlay').attr('src', event.target.result).attr('data-selected-src', event.target.result).removeClass('d-none');
 		$('#remove_photo_khuyenmai').prop('checked', false);
 	};
+	reader.readAsDataURL(file);
+});
+
+$(document).on('change', '#campaign-file', function(){
+	var file = this.files && this.files[0];
+	if(!file) return;
+	if(file.type !== 'image/png' || !/\.png$/i.test(file.name)){
+		this.value = '';
+		notifyDialog('Khung chiến dịch chỉ nhận file PNG nền trong suốt.');
+		return;
+	}
+	var reader = new FileReader();
+	reader.onload = function(event){ $('#campaign-frame-preview').attr('src', event.target.result).removeClass('d-none'); };
 	reader.readAsDataURL(file);
 });
 
@@ -55,7 +68,11 @@ $(document).on('change', '#file-zone', function(){
 });
 
 $(document).on('change', '#remove_photo_khuyenmai', function(){
-	$('#pts-promo-frame-admin-overlay').toggleClass('d-none', this.checked);
+	var overlay = $('#pts-promo-frame-admin-overlay');
+	var src = this.checked
+		? (overlay.attr('data-campaign-src') || '')
+		: (overlay.attr('data-selected-src') || overlay.attr('data-individual-src') || overlay.attr('data-campaign-src') || '');
+	overlay.attr('src', src).toggleClass('d-none', !src);
 });
 
 function isExist(ele)

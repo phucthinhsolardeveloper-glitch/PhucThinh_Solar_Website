@@ -39,6 +39,7 @@ docker cp scripts/test-product-bulk.php "$web_container:/tmp/test-product-bulk.p
 docker cp scripts/test-product-project-links.php "$web_container:/tmp/test-product-project-links.php"
 docker cp scripts/test-product-power-filter.php "$web_container:/tmp/test-product-power-filter.php"
 docker cp scripts/test-product-content-blocks.php "$web_container:/tmp/test-product-content-blocks.php"
+docker cp scripts/test-product-campaign.php "$web_container:/tmp/test-product-campaign.php"
 docker cp scripts/test-pdodb-exceptions.php "$web_container:/tmp/test-pdodb-exceptions.php"
 docker cp scripts/test-product-pricing-admin-http.php "$web_container:/tmp/test-product-pricing-admin-http.php"
 docker cp scripts/test-checkout-atomicity.php "$web_container:/tmp/test-checkout-atomicity.php"
@@ -64,6 +65,10 @@ php -l libraries/order_security.php
 php -l libraries/session_security.php
 php -l libraries/public_route_resolver.php
 php -l libraries/product_category_urls.php
+php -l libraries/product_promo.php
+php -l administrator/sources/product_campaign.php
+php -l administrator/templates/product_campaign/list_tpl.php
+php -l administrator/templates/product_campaign/form_tpl.php
 php -l libraries/router.php
 php /tmp/test-security-hardening.php
 php /tmp/test-admin-readiness.php
@@ -71,6 +76,7 @@ php /tmp/test-product-bulk.php
 php /tmp/test-product-project-links.php
 php /tmp/test-product-power-filter.php
 php /tmp/test-product-content-blocks.php
+php /tmp/test-product-campaign.php
 php /tmp/test-pdodb-exceptions.php
 php /tmp/test-product-pricing-admin-http.php
 php /tmp/test-checkout-atomicity.php
@@ -82,6 +88,12 @@ php /tmp/preflight-commerce-migrations.php
 redirect_table="$(docker compose -f "$compose_file" exec -T db mariadb -N -B -upts_local -ppts_local_only phucthinhs_local -e "SHOW TABLES LIKE 'table_url_redirect';")"
 if [ "$redirect_table" != "table_url_redirect" ]; then
     echo "FAIL: Chưa áp dụng migrations/012_add_public_url_redirects.sql trên DB local" >&2
+    exit 1
+fi
+
+campaign_table_count="$(docker compose -f "$compose_file" exec -T db mariadb -N -B -upts_local -ppts_local_only information_schema -e "SELECT COUNT(*) FROM TABLES WHERE TABLE_SCHEMA='phucthinhs_local' AND TABLE_NAME IN ('table_product_campaign','table_product_campaign_scope');")"
+if [ "$campaign_table_count" != "2" ]; then
+    echo "FAIL: Chưa áp dụng migrations/022_add_product_campaigns.sql trên DB local" >&2
     exit 1
 fi
 
@@ -229,7 +241,7 @@ curl -fsS -H 'Accept-Encoding: gzip, deflate' -D /tmp/pts-predeploy-static-heade
 grep -qiE '^Content-Encoding: gzip' /tmp/pts-predeploy-static-headers.txt
 grep -qiE '^Cache-Control: .*max-age=' /tmp/pts-predeploy-static-headers.txt
 
-remaining="$(docker compose -f "$compose_file" exec -T db mariadb -N -B -upts_local -ppts_local_only phucthinhs_local -e "SELECT (SELECT COUNT(*) FROM table_product WHERE code LIKE 'CODEX-BULK-%') + (SELECT COUNT(*) FROM table_user WHERE username LIKE 'codex-rbac-%') + (SELECT COUNT(*) FROM table_permission_group WHERE name LIKE 'CODEX-RBAC-%') + (SELECT COUNT(*) FROM table_user_limit WHERE login_ip LIKE 'form:%');")"
+remaining="$(docker compose -f "$compose_file" exec -T db mariadb -N -B -upts_local -ppts_local_only phucthinhs_local -e "SELECT (SELECT COUNT(*) FROM table_product WHERE code LIKE 'CODEX-BULK-%') + (SELECT COUNT(*) FROM table_product_campaign WHERE name LIKE 'CODEX%') + (SELECT COUNT(*) FROM table_user WHERE username LIKE 'codex-rbac-%') + (SELECT COUNT(*) FROM table_permission_group WHERE name LIKE 'CODEX-RBAC-%') + (SELECT COUNT(*) FROM table_user_limit WHERE login_ip LIKE 'form:%');")"
 if [ "$remaining" != "0" ]; then
     echo "FAIL: Còn $remaining dòng dữ liệu kiểm thử trong DB local" >&2
     exit 1

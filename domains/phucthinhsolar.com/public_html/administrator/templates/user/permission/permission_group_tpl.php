@@ -249,6 +249,23 @@
 			                    </div>
 							</div>
 						</div>
+						<div class="form-group row">
+							<label class="d-inline-block align-middle mb-2 mr-2 text-md col-md-3" for="quyen-product-campaign-view-<?=$key?>">Chiến dịch khung sản phẩm:</label>
+							<div class="col-md-7">
+								<div class="custom-control custom-checkbox d-inline-block align-middle mb-2 mr-4 text-md">
+									<input type="checkbox" class="custom-control-input" name="dataPermission[]" id="quyen-product-campaign-view-<?=$key?>" value="product_campaign_man_<?=$key?>" <?=(isset($lists_permission) && in_array('product_campaign_man_'.$key, $lists_permission))?'checked':'';?>>
+									<label for="quyen-product-campaign-view-<?=$key?>" class="custom-control-label font-weight-normal">Xem danh sách</label>
+								</div>
+								<div class="custom-control custom-checkbox d-inline-block align-middle mb-2 mr-4 text-md">
+									<input type="checkbox" class="custom-control-input" name="dataPermission[]" id="quyen-product-campaign-add-<?=$key?>" value="product_campaign_add_<?=$key?>" <?=(isset($lists_permission) && in_array('product_campaign_add_'.$key, $lists_permission))?'checked':'';?>>
+									<label for="quyen-product-campaign-add-<?=$key?>" class="custom-control-label font-weight-normal">Thêm mới</label>
+								</div>
+								<div class="custom-control custom-checkbox d-inline-block align-middle mb-2 text-md">
+									<input type="checkbox" class="custom-control-input" name="dataPermission[]" id="quyen-product-campaign-edit-<?=$key?>" value="product_campaign_edit_<?=$key?>" <?=(isset($lists_permission) && in_array('product_campaign_edit_'.$key, $lists_permission))?'checked':'';?>>
+									<label for="quyen-product-campaign-edit-<?=$key?>" class="custom-control-label font-weight-normal">Chỉnh sửa / bật tắt</label>
+								</div>
+							</div>
+						</div>
 						<?php if(isset($value['comment']) && $value['comment'] == true) { ?>
 							<div class="form-group row">
 								<label class="d-inline-block align-middle mb-2 mr-2 text-md col-md-3" for="quyen-comment-product-<?=$key?>"><?=$value['title_main']?> <span class="font-weight-normal">(Bình luận)</span>:</label>

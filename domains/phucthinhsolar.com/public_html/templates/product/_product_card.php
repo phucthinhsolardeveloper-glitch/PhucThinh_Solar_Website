@@ -3,14 +3,14 @@
  * Partial hiển thị card sản phẩm dùng chung.
  * $pcNoLazy tắt lazy-load cho card nằm trong carousel.
  */
+require_once LIBRARIES.'product_promo.php';
 
 $pcDiscount = publicProductPricesVisible() && (!empty($v['sale_price']) && !empty($v['regular_price']) && $v['regular_price'] > $v['sale_price'])
     ? round((($v['regular_price'] - $v['sale_price']) / $v['regular_price']) * 100)
     : 0;
 
-/* Khung khuyến mãi PNG phủ lên ảnh thật; không thay thế ảnh sản phẩm. */
-$pcPromoStatuses = array_filter(array_map('trim', explode(',', isset($v['status']) ? (string) $v['status'] : '')));
-$pcHasPromoFrame = in_array('khuyenmai', $pcPromoStatuses, true) && !empty($v['photo_khuyenmai']);
+/* Ảnh riêng của sản phẩm thắng; nếu không có thì resolver xét chiến dịch/phạm vi. */
+$pcPromoFrame = productPromoFrameForCard($v, $cache);
 ?>
 <div class="product-card">
     <a class="product-item" href="san-pham/<?=$v[$sluglang]?>" title="<?=$v['name'.$lang]?>">
@@ -23,8 +23,8 @@ $pcHasPromoFrame = in_array('khuyenmai', $pcPromoStatuses, true) && !empty($v['p
             <?php } else { ?>
             <?=$func->getImage(['class' => 'lazy w-100 pts-product-photo', 'sizes' => '300x300x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
             <?php } ?>
-            <?php if($pcHasPromoFrame) { ?>
-            <?=$func->getImage(['isLazy' => false, 'class' => 'w-100 pts-promo-frame', 'sizes' => '300x300x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $v['photo_khuyenmai'], 'alt' => ''])?>
+            <?php if(!empty($pcPromoFrame)) { ?>
+            <?=$func->getImage(['isLazy' => false, 'class' => 'w-100 pts-promo-frame', 'sizes' => '300x300x2', 'upload' => $pcPromoFrame['upload'], 'image' => $pcPromoFrame['photo'], 'alt' => ''])?>
             <?php } ?>
         </div>
         <div class="caption">

@@ -2,6 +2,7 @@
 	if(!defined('SOURCES')) die("Error");
 	require_once LIBRARIES.'product_projects.php';
 	require_once LIBRARIES.'product_content_blocks.php';
+	require_once LIBRARIES.'product_promo.php';
 
 	/* Kiểm tra active product */
 	if(isset($config['product']))

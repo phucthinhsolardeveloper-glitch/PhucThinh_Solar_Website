@@ -4,7 +4,7 @@
 
 - Đối chiếu cấu hình menu/type, route, source, template, consumer public và dữ liệu tổng hợp trong MariaDB local.
 - Kiểm tra form thật qua HTTP bằng tài khoản fixture local; fixture được dọn trong `finally`.
-- Không ghi production, không xóa record/upload legacy và không đổi schema trong đợt rà soát này.
+- Không ghi production và không xóa record/upload legacy. Migration `022` chỉ thêm hai bảng campaign; đã áp dụng trên DB local để kiểm thử, chưa chạy production.
 - Tài liệu này bổ sung trạng thái mới cho các audit ngày 2026-08-29, 2026-09-01 và 2026-09-04; khi có khác biệt, kết quả ngày 2026-09-05 được ưu tiên.
 
 ## Kết luận ngắn
@@ -19,25 +19,29 @@ Admin không thiếu nhiều màn CRUD, nhưng đang có ba vấn đề vận h�
 
 | Hạng mục | Kết quả |
 |---|---|
-| Khung card khuyến mãi | Ảnh sản phẩm và PNG khung được ghép hai lớp; không thay ảnh gốc. Form sản phẩm có preview đúng cấu trúc ngoài website. |
-| Tìm kiếm sản phẩm | Truy vấn ban đầu đã lấy `status` và `photo_khuyenmai`, nên card trong `/tim-kiem/` không còn mất khung. |
+| Khung card khuyến mãi | Có thư viện campaign dùng chung: một PNG áp theo danh mục cấp 1/cấp 2, thương hiệu hoặc sản phẩm chọn riêng; không thay ảnh gốc và không upload lặp. Khung per-product cũ được giữ làm override. |
+| Resolver card dùng chung | Trang danh mục, tìm kiếm, carousel trang chủ và sản phẩm liên quan dùng cùng quy tắc campaign; đã bổ sung đủ `id_list`, `id_cat`, `id_brand`, `photo_khuyenmai` cho các query rút gọn. |
 | Bật/tắt banner và popup | Công tắc `Hiển thị trên website` được đưa lên đầu form `banner-top` và `popup`; không còn bị chôn gần cuối form. |
-| Gom điểm điều khiển chiến dịch | Sidebar có nhóm `Chiến dịch hiển thị` gồm Banner đầu trang, Popup và lối vào danh sách sản phẩm đang có khung; thumbnail Admin cũng preview hai lớp. |
+| Gom điểm điều khiển chiến dịch | Sidebar có nhóm `Chiến dịch hiển thị` gồm Banner đầu trang, Popup, thư viện khung và danh sách sản phẩm đang có khung; thumbnail Admin resolve cả campaign lẫn override. |
+| Thumbnail Admin | Thêm version theo `filemtime` cho CSS Admin và theo mtime nguồn cho bundle CSS public; trình duyệt không còn giữ stylesheet cũ làm PNG khung phình kín bảng. |
 | Tần suất popup | Popup trang chủ chỉ tự mở một lần trong mỗi tab bằng `sessionStorage`; reload cùng tab không làm phiền lại, tab mới vẫn hiện và nội dung mới sau khi Admin cập nhật dùng khóa phiên bản mới. |
 | Breadcrumb | Bỏ nền ảnh, thu chiều cao và cân khoảng trống quang học trên/dưới ở desktop/mobile. |
 | Tìm kiếm Admin | 21 truy vấn legacy đã chuyển sang placeholder; các filter ID liên quan và toàn bộ filter xuất đơn hàng không còn ghép dữ liệu request vào SQL. |
 | Nguồn nội dung dùng chung | Gộp `chinh-sach` về một cấu hình; khôi phục Admin cho phương thức thanh toán và hai watermark. Ba record thanh toán cùng hai record watermark local được giữ nguyên, không import/ghi đè DB. |
 
-### Vị trí vận hành khung card hiện tại
+### Vị trí vận hành khung card
 
 Có thể đi theo một trong hai đường:
 
-- `Admin → Chiến dịch hiển thị → Sản phẩm có khung card` để xem đúng nhóm đang chạy.
-- `Admin → Quản lý Sản phẩm → Sản phẩm → Sửa → Khung khuyến mãi/sự kiện` để sửa trực tiếp một sản phẩm.
+- `Admin → Chiến dịch hiển thị → Thư viện khung chiến dịch → Thêm chiến dịch` để upload một PNG, đặt lịch, ưu tiên, bật/tắt và chọn phạm vi.
+- `Admin → Chiến dịch hiển thị → Sản phẩm đang có khung` để xem kết quả đã resolve.
+- `Admin → Quản lý Sản phẩm → Sản phẩm → Sửa → Khung riêng của sản phẩm` chỉ dùng khi một sản phẩm cần artwork khác chiến dịch.
 
-Khung phải là PNG nền trong suốt, phần giữa để trống. Muốn hiện ngoài website cần đồng thời có file khung và bật trạng thái `Khuyến mãi/Sự kiện` của sản phẩm.
+Khung phải là PNG nền trong suốt, phần giữa để trống. Campaign chỉ tác động các sản phẩm khớp phạm vi và nằm trong lịch đang bật; không thay `photo` gốc hay trạng thái sản phẩm. Khung riêng cũ chỉ hiện khi sản phẩm bật `Bật khung riêng`.
 
-Đây là mô hình per-product phù hợp để thử nghiệm. Không nên dùng nó làm mô hình cuối cùng cho một chiến dịch áp lên nhiều sản phẩm.
+Khi sửa campaign, danh mục/thương hiệu/sản phẩm đã bị ẩn vẫn được giữ trong bộ chọn với nhãn `(đang ẩn)`, tránh thao tác đổi ảnh hoặc lịch chạy vô tình làm mất phạm vi cũ.
+
+Nếu nhiều campaign trùng sản phẩm: ưu tiên số lớn hơn thắng; nếu bằng nhau thì `sản phẩm → danh mục cấp 2 → thương hiệu → danh mục cấp 1 → toàn bộ`; nếu vẫn bằng nhau thì campaign tạo sau thắng. Không có thao tác xóa campaign/media trong UI: tắt campaign để giữ lịch sử và khả năng rollback.
 
 ## Mức sử dụng dữ liệu sản phẩm local
 
@@ -52,7 +56,7 @@ Snapshot local có 443 sản phẩm:
 | Chính sách mua hàng riêng | 153 | Có sử dụng, nhưng cần giữ rõ quy tắc override/fallback chính sách chung. |
 | Video sản phẩm | 0 | Có consumer và form nhưng chưa được tận dụng. Chưa xóa trước khi chốt nhu cầu. |
 | Ảnh phụ `photo2` | 0 | Có consumer legacy nhưng không có dữ liệu; là ứng viên ẩn khỏi form sau xác minh staging. |
-| Khung campaign | 1 | Record demo local; mô hình hiện tại chưa phù hợp gán hàng loạt. |
+| Khung per-product legacy | 1 | Record demo local được giữ làm override; thư viện campaign mới chưa tự backfill dữ liệu này. |
 | Điểm nổi bật / ứng dụng / lắp đặt / chứng nhận mới | 0 | Form có nhưng chưa có quy trình nhập hoặc kế thừa nội dung. |
 
 Gallery có dữ liệu nhưng không cứu được 363 sản phẩm thiếu ảnh chính: nhóm thiếu ảnh chính hiện cũng không có gallery. Vì vậy cần xử lý nguồn media/import, không chỉ đổi CSS card.
@@ -146,17 +150,19 @@ Hướng xử lý: thêm bộ lọc/readiness score chỉ đọc; mỗi chỉ s�
 3. Dùng ZIP/bulk media theo mã sản phẩm và báo cáo file không khớp; không bắt nhân viên mở từng sản phẩm.
 4. Chuyển form sản phẩm thành các tab có completeness indicator; giữ CKEditor làm “nội dung tự do”, không dùng làm layout engine chính.
 
-### Giai đoạn 3 — Thư viện chiến dịch thay khung per-product
+### Giai đoạn 3 — Thư viện chiến dịch thay khung per-product — lõi đã hoàn tất
 
 Thiết kế entity campaign dùng chung gồm:
 
-- tên nội bộ, PNG overlay/asset, link và mức ưu tiên;
+- tên nội bộ, PNG overlay/asset và mức ưu tiên;
 - thời gian bắt đầu/kết thúc, trạng thái bật/tắt;
 - phạm vi áp dụng: toàn site, danh mục, thương hiệu hoặc danh sách sản phẩm;
-- preview desktop/mobile và kiểm tra vùng giữa trong suốt;
+- preview ghép lớp trong Admin;
 - quy tắc chỉ chọn một campaign thắng khi nhiều phạm vi trùng nhau.
 
 Card chỉ resolve campaign đang hiệu lực; nhân viên không phải upload cùng một PNG cho hàng trăm sản phẩm. Cột `photo_khuyenmai` hiện tại được giữ làm override trong giai đoạn chuyển tiếp.
+
+Phần còn lại nếu cần nâng thêm: validator tự động đo alpha/vùng giữa của PNG và audit log từng lần sửa. Hiện hệ thống chủ động giữ file artwork cũ khi thay ảnh, chưa có cleanup tự động.
 
 ### Giai đoạn 4 — Bảo mật và cleanup có kiểm soát
 
@@ -170,6 +176,8 @@ Card chỉ resolve campaign đang hiệu lực; nhân viên không phải upload
 - PHP 7.4 lint cho source tìm kiếm, form sản phẩm, form media và breadcrumb: đạt.
 - Node syntax check cho Admin JS và Playwright test: đạt.
 - Admin readiness authenticated: đạt toàn bộ, gồm preview khung sản phẩm và công tắc của banner/popup.
+- Product campaign regression: đạt quy tắc lịch chạy, mức ưu tiên, độ cụ thể phạm vi, override legacy và resolver DB parameterized.
+- Admin campaign HTTP: danh sách/form 200; upload PNG + scope sản phẩm + CSRF + transaction đạt; card public nhận đúng campaign và fixture được dọn sạch.
 - Admin readiness cho cấu hình dùng chung: form Chính sách, danh sách/form phương thức thanh toán và hai form watermark đều trả 200, có CSRF và đúng bộ field.
 - Checkout atomicity: đạt, gồm kiểm tra chỉ nạp phương thức đang hiển thị và từ chối ID khác type.
 - Security/Admin search regression: helper, static guard đủ 21 vị trí và năm màn danh sách với dấu nháy, `%`, Unicode đều đạt; filter export đạt ở unit nhưng generation file local còn lỗi legacy đã ghi nhận.
@@ -183,6 +191,6 @@ Card chỉ resolve campaign đang hiệu lực; nhân viên không phải upload
 ## Deploy và rollback
 
 - Chưa deploy production và chưa chạy migration/SQL production.
-- Patch hiện tại chỉ cần deploy source/assets và xóa cache ứng dụng sau deploy.
-- Rollback source bằng revert commit của đợt này; không cần rollback schema.
+- Chạy `migrations/022_add_product_campaigns.sql` sau `021`, trước khi mở màn Admin campaign; sau đó deploy source/assets và xóa cache ứng dụng. Migration chỉ tạo bảng, không ghi bảng sản phẩm.
+- Rollback an toàn: revert commit nhưng giữ hai bảng campaign. Chỉ DROP bảng nếu đã xác nhận chưa có campaign thật cần giữ.
 - Record demo khung/banner/popup chỉ thuộc DB local. Nếu không cần demo, dùng câu rollback local đã ghi trong thư mục artifact; không xóa media production theo tên file demo.

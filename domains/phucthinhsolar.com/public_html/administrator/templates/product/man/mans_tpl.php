@@ -24,8 +24,9 @@
 
 <!-- Main content -->
 <section class="content">
-    <div class="card-footer text-sm sticky-top">
+	<div class="card-footer text-sm sticky-top">
     	<a class="btn btn-sm bg-gradient-primary text-white" href="<?=$linkAdd?>" title="Thêm mới"><i class="fas fa-plus mr-2"></i>Thêm mới</a>
+        <a class="btn btn-sm btn-outline-primary" href="index.php?com=product_campaign&act=man&type=<?=urlencode($type)?>" title="Quản lý khung chiến dịch dùng chung"><i class="fas fa-images mr-1"></i>Khung chiến dịch</a>
         <a class="btn btn-sm bg-gradient-danger text-white" id="delete-all" data-url="<?=$linkDelete?><?=$strUrl?>" title="Xóa sản phẩm đã chọn"><i class="far fa-trash-alt mr-2"></i>Xóa mục đã chọn</a>
         <a class="btn btn-sm bg-gradient-success text-white" href="<?=$linkBulk?>" title="Nhập xuất Excel/CSV"><i class="fas fa-file-excel mr-2"></i>Nhập / Xuất</a>
         <div class="dropdown d-inline-block ml-2">
@@ -153,8 +154,8 @@
                                                 <?php }else{ ?>
                                                     <?=$func->getImage(['class' => 'rounded img-preview pts-admin-product-thumb-base', 'size-error' => '50x50x1', 'upload' => UPLOAD_PRODUCT_L, 'image' => $items[$i]['photo'], 'alt' => $items[$i]['namevi']])?>
                                                 <?php } ?>
-                                                <?php $itemStatus = !empty($items[$i]['status']) ? explode(',', $items[$i]['status']) : array(); if(!empty($items[$i]['photo_khuyenmai']) && in_array('khuyenmai', $itemStatus, true)) { ?>
-                                                    <?=$func->getImage(['isLazy' => false, 'class' => 'pts-admin-product-thumb-overlay', 'sizes' => $config['product'][$type]['thumb'], 'upload' => UPLOAD_PRODUCT_L, 'image' => $items[$i]['photo_khuyenmai'], 'alt' => ''])?>
+                                                <?php $adminPromoFrame = productPromoFrameForCard($items[$i], $cache); if(!empty($adminPromoFrame)) { ?>
+                                                    <?=$func->getImage(['isLazy' => false, 'class' => 'pts-admin-product-thumb-overlay', 'sizes' => '70x55x2', 'upload' => $adminPromoFrame['upload'], 'image' => $adminPromoFrame['photo'], 'alt' => ''])?>
                                                 <?php } ?>
                                             </span>
                                         </a>
@@ -163,6 +164,7 @@
                                 <td class="align-middle">
                                     <a class="text-dark text-break" href="<?=$linkEdit?><?=$linkID?>&id=<?=$items[$i]['id']?>" title="<?=$items[$i]['namevi']?>"><?=$items[$i]['namevi']?></a>
                                     <span class="badge <?=adminProductHasStructuredContent($items[$i]) ? 'badge-success' : 'badge-secondary'?> ml-1"><?=adminProductHasStructuredContent($items[$i]) ? 'Nội dung chuẩn' : 'Nội dung legacy'?></span>
+                                    <?php if(!empty($adminPromoFrame)) { ?><span class="badge badge-info ml-1"><?=$adminPromoFrame['source'] === 'product' ? 'Khung riêng' : 'Chiến dịch: '.htmlspecialchars($adminPromoFrame['campaign_name'], ENT_QUOTES, 'UTF-8')?></span><?php } ?>
                                     <?php $missingLabels = adminProductMissingLabels($items[$i]); if($missingLabels) { ?>
                                         <div class="mt-1" aria-label="Dữ liệu còn thiếu">
                                             <?php foreach($missingLabels as $missingLabel) { ?><span class="badge badge-warning mr-1">Thiếu <?=htmlspecialchars($missingLabel, ENT_QUOTES, 'UTF-8')?></span><?php } ?>
