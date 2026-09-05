@@ -1106,16 +1106,20 @@
 		/* Delete gallery */
 		public function deleteGallery()
 		{
-			$row = $this->d->rawQuery("select id, com, photo from #_gallery where hash != '' and date_created < ".(time()-3*3600));
+			$row = $this->d->rawQuery("select id, com, photo from #_gallery where hash != '' and date_created < ?", array(time()-3*3600));
 			$array = array("product" => UPLOAD_PRODUCT, "news" => UPLOAD_NEWS);
 
 			if($row)
 			{
+				$ids = array();
 				foreach($row as $item)
 				{
 					@unlink($array[$item['com']].$item['photo']);
-					$this->d->rawQuery("delete from #_gallery where id = ".$item['id']);
+					$ids[] = (int)$item['id'];
 				}
+				/* Một câu DELETE cho cả lô thay vì một câu cho từng dòng. */
+				$placeholders = implode(',', array_fill(0, count($ids), '?'));
+				$this->d->rawQuery("delete from #_gallery where id in ($placeholders)", $ids);
 			}
 		}
 		

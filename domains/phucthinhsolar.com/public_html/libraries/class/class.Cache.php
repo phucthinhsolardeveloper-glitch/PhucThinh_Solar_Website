@@ -111,14 +111,18 @@
             if(!is_dir($this->path)) return false;
             if($handle = opendir($this->path))
             {
+                /* Xoá thẳng bằng @unlink, không stat trước (file_exists/is_readable) vì unlink
+                   đã tự trả false an toàn khi file không tồn tại/không đọc được. Trước đây một
+                   file lỗi quyền giữa chừng làm return false sớm, bỏ dở toàn bộ phần còn lại
+                   của thư mục cache chưa kịp xoá. */
                 while(false !== ($file = readdir($handle)))
                 {
                     if($file != "." && $file != ".." && $file != ".htaccess" && $file != "thumb.db" && $file != "index.html")
-                    {     
-                        if(!file_exists($this->path . "/" . $file) || !is_readable($this->path . "/" . $file)) return false;
-                        unlink($this->path . "/" . $file);
+                    {
+                        @unlink($this->path . "/" . $file);
                     }
                 }
+                closedir($handle);
                 return true;
             }
             else return false;
