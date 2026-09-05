@@ -35,7 +35,11 @@
 	require_once LIBRARIES."requick.php";
 
 	/* Controller bảng điều khiển: route mặc định (com rỗng) không đi qua sources/ */
-	if(empty($com) && !empty($template) && $template === 'index' && is_file(SOURCES.'index.php')) require_once SOURCES.'index.php';
+	/* Dữ liệu bảng điều khiển phải nạp cho MỌI đường dẫn dẫn tới template index,
+	   không chỉ khi com rỗng: vào thẳng ?com=index cũng render đúng template đó,
+	   và trước đây thiếu dữ liệu nên sinh hàng loạt "Undefined variable:
+	   dashboardNewOrders / dashboardNewConsults / ...". */
+	if((empty($com) || $com === 'index') && !empty($template) && $template === 'index' && is_file(SOURCES.'index.php')) require_once SOURCES.'index.php';
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -51,7 +55,8 @@
 </head>
 <body class="sidebar-mini hold-transition text-sm <?=(!isset($_SESSION[$loginAdmin]['active']) || $_SESSION[$loginAdmin]['active']==false)?'login-page':''?>">
     <!-- Loader -->
-	<?php if($template == 'index' || $template == 'user/login') include TEMPLATE.LAYOUT."loader.php"; ?>
+	<?php $template = isset($template) ? $template : ''; /* Source nào chỉ redirect hoặc stream file rồi exit sẽ không đặt biến này. */ ?>
+	<?php if($template === 'index' || $template === 'user/login') include TEMPLATE.LAYOUT."loader.php"; ?>
 
     <!-- Wrapper -->
 	<?php if(isset($_SESSION[$loginAdmin]['active']) && ($_SESSION[$loginAdmin]['active'] == true)) { ?>
@@ -71,7 +76,12 @@
 						</div>
 					</section>
 				<?php } ?>
-				<?php include TEMPLATE.$template."_tpl.php"; ?>
+				<?php
+					/* Không có template khớp thì báo rõ thay vì include
+					   templates/_tpl.php không tồn tại. */
+					if($template !== '' && is_file(TEMPLATE.$template."_tpl.php")) include TEMPLATE.$template."_tpl.php";
+					else echo '<section class="content"><div class="alert alert-warning text-sm">Không tìm thấy màn hình cho yêu cầu này.</div></section>';
+				?>
 			</div>
 			<?php include TEMPLATE.LAYOUT."footer.php"; ?>
 		</div>
@@ -79,7 +89,7 @@
 
 	<!-- Js all -->
 	<?php include TEMPLATE.LAYOUT."js.php"; ?>
-	<?php if ($template == 'sortable/man/man_add'){ ?>
+	<?php if ($template === 'sortable/man/man_add'){ ?>
 	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 	<script type="text/javascript">
 		$(document).ready(function(){	
@@ -101,7 +111,7 @@
 		});
 	</script>
 	<?php } ?>
-	<?php if ($template == 'index'){ ?>
+	<?php if ($template === 'index'){ ?>
 	<script src="assets/js/apexcharts/dist/apexcharts.min.js"></script>
 	<script type="text/javascript">
 

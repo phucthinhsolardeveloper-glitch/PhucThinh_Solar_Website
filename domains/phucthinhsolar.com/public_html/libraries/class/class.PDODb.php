@@ -1606,6 +1606,32 @@ class PDODb
      * @param int    $numRows   Limit on the number of rows that can be updated.
      * @return bool
      */
+    /**
+     * Cột có kiểu số hay không, dùng để chọn giá trị mặc định trong fillTable().
+     *
+     * Trước đây chỗ này liệt kê tay 'int', 'float', 'double' và BỎ SÓT 'decimal'.
+     * Hệ quả: cột decimal để trống bị điền chuỗi rỗng, và MySQL ở chế độ
+     * STRICT_TRANS_TABLES từ chối với "Incorrect decimal value: ''". Cụ thể là
+     * thêm sản phẩm mới mà không điền Công suất (table_product.cong_suat kiểu
+     * decimal(6,1)) luôn chết bằng fatal error.
+     *
+     * Giữ nguyên quy ước cũ là quy về 0 chứ không phải NULL: các cột số khác
+     * vốn đã như vậy, và app coi cong_suat NULL với 0 là như nhau (xem
+     * adminProductDataStatus 'missing_wattage').
+     *
+     * @param string $type Tên kiểu cột lấy từ information_schema.DATA_TYPE
+     * @return bool
+     */
+    private static function isNumericColumnType($type)
+    {
+        $type = strtolower((string)$type);
+        foreach (array('int', 'float', 'double', 'decimal', 'numeric', 'real', 'bit') as $numeric)
+        {
+            if (strpos($type, $numeric) !== false) return true;
+        }
+        return false;
+    }
+
     public function fillTable($table, &$data, $old_data = array() , $where = "", $is_update = false)
     {
         $fields = $this->getAllSchema($table);
@@ -1648,7 +1674,7 @@ class PDODb
                     if (!$value)
                     {
                         $_type = $v['DATA_TYPE'];
-                        if (strpos($_type, 'int') !== false | strpos($_type, 'float') !== false | strpos($_type, 'double') !== false)
+                        if (self::isNumericColumnType($_type))
                         {
                             $value = 0;
                         }
@@ -1671,7 +1697,7 @@ class PDODb
                 {
                     $_type = $v['DATA_TYPE'];
                     $value = "";
-                    if (strpos($_type, 'int') !== false | strpos($_type, 'float') !== false | strpos($_type, 'double') !== false)
+                    if (self::isNumericColumnType($_type))
                     {
                         $value = 0;
                     }

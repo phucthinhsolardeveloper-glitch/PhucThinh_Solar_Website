@@ -42,6 +42,8 @@ docker cp scripts/test-product-content-blocks.php "$web_container:/tmp/test-prod
 docker cp scripts/test-cache-performance.php "$web_container:/tmp/test-cache-performance.php"
 docker cp scripts/test-admin-transfer-toast.php "$web_container:/tmp/test-admin-transfer-toast.php"
 docker cp scripts/test-admin-permission-gate.php "$web_container:/tmp/test-admin-permission-gate.php"
+docker cp scripts/test-admin-crud-lifecycle.php "$web_container:/tmp/test-admin-crud-lifecycle.php"
+docker cp scripts/test-admin-screen-sweep.php "$web_container:/tmp/test-admin-screen-sweep.php"
 docker cp scripts/check-admin-permission-readiness.php "$web_container:/tmp/check-admin-permission-readiness.php"
 docker cp scripts/test-frontend-transfer-toast.php "$web_container:/tmp/test-frontend-transfer-toast.php"
 docker cp scripts/test-product-campaign.php "$web_container:/tmp/test-product-campaign.php"
@@ -84,6 +86,8 @@ php /tmp/test-product-content-blocks.php
 php /tmp/test-cache-performance.php
 php /tmp/test-admin-transfer-toast.php
 php /tmp/test-admin-permission-gate.php
+php /tmp/test-admin-crud-lifecycle.php
+php /tmp/test-admin-screen-sweep.php
 php /tmp/check-admin-permission-readiness.php
 php /tmp/test-frontend-transfer-toast.php
 php /tmp/test-product-campaign.php

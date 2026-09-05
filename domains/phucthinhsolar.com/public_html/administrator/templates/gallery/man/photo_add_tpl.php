@@ -1,4 +1,12 @@
 <?php
+/* Chuỗi $config[$com][$type][$dfgallery][$val] chỉ đầy đủ khi màn hình được mở
+   từ đúng ngữ cảnh (có type/kind/val). Mở trực tiếp thiếu tham số thì cả chuỗi
+   là null và template sinh hàng loạt notice. Lấy tiêu đề một lần, có fallback. */
+$galleryTitle = 'hình ảnh';
+if(isset($config[$com][$type][$dfgallery][$val]['title_main_photo']))
+    $galleryTitle = $config[$com][$type][$dfgallery][$val]['title_main_photo'];
+?>
+<?php
     $linkMan = "index.php?com=".$com."&act=man_photo&id_parent=".$id_parent."&kind=".$kind."&val=".$val."&type=".$type;
     $linkSave = "index.php?com=".$com."&act=save_photo&id_parent=".$id_parent."&kind=".$kind."&val=".$val."&type=".$type;
 ?>
@@ -8,7 +16,7 @@
         <div class="row">
             <ol class="breadcrumb float-sm-left">
                 <li class="breadcrumb-item"><a href="index.php" title="Bảng điều khiển">Bảng điều khiển</a></li>
-                <li class="breadcrumb-item active">Thêm mới <?=$config[$com][$type][$dfgallery][$val]['title_main_photo']?></li>
+                <li class="breadcrumb-item active">Thêm mới <?=htmlspecialchars($galleryTitle, ENT_QUOTES, 'UTF-8')?></li>
             </ol>
         </div>
     </div>

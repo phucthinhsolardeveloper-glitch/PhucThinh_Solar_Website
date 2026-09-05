@@ -1,4 +1,12 @@
 <?php
+/* Chuỗi $config[$com][$type][$dfgallery][$val] chỉ đầy đủ khi màn hình được mở
+   từ đúng ngữ cảnh (có type/kind/val). Mở trực tiếp thiếu tham số thì cả chuỗi
+   là null và template sinh hàng loạt notice. Lấy tiêu đề một lần, có fallback. */
+$galleryTitle = 'hình ảnh';
+if(isset($config[$com][$type][$dfgallery][$val]['title_main_photo']))
+    $galleryTitle = $config[$com][$type][$dfgallery][$val]['title_main_photo'];
+?>
+<?php
     $linkParent = "index.php?com=".$com."&act=".$kind."&type=".$type;
     $linkMan = "index.php?com=".$com."&act=man_photo&id_parent=".$id_parent."&type=".$type."&kind=".$kind."&val=".$val;
     $linkAdd = "index.php?com=".$com."&act=add_photo&id_parent=".$id_parent."&type=".$type."&kind=".$kind."&val=".$val;
@@ -11,7 +19,7 @@
         <div class="row">
             <ol class="breadcrumb float-sm-left">
                 <li class="breadcrumb-item"><a href="index.php" title="Bảng điều khiển">Bảng điều khiển</a></li>
-                <li class="breadcrumb-item active">Quản lý <?=$config[$com][$type][$dfgallery][$val]['title_main_photo']?></li>
+                <li class="breadcrumb-item active">Quản lý <?=htmlspecialchars($galleryTitle, ENT_QUOTES, 'UTF-8')?></li>
             </ol>
         </div>
     </div>
@@ -26,7 +34,7 @@
     </div>
     <div class="card card-primary card-outline text-sm mb-0">
         <div class="card-header">
-            <h3 class="card-title">Danh sách <?=$config[$com][$type][$dfgallery][$val]['title_main_photo']?></h3>
+            <h3 class="card-title">Danh sách <?=htmlspecialchars($galleryTitle, ENT_QUOTES, 'UTF-8')?></h3>
         </div>
         <div class="card-body table-responsive p-0">
             <table class="table table-hover">
