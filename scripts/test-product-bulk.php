@@ -396,3 +396,12 @@ try {
     $after = (int) $d->rawQueryOne('select count(*) as total from #_product where type = ?', array($type))['total'];
     testAssert($after === $before, 'Dữ liệu thử đã được dọn sạch, tổng sản phẩm không đổi');
 }
+
+/* Ảnh khuyến mãi/sự kiện theo từng sản phẩm (cờ "khuyenmai" + cột photo_khuyenmai) */
+$promoColumns = productBulkColumns();
+testAssert(isset($promoColumns['is_promo']) && $promoColumns['is_promo']['kind'] === 'boolean_status', 'Cột is_promo khai báo đúng kind boolean_status');
+testAssert(isset($promoColumns['photo_khuyenmai']) && $promoColumns['photo_khuyenmai']['kind'] === 'image_filename', 'Cột photo_khuyenmai khai báo đúng kind image_filename');
+testAssert(isset(productBulkDatabaseColumns()['photo_khuyenmai']), 'Cột photo_khuyenmai tồn tại thật trong bảng product');
+testAssert(in_array('photo_khuyenmai', productBulkEditableFields(), true), 'photo_khuyenmai nằm trong danh sách field bulk áp dụng được');
+testAssert(productBulkExportValue('is_promo', array('status' => 'hienthi,khuyenmai'), array()) === 1, 'is_promo xuất ra 1 khi status có khuyenmai');
+testAssert(productBulkExportValue('is_promo', array('status' => 'hienthi'), array()) === 0, 'is_promo xuất ra 0 khi status không có khuyenmai');

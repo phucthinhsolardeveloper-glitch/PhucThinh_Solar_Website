@@ -678,6 +678,39 @@
 					}
 				}
 
+				/* Ảnh khuyến mãi/sự kiện — thay ảnh sản phẩm thường trên card khi bật cờ "khuyenmai" */
+				if($func->hasFile("file_khuyenmai"))
+				{
+					$photoUpdate = array();
+					$file_name_khuyenmai = $func->uploadName($_FILES["file_khuyenmai"]["name"]);
+
+					if($photoKhuyenMai = $func->uploadImage("file_khuyenmai", $config['product'][$type]['img_type'], UPLOAD_PRODUCT, $file_name_khuyenmai))
+					{
+						$row = $d->rawQueryOne("select id, photo_khuyenmai from #_product where id = ? and type = ? limit 0,1",array($id,$type));
+
+						if(!empty($row['photo_khuyenmai']))
+						{
+							$func->deleteFile(UPLOAD_PRODUCT.$row['photo_khuyenmai']);
+						}
+
+						$photoUpdate['photo_khuyenmai'] = $photoKhuyenMai;
+						$d->where('id', $id);
+						$d->update('product', $photoUpdate);
+						unset($photoUpdate);
+					}
+				}
+
+				if(isset($_POST['remove_photo_khuyenmai']))
+				{
+					$row = $d->rawQueryOne("select id, photo_khuyenmai from #_product where id = ? and type = ? limit 0,1",array($id,$type));
+					if(!empty($row['photo_khuyenmai']))
+					{
+						$func->deleteFile(UPLOAD_PRODUCT.$row['photo_khuyenmai']);
+						$d->where('id', $id);
+						$d->update('product', array('photo_khuyenmai' => ''));
+					}
+				}
+
 				/* SEO */
 				if(isset($config['product'][$type]['seo']) && $config['product'][$type]['seo'] == true)
 				{
@@ -820,6 +853,20 @@
 					if($photo2 = $func->uploadImage("file2", $config['product'][$type]['img_type2'], UPLOAD_PRODUCT, $file_name2))
 					{
 						$photoUpdate['photo2'] = $photo2;
+						$d->where('id', $id_insert);
+						$d->update('product', $photoUpdate);
+						unset($photoUpdate);
+					}
+				}
+
+				if($func->hasFile("file_khuyenmai"))
+				{
+					$photoUpdate = array();
+					$file_name_khuyenmai = $func->uploadName($_FILES['file_khuyenmai']["name"]);
+
+					if($photoKhuyenMai = $func->uploadImage("file_khuyenmai", $config['product'][$type]['img_type'], UPLOAD_PRODUCT, $file_name_khuyenmai))
+					{
+						$photoUpdate['photo_khuyenmai'] = $photoKhuyenMai;
 						$d->where('id', $id_insert);
 						$d->update('product', $photoUpdate);
 						unset($photoUpdate);

@@ -367,6 +367,32 @@
 			            </div>
 			        </div>
 		        <?php } ?>
+					<?php if(isset($config['product'][$type]['images_khuyenmai']) && $config['product'][$type]['images_khuyenmai'] == true) { ?>
+				        <div class="card card-primary card-outline text-sm">
+				            <div class="card-header">
+				                <h3 class="card-title">Ảnh khuyến mãi/sự kiện</h3>
+				                <div class="card-tools">
+				                <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
+				                </div>
+				            </div>
+				            <div class="card-body">
+				                <small class="d-block text-muted mb-2">Khi bật cờ “Khuyến mãi/Sự kiện” ở dưới và có ảnh này, trang danh sách sẽ hiện ảnh này thay ảnh sản phẩm thường. Không upload thì card vẫn hiện ảnh sản phẩm bình thường.</small>
+				                <?php if(!empty($item['photo_khuyenmai'])) { ?>
+				                <div class="upload-file-image rounded mb-2" style="max-width:220px;">
+				                    <?=$func->getImage(['class' => 'rounded w-100', 'sizes' => '300x300x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $item['photo_khuyenmai'], 'alt' => 'Ảnh khuyến mãi'])?>
+				                </div>
+				                <div class="custom-control custom-checkbox mb-2">
+				                    <input type="checkbox" class="custom-control-input" name="remove_photo_khuyenmai" id="remove_photo_khuyenmai" value="1">
+				                    <label class="custom-control-label" for="remove_photo_khuyenmai">Xoá ảnh khuyến mãi hiện tại</label>
+				                </div>
+				                <?php } ?>
+				                <div class="custom-file my-custom-file">
+				                    <input type="file" class="custom-file-input" name="file_khuyenmai" id="file_khuyenmai" lang="vi">
+				                    <label class="custom-file-label mb-0" data-browse="Chọn" for="file_khuyenmai">Chọn ảnh khuyến mãi</label>
+				                </div>
+				            </div>
+				        </div>
+			        <?php } ?>
 	        </div>
 	    </div>
 	    <div class="card card-primary card-outline text-sm">

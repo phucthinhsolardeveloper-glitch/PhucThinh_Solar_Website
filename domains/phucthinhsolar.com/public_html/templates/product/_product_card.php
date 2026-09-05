@@ -7,6 +7,10 @@
 $pcDiscount = publicProductPricesVisible() && (!empty($v['sale_price']) && !empty($v['regular_price']) && $v['regular_price'] > $v['sale_price'])
     ? round((($v['regular_price'] - $v['sale_price']) / $v['regular_price']) * 100)
     : 0;
+
+/* Ảnh khuyến mãi/sự kiện riêng theo từng sản phẩm (bật ở Admin, không dùng thì card vẫn hiện ảnh thường) */
+$pcPromoStatuses = array_filter(array_map('trim', explode(',', isset($v['status']) ? (string) $v['status'] : '')));
+$pcPromoPhoto = (in_array('khuyenmai', $pcPromoStatuses, true) && !empty($v['photo_khuyenmai'])) ? $v['photo_khuyenmai'] : $v['photo'];
 ?>
 <div class="product-card">
     <a class="product-item" href="san-pham/<?=$v[$sluglang]?>" title="<?=$v['name'.$lang]?>">
@@ -15,9 +19,9 @@ $pcDiscount = publicProductPricesVisible() && (!empty($v['sale_price']) && !empt
             <span class="badge-discount">-<?=$pcDiscount?>%</span>
             <?php } ?>
             <?php if(!empty($pcNoLazy)) { ?>
-            <?=$func->getImage(['isLazy' => false, 'class' => 'w-100', 'sizes' => '300x300x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
+            <?=$func->getImage(['isLazy' => false, 'class' => 'w-100', 'sizes' => '300x300x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $pcPromoPhoto, 'alt' => $v['name'.$lang]])?>
             <?php } else { ?>
-            <?=$func->getImage(['class' => 'lazy w-100', 'sizes' => '300x300x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
+            <?=$func->getImage(['class' => 'lazy w-100', 'sizes' => '300x300x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $pcPromoPhoto, 'alt' => $v['name'.$lang]])?>
             <?php } ?>
         </div>
         <div class="caption">

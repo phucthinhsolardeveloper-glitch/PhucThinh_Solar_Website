@@ -40,6 +40,8 @@ function productBulkColumns()
         'is_visible' => array('label' => 'Hiển thị (1/0)', 'kind' => 'boolean_status'),
         'is_featured' => array('label' => 'Bán chạy (1/0)', 'kind' => 'boolean_status'),
         'requires_quote' => array('label' => 'Liên hệ báo giá (1/0)', 'kind' => 'boolean_status'),
+        'is_promo' => array('label' => 'Khuyến mãi/Sự kiện (1/0)', 'kind' => 'boolean_status'),
+        'photo_khuyenmai' => array('label' => 'Tên file ảnh khuyến mãi (đã upload sẵn qua Quản lý file)', 'kind' => 'image_filename', 'db' => 'photo_khuyenmai', 'max' => 255),
         'numb' => array('label' => 'Thứ tự', 'kind' => 'integer', 'db' => 'numb', 'export' => false),
         'descvi' => array('label' => 'Mô tả ngắn', 'kind' => 'html', 'db' => 'descvi'),
         'contentvi' => array('label' => 'Nội dung', 'kind' => 'html', 'db' => 'contentvi'),
@@ -854,7 +856,7 @@ function productBulkValidateRows($rawRows, $type, $baseline = array(), $overwrit
         $item['action'] = $resolvedAction;
         $hasBooleanStatus = false;
         $booleanStatusValues = array();
-        foreach (array('is_visible', 'is_featured', 'requires_quote') as $booleanStatusKey) {
+        foreach (array('is_visible', 'is_featured', 'requires_quote', 'is_promo') as $booleanStatusKey) {
             if (!array_key_exists($booleanStatusKey, $raw) || trim((string) $raw[$booleanStatusKey]) === '') continue;
             $booleanStatusValue = trim((string) $raw[$booleanStatusKey]);
             if (!in_array($booleanStatusValue, array('0', '1'), true)) {
@@ -869,7 +871,8 @@ function productBulkValidateRows($rawRows, $type, $baseline = array(), $overwrit
             $visible = array_key_exists('is_visible', $booleanStatusValues) ? $booleanStatusValues['is_visible'] : in_array('hienthi', $baseStatuses, true);
             $featured = array_key_exists('is_featured', $booleanStatusValues) ? $booleanStatusValues['is_featured'] : in_array('banchay', $baseStatuses, true);
             $requiresQuote = array_key_exists('requires_quote', $booleanStatusValues) ? $booleanStatusValues['requires_quote'] : in_array('baogia', $baseStatuses, true);
-            $raw['status'] = implode(',', array_filter(array($visible ? 'hienthi' : '', $featured ? 'banchay' : '', $requiresQuote ? 'baogia' : '')));
+            $promo = array_key_exists('is_promo', $booleanStatusValues) ? $booleanStatusValues['is_promo'] : in_array('khuyenmai', $baseStatuses, true);
+            $raw['status'] = implode(',', array_filter(array($visible ? 'hienthi' : '', $featured ? 'banchay' : '', $requiresQuote ? 'baogia' : '', $promo ? 'khuyenmai' : '')));
         }
         foreach (array('_list_name' => array('list', 'id_list'), '_cat_name' => array('cat', 'id_cat'), '_brand_name' => array('brand', 'id_brand')) as $sourceKey => $definition) {
             if (!array_key_exists($sourceKey, $raw) || trim((string) $raw[$sourceKey]) === '') continue;
@@ -946,6 +949,10 @@ function productBulkValidateRows($rawRows, $type, $baseline = array(), $overwrit
                 $parsedBlock = productContentBlockParse($value, $meta['kind'] === 'content_block_paired', $meta['limit']);
                 foreach($parsedBlock['errors'] as $blockError) $item['errors'][] = $meta['label'].': '.$blockError;
                 $item['data'][$meta['db']] = $parsedBlock['items'] ? json_encode($parsedBlock['items'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : null;
+            } elseif ($meta['kind'] === 'image_filename') {
+                if (!preg_match('/^[A-Za-z0-9_.-]+$/', $value)) $item['errors'][] = $meta['label'].' chỉ nhận tên file (không đường dẫn, không ký tự đặc biệt).';
+                elseif (!file_exists(UPLOAD_PRODUCT.$value)) $item['errors'][] = $meta['label'].': file "'.$value.'" chưa tồn tại trong upload/product — upload qua Quản lý file trước.';
+                else $item['data'][$meta['db']] = $value;
             } elseif ($meta['kind'] === 'youtube') {
                 if ($value !== '') {
                     $parts = parse_url($value);
@@ -1281,6 +1288,7 @@ function productBulkExportValue($key, $row, $categories)
     if ($key === 'is_visible') return in_array('hienthi', array_filter(array_map('trim', explode(',', isset($row['status']) ? $row['status'] : ''))), true) ? 1 : 0;
     if ($key === 'is_featured') return in_array('banchay', array_filter(array_map('trim', explode(',', isset($row['status']) ? $row['status'] : ''))), true) ? 1 : 0;
     if ($key === 'requires_quote') return in_array('baogia', array_filter(array_map('trim', explode(',', isset($row['status']) ? $row['status'] : ''))), true) ? 1 : 0;
+    if ($key === 'is_promo') return in_array('khuyenmai', array_filter(array_map('trim', explode(',', isset($row['status']) ? $row['status'] : ''))), true) ? 1 : 0;
     if ($key === 'status') {
         $labels = array('hienthi' => 'Hiển thị', 'banchay' => 'Bán chạy');
         $values = array();
@@ -1485,7 +1493,7 @@ function productBulkExport($templateOnly = false)
             $validation = $sheet->getCell($letter.'2')->getDataValidation();
             $validation->setType(PHPExcel_Cell_DataValidation::TYPE_LIST)->setErrorStyle(PHPExcel_Cell_DataValidation::STYLE_STOP)->setAllowBlank(true)->setShowErrorMessage(true)->setErrorTitle('Giá trị không hợp lệ')->setError('Hãy chọn một giá trị có trong sheet DanhMuc.')->setShowDropDown(true)->setFormula1("DanhMuc!".$dropdownRanges[$key]);
             for ($validationRow = 3; $validationRow <= 501; $validationRow++) $sheet->getCell($letter.$validationRow)->setDataValidation(clone $validation);
-        } elseif (in_array($key, array('is_visible', 'is_featured', 'requires_quote'), true)) {
+        } elseif (in_array($key, array('is_visible', 'is_featured', 'requires_quote', 'is_promo'), true)) {
             $validation = $sheet->getCell($letter.'2')->getDataValidation();
             $validation->setType(PHPExcel_Cell_DataValidation::TYPE_LIST)->setAllowBlank(true)->setShowErrorMessage(true)->setErrorTitle('Giá trị không hợp lệ')->setError('Chỉ chọn 1 (bật) hoặc 0 (tắt).')->setFormula1('"1,0"');
             for ($validationRow = 3; $validationRow <= 501; $validationRow++) $sheet->getCell($letter.$validationRow)->setDataValidation(clone $validation);
