@@ -59,15 +59,17 @@
 								<?php } ?>
 							</td>
 							<td>
+								<div class="d-flex justify-content-between align-items-center">
 								<a class="btn btn-xs bg-gradient-primary text-white" href="<?=$editUrl?>"><i class="far fa-edit mr-1"></i><?=($info && $info['count'] > 0) ? 'Sửa' : 'Tạo'?></a>
 								<?php if($info && $info['count'] > 0) { ?>
-								<form method="post" action="index.php?com=content_section&act=delete&type=<?=htmlspecialchars($type, ENT_QUOTES, 'UTF-8')?>" class="d-inline" onsubmit="return confirm('Xoá toàn bộ khối nội dung của mục này? Các sản phẩm sẽ quay lại kế thừa.');">
+								<form method="post" action="index.php?com=content_section&act=delete&type=<?=htmlspecialchars($type, ENT_QUOTES, 'UTF-8')?>" onsubmit="return confirm('Xoá toàn bộ khối nội dung của mục này? Các sản phẩm sẽ quay lại kế thừa.');">
 									<?=adminCsrfField()?>
 									<input type="hidden" name="scope" value="<?=$group['scope']?>">
 									<input type="hidden" name="scope_id" value="<?=(int)$it['id']?>">
 									<button type="submit" class="btn btn-xs bg-gradient-danger text-white"><i class="far fa-trash-alt"></i></button>
 								</form>
 								<?php } ?>
+								</div>
 							</td>
 						</tr>
 						<?php } ?>
