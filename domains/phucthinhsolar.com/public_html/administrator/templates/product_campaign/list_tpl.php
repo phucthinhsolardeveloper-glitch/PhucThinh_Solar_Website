@@ -4,10 +4,10 @@ $now = time();
 $scopeLabels = array('all' => 'Toàn bộ', 'list' => 'Danh mục cấp 1', 'cat' => 'Danh mục cấp 2', 'brand' => 'Thương hiệu', 'product' => 'Sản phẩm chọn riêng');
 ?>
 <section class="content-header text-sm">
-    <div class="container-fluid"><ol class="breadcrumb float-sm-left">
+    <div class="container-fluid"><div class="row"><ol class="breadcrumb float-sm-left">
         <li class="breadcrumb-item"><a href="index.php">Bảng điều khiển</a></li>
         <li class="breadcrumb-item active">Chiến dịch khung sản phẩm</li>
-    </ol></div>
+    </ol></div></div>
 </section>
 <section class="content">
     <div class="card-footer text-sm sticky-top">

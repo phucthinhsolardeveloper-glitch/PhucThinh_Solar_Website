@@ -14,11 +14,11 @@ if(!function_exists('productCampaignScopeLabel'))
     }
 }
 ?>
-<section class="content-header text-sm"><div class="container-fluid"><ol class="breadcrumb float-sm-left">
+<section class="content-header text-sm"><div class="container-fluid"><div class="row"><ol class="breadcrumb float-sm-left">
     <li class="breadcrumb-item"><a href="index.php">Bảng điều khiển</a></li>
     <li class="breadcrumb-item"><a href="<?=$linkMan?>">Chiến dịch khung sản phẩm</a></li>
     <li class="breadcrumb-item active"><?=$isEdit ? 'Chỉnh sửa' : 'Thêm mới'?></li>
-</ol></div></section>
+</ol></div></div></section>
 <section class="content">
     <form class="validation-form" novalidate method="post" action="<?=$linkSave?>" enctype="multipart/form-data">
         <?=adminCsrfField()?>
