@@ -83,10 +83,25 @@ Web root **2,2 GB → 585 MB**. Không xoá file nào, tất cả chuyển sang
 `scripts/test-admin-screen-sweep.php` gọi mọi màn hình Admin chỉ-đọc (111 màn
 hình) và bắt fatal, notice PHP lọt HTML, JSON hỏng. Hiện **111/111 sạch**.
 
-Bộ quét tìm ra 2 lỗi và đã sửa xong: xuất Excel đơn hàng chết vì file vendor
-`PHPExcel/Writer/Excel2007/Comments.php` rỗng 0 byte từ commit đầu tiên; xuất
-Word chết vì `PHPWord_Template` ghi file tạm vào thư mục source không có quyền
-ghi.
+`scripts/test-admin-crud-lifecycle.php` bổ sung phần bộ quét cố tình không chạm:
+luồng ghi. Nó lái thêm → sửa → xoá cho sản phẩm và tin tức qua đúng form Admin
+trên HTTP thật, 19 assertion, hiện pass hết.
+
+Bốn lỗi thật đã tìm ra và sửa xong trong phiên:
+
+1. **Thêm sản phẩm bỏ trống "Công suất" luôn chết** bằng fatal error. `fillTable()`
+   trong PDODb điền mặc định theo kiểu cột nhưng danh sách kiểu số thiếu
+   `decimal`, nên cột `cong_suat` thành chuỗi rỗng và MySQL strict mode từ chối.
+   Đây là lý do dữ liệu ORIANA phải nhập bằng script thay vì nhập tay.
+2. **Xuất Excel đơn hàng** chết vì file vendor
+   `PHPExcel/Writer/Excel2007/Comments.php` rỗng 0 byte từ commit đầu tiên.
+3. **Xuất Word đơn hàng** chết vì `PHPWord_Template` ghi file tạm vào thư mục
+   source không có quyền ghi.
+4. **Notice PHP rải rác**: `$template` chưa đặt trong `administrator/index.php`,
+   dữ liệu dashboard không nạp khi vào `?com=index`, và template gallery đọc
+   chuỗi `$config` sâu 4 tầng không có fallback.
+
+Log web hiện **sạch hoàn toàn**, không còn notice nào.
 
 ## 3. Việc còn lại
 
