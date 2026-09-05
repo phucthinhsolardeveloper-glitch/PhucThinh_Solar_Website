@@ -12,7 +12,7 @@
 Admin không thiếu nhiều màn CRUD, nhưng đang có ba vấn đề vận hành chính:
 
 1. Dữ liệu sản phẩm không đồng đều: thông số cấu trúc được dùng tốt nhưng ảnh, nội dung và SEO còn thiếu nhiều.
-2. Một số nội dung public đang có consumer nhưng type tương ứng bị ẩn khỏi Admin, khiến nhân viên không thể cập nhật nguồn dữ liệu chính thức.
+2. Các type phương thức thanh toán và watermark từng bị ẩn khỏi Admin dù public còn dùng; đợt này đã khôi phục màn quản trị và giữ nguyên dữ liệu.
 3. Nhiều tính năng đã có nhưng cách tổ chức còn theo từng record, chưa phù hợp khi vận hành hàng trăm sản phẩm hoặc chiến dịch diện rộng.
 
 ## Việc đã xử lý trong đợt này
@@ -23,8 +23,10 @@ Admin không thiếu nhiều màn CRUD, nhưng đang có ba vấn đề vận h�
 | Tìm kiếm sản phẩm | Truy vấn ban đầu đã lấy `status` và `photo_khuyenmai`, nên card trong `/tim-kiem/` không còn mất khung. |
 | Bật/tắt banner và popup | Công tắc `Hiển thị trên website` được đưa lên đầu form `banner-top` và `popup`; không còn bị chôn gần cuối form. |
 | Gom điểm điều khiển chiến dịch | Sidebar có nhóm `Chiến dịch hiển thị` gồm Banner đầu trang, Popup và lối vào danh sách sản phẩm đang có khung; thumbnail Admin cũng preview hai lớp. |
+| Tần suất popup | Popup trang chủ chỉ tự mở một lần trong mỗi tab bằng `sessionStorage`; reload cùng tab không làm phiền lại, tab mới vẫn hiện và nội dung mới sau khi Admin cập nhật dùng khóa phiên bản mới. |
 | Breadcrumb | Bỏ nền ảnh, thu chiều cao và cân khoảng trống quang học trên/dưới ở desktop/mobile. |
 | Tìm kiếm Admin | 21 truy vấn legacy đã chuyển sang placeholder; các filter ID liên quan và toàn bộ filter xuất đơn hàng không còn ghép dữ liệu request vào SQL. |
+| Nguồn nội dung dùng chung | Gộp `chinh-sach` về một cấu hình; khôi phục Admin cho phương thức thanh toán và hai watermark. Ba record thanh toán cùng hai record watermark local được giữ nguyên, không import/ghi đè DB. |
 
 ### Vị trí vận hành khung card hiện tại
 
@@ -75,15 +77,15 @@ Hướng đúng là tạo bộ section chuẩn ở danh mục/thương hiệu, c
 
 Không nên âm thầm ghi đè SEO đã được biên tập. Cần màn preview/dry-run chỉ đề xuất cho trường đang rỗng, cho phép nhân viên duyệt trước khi ghi hàng loạt.
 
-## Nội dung public có consumer nhưng bị ẩn khỏi Admin
+## Đối chiếu nội dung dùng chung với consumer public
 
-| Dữ liệu | Bằng chứng consumer | Vấn đề | Đề xuất |
-|---|---|---|---|
-| `tom-tat-gioi-thieu` | `sources/about.php` đọc static này | Block cấu hình đang comment | Khôi phục type vào đúng nhóm Giới thiệu và smoke test trang public. |
-| `hinh-thuc-thanh-toan` | `sources/order.php` và `Functions.php` đọc type này | Có dữ liệu local nhưng Admin không cho sửa | Khôi phục CRUD với field tên/mô tả và xác nhận checkout quote/order dùng đúng nguồn. |
-| `watermark`, `watermark-news` | `libraries/router.php` đọc hai type | Record và consumer còn nhưng config Admin đang comment | Khôi phục có kiểm soát hoặc vô hiệu hóa cả consumer sau khi có quyết định nghiệp vụ; không để trạng thái nửa dùng nửa ẩn. |
+| Dữ liệu | Bằng chứng consumer | Kết quả đối chiếu |
+|---|---|---|
+| `tom-tat-gioi-thieu` | `sources/about.php` có câu query nhưng template không đọc biến `$tomtat` | Đính chính audit: đây chưa phải consumer hoàn chỉnh. Type tiếp tục ẩn để không tạo màn hình Admin vô tác dụng; record local vẫn được giữ nguyên. |
+| `hinh-thuc-thanh-toan` | `sources/order.php` và `Functions.php` đọc type này | Đã khôi phục danh sách/form Admin với tên, mô tả và trạng thái. Checkout chỉ liệt kê/chấp nhận record đúng type đang bật `hienthi`; không thể gửi ID tin tức hoặc phương thức đã tắt. |
+| `watermark`, `watermark-news` | `libraries/router.php` đọc hai type | Đã khôi phục hai form Admin, gồm PNG, trạng thái và thiết lập vị trí/tỉ lệ watermark nâng cao. |
 
-`chinh-sach` hiện được khai báo hai lần trong `config-type-news.php`. Block sau ghi đè một phần block trước, còn các key không khai báo tiếp tục thừa hưởng âm thầm. Cần gộp thành một cấu hình đầy đủ rồi chạy lại menu/form/public smoke.
+`chinh-sach` đã được gộp còn đúng một cấu hình đầy đủ. Form giữ nội dung CKEditor, slug và SEO; trường ảnh/copy ảnh không dùng được loại khỏi giao diện. URL và năm record chính sách không thay đổi.
 
 ## Phần chưa dùng hoặc nên xem lại
 
@@ -133,7 +135,7 @@ Hướng xử lý: thêm bộ lọc/readiness score chỉ đọc; mỗi chỉ s�
 ### Giai đoạn 1 — Correctness và khả năng vận hành
 
 1. **Đã hoàn tất:** parameterize 21 query tìm kiếm còn lại và thêm regression.
-2. Gộp cấu hình `chinh-sach`; khôi phục ba nguồn public đang bị ẩn khỏi Admin sau smoke test.
+2. **Đã hoàn tất:** gộp cấu hình `chinh-sach`; khôi phục Admin cho phương thức thanh toán và hai watermark. `tom-tat-gioi-thieu` được xác minh là query thừa, chưa có render public nên không bật lại.
 3. Thêm hàng đợi thiếu ảnh/SEO/danh mục/nội dung vào Admin; ưu tiên xử lý 363 sản phẩm thiếu ảnh.
 4. Thêm SEO preview/dry-run và bulk fill **chỉ trường rỗng**; không đổi slug/URL public.
 
@@ -168,8 +170,13 @@ Card chỉ resolve campaign đang hiệu lực; nhân viên không phải upload
 - PHP 7.4 lint cho source tìm kiếm, form sản phẩm, form media và breadcrumb: đạt.
 - Node syntax check cho Admin JS và Playwright test: đạt.
 - Admin readiness authenticated: đạt toàn bộ, gồm preview khung sản phẩm và công tắc của banner/popup.
+- Admin readiness cho cấu hình dùng chung: form Chính sách, danh sách/form phương thức thanh toán và hai form watermark đều trả 200, có CSRF và đúng bộ field.
+- Checkout atomicity: đạt, gồm kiểm tra chỉ nạp phương thức đang hiển thị và từ chối ID khác type.
 - Security/Admin search regression: helper, static guard đủ 21 vị trí và năm màn danh sách với dấu nháy, `%`, Unicode đều đạt; filter export đạt ở unit nhưng generation file local còn lỗi legacy đã ghi nhận.
 - Playwright Chromium tìm kiếm khung campaign: 2/2 desktop/mobile đạt.
+- Playwright Chromium popup một lần mỗi tab: 2/2 desktop/mobile đạt; reload cùng tab không mở lại và tab mới vẫn mở.
+- Toàn bộ Playwright: 54 đạt, 2 skip đúng theo project/thiết kế; visual baseline trang chủ, danh sách sản phẩm, dải danh mục và chi tiết JD-T300 đều đạt. Test chi tiết đã cố định slug thay vì phụ thuộc sản phẩm đầu tiên sau import.
+- Full pre-deploy local: đạt; lint PHP 7.4, regression, commerce/preflight, 511 URL sitemap và mẫu 26 URL đều sạch.
 - Playwright Chromium header/menu/breadcrumb/footer: 2/2 desktop/mobile đạt.
 - `git diff --check`: đạt.
 

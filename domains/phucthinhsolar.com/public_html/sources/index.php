@@ -1,7 +1,7 @@
 <?php  
 	if(!defined('SOURCES')) die("Error");
 
-	$popup = $cache->get("select name$lang, photo, link from #_photo where type = ? and act = ? and find_in_set('hienthi',status) limit 0,1", array('popup','photo_static'), 'fetch', 7200);
+	$popup = $cache->get("select id, date_updated, name$lang, photo, link from #_photo where type = ? and act = ? and find_in_set('hienthi',status) limit 0,1", array('popup','photo_static'), 'fetch', 7200);
     $adv = $cache->get("select name$lang, desc$lang, photo, link from #_photo where type = ? and find_in_set('hienthi',status) order by numb,id desc", array('adv'), 'result', 7200);
     
     $gtcl = $cache->get("select name$lang, photo, link, show_stt, video from #_photo where type = ? and find_in_set('hienthi',status) order by numb,id desc", array('gia-tri-cot-loi'), 'result', 7200);

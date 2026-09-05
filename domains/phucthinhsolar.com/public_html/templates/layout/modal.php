@@ -1,6 +1,7 @@
 <?php if(!empty($popup)) { ?>
 	<!-- Modal popup -->
-	<div class="modal fade" id="popup" tabindex="-1" role="dialog" aria-label="Quảng cáo" aria-hidden="true">
+	<?php $popupCampaignKey = substr(hash('sha256', $popup['id'].'|'.$popup['date_updated'].'|'.$popup['photo']), 0, 20); ?>
+	<div class="modal fade" id="popup" data-campaign-key="<?=htmlspecialchars($popupCampaignKey, ENT_QUOTES, 'UTF-8')?>" tabindex="-1" role="dialog" aria-label="Quảng cáo" aria-hidden="true">
 		<div class="modal-dialog modal-dialog-centered modal-lg pts-popup-dialog" role="document">
 			<div class="modal-content pts-popup-content">
 				<button type="button" class="close pts-popup-close" data-dismiss="modal" aria-label="Đóng quảng cáo">

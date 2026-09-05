@@ -166,10 +166,18 @@ GA_FRAMEWORK.Tools = function(){
 
 /* Popup */
 GA_FRAMEWORK.Popup = function(){
-    if(isExist($("#popup")))
+    var popup = $("#popup");
+    if(!isExist(popup)) return;
+
+    var campaignKey = popup.attr('data-campaign-key') || 'current';
+    try
     {
-        $('#popup').modal('show');
+        if(window.sessionStorage.getItem('pts-popup-campaign') === campaignKey) return;
+        window.sessionStorage.setItem('pts-popup-campaign', campaignKey);
     }
+    catch(error) {}
+
+    popup.modal('show');
 };
 
 /* Wow */

@@ -23,9 +23,18 @@ async function settlePage(page) {
   await page.waitForTimeout(1000);
 }
 
+async function dismissEntrancePopup(page) {
+  const popup = page.locator('#popup');
+  if (await popup.isVisible()) {
+    await popup.locator('[data-dismiss="modal"]').click();
+    await expect(popup).not.toBeVisible();
+  }
+}
+
 for (const [name, path] of [['home', '/'], ['products', '/san-pham/']]) {
   test(`${name} visual baseline`, async ({ page }) => {
     await page.goto(path, { waitUntil: 'domcontentloaded' });
+    await dismissEntrancePopup(page);
     await settlePage(page);
     await expect(page).toHaveScreenshot(`${name}.png`, {
       animations: 'disabled',
@@ -38,6 +47,7 @@ for (const [name, path] of [['home', '/'], ['products', '/san-pham/']]) {
 
 test('home featured categories visual baseline', async ({ page }) => {
   await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await dismissEntrancePopup(page);
   await settlePage(page);
   const categories = page.locator('.pts-home-category-wrap');
   await categories.scrollIntoViewIfNeeded();
@@ -54,11 +64,7 @@ test('home featured categories visual baseline', async ({ page }) => {
 
 test('product detail visual baseline', async ({ page, isMobile }) => {
   test.skip(isMobile, 'MagicZoom detail is covered by DOM regression on mobile; its element canvas is not screenshot-stable.');
-  await page.goto('/san-pham/', { waitUntil: 'domcontentloaded' });
-  const productLink = page.locator('.grid-product a[href]').filter({ has: page.locator('img') }).first();
-  const href = await productLink.getAttribute('href');
-  expect(href).toBeTruthy();
-  await page.goto(href, { waitUntil: 'domcontentloaded' });
+  await page.goto('/san-pham/den-pha-nang-luong-mat-troi-jindian-jd-t300-300w', { waitUntil: 'domcontentloaded' });
   await settlePage(page);
   const productDetail = page.locator('.grid-pro-detail');
   const detailTarget = isMobile ? page.locator('.right-pro-detail') : productDetail;

@@ -1,5 +1,13 @@
 const { test, expect } = require('@playwright/test');
 
+async function dismissEntrancePopup(page) {
+  const popup = page.locator('#popup');
+  if (await popup.isVisible()) {
+    await popup.locator('[data-dismiss="modal"]').click();
+    await expect(popup).not.toBeVisible();
+  }
+}
+
 test('header, menu, breadcrumb and footer remain usable', async ({ page, isMobile }) => {
   const pageErrors = [];
   page.on('pageerror', error => pageErrors.push(error.message));
@@ -87,6 +95,7 @@ test('quote request CTA opens the protected consultation form', async ({ page })
 
 test('home exposes every featured category and switches its product grid', async ({ page }) => {
   await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await dismissEntrancePopup(page);
   const categories = page.locator('.pts-home-category-grid > li');
   expect(await categories.count()).toBeGreaterThan(0);
   await expect(page.locator('.pts-home-category-grid a[href="danh-muc-san-pham/den-ac/"]')).toHaveCount(0);

@@ -53,6 +53,23 @@ test('empty cart page renders its empty state', async ({ page, baseURL }) => {
   await expect(page.locator('footer')).toBeVisible();
 });
 
+test('entrance popup appears once per tab and resets in a new tab', async ({ page, context }) => {
+  const firstResponse = await page.goto('/', { waitUntil: 'domcontentloaded' });
+  expect(firstResponse && firstResponse.ok()).toBeTruthy();
+  await expect(page.locator('#popup')).toBeVisible();
+
+  const campaignKey = await page.locator('#popup').getAttribute('data-campaign-key');
+  expect(campaignKey).toMatch(/^[a-f0-9]{20}$/);
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  await expect(page.locator('#popup')).not.toBeVisible();
+
+  const newTab = await context.newPage();
+  const newTabResponse = await newTab.goto('/', { waitUntil: 'domcontentloaded' });
+  expect(newTabResponse && newTabResponse.ok()).toBeTruthy();
+  await expect(newTab.locator('#popup')).toBeVisible();
+  await newTab.close();
+});
+
 test('search with no match shows the not-found notice', async ({ page, baseURL }) => {
   await collectHealth(page, baseURL, async () => {
     const response = await page.goto('/tim-kiem/?keyword=zzzznothingfound999', { waitUntil: 'domcontentloaded' });
