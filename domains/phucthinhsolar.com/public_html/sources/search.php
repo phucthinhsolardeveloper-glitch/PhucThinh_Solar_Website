@@ -1,5 +1,6 @@
 <?php  
 	if(!defined('SOURCES')) die("Error");
+	require_once LIBRARIES.'product_sort.php';
 
 	/* Tìm kiếm sản phẩm */
 	if(!empty($_GET['keyword']))
@@ -18,9 +19,9 @@
 			$startpoint = ($curPage * $perPage) - $perPage;
 			$limit = " limit ".$startpoint.",".$perPage;
 			/* Card dùng status + photo_khuyenmai để ghép lớp khung campaign giống trang danh mục. */
-			$sql = "select photo, photo2, photo_khuyenmai, status, name$lang, slugvi, slugen, sale_price, regular_price, discount, id, id_list, id_cat, id_brand from #_product where $where order by numb,id desc $limit";
+			$sql = "select photo, photo2, photo_khuyenmai, status, name$lang, slugvi, slugen, sale_price, regular_price, discount, id, id_list, id_cat, id_brand from #_product where $where".publicProductDefaultOrder()." $limit";
 			$product = $d->rawQuery($sql,$params);
-			$sqlNum = "select count(*) as 'num' from #_product where $where order by numb,id desc";
+			$sqlNum = "select count(*) as 'num' from #_product where $where";
 			$count = $d->rawQueryOne($sqlNum,$params);
 			$total = (!empty($count)) ? $count['num'] : 0;
 			$url = $func->getCurrentPageURL();

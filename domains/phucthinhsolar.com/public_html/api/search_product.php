@@ -12,7 +12,7 @@
 
 	}else{
 
-		$order_by = ' order by numb asc, id desc';
+		$order_by = publicProductDefaultOrder();
 
 	}
 	 $sql = "select name$lang, slugvi, slugen, id, photo, regular_price, sale_price, discount, type, status from #_product where type='san-pham' and find_in_set('hienthi',status)";

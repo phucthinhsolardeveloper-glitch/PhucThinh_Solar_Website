@@ -22,7 +22,8 @@
 	$pageLink = "api/fillter_service.php?perpage=".$pagingAjax->perpage;
 	$tempLink = "";
 	$where = "";
-	$order = " order by numb,id desc";
+	$defaultProductOrder = publicProductDefaultOrder();
+	$order = $defaultProductOrder;
 	$params = array();
 
 	/* Math url */
@@ -137,7 +138,7 @@
 				break;
 
 			default:
-				$order = "";
+				$order = $defaultProductOrder;
 				break;
 		}
 	}

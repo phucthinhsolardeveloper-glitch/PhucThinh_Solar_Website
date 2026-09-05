@@ -18,7 +18,7 @@
 	$pageLink .= $tempLink;
 
 	/* Get data */
-	$sql = "select name$lang, slugvi, slugen, id, photo, photo2, regular_price, sale_price, discount, type, khoanggia, status from #_product where type='san-pham' $where and find_in_set('hienthi',status) and find_in_set('banchay',status) order by numb,id desc";
+	$sql = "select name$lang, slugvi, slugen, id, photo, photo2, regular_price, sale_price, discount, type, khoanggia, status from #_product where type='san-pham' $where and find_in_set('hienthi',status) and find_in_set('banchay',status)".publicProductDefaultOrder();
 	$sqlCache = $sql." limit $start, $pagingAjax->perpage";
     $items = $cache->get($sqlCache, $params, 'result', 7200);
 	/* Count all data */

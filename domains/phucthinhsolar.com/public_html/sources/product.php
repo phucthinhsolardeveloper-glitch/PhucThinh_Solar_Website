@@ -2,6 +2,7 @@
 	if(!defined('SOURCES')) die("Error");
 	require_once LIBRARIES.'product_projects.php';
 	require_once LIBRARIES.'product_power_filter.php';
+	require_once LIBRARIES.'product_sort.php';
 
 	@$id = htmlspecialchars($_GET['id']);
 	@$idl = htmlspecialchars($_GET['idl']);
@@ -23,7 +24,8 @@
 		}
 	}
 	$orderby = (isset($_GET['is_orderby']) && $_GET['is_orderby'] != '') ? htmlspecialchars($_GET['is_orderby']) : '';
-	$order_by = ' order by numb,id desc';
+	$defaultProductOrder = publicProductDefaultOrder();
+	$order_by = $defaultProductOrder;
 	$productListHasItems = array();
 	if($template === 'product/product_list')
 	{
@@ -60,7 +62,7 @@
 				break;
 
 			default:
-				$order_by = "";
+				$order_by = $defaultProductOrder;
 				break;
 		}
 	}
