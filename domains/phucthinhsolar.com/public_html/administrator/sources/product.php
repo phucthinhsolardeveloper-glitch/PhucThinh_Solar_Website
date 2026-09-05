@@ -678,13 +678,13 @@
 					}
 				}
 
-				/* Ảnh khuyến mãi/sự kiện — thay ảnh sản phẩm thường trên card khi bật cờ "khuyenmai" */
+				/* Khung khuyến mãi/sự kiện PNG — phủ lên ảnh sản phẩm khi bật cờ "khuyenmai" */
 				if($func->hasFile("file_khuyenmai"))
 				{
 					$photoUpdate = array();
 					$file_name_khuyenmai = $func->uploadName($_FILES["file_khuyenmai"]["name"]);
 
-					if($photoKhuyenMai = $func->uploadImage("file_khuyenmai", $config['product'][$type]['img_type'], UPLOAD_PRODUCT, $file_name_khuyenmai))
+					if($photoKhuyenMai = $func->uploadImage("file_khuyenmai", '.png', UPLOAD_PRODUCT, $file_name_khuyenmai))
 					{
 						$row = $d->rawQueryOne("select id, photo_khuyenmai from #_product where id = ? and type = ? limit 0,1",array($id,$type));
 
@@ -864,7 +864,7 @@
 					$photoUpdate = array();
 					$file_name_khuyenmai = $func->uploadName($_FILES['file_khuyenmai']["name"]);
 
-					if($photoKhuyenMai = $func->uploadImage("file_khuyenmai", $config['product'][$type]['img_type'], UPLOAD_PRODUCT, $file_name_khuyenmai))
+					if($photoKhuyenMai = $func->uploadImage("file_khuyenmai", '.png', UPLOAD_PRODUCT, $file_name_khuyenmai))
 					{
 						$photoUpdate['photo_khuyenmai'] = $photoKhuyenMai;
 						$d->where('id', $id_insert);

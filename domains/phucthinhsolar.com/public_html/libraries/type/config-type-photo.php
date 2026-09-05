@@ -10,56 +10,6 @@
     // $config['photo']['photo_static'][$nametype]['thumb'] = '900x300x1';
     // $config['photo']['photo_static'][$nametype]['img_type'] = '.jpg|.gif|.png|.jpeg|.gif';
 
-    /* Banner */
-    $nametype = "background-breadcrumb";
-    $config['photo']['photo_static'][$nametype]['title_main'] = "Background breadcrumb";
-    $config['photo']['photo_static'][$nametype]['check'] = array("hienthi" => "Hiển thị");
-    $config['photo']['photo_static'][$nametype]['images'] = true;
-    $config['photo']['photo_static'][$nametype]['width'] = 730;
-    $config['photo']['photo_static'][$nametype]['height'] = 120;
-    $config['photo']['photo_static'][$nametype]['thumb'] = '730x120x1';
-    $config['photo']['photo_static'][$nametype]['img_type'] = '.jpg|.gif|.png|.jpeg|.gif';
-
-    /* Banner */
-    $nametype = "banner-gioi-thieu";
-    $config['photo']['photo_static'][$nametype]['title_main'] = "Banner giới thiệu";
-    $config['photo']['photo_static'][$nametype]['check'] = array("hienthi" => "Hiển thị");
-    $config['photo']['photo_static'][$nametype]['images'] = true;
-    $config['photo']['photo_static'][$nametype]['width'] = 730;
-    $config['photo']['photo_static'][$nametype]['height'] = 120;
-    $config['photo']['photo_static'][$nametype]['thumb'] = '730x120x1';
-    $config['photo']['photo_static'][$nametype]['img_type'] = '.jpg|.gif|.png|.jpeg|.gif';
-
-    /* Banner */
-    $nametype = "banner-san-pham";
-    $config['photo']['photo_static'][$nametype]['title_main'] = "Banner sản phẩm";
-    $config['photo']['photo_static'][$nametype]['check'] = array("hienthi" => "Hiển thị");
-    $config['photo']['photo_static'][$nametype]['images'] = true;
-    $config['photo']['photo_static'][$nametype]['width'] = 730;
-    $config['photo']['photo_static'][$nametype]['height'] = 120;
-    $config['photo']['photo_static'][$nametype]['thumb'] = '730x120x1';
-    $config['photo']['photo_static'][$nametype]['img_type'] = '.jpg|.gif|.png|.jpeg|.gif';
-
-    /* Banner */
-    $nametype = "banner-giai-phap";
-    $config['photo']['photo_static'][$nametype]['title_main'] = "Banner giải pháp";
-    $config['photo']['photo_static'][$nametype]['check'] = array("hienthi" => "Hiển thị");
-    $config['photo']['photo_static'][$nametype]['images'] = true;
-    $config['photo']['photo_static'][$nametype]['width'] = 730;
-    $config['photo']['photo_static'][$nametype]['height'] = 120;
-    $config['photo']['photo_static'][$nametype]['thumb'] = '730x120x1';
-    $config['photo']['photo_static'][$nametype]['img_type'] = '.jpg|.gif|.png|.jpeg|.gif';
-
-    /* Banner */
-    $nametype = "banner-du-an";
-    $config['photo']['photo_static'][$nametype]['title_main'] = "Banner dự án";
-    $config['photo']['photo_static'][$nametype]['check'] = array("hienthi" => "Hiển thị");
-    $config['photo']['photo_static'][$nametype]['images'] = true;
-    $config['photo']['photo_static'][$nametype]['width'] = 730;
-    $config['photo']['photo_static'][$nametype]['height'] = 120;
-    $config['photo']['photo_static'][$nametype]['thumb'] = '730x120x1';
-    $config['photo']['photo_static'][$nametype]['img_type'] = '.jpg|.gif|.png|.jpeg|.gif';
-
     /* Banner quảng cáo đầu trang, hiển thị trên mọi trang, phía trên header */
     $nametype = "banner-top";
     $config['photo']['photo_static'][$nametype]['title_main'] = "Banner đầu trang (trên header)";

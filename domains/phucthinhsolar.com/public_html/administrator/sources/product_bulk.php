@@ -41,7 +41,7 @@ function productBulkColumns()
         'is_featured' => array('label' => 'Bán chạy (1/0)', 'kind' => 'boolean_status'),
         'requires_quote' => array('label' => 'Liên hệ báo giá (1/0)', 'kind' => 'boolean_status'),
         'is_promo' => array('label' => 'Khuyến mãi/Sự kiện (1/0)', 'kind' => 'boolean_status'),
-        'photo_khuyenmai' => array('label' => 'Tên file ảnh khuyến mãi (đã upload sẵn qua Quản lý file)', 'kind' => 'image_filename', 'db' => 'photo_khuyenmai', 'max' => 255),
+        'photo_khuyenmai' => array('label' => 'Tên file khung khuyến mãi PNG (đã upload sẵn qua Quản lý file)', 'kind' => 'image_filename', 'db' => 'photo_khuyenmai', 'max' => 255),
         'numb' => array('label' => 'Thứ tự', 'kind' => 'integer', 'db' => 'numb', 'export' => false),
         'descvi' => array('label' => 'Mô tả ngắn', 'kind' => 'html', 'db' => 'descvi'),
         'contentvi' => array('label' => 'Nội dung', 'kind' => 'html', 'db' => 'contentvi'),
@@ -951,6 +951,7 @@ function productBulkValidateRows($rawRows, $type, $baseline = array(), $overwrit
                 $item['data'][$meta['db']] = $parsedBlock['items'] ? json_encode($parsedBlock['items'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : null;
             } elseif ($meta['kind'] === 'image_filename') {
                 if (!preg_match('/^[A-Za-z0-9_.-]+$/', $value)) $item['errors'][] = $meta['label'].' chỉ nhận tên file (không đường dẫn, không ký tự đặc biệt).';
+                elseif (strtolower(pathinfo($value, PATHINFO_EXTENSION)) !== 'png') $item['errors'][] = $meta['label'].' chỉ nhận file PNG để giữ nền trong suốt.';
                 elseif (!file_exists(UPLOAD_PRODUCT.$value)) $item['errors'][] = $meta['label'].': file "'.$value.'" chưa tồn tại trong upload/product — upload qua Quản lý file trước.';
                 else $item['data'][$meta['db']] = $value;
             } elseif ($meta['kind'] === 'youtube') {

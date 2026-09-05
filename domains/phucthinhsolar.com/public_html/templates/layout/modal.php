@@ -1,19 +1,14 @@
 <?php if(!empty($popup)) { ?>
 	<!-- Modal popup -->
-	<div class="modal fade" id="popup" tabindex="-1" role="dialog" aria-labelledby="popupModalLabel" aria-hidden="true">
-		<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h6 class="modal-title" id="popupModalLabel"><?=$popup['name'.$lang]?></h6>
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-						<span aria-hidden="true">&times;</span>
-					</button>
-				</div>
-				<div class="modal-body">
-					<a href="<?=$popup['link']?>">
-						<?=$func->getImage(['sizes' => '800x530x1', 'upload' => UPLOAD_PHOTO_L, 'image' => $popup['photo'], 'alt' => 'Popup'])?>
-					</a>
-				</div>
+	<div class="modal fade" id="popup" tabindex="-1" role="dialog" aria-label="Quảng cáo" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered modal-lg pts-popup-dialog" role="document">
+			<div class="modal-content pts-popup-content">
+				<button type="button" class="close pts-popup-close" data-dismiss="modal" aria-label="Đóng quảng cáo">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<a class="pts-popup-media" href="<?=$popup['link']?>" title="<?=htmlspecialchars($popup['name'.$lang], ENT_QUOTES, 'UTF-8')?>">
+					<?=$func->getImage(['sizes' => '800x530x1', 'upload' => UPLOAD_PHOTO_L, 'image' => $popup['photo'], 'alt' => (!empty($popup['name'.$lang])) ? $popup['name'.$lang] : 'Quảng cáo'])?>
+				</a>
 			</div>
 		</div>
 	</div>

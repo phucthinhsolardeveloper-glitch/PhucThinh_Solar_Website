@@ -10,13 +10,13 @@
     ?>
     <div class="wap-all-page">
 
+        <?php include TEMPLATE.LAYOUT."topbar-banner.php"; ?>
         <div class="wap-hearder">
-            <?php include TEMPLATE.LAYOUT."topbar-banner.php"; ?>
             <?php include TEMPLATE.LAYOUT."header.php"; ?>
             <?php include TEMPLATE.LAYOUT."mmenu.php"; ?>
         </div>
 
-        <div class="wap-slider">
+        <div class="wap-slider<?=($source != 'index' && $source != 'daily') ? ' pts-breadcrumb-shell' : ''?>">
             <?php 
                 if($source == 'index') include TEMPLATE.LAYOUT."slide.php";
                 if($source != 'index' && $source != 'daily') include TEMPLATE.LAYOUT."breadcrumb.php"; 
