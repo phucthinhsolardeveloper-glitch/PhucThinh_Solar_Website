@@ -1,5 +1,10 @@
+<?php
+	global $flash;
+	$flashToast = (isset($flash) && is_object($flash)) ? $flash->get('toast') : null;
+?>
 <!-- Js Config -->
 <script type="text/javascript">
+	var FLASH_TOAST = <?=(!empty($flashToast)) ? $flashToast : 'null'?>;
 	var CONFIG_BASE = '<?=$configBase?>';
 	var TOKEN = '<?=TOKEN?>';
 	var ADMIN_CSRF = '<?=htmlspecialchars(adminCsrfToken(), ENT_QUOTES, 'UTF-8')?>';
@@ -48,3 +53,7 @@
 <script src="assets/simplenotify/simple-notify.js"></script>
 <script src="assets/comment/comment.js"></script>
 <script src="assets/js/apps.js?v=<?=@filemtime(ROOT.'administrator/assets/js/apps.js')?>"></script>
+<script>
+	/* Kết quả Lưu/Xoá... hiện bằng toast thay vì màn "Thông báo" chờ 4.5s trước đây. */
+	if(FLASH_TOAST) showNotify(FLASH_TOAST.text, 'Thông báo', FLASH_TOAST.status === 'error' ? 'error' : 'success');
+</script>

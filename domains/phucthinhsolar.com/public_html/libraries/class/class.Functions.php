@@ -1163,13 +1163,27 @@
 		/* Transfer */
 		public function transfer($msg='', $page='', $numb=true)
 		{
+			/* Admin: chuyển trang ngay, không qua màn "Thông báo" đếm ngược 4.5s nữa —
+			   thông báo kết quả hiện bằng toast (showNotify) trên trang đích. Giữ
+			   nguyên màn đếm ngược cho phía công khai (checkout, liên hệ...) vì
+			   frontend chưa có cơ chế toast tương đương và chưa ai yêu cầu đổi. */
+			if(isset($_SERVER['SCRIPT_NAME']) && strpos($_SERVER['SCRIPT_NAME'], '/administrator/') !== false)
+			{
+				global $flash;
+				if(!empty($msg) && isset($flash) && is_object($flash))
+				{
+					$flash->set('toast', json_encode(array('status' => $numb ? 'success' : 'error', 'text' => (string)$msg), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+				}
+				$this->redirect($page);
+			}
+
 			global $configBase;
 
 			$basehref = $configBase;
 			$showtext = $msg;
 			$page_transfer = $page;
 			$numb = $numb;
-			
+
 			include("./templates/layout/transfer.php");
 			exit();
 		}
