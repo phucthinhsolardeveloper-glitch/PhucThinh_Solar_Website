@@ -11,6 +11,7 @@
     <div class="wap-all-page">
 
         <div class="wap-hearder">
+            <?php include TEMPLATE.LAYOUT."topbar-banner.php"; ?>
             <?php include TEMPLATE.LAYOUT."header.php"; ?>
             <?php include TEMPLATE.LAYOUT."mmenu.php"; ?>
         </div>

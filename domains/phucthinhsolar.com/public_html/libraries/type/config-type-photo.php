@@ -60,6 +60,17 @@
     $config['photo']['photo_static'][$nametype]['thumb'] = '730x120x1';
     $config['photo']['photo_static'][$nametype]['img_type'] = '.jpg|.gif|.png|.jpeg|.gif';
 
+    /* Banner quảng cáo đầu trang, hiển thị trên mọi trang, phía trên header */
+    $nametype = "banner-top";
+    $config['photo']['photo_static'][$nametype]['title_main'] = "Banner đầu trang (trên header)";
+    $config['photo']['photo_static'][$nametype]['check'] = array("hienthi" => "Hiển thị");
+    $config['photo']['photo_static'][$nametype]['images'] = true;
+    $config['photo']['photo_static'][$nametype]['link'] = true;
+    $config['photo']['photo_static'][$nametype]['width'] = 1900;
+    $config['photo']['photo_static'][$nametype]['height'] = 90;
+    $config['photo']['photo_static'][$nametype]['thumb'] = '1900x90x1';
+    $config['photo']['photo_static'][$nametype]['img_type'] = '.jpg|.gif|.png|.jpeg|.gif';
+
     /* Logo */
     $nametype = "logo";
     $config['photo']['photo_static'][$nametype]['title_main'] = "Logo";
@@ -131,7 +142,18 @@
     // $config['photo']['photo_static'][$nametype]['show_stt'] = true;
     // $config['photo']['photo_static'][$nametype]['video_type'] = 'mp4';
 
-    // /* Popup */
+    /* Popup */
+    $nametype = "popup";
+    $config['photo']['photo_static'][$nametype]['title_main'] = "Popup quảng cáo (hiện khi vào trang chủ)";
+    $config['photo']['photo_static'][$nametype]['check'] = array("hienthi" => "Hiển thị");
+    $config['photo']['photo_static'][$nametype]['images'] = true;
+    $config['photo']['photo_static'][$nametype]['name'] = true;
+    $config['photo']['photo_static'][$nametype]['link'] = true;
+    $config['photo']['photo_static'][$nametype]['width'] = 800;
+    $config['photo']['photo_static'][$nametype]['height'] = 530;
+    $config['photo']['photo_static'][$nametype]['thumb'] = '800x530x1';
+    $config['photo']['photo_static'][$nametype]['img_type'] = '.jpg|.gif|.png|.jpeg|.gif';
+
     $nametype = "bct";
     $config['photo']['photo_static'][$nametype]['title_main'] = "Logo bộ công thương";
     $config['photo']['photo_static'][$nametype]['check'] = array("hienthi" => "Hiển thị");
@@ -141,6 +163,30 @@
     $config['photo']['photo_static'][$nametype]['width'] = 800;
     $config['photo']['photo_static'][$nametype]['height'] = 530;
     $config['photo']['photo_static'][$nametype]['thumb'] = '800x530x1';
+    $config['photo']['photo_static'][$nametype]['img_type'] = '.jpg|.gif|.png|.jpeg|.gif';
+
+    /* Hình ảnh giới thiệu — đang được sources/about.php truy vấn nhưng chưa
+       gắn vào admin, nên trước giờ không ai sửa được qua đây. */
+    $nametype = "hinh-anh-gioi-thieu";
+    $config['photo']['photo_static'][$nametype]['title_main'] = "Hình ảnh giới thiệu (trang Về chúng tôi)";
+    $config['photo']['photo_static'][$nametype]['check'] = array("hienthi" => "Hiển thị");
+    $config['photo']['photo_static'][$nametype]['images'] = true;
+    $config['photo']['photo_static'][$nametype]['width'] = 600;
+    $config['photo']['photo_static'][$nametype]['height'] = 800;
+    $config['photo']['photo_static'][$nametype]['thumb'] = '600x800x1';
+    $config['photo']['photo_static'][$nametype]['img_type'] = '.jpg|.gif|.png|.jpeg|.gif';
+
+    /* Video giới thiệu công ty (trang Về chúng tôi) — templates/static/about_tpl.php
+       đã render, chỉ thiếu đăng ký ở admin nên trước giờ không sửa được. */
+    $nametype = "video";
+    $config['photo']['photo_static'][$nametype]['title_main'] = "Video giới thiệu (trang Về chúng tôi)";
+    $config['photo']['photo_static'][$nametype]['check'] = array("hienthi" => "Hiển thị");
+    $config['photo']['photo_static'][$nametype]['images'] = true;
+    $config['photo']['photo_static'][$nametype]['video_mp4'] = true;
+    $config['photo']['photo_static'][$nametype]['video_type'] = 'mp4';
+    $config['photo']['photo_static'][$nametype]['width'] = 1280;
+    $config['photo']['photo_static'][$nametype]['height'] = 720;
+    $config['photo']['photo_static'][$nametype]['thumb'] = '1280x720x1';
     $config['photo']['photo_static'][$nametype]['img_type'] = '.jpg|.gif|.png|.jpeg|.gif';
 
     /* Slideshow */

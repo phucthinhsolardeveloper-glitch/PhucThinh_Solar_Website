@@ -2164,3 +2164,7 @@ body .home-6 .btn-all:hover i{transform:translateX(3px);}
 @media(max-width:640px){
     .pts-product-desc{padding:24px 16px 30px}
 }
+
+/* Banner quảng cáo đầu trang (sự kiện/khuyến mãi theo đợt) */
+.pts-topbar-banner{width:100%;line-height:0;overflow:hidden}
+.pts-topbar-banner img{width:100%;height:auto;display:block}
