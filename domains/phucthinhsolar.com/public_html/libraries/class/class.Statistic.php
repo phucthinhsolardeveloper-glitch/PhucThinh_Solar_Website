@@ -45,12 +45,21 @@
             /* Delete old records */
             $temp = $all_visitors - $records;
 
-            if($temp>0) $this->d->rawQuery("delete from #_counter where id < '$temp'");
-            
-            $vip = $this->d->rawQueryOne("select count(*) as visitip from #_counter where ip='$ip' and (tm+'$locktime')>'$now' limit 0,1");
+            if($temp>0) $this->d->rawQuery("delete from #_counter where id < ?", array((int)$temp));
+
+            /* Viết điều kiện thành "tm > now - locktime" thay vì "tm + locktime > now":
+               vế trái không còn phép tính nên MySQL dùng được index (ip, tm), thay vì
+               phải quét cả bảng như trước. Ý nghĩa hai cách viết là như nhau. */
+            $vip = $this->d->rawQueryOne(
+                "select count(*) as visitip from #_counter where ip = ? and tm > ? limit 0,1",
+                array($ip, $now - $locktime)
+            );
             $items = $vip['visitip'];
-            
-            if(empty($items)) $this->d->rawQuery("insert into #_counter (tm, ip) values ('$now', '$ip')");
+
+            /* Tham số hoá: REMOTE_ADDR do web server đặt nên không phải đầu vào của
+               người dùng, nhưng đây là truy vấn chạy trên mọi lượt xem trang công
+               khai, không có lý do gì để nối chuỗi. */
+            if(empty($items)) $this->d->rawQuery("insert into #_counter (tm, ip) values (?, ?)", array($now, $ip));
             
             $n = $all_visitors;
             $div = 100000;
