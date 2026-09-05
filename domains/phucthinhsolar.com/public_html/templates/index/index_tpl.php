@@ -16,7 +16,7 @@
                                 <a href="javascript:void(0)" class="get-product-category" data-list="<?=$v['id']?>">
                                     <span class="pts-home-category-image">
                                         <?php if(!empty($v['photo'])) { ?>
-                                        <?=$func->getImage(['class' => 'lazy', 'sizes' => '180x120x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
+                                        <?=$func->getImage(['class' => 'lazy', 'sizes' => '220x220x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
                                         <?php } else {
                                             $categoryIcon = 'fa-lightbulb';
                                             $categorySlug = isset($v[$sluglang]) ? $v[$sluglang] : '';
@@ -74,7 +74,7 @@
                             <div class="name-adv"><?=htmlspecialchars_decode($v['name'.$lang])?></div>
                             <div class="desc-adv"><?=htmlspecialchars_decode($v['desc'.$lang])?></div>
                             <div class="btn-style">
-                                Tìm hiểu thêm
+                                Đăng ký ngay
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" height="24" viewBox="0 0 24 24" width="24"><path d="m19.71 12.71-6 6c-.0932.0932-.2039.1672-.3258.2177-.1218.0504-.2523.0764-.3842.0764s-.2624-.026-.3842-.0764c-.1219-.0505-.2326-.1245-.3258-.2177s-.1672-.2039-.2177-.3257c-.0504-.1219-.0764-.2524-.0764-.3843s.026-.2624.0764-.3842c.0505-.1219.1245-.2326.2177-.3258l4.3-4.29h-11.59c-.26522 0-.51957-.1054-.70711-.2929-.18753-.1875-.29289-.4419-.29289-.7071s.10536-.5196.29289-.7071c.18754-.1875.44189-.2929.70711-.2929h11.59l-4.3-4.29c-.1883-.1883-.2941-.4437-.2941-.71s.1058-.52169.2941-.71c.1883-.1883.4437-.29409.71-.29409s.5217.10579.71.29409l6 6c.0937.093.1681.2036.2189.3254.0508.1219.0769.2526.0769.3846s-.0261.2627-.0769.3846c-.0508.1218-.1252.2324-.2189.3254z" fill="rgb(0,0,0)"></path></svg>
                             </div>
                         </div>

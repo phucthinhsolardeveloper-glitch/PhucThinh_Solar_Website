@@ -39,6 +39,7 @@ docker cp scripts/test-product-bulk.php "$web_container:/tmp/test-product-bulk.p
 docker cp scripts/test-product-project-links.php "$web_container:/tmp/test-product-project-links.php"
 docker cp scripts/test-product-power-filter.php "$web_container:/tmp/test-product-power-filter.php"
 docker cp scripts/test-product-content-blocks.php "$web_container:/tmp/test-product-content-blocks.php"
+docker cp scripts/test-cache-performance.php "$web_container:/tmp/test-cache-performance.php"
 docker cp scripts/test-product-campaign.php "$web_container:/tmp/test-product-campaign.php"
 docker cp scripts/test-pdodb-exceptions.php "$web_container:/tmp/test-pdodb-exceptions.php"
 docker cp scripts/test-product-pricing-admin-http.php "$web_container:/tmp/test-product-pricing-admin-http.php"
@@ -76,6 +77,7 @@ php /tmp/test-product-bulk.php
 php /tmp/test-product-project-links.php
 php /tmp/test-product-power-filter.php
 php /tmp/test-product-content-blocks.php
+php /tmp/test-cache-performance.php
 php /tmp/test-product-campaign.php
 php /tmp/test-pdodb-exceptions.php
 php /tmp/test-product-pricing-admin-http.php
@@ -137,7 +139,7 @@ for public_path in "${public_paths[@]}"; do
 done
 
 grep -qF '<title>' /tmp/pts-predeploy-home.html
-grep -qF 'pts-brand-copy pts-brand-text' /tmp/pts-predeploy-home.html
+grep -qF 'pts-brand-wordmark' /tmp/pts-predeploy-home.html
 grep -qF '<span class="pts-brand-text">PHÚC THỊNH SOLAR</span>' /tmp/pts-predeploy-home.html
 grep -qF '<i class="fas fa-phone-alt"></i> Hotline:' /tmp/pts-predeploy-home.html
 grep -qF 'name="form_csrf"' /tmp/pts-predeploy-contact.html
@@ -224,7 +226,7 @@ for legacy_media_path in \
     curl -fsS -o /dev/null "$base_url/$legacy_media_path"
 done
 for upload_media_path in \
-    upload/photo/logo-moi-1-1-1649.png \
+    upload/photo/logo-phucthinh-solar-wordmark-2026.png \
     upload/photo/banner4-1-33501.jpg; do
     curl -fsS -o /dev/null "$base_url/$upload_media_path"
 done

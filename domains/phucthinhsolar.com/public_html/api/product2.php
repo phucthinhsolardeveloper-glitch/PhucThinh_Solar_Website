@@ -36,6 +36,9 @@
 	$pagingItems = $pagingAjax->getAllPageLinks($countItems, $pageLink, $eShow);
 ?>
 <?php if($countItems) { ?>
+<div class="btn-view-all text-center pts-viewall-top">
+    <a class="" href="danh-muc-san-pham/<?=$productList[$sluglang]?>/" title="">Xem tất cả<span class="link_arrow lnr lnr-arrow-right"></span></a>
+</div>
 <div class="position-relative owl-btn">
     <div class="owl-page owl-carousel owl-theme" data-xsm-items="2:15" data-sm-items="2:15" data-md-items="3:20"
         data-lg-items="4:24" data-xlg-items="4:24" data-rewind="1" data-autoplay="0" data-loop="0" data-lazyload="0"
@@ -49,8 +52,5 @@
         <?php foreach($items as $v) { include ROOT."templates/product/_product_card.php"; } ?>
     </div>
     <div class="control-prodcthome control-owl transition"></div>
-</div>
-<div class="btn-view-all text-center">
-    <a class="" href="danh-muc-san-pham/<?=$productList[$sluglang]?>/" title="">Xem tất cả<span class="link_arrow lnr lnr-arrow-right"></span></a>
 </div>
 <?php } ?>

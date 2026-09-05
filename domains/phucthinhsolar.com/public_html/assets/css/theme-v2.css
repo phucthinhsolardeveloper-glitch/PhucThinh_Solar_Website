@@ -134,7 +134,7 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 }
 /* ảnh nền banner sáng -> chữ trắng thiếu tương phản, phủ lớp navy mờ */
 .agency_1 .inner_content{position:relative!important;}
-.agency_1 .inner_content:before{content:"";position:absolute;inset:0;background:linear-gradient(100deg,rgba(6,21,55,.68),rgba(10,34,81,.38));z-index:1;}
+.agency_1 .inner_content:before{content:"";display:block!important;position:absolute;inset:0;background:linear-gradient(100deg,rgba(6,21,55,.68),rgba(10,34,81,.38));z-index:1;}
 .agency_1 .inner{position:relative;z-index:2;width:100%;padding:40px!important;}
 .agency_1 .inner .content.text h3{color:#fff!important;font-size:clamp(22px,2.3vw,32px)!important;font-weight:900!important;line-height:1.25!important;margin:0 0 14px!important;}
 .agency_1 .inner .content.text,.agency_1 .inner .content.text p,.agency_1 .inner .content.text li{color:#f3f6fd!important;text-shadow:0 1px 2px rgba(0,0,0,.28);}
@@ -162,6 +162,7 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 .header-bottom .wrap-content{min-height:72px;gap:24px;padding-top:10px;padding-bottom:10px;}
 .pts-brand{display:inline-flex!important;align-items:center;gap:10px;flex:0 0 auto;text-decoration:none!important;}
 .pts-brand img{width:auto!important;max-width:54px!important;max-height:52px!important;object-fit:contain;}
+.pts-brand-wordmark img{max-width:210px!important;max-height:46px!important;}
 .pts-brand-copy{display:block;line-height:1.05;white-space:nowrap;}
 .pts-brand-copy strong{display:block;font-size:18px;font-weight:900;letter-spacing:.04em;}
 .pts-brand-copy small{display:block;font-size:11px;font-weight:800;letter-spacing:.25em;margin-top:5px;}
@@ -237,7 +238,7 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 .product-card .product-item{border:0!important;padding:0!important;}
 .product-card:hover{border-color:var(--pts-gold)!important;box-shadow:0 16px 34px rgba(6,21,55,.11)!important;transform:translateY(-5px)!important;}
 /* Ảnh sản phẩm hiển thị trọn khung trên nền trắng. */
-.product-card-img{border-radius:9px!important;background:#fff!important;margin-bottom:10px;padding:4px!important;overflow:hidden!important;}
+.product-card-img{position:relative;border-radius:9px!important;background:#fff!important;margin-bottom:10px;padding:4px!important;overflow:hidden!important;}
 .product-card-img .pts-product-photo{position:relative;z-index:1;object-fit:contain!important;padding:0!important;transition:transform .25s;}
 .product-card:hover .product-card-img .pts-product-photo{transform:scale(1.035);}
 .product-card-img .pts-promo-frame{position:absolute;z-index:2;inset:0;width:100%!important;height:100%!important;object-fit:fill!important;padding:0!important;pointer-events:none;transform:none!important;}
@@ -290,6 +291,7 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
     .top-utility-left .hide-mobile{display:none!important;}
     .pts-brand-copy strong{font-size:15px;}
     .pts-brand-copy small{font-size:9px;}
+    .pts-brand-wordmark img{max-width:165px!important;max-height:38px!important;}
     .pts-home-hero h1{font-size:clamp(36px,11vw,52px);}
     .pts-home-hero p{font-size:15px;}
     .pts-hero-stats{gap:24px;}
@@ -309,6 +311,7 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
     .top-utility-right a:first-of-type:before{content:"Facebook";}
     .top-utility-right a:last-of-type:before{content:"Zalo";}
     .pts-brand-copy{display:none;}
+    .pts-brand-wordmark img{max-width:118px!important;max-height:32px!important;}
     .pts-hero-inner{padding-top:48px;padding-bottom:52px;}
     .pts-home-hero h1{font-size:35px;}
     .pts-hero-actions .pts-btn{width:100%;}
@@ -316,6 +319,12 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
     .pts-hero-stats strong{font-size:24px;}
     .pts-hero-stats span{font-size:10px;max-width:90px;}
     .wrap-cat-highlight{padding:46px 0!important;}
+}
+/* Điện thoại rất hẹp (iPhone SE, Android nhỏ): logo + giỏ hàng + tìm kiếm dễ tràn hàng, thu gọn thêm. */
+@media(max-width:340px){
+    .header-bottom .wrap-content{gap:10px!important;}
+    .pts-brand-wordmark img{max-width:82px!important;max-height:26px!important;}
+    .header-right-style{gap:8px!important;}
 }
 
 /* Category composition */
@@ -1569,6 +1578,8 @@ h4{font-size:21px!important;font-weight:800!important;}
     .agency_1 .container{padding-top:28px!important;padding-bottom:28px!important;gap:20px!important;}
     .agency_1 .inner{padding:22px!important;}
     .agency_1 .inner .content.text h3{font-size:22px!important;}
+    /* Khối nền ảnh cao hơn nhiều trên di động (chữ dài hơn) nên cần phủ tối đều, tránh chữ chìm vào vùng sáng của ảnh. */
+    .agency_1 .inner_content:before{background:rgba(6,21,55,.82)!important;}
 
     /* Về chúng tôi: khối lịch sử xếp dọc, ảnh trên - chữ dưới */
     .inf_about_history{padding:32px 0!important;}
@@ -1782,13 +1793,13 @@ body .home-3 .tab-switcher ul.pts-home-category-grid{
     overflow-x:auto;
     overflow-y:hidden;
     scroll-behavior:smooth;
-    scroll-snap-type:x mandatory;
+    scroll-snap-type:x proximity;
     overscroll-behavior-inline:contain;
     scrollbar-width:none;
     -webkit-overflow-scrolling:touch;
 }
 .home-3 .pts-home-category-grid::-webkit-scrollbar{display:none}
-.home-3 .pts-home-category-grid>li{display:block!important;min-width:0;flex:0 0 clamp(220px,18vw,280px);text-align:center;scroll-snap-align:start;}
+.home-3 .pts-home-category-grid>li{display:block!important;min-width:0;flex:0 0 clamp(140px,12vw,175px);text-align:center;scroll-snap-align:start;}
 .home-3 .pts-category-scroll{display:flex;width:42px;height:42px;align-items:center;justify-content:center;border:1px solid var(--pts-line);border-radius:50%;background:#fff;color:var(--pts-navy);box-shadow:0 7px 20px rgba(15,23,42,.09);cursor:pointer;transition:.18s}
 .home-3 .pts-category-scroll:hover{border-color:var(--pts-gold);background:var(--pts-gold);transform:translateY(-1px)}
 .home-3 .pts-category-scroll:disabled{opacity:.28;cursor:default;transform:none}
@@ -1797,12 +1808,12 @@ body .home-3 .tab-switcher ul.pts-home-category-grid{
     flex-direction:column;
     align-items:center;
     justify-content:flex-start;
-    gap:10px;
-    min-height:166px;
+    gap:7px;
+    min-height:118px;
     height:100%!important;
-    padding:15px 12px!important;
+    padding:10px 8px!important;
     border:1px solid var(--pts-line)!important;
-    border-radius:16px!important;
+    border-radius:14px!important;
     background:#fff!important;
     color:var(--pts-navy)!important;
     box-shadow:0 8px 24px rgba(15,23,42,.06)!important;
@@ -1812,7 +1823,7 @@ body .home-3 .tab-switcher ul.pts-home-category-grid{
     align-items:center;
     justify-content:center;
     width:100%;
-    height:100px;
+    aspect-ratio:1/1;
     padding:4px;
     border-radius:12px;
     background:#f8fafc;
@@ -1825,16 +1836,16 @@ body .home-3 .tab-switcher ul.pts-home-category-grid{
 .home-3 .pts-home-category-grid>li>a:hover img{transform:scale(1.05);}
 .home-3 .pts-home-category-grid>li.uk-active>a{border-color:var(--pts-gold)!important;background:#fffaf0!important;box-shadow:0 10px 28px rgba(182,125,46,.18)!important;}
 @media(max-width:991px){
-    .home-3 .pts-home-category-grid>li{flex-basis:230px}
+    .home-3 .pts-home-category-grid>li{flex-basis:160px}
 }
 @media(max-width:640px){
     .home-3 .pts-home-category-wrap{display:block;margin-top:20px;}
     .home-3 .pts-category-scroll{display:none}
     body .home-3 .tab-switcher ul.pts-home-category-grid{gap:10px;}
-    .home-3 .pts-home-category-grid>li{flex-basis:138px}
-    .home-3 .pts-home-category-grid>li>a{min-height:142px;padding:11px 8px!important;border-radius:13px!important;}
-    .home-3 .pts-home-category-image{height:82px;}
-    .home-3 .pts-home-category-grid>li>a>span:last-child{font-size:12.5px;}
+    .home-3 .pts-home-category-grid>li{flex-basis:108px}
+    .home-3 .pts-home-category-grid>li>a{min-height:100px;padding:8px 6px!important;border-radius:12px!important;}
+    .home-3 .pts-home-category-image{aspect-ratio:1/1;}
+    .home-3 .pts-home-category-grid>li>a>span:last-child{font-size:11.5px;}
 }
 
 /* =====================================================================
@@ -2200,3 +2211,7 @@ body .home-6 .btn-all:hover i{transform:translateX(3px);}
     .pts-breadcrumb-bar .breadcrumb-item a{line-height:17px!important;}
     .pts-breadcrumb-bar .breadcrumb-item a{font-size:11.5px!important;}
 }
+
+/* Nút "Xem tất cả" của danh mục đang chọn, hiện ngay trên dải sản phẩm thay vì dưới cùng. */
+.home-3 .product-tabs-container{padding-top:14px!important;}
+.pts-viewall-top{margin-top:0!important;margin-bottom:30px;}
