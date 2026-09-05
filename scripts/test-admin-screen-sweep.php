@@ -51,10 +51,15 @@ function httpGet($url, $cookie)
         'header' => "User-Agent: PTS-Admin-Sweep\r\nCookie: ".$cookie
     )));
     $body = @file_get_contents($url, false, $context);
+    $headers = isset($http_response_header) ? (array)$http_response_header : array();
     $status = 0;
-    foreach ((array)$http_response_header as $header)
+    $contentType = '';
+    foreach ($headers as $header)
+    {
         if (preg_match('#^HTTP/\S+\s+(\d+)#i', $header, $m)) $status = (int)$m[1];
-    return array('status' => $status, 'body' => (string)$body);
+        if (stripos($header, 'Content-Type:') === 0) $contentType = strtolower(trim(substr($header, 13)));
+    }
+    return array('status' => $status, 'body' => (string)$body, 'type' => $contentType);
 }
 
 /* Tài khoản fixture role=3 để không bị chặn quyền; xoá ở cuối. */
@@ -74,16 +79,12 @@ $cleanup = function () use ($d, $sweepUserId) {
 };
 register_shutdown_function($cleanup);
 
-$login = httpGet($base.'index.php?com=user&act=login', '');
-if (!preg_match('/PHPSESSID=[^;]+/', implode("\n", (array)$http_response_header), $cookieMatch))
-{
-    /* Lấy cookie từ header Set-Cookie của lần mở trang login. */
-    $cookieMatch = array('');
-}
+/* Mở trang login một lần để nhận cookie phiên. */
+$cookie = '';
 $context = stream_context_create(array('http' => array('method' => 'GET', 'ignore_errors' => true, 'timeout' => 20)));
 @file_get_contents($base.'index.php?com=user&act=login', false, $context);
-$cookie = '';
-foreach ((array)$http_response_header as $header)
+$loginHeaders = isset($http_response_header) ? (array)$http_response_header : array();
+foreach ($loginHeaders as $header)
     if (stripos($header, 'Set-Cookie:') === 0 && preg_match('/(PHPSESSID=[^;]+)/', $header, $m)) $cookie = $m[1];
 $loginPage = httpGet($base.'index.php?com=user&act=login', $cookie);
 if (!preg_match("/ADMIN_CSRF\s*=\s*'([^']+)'/", $loginPage['body'], $csrf))
@@ -159,6 +160,18 @@ foreach ($screens as $screen)
     if (preg_match('/(Warning|Notice|Deprecated)\s*:\s*[^<\n]{0,140}/i', $response['body'], $detail))
     {
         $warnings[] = sprintf('%-46s %s', $label, trim($detail[0]));
+        continue;
+    }
+    /* Endpoint JSON trả body ngắn là bình thường: thiếu tham số thì nó trả
+       {"ok":false,...} chứ không dựng trang. Chỉ coi là hỏng khi body không
+       phải JSON hợp lệ. */
+    $looksJson = strpos($response['type'], 'application/json') !== false
+        || preg_match('/^\s*[\{\[]/', $response['body']);
+    if ($looksJson)
+    {
+        if (json_decode($response['body'], true) === null && strtolower(trim($response['body'])) !== 'null')
+            $errors[] = sprintf('%-46s trả JSON hỏng', $label);
+        else $ok++;
         continue;
     }
     if ($response['status'] === 200 && strlen($response['body']) < 900)

@@ -84,13 +84,26 @@ class PHPWord_Template {
 	* @param string $strFilename
 	*/
 	public function __construct($strFilename) {
-		$path = dirname($strFilename);
-		$this->_tempFileName = $path.DIRECTORY_SEPARATOR.time().'.docx';
+		/* File tạm phải nằm ở thư mục tạm của hệ thống, không phải cạnh file mẫu.
+		   Trước đây dùng dirname($strFilename), tức ghi thẳng vào libraries/sample/
+		   — thư mục source mà user chạy web (www-data) không có quyền ghi. copy()
+		   thất bại, ZipArchive mở một file không tồn tại, rồi close() trả false và
+		   ném "Could not close zip file". Đó là lý do xuất Word danh sách đơn hàng
+		   luôn hỏng. Dùng tempnam() cũng an toàn hơn: tên file không đoán trước
+		   được và không đụng nhau khi hai request chạy cùng giây. */
+		$this->_tempFileName = tempnam(sys_get_temp_dir(), 'phpword-');
+		if ($this->_tempFileName === false) {
+			throw new Exception('Không tạo được file tạm để dựng tài liệu Word.');
+		}
 
-		copy($strFilename, $this->_tempFileName); // Copy the source File to the temp File
+		if (!copy($strFilename, $this->_tempFileName)) { // Copy the source File to the temp File
+			throw new Exception('Không chép được file mẫu Word: '.$strFilename);
+		}
 
 		$this->_objZip = new ZipArchive();
-		$this->_objZip->open($this->_tempFileName);
+		if ($this->_objZip->open($this->_tempFileName) !== true) {
+			throw new Exception('Không mở được file mẫu Word: '.$strFilename);
+		}
 
 		$this->_documentXML = $this->_objZip->getFromName('word/document.xml');
 	}
@@ -135,7 +148,14 @@ class PHPWord_Template {
 			throw new Exception('Could not close zip file.');
 		}
 
-		rename($this->_tempFileName, $strFilename);
+		/* File tạm giờ nằm ở /tmp, có thể khác filesystem với thư mục đích nên
+		   rename() sẽ thất bại. Chép rồi xoá là đường lui an toàn. */
+		if(!@rename($this->_tempFileName, $strFilename)) {
+			if(!@copy($this->_tempFileName, $strFilename)) {
+				throw new Exception('Không ghi được file Word ra: '.$strFilename);
+			}
+			@unlink($this->_tempFileName);
+		}
 	}
 
 	/**

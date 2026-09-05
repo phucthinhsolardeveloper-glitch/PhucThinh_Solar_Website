@@ -95,7 +95,12 @@
 	
 	/* Xuất file */
 	$filename = "order_".$code."_".$time."_".date('d_m_Y').".docx";
-	$document->save($filename);
+	/* Lưu vào thư mục tạm rồi mới stream. Trước đây save($filename) dùng đường dẫn
+	   tương đối nên ghi vào thư mục làm việc (administrator/), nơi www-data không
+	   có quyền ghi — xuất file luôn hỏng. Tên tải về vẫn giữ nguyên $filename. */
+	$exportPath = tempnam(sys_get_temp_dir(), 'orderdoc-');
+	if($exportPath === false) $func->transfer("Không tạo được file tạm để xuất tài liệu", "index.php?com=order&act=man", false);
+	$document->save($exportPath);
 	header('Content-Description: File Transfer');
 	header('Content-Type: application/octet-stream');
 	header('Content-Disposition: attachment; filename='.$filename);
@@ -103,8 +108,8 @@
 	header('Expires: 0');
 	header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
 	header('Pragma: public');
-	header('Content-Length: '. filesize($filename));
+	header('Content-Length: '. filesize($exportPath));
 	flush();
-	readfile($filename);
-	unlink($filename);
+	readfile($exportPath);
+	@unlink($exportPath);
 ?>
