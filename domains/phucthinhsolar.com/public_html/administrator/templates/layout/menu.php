@@ -293,6 +293,27 @@
                                     <a class="nav-link <?=$active?>" href="index.php?com=photo&act=photo_static&type=<?=$k?>" title="<?=$v['title_main']?>"><i class="nav-icon text-sm far fa-caret-square-right"></i><p><?=$v['title_main']?></p></a>
                                 </li>
                             <?php } } ?>
+
+                            <?php if(isset($value['shortcut'])) { foreach($value['shortcut'] as $shortcut) {
+                                $none = "";
+                                $active = "";
+                                if(isset($is_permission) && $is_permission == true && !empty($shortcut['permission']))
+                                {
+                                    $permission = $shortcut['permission'];
+                                    if($func->checkPermission($permission[0], $permission[1], $permission[2], null, 'phrase-1')) $none = "d-none";
+                                }
+                                if(!empty($shortcut['active']))
+                                {
+                                    $activeRule = $shortcut['active'];
+                                    $activeMatches = $com === $activeRule['com'] && $act === $activeRule['act'] && $type === $activeRule['type'];
+                                    if(isset($activeRule['data_status'])) $activeMatches = $activeMatches && (!empty($_GET['data_status']) && $_GET['data_status'] === $activeRule['data_status']);
+                                    if($activeMatches) $active = 'active';
+                                }
+                            ?>
+                                <li class="nav-item <?=$none?>">
+                                    <a class="nav-link <?=$active?>" href="<?=$shortcut['href']?>" title="<?=$shortcut['title']?>"><i class="nav-icon text-sm <?=$shortcut['icon']?>"></i><p><?=$shortcut['title']?></p></a>
+                                </li>
+                            <?php } } ?>
                         </ul>
                     </li>
                 <?php } } ?>

@@ -97,6 +97,30 @@ test('search with matches lists product cards', async ({ page, baseURL }) => {
   expect(await page.locator('.product-item').count()).toBeGreaterThan(0);
 });
 
+test('search preserves the promotional frame layered over the product image', async ({ page, baseURL }) => {
+  await collectHealth(page, baseURL, async () => {
+    const response = await page.goto('/tim-kiem/?keyword=JD-200NEW', { waitUntil: 'domcontentloaded' });
+    expect(response && response.ok()).toBeTruthy();
+  });
+
+  const promotedCard = page.locator('.product-card', { hasText: 'JD-200NEW' }).first();
+  await expect(promotedCard).toBeVisible();
+  await expect(promotedCard.locator('.pts-product-photo')).toBeVisible();
+  await expect(promotedCard.locator('.pts-promo-frame')).toBeVisible();
+
+  const layers = await promotedCard.locator('.product-card-img').evaluate(container => {
+    const base = container.querySelector('.pts-product-photo');
+    const overlay = container.querySelector('.pts-promo-frame');
+    return {
+      sameParent: Boolean(base && overlay && base.parentElement === overlay.parentElement),
+      baseZ: base ? getComputedStyle(base).zIndex : null,
+      overlayZ: overlay ? getComputedStyle(overlay).zIndex : null,
+    };
+  });
+  expect(layers.sameParent).toBeTruthy();
+  expect(Number(layers.overlayZ)).toBeGreaterThan(Number(layers.baseZ));
+});
+
 test('contact page serves a CSRF-protected lead form wired to the PHP handler', async ({ page, baseURL }) => {
   await collectHealth(page, baseURL, async () => {
     const response = await page.goto('/lien-he/', { waitUntil: 'domcontentloaded' });

@@ -332,6 +332,19 @@ select.form-control option:disabled{color:#b8babb;font-style:italic;}
 .content > form > .card-footer.sticky-top,.content > .card-footer.sticky-top{z-index:1020;box-shadow:0 2px 5px rgba(0,0,0,.08);}
 .admin-action-bar-duplicate{display:none!important;}
 
+/* Xem trước khung campaign theo đúng cách card ngoài website xếp hai lớp. */
+.pts-promo-frame-admin-preview{position:relative;width:240px;max-width:100%;aspect-ratio:1/1;overflow:hidden;border:1px solid #d9dee5;border-radius:8px;background:#fff;}
+.pts-promo-frame-admin-preview .pts-promo-frame-admin-base,
+.pts-promo-frame-admin-preview .pts-promo-frame-admin-overlay{display:block;width:100%;height:100%;object-fit:contain;}
+.pts-promo-frame-admin-preview .pts-promo-frame-admin-overlay{position:absolute;z-index:2;inset:0;object-fit:fill;pointer-events:none;}
+.pts-campaign-visibility-control{margin-left:auto;padding:7px 12px;border:1px solid #cbd5e1;border-radius:8px;background:#f8fafc;line-height:1.2;}
+.pts-campaign-visibility-control .custom-control-label{cursor:pointer;color:#0b2859;}
+.pts-campaign-visibility-control small{margin-top:3px;}
+.pts-admin-product-thumb{position:relative;display:inline-block;width:70px;height:55px;overflow:hidden;border-radius:4px;background:#fff;vertical-align:middle;}
+.pts-admin-product-thumb .pts-admin-product-thumb-base,
+.pts-admin-product-thumb .pts-admin-product-thumb-overlay{display:block;width:100%;height:100%;max-width:none;max-height:none;object-fit:contain;}
+.pts-admin-product-thumb .pts-admin-product-thumb-overlay{position:absolute;z-index:2;inset:0;object-fit:fill;pointer-events:none;}
+
 /* Responsive */
 @media(max-width:1201px){
 	.watermark-position{max-width:300px;height:300px;}

@@ -31,7 +31,7 @@
         <div class="dropdown d-inline-block ml-2">
             <button class="btn btn-sm btn-outline-warning dropdown-toggle" type="button" data-toggle="dropdown"><i class="fas fa-tasks mr-1"></i>Điền dữ liệu thiếu</button>
             <div class="dropdown-menu">
-                <?php foreach(adminProductDataStatusDefinitions() as $statusKey => $statusDefinition) { ?>
+                <?php foreach(adminProductDataStatusDefinitions() as $statusKey => $statusDefinition) { if($statusKey === 'campaign_active') continue; ?>
                     <a class="dropdown-item" href="<?=$linkMan?>&data_status=<?=urlencode($statusKey)?>"><?=htmlspecialchars($statusDefinition['label'], ENT_QUOTES, 'UTF-8')?></a>
                 <?php } ?>
             </div>
@@ -147,11 +147,16 @@
                                 <?php if(isset($config['product'][$type]['show_images']) && $config['product'][$type]['show_images'] == true) { ?>
                                     <td class="align-middle">
                                     	<a href="<?=$linkEdit?><?=$linkID?>&id=<?=$items[$i]['id']?>" title="<?=$items[$i]['namevi']?>">
-                                            <?php if(!empty($config['product'][$type]['thumb'])){ ?>
-                                                <?=$func->getImage(['class' => 'rounded img-preview', 'sizes' => $config['product'][$type]['thumb'], 'upload' => UPLOAD_PRODUCT_L, 'image' => $items[$i]['photo'], 'alt' => $items[$i]['namevi']])?>
-                                            <?php }else{ ?>
-                                                <?=$func->getImage(['class' => 'rounded img-preview', 'size-error' => '50x50x1', 'upload' => UPLOAD_PRODUCT_L, 'image' => $items[$i]['photo'], 'alt' => $items[$i]['namevi']])?>
-                                            <?php } ?>
+                                            <span class="pts-admin-product-thumb">
+                                                <?php if(!empty($config['product'][$type]['thumb'])){ ?>
+                                                    <?=$func->getImage(['class' => 'rounded img-preview pts-admin-product-thumb-base', 'sizes' => $config['product'][$type]['thumb'], 'upload' => UPLOAD_PRODUCT_L, 'image' => $items[$i]['photo'], 'alt' => $items[$i]['namevi']])?>
+                                                <?php }else{ ?>
+                                                    <?=$func->getImage(['class' => 'rounded img-preview pts-admin-product-thumb-base', 'size-error' => '50x50x1', 'upload' => UPLOAD_PRODUCT_L, 'image' => $items[$i]['photo'], 'alt' => $items[$i]['namevi']])?>
+                                                <?php } ?>
+                                                <?php $itemStatus = !empty($items[$i]['status']) ? explode(',', $items[$i]['status']) : array(); if(!empty($items[$i]['photo_khuyenmai']) && in_array('khuyenmai', $itemStatus, true)) { ?>
+                                                    <?=$func->getImage(['isLazy' => false, 'class' => 'pts-admin-product-thumb-overlay', 'sizes' => $config['product'][$type]['thumb'], 'upload' => UPLOAD_PRODUCT_L, 'image' => $items[$i]['photo_khuyenmai'], 'alt' => ''])?>
+                                                <?php } ?>
+                                            </span>
                                         </a>
                                     </td>
                                 <?php } ?>

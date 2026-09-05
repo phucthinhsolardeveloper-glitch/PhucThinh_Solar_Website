@@ -8,6 +8,7 @@ $d = new PDODb($config['database']);
 $cache = new Cache($d);
 $func = new Functions($d, $cache);
 require LIBRARIES.'admin_security.php';
+require LIBRARIES.'admin_product_completeness.php';
 require LIBRARIES.'login_security.php';
 require LIBRARIES.'session_security.php';
 
@@ -213,6 +214,20 @@ try
 
     $adminForm = readinessHttp($base.'index.php?com=product&act=add&type=san-pham', 'GET', array(), $newCookie);
     readinessAssert($adminForm['status'] === 200 && strpos($adminForm['body'], 'name="admin_csrf"') !== false, 'Form sản phẩm authenticated render CSRF field');
+    readinessAssert(
+        strpos($adminForm['body'], 'pts-promo-frame-admin-preview') !== false
+            && strpos($adminForm['body'], 'id="pts-promo-frame-admin-overlay"') !== false
+            && strpos($adminForm['body'], 'id="file_khuyenmai"') !== false,
+        'Form sản phẩm có xem trước ghép ảnh gốc và khung campaign PNG'
+    );
+    readinessAssert(
+        strpos($adminForm['body'], 'Chiến dịch hiển thị') !== false
+            && strpos($adminForm['body'], 'data_status=campaign_active') !== false,
+        'Sidebar gom banner, popup và lối vào sản phẩm có khung trong nhóm Chiến dịch hiển thị'
+    );
+    $campaignDataStatus = adminProductDataStatus('campaign_active');
+    $campaignCount = !empty($campaignDataStatus['sql']) ? $d->rawQueryOne("select count(*) as total from #_product p where p.type = ? and ".$campaignDataStatus['sql'], array('san-pham')) : array();
+    readinessAssert(!empty($campaignDataStatus['sql']) && strpos($campaignDataStatus['sql'], 'photo_khuyenmai') !== false && isset($campaignCount['total']), 'Bộ lọc chiến dịch chỉ lấy sản phẩm có khung đang bật và có SQL hợp lệ');
     readinessAssert(preg_match("/ADMIN_CSRF\s*=\s*'([^']+)'/", $adminForm['body'], $authenticatedToken) === 1, 'Phiên authenticated phát hành token mới');
     $authStateAfterRefresh = $d->rawQueryOne('select lastlogin, user_token from #_user where id = ?', array($createdUsers['product']['id']));
     readinessAssert(
@@ -221,6 +236,8 @@ try
         'Page load đến hạn cập nhật activity nhưng giữ nguyên token phiên'
     );
     $adminList = readinessHttp($base.'index.php?com=product&act=man&type=san-pham', 'GET', array(), $newCookie);
+    $campaignList = readinessHttp($base.'index.php?com=product&act=man&type=san-pham&data_status=campaign_active', 'GET', array(), $newCookie);
+    readinessAssert($campaignList['status'] === 200 && strpos($campaignList['body'], 'Đang lọc: Đang có khung campaign') !== false, 'Lối vào chiến dịch mở đúng danh sách sản phẩm đã lọc');
     $authStateAfterPages = $d->rawQueryOne('select lastlogin, user_token from #_user where id = ?', array($createdUsers['product']['id']));
     readinessAssert($adminList['status'] === 200, 'Phiên Admin mở liên tiếp hai trang authenticated');
     readinessAssert(
@@ -228,6 +245,18 @@ try
             && (int)$authStateAfterPages['lastlogin'] === (int)$authStateAfterRefresh['lastlogin'],
         'Các page load trong throttle không xoay token hoặc ghi lại activity'
     );
+
+    foreach(array('banner-top' => 'Banner đầu trang', 'popup' => 'Popup') as $campaignType => $campaignLabel)
+    {
+        $campaignForm = readinessHttp($base.'index.php?com=photo&act=photo_static&type='.$campaignType, 'GET', array(), $newCookie);
+        readinessAssert(
+            $campaignForm['status'] === 200
+                && strpos($campaignForm['body'], 'pts-campaign-visibility-control') !== false
+                && substr_count($campaignForm['body'], 'name="status[hienthi]"') === 1
+                && strpos($campaignForm['body'], 'Bỏ chọn rồi bấm Lưu để tắt.') !== false,
+            $campaignLabel.' có công tắc bật/tắt dễ thấy và không lặp field trạng thái'
+        );
+    }
 
 	$emptyCategoryOptions = readinessHttp($base.'api/category.php', 'POST', array('id'=>0, 'level'=>0, 'table'=>'product_cat', 'type'=>'san-pham'), $newCookie);
 	readinessAssert($emptyCategoryOptions['status'] === 200 && strpos($emptyCategoryOptions['body'], '<option value="0">Chọn danh mục</option>') !== false, 'API danh mục giữ HTML fragment tương thích khi parent rỗng');

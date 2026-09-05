@@ -377,10 +377,12 @@
 				            </div>
 				            <div class="card-body">
 				                <small class="d-block text-muted mb-2">Upload PNG nền trong suốt. Khi bật cờ “Khuyến mãi/Sự kiện”, khung này sẽ phủ lên trên nhưng vẫn giữ nguyên ảnh sản phẩm bên dưới. Nên dùng ảnh vuông, phần giữa trong suốt và chi tiết chỉ nằm sát mép.</small>
-				                <?php if(!empty($item['photo_khuyenmai'])) { ?>
-				                <div class="upload-file-image rounded mb-2" style="max-width:220px;">
-				                    <?=$func->getImage(['class' => 'rounded w-100', 'sizes' => '300x300x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $item['photo_khuyenmai'], 'alt' => 'Khung khuyến mãi'])?>
+				                <div class="pts-promo-frame-admin-preview mb-2" aria-label="Xem trước ảnh sản phẩm và khung khuyến mãi">
+				                    <?=$func->getImage(['isLazy' => false, 'class' => 'pts-promo-frame-admin-base', 'sizes' => '300x300x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => (!empty($item['photo'])) ? $item['photo'] : '', 'alt' => 'Ảnh sản phẩm'])?>
+				                    <img id="pts-promo-frame-admin-overlay" class="pts-promo-frame-admin-overlay<?=empty($item['photo_khuyenmai']) ? ' d-none' : ''?>" src="<?=!empty($item['photo_khuyenmai']) ? UPLOAD_PRODUCT_L.$item['photo_khuyenmai'] : ''?>" alt="" aria-hidden="true">
 				                </div>
+				                <small class="d-block text-muted mb-2"><i class="fas fa-layer-group mr-1"></i>Xem trước ghép lớp: ảnh sản phẩm ở dưới, khung PNG ở trên.</small>
+				                <?php if(!empty($item['photo_khuyenmai'])) { ?>
 				                <div class="custom-control custom-checkbox mb-2">
 				                    <input type="checkbox" class="custom-control-input" name="remove_photo_khuyenmai" id="remove_photo_khuyenmai" value="1">
 				                    <label class="custom-control-label" for="remove_photo_khuyenmai">Xoá khung khuyến mãi hiện tại</label>

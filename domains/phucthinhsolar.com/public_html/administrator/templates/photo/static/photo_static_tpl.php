@@ -1,6 +1,8 @@
 <?php
     $linkSave = "index.php?com=photo&act=save_static&type=".$type;
     $options = (isset($item['options']) && $item['options'] != '') ? json_decode($item['options'],true) : null;
+    $status_array = (!empty($item['status'])) ? explode(',', $item['status']) : array();
+    $isCampaignMedia = in_array($type, array('banner-top', 'popup'), true);
 ?>
 <!-- Content Header -->
 <section class="content-header text-sm">
@@ -26,8 +28,17 @@
         <?=$flash->getMessages('admin')?>
 
         <div class="card card-primary card-outline text-sm">
-            <div class="card-header">
+            <div class="card-header d-flex flex-wrap align-items-center justify-content-between">
                 <h3 class="card-title">Chi tiết <?=$config['photo']['photo_static'][$type]['title_main']?></h3>
+                <?php if($isCampaignMedia && isset($config['photo']['photo_static'][$type]['check']['hienthi'])) { ?>
+                    <div class="pts-campaign-visibility-control">
+                        <div class="custom-control custom-switch">
+                            <input type="checkbox" class="custom-control-input hienthi-checkbox" name="status[hienthi]" id="hienthi-checkbox" <?=(empty($status_array) && empty($item['id']) ? 'checked' : in_array('hienthi', $status_array)) ? 'checked' : ''?> value="hienthi">
+                            <label for="hienthi-checkbox" class="custom-control-label font-weight-bold">Hiển thị trên website</label>
+                        </div>
+                        <small class="d-block text-muted">Bỏ chọn rồi bấm Lưu để tắt.</small>
+                    </div>
+                <?php } ?>
             </div>
             <div class="card-body">
                 <?php if(isset($config['photo']['photo_static'][$type]['show_stt']) && $config['photo']['photo_static'][$type]['show_stt'] == true) { ?>
@@ -239,8 +250,7 @@
                     <?php } ?>
                 </div>
                 <div class="form-group">
-                    <?php $status_array = (!empty($item['status'])) ? explode(',', $item['status']) : array(); ?>
-                    <?php if(isset($config['photo']['photo_static'][$type]['check'])) { foreach($config['photo']['photo_static'][$type]['check'] as $key => $value) { ?>
+                    <?php if(isset($config['photo']['photo_static'][$type]['check'])) { foreach($config['photo']['photo_static'][$type]['check'] as $key => $value) { if($isCampaignMedia && $key === 'hienthi') continue; ?>
                         <div class="form-group d-inline-block mb-2 mr-2">
                             <label for="<?=$key?>-checkbox" class="d-inline-block align-middle mb-0 mr-2"><?=$value?>:</label>
                             <div class="custom-control custom-checkbox d-inline-block align-middle">

@@ -8,6 +8,18 @@
             "news" => array("thong-tin-lien-he","lich-su","su-menh","ly-do-chon-chung-toi"),
             "photo" => array("chungnhan")
         ),
+        "Chiến dịch hiển thị" => array(
+            "photo_static" => array("banner-top", "popup"),
+            "shortcut" => array(
+                array(
+                    "title" => "Sản phẩm có khung card",
+                    "href" => "index.php?com=product&act=man&type=san-pham&data_status=campaign_active",
+                    "icon" => "fas fa-layer-group",
+                    "permission" => array("product", "man", "san-pham"),
+                    "active" => array("com" => "product", "act" => "man", "type" => "san-pham", "data_status" => "campaign_active")
+                )
+            )
+        ),
         "Sản phẩm" => array(
             "product" => array("san-pham"),
             // "tags" => array("san-pham"),

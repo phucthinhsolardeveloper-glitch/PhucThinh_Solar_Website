@@ -29,6 +29,35 @@ $(document).ajaxError(function(event, xhr){
 	setTimeout(function(){ window.location.href = 'index.php?com=user&act=login'; }, 1200);
 });
 
+/* Preview ghép lớp cho khung khuyến mãi của card sản phẩm. */
+$(document).on('change', '#file_khuyenmai', function(){
+	var file = this.files && this.files[0];
+	if(!file) return;
+	if(file.type !== 'image/png' || !/\.png$/i.test(file.name)){
+		this.value = '';
+		notifyDialog('Khung khuyến mãi chỉ nhận file PNG nền trong suốt.');
+		return;
+	}
+	var reader = new FileReader();
+	reader.onload = function(event){
+		$('#pts-promo-frame-admin-overlay').attr('src', event.target.result).removeClass('d-none');
+		$('#remove_photo_khuyenmai').prop('checked', false);
+	};
+	reader.readAsDataURL(file);
+});
+
+$(document).on('change', '#file-zone', function(){
+	var file = this.files && this.files[0];
+	if(!file || !/^image\//.test(file.type)) return;
+	var reader = new FileReader();
+	reader.onload = function(event){ $('.pts-promo-frame-admin-base').attr('src', event.target.result); };
+	reader.readAsDataURL(file);
+});
+
+$(document).on('change', '#remove_photo_khuyenmai', function(){
+	$('#pts-promo-frame-admin-overlay').toggleClass('d-none', this.checked);
+});
+
 function isExist(ele)
 {
     return ele.length;

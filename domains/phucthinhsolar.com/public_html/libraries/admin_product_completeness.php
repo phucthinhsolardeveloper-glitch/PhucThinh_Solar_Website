@@ -18,7 +18,8 @@ if(!function_exists('adminProductDataStatusDefinitions'))
             'missing_desc' => array('label' => 'Thiếu mô tả ngắn', 'sql' => "coalesce(trim(p.descvi), '') = ''"),
             'missing_content' => array('label' => 'Thiếu nội dung chi tiết', 'sql' => "coalesce(trim(p.contentvi), '') = ''"),
             'missing_specs' => array('label' => 'Thiếu thông số kỹ thuật', 'sql' => '('.implode(' and ', $emptySpecs).')'),
-            'missing_wattage' => array('label' => 'Thiếu công suất', 'sql' => '(p.cong_suat is null or p.cong_suat <= 0)')
+            'missing_wattage' => array('label' => 'Thiếu công suất', 'sql' => '(p.cong_suat is null or p.cong_suat <= 0)'),
+            'campaign_active' => array('label' => 'Đang có khung campaign', 'sql' => "coalesce(trim(p.photo_khuyenmai), '') <> '' and find_in_set('khuyenmai', p.status)")
         );
     }
 
