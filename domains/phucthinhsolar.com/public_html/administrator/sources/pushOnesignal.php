@@ -298,6 +298,9 @@
 		curl_setopt($ch, CURLOPT_POST, TRUE);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $fields);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+		/* Không giới hạn thời gian trước đây: OneSignal chậm/treo làm nút Lưu thông báo đứng theo. */
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+		curl_setopt($ch, CURLOPT_TIMEOUT, 10);
 		$response = curl_exec($ch);
 		curl_close($ch);
 		

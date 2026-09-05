@@ -373,12 +373,26 @@
 										$fp = fopen($pathSaveImg, 'wb');
 										curl_setopt($ch, CURLOPT_FILE, $fp);
 										curl_setopt($ch, CURLOPT_HEADER, 0);
-										curl_exec($ch);
+										/* Không giới hạn thời gian trước đây: 1 URL ảnh chết/chậm làm cả file Excel
+										   nhập hàng trăm dòng treo theo, không có cách nào dừng giữa chừng. */
+										curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+										curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+										$downloadOk = curl_exec($ch);
+										$downloadHttpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 										curl_close($ch);
 										fclose($fp);
 
-										$data['photo'] = $name;
-										$photo = $name;
+										/* URL chết/timeout trước đây vẫn bị gán làm ảnh sản phẩm, để lại file rỗng. */
+										if($downloadOk && $downloadHttpCode == 200 && filesize($pathSaveImg) > 0)
+										{
+											$data['photo'] = $name;
+											$photo = $name;
+										}
+										else
+										{
+											@unlink($pathSaveImg);
+											$data['photo'] = '';
+										}
 									}
 									else
 									{

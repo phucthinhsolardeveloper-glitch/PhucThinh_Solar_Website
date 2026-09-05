@@ -41,6 +41,7 @@ docker cp scripts/test-product-power-filter.php "$web_container:/tmp/test-produc
 docker cp scripts/test-product-content-blocks.php "$web_container:/tmp/test-product-content-blocks.php"
 docker cp scripts/test-cache-performance.php "$web_container:/tmp/test-cache-performance.php"
 docker cp scripts/test-admin-transfer-toast.php "$web_container:/tmp/test-admin-transfer-toast.php"
+docker cp scripts/test-frontend-transfer-toast.php "$web_container:/tmp/test-frontend-transfer-toast.php"
 docker cp scripts/test-product-campaign.php "$web_container:/tmp/test-product-campaign.php"
 docker cp scripts/test-pdodb-exceptions.php "$web_container:/tmp/test-pdodb-exceptions.php"
 docker cp scripts/test-product-pricing-admin-http.php "$web_container:/tmp/test-product-pricing-admin-http.php"
@@ -80,6 +81,7 @@ php /tmp/test-product-power-filter.php
 php /tmp/test-product-content-blocks.php
 php /tmp/test-cache-performance.php
 php /tmp/test-admin-transfer-toast.php
+php /tmp/test-frontend-transfer-toast.php
 php /tmp/test-product-campaign.php
 php /tmp/test-pdodb-exceptions.php
 php /tmp/test-product-pricing-admin-http.php

@@ -1,5 +1,10 @@
+<?php
+    global $flash;
+    $flashToastFront = (isset($flash) && is_object($flash)) ? $flash->get('toast') : null;
+?>
 <!-- Js Config -->
 <script type="text/javascript">
+    var FLASH_TOAST = <?=(!empty($flashToastFront)) ? $flashToastFront : 'null'?>;
     var GA_FRAMEWORK = GA_FRAMEWORK || {};
     var CONFIG_BASE = '<?= $configBase ?>';
     var ASSET = '<?= ASSET ?>';
@@ -76,6 +81,10 @@ $js->set("js/share.js");
 $js->set("js/apps.js");
 echo $js->get();
 ?>
+<script>
+    /* Kết quả gửi form (liên hệ, đặt hàng...) hiện bằng toast thay vì màn "Thông báo" chờ trước khi chuyển trang. */
+    if(FLASH_TOAST) showNotify(FLASH_TOAST.text, 'Thông báo', FLASH_TOAST.status === 'error' ? 'error' : 'success');
+</script>
 <script>
     $('.album-gallery').photobox('.album-item:not(.slick-cloned) a', { thumbs: true, loop: false });
 </script>
