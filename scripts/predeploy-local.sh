@@ -268,4 +268,14 @@ if docker compose -f "$compose_file" logs --since=15m web 2>&1 | grep -En 'PHP (
     exit 1
 fi
 
+# Diễn tập phục hồi bản backup mới nhất. Một bản backup chưa từng restore thử
+# thì chưa tính là có backup; kiểm tra tốn khoảng 4 giây nên chạy mỗi lần.
+latest_backup="$(ls -1dt "$repo_dir/backup/local"/*/ 2>/dev/null | head -1 || true)"
+if [ -n "$latest_backup" ] && [ -f "${latest_backup}database.sql" ]; then
+    echo "INFO: Diễn tập phục hồi backup $(basename "$latest_backup")"
+    bash "$repo_dir/scripts/test-backup-restore-local.sh" "${latest_backup%/}"
+else
+    echo "INFO: Chưa có bản backup local nào để diễn tập phục hồi (chạy scripts/backup-local.sh)."
+fi
+
 echo "PASS: Pre-deploy local hoàn tất; regression, smoke, log và cleanup đều sạch."
