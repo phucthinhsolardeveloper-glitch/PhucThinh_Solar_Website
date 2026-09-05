@@ -6,7 +6,7 @@
 
 	/* Cấu hình đường dẫn trả về */
 	$strUrl = "";
-	$strUrl = (isset($_REQUEST['keyword'])) ? "&keyword=".htmlspecialchars($_REQUEST['keyword']) : "";
+	$strUrl = (isset($_REQUEST['keyword']) && is_scalar($_REQUEST['keyword'])) ? "&keyword=".urlencode((string)$_REQUEST['keyword']) : "";
 
 	switch($act)
 	{
@@ -74,20 +74,21 @@
 		global $d, $func, $curPage, $items, $paging, $strUrl;
 
 		$where = "";
+		$params = array();
 
 		if(isset($_REQUEST['keyword']))
 		{
-			$keyword = htmlspecialchars($_REQUEST['keyword']);
-			$where .= " where lang_define LIKE '%$keyword%'";
+			$keywordClause = adminKeywordLikeClause($_REQUEST['keyword'], array('lang_define'), $params);
+			if($keywordClause !== '') $where .= " where ".$keywordClause;
 		}
 
 		$perPage = 10;
 		$startpoint = ($curPage * $perPage) - $perPage;
 		$limit = " limit ".$startpoint.",".$perPage;
 		$sql = "select * from #_lang $where order by id desc $limit";
-		$items = $d->rawQuery($sql);
+		$items = $d->rawQuery($sql,$params);
 		$sqlNum = "select count(*) as 'num' from #_lang $where order by id desc";
-		$count = $d->rawQueryOne($sqlNum);
+		$count = $d->rawQueryOne($sqlNum,$params);
 		$total = (!empty($count)) ? $count['num'] : 0;
 		$url = "index.php?com=lang&act=man".$strUrl;
 		$paging = $func->pagination($total,$perPage,$curPage,$url);

@@ -22,7 +22,7 @@
 			if(!empty($_REQUEST[$arrUrl[$k]])) $strUrl .= "&".$arrUrl[$k]."=".htmlspecialchars($_REQUEST[$arrUrl[$k]]);
 		}
 		
-		if(!empty($_REQUEST['keyword'])) $strUrl .= "&keyword=".htmlspecialchars($_REQUEST['keyword']);
+		if(!empty($_REQUEST['keyword']) && is_scalar($_REQUEST['keyword'])) $strUrl .= "&keyword=".urlencode((string)$_REQUEST['keyword']);
 	}
 
 	switch($act)
@@ -94,20 +94,21 @@
 		global $d, $func, $strUrl, $curPage, $items, $paging;
 		
 		$where = "";
+		$params = array();
 
 		if(isset($_REQUEST['keyword']))
 		{
-			$keyword = htmlspecialchars($_REQUEST['keyword']);
-			$where .= " and (name LIKE '%$keyword%')";
+			$keywordClause = adminKeywordLikeClause($_REQUEST['keyword'], array('name'), $params);
+			if($keywordClause !== '') $where .= " and ".$keywordClause;
 		}
 
 		$perPage = 10;
 		$startpoint = ($curPage * $perPage) - $perPage;
 		$limit = " limit ".$startpoint.",".$perPage;
 		$sql = "select * from #_city where id<>0 $where order by numb,id asc $limit";
-		$items = $d->rawQuery($sql);
+		$items = $d->rawQuery($sql,$params);
 		$sqlNum = "select count(*) as 'num' from #_city where id<>0 $where order by numb,id asc";
-		$count = $d->rawQueryOne($sqlNum);
+		$count = $d->rawQueryOne($sqlNum,$params);
 		$total = (!empty($count)) ? $count['num'] : 0;
 		$url = "index.php?com=places".$strUrl."&act=man_city";
 		$paging = $func->pagination($total,$perPage,$curPage,$url);
@@ -284,23 +285,24 @@
 		global $d, $func, $strUrl, $curPage, $items, $paging;
 		
 		$where = "";
+		$params = array();
 
-		$id_city = (isset($_REQUEST['id_city'])) ? htmlspecialchars($_REQUEST['id_city']) : 0;
+		$id_city = isset($_REQUEST['id_city']) ? (int)$_REQUEST['id_city'] : 0;
 
-		if($id_city!='') $where .= " and id_city=$id_city";
+		if($id_city > 0) { $where .= " and id_city = ?"; $params[] = $id_city; }
 		if(isset($_REQUEST['keyword']))
 		{
-			$keyword = htmlspecialchars($_REQUEST['keyword']);
-			$where .= " and (name LIKE '%$keyword%')";
+			$keywordClause = adminKeywordLikeClause($_REQUEST['keyword'], array('name'), $params);
+			if($keywordClause !== '') $where .= " and ".$keywordClause;
 		}
 
 		$perPage = 10;
 		$startpoint = ($curPage * $perPage) - $perPage;
 		$limit = " limit ".$startpoint.",".$perPage;
 		$sql = "select * from #_district where id<>0 $where order by numb,id asc $limit";
-		$items = $d->rawQuery($sql);
+		$items = $d->rawQuery($sql,$params);
 		$sqlNum = "select count(*) as 'num' from #_district where id<>0 $where order by numb,id asc";
-		$count = $d->rawQueryOne($sqlNum);
+		$count = $d->rawQueryOne($sqlNum,$params);
 		$total = (!empty($count)) ? $count['num'] : 0;
 		$url = "index.php?com=places".$strUrl."&act=man_district";
 		$paging = $func->pagination($total,$perPage,$curPage,$url);
@@ -482,25 +484,26 @@
 		global $d, $func, $strUrl, $curPage, $items, $paging;
 		
 		$where = "";
+		$params = array();
 
-		$id_city = (isset($_REQUEST['id_city'])) ? htmlspecialchars($_REQUEST['id_city']) : 0;
-		$id_district = (isset($_REQUEST['id_district'])) ? htmlspecialchars($_REQUEST['id_district']) : 0;
+		$id_city = isset($_REQUEST['id_city']) ? (int)$_REQUEST['id_city'] : 0;
+		$id_district = isset($_REQUEST['id_district']) ? (int)$_REQUEST['id_district'] : 0;
 
-		if($id_city!='') $where .= " and id_city=$id_city";
-		if($id_district!='') $where .= " and id_district=$id_district";
+		if($id_city > 0) { $where .= " and id_city = ?"; $params[] = $id_city; }
+		if($id_district > 0) { $where .= " and id_district = ?"; $params[] = $id_district; }
 		if(isset($_REQUEST['keyword']))
 		{
-			$keyword = htmlspecialchars($_REQUEST['keyword']);
-			$where .= " and (name LIKE '%$keyword%')";
+			$keywordClause = adminKeywordLikeClause($_REQUEST['keyword'], array('name'), $params);
+			if($keywordClause !== '') $where .= " and ".$keywordClause;
 		}
 
 		$perPage = 10;
 		$startpoint = ($curPage * $perPage) - $perPage;
 		$limit = " limit ".$startpoint.",".$perPage;
 		$sql = "select * from #_ward where id<>0 $where order by numb,id asc $limit";
-		$items = $d->rawQuery($sql);
+		$items = $d->rawQuery($sql,$params);
 		$sqlNum = "select count(*) as 'num' from #_ward where id<>0 $where order by numb,id asc";
-		$count = $d->rawQueryOne($sqlNum);
+		$count = $d->rawQueryOne($sqlNum,$params);
 		$total = (!empty($count)) ? $count['num'] : 0;
 		$url = "index.php?com=places".$strUrl."&act=man_ward";
 		$paging = $func->pagination($total,$perPage,$curPage,$url);

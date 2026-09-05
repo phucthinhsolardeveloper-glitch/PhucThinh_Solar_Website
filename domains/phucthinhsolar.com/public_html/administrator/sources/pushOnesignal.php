@@ -36,22 +36,24 @@
 		global $d, $func, $curPage, $items, $paging;
 
 		$where = "";
+		$params = array();
 		
 		if(isset($_REQUEST['keyword']))
 		{
-			$keyword = htmlspecialchars($_REQUEST['keyword']);
-			$where .= " and (name LIKE '%$keyword%')";
+			$keywordClause = adminKeywordLikeClause($_REQUEST['keyword'], array('name'), $params);
+			if($keywordClause !== '') $where .= " and ".$keywordClause;
 		}
 
 		$perPage = 10;
 		$startpoint = ($curPage * $perPage) - $perPage;
 		$limit = " limit ".$startpoint.",".$perPage;
 		$sql = "select * from #_pushonesignal where id<>0 $where order by numb,id desc $limit";
-		$items = $d->rawQuery($sql);
+		$items = $d->rawQuery($sql,$params);
 		$sqlNum = "select count(*) as 'num' from #_pushonesignal where id<>0 $where order by numb,id desc";
-		$count = $d->rawQueryOne($sqlNum);
+		$count = $d->rawQueryOne($sqlNum,$params);
 		$total = (!empty($count)) ? $count['num'] : 0;
 		$url = "index.php?com=pushOnesignal&act=man";
+		if(isset($_REQUEST['keyword']) && is_scalar($_REQUEST['keyword'])) $url .= "&keyword=".urlencode((string)$_REQUEST['keyword']);
 		$paging = $func->pagination($total,$perPage,$curPage,$url);
 	}
 

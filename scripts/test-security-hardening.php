@@ -26,6 +26,52 @@ $apiEnvelope = adminApiEnvelope(true, 'Đã xử lý', 'TEST_OK', array('id'=>1)
 securityAssert($apiEnvelope['ok'] === true && $apiEnvelope['code'] === 'TEST_OK' && $apiEnvelope['success'] === 'legacy' && $apiEnvelope['data']['id'] === 1, 'Envelope API chuẩn giữ tương thích field legacy');
 securityAssert(adminApiEnvelope(false, 'Không có quyền', 'FORBIDDEN')['ok'] === false, 'Envelope API biểu diễn lỗi bằng boolean ổn định');
 securityAssert(!adminCsrfValid('sai-token'), 'CSRF Admin từ chối token sai');
+$searchParams = array();
+$searchKeyword = "O'Reilly % Đèn";
+$searchClause = adminKeywordLikeClause($searchKeyword, array('p.namevi', 'p.nameen'), $searchParams);
+securityAssert(
+    $searchClause === '(p.namevi LIKE ? or p.nameen LIKE ?)'
+        && $searchParams === array('%'.$searchKeyword.'%', '%'.$searchKeyword.'%')
+        && strpos($searchClause, $searchKeyword) === false,
+    'Tìm kiếm Admin bind dấu nháy, wildcard và Unicode thay vì ghép vào SQL'
+);
+$invalidSearchColumnRejected = false;
+try { $unusedParams = array(); adminKeywordLikeClause('test', array('namevi) or 1=1 --'), $unusedParams); }
+catch(InvalidArgumentException $exception) { $invalidSearchColumnRejected = true; }
+securityAssert($invalidSearchColumnRejected, 'Tìm kiếm Admin từ chối identifier cột ngoài allowlist cú pháp');
+$exportParams = array();
+$exportWhere = adminOrderExportFilter(array(
+    'listid' => '12,34',
+    'order_status' => '2',
+    'id_city' => '7',
+    'order_date' => '01/09/2026 - 05/09/2026',
+    'range_price' => '100000;200000',
+    'keyword' => $searchKeyword
+), $exportParams);
+securityAssert(
+    substr_count($exportWhere, '?') === count($exportParams)
+        && strpos($exportWhere, $searchKeyword) === false
+        && in_array('%'.$searchKeyword.'%', $exportParams, true),
+    'Bộ lọc export đơn hàng parameterize đồng bộ ID, ngày, giá và keyword'
+);
+$invalidExportParams = array();
+$invalidExportWhere = adminOrderExportFilter(array('listid' => '12,34 or 1=1'), $invalidExportParams);
+securityAssert(strpos($invalidExportWhere, '1=0') !== false && empty($invalidExportParams), 'Export đơn hàng từ chối toàn bộ list ID sai định dạng');
+$adminSearchSourceFiles = array('product.php', 'news.php', 'places.php', 'tags.php', 'user.php', 'lang.php', 'pushOnesignal.php', 'wordAll.php', 'excelAll.php');
+$keywordHelperCalls = 0;
+$orderExportFilterCalls = 0;
+$legacyKeywordSql = array();
+foreach($adminSearchSourceFiles as $sourceFile)
+{
+    $source = file_get_contents('/var/www/html/administrator/sources/'.$sourceFile);
+    $keywordHelperCalls += substr_count($source, 'adminKeywordLikeClause(');
+    $orderExportFilterCalls += substr_count($source, 'adminOrderExportFilter(');
+    if(strpos($source, "LIKE '%\$keyword%'") !== false) $legacyKeywordSql[] = $sourceFile;
+}
+securityAssert(
+    $keywordHelperCalls === 19 && $orderExportFilterCalls === 2 && empty($legacyKeywordSql),
+    'Đủ 21 truy vấn tìm kiếm Admin dùng placeholder, không còn nội suy keyword legacy'
+);
 securityAssert(adminAllowedMutationTable('product', 'status') && !adminAllowedMutationTable('order_detail', 'status'), 'Allowlist status không nhận bảng ngoài phạm vi');
 securityAssert(adminAllowedMutationTable('news', 'copy') && !adminAllowedMutationTable('user', 'copy'), 'Allowlist copy chỉ nhận product/news');
 securityAssert(adminAllowedCategoryTable('product_cat') && !adminAllowedCategoryTable('user'), 'Allowlist category chặn identifier tùy ý');

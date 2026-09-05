@@ -24,6 +24,7 @@ Admin không thiếu nhiều màn CRUD, nhưng đang có ba vấn đề vận h�
 | Bật/tắt banner và popup | Công tắc `Hiển thị trên website` được đưa lên đầu form `banner-top` và `popup`; không còn bị chôn gần cuối form. |
 | Gom điểm điều khiển chiến dịch | Sidebar có nhóm `Chiến dịch hiển thị` gồm Banner đầu trang, Popup và lối vào danh sách sản phẩm đang có khung; thumbnail Admin cũng preview hai lớp. |
 | Breadcrumb | Bỏ nền ảnh, thu chiều cao và cân khoảng trống quang học trên/dưới ở desktop/mobile. |
+| Tìm kiếm Admin | 21 truy vấn legacy đã chuyển sang placeholder; các filter ID liên quan và toàn bộ filter xuất đơn hàng không còn ghép dữ liệu request vào SQL. |
 
 ### Vị trí vận hành khung card hiện tại
 
@@ -97,16 +98,17 @@ Quy trình bắt buộc trước cleanup: backup DB/upload → scan consumer sta
 ### Không phải code chết
 
 - `excel.php`, `excelAll.php`, `word.php`, `wordAll.php` vẫn được màn đơn hàng liên kết để xuất file.
+- Smoke local bổ sung cho thấy riêng luồng tạo file tổng hợp đang lỗi legacy: `excelAll.php` gặp file writer `Comments.php` rỗng, còn `wordAll.php` cố tạo file tạm trong `libraries/sample/` không có quyền ghi. Đây là lỗi generation độc lập với query filter; cần sửa và test download riêng trước deploy.
 - `product_bulk.php` đang được `product.php` nạp và là luồng nhập/xuất sản phẩm mới.
 - `photo2`, video và gallery vẫn có consumer public dù dữ liệu hiện tại ít hoặc bằng 0.
 
 ## Rủi ro kỹ thuật ảnh hưởng nhân viên vận hành
 
-### P0 — Query tìm kiếm Admin chưa parameterized đồng đều
+### P0 — Query tìm kiếm Admin đã parameterized
 
-Scan source phát hiện 21 vị trí ghép trực tiếp keyword vào `LIKE` trong các module product taxonomy, user, places, news, tags, language và export đơn hàng. `htmlspecialchars()` không thay thế prepared statement cho SQL.
+Scan source ban đầu phát hiện 21 vị trí ghép trực tiếp keyword vào `LIKE` trong các module product taxonomy, user, places, news, tags, language và export đơn hàng. `htmlspecialchars()` không thay thế prepared statement cho SQL.
 
-Hướng xử lý: chuyển từng module sang `LIKE ?`, bind `%keyword%`, ép kiểu toàn bộ ID filter, thêm characterization test cho dấu nháy/ký tự `%`/Unicode và giữ nguyên pagination/query state.
+Đã chuyển cả 21 vị trí sang helper chỉ nhận identifier cột hợp lệ và sinh `LIKE ?`; `%keyword%` được bind riêng. ID danh mục/địa giới được ép kiểu và bind. Hai export đơn hàng dùng chung bộ dựng điều kiện parameterized cho danh sách ID, trạng thái, địa giới, ngày, khoảng giá và keyword; list ID sai định dạng trả tập rỗng thay vì mở rộng phạm vi export. Regression chạy keyword `O'Reilly % Đèn` qua helper, static guard và năm màn có template/config phù hợp. Bộ lọc export được test tách biệt với lỗi generation legacy nêu trên.
 
 ### P0/P1 — Mật khẩu legacy dùng MD5
 
@@ -130,7 +132,7 @@ Hướng xử lý: thêm bộ lọc/readiness score chỉ đọc; mỗi chỉ s�
 
 ### Giai đoạn 1 — Correctness và khả năng vận hành
 
-1. Parameterize 21 query tìm kiếm còn lại và thêm regression.
+1. **Đã hoàn tất:** parameterize 21 query tìm kiếm còn lại và thêm regression.
 2. Gộp cấu hình `chinh-sach`; khôi phục ba nguồn public đang bị ẩn khỏi Admin sau smoke test.
 3. Thêm hàng đợi thiếu ảnh/SEO/danh mục/nội dung vào Admin; ưu tiên xử lý 363 sản phẩm thiếu ảnh.
 4. Thêm SEO preview/dry-run và bulk fill **chỉ trường rỗng**; không đổi slug/URL public.
@@ -166,6 +168,7 @@ Card chỉ resolve campaign đang hiệu lực; nhân viên không phải upload
 - PHP 7.4 lint cho source tìm kiếm, form sản phẩm, form media và breadcrumb: đạt.
 - Node syntax check cho Admin JS và Playwright test: đạt.
 - Admin readiness authenticated: đạt toàn bộ, gồm preview khung sản phẩm và công tắc của banner/popup.
+- Security/Admin search regression: helper, static guard đủ 21 vị trí và năm màn danh sách với dấu nháy, `%`, Unicode đều đạt; filter export đạt ở unit nhưng generation file local còn lỗi legacy đã ghi nhận.
 - Playwright Chromium tìm kiếm khung campaign: 2/2 desktop/mobile đạt.
 - Playwright Chromium header/menu/breadcrumb/footer: 2/2 desktop/mobile đạt.
 - `git diff --check`: đạt.

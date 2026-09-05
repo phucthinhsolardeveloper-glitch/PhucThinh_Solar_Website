@@ -43,22 +43,24 @@
 		global $d, $func, $curPage, $items, $paging, $type;
 
 		$where = "";
+		$params = array($type);
 		
 		if(isset($_REQUEST['keyword']))
 		{
-			$keyword = htmlspecialchars($_REQUEST['keyword']);
-			$where .= " and (namevi LIKE '%$keyword%' or nameen LIKE '%$keyword%')";
+			$keywordClause = adminKeywordLikeClause($_REQUEST['keyword'], array('namevi', 'nameen'), $params);
+			if($keywordClause !== '') $where .= " and ".$keywordClause;
 		}
 
 		$perPage = 10;
 		$startpoint = ($curPage * $perPage) - $perPage;
 		$limit = " limit ".$startpoint.",".$perPage;
 		$sql = "select * from #_tags where type = ? $where order by numb,id desc $limit";
-		$items = $d->rawQuery($sql,array($type));
+		$items = $d->rawQuery($sql,$params);
 		$sqlNum = "select count(*) as 'num' from #_tags where type = ? $where order by numb,id desc";
-		$count = $d->rawQueryOne($sqlNum,array($type));
+		$count = $d->rawQueryOne($sqlNum,$params);
 		$total = (!empty($count)) ? $count['num'] : 0;
 		$url = "index.php?com=tags&act=man&type=".$type;
+		if(isset($_REQUEST['keyword']) && is_scalar($_REQUEST['keyword'])) $url .= "&keyword=".urlencode((string)$_REQUEST['keyword']);
 		$paging = $func->pagination($total,$perPage,$curPage,$url);
 	}
 

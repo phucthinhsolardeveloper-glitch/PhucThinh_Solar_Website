@@ -238,6 +238,35 @@ try
     $adminList = readinessHttp($base.'index.php?com=product&act=man&type=san-pham', 'GET', array(), $newCookie);
     $campaignList = readinessHttp($base.'index.php?com=product&act=man&type=san-pham&data_status=campaign_active', 'GET', array(), $newCookie);
     readinessAssert($campaignList['status'] === 200 && strpos($campaignList['body'], 'Đang lọc: Đang có khung campaign') !== false, 'Lối vào chiến dịch mở đúng danh sách sản phẩm đã lọc');
+	$specialSearchKeyword = "O'Reilly % Đèn";
+	$specialSearchRoutes = array(
+		'Kích thước sản phẩm' => 'index.php?com=product&act=man_size&type=san-pham',
+		'Màu sản phẩm' => 'index.php?com=product&act=man_color&type=san-pham',
+		'Thương hiệu sản phẩm' => 'index.php?com=product&act=man_brand&type=san-pham',
+		'Nội dung chính' => 'index.php?com=news&act=man&type=tin-tuc',
+		'Nội dung cấp 1' => 'index.php?com=news&act=man_list&type=tin-tuc'
+	);
+	foreach($specialSearchRoutes as $searchLabel => $searchRoute)
+	{
+		$searchResponse = readinessHttp($base.$searchRoute.'&keyword='.rawurlencode($specialSearchKeyword), 'GET', array(), $newCookie);
+		readinessAssert(
+			$searchResponse['status'] === 200
+				&& strpos($searchResponse['body'], 'SQLSTATE') === false
+				&& strpos($searchResponse['body'], 'PDODbException') === false,
+			'Tìm kiếm '.$searchLabel.' xử lý an toàn dấu nháy, wildcard và Unicode'
+		);
+	}
+	foreach(array(
+		'phân trang thương hiệu' => 'index.php?com=product&act=man_brand&type=san-pham',
+		'phân trang nội dung' => 'index.php?com=news&act=man&type=tin-tuc&per_page=10'
+	) as $paginationLabel => $paginationRoute)
+	{
+		$paginationResponse = readinessHttp($base.$paginationRoute.'&keyword='.rawurlencode('%'), 'GET', array(), $newCookie);
+		readinessAssert(
+			$paginationResponse['status'] === 200 && strpos($paginationResponse['body'], 'keyword=%25') !== false,
+			'Tìm kiếm Admin giữ keyword đã encode qua '.$paginationLabel
+		);
+	}
     $authStateAfterPages = $d->rawQueryOne('select lastlogin, user_token from #_user where id = ?', array($createdUsers['product']['id']));
     readinessAssert($adminList['status'] === 200, 'Phiên Admin mở liên tiếp hai trang authenticated');
     readinessAssert(

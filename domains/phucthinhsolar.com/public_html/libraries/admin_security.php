@@ -28,6 +28,25 @@ if(!function_exists('adminCsrfToken'))
         return adminApiEnvelope(false, 'Không thể xử lý yêu cầu. Vui lòng thử lại.', 'INTERNAL_ERROR', array(), array('success'=>false));
     }
 
+    function adminKeywordLikeClause($keyword, $columns, &$params)
+    {
+        if(!is_scalar($keyword) || !is_array($columns) || empty($columns)) return '';
+
+        $keyword = (string)$keyword;
+        if($keyword === '') return '';
+
+        $conditions = array();
+        foreach($columns as $column)
+        {
+            if(!is_string($column) || !preg_match('/^(?:[A-Za-z_][A-Za-z0-9_]*\.)?[A-Za-z_][A-Za-z0-9_]*$/D', $column))
+                throw new InvalidArgumentException('Invalid Admin search column');
+            $conditions[] = $column.' LIKE ?';
+            $params[] = '%'.$keyword.'%';
+        }
+
+        return '('.implode(' or ', $conditions).')';
+    }
+
     function adminInstallApiExceptionHandler()
     {
         set_exception_handler(function(Throwable $exception) {

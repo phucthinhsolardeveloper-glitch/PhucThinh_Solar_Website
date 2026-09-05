@@ -88,22 +88,24 @@
 		global $d, $func, $curPage, $items, $paging;
 
 		$where = "";
+		$params = array();
 		
 		if(isset($_REQUEST['keyword']))
 		{
-			$keyword = htmlspecialchars($_REQUEST['keyword']);
-			$where .= " and fullname LIKE '%$keyword%'";
+			$keywordClause = adminKeywordLikeClause($_REQUEST['keyword'], array('fullname'), $params);
+			if($keywordClause !== '') $where .= " and ".$keywordClause;
 		}
 
 		$perPage = 10;
 		$startpoint = ($curPage * $perPage) - $perPage;
 		$limit = " limit ".$startpoint.",".$perPage;
 		$sql = "select * from #_permission_group where id<>0 $where order by numb,id desc $limit";
-		$items = $d->rawQuery($sql);
+		$items = $d->rawQuery($sql,$params);
 		$sqlNum = "select count(*) as 'num' from #_permission_group where id<>0 $where order by numb,id desc";
-		$count = $d->rawQueryOne($sqlNum);
+		$count = $d->rawQueryOne($sqlNum,$params);
 		$total = (!empty($count)) ? $count['num'] : 0;
 		$url = "index.php?com=user&act=permission_group";
+		if(isset($_REQUEST['keyword']) && is_scalar($_REQUEST['keyword'])) $url .= "&keyword=".urlencode((string)$_REQUEST['keyword']);
 		$paging = $func->pagination($total,$perPage,$curPage,$url);
 	}
 
@@ -317,22 +319,24 @@
 		global $d, $func, $curPage, $items, $paging, $config;
 
 		$where = "";
+		$params = array();
 
 		if(isset($_REQUEST['keyword']))
 		{
-			$keyword = htmlspecialchars($_REQUEST['keyword']);
-			$where .= " and (username LIKE '%$keyword%' or fullname LIKE '%$keyword%')";
+			$keywordClause = adminKeywordLikeClause($_REQUEST['keyword'], array('username', 'fullname'), $params);
+			if($keywordClause !== '') $where .= " and ".$keywordClause;
 		}
 
 		$perPage = 10;
 		$startpoint = ($curPage * $perPage) - $perPage;
 		$limit = " limit ".$startpoint.",".$perPage;
 		$sql = "select * from #_user where id <> 0 and role = 1 $where order by numb,id desc $limit";
-		$items = $d->rawQuery($sql);
+		$items = $d->rawQuery($sql,$params);
 		$sqlNum = "select count(*) as 'num' from #_user where id <> 0 and role = 1 $where order by numb,id desc";
-		$count = $d->rawQueryOne($sqlNum);
+		$count = $d->rawQueryOne($sqlNum,$params);
 		$total = (!empty($count)) ? $count['num'] : 0;
 		$url = "index.php?com=user&act=man_admin";
+		if(isset($_REQUEST['keyword']) && is_scalar($_REQUEST['keyword'])) $url .= "&keyword=".urlencode((string)$_REQUEST['keyword']);
 		$paging = $func->pagination($total,$perPage,$curPage,$url);
 	}
 
@@ -834,22 +838,24 @@
 		global $d, $func, $curPage, $items, $paging, $config;
 
 		$where = "";
+		$params = array();
 
 		if(isset($_REQUEST['keyword']))
 		{
-			$keyword = htmlspecialchars($_REQUEST['keyword']);
-			$where .= " and (username LIKE '%$keyword%' or fullname LIKE '%$keyword%')";
+			$keywordClause = adminKeywordLikeClause($_REQUEST['keyword'], array('username', 'fullname'), $params);
+			if($keywordClause !== '') $where .= " and ".$keywordClause;
 		}
 
 		$perPage = 10;
 		$startpoint = ($curPage * $perPage) - $perPage;
 		$limit = " limit ".$startpoint.",".$perPage;
 		$sql = "select * from #_member where id <> 0 $where order by numb,id desc $limit";
-		$items = $d->rawQuery($sql);
+		$items = $d->rawQuery($sql,$params);
 		$sqlNum = "select count(*) as 'num' from #_member where id <> 0 $where order by numb,id desc";
-		$count = $d->rawQueryOne($sqlNum);
+		$count = $d->rawQueryOne($sqlNum,$params);
 		$total = (!empty($count)) ? $count['num'] : 0;
 		$url = "index.php?com=user&act=man_member";
+		if(isset($_REQUEST['keyword']) && is_scalar($_REQUEST['keyword'])) $url .= "&keyword=".urlencode((string)$_REQUEST['keyword']);
 		$paging = $func->pagination($total,$perPage,$curPage,$url);
 	}
 

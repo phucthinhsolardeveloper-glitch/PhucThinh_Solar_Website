@@ -36,7 +36,7 @@
 		}
 
 		if(!empty($_REQUEST['comment_status'])) $strUrl .= "&comment_status=".htmlspecialchars($_REQUEST['comment_status']);
-		if(isset($_REQUEST['keyword'])) $strUrl .= "&keyword=".htmlspecialchars($_REQUEST['keyword']);
+		if(isset($_REQUEST['keyword']) && is_scalar($_REQUEST['keyword'])) $strUrl .= "&keyword=".urlencode((string)$_REQUEST['keyword']);
 	}
 	$adminPerPageOptions = array(10, 20, 50, 100);
 	$adminPerPage = isset($_REQUEST['per_page']) ? (int)$_REQUEST['per_page'] : 20;
@@ -174,16 +174,17 @@
 		global $d, $func, $comment, $strUrl, $curPage, $items, $paging, $type, $adminPerPage;
 
 		$where = "";
-		$idlist = (isset($_REQUEST['id_list'])) ? htmlspecialchars($_REQUEST['id_list']) : 0;
-		$idcat = (isset($_REQUEST['id_cat'])) ? htmlspecialchars($_REQUEST['id_cat']) : 0;
-		$iditem = (isset($_REQUEST['id_item'])) ? htmlspecialchars($_REQUEST['id_item']) : 0;
-		$idsub = (isset($_REQUEST['id_sub'])) ? htmlspecialchars($_REQUEST['id_sub']) : 0;
+		$params = array($type);
+		$idlist = isset($_REQUEST['id_list']) ? (int)$_REQUEST['id_list'] : 0;
+		$idcat = isset($_REQUEST['id_cat']) ? (int)$_REQUEST['id_cat'] : 0;
+		$iditem = isset($_REQUEST['id_item']) ? (int)$_REQUEST['id_item'] : 0;
+		$idsub = isset($_REQUEST['id_sub']) ? (int)$_REQUEST['id_sub'] : 0;
 		$comment_status = (!empty($_REQUEST['comment_status'])) ? htmlspecialchars($_REQUEST['comment_status']) : '';
 
-		if($idlist) $where .= " and id_list=$idlist";
-		if($idcat) $where .= " and id_cat=$idcat";
-		if($iditem) $where .= " and id_item=$iditem";
-		if($idsub) $where .= " and id_sub=$idsub";
+		if($idlist > 0) { $where .= " and id_list = ?"; $params[] = $idlist; }
+		if($idcat > 0) { $where .= " and id_cat = ?"; $params[] = $idcat; }
+		if($iditem > 0) { $where .= " and id_item = ?"; $params[] = $iditem; }
+		if($idsub > 0) { $where .= " and id_sub = ?"; $params[] = $idsub; }
 		if($comment_status == 'new')
 		{
 			$comment = $d->rawQuery("select distinct id_variant from #_comment where type = ? and find_in_set('new-admin',status)", array($type));
@@ -192,17 +193,17 @@
 		}
 		if(isset($_REQUEST['keyword']))
 		{
-			$keyword = htmlspecialchars($_REQUEST['keyword']);
-			$where .= " and (namevi LIKE '%$keyword%' or nameen LIKE '%$keyword%')";
+			$keywordClause = adminKeywordLikeClause($_REQUEST['keyword'], array('namevi', 'nameen'), $params);
+			if($keywordClause !== '') $where .= " and ".$keywordClause;
 		}
 
 		$perPage = $adminPerPage;
 		$startpoint = ($curPage * $perPage) - $perPage;
 		$limit = " limit ".$startpoint.",".$perPage;
 		$sql = "select * from #_news where type = ? $where order by numb,id desc $limit";
-		$items = $d->rawQuery($sql,array($type));
+		$items = $d->rawQuery($sql,$params);
 		$sqlNum = "select count(*) as 'num' from #_news where type = ? $where order by numb,id desc";
-		$count = $d->rawQueryOne($sqlNum,array($type));
+		$count = $d->rawQueryOne($sqlNum,$params);
 		$total = (!empty($count)) ? $count['num'] : 0;
 		$url = "index.php?com=news&act=man".$strUrl."&type=".$type;
 		$paging = $func->pagination($total,$perPage,$curPage,$url);
@@ -809,22 +810,23 @@
 		global $d, $func, $strUrl, $curPage, $items, $paging, $type;
 		
 		$where = "";
+		$params = array($type);
 
 		if(isset($_REQUEST['keyword']))
 		{
-			$keyword = htmlspecialchars($_REQUEST['keyword']);
-			$where .= " and (namevi LIKE '%$keyword%' or nameen LIKE '%$keyword%')";
+			$keywordClause = adminKeywordLikeClause($_REQUEST['keyword'], array('namevi', 'nameen'), $params);
+			if($keywordClause !== '') $where .= " and ".$keywordClause;
 		}
 
 		$perPage = 10;
 		$startpoint = ($curPage * $perPage) - $perPage;
 		$limit = " limit ".$startpoint.",".$perPage;
 		$sql = "select * from #_news_list where type = ? $where order by numb,id desc $limit";
-		$items = $d->rawQuery($sql,array($type));
+		$items = $d->rawQuery($sql,$params);
 		$sqlNum = "select count(*) as 'num' from #_news_list where type = ? $where order by numb,id desc";
-		$count = $d->rawQueryOne($sqlNum,array($type));
+		$count = $d->rawQueryOne($sqlNum,$params);
 		$total = (!empty($count)) ? $count['num'] : 0;
-		$url = "index.php?com=news&act=man_list&type=".$type;
+		$url = "index.php?com=news&act=man_list&type=".$type.$strUrl;
 		$paging = $func->pagination($total,$perPage,$curPage,$url);
 	}
 
@@ -1183,22 +1185,23 @@
 		global $d, $func, $strUrl, $curPage, $items, $paging, $type;
 		
 		$where = "";
-		$idlist = (isset($_REQUEST['id_list'])) ? htmlspecialchars($_REQUEST['id_list']) : 0;
+		$params = array($type);
+		$idlist = isset($_REQUEST['id_list']) ? (int)$_REQUEST['id_list'] : 0;
 
-		if($idlist) $where .= " and id_list=$idlist";
+		if($idlist > 0) { $where .= " and id_list = ?"; $params[] = $idlist; }
 		if(isset($_REQUEST['keyword']))
 		{
-			$keyword = htmlspecialchars($_REQUEST['keyword']);
-			$where .= " and (namevi LIKE '%$keyword%' or nameen LIKE '%$keyword%')";
+			$keywordClause = adminKeywordLikeClause($_REQUEST['keyword'], array('namevi', 'nameen'), $params);
+			if($keywordClause !== '') $where .= " and ".$keywordClause;
 		}
 
 		$perPage = 10;
 		$startpoint = ($curPage * $perPage) - $perPage;
 		$limit = " limit ".$startpoint.",".$perPage;
 		$sql = "select * from #_news_cat where type = ? $where order by numb,id desc $limit";
-		$items = $d->rawQuery($sql,array($type));
+		$items = $d->rawQuery($sql,$params);
 		$sqlNum = "select count(*) as 'num' from #_news_cat where type = ? $where order by numb,id desc";
-		$count = $d->rawQueryOne($sqlNum,array($type));
+		$count = $d->rawQueryOne($sqlNum,$params);
 		$total = (!empty($count)) ? $count['num'] : 0;
 		$url = "index.php?com=news&act=man_cat".$strUrl."&type=".$type;
 		$paging = $func->pagination($total,$perPage,$curPage,$url);
@@ -1518,24 +1521,25 @@
 		global $d, $func, $strUrl, $curPage, $items, $paging, $type;
 		
 		$where = "";
-		$idlist = (isset($_REQUEST['id_list'])) ? htmlspecialchars($_REQUEST['id_list']) : 0;
-		$idcat = (isset($_REQUEST['id_cat'])) ? htmlspecialchars($_REQUEST['id_cat']) : 0;
+		$params = array($type);
+		$idlist = isset($_REQUEST['id_list']) ? (int)$_REQUEST['id_list'] : 0;
+		$idcat = isset($_REQUEST['id_cat']) ? (int)$_REQUEST['id_cat'] : 0;
 
-		if($idlist) $where .= " and id_list=$idlist";
-		if($idcat) $where .= " and id_cat=$idcat";
+		if($idlist > 0) { $where .= " and id_list = ?"; $params[] = $idlist; }
+		if($idcat > 0) { $where .= " and id_cat = ?"; $params[] = $idcat; }
 		if(isset($_REQUEST['keyword']))
 		{
-			$keyword = htmlspecialchars($_REQUEST['keyword']);
-			$where .= " and (namevi LIKE '%$keyword%' or nameen LIKE '%$keyword%')";
+			$keywordClause = adminKeywordLikeClause($_REQUEST['keyword'], array('namevi', 'nameen'), $params);
+			if($keywordClause !== '') $where .= " and ".$keywordClause;
 		}
 
 		$perPage = 10;
 		$startpoint = ($curPage * $perPage) - $perPage;
 		$limit = " limit ".$startpoint.",".$perPage;
 		$sql = "select * from #_news_item where type = ? $where order by numb,id desc $limit";
-		$items = $d->rawQuery($sql,array($type));
+		$items = $d->rawQuery($sql,$params);
 		$sqlNum = "select count(*) as 'num' from #_news_item where type = ? $where order by numb,id desc";
-		$count = $d->rawQueryOne($sqlNum,array($type));
+		$count = $d->rawQueryOne($sqlNum,$params);
 		$total = (!empty($count)) ? $count['num'] : 0;
 		$url = "index.php?com=news&act=man_item".$strUrl."&type=".$type;
 		$paging = $func->pagination($total,$perPage,$curPage,$url);
@@ -1843,28 +1847,28 @@
 	{
 		global $d, $func, $strUrl, $curPage, $items, $paging, $type;
 
-		$where = "";	
-		
-		$idlist = (isset($_REQUEST['id_list'])) ? htmlspecialchars($_REQUEST['id_list']) : 0;
-		$idcat = (isset($_REQUEST['id_cat'])) ? htmlspecialchars($_REQUEST['id_cat']) : 0;
-		$iditem = (isset($_REQUEST['id_item'])) ? htmlspecialchars($_REQUEST['id_item']) : 0;
+		$where = "";
+		$params = array($type);
+		$idlist = isset($_REQUEST['id_list']) ? (int)$_REQUEST['id_list'] : 0;
+		$idcat = isset($_REQUEST['id_cat']) ? (int)$_REQUEST['id_cat'] : 0;
+		$iditem = isset($_REQUEST['id_item']) ? (int)$_REQUEST['id_item'] : 0;
 
-		if($idlist) $where .= " and id_list=$idlist";
-		if($idcat) $where .= " and id_cat=$idcat";
-		if($iditem) $where .= " and id_item=$iditem";
+		if($idlist > 0) { $where .= " and id_list = ?"; $params[] = $idlist; }
+		if($idcat > 0) { $where .= " and id_cat = ?"; $params[] = $idcat; }
+		if($iditem > 0) { $where .= " and id_item = ?"; $params[] = $iditem; }
 		if(isset($_REQUEST['keyword']))
 		{
-			$keyword = htmlspecialchars($_REQUEST['keyword']);
-			$where .= " and (namevi LIKE '%$keyword%' or nameen LIKE '%$keyword%')";
+			$keywordClause = adminKeywordLikeClause($_REQUEST['keyword'], array('namevi', 'nameen'), $params);
+			if($keywordClause !== '') $where .= " and ".$keywordClause;
 		}
 
 		$perPage = 10;
 		$startpoint = ($curPage * $perPage) - $perPage;
 		$limit = " limit ".$startpoint.",".$perPage;
 		$sql = "select * from #_news_sub where type = ? $where order by numb,id desc $limit";
-		$items = $d->rawQuery($sql,array($type));
+		$items = $d->rawQuery($sql,$params);
 		$sqlNum = "select count(*) as 'num' from #_news_sub where type = ? $where order by numb,id desc";
-		$count = $d->rawQueryOne($sqlNum,array($type));
+		$count = $d->rawQueryOne($sqlNum,$params);
 		$total = (!empty($count)) ? $count['num'] : 0;
 		$url = "index.php?com=news&act=man_sub".$strUrl."&type=".$type;
 		$paging = $func->pagination($total,$perPage,$curPage,$url);
