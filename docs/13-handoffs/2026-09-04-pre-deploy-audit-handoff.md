@@ -56,8 +56,11 @@ Không còn lỗi P0/P1 nào đang mở.
 Backup database production trước, sau đó chạy migration **đúng thứ tự**:
 
 ```
-013 → 015 --apply → 016 → 017 → 018 → 019 → 020
+013 → 015 --apply → 016 → 017 → 018 → 019 → 020 → 021
 ```
+
+`021` (2026-09-05, thêm cột `photo_khuyenmai` cho ảnh khuyến mãi/sự kiện theo
+sản phẩm) chỉ thêm cột nullable, không cần dry-run, an toàn chạy trực tiếp.
 
 `018`, `019`, `020` **mặc định dry-run**. Phải chạy xem trước trên DB thật, đọc
 kết quả, rồi mới thêm `--apply`. Production nhiều khả năng có mức thiệt hại
@@ -79,14 +82,33 @@ Chỉ chạy lệnh dưới **sau khi chủ project nhìn và xác nhận giao d
 cd tools/visual-tests && npx playwright test visual-baseline.spec.js --update-snapshots
 ```
 
+### 3.2b Tính năng mới thêm 2026-09-05 (đã test, chưa dùng thật)
+
+Chủ project tham khảo giao diện Kitawa Solar Light, yêu cầu 3 việc — cả 3 đã
+code + test xong nhưng **chưa có ảnh/nội dung thật** vì cần chủ project tự
+chuẩn bị theo từng đợt sự kiện:
+
+- **Banner đầu trang**: Admin → Cài đặt hình ảnh → "Banner đầu trang (trên
+  header)". Bật "Hiển thị" + upload ảnh là hiện full-width trên mọi trang;
+  tắt là ẩn, ảnh vẫn lưu lại dùng cho đợt sau.
+- **Popup khi vào trang chủ**: Admin → Cài đặt hình ảnh → "Popup quảng cáo".
+  Data cũ đã có sẵn trong DB (ai đó cấu hình trước đây), giờ có nút bật/tắt.
+- **Ảnh khuyến mãi/sự kiện theo từng sản phẩm**: sửa 1 sản phẩm → card "Ảnh
+  khuyến mãi/sự kiện" để upload + tick cờ "Khuyến mãi/Sự kiện" ở khối trạng
+  thái. Card sản phẩm sẽ ưu tiên hiện ảnh này thay ảnh thường. Áp dụng hàng
+  loạt: cột "Khuyến mãi/Sự kiện" tự xuất hiện ở trang danh sách sản phẩm
+  (checkbox từng dòng + nút "Cập nhật hàng loạt" theo trang/toàn bộ lọc) và
+  trong file Excel xuất/nhập hàng loạt (`administrator?com=product&act=export`).
+
+Nhân tiện rà soát phát hiện 2 chỗ Admin thiếu quyền chỉnh dù frontend đang
+hiển thị thật (ảnh + video trang "Về chúng tôi") — đã đăng ký lại, xem
+migrations/021 và commit tương ứng.
+
 ### 3.3 Quyết định còn treo
 
-- **Slug `den-nlmt`** cho danh mục "Đèn năng lượng mặt trời": viết tắt cố ý,
-  vẫn đúng chủ đề nên `migrations/020` chủ động bỏ qua. Đây là danh mục lớn
-  nhất (165 sản phẩm) nên rủi ro SEO khi đổi cao hơn lợi ích. Nếu chủ project
-  duyệt đổi, chỉ cần thêm một dòng vào `$approvedRenames` trong
-  `migrations/020_fix_mismatched_category_slugs.php` rồi chạy lại; script tự ghi
-  301 từ slug cũ.
+- **Slug `den-nlmt`** cho danh mục "Đèn năng lượng mặt trời": **đã chốt giữ
+  nguyên** (chủ project duyệt 2026-09-05, không đổi). Viết tắt cố ý, vẫn đúng
+  chủ đề, `migrations/020` chủ động bỏ qua — không cần sửa gì thêm.
 - **"Tin tuyển dụng"**: hiện ẩn khỏi menu vì chưa có bài nào. Đăng bài thuộc
   danh mục này là nó tự hiện lại, không cần sửa code.
 
