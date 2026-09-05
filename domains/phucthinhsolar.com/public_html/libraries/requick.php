@@ -67,19 +67,24 @@
 		{
 			$is_permission = true;
 
-			if(!empty($com) && !in_array($com, ['user', 'index']) && !empty($act) && !in_array($act, ['save', 'save_list', 'save_cat', 'save_item', 'save_sub', 'save_brand', 'save_color', 'save_size', 'saveImages', 'uploadExcel', 'save_static', 'save_photo']))
-			{
-				$sum_permission = '';
-				$sum_permission .= $com.'_'.$act;
-				$sum_permission .= (!empty($variant)) ? '_'.$variant : '';
-				$sum_permission .= (!empty($type)) ? '_'.$type : '';
+			require_once LIBRARIES.'admin_security.php';
+			$hasIdForPermission = !empty($_REQUEST['id']);
+			$sum_permission = adminLegacyScreenPermission($com, $act, $variant, $type, $hasIdForPermission);
 
-				if(isset($_SESSION[$loginAdmin]['permissions']))
+			if($sum_permission === 'SUPERADMIN_ONLY')
+			{
+				/* Quản lý tài khoản và nhóm quyền chỉ dành cho tài khoản cấp cao
+				   nhất; không nhóm quyền nào cấp được khu vực này. */
+				$func->transfer("Chỉ tài khoản quản trị cấp cao mới vào được khu vực này", "index.php", false);
+			}
+			elseif($sum_permission !== '')
+			{
+				$grantedPermissions = isset($_SESSION[$loginAdmin]['permissions']) && is_array($_SESSION[$loginAdmin]['permissions'])
+					? $_SESSION[$loginAdmin]['permissions']
+					: array();
+				if(!in_array($sum_permission, $grantedPermissions, true))
 				{
-					if(!in_array($sum_permission, $_SESSION[$loginAdmin]['permissions']))
-					{
-						$func->transfer("Bạn không có quyền truy cập vào khu vực này", "index.php", false);
-					}
+					$func->transfer("Bạn không có quyền truy cập vào khu vực này", "index.php", false);
 				}
 			}
 		}

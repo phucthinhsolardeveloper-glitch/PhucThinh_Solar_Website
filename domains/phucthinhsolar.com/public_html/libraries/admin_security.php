@@ -256,4 +256,78 @@ if(!function_exists('adminCsrfToken'))
         }
         exit();
     }
+
+    /**
+     * Quyền cần có cho một màn hình Admin theo com/act, dùng cho cổng chặn tập
+     * trung trong requick.php.
+     *
+     * Trả về một trong ba giá trị:
+     *   ''                  - ai đăng nhập cũng dùng được (đăng xuất, hồ sơ cá nhân)
+     *   'SUPERADMIN_ONLY'   - chỉ tài khoản role 3, không nhóm quyền nào cấp được
+     *   'chuoi_quyen'       - phải có đúng quyền này trong nhóm
+     *
+     * Hai chỗ trước đây bị bỏ trống hoàn toàn:
+     *
+     * 1) Toàn bộ com=user được loại khỏi kiểm tra, nên bất kỳ tài khoản nào đăng
+     *    nhập được cũng vào thẳng được man_admin/add_admin/save_admin/
+     *    delete_admin/permission_group — tức tự tạo cho mình một tài khoản role 3.
+     *    Giờ chỉ role 3 mới quản lý được tài khoản và nhóm quyền; các màn hình tự
+     *    phục vụ (đăng xuất, xem hồ sơ của chính mình) vẫn mở cho mọi người.
+     *
+     * 2) Các act ghi dữ liệu (save, save_list, saveImages, uploadExcel...) cũng
+     *    được loại khỏi kiểm tra, vì khoá quyền sinh ra là "product_save_..." mà
+     *    danh mục quyền không hề có khoá đó. Hệ quả: một tài khoản không được
+     *    xem sản phẩm vẫn POST thẳng act=save để ghi. Nay mỗi act ghi được quy
+     *    về đúng quyền add hoặc edit tương ứng, chọn theo việc có id hay không.
+     */
+    function adminLegacyScreenPermission($com, $act, $variant, $type, $hasId)
+    {
+        $com = (string)$com;
+        $act = (string)$act;
+
+        if($com === '' || $act === '') return '';
+        if($com === 'index') return '';
+
+        if($com === 'user')
+        {
+            /* Tự phục vụ: không đụng tới tài khoản người khác. */
+            if(in_array($act, array('login', 'logout', 'info_admin'), true)) return '';
+            return 'SUPERADMIN_ONLY';
+        }
+
+        /* act ghi -> quyền add/edit tương ứng. Giá trị là hậu tố sau tên module. */
+        $writeActions = array(
+            'save'        => array('add', 'edit'),
+            'save_list'   => array('add_list', 'edit_list'),
+            'save_cat'    => array('add_cat', 'edit_cat'),
+            'save_item'   => array('add_item', 'edit_item'),
+            'save_sub'    => array('add_sub', 'edit_sub'),
+            'save_brand'  => array('add_brand', 'edit_brand'),
+            'save_color'  => array('add_color', 'edit_color'),
+            'save_size'   => array('add_size', 'edit_size'),
+            'save_photo'  => array('add_photo', 'edit_photo'),
+            'saveImages'  => array('edit_photo', 'edit_photo')
+        );
+
+        if(isset($writeActions[$act]))
+        {
+            $pair = $writeActions[$act];
+            $suffix = $hasId ? $pair[1] : $pair[0];
+            $permission = $com.'_'.$suffix;
+            if($variant !== '') $permission .= '_'.$variant;
+            if($type !== '') $permission .= '_'.$type;
+            return $permission;
+        }
+
+        /* Nhập Excel dùng chung quyền với module import. */
+        if($act === 'uploadExcel') return $type !== '' ? 'import_man_'.$type : 'SUPERADMIN_ONLY';
+        /* Lưu nội dung trang tĩnh dùng quyền update của chính nó. */
+        if($act === 'save_static') return $type !== '' ? 'static_update_'.$type : 'SUPERADMIN_ONLY';
+
+        /* Mặc định giữ nguyên quy ước cũ: com_act[_variant][_type]. */
+        $permission = $com.'_'.$act;
+        if($variant !== '') $permission .= '_'.$variant;
+        if($type !== '') $permission .= '_'.$type;
+        return $permission;
+    }
 }

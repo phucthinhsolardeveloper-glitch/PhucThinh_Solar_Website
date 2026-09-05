@@ -114,7 +114,12 @@
     $config['user']['check_member'] = array("hienthi" => "Kích hoạt");
 
     /* Quản lý phân quyền */
-    $config['permission']['active'] = false;
+    /* Bật phân quyền Admin. Tài khoản role 3 vẫn đi qua mọi kiểm tra, nên chủ
+       project không bao giờ bị khoá ngoài. Tài khoản role khác phải thuộc một
+       nhóm quyền đang bật, nếu không sẽ không vào được màn hình nào.
+       Chạy scripts/check-admin-permission-readiness.php trước khi deploy để
+       biết tài khoản nào sẽ mất quyền truy cập. */
+    $config['permission']['active'] = true;
     $config['permission']['check'] = array("hienthi" => "Kích hoạt");
 
     /* Quản lý liên lệ */
