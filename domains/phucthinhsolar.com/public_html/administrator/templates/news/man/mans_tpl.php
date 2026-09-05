@@ -141,7 +141,7 @@
 									            </ul>
 			                            	</div>
                                     	<?php } ?>
-                                    	<a class="text-danger" id="delete-item" data-url="<?=$linkDelete?><?=$linkID?>&id=<?=$items[$i]['id']?>" title="<?=$items[$i]['namevi']?>"><i class="far fa-trash-alt mr-1"></i>Delete</a>
+                                    <a class="text-danger" id="delete-item" data-url="<?=$linkDelete?><?=$strUrl?>&id=<?=$items[$i]['id']?>" title="<?=$items[$i]['namevi']?>"><i class="far fa-trash-alt mr-1"></i>Delete</a>
                                     </div>
                                 </td>
                                 <?php if(isset($config['news'][$type]['gallery']) && count($config['news'][$type]['gallery']) > 0) { ?>
@@ -176,7 +176,7 @@
 		                            	</div>
                                     <?php } ?>
                                     <a class="text-primary mr-2" href="<?=$linkEdit?><?=$linkID?>&id=<?=$items[$i]['id']?>" title="Chỉnh sửa"><i class="fas fa-edit"></i></a>
-                                    <a class="text-danger" id="delete-item" data-url="<?=$linkDelete?><?=$linkID?>&id=<?=$items[$i]['id']?>" title="Xóa"><i class="fas fa-trash-alt"></i></a>
+                                    <a class="text-danger" id="delete-item" data-url="<?=$linkDelete?><?=$strUrl?>&id=<?=$items[$i]['id']?>" title="Xóa"><i class="fas fa-trash-alt"></i></a>
                                 </td>
                             </tr>
                         <?php } ?>
