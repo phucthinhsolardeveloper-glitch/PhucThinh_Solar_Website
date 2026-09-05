@@ -1814,14 +1814,27 @@ class PDODb
         $ip_user = $this->getClientIP();
         $name_file = date('d-m-Y', time());
 
-        $file = fopen($logsfile . "/" . $name_file . ".txt", "a");
-        $data_old = file_get_contents($logsfile . "/" . $name_file . ".txt");
         $time_act = date('H:i:s d/m/Y', time());
-        fwrite($file, $ip_user . "(" . $user . ")" . "--" . $act . "--" . $com . "(" . $id . ") (" . $time_act . ")\n");
-        fclose($file);
+        /* Ghi nối, khoá file để hai request song song không xen dòng vào nhau.
+           Trước đây còn đọc cả file log của ngày vào biến $data_old rồi bỏ không
+           dùng — mỗi thao tác ghi phải nạp toàn bộ file (log ngày cao điểm hơn
+           130 KB) vào RAM một cách vô ích. */
+        $file = @fopen($logsfile . "/" . $name_file . ".txt", "a");
+        if ($file !== false)
+        {
+            @fwrite($file, $ip_user . "(" . $user . ")" . "--" . $act . "--" . $com . "(" . $id . ") (" . $time_act . ")\n");
+            @fclose($file);
+        }
 
-        $name_file_old = date('d-m-Y', time() - 7776000);
-        if (file_exists($logsfile . "/" . $name_file_old . ".txt")) unlink($logsfile . "/" . $name_file_old . ".txt");
+        /* Xoá mọi log cũ hơn 90 ngày. Bản cũ chỉ xoá đúng file của ngày thứ 90,
+           nên hôm nào không có thao tác nào là file ngày đó không bao giờ bị dọn
+           và log tồn lại vĩnh viễn. */
+        $keepSeconds = 7776000;
+        $now = time();
+        foreach ((array)glob($logsfile . "/*.txt") as $oldFile)
+        {
+            if (is_file($oldFile) && ($now - filemtime($oldFile)) > $keepSeconds) @unlink($oldFile);
+        }
     }
     public function getClientIP()
     {
