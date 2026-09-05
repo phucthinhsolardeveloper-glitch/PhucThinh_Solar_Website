@@ -20,6 +20,16 @@ async function settlePage(page) {
       window.jQuery('.owl-carousel').trigger('stop.owl.autoplay');
     }
   });
+  // Chờ font và ảnh thật sự xong: font swap đổi chiều cao chữ và ảnh chưa
+  // decode làm dịch layout vài px, khiến baseline lệch ngẫu nhiên giữa các lần chạy.
+  await page.evaluate(async () => {
+    if (document.fonts && document.fonts.ready) await document.fonts.ready;
+    const pending = Array.from(document.images).filter(image => !image.complete);
+    await Promise.all(pending.map(image => new Promise(resolve => {
+      image.addEventListener('load', resolve, { once: true });
+      image.addEventListener('error', resolve, { once: true });
+    })));
+  });
   await page.waitForTimeout(1000);
 }
 

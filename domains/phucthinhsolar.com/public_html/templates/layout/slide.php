@@ -1,5 +1,22 @@
-<section class="pts-home-hero">
+<?php
+    /* Chứng nhận uỷ quyền: tối đa 3 tấm xếp chồng, tên hãng lấy từ toàn bộ danh sách. */
+    $heroCerts = array();
+    $heroCertBrands = array();
+    if(!empty($chungnhan) && is_array($chungnhan))
+    {
+        foreach($chungnhan as $heroCert)
+        {
+            if(empty($heroCert['photo'])) continue;
+            if(count($heroCerts) < 3) $heroCerts[] = $heroCert;
+            $heroCertName = trim((string)$heroCert['name'.$lang]);
+            if($heroCertName !== '') $heroCertBrands[] = $heroCertName;
+        }
+    }
+?>
+<section class="pts-home-hero<?=$heroCerts ? ' pts-home-hero-split' : ''?>">
     <div class="pts-hero-glow" aria-hidden="true"></div>
+    <div class="pts-hero-glow-cool" aria-hidden="true"></div>
+    <div class="pts-hero-texture" aria-hidden="true"></div>
     <div class="pts-hero-accent" aria-hidden="true"></div>
     <div class="wrap-content pts-hero-inner">
         <div class="pts-hero-copy">
@@ -25,6 +42,26 @@
                 </div>
             </div>
         </div>
+        <?php if($heroCerts) { ?>
+        <aside class="pts-hero-trust">
+            <span class="pts-hero-trust-label"><i class="fas fa-award"></i> Nhà phân phối uỷ quyền</span>
+            <div class="pts-hero-cert-stack">
+                <?php foreach($heroCerts as $heroCertIndex => $heroCert) { ?>
+                    <figure class="pts-hero-cert pts-hero-cert-<?=(int)$heroCertIndex?>">
+                        <?=$func->getImage(array('isLazy' => false, 'class' => '', 'sizes' => '300x420x3', 'upload' => UPLOAD_PHOTO_L, 'image' => $heroCert['photo'], 'alt' => 'Chứng nhận uỷ quyền '.trim((string)$heroCert['name'.$lang])))?>
+                    </figure>
+                <?php } ?>
+            </div>
+            <?php if($heroCertBrands) { ?>
+                <ul class="pts-hero-trust-brands">
+                    <?php foreach($heroCertBrands as $heroCertBrand) { ?>
+                        <li><?=htmlspecialchars($heroCertBrand, ENT_QUOTES, 'UTF-8')?></li>
+                    <?php } ?>
+                </ul>
+            <?php } ?>
+            <a class="pts-hero-trust-link" href="ve-chung-toi/">Xem chứng nhận <i class="fas fa-arrow-right"></i></a>
+        </aside>
+        <?php } ?>
     </div>
 </section>
 <?php /* Theme V2 không render slider legacy. */ ?>

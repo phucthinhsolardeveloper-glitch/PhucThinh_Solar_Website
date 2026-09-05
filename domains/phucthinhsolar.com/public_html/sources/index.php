@@ -19,6 +19,8 @@
     $testimonial = $cache->get("select name$lang, desc$lang, content$lang, photo from #_news where type = ? and find_in_set('hienthi',status) order by numb,id desc limit 0,4", array('phan-hoi-dai-ly'), 'result', 7200);
     // $videonb = $cache->get("select id from #_photo where type = ? and find_in_set('noibat',status) and find_in_set('hienthi',status)", array('video'), 'result', 7200);
     $partner = $cache->get("select name$lang, link, photo from #_photo where type = ? and find_in_set('hienthi',status) order by numb, id desc", array('doitac'), 'result', 7200);
+    /* Chứng nhận uỷ quyền cho khối tin cậy ở hero; dùng chung nguồn với trang Về chúng tôi nên Admin chỉ cần quản lý một chỗ. */
+    $chungnhan = $cache->get("select name$lang, link, photo from #_photo where type = ? and find_in_set('hienthi',status) order by numb, id desc", array('chungnhan'), 'result', 7200);
     $about = $cache->get("select name$lang, desc$lang,photo from #_static where type = ? and find_in_set('hienthi',status) limit 0,1", array('gioi-thieu'), 'fetch', 7200);
     $doitaccongnghe = $cache->get("select name$lang, desc$lang,photo, namkinhnghiem from #_static where type = ? and find_in_set('hienthi',status) limit 0,1", array('doi-tac-cong-nghe'), 'fetch', 7200);
     $tieuchi = $cache->get("select name$lang, slugvi, slugen, desc$lang, date_created, id, photo from #_news where type = ? and find_in_set('hienthi',status) order by numb,id desc", array('tieu-chi'), 'result', 7200);

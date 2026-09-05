@@ -190,10 +190,42 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 /* Home hero: same composition as solar-light-web */
 .wap-slider{background:var(--pts-navy-deep);}
 .pts-home-hero{position:relative;overflow:hidden;background:linear-gradient(135deg,var(--pts-navy-deep) 0%,var(--pts-navy) 57%,var(--pts-navy-light) 100%);isolation:isolate;}
-.pts-hero-glow{position:absolute;z-index:-1;width:480px;height:480px;right:-120px;top:-160px;border-radius:50%;background:rgba(201,150,46,.22);filter:blur(65px);}
+.pts-hero-glow{position:absolute;z-index:-1;width:560px;height:560px;right:-130px;top:-190px;border-radius:50%;background:rgba(201,150,46,.30);filter:blur(70px);}
+/* Quầng lạnh đối trọng ở góc dưới trái để nền không còn phẳng một màu. */
+.pts-hero-glow-cool{position:absolute;z-index:-1;width:520px;height:520px;left:-180px;bottom:-240px;border-radius:50%;background:rgba(41,105,208,.30);filter:blur(80px);}
+/* Vân lưới mô phỏng tấm pin, rất mờ, mờ dần về phải để không đè chữ. */
+.pts-hero-texture{position:absolute;z-index:-1;inset:0;opacity:.5;background-image:repeating-linear-gradient(90deg,rgba(255,255,255,.05) 0 1px,transparent 1px 64px),repeating-linear-gradient(0deg,rgba(255,255,255,.05) 0 1px,transparent 1px 64px);-webkit-mask-image:linear-gradient(105deg,transparent 0%,rgba(0,0,0,.85) 55%,rgba(0,0,0,.3) 100%);mask-image:linear-gradient(105deg,transparent 0%,rgba(0,0,0,.85) 55%,rgba(0,0,0,.3) 100%);}
 .pts-hero-accent{position:absolute;top:0;right:0;width:10px;height:100%;background:linear-gradient(var(--pts-gold),var(--pts-gold-light),var(--pts-gold));}
 .pts-hero-inner{position:relative;padding-top:78px;padding-bottom:82px;}
 .pts-hero-copy{max-width:760px;}
+/* Hero hai cột khi có chứng nhận; không có chứng nhận thì giữ nguyên bố cục một cột cũ. */
+.pts-home-hero-split .pts-hero-inner{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,392px);align-items:center;gap:56px;}
+.pts-home-hero-split .pts-hero-copy{max-width:640px;}
+.pts-home-hero-split .pts-home-hero p{max-width:560px;}
+.pts-home-hero-split .pts-hero-stats{gap:34px;}
+
+/* Khối tin cậy: chứng nhận uỷ quyền của hãng */
+.pts-hero-trust{position:relative;border:1px solid rgba(224,182,84,.30);border-radius:18px;background:rgba(255,255,255,.055);padding:24px 26px 26px;box-shadow:0 22px 50px rgba(3,10,28,.34);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);}
+.pts-hero-trust-label{display:inline-flex;align-items:center;gap:8px;color:var(--pts-gold-light);font-size:11.5px;font-weight:900;letter-spacing:.13em;text-transform:uppercase;}
+.pts-hero-cert-stack{position:relative;display:flex;align-items:flex-end;justify-content:center;min-height:250px;margin:18px 0 20px;}
+.pts-hero-cert{margin:0;border-radius:6px;background:#fff;box-shadow:0 14px 30px rgba(3,10,28,.42);overflow:hidden;}
+.pts-hero-cert img{display:block;width:100%;height:100%;object-fit:cover;}
+/* Hai tấm sau chỉ ló ra làm chiều sâu, tấm đầu danh sách đứng trước và thẳng. */
+.pts-hero-cert-0{position:relative;z-index:3;width:172px;aspect-ratio:1826/2560;}
+.pts-hero-cert-1{position:absolute;z-index:2;left:50%;bottom:16px;width:150px;aspect-ratio:1826/2560;transform:translateX(-108%) rotate(-8deg);opacity:.85;}
+.pts-hero-cert-2{position:absolute;z-index:1;left:50%;bottom:16px;width:150px;aspect-ratio:1826/2560;transform:translateX(8%) rotate(8deg);opacity:.85;}
+.pts-hero-trust-brands{display:flex;flex-wrap:wrap;justify-content:center;gap:7px;margin:0 0 18px;padding:0;list-style:none;}
+.pts-hero-trust-brands li{border:1px solid rgba(224,182,84,.34);border-radius:999px;padding:4px 11px;color:#f2e6c8;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;}
+.pts-hero-trust-link{display:inline-flex;align-items:center;gap:8px;color:var(--pts-gold-light)!important;font-size:13px;font-weight:850;text-decoration:none!important;}
+.pts-hero-trust-link:hover{color:#fff!important;}
+.pts-hero-trust-link i{transition:transform .2s ease;}
+.pts-hero-trust-link:hover i{transform:translateX(4px);}
+/* Thanh mạng xã hội cố định rộng 90px, cách mép phải 120px. Dưới 1680px thì
+   khung .wrap-content chạm vào nó, nên chừa chỗ cho cột chứng nhận; rộng hơn
+   thì khung đã tự nằm trong nên không cần bù. */
+@media(min-width:1002px) and (max-width:1680px){
+    .pts-home-hero-split .pts-hero-inner{padding-right:110px;}
+}
 .pts-hero-eyebrow{display:inline-flex;align-items:center;gap:8px;border-radius:999px;background:var(--pts-gold);color:var(--pts-navy);padding:7px 16px;margin-bottom:22px;font-size:12px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;box-shadow:0 8px 22px rgba(0,0,0,.2);}
 .pts-home-hero h1{color:#fff;font-size:clamp(40px,5.3vw,72px);font-weight:950;line-height:1.05;letter-spacing:-.035em;margin:0 0 22px;text-transform:uppercase;}
 .pts-home-hero h1 strong{color:var(--pts-gold-light);font:inherit;}
@@ -282,6 +314,10 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
     .pts-brand-copy{display:block;}
     .header-right-style{flex:0 0 auto;}
     .pts-hero-inner{padding-top:62px;padding-bottom:66px;}
+    /* Hẹp hơn 1001px thì chứng nhận xuống dưới phần chữ, không ép hai cột. */
+    .pts-home-hero-split .pts-hero-inner{grid-template-columns:minmax(0,1fr);gap:40px;}
+    .pts-home-hero-split .pts-hero-copy,.pts-home-hero-split .pts-home-hero p{max-width:none;}
+    .pts-hero-trust{max-width:420px;}
     .footer_top>.container>.row{grid-template-columns:120px 1fr;}
     .ft_mn_right{grid-column:1/-1;}
 }
@@ -296,6 +332,10 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
     .pts-home-hero p{font-size:15px;}
     .pts-hero-stats{gap:24px;}
     .pts-hero-stats strong{font-size:28px;}
+    .pts-hero-trust{padding:20px 18px 22px;}
+    .pts-hero-cert-stack{min-height:210px;margin:16px 0 18px;}
+    .pts-hero-cert-0{width:146px;}
+    .pts-hero-cert-1,.pts-hero-cert-2{width:128px;}
     .cat-highlight-row{gap:16px 0;}
     .cat-highlight-card{min-height:auto;}
     .footer_top>.container>.row{grid-template-columns:1fr;}
@@ -1548,7 +1588,10 @@ h4{font-size:21px!important;font-weight:800!important;}
     #button-contact-vr .phone-vr-circle-fill{width:42px!important;height:42px!important;top:7px!important;left:7px!important;}
     #button-contact-vr .phone-vr-img-circle{width:30px!important;height:30px!important;top:13px!important;left:13px!important;}
     #button-contact-vr .phone-vr-img-circle img{max-height:15px!important;max-width:17px!important;}
-    .progress-wrap{right:14px!important;bottom:76px!important;width:38px!important;height:38px!important;}
+    /* Canh tâm nút cuộn lên trùng cột nút liên hệ: tâm cách mép phải 38px
+       (#button-contact-vr là right:10px + 56/2), nên nút 38px phải đặt
+       right:19px. Để 14px thì hai nút lệch nhau 5px, nhìn như bị xô lệch. */
+    .progress-wrap{right:19px!important;bottom:76px!important;width:38px!important;height:38px!important;}
 
     /* Chi tiết dự án: card thoáng hơn, tiêu đề vừa phải */
     #inf_single_project{padding:24px 0 36px!important;}
