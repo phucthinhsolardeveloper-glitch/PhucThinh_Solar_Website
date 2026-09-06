@@ -7,7 +7,7 @@
                 <div class="left col-xl-6 col-lg-6 col-md-12 col-sm-12 ">
                     <div class="content aos-init aos-animate" data-aos="fade-right" data-aos-duration="1500"
                         data-aos-delay="300">
-                        <?=$func->getImage(['class' => '', 'sizes' => '300x240x3', 'upload' => UPLOAD_NEWS_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
+                        <?=$func->getImage(['class' => '', 'sizes' => '1000x700x3', 'upload' => UPLOAD_NEWS_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
                     </div>
                 </div>
                 <div class="right col-xl-6 col-lg-6 col-md-12 col-sm-12 ">
@@ -40,7 +40,7 @@
                         <?php if(count($sumenh)){foreach($sumenh as $k => $v){ ?>
                         <div class="CRgr_item_vision inf_item_vision">
                             <div class="wrap">
-                                <?=$func->getImage(['class' => '', 'sizes' => '300x240x3', 'upload' => UPLOAD_NEWS_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
+                                <?=$func->getImage(['class' => '', 'sizes' => '120x120x3', 'upload' => UPLOAD_NEWS_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
                                 <h4><?=$v['name'.$lang]?></h4>
                                 <div class="content"><?=htmlspecialchars_decode($v['content'.$lang])?></div>
                             </div>
