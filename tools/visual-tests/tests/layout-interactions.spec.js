@@ -110,6 +110,7 @@ test('home exposes every featured category and switches its product grid', async
   await expect(page.locator('.pts-home-category-grid a[href="danh-muc-san-pham/den-ac/"]')).toHaveCount(0);
   await expect(categories).toHaveCount(await categories.count());
   const categoryTrack = page.locator('.pts-home-category-grid');
+  await expect(categoryTrack).toHaveAttribute('data-click-scroll', 'center');
   expect(await categoryTrack.evaluate(element => element.scrollWidth > element.clientWidth)).toBeTruthy();
   if((page.viewportSize()?.width || 0) > 640) {
     const nextButton = page.locator('.pts-category-scroll--next');
@@ -132,6 +133,36 @@ test('home exposes every featured category and switches its product grid', async
   await secondCategory.locator('a').click();
   await productResponse;
   await expect(secondCategory).toHaveClass(/uk-active/);
+
+  // Không cần người dùng kéo dải trước: click trực tiếp một ô ở xa phải vừa
+  // đổi dữ liệu, vừa tự cuộn mượt để ô đang chọn nằm trọn trong viewport dải.
+  await categoryTrack.evaluate(element => {
+    const previous = element.style.scrollBehavior;
+    element.style.scrollBehavior = 'auto';
+    element.scrollLeft = 0;
+    element.style.scrollBehavior = previous;
+  });
+  await expect.poll(() => categoryTrack.evaluate(element => element.scrollLeft)).toBeLessThanOrEqual(2);
+  const clickIndex = Math.min(7, (await categories.count()) - 1);
+  const clickedCategory = categories.nth(clickIndex);
+  const clickedListId = await clickedCategory.locator('a').getAttribute('data-list');
+  const clickedResponse = page.waitForResponse(response => response.url().includes(`api/product2.php?perpage=16&idList=${clickedListId}`) && response.ok());
+  await clickedCategory.locator('a').evaluate(element => element.click());
+  await clickedResponse;
+  await expect.poll(() => categoryTrack.evaluate(element => element.scrollLeft)).toBeGreaterThan(0);
+  await expect(clickedCategory).toHaveClass(/uk-active/);
+  await expect.poll(() => clickedCategory.evaluate(element => {
+    const item = element.getBoundingClientRect();
+    const track = element.parentElement.getBoundingClientRect();
+    return item.left >= track.left - 1 && item.right <= track.right + 1;
+  })).toBeTruthy();
+  const visibility = await clickedCategory.evaluate(element => {
+    const item = element.getBoundingClientRect();
+    const track = element.parentElement.getBoundingClientRect();
+    return { left: item.left - track.left, right: track.right - item.right };
+  });
+  expect(visibility.left).toBeGreaterThanOrEqual(-1);
+  expect(visibility.right).toBeGreaterThanOrEqual(-1);
 });
 
 test('product category sidebar keeps child categories only in the type filter', async ({ page }) => {

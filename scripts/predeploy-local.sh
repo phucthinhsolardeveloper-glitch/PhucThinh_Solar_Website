@@ -65,6 +65,7 @@ docker cp migrations/000_check_hosting_runtime.php "$web_container:/tmp/000_chec
 docker cp migrations/025_compress_oversized_images.php "$web_container:/tmp/025_compress_oversized_images.php"
 docker cp migrations/030_install_featured_category_icons.php "$web_container:/tmp/030_install_featured_category_icons.php"
 docker cp scripts/import-oriana-images-local.php "$web_container:/tmp/import-oriana-images.php"
+docker cp scripts/create-local-rbac-demo-accounts.php "$web_container:/tmp/create-local-rbac-demo-accounts.php"
 docker compose -f "$compose_file" exec -T web mkdir -p /tmp/pts-featured-category-icons
 docker cp design-assets/product-featured-icons/2026-09-05/. "$web_container:/tmp/pts-featured-category-icons"
 
@@ -97,6 +98,7 @@ php -l /tmp/000_check_hosting_runtime.php
 php -l /tmp/025_compress_oversized_images.php
 php -l /tmp/030_install_featured_category_icons.php
 php -l /tmp/import-oriana-images.php
+php -l /tmp/create-local-rbac-demo-accounts.php
 php -l /tmp/test-admin-self-profile-integrity.php
 php -l /tmp/test-admin-permission-gate.php
 php /tmp/test-security-hardening.php

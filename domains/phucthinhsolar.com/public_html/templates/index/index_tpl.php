@@ -10,7 +10,7 @@
                 <div class="tab-switcher">
                     <div class="pts-home-category-wrap">
                         <button type="button" class="pts-category-scroll pts-category-scroll--prev" aria-label="Cuộn danh mục sang trái" aria-controls="pts-home-category-list"><i class="fas fa-chevron-left" aria-hidden="true"></i></button>
-                        <ul class="pts-home-category-grid" id="pts-home-category-list" uk-switcher="connect: .product-tabs-container">
+                        <ul class="pts-home-category-grid" id="pts-home-category-list" data-click-scroll="center" uk-switcher="connect: .product-tabs-container">
                             <?php if(count($splistnb)){foreach($splistnb as $k => $v){ ?>
                             <li>
                                 <a href="javascript:void(0)" class="get-product-category" data-list="<?=$v['id']?>">

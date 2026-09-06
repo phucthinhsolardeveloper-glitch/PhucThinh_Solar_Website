@@ -213,7 +213,7 @@ $hasProductPolicy = $productPolicyOverride !== '' || !empty($policy);
 <?php if($hasProductDescription || $hasProductSpecs || !empty($videoEmbedUrl) || !empty($certificateContent) || $hasProductPolicy) { $activeProductTab = $hasProductDescription ? 'info' : ($hasProductSpecs ? 'specs' : (!empty($videoEmbedUrl) ? 'video' : (!empty($certificateContent) ? 'certificate' : 'policy'))); ?>
 <div class="box-detail mg-top-30">
     <div class="tabs-pro-detail">
-        <ul class="nav nav-tabs" id="tabsProDetail" role="tablist">
+        <ul class="nav nav-tabs" id="tabsProDetail" data-click-scroll="center" role="tablist">
             <?php if($hasProductDescription) { ?><li class="nav-item">
                 <a class="nav-link <?=$activeProductTab==='info'?'active':''?>" id="info-pro-detail-tab" data-toggle="tab" href="#info-pro-detail"
                     role="tab">Mô tả sản phẩm</a>

@@ -832,6 +832,28 @@ GA_FRAMEWORK.HomeCategoryScroller = function(){
     });
 };
 
+/* Dải chọn cuộn ngang: khi bấm một ô đang nằm sát/rời mép nhìn thấy, tự đưa
+   ô đó vào giữa dải. Chỉ áp dụng cho widget gắn data-click-scroll; link điều
+   hướng thông thường không bị can thiệp và click vẫn chạy đúng chức năng cũ. */
+GA_FRAMEWORK.ClickScrollTracks = function(){
+    $(document).on('click', '[data-click-scroll] > li > a, [data-click-scroll] > a, [data-click-scroll] > button', function(){
+        var item = this.parentElement && this.parentElement.parentElement && this.parentElement.parentElement.hasAttribute('data-click-scroll')
+            ? this.parentElement
+            : this;
+        var track = item.parentElement;
+        if(!track || track.scrollWidth <= track.clientWidth + 1) return;
+
+        var itemRect = item.getBoundingClientRect();
+        var trackRect = track.getBoundingClientRect();
+        var desired = track.scrollLeft + itemRect.left - trackRect.left
+            - Math.max(0, (track.clientWidth - itemRect.width) / 2);
+        var maximum = Math.max(0, track.scrollWidth - track.clientWidth);
+        var target = Math.max(0, Math.min(maximum, desired));
+        var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        track.scrollTo({left: target, behavior: reduceMotion ? 'auto' : 'smooth'});
+    });
+};
+
 /* Ready */
 $(document).ready(function(){
     GA_FRAMEWORK.Lazys();
@@ -841,6 +863,7 @@ $(document).ready(function(){
     // GA_FRAMEWORK.Wows();
     GA_FRAMEWORK.SlickPage();
     GA_FRAMEWORK.HomeCategoryScroller();
+    GA_FRAMEWORK.ClickScrollTracks();
     GA_FRAMEWORK.AltImg();
     GA_FRAMEWORK.Toc();
     // GA_FRAMEWORK.GoTop();

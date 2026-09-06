@@ -898,7 +898,10 @@ finally
         $d->rawQuery('delete from #_product_campaign_scope where id_campaign = ?', array($campaignId));
         $d->rawQuery('delete from #_product_campaign where id = ?', array($campaignId));
     }
-    foreach($createdCampaignPhotos as $campaignPhoto) $func->deleteFile(UPLOAD_PHOTO.$campaignPhoto);
+    /* Script CLI không đi qua administrator/index.php nên hằng UPLOAD_PHOTO
+       (đường dẫn ghi) chưa được bootstrap. Dùng ROOT + đường dẫn public đã biết;
+       trước đây chuỗi hằng undefined làm mỗi lượt test sót một PNG fixture. */
+    foreach($createdCampaignPhotos as $campaignPhoto) $func->deleteFile(ROOT.'upload/photo/'.$campaignPhoto);
     foreach($createdGalleryIds as $galleryId) $d->rawQuery('delete from #_gallery where id = ?', array($galleryId));
     foreach($createdCommentIds as $commentId) $d->rawQuery('delete from #_comment where id = ? or id_parent = ?', array($commentId, $commentId));
     foreach($createdSortableIds as $sortableTable => $sortableIds)

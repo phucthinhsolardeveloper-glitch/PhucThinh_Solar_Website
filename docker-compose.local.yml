@@ -30,6 +30,7 @@ services:
     restart: unless-stopped
     environment:
       APP_ENV: local
+      LOCAL_ENFORCE_RBAC: "${LOCAL_ENFORCE_RBAC:-0}"
       DB_HOST: db
       DB_PORT: "3306"
       DB_NAME: phucthinhs_local

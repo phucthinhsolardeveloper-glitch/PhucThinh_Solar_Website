@@ -56,7 +56,7 @@
                     </div>
                 </div> -->
                 <div class="tabs-pro-detail">
-                    <ul class="nav nav-tabs" id="tabsProDetail" role="tablist">
+                    <ul class="nav nav-tabs" id="tabsProDetail" data-click-scroll="center" role="tablist">
                         <li class="nav-item">
                             <a class="nav-link active" id="info-pro-detail-tab" data-toggle="tab" href="#info-pro-detail"
                                 role="tab">

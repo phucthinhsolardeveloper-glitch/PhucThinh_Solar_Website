@@ -2,6 +2,17 @@
 
 ## Docker local (dev nhanh)
 
+Mặc định local bật `debug-developer` để phát triển. Khi cần cho chủ project test
+phân quyền thật qua tunnel, khởi động lại web với:
+
+```bash
+LOCAL_ENFORCE_RBAC=1 docker compose -f docker-compose.local.yml up -d --force-recreate web
+```
+
+Trả về chế độ phát triển bằng cùng lệnh với `LOCAL_ENFORCE_RBAC=0`. Tài khoản
+demo chỉ tạo bằng `scripts/create-local-rbac-demo-accounts.php`; không mang các
+tài khoản/mật khẩu này lên production.
+
 ```bash
 docker compose -f docker-compose.local.yml up -d
 ```
