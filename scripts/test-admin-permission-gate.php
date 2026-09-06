@@ -9,8 +9,8 @@
  *
  * Bật $config['permission']['active'] tạm thời trong chính tiến trình test
  * không đủ, vì mỗi request HTTP là một tiến trình PHP riêng đọc lại config.
- * Nên test tự ghi một file cờ tạm và yêu cầu config nạp nó — xem $flagFile.
- * Nếu môi trường chưa bật phân quyền thì test báo SKIP thay vì báo đỏ giả.
+ * Mọi request test gửi header X-PTS-Permission-Test: enforce; config-type.php
+ * chỉ nhận header này khi APP_ENV=local và tắt debug-developer cho request đó.
  *
  * Chạy: php scripts/test-admin-permission-gate.php
  */
@@ -39,7 +39,7 @@ function ok($condition, $message)
 
 function request($url, $cookie = '', $post = null)
 {
-    $header = "User-Agent: PTS-Permission-Gate\r\n";
+    $header = "User-Agent: PTS-Permission-Gate\r\nX-PTS-Permission-Test: enforce\r\n";
     if ($cookie !== '') $header .= "Cookie: ".$cookie."\r\n";
     $options = array('http' => array('ignore_errors' => true, 'timeout' => 20,
         'method' => $post === null ? 'GET' : 'POST', 'follow_location' => 0));
@@ -74,18 +74,17 @@ function login($base, $username, $password)
 
 if (empty($config['permission']['active']))
 {
-    echo "SKIP: \$config['permission']['active'] đang tắt nên cổng phân quyền không chạy.", PHP_EOL;
-    echo "      Bật cờ này trong libraries/config-type.php rồi chạy lại để kiểm chứng thật.", PHP_EOL;
-    exit(0);
+    echo "FAIL: \$config['permission']['active'] đang tắt nên không thể kiểm chứng cổng phân quyền.", PHP_EOL;
+    exit(1);
+}
+if (!empty($config['website']['debug-developer']) && getenv('APP_ENV') !== 'local')
+{
+    echo "FAIL: debug-developer đang bật ngoài local nên mọi kiểm tra quyền bị bỏ qua.", PHP_EOL;
+    exit(1);
 }
 if (!empty($config['website']['debug-developer']))
 {
-    /* checkRole() trả false khi cờ này bật, nên toàn bộ khối phân quyền bị bỏ
-       qua có chủ đích. Chạy tiếp chỉ sinh ra fail giả. Máy local để cờ này bật
-       cho tiện phát triển; muốn kiểm chứng thật thì tắt nó rồi chạy lại. */
-    echo "SKIP: \$config['website']['debug-developer'] đang bật nên mọi kiểm tra quyền bị bỏ qua.", PHP_EOL;
-    echo "      Tắt cờ này trong libraries/config.php rồi chạy lại để kiểm chứng thật.", PHP_EOL;
-    exit(0);
+    echo "INFO: Request HTTP dùng chế độ ép kiểm tra quyền dành riêng cho APP_ENV=local.", PHP_EOL;
 }
 
 $suffix = bin2hex(random_bytes(4));

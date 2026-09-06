@@ -66,6 +66,7 @@ php -l administrator/api/status.php
 php -l administrator/sources/order.php
 php -l administrator/sources/product.php
 php -l administrator/sources/product_bulk.php
+php -l administrator/sources/user.php
 php -l libraries/class/class.PDODb.php
 php -l libraries/admin_product_pricing.php
 php -l libraries/admin_product_completeness.php
@@ -82,6 +83,8 @@ php -l administrator/sources/product_campaign.php
 php -l administrator/templates/product_campaign/list_tpl.php
 php -l administrator/templates/product_campaign/form_tpl.php
 php -l libraries/router.php
+php -l /tmp/test-admin-self-profile-integrity.php
+php -l /tmp/test-admin-permission-gate.php
 php /tmp/test-security-hardening.php
 php /tmp/test-admin-readiness.php
 php /tmp/test-product-bulk.php

@@ -389,16 +389,28 @@
 			   id = 1 (tài khoản admin) kèm username = "admin" thì checkAccount
 			   loại trừ đúng tài khoản admin thật, không thấy trùng, và cho đổi.
 			   Kết quả: hai tài khoản cùng tên "admin". Vì toàn bộ hệ thống định
-			   danh theo username (session, đăng nhập, và chính update bên dưới
-			   dùng where('username',...) không LIMIT), đây là lỗ hổng phá vỡ tính
-			   toàn vẹn tài khoản. Luôn dùng id thật từ phiên. */
-			$sessionUser = $d->rawQueryOne("select id from #_user where username = ? limit 0,1", array($_SESSION[$loginAdmin]['username']));
+			   danh theo username và code cũ còn update theo username không LIMIT,
+			   đây là lỗ hổng phá vỡ tính toàn vẹn tài khoản. Luôn dùng id thật từ
+			   phiên cho cả kiểm tra lẫn cập nhật. */
+			$sessionId = !empty($_SESSION[$loginAdmin]['id']) ? (int)$_SESSION[$loginAdmin]['id'] : 0;
+			$sessionUser = $d->rawQueryOne("select id, username, password from #_user where id = ? and find_in_set('hienthi',status) limit 0,1", array($sessionId));
 			$id = !empty($sessionUser['id']) ? (int)$sessionUser['id'] : 0;
-			$data = (!empty($_POST['data'])) ? $_POST['data'] : null;
-			if($data)
+			if(empty($id))
 			{
-				foreach($data as $column => $value)
+				$func->transfer("Phiên đăng nhập không hợp lệ", "index.php?com=user&act=login", false);
+			}
+
+			/* Chỉ nhận đúng các trường mà form hồ sơ hiển thị. Không được đưa thẳng
+			   $_POST['data'] vào update vì client có thể tự chèn role,
+			   id_permission, status, password hoặc token để nâng quyền/chiếm phiên. */
+			$postedData = (!empty($_POST['data']) && is_array($_POST['data'])) ? $_POST['data'] : array();
+			$data = array();
+			if(empty($changepass))
+			{
+				$allowedProfileFields = array('username', 'fullname', 'email', 'phone', 'gender', 'birthday', 'address');
+				foreach($allowedProfileFields as $column)
 				{
+					$value = array_key_exists($column, $postedData) && is_scalar($postedData[$column]) ? $postedData[$column] : '';
 					$data[$column] = htmlspecialchars($func->sanitize($value));
 				}
 			}
@@ -459,7 +471,7 @@
 			}
 			else
 			{
-				$birthday = $data['birthday'];
+				$birthday = isset($data['birthday']) ? $data['birthday'] : '';
 				$data['birthday'] = strtotime(str_replace("/","-",$data['birthday']));
 
 				/* Valid data */
@@ -551,8 +563,16 @@
 				}
 			}
 			
-			/* Save data */
-			$d->where('username', $_SESSION[$loginAdmin]['username']);
+			/* Khi đổi username, cập nhật hash phiên bằng dữ liệu do server tạo để
+			   request kế tiếp không bị đăng xuất ngoài ý muốn. */
+			$usernameChanged = empty($changepass) && isset($data['username']) && $data['username'] !== $sessionUser['username'];
+			if($usernameChanged)
+			{
+				$data['login_session'] = md5(sha1($sessionUser['password'].$data['username']));
+			}
+
+			/* Save data bằng ID lấy từ phiên, không dùng username hay id từ client. */
+			$d->where('id', $id);
 			if($d->update('user',$data))
 			{
 				if(isset($flagchangepass) && $flagchangepass == true)
@@ -560,6 +580,15 @@
 					if(!empty($_SESSION[TOKEN])) unset($_SESSION[TOKEN]);
 					unset($_SESSION[$loginAdmin]);
 					$func->transfer("Cập nhật dữ liệu thành công","index.php");	
+				}
+
+				if(empty($changepass))
+				{
+					$_SESSION[$loginAdmin]['username'] = $data['username'];
+					$_SESSION[$loginAdmin]['fullname'] = $data['fullname'];
+					$_SESSION[$loginAdmin]['phone'] = $data['phone'];
+					$_SESSION[$loginAdmin]['email'] = $data['email'];
+					if($usernameChanged) $_SESSION[$loginAdmin]['login_session'] = $data['login_session'];
 				}
 
 				$func->transfer("Cập nhật dữ liệu thành công","index.php?com=user&act=info_admin");

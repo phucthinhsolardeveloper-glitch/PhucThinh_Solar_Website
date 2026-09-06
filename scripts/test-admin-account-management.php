@@ -40,7 +40,7 @@ function ok($condition, $message)
 
 function request($url, $cookie = '', $post = null)
 {
-    $header = "User-Agent: PTS-Account-Mgmt-Test\r\n";
+    $header = "User-Agent: PTS-Account-Mgmt-Test\r\nX-PTS-Permission-Test: enforce\r\n";
     if ($cookie !== '') $header .= 'Cookie: '.$cookie."\r\n";
     $options = array('http' => array('ignore_errors' => true, 'timeout' => 25,
         'method' => $post === null ? 'GET' : 'POST', 'follow_location' => 0));
@@ -181,11 +181,11 @@ if (!empty($staffRow['id']))
 
 /* 4. Nhân viên dùng được đúng phần được cấp, và chỉ phần đó.
    Chỉ kiểm tra khi cổng phân quyền thật sự đang hoạt động. */
-$gateActive = !empty($config['permission']['active']) && empty($config['website']['debug-developer']);
+$gateActive = !empty($config['permission']['active'])
+    && (empty($config['website']['debug-developer']) || getenv('APP_ENV') === 'local');
 if (!$gateActive)
 {
-    echo 'SKIP: cổng phân quyền đang tắt (permission.active off hoặc debug-developer on),', PHP_EOL;
-    echo '      không kiểm tra được phần chặn theo quyền.', PHP_EOL;
+    ok(false, 'Không thể kiểm tra cổng phân quyền: permission.active đang tắt hoặc debug-developer bật ngoài local');
 }
 else if (!empty($staffRow['id']))
 {

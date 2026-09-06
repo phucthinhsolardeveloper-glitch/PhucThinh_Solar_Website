@@ -128,6 +128,17 @@
     $config['permission']['active'] = true;
     $config['permission']['check'] = array("hienthi" => "Kích hoạt");
 
+    /* Test HTTP phân quyền cần đi qua đúng bootstrap và route thật, trong khi
+       local mặc định bật debug-developer. Header này chỉ có tác dụng ở
+       APP_ENV=local và chỉ chuyển sang chế độ nghiêm ngặt hơn; production bỏ
+       qua hoàn toàn nên không tạo đường tắt phân quyền. */
+    if(getenv('APP_ENV') === 'local'
+        && isset($_SERVER['HTTP_X_PTS_PERMISSION_TEST'])
+        && $_SERVER['HTTP_X_PTS_PERMISSION_TEST'] === 'enforce')
+    {
+        $config['website']['debug-developer'] = false;
+    }
+
     /* Quản lý liên lệ */
     $config['contact']['check'] = array("hienthi" => "Xác nhận");
 

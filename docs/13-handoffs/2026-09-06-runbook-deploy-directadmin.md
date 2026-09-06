@@ -62,6 +62,7 @@ domains/phucthinhsolar.com/public_html/administrator/
 domains/phucthinhsolar.com/public_html/sources/
 domains/phucthinhsolar.com/public_html/api/
 domains/phucthinhsolar.com/public_html/assets/css/
+domains/phucthinhsolar.com/public_html/assets/js/
 ```
 
 Và upload thư mục `migrations/` lên **ngang hàng với `domains/`**, tức
@@ -75,12 +76,19 @@ upload/                  <- toàn bộ ảnh sản phẩm, tin tức
 thumbs/  caches/  logs/  <- thư mục runtime
 ```
 
+Ảnh ORIANA và icon danh mục đã nhập ở local **không nằm trong gói code trên**.
+Không chép đè cả `upload/`: ID sản phẩm trên production có thể khác local nên
+không được dùng nguyên mapping theo ID. Muốn đưa bộ ảnh này lên phải làm một gói
+riêng, đối chiếu sản phẩm theo `code`, chỉ upload đúng file mới và xem trước SQL
+cập nhật trước khi áp dụng. Đây là một bước triển khai dữ liệu riêng, cần backup
+và xác nhận của chủ project.
+
 Kiểm chứng: mở trang chủ, xem mã nguồn trang (Ctrl+U), tìm chữ
 `rll-youtube-player`. **Không còn** nghĩa là code mới đã lên.
 
 ---
 
-## Bước 3 — Chạy 5 migration SQL bằng phpMyAdmin
+## Bước 3 — Chạy 7 migration SQL bằng phpMyAdmin
 
 DirectAdmin → **phpMyAdmin** → chọn database → tab **SQL** → dán nội dung từng
 file rồi bấm Go. Chạy đúng thứ tự:
@@ -99,9 +107,10 @@ file rồi bấm Go. Chạy đúng thứ tự:
 `SELECT username, COUNT(*) c FROM table_user GROUP BY username HAVING c > 1;`.
 Có kết quả thì phải xử lý trùng rồi mới chạy ALTER, xem chú thích trong file.
 
-Các file này dùng `CREATE TABLE IF NOT EXISTS` và `ADD COLUMN IF NOT EXISTS`, nên
-chạy lại lần hai không hỏng gì. Riêng `026` khoá bảng trong lúc dựng index —
-chạy lúc ít khách (khuya).
+Các migration `013`, `016`, `017`, `021`, `022` có guard `IF NOT EXISTS` phù hợp.
+Riêng `026` và `029` dùng `ADD INDEX` trực tiếp: **chỉ chạy đúng một lần** sau
+khi kiểm tra index chưa tồn tại; chạy lại sẽ báo trùng tên index. `026` còn khoá
+bảng trong lúc dựng index, nên chạy lúc ít khách (khuya).
 
 Kiểm chứng, dán vào tab SQL:
 
@@ -115,10 +124,13 @@ SELECT
   (SELECT COUNT(*) FROM information_schema.TABLES
     WHERE table_schema = DATABASE() AND table_name = 'table_product_campaign') AS mig_022,
   (SELECT COUNT(*) FROM information_schema.STATISTICS
-    WHERE table_schema = DATABASE() AND index_name = 'idx_counter_ip_tm') AS mig_026;
+    WHERE table_schema = DATABASE() AND index_name = 'idx_counter_ip_tm') AS mig_026,
+  (SELECT COUNT(*) FROM information_schema.STATISTICS
+    WHERE table_schema = DATABASE() AND table_name = 'table_user'
+      AND index_name = 'uniq_user_username') AS mig_029;
 ```
 
-Cả bốn cột phải khác 0.
+Cả năm cột phải khác 0.
 
 ---
 
@@ -190,8 +202,9 @@ Cả ba phải bằng **0**.
 Chỉ làm khi Bước 1 đã đổi `debug-developer => false`.
 
 1. Đăng nhập Admin bằng tài khoản `admin`.
-2. Menu **Quản lý user → Nhóm quyền**: xem lại ba nhóm dựng sẵn (cấp cao 150
-   quyền, cơ bản 37, content 17), tick thêm/bớt quyền cho đúng nhu cầu.
+2. Menu **Quản lý user → Nhóm quyền**: xem lại ba nhóm dựng sẵn (bản local gần
+   nhất: cấp cao 191 quyền, cơ bản 16, content 6), tick thêm/bớt quyền cho đúng
+   nhu cầu thực tế của từng nhân viên.
 3. **Quản lý user → Tài khoản admin → Thêm mới**: tạo cho từng nhân viên, chọn
    nhóm quyền tương ứng.
 4. Đổi mật khẩu tài khoản `admin` sang mật khẩu mạnh, chỉ bạn giữ.

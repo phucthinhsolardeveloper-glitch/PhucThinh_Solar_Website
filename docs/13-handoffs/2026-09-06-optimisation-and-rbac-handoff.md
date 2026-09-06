@@ -4,7 +4,9 @@ Thay cho `2026-09-04-pre-deploy-audit-handoff.md` (đã lỗi thời). Chỉ ghi
 **còn lại** và bối cảnh tối thiểu; chi tiết từng thay đổi nằm trong commit
 message tương ứng.
 
-Nhánh `feature/ecommerce-upgrade`, local và `origin` khớp nhau tại `d23c643`.
+Nhánh `feature/ecommerce-upgrade` đã khớp `origin` tại thời điểm lập bàn giao;
+luôn chạy `git status --short` và `git branch -vv` để xác nhận lại trước deploy,
+không dùng hash cũ trong tài liệu làm căn cứ.
 
 ## 1. Bắt đầu lại
 
@@ -48,6 +50,14 @@ chặn trong `requick.php` thủng hai chỗ, nay đã bịt bằng
   tương ứng.
 
 Kiểm chứng: `scripts/test-admin-permission-gate.php`, 12 assertion qua HTTP thật.
+Ở local, test gửi một header chỉ có tác dụng khi `APP_ENV=local` để tắt
+`debug-developer` cho đúng request kiểm thử; vì vậy 12 assertion này thực sự đi
+qua cổng RBAC, không còn bị SKIP do cấu hình tiện phát triển.
+
+Màn hình tự sửa hồ sơ cũng đã dùng allowlist 7 trường và cập nhật theo ID của
+phiên. Request tự chèn `role`, `id_permission`, `status`, `password` hoặc token
+đều bị bỏ qua; đổi username hợp lệ sẽ đồng bộ hash phiên thay vì đăng xuất bất
+ngờ. Kiểm chứng bằng `test-admin-self-profile-integrity.php`.
 
 ### Mục 03 — Dọn dung lượng: XONG phần lớn
 
@@ -126,6 +136,7 @@ Mọi đường ghi dữ liệu đều đã có test chạy qua HTTP thật, t�
 | Admin thêm/sửa/xoá sản phẩm + tin tức | `test-admin-crud-lifecycle.php` | 19 |
 | Cấp tài khoản + nhóm quyền | `test-admin-account-management.php` | 20 |
 | Cổng phân quyền | `test-admin-permission-gate.php` | 12 |
+| Hồ sơ cá nhân + chống tự nâng quyền | `test-admin-self-profile-integrity.php` | 9 |
 | Form Liên hệ + Đăng ký đại lý | `test-public-form-submissions.php` | 16 |
 | Đăng ký tư vấn + Nhận xét sản phẩm | `test-public-lead-and-review.php` | 18 |
 
@@ -143,7 +154,8 @@ trỏ tới — bật lên là quyết định kinh doanh).
    toàn bộ kiểm tra quyền. Bật thì phân quyền vô nghĩa. `config.php` không nằm
    trong git nên không kiểm tra từ đây được.
 2. **Danh sách nhân sự cần tài khoản Admin, mỗi người thuộc nhóm quyền nào?**
-   Ba nhóm đã dựng sẵn: cấp cao (150 quyền), cơ bản (37), content (17).
+   Ba nhóm đã dựng sẵn trong DB local gần nhất: cấp cao (191 quyền), cơ bản
+   (16), content (6).
 3. **Host có cho nâng PHP 7.4 lên 8.x không?** Đã thống nhất bàn sau khi xong
    plan.
 
@@ -153,7 +165,7 @@ Backup database production, rồi chạy migration **đúng thứ tự**:
 
 ```
 013 → 015 --apply → 016 → 017 → 018 → 019 → 020 → 021 → 022 → 023 → 024
-   → 026 → 027 → 028
+   → 026 → 027 → 028 → 029
 ```
 
 - `018`, `019`, `020` **mặc định dry-run**. Phải chạy xem trước trên DB thật,

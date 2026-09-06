@@ -10,8 +10,9 @@
  * khoản cùng tên. Toàn bộ hệ thống định danh theo username nên đây là lỗi phá
  * vỡ toàn vẹn tài khoản.
  *
- * Test này đóng vai kẻ tấn công đúng như kịch bản đó và khẳng định bị chặn, đồng
- * thời xác nhận việc tự sửa hồ sơ hợp lệ vẫn chạy.
+ * Test này đóng vai kẻ tấn công đúng như kịch bản đó và khẳng định bị chặn;
+ * đồng thời gửi thêm các cột đặc quyền để chống mass assignment, xác nhận việc
+ * tự sửa hồ sơ hợp lệ và đổi username vẫn giữ phiên đăng nhập.
  *
  * Chạy được cả khi cổng phân quyền đang tắt: info_admin là màn hình tự phục vụ,
  * role 1 luôn vào được, nên lỗ hổng không phụ thuộc trạng thái phân quyền.
@@ -137,6 +138,59 @@ request($base.'index.php?com=user&act=info_admin', $cookie, array(
 $afterEdit = $d->rawQueryOne('select fullname, address from #_user where id = ?', array($attackerId));
 ok(trim($afterEdit['fullname']) === 'Ho So Da Sua' && trim($afterEdit['address']) === 'dia chi moi',
    'Nhân viên vẫn tự sửa được hồ sơ chính mình');
+
+/* KHAI THÁC MASS ASSIGNMENT: các trường đặc quyền không có trên form nhưng
+   client vẫn có thể tự chèn vào request. Chỉ trường hồ sơ hợp lệ được đổi. */
+$formAgain = request($base.'index.php?com=user&act=info_admin', $cookie);
+preg_match('/name="admin_csrf"\s+value="([^"]+)"/', $formAgain['body'], $csrfAgain);
+$beforePrivilegeAttack = $d->rawQueryOne(
+    'select role, id_permission, status, password, user_token from #_user where id = ?',
+    array($attackerId)
+);
+request($base.'index.php?com=user&act=info_admin', $cookie, array(
+    'admin_csrf' => isset($csrfAgain[1]) ? $csrfAgain[1] : '',
+    'data' => array(
+        'username' => $attackerName,
+        'fullname' => 'Mass Assignment Blocked',
+        'email' => $attackerName.'@example.test',
+        'phone' => '0912345678', 'address' => 'dia chi moi', 'gender' => 1, 'birthday' => '01/01/1990',
+        'role' => 3, 'id_permission' => $victimId, 'status' => 'tamkhoa',
+        'password' => 'forged-password', 'user_token' => 'forged-token'
+    )
+));
+$afterPrivilegeAttack = $d->rawQueryOne(
+    'select fullname, role, id_permission, status, password, user_token from #_user where id = ?',
+    array($attackerId)
+);
+ok(trim($afterPrivilegeAttack['fullname']) === 'Mass Assignment Blocked',
+   'Trường hồ sơ nằm trong allowlist vẫn được cập nhật');
+ok((int)$afterPrivilegeAttack['role'] === (int)$beforePrivilegeAttack['role']
+   && (int)$afterPrivilegeAttack['id_permission'] === (int)$beforePrivilegeAttack['id_permission']
+   && $afterPrivilegeAttack['status'] === $beforePrivilegeAttack['status']
+   && $afterPrivilegeAttack['password'] === $beforePrivilegeAttack['password']
+   && $afterPrivilegeAttack['user_token'] === $beforePrivilegeAttack['user_token'],
+   'Request giả mạo KHÔNG đổi role, nhóm quyền, trạng thái, mật khẩu hoặc token');
+
+/* Đổi username hợp lệ phải cập nhật session server-side, không buộc đăng nhập
+   lại ở request kế tiếp. */
+$renamed = 'renamed'.bin2hex(random_bytes(4));
+$formAgain = request($base.'index.php?com=user&act=info_admin', $cookie);
+preg_match('/name="admin_csrf"\s+value="([^"]+)"/', $formAgain['body'], $csrfAgain);
+request($base.'index.php?com=user&act=info_admin', $cookie, array(
+    'admin_csrf' => isset($csrfAgain[1]) ? $csrfAgain[1] : '',
+    'data' => array(
+        'username' => $renamed,
+        'fullname' => 'Username Da Doi',
+        'email' => $attackerName.'@example.test',
+        'phone' => '0912345678', 'address' => 'dia chi moi', 'gender' => 1, 'birthday' => '01/01/1990'
+    )
+));
+$afterRename = $d->rawQueryOne('select username from #_user where id = ?', array($attackerId));
+ok($afterRename['username'] === $renamed, 'Đổi username hợp lệ được lưu theo đúng ID của phiên');
+$pageAfterRename = request($base.'index.php?com=user&act=info_admin', $cookie);
+ok(stripos($pageAfterRename['body'], 'name="data[username]"') !== false
+   && stripos($pageAfterRename['body'], 'com=user&amp;act=login') === false,
+   'Phiên đăng nhập vẫn hợp lệ sau khi đổi username');
 
 echo PHP_EOL, 'Kết quả: ', $passes, ' pass, ', $failures, ' fail', PHP_EOL;
 exit($failures ? 1 : 0);

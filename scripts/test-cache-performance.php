@@ -1,6 +1,6 @@
 <?php
+$_SERVER['SERVER_NAME'] = 'localhost';
 define('LIBRARIES', '/var/www/html/libraries/');
-define('ROOT', '/var/www/html/');
 require LIBRARIES.'config.php';
 require LIBRARIES.'autoload.php';
 new AutoLoad();
