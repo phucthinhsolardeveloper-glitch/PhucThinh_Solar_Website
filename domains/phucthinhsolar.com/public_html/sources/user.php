@@ -1,7 +1,12 @@
 <?php
 	if(!defined('SOURCES')) die("Error");
 
-	$action = htmlspecialchars($match['params']['action']);
+	/* Route account khớp cả khi không có action (/account/), lúc đó
+	   $match['params']['action'] không tồn tại. Đọc thẳng sẽ sinh Notice, mà
+	   Notice là output — nên header('404') ở nhánh default bên dưới không gửi
+	   được nữa và trang trả HTTP 200 kèm nội dung 404. Đó là soft 404: công cụ
+	   tìm kiếm coi đây là trang hợp lệ và index nó. */
+	$action = isset($match['params']['action']) ? htmlspecialchars($match['params']['action']) : '';
 
 	switch($action)
 	{
