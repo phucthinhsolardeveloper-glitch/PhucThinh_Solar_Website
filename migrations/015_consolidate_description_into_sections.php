@@ -19,6 +19,10 @@
  *   php ../../../migrations/015_consolidate_description_into_sections.php --apply  # ghi DB
  */
 
+
+/* Chỉ cho chạy từ dòng lệnh (cron / terminal). Nếu thư mục migrations lỡ nằm
+   trong web root thì người ngoài không gọi được qua trình duyệt. */
+if (PHP_SAPI !== 'cli') { http_response_code(404); exit; }
 define('LIBRARIES', './libraries/');
 $root = __DIR__.'/../domains/phucthinhsolar.com/public_html/';
 require $root.'libraries/config.php';

@@ -30,6 +30,10 @@
  *   php migrations/024_move_legacy_wp_images.php --apply  # chép ảnh + sửa nội dung
  */
 
+
+/* Chỉ cho chạy từ dòng lệnh (cron / terminal). Nếu thư mục migrations lỡ nằm
+   trong web root thì người ngoài không gọi được qua trình duyệt. */
+if (PHP_SAPI !== 'cli') { http_response_code(404); exit; }
 define('LIBRARIES', './libraries/');
 if(!isset($_SERVER['SERVER_NAME'])) $_SERVER['SERVER_NAME'] = 'localhost';
 $publicHtml = __DIR__.'/../domains/phucthinhsolar.com/public_html';

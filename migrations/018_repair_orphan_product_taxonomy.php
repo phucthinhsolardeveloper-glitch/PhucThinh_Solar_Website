@@ -21,6 +21,10 @@
  *   php ../../../migrations/018_repair_orphan_product_taxonomy.php --apply  # ghi DB
  */
 
+
+/* Chỉ cho chạy từ dòng lệnh (cron / terminal). Nếu thư mục migrations lỡ nằm
+   trong web root thì người ngoài không gọi được qua trình duyệt. */
+if (PHP_SAPI !== 'cli') { http_response_code(404); exit; }
 define('LIBRARIES', './libraries/');
 require __DIR__.'/../domains/phucthinhsolar.com/public_html/libraries/config.php';
 

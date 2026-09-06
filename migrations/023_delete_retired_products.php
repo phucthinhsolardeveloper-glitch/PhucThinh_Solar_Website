@@ -28,6 +28,10 @@
  *   php ../../../migrations/023_delete_retired_products.php --apply  # ghi DB
  */
 
+
+/* Chỉ cho chạy từ dòng lệnh (cron / terminal). Nếu thư mục migrations lỡ nằm
+   trong web root thì người ngoài không gọi được qua trình duyệt. */
+if (PHP_SAPI !== 'cli') { http_response_code(404); exit; }
 define('LIBRARIES', './libraries/');
 /* config.php đọc SERVER_NAME để chọn cấu hình; chạy CLI thì biến này không có. */
 if(!isset($_SERVER['SERVER_NAME'])) $_SERVER['SERVER_NAME'] = 'localhost';
