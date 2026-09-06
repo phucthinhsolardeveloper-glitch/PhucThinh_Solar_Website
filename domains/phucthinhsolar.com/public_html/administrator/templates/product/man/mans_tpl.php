@@ -157,7 +157,7 @@
                                 </td>
                                 <?php if(isset($config['product'][$type]['show_images']) && $config['product'][$type]['show_images'] == true) { ?>
                                     <td class="align-middle">
-									<?php if($canEdit) { ?><a href="<?=$linkEdit?><?=$linkID?>&id=<?=$items[$i]['id']?>" title="<?=$items[$i]['namevi']?>"><?php } ?>
+									<a<?=$canEdit ? ' href="'.$linkEdit.$linkID.'&id='.$items[$i]['id'].'"' : ''?> title="<?=$items[$i]['namevi']?>">
                                             <span class="pts-admin-product-thumb">
                                                 <?php if(!empty($config['product'][$type]['thumb'])){ ?>
                                                     <?=$func->getImage(['class' => 'rounded img-preview pts-admin-product-thumb-base', 'sizes' => $config['product'][$type]['thumb'], 'upload' => UPLOAD_PRODUCT_L, 'image' => $items[$i]['photo'], 'alt' => $items[$i]['namevi']])?>
@@ -168,11 +168,11 @@
                                                     <?=$func->getImage(['isLazy' => false, 'class' => 'pts-admin-product-thumb-overlay', 'sizes' => '70x55x2', 'upload' => $adminPromoFrame['upload'], 'image' => $adminPromoFrame['photo'], 'alt' => ''])?>
                                                 <?php } ?>
                                             </span>
-                                        <?php if($canEdit) { ?></a><?php } ?>
+                                        </a>
                                     </td>
                                 <?php } ?>
                                 <td class="align-middle">
-                                    <?php if($canEdit) { ?><a class="text-dark text-break" href="<?=$linkEdit?><?=$linkID?>&id=<?=$items[$i]['id']?>" title="<?=$items[$i]['namevi']?>"><?=$items[$i]['namevi']?></a><?php } else { ?><span class="text-dark text-break"><?=$items[$i]['namevi']?></span><?php } ?>
+                                    <a class="text-dark text-break"<?=$canEdit ? ' href="'.$linkEdit.$linkID.'&id='.$items[$i]['id'].'"' : ''?> title="<?=$items[$i]['namevi']?>"><?=$items[$i]['namevi']?></a>
                                     <span class="badge <?=adminProductHasStructuredContent($items[$i]) ? 'badge-success' : 'badge-secondary'?> ml-1"><?=adminProductHasStructuredContent($items[$i]) ? 'Nội dung chuẩn' : 'Nội dung legacy'?></span>
                                     <?php if(!empty($adminPromoFrame)) { ?><span class="badge badge-info ml-1"><?=$adminPromoFrame['source'] === 'product' ? 'Khung riêng' : 'Chiến dịch: '.htmlspecialchars($adminPromoFrame['campaign_name'], ENT_QUOTES, 'UTF-8')?></span><?php } ?>
                                     <?php $missingLabels = adminProductMissingLabels($items[$i]); if($missingLabels) { ?>
