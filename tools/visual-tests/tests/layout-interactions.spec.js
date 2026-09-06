@@ -1,5 +1,14 @@
 const { test, expect } = require('@playwright/test');
 
+// Widget GTranslate (cdn.gtranslate.net) tự dịch trang sang tiếng Anh, nên các
+// assertion so chuỗi tiếng Việt đỏ ngẫu nhiên tuỳ script kịp chạy hay không —
+// ví dụ tiêu đề modal báo giá vốn hardcode "Tư vấn & báo giá" trong template lại
+// trả về "Consultation & Quotation". visual-baseline.spec.js đã chặn sẵn; chặn ở
+// đây cho nhất quán, để test đo giao diện thật chứ không đo bản dịch máy.
+test.beforeEach(async ({ page }) => {
+  await page.route('https://cdn.gtranslate.net/**', route => route.abort());
+});
+
 async function dismissEntrancePopup(page) {
   const popup = page.locator('#popup');
   if (await popup.isVisible()) {

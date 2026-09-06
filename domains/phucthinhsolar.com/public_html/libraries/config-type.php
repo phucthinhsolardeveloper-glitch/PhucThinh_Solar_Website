@@ -107,7 +107,13 @@
     $config['export']['category'] = false;
 
     /* Quản lý tài khoản */
-    $config['user']['active'] = false;
+    /* Cờ này chỉ điều khiển đúng một thứ: hiện khối "Quản lý user" trong menu
+       Admin (templates/layout/menu.php dòng 771) — nơi có Thông tin admin, Tài
+       khoản admin, Tài khoản khách và Nhóm quyền. Để false thì chủ project
+       không nhìn thấy đường vào cấp tài khoản cho nhân viên, dù các màn hình đó
+       vẫn tồn tại và hoạt động bình thường. Bật lên để dùng được phân quyền.
+       Riêng mục "Nhóm quyền" còn cần thêm $config['permission']['active']. */
+    $config['user']['active'] = true;
     $config['user']['admin'] = true;
     $config['user']['check_admin'] = array("hienthi" => "Kích hoạt");
     $config['user']['member'] = true;
