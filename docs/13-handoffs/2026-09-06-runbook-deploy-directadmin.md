@@ -67,6 +67,13 @@ kiểm tra trực tiếp file đang chạy trên hosting.
 SMTP chỉ được coi là hoàn tất sau khi gửi thử form liên hệ và nhận email. Không
 chép credential vào log, tài liệu hoặc chat.
 
+Nếu website chạy sau Cloudflare/reverse proxy, proxy phải chuyển đúng
+`X-Forwarded-Proto`. Ứng dụng nhận token đầu tiên của header này để sinh
+`configBase`, OpenGraph và canonical theo HTTPS, đồng thời không ghép cổng HTTP
+của backend vào URL public. Sau cutover, kiểm tra HTML không còn base/canonical
+`http://` trên trang HTTPS. Việc tin IP khách từ `X-Forwarded-For` vẫn là cơ chế
+riêng và chỉ bật cho đúng IP trong `login.trusted-proxies`.
+
 ## 3. Preflight schema rồi mới chọn migration
 
 Chạy Cron chỉ đọc:
@@ -168,6 +175,8 @@ Xóa nội dung `public_html/caches/` nhưng giữ thư mục. Kiểm tra:
 - Trang chủ desktop/mobile và đủ 12 ô danh mục nổi bật.
 - Danh mục → chi tiết sản phẩm → form tư vấn/báo giá.
 - Tìm kiếm, lọc sản phẩm, breadcrumb và ảnh/gallery.
+- Trên HTTPS: `<base>`, OpenGraph và canonical đều dùng `https://`, không mang
+  cổng HTTP nội bộ của reverse proxy.
 - Admin: đăng nhập role 3; một tài khoản hạn chế chỉ thấy đúng quyền.
 - Gửi form liên hệ thật và nhận email.
 - Nếu đang bật bán hàng: danh mục → sản phẩm → giỏ → checkout → xác nhận, kiểm

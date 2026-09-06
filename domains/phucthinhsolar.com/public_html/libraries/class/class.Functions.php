@@ -179,7 +179,13 @@
 		/* Check HTTP */
 		public function checkHTTP($http, $arrayDomain, &$configBase, $configUrl)
 		{
-			if(count($arrayDomain) == 0 && $http == 'https://')
+			/* Với domain không ép SSL (điển hình là local), code legacy hạ
+			   configBase về HTTP. Không được hạ khi HTTPS đã được reverse proxy
+			   xác nhận, nếu không base/canonical sẽ thành mixed-content. */
+			$forwardedProto = isset($_SERVER['HTTP_X_FORWARDED_PROTO'])
+				? strtolower(trim(explode(',', (string) $_SERVER['HTTP_X_FORWARDED_PROTO'])[0]))
+				: '';
+			if(count($arrayDomain) == 0 && $http == 'https://' && $forwardedProto !== 'https')
 			{
 				$configBase = 'http://'.$configUrl;
 			}
@@ -1351,24 +1357,31 @@
 		/* Lấy getPageURL */
 		public function getPageURL()
 		{
-			$pageURL = 'http';
-			if(array_key_exists('HTTPS', $_SERVER) && $_SERVER["HTTPS"] == "on") $pageURL .= "s";
-			$pageURL .= "://";
-			$pageURL .= $_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
-			return $pageURL;
+			$isHttps = (isset($_SERVER['HTTPS']) && (strtolower((string) $_SERVER['HTTPS']) === 'on' || (string) $_SERVER['HTTPS'] === '1'))
+				|| (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower(trim(explode(',', (string) $_SERVER['HTTP_X_FORWARDED_PROTO'])[0])) === 'https');
+			$host = !empty($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : $_SERVER['SERVER_NAME'];
+			return ($isHttps ? 'https://' : 'http://').$host.$_SERVER['REQUEST_URI'];
 		}
 
 		/* Lấy getCurrentPageURL */
 		public function getCurrentPageURL()
 		{
-			$pageURL = 'http';
-			$isHttps = (array_key_exists('HTTPS', $_SERVER) && $_SERVER["HTTPS"] == "on");
-			if($isHttps) $pageURL .= "s";
-			$pageURL .= "://";
-			$port = (!empty($_SERVER["SERVER_PORT"])) ? $_SERVER["SERVER_PORT"] : '';
-			$isDefaultPort = ($port == '' || ($isHttps && $port == '443') || (!$isHttps && $port == '80'));
-			$host = $_SERVER["SERVER_NAME"].(($isDefaultPort) ? '' : ':'.$port);
-			$pageURL .= $host.$_SERVER["REQUEST_URI"];
+			$isForwarded = isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && trim((string) $_SERVER['HTTP_X_FORWARDED_PROTO']) !== '';
+			$isHttps = (isset($_SERVER['HTTPS']) && (strtolower((string) $_SERVER['HTTPS']) === 'on' || (string) $_SERVER['HTTPS'] === '1'))
+				|| ($isForwarded && strtolower(trim(explode(',', (string) $_SERVER['HTTP_X_FORWARDED_PROTO'])[0])) === 'https');
+			if(!empty($_SERVER['HTTP_HOST']))
+			{
+				/* HTTP_HOST đã mang cổng public nếu có; không ghép cổng backend
+				   (thường là 80) vào URL HTTPS của reverse proxy. */
+				$host = $_SERVER['HTTP_HOST'];
+			}
+			else
+			{
+				$port = (!empty($_SERVER['SERVER_PORT'])) ? $_SERVER['SERVER_PORT'] : '';
+				$isDefaultPort = ($port == '' || ($isHttps && $port == '443') || (!$isHttps && $port == '80') || $isForwarded);
+				$host = $_SERVER['SERVER_NAME'].(($isDefaultPort) ? '' : ':'.$port);
+			}
+			$pageURL = ($isHttps ? 'https://' : 'http://').$host.$_SERVER['REQUEST_URI'];
 			$urlpos = strpos($pageURL, "?p");
 			$pageURL = ($urlpos) ? explode("?p=", $pageURL) : explode("&p=", $pageURL);
 			return $pageURL[0];

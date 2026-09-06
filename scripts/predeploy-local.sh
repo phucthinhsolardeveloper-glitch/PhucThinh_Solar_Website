@@ -59,6 +59,7 @@ docker cp scripts/test-product-pricing-admin-http.php "$web_container:/tmp/test-
 docker cp scripts/test-checkout-atomicity.php "$web_container:/tmp/test-checkout-atomicity.php"
 docker cp scripts/test-commerce-transaction.php "$web_container:/tmp/test-commerce-transaction.php"
 docker cp scripts/test-public-route-resolver.php "$web_container:/tmp/test-public-route-resolver.php"
+docker cp scripts/test-proxy-https.php "$web_container:/tmp/test-proxy-https.php"
 docker cp scripts/preflight-commerce-migrations.php "$web_container:/tmp/preflight-commerce-migrations.php"
 docker cp migrations/000_preflight_production.php "$web_container:/tmp/000_preflight_production.php"
 docker cp migrations/000_check_hosting_runtime.php "$web_container:/tmp/000_check_hosting_runtime.php"
@@ -101,6 +102,7 @@ php -l /tmp/import-oriana-images.php
 php -l /tmp/create-local-rbac-demo-accounts.php
 php -l /tmp/test-admin-self-profile-integrity.php
 php -l /tmp/test-admin-permission-gate.php
+php -l /tmp/test-proxy-https.php
 php /tmp/test-security-hardening.php
 php /tmp/test-admin-readiness.php
 php /tmp/test-product-bulk.php
@@ -125,6 +127,7 @@ php /tmp/test-product-pricing-admin-http.php
 php /tmp/test-checkout-atomicity.php
 php /tmp/test-commerce-transaction.php
 php /tmp/test-public-route-resolver.php
+php /tmp/test-proxy-https.php
 php /tmp/preflight-commerce-migrations.php
 php /tmp/000_preflight_production.php --require-all
 php /tmp/000_check_hosting_runtime.php
