@@ -92,7 +92,12 @@ file rồi bấm Go. Chạy đúng thứ tự:
 021_add_product_promo_photo.sql
 022_add_product_campaigns.sql
 026_index_visit_tracking_tables.sql
+029_unique_username_index.sql
 ```
+
+**Riêng `029`** (unique index cho username): chạy câu kiểm tra trùng TRƯỚC —
+`SELECT username, COUNT(*) c FROM table_user GROUP BY username HAVING c > 1;`.
+Có kết quả thì phải xử lý trùng rồi mới chạy ALTER, xem chú thích trong file.
 
 Các file này dùng `CREATE TABLE IF NOT EXISTS` và `ADD COLUMN IF NOT EXISTS`, nên
 chạy lại lần hai không hỏng gì. Riêng `026` khoá bảng trong lúc dựng index —
