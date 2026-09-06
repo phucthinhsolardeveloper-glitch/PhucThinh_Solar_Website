@@ -103,6 +103,18 @@ Bốn lỗi thật đã tìm ra và sửa xong trong phiên:
 
 Log web hiện **sạch hoàn toàn**, không còn notice nào.
 
+**Phát hiện quan trọng nhất phiên này — lỗi thứ 5:** viết
+`scripts/test-public-form-submissions.php` để test luồng ghi công khai (form
+Liên hệ, Đăng ký đại lý — chỉ có test kiểm tra form tồn tại, chưa từng submit
+thật) thì lộ ra **`Email::send()` ném exception không ai bắt**, làm vỡ fatal
+error ngay sau khi lưu DB thành công. Ảnh hưởng **7 điểm gọi**: liên hệ, đặt
+hàng (khách chốt đơn xong vẫn có thể văng ra trang lỗi), đăng ký tài khoản,
+quên mật khẩu, đăng ký đại lý. Đã bọc try/catch quanh toàn bộ
+`Host/SetFrom/AddAddress/Send()` trong `class.Email.php`, trả `false` thay vì
+vỡ — mọi nơi gọi đã sẵn nhánh xử lý "gửi thất bại", chỉ chưa từng chạy tới
+được. Kiểm chứng: submit form Liên hệ giờ trả 302 sạch, không fatal, bản ghi
+vẫn lưu đúng.
+
 ## 3. Việc còn lại
 
 ### 3.1 Cần chủ project trả lời trước
