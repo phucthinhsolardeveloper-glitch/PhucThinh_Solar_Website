@@ -13,9 +13,12 @@
     /* Ẩn nút mà tài khoản này không có quyền dùng, thay vì để họ bấm rồi bị
        cổng chặn đá về trang chủ. Sao chép sinh ra bản ghi mới nên tính là quyền
        thêm. Tài khoản cấp cao (role 3) không bị ẩn gì. */
-    $hideAdd    = adminHideUnless('product', 'add', '', $type);
-    $hideEdit   = adminHideUnless('product', 'edit', '', $type, true);
-    $hideDelete = adminHideUnless('product', 'delete', '', $type, true);
+    $canAdd     = adminUiCan('product', 'add', '', $type);
+    $canEdit    = adminUiCan('product', 'edit', '', $type, true);
+    $canDelete  = adminUiCan('product', 'delete', '', $type, true);
+    $hideAdd    = $canAdd ? '' : ' d-none';
+    $hideEdit   = $canEdit ? '' : ' d-none';
+    $hideDelete = $canDelete ? '' : ' d-none';
 ?>
 <!-- Content Header -->
 <section class="content-header text-sm">
@@ -154,7 +157,7 @@
                                 </td>
                                 <?php if(isset($config['product'][$type]['show_images']) && $config['product'][$type]['show_images'] == true) { ?>
                                     <td class="align-middle">
-                                    	<a href="<?=$linkEdit?><?=$linkID?>&id=<?=$items[$i]['id']?>" title="<?=$items[$i]['namevi']?>">
+									<?php if($canEdit) { ?><a href="<?=$linkEdit?><?=$linkID?>&id=<?=$items[$i]['id']?>" title="<?=$items[$i]['namevi']?>"><?php } ?>
                                             <span class="pts-admin-product-thumb">
                                                 <?php if(!empty($config['product'][$type]['thumb'])){ ?>
                                                     <?=$func->getImage(['class' => 'rounded img-preview pts-admin-product-thumb-base', 'sizes' => $config['product'][$type]['thumb'], 'upload' => UPLOAD_PRODUCT_L, 'image' => $items[$i]['photo'], 'alt' => $items[$i]['namevi']])?>
@@ -165,17 +168,17 @@
                                                     <?=$func->getImage(['isLazy' => false, 'class' => 'pts-admin-product-thumb-overlay', 'sizes' => '70x55x2', 'upload' => $adminPromoFrame['upload'], 'image' => $adminPromoFrame['photo'], 'alt' => ''])?>
                                                 <?php } ?>
                                             </span>
-                                        </a>
+                                        <?php if($canEdit) { ?></a><?php } ?>
                                     </td>
                                 <?php } ?>
                                 <td class="align-middle">
-                                    <a class="text-dark text-break" href="<?=$linkEdit?><?=$linkID?>&id=<?=$items[$i]['id']?>" title="<?=$items[$i]['namevi']?>"><?=$items[$i]['namevi']?></a>
+                                    <?php if($canEdit) { ?><a class="text-dark text-break" href="<?=$linkEdit?><?=$linkID?>&id=<?=$items[$i]['id']?>" title="<?=$items[$i]['namevi']?>"><?=$items[$i]['namevi']?></a><?php } else { ?><span class="text-dark text-break"><?=$items[$i]['namevi']?></span><?php } ?>
                                     <span class="badge <?=adminProductHasStructuredContent($items[$i]) ? 'badge-success' : 'badge-secondary'?> ml-1"><?=adminProductHasStructuredContent($items[$i]) ? 'Nội dung chuẩn' : 'Nội dung legacy'?></span>
                                     <?php if(!empty($adminPromoFrame)) { ?><span class="badge badge-info ml-1"><?=$adminPromoFrame['source'] === 'product' ? 'Khung riêng' : 'Chiến dịch: '.htmlspecialchars($adminPromoFrame['campaign_name'], ENT_QUOTES, 'UTF-8')?></span><?php } ?>
                                     <?php $missingLabels = adminProductMissingLabels($items[$i]); if($missingLabels) { ?>
                                         <div class="mt-1" aria-label="Dữ liệu còn thiếu">
                                             <?php foreach($missingLabels as $missingLabel) { ?><span class="badge badge-warning mr-1">Thiếu <?=htmlspecialchars($missingLabel, ENT_QUOTES, 'UTF-8')?></span><?php } ?>
-                                            <a class="text-primary text-xs" href="<?=$linkEdit?><?=$linkID?>&id=<?=$items[$i]['id']?>">Điền ngay</a>
+                                            <a class="text-primary text-xs<?=$hideEdit?>" href="<?=$linkEdit?><?=$linkID?>&id=<?=$items[$i]['id']?>">Điền ngay</a>
                                         </div>
                                     <?php } ?>
                                     <div class="tool-action mt-2 w-clear">
@@ -215,7 +218,7 @@
 								<?php } } ?>
                                 <td class="align-middle text-center text-md text-nowrap">
                                 	<?php if(isset($config['product'][$type]['copy']) && $config['product'][$type]['copy'] == true) { ?>
-                                    	<div class="dropdown d-inline-block align-middle<?=$hideAdd?>">
+									<div class="dropdown d-inline-block align-middle<?=$hideAdd?>">
 		                            		<a id="dropdownCopy" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle text-success p-0 pr-2"><i class="far fa-clone"></i></a>
 								            <ul aria-labelledby="dropdownCopy" class="dropdown-menu border-0 shadow">
 								                <li><a href="#" class="dropdown-item copy-now" data-id="<?=$items[$i]['id']?>" data-table="product"><i class="far fa-caret-square-right text-secondary mr-2"></i>Sao chép ngay</a></li>
