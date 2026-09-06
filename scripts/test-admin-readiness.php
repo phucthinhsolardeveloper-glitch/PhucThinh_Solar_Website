@@ -189,6 +189,28 @@ try
         readinessAssert(count(array_diff($permissions, $loaded)) === 0, 'Nạp đúng quyền DB cho vai trò '.$roleName);
     }
 
+    /* Phần HTTP phía dưới quét chéo sản phẩm, nội dung, media, liên hệ và
+       newsletter. Dùng fixture role 3 để kiểm tra toàn bộ màn hình; việc chặn
+       staff theo từng quyền đã có test-admin-permission-gate.php phụ trách. */
+    $readinessAdminName = strtolower($prefix.'-superadmin');
+    $readinessAdminPassword = bin2hex(random_bytes(12));
+    $d->insert('user', array(
+        'id_permission' => 0,
+        'username' => $readinessAdminName,
+        'password' => $func->encryptPassword($config['website']['secret'], $readinessAdminPassword, $config['website']['salt']),
+        'fullname' => 'Local readiness superadmin',
+        'status' => 'hienthi',
+        'role' => 3,
+        'secret_key' => bin2hex(random_bytes(16)),
+        'numb' => 0
+    ));
+    $createdUsers['superadmin'] = array(
+        'id' => (int)$d->getLastInsertId(),
+        'username' => $readinessAdminName,
+        'password' => $readinessAdminPassword
+    );
+    readinessAssert($createdUsers['superadmin']['id'] > 0, 'Tạo tài khoản superadmin fixture cho HTTP readiness đa module');
+
     readinessAssert(adminPermissionGranted(true, 1, false, 'product_edit_san-pham', adminLoadPermissions($d, $createdUsers['product']['id'])), 'Nhóm sản phẩm được sửa sản phẩm');
     readinessAssert(!adminPermissionGranted(true, 1, false, 'order_edit', adminLoadPermissions($d, $createdUsers['product']['id'])), 'Nhóm sản phẩm không vượt quyền đơn hàng');
     readinessAssert(adminPermissionGranted(true, 1, false, 'order_edit', adminLoadPermissions($d, $createdUsers['order']['id'])), 'Nhóm đơn hàng được cập nhật đơn');
@@ -258,19 +280,19 @@ try
 		readinessAssertApiEnvelope($disabledPayload, 'Endpoint legacy '.$disabledEndpoint.' giữ đủ schema envelope');
 	}
 
-    $missingCsrf = readinessHttp($base.'api/login.php', 'POST', array('username' => $createdUsers['product']['username'], 'password' => $createdUsers['product']['password']), $oldCookie);
+    $missingCsrf = readinessHttp($base.'api/login.php', 'POST', array('username' => $createdUsers['superadmin']['username'], 'password' => $createdUsers['superadmin']['password']), $oldCookie);
     readinessAssert($missingCsrf['status'] === 403, 'Login thiếu CSRF bị từ chối');
 
-    $login = readinessHttp($base.'api/login.php', 'POST', array('username' => $createdUsers['product']['username'], 'password' => $createdUsers['product']['password'], 'admin_csrf' => $tokenMatch[1]), $oldCookie);
+    $login = readinessHttp($base.'api/login.php', 'POST', array('username' => $createdUsers['superadmin']['username'], 'password' => $createdUsers['superadmin']['password'], 'admin_csrf' => $tokenMatch[1]), $oldCookie);
     list($newCookie, $authenticatedSetCookie) = readinessSessionCookie($login['cookies']);
     $loginJson = json_decode($login['body'], true);
-    readinessAssert($login['status'] === 200 && !empty($loginJson['success']), 'Đăng nhập HTTP bằng tài khoản RBAC tạm thành công');
+    readinessAssert($login['status'] === 200 && !empty($loginJson['success']), 'Đăng nhập HTTP bằng tài khoản superadmin fixture thành công');
     readinessAssert($newCookie !== '' && $newCookie !== $oldCookie, 'Session ID được regenerate sau đăng nhập');
     readinessAssert(stripos($authenticatedSetCookie, 'HttpOnly') !== false && stripos($authenticatedSetCookie, 'SameSite=Lax') !== false, 'Cookie sau đăng nhập giữ thuộc tính bảo mật');
 
-    $authStateAfterLogin = $d->rawQueryOne('select lastlogin, user_token from #_user where id = ?', array($createdUsers['product']['id']));
+    $authStateAfterLogin = $d->rawQueryOne('select lastlogin, user_token from #_user where id = ?', array($createdUsers['superadmin']['id']));
     $forcedLastLogin = max(1, (int)$authStateAfterLogin['lastlogin'] - 61);
-    $d->rawQuery('update #_user set lastlogin = ? where id = ?', array($forcedLastLogin, $createdUsers['product']['id']));
+    $d->rawQuery('update #_user set lastlogin = ? where id = ?', array($forcedLastLogin, $createdUsers['superadmin']['id']));
 
     $adminForm = readinessHttp($base.'index.php?com=product&act=add&type=san-pham', 'GET', array(), $newCookie);
     readinessAssert($adminForm['status'] === 200 && strpos($adminForm['body'], 'name="admin_csrf"') !== false, 'Form sản phẩm authenticated render CSRF field');
@@ -392,7 +414,7 @@ try
     $campaignCount = !empty($campaignDataStatus['sql']) ? $d->rawQueryOne("select count(*) as total from #_product p where p.type = ? and ".$campaignDataStatus['sql'], array('san-pham')) : array();
     readinessAssert(!empty($campaignDataStatus['sql']) && strpos($campaignDataStatus['sql'], 'photo_khuyenmai') !== false && isset($campaignCount['total']), 'Bộ lọc chiến dịch chỉ lấy sản phẩm có khung đang bật và có SQL hợp lệ');
     readinessAssert(preg_match("/ADMIN_CSRF\s*=\s*'([^']+)'/", $adminForm['body'], $authenticatedToken) === 1, 'Phiên authenticated phát hành token mới');
-    $authStateAfterRefresh = $d->rawQueryOne('select lastlogin, user_token from #_user where id = ?', array($createdUsers['product']['id']));
+    $authStateAfterRefresh = $d->rawQueryOne('select lastlogin, user_token from #_user where id = ?', array($createdUsers['superadmin']['id']));
     readinessAssert(
         $authStateAfterRefresh['user_token'] === $authStateAfterLogin['user_token']
             && (int)$authStateAfterRefresh['lastlogin'] > $forcedLastLogin,
@@ -430,7 +452,7 @@ try
 			'Tìm kiếm Admin giữ keyword đã encode qua '.$paginationLabel
 		);
 	}
-    $authStateAfterPages = $d->rawQueryOne('select lastlogin, user_token from #_user where id = ?', array($createdUsers['product']['id']));
+    $authStateAfterPages = $d->rawQueryOne('select lastlogin, user_token from #_user where id = ?', array($createdUsers['superadmin']['id']));
     readinessAssert($adminList['status'] === 200, 'Phiên Admin mở liên tiếp hai trang authenticated');
     readinessAssert(
         $authStateAfterPages['user_token'] === $authStateAfterRefresh['user_token']

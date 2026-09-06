@@ -86,6 +86,13 @@ securityAssert(adminPermissionGranted(false, 1, false, null, array()), 'RBAC t�
 securityAssert(adminPermissionGranted(true, 3, false, null, array()), 'Tài khoản developer role 3 giữ quyền quản trị');
 securityAssert(adminPermissionGranted(true, 1, false, 'product_edit_san-pham', array('product_edit_san-pham')), 'RBAC cho phép đúng quyền được cấp');
 securityAssert(!adminPermissionGranted(true, 1, false, 'product_edit_san-pham', array('news_edit_tin-tuc')), 'RBAC từ chối quyền khác module');
+$is_permission = true;
+$_SESSION[$loginAdmin]['permissions'] = array('product_man_san-pham');
+securityAssert(adminUiCan('product', 'man', '', 'san-pham') && !adminUiCan('product', 'add', '', 'san-pham'), 'UI RBAC hiện thao tác xem và ẩn thao tác thêm ngoài quyền');
+securityAssert(adminHideUnless('product', 'edit', '', 'san-pham', true) === ' d-none' && adminHideUnless('product', 'delete', '', 'san-pham', true) === ' d-none', 'UI RBAC ẩn nút sửa và xóa ngoài quyền');
+$is_permission = false;
+securityAssert(adminUiCan('product', 'add', '', 'san-pham'), 'UI không tự ẩn nút khi cổng phân quyền không áp dụng');
+unset($is_permission, $_SESSION[$loginAdmin]['permissions']);
 securityAssert(adminMutationPermissionKey('setting', 'database') === 'setting_update', 'Bảo trì database yêu cầu quyền cấu hình hệ thống');
 securityAssert(adminLegacyMutationNeedsCsrf('product', 'save', 'POST', array()), 'Mutation save legacy yêu cầu CSRF');
 securityAssert(adminLegacyMutationNeedsCsrf('pushOnesignal', 'sync', 'GET', array()), 'Mutation OneSignal GET cũ bị từ chối để chuyển sang POST');

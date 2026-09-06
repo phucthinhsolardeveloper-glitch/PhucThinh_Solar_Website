@@ -9,6 +9,13 @@
     $linkComment = "index.php?com=comment&act=man&variant=product&type=".$type;
     $linkBulk = "index.php?com=product&act=bulk&type=".$type.$strUrl;
     $copyImg = (isset($config['product'][$type]['copy_image']) && $config['product'][$type]['copy_image'] == true) ? TRUE : FALSE;
+
+    /* Ẩn nút mà tài khoản này không có quyền dùng, thay vì để họ bấm rồi bị
+       cổng chặn đá về trang chủ. Sao chép sinh ra bản ghi mới nên tính là quyền
+       thêm. Tài khoản cấp cao (role 3) không bị ẩn gì. */
+    $hideAdd    = adminHideUnless('product', 'add', '', $type);
+    $hideEdit   = adminHideUnless('product', 'edit', '', $type, true);
+    $hideDelete = adminHideUnless('product', 'delete', '', $type, true);
 ?>
 <!-- Content Header -->
 <section class="content-header text-sm">
@@ -25,9 +32,9 @@
 <!-- Main content -->
 <section class="content">
 	<div class="card-footer text-sm sticky-top">
-    	<a class="btn btn-sm bg-gradient-primary text-white" href="<?=$linkAdd?>" title="Thêm mới"><i class="fas fa-plus mr-2"></i>Thêm mới</a>
+		<a class="btn btn-sm bg-gradient-primary text-white<?=$hideAdd?>" href="<?=$linkAdd?>" title="Thêm mới"><i class="fas fa-plus mr-2"></i>Thêm mới</a>
         <a class="btn btn-sm btn-outline-primary" href="index.php?com=product_campaign&act=man&type=<?=urlencode($type)?>" title="Quản lý khung chiến dịch dùng chung"><i class="fas fa-images mr-1"></i>Khung chiến dịch</a>
-        <a class="btn btn-sm bg-gradient-danger text-white" id="delete-all" data-url="<?=$linkDelete?><?=$strUrl?>" title="Xóa sản phẩm đã chọn"><i class="far fa-trash-alt mr-2"></i>Xóa mục đã chọn</a>
+        <a class="btn btn-sm bg-gradient-danger text-white<?=$hideDelete?>" id="delete-all" data-url="<?=$linkDelete?><?=$strUrl?>" title="Xóa sản phẩm đã chọn"><i class="far fa-trash-alt mr-2"></i>Xóa mục đã chọn</a>
         <a class="btn btn-sm bg-gradient-success text-white" href="<?=$linkBulk?>" title="Nhập xuất Excel/CSV"><i class="fas fa-file-excel mr-2"></i>Nhập / Xuất</a>
         <div class="dropdown d-inline-block ml-2">
             <button class="btn btn-sm btn-outline-warning dropdown-toggle" type="button" data-toggle="dropdown"><i class="fas fa-tasks mr-1"></i>Điền dữ liệu thiếu</button>
@@ -208,7 +215,7 @@
 								<?php } } ?>
                                 <td class="align-middle text-center text-md text-nowrap">
                                 	<?php if(isset($config['product'][$type]['copy']) && $config['product'][$type]['copy'] == true) { ?>
-                                    	<div class="dropdown d-inline-block align-middle">
+                                    	<div class="dropdown d-inline-block align-middle<?=$hideAdd?>">
 		                            		<a id="dropdownCopy" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle text-success p-0 pr-2"><i class="far fa-clone"></i></a>
 								            <ul aria-labelledby="dropdownCopy" class="dropdown-menu border-0 shadow">
 								                <li><a href="#" class="dropdown-item copy-now" data-id="<?=$items[$i]['id']?>" data-table="product"><i class="far fa-caret-square-right text-secondary mr-2"></i>Sao chép ngay</a></li>
@@ -216,8 +223,8 @@
 								            </ul>
 		                            	</div>
                                     <?php } ?>
-                                    <a class="text-primary mr-2" href="<?=$linkEdit?><?=$linkID?>&id=<?=$items[$i]['id']?>" title="Chỉnh sửa"><i class="fas fa-edit"></i></a>
-                                    <a class="text-danger" id="delete-item" data-url="<?=$linkDelete?><?=$strUrl?>&id=<?=$items[$i]['id']?>" title="Xóa"><i class="fas fa-trash-alt"></i></a>
+                                    <a class="text-primary mr-2<?=$hideEdit?>" href="<?=$linkEdit?><?=$linkID?>&id=<?=$items[$i]['id']?>" title="Chỉnh sửa"><i class="fas fa-edit"></i></a>
+                                    <a class="text-danger<?=$hideDelete?>" id="delete-item" data-url="<?=$linkDelete?><?=$strUrl?>&id=<?=$items[$i]['id']?>" title="Xóa"><i class="fas fa-trash-alt"></i></a>
                                 </td>
                             </tr>
                         <?php } ?>

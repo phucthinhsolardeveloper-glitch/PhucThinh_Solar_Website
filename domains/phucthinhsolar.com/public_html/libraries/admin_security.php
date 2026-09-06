@@ -330,4 +330,50 @@ if(!function_exists('adminCsrfToken'))
         if($type !== '') $permission .= '_'.$type;
         return $permission;
     }
+
+    /**
+     * Người đang đăng nhập có dùng được thao tác này không — dùng để ẩn nút
+     * Thêm/Sửa/Xoá trong template.
+     *
+     * Vì sao cần: cổng chặn ở requick.php chặn đúng, nhưng template vẫn vẽ đủ
+     * nút. Một nhân viên chỉ có quyền XEM sản phẩm vẫn thấy 1 nút "Thêm mới",
+     * 80 link "Sửa" và 21 nút "Xoá"; bấm vào là bị đá về trang chủ kèm thông
+     * báo từ chối. Đúng về bảo mật nhưng rất ức chế khi dùng.
+     *
+     * Hàm này gọi lại CHÍNH adminLegacyScreenPermission() mà cổng đang dùng,
+     * nên nút hiện ra luôn đúng bằng thứ server cho phép. Nếu tự dựng lại chuỗi
+     * quyền ở đây thì hai bên sẽ lệch nhau theo thời gian, và lệch kiểu nào
+     * cũng tệ: hoặc thấy nút rồi bị từ chối, hoặc mất nút mình có quyền dùng.
+     *
+     * $is_permission do requick.php đặt, và chỉ bằng true khi cổng thật sự
+     * đang áp dụng. Role 3, cờ debug-developer, hay khi tắt phân quyền đều
+     * không đặt cờ này — khi đó hàm trả về true và không ẩn gì cả.
+     */
+    function adminUiCan($com, $act, $variant = '', $type = '', $hasId = false)
+    {
+        global $is_permission, $loginAdmin;
+
+        if(empty($is_permission)) return true;
+
+        $permission = adminLegacyScreenPermission($com, $act, $variant, $type, $hasId);
+        if($permission === '') return true;
+        if($permission === 'SUPERADMIN_ONLY') return false;
+
+        $granted = isset($_SESSION[$loginAdmin]['permissions']) && is_array($_SESSION[$loginAdmin]['permissions'])
+            ? $_SESSION[$loginAdmin]['permissions']
+            : array();
+
+        return in_array($permission, $granted, true);
+    }
+
+    /**
+     * Trả về 'd-none' khi KHÔNG có quyền, để gắn thẳng vào class của nút.
+     * Giữ đúng lối viết sẵn có của menu.php thay vì bỏ hẳn thẻ khỏi DOM: một số
+     * nút được JS bắt theo id (#delete-all, #delete-item), giữ lại thẻ thì
+     * không phải rà lại toàn bộ script.
+     */
+    function adminHideUnless($com, $act, $variant = '', $type = '', $hasId = false)
+    {
+        return adminUiCan($com, $act, $variant, $type, $hasId) ? '' : ' d-none';
+    }
 }
