@@ -44,6 +44,7 @@ docker cp scripts/test-product-content-blocks.php "$web_container:/tmp/test-prod
 docker cp scripts/test-cache-performance.php "$web_container:/tmp/test-cache-performance.php"
 docker cp scripts/test-admin-transfer-toast.php "$web_container:/tmp/test-admin-transfer-toast.php"
 docker cp scripts/test-admin-permission-gate.php "$web_container:/tmp/test-admin-permission-gate.php"
+docker cp scripts/test-admin-button-visibility.php "$web_container:/tmp/test-admin-button-visibility.php"
 docker cp scripts/test-admin-crud-lifecycle.php "$web_container:/tmp/test-admin-crud-lifecycle.php"
 docker cp scripts/test-public-form-submissions.php "$web_container:/tmp/test-public-form-submissions.php"
 docker cp scripts/test-public-lead-and-review.php "$web_container:/tmp/test-public-lead-and-review.php"
@@ -102,6 +103,7 @@ php -l /tmp/import-oriana-images.php
 php -l /tmp/create-local-rbac-demo-accounts.php
 php -l /tmp/test-admin-self-profile-integrity.php
 php -l /tmp/test-admin-permission-gate.php
+php -l /tmp/test-admin-button-visibility.php
 php -l /tmp/test-proxy-https.php
 php /tmp/test-security-hardening.php
 php /tmp/test-admin-readiness.php
@@ -112,6 +114,7 @@ php /tmp/test-product-content-blocks.php
 php /tmp/test-cache-performance.php
 php /tmp/test-admin-transfer-toast.php
 php /tmp/test-admin-permission-gate.php
+php /tmp/test-admin-button-visibility.php
 php /tmp/test-admin-crud-lifecycle.php
 php /tmp/test-public-form-submissions.php
 php /tmp/test-public-lead-and-review.php
