@@ -3,6 +3,15 @@
 	$linkAdd = "index.php?com=product&act=add_brand&type=".$type;
     $linkEdit = "index.php?com=product&act=edit_brand&type=".$type;
     $linkDelete = "index.php?com=product&act=delete_brand&type=".$type;
+
+    /* Ẩn nút mà tài khoản này không có quyền dùng, thay vì để họ bấm rồi bị
+       cổng chặn đá về trang chủ. Tài khoản cấp cao (role 3) không bị ẩn gì. */
+    $canAdd     = adminUiCan('product', 'add_brand', '', $type);
+    $canEdit    = adminUiCan('product', 'edit_brand', '', $type, true);
+    $canDelete  = adminUiCan('product', 'delete_brand', '', $type, true);
+    $hideAdd    = $canAdd ? '' : ' d-none';
+    $hideEdit   = $canEdit ? '' : ' d-none';
+    $hideDelete = $canDelete ? '' : ' d-none';
 ?>
 <!-- Content Header -->
 <section class="content-header text-sm">
@@ -19,8 +28,8 @@
 <!-- Main content -->
 <section class="content">
     <div class="card-footer text-sm sticky-top">
-    	<a class="btn btn-sm bg-gradient-primary text-white" href="<?=$linkAdd?>" title="Thêm mới"><i class="fas fa-plus mr-2"></i>Thêm mới</a>
-        <a class="btn btn-sm bg-gradient-danger text-white" id="delete-all" data-url="<?=$linkDelete?>" title="Xóa tất cả"><i class="far fa-trash-alt mr-2"></i>Xóa tất cả</a>
+        <a class="btn btn-sm bg-gradient-primary text-white<?=$hideAdd?>" href="<?=$linkAdd?>" title="Thêm mới"><i class="fas fa-plus mr-2"></i>Thêm mới</a>
+        <a class="btn btn-sm bg-gradient-danger text-white<?=$hideDelete?>" id="delete-all" data-url="<?=$linkDelete?>" title="Xóa tất cả"><i class="far fa-trash-alt mr-2"></i>Xóa tất cả</a>
         <div class="form-inline form-search d-inline-block align-middle ml-3">
             <div class="input-group input-group-sm">
                 <input class="form-control form-control-navbar text-sm" type="search" id="keyword" placeholder="Tìm kiếm" aria-label="Tìm kiếm" value="<?=(isset($_GET['keyword'])) ? $_GET['keyword'] : ''?>" onkeypress="doEnter(event,'keyword','<?=$linkMan?>')">
@@ -74,13 +83,13 @@
                                 </td>
                                 <?php if(isset($config['product'][$type]['show_images_brand']) && $config['product'][$type]['show_images_brand'] == true) { ?>
                                     <td class="align-middle">
-                                    	<a href="<?=$linkEdit?>&id=<?=$items[$i]['id']?>" title="<?=$items[$i]['namevi']?>">
+                                        <a<?=$canEdit ? ' href="'.$linkEdit.'&id='.$items[$i]['id'].'"' : ''?> title="<?=$items[$i]['namevi']?>">
                                             <?=$func->getImage(['class' => 'rounded img-preview', 'sizes' => $config['product'][$type]['thumb_brand'], 'upload' => UPLOAD_PRODUCT_L, 'image' => $items[$i]['photo'], 'alt' => $items[$i]['namevi']])?>
                                         </a>
                                     </td>
                                 <?php } ?>
                                 <td class="align-middle">
-                                    <a class="text-dark text-break" href="<?=$linkEdit?>&id=<?=$items[$i]['id']?>" title="<?=$items[$i]['namevi']?>"><?=$items[$i]['namevi']?></a>
+                                    <a class="text-dark text-break"<?=$canEdit ? ' href="'.$linkEdit.'&id='.$items[$i]['id'].'"' : ''?> title="<?=$items[$i]['namevi']?>"><?=$items[$i]['namevi']?></a>
                                 </td>
                                 <?php $status_array = (!empty($items[$i]['status'])) ? explode(',', $items[$i]['status']) : array(); ?>
                                 <?php if(isset($config['product'][$type]['check_brand'])) { foreach($config['product'][$type]['check_brand'] as $key => $value) { ?>
@@ -92,8 +101,8 @@
                                     </td>
                                 <?php } } ?>
                                 <td class="align-middle text-center text-md text-nowrap">
-                                    <a class="text-primary mr-2" href="<?=$linkEdit?>&id=<?=$items[$i]['id']?>" title="Chỉnh sửa"><i class="fas fa-edit"></i></a>
-                                    <a class="text-danger" id="delete-item" data-url="<?=$linkDelete?>&id=<?=$items[$i]['id']?>" title="Xóa"><i class="fas fa-trash-alt"></i></a>
+                                    <a class="text-primary mr-2<?=$hideEdit?>" href="<?=$linkEdit?>&id=<?=$items[$i]['id']?>" title="Chỉnh sửa"><i class="fas fa-edit"></i></a>
+                                    <a class="text-danger<?=$hideDelete?>" id="delete-item" data-url="<?=$linkDelete?>&id=<?=$items[$i]['id']?>" title="Xóa"><i class="fas fa-trash-alt"></i></a>
                                 </td>
                             </tr>
                         <?php } ?>
@@ -108,7 +117,7 @@
         </div>
     <?php } ?>
     <div class="card-footer text-sm">
-    	<a class="btn btn-sm bg-gradient-primary text-white" href="<?=$linkAdd?>" title="Thêm mới"><i class="fas fa-plus mr-2"></i>Thêm mới</a>
-        <a class="btn btn-sm bg-gradient-danger text-white" id="delete-all" data-url="<?=$linkDelete?>" title="Xóa tất cả"><i class="far fa-trash-alt mr-2"></i>Xóa tất cả</a>
+        <a class="btn btn-sm bg-gradient-primary text-white<?=$hideAdd?>" href="<?=$linkAdd?>" title="Thêm mới"><i class="fas fa-plus mr-2"></i>Thêm mới</a>
+        <a class="btn btn-sm bg-gradient-danger text-white<?=$hideDelete?>" id="delete-all" data-url="<?=$linkDelete?>" title="Xóa tất cả"><i class="far fa-trash-alt mr-2"></i>Xóa tất cả</a>
     </div>
 </section>

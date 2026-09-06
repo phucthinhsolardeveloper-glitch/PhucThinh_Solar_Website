@@ -3,6 +3,15 @@
     $linkAdd = "index.php?com=newsletter&act=add&type=".$type;
     $linkEdit = "index.php?com=newsletter&act=edit&type=".$type;
     $linkDelete = "index.php?com=newsletter&act=delete&type=".$type;
+
+    /* Ẩn nút mà tài khoản này không có quyền dùng, thay vì để họ bấm rồi bị
+       cổng chặn đá về trang chủ. Tài khoản cấp cao (role 3) không bị ẩn gì. */
+    $canAdd     = adminUiCan('newsletter', 'add', '', $type);
+    $canEdit    = adminUiCan('newsletter', 'edit', '', $type, true);
+    $canDelete  = adminUiCan('newsletter', 'delete', '', $type, true);
+    $hideAdd    = $canAdd ? '' : ' d-none';
+    $hideEdit   = $canEdit ? '' : ' d-none';
+    $hideDelete = $canDelete ? '' : ' d-none';
 	$linkSearch = $linkMan.(!empty($_GET['confirm_status']) ? '&confirm_status='.urlencode($_GET['confirm_status']) : '');
 	$linkConfirmStatus = $linkMan.(!empty($_GET['keyword']) ? '&keyword='.urlencode($_GET['keyword']) : '');
 ?>
@@ -43,8 +52,8 @@
         <?php if(isset($config['newsletter'][$type]['is_send']) && $config['newsletter'][$type]['is_send'] == true) { ?>
            <a class="btn btn-sm bg-gradient-success text-white" id="send-email" title="Gửi email"><i class="fas fa-paper-plane mr-2"></i>Gửi email</a>
         <?php } ?>
-        <a class="btn btn-sm bg-gradient-primary text-white" href="<?=$linkAdd?>" title="Thêm mới"><i class="fas fa-plus mr-2"></i>Thêm mới</a>
-        <a class="btn btn-sm bg-gradient-danger text-white" id="delete-all" data-url="<?=$linkDelete?>" title="Xóa tất cả"><i class="far fa-trash-alt mr-2"></i>Xóa tất cả</a>
+        <a class="btn btn-sm bg-gradient-primary text-white<?=$hideAdd?>" href="<?=$linkAdd?>" title="Thêm mới"><i class="fas fa-plus mr-2"></i>Thêm mới</a>
+        <a class="btn btn-sm bg-gradient-danger text-white<?=$hideDelete?>" id="delete-all" data-url="<?=$linkDelete?>" title="Xóa tất cả"><i class="far fa-trash-alt mr-2"></i>Xóa tất cả</a>
         <?php $currentConfirmStatus = isset($_GET['confirm_status']) ? (string) $_GET['confirm_status'] : ''; ?>
         <?php if(!empty($config['newsletter'][$type]['confirm_status'])) { ?>
         <div class="form-inline d-inline-block align-middle ml-3">
@@ -124,7 +133,7 @@
                                 </td>
                                 <?php if(isset($config['newsletter'][$type]['show_name']) && $config['newsletter'][$type]['show_name'] == true) { ?>
                                     <td class="align-middle">
-                                        <a class="text-dark text-break" href="<?=$linkEdit?>&id=<?=$items[$i]['id']?>" title="<?=htmlspecialchars($items[$i]['fullname'], ENT_QUOTES, 'UTF-8')?>"><?=htmlspecialchars($items[$i]['fullname'], ENT_QUOTES, 'UTF-8')?></a>
+                                        <a class="text-dark text-break"<?=$canEdit ? ' href="'.$linkEdit.'&id='.$items[$i]['id'].'"' : ''?> title="<?=htmlspecialchars($items[$i]['fullname'], ENT_QUOTES, 'UTF-8')?>"><?=htmlspecialchars($items[$i]['fullname'], ENT_QUOTES, 'UTF-8')?></a>
                                     </td>
                                 <?php } ?>
                                 <?php if(isset($config['newsletter'][$type]['email']) && $config['newsletter'][$type]['email'] == true) { ?>
@@ -151,8 +160,8 @@
                                     <td class="align-middle"><?=$func->getStatusNewsletter($items[$i]['confirm_status'],$type)?></td>
                                 <?php } ?>
                                 <td class="align-middle text-center text-md text-nowrap">
-                                    <a class="text-primary mr-2" href="<?=$linkEdit?>&id=<?=$items[$i]['id']?>" title="Chỉnh sửa"><i class="fas fa-edit"></i></a>
-                                    <a class="text-danger" id="delete-item" data-url="<?=$linkDelete?>&id=<?=$items[$i]['id']?>" title="Xóa"><i class="fas fa-trash-alt"></i></a>
+                                    <a class="text-primary mr-2<?=$hideEdit?>" href="<?=$linkEdit?>&id=<?=$items[$i]['id']?>" title="Chỉnh sửa"><i class="fas fa-edit"></i></a>
+                                    <a class="text-danger<?=$hideDelete?>" id="delete-item" data-url="<?=$linkDelete?>&id=<?=$items[$i]['id']?>" title="Xóa"><i class="fas fa-trash-alt"></i></a>
                                 </td>
                             </tr>
                         <?php } ?>
@@ -199,7 +208,7 @@
         <?php if(isset($config['newsletter'][$type]['is_send']) && $config['newsletter'][$type]['is_send'] == true) { ?>
            <a class="btn btn-sm bg-gradient-success text-white" id="send-email" title="Gửi email"><i class="fas fa-paper-plane mr-2"></i>Gửi email</a>
         <?php } ?>
-        <a class="btn btn-sm bg-gradient-primary text-white" href="<?=$linkAdd?>" title="Thêm mới"><i class="fas fa-plus mr-2"></i>Thêm mới</a>
-        <a class="btn btn-sm bg-gradient-danger text-white" id="delete-all" data-url="<?=$linkDelete?>" title="Xóa tất cả"><i class="far fa-trash-alt mr-2"></i>Xóa tất cả</a>
+        <a class="btn btn-sm bg-gradient-primary text-white<?=$hideAdd?>" href="<?=$linkAdd?>" title="Thêm mới"><i class="fas fa-plus mr-2"></i>Thêm mới</a>
+        <a class="btn btn-sm bg-gradient-danger text-white<?=$hideDelete?>" id="delete-all" data-url="<?=$linkDelete?>" title="Xóa tất cả"><i class="far fa-trash-alt mr-2"></i>Xóa tất cả</a>
     </div>
 </section>

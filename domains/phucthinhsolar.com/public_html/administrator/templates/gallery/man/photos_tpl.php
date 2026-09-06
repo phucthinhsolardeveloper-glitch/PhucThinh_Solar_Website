@@ -12,6 +12,15 @@ if(isset($config[$com][$type][$dfgallery][$val]['title_main_photo']))
     $linkAdd = "index.php?com=".$com."&act=add_photo&id_parent=".$id_parent."&type=".$type."&kind=".$kind."&val=".$val;
     $linkEdit = "index.php?com=".$com."&act=edit_photo&id_parent=".$id_parent."&type=".$type."&kind=".$kind."&val=".$val;
     $linkDelete = "index.php?com=".$com."&act=delete_photo&id_parent=".$id_parent."&type=".$type."&kind=".$kind."&val=".$val;
+
+    /* Ẩn nút mà tài khoản này không có quyền dùng, thay vì để họ bấm rồi bị
+       cổng chặn đá về trang chủ. Tài khoản cấp cao (role 3) không bị ẩn gì. */
+    $canAdd     = adminUiCan($com, 'add_photo', '', $type);
+    $canEdit    = adminUiCan($com, 'edit_photo', '', $type, true);
+    $canDelete  = adminUiCan($com, 'delete_photo', '', $type, true);
+    $hideAdd    = $canAdd ? '' : ' d-none';
+    $hideEdit   = $canEdit ? '' : ' d-none';
+    $hideDelete = $canDelete ? '' : ' d-none';
 ?>
 <!-- Content Header -->
 <section class="content-header text-sm">
@@ -28,8 +37,8 @@ if(isset($config[$com][$type][$dfgallery][$val]['title_main_photo']))
 <!-- Main content -->
 <section class="content">
     <div class="card-footer text-sm sticky-top">
-        <a class="btn btn-sm bg-gradient-primary text-white" href="<?=$linkAdd?>" title="Thêm mới"><i class="fas fa-plus mr-2"></i>Thêm mới</a>
-        <a class="btn btn-sm bg-gradient-danger text-white" id="delete-all" data-url="<?=$linkDelete?>" title="Xóa tất cả"><i class="far fa-trash-alt mr-2"></i>Xóa tất cả</a>
+        <a class="btn btn-sm bg-gradient-primary text-white<?=$hideAdd?>" href="<?=$linkAdd?>" title="Thêm mới"><i class="fas fa-plus mr-2"></i>Thêm mới</a>
+        <a class="btn btn-sm bg-gradient-danger text-white<?=$hideDelete?>" id="delete-all" data-url="<?=$linkDelete?>" title="Xóa tất cả"><i class="far fa-trash-alt mr-2"></i>Xóa tất cả</a>
         <a class="btn btn-sm bg-gradient-secondary" href="<?=$linkParent?>" title="Thoát"><i class="fas fa-sign-out-alt mr-2"></i>Thoát</a>
     </div>
     <div class="card card-primary card-outline text-sm mb-0">
@@ -85,14 +94,14 @@ if(isset($config[$com][$type][$dfgallery][$val]['title_main_photo']))
                                 </td>
                                 <?php if(isset($config[$com][$type][$dfgallery][$val]['avatar_photo']) && $config[$com][$type][$dfgallery][$val]['avatar_photo'] == true) { ?>
 	                                <td class="align-middle text-center">
-	                                    <a href="<?=$linkEdit?>&id=<?=$items[$i]['id']?>" title="<?=$items[$i]['namevi']?>">
+	                                    <a<?=$canEdit ? ' href="'.$linkEdit.'&id='.$items[$i]['id'].'"' : ''?> title="<?=$items[$i]['namevi']?>">
                                             <?=$func->getImage(['class' => 'rounded img-preview', 'sizes' => $config[$com][$type][$dfgallery][$val]['thumb_photo'], 'upload' => 'upload/'.$com.'/', 'image' => $items[$i]['photo'], 'alt' => $items[$i]['namevi']])?>
                                         </a>
 	                                </td>
 	                            <?php } ?>
                                 <?php if(isset($config[$com][$type][$dfgallery][$val]['name_photo']) && $config[$com][$type][$dfgallery][$val]['name_photo'] == true) { ?>
 	                                <td class="align-middle">
-	                                    <a class="text-dark text-break" href="<?=$linkEdit?>&id=<?=$items[$i]['id']?>" title="<?=$items[$i]['namevi']?>"><?=$items[$i]['namevi']?></a>
+	                                    <a class="text-dark text-break"<?=$canEdit ? ' href="'.$linkEdit.'&id='.$items[$i]['id'].'"' : ''?> title="<?=$items[$i]['namevi']?>"><?=$items[$i]['namevi']?></a>
 	                                </td>
 	                            <?php } ?>
                                 <?php if(isset($config[$com][$type][$dfgallery][$val]['cart_photo']) && $config[$com][$type][$dfgallery][$val]['cart_photo'] == true) { ?>
@@ -127,8 +136,8 @@ if(isset($config[$com][$type][$dfgallery][$val]['title_main_photo']))
                                     </td>
                                 <?php } } ?>
                                 <td class="align-middle text-center text-md text-nowrap">
-                                    <a class="text-primary mr-2" href="<?=$linkEdit?>&id=<?=$items[$i]['id']?>" title="Chỉnh sửa"><i class="fas fa-edit"></i></a>
-                                    <a class="text-danger" id="delete-item" data-url="<?=$linkDelete?>&id=<?=$items[$i]['id']?>" title="Xóa"><i class="fas fa-trash-alt"></i></a>
+                                    <a class="text-primary mr-2<?=$hideEdit?>" href="<?=$linkEdit?>&id=<?=$items[$i]['id']?>" title="Chỉnh sửa"><i class="fas fa-edit"></i></a>
+                                    <a class="text-danger<?=$hideDelete?>" id="delete-item" data-url="<?=$linkDelete?>&id=<?=$items[$i]['id']?>" title="Xóa"><i class="fas fa-trash-alt"></i></a>
                                 </td>
                             </tr>
                         <?php } ?>
@@ -143,8 +152,8 @@ if(isset($config[$com][$type][$dfgallery][$val]['title_main_photo']))
         </div>
     <?php } ?>
     <div class="card-footer text-sm">
-        <a class="btn btn-sm bg-gradient-primary text-white" href="<?=$linkAdd?>" title="Thêm mới"><i class="fas fa-plus mr-2"></i>Thêm mới</a>
-        <a class="btn btn-sm bg-gradient-danger text-white" id="delete-all" data-url="<?=$linkDelete?>" title="Xóa tất cả"><i class="far fa-trash-alt mr-2"></i>Xóa tất cả</a>
+        <a class="btn btn-sm bg-gradient-primary text-white<?=$hideAdd?>" href="<?=$linkAdd?>" title="Thêm mới"><i class="fas fa-plus mr-2"></i>Thêm mới</a>
+        <a class="btn btn-sm bg-gradient-danger text-white<?=$hideDelete?>" id="delete-all" data-url="<?=$linkDelete?>" title="Xóa tất cả"><i class="far fa-trash-alt mr-2"></i>Xóa tất cả</a>
         <a class="btn btn-sm bg-gradient-secondary" href="<?=$linkParent?>" title="Thoát"><i class="fas fa-sign-out-alt mr-2"></i>Thoát</a>
     </div>
 </section>

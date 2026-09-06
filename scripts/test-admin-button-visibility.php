@@ -56,10 +56,15 @@ function request($url, $cookie = '', $post = null)
     }
     $options['http']['header'] = $header;
     $body = @file_get_contents($url, false, stream_context_create($options));
+    $status = 0;
     $newCookie = '';
-    foreach ((array)$http_response_header as $line)
+    $responseHeaders = isset($http_response_header) ? $http_response_header : array();
+    foreach ($responseHeaders as $line)
+    {
+        if (preg_match('#^HTTP/\S+\s+(\d+)#i', $line, $m)) $status = (int)$m[1];
         if (stripos($line, 'Set-Cookie:') === 0 && preg_match('/(PHPSESSID=[^;]+)/', $line, $m)) $newCookie = $m[1];
-    return array('body' => (string)$body, 'cookie' => $newCookie);
+    }
+    return array('status' => $status, 'body' => (string)$body, 'cookie' => $newCookie);
 }
 
 function login($base, $username, $password)
@@ -72,7 +77,7 @@ function login($base, $username, $password)
         array('username' => $username, 'password' => $password, 'admin_csrf' => $csrf[1]));
     if ($result['cookie'] !== '') $cookie = $result['cookie'];
     $payload = json_decode($result['body'], true);
-    return empty($payload['success']) ? '' : $cookie;
+    return $result['status'] !== 200 || empty($payload['success']) ? '' : $cookie;
 }
 
 /**
@@ -138,10 +143,25 @@ register_shutdown_function(function () use (&$groupId, &$viewerId, &$ownerId, $d
     }
 });
 
-/* Nhóm quyền chỉ được XEM sản phẩm, không thêm/sửa/xoá. */
+/* Mỗi màn hình: quyền XEM cấp cho nhân viên, URL, và màn hình đó có nút
+   "Thêm mới" hay không (đơn hàng do khách đặt nên không có nút thêm). */
+$screens = array(
+    array('Sản phẩm',            'product_man_san-pham',           'index.php?com=product&act=man&type=san-pham',        true),
+    array('Danh mục cấp 1 SP',   'product_man_list_san-pham',      'index.php?com=product&act=man_list&type=san-pham',   true),
+    array('Danh mục cấp 2 SP',   'product_man_cat_san-pham',       'index.php?com=product&act=man_cat&type=san-pham',    true),
+    array('Thương hiệu SP',      'product_man_brand_san-pham',     'index.php?com=product&act=man_brand&type=san-pham',  true),
+    array('Tin tức',             'news_man_tin-tuc',               'index.php?com=news&act=man&type=tin-tuc',            true),
+    array('Danh mục tin tức',    'news_man_list_tin-tuc',          'index.php?com=news&act=man_list&type=tin-tuc',       true),
+    array('Hình ảnh slide',      'photo_man_photo_slide',          'index.php?com=photo&act=man_photo&type=slide',       true),
+    array('Đăng ký nhận tin',    'newsletter_man_dangkynhantin',   'index.php?com=newsletter&act=man&type=dangkynhantin', true),
+    array('Đơn hàng',            'order_man',                      'index.php?com=order&act=man',                       false),
+);
+
+/* Nhóm quyền chỉ được XEM, không thêm/sửa/xoá ở bất kỳ màn hình nào. */
 $d->insert('permission_group', array('name' => $groupName, 'numb' => 0, 'status' => 'hienthi', 'date_created' => time()));
 $groupId = (int)$d->getLastInsertId();
-$d->insert('permission', array('id_permission_group' => $groupId, 'permission' => 'product_man_san-pham'));
+foreach ($screens as $screen)
+    $d->insert('permission', array('id_permission_group' => $groupId, 'permission' => $screen[1]));
 
 foreach (array(array($viewerName, $groupId, 1, 'viewerId'), array($ownerName, 0, 3, 'ownerId')) as $spec)
 {
@@ -154,39 +174,53 @@ foreach (array(array($viewerName, $groupId, 1, 'viewerId'), array($ownerName, 0,
     ${$spec[3]} = (int)$d->getLastInsertId();
 }
 
-$listUrl = $base.'index.php?com=product&act=man&type=san-pham';
-
 $addButton    = "//a[contains(@href,'act=add')]";
 $editButton   = "//a[contains(@href,'act=edit')]";
 $deleteButton = "//a[@data-url]";
-$productRow   = "//table//tbody//tr";
+$dataRow      = "//table//tbody//tr";
 
-/* --- Nhân viên chỉ có quyền xem --- */
 $viewerCookie = login($base, $viewerName, $password);
 ok($viewerCookie !== '', 'Nhân viên chỉ-xem đăng nhập được');
-
-$viewerPage = request($listUrl, $viewerCookie)['body'];
-$viewerRows = countVisible($viewerPage, $productRow);
-
-ok($viewerRows > 0, 'Nhân viên vẫn đọc được danh sách sản phẩm ('.$viewerRows.' dòng)');
-ok(countVisible($viewerPage, $addButton) === 0, 'Nhân viên không còn thấy nút Thêm mới');
-ok(countVisible($viewerPage, $editButton) === 0, 'Nhân viên không còn thấy link Sửa');
-ok(countVisible($viewerPage, $deleteButton) === 0, 'Nhân viên không còn thấy nút Xoá');
-
-/* --- Tài khoản cấp cao: phải còn nguyên mọi nút --- */
 $ownerCookie = login($base, $ownerName, $password);
 ok($ownerCookie !== '', 'Tài khoản cấp cao đăng nhập được');
 
-$ownerPage = request($listUrl, $ownerCookie)['body'];
-$ownerAdd    = countVisible($ownerPage, $addButton);
-$ownerEdit   = countVisible($ownerPage, $editButton);
-$ownerDelete = countVisible($ownerPage, $deleteButton);
+foreach ($screens as $screen)
+{
+    list($label, $permission, $path, $hasAddButton) = $screen;
+    $url = $base.$path;
 
-ok($ownerAdd > 0,    'Tài khoản cấp cao vẫn thấy nút Thêm mới ('.$ownerAdd.')');
-ok($ownerEdit > 0,   'Tài khoản cấp cao vẫn thấy link Sửa ('.$ownerEdit.')');
-ok($ownerDelete > 0, 'Tài khoản cấp cao vẫn thấy nút Xoá ('.$ownerDelete.')');
-ok(countVisible($ownerPage, $productRow) === $viewerRows,
-   'Hai tài khoản thấy cùng số dòng sản phẩm — ẩn nút không làm mất dữ liệu');
+    $viewerResponse = request($url, $viewerCookie);
+    $ownerResponse = request($url, $ownerCookie);
+    ok($viewerResponse['status'] === 200 && $ownerResponse['status'] === 200,
+       $label.': cả hai vai trò mở danh sách thành công');
+    if ($viewerResponse['status'] !== 200 || $ownerResponse['status'] !== 200) continue;
+
+    $viewerPage = $viewerResponse['body'];
+    $ownerPage = $ownerResponse['body'];
+
+    $viewerRows = countVisible($viewerPage, $dataRow);
+    $ownerRows  = countVisible($ownerPage, $dataRow);
+
+    /* Vế 1: nhân viên không còn nút thao tác nào. */
+    $viewerActions = countVisible($viewerPage, $addButton)
+                   + countVisible($viewerPage, $editButton)
+                   + countVisible($viewerPage, $deleteButton);
+    ok($viewerActions === 0, $label.': nhân viên chỉ-xem không còn nút thao tác nào');
+
+    /* Vế 2: nội dung không mất đi, chỉ mất nút. */
+    ok($ownerRows === $viewerRows,
+       $label.': hai tài khoản thấy cùng '.$viewerRows.' dòng — ẩn nút không làm mất dữ liệu');
+
+    /* Vế 3: tài khoản cấp cao vẫn thao tác được như trước. */
+    if ($hasAddButton)
+        ok(countVisible($ownerPage, $addButton) > 0, $label.': tài khoản cấp cao vẫn thấy nút Thêm mới');
+
+    if ($ownerRows > 0)
+    {
+        $ownerRowActions = countVisible($ownerPage, $editButton) + countVisible($ownerPage, $deleteButton);
+        ok($ownerRowActions > 0, $label.': tài khoản cấp cao vẫn thấy nút Sửa/Xoá trên từng dòng');
+    }
+}
 
 echo PHP_EOL, 'Kết quả: ', $passes, ' pass, ', $failures, ' fail', PHP_EOL;
 exit($failures ? 1 : 0);

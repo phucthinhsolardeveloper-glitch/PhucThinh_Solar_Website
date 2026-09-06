@@ -5,6 +5,15 @@
     $linkCopy = "index.php?com=news&act=copy&type=".$type;
     $linkEdit = "index.php?com=news&act=edit&type=".$type;
     $linkDelete = "index.php?com=news&act=delete&type=".$type;
+
+    /* Ẩn nút mà tài khoản này không có quyền dùng, thay vì để họ bấm rồi bị
+       cổng chặn đá về trang chủ. Tài khoản cấp cao (role 3) không bị ẩn gì. */
+    $canAdd     = adminUiCan('news', 'add', '', $type);
+    $canEdit    = adminUiCan('news', 'edit', '', $type, true);
+    $canDelete  = adminUiCan('news', 'delete', '', $type, true);
+    $hideAdd    = $canAdd ? '' : ' d-none';
+    $hideEdit   = $canEdit ? '' : ' d-none';
+    $hideDelete = $canDelete ? '' : ' d-none';
     $linkMulti = "index.php?com=news&act=man_photo&kind=man&type=".$type;
     $linkComment = "index.php?com=comment&act=man&variant=news&type=".$type;
     $copyImg = (isset($config['news'][$type]['copy_image']) && $config['news'][$type]['copy_image'] == true) ? TRUE : FALSE;
@@ -24,8 +33,8 @@
 <!-- Main content -->
 <section class="content">
     <div class="card-footer text-sm sticky-top">
-    	<a class="btn btn-sm bg-gradient-primary text-white" href="<?=$linkAdd?>" title="Thêm mới"><i class="fas fa-plus mr-2"></i>Thêm mới</a>
-        <a class="btn btn-sm bg-gradient-danger text-white" id="delete-all" data-url="<?=$linkDelete?><?=$strUrl?>" title="Xóa tất cả"><i class="far fa-trash-alt mr-2"></i>Xóa tất cả</a>
+        <a class="btn btn-sm bg-gradient-primary text-white<?=$hideAdd?>" href="<?=$linkAdd?>" title="Thêm mới"><i class="fas fa-plus mr-2"></i>Thêm mới</a>
+        <a class="btn btn-sm bg-gradient-danger text-white<?=$hideDelete?>" id="delete-all" data-url="<?=$linkDelete?><?=$strUrl?>" title="Xóa tất cả"><i class="far fa-trash-alt mr-2"></i>Xóa tất cả</a>
         <div class="form-inline form-search d-inline-block align-middle ml-3">
             <div class="input-group input-group-sm">
                 <input class="form-control form-control-navbar text-sm" type="search" id="keyword" placeholder="Tìm kiếm" aria-label="Tìm kiếm" value="<?=(isset($_GET['keyword'])) ? $_GET['keyword'] : ''?>" onkeypress="doEnter(event,'keyword','<?=$linkMan?>')">
@@ -113,13 +122,13 @@
                                 </td>
                                 <?php if(isset($config['news'][$type]['show_images']) && $config['news'][$type]['show_images'] == true) { ?>
                                     <td class="align-middle">
-                                    	<a href="<?=$linkEdit?><?=$linkID?>&id=<?=$items[$i]['id']?>" title="<?=$items[$i]['namevi']?>">
+                                        <a<?=$canEdit ? ' href="'.$linkEdit.$linkID.'&id='.$items[$i]['id'].'"' : ''?> title="<?=$items[$i]['namevi']?>">
                                             <?=$func->getImage(['class' => 'rounded img-preview', 'sizes' => $config['news'][$type]['thumb'], 'upload' => UPLOAD_NEWS_L, 'image' => $items[$i]['photo'], 'alt' => $items[$i]['namevi']])?>
                                         </a>
                                     </td>
                                 <?php } ?>
                                 <td class="align-middle">
-                                    <a class="text-dark text-break" href="<?=$linkEdit?><?=$linkID?>&id=<?=$items[$i]['id']?>" title="<?=$items[$i]['namevi']?>"><?=$items[$i]['namevi']?></a>
+                                    <a class="text-dark text-break"<?=$canEdit ? ' href="'.$linkEdit.$linkID.'&id='.$items[$i]['id'].'"' : ''?> title="<?=$items[$i]['namevi']?>"><?=$items[$i]['namevi']?></a>
                                     <div class="tool-action mt-2 w-clear">
                                         <?php if(isset($config['news'][$type]['comment']) && $config['news'][$type]['comment'] == true) { ?>
                                             <?php
@@ -131,17 +140,17 @@
                                     	<?php if(isset($config['news'][$type]['view']) && $config['news'][$type]['view'] == true) { ?>
                                     		<a class="text-primary mr-3" href="<?=$linkView?><?=$items[$i]['slugvi']?>" target="_blank" title="<?=$items[$i]['namevi']?>"><i class="far fa-eye mr-1"></i>View</a>
                                     	<?php } ?>
-                                    	<a class="text-info mr-3" href="<?=$linkEdit?><?=$linkID?>&id=<?=$items[$i]['id']?>" title="<?=$items[$i]['namevi']?>"><i class="far fa-edit mr-1"></i>Edit</a>
+                                        <a class="text-info mr-3<?=$hideEdit?>" href="<?=$linkEdit?><?=$linkID?>&id=<?=$items[$i]['id']?>" title="<?=$items[$i]['namevi']?>"><i class="far fa-edit mr-1"></i>Edit</a>
                                     	<?php if(isset($config['news'][$type]['copy']) && $config['news'][$type]['copy'] == true) { ?>
                                     		<div class="dropdown">
 			                            		<a id="dropdownCopy" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle text-success p-0 pr-3"><i class="far fa-clone mr-1"></i>Copy</a>
 									            <ul aria-labelledby="dropdownCopy" class="dropdown-menu border-0 shadow">
 									                <li><a href="#" class="dropdown-item copy-now" data-id="<?=$items[$i]['id']?>" data-table="news" data-copyimg="<?=$copyImg?>"><i class="far fa-caret-square-right text-secondary mr-2"></i>Sao chép ngay</a></li>
-									                <li><a href="<?=$linkCopy?><?=$linkID?>&id_copy=<?=$items[$i]['id']?>" class="dropdown-item"><i class="far fa-caret-square-right text-secondary mr-2"></i>Chỉnh sửa thông tin</a></li>
+									                <li<?=$hideAdd?>><a href="<?=$linkCopy?><?=$linkID?>&id_copy=<?=$items[$i]['id']?>" class="dropdown-item"><i class="far fa-caret-square-right text-secondary mr-2"></i>Chỉnh sửa thông tin</a></li>
 									            </ul>
 			                            	</div>
                                     	<?php } ?>
-                                    <a class="text-danger" id="delete-item" data-url="<?=$linkDelete?><?=$strUrl?>&id=<?=$items[$i]['id']?>" title="<?=$items[$i]['namevi']?>"><i class="far fa-trash-alt mr-1"></i>Delete</a>
+                                    <a class="text-danger<?=$hideDelete?>" id="delete-item" data-url="<?=$linkDelete?><?=$strUrl?>&id=<?=$items[$i]['id']?>" title="<?=$items[$i]['namevi']?>"><i class="far fa-trash-alt mr-1"></i>Delete</a>
                                     </div>
                                 </td>
                                 <?php if(isset($config['news'][$type]['gallery']) && count($config['news'][$type]['gallery']) > 0) { ?>
@@ -171,12 +180,12 @@
 		                            		<a id="dropdownCopy" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle text-success p-0 pr-2"><i class="far fa-clone"></i></a>
 								            <ul aria-labelledby="dropdownCopy" class="dropdown-menu border-0 shadow">
 								                <li><a href="#" class="dropdown-item copy-now" data-id="<?=$items[$i]['id']?>" data-table="news"><i class="far fa-caret-square-right text-secondary mr-2"></i>Sao chép ngay</a></li>
-								                <li><a href="<?=$linkCopy?><?=$linkID?>&id=<?=$items[$i]['id']?>" class="dropdown-item"><i class="far fa-caret-square-right text-secondary mr-2"></i>Chỉnh sửa thông tin</a></li>
+								                <li<?=$hideAdd?>><a href="<?=$linkCopy?><?=$linkID?>&id=<?=$items[$i]['id']?>" class="dropdown-item"><i class="far fa-caret-square-right text-secondary mr-2"></i>Chỉnh sửa thông tin</a></li>
 								            </ul>
 		                            	</div>
                                     <?php } ?>
-                                    <a class="text-primary mr-2" href="<?=$linkEdit?><?=$linkID?>&id=<?=$items[$i]['id']?>" title="Chỉnh sửa"><i class="fas fa-edit"></i></a>
-                                    <a class="text-danger" id="delete-item" data-url="<?=$linkDelete?><?=$strUrl?>&id=<?=$items[$i]['id']?>" title="Xóa"><i class="fas fa-trash-alt"></i></a>
+                                    <a class="text-primary mr-2<?=$hideEdit?>" href="<?=$linkEdit?><?=$linkID?>&id=<?=$items[$i]['id']?>" title="Chỉnh sửa"><i class="fas fa-edit"></i></a>
+                                    <a class="text-danger<?=$hideDelete?>" id="delete-item" data-url="<?=$linkDelete?><?=$strUrl?>&id=<?=$items[$i]['id']?>" title="Xóa"><i class="fas fa-trash-alt"></i></a>
                                 </td>
                             </tr>
                         <?php } ?>
