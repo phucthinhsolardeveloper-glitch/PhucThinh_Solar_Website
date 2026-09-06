@@ -1,23 +1,39 @@
 <?php
 
 /**
- * Đối chiếu và bổ sung ảnh trong thư mục ĐÈN ORIANA vào dữ liệu local.
+ * Đối chiếu và bổ sung ảnh trong thư mục ĐÈN ORIANA theo MÃ SẢN PHẨM.
  *
  * Mặc định chỉ kiểm tra:
  *   php scripts/import-oriana-images-local.php /path/to/ĐÈN\ ORIANA
  *
  * Ghi dữ liệu local sau khi bản kiểm tra sạch:
- *   php scripts/import-oriana-images-local.php /path/to/ĐÈN\ ORIANA --commit
+ *   php scripts/import-oriana-images-local.php /path/to/ĐÈN\ ORIANA --apply
+ *
+ * Production bắt buộc dry-run trước, backup code/DB/upload và xác nhận riêng:
+ *   php scripts/import-oriana-images-local.php /path/to/ĐÈN\ ORIANA --public-html=/home/USER/domains/phucthinhsolar.com/public_html
+ *   php scripts/import-oriana-images-local.php /path/to/ĐÈN\ ORIANA --public-html=/home/USER/domains/phucthinhsolar.com/public_html --apply --confirm-production=IMPORT-ORIANA
+ *
+ * Script không dùng ID local: mỗi môi trường tự tìm đúng một sản phẩm theo code
+ * rồi mới đặt tên file theo ID của chính môi trường đó. Không ghi đè ảnh đại
+ * diện đang có; gặp xung đột là dừng trước khi ghi.
  */
 
 if(PHP_SAPI !== 'cli') exit(1);
-if(getenv('APP_ENV') !== 'local') {
-    fwrite(STDERR, "Từ chối chạy ngoài APP_ENV=local.\n");
+set_exception_handler(function($exception) {
+    fwrite(STDERR, "FAIL: Importer dừng do lỗi không xử lý; kiểm tra log server và chạy lại dry-run.\n");
     exit(1);
-}
+});
 
 $sourceRoot = isset($argv[1]) ? rtrim((string)$argv[1], DIRECTORY_SEPARATOR) : '';
-$commit = in_array('--commit', $argv, true);
+$commit = in_array('--apply', $argv, true) || in_array('--commit', $argv, true);
+$isLocal = getenv('APP_ENV') === 'local';
+$productionConfirmed = in_array('--confirm-production=IMPORT-ORIANA', $argv, true);
+$publicHtmlOverride = '';
+foreach($argv as $arg) if(strpos($arg, '--public-html=') === 0) $publicHtmlOverride = rtrim(substr($arg, 14), '/');
+if(!$isLocal && $commit && !$productionConfirmed) {
+    fwrite(STDERR, "Từ chối ghi ngoài local: phải backup, dry-run rồi thêm --confirm-production=IMPORT-ORIANA.\n");
+    exit(1);
+}
 if($sourceRoot === '' || !is_dir($sourceRoot)) {
     fwrite(STDERR, "Không tìm thấy thư mục nguồn ĐÈN ORIANA.\n");
     exit(1);
@@ -25,8 +41,14 @@ if($sourceRoot === '' || !is_dir($sourceRoot)) {
 $sourceRootReal = realpath($sourceRoot);
 
 $_SERVER['SERVER_NAME'] = 'localhost';
-define('LIBRARIES', '/var/www/html/libraries/');
-define('SOURCES', '/var/www/html/administrator/sources/');
+$publicHtml = $publicHtmlOverride !== '' ? $publicHtmlOverride : __DIR__.'/../domains/phucthinhsolar.com/public_html';
+if($publicHtmlOverride === '' && !is_file($publicHtml.'/libraries/config.php') && is_file('/var/www/html/libraries/config.php')) $publicHtml = '/var/www/html';
+if(!is_file($publicHtml.'/libraries/config.php')) {
+    fwrite(STDERR, "Không tìm thấy libraries/config.php.\n");
+    exit(1);
+}
+define('LIBRARIES', $publicHtml.'/libraries/');
+define('SOURCES', $publicHtml.'/administrator/sources/');
 require LIBRARIES.'config.php';
 require LIBRARIES.'autoload.php';
 new AutoLoad();
@@ -241,9 +263,16 @@ $preparedDir = sys_get_temp_dir().DIRECTORY_SEPARATOR.'pts-oriana-prepared-'.bin
 if(!mkdir($preparedDir, 0700)) throw new RuntimeException('Không tạo được thư mục chuẩn hóa tạm.');
 $prepared = array();
 $createdFiles = array();
+$changedProducts = array();
+$createdGalleryIds = array();
 $committed = false;
-register_shutdown_function(function() use (&$committed, &$createdFiles, $preparedDir) {
-    if(!$committed) foreach($createdFiles as $file) if(is_file($file)) @unlink($file);
+register_shutdown_function(function() use (&$committed, &$createdFiles, &$changedProducts, &$createdGalleryIds, $preparedDir, $d) {
+    if(!$committed) {
+        foreach(array_reverse($createdGalleryIds) as $id) $d->rawQuery('delete from #_gallery where id = ?', array((int)$id));
+        foreach(array_reverse($changedProducts) as $row)
+            $d->rawQuery('update #_product set photo = ?, date_updated = ? where id = ?', array($row['photo'], $row['date_updated'], $row['id']));
+        foreach($createdFiles as $file) if(is_file($file)) @unlink($file);
+    }
     if(is_dir($preparedDir)) {
         foreach(scandir($preparedDir) as $name) if($name !== '.' && $name !== '..' && is_file($preparedDir.DIRECTORY_SEPARATOR.$name)) @unlink($preparedDir.DIRECTORY_SEPARATOR.$name);
         @rmdir($preparedDir);
@@ -273,15 +302,20 @@ try {
         if($row['role'] === 'main') {
             $current = $d->rawQueryOne('select photo,date_updated from #_product where id = ? and type = ? limit 0,1', array((int)$row['product']['id'], $type));
             if(empty($current) || trim((string)$current['photo']) !== '' || (int)$current['date_updated'] !== (int)$row['product']['date_updated']) throw new RuntimeException('Sản phẩm '.$row['code'].' đã thay đổi sau bước kiểm tra.');
+            $changedProducts[] = array('id'=>(int)$row['product']['id'], 'photo'=>$current['photo'], 'date_updated'=>(int)$current['date_updated']);
             $d->where('id', (int)$row['product']['id']);
             $d->where('type', $type);
             $d->where('photo', '');
+            $d->where('date_updated', (int)$current['date_updated']);
             if(!$d->update('product', array('photo'=>$row['filename'], 'date_updated'=>time()))) throw new RuntimeException('Không cập nhật được ảnh đại diện '.$row['code']);
+            $verified = $d->rawQueryOne('select photo from #_product where id = ? and type = ? limit 0,1', array((int)$row['product']['id'], $type));
+            if(empty($verified) || (string)$verified['photo'] !== $row['filename']) throw new RuntimeException('Không xác minh được ảnh đại diện '.$row['code'].' sau cập nhật.');
         } else {
             if(!$d->insert('gallery', array(
                 'id_parent'=>(int)$row['product']['id'], 'photo'=>$row['filename'], 'namevi'=>'', 'numb'=>(int)$row['order'],
                 'type'=>$type, 'com'=>'product', 'kind'=>'man', 'val'=>$type, 'status'=>'hienthi', 'date_created'=>time(), 'date_updated'=>0
             ))) throw new RuntimeException('Không thêm được ảnh phụ '.$row['code']);
+            $createdGalleryIds[] = (int)$d->getLastInsertId();
         }
     }
     $d->commit();
@@ -290,9 +324,13 @@ try {
     echo 'COMMIT OK: đã thêm '.$counts['main'].' ảnh đại diện và '.$counts['gallery']." ảnh phụ.\n";
 } catch(Exception $e) {
     $d->rollback();
+    foreach(array_reverse($createdGalleryIds) as $id) $d->rawQuery('delete from #_gallery where id = ?', array((int)$id));
+    foreach(array_reverse($changedProducts) as $row)
+        $d->rawQuery('update #_product set photo = ?, date_updated = ? where id = ?', array($row['photo'], $row['date_updated'], $row['id']));
+    $createdGalleryIds = array();
+    $changedProducts = array();
     foreach($createdFiles as $file) if(is_file($file)) @unlink($file);
     $createdFiles = array();
     fwrite(STDERR, 'ROLLBACK: '.$e->getMessage()."\n");
     exit(1);
 }
-

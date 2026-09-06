@@ -28,6 +28,7 @@
  *   php migrations/025_compress_oversized_images.php                 # xem trước
  *   php migrations/025_compress_oversized_images.php --apply         # nén thật
  *   php migrations/025_compress_oversized_images.php --apply --min-kb=500
+ *   php migrations/025_compress_oversized_images.php --max-megapixels=25
  */
 
 if (PHP_SAPI !== 'cli') exit(1);
@@ -43,10 +44,12 @@ if (!is_dir($publicHtml.'/upload'))
 
 $apply = in_array('--apply', $argv, true);
 $minBytes = 1048576;
+$maxPixels = 25000000;
 $backupDir = '';
 foreach ($argv as $arg)
 {
     if (strpos($arg, '--min-kb=') === 0) $minBytes = max(1, (int)substr($arg, 9)) * 1024;
+    if (strpos($arg, '--max-megapixels=') === 0) $maxPixels = max(1, (int)substr($arg, 18)) * 1000000;
     if (strpos($arg, '--backup-dir=') === 0) $backupDir = rtrim(substr($arg, 13), '/');
 }
 if ($backupDir === '') $backupDir = '/mnt/d/FIleLinhTinh/phucthinhsolar-donkho-20260905/anh-goc-truoc-khi-nen';
@@ -93,6 +96,7 @@ function recompress($path, $ext, $jpegQuality)
 echo $apply ? "CHẾ ĐỘ GHI (--apply)\n" : "CHẾ ĐỘ XEM TRƯỚC (thêm --apply để nén thật)\n";
 echo "Ngưỡng xét: ảnh từ ", round($minBytes / 1024), " KB trở lên | JPEG q", $jpegQuality,
      " (chỉ đổi khi lợi >=", round($jpegMinGain * 100), "%) | PNG nén lại không mất dữ liệu\n";
+echo "Giới hạn giải mã bằng GD: ", round($maxPixels / 1000000), " megapixel/ảnh; ảnh lớn hơn được giữ nguyên và báo riêng.\n";
 echo "Thư mục sao lưu ảnh gốc: ", $backupDir, "\n\n";
 
 $plan = array();
@@ -105,6 +109,15 @@ foreach ($targets as $path)
     $old = filesize($path);
     $info = @getimagesize($path);
     if (!$info) { $skipped++; continue; }
+    $pixels = (int)$info[0] * (int)$info[1];
+    if ($pixels > $maxPixels)
+    {
+        $skipped++;
+        printf("  BỎ QUA (quá lớn cho GD: %dx%d, %.1fMP): %s\n",
+            $info[0], $info[1], $pixels / 1000000,
+            str_replace($publicHtml.'/', '', $path));
+        continue;
+    }
     $result = recompress($path, $ext, $jpegQuality);
     if ($result === null) { $skipped++; echo "  BỎ QUA (GD không xử lý được): ", str_replace($publicHtml.'/', '', $path), "\n"; continue; }
     $new = $result['size'];

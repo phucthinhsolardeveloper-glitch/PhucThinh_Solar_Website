@@ -73,7 +73,9 @@ Web root **2,2 GB → 585 MB**. Không xoá file nào, tất cả chuyển sang
 56 ảnh còn được nội dung dùng đã chép sang `upload/filemanager/wp-legacy/` và
 `migrations/024` đã đổi đường dẫn trong 12 bản ghi.
 
-**Còn lại:** nén ảnh (`migrations/025`) — chủ project yêu cầu để sau.
+**Còn lại:** nén ảnh (`migrations/025`) — chủ project yêu cầu để sau. Dry-run
+nay tự bỏ qua bốn PNG 166,2 MP vượt giới hạn GD thay vì hết RAM; tác vụ vẫn là
+tùy chọn và chưa apply.
 
 ### Mục 04 — Bảo mật, backup, database: XONG phần làm được
 
@@ -148,11 +150,11 @@ trỏ tới — bật lên là quyết định kinh doanh).
 
 ## 3. Việc còn lại
 
-### 3.1 Cần chủ project trả lời trước
+### 3.1 Cần xác minh trên production
 
-1. **Cờ `debug-developer` trên production đang bật hay tắt?** Cờ này bỏ qua
-   toàn bộ kiểm tra quyền. Bật thì phân quyền vô nghĩa. `config.php` không nằm
-   trong git nên không kiểm tra từ đây được.
+1. Chạy `migrations/000_check_hosting_runtime.php --require-production`; cờ
+   `debug-developer` và `error-reporting` phải tắt. Source đã đổi mặc định
+   production thành false nhưng release vẫn bảo toàn `config.php` riêng của host.
 2. **Danh sách nhân sự cần tài khoản Admin, mỗi người thuộc nhóm quyền nào?**
    Ba nhóm đã dựng sẵn trong DB local gần nhất: cấp cao (191 quyền), cơ bản
    (16), content (6).
@@ -161,19 +163,18 @@ trỏ tới — bật lên là quyết định kinh doanh).
 
 ### 3.2 Deploy — ưu tiên cao nhất
 
-Backup database production, rồi chạy migration **đúng thứ tự**:
-
-```
-013 → 015 --apply → 016 → 017 → 018 → 019 → 020 → 021 → 022 → 023 → 024
-   → 026 → 027 → 028 → 029
-```
+Backup database production, rồi chạy
+`migrations/000_preflight_production.php`. Chỉ chạy các SQL được báo `MISSING`,
+theo thứ tự số; gặp `PARTIAL/UNSAFE` phải dừng. Danh sách schema đầy đủ là
+`001, 003, 004, 007, 008, 009, 010, 011, 012, 013, 016, 017, 021, 022, 026, 029`.
 
 - `018`, `019`, `020` **mặc định dry-run**. Phải chạy xem trước trên DB thật,
   đọc kết quả, rồi mới thêm `--apply`.
 - `023` (xoá 36 mã ngừng kinh doanh) và `024` (gom ảnh WordPress cũ) đều
   dry-run mặc định.
-- `025` (nén ảnh) **chưa chạy, đang tạm dừng** theo yêu cầu chủ project. Script
-  hiện còn lỗi: chết khi xử lý `upload/photo/a-9088.png`, chưa tìm nguyên nhân.
+- `025` (nén ảnh) **chưa chạy, đang tạm dừng** theo yêu cầu chủ project. Lỗi
+  hết RAM đã được chặn bằng `--max-megapixels` (mặc định 25 MP); dry-run sạch,
+  nhưng chỉ apply sau khi backup ảnh và duyệt kế hoạch riêng.
 - `026` chỉ thêm index, chạy lúc vắng khách vì bảng là MyISAM nên ALTER khoá bảng.
 - `027` sửa chính tả "Invester" -> "Inverter", `028` dọn bản ghi mồ côi. Cả hai
   dry-run mặc định. Với `028`, theo quy ước của dự án phải xuất các dòng sắp xoá
@@ -182,6 +183,13 @@ Backup database production, rồi chạy migration **đúng thứ tự**:
 **Trước khi deploy phân quyền:** chạy
 `scripts/check-admin-permission-readiness.php` trên production để biết tài khoản
 nào sẽ mất quyền truy cập (không nhóm quyền, nhóm tắt, nhóm rỗng).
+
+Bộ 12 icon danh mục được cài bằng
+`migrations/030_install_featured_category_icons.php`: ghép theo slug, chỉ điền
+ảnh trống và không ghi đè ảnh riêng. Ảnh ORIANA dùng media release từ
+`scripts/package-oriana-media.sh` và importer ghép theo mã sản phẩm. Cả hai đều
+dry-run trước, không chép nguyên `upload/` local lên production. Quy trình đầy
+đủ ở `2026-09-06-runbook-deploy-directadmin.md`.
 
 ### 3.3 Việc nhỏ ghi nhận, chưa làm
 

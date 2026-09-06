@@ -19,6 +19,7 @@ release_parent="$(git rev-parse "${release_commit}^" 2>/dev/null || true)"
 release_time="$(date -u +%Y%m%dT%H%M%SZ)"
 release_dir="$release_root/${release_time}-${release_short}"
 archive_name="public_html-${release_short}.tar.gz"
+tools_archive_name="deployment-tools-${release_short}.tar.gz"
 
 mkdir -p "$release_dir"
 
@@ -27,6 +28,14 @@ git archive --format=tar.gz --prefix=public_html/ \
     "${release_commit}:${webroot_tree}"
 
 tar -tzf "$release_dir/$archive_name" > "$release_dir/FILES.txt"
+
+git archive --format=tar.gz \
+    --output="$release_dir/$tools_archive_name" \
+    "$release_commit" \
+    migrations scripts design-assets/product-featured-icons/2026-09-05 \
+    docs/13-handoffs/2026-09-06-runbook-deploy-directadmin.md
+
+tar -tzf "$release_dir/$tools_archive_name" > "$release_dir/DEPLOYMENT-TOOLS-FILES.txt"
 
 for forbidden in \
     '^public_html/(backup|artifacts|caches|logs|upload|thumbs|watermark)/' \
@@ -44,6 +53,7 @@ commit=$release_commit
 parent_commit=$release_parent
 source_tree=$webroot_tree
 archive=$archive_name
+deployment_tools_archive=$tools_archive_name
 configuration=preserve hosting libraries/config.php
 runtime_data=preserve hosting upload, thumbs, watermark, caches and logs
 legacy_assets=assets/wp-content/uploads included for WordPress media fallback
@@ -53,10 +63,11 @@ EOF
 
 (
     cd "$release_dir"
-    sha256sum "$archive_name" FILES.txt RELEASE.txt > SHA256SUMS
+    sha256sum "$archive_name" "$tools_archive_name" FILES.txt DEPLOYMENT-TOOLS-FILES.txt RELEASE.txt > SHA256SUMS
     sha256sum -c SHA256SUMS
 )
 
 echo "PASS: Release được tạo tại $release_dir"
 echo "Commit: $release_commit"
 echo "Archive: $release_dir/$archive_name"
+echo "Deployment tools: $release_dir/$tools_archive_name"

@@ -41,27 +41,27 @@ Phạm vi tối ưu áp dụng cho toàn bộ project, gồm frontend public, Ad
 - [x] Canonical, noindex trang nội bộ, robots và sitemap đạt trên local.
 - [x] Crawl 141 URL sitemap; loại 4 URL 404 do danh mục ẩn/trang tuyển dụng chưa hoạt động và thêm regression chống tái phát.
 - [x] Chặn file nhạy cảm và bổ sung HTTP security headers trên local.
-- [ ] Retest tài khoản và phân quyền nghiệp vụ trên staging trước khi bật RBAC.
+- [ ] Retest tài khoản và phân quyền nghiệp vụ trên staging/production; RBAC đã bật trong source nhưng chỉ có hiệu lực khi `debug-developer=false`.
 - [ ] Xác minh HTTPS, cookie Secure, proxy chain, HSTS và header trên hosting.
 - [ ] Retest video upload thật và toàn bộ endpoint legacy trên staging.
 
 ## 4. Dữ liệu
 
 - [x] Import/export Excel có preview, xác nhận, conflict detection và rollback trong lượt xử lý; brand mới được chọn tạo/ghép/bỏ trống ở preview và rollback cùng batch.
-- [x] Importer hỗ trợ XLSX generator không chuẩn/Strict OOXML; trùng URL sản phẩm legacy được xử lý theo nhóm ngay tại preview và thay đổi hàng loạt sang `Tạm ẩn` có thống kê + xác nhận riêng. File master sau đó đã được chủ project nhập vào DB local; tổng hiện tại 445 sản phẩm và được xác nhận là dữ liệu có chủ ý.
+- [x] Importer hỗ trợ XLSX generator không chuẩn/Strict OOXML; trùng URL sản phẩm legacy được xử lý theo nhóm ngay tại preview và thay đổi hàng loạt sang `Tạm ẩn` có thống kê + xác nhận riêng. DB local hiện có 405 sản phẩm; dữ liệu trống do chưa có nguồn thật được chủ project xác nhận là chủ đích.
 - [x] Chế độ báo giá chỉ ẩn giá public; giá nội bộ trong Admin/Excel được giữ nguyên.
 - [x] Nhận file Excel thật `san-pham-20260831-da-bo-sung-oriana.xlsx`: lưu `artifacts/` + checksum, backup local, preview qua pipeline (0 lỗi/cảnh báo/xung đột), commit vào DB local (+70 ORIANA id 467–536, cập nhật #321/#311, tổng 151). 70 sp mới `numb=2` xếp cuối danh mục.
-- [ ] Đối chiếu sản phẩm quảng cáo: mã, slug, danh mục, trạng thái, thông số, ảnh và nội dung. *(Bộ 445 sản phẩm đang được chủ project kiểm tra/bổ sung ảnh và nội dung dần.)*
+- [ ] Đối chiếu sản phẩm quảng cáo: mã, slug, danh mục, trạng thái, thông số, ảnh và nội dung khi có nguồn thật.
 - [x] Local không còn dữ liệu test, mã/slug trùng hoặc liên kết danh mục mồ côi.
-- [ ] Bổ sung 5 chính sách và dữ liệu sản phẩm còn thiếu. Đối chiếu local 2026-09-04 trên 445 sản phẩm đang hiển thị: 363 thiếu ảnh đại diện, 442 thiếu mô tả ngắn, 366 thiếu nội dung chi tiết, 40 thiếu cả thông số legacy/cấu trúc và 188 chưa có công suất hợp lệ. Cả 5 chính sách đang hiển thị nhưng nội dung còn rỗng.
+- [ ] Khi có nguồn thật, bổ sung 5 chính sách và dữ liệu sản phẩm. Đối chiếu local 2026-09-06: 405 sản phẩm, 244 thiếu ảnh đại diện, 402 thiếu mô tả ngắn, 351 thiếu nội dung chi tiết và 183 chưa có công suất hợp lệ. Đây không phải blocker kỹ thuật deploy.
 - [ ] Xác nhận không còn dữ liệu test, mã trùng hoặc import dở dang trên staging.
 
 ## 5. Backup, deploy và rollback
 
 - [x] Kiểm tra script backup không ghi file vào webroot và không ghi credential vào metadata.
 - [x] Tạo backup local kiểm thử gồm database, upload và metadata checksum.
-- [x] Diễn tập restore vào database/thư mục tạm độc lập và đối chiếu checksum: 49 bảng, 775 file upload.
-- [x] Có công cụ tạo release từ commit Git, danh sách file, checksum, metadata và hướng dẫn rollback; commit deploy cuối cùng chỉ chốt sát thời điểm bàn giao.
+- [x] Diễn tập restore backup mới nhất vào database/thư mục tạm độc lập và đối chiếu checksum: 54 bảng, 973 file upload.
+- [x] Công cụ release tạo archive webroot và deployment tools từ cùng commit, kèm danh sách file, checksum, metadata và hướng dẫn rollback; media ORIANA có gói checksum riêng.
 - [ ] Xác minh document root, PHP extension, quyền ghi, upload limit và rewrite trên staging.
 - [ ] Chỉ cập nhật production sau khi toàn bộ P0 đạt và chủ project phê duyệt.
 

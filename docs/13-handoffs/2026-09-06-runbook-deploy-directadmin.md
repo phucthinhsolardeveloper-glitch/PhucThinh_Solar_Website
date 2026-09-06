@@ -1,278 +1,191 @@
-# Runbook deploy lên hosting DirectAdmin (không có SSH)
+# Runbook deploy DirectAdmin không có SSH
 
-Hosting dùng **DirectAdmin**, không cấp SSH nhưng **có Cron Jobs** — đó là đường
-chạy migration PHP. Toàn bộ việc dưới đây làm qua giao diện DirectAdmin.
+Áp dụng cho nhánh `feature/ecommerce-upgrade`. Production chưa được thay đổi bởi
+các bước local trong repository. Dữ liệu sản phẩm chưa có ảnh/nội dung/thông số
+thật là trạng thái được chủ project chấp nhận, không phải lỗi deploy và không
+được tự sinh dữ liệu để lấp.
 
-Làm đúng thứ tự. Mỗi bước có cách kiểm chứng ngay sau khi làm.
+Làm đúng thứ tự. Gặp `FAIL`, `BLOCK`, `PARTIAL` hoặc kết quả khác dự kiến thì
+dừng, giữ nguyên backup và không chạy tiếp migration.
 
----
+## 0. Chuẩn bị và backup
 
-## Bước 0 — Backup trước, luôn luôn
+1. Tạo gói từ một commit sạch trên máy phát triển:
 
-DirectAdmin → **Create/Restore Backups** → tạo backup đầy đủ (file + database).
-Tải bản backup đó về máy trước khi đi tiếp.
+   ```bash
+   ./scripts/package-hosting-release.sh
+   ./scripts/package-oriana-media.sh    # chỉ cần khi triển khai ảnh ORIANA
+   ```
 
-Riêng database, tải thêm một bản qua **phpMyAdmin → Export → Go** (định dạng SQL).
-Backup của DirectAdmin đôi khi khó bóc riêng một bảng khi cần khôi phục gấp.
+2. Trong thư mục release, chạy `sha256sum -c SHA256SUMS`.
+3. DirectAdmin → Create/Restore Backups: backup file + database và tải về máy.
+4. phpMyAdmin → Export: tải thêm một bản SQL độc lập.
+5. Ghi lại commit/release hiện tại để rollback code.
 
-**Không làm bước nào tiếp theo khi chưa có backup nằm trên máy bạn.**
+Không tiếp tục nếu chưa có đủ backup code, DB và `upload/` có thể phục hồi.
 
----
+## 1. Hai gói triển khai
 
-## Bước 1 — Sửa 2 dòng cấu hình
+Mỗi release code có:
 
-DirectAdmin → **File Manager** → mở
-`domains/phucthinhsolar.com/public_html/libraries/config.php`
+- `public_html-<commit>.tar.gz`: webroot, đã loại `libraries/config.php` và các
+  thư mục runtime.
+- `deployment-tools-<commit>.tar.gz`: `migrations/`, `scripts/`, icon nguồn và
+  runbook; giải nén ở `/home/<user>/`, ngoài public webroot.
 
-Sửa hai dòng:
+Không xóa hoặc ghi đè `libraries/config.php`, `upload/`, `thumbs/`, `watermark/`,
+`caches/`, `logs/`. Nên giải nén webroot vào thư mục staging, chép file config và
+runtime hiện hữu sang đó, rồi đổi thư mục/cutover theo khả năng của hosting.
+
+Nếu buộc phải upload đè, chỉ đè file code trong archive; không xóa toàn bộ
+`public_html` trước. Xác minh lại checksum sau khi upload nếu DirectAdmin hỗ trợ.
+
+## 2. Kiểm tra runtime trước khi đổi traffic
+
+Tạo Cron chạy một lần và nhận toàn bộ output qua email:
+
+```text
+/usr/local/bin/php /home/<user>/migrations/000_check_hosting_runtime.php --require-production
+```
+
+Nếu hosting dùng `/usr/bin/php`, thay đường dẫn trên. Kết quả phải là `READY`.
+Script chỉ báo trạng thái, không in host/email/mật khẩu. Nó kiểm tra PHP 7.4,
+extension cần thiết, quyền ghi thư mục runtime, RBAC, hai cờ debug, cấu hình SMTP
+và ít nhất một phương thức thanh toán đang hiển thị.
+
+`libraries/config.php` trên hosting phải có:
 
 ```php
-'error-reporting' => false,      // đang là true
-'debug-developer' => false,      // đang là true
+'error-reporting' => false,
+'debug-developer' => false,
 ```
 
-Vì sao:
+File config local đã được đặt mặc định an toàn và Docker tự bật lại hai cờ để
+test. `config.php` chứa bí mật nên không nằm trong Git/release; vì vậy luôn phải
+kiểm tra trực tiếp file đang chạy trên hosting.
 
-- `error-reporting => true` bật `error_reporting(E_ALL)`. Gặp lỗi PHP là in thẳng
-  ra trang khách kèm đường dẫn thật trên server. Đây cũng chính là cơ chế biến
-  một cảnh báo nhỏ thành trang vỡ — hai lỗi đã sửa trong phiên này đều thuộc loại đó.
-- `debug-developer => true` **bỏ qua toàn bộ kiểm tra phân quyền**. Để nguyên thì
-  phân quyền vừa làm hoàn toàn vô nghĩa, nhân viên nào cũng vào được mọi thứ.
+SMTP chỉ được coi là hoàn tất sau khi gửi thử form liên hệ và nhận email. Không
+chép credential vào log, tài liệu hoặc chat.
 
-Hai dòng `debug-css` và `debug-js` **để nguyên** ở bước này. Chúng tắt nén CSS/JS;
-đổi sang `false` giúp trang nhẹ hơn nhưng đổi cách nạp asset, nên làm sau khi
-mọi thứ chạy ổn.
+## 3. Preflight schema rồi mới chọn migration
 
-Kiểm chứng: mở `https://phucthinhsolar.com/` — trang vẫn bình thường, không có
-dòng chữ lạ màu đỏ ở đầu trang.
+Chạy Cron chỉ đọc:
 
----
-
-## Bước 2 — Đưa code lên
-
-Cách an toàn nhất là **thay theo thư mục**, không xoá cả `public_html`.
-
-Từ máy bạn, lấy code mới nhất của nhánh `feature/ecommerce-upgrade`, rồi upload
-đè lên hosting các thư mục sau:
-
-```
-domains/phucthinhsolar.com/public_html/libraries/
-domains/phucthinhsolar.com/public_html/templates/
-domains/phucthinhsolar.com/public_html/administrator/
-domains/phucthinhsolar.com/public_html/sources/
-domains/phucthinhsolar.com/public_html/api/
-domains/phucthinhsolar.com/public_html/assets/css/
-domains/phucthinhsolar.com/public_html/assets/js/
+```text
+/usr/local/bin/php /home/<user>/migrations/000_preflight_production.php
 ```
 
-Và upload thư mục `migrations/` lên **ngang hàng với `domains/`**, tức
-`/home/<tài-khoản>/migrations/` — KHÔNG để trong `public_html`.
+- `READY`: schema đã đủ, không chạy lại SQL.
+- `MISSING`: chỉ chạy đúng các số được báo, theo thứ tự tăng dần.
+- `PARTIAL` hoặc `UNSAFE`: dừng và đối chiếu schema/backup, không cố chạy tiếp.
 
-**Tuyệt đối không đè lên:**
+Danh mục migration schema đầy đủ là:
 
-```
-libraries/config.php     <- cấu hình riêng của hosting, đè là mất kết nối DB
-upload/                  <- toàn bộ ảnh sản phẩm, tin tức
-thumbs/  caches/  logs/  <- thư mục runtime
-```
-
-Ảnh ORIANA và icon danh mục đã nhập ở local **không nằm trong gói code trên**.
-Không chép đè cả `upload/`: ID sản phẩm trên production có thể khác local nên
-không được dùng nguyên mapping theo ID. Muốn đưa bộ ảnh này lên phải làm một gói
-riêng, đối chiếu sản phẩm theo `code`, chỉ upload đúng file mới và xem trước SQL
-cập nhật trước khi áp dụng. Đây là một bước triển khai dữ liệu riêng, cần backup
-và xác nhận của chủ project.
-
-Kiểm chứng: mở trang chủ, xem mã nguồn trang (Ctrl+U), tìm chữ
-`rll-youtube-player`. **Không còn** nghĩa là code mới đã lên.
-
----
-
-## Bước 3 — Chạy 7 migration SQL bằng phpMyAdmin
-
-DirectAdmin → **phpMyAdmin** → chọn database → tab **SQL** → dán nội dung từng
-file rồi bấm Go. Chạy đúng thứ tự:
-
-```
-013_add_content_sections.sql
-016_content_section_mode.sql
-017_content_section_add_cat_scope.sql
-021_add_product_promo_photo.sql
-022_add_product_campaigns.sql
-026_index_visit_tracking_tables.sql
-029_unique_username_index.sql
+```text
+001, 003, 004, 007, 008, 009, 010, 011, 012,
+013, 016, 017, 021, 022, 026, 029
 ```
 
-**Riêng `029`** (unique index cho username): chạy câu kiểm tra trùng TRƯỚC —
-`SELECT username, COUNT(*) c FROM table_user GROUP BY username HAVING c > 1;`.
-Có kết quả thì phải xử lý trùng rồi mới chạy ALTER, xem chú thích trong file.
+Mở đúng file SQL trong `migrations/` và chạy qua phpMyAdmin. Không suy đoán từ
+danh sách cũ. Đặc biệt:
 
-Các migration `013`, `016`, `017`, `021`, `022` có guard `IF NOT EXISTS` phù hợp.
-Riêng `026` và `029` dùng `ADD INDEX` trực tiếp: **chỉ chạy đúng một lần** sau
-khi kiểm tra index chưa tồn tại; chạy lại sẽ báo trùng tên index. `026` còn khoá
-bảng trong lúc dựng index, nên chạy lúc ít khách (khuya).
+- `017` dùng `MODIFY COLUMN`, không có guard `IF NOT EXISTS`; chỉ chạy khi
+  preflight báo thiếu.
+- `026` và `029` thêm index trực tiếp; chỉ chạy khi thiếu. `026` nên chạy lúc
+  ít khách vì có thể khóa bảng.
+- `008` đổi bảng commerce sang InnoDB; chỉ chạy khi preflight không báo orphan,
+  và nên tạm ngừng checkout trong lúc ALTER.
+- Sau mỗi SQL, chạy lại preflight. Chỉ tiếp tục khi không còn `PARTIAL/UNSAFE`.
 
-Kiểm chứng, dán vào tab SQL:
+## 4. Migration dữ liệu: luôn dry-run, không chạy theo quán tính
 
-```sql
-SELECT
-  (SELECT COUNT(*) FROM information_schema.TABLES
-    WHERE table_schema = DATABASE() AND table_name = 'table_content_section') AS mig_013,
-  (SELECT COUNT(*) FROM information_schema.COLUMNS
-    WHERE table_schema = DATABASE() AND table_name = 'table_product'
-      AND column_name = 'photo_khuyenmai') AS mig_021,
-  (SELECT COUNT(*) FROM information_schema.TABLES
-    WHERE table_schema = DATABASE() AND table_name = 'table_product_campaign') AS mig_022,
-  (SELECT COUNT(*) FROM information_schema.STATISTICS
-    WHERE table_schema = DATABASE() AND index_name = 'idx_counter_ip_tm') AS mig_026,
-  (SELECT COUNT(*) FROM information_schema.STATISTICS
-    WHERE table_schema = DATABASE() AND table_name = 'table_user'
-      AND index_name = 'uniq_user_username') AS mig_029;
+Các file PHP dữ liệu không thể suy ra trạng thái chỉ bằng schema:
+
+```text
+002, 005, 006, 014, 015, 018, 019, 020, 023, 024, 027, 028
 ```
 
-Cả năm cột phải khác 0.
+Chạy từng file không có `--apply`, lưu output và đọc phạm vi tác động. Chỉ thêm
+`--apply` cho đúng file có kết quả mong muốn và đã được chủ project duyệt.
 
----
+- `002`, `005`, `006`: backfill/chuẩn hóa dữ liệu cũ; không apply khi chưa có
+  nguồn dữ liệu và phê duyệt riêng. Việc thiếu nội dung thật hiện tại là chủ đích.
+- `014`: chỉ báo cáo.
+- `018`–`020`: sửa quan hệ/slug; phải xem dữ liệu production thật.
+- `023`: xóa mã hàng đã nghỉ; cần xác nhận danh sách.
+- `024`: chuyển media WordPress; không xóa cây media cũ trước khi xác minh URL.
+- `028`: giữ bản SQL các dòng sắp xóa cùng backup trước khi apply.
+- `025`: tối ưu ảnh tùy chọn, không phải điều kiện deploy. Script dry-run đã chặn
+  ảnh vượt 25 MP để tránh hết RAM; chỉ apply khi có backup ảnh riêng và chỉ định
+  `--backup-dir` hợp lệ trên hosting.
 
-## Bước 4 — Chạy migration PHP bằng Cron Jobs
+## 5. Icon danh mục nổi bật
 
-DirectAdmin → **Advanced Features → Cron Jobs → CREATE CRON JOB**.
+Script ánh xạ 12 icon theo slug danh mục, không theo ID. Nó chỉ điền ô ảnh trống
+hoặc phục hồi file khi DB đã tham chiếu đúng tên; gặp ảnh khác sẽ `PRESERVE`,
+không ghi đè lựa chọn riêng của quản trị viên.
 
-Mẹo: đặt lịch vào **một phút sắp tới** để nó chạy ngay, tick "Send all Cron output
-to e-mail" để nhận kết quả, chạy xong thì **xoá cron job đó đi**.
-
-Đường dẫn PHP trên DirectAdmin thường là `/usr/local/bin/php`. Nếu sai, xem
-**System Info & Files → System Information** hoặc thử `/usr/bin/php`.
-
-Thay `<tài-khoản>` bằng tên tài khoản hosting của bạn.
-
-### 4.1 Luôn chạy XEM TRƯỚC (không có `--apply`) rồi đọc email kết quả
-
-```
-/usr/local/bin/php /home/<tài-khoản>/migrations/018_repair_orphan_product_taxonomy.php
-```
-
-Chạy lần lượt và đọc kỹ từng cái: `014`, `015`, `018`, `019`, `020`, `023`, `024`,
-`027`, `028`.
-
-Đây là bước quan trọng nhất. Dữ liệu production **khác local**, nhất là `018`,
-`019`, `020` — chúng sửa dữ liệu hỏng do lỗi form Admin cũ, mà mức hỏng ở
-production nhiều khả năng khác hẳn. Đọc xong thấy hợp lý mới sang bước sau.
-
-### 4.2 Chạy thật, thêm `--apply`, đúng thứ tự
-
-```
-/usr/local/bin/php /home/<tài-khoản>/migrations/015_consolidate_description_into_sections.php --apply
-/usr/local/bin/php /home/<tài-khoản>/migrations/018_repair_orphan_product_taxonomy.php --apply
-/usr/local/bin/php /home/<tài-khoản>/migrations/019_assign_news_categories.php --apply
-/usr/local/bin/php /home/<tài-khoản>/migrations/020_fix_mismatched_category_slugs.php --apply
-/usr/local/bin/php /home/<tài-khoản>/migrations/023_delete_retired_products.php --apply
-/usr/local/bin/php /home/<tài-khoản>/migrations/024_move_legacy_wp_images.php --apply
-/usr/local/bin/php /home/<tài-khoản>/migrations/027_fix_inverter_typo.php --apply
-/usr/local/bin/php /home/<tài-khoản>/migrations/028_clean_orphan_gallery_seo.php --apply
+```text
+/usr/local/bin/php /home/<user>/migrations/030_install_featured_category_icons.php
+/usr/local/bin/php /home/<user>/migrations/030_install_featured_category_icons.php --apply
 ```
 
-`014` chỉ là báo cáo, không ghi gì, chạy lúc nào cũng được.
+Chỉ chạy dòng `--apply` sau khi dry-run sạch. Sau đó chạy lại dry-run; dự kiến
+`Đã đúng: 12`, `sẽ cài/khôi phục: 0`, không có `ERROR`.
 
-**Trước khi chạy `028`:** theo quy ước của dự án, phải trích các dòng sắp xoá từ
-bản backup ra file `.sql` cất riêng — xem phần đầu file `028`. Trên hosting cách
-đơn giản là giữ nguyên bản backup ở Bước 0 và ghi lại ngày giờ chạy.
+## 6. Ảnh sản phẩm ORIANA (tác vụ dữ liệu riêng)
 
-**Sau `024`:** thư mục `public_html/wp-content/` không còn cần thiết (khoảng
-1,2 GB). Dùng File Manager nén lại rồi **tải về máy**, sau đó mới xoá trên
-hosting. Đừng xoá thẳng.
+Không chép nguyên `upload/` local lên production. ID giữa hai DB có thể khác.
+Gói media chứa 102 file nguồn / 98 nội dung duy nhất và importer ghép bằng mã
+sản phẩm (`code`). Importer không ghi đè ảnh đại diện đã có và dừng trước khi
+ghi nếu mapping xung đột.
 
-Kiểm chứng sau khi chạy hết:
+1. Upload media release ngoài public webroot, chạy `sha256sum -c SHA256SUMS`.
+2. Giải nén archive vào `oriana-source/`.
+3. Dry-run:
 
-```sql
-SELECT
-  (SELECT COUNT(*) FROM table_product WHERE contentvi LIKE '%wp-content%') AS con_sot_wp,
-  (SELECT COUNT(*) FROM table_news    WHERE namevi LIKE '%Invester%')      AS con_sot_typo,
-  (SELECT COUNT(*) FROM table_gallery g
-     LEFT JOIN table_product p ON p.id = g.id_parent
-     WHERE g.com='product' AND g.kind='man' AND p.id IS NULL)              AS gallery_mo_coi;
-```
+   ```text
+   /usr/local/bin/php import-oriana-images.php /home/<user>/oriana-source --public-html=/home/<user>/domains/phucthinhsolar.com/public_html
+   ```
 
-Cả ba phải bằng **0**.
+4. Chỉ khi toàn bộ mã khớp duy nhất, không có conflict và backup đủ, chạy:
 
----
+   ```text
+   /usr/local/bin/php import-oriana-images.php /home/<user>/oriana-source --public-html=/home/<user>/domains/phucthinhsolar.com/public_html --apply --confirm-production=IMPORT-ORIANA
+   ```
 
-## Bước 5 — Bật phân quyền và tạo tài khoản nhân viên
+5. Chạy dry-run lần nữa; số pending phải bằng 0. Kiểm tra ngẫu nhiên ảnh chính,
+   gallery và trang chi tiết theo mã sản phẩm.
 
-Chỉ làm khi Bước 1 đã đổi `debug-developer => false`.
+## 7. RBAC, cache và smoke test
 
-1. Đăng nhập Admin bằng tài khoản `admin`.
-2. Menu **Quản lý user → Nhóm quyền**: xem lại ba nhóm dựng sẵn (bản local gần
-   nhất: cấp cao 191 quyền, cơ bản 16, content 6), tick thêm/bớt quyền cho đúng
-   nhu cầu thực tế của từng nhân viên.
-3. **Quản lý user → Tài khoản admin → Thêm mới**: tạo cho từng nhân viên, chọn
-   nhóm quyền tương ứng.
-4. Đổi mật khẩu tài khoản `admin` sang mật khẩu mạnh, chỉ bạn giữ.
+Trước khi cho nhân viên sử dụng, chạy
+`scripts/check-admin-permission-readiness.php` trên production. Role 3 vẫn có
+quyền quản trị; tài khoản thường phải thuộc nhóm quyền đang bật và không rỗng.
 
-Lưu ý khi tạo tài khoản: tên đăng nhập **chỉ được chữ thường và số**, không dấu
-gạch ngang. Bắt buộc điền đủ họ tên, email, giới tính, ngày sinh, địa chỉ.
+Xóa nội dung `public_html/caches/` nhưng giữ thư mục. Kiểm tra:
 
-Kiểm chứng: đăng nhập bằng một tài khoản nhân viên vừa tạo, xác nhận vào được
-đúng phần được cấp và **không** vào được mục "Quản lý user".
+- Trang chủ desktop/mobile và đủ 12 ô danh mục nổi bật.
+- Danh mục → chi tiết sản phẩm → form tư vấn/báo giá.
+- Tìm kiếm, lọc sản phẩm, breadcrumb và ảnh/gallery.
+- Admin: đăng nhập role 3; một tài khoản hạn chế chỉ thấy đúng quyền.
+- Gửi form liên hệ thật và nhận email.
+- Nếu đang bật bán hàng: danh mục → sản phẩm → giỏ → checkout → xác nhận, kiểm
+  tra đúng phương thức thanh toán và không tạo đơn trùng.
+- `/account/` trả đúng 404 theo chủ đích hiện tại.
+- Log PHP/web không có fatal, warning hoặc credential.
 
----
+Chỉ mở traffic/chạy quảng cáo sau khi smoke sạch.
 
-## Bước 6 — Cấu hình email
+## 8. Rollback
 
-Hiện `ip_host` và `email_host` đều trống, nghĩa là **website không gửi được email
-nào**. Khách gửi liên hệ hay đặt hàng, bạn không nhận được thông báo.
+- Code lỗi: đưa release trước có checksum trở lại; giữ config và runtime hiện tại.
+- Schema/data lỗi: dừng traffic ghi và phục hồi DB từ backup trước deploy; không
+  tự sửa tay trên production khi chưa đối soát.
+- Media/icon lỗi: phục hồi DB + `upload/` từ cùng mốc backup. Không chỉ hoàn
+  nguyên một phía vì sẽ tạo tham chiếu file mồ côi.
+- RBAC khóa nhầm nhân viên: role 3 sửa nhóm quyền. Chỉ bật tạm
+  `debug-developer` trong tình huống khẩn cấp, giới hạn truy cập, rồi tắt ngay.
 
-Admin → **Cài đặt** → phần email. Hai lựa chọn:
-
-- **Email của hosting**: DirectAdmin → E-mail Manager → E-mail Accounts, tạo hộp
-  thư (ví dụ `no-reply@phucthinhsolar.com`), rồi điền host/port/mật khẩu vào Admin.
-- **Gmail**: bật xác minh 2 bước cho tài khoản Google, tạo *App Password*, dùng
-  `smtp.gmail.com`. Trong Admin đổi kiểu gửi sang Gmail.
-
-Kiểm chứng: mở `https://phucthinhsolar.com/lien-he/`, gửi thử một liên hệ, kiểm
-tra hộp thư nhận được không. Nếu không, xem lại host/port/mật khẩu — hiện lỗi gửi
-mail chỉ ghi vào log chứ không làm vỡ trang nữa.
-
----
-
-## Bước 7 — Dọn cache và kiểm tra lần cuối
-
-File Manager → xoá sạch nội dung `public_html/caches/` (giữ lại thư mục).
-
-Danh sách kiểm tra trên trình duyệt:
-
-- [ ] Trang chủ mở bình thường, ảnh không mờ
-- [ ] Trang sản phẩm, lọc theo công suất chạy đúng
-- [ ] Trang chi tiết một sản phẩm, nút "Tư vấn & báo giá" mở được form
-- [ ] Gửi thử form liên hệ, nhận được email
-- [ ] Admin: thêm thử một sản phẩm rồi xoá đi
-- [ ] Admin: xuất Excel và Word danh sách đơn hàng
-- [ ] `https://phucthinhsolar.com/account/` trả 404 (không phải trang trắng)
-
----
-
-## Nếu có sự cố
-
-| Hiện tượng | Xử lý |
-|---|---|
-| Trang trắng sau khi upload | Bật lại `error-reporting => true` tạm thời để xem lỗi, sửa xong tắt lại ngay |
-| Mất kết nối database | `config.php` bị đè mất — khôi phục file này từ backup |
-| Ảnh mất hết | `upload/` bị đè — khôi phục từ backup |
-| Migration chạy sai | Khôi phục database từ backup Bước 0, không cố sửa tay |
-| Không vào được Admin | Đặt lại `debug-developer => true` để tạm bỏ qua phân quyền, vào sửa nhóm quyền rồi tắt |
-
----
-
-## Việc nên làm sau khi deploy xong và ổn định
-
-1. **Nâng PHP 7.4 lên 8.x** — 7.4 đã hết hỗ trợ bảo mật từ 11/2022. DirectAdmin
-   có **Account Manager → PHP Settings** để đổi. Phải kiểm thử kỹ, code cũ có thể
-   vỡ. Chủ project đã thống nhất để sau.
-2. **Đổi cách băm mật khẩu** — hiện dùng MD5, thuật toán đã bị phá và rất nhanh
-   để dò. Nên chuyển sang `password_hash()`, nâng cấp dần khi từng người đăng
-   nhập để không ai bị mất mật khẩu. Riêng tài khoản khách còn dùng MD5 **không
-   salt** (`administrator/sources/user.php` dòng 1058), yếu hơn nữa — hiện chưa
-   có tài khoản khách nào nên sửa sớm là gọn nhất.
-3. **Đổi `debug-css`/`debug-js` sang `false`** để nén CSS/JS, trang nhẹ thêm.
-4. **Nén ảnh trong `upload/`** — `migrations/025` làm việc này nhưng còn lỗi ở
-   một file PNG, chưa chạy được.
+Giữ backup và release trước ít nhất đến khi website ổn định, log sạch và chủ
+project đã duyệt toàn bộ luồng P0.

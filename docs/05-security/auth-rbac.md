@@ -8,10 +8,20 @@ Session Admin dùng cookie theo phiên với strict mode, `HttpOnly`, `SameSite=
 
 ## Authorization
 
-Permission strings nằm trong `table_permission`, nhóm trong `table_permission_group`; request admin có code so `com_act[_variant][_type]`. Loader quyền xác minh cả tài khoản và nhóm còn active, đồng thời loại permission trùng. Ma trận local đã test bốn nhóm sản phẩm, đơn hàng, nội dung và chỉ xem, gồm cả từ chối truy cập chéo module. Tuy nhiên `config-type.php` vẫn đặt `permission.active = false`: chưa bật enforcement trước khi cấu hình và retest tài khoản thật trên staging. Role 3/debug developer vẫn bypass check theo thiết kế legacy.
+Permission strings nằm trong `table_permission`, nhóm trong
+`table_permission_group`; request admin có code so `com_act[_variant][_type]`.
+Loader quyền xác minh cả tài khoản và nhóm còn active, đồng thời loại permission
+trùng. `config-type.php` đã bật `permission.active`; ma trận local đã test nhóm
+sản phẩm, đơn hàng, nội dung và chỉ xem, gồm cả từ chối truy cập chéo module.
+Role 3 vẫn bypass theo thiết kế quản trị. `debug-developer` cũng bypass nên bắt
+buộc phải là `false` trên production.
 
 ## Member
 
 `sources/user.php` có đăng ký, login, activation, forgot password, profile, order history/return/cancel; session member được kiểm tra trong `Functions`. Config admin đặt `user.active = false`; usage production NEEDS VERIFICATION.
 
-Rủi ro còn lại: password hashing/secret legacy và RBAC vẫn tắt. Toàn bộ 42 form POST Admin đã có CSRF; API mutation chính kiểm CSRF và quyền action khi RBAC bật. Cần lặp lại ma trận bằng tài khoản staging, kiểm tra cookie `Secure` qua HTTPS thật và không xem việc ẩn menu là authorization.
+Rủi ro còn lại: password hashing/secret legacy và việc chưa retest tài khoản
+nghiệp vụ trên hosting. Toàn bộ form POST Admin đã có CSRF; mutation chính kiểm
+CSRF và quyền action. Cần chạy runtime/readiness trên production, lặp lại ma
+trận bằng tài khoản hạn chế, kiểm tra cookie `Secure` qua HTTPS thật và không
+xem việc ẩn menu là authorization.

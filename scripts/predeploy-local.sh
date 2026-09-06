@@ -17,6 +17,8 @@ if grep -n '^\s*rg -q' scripts/*.sh; then
 fi
 
 git diff --check
+bash -n scripts/package-hosting-release.sh
+bash -n scripts/package-oriana-media.sh
 docker compose -f "$compose_file" build web
 docker compose -f "$compose_file" up -d web
 
@@ -58,6 +60,13 @@ docker cp scripts/test-checkout-atomicity.php "$web_container:/tmp/test-checkout
 docker cp scripts/test-commerce-transaction.php "$web_container:/tmp/test-commerce-transaction.php"
 docker cp scripts/test-public-route-resolver.php "$web_container:/tmp/test-public-route-resolver.php"
 docker cp scripts/preflight-commerce-migrations.php "$web_container:/tmp/preflight-commerce-migrations.php"
+docker cp migrations/000_preflight_production.php "$web_container:/tmp/000_preflight_production.php"
+docker cp migrations/000_check_hosting_runtime.php "$web_container:/tmp/000_check_hosting_runtime.php"
+docker cp migrations/025_compress_oversized_images.php "$web_container:/tmp/025_compress_oversized_images.php"
+docker cp migrations/030_install_featured_category_icons.php "$web_container:/tmp/030_install_featured_category_icons.php"
+docker cp scripts/import-oriana-images-local.php "$web_container:/tmp/import-oriana-images.php"
+docker compose -f "$compose_file" exec -T web mkdir -p /tmp/pts-featured-category-icons
+docker cp design-assets/product-featured-icons/2026-09-05/. "$web_container:/tmp/pts-featured-category-icons"
 
 docker compose -f "$compose_file" exec -T web sh -lc '
 set -eu
@@ -83,6 +92,11 @@ php -l administrator/sources/product_campaign.php
 php -l administrator/templates/product_campaign/list_tpl.php
 php -l administrator/templates/product_campaign/form_tpl.php
 php -l libraries/router.php
+php -l /tmp/000_preflight_production.php
+php -l /tmp/000_check_hosting_runtime.php
+php -l /tmp/025_compress_oversized_images.php
+php -l /tmp/030_install_featured_category_icons.php
+php -l /tmp/import-oriana-images.php
 php -l /tmp/test-admin-self-profile-integrity.php
 php -l /tmp/test-admin-permission-gate.php
 php /tmp/test-security-hardening.php
@@ -110,6 +124,9 @@ php /tmp/test-checkout-atomicity.php
 php /tmp/test-commerce-transaction.php
 php /tmp/test-public-route-resolver.php
 php /tmp/preflight-commerce-migrations.php
+php /tmp/000_preflight_production.php --require-all
+php /tmp/000_check_hosting_runtime.php
+php /tmp/030_install_featured_category_icons.php --assets=/tmp/pts-featured-category-icons
 '
 
 redirect_table="$(docker compose -f "$compose_file" exec -T db mariadb -N -B -upts_local -ppts_local_only phucthinhs_local -e "SHOW TABLES LIKE 'table_url_redirect';")"

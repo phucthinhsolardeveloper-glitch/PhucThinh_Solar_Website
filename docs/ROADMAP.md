@@ -14,11 +14,11 @@ Checklist thực thi hiện hành: `docs/13-handoffs/2026-08-29-next-work-checkl
 
 ## Trước khi chạy quảng cáo / production
 
-- [ ] Nhận, preview và kiểm tra file Excel dữ liệu thật trên local/staging; không chạy migration 006 apply.
-- [ ] Nhập và duyệt nội dung thật cho 5 chính sách.
-- [ ] Duyệt video, mô tả và chứng nhận thật cho nhóm sản phẩm chạy ads.
-- [ ] Xử lý phần Security Review còn lại rồi retest.
-- [ ] Xác minh SMTP, reCAPTCHA, PHP `calendar`, backup/restore và rollback trên hosting/staging.
+- [ ] Khi có nguồn mới: preview và kiểm tra Excel trên local/staging; không chạy migration 006 apply nếu chưa duyệt dữ liệu.
+- [ ] Khi doanh nghiệp cung cấp: nhập và duyệt nội dung thật cho 5 chính sách.
+- [ ] Khi có nguồn: duyệt video, mô tả và chứng nhận thật cho nhóm sản phẩm chạy ads.
+- [x] Xử lý finding code Security Review và chạy regression local.
+- [ ] Chạy runtime/schema preflight, xác minh SMTP, reCAPTCHA, backup/restore và rollback trên hosting/staging.
 - [ ] Chạy commerce smoke đầy đủ và chỉ deploy khi có phê duyệt.
 
 ## Đã hoàn thành trên local

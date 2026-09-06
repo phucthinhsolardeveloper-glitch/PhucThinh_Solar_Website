@@ -1,6 +1,8 @@
 # Current status
 
-Cập nhật gần nhất: 2026-09-03. Mọi thay đổi bên dưới mới ở Git + Docker local, chưa triển khai production.
+Cập nhật gần nhất: 2026-09-06. Mọi thay đổi bên dưới mới ở Git + Docker local,
+chưa triển khai production. Trạng thái dữ liệu trống đã được chủ project xác
+nhận là do chưa có nguồn thật; không coi đó là blocker kỹ thuật và không tự lấp.
 
 ## WORKING ON LOCAL
 
@@ -28,7 +30,8 @@ Cập nhật gần nhất: 2026-09-03. Mọi thay đổi bên dưới mới ở 
 - Giá sản phẩm trong CRUD Admin và bulk import dùng chung một validator: chặn giá khuyến mãi lớn hơn giá gốc và luôn tính lại phần trăm giảm; bản ghi local #316 đã được sửa qua form Admin từ discount 0 thành 10.
 - ADM-P1-004: `table_order` và `table_order_detail` đã chuyển sang InnoDB trên Docker local bằng migration 008; `order_detail` có index theo order/product. Regression xác nhận rollback thật xóa cả order/detail và không đổi tổng dữ liệu. Predeploy đã tích hợp preflight chỉ đọc để chặn orphan, token trùng, migration 008/009 dở dang hoặc sai thứ tự. Production chưa chạy migration; vẫn phải backup, restore rehearsal và dừng checkout trong thời gian ALTER.
 - Reader XLSX data-only đã bỏ qua theme/custom property/sharedStrings không đầy đủ và chuẩn hóa Strict OOXML sang namespace PHPExcel hỗ trợ; lỗi parser còn lại được bắt thành thông báo Admin có kiểm soát.
-- A3 e-commerce hoàn tất: trang chủ hiển thị đủ 9 danh mục nổi bật thành lưới 5/3/2 cột; ưu tiên ảnh Admin và dùng icon vàng khi danh mục chưa có ảnh, không thêm query DB.
+- A3 e-commerce hoàn tất: trang chủ có 12 danh mục nổi bật; bộ icon đồng nhất
+  đã đủ 12/12 và được cài bằng script ghép slug, không ghi đè ảnh riêng đã chọn.
 - A4 e-commerce hoàn tất: trang danh mục có nút “Bộ lọc” trên mobile/tablet, drawer trượt có backdrop, khóa cuộn, Escape/focus/ARIA và tự đóng sau khi lọc AJAX; desktop giữ sidebar hiện hữu.
 - Đã sửa cú pháp `.htaccess` upload từng làm ảnh/logo trả HTTP 500; pre-deploy kiểm tra trực tiếp media để chống tái phát.
 - Đã lập dependency/usage map CSS, JS, media và bốn luồng video legacy; chưa xóa/tách asset khi chưa đủ browser/staging evidence.
@@ -68,22 +71,28 @@ Cập nhật gần nhất: 2026-09-03. Mọi thay đổi bên dưới mới ở 
 ## PARTIAL / CHỜ DỮ LIỆU THẬT
 
 - 5 trang chính sách đã có URL nhưng nội dung đang rỗng.
-- DB local hiện có 445 sản phẩm, được chủ project xác nhận ngày 2026-09-03 là dữ liệu nhập có chủ ý. Không hoàn nguyên, tự ẩn hoặc đổi thứ tự lô này.
-- Ảnh, mô tả ngắn, nội dung chi tiết và thông số của bộ 445 sản phẩm đang được chủ project kiểm tra/bổ sung dần. Đối chiếu ngày 2026-09-04: 363 thiếu ảnh đại diện, 442 thiếu mô tả ngắn, 366 thiếu nội dung chi tiết, 40 thiếu cả thông số legacy/cấu trúc và 188 chưa có công suất hợp lệ; 0 nhóm trùng mã, 0 nhóm trùng slug, 0 slug rỗng và 0 liên kết danh mục cấp 1 mồ côi. Cả 5 chính sách public đang bật nhưng nội dung còn rỗng.
+- DB local hiện có 405 sản phẩm. Đối chiếu 2026-09-06: 161 có ảnh đại diện,
+  244 chưa có ảnh, 402 thiếu mô tả ngắn, 351 thiếu nội dung chi tiết và 183
+  chưa có công suất hợp lệ. Đây là dữ liệu đang chờ nguồn thật, không tự ẩn/xóa.
+  Có 3 phương thức thanh toán đang hiển thị; không phát hiện việc bị xóa.
 - Lịch sử gồm lô ORIANA `san-pham-20260831-da-bo-sung-oriana.xlsx` và file master `san-pham-master-fixed-2026-09-01.xlsx`; các file nằm trong `artifacts/`, tiếp tục được giữ ngoài Git/release.
 - Chứng nhận và video chỉ hiển thị khi admin nhập dữ liệu thật.
 - Dữ liệu kỹ thuật thật sẽ được cập nhật từ file Excel bên ngoài; không chạy migration 006 apply nếu chưa có phê duyệt riêng.
 - Nội dung mô tả chi tiết từng sản phẩm cần biên tập theo tài liệu kỹ thuật thật.
-- SMTP production và extension `calendar` trên hosting chưa được xác minh.
+- SMTP production và extension PHP trên hosting chưa được xác minh; chạy
+  `migrations/000_check_hosting_runtime.php --require-production` khi deploy.
 
 ## SECURITY
 
 - Các finding code chính của Security Review ngày 2026-08-27 đã được xử lý và regression đạt trên local.
-- RBAC vẫn tắt; cần test tài khoản nghiệp vụ, HTTPS, cookie Secure, proxy, SMTP, reCAPTCHA và upload video trên staging.
+- RBAC đã bật trong source và regression local đạt; vẫn cần test tài khoản
+  nghiệp vụ, HTTPS, cookie Secure, proxy, SMTP, reCAPTCHA và upload video trên
+  staging/production.
 - Không coi nhánh hiện tại là sẵn sàng production cho tới khi cổng staging và backup hosting đạt.
 
 ## STILL MISSING
 
 - Nội dung chính sách được doanh nghiệp phê duyệt.
 - Nội dung/ảnh/video/chứng nhận thật cho sản phẩm.
-- CI/CD, E2E nghiệp vụ đầy đủ, staging và quy trình deploy/rollback production đã diễn tập.
+- Staging/production và quy trình deploy/rollback hosting chưa diễn tập; runbook
+  và release có checksum đã sẵn sàng để thực hiện có kiểm soát.
