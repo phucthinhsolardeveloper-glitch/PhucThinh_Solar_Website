@@ -35,61 +35,13 @@
     $css->set("themes/local/css/home076c.css");
     $css->set("themes/local/css/mainV2173a.css");
     $css->set("css/frontendf3c4.css");
-?>
-<style id='rocket-lazyload-inline-css' type='text/css'>
-        .rll-youtube-player {
-            position: relative;
-            padding-bottom: 56.23%;
-            height: 0;
-            overflow: hidden;
-            max-width: 100%;
-        }
 
-        .rll-youtube-player iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 100;
-            background: 0 0
-        }
-
-        .rll-youtube-player img {
-            bottom: 0;
-            display: block;
-            left: 0;
-            margin: auto;
-            max-width: 100%;
-            width: 100%;
-            position: absolute;
-            right: 0;
-            top: 0;
-            border: none;
-            height: auto;
-            cursor: pointer;
-            -webkit-transition: .4s all;
-            -moz-transition: .4s all;
-            transition: .4s all
-        }
-
-        .rll-youtube-player img:hover {
-            -webkit-filter: brightness(75%)
-        }
-
-        .rll-youtube-player .play {
-            height: 72px;
-            width: 72px;
-            left: 50%;
-            top: 50%;
-            margin-left: -36px;
-            margin-top: -36px;
-            position: absolute;
-            background: url(wp-content/plugins/rocket-lazy-load/assets/img/youtube.png) no-repeat;
-            cursor: pointer
-        }
-    </style>
-<?php
+    /* Đã bỏ khối <style id='rocket-lazyload-inline-css'>: 55 dòng CSS nội tuyến
+       cho class .rll-youtube-player do plugin WP Rocket LazyLoad sinh ra. Plugin
+       không còn chạy, không template hay JS nào của site render class này, và quét
+       toàn bộ cột text trong DB cũng không có bản ghi nào chứa nó. Bản thân CSS còn
+       trỏ background tới wp-content/plugins/rocket-lazy-load/.../youtube.png — file
+       chưa từng tồn tại trên đĩa. Tức là CSS chết, gửi kèm mọi lượt xem trang. */
     $css->set("holdon/HoldOn-style.css");
     $css->set("confirm/confirm.css");
     $css->set("simplenotify/simple-notify.css");

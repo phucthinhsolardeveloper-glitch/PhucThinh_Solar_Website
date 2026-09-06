@@ -30,7 +30,7 @@
 				</div>
 			</div>
 			<a class="logo-header pts-brand pts-brand-wordmark" href="" aria-label="Phúc Thịnh Solar">
-				<?=$func->getImage(['class' => '','size-error' => '108x63x2', 'upload' => UPLOAD_PHOTO_L, 'image' => $logo['photo'], 'alt' => $setting['name'.$lang]])?>
+				<?=$func->getImage(['class' => '','sizes' => '420x58x3', 'upload' => UPLOAD_PHOTO_L, 'image' => $logo['photo'], 'alt' => $setting['name'.$lang]])?>
 			</a>
 			<div class="header-right-style">
 				<?php include TEMPLATE.LAYOUT."menu.php"; ?>

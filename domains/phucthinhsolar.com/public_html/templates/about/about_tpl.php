@@ -7,7 +7,7 @@
                 <div class="left col-xl-6 col-lg-6 col-md-12 col-sm-12 ">
                     <div class="content aos-init aos-animate" data-aos="fade-right" data-aos-duration="1500"
                         data-aos-delay="300">
-                        <?=$func->getImage(['class' => '', 'size-error' => '150x120x2', 'upload' => UPLOAD_NEWS_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
+                        <?=$func->getImage(['class' => '', 'sizes' => '300x240x3', 'upload' => UPLOAD_NEWS_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
                     </div>
                 </div>
                 <div class="right col-xl-6 col-lg-6 col-md-12 col-sm-12 ">
@@ -40,7 +40,7 @@
                         <?php if(count($sumenh)){foreach($sumenh as $k => $v){ ?>
                         <div class="CRgr_item_vision inf_item_vision">
                             <div class="wrap">
-                                <?=$func->getImage(['class' => '', 'size-error' => '150x120x2', 'upload' => UPLOAD_NEWS_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
+                                <?=$func->getImage(['class' => '', 'sizes' => '300x240x3', 'upload' => UPLOAD_NEWS_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
                                 <h4><?=$v['name'.$lang]?></h4>
                                 <div class="content"><?=htmlspecialchars_decode($v['content'.$lang])?></div>
                             </div>
@@ -65,7 +65,7 @@
                             <?php foreach($partner as $k => $v){ ?>
                             <div class="inf_item_partner">
                                 <div class="wrap">
-                                    <?=$func->getImage(['isLazy' => false,'size-error' => '183x78x1', 'upload' => UPLOAD_PHOTO_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
+                                    <?=$func->getImage(['isLazy' => false,'sizes' => '300x128x3', 'upload' => UPLOAD_PHOTO_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
                                 </div>
                             </div>
                             <?php } ?>
@@ -89,7 +89,7 @@
                         <div class="CRitem_certification inf_item_certification">
                             <div class="CRcertification wrap">
                                 <div class="img_personnel">
-                                    <?=$func->getImage(['isLazy' => false,'size-error' => '183x78x1', 'upload' => UPLOAD_PHOTO_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
+                                    <?=$func->getImage(['isLazy' => false,'sizes' => '642x900x3', 'upload' => UPLOAD_PHOTO_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
                                 </div>
                                 <p class="des"><?=$v['name'.$lang]?></p>
                             </div>
@@ -113,7 +113,7 @@
                             <?php foreach($lydo as $k => $v){ ?>
                             <div class="inf_ico_intro_home">
                                 <div class="wrap">
-                                    <?=$func->getImage(['class' => 'lazy','size-error' => '183x78x1', 'upload' => UPLOAD_NEWS_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
+                                    <?=$func->getImage(['class' => 'lazy','sizes' => '366x156x3', 'upload' => UPLOAD_NEWS_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
                                     <p><?=$v['name'.$lang]?></p>
                                 </div>
                             </div>

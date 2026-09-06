@@ -27,7 +27,7 @@
                 <div class="col-md-2">
                     <div id="footer_logo" style="max-width: 141px; margin-bottom: 29px">
                         <a href="">
-                            <?=$func->getImage(['class' => 'lazy','size-error' => '108x63x2', 'upload' => UPLOAD_PHOTO_L, 'image' => $logof['photo'], 'alt' => $setting['name'.$lang]])?>
+                            <?=$func->getImage(['class' => 'lazy','sizes' => '368x144x3', 'upload' => UPLOAD_PHOTO_L, 'image' => $logof['photo'], 'alt' => $setting['name'.$lang]])?>
                         </a>
                     </div>
                 </div>
@@ -109,7 +109,7 @@
                             </div>
                             <?php if(!empty($bct)){ ?>
                             <a href="<?=$bct['link']?>">
-                                <?=$func->getImage(['class' => 'lazy','size-error' => '108x63x2', 'upload' => UPLOAD_PHOTO_L, 'image' => $bct['photo'], 'alt' => $setting['name'.$lang]])?>
+                                <?=$func->getImage(['class' => 'lazy','sizes' => '400x152x3', 'upload' => UPLOAD_PHOTO_L, 'image' => $bct['photo'], 'alt' => $setting['name'.$lang]])?>
                             </a>
                             <?php } ?>
                         </div>

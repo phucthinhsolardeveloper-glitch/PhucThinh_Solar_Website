@@ -348,7 +348,7 @@
                             <?php foreach($partner as $v){ ?>
                             <div class="inf_item_partner">
                                 <div class="wrap">
-                                    <?=$func->getImage(['isLazy' => false,'size-error' => '183x78x1', 'upload' => UPLOAD_PHOTO_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
+                                    <?=$func->getImage(['isLazy' => false,'sizes' => '260x116x3', 'upload' => UPLOAD_PHOTO_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
                                 </div>
                             </div>
                             <?php } ?>
