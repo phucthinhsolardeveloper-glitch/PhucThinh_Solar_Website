@@ -46,6 +46,7 @@ docker cp scripts/test-admin-crud-lifecycle.php "$web_container:/tmp/test-admin-
 docker cp scripts/test-public-form-submissions.php "$web_container:/tmp/test-public-form-submissions.php"
 docker cp scripts/test-public-lead-and-review.php "$web_container:/tmp/test-public-lead-and-review.php"
 docker cp scripts/test-admin-account-management.php "$web_container:/tmp/test-admin-account-management.php"
+docker cp scripts/test-permission-catalogue.php "$web_container:/tmp/test-permission-catalogue.php"
 docker cp scripts/test-admin-screen-sweep.php "$web_container:/tmp/test-admin-screen-sweep.php"
 docker cp scripts/check-admin-permission-readiness.php "$web_container:/tmp/check-admin-permission-readiness.php"
 docker cp scripts/test-frontend-transfer-toast.php "$web_container:/tmp/test-frontend-transfer-toast.php"
@@ -93,6 +94,7 @@ php /tmp/test-admin-crud-lifecycle.php
 php /tmp/test-public-form-submissions.php
 php /tmp/test-public-lead-and-review.php
 php /tmp/test-admin-account-management.php
+php /tmp/test-permission-catalogue.php
 php /tmp/test-admin-screen-sweep.php
 php /tmp/check-admin-permission-readiness.php
 php /tmp/test-frontend-transfer-toast.php
