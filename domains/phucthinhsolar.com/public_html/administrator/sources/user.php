@@ -597,8 +597,13 @@
 			}
 
 			$data['role'] = 1;
-			$birthday = $data['birthday'];
-			$data['birthday'] = strtotime(str_replace("/","-",$data['birthday']));
+			/* Không đọc thẳng $data['birthday']: form thiếu trường này (hoặc bị
+			   client cắt bớt) thì PHP in ra Notice, mà lúc đó output đã bắt đầu
+			   nên header redirect phía sau hỏng luôn — "Cannot modify header
+			   information". Người dùng thấy trang vỡ thay vì thông báo lỗi
+			   "Ngày sinh không được trống" mà phần validate bên dưới đã viết sẵn. */
+			$birthday = isset($data['birthday']) ? $data['birthday'] : '';
+			$data['birthday'] = ($birthday !== '') ? strtotime(str_replace("/","-",$birthday)) : 0;
 		}
 
 		/* Valid data */
