@@ -382,7 +382,18 @@
 			/* Post dữ liệu */
 			$message = '';
 			$response = array();
-			$id = (!empty($_POST['id'])) ? htmlspecialchars($_POST['id']) : 0;
+			/* KHÔNG lấy id từ POST. Đây là màn hình tự sửa hồ sơ của chính mình,
+			   id phải là id của tài khoản đang đăng nhập. Trước đây lấy
+			   $_POST['id'] rồi truyền vào checkAccount() để loại trừ khi kiểm tra
+			   trùng tên/email — mà id đó do client gửi. Nhân viên (role 1) gửi
+			   id = 1 (tài khoản admin) kèm username = "admin" thì checkAccount
+			   loại trừ đúng tài khoản admin thật, không thấy trùng, và cho đổi.
+			   Kết quả: hai tài khoản cùng tên "admin". Vì toàn bộ hệ thống định
+			   danh theo username (session, đăng nhập, và chính update bên dưới
+			   dùng where('username',...) không LIMIT), đây là lỗ hổng phá vỡ tính
+			   toàn vẹn tài khoản. Luôn dùng id thật từ phiên. */
+			$sessionUser = $d->rawQueryOne("select id from #_user where username = ? limit 0,1", array($_SESSION[$loginAdmin]['username']));
+			$id = !empty($sessionUser['id']) ? (int)$sessionUser['id'] : 0;
 			$data = (!empty($_POST['data'])) ? $_POST['data'] : null;
 			if($data)
 			{
