@@ -78,7 +78,7 @@ Web root **2,2 GB → 585 MB**. Không xoá file nào, tất cả chuyển sang
 - **Đã có sẵn, không cần làm:** chặn thực thi PHP trong `upload/`, giới hạn
   đăng nhập theo IP và theo tài khoản, CSRF, kiểm tra phiên.
 
-### Mục 01 — Kiểm thử: bộ quét đã có, còn checklist thủ công
+### Mục 01 — Kiểm thử: XONG phần tự động hoá được
 
 `scripts/test-admin-screen-sweep.php` gọi mọi màn hình Admin chỉ-đọc (111 màn
 hình) và bắt fatal, notice PHP lọt HTML, JSON hỏng. Hiện **111/111 sạch**.
@@ -115,6 +115,26 @@ vỡ — mọi nơi gọi đã sẵn nhánh xử lý "gửi thất bại", chỉ
 được. Kiểm chứng: submit form Liên hệ giờ trả 302 sạch, không fatal, bản ghi
 vẫn lưu đúng.
 
+### Phủ kiểm thử hiện có
+
+Mọi đường ghi dữ liệu đều đã có test chạy qua HTTP thật, tất cả nằm trong
+`scripts/predeploy-local.sh`:
+
+| Luồng | Script | Assertion |
+|---|---|---|
+| 111 màn hình Admin (chỉ đọc) | `test-admin-screen-sweep.php` | 111/111 sạch |
+| Admin thêm/sửa/xoá sản phẩm + tin tức | `test-admin-crud-lifecycle.php` | 19 |
+| Cấp tài khoản + nhóm quyền | `test-admin-account-management.php` | 20 |
+| Cổng phân quyền | `test-admin-permission-gate.php` | 12 |
+| Form Liên hệ + Đăng ký đại lý | `test-public-form-submissions.php` | 16 |
+| Đăng ký tư vấn + Nhận xét sản phẩm | `test-public-lead-and-review.php` | 18 |
+
+**Hai thứ cố ý không test:** giỏ hàng (đã ẩn có chủ ý — site bán theo hình thức
+báo giá, test hiện có khẳng định nút giỏ hàng phải vắng mặt) và khu vực tài
+khoản khách `/account/...` (route bị route tổng quát `[a:sub]/[a:com]` trong
+`router.php` chặn trước nên chưa bao giờ tới nơi; site cũng không có link nào
+trỏ tới — bật lên là quyết định kinh doanh).
+
 ## 3. Việc còn lại
 
 ### 3.1 Cần chủ project trả lời trước
@@ -132,7 +152,8 @@ vẫn lưu đúng.
 Backup database production, rồi chạy migration **đúng thứ tự**:
 
 ```
-013 → 015 --apply → 016 → 017 → 018 → 019 → 020 → 021 → 022 → 023 → 024 → 026
+013 → 015 --apply → 016 → 017 → 018 → 019 → 020 → 021 → 022 → 023 → 024
+   → 026 → 027 → 028
 ```
 
 - `018`, `019`, `020` **mặc định dry-run**. Phải chạy xem trước trên DB thật,
@@ -142,6 +163,9 @@ Backup database production, rồi chạy migration **đúng thứ tự**:
 - `025` (nén ảnh) **chưa chạy, đang tạm dừng** theo yêu cầu chủ project. Script
   hiện còn lỗi: chết khi xử lý `upload/photo/a-9088.png`, chưa tìm nguyên nhân.
 - `026` chỉ thêm index, chạy lúc vắng khách vì bảng là MyISAM nên ALTER khoá bảng.
+- `027` sửa chính tả "Invester" -> "Inverter", `028` dọn bản ghi mồ côi. Cả hai
+  dry-run mặc định. Với `028`, theo quy ước của dự án phải xuất các dòng sắp xoá
+  sang `D:\FIleLinhTinh\...\du-lieu-da-xoa-khoi-database\` trước khi `--apply`.
 
 **Trước khi deploy phân quyền:** chạy
 `scripts/check-admin-permission-readiness.php` trên production để biết tài khoản
@@ -149,17 +173,18 @@ nào sẽ mất quyền truy cập (không nhóm quyền, nhóm tắt, nhóm r�
 
 ### 3.3 Việc nhỏ ghi nhận, chưa làm
 
-- 259 bản ghi `gallery` và 242 bản ghi `seo` mồ côi, đều trỏ tới sản phẩm id
-  < 311 đã xoá từ lâu. Không ảnh hưởng hiển thị, dọn được bằng một migration.
-- Chữ **"Invester"** trong mục "Những con số ấn tượng" sai chính tả, đúng là
-  "Inverter". Nội dung CMS, sửa trong Admin.
-- `templates/layout/css.php` còn một background trỏ tới
-  `wp-content/plugins/rocket-lazy-load/assets/img/youtube.png` — file chưa từng
-  tồn tại, code chết.
 - `assets/wp-content/uploads` (138 MB) là cây riêng phục vụ rewrite URL cũ trong
   `.htaccess` cho SEO. **Không xoá** khi chưa xác nhận không còn backlink.
-- Trang "Về chúng tôi" tải ảnh chứng nhận cỡ gốc (5 tấm, ~2,5 MB) vì dùng
-  `size-error` thay vì `sizes`. Hero trang chủ đã dùng thumbnail.
+- Còn khoảng 28 lời gọi `getImage()` dùng `size-error` (tức vẫn tải ảnh gốc) ở
+  các trang tin tức / dự án / giải pháp. Trang chủ và Về chúng tôi đã xử lý.
+  **Không đổi hàng loạt**: nhiều chỗ giá trị `size-error` nhỏ hơn kích thước
+  hiển thị thật, đổi mù sẽ làm ảnh vỡ nét. Phải đo từng trang trước.
+- Khu vực tài khoản khách `/account/...` không tới được (xem mục 2). Muốn dùng
+  thì phải chuyển route `account` lên trước `[a:sub]/[a:com]` trong `router.php`
+  và kiểm thử lại toàn bộ luồng đăng ký/đăng nhập/quên mật khẩu.
+- **Đã xong** trong phiên: dọn 570 bản ghi mồ côi (migration 028, dữ liệu đã
+  xuất sang ổ D), sửa "Invester" (migration 027), xoá khối CSS chết
+  `rll-youtube-player`, và sửa soft 404 ở `/account/`.
 
 ## 4. Quy ước đang áp dụng
 
