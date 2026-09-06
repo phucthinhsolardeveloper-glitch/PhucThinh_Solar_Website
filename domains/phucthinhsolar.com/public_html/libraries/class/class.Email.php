@@ -192,47 +192,68 @@
 			}
 			
 
-            $mail->Host = $config_host;
-            if($config_port)
-            {
-                $mail->Port = $config_port;
-            }
-            $mail->Username = $config_email;
-            $mail->Password = $config_password;
-            $mail->SetFrom($config_email,$this->company['namevi']);
-            
-		    if($owner == 'admin')
-		    {
-		    	$mail->AddAddress($this->optcompany['email'],$this->company['namevi']);
-		    }
-		    else if($owner == 'customer')
-		    {
-		    	if($arrayEmail && count($arrayEmail) > 0)
-		    	{
-		    		foreach($arrayEmail as $vEmail)
-		    		{
-		    			$mail->AddAddress($vEmail['email'],$vEmail['name']);
-		    		}
-		    	}
-		    }else if ($owner == 'adminis'){
-		    	$mail->AddAddress($this->optcompany['email_as'],"ERROR SERVER NOT!!!");
-		    	$mail->AddAddress($this->optcompany['apdev_as'],"ERROR SERVER NOT DEV!!!");
-		    }else{
-		    	$mail->AddReplyTo($this->optcompany['email'],$this->company['namevi']);
-		    }
+			/* PHPMailer(true) ở đầu hàm bật ném exception, và nó ném cho rất nhiều
+			   trường hợp: SetFrom/AddAddress với địa chỉ rỗng hoặc sai định dạng,
+			   không kết nối được SMTP, sai mật khẩu, timeout Send()... không riêng
+			   gì cấu hình thiếu. Trước đây không có try/catch nào từ đây lên tới
+			   nơi gọi (contact.php, order.php, user.php, newsletter.php — 7 chỗ),
+			   nên bất kỳ trục trặc gửi mail nào cũng vỡ thành fatal error lộ ra
+			   thẳng trình duyệt khách hàng, kèm stack trace lộ đường dẫn server
+			   thật. Với order.php, đây là email xác nhận đơn hàng: đơn đã lưu xong
+			   trước khi gửi mail, nên khách mất luôn trang xác nhận dù đơn vẫn vào
+			   hệ thống bình thường.
+			   Bọc từ bước gán Host/SetFrom, không chỉ quanh Send(): SetFrom và
+			   AddAddress ném ngay khi gặp địa chỉ rỗng, tức trước khi chạm tới
+			   Send() một bước. Bắt lại và trả false: mọi nơi gọi đã sẵn nhánh xử
+			   lý "gửi thất bại" ở else, chỉ là trước giờ không bao giờ chạy tới
+			   được vì exception chặn ngang trước đó. */
+			try
+			{
+				$mail->Host = $config_host;
+				if($config_port)
+				{
+					$mail->Port = $config_port;
+				}
+				$mail->Username = $config_email;
+				$mail->Password = $config_password;
+				$mail->SetFrom($config_email,$this->company['namevi']);
 
-		   
-		    $mail->CharSet = "utf-8";
-		    $mail->AltBody = "To view the message, please use an HTML compatible email viewer!";
-		    $mail->Subject = $subject;
-		    $mail->MsgHTML($message);
-		    if($file != '' && isset($_FILES[$file]) && !$_FILES[$file]['error'])
-		    {
-		    	$mail->AddAttachment($_FILES[$file]["tmp_name"], $_FILES[$file]["name"]);
-		    }
+				if($owner == 'admin')
+				{
+					$mail->AddAddress($this->optcompany['email'],$this->company['namevi']);
+				}
+				else if($owner == 'customer')
+				{
+					if($arrayEmail && count($arrayEmail) > 0)
+					{
+						foreach($arrayEmail as $vEmail)
+						{
+							$mail->AddAddress($vEmail['email'],$vEmail['name']);
+						}
+					}
+				}else if ($owner == 'adminis'){
+					$mail->AddAddress($this->optcompany['email_as'],"ERROR SERVER NOT!!!");
+					$mail->AddAddress($this->optcompany['apdev_as'],"ERROR SERVER NOT DEV!!!");
+				}else{
+					$mail->AddReplyTo($this->optcompany['email'],$this->company['namevi']);
+				}
 
-		    if($mail->Send()) return true;
-		    else return false;
+				$mail->CharSet = "utf-8";
+				$mail->AltBody = "To view the message, please use an HTML compatible email viewer!";
+				$mail->Subject = $subject;
+				$mail->MsgHTML($message);
+				if($file != '' && isset($_FILES[$file]) && !$_FILES[$file]['error'])
+				{
+					$mail->AddAttachment($_FILES[$file]["tmp_name"], $_FILES[$file]["name"]);
+				}
+
+				return $mail->Send() ? true : false;
+			}
+			catch(Throwable $exception)
+			{
+				error_log('Email::send('.$owner.') thất bại: '.$exception->getMessage());
+				return false;
+			}
 		}
 	}
 ?>

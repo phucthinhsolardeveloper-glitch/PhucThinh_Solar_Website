@@ -43,6 +43,7 @@ docker cp scripts/test-cache-performance.php "$web_container:/tmp/test-cache-per
 docker cp scripts/test-admin-transfer-toast.php "$web_container:/tmp/test-admin-transfer-toast.php"
 docker cp scripts/test-admin-permission-gate.php "$web_container:/tmp/test-admin-permission-gate.php"
 docker cp scripts/test-admin-crud-lifecycle.php "$web_container:/tmp/test-admin-crud-lifecycle.php"
+docker cp scripts/test-public-form-submissions.php "$web_container:/tmp/test-public-form-submissions.php"
 docker cp scripts/test-admin-screen-sweep.php "$web_container:/tmp/test-admin-screen-sweep.php"
 docker cp scripts/check-admin-permission-readiness.php "$web_container:/tmp/check-admin-permission-readiness.php"
 docker cp scripts/test-frontend-transfer-toast.php "$web_container:/tmp/test-frontend-transfer-toast.php"
@@ -87,6 +88,7 @@ php /tmp/test-cache-performance.php
 php /tmp/test-admin-transfer-toast.php
 php /tmp/test-admin-permission-gate.php
 php /tmp/test-admin-crud-lifecycle.php
+php /tmp/test-public-form-submissions.php
 php /tmp/test-admin-screen-sweep.php
 php /tmp/check-admin-permission-readiness.php
 php /tmp/test-frontend-transfer-toast.php
