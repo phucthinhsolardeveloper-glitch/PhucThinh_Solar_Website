@@ -55,6 +55,7 @@ docker cp scripts/test-admin-permission-gate.php "$web_container:/tmp/test-admin
 docker cp scripts/test-admin-filemanager-security.php "$web_container:/tmp/test-admin-filemanager-security.php"
 docker cp scripts/test-admin-password-migration.php "$web_container:/tmp/test-admin-password-migration.php"
 docker cp scripts/test-email-tls-security.php "$web_container:/tmp/test-email-tls-security.php"
+docker cp scripts/test-email-production-config.php "$web_container:/tmp/test-email-production-config.php"
 docker cp scripts/test-public-session-security.php "$web_container:/tmp/test-public-session-security.php"
 docker cp scripts/test-admin-button-visibility.php "$web_container:/tmp/test-admin-button-visibility.php"
 docker cp scripts/test-admin-crud-lifecycle.php "$web_container:/tmp/test-admin-crud-lifecycle.php"
@@ -96,6 +97,7 @@ php -l administrator/sources/order.php
 php -l administrator/sources/product.php
 php -l administrator/sources/product_bulk.php
 php -l administrator/sources/user.php
+php -l administrator/sources/setting.php
 php -l libraries/class/class.PDODb.php
 php -l libraries/admin_product_pricing.php
 php -l libraries/admin_product_completeness.php
@@ -109,6 +111,8 @@ php -l libraries/login_security.php
 php -l libraries/requick.php
 php -l libraries/order_security.php
 php -l libraries/session_security.php
+php -l libraries/mail_config.php
+php -l libraries/class/class.Email.php
 php -l libraries/public_route_resolver.php
 php -l libraries/product_category_urls.php
 php -l libraries/product_promo.php
@@ -122,10 +126,12 @@ php -l administrator/templates/layout/menu.php
 php -l administrator/templates/photo/man/photo_add_tpl.php
 php -l administrator/templates/photo/man/photo_edit_tpl.php
 php -l administrator/templates/user/permission/permission_group_tpl.php
+php -l administrator/templates/setting/man/man_add_tpl.php
 php -l sources/allpage.php
 php -l sources/contact.php
 php -l sources/product.php
 php -l templates/contact/contact_tpl.php
+php -l templates/account/forgot_password_tpl.php
 php -l templates/index/index_tpl.php
 php -l templates/layout/js.php
 php -l templates/layout/modal.php
@@ -147,6 +153,7 @@ php -l /tmp/test-admin-permission-gate.php
 php -l /tmp/test-admin-filemanager-security.php
 php -l /tmp/test-admin-password-migration.php
 php -l /tmp/test-email-tls-security.php
+php -l /tmp/test-email-production-config.php
 php -l /tmp/test-public-session-security.php
 php -l /tmp/test-admin-button-visibility.php
 php -l /tmp/test-proxy-https.php
@@ -162,6 +169,7 @@ php /tmp/test-admin-permission-gate.php
 php /tmp/test-admin-filemanager-security.php
 php /tmp/test-admin-password-migration.php
 php /tmp/test-email-tls-security.php
+php /tmp/test-email-production-config.php
 php /tmp/test-public-session-security.php
 php /tmp/test-admin-button-visibility.php
 php /tmp/test-admin-crud-lifecycle.php

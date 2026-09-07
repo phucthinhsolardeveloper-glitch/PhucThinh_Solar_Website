@@ -72,12 +72,21 @@ File config local đã được đặt mặc định an toàn và Docker tự b�
 test. `config.php` chứa bí mật nên không nằm trong Git/release; vì vậy luôn phải
 kiểm tra trực tiếp file đang chạy trên hosting.
 
+SMTP dùng `$config['mail']`; không còn lấy transport/password/recipient từ
+`table_setting.options`. Tạo file secret `0600` tại
+`/home/<directadmin-user>/.pts-mail.php`; source tự nạp file này theo
+`docs/08-integrations/smtp-production.md`. Host `mail.phucthinhsolar.com`, port
+`587`, sender `website@phucthinhsolar.com`, recipient
+`phucthinhsolar.hr@gmail.com`; riêng encryption phải xác minh với hosting, không
+tự suy ra từ port.
+
 Nếu CKFinder có license production, khai báo `CKFINDER_LICENSE_NAME` và
 `CKFINDER_LICENSE_KEY` bằng constant trong config ngoài Git hoặc environment
 của hosting. Không chép giá trị license vào source, archive, log hay tài liệu.
 
-SMTP chỉ được coi là hoàn tất sau khi gửi thử form liên hệ và nhận email. Không
-chép credential vào log, tài liệu hoặc chat.
+Chạy lần lượt `scripts/smtp-readiness.php`, thêm `--connect`, rồi
+`--send-test`. SMTP chỉ được coi là hoàn tất sau khi mail test và form liên hệ
+thật được nhận. Không chép credential vào log, tài liệu hoặc chat.
 
 Nếu website chạy sau Cloudflare/reverse proxy, proxy phải chuyển đúng
 `X-Forwarded-Proto`. Ứng dụng nhận token đầu tiên của header này để sinh

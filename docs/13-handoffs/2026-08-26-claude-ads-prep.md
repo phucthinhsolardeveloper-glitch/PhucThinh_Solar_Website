@@ -59,7 +59,10 @@ DB production **đã có sẵn 5 bài chính sách** (bảo hành/mua bán/đổ
 
 ## Đã phát hiện nhưng CHƯA sửa — cần chủ project quyết định
 
-1. **SMTP sai cấu hình trên production**: DB `table_setting.options.mailertype = "1"` (SMTP host tùy chỉnh) nhưng `ip_host`/`email_host`/`password_host` đang RỖNG. Trong khi đó `host_gmail`/`email_gmail`/`password_gmail` có giá trị thật (Gmail App Password) nhưng KHÔNG được dùng. **Khả năng cao mọi email đặt hàng/liên hệ trên production đang gửi lỗi ngay bây giờ**, không liên quan gì đến các thay đổi trong handoff này. Cần người quản trị vào admin đổi `mailertype` hoặc điền đúng SMTP host.
+1. **Lịch sử tại thời điểm 2026-08-26 — đã superseded**: khi đó SMTP còn lấy từ
+   `table_setting.options` và cấu hình active bị thiếu. Runtime hiện tại không còn
+   đọc transport/password SMTP từ DB; nguồn đúng là `$config['mail']` ngoài Git,
+   theo `docs/08-integrations/smtp-production.md`.
 2. **`$config['order']['active'] = false`** trong `config-type.php` — nghi ngờ đây là cờ ẩn menu "Quản lý đơn hàng" trong admin. Giờ storefront đã cho khách đặt hàng thật (mục 4), nếu cờ này ẩn luôn màn hình admin xem đơn thì đơn vào DB nhưng nhân viên không thấy để xử lý. **Chưa kiểm tra/bật** — cần xác nhận trước khi launch ads thật.
 3. **reCAPTCHA và OneSignal**: có key thật trong `config.php` nhưng đang tắt (`active: false`). Không đụng, chỉ note lại.
 4. Domain/hosting/tài khoản ngoài (GTM, GA4, email quản trị...) — xem lịch sử chat trước, không nhắc lại ở đây vì không liên quan code.
