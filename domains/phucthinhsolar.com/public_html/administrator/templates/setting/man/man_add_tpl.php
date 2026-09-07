@@ -40,78 +40,43 @@
 					<div class="form-group result-database row"></div>
 				</div>
 			</div>
-			<div class="card card-primary card-outline text-sm">
-				<div class="card-header">
-					<h3 class="card-title">Cấu hình mailer</h3>
-				</div>
-				<div class="card-body">
-					<div class="form-group">
-						<div class="custom-control custom-radio d-inline-block mr-3 text-md">
-							<input class="custom-control-input mailertype" type="radio" id="mailertype-host" name="data[options][mailertype]" <?=($options['mailertype']==1 || $options['mailertype']==0)?"checked":""?> value="1">
-							<label for="mailertype-host" class="custom-control-label font-weight-normal">Host email</label>
-						</div>
-						<div class="custom-control custom-radio d-inline-block mr-3 text-md">
-							<input class="custom-control-input mailertype" type="radio" id="mailertype-gmail" name="data[options][mailertype]" <?=($options['mailertype']==2)?"checked":""?> value="2">
-							<label for="mailertype-gmail" class="custom-control-label font-weight-normal">Gmail email</label>
-						</div>
-					</div>
-					<div class="host-email <?=($options['mailertype']==1 || $options['mailertype']==0)?'d-block':'d-none'?>">
-						<div class="row">
-							<div class="form-group col-md-4 col-sm-6">
-								<label for="ip_host">Host:</label>
-								<input type="text" class="form-control text-sm" name="data[options][ip_host]" id="ip_host" placeholder="Host" value="<?=$options['ip_host']?>">
-							</div>
-							<div class="form-group col-md-4 col-sm-6">
-								<label for="port_host">Port:</label>
-								<input type="text" class="form-control text-sm" name="data[options][port_host]" id="port_host" placeholder="Port" value="<?=$options['port_host']?>">
-							</div>
-							<div class="form-group col-md-4 col-sm-6">
-								<label for="secure_host">Secure:</label>
-								<select class="custom-select text-sm" name="data[options][secure_host]" id="secure_host">
-									<option <?=($options['secure_host']=='tls')?'selected':''?> value="tls">TLS</option>
-									<option <?=($options['secure_host']=='ssl')?'selected':''?> value="ssl">SSL</option>
-								</select>
-							</div>
-							<div class="form-group col-md-4 col-sm-6">
-								<label for="email_host">Email host:</label>
-								<input type="text" class="form-control text-sm" name="data[options][email_host]" id="email_host" placeholder="Email host" value="<?=$options['email_host']?>">
-							</div>
-							<div class="form-group col-md-4 col-sm-6">
-								<label for="password_host">Password host:</label>
-								<input type="text" class="form-control text-sm" name="data[options][password_host]" id="password_host" placeholder="Password host" value="<?=$options['password_host']?>">
-							</div>
-						</div>
-					</div>
-					<div class="gmail-email <?=($options['mailertype']==2)?'d-block':'d-none'?>">
-						<div class="row">
-							<div class="form-group col-md-4 col-sm-6">
-								<label for="host_gmail">Host:</label>
-								<input type="text" class="form-control text-sm" name="data[options][host_gmail]" id="host_gmail" placeholder="Host" value="<?=$options['host_gmail']?>">
-							</div>
-							<div class="form-group col-md-4 col-sm-6">
-								<label for="port_gmail">Port:</label>
-								<input type="text" class="form-control text-sm" name="data[options][port_gmail]" id="port_gmail" placeholder="Port" value="<?=$options['port_gmail']?>">
-							</div>
-							<div class="form-group col-md-4 col-sm-6">
-								<label for="secure_gmail">Secure:</label>
-								<select class="custom-select text-sm" name="data[options][secure_gmail]" id="secure_gmail">
-									<option <?=($options['secure_gmail']=='tls')?'selected':''?> value="tls">TLS</option>
-									<option <?=($options['secure_gmail']=='ssl')?'selected':''?> value="ssl">SSL</option>
-								</select>
-							</div>
-							<div class="form-group col-md-4 col-sm-6">
-								<label for="email_gmail">Email:</label>
-								<input type="text" class="form-control text-sm" name="data[options][email_gmail]" id="email_gmail" placeholder="Email" value="<?=$options['email_gmail']?>">
-							</div>
-							<div class="form-group col-md-4 col-sm-6">
-								<label for="password_gmail">Password:</label>
-								<input type="text" class="form-control text-sm" name="data[options][password_gmail]" id="password_gmail" placeholder="Password" value="<?=$options['password_gmail']?>">
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
 		<?php } ?>
+		<?php
+			$mailConfig = isset($config['mail']) && is_array($config['mail']) ? $config['mail'] : array();
+			$mailConfigured = empty(Email::validateConfig($mailConfig));
+			$mailView = function($key) use ($mailConfig) {
+				return htmlspecialchars(isset($mailConfig[$key]) && trim((string)$mailConfig[$key]) !== '' ? (string)$mailConfig[$key] : '—', ENT_QUOTES, 'UTF-8');
+			};
+		?>
+		<div class="card card-primary card-outline text-sm">
+			<div class="card-header">
+				<h3 class="card-title">Hệ thống email (chỉ đọc)</h3>
+			</div>
+			<div class="card-body">
+				<div class="alert <?=$mailConfigured ? 'alert-success' : 'alert-warning'?>">
+					<strong><?=$mailConfigured ? 'SMTP đã đủ cấu hình.' : 'SMTP chưa đủ cấu hình production.'?></strong>
+					Password mailbox được quản lý ngoài Git/webroot và không hiển thị hoặc cập nhật tại Admin.
+				</div>
+				<div class="row mb-3">
+					<div class="col-md-4"><strong>SMTP:</strong> <?=$mailView('host')?>:<?=$mailView('port')?> / <?=$mailView('encryption')?></div>
+					<div class="col-md-4"><strong>From:</strong> <?=$mailView('from')?></div>
+					<div class="col-md-4"><strong>Nhận thông báo:</strong> <?=$mailView('admin_to')?></div>
+				</div>
+				<div class="table-responsive">
+					<table class="table table-sm table-bordered mb-0">
+						<thead><tr><th>Workflow</th><th>Nội dung/khung mẫu</th><th>Người nhận</th></tr></thead>
+						<tbody>
+							<tr><td>Liên hệ</td><td><code>contact/admin</code>, <code>contact/customer</code></td><td>Công ty + xác nhận khách; Reply-To khách</td></tr>
+							<tr><td>Tư vấn / Đại lý</td><td>Bảng tóm tắt dữ liệu form đã validate</td><td>Công ty; Reply-To khách</td></tr>
+							<tr><td>Đơn hàng</td><td><code>order/admin</code>, <code>order/customer</code></td><td>Công ty + xác nhận khách; Reply-To khách</td></tr>
+							<tr><td>Thành viên (legacy, route chưa public)</td><td><code>member/active</code>, <code>member/forgot-password</code></td><td>Email thành viên</td></tr>
+							<tr><td>Newsletter Admin</td><td>Admin nhập tiêu đề/nội dung/file khi gửi</td><td>Danh sách đã chọn qua BCC</td></tr>
+						</tbody>
+					</table>
+				</div>
+				<small class="text-muted d-block mt-2">Các template tự động đang được version hóa trong source; Admin chưa chỉnh sửa trực tiếp.</small>
+			</div>
+		</div>
 		<div class="card card-primary card-outline text-sm">
 			<div class="card-header">
 				<h3 class="card-title">Hiển thị giá sản phẩm</h3>

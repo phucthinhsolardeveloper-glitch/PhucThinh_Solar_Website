@@ -48,8 +48,16 @@
 			{
 				if(is_array($value))
 				{
+					$legacyMailKeys = array(
+						'mailertype','ip_host','port_host','secure_host','email_host','password_host',
+						'host_gmail','port_gmail','secure_gmail','email_gmail','password_gmail',
+						'ip_host_as','email_host_as','password_host_as','email_as','apdev_as'
+					);
 					foreach($value as $k2 => $v2)
 					{
+						/* SMTP production chỉ cấu hình ngoài Git. Không cho direct POST
+						   biến DB legacy thành nguồn secret thứ hai. */
+						if(in_array($k2, $legacyMailKeys, true)) continue;
 						if($k2 == 'public_product_prices')
 						{
 							$option[$k2] = ((string)$v2 === '1') ? '1' : '0';
