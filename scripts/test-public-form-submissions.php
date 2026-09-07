@@ -15,8 +15,8 @@
  * chế độ test, không cần giải captcha thật — xem class.Functions.php.
  *
  * Dọn dẹp: xoá đúng các bản ghi contact/newsletter do test tạo (nhận theo tiền
- * tố duy nhất), và xoá đúng hai khoá rate-limit test dùng, không đụng dữ liệu
- * rate-limit thật của người dùng khác.
+ * tố duy nhất), và xoá đúng các dòng rate-limit phát sinh sau khi test bắt đầu,
+ * không đụng dữ liệu rate-limit đã tồn tại trước đó.
  *
  * Chạy: php scripts/test-public-form-submissions.php
  */
@@ -76,18 +76,20 @@ function sessionAndCsrf($base, $path)
 $suffix = bin2hex(random_bytes(4));
 $createdContactIds = array();
 $createdNewsletterIds = array();
+$existingRateLimitIds = array();
+foreach ($d->rawQuery("select id from #_user_limit where login_ip like 'form:%'") as $rateRow)
+    $existingRateLimitIds[(int)$rateRow['id']] = true;
 
-register_shutdown_function(function () use (&$createdContactIds, &$createdNewsletterIds, $d, $suffix) {
+register_shutdown_function(function () use (&$createdContactIds, &$createdNewsletterIds, $existingRateLimitIds, $d, $suffix) {
     foreach ($createdContactIds as $id) $d->rawQuery('delete from #_contact where id = ?', array((int)$id));
     foreach ($createdNewsletterIds as $id) $d->rawQuery('delete from #_newsletter where id = ?', array((int)$id));
     $d->rawQuery("delete from #_contact where email like ?", array('form-test-'.$suffix.'%'));
     $d->rawQuery("delete from #_newsletter where email like ?", array('form-test-'.$suffix.'%'));
-    /* Chỉ xoá đúng hai khoá rate-limit mà test này tự tạo. */
-    foreach (array('contact', 'newsletter-dealer') as $form)
-    {
-        $key = 'form:'.sha1(strtolower($form).'|127.0.0.1');
-        $d->rawQuery('delete from #_user_limit where login_ip = ?', array($key));
-    }
+    /* REMOTE_ADDR của Apache có thể là gateway Docker, nên nhận diện theo ID
+       mới thay vì giả định request luôn đến từ 127.0.0.1. */
+    foreach ($d->rawQuery("select id from #_user_limit where login_ip like 'form:%'") as $rateRow)
+        if (!isset($existingRateLimitIds[(int)$rateRow['id']]))
+            $d->rawQuery('delete from #_user_limit where id = ?', array((int)$rateRow['id']));
 });
 
 /* ------------------------------------------------------------------ LIÊN HỆ */
@@ -115,6 +117,10 @@ $validContact = array(
 $before = (int)$d->rawQueryOne("select count(*) as n from #_contact")['n'];
 $response = request($base.'lien-he/', $cookie, $validContact);
 ok(in_array($response['status'], array(200, 302), true), 'Nộp form Liên hệ hợp lệ');
+$contactDestination = request($base.'lien-he/', $cookie);
+$contactToast = preg_match('/var\s+FLASH_TOAST\s*=\s*(\{[^;]*\});/', $contactDestination['body'], $contactToastMatch)
+    ? json_decode($contactToastMatch[1], true) : null;
+ok(is_array($contactToast) && $contactToast['status'] === 'success' && strpos($contactToast['text'], 'Gửi liên hệ thành công') !== false, 'Nộp Liên hệ hợp lệ hiện toast thành công trên trang đích');
 
 $row = $d->rawQueryOne('select id, fullname, phone, subject from #_contact where email = ? order by id desc limit 1', array($contactEmail));
 ok(!empty($row['id']), 'Bản ghi liên hệ mới xuất hiện trong DB');
@@ -196,6 +202,10 @@ $dealerSubmit = array(
 );
 $dealerResponse = request($base.'dai-ly/', $dealerCookie, $dealerSubmit);
 ok(in_array($dealerResponse['status'], array(200, 302), true), 'Nộp form đăng ký đại lý hợp lệ');
+$dealerDestination = request($base.'dai-ly/', $dealerCookie);
+$dealerToast = preg_match('/var\s+FLASH_TOAST\s*=\s*(\{[^;]*\});/', $dealerDestination['body'], $dealerToastMatch)
+    ? json_decode($dealerToastMatch[1], true) : null;
+ok(is_array($dealerToast) && $dealerToast['status'] === 'success' && strpos($dealerToast['text'], 'Đăng ký đại lý thành công') !== false, 'Nộp Đại lý hợp lệ hiện toast thành công trên trang đích');
 
 $dealerRow = $d->rawQueryOne("select id, fullname, company, type from #_newsletter where email = ? order by id desc limit 1", array($dealerEmail));
 ok(!empty($dealerRow['id']), 'Bản ghi đăng ký đại lý mới xuất hiện trong DB');

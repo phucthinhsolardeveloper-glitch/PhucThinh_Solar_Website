@@ -66,6 +66,8 @@ docker cp migrations/000_preflight_production.php "$web_container:/tmp/000_prefl
 docker cp migrations/000_check_hosting_runtime.php "$web_container:/tmp/000_check_hosting_runtime.php"
 docker cp migrations/025_compress_oversized_images.php "$web_container:/tmp/025_compress_oversized_images.php"
 docker cp migrations/030_install_featured_category_icons.php "$web_container:/tmp/030_install_featured_category_icons.php"
+docker cp migrations/031_grant_contact_content_section_permissions.php "$web_container:/tmp/031_grant_contact_content_section_permissions.php"
+docker cp migrations/032_adv_banner_popup_links.php "$web_container:/tmp/032_adv_banner_popup_links.php"
 docker cp scripts/import-oriana-images-local.php "$web_container:/tmp/import-oriana-images.php"
 docker cp scripts/create-local-rbac-demo-accounts.php "$web_container:/tmp/create-local-rbac-demo-accounts.php"
 docker compose -f "$compose_file" exec -T web mkdir -p /tmp/pts-featured-category-icons
@@ -75,6 +77,9 @@ docker compose -f "$compose_file" exec -T web sh -lc '
 set -eu
 php -l administrator/api/login.php
 php -l administrator/api/status.php
+php -l administrator/api/newsletter_confirm_status.php
+php -l administrator/index.php
+php -l administrator/sources/photo.php
 php -l administrator/sources/order.php
 php -l administrator/sources/product.php
 php -l administrator/sources/product_bulk.php
@@ -94,11 +99,31 @@ php -l libraries/product_promo.php
 php -l administrator/sources/product_campaign.php
 php -l administrator/templates/product_campaign/list_tpl.php
 php -l administrator/templates/product_campaign/form_tpl.php
+php -l administrator/templates/newsletter/man/mans_tpl.php
+php -l administrator/templates/layout/header.php
+php -l administrator/templates/layout/js.php
+php -l administrator/templates/layout/menu.php
+php -l administrator/templates/photo/man/photo_add_tpl.php
+php -l administrator/templates/photo/man/photo_edit_tpl.php
+php -l administrator/templates/user/permission/permission_group_tpl.php
+php -l sources/allpage.php
+php -l sources/contact.php
+php -l sources/product.php
+php -l templates/contact/contact_tpl.php
+php -l templates/index/index_tpl.php
+php -l templates/layout/js.php
+php -l templates/layout/modal.php
+php -l templates/news/project_detail_tpl.php
+php -l templates/product/product_detail_tpl.php
+php -l templates/product/product_list_tpl.php
+php -l templates/product/product_tpl.php
 php -l libraries/router.php
 php -l /tmp/000_preflight_production.php
 php -l /tmp/000_check_hosting_runtime.php
 php -l /tmp/025_compress_oversized_images.php
 php -l /tmp/030_install_featured_category_icons.php
+php -l /tmp/031_grant_contact_content_section_permissions.php
+php -l /tmp/032_adv_banner_popup_links.php
 php -l /tmp/import-oriana-images.php
 php -l /tmp/create-local-rbac-demo-accounts.php
 php -l /tmp/test-admin-self-profile-integrity.php
@@ -135,6 +160,8 @@ php /tmp/preflight-commerce-migrations.php
 php /tmp/000_preflight_production.php --require-all
 php /tmp/000_check_hosting_runtime.php
 php /tmp/030_install_featured_category_icons.php --assets=/tmp/pts-featured-category-icons
+php /tmp/031_grant_contact_content_section_permissions.php
+php /tmp/032_adv_banner_popup_links.php
 '
 
 redirect_table="$(docker compose -f "$compose_file" exec -T db mariadb -N -B -upts_local -ppts_local_only phucthinhs_local -e "SHOW TABLES LIKE 'table_url_redirect';")"
@@ -150,6 +177,9 @@ if [ "$campaign_table_count" != "2" ]; then
 fi
 
 node --check domains/phucthinhsolar.com/public_html/administrator/assets/js/apps.js
+node --check domains/phucthinhsolar.com/public_html/administrator/assets/js/sidebar-state.js
+node --check domains/phucthinhsolar.com/public_html/assets/js/apps.js
+node --check domains/phucthinhsolar.com/public_html/assets/wp-content/themes/local/js/main080f.js
 
 curl -fsS -L -o /tmp/pts-predeploy-contact.html "$base_url/lien-he"
 product_slug="$(docker compose -f "$compose_file" exec -T db mariadb -N -B -upts_local -ppts_local_only phucthinhs_local -e "SELECT slugvi FROM table_product WHERE FIND_IN_SET('hienthi',status) AND slugvi<>'' ORDER BY id DESC LIMIT 1;")"

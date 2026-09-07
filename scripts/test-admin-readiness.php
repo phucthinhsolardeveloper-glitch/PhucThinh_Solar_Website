@@ -818,10 +818,12 @@ try
     readinessAssert(
         $newsletterList['status'] === 200
             && strpos($newsletterList['body'], 'Yêu cầu tư vấn') !== false
+            && preg_match('/<body class="[^"]*layout-fixed[^"]*"/', $newsletterList['body']) === 1
+            && strpos($newsletterList['body'], 'assets/js/sidebar-state.js?v=') !== false
             && strpos($newsletterList['body'], 'Mới / chưa xử lý') !== false
             && strpos($newsletterList['body'], 'Đang tư vấn') !== false
             && substr_count($newsletterList['body'], $newsletterFixtureCode) >= 2,
-        'Pipeline yêu cầu tư vấn render bộ đếm, lọc và kết quả tìm kiếm'
+        'Pipeline yêu cầu tư vấn render đúng và Admin nạp sidebar cuộn độc lập'
     );
 
     $pendingNewsletter = readinessHttp($base.'index.php?com=newsletter&act=man&type=dangkynhantin&confirm_status=pending&keyword='.urlencode($newsletterFixtureCode), 'GET', array(), $newCookie);
@@ -868,6 +870,55 @@ try
     ), $newCookie);
     $newsletterRejectedRow = $d->rawQueryOne('select confirm_status from #_newsletter where id = ?', array($createdNewsletterIds[0]));
     readinessAssert((string)$newsletterRejectedRow['confirm_status'] === '2', 'Pipeline từ chối trạng thái ngoài allowlist cấu hình');
+
+    // Bảng đăng ký đại lý gom dữ liệu theo nghiệp vụ và tô màu riêng từng trạng thái.
+    $dealerFixtureCode = 'CODEX-DEALER-'.bin2hex(random_bytes(4));
+	$dealerFixtureIds = array();
+    foreach(array('', '2') as $fixtureStatus)
+    {
+        $d->insert('newsletter', array(
+            'fullname' => 'Đại diện '.$dealerFixtureCode.'-'.$fixtureStatus,
+            'company' => 'Công ty '.$dealerFixtureCode,
+            'email' => strtolower($dealerFixtureCode).'-'.($fixtureStatus === '' ? 'new' : 'processing').'@example.com',
+            'phone' => '0911000000',
+            'address' => 'Quận kiểm thử, TP.HCM',
+            'notes' => '',
+            'confirm_status' => $fixtureStatus,
+            'type' => 'dangkynhantin2',
+            'status' => $fixtureStatus === '' ? '' : 'hienthi',
+            'date_created' => time(),
+            'date_updated' => 0,
+            'numb' => 0,
+        ));
+		$dealerFixtureIds[] = (int)$d->getLastInsertId();
+		$createdNewsletterIds[] = end($dealerFixtureIds);
+    }
+    $dealerList = readinessHttp($base.'index.php?com=newsletter&act=man&type=dangkynhantin2&keyword='.urlencode($dealerFixtureCode), 'GET', array(), $newCookie);
+    readinessAssert(
+        $dealerList['status'] === 200
+            && strpos($dealerList['body'], 'pts-newsletter-table--dealer') !== false
+            && strpos($dealerList['body'], 'Người đăng ký / Doanh nghiệp') !== false
+            && strpos($dealerList['body'], 'Thông tin liên hệ') !== false
+            && strpos($dealerList['body'], 'Công ty '.$dealerFixtureCode) !== false
+            && strpos($dealerList['body'], 'pts-status-new') !== false
+            && strpos($dealerList['body'], 'pts-status-processing') !== false,
+        'Bảng đăng ký đại lý cân cột nghiệp vụ và phân màu trạng thái'
+    );
+	preg_match("/ADMIN_CSRF\s*=\s*'([^']+)'/", $dealerList['body'], $dealerStatusToken);
+	$dealerStatusUpdate = readinessHttp($base.'api/newsletter_confirm_status.php', 'POST', array(
+		'admin_csrf' => isset($dealerStatusToken[1]) ? $dealerStatusToken[1] : '',
+		'id' => $dealerFixtureIds[0],
+		'type' => 'dangkynhantin2',
+		'value' => '1',
+	), $newCookie);
+	$dealerStatusPayload = json_decode($dealerStatusUpdate['body'], true);
+	$dealerStatusRow = $d->rawQueryOne('select confirm_status from #_newsletter where id = ?', array($dealerFixtureIds[0]));
+	readinessAssert(
+		$dealerStatusUpdate['status'] === 200
+			&& !empty($dealerStatusPayload['ok'])
+			&& (string)$dealerStatusRow['confirm_status'] === '1',
+		'Cập nhật nhanh trạng thái đại lý giữ CSRF, phân quyền và allowlist'
+	);
 
     // ADM-P2-001: bảng điều khiển nạp dữ liệu ở controller sources/index.php, template chỉ render.
     $dashboard = readinessHttp($base.'index.php', 'GET', array(), $newCookie);

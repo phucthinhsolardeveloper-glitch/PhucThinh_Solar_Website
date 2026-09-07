@@ -845,6 +845,59 @@
 	        </div>
 	    <?php } ?>
 	    <div class="card card-permission card-primary card-outline text-sm">
+	        <div class="card-header">
+	            <h3 class="card-title">Quản lý liên hệ</h3>
+	            <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
+	            </div>
+	        </div>
+	        <div class="card-body">
+					<div class="custom-control custom-checkbox d-inline-block align-middle mb-2 mr-4 text-md">
+                        <input type="checkbox" class="custom-control-input" name="dataPermission[]" id="quyen-contact-view" value="contact_man" <?=(isset($lists_permission) && in_array('contact_man', $lists_permission))?'checked':'';?>>
+                        <label for="quyen-contact-view" class="custom-control-label font-weight-normal">Xem danh sách</label>
+                    </div>
+                    <div class="custom-control custom-checkbox d-inline-block align-middle mb-2 mr-4 text-md">
+                        <input type="checkbox" class="custom-control-input" name="dataPermission[]" id="quyen-contact-edit" value="contact_edit" <?=(isset($lists_permission) && in_array('contact_edit', $lists_permission))?'checked':'';?>>
+                        <label for="quyen-contact-edit" class="custom-control-label font-weight-normal">Chỉnh sửa</label>
+                    </div>
+                    <div class="custom-control custom-checkbox d-inline-block align-middle mb-2 text-md">
+                        <input type="checkbox" class="custom-control-input" name="dataPermission[]" id="quyen-contact-delete" value="contact_delete" <?=(isset($lists_permission) && in_array('contact_delete', $lists_permission))?'checked':'';?>>
+                        <label for="quyen-contact-delete" class="custom-control-label font-weight-normal">Xóa</label>
+                    </div>
+	        </div>
+	    </div>
+	    <?php if(isset($config['product'])) { ?>
+	    <div class="card card-permission card-primary card-outline text-sm">
+	        <div class="card-header">
+	            <h3 class="card-title">Khối nội dung mô tả</h3>
+	            <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
+	            </div>
+	        </div>
+	        <div class="card-body">
+                        <?php foreach($config['product'] as $key => $value) { ?>
+					<div class="form-group row">
+						<label class="d-inline-block align-middle mb-2 mr-2 text-md col-md-3" for="quyen-content-section-<?=$key?>"><?=$value['title_main']?>:</label>
+						<div class="col-md-7">
+							<div class="custom-control custom-checkbox d-inline-block align-middle mb-2 mr-4 text-md">
+		                        <input type="checkbox" class="custom-control-input" name="dataPermission[]" id="quyen-content-section-view-<?=$key?>" value="content_section_man_<?=$key?>" <?=(isset($lists_permission) && in_array('content_section_man_'.$key, $lists_permission))?'checked':'';?>>
+		                        <label for="quyen-content-section-view-<?=$key?>" class="custom-control-label font-weight-normal">Xem danh sách</label>
+		                    </div>
+		                    <div class="custom-control custom-checkbox d-inline-block align-middle mb-2 mr-4 text-md">
+		                        <input type="checkbox" class="custom-control-input" name="dataPermission[]" id="quyen-content-section-edit-<?=$key?>" value="content_section_edit_<?=$key?>" <?=(isset($lists_permission) && in_array('content_section_edit_'.$key, $lists_permission))?'checked':'';?>>
+		                        <label for="quyen-content-section-edit-<?=$key?>" class="custom-control-label font-weight-normal">Soạn nội dung</label>
+		                    </div>
+		                    <div class="custom-control custom-checkbox d-inline-block align-middle mb-2 text-md">
+		                        <input type="checkbox" class="custom-control-input" name="dataPermission[]" id="quyen-content-section-delete-<?=$key?>" value="content_section_delete_<?=$key?>" <?=(isset($lists_permission) && in_array('content_section_delete_'.$key, $lists_permission))?'checked':'';?>>
+		                        <label for="quyen-content-section-delete-<?=$key?>" class="custom-control-label font-weight-normal">Xóa</label>
+		                    </div>
+						</div>
+					</div>
+				<?php } ?>
+	        </div>
+	    </div>
+	    <?php } ?>
+	    <div class="card card-permission card-primary card-outline text-sm">
             <div class="card-header">
                 <h3 class="card-title">Quản lý thông tin công ty</h3>
                 <div class="card-tools">

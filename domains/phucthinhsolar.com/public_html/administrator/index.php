@@ -53,7 +53,7 @@
 	<!-- Css all -->
 	<?php include TEMPLATE.LAYOUT."css.php"; ?>
 </head>
-<body class="sidebar-mini hold-transition text-sm <?=(!isset($_SESSION[$loginAdmin]['active']) || $_SESSION[$loginAdmin]['active']==false)?'login-page':''?>">
+<body class="sidebar-mini hold-transition text-sm <?=(isset($_SESSION[$loginAdmin]['active']) && $_SESSION[$loginAdmin]['active']==true)?'layout-fixed':'login-page'?>">
     <!-- Loader -->
 	<?php $template = isset($template) ? $template : ''; /* Source nào chỉ redirect hoặc stream file rồi exit sẽ không đặt biến này. */ ?>
 	<?php if($template === 'index' || $template === 'user/login') include TEMPLATE.LAYOUT."loader.php"; ?>

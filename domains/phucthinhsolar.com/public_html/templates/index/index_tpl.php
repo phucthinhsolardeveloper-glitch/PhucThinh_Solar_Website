@@ -64,9 +64,16 @@
                 data-autoplayspeed="3500" data-dots="0" data-nav="1"
                 data-navtext="<svg xmlns='http://www.w3.org/2000/svg' class='icon icon-tabler icon-tabler-arrow-narrow-left' width='50' height='37' viewBox='0 0 24 24' stroke-width='1' stroke='#ffffff' fill='none' stroke-linecap='round' stroke-linejoin='round'><path stroke='none' d='M0 0h24v24H0z' fill='none'/><line x1='5' y1='12' x2='19' y2='12' /><line x1='5' y1='12' x2='9' y2='16' /><line x1='5' y1='12' x2='9' y2='8' /></svg>|<svg xmlns='http://www.w3.org/2000/svg' class='icon icon-tabler icon-tabler-arrow-narrow-right' width='50' height='37' viewBox='0 0 24 24' stroke-width='1' stroke='#ffffff' fill='none' stroke-linecap='round' stroke-linejoin='round'><path stroke='none' d='M0 0h24v24H0z' fill='none'/><line x1='5' y1='12' x2='19' y2='12' /><line x1='15' y1='16' x2='19' y2='12' /><line x1='15' y1='8' x2='19' y2='12' /></svg>"
                 data-navcontainer=".control-adv">
-                <?php foreach($adv as $v) { ?>
+                <?php foreach($adv as $v) {
+                    /* Màn hình sửa banner (photo_edit_tpl.php) có dropdown "Khi bấm
+                       nút" ghi thẳng #ptsContactModal / #ptsDealerModal vào link —
+                       nhận đúng 2 giá trị đặc biệt này để mở popup dùng chung toàn
+                       site, các banner khác (link tự do) giữ nguyên hành vi điều
+                       hướng bình thường. */
+                    $advModalTarget = in_array($v['link'], array('#ptsContactModal', '#ptsDealerModal'), true) ? ltrim($v['link'], '#') : '';
+                ?>
                 <div class="adv-item">
-                    <a class="text-decoration-none" href="<?=$v['link']?>" title="<?=$v['name'.$lang]?>">
+                    <a class="text-decoration-none" href="<?=$advModalTarget !== '' ? '#'.$advModalTarget : $v['link']?>"<?=$advModalTarget !== '' ? ' data-toggle="modal" data-target="#'.$advModalTarget.'"' : ''?> title="<?=$v['name'.$lang]?>">
                         <div class="adv-photo">
                             <?=$func->getImage(['class' => 'lazy w-100', 'sizes' => '735x378x2', 'upload' => UPLOAD_PHOTO_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
                         </div>
@@ -207,7 +214,7 @@
     <div class="uk-container">
         <div class="row">
             <div class="col-12">
-                <a href="dai-ly/" class="promo-banner promo-banner-gold promo-banner-single">
+                <a href="#ptsDealerModal" data-toggle="modal" data-target="#ptsDealerModal" class="promo-banner promo-banner-gold promo-banner-single">
                     <span class="promo-copy">
                         <span class="promo-eyebrow">Trở thành đối tác phân phối</span>
                         <span class="promo-title">Tuyển đại lý toàn quốc</span>

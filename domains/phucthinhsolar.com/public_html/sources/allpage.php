@@ -39,25 +39,42 @@
     $counter = $statistic->getCounter();
     $online = $statistic->getOnline();
 
+    /* Chuẩn hoá input form public trước khi kiểm tra/lưu. Không nhận array ở
+       vị trí scalar và giới hạn độ dài để tránh dữ liệu quá cỡ vào DB/email. */
+    $formLeadValue = function($input, $key, $maxLength) {
+        if(!is_array($input) || !isset($input[$key]) || !is_scalar($input[$key])) return '';
+        $value = trim((string)$input[$key]);
+        return function_exists('mb_substr') ? mb_substr($value, 0, $maxLength, 'UTF-8') : substr($value, 0, $maxLength);
+    };
+
     /* Newsletter */
     if(!empty($_POST['submit-newsletter']))
     {
-        if(!formCsrfValid(isset($_POST['form_csrf']) ? $_POST['form_csrf'] : '')) $func->transfer("Phiên đăng ký không hợp lệ. Vui lòng tải lại trang.", $configBase, false);
+        if(!formCsrfValid(isset($_POST['form_csrf']) ? $_POST['form_csrf'] : '')) $func->transfer("Phiên đăng ký không hợp lệ. Vui lòng tải lại trang.", $func->getPageURL(), false);
         $publicIp = formClientIp($_SERVER, isset($config['login']['trusted-proxies']) ? $config['login']['trusted-proxies'] : array());
-        if(!formPersistentRateLimit($d, 'newsletter-consulting', $publicIp, 5, 600)) $func->transfer("Bạn đăng ký quá nhanh. Vui lòng thử lại sau.", $configBase, false);
-        $responseCaptcha = $_POST['recaptcha_response_newsletter'];
+        if(!formPersistentRateLimit($d, 'newsletter-consulting', $publicIp, 5, 600)) $func->transfer("Bạn đăng ký quá nhanh. Vui lòng thử lại sau.", $func->getPageURL(), false);
+        $responseCaptcha = isset($_POST['recaptcha_response_newsletter']) ? $_POST['recaptcha_response_newsletter'] : '';
         $resultCaptcha = $func->checkRecaptcha($responseCaptcha);
         $scoreCaptcha = (!empty($resultCaptcha['score'])) ? $resultCaptcha['score'] : 0;
         $actionCaptcha = (!empty($resultCaptcha['action'])) ? $resultCaptcha['action'] : '';
         $testCaptcha = (!empty($resultCaptcha['test'])) ? $resultCaptcha['test'] : false;
-        $dataNewsletter = (!empty($_POST['dataNewsletter'])) ? $_POST['dataNewsletter'] : null;
-
-        $error = $flash->get('error');
-
-        if(!empty($error))
-        {
-            $func->transfer($error, $configBase, false);
-        }
+        $dataNewsletterInput = (!empty($_POST['dataNewsletter']) && is_array($_POST['dataNewsletter'])) ? $_POST['dataNewsletter'] : array();
+        $dataNewsletter = array(
+            'fullname' => $formLeadValue($dataNewsletterInput, 'fullname', 100),
+            'phone' => $formLeadValue($dataNewsletterInput, 'phone', 20),
+            'email' => $formLeadValue($dataNewsletterInput, 'email', 150),
+            'loaihinh' => $formLeadValue($dataNewsletterInput, 'loaihinh', 180),
+            'congsuat' => $formLeadValue($dataNewsletterInput, 'congsuat', 255),
+            'address' => $formLeadValue($dataNewsletterInput, 'address', 180),
+        );
+        $leadErrors = array();
+        if($dataNewsletter['fullname'] === '') $leadErrors[] = 'Vui lòng nhập họ và tên';
+        if($dataNewsletter['phone'] === '' || !$func->isPhone($dataNewsletter['phone'])) $leadErrors[] = 'Số điện thoại không hợp lệ';
+        if($dataNewsletter['email'] === '' || !$func->isEmail($dataNewsletter['email'])) $leadErrors[] = 'Email không hợp lệ';
+        if($dataNewsletter['loaihinh'] === '') $leadErrors[] = 'Vui lòng chọn đối tượng tư vấn';
+        if($dataNewsletter['congsuat'] === '') $leadErrors[] = 'Vui lòng nhập nhu cầu sản phẩm';
+        if($dataNewsletter['address'] === '') $leadErrors[] = 'Vui lòng chọn tỉnh/thành phố';
+        if($leadErrors) $func->transfer(implode('. ', $leadErrors).'.', $func->getPageURL(), false);
 
         /* Save data */
         if(($scoreCaptcha >= 0.5 && $actionCaptcha == 'Newsletter') || $testCaptcha == true)
@@ -74,37 +91,44 @@
 
             if($d->insert('newsletter',$data))
             {
-                $func->transfer("Đăng ký tư vấn thành công. Chúng tôi sẽ liên hệ với bạn sớm.", $configBase);
+                $func->transfer("Đăng ký tư vấn thành công. Chúng tôi sẽ liên hệ với bạn sớm.", $func->getPageURL());
             }
             else
             {
-                $func->transfer("Đăng ký tư vấn thất bại. Vui lòng thử lại sau.", $configBase, false);
+                $func->transfer("Đăng ký tư vấn thất bại. Vui lòng thử lại sau.", $func->getPageURL(), false);
             }
         }
         else
         {
-            $func->transfer("Đăng ký tư vấn thất bại. Vui lòng thử lại sau.", $configBase, false);
+            $func->transfer("Đăng ký tư vấn thất bại. Vui lòng thử lại sau.", $func->getPageURL(), false);
         }
     }
 
     if(!empty($_POST['submit-newsletter2']))
     {
-        if(!formCsrfValid(isset($_POST['form_csrf']) ? $_POST['form_csrf'] : '')) $func->transfer("Phiên đăng ký không hợp lệ. Vui lòng tải lại trang.", $configBase, false);
+        if(!formCsrfValid(isset($_POST['form_csrf']) ? $_POST['form_csrf'] : '')) $func->transfer("Phiên đăng ký không hợp lệ. Vui lòng tải lại trang.", $func->getPageURL(), false);
         $publicIp = formClientIp($_SERVER, isset($config['login']['trusted-proxies']) ? $config['login']['trusted-proxies'] : array());
-        if(!formPersistentRateLimit($d, 'newsletter-dealer', $publicIp, 5, 600)) $func->transfer("Bạn đăng ký quá nhanh. Vui lòng thử lại sau.", $configBase, false);
-        $responseCaptcha = $_POST['recaptcha_response_newsletter2'];
+        if(!formPersistentRateLimit($d, 'newsletter-dealer', $publicIp, 5, 600)) $func->transfer("Bạn đăng ký quá nhanh. Vui lòng thử lại sau.", $func->getPageURL(), false);
+        $responseCaptcha = isset($_POST['recaptcha_response_newsletter2']) ? $_POST['recaptcha_response_newsletter2'] : '';
         $resultCaptcha = $func->checkRecaptcha($responseCaptcha);
         $scoreCaptcha = (!empty($resultCaptcha['score'])) ? $resultCaptcha['score'] : 0;
         $actionCaptcha = (!empty($resultCaptcha['action'])) ? $resultCaptcha['action'] : '';
         $testCaptcha = (!empty($resultCaptcha['test'])) ? $resultCaptcha['test'] : false;
-        $dataNewsletter = (!empty($_POST['dataNewsletter'])) ? $_POST['dataNewsletter'] : null;
-
-        $error = $flash->get('error');
-
-        if(!empty($error))
-        {
-            $func->transfer($error, $configBase, false);
-        }
+        $dataNewsletterInput = (!empty($_POST['dataNewsletter']) && is_array($_POST['dataNewsletter'])) ? $_POST['dataNewsletter'] : array();
+        $dataNewsletter = array(
+            'fullname' => $formLeadValue($dataNewsletterInput, 'fullname', 100),
+            'phone' => $formLeadValue($dataNewsletterInput, 'phone', 20),
+            'email' => $formLeadValue($dataNewsletterInput, 'email', 150),
+            'address' => $formLeadValue($dataNewsletterInput, 'address', 180),
+            'company' => $formLeadValue($dataNewsletterInput, 'company', 180),
+        );
+        $leadErrors = array();
+        if($dataNewsletter['fullname'] === '') $leadErrors[] = 'Vui lòng nhập họ và tên';
+        if($dataNewsletter['phone'] === '' || !$func->isPhone($dataNewsletter['phone'])) $leadErrors[] = 'Số điện thoại không hợp lệ';
+        if($dataNewsletter['email'] === '' || !$func->isEmail($dataNewsletter['email'])) $leadErrors[] = 'Email không hợp lệ';
+        if($dataNewsletter['address'] === '' || $dataNewsletter['address'] === 'Tỉnh thành') $leadErrors[] = 'Vui lòng chọn tỉnh/thành phố';
+        if($dataNewsletter['company'] === '') $leadErrors[] = 'Vui lòng nhập tên doanh nghiệp/cửa hàng';
+        if($leadErrors) $func->transfer(implode('. ', $leadErrors).'.', $func->getPageURL(), false);
 
         /* Save data */
         if(($scoreCaptcha >= 0.5 && $actionCaptcha == 'Newsletter2') || $testCaptcha == true)
@@ -120,16 +144,146 @@
 
             if($d->insert('newsletter',$data))
             {
-                $func->transfer("Đăng ký đại lý thành công. Chúng tôi sẽ liên hệ với bạn sớm.", $configBase);
+                $func->transfer("Đăng ký đại lý thành công. Chúng tôi sẽ liên hệ với bạn sớm.", $func->getPageURL());
             }
             else
             {
-                $func->transfer("Đăng ký đại lý thất bại. Vui lòng thử lại sau.", $configBase, false);
+                $func->transfer("Đăng ký đại lý thất bại. Vui lòng thử lại sau.", $func->getPageURL(), false);
             }
         }
         else
         {
-            $func->transfer("Đăng ký đại lý thất bại. Vui lòng thử lại sau.", $configBase, false);
+            $func->transfer("Đăng ký đại lý thất bại. Vui lòng thử lại sau.", $func->getPageURL(), false);
+        }
+    }
+
+    /* Liên hệ (form dùng chung: trang lien-he và popup toàn site) */
+    if(!empty($_POST['submit-contact']))
+    {
+        if(!formCsrfValid(isset($_POST['form_csrf']) ? $_POST['form_csrf'] : '')) $func->transfer("Phiên gửi liên hệ không hợp lệ. Vui lòng tải lại trang.", $func->getPageURL(), false);
+        $publicIp = formClientIp($_SERVER, isset($config['login']['trusted-proxies']) ? $config['login']['trusted-proxies'] : array());
+        if(!formPersistentRateLimit($d, 'contact', $publicIp, 5, 600)) $func->transfer("Bạn gửi liên hệ quá nhanh. Vui lòng thử lại sau.", $func->getPageURL(), false);
+        $responseCaptcha = isset($_POST['recaptcha_response_contact']) ? $_POST['recaptcha_response_contact'] : '';
+        $resultCaptcha = $func->checkRecaptcha($responseCaptcha);
+        $scoreCaptcha = (!empty($resultCaptcha['score'])) ? $resultCaptcha['score'] : 0;
+        $actionCaptcha = (!empty($resultCaptcha['action'])) ? $resultCaptcha['action'] : '';
+        $testCaptcha = (!empty($resultCaptcha['test'])) ? $resultCaptcha['test'] : false;
+        $dataContactInput = (!empty($_POST['dataContact']) && is_array($_POST['dataContact'])) ? $_POST['dataContact'] : array();
+        $dataContact = array(
+            'fullname' => $formLeadValue($dataContactInput, 'fullname', 100),
+            'phone' => $formLeadValue($dataContactInput, 'phone', 20),
+            'email' => $formLeadValue($dataContactInput, 'email', 150),
+            'address' => $formLeadValue($dataContactInput, 'address', 255),
+            'subject' => $formLeadValue($dataContactInput, 'subject', 180),
+            'content' => $formLeadValue($dataContactInput, 'content', 5000),
+        );
+
+        /* Valid data */
+        $contactResponse = array();
+        if(empty($dataContact['fullname'])) $contactResponse['messages'][] = 'Họ tên không được trống';
+        if(empty($dataContact['phone'])) $contactResponse['messages'][] = 'Số điện thoại không được trống';
+        if(!empty($dataContact['phone']) && !$func->isPhone($dataContact['phone'])) $contactResponse['messages'][] = 'Số điện thoại không hợp lệ';
+        if(empty($dataContact['email'])) $contactResponse['messages'][] = 'Email không được trống';
+        if(!empty($dataContact['email']) && !$func->isEmail($dataContact['email'])) $contactResponse['messages'][] = 'Email không hợp lệ';
+        if(empty($dataContact['subject'])) $contactResponse['messages'][] = 'Chủ đề không được trống';
+        if(empty($dataContact['content'])) $contactResponse['messages'][] = 'Nội dung không được trống';
+
+        if(!empty($contactResponse))
+        {
+            /* Flash data */
+            foreach($dataContact as $k => $v) if(!empty($v)) $flash->set($k, $v);
+
+            /* Hiển thị lỗi bằng cùng toast với kết quả thành công. Template cũ
+               đọc flash message bên trong một HTML comment nên người gửi không
+               nhìn thấy bất kỳ phản hồi nào. */
+            $func->transfer(implode('. ', $contactResponse['messages']).'.', $func->getPageURL(), false);
+        }
+
+        /* Save data */
+        if(($scoreCaptcha >= 0.5 && $actionCaptcha == 'contact') || $testCaptcha == true)
+        {
+            $data = array();
+            $data['fullname'] = htmlspecialchars($dataContact['fullname']);
+            $data['email'] = htmlspecialchars($dataContact['email']);
+            $data['phone'] = htmlspecialchars($dataContact['phone']);
+            $data['address'] = isset($dataContact['address']) ? htmlspecialchars($dataContact['address']) : '';
+            $data['subject'] = htmlspecialchars($dataContact['subject']);
+            $data['content'] = htmlspecialchars($dataContact['content']);
+            $data['date_created'] = time();
+            $data['numb'] = 1;
+
+            if($d->insert('contact',$data))
+            {
+                $id_insert = $d->getLastInsertId();
+
+                if($func->hasFile("file_attach"))
+                {
+                    $fileUpdate = array();
+                    $file_name = $func->uploadName($_FILES['file_attach']["name"]);
+
+                    if($file_attach = $func->uploadFile("file_attach", '.doc|.docx|.pdf|.rar|.zip|.ppt|.pptx|.xls|.xlsx|.jpg|.jpeg|.png|.gif', UPLOAD_FILE_L, $file_name))
+                    {
+                        $fileUpdate['file_attach'] = $file_attach;
+                        $d->where('id', $id_insert);
+                        $d->update('contact', $fileUpdate);
+                        unset($fileUpdate);
+                    }
+                }
+            }
+            else
+            {
+                $func->transfer("Gửi liên hệ thất bại. Vui lòng thử lại sau.", $func->getPageURL(), false);
+            }
+
+            /* Gán giá trị gửi email */
+            $strThongtin = '';
+            $emailer->set('tennguoigui',$data['fullname']);
+            $emailer->set('emailnguoigui',$data['email']);
+            $emailer->set('dienthoainguoigui',$data['phone']);
+            $emailer->set('diachinguoigui',$data['address']);
+            $emailer->set('tieudelienhe',$data['subject']);
+            $emailer->set('noidunglienhe',$data['content']);
+            if($emailer->get('tennguoigui')) $strThongtin .= '<span style="text-transform:capitalize">'.$emailer->get('tennguoigui').'</span><br>';
+            if($emailer->get('emailnguoigui')) $strThongtin .= '<a href="mailto:'.$emailer->get('emailnguoigui').'" target="_blank">'.$emailer->get('emailnguoigui').'</a><br>';
+            if($emailer->get('diachinguoigui')) $strThongtin .= ''.$emailer->get('diachinguoigui').'<br>';
+            if($emailer->get('dienthoainguoigui')) $strThongtin .= 'Tel: '.$emailer->get('dienthoainguoigui').'';
+            $emailer->set('thongtin',$strThongtin);
+
+            /* Defaults attributes email */
+            $emailDefaultAttrs = $emailer->defaultAttrs();
+
+            /* Variables email */
+            $emailVars = array('{emailTitleSender}', '{emailInfoSender}', '{emailSubjectSender}', '{emailContentSender}');
+            $emailVars = $emailer->addAttrs($emailVars, $emailDefaultAttrs['vars']);
+
+            /* Values email */
+            $emailVals = array($emailer->get('tennguoigui'), $emailer->get('thongtin'), $emailer->get('tieudelienhe'), $emailer->get('noidunglienhe'));
+            $emailVals = $emailer->addAttrs($emailVals, $emailDefaultAttrs['vals']);
+
+            /* Send email admin */
+            $arrayEmail = null;
+            $subject = "Thư liên hệ từ ".$setting['name'.$lang];
+            $message = str_replace($emailVars, $emailVals, $emailer->markdown('contact/admin'));
+            $file = 'file_attach';
+
+            if($emailer->send("admin", $arrayEmail, $subject, $message, $file))
+            {
+                /* Send email customer */
+                $arrayEmail = array("dataEmail" => array("name" => $emailer->get('tennguoigui'), "email" => $emailer->get('emailnguoigui')));
+                $subject = "Thư liên hệ từ ".$setting['name'.$lang];
+                $message = str_replace($emailVars, $emailVals, $emailer->markdown('contact/customer'));
+                $file = 'file_attach';
+
+                $emailer->send("customer", $arrayEmail, $subject, $message, $file);
+            }
+
+            /* Bản ghi đã lưu thành công là kết quả chính. Không để lỗi gửi mail
+               phụ làm request rơi xuống cuối trang mà không có thông báo. */
+            $func->transfer("Gửi liên hệ thành công. Chúng tôi sẽ liên hệ với bạn sớm.", $func->getPageURL());
+        }
+        else
+        {
+            $func->transfer("Gửi liên hệ thất bại. Vui lòng thử lại sau", $func->getPageURL(), false);
         }
     }
 ?>

@@ -421,8 +421,11 @@
                 <?php } ?>
 
                 <!-- Khối nội dung mô tả (soạn nội dung dài cho sản phẩm) -->
-                <?php if(isset($config['product'])) { $csType = array_key_first($config['product']); if($csType) { ?>
-                    <li class="nav-item">
+                <?php if(isset($config['product'])) { $csType = array_key_first($config['product']); if($csType) {
+                    $none = "";
+                    if(isset($is_permission) && $is_permission == true) if($func->checkPermission('content_section', 'man', $csType, null, 'phrase-1')) $none = "d-none";
+                ?>
+                    <li class="nav-item <?=$none?>">
                         <a class="nav-link <?=($com=='content_section')?'active':''?>" href="index.php?com=content_section&act=man&type=<?=htmlspecialchars($csType, ENT_QUOTES, 'UTF-8')?>" title="Khối nội dung mô tả">
                             <i class="nav-icon text-sm fas fa-layer-group"></i>
                             <p>Khối nội dung mô tả</p>
@@ -546,8 +549,12 @@
                     </li>
                 <?php } ?>
                 <!-- Contact -->
-                <?php $active = ($com == 'contact') ? 'active' : ''; ?>
-                <li class="nav-item <?=$active?>">
+                <?php
+                    $active = ($com == 'contact') ? 'active' : '';
+                    $none = "";
+                    if(isset($is_permission) && $is_permission == true) if($func->checkPermission('contact', 'man', '', null, 'phrase-1')) $none = "d-none";
+                ?>
+                <li class="nav-item <?=$active?> <?=$none?>">
                     <a class="nav-link <?=$active?>" href="index.php?com=contact&act=man" title="Quản lý liên hệ">
                         <i class="nav-icon text-sm fas fa-inbox"></i>
                         <p>Liên hệ khách hàng</p>

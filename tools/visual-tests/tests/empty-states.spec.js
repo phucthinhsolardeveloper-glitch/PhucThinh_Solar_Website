@@ -91,7 +91,9 @@ test('empty product category keeps navigation, filters and consultation entry po
   await expect(page.locator('.breadCrumbs')).toBeVisible();
   if (!isMobile) {
     await expect(page.locator('.sidebar-consult-box')).toBeVisible();
-    await expect(page.locator('.sidebar-consult-box .sc-btn')).toHaveAttribute('href', /lien-he\/?$/);
+    await expect(page.locator('.sidebar-consult-box .sc-btn')).toHaveAttribute('data-target', '#ptsContactModal');
+    await page.locator('.sidebar-consult-box .sc-btn').click();
+    await expect(page.locator('#ptsContactModal')).toBeVisible();
   }
 });
 
@@ -153,7 +155,7 @@ test('contact page serves a CSRF-protected lead form wired to the PHP handler', 
     const response = await page.goto('/lien-he/', { waitUntil: 'domcontentloaded' });
     expect(response && response.ok()).toBeTruthy();
   });
-  // The live form carries WordPress-era class names but posts to sources/contact.php.
+  // The live form carries WordPress-era class names; the shared handler runs from sources/allpage.php.
   const form = page.locator('form:has([name="dataContact[fullname]"])');
   await expect(form).toHaveCount(1);
   await expect(form.locator('input[name="form_csrf"]')).toHaveCount(1);

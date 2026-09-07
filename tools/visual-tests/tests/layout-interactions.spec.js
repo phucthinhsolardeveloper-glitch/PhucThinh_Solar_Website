@@ -97,9 +97,128 @@ test('quote request CTA opens the protected consultation form', async ({ page })
   await expect(form.locator('[name="dataNewsletter[fullname]"]')).toBeVisible();
   await expect(form.locator('[name="dataNewsletter[phone]"]')).toBeVisible();
   await expect(form.locator('[name="submit-newsletter"]')).toBeVisible();
+  await expect(form.locator('[name="submit-newsletter"]')).toBeEnabled();
 
   await modal.locator('[data-dismiss="modal"]').click();
   await expect(modal).not.toBeVisible();
+});
+
+test('product landing renders category products in the initial HTML without startup API requests', async ({ page }) => {
+  const product3Requests = [];
+  page.on('request', request => {
+    if (request.url().includes('/api/product3.php')) product3Requests.push(request.url());
+  });
+
+  const response = await page.goto('/san-pham/', { waitUntil: 'domcontentloaded' });
+  expect(response && response.ok()).toBeTruthy();
+  const blocks = page.locator('.paging-prolist[data-server-rendered="1"]');
+  expect(await blocks.count()).toBeGreaterThan(0);
+  await expect(blocks.first().locator('.product-card').first()).toBeAttached();
+  expect(await blocks.first().locator('.product-card').count()).toBeLessThanOrEqual(4);
+  await page.waitForTimeout(700);
+  expect(product3Requests).toEqual([]);
+});
+
+test('dealer CTA opens a complete, styled and enabled form', async ({ page }) => {
+  await page.goto('/san-pham/den-pha-nang-luong-mat-troi-jindian-jd-t300-300w', { waitUntil: 'domcontentloaded' });
+  await page.locator('.btn-product-detail [data-target="#ptsDealerModal"]').click();
+  const modal = page.locator('#ptsDealerModal');
+  await expect(modal).toBeVisible();
+  await expect(modal).toHaveClass(/pts-lead-modal/);
+  await expect(modal.locator('[name="dataNewsletter[fullname]"]')).toHaveAttribute('required', '');
+  await expect(modal.locator('[name="dataNewsletter[phone]"]')).toHaveAttribute('required', '');
+  await expect(modal.locator('[name="dataNewsletter[email]"]')).toHaveAttribute('required', '');
+  await expect(modal.locator('[name="dataNewsletter[address]"]')).toHaveAttribute('required', '');
+  await expect(modal.locator('[name="dataNewsletter[company]"]')).toHaveAttribute('required', '');
+  await expect(modal.locator('[name="submit-newsletter2"]')).toBeEnabled();
+  await expect(page.locator('#button-contact-vr')).toBeHidden();
+});
+
+test('mobile news and project category rails do not re-layout into Slick after load', async ({ page, isMobile }) => {
+  test.skip(!isMobile, 'The native category rail is a mobile/tablet layout.');
+  for (const path of ['/tin-tuc/', '/du-an-da-thuc-hien/']) {
+    await page.goto(path, { waitUntil: 'domcontentloaded' });
+    const rail = page.locator('.CRlist_term_blog_box').first();
+    await expect(rail).toBeVisible();
+    const initial = await rail.evaluate(element => ({
+      height: element.getBoundingClientRect().height,
+      flexWrap: getComputedStyle(element).flexWrap,
+      overflowX: getComputedStyle(element).overflowX,
+    }));
+    await page.waitForTimeout(700);
+    const settled = await rail.evaluate(element => ({
+      height: element.getBoundingClientRect().height,
+      slick: element.classList.contains('slick-initialized'),
+    }));
+    expect(initial.flexWrap).toBe('nowrap');
+    expect(['auto', 'scroll']).toContain(initial.overflowX);
+    expect(settled.slick).toBeFalsy();
+    expect(Math.abs(settled.height - initial.height)).toBeLessThanOrEqual(1);
+  }
+});
+
+test('mobile product detail tabs fit the viewport and switch content', async ({ page, isMobile }) => {
+  test.skip(!isMobile, 'The two-column tab layout only applies on mobile.');
+  await page.goto('/san-pham/den-pha-nang-luong-mat-troi-jindian-jd-t300-300w', { waitUntil: 'domcontentloaded' });
+  const tabs = page.locator('#tabsProDetail');
+  await expect(tabs).toBeVisible();
+  const layout = await tabs.evaluate(element => {
+    const parent = element.getBoundingClientRect();
+    return {
+      columns: getComputedStyle(element).gridTemplateColumns.split(' ').length,
+      childrenInside: Array.from(element.children).every(child => {
+        const rect = child.getBoundingClientRect();
+        return rect.left >= parent.left - 1 && rect.right <= parent.right + 1;
+      }),
+    };
+  });
+  expect(layout.columns).toBe(2);
+  expect(layout.childrenInside).toBeTruthy();
+  const specTab = page.locator('#tskt-pro-detail-tab');
+  if (await specTab.count()) {
+    await specTab.click();
+    await expect(specTab).toHaveClass(/active/);
+    await expect(page.locator('#tskt-pro-detail')).toBeVisible();
+  }
+});
+
+test('mobile child breadcrumb stays vertically aligned with its parent', async ({ page, isMobile }) => {
+  test.skip(!isMobile, 'The compact breadcrumb behavior only applies on mobile.');
+  await page.goto('/danh-muc-san-pham/den-nlmt/den-op-tran/', { waitUntil: 'domcontentloaded' });
+  const visibleAnchors = page.locator('.pts-breadcrumb-bar .breadcrumb-item:visible a');
+  expect(await visibleAnchors.count()).toBeGreaterThanOrEqual(2);
+  const centers = await visibleAnchors.evaluateAll(anchors => anchors.map(anchor => {
+    const rect = anchor.getBoundingClientRect();
+    return rect.top + rect.height / 2;
+  }));
+  expect(Math.max(...centers) - Math.min(...centers)).toBeLessThanOrEqual(1);
+});
+
+test('mobile back-to-top arrow uses the same box center as its circle', async ({ page, isMobile }) => {
+  test.skip(!isMobile, 'The 38px Back to Top override only applies on mobile.');
+  await page.goto('/san-pham/', { waitUntil: 'domcontentloaded' });
+  const metrics = await page.locator('.progress-wrap').evaluate(element => {
+    const box = element.getBoundingClientRect();
+    const icon = getComputedStyle(element, '::after');
+    return {
+      boxWidth: box.width,
+      boxHeight: box.height,
+      iconWidth: parseFloat(icon.width),
+      iconHeight: parseFloat(icon.height),
+      iconLeft: parseFloat(icon.left),
+      iconTop: parseFloat(icon.top),
+      display: icon.display,
+      alignItems: icon.alignItems,
+      justifyContent: icon.justifyContent,
+    };
+  });
+  expect(metrics.iconWidth).toBe(metrics.boxWidth);
+  expect(metrics.iconHeight).toBe(metrics.boxHeight);
+  expect(metrics.iconLeft).toBe(0);
+  expect(metrics.iconTop).toBe(0);
+  expect(metrics.display).toBe('flex');
+  expect(metrics.alignItems).toBe('center');
+  expect(metrics.justifyContent).toBe('center');
 });
 
 test('home exposes every featured category and switches its product grid', async ({ page }) => {

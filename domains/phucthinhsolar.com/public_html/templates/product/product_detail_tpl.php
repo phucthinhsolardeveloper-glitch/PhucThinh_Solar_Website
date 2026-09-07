@@ -170,7 +170,7 @@ $hasProductPolicy = $productPolicyOverride !== '' || !empty($policy);
                         </div>
                         <?php } ?>
                         <div class="btn-product-detail">
-                            <a href="dai-ly/" target="_blank" title="Liên hệ" style="width:100%;">Đăng ký đại lý</a>
+                            <a href="#ptsDealerModal" data-toggle="modal" data-target="#ptsDealerModal" title="Đăng ký đại lý" style="width:100%;">Đăng ký đại lý</a>
                         </div>
                         <?php if(count($tc)){ ?>
                         <div id="CRlist_endow_sidebar" class="CRdef_sidebar_pd">
@@ -350,7 +350,7 @@ $hasProductPolicy = $productPolicyOverride !== '' || !empty($policy);
 </div>
 <?php } ?>
 
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="quoteRequestModalLabel" aria-hidden="true">
+<div class="modal fade pts-lead-modal pts-quote-modal" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="quoteRequestModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-body">
@@ -362,30 +362,31 @@ $hasProductPolicy = $productPolicyOverride !== '' || !empty($policy);
                     </svg>
                 </button>
                 <p class="title-pro-detail" id="quoteRequestModalLabel">Tư vấn & báo giá</p>
+                <p class="pts-lead-intro">Để lại thông tin, đội ngũ Phúc Thịnh Solar sẽ tư vấn đúng sản phẩm và nhu cầu của bạn.</p>
                 <div class=" w-100">
                     <div class="">
                         <div class="form-register">
                             <form class="validation-newsletter" novalidate method="post" action=""
                                 enctype="multipart/form-data">
                                 <input type="hidden" name="form_csrf" value="<?=htmlspecialchars(formCsrfToken(), ENT_QUOTES, 'UTF-8')?>">
-                                <div class="newsletter-input">
+                                <div class="newsletter-input pts-form-half">
                                     <label for="fullname-newsletter">Tên của bạn*</label>
                                     <input type="text" class="form-control" id="fullname-newsletter"
-                                        name="dataNewsletter[fullname]" placeholder="VD: Nguyễn Văn A" required />
+                                        name="dataNewsletter[fullname]" maxlength="100" autocomplete="name" placeholder="VD: Nguyễn Văn A" required />
                                 </div>
-                                <div class="newsletter-input">
+                                <div class="newsletter-input pts-form-half">
                                     <label for="phone-newsletter">Số điện thoại*</label>
                                     <input type="text" class="form-control" id="phone-newsletter"
-                                        name="dataNewsletter[phone]" placeholder="0987 XXX XXX *" required />
+                                        name="dataNewsletter[phone]" maxlength="20" autocomplete="tel" inputmode="tel" placeholder="0987 XXX XXX" required />
                                 </div>
-                                <div class="newsletter-input">
+                                <div class="newsletter-input pts-form-half">
                                     <label for="email-newsletter">Email*</label>
                                     <input type="email" class="form-control" id="email-newsletter"
-                                        name="dataNewsletter[email]" placeholder="VD: nguyenvana@gmail.com" required />
+                                        name="dataNewsletter[email]" maxlength="150" autocomplete="email" placeholder="VD: nguyenvana@gmail.com" required />
                                 </div>
 
-                                <div class="newsletter-input">
-                                    <label for="email-newsletter">Bạn là...*</label>
+                                <div class="newsletter-input pts-form-full">
+                                    <label>Bạn là...*</label>
                                     <div class="radio-user custom-control custom-radio">
                                         <input type="radio" id="canhan" name="dataNewsletter[loaihinh]" class="custom-control-input"
                                             value="Người dùng cá nhân" required>
@@ -400,15 +401,15 @@ $hasProductPolicy = $productPolicyOverride !== '' || !empty($policy);
                                     </div>
                                 </div>
 
-                                <div class="newsletter-input">
+                                <div class="newsletter-input pts-form-full">
                                     <label for="congsuat-newsletter">Công suất, số lượng, ứng dụng hoặc mã sản phẩm...
                                         *</label>
                                     <input type="text" class="form-control" id="congsuat-newsletter"
                                         name="dataNewsletter[congsuat]" placeholder="20 tấm 550, 1 cont tấm 440..."
-                                        required />
+                                        maxlength="255" required />
                                 </div>
 
-                                <div class="newsletter-input">
+                                <div class="newsletter-input pts-form-half">
                                     <label for="address">Tỉnh/Thành phố *</label>
                                     <select class="form-control" name="dataNewsletter[address]" id="address" required>
                                         <?php if(count($city)){foreach($city as $k => $v){ ?>
@@ -419,7 +420,7 @@ $hasProductPolicy = $productPolicyOverride !== '' || !empty($policy);
 
                                 <div class="newsletter-button">
                                     <input type="submit" class="btn btn-sm btn-danger" name="submit-newsletter"
-                                        value="Gửi yêu cầu" disabled>
+                                        value="Gửi yêu cầu">
                                     <input type="hidden" class="btn btn-sm btn-danger w-100"
                                         name="recaptcha_response_newsletter" id="recaptchaResponseNewsletter">
                                 </div>

@@ -411,7 +411,7 @@
 	/* Save photo */
 	function savePhoto()
 	{
-		global $d, $func, $flash, $curPage, $config, $type;
+		global $d, $func, $flash, $curPage, $config, $type, $cache;
 
 		/* Check post */
 		if(empty($_POST))
@@ -549,6 +549,9 @@
 					}
 				}
 
+				/* Trang công khai đọc banner/slider qua $cache->get(...,7200) —
+				   không xoá cache thì sửa xong vẫn thấy bản cũ tới 2 tiếng. */
+				$cache->delete();
 				$func->transfer("Cập nhật dữ liệu thành công", "index.php?com=photo&act=man_photo&type=".$type."&p=".$curPage);
 			}
 			else
@@ -703,6 +706,7 @@
 				}
 				else
 				{
+					$cache->delete();
 					$func->transfer("Lưu dữ liệu thành công", "index.php?com=photo&act=man_photo&type=".$type."&p=".$curPage);
 				}
 			}
@@ -714,8 +718,8 @@
 	/* Delete photo */
 	function deletePhoto()
 	{
-		global $d, $func, $curPage, $type;
-		
+		global $d, $func, $curPage, $type, $cache;
+
 		$id = (!empty($_GET['id'])) ? htmlspecialchars($_GET['id']) : 0;
 
 		if($id)
@@ -726,6 +730,7 @@
 			{
 				$func->deleteFile(UPLOAD_PHOTO.$row['photo']);
 				$d->rawQuery("delete from #_photo where id = ? and type = ?",array($id,$type));
+				$cache->delete();
 				$func->transfer("Xóa dữ liệu thành công", "index.php?com=photo&act=man_photo&type=".$type."&p=".$curPage);
 			}
 			else
@@ -748,7 +753,8 @@
 					$d->rawQuery("delete from #_photo where id = ? and type = ?",array($id,$type));
 				}
 			}
-			
+
+			$cache->delete();
 			$func->transfer("Xóa dữ liệu thành công", "index.php?com=photo&act=man_photo&type=".$type."&p=".$curPage);
 		}
 		else

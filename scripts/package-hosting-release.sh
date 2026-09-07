@@ -13,6 +13,16 @@ if ! git diff --quiet || ! git diff --cached --quiet; then
     exit 1
 fi
 
+untracked_release_files="$(git ls-files --others --exclude-standard -- \
+    "$webroot_tree" migrations scripts \
+    design-assets/product-featured-icons/2026-09-05 \
+    docs/13-handoffs/2026-09-06-runbook-deploy-directadmin.md)"
+if [ -n "$untracked_release_files" ]; then
+    echo "FAIL: Source release còn file chưa được Git theo dõi; git archive sẽ bỏ sót:" >&2
+    echo "$untracked_release_files" >&2
+    exit 1
+fi
+
 release_commit="$(git rev-parse --verify "${release_ref}^{commit}")"
 release_short="$(git rev-parse --short=12 "$release_commit")"
 release_parent="$(git rev-parse "${release_commit}^" 2>/dev/null || true)"

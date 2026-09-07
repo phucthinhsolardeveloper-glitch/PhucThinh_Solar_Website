@@ -86,8 +86,23 @@
 					</div>
 					<?php } ?>
 	                <?php if(isset($config['photo']['man_photo'][$type]['link_photo']) && $config['photo']['man_photo'][$type]['link_photo'] == true) { ?>
+		                <?php if($type === 'adv') { ?>
 		                <div class="form-group">
-		                    <label for="link<?=$i?>">Link:</label>
+		                    <label for="link_action<?=$i?>">Khi bấm nút "Đăng ký ngay":</label>
+		                    <select class="form-control text-sm" id="link_action<?=$i?>" onchange="
+		                        var v = this.value;
+		                        var input = document.getElementById('link<?=$i?>');
+		                        if(v !== '') { input.value = v; input.readOnly = true; }
+		                        else { if(['#ptsContactModal','#ptsDealerModal'].indexOf(input.value) !== -1) input.value = ''; input.readOnly = false; }
+		                    ">
+		                        <option value="">Liên kết bình thường</option>
+		                        <option value="#ptsContactModal">Mở popup: Liên hệ</option>
+		                        <option value="#ptsDealerModal">Mở popup: Đăng ký đại lý</option>
+		                    </select>
+		                </div>
+		                <?php } ?>
+		                <div class="form-group">
+		                    <label for="link<?=$i?>"><?=$type === 'adv' ? 'Link (khi chọn "Liên kết bình thường")' : 'Link'?>:</label>
 		                    <input type="text" class="form-control text-sm" name="dataMulti[<?=$i?>][link]" id="link<?=$i?>" placeholder="Link" value="<?=(!empty($flash->has('link'.$i))) ? $flash->get('link'.$i) : ''?>">
 		                </div>
 		            <?php } ?>

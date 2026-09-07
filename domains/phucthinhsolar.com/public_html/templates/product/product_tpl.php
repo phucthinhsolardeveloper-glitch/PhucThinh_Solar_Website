@@ -64,7 +64,7 @@
             <div class="sidebar-consult-box">
                 <span class="sc-label">Cần tư vấn chọn sản phẩm?</span>
                 <a class="sc-phone" href="tel:<?=$func->parsePhone($optsetting['hotline'])?>"><?=$optsetting['hotline']?></a>
-                <a class="sc-btn" href="lien-he/">Yêu cầu tư vấn miễn phí</a>
+                <a class="sc-btn" href="#ptsContactModal" data-toggle="modal" data-target="#ptsContactModal">Yêu cầu tư vấn miễn phí</a>
             </div>
             <?php } ?>
             <?php /* Nhóm bộ lọc sản phẩm trong một card dùng chung. */ ?>

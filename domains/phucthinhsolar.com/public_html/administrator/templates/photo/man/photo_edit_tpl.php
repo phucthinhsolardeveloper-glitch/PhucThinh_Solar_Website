@@ -78,9 +78,34 @@
                     </div>
                 <?php } ?>
                 <?php if(isset($config['photo']['man_photo'][$type]['link_photo']) && $config['photo']['man_photo'][$type]['link_photo'] == true) { ?>
+                    <?php
+                        $currentLink = (!empty($flash->has('link'))) ? $flash->get('link') : @$item['link'];
+                        /* Banner quảng cáo (adv) là nơi duy nhất có 2 popup dùng chung
+                           toàn site (Liên hệ, Đăng ký đại lý). Trước đây phải đoán qua
+                           nội dung chuỗi link, dễ gõ sai và không rõ ràng cho người
+                           dùng — giờ chọn thẳng bằng dropdown, giá trị đặc biệt chỉ do
+                           dropdown này ghi ra chứ không phải admin tự gõ. */
+                        $advPopupTargets = array('' => 'Liên kết bình thường', '#ptsContactModal' => 'Mở popup: Liên hệ', '#ptsDealerModal' => 'Mở popup: Đăng ký đại lý');
+                        $isAdvPopupLink = $type === 'adv' && isset($advPopupTargets[(string)$currentLink]) && $currentLink !== '';
+                    ?>
+                    <?php if($type === 'adv') { ?>
                     <div class="form-group">
-                        <label for="link">Link:</label>
-                        <input type="text" class="form-control text-sm" name="data[link]" id="link" placeholder="Link" value="<?=(!empty($flash->has('link'))) ? $flash->get('link') : @$item['link']?>">
+                        <label for="link_action">Khi bấm nút "Đăng ký ngay":</label>
+                        <select class="form-control text-sm" id="link_action" onchange="
+                            var v = this.value;
+                            var input = document.getElementById('link');
+                            if(v !== '') { input.value = v; input.readOnly = true; }
+                            else { if(['#ptsContactModal','#ptsDealerModal'].indexOf(input.value) !== -1) input.value = ''; input.readOnly = false; }
+                        ">
+                            <?php foreach($advPopupTargets as $targetValue => $targetLabel) { ?>
+                                <option value="<?=htmlspecialchars($targetValue, ENT_QUOTES, 'UTF-8')?>" <?=((string)$currentLink === $targetValue) ? 'selected' : ''?>><?=$targetLabel?></option>
+                            <?php } ?>
+                        </select>
+                    </div>
+                    <?php } ?>
+                    <div class="form-group">
+                        <label for="link"><?=$type === 'adv' ? 'Link (khi chọn "Liên kết bình thường")' : 'Link'?>:</label>
+                        <input type="text" class="form-control text-sm" name="data[link]" id="link" placeholder="Link" <?=$isAdvPopupLink ? 'readonly' : ''?> value="<?=htmlspecialchars((string)$currentLink, ENT_QUOTES, 'UTF-8')?>">
                     </div>
                 <?php } ?>
                 <?php if(isset($config['photo']['man_photo'][$type]['video_photo']) && $config['photo']['man_photo'][$type]['video_photo'] == true) { ?>

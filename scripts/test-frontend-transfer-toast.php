@@ -40,8 +40,11 @@ $base = 'http://127.0.0.1/';
 $page = frontToastHttp($base.'lien-he');
 frontToastAssert($page['status'] === 200 && $page['cookie'] !== '', 'Mở /lien-he và nhận session cookie');
 
+/* Chuyển hướng về đúng URL trang đang đứng (getPageURL()), không còn dùng
+   chuỗi tương đối "lien-he" — chuỗi tương đối bị trình duyệt phân giải sai
+   thành /lien-he/lien-he khi trang được truy cập kèm dấu / cuối. */
 $postNoFollow = frontToastHttp($base.'lien-he', 'POST', array('submit-contact' => '1', 'form_csrf' => 'gia-mao-token-sai'), $page['cookie'], 0);
-frontToastAssert($postNoFollow['status'] === 302 && $postNoFollow['location'] === 'lien-he', 'Submit CSRF sai chuyển hướng ngay bằng 302, không còn màn chờ 4.5s');
+frontToastAssert($postNoFollow['status'] === 302 && $postNoFollow['location'] === $base.'lien-he', 'Submit CSRF sai chuyển hướng ngay bằng 302, không còn màn chờ 4.5s');
 frontToastAssert(trim((string)$postNoFollow['body']) === '', 'Response redirect không kèm theo HTML trang chờ cũ');
 
 $dest = frontToastHttp($base.'lien-he', 'GET', array(), $page['cookie']);

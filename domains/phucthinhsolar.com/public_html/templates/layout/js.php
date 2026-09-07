@@ -208,17 +208,14 @@ $('.view_maps').click(function() {
         <script src="https://www.google.com/recaptcha/api.js?render=<?= $config['googleAPI']['recaptcha']['sitekey'] ?>"></script>
         <script type="text/javascript">
             grecaptcha.ready(function() {
-                /* Newsletter */
+                /* Newsletter (tư vấn/báo giá) đã chạy trên mọi trang từ trước vì form
+                   này vốn đã là popup toàn site. Contact và đăng ký đại lý giờ cũng
+                   là popup toàn site (không chỉ riêng trang lien-he/dai-ly nữa) nên
+                   bỏ điều kiện $source — thiếu điều kiện này thì field ẩn không có
+                   token, submit ở trang khác sẽ luôn bị captcha từ chối. */
                 generateCaptcha('Newsletter', 'recaptchaResponseNewsletter');
-
-                <?php if ($source == 'contact') { ?>
-                    /* Contact */
-                    generateCaptcha('contact', 'recaptchaResponseContact');
-                <?php } ?>
-                <?php if ($source == 'daily') { ?>
-                    /* Contact */
-                    generateCaptcha('Newsletter2', 'recaptchaResponseNewsletter2');
-                <?php } ?>
+                if(document.getElementById('recaptchaResponseContact')) generateCaptcha('contact', 'recaptchaResponseContact');
+                if(document.getElementById('recaptchaResponseNewsletter2')) generateCaptcha('Newsletter2', 'recaptchaResponseNewsletter2');
             });
         </script>
     <?php } ?>

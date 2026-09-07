@@ -38,20 +38,9 @@ jQuery(document).ready(function ($) {
     CRworkshop_intro = new InitSlider(optionWorkshop_intro);
     CRworkshop_intro.init();
 
-    var optionList_term_blog = {
-        responseSize: 992,
-        selector: '.CRlist_term_blog_box',
-        options: {
-            slidesToShow: 2,
-            slidesToScroll: 1,
-            speed: 1000,
-            arrows: false,
-            dots: true,
-            adaptiveHeight: true
-        }
-    },
-    CRlist_term_blog_box = new InitSlider(optionList_term_blog);
-    CRlist_term_blog_box.init();
+    /* Dải danh mục tin tức/dự án dùng overflow-x native ở mobile. Trước đây
+       Slick chỉ khởi tạo sau DOM ready nên dải flex nhiều dòng bị đổi thành
+       carousel trong lúc người dùng đang nhìn, gây layout shift và lệch pill. */
 
     var optionList_filter_product = {
             responseSize: 992,

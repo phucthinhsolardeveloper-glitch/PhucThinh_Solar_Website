@@ -119,24 +119,42 @@
             </a>
             <div class="dropdown-menu dropdown-menu-right shadow">
                 <span class="dropdown-item dropdown-header p-0">Thông báo</span>
+                <?php
+                    /* Chuông thông báo trỏ thẳng vào các màn hình bị cổng phân quyền
+                       chặn (contact_man, order_man, product_man_X, news_man_X,
+                       newsletter_man_X). Trước đây hiện không điều kiện nên tài khoản
+                       thiếu quyền vẫn thấy đủ mục rồi bấm vào bị từ chối — cùng lỗi
+                       như menu bên trái, chỉ khác chỗ hiển thị. */
+                    $canSeeContact = !(isset($is_permission) && $is_permission == true && $func->checkPermission('contact', 'man', '', null, 'phrase-1'));
+                ?>
+                <?php if($canSeeContact) { ?>
                 <div class="dropdown-divider"></div>
                 <a href="index.php?com=contact&act=man" class="dropdown-item"><i class="fas fa-envelope mr-2"></i><span class="badge badge-danger mr-1"><?=count($contactNotify)?></span> Liên hệ</a>
-                <?php if(isset($config['order']['active']) && $config['order']['active'] == true) { ?>
+                <?php } ?>
+                <?php if(isset($config['order']['active']) && $config['order']['active'] == true) {
+                    $canSeeOrder = !(isset($is_permission) && $is_permission == true && $func->checkPermission('order', 'man', '', null, 'phrase-1'));
+                    if($canSeeOrder) { ?>
                     <div class="dropdown-divider"></div>
                     <a href="index.php?com=order&act=man" class="dropdown-item"><i class="fas fa-shopping-bag mr-2"></i><span class="badge badge-danger mr-1"><?=count($orderNotify)?></span> Đơn hàng</a>
-                <?php } ?>
-                <?php if(!empty($commentProductNotify)) { foreach($commentProductNotify as $k => $v) { ?>
+                <?php } } ?>
+                <?php if(!empty($commentProductNotify)) { foreach($commentProductNotify as $k => $v) {
+                    $canSeeItem = !(isset($is_permission) && $is_permission == true && $func->checkPermission('product', 'man', $k, null, 'phrase-1'));
+                    if($canSeeItem) { ?>
                     <div class="dropdown-divider"></div>
                     <a href="index.php?com=product&act=man&type=<?=$k?>&comment_status=new" class="dropdown-item"><i class="fas fa-comments mr-2"></i><span class="badge badge-danger mr-1"><?=$v['notify']?></span> Bình luận - <?=$v['title']?></a>
-                <?php } } ?>
-                <?php if(!empty($commentNewsNotify)) { foreach($commentNewsNotify as $k => $v) { ?>
+                <?php } } } ?>
+                <?php if(!empty($commentNewsNotify)) { foreach($commentNewsNotify as $k => $v) {
+                    $canSeeItem = !(isset($is_permission) && $is_permission == true && $func->checkPermission('news', 'man', $k, null, 'phrase-1'));
+                    if($canSeeItem) { ?>
                     <div class="dropdown-divider"></div>
                     <a href="index.php?com=news&act=man&type=<?=$k?>&comment_status=new" class="dropdown-item"><i class="fas fa-comments mr-2"></i><span class="badge badge-danger mr-1"><?=$v['notify']?></span> Bình luận - <?=$v['title']?></a>
-                <?php } } ?>
-                <?php if(!empty($newsletterNotify)) { foreach($newsletterNotify as $k => $v) { ?>
+                <?php } } } ?>
+                <?php if(!empty($newsletterNotify)) { foreach($newsletterNotify as $k => $v) {
+                    $canSeeItem = !(isset($is_permission) && $is_permission == true && $func->checkPermission('newsletter', 'man', $k, null, 'phrase-1'));
+                    if($canSeeItem) { ?>
                     <div class="dropdown-divider"></div>
                     <a href="index.php?com=newsletter&act=man&type=<?=$k?>" class="dropdown-item"><i class="fas fa-mail-bulk mr-2"></i><span class="badge badge-danger mr-1"><?=$v['notify']?></span> <?=$v['title']?></a>
-                <?php } } ?>
+                <?php } } } ?>
             </div>
         </li>
         <li class="nav-item d-sm-inline-block">

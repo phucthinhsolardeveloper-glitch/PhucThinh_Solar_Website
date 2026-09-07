@@ -345,6 +345,49 @@ select.form-control option:disabled{color:#b8babb;font-style:italic;}
 .pts-admin-product-thumb .pts-admin-product-thumb-overlay{display:block;width:100%;height:100%;max-width:none;max-height:none;object-fit:contain;}
 .pts-admin-product-thumb .pts-admin-product-thumb-overlay{position:absolute;z-index:2;inset:0;object-fit:fill;pointer-events:none;}
 
+/* Pipeline tư vấn / đăng ký đại lý */
+.pts-newsletter-pipeline-card{border:2px solid transparent;border-radius:.4rem;box-shadow:0 2px 8px rgba(15,23,42,.09);transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease;overflow:hidden;}
+.pts-newsletter-pipeline-card:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(15,23,42,.16);}
+.pts-newsletter-pipeline-card.is-active{border-color:#172b4d;box-shadow:0 0 0 2px rgba(23,43,77,.14),0 5px 14px rgba(15,23,42,.15);}
+.pts-newsletter-pipeline-card .inner h3{font-size:1.65rem;margin-bottom:.2rem;}
+.pts-newsletter-toolbar{gap:.5rem;}
+.pts-newsletter-toolbar .btn,.pts-newsletter-toolbar .form-inline{margin-left:0!important;}
+.pts-newsletter-filter select{min-width:165px;}
+.pts-newsletter-search{margin-left:auto!important;}
+.pts-newsletter-search .input-group{width:290px;max-width:100%;}
+
+.pts-newsletter-table thead th{background:#f7f9fc;border-bottom:1px solid #d9e0e8;color:#334155;font-weight:700;vertical-align:middle;}
+.pts-newsletter-table tbody td{border-top-color:#e9edf2;}
+.pts-newsletter-table tbody tr:hover{background:#f8fbff;}
+.pts-newsletter-table--dealer{min-width:1050px;table-layout:fixed;}
+.pts-newsletter-table--dealer .pts-col-select{width:4%;}
+.pts-newsletter-table--dealer .pts-col-dealer{width:23%;}
+.pts-newsletter-table--dealer .pts-col-contact{width:23%;}
+.pts-newsletter-table--dealer .pts-col-address{width:19%;}
+.pts-newsletter-table--dealer .pts-col-created{width:12%;}
+.pts-newsletter-table--dealer .pts-col-status{width:14%;}
+.pts-newsletter-table--dealer .pts-col-actions{width:5%;}
+.pts-dealer-name,.pts-dealer-company,.pts-dealer-contact a,.pts-dealer-address,.pts-newsletter-created strong,.pts-newsletter-created small{display:block;}
+.pts-dealer-name{color:#172b4d;font-size:.9rem;font-weight:700;line-height:1.35;margin-bottom:.3rem;overflow-wrap:anywhere;}
+.pts-dealer-company,.pts-dealer-email,.pts-dealer-address{color:#64748b;font-size:.79rem;line-height:1.45;overflow-wrap:anywhere;}
+.pts-dealer-phone{color:#075985;font-weight:700;margin-bottom:.3rem;}
+.pts-dealer-contact i,.pts-dealer-company i,.pts-dealer-address i{color:#94a3b8;margin-right:.4rem;text-align:center;width:14px;}
+.pts-dealer-address{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;}
+.pts-newsletter-created{white-space:nowrap;}
+.pts-newsletter-created strong{color:#334155;font-size:.84rem;}
+.pts-newsletter-created small{color:#64748b;margin-top:.15rem;}
+
+.pts-newsletter-status-control,.pts-newsletter-status-badge{border:1px solid transparent;border-left-width:4px;font-size:.78rem;font-weight:700;line-height:1.25;}
+.pts-newsletter-status-control{border-radius:.4rem;min-width:142px;padding-left:.55rem;transition:opacity .15s ease,box-shadow .15s ease;}
+.pts-newsletter-status-control:focus{box-shadow:0 0 0 .18rem rgba(59,130,246,.16);}
+.pts-newsletter-status-control.is-saving{cursor:wait;opacity:.65;}
+.pts-newsletter-status-control option{background:#fff;color:#212529;}
+.pts-newsletter-status-badge{display:inline-flex;align-items:center;border-radius:999px;padding:.42rem .68rem;white-space:nowrap;}
+.pts-status-new{background-color:#fff1f2!important;border-color:#fecdd3!important;border-left-color:#e11d48!important;color:#9f1239!important;}
+.pts-status-received{background-color:#eff6ff!important;border-color:#bfdbfe!important;border-left-color:#2563eb!important;color:#1d4ed8!important;}
+.pts-status-processing{background-color:#fffbeb!important;border-color:#fde68a!important;border-left-color:#d97706!important;color:#92400e!important;}
+.pts-status-completed{background-color:#ecfdf5!important;border-color:#a7f3d0!important;border-left-color:#059669!important;color:#047857!important;}
+
 /* Responsive */
 @media(max-width:1201px){
 	.watermark-position{max-width:300px;height:300px;}
@@ -354,6 +397,11 @@ select.form-control option:disabled{color:#b8babb;font-style:italic;}
 }
 @media(max-width:569px){
 	.form-search{width:100%;margin-left:0px!important;margin-top:0.75rem!important;}
+	.pts-newsletter-toolbar{align-items:stretch!important;}
+	.pts-newsletter-filter{flex:1 1 100%;margin-top:.25rem;}
+	.pts-newsletter-filter select{width:100%;}
+	.pts-newsletter-search{margin-top:0!important;width:100%;}
+	.pts-newsletter-search .input-group{width:100%;}
 }
 @media(max-width:469px){
 	.card-body{padding:0.75rem;}

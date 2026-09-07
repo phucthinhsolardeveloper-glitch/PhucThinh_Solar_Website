@@ -48,6 +48,7 @@
 <script src="assets/sortable/Sortable.js"></script>
 <script src="assets/js/bootstrap.js"></script>
 <script src="assets/js/adminlte.js"></script>
+<script src="assets/js/sidebar-state.js?v=<?=@filemtime(ROOT.'administrator/assets/js/sidebar-state.js')?>"></script>
 <script src="ckeditor/ckeditor.js"></script>
 <script src="assets/apexcharts/apexcharts.min.js"></script>
 <script src="assets/simplenotify/simple-notify.js"></script>

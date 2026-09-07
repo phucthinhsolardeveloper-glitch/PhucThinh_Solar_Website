@@ -151,7 +151,7 @@
             </div>
             <div class="pts-project-cta-actions">
                 <a class="pts-btn pts-btn-gold" href="tel:<?=preg_replace('/[^0-9]/','',$optsetting['hotline'])?>"><i class="fas fa-phone-alt"></i> <?=$optsetting['hotline']?></a>
-                <a class="pts-btn pts-btn-ghost" href="lien-he/">Gửi yêu cầu tư vấn</a>
+                <a class="pts-btn pts-btn-ghost" href="#ptsContactModal" data-toggle="modal" data-target="#ptsContactModal">Gửi yêu cầu tư vấn</a>
             </div>
         </div>
     </div>

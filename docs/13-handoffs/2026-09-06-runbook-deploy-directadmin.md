@@ -10,17 +10,25 @@ dừng, giữ nguyên backup và không chạy tiếp migration.
 
 ## 0. Chuẩn bị và backup
 
-1. Tạo gói từ một commit sạch trên máy phát triển:
+1. Trên máy phát triển, chạy đầy đủ kiểm tra local và trình duyệt:
+
+   ```bash
+   ./scripts/predeploy-local.sh
+   cd tools/visual-tests
+   PLAYWRIGHT_BROWSERS_PATH=.browsers npx playwright test --workers=1
+   ```
+
+2. Chỉ khi cả hai lệnh đều đạt, tạo commit sạch rồi tạo gói release:
 
    ```bash
    ./scripts/package-hosting-release.sh
    ./scripts/package-oriana-media.sh    # chỉ cần khi triển khai ảnh ORIANA
    ```
 
-2. Trong thư mục release, chạy `sha256sum -c SHA256SUMS`.
-3. DirectAdmin → Create/Restore Backups: backup file + database và tải về máy.
-4. phpMyAdmin → Export: tải thêm một bản SQL độc lập.
-5. Ghi lại commit/release hiện tại để rollback code.
+3. Trong thư mục release, chạy `sha256sum -c SHA256SUMS`.
+4. DirectAdmin → Create/Restore Backups: backup file + database và tải về máy.
+5. phpMyAdmin → Export: tải thêm một bản SQL độc lập.
+6. Ghi lại commit/release hiện tại để rollback code.
 
 Không tiếp tục nếu chưa có đủ backup code, DB và `upload/` có thể phục hồi.
 
@@ -106,10 +114,10 @@ danh sách cũ. Đặc biệt:
 
 ## 4. Migration dữ liệu: luôn dry-run, không chạy theo quán tính
 
-Các file PHP dữ liệu không thể suy ra trạng thái chỉ bằng schema:
+Các file PHP dữ liệu/quyền không thể suy ra trạng thái chỉ bằng schema:
 
 ```text
-002, 005, 006, 014, 015, 018, 019, 020, 023, 024, 027, 028
+002, 005, 006, 014, 015, 018, 019, 020, 023, 024, 027, 028, 031, 032
 ```
 
 Chạy từng file không có `--apply`, lưu output và đọc phạm vi tác động. Chỉ thêm
@@ -122,6 +130,10 @@ Chạy từng file không có `--apply`, lưu output và đọc phạm vi tác �
 - `023`: xóa mã hàng đã nghỉ; cần xác nhận danh sách.
 - `024`: chuyển media WordPress; không xóa cây media cũ trước khi xác minh URL.
 - `028`: giữ bản SQL các dòng sắp xóa cùng backup trước khi apply.
+- `031`: chỉ cấp quyền Liên hệ/Khối nội dung cho nhóm đang có ít nhất 90% danh
+  mục quyền hợp lệ cũ; đọc kỹ danh sách nhóm được chọn ở dry-run trước khi apply.
+- `032`: chỉ đổi hai link banner legacy khớp chính xác sang popup Liên hệ/Đại
+  lý; dry-run phải chỉ ra đúng banner mong muốn trước khi apply.
 - `025`: tối ưu ảnh tùy chọn, không phải điều kiện deploy. Script dry-run đã chặn
   ảnh vượt 25 MP để tránh hết RAM; chỉ apply khi có backup ảnh riêng và chỉ định
   `--backup-dir` hợp lệ trên hosting.
@@ -177,8 +189,12 @@ Xóa nội dung `public_html/caches/` nhưng giữ thư mục. Kiểm tra:
 - Tìm kiếm, lọc sản phẩm, breadcrumb và ảnh/gallery.
 - Trên HTTPS: `<base>`, OpenGraph và canonical đều dùng `https://`, không mang
   cổng HTTP nội bộ của reverse proxy.
-- Admin: đăng nhập role 3; một tài khoản hạn chế chỉ thấy đúng quyền.
-- Gửi form liên hệ thật và nhận email.
+- Admin: đăng nhập role 3; cuộn sidebar rồi mở `Quản lý SEO page → Liên hệ`,
+  xác nhận nhánh vẫn mở và mục vừa bấm không nhảy về đầu; lặp lại trên mobile.
+- Admin: một tài khoản hạn chế chỉ thấy đúng quyền; các trạng thái yêu cầu tư
+  vấn/đại lý có màu phân biệt và cập nhật nhanh được.
+- Gửi thật form Liên hệ, đăng ký đại lý và tư vấn sản phẩm; xác nhận có toast,
+  dữ liệu vào đúng màn Admin và email được nhận.
 - Nếu đang bật bán hàng: danh mục → sản phẩm → giỏ → checkout → xác nhận, kiểm
   tra đúng phương thức thanh toán và không tạo đơn trùng.
 - `/account/` trả đúng 404 theo chủ đích hiện tại.

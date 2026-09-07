@@ -27,10 +27,20 @@
 	$defaultProductOrder = publicProductDefaultOrder();
 	$order_by = $defaultProductOrder;
 	$productListHasItems = array();
+	$productListPreview = array();
+	$productListPreviewCount = array();
 	if($template === 'product/product_list')
 	{
-		$productListRows = $cache->get("select distinct id_list from #_product where type = ? and find_in_set('hienthi',status)", array($type), 'result', 7200);
-		foreach($productListRows as $productListRow) $productListHasItems[(int)$productListRow['id_list']] = true;
+		/* Render 4 card đầu của mỗi danh mục ngay trong HTML. Bản cũ trả về các
+		   khối rỗng rồi gọi riêng product3.php sau DOM ready cho từng danh mục. */
+		$productListPreviewRows = $cache->get("select name$lang, slugvi, slugen, id, id_list, id_cat, id_brand, photo, photo_khuyenmai, regular_price, sale_price, discount, type, status from #_product where type = ? and find_in_set('hienthi',status)".publicProductDefaultOrder(), array($type), 'result', 7200);
+		foreach($productListPreviewRows as $productListPreviewRow)
+		{
+			$productListId = (int)$productListPreviewRow['id_list'];
+			$productListHasItems[$productListId] = true;
+			$productListPreviewCount[$productListId] = isset($productListPreviewCount[$productListId]) ? $productListPreviewCount[$productListId] + 1 : 1;
+			if(empty($productListPreview[$productListId]) || count($productListPreview[$productListId]) < 4) $productListPreview[$productListId][] = $productListPreviewRow;
+		}
 	}
 	if($orderby !="")
 	{

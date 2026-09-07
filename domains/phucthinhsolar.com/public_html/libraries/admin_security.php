@@ -131,7 +131,7 @@ if(!function_exists('adminCsrfToken'))
     function adminAllowedMutationTable($table, $capability)
     {
         $tables = array(
-            'status' => array('product','product_list','product_cat','product_item','product_sub','product_brand','news','news_list','news_cat','news_item','news_sub','gallery','photo','tags','size','color','user','member','permission_group','city','district','ward','contact'),
+            'status' => array('product','product_list','product_cat','product_item','product_sub','product_brand','news','news_list','news_cat','news_item','news_sub','gallery','photo','tags','size','color','user','member','permission_group','city','district','ward','contact','newsletter'),
             'numb' => array('product','product_list','product_cat','product_item','product_sub','product_brand','news','news_list','news_cat','news_item','news_sub','gallery','photo','tags','size','color','user','member','permission_group','city','district','ward','contact','newsletter','order','excel','pushonesignal'),
             'copy' => array('product','news')
         );
@@ -323,6 +323,17 @@ if(!function_exists('adminCsrfToken'))
         if($act === 'uploadExcel') return $type !== '' ? 'import_man_'.$type : 'SUPERADMIN_ONLY';
         /* Lưu nội dung trang tĩnh dùng quyền update của chính nó. */
         if($act === 'save_static') return $type !== '' ? 'static_update_'.$type : 'SUPERADMIN_ONLY';
+
+        /* Khối nội dung mô tả (content_section) không có khái niệm "thêm mới"
+           riêng — chỉ soạn theo scope/scope_id có sẵn (upsert), và act=save
+           không gửi kèm 'id' nên $hasId luôn false, khiến quy tắc write mặc
+           định ở trên sẽ đòi quyền "add" cho một màn hình không hề có nút
+           thêm. Các thao tác phụ trong composer (tải ảnh, nhập nội dung cũ,
+           xem khối kế thừa) cũng chỉ là một phần của việc soạn nội dung, nên
+           gộp chung một quyền "edit" thay vì tách vụn theo từng endpoint nội
+           bộ mà người dùng không hề thấy là hành động riêng. */
+        if($com === 'content_section' && in_array($act, array('edit', 'save', 'upload_image', 'import_legacy', 'inherited_blocks'), true))
+            return $type !== '' ? 'content_section_edit_'.$type : 'SUPERADMIN_ONLY';
 
         /* Mặc định giữ nguyên quy ước cũ: com_act[_variant][_type]. */
         $permission = $com.'_'.$act;

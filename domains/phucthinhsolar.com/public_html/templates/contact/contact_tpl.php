@@ -126,35 +126,35 @@
                                         <li class="inf_default_row inf_row_half">
                                             <div class="inf_input"><label>Họ và tên</label><span
                                                     class="wpcf7-form-control-wrap name-contact"><input type="text"
-                                                        name="dataContact[fullname]" value="" size="40"
+                                                        name="dataContact[fullname]" value="" size="40" maxlength="100" autocomplete="name"
                                                         class="wpcf7-form-control wpcf7-text wpcf7-validates-as-required"
                                                         placeholder="Nguyễn Văn A" required></span></div>
                                         </li>
                                         <li class="inf_default_row inf_row_half">
                                             <div class="inf_input"><label>Số điện thoại</label><span
                                                     class="wpcf7-form-control-wrap tel-contact"><input type="tel"
-                                                        name="dataContact[phone]" value="" size="40"
+                                                        name="dataContact[phone]" value="" size="40" maxlength="20" autocomplete="tel" inputmode="tel"
                                                         class="wpcf7-form-control wpcf7-text wpcf7-tel wpcf7-validates-as-required wpcf7-validates-as-tel"
                                                         placeholder="090xxxxxxx" required></span></div>
                                         </li>
                                         <li class="inf_default_row inf_row_half">
                                             <div class="inf_input"><label>Email</label><span
                                                     class="wpcf7-form-control-wrap mail-contact"><input type="email"
-                                                        name="dataContact[email]" value="" size="40"
+                                                        name="dataContact[email]" value="" size="40" maxlength="150" autocomplete="email"
                                                         class="wpcf7-form-control wpcf7-text wpcf7-email wpcf7-validates-as-required wpcf7-validates-as-email"
                                                         placeholder="abc@gmail.com" required></span></div>
                                         </li>
                                         <li class="inf_default_row inf_row_half">
                                             <div class="inf_input"><label>Tiêu đề</label><span
                                                     class="wpcf7-form-control-wrap title-form-contact"><input type="text"
-                                                        name="dataContact[subject]" value="" size="40"
+                                                        name="dataContact[subject]" value="" size="40" maxlength="180"
                                                         class="wpcf7-form-control wpcf7-text wpcf7-validates-as-required"
                                                         placeholder="Nhập tiêu đề" required></span></div>
                                         </li>
                                         <li class="inf_default_row inf_row_full">
                                             <div class="inf_input"><label>Nội dung liên hệ</label><span
                                                     class="wpcf7-form-control-wrap content-contact"><textarea
-                                                        name="dataContact[content]" cols="40" rows="10"
+                                                        name="dataContact[content]" cols="40" rows="10" maxlength="5000" required
                                                         class="wpcf7-form-control wpcf7-textarea wpcf7-validates-as-required"
                                                         placeholder="Nhập tin nhắn..."></textarea></span></div>
                                         </li>

@@ -576,6 +576,19 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
     .CRitem_term_blog h2{font-size:12.5px!important;}
     .CRrow_term_blog_box{margin-bottom:32px;}
 }
+/* Giữ đúng một layout ngay từ first paint trên mobile. Dải cuộn ngang native
+   không cần chờ Slick đo/chèn clone nên không còn nhảy vị trí lúc JS khởi tạo. */
+@media(max-width:991px){
+    .CRlist_term_blog{overflow:hidden;}
+    .CRlist_term_blog .container{padding-right:0!important;}
+    .CRlist_term_blog_box{
+        flex-wrap:nowrap!important;justify-content:flex-start!important;gap:10px!important;
+        overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;
+        scroll-snap-type:x proximity;scrollbar-width:none;padding-right:var(--pts-gutter)!important;
+    }
+    .CRlist_term_blog_box::-webkit-scrollbar{display:none;}
+    .CRitem_term_blog{scroll-snap-align:start;}
+}
 
 /* Trang /san-pham/ - danh sách theo từng danh mục (product_list_tpl) */
 .pts-catblock{margin-bottom:52px;}
@@ -703,7 +716,17 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
    chính sách) tự có phần đệm trong. */
 #tskt-pro-detail,#video-pro-detail,#certificate-pro-detail,#cs-pro-detail{padding:28px 30px 34px;}
 @media(max-width:576px){
-    .tabs-pro-detail>#tabsProDetail{padding:10px!important;flex-wrap:nowrap;overflow-x:auto;-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 22px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 22px),transparent);}
+    .tabs-pro-detail{margin-top:24px!important;border-radius:13px!important;}
+    .tabs-pro-detail>#tabsProDetail{
+        display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px!important;
+        padding:10px!important;overflow:visible!important;
+    }
+    .tabs-pro-detail>#tabsProDetail .nav-item{width:100%;min-width:0;margin:0!important;}
+    .tabs-pro-detail>#tabsProDetail .nav-item:last-child:nth-child(odd){grid-column:1/-1;}
+    .tabs-pro-detail>#tabsProDetail .nav-link{
+        display:flex;align-items:center;justify-content:center;width:100%;height:100%;min-height:48px;
+        margin:0!important;padding:9px 8px!important;text-align:center;white-space:normal;line-height:1.25;
+    }
     #tskt-pro-detail,#video-pro-detail,#certificate-pro-detail,#cs-pro-detail{padding:20px 16px 24px;}
 }
 #tskt-pro-detail table{width:100%;border:1px solid var(--pts-line);border-radius:12px;border-collapse:separate;border-spacing:0;overflow:hidden;}
@@ -1210,7 +1233,13 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
     background:#fff!important;border:1px solid var(--pts-line)!important;
     border-radius:999px!important;
     box-shadow:0 18px 40px rgba(6,21,55,.16)!important;
+    pointer-events:none!important;
 }
+/* width:auto!important ở trên đè luôn width:0px mà apps.js set khi đóng, nên
+   hộp tìm kiếm luôn rộng ~330px dù đang ẩn (opacity:0) — vô hình nhưng vẫn
+   nằm đè lên và hứng hết cú chạm của thanh lọc công suất ngay bên dưới trên
+   mobile. Chỉ mở pointer-events lại đúng lúc icon tìm kiếm đang active. */
+.icon-search.active + .search-grid{pointer-events:auto!important;}
 .search-grid input#keyword-res{
     flex:1;width:auto!important;height:40px!important;
     border:0!important;background:transparent!important;outline:none!important;
@@ -1468,6 +1497,49 @@ h4{font-size:21px!important;font-weight:800!important;}
 @media(max-width:768px){
     .inf_default_form ul{grid-template-columns:1fr!important;}
     .formContact{padding:32px 22px!important;}
+}
+
+/* Form tư vấn/liên hệ/đại lý mở từ chi tiết sản phẩm. Scope theo
+   .pts-lead-modal để không ảnh hưởng modal giỏ hàng và popup quảng cáo. */
+.pts-lead-modal .modal-dialog{max-width:760px!important;margin-top:24px;margin-bottom:24px;}
+.modal-open #button-contact-vr,.modal-open .progress-wrap{opacity:0!important;visibility:hidden!important;pointer-events:none!important;}
+.pts-lead-modal .modal-content{border:0!important;border-radius:20px!important;overflow:hidden;box-shadow:0 28px 80px rgba(6,21,55,.28)!important;}
+.pts-lead-modal .modal-body{max-height:calc(100vh - 48px);overflow-y:auto;padding:36px 38px 38px!important;background:linear-gradient(145deg,#fff 0%,#fbfcff 100%);}
+.pts-lead-modal button.close{
+    position:absolute;z-index:5;top:12px;right:12px;display:flex;align-items:center;justify-content:center;
+    width:38px;height:38px;margin:0!important;padding:0!important;border:0!important;border-radius:50%!important;
+    background:#eef2f7!important;color:var(--pts-navy)!important;opacity:1!important;
+}
+.pts-lead-modal button.close:hover{background:var(--pts-navy)!important;color:#fff!important;}
+.pts-lead-modal button.close svg{width:19px;height:19px;stroke:currentColor!important;}
+.pts-lead-modal .formContact{margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;}
+.pts-lead-modal .inf_default_form .title,.pts-lead-modal .title-pro-detail{
+    max-width:calc(100% - 46px);margin:0 0 8px!important;color:var(--pts-navy)!important;
+    font-size:clamp(23px,3vw,30px)!important;font-weight:900!important;line-height:1.25!important;
+}
+.pts-lead-modal .inf_default_form .des,.pts-lead-intro{margin:0 0 24px!important;color:#64748b!important;font-size:14.5px!important;line-height:1.65;}
+.pts-lead-modal .inf_default_form ul{gap:17px 18px!important;}
+.pts-lead-modal .inf_default_form input:not([type=submit]),
+.pts-lead-modal .inf_default_form select{height:50px!important;font-size:14.5px!important;}
+.pts-lead-modal .inf_default_form textarea{height:120px!important;font-size:14.5px!important;resize:vertical;}
+.pts-lead-modal .inf_default_form input[type=submit]{height:54px!important;font-size:16px!important;}
+.pts-quote-modal .form-register form{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:17px 18px!important;}
+.pts-quote-modal .newsletter-input,.pts-quote-modal .newsletter-button{min-width:0;margin:0!important;}
+.pts-quote-modal .pts-form-full,.pts-quote-modal .newsletter-button{grid-column:1/-1;}
+.pts-quote-modal .newsletter-input label{display:block;margin:0 0 7px;color:var(--pts-navy);font-size:14px;font-weight:800;}
+.pts-quote-modal .newsletter-input .form-control{height:50px!important;border:1px solid #dbe2ec!important;border-radius:10px!important;background:#fff!important;padding:0 15px!important;font-size:14.5px!important;box-shadow:none!important;}
+.pts-quote-modal .newsletter-input .form-control:focus{border-color:var(--pts-gold)!important;box-shadow:0 0 0 3px rgba(201,150,46,.14)!important;}
+.pts-quote-modal .radio-user{display:inline-flex;margin:2px 24px 0 0;padding-left:25px;}
+.pts-quote-modal .radio-user label{margin:0!important;color:#475569!important;font-weight:600!important;}
+.pts-quote-modal .newsletter-button input[type=submit]{width:100%!important;height:54px!important;margin:2px 0 0!important;border-radius:10px!important;background:var(--pts-gold)!important;color:var(--pts-navy)!important;font-size:16px!important;font-weight:900!important;}
+@media(max-width:576px){
+    .pts-lead-modal .modal-dialog{margin:10px!important;}
+    .pts-lead-modal .modal-body{max-height:calc(100vh - 20px);padding:28px 18px 22px!important;}
+    .pts-lead-modal button.close{top:9px;right:9px;width:34px;height:34px;}
+    .pts-lead-modal .inf_default_form .title,.pts-lead-modal .title-pro-detail{font-size:22px!important;}
+    .pts-quote-modal .form-register form{grid-template-columns:1fr;gap:15px!important;}
+    .pts-quote-modal .pts-form-full,.pts-quote-modal .newsletter-button{grid-column:auto;}
+    .pts-quote-modal .radio-user{display:flex;margin:7px 0;}
 }
 
 /* =====================================================================
@@ -2240,11 +2312,11 @@ body .home-6 .btn-all:hover i{transform:translateX(3px);}
 .pts-breadcrumb-bar .wrap-content2{padding-top:5px!important;padding-bottom:5px!important;}
 .pts-breadcrumb-bar .breadCrumbs{width:100%!important;margin:0!important;padding:0!important;}
 .pts-breadcrumb-bar .breadcrumb{gap:0!important;margin:0!important;padding:0!important;background:transparent!important;line-height:18px!important;}
-.pts-breadcrumb-bar .breadcrumb-item{font-size:0!important;line-height:18px!important;}
-.pts-breadcrumb-bar .breadcrumb-item a{position:relative;top:3px;display:inline-flex;font-size:12.5px!important;line-height:18px!important;font-weight:650!important;color:var(--pts-muted)!important;}
+.pts-breadcrumb-bar .breadcrumb-item{display:flex!important;align-items:center;height:18px;font-size:0!important;line-height:18px!important;}
+.pts-breadcrumb-bar .breadcrumb-item a{position:relative;top:0;display:inline-flex!important;align-items:center;font-size:12.5px!important;line-height:18px!important;font-weight:650!important;color:var(--pts-muted)!important;}
 .pts-breadcrumb-bar .breadcrumb-item.active a{color:var(--pts-navy)!important;font-weight:750!important;}
 .pts-breadcrumb-bar .breadcrumb-item+.breadcrumb-item{padding-left:20px!important;}
-.pts-breadcrumb-bar .breadcrumb-item+.breadcrumb-item:before{top:calc(50% + 3px)!important;left:7px!important;color:#94a3b8!important;font-size:10px!important;}
+.pts-breadcrumb-bar .breadcrumb-item+.breadcrumb-item:before{top:50%!important;left:7px!important;color:#94a3b8!important;font-size:10px!important;}
 .pts-breadcrumb-bar .breadcrumb-item a:hover{color:var(--pts-gold-dark)!important;}
 @media(max-width:768px){
     .page-title.pts-breadcrumb-bar{min-height:32px!important;}
@@ -2252,7 +2324,17 @@ body .home-6 .btn-all:hover i{transform:translateX(3px);}
     .pts-breadcrumb-bar .breadcrumb,
     .pts-breadcrumb-bar .breadcrumb-item,
     .pts-breadcrumb-bar .breadcrumb-item a{line-height:17px!important;}
+    .pts-breadcrumb-bar .breadcrumb-item{height:17px;}
+    .pts-breadcrumb-bar .breadcrumb-item.active a{display:inline-flex!important;vertical-align:middle;}
     .pts-breadcrumb-bar .breadcrumb-item a{font-size:11.5px!important;}
+}
+
+/* Parent của Back to Top được thu còn 38px trên mobile nhưng pseudo icon cũ
+   vẫn giữ hộp 50px, vì vậy tâm mũi tên bị đẩy xuống/phải 6px. Bám icon theo
+   chính kích thước vòng tròn để mọi breakpoint luôn đồng tâm. */
+.progress-wrap::after{
+    inset:0!important;width:100%!important;height:100%!important;line-height:1!important;
+    display:flex!important;align-items:center;justify-content:center;transform:translateY(-1px);
 }
 
 /* Nút "Xem tất cả" của danh mục đang chọn, hiện ngay trên dải sản phẩm thay vì dưới cùng. */

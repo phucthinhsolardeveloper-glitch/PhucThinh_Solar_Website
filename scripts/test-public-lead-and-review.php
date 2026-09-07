@@ -76,8 +76,11 @@ function phone() { return '09'.str_pad((string)random_int(0, 99999999), 8, '0', 
 $suffix = bin2hex(random_bytes(4));
 $orderId = 0;
 $orderCode = 'LEADTEST-'.strtoupper($suffix);
+$existingRateLimitIds = array();
+foreach ($d->rawQuery("select id from #_user_limit where login_ip like 'form:%'") as $rateRow)
+    $existingRateLimitIds[(int)$rateRow['id']] = true;
 
-register_shutdown_function(function () use (&$orderId, $d, $suffix, $orderCode) {
+register_shutdown_function(function () use (&$orderId, $existingRateLimitIds, $d, $suffix, $orderCode) {
     $d->rawQuery("delete from #_newsletter where email like ?", array('leadtest-'.$suffix.'%'));
     $d->rawQuery("delete from #_comment where email like ?", array('reviewtest-'.$suffix.'%'));
     if ($orderId)
@@ -86,8 +89,11 @@ register_shutdown_function(function () use (&$orderId, $d, $suffix, $orderCode) 
         $d->rawQuery('delete from #_order where id = ?', array($orderId));
     }
     $d->rawQuery("delete from #_order where code = ?", array($orderCode));
-    foreach (array('newsletter-consulting', 'review') as $form)
-        $d->rawQuery('delete from #_user_limit where login_ip = ?', array('form:'.sha1($form.'|127.0.0.1')));
+    /* Không giả định REMOTE_ADDR là loopback: chỉ xoá các bucket form được tạo
+       sau thời điểm test bắt đầu, giữ nguyên toàn bộ dòng đã có trước đó. */
+    foreach ($d->rawQuery("select id from #_user_limit where login_ip like 'form:%'") as $rateRow)
+        if (!isset($existingRateLimitIds[(int)$rateRow['id']]))
+            $d->rawQuery('delete from #_user_limit where id = ?', array((int)$rateRow['id']));
 });
 
 /* Lấy một sản phẩm đang hiển thị để làm đối tượng thật. */

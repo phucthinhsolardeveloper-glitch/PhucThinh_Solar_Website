@@ -2236,6 +2236,54 @@ $(document).ready(function(){
 		});
 	}
 
+	/* Đổi tình trạng xử lý (yêu cầu tư vấn, đăng ký đại lý...) ngay trên danh
+	   sách, khỏi phải mở màn hình Sửa chỉ để đổi một giá trị. */
+	if($("select.update-confirm-status").length)
+	{
+		var newsletterStatusClasses = 'pts-status-new pts-status-received pts-status-processing pts-status-completed';
+		var applyNewsletterStatusAppearance = function($select, value){
+			var statusClass = 'pts-status-new';
+			if(String(value) === '1') statusClass = 'pts-status-received';
+			else if(String(value) === '2') statusClass = 'pts-status-processing';
+			else if(String(value) === '3') statusClass = 'pts-status-completed';
+			$select.removeClass(newsletterStatusClasses).addClass(statusClass).attr('data-status', value || '');
+		};
+
+		$('select.update-confirm-status').each(function(){
+			$(this).data('previous-value', $(this).val());
+			applyNewsletterStatusAppearance($(this), $(this).val());
+		});
+		$('body').on('change', 'select.update-confirm-status', function(){
+			var $this = $(this);
+			var id = $(this).attr('data-id');
+			var type = $(this).attr('data-type');
+			var value = $(this).val();
+			var previousValue = $(this).data('previous-value');
+			applyNewsletterStatusAppearance($this, value);
+			$this.prop('disabled', true).addClass('is-saving');
+
+			$.ajax({
+				url: 'api/newsletter_confirm_status.php',
+				type: 'POST',
+				dataType: 'json',
+				data: {
+					admin_csrf: ADMIN_CSRF,
+					id: id,
+					type: type,
+					value: value
+				},
+				success: function(response){
+					if(response && response.ok) { $this.data('previous-value', value); showNotify(response.message || 'Đã cập nhật tình trạng.', 'Thành công', 'success'); }
+					else { $this.val(previousValue); applyNewsletterStatusAppearance($this, previousValue); showNotify(response && response.message ? response.message : 'Không thể cập nhật tình trạng.', 'Lỗi', 'error'); }
+				},
+				error: function(){ $this.val(previousValue); applyNewsletterStatusAppearance($this, previousValue); showNotify('Không thể kết nối để cập nhật tình trạng.', 'Lỗi', 'error'); },
+				complete: function(){ $this.prop('disabled', false).removeClass('is-saving'); }
+			});
+
+			return false;
+		});
+	}
+
 	/* Watermark */
 	if($(".watermark-position label").length)
 	{

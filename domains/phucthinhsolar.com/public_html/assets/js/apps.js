@@ -209,6 +209,7 @@ GA_FRAMEWORK.Pagings = function(){
     if(isExist($(".paging-prolist")))
     {
         $(".paging-prolist").each(function(){
+            if($(this).attr("data-server-rendered") === "1") return;
             var list = $(this).data("list");
             loadPaging("api/product3.php?perpage=4&idList="+list,'.paging-prolist-'+list);
         })
