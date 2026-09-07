@@ -4,6 +4,7 @@
         <div class="brand-title"><?=quenmatkhau?></div>
             
         <form class="form-user validation-user" novalidate method="post" action="account/quen-mat-khau" enctype="multipart/form-data">
+			<input type="hidden" name="form_csrf" value="<?=htmlspecialchars(formCsrfToken(), ENT_QUOTES, 'UTF-8')?>">
             <div class="inputs">
                 <?=$flash->getMessages("frontend")?>
                 <div class="input-group input-user">

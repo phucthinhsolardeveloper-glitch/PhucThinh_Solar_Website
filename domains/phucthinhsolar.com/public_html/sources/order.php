@@ -444,7 +444,10 @@
 				$subject = "Thông tin đơn hàng từ ".$setting['name'.$lang];
 				$message = str_replace($emailVars, $emailVals, $emailer->markdown('order/admin', ['shipPrice' => $ship_price]));
 				$file = '';
-				$emailer->send("admin", $arrayEmail, $subject, $message, $file);
+				$emailer->send("admin", $arrayEmail, $subject, $message, $file, array(
+					'email' => $email,
+					'name' => $fullname
+				));
 
 				$arrayEmail = array(
 					"dataEmail" => array(

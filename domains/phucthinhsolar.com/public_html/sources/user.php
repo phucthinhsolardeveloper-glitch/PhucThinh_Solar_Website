@@ -657,14 +657,20 @@
 
 	function forgotPasswordMember()
 	{
-		global $d, $setting, $emailer, $func, $flash, $loginMember, $configBase, $lang;
+		global $d, $setting, $emailer, $func, $flash, $loginMember, $configBase, $lang, $config;
+
+		if(!formCsrfValid(isset($_POST['form_csrf']) ? $_POST['form_csrf'] : ''))
+			$func->transfer("Phiên cấp lại mật khẩu không hợp lệ. Vui lòng tải lại trang.", $configBase."account/quen-mat-khau", false);
+		$publicIp = formClientIp($_SERVER, isset($config['login']['trusted-proxies']) ? $config['login']['trusted-proxies'] : array());
+		if(!formPersistentRateLimit($d, 'member-forgot-password', $publicIp, 3, 900))
+			$func->transfer("Bạn yêu cầu quá nhanh. Vui lòng thử lại sau.", $configBase."account/quen-mat-khau", false);
 
 		/* Data */
 		$message = '';
 		$response = array();
 		$username = (!empty($_POST['username'])) ? htmlspecialchars($_POST['username']) : '';
 		$email = (!empty($_POST['email'])) ? htmlspecialchars($_POST['email']) : '';
-		$newpass = substr(md5(rand(0,999)*time()), 15, 6);
+		$newpass = strtoupper(bin2hex(random_bytes(4)));
 		$newpassMD5 = md5($newpass);
 
 		/* Valid data */
@@ -690,7 +696,7 @@
 
 		if(!empty($username) && !empty($email))
 		{
-			$row = $d->rawQueryOne("select id from #_member where username = ? and email = ? limit 0,1",array($username,$email));
+			$row = $d->rawQueryOne("select id, username, password, fullname, email, phone, address from #_member where username = ? and email = ? limit 0,1",array($username,$email));
 
 			if(empty($row))
 			{
@@ -706,14 +712,15 @@
 			$func->redirect($configBase."account/quen-mat-khau");
 		}
 
-		/* Cập nhật mật khẩu mới */
+		/* Giữ hash cũ để phục hồi nếu SMTP thất bại; tránh khóa tài khoản khi
+		   người dùng không nhận được mật khẩu tạm. */
+		$oldPasswordHash = $row['password'];
 		$data['password'] = $newpassMD5;
-		$d->where('username', $username);
-		$d->where('email', $email);
-		$d->update('member',$data);
-
-		/* Lấy thông tin người dùng */
-		$row = $d->rawQueryOne("select id, username, password, fullname, email, phone, address from #_member where username = ? limit 0,1",array($username));
+		$d->where('id', (int)$row['id']);
+		$d->where('password', $oldPasswordHash);
+		if(!$d->update('member',$data))
+			$func->transfer("Có lỗi xảy ra trong quá trình cấp lại mật khẩu. Vui lòng liên hệ với chúng tôi.", $configBase."lien-he", false);
+		$row['password'] = $newpassMD5;
 
 		/* Gán giá trị gửi email */
 		$iduser = $row['id'];
@@ -783,6 +790,11 @@
 		}
 		else
 		{
+			/* Chỉ phục hồi nếu password vẫn đúng giá trị vừa tạo; không ghi đè
+			   thay đổi đồng thời từ một request khác. */
+			$d->where('id', (int)$row['id']);
+			$d->where('password', $newpassMD5);
+			$d->update('member', array('password' => $oldPasswordHash));
 			$func->transfer("Có lỗi xảy ra trong quá trình cấp lại mật khẩu. Vui lòng liện hệ với chúng tôi.", $configBase."account/quen-mat-khau", false);
 		}
 	}

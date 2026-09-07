@@ -91,6 +91,20 @@
 
             if($d->insert('newsletter',$data))
             {
+                /* Dữ liệu đã được lưu trước; SMTP lỗi không được làm mất yêu cầu. */
+                $emailer->sendAdminNotification(
+                    'Yêu cầu tư vấn mới từ '.$setting['name'.$lang],
+                    array(
+                        'Họ tên' => $dataNewsletter['fullname'],
+                        'Điện thoại' => $dataNewsletter['phone'],
+                        'Email' => $dataNewsletter['email'],
+                        'Đối tượng tư vấn' => $dataNewsletter['loaihinh'],
+                        'Nhu cầu' => $dataNewsletter['congsuat'],
+                        'Tỉnh/Thành phố' => $dataNewsletter['address']
+                    ),
+                    $dataNewsletter['email'],
+                    $dataNewsletter['fullname']
+                );
                 $func->transfer("Đăng ký tư vấn thành công. Chúng tôi sẽ liên hệ với bạn sớm.", $func->getPageURL());
             }
             else
@@ -144,6 +158,19 @@
 
             if($d->insert('newsletter',$data))
             {
+                /* Dữ liệu đã được lưu trước; SMTP lỗi không được làm mất yêu cầu. */
+                $emailer->sendAdminNotification(
+                    'Đăng ký đại lý mới từ '.$setting['name'.$lang],
+                    array(
+                        'Họ tên' => $dataNewsletter['fullname'],
+                        'Điện thoại' => $dataNewsletter['phone'],
+                        'Email' => $dataNewsletter['email'],
+                        'Tỉnh/Thành phố' => $dataNewsletter['address'],
+                        'Doanh nghiệp/Cửa hàng' => $dataNewsletter['company']
+                    ),
+                    $dataNewsletter['email'],
+                    $dataNewsletter['fullname']
+                );
                 $func->transfer("Đăng ký đại lý thành công. Chúng tôi sẽ liên hệ với bạn sớm.", $func->getPageURL());
             }
             else
@@ -266,7 +293,10 @@
             $message = str_replace($emailVars, $emailVals, $emailer->markdown('contact/admin'));
             $file = 'file_attach';
 
-            if($emailer->send("admin", $arrayEmail, $subject, $message, $file))
+            if($emailer->send("admin", $arrayEmail, $subject, $message, $file, array(
+                'email' => $emailer->get('emailnguoigui'),
+                'name' => $emailer->get('tennguoigui')
+            )))
             {
                 /* Send email customer */
                 $arrayEmail = array("dataEmail" => array("name" => $emailer->get('tennguoigui'), "email" => $emailer->get('emailnguoigui')));
