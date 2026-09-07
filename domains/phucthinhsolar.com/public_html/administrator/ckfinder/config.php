@@ -108,7 +108,7 @@ $config['backends'][] = array(
 $config['defaultResourceTypes'] = '';
 
 $config['resourceTypes'][] = array(
-    'name'              => '', // Single quotes not allowed.
+    'name'              => 'Files',
     'directory'         => '',
     'maxSize'           => '64M',
     'allowedExtensions' => 'avi,bmp,doc,docx,gif,jpeg,jpg,mov,mp3,mp4,pdf,png,ppt,pptx,tif,tiff,wav,webm,webp,xls,xlsx',
@@ -117,7 +117,7 @@ $config['resourceTypes'][] = array(
 );
 
 $config['resourceTypes'][] = array(
-    'name'              => '',
+    'name'              => 'Images',
     'directory'         => '',
     'maxSize'           => '64M',
     'allowedExtensions' => 'bmp,gif,jpeg,jpg,png,webp',

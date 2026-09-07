@@ -109,6 +109,13 @@ $lowCk = fmRequest($base.'ckfinder/core/connector/php/connector.php?command=GetF
 fmOk($lowCk['status'] === 403, 'Low-role bị từ chối CKFinder bằng HTTP 403');
 if($lowCk['status'] !== 403) echo 'INFO: CKFinder low status='.$lowCk['status'].' body='.substr($lowCk['body'], 0, 300).PHP_EOL;
 
+$imagePath = tempnam(sys_get_temp_dir(), 'pts-fm-image-');
+$phpPath = tempnam(sys_get_temp_dir(), 'pts-fm-php-');
+$htmlPath = tempnam(sys_get_temp_dir(), 'pts-fm-html-');
+file_put_contents($imagePath, base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII='));
+file_put_contents($phpPath, '<?php echo "unsafe";');
+file_put_contents($htmlPath, '<html><script>alert(1)</script></html>');
+
 $editorCookie = fmLogin($base, $editorUsername, $password);
 fmOk($editorCookie !== '', 'Đăng nhập tài khoản có đúng quyền edit');
 $editorQuery = $common.'&fm_act=edit';
@@ -116,18 +123,59 @@ $editorCk = fmRequest($base.'ckfinder/core/connector/php/connector.php?command=G
 $editorCkPayload = json_decode($editorCk['body'], true);
 fmOk($editorCk['status'] === 200 && empty($editorCkPayload['error']), 'Editor có đúng quyền mở CKFinder');
 if($editorCk['status'] !== 200 || !empty($editorCkPayload['error'])) echo 'INFO: CKFinder editor status='.$editorCk['status'].' body='.substr($editorCk['body'], 0, 300).PHP_EOL;
+$ckCsrf = bin2hex(random_bytes(32));
+$ckCookie = $editorCookie.'; ckCsrfToken='.$ckCsrf;
+$ckSafeName = 'ck-safe-'.$suffix.'.png';
+$ckRenamedName = 'ck-renamed-'.$suffix.'.png';
+$ckUploadUrl = $base.'ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Files&currentFolder=%2F&'.$editorQuery;
+$ckUpload = fmRequest($ckUploadUrl, $ckCookie, array(
+    'ckCsrfToken'=>$ckCsrf, 'upload'=>new CURLFile($imagePath, 'image/png', $ckSafeName)
+));
+$ckUploadSucceeded = $ckUpload['status'] === 200
+    && strpos($ckUpload['body'], rawurlencode($ckSafeName)) !== false
+    && stripos($ckUpload['body'], 'error') === false;
+fmOk($ckUploadSucceeded, 'CKFinder upload ảnh PNG hợp lệ');
+if(!$ckUploadSucceeded) echo 'INFO: CKFinder upload status='.$ckUpload['status'].' body='.substr($ckUpload['body'], 0, 400).PHP_EOL;
+
+$ckBadPhp = fmRequest($ckUploadUrl, $ckCookie, array(
+    'ckCsrfToken'=>$ckCsrf, 'upload'=>new CURLFile($phpPath, 'application/x-httpd-php', 'shell.php')
+));
+$ckBadHtml = fmRequest($ckUploadUrl, $ckCookie, array(
+    'ckCsrfToken'=>$ckCsrf, 'upload'=>new CURLFile($htmlPath, 'text/html', 'unsafe.html')
+));
+$ckBadPhpPayload = json_decode($ckBadPhp['body'], true);
+$ckBadHtmlPayload = json_decode($ckBadHtml['body'], true);
+fmOk(empty($ckBadPhpPayload['uploaded']), 'CKFinder từ chối PHP/server-side script');
+fmOk(empty($ckBadHtmlPayload['uploaded']), 'CKFinder từ chối HTML nguy hiểm');
+
+$ckRename = fmRequest(
+    $base.'ckfinder/core/connector/php/connector.php?command=RenameFile&type=Files&currentFolder=%2F&fileName='.rawurlencode($ckSafeName).'&newFileName='.rawurlencode($ckRenamedName).'&'.$editorQuery,
+    $ckCookie,
+    array('ckCsrfToken'=>$ckCsrf)
+);
+$ckRenamePayload = json_decode($ckRename['body'], true);
+fmOk(!empty($ckRenamePayload['renamed']), 'CKFinder editor có quyền rename media');
+if(empty($ckRenamePayload['renamed'])) echo 'INFO: CKFinder rename status='.$ckRename['status'].' body='.substr($ckRename['body'], 0, 400).PHP_EOL;
+$ckDelete = fmRequest(
+    $base.'ckfinder/core/connector/php/connector.php?command=DeleteFiles&type=Files&currentFolder=%2F&'.$editorQuery,
+    $ckCookie,
+    array(
+        'ckCsrfToken'=>$ckCsrf,
+        'files[0][name]'=>$ckRenamedName,
+        'files[0][type]'=>'Files',
+        'files[0][folder]'=>'/'
+    )
+);
+$ckDeletePayload = json_decode($ckDelete['body'], true);
+fmOk(!empty($ckDeletePayload['deleted']), 'CKFinder editor có quyền delete media');
+if(empty($ckDeletePayload['deleted'])) echo 'INFO: CKFinder delete status='.$ckDelete['status'].' body='.substr($ckDelete['body'], 0, 400).PHP_EOL;
+
 $editorCookie = fmLogin($base, $editorUsername, $password);
 $open = fmRequest($base.'elfinder/php/connector.php?cmd=open&init=1&'.$editorQuery, $editorCookie);
 $openPayload = json_decode($open['body'], true);
 fmOk($open['status'] === 200 && !empty($openPayload['cwd']['hash']), 'Editor có quyền mở kho media');
 $target = !empty($openPayload['cwd']['hash']) ? $openPayload['cwd']['hash'] : '';
 
-$imagePath = tempnam(sys_get_temp_dir(), 'pts-fm-image-');
-$phpPath = tempnam(sys_get_temp_dir(), 'pts-fm-php-');
-$htmlPath = tempnam(sys_get_temp_dir(), 'pts-fm-html-');
-file_put_contents($imagePath, base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII='));
-file_put_contents($phpPath, '<?php echo "unsafe";');
-file_put_contents($htmlPath, '<html><script>alert(1)</script></html>');
 $safeName = 'fm-safe-'.$suffix.'.png';
 $renamedName = 'fm-renamed-'.$suffix.'.png';
 
