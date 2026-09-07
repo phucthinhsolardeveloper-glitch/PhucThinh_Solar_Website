@@ -43,7 +43,7 @@ MAIL_ADMIN_TO=phucthinhsolar.hr@gmail.com
 Cần lấy từ DirectAdmin/nhà cung cấp đúng tên chế độ bảo mật SMTP outbound:
 `STARTTLS` (explicit TLS) hay `SSL/TLS` (implicit TLS). Không suy ra chế độ chỉ
 từ port 587. Trong cấu hình ứng dụng dùng `tls`/`starttls` cho STARTTLS, hoặc
-`ssl`/`smtps` cho implicit SSL/TLS.
+`ssl`/`smtps` cho implicit SSL/TLS. PHP production phải bật extension `openssl`.
 
 ## Cấu hình secret ngoài webroot
 

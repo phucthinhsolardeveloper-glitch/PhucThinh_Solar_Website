@@ -46,7 +46,7 @@ $phpOk = PHP_VERSION_ID >= 70400 && PHP_VERSION_ID < 80000;
 runtimeResult($phpOk, 'PHP', PHP_MAJOR_VERSION.'.'.PHP_MINOR_VERSION.' (mục tiêu đã test: 7.4.x)');
 if(!$phpOk) $failures[] = 'PHP phải là 7.4.x cho lần deploy này; PHP 8.x cần đợt kiểm thử riêng.';
 
-$requiredExtensions = array('calendar','curl','exif','fileinfo','gd','json','mbstring','pdo_mysql','zip');
+$requiredExtensions = array('calendar','curl','exif','fileinfo','gd','json','mbstring','openssl','pdo_mysql','zip');
 $missingExtensions = array();
 foreach($requiredExtensions as $extension) if(!extension_loaded($extension)) $missingExtensions[] = $extension;
 runtimeResult(empty($missingExtensions), 'PHP extensions', empty($missingExtensions) ? implode(', ', $requiredExtensions) : 'thiếu '.implode(', ', $missingExtensions));
