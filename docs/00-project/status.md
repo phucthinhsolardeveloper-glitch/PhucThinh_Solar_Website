@@ -88,6 +88,9 @@ nhận là do chưa có nguồn thật; không coi đó là blocker kỹ thuật
 - CKFinder/elFinder đã đi qua bootstrap session + RBAC Admin dùng chung; quyền
   chỉ xem bị chặn 403, editor đúng quyền vẫn upload/rename/delete được, file
   PHP/script/HTML bị từ chối và mode tạo mới là `0644`/`0755`.
+- Mật khẩu Admin tạo/đổi mới dùng `password_hash()`; tài khoản MD5 legacy vẫn
+  đăng nhập bằng mật khẩu hiện hữu và được nâng hash tự động ngay lần login
+  thành công đầu tiên. Sai mật khẩu không ghi DB.
 - RBAC đã bật trong source và regression local đạt; vẫn cần test tài khoản
   nghiệp vụ, HTTPS, cookie Secure, proxy, SMTP, reCAPTCHA và upload video trên
   staging/production.

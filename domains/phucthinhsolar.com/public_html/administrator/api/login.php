@@ -44,11 +44,21 @@
 	else
 	{
 		$row = $d->rawQueryOne("select * from #_user where username = ? and find_in_set('hienthi',status) limit 0,1", array($username));
-		$validPassword = !empty($row['id']) && hash_equals((string)$row['password'], $func->encryptPassword($config['website']['secret'], $password, $config['website']['salt']));
+		$validPassword = !empty($row['id']) && adminPasswordVerify($password, $row['password'], $config['website']['secret'], $config['website']['salt']);
 
 		if($validPassword)
 		{
 			$idUser = (int)$row['id'];
+			if(adminPasswordNeedsUpgrade($row['password']))
+			{
+				$oldHash = (string)$row['password'];
+				$newHash = adminPasswordHash($password);
+				$d->rawQuery("update #_user set password = ? where id = ? and password = ?", array($newHash, $idUser, $oldHash));
+				$current = $d->rawQueryOne("select password from #_user where id = ? limit 0,1", array($idUser));
+				if(empty($current['password']) || !adminPasswordVerify($password, $current['password'], $config['website']['secret'], $config['website']['salt']))
+					throw new RuntimeException('Admin password hash upgrade failed');
+				$row['password'] = $current['password'];
+			}
 			$token = bin2hex(random_bytes(32));
 			$userAgent = isset($_SERVER['HTTP_USER_AGENT']) ? substr((string)$_SERVER['HTTP_USER_AGENT'], 0, 255) : '';
 			$sessionHash = md5(sha1($row['password'].$row['username']));

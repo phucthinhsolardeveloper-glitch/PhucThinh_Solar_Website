@@ -2,7 +2,15 @@
 
 ## Admin
 
-`administrator/api/login.php` lookup user bằng prepared query, so password qua `Functions::encryptPassword()` = MD5 với secret/salt tĩnh, tạo token ngẫu nhiên, regenerate session ID, log IP/user-agent và rate limit bền vững bằng DB theo cả IP lẫn hash tài khoản. Login bắt buộc POST + CSRF và trả thông báo chung để hạn chế dò tài khoản. `libraries/requick.php` kiểm tra token/session, timeout cấu hình 3600 giây và concurrent login token.
+`administrator/api/login.php` lookup user bằng prepared query và ưu tiên xác
+minh hash do `password_hash()` tạo. Hash MD5 với secret/salt cũ chỉ được giữ
+như nhánh tương thích: đăng nhập đúng một lần sẽ cập nhật có điều kiện sang
+hash mới, không reset mật khẩu. Tạo/đổi mật khẩu Admin mới đều dùng
+`password_hash()`. Login tạo token ngẫu nhiên, regenerate session ID, log
+IP/user-agent và rate limit bền vững bằng DB theo cả IP lẫn hash tài khoản.
+Login bắt buộc POST + CSRF và trả thông báo chung để hạn chế dò tài khoản.
+`libraries/requick.php` kiểm tra token/session, timeout cấu hình 3600 giây và
+concurrent login token.
 
 Session Admin dùng cookie theo phiên với strict mode, `HttpOnly`, `SameSite=Lax`; thuộc tính `Secure` tự bật khi request được xác định là HTTPS. `X-Forwarded-For` chỉ được dùng khi địa chỉ proxy nằm trong allowlist `login.trusted-proxies`; mặc định allowlist rỗng.
 
@@ -27,8 +35,8 @@ chặn script/HTML và tạo file/thư mục với mode `0644`/`0755`. Integrati
 
 `sources/user.php` có đăng ký, login, activation, forgot password, profile, order history/return/cancel; session member được kiểm tra trong `Functions`. Config admin đặt `user.active = false`; usage production NEEDS VERIFICATION.
 
-Rủi ro còn lại: password hashing/secret legacy và việc chưa retest tài khoản
-nghiệp vụ trên hosting. Toàn bộ form POST Admin đã có CSRF; mutation chính kiểm
+Rủi ro còn lại: hash MD5 chỉ biến mất dần khi từng tài khoản đăng nhập và chưa
+retest tài khoản nghiệp vụ trên hosting. Toàn bộ form POST Admin đã có CSRF; mutation chính kiểm
 CSRF và quyền action. Cần chạy runtime/readiness trên production, lặp lại ma
 trận bằng tài khoản hạn chế, kiểm tra cookie `Secure` qua HTTPS thật và không
 xem việc ẩn menu là authorization.

@@ -1,6 +1,33 @@
 <?php
 if(!function_exists('adminLoginLimitDescriptors'))
 {
+    function adminLegacyPasswordHash($password, $secret, $salt)
+    {
+        return md5((string)$secret.(string)$password.(string)$salt);
+    }
+
+    function adminPasswordVerify($password, $storedHash, $secret, $salt)
+    {
+        $storedHash = (string)$storedHash;
+        if($storedHash === '') return false;
+        $info = password_get_info($storedHash);
+        if(!empty($info['algo'])) return password_verify((string)$password, $storedHash);
+        return hash_equals($storedHash, adminLegacyPasswordHash($password, $secret, $salt));
+    }
+
+    function adminPasswordNeedsUpgrade($storedHash)
+    {
+        $info = password_get_info((string)$storedHash);
+        return empty($info['algo']) || password_needs_rehash((string)$storedHash, PASSWORD_DEFAULT);
+    }
+
+    function adminPasswordHash($password)
+    {
+        $hash = password_hash((string)$password, PASSWORD_DEFAULT);
+        if(!is_string($hash) || $hash === '') throw new RuntimeException('Không thể tạo password hash');
+        return $hash;
+    }
+
     function adminSessionInvalid($row, $session, $tokenPresent, $now, $timeout)
     {
         if(empty($row['username']) || !isset($row['password'], $row['lastlogin'])) return true;

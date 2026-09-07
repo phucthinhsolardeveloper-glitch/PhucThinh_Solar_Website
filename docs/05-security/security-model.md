@@ -6,8 +6,10 @@
 
 ## P1
 
-- Admin password MD5 với salt tĩnh; credential/config secret nằm trong code/DB option.
-- RBAC granular đang tắt.
+- Admin mới dùng `password_hash()`; hash MD5 cũ chỉ còn nhánh tương thích và
+  được nâng tự động sau lần đăng nhập hợp lệ đầu tiên.
+- RBAC granular đã bật trong source; vẫn phải kiểm chứng bằng tài khoản nghiệp
+  vụ trên staging/hosting với `debug-developer=false`.
 - CSRF đã có cho form POST Admin, controller save/delete/upload/sync/create, các API mutation đang dùng, checkout và review. Request đọc không yêu cầu token; login giữ cơ chế xác thực riêng.
 - Một số SQL ghép input đã `htmlspecialchars` nhưng không bind, ví dụ brand/origin filter; blacklist `AntiSQLInjection` không thay thế parameterization.
 

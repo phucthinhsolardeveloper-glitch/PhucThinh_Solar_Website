@@ -431,7 +431,7 @@
 				{
 					$row = $d->rawQueryOne("select id, password from #_user where username = ? limit 0,1",array($_SESSION[$loginAdmin]['username']));
 
-					if(empty($row['id']) || (!empty($row['id']) && ($row['password'] != md5($config['website']['secret'].$old_pass.$config['website']['salt']))))
+					if(empty($row['id']) || !adminPasswordVerify($old_pass, $row['password'], $config['website']['secret'], $config['website']['salt']))
 					{
 						$response['messages'][] = 'Mật khẩu cũ không chính xác';
 					}
@@ -466,7 +466,7 @@
 				}
 
 				/* Change to new password */
-				$data['password'] = md5($config['website']['secret'].$new_pass.$config['website']['salt']);
+				$data['password'] = adminPasswordHash($new_pass);
 				$flagchangepass = true;
 			}
 			else
@@ -782,7 +782,7 @@
 			{
 				$password = $data['password'];
 				$confirm_password = !empty($_POST['confirm_password']) ? $_POST['confirm_password'] : '';
-				$data['password'] = md5($config['website']['secret'].$password.$config['website']['salt']);
+				$data['password'] = adminPasswordHash($password);
 			}
 			else
 			{
@@ -803,7 +803,7 @@
 		{		
 			if(!empty($data['password']))
 			{
-				$data['password'] = md5($config['website']['secret'].$data['password'].$config['website']['salt']);
+				$data['password'] = adminPasswordHash($data['password']);
 			}
 			
 			if($d->insert('user',$data))
