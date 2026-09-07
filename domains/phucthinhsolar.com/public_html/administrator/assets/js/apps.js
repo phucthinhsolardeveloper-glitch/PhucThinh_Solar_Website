@@ -2833,14 +2833,18 @@ $(document).ready(function(){
 			config.pasteFromWordRemoveStyles = false;
 
 			/* Config CKFinder - ELFinder */
+			var fileManagerContext = '&fm_com=' + encodeURIComponent(COM)
+				+ '&fm_act=' + encodeURIComponent(ACT)
+				+ '&fm_type=' + encodeURIComponent(TYPE)
+				+ '&fm_has_id=' + (ID > 0 ? '1' : '0');
 			if(navigator.userAgent.match(/(iPod|iPhone|iPad)/) && navigator.userAgent.match(/AppleWebKit/))
 			{
-				config.filebrowserBrowseUrl = 'ckfinder/ckfinder.html?token=' + TOKEN;
-				config.filebrowserUploadUrl = 'ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Files&token=' + TOKEN;
+				config.filebrowserBrowseUrl = 'ckfinder/ckfinder.html?token=' + TOKEN + fileManagerContext;
+				config.filebrowserUploadUrl = 'ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Files&token=' + TOKEN + fileManagerContext;
 			}
 			else
 			{
-				config.filebrowserBrowseUrl = 'elfinder/index.php?token=' + TOKEN;
+				config.filebrowserBrowseUrl = 'elfinder/index.php?token=' + TOKEN + fileManagerContext;
 			}
 
 			/* Config ToolBar */

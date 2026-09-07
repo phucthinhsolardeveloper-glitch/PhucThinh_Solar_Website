@@ -1,10 +1,14 @@
 <?php
-	session_start();
-	$token = (!empty($_GET['token'])) ? $_GET['token'] : '';
-	if(empty($token) || empty($_SESSION[$token]))
-	{
-		die("Access denied");
-	}
+	require_once dirname(__DIR__).'/filemanager_bootstrap.php';
+	$token = TOKEN;
+	$fileManagerQuery = http_build_query(array(
+		'token' => $token,
+		'fm_com' => isset($_GET['fm_com']) ? $_GET['fm_com'] : '',
+		'fm_act' => isset($_GET['fm_act']) ? $_GET['fm_act'] : '',
+		'fm_type' => isset($_GET['fm_type']) ? $_GET['fm_type'] : '',
+		'fm_variant' => isset($_GET['fm_variant']) ? $_GET['fm_variant'] : '',
+		'fm_has_id' => isset($_GET['fm_has_id']) ? $_GET['fm_has_id'] : '0'
+	));
 ?>
 <!DOCTYPE html>
 <html>
@@ -23,7 +27,7 @@
 				// Documentation for client options:
 				// https://github.com/Studio-42/elFinder/wiki/Client-configuration-options
 				defaultOpts : {
-					url : 'php/connector.php?token=<?=$token?>', // or connector.maximal.php : connector URL (REQUIRED)
+					url : 'php/connector.php?<?=htmlspecialchars($fileManagerQuery, ENT_QUOTES, 'UTF-8')?>', // connector URL (REQUIRED)
 					commandsOptions : {
 						edit : {
 							extraOptions : {

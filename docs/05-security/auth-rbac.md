@@ -16,6 +16,13 @@ sản phẩm, đơn hàng, nội dung và chỉ xem, gồm cả từ chối truy
 Role 3 vẫn bypass theo thiết kế quản trị. `debug-developer` cũng bypass nên bắt
 buộc phải là `false` trên production.
 
+CKFinder và elFinder dùng `administrator/filemanager_bootstrap.php`: session
+Admin active, token file manager và permission add/edit của đúng ngữ cảnh
+`com/act/type` đều được kiểm tra lại ở backend. Quyền chỉ xem bị từ chối 403;
+request chưa đăng nhập trả 401. Upload chỉ nhận image/media/document allowlist,
+chặn script/HTML và tạo file/thư mục với mode `0644`/`0755`. Integration test
+`scripts/test-admin-filemanager-security.php` bao phủ cả hai connector.
+
 ## Member
 
 `sources/user.php` có đăng ký, login, activation, forgot password, profile, order history/return/cancel; session member được kiểm tra trong `Functions`. Config admin đặt `user.active = false`; usage production NEEDS VERIFICATION.

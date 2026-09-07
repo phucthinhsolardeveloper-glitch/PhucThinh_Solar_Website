@@ -11,7 +11,7 @@
 // Production
 error_reporting(E_ALL & ~E_DEPRECATED & ~E_STRICT);
 ini_set('display_errors', 0);
-session_start();
+require_once dirname(__DIR__).'/filemanager_bootstrap.php';
 
 // Development
 // error_reporting(E_ALL);
@@ -52,8 +52,7 @@ $config = array();
 /*============================ Enable PHP Connector HERE ==============================*/
 // https://ckeditor.com/docs/ckfinder/ckfinder3-php/configuration.html#configuration_options_authentication
 $config['authentication'] = function () {
-    $token = (!empty($_GET['token'])) ? $_GET['token'] : '';
-    return (!empty($token) && !empty($_SESSION[$token])) ? true : false;
+    return true; /* filemanager_bootstrap.php đã xác thực session, token và RBAC. */
 };
 
 /*============================ License Key ============================================*/
@@ -94,7 +93,7 @@ $config['backends'][] = array(
     'adapter'      => 'local',
     'baseUrl'      => dirname(str_replace('ckfinder/core/connector/php/', '', baseUrl())).'/upload/filemanager/',
     'root'         => dirname(dirname(__DIR__)).'/upload/filemanager/',
-    'chmodFiles'   => 0777,
+    'chmodFiles'   => 0644,
     'chmodFolders' => 0755,
     'filesystemEncoding' => 'UTF-8',
 );
@@ -107,18 +106,18 @@ $config['defaultResourceTypes'] = '';
 $config['resourceTypes'][] = array(
     'name'              => '', // Single quotes not allowed.
     'directory'         => '',
-    'maxSize'           => 0,
-    'allowedExtensions' => '7z,aiff,asf,avi,bmp,csv,doc,docx,fla,flv,gif,gz,gzip,jpeg,jpg,mid,mov,mp3,mp4,mpc,mpeg,mpg,ods,odt,pdf,png,ppt,pptx,qt,ram,rar,rm,rmi,rmvb,rtf,sdc,swf,sxc,sxw,tar,tgz,tif,tiff,txt,vsd,wav,wma,wmv,xls,xlsx,zip',
-    'deniedExtensions'  => '',
+    'maxSize'           => '64M',
+    'allowedExtensions' => 'avi,bmp,doc,docx,gif,jpeg,jpg,mov,mp3,mp4,pdf,png,ppt,pptx,tif,tiff,wav,webm,webp,xls,xlsx',
+    'deniedExtensions'  => 'asp,aspx,cgi,exe,htm,html,js,jsp,mjs,phar,php,php3,php4,php5,phtml,pl,py,sh,shtml,svg,swf,xml',
     'backend'           => 'default'
 );
 
 $config['resourceTypes'][] = array(
     'name'              => '',
     'directory'         => '',
-    'maxSize'           => 0,
-    'allowedExtensions' => 'bmp,gif,jpeg,jpg,png',
-    'deniedExtensions'  => '',
+    'maxSize'           => '64M',
+    'allowedExtensions' => 'bmp,gif,jpeg,jpg,png,webp',
+    'deniedExtensions'  => 'asp,aspx,cgi,exe,htm,html,js,jsp,mjs,phar,php,php3,php4,php5,phtml,pl,py,sh,shtml,svg,swf,xml',
     'backend'           => 'default'
 );
 
@@ -129,7 +128,7 @@ $config['roleSessionVar'] = 'CKFinder_UserRole';
 
 // https://ckeditor.com/docs/ckfinder/ckfinder3-php/configuration.html#configuration_options_accessControl
 $config['accessControl'][] = array(
-    'role'                => '*',
+    'role'                => 'media_editor',
     'resourceType'        => '*',
     'folder'              => '/',
 

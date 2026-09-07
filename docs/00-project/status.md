@@ -85,6 +85,9 @@ nhận là do chưa có nguồn thật; không coi đó là blocker kỹ thuật
 ## SECURITY
 
 - Các finding code chính của Security Review ngày 2026-08-27 đã được xử lý và regression đạt trên local.
+- CKFinder/elFinder đã đi qua bootstrap session + RBAC Admin dùng chung; quyền
+  chỉ xem bị chặn 403, editor đúng quyền vẫn upload/rename/delete được, file
+  PHP/script/HTML bị từ chối và mode tạo mới là `0644`/`0755`.
 - RBAC đã bật trong source và regression local đạt; vẫn cần test tài khoản
   nghiệp vụ, HTTPS, cookie Secure, proxy, SMTP, reCAPTCHA và upload video trên
   staging/production.

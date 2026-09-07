@@ -257,6 +257,40 @@ if(!function_exists('adminCsrfToken'))
         exit();
     }
 
+    function adminFileManagerContextPermission($request)
+    {
+        $request = is_array($request) ? $request : array();
+        $fields = array();
+        foreach(array('fm_com', 'fm_act', 'fm_type', 'fm_variant') as $field)
+        {
+            $value = isset($request[$field]) ? (string)$request[$field] : '';
+            if($value !== '' && !preg_match('/^[a-zA-Z0-9_-]{1,100}$/D', $value)) return null;
+            $fields[$field] = $value;
+        }
+
+        if($fields['fm_com'] === '' || $fields['fm_act'] === '') return null;
+        $hasId = !empty($request['fm_has_id']) && (string)$request['fm_has_id'] === '1';
+        $permission = adminLegacyScreenPermission(
+            $fields['fm_com'],
+            $fields['fm_act'],
+            $fields['fm_variant'],
+            $fields['fm_type'],
+            $hasId
+        );
+
+        /* File manager thay đổi filesystem: quyền chỉ-xem (man) không đủ. */
+        if(!is_string($permission) || $permission === '' || $permission === 'SUPERADMIN_ONLY') return null;
+        if(!preg_match('/(?:^|_)(?:add|edit|update)(?:_|$)/D', $permission)) return null;
+        return $permission;
+    }
+
+    function adminFileManagerAccessGranted($active, $role, $debugDeveloper, $permission, $permissions)
+    {
+        if(!$active || (int)$role === 3 || $debugDeveloper) return true;
+        return is_string($permission) && $permission !== ''
+            && is_array($permissions) && in_array($permission, $permissions, true);
+    }
+
     /**
      * Quyền cần có cho một màn hình Admin theo com/act, dùng cho cổng chặn tập
      * trung trong requick.php.

@@ -8,7 +8,7 @@ Ngày xác minh gần nhất: 2026-08-31. Project không có root Composer manif
 |---|---|---|---|
 | Routing/data | AltoRouter, PDODb/PDO | `index.php`, router, public/Admin source | Bắt buộc giữ |
 | Email/import | PHPMailer, PHPExcel, PHPWord | SMTP, bulk CSV/XLS/XLSX, export Admin | Bắt buộc giữ đến khi staging retest |
-| Media | WebpConvert, GD/fileinfo, CKEditor/CKFinder/elFinder | thumbnail/upload/editor/file manager legacy | Giữ; endpoint file manager không còn call site đã bị khóa nhưng code chưa xóa |
+| Media | WebpConvert, GD/fileinfo, CKEditor/CKFinder/elFinder | thumbnail/upload/editor/file manager trong form CKEditor | Giữ; connector dùng bootstrap Admin + RBAC backend và upload allowlist |
 | Public UI | jQuery, Bootstrap, UIkit, Slick, Owl, Jssor, Fancybox, Photobox, MagicZoom, mmenu, Font Awesome | layout public và markup/AJAX fragment | Đang nạp global để giữ tương thích |
 | External | Google Fonts, UIkit CDN, GTranslate; reCAPTCHA/OneSignal theo config | font/UI/dịch/form/notification | Cần retest network/CSP/staging |
 | Browser test | Playwright 1.62.1 + Chromium | `tools/visual-tests` | 16/16 smoke desktop/mobile đạt |
