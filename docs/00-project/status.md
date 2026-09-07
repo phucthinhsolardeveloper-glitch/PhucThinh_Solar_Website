@@ -94,6 +94,8 @@ nhận là do chưa có nguồn thật; không coi đó là blocker kỹ thuật
 - SMTP không còn tắt kiểm tra TLS: PHPMailer xác minh certificate/hostname và
   từ chối self-signed cho mọi nhánh provider; local mới verify cấu hình tĩnh,
   còn gửi thật phải kiểm tra trên hosting.
+- Frontend, public API, Admin và Flash dùng chung bootstrap session; cookie bật
+  strict mode, HttpOnly, SameSite=Lax và Secure khi request là HTTPS.
 - RBAC đã bật trong source và regression local đạt; vẫn cần test tài khoản
   nghiệp vụ, HTTPS, cookie Secure, proxy, SMTP, reCAPTCHA và upload video trên
   staging/production.

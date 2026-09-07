@@ -14,6 +14,11 @@ concurrent login token.
 
 Session Admin dùng cookie theo phiên với strict mode, `HttpOnly`, `SameSite=Lax`; thuộc tính `Secure` tự bật khi request được xác định là HTTPS. `X-Forwarded-For` chỉ được dùng khi địa chỉ proxy nằm trong allowlist `login.trusted-proxies`; mặc định allowlist rỗng.
 
+Frontend, public API và `Flash` cũng dùng chính `libraries/session_security.php`,
+không còn gọi `session_start()` theo cơ chế riêng. Cookie public giữ
+`HttpOnly`, `SameSite=Lax`, strict mode và tự bật `Secure` trên HTTPS để không
+phá luồng cart/contact/checkout hiện tại.
+
 ## Authorization
 
 Permission strings nằm trong `table_permission`, nhóm trong
