@@ -46,6 +46,7 @@ docker cp scripts/test-admin-transfer-toast.php "$web_container:/tmp/test-admin-
 docker cp scripts/test-admin-permission-gate.php "$web_container:/tmp/test-admin-permission-gate.php"
 docker cp scripts/test-admin-filemanager-security.php "$web_container:/tmp/test-admin-filemanager-security.php"
 docker cp scripts/test-admin-password-migration.php "$web_container:/tmp/test-admin-password-migration.php"
+docker cp scripts/test-email-tls-security.php "$web_container:/tmp/test-email-tls-security.php"
 docker cp scripts/test-admin-button-visibility.php "$web_container:/tmp/test-admin-button-visibility.php"
 docker cp scripts/test-admin-crud-lifecycle.php "$web_container:/tmp/test-admin-crud-lifecycle.php"
 docker cp scripts/test-public-form-submissions.php "$web_container:/tmp/test-public-form-submissions.php"
@@ -136,6 +137,7 @@ php -l /tmp/test-admin-self-profile-integrity.php
 php -l /tmp/test-admin-permission-gate.php
 php -l /tmp/test-admin-filemanager-security.php
 php -l /tmp/test-admin-password-migration.php
+php -l /tmp/test-email-tls-security.php
 php -l /tmp/test-admin-button-visibility.php
 php -l /tmp/test-proxy-https.php
 php /tmp/test-security-hardening.php
@@ -149,6 +151,7 @@ php /tmp/test-admin-transfer-toast.php
 php /tmp/test-admin-permission-gate.php
 php /tmp/test-admin-filemanager-security.php
 php /tmp/test-admin-password-migration.php
+php /tmp/test-email-tls-security.php
 php /tmp/test-admin-button-visibility.php
 php /tmp/test-admin-crud-lifecycle.php
 php /tmp/test-public-form-submissions.php

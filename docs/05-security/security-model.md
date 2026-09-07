@@ -15,7 +15,8 @@
 
 ## P2
 
-- SMTP cho phép self-signed và tắt verify peer/name.
+- SMTP đã bắt buộc verify peer/name và từ chối self-signed; certificate, CA và
+  gửi thư thật vẫn cần xác minh trên hosting.
 - HTML CMS được decode/render trực tiếp; quyền CMS compromise có thể dẫn tới stored XSS/script injection.
 - Upload contact cho phép archive/office file; cần MIME/size/storage review.
 - Logs public và permission file 0644 làm tăng blast radius nếu web config sai.

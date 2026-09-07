@@ -91,6 +91,9 @@ nhận là do chưa có nguồn thật; không coi đó là blocker kỹ thuật
 - Mật khẩu Admin tạo/đổi mới dùng `password_hash()`; tài khoản MD5 legacy vẫn
   đăng nhập bằng mật khẩu hiện hữu và được nâng hash tự động ngay lần login
   thành công đầu tiên. Sai mật khẩu không ghi DB.
+- SMTP không còn tắt kiểm tra TLS: PHPMailer xác minh certificate/hostname và
+  từ chối self-signed cho mọi nhánh provider; local mới verify cấu hình tĩnh,
+  còn gửi thật phải kiểm tra trên hosting.
 - RBAC đã bật trong source và regression local đạt; vẫn cần test tài khoản
   nghiệp vụ, HTTPS, cookie Secure, proxy, SMTP, reCAPTCHA và upload video trên
   staging/production.

@@ -130,6 +130,17 @@
 			return $array1;
 		}
 
+		public static function secureSmtpOptions()
+		{
+			return array(
+				'ssl' => array(
+					'verify_peer' => true,
+					'verify_peer_name' => true,
+					'allow_self_signed' => false
+				)
+			);
+		}
+
 		public function send($owner='', $arrayEmail=array(), $subject="", $message="", $file='')
 		{
 			$mail = new PHPMailer(true);
@@ -151,13 +162,6 @@
 	                $mail->SMTPAuth = true;
 	                $mail->SMTPDebug = false;
 	                $mail->SMTPSecure = $config_secure;
-	                $mail->SMTPOptions = array(
-	                    'ssl' => array(
-	                        'verify_peer' => false,
-	                        'verify_peer_name' => false,
-	                        'allow_self_signed' => true
-	                    )
-	                );
 	            }
 	            else if($this->optcompany['mailertype'] == 2)
 	            {
@@ -182,14 +186,11 @@
                 $mail->SMTPAuth = true;
                 $mail->SMTPDebug = false;
                 $mail->SMTPSecure = $config_secure;
-                $mail->SMTPOptions = array(
-                    'ssl' => array(
-                        'verify_peer' => false,
-                        'verify_peer_name' => false,
-                        'allow_self_signed' => true
-                    )
-                );
 			}
+
+			/* Không hạ chuẩn TLS theo từng provider: certificate và hostname phải
+			   hợp lệ trên hosting production. */
+			$mail->SMTPOptions = self::secureSmtpOptions();
 			
 
 			/* PHPMailer(true) ở đầu hàm bật ném exception, và nó ném cho rất nhiều
