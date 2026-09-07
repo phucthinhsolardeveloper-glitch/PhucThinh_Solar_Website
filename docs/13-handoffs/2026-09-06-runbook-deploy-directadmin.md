@@ -209,6 +209,12 @@ Chỉ mở traffic/chạy quảng cáo sau khi smoke sạch.
 ## 8. Rollback
 
 - Code lỗi: đưa release trước có checksum trở lại; giữ config và runtime hiện tại.
+- Sau lần đăng nhập Admin đầu tiên, một số hash MD5 có thể đã được nâng sang
+  `password_hash()`. Không rollback `21dfb0a` hoặc quay về source chỉ hiểu MD5;
+  nếu phải rollback phần khác, dựng hotfix/release rollback vẫn giữ verifier
+  hai định dạng. Nếu bỏ bước này, tài khoản đã nâng hash sẽ không đăng nhập được.
+- Không khôi phục file-manager connector trước `a82da6c` hoặc body legacy trước
+  `ed5229a`; security fix phải roll-forward kể cả khi rollback tính năng khác.
 - Schema/data lỗi: dừng traffic ghi và phục hồi DB từ backup trước deploy; không
   tự sửa tay trên production khi chưa đối soát.
 - Media/icon lỗi: phục hồi DB + `upload/` từ cùng mốc backup. Không chỉ hoàn
