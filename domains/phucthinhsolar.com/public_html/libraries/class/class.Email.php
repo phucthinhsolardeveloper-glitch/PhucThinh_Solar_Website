@@ -13,10 +13,12 @@
 		private $data = array();
 		private $company = array();
 		private $optcompany = '';
+		private $mailConfig = array();
 
-		function __construct($d)
+		function __construct($d, $mailConfig = array())
 		{
 			$this->d = $d;
+			$this->mailConfig = is_array($mailConfig) ? $mailConfig : array();
 			$this->info();
 		}
 
@@ -29,6 +31,7 @@
 			$socialString = '';
 			$this->company = $this->d->rawQueryOne("select options, namevi from #_setting limit 0,1");
 			$this->optcompany = json_decode($this->company['options'],true);
+			if(!is_array($this->optcompany)) $this->optcompany = array();
 			$logo = $this->d->rawQueryOne("select photo from #_photo where type = ? and act = ? limit 0,1",array('logo','photo_static'));
 			$social = $this->d->rawQuery("select photo, link from #_photo where type = ? and find_in_set('hienthi',status) order by numb,id desc",array('social'));
 
@@ -40,7 +43,7 @@
 				}
 			}
 
-			$this->data['email'] = ($this->optcompany['mailertype']==1) ? $this->optcompany['email_host'] : $this->optcompany['email_gmail'];
+			$this->data['email'] = isset($this->mailConfig['from']) ? trim((string)$this->mailConfig['from']) : '';
 			$this->data['color'] = '#94130F';
 			$this->data['home'] = $configBase;
 			$this->data['logo'] = '<img src="'.$configBase.UPLOAD_PHOTO_L.$logo['photo'].'" style="max-height:70px;" >';
@@ -141,57 +144,141 @@
 			);
 		}
 
-		public function send($owner='', $arrayEmail=array(), $subject="", $message="", $file='')
+		private static function validAddress($email)
+		{
+			$email = trim((string)$email);
+			return $email !== ''
+				&& strpos($email, "\r") === false
+				&& strpos($email, "\n") === false
+				&& filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
+		}
+
+		private static function cleanHeaderText($value)
+		{
+			return trim(preg_replace('/[\r\n]+/', ' ', (string)$value));
+		}
+
+		private static function normalizeEncryption($encryption)
+		{
+			$encryption = strtolower(trim((string)$encryption));
+			if($encryption === 'starttls') return PHPMailer::ENCRYPTION_STARTTLS;
+			if($encryption === 'smtps') return PHPMailer::ENCRYPTION_SMTPS;
+			return $encryption;
+		}
+
+		public static function validateConfig($config)
+		{
+			$errors = array();
+			$config = is_array($config) ? $config : array();
+			if(!isset($config['enabled']) || $config['enabled'] !== true) $errors[] = 'enabled';
+			$host = isset($config['host']) ? trim((string)$config['host']) : '';
+			if($host === '' || strpos($host, "\r") !== false || strpos($host, "\n") !== false || !preg_match('/^[a-z0-9.-]+$/i', $host)) $errors[] = 'host';
+			$port = isset($config['port']) ? (int)$config['port'] : 0;
+			if($port < 1 || $port > 65535) $errors[] = 'port';
+			$encryption = self::normalizeEncryption(isset($config['encryption']) ? $config['encryption'] : '');
+			if(!in_array($encryption, array(PHPMailer::ENCRYPTION_STARTTLS, PHPMailer::ENCRYPTION_SMTPS), true)) $errors[] = 'encryption';
+			if(!self::validAddress(isset($config['username']) ? $config['username'] : '')) $errors[] = 'username';
+			$password = trim((string)(isset($config['password']) ? $config['password'] : ''));
+			if($password === '' || $password === 'REPLACE_WITH_MAILBOX_PASSWORD') $errors[] = 'password';
+			if(!self::validAddress(isset($config['from']) ? $config['from'] : '')) $errors[] = 'from';
+			if(!self::validAddress(isset($config['admin_to']) ? $config['admin_to'] : '')) $errors[] = 'admin_to';
+			if(!in_array('username', $errors, true) && !in_array('from', $errors, true)
+				&& strcasecmp(trim((string)$config['username']), trim((string)$config['from'])) !== 0) $errors[] = 'from_must_match_username';
+			$timeout = isset($config['timeout']) ? (int)$config['timeout'] : 10;
+			if($timeout < 3 || $timeout > 30) $errors[] = 'timeout';
+			return array_values(array_unique($errors));
+		}
+
+		private static function configureMailer($mail, $config)
+		{
+			$mail->isSMTP();
+			$mail->SMTPAuth = true;
+			$mail->SMTPDebug = 0;
+			$mail->Host = trim((string)$config['host']);
+			$mail->Port = (int)$config['port'];
+			$mail->SMTPSecure = self::normalizeEncryption($config['encryption']);
+			$mail->SMTPAutoTLS = true;
+			$mail->Username = trim((string)$config['username']);
+			$mail->Password = (string)$config['password'];
+			$mail->Timeout = isset($config['timeout']) ? (int)$config['timeout'] : 10;
+			$mail->Timelimit = $mail->Timeout + 5;
+			$mail->SMTPOptions = self::secureSmtpOptions();
+			$mail->CharSet = 'utf-8';
+		}
+
+		/** Dùng cho CLI readiness; không trả host, account, recipient hay secret. */
+		public static function readiness($config, $connect = false, $sendTest = false)
+		{
+			$errors = self::validateConfig($config);
+			if($errors) return array('ok' => false, 'stage' => 'config', 'errors' => $errors);
+			if(!$connect && !$sendTest) return array('ok' => true, 'stage' => 'config', 'errors' => array());
+
+			$mail = new PHPMailer(true);
+			try
+			{
+				self::configureMailer($mail, $config);
+				$mail->setFrom(trim((string)$config['from']), 'PTS Website');
+				if($sendTest)
+				{
+					$mail->addAddress(trim((string)$config['admin_to']));
+					$mail->Subject = '[PTS] SMTP production readiness test';
+					$mail->Body = 'SMTP production test completed at '.date('c').'.';
+					$mail->AltBody = 'SMTP production test completed at '.date('c').'.';
+					$mail->send();
+					return array('ok' => true, 'stage' => 'send', 'errors' => array());
+				}
+
+				if(!$mail->smtpConnect(self::secureSmtpOptions())) return array('ok' => false, 'stage' => 'connect', 'errors' => array('smtp_connection'));
+				$mail->smtpClose();
+				return array('ok' => true, 'stage' => 'connect', 'errors' => array());
+			}
+			catch(Throwable $exception)
+			{
+				$mail->smtpClose();
+				return array('ok' => false, 'stage' => $sendTest ? 'send' : 'connect', 'errors' => array('smtp_operation'));
+			}
+		}
+
+		private static function attachmentAllowed($field)
+		{
+			if(!isset($_FILES[$field]) || !is_array($_FILES[$field]) || !empty($_FILES[$field]['error'])) return false;
+			$file = $_FILES[$field];
+			if(empty($file['tmp_name']) || !is_uploaded_file($file['tmp_name'])) return false;
+			if(empty($file['size']) || (int)$file['size'] > 10 * 1024 * 1024) return false;
+			$extension = strtolower(pathinfo((string)$file['name'], PATHINFO_EXTENSION));
+			$allowed = array('doc','docx','pdf','rar','zip','ppt','pptx','xls','xlsx','jpg','jpeg','png','gif');
+			if(!in_array($extension, $allowed, true)) return false;
+			if(function_exists('finfo_open'))
+			{
+				$finfo = finfo_open(FILEINFO_MIME_TYPE);
+				$mime = $finfo ? finfo_file($finfo, $file['tmp_name']) : '';
+				if($finfo) finfo_close($finfo);
+				if($mime === 'text/html' || preg_match('/php|x-httpd|x-sh/i', (string)$mime)) return false;
+			}
+			return true;
+		}
+
+		public function sendAdminNotification($subject, $fields, $replyToEmail = '', $replyToName = '')
+		{
+			$rows = '';
+			foreach((array)$fields as $label => $value)
+			{
+				$rows .= '<tr><th align="left" style="padding:6px 10px">'.htmlspecialchars((string)$label, ENT_QUOTES, 'UTF-8').'</th>'
+					.'<td style="padding:6px 10px">'.nl2br(htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8')).'</td></tr>';
+			}
+			$message = '<table border="1" cellpadding="0" cellspacing="0" style="border-collapse:collapse">'.$rows.'</table>';
+			return $this->send('admin', array(), $subject, $message, '', array('email' => $replyToEmail, 'name' => $replyToName));
+		}
+
+		public function send($owner='', $arrayEmail=array(), $subject="", $message="", $file='', $replyTo=array())
 		{
 			$mail = new PHPMailer(true);
-			$config_host = '';
-			$config_port = 0;
-			$config_secure = '';
-			$config_email = '';
-			$config_password = '';
-			if ($owner != 'adminis'){
-				if($this->optcompany['mailertype'] == 1)
-	            {
-	                $config_host = $this->optcompany['ip_host'];
-	                $config_port = $this->optcompany['port_host'];
-	                $config_secure = $this->optcompany['secure_host'];
-	                $config_email = $this->optcompany['email_host'];
-	                $config_password = $this->optcompany['password_host'];
-
-	                $mail->IsSMTP();
-	                $mail->SMTPAuth = true;
-	                $mail->SMTPDebug = false;
-	                $mail->SMTPSecure = $config_secure;
-	            }
-	            else if($this->optcompany['mailertype'] == 2)
-	            {
-	                $config_host = $this->optcompany['host_gmail'];
-	                $config_port = $this->optcompany['port_gmail'];
-	                $config_secure = $this->optcompany['secure_gmail'];
-	                $config_email = $this->optcompany['email_gmail'];
-	                $config_password = $this->optcompany['password_gmail'];
-	                $mail->IsSMTP();
-	                $mail->SMTPAuth = true;
-	                $mail->SMTPDebug = false;
-	                $mail->SMTPSecure = $config_secure;             
-	            }
-			}else{
-				$config_host = $this->optcompany['ip_host_as'];
-                $config_port = $this->optcompany['port_host'];
-                $config_secure = $this->optcompany['secure_host'];
-                $config_email = $this->optcompany['email_host_as'];
-                $config_password = $this->optcompany['password_host_as'];
-
-                $mail->IsSMTP();
-                $mail->SMTPAuth = true;
-                $mail->SMTPDebug = false;
-                $mail->SMTPSecure = $config_secure;
+			$configErrors = self::validateConfig($this->mailConfig);
+			if($configErrors)
+			{
+				error_log('Email::send configuration invalid: '.implode(',', $configErrors));
+				return false;
 			}
-
-			/* Không hạ chuẩn TLS theo từng provider: certificate và hostname phải
-			   hợp lệ trên hosting production. */
-			$mail->SMTPOptions = self::secureSmtpOptions();
-			
 
 			/* PHPMailer(true) ở đầu hàm bật ném exception, và nó ném cho rất nhiều
 			   trường hợp: SetFrom/AddAddress với địa chỉ rỗng hoặc sai định dạng,
@@ -210,49 +297,58 @@
 			   được vì exception chặn ngang trước đó. */
 			try
 			{
-				$mail->Host = $config_host;
-				if($config_port)
-				{
-					$mail->Port = $config_port;
-				}
-				$mail->Username = $config_email;
-				$mail->Password = $config_password;
-				$mail->SetFrom($config_email,$this->company['namevi']);
+				self::configureMailer($mail, $this->mailConfig);
+				$fromName = isset($this->mailConfig['from_name']) && trim((string)$this->mailConfig['from_name']) !== ''
+					? self::cleanHeaderText($this->mailConfig['from_name']) : self::cleanHeaderText($this->company['namevi']);
+				$mail->setFrom(trim((string)$this->mailConfig['from']), $fromName);
 
-				if($owner == 'admin')
+				if($owner === 'admin' || $owner === 'adminis')
 				{
-					$mail->AddAddress($this->optcompany['email'],$this->company['namevi']);
+					$mail->addAddress(trim((string)$this->mailConfig['admin_to']), self::cleanHeaderText($this->company['namevi']));
 				}
-				else if($owner == 'customer')
+				else if($owner === 'customer')
 				{
-					if($arrayEmail && count($arrayEmail) > 0)
+					$validRecipients = array();
+					foreach((array)$arrayEmail as $vEmail)
 					{
-						foreach($arrayEmail as $vEmail)
-						{
-							$mail->AddAddress($vEmail['email'],$vEmail['name']);
-						}
+						if(is_array($vEmail) && self::validAddress(isset($vEmail['email']) ? $vEmail['email'] : '')) $validRecipients[] = $vEmail;
 					}
-				}else if ($owner == 'adminis'){
-					$mail->AddAddress($this->optcompany['email_as'],"ERROR SERVER NOT!!!");
-					$mail->AddAddress($this->optcompany['apdev_as'],"ERROR SERVER NOT DEV!!!");
-				}else{
-					$mail->AddReplyTo($this->optcompany['email'],$this->company['namevi']);
+					if(!$validRecipients) return false;
+					$bulk = count($validRecipients) > 1;
+					foreach($validRecipients as $recipient)
+					{
+						$name = isset($recipient['name']) ? self::cleanHeaderText($recipient['name']) : '';
+						if($bulk) $mail->addBCC(trim((string)$recipient['email']), $name);
+						else $mail->addAddress(trim((string)$recipient['email']), $name);
+					}
+				}
+				else
+				{
+					return false;
+				}
+
+				if(is_array($replyTo) && self::validAddress(isset($replyTo['email']) ? $replyTo['email'] : ''))
+				{
+					$mail->addReplyTo(trim((string)$replyTo['email']), isset($replyTo['name']) ? self::cleanHeaderText($replyTo['name']) : '');
 				}
 
 				$mail->CharSet = "utf-8";
 				$mail->AltBody = "To view the message, please use an HTML compatible email viewer!";
-				$mail->Subject = $subject;
+				$mail->Subject = self::cleanHeaderText($subject);
 				$mail->MsgHTML($message);
-				if($file != '' && isset($_FILES[$file]) && !$_FILES[$file]['error'])
+				if($file !== '' && self::attachmentAllowed($file))
 				{
-					$mail->AddAttachment($_FILES[$file]["tmp_name"], $_FILES[$file]["name"]);
+					$attachmentName = preg_replace('/[\r\n]+/', '', basename((string)$_FILES[$file]['name']));
+					$mail->addAttachment($_FILES[$file]['tmp_name'], $attachmentName);
 				}
 
-				return $mail->Send() ? true : false;
+				return $mail->send() ? true : false;
 			}
 			catch(Throwable $exception)
 			{
-				error_log('Email::send('.$owner.') thất bại: '.$exception->getMessage());
+				/* Không log exception/message của SMTP vì có thể chứa account,
+				   recipient hoặc phản hồi từ provider. */
+				error_log('Email::send failed owner='.(in_array($owner, array('admin','adminis','customer'), true) ? $owner : 'invalid'));
 				return false;
 			}
 		}

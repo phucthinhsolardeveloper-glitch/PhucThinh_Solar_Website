@@ -15,6 +15,7 @@ imap/
 *.log
 .env
 .env.*
+**/.pts-mail.php
 .claude/
 .playwright-mcp/
 tools/visual-tests/node_modules/

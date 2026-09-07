@@ -24,6 +24,8 @@ if(!is_file($publicHtml.'/libraries/config.php'))
 
 define('LIBRARIES', $publicHtml.'/libraries/');
 require LIBRARIES.'config.php';
+require LIBRARIES.'mail_config.php';
+loadMailConfig($config);
 require LIBRARIES.'config-type.php';
 require LIBRARIES.'autoload.php';
 new AutoLoad();
@@ -72,15 +74,9 @@ if($requireProduction && !$debugOff) $failures[] = 'Production còn bật debug-
 if($requireProduction && !$reportingOff) $failures[] = 'Production còn bật error-reporting.';
 if(!$requireProduction && (!$debugOff || !$reportingOff)) $warnings[] = 'Local đang bật chế độ debug; đây là chủ đích của Docker test.';
 
-$setting = $d->rawQueryOne('select options from #_setting limit 0,1');
-$options = !empty($setting['options']) ? json_decode($setting['options'], true) : array();
-if(!is_array($options)) $options = array();
-$mailerType = isset($options['mailertype']) ? (int)$options['mailertype'] : 1;
-$smtpKeys = $mailerType === 2
-    ? array('host_gmail','port_gmail','secure_gmail','email_gmail','password_gmail')
-    : array('ip_host','port_host','secure_host','email_host','password_host');
-$smtpConfigured = true;
-foreach($smtpKeys as $key) if(!isset($options[$key]) || trim((string)$options[$key]) === '') $smtpConfigured = false;
+$mailConfig = isset($config['mail']) && is_array($config['mail']) ? $config['mail'] : array();
+$smtpErrors = Email::validateConfig($mailConfig);
+$smtpConfigured = empty($smtpErrors);
 runtimeResult($smtpConfigured || !$requireProduction, 'Cấu hình SMTP', $smtpConfigured ? 'đủ trường bắt buộc (chưa gửi thử)' : 'còn thiếu (chỉ chấp nhận ở local)');
 if($requireProduction && !$smtpConfigured) $failures[] = 'SMTP production chưa đủ cấu hình.';
 if(!$requireProduction && !$smtpConfigured) $warnings[] = 'SMTP local chưa cấu hình; form đã có cơ chế không làm vỡ trang khi gửi thất bại.';

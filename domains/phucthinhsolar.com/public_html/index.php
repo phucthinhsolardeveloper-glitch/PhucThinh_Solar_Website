@@ -15,6 +15,8 @@
 
     /* Config */
     require_once LIBRARIES."config.php";
+    require_once LIBRARIES."mail_config.php";
+    loadMailConfig($config);
     require_once LIBRARIES."form_security.php";
     require_once LIBRARIES."public_pricing.php";
 
@@ -24,7 +26,7 @@
     $d = new PDODb($config['database']);
     $flash = new Flash();
     $seo = new Seo($d);
-    $emailer = new Email($d);
+    $emailer = new Email($d, isset($config['mail']) ? $config['mail'] : array());
     $router = new AltoRouter();
     $cache = new Cache($d);
     $func = new Functions($d, $cache);
