@@ -8,6 +8,11 @@
 
 - Admin mới dùng `password_hash()`; hash MD5 cũ chỉ còn nhánh tương thích và
   được nâng tự động sau lần đăng nhập hợp lệ đầu tiên.
+- File-manager `component.php` legacy chỉ còn stub 404, không giữ credential
+  hoặc implementation chết trong source; credential cũ phải được rotate ngoài
+  source nếu từng dùng trên môi trường thật.
+- CKFinder license không còn hard-code; production phải cấp qua constant trong
+  config ngoài Git hoặc biến môi trường và không ghi giá trị vào log/artifact.
 - RBAC granular đã bật trong source; vẫn phải kiểm chứng bằng tài khoản nghiệp
   vụ trên staging/hosting với `debug-developer=false`.
 - CSRF đã có cho form POST Admin, controller save/delete/upload/sync/create, các API mutation đang dùng, checkout và review. Request đọc không yêu cầu token; login giữ cơ chế xác thực riêng.

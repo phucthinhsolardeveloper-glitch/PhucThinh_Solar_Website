@@ -72,6 +72,10 @@ File config local đã được đặt mặc định an toàn và Docker tự b�
 test. `config.php` chứa bí mật nên không nằm trong Git/release; vì vậy luôn phải
 kiểm tra trực tiếp file đang chạy trên hosting.
 
+Nếu CKFinder có license production, khai báo `CKFINDER_LICENSE_NAME` và
+`CKFINDER_LICENSE_KEY` bằng constant trong config ngoài Git hoặc environment
+của hosting. Không chép giá trị license vào source, archive, log hay tài liệu.
+
 SMTP chỉ được coi là hoàn tất sau khi gửi thử form liên hệ và nhận email. Không
 chép credential vào log, tài liệu hoặc chat.
 

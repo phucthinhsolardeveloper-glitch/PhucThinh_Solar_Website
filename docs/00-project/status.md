@@ -96,6 +96,10 @@ nhận là do chưa có nguồn thật; không coi đó là blocker kỹ thuật
   còn gửi thật phải kiểm tra trên hosting.
 - Frontend, public API, Admin và Flash dùng chung bootstrap session; cookie bật
   strict mode, HttpOnly, SameSite=Lax và Secure khi request là HTTPS.
+- `administrator/api/component.php` chỉ còn stub JSON 404; toàn bộ file-manager
+  body và credential hard-code phía sau `exit()` đã được loại khỏi source.
+- CKFinder license key được lấy từ production config ngoài Git hoặc environment,
+  không còn lưu literal trong file được track.
 - RBAC đã bật trong source và regression local đạt; vẫn cần test tài khoản
   nghiệp vụ, HTTPS, cookie Secure, proxy, SMTP, reCAPTCHA và upload video trên
   staging/production.
