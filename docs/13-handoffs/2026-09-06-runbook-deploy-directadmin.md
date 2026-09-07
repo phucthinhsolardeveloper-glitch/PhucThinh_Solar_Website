@@ -76,9 +76,11 @@ SMTP dùng `$config['mail']`; không còn lấy transport/password/recipient t�
 `table_setting.options`. Tạo file secret `0600` tại
 `/home/<directadmin-user>/.pts-mail.php`; source tự nạp file này theo
 `docs/08-integrations/smtp-production.md`. Host `mail.phucthinhsolar.com`, port
-`587`, sender `website@phucthinhsolar.com`, recipient
-`phucthinhsolar.hr@gmail.com`; riêng encryption phải xác minh với hosting, không
-tự suy ra từ port.
+`587` dùng STARTTLS (`tls`), sender `website@phucthinhsolar.com`, recipient
+`phucthinhsolar.hr@gmail.com`. Handshake ngày 2026-09-07 nhận certificate
+self-signed `CN=localhost`; phải yêu cầu hosting cài certificate hợp lệ cho mail
+hostname hoặc cung cấp hostname SMTP hợp lệ trước khi authenticate/gửi test.
+Không cấu hình certificate bypass.
 
 Nếu CKFinder có license production, khai báo `CKFINDER_LICENSE_NAME` và
 `CKFINDER_LICENSE_KEY` bằng constant trong config ngoài Git hoặc environment

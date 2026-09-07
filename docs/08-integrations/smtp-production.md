@@ -33,17 +33,20 @@ tự động hiện được version hóa trong source, chưa có chức năng c
 ```text
 SMTP_HOST=mail.phucthinhsolar.com
 SMTP_PORT=587
-SMTP_ENCRYPTION=CHƯA_XÁC_MINH
+SMTP_ENCRYPTION=STARTTLS (`tls`)
 SMTP_USERNAME=website@phucthinhsolar.com
 SMTP_PASSWORD=SECRET_KHÔNG_GHI_VÀO_GIT_DOC_LOG
 MAIL_FROM=website@phucthinhsolar.com
 MAIL_ADMIN_TO=phucthinhsolar.hr@gmail.com
 ```
 
-Cần lấy từ DirectAdmin/nhà cung cấp đúng tên chế độ bảo mật SMTP outbound:
-`STARTTLS` (explicit TLS) hay `SSL/TLS` (implicit TLS). Không suy ra chế độ chỉ
-từ port 587. Trong cấu hình ứng dụng dùng `tls`/`starttls` cho STARTTLS, hoặc
-`ssl`/`smtps` cho implicit SSL/TLS. PHP production phải bật extension `openssl`.
+STARTTLS đã được xác minh bằng handshake thật trên port 587. Tuy nhiên tại lần
+kiểm tra 2026-09-07, server trả certificate self-signed `CN=localhost`, không
+khớp `mail.phucthinhsolar.com`; TLS verification chuẩn vì vậy từ chối kết nối.
+Hosting phải cài certificate hợp lệ cho `mail.phucthinhsolar.com` hoặc cung cấp
+SMTP hostname chính thức có certificate hợp lệ. Không tắt `verify_peer`,
+`verify_peer_name` hoặc bật `allow_self_signed`. PHP production phải bật
+extension `openssl`.
 
 ## Cấu hình secret ngoài webroot
 
@@ -56,7 +59,7 @@ return array(
     'enabled' => true,
     'host' => 'mail.phucthinhsolar.com',
     'port' => 587,
-    'encryption' => 'REPLACE_WITH_VERIFIED_VALUE',
+    'encryption' => 'tls',
     'username' => 'website@phucthinhsolar.com',
     'password' => 'REPLACE_WITH_MAILBOX_PASSWORD',
     'from' => 'website@phucthinhsolar.com',
