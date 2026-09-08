@@ -16,8 +16,13 @@
 	if(file_exists(ROOT.$upload_const) && $array_const)
 	{
 		$path_htaccess = ROOT.$upload_const.'/.htaccess';
-		$content_htaccess = 'Options -ExecCGI'.PHP_EOL;
-		$content_htaccess .= 'RemoveHandler .php .php3 .php4 .php5 .php7 .php8 .phtml .phar .cgi .pl'.PHP_EOL;
+		/* "Options -ExecCGI" bị hosting production chặn ("not allowed here" trong
+		   error log - AllowOverride của host không cho phép override Options),
+		   khiến TOÀN BỘ file trong upload/ trả 500 (không chỉ file thực thi được).
+		   RemoveHandler + FilesMatch/Require bên dưới đã đủ chặn thực thi script
+		   giả dạng ảnh nên bỏ dòng này (audit UX 2026-09-08, phát hiện qua log lỗi
+		   thật trên phucthinhsolar.com). */
+		$content_htaccess = 'RemoveHandler .php .php3 .php4 .php5 .php7 .php8 .phtml .phar .cgi .pl'.PHP_EOL;
 		$content_htaccess .= '<FilesMatch "\.(?:inc|sql|php[0-9]?|phtml|phar|cgi|pl|asp|aspx|jsp|shtml)$">'.PHP_EOL;
 		$content_htaccess .= '<IfModule mod_authz_core.c>'.PHP_EOL;
 		$content_htaccess .= 'Require all denied'.PHP_EOL;
