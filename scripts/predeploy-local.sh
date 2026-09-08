@@ -8,6 +8,32 @@ base_url="http://localhost:8080"
 
 cd "$repo_dir"
 
+# Khi debug-css=false (đúng cấu hình production), toàn bộ <link> CSS được gộp
+# vào một file assets/caches/<hash>.css nên đường dẫn CSS gốc (photobox.css,
+# fancybox.css...) không còn xuất hiện nguyên văn trong HTML nữa. Kiểm tra cả
+# hai trường hợp: link riêng (debug-css=true) hoặc rule đặc trưng có mặt trong
+# bundle (debug-css=false), thay vì chỉ grep đường dẫn gốc.
+assert_css_shipped() {
+    local html_file="$1" literal_path="$2" distinctive_rule="$3"
+    if grep -qF "$literal_path" "$html_file"; then
+        return 0
+    fi
+    local bundle_url
+    bundle_url="$(grep -oE 'href="[^"]*assets/caches/[a-f0-9]+\.css[^"]*"' "$html_file" | head -1 | sed -E 's/^href="//; s/"$//')"
+    if [ -z "$bundle_url" ]; then
+        echo "FAIL: Không thấy $literal_path (không link riêng, không có CSS bundle) trong $html_file" >&2
+        exit 1
+    fi
+    local bundle_cache="/tmp/pts-predeploy-bundle-$(basename "${bundle_url%%\?*}")"
+    if [ ! -s "$bundle_cache" ]; then
+        curl -fsS -L -o "$bundle_cache" "$bundle_url"
+    fi
+    if ! grep -qF "$distinctive_rule" "$bundle_cache"; then
+        echo "FAIL: CSS bundle thiếu \"$distinctive_rule\" — $literal_path có thể không được gộp vào bundle" >&2
+        exit 1
+    fi
+}
+
 # ripgrep không có trên máy deploy (trong Claude Code nó chỉ là shell function
 # của phiên tương tác, script non-interactive không thấy). Mọi guard phải dùng
 # grep, nếu không script chết giữa chừng và assertion phía sau không chạy.
@@ -272,19 +298,19 @@ grep -qE '<title>[^<]+</title>' /tmp/pts-predeploy-solution-detail.html
 grep -qF 'class="box-detail-news"' /tmp/pts-predeploy-solution-detail.html
 grep -qE '<title>[^<]+</title>' /tmp/pts-predeploy-project-detail.html
 grep -qF 'id="inf_single_project"' /tmp/pts-predeploy-project-detail.html
-grep -qF 'assets/photobox/photobox.css' /tmp/pts-predeploy-project-detail.html
+assert_css_shipped /tmp/pts-predeploy-project-detail.html 'assets/photobox/photobox.css' '#pbOverlay'
 grep -qF 'assets/photobox/photobox.js' /tmp/pts-predeploy-project-detail.html
-grep -qF 'assets/fancybox3/jquery.fancybox.css' /tmp/pts-predeploy-project-detail.html
+assert_css_shipped /tmp/pts-predeploy-project-detail.html 'assets/fancybox3/jquery.fancybox.css' '.fancybox-bg'
 grep -qF 'assets/fancybox3/jquery.fancybox.js' /tmp/pts-predeploy-project-detail.html
-grep -qF 'assets/magiczoomplus/magiczoomplus.css' /tmp/pts-predeploy-product.html
+assert_css_shipped /tmp/pts-predeploy-product.html 'assets/magiczoomplus/magiczoomplus.css' '.MagicZoom'
 grep -qF 'assets/magiczoomplus/magiczoomplus.js' /tmp/pts-predeploy-product.html
 grep -qF 'assets/fileuploader/jquery.fileuploader.min.js' /tmp/pts-predeploy-product.html
 grep -qF 'assets/comment/comment.js' /tmp/pts-predeploy-product.html
-grep -qF 'assets/owlcarousel2/owl.carousel.css' /tmp/pts-predeploy-product.html
+assert_css_shipped /tmp/pts-predeploy-product.html 'assets/owlcarousel2/owl.carousel.css' '.owl-carousel'
 grep -qF 'assets/owlcarousel2/owl.carousel.js' /tmp/pts-predeploy-product.html
-grep -qF 'assets/css/jssor.css' /tmp/pts-predeploy-home.html
+assert_css_shipped /tmp/pts-predeploy-home.html 'assets/css/jssor.css' 'jssorl-009-spin'
 grep -qF 'assets/js/jssor.slider.min.js' /tmp/pts-predeploy-home.html
-grep -qF 'assets/owlcarousel2/owl.carousel.css' /tmp/pts-predeploy-home.html
+assert_css_shipped /tmp/pts-predeploy-home.html 'assets/owlcarousel2/owl.carousel.css' '.owl-carousel'
 grep -qF 'assets/owlcarousel2/owl.carousel.js' /tmp/pts-predeploy-home.html
 grep -qF 'name="twitter:title"' /tmp/pts-predeploy-product-filtered.html
 grep -qF 'rel="canonical" href="http://localhost:8080/san-pham/"' /tmp/pts-predeploy-product-filtered.html

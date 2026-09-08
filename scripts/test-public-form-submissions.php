@@ -131,7 +131,8 @@ if (!empty($row['id']))
     ok(trim($row['subject']) === 'Kiem thu tu dong', 'Chủ đề lưu đúng như đã gửi');
 }
 
-/* Thiếu trường bắt buộc (subject) -> không được tạo bản ghi. */
+/* Chủ đề bỏ trống -> vẫn tạo bản ghi, dùng fallback thay vì báo lỗi (email/chủ đề
+   không còn là trường bắt buộc kể từ đợt rút gọn form Liên hệ 2026-09-08). */
 list($cookie2, $csrf2) = sessionAndCsrf($base, 'lien-he/');
 $missingEmail = 'form-test-'.$suffix.'-missing@example.test';
 $invalidContact = $validContact;
@@ -139,8 +140,13 @@ $invalidContact['form_csrf'] = $csrf2;
 $invalidContact['dataContact']['email'] = $missingEmail;
 $invalidContact['dataContact']['subject'] = '';
 request($base.'lien-he/', $cookie2, $invalidContact);
-$missingRow = $d->rawQueryOne('select id from #_contact where email = ? limit 1', array($missingEmail));
-ok(empty($missingRow), 'Thiếu chủ đề thì KHÔNG tạo bản ghi liên hệ');
+$missingRow = $d->rawQueryOne('select id, subject from #_contact where email = ? limit 1', array($missingEmail));
+ok(!empty($missingRow['id']), 'Chủ đề bỏ trống vẫn tạo được bản ghi liên hệ');
+if (!empty($missingRow['id']))
+{
+    $createdContactIds[] = (int)$missingRow['id'];
+    ok(trim($missingRow['subject']) === 'Yêu cầu tư vấn từ website', 'Chủ đề bỏ trống dùng đúng fallback');
+}
 
 /* CSRF sai -> không được tạo bản ghi. */
 list($cookie3, ) = sessionAndCsrf($base, 'lien-he/');
