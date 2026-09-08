@@ -71,7 +71,7 @@
 					if($extension != 'css') die("Invalid file");
 					$myfile = fopen($path['server'], "r") or die("Unable to open file");
 					$sizefile = filesize($path['server']);
-			        if($sizefile) $strCss .= $this->compress(fread($myfile,$sizefile));
+			        if($sizefile) $strCss .= $this->rebaseUrls($this->compress(fread($myfile,$sizefile)), $path['asset']);
 					fclose($myfile);
 				}
 
@@ -107,6 +107,19 @@
 			}
 
 			return $linkCss;
+		}
+
+		/* File gộp nằm ở caches/, khác thư mục file gốc, nên url() tương đối trong
+		   CSS gốc (vd font Linearicons "fonts/Linearicons-Free....woff2") sẽ trỏ
+		   sai chỗ nếu giữ nguyên. Viết lại thành đường dẫn tuyệt đối tính từ thư
+		   mục file gốc, bỏ qua url() đã tuyệt đối/data:/http(s) (audit UX
+		   2026-09-08, phát hiện khi bật lại minify production đã tắt từ lâu). */
+		private function rebaseUrls($css, $assetPath)
+		{
+			$baseDir = rtrim(dirname($assetPath), '/').'/';
+			return preg_replace_callback('/url\(\s*([\'"]?)(?!data:|https?:\/\/|\/\/|\/)([^\'")]+)\1\s*\)/i', function($m) use ($baseDir) {
+				return 'url('.$m[1].$baseDir.$m[2].$m[1].')';
+			}, $css);
 		}
 
 		private function compress($buffer)

@@ -28,7 +28,18 @@ $pcPromoFrame = productPromoFrameForCard($v, $cache);
             <?php } ?>
         </div>
         <div class="caption">
-            <p class="name"><?=$v['name'.$lang]?></p>
+            <p class="name"><?=$func->noBreakModelCode($v['name'.$lang])?></p>
+            <?php
+                /* Chỉ hiện thông số THẬT đang có, không bịa cho sản phẩm thiếu dữ liệu
+                   (audit UX 2026-09-08: card cũ chỉ có ảnh+tên+giá, không đủ để so sánh nhanh). */
+                $pcSpecs = array();
+                if((float)($v['cong_suat'] ?? 0) > 0) $pcSpecs[] = round((float)$v['cong_suat']).'W';
+                if(!empty($v['waterproof_rating'])) $pcSpecs[] = $v['waterproof_rating'];
+                if(!empty($v['lighting_time'])) $pcSpecs[] = $v['lighting_time'];
+            ?>
+            <?php if($pcSpecs) { ?>
+            <p class="pts-card-specs"><?=implode(' · ', array_map(function($s){ return htmlspecialchars($s, ENT_QUOTES, 'UTF-8'); }, $pcSpecs))?></p>
+            <?php } ?>
         </div>
         <p class="price-product">
             <?php if(publicProductRequiresQuote($v)) { ?>

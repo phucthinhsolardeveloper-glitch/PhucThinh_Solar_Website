@@ -170,9 +170,21 @@
                 $catFilterList = ($catFilterListId && empty($id_cat)) ? $d->rawQuery("select pc.name$lang, pc.id, pc.slugvi, pc.slugen, pl.slugvi list_slugvi, pl.slugen list_slugen from #_product_cat pc join #_product_list pl on pl.id=pc.id_list where pc.id_list = ? and find_in_set('hienthi',pc.status) and exists (select 1 from #_product p where p.id_cat = pc.id and p.type = ? and find_in_set('hienthi',p.status)) order by pc.numb,pc.id desc",array($catFilterListId,'san-pham')) : array();
             ?>
             <?php if(count($catFilterList)) { ?>
+            <?php
+                /* Gợi ý "dùng cho" theo TÊN LOẠI ĐÈN - đây là kiến thức phổ thông về công
+                   dụng của từng KIỂU đèn (đèn pha/đèn đường/UFO/ốp trần), không phải số
+                   liệu riêng của sản phẩm nên không tính là bịa dữ liệu. Chỉ gắn khi tên
+                   khớp đúng 1 trong 4 loại đã biết, không đoán cho tên lạ (audit UX 2026-09-08). */
+                $catUseHints = array(
+                    'đèn pha' => 'Sân bãi, công trình rộng',
+                    'đèn đường' => 'Đường giao thông, đường nội bộ',
+                    'đèn ufo' => 'Nhà xưởng, nhà kho, trần cao',
+                    'đèn ốp trần' => 'Hiên nhà, hành lang, mái che',
+                );
+            ?>
             <div class="product-pages__price mb20">
                 <div class="product-pages__price-aside">
-                    <span class="product-pages__price-name">Loại sản phẩm</span>
+                    <span class="product-pages__price-name">Loại đèn - dùng cho</span>
                 </div>
 
                 <div class="wrappers-aside__filter-scroll">
@@ -183,13 +195,19 @@
                                 $cat_get = explode(",", $_GET['is_cat']);
                             }
                         ?>
-                        <?php foreach($catFilterList as $k => $v) { ?>
+                        <?php foreach($catFilterList as $k => $v) {
+                            $catUseHintKey = mb_strtolower(trim($v['name'.$lang]), 'UTF-8');
+                            $catUseHint = isset($catUseHints[$catUseHintKey]) ? $catUseHints[$catUseHintKey] : '';
+                        ?>
                         <li class="product-pages__price-items">
                             <label class="mg0 cs-pointer checker product-pages__price-label d-flex p-relative">
                                 <input type="checkbox" onchange="fetch_product()" <?=(in_array($v['id'],$cat_get))?'checked':''?> name="car_cat" id="car_cat<?=$k?>"
                                     value="<?=$v['id']?>" data-url="<?=publicProductCategoryPath($v,'cat',$lang)?>">
                                 <label class="mg0 checked-fake" for="car_cat<?=$k?>"></label>
-                                <span class=" ml10" for="car_cat<?=$k?>"><?=$v['name'.$lang]?></span>
+                                <span class="ml10 pts-cat-filter-label" for="car_cat<?=$k?>">
+                                    <?=$v['name'.$lang]?>
+                                    <?php if($catUseHint) { ?><small class="pts-cat-filter-hint"><?=$catUseHint?></small><?php } ?>
+                                </span>
                             </label>
                         </li>
                         <?php } ?>

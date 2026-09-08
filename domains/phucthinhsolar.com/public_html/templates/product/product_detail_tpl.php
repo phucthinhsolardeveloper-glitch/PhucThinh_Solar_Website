@@ -85,7 +85,7 @@ $hasProductPolicy = $productPolicyOverride !== '' || !empty($policy);
                     </div>
 
                     <div class="right-pro-detail col-md-7 col-lg-7">
-                        <p class="title-pro-detail"><?=$rowDetail['name'.$lang]?></p>
+                        <p class="title-pro-detail"><?=$func->noBreakModelCode($rowDetail['name'.$lang])?></p>
                         <div class="desc-pro-detail">
                             <?=(!empty($rowDetail['desc'.$lang])) ? htmlspecialchars_decode($rowDetail['desc'.$lang]) : ''?>
                         </div>
@@ -132,6 +132,25 @@ $hasProductPolicy = $productPolicyOverride !== '' || !empty($policy);
                             <?php } ?>
                         </ul>
                         <?php
+                            /* Thông số nổi bật ngay dưới giá - chỉ hiện field THẬT đang có dữ
+                               liệu cho đúng sản phẩm này, không suy diễn cho field trống
+                               (audit UX 2026-09-08: PDP trước đây chỉ có Mã SP + Danh mục,
+                               phải bấm thêm mới thấy thông số kỹ thuật). */
+                            $pdpKeySpecs = array();
+                            if((float)($rowDetail['cong_suat'] ?? 0) > 0) $pdpKeySpecs[] = array('fa-bolt', round((float)$rowDetail['cong_suat']).'W');
+                            if(!empty($rowDetail['waterproof_rating'])) $pdpKeySpecs[] = array('fa-tint', $rowDetail['waterproof_rating']);
+                            if(!empty($rowDetail['lighting_time'])) $pdpKeySpecs[] = array('fa-clock', $rowDetail['lighting_time']);
+                            if(!empty($rowDetail['lighting_area'])) $pdpKeySpecs[] = array('fa-expand', $rowDetail['lighting_area']);
+                            if(!empty($rowDetail['warranty'])) $pdpKeySpecs[] = array('fa-shield-alt', $rowDetail['warranty']);
+                        ?>
+                        <?php if($pdpKeySpecs) { ?>
+                        <div class="pts-pdp-key-specs">
+                            <?php foreach($pdpKeySpecs as $pdpKeySpec) { ?>
+                            <span class="pts-pdp-key-spec"><i class="fas <?=$pdpKeySpec[0]?>" aria-hidden="true"></i><?=htmlspecialchars($pdpKeySpec[1], ENT_QUOTES, 'UTF-8')?></span>
+                            <?php } ?>
+                        </div>
+                        <?php } ?>
+                        <?php
                             /* Chuyển sang CTA báo giá khi giá công khai bị ẩn. */
                             $isContactPrice = publicProductRequiresQuote($rowDetail);
                         ?>
@@ -160,7 +179,7 @@ $hasProductPolicy = $productPolicyOverride !== '' || !empty($policy);
                         </div>
                         <?php if($isContactPrice) { ?>
                         <div class="btn-product-detail btn-contact-price">
-                            <a href="tel:<?=preg_replace('/[^0-9]/','',$optsetting['hotline'])?>" title="Gọi tư vấn báo giá"><i class="fas fa-phone-alt"></i> Gọi báo giá: <?=$optsetting['hotline']?></a>
+                            <a href="tel:<?=preg_replace('/[^0-9]/','',$optsetting['hotline'])?>" title="Gọi báo giá: <?=$optsetting['hotline']?>"><i class="fas fa-phone-alt"></i> Gọi báo giá</a>
                             <a href="#exampleModal" data-toggle="modal" data-target="#exampleModal" title="Gửi yêu cầu báo giá">Gửi yêu cầu báo giá</a>
                         </div>
                         <?php } else { ?>
@@ -169,8 +188,13 @@ $hasProductPolicy = $productPolicyOverride !== '' || !empty($policy);
                             <a href="javascript:void(0)" class="addcart" data-id="<?=$rowDetail['id']?>" data-action="addnow" title="Thêm vào giỏ hàng">Thêm giỏ hàng</a>
                         </div>
                         <?php } ?>
-                        <div class="btn-product-detail">
-                            <a href="#ptsDealerModal" data-toggle="modal" data-target="#ptsDealerModal" title="Đăng ký đại lý" style="width:100%;">Đăng ký đại lý</a>
+                        <?php
+                            /* "Đăng ký đại lý" trước đây là nút to bằng với CTA mua hàng, cạnh
+                               tranh sự chú ý với người chỉ muốn hỏi mua (audit UX 2026-09-08:
+                               "không dùng quá nhiều CTA cùng cấp độ"). Hạ xuống thành link phụ. */
+                        ?>
+                        <div class="pts-pdp-dealer-link">
+                            <a href="#ptsDealerModal" data-toggle="modal" data-target="#ptsDealerModal" title="Đăng ký làm đại lý">Bạn là đại lý? Đăng ký hợp tác <i class="fas fa-angle-right" aria-hidden="true"></i></a>
                         </div>
                         <?php if(count($tc)){ ?>
                         <div id="CRlist_endow_sidebar" class="CRdef_sidebar_pd">

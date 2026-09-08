@@ -497,6 +497,25 @@
 			return $row;
 		}
 
+		/* Giữ mã model (vd "JD-8500L") và vài cụm từ có nghĩa hay gặp trong tên sản
+		   phẩm (vd "Mặt Trời") không bị trình duyệt ngắt dòng giữa chừng - dấu "-"
+		   thường (U+002D) là điểm ngắt dòng hợp lệ theo thuật toán line-break
+		   Unicode dù có word-break:keep-all, và khoảng trắng thường giữa 2 âm tiết
+		   một cụm từ cũng luôn là điểm ngắt. Thay dấu gạch ngang giữa chữ/số bằng
+		   non-breaking hyphen (U+2011), và nối các cụm từ trong $noBreakPhrases
+		   bằng non-breaking space (audit UX 2026-09-08, phản hồi "JD xuống dòng
+		   -5434" + "mặt trời không nên xuống dòng"). */
+		public function noBreakModelCode($str='')
+		{
+			$str = preg_replace('/(?<=[A-Za-z0-9])-(?=[A-Za-z0-9])/u', "\xE2\x80\x91", (string)$str);
+			$noBreakPhrases = array('Năng Lượng Mặt Trời', 'năng lượng mặt trời', 'Mặt Trời', 'mặt trời', 'Phúc Thịnh Solar', 'Phúc Thịnh');
+			foreach($noBreakPhrases as $phrase)
+			{
+				$str = str_replace($phrase, str_replace(' ', "\xC2\xA0", $phrase), $str);
+			}
+			return $str;
+		}
+
 		/* Format money */
 		public function formatMoney($price=0, $unit='đ', $html=false)
 		{

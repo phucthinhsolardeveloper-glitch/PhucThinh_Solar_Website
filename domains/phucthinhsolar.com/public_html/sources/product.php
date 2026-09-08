@@ -33,7 +33,7 @@
 	{
 		/* Render 4 card đầu của mỗi danh mục ngay trong HTML. Bản cũ trả về các
 		   khối rỗng rồi gọi riêng product3.php sau DOM ready cho từng danh mục. */
-		$productListPreviewRows = $cache->get("select name$lang, slugvi, slugen, id, id_list, id_cat, id_brand, photo, photo_khuyenmai, regular_price, sale_price, discount, type, status from #_product where type = ? and find_in_set('hienthi',status)".publicProductDefaultOrder(), array($type), 'result', 7200);
+		$productListPreviewRows = $cache->get("select name$lang, slugvi, slugen, id, id_list, id_cat, id_brand, photo, photo_khuyenmai, regular_price, sale_price, discount, type, status, cong_suat, waterproof_rating, lighting_time from #_product where type = ? and find_in_set('hienthi',status)".publicProductDefaultOrder(), array($type), 'result', 7200);
 		foreach($productListPreviewRows as $productListPreviewRow)
 		{
 			$productListId = (int)$productListPreviewRow['id_list'];
