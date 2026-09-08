@@ -5,6 +5,10 @@
     <?php include TEMPLATE.LAYOUT."css.php"; ?>
 </head>
 <body class="home">
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-57TJSRVM"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
     <?php
         include TEMPLATE.LAYOUT."seo.php";
     ?>
