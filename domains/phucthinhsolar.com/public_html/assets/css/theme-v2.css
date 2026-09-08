@@ -404,7 +404,18 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 .grid-product.grid-product-3{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:18px!important;}
 .product-card{padding-bottom:13px!important;}
 .product-card .product-item{min-width:0;}
-.product-card .price-product{padding-right:46px!important;margin-top:auto!important;}
+/* padding-right chừa chỗ ngang cho nút tròn "+" (position:absolute, bottom
+   right); padding-bottom chừa thêm chỗ dọc - khi card hẹp, giá khuyến mãi
+   (giá mới + giá cũ gạch ngang) xuống dòng 2 và không có padding-bottom thì
+   dòng 2 sẽ chui thẳng vào vùng nút, đè lên chữ (phản hồi mobile 2026-09-08). */
+/* style.css đặt .price-product justify-content:center (dùng chung nhiều
+   nơi); trong thẻ sản phẩm, .product-item cha lại có overflow-x:hidden, nên
+   khi giá mới+giá cũ cộng lại rộng hơn khung, canh giữa làm nó tràn ĐỀU 2
+   bên rồi bị cắt phần đầu bên trái ("912." biến mất, chỉ còn "000đ") - lỗi
+   chỉ lộ rõ ở khung hẹp (mobile, tablet), khung rộng (desktop) thừa chỗ nên
+   không tràn. Canh trái + cho xuống dòng để không bao giờ tràn ra ngoài
+   (phản hồi mobile 2026-09-08). */
+.product-card .price-product{padding-right:46px!important;padding-bottom:44px!important;margin-top:auto!important;justify-content:flex-start!important;flex-wrap:wrap!important;row-gap:2px!important;}
 .product-card-btns{position:absolute;right:10px;bottom:10px;display:block!important;padding:0!important;z-index:4;}
 .product-card-btns .pts-card-add{display:flex!important;width:36px!important;height:36px!important;min-height:36px!important;align-items:center!important;justify-content:center!important;border:0!important;border-radius:50%!important;background:var(--pts-gold)!important;color:#fff!important;box-shadow:0 6px 14px rgba(156,116,32,.28);padding:0!important;}
 .product-card-btns .pts-card-add:hover{background:var(--pts-gold-dark)!important;transform:translateY(-2px);}
