@@ -214,6 +214,24 @@ GA_FRAMEWORK.Pagings = function(){
             loadPaging("api/product3.php?perpage=4&idList="+list,'.paging-prolist-'+list);
         })
     }
+
+    /* Nhảy nhanh tới danh mục trên /san-pham/: trang có <base href> trỏ về
+       domain gốc nên href="#id" thường bị trình duyệt điều hướng về trang chủ
+       thay vì cuộn trong trang hiện tại. Tự bắt sự kiện và cuộn bằng JS. */
+    if(isExist($(".pts-catalog-jump")))
+    {
+        $(document).on('click', '.pts-catalog-jump a', function(event) {
+            var hash = $(this).attr('href');
+            if(!hash || hash.charAt(0) !== '#') return;
+            var target = document.getElementById(hash.slice(1));
+            if(!target) return;
+            event.preventDefault();
+            target.scrollIntoView({behavior: 'smooth', block: 'start'});
+            /* location.pathname (không phải "hash" trần) vì <base href> của trang
+               trỏ về domain gốc, pushState cũng resolve theo base đó. */
+            if(history.pushState) history.pushState(null, '', location.pathname + hash);
+        });
+    }
 };
 
 /* Ticker scroll */
