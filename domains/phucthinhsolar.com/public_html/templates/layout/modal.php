@@ -41,10 +41,10 @@
 										<div class="inf_input"><label>Số điện thoại</label><span class="wpcf7-form-control-wrap tel-contact"><input type="tel" name="dataContact[phone]" value="" size="40" maxlength="20" class="wpcf7-form-control wpcf7-text wpcf7-tel wpcf7-validates-as-required wpcf7-validates-as-tel" placeholder="090xxxxxxx" autocomplete="tel" inputmode="tel" required></span></div>
 									</li>
 									<li class="inf_default_row inf_row_half">
-										<div class="inf_input"><label>Email</label><span class="wpcf7-form-control-wrap mail-contact"><input type="email" name="dataContact[email]" value="" size="40" maxlength="150" class="wpcf7-form-control wpcf7-text wpcf7-email wpcf7-validates-as-required wpcf7-validates-as-email" placeholder="abc@gmail.com" autocomplete="email" required></span></div>
+										<div class="inf_input"><label>Email <small class="pts-optional-label">(không bắt buộc)</small></label><span class="wpcf7-form-control-wrap mail-contact"><input type="email" name="dataContact[email]" value="" size="40" maxlength="150" class="wpcf7-form-control wpcf7-text wpcf7-email" placeholder="abc@gmail.com" autocomplete="email"></span></div>
 									</li>
 									<li class="inf_default_row inf_row_half">
-										<div class="inf_input"><label>Tiêu đề</label><span class="wpcf7-form-control-wrap title-form-contact"><input type="text" name="dataContact[subject]" value="" size="40" maxlength="180" class="wpcf7-form-control wpcf7-text wpcf7-validates-as-required" placeholder="Nhập tiêu đề" required></span></div>
+										<div class="inf_input"><label>Anh/chị quan tâm đến <small class="pts-optional-label">(không bắt buộc)</small></label><span class="wpcf7-form-control-wrap subject-contact"><select name="dataContact[subject]" class="wpcf7-form-control wpcf7-select"><option value="">-- Chọn nhu cầu --</option><option value="Đèn năng lượng mặt trời">Đèn năng lượng mặt trời</option><option value="Điện mặt trời">Điện mặt trời</option><option value="Thiết bị (inverter, tấm pin, pin lưu trữ...)">Thiết bị (inverter, tấm pin, pin lưu trữ...)</option><option value="Đại lý">Đại lý</option><option value="Khác">Khác</option></select></span></div>
 									</li>
 									<li class="inf_default_row inf_row_full">
 										<div class="inf_input"><label>Nội dung liên hệ</label><span class="wpcf7-form-control-wrap content-contact"><textarea name="dataContact[content]" cols="40" rows="6" class="wpcf7-form-control wpcf7-textarea wpcf7-validates-as-required" placeholder="Nhập tin nhắn..." required></textarea></span></div>

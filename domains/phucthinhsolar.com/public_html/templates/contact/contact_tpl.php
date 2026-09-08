@@ -138,18 +138,22 @@
                                                         placeholder="090xxxxxxx" required></span></div>
                                         </li>
                                         <li class="inf_default_row inf_row_half">
-                                            <div class="inf_input"><label>Email</label><span
+                                            <div class="inf_input"><label>Email <small class="pts-optional-label">(không bắt buộc)</small></label><span
                                                     class="wpcf7-form-control-wrap mail-contact"><input type="email"
                                                         name="dataContact[email]" value="" size="40" maxlength="150" autocomplete="email"
-                                                        class="wpcf7-form-control wpcf7-text wpcf7-email wpcf7-validates-as-required wpcf7-validates-as-email"
-                                                        placeholder="abc@gmail.com" required></span></div>
+                                                        class="wpcf7-form-control wpcf7-text wpcf7-email"
+                                                        placeholder="abc@gmail.com"></span></div>
                                         </li>
                                         <li class="inf_default_row inf_row_half">
-                                            <div class="inf_input"><label>Tiêu đề</label><span
-                                                    class="wpcf7-form-control-wrap title-form-contact"><input type="text"
-                                                        name="dataContact[subject]" value="" size="40" maxlength="180"
-                                                        class="wpcf7-form-control wpcf7-text wpcf7-validates-as-required"
-                                                        placeholder="Nhập tiêu đề" required></span></div>
+                                            <div class="inf_input"><label>Anh/chị quan tâm đến <small class="pts-optional-label">(không bắt buộc)</small></label><span
+                                                    class="wpcf7-form-control-wrap subject-contact"><select name="dataContact[subject]" class="wpcf7-form-control wpcf7-select">
+                                                        <option value="">-- Chọn nhu cầu --</option>
+                                                        <option value="Đèn năng lượng mặt trời">Đèn năng lượng mặt trời</option>
+                                                        <option value="Điện mặt trời">Điện mặt trời</option>
+                                                        <option value="Thiết bị (inverter, tấm pin, pin lưu trữ...)">Thiết bị (inverter, tấm pin, pin lưu trữ...)</option>
+                                                        <option value="Đại lý">Đại lý</option>
+                                                        <option value="Khác">Khác</option>
+                                                    </select></span></div>
                                         </li>
                                         <li class="inf_default_row inf_row_full">
                                             <div class="inf_input"><label>Nội dung liên hệ</label><span

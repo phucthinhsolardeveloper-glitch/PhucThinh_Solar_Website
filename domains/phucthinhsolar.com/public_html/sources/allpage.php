@@ -210,10 +210,11 @@
         if(empty($dataContact['fullname'])) $contactResponse['messages'][] = 'Họ tên không được trống';
         if(empty($dataContact['phone'])) $contactResponse['messages'][] = 'Số điện thoại không được trống';
         if(!empty($dataContact['phone']) && !$func->isPhone($dataContact['phone'])) $contactResponse['messages'][] = 'Số điện thoại không hợp lệ';
-        if(empty($dataContact['email'])) $contactResponse['messages'][] = 'Email không được trống';
+        /* Email và Tiêu đề không bắt buộc nữa - khách chỉ cần để lại tên/SĐT/nội dung
+           là đủ để PTS gọi lại, giảm friction so với form hành chính (audit UX 2026-09-08). */
         if(!empty($dataContact['email']) && !$func->isEmail($dataContact['email'])) $contactResponse['messages'][] = 'Email không hợp lệ';
-        if(empty($dataContact['subject'])) $contactResponse['messages'][] = 'Chủ đề không được trống';
         if(empty($dataContact['content'])) $contactResponse['messages'][] = 'Nội dung không được trống';
+        if(empty($dataContact['subject'])) $dataContact['subject'] = 'Yêu cầu tư vấn từ website';
 
         if(!empty($contactResponse))
         {
