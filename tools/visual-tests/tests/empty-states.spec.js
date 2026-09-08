@@ -81,8 +81,13 @@ test('search with no match shows the not-found notice', async ({ page, baseURL }
 });
 
 test('empty product category keeps navigation, filters and consultation entry points', async ({ page, baseURL, isMobile }) => {
+  // Trước đây bám vào "Đèn AC" vì danh mục đó vốn không có sản phẩm nào. Sau đợt
+  // tái cấu trúc cây danh mục 2026-09-08, "Đèn AC" đã bị ẩn (không còn route),
+  // và cả 10 danh mục còn hoạt động đều có sản phẩm. Ép rỗng bằng bộ lọc is_cat
+  // trỏ tới một danh mục con không tồn tại, trên một danh mục cấp 1 còn thật —
+  // vẫn đúng mục đích test là kiểm tra khung trang khi 0 kết quả.
   await collectHealth(page, baseURL, async () => {
-    const response = await page.goto('/den-ac/', { waitUntil: 'domcontentloaded' });
+    const response = await page.goto('/danh-muc-san-pham/quat-nang-luong-mat-troi/?is_cat=999999', { waitUntil: 'domcontentloaded' });
     expect(response && response.ok()).toBeTruthy();
   });
   await expect(page.locator('.alert-warning')).toContainText('Không tìm thấy kết quả');
@@ -160,7 +165,11 @@ test('contact page serves a CSRF-protected lead form wired to the PHP handler', 
   await expect(form).toHaveCount(1);
   await expect(form.locator('input[name="form_csrf"]')).toHaveCount(1);
   await expect(form.locator('input[name="submit-contact"]')).toBeVisible();
-  await expect(form.locator('[name="dataContact[email]"]')).toHaveAttribute('required', '');
+  // Email was made optional in the 2026-09-08 UX pass (hotline/Zalo are the
+  // primary channels here); fullname stays required and still blocks an
+  // empty submit via native constraint validation.
+  await expect(form.locator('[name="dataContact[email]"]')).not.toHaveAttribute('required', '');
+  await expect(form.locator('[name="dataContact[fullname]"]')).toHaveAttribute('required', '');
   // Empty submit is blocked by native constraint validation — still on /lien-he/.
   await form.locator('input[name="submit-contact"]').click();
   expect(new URL(page.url()).pathname.replace(/\/$/, '')).toBe('/lien-he');

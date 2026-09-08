@@ -121,7 +121,10 @@ test('product landing renders category products in the initial HTML without star
 
 test('dealer CTA opens a complete, styled and enabled form', async ({ page }) => {
   await page.goto('/san-pham/den-pha-nang-luong-mat-troi-jindian-jd-t300-300w', { waitUntil: 'domcontentloaded' });
-  await page.locator('.btn-product-detail [data-target="#ptsDealerModal"]').click();
+  // Demoted from a full-width button to a small subordinate link in the
+  // 2026-09-08 UX pass (PDP CTA hierarchy: "Gọi báo giá" leads, dealer signup
+  // is secondary) — same modal target, new container class.
+  await page.locator('.pts-pdp-dealer-link [data-target="#ptsDealerModal"]').click();
   const modal = page.locator('#ptsDealerModal');
   await expect(modal).toBeVisible();
   await expect(modal).toHaveClass(/pts-lead-modal/);
