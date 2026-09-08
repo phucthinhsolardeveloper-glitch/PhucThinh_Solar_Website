@@ -82,8 +82,13 @@
             if($heroCertName !== '') $heroCertBrands[] = $heroCertName;
         }
     }
+    /* Ảnh nền tuỳ chọn (Admin > Ảnh nền Hero trang chủ) thay cho gradient mặc
+       định - lớp phủ tối pts-hero-photo-overlay giữ chữ/hiệu ứng vàng-navy
+       đọc được trên nền ảnh thật, không đổi bố cục hay hiệu ứng phía trên. */
+    $heroBgUrl = (!empty($heroBg['photo'])) ? THUMBS.'/1920x900x1/'.UPLOAD_PHOTO_L.$heroBg['photo'] : '';
 ?>
-<section class="pts-home-hero<?=$heroCerts ? ' pts-home-hero-split' : ''?>">
+<section class="pts-home-hero<?=$heroCerts ? ' pts-home-hero-split' : ''?><?=$heroBgUrl ? ' pts-home-hero-photo' : ''?>"<?php if($heroBgUrl) { ?> style="background-image:url('<?=htmlspecialchars($heroBgUrl, ENT_QUOTES, 'UTF-8')?>')"<?php } ?>>
+    <?php if($heroBgUrl) { ?><div class="pts-hero-photo-overlay" aria-hidden="true"></div><?php } ?>
     <div class="pts-hero-glow" aria-hidden="true"></div>
     <div class="pts-hero-glow-cool" aria-hidden="true"></div>
     <div class="pts-hero-texture" aria-hidden="true"></div>

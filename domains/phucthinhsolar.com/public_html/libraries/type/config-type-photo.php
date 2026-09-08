@@ -10,6 +10,19 @@
     // $config['photo']['photo_static'][$nametype]['thumb'] = '900x300x1';
     // $config['photo']['photo_static'][$nametype]['img_type'] = '.jpg|.gif|.png|.jpeg|.gif';
 
+    /* Ảnh nền Hero trang chủ (chế độ "text") - dùng thay cho nền gradient mặc
+       định khi chủ site muốn có ảnh thật phía sau chữ/số liệu/khối chứng
+       nhận. sources/index.php đọc bằng type=photo_static, đọc trong
+       templates/layout/slide.php (audit UX 2026-09-08). */
+    $nametype = "home-hero-bg";
+    $config['photo']['photo_static'][$nametype]['title_main'] = "Ảnh nền Hero trang chủ";
+    $config['photo']['photo_static'][$nametype]['check'] = array("hienthi" => "Hiển thị");
+    $config['photo']['photo_static'][$nametype]['images'] = true;
+    $config['photo']['photo_static'][$nametype]['width'] = 1920;
+    $config['photo']['photo_static'][$nametype]['height'] = 900;
+    $config['photo']['photo_static'][$nametype]['thumb'] = '1920x900x1';
+    $config['photo']['photo_static'][$nametype]['img_type'] = '.jpg|.gif|.png|.jpeg|.gif';
+
     /* Banner quảng cáo đầu trang, hiển thị trên mọi trang, phía trên header */
     $nametype = "banner-top";
     $config['photo']['photo_static'][$nametype]['title_main'] = "Banner đầu trang (trên header)";
