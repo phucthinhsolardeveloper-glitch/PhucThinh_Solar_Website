@@ -413,3 +413,9 @@ select.form-control option:disabled{color:#b8babb;font-style:italic;}
 @media(max-width:401px){
 	.main-header .navbar-nav .nav-item.nav-item-hello span,.label-filer{display:none;}
 }
+
+/* Mục cuối cùng của sidebar (Thiết lập thông tin) nằm sát mép dưới của vùng
+   cuộn - kể cả khi đã cuộn hết cỡ vẫn chỉ vừa đủ lọt, dễ bị cắt/khó bấm trên
+   màn hình thấp hơn (điện thoại có thanh trình duyệt chiếm chỗ). Thêm đệm
+   dưới để luôn có khoảng trống rõ ràng sau mục cuối (phản hồi 2026-09-08). */
+.main-sidebar .sidebar .nav-sidebar{padding-bottom:32px;}
