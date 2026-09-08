@@ -159,7 +159,7 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 .top-utility-bar a:hover{color:var(--pts-gold-light);}
 .top-utility-left i{font-size:11px;margin-right:5px;color:#bfdbfe;}
 .header,.header-bottom{background:#fff;}
-.header-bottom .wrap-content{min-height:92px;gap:24px;padding-top:16px;padding-bottom:16px;}
+.header-bottom .wrap-content{min-height:72px;gap:24px;padding-top:10px;padding-bottom:10px;}
 .pts-brand{display:inline-flex!important;align-items:center;gap:10px;flex:0 0 auto;text-decoration:none!important;}
 .pts-brand img{width:auto!important;max-width:54px!important;max-height:52px!important;object-fit:contain;}
 .pts-brand-wordmark img{max-width:210px!important;max-height:46px!important;}
@@ -1895,14 +1895,19 @@ h4{font-size:21px!important;font-weight:800!important;}
 }
 
 /* =====================================================================
-   HEADER — hạ chiều cao về mức gọn, gộp dải công suất vào header
-   Nguyên nhân header cao bất thường: style.css đặt `.menu > div > ul > li
-   { padding: 40px 0 }` (mỗi mục menu +80px). Ghi đè để chiều cao do
-   padding của thẻ <a> quyết định.
+   HEADER — chiều cao do padding của thẻ <a> quyết định, không để
+   style.css `.menu > div > ul > li { padding: 40px 0 }` (mỗi mục +80px)
+   đẩy header cao bất thường.
+   Dải công suất đã bị bỏ hẳn khỏi header (không còn "gộp" gì cả); sau khi
+   bỏ, header co lại 70px trông mất cân đối nên tăng lại lên 88px (phản hồi
+   thực tế 2026-09-08). Đây là rule thắng thế cuối cùng trong file cho
+   .header-bottom .wrap-content - các khai báo !important khác của cùng
+   selector phía trên (dòng ~162, ~1427, ~1883) đã lỗi thời, không còn hiệu
+   lực do thứ tự cascade.
    ===================================================================== */
 .menu>div>ul>li{padding:0!important;}
 .menu>div>ul>li>a{padding:12px 0!important;}
-.header-bottom .wrap-content{min-height:70px!important;padding-top:6px!important;padding-bottom:6px!important;}
+.header-bottom .wrap-content{min-height:88px!important;padding-top:12px!important;padding-bottom:12px!important;}
 .menu>div>ul>li.menu-catalog>a{padding:8px 13px!important;}
 .header-bottom .logo img,.header .logo img,#logo img{max-height:46px!important;}
 .hdr-call .hdr-call-ic{width:34px!important;height:34px!important;font-size:14px!important;}
