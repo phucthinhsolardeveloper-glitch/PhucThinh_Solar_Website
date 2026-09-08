@@ -100,48 +100,27 @@
 
 
 	/* Kiểm tra POST và CSRF cho các thao tác thay đổi dữ liệu. */
-	if(adminLegacyMutationNeedsCsrf($com, $act, isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : '', $_POST)) adminRequirePostCsrf();
+	$isAdminMutationRequest = adminLegacyMutationNeedsCsrf($com, $act, isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : '', $_POST);
+	if($isAdminMutationRequest) adminRequirePostCsrf();
 
 	/* Delete gallery */
 	$func->deleteGallery();
 
-	/* Delete cache */
-	$cacheAction = array(
-		'save',
-		'save_copy',
-		'save_list',
-		'save_cat',
-		'save_item',
-		'save_sub',
-		'save_brand',
-		'save_size',
-		'save_color',
-		'save_static',
-		'save_photo',
-		'save_city',
-		'save_district',
-		'save_ward',
-		'update',
-		'delete',
-		'delete_list',
-		'delete_cat',
-		'delete_item',
-		'delete_sub',
-		'delete_brand',
-		'delete_city',
-		'delete_district',
-		'delete_ward'
-	);
-	if(isset($_POST) && isset($cacheAction) && count($cacheAction) > 0) 
+	/* Delete cache - dùng chung đúng 1 định nghĩa "hành động ghi dữ liệu" với CSRF
+	   ở trên (adminLegacyMutationNeedsCsrf: mọi $act bắt đầu bằng save, delete
+	   hoặc upload, hoặc đúng bằng sync/create), thay vì danh sách $act liệt kê
+	   tay trước đây - danh sách
+	   cũ chỉ khớp đúng product.php/news.php/places.php, còn contact.php,
+	   tags.php, user.php, seopage.php, order.php, gallery.php... dùng tên action
+	   khác nên sửa xong phải chờ tới hết TTL cache (2 tiếng) mới lên site thật
+	   (audit UX 2026-09-08). */
+	if($isAdminMutationRequest)
 	{
-		if(in_array($act, $cacheAction))
-		{
+		$cache->delete();
+		/* Xóa lại sau controller vì thao tác lưu có thể tạo cache mới trước khi DB cập nhật xong. */
+		register_shutdown_function(function() use ($cache) {
 			$cache->delete();
-			/* Xóa lại sau controller vì thao tác lưu có thể tạo cache mới trước khi DB cập nhật xong. */
-			register_shutdown_function(function() use ($cache) {
-				$cache->delete();
-			});
-		}
+		});
 	}
 	
 	/* Include sources */

@@ -4,6 +4,7 @@
 !migrations/*.sql
 backup/
 domains/phucthinhsolar.com/public_html/caches/
+domains/phucthinhsolar.com/public_html/assets/caches/
 domains/phucthinhsolar.com/public_html/logs/
 domains/phucthinhsolar.com/public_html/upload/
 domains/phucthinhsolar.com/public_html/thumbs/
