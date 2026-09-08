@@ -4,9 +4,6 @@
 			<?php if(!empty($optsetting['hotline'])) { ?>
 			<span><i class="fas fa-phone-alt"></i> Hotline: <a href="tel:<?=$func->parsePhone($optsetting['hotline'])?>"><?=$optsetting['hotline']?></a></span>
 			<?php } ?>
-			<?php if(!empty($optsetting['email'])) { ?>
-			<span class="hide-mobile"><i class="fas fa-envelope"></i> <?=$optsetting['email']?></span>
-			<?php } ?>
 			<?php if(!empty($optsetting['thoigianlamviec'])) { ?>
 			<span class="hide-mobile"><i class="fas fa-clock"></i> Giờ làm việc: <?=$optsetting['thoigianlamviec']?></span>
 			<?php } ?>
@@ -75,27 +72,7 @@
 			</div>
 		</div>
 	</div>
-	<?php
-		$headlineWatts = array(60,100,150,200,300,400,500,600,800,1000);
-		$availWatts = array();
-		if(!empty($congSuatList)) foreach($congSuatList as $csRow) $availWatts[(int)$csRow['cong_suat']] = true;
-		$quickPowerGroups = array('under-60' => 'Dưới 60W');
-		foreach($headlineWatts as $powerValue) {
-			if(isset($availWatts[$powerValue])) $quickPowerGroups[(string)$powerValue] = $powerValue.'W';
-		}
-		$quickPowerGroups['over-1000'] = 'Trên 1000W';
-	?>
-	<?php if(!empty($congSuatList)) { ?>
-	<div class="header-quickfilter">
-		<div class="wrap-content">
-			<span class="hqf-label" aria-label="Chọn theo công suất"><i class="fas fa-bolt"></i></span>
-			<div class="hqf-list">
-				<?php foreach($quickPowerGroups as $powerKey => $powerLabel) { ?>
-				<a href="danh-muc-san-pham/den-nlmt/?is_congsuat=<?=$powerKey?>"><?=$powerLabel?></a>
-				<?php } ?>
-				<a class="hqf-all" href="danh-muc-san-pham/den-nlmt/">Xem tất cả <i class="fas fa-angle-right"></i></a>
-			</div>
-		</div>
-	</div>
-	<?php } ?>
+	<?php /* Dải "tìm nhanh theo công suất" đã bỏ khỏi header theo yêu cầu chủ site
+	         (làm rối phần đầu trang) - bộ lọc công suất đầy đủ vẫn còn ở sidebar
+	         category page, không mất tính năng, chỉ bớt 1 hàng ở header. */ ?>
 </div>

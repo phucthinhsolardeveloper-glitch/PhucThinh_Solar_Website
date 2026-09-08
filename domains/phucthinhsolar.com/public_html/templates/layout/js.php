@@ -112,30 +112,39 @@ $('.view_maps').click(function() {
     </div>
 
     <script>
-        if (isExist($(".Module-327"))) {
+        if (isExist($(".so"))) {
             $(function() {
-                let p = $(".Module-327").first();
-                let position = p.position();
-                console.log(position.top);
-                $(window).scroll(function(event) {
-                    let scroll = $(window).scrollTop();
-                    if (scroll >= position.top - 1000) {
-                        setTimeout(function() {
-                            $('.so').each(function() {
-                                $(this).prop('Counter', 0).animate({
-                                    Counter: $(this).data('count')
-                                }, {
-                                    duration: 3000,
-                                    easing: 'swing',
-                                    step: function(now) {
-                                        // Thêm dấu phẩy phân cách
-                                        $(this).text(Math.ceil(now).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
-                                    }
-                                });
-                            });
-                        }, 700);
-                    }
-                });
+                // Dùng IntersectionObserver thay vì bắt sự kiện scroll của window:
+                // cách cũ chỉ chạy khi có sự kiện "scroll" thật, nên nếu vào trang
+                // bằng anchor-jump, back/forward, hoặc trang đã ở sẵn vị trí đó khi
+                // load thì counter đứng yên ở "0" (audit UX 2026-09-08).
+                var runCounters = function() {
+                    $('.so').each(function() {
+                        $(this).prop('Counter', 0).animate({
+                            Counter: $(this).data('count')
+                        }, {
+                            duration: 3000,
+                            easing: 'swing',
+                            step: function(now) {
+                                // Thêm dấu phẩy phân cách
+                                $(this).text(Math.ceil(now).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+                            }
+                        });
+                    });
+                };
+                if ('IntersectionObserver' in window) {
+                    var counterObserver = new IntersectionObserver(function(entries) {
+                        entries.forEach(function(entry) {
+                            if (entry.isIntersecting) {
+                                runCounters();
+                                counterObserver.disconnect();
+                            }
+                        });
+                    }, { rootMargin: '0px 0px 200px 0px' });
+                    counterObserver.observe($('.so').get(0));
+                } else {
+                    runCounters();
+                }
             });
         }
 

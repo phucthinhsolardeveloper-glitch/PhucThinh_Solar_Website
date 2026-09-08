@@ -276,6 +276,7 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 .product-card-img .pts-promo-frame{position:absolute;z-index:2;inset:0;width:100%!important;height:100%!important;object-fit:fill!important;padding:0!important;pointer-events:none;transform:none!important;}
 .product-card .caption{padding:4px 2px 2px!important;}
 .product-card .caption .name{color:var(--pts-navy)!important;font-size:15px!important;font-weight:800!important;line-height:1.45!important;min-height:44px!important;}
+.product-card .pts-card-specs{color:#64748b!important;font-size:12px!important;font-weight:650;margin:3px 2px 0!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .product-card .price-product{padding:2px 2px 10px!important;}
 .product-card .price-product .price-new{font-size:18px!important;color:#dc2626!important;}
 .badge-discount{top:-1px!important;right:12px!important;border-radius:0 0 6px 6px!important;background:#dc2626!important;padding:7px 9px!important;}
@@ -590,8 +591,22 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
     .CRitem_term_blog{scroll-snap-align:start;}
 }
 
-/* Trang /san-pham/ - danh sách theo từng danh mục (product_list_tpl) */
-.pts-catblock{margin-bottom:52px;}
+/* Trang /san-pham/ - nhảy nhanh tới danh mục (audit UX 2026-09-08) */
+.pts-catalog-toolbar{
+    border:1px solid var(--pts-line);border-radius:14px;background:var(--pts-surface);
+    padding:16px 20px;margin-bottom:36px;
+}
+.pts-catalog-jump{display:flex;flex-wrap:wrap;gap:8px;}
+.pts-catalog-jump a{
+    border:1px solid var(--pts-line);border-radius:999px;background:#fff;
+    color:var(--pts-navy);font-size:12.5px;font-weight:750;padding:7px 14px;
+    text-decoration:none!important;transition:.15s;
+}
+.pts-catalog-jump a:hover{border-color:var(--pts-gold);background:var(--pts-cream);color:var(--pts-gold-dark);}
+@media(max-width:640px){
+    .pts-catalog-toolbar{padding:14px;}
+}
+.pts-catblock{margin-bottom:52px;scroll-margin-top:130px;}
 .pts-catblock:last-child{margin-bottom:0;}
 .pts-catblock-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:24px;}
 .pts-catblock-head .section-title{margin:0;text-align:left;}
@@ -633,6 +648,13 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 .badge-discount-inline{display:inline-flex!important;vertical-align:middle!important;position:static!important;border-radius:5px!important;padding:5px 8px!important;margin-left:8px!important;}
 .attr-pro-detail>li:not(:first-child){display:flex;gap:10px;padding:4px 0;font-size:13px;}
 .attr-label-pro-detail{color:#475569!important;font-weight:800!important;min-width:95px;}
+.pts-pdp-key-specs{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 18px;}
+.pts-pdp-key-spec{
+    display:inline-flex;align-items:center;gap:7px;
+    border:1px solid var(--pts-line);border-radius:999px;background:#fff;
+    color:var(--pts-navy);font-size:13px;font-weight:750;padding:8px 15px;
+}
+.pts-pdp-key-spec i{color:var(--pts-gold-dark);font-size:13px;}
 .quantity-pro-detail{display:flex!important;align-items:center!important;gap:0!important;margin:17px 0!important;}
 .quantity-pro-detail label{margin-right:14px!important;min-width:auto!important;white-space:nowrap!important;flex:0 0 auto;margin-bottom:0!important;}
 .quantity-pro-detail span,.quantity-pro-detail .qty-pro{height:38px!important;border-color:var(--pts-line)!important;border-radius:0!important;margin:0!important;}
@@ -646,21 +668,11 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 .btn-product-detail a{display:flex!important;width:auto!important;min-height:46px!important;align-items:center!important;justify-content:center!important;margin:0!important;border:2px solid var(--pts-navy)!important;border-radius:8px!important;background:#fff!important;color:var(--pts-navy)!important;font-size:13px!important;font-weight:850!important;text-decoration:none!important;}
 .btn-product-detail a:first-child{border-color:var(--pts-gold)!important;background:var(--pts-gold)!important;color:var(--pts-navy)!important;}
 .btn-product-detail a:hover{background:var(--pts-navy)!important;color:#fff!important;}
-/* CTA "Đăng ký đại lý": nút viền vàng, nền trắng, chữ vàng (đồng bộ kiểu
-   với "Gửi yêu cầu báo giá"). */
-.btn-product-detail+ .btn-product-detail{display:block!important;margin-top:8px!important;}
-.right-pro-detail .btn-product-detail+ .btn-product-detail a,
-.btn-product-detail+ .btn-product-detail a{
-    width:100%!important;min-height:46px!important;border-radius:8px!important;
-    border:2px solid var(--pts-gold)!important;
-    background:#fff!important;background-image:none!important;
-    color:var(--pts-gold-dark)!important;font-size:13px!important;font-weight:850!important;
-    box-shadow:none!important;
-}
-.btn-product-detail+ .btn-product-detail a:hover{
-    background:var(--pts-gold-metal)!important;background-image:var(--pts-gold-metal)!important;
-    color:var(--pts-navy-deep)!important;border-color:transparent!important;
-}
+/* CTA "Đăng ký đại lý" trên PDP: hạ xuống link phụ, không cạnh tranh với
+   CTA mua/hỏi giá chính (audit UX 2026-09-08). */
+.pts-pdp-dealer-link{margin:0 0 14px;text-align:center;}
+.pts-pdp-dealer-link a{color:#64748b!important;font-size:12.5px!important;font-weight:650;text-decoration:none!important;}
+.pts-pdp-dealer-link a:hover{color:var(--pts-gold-dark)!important;text-decoration:underline!important;}
 /* ===== Khối cam kết trong buy box =====
    Trang có SẴN 2 khối cam kết trùng ý nhau (5 icon dịch vụ + 3 hộp bảo đảm)
    xếp chồng, hai kiểu style khác nhau -> tổng 8 mục, gây rối và đẩy nội dung
@@ -833,9 +845,12 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 .home-5 .section-title h3{display:none!important;}
 #inf_list_partner{display:flex!important;align-items:center;justify-content:center;flex-wrap:wrap;gap:26px 42px!important;margin-top:25px!important;}
 #inf_list_partner .inf_item_partner{width:auto!important;}
-#inf_list_partner .wrap{width:130px!important;height:58px!important;border:0!important;background:transparent!important;filter:grayscale(1);opacity:.58;transition:.2s;}
-#inf_list_partner .wrap:hover{filter:none;opacity:1;}
+#inf_list_partner .wrap{width:130px!important;height:58px!important;border:0!important;background:transparent!important;filter:none;opacity:1;transition:.2s;}
 #inf_list_partner img{width:100%!important;height:100%!important;object-fit:contain!important;}
+@media(max-width:767px){
+    #inf_list_partner{flex-wrap:nowrap!important;justify-content:flex-start!important;overflow-x:auto!important;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity;padding-bottom:10px;gap:22px!important;}
+    #inf_list_partner .inf_item_partner{flex:0 0 auto!important;scroll-snap-align:start;}
+}
 
 .wrap-testimonial{margin:0!important;padding:64px 0!important;background:#f8fafc!important;}
 .wrap-testimonial .row{margin-top:30px!important;}
@@ -901,9 +916,12 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
     .home-2 .heading,.home-6 .heading{display:block!important;}
     .home-2 .heading-right,.home-6 .heading-right{margin-top:18px;}
     .home-2 .tabs-container .item{padding:0 18px;}
-    .home-2 .tabs-container .wrapper{min-height:360px;}
+    .home-2 .tabs-container .wrapper{min-height:300px;}
     .home-2 .tabs-container .content{border-radius:18px 18px 0 0!important;padding:34px!important;}
-    .home-2 .tabs-container .wrapper>.img{border-radius:0 0 18px 18px!important;}
+    /* mainV2*.css có luật "body.home .home-2 .item .content{padding:30px 45px!important}"
+       specificity cao hơn (5 lớp), đè mất padding 34px ở trên -> phải khớp/vượt cùng mức. */
+    body.home .home-2 .tabs-container .item .content{padding:24px 20px!important;}
+    .home-2 .tabs-container .wrapper>.img{border-radius:0 0 18px 18px!important;min-height:0;}
 }
 @media(max-width:768px){
     .adv-info{padding:28px!important;}
@@ -954,6 +972,9 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 #inf_contact_page{padding:56px 0 64px!important;}
 #top_content>.container{max-width:1180px!important;}
 #top_content h2{color:var(--pts-navy)!important;font-size:clamp(23px,2.3vw,32px)!important;font-weight:900!important;line-height:1.35!important;margin-bottom:18px!important;}
+/* Tên công ty đầu trang liên hệ: đồng nhất toàn bộ chữ sang màu vàng thương hiệu,
+   không chỉ riêng phần "Phúc Thịnh Solar" trong span .pts-brand-text. */
+#top_content h2.text-center:not(.mt-4){color:var(--pts-gold-dark)!important;}
 .custContContact{display:flex!important;flex-wrap:wrap;justify-content:center;gap:8px 26px;list-style:none;padding:0!important;margin:0 0 8px!important;}
 .custContContact li a{color:#64748b!important;font-size:14.5px!important;text-decoration:none!important;}
 .custContContact li b{color:var(--pts-navy)!important;}
@@ -963,7 +984,9 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 .inf_default_form ul{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:1fr 1fr;gap:20px;}
 .inf_default_form .inf_row_full{grid-column:1/-1;}
 .inf_input label{display:block;color:#334155;font-size:14.5px;font-weight:750;margin-bottom:8px;}
-.inf_input input,.inf_input textarea{width:100%!important;border:1px solid var(--pts-line)!important;border-radius:10px!important;padding:13px 16px!important;font-size:15px!important;line-height:1.5!important;outline:none;transition:.15s;}
+.pts-optional-label{color:#94a3b8;font-size:12px;font-weight:500;}
+.inf_input input,.inf_input textarea,.inf_input select{width:100%!important;border:1px solid var(--pts-line)!important;border-radius:10px!important;padding:13px 16px!important;font-size:15px!important;line-height:1.5!important;outline:none;transition:.15s;}
+.inf_input select{background:#fff!important;height:50px;}
 .inf_input input{min-height:50px;}
 .inf_input textarea{min-height:180px;resize:vertical;}
 .inf_input input:focus,.inf_input textarea:focus{border-color:var(--pts-gold)!important;}
@@ -1282,9 +1305,8 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 /* khối "Giá trị cốt lõi" chữ dài đặc -> giới hạn bề ngang cho dễ đọc */
 .inf_item_vision:last-child .content{max-width:1000px;margin-left:auto;margin-right:auto;}
 
-/* Đối tác: logo đang xám nhạt và bé, nâng độ rõ */
-#inf_partner #inf_list_partner .wrap{width:150px!important;height:64px!important;filter:grayscale(1);opacity:.62;transition:.2s;}
-#inf_partner #inf_list_partner .wrap:hover{filter:none;opacity:1;}
+/* Đối tác: logo hiện màu thật, không làm mờ/xám */
+#inf_partner #inf_list_partner .wrap{width:150px!important;height:64px!important;filter:none;opacity:1;transition:.2s;}
 
 /* Các lợi ích hiển thị bằng thẻ nền nhạt. */
 #CRintro_home #CRicos_intro_home{
@@ -1361,6 +1383,8 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
     text-transform:none!important;font-weight:500!important;
 }
 .pts-filter-card .product-pages__price-label:hover{color:var(--pts-navy)!important;}
+.pts-cat-filter-label{display:flex;flex-direction:column;line-height:1.3;}
+.pts-cat-filter-hint{color:#94a3b8!important;font-size:11px!important;font-weight:500!important;margin-top:1px;}
 .pts-filter-card label.checker label{
     height:18px!important;width:18px!important;border-radius:4px;
     border-color:var(--pts-line)!important;
@@ -1437,9 +1461,7 @@ h4{font-size:21px!important;font-weight:800!important;}
     line-height:1.18!important;color:var(--pts-navy)!important;
     text-transform:none!important;letter-spacing:-.015em!important;
 }
-#inf_vision_intro .CRstyle_title,
-#inf_partner_cert #inf_partner .CRstyle_title,
-#inf_partner_cert #CRcertification_intro .CRstyle_title{color:#fff!important;}
+#inf_vision_intro .CRstyle_title{color:#fff!important;}
 
 /* --- Nút bấm chung: cao & rõ hơn --- */
 .btn,button.btn,.pts-btn,.pts-btn-gold,input[type=submit],button[type=submit],
@@ -1841,7 +1863,6 @@ h4{font-size:21px!important;font-weight:800!important;}
 @media(max-width:640px){
     .header-quickfilter .wrap-content{gap:10px;min-height:42px;overflow:hidden;}
     .hqf-label{font-size:12px;}
-    .hqf-label span{display:none;}
     .hqf-list{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:2px;}
     .hqf-list a{padding:5px 12px;font-size:12.5px;}
     .hdr-call .hdr-call-ic{width:36px;height:36px;font-size:15px;}
@@ -2083,7 +2104,11 @@ body .home-3 .tab-switcher ul.pts-home-category-grid{
 }
 .home-2 .fullcontent .number small{font-size:11px!important;white-space:nowrap;display:inline-block;}
 @media(max-width:560px){
-    .home-2 .fullcontent ul>li{flex:1 1 100%!important;min-width:0!important;}
+    /* Giữ lưới 2 cột thay vì xếp dọc 1 cột - tránh kéo section quá dài trên mobile.
+       min-width:0 để bỏ hẳn sàn cứng (158px cũ) - nếu còn sàn thì 2 ô + gap dễ
+       vượt bề ngang thật của ul trên màn rất hẹp, khiến flex-wrap rớt xuống 1 cột. */
+    .home-2 .fullcontent ul>li{min-width:0!important;padding:11px 12px!important;}
+    .home-2 .fullcontent .small-text{font-size:11.5px!important;}
 }
 /* mũi tên slider: gọn, tinh tế, không đè nội dung */
 .home-2 .uk-slidenav{
@@ -2119,10 +2144,17 @@ body .home-3 .tab-switcher ul.pts-home-category-grid{
     }
 }
 
-/* Dải công suất: chỉ còn icon sấm sét, bỏ chữ "Chọn theo công suất" */
-.hqf-label{flex:0 0 auto;gap:0!important;color:var(--pts-gold-dark)!important;font-size:0!important;}
+/* Dải công suất: khôi phục chữ ngữ cảnh - icon sấm sét không đủ để người mới
+   hiểu "60W/100W/..." là lọc NHANH đèn NLMT theo công suất (audit UX 2026-09-08). */
+.hqf-label{flex:0 0 auto;display:inline-flex;align-items:center;gap:7px!important;color:var(--pts-gold-dark)!important;}
 .hqf-label i{font-size:15px!important;}
-@media(max-width:640px){ .hqf-label i{font-size:14px!important;} }
+.hqf-label-text{font-size:13px!important;font-weight:800;white-space:nowrap;}
+@media(max-width:640px){
+    .hqf-label i{font-size:14px!important;}
+    /* Chỉ giữ icon trên mobile - chữ dài chiếm chỗ của dải pill công suất
+       vốn đã phải cuộn ngang (theo phản hồi trực tiếp trên máy thật). */
+    .hqf-label-text{display:none;}
+}
 
 /* =====================================================================
    HERO TRANG TRONG — hạ chiều cao, bỏ tiêu đề lớn
@@ -2340,3 +2372,112 @@ body .home-6 .btn-all:hover i{transform:translateX(3px);}
 /* Nút "Xem tất cả" của danh mục đang chọn, hiện ngay trên dải sản phẩm thay vì dưới cùng. */
 .home-3 .product-tabs-container{padding-top:14px!important;}
 .pts-viewall-top{margin-top:0!important;margin-bottom:30px;}
+
+/* =====================================================================
+   "BẠN ĐANG CẦN GÌ?" — section định hướng ngay sau Hero (audit UX 2026-09-08).
+   Trang chủ trước đây không có lối vào theo nhu cầu cho khách chưa biết chọn.
+   ===================================================================== */
+.pts-need-nav{padding-top:52px!important;padding-bottom:12px!important;background:#fff!important;}
+.pts-need-nav .section-title h3{font-size:clamp(28px,2.8vw,40px)!important;font-weight:900!important;color:var(--pts-navy)!important;margin-bottom:30px!important;}
+.pts-need-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;max-width:var(--pts-container);margin:0 auto;}
+.pts-need-card{
+    display:flex;flex-direction:column;align-items:flex-start;gap:6px;
+    border:1px solid var(--pts-line);border-radius:16px;background:#fff;
+    padding:26px 22px;text-decoration:none!important;transition:.2s;
+    box-shadow:0 6px 18px rgba(15,23,42,.05);
+}
+.pts-need-card:hover{border-color:var(--pts-gold);box-shadow:var(--pts-shadow);transform:translateY(-3px);}
+.pts-need-icon{
+    width:48px;height:48px;border-radius:12px;background:var(--pts-cream);
+    color:var(--pts-gold-dark);display:flex;align-items:center;justify-content:center;
+    font-size:20px;margin-bottom:6px;
+}
+.pts-need-title{font-size:17px;font-weight:850;color:var(--pts-navy);}
+.pts-need-desc{font-size:13.5px;color:#64748b;line-height:1.5;}
+.pts-need-card-cta{background:linear-gradient(135deg,var(--pts-navy-deep),var(--pts-navy));border-color:transparent;}
+.pts-need-card-cta .pts-need-icon{background:rgba(255,255,255,.12);color:var(--pts-gold-light);}
+.pts-need-card-cta .pts-need-title{color:#fff;}
+.pts-need-card-cta .pts-need-desc{color:#dbeafe;}
+@media(max-width:991px){
+    .pts-need-grid{grid-template-columns:repeat(2,1fr);}
+}
+@media(max-width:560px){
+    .pts-need-nav{padding-top:36px!important;}
+    .pts-need-grid{gap:14px;}
+    .pts-need-card{padding:18px 16px;}
+    .pts-need-title{font-size:15.5px;}
+    .pts-need-desc{font-size:12.5px;}
+}
+
+/* =====================================================================
+   CTA CHỐT TRANG CHỦ (audit UX 2026-09-08)
+   ===================================================================== */
+.pts-home-closing-cta{padding:56px 0;background:linear-gradient(135deg,var(--pts-navy-deep),var(--pts-navy));}
+.pts-closing-cta-box{
+    display:flex;align-items:center;justify-content:space-between;gap:32px;flex-wrap:wrap;
+    border-top:1px solid rgba(255,255,255,.14);padding-top:0;
+}
+.pts-closing-cta-main h3{color:#fff!important;font-size:clamp(24px,2.4vw,32px)!important;font-weight:900!important;margin:0 0 8px!important;}
+.pts-closing-cta-main p{color:#dbeafe!important;font-size:15px!important;margin:0 0 20px!important;}
+.pts-closing-cta-actions{display:flex;flex-wrap:wrap;gap:12px;}
+.pts-closing-cta-dealer{
+    flex:0 0 auto;display:flex;flex-direction:column;align-items:flex-start;gap:6px;
+    border-left:1px solid rgba(255,255,255,.18);padding-left:32px;
+}
+.pts-closing-cta-dealer span{color:#94a3b8;font-size:13px;max-width:220px;}
+.pts-closing-cta-dealer a{color:var(--pts-gold-light)!important;font-size:14.5px;font-weight:800;text-decoration:none!important;}
+.pts-closing-cta-dealer a:hover{text-decoration:underline!important;}
+@media(max-width:767px){
+    .pts-closing-cta-box{flex-direction:column;align-items:flex-start;}
+    .pts-closing-cta-actions .pts-btn{flex:1 1 auto;}
+    .pts-closing-cta-dealer{border-left:0;border-top:1px solid rgba(255,255,255,.18);padding-left:0;padding-top:20px;width:100%;}
+}
+
+/* =====================================================================
+   HERO SLIDER - banner ảnh/video quản lý qua admin "Slideshow"
+   (audit UX 2026-09-08, thay Hero chữ theo yêu cầu chủ site; có switch
+   bật/tắt ở Cài đặt chung để quay lại Hero chữ bất kỳ lúc nào).
+   ===================================================================== */
+.pts-hero-slider{position:relative;background:var(--pts-navy-deep);overflow:hidden;}
+.pts-hero-slider .owl-page{width:100%;}
+.pts-hero-slide{position:relative;width:100%;aspect-ratio:1920/712;background:var(--pts-navy-deep);}
+.pts-hero-slide a{display:block;width:100%;height:100%;}
+.pts-hero-slide-media{width:100%!important;height:100%!important;object-fit:cover!important;display:block;}
+.pts-hero-slider .owl-dots{position:absolute;left:0;right:0;bottom:18px;display:flex;justify-content:center;gap:8px;}
+.pts-hero-slider .owl-dot span{display:block;width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.45);margin:0;transition:.2s;}
+.pts-hero-slider .owl-dot.active span{background:var(--pts-gold);width:22px;border-radius:5px;}
+.pts-hero-slider-nav{position:absolute;inset:0;pointer-events:none;}
+/* data-navcontainer khiến Owl chèn thẳng nút owl-prev/owl-next
+   làm CON TRỰC TIẾP của container này, KHÔNG bọc qua .owl-nav (đã kiểm tra
+   DOM thật) - selector cũ ".owl-nav button" không khớp gì cả nên nút trôi ra
+   ngoài màn hình theo CSS mặc định của thư viện (audit UX 2026-09-08). */
+.pts-hero-slider-nav .owl-prev,
+.pts-hero-slider-nav .owl-next{
+    pointer-events:auto;position:absolute;top:50%;transform:translateY(-50%);
+    width:44px;height:44px;border-radius:50%;background:rgba(10,34,81,.45)!important;
+    display:flex;align-items:center;justify-content:center;transition:.2s;
+}
+.pts-hero-slider-nav .owl-prev:hover,
+.pts-hero-slider-nav .owl-next:hover{background:rgba(10,34,81,.75)!important;}
+.pts-hero-slider-nav .owl-prev{left:18px;}
+.pts-hero-slider-nav .owl-next{right:18px;}
+@media(max-width:767px){
+    .pts-hero-slide{aspect-ratio:4/3;}
+    .pts-hero-slider-nav .owl-prev,
+    .pts-hero-slider-nav .owl-next{width:36px;height:36px;}
+}
+
+.pts-hero-substrip{background:linear-gradient(135deg,var(--pts-navy-deep),var(--pts-navy));padding:22px 0;}
+.pts-hero-substrip-inner{display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;}
+.pts-hero-substrip-actions{display:flex;gap:12px;flex-wrap:wrap;}
+.pts-hero-substrip-stats{display:flex;gap:32px;}
+.pts-hero-substrip-stats div{display:flex;flex-direction:column;}
+.pts-hero-substrip-stats strong{color:var(--pts-gold-light);font-size:22px;font-weight:900;line-height:1.1;}
+.pts-hero-substrip-stats span{color:#dbeafe;font-size:12px;}
+@media(max-width:767px){
+    .pts-hero-substrip-inner{flex-direction:column;align-items:flex-start;}
+    .pts-hero-substrip-actions .pts-btn{flex:1 1 auto;}
+    .pts-hero-substrip-stats{gap:20px;}
+    .pts-hero-substrip-stats strong{font-size:19px;}
+}
+

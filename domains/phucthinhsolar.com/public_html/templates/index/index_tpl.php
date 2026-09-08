@@ -1,3 +1,34 @@
+<!-- Ban dang can gi: giúp khách chưa biết chọn tự định hướng ngay sau Hero -->
+<section class="pts-need-nav uk-section-large">
+    <div class="uk-container">
+        <div class="section-title uk-text-center">
+            <h3>BẠN ĐANG CẦN GÌ?</h3>
+        </div>
+        <div class="pts-need-grid">
+            <a class="pts-need-card" href="danh-muc-san-pham/den-nlmt/">
+                <span class="pts-need-icon"><i class="fas fa-lightbulb" aria-hidden="true"></i></span>
+                <span class="pts-need-title">Đèn năng lượng mặt&nbsp;trời</span>
+                <span class="pts-need-desc">Sân nhà, đường đi, sân vườn, công trình...</span>
+            </a>
+            <a class="pts-need-card" href="giai-phap/">
+                <span class="pts-need-icon"><i class="fas fa-solar-panel" aria-hidden="true"></i></span>
+                <span class="pts-need-title">Điện mặt&nbsp;trời</span>
+                <span class="pts-need-desc">Gia đình, cửa hàng, doanh nghiệp, nhà xưởng...</span>
+            </a>
+            <a class="pts-need-card" href="san-pham/">
+                <span class="pts-need-icon"><i class="fas fa-microchip" aria-hidden="true"></i></span>
+                <span class="pts-need-title">Thiết bị</span>
+                <span class="pts-need-desc">Inverter, tấm pin, pin lưu trữ...</span>
+            </a>
+            <a class="pts-need-card pts-need-card-cta" href="#ptsContactModal" data-toggle="modal" data-target="#ptsContactModal">
+                <span class="pts-need-icon"><i class="fas fa-comments" aria-hidden="true"></i></span>
+                <span class="pts-need-title">Tôi chưa biết chọn</span>
+                <span class="pts-need-desc">Nhận tư vấn miễn phí từ Phúc Thịnh Solar</span>
+            </a>
+        </div>
+    </div>
+</section>
+
 <!-- San pham -->
 <section class="home-3 home-products-featured uk-section-large" style="background-image: url();">
     <div class="uk-container">
@@ -5,8 +36,12 @@
             <div class="ModuleContent">
                 <div class="section-title uk-text-center">
                     <p>CHẤT LƯỢNG, HIỆN ĐẠI, AN TOÀN</p>
-                    <h3>SẢN PHẨM NỔI BẬT </h3>
+                    <h3>DANH MỤC SẢN PHẨM</h3>
                 </div>
+                <?php /* Bấm icon danh mục -> AJAX đổi lưới sản phẩm bên dưới sang đúng
+                         danh mục đó (kiểu cũ, khôi phục lại theo yêu cầu chủ site
+                         2026-09-08) - api/product2.php + apps.js xử lý phần load, không
+                         cần thêm code JS mới. */ ?>
                 <div class="tab-switcher">
                     <div class="pts-home-category-wrap">
                         <button type="button" class="pts-category-scroll pts-category-scroll--prev" aria-label="Cuộn danh mục sang trái" aria-controls="pts-home-category-list"><i class="fas fa-chevron-left" aria-hidden="true"></i></button>
@@ -101,7 +136,7 @@
             <div class="ModuleContent">
                 <div class="heading uk-flex">
                     <div class="section-title">
-                        <p><span class="pts-brand-text">PHÚC THỊNH SOLAR</span> CUNG CẤP GIẢI PHÁP TỐI ƯU</p>
+                        <p>Chọn đúng giải pháp theo nhu cầu sử dụng điện của bạn</p>
                         <h3>GIẢI PHÁP <span class="pts-brand-text">PHÚC THỊNH SOLAR</span></h3>
                     </div>
                     <div class="heading-right">
@@ -209,22 +244,6 @@
     </div>
 </section>
 <?php } ?>
-
-<div class="wrap-promo-banners">
-    <div class="uk-container">
-        <div class="row">
-            <div class="col-12">
-                <a href="#ptsDealerModal" data-toggle="modal" data-target="#ptsDealerModal" class="promo-banner promo-banner-gold promo-banner-single">
-                    <span class="promo-copy">
-                        <span class="promo-eyebrow">Trở thành đối tác phân phối</span>
-                        <span class="promo-title">Tuyển đại lý toàn quốc</span>
-                    </span>
-                    <span class="promo-btn">Đăng ký ngay</span>
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
 
 <?php if(count($loiich)){ ?>
 <!-- Loi ich -->
@@ -337,59 +356,14 @@
 </div>
 <?php } ?>
 
-<?php if(count($partner)){ ?>
-<!-- Doi tac -->
-<div class="Module Module-327">
-    <div class="ModuleContent">
-        <section data-bg="" class="home-5 uk-section-large rocket-lazyload" style="">
-            <div class="uk-container">
-                <div class="section-title uk-text-center">
-                    <p>TỰ HÀO LÀ DOANH NGHIỆP DẪN ĐẦU TRONG LĨNH VỰC ĐIỆN MẶT TRỜI </p>
-                    <h3>ĐỐI TÁC</h3>
-                </div>
-            </div>
-            <div class="container">
-                <div class="row">
-                    <div class="col">
-                        <div id="inf_list_partner" class="inf_dots"><?php /* Theme V2: lưới logo tĩnh (flex-wrap), không dùng slick để tránh kéo tràn qua logo cuối. */ ?>
-                            <?php foreach($partner as $v){ ?>
-                            <div class="inf_item_partner">
-                                <div class="wrap">
-                                    <?=$func->getImage(['isLazy' => false,'sizes' => '260x116x3', 'upload' => UPLOAD_PHOTO_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
-                                </div>
-                            </div>
-                            <?php } ?>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </div>
-</div>
-<?php } ?>
+<?php /* Section "Đối tác" (logo $partner) đã bỏ khỏi trang chủ theo yêu cầu chủ
+     site: nội dung trùng 100% với "Đối tác chiến lược" ở trang Về chúng tôi
+     (cùng nguồn $partner, type='doitac') - chỉ giữ 1 nơi để tránh lặp, trang
+     chủ dành chỗ cho sản phẩm (audit UX 2026-09-08). */ ?>
 
-<?php if(count($testimonial)){ ?>
-<!-- Testimonial - phản hồi đại lý/khách hàng thật đã có sẵn trong DB -->
-<section class="wrap-testimonial uk-section-large">
-    <div class="uk-container">
-        <div class="section-title uk-text-center">
-            <p>Khách hàng nói gì</p>
-            <h3>Sự hài lòng của khách hàng, đối tác</h3>
-        </div>
-        <div class="row">
-            <?php foreach($testimonial as $v) { ?>
-            <div class="col-md-4">
-                <div class="testimonial-card">
-                    <p class="testimonial-name"><?=$v['name'.$lang]?></p>
-                    <p class="testimonial-role"><?=trim($v['desc'.$lang])?></p>
-                    <div class="testimonial-content"><?=htmlspecialchars_decode($v['content'.$lang])?></div>
-                </div>
-            </div>
-            <?php } ?>
-        </div>
-    </div>
-</section>
-<?php } ?>
+        <?php /* Section "Sự hài lòng của khách hàng, đối tác" đã bỏ khỏi trang chủ
+     theo yêu cầu chủ site (2026-09-08) - dồn hết vào việc gộp/rút gọn để tránh
+     trang chủ dài, không cần làm lại giao diện riêng cho phần này nữa. */ ?>
 
 <?php if(count($dalist)){ ?>
 <!-- Du an -->
@@ -627,3 +601,30 @@
     </div>
 </div>
 <?php } ?>
+
+<!-- CTA chốt trang chủ: đọc hết trang phải biết bước tiếp theo là gì, trước đây
+     trang chủ kết thúc thẳng bằng Footer, không có lối ra rõ ràng cho người đã
+     đọc hết nhưng vẫn còn phân vân (audit UX 2026-09-08). Đồng thời gộp luôn
+     CTA "tuyển đại lý" (trước đây là 1 banner riêng chen giữa Giải pháp/Lợi ích)
+     vào đây làm lối phụ, tránh nhắc đại lý 2 lần rải rác giữa trang. -->
+<section class="pts-home-closing-cta">
+    <div class="uk-container">
+        <div class="pts-closing-cta-box">
+            <div class="pts-closing-cta-main">
+                <h3>Chưa biết chọn sản phẩm phù hợp?</h3>
+                <p>Để lại số điện thoại hoặc nhắn Zalo, Phúc Thịnh Solar tư vấn miễn phí ngay.</p>
+                <div class="pts-closing-cta-actions">
+                    <a href="tel:<?=preg_replace('/[^0-9]/','',$optsetting['hotline'])?>" class="pts-btn pts-btn-gold"><i class="fas fa-phone-alt" aria-hidden="true"></i> Gọi ngay</a>
+                    <?php if(!empty($optsetting['zalo'])) { ?>
+                    <a href="https://zalo.me/<?=$func->parsePhone($optsetting['zalo'])?>" target="_blank" class="pts-btn pts-btn-ghost">Zalo tư vấn</a>
+                    <?php } ?>
+                    <a href="#ptsContactModal" data-toggle="modal" data-target="#ptsContactModal" class="pts-btn pts-btn-ghost">Để lại số điện thoại</a>
+                </div>
+            </div>
+            <div class="pts-closing-cta-dealer">
+                <span>Bạn muốn kinh doanh sản phẩm Phúc Thịnh Solar?</span>
+                <a href="#ptsDealerModal" data-toggle="modal" data-target="#ptsDealerModal">Đăng ký làm đại lý <i class="fas fa-angle-right" aria-hidden="true"></i></a>
+            </div>
+        </div>
+    </div>
+</section>

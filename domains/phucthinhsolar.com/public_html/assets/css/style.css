@@ -85,9 +85,8 @@ footer{background-color:var(--color-navy-deep) !important;background-image:none 
 .home-4 .number,.home-4 .text{color:#fff;}
 .home-4 .number{color:var(--color-gold-light);font-weight:800;}
 
-/* Đối tác - logo hover */
-.inf_item_partner .wrap{filter:grayscale(60%);opacity:.85;transition:all .2s;}
-.inf_item_partner:hover .wrap{filter:grayscale(0%);opacity:1;}
+/* Đối tác - logo màu thật */
+.inf_item_partner .wrap{filter:none;opacity:1;transition:all .2s;}
 
 /* Dự án - card + link */
 .slider_6_slick .project .name a{color:var(--color-primary);font-weight:700;}

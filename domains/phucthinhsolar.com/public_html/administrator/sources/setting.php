@@ -62,6 +62,10 @@
 						{
 							$option[$k2] = ((string)$v2 === '1') ? '1' : '0';
 						}
+						else if($k2 == 'home_hero_mode')
+						{
+							$option[$k2] = ((string)$v2 === 'text') ? 'text' : 'slider';
+						}
 						else if($k2 == 'coords_iframe')
 						{
 							$option[$k2] = $func->sanitize($v2, 'iframe');

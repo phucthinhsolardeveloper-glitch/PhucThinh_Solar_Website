@@ -1,4 +1,74 @@
 <?php
+    /* Hero trang chủ có 2 chế độ, admin chọn ở Cài đặt chung > "Hero trang chủ"
+       (options['home_hero_mode'], mặc định 'slider'):
+       - 'slider': banner slide ảnh/video thật, quản lý qua "Slideshow"
+         (index.php?com=photo&act=man_photo&type=slide) - hạ tầng đã có sẵn từ
+         trước (upload, sắp xếp, bật/tắt, link riêng từng slide), chỉ là bị tắt
+         render ở Theme V2.
+       - 'text': Hero chữ tĩnh trước đó (headline, số liệu tin cậy, chứng nhận) -
+         giữ lại làm phương án dự phòng, không xoá hẳn (audit UX 2026-09-08,
+         yêu cầu chủ site "có thể giữ nguyên như hiện tại hoặc bật dạng slide"). */
+    $heroMode = (isset($optsetting['home_hero_mode']) && $optsetting['home_hero_mode'] === 'text') ? 'text' : 'slider';
+    $heroSlides = (!empty($slider) && is_array($slider)) ? $slider : array();
+    if($heroMode === 'slider' && !count($heroSlides)) $heroMode = 'text'; /* chưa có slide nào thì tự rơi về bản chữ, tránh trang chủ trống đầu trang */
+?>
+<?php if($heroMode === 'slider') { ?>
+<section class="pts-hero-slider">
+    <div class="owl-page owl-carousel owl-theme" data-xsm-items="1:0" data-sm-items="1:0" data-md-items="1:0"
+        data-lg-items="1:0" data-xlg-items="1:0" data-rewind="1" data-autoplay="1" data-loop="1" data-lazyload="0"
+        data-mousedrag="1" data-touchdrag="1" data-smartspeed="600" data-autoplayspeed="600" data-autoplaytimeout="5500"
+        data-dots="1" data-nav="1"
+        data-navtext="
+        <svg fill='#fff' width='20px' height='20px' viewBox='-78.5 0 512 512' xmlns='http://www.w3.org/2000/svg' ><title>left</title><path d='M257 64L291 98 128 262 291 426 257 460 61 262 257 64Z' /></svg>
+        |
+        <svg fill='#fff' width='20px' height='20px' viewBox='-77 0 512 512' xmlns='http://www.w3.org/2000/svg' ><title>right</title><path d='M98 460L64 426 227 262 64 98 98 64 294 262 98 460Z' /></svg>"
+        data-navcontainer=".pts-hero-slider-nav">
+        <?php foreach($heroSlides as $heroSlide) {
+            $heroSlideLink = trim((string)$heroSlide['link']);
+            $heroSlideModalTarget = in_array($heroSlideLink, array('#ptsContactModal', '#ptsDealerModal'), true) ? ltrim($heroSlideLink, '#') : '';
+            $heroSlideAlt = htmlspecialchars((string)$heroSlide['name'.$lang], ENT_QUOTES, 'UTF-8');
+        ?>
+        <div class="pts-hero-slide">
+            <?php if($heroSlideLink !== '') { ?>
+            <a href="<?=htmlspecialchars($heroSlideLink, ENT_QUOTES, 'UTF-8')?>" title="<?=$heroSlideAlt?>"<?php if($heroSlideModalTarget !== '') { ?> data-toggle="modal" data-target="#<?=$heroSlideModalTarget?>"<?php } ?>>
+            <?php } ?>
+                <?php if((int)$heroSlide['show_stt'] === 1 && !empty($heroSlide['video'])) { ?>
+                <video class="pts-hero-slide-media" autoplay muted loop playsinline>
+                    <source src="<?=UPLOAD_FILE_L.$heroSlide['video']?>" type="video/mp4">
+                </video>
+                <?php } else { ?>
+                <?=$func->getImage(['isLazy' => false, 'class' => 'pts-hero-slide-media', 'sizes' => '1920x712x1', 'upload' => UPLOAD_PHOTO_L, 'image' => $heroSlide['photo'], 'alt' => $heroSlideAlt])?>
+                <?php } ?>
+            <?php if($heroSlideLink !== '') { ?></a><?php } ?>
+        </div>
+        <?php } ?>
+    </div>
+    <div class="pts-hero-slider-nav control-owl transition"></div>
+</section>
+
+<div class="pts-hero-substrip">
+    <div class="wrap-content pts-hero-substrip-inner">
+        <div class="pts-hero-substrip-actions">
+            <a class="pts-btn pts-btn-gold" href="san-pham/">XEM SẢN PHẨM</a>
+            <a class="pts-btn pts-btn-ghost" href="giai-phap/">XEM GIẢI PHÁP</a>
+        </div>
+        <div class="pts-hero-substrip-stats">
+            <div>
+                <strong>10.000+</strong>
+                <span>Khách hàng tin dùng</span>
+            </div>
+            <div>
+                <strong>50+</strong>
+                <span>Nhân sự đồng hành</span>
+            </div>
+            <div>
+                <strong>5+</strong>
+                <span>Năm kinh nghiệm</span>
+            </div>
+        </div>
+    </div>
+</div>
+<?php } else {
     /* Chứng nhận uỷ quyền: tối đa 3 tấm xếp chồng, tên hãng lấy từ toàn bộ danh sách. */
     $heroCerts = array();
     $heroCertBrands = array();
@@ -21,10 +91,10 @@
     <div class="wrap-content pts-hero-inner">
         <div class="pts-hero-copy">
             <span class="pts-hero-eyebrow"><i class="fas fa-sun"></i> Đèn dự án · Đèn công trình</span>
-            <h1>NĂNG LƯỢNG MẶT TRỜI<br><strong>CHO MỌI CÔNG TRÌNH</strong></h1>
+            <h1>NĂNG LƯỢNG MẶT&nbsp;TRỜI<br><strong>CHO MỌI CÔNG TRÌNH</strong></h1>
             <p><span class="pts-brand-text">Phúc Thịnh Solar</span> — thiết bị năng lượng mặt trời chính hãng, thi công trọn gói và đồng hành kỹ thuật trên toàn quốc.</p>
             <div class="pts-hero-actions">
-                <a class="pts-btn pts-btn-gold" href="san-pham/">MUA NGAY</a>
+                <a class="pts-btn pts-btn-gold" href="san-pham/">XEM SẢN PHẨM</a>
                 <a class="pts-btn pts-btn-ghost" href="giai-phap/">XEM GIẢI PHÁP</a>
             </div>
             <div class="pts-hero-stats">
@@ -64,52 +134,4 @@
         <?php } ?>
     </div>
 </section>
-<?php /* Theme V2 không render slider legacy. */ ?>
-<?php if(false && count($slider)) { ?>
-<div class="slideshow">
-    <div id="jssor_1"
-        style="position:relative;margin:0 auto;top:0px;left:0px;width:1920px;height:780px;overflow:hidden;visibility:hidden;">
-        <div data-u="loading" class="jssorl-009-spin"
-            style="position:absolute;top:0px;left:0px;width:100%;height:100%;text-align:center;background-color:rgba(0,0,0,0.7);">
-            <img style="margin-top:-19px;position:relative;top:50%;width:38px;height:38px;"
-                src="assets/images/spin.svg" />
-        </div>
-        <div data-u="slides"
-            style="cursor:default;position:relative;top:0px;left:0px;width:1920px;height:780px;overflow:hidden;">
-            <?php foreach($slider as $v) { ?>
-            <div>
-                <a href="<?=$v['link']?>" title="<?=$v['name'.$lang]?>">
-                    <?php if ($v['show_stt'] == 1) { ?>
-                        <video class="video-slider" data-html="true" autoplay muted loop playsinline>
-                            <source src="<?= UPLOAD_FILE_L . $v['video'] ?>" type="video/mp4">
-                        </video>
-                    <?php } else { ?>
-                        <img onerror="this.src='thumbs/1440x560x1/assets/images/noimage.png';" data-u="image" src="<?=UPLOAD_PHOTO_L.$v['photo']?>" />
-                    <?php } ?>
-                </a>
-            </div>
-            <?php } ?>
-        </div>
-        <!-- <div data-u="navigator" class="jssorb032" style="position:absolute;bottom:12px;right:12px;" data-autocenter="1"
-                data-scale="0.5" data-scale-bottom="0.75">
-                <div data-u="prototype" class="i" style="width:16px;height:16px;">
-                    <svg viewBox="0 0 16000 16000" style="position:absolute;top:0;left:0;width:100%;height:100%;">
-                        <circle class="b" cx="8000" cy="8000" r="5800"></circle>
-                    </svg>
-                </div>
-            </div>
-        <div data-u="arrowleft" class="jssora051" style="width:65px;height:65px;top:0px;left:25px;" data-autocenter="2"
-            data-scale="0.75" data-scale-left="0.75">
-            <svg viewBox="0 0 16000 16000" style="position:absolute;top:0;left:0;width:100%;height:100%;">
-                <polyline class="a" points="11040,1920 4960,8000 11040,14080 "></polyline>
-            </svg>
-        </div>
-        <div data-u="arrowright" class="jssora051" style="width:65px;height:65px;top:0px;right:25px;"
-            data-autocenter="2" data-scale="0.75" data-scale-right="0.75">
-            <svg viewBox="0 0 16000 16000" style="position:absolute;top:0;left:0;width:100%;height:100%;">
-                <polyline class="a" points="4960,1920 11040,8000 4960,14080 "></polyline>
-            </svg>
-        </div> -->
-    </div>
-</div>
 <?php } ?>

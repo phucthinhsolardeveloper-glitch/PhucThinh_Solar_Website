@@ -79,6 +79,24 @@
 		</div>
 		<div class="card card-primary card-outline text-sm">
 			<div class="card-header">
+				<h3 class="card-title">Hero trang chủ</h3>
+			</div>
+			<div class="card-body">
+				<?php $heroModeIsText = isset($options['home_hero_mode']) && (string)$options['home_hero_mode'] === 'text'; ?>
+				<div class="form-group mb-2">
+					<div class="custom-control custom-radio mb-2">
+						<input class="custom-control-input" type="radio" id="home-hero-mode-slider" name="data[options][home_hero_mode]" value="slider" <?=!$heroModeIsText ? 'checked' : ''?>>
+						<label for="home-hero-mode-slider" class="custom-control-label font-weight-normal"><strong>Banner slide ảnh/video</strong> — quản lý ảnh, thứ tự, link riêng từng slide ở mục <a href="index.php?com=photo&act=man_photo&type=slide">Slideshow</a>. Chưa có slide nào thì tự hiện lại bản chữ.</label>
+					</div>
+					<div class="custom-control custom-radio">
+						<input class="custom-control-input" type="radio" id="home-hero-mode-text" name="data[options][home_hero_mode]" value="text" <?=$heroModeIsText ? 'checked' : ''?>>
+						<label for="home-hero-mode-text" class="custom-control-label font-weight-normal"><strong>Hero chữ (mặc định cũ)</strong> — tiêu đề "Năng lượng mặt trời...", số liệu tin cậy, chứng nhận uỷ quyền.</label>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="card card-primary card-outline text-sm">
+			<div class="card-header">
 				<h3 class="card-title">Hiển thị giá sản phẩm</h3>
 			</div>
 			<div class="card-body">
