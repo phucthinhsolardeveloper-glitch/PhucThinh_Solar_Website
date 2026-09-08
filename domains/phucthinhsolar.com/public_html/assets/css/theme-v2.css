@@ -159,7 +159,7 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 .top-utility-bar a:hover{color:var(--pts-gold-light);}
 .top-utility-left i{font-size:11px;margin-right:5px;color:#bfdbfe;}
 .header,.header-bottom{background:#fff;}
-.header-bottom .wrap-content{min-height:72px;gap:24px;padding-top:10px;padding-bottom:10px;}
+.header-bottom .wrap-content{min-height:92px;gap:24px;padding-top:16px;padding-bottom:16px;}
 .pts-brand{display:inline-flex!important;align-items:center;gap:10px;flex:0 0 auto;text-decoration:none!important;}
 .pts-brand img{width:auto!important;max-width:54px!important;max-height:52px!important;object-fit:contain;}
 .pts-brand-wordmark img{max-width:210px!important;max-height:46px!important;}
@@ -1462,6 +1462,10 @@ h4{font-size:21px!important;font-weight:800!important;}
     text-transform:none!important;letter-spacing:-.015em!important;
 }
 #inf_vision_intro .CRstyle_title{color:#fff!important;}
+/* Section "TỰ HÀO Phúc Thịnh Solar" ở trang Đại lý có ảnh nền tối - chữ navy
+   của rule chung phía trên gần như vô hình trên nền đó, đổi sang vàng thương
+   hiệu (audit UX 2026-09-08, phản hồi thực tế). */
+.agency_5 .CRstyle_title{color:var(--pts-gold-light)!important;}
 
 /* --- Nút bấm chung: cao & rõ hơn --- */
 .btn,button.btn,.pts-btn,.pts-btn-gold,input[type=submit],button[type=submit],
