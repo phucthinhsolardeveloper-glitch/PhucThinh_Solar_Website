@@ -12,16 +12,22 @@
 
     /* Ảnh nền Hero trang chủ (chế độ "text") - dùng thay cho nền gradient mặc
        định khi chủ site muốn có ảnh thật phía sau chữ/số liệu/khối chứng
-       nhận. sources/index.php đọc bằng type=photo_static, đọc trong
-       templates/layout/slide.php (audit UX 2026-09-08). */
+       nhận. Nhiều ảnh -> tự chuyển dạng crossfade (không dùng chế độ
+       "slider" toàn banner vì chủ site chưa hợp gu, có thể thiết kế lại
+       sau). man_photo cho phép thêm/xoá/sắp thứ tự nhiều ảnh, giống
+       Slideshow/Đối tác. sources/index.php đọc, render+cycle trong
+       templates/layout/slide.php (audit UX 2026-09-08, phản hồi tiếp
+       theo). */
     $nametype = "home-hero-bg";
-    $config['photo']['photo_static'][$nametype]['title_main'] = "Ảnh nền Hero trang chủ";
-    $config['photo']['photo_static'][$nametype]['check'] = array("hienthi" => "Hiển thị");
-    $config['photo']['photo_static'][$nametype]['images'] = true;
-    $config['photo']['photo_static'][$nametype]['width'] = 1920;
-    $config['photo']['photo_static'][$nametype]['height'] = 900;
-    $config['photo']['photo_static'][$nametype]['thumb'] = '1920x900x1';
-    $config['photo']['photo_static'][$nametype]['img_type'] = '.jpg|.gif|.png|.jpeg|.gif';
+    $config['photo']['man_photo'][$nametype]['title_main_photo'] = "Ảnh nền Hero trang chủ";
+    $config['photo']['man_photo'][$nametype]['check_photo'] = array("hienthi" => "Hiển thị");
+    $config['photo']['man_photo'][$nametype]['number_photo'] = 5;
+    $config['photo']['man_photo'][$nametype]['images_photo'] = true;
+    $config['photo']['man_photo'][$nametype]['avatar_photo'] = true;
+    $config['photo']['man_photo'][$nametype]['width_photo'] = 1920;
+    $config['photo']['man_photo'][$nametype]['height_photo'] = 900;
+    $config['photo']['man_photo'][$nametype]['thumb_photo'] = '1920x900x1';
+    $config['photo']['man_photo'][$nametype]['img_type_photo'] = '.jpg|.gif|.png|.jpeg|.gif';
 
     /* Banner quảng cáo đầu trang, hiển thị trên mọi trang, phía trên header */
     $nametype = "banner-top";

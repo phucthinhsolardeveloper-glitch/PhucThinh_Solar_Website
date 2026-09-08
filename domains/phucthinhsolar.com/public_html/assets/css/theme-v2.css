@@ -192,8 +192,12 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 .pts-home-hero{position:relative;overflow:hidden;background:linear-gradient(135deg,var(--pts-navy-deep) 0%,var(--pts-navy) 57%,var(--pts-navy-light) 100%);isolation:isolate;}
 /* Ảnh nền tuỳ chọn qua Admin (thay cho gradient) - overlay tối giữ tương
    phản cho chữ trắng/vàng và các hiệu ứng glow/texture/accent y hệt bản
-   gradient, chỉ đổi lớp nền phía sau (phản hồi 2026-09-08). */
-.pts-home-hero.pts-home-hero-photo{background-size:cover;background-position:center;}
+   gradient, chỉ đổi lớp nền phía sau. Nhiều ảnh xếp chồng, JS đổi
+   is-active theo chu kỳ, CSS transition lo phần crossfade mượt
+   (phản hồi 2026-09-08). */
+.pts-hero-photo-layers{position:absolute;inset:0;z-index:-2;}
+.pts-hero-photo-layer{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity 1.2s ease;}
+.pts-hero-photo-layer.is-active{opacity:1;}
 .pts-hero-photo-overlay{position:absolute;inset:0;z-index:-1;background:linear-gradient(135deg,rgba(11,29,58,.88) 0%,rgba(11,29,58,.72) 57%,rgba(11,29,58,.55) 100%);}
 .pts-hero-glow{position:absolute;z-index:-1;width:560px;height:560px;right:-130px;top:-190px;border-radius:50%;background:rgba(201,150,46,.30);filter:blur(70px);}
 /* Quầng lạnh đối trọng ở góc dưới trái để nền không còn phẳng một màu. */

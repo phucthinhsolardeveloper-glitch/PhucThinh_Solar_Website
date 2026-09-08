@@ -21,8 +21,9 @@
     $partner = $cache->get("select name$lang, link, photo from #_photo where type = ? and find_in_set('hienthi',status) order by numb, id desc", array('doitac'), 'result', 7200);
     /* Chứng nhận uỷ quyền cho khối tin cậy ở hero; dùng chung nguồn với trang Về chúng tôi nên Admin chỉ cần quản lý một chỗ. */
     $chungnhan = $cache->get("select name$lang, link, photo from #_photo where type = ? and find_in_set('hienthi',status) order by numb, id desc", array('chungnhan'), 'result', 7200);
-    /* Ảnh nền Hero (chế độ 'text') - tuỳ chọn, quản lý qua Admin > Ảnh nền Hero trang chủ. Không có thì slide.php tự dùng nền gradient mặc định. */
-    $heroBg = $cache->get("select photo from #_photo where type = ? and act = ? and find_in_set('hienthi',status) limit 0,1", array('home-hero-bg','photo_static'), 'fetch', 7200);
+    /* Ảnh nền Hero (chế độ 'text') - tuỳ chọn, quản lý qua Admin > Ảnh nền Hero trang chủ.
+       Nhiều ảnh thì slide.php tự crossfade; không có ảnh nào thì dùng nền gradient mặc định. */
+    $heroBgList = $cache->get("select photo from #_photo where type = ? and find_in_set('hienthi',status) order by numb,id desc", array('home-hero-bg'), 'result', 7200);
     $about = $cache->get("select name$lang, desc$lang,photo from #_static where type = ? and find_in_set('hienthi',status) limit 0,1", array('gioi-thieu'), 'fetch', 7200);
     $doitaccongnghe = $cache->get("select name$lang, desc$lang,photo, namkinhnghiem from #_static where type = ? and find_in_set('hienthi',status) limit 0,1", array('doi-tac-cong-nghe'), 'fetch', 7200);
     $tieuchi = $cache->get("select name$lang, slugvi, slugen, desc$lang, date_created, id, photo from #_news where type = ? and find_in_set('hienthi',status) order by numb,id desc", array('tieu-chi'), 'result', 7200);

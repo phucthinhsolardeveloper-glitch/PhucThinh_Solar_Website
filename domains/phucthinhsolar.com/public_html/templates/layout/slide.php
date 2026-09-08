@@ -84,11 +84,29 @@
     }
     /* Ảnh nền tuỳ chọn (Admin > Ảnh nền Hero trang chủ) thay cho gradient mặc
        định - lớp phủ tối pts-hero-photo-overlay giữ chữ/hiệu ứng vàng-navy
-       đọc được trên nền ảnh thật, không đổi bố cục hay hiệu ứng phía trên. */
-    $heroBgUrl = (!empty($heroBg['photo'])) ? THUMBS.'/1920x900x1/'.UPLOAD_PHOTO_L.$heroBg['photo'] : '';
+       đọc được trên nền ảnh thật, không đổi bố cục hay hiệu ứng phía trên.
+       Nhiều ảnh -> xếp chồng nhiều layer rồi JS đổi class is-active theo chu
+       kỳ, CSS lo phần fade (transition opacity) - không dùng chế độ
+       "slider" toàn banner vì chưa hợp gu, đây chỉ đổi ảnh phía sau. */
+    $heroBgUrls = array();
+    if(!empty($heroBgList) && is_array($heroBgList))
+    {
+        foreach($heroBgList as $heroBgItem)
+        {
+            if(empty($heroBgItem['photo'])) continue;
+            $heroBgUrls[] = THUMBS.'/1920x900x1/'.UPLOAD_PHOTO_L.$heroBgItem['photo'];
+        }
+    }
 ?>
-<section class="pts-home-hero<?=$heroCerts ? ' pts-home-hero-split' : ''?><?=$heroBgUrl ? ' pts-home-hero-photo' : ''?>"<?php if($heroBgUrl) { ?> style="background-image:url('<?=htmlspecialchars($heroBgUrl, ENT_QUOTES, 'UTF-8')?>')"<?php } ?>>
-    <?php if($heroBgUrl) { ?><div class="pts-hero-photo-overlay" aria-hidden="true"></div><?php } ?>
+<section class="pts-home-hero<?=$heroCerts ? ' pts-home-hero-split' : ''?><?=$heroBgUrls ? ' pts-home-hero-photo' : ''?>">
+    <?php if($heroBgUrls) { ?>
+    <div class="pts-hero-photo-layers" data-pts-hero-cycle="6000" aria-hidden="true">
+        <?php foreach($heroBgUrls as $heroBgIndex => $heroBgUrl) { ?>
+        <div class="pts-hero-photo-layer<?=$heroBgIndex === 0 ? ' is-active' : ''?>" style="background-image:url('<?=htmlspecialchars($heroBgUrl, ENT_QUOTES, 'UTF-8')?>')"></div>
+        <?php } ?>
+    </div>
+    <div class="pts-hero-photo-overlay" aria-hidden="true"></div>
+    <?php } ?>
     <div class="pts-hero-glow" aria-hidden="true"></div>
     <div class="pts-hero-glow-cool" aria-hidden="true"></div>
     <div class="pts-hero-texture" aria-hidden="true"></div>

@@ -92,7 +92,7 @@
 						<input class="custom-control-input" type="radio" id="home-hero-mode-text" name="data[options][home_hero_mode]" value="text" <?=$heroModeIsText ? 'checked' : ''?>>
 						<label for="home-hero-mode-text" class="custom-control-label font-weight-normal"><strong>Hero chữ (mặc định cũ)</strong> — tiêu đề "Năng lượng mặt trời...", số liệu tin cậy, chứng nhận uỷ quyền.</label>
 					</div>
-					<small class="text-muted d-block mt-2">Muốn dùng ảnh thật làm nền cho "Hero chữ" thay vì nền màu, tải ảnh ở mục <a href="index.php?com=photo&act=photo_static&type=home-hero-bg">Ảnh nền Hero trang chủ</a> — chữ, số liệu và hiệu ứng vẫn giữ nguyên, hiện trên ảnh.</small>
+					<small class="text-muted d-block mt-2">Muốn dùng ảnh thật làm nền cho "Hero chữ" thay vì nền màu, tải ảnh ở mục <a href="index.php?com=photo&act=man_photo&type=home-hero-bg">Ảnh nền Hero trang chủ</a> — chữ, số liệu và hiệu ứng vẫn giữ nguyên, hiện trên ảnh. Tải nhiều ảnh thì tự đổi vòng (crossfade), 1 ảnh thì đứng yên.</small>
 				</div>
 			</div>
 		</div>

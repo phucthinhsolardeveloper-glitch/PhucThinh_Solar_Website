@@ -232,6 +232,21 @@ GA_FRAMEWORK.Pagings = function(){
             if(history.pushState) history.pushState(null, '', location.pathname + hash);
         });
     }
+
+    /* Ảnh nền Hero trang chủ: nhiều ảnh (Admin > Ảnh nền Hero trang chủ) thì
+       tự đổi vòng, CSS transition (theme-v2.css .pts-hero-photo-layer) lo
+       phần crossfade mượt - JS chỉ đổi class is-active theo chu kỳ. */
+    $(".pts-hero-photo-layers").each(function() {
+        var layers = $(this).find(".pts-hero-photo-layer");
+        if(layers.length < 2) return;
+        var interval = parseInt($(this).data("pts-hero-cycle"), 10) || 6000;
+        var current = 0;
+        setInterval(function() {
+            layers.eq(current).removeClass("is-active");
+            current = (current + 1) % layers.length;
+            layers.eq(current).addClass("is-active");
+        }, interval);
+    });
 };
 
 /* Ticker scroll */
