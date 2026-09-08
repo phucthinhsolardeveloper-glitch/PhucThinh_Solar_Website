@@ -132,7 +132,7 @@ danh sách cũ. Đặc biệt:
 Các file PHP dữ liệu/quyền không thể suy ra trạng thái chỉ bằng schema:
 
 ```text
-002, 005, 006, 014, 015, 018, 019, 020, 023, 024, 027, 028, 031, 032
+002, 005, 006, 014, 015, 018, 019, 020, 023, 024, 027, 028, 031, 032, 033
 ```
 
 Chạy từng file không có `--apply`, lưu output và đọc phạm vi tác động. Chỉ thêm
@@ -149,6 +149,14 @@ Chạy từng file không có `--apply`, lưu output và đọc phạm vi tác �
   mục quyền hợp lệ cũ; đọc kỹ danh sách nhóm được chọn ở dry-run trước khi apply.
 - `032`: chỉ đổi hai link banner legacy khớp chính xác sang popup Liên hệ/Đại
   lý; dry-run phải chỉ ra đúng banner mong muốn trước khi apply.
+- `033`: tái cấu trúc cây danh mục sản phẩm (12→10 cấp 1, +25 cấp 2) theo audit
+  ChatGPT Plus 2026-09-08, đã kiểm chứng khớp tuyệt đối trên local/demo cùng
+  ngày. Xoá luôn sản phẩm trùng #365 (giữ #371) nếu code khớp đúng vân tay đã
+  biết. Chỉ giải thể 2 danh mục cấp 1 rỗng (Hệ thống điện, Đèn AC) và 2 danh
+  mục cấp 2 cũ khi đếm lại trên production ra đúng 0 sản phẩm - script ẩn
+  (`status=''`) chứ không xoá cứng các danh mục rỗng đó, để chủ project tự
+  quyết xoá cứng sau khi xác nhận. Idempotent: chạy `--apply` nhiều lần không
+  lỗi, lần 2 trở đi chỉ báo "đã đúng/đã có".
 - `025`: tối ưu ảnh tùy chọn, không phải điều kiện deploy. Script dry-run đã chặn
   ảnh vượt 25 MP để tránh hết RAM; chỉ apply khi có backup ảnh riêng và chỉ định
   `--backup-dir` hợp lệ trên hosting.
