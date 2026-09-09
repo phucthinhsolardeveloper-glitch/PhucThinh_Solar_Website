@@ -1728,6 +1728,13 @@ h4{font-size:21px!important;font-weight:800!important;}
        cột dọc liền mạch, không đè lên nhau (152 + 8px cách + chính nó). */
     .progress-wrap{right:19px!important;bottom:160px!important;width:38px!important;height:38px!important;}
 
+    /* Dòng "© ... CÔNG TY..." là nội dung CUỐI CÙNG của trang, luôn nằm sát
+       mép dưới thật khi cuộn hết trang — trong khi cụm nút liên hệ (fixed)
+       cũng neo ở mép dưới VIEWPORT, cần tới 152px (14 đáy + 138 cao). Thêm
+       đệm dưới cho khối cuối để dòng chữ không còn bị đè, bất kể trang dài
+       ngắn thế nào. */
+    .footer_bottom{padding-bottom:calc(14px + 138px + 60px)!important;}
+
     /* Chi tiết dự án: card thoáng hơn, tiêu đề vừa phải */
     #inf_single_project{padding:24px 0 36px!important;}
     #inf_single_project .title_wrap h1{font-size:23px!important;padding-bottom:12px!important;}

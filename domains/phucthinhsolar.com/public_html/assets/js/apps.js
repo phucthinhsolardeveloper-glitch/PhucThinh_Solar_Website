@@ -162,6 +162,15 @@ GA_FRAMEWORK.Menu = function(){
                 title: "Phúc Thịnh Solar"
             }
         });
+        /* mmenu tự đo chiều cao trang lúc khởi tạo (lúc DOM vừa sẵn sàng)
+           để canh wrapper .mm-page/.wap-all-page, nhưng lúc đó ảnh/khối cuối
+           trang (footer, badge...) có thể chưa load xong nên đo hụt — phần
+           dưới cùng bị overflow:clip cắt mất, kéo theo dòng "© ..." bị đè
+           bởi cụm nút liên hệ. Bắn lại 1 sự kiện resize sau khi trang load
+           xong để mmenu đo lại đúng, không cần đổi gì bên mmenu.js. */
+        $(window).on('load', function(){
+            setTimeout(function(){ window.dispatchEvent(new Event('resize')); }, 300);
+        });
     }
 };
 
@@ -966,12 +975,18 @@ $(document).ready(function(){
         };
         updateProgress();
         $(window).scroll(updateProgress);
-        var offset = 150;
+        var offsetShow = 170;
+        var offsetHide = 130;
         var duration = 550;
+        /* Có khoảng đệm giữa ngưỡng hiện (170px) và ẩn (130px) thay vì 1 mốc
+           duy nhất — nếu chỉ 1 mốc, cuộn rung nhẹ quanh đó (rất hay gặp khi
+           vuốt chạm/đà cuộn trên mobile) sẽ bật/tắt active-progress liên tục,
+           chạy lại transition 400ms mỗi lần -> nút bị giật. */
         $(window).on('scroll', function () {
-            if ($(this).scrollTop() > offset) {
+            var top = $(this).scrollTop();
+            if (top > offsetShow) {
                 $('.progress-wrap').addClass('active-progress');
-            } else {
+            } else if (top < offsetHide) {
                 $('.progress-wrap').removeClass('active-progress');
             }
         });
