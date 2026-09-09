@@ -37,6 +37,12 @@
 @media(max-width:767px){.pts-related-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;}}
 @media(max-width:480px){.pts-related-grid{grid-template-columns:1fr;}}
 html{scroll-behavior:smooth;}
+/* style.css:40 vẽ 1 mũi tên Font Awesome trước MỌI mục trong dropdown menu,
+   kể cả mục không có danh mục con — trong khi .has-child:after (bên phải,
+   cũng style.css) đã báo đúng "có thêm cấp con" và CHỈ hiện khi thực sự có.
+   Bỏ mũi tên trái để mỗi mục chỉ còn 1 dấu hiệu duy nhất, và chỉ hiện khi
+   có ý nghĩa. */
+.menu ul li ul li a:before{content:none;margin-right:0;}
 
 /* Compact page heading: retain the image identity without letting it dominate. */
 .page-title{min-height:176px!important;justify-content:flex-start!important;background-position:center 45%!important;}
