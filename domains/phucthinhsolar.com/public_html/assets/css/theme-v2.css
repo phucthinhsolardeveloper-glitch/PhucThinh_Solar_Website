@@ -43,6 +43,21 @@ html{scroll-behavior:smooth;}
    Bỏ mũi tên trái để mỗi mục chỉ còn 1 dấu hiệu duy nhất, và chỉ hiện khi
    có ý nghĩa. */
 .menu ul li ul li a:before{content:none;margin-right:0;}
+/* Dấu còn lại (bên phải, chỉ hiện khi có danh mục con) vốn là 1 ô 5x5px viền
+   đen bo góc (style.css:410) — quá nhỏ, khó thấy. Đổi sang dùng lại đúng
+   icon mũi tên vàng vừa bỏ ở bên trái, chỉ chuyển sang phải. */
+.menu ul li ul li a.has-child:after{
+    content:"\f105";font-family:"Font Awesome 5 Free";font-weight:900;
+    width:auto;height:auto;border:0;background:none;
+    top:50%;bottom:auto;right:15px;
+    transform:translateY(-50%);
+    color:var(--pts-gold-dark);opacity:.7;
+    transition:color .3s ease,opacity .3s ease;
+}
+.menu ul li ul li:hover>a.has-child:after,
+.menu ul li ul li a.active.has-child:after{
+    border-color:transparent;color:var(--pts-gold);opacity:1;
+}
 
 /* Compact page heading: retain the image identity without letting it dominate. */
 .page-title{min-height:176px!important;justify-content:flex-start!important;background-position:center 45%!important;}
