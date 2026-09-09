@@ -1,6 +1,8 @@
 # Roadmap
 
-Checklist thực thi hiện hành: `docs/13-handoffs/2026-08-29-next-work-checklist.md`.
+Checklist thực thi hiện hành: `docs/13-handoffs/2026-08-29-next-work-checklist.md`
+(lưu ý: đã cũ so với `docs/13-handoffs/2026-09-09-category-restructure-and-mobile-audit.md`,
+đọc file mới trước để biết việc gần nhất đã xong).
 
 ## Theme V2 - ưu tiên trước quảng cáo
 
@@ -9,7 +11,10 @@ Checklist thực thi hiện hành: `docs/13-handoffs/2026-08-29-next-work-checkl
 - [x] Nâng header, logo wordmark và Home Hero.
 - [x] Nâng Hero danh mục, bộ lọc, lưới và thẻ sản phẩm.
 - [x] Nâng bố cục trang chi tiết, gallery, giá, CTA và thông số.
-- [ ] Tinh chỉnh trực quan sau khi đối chiếu thủ công trên desktop/mobile.
+- [x] Tinh chỉnh trực quan sau khi đối chiếu thủ công trên desktop/mobile
+  (2026-09-09, xem `docs/13-handoffs/2026-09-09-category-restructure-and-mobile-audit.md`
+  — vẫn còn 1 báo cáo chưa xác minh: lưới sản phẩm 2 cột/1 cột lệch giữa
+  giả lập desktop và điện thoại thật, đang chờ ảnh chụp thật để đối chiếu).
 - [ ] Thay dần các section trang chủ legacy còn lại bằng cấu trúc Theme V2.
 
 ## Trước khi chạy quảng cáo / production

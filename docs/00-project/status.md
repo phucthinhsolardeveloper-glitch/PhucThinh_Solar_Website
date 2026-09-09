@@ -1,8 +1,44 @@
 # Current status
 
-Cập nhật gần nhất: 2026-09-06. Mọi thay đổi bên dưới mới ở Git + Docker local,
-chưa triển khai production. Trạng thái dữ liệu trống đã được chủ project xác
-nhận là do chưa có nguồn thật; không coi đó là blocker kỹ thuật và không tự lấp.
+Cập nhật gần nhất: 2026-09-09. Phần lớn nội dung bên dưới (tới dòng "Checkout
+idempotency local") là log tích lũy từ trước 2026-09-06 và mới ở Git + Docker
+local tại thời điểm ghi — KHÔNG tự suy ra các mục đó đã lên production chỉ vì
+đợt 2026-09-08/09 đã bắt đầu deploy thật (xem mục riêng bên dưới); mỗi mục cũ
+giữ nguyên phạm vi "local" như lúc viết trừ khi có ghi chú deploy production
+rõ ràng. Trạng thái dữ liệu trống đã được chủ project xác nhận là do chưa có
+nguồn thật; không coi đó là blocker kỹ thuật và không tự lấp.
+
+## 2026-09-08 → 2026-09-09: đã lên PRODUCTION
+
+Production không có SSH — toàn bộ deploy dưới đây thực hiện qua FTP (file) +
+phpMyAdmin (SQL do chủ project tự chạy), không qua CI/CD hay migration runner.
+
+- Tái cấu trúc cây danh mục sản phẩm: 12→10 danh mục cấp 1, +25 danh mục cấp 2,
+  xếp lại 405 sản phẩm, dựa theo audit ChatGPT Plus chủ project cung cấp.
+  Migration `migrations/033_restructure_category_tree.php`; SQL sinh sẵn đã
+  chạy qua phpMyAdmin trên production. Xóa 1 sản phẩm trùng (SP 365, cascade
+  đầy đủ) và 2 danh mục rỗng không dùng.
+- Nhập 54 ảnh sản phẩm đèn JINDIAN/Blue Carbon (khớp theo đúng mã sản phẩm,
+  script `scripts/import-lamp-images-local.php`), áp dụng cả local/demo và
+  production. 1 ảnh (`BCT-OLF-02.jpg`) cố ý bỏ qua vì không đủ căn cứ khớp mã
+  giữa 4 biến thể công suất OLF — không đoán.
+- Tính năng mới: banner trang chủ đổi được ảnh nền (Admin → nhiều ảnh, tự
+  chuyển ảnh), thay cho ô upload ảnh tĩnh cũ; không tái dùng chế độ slideshow
+  cũ theo yêu cầu chủ project ("chưa hợp gu").
+- Bật public giá + giỏ hàng toàn site (chủ project tự bật qua Admin) — xem
+  ghi chú sửa lại dòng "Toàn bộ giá public đang ẩn..." bên dưới.
+- Rà soát responsive Android/mobile toàn site và sửa trên production, gồm:
+  nút liên hệ nổi (Facebook/Zalo/Phone) từng đè lên nội dung/che tên công ty ở
+  cuối trang; carousel "Tại sao nên chọn PTS" xung đột Slick-vs-CSS-grid; popup
+  giỏ hàng lặp giá/tràn ngang trên mobile; header và nút cuộn-lên-đầu giật khi
+  cuộn (thiếu ngưỡng chống rung); nút cuộn-lên-đầu đè lên cụm nút liên hệ; menu
+  dropdown desktop có 2 icon mũi tên chồng nhau (đã gộp lại 1, đúng màu vàng
+  thương hiệu, chỉ hiện khi mục thật sự có danh mục con).
+- Chưa xác minh trên thiết bị Android/iOS thật: có báo cáo lưới sản phẩm hiện
+  2 cột trên trình giả lập desktop nhưng 1 cột trên điện thoại thật — đã rà
+  toàn bộ CSS/JS/PHP liên quan, không tìm thấy cơ chế nào trong code có thể
+  gây khác biệt này; đang chờ ảnh chụp thật từ chủ project để đối chiếu thay
+  vì đoán và sửa sai chỗ.
 
 ## WORKING ON LOCAL
 
@@ -14,7 +50,7 @@ nhận là do chưa có nguồn thật; không coi đó là blocker kỹ thuật
 - Video YouTube, 19 trường thông số có cấu trúc, danh sách thông số riêng và nội dung chứng nhận theo từng sản phẩm.
 - Admin và Excel CSV/XLS/XLSX nhập/xuất từng thông số; frontend dựng bảng từ dữ liệu cấu trúc và vẫn fallback về HTML kỹ thuật cũ.
 - 4 dự án hiện có đều có ảnh và nội dung.
-- Toàn bộ giá public đang ẩn theo chế độ báo giá; Admin và Excel vẫn giữ giá nội bộ. Có công tắc Admin → Thiết lập thông tin → “Hiển thị giá sản phẩm” (khóa `public_product_prices`), mặc định “Liên hệ báo giá”, lưu xong tự xóa cache.
+- **[CẬP NHẬT 2026-09-09]** Giá public + giỏ hàng đã được BẬT trên production (chủ project tự bật qua Admin → Thiết lập thông tin → "Hiển thị giá sản phẩm", khóa `public_product_prices`). Dòng mô tả gốc bên dưới về mặc định "Liên hệ báo giá" chỉ còn đúng cho trạng thái TRƯỚC khi bật; cơ chế công tắc (Admin/Excel giữ giá nội bộ riêng, lưu xong tự xóa cache) không đổi.
 - Canonical, Twitter metadata, robots, sitemap, HTTP security headers và chặn file nhạy cảm đã có regression local.
 - Wordmark “Phúc Thịnh Solar” trong template public dùng vàng kim gradient.
 - Đợt 2026-08-31: phóng to giao diện public (thang chữ/header/container/section title), cân lại form liên hệ + chi tiết dự án, rà soát responsive mobile (nút liên hệ nổi, gutter, canh chữ, footer đầy đủ), sửa lỗi khung ảnh chi tiết sản phẩm phình trên mobile, khôi phục bộ lọc Thương hiệu/Công suất/Loại SP ở listing. Có `docs/07-features/ecommerce-upgrade-proposal.md` (phân tích Kitawa, chờ chốt phạm vi).
@@ -71,10 +107,15 @@ nhận là do chưa có nguồn thật; không coi đó là blocker kỹ thuật
 ## PARTIAL / CHỜ DỮ LIỆU THẬT
 
 - 5 trang chính sách đã có URL nhưng nội dung đang rỗng.
-- DB local hiện có 405 sản phẩm. Đối chiếu 2026-09-06: 161 có ảnh đại diện,
-  244 chưa có ảnh, 402 thiếu mô tả ngắn, 351 thiếu nội dung chi tiết và 183
-  chưa có công suất hợp lệ. Đây là dữ liệu đang chờ nguồn thật, không tự ẩn/xóa.
-  Có 3 phương thức thanh toán đang hiển thị; không phát hiện việc bị xóa.
+- DB local hiện có 404 sản phẩm (405 trước đó, trừ 1 bản trùng SP 365 đã xóa
+  trong đợt tái cấu trúc danh mục 2026-09-08). Đối chiếu trực tiếp 2026-09-09
+  (query thật, không suy đoán từ số cũ): 194 có ảnh đại diện, 210 chưa có ảnh
+  (giảm từ 244 nhờ đợt nhập 54 ảnh đèn JINDIAN/Blue Carbon, dù không phải hết
+  54 ảnh đều là ảnh đại diện mới — một phần vào gallery của sản phẩm đã có
+  ảnh chính), 401 thiếu mô tả ngắn (`descvi`), 351 thiếu nội dung chi tiết
+  (`contentvi`, không đổi) và 182 chưa có công suất hợp lệ (`cong_suat`). Đây
+  là dữ liệu đang chờ nguồn thật, không tự ẩn/xóa. Có 3 phương thức thanh toán
+  đang hiển thị; không phát hiện việc bị xóa.
 - Lịch sử gồm lô ORIANA `san-pham-20260831-da-bo-sung-oriana.xlsx` và file master `san-pham-master-fixed-2026-09-01.xlsx`; các file nằm trong `artifacts/`, tiếp tục được giữ ngoài Git/release.
 - Chứng nhận và video chỉ hiển thị khi admin nhập dữ liệu thật.
 - Dữ liệu kỹ thuật thật sẽ được cập nhật từ file Excel bên ngoài; không chạy migration 006 apply nếu chưa có phê duyệt riêng.
