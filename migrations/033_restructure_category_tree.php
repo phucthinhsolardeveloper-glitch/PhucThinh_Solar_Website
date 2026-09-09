@@ -70,6 +70,7 @@ $l1Renames = array(
 	array('Thiết bị điện năng lượng mặt trời', 'Thiết bị & phụ kiện điện mặt trời'),
 	array('Trụ Đèn', 'Trụ đèn & phụ kiện'),
 	array('Đèn Sân Vườn', 'Đèn sân vườn'),
+	array('Tấm pin năng lượng măt trời', 'Tấm pin năng lượng mặt trời'),
 );
 $l1Dissolve = array(
 	'Hệ thống điện',
