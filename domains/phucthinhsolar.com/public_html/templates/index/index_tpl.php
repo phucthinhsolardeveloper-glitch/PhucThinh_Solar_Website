@@ -8,7 +8,7 @@
             <a class="pts-need-card" href="danh-muc-san-pham/den-nlmt/">
                 <span class="pts-need-icon"><i class="fas fa-lightbulb" aria-hidden="true"></i></span>
                 <span class="pts-need-title">Đèn năng lượng mặt&nbsp;trời</span>
-                <span class="pts-need-desc">Sân nhà, đường đi, sân vườn, công trình...</span>
+                <span class="pts-need-desc">Sân bãi, đường giao thông, công trình, nhà xưởng...</span>
             </a>
             <a class="pts-need-card" href="giai-phap/">
                 <span class="pts-need-icon"><i class="fas fa-solar-panel" aria-hidden="true"></i></span>
