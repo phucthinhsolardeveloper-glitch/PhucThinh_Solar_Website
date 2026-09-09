@@ -965,8 +965,21 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 .price-procart-rp{display:none;}
 .procart-label .quantity-procart p:last-child{display:none;}
 @media(max-width:767px){
+    /* Cột "Thành tiền" gốc (không phải bản sao -rp) và chữ "Số lượng" trong
+       header phải ẩn đi ở mobile — thiếu 2 dòng này khiến cột 4 (col-3) vẫn
+       chiếm chỗ, tổng cột vượt 12/12 (3+6+3+3=15) nên bị wrap lệch và giá/
+       "Thành tiền" hiện lặp 2 lần mỗi dòng. */
+    .price-procart{display:none;}
     .price-procart-rp{display:block;width:100%;margin-bottom:10px;}
+    .procart-label .quantity-procart p:first-child{display:none;}
     .procart-label .quantity-procart p:last-child{display:block;}
+    /* Cột quantity-procart (col-3) chỉ rộng ~89px ở mobile, nhưng bộ đếm
+       số lượng (input.quantity-procart trong style.css) rộng cố định 110px
+       -> tràn ra ngoài cột, kéo cả hàng vượt viewport (cuộn ngang). Thu nhỏ
+       bộ đếm cho vừa cột. */
+    .quantity-counter-procart{width:80px!important;flex:0 0 80px!important;}
+    .quantity-counter-procart input.quantity-procart{flex:0 0 28px!important;width:28px!important;}
+    .quantity-counter-procart .counter-procart{padding:4px 6px!important;}
 }
 /* Căn giữa popup giỏ hàng và cuộn nội dung khi vượt chiều cao màn hình. */
 #popup-cart .modal-dialog{display:flex!important;align-items:center;min-height:calc(100% - 3.5rem);margin:1.75rem auto!important;}
@@ -1708,8 +1721,12 @@ h4{font-size:21px!important;font-weight:800!important;}
     #button-contact-vr .phone-vr-img-circle img{max-height:15px!important;max-width:17px!important;}
     /* Canh tâm nút cuộn lên trùng cột nút liên hệ: tâm cách mép phải 38px
        (#button-contact-vr là right:10px + 56/2), nên nút 38px phải đặt
-       right:19px. Để 14px thì hai nút lệch nhau 5px, nhìn như bị xô lệch. */
-    .progress-wrap{right:19px!important;bottom:76px!important;width:38px!important;height:38px!important;}
+       right:19px. Để 14px thì hai nút lệch nhau 5px, nhìn như bị xô lệch.
+       Về CHIỀU CAO: cụm 3 nút liên hệ cao 138px (đo thực tế), đặt sát đáy
+       (bottom:14px) nên đỉnh của nó ở 152px — không còn chỗ đặt nút cuộn-
+       lên bên DƯỚI. Phải đặt nút cuộn-lên bên TRÊN cụm 3 nút để thành 1
+       cột dọc liền mạch, không đè lên nhau (152 + 8px cách + chính nó). */
+    .progress-wrap{right:19px!important;bottom:160px!important;width:38px!important;height:38px!important;}
 
     /* Chi tiết dự án: card thoáng hơn, tiêu đề vừa phải */
     #inf_single_project{padding:24px 0 36px!important;}
@@ -2290,12 +2307,43 @@ body .home-6 .btn-all:hover i{transform:translateX(3px);}
 .comment-statistic .btn-write-comment:hover{filter:brightness(1.05);}
 .comment-statistic .comment-point,
 .comment-statistic .comment-point strong{color:var(--pts-navy)!important;}
-#button-contact-vr{position:fixed;right:15px;bottom:130px;z-index:99999;}
+/* !important trên bottom là bắt buộc: assets/wp-content/themes/local/css/
+   stylephone3781.css (plugin nút liên hệ, nạp qua templates/layout/js.php,
+   nằm SAU css.php trong DOM) có #button-contact-vr{bottom:0} không !important
+   -> nếu bỏ !important ở đây, luật đó thắng vì nạp sau, kéo cả cụm nút xuống
+   sát đáy màn hình, đè lên nút cuộn-lên-đầu (.progress-wrap). */
+#button-contact-vr{position:fixed!important;right:15px!important;bottom:130px!important;z-index:99999;}
+/* Cụm 3 nút liên hệ cao 255px (đo thực tế) đặt sát đáy (bottom:130px) nên
+   đỉnh của nó ở 385px — đặt nút cuộn-lên-đầu (.progress-wrap) bên TRÊN đỉnh
+   đó (+10px cách) để 4 nút thành 1 cột dọc liền mạch, không đè lên nhau.
+   Tâm nút cuộn-lên (50px) trùng cột: contact right:15+90/2=60 -> right:35px
+   (60-25) — đúng giá trị gốc trong style.css nên không cần đổi right. */
+/* min-width:768px để KHÔNG tranh chấp thứ tự nguồn với luật mobile
+   (max-width:767px) ở trên — mỗi luật chỉ khớp đúng 1 phía, khỏi phải lo
+   luật nào nằm sau file thắng luật nào. */
+@media(min-width:768px){
+    .progress-wrap{bottom:395px!important;}
+}
+/* Luật mobile ở trên (khoảng dòng 1716, "ROUND 2B") nằm TRƯỚC luật gốc này
+   trong file -> nếu chỉ dựa vào !important, 2 luật cùng specificity thì luật
+   SAU thắng, tức là luật gốc (130px) sẽ đè luôn cả ở mobile. Phải khẳng định
+   lại giá trị mobile ở ĐÂY, sau luật gốc, để thứ tự nguồn quyết định đúng. */
+@media(max-width:767px){
+    #button-contact-vr{bottom:14px!important;right:10px!important;}
+}
 #button-contact-vr .button-contact{position:relative;margin-top:-5px;}
 #button-contact-vr .button-contact .phone-vr{position:relative;width:90px;height:90px;display:block;}
 #button-contact-vr .phone-vr-circle-fill{position:absolute;width:65px;height:65px;top:12px;left:12px;border-radius:50%;}
 #button-contact-vr .phone-vr-img-circle{position:absolute;width:40px;height:40px;top:25px;left:25px;border-radius:50%;overflow:hidden;display:flex;justify-content:center;}
 #button-contact-vr .phone-vr-img-circle img{position:absolute;max-width:27px;max-height:25px;top:50%;left:50%;transform:translate(-50%,-50%);}
+/* Nút liên hệ nổi luôn position:fixed nên khi cuộn trang có thể đè lên tab/
+   thẻ khác (VD tab "Thông số kỹ thuật" ở trang sản phẩm mobile). Vòng tròn
+   hiệu ứng pulse (.phone-vr, .phone-vr-circle-fill) chỉ là trang trí, không
+   phải link -> cho pointer-events xuyên qua, chỉ icon thật bên trong
+   (.phone-vr-img-circle, chứa <a>) mới cần bắt tap. Giảm gần 70% diện tích
+   "chặn tap" của mỗi nút mà không đổi kích thước hiển thị. */
+#button-contact-vr .button-contact,#button-contact-vr .phone-vr{pointer-events:none;}
+#button-contact-vr .phone-vr-img-circle{pointer-events:auto;}
 .pts-product-content{font:inherit;color:inherit;line-height:1.75;overflow-wrap:anywhere}.pts-product-content h1{font-size:1.75rem}.pts-product-content h2{font-size:1.5rem}.pts-product-content h3{font-size:1.25rem}.pts-product-content h2,.pts-product-content h3{color:var(--pts-navy);margin:1.4em 0 .65em}.pts-product-content img,.pts-product-content iframe,.pts-product-content video{max-width:100%!important;height:auto}.pts-product-content table{width:100%!important}.pts-product-content [style]{font-family:inherit!important;line-height:inherit!important}.pts-policy-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.pts-policy-links a{display:block;border:1px solid #e5e9ef;border-radius:9px;padding:12px;color:var(--pts-navy);font-weight:600}
 @media(max-width:640px){.pts-policy-links{grid-template-columns:1fr}}
 

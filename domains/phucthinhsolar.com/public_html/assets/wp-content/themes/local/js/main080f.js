@@ -10,18 +10,12 @@ jQuery(document).ready(function ($) {
     var $stickyrStopper = $('footer');
     var $stickyrStopper2 = $('#CRsingle_advisory_author');
     var handleVariationProduct = HandleVariationproduct();
-    var optionCRintro_home = {
-            responseSize: 768,
-            selector: '#CRicos_intro_home',
-            options: {
-                slidesToShow: 1,
-                slidesToScroll: 1,
-                arrows:false,
-                dots:true,
-            }
-        },
-    CRintro_home = new InitSlider(optionCRintro_home);
-    CRintro_home.init();
+    /* #CRicos_intro_home ("Tại sao nên chọn Phúc Thịnh Solar?") đã đổi sang
+       lưới CSS tĩnh responsive (xem #CRintro_home #CRicos_intro_home trong
+       theme-v2.css) thay cho carousel Slick — bỏ init Slick ở đây và ở
+       optionInficos_intro_page bên dưới để hai bên không còn đè lên nhau,
+       vì Slick set width inline cho từng .slick-slide còn CSS grid ép
+       width:auto!important, gây lệch/cắt chữ trên mobile. */
 
     var optionWorkshop_intro = {
         responseSize: 769,
@@ -136,33 +130,6 @@ jQuery(document).ready(function ($) {
         },
     inf_vision_intro = new InitSlider(optioninf_vision_intro);
     inf_vision_intro.init();
-
-    var optionInficos_intro_page = {
-            responseSize: 992,
-            selector: '#CRicos_intro_home',
-            options: {
-                slidesToShow: 2,
-                slidesToScroll: 1,
-                speed: 1000,
-                arrows: false,
-                dots: true,
-                cssEase: 'cubic-bezier(0.7, 0, 0.3, 1)',
-                autoplay: true,
-                autoplaySpeed: 1500,
-                adaptiveHeight: true,
-                responsive: [
-                    {
-                        breakpoint: 454,
-                        settings: {
-                            slidesToShow: 1,
-                            slidesToScroll: 1,
-                        }
-                    },
-                ]
-            }
-        },
-    Inficos_intro_page = new InitSlider(optionInficos_intro_page);
-    Inficos_intro_page.init();
 
     var optionHome4 = {
             responseSize: 767,

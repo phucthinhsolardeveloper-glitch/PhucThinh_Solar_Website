@@ -168,15 +168,6 @@
     </div>
 </footer>
 
-<style>
-    #button-contact-vr {
-        bottom: 130px !important;
-    }
-    #button-contact-vr {
-        right: 15px;
-    }
-</style>
-
 <div id="button-contact-vr" class="">
     <div id="gom-all-in-one">
         <div id="fanpage-vr" class="button-contact">

@@ -13,9 +13,6 @@
                             <li>
                                 <a class="transition" title="<?=$vlist['name'.$lang]?>" href="danh-muc-san-pham/<?=$vlist[$sluglang]?>/">
                                     <?=$vlist['name'.$lang]?>
-                                    <?php if(!empty($spcat)) { ?>
-                                        <span class="child-menu"></span>
-                                    <?php } ?>
                                 </a>
                                 <?php if(!empty($spcat)) { ?>
                                     <ul>

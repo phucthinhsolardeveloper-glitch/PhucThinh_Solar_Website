@@ -122,8 +122,9 @@ GA_FRAMEWORK.Menu = function(){
     /* Menu fixed */
     if(isExist($(".header")))
     {
+        var headerHeight = $(".header").height();
         $(window).scroll(function(){
-            if($(window).scrollTop() >= $(".header").height())
+            if($(window).scrollTop() >= headerHeight)
             {
                 $(".header").addClass('fixed');
             }
@@ -134,13 +135,21 @@ GA_FRAMEWORK.Menu = function(){
         });
          var prevScrollpos = window.pageYOffset;
         window.onscroll = function() {
-        var currentScrollPos = window.pageYOffset;
-        if (prevScrollpos > currentScrollPos) {
+        var currentScrollPos = Math.max(0, window.pageYOffset);
+        /* Gần đầu trang: luôn hiện header, không xét hướng cuộn (tránh bị ẩn
+           oan bởi các sự kiện scroll ảo do thanh địa chỉ Android tự ẩn/hiện).
+           Xa hơn: chỉ đổi trạng thái khi cuộn tích lũy vượt ngưỡng 8px, để
+           không giật liên tục theo từng rung nhỏ khi vuốt chạm (đà/đàn hồi). */
+        if (currentScrollPos <= headerHeight) {
             document.getElementById("headerscroll").style.top = "0";
-        } else {
-            document.getElementById("headerscroll").style.top = "-130px";
+            prevScrollpos = currentScrollPos;
+            return;
         }
-        prevScrollpos = currentScrollPos;
+        var delta = currentScrollPos - prevScrollpos;
+        if (Math.abs(delta) > 8) {
+            document.getElementById("headerscroll").style.top = (delta < 0) ? "0" : "-130px";
+            prevScrollpos = currentScrollPos;
+        }
         }
     }
 
