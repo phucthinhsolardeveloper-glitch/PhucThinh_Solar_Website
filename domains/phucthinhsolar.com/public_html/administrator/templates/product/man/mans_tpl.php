@@ -1,9 +1,15 @@
-<?php 
+<?php
 	$linkView = $configBase;
 	$linkMan = $linkFilter = "index.php?com=product&act=man&type=".$type;
-	$linkAdd = "index.php?com=product&act=add&type=".$type;
-    $linkCopy = "index.php?com=product&act=copy&type=".$type;
-    $linkEdit = "index.php?com=product&act=edit&type=".$type;
+	/* Đường quay lại ĐÚNG trang danh sách đang xem (kể cả lọc/trang hiện tại) sau
+	   khi sửa/sao chép/thêm sản phẩm - trước đây chỉ nhớ vài filter cố định
+	   (id_list/id_cat/.../keyword) qua $strUrl và LUÔN mất số trang, nên sửa
+	   xong hay bấm Huỷ đều rơi về trang 1 danh sách chưa lọc, người dùng phải tự
+	   bấm "Bảng điều khiển" rồi vào lại từ đầu (audit 2026-09-10). */
+	$returnParam = '&_return='.urlencode($_SERVER['REQUEST_URI']);
+	$linkAdd = "index.php?com=product&act=add&type=".$type.$returnParam;
+    $linkCopy = "index.php?com=product&act=copy&type=".$type.$returnParam;
+    $linkEdit = "index.php?com=product&act=edit&type=".$type.$returnParam;
     $linkDelete = "index.php?com=product&act=delete&type=".$type;
     $linkMulti = "index.php?com=product&act=man_photo&kind=man&type=".$type;
     $linkComment = "index.php?com=comment&act=man&variant=product&type=".$type;

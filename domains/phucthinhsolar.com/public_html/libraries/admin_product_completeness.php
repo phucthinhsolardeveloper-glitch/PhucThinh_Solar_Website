@@ -22,6 +22,10 @@ if(!function_exists('adminProductDataStatusDefinitions'))
             'campaign_active' => array(
                 'label' => 'Đang có khung chiến dịch',
                 'sql' => "((coalesce(trim(p.photo_khuyenmai), '') <> '' and find_in_set('khuyenmai', p.status)) or exists (select 1 from #_product_campaign c inner join #_product_campaign_scope pcs on pcs.id_campaign = c.id where find_in_set('hienthi',c.status) and coalesce(trim(c.photo), '') <> '' and (c.start_at = 0 or c.start_at <= unix_timestamp()) and (c.end_at = 0 or c.end_at >= unix_timestamp()) and (pcs.scope_type = 'all' or (pcs.scope_type = 'product' and pcs.scope_id = p.id) or (pcs.scope_type = 'cat' and pcs.scope_id = p.id_cat) or (pcs.scope_type = 'brand' and pcs.scope_id = p.id_brand) or (pcs.scope_type = 'list' and pcs.scope_id = p.id_list))))"
+            ),
+            'has_discount' => array(
+                'label' => 'Đang giảm giá (giá KM thấp hơn giá gốc)',
+                'sql' => "(p.sale_price > 0 and p.sale_price < p.regular_price)"
             )
         );
     }

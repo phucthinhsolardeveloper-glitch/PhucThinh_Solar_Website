@@ -35,6 +35,31 @@
 		}
 		return $dataSeo;
 	}
+	/**
+	 * Đường quay lại đúng trang danh sách (kèm trang/lọc) mà người dùng đang xem
+	 * trước khi vào thêm/sửa/sao chép - đọc từ hidden field data[_return] (khi
+	 * submit form) hoặc query string _return (khi vừa vào trang bằng GET).
+	 * Chỉ chấp nhận link nội bộ trỏ về đúng danh sách sản phẩm, tránh bị lợi
+	 * dụng làm open-redirect nếu ai đó chỉnh tay tham số này.
+	 */
+	function productAdminReturnUrl($fallback)
+	{
+		$raw = null;
+		if(isset($_POST['data']['_return'])) $raw = $_POST['data']['_return'];
+		elseif(isset($_GET['_return'])) $raw = $_GET['_return'];
+		if($raw === null || $raw === '') return $fallback;
+		$raw = (string) $raw;
+		if(strpos($raw, '://') !== false || substr($raw, 0, 2) === '//') return $fallback;
+		if(strpos($raw, 'com=product') === false || strpos($raw, 'act=man') === false) return $fallback;
+		return $raw;
+	}
+	/** Nối &_return=... vào link "lưu tại trang" (quay lại form edit, chưa về
+	 *  danh sách) để bấm "Lưu tại trang" nhiều lần vẫn không mất ngữ cảnh. */
+	function productAdminReturnSuffix()
+	{
+		if(empty($_POST['data']['_return'])) return '';
+		return '&_return='.urlencode($_POST['data']['_return']);
+	}
 	function productAdminRememberRedirect($d, $oldPath, $entityTable, $entityId)
 	{
 		$oldPath = trim((string)$oldPath, '/');
@@ -387,7 +412,7 @@
 
 		if(empty($id))
 		{
-			$func->transfer("Không nhận được dữ liệu", "index.php?com=product&act=man&type=".$type."&p=".$curPage.$strUrl, false);
+			$func->transfer("Không nhận được dữ liệu", productAdminReturnUrl("index.php?com=product&act=man&type=".$type."&p=".$curPage.$strUrl), false);
 		}
 		else
 		{
@@ -395,7 +420,7 @@
 
 			if(empty($item))
 			{
-				$func->transfer("Dữ liệu không có thực", "index.php?com=product&act=man&type=".$type."&p=".$curPage.$strUrl, false);
+				$func->transfer("Dữ liệu không có thực", productAdminReturnUrl("index.php?com=product&act=man&type=".$type."&p=".$curPage.$strUrl), false);
 			}
 			else
 			{
@@ -417,7 +442,7 @@
 		/* Check post */
 		if(empty($_POST))
 		{
-			$func->transfer("Không nhận được dữ liệu", "index.php?com=product&act=man&type=".$type."&p=".$curPage.$strUrl, false);
+			$func->transfer("Không nhận được dữ liệu", productAdminReturnUrl("index.php?com=product&act=man&type=".$type."&p=".$curPage.$strUrl), false);
 		}
 
 		/* Post dữ liệu */
@@ -611,16 +636,16 @@
 			{
 				if($act == 'save_copy')
 				{
-					$func->redirect("index.php?com=product&act=copy&type=".$type."&p=".$curPage.$strUrl."&id_copy=".$id);
+					$func->redirect("index.php?com=product&act=copy&type=".$type."&p=".$curPage.$strUrl."&id_copy=".$id.productAdminReturnSuffix());
 				}
 				else
 				{
-					$func->redirect("index.php?com=product&act=edit&type=".$type."&p=".$curPage.$strUrl."&id=".$id);
+					$func->redirect("index.php?com=product&act=edit&type=".$type."&p=".$curPage.$strUrl."&id=".$id.productAdminReturnSuffix());
 				}
 			}
 			else
 			{
-				$func->redirect("index.php?com=product&act=add&type=".$type."&p=".$curPage.$strUrl);
+				$func->redirect("index.php?com=product&act=add&type=".$type."&p=".$curPage.$strUrl.productAdminReturnSuffix());
 			}
 		}
 
@@ -802,22 +827,22 @@
 
 				if($savehere)
 				{
-					$func->transfer("Cập nhật dữ liệu thành công", "index.php?com=product&act=edit&type=".$type."&p=".$curPage.$strUrl."&id=".$id);
+					$func->transfer("Cập nhật dữ liệu thành công", "index.php?com=product&act=edit&type=".$type."&p=".$curPage.$strUrl."&id=".$id.productAdminReturnSuffix());
 				}
 				else
 				{
-					$func->transfer("Cập nhật dữ liệu thành công", "index.php?com=product&act=man&type=".$type."&p=".$curPage.$strUrl);
+					$func->transfer("Cập nhật dữ liệu thành công", productAdminReturnUrl("index.php?com=product&act=man&type=".$type."&p=".$curPage.$strUrl));
 				}
 			}
 			else
 			{
 				if($savehere)
 				{
-					$func->transfer("Cập nhật dữ liệu bị lỗi", "index.php?com=product&act=edit&type=".$type."&p=".$curPage.$strUrl."&id=".$id, false);
+					$func->transfer("Cập nhật dữ liệu bị lỗi", "index.php?com=product&act=edit&type=".$type."&p=".$curPage.$strUrl."&id=".$id.productAdminReturnSuffix(), false);
 				}
 				else
 				{
-					$func->transfer("Cập nhật dữ liệu bị lỗi", "index.php?com=product&act=man&type=".$type."&p=".$curPage.$strUrl, false);
+					$func->transfer("Cập nhật dữ liệu bị lỗi", productAdminReturnUrl("index.php?com=product&act=man&type=".$type."&p=".$curPage.$strUrl), false);
 				}
 			}
 		}
@@ -960,22 +985,22 @@
 				{
 					if($savehere)
 					{
-						$func->transfer("Sao chép dữ liệu thành công", "index.php?com=product&act=edit&type=".$type."&p=".$curPage.$strUrl."&id=".$id_insert);
+						$func->transfer("Sao chép dữ liệu thành công", "index.php?com=product&act=edit&type=".$type."&p=".$curPage.$strUrl."&id=".$id_insert.productAdminReturnSuffix());
 					}
 					else
 					{
-						$func->transfer("Sao chép dữ liệu thành công", "index.php?com=product&act=man&type=".$type."&p=".$curPage.$strUrl);
+						$func->transfer("Sao chép dữ liệu thành công", productAdminReturnUrl("index.php?com=product&act=man&type=".$type."&p=".$curPage.$strUrl));
 					}
 				}
 				else
 				{
 					if($savehere)
 					{
-						$func->transfer("Lưu dữ liệu thành công", "index.php?com=product&act=edit&type=".$type."&p=".$curPage.$strUrl."&id=".$id_insert);
+						$func->transfer("Lưu dữ liệu thành công", "index.php?com=product&act=edit&type=".$type."&p=".$curPage.$strUrl."&id=".$id_insert.productAdminReturnSuffix());
 					}
 					else
 					{
-						$func->transfer("Lưu dữ liệu thành công", "index.php?com=product&act=man&type=".$type."&p=".$curPage.$strUrl);
+						$func->transfer("Lưu dữ liệu thành công", productAdminReturnUrl("index.php?com=product&act=man&type=".$type."&p=".$curPage.$strUrl));
 					}
 				}
 			}
@@ -985,22 +1010,22 @@
 				{
 					if($savehere)
 					{
-						$func->transfer("Sao chép dữ liệu bị lỗi", "index.php?com=product&act=edit&type=".$type."&p=".$curPage.$strUrl."&id=".$id_insert, false);
+						$func->transfer("Sao chép dữ liệu bị lỗi", "index.php?com=product&act=edit&type=".$type."&p=".$curPage.$strUrl."&id=".$id_insert.productAdminReturnSuffix(), false);
 					}
 					else
 					{
-						$func->transfer("Sao chép dữ liệu bị lỗi", "index.php?com=product&act=man&type=".$type."&p=".$curPage.$strUrl, false);
+						$func->transfer("Sao chép dữ liệu bị lỗi", productAdminReturnUrl("index.php?com=product&act=man&type=".$type."&p=".$curPage.$strUrl), false);
 					}
 				}
 				else
 				{
 					if($savehere)
 					{
-						$func->transfer("Lưu dữ liệu bị lỗi", "index.php?com=product&act=edit&type=".$type."&p=".$curPage.$strUrl."&id=".$id_insert, false);
+						$func->transfer("Lưu dữ liệu bị lỗi", "index.php?com=product&act=edit&type=".$type."&p=".$curPage.$strUrl."&id=".$id_insert.productAdminReturnSuffix(), false);
 					}
 					else
 					{
-						$func->transfer("Lưu dữ liệu bị lỗi", "index.php?com=product&act=man&type=".$type."&p=".$curPage.$strUrl, false);
+						$func->transfer("Lưu dữ liệu bị lỗi", productAdminReturnUrl("index.php?com=product&act=man&type=".$type."&p=".$curPage.$strUrl), false);
 					}
 				}
 			}
@@ -1093,11 +1118,11 @@
 					}
 				}
 
-				$func->transfer("Xóa dữ liệu thành công", "index.php?com=product&act=man&type=".$type."&p=".$curPage.$strUrl);
+				$func->transfer("Xóa dữ liệu thành công", productAdminReturnUrl("index.php?com=product&act=man&type=".$type."&p=".$curPage.$strUrl));
 			}
 			else
 			{
-				$func->transfer("Xóa dữ liệu bị lỗi", "index.php?com=product&act=man&type=".$type."&p=".$curPage.$strUrl, false);
+				$func->transfer("Xóa dữ liệu bị lỗi", productAdminReturnUrl("index.php?com=product&act=man&type=".$type."&p=".$curPage.$strUrl), false);
 			}
 		}
 		elseif(isset($_GET['listid']))
@@ -1186,11 +1211,11 @@
 				}
 			}
 
-			$func->transfer("Xóa dữ liệu thành công", "index.php?com=product&act=man&type=".$type."&p=".$curPage.$strUrl);
+			$func->transfer("Xóa dữ liệu thành công", productAdminReturnUrl("index.php?com=product&act=man&type=".$type."&p=".$curPage.$strUrl));
 		} 
 		else
 		{
-			$func->transfer("Không nhận được dữ liệu", "index.php?com=product&act=man&type=".$type."&p=".$curPage.$strUrl, false);
+			$func->transfer("Không nhận được dữ liệu", productAdminReturnUrl("index.php?com=product&act=man&type=".$type."&p=".$curPage.$strUrl), false);
 		}
 	}
 
