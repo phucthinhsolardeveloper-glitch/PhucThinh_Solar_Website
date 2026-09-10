@@ -70,11 +70,12 @@
             <?php /* Nhóm bộ lọc sản phẩm trong một card dùng chung. */ ?>
             <div class="pts-filter-card">
             <?php if(count($splist)){ ?>
-            <div class="aside-item aside-filter collection-category">
-                <div class="aside-title aside-title-f">
+            <div class="aside-item aside-filter collection-category pts-filter-group pts-filter-open">
+                <div class="aside-title aside-title-f pts-filter-toggle" role="button" tabindex="0" aria-expanded="true">
                     <h3 class="title-head margin-top-0"><span>Danh mục</span></h3>
+                    <i class="fas fa-chevron-down pts-filter-chevron" aria-hidden="true"></i>
                 </div>
-                <div class="aside-hidden-mobile" style="">
+                <div class="aside-hidden-mobile pts-filter-body" style="">
                     <div class="filter-container">
                         <aside class="aside-item filter-cat">
                             <div class="aside-content filter-group">
@@ -98,20 +99,23 @@
             </div>
             <?php } ?>
 
-            <?php /* Thương hiệu / Công suất / Loại sản phẩm luôn hiển thị; chỉ "Mức giá" phụ thuộc chế độ giá công khai. */ ?>
-            <div class="product-pages__price mb20">
-                <div class="product-pages__price-aside">
+            <?php /* Thương hiệu / Công suất / Loại sản phẩm luôn hiển thị; chỉ "Mức giá" phụ thuộc chế độ giá công khai.
+                     Mặc định thu gọn từng nhóm (trừ Danh mục) để sidebar không dài lê thê so với
+                     lưới sản phẩm; nhóm nào đang có lựa chọn từ URL thì tự mở sẵn. */ ?>
+            <?php
+                $brand_get = [];
+                if(isset($_GET['is_brand'])){
+                    $brand_get = explode(",", $_GET['is_brand']);
+                }
+            ?>
+            <div class="product-pages__price mb20 pts-filter-group<?=$brand_get?' pts-filter-open':''?>">
+                <div class="product-pages__price-aside pts-filter-toggle" role="button" tabindex="0" aria-expanded="<?=$brand_get?'true':'false'?>">
                     <span class="product-pages__price-name">Thương hiệu</span>
+                    <i class="fas fa-chevron-down pts-filter-chevron" aria-hidden="true"></i>
                 </div>
 
-                <div class="wrappers-aside__filter-scroll">
+                <div class="wrappers-aside__filter-scroll pts-filter-body">
                     <ul class="product-pages__price-nav">
-                        <?php
-                            $brand_get = [];
-                            if(isset($_GET['is_brand'])){
-                                $brand_get = explode(",", $_GET['is_brand']);
-                            }
-                        ?>
                         <?php if(count($brand)){foreach($brand as $k => $v){ ?>
 
                         <li class="product-pages__price-items">
@@ -127,19 +131,22 @@
                 </div>
             </div>
 
+            <?php
+                $congsuat_get = [];
+                if(isset($_GET['is_congsuat'])){
+                    $congsuat_get = explode(",", $_GET['is_congsuat']);
+                }
+            ?>
             <?php if(count($congSuatList)) { ?>
-            <div class="product-pages__price mb20">
-                <div class="product-pages__price-aside">
+            <div class="product-pages__price mb20 pts-filter-group<?=$congsuat_get?' pts-filter-open':''?>">
+                <div class="product-pages__price-aside pts-filter-toggle" role="button" tabindex="0" aria-expanded="<?=$congsuat_get?'true':'false'?>">
                     <span class="product-pages__price-name">Công suất</span>
+                    <i class="fas fa-chevron-down pts-filter-chevron" aria-hidden="true"></i>
                 </div>
 
-                <div class="wrappers-aside__filter-scroll">
+                <div class="wrappers-aside__filter-scroll pts-filter-body">
                     <ul class="product-pages__price-nav">
                         <?php
-                            $congsuat_get = [];
-                            if(isset($_GET['is_congsuat'])){
-                                $congsuat_get = explode(",", $_GET['is_congsuat']);
-                            }
                             $commonPowerValues = array(60,100,150,200,300,400,500,600,800,1000);
                             $availablePowerValues = array();
                             foreach($congSuatList as $powerRow) {
@@ -169,6 +176,12 @@
                 $catFilterListId = (!empty($productList['id'])) ? $productList['id'] : 0;
                 $catFilterList = ($catFilterListId && empty($id_cat)) ? $d->rawQuery("select pc.name$lang, pc.id, pc.slugvi, pc.slugen, pl.slugvi list_slugvi, pl.slugen list_slugen from #_product_cat pc join #_product_list pl on pl.id=pc.id_list where pc.id_list = ? and find_in_set('hienthi',pc.status) and exists (select 1 from #_product p where p.id_cat = pc.id and p.type = ? and find_in_set('hienthi',p.status)) order by pc.numb,pc.id desc",array($catFilterListId,'san-pham')) : array();
             ?>
+            <?php
+                $cat_get = [];
+                if(isset($_GET['is_cat'])){
+                    $cat_get = explode(",", $_GET['is_cat']);
+                }
+            ?>
             <?php if(count($catFilterList)) { ?>
             <?php
                 /* Gợi ý "dùng cho" theo TÊN LOẠI ĐÈN - đây là kiến thức phổ thông về công
@@ -182,19 +195,14 @@
                     'đèn ốp trần' => 'Hiên nhà, hành lang, mái che',
                 );
             ?>
-            <div class="product-pages__price mb20">
-                <div class="product-pages__price-aside">
+            <div class="product-pages__price mb20 pts-filter-group<?=$cat_get?' pts-filter-open':''?>">
+                <div class="product-pages__price-aside pts-filter-toggle" role="button" tabindex="0" aria-expanded="<?=$cat_get?'true':'false'?>">
                     <span class="product-pages__price-name">Loại đèn - dùng cho</span>
+                    <i class="fas fa-chevron-down pts-filter-chevron" aria-hidden="true"></i>
                 </div>
 
-                <div class="wrappers-aside__filter-scroll">
+                <div class="wrappers-aside__filter-scroll pts-filter-body">
                     <ul class="product-pages__price-nav">
-                        <?php
-                            $cat_get = [];
-                            if(isset($_GET['is_cat'])){
-                                $cat_get = explode(",", $_GET['is_cat']);
-                            }
-                        ?>
                         <?php foreach($catFilterList as $k => $v) {
                             $catUseHintKey = mb_strtolower(trim($v['name'.$lang]), 'UTF-8');
                             $catUseHint = isset($catUseHints[$catUseHintKey]) ? $catUseHints[$catUseHintKey] : '';
@@ -216,19 +224,22 @@
             </div>
             <?php } ?>
 
+            <?php
+                $price_get = [];
+                if(isset($_GET['is_price'])){
+                    $price_get = explode(",", $_GET['is_price']);
+                }
+            ?>
             <?php if(publicProductPricesVisible()) { ?>
-            <div class="product-pages__price mb20">
-                <div class="product-pages__price-aside">
+            <div class="product-pages__price mb20 pts-filter-group<?=$price_get?' pts-filter-open':''?>">
+                <div class="product-pages__price-aside pts-filter-toggle" role="button" tabindex="0" aria-expanded="<?=$price_get?'true':'false'?>">
                     <span class="product-pages__price-name">Mức giá</span>
+                    <i class="fas fa-chevron-down pts-filter-chevron" aria-hidden="true"></i>
                 </div>
 
-                <div class="wrappers-aside__filter-scroll">
+                <div class="wrappers-aside__filter-scroll pts-filter-body">
                     <ul class="product-pages__price-nav">
                         <?php
-                            $price_get = [];
-                            if(isset($_GET['is_price'])){
-                                $price_get = explode(",", $_GET['is_price']);
-                            }
                             $priceOptions = array();
                             foreach(productPriceFilterRanges() as $pOptKey => $pOptRange) $priceOptions[$pOptKey] = $pOptRange[2];
                         ?>

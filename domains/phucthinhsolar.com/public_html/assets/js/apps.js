@@ -958,6 +958,20 @@ $(document).ready(function(){
             $('#opensideBar-product').trigger('focus');
         }
     });
+    /* Accordion cho từng nhóm filter sidebar (Danh mục luôn mở, còn lại thu
+       gọn mặc định - xem class .pts-filter-open được render sẵn ở PHP). */
+    $(document).on('click', '.pts-filter-toggle', function () {
+        var $group = $(this).closest('.pts-filter-group');
+        var open = !$group.hasClass('pts-filter-open');
+        $group.toggleClass('pts-filter-open', open);
+        $(this).attr('aria-expanded', open ? 'true' : 'false');
+    });
+    $(document).on('keydown', '.pts-filter-toggle', function (event) {
+        if(event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            $(this).trigger('click');
+        }
+    });
     $(document).ready(function () {
         "use strict";
         var progressPath = document.querySelector('.progress-wrap path');
