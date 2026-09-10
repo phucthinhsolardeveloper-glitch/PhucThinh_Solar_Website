@@ -130,4 +130,24 @@
         <?php } ?>
     </section>
 
+    <section class="pts-home-closing-cta" id="inf_about_cta">
+        <div class="uk-container">
+            <div class="pts-closing-cta-box">
+                <div class="pts-closing-cta-main">
+                    <h2>Cần tư vấn giải pháp năng lượng mặt trời?</h2>
+                    <p>Đội ngũ Phúc Thịnh Solar khảo sát và tư vấn miễn phí, chọn đúng thiết bị cho nhu cầu của bạn.</p>
+                    <div class="pts-closing-cta-actions">
+                        <?php if(!empty($optsetting['hotline'])) { ?>
+                        <a href="tel:<?=preg_replace('/[^0-9]/','',$optsetting['hotline'])?>" class="pts-btn pts-btn-gold"><i class="fas fa-phone-alt" aria-hidden="true"></i> Gọi <?=$optsetting['hotline']?></a>
+                        <?php } ?>
+                        <?php if(!empty($optsetting['zalo'])) { ?>
+                        <a href="https://zalo.me/<?=$func->parsePhone($optsetting['zalo'])?>" target="_blank" class="pts-btn pts-btn-ghost">Zalo tư vấn</a>
+                        <?php } ?>
+                        <a href="#ptsContactModal" data-toggle="modal" data-target="#ptsContactModal" class="pts-btn pts-btn-ghost">Liên hệ đội ngũ tư vấn</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
 </div>
