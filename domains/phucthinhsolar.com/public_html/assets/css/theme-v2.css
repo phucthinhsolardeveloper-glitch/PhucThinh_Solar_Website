@@ -1800,8 +1800,13 @@ h4{font-size:21px!important;font-weight:800!important;}
     .top-utility-bar{font-size:12px!important;}
 }
 
-/* Màn hình rất hẹp: card sản phẩm 1 cột cho dễ đọc */
-@media(max-width:390px){
+/* Màn hình rất hẹp: card sản phẩm 1 cột cho dễ đọc.
+   Ngưỡng ban đầu 390px vô tình bắt trúng đa số điện thoại Android/iOS thật
+   (bề rộng CSS phổ biến ~360-390px), khiến máy thật hiện 1 cột trong khi
+   giả lập DevTools ở 412px lại hiện 2 cột (phát hiện 2026-09-10, bằng chứng
+   ảnh chụp thật Oppo Find X9 + Brave). Hạ xuống 320px để chỉ còn ảnh hưởng
+   nhóm máy rất nhỏ/cũ, không còn bắt nhầm máy phổ biến hiện nay. */
+@media(max-width:320px){
     .grid-product.grid-product-3{grid-template-columns:1fr!important;}
     .product-card .caption .name{min-height:0!important;}
 }
