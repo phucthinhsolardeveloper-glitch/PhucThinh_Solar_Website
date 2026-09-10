@@ -1650,7 +1650,14 @@ h4{font-size:21px!important;font-weight:800!important;}
 .pts-quote-modal .radio-user label{margin:0!important;color:#475569!important;font-weight:600!important;}
 .pts-quote-modal .newsletter-button input[type=submit]{width:100%!important;height:54px!important;margin:2px 0 0!important;border-radius:10px!important;background:var(--pts-gold)!important;color:var(--pts-navy)!important;font-size:16px!important;font-weight:900!important;}
 @media(max-width:576px){
-    .pts-lead-modal .modal-dialog{margin:10px!important;}
+    /* modal-dialog-centered (Bootstrap) canh giữa dialog theo chiều dọc bằng
+       flex + align-items:center; với form dài (đăng ký đại lý) cao hơn cả
+       viewport, phần TRÊN của dialog (tiêu đề, nút đóng) bị đẩy lên trên mép
+       màn hình - modal-body có overflow-y:auto riêng nhưng không cứu được vì
+       chưa cuộn tới nơi đã bị che mất phía trên. Ghim dialog lên đầu thay vì
+       canh giữa để luôn thấy trọn tiêu đề + nút đóng ngay khi mở (bằng chứng
+       ảnh chụp thật Oppo Find X9 2026-09-10). */
+    .pts-lead-modal .modal-dialog{margin:10px!important;align-items:flex-start!important;}
     .pts-lead-modal .modal-body{max-height:calc(100vh - 20px);padding:28px 18px 22px!important;}
     .pts-lead-modal button.close{top:9px;right:9px;width:34px;height:34px;}
     .pts-lead-modal .inf_default_form .title,.pts-lead-modal .title-pro-detail{font-size:22px!important;}
