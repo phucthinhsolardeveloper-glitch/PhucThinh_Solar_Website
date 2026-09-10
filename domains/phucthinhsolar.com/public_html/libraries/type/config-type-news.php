@@ -136,48 +136,17 @@
     $config['news'][$nametype]['thumb_list'] = '100x100x1';
     $config['news'][$nametype]['img_type_list'] = '.jpg|.gif|.png|.jpeg|.gif';
 
-    /* Hệ thống đại lý */
-    $nametype = "he-thong-dai-ly";
-    $config['news'][$nametype]['title_main'] = "Hệ thống đại lý";
-    $config['news'][$nametype]['phone'] = true;
-    $config['news'][$nametype]['address'] = true;
-    /* Cột ggmap đã tồn tại từ trước và footer.php đã dùng làm link "Xem bản đồ"
-       cho từng chi nhánh, nhưng form admin CHƯA BAO GIỜ bật field này ở bất kỳ
-       loại tin tức nào - không có cách nào sửa link qua admin. Bật ở đây để
-       admin tự sửa được, không cần nhờ sửa DB tay nữa (audit 2026-09-10). */
-    $config['news'][$nametype]['ggmap'] = true;
-    $config['news'][$nametype]['email'] = true;
-    $config['news'][$nametype]['dropdown'] = false;
-    $config['news'][$nametype]['list'] = false;
-    $config['news'][$nametype]['cat'] = false;
-    $config['news'][$nametype]['item'] = false;
-    $config['news'][$nametype]['sub'] = false;
-    $config['news'][$nametype]['tags'] = false;
-    $config['news'][$nametype]['view'] = false;
-    $config['news'][$nametype]['copy'] = false;
-    $config['news'][$nametype]['copy_image'] = false;
-    $config['news'][$nametype]['comment'] = false;
-    $config['news'][$nametype]['slug'] = false;
-    $config['news'][$nametype]['check'] = array("hienthi" => "Hiển thị");
-    $config['news'][$nametype]['images'] = false;
-    $config['news'][$nametype]['show_images'] = false;
-    $config['news'][$nametype]['desc'] = false;
-    $config['news'][$nametype]['content'] = false;
-    $config['news'][$nametype]['content_cke'] = false;
-    $config['news'][$nametype]['seo'] = false;
-    $config['news'][$nametype]['width'] = 397;
-    $config['news'][$nametype]['height'] = 340;
-    $config['news'][$nametype]['thumb'] = '100x100x1';
-    $config['news'][$nametype]['img_type'] = '.jpg|.gif|.png|.jpeg|.gif';
-
-    /* Hệ thống cửa hàng */
+    /* Hệ thống cửa hàng - gộp với "Hệ thống đại lý" cũ (2026-09-10): footer và
+       trang Liên hệ giờ dùng chung 1 danh sách chi nhánh thay vì 2 bản riêng
+       hay lệch nhau. */
     $nametype = "he-thong-cua-hang";
     $config['news'][$nametype]['title_main'] = "Hệ thống cửa hàng";
-    $config['news'][$nametype]['phone'] = false;
+    $config['news'][$nametype]['phone'] = true;
     $config['news'][$nametype]['address'] = true;
-    $config['news'][$nametype]['email'] = false;
+    $config['news'][$nametype]['email'] = true;
     $config['news'][$nametype]['dropdown'] = false;
     $config['news'][$nametype]['map_iframe'] = true;
+    $config['news'][$nametype]['ggmap'] = true;
     $config['news'][$nametype]['list'] = false;
     $config['news'][$nametype]['cat'] = false;
     $config['news'][$nametype]['item'] = false;
