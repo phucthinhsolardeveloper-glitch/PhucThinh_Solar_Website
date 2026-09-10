@@ -89,7 +89,7 @@
                             </div>
                         </div>*/?>
                         <div class="item col-md-5">
-                            <p class="footer-title">Hướng dẫn</p>
+                            <p class="footer-title">Chính sách &amp; Hỗ trợ khách hàng</p>
                             <div class="CRcont_nav_mobile">
                                 <nav class="footer-link">
                                     <div class="menu-policy-menu-container">
