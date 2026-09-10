@@ -66,7 +66,7 @@
 
 		if(empty($id))
 		{
-			$func->transfer("Không nhận được dữ liệu", "index.php?com=pushOnesignal&act=man&p=".$curPage, false);
+			$func->transfer("Không nhận được dữ liệu", adminReturnUrl("index.php?com=pushOnesignal&act=man&p=".$curPage), false);
 		}
 		else
 		{
@@ -74,7 +74,7 @@
 
 			if(empty($item))
 			{
-				$func->transfer("Dữ liệu không có thực", "index.php?com=pushOnesignal&act=man&p=".$curPage, false);
+				$func->transfer("Dữ liệu không có thực", adminReturnUrl("index.php?com=pushOnesignal&act=man&p=".$curPage), false);
 			}
 		}
 	}
@@ -87,7 +87,7 @@
 		/* Check post */
 		if(empty($_POST))
 		{
-			$func->transfer("Không nhận được dữ liệu", "index.php?com=pushOnesignal&act=man&p=".$curPage, false);
+			$func->transfer("Không nhận được dữ liệu", adminReturnUrl("index.php?com=pushOnesignal&act=man&p=".$curPage), false);
 		}
 
 		/* Post dữ liệu */
@@ -183,11 +183,11 @@
 					}
 				}
 
-				$func->transfer("Cập nhật dữ liệu thành công", "index.php?com=pushOnesignal&act=man&p=".$curPage);
+				$func->transfer("Cập nhật dữ liệu thành công", adminReturnUrl("index.php?com=pushOnesignal&act=man&p=".$curPage));
 			}
 			else
 			{
-				$func->transfer("Cập nhật dữ liệu bị lỗi", "index.php?com=pushOnesignal&act=man&p=".$curPage, false);
+				$func->transfer("Cập nhật dữ liệu bị lỗi", adminReturnUrl("index.php?com=pushOnesignal&act=man&p=".$curPage), false);
 			}
 		}
 		else
@@ -211,11 +211,11 @@
 					}
 				}
 
-				$func->transfer("Lưu dữ liệu thành công", "index.php?com=pushOnesignal&act=man&p=".$curPage);
+				$func->transfer("Lưu dữ liệu thành công", adminReturnUrl("index.php?com=pushOnesignal&act=man&p=".$curPage));
 			}
 			else
 			{
-				$func->transfer("Lưu dữ liệu bị lỗi", "index.php?com=pushOnesignal&act=man&p=".$curPage, false);
+				$func->transfer("Lưu dữ liệu bị lỗi", adminReturnUrl("index.php?com=pushOnesignal&act=man&p=".$curPage), false);
 			}
 		}
 	}
@@ -235,11 +235,11 @@
 			{
 				$func->deleteFile(UPLOAD_SYNC.$row['photo']);
 				$d->rawQuery("delete from #_pushonesignal where id = ?",array($id));
-				$func->transfer("Xóa dữ liệu thành công","index.php?com=pushOnesignal&act=man&p=".$curPage);
+				$func->transfer("Xóa dữ liệu thành công",adminReturnUrl("index.php?com=pushOnesignal&act=man&p=".$curPage));
 			}
 			else
 			{
-				$func->transfer("Xóa dữ liệu bị lỗi","index.php?com=pushOnesignal&act=man&p=".$curPage, false);
+				$func->transfer("Xóa dữ liệu bị lỗi",adminReturnUrl("index.php?com=pushOnesignal&act=man&p=".$curPage), false);
 			}
 		}
 		elseif(isset($_GET['listid']))
@@ -258,11 +258,11 @@
 				}
 			}
 
-			$func->transfer("Xóa dữ liệu thành công","index.php?com=pushOnesignal&act=man&p=".$curPage);
+			$func->transfer("Xóa dữ liệu thành công",adminReturnUrl("index.php?com=pushOnesignal&act=man&p=".$curPage));
 		}
 		else
 		{
-			$func->transfer("Không nhận được dữ liệu","index.php?com=pushOnesignal&act=man&p=".$curPage, false);
+			$func->transfer("Không nhận được dữ liệu",adminReturnUrl("index.php?com=pushOnesignal&act=man&p=".$curPage), false);
 		}
 	}
 
@@ -318,11 +318,11 @@
 		{
 			$row = $d->rawQueryOne("select id,photo,name,description,link from #_pushonesignal where id = ? limit 0,1",array($id));
 			sendMessageOnesignal($row['name'],$row['description'],$row['link'],$row['photo']);
-			$func->transfer("Gửi thông báo thành công", "index.php?com=pushOnesignal&act=man&p=".$curPage);	
+			$func->transfer("Gửi thông báo thành công", adminReturnUrl("index.php?com=pushOnesignal&act=man&p=".$curPage));	
 		}
 		else
 		{
-			$func->transfer("Không nhận được dữ liệu", "index.php?com=pushOnesignal&act=man&p=".$curPage, false);	
+			$func->transfer("Không nhận được dữ liệu", adminReturnUrl("index.php?com=pushOnesignal&act=man&p=".$curPage), false);	
 		}
 	}
 ?>

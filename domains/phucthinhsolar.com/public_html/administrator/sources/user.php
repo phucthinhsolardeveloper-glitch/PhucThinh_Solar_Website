@@ -349,7 +349,7 @@
 
 		if(empty($id))
 		{
-			$func->transfer("Không nhận được dữ liệu", "index.php?com=user&act=man_admin&p=".$curPage, false);
+			$func->transfer("Không nhận được dữ liệu", adminReturnUrl("index.php?com=user&act=man_admin&p=".$curPage), false);
 		}
 		else
 		{
@@ -357,7 +357,7 @@
 
 			if(empty($item))
 			{
-				$func->transfer("Dữ liệu không có thực", "index.php?com=user&act=man_admin&p=".$curPage, false);
+				$func->transfer("Dữ liệu không có thực", adminReturnUrl("index.php?com=user&act=man_admin&p=".$curPage), false);
 			}
 		}
 	}
@@ -610,7 +610,7 @@
 		/* Check post */
 		if(empty($_POST))
 		{
-			$func->transfer("Không nhận được dữ liệu", "index.php?com=user&act=man_admin&p=".$curPage, false);
+			$func->transfer("Không nhận được dữ liệu", adminReturnUrl("index.php?com=user&act=man_admin&p=".$curPage), false);
 		}
 
 		/* Post dữ liệu */
@@ -774,7 +774,7 @@
 
 				if(!empty($row))
 				{
-					$func->transfer("Bạn không có quyền trên tài khoản này. Mọi thắc mắc xin liên hệ quản trị website", "index.php?com=user&act=man_admin&p=".$curPage, false);
+					$func->transfer("Bạn không có quyền trên tài khoản này. Mọi thắc mắc xin liên hệ quản trị website", adminReturnUrl("index.php?com=user&act=man_admin&p=".$curPage), false);
 				}
 			}
 			
@@ -792,11 +792,11 @@
 			$d->where('id', $id);
 			if($d->update('user',$data))
 			{
-				$func->transfer("Cập nhật dữ liệu thành công", "index.php?com=user&act=man_admin&p=".$curPage);
+				$func->transfer("Cập nhật dữ liệu thành công", adminReturnUrl("index.php?com=user&act=man_admin&p=".$curPage));
 			}
 			else
 			{
-				$func->transfer("Cập nhật dữ liệu bị lỗi", "index.php?com=user&act=man_admin&p=".$curPage, false);
+				$func->transfer("Cập nhật dữ liệu bị lỗi", adminReturnUrl("index.php?com=user&act=man_admin&p=".$curPage), false);
 			}
 		}
 		else
@@ -808,11 +808,11 @@
 			
 			if($d->insert('user',$data))
 			{
-				$func->transfer("Lưu dữ liệu thành công", "index.php?com=user&act=man_admin&p=".$curPage);
+				$func->transfer("Lưu dữ liệu thành công", adminReturnUrl("index.php?com=user&act=man_admin&p=".$curPage));
 			}
 			else
 			{
-				$func->transfer("Lưu dữ liệu bị lỗi", "index.php?com=user&act=man_admin", false);
+				$func->transfer("Lưu dữ liệu bị lỗi", adminReturnUrl("index.php?com=user&act=man_admin"), false);
 			}
 		}
 	}
@@ -831,11 +831,11 @@
 			if(!empty($row['id']))
 			{
 				$d->rawQuery("delete from #_user where id = ? and role = 1",array($id));
-				$func->transfer("Xóa dữ liệu thành công", "index.php?com=user&act=man_admin&p=".$curPage);
+				$func->transfer("Xóa dữ liệu thành công", adminReturnUrl("index.php?com=user&act=man_admin&p=".$curPage));
 			}
 			else
 			{
-				$func->transfer("Xóa dữ liệu bị lỗi", "index.php?com=user&act=man_admin&p=".$curPage, false);
+				$func->transfer("Xóa dữ liệu bị lỗi", adminReturnUrl("index.php?com=user&act=man_admin&p=".$curPage), false);
 			}
 		}
 		elseif(isset($_GET['listid']))
@@ -853,11 +853,11 @@
 				}
 			}
 
-			$func->transfer("Xóa dữ liệu thành công","index.php?com=user&act=man_admin&p=".$curPage);
+			$func->transfer("Xóa dữ liệu thành công",adminReturnUrl("index.php?com=user&act=man_admin&p=".$curPage));
 		}
 		else
 		{
-			$func->transfer("Không nhận được dữ liệu","index.php?com=user&act=man_admin&p=".$curPage, false);
+			$func->transfer("Không nhận được dữ liệu",adminReturnUrl("index.php?com=user&act=man_admin&p=".$curPage), false);
 		}
 	}
 
@@ -913,7 +913,7 @@
 
 		if(empty($id))
 		{
-			$func->transfer("Không nhận được dữ liệu", "index.php?com=user&act=man_member&p=".$curPage, false);
+			$func->transfer("Không nhận được dữ liệu", adminReturnUrl("index.php?com=user&act=man_member&p=".$curPage), false);
 		}
 		else
 		{
@@ -921,7 +921,7 @@
 
 			if(empty($item))
 			{
-				$func->transfer("Dữ liệu không có thực", "index.php?com=user&act=man_member&p=".$curPage, false);
+				$func->transfer("Dữ liệu không có thực", adminReturnUrl("index.php?com=user&act=man_member&p=".$curPage), false);
 			}
 		}
 	}
@@ -934,7 +934,7 @@
 		/* Check post */
 		if(empty($_POST))
 		{
-			$func->transfer("Không nhận được dữ liệu", "index.php?com=user&act=man_member&p=".$curPage, false);
+			$func->transfer("Không nhận được dữ liệu", adminReturnUrl("index.php?com=user&act=man_member&p=".$curPage), false);
 		}
 
 		/* Post dữ liệu */
@@ -1087,7 +1087,7 @@
 
 				if(!empty($row))
 				{
-					$func->transfer("Bạn không có quyền trên tài khoản này. Mọi thắc mắc xin liên hệ quản trị website", "index.php?com=user&act=man_member&p=".$curPage, false);
+					$func->transfer("Bạn không có quyền trên tài khoản này. Mọi thắc mắc xin liên hệ quản trị website", adminReturnUrl("index.php?com=user&act=man_member&p=".$curPage), false);
 				}
 			}
 			
@@ -1105,11 +1105,11 @@
 			$d->where('id', $id);
 			if($d->update('member',$data))
 			{
-				$func->transfer("Cập nhật dữ liệu thành công", "index.php?com=user&act=man_member&p=".$curPage);
+				$func->transfer("Cập nhật dữ liệu thành công", adminReturnUrl("index.php?com=user&act=man_member&p=".$curPage));
 			}
 			else
 			{
-				$func->transfer("Cập nhật dữ liệu bị lỗi", "index.php?com=user&act=man_member&p=".$curPage, false);
+				$func->transfer("Cập nhật dữ liệu bị lỗi", adminReturnUrl("index.php?com=user&act=man_member&p=".$curPage), false);
 			}
 		}
 		else
@@ -1121,11 +1121,11 @@
 			
 			if($d->insert('member',$data))
 			{
-				$func->transfer("Lưu dữ liệu thành công", "index.php?com=user&act=man_member&p=".$curPage);
+				$func->transfer("Lưu dữ liệu thành công", adminReturnUrl("index.php?com=user&act=man_member&p=".$curPage));
 			}
 			else
 			{
-				$func->transfer("Lưu dữ liệu bị lỗi", "index.php?com=user&act=man_member&p=".$curPage, false);
+				$func->transfer("Lưu dữ liệu bị lỗi", adminReturnUrl("index.php?com=user&act=man_member&p=".$curPage), false);
 			}
 		}
 	}
@@ -1144,11 +1144,11 @@
 			if(!empty($row['id']))
 			{
 				$d->rawQuery("delete from #_member where id = ?",array($id));
-				$func->transfer("Xóa dữ liệu thành công", "index.php?com=user&act=man_member&p=".$curPage);
+				$func->transfer("Xóa dữ liệu thành công", adminReturnUrl("index.php?com=user&act=man_member&p=".$curPage));
 			}
 			else
 			{
-				$func->transfer("Xóa dữ liệu bị lỗi", "index.php?com=user&act=man_member&p=".$curPage, false);
+				$func->transfer("Xóa dữ liệu bị lỗi", adminReturnUrl("index.php?com=user&act=man_member&p=".$curPage), false);
 			}
 		}
 		elseif(isset($_GET['listid']))
@@ -1166,11 +1166,11 @@
 				}
 			}
 
-			$func->transfer("Xóa dữ liệu thành công","index.php?com=user&act=man_member&p=".$curPage);
+			$func->transfer("Xóa dữ liệu thành công",adminReturnUrl("index.php?com=user&act=man_member&p=".$curPage));
 		}
 		else
 		{
-			$func->transfer("Không nhận được dữ liệu","index.php?com=user&act=man_member&p=".$curPage, false);
+			$func->transfer("Không nhận được dữ liệu",adminReturnUrl("index.php?com=user&act=man_member&p=".$curPage), false);
 		}
 	}
 ?>

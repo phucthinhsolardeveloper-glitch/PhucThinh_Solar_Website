@@ -4,6 +4,7 @@
 	else if($act=="copy")  $labelAct = "Sao chép";
 
 	$linkMan = "index.php?com=news&act=man&type=".$type;
+	$returnUrl = adminReturnUrl($linkMan);
 	if($act=='add') $linkFilter = "index.php?com=news&act=add&type=".$type;
 	else if($act=='edit') $linkFilter = "index.php?com=news&act=edit&type=".$type."&id=".$id;
     if($act=="copy") $linkSave = "index.php?com=news&act=save_copy&type=".$type;
@@ -43,6 +44,7 @@
         <div class="row">
             <ol class="breadcrumb float-sm-left">
                 <li class="breadcrumb-item"><a href="index.php" title="Bảng điều khiển">Bảng điều khiển</a></li>
+                <li class="breadcrumb-item"><a href="<?=htmlspecialchars($returnUrl, ENT_QUOTES, 'UTF-8')?>" title="Quản lý <?=$config['news'][$type]['title_main']?>">Quản lý <?=$config['news'][$type]['title_main']?></a></li>
                 <li class="breadcrumb-item active"><?=$labelAct?> <?=$config['news'][$type]['title_main']?></li>
             </ol>
         </div>
@@ -53,11 +55,12 @@
 <section class="content">
     <form class="validation-form" novalidate method="post" action="<?=$linkSave?>" enctype="multipart/form-data">
         <?=adminCsrfField()?>
+        <input type="hidden" name="data[_return]" value="<?=htmlspecialchars($returnUrl, ENT_QUOTES, 'UTF-8')?>">
         <div class="card-footer text-sm sticky-top">
             <button type="submit" class="btn btn-sm bg-gradient-primary submit-check" disabled><i class="far fa-save mr-2"></i>Lưu</button>
             <button type="submit" class="btn btn-sm bg-gradient-success submit-check" name="save-here" disabled><i class="far fa-save mr-2"></i>Lưu tại trang</button>
             <button type="reset" class="btn btn-sm bg-gradient-secondary"><i class="fas fa-redo mr-2"></i>Làm lại</button>
-            <a class="btn btn-sm bg-gradient-danger" href="<?=$linkMan?>" title="Thoát"><i class="fas fa-sign-out-alt mr-2"></i>Thoát</a>
+            <a class="btn btn-sm bg-gradient-danger" href="<?=htmlspecialchars($returnUrl, ENT_QUOTES, 'UTF-8')?>" title="Thoát"><i class="fas fa-sign-out-alt mr-2"></i>Thoát</a>
         </div>
 
         <?=$flash->getMessages('admin')?>
@@ -394,7 +397,7 @@
             <button type="submit" class="btn btn-sm bg-gradient-primary submit-check" disabled><i class="far fa-save mr-2"></i>Lưu</button>
             <button type="submit" class="btn btn-sm bg-gradient-success submit-check" name="save-here" disabled><i class="far fa-save mr-2"></i>Lưu tại trang</button>
             <button type="reset" class="btn btn-sm bg-gradient-secondary"><i class="fas fa-redo mr-2"></i>Làm lại</button>
-            <a class="btn btn-sm bg-gradient-danger" href="<?=$linkMan?>" title="Thoát"><i class="fas fa-sign-out-alt mr-2"></i>Thoát</a>
+            <a class="btn btn-sm bg-gradient-danger" href="<?=htmlspecialchars($returnUrl, ENT_QUOTES, 'UTF-8')?>" title="Thoát"><i class="fas fa-sign-out-alt mr-2"></i>Thoát</a>
             <input type="hidden" name="id" value="<?=(isset($item['id']) && $item['id'] > 0) ? $item['id'] : ''?>">
         </div>
     </form>

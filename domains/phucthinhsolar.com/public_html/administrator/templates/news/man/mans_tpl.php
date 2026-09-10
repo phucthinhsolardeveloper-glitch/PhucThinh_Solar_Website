@@ -1,9 +1,10 @@
 <?php 
 	$linkView = $configBase;
 	$linkMan = $linkFilter = "index.php?com=news&act=man&type=".$type;
-	$linkAdd = "index.php?com=news&act=add&type=".$type;
-    $linkCopy = "index.php?com=news&act=copy&type=".$type;
-    $linkEdit = "index.php?com=news&act=edit&type=".$type;
+	$returnParam = '&_return='.urlencode($_SERVER['REQUEST_URI']);
+	$linkAdd = "index.php?com=news&act=add&type=".$type.$returnParam;
+    $linkCopy = "index.php?com=news&act=copy&type=".$type.$returnParam;
+    $linkEdit = "index.php?com=news&act=edit&type=".$type.$returnParam;
     $linkDelete = "index.php?com=news&act=delete&type=".$type;
 
     /* Ẩn nút mà tài khoản này không có quyền dùng, thay vì để họ bấm rồi bị

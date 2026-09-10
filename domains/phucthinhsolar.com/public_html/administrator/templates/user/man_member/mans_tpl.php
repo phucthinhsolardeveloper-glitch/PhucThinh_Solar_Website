@@ -1,7 +1,8 @@
 <?php
 	$linkMan = "index.php?com=user&act=man_member";
-    $linkAdd = "index.php?com=user&act=add_member";
-	$linkEdit = "index.php?com=user&act=edit_member";
+	$returnParam = '&_return='.urlencode($_SERVER['REQUEST_URI']);
+    $linkAdd = "index.php?com=user&act=add_member".$returnParam;
+	$linkEdit = "index.php?com=user&act=edit_member".$returnParam;
 	$linkDelete = "index.php?com=user&act=delete_member";
 ?>
 

@@ -1,7 +1,8 @@
 <?php
     $linkMan = "index.php?com=pushOnesignal&act=man";
-    $linkAdd = "index.php?com=pushOnesignal&act=add";
-    $linkEdit = "index.php?com=pushOnesignal&act=edit";
+    $returnParam = '&_return='.urlencode($_SERVER['REQUEST_URI']);
+    $linkAdd = "index.php?com=pushOnesignal&act=add".$returnParam;
+    $linkEdit = "index.php?com=pushOnesignal&act=edit".$returnParam;
     $linkDelete = "index.php?com=pushOnesignal&act=delete";
 ?>
 <!-- Content Header -->

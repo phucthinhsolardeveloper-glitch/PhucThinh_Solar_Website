@@ -5,8 +5,8 @@
 
 	$linkMan = "index.php?com=product&act=man&type=".$type;
 	/* Quay lại ĐÚNG trang danh sách (kèm trang/lọc) đã mở link Thêm/Sửa này,
-	   không phải danh sách trắng trang 1 - xem productAdminReturnUrl(). */
-	$returnUrl = productAdminReturnUrl($linkMan);
+	   không phải danh sách trắng trang 1 - xem adminReturnUrl(). */
+	$returnUrl = adminReturnUrl($linkMan);
 	if($act=='add') $linkFilter = "index.php?com=product&act=add&type=".$type;
 	else if($act=='edit') $linkFilter = "index.php?com=product&act=edit&type=".$type."&id=".$id;
     if($act=="copy") $linkSave = "index.php?com=product&act=save_copy&type=".$type;

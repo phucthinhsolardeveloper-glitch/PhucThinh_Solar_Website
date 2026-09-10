@@ -123,7 +123,7 @@
 
 		if(empty($id))
 		{
-			$func->transfer("Không nhận được dữ liệu", "index.php?com=places&act=man_city&p=".$curPage.$strUrl, false);
+			$func->transfer("Không nhận được dữ liệu", adminReturnUrl("index.php?com=places&act=man_city&p=".$curPage.$strUrl), false);
 		}
 		else
 		{
@@ -131,7 +131,7 @@
 
 			if(empty($item))
 			{
-				$func->transfer("Dữ liệu không có thực", "index.php?com=places&act=man_city&p=".$curPage.$strUrl, false);
+				$func->transfer("Dữ liệu không có thực", adminReturnUrl("index.php?com=places&act=man_city&p=".$curPage.$strUrl), false);
 			}
 		}
 	}
@@ -144,7 +144,7 @@
 		/* Check post */
 		if(empty($_POST))
 		{
-			$func->transfer("Không nhận được dữ liệu", "index.php?com=places&act=man_city&p=".$curPage.$strUrl, false);
+			$func->transfer("Không nhận được dữ liệu", adminReturnUrl("index.php?com=places&act=man_city&p=".$curPage.$strUrl), false);
 		}
 
 		/* Post dữ liệu */
@@ -216,11 +216,11 @@
 			$d->where('id', $id);
 			if($d->update('city',$data))
 			{
-				$func->transfer("Cập nhật dữ liệu thành công", "index.php?com=places&act=man_city&p=".$curPage.$strUrl);
+				$func->transfer("Cập nhật dữ liệu thành công", adminReturnUrl("index.php?com=places&act=man_city&p=".$curPage.$strUrl));
 			}
 			else
 			{
-				$func->transfer("Cập nhật dữ liệu bị lỗi", "index.php?com=places&act=man_city&p=".$curPage.$strUrl, false);
+				$func->transfer("Cập nhật dữ liệu bị lỗi", adminReturnUrl("index.php?com=places&act=man_city&p=".$curPage.$strUrl), false);
 			}
 		}
 		else
@@ -229,11 +229,11 @@
 			
 			if($d->insert('city',$data))
 			{
-				$func->transfer("Lưu dữ liệu thành công", "index.php?com=places&act=man_city&p=".$curPage.$strUrl);
+				$func->transfer("Lưu dữ liệu thành công", adminReturnUrl("index.php?com=places&act=man_city&p=".$curPage.$strUrl));
 			}
 			else
 			{
-				$func->transfer("Lưu dữ liệu bị lỗi", "index.php?com=places&act=man_city&p=".$curPage.$strUrl, false);
+				$func->transfer("Lưu dữ liệu bị lỗi", adminReturnUrl("index.php?com=places&act=man_city&p=".$curPage.$strUrl), false);
 			}
 		}
 	}
@@ -252,11 +252,11 @@
 			if(!empty($row))
 			{
 				$d->rawQuery("delete from #_city where id = ?",array($id));
-				$func->transfer("Xóa dữ liệu thành công", "index.php?com=places&act=man_city&p=".$curPage.$strUrl);
+				$func->transfer("Xóa dữ liệu thành công", adminReturnUrl("index.php?com=places&act=man_city&p=".$curPage.$strUrl));
 			}
 			else
 			{
-				$func->transfer("Xóa dữ liệu bị lỗi", "index.php?com=places&act=man_city&p=".$curPage.$strUrl, false);
+				$func->transfer("Xóa dữ liệu bị lỗi", adminReturnUrl("index.php?com=places&act=man_city&p=".$curPage.$strUrl), false);
 			}
 		}
 		elseif(isset($_GET['listid']))
@@ -271,11 +271,11 @@
 				if(!empty($row)) $d->rawQuery("delete from #_city where id = ?",array($id));
 			}
 
-			$func->transfer("Xóa dữ liệu thành công", "index.php?com=places&act=man_city&p=".$curPage.$strUrl);
+			$func->transfer("Xóa dữ liệu thành công", adminReturnUrl("index.php?com=places&act=man_city&p=".$curPage.$strUrl));
 		}
 		else
 		{
-			$func->transfer("Không nhận được dữ liệu", "index.php?com=places&act=man_city&p=".$curPage.$strUrl, false);
+			$func->transfer("Không nhận được dữ liệu", adminReturnUrl("index.php?com=places&act=man_city&p=".$curPage.$strUrl), false);
 		}
 	}
 
@@ -317,7 +317,7 @@
 
 		if(empty($id))
 		{
-			$func->transfer("Không nhận được dữ liệu", "index.php?com=places&act=man_district&p=".$curPage.$strUrl, false);
+			$func->transfer("Không nhận được dữ liệu", adminReturnUrl("index.php?com=places&act=man_district&p=".$curPage.$strUrl), false);
 		}
 		else
 		{
@@ -325,7 +325,7 @@
 
 			if(empty($item))
 			{
-				$func->transfer("Dữ liệu không có thực", "index.php?com=places&act=man_district&p=".$curPage.$strUrl, false);
+				$func->transfer("Dữ liệu không có thực", adminReturnUrl("index.php?com=places&act=man_district&p=".$curPage.$strUrl), false);
 			}
 		}
 	}
@@ -338,7 +338,7 @@
 		/* check post */
 		if(empty($_POST))
 		{
-			$func->transfer("Không nhận được dữ liệu", "index.php?com=places&act=man_district&p=".$curPage.$strUrl, false);
+			$func->transfer("Không nhận được dữ liệu", adminReturnUrl("index.php?com=places&act=man_district&p=".$curPage.$strUrl), false);
 		}
 
 		/* Post dữ liệu */
@@ -415,11 +415,11 @@
 			$d->where('id', $id);
 			if($d->update('district',$data))
 			{
-				$func->transfer("Cập nhật dữ liệu thành công", "index.php?com=places&act=man_district&p=".$curPage.$strUrl);
+				$func->transfer("Cập nhật dữ liệu thành công", adminReturnUrl("index.php?com=places&act=man_district&p=".$curPage.$strUrl));
 			}
 			else
 			{
-				$func->transfer("Cập nhật dữ liệu bị lỗi", "index.php?com=places&act=man_district&p=".$curPage.$strUrl, false);
+				$func->transfer("Cập nhật dữ liệu bị lỗi", adminReturnUrl("index.php?com=places&act=man_district&p=".$curPage.$strUrl), false);
 			}
 		}
 		else
@@ -428,11 +428,11 @@
 			
 			if($d->insert('district',$data))
 			{
-				$func->transfer("Lưu dữ liệu thành công", "index.php?com=places&act=man_district&p=".$curPage.$strUrl);
+				$func->transfer("Lưu dữ liệu thành công", adminReturnUrl("index.php?com=places&act=man_district&p=".$curPage.$strUrl));
 			}
 			else
 			{
-				$func->transfer("Lưu dữ liệu bị lỗi", "index.php?com=places&act=man_district&p=".$curPage.$strUrl, false);
+				$func->transfer("Lưu dữ liệu bị lỗi", adminReturnUrl("index.php?com=places&act=man_district&p=".$curPage.$strUrl), false);
 			}
 		}
 	}
@@ -451,11 +451,11 @@
 			if(!empty($row))
 			{
 				$d->rawQuery("delete from #_district where id = ?",array($id));
-				$func->transfer("Xóa dữ liệu thành công", "index.php?com=places&act=man_district&p=".$curPage.$strUrl);
+				$func->transfer("Xóa dữ liệu thành công", adminReturnUrl("index.php?com=places&act=man_district&p=".$curPage.$strUrl));
 			}
 			else
 			{
-				$func->transfer("Xóa dữ liệu bị lỗi", "index.php?com=places&act=man_district&p=".$curPage.$strUrl, false);
+				$func->transfer("Xóa dữ liệu bị lỗi", adminReturnUrl("index.php?com=places&act=man_district&p=".$curPage.$strUrl), false);
 			}
 		}
 		elseif(isset($_GET['listid']))
@@ -470,11 +470,11 @@
 				if(!empty($row)) $d->rawQuery("delete from #_district where id = ?",array($id));
 			}
 
-			$func->transfer("Xóa dữ liệu thành công", "index.php?com=places&act=man_district&p=".$curPage.$strUrl);
+			$func->transfer("Xóa dữ liệu thành công", adminReturnUrl("index.php?com=places&act=man_district&p=".$curPage.$strUrl));
 		}
 		else
 		{
-			$func->transfer("Không nhận được dữ liệu", "index.php?com=places&act=man_district&p=".$curPage.$strUrl, false);
+			$func->transfer("Không nhận được dữ liệu", adminReturnUrl("index.php?com=places&act=man_district&p=".$curPage.$strUrl), false);
 		}
 	}
 
@@ -518,7 +518,7 @@
 
 		if(empty($id))
 		{
-			$func->transfer("Không nhận được dữ liệu", "index.php?com=places&act=man_ward&p=".$curPage.$strUrl, false);
+			$func->transfer("Không nhận được dữ liệu", adminReturnUrl("index.php?com=places&act=man_ward&p=".$curPage.$strUrl), false);
 		}
 		else
 		{
@@ -526,7 +526,7 @@
 
 			if(empty($item))
 			{
-				$func->transfer("Dữ liệu không có thực", "index.php?com=places&act=man_ward&p=".$curPage.$strUrl, false);
+				$func->transfer("Dữ liệu không có thực", adminReturnUrl("index.php?com=places&act=man_ward&p=".$curPage.$strUrl), false);
 			}
 		}
 	}
@@ -539,7 +539,7 @@
 		/* Check post */
 		if(empty($_POST))
 		{
-			$func->transfer("Không nhận được dữ liệu", "index.php?com=places&act=man_ward&p=".$curPage.$strUrl, false);
+			$func->transfer("Không nhận được dữ liệu", adminReturnUrl("index.php?com=places&act=man_ward&p=".$curPage.$strUrl), false);
 		}
 
 		/* Post dữ liệu */
@@ -627,11 +627,11 @@
 			$d->where('id', $id);
 			if($d->update('ward',$data))
 			{
-				$func->transfer("Cập nhật dữ liệu thành công", "index.php?com=places&act=man_ward&p=".$curPage.$strUrl);
+				$func->transfer("Cập nhật dữ liệu thành công", adminReturnUrl("index.php?com=places&act=man_ward&p=".$curPage.$strUrl));
 			}
 			else
 			{
-				$func->transfer("Cập nhật dữ liệu bị lỗi", "index.php?com=places&act=man_ward&p=".$curPage.$strUrl, false);
+				$func->transfer("Cập nhật dữ liệu bị lỗi", adminReturnUrl("index.php?com=places&act=man_ward&p=".$curPage.$strUrl), false);
 			}
 		}
 		else
@@ -640,11 +640,11 @@
 			
 			if($d->insert('ward',$data))
 			{
-				$func->transfer("Lưu dữ liệu thành công", "index.php?com=places&act=man_ward&p=".$curPage.$strUrl);
+				$func->transfer("Lưu dữ liệu thành công", adminReturnUrl("index.php?com=places&act=man_ward&p=".$curPage.$strUrl));
 			}
 			else
 			{
-				$func->transfer("Lưu dữ liệu bị lỗi", "index.php?com=places&act=man_ward&p=".$curPage.$strUrl, false);
+				$func->transfer("Lưu dữ liệu bị lỗi", adminReturnUrl("index.php?com=places&act=man_ward&p=".$curPage.$strUrl), false);
 			}
 		}
 	}
@@ -663,11 +663,11 @@
 			if(!empty($row))
 			{
 				$d->rawQuery("delete from #_ward where id = ?",array($id));
-				$func->transfer("Xóa dữ liệu thành công", "index.php?com=places&act=man_ward&p=".$curPage.$strUrl);
+				$func->transfer("Xóa dữ liệu thành công", adminReturnUrl("index.php?com=places&act=man_ward&p=".$curPage.$strUrl));
 			}
 			else
 			{
-				$func->transfer("Xóa dữ liệu bị lỗi", "index.php?com=places&act=man_ward&p=".$curPage.$strUrl, false);
+				$func->transfer("Xóa dữ liệu bị lỗi", adminReturnUrl("index.php?com=places&act=man_ward&p=".$curPage.$strUrl), false);
 			}
 		}
 		elseif(isset($_GET['listid']))
@@ -682,11 +682,11 @@
 				if(!empty($row)) $d->rawQuery("delete from #_ward where id = ?",array($id));
 			}
 
-			$func->transfer("Xóa dữ liệu thành công", "index.php?com=places&act=man_ward&p=".$curPage.$strUrl);
+			$func->transfer("Xóa dữ liệu thành công", adminReturnUrl("index.php?com=places&act=man_ward&p=".$curPage.$strUrl));
 		}
 		else
 		{
-			$func->transfer("Không nhận được dữ liệu", "index.php?com=places&act=man_ward&p=".$curPage.$strUrl, false);
+			$func->transfer("Không nhận được dữ liệu", adminReturnUrl("index.php?com=places&act=man_ward&p=".$curPage.$strUrl), false);
 		}
 	}
 ?>

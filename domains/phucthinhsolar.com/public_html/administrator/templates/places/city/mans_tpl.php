@@ -1,7 +1,8 @@
 <?php
 	$linkMan = "index.php?com=places&act=man_city";
-    $linkAdd = "index.php?com=places&act=add_city";
-	$linkEdit = "index.php?com=places&act=edit_city";
+	$returnParam = '&_return='.urlencode($_SERVER['REQUEST_URI']);
+    $linkAdd = "index.php?com=places&act=add_city".$returnParam;
+	$linkEdit = "index.php?com=places&act=edit_city".$returnParam;
 	$linkDelete = "index.php?com=places&act=delete_city";
 ?>
 <!-- Content Header -->

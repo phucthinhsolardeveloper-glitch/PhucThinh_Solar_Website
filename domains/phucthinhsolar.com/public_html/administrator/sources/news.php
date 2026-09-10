@@ -223,7 +223,7 @@
 
 		if(empty($id))
 		{
-			$func->transfer("Không nhận được dữ liệu", "index.php?com=news&act=man&type=".$type."&p=".$curPage.$strUrl, false);
+			$func->transfer("Không nhận được dữ liệu", adminReturnUrl("index.php?com=news&act=man&type=".$type."&p=".$curPage.$strUrl), false);
 		}
 		else
 		{
@@ -231,7 +231,7 @@
 
 			if(empty($item))
 			{
-				$func->transfer("Dữ liệu không có thực", "index.php?com=news&act=man&type=".$type."&p=".$curPage.$strUrl, false);
+				$func->transfer("Dữ liệu không có thực", adminReturnUrl("index.php?com=news&act=man&type=".$type."&p=".$curPage.$strUrl), false);
 			}
 			else
 			{
@@ -252,7 +252,7 @@
 		/* Check post */
 		if(empty($_POST))
 		{
-			$func->transfer("Không nhận được dữ liệu", "index.php?com=news&act=man&type=".$type."&p=".$curPage.$strUrl, false);
+			$func->transfer("Không nhận được dữ liệu", adminReturnUrl("index.php?com=news&act=man&type=".$type."&p=".$curPage.$strUrl), false);
 		}
 
 		/* Post dữ liệu */
@@ -381,16 +381,16 @@
 			{
 				if($act == 'save_copy')
 				{
-					$func->redirect("index.php?com=news&act=copy&type=".$type."&p=".$curPage.$strUrl."&id_copy=".$id);
+					$func->redirect("index.php?com=news&act=copy&type=".$type."&p=".$curPage.$strUrl."&id_copy=".$id.adminReturnSuffix());
 				}
 				else
 				{
-					$func->redirect("index.php?com=news&act=edit&type=".$type."&p=".$curPage.$strUrl."&id=".$id);
+					$func->redirect("index.php?com=news&act=edit&type=".$type."&p=".$curPage.$strUrl."&id=".$id.adminReturnSuffix());
 				}
 			}
 			else
 			{
-				$func->redirect("index.php?com=news&act=add&type=".$type."&p=".$curPage.$strUrl);
+				$func->redirect("index.php?com=news&act=add&type=".$type."&p=".$curPage.$strUrl.adminReturnSuffix());
 			}
 		}
 
@@ -404,7 +404,7 @@
 			if($d->update('news',$data))
 			{
 				if($type === 'du-an' && !productProjectSync($d, $id, $dataProjectProducts))
-					$func->transfer("Dự án đã lưu nhưng liên kết sản phẩm bị lỗi", "index.php?com=news&act=edit&type=".$type."&p=".$curPage.$strUrl."&id=".$id, false);
+					$func->transfer("Dự án đã lưu nhưng liên kết sản phẩm bị lỗi", "index.php?com=news&act=edit&type=".$type."&p=".$curPage.$strUrl."&id=".$id.adminReturnSuffix(), false);
 
 				/* Photo */
 				if($func->hasFile("file"))
@@ -483,22 +483,22 @@
 
 				if($savehere)
 				{
-					$func->transfer("Cập nhật dữ liệu thành công", "index.php?com=news&act=edit&type=".$type."&p=".$curPage.$strUrl."&id=".$id);
+					$func->transfer("Cập nhật dữ liệu thành công", "index.php?com=news&act=edit&type=".$type."&p=".$curPage.$strUrl."&id=".$id.adminReturnSuffix());
 				}
 				else
 				{
-					$func->transfer("Cập nhật dữ liệu thành công", "index.php?com=news&act=man&type=".$type."&p=".$curPage.$strUrl);
+					$func->transfer("Cập nhật dữ liệu thành công", adminReturnUrl("index.php?com=news&act=man&type=".$type."&p=".$curPage.$strUrl));
 				}
 			}
 			else
 			{
 				if($savehere)
 				{
-					$func->transfer("Cập nhật dữ liệu bị lỗi", "index.php?com=news&act=edit&type=".$type."&p=".$curPage.$strUrl."&id=".$id, false);
+					$func->transfer("Cập nhật dữ liệu bị lỗi", "index.php?com=news&act=edit&type=".$type."&p=".$curPage.$strUrl."&id=".$id.adminReturnSuffix(), false);
 				}
 				else
 				{
-					$func->transfer("Cập nhật dữ liệu bị lỗi", "index.php?com=news&act=man&type=".$type."&p=".$curPage.$strUrl, false);
+					$func->transfer("Cập nhật dữ liệu bị lỗi", adminReturnUrl("index.php?com=news&act=man&type=".$type."&p=".$curPage.$strUrl), false);
 				}
 			}
 		}
@@ -510,7 +510,7 @@
 			{
 				$id_insert = $d->getLastInsertId();
 				if($type === 'du-an' && !productProjectSync($d, $id_insert, $dataProjectProducts))
-					$func->transfer("Dự án đã lưu nhưng liên kết sản phẩm bị lỗi", "index.php?com=news&act=edit&type=".$type."&p=".$curPage.$strUrl."&id=".$id_insert, false);
+					$func->transfer("Dự án đã lưu nhưng liên kết sản phẩm bị lỗi", "index.php?com=news&act=edit&type=".$type."&p=".$curPage.$strUrl."&id=".$id_insert.adminReturnSuffix(), false);
 
 				/* Photo */
 				if($func->hasFile("file"))
@@ -577,22 +577,22 @@
 				{
 					if($savehere)
 					{
-						$func->transfer("Sao chép dữ liệu thành công", "index.php?com=news&act=edit&type=".$type."&p=".$curPage.$strUrl."&id=".$id_insert);
+						$func->transfer("Sao chép dữ liệu thành công", "index.php?com=news&act=edit&type=".$type."&p=".$curPage.$strUrl."&id=".$id_insert.adminReturnSuffix());
 					}
 					else
 					{
-						$func->transfer("Sao chép dữ liệu thành công", "index.php?com=news&act=man&type=".$type."&p=".$curPage.$strUrl);
+						$func->transfer("Sao chép dữ liệu thành công", adminReturnUrl("index.php?com=news&act=man&type=".$type."&p=".$curPage.$strUrl));
 					}
 				}
 				else
 				{
 					if($savehere)
 					{
-						$func->transfer("Lưu dữ liệu thành công", "index.php?com=news&act=edit&type=".$type."&p=".$curPage.$strUrl."&id=".$id_insert);
+						$func->transfer("Lưu dữ liệu thành công", "index.php?com=news&act=edit&type=".$type."&p=".$curPage.$strUrl."&id=".$id_insert.adminReturnSuffix());
 					}
 					else
 					{
-						$func->transfer("Lưu dữ liệu thành công", "index.php?com=news&act=man&type=".$type."&p=".$curPage.$strUrl);
+						$func->transfer("Lưu dữ liệu thành công", adminReturnUrl("index.php?com=news&act=man&type=".$type."&p=".$curPage.$strUrl));
 					}
 				}
 			}
@@ -602,22 +602,22 @@
 				{
 					if($savehere)
 					{
-						$func->transfer("Sao chép dữ liệu bị lỗi", "index.php?com=news&act=edit&type=".$type."&p=".$curPage.$strUrl."&id=".$id_insert, false);
+						$func->transfer("Sao chép dữ liệu bị lỗi", "index.php?com=news&act=edit&type=".$type."&p=".$curPage.$strUrl."&id=".$id_insert.adminReturnSuffix(), false);
 					}
 					else
 					{
-						$func->transfer("Sao chép dữ liệu bị lỗi", "index.php?com=news&act=man&type=".$type."&p=".$curPage.$strUrl, false);
+						$func->transfer("Sao chép dữ liệu bị lỗi", adminReturnUrl("index.php?com=news&act=man&type=".$type."&p=".$curPage.$strUrl), false);
 					}
 				}
 				else
 				{
 					if($savehere)
 					{
-						$func->transfer("Lưu dữ liệu bị lỗi", "index.php?com=news&act=edit&type=".$type."&p=".$curPage.$strUrl."&id=".$id_insert, false);
+						$func->transfer("Lưu dữ liệu bị lỗi", "index.php?com=news&act=edit&type=".$type."&p=".$curPage.$strUrl."&id=".$id_insert.adminReturnSuffix(), false);
 					}
 					else
 					{
-						$func->transfer("Lưu dữ liệu bị lỗi", "index.php?com=news&act=man&type=".$type."&p=".$curPage.$strUrl, false);
+						$func->transfer("Lưu dữ liệu bị lỗi", adminReturnUrl("index.php?com=news&act=man&type=".$type."&p=".$curPage.$strUrl), false);
 					}
 				}
 			}
@@ -706,11 +706,11 @@
 					}
 				}
 
-				$func->transfer("Xóa dữ liệu thành công", "index.php?com=news&act=man&type=".$type."&p=".$curPage.$strUrl);
+				$func->transfer("Xóa dữ liệu thành công", adminReturnUrl("index.php?com=news&act=man&type=".$type."&p=".$curPage.$strUrl));
 			}
 			else
 			{
-				$func->transfer("Xóa dữ liệu bị lỗi", "index.php?com=news&act=man&type=".$type."&p=".$curPage.$strUrl, false);
+				$func->transfer("Xóa dữ liệu bị lỗi", adminReturnUrl("index.php?com=news&act=man&type=".$type."&p=".$curPage.$strUrl), false);
 			}
 		}
 		elseif(isset($_GET['listid']))
@@ -796,11 +796,11 @@
 				}
 			}
 
-			$func->transfer("Xóa dữ liệu thành công", "index.php?com=news&act=man&type=".$type."&p=".$curPage.$strUrl);
+			$func->transfer("Xóa dữ liệu thành công", adminReturnUrl("index.php?com=news&act=man&type=".$type."&p=".$curPage.$strUrl));
 		} 
 		else
 		{
-			$func->transfer("Không nhận được dữ liệu", "index.php?com=news&act=man&type=".$type."&p=".$curPage.$strUrl, false);
+			$func->transfer("Không nhận được dữ liệu", adminReturnUrl("index.php?com=news&act=man&type=".$type."&p=".$curPage.$strUrl), false);
 		}
 	}
 
