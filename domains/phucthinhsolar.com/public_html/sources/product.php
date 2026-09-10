@@ -2,7 +2,9 @@
 	if(!defined('SOURCES')) die("Error");
 	require_once LIBRARIES.'product_projects.php';
 	require_once LIBRARIES.'product_power_filter.php';
+	require_once LIBRARIES.'product_price_filter.php';
 	require_once LIBRARIES.'product_sort.php';
+	require_once LIBRARIES.'product_content_blocks.php';
 
 	@$id = htmlspecialchars($_GET['id']);
 	@$idl = htmlspecialchars($_GET['idl']);
@@ -108,33 +110,9 @@
 		$idPrice = publicProductPricesVisible() && isset($_GET['is_price']) && $_GET['is_price'] != '' ? $_GET['is_price'] : '';
 		if($idPrice != '')
 		{
-			$priceRanges = array(
-				'1' => array(0, 500000),
-				'2' => array(500000, 1000000),
-				'3' => array(1000000, 2000000),
-				'4' => array(2000000, null),
-			);
-			$priceConds = array();
-			foreach(explode(',', $idPrice) as $pb)
-			{
-				if(!isset($priceRanges[$pb])) continue;
-				list($min, $max) = $priceRanges[$pb];
-				if($max === null)
-				{
-					$priceConds[] = "(if(sale_price>0,sale_price,regular_price) >= ?)";
-					$extraParams[] = $min;
-				}
-				else
-				{
-					$priceConds[] = "(if(sale_price>0,sale_price,regular_price) >= ? and if(sale_price>0,sale_price,regular_price) < ?)";
-					$extraParams[] = $min;
-					$extraParams[] = $max;
-				}
-			}
-			if(!empty($priceConds))
-			{
-				$extraWhere .= " and not find_in_set('baogia',status) and (".implode(' or ', $priceConds).")";
-			}
+			list($priceWhere, $priceParams) = productPriceFilterSql($idPrice);
+			$extraWhere .= $priceWhere;
+			$extraParams = array_merge($extraParams, $priceParams);
 		}
 
 		return array($extraWhere, $extraParams);
@@ -270,6 +248,7 @@
 		$productList = $d->rawQueryOne("select id, name$lang, slugvi, slugen, type, photo, options from #_product_list where id = ? and type = ? limit 0,1",array($idl,$type));
 		$slug_param = $productList[$sluglang];
 		$id_list = $productList['id'];
+		$categorySectionBlocks = productCategorySectionBlocks($d, 'list', $id_list, $lang);
 		/* SEO */
 		$titleCate = $productList['name'.$lang];
 		$seoDB = $seo->getOnDB($productList['id'],'product','man_list',$productList['type']);
@@ -338,6 +317,7 @@
 		$productList = $d->rawQueryOne("select id, name$lang, slugvi, slugen from #_product_list where id = ? and type = ? limit 0,1",array($productCat['id_list'],$type));
 		$slug_param = $productCat[$sluglang];
 		$id_cat = $productCat['id'];
+		$categorySectionBlocks = productCategorySectionBlocks($d, 'cat', $id_cat, $lang);
 		/* Lấy sản phẩm */
 		$where = "";
 		$where = "id_cat = ? and type = ? and find_in_set('hienthi',status)";

@@ -171,7 +171,7 @@ if(!function_exists('contentSectionScopeName'))
 		{
 			$upd = array('blocksvi' => $blocksJson, 'date_updated' => time());
 			if($scope === 'product')
-				$upd['mode'] = $clean ? 'own' : ($exists['mode'] === 'hide' ? 'hide' : 'inherit');
+				$upd['mode'] = $clean ? ($exists['mode'] === 'both' ? 'both' : 'own') : ($exists['mode'] === 'hide' ? 'hide' : 'inherit');
 			$d->where('id', $exists['id']);
 			$d->update('content_section', $upd);
 		}

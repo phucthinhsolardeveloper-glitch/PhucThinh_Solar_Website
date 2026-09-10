@@ -229,12 +229,8 @@
                             if(isset($_GET['is_price'])){
                                 $price_get = explode(",", $_GET['is_price']);
                             }
-                            $priceOptions = array(
-                                '1' => 'Dưới 500.000đ',
-                                '2' => '500.000đ - 1.000.000đ',
-                                '3' => '1.000.000đ - 2.000.000đ',
-                                '4' => 'Trên 2.000.000đ',
-                            );
+                            $priceOptions = array();
+                            foreach(productPriceFilterRanges() as $pOptKey => $pOptRange) $priceOptions[$pOptKey] = $pOptRange[2];
                         ?>
                         <?php foreach($priceOptions as $pk => $pv) { ?>
                         <li class="product-pages__price-items">
@@ -277,6 +273,19 @@
     </div>
 
 </div>
+<?php
+    /* Nội dung riêng của danh mục (soạn ở admin > Khối nội dung mô tả > Danh mục
+       cấp 1/2), hiện CỐ ĐỊNH dưới lưới sản phẩm — không đổi theo bộ lọc AJAX vì
+       đây là nội dung mô tả danh mục, không phải kết quả lọc (học theo Kitawa). */
+    $categorySectionHtml = (!empty($categorySectionBlocks)) ? productRenderSections($categorySectionBlocks, UPLOAD_PRODUCT_L, $func) : '';
+?>
+<?php if($categorySectionHtml !== '') { ?>
+<section class="pts-category-content">
+    <div class="pts-category-content-inner">
+        <?=$categorySectionHtml?>
+    </div>
+</section>
+<?php } ?>
 <?php $productFilterPath = parse_url(isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '/san-pham/', PHP_URL_PATH); ?>
 <input type="hidden" name="keywords" id="keyword" value="<?=htmlspecialchars(isset($_GET['keyword']) ? $_GET['keyword'] : '',ENT_QUOTES,'UTF-8')?>">
 <input type="hidden" name="alias" value="<?=htmlspecialchars($productFilterPath ?: '/san-pham/',ENT_QUOTES,'UTF-8')?>">

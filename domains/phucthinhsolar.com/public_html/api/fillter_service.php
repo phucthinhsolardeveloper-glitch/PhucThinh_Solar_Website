@@ -79,33 +79,9 @@
 	if($gia !="")
 	{
 		$tempLink .= "&is_price=".$gia;
-		$priceRanges = array(
-			'1' => array(0, 500000),
-			'2' => array(500000, 1000000),
-			'3' => array(1000000, 2000000),
-			'4' => array(2000000, null),
-		);
-		$priceConds = array();
-		foreach(explode(',', $gia) as $pb)
-		{
-			if(!isset($priceRanges[$pb])) continue;
-			list($min, $max) = $priceRanges[$pb];
-			if($max === null)
-			{
-				$priceConds[] = "(if(sale_price>0,sale_price,regular_price) >= ?)";
-				$params[] = $min;
-			}
-			else
-			{
-				$priceConds[] = "(if(sale_price>0,sale_price,regular_price) >= ? and if(sale_price>0,sale_price,regular_price) < ?)";
-				$params[] = $min;
-				$params[] = $max;
-			}
-		}
-		if(!empty($priceConds))
-		{
-			$where .= " and not find_in_set('baogia',status) and (".implode(' or ', $priceConds).")";
-		}
+		list($priceWhere, $priceParams) = productPriceFilterSql($gia);
+		$where .= $priceWhere;
+		$params = array_merge($params, $priceParams);
 	}
 	if($orderby !="")
 	{

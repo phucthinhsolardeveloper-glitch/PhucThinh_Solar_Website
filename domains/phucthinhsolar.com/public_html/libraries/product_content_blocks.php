@@ -61,9 +61,10 @@ if(!function_exists('productContentBlockParse'))
     /**
      * Chọn khối nội dung cho một sản phẩm theo chế độ + thứ tự ưu tiên.
      *   mode 'own'     -> chỉ dùng khối của chính sản phẩm
+     *   mode 'both'    -> khối kế thừa (hãng > cấp 2 > cấp 1) rồi nối thêm khối riêng của sản phẩm
      *   mode 'hide'    -> không hiện mô tả dài (kể cả kế thừa lẫn đoạn tự sinh)
      *   mode 'inherit' / không có bản riêng -> sản phẩm > hãng > danh mục cấp 2 > cấp 1
-     * Trả về array('blocks' => [...], 'source' => 'product'|'brand'|'cat'|'list'|'hide'|'').
+     * Trả về array('blocks' => [...], 'source' => 'product'|'brand'|'cat'|'list'|'both'|'hide'|'').
      */
     function productResolveSections($d, $rowDetail, $lang = 'vi')
     {
@@ -99,6 +100,21 @@ if(!function_exists('productContentBlockParse'))
             return $out;
         }
 
+        if($productMode === 'both')
+        {
+            $ownBlocks = isset($byScope['product']) ? productSectionsDecode($byScope['product']['blocks']) : array();
+            $inheritedBlocks = array(); $inheritedSource = '';
+            foreach(array('brand', 'cat', 'list') as $scope)
+            {
+                if(!isset($byScope[$scope])) continue;
+                $blocks = productSectionsDecode($byScope[$scope]['blocks']);
+                if($blocks) { $inheritedBlocks = $blocks; $inheritedSource = $scope; break; }
+            }
+            $out['blocks'] = array_merge($inheritedBlocks, $ownBlocks);
+            $out['source'] = $out['blocks'] ? ($ownBlocks ? 'both' : $inheritedSource) : '';
+            return $out;
+        }
+
         /* inherit: sản phẩm (nếu lỡ có khối) -> hãng -> danh mục cấp 2 -> cấp 1 */
         foreach(array('product', 'brand', 'cat', 'list') as $scope)
         {
@@ -117,7 +133,7 @@ if(!function_exists('productContentBlockParse'))
     {
         $productId = (int) $productId;
         if($productId <= 0 || $mode === null || $mode === '') return;
-        if(!in_array($mode, array('inherit', 'own', 'hide'), true)) $mode = 'inherit';
+        if(!in_array($mode, array('inherit', 'own', 'both', 'hide'), true)) $mode = 'inherit';
 
         $row = $d->rawQueryOne("select id, blocksvi from #_content_section where scope='product' and scope_id=? limit 0,1", array($productId));
         if($row)
@@ -230,6 +246,20 @@ if(!function_exists('productContentBlockParse'))
             $blocks[] = array('type' => 'text', 'text' => implode("\n", $lines));
         }
         return $blocks;
+    }
+
+    /** Khối nội dung riêng của MỘT danh mục (cấp 1 'list' hoặc cấp 2 'cat'),
+     *  dùng để hiện dưới lưới sản phẩm ở trang danh mục — không liên quan tới
+     *  chế độ kế thừa của sản phẩm (đây là nội dung của chính danh mục đó). */
+    function productCategorySectionBlocks($d, $scope, $scopeId, $lang = 'vi')
+    {
+        if(!in_array($scope, array('cat', 'list'), true) || (int) $scopeId <= 0) return array();
+        $row = $d->rawQueryOne(
+            "select coalesce(nullif(blocks$lang,''), blocksvi) as blocks from #_content_section
+             where scope=? and scope_id=? and find_in_set('hienthi',status) limit 0,1",
+            array($scope, (int) $scopeId)
+        );
+        return empty($row) ? array() : productSectionsDecode($row['blocks']);
     }
 
     /** Khối mà sản phẩm đang KẾ THỪA (bỏ qua bản riêng) — để nút "chép từ hãng". */

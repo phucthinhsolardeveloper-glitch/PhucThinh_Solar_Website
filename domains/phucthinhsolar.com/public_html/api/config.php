@@ -12,6 +12,7 @@
     require_once LIBRARIES."form_security.php";
     require_once LIBRARIES."public_pricing.php";
     require_once LIBRARIES."product_power_filter.php";
+    require_once LIBRARIES."product_price_filter.php";
     require_once LIBRARIES."product_sort.php";
     require_once LIBRARIES.'autoload.php';
     new AutoLoad();
