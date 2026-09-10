@@ -4,9 +4,9 @@
 	/* Paginations */
 	include LIBRARIES."class/class.PaginationsAjax.php";
 	$pagingAjax = new PaginationsAjax();
-	/* Mặc định khớp sources/product.php ($perPage=16) để số trang không lệch
+	/* Mặc định khớp sources/product.php ($perPage=20) để số trang không lệch
 	   giữa lần tải trang đầu và các lần lọc AJAX sau đó (audit 2026-09-10). */
-	$pagingAjax->perpage = isset($_GET['perpage']) ? max(1, min(48, (int) $_GET['perpage'])) : 16;
+	$pagingAjax->perpage = isset($_GET['perpage']) ? max(1, min(48, (int) $_GET['perpage'])) : 20;
 	$eShow = isset($_GET['eShow']) ? max(1, min(10, (int) $_GET['eShow'])) : 5;
 	$idList = isset($_GET['id_list']) ? max(0, (int) $_GET['id_list']) : 0;
 	$idCat = isset($_GET['id_cat']) ? max(0, (int) $_GET['id_cat']) : 0;

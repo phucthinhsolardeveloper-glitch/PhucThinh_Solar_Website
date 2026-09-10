@@ -109,21 +109,37 @@
 		                                    <?php } ?>
 											<?php if($k === 'vi') {
 												$sectionMode = 'inherit';
-												if(!empty($item['id']) && isset($d)) { $__sm = $d->rawQueryOne("select mode from #_content_section where scope='product' and scope_id=? limit 0,1", array((int)$item['id'])); if(!empty($__sm['mode'])) $sectionMode = $__sm['mode']; }
+												$sectionInheritSource = 'auto';
+												if(!empty($item['id']) && isset($d)) {
+													$__sm = $d->rawQueryOne("select mode, inherit_source from #_content_section where scope='product' and scope_id=? limit 0,1", array((int)$item['id']));
+													if(!empty($__sm['mode'])) $sectionMode = $__sm['mode'];
+													if(!empty($__sm['inherit_source'])) $sectionInheritSource = $__sm['inherit_source'];
+												}
 												if($flash->has('section_mode')) $sectionMode = $flash->get('section_mode');
+												if($flash->has('section_inherit_source')) $sectionInheritSource = $flash->get('section_inherit_source');
 											?>
 											<div class="card card-outline card-primary text-sm mb-3">
 												<div class="card-header py-2"><h3 class="card-title" style="font-size:13px;font-weight:700;">Nội dung mô tả dài</h3></div>
 												<div class="card-body">
 													<div class="form-group mb-2">
 														<label class="mb-1">Chế độ:</label>
-														<select name="section_mode" class="form-control form-control-sm" style="max-width:420px">
+														<select name="section_mode" id="pts-section-mode" class="form-control form-control-sm" style="max-width:420px">
 															<option value="inherit" <?=$sectionMode==='inherit'?'selected':''?>>Kế thừa từ thương hiệu / danh mục (mặc định)</option>
 															<option value="own" <?=$sectionMode==='own'?'selected':''?>>Nội dung riêng cho sản phẩm này</option>
 															<option value="both" <?=$sectionMode==='both'?'selected':''?>>Nội dung riêng + kế thừa (nối thêm phía sau)</option>
 															<option value="hide" <?=$sectionMode==='hide'?'selected':''?>>Ẩn phần mô tả dài (chỉ hiện dải thông số)</option>
 														</select>
-														<small class="form-text text-muted">Dải thông số + đoạn giới thiệu tự sinh vẫn hiển thị ở mọi chế độ trừ "Ẩn". Chế độ "Nội dung riêng + kế thừa" hiện khối soạn riêng ở sản phẩm này trước, nối thêm khối kế thừa phía sau. Khối kế thừa lấy theo THỨ TỰ ƯU TIÊN duy nhất 1 nguồn: hãng &gt; danh mục cấp 2 &gt; danh mục cấp 1 (hãng có khối thì dùng hãng, không thì mới tới danh mục) - không cộng dồn nhiều nguồn kế thừa cùng lúc.</small>
+														<small class="form-text text-muted">Dải thông số + đoạn giới thiệu tự sinh vẫn hiển thị ở mọi chế độ trừ "Ẩn". Chế độ "Nội dung riêng + kế thừa" hiện khối soạn riêng ở sản phẩm này trước, nối thêm khối kế thừa phía sau.</small>
+													</div>
+													<div class="form-group mb-2" id="pts-section-inherit-source-wrap">
+														<label class="mb-1">Nguồn kế thừa <span class="text-muted font-weight-normal">(áp dụng khi chế độ là "Kế thừa" hoặc "Nội dung riêng + kế thừa")</span>:</label>
+														<select name="section_inherit_source" class="form-control form-control-sm" style="max-width:420px">
+															<option value="auto" <?=$sectionInheritSource==='auto'?'selected':''?>>Tự động (thương hiệu &gt; danh mục cấp 2 &gt; danh mục cấp 1)</option>
+															<option value="brand" <?=$sectionInheritSource==='brand'?'selected':''?>>Chỉ thương hiệu</option>
+															<option value="category" <?=$sectionInheritSource==='category'?'selected':''?>>Chỉ danh mục (ưu tiên cấp 2, cấp 1 nếu cấp 2 chưa có)</option>
+															<option value="stack" <?=$sectionInheritSource==='stack'?'selected':''?>>Cộng dồn tất cả nguồn có nội dung (danh mục cấp 2 + cấp 1 + thương hiệu)</option>
+														</select>
+														<small class="form-text text-muted">Mặc định "Tự động" ưu tiên thương hiệu trước. Danh mục thường sát nội dung sản phẩm hơn thương hiệu, đặc biệt danh mục cấp 2 - chọn "Chỉ danh mục" nếu muốn ưu tiên danh mục thay vì thương hiệu.</small>
 													</div>
 													<?php if(!empty($item['id'])) { ?>
 														<a class="btn btn-sm bg-gradient-primary text-white" href="index.php?com=content_section&act=edit&type=<?=htmlspecialchars($type, ENT_QUOTES, 'UTF-8')?>&scope=product&scope_id=<?=(int)$item['id']?>"><i class="far fa-edit mr-1"></i>Mở trình soạn khối cho sản phẩm này</a>
@@ -133,6 +149,16 @@
 													<?php } ?>
 												</div>
 											</div>
+											<script>
+											(function(){
+												var modeSel = document.getElementById('pts-section-mode');
+												var wrap = document.getElementById('pts-section-inherit-source-wrap');
+												if(!modeSel || !wrap) return;
+												function sync(){ wrap.style.display = (modeSel.value === 'inherit' || modeSel.value === 'both') ? '' : 'none'; }
+												modeSel.addEventListener('change', sync);
+												sync();
+											})();
+											</script>
 											<?php } ?>
 											<?php $hasSideTabFields = (isset($config['product'][$type]['chinhsachmuahang']) && $config['product'][$type]['chinhsachmuahang'] == true) || (isset($config['product'][$type]['certificate']) && $config['product'][$type]['certificate'] == true); ?>
 											<?php if($hasSideTabFields) { ?>

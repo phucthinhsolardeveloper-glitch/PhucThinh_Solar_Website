@@ -59,12 +59,61 @@ if(!function_exists('productContentBlockParse'))
     }
 
     /**
-     * Chọn khối nội dung cho một sản phẩm theo chế độ + thứ tự ưu tiên.
+     * Chọn khối kế thừa (bỏ qua sản phẩm) theo nguồn được yêu cầu.
+     *   'auto'     -> hành vi gốc: hãng > danh mục cấp 2 > cấp 1, chỉ lấy 1 nguồn đầu tiên có khối
+     *   'brand'    -> chỉ hãng (không tự lùi về danh mục nếu hãng trống)
+     *   'category' -> chỉ danh mục, ưu tiên cấp 2 - cấp 1 nếu cấp 2 chưa có (bỏ qua hãng)
+     *   'stack'    -> cộng dồn MỌI nguồn có khối, theo thứ tự gần sản phẩm nhất trước:
+     *                 danh mục cấp 2 -> danh mục cấp 1 -> hãng
+     * Trả về array('blocks' => [...], 'source' => 'brand'|'cat'|'list'|'stack'|'').
+     */
+    function productPickInheritedBlocks($byScope, $source = 'auto')
+    {
+        $blocksOf = function($scope) use ($byScope) {
+            return isset($byScope[$scope]) ? productSectionsDecode($byScope[$scope]['blocks']) : array();
+        };
+
+        if($source === 'brand')
+        {
+            $blocks = $blocksOf('brand');
+            return array('blocks' => $blocks, 'source' => $blocks ? 'brand' : '');
+        }
+
+        if($source === 'category')
+        {
+            foreach(array('cat', 'list') as $scope)
+            {
+                $blocks = $blocksOf($scope);
+                if($blocks) return array('blocks' => $blocks, 'source' => $scope);
+            }
+            return array('blocks' => array(), 'source' => '');
+        }
+
+        if($source === 'stack')
+        {
+            $combined = array();
+            foreach(array('cat', 'list', 'brand') as $scope) $combined = array_merge($combined, $blocksOf($scope));
+            return array('blocks' => $combined, 'source' => $combined ? 'stack' : '');
+        }
+
+        /* auto (mặc định) */
+        foreach(array('brand', 'cat', 'list') as $scope)
+        {
+            $blocks = $blocksOf($scope);
+            if($blocks) return array('blocks' => $blocks, 'source' => $scope);
+        }
+        return array('blocks' => array(), 'source' => '');
+    }
+
+    /**
+     * Chọn khối nội dung cho một sản phẩm theo chế độ + nguồn kế thừa.
      *   mode 'own'     -> chỉ dùng khối của chính sản phẩm
-     *   mode 'both'    -> khối riêng của sản phẩm trước, nối thêm khối kế thừa (hãng > cấp 2 > cấp 1) phía sau
+     *   mode 'both'    -> khối riêng của sản phẩm trước, nối thêm khối kế thừa phía sau
      *   mode 'hide'    -> không hiện mô tả dài (kể cả kế thừa lẫn đoạn tự sinh)
-     *   mode 'inherit' / không có bản riêng -> sản phẩm > hãng > danh mục cấp 2 > cấp 1
-     * Trả về array('blocks' => [...], 'source' => 'product'|'brand'|'cat'|'list'|'both'|'hide'|'').
+     *   mode 'inherit' / không có bản riêng -> sản phẩm (nếu lỡ có khối) rồi tới khối kế thừa
+     * Nguồn kế thừa (cột inherit_source, xem productPickInheritedBlocks) áp dụng cho cả
+     * 'inherit' lẫn 'both'.
+     * Trả về array('blocks' => [...], 'source' => 'product'|'brand'|'cat'|'list'|'both'|'stack'|'hide'|'').
      */
     function productResolveSections($d, $rowDetail, $lang = 'vi')
     {
@@ -77,7 +126,7 @@ if(!function_exists('productContentBlockParse'))
 
         /* Ngôn ngữ khác VI mà chưa soạn -> tự lùi về khối VI. */
         $rows = $d->rawQuery(
-            "select scope, mode, coalesce(nullif(blocks$lang,''), blocksvi) as blocks from #_content_section
+            "select scope, mode, inherit_source, coalesce(nullif(blocks$lang,''), blocksvi) as blocks from #_content_section
              where find_in_set('hienthi',status) and (
                 (scope='product' and scope_id=?) or (scope='brand' and scope_id=?)
                 or (scope='cat' and scope_id=?) or (scope='list' and scope_id=?)
@@ -90,6 +139,7 @@ if(!function_exists('productContentBlockParse'))
         foreach($rows as $row) $byScope[$row['scope']] = $row;
 
         $productMode = isset($byScope['product']) ? $byScope['product']['mode'] : 'inherit';
+        $inheritSource = (isset($byScope['product']) && !empty($byScope['product']['inherit_source'])) ? $byScope['product']['inherit_source'] : 'auto';
         if($productMode === 'hide') { $out['source'] = 'hide'; return $out; }
 
         if($productMode === 'own')
@@ -103,54 +153,57 @@ if(!function_exists('productContentBlockParse'))
         if($productMode === 'both')
         {
             $ownBlocks = isset($byScope['product']) ? productSectionsDecode($byScope['product']['blocks']) : array();
-            $inheritedBlocks = array(); $inheritedSource = '';
-            foreach(array('brand', 'cat', 'list') as $scope)
-            {
-                if(!isset($byScope[$scope])) continue;
-                $blocks = productSectionsDecode($byScope[$scope]['blocks']);
-                if($blocks) { $inheritedBlocks = $blocks; $inheritedSource = $scope; break; }
-            }
+            $inherited = productPickInheritedBlocks($byScope, $inheritSource);
             /* Riêng của sản phẩm hiện trước (thông tin cụ thể nhất), kế thừa hãng/danh
                mục nối thêm phía sau (thông tin chung). */
-            $out['blocks'] = array_merge($ownBlocks, $inheritedBlocks);
-            $out['source'] = $out['blocks'] ? ($ownBlocks ? 'both' : $inheritedSource) : '';
+            $out['blocks'] = array_merge($ownBlocks, $inherited['blocks']);
+            $out['source'] = $out['blocks'] ? ($ownBlocks ? 'both' : $inherited['source']) : '';
             return $out;
         }
 
-        /* inherit: sản phẩm (nếu lỡ có khối) -> hãng -> danh mục cấp 2 -> cấp 1 */
-        foreach(array('product', 'brand', 'cat', 'list') as $scope)
+        /* inherit: sản phẩm (nếu lỡ có khối) -> nguồn kế thừa đã chọn (hoặc auto) */
+        if(isset($byScope['product']))
         {
-            if(!isset($byScope[$scope])) continue;
-            $blocks = productSectionsDecode($byScope[$scope]['blocks']);
-            if($blocks) { $out['blocks'] = $blocks; $out['source'] = $scope; break; }
+            $blocks = productSectionsDecode($byScope['product']['blocks']);
+            if($blocks) { $out['blocks'] = $blocks; $out['source'] = 'product'; return $out; }
         }
+        $inherited = productPickInheritedBlocks($byScope, $inheritSource);
+        $out['blocks'] = $inherited['blocks'];
+        $out['source'] = $inherited['source'];
         return $out;
     }
 
     /**
-     * Đặt chế độ mô tả cho một sản phẩm (dùng khi lưu form sản phẩm).
-     * $mode null/'' -> bỏ qua. 'inherit' + không có khối -> xoá bản ghi cho gọn.
+     * Đặt chế độ + nguồn kế thừa cho một sản phẩm (dùng khi lưu form sản phẩm).
+     * $mode null/'' -> bỏ qua toàn bộ. $inheritSource null -> giữ nguyên giá trị đang lưu
+     * (dùng khi nơi gọi chỉ cần đổi mode, ví dụ thao tác hàng loạt "ẩn mô tả").
+     * 'inherit' + auto + không có khối riêng -> xoá bản ghi cho gọn (không có gì đặc biệt để nhớ).
      */
-    function productContentSectionSetMode($d, $productId, $mode)
+    function productContentSectionSetMode($d, $productId, $mode, $inheritSource = null)
     {
         $productId = (int) $productId;
         if($productId <= 0 || $mode === null || $mode === '') return;
         if(!in_array($mode, array('inherit', 'own', 'both', 'hide'), true)) $mode = 'inherit';
+        if($inheritSource !== null && !in_array($inheritSource, array('auto', 'brand', 'category', 'stack'), true)) $inheritSource = 'auto';
 
-        $row = $d->rawQueryOne("select id, blocksvi from #_content_section where scope='product' and scope_id=? limit 0,1", array($productId));
+        $row = $d->rawQueryOne("select id, blocksvi, inherit_source from #_content_section where scope='product' and scope_id=? limit 0,1", array($productId));
+        $effectiveSource = $inheritSource !== null ? $inheritSource : ((!empty($row['inherit_source'])) ? $row['inherit_source'] : 'auto');
+
         if($row)
         {
-            if($mode === 'inherit' && trim((string) $row['blocksvi']) === '')
+            if($mode === 'inherit' && $effectiveSource === 'auto' && trim((string) $row['blocksvi']) === '')
             {
                 $d->rawQuery("delete from #_content_section where id=?", array((int) $row['id']));
                 return;
             }
+            $upd = array('mode' => $mode, 'date_updated' => time());
+            if($inheritSource !== null) $upd['inherit_source'] = $inheritSource;
             $d->where('id', (int) $row['id']);
-            $d->update('content_section', array('mode' => $mode, 'date_updated' => time()));
+            $d->update('content_section', $upd);
         }
-        elseif($mode !== 'inherit')
+        elseif($mode !== 'inherit' || $effectiveSource !== 'auto')
         {
-            $d->insert('content_section', array('scope' => 'product', 'scope_id' => $productId, 'mode' => $mode, 'status' => 'hienthi', 'date_updated' => time()));
+            $d->insert('content_section', array('scope' => 'product', 'scope_id' => $productId, 'mode' => $mode, 'inherit_source' => $effectiveSource, 'status' => 'hienthi', 'date_updated' => time()));
         }
     }
 

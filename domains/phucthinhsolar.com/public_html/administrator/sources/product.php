@@ -634,7 +634,7 @@
 			if($d->update('product',$data))
 			{
 				require_once LIBRARIES.'product_content_blocks.php';
-				if(isset($_POST['section_mode'])) productContentSectionSetMode($d, $id, $_POST['section_mode']);
+				if(isset($_POST['section_mode'])) productContentSectionSetMode($d, $id, $_POST['section_mode'], isset($_POST['section_inherit_source']) ? $_POST['section_inherit_source'] : null);
 				if(!empty($oldSlugRow['slugvi']) && $oldSlugRow['slugvi'] !== $data['slugvi']) productAdminRememberRedirect($d, 'san-pham/'.$oldSlugRow['slugvi'], 'product', $id);
 				/* Photo */
 				if($func->hasFile("file"))
@@ -829,7 +829,7 @@
 			{
 				$id_insert = $d->getLastInsertId();
 				require_once LIBRARIES.'product_content_blocks.php';
-				if(isset($_POST['section_mode'])) productContentSectionSetMode($d, $id_insert, $_POST['section_mode']);
+				if(isset($_POST['section_mode'])) productContentSectionSetMode($d, $id_insert, $_POST['section_mode'], isset($_POST['section_inherit_source']) ? $_POST['section_inherit_source'] : null);
 
 				/* Photo */
 				if($func->hasFile("file"))

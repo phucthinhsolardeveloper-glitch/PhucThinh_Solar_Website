@@ -226,7 +226,9 @@ if(!function_exists('contentSectionScopeName'))
 		header('Content-Type: application/json; charset=UTF-8');
 		$scopeId = (int) (!empty($_GET['scope_id']) ? $_GET['scope_id'] : 0);
 		if($scopeId <= 0) { echo json_encode(array('ok' => false, 'msg' => 'Thiếu scope_id')); exit; }
-		$row = $d->rawQueryOne("select id, id_brand, id_list from #_product where id = ? and type = ? limit 0,1", array($scopeId, $type));
+		/* id_cat thiếu ở đây trước 2026-09-10 khiến nút này không bao giờ chép được
+		   khối của danh mục cấp 2 - chỉ hãng/cấp 1. */
+		$row = $d->rawQueryOne("select id, id_brand, id_cat, id_list from #_product where id = ? and type = ? limit 0,1", array($scopeId, $type));
 		if(empty($row)) { echo json_encode(array('ok' => false, 'msg' => 'Không tìm thấy sản phẩm')); exit; }
 		$res = productInheritedSectionBlocks($d, $row, 'vi');
 		echo json_encode(array('ok' => true, 'blocks' => $res['blocks'], 'source' => $res['source']), JSON_UNESCAPED_UNICODE);

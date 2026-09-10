@@ -292,11 +292,11 @@
 		$params = array_merge($params, $extraParams);
 
 		$curPage = $getPage;
-		/* Tăng từ 12 lên 16 (4 cột x 4 dòng ở desktop) - 12 luôn dừng ở đúng 3
+		/* 12 -> 16 -> 20 (4 cột x 5 dòng ở desktop) - số cũ luôn dừng ở đúng 3
 		   dòng bất kể danh mục có bao nhiêu sản phẩm, khiến lưới ngắn hơn hẳn
 		   sidebar filter. Áp dụng đồng bộ cho mọi nhánh danh mục/hãng/tất cả
 		   sản phẩm trong file này + api/fillter_service.php (audit 2026-09-10). */
-		$perPage = 16;
+		$perPage = 20;
 		$startpoint = ($curPage * $perPage) - $perPage;
 		$limit = " limit ".$startpoint.",".$perPage;
 		$sql = "select * from #_product where $where $order_by $limit";
@@ -342,7 +342,7 @@
 		$params = array_merge($params, $extraParams);
 
 		$curPage = $getPage;
-		$perPage = 16;
+		$perPage = 20;
 		$startpoint = ($curPage * $perPage) - $perPage;
 		$limit = " limit ".$startpoint.",".$perPage;
 		$sql = "select * from #_product where $where $order_by $limit";
@@ -399,7 +399,7 @@
 		$params = array($idi,$type);
 
 		$curPage = $getPage;
-		$perPage = 16;
+		$perPage = 20;
 		$startpoint = ($curPage * $perPage) - $perPage;
 		$limit = " limit ".$startpoint.",".$perPage;
 		$sql = "select * from #_product where $where $order_by $limit";
@@ -460,7 +460,7 @@
 		$params = array($ids,$type);
 
 		$curPage = $getPage;
-		$perPage = 16;
+		$perPage = 20;
 		$startpoint = ($curPage * $perPage) - $perPage;
 		$limit = " limit ".$startpoint.",".$perPage;
 		$sql = "select * from #_product where $where $order_by $limit";
@@ -536,7 +536,7 @@
 		$params = array($productBrand['id'],$type);
 
 		$curPage = $getPage;
-		$perPage = 16;
+		$perPage = 20;
 		$startpoint = ($curPage * $perPage) - $perPage;
 		$limit = " limit ".$startpoint.",".$perPage;
 		$sql = "select * from #_product where $where $order_by $limit";
@@ -599,7 +599,7 @@
 		$params = array_merge($params, $extraParams);
 
 		$curPage = $getPage;
-		$perPage = 16;
+		$perPage = 20;
 		$startpoint = ($curPage * $perPage) - $perPage;
 		$limit = " limit ".$startpoint.",".$perPage;
 		$sql = "select * from #_product where $where $order_by $limit";
