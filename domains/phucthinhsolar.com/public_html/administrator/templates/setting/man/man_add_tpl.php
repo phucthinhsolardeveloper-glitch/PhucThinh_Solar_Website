@@ -117,6 +117,25 @@
 		</div>
 		<div class="card card-primary card-outline text-sm">
 			<div class="card-header">
+				<h3 class="card-title">Đánh giá sản phẩm — Mã đơn hàng</h3>
+			</div>
+			<div class="card-body">
+				<?php $reviewRequireCode = isset($options['review_require_order_code']) && (string)$options['review_require_order_code'] === '1'; ?>
+				<div class="form-group mb-2">
+					<div class="custom-control custom-radio mb-2">
+						<input class="custom-control-input" type="radio" id="review-require-code-off" name="data[options][review_require_order_code]" value="0" <?=!$reviewRequireCode ? 'checked' : ''?>>
+						<label for="review-require-code-off" class="custom-control-label font-weight-normal"><strong>Không bắt buộc</strong> — chỉ cần tên + số điện thoại là gửi đánh giá được. Vẫn qua duyệt của Admin trước khi hiển thị.</label>
+					</div>
+					<div class="custom-control custom-radio">
+						<input class="custom-control-input" type="radio" id="review-require-code-on" name="data[options][review_require_order_code]" value="1" <?=$reviewRequireCode ? 'checked' : ''?>>
+						<label for="review-require-code-on" class="custom-control-label font-weight-normal"><strong>Bắt buộc</strong> — người đánh giá phải nhập mã đơn hàng khớp số điện thoại + email của đơn đã mua (chống spam mạnh hơn).</label>
+					</div>
+				</div>
+				<small class="text-muted">Đánh giá nhập đúng mã đơn khớp thông tin luôn được gắn nhãn “Đã mua hàng”, ở cả hai chế độ.</small>
+			</div>
+		</div>
+		<div class="card card-primary card-outline text-sm">
+			<div class="card-header">
 				<h3 class="card-title">Thông tin chung</h3>
 			</div>
 			<div class="card-body">

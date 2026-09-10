@@ -115,12 +115,13 @@
 								<label for="review-content">3. Viết nhận xét của bạn vào bên dưới:</label>
 								<textarea class="form-control text-sm" name="dataReview[content]" id="review-content" placeholder="Nhận xét của bạn về sản phẩm này *" rows="11"></textarea>
 							</div>
+							<?php $reviewRequireCode = isset($optsetting['review_require_order_code']) && (string)$optsetting['review_require_order_code'] === '1'; ?>
 							<div class="form-group">
 								<label>4. Thông tin liên hệ:</label>
 								<div class="form-row">
 									<div class="col-12 mb-2">
-										<input type="text" class="form-control text-sm" name="dataReview[order_code]" id="review-order-code" placeholder="Mã đơn hàng đã mua sản phẩm *">
-										<small class="form-text text-muted">Mã đơn nằm trên trang cảm ơn hoặc email xác nhận đặt hàng.</small>
+										<input type="text" class="form-control text-sm" name="dataReview[order_code]" id="review-order-code" placeholder="<?=$reviewRequireCode ? 'Mã đơn hàng đã mua sản phẩm *' : 'Mã đơn hàng (nếu có) — để nhận nhãn Đã mua hàng'?>">
+										<small class="form-text text-muted"><?=$reviewRequireCode ? 'Mã đơn nằm trên trang cảm ơn hoặc email xác nhận đặt hàng.' : 'Không bắt buộc. Nhập đúng mã đơn khớp thông tin sẽ được gắn nhãn “Đã mua hàng”.'?></small>
 									</div>
 									<div class="col-4">
 										<input type="text" class="form-control text-sm" name="dataReview[fullname]" id="review-fullname" placeholder="Nhập họ tên liên hệ *">
@@ -129,7 +130,7 @@
 										<input type="text" class="form-control text-sm" name="dataReview[phone]" id="review-phone" placeholder="Nhập số điện thoại liên hệ *">
 									</div>
 									<div class="col-4">
-										<input type="text" class="form-control text-sm" name="dataReview[email]" id="review-email" placeholder="Nhập email liên hệ *">
+										<input type="text" class="form-control text-sm" name="dataReview[email]" id="review-email" placeholder="<?=$reviewRequireCode ? 'Nhập email liên hệ *' : 'Email liên hệ (không bắt buộc)'?>">
 									</div>
 								</div>
 							</div>

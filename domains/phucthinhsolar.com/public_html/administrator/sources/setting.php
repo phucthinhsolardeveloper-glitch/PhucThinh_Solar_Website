@@ -62,6 +62,10 @@
 						{
 							$option[$k2] = ((string)$v2 === '1') ? '1' : '0';
 						}
+						else if($k2 == 'review_require_order_code')
+						{
+							$option[$k2] = ((string)$v2 === '1') ? '1' : '0';
+						}
 						else if($k2 == 'home_hero_mode')
 						{
 							$option[$k2] = ((string)$v2 === 'text') ? 'text' : 'slider';

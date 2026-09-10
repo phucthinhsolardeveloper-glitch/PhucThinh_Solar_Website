@@ -275,6 +275,11 @@
 				$data['status'] = 'new-admin';
 				$data['date_posted'] = time();
 
+				/* Cờ Admin: bắt buộc mã đơn hàng khi đánh giá. Chưa cấu hình = không bắt buộc. */
+				$settingRow = $this->d->rawQueryOne("select options from #_setting limit 0,1");
+				$settingOpt = (!empty($settingRow['options'])) ? json_decode($settingRow['options'], true) : array();
+				$requireOrderCode = is_array($settingOpt) && isset($settingOpt['review_require_order_code']) && (string) $settingOpt['review_require_order_code'] === '1';
+
 				/* Valid data */
 				if(isset($data['star']) && empty($data['star']))
 				{
@@ -315,7 +320,7 @@
 					$this->errors[] = 'Số điện thoại không hợp lệ';
 				}
 
-				if(isset($data['email']) && empty($data['email']))
+				if($requireOrderCode && isset($data['email']) && empty($data['email']))
 				{
 					$this->errors[] = 'Chưa nhập email liên hệ';
 				}
@@ -325,26 +330,29 @@
 					$this->errors[] = 'Email không hợp lệ';
 				}
 
-				/* Chỉ nhận review khi mã đơn + điện thoại + email khớp sản phẩm đã mua */
+				/* Mã đơn khớp SĐT + email của đơn đã mua -> gắn nhãn "Đã mua hàng".
+				   Khi cờ bắt buộc bật: thiếu mã hoặc không khớp thì chặn.
+				   Khi tắt: có nhập & khớp thì gắn nhãn, không thì vẫn nhận review. */
 				if(empty($orderCode))
 				{
-					$this->errors[] = 'Chưa nhập mã đơn hàng';
+					if($requireOrderCode) $this->errors[] = 'Chưa nhập mã đơn hàng';
 				}
 				else
 				{
 					$orderMatch = $this->d->rawQueryOne("select o.phone, o.email from #_order o inner join #_order_detail od on od.id_order = o.id where o.code = ? and od.id_product = ? limit 0,1", array($orderCode, (int) $data['id_variant']));
 					$phoneInput = preg_replace('/[^0-9]/', '', $data['phone']);
 					$phoneOrder = preg_replace('/[^0-9]/', '', (!empty($orderMatch['phone']) ? $orderMatch['phone'] : ''));
-					$emailInput = strtolower(trim($data['email']));
+					$emailInput = strtolower(trim(!empty($data['email']) ? $data['email'] : ''));
 					$emailOrder = strtolower(trim(!empty($orderMatch['email']) ? $orderMatch['email'] : ''));
+					$orderMatched = !empty($orderMatch) && $phoneInput !== '' && $phoneInput === $phoneOrder && $emailInput !== '' && $emailInput === $emailOrder;
 
-					if(empty($orderMatch) || $phoneInput === '' || $phoneInput !== $phoneOrder || $emailInput === '' || $emailInput !== $emailOrder)
-					{
-						$this->errors[] = 'Không tìm thấy đơn hàng phù hợp với sản phẩm và thông tin liên hệ';
-					}
-					else
+					if($orderMatched)
 					{
 						$data['status'] = 'new-admin,verified-purchase';
+					}
+					else if($requireOrderCode)
+					{
+						$this->errors[] = 'Không tìm thấy đơn hàng phù hợp với sản phẩm và thông tin liên hệ';
 					}
 				}
 
