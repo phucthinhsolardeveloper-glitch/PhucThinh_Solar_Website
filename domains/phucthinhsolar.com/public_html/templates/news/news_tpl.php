@@ -37,7 +37,7 @@
                                 <div class="CRbox">
                                     <p class="date_content"><i class="fa fa-clock-o" aria-hidden="true"></i><?=date('d/m/Y', $v['date_created'])?></p>
                                     <p>-</p>
-                                    <p class="author_post"><i class="fa fa-user-o" aria-hidden="true"></i>Admin Dev</p>
+                                    <p class="author_post"><i class="fa fa-user-o" aria-hidden="true"></i>Phúc Thịnh Solar</p>
                                 </div>
                                 <h3><?=$v['name'.$lang]?></h3>
                             </div>

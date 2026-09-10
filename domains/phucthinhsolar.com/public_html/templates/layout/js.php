@@ -95,9 +95,17 @@ $('.view_maps').click(function() {
     $('.view_maps').removeClass('active');
     $(this).addClass('active');
     $('#maps').html(map);
-    $('html, body').animate({
-        scrollTop: $("#maps").offset().top
-    }, 500);
+    /* Chỉ cuộn khi bản đồ đang nằm ngoài vùng nhìn thấy - ở desktop bản đồ nằm
+       CẠNH danh sách chi nhánh (đã thấy sẵn, không cần cuộn); ở mobile bản đồ
+       xếp DƯỚI cả danh sách nên mới cần cuộn tới. Trước đây luôn cuộn bất kể
+       đã thấy bản đồ hay chưa, gây cảm giác giật xuống cuối trang mỗi lần bấm,
+       nhất là khi danh sách dài ra sau khi thêm "Trụ sở" (audit 2026-09-10). */
+    var mapsTop = $('#maps').offset().top;
+    var viewTop = $(window).scrollTop();
+    var viewBottom = viewTop + $(window).height();
+    if(mapsTop < viewTop || mapsTop > viewBottom - 100) {
+        $('html, body').animate({ scrollTop: mapsTop - 20 }, 500);
+    }
 });
 </script>
 

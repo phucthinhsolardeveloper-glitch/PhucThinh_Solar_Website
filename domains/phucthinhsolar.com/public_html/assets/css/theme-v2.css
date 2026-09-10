@@ -317,16 +317,27 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 .wap-footer footer{background:var(--pts-navy-deep)!important;background-image:none!important;color:#bfdbfe;padding-top:40px;}
 .footer_top{padding:0 0 28px!important;}
 .footer_top>.container{max-width:var(--pts-container)!important;}
-.footer_top>.container>.row{display:grid!important;grid-template-columns:180px minmax(320px,1.3fr) minmax(420px,1fr);gap:30px;margin:0!important;}
+/* Cột "Thông tin doanh nghiệp" (1.3fr) trước đây rộng hơn hẳn cột chứa
+   "Chính sách & Hỗ trợ" + "Chi nhánh" gộp lại (1fr), trong khi cột chính sách
+   giờ có 7 mục (từ 5) nên bị ép chật. Đảo lại tỉ lệ để cột chính sách/chi
+   nhánh có nhiều chỗ hơn (audit 2026-09-10). */
+.footer_top>.container>.row{display:grid!important;grid-template-columns:180px minmax(280px,1fr) minmax(460px,1.3fr);gap:30px;margin:0!important;}
 .footer_top>.container>.row>[class*="col-"]{width:auto!important;max-width:none!important;flex:none!important;padding:0!important;}
 #footer_logo{max-width:120px!important;margin:0!important;}
 .footer-title{color:#fff!important;font-size:14px!important;font-weight:850!important;text-transform:none!important;margin:0 0 15px!important;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,.12);}
 .CRlist_office_center,.CRlist_office_center p,.footer-link a,.content_cn a,.content_cn span{color:#bfdbfe!important;font-size:13px!important;line-height:1.7!important;}
 .footer-link a:hover,.content_cn a:hover{color:var(--pts-gold-light)!important;}
-.ft_mn_right .content{display:grid!important;grid-template-columns:.8fr 1.2fr;gap:28px;margin:0!important;}
+/* Chính sách tăng từ 5 lên 7 mục, dài hơn - đổi từ .8fr/1.2fr sang chia đều
+   để không bị ép chật so với Chi nhánh (audit 2026-09-10). */
+.ft_mn_right .content{display:grid!important;grid-template-columns:1fr 1fr;gap:28px;margin:0!important;}
 .ft_mn_right .item{width:auto!important;max-width:none!important;padding:0!important;}
 .item_cn{margin-bottom:10px!important;}
 .name_cn{font-size:13px!important;color:#fff!important;margin-bottom:2px!important;}
+/* Badge "Đã thông báo Bộ Công Thương" - chuyển sang cột thông tin doanh
+   nghiệp (hợp lý hơn: thường đi cùng thông tin pháp lý công ty), thu nhỏ lại
+   vì bản gốc quá to so với vị trí trong footer. */
+.footer-bct-badge{display:inline-block;max-width:130px;margin-top:18px;}
+.footer-bct-badge img{width:100%!important;height:auto!important;display:block;}
 .footer_bottom{border-top:1px solid rgba(255,255,255,.1)!important;background:transparent!important;padding:14px 0!important;}
 .footer_bottom .copyright{color:#93c5fd!important;font-size:12px!important;}
 .footer_bottom .CRcont_nav_mobile{display:none!important;}
@@ -373,6 +384,7 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
     #footer_logo{margin-bottom:10px!important;}
     .ft_mn_right{grid-column:auto;}
     .ft_mn_right .content{grid-template-columns:1fr;}
+    .footer-bct-badge{max-width:100px;margin-top:14px;}
 }
 @media(max-width:576px){
     :root{--pts-gutter:15px;}

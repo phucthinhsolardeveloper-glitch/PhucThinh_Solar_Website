@@ -41,6 +41,11 @@
                                 <?=htmlspecialchars_decode($footer['content'.$lang])?>
                             </div>
                         </div>
+                        <?php if(!empty($bct)){ ?>
+                        <a class="footer-bct-badge" href="<?=$bct['link']?>">
+                            <?=$func->getImage(['class' => 'lazy','sizes' => '400x152x3', 'upload' => UPLOAD_PHOTO_L, 'image' => $bct['photo'], 'alt' => $setting['name'.$lang]])?>
+                        </a>
+                        <?php } ?>
                     </div>
                 </div>
                 <div class="ft_mn ft_mn_right col-md-5">
@@ -107,11 +112,6 @@
                                     </div>
                                 </nav>
                             </div>
-                            <?php if(!empty($bct)){ ?>
-                            <a href="<?=$bct['link']?>">
-                                <?=$func->getImage(['class' => 'lazy','sizes' => '400x152x3', 'upload' => UPLOAD_PHOTO_L, 'image' => $bct['photo'], 'alt' => $setting['name'.$lang]])?>
-                            </a>
-                            <?php } ?>
                         </div>
                         <div class="item col-md-7">
                             <p class="footer-title">

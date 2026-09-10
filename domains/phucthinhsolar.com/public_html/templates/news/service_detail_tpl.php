@@ -4,7 +4,7 @@
             <div class="title-main"><span class=""><?=$rowDetail['name'.$lang]?></span></div>
             <div class="time-main">
                 <i class="fas fa-clock"></i><span><?=date("M d, Y",$rowDetail['date_created'])?></span>
-                <i class="fas fa-user ml-4"></i><span>Admin Dev</span>
+                <i class="fas fa-user ml-4"></i><span>Phúc Thịnh Solar</span>
             </div>
             <?php if(!empty($rowDetail['content'.$lang])) { ?>
             <div class="meta-toc">
