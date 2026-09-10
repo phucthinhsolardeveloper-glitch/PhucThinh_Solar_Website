@@ -19,8 +19,12 @@
 
 <section class="content">
 	<div class="card card-primary card-outline text-sm">
-		<div class="card-header">
-			<h3 class="card-title">Khối nội dung mô tả dùng chung</h3>
+		<div class="card-header d-flex justify-content-between align-items-center flex-wrap">
+			<h3 class="card-title mb-0">Khối nội dung mô tả dùng chung</h3>
+			<div class="btn-group btn-group-sm">
+				<a class="btn btn-outline-secondary" href="index.php?com=content_section&act=export&type=<?=htmlspecialchars($type, ENT_QUOTES, 'UTF-8')?>"><i class="fas fa-file-export mr-1"></i>Xuất JSON</a>
+				<a class="btn btn-outline-primary" href="index.php?com=content_section&act=import&type=<?=htmlspecialchars($type, ENT_QUOTES, 'UTF-8')?>"><i class="fas fa-file-import mr-1"></i>Nhập JSON</a>
+			</div>
 		</div>
 		<div class="card-body">
 			<div class="alert alert-info text-sm">
