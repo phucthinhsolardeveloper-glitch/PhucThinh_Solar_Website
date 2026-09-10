@@ -1056,14 +1056,19 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 .inf_button input.wpcf7-submit{border:0!important;border-radius:9px!important;background:var(--pts-gold)!important;color:var(--pts-navy)!important;font-weight:900!important;font-size:15px!important;min-height:50px;padding:12px 36px!important;cursor:pointer;transition:.15s;}
 .inf_button input.wpcf7-submit:hover{background:var(--pts-gold-dark)!important;color:#fff!important;}
 #top_content h2.text-center.mt-4{margin-top:56px!important;text-align:center;}
-/* Khu bản đồ dùng lưới hai cột trong luồng tài liệu. */
-.hts-wrapper{display:grid!important;grid-template-columns:360px 1fr;gap:22px;margin-top:26px;align-items:start;
+/* Khu bản đồ dùng lưới hai cột trong luồng tài liệu. Bản đồ giãn theo đúng
+   chiều cao của danh sách chi nhánh bên trái (align-items:stretch, height
+   100% xuống hết chuỗi div/iframe) thay vì độ cao cố định 460px - trước đây
+   danh sách 3 mục vừa khít 460px, nhưng thêm mục thứ 4 (Trụ sở) làm danh
+   sách cao hơn bản đồ, hụt hình rất xấu (audit 2026-09-10). min-height giữ
+   lại làm sàn cho trường hợp danh sách ngắn (1-2 mục). */
+.hts-wrapper{display:grid!important;grid-template-columns:360px 1fr;gap:22px;margin-top:26px;align-items:stretch;
     position:static!important;background:transparent!important;}
 .hts-fixed-wrap{position:static!important;width:auto!important;height:auto!important;
     padding:0!important;background:transparent!important;}
-#maps{height:auto!important;min-height:460px;position:relative!important;
+#maps{height:100%!important;min-height:460px;position:relative!important;
     border-radius:14px;overflow:hidden;border:1px solid var(--pts-line);}
-#maps iframe{position:static!important;width:100%!important;height:460px!important;
+#maps iframe{position:static!important;width:100%!important;height:100%!important;
     min-height:460px;border:0!important;display:block;}
 .officeContact{list-style:none;padding:0;margin:0;display:grid;gap:14px;}
 .officeContact li{border:1px solid var(--pts-line);border-radius:14px;background:#fff;padding:16px 18px;}

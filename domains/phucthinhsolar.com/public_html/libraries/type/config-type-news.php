@@ -141,6 +141,11 @@
     $config['news'][$nametype]['title_main'] = "Hệ thống đại lý";
     $config['news'][$nametype]['phone'] = true;
     $config['news'][$nametype]['address'] = true;
+    /* Cột ggmap đã tồn tại từ trước và footer.php đã dùng làm link "Xem bản đồ"
+       cho từng chi nhánh, nhưng form admin CHƯA BAO GIỜ bật field này ở bất kỳ
+       loại tin tức nào - không có cách nào sửa link qua admin. Bật ở đây để
+       admin tự sửa được, không cần nhờ sửa DB tay nữa (audit 2026-09-10). */
+    $config['news'][$nametype]['ggmap'] = true;
     $config['news'][$nametype]['email'] = true;
     $config['news'][$nametype]['dropdown'] = false;
     $config['news'][$nametype]['list'] = false;
