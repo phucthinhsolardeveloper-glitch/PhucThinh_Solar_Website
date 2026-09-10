@@ -420,6 +420,34 @@
                     <?php } } ?>
                 <?php } ?>
 
+                <!-- Cart -->
+                <?php if(isset($config['order']['active']) && $config['order']['active'] == true) { ?>
+                    <?php
+                        $none = "";
+                        $active = "";
+                        if(isset($is_permission) && $is_permission == true) if($func->checkPermission('order', 'man', '', null, 'phrase-1')) $none = "d-none";
+                        if($com=='order') $active = 'active';
+                    ?>
+                    <li class="nav-item <?=$active?> <?=$none?>">
+                        <a class="nav-link <?=$active?>" href="index.php?com=order&act=man" title="Quản lý đơn hàng">
+                            <i class="nav-icon text-sm fas fa-shopping-bag"></i>
+                            <p>Quản lý đơn hàng</p>
+                        </a>
+                    </li>
+                <?php } ?>
+                <!-- Contact -->
+                <?php
+                    $active = ($com == 'contact') ? 'active' : '';
+                    $none = "";
+                    if(isset($is_permission) && $is_permission == true) if($func->checkPermission('contact', 'man', '', null, 'phrase-1')) $none = "d-none";
+                ?>
+                <li class="nav-item <?=$active?> <?=$none?>">
+                    <a class="nav-link <?=$active?>" href="index.php?com=contact&act=man" title="Quản lý liên hệ">
+                        <i class="nav-icon text-sm fas fa-inbox"></i>
+                        <p>Liên hệ khách hàng</p>
+                    </a>
+                </li>
+
                 <!-- Khối nội dung mô tả (soạn nội dung dài cho sản phẩm) -->
                 <?php if(isset($config['product'])) { $csType = array_key_first($config['product']); if($csType) {
                     $none = "";
@@ -533,146 +561,6 @@
                     </li>
                 <?php } ?>
 
-                <!-- Cart -->
-                <?php if(isset($config['order']['active']) && $config['order']['active'] == true) { ?>
-                    <?php
-                        $none = "";
-                        $active = "";
-                        if(isset($is_permission) && $is_permission == true) if($func->checkPermission('order', 'man', '', null, 'phrase-1')) $none = "d-none";
-                        if($com=='order') $active = 'active';
-                    ?>
-                    <li class="nav-item <?=$active?> <?=$none?>">
-                        <a class="nav-link <?=$active?>" href="index.php?com=order&act=man" title="Quản lý đơn hàng">
-                            <i class="nav-icon text-sm fas fa-shopping-bag"></i>
-                            <p>Quản lý đơn hàng</p>
-                        </a>
-                    </li>
-                <?php } ?>
-                <!-- Contact -->
-                <?php
-                    $active = ($com == 'contact') ? 'active' : '';
-                    $none = "";
-                    if(isset($is_permission) && $is_permission == true) if($func->checkPermission('contact', 'man', '', null, 'phrase-1')) $none = "d-none";
-                ?>
-                <li class="nav-item <?=$active?> <?=$none?>">
-                    <a class="nav-link <?=$active?>" href="index.php?com=contact&act=man" title="Quản lý liên hệ">
-                        <i class="nav-icon text-sm fas fa-inbox"></i>
-                        <p>Liên hệ khách hàng</p>
-                    </a>
-                </li>
-
-
-                <!-- Tags -->
-                <?php if(isset($config['tags'])) { ?>
-                    <?php
-                        $none = "";
-                        $active = "";
-                        $menuopen = "";
-                        if(isset($is_permission) && $is_permission == true) if($func->checkPermission('tags', 'man', '', $config['tags'], 'phrase-2')) $none = "d-none";
-                        if($com=='tags' && !isset($disabled['tags'][$_GET['type']]))
-                        {
-                            $active = 'active';
-                            $menuopen = 'menu-open';
-                        }
-                    ?>
-                    <li class="nav-item has-treeview <?=$menuopen?> <?=$none?>">
-                        <a class="nav-link <?=$active?>" href="#" title="Quản lý tags">
-                            <i class="nav-icon text-sm fas fa-tags"></i>
-                            <p>
-                                Quản lý tags
-                                <i class="right fas fa-angle-left"></i>
-                            </p>
-                        </a>
-                        <ul class="nav nav-treeview">
-                            <?php foreach($config['tags'] as $k => $v) { if(!isset($disabled['tags'][$k])) { ?>
-                                <?php
-                                    $none = "";
-                                    $active = "";
-                                    if(isset($is_permission) && $is_permission == true) if($func->checkPermission('tags', 'man', $k, null, 'phrase-1')) $none = "d-none";
-                                    if($com=='tags' && $k==$_GET['type']) $active = "active";
-                                ?>
-                                <li class="nav-item <?=$none?>">
-                                    <a class="nav-link <?=$active?>" href="index.php?com=tags&act=man&type=<?=$k?>" title="<?=$v['title_main']?>"><i class="nav-icon text-sm far fa-caret-square-right"></i><p><?=$v['title_main']?></p></a>
-                                </li>
-                            <?php } } ?>
-                        </ul>
-                    </li>
-                <?php } ?>
-
-                <!-- Newsletter -->
-                <?php if(isset($config['newsletter'])) { ?>
-                    <?php
-                        $none = "";
-                        $active = "";
-                        $menuopen = "";
-                        if(isset($is_permission) && $is_permission == true) if($func->checkPermission('newsletter', 'man', '', $config['newsletter'], 'phrase-2')) $none = "d-none";
-                        if($com=='newsletter' && !isset($disabled['newsletter'][$_GET['type']]))
-                        {
-                            $active = 'active';
-                            $menuopen = 'menu-open';
-                        }
-                    ?>
-                    <li class="nav-item has-treeview <?=$menuopen?> <?=$none?>">
-                        <a class="nav-link <?=$active?>" href="#" title="Quản lý nhận tin">
-                            <i class="nav-icon text-sm fas fa-envelope"></i>
-                            <p>
-                                Quản lý nhận tin
-                                <i class="right fas fa-angle-left"></i>
-                            </p>
-                        </a>
-                        <ul class="nav nav-treeview">
-                            <?php foreach($config['newsletter'] as $k => $v) { if(!isset($disabled['newsletter'][$k])) { ?>
-                                <?php
-                                    $none = "";
-                                    $active = "";
-                                    if(isset($is_permission) && $is_permission == true) if($func->checkPermission('newsletter', 'man', $k, null, 'phrase-1')) $none = "d-none";
-                                    if($com=='newsletter' && $k==$_GET['type']) $active = "active";
-                                ?>
-                                <li class="nav-item <?=$none?>">
-                                    <a class="nav-link <?=$active?>" href="index.php?com=newsletter&act=man&type=<?=$k?>" title="<?=$v['title_main']?>"><i class="nav-icon text-sm far fa-caret-square-right"></i><p><?=$v['title_main']?></p></a>
-                                </li>
-                            <?php } } ?>
-                        </ul>
-                    </li>
-                <?php } ?>
-
-                <!-- Static -->
-                <?php if(isset($config['static'])) { ?>
-                    <?php
-                        $none = "";
-                        $active = "";
-                        $menuopen = "";
-                        if(isset($is_permission) && $is_permission == true) if($func->checkPermission('static', 'update', '', $config['static'], 'phrase-2')) $none = "d-none";
-                        if($com=='static' && !isset($disabled['static'][$_GET['type']]))
-                        {
-                            $active = 'active';
-                            $menuopen = 'menu-open';
-                        }
-                    ?>
-                    <li class="nav-item has-treeview <?=$menuopen?> <?=$none?>">
-                        <a class="nav-link <?=$active?>" href="#" title="Quản lý trang tĩnh">
-                            <i class="nav-icon text-sm fas fa-bookmark"></i>
-                            <p>
-                                Quản lý trang tĩnh
-                                <i class="right fas fa-angle-left"></i>
-                            </p>
-                        </a>
-                        <ul class="nav nav-treeview">
-                            <?php foreach($config['static'] as $k => $v) { if(!isset($disabled['static'][$k])) { ?>
-                                <?php
-                                    $none = "";
-                                    $active = "";
-                                    if(isset($is_permission) && $is_permission == true) if($func->checkPermission('static', 'update', $k, null, 'phrase-1')) $none = "d-none";
-                                    if($com=='static' && $k==$_GET['type']) $active = "active";
-                                ?>
-                                <li class="nav-item <?=$none?>">
-                                    <a class="nav-link <?=$active?>" href="index.php?com=static&act=update&type=<?=$k?>" title="<?=$v['title_main']?>"><i class="nav-icon text-sm far fa-caret-square-right"></i><p><?=$v['title_main']?></p></a>
-                                </li>
-                            <?php } } ?>
-                        </ul>
-                    </li>
-                <?php } ?>
-
                 <!-- Gallery -->
                 <?php if(isset($config['photo'])) { ?>
                     <?php
@@ -716,6 +604,234 @@
                                         <a class="nav-link <?=$active?>" href="index.php?com=photo&act=man_photo&type=<?=$k?>" title="<?=$v['title_main_photo']?>"><i class="nav-icon text-sm far fa-caret-square-right"></i><p><?=$v['title_main_photo']?></p></a>
                                     </li>
                                 <?php } } ?>
+                            <?php } ?>
+                        </ul>
+                    </li>
+                <?php } ?>
+
+                <!-- Newsletter -->
+                <?php if(isset($config['newsletter'])) { ?>
+                    <?php
+                        $none = "";
+                        $active = "";
+                        $menuopen = "";
+                        if(isset($is_permission) && $is_permission == true) if($func->checkPermission('newsletter', 'man', '', $config['newsletter'], 'phrase-2')) $none = "d-none";
+                        if($com=='newsletter' && !isset($disabled['newsletter'][$_GET['type']]))
+                        {
+                            $active = 'active';
+                            $menuopen = 'menu-open';
+                        }
+                    ?>
+                    <li class="nav-item has-treeview <?=$menuopen?> <?=$none?>">
+                        <a class="nav-link <?=$active?>" href="#" title="Quản lý nhận tin">
+                            <i class="nav-icon text-sm fas fa-envelope"></i>
+                            <p>
+                                Quản lý nhận tin
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <?php foreach($config['newsletter'] as $k => $v) { if(!isset($disabled['newsletter'][$k])) { ?>
+                                <?php
+                                    $none = "";
+                                    $active = "";
+                                    if(isset($is_permission) && $is_permission == true) if($func->checkPermission('newsletter', 'man', $k, null, 'phrase-1')) $none = "d-none";
+                                    if($com=='newsletter' && $k==$_GET['type']) $active = "active";
+                                ?>
+                                <li class="nav-item <?=$none?>">
+                                    <a class="nav-link <?=$active?>" href="index.php?com=newsletter&act=man&type=<?=$k?>" title="<?=$v['title_main']?>"><i class="nav-icon text-sm far fa-caret-square-right"></i><p><?=$v['title_main']?></p></a>
+                                </li>
+                            <?php } } ?>
+                        </ul>
+                    </li>
+                <?php } ?>
+
+                <!-- Tags -->
+                <?php if(isset($config['tags'])) { ?>
+                    <?php
+                        $none = "";
+                        $active = "";
+                        $menuopen = "";
+                        if(isset($is_permission) && $is_permission == true) if($func->checkPermission('tags', 'man', '', $config['tags'], 'phrase-2')) $none = "d-none";
+                        if($com=='tags' && !isset($disabled['tags'][$_GET['type']]))
+                        {
+                            $active = 'active';
+                            $menuopen = 'menu-open';
+                        }
+                    ?>
+                    <li class="nav-item has-treeview <?=$menuopen?> <?=$none?>">
+                        <a class="nav-link <?=$active?>" href="#" title="Quản lý tags">
+                            <i class="nav-icon text-sm fas fa-tags"></i>
+                            <p>
+                                Quản lý tags
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <?php foreach($config['tags'] as $k => $v) { if(!isset($disabled['tags'][$k])) { ?>
+                                <?php
+                                    $none = "";
+                                    $active = "";
+                                    if(isset($is_permission) && $is_permission == true) if($func->checkPermission('tags', 'man', $k, null, 'phrase-1')) $none = "d-none";
+                                    if($com=='tags' && $k==$_GET['type']) $active = "active";
+                                ?>
+                                <li class="nav-item <?=$none?>">
+                                    <a class="nav-link <?=$active?>" href="index.php?com=tags&act=man&type=<?=$k?>" title="<?=$v['title_main']?>"><i class="nav-icon text-sm far fa-caret-square-right"></i><p><?=$v['title_main']?></p></a>
+                                </li>
+                            <?php } } ?>
+                        </ul>
+                    </li>
+                <?php } ?>
+
+                <!-- SEO page -->
+                <?php if(isset($config['seopage']) && count($config['seopage']['page']) > 0) { ?>
+                    <?php
+                        $none = "";
+                        $active = "";
+                        $menuopen = "";
+                        if(isset($is_permission) && $is_permission == true) if($func->checkPermission('seopage', 'update', '', $config['seopage']['page'], 'phrase-2')) $none = "d-none";
+                        if($com=='seopage')
+                        {
+                            $active = 'active';
+                            $menuopen = 'menu-open';
+                        }
+                    ?>
+                    <li class="nav-item has-treeview <?=$menuopen?> <?=$none?>">
+                        <a class="nav-link <?=$active?>" href="#" title="Quản lý SEO page">
+                            <i class="nav-icon text-sm fas fa-share-alt"></i>
+                            <p>
+                                Quản lý SEO page
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <?php foreach($config['seopage']['page'] as $k => $v) { ?>
+                                <?php
+                                    $none = "";
+                                    $active = "";
+                                    if(isset($is_permission) && $is_permission == true) if($func->checkPermission('seopage', 'update', $k, null, 'phrase-1')) $none = "d-none";
+                                    if($com=='seopage' && $k==$_GET['type']) $active = "active";
+                                ?>
+                                <li class="nav-item <?=$none?>">
+                                    <a class="nav-link <?=$active?>" href="index.php?com=seopage&act=update&type=<?=$k?>" title="<?=$v?>"><i class="nav-icon text-sm far fa-caret-square-right"></i><p><?=$v?></p></a>
+                                </li>
+                            <?php } ?>
+                        </ul>
+                    </li>
+                <?php } ?>
+
+                <!-- Static -->
+                <?php if(isset($config['static'])) { ?>
+                    <?php
+                        $none = "";
+                        $active = "";
+                        $menuopen = "";
+                        if(isset($is_permission) && $is_permission == true) if($func->checkPermission('static', 'update', '', $config['static'], 'phrase-2')) $none = "d-none";
+                        if($com=='static' && !isset($disabled['static'][$_GET['type']]))
+                        {
+                            $active = 'active';
+                            $menuopen = 'menu-open';
+                        }
+                    ?>
+                    <li class="nav-item has-treeview <?=$menuopen?> <?=$none?>">
+                        <a class="nav-link <?=$active?>" href="#" title="Quản lý trang tĩnh">
+                            <i class="nav-icon text-sm fas fa-bookmark"></i>
+                            <p>
+                                Quản lý trang tĩnh
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <?php foreach($config['static'] as $k => $v) { if(!isset($disabled['static'][$k])) { ?>
+                                <?php
+                                    $none = "";
+                                    $active = "";
+                                    if(isset($is_permission) && $is_permission == true) if($func->checkPermission('static', 'update', $k, null, 'phrase-1')) $none = "d-none";
+                                    if($com=='static' && $k==$_GET['type']) $active = "active";
+                                ?>
+                                <li class="nav-item <?=$none?>">
+                                    <a class="nav-link <?=$active?>" href="index.php?com=static&act=update&type=<?=$k?>" title="<?=$v['title_main']?>"><i class="nav-icon text-sm far fa-caret-square-right"></i><p><?=$v['title_main']?></p></a>
+                                </li>
+                            <?php } } ?>
+                        </ul>
+                    </li>
+                <?php } ?>
+
+                <!-- Onesignal -->
+                <?php if(isset($config['onesignal']) && $config['onesignal'] == true) { ?>
+                    <?php
+                        $none = "";
+                        $active = "";
+                        if(isset($is_permission) && $is_permission == true) if($func->checkPermission('pushOnesignal', 'man', '', null, 'phrase-1')) $none = "d-none";
+                        if($com=='pushOnesignal') $active = 'active';
+                    ?>
+                    <li class="nav-item <?=$active?> <?=$none?>">
+                        <a class="nav-link <?=$active?>" href="index.php?com=pushOnesignal&act=man" title="Quản lý thông báo đẩy">
+                            <i class="nav-icon text-sm fas fa-bell"></i>
+                            <p>Quản lý thông báo đẩy</p>
+                        </a>
+                    </li>
+                <?php } ?>
+
+                <!-- Thiết lập thông tin -->
+                <?php
+                    $none = "";
+                    $active = "";
+                    if(isset($is_permission) && $is_permission == true) if($func->checkPermission('setting', 'update', '', null, 'phrase-1')) $none = "d-none";
+                    if($com=='setting') $active = 'active';
+
+                    $none1 = "";
+                    $active1 = "";
+                    if(isset($is_permission) && $is_permission == true) if($func->checkPermission('sortable', 'update', '', null, 'phrase-1')) $none1 = "d-none";
+                    if($com=='sortable') $active1 = 'active';
+                ?>
+                <li class="nav-item <?=$active?> <?=$none?>">
+                    <a class="nav-link <?=$active?>" href="index.php?com=setting&act=update" title="Thiết lập thông tin">
+                        <i class="nav-icon text-sm fas fa-cogs"></i>
+                        <p>Thiết lập thông tin</p>
+                    </a>
+                </li>
+
+                <!-- User -->
+                <?php if(isset($config['user']['active']) && $config['user']['active'] == true && !$func->checkRole()) { ?>
+                    <?php
+                        $none = "";
+                        $active = "";
+                        $menuopen = "";
+                        if($com=='user' && $act!='login' && $act!='logout')
+                        {
+                            $active = 'active';
+                            $menuopen = 'menu-open';
+                        }
+                    ?>
+                    <li class="nav-item has-treeview <?=$menuopen?> <?=$none?>">
+                        <a class="nav-link <?=$active?>" href="#" title="Quản lý user">
+                            <i class="nav-icon text-sm fas fa-users"></i>
+                            <p>
+                                Quản lý user
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <?php if(isset($config['permission']['active']) && $config['permission']['active'] == true) {
+                                $active = "";
+                                if($act=='permission_group' || $act=='add_permission_group' || $act=='edit_permission_group') $active = "active"; ?>
+                                <li class="nav-item"><a class="nav-link <?=$active?>" href="index.php?com=user&act=permission_group" title="Nhóm quyền"><i class="nav-icon text-sm far fa-caret-square-right"></i><p>Nhóm quyền</p></a></li>
+                            <?php } ?>
+                            <?php
+                                $active = "";
+                                if($act=='info_admin') $active = "active";
+                            ?>
+                            <li class="nav-item"><a class="nav-link <?=$active?>" href="index.php?com=user&act=info_admin" title="Thông tin admin"><i class="nav-icon text-sm far fa-caret-square-right"></i><p>Thông tin admin</p></a></li>
+                            <?php if(isset($config['user']['admin']) && $config['user']['admin'] == true) {
+                                $active = "";
+                                if($act=='man_admin' || $act=='add_admin' || $act=='edit_admin') $active = "active"; ?>
+                                <li class="nav-item"><a class="nav-link <?=$active?>" href="index.php?com=user&act=man_admin" title="Tài khoản admin"><i class="nav-icon text-sm far fa-caret-square-right"></i><p>Tài khoản admin</p></a></li>
+                            <?php } ?>
+                            <?php if(isset($config['user']['member']) && $config['user']['member'] == true) {
+                                $active = "";
+                                if($com=='user' && ($act=='man_member' || $act=='add_member' || $act=='edit_member')) $active = "active"; ?>
+                                <li class="nav-item"><a class="nav-link <?=$active?>" href="index.php?com=user&act=man_member" title="Tài khoản khách"><i class="nav-icon text-sm far fa-caret-square-right"></i><p>Tài khoản khách</p></a></li>
                             <?php } ?>
                         </ul>
                     </li>
@@ -773,123 +889,6 @@
                         </ul>
                     </li>
                 <?php } ?>
-
-                <!-- User -->
-                <?php if(isset($config['user']['active']) && $config['user']['active'] == true && !$func->checkRole()) { ?>
-                    <?php
-                        $none = "";
-                        $active = "";
-                        $menuopen = "";
-                        if($com=='user' && $act!='login' && $act!='logout')
-                        {
-                            $active = 'active';
-                            $menuopen = 'menu-open';
-                        }
-                    ?>
-                    <li class="nav-item has-treeview <?=$menuopen?> <?=$none?>">
-                        <a class="nav-link <?=$active?>" href="#" title="Quản lý user">
-                            <i class="nav-icon text-sm fas fa-users"></i>
-                            <p>
-                                Quản lý user
-                                <i class="right fas fa-angle-left"></i>
-                            </p>
-                        </a>
-                        <ul class="nav nav-treeview">
-                            <?php if(isset($config['permission']['active']) && $config['permission']['active'] == true) {
-                                $active = "";
-                                if($act=='permission_group' || $act=='add_permission_group' || $act=='edit_permission_group') $active = "active"; ?>
-                                <li class="nav-item"><a class="nav-link <?=$active?>" href="index.php?com=user&act=permission_group" title="Nhóm quyền"><i class="nav-icon text-sm far fa-caret-square-right"></i><p>Nhóm quyền</p></a></li>
-                            <?php } ?>
-                            <?php
-                                $active = "";
-                                if($act=='info_admin') $active = "active";
-                            ?>
-                            <li class="nav-item"><a class="nav-link <?=$active?>" href="index.php?com=user&act=info_admin" title="Thông tin admin"><i class="nav-icon text-sm far fa-caret-square-right"></i><p>Thông tin admin</p></a></li>
-                            <?php if(isset($config['user']['admin']) && $config['user']['admin'] == true) {
-                                $active = "";
-                                if($act=='man_admin' || $act=='add_admin' || $act=='edit_admin') $active = "active"; ?>
-                                <li class="nav-item"><a class="nav-link <?=$active?>" href="index.php?com=user&act=man_admin" title="Tài khoản admin"><i class="nav-icon text-sm far fa-caret-square-right"></i><p>Tài khoản admin</p></a></li>
-                            <?php } ?>
-                            <?php if(isset($config['user']['member']) && $config['user']['member'] == true) {
-                                $active = "";
-                                if($com=='user' && ($act=='man_member' || $act=='add_member' || $act=='edit_member')) $active = "active"; ?>
-                                <li class="nav-item"><a class="nav-link <?=$active?>" href="index.php?com=user&act=man_member" title="Tài khoản khách"><i class="nav-icon text-sm far fa-caret-square-right"></i><p>Tài khoản khách</p></a></li>
-                            <?php } ?>
-                        </ul>
-                    </li>
-                <?php } ?>
-
-                <!-- Onesignal -->
-                <?php if(isset($config['onesignal']) && $config['onesignal'] == true) { ?>
-                    <?php
-                        $none = "";
-                        $active = "";
-                        if(isset($is_permission) && $is_permission == true) if($func->checkPermission('pushOnesignal', 'man', '', null, 'phrase-1')) $none = "d-none";
-                        if($com=='pushOnesignal') $active = 'active';
-                    ?>
-                    <li class="nav-item <?=$active?> <?=$none?>">
-                        <a class="nav-link <?=$active?>" href="index.php?com=pushOnesignal&act=man" title="Quản lý thông báo đẩy">
-                            <i class="nav-icon text-sm fas fa-bell"></i>
-                            <p>Quản lý thông báo đẩy</p>
-                        </a>
-                    </li>
-                <?php } ?>
-
-                <!-- SEO page -->
-                <?php if(isset($config['seopage']) && count($config['seopage']['page']) > 0) { ?>
-                    <?php
-                        $none = "";
-                        $active = "";
-                        $menuopen = "";
-                        if(isset($is_permission) && $is_permission == true) if($func->checkPermission('seopage', 'update', '', $config['seopage']['page'], 'phrase-2')) $none = "d-none";
-                        if($com=='seopage')
-                        {
-                            $active = 'active';
-                            $menuopen = 'menu-open';
-                        }
-                    ?>
-                    <li class="nav-item has-treeview <?=$menuopen?> <?=$none?>">
-                        <a class="nav-link <?=$active?>" href="#" title="Quản lý SEO page">
-                            <i class="nav-icon text-sm fas fa-share-alt"></i>
-                            <p>
-                                Quản lý SEO page
-                                <i class="right fas fa-angle-left"></i>
-                            </p>
-                        </a>
-                        <ul class="nav nav-treeview">
-                            <?php foreach($config['seopage']['page'] as $k => $v) { ?>
-                                <?php
-                                    $none = "";
-                                    $active = "";
-                                    if(isset($is_permission) && $is_permission == true) if($func->checkPermission('seopage', 'update', $k, null, 'phrase-1')) $none = "d-none";
-                                    if($com=='seopage' && $k==$_GET['type']) $active = "active";
-                                ?>
-                                <li class="nav-item <?=$none?>">
-                                    <a class="nav-link <?=$active?>" href="index.php?com=seopage&act=update&type=<?=$k?>" title="<?=$v?>"><i class="nav-icon text-sm far fa-caret-square-right"></i><p><?=$v?></p></a>
-                                </li>
-                            <?php } ?>
-                        </ul>
-                    </li>
-                <?php } ?>
-
-                <!-- Thiết lập thông tin -->
-                <?php
-                    $none = "";
-                    $active = "";
-                    if(isset($is_permission) && $is_permission == true) if($func->checkPermission('setting', 'update', '', null, 'phrase-1')) $none = "d-none";
-                    if($com=='setting') $active = 'active';
-
-                    $none1 = "";
-                    $active1 = "";
-                    if(isset($is_permission) && $is_permission == true) if($func->checkPermission('sortable', 'update', '', null, 'phrase-1')) $none1 = "d-none";
-                    if($com=='sortable') $active1 = 'active';
-                ?>
-                <li class="nav-item <?=$active?> <?=$none?>">
-                    <a class="nav-link <?=$active?>" href="index.php?com=setting&act=update" title="Thiết lập thông tin">
-                        <i class="nav-icon text-sm fas fa-cogs"></i>
-                        <p>Thiết lập thông tin</p>
-                    </a>
-                </li>
             </ul>
         </nav>
     </div>

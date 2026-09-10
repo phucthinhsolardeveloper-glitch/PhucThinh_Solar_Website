@@ -1,12 +1,12 @@
 <?php
     /* Config type - Group */
     $config['group'] = array(
-        "Giới thiệu" => array(
-            // "product" => array("san-pham"),
+        "Sản phẩm" => array(
+            "product" => array("san-pham"),
             // "tags" => array("san-pham"),
-            "static" => array("su-menh","gioi-thieu"),
-            "news" => array("thong-tin-lien-he","lich-su","su-menh","ly-do-chon-chung-toi"),
-            "photo" => array("chungnhan")
+            // "static" => array("su-menh","gioi-thieu","tom-tat-gioi-thieu"),
+            "news" => array("tieu-chi", "cam-ket"),
+            // "photo" => array("chungnhan")
         ),
         "Chiến dịch hiển thị" => array(
             "photo_static" => array("banner-top", "popup"),
@@ -27,12 +27,12 @@
                 )
             )
         ),
-        "Sản phẩm" => array(
-            "product" => array("san-pham"),
+        "Giới thiệu" => array(
+            // "product" => array("san-pham"),
             // "tags" => array("san-pham"),
-            // "static" => array("su-menh","gioi-thieu","tom-tat-gioi-thieu"),
-            "news" => array("tieu-chi", "cam-ket"),
-            // "photo" => array("chungnhan")
+            "static" => array("su-menh","gioi-thieu"),
+            "news" => array("thong-tin-lien-he","lich-su","su-menh","ly-do-chon-chung-toi"),
+            "photo" => array("chungnhan")
         ),
         "Lợi ích" => array(
             "news" => array("loi-ich"),
@@ -44,8 +44,8 @@
             "newsletter" => array("dangkynhantin2"),
             "news" => array("cam-ket-dai-ly","phan-hoi-dai-ly","so-lieu-thong-ke-dai-ly"),
         ),
-        "Hệ thống đại lý" => array(
-            "news" => array("he-thong-dai-ly"),
+        "Hệ thống cửa hàng" => array(
+            "news" => array("he-thong-cua-hang"),
             // "static" => array("cau-truc-co-cau"),
             // "photo_static" => array("watermark-news"),
             // "newsletter" => array("dangkytuyendung")
