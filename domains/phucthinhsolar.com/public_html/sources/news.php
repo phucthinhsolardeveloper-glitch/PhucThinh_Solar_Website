@@ -1,6 +1,21 @@
-<?php  
+<?php
 	if(!defined('SOURCES')) die("Error");
 	require_once LIBRARIES.'product_projects.php';
+
+	/* Tên tác giả thật (tài khoản đã tạo bài) thay vì chữ cứng giống nhau cho
+	   mọi bài. Bài cũ/id_user=0 vẫn hiện tên mặc định như trước. */
+	function newsAuthorName($d, $idUser)
+	{
+		static $cache = array();
+		$idUser = (int) $idUser;
+		if($idUser <= 0) return 'Phúc Thịnh Solar';
+		if(!array_key_exists($idUser, $cache))
+		{
+			$row = $d->rawQueryOne("select fullname from #_user where id = ? limit 0,1", array($idUser));
+			$cache[$idUser] = (!empty($row['fullname'])) ? $row['fullname'] : 'Phúc Thịnh Solar';
+		}
+		return $cache[$idUser];
+	}
 
 	@$id = htmlspecialchars($_GET['id']);
 	@$idl = htmlspecialchars($_GET['idl']);
@@ -46,7 +61,7 @@
 		$perPage = 12;
 		$startpoint = ($curPage * $perPage) - $perPage;
 		$limit = " limit ".$startpoint.",".$perPage;
-		$sql = "select id, name$lang, slugvi, slugen, photo, date_created, desc$lang, email, phone, address from #_news where $where order by numb,id desc $limit";
+		$sql = "select id, id_user, name$lang, slugvi, slugen, photo, date_created, desc$lang, email, phone, address from #_news where $where order by numb,id desc $limit";
 		$news = $d->rawQuery($sql,$params);
 		$sqlNum = "select count(*) as 'num' from #_news where $where order by numb,id desc";
 		$count = $d->rawQueryOne($sqlNum,$params);
@@ -122,7 +137,7 @@
 		$perPage = 12;
 		$startpoint = ($curPage * $perPage) - $perPage;
 		$limit = " limit ".$startpoint.",".$perPage;
-		$sql = "select id, name$lang, slugvi, slugen, photo, date_created, desc$lang, email, phone, address from #_news where $where order by numb,id desc $limit";
+		$sql = "select id, id_user, name$lang, slugvi, slugen, photo, date_created, desc$lang, email, phone, address from #_news where $where order by numb,id desc $limit";
 		$news = $d->rawQuery($sql,$params);
 		$sqlNum = "select count(*) as 'num' from #_news where $where order by numb,id desc";
 		$count = $d->rawQueryOne($sqlNum,$params);
@@ -152,7 +167,7 @@
 		$perPage = 12;
 		$startpoint = ($curPage * $perPage) - $perPage;
 		$limit = " limit ".$startpoint.",".$perPage;
-		$sql = "select id, name$lang, slugvi, slugen, photo, date_created, desc$lang, email, phone, address from #_news where $where order by numb,id desc $limit";
+		$sql = "select id, id_user, name$lang, slugvi, slugen, photo, date_created, desc$lang, email, phone, address from #_news where $where order by numb,id desc $limit";
 		$news = $d->rawQuery($sql,$params);
 		$sqlNum = "select count(*) as 'num' from #_news where $where order by numb,id desc";
 		$count = $d->rawQueryOne($sqlNum,$params);
@@ -209,7 +224,7 @@
 		$perPage = 12;
 		$startpoint = ($curPage * $perPage) - $perPage;
 		$limit = " limit ".$startpoint.",".$perPage;
-		$sql = "select id, name$lang, slugvi, slugen, photo, date_created, desc$lang, email, phone, address from #_news where $where order by numb,id desc $limit";
+		$sql = "select id, id_user, name$lang, slugvi, slugen, photo, date_created, desc$lang, email, phone, address from #_news where $where order by numb,id desc $limit";
 		$news = $d->rawQuery($sql,$params);
 		$sqlNum = "select count(*) as 'num' from #_news where $where order by numb,id desc";
 		$count = $d->rawQueryOne($sqlNum,$params);
@@ -270,7 +285,7 @@
 		$perPage = 12;
 		$startpoint = ($curPage * $perPage) - $perPage;
 		$limit = " limit ".$startpoint.",".$perPage;
-		$sql = "select id, name$lang, slugvi, slugen, photo, date_created, desc$lang, email, phone, address from #_news where $where order by numb,id desc $limit";
+		$sql = "select id, id_user, name$lang, slugvi, slugen, photo, date_created, desc$lang, email, phone, address from #_news where $where order by numb,id desc $limit";
 		$news = $d->rawQuery($sql,$params);
 		$sqlNum = "select count(*) as 'num' from #_news where $where order by numb,id desc";
 		$count = $d->rawQueryOne($sqlNum,$params);
@@ -345,7 +360,7 @@
 		$perPage = 12;
 		$startpoint = ($curPage * $perPage) - $perPage;
 		$limit = " limit ".$startpoint.",".$perPage;
-		$sql = "select id, name$lang, slugvi, slugen, photo, date_created, desc$lang, email, phone, address from #_news where $where order by numb,id desc $limit";
+		$sql = "select id, id_user, name$lang, slugvi, slugen, photo, date_created, desc$lang, email, phone, address from #_news where $where order by numb,id desc $limit";
 		$news = $d->rawQuery($sql,$params);
 		$sqlNum = "select count(*) as 'num' from #_news where $where order by numb,id desc";
 		$count = $d->rawQueryOne($sqlNum,$params);

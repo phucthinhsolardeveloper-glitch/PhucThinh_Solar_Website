@@ -247,7 +247,7 @@
 	/* Save man */
 	function saveMan()
 	{
-		global $d, $strUrl, $func, $flash, $curPage, $config, $com, $act, $type;
+		global $d, $strUrl, $func, $flash, $curPage, $config, $com, $act, $type, $id_user;
 
 		/* Check post */
 		if(empty($_POST))
@@ -503,8 +503,9 @@
 			}
 		}
 		else
-		{	
+		{
 			$data['date_created'] = time();
+			$data['id_user'] = (int) $id_user;
 
 			if($d->insert('news',$data))
 			{

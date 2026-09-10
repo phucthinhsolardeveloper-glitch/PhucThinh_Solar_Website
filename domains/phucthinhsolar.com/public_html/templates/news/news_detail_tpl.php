@@ -4,7 +4,7 @@
             <div class="title-main"><span class=""><?=$rowDetail['name'.$lang]?></span></div>
             <div class="time-main">
                 <i class="fas fa-clock"></i><span><?=date("M d, Y",$rowDetail['date_created'])?></span>
-                <i class="fas fa-user ml-4"></i><span>Phúc Thịnh Solar</span>
+                <i class="fas fa-user ml-4"></i><span><?=htmlspecialchars(newsAuthorName($d, isset($rowDetail['id_user']) ? $rowDetail['id_user'] : 0), ENT_QUOTES, 'UTF-8')?></span>
             </div>
             <?php if(!empty($rowDetail['content'.$lang])) { ?>
             <div class="meta-toc">
@@ -92,7 +92,7 @@
                     <div class="CRbox">
                         <p class="date_content"><i class="fa fa-clock-o" aria-hidden="true"></i><?=date('d/m/Y', $v['date_created'])?></p>
                         <p>-</p>
-                        <p class="author_post"><i class="fa fa-user-o" aria-hidden="true"></i>Phúc Thịnh Solar
+                        <p class="author_post"><i class="fa fa-user-o" aria-hidden="true"></i><?=htmlspecialchars(newsAuthorName($d, isset($v['id_user']) ? $v['id_user'] : 0), ENT_QUOTES, 'UTF-8')?>
                         </p>
                     </div>
                     <h3><?=$v['name'.$lang]?></h3>

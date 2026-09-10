@@ -18,7 +18,7 @@
 <?php if(count($gplist)) { ?>
 <section class="CRlist_item_blog">
     <div class="container">
-        <?php foreach($gplist as $v){$gp_item = $cache->get("select name$lang, title_index$lang, slugvi, slugen, desc$lang, date_created, id, photo from #_news where id_list = ".$v['id']." and type = ? and find_in_set('hienthi',status) order by numb,id desc", array('giai-phap'), 'result', 7200); ?>
+        <?php foreach($gplist as $v){$gp_item = $cache->get("select name$lang, title_index$lang, slugvi, slugen, desc$lang, date_created, id, id_user, photo from #_news where id_list = ".$v['id']." and type = ? and find_in_set('hienthi',status) order by numb,id desc", array('giai-phap'), 'result', 7200); ?>
         <div class="CRrow_term_blog_box">
             <div class="CRrow_term_top row">
                 <div class="col-sm">
@@ -38,7 +38,7 @@
                             <div class="CRbox">
                                 <p class="date_content"><i class="fa fa-clock-o" aria-hidden="true"></i><?=date('d/m/Y', $c['date_created'])?></p>
                                 <p>-</p>
-                                <p class="author_post"><i class="fa fa-user-o" aria-hidden="true"></i>Phúc Thịnh Solar</p>
+                                <p class="author_post"><i class="fa fa-user-o" aria-hidden="true"></i><?=htmlspecialchars(newsAuthorName($d, isset($c['id_user']) ? $c['id_user'] : 0), ENT_QUOTES, 'UTF-8')?></p>
                             </div>
                             <h3><?=$c['name'.$lang]?></h3>
                         </div>
