@@ -61,7 +61,7 @@ if(!function_exists('productContentBlockParse'))
     /**
      * Chọn khối nội dung cho một sản phẩm theo chế độ + thứ tự ưu tiên.
      *   mode 'own'     -> chỉ dùng khối của chính sản phẩm
-     *   mode 'both'    -> khối kế thừa (hãng > cấp 2 > cấp 1) rồi nối thêm khối riêng của sản phẩm
+     *   mode 'both'    -> khối riêng của sản phẩm trước, nối thêm khối kế thừa (hãng > cấp 2 > cấp 1) phía sau
      *   mode 'hide'    -> không hiện mô tả dài (kể cả kế thừa lẫn đoạn tự sinh)
      *   mode 'inherit' / không có bản riêng -> sản phẩm > hãng > danh mục cấp 2 > cấp 1
      * Trả về array('blocks' => [...], 'source' => 'product'|'brand'|'cat'|'list'|'both'|'hide'|'').
@@ -110,7 +110,9 @@ if(!function_exists('productContentBlockParse'))
                 $blocks = productSectionsDecode($byScope[$scope]['blocks']);
                 if($blocks) { $inheritedBlocks = $blocks; $inheritedSource = $scope; break; }
             }
-            $out['blocks'] = array_merge($inheritedBlocks, $ownBlocks);
+            /* Riêng của sản phẩm hiện trước (thông tin cụ thể nhất), kế thừa hãng/danh
+               mục nối thêm phía sau (thông tin chung). */
+            $out['blocks'] = array_merge($ownBlocks, $inheritedBlocks);
             $out['source'] = $out['blocks'] ? ($ownBlocks ? 'both' : $inheritedSource) : '';
             return $out;
         }

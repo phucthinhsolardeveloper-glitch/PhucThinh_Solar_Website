@@ -60,13 +60,8 @@
             <button type="button" class="pts-filter-drawer-close toggle-sidebar" aria-label="Đóng bộ lọc"><i class="fas fa-times" aria-hidden="true"></i></button>
         </div>
         <div class="mb40">
-            <?php if(!empty($optsetting['hotline'])) { ?>
-            <div class="sidebar-consult-box">
-                <span class="sc-label">Cần tư vấn chọn sản phẩm?</span>
-                <a class="sc-phone" href="tel:<?=$func->parsePhone($optsetting['hotline'])?>"><?=$optsetting['hotline']?></a>
-                <a class="sc-btn" href="#ptsContactModal" data-toggle="modal" data-target="#ptsContactModal">Yêu cầu tư vấn miễn phí</a>
-            </div>
-            <?php } ?>
+            <?php /* Đã bỏ box "Cần tư vấn chọn sản phẩm?" ở đây - trùng với nút
+                     "Gọi ngay" đã có sẵn ở banner đầu trang danh mục (audit 2026-09-10). */ ?>
             <?php /* Nhóm bộ lọc sản phẩm trong một card dùng chung. */ ?>
             <div class="pts-filter-card">
             <?php if(count($splist)){ ?>
@@ -100,16 +95,16 @@
             <?php } ?>
 
             <?php /* Thương hiệu / Công suất / Loại sản phẩm luôn hiển thị; chỉ "Mức giá" phụ thuộc chế độ giá công khai.
-                     Mặc định thu gọn từng nhóm (trừ Danh mục) để sidebar không dài lê thê so với
-                     lưới sản phẩm; nhóm nào đang có lựa chọn từ URL thì tự mở sẵn. */ ?>
+                     Mỗi nhóm có thể tự thu gọn (accordion, xem apps.js .pts-filter-toggle) nhưng
+                     mặc định MỞ SẴN hết - đóng mặc định bị phản hồi là bất tiện (audit 2026-09-10). */ ?>
             <?php
                 $brand_get = [];
                 if(isset($_GET['is_brand'])){
                     $brand_get = explode(",", $_GET['is_brand']);
                 }
             ?>
-            <div class="product-pages__price mb20 pts-filter-group<?=$brand_get?' pts-filter-open':''?>">
-                <div class="product-pages__price-aside pts-filter-toggle" role="button" tabindex="0" aria-expanded="<?=$brand_get?'true':'false'?>">
+            <div class="product-pages__price mb20 pts-filter-group pts-filter-open">
+                <div class="product-pages__price-aside pts-filter-toggle" role="button" tabindex="0" aria-expanded="true">
                     <span class="product-pages__price-name">Thương hiệu</span>
                     <i class="fas fa-chevron-down pts-filter-chevron" aria-hidden="true"></i>
                 </div>
@@ -138,8 +133,8 @@
                 }
             ?>
             <?php if(count($congSuatList)) { ?>
-            <div class="product-pages__price mb20 pts-filter-group<?=$congsuat_get?' pts-filter-open':''?>">
-                <div class="product-pages__price-aside pts-filter-toggle" role="button" tabindex="0" aria-expanded="<?=$congsuat_get?'true':'false'?>">
+            <div class="product-pages__price mb20 pts-filter-group pts-filter-open">
+                <div class="product-pages__price-aside pts-filter-toggle" role="button" tabindex="0" aria-expanded="true">
                     <span class="product-pages__price-name">Công suất</span>
                     <i class="fas fa-chevron-down pts-filter-chevron" aria-hidden="true"></i>
                 </div>
@@ -195,8 +190,8 @@
                     'đèn ốp trần' => 'Hiên nhà, hành lang, mái che',
                 );
             ?>
-            <div class="product-pages__price mb20 pts-filter-group<?=$cat_get?' pts-filter-open':''?>">
-                <div class="product-pages__price-aside pts-filter-toggle" role="button" tabindex="0" aria-expanded="<?=$cat_get?'true':'false'?>">
+            <div class="product-pages__price mb20 pts-filter-group pts-filter-open">
+                <div class="product-pages__price-aside pts-filter-toggle" role="button" tabindex="0" aria-expanded="true">
                     <span class="product-pages__price-name">Loại đèn - dùng cho</span>
                     <i class="fas fa-chevron-down pts-filter-chevron" aria-hidden="true"></i>
                 </div>
@@ -231,8 +226,8 @@
                 }
             ?>
             <?php if(publicProductPricesVisible()) { ?>
-            <div class="product-pages__price mb20 pts-filter-group<?=$price_get?' pts-filter-open':''?>">
-                <div class="product-pages__price-aside pts-filter-toggle" role="button" tabindex="0" aria-expanded="<?=$price_get?'true':'false'?>">
+            <div class="product-pages__price mb20 pts-filter-group pts-filter-open">
+                <div class="product-pages__price-aside pts-filter-toggle" role="button" tabindex="0" aria-expanded="true">
                     <span class="product-pages__price-name">Mức giá</span>
                     <i class="fas fa-chevron-down pts-filter-chevron" aria-hidden="true"></i>
                 </div>

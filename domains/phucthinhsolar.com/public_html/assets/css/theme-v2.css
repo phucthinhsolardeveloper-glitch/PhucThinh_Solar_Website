@@ -1464,10 +1464,11 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
     max-height:260px;overflow-y:auto;padding-right:6px;
 }
 
-/* Thu gọn từng nhóm filter (accordion) - sidebar dài hơn hẳn lưới sản phẩm ở
-   danh mục ít hàng, đặc biệt sau khi Mức giá tăng từ 4 lên 8 bậc. Mặc định
-   đóng mọi nhóm trừ Danh mục; nhóm đang có lựa chọn từ URL được server render
-   mở sẵn (class .pts-filter-open) để khỏi giật mở/đóng lúc tải trang. */
+/* Accordion cho từng nhóm filter sidebar - mặc định MỞ SẴN hết (thử đóng mặc
+   định thấy phản tác dụng: cảm giác thiếu, phải bấm mở lại mỗi lần vào trang -
+   phản hồi chủ project 2026-09-10). Người dùng có thể tự thu gọn nhóm nào
+   không cần trong lúc xem; hướng chính để cân bằng sidebar/lưới sản phẩm
+   chuyển sang tăng số sản phẩm/trang (xem sources/product.php, perPage). */
 .pts-filter-card .pts-filter-toggle{display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;}
 .pts-filter-card .pts-filter-chevron{flex:0 0 auto;margin-left:10px;font-size:12px;color:var(--pts-navy);opacity:.5;transition:transform .25s ease;}
 .pts-filter-card .pts-filter-group .pts-filter-body{display:none;}

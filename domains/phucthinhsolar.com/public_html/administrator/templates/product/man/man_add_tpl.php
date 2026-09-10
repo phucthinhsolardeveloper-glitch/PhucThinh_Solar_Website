@@ -120,10 +120,10 @@
 														<select name="section_mode" class="form-control form-control-sm" style="max-width:420px">
 															<option value="inherit" <?=$sectionMode==='inherit'?'selected':''?>>Kế thừa từ thương hiệu / danh mục (mặc định)</option>
 															<option value="own" <?=$sectionMode==='own'?'selected':''?>>Nội dung riêng cho sản phẩm này</option>
-															<option value="both" <?=$sectionMode==='both'?'selected':''?>>Kế thừa + nội dung riêng (nối thêm phía sau)</option>
+															<option value="both" <?=$sectionMode==='both'?'selected':''?>>Nội dung riêng + kế thừa (nối thêm phía sau)</option>
 															<option value="hide" <?=$sectionMode==='hide'?'selected':''?>>Ẩn phần mô tả dài (chỉ hiện dải thông số)</option>
 														</select>
-														<small class="form-text text-muted">Dải thông số + đoạn giới thiệu tự sinh vẫn hiển thị ở mọi chế độ trừ "Ẩn". Chế độ "Kế thừa + nội dung riêng" ghép khối kế thừa (hãng/danh mục) ở trên, khối soạn riêng ở sản phẩm này nối thêm phía dưới.</small>
+														<small class="form-text text-muted">Dải thông số + đoạn giới thiệu tự sinh vẫn hiển thị ở mọi chế độ trừ "Ẩn". Chế độ "Nội dung riêng + kế thừa" hiện khối soạn riêng ở sản phẩm này trước, nối thêm khối kế thừa phía sau. Khối kế thừa lấy theo THỨ TỰ ƯU TIÊN duy nhất 1 nguồn: hãng &gt; danh mục cấp 2 &gt; danh mục cấp 1 (hãng có khối thì dùng hãng, không thì mới tới danh mục) - không cộng dồn nhiều nguồn kế thừa cùng lúc.</small>
 													</div>
 													<?php if(!empty($item['id'])) { ?>
 														<a class="btn btn-sm bg-gradient-primary text-white" href="index.php?com=content_section&act=edit&type=<?=htmlspecialchars($type, ENT_QUOTES, 'UTF-8')?>&scope=product&scope_id=<?=(int)$item['id']?>"><i class="far fa-edit mr-1"></i>Mở trình soạn khối cho sản phẩm này</a>
