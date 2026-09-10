@@ -1,6 +1,7 @@
 <?php  
 	if(!defined('SOURCES')) die("Error");
 	require_once LIBRARIES.'product_sort.php';
+	require_once LIBRARIES.'product_price_filter.php';
 
 	/* Tìm kiếm sản phẩm */
 	if(!empty($_GET['keyword']))
