@@ -11,23 +11,27 @@
 	$curPage = (!empty($_GET['p'])) ? htmlspecialchars($_GET['p']) : 1;
 
 	/* Quay lại đúng trang danh sách (kèm trang/lọc) sau khi thêm/sửa/xoá, thay
-	   vì luôn về trang 1 chưa lọc. Dùng chung cho mọi module danh sách+sửa. */
+	   vì luôn về trang 1 chưa lọc. Dùng chung cho mọi module danh sách+sửa.
+	   Lấy giá trị 1 lần rồi gỡ khỏi $_POST['data'] để nó không lọt vào mảng
+	   lưu DB của module (từng gây "Unknown column '_return'" khi lưu sản phẩm). */
+	$adminReturnRaw = (isset($_POST['data']['_return']) && is_scalar($_POST['data']['_return'])) ? (string) $_POST['data']['_return'] : '';
+	if(isset($_POST['data']) && is_array($_POST['data'])) unset($_POST['data']['_return']);
 	if(!function_exists('adminReturnUrl'))
 	{
 		function adminReturnUrl($fallback)
 		{
-			global $com;
-			$raw = isset($_POST['data']['_return']) ? $_POST['data']['_return'] : (isset($_GET['_return']) ? $_GET['_return'] : null);
-			if($raw === null || $raw === '') return $fallback;
-			$raw = (string) $raw;
+			global $com, $adminReturnRaw;
+			$raw = ($adminReturnRaw !== '') ? $adminReturnRaw : (isset($_GET['_return']) ? (string) $_GET['_return'] : '');
+			if($raw === '') return $fallback;
 			if(strpos($raw, '://') !== false || substr($raw, 0, 2) === '//') return $fallback;
 			if(strpos($raw, 'com='.$com) === false || strpos($raw, 'act=man') === false) return $fallback;
 			return $raw;
 		}
 		function adminReturnSuffix()
 		{
-			if(empty($_POST['data']['_return'])) return '';
-			return '&_return='.urlencode($_POST['data']['_return']);
+			global $adminReturnRaw;
+			if($adminReturnRaw === '') return '';
+			return '&_return='.urlencode($adminReturnRaw);
 		}
 	}
 	if(!empty($kind)) $dfgallery = ($kind == 'man_list') ? 'gallery_list' : 'gallery';
