@@ -1378,6 +1378,7 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 .inf_item_vision .content,.inf_item_vision .content p{
     color:#e8eefc!important;font-size:15px!important;line-height:1.8!important;
 }
+.inf_item_vision h3,
 .inf_item_vision h4{
     color:#fff!important;font-size:19px!important;font-weight:900!important;
     letter-spacing:.02em;margin-bottom:14px!important;
@@ -1692,6 +1693,8 @@ h4{font-size:21px!important;font-weight:800!important;}
 .inf_about_history .container-fluid{max-width:var(--pts-container)!important;margin:0 auto!important;padding-left:var(--pts-gutter)!important;padding-right:var(--pts-gutter)!important;}
 .inf_about_history{padding:52px 0!important;}
 .inf_about_history .row{align-items:center!important;}
+.inf_about_history .right .content>h2,
+.inf_about_history .right h2,
 .inf_about_history .right .content>h3,
 .inf_about_history .right h3{
     font-size:clamp(24px,2.5vw,34px)!important;font-weight:900!important;
@@ -1702,7 +1705,13 @@ h4{font-size:21px!important;font-weight:800!important;}
 .inf_about_history .left .content img{border-radius:16px!important;box-shadow:var(--pts-shadow)!important;width:100%!important;object-fit:cover!important;}
 #inf_vision_intro{padding:60px 0!important;}
 #inf_partner_cert{padding:56px 0!important;}
+.inf_item_vision h3,
 .inf_item_vision h4{font-size:21px!important;}
+#inf_partner .inf_item_partner .inf_partner_caption{
+    margin:8px 0 0!important;text-align:center!important;font-size:13px!important;
+    font-weight:600!important;color:var(--pts-navy,#1e293b)!important;line-height:1.35!important;
+    max-width:220px;margin-left:auto!important;margin-right:auto!important;
+}
 .inf_item_vision .content,.inf_item_vision .content p{font-size:16px!important;}
 #CRcertification_intro .CRitem_certification .wrap{background:#fff!important;border:1px solid var(--pts-line)!important;border-radius:14px!important;padding:14px!important;}
 #CRcertification_intro .des{font-size:14.5px!important;font-weight:800!important;color:var(--pts-navy)!important;margin-top:10px!important;}
@@ -1833,6 +1842,8 @@ h4{font-size:21px!important;font-weight:800!important;}
 
     /* Về chúng tôi: khối lịch sử xếp dọc, ảnh trên - chữ dưới */
     .inf_about_history{padding:32px 0!important;}
+    .inf_about_history .right .content>h2,
+    .inf_about_history .right h2,
     .inf_about_history .right .content>h3,
     .inf_about_history .right h3{font-size:21px!important;margin-bottom:12px!important;}
     .inf_about_history .right .des,
