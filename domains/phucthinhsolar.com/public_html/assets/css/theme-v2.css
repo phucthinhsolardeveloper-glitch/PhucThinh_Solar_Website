@@ -986,6 +986,15 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 .home-7 .process-slider .inner{border:1px solid rgba(255,255,255,.1)!important;border-radius:18px!important;background:rgba(255,255,255,.04)!important;padding:34px!important;overflow:hidden;}
 .home-7 .process-slider .text{color:var(--pts-gold-light)!important;font-size:25px!important;font-weight:900!important;}
 .home-7 .process-slider .img{border-radius:14px!important;overflow:hidden;}
+/* Lệch phiên bản thư viện Swiper trên site: JS (bản mới) gắn class
+   "swiper-autoheight" lên container khi bật autoHeight, nhưng CSS vendor
+   đóng gói kèm theo (core.min4ca0.css) lại là bản cũ chỉ định nghĩa rule
+   cho class "swiper-container-autoheight" - class đó JS không bao giờ gắn
+   nữa nên rule "height:auto" cho .swiper-slide không được áp dụng, slide
+   luôn bị kẹt ở height:100% (chiều cao của slide TRƯỚC nó) thay vì co giãn
+   theo đúng nội dung, cắt cụt ảnh/nội dung của các bước dài hơn. Vá thẳng
+   bằng đúng tên class JS thực tế đang gắn. */
+.swiper-autoheight .swiper-slide{height:auto!important;}
 
 .home-8{background:#f8fafc!important;}
 .blog-2col-row{margin-top:32px!important;}
@@ -1768,6 +1777,19 @@ h4{font-size:21px!important;font-weight:800!important;}
 .inf_item_vision .content,.inf_item_vision .content p{font-size:16px!important;}
 #CRcertification_intro .CRitem_certification .wrap{background:#fff!important;border:1px solid var(--pts-line)!important;border-radius:14px!important;padding:14px!important;}
 #CRcertification_intro .des{font-size:14.5px!important;font-weight:800!important;color:var(--pts-navy)!important;margin-top:10px!important;}
+/* .img_personnel có chiều cao cố định (450px desktop / 250px mobile) để
+   card đều nhau, nhưng ảnh <img> bên trong không bị ép vừa khung - nó cứ
+   hiện đúng tỉ lệ gốc (~1:1.4, ảnh dọc) nên cao hơn khung khá nhiều,
+   overflow:visible mặc định khiến phần dư tràn xuống và bị chữ chú thích
+   (.des) đè lên, trông như ảnh bị "cụt". Ép ảnh vừa khít khung bằng
+   object-fit:cover (giữ đúng khung hình cố định, ảnh chỉ crop chứ không
+   bị chữ đè lên nữa). */
+#CRcertification_intro .img_personnel{overflow:hidden!important;}
+#CRcertification_intro .img_personnel .album-image,
+#CRcertification_intro .img_personnel img{
+    width:100%!important;height:100%!important;
+    object-fit:cover!important;display:block;
+}
 #CRintro_home .inf_ico_intro_home p{font-size:15.5px!important;}
 
 /* Ở mobile, mỗi carousel (Sứ mệnh, Chứng nhận) chỉ hiện 1 thẻ/dòng nên
