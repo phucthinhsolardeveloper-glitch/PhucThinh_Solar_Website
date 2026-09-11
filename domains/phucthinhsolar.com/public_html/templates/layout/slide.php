@@ -145,8 +145,8 @@
             <h1>THIẾT BỊ VÀ GIẢI PHÁP<br><strong>NĂNG LƯỢNG MẶT&nbsp;TRỜI</strong></h1>
             <p><span class="pts-brand-text">Phúc Thịnh Solar</span> cung cấp đèn năng lượng mặt trời chính hãng, thiết bị điện mặt trời và giải pháp thi công cho gia đình, đại lý và công trình.</p>
             <div class="pts-hero-actions">
-                <a class="pts-btn pts-btn-gold" href="san-pham/">XEM SẢN PHẨM</a>
-                <a class="pts-btn pts-btn-ghost" href="#ptsContactModal" data-toggle="modal" data-target="#ptsContactModal">NHẬN TƯ VẤN</a>
+                <a class="pts-btn pts-btn-gold pts-btn-lg" href="san-pham/">XEM SẢN PHẨM</a>
+                <a class="pts-btn pts-btn-ghost pts-btn-lg" href="#ptsContactModal" data-toggle="modal" data-target="#ptsContactModal">NHẬN TƯ VẤN</a>
             </div>
             <p class="pts-hero-dealer-link">Bạn muốn kinh doanh? <a href="#ptsDealerModal" data-toggle="modal" data-target="#ptsDealerModal">Đăng ký đại lý <i class="fas fa-angle-right"></i></a></p>
             <div class="pts-hero-stats">

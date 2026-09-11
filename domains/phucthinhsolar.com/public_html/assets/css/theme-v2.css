@@ -224,8 +224,15 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
    hồi marketing: ảnh đang tối toàn bộ, mất sức sống). */
 .pts-hero-photo-overlay{position:absolute;inset:0;z-index:-1;background:linear-gradient(135deg,rgba(11,29,58,.88) 0%,rgba(11,29,58,.6) 45%,rgba(11,29,58,.28) 100%);}
 .pts-hero-glow{position:absolute;z-index:-1;width:560px;height:560px;right:-130px;top:-190px;border-radius:50%;background:rgba(201,150,46,.30);filter:blur(70px);}
-/* Quầng lạnh đối trọng ở góc dưới trái để nền không còn phẳng một màu. */
-.pts-hero-glow-cool{position:absolute;z-index:-1;width:520px;height:520px;left:-180px;bottom:-240px;border-radius:50%;background:rgba(41,105,208,.30);filter:blur(80px);}
+/* Quầng lạnh đối trọng ở góc dưới trái để nền không còn phẳng một màu. Neo
+   bằng "top:calc(100% - 280px)" thay vì "bottom:-240px" - dù có
+   overflow:hidden, "bottom" âm trên phần tử filter:blur()+position:absolute
+   vẫn khiến trình duyệt tính luôn phần tràn đó vào chiều cao section cha
+   (auto height), lộ ra thành khoảng trống ~240px thừa phía dưới hero khi
+   section đủ cao (phát hiện 2026-09-11 lúc nâng chiều cao layout 1). Cùng
+   vị trí thị giác (mép dưới quầng vẫn tràn ra ngoài 240px) nhưng "top" thì
+   không bị lỗi này. */
+.pts-hero-glow-cool{position:absolute;z-index:-1;width:520px;height:520px;left:-180px;top:calc(100% - 280px);border-radius:50%;background:rgba(41,105,208,.30);filter:blur(80px);}
 /* Vân lưới mô phỏng tấm pin, rất mờ, mờ dần về phải để không đè chữ. */
 .pts-hero-texture{position:absolute;z-index:-1;inset:0;opacity:.5;background-image:repeating-linear-gradient(90deg,rgba(255,255,255,.05) 0 1px,transparent 1px 64px),repeating-linear-gradient(0deg,rgba(255,255,255,.05) 0 1px,transparent 1px 64px);-webkit-mask-image:linear-gradient(105deg,transparent 0%,rgba(0,0,0,.85) 55%,rgba(0,0,0,.3) 100%);mask-image:linear-gradient(105deg,transparent 0%,rgba(0,0,0,.85) 55%,rgba(0,0,0,.3) 100%);}
 /* Nút mũi tên + chấm để bấm tay chuyển ảnh nền hero (yêu cầu 2026-09-11) -
@@ -240,24 +247,27 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
     .pts-hero-photo-nav{bottom:10px;padding:0 16px;gap:8px;}
     .pts-hero-photo-nav-btn{width:28px;height:28px;font-size:11px;}
 }
-.pts-hero-inner{position:relative;padding-top:78px;padding-bottom:82px;}
+.pts-hero-inner{position:relative;padding-top:92px;padding-bottom:96px;}
 .pts-hero-copy{max-width:760px;}
 /* Hero hai cột khi có chứng nhận; không có chứng nhận thì giữ nguyên bố cục một cột cũ. */
-.pts-home-hero-split .pts-hero-inner{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,392px);align-items:center;gap:56px;}
+.pts-home-hero-split .pts-hero-inner{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,440px);align-items:center;gap:56px;}
 .pts-home-hero-split .pts-hero-copy{max-width:640px;}
 .pts-home-hero-split .pts-home-hero p{max-width:560px;}
-.pts-home-hero-split .pts-hero-stats{gap:34px;}
+.pts-home-hero-split .pts-hero-stats{gap:38px;}
 
-/* Khối tin cậy: chứng nhận uỷ quyền của hãng */
-.pts-hero-trust{position:relative;border:1px solid rgba(224,182,84,.30);border-radius:18px;background:rgba(255,255,255,.055);padding:24px 26px 26px;box-shadow:0 22px 50px rgba(3,10,28,.34);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);}
-.pts-hero-trust-label{display:inline-flex;align-items:center;gap:8px;color:var(--pts-gold-light);font-size:11.5px;font-weight:900;letter-spacing:.13em;text-transform:uppercase;}
-.pts-hero-cert-stack{position:relative;display:flex;align-items:flex-end;justify-content:center;min-height:250px;margin:18px 0 20px;}
+/* Khối tin cậy: chứng nhận uỷ quyền của hãng - phóng to (thẻ, ảnh giấy
+   chứng nhận) để tăng độ hiển thị, đây là điểm khác biệt riêng của layout
+   1 (layout 2 không có cột chứng nhận) nên không đụng tới layout 2
+   (yêu cầu 2026-09-11). */
+.pts-hero-trust{position:relative;border:1px solid rgba(224,182,84,.30);border-radius:20px;background:rgba(255,255,255,.055);padding:30px 32px 32px;box-shadow:0 26px 58px rgba(3,10,28,.36);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);}
+.pts-hero-trust-label{display:inline-flex;align-items:center;gap:8px;color:var(--pts-gold-light);font-size:12.5px;font-weight:900;letter-spacing:.13em;text-transform:uppercase;}
+.pts-hero-cert-stack{position:relative;display:flex;align-items:flex-end;justify-content:center;min-height:296px;margin:22px 0 24px;}
 .pts-hero-cert{margin:0;border-radius:6px;background:#fff;box-shadow:0 14px 30px rgba(3,10,28,.42);overflow:hidden;}
 .pts-hero-cert img{display:block;width:100%;height:100%;object-fit:cover;}
 /* Hai tấm sau chỉ ló ra làm chiều sâu, tấm đầu danh sách đứng trước và thẳng. */
-.pts-hero-cert-0{position:relative;z-index:3;width:172px;aspect-ratio:1826/2560;}
-.pts-hero-cert-1{position:absolute;z-index:2;left:50%;bottom:16px;width:150px;aspect-ratio:1826/2560;transform:translateX(-108%) rotate(-8deg);opacity:.85;}
-.pts-hero-cert-2{position:absolute;z-index:1;left:50%;bottom:16px;width:150px;aspect-ratio:1826/2560;transform:translateX(8%) rotate(8deg);opacity:.85;}
+.pts-hero-cert-0{position:relative;z-index:3;width:204px;aspect-ratio:1826/2560;}
+.pts-hero-cert-1{position:absolute;z-index:2;left:50%;bottom:18px;width:178px;aspect-ratio:1826/2560;transform:translateX(-108%) rotate(-8deg);opacity:.85;}
+.pts-hero-cert-2{position:absolute;z-index:1;left:50%;bottom:18px;width:178px;aspect-ratio:1826/2560;transform:translateX(8%) rotate(8deg);opacity:.85;}
 .pts-hero-trust-brands{display:flex;flex-wrap:wrap;justify-content:center;gap:7px;margin:0 0 18px;padding:0;list-style:none;}
 .pts-hero-trust-brands li{border:1px solid rgba(224,182,84,.34);border-radius:999px;padding:4px 11px;color:#f2e6c8;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;}
 .pts-hero-trust-link{display:inline-flex;align-items:center;gap:8px;color:var(--pts-gold-light)!important;font-size:13px;font-weight:850;text-decoration:none!important;}
@@ -287,10 +297,17 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 .pts-btn-gold:hover{background:var(--pts-gold-light);}
 .pts-btn-ghost{border:2px solid rgba(255,255,255,.32);color:#fff!important;}
 .pts-btn-ghost:hover{border-color:var(--pts-gold-light);}
-.pts-hero-stats{display:flex;flex-wrap:wrap;gap:42px;}
+/* Hàng 3 lợi ích + thanh số liệu kính mờ cuối hero (yêu cầu 2026-09-11):
+   nâng layout 1 lên ngang tầm layout 2 (chiều cao + độ chi tiết), tái dùng
+   nguyên nội dung 3 lợi ích đã duyệt ở layout 2 cho nhất quán. */
+/* Số liệu tin cậy - phóng to hơn bản cũ để tăng độ hiển thị (yêu cầu
+   2026-09-11), vẫn giữ đúng dạng số trần + nhãn nhỏ nguyên bản của layout
+   1, không chuyển sang dạng card kính như layout 2 để 2 bản không bị giống
+   nhau. */
+.pts-hero-stats{display:flex;flex-wrap:wrap;gap:52px;}
 .pts-hero-stats>div{display:flex;flex-direction:column;}
-.pts-hero-stats strong{font-size:34px;font-weight:950;line-height:1;color:var(--pts-gold-light);}
-.pts-hero-stats span{font-size:12px;color:#bfdbfe;margin-top:7px;}
+.pts-hero-stats strong{font-size:44px;font-weight:950;line-height:1;color:var(--pts-gold-light);}
+.pts-hero-stats span{font-size:13px;color:#bfdbfe;margin-top:8px;}
 
 /* =====================================================================
    HERO LAYOUT 2 + nút chuyển thiết kế (yêu cầu 2026-09-11)
@@ -495,12 +512,12 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
     .pts-brand-wordmark img{max-width:165px!important;max-height:38px!important;}
     .pts-home-hero h1{font-size:clamp(36px,11vw,52px);}
     .pts-home-hero p{font-size:15px;}
-    .pts-hero-stats{gap:24px;}
-    .pts-hero-stats strong{font-size:28px;}
-    .pts-hero-trust{padding:20px 18px 22px;}
-    .pts-hero-cert-stack{min-height:210px;margin:16px 0 18px;}
-    .pts-hero-cert-0{width:146px;}
-    .pts-hero-cert-1,.pts-hero-cert-2{width:128px;}
+    .pts-hero-stats{gap:32px;}
+    .pts-hero-stats strong{font-size:34px;}
+    .pts-hero-trust{padding:24px 22px 26px;max-width:460px;}
+    .pts-hero-cert-stack{min-height:250px;margin:18px 0 20px;}
+    .pts-hero-cert-0{width:172px;}
+    .pts-hero-cert-1,.pts-hero-cert-2{width:150px;}
     .cat-highlight-row{gap:16px 0;}
     .cat-highlight-card{min-height:auto;}
     .footer_top>.container>.row{grid-template-columns:1fr;}
@@ -521,8 +538,13 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
     .pts-hero-inner{padding-top:48px;padding-bottom:52px;}
     .pts-home-hero h1{font-size:35px;}
     .pts-hero-actions .pts-btn{width:100%;}
+    /* Cụm nút liên hệ nổi che nút full-width - cùng nguyên nhân/cách sửa đã
+       áp dụng cho layout 2 (yêu cầu 2026-09-11): tăng độ đặc hiệu bằng
+       ".pts-home-hero " vì rule dùng chung ".wrap-content{padding-right:
+       16px!important}" (@640px, bao luôn 576px) đứng sau trong file. */
+    .pts-home-hero .pts-hero-inner{padding-right:78px!important;}
     .pts-hero-stats{justify-content:space-between;gap:14px;}
-    .pts-hero-stats strong{font-size:24px;}
+    .pts-hero-stats strong{font-size:28px;}
     .pts-hero-stats span{font-size:10px;max-width:90px;}
     .wrap-cat-highlight{padding:46px 0!important;}
 }
