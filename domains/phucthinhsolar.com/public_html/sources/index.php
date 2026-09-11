@@ -5,7 +5,6 @@
 	$popup = $cache->get("select id, date_updated, name$lang, photo, link from #_photo where type = ? and act = ? and find_in_set('hienthi',status) limit 0,1", array('popup','photo_static'), 'fetch', 7200);
     $adv = $cache->get("select name$lang, desc$lang, photo, link from #_photo where type = ? and find_in_set('hienthi',status) order by numb,id desc", array('adv'), 'result', 7200);
     
-    $gtcl = $cache->get("select name$lang, photo, link, show_stt, video from #_photo where type = ? and find_in_set('hienthi',status) order by numb,id desc", array('gia-tri-cot-loi'), 'result', 7200);
     $splistnb = $cache->get("select pl.name$lang, pl.slugvi, pl.slugen, pl.id, pl.photo from #_product_list pl where pl.type = ? and find_in_set('noibat',pl.status) and find_in_set('hienthi',pl.status) and exists (select 1 from #_product p where p.id_list = pl.id and p.type = ? and find_in_set('hienthi',p.status)) order by pl.numb,pl.id desc", array('san-pham','san-pham'), 'result', 7200);
     $newsnb = $cache->get("select name$lang, slugvi, slugen, desc$lang, date_created, id, photo from #_news where type = ? and find_in_set('noibat',status) and find_in_set('hienthi',status) order by numb,id desc limit 0,6", array('tin-tuc'), 'result', 7200);
     $solieu = $cache->get("select name$lang, solieu, id, photo from #_news where type = ? and find_in_set('hienthi',status) order by numb,id desc limit 0,4", array('so-lieu-thong-ke'), 'result', 7200);
@@ -24,8 +23,6 @@
     /* Ảnh nền Hero (chế độ 'text') - tuỳ chọn, quản lý qua Admin > Ảnh nền Hero trang chủ.
        Nhiều ảnh thì slide.php tự crossfade; không có ảnh nào thì dùng nền gradient mặc định. */
     $heroBgList = $cache->get("select photo from #_photo where type = ? and find_in_set('hienthi',status) order by numb,id desc", array('home-hero-bg'), 'result', 7200);
-    $about = $cache->get("select name$lang, desc$lang,photo from #_static where type = ? and find_in_set('hienthi',status) limit 0,1", array('gioi-thieu'), 'fetch', 7200);
-    $doitaccongnghe = $cache->get("select name$lang, desc$lang,photo, namkinhnghiem from #_static where type = ? and find_in_set('hienthi',status) limit 0,1", array('doi-tac-cong-nghe'), 'fetch', 7200);
     $tieuchi = $cache->get("select name$lang, slugvi, slugen, desc$lang, date_created, id, photo from #_news where type = ? and find_in_set('hienthi',status) order by numb,id desc", array('tieu-chi'), 'result', 7200);
     $solutionTabs = array();
     $solutionRows = $cache->get("select name$lang, title_index$lang, slugvi, slugen, desc$lang, date_created, id, id_list, photo1 from #_news where type = ? and find_in_set('noibat',status) and find_in_set('hienthi',status) order by numb,id desc", array('giai-phap'), 'result', 7200);

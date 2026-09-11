@@ -1,5 +1,10 @@
 # Rà soát mức độ sử dụng Admin và kế hoạch nâng cấp — 2026-09-05
 
+> **Cập nhật 2026-09-11:** dữ liệu, Hero, chính sách, danh mục, review và ảnh
+> Shopping đã thay đổi đáng kể. Dùng
+> [`2026-09-11-full-site-admin-alignment-retest.md`](2026-09-11-full-site-admin-alignment-retest.md)
+> làm trạng thái hiện hành; tài liệu này được giữ làm mốc lịch sử.
+
 ## Phạm vi
 
 - Đối chiếu cấu hình menu/type, route, source, template, consumer public và dữ liệu tổng hợp trong MariaDB local.

@@ -467,23 +467,26 @@
     $config['news'][$nametype]['thumb'] = '100x100x1';
     $config['news'][$nametype]['img_type'] = '.jpg|.gif|.png|.jpeg|.gif';
 
-    /* Thông tin liên hệ */
-    $nametype = "thong-tin-lien-he";
-    $config['news'][$nametype]['title_main'] = "Thông tin liên hệ";
-    $config['news'][$nametype]['check'] = array("hienthi" => "Hiển thị");
-    $config['news'][$nametype]['view'] = false;
-    $config['news'][$nametype]['slug'] = false;
-    $config['news'][$nametype]['copy'] = false;
-    $config['news'][$nametype]['images'] = true;
-    $config['news'][$nametype]['show_images'] = true;
-    $config['news'][$nametype]['desc'] = true;
-    $config['news'][$nametype]['content'] = false;
-    $config['news'][$nametype]['desc_cke'] = true;
-    $config['news'][$nametype]['seo'] = false;
-    $config['news'][$nametype]['width'] = 320;
-    $config['news'][$nametype]['height'] = 240;
-    $config['news'][$nametype]['thumb'] = '100x100x1';
-    $config['news'][$nametype]['img_type'] = '.jpg|.gif|.png|.jpeg|.gif';
+    /* Thông tin liên hệ — mồ côi: sources/about.php từng query nhưng
+       templates/about/about_tpl.php không dùng biến này. 3 dòng dữ liệu cũ
+       (Phone/Email/Địa chỉ) chưa từng được nhập nội dung thật, đã xoá
+       (audit 2026-09-11). */
+    // $nametype = "thong-tin-lien-he";
+    // $config['news'][$nametype]['title_main'] = "Thông tin liên hệ";
+    // $config['news'][$nametype]['check'] = array("hienthi" => "Hiển thị");
+    // $config['news'][$nametype]['view'] = false;
+    // $config['news'][$nametype]['slug'] = false;
+    // $config['news'][$nametype]['copy'] = false;
+    // $config['news'][$nametype]['images'] = true;
+    // $config['news'][$nametype]['show_images'] = true;
+    // $config['news'][$nametype]['desc'] = true;
+    // $config['news'][$nametype]['content'] = false;
+    // $config['news'][$nametype]['desc_cke'] = true;
+    // $config['news'][$nametype]['seo'] = false;
+    // $config['news'][$nametype]['width'] = 320;
+    // $config['news'][$nametype]['height'] = 240;
+    // $config['news'][$nametype]['thumb'] = '100x100x1';
+    // $config['news'][$nametype]['img_type'] = '.jpg|.gif|.png|.jpeg|.gif';
 
 
     /* Lịch sử */

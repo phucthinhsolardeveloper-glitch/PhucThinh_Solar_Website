@@ -90,7 +90,7 @@ function publicCanonicalEntityPath($d, $com, array $params, $lang = 'vi')
        (category/, solution/, danh-muc-du-an/...) cho cùng một entity. Chuẩn hoá
        về bare slug — đúng dạng sitemap đang công bố. Chỉ áp dụng khi URL trỏ tới
        một entity cụ thể; trang danh sách giữ nguyên hành vi cũ. */
-    $newsComs = array('tin-tuc', 'giai-phap', 'du-an', 'du-an-da-thuc-hien', 'chinh-sach', 'he-thong-dai-ly');
+    $newsComs = array('tin-tuc', 'giai-phap', 'du-an', 'du-an-da-thuc-hien', 'chinh-sach');
     if(in_array($com, $newsComs, true))
     {
         $newsRoutes = array('id' => 'news', 'ids' => 'news_sub', 'idi' => 'news_item', 'idc' => 'news_cat', 'idl' => 'news_list');

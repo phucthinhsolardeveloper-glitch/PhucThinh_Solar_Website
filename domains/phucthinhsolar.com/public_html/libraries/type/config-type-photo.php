@@ -134,29 +134,35 @@
     $config['photo']['photo_static'][$nametype]['thumb'] = '800x530x1';
     $config['photo']['photo_static'][$nametype]['img_type'] = '.jpg|.gif|.png|.jpeg|.gif';
 
-    /* Hình ảnh giới thiệu — đang được sources/about.php truy vấn nhưng chưa
-       gắn vào admin, nên trước giờ không ai sửa được qua đây. */
-    $nametype = "hinh-anh-gioi-thieu";
-    $config['photo']['photo_static'][$nametype]['title_main'] = "Hình ảnh giới thiệu (trang Về chúng tôi)";
-    $config['photo']['photo_static'][$nametype]['check'] = array("hienthi" => "Hiển thị");
-    $config['photo']['photo_static'][$nametype]['images'] = true;
-    $config['photo']['photo_static'][$nametype]['width'] = 600;
-    $config['photo']['photo_static'][$nametype]['height'] = 800;
-    $config['photo']['photo_static'][$nametype]['thumb'] = '600x800x1';
-    $config['photo']['photo_static'][$nametype]['img_type'] = '.jpg|.gif|.png|.jpeg|.gif';
+    /* Hình ảnh giới thiệu — mồ côi: sources/about.php từng query nhưng
+       templates/about/about_tpl.php không dùng biến này (đã xác nhận qua
+       audit 2026-09-11). Dữ liệu cũ chỉ là 1 ảnh demo không rõ nguồn gốc,
+       đã xoá. Ẩn field admin, không xoá code để có thể khôi phục nếu sau
+       này thật sự cần. */
+    // $nametype = "hinh-anh-gioi-thieu";
+    // $config['photo']['photo_static'][$nametype]['title_main'] = "Hình ảnh giới thiệu (trang Về chúng tôi)";
+    // $config['photo']['photo_static'][$nametype]['check'] = array("hienthi" => "Hiển thị");
+    // $config['photo']['photo_static'][$nametype]['images'] = true;
+    // $config['photo']['photo_static'][$nametype]['width'] = 600;
+    // $config['photo']['photo_static'][$nametype]['height'] = 800;
+    // $config['photo']['photo_static'][$nametype]['thumb'] = '600x800x1';
+    // $config['photo']['photo_static'][$nametype]['img_type'] = '.jpg|.gif|.png|.jpeg|.gif';
 
-    /* Video giới thiệu công ty (trang Về chúng tôi) — templates/static/about_tpl.php
-       đã render, chỉ thiếu đăng ký ở admin nên trước giờ không sửa được. */
-    $nametype = "video";
-    $config['photo']['photo_static'][$nametype]['title_main'] = "Video giới thiệu (trang Về chúng tôi)";
-    $config['photo']['photo_static'][$nametype]['check'] = array("hienthi" => "Hiển thị");
-    $config['photo']['photo_static'][$nametype]['images'] = true;
-    $config['photo']['photo_static'][$nametype]['video_mp4'] = true;
-    $config['photo']['photo_static'][$nametype]['video_type'] = 'mp4';
-    $config['photo']['photo_static'][$nametype]['width'] = 1280;
-    $config['photo']['photo_static'][$nametype]['height'] = 720;
-    $config['photo']['photo_static'][$nametype]['thumb'] = '1280x720x1';
-    $config['photo']['photo_static'][$nametype]['img_type'] = '.jpg|.gif|.png|.jpeg|.gif';
+    /* Video giới thiệu công ty — mồ côi thật sự: templates/static/about_tpl.php
+       KHÔNG được route nào include (đã xoá cả file, xem sources/static.php).
+       Comment cũ ở đây nói "đã render, chỉ thiếu đăng ký admin" là SAI - đó
+       chính là nguyên nhân field này được thêm nhầm (audit 2026-09-11). Dữ
+       liệu cũ là ảnh Pexels stock, file đã mất trên đĩa, đã xoá row. */
+    // $nametype = "video";
+    // $config['photo']['photo_static'][$nametype]['title_main'] = "Video giới thiệu (trang Về chúng tôi)";
+    // $config['photo']['photo_static'][$nametype]['check'] = array("hienthi" => "Hiển thị");
+    // $config['photo']['photo_static'][$nametype]['images'] = true;
+    // $config['photo']['photo_static'][$nametype]['video_mp4'] = true;
+    // $config['photo']['photo_static'][$nametype]['video_type'] = 'mp4';
+    // $config['photo']['photo_static'][$nametype]['width'] = 1280;
+    // $config['photo']['photo_static'][$nametype]['height'] = 720;
+    // $config['photo']['photo_static'][$nametype]['thumb'] = '1280x720x1';
+    // $config['photo']['photo_static'][$nametype]['img_type'] = '.jpg|.gif|.png|.jpeg|.gif';
 
     /* Slideshow */
     $nametype = "slide";
@@ -192,19 +198,22 @@
     $config['photo']['man_photo'][$nametype]['img_type_photo'] = '.jpg|.gif|.png|.jpeg|.gif';
 
 
-    /* Giá trị cốt lõi */
-    $nametype = "gia-tri-cot-loi";
-    $config['photo']['man_photo'][$nametype]['title_main_photo'] = "Giá trị cốt lõi";
-    $config['photo']['man_photo'][$nametype]['check_photo'] = array("hienthi" => "Hiển thị");
-    $config['photo']['man_photo'][$nametype]['number_photo'] = 3;
-    $config['photo']['man_photo'][$nametype]['images_photo'] = true;
-    $config['photo']['man_photo'][$nametype]['avatar_photo'] = true;
-    $config['photo']['man_photo'][$nametype]['link_photo'] = true;
-    $config['photo']['man_photo'][$nametype]['name_photo'] = true;
-    $config['photo']['man_photo'][$nametype]['width_photo'] = 379;
-    $config['photo']['man_photo'][$nametype]['height_photo'] = 171;
-    $config['photo']['man_photo'][$nametype]['thumb_photo'] = '379x171x1';
-    $config['photo']['man_photo'][$nametype]['img_type_photo'] = '.jpg|.gif|.png|.jpeg|.gif';
+    /* Giá trị cốt lõi — mồ côi: sources/index.php từng query nhưng
+       templates/index/index_tpl.php không dùng biến này. Dữ liệu cũ chỉ là
+       4 ảnh stock "chuyển đổi số"/"corporate strategy" demo, đã xoá (audit
+       2026-09-11). */
+    // $nametype = "gia-tri-cot-loi";
+    // $config['photo']['man_photo'][$nametype]['title_main_photo'] = "Giá trị cốt lõi";
+    // $config['photo']['man_photo'][$nametype]['check_photo'] = array("hienthi" => "Hiển thị");
+    // $config['photo']['man_photo'][$nametype]['number_photo'] = 3;
+    // $config['photo']['man_photo'][$nametype]['images_photo'] = true;
+    // $config['photo']['man_photo'][$nametype]['avatar_photo'] = true;
+    // $config['photo']['man_photo'][$nametype]['link_photo'] = true;
+    // $config['photo']['man_photo'][$nametype]['name_photo'] = true;
+    // $config['photo']['man_photo'][$nametype]['width_photo'] = 379;
+    // $config['photo']['man_photo'][$nametype]['height_photo'] = 171;
+    // $config['photo']['man_photo'][$nametype]['thumb_photo'] = '379x171x1';
+    // $config['photo']['man_photo'][$nametype]['img_type_photo'] = '.jpg|.gif|.png|.jpeg|.gif';
 
     /* Hình ảnh */
     $nametype = "hinh-anh-dai-ly";
@@ -283,17 +292,20 @@
     $config['photo']['man_photo'][$nametype]['thumb_photo'] = '175x95x2';
     $config['photo']['man_photo'][$nametype]['img_type_photo'] = '.jpg|.gif|.png|.jpeg|.gif';
 
-    // /* Đối tác - giới thiệu */
-    $nametype = "doitacgioithieu";
-    $config['photo']['man_photo'][$nametype]['title_main_photo'] = "Đối tác - giới thiệu";
-    $config['photo']['man_photo'][$nametype]['check_photo'] = array("hienthi" => "Hiển thị");
-    $config['photo']['man_photo'][$nametype]['number_photo'] = 5;
-    $config['photo']['man_photo'][$nametype]['images_photo'] = true;
-    $config['photo']['man_photo'][$nametype]['avatar_photo'] = true;
-    $config['photo']['man_photo'][$nametype]['link_photo'] = false;
-    $config['photo']['man_photo'][$nametype]['name_photo'] = true;
-    $config['photo']['man_photo'][$nametype]['width_photo'] = 175;
-    $config['photo']['man_photo'][$nametype]['height_photo'] = 95;
-    $config['photo']['man_photo'][$nametype]['thumb_photo'] = '175x95x2';
-    $config['photo']['man_photo'][$nametype]['img_type_photo'] = '.jpg|.gif|.png|.jpeg|.gif';
+    // /* Đối tác - giới thiệu — mồ côi: sources/about.php từng query nhưng
+    //    templates/about/about_tpl.php không dùng biến này. Dữ liệu cũ là 6
+    //    logo không liên quan (Sacombank, HUTECH...) - demo leftover, đã xoá
+    //    (audit 2026-09-11). */
+    // $nametype = "doitacgioithieu";
+    // $config['photo']['man_photo'][$nametype]['title_main_photo'] = "Đối tác - giới thiệu";
+    // $config['photo']['man_photo'][$nametype]['check_photo'] = array("hienthi" => "Hiển thị");
+    // $config['photo']['man_photo'][$nametype]['number_photo'] = 5;
+    // $config['photo']['man_photo'][$nametype]['images_photo'] = true;
+    // $config['photo']['man_photo'][$nametype]['avatar_photo'] = true;
+    // $config['photo']['man_photo'][$nametype]['link_photo'] = false;
+    // $config['photo']['man_photo'][$nametype]['name_photo'] = true;
+    // $config['photo']['man_photo'][$nametype]['width_photo'] = 175;
+    // $config['photo']['man_photo'][$nametype]['height_photo'] = 95;
+    // $config['photo']['man_photo'][$nametype]['thumb_photo'] = '175x95x2';
+    // $config['photo']['man_photo'][$nametype]['img_type_photo'] = '.jpg|.gif|.png|.jpeg|.gif';
 ?>

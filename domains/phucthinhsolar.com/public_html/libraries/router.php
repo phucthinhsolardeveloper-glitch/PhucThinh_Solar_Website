@@ -270,14 +270,6 @@
 			$titleMain = "Dự án đã thực hiện";
 			break;
 
-		case 'he-thong-dai-ly':
-			$source = "news";
-			$template = "news/daily";
-			$seo->set('type',isset($_GET['id']) ? "article" : "object");
-			$type = $com;
-			$titleMain = "Hệ thống đại lý";
-			break;
-
 		case 'chinh-sach':
 			$source = "news";
 			$template = isset($_GET['id']) ? "news/news_detail" : "";
