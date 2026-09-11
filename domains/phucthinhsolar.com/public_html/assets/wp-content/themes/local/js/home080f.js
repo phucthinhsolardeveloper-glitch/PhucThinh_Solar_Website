@@ -222,6 +222,8 @@ function sliderHome(){
             slidesPerView: 1,
             spaceBetween: 30,
             autoHeight: true,
+            observer: true,
+            observeSlideChildren: true,
             autoplay: {
                 delay: 5e3
             },

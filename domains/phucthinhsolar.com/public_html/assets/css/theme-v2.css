@@ -2010,14 +2010,18 @@ h4{font-size:21px!important;font-weight:800!important;}
 }
 
 /* =====================================================================
-   FOOTER TRÊN MOBILE — hiển thị đầy đủ, bỏ accordion thu gọn
-   Legacy ẩn .CRcont_nav_mobile trên mobile và thêm mũi tên để bung
-   từng mục. Chủ project muốn thấy đủ nội dung footer ngay.
-   ===================================================================== */
-@media(max-width:820px){
+   FOOTER — hiển thị đầy đủ, bỏ accordion thu gọn
+   Vendor CSS ẩn .CRcont_nav_mobile (khối "Chính sách & Hỗ trợ khách
+   hàng") tới tận max-width:991px, nhưng bản vá cũ ở đây chỉ chống tới
+   820px — để hở khoảng 821-991px khiến khối này vẫn mặc định thu gọn
+   trong khi khối "Chi nhánh" bên cạnh (không mang class này) luôn hiện,
+   nhìn như 2 khối lệch nhau. Khớp đúng ngưỡng 991px của vendor. */
+@media(max-width:991px){
     .footer_top .CRcont_nav_mobile{display:block!important;height:auto!important;}
     .footer_top .item .footer-title .show_menu_mb{display:none!important;}
     .footer_top .item .footer-title{cursor:default!important;pointer-events:none;}
+}
+@media(max-width:820px){
     .footer_top>.container>.row{display:grid!important;grid-template-columns:1fr!important;gap:26px!important;}
     .footer_top .ft_mn,.footer_top .ft_first,.footer_top .ft_last{width:100%!important;max-width:100%!important;flex:0 0 100%!important;}
     .footer_top .ft_mn_right .content{margin:0!important;}
