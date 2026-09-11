@@ -1724,6 +1724,17 @@ h4{font-size:21px!important;font-weight:800!important;}
 #CRcertification_intro .des{font-size:14.5px!important;font-weight:800!important;color:var(--pts-navy)!important;margin-top:10px!important;}
 #CRintro_home .inf_ico_intro_home p{font-size:15.5px!important;}
 
+/* Ở mobile, mỗi carousel (Sứ mệnh, Chứng nhận) chỉ hiện 1 thẻ/dòng nên
+   phần đệm hai bên kế thừa từ lưới Bootstrap cũ (col-sm-12, width:50%)
+   không còn tạo khoảng cách với thẻ kế tiếp — chỉ ăn mất không gian hiển
+   thị nội dung. Giảm đệm ở breakpoint này, giữ nguyên desktop/tablet vì ở
+   đó đệm vẫn đang làm đúng việc tạo khoảng cách giữa các thẻ. */
+@media(max-width:640px){
+    #CRlist_vision .CRgr_item_vision.inf_item_vision{padding:8px!important;}
+    #CRlist_vision .CRgr_item_vision.inf_item_vision .wrap{padding:24px 20px 28px!important;}
+    #CRcertification_intro .CRfix_width_slider{padding-left:8px!important;padding-right:8px!important;}
+}
+
 /* =====================================================================
    TRANG CHI TIẾT DỰ ÁN — cụm "Khách hàng / Địa chỉ" phải bám ngay dưới
    tiêu đề, không trôi ra giữa cột khi nội dung bên phải dài.

@@ -28,24 +28,19 @@
     <?php if(count($lydo)){ ?>
     <section id="CRintro_home">
         <div class="container">
-            <div class="row">
-                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-                    <div class="content">
-                        <h2 class="CRstyle_title">Tại sao nên chọn <span class="pts-brand-text">Phúc Thịnh Solar</span>?</h2>
-                        <div id="CRicos_intro_home" class="inf_dots">
-                            <?php foreach($lydo as $k => $v){ ?>
-                            <div class="inf_ico_intro_home">
-                                <div class="wrap">
-                                    <?=$func->getImage(['isLazy' => false, 'class' => '', 'sizes' => '366x156x3', 'upload' => UPLOAD_NEWS_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
-                                    <p><?=$v['name'.$lang]?></p>
-                                </div>
-                            </div>
-                            <?php } ?>
+            <div class="content">
+                <h2 class="CRstyle_title">Tại sao nên chọn <span class="pts-brand-text">Phúc Thịnh Solar</span>?</h2>
+                <div id="CRicos_intro_home" class="inf_dots">
+                    <?php foreach($lydo as $k => $v){ ?>
+                    <div class="inf_ico_intro_home">
+                        <div class="wrap">
+                            <?=$func->getImage(['isLazy' => false, 'class' => '', 'sizes' => '366x156x3', 'upload' => UPLOAD_NEWS_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
+                            <p><?=$v['name'.$lang]?></p>
                         </div>
                     </div>
+                    <?php } ?>
                 </div>
             </div>
-
         </div>
     </section>
     <?php } ?>
@@ -54,24 +49,18 @@
     <section class="rocket-lazyload lazyloaded" id="inf_vision_intro"
         style="background-image: url(assets/images/2-layers-6.png);" data-ll-status="loaded">
         <div class="container">
-            <div class="row">
-                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-                    <h2 class="CRstyle_title"><?=$sumenh_title['name'.$lang]?></h2>
-                </div>
-            </div>
-            <div id="CRlist_vision" class="row">
-                <div class="col-12">
-                    <div class="content inf_dots">
-                        <?php if(count($sumenh)){foreach($sumenh as $k => $v){ ?>
-                        <div class="CRgr_item_vision inf_item_vision">
-                            <div class="wrap">
-                                <?=$func->getImage(['class' => '', 'sizes' => '120x120x3', 'upload' => UPLOAD_NEWS_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
-                                <h3><?=$v['name'.$lang]?></h3>
-                                <div class="content"><?=htmlspecialchars_decode($v['content'.$lang])?></div>
-                            </div>
+            <h2 class="CRstyle_title"><?=$sumenh_title['name'.$lang]?></h2>
+            <div id="CRlist_vision">
+                <div class="content inf_dots">
+                    <?php if(count($sumenh)){foreach($sumenh as $k => $v){ ?>
+                    <div class="CRgr_item_vision inf_item_vision">
+                        <div class="wrap">
+                            <?=$func->getImage(['class' => '', 'sizes' => '120x120x3', 'upload' => UPLOAD_NEWS_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
+                            <h3><?=$v['name'.$lang]?></h3>
+                            <div class="content"><?=htmlspecialchars_decode($v['content'.$lang])?></div>
                         </div>
-                        <?php }} ?>
                     </div>
+                    <?php }} ?>
                 </div>
             </div>
         </div>
@@ -83,19 +72,15 @@
         <?php if(count($partner)){ ?>
         <section id="inf_partner">
             <div class="container">
-                <div class="row">
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-                        <h2 class="CRstyle_title">Đối tác chiến lược</h2>
-                        <div id="inf_list_partner" class="inf_dots"><?php /* Theme V2: lưới logo tĩnh (flex-wrap), không dùng slick. */ ?>
-                            <?php foreach($partner as $k => $v){ ?>
-                            <div class="inf_item_partner">
-                                <div class="wrap">
-                                    <?=$func->getImage(['isLazy' => false,'sizes' => '300x128x3', 'upload' => UPLOAD_PHOTO_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
-                                </div>
-                            </div>
-                            <?php } ?>
+                <h2 class="CRstyle_title">Đối tác chiến lược</h2>
+                <div id="inf_list_partner" class="inf_dots"><?php /* Theme V2: lưới logo tĩnh (flex-wrap), không dùng slick. */ ?>
+                    <?php foreach($partner as $k => $v){ ?>
+                    <div class="inf_item_partner">
+                        <div class="wrap">
+                            <?=$func->getImage(['isLazy' => false,'sizes' => '300x128x3', 'upload' => UPLOAD_PHOTO_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
                         </div>
                     </div>
+                    <?php } ?>
                 </div>
             </div>
         </section>
@@ -103,11 +88,7 @@
         <?php if(count($chungnhan)){ ?>
         <section id="CRcertification_intro">
             <div class="container">
-                <div class="row">
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-                        <h2 class="CRstyle_title">Chứng nhận</h2>
-                    </div>
-                </div>
+                <h2 class="CRstyle_title">Chứng nhận</h2>
                 <div id="inf_list_certification_intro" class="row active_slider inf_dots album-gallery">
                     <?php foreach($chungnhan as $k => $v){ ?>
                     <div class="CRfix_width_slider CRgroup_item_personnel col-xl-4 col-lg-4 col-md-6 col-sm-12 album-item">
