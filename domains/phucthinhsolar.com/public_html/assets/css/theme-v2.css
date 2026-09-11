@@ -905,6 +905,18 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 @media(min-width:993px){
     .home_loi_ich #inf_circle_utilities_destroy{display:none!important;}
 }
+@media(max-width:992px){
+    /* Nội dung phụ, không cần chiếm hết chiều dài trang khi xếp dọc từng
+       thẻ - chuyển sang cuộn ngang như khối danh mục sản phẩm phía trên. */
+    .home_loi_ich .pts-benefit-grid{
+        display:flex!important;flex-wrap:nowrap!important;gap:14px;
+        overflow-x:auto;overflow-y:hidden;scroll-behavior:smooth;
+        scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;
+        padding:4px 2px 10px!important;margin:0!important;list-style:none;
+    }
+    .home_loi_ich .item_utilities_destroy{flex:0 0 78%;max-width:280px;scroll-snap-align:start;}
+    .home_loi_ich .item_utilities_destroy .wrap{height:100%;}
+}
 
 .home-4{position:relative;background:linear-gradient(135deg,var(--pts-navy-deep),var(--pts-navy-light))!important;}
 .home-4:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 80% 20%,rgba(201,150,46,.22),transparent 35%);pointer-events:none;}
@@ -978,6 +990,19 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 .home-8{background:#f8fafc!important;}
 .blog-2col-row{margin-top:32px!important;}
 .blog-2col-item{border:1px solid var(--pts-line)!important;border-radius:15px!important;background:#fff!important;padding:24px!important;}
+/* Dưới 992px, nền xám của .home-8 bị thụt vào theo cả gutter của
+   wrap-main LẪN uk-container cộng dồn (32px mỗi bên) trước khi chạm card
+   trắng bên trong - viền xám thừa không có tác dụng gì, chỉ làm card bị
+   thu hẹp. Cho nền tràn sát viền màn hình (kỹ thuật "breakout" bù margin
+   âm bằng chiều rộng viewport), card chỉ còn cách viền đúng 1 lớp gutter
+   16px (khớp nhịp chung của trang) thay vì 2 lớp cộng dồn. */
+@media(max-width:991px){
+    .home-8.uk-section-large{
+        margin-left:calc(50% - 50vw)!important;margin-right:calc(50% - 50vw)!important;
+        padding-left:calc(50vw - 50% + 16px)!important;padding-right:calc(50vw - 50% + 16px)!important;
+    }
+    .home-8.uk-section-large>.uk-container{padding-left:0!important;padding-right:0!important;}
+}
 .blog-2col-heading{border-bottom:1px solid #eef0f4!important;padding-bottom:14px!important;margin-bottom:8px!important;}
 .blog-2col-heading h4{color:var(--pts-navy)!important;font-size:18px!important;font-weight:900!important;}
 .blog-2col-viewall{color:var(--pts-gold-dark)!important;font-size:12px!important;font-weight:850!important;}
@@ -1000,6 +1025,11 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
        dù ảnh thật chỉ cao ~117px, để lại khoảng trắng giữa ảnh và khối nội
        dung bên dưới. Bỏ ép, để mỗi khối cao theo đúng nội dung của nó. */
     .home-2 .tabs-container .wrapper{min-height:0;}
+    /* Ảnh bo góc dưới + card bo góc trên là để tách 2 khối rõ ràng - nếu
+       ghép sát mép 0px thì 2 chỗ bo cong chạm nhau tạo vết lõm nhìn lỗi,
+       chừa 1 khoảng hở nhỏ vừa đủ để mỗi khối vẫn là 1 "thẻ" bo tròn riêng
+       biệt, không lặp lại khoảng trắng 180px như trước khi sửa. */
+    .home-2 .tabs-container .item{gap:14px;}
     .home-2 .tabs-container .content{border-radius:18px 18px 0 0!important;padding:34px!important;}
     /* mainV2*.css có luật "body.home .home-2 .item .content{padding:30px 45px!important}"
        specificity cao hơn (5 lớp), đè mất padding 34px ở trên -> phải khớp/vượt cùng mức. */
