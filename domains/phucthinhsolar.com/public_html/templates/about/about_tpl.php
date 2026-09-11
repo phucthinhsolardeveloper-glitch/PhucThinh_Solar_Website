@@ -92,9 +92,6 @@
                                 <div class="wrap">
                                     <?=$func->getImage(['isLazy' => false,'sizes' => '300x128x3', 'upload' => UPLOAD_PHOTO_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
                                 </div>
-                                <?php if(!empty($v['name'.$lang])){ ?>
-                                <p class="inf_partner_caption"><?=$v['name'.$lang]?></p>
-                                <?php } ?>
                             </div>
                             <?php } ?>
                         </div>
@@ -113,10 +110,10 @@
                 </div>
                 <div id="inf_list_certification_intro" class="row active_slider inf_dots album-gallery">
                     <?php foreach($chungnhan as $k => $v){ ?>
-                    <div class="CRfix_width_slider CRgroup_item_personnel col-xl-4 col-lg-4 col-md-6 col-sm-12">
+                    <div class="CRfix_width_slider CRgroup_item_personnel col-xl-4 col-lg-4 col-md-6 col-sm-12 album-item">
                         <div class="CRitem_certification inf_item_certification">
                             <div class="CRcertification wrap">
-                                <div class="img_personnel album-item">
+                                <div class="img_personnel">
                                     <a class="album-image" href="<?=ASSET.UPLOAD_PHOTO_L.$v['photo']?>" title="<?=htmlspecialchars($v['name'.$lang], ENT_QUOTES, 'UTF-8')?>">
                                         <?=$func->getImage(['isLazy' => false,'sizes' => '642x900x3', 'upload' => UPLOAD_PHOTO_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
                                     </a>
