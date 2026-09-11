@@ -893,7 +893,18 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 .promo-btn{border-radius:7px!important;background:var(--pts-navy)!important;color:#fff!important;padding:11px 22px!important;position:relative;z-index:1;margin-left:auto;}
 
 .home_loi_ich{background:#f8fafc!important;}
-.home_loi_ich #inf_circle_utilities_destroy{display:none!important;}
+/* #inf_circle_utilities_destroy là bản lưới thay thế cho vòng tròn xoay
+   (.utilities) - vòng tròn chỉ tính toán vị trí đẹp trên màn rộng, dưới
+   992px các icon chồng lên chữ, vỡ layout hoàn toàn (đó là lý do bundle CSS
+   gốc tự ẩn .utilities và hiện bản lưới ở đúng breakpoint max-width:992px).
+   Rule cũ ở đây ẩn bản lưới vô điều kiện (không có @media), đè luôn lên
+   phần bật-lại đúng breakpoint của bundle gốc — khiến cả 2 bản đều ẩn từ
+   993px trở xuống, mục "Lợi ích" biến mất trắng, không còn nội dung nào
+   hiển thị. Sửa lại đúng ngưỡng 992px để khớp với .utilities, không còn
+   khoảng trống giữa 2 bản. */
+@media(min-width:993px){
+    .home_loi_ich #inf_circle_utilities_destroy{display:none!important;}
+}
 
 .home-4{position:relative;background:linear-gradient(135deg,var(--pts-navy-deep),var(--pts-navy-light))!important;}
 .home-4:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 80% 20%,rgba(201,150,46,.22),transparent 35%);pointer-events:none;}
