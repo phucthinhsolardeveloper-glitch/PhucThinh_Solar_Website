@@ -55,6 +55,10 @@ function publicProductEntityPath($d, $table, $id, $lang = 'vi')
         $row = $d->rawQueryOne("select ps.$slug, pi.$slug item_$slug, pc.$slug cat_$slug, pl.$slug list_$slug from #_product_sub ps join #_product_item pi on pi.id=ps.id_item join #_product_cat pc on pc.id=ps.id_cat join #_product_list pl on pl.id=ps.id_list where ps.id=? and ps.type=? limit 1", array((int)$id,'san-pham'));
         return !empty($row) ? publicProductCategoryPath($row,'sub',$lang) : '';
     }
+    if($table === 'news_chinh_sach') {
+        $row = $d->rawQueryOne("select $slug from #_news where id = ? and type = ? limit 1", array((int)$id,'chinh-sach'));
+        return !empty($row[$slug]) ? 'ho-tro/'.$row[$slug].'/' : '';
+    }
     return '';
 }
 
