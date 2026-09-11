@@ -1973,15 +1973,22 @@ h4{font-size:21px!important;font-weight:800!important;}
 /* --- A2: nhãn "Giỏ hàng" cạnh icon --- */
 .icon-cart-header .hdr-cart-txt{margin-right:7px;color:var(--pts-navy);font-size:14px;font-weight:750;}
 
-/* --- A2: nổi bật mục "Sản phẩm" như nút catalog --- */
+/* --- A2: nút danh mục "Sản phẩm" - viền vàng khi nghỉ, chỉ tô đặc khi thật
+   sự đang ở trang Sản phẩm (.active) hoặc hover, để không bị đọc nhầm thành
+   "đang xem trang này" trên các trang khác (phản hồi UX 2026-09-11). */
 .menu>div>ul>li.menu-catalog>a{
-    background:var(--pts-gold-metal)!important;color:var(--pts-navy-deep)!important;
-    padding:11px 18px!important;border-radius:10px!important;font-weight:900!important;
-    box-shadow:0 6px 16px rgba(156,116,32,.24);
+    background:transparent!important;color:var(--pts-navy-deep)!important;
+    border:2px solid var(--pts-gold)!important;
+    padding:9px 16px!important;border-radius:10px!important;font-weight:900!important;
+    box-shadow:none!important;
 }
 .menu>div>ul>li.menu-catalog>a i{margin-right:6px;font-size:13px;}
 .menu>div>ul>li.menu-catalog>a:hover,
-.menu>div>ul>li.menu-catalog>a.active{color:var(--pts-navy-deep)!important;filter:brightness(1.05);}
+.menu>div>ul>li.menu-catalog>a.active{
+    background:var(--pts-gold-metal)!important;color:var(--pts-navy-deep)!important;
+    border-color:transparent!important;filter:brightness(1.05);
+    box-shadow:0 6px 16px rgba(156,116,32,.24)!important;
+}
 /* menu con của catalog không đổi */
 .menu>div>ul>li.menu-catalog ul li a{background:#fff!important;}
 .menu>div>ul>li.menu-catalog>ul{overflow:visible!important;}
@@ -2010,8 +2017,10 @@ h4{font-size:21px!important;font-weight:800!important;}
 .menu>div>ul>li>a{font-size:15.5px!important;padding:16px 0!important;letter-spacing:0!important;}
 .menu>div>ul>li.menu-catalog>a{
     padding:9px 14px!important;border-radius:9px!important;font-size:15px!important;
-    box-shadow:0 4px 12px rgba(156,116,32,.20)!important;white-space:nowrap;
+    box-shadow:none!important;white-space:nowrap;
 }
+.menu>div>ul>li.menu-catalog>a:hover,
+.menu>div>ul>li.menu-catalog>a.active{box-shadow:0 4px 12px rgba(156,116,32,.20)!important;}
 .menu>div>ul>li.menu-catalog>a i{margin-right:5px;font-size:12px;}
 .header-bottom .wrap-content{gap:20px!important;}
 .header-right-style{gap:14px!important;}
