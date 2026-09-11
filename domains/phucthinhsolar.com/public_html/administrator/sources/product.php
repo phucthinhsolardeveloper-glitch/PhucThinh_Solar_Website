@@ -64,6 +64,35 @@
 		return (int)$product['num'] + (int)$child['num'];
 	}
 
+	/* Xuat CSV cho quang cao Shopping: uu tien anh sach photo_feed (khong watermark,
+	   khong khung/huy hieu), rot ve photo chinh neu chua co. Link anh tro thang file
+	   goc trong upload/product/ - watermark chi ap luc tao thumbnail nen file goc sach. */
+	function productExportFeedCsv()
+	{
+		global $d, $type, $configBase;
+
+		$rows = $d->rawQuery("select code, namevi, slugvi, regular_price, sale_price, photo, photo_feed from #_product where type = ? and find_in_set('hienthi',status) order by id", array($type));
+
+		$filename = 'shopping-feed-'.preg_replace('/[^a-z0-9\-]/i', '', (string) $type).'-'.date('Ymd-His').'.csv';
+		header('Content-Type: text/csv; charset=UTF-8');
+		header('Content-Disposition: attachment; filename="'.$filename.'"');
+
+		$out = fopen('php://output', 'w');
+		fwrite($out, "\xEF\xBB\xBF");
+		fputcsv($out, array('code', 'title', 'link', 'image_link', 'price', 'sale_price'));
+
+		foreach($rows as $row)
+		{
+			$image = !empty($row['photo_feed']) ? $row['photo_feed'] : $row['photo'];
+			$imageLink = !empty($image) ? $configBase.'upload/product/'.$image : '';
+			$link = !empty($row['slugvi']) ? $configBase.'san-pham/'.$row['slugvi'] : '';
+			fputcsv($out, array($row['code'], $row['namevi'], $link, $imageLink, $row['regular_price'], $row['sale_price']));
+		}
+
+		fclose($out);
+		exit;
+	}
+
 	/* Cấu hình đường dẫn trả về */
 	$strUrl = "";
 	$arrUrl = array('id_list','id_cat','id_item','id_sub','id_brand');
@@ -121,6 +150,9 @@
 			break;
 		case "bulk_export":
 			productBulkExport(false);
+			break;
+		case "export_feed_csv":
+			productExportFeedCsv();
 			break;
 
 		/* Man */
@@ -713,6 +745,39 @@
 					}
 				}
 
+				/* Anh Shopping/quang cao: nen sach, khong logo/chu. */
+				if($func->hasFile("file_feed"))
+				{
+					$photoUpdate = array();
+					$file_name_feed = $func->uploadName($_FILES["file_feed"]["name"]);
+
+					if($photoFeed = $func->uploadImage("file_feed", $config['product'][$type]['img_type'], UPLOAD_PRODUCT, $file_name_feed))
+					{
+						$row = $d->rawQueryOne("select id, photo_feed from #_product where id = ? and type = ? limit 0,1",array($id,$type));
+
+						if(!empty($row['photo_feed']))
+						{
+							$func->deleteFile(UPLOAD_PRODUCT.$row['photo_feed']);
+						}
+
+						$photoUpdate['photo_feed'] = $photoFeed;
+						$d->where('id', $id);
+						$d->update('product', $photoUpdate);
+						unset($photoUpdate);
+					}
+				}
+
+				if(isset($_POST['remove_photo_feed']))
+				{
+					$row = $d->rawQueryOne("select id, photo_feed from #_product where id = ? and type = ? limit 0,1",array($id,$type));
+					if(!empty($row['photo_feed']))
+					{
+						$func->deleteFile(UPLOAD_PRODUCT.$row['photo_feed']);
+						$d->where('id', $id);
+						$d->update('product', array('photo_feed' => ''));
+					}
+				}
+
 				/* SEO */
 				if(isset($config['product'][$type]['seo']) && $config['product'][$type]['seo'] == true)
 				{
@@ -869,6 +934,20 @@
 					if($photoKhuyenMai = $func->uploadImage("file_khuyenmai", '.png', UPLOAD_PRODUCT, $file_name_khuyenmai))
 					{
 						$photoUpdate['photo_khuyenmai'] = $photoKhuyenMai;
+						$d->where('id', $id_insert);
+						$d->update('product', $photoUpdate);
+						unset($photoUpdate);
+					}
+				}
+
+				if($func->hasFile("file_feed"))
+				{
+					$photoUpdate = array();
+					$file_name_feed = $func->uploadName($_FILES['file_feed']["name"]);
+
+					if($photoFeed = $func->uploadImage("file_feed", $config['product'][$type]['img_type'], UPLOAD_PRODUCT, $file_name_feed))
+					{
+						$photoUpdate['photo_feed'] = $photoFeed;
 						$d->where('id', $id_insert);
 						$d->update('product', $photoUpdate);
 						unset($photoUpdate);

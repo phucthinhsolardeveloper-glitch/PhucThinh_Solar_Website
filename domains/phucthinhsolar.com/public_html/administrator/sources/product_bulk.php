@@ -42,6 +42,7 @@ function productBulkColumns()
         'requires_quote' => array('label' => 'Liên hệ báo giá (1/0)', 'kind' => 'boolean_status'),
         'is_promo' => array('label' => 'Khuyến mãi/Sự kiện (1/0)', 'kind' => 'boolean_status'),
         'photo_khuyenmai' => array('label' => 'Tên file khung khuyến mãi PNG (đã upload sẵn qua Quản lý file)', 'kind' => 'image_filename', 'db' => 'photo_khuyenmai', 'max' => 255),
+        'photo_feed' => array('label' => 'Tên file ảnh Shopping/quảng cáo - nền sạch, không logo/chữ (đã upload sẵn qua Quản lý file)', 'kind' => 'image_filename', 'db' => 'photo_feed', 'max' => 255),
         'numb' => array('label' => 'Thứ tự', 'kind' => 'integer', 'db' => 'numb', 'export' => false),
         'descvi' => array('label' => 'Mô tả ngắn', 'kind' => 'html', 'db' => 'descvi'),
         'contentvi' => array('label' => 'Nội dung', 'kind' => 'html', 'db' => 'contentvi'),

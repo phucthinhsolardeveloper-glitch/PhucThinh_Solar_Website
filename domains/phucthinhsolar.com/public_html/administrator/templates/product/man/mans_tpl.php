@@ -45,6 +45,7 @@
         <a class="btn btn-sm btn-outline-primary" href="index.php?com=product_campaign&act=man&type=<?=urlencode($type)?>" title="Quản lý khung chiến dịch dùng chung"><i class="fas fa-images mr-1"></i>Khung chiến dịch</a>
         <a class="btn btn-sm bg-gradient-danger text-white<?=$hideDelete?>" id="delete-all" data-url="<?=$linkDelete?><?=$strUrl?>" title="Xóa sản phẩm đã chọn"><i class="far fa-trash-alt mr-2"></i>Xóa mục đã chọn</a>
         <a class="btn btn-sm bg-gradient-success text-white" href="<?=$linkBulk?>" title="Nhập xuất Excel/CSV"><i class="fas fa-file-excel mr-2"></i>Nhập / Xuất</a>
+        <a class="btn btn-sm btn-outline-secondary" href="index.php?com=product&act=export_feed_csv&type=<?=urlencode($type)?>" title="Xuất CSV ảnh sạch + giá cho quảng cáo Shopping"><i class="fas fa-file-csv mr-2"></i>Xuất CSV Shopping</a>
         <div class="dropdown d-inline-block ml-2">
             <button class="btn btn-sm btn-outline-warning dropdown-toggle" type="button" data-toggle="dropdown"><i class="fas fa-tasks mr-1"></i>Điền dữ liệu thiếu</button>
             <div class="dropdown-menu">

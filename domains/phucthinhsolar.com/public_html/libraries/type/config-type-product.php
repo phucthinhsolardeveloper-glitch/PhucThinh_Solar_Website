@@ -23,6 +23,8 @@
     $config['product'][$nametype]['images'] = true;
     $config['product'][$nametype]['images2'] = false;
     $config['product'][$nametype]['images_khuyenmai'] = true;
+    /* Anh rieng cho feed quang cao (Google Shopping...): nen sach, khong logo/chu. */
+    $config['product'][$nametype]['images_feed'] = true;
     $config['product'][$nametype]['show_images'] = true;
     $config['product'][$nametype]['gallery'] = array
     (

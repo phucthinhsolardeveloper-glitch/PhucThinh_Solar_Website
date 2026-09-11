@@ -441,6 +441,34 @@
 				            </div>
 				        </div>
 			        <?php } ?>
+		        <?php if(isset($config['product'][$type]['images_feed']) && $config['product'][$type]['images_feed'] == true) { ?>
+			        <div class="card card-primary card-outline text-sm">
+			            <div class="card-header">
+			                <h3 class="card-title">Ảnh Shopping / quảng cáo (không bắt buộc)</h3>
+			                <div class="card-tools">
+			                <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
+			                </div>
+			            </div>
+			            <div class="card-body">
+			                <div class="alert alert-info py-2">
+			                    Ảnh riêng cho quảng cáo (Google Shopping, Facebook Catalog...): chỉ có sản phẩm trên nền sạch, <strong>không logo, không chữ, không khung/huy hiệu</strong>. Bỏ trống thì khi xuất CSV Shopping hệ thống tự dùng ảnh chính.
+			                </div>
+			                <?php if(!empty($item['photo_feed'])) { ?>
+			                <div class="mb-2">
+			                    <?=$func->getImage(['isLazy' => false, 'class' => 'rounded', 'sizes' => '200x200x1', 'upload' => UPLOAD_PRODUCT_L, 'image' => $item['photo_feed'], 'alt' => 'Ảnh Shopping'])?>
+			                </div>
+			                <div class="custom-control custom-checkbox mb-2">
+			                    <input type="checkbox" class="custom-control-input" name="remove_photo_feed" id="remove_photo_feed" value="1">
+			                    <label class="custom-control-label" for="remove_photo_feed">Xoá ảnh Shopping (quay lại dùng ảnh chính)</label>
+			                </div>
+			                <?php } ?>
+			                <div class="custom-file my-custom-file">
+			                    <input type="file" class="custom-file-input" name="file_feed" id="file_feed" lang="vi">
+			                    <label class="custom-file-label mb-0" data-browse="Chọn" for="file_feed">Chọn ảnh Shopping</label>
+			                </div>
+			            </div>
+			        </div>
+		        <?php } ?>
 	        </div>
 	    </div>
 	    <div class="card card-primary card-outline text-sm">
