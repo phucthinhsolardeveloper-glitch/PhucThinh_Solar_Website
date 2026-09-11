@@ -221,6 +221,7 @@ function sliderHome(){
         processSlider = new Swiper(".home-7 .process-slider .swiper-container", {
             slidesPerView: 1,
             spaceBetween: 30,
+            autoHeight: true,
             autoplay: {
                 delay: 5e3
             },

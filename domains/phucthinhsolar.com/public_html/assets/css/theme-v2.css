@@ -994,7 +994,12 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
     .home-2 .heading,.home-6 .heading{display:block!important;}
     .home-2 .heading-right,.home-6 .heading-right{margin-top:18px;}
     .home-2 .tabs-container .item{padding:0 18px;}
-    .home-2 .tabs-container .wrapper{min-height:300px;}
+    /* Ở @l (>=1200px) 2 khối ảnh/nội dung nằm ngang hàng nên cần ép cùng
+       chiều cao (430px, giảm còn 300px ở đây). Dưới breakpoint đó chúng xếp
+       chồng dọc (column-reverse) - min-height cũ vẫn ép khối ảnh cao 300px
+       dù ảnh thật chỉ cao ~117px, để lại khoảng trắng giữa ảnh và khối nội
+       dung bên dưới. Bỏ ép, để mỗi khối cao theo đúng nội dung của nó. */
+    .home-2 .tabs-container .wrapper{min-height:0;}
     .home-2 .tabs-container .content{border-radius:18px 18px 0 0!important;padding:34px!important;}
     /* mainV2*.css có luật "body.home .home-2 .item .content{padding:30px 45px!important}"
        specificity cao hơn (5 lớp), đè mất padding 34px ở trên -> phải khớp/vượt cùng mức. */
