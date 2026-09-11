@@ -113,13 +113,14 @@
     <div class="pts-hero-accent" aria-hidden="true"></div>
     <div class="wrap-content pts-hero-inner">
         <div class="pts-hero-copy">
-            <span class="pts-hero-eyebrow"><i class="fas fa-sun"></i> Đèn dự án · Đèn công trình</span>
-            <h1>NĂNG LƯỢNG MẶT&nbsp;TRỜI<br><strong>CHO MỌI CÔNG TRÌNH</strong></h1>
-            <p><span class="pts-brand-text">Phúc Thịnh Solar</span> — thiết bị năng lượng mặt trời chính hãng, thi công trọn gói và đồng hành kỹ thuật trên toàn quốc.</p>
+            <span class="pts-hero-eyebrow"><i class="fas fa-sun"></i> Đèn năng lượng mặt trời là nhóm sản phẩm chủ lực</span>
+            <h1>THIẾT BỊ VÀ GIẢI PHÁP<br><strong>NĂNG LƯỢNG MẶT&nbsp;TRỜI</strong></h1>
+            <p><span class="pts-brand-text">Phúc Thịnh Solar</span> cung cấp đèn năng lượng mặt trời chính hãng, thiết bị điện mặt trời và giải pháp thi công cho gia đình, đại lý và công trình.</p>
             <div class="pts-hero-actions">
                 <a class="pts-btn pts-btn-gold" href="san-pham/">XEM SẢN PHẨM</a>
-                <a class="pts-btn pts-btn-ghost" href="giai-phap/">XEM GIẢI PHÁP</a>
+                <a class="pts-btn pts-btn-ghost" href="#ptsContactModal" data-toggle="modal" data-target="#ptsContactModal">NHẬN TƯ VẤN</a>
             </div>
+            <p class="pts-hero-dealer-link">Bạn muốn kinh doanh? <a href="#ptsDealerModal" data-toggle="modal" data-target="#ptsDealerModal">Đăng ký đại lý <i class="fas fa-angle-right"></i></a></p>
             <div class="pts-hero-stats">
                 <div>
                     <strong>10.000+</strong>

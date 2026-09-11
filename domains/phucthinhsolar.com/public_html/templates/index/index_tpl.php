@@ -5,25 +5,20 @@
             <h3>BẠN ĐANG CẦN GÌ?</h3>
         </div>
         <div class="pts-need-grid">
-            <a class="pts-need-card" href="danh-muc-san-pham/den-nlmt/">
-                <span class="pts-need-icon"><i class="fas fa-lightbulb" aria-hidden="true"></i></span>
-                <span class="pts-need-title">Đèn năng lượng mặt&nbsp;trời</span>
-                <span class="pts-need-desc">Sân bãi, đường giao thông, công trình, nhà xưởng...</span>
+            <a class="pts-need-card" href="dai-ly">
+                <span class="pts-need-icon"><i class="fas fa-handshake" aria-hidden="true"></i></span>
+                <span class="pts-need-title">Dành cho đại lý / nhà phân phối</span>
+                <span class="pts-need-desc">Chính sách hợp tác, chiết khấu và hỗ trợ kinh doanh</span>
             </a>
-            <a class="pts-need-card" href="giai-phap/">
-                <span class="pts-need-icon"><i class="fas fa-solar-panel" aria-hidden="true"></i></span>
-                <span class="pts-need-title">Điện mặt&nbsp;trời</span>
-                <span class="pts-need-desc">Gia đình, cửa hàng, doanh nghiệp, nhà xưởng...</span>
-            </a>
-            <a class="pts-need-card" href="san-pham/">
-                <span class="pts-need-icon"><i class="fas fa-microchip" aria-hidden="true"></i></span>
-                <span class="pts-need-title">Thiết bị</span>
-                <span class="pts-need-desc">Inverter, tấm pin, pin lưu trữ...</span>
+            <a class="pts-need-card" href="du-an-da-thuc-hien/">
+                <span class="pts-need-icon"><i class="fas fa-city" aria-hidden="true"></i></span>
+                <span class="pts-need-title">Giải pháp dự án chiếu sáng</span>
+                <span class="pts-need-desc">Khảo sát, thi công đèn năng lượng mặt trời cho công trình</span>
             </a>
             <a class="pts-need-card pts-need-card-cta" href="#ptsContactModal" data-toggle="modal" data-target="#ptsContactModal">
                 <span class="pts-need-icon"><i class="fas fa-comments" aria-hidden="true"></i></span>
-                <span class="pts-need-title">Tôi chưa biết chọn</span>
-                <span class="pts-need-desc">Nhận tư vấn miễn phí từ Phúc Thịnh Solar</span>
+                <span class="pts-need-title">Tư vấn giải pháp theo nhu&nbsp;cầu</span>
+                <span class="pts-need-desc">Điện mặt trời, lưu trữ, bơm nước — tư vấn miễn phí</span>
             </a>
         </div>
     </div>

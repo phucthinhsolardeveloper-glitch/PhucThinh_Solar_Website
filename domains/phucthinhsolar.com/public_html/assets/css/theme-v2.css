@@ -260,7 +260,10 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 .pts-home-hero h1{color:#fff;font-size:clamp(40px,5.3vw,72px);font-weight:950;line-height:1.05;letter-spacing:-.035em;margin:0 0 22px;text-transform:uppercase;}
 .pts-home-hero h1 strong{color:var(--pts-gold-light);font:inherit;}
 .pts-home-hero p{max-width:650px;color:#dbeafe!important;font-size:17px;line-height:1.75;margin:0 0 30px;}
-.pts-hero-actions{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:42px;}
+.pts-hero-actions{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:18px;}
+.pts-hero-dealer-link{margin:0 0 24px!important;font-size:13.5px!important;color:#cbd5e1!important;}
+.pts-hero-dealer-link a{color:var(--pts-gold-light)!important;font-weight:800!important;text-decoration:none!important;}
+.pts-hero-dealer-link a:hover{text-decoration:underline!important;}
 .pts-btn{display:inline-flex;min-height:48px;align-items:center;justify-content:center;border-radius:7px;padding:0 28px;font-size:14px;font-weight:900;text-decoration:none!important;transition:.2s ease;}
 .pts-btn:hover{transform:translateY(-2px);}
 .pts-btn-gold{background:var(--pts-gold);color:var(--pts-navy)!important;box-shadow:0 12px 26px rgba(0,0,0,.22);}
@@ -2549,7 +2552,7 @@ body .home-6 .btn-all:hover i{transform:translateX(3px);}
    ===================================================================== */
 .pts-need-nav{padding-top:52px!important;padding-bottom:12px!important;background:#fff!important;}
 .pts-need-nav .section-title h3{font-size:clamp(28px,2.8vw,40px)!important;font-weight:900!important;color:var(--pts-navy)!important;margin-bottom:30px!important;}
-.pts-need-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;max-width:var(--pts-container);margin:0 auto;}
+.pts-need-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:var(--pts-container);margin:0 auto;}
 .pts-need-card{
     display:flex;flex-direction:column;align-items:flex-start;gap:6px;
     border:1px solid var(--pts-line);border-radius:16px;background:#fff;
