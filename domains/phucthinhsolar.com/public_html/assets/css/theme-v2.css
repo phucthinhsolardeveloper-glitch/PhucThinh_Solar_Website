@@ -995,6 +995,11 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
    theo đúng nội dung, cắt cụt ảnh/nội dung của các bước dài hơn. Vá thẳng
    bằng đúng tên class JS thực tế đang gắn. */
 .swiper-autoheight .swiper-slide{height:auto!important;}
+/* Cùng rule vendor cho phần .swiper-wrapper cũng bị lệch tên class y hệt -
+   đây là rule làm khung chuyển chiều cao mượt (transition) giữa các bước
+   dài/ngắn khác nhau thay vì nhảy cứng, khớp hiệu ứng đã có sẵn ở carousel
+   Tầm nhìn/Sứ mệnh (Slick) bên trang Về chúng tôi. */
+.swiper-autoheight .swiper-wrapper{transition-property:height,transform!important;}
 
 .home-8{background:#f8fafc!important;}
 .blog-2col-row{margin-top:32px!important;}
