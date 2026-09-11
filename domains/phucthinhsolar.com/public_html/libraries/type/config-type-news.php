@@ -56,7 +56,8 @@
     $config['news'][$nametype]['comment'] = false;
     $config['news'][$nametype]['slug'] = true;
     $config['news'][$nametype]['check'] = array("hienthi" => "Hiển thị");
-    $config['news'][$nametype]['images'] = false;
+    /* Anh dai dien dau trang - yeu cau 2026-09-11, hien qua news_detail_tpl.php. */
+    $config['news'][$nametype]['images'] = true;
     $config['news'][$nametype]['show_images'] = false;
     $config['news'][$nametype]['desc'] = false;
     $config['news'][$nametype]['content'] = true;

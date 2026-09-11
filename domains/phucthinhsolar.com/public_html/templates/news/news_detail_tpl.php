@@ -6,6 +6,11 @@
                 <i class="fas fa-clock"></i><span><?=date("M d, Y",$rowDetail['date_created'])?></span>
                 <i class="fas fa-user ml-4"></i><span><?=htmlspecialchars(newsAuthorName($d, isset($rowDetail['id_user']) ? $rowDetail['id_user'] : 0), ENT_QUOTES, 'UTF-8')?></span>
             </div>
+            <?php if(!empty($rowDetail['photo'])) { ?>
+            <div class="pts-news-detail-cover">
+                <?=$func->getImage(['class' => 'w-100', 'isLazy' => false, 'sizes' => '1000x560x1', 'upload' => UPLOAD_NEWS_L, 'image' => $rowDetail['photo'], 'alt' => $rowDetail['name'.$lang]])?>
+            </div>
+            <?php } ?>
             <?php if(!empty($rowDetail['content'.$lang])) { ?>
             <div class="meta-toc">
                 <div class="box-readmore">

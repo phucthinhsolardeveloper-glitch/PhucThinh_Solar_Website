@@ -30,6 +30,11 @@
                                 <?=$func->getImage(['class' => 'lazy w-100','size-error' => '300x200x1', 'upload' => UPLOAD_NEWS_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
                             </div>
                             <div class="content">
+                                <div class="CRbox">
+                                    <p class="date_content"><i class="fa fa-clock-o" aria-hidden="true"></i><?=date('d/m/Y', $v['date_created'])?></p>
+                                    <p>-</p>
+                                    <p class="author_post"><i class="fa fa-user-o" aria-hidden="true"></i><?=htmlspecialchars(newsAuthorName($d, isset($v['id_user']) ? $v['id_user'] : 0), ENT_QUOTES, 'UTF-8')?></p>
+                                </div>
                                 <div class="box_title">
                                     <h4 class="title"><?=$v['name'.$lang]?></h4>
                                 </div>
