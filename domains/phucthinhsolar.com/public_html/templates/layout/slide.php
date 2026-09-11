@@ -87,7 +87,9 @@
        đọc được trên nền ảnh thật, không đổi bố cục hay hiệu ứng phía trên.
        Nhiều ảnh -> xếp chồng nhiều layer rồi JS đổi class is-active theo chu
        kỳ, CSS lo phần fade (transition opacity) - không dùng chế độ
-       "slider" toàn banner vì chưa hợp gu, đây chỉ đổi ảnh phía sau. */
+       "slider" toàn banner vì chưa hợp gu, đây chỉ đổi ảnh phía sau. Có từ
+       2 ảnh trở lên thì thêm nút mũi tên + chấm để tự bấm chuyển, không chỉ
+       chờ tự động (yêu cầu 2026-09-11). */
     $heroBgUrls = array();
     if(!empty($heroBgList) && is_array($heroBgList))
     {
@@ -106,6 +108,17 @@
         <?php } ?>
     </div>
     <div class="pts-hero-photo-overlay" aria-hidden="true"></div>
+    <?php if(count($heroBgUrls) > 1) { ?>
+    <div class="pts-hero-photo-nav" role="group" aria-label="Chuyển ảnh nền">
+        <button type="button" class="pts-hero-photo-nav-btn pts-hero-photo-nav-prev" aria-label="Ảnh trước"><i class="fas fa-chevron-left" aria-hidden="true"></i></button>
+        <div class="pts-hero-photo-dots">
+            <?php foreach($heroBgUrls as $heroBgIndex => $heroBgUrl) { ?>
+            <button type="button" class="pts-hero-photo-dot<?=$heroBgIndex === 0 ? ' is-active' : ''?>" data-pts-hero-index="<?=(int)$heroBgIndex?>" aria-label="Ảnh nền <?=(int)$heroBgIndex + 1?>"></button>
+            <?php } ?>
+        </div>
+        <button type="button" class="pts-hero-photo-nav-btn pts-hero-photo-nav-next" aria-label="Ảnh tiếp theo"><i class="fas fa-chevron-right" aria-hidden="true"></i></button>
+    </div>
+    <?php } ?>
     <?php } ?>
     <div class="pts-hero-glow" aria-hidden="true"></div>
     <div class="pts-hero-glow-cool" aria-hidden="true"></div>

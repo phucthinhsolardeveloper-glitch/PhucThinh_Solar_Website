@@ -219,12 +219,27 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 .pts-hero-photo-layers{position:absolute;inset:0;z-index:-2;}
 .pts-hero-photo-layer{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity 1.2s ease;}
 .pts-hero-photo-layer.is-active{opacity:1;}
-.pts-hero-photo-overlay{position:absolute;inset:0;z-index:-1;background:linear-gradient(135deg,rgba(11,29,58,.88) 0%,rgba(11,29,58,.72) 57%,rgba(11,29,58,.55) 100%);}
+/* Giảm lớp phủ bên phải để ảnh công trình sáng, có chiều sâu - vẫn tối đủ
+   mạnh bên trái (nơi đặt chữ) để giữ tương phản (yêu cầu 2026-09-11, phản
+   hồi marketing: ảnh đang tối toàn bộ, mất sức sống). */
+.pts-hero-photo-overlay{position:absolute;inset:0;z-index:-1;background:linear-gradient(135deg,rgba(11,29,58,.88) 0%,rgba(11,29,58,.6) 45%,rgba(11,29,58,.28) 100%);}
 .pts-hero-glow{position:absolute;z-index:-1;width:560px;height:560px;right:-130px;top:-190px;border-radius:50%;background:rgba(201,150,46,.30);filter:blur(70px);}
 /* Quầng lạnh đối trọng ở góc dưới trái để nền không còn phẳng một màu. */
 .pts-hero-glow-cool{position:absolute;z-index:-1;width:520px;height:520px;left:-180px;bottom:-240px;border-radius:50%;background:rgba(41,105,208,.30);filter:blur(80px);}
 /* Vân lưới mô phỏng tấm pin, rất mờ, mờ dần về phải để không đè chữ. */
 .pts-hero-texture{position:absolute;z-index:-1;inset:0;opacity:.5;background-image:repeating-linear-gradient(90deg,rgba(255,255,255,.05) 0 1px,transparent 1px 64px),repeating-linear-gradient(0deg,rgba(255,255,255,.05) 0 1px,transparent 1px 64px);-webkit-mask-image:linear-gradient(105deg,transparent 0%,rgba(0,0,0,.85) 55%,rgba(0,0,0,.3) 100%);mask-image:linear-gradient(105deg,transparent 0%,rgba(0,0,0,.85) 55%,rgba(0,0,0,.3) 100%);}
+/* Nút mũi tên + chấm để bấm tay chuyển ảnh nền hero (yêu cầu 2026-09-11) -
+   đặt góc dưới trái, dưới khối chữ, không đè CTA/số liệu. */
+.pts-hero-photo-nav{position:absolute;z-index:2;left:0;bottom:18px;display:flex;align-items:center;gap:12px;padding:0 24px;}
+.pts-hero-photo-nav-btn{display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,.35);background:rgba(11,29,58,.35);color:#fff;font-size:13px;cursor:pointer;transition:.18s;flex:0 0 auto;}
+.pts-hero-photo-nav-btn:hover{background:var(--pts-gold);border-color:var(--pts-gold);color:var(--pts-navy-deep);}
+.pts-hero-photo-dots{display:flex;align-items:center;gap:8px;}
+.pts-hero-photo-dot{width:8px;height:8px;padding:0;border-radius:50%;border:1px solid rgba(255,255,255,.6);background:transparent;cursor:pointer;transition:.18s;}
+.pts-hero-photo-dot.is-active{width:22px;border-radius:4px;background:var(--pts-gold);border-color:var(--pts-gold);}
+@media(max-width:640px){
+    .pts-hero-photo-nav{bottom:10px;padding:0 16px;gap:8px;}
+    .pts-hero-photo-nav-btn{width:28px;height:28px;font-size:11px;}
+}
 .pts-hero-inner{position:relative;padding-top:78px;padding-bottom:82px;}
 .pts-hero-copy{max-width:760px;}
 /* Hero hai cột khi có chứng nhận; không có chứng nhận thì giữ nguyên bố cục một cột cũ. */

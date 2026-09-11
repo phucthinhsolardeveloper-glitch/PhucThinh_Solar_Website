@@ -253,17 +253,39 @@ GA_FRAMEWORK.Pagings = function(){
 
     /* Ảnh nền Hero trang chủ: nhiều ảnh (Admin > Ảnh nền Hero trang chủ) thì
        tự đổi vòng, CSS transition (theme-v2.css .pts-hero-photo-layer) lo
-       phần crossfade mượt - JS chỉ đổi class is-active theo chu kỳ. */
+       phần crossfade mượt - JS chỉ đổi class is-active theo chu kỳ. Nút mũi
+       tên/chấm (.pts-hero-photo-nav, nằm cùng cấp .pts-hero-photo-layers
+       trong section cha) cho bấm tay - bấm xong thì reset lại đồng hồ tự
+       động để không bị nhảy ảnh ngay sau khi vừa bấm (yêu cầu 2026-09-11). */
     $(".pts-hero-photo-layers").each(function() {
         var layers = $(this).find(".pts-hero-photo-layer");
         if(layers.length < 2) return;
         var interval = parseInt($(this).data("pts-hero-cycle"), 10) || 6000;
         var current = 0;
-        setInterval(function() {
+        var nav = $(this).siblings(".pts-hero-photo-nav");
+        var dots = nav.find(".pts-hero-photo-dot");
+        var timer = null;
+
+        function goTo(index) {
+            index = ((index % layers.length) + layers.length) % layers.length;
+            if(index === current) return;
             layers.eq(current).removeClass("is-active");
-            current = (current + 1) % layers.length;
+            dots.eq(current).removeClass("is-active");
+            current = index;
             layers.eq(current).addClass("is-active");
-        }, interval);
+            dots.eq(current).addClass("is-active");
+        }
+
+        function restartTimer() {
+            if(timer) clearInterval(timer);
+            timer = setInterval(function() { goTo(current + 1); }, interval);
+        }
+
+        nav.find(".pts-hero-photo-nav-prev").on("click", function() { goTo(current - 1); restartTimer(); });
+        nav.find(".pts-hero-photo-nav-next").on("click", function() { goTo(current + 1); restartTimer(); });
+        dots.on("click", function() { goTo($(this).data("pts-hero-index")); restartTimer(); });
+
+        restartTimer();
     });
 };
 
