@@ -110,7 +110,6 @@
     <div class="pts-hero-glow" aria-hidden="true"></div>
     <div class="pts-hero-glow-cool" aria-hidden="true"></div>
     <div class="pts-hero-texture" aria-hidden="true"></div>
-    <div class="pts-hero-accent" aria-hidden="true"></div>
     <div class="wrap-content pts-hero-inner">
         <div class="pts-hero-copy">
             <span class="pts-hero-eyebrow"><i class="fas fa-sun"></i> Đèn năng lượng mặt trời là nhóm sản phẩm chủ lực</span>
