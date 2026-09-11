@@ -1730,8 +1730,16 @@ h4{font-size:21px!important;font-weight:800!important;}
    thị nội dung. Giảm đệm ở breakpoint này, giữ nguyên desktop/tablet vì ở
    đó đệm vẫn đang làm đúng việc tạo khoảng cách giữa các thẻ. */
 @media(max-width:640px){
-    #CRlist_vision .CRgr_item_vision.inf_item_vision{padding:8px!important;}
-    #CRlist_vision .CRgr_item_vision.inf_item_vision .wrap{padding:24px 20px 28px!important;}
+    /* Thẻ "Sứ mệnh/Tầm nhìn" trên mobile chỉ hiện 1 thẻ/dòng — lớp nền mờ
+       (rgba đen 20%) + bo góc riêng của .wrap tạo cảm giác "hộp trong hộp"
+       so với nền navy chung của cả section, lại còn hở mép lộ slide kế
+       bên. Bỏ nền/bo góc riêng, để nội dung nằm thẳng trên nền section,
+       tràn viền thật sự thay vì mô phỏng lại dạng card nhiều cột của pc. */
+    #CRlist_vision .CRgr_item_vision.inf_item_vision{padding:0!important;}
+    #CRlist_vision .CRgr_item_vision.inf_item_vision .wrap{
+        background:transparent!important;border-radius:0!important;
+        padding:32px 24px 40px!important;
+    }
     #CRcertification_intro .CRfix_width_slider{padding-left:8px!important;padding-right:8px!important;}
 }
 
