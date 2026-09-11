@@ -66,6 +66,10 @@
 						{
 							$option[$k2] = ((string)$v2 === '1') ? '1' : '0';
 						}
+						else if($k2 == 'watermark_active')
+						{
+							$option[$k2] = ((string)$v2 === '1') ? '1' : '0';
+						}
 						else if($k2 == 'home_hero_mode')
 						{
 							$option[$k2] = ((string)$v2 === 'text') ? 'text' : 'slider';

@@ -55,7 +55,7 @@ $hasProductPolicy = $productPolicyOverride !== '' || !empty($policy);
                         <a id="Zoom-1" class="MagicZoom"
                             data-options="zoomMode: on; hint: off; rightClick: true; selectorTrigger: hover; expandCaption: false; history: false;"
                             href="<?=$detailZoomHref?>" title="<?=$rowDetail['name'.$lang]?>">
-                            <?=$func->getImage(['isLazy' => false, 'sizes' => '600x600x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $rowDetail['photo'], 'alt' => $rowDetail['name'.$lang]])?>
+                            <?=$func->getImage(array_merge(['isLazy' => false, 'sizes' => '600x600x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $rowDetail['photo'], 'alt' => $rowDetail['name'.$lang]], watermarkImageArgs('product')))?>
                         </a>
                         <?php if($rowDetailPhoto) { if(count($rowDetailPhoto) > 0) { ?>
                         <div class="gallery-thumb-pro">
@@ -68,14 +68,14 @@ $hasProductPolicy = $productPolicyOverride !== '' || !empty($policy);
                                     <a class="thumb-pro-detail" data-zoom-id="Zoom-1"
                                         href="<?=$detailZoomHref?>"
                                         title="<?=$rowDetail['name'.$lang]?>">
-                                        <?=$func->getImage(['isLazy' => false, 'sizes' => '600x600x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $rowDetail['photo'], 'alt' => $rowDetail['name'.$lang]])?>
+                                        <?=$func->getImage(array_merge(['isLazy' => false, 'sizes' => '600x600x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $rowDetail['photo'], 'alt' => $rowDetail['name'.$lang]], watermarkImageArgs('product')))?>
                                     </a>
                                 </div>
                                 <?php foreach($rowDetailPhoto as $v) { $thumbAlt = !empty($v['caption']) ? $v['caption'] : $rowDetail['name'.$lang]; ?>
                                 <div>
                                     <a class="thumb-pro-detail" data-zoom-id="Zoom-1"
                                         href="<?=!empty($v['photo']) ? UPLOAD_PRODUCT_L.$v['photo'] : 'assets/images/noimage.png'?>" title="<?=htmlspecialchars($thumbAlt, ENT_QUOTES, 'UTF-8')?>">
-                                        <?=$func->getImage(['isLazy' => false, 'sizes' => '600x600x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $v['photo'], 'alt' => $thumbAlt])?>
+                                        <?=$func->getImage(array_merge(['isLazy' => false, 'sizes' => '600x600x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $v['photo'], 'alt' => $thumbAlt], watermarkImageArgs('product')))?>
                                     </a>
                                 </div>
                                 <?php } ?>

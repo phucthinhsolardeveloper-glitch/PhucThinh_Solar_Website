@@ -17,7 +17,7 @@
             ?>
             <?php if(!empty($rowDetail['photo']) && $showDetailCover) { ?>
             <div class="pts-news-detail-cover">
-                <?=$func->getImage(['class' => 'w-100', 'isLazy' => false, 'sizes' => '1000x560x1', 'upload' => UPLOAD_NEWS_L, 'image' => $rowDetail['photo'], 'alt' => $rowDetail['name'.$lang]])?>
+                <?=$func->getImage(array_merge(['class' => 'w-100', 'isLazy' => false, 'sizes' => '1000x560x1', 'upload' => UPLOAD_NEWS_L, 'image' => $rowDetail['photo'], 'alt' => $rowDetail['name'.$lang]], watermarkImageArgs('news')))?>
             </div>
             <?php } ?>
             <?php if(!empty($rowDetail['content'.$lang])) { ?>

@@ -19,6 +19,7 @@
     loadMailConfig($config);
     require_once LIBRARIES."form_security.php";
     require_once LIBRARIES."public_pricing.php";
+    require_once LIBRARIES."public_watermark.php";
 
     require_once LIBRARIES.'autoload.php';
     new AutoLoad();

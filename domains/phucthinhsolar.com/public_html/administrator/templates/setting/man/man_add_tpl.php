@@ -134,6 +134,25 @@
 				<small class="text-muted">Đánh giá nhập đúng mã đơn khớp thông tin luôn được gắn nhãn “Đã mua hàng”, ở cả hai chế độ.</small>
 			</div>
 		</div>
+			<div class="card card-primary card-outline text-sm">
+				<div class="card-header">
+					<h3 class="card-title">Đóng logo lên ảnh sản phẩm &amp; tin tức</h3>
+				</div>
+				<div class="card-body">
+					<?php $watermarkActive = isset($options['watermark_active']) && (string)$options['watermark_active'] === '1'; ?>
+					<div class="form-group mb-2">
+						<div class="custom-control custom-radio mb-2">
+							<input class="custom-control-input" type="radio" id="watermark-off" name="data[options][watermark_active]" value="0" <?=!$watermarkActive ? 'checked' : ''?>>
+							<label for="watermark-off" class="custom-control-label font-weight-normal"><strong>Tắt</strong> — ảnh sản phẩm/tin tức hiển thị nguyên bản, không đóng logo.</label>
+						</div>
+						<div class="custom-control custom-radio">
+							<input class="custom-control-input" type="radio" id="watermark-on" name="data[options][watermark_active]" value="1" <?=$watermarkActive ? 'checked' : ''?>>
+							<label for="watermark-on" class="custom-control-label font-weight-normal"><strong>Bật</strong> — tự động đóng logo Phúc Thịnh Solar lên ảnh đại diện sản phẩm và tin tức trên website.</label>
+						</div>
+					</div>
+					<small class="text-muted">Đổi logo/vị trí/kích thước watermark tại Quản lý photo - video &gt; Watermark sản phẩm / Watermark tin tức.</small>
+				</div>
+			</div>
 		<div class="card card-primary card-outline text-sm">
 			<div class="card-header">
 				<h3 class="card-title">Thông tin chung</h3>

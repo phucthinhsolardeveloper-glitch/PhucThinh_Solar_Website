@@ -31,7 +31,7 @@
                             <a title="<?=$v['name'.$lang]?>"
                                 href="solution/<?=$v[$sluglang]?>/"></a>
                             <div itemprop="image" class="CRthumb_post">
-                                <?=$func->getImage(['class' => 'lazy w-100','size-error' => '300x200x1', 'upload' => UPLOAD_NEWS_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
+                                <?=$func->getImage(array_merge(['class' => 'lazy w-100','size-error' => '300x200x1', 'upload' => UPLOAD_NEWS_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]], watermarkImageArgs('news', '300x200x1')))?>
                             </div>
                             <div class="CRcont_post box_cont_post_slider">
                                 <div class="CRbox">
