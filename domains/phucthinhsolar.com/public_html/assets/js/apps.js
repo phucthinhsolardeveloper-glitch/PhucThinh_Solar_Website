@@ -287,6 +287,58 @@ GA_FRAMEWORK.Pagings = function(){
 
         restartTimer();
     });
+
+    /* Nút chuyển thiết kế hero (yêu cầu 2026-09-11): 2 bản layout render sẵn
+       trong DOM (.pts-hero-layout-panel, ẩn/hiện bằng thuộc tính "hidden"),
+       JS chỉ đổi bản nào đang hiện + nhớ lựa chọn vào localStorage để lần
+       ghé sau vẫn giữ nguyên. Áp lựa chọn đã lưu NGAY khi trang tải, trước
+       khi người dùng thấy gì, để không bị chớp sai bản. */
+    var heroLayoutWrap = $(".pts-hero-layouts");
+    if(heroLayoutWrap.length)
+    {
+        var heroLayoutKey = "ptsHeroLayout";
+        var heroLayoutToggleBtn = heroLayoutWrap.find(".pts-hero-layout-toggle");
+        /* Nút chỉ có icon, không chữ (yêu cầu 2026-09-11) - vẫn đổi
+           title/aria-label theo bản đang hiện để hỗ trợ trình đọc màn hình. */
+        var heroLayoutTitles = { "1": "Xem giao diện khác", "2": "Quay lại giao diện gốc" };
+
+        function applyHeroLayout(target) {
+            heroLayoutWrap.find(".pts-hero-layout-panel").each(function() {
+                var isTarget = $(this).data("pts-hero-layout") == target;
+                this.hidden = !isTarget;
+            });
+            var title = heroLayoutTitles[target] || heroLayoutTitles["1"];
+            heroLayoutToggleBtn.attr({ "title": title, "aria-label": title });
+            heroLayoutToggleBtn.data("pts-hero-layout-target", target == "1" ? "2" : "1");
+        }
+
+        /* Mặc định hiện bản 2 (form tư vấn nổi) - bản 1 (ảnh crossfade + cột
+           chứng nhận) giờ là bản phụ, chỉ hiện khi khách tự bấm đổi hoặc đã
+           từng chọn trước đó (yêu cầu 2026-09-11). */
+        var heroLayoutSaved = null;
+        try { heroLayoutSaved = window.localStorage.getItem(heroLayoutKey); } catch(e) {}
+        if(heroLayoutSaved === "1") applyHeroLayout("1");
+        else applyHeroLayout("2");
+
+        heroLayoutToggleBtn.on("click", function() {
+            var target = String($(this).data("pts-hero-layout-target") || "2");
+            applyHeroLayout(target);
+            try { window.localStorage.setItem(heroLayoutKey, target); } catch(e) {}
+        });
+
+        /* CTA "NHẬN TƯ VẤN NGAY" ở layout 2 trỏ tới #pts-hero2-form (form nổi
+           bên phải) - trang có <base href> về domain gốc nên href="#id" trần
+           không tự cuộn trong trang (như .pts-catalog-jump ở trên), phải tự
+           bắt sự kiện. */
+        heroLayoutWrap.on("click", 'a[href="#pts-hero2-form"]', function(event) {
+            var target = document.getElementById("pts-hero2-form");
+            if(!target) return;
+            event.preventDefault();
+            target.scrollIntoView({behavior: "smooth", block: "center"});
+            var firstField = target.querySelector('input[name="dataContact[fullname]"]');
+            if(firstField) setTimeout(function() { firstField.focus(); }, 400);
+        });
+    }
 };
 
 /* Ticker scroll */

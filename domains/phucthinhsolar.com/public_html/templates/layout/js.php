@@ -233,6 +233,11 @@ $('.view_maps').click(function() {
                 generateCaptcha('Newsletter', 'recaptchaResponseNewsletter');
                 if(document.getElementById('recaptchaResponseContact')) generateCaptcha('contact', 'recaptchaResponseContact');
                 if(document.getElementById('recaptchaResponseNewsletter2')) generateCaptcha('Newsletter2', 'recaptchaResponseNewsletter2');
+                /* Form tư vấn nổi ở hero layout 2 (trang chủ) - id riêng vì
+                   #recaptchaResponseContact đã dùng cho modal #ptsContactModal,
+                   trùng id thì generateCaptcha() chỉ set được 1 trong 2 field
+                   (yêu cầu 2026-09-11). */
+                if(document.getElementById('recaptchaResponseHero')) generateCaptcha('contact', 'recaptchaResponseHero');
             });
         </script>
     <?php } ?>

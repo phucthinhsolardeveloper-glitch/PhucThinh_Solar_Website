@@ -269,6 +269,9 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
    thì khung đã tự nằm trong nên không cần bù. */
 @media(min-width:1002px) and (max-width:1680px){
     .pts-home-hero-split .pts-hero-inner{padding-right:110px;}
+    /* Thẻ form tư vấn hero layout 2 gặp đúng vấn đề tương tự cột chứng nhận
+       ở trên - chừa chỗ như nhau (yêu cầu 2026-09-11). */
+    .pts-hero2-main{padding-right:110px;}
 }
 .pts-hero-eyebrow{display:inline-flex;align-items:center;gap:8px;border-radius:999px;background:var(--pts-gold);color:var(--pts-navy);padding:7px 16px;margin-bottom:22px;font-size:12px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;box-shadow:0 8px 22px rgba(0,0,0,.2);}
 .pts-home-hero h1{color:#fff;font-size:clamp(40px,5.3vw,72px);font-weight:950;line-height:1.05;letter-spacing:-.035em;margin:0 0 22px;text-transform:uppercase;}
@@ -288,6 +291,104 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 .pts-hero-stats>div{display:flex;flex-direction:column;}
 .pts-hero-stats strong{font-size:34px;font-weight:950;line-height:1;color:var(--pts-gold-light);}
 .pts-hero-stats span{font-size:12px;color:#bfdbfe;margin-top:7px;}
+
+/* =====================================================================
+   HERO LAYOUT 2 + nút chuyển thiết kế (yêu cầu 2026-09-11)
+   Bản hero thứ 2: ảnh mái nhà solar full-bleed, form tư vấn nổi bên phải,
+   thanh số liệu kính mờ ở dưới. .pts-hero-layouts bọc cả 2 panel + nút
+   toggle; JS (apps.js) ẩn/hiện bằng thuộc tính "hidden", không dùng JS ở
+   đây nên panel còn lại phải ẩn mặc định để không lộ 2 hero chồng nhau khi
+   JS chưa kịp chạy. ===================================================== */
+.pts-hero-layouts{position:relative;isolation:isolate;}
+.pts-hero-layout-panel[hidden]{display:none!important;}
+
+/* Chỉ icon, không chữ (yêu cầu 2026-09-11) - nút tròn to, nổi góc trên-phải. */
+.pts-hero-layout-toggle{position:absolute;z-index:6;top:22px;right:22px;display:flex;align-items:center;justify-content:center;width:52px;height:52px;border:0;border-radius:50%;background:var(--pts-gold-metal);color:var(--pts-navy-deep)!important;font-size:19px;box-shadow:0 14px 32px rgba(6,21,55,.35);cursor:pointer;transition:.2s ease;}
+.pts-hero-layout-toggle:hover{transform:translateY(-2px) rotate(90deg);box-shadow:0 18px 38px rgba(6,21,55,.42);}
+@media(max-width:640px){
+    .pts-hero-layout-toggle{top:14px;right:14px;width:40px;height:40px;font-size:15px;}
+}
+
+.pts-hero2{position:relative;overflow:hidden;background:linear-gradient(135deg,var(--pts-navy-deep) 0%,var(--pts-navy) 100%);isolation:isolate;}
+.pts-hero2-bg{position:absolute;inset:0;z-index:-2;background-size:cover;background-position:center;}
+.pts-hero2-overlay{position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(6,21,55,.92) 0%,rgba(6,21,55,.78) 42%,rgba(6,21,55,.4) 72%,rgba(6,21,55,.18) 100%);}
+.pts-hero2-inner{position:relative;padding:76px 0 56px;}
+.pts-hero2-main{display:grid;grid-template-columns:minmax(0,1fr) minmax(340px,400px);gap:52px;align-items:start;}
+.pts-hero2-copy{padding-top:6px;}
+.pts-hero2-eyebrow{display:inline-flex;align-items:center;gap:8px;padding:8px 18px;margin-bottom:24px;border:1.5px solid var(--pts-gold);border-radius:999px;color:var(--pts-gold-light);font-size:12.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;}
+.pts-hero2-title{margin:0 0 20px;color:#fff;font-size:clamp(34px,4.6vw,52px);font-weight:950;line-height:1.16;letter-spacing:-.02em;text-transform:uppercase;}
+.pts-hero2-title strong{color:var(--pts-gold-light);font:inherit;}
+.pts-hero2-desc{max-width:520px;margin:0 0 30px;color:#dbe4f5;font-size:17px;line-height:1.75;}
+.pts-hero2-benefits{display:flex;flex-wrap:wrap;gap:28px 32px;margin-bottom:34px;}
+.pts-hero2-benefit{display:flex;align-items:flex-start;gap:11px;max-width:200px;}
+.pts-hero2-benefit i{flex:0 0 auto;margin-top:3px;color:var(--pts-gold);font-size:19px;}
+.pts-hero2-benefit strong{display:block;color:#fff;font-size:13.5px;font-weight:850;}
+.pts-hero2-benefit span{display:block;margin-top:2px;color:#a9b8d6;font-size:12px;line-height:1.4;}
+.pts-hero2-actions{display:flex;flex-wrap:wrap;gap:14px;}
+.pts-btn-lg{min-height:56px!important;padding:0 32px!important;border-radius:9px!important;font-size:14.5px!important;gap:9px;}
+.pts-btn-lg i{font-size:14px;}
+
+.pts-hero2-form-card{position:relative;background:#fff;border-radius:20px;padding:30px 26px 26px;box-shadow:0 30px 64px rgba(6,21,55,.4);color:var(--pts-ink);}
+.pts-hero2-form-badge{position:absolute;top:-24px;right:-12px;display:flex;flex-direction:column;align-items:center;justify-content:center;width:92px;height:92px;border:3px solid #fff;border-radius:50%;background:var(--pts-gold-metal);box-shadow:0 12px 26px rgba(182,125,46,.4);color:var(--pts-navy-deep);font-size:10.5px;font-weight:800;line-height:1.3;text-align:center;}
+.pts-hero2-form-badge strong{font-size:19px;line-height:1.1;}
+/* Chừa chỗ bên phải head cho huy hiệu tròn nhô ra, không thì đè lên chữ
+   "TƯ VẤN MIỄN PHÍ" (phát hiện khi test 2026-09-11). */
+.pts-hero2-form-head{margin-bottom:20px;padding-right:68px;}
+.pts-hero2-form-eyebrow{display:inline-flex;align-items:center;gap:6px;margin-bottom:8px;color:var(--pts-gold-dark);font-size:11.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;}
+.pts-hero2-form-head h3{margin:0 0 8px;color:var(--pts-navy);font-size:21px;font-weight:900;line-height:1.25;}
+.pts-hero2-form-head p{margin:0;color:var(--pts-muted);font-size:12.5px;line-height:1.55;}
+.pts-hero2-field{display:flex;align-items:center;gap:10px;height:46px;margin-bottom:12px;padding:0 14px;border:1px solid var(--pts-line);border-radius:10px;background:var(--pts-surface);}
+.pts-hero2-field i{flex:0 0 auto;width:15px;text-align:center;color:var(--pts-gold-dark);font-size:14px;}
+.pts-hero2-field input,.pts-hero2-field select{flex:1;min-width:0;height:100%;border:0;background:transparent;outline:0;color:var(--pts-ink);font-size:13.5px;}
+.pts-hero2-field select{appearance:none;-webkit-appearance:none;cursor:pointer;color:var(--pts-muted);}
+.pts-hero2-field-select{position:relative;}
+.pts-hero2-field-select::after{content:'\f107';position:absolute;right:14px;color:var(--pts-muted);font:900 12px "Font Awesome 5 Free";pointer-events:none;}
+.pts-hero2-submit{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:50px;margin-top:6px;border:0;border-radius:10px;background:var(--pts-gold-metal);color:var(--pts-navy-deep);font-size:14px;font-weight:900;letter-spacing:.02em;cursor:pointer;transition:.18s ease;}
+.pts-hero2-submit:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(182,125,46,.35);}
+.pts-hero2-privacy{display:flex;align-items:flex-start;gap:6px;margin:12px 0 0;color:var(--pts-muted);font-size:11px;line-height:1.5;}
+.pts-hero2-privacy i{margin-top:2px;}
+
+.pts-hero2-stats{display:grid;grid-template-columns:repeat(4,1fr);margin-top:52px;border:1px solid rgba(255,255,255,.16);border-radius:16px;background:rgba(255,255,255,.08);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);overflow:hidden;}
+.pts-hero2-stat{display:flex;align-items:center;gap:13px;padding:22px 20px;border-right:1px solid rgba(255,255,255,.14);}
+.pts-hero2-stat:last-child{border-right:0;}
+.pts-hero2-stat i{flex:0 0 auto;color:var(--pts-gold);font-size:23px;}
+.pts-hero2-stat strong{display:block;color:#fff;font-size:19px;font-weight:900;line-height:1.15;}
+.pts-hero2-stat span{display:block;margin-top:2px;color:#b7c3dd;font-size:11.5px;line-height:1.35;}
+
+@media(max-width:1199px){
+    .pts-hero2-main{grid-template-columns:minmax(0,1fr) minmax(320px,360px);gap:36px;}
+    .pts-hero2-stats{grid-template-columns:repeat(2,1fr);}
+    .pts-hero2-stat{border-bottom:1px solid rgba(255,255,255,.14);}
+    .pts-hero2-stat:nth-child(2n){border-right:0;}
+    .pts-hero2-stat:nth-last-child(-n+2){border-bottom:0;}
+}
+@media(max-width:900px){
+    .pts-hero2-main{grid-template-columns:minmax(0,1fr);}
+    .pts-hero2-form-card{max-width:420px;}
+}
+@media(max-width:640px){
+    .pts-hero2-inner{padding:64px 0 32px;}
+    /* Cụm nút liên hệ nổi (#button-contact-vr, fixed) chiếm cột ~80px sát mép
+       phải màn hình, MỌI lúc chứ không chỉ cuối trang - nút "NHẬN TƯ VẤN
+       NGAY" full-width ở layout 2 vừa bị đè khi test (phát hiện 2026-09-11,
+       cùng nguyên nhân đã sửa ở footer). Chừa cột phải cho toàn khối chữ để
+       phần tử con nào sau này cũng tự động né, không phải vá riêng lẻ. Cần
+       !important + tăng độ đặc hiệu bằng ".pts-hero2 " phía trước vì rule
+       dùng chung ".wrap-content{padding-right:16px!important}" (dòng ~1984)
+       cùng độ đặc hiệu (1 class) nhưng đứng SAU trong file nên thắng nếu
+       không tăng độ đặc hiệu riêng cho rule này. */
+    .pts-hero2 .pts-hero2-inner{padding-right:78px!important;}
+    .pts-hero2-overlay{background:linear-gradient(180deg,rgba(6,21,55,.94) 0%,rgba(6,21,55,.88) 55%,rgba(6,21,55,.72) 100%);}
+    .pts-hero2-eyebrow{margin-bottom:16px;font-size:11.5px;padding:6px 14px;}
+    .pts-hero2-desc{margin-bottom:22px;font-size:15px;}
+    .pts-hero2-benefits{gap:18px 24px;margin-bottom:26px;}
+    .pts-hero2-actions{flex-direction:column;}
+    .pts-hero2-actions .pts-btn-lg{width:100%;}
+    .pts-hero2-form-card{margin-top:8px;max-width:none;}
+    .pts-hero2-form-badge{top:-18px;right:8px;width:76px;height:76px;font-size:9px;}
+    .pts-hero2-form-badge strong{font-size:16px;}
+    .pts-hero2-stats{grid-template-columns:repeat(2,1fr);margin-top:34px;}
+}
 
 /* Section system */
 .section-title p{color:var(--pts-gold-dark)!important;font-size:12.5px!important;font-weight:850!important;letter-spacing:.15em!important;text-transform:uppercase;}

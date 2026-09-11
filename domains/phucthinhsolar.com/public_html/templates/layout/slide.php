@@ -99,8 +99,24 @@
             $heroBgUrls[] = THUMBS.'/1920x900x1/'.UPLOAD_PHOTO_L.$heroBgItem['photo'];
         }
     }
+
+    /* Bản 2 (yêu cầu 2026-09-11, ĐẶT MẶC ĐỊNH): hero dạng "ảnh full-bleed +
+       form tư vấn nổi bên phải + thanh số liệu kính mờ", tham khảo layout
+       đối thủ. Bản 1 (ảnh crossfade + cột chứng nhận, section ngay dưới)
+       giờ là bản phụ, ẩn mặc định. Nút .pts-hero-layout-toggle cho khách
+       bấm đổi qua lại - JS lưu lựa chọn vào localStorage nên lần sau ghé
+       lại vẫn giữ bản đã chọn. Form dùng LẠI đúng field/route xử lý với
+       modal #ptsContactModal (dataContact[...], form_csrf, submit-contact ở
+       sources/allpage.php) - không tạo bảng/API mới. content không có ô
+       nhập ở layout này (theo tham khảo) nên đặt hidden field cố định để
+       qua được validate bắt buộc "Nội dung không được trống" phía server.
+       reCAPTCHA cần id hidden field RIÊNG (recaptchaResponseHero) vì
+       #recaptchaResponseContact đã dùng cho modal - trùng id thì
+       generateCaptcha() chỉ set được 1 trong 2. */
+    $heroBgUrl2 = !empty($heroBgUrls) ? $heroBgUrls[0] : '';
 ?>
-<section class="pts-home-hero<?=$heroCerts ? ' pts-home-hero-split' : ''?><?=$heroBgUrls ? ' pts-home-hero-photo' : ''?>">
+<div class="pts-hero-layouts">
+<section class="pts-home-hero<?=$heroCerts ? ' pts-home-hero-split' : ''?><?=$heroBgUrls ? ' pts-home-hero-photo' : ''?> pts-hero-layout-panel" data-pts-hero-layout="1" hidden>
     <?php if($heroBgUrls) { ?>
     <div class="pts-hero-photo-layers" data-pts-hero-cycle="6000" aria-hidden="true">
         <?php foreach($heroBgUrls as $heroBgIndex => $heroBgUrl) { ?>
@@ -170,4 +186,77 @@
         <?php } ?>
     </div>
 </section>
+
+<section class="pts-hero2 pts-hero-layout-panel is-active" data-pts-hero-layout="2">
+    <?php if($heroBgUrl2 !== '') { ?>
+    <div class="pts-hero2-bg" style="background-image:url('<?=htmlspecialchars($heroBgUrl2, ENT_QUOTES, 'UTF-8')?>')" aria-hidden="true"></div>
+    <?php } ?>
+    <div class="pts-hero2-overlay" aria-hidden="true"></div>
+    <div class="wrap-content pts-hero2-inner">
+        <div class="pts-hero2-main">
+            <div class="pts-hero2-copy">
+                <span class="pts-hero2-eyebrow"><i class="fas fa-sun" aria-hidden="true"></i> Giải pháp năng lượng sạch cho mọi nhà</span>
+                <h1 class="pts-hero2-title">ĐIỆN MẶT TRỜI<br><strong>CHO CUỘC SỐNG<br>BỀN VỮNG HƠN</strong></h1>
+                <p class="pts-hero2-desc"><span class="pts-brand-text">Phúc Thịnh Solar</span> cung cấp giải pháp điện mặt trời trọn gói cho hộ gia đình, doanh nghiệp và công trình, giúp bạn tiết kiệm chi phí, chủ động nguồn điện và bảo vệ môi trường.</p>
+                <div class="pts-hero2-benefits">
+                    <div class="pts-hero2-benefit">
+                        <i class="fas fa-certificate" aria-hidden="true"></i>
+                        <div><strong>Sản phẩm chính hãng</strong><span>Từ các thương hiệu hàng đầu</span></div>
+                    </div>
+                    <div class="pts-hero2-benefit">
+                        <i class="fas fa-tools" aria-hidden="true"></i>
+                        <div><strong>Thi công chuyên nghiệp</strong><span>Đảm bảo an toàn, đúng tiến độ</span></div>
+                    </div>
+                    <div class="pts-hero2-benefit">
+                        <i class="fas fa-headset" aria-hidden="true"></i>
+                        <div><strong>Hỗ trợ trọn đời</strong><span>Bảo hành dài hạn, đồng hành cùng khách hàng</span></div>
+                    </div>
+                </div>
+                <div class="pts-hero2-actions">
+                    <a class="pts-btn pts-btn-gold pts-btn-lg" href="#pts-hero2-form"><i class="fas fa-phone-alt" aria-hidden="true"></i> NHẬN TƯ VẤN NGAY</a>
+                    <a class="pts-btn pts-btn-ghost pts-btn-lg" href="giai-phap/"><i class="fas fa-play" aria-hidden="true"></i> XEM GIẢI PHÁP</a>
+                </div>
+            </div>
+            <aside class="pts-hero2-form-card" id="pts-hero2-form">
+                <span class="pts-hero2-form-badge">Tiết kiệm đến<br><strong>70%</strong><br>tiền điện</span>
+                <div class="pts-hero2-form-head">
+                    <span class="pts-hero2-form-eyebrow"><i class="fas fa-headset" aria-hidden="true"></i> TƯ VẤN MIỄN PHÍ</span>
+                    <h3>ĐĂNG KÝ NHẬN TƯ VẤN</h3>
+                    <p>Để lại thông tin, chuyên gia Phúc Thịnh Solar sẽ liên hệ tư vấn giải pháp phù hợp nhất cho bạn!</p>
+                </div>
+                <form action="" method="post" class="pts-hero2-form-el">
+                    <input type="hidden" name="form_csrf" value="<?=htmlspecialchars(formCsrfToken(), ENT_QUOTES, 'UTF-8')?>">
+                    <input type="hidden" name="dataContact[content]" class="pts-hero2-content-field" value="Yêu cầu tư vấn từ banner trang chủ">
+                    <label class="pts-hero2-field"><i class="fas fa-user" aria-hidden="true"></i><input type="text" name="dataContact[fullname]" placeholder="Họ và tên *" maxlength="100" autocomplete="name" required></label>
+                    <label class="pts-hero2-field"><i class="fas fa-phone-alt" aria-hidden="true"></i><input type="tel" name="dataContact[phone]" placeholder="Số điện thoại *" maxlength="20" autocomplete="tel" inputmode="tel" required></label>
+                    <label class="pts-hero2-field"><i class="fas fa-envelope" aria-hidden="true"></i><input type="email" name="dataContact[email]" placeholder="Email (nếu có)" maxlength="150" autocomplete="email"></label>
+                    <label class="pts-hero2-field pts-hero2-field-select"><i class="fas fa-home" aria-hidden="true"></i>
+                        <select name="dataContact[subject]" class="pts-hero2-subject-field">
+                            <option value="">Nhu cầu của bạn</option>
+                            <option value="Đèn năng lượng mặt trời">Đèn năng lượng mặt trời</option>
+                            <option value="Điện mặt trời">Điện mặt trời</option>
+                            <option value="Thiết bị (inverter, tấm pin, pin lưu trữ...)">Thiết bị (inverter, tấm pin, pin lưu trữ...)</option>
+                            <option value="Đại lý">Đại lý</option>
+                            <option value="Khác">Khác</option>
+                        </select>
+                    </label>
+                    <button type="submit" name="submit-contact" class="pts-hero2-submit"><i class="fas fa-paper-plane" aria-hidden="true"></i> GỬI THÔNG TIN NGAY</button>
+                    <p class="pts-hero2-privacy"><i class="fas fa-lock" aria-hidden="true"></i> Thông tin của bạn được bảo mật tuyệt đối, chỉ phục vụ cho việc tư vấn.</p>
+                    <input type="hidden" name="recaptcha_response_contact" id="recaptchaResponseHero">
+                </form>
+            </aside>
+        </div>
+        <div class="pts-hero2-stats">
+            <div class="pts-hero2-stat"><i class="fas fa-users" aria-hidden="true"></i><div><strong>10.000+</strong><span>Khách hàng tin tưởng</span></div></div>
+            <div class="pts-hero2-stat"><i class="fas fa-solar-panel" aria-hidden="true"></i><div><strong>500+</strong><span>Công trình đã triển khai</span></div></div>
+            <div class="pts-hero2-stat"><i class="fas fa-award" aria-hidden="true"></i><div><strong>5+</strong><span>Năm kinh nghiệm</span></div></div>
+            <div class="pts-hero2-stat"><i class="fas fa-seedling" aria-hidden="true"></i><div><strong>Giảm hàng nghìn tấn CO₂</strong><span>Vì một Việt Nam xanh hơn</span></div></div>
+        </div>
+    </div>
+</section>
+
+<button type="button" class="pts-hero-layout-toggle" data-pts-hero-layout-target="1" aria-label="Xem giao diện banner khác" title="Xem giao diện khác">
+    <i class="fas fa-th-large" aria-hidden="true"></i>
+</button>
+</div>
 <?php } ?>
