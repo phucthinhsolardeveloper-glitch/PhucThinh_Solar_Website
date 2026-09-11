@@ -329,6 +329,11 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 .footer-title{color:#fff!important;font-size:14px!important;font-weight:850!important;text-transform:none!important;margin:0 0 15px!important;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,.12);}
 .CRlist_office_center,.CRlist_office_center p,.footer-link a,.content_cn a,.content_cn span{color:#bfdbfe!important;font-size:13px!important;line-height:1.7!important;}
 .footer-link a:hover,.content_cn a:hover{color:var(--pts-gold-light)!important;}
+/* Vendor CSS ép .content_cn (khối "Chi nhánh") cao cố định 200px với
+   overflow:auto - đủ cho danh sách ngắn trước đây, nhưng giờ có 4 chi
+   nhánh (Trụ sở + 3) thì tràn, chi nhánh cuối bị cắt cụt trong khung cuộn
+   ẩn, nhìn như bị che (phản hồi 2026-09-11). Bỏ giới hạn, hiện đủ hết. */
+.content_cn{height:auto!important;overflow:visible!important;}
 /* Chính sách tăng từ 5 lên 7 mục, dài hơn - đổi từ .8fr/1.2fr sang chia đều
    để không bị ép chật so với Chi nhánh (audit 2026-09-10). */
 .ft_mn_right .content{display:grid!important;grid-template-columns:1fr 1fr;gap:28px;margin:0!important;}
@@ -1903,10 +1908,18 @@ h4{font-size:21px!important;font-weight:800!important;}
 
     /* Dòng "© ... CÔNG TY..." là nội dung CUỐI CÙNG của trang, luôn nằm sát
        mép dưới thật khi cuộn hết trang — trong khi cụm nút liên hệ (fixed)
-       cũng neo ở mép dưới VIEWPORT, cần tới 152px (14 đáy + 138 cao). Thêm
-       đệm dưới cho khối cuối để dòng chữ không còn bị đè, bất kể trang dài
-       ngắn thế nào. */
-    .footer_bottom{padding-bottom:calc(14px + 138px + 60px)!important;}
+       cũng neo ở mép dưới VIEWPORT, cần tới 152px (14 đáy + 138 cao) để
+       không đè lên dòng chữ. +60px đệm dự phòng trước đây làm tổng thành
+       212px, nhìn như khoảng trống lỗi (phản hồi 2026-09-11) — chỉ giữ
+       đúng 152px cần thiết, không thêm dự phòng thừa. */
+    .footer_bottom{padding-bottom:152px!important;}
+    /* Chữ "© ..." canh giữa trong .container full-width có thể tràn dòng 1
+       tới ngay cột nút liên hệ (right:10px, rộng 56px) khi văn bản đủ dài,
+       gây đè chữ lên nút dù đã chừa padding-bottom (padding-bottom chỉ né
+       theo chiều dọc, không né theo chiều ngang). Chừa hẳn cột phải cho nút
+       để dòng 1 luôn ngắt trước khi chạm cột đó, bất kể tăng/giảm padding-
+       bottom sau này. */
+    .footer_bottom .container{padding-right:78px!important;}
 
     /* Chi tiết dự án: card thoáng hơn, tiêu đề vừa phải */
     #inf_single_project{padding:24px 0 36px!important;}
@@ -2384,10 +2397,6 @@ body .home-3 .tab-switcher ul.pts-home-category-grid{
         flex:0 0 138px!important;scroll-snap-align:start;
     }
     .home-3 .pts-home-category-grid>li>a{min-height:150px;}
-    .home-3 .pts-home-category-wrap{
-        margin-left:calc(-1 * var(--pts-gutter));margin-right:calc(-1 * var(--pts-gutter));
-        padding-left:var(--pts-gutter);padding-right:var(--pts-gutter);
-    }
 }
 
 /* Dải công suất: khôi phục chữ ngữ cảnh - icon sấm sét không đủ để người mới
