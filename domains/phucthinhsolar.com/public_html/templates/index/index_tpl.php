@@ -406,10 +406,9 @@
 </div>
 <?php } ?>
 
-<?php /* Section "Đối tác" (logo $partner) đã bỏ khỏi trang chủ theo yêu cầu chủ
-     site: nội dung trùng 100% với "Đối tác chiến lược" ở trang Về chúng tôi
-     (cùng nguồn $partner, type='doitac') - chỉ giữ 1 nơi để tránh lặp, trang
-     chủ dành chỗ cho sản phẩm (audit UX 2026-09-08). */ ?>
+<?php /* Khối Đối tác dạng section lớn legacy đã bỏ. Nguồn $partner được tái sử
+     dụng một lần ở dải logo Thương hiệu hợp tác gọn sau khối Dự án; trang Về
+     chúng tôi vẫn giữ phần Đối tác chiến lược đầy đủ. */ ?>
 
 	        <?php /* Section "Sự hài lòng của khách hàng, đối tác" đã bỏ khỏi trang chủ
 	     theo yêu cầu chủ site (2026-09-08) - dồn hết vào việc gộp/rút gọn để tránh
@@ -544,25 +543,38 @@
 </section>
 <?php } ?>
 
-<?php /* Thương hiệu (MỚI, 2026-09-12) - trang chủ trước đây chưa có khối này,
-     $chungnhan đã tải sẵn ở sources/index.php (dùng chung cho Hero layout 1),
-     chỉ thêm render, không thêm truy vấn. 5 brand hiện có: SHARP, BLUE CARBON,
-     JINDIAN, ZUOLIGHT, HUAWEI - CHỈ hiện tên/logo, không tự gắn nhãn "nhà phân
-     phối uỷ quyền" hay quan hệ đối tác nào khác (chưa xác minh riêng từng
-     brand, đúng cảnh báo lặp lại ở mọi tài liệu rà soát). */ ?>
-<?php if(count($chungnhan)){ ?>
+<?php /* Thương hiệu hợp tác: dùng đúng toàn bộ record type "doitac" đang bật.
+     Đây là nguồn logo được Admin quản lý và cũng dùng ở trang Về chúng tôi;
+     không dùng ảnh giấy chứng nhận (type "chungnhan") thay cho logo. */ ?>
+<?php if(count($partner)){ ?>
 <section class="pts-brands uk-section-large">
     <div class="uk-container">
         <div class="section-title uk-text-center">
             <p>ĐỒNG HÀNH CÙNG THƯƠNG HIỆU UY TÍN</p>
             <h3>THƯƠNG HIỆU HỢP TÁC</h3>
         </div>
-        <div class="pts-brands-grid" role="list" aria-label="Danh sách thương hiệu hợp tác">
-            <?php foreach($chungnhan as $v){ ?>
-            <div class="pts-brands-item" role="listitem">
-                <span class="pts-brands-name"><?=$v['name'.$lang]?></span>
+        <div class="pts-brands-rail" data-pts-horizontal-rail>
+            <button class="pts-brands-arrow pts-brands-arrow--prev" type="button" aria-label="Xem thương hiệu trước" aria-controls="pts-brand-track">
+                <i class="fas fa-chevron-left" aria-hidden="true"></i>
+            </button>
+            <div class="pts-brands-grid" id="pts-brand-track" role="list" aria-label="Danh sách thương hiệu hợp tác" tabindex="0">
+                <?php foreach($partner as $v){
+                    $brandAlt = !empty($v['name'.$lang]) ? $v['name'.$lang] : 'Logo thương hiệu hợp tác';
+                ?>
+                <div class="pts-brands-item" role="listitem">
+                    <?php if(!empty($v['photo'])){ ?>
+                    <span class="pts-brands-logo">
+                        <?=$func->getImage(['isLazy' => false, 'sizes' => '300x128x3', 'upload' => UPLOAD_PHOTO_L, 'image' => $v['photo'], 'alt' => $brandAlt])?>
+                    </span>
+                    <?php } else { ?>
+                    <span class="pts-brands-name"><?=$brandAlt?></span>
+                    <?php } ?>
+                </div>
+                <?php } ?>
             </div>
-            <?php } ?>
+            <button class="pts-brands-arrow pts-brands-arrow--next" type="button" aria-label="Xem thương hiệu tiếp theo" aria-controls="pts-brand-track">
+                <i class="fas fa-chevron-right" aria-hidden="true"></i>
+            </button>
         </div>
         <div class="pts-brand-services">
             <a href="san-pham/">

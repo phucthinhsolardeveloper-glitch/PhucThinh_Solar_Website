@@ -1183,14 +1183,25 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
    Tầm nhìn/Sứ mệnh (Slick) bên trang Về chúng tôi. */
 .swiper-autoheight .swiper-wrapper{transition-property:height,transform!important;}
 
-/* Chưa có logo phẳng riêng trong asset/DB, còn một số ảnh giấy chứng nhận local
-   cũng thiếu file. Chỉ lấy đúng tên record làm dải chữ; không giả lập logo hay
-   quan hệ chưa được duyệt. Thay bằng logo thật khi chủ project cung cấp asset. */
+/* Logo lấy từ nguồn Đối tác trong Admin. Dải luôn giữ một hàng và cuộn ngang
+   khi tổng số logo vượt chiều rộng, nên thêm brand mới không làm vỡ layout. */
 .pts-brands{padding-top:44px!important;padding-bottom:44px!important;background:#fff;border-bottom:1px solid var(--pts-line);}
 .pts-brands .section-title h3{font-size:clamp(24px,2.4vw,32px)!important;}
-.pts-brands-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:26px;}
-.pts-brands-item{display:flex;align-items:center;justify-content:center;flex:1 1 180px;max-width:220px;min-height:64px;padding:8px 14px;border-left:2px solid #e2e8f0;background:#fff;text-align:center;transition:.18s ease;}
+.pts-brands-rail{display:grid;grid-template-columns:38px minmax(0,1fr) 38px;align-items:center;gap:10px;margin:26px clamp(0px,5vw,64px) 0;}
+.pts-brands-grid{display:flex;flex-wrap:nowrap;justify-content:flex-start;gap:0;padding:8px 0;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x proximity;scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior-inline:contain;cursor:grab;}
+.pts-brands-grid::-webkit-scrollbar{display:none;width:0;height:0;}
+.pts-brands-grid.is-dragging{cursor:grabbing;scroll-snap-type:none;user-select:none;}
+.pts-brands-grid:focus-visible{outline:2px solid var(--pts-gold);outline-offset:5px;}
+.pts-brands-arrow{display:flex;align-items:center;justify-content:center;width:38px;height:38px;padding:0;border:1px solid #dbe3ee;border-radius:50%;background:#fff;color:var(--pts-navy);box-shadow:0 5px 16px rgba(15,42,87,.08);transition:.18s ease;}
+.pts-brands-arrow:hover:not(:disabled){border-color:var(--pts-gold);background:var(--pts-gold);color:var(--pts-navy-deep);}
+.pts-brands-arrow:disabled{opacity:.28;cursor:default;box-shadow:none;}
+.pts-brands-arrow[hidden]{display:none!important;}
+.pts-brands-item{display:flex;align-items:center;justify-content:center;flex:0 0 210px;min-width:0;min-height:82px;padding:8px 22px;border-left:1px solid #dbe3ee;background:#fff;text-align:center;scroll-snap-align:start;transition:.18s ease;}
+.pts-brands-item:first-child{border-left:0;}
 .pts-brands-item:hover{border-left-color:var(--pts-gold);background:#f8fafc;}
+.pts-brands-logo{display:flex;align-items:center;justify-content:center;width:100%;height:66px;}
+.pts-brands-logo picture{display:flex;align-items:center;justify-content:center;width:100%;height:100%;}
+.pts-brands-logo img{display:block;width:100%!important;height:100%!important;max-width:166px!important;object-fit:contain!important;}
 .pts-brands-name{color:var(--pts-navy);font-size:14px;font-weight:900;line-height:1.3;letter-spacing:.04em;overflow-wrap:anywhere;}
 .pts-brand-services{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;margin-top:24px;padding-top:22px;border-top:1px solid var(--pts-line);}
 .pts-brand-services>a{display:flex;align-items:center;justify-content:center;gap:12px;min-width:0;padding:5px 22px;border-right:1px solid var(--pts-line);color:inherit!important;text-decoration:none!important;}
@@ -1201,8 +1212,11 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 .pts-brand-services small{color:#64748b;font-size:11px;line-height:1.35;}
 .pts-brand-services>a:hover strong{color:var(--pts-gold-dark);}
 @media(max-width:640px){
-    .pts-brands-grid{flex-wrap:nowrap;justify-content:flex-start;gap:8px;overflow-x:auto;padding-bottom:8px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;}
-    .pts-brands-item{flex:0 0 190px;scroll-snap-align:start;}
+    .pts-brands-rail{display:block;margin-top:20px;}
+    .pts-brands-arrow{display:none;}
+    .pts-brands-grid{padding-bottom:8px;}
+    .pts-brands-item{flex-basis:176px;min-height:74px;padding:7px 18px;}
+    .pts-brands-logo{height:58px;}
     .pts-brand-services{grid-template-columns:1fr;gap:12px;}
     .pts-brand-services>a{justify-content:flex-start;padding:0;border-right:0;}
 }
@@ -2435,7 +2449,6 @@ h4{font-size:21px!important;font-weight:800!important;}
 .header-quickfilter .wrap-content{padding-right:70px!important;}
 @media(max-width:640px){ .header-quickfilter .wrap-content{padding-right:16px!important;} }
 
-/* Dải danh mục nổi bật: một hàng cuộn ngang, không xuống dòng tạo khoảng trống. */
 /* Hệ sinh thái thiết bị - lưới tĩnh 2 hàng (2026-09-12, bản 2). Thanh cuộn
    ngang icon nhỏ bản trước bị chủ project chê "vẫn hơi hướng layout cũ" -
    đổi hẳn sang lưới CSS Grid 12 cột: 4 card "HOT" span 3 (đủ 1 hàng ngang),
@@ -2445,7 +2458,9 @@ h4{font-size:21px!important;font-weight:800!important;}
 .pts-ecosystem-viewall{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:800;color:var(--pts-navy);white-space:nowrap;}
 .pts-ecosystem-viewall:hover{color:var(--pts-gold-dark);}
 .pts-ecosystem-viewall i{font-size:12px;}
-.pts-ecosystem-grid{display:grid!important;grid-template-columns:repeat(12,minmax(0,1fr))!important;gap:18px!important;width:100%;margin:26px 0 0!important;padding:0!important;list-style:none;}
+/* Ghi đủ ngữ cảnh .tab-switcher để thắng rule flex dùng chung ở dòng ~1003;
+   nếu chỉ dùng .pts-ecosystem-grid thì runtime bị xếp 4-4-2 thay vì 4 + 6. */
+.tab-switcher ul.pts-ecosystem-grid{display:grid!important;grid-template-columns:repeat(12,minmax(0,1fr))!important;gap:18px!important;width:100%;margin:26px 0 0!important;padding:0!important;list-style:none;}
 .pts-ecosystem-grid>li{grid-column:span 2;}
 .pts-ecosystem-grid>li.is-major{grid-column:span 3;}
 .pts-ecosystem-grid>li>a{

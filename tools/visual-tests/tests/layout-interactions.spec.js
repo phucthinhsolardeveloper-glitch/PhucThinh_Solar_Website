@@ -69,7 +69,7 @@ test('header, menu, breadcrumb and footer remain usable', async ({ page, isMobil
   expect(pageErrors).toEqual([]);
 });
 
-test('mobile home hero keeps symmetric gutters in both layouts', async ({ page, isMobile }) => {
+test('mobile home hero keeps symmetric gutters in all three layouts', async ({ page, isMobile }) => {
   test.skip(!isMobile, 'The asymmetric-gutter regression only affected mobile.');
   await page.addInitScript(() => window.localStorage.setItem('ptsHeroLayout', '2'));
   await page.goto('/', { waitUntil: 'domcontentloaded' });
@@ -93,6 +93,10 @@ test('mobile home hero keeps symmetric gutters in both layouts', async ({ page, 
   await assertSymmetric('.pts-hero2-copy');
   await assertSymmetric('.pts-hero2-form-card');
   await assertSymmetric('.pts-hero2-stats');
+
+  await page.locator('.pts-hero-layout-toggle').click();
+  await expect(page.locator('.pts-hero-carousel')).toBeVisible();
+  await assertSymmetric('.pts-hero-carousel-slide.is-active .pts-hero-carousel-copy');
 
   await page.locator('.pts-hero-layout-toggle').click();
   await expect(page.locator('.pts-home-hero')).toBeVisible();
@@ -270,19 +274,28 @@ test('mobile back-to-top arrow uses the same box center as its circle', async ({
 test('home exposes every featured category and switches its product grid', async ({ page }) => {
   await page.goto('/', { waitUntil: 'domcontentloaded' });
   await dismissEntrancePopup(page);
-  const categories = page.locator('.pts-home-category-grid > li');
+  const categoryTrack = page.locator('.pts-ecosystem-grid');
+  const categories = categoryTrack.locator(':scope > li');
   expect(await categories.count()).toBeGreaterThan(0);
-  await expect(page.locator('.pts-home-category-grid a[href="danh-muc-san-pham/den-ac/"]')).toHaveCount(0);
-  await expect(categories).toHaveCount(await categories.count());
-  const categoryTrack = page.locator('.pts-home-category-grid');
-  await expect(categoryTrack).toHaveAttribute('data-click-scroll', 'center');
-  expect(await categoryTrack.evaluate(element => element.scrollWidth > element.clientWidth)).toBeTruthy();
-  if((page.viewportSize()?.width || 0) > 640) {
-    const nextButton = page.locator('.pts-category-scroll--next');
-    await expect(nextButton).toBeVisible();
-    await expect(nextButton).toBeEnabled();
-    await nextButton.click();
-    await expect.poll(() => categoryTrack.evaluate(element => element.scrollLeft)).toBeGreaterThan(0);
+  await expect(categoryTrack.locator('a[href="danh-muc-san-pham/den-ac/"]')).toHaveCount(0);
+  await expect(categoryTrack).toHaveCSS('display', 'grid');
+
+  const majorCategories = categories.filter({ has: page.locator('.pts-home-category-badge') });
+  await expect(majorCategories).toHaveCount(4);
+  await expect(categories).toHaveCount(10);
+  if((page.viewportSize()?.width || 0) > 991) {
+    const layout = await categories.evaluateAll(items => items.map(item => ({
+      major: item.classList.contains('is-major'),
+      top: Math.round(item.getBoundingClientRect().top),
+      width: Math.round(item.getBoundingClientRect().width),
+    })));
+    const major = layout.filter(item => item.major);
+    const minor = layout.filter(item => !item.major);
+    expect(major).toHaveLength(4);
+    expect(minor).toHaveLength(6);
+    expect(new Set(major.map(item => item.top)).size).toBe(1);
+    expect(new Set(minor.map(item => item.top)).size).toBe(1);
+    expect(minor[0].width).toBeLessThan(major[0].width);
   }
 
   for (const category of await categories.all()) {
@@ -300,15 +313,8 @@ test('home exposes every featured category and switches its product grid', async
   expect(productBody).toContain('product-item');
   await expect(secondCategory).toHaveClass(/uk-active/);
 
-  // Không cần người dùng kéo dải trước: click trực tiếp một ô ở xa phải vừa
-  // đổi dữ liệu, vừa tự cuộn mượt để ô đang chọn nằm trọn trong viewport dải.
-  await categoryTrack.evaluate(element => {
-    const previous = element.style.scrollBehavior;
-    element.style.scrollBehavior = 'auto';
-    element.scrollLeft = 0;
-    element.style.scrollBehavior = previous;
-  });
-  await expect.poll(() => categoryTrack.evaluate(element => element.scrollLeft)).toBeLessThanOrEqual(2);
+  // Grid mới phải giữ nguyên hành vi AJAX với cả card ở cuối danh sách; không
+  // còn kỳ vọng scrollLeft/nút điều hướng của rail legacy.
   const clickIndex = Math.min(7, (await categories.count()) - 1);
   const clickedCategory = categories.nth(clickIndex);
   const clickedListId = await clickedCategory.locator('a').getAttribute('data-list');
@@ -316,20 +322,7 @@ test('home exposes every featured category and switches its product grid', async
   await clickedCategory.locator('a').evaluate(element => element.click());
   const clickedBody = await assertHealthyAjaxResponse(clickedResponse);
   expect(clickedBody).toContain('product-item');
-  await expect.poll(() => categoryTrack.evaluate(element => element.scrollLeft)).toBeGreaterThan(0);
   await expect(clickedCategory).toHaveClass(/uk-active/);
-  await expect.poll(() => clickedCategory.evaluate(element => {
-    const item = element.getBoundingClientRect();
-    const track = element.parentElement.getBoundingClientRect();
-    return item.left >= track.left - 1 && item.right <= track.right + 1;
-  })).toBeTruthy();
-  const visibility = await clickedCategory.evaluate(element => {
-    const item = element.getBoundingClientRect();
-    const track = element.parentElement.getBoundingClientRect();
-    return { left: item.left - track.left, right: track.right - item.right };
-  });
-  expect(visibility.left).toBeGreaterThanOrEqual(-1);
-  expect(visibility.right).toBeGreaterThanOrEqual(-1);
 });
 
 test('product category sidebar keeps child categories only in the type filter', async ({ page }) => {

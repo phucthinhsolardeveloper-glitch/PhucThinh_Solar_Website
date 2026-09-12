@@ -1081,6 +1081,54 @@ GA_FRAMEWORK.HomeCategoryScroller = function(){
     });
 };
 
+/* Dải logo thương hiệu: ẩn scrollbar thị giác, điều khiển bằng nút ở desktop
+   và vẫn hỗ trợ kéo chuột/vuốt chạm trực tiếp trên track. */
+GA_FRAMEWORK.HomeBrandScroller = function(){
+    $('[data-pts-horizontal-rail]').each(function(){
+        var rail = $(this);
+        var track = rail.find('.pts-brands-grid').get(0);
+        var prev = rail.find('.pts-brands-arrow--prev');
+        var next = rail.find('.pts-brands-arrow--next');
+        var drag = null;
+        if(!track) return;
+
+        function updateButtons(){
+            var maxScroll = Math.max(0, track.scrollWidth - track.clientWidth);
+            var hasOverflow = maxScroll > 2;
+            prev.prop('hidden', !hasOverflow).prop('disabled', !hasOverflow || track.scrollLeft <= 2);
+            next.prop('hidden', !hasOverflow).prop('disabled', !hasOverflow || track.scrollLeft >= maxScroll - 2);
+        }
+        function move(direction){
+            var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            track.scrollBy({left: direction * Math.max(210, track.clientWidth * 0.72), behavior: reduceMotion ? 'auto' : 'smooth'});
+        }
+
+        prev.on('click', function(){ move(-1); });
+        next.on('click', function(){ move(1); });
+        $(track).on('scroll', updateButtons);
+        $(window).on('resize', updateButtons);
+        track.addEventListener('pointerdown', function(event){
+            if(event.pointerType === 'touch' || event.button !== 0) return;
+            drag = {id:event.pointerId, x:event.clientX, left:track.scrollLeft};
+            track.setPointerCapture(event.pointerId);
+            track.classList.add('is-dragging');
+        });
+        track.addEventListener('pointermove', function(event){
+            if(!drag || drag.id !== event.pointerId) return;
+            track.scrollLeft = drag.left - (event.clientX - drag.x);
+        });
+        function endDrag(event){
+            if(!drag || drag.id !== event.pointerId) return;
+            if(track.hasPointerCapture(event.pointerId)) track.releasePointerCapture(event.pointerId);
+            drag = null;
+            track.classList.remove('is-dragging');
+        }
+        track.addEventListener('pointerup', endDrag);
+        track.addEventListener('pointercancel', endDrag);
+        updateButtons();
+    });
+};
+
 /* Bốn lối vào theo đối tượng khách hàng ở đầu trang. Gia đình/doanh nghiệp
    dùng chung section Giải pháp nhưng phải mở đúng tab dữ liệu hiện có trước
    khi cuộn tới, tránh đưa cả hai card về cùng một trạng thái. */
@@ -1136,6 +1184,7 @@ $(document).ready(function(){
     // GA_FRAMEWORK.Wows();
     GA_FRAMEWORK.SlickPage();
     GA_FRAMEWORK.HomeCategoryScroller();
+    GA_FRAMEWORK.HomeBrandScroller();
     GA_FRAMEWORK.HomeSolutionPaths();
     GA_FRAMEWORK.ClickScrollTracks();
     GA_FRAMEWORK.AltImg();
