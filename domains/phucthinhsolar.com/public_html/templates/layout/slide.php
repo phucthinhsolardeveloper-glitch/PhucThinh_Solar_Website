@@ -256,7 +256,7 @@
 </section>
 
 <button type="button" class="pts-hero-layout-toggle" data-pts-hero-layout-target="1" aria-label="Xem giao diện banner khác" title="Xem giao diện khác">
-    <i class="fas fa-th-large" aria-hidden="true"></i>
+    <i class="fas fa-exchange-alt" aria-hidden="true"></i>
 </button>
 </div>
 <?php } ?>

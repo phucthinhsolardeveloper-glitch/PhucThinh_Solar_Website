@@ -1,6 +1,6 @@
 FROM php:7.4-apache
 
-RUN apt-get update \
+RUN apt-get update -o Acquire::Check-Valid-Until=false \
     && apt-get install -y --no-install-recommends \
         libfreetype6-dev \
         libjpeg62-turbo-dev \

@@ -102,10 +102,10 @@ $newsTypeConfigSource = file_get_contents('/var/www/html/libraries/type/config-t
 readinessAssert(substr_count($newsTypeConfigSource, '$nametype = "chinh-sach";') === 1, 'Cấu hình Chính sách chỉ còn một khai báo đầy đủ');
 readinessAssert(
     isset($config['news']['chinh-sach'])
-        && empty($config['news']['chinh-sach']['images'])
+        && !empty($config['news']['chinh-sach']['images'])
         && !empty($config['news']['chinh-sach']['content'])
         && !empty($config['news']['chinh-sach']['seo']),
-    'Cấu hình Chính sách giữ form nội dung/SEO và không hiện trường ảnh không dùng'
+    'Cấu hình Chính sách giữ form nội dung/SEO, có field ảnh đại diện (og:image/card - yêu cầu 2026-09-11, không hiện to ở đầu trang chi tiết)'
 );
 readinessAssert(
     isset($config['news']['hinh-thuc-thanh-toan'])
@@ -386,8 +386,8 @@ try
         $policyForm['status'] === 200
             && strpos($policyForm['body'], 'name="data[contentvi]"') !== false
             && strpos($policyForm['body'], 'name="dataSeo[titlevi]"') !== false
-            && strpos($policyForm['body'], 'name="file"') === false,
-        'Form Chính sách dùng đúng một cấu hình nội dung/SEO, không còn field ảnh bị ghi đè'
+            && strpos($policyForm['body'], 'name="file"') !== false,
+        'Form Chính sách dùng đúng một cấu hình nội dung/SEO, có field ảnh đại diện (og:image/card - yêu cầu 2026-09-11)'
     );
     $paymentList = readinessHttp($base.'index.php?com=news&act=man&type=hinh-thuc-thanh-toan', 'GET', array(), $newCookie);
     $paymentForm = readinessHttp($base.'index.php?com=news&act=add&type=hinh-thuc-thanh-toan', 'GET', array(), $newCookie);

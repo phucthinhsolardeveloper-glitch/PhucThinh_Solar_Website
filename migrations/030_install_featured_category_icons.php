@@ -5,9 +5,11 @@
  * Mặc định chỉ xem trước. Script chỉ điền danh mục đang trống hoặc phục hồi
  * file khi DB đã tham chiếu đúng tên; không ghi đè ảnh khác đã có.
  *
- *   php migrations/030_install_featured_category_icons.php
- *   php migrations/030_install_featured_category_icons.php --apply
+ * Migration lịch sử cho cây 12 danh mục trước migration 033. Bộ ảnh nguồn đã
+ * được lưu ngoài repo; khi thật sự cần phục hồi phải truyền --assets rõ ràng.
+ *
  *   php migrations/030_install_featured_category_icons.php --assets=/path/to/icons
+ *   php migrations/030_install_featured_category_icons.php --assets=/path/to/icons --apply
  */
 
 if(PHP_SAPI !== 'cli') exit(1);
@@ -18,10 +20,15 @@ set_exception_handler(function($exception) {
 });
 
 $apply = in_array('--apply', $argv, true);
-$assetDir = __DIR__.'/../design-assets/product-featured-icons/2026-09-05';
+$assetDir = '';
 foreach($argv as $arg)
 {
     if(strpos($arg, '--assets=') === 0) $assetDir = rtrim(substr($arg, 9), '/');
+}
+if($assetDir === '')
+{
+    fwrite(STDERR, "FAIL: Thiếu --assets=/path/to/icons; bộ icon nguồn không còn nằm trong repo.\n");
+    exit(1);
 }
 $assetDirReal = realpath($assetDir);
 if(!$assetDirReal || !is_dir($assetDirReal))

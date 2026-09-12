@@ -15,7 +15,6 @@ fi
 
 untracked_release_files="$(git ls-files --others --exclude-standard -- \
     "$webroot_tree" migrations scripts \
-    design-assets/product-featured-icons/2026-09-05 \
     docs/13-handoffs/2026-09-06-runbook-deploy-directadmin.md)"
 if [ -n "$untracked_release_files" ]; then
     echo "FAIL: Source release còn file chưa được Git theo dõi; git archive sẽ bỏ sót:" >&2
@@ -42,7 +41,7 @@ tar -tzf "$release_dir/$archive_name" > "$release_dir/FILES.txt"
 git archive --format=tar.gz \
     --output="$release_dir/$tools_archive_name" \
     "$release_commit" \
-    migrations scripts design-assets/product-featured-icons/2026-09-05 \
+    migrations scripts \
     docs/13-handoffs/2026-09-06-runbook-deploy-directadmin.md
 
 tar -tzf "$release_dir/$tools_archive_name" > "$release_dir/DEPLOYMENT-TOOLS-FILES.txt"

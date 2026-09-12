@@ -104,14 +104,10 @@ docker cp scripts/preflight-commerce-migrations.php "$web_container:/tmp/preflig
 docker cp migrations/000_preflight_production.php "$web_container:/tmp/000_preflight_production.php"
 docker cp migrations/000_check_hosting_runtime.php "$web_container:/tmp/000_check_hosting_runtime.php"
 docker cp migrations/025_compress_oversized_images.php "$web_container:/tmp/025_compress_oversized_images.php"
-docker cp migrations/030_install_featured_category_icons.php "$web_container:/tmp/030_install_featured_category_icons.php"
 docker cp migrations/031_grant_contact_content_section_permissions.php "$web_container:/tmp/031_grant_contact_content_section_permissions.php"
 docker cp migrations/032_adv_banner_popup_links.php "$web_container:/tmp/032_adv_banner_popup_links.php"
 docker cp scripts/import-oriana-images-local.php "$web_container:/tmp/import-oriana-images.php"
 docker cp scripts/create-local-rbac-demo-accounts.php "$web_container:/tmp/create-local-rbac-demo-accounts.php"
-docker compose -f "$compose_file" exec -T web mkdir -p /tmp/pts-featured-category-icons
-docker cp design-assets/product-featured-icons/2026-09-05/. "$web_container:/tmp/pts-featured-category-icons"
-
 docker compose -f "$compose_file" exec -T web sh -lc '
 set -eu
 php -l administrator/api/login.php
@@ -169,7 +165,6 @@ php -l libraries/router.php
 php -l /tmp/000_preflight_production.php
 php -l /tmp/000_check_hosting_runtime.php
 php -l /tmp/025_compress_oversized_images.php
-php -l /tmp/030_install_featured_category_icons.php
 php -l /tmp/031_grant_contact_content_section_permissions.php
 php -l /tmp/032_adv_banner_popup_links.php
 php -l /tmp/import-oriana-images.php
@@ -217,7 +212,6 @@ php /tmp/test-proxy-https.php
 php /tmp/preflight-commerce-migrations.php
 php /tmp/000_preflight_production.php --require-all
 php /tmp/000_check_hosting_runtime.php
-php /tmp/030_install_featured_category_icons.php --assets=/tmp/pts-featured-category-icons
 php /tmp/031_grant_contact_content_section_permissions.php
 php /tmp/032_adv_banner_popup_links.php
 '

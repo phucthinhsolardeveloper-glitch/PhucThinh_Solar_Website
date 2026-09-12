@@ -163,17 +163,21 @@ Chạy từng file không có `--apply`, lưu output và đọc phạm vi tác �
 
 ## 5. Icon danh mục nổi bật
 
-Script ánh xạ 12 icon theo slug danh mục, không theo ID. Nó chỉ điền ô ảnh trống
-hoặc phục hồi file khi DB đã tham chiếu đúng tên; gặp ảnh khác sẽ `PRESERVE`,
-không ghi đè lựa chọn riêng của quản trị viên.
+Migration `030` là bước lịch sử của cây 12 danh mục và đã được thay thế bởi bộ
+10 danh mục/ảnh `featured-category-*-v2.png` sau migration `033`. Không chạy
+`030` trong predeploy hoặc trên database hiện tại: hai slug `he-thong-dien` và
+`den-ac` đã được giải thể, còn 10 danh mục đang dùng ảnh v2 trong `upload`.
+
+Bộ ảnh v1 đã được chuyển ra `D:\LinhTinh01\design-assets\`. Chỉ khi phục hồi
+một database cũ ở thời điểm trước migration `033` mới dùng `030`, và phải chỉ
+định thư mục nguồn ngoài repo:
 
 ```text
-/usr/local/bin/php /home/<user>/migrations/030_install_featured_category_icons.php
-/usr/local/bin/php /home/<user>/migrations/030_install_featured_category_icons.php --apply
+/usr/local/bin/php /home/<user>/migrations/030_install_featured_category_icons.php --assets=/path/to/product-featured-icons/2026-09-05
+/usr/local/bin/php /home/<user>/migrations/030_install_featured_category_icons.php --assets=/path/to/product-featured-icons/2026-09-05 --apply
 ```
 
-Chỉ chạy dòng `--apply` sau khi dry-run sạch. Sau đó chạy lại dry-run; dự kiến
-`Đã đúng: 12`, `sẽ cài/khôi phục: 0`, không có `ERROR`.
+Không dùng migration này để ghi đè bộ ảnh v2 đang chạy.
 
 ## 6. Ảnh sản phẩm ORIANA (tác vụ dữ liệu riêng)
 

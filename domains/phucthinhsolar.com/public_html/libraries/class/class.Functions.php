@@ -1802,7 +1802,13 @@
 				}
 			}
 			closedir($dir_handle);
-			rmdir($dirname);
+			/* @: xoa het noi dung la du de cache tu sinh lai dung; ban than
+			   thu muc watermark/ khong nhat thiet phai mat di, va tren local
+			   Docker no khong the rmdir duoc (thu muc cha /var/www/html chi
+			   755, khac chu voi www-data) - khong co sudo de chown sua tan
+			   goc. Khong @ o day se in Warning ra giua response va lam hong
+			   header() redirect ngay sau. */
+			@rmdir($dirname);
 			return true;
 		}
 

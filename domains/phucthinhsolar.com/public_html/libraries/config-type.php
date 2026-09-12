@@ -30,8 +30,14 @@
         "Giới thiệu" => array(
             // "product" => array("san-pham"),
             // "tags" => array("san-pham"),
-            "static" => array("su-menh","gioi-thieu"),
-            "news" => array("thong-tin-lien-he","lich-su","su-menh","ly-do-chon-chung-toi"),
+            /* "gioi-thieu" (static) va "thong-tin-lien-he" (news) da bi vo
+               hieu hoa o dot don dep 2026-09-11 (noi dung demo/rac tu theme
+               goc, xem config-type-static.php/config-type-news.php) - phai
+               xoa luon tham chieu o day, neu khong $config['static']['gioi-thieu']
+               / $config['news']['thong-tin-lien-he'] la null va menu.php
+               bao Undefined index khi render sidebar nhom nay. */
+            "static" => array("su-menh"),
+            "news" => array("lich-su","su-menh","ly-do-chon-chung-toi"),
             "photo" => array("chungnhan")
         ),
         "Lợi ích" => array(

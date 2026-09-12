@@ -12,15 +12,19 @@ project nhưng vẫn giữ bản nguồn phục vụ đối chiếu, nhập lạ
 - WSL: `/mnt/d/LinhTinh01/ĐÈN ORIANA/`
 - Windows: `D:\LinhTinh01\artifacts\`
 - WSL: `/mnt/d/LinhTinh01/artifacts/`
+- Windows: `D:\LinhTinh01\design-assets\`
+- WSL: `/mnt/d/LinhTinh01/design-assets/`
 - Bộ `ảnh nlmt` đã được chuyển trước đó vào `D:\LinhTinh01\ảnh nlmt\`.
 
-Hai thư mục `ĐÈN ORIANA/` và `artifacts/` ở root project đã được xóa sau khi
-bản sao trên ổ D khớp đủ số file, tổng byte và checksum nội dung.
+Ba thư mục `ĐÈN ORIANA/`, `artifacts/` và `design-assets/` ở root project đã
+được xóa sau khi bản sao trên ổ D khớp đủ số file, tổng byte và checksum nội
+dung.
 
 | Bộ nguồn | File | Tổng byte | SHA-256 tổng theo đường dẫn tương đối + nội dung |
 |---|---:|---:|---|
 | `ĐÈN ORIANA` | 103 | 266.465.838 | `aaa274d06c4730dfce866750acf9ad34eab4458bac1efef4b4c86b8b800495b4` |
 | `artifacts` | 55 | 57.834.381 | `83a1e4a8ee25280a1b3dadb7a72887068ece55c61cec7878eddd64ca9c115325` |
+| `design-assets` | 13 | 6.375.864 | `41da11740ab6747e49445d743c624bd386c67bb015e4db718fc426e166fd98ea` |
 
 ## Giải thích dữ liệu ORIANA
 

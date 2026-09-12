@@ -69,6 +69,36 @@ test('header, menu, breadcrumb and footer remain usable', async ({ page, isMobil
   expect(pageErrors).toEqual([]);
 });
 
+test('mobile home hero keeps symmetric gutters in both layouts', async ({ page, isMobile }) => {
+  test.skip(!isMobile, 'The asymmetric-gutter regression only affected mobile.');
+  await page.addInitScript(() => window.localStorage.setItem('ptsHeroLayout', '2'));
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await dismissEntrancePopup(page);
+
+  const assertSymmetric = async selector => {
+    const metrics = await page.locator(selector).evaluate(element => {
+      const rect = element.getBoundingClientRect();
+      return {
+        left: rect.left,
+        right: document.documentElement.clientWidth - rect.right,
+        viewport: document.documentElement.clientWidth,
+        scrollWidth: document.documentElement.scrollWidth,
+      };
+    });
+    expect(Math.abs(metrics.left - metrics.right)).toBeLessThanOrEqual(1);
+    expect(metrics.scrollWidth).toBe(metrics.viewport);
+  };
+
+  await expect(page.locator('.pts-hero2')).toBeVisible();
+  await assertSymmetric('.pts-hero2-copy');
+  await assertSymmetric('.pts-hero2-form-card');
+  await assertSymmetric('.pts-hero2-stats');
+
+  await page.locator('.pts-hero-layout-toggle').click();
+  await expect(page.locator('.pts-home-hero')).toBeVisible();
+  await assertSymmetric('.pts-home-hero .pts-hero-inner');
+});
+
 test('product detail keeps gallery and quote-only CTA', async ({ page }) => {
   await page.goto('/san-pham/', { waitUntil: 'domcontentloaded' });
   const productLink = page.locator('.grid-product a[href]').filter({ has: page.locator('img') }).first();
