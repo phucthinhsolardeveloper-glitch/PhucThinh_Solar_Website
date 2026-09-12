@@ -215,6 +215,69 @@ mục 3:
 4. Trỏ DNS (mục 8) sang một host tạm bất kỳ đã dựng sẵn code từ GitHub, để
    site không "chết" hoàn toàn trong lúc xử lý tranh chấp với bên host cũ.
 
+## 11. Danh sách đầy đủ những gì cần thiết lập/kiểm tra lại sau khi khôi phục lên host mới
+
+Bổ sung ngoài mục 6, gộp mọi thứ đặc thù của site này cần soát lại — tránh sót
+việc tưởng "chỉ cần copy code + DB là xong".
+
+### 11.1. Email — phát hiện quan trọng, khác với domain/DNS
+
+Kiểm tra MX record ngày 2026-09-12: `phucthinhsolar.com` dùng
+`mail.phucthinhsolar.com` để **nhận** email, và bản ghi này trỏ **thẳng vào
+server hosting hiện tại** (không tách riêng như domain/DNS ở mục 0). Trên
+server có ít nhất 1 mailbox thật: `website@phucthinhsolar.com` (dùng để hệ
+thống tự gửi mail thông báo — form liên hệ, đơn hàng — tới
+`phucthinhsolar.hr@gmail.com`).
+
+**Nghĩa là**: nếu chỉ chuyển web hosting mà không xử lý email, sau khi đổi DNS
+sang host mới thì `website@phucthinhsolar.com` sẽ **ngừng gửi được mail** (vì
+SMTP xác thực qua chính mailbox này), trừ khi:
+
+- [ ] Kiểm tra lại xem ngoài `website@` có mailbox nào khác đang được nhân sự
+      thật sự dùng để nhận email hàng ngày không (hỏi trực tiếp nhân sự, đừng
+      suy đoán từ mỗi lần kiểm tra FTP).
+- [ ] Nếu có host mới hỗ trợ email (hầu hết hosting cPanel/DirectAdmin đều có)
+      → tạo lại đúng mailbox `website@phucthinhsolar.com` (và mailbox khác nếu
+      có) trên host mới, cập nhật MX record trỏ sang `mail` của host mới.
+- [ ] Nếu muốn tách hẳn email khỏi hosting (khuyến nghị để giảm rủi ro tương
+      tự về sau) → chuyển sang Google Workspace/Zoho Mail rồi trỏ MX sang đó,
+      độc lập hoàn toàn với web hosting.
+- [ ] Sau khi có mailbox mới, cập nhật lại nội dung file `~/.pts-mail.php`
+      trên host mới (host SMTP, username, password) khớp với nơi mailbox thật
+      sự đang chạy.
+
+### 11.2. Những thứ KHÔNG cần đổi khi chỉ đổi hosting (domain giữ nguyên)
+
+- **reCAPTCHA** (`libraries/config.php` → `googleAPI.recaptcha`): site
+  key/secret key gắn với *domain* trên Google Console, không gắn với server —
+  giữ nguyên domain thì không cần tạo lại. (Hiện đang `active => false`, chưa
+  bật, nên tạm thời không phải lo.)
+- **Sitemap/robots.txt**: `robots.txt` có domain hardcode
+  (`https://phucthinhsolar.com/sitemap.xml`) nhưng đó là domain, không phải
+  IP/host — không cần sửa khi đổi hosting.
+- **Cron job định kỳ**: đã kiểm tra, crontab hiện tại **rỗng** — không có tác
+  vụ định kỳ nào cần dựng lại trên host mới.
+
+### 11.3. SSL
+
+Không "chuyển" chứng chỉ SSL cũ sang — host mới tự cấp chứng chỉ Let's Encrypt
+mới cho domain (miễn phí, tự động ở hầu hết hosting panel hiện đại). Chỉ cần
+đảm bảo bật HTTPS-only sau khi domain đã trỏ đúng sang host mới.
+
+### 11.4. Bảng tổng hợp nhanh
+
+| Việc | Có cần làm khi đổi host? |
+|---|---|
+| DNS A record | **Có** — trỏ sang IP mới (mục 8) |
+| MX record (email) | **Có, nếu email đang nhận trên host cũ** (mục 11.1) |
+| reCAPTCHA site/secret key | Không — gắn domain, không gắn server |
+| SSL certificate | Không cần chuyển — host mới tự cấp mới |
+| Cron job | Không — hiện không có cron nào |
+| Sitemap/robots.txt | Không — domain không đổi |
+| `libraries/config.php` (DB creds) | **Có** — sửa lại theo DB mới (mục 6) |
+| `~/.pts-mail.php` (SMTP) | **Có, nếu email cũng chuyển** (mục 11.1) |
+| CKFinder license | Kiểm tra lại còn hạn dùng cho domain hiện tại không |
+
 ## Checklist tổng hợp (in ra hoặc copy sang ghi chú riêng)
 
 - [ ] Xác nhận tự đăng nhập được tài khoản P.A Vietnam bằng email của mình
@@ -229,5 +292,9 @@ mục 3:
 - [ ] Khôi phục xong code + config + database + upload lên host mới
 - [ ] Test đầy đủ qua file hosts trước khi đổi DNS thật
 - [ ] Đổi bản ghi A trên P.A Vietnam
+- [ ] Xác nhận có mailbox nào đang thật sự dùng nhận email hàng ngày ngoài `website@` không (mục 11.1)
+- [ ] Tạo lại mailbox trên host mới hoặc chuyển email sang Google Workspace/Zoho Mail
+- [ ] Đổi bản ghi MX sang nơi email thật sự chạy
+- [ ] Cập nhật lại `~/.pts-mail.php` khớp mailbox mới
 - [ ] Theo dõi 24-48h sau cutover
 - [ ] Đổi mật khẩu host cũ sau khi ổn định
