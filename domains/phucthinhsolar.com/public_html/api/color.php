@@ -7,8 +7,8 @@
 	$rowDetail = $d->rawQueryOne("select name$lang, photo from #_product where id = ? and type = ? limit 0,1",array($id_pro,'san-pham'));
 ?>
 <?php if(!empty($rowDetailPhoto)) { ?>
-	<a id="Zoom-1" class="MagicZoom" data-options="zoomMode: off; hint: off; rightClick: true; selectorTrigger: hover; expandCaption: false; history: false;" href="<?=ASSET.WATERMARK?>/product/540x540x1/<?=UPLOAD_PRODUCT_L.$rowDetailPhoto[0]['photo']?>" title="<?=$rowDetail['name'.$lang]?>">
-        <?=$func->getImage(['isLazy' => false, 'sizes' => '540x540x1', 'isWatermark' => true, 'prefix' => 'product', 'upload' => UPLOAD_PRODUCT_L, 'image' => $rowDetailPhoto[0]['photo'], 'alt' => $rowDetail['name'.$lang]])?>
+	<a id="Zoom-1" class="MagicZoom" data-options="zoomMode: off; hint: off; rightClick: true; selectorTrigger: hover; expandCaption: false; history: false;" href="<?=watermarkImageHref('product', '540x540x1', UPLOAD_PRODUCT_L.$rowDetailPhoto[0]['photo'])?>" title="<?=$rowDetail['name'.$lang]?>">
+        <?=$func->getImage(array_merge(['isLazy' => false, 'sizes' => '540x540x1', 'upload' => UPLOAD_PRODUCT_L, 'image' => $rowDetailPhoto[0]['photo'], 'alt' => $rowDetail['name'.$lang]], watermarkImageArgs('product')))?>
     </a>
     <div class="gallery-thumb-pro">
         <div class="owl-page owl-carousel owl-theme owl-pro-detail"
@@ -21,8 +21,8 @@
             data-navtext = "<svg xmlns='http://www.w3.org/2000/svg' class='icon icon-tabler icon-tabler-chevron-left' width='44' height='45' viewBox='0 0 24 24' stroke-width='1.5' stroke='#2c3e50' fill='none' stroke-linecap='round' stroke-linejoin='round'><path stroke='none' d='M0 0h24v24H0z' fill='none'/><polyline points='15 6 9 12 15 18' /></svg>|<svg xmlns='http://www.w3.org/2000/svg' class='icon icon-tabler icon-tabler-chevron-right' width='44' height='45' viewBox='0 0 24 24' stroke-width='1.5' stroke='#2c3e50' fill='none' stroke-linecap='round' stroke-linejoin='round'><path stroke='none' d='M0 0h24v24H0z' fill='none'/><polyline points='9 6 15 12 9 18' /></svg>" 
             data-navcontainer = ".control-pro-detail">
             <?php foreach($rowDetailPhoto as $v) { ?>
-                <a class="thumb-pro-detail" data-zoom-id="Zoom-1" href="<?=ASSET.WATERMARK?>/product/540x540x1/<?=UPLOAD_PRODUCT_L.$v['photo']?>" title="<?=$rowDetail['name'.$lang]?>">
-                    <?=$func->getImage(['isLazy' => false, 'sizes' => '540x540x1', 'isWatermark' => true, 'prefix' => 'product', 'upload' => UPLOAD_PRODUCT_L, 'image' => $v['photo'], 'alt' => $rowDetail['name'.$lang]])?>
+                <a class="thumb-pro-detail" data-zoom-id="Zoom-1" href="<?=watermarkImageHref('product', '540x540x1', UPLOAD_PRODUCT_L.$v['photo'])?>" title="<?=$rowDetail['name'.$lang]?>">
+                    <?=$func->getImage(array_merge(['isLazy' => false, 'sizes' => '540x540x1', 'upload' => UPLOAD_PRODUCT_L, 'image' => $v['photo'], 'alt' => $rowDetail['name'.$lang]], watermarkImageArgs('product')))?>
                 </a>
             <?php } ?>
         </div>

@@ -56,8 +56,11 @@
     $config['news'][$nametype]['comment'] = false;
     $config['news'][$nametype]['slug'] = true;
     $config['news'][$nametype]['check'] = array("hienthi" => "Hiển thị");
-    /* Anh dai dien dau trang - yeu cau 2026-09-11, hien qua news_detail_tpl.php.
-       width/height/img_type khop voi size render thuc te '1000x560x1' o do. */
+    /* Anh dai dien - chi dung lam og:image khi share MXH va cho card/thumbnail,
+       KHONG hien to dau trang chi tiet (news_detail_tpl.php tu kiem tra
+       type=='chinh-sach' de an rieng, khong doc show_images vi bien nay chi
+       ton tai ben administrator/, frontend khong nap file config nay).
+       width/height/img_type khop voi size render thuc te '1000x560x1'. */
     $config['news'][$nametype]['images'] = true;
     $config['news'][$nametype]['show_images'] = false;
     $config['news'][$nametype]['width'] = 1000;

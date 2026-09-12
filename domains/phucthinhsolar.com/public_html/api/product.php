@@ -33,9 +33,9 @@
         <div class="product-block item loop-border">
             <div class="product-img  has-hover" data-frame="">
                 <a href="<?=$v[$sluglang]?>" title="<?=$v['name'.$lang]?>" class="image-resize ">
-                    <?=$func->getImage(['class' => 'lazy dt-width-100 img-first bigloaded','sizes' => '300x300x1', 'upload' => UPLOAD_PRODUCT_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
+                    <?=$func->getImage(array_merge(['class' => 'lazy dt-width-100 img-first bigloaded','sizes' => '300x300x1', 'upload' => UPLOAD_PRODUCT_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]], watermarkImageArgs('product')))?>
                     <?php if(!empty($v['photo2'])){ ?>
-					<?=$func->getImage(['class' => 'lazy dt-width-100 img-hover hidden-xs bigloaded','sizes' => '300x300x1', 'upload' => UPLOAD_PRODUCT_L, 'image' => $v['photo2'], 'alt' => $v['name'.$lang]])?>
+					<?=$func->getImage(array_merge(['class' => 'lazy dt-width-100 img-hover hidden-xs bigloaded','sizes' => '300x300x1', 'upload' => UPLOAD_PRODUCT_L, 'image' => $v['photo2'], 'alt' => $v['name'.$lang]], watermarkImageArgs('product')))?>
                 	<?php } ?>
 				</a>
                 <?php if(!publicProductRequiresQuote($v) && $v['discount']) { ?>

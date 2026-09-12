@@ -26,3 +26,16 @@ function watermarkImageArgs($prefix, $forceSizes = '')
 
     return $args;
 }
+
+/* Dùng cho link <a href> ảnh gốc/phóng to (MagicZoom...) không đi qua
+   getImage() nên watermarkImageArgs() không áp dụng được - vd
+   templates/product/product_detail_tpl.php, api/color.php. $path phải là
+   đường dẫn upload đầy đủ dạng UPLOAD_PRODUCT_L.$photo (giống tham số truyền
+   cho getImage()['upload'].['image']). Khi tắt watermark trả về nguyên $path
+   như hành vi cũ (không đổi). */
+function watermarkImageHref($prefix, $sizeToken, $path)
+{
+    if(!watermarkActive() || empty($path)) return $path;
+
+    return ASSET.WATERMARK.'/'.$prefix.'/'.$sizeToken.'/'.$path;
+}

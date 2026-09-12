@@ -40,6 +40,18 @@ async function collectHealth(page, baseURL, action) {
   expect(horizontalOverflow).toBeLessThanOrEqual(1);
 }
 
+// response.ok() chỉ kiểm tra HTTP status - một PHP Fatal error vẫn trả 200
+// (đã gặp thật với api/fillter_service.php khi public_watermark.php không
+// được nạp ở bootstrap api/config.php, audit 2026-09-12). Đọc thẳng body để
+// chặn lỗi PHP lọt qua mà vẫn báo test xanh.
+async function assertHealthyAjaxResponse(responsePromise) {
+  const response = await responsePromise;
+  expect(response.ok()).toBeTruthy();
+  const body = await response.text();
+  expect(body).not.toMatch(/Fatal error|Warning:|Notice:|Parse error|Deprecated:/);
+  return body;
+}
+
 test('empty cart page renders its empty state', async ({ page, baseURL }) => {
   await collectHealth(page, baseURL, async () => {
     const response = await page.goto('/gio-hang/', { waitUntil: 'domcontentloaded' });
@@ -112,9 +124,10 @@ test('search with matches lists product cards', async ({ page, baseURL }) => {
   // Quote-only mode: cards must not expose add-to-cart controls.
   await expect(page.locator('.product-card .addcart')).toHaveCount(0);
 
-  const filteredResponse = page.waitForResponse(response => response.url().includes('/api/fillter_service.php?') && response.ok());
+  const filteredResponse = page.waitForResponse(response => response.url().includes('/api/fillter_service.php?'));
   await page.locator('select[name="orderby"]').selectOption('new');
-  await filteredResponse;
+  const filteredBody = await assertHealthyAjaxResponse(filteredResponse);
+  expect(filteredBody).toContain('product-item');
   const filteredUrl = new URL(page.url());
   expect(filteredUrl.pathname).toBe('/tim-kiem/');
   expect(filteredUrl.searchParams.get('keyword')).toBe('ORIANA');

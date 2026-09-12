@@ -114,7 +114,6 @@
 	</script>
 	<?php } ?>
 	<?php if ($template === 'index'){ ?>
-	<script src="assets/js/apexcharts/dist/apexcharts.min.js"></script>
 	<script type="text/javascript">
 
             var _templates = 'index';
@@ -252,126 +251,6 @@
                         
 
                     }
-
-                    var options1 = {
-
-                          series: [{
-
-                          name: 'Doanh thu',
-
-                          data: [<?php for($i = 0; $i < count($doanhthu); $i++):?><?=$doanhthu[$i]?><?php if($i<count($doanhthu)-1){ ?>,<?php } ?><?php endfor; ?>]
-
-                        }],
-
-                          chart: {
-
-                            id: 'chart_revenue',
-
-                          height: 350,
-
-                          type: 'line',
-
-                          dropShadow: {
-
-                                enabled: true,
-
-                                color: '#000',
-
-                                top: 18,
-
-                                left: 7,
-
-                                blur: 10,
-
-                                opacity: 0.2
-
-                            }
-
-                        },
-
-                        stroke: {
-
-                          width: 5,
-
-                          curve: 'smooth'
-
-                        },
-
-                        xaxis: {
-
-                          categories: [<?php for($i = 1; $i <= $daysInMonth; $i++):?>'D<?=$i?>'<?php if($i<$daysInMonth){ ?>,<?php } ?><?php endfor; ?>],
-
-                        },
-
-                        fill: {
-
-                          type: 'gradient',
-
-                          gradient: {
-
-                            shade: 'dark',
-
-                            gradientToColors: [ '#FDD835'],
-
-                            shadeIntensity: 1,
-
-                            type: 'horizontal',
-
-                            opacityFrom: 1,
-
-                            opacityTo: 1,
-
-                            stops: [0, 100, 100, 100]
-
-                          },
-
-                        },
-
-                        markers: {
-
-                          size: 4,
-
-                          colors: ["#FFA41B"],
-
-                          strokeColors: "#fff",
-
-                          strokeWidth: 2,
-
-                          hover: {
-
-                            size: 7,
-
-                          }
-
-                        },
-
-                        yaxis: {
-
-                          min: 0,
-
-                          show: false
-
-                        },
-
-                        tooltip: {
-
-                          y: {
-
-                            formatter: function (val) {
-
-                              return parseFloat(val, 10).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, "$1,").toString() + 'đ';
-
-                            }
-
-                          }
-
-                        }
-
-                    };
-
-                    chart_revenue = new ApexCharts(document.querySelector("#chart_revenue"), options1);
-
-                    chart_revenue.render();
 
 
 

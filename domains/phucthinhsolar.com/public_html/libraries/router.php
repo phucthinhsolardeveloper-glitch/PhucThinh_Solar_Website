@@ -29,6 +29,11 @@
     $router->map('GET|POST', '', 'index', 'home');
     $router->map('GET|POST', 'index.php', 'index', 'index');
     $router->map('GET|POST', 'sitemap.xml', 'sitemap', 'sitemap');
+	/* '?' cuối chuỗi literal (không có [param]) chỉ so bằng strcmp() trong
+	   AltoRouter này (xem compileRoute) nên KHÔNG khớp gì cả - 'product/?' bên
+	   dưới bị lỗi y hệt từ trước, chưa từng chạy. Dùng delimiter '@' để ép
+	   preg_match thật. */
+	$router->map('GET', '@^he-thong-dai-ly/?$', function(){ global $configBase; header('Location: '.$configBase.'lien-he/', true, 301); exit; }, 'legacy-he-thong-dai-ly');
 	$router->map('GET', 'product/?', function(){ global $configBase; header('Location: '.$configBase.'san-pham/', true, 301); exit; }, 'legacy-product');
 	$router->map('GET', 'product/[a:product]/?', function($product){ global $d, $configBase; $row=$d->rawQueryOne("select slugvi from #_product where slugvi=? and type=? and find_in_set('hienthi',status) limit 1",array($product,'san-pham')); if(empty($row)){ header('HTTP/1.0 404 Not Found',true,404); include('404.php'); exit; } header('Location: '.$configBase.'san-pham/'.$row['slugvi'],true,301); exit; }, 'legacy-product-detail');
 	$router->map('GET', 'danh-muc-san-pham/[a:list]/[a:cat]/[a:item]/[a:sub]/?', 'productHierarchy', 'product-hierarchy-4');

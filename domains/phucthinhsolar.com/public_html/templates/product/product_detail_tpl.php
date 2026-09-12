@@ -51,7 +51,7 @@ $hasProductPolicy = $productPolicyOverride !== '' || !empty($policy);
             <div class="grid-pro-detail w-clear">
                 <div class="row">
                     <div class="left-pro-detail col-md-5 col-lg-5">
-                        <?php $detailZoomHref = !empty($rowDetail['photo']) ? UPLOAD_PRODUCT_L.$rowDetail['photo'] : 'assets/images/noimage.png'; ?>
+                        <?php $detailZoomHref = !empty($rowDetail['photo']) ? watermarkImageHref('product', '600x600x2', UPLOAD_PRODUCT_L.$rowDetail['photo']) : 'assets/images/noimage.png'; ?>
                         <a id="Zoom-1" class="MagicZoom"
                             data-options="zoomMode: on; hint: off; rightClick: true; selectorTrigger: hover; expandCaption: false; history: false;"
                             href="<?=$detailZoomHref?>" title="<?=$rowDetail['name'.$lang]?>">
@@ -74,7 +74,7 @@ $hasProductPolicy = $productPolicyOverride !== '' || !empty($policy);
                                 <?php foreach($rowDetailPhoto as $v) { $thumbAlt = !empty($v['caption']) ? $v['caption'] : $rowDetail['name'.$lang]; ?>
                                 <div>
                                     <a class="thumb-pro-detail" data-zoom-id="Zoom-1"
-                                        href="<?=!empty($v['photo']) ? UPLOAD_PRODUCT_L.$v['photo'] : 'assets/images/noimage.png'?>" title="<?=htmlspecialchars($thumbAlt, ENT_QUOTES, 'UTF-8')?>">
+                                        href="<?=!empty($v['photo']) ? watermarkImageHref('product', '600x600x2', UPLOAD_PRODUCT_L.$v['photo']) : 'assets/images/noimage.png'?>" title="<?=htmlspecialchars($thumbAlt, ENT_QUOTES, 'UTF-8')?>">
                                         <?=$func->getImage(array_merge(['isLazy' => false, 'sizes' => '600x600x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $v['photo'], 'alt' => $thumbAlt], watermarkImageArgs('product')))?>
                                     </a>
                                 </div>

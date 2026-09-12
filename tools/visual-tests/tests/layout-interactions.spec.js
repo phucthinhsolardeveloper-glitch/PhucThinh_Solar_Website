@@ -17,6 +17,19 @@ async function dismissEntrancePopup(page) {
   }
 }
 
+// response.ok() chỉ kiểm tra HTTP status - một PHP Fatal error vẫn trả 200
+// (đã gặp thật với api/product2.php, product3.php, fillter_service.php khi
+// public_watermark.php không được nạp ở bootstrap api/config.php, audit
+// 2026-09-12). Đọc thẳng body để chặn các API AJAX sản phẩm lọt lỗi PHP mà
+// vẫn báo test xanh.
+async function assertHealthyAjaxResponse(responsePromise) {
+  const response = await responsePromise;
+  expect(response.ok()).toBeTruthy();
+  const body = await response.text();
+  expect(body).not.toMatch(/Fatal error|Warning:|Notice:|Parse error|Deprecated:/);
+  return body;
+}
+
 test('header, menu, breadcrumb and footer remain usable', async ({ page, isMobile }) => {
   const pageErrors = [];
   page.on('pageerror', error => pageErrors.push(error.message));
@@ -251,9 +264,10 @@ test('home exposes every featured category and switches its product grid', async
   const secondCategory = categories.nth(1);
   const listId = await secondCategory.locator('a').getAttribute('data-list');
   expect(listId).toBeTruthy();
-  const productResponse = page.waitForResponse(response => response.url().includes(`api/product2.php?perpage=16&idList=${listId}`) && response.ok());
+  const productResponse = page.waitForResponse(response => response.url().includes(`api/product2.php?perpage=16&idList=${listId}`));
   await secondCategory.locator('a').click();
-  await productResponse;
+  const productBody = await assertHealthyAjaxResponse(productResponse);
+  expect(productBody).toContain('product-item');
   await expect(secondCategory).toHaveClass(/uk-active/);
 
   // Không cần người dùng kéo dải trước: click trực tiếp một ô ở xa phải vừa
@@ -268,9 +282,10 @@ test('home exposes every featured category and switches its product grid', async
   const clickIndex = Math.min(7, (await categories.count()) - 1);
   const clickedCategory = categories.nth(clickIndex);
   const clickedListId = await clickedCategory.locator('a').getAttribute('data-list');
-  const clickedResponse = page.waitForResponse(response => response.url().includes(`api/product2.php?perpage=16&idList=${clickedListId}`) && response.ok());
+  const clickedResponse = page.waitForResponse(response => response.url().includes(`api/product2.php?perpage=16&idList=${clickedListId}`));
   await clickedCategory.locator('a').evaluate(element => element.click());
-  await clickedResponse;
+  const clickedBody = await assertHealthyAjaxResponse(clickedResponse);
+  expect(clickedBody).toContain('product-item');
   await expect.poll(() => categoryTrack.evaluate(element => element.scrollLeft)).toBeGreaterThan(0);
   await expect(clickedCategory).toHaveClass(/uk-active/);
   await expect.poll(() => clickedCategory.evaluate(element => {
@@ -352,12 +367,12 @@ test('mobile product filters open as an accessible drawer and close after filter
   await expect(drawer).toHaveClass(/show/);
   const firstBrand = drawer.locator('input[name="car_brand"]').first();
   await expect(firstBrand).toBeAttached();
-  const filteredResponse = page.waitForResponse(response => response.url().includes('/api/fillter_service.php?') && response.ok());
+  const filteredResponse = page.waitForResponse(response => response.url().includes('/api/fillter_service.php?'));
   await firstBrand.evaluate(input => {
     input.checked = true;
     input.dispatchEvent(new Event('change', { bubbles: true }));
   });
-  await filteredResponse;
+  await assertHealthyAjaxResponse(filteredResponse);
   await expect(drawer).not.toHaveClass(/show/);
   await expect(trigger).toHaveAttribute('aria-expanded', 'false');
   await expect(page.locator('body')).not.toHaveClass(/pts-filter-drawer-open/);

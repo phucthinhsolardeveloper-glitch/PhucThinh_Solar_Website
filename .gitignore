@@ -34,8 +34,7 @@ domains/phucthinhsolar.com/public_html/*.zip
 
 # Ảnh/dữ liệu nguồn giữ ngoài Git (audit dọn dẹp 2026-09-11): ảnh nhà cung
 # cấp Oriana chờ upload cho sản phẩm, artifact tạo icon/ảnh chính sách/quy
-# trình đã dùng, ảnh hero đang chờ duyệt - không phải rác, chỉ không cần
-# track trong Git.
+# trình đã dùng - không phải rác, chỉ không cần track trong Git.
+# (ảnh nlmt/ đã copy xong vào home-hero-bg, chuyển ra D:\LinhTinh01 2026-09-12)
 artifacts/
 ĐÈN ORIANA/
-ảnh nlmt/

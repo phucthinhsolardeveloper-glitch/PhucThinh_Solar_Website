@@ -27,7 +27,7 @@
 
 	$html['res'] = ' ';
 				 foreach($items as $k => $v) { 
-				 	$imgg = $func->getImage(['sizes' => '270x270x1', 'isWatermark' => true, 'prefix' => 'product', 'upload' => UPLOAD_PRODUCT_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]]);
+				 	$imgg = $func->getImage(array_merge(['sizes' => '270x270x1', 'upload' => UPLOAD_PRODUCT_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]], watermarkImageArgs('product')));
                     $html['res'] .='    <div class="product">
                             <a class="box-product text-decoration-none" href="'.$v[$sluglang].'" title="'.$v['name'.$lang].'">
                                 <p class="pic-product scale-img">
