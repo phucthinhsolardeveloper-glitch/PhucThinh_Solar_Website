@@ -1081,6 +1081,30 @@ GA_FRAMEWORK.HomeCategoryScroller = function(){
     });
 };
 
+/* Bốn lối vào theo đối tượng khách hàng ở đầu trang. Gia đình/doanh nghiệp
+   dùng chung section Giải pháp nhưng phải mở đúng tab dữ liệu hiện có trước
+   khi cuộn tới, tránh đưa cả hai card về cùng một trạng thái. */
+GA_FRAMEWORK.HomeSolutionPaths = function(){
+    $(document).on('click', '[data-pts-solution-name]', function(event){
+        var section = document.querySelector($(this).attr('href'));
+        if(!section) return;
+
+        event.preventDefault();
+        var desiredName = String($(this).attr('data-pts-solution-name') || '').trim().toLowerCase();
+        var tabLinks = section.querySelectorAll('.pts-solution-tabs > li > a');
+        for(var index = 0; index < tabLinks.length; index++) {
+            if(tabLinks[index].textContent.trim().toLowerCase() === desiredName) {
+                tabLinks[index].click();
+                break;
+            }
+        }
+
+        var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        section.scrollIntoView({behavior: reduceMotion ? 'auto' : 'smooth', block: 'start'});
+        if(window.history && window.history.replaceState) window.history.replaceState(null, '', '#giai-phap');
+    });
+};
+
 /* Dải chọn cuộn ngang: khi bấm một ô đang nằm sát/rời mép nhìn thấy, tự đưa
    ô đó vào giữa dải. Chỉ áp dụng cho widget gắn data-click-scroll; link điều
    hướng thông thường không bị can thiệp và click vẫn chạy đúng chức năng cũ. */
@@ -1112,6 +1136,7 @@ $(document).ready(function(){
     // GA_FRAMEWORK.Wows();
     GA_FRAMEWORK.SlickPage();
     GA_FRAMEWORK.HomeCategoryScroller();
+    GA_FRAMEWORK.HomeSolutionPaths();
     GA_FRAMEWORK.ClickScrollTracks();
     GA_FRAMEWORK.AltImg();
     GA_FRAMEWORK.Toc();

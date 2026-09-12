@@ -1,25 +1,63 @@
-<!-- Ban dang can gi: giúp khách chưa biết chọn tự định hướng ngay sau Hero -->
-<section class="pts-need-nav uk-section-large">
+<!-- Bốn hành trình theo mockup 2026-09-12. Hai hành trình đầu chuyển đúng tab
+     giải pháp đang có; Dự án và Đối tác dùng route public hiện hữu. -->
+<nav class="pts-need-nav" aria-label="Chọn hành trình theo nhu cầu">
     <div class="uk-container">
-        <div class="section-title uk-text-center">
-            <h3>BẠN ĐANG CẦN GÌ?</h3>
-        </div>
         <div class="pts-need-grid">
-            <a class="pts-need-card" href="dai-ly">
-                <span class="pts-need-icon"><i class="fas fa-handshake" aria-hidden="true"></i></span>
-                <span class="pts-need-title">Dành cho đại lý / nhà phân phối</span>
-                <span class="pts-need-desc">Chính sách hợp tác, chiết khấu và hỗ trợ kinh doanh</span>
+            <a class="pts-need-card" href="#giai-phap" data-pts-solution-name="Hộ gia đình">
+                <span class="pts-need-icon"><i class="fas fa-home" aria-hidden="true"></i></span>
+                <span class="pts-need-copy"><span class="pts-need-title">Cho hộ gia đình</span>
+                <span class="pts-need-desc">Tiết kiệm điện, sống xanh hơn</span></span>
+                <i class="fas fa-arrow-right pts-need-arrow" aria-hidden="true"></i>
+            </a>
+            <a class="pts-need-card" href="#giai-phap" data-pts-solution-name="Doanh nghiệp">
+                <span class="pts-need-icon"><i class="fas fa-building" aria-hidden="true"></i></span>
+                <span class="pts-need-copy"><span class="pts-need-title">Cho doanh nghiệp</span>
+                <span class="pts-need-desc">Tối ưu chi phí vận hành</span></span>
+                <i class="fas fa-arrow-right pts-need-arrow" aria-hidden="true"></i>
             </a>
             <a class="pts-need-card" href="du-an-da-thuc-hien/">
                 <span class="pts-need-icon"><i class="fas fa-city" aria-hidden="true"></i></span>
-                <span class="pts-need-title">Giải pháp dự án chiếu sáng</span>
-                <span class="pts-need-desc">Khảo sát, thi công đèn năng lượng mặt trời cho công trình</span>
+                <span class="pts-need-copy"><span class="pts-need-title">Cho dự án</span>
+                <span class="pts-need-desc">Giải pháp trọn gói, hiệu quả</span></span>
+                <i class="fas fa-arrow-right pts-need-arrow" aria-hidden="true"></i>
             </a>
-            <a class="pts-need-card pts-need-card-cta" href="#ptsContactModal" data-toggle="modal" data-target="#ptsContactModal">
-                <span class="pts-need-icon"><i class="fas fa-comments" aria-hidden="true"></i></span>
-                <span class="pts-need-title">Tư vấn giải pháp theo nhu&nbsp;cầu</span>
-                <span class="pts-need-desc">Điện mặt trời, lưu trữ, bơm nước — tư vấn miễn phí</span>
+            <a class="pts-need-card" href="dai-ly">
+                <span class="pts-need-icon"><i class="fas fa-handshake" aria-hidden="true"></i></span>
+                <span class="pts-need-copy"><span class="pts-need-title">Cho đối tác</span>
+                <span class="pts-need-desc">Hợp tác cùng phát triển</span></span>
+                <i class="fas fa-arrow-right pts-need-arrow" aria-hidden="true"></i>
             </a>
+        </div>
+    </div>
+</nav>
+
+<?php /* Giới thiệu ngắn (MỚI, 2026-09-12) - trang chủ trước đây chưa có khối About
+     teaser. $tomtat (table_static type=tom-tat-gioi-thieu) là dữ liệu demo cũ
+     của template gốc (nói về 1 công ty máy tính khác, không phải PTS, không
+     có ảnh) - KHÔNG dùng. Copy dưới đây lấy nguyên văn câu mô tả đã có sẵn và
+     được duyệt ở Hero (templates/layout/slide.php, layout 1/2), không tự viết
+     nội dung/số liệu mới; 4 gạch đầu dòng tái dùng nguyên .trust-badge-strip
+     cũ (chỉ đổi cách trình bày, gộp vào khối này thay vì đứng riêng 1 dải).
+     Ảnh dùng lại đúng 1 trong 4 ảnh thật của Hero carousel (upload/photo có
+     sẵn, không cần ảnh mới). */ ?>
+<section class="pts-about-teaser uk-section-large">
+    <div class="uk-container">
+        <div class="pts-about-teaser-grid">
+            <div class="pts-about-teaser-media">
+                <?=$func->getImage(['class' => 'lazy', 'sizes' => '860x680x1', 'upload' => UPLOAD_PHOTO_L, 'image' => '1-27050.png', 'alt' => 'Công trình điện mặt trời Phúc Thịnh Solar'])?>
+            </div>
+            <div class="pts-about-teaser-copy">
+                <span class="pts-about-teaser-eyebrow">VỀ PHÚC THỊNH SOLAR</span>
+                <h3>Đồng hành cùng khách hàng trên hành trình năng lượng sạch</h3>
+                <p>Phúc Thịnh Solar cung cấp đèn năng lượng mặt trời chính hãng, thiết bị điện mặt trời và giải pháp thi công cho gia đình, đại lý và công trình.</p>
+                <ul class="pts-about-teaser-list">
+                    <li><i class="fas fa-certificate" aria-hidden="true"></i><span>Cam kết chính hãng</span></li>
+                    <li><i class="fas fa-tools" aria-hidden="true"></i><span>Đội ngũ kỹ thuật giàu kinh nghiệm</span></li>
+                    <li><i class="fas fa-shield-alt" aria-hidden="true"></i><span>Chính sách bảo hành rõ ràng</span></li>
+                    <li><i class="fas fa-truck" aria-hidden="true"></i><span>Giao hàng toàn quốc</span></li>
+                </ul>
+                <a class="pts-btn pts-btn-gold" href="ve-chung-toi/">Tìm hiểu về chúng tôi <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+            </div>
         </div>
     </div>
 </section>
@@ -90,38 +128,9 @@
     </div>
 </section>
 
-<?php /* Giới thiệu ngắn (MỚI, 2026-09-12) - trang chủ trước đây chưa có khối About
-     teaser. $tomtat (table_static type=tom-tat-gioi-thieu) là dữ liệu demo cũ
-     của template gốc (nói về 1 công ty máy tính khác, không phải PTS, không
-     có ảnh) - KHÔNG dùng. Copy dưới đây lấy nguyên văn câu mô tả đã có sẵn và
-     được duyệt ở Hero (templates/layout/slide.php, layout 1/2), không tự viết
-     nội dung/số liệu mới; 4 gạch đầu dòng tái dùng nguyên .trust-badge-strip
-     cũ (chỉ đổi cách trình bày, gộp vào khối này thay vì đứng riêng 1 dải).
-     Ảnh dùng lại đúng 1 trong 4 ảnh thật của Hero carousel (upload/photo có
-     sẵn, không cần ảnh mới). */ ?>
-<section class="pts-about-teaser uk-section-large">
-    <div class="uk-container">
-        <div class="pts-about-teaser-grid">
-            <div class="pts-about-teaser-media">
-                <?=$func->getImage(['class' => 'lazy', 'sizes' => '860x680x1', 'upload' => UPLOAD_PHOTO_L, 'image' => '1-27050.png', 'alt' => 'Công trình điện mặt trời Phúc Thịnh Solar'])?>
-            </div>
-            <div class="pts-about-teaser-copy">
-                <span class="pts-about-teaser-eyebrow">VỀ PHÚC THỊNH SOLAR</span>
-                <h3>Đồng hành cùng khách hàng trên hành trình năng lượng sạch</h3>
-                <p>Phúc Thịnh Solar cung cấp đèn năng lượng mặt trời chính hãng, thiết bị điện mặt trời và giải pháp thi công cho gia đình, đại lý và công trình.</p>
-                <ul class="pts-about-teaser-list">
-                    <li><i class="fas fa-certificate" aria-hidden="true"></i><span>Cam kết chính hãng</span></li>
-                    <li><i class="fas fa-tools" aria-hidden="true"></i><span>Đội ngũ kỹ thuật giàu kinh nghiệm</span></li>
-                    <li><i class="fas fa-shield-alt" aria-hidden="true"></i><span>Chính sách bảo hành rõ ràng</span></li>
-                    <li><i class="fas fa-truck" aria-hidden="true"></i><span>Giao hàng toàn quốc</span></li>
-                </ul>
-                <a class="pts-btn pts-btn-gold" href="ve-chung-toi/">Tìm hiểu về chúng tôi <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
-            </div>
-        </div>
-    </div>
-</section>
-
-<?php if(count($adv)){ ?>
+<?php /* Banner carousel cũ giữ lại để rollback; giao diện mới tách CTA đại lý
+     về đúng vị trí sau dải thương hiệu và dùng CTA tư vấn ở cuối trang. */ ?>
+<?php if(false && count($adv)){ ?>
     <div class="wrap-adv w-100">
         <div class="uk-container">
             <div class="owl-page owl-carousel owl-theme" data-xsm-items="1:20" data-sm-items="1:20"
@@ -161,7 +170,7 @@
 
 <?php if(count($gplist)){ ?>
 <!-- Giai phap -->
-<section class="home-2 uk-section-large">
+<section class="home-2 uk-section-large" id="giai-phap">
     <div class="uk-container">
         <div class="Module Module-321">
             <div class="ModuleContent">
@@ -172,7 +181,7 @@
                     </div>
                     <div class="heading-right">
                         <div class="tab-switcher">
-                            <ul uk-switcher="connect: .tabs-container">
+                            <ul class="pts-solution-tabs" uk-switcher="connect: .tabs-container">
                                 <?php if(count($gplist)){foreach($gplist as $k => $v){ ?>
                                 <li class="<?=($k==0)?'uk-active':''?>"> <a href="javascript:"
                                         aria-expanded=""><?=$v['name'.$lang]?></a></li>
@@ -276,7 +285,11 @@
 </section>
 <?php } ?>
 
-<?php if(count($loiich)){ ?>
+<?php /* Ẩn tạm sơ đồ lợi ích khỏi trang chủ (2026-09-12): nội dung trùng với
+     các tín hiệu tin cậy ở khối Giới thiệu, còn giao diện vòng tròn làm trang
+     dài và không có trong hướng thiết kế mới. Giữ nguyên code/query/data để
+     có thể bật lại sau khi đổi "false &&" về điều kiện gốc. */ ?>
+<?php if(false && count($loiich)){ ?>
 <!-- Loi ich -->
 <div class="Module Module-320">
     <div class="ModuleContent">
@@ -398,9 +411,44 @@
      (cùng nguồn $partner, type='doitac') - chỉ giữ 1 nơi để tránh lặp, trang
      chủ dành chỗ cho sản phẩm (audit UX 2026-09-08). */ ?>
 
-        <?php /* Section "Sự hài lòng của khách hàng, đối tác" đã bỏ khỏi trang chủ
-     theo yêu cầu chủ site (2026-09-08) - dồn hết vào việc gộp/rút gọn để tránh
-     trang chủ dài, không cần làm lại giao diện riêng cho phần này nữa. */ ?>
+	        <?php /* Section "Sự hài lòng của khách hàng, đối tác" đã bỏ khỏi trang chủ
+	     theo yêu cầu chủ site (2026-09-08) - dồn hết vào việc gộp/rút gọn để tránh
+	     trang chủ dài, không cần làm lại giao diện riêng cho phần này nữa. */ ?>
+
+<?php if(count($quytrinh)){ ?>
+<!-- Quy trinh -->
+<div class="Module Module-332">
+    <div class="ModuleContent">
+        <section class="home-7 uk-section-large">
+            <div class="uk-container">
+                <div class="section-title uk-text-center">
+                    <p>THI CÔNG AN TOÀN, LẮP ĐẶT NHANH CHÓNG</p>
+                    <h3>QUY TRÌNH CHUYÊN NGHIỆP</h3>
+                </div>
+                <?php /* Lưới tĩnh 4 cột (2026-09-12) - trước là 2 Swiper (icon-slider
+                         "tab" đồng bộ với process-slider ảnh lớn) cho đúng 4 bước
+                         $quytrinh, phải tương tác (bấm/vuốt) mới đọc hết. Dữ liệu đã
+                         đủ đúng 4 dòng nên hiện tĩnh luôn, đọc được không cần thao
+                         tác - JS Swiper cho .home-7 đã được guard querySelector nên
+                         không khởi tạo khi markup này không còn .swiper-container.
+                         Phần mô tả dài vẫn giữ trong DB nhưng không render tại trang
+                         chủ; trang này chỉ cần cho khách nắm nhanh bốn bước. */ ?>
+                <div class="pts-process-grid">
+                    <?php foreach($quytrinh as $k => $v){ ?>
+                    <div class="pts-process-step">
+                        <span class="pts-process-step-num"><?=($k<10)?'0'.($k+1):($k+1)?></span>
+                        <div class="pts-process-step-img">
+                            <?=$func->getImage(['class' => 'lazy','size-error' => '500x500x1', 'upload' => UPLOAD_NEWS_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
+                        </div>
+                        <h4 class="pts-process-step-title"><?=$v['name'.$lang]?></h4>
+                    </div>
+                    <?php } ?>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+<?php } ?>
 
 <?php if(count($dalist)){ ?>
 <!-- Du an -->
@@ -496,40 +544,6 @@
 </section>
 <?php } ?>
 
-<?php if(count($quytrinh)){ ?>
-<!-- Quy trinh -->
-<div class="Module Module-332">
-    <div class="ModuleContent">
-        <section class="home-7 uk-section-large rocket-lazyload"
-            style="background-image: url(assets/images/bg-1-1.png);">
-            <div class="uk-container">
-                <div class="section-title text-white uk-text-center">
-                    <p>THI CÔNG AN TOÀN, LẮP ĐẶT NHANH CHÓNG</p>
-                    <h3 class=" text-white">QUY TRÌNH CHUYÊN NGHIỆP</h3>
-                </div>
-                <?php /* Lưới tĩnh 4 cột (2026-09-12) - trước là 2 Swiper (icon-slider
-                         "tab" đồng bộ với process-slider ảnh lớn) cho đúng 4 bước
-                         $quytrinh, phải tương tác (bấm/vuốt) mới đọc hết. Dữ liệu đã
-                         đủ đúng 4 dòng nên hiện tĩnh luôn, đọc được không cần thao
-                         tác - JS Swiper cho .home-7 đã được guard querySelector nên
-                         không khởi tạo khi markup này không còn .swiper-container. */ ?>
-                <div class="pts-process-grid">
-                    <?php foreach($quytrinh as $k => $v){ ?>
-                    <div class="pts-process-step">
-                        <span class="pts-process-step-num"><?=($k<10)?'0'.($k+1):($k+1)?></span>
-                        <div class="pts-process-step-img">
-                            <?=$func->getImage(['class' => 'lazy','size-error' => '500x500x1', 'upload' => UPLOAD_NEWS_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
-                        </div>
-                        <h4 class="pts-process-step-title"><?=$v['name'.$lang]?></h4>
-                        <div class="pts-process-step-desc"><?=htmlspecialchars_decode($v['desc'.$lang])?></div>
-                    </div>
-                    <?php } ?>
-                </div>
-        </section>
-    </div>
-</div>
-<?php } ?>
-
 <?php /* Thương hiệu (MỚI, 2026-09-12) - trang chủ trước đây chưa có khối này,
      $chungnhan đã tải sẵn ở sources/index.php (dùng chung cho Hero layout 1),
      chỉ thêm render, không thêm truy vấn. 5 brand hiện có: SHARP, BLUE CARBON,
@@ -543,65 +557,82 @@
             <p>ĐỒNG HÀNH CÙNG THƯƠNG HIỆU UY TÍN</p>
             <h3>THƯƠNG HIỆU HỢP TÁC</h3>
         </div>
-        <div class="pts-brands-grid">
+        <div class="pts-brands-grid" role="list" aria-label="Danh sách thương hiệu hợp tác">
             <?php foreach($chungnhan as $v){ ?>
-            <div class="pts-brands-item">
-                <?=$func->getImage(['class' => 'lazy', 'size-error' => '300x420x3', 'upload' => UPLOAD_PHOTO_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
+            <div class="pts-brands-item" role="listitem">
+                <span class="pts-brands-name"><?=$v['name'.$lang]?></span>
             </div>
             <?php } ?>
+        </div>
+        <div class="pts-brand-services">
+            <a href="san-pham/">
+                <i class="fas fa-certificate" aria-hidden="true"></i>
+                <span><strong>Sản phẩm chính hãng</strong><small>Thông tin rõ theo từng mã hàng</small></span>
+            </a>
+            <a href="ho-tro/chinh-sach-giao-hang-va-kiem-hang/">
+                <i class="fas fa-truck" aria-hidden="true"></i>
+                <span><strong>Giao hàng toàn quốc</strong><small>Kiểm tra điều kiện vận chuyển</small></span>
+            </a>
+            <a href="ho-tro/chinh-sach-bao-hanh-bao-tri-va-ho-tro-ky-thuat/">
+                <i class="fas fa-headset" aria-hidden="true"></i>
+                <span><strong>Hỗ trợ kỹ thuật</strong><small>Tra cứu chính sách bảo hành</small></span>
+            </a>
         </div>
     </div>
 </section>
 <?php } ?>
 
-<?php if(count($newsnb) || count($dahoatdong)){ ?>
-<!-- Tin tuc + Hoat dong du an (2 cot, mix theo demo) -->
+<?php
+    $dealerAdv = array();
+    $contactAdv = array();
+    foreach($adv as $advItem)
+    {
+        if(!isset($advItem['link'])) continue;
+        if($advItem['link'] === '#ptsDealerModal' && !$dealerAdv) $dealerAdv = $advItem;
+        if($advItem['link'] === '#ptsContactModal' && !$contactAdv) $contactAdv = $advItem;
+    }
+?>
+<?php if($dealerAdv){ ?>
+<section class="pts-dealer-banner">
+    <div class="pts-dealer-banner-media" aria-hidden="true">
+        <?=$func->getImage(['class' => 'lazy', 'sizes' => '760x260x1', 'upload' => UPLOAD_PHOTO_L, 'image' => $dealerAdv['photo'], 'alt' => ''])?>
+    </div>
+    <div class="uk-container pts-dealer-banner-inner">
+        <div class="pts-dealer-banner-copy">
+            <span>HỢP TÁC CÙNG PHÚC THỊNH SOLAR</span>
+            <h3><?=htmlspecialchars_decode($dealerAdv['name'.$lang])?></h3>
+            <div><?=htmlspecialchars_decode($dealerAdv['desc'.$lang])?></div>
+        </div>
+        <a class="pts-btn pts-btn-gold" href="#ptsDealerModal" data-toggle="modal" data-target="#ptsDealerModal">Đăng ký hợp tác <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+    </div>
+</section>
+<?php } ?>
+
+<?php if(count($newsnb)){ ?>
+<!-- Kiến thức năng lượng; dự án đã có section riêng phía trên. -->
 <div class="Module Module-333">
     <div class="ModuleContent">
         <section class="home-8 uk-section-large">
             <div class="uk-container">
-                <div class="section-title uk-text-center">
-                    <p>CẬP NHẬT MỚI NHẤT</p>
-                    <h3>Hoạt động &amp; kiến thức <span class="pts-brand-text">Phúc Thịnh Solar</span></h3>
+                <div class="pts-news-heading">
+                    <div class="section-title">
+                        <p>CẬP NHẬT MỚI NHẤT</p>
+                        <h3>KIẾN THỨC NĂNG LƯỢNG</h3>
+                    </div>
+                    <a href="tin-tuc/" class="pts-news-viewall">Xem tất cả bài viết <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
                 </div>
-                <div class="row blog-2col-row">
-                    <?php if(count($dahoatdong)) { ?>
-                    <div class="col-md-6 blog-2col-item">
-                        <div class="blog-2col-heading">
-                            <h4>Hoạt động dự án</h4>
-                            <a href="du-an-da-thuc-hien/" class="blog-2col-viewall">Xem tất cả</a>
-                        </div>
-                        <?php foreach($dahoatdong as $v) { ?>
-                        <a class="blog-2col-row-item" href="store-manager/<?=$v[$sluglang]?>/" title="<?=$v['name'.$lang]?>">
-                            <div class="blog-2col-thumb">
-                                <?=$func->getImage(['class' => 'lazy', 'size-error' => '120x90x2', 'upload' => UPLOAD_NEWS_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
-                            </div>
-                            <div class="blog-2col-info">
-                                <p class="blog-2col-title"><?=$v['name'.$lang]?></p>
-                                <span class="blog-2col-date"><?=date('d/m/Y',$v['date_created'])?></span>
-                            </div>
-                        </a>
-                        <?php } ?>
-                    </div>
-                    <?php } ?>
-                    <?php if(count($newsnb)) { ?>
-                    <div class="col-md-6 blog-2col-item">
-                        <div class="blog-2col-heading">
-                            <h4>Kiến thức năng lượng</h4>
-                            <a href="tin-tuc/" class="blog-2col-viewall">Xem tất cả</a>
-                        </div>
-                        <?php foreach($newsnb as $v) { ?>
-                        <a class="blog-2col-row-item" href="<?=$v[$sluglang]?>/" title="<?=$v['name'.$lang]?>">
-                            <div class="blog-2col-thumb">
-                                <?=$func->getImage(['class' => 'lazy', 'size-error' => '120x90x2', 'upload' => UPLOAD_NEWS_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
-                            </div>
-                            <div class="blog-2col-info">
-                                <p class="blog-2col-title"><?=$v['name'.$lang]?></p>
-                                <span class="blog-2col-date"><?=date('d/m/Y',$v['date_created'])?></span>
-                            </div>
-                        </a>
-                        <?php } ?>
-                    </div>
+                <div class="pts-news-grid">
+                    <?php foreach($newsnb as $v) { ?>
+                    <a class="pts-news-card" href="<?=$v[$sluglang]?>/" title="<?=$v['name'.$lang]?>">
+                        <span class="pts-news-thumb">
+                            <?=$func->getImage(['class' => 'lazy', 'size-error' => '420x250x2', 'upload' => UPLOAD_NEWS_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
+                        </span>
+                        <span class="pts-news-info">
+                            <span class="pts-news-date"><?=date('d/m/Y',$v['date_created'])?></span>
+                            <span class="pts-news-title"><?=$v['name'.$lang]?></span>
+                            <span class="pts-news-link">Đọc bài viết <i class="fas fa-arrow-right" aria-hidden="true"></i></span>
+                        </span>
+                    </a>
                     <?php } ?>
                 </div>
             </div>
@@ -610,17 +641,13 @@
 </div>
 <?php } ?>
 
-<!-- CTA chốt trang chủ: đọc hết trang phải biết bước tiếp theo là gì, trước đây
-     trang chủ kết thúc thẳng bằng Footer, không có lối ra rõ ràng cho người đã
-     đọc hết nhưng vẫn còn phân vân (audit UX 2026-09-08). Đồng thời gộp luôn
-     CTA "tuyển đại lý" (trước đây là 1 banner riêng chen giữa Giải pháp/Lợi ích)
-     vào đây làm lối phụ, tránh nhắc đại lý 2 lần rải rác giữa trang. -->
+<!-- CTA tư vấn chốt trang; CTA đại lý đã được đặt riêng trước khối Kiến thức. -->
 <section class="pts-home-closing-cta">
     <div class="uk-container">
         <div class="pts-closing-cta-box">
             <div class="pts-closing-cta-main">
-                <h3>Chưa biết chọn sản phẩm phù hợp?</h3>
-                <p>Để lại số điện thoại hoặc nhắn Zalo, Phúc Thịnh Solar tư vấn miễn phí ngay.</p>
+                <h3><?=$contactAdv ? strip_tags(htmlspecialchars_decode($contactAdv['name'.$lang])) : 'Chưa biết chọn sản phẩm phù hợp?'?></h3>
+                <p><?=$contactAdv ? strip_tags(htmlspecialchars_decode($contactAdv['desc'.$lang])) : 'Để lại số điện thoại hoặc nhắn Zalo, Phúc Thịnh Solar tư vấn miễn phí ngay.'?></p>
                 <div class="pts-closing-cta-actions">
                     <a href="tel:<?=preg_replace('/[^0-9]/','',$optsetting['hotline'])?>" class="pts-btn pts-btn-gold"><i class="fas fa-phone-alt" aria-hidden="true"></i> Gọi ngay</a>
                     <?php if(!empty($optsetting['zalo'])) { ?>
@@ -628,10 +655,6 @@
                     <?php } ?>
                     <a href="#ptsContactModal" data-toggle="modal" data-target="#ptsContactModal" class="pts-btn pts-btn-ghost">Để lại số điện thoại</a>
                 </div>
-            </div>
-            <div class="pts-closing-cta-dealer">
-                <span>Bạn muốn kinh doanh sản phẩm Phúc Thịnh Solar?</span>
-                <a href="#ptsDealerModal" data-toggle="modal" data-target="#ptsDealerModal">Đăng ký làm đại lý <i class="fas fa-angle-right" aria-hidden="true"></i></a>
             </div>
         </div>
     </div>
