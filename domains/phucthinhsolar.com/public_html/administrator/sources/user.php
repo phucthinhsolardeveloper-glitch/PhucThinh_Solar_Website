@@ -472,7 +472,7 @@
 			else
 			{
 				$birthday = isset($data['birthday']) ? $data['birthday'] : '';
-				$data['birthday'] = strtotime(str_replace("/","-",$data['birthday']));
+				$data['birthday'] = ($birthday !== '') ? strtotime(str_replace("/","-",$birthday)) : 0;
 
 				/* Valid data */
 				if(empty($data['username']))
@@ -498,11 +498,6 @@
 					$response['messages'][] = 'Họ tên không được trống';
 				}
 
-				if(empty($data['email']))
-				{
-					$response['messages'][] = 'Email không được trống';
-				}
-
 				if(!empty($data['email']) && !$func->isEmail($data['email']))
 				{
 					$response['messages'][] = 'Email không hợp lệ';
@@ -521,24 +516,9 @@
 					$response['messages'][] = 'Số điện thoại không hợp lệ';
 				}
 
-				if(empty($data['gender']))
-				{
-					$response['messages'][] = 'Chưa chọn giới tính';
-				}
-
-				if(empty($birthday))
-				{
-					$response['messages'][] = 'Ngày sinh không được trống';
-				}
-				
 				if(!empty($birthday) && !$func->isDate($birthday))
 				{
 					$response['messages'][] = 'Ngày sinh không hợp lệ';
-				}
-
-				if(empty($data['address']))
-				{
-					$response['messages'][] = 'Địa chỉ không được trống';
 				}
 
 				if(!empty($response))
@@ -693,11 +673,6 @@
 			$response['messages'][] = 'Họ tên không được trống';
 		}
 
-		if(empty($data['email']))
-		{
-			$response['messages'][] = 'Email không được trống';
-		}
-
 		if(!empty($data['email']) && !$func->isEmail($data['email']))
 		{
 			$response['messages'][] = 'Email không hợp lệ';
@@ -716,24 +691,9 @@
 			$response['messages'][] = 'Số điện thoại không hợp lệ';
 		}
 
-		if(empty($data['gender']))
-		{
-			$response['messages'][] = 'Chưa chọn giới tính';
-		}
-
-		if(empty($birthday))
-		{
-			$response['messages'][] = 'Ngày sinh không được trống';
-		}
-		
 		if(!empty($birthday) && !$func->isDate($birthday))
 		{
 			$response['messages'][] = 'Ngày sinh không hợp lệ';
-		}
-
-		if(empty($data['address']))
-		{
-			$response['messages'][] = 'Địa chỉ không được trống';
 		}
 
 		if(!empty($response))

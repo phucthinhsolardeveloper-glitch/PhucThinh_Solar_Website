@@ -437,6 +437,7 @@
 				                <div class="custom-file my-custom-file">
 				                    <input type="file" class="custom-file-input" name="file_khuyenmai" id="file_khuyenmai" lang="vi" accept=".png,image/png">
 				                    <label class="custom-file-label mb-0" data-browse="Chọn" for="file_khuyenmai">Chọn PNG override riêng</label>
+				<strong class="d-block text-sm mt-2">Ảnh vuông 600×600, nền trong suốt, phần giữa để trống (khớp khung chiến dịch)</strong>
 				                </div>
 				            </div>
 				        </div>
@@ -465,6 +466,7 @@
 			                <div class="custom-file my-custom-file">
 			                    <input type="file" class="custom-file-input" name="file_feed" id="file_feed" lang="vi">
 			                    <label class="custom-file-label mb-0" data-browse="Chọn" for="file_feed">Chọn ảnh Shopping</label>
+			<strong class="d-block text-sm mt-2">Width: 200 px - Height: 200 px (nền trắng/sạch, không logo)</strong>
 			                </div>
 			            </div>
 			        </div>
@@ -558,6 +560,7 @@
         		<div class="card-body">
         			<div class="form-group">
 						<label for="filer-gallery" class="label-filer-gallery mb-2">Album hình: (<?=$config['product'][$type]['gallery'][$keyGallery]['img_type_photo']?>)</label>
+						<strong class="d-block text-sm mb-2"><?php echo "Width: ".$config['product'][$type]['gallery'][$keyGallery]['width_photo']." px - Height: ".$config['product'][$type]['gallery'][$keyGallery]['height_photo']." px" ?></strong>
 						<div class="alert alert-info text-sm">
 							Ảnh trong album hiển thị ở khu gallery (phóng to + dải thumbnail) của trang sản phẩm. Kéo để đổi thứ tự; đặt tên file có dấu, rõ nghĩa vì tên file được dùng làm alt/chú thích ảnh.
 						</div>

@@ -355,6 +355,7 @@
                 <div class="card-body">
                     <div class="form-group">
                         <label for="filer-gallery" class="label-filer-gallery mb-3">Album hình: (<?=$config['news'][$type]['gallery'][$keyGallery]['img_type_photo']?>)</label>
+                        <strong class="d-block text-sm mb-2"><?php echo "Width: ".$config['news'][$type]['gallery'][$keyGallery]['width_photo']." px - Height: ".$config['news'][$type]['gallery'][$keyGallery]['height_photo']." px" ?></strong>
                         <input type="file" name="files[]" id="filer-gallery" multiple="multiple">
                         <input type="hidden" class="col-filer" value="col-xl-2 col-lg-3 col-md-3 col-sm-4 col-6">
                         <input type="hidden" class="act-filer" value="man">

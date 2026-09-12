@@ -58,29 +58,29 @@
 						<input type="password" class="form-control text-sm" name="confirm_password" id="confirm_password" placeholder="Nhập lại mật khẩu" <?=($act=="add_admin")?'required':'';?>>
 					</div>
 					<div class="form-group col-md-4">
-						<label for="email">Email:</label>
-						<input type="email" class="form-control text-sm" name="data[email]" id="email" placeholder="Email" value="<?=(!empty($flash->has('email'))) ? $flash->get('email') : @$item['email']?>" required>
+						<label for="email">Email (không bắt buộc):</label>
+						<input type="email" class="form-control text-sm" name="data[email]" id="email" placeholder="Email" value="<?=(!empty($flash->has('email'))) ? $flash->get('email') : @$item['email']?>">
 					</div>
 					<div class="form-group col-md-4">
 						<label for="phone">Điện thoại:</label>
 						<input type="text" class="form-control text-sm" name="data[phone]" id="phone" placeholder="Điện thoại" value="<?=(!empty($flash->has('phone'))) ? $flash->get('phone') : @$item['phone']?>" required>
 					</div>
 					<div class="form-group col-md-4">
-						<label for="gender">Giới tính:</label>
+						<label for="gender">Giới tính (không bắt buộc):</label>
 						<?php $flashGender = $flash->get('gender'); ?>
-						<select class="custom-select text-sm" name="data[gender]" id="gender" required>
+						<select class="custom-select text-sm" name="data[gender]" id="gender">
 							<option value="">Chọn giới tính</option>
 							<option <?=(!empty($flashGender) && $flashGender == 1) ? 'selected' : ((@$item['gender'] == 1) ? 'selected' : '')?> value="1">Nam</option>
 							<option <?=(!empty($flashGender) && $flashGender == 2) ? 'selected' : ((@$item['gender'] == 2) ? 'selected' : '')?> value="2">Nữ</option>
 						</select>
 					</div>
 					<div class="form-group col-md-4">
-						<label for="birthday">Ngày sinh:</label>
-						<input type="text" class="form-control text-sm max-date" name="data[birthday]" id="birthday" placeholder="Ngày sinh" value="<?=(!empty($flash->has('birthday'))) ? date("d/m/Y",$flash->get('birthday')) : ((!empty($item['birthday'])) ? date("d/m/Y",$item['birthday']) : '')?>" required autocomplete="off">
+						<label for="birthday">Ngày sinh (không bắt buộc):</label>
+						<input type="text" class="form-control text-sm max-date" name="data[birthday]" id="birthday" placeholder="Ngày sinh" value="<?=(!empty($flash->has('birthday'))) ? date("d/m/Y",$flash->get('birthday')) : ((!empty($item['birthday'])) ? date("d/m/Y",$item['birthday']) : '')?>" autocomplete="off">
 					</div>
 					<div class="form-group col-md-4">
-						<label for="address">Địa chỉ:</label>
-						<input type="text" class="form-control text-sm" name="data[address]" id="address" placeholder="Địa chỉ" value="<?=(!empty($flash->has('address'))) ? $flash->get('address') : @$item['address']?>" required>
+						<label for="address">Địa chỉ (không bắt buộc):</label>
+						<input type="text" class="form-control text-sm" name="data[address]" id="address" placeholder="Địa chỉ" value="<?=(!empty($flash->has('address'))) ? $flash->get('address') : @$item['address']?>">
 					</div>
 				</div>
 				<div class="form-group">
