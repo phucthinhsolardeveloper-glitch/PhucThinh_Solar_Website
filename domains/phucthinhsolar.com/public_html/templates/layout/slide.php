@@ -100,7 +100,7 @@
         }
     }
 
-    /* Bản 2 (yêu cầu 2026-09-11, ĐẶT MẶC ĐỊNH): hero dạng "ảnh full-bleed +
+    /* Bản 2 (yêu cầu 2026-09-11): hero dạng "ảnh full-bleed +
        form tư vấn nổi bên phải + thanh số liệu kính mờ", tham khảo layout
        đối thủ. Bản 1 (ảnh crossfade + cột chứng nhận, section ngay dưới)
        giờ là bản phụ, ẩn mặc định. Nút .pts-hero-layout-toggle cho khách
@@ -115,11 +115,12 @@
        generateCaptcha() chỉ set được 1 trong 2. */
     $heroBgUrl2 = !empty($heroBgUrls) ? $heroBgUrls[0] : '';
 
-    /* LAYOUT 3 (2026-09-12): carousel 4-slide thật, thêm SONG SONG 2 layout
+    /* LAYOUT 3 (2026-09-12, ĐẶT MẶC ĐỊNH): carousel 4-slide thật, thêm SONG SONG 2 layout
        cũ theo yêu cầu chủ project "vẫn giữ layout hero cũ, k có bỏ, vì sẽ
        dùng song song, nó có nút chuyển mà" - không xoá/viết lại layout 1-2,
-       chỉ mở rộng .pts-hero-layout-toggle từ chu kỳ 2 trạng thái (1<->2)
-       thành 3 trạng thái (1->2->3->1). Dữ liệu tập trung 1 chỗ ở
+       cũ. Nút .pts-hero-layout-toggle vẫn dùng cho layout 1-2 để phục vụ
+       tính năng quản lý layout về sau, nhưng được ẩn ở layout 3 theo quyết
+       định của chủ project ngày 2026-09-12. Dữ liệu tập trung 1 chỗ ở
        libraries/home_hero_carousel.php (getHeroCarouselSlides()); khi nào
        có màn Admin quản lý riêng, thay hàm này bằng query DB, giữ nguyên
        shape mảng để không phải sửa lại phần render bên dưới. */
@@ -198,7 +199,7 @@
     </div>
 </section>
 
-<section class="pts-hero2 pts-hero-layout-panel is-active" data-pts-hero-layout="2">
+<section class="pts-hero2 pts-hero-layout-panel" data-pts-hero-layout="2" hidden>
     <?php if($heroBgUrl2 !== '') { ?>
     <div class="pts-hero2-bg" style="background-image:url('<?=htmlspecialchars($heroBgUrl2, ENT_QUOTES, 'UTF-8')?>')" aria-hidden="true"></div>
     <?php } ?>
@@ -267,7 +268,7 @@
 </section>
 
 <?php if($heroSlideCount) { ?>
-<section class="pts-hero-carousel pts-hero-layout-panel" data-pts-hero-layout="3" hidden aria-roledescription="carousel" aria-label="Giải pháp Phúc Thịnh Solar" id="ptsHeroCarousel">
+<section class="pts-hero-carousel pts-hero-layout-panel is-active" data-pts-hero-layout="3" aria-roledescription="carousel" aria-label="Giải pháp Phúc Thịnh Solar" id="ptsHeroCarousel">
     <div class="pts-hero-carousel-track">
         <?php foreach($heroCarouselSlides as $heroSlideIndex => $heroSlideData) {
             $heroIsFirst = ($heroSlideIndex === 0);
@@ -332,7 +333,7 @@
 </section>
 <?php } ?>
 
-<button type="button" class="pts-hero-layout-toggle" data-pts-hero-layout-target="1" aria-label="Xem giao diện banner khác" title="Xem giao diện khác">
+<button type="button" class="pts-hero-layout-toggle" data-pts-hero-layout-target="1" aria-label="Xem giao diện banner khác" title="Xem giao diện khác" hidden>
     <i class="fas fa-exchange-alt" aria-hidden="true"></i>
 </button>
 </div>

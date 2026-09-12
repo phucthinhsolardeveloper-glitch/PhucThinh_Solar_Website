@@ -69,9 +69,8 @@ test('header, menu, breadcrumb and footer remain usable', async ({ page, isMobil
   expect(pageErrors).toEqual([]);
 });
 
-test('mobile home hero keeps symmetric gutters in all three layouts', async ({ page, isMobile }) => {
+test('mobile home hero defaults to layout 3 and keeps legacy layouts usable', async ({ page, isMobile }) => {
   test.skip(!isMobile, 'The asymmetric-gutter regression only affected mobile.');
-  await page.addInitScript(() => window.localStorage.setItem('ptsHeroLayout', '2'));
   await page.goto('/', { waitUntil: 'domcontentloaded' });
   await dismissEntrancePopup(page);
 
@@ -89,18 +88,78 @@ test('mobile home hero keeps symmetric gutters in all three layouts', async ({ p
     expect(metrics.scrollWidth).toBe(metrics.viewport);
   };
 
+  await expect(page.locator('.pts-hero-carousel')).toBeVisible();
+  await expect(page.locator('.pts-hero-layout-toggle')).toBeHidden();
+  await assertSymmetric('.pts-hero-carousel-slide.is-active .pts-hero-carousel-copy');
+
+  await page.evaluate(() => window.localStorage.setItem('ptsHeroLayout20260912', '2'));
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  await dismissEntrancePopup(page);
   await expect(page.locator('.pts-hero2')).toBeVisible();
+  await expect(page.locator('.pts-hero-layout-toggle')).toBeVisible();
   await assertSymmetric('.pts-hero2-copy');
   await assertSymmetric('.pts-hero2-form-card');
   await assertSymmetric('.pts-hero2-stats');
 
   await page.locator('.pts-hero-layout-toggle').click();
   await expect(page.locator('.pts-hero-carousel')).toBeVisible();
+  await expect(page.locator('.pts-hero-layout-toggle')).toBeHidden();
   await assertSymmetric('.pts-hero-carousel-slide.is-active .pts-hero-carousel-copy');
 
-  await page.locator('.pts-hero-layout-toggle').click();
+  await page.evaluate(() => window.localStorage.setItem('ptsHeroLayout20260912', '1'));
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  await dismissEntrancePopup(page);
   await expect(page.locator('.pts-home-hero')).toBeVisible();
+  await expect(page.locator('.pts-hero-layout-toggle')).toBeVisible();
   await assertSymmetric('.pts-home-hero .pts-hero-inner');
+});
+
+test('home contact dock stays compact and exposes existing contact links', async ({ page }) => {
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await dismissEntrancePopup(page);
+
+  const dock = page.locator('#button-contact-vr.pts-contact-dock');
+  const toggle = dock.locator('.pts-contact-dock-toggle');
+  await expect(toggle).toBeVisible();
+  await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+  await expect(dock.locator('#gom-all-in-one')).toHaveAttribute('aria-hidden', 'true');
+
+  await toggle.click();
+  await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+  await expect(dock.locator('#gom-all-in-one')).toHaveAttribute('aria-hidden', 'false');
+  await expect(dock.locator('a[href^="tel:"]')).toBeVisible();
+  await expect(dock.locator('a[href*="zalo.me"]')).toBeVisible();
+
+  await page.keyboard.press('Escape');
+  await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+});
+
+test('home solution, projects and closing CTA follow the responsive redesign', async ({ page, isMobile }) => {
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await dismissEntrancePopup(page);
+
+  const solution = page.locator('.home-2 .tabs-container .item').first();
+  const copy = solution.locator('.wrapper').first();
+  const image = solution.locator('.wrapper').nth(1);
+  await solution.scrollIntoViewIfNeeded();
+  const positions = await Promise.all([copy.boundingBox(), image.boundingBox()]);
+  expect(positions[0]).toBeTruthy();
+  expect(positions[1]).toBeTruthy();
+  if (isMobile) expect(positions[1].y).toBeLessThan(positions[0].y);
+  else expect(positions[1].x).toBeLessThan(positions[0].x);
+
+  const activeProjectCards = page.locator('.projects-switcher > .uk-active .slider_6_slick .slick-active');
+  await expect(activeProjectCards).toHaveCount(isMobile ? 1 : 2);
+  if (!isMobile) {
+    const projectImageHeight = await activeProjectCards.first().locator('.project .img').evaluate(element => element.getBoundingClientRect().height);
+    expect(projectImageHeight).toBeLessThanOrEqual(260);
+  }
+
+  const closingImage = page.locator('.pts-home-closing-cta .pts-closing-cta-media img');
+  await closingImage.scrollIntoViewIfNeeded();
+  await expect(closingImage).toBeVisible();
+  expect(await closingImage.evaluate(element => element.naturalWidth)).toBeGreaterThan(0);
+  await expect(page.locator('.pts-news-card')).toHaveCount(6);
 });
 
 test('product detail keeps gallery and quote-only CTA', async ({ page }) => {

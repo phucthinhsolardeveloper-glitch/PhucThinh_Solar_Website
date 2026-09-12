@@ -168,8 +168,8 @@
     </div>
 </footer>
 
-<div id="button-contact-vr" class="">
-    <div id="gom-all-in-one">
+<div id="button-contact-vr" class="pts-contact-dock">
+    <div id="gom-all-in-one" aria-label="Các kênh liên hệ nhanh">
         <div id="fanpage-vr" class="button-contact">
             <div class="phone-vr">
                 <div class="phone-vr-circle-fill"></div>
@@ -214,4 +214,8 @@
         <!-- end phone -->
 
     </div>
+    <button type="button" class="pts-contact-dock-toggle" aria-expanded="false" aria-controls="gom-all-in-one" aria-label="Mở các kênh liên hệ">
+        <i class="fas fa-headset" aria-hidden="true"></i>
+        <span class="sr-only">Liên hệ nhanh</span>
+    </button>
 </div>

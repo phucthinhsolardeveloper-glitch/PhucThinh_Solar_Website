@@ -487,7 +487,7 @@
                     <div class=" Module Module-330">
                         <div class="ModuleContent">
                             <div class="row">
-                                <div class="col-md-8 offset-md-2">
+                                <div class="col-12">
                                     <div class="slider_6_slick">
                                         <?php if(count($projectnb)){foreach($projectnb as $kk => $c){ ?>
                                         <div class="item none">
@@ -656,8 +656,14 @@
 <!-- CTA tư vấn chốt trang; CTA đại lý đã được đặt riêng trước khối Kiến thức. -->
 <section class="pts-home-closing-cta">
     <div class="uk-container">
-        <div class="pts-closing-cta-box">
+        <div class="pts-closing-cta-box<?=$contactAdv && !empty($contactAdv['photo']) ? ' has-media' : ''?>">
+            <?php if($contactAdv && !empty($contactAdv['photo'])) { ?>
+            <div class="pts-closing-cta-media" aria-hidden="true">
+                <?=$func->getImage(['isLazy' => false, 'class' => '', 'sizes' => '760x420x1', 'upload' => UPLOAD_PHOTO_L, 'image' => $contactAdv['photo'], 'alt' => ''])?>
+            </div>
+            <?php } ?>
             <div class="pts-closing-cta-main">
+                <span class="pts-closing-cta-eyebrow">NHẬN TƯ VẤN</span>
                 <h3><?=$contactAdv ? strip_tags(htmlspecialchars_decode($contactAdv['name'.$lang])) : 'Chưa biết chọn sản phẩm phù hợp?'?></h3>
                 <p><?=$contactAdv ? strip_tags(htmlspecialchars_decode($contactAdv['desc'.$lang])) : 'Để lại số điện thoại hoặc nhắn Zalo, Phúc Thịnh Solar tư vấn miễn phí ngay.'?></p>
                 <div class="pts-closing-cta-actions">

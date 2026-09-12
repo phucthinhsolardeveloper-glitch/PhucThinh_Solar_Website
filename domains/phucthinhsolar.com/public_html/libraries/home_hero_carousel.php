@@ -7,9 +7,10 @@
    dùng cho watermark - thay vì ALTER TABLE) và giữ nguyên shape mảng bên dưới
    để không phải sửa slide.php/CSS/JS.
 
-   Render thành LAYOUT 3 trong .pts-hero-layouts (templates/layout/slide.php),
-   song song 2 layout Hero cũ (pts-home-hero / pts-hero2) - yêu cầu 2026-09-12
-   "vẫn giữ layout hero cũ, dùng song song, có nút chuyển", không thay thế.
+   Render thành LAYOUT 3 mặc định public trong .pts-hero-layouts
+   (templates/layout/slide.php), song song 2 layout Hero cũ
+   (pts-home-hero / pts-hero2). Hai layout cũ và nút chuyển của chúng được
+   giữ nguyên để nối vào màn quản lý layout về sau; layout 3 không hiện nút.
 
    Ảnh nền dùng lại đúng 4 ảnh thật đã có sẵn trong Admin > Ảnh nền Hero trang
    chủ (table_photo type=home-hero-bg, id 132-135) - không dùng ảnh dựng AI.

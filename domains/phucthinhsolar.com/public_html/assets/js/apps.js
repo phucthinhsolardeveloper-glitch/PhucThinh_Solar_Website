@@ -288,17 +288,18 @@ GA_FRAMEWORK.Pagings = function(){
         restartTimer();
     });
 
-    /* Nút chuyển thiết kế hero (yêu cầu 2026-09-11, mở rộng 2026-09-12 thêm
-       layout 3 = carousel mới, "vẫn giữ layout cũ, dùng song song, có nút
-       chuyển"): 3 bản layout render sẵn trong DOM (.pts-hero-layout-panel,
+    /* Nút chuyển thiết kế hero (yêu cầu 2026-09-11, cập nhật 2026-09-12):
+       3 bản layout vẫn render sẵn trong DOM (.pts-hero-layout-panel,
        ẩn/hiện bằng thuộc tính "hidden"), JS chỉ đổi bản nào đang hiện + nhớ
-       lựa chọn vào localStorage để lần ghé sau vẫn giữ nguyên. Áp lựa chọn đã
-       lưu NGAY khi trang tải, trước khi người dùng thấy gì, để không bị chớp
-       sai bản. Chu kỳ nút bấm: 1 -> 2 -> 3 -> 1. */
+       lựa chọn vào localStorage để hai layout cũ không bị xoá. Layout 3 là
+       mặc định public và không hiện nút đổi; layout 1-2 vẫn có nút để sẵn
+       cho màn quản lý layout trong tương lai. */
     var heroLayoutWrap = $(".pts-hero-layouts");
     if(heroLayoutWrap.length)
     {
-        var heroLayoutKey = "ptsHeroLayout";
+        /* Đổi key khi chốt layout 3 để preference thử nghiệm cũ (1/2) không
+           khiến một số trình duyệt tiếp tục thấy nhầm Hero legacy sau deploy. */
+        var heroLayoutKey = "ptsHeroLayout20260912";
         var heroLayoutToggleBtn = heroLayoutWrap.find(".pts-hero-layout-toggle");
         var heroLayoutNextMap = { "1": "2", "2": "3", "3": "1" };
         /* Nút chỉ có icon, không chữ (yêu cầu 2026-09-11) - vẫn đổi
@@ -313,20 +314,21 @@ GA_FRAMEWORK.Pagings = function(){
             panels.each(function() {
                 var isTarget = String($(this).data("pts-hero-layout")) === String(target);
                 this.hidden = !isTarget;
+                $(this).toggleClass("is-active", isTarget);
             });
             var title = heroLayoutTitles[target] || heroLayoutTitles["1"];
             heroLayoutToggleBtn.attr({ "title": title, "aria-label": title });
             var nextTarget = heroLayoutNextMap[target] || "1";
             if(availableTargets.indexOf(nextTarget) === -1) nextTarget = availableTargets[(availableTargets.indexOf(String(target)) + 1) % availableTargets.length];
             heroLayoutToggleBtn.data("pts-hero-layout-target", nextTarget);
+            heroLayoutToggleBtn.prop("hidden", String(target) === "3");
         }
 
-        /* Mặc định hiện bản 2 (form tư vấn nổi) - bản 1 (ảnh crossfade + cột
-           chứng nhận) và bản 3 (carousel mới) là bản phụ, chỉ hiện khi khách
-           tự bấm đổi hoặc đã từng chọn trước đó. */
+        /* Key mới bảo đảm mọi trình duyệt bắt đầu ở layout 3; vẫn có thể lưu
+           layout 1-2 khi cơ chế quản lý layout được nối vào trong tương lai. */
         var heroLayoutSaved = null;
         try { heroLayoutSaved = window.localStorage.getItem(heroLayoutKey); } catch(e) {}
-        applyHeroLayout(heroLayoutSaved || "2");
+        applyHeroLayout(heroLayoutSaved || "3");
 
         heroLayoutToggleBtn.on("click", function() {
             var target = String($(this).data("pts-hero-layout-target") || "2");
@@ -1153,6 +1155,44 @@ GA_FRAMEWORK.HomeSolutionPaths = function(){
     });
 };
 
+/* Cụm liên hệ nổi thu gọn: chỉ chiếm một nút ở góc màn hình, mở các kênh
+   khi người dùng chủ động bấm. Giữ nguyên toàn bộ link gọi/Zalo/Facebook. */
+GA_FRAMEWORK.ContactDock = function(){
+    var dock = $('#button-contact-vr.pts-contact-dock');
+    if(!dock.length) return;
+
+    var toggle = dock.find('.pts-contact-dock-toggle');
+    var group = dock.find('#gom-all-in-one');
+    var links = group.find('a');
+
+    function setOpen(open){
+        dock.toggleClass('is-open', open);
+        $('body').toggleClass('pts-contact-dock-open', open);
+        toggle.attr({
+            'aria-expanded': open ? 'true' : 'false',
+            'aria-label': open ? 'Đóng các kênh liên hệ' : 'Mở các kênh liên hệ'
+        });
+        group.attr('aria-hidden', open ? 'false' : 'true');
+        links.attr('tabindex', open ? '0' : '-1');
+    }
+
+    dock.addClass('is-enhanced');
+    setOpen(false);
+    toggle.on('click', function(event){
+        event.stopPropagation();
+        setOpen(!dock.hasClass('is-open'));
+    });
+    $(document).on('click', function(event){
+        if(dock.hasClass('is-open') && !dock.get(0).contains(event.target)) setOpen(false);
+    });
+    $(document).on('keydown', function(event){
+        if(event.key === 'Escape' && dock.hasClass('is-open')) {
+            setOpen(false);
+            toggle.trigger('focus');
+        }
+    });
+};
+
 /* Dải chọn cuộn ngang: khi bấm một ô đang nằm sát/rời mép nhìn thấy, tự đưa
    ô đó vào giữa dải. Chỉ áp dụng cho widget gắn data-click-scroll; link điều
    hướng thông thường không bị can thiệp và click vẫn chạy đúng chức năng cũ. */
@@ -1186,6 +1226,7 @@ $(document).ready(function(){
     GA_FRAMEWORK.HomeCategoryScroller();
     GA_FRAMEWORK.HomeBrandScroller();
     GA_FRAMEWORK.HomeSolutionPaths();
+    GA_FRAMEWORK.ContactDock();
     GA_FRAMEWORK.ClickScrollTracks();
     GA_FRAMEWORK.AltImg();
     GA_FRAMEWORK.Toc();

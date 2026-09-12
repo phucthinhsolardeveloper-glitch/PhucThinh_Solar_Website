@@ -176,37 +176,27 @@ function sliderHome(){
         }),
         home_6 = jQuery('.slider_6_slick').slick({
             infinite: true,
-            slidesToShow: 1,
+            slidesToShow: 2,
             slidesToScroll: 1,
             speed: 1000,
             cssEase: 'cubic-bezier(0.7, 0, 0.3, 1)',
             autoplay: true,
             arrows: true,
             // dots:true,
-            adaptiveHeight: true,
+            adaptiveHeight: false,
             prevArrow: "<div class='customm_arrow left'><i class='fa fa-angle-left'></i></div>",
             nextArrow: "<div class='customm_arrow right'><i class='fa fa-angle-right'></i></div>",
-            autoplaySpeed: 1500,
-            // responsive: [
-            //     {
-            //         breakpoint: 992,
-            //         settings: {
-            //             slidesToShow: 1,
-            //             slidesToScroll: 1,
-            //             arrows:false,
-            //             adaptiveHeight: true
-            //         }
-            //     },
-            //     {
-            //         breakpoint: 768,
-            //         settings: {
-            //             slidesToShow: 1,
-            //             slidesToScroll: 1,
-            //             arrows:false,
-            //             adaptiveHeight: true
-            //         }
-            //     }
-            // ]
+            autoplaySpeed: 4500,
+            responsive: [
+                {
+                    breakpoint: 768,
+                    settings: {
+                        slidesToShow: 1,
+                        slidesToScroll: 1,
+                        adaptiveHeight: true
+                    }
+                }
+            ]
         }),
         // home_6 = new Swiper(".home-6 .swiper-container", {
         //     slidesPerView: 1,
