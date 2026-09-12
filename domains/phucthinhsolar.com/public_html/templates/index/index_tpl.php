@@ -25,65 +25,101 @@
 </section>
 
 <!-- San pham -->
-<section class="home-3 home-products-featured uk-section-large" style="background-image: url();">
+<section class="home-3 home-products-featured uk-section-large pts-ecosystem" style="background-image: url();">
     <div class="uk-container">
         <div class="Module Module-324">
             <div class="ModuleContent">
-                <div class="section-title uk-text-center">
-                    <p>CHẤT LƯỢNG, HIỆN ĐẠI, AN TOÀN</p>
-                    <h3>DANH MỤC SẢN PHẨM</h3>
-                </div>
-                <?php /* Bấm icon danh mục -> AJAX đổi lưới sản phẩm bên dưới sang đúng
-                         danh mục đó (kiểu cũ, khôi phục lại theo yêu cầu chủ site
-                         2026-09-08) - api/product2.php + apps.js xử lý phần load, không
-                         cần thêm code JS mới. */ ?>
-                <div class="tab-switcher">
-                    <div class="pts-home-category-wrap">
-                        <button type="button" class="pts-category-scroll pts-category-scroll--prev" aria-label="Cuộn danh mục sang trái" aria-controls="pts-home-category-list"><i class="fas fa-chevron-left" aria-hidden="true"></i></button>
-                        <ul class="pts-home-category-grid" id="pts-home-category-list" data-click-scroll="center" uk-switcher="connect: .product-tabs-container">
-                            <?php if(count($splistnb)){foreach($splistnb as $k => $v){ ?>
-                            <li>
-                                <a href="javascript:void(0)" class="get-product-category" data-list="<?=$v['id']?>">
-                                    <span class="pts-home-category-image">
-                                        <?php if(!empty($v['photo'])) { ?>
-                                        <?=$func->getImage(['class' => 'lazy', 'sizes' => '220x220x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
-                                        <?php } else {
-                                            $categoryIcon = 'fa-lightbulb';
-                                            $categorySlug = isset($v[$sluglang]) ? $v[$sluglang] : '';
-                                            if(strpos($categorySlug, 'tam-pin') !== false) $categoryIcon = 'fa-solar-panel';
-                                            else if(strpos($categorySlug, 'tru-den') !== false) $categoryIcon = 'fa-broadcast-tower';
-                                            else if(strpos($categorySlug, 'san-vuon') !== false) $categoryIcon = 'fa-seedling';
-                                            else if(strpos($categorySlug, 'quat') !== false) $categoryIcon = 'fa-fan';
-                                        ?>
-                                        <i class="fas <?=$categoryIcon?>" aria-hidden="true"></i>
-                                        <?php } ?>
-                                    </span>
-                                    <span><?=$v['name'.$lang]?></span>
-                                </a>
-                            </li>
-                            <?php }} ?>
-                        </ul>
-                        <button type="button" class="pts-category-scroll pts-category-scroll--next" aria-label="Cuộn danh mục sang phải" aria-controls="pts-home-category-list"><i class="fas fa-chevron-right" aria-hidden="true"></i></button>
+                <?php /* Lưới tĩnh 4 lớn + 6 nhỏ (2026-09-12, bản 2 - đổi từ thanh cuộn
+                         ngang sang lưới 2 hàng cố định theo hướng thiết kế mới chủ
+                         project đưa - "vẫn hơi hướng layout cũ", thanh cuộn ngang với
+                         icon nhỏ đúng là gần giống bản gốc). Bấm card -> AJAX đổi lưới
+                         sản phẩm bên dưới (api/product2.php + apps.js, không đổi JS).
+                         Tách theo cờ pl.status có 'major' (Đèn NLMT, Trụ đèn & phụ
+                         kiện, Đèn sân vườn, Biến tần - chủ project chọn), render
+                         trước để nổi bật, giữ đủ cả 10 danh mục. Lưới 12 cột: 4 card
+                         major span 3 (đủ 1 hàng), 6 card minor span 2 (đủ 1 hàng) -
+                         không cần JS, tự xuống hàng đúng theo CSS grid. */
+                    $splistMajor = array();
+                    $splistMinor = array();
+                    foreach($splistnb as $splistRow) {
+                        if(!empty($splistRow['status']) && strpos(','.$splistRow['status'].',', ',major,') !== false) $splistMajor[] = $splistRow;
+                        else $splistMinor[] = $splistRow;
+                    }
+                    $splistOrdered = array_merge($splistMajor, $splistMinor);
+                ?>
+                <div class="pts-ecosystem-head">
+                    <div class="section-title">
+                        <p>SẢN PHẨM</p>
+                        <h3>HỆ SINH THÁI THIẾT BỊ</h3>
                     </div>
+                    <a class="pts-ecosystem-viewall" href="san-pham/">Xem tất cả sản phẩm <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+                </div>
+                <div class="tab-switcher">
+                    <ul class="pts-ecosystem-grid" uk-switcher="connect: .product-tabs-container">
+                        <?php if(count($splistOrdered)){foreach($splistOrdered as $k => $v){
+                            $isMajorCategory = !empty($v['status']) && strpos(','.$v['status'].',', ',major,') !== false;
+                        ?>
+                        <li class="<?=$isMajorCategory ? 'is-major' : ''?>">
+                            <a href="javascript:void(0)" class="get-product-category" data-list="<?=$v['id']?>">
+                                <?php if($isMajorCategory) { ?><span class="pts-home-category-badge">HOT</span><?php } ?>
+                                <span class="pts-home-category-image">
+                                    <?php if(!empty($v['photo'])) { ?>
+                                    <?=$func->getImage(['class' => 'lazy', 'sizes' => '220x220x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
+                                    <?php } else {
+                                        $categoryIcon = 'fa-lightbulb';
+                                        $categorySlug = isset($v[$sluglang]) ? $v[$sluglang] : '';
+                                        if(strpos($categorySlug, 'tam-pin') !== false) $categoryIcon = 'fa-solar-panel';
+                                        else if(strpos($categorySlug, 'tru-den') !== false) $categoryIcon = 'fa-broadcast-tower';
+                                        else if(strpos($categorySlug, 'san-vuon') !== false) $categoryIcon = 'fa-seedling';
+                                        else if(strpos($categorySlug, 'quat') !== false) $categoryIcon = 'fa-fan';
+                                    ?>
+                                    <i class="fas <?=$categoryIcon?>" aria-hidden="true"></i>
+                                    <?php } ?>
+                                </span>
+                                <span class="pts-ecosystem-name"><?=$v['name'.$lang]?><i class="fas fa-arrow-right" aria-hidden="true"></i></span>
+                            </a>
+                        </li>
+                        <?php }} ?>
+                    </ul>
                 </div>
             </div>
         </div>
         <div class="product-tabs-container" style="touch-action: pan-y pinch-zoom;">
-            <div class="paging-product-category" data-list="<?=$splistnb[0]['id']?>"></div>
+            <div class="paging-product-category" data-list="<?=$splistOrdered[0]['id']?>"></div>
         </div>
     </div>
 </section>
 
-<div class="trust-badge-strip">
+<?php /* Giới thiệu ngắn (MỚI, 2026-09-12) - trang chủ trước đây chưa có khối About
+     teaser. $tomtat (table_static type=tom-tat-gioi-thieu) là dữ liệu demo cũ
+     của template gốc (nói về 1 công ty máy tính khác, không phải PTS, không
+     có ảnh) - KHÔNG dùng. Copy dưới đây lấy nguyên văn câu mô tả đã có sẵn và
+     được duyệt ở Hero (templates/layout/slide.php, layout 1/2), không tự viết
+     nội dung/số liệu mới; 4 gạch đầu dòng tái dùng nguyên .trust-badge-strip
+     cũ (chỉ đổi cách trình bày, gộp vào khối này thay vì đứng riêng 1 dải).
+     Ảnh dùng lại đúng 1 trong 4 ảnh thật của Hero carousel (upload/photo có
+     sẵn, không cần ảnh mới). */ ?>
+<section class="pts-about-teaser uk-section-large">
     <div class="uk-container">
-        <div class="row">
-            <div class="col-md-3 trust-badge-item"><i class="fas fa-certificate"></i><span>Cam kết chính hãng</span></div>
-            <div class="col-md-3 trust-badge-item"><i class="fas fa-tools"></i><span>Đội ngũ kỹ thuật giàu kinh nghiệm</span></div>
-            <div class="col-md-3 trust-badge-item"><i class="fas fa-shield-alt"></i><span>Chính sách bảo hành rõ ràng</span></div>
-            <div class="col-md-3 trust-badge-item"><i class="fas fa-truck"></i><span>Giao hàng toàn quốc</span></div>
+        <div class="pts-about-teaser-grid">
+            <div class="pts-about-teaser-media">
+                <?=$func->getImage(['class' => 'lazy', 'sizes' => '860x680x1', 'upload' => UPLOAD_PHOTO_L, 'image' => '1-27050.png', 'alt' => 'Công trình điện mặt trời Phúc Thịnh Solar'])?>
+            </div>
+            <div class="pts-about-teaser-copy">
+                <span class="pts-about-teaser-eyebrow">VỀ PHÚC THỊNH SOLAR</span>
+                <h3>Đồng hành cùng khách hàng trên hành trình năng lượng sạch</h3>
+                <p>Phúc Thịnh Solar cung cấp đèn năng lượng mặt trời chính hãng, thiết bị điện mặt trời và giải pháp thi công cho gia đình, đại lý và công trình.</p>
+                <ul class="pts-about-teaser-list">
+                    <li><i class="fas fa-certificate" aria-hidden="true"></i><span>Cam kết chính hãng</span></li>
+                    <li><i class="fas fa-tools" aria-hidden="true"></i><span>Đội ngũ kỹ thuật giàu kinh nghiệm</span></li>
+                    <li><i class="fas fa-shield-alt" aria-hidden="true"></i><span>Chính sách bảo hành rõ ràng</span></li>
+                    <li><i class="fas fa-truck" aria-hidden="true"></i><span>Giao hàng toàn quốc</span></li>
+                </ul>
+                <a class="pts-btn pts-btn-gold" href="ve-chung-toi/">Tìm hiểu về chúng tôi <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+            </div>
         </div>
     </div>
-</div>
+</section>
 
 <?php if(count($adv)){ ?>
     <div class="wrap-adv w-100">
@@ -316,7 +352,13 @@
 </div>
 <?php } ?>
 
-<?php if(count($solieu)){ ?>
+<?php /* Ẩn tạm khối "Con số ấn tượng" (2026-09-12) - số liệu hiện tại
+     (1.000.000 tấm pin đã cung cấp, 1.000 inverter, 1.000 diện tích...) là số
+     tròn rõ ràng chưa xác minh, đúng cảnh báo lặp lại ở cả 3 tài liệu rà soát
+     (BAN-GIAO.md, Codex Sep-11, đặc tả tiếng Anh). KHÔNG xoá dữ liệu/truy vấn -
+     chỉ ẩn hiển thị cho tới khi chủ project xác nhận số liệu thật, đổi lại
+     "false &&" thành điều kiện gốc khi có số liệu đã duyệt. */ ?>
+<?php if(false && count($solieu)){ ?>
 <!-- Con so -->
 <div class="Module Module-327">
     <div class="ModuleContent">
@@ -465,80 +507,51 @@
                     <p>THI CÔNG AN TOÀN, LẮP ĐẶT NHANH CHÓNG</p>
                     <h3 class=" text-white">QUY TRÌNH CHUYÊN NGHIỆP</h3>
                 </div>
-                <div class="icon-slider">
-                    <div class="swiper-container">
-                        <div class="swiper-wrapper">
-                            <?php foreach($quytrinh as $k => $v){ ?>
-                            <div class="swiper-slide">
-                                <div class="item">
-                                    <div class="content">
-                                        <div class="text">
-                                            <span><?=($k<10)?'0'.($k+1):($k+1)?>. <?=$v['name'.$lang]?></span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <?php } ?>
+                <?php /* Lưới tĩnh 4 cột (2026-09-12) - trước là 2 Swiper (icon-slider
+                         "tab" đồng bộ với process-slider ảnh lớn) cho đúng 4 bước
+                         $quytrinh, phải tương tác (bấm/vuốt) mới đọc hết. Dữ liệu đã
+                         đủ đúng 4 dòng nên hiện tĩnh luôn, đọc được không cần thao
+                         tác - JS Swiper cho .home-7 đã được guard querySelector nên
+                         không khởi tạo khi markup này không còn .swiper-container. */ ?>
+                <div class="pts-process-grid">
+                    <?php foreach($quytrinh as $k => $v){ ?>
+                    <div class="pts-process-step">
+                        <span class="pts-process-step-num"><?=($k<10)?'0'.($k+1):($k+1)?></span>
+                        <div class="pts-process-step-img">
+                            <?=$func->getImage(['class' => 'lazy','size-error' => '500x500x1', 'upload' => UPLOAD_NEWS_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
                         </div>
-                        <span class="swiper-notification" aria-live="assertive" aria-atomic="true"></span>
+                        <h4 class="pts-process-step-title"><?=$v['name'.$lang]?></h4>
+                        <div class="pts-process-step-desc"><?=htmlspecialchars_decode($v['desc'.$lang])?></div>
                     </div>
-                </div>
-                <div class="process-slider">
-                    <div class="swiper-container">
-                        <div class="swiper-wrapper">
-                            <?php foreach($quytrinh as $k => $v){ ?>
-                            <div class="swiper-slide">
-                                <div class="item">
-                                    <div class="inner">
-                                        <div class="row align-items-center">
-                                            <div class="col-md-6">
-                                                <div class="group_content">
-                                                    <div class="title">
-                                                        <div class="icon">
-                                                            <img class="lazy" data-src="assets/images/solar-panels.png"
-                                                                alt="<?=$v['name'.$lang]?>">
-                                                        </div>
-                                                        <p class="text"><?=($k<10)?'0'.($k+1):($k+1)?>.
-                                                            <?=$v['name'.$lang]?></p>
-                                                    </div>
-                                                    <div class="content text-white">
-                                                        <?=htmlspecialchars_decode($v['desc'.$lang])?>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="img">
-                                                    <?=$func->getImage(['class' => 'lazy','size-error' => '500x500x1', 'upload' => UPLOAD_NEWS_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <?php } ?>
-                            <span class="swiper-notification" aria-live="assertive" aria-atomic="true"></span>
-                        </div>
-                    </div>
-                    <a class="uk-position-center-left uk-position-small uk-slidenav swiper-prev" href="#" tabindex="0"
-                        role="button" aria-label="Previous slide">
-                        <svg fill="rgba(51, 51, 51, 0.5)" width="20px" height="20px" viewBox="-78.5 0 512 512"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <title>left</title>
-                            <path d="M257 64L291 98 128 262 291 426 257 460 61 262 257 64Z"></path>
-                        </svg>
-                    </a>
-                    <a class="uk-position-center-right uk-position-small uk-slidenav swiper-next" href="#" tabindex="0"
-                        role="button" aria-label="Next slide">
-                        <svg fill="rgba(51, 51, 51, 0.5)" width="20px" height="20px" viewBox="-77 0 512 512"
-                            xmlns="http://www.w3.org/2000/svg">
-                            <title>right</title>
-                            <path d="M98 460L64 426 227 262 64 98 98 64 294 262 98 460Z"></path>
-                        </svg>
-                    </a>
+                    <?php } ?>
                 </div>
         </section>
     </div>
 </div>
+<?php } ?>
+
+<?php /* Thương hiệu (MỚI, 2026-09-12) - trang chủ trước đây chưa có khối này,
+     $chungnhan đã tải sẵn ở sources/index.php (dùng chung cho Hero layout 1),
+     chỉ thêm render, không thêm truy vấn. 5 brand hiện có: SHARP, BLUE CARBON,
+     JINDIAN, ZUOLIGHT, HUAWEI - CHỈ hiện tên/logo, không tự gắn nhãn "nhà phân
+     phối uỷ quyền" hay quan hệ đối tác nào khác (chưa xác minh riêng từng
+     brand, đúng cảnh báo lặp lại ở mọi tài liệu rà soát). */ ?>
+<?php if(count($chungnhan)){ ?>
+<section class="pts-brands uk-section-large">
+    <div class="uk-container">
+        <div class="section-title uk-text-center">
+            <p>ĐỒNG HÀNH CÙNG THƯƠNG HIỆU UY TÍN</p>
+            <h3>THƯƠNG HIỆU HỢP TÁC</h3>
+        </div>
+        <div class="pts-brands-grid">
+            <?php foreach($chungnhan as $v){ ?>
+            <div class="pts-brands-item">
+                <?=$func->getImage(['class' => 'lazy', 'size-error' => '300x420x3', 'upload' => UPLOAD_PHOTO_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
+            </div>
+            <?php } ?>
+        </div>
+    </div>
+</section>
 <?php } ?>
 
 <?php if(count($newsnb) || count($dahoatdong)){ ?>

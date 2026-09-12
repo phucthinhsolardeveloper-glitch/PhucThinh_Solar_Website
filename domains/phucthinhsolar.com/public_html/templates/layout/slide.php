@@ -114,6 +114,17 @@
        #recaptchaResponseContact đã dùng cho modal - trùng id thì
        generateCaptcha() chỉ set được 1 trong 2. */
     $heroBgUrl2 = !empty($heroBgUrls) ? $heroBgUrls[0] : '';
+
+    /* LAYOUT 3 (2026-09-12): carousel 4-slide thật, thêm SONG SONG 2 layout
+       cũ theo yêu cầu chủ project "vẫn giữ layout hero cũ, k có bỏ, vì sẽ
+       dùng song song, nó có nút chuyển mà" - không xoá/viết lại layout 1-2,
+       chỉ mở rộng .pts-hero-layout-toggle từ chu kỳ 2 trạng thái (1<->2)
+       thành 3 trạng thái (1->2->3->1). Dữ liệu tập trung 1 chỗ ở
+       libraries/home_hero_carousel.php (getHeroCarouselSlides()); khi nào
+       có màn Admin quản lý riêng, thay hàm này bằng query DB, giữ nguyên
+       shape mảng để không phải sửa lại phần render bên dưới. */
+    $heroCarouselSlides = getHeroCarouselSlides();
+    $heroSlideCount = count($heroCarouselSlides);
 ?>
 <div class="pts-hero-layouts">
 <section class="pts-home-hero<?=$heroCerts ? ' pts-home-hero-split' : ''?><?=$heroBgUrls ? ' pts-home-hero-photo' : ''?> pts-hero-layout-panel" data-pts-hero-layout="1" hidden>
@@ -254,6 +265,72 @@
         </div>
     </div>
 </section>
+
+<?php if($heroSlideCount) { ?>
+<section class="pts-hero-carousel pts-hero-layout-panel" data-pts-hero-layout="3" hidden aria-roledescription="carousel" aria-label="Giải pháp Phúc Thịnh Solar" id="ptsHeroCarousel">
+    <div class="pts-hero-carousel-track">
+        <?php foreach($heroCarouselSlides as $heroSlideIndex => $heroSlideData) {
+            $heroIsFirst = ($heroSlideIndex === 0);
+            $heroSlideAlt = htmlspecialchars((string)$heroSlideData['alt'], ENT_QUOTES, 'UTF-8');
+            $heroDesktopSrc = ASSET.THUMBS.'/1920x900x1/'.UPLOAD_PHOTO_L.$heroSlideData['image'];
+            $heroMobileSrc = ASSET.THUMBS.'/900x1100x1/'.UPLOAD_PHOTO_L.$heroSlideData['image'];
+            /* Layout 3 dùng chung <h1> với layout 1/2 (chỉ 1 layout hiển thị tại
+               1 thời điểm) - slide đầu vẫn dùng h1 để giữ đúng 1 H1/trang khi
+               layout 3 là bản đang active; các slide sau dùng h2. */
+            $heroTitleTag = $heroIsFirst ? 'h1' : 'h2';
+        ?>
+        <article class="pts-hero-carousel-slide<?=$heroIsFirst ? ' is-active' : ''?><?=!empty($heroSlideData['theme']) && $heroSlideData['theme'] === 'light' ? ' is-theme-light' : ''?>"
+            data-hero-slide="<?=(int)$heroSlideIndex?>"
+            aria-roledescription="slide"
+            aria-label="<?=(int)$heroSlideIndex + 1?> trên <?=$heroSlideCount?>: <?=htmlspecialchars((string)$heroSlideData['eyebrow'], ENT_QUOTES, 'UTF-8')?>"
+            <?=$heroIsFirst ? '' : 'aria-hidden="true"'?>>
+            <div class="pts-hero-carousel-visual" aria-hidden="true">
+                <picture>
+                    <source media="(max-width:760px)" srcset="<?=htmlspecialchars($heroMobileSrc, ENT_QUOTES, 'UTF-8')?>">
+                    <img class="pts-hero-carousel-img" src="<?=htmlspecialchars($heroDesktopSrc, ENT_QUOTES, 'UTF-8')?>" alt="" width="1920" height="900" <?=$heroIsFirst ? 'fetchpriority="high"' : 'loading="lazy"'?>>
+                </picture>
+                <div class="pts-hero-carousel-scrim"></div>
+            </div>
+            <div class="wrap-content pts-hero-carousel-inner">
+                <div class="pts-hero-carousel-copy">
+                    <span class="pts-hero-carousel-eyebrow"><?=htmlspecialchars((string)$heroSlideData['eyebrow'], ENT_QUOTES, 'UTF-8')?></span>
+                    <<?=$heroTitleTag?> class="pts-hero-carousel-title">
+                        <span><?=htmlspecialchars((string)$heroSlideData['titleLine1'], ENT_QUOTES, 'UTF-8')?></span>
+                        <span class="pts-hero-carousel-title-muted"><?=htmlspecialchars((string)$heroSlideData['titleLine2'], ENT_QUOTES, 'UTF-8')?></span>
+                    </<?=$heroTitleTag?>>
+                    <p class="pts-hero-carousel-desc"><?=htmlspecialchars((string)$heroSlideData['description'], ENT_QUOTES, 'UTF-8')?></p>
+                    <div class="pts-hero-carousel-actions">
+                        <?php $heroPrimary = $heroSlideData['primaryCTA']; ?>
+                        <a class="pts-btn pts-btn-gold pts-btn-lg" href="<?=htmlspecialchars((string)$heroPrimary['href'], ENT_QUOTES, 'UTF-8')?>"<?php if(!empty($heroPrimary['modal'])) { ?> data-toggle="modal" data-target="#<?=htmlspecialchars((string)$heroPrimary['modal'], ENT_QUOTES, 'UTF-8')?>"<?php } ?>><?=htmlspecialchars((string)$heroPrimary['label'], ENT_QUOTES, 'UTF-8')?></a>
+                        <?php if(!empty($heroSlideData['secondaryCTA'])) { $heroSecondary = $heroSlideData['secondaryCTA']; ?>
+                        <a class="pts-hero-carousel-text-link" href="<?=htmlspecialchars((string)$heroSecondary['href'], ENT_QUOTES, 'UTF-8')?>"<?php if(!empty($heroSecondary['modal'])) { ?> data-toggle="modal" data-target="#<?=htmlspecialchars((string)$heroSecondary['modal'], ENT_QUOTES, 'UTF-8')?>"<?php } ?>><?=htmlspecialchars((string)$heroSecondary['label'], ENT_QUOTES, 'UTF-8')?> <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+                        <?php } ?>
+                    </div>
+                    <?php if(!empty($heroSlideData['tags'])) { ?>
+                    <p class="pts-hero-carousel-tags"><?=implode(' <i aria-hidden="true"></i> ', array_map(function($heroTag){ return htmlspecialchars((string)$heroTag, ENT_QUOTES, 'UTF-8'); }, $heroSlideData['tags']))?></p>
+                    <?php } ?>
+                </div>
+            </div>
+        </article>
+        <?php } ?>
+    </div>
+
+    <?php if($heroSlideCount > 1) { ?>
+    <div class="wrap-content pts-hero-carousel-control">
+        <div class="pts-hero-carousel-pagination" role="group" aria-label="Chọn slide">
+            <?php foreach($heroCarouselSlides as $heroSlideIndex => $heroSlideData) { ?>
+            <button type="button" class="pts-hero-carousel-dot<?=$heroSlideIndex === 0 ? ' is-active' : ''?>" data-hero-goto="<?=(int)$heroSlideIndex?>" aria-label="Slide <?=(int)$heroSlideIndex + 1?>: <?=htmlspecialchars((string)$heroSlideData['eyebrow'], ENT_QUOTES, 'UTF-8')?>" <?=$heroSlideIndex === 0 ? 'aria-current="true"' : ''?>><?=str_pad((int)$heroSlideIndex + 1, 2, '0', STR_PAD_LEFT)?></button>
+            <?php } ?>
+        </div>
+        <div class="pts-hero-carousel-nav">
+            <button type="button" class="pts-hero-carousel-nav-btn" id="ptsHeroPause" aria-label="Dừng chuyển slide" aria-pressed="false"><i class="fas fa-pause" aria-hidden="true"></i></button>
+            <button type="button" class="pts-hero-carousel-nav-btn" id="ptsHeroPrev" aria-label="Slide trước"><i class="fas fa-chevron-left" aria-hidden="true"></i></button>
+            <button type="button" class="pts-hero-carousel-nav-btn" id="ptsHeroNext" aria-label="Slide tiếp theo"><i class="fas fa-chevron-right" aria-hidden="true"></i></button>
+        </div>
+    </div>
+    <?php } ?>
+</section>
+<?php } ?>
 
 <button type="button" class="pts-hero-layout-toggle" data-pts-hero-layout-target="1" aria-label="Xem giao diện banner khác" title="Xem giao diện khác">
     <i class="fas fa-exchange-alt" aria-hidden="true"></i>

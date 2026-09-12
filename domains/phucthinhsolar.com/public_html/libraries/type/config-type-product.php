@@ -105,7 +105,10 @@
     $config['product'][$nametype]['images_list'] = true;
     $config['product'][$nametype]['show_images_list'] = true;
     $config['product'][$nametype]['slug_list'] = true;
-    $config['product'][$nametype]['check_list'] = array("noibat" => "Trang chủ","hienthi" => "Hiển thị");
+    // "major": đánh dấu 4 danh mục "chủ lực" hiện card lớn trên trang chủ
+    // (2026-09-12, tái cấu trúc khối danh mục thành 4 lớn + 6 nhỏ) - 6 danh
+    // mục còn lại vẫn hiển thị đầy đủ (card nhỏ), không bị ẩn.
+    $config['product'][$nametype]['check_list'] = array("noibat" => "Trang chủ","hienthi" => "Hiển thị","major" => "Chủ lực (card lớn trang chủ)");
     $config['product'][$nametype]['desc_list'] = false;
     $config['product'][$nametype]['seo_list'] = true;
     $config['product'][$nametype]['width_list'] = 1200;

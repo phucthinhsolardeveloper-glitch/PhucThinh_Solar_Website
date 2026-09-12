@@ -251,12 +251,12 @@ GA_FRAMEWORK.Pagings = function(){
         });
     }
 
-    /* Ảnh nền Hero trang chủ: nhiều ảnh (Admin > Ảnh nền Hero trang chủ) thì
-       tự đổi vòng, CSS transition (theme-v2.css .pts-hero-photo-layer) lo
-       phần crossfade mượt - JS chỉ đổi class is-active theo chu kỳ. Nút mũi
-       tên/chấm (.pts-hero-photo-nav, nằm cùng cấp .pts-hero-photo-layers
-       trong section cha) cho bấm tay - bấm xong thì reset lại đồng hồ tự
-       động để không bị nhảy ảnh ngay sau khi vừa bấm (yêu cầu 2026-09-11). */
+    /* Ảnh nền Hero trang chủ (layout 1): nhiều ảnh (Admin > Ảnh nền Hero trang
+       chủ) thì tự đổi vòng, CSS transition (theme-v2.css .pts-hero-photo-layer)
+       lo phần crossfade mượt - JS chỉ đổi class is-active theo chu kỳ. Nút mũi
+       tên/chấm (.pts-hero-photo-nav, nằm cùng cấp .pts-hero-photo-layers trong
+       section cha) cho bấm tay - bấm xong thì reset lại đồng hồ tự động để
+       không bị nhảy ảnh ngay sau khi vừa bấm (yêu cầu 2026-09-11). */
     $(".pts-hero-photo-layers").each(function() {
         var layers = $(this).find(".pts-hero-photo-layer");
         if(layers.length < 2) return;
@@ -288,37 +288,45 @@ GA_FRAMEWORK.Pagings = function(){
         restartTimer();
     });
 
-    /* Nút chuyển thiết kế hero (yêu cầu 2026-09-11): 2 bản layout render sẵn
-       trong DOM (.pts-hero-layout-panel, ẩn/hiện bằng thuộc tính "hidden"),
-       JS chỉ đổi bản nào đang hiện + nhớ lựa chọn vào localStorage để lần
-       ghé sau vẫn giữ nguyên. Áp lựa chọn đã lưu NGAY khi trang tải, trước
-       khi người dùng thấy gì, để không bị chớp sai bản. */
+    /* Nút chuyển thiết kế hero (yêu cầu 2026-09-11, mở rộng 2026-09-12 thêm
+       layout 3 = carousel mới, "vẫn giữ layout cũ, dùng song song, có nút
+       chuyển"): 3 bản layout render sẵn trong DOM (.pts-hero-layout-panel,
+       ẩn/hiện bằng thuộc tính "hidden"), JS chỉ đổi bản nào đang hiện + nhớ
+       lựa chọn vào localStorage để lần ghé sau vẫn giữ nguyên. Áp lựa chọn đã
+       lưu NGAY khi trang tải, trước khi người dùng thấy gì, để không bị chớp
+       sai bản. Chu kỳ nút bấm: 1 -> 2 -> 3 -> 1. */
     var heroLayoutWrap = $(".pts-hero-layouts");
     if(heroLayoutWrap.length)
     {
         var heroLayoutKey = "ptsHeroLayout";
         var heroLayoutToggleBtn = heroLayoutWrap.find(".pts-hero-layout-toggle");
+        var heroLayoutNextMap = { "1": "2", "2": "3", "3": "1" };
         /* Nút chỉ có icon, không chữ (yêu cầu 2026-09-11) - vẫn đổi
            title/aria-label theo bản đang hiện để hỗ trợ trình đọc màn hình. */
-        var heroLayoutTitles = { "1": "Xem giao diện khác", "2": "Quay lại giao diện gốc" };
+        var heroLayoutTitles = { "1": "Xem giao diện khác", "2": "Xem carousel mới", "3": "Quay lại giao diện gốc" };
 
         function applyHeroLayout(target) {
-            heroLayoutWrap.find(".pts-hero-layout-panel").each(function() {
-                var isTarget = $(this).data("pts-hero-layout") == target;
+            var panels = heroLayoutWrap.find(".pts-hero-layout-panel");
+            var availableTargets = [];
+            panels.each(function() { availableTargets.push(String($(this).data("pts-hero-layout"))); });
+            if(availableTargets.indexOf(String(target)) === -1) target = availableTargets[0];
+            panels.each(function() {
+                var isTarget = String($(this).data("pts-hero-layout")) === String(target);
                 this.hidden = !isTarget;
             });
             var title = heroLayoutTitles[target] || heroLayoutTitles["1"];
             heroLayoutToggleBtn.attr({ "title": title, "aria-label": title });
-            heroLayoutToggleBtn.data("pts-hero-layout-target", target == "1" ? "2" : "1");
+            var nextTarget = heroLayoutNextMap[target] || "1";
+            if(availableTargets.indexOf(nextTarget) === -1) nextTarget = availableTargets[(availableTargets.indexOf(String(target)) + 1) % availableTargets.length];
+            heroLayoutToggleBtn.data("pts-hero-layout-target", nextTarget);
         }
 
         /* Mặc định hiện bản 2 (form tư vấn nổi) - bản 1 (ảnh crossfade + cột
-           chứng nhận) giờ là bản phụ, chỉ hiện khi khách tự bấm đổi hoặc đã
-           từng chọn trước đó (yêu cầu 2026-09-11). */
+           chứng nhận) và bản 3 (carousel mới) là bản phụ, chỉ hiện khi khách
+           tự bấm đổi hoặc đã từng chọn trước đó. */
         var heroLayoutSaved = null;
         try { heroLayoutSaved = window.localStorage.getItem(heroLayoutKey); } catch(e) {}
-        if(heroLayoutSaved === "1") applyHeroLayout("1");
-        else applyHeroLayout("2");
+        applyHeroLayout(heroLayoutSaved || "2");
 
         heroLayoutToggleBtn.on("click", function() {
             var target = String($(this).data("pts-hero-layout-target") || "2");
@@ -338,6 +346,121 @@ GA_FRAMEWORK.Pagings = function(){
             var firstField = target.querySelector('input[name="dataContact[fullname]"]');
             if(firstField) setTimeout(function() { firstField.focus(); }, 400);
         });
+    }
+
+    /* Hero carousel trang chủ (2026-09-12) - layout 3 của .pts-hero-layouts ở
+       trên. 1 khối markup lặp cho N slide (templates/layout/slide.php), JS chỉ
+       đổi state activeIndex và bật/tắt class .is-active + aria-hidden tương
+       ứng - không phải nhiều bản tĩnh cho khách tự chọn. Timer vẫn chạy nền
+       kể cả khi panel đang ẩn (giống hệt cơ chế .pts-hero-photo-layers ở
+       trên - không tự thêm guard hidden vì đó không phải hành vi hiện có). */
+    var heroEl = document.getElementById("ptsHeroCarousel");
+    if(heroEl)
+    {
+        var heroSlides = Array.prototype.slice.call(heroEl.querySelectorAll(".pts-hero-carousel-slide"));
+        if(heroSlides.length)
+        {
+            var heroDots = Array.prototype.slice.call(heroEl.querySelectorAll(".pts-hero-carousel-dot"));
+            var heroPauseBtn = document.getElementById("ptsHeroPause");
+            var heroPrevBtn = document.getElementById("ptsHeroPrev");
+            var heroNextBtn = document.getElementById("ptsHeroNext");
+            var heroReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+            var heroCurrent = 0;
+            var heroPaused = heroReducedMotion.matches;
+            var heroTimer = null;
+            var HERO_INTERVAL = 7000;
+
+            function heroApplyTheme(index) {
+                var isLight = heroSlides[index].classList.contains("is-theme-light");
+                heroEl.classList.toggle("is-light-active", isLight);
+            }
+
+            function heroShow(index) {
+                heroCurrent = ((index % heroSlides.length) + heroSlides.length) % heroSlides.length;
+                heroSlides.forEach(function(slide, i) {
+                    var active = i === heroCurrent;
+                    slide.classList.toggle("is-active", active);
+                    if(active) slide.removeAttribute("aria-hidden");
+                    else slide.setAttribute("aria-hidden", "true");
+                });
+                heroDots.forEach(function(dot, i) {
+                    var active = i === heroCurrent;
+                    dot.classList.toggle("is-active", active);
+                    if(active) dot.setAttribute("aria-current", "true");
+                    else dot.removeAttribute("aria-current");
+                });
+                heroApplyTheme(heroCurrent);
+            }
+
+            function heroUpdatePauseUI() {
+                if(!heroPauseBtn) return;
+                heroPauseBtn.setAttribute("aria-pressed", String(heroPaused));
+                var label = heroPaused ? "Tiếp tục chuyển slide" : "Dừng chuyển slide";
+                heroPauseBtn.setAttribute("aria-label", label);
+                heroPauseBtn.title = label;
+                heroPauseBtn.innerHTML = heroPaused ? '<i class="fas fa-play" aria-hidden="true"></i>' : '<i class="fas fa-pause" aria-hidden="true"></i>';
+            }
+
+            function heroClearTimer() {
+                if(heroTimer) { window.clearInterval(heroTimer); heroTimer = null; }
+            }
+
+            function heroStartTimer() {
+                heroClearTimer();
+                if(heroPaused || document.hidden) return;
+                heroTimer = window.setInterval(function() { heroShow(heroCurrent + 1); }, HERO_INTERVAL);
+            }
+
+            function heroManualGoto(index) {
+                heroShow(index);
+                heroStartTimer();
+            }
+
+            heroApplyTheme(0);
+            heroUpdatePauseUI();
+            heroStartTimer();
+
+            heroDots.forEach(function(dot, i) {
+                dot.addEventListener("click", function() { heroManualGoto(i); });
+            });
+            if(heroPrevBtn) heroPrevBtn.addEventListener("click", function() { heroManualGoto(heroCurrent - 1); });
+            if(heroNextBtn) heroNextBtn.addEventListener("click", function() { heroManualGoto(heroCurrent + 1); });
+            if(heroPauseBtn) heroPauseBtn.addEventListener("click", function() {
+                heroPaused = !heroPaused;
+                heroUpdatePauseUI();
+                heroStartTimer();
+            });
+
+            heroEl.addEventListener("mouseenter", heroClearTimer);
+            heroEl.addEventListener("mouseleave", heroStartTimer);
+            heroEl.addEventListener("focusin", heroClearTimer);
+            heroEl.addEventListener("focusout", function() { window.setTimeout(heroStartTimer, 0); });
+            document.addEventListener("visibilitychange", heroStartTimer);
+
+            heroEl.setAttribute("tabindex", "-1");
+            heroEl.addEventListener("keydown", function(event) {
+                if(event.key === "ArrowLeft") { event.preventDefault(); heroManualGoto(heroCurrent - 1); }
+                else if(event.key === "ArrowRight") { event.preventDefault(); heroManualGoto(heroCurrent + 1); }
+            });
+
+            var heroTouchStart = null;
+            heroEl.addEventListener("touchstart", function(event) {
+                var touch = event.changedTouches[0];
+                heroTouchStart = { x: touch.clientX, y: touch.clientY };
+            }, { passive: true });
+            heroEl.addEventListener("touchend", function(event) {
+                if(!heroTouchStart) return;
+                var touch = event.changedTouches[0];
+                var dx = touch.clientX - heroTouchStart.x;
+                var dy = touch.clientY - heroTouchStart.y;
+                if(Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy) * 1.4) heroManualGoto(heroCurrent + (dx < 0 ? 1 : -1));
+                heroTouchStart = null;
+            }, { passive: true });
+
+            heroReducedMotion.addEventListener("change", function() {
+                if(heroReducedMotion.matches) { heroPaused = true; heroUpdatePauseUI(); heroClearTimer(); }
+            });
+        }
     }
 };
 

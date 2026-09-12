@@ -113,7 +113,15 @@ function run_utilities() {
 }
 
 function sliderHome(){
-    var iconSlider = new Swiper(".home-7 .icon-slider .swiper-container", {
+    /* Quy trình trang chủ (2026-09-12): đổi hẳn sang lưới tĩnh 4 cột, không
+       còn markup .home-7 .icon-slider/.process-slider .swiper-container -
+       guard bằng querySelector trước khi new Swiper() để tránh lỗi "container
+       not found" làm gãy cả chuỗi var này (processSlider bên dưới dùng
+       iconSlider làm thumbs, và các slider trang khác - sản phẩm, về chúng
+       tôi... - nằm chung 1 câu lệnh var; lỗi giữa chừng sẽ làm hỏng luôn các
+       slider phía sau, đúng bẫy đã gặp ở carousel "Tại sao chọn PTS" trước
+       đó). */
+    var iconSlider = (document.querySelector(".home-7 .icon-slider .swiper-container") ? new Swiper(".home-7 .icon-slider .swiper-container", {
             slidesPerView: 'auto',
             slideToClickedSlide: true,
             centerInsufficientSlides: true,
@@ -127,7 +135,7 @@ function sliderHome(){
                     spaceBetween: 17,
                 },
             }
-        }),
+        }) : null),
     
         tabcat = new Swiper(".swiper-container.sw-tab-cat", {
             slidesPerView: 2,
@@ -218,7 +226,7 @@ function sliderHome(){
         //         },
         //     }
         // }),
-        processSlider = new Swiper(".home-7 .process-slider .swiper-container", {
+        processSlider = (document.querySelector(".home-7 .process-slider .swiper-container") ? new Swiper(".home-7 .process-slider .swiper-container", {
             slidesPerView: 1,
             spaceBetween: 30,
             autoHeight: true,
@@ -235,7 +243,7 @@ function sliderHome(){
             thumbs: {
                 swiper: iconSlider
             }
-        }),
+        }) : null),
         news_list = new Swiper(".news-list .swiper-container", {
             slidesPerView: 3,
             spaceBetween: 20,

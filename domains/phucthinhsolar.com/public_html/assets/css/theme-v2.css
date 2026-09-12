@@ -1090,15 +1090,49 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 .home-6{padding-top:64px!important;padding-bottom:64px!important;background:#fff!important;}
 .home-6 .slider-6{margin-top:12px!important;}
 .home-6 .slider_6_slick .item{padding:10px!important;}
+/* Card dự án (2026-09-12): giữ nguyên carousel Slick (yêu cầu chủ project
+   "vẫn dùng carousel, nhưng thiết kế đẹp như card tĩnh") - không đổi JS/data,
+   chỉ nâng cấp khung card: bỏ khối navy đặc che info, đổi thành đáy card
+   sáng + đường viền, gọn 3 meta thành hàng chip có icon thay vì list dọc có
+   nhãn "Khách hàng:"/"Địa chỉ:"/"Ngày hợp đồng:" (đúng nội dung cũ, chỉ đổi
+   cách trình bày cho "tĩnh"/gọn hơn). */
 .home-6 .project{border:1px solid var(--pts-line)!important;border-radius:16px!important;background:#fff!important;overflow:hidden!important;box-shadow:var(--pts-shadow)!important;}
-.home-6 .project .img{height:360px!important;}
+.home-6 .project .img{height:340px!important;position:relative;}
 .home-6 .project .img img{width:100%!important;height:100%!important;object-fit:cover!important;}
-.home-6 .project .group_content{position:static!important;background:var(--pts-navy)!important;padding:24px!important;}
-.home-6 .project .name a{color:#fff!important;font-size:20px!important;font-weight:900!important;}
-.home-6 .project .content,.home-6 .project .content p{color:#bfdbfe!important;font-size:13px!important;}
+.home-6 .project .group_content{position:static!important;width:100%!important;background:#fff!important;padding:26px 26px 24px!important;border-top:1px solid var(--pts-line);box-shadow:none!important;}
+.home-6 .project .name{margin-bottom:16px!important;padding-bottom:14px;border-bottom:1px solid var(--pts-line);}
+.home-6 .project .name a{color:var(--pts-navy-deep)!important;font-size:19px!important;font-weight:900!important;line-height:1.35;}
+.home-6 .project .content ul{display:flex!important;flex-wrap:wrap;gap:9px!important;list-style:none;margin:0!important;padding:0!important;}
+.home-6 .project .content ul li{display:flex!important;}
+.home-6 .project .content,.home-6 .project .content p{color:var(--pts-muted)!important;font-size:12.5px!important;margin:0!important;}
+.home-6 .project .content ul li p{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:20px;background:var(--pts-surface);white-space:nowrap;}
+.home-6 .project .content ul li b{color:var(--pts-navy)!important;font-weight:800;}
 .home-6 .btn-all{display:inline-flex!important;border-radius:7px!important;background:var(--pts-gold)!important;color:var(--pts-navy)!important;padding:10px 18px!important;font-weight:900!important;}
+@media(max-width:640px){
+    .home-6 .project .img{height:220px!important;}
+    .home-6 .project .group_content{padding:20px!important;}
+}
 
 .home-7{background:linear-gradient(135deg,var(--pts-navy-deep),var(--pts-navy))!important;}
+/* Quy trình - lưới tĩnh 4 cột (2026-09-12), thay 2 Swiper cũ (.icon-slider/
+   .process-slider ở dưới, để lại nguyên vẹn - không xoá CSS legacy vì có thể
+   còn dùng nếu quay lại markup cũ). Đọc được cả 4 bước cùng lúc, không cần
+   bấm/vuốt. */
+.pts-process-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:26px;margin-top:36px;}
+.pts-process-step{position:relative;padding:30px 22px 26px;border:1px solid rgba(255,255,255,.1);border-radius:16px;background:rgba(255,255,255,.04);text-align:center;}
+.pts-process-step-num{display:block;margin:0 auto 14px;font-family:"IBM Plex Mono",monospace;font-size:13px;font-weight:800;letter-spacing:.08em;color:var(--pts-navy-deep);background:var(--pts-gold-metal);width:38px;height:38px;line-height:38px;border-radius:50%;}
+.pts-process-step-img{width:84px;height:84px;margin:0 auto 18px;border-radius:50%;overflow:hidden;background:rgba(255,255,255,.06);}
+.pts-process-step-img img{display:block;width:100%;height:100%;object-fit:cover;}
+.pts-process-step-title{margin:0 0 10px;font-size:17px;font-weight:900;color:#fff;}
+.pts-process-step-desc{font-size:13.5px;line-height:1.7;color:#bfdbfe;}
+.pts-process-step-desc p{margin:0;}
+@media(max-width:991px){
+    .pts-process-grid{grid-template-columns:repeat(2,1fr);gap:20px;}
+}
+@media(max-width:480px){
+    .pts-process-grid{grid-template-columns:1fr;}
+    .pts-process-step{padding:24px 20px 22px;}
+}
 .home-7 .icon-slider{margin-top:30px!important;}
 /* Nút bước quy trình: phần NHÌN THẤY được là .text (có viền, cao 48px), còn
    .item/.content chỉ là 2 lớp bao trong suốt cao 69px. Trước tô nền lên .item
@@ -1137,6 +1171,38 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
    dài/ngắn khác nhau thay vì nhảy cứng, khớp hiệu ứng đã có sẵn ở carousel
    Tầm nhìn/Sứ mệnh (Slick) bên trang Về chúng tôi. */
 .swiper-autoheight .swiper-wrapper{transition-property:height,transform!important;}
+
+/* Thương hiệu hợp tác (MỚI, 2026-09-12) - $chungnhan là ảnh chụp giấy chứng
+   nhận thật (khổ dọc, có chữ), không phải logo nền trong suốt - dùng
+   object-fit:contain để không cắt mất nội dung giấy, khung trắng bo góc giữ
+   đồng bộ với .pts-hero-cert ở Hero layout 1. */
+.pts-brands{background:#fff;}
+.pts-brands-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:22px;margin-top:32px;}
+.pts-brands-item{display:flex;align-items:center;justify-content:center;width:190px;height:230px;padding:14px;border:1px solid var(--pts-line);border-radius:14px;background:#fbfbfd;box-shadow:0 10px 26px rgba(15,23,42,.06);transition:.2s ease;}
+.pts-brands-item:hover{border-color:var(--pts-gold);box-shadow:0 14px 32px rgba(182,125,46,.14);transform:translateY(-3px);}
+.pts-brands-item img{display:block;max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;}
+@media(max-width:640px){
+    .pts-brands-grid{gap:14px;}
+    .pts-brands-item{width:44%;height:170px;padding:10px;}
+}
+
+/* Giới thiệu ngắn About teaser (MỚI, 2026-09-12). */
+.pts-about-teaser-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:56px;align-items:center;}
+.pts-about-teaser-media{border-radius:18px;overflow:hidden;box-shadow:var(--pts-shadow);aspect-ratio:860/680;}
+.pts-about-teaser-media img{display:block;width:100%;height:100%;object-fit:cover;}
+.pts-about-teaser-eyebrow{display:block;margin-bottom:14px;font-size:12.5px;font-weight:800;letter-spacing:.12em;color:var(--pts-gold-dark);}
+.pts-about-teaser-copy h3{margin:0 0 18px;font-size:clamp(24px,2.4vw,32px);font-weight:900;line-height:1.3;color:var(--pts-navy-deep);}
+.pts-about-teaser-copy>p{margin:0 0 26px;font-size:15.5px;line-height:1.8;color:var(--pts-muted);max-width:480px;}
+.pts-about-teaser-list{display:grid;grid-template-columns:1fr 1fr;gap:14px 20px;margin:0 0 30px;padding:0;list-style:none;}
+.pts-about-teaser-list li{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:700;color:var(--pts-navy);}
+.pts-about-teaser-list li i{color:var(--pts-gold-dark);font-size:16px;flex-shrink:0;}
+@media(max-width:991px){
+    .pts-about-teaser-grid{grid-template-columns:1fr;gap:32px;}
+    .pts-about-teaser-media{max-width:520px;margin:0 auto;}
+}
+@media(max-width:480px){
+    .pts-about-teaser-list{grid-template-columns:1fr;}
+}
 
 .home-8{background:#f8fafc!important;}
 .blog-2col-row{margin-top:32px!important;}
@@ -2308,44 +2374,37 @@ h4{font-size:21px!important;font-weight:800!important;}
 @media(max-width:640px){ .header-quickfilter .wrap-content{padding-right:16px!important;} }
 
 /* Dải danh mục nổi bật: một hàng cuộn ngang, không xuống dòng tạo khoảng trống. */
-.home-3 .pts-home-category-wrap{display:grid;grid-template-columns:42px minmax(0,1fr) 42px;align-items:center;gap:12px;width:100%;margin-top:26px;}
-body .home-3 .tab-switcher ul.pts-home-category-grid{
-    display:flex!important;
-    flex-wrap:nowrap!important;
-    gap:16px;
-    width:100%;
-    margin:0!important;
-    padding:4px 2px 14px!important;
-    list-style:none;
-    overflow-x:auto;
-    overflow-y:hidden;
-    scroll-behavior:smooth;
-    scroll-snap-type:x proximity;
-    overscroll-behavior-inline:contain;
-    scrollbar-width:none;
-    -webkit-overflow-scrolling:touch;
-}
-.home-3 .pts-home-category-grid::-webkit-scrollbar{display:none}
-.home-3 .pts-home-category-grid>li{display:block!important;min-width:0;flex:0 0 clamp(140px,12vw,175px);text-align:center;scroll-snap-align:start;}
-.home-3 .pts-category-scroll{display:flex;width:42px;height:42px;align-items:center;justify-content:center;border:1px solid var(--pts-line);border-radius:50%;background:#fff;color:var(--pts-navy);box-shadow:0 7px 20px rgba(15,23,42,.09);cursor:pointer;transition:.18s}
-.home-3 .pts-category-scroll:hover{border-color:var(--pts-gold);background:var(--pts-gold);transform:translateY(-1px)}
-.home-3 .pts-category-scroll:disabled{opacity:.28;cursor:default;transform:none}
-.home-3 .pts-home-category-grid>li>a{
+/* Hệ sinh thái thiết bị - lưới tĩnh 2 hàng (2026-09-12, bản 2). Thanh cuộn
+   ngang icon nhỏ bản trước bị chủ project chê "vẫn hơi hướng layout cũ" -
+   đổi hẳn sang lưới CSS Grid 12 cột: 4 card "HOT" span 3 (đủ 1 hàng ngang),
+   6 card còn lại span 2 (đủ 1 hàng ngang) - tự xuống hàng đúng vị trí nhờ
+   auto-flow, không cần JS/nút cuộn. */
+.pts-ecosystem-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;}
+.pts-ecosystem-viewall{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:800;color:var(--pts-navy);white-space:nowrap;}
+.pts-ecosystem-viewall:hover{color:var(--pts-gold-dark);}
+.pts-ecosystem-viewall i{font-size:12px;}
+.pts-ecosystem-grid{display:grid!important;grid-template-columns:repeat(12,minmax(0,1fr))!important;gap:18px!important;width:100%;margin:26px 0 0!important;padding:0!important;list-style:none;}
+.pts-ecosystem-grid>li{grid-column:span 2;}
+.pts-ecosystem-grid>li.is-major{grid-column:span 3;}
+.pts-ecosystem-grid>li>a{
     display:flex!important;
     flex-direction:column;
     align-items:center;
     justify-content:flex-start;
-    gap:7px;
-    min-height:118px;
+    gap:10px;
     height:100%!important;
-    padding:10px 8px!important;
+    min-height:150px;
+    padding:20px 14px 18px!important;
     border:1px solid var(--pts-line)!important;
     border-radius:14px!important;
     background:#fff!important;
     color:var(--pts-navy)!important;
+    text-align:center;
     box-shadow:0 8px 24px rgba(15,23,42,.06)!important;
+    transition:.2s ease;
 }
-.home-3 .pts-home-category-image{
+.pts-ecosystem-grid>li.is-major>a{position:relative;min-height:200px;padding:26px 18px 22px!important;}
+.pts-home-category-image{
     display:flex!important;
     align-items:center;
     justify-content:center;
@@ -2356,23 +2415,31 @@ body .home-3 .tab-switcher ul.pts-home-category-grid{
     background:#f8fafc;
     overflow:hidden;
 }
-.home-3 .pts-home-category-image img{display:block;width:100%;height:100%;object-fit:contain;transition:transform .2s ease;}
-.home-3 .pts-home-category-image>i{font-size:44px;color:var(--pts-gold-dark);filter:drop-shadow(0 5px 10px rgba(182,125,46,.16));}
-.home-3 .pts-home-category-grid>li>a>span:last-child{font-size:14px;line-height:1.35;font-weight:850;}
-.home-3 .pts-home-category-grid>li>a:hover{transform:translateY(-2px);border-color:var(--pts-gold)!important;box-shadow:0 12px 30px rgba(15,23,42,.1)!important;}
-.home-3 .pts-home-category-grid>li>a:hover img{transform:scale(1.05);}
-.home-3 .pts-home-category-grid>li.uk-active>a{border-color:var(--pts-gold)!important;background:#fffaf0!important;box-shadow:0 10px 28px rgba(182,125,46,.18)!important;}
+.pts-ecosystem-grid>li.is-major .pts-home-category-image{aspect-ratio:4/3;background:#f8fafc;}
+.pts-home-category-image img{display:block;width:100%;height:100%;object-fit:contain;transition:transform .2s ease;}
+.pts-home-category-image>i{font-size:40px;color:var(--pts-gold-dark);filter:drop-shadow(0 5px 10px rgba(182,125,46,.16));}
+.pts-ecosystem-grid>li.is-major .pts-home-category-image>i{font-size:52px;}
+.pts-ecosystem-name{display:flex;align-items:center;gap:8px;font-size:14px;line-height:1.35;font-weight:850;}
+.pts-ecosystem-grid>li.is-major .pts-ecosystem-name{font-size:16px;}
+.pts-ecosystem-name i{font-size:11px;color:var(--pts-gold-dark);opacity:0;transform:translateX(-4px);transition:.2s ease;}
+.pts-ecosystem-grid>li>a:hover{transform:translateY(-3px);border-color:var(--pts-gold)!important;box-shadow:0 14px 32px rgba(15,23,42,.1)!important;}
+.pts-ecosystem-grid>li>a:hover img{transform:scale(1.05);}
+.pts-ecosystem-grid>li>a:hover .pts-ecosystem-name i{opacity:1;transform:translateX(0);}
+.pts-ecosystem-grid>li.uk-active>a{border-color:var(--pts-gold)!important;background:#fffaf0!important;box-shadow:0 10px 28px rgba(182,125,46,.18)!important;}
+.pts-home-category-badge{position:absolute;top:14px;left:14px;z-index:1;padding:3px 10px;border-radius:20px;background:var(--pts-gold-metal);color:var(--pts-navy-deep);font-size:10px;font-weight:800;letter-spacing:.06em;}
 @media(max-width:991px){
-    .home-3 .pts-home-category-grid>li{flex-basis:160px}
+    .pts-ecosystem-grid{grid-template-columns:repeat(6,minmax(0,1fr))!important;}
+    .pts-ecosystem-grid>li{grid-column:span 2;}
+    .pts-ecosystem-grid>li.is-major{grid-column:span 3;}
 }
 @media(max-width:640px){
-    .home-3 .pts-home-category-wrap{display:block;margin-top:20px;}
-    .home-3 .pts-category-scroll{display:none}
-    body .home-3 .tab-switcher ul.pts-home-category-grid{gap:10px;}
-    .home-3 .pts-home-category-grid>li{flex-basis:108px}
-    .home-3 .pts-home-category-grid>li>a{min-height:100px;padding:8px 6px!important;border-radius:12px!important;}
-    .home-3 .pts-home-category-image{aspect-ratio:1/1;}
-    .home-3 .pts-home-category-grid>li>a>span:last-child{font-size:11.5px;}
+    .pts-ecosystem-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:12px!important;}
+    .pts-ecosystem-grid>li{grid-column:span 2;}
+    .pts-ecosystem-grid>li.is-major{grid-column:span 4;}
+    .pts-ecosystem-grid>li>a{min-height:110px;padding:14px 10px!important;}
+    .pts-ecosystem-grid>li.is-major>a{min-height:150px;}
+    .pts-ecosystem-name{font-size:12.5px;}
+    .pts-ecosystem-grid>li.is-major .pts-ecosystem-name{font-size:14px;}
 }
 
 /* =====================================================================
@@ -2904,4 +2971,126 @@ body .home-6 .btn-all:hover i{transform:translateX(3px);}
     .pts-hero-substrip-actions .pts-btn{flex:1 1 auto;}
     .pts-hero-substrip-stats{gap:20px;}
     .pts-hero-substrip-stats strong{font-size:19px;}
+}
+
+/* ============================================================
+   Hero carousel trang chủ (2026-09-12) - 4 slide động, 1 khối
+   markup dùng chung (xem templates/layout/slide.php + hàm
+   initHeroCarousel trong assets/js/apps.js). Thay hẳn 2 layout
+   tĩnh + nút chuyển layout cũ.
+   ============================================================ */
+.pts-hero-carousel{position:relative;overflow:hidden;background:var(--pts-navy-deep);isolation:isolate;min-height:clamp(520px,62vw,680px);}
+.pts-hero-carousel-track{position:relative;height:clamp(520px,62vw,680px);}
+.pts-hero-carousel-slide{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity .6s ease;}
+.pts-hero-carousel-slide.is-active{opacity:1;visibility:visible;z-index:2;}
+.pts-hero-carousel-visual{position:absolute;inset:0;z-index:0;}
+.pts-hero-carousel-img{display:block;width:100%;height:100%;object-fit:cover;object-position:center;}
+.pts-hero-carousel-scrim{position:absolute;inset:0;background:linear-gradient(90deg,rgba(6,21,55,.94) 0%,rgba(6,21,55,.82) 32%,rgba(6,21,55,.42) 56%,rgba(6,21,55,.08) 74%,rgba(6,21,55,0) 100%);}
+.pts-hero-carousel-slide.is-theme-light .pts-hero-carousel-scrim{background:linear-gradient(90deg,rgba(246,248,251,.96) 0%,rgba(246,248,251,.88) 32%,rgba(246,248,251,.5) 56%,rgba(246,248,251,.1) 74%,rgba(246,248,251,0) 100%);}
+.pts-hero-carousel-inner{position:relative;z-index:1;height:clamp(520px,62vw,680px);display:flex;align-items:center;}
+.pts-hero-carousel-copy{width:min(44%,560px);}
+.pts-hero-carousel-eyebrow{display:block;font-size:12.5px;font-weight:800;letter-spacing:.14em;color:var(--pts-gold-light);margin-bottom:20px;
+    opacity:0;transform:translateY(14px);transition:opacity .5s ease .12s,transform .5s ease .12s;}
+.pts-hero-carousel-title{margin:0 0 22px;font-size:clamp(34px,3.6vw,50px);font-weight:900;line-height:1.18;letter-spacing:-.01em;color:#fff;
+    opacity:0;transform:translateY(18px);transition:opacity .55s ease .18s,transform .55s ease .18s;}
+.pts-hero-carousel-title span{display:block;}
+.pts-hero-carousel-title-muted{color:#9fb0c9;}
+.pts-hero-carousel-slide.is-theme-light .pts-hero-carousel-title{color:var(--pts-navy-deep);}
+.pts-hero-carousel-slide.is-theme-light .pts-hero-carousel-title-muted{color:#5b6f8a;}
+.pts-hero-carousel-desc{max-width:445px;margin:0 0 32px;font-size:16px;line-height:1.8;color:#c7d2e2;
+    opacity:0;transform:translateY(16px);transition:opacity .5s ease .26s,transform .5s ease .26s;}
+.pts-hero-carousel-slide.is-theme-light .pts-hero-carousel-desc{color:#3d4f68;}
+.pts-hero-carousel-actions{display:flex;flex-wrap:wrap;align-items:center;gap:26px;margin-bottom:30px;
+    opacity:0;transform:translateY(16px);transition:opacity .5s ease .34s,transform .5s ease .34s;}
+.pts-hero-carousel-text-link{display:inline-flex;align-items:center;gap:10px;font-size:14px;font-weight:800;color:#fff!important;text-decoration:none!important;}
+.pts-hero-carousel-text-link:hover{color:var(--pts-gold-light)!important;}
+.pts-hero-carousel-slide.is-theme-light .pts-hero-carousel-text-link{color:var(--pts-navy-deep)!important;}
+.pts-hero-carousel-slide.is-theme-light .pts-hero-carousel-text-link:hover{color:var(--pts-gold-dark)!important;}
+.pts-hero-carousel-tags{display:flex;align-items:center;gap:11px;margin:0;font-size:10.5px;font-weight:800;letter-spacing:.12em;color:#8fa0ba;
+    opacity:0;transform:translateY(12px);transition:opacity .5s ease .42s,transform .5s ease .42s;}
+.pts-hero-carousel-tags i{width:3px;height:3px;border-radius:50%;background:var(--pts-gold-light);flex-shrink:0;}
+.pts-hero-carousel-slide.is-theme-light .pts-hero-carousel-tags{color:#6b7d97;}
+.pts-hero-carousel-slide.is-active .pts-hero-carousel-eyebrow,
+.pts-hero-carousel-slide.is-active .pts-hero-carousel-title,
+.pts-hero-carousel-slide.is-active .pts-hero-carousel-desc,
+.pts-hero-carousel-slide.is-active .pts-hero-carousel-actions,
+.pts-hero-carousel-slide.is-active .pts-hero-carousel-tags{opacity:1;transform:translateY(0);}
+
+.pts-hero-carousel-control{position:absolute;left:0;right:0;bottom:26px;z-index:5;display:flex;align-items:center;justify-content:space-between;pointer-events:none;}
+.pts-hero-carousel-pagination{display:flex;gap:6px;pointer-events:auto;}
+.pts-hero-carousel-dot{min-width:42px;min-height:36px;padding:6px 12px;border:0;border-bottom:2px solid rgba(255,255,255,.28);background:transparent;color:rgba(255,255,255,.55);font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:700;letter-spacing:.04em;cursor:pointer;transition:.2s ease;}
+.pts-hero-carousel-dot:hover{color:#fff;}
+.pts-hero-carousel-dot.is-active{color:#fff;border-color:var(--pts-gold-light);}
+.pts-hero-carousel.is-light-active .pts-hero-carousel-dot{color:rgba(20,35,60,.5);border-bottom-color:rgba(20,35,60,.22);}
+.pts-hero-carousel.is-light-active .pts-hero-carousel-dot:hover{color:var(--pts-navy-deep);}
+.pts-hero-carousel.is-light-active .pts-hero-carousel-dot.is-active{color:var(--pts-navy-deep);border-color:var(--pts-gold-dark);}
+.pts-hero-carousel-nav{display:flex;gap:9px;pointer-events:auto;}
+.pts-hero-carousel-nav-btn{width:42px;height:42px;border-radius:50%;border:1px solid rgba(255,255,255,.3);background:rgba(8,20,45,.35);color:#fff;font-size:14px;cursor:pointer;transition:.2s ease;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);}
+.pts-hero-carousel-nav-btn:hover{background:var(--pts-gold);color:var(--pts-navy)!important;border-color:var(--pts-gold);}
+.pts-hero-carousel.is-light-active .pts-hero-carousel-nav-btn{border-color:rgba(20,35,60,.22);background:rgba(255,255,255,.55);color:var(--pts-navy-deep);}
+.pts-hero-carousel-nav-btn[aria-pressed="true"] i:before{content:"\f04b";}
+
+@media(prefers-reduced-motion:reduce){
+    .pts-hero-carousel-slide,.pts-hero-carousel-eyebrow,.pts-hero-carousel-title,.pts-hero-carousel-desc,.pts-hero-carousel-actions,.pts-hero-carousel-tags{transition:none!important;}
+}
+
+/* 992-1200: tablet lớn, vẫn kiểu ảnh phủ nền như desktop, chỉ nới tỉ lệ chữ
+   theo tinh thần "~45/55" thay vì 40/60. */
+@media(max-width:1200px){
+    .pts-hero-carousel-copy{width:min(50%,520px);}
+}
+
+/* <=991: MOBILE THẬT - không thu nhỏ nguyên khối desktop (ảnh phủ nền +
+   overlay tuyệt đối làm chiều cao container sụp về 0 vì mọi slide đều
+   position:absolute, không có gì trong luồng để cha tự tính chiều cao).
+   Đổi hẳn sang bố cục xếp dọc: chữ trước, ảnh sau, mỗi slide nằm trong luồng
+   bình thường (position:static), chỉ 1 slide active mới display - đúng yêu
+   cầu "dedicated mobile layout, not shrunk desktop canvas". */
+@media(max-width:991px){
+    .pts-hero-carousel,.pts-hero-carousel-track{height:auto;min-height:0;background:var(--pts-navy-deep);}
+    .pts-hero-carousel-slide{position:static;display:none;opacity:1;visibility:visible;flex-direction:column;transition:none;}
+    .pts-hero-carousel-slide.is-active{display:flex;}
+    /* Chữ luôn nền navy đậm (bỏ biến thể nền sáng flat) - chữ/ảnh không còn
+       chồng lên nhau như bản desktop nên "theme sáng để đọc được trên ảnh
+       sáng" không còn cần thiết; navy đồng nhất mọi slide nhìn cao cấp và
+       liền mạch hơn là đổi màu nền xám nhạt rời rạc giữa các slide. */
+    .pts-hero-carousel-inner{position:relative;z-index:1;order:1;height:auto;display:block;padding:34px 0 26px;background:radial-gradient(120% 140% at 8% 0%,rgba(224,182,84,.14) 0%,rgba(6,21,55,0) 46%),var(--pts-navy-deep);}
+    .pts-hero-carousel-copy{width:100%;max-width:none;}
+    .pts-hero-carousel-eyebrow,.pts-hero-carousel-title,.pts-hero-carousel-desc,.pts-hero-carousel-actions,.pts-hero-carousel-tags{opacity:1;transform:none;transition:none;color:inherit;}
+    .pts-hero-carousel-eyebrow{margin-bottom:14px;}
+    .pts-hero-carousel-title{margin-bottom:16px;color:#fff;}
+    .pts-hero-carousel-title-muted{color:#9fb0c9;}
+    .pts-hero-carousel-desc{margin-bottom:24px;color:#c7d2e2;}
+    .pts-hero-carousel-actions{margin-bottom:0;}
+    .pts-hero-carousel-text-link{color:#fff!important;}
+    .pts-hero-carousel-tags{display:none;}
+    /* Ảnh bo góc trên, kéo nhẹ đè lên khối chữ 1 chút cho liền mạch thay vì
+       cắt đứt ngang bằng 2 khối màu phẳng xếp chồng. */
+    .pts-hero-carousel-visual{position:relative;inset:auto;order:2;aspect-ratio:4/3;overflow:hidden;margin-top:-14px;border-radius:22px 22px 0 0;}
+    .pts-hero-carousel-scrim{background:linear-gradient(180deg,rgba(6,21,55,.22) 0%,rgba(6,21,55,0) 22%,rgba(6,21,55,0) 68%,rgba(6,21,55,.82) 100%);}
+    /* Pagination + play/pause/prev/next đè trực tiếp lên đáy ảnh (trong vùng
+       scrim tối phía trên) thay vì 1 thanh riêng bên dưới - đỡ tốn chiều cao,
+       nhìn liền với ảnh hơn. Chừa padding-right 78px (đúng gutter đã dùng cho
+       .footer_bottom .container) vì cụm nút liên hệ nổi #button-contact-vr
+       (right:10px, rộng 56px, z-index:99999) luôn đè lên góc dưới-phải viewport
+       - không chừa chỗ thì nút "next" bị nút liên hệ che khuất/đè lên. */
+    /* !important bắt buộc: .wrap-content (class chung trên chính phần tử này)
+       có rule padding-left/right:16px!important riêng ở @media(max-width:640px)
+       - không !important thì bị đè mất padding-right:78px vừa thêm. */
+    .pts-hero-carousel-control{position:absolute;left:0;right:0;bottom:14px;order:3;background:none;padding-left:20px!important;padding-right:78px!important;}
+}
+@media(max-width:768px){
+    .pts-hero-carousel-title{font-size:clamp(30px,7.6vw,40px);}
+    .pts-hero-carousel-desc{font-size:14.5px;}
+    .pts-hero-carousel-tags{display:none;}
+}
+@media(max-width:640px){
+    .pts-hero-carousel-actions{flex-direction:column;align-items:flex-start;gap:14px;}
+    .pts-hero-carousel-actions .pts-btn{width:100%;text-align:center;justify-content:center;}
+    .pts-hero-carousel-nav-btn{width:36px;height:36px;font-size:12px;}
+    .pts-hero-carousel-dot{min-width:34px;min-height:32px;padding:5px 8px;font-size:11px;}
+}
+@media(max-width:480px){
+    .pts-hero-carousel-eyebrow{font-size:11px;margin-bottom:14px;}
+    .pts-hero-carousel-title{font-size:clamp(28px,8vw,34px);}
 }
