@@ -1029,7 +1029,7 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 .home-2 .tabs-container .wrapper>.img{height:100%;padding-top:0!important;border-radius:18px 0 0 18px!important;overflow:hidden;}
 .home-2 .tabs-container .wrapper>.img>img{position:static!important;width:100%!important;height:100%!important;object-fit:cover!important;}
 .home-2 .btn-view-all{margin-top:24px!important;}
-.home-2 .btn-view-all a{display:inline-flex!important;align-items:center;gap:9px;border-radius:7px;background:var(--pts-gold)!important;color:var(--pts-navy-deep)!important;padding:11px 18px!important;font-weight:900!important;text-decoration:none!important;}
+.home-2 .btn-view-all a{display:inline-flex!important;align-items:center;gap:9px;border-radius:7px;background:var(--pts-gold-metal)!important;background-image:var(--pts-gold-metal)!important;color:var(--pts-navy-deep)!important;padding:11px 18px!important;font-weight:900!important;text-decoration:none!important;box-shadow:0 8px 22px rgba(182,125,46,.24)!important;}
 @media(max-width:1199px){
     .home-2 .tabs-container .item{flex-direction:column!important;}
     .home-2 .tabs-container .wrapper{min-height:0;}

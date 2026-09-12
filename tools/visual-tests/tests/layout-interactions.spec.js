@@ -142,6 +142,7 @@ test('home solution, projects and closing CTA follow the responsive redesign', a
   const copy = solution.locator('.wrapper').first();
   const image = solution.locator('.wrapper').nth(1);
   await solution.scrollIntoViewIfNeeded();
+  await expect(solution.locator('.btn-view-all a')).toHaveCSS('background-image', /linear-gradient/);
   const positions = await Promise.all([copy.boundingBox(), image.boundingBox()]);
   expect(positions[0]).toBeTruthy();
   expect(positions[1]).toBeTruthy();

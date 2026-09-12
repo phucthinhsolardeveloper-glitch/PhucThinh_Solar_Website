@@ -59,7 +59,8 @@ Trang chủ hiện đi theo nhịp chính của mockup:
   coi đây là nội dung chưa xác minh.
 - Giữ bốn sản phẩm preview và sáu bài Kiến thức như hiện tại.
 - Đổi Giải pháp sang bố cục sáng: ảnh bên trái/nội dung bên phải trên desktop,
-  ảnh trên/nội dung dưới trên mobile; giữ tab, dữ liệu và link chi tiết cũ.
+  ảnh trên/nội dung dưới trên mobile; giữ tab, dữ liệu và link chi tiết cũ. Nút
+  “Xem chi tiết” dùng đúng gradient vàng kim của bộ nhận diện thay cho vàng phẳng.
 - Dự án giữ Slick carousel và tab dữ liệu cũ nhưng đổi thành hai card gọn trên
   desktop, một card trên mobile.
 - CTA tư vấn cuối trang giữ nguyên gọi điện, Zalo và modal cũ; đổi sang bố cục
