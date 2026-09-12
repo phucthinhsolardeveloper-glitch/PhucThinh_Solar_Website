@@ -116,7 +116,7 @@ phpMyAdmin (SQL do chủ project tự chạy), không qua CI/CD hay migration ru
   (`contentvi`, không đổi) và 182 chưa có công suất hợp lệ (`cong_suat`). Đây
   là dữ liệu đang chờ nguồn thật, không tự ẩn/xóa. Có 3 phương thức thanh toán
   đang hiển thị; không phát hiện việc bị xóa.
-- Lịch sử gồm lô ORIANA `san-pham-20260831-da-bo-sung-oriana.xlsx` và file master `san-pham-master-fixed-2026-09-01.xlsx`; các file nằm trong `artifacts/`, tiếp tục được giữ ngoài Git/release.
+- Lịch sử gồm lô ORIANA `san-pham-20260831-da-bo-sung-oriana.xlsx` và file master `san-pham-master-fixed-2026-09-01.xlsx`; từ 2026-09-12 các file nguồn nằm tại `D:\LinhTinh01\artifacts\`, tiếp tục được giữ ngoài Git/release. Xem `docs/13-handoffs/2026-09-12-source-assets-moved-to-d-drive.md`.
 - Chứng nhận và video chỉ hiển thị khi admin nhập dữ liệu thật.
 - Dữ liệu kỹ thuật thật sẽ được cập nhật từ file Excel bên ngoài; không chạy migration 006 apply nếu chưa có phê duyệt riêng.
 - Nội dung mô tả chi tiết từng sản phẩm cần biên tập theo tài liệu kỹ thuật thật.

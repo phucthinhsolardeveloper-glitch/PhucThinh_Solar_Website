@@ -2,7 +2,10 @@
 
 ## Phạm vi
 
-- Nguồn: thư mục `ĐÈN ORIANA` ở project local.
+- Nguồn tại thời điểm nhập: thư mục `ĐÈN ORIANA` ở project local. Từ
+  2026-09-12 bộ nguồn được chuyển sang
+  `D:\LinhTinh01\ĐÈN ORIANA\` (`/mnt/d/LinhTinh01/ĐÈN ORIANA/` trong WSL);
+  xem `2026-09-12-source-assets-moved-to-d-drive.md`.
 - Chỉ nhập vào Docker local; chưa thay đổi production.
 - Backup trước khi nhập: `backup/local/20260905-153505`.
 - Script đối chiếu có chặn môi trường ngoài local: `scripts/import-oriana-images-local.php`.
@@ -34,6 +37,5 @@
 ## Rollback
 
 - Rollback đầy đủ local bằng backup `backup/local/20260905-153505` theo quy trình restore local hiện có.
-- Không xóa trực tiếp thư mục ảnh gốc `ĐÈN ORIANA`.
+- Không xóa bản lưu ảnh gốc `D:\LinhTinh01\ĐÈN ORIANA\`.
 - Trước khi triển khai production cần xin phép riêng, chuyển đủ file upload và áp dữ liệu theo bản backup/mapping đã xác minh.
-
