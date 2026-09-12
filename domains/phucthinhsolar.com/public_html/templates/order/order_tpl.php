@@ -185,7 +185,7 @@
 					</div>
 			    </div>
 			<?php } else { ?>
-				<a href="" class="empty-cart text-decoration-none w-100">
+				<a href="san-pham/" class="empty-cart text-decoration-none w-100">
 					<i class="fa fa-cart-plus"></i>
 					<p><?=khongtontaisanphamtronggiohang?></p>
 					<span><?=tieptucmuahang?></span>
