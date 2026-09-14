@@ -1,23 +1,17 @@
 <?php
-/* Dữ liệu 4 slide Hero trang chủ - tập trung một chỗ (yêu cầu 2026-09-12: "one
-   centralized frontend config/data file", chưa có màn Admin quản lý riêng nên
-   tạm định nghĩa ở đây; slide.php chỉ lặp qua mảng này bằng MỘT khối markup
-   dùng chung, không copy dán 4 lần). Khi có Admin, thay hàm này bằng truy vấn
-   DB (gợi ý: mở rộng cột options JSON của #_photo type 'slide' - cùng cách đã
-   dùng cho watermark - thay vì ALTER TABLE) và giữ nguyên shape mảng bên dưới
-   để không phải sửa slide.php/CSS/JS.
+/* Dữ liệu Hero carousel trang chủ (layout 3) - Admin hoá 2026-09-14.
+   Đọc table_photo type='hero-carousel' (man_photo, đúng 4 slide, xem
+   libraries/type/config-type-photo.php). Field chuẩn (name/desc/link/photo)
+   dùng cột có sẵn; eyebrow/dòng tiêu đề 2/CTA phụ/tag/theme lưu trong cột
+   options JSON (merge qua administrator/sources/photo.php savePhoto(), theo
+   đúng cách savePhotoStatic() đã dùng cho watermark - không ALTER TABLE).
 
-   Render thành LAYOUT 3 mặc định public trong .pts-hero-layouts
-   (templates/layout/slide.php), song song 2 layout Hero cũ
-   (pts-home-hero / pts-hero2). Hai layout cũ và nút chuyển của chúng được
-   giữ nguyên để nối vào màn quản lý layout về sau; layout 3 không hiện nút.
+   Chưa đủ 4 slide đang Hiển thị (chưa tạo, hoặc admin ẩn bớt) thì dùng
+   nguyên mảng tĩnh HERO_CAROUSEL_FALLBACK bên dưới - giữ đúng nội dung đã
+   duyệt ban đầu (2026-09-12), không để Hero trống. slide.php/CSS/JS không
+   cần biết nguồn dữ liệu là DB hay fallback, shape mảng luôn giống nhau. */
 
-   Ảnh nền dùng lại đúng 4 ảnh thật đã có sẵn trong Admin > Ảnh nền Hero trang
-   chủ (table_photo type=home-hero-bg, id 132-135) - không dùng ảnh dựng AI.
-   Slide 4 (đại lý/đối tác) tạm dùng ảnh công trình mái lớn do chưa có ảnh
-   showroom/văn phòng thật trong thư viện; nên thay bằng ảnh văn phòng/showroom
-   thật khi có. */
-function getHeroCarouselSlides()
+function heroCarouselFallbackSlides()
 {
     return array(
         array(
@@ -73,4 +67,62 @@ function getHeroCarouselSlides()
             'alt' => 'Công trình điện mặt trời quy mô lớn Phúc Thịnh Solar đã triển khai',
         ),
     );
+}
+
+function getHeroCarouselSlides()
+{
+    global $d, $cache, $lang;
+    if(empty($d) || empty($cache)) return heroCarouselFallbackSlides();
+
+    $rows = $cache->get("select id, name$lang, desc$lang, link, photo, options from #_photo where type = ? and find_in_set('hienthi',status) order by numb,id desc", array('hero-carousel'), 'result', 7200);
+    if(empty($rows) || count($rows) < 1) return heroCarouselFallbackSlides();
+
+    $slides = array();
+    foreach($rows as $row)
+    {
+        $titleLine1 = trim((string)$row['name'.$lang]);
+        $imagePhoto = trim((string)$row['photo']);
+        /* Slide thiếu tiêu đề hoặc ảnh thì bỏ qua (không render slide rỗng) -
+           không tự bịa nội dung thay Admin. */
+        if($titleLine1 === '' || $imagePhoto === '') continue;
+
+        $options = (!empty($row['options'])) ? json_decode($row['options'], true) : array();
+        if(!is_array($options)) $options = array();
+
+        $primaryHref = trim((string)$row['link']);
+        $primaryModal = in_array($primaryHref, array('#ptsContactModal', '#ptsDealerModal'), true) ? ltrim($primaryHref, '#') : '';
+        $primaryCTA = array('label' => !empty($options['ctaLabel']) ? $options['ctaLabel'] : 'Xem thêm', 'href' => $primaryHref !== '' ? $primaryHref : 'san-pham/');
+        if($primaryModal !== '') $primaryCTA['modal'] = $primaryModal;
+
+        $secondaryCTA = null;
+        if(!empty($options['cta2Label']))
+        {
+            $secondaryHref = !empty($options['cta2Href']) ? trim((string)$options['cta2Href']) : '#ptsContactModal';
+            $secondaryModal = in_array($secondaryHref, array('#ptsContactModal', '#ptsDealerModal'), true) ? ltrim($secondaryHref, '#') : '';
+            $secondaryCTA = array('label' => $options['cta2Label'], 'href' => $secondaryHref);
+            if($secondaryModal !== '') $secondaryCTA['modal'] = $secondaryModal;
+        }
+
+        $tags = array();
+        if(!empty($options['tags']))
+        {
+            foreach(explode(',', (string)$options['tags']) as $tag) { $tag = trim($tag); if($tag !== '') $tags[] = $tag; }
+        }
+
+        $slides[] = array(
+            'id' => 'hero-'.$row['id'],
+            'theme' => (!empty($options['theme']) && $options['theme'] === 'light') ? 'light' : 'dark',
+            'eyebrow' => !empty($options['eyebrow']) ? $options['eyebrow'] : '',
+            'titleLine1' => $titleLine1,
+            'titleLine2' => !empty($options['titleLine2']) ? $options['titleLine2'] : '',
+            'description' => trim((string)$row['desc'.$lang]),
+            'primaryCTA' => $primaryCTA,
+            'secondaryCTA' => $secondaryCTA,
+            'tags' => $tags,
+            'image' => $imagePhoto,
+            'alt' => $titleLine1,
+        );
+    }
+
+    return $slides ?: heroCarouselFallbackSlides();
 }

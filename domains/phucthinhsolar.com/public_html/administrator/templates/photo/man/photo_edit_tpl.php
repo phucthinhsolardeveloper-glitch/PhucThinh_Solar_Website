@@ -91,11 +91,11 @@
                            dùng — giờ chọn thẳng bằng dropdown, giá trị đặc biệt chỉ do
                            dropdown này ghi ra chứ không phải admin tự gõ. */
                         $advPopupTargets = array('' => 'Liên kết bình thường', '#ptsContactModal' => 'Mở popup: Liên hệ', '#ptsDealerModal' => 'Mở popup: Đăng ký đại lý');
-                        $isAdvPopupLink = $type === 'adv' && isset($advPopupTargets[(string)$currentLink]) && $currentLink !== '';
+                        $isAdvPopupLink = ($type === 'adv' || $type === 'hero-carousel') && isset($advPopupTargets[(string)$currentLink]) && $currentLink !== '';
                     ?>
-                    <?php if($type === 'adv') { ?>
+                    <?php if($type === 'adv' || $type === 'hero-carousel') { ?>
                     <div class="form-group">
-                        <label for="link_action">Khi bấm nút "Đăng ký ngay":</label>
+                        <label for="link_action">Link nút mở popup thay vì đường dẫn thường:</label>
                         <select class="form-control text-sm" id="link_action" onchange="
                             var v = this.value;
                             var input = document.getElementById('link');
@@ -113,6 +113,64 @@
                         <label for="link"><?=htmlspecialchars($linkLabel, ENT_QUOTES, 'UTF-8')?>:</label>
                         <input type="text" class="form-control text-sm" name="data[link]" id="link" placeholder="<?=htmlspecialchars($linkLabel, ENT_QUOTES, 'UTF-8')?>" <?=$isAdvPopupLink ? 'readonly' : ''?> value="<?=htmlspecialchars((string)$currentLink, ENT_QUOTES, 'UTF-8')?>">
                     </div>
+                <?php } ?>
+                <?php if($type === 'hero-carousel') {
+                    $heroOption = (!empty($item['options'])) ? json_decode($item['options'], true) : array();
+                    if(!is_array($heroOption)) $heroOption = array();
+                    $heroOptionGet = static function($key) use ($flash, $heroOption) { return $flash->has('options_'.$key) ? $flash->get('options_'.$key) : (isset($heroOption[$key]) ? $heroOption[$key] : ''); };
+                ?>
+                <div class="card card-secondary card-outline text-sm">
+                    <div class="card-header"><h3 class="card-title">Nội dung nâng cao</h3></div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label for="opt_eyebrow">Nhãn nhỏ phía trên tiêu đề:</label>
+                            <input type="text" class="form-control text-sm" name="data[options][eyebrow]" id="opt_eyebrow" value="<?=htmlspecialchars((string)$heroOptionGet('eyebrow'), ENT_QUOTES, 'UTF-8')?>">
+                        </div>
+                        <div class="form-group">
+                            <label for="opt_titleLine2">Tiêu đề (dòng 2, chữ mờ hơn dòng 1):</label>
+                            <input type="text" class="form-control text-sm" name="data[options][titleLine2]" id="opt_titleLine2" value="<?=htmlspecialchars((string)$heroOptionGet('titleLine2'), ENT_QUOTES, 'UTF-8')?>">
+                        </div>
+                        <div class="form-group">
+                            <label for="opt_theme">Kiểu nền chữ:</label>
+                            <?php $heroTheme = $heroOptionGet('theme'); ?>
+                            <select class="form-control text-sm" name="data[options][theme]" id="opt_theme">
+                                <option value="dark" <?=($heroTheme !== 'light') ? 'selected' : ''?>>Tối (chữ trắng, mặc định)</option>
+                                <option value="light" <?=($heroTheme === 'light') ? 'selected' : ''?>>Sáng (chữ tối màu)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="opt_ctaLabel">Chữ trên nút chính:</label>
+                            <input type="text" class="form-control text-sm" name="data[options][ctaLabel]" id="opt_ctaLabel" value="<?=htmlspecialchars((string)$heroOptionGet('ctaLabel'), ENT_QUOTES, 'UTF-8')?>">
+                        </div>
+                        <hr>
+                        <div class="form-group">
+                            <label for="opt_cta2Label">Chữ trên link phụ (để trống = không hiện link phụ):</label>
+                            <input type="text" class="form-control text-sm" name="data[options][cta2Label]" id="opt_cta2Label" value="<?=htmlspecialchars((string)$heroOptionGet('cta2Label'), ENT_QUOTES, 'UTF-8')?>">
+                        </div>
+                        <?php $heroCta2Href = (string)$heroOptionGet('cta2Href'); $isHeroCta2Popup = isset($advPopupTargets[$heroCta2Href]) && $heroCta2Href !== ''; ?>
+                        <div class="form-group">
+                            <label for="opt_cta2_action">Link phụ mở popup thay vì đường dẫn thường:</label>
+                            <select class="form-control text-sm" id="opt_cta2_action" onchange="
+                                var v = this.value;
+                                var input = document.getElementById('opt_cta2Href');
+                                if(v !== '') { input.value = v; input.readOnly = true; }
+                                else { if(['#ptsContactModal','#ptsDealerModal'].indexOf(input.value) !== -1) input.value = ''; input.readOnly = false; }
+                            ">
+                                <?php foreach($advPopupTargets as $targetValue => $targetLabel) { ?>
+                                    <option value="<?=htmlspecialchars($targetValue, ENT_QUOTES, 'UTF-8')?>" <?=($heroCta2Href === $targetValue) ? 'selected' : ''?>><?=$targetLabel?></option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="opt_cta2Href">Link phụ:</label>
+                            <input type="text" class="form-control text-sm" name="data[options][cta2Href]" id="opt_cta2Href" <?=$isHeroCta2Popup ? 'readonly' : ''?> value="<?=htmlspecialchars($heroCta2Href, ENT_QUOTES, 'UTF-8')?>">
+                        </div>
+                        <div class="form-group">
+                            <label for="opt_tags">Tag cuối slide, cách nhau bằng dấu phẩy (để trống = không hiện):</label>
+                            <input type="text" class="form-control text-sm" name="data[options][tags]" id="opt_tags" value="<?=htmlspecialchars((string)$heroOptionGet('tags'), ENT_QUOTES, 'UTF-8')?>">
+                        </div>
+                    </div>
+                </div>
                 <?php } ?>
                 <?php if(isset($config['photo']['man_photo'][$type]['video_photo']) && $config['photo']['man_photo'][$type]['video_photo'] == true) { ?>
                     <div class="form-group">

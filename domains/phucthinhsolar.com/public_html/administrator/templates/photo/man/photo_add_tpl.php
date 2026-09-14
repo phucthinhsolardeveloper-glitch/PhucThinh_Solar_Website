@@ -91,9 +91,9 @@
 					</div>
 					<?php } ?>
 	                <?php if(isset($config['photo']['man_photo'][$type]['link_photo']) && $config['photo']['man_photo'][$type]['link_photo'] == true) { ?>
-		                <?php if($type === 'adv') { ?>
+		                <?php if($type === 'adv' || $type === 'hero-carousel') { ?>
 		                <div class="form-group">
-		                    <label for="link_action<?=$i?>">Khi bấm nút "Đăng ký ngay":</label>
+		                    <label for="link_action<?=$i?>">Link nút mở popup thay vì đường dẫn thường:</label>
 		                    <select class="form-control text-sm" id="link_action<?=$i?>" onchange="
 		                        var v = this.value;
 		                        var input = document.getElementById('link<?=$i?>');
@@ -111,6 +111,58 @@
 		                    <label for="link<?=$i?>"><?=htmlspecialchars($linkLabel, ENT_QUOTES, 'UTF-8')?>:</label>
 		                    <input type="text" class="form-control text-sm" name="dataMulti[<?=$i?>][link]" id="link<?=$i?>" placeholder="<?=htmlspecialchars($linkLabel, ENT_QUOTES, 'UTF-8')?>" value="<?=(!empty($flash->has('link'.$i))) ? $flash->get('link'.$i) : ''?>">
 		                </div>
+		            <?php } ?>
+		            <?php if($type === 'hero-carousel') { ?>
+		            <div class="card card-secondary card-outline text-sm">
+		                <div class="card-header"><h3 class="card-title">Nội dung nâng cao (slide <?=$numb?>)</h3></div>
+		                <div class="card-body">
+		                    <div class="form-group">
+		                        <label for="opt_eyebrow<?=$i?>">Nhãn nhỏ phía trên tiêu đề:</label>
+		                        <input type="text" class="form-control text-sm" name="dataMulti[<?=$i?>][options][eyebrow]" id="opt_eyebrow<?=$i?>" placeholder="VD: PHÚC THỊNH SOLAR">
+		                    </div>
+		                    <div class="form-group">
+		                        <label for="opt_titleLine2_<?=$i?>">Tiêu đề (dòng 2, chữ mờ hơn dòng 1):</label>
+		                        <input type="text" class="form-control text-sm" name="dataMulti[<?=$i?>][options][titleLine2]" id="opt_titleLine2_<?=$i?>">
+		                    </div>
+		                    <div class="form-group">
+		                        <label for="opt_theme<?=$i?>">Kiểu nền chữ:</label>
+		                        <select class="form-control text-sm" name="dataMulti[<?=$i?>][options][theme]" id="opt_theme<?=$i?>">
+		                            <option value="dark">Tối (chữ trắng, mặc định)</option>
+		                            <option value="light">Sáng (chữ tối màu)</option>
+		                        </select>
+		                    </div>
+		                    <div class="form-group">
+		                        <label for="opt_ctaLabel<?=$i?>">Chữ trên nút chính:</label>
+		                        <input type="text" class="form-control text-sm" name="dataMulti[<?=$i?>][options][ctaLabel]" id="opt_ctaLabel<?=$i?>" placeholder="VD: Khám phá sản phẩm">
+		                    </div>
+		                    <hr>
+		                    <div class="form-group">
+		                        <label for="opt_cta2Label<?=$i?>">Chữ trên link phụ (để trống = không hiện link phụ):</label>
+		                        <input type="text" class="form-control text-sm" name="dataMulti[<?=$i?>][options][cta2Label]" id="opt_cta2Label<?=$i?>" placeholder="VD: Nhận tư vấn">
+		                    </div>
+		                    <div class="form-group">
+		                        <label for="opt_cta2_action<?=$i?>">Link phụ mở popup thay vì đường dẫn thường:</label>
+		                        <select class="form-control text-sm" id="opt_cta2_action<?=$i?>" onchange="
+		                            var v = this.value;
+		                            var input = document.getElementById('opt_cta2Href<?=$i?>');
+		                            if(v !== '') { input.value = v; input.readOnly = true; }
+		                            else { if(['#ptsContactModal','#ptsDealerModal'].indexOf(input.value) !== -1) input.value = ''; input.readOnly = false; }
+		                        ">
+		                            <option value="">Liên kết bình thường</option>
+		                            <option value="#ptsContactModal">Mở popup: Liên hệ</option>
+		                            <option value="#ptsDealerModal">Mở popup: Đăng ký đại lý</option>
+		                        </select>
+		                    </div>
+		                    <div class="form-group">
+		                        <label for="opt_cta2Href<?=$i?>">Link phụ:</label>
+		                        <input type="text" class="form-control text-sm" name="dataMulti[<?=$i?>][options][cta2Href]" id="opt_cta2Href<?=$i?>">
+		                    </div>
+		                    <div class="form-group">
+		                        <label for="opt_tags<?=$i?>">Tag cuối slide, cách nhau bằng dấu phẩy (để trống = không hiện):</label>
+		                        <input type="text" class="form-control text-sm" name="dataMulti[<?=$i?>][options][tags]" id="opt_tags<?=$i?>" placeholder="VD: GIA ĐÌNH, DOANH NGHIỆP, DỰ ÁN">
+		                    </div>
+		                </div>
+		            </div>
 		            <?php } ?>
 		            <?php if(isset($config['photo']['man_photo'][$type]['video_photo']) && $config['photo']['man_photo'][$type]['video_photo'] == true) { ?>
 		                <div class="form-group">

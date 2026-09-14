@@ -425,11 +425,24 @@
 		$id = (!empty($_POST['id'])) ? htmlspecialchars($_POST['id']) : 0;
 		$data = (!empty($_POST['data'])) ? $_POST['data'] : null;
 		$dataMultiTemp = (!empty($_POST['dataMulti'])) ? $_POST['dataMulti'] : null;
+		/* Merge field dạng mảng (data[options][...]) vào cột options JSON của
+		   ĐÚNG record đang sửa - cùng cơ chế savePhotoStatic() đã dùng cho
+		   watermark, thêm 2026-09-14 để hero-carousel (man_photo) lưu được
+		   eyebrow/2 dòng tiêu đề/2 CTA/tag riêng từng slide mà không cần
+		   ALTER TABLE. photo_static dùng chung 1 record/type nên chỉ cần lọc
+		   theo type; man_photo có nhiều record/type nên phải lọc theo đúng id. */
+		$optionRow = $id ? $d->rawQueryOne("select options from #_photo where id = ? limit 0,1", array($id)) : array();
+		$option = (!empty($optionRow['options'])) ? json_decode($optionRow['options'], true) : null;
 		if($data)
 		{
 			foreach($data as $column => $value)
 			{
-                if(strpos($column, 'content') !== false || strpos($column, 'desc') !== false)
+				if(is_array($value))
+				{
+					foreach($value as $k2 => $v2) $option[$k2] = $func->sanitize($v2);
+					$data[$column] = json_encode($option);
+				}
+				else if(strpos($column, 'content') !== false || strpos($column, 'desc') !== false)
                 {
                     $data[$column] = htmlspecialchars($func->sanitize($value, 'iframe'));
                 }
@@ -572,6 +585,16 @@
 					$success_photo = false;
 					$success_video = false;
 					$dataMulti = $dataMultiTemp[$i];
+					/* Field dạng mảng (dataMulti[i][options][...]) -> JSON hoá vào
+					   cột options trước khi insert - thêm mới hoàn toàn nên không
+					   có options cũ để merge (khác nhánh update ở trên). 2026-09-14,
+					   phục vụ hero-carousel. */
+					if(!empty($dataMulti['options']) && is_array($dataMulti['options']))
+					{
+						$dataMultiOption = array();
+						foreach($dataMulti['options'] as $k2 => $v2) $dataMultiOption[$k2] = $func->sanitize($v2);
+						$dataMulti['options'] = json_encode($dataMultiOption);
+					}
 					if(!empty($dataMulti['status']))
 					{
 						$dataStatus = implode(",", $dataMulti['status']);

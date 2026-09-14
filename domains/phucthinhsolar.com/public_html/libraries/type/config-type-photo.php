@@ -29,6 +29,32 @@
     $config['photo']['man_photo'][$nametype]['thumb_photo'] = '1920x900x1';
     $config['photo']['man_photo'][$nametype]['img_type_photo'] = '.jpg|.gif|.png|.jpeg|.gif';
 
+    /* Hero carousel trang chủ (layout 3, thêm 2026-09-12, Admin hoá 2026-09-14)
+       - đúng 4 slide cố định, mỗi slide 1 record. Field chuẩn (tên/mô tả/
+       link/ảnh) dùng hệ thống có sẵn; eyebrow/dòng tiêu đề 2/nhãn+link CTA
+       phụ/tag/theme không có cột riêng nên lưu qua options JSON (field khối
+       "hero-carousel-extra" tự thêm trong photo_add_tpl.php/photo_edit_tpl.php,
+       merge JSON đã có sẵn trong savePhoto() - xem administrator/sources/photo.php).
+       libraries/home_hero_carousel.php đọc đúng 4 record này, rơi về mảng
+       tĩnh cũ nếu chưa đủ/chưa có record nào (không để trang chủ trống Hero). */
+    $nametype = "hero-carousel";
+    $config['photo']['man_photo'][$nametype]['title_main_photo'] = "Hero carousel trang chủ";
+    $config['photo']['man_photo'][$nametype]['admin_note_photo'] = "Layout 3 của Hero (carousel 4 slide, bấm nút tròn giữa Hero để xem). Đúng 4 slide theo thứ tự Số thứ tự. \"Tiêu đề\" là dòng 1 (chữ trắng đậm); dòng 2 (chữ mờ hơn), nhãn nhỏ phía trên, CTA phụ và tag nằm trong khối riêng bên dưới. Link chính có thể mở popup tư vấn/đại lý thay vì đường dẫn thường. Chưa đủ 4 slide Hiển thị thì trang chủ tự dùng nội dung mặc định có sẵn trong code, không để trống.";
+    $config['photo']['man_photo'][$nametype]['check_photo'] = array("hienthi" => "Hiển thị");
+    $config['photo']['man_photo'][$nametype]['number_photo'] = 4;
+    $config['photo']['man_photo'][$nametype]['images_photo'] = true;
+    $config['photo']['man_photo'][$nametype]['avatar_photo'] = true;
+    $config['photo']['man_photo'][$nametype]['width_photo'] = 1920;
+    $config['photo']['man_photo'][$nametype]['height_photo'] = 900;
+    $config['photo']['man_photo'][$nametype]['thumb_photo'] = '1920x900x1';
+    $config['photo']['man_photo'][$nametype]['img_type_photo'] = '.jpg|.gif|.png|.jpeg|.gif';
+    $config['photo']['man_photo'][$nametype]['name_photo'] = true;
+    $config['photo']['man_photo'][$nametype]['name_label_photo'] = 'Tiêu đề (dòng 1)';
+    $config['photo']['man_photo'][$nametype]['desc_photo'] = true;
+    $config['photo']['man_photo'][$nametype]['desc_label_photo'] = 'Mô tả ngắn';
+    $config['photo']['man_photo'][$nametype]['link_photo'] = true;
+    $config['photo']['man_photo'][$nametype]['link_label_photo'] = 'Link nút chính';
+
     /* Banner quảng cáo đầu trang, hiển thị trên mọi trang, phía trên header */
     $nametype = "banner-top";
     $config['photo']['photo_static'][$nametype]['title_main'] = "Banner đầu trang (trên header)";
