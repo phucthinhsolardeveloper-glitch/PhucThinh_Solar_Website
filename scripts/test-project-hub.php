@@ -26,12 +26,47 @@ foreach(array(0, 4) as $count) {
     for($i=0;$i<$count;$i++) $news[] = array('id'=>$i+1,'id_list'=>6,'namevi'=>'Dự án '.$i,'slugvi'=>'du-an-'.$i,'slugen'=>'project-'.$i,'photo'=>'missing.png','address'=>'<b>Gia Lai</b>','tenkhachhang'=>'','ngayhopdong'=>'');
     require SOURCES.'project_hub.php';
     ob_start(); require '/var/www/html/templates/news/project_tpl.php'; $html = ob_get_clean();
-    projectHubAssert(substr_count($html, 'class="pts-ph-card"') === $count, 'Render '.$count.' dự án, không tạo card giả');
+    /* 2026-09-14: trang danh sách gốc (chưa lọc danh mục, trang 1) giờ tách 1
+       dự án ra khối "Dự án nổi bật" (.pts-ph-featured) riêng khỏi lưới
+       (.pts-ph-card) - tổng 2 loại vẫn phải khớp đúng $count, không tạo/mất
+       dự án nào. */
+    $projectFeaturedRendered = substr_count($html, 'class="pts-ph-featured"');
+    $projectCardRendered = substr_count($html, 'class="pts-ph-card"');
+    projectHubAssert($projectFeaturedRendered === ($count > 0 ? 1 : 0), 'Tách đúng 1 dự án nổi bật khi có dữ liệu ('.$count.')');
+    projectHubAssert($projectCardRendered === $count - $projectFeaturedRendered, 'Render '.$count.' dự án (nổi bật + lưới), không tạo card giả');
     projectHubAssert(substr_count($html, '<a class="pts-ph-filter') === 3, 'Bộ lọc lấy Tất cả và nhóm Admin');
     projectHubAssert(strpos($html, 'store-manager/') === false && ($count === 0 || strpos($html, 'href="du-an-0/"') !== false), 'Card dùng URL canonical thay cho store-manager');
     projectHubAssert(strpos($html, '<b>Gia Lai</b>') === false && strpos($html, 'missing.png') === false, 'Escape metadata và không render ảnh thiếu');
     projectHubAssert(substr_count($html, '<h1 ') === 1, 'Giữ đúng một H1 trong module');
 }
+/* 2026-09-14: khối nổi bật CHỈ hiện ở trang danh sách gốc, trang 1 - ẩn khi
+   đã lọc theo danh mục (dù có dữ liệu) và khi sang trang 2, giống nguyên tắc
+   đã dùng ở News Hub. */
+$d->rows = array('du-an' => array(array('id'=>6,'namevi'=>'Hộ gia đình','nameen'=>'','descvi'=>'','descen'=>'','photo'=>'missing.png','slugvi'=>'du-an-ho-gia-dinh','slugen'=>'','status'=>'hienthi')));
+$news = array(); for($i=0;$i<4;$i++) $news[] = array('id'=>$i+1,'id_list'=>6,'namevi'=>'Dự án '.$i,'slugvi'=>'du-an-'.$i,'slugen'=>'project-'.$i,'photo'=>'missing.png','address'=>'','tenkhachhang'=>'','ngayhopdong'=>'');
+$newsList = array('id' => 6);
+require SOURCES.'project_hub.php';
+ob_start(); require '/var/www/html/templates/news/project_tpl.php'; $html = ob_get_clean();
+projectHubAssert(strpos($html, 'class="pts-ph-featured"') === false && substr_count($html, 'class="pts-ph-card"') === 4, 'Đã lọc danh mục thì ẩn khối nổi bật, giữ đủ dự án ở lưới');
+
+$_GET['p'] = '2';
+$newsList = array();
+require SOURCES.'project_hub.php';
+ob_start(); require '/var/www/html/templates/news/project_tpl.php'; $html = ob_get_clean();
+projectHubAssert(strpos($html, 'class="pts-ph-featured"') === false && substr_count($html, 'class="pts-ph-card"') === 4, 'Sang trang 2 thì ẩn khối nổi bật, giữ đủ dự án ở lưới');
+unset($_GET['p']);
+
+/* Cờ "projecthub" (Nổi bật trang Dự án) phải được ưu tiên chọn làm nổi bật
+   thay vì luôn lấy dòng đầu tiên. */
+$news = array(
+    array('id'=>1,'id_list'=>6,'namevi'=>'Dự án A','slugvi'=>'du-an-a','slugen'=>'','photo'=>'missing.png','address'=>'','tenkhachhang'=>'','ngayhopdong'=>'','status'=>'hienthi'),
+    array('id'=>2,'id_list'=>6,'namevi'=>'Dự án B (nổi bật)','slugvi'=>'du-an-b','slugen'=>'','photo'=>'missing.png','address'=>'','tenkhachhang'=>'','ngayhopdong'=>'','status'=>'projecthub,hienthi'),
+);
+$newsList = array();
+require SOURCES.'project_hub.php';
+ob_start(); require '/var/www/html/templates/news/project_tpl.php'; $html = ob_get_clean();
+projectHubAssert(strpos($html, 'href="du-an-b/"') !== false && strpos($html, '>Dự án B (nổi bật)<') !== false, 'Cờ "Nổi bật trang Dự án" được ưu tiên chọn làm khối nổi bật');
+
 $d->rows = array('project-intro'=>array(array('status'=>'')), 'project-cta'=>array(array('status'=>'')), 'du-an'=>array());
 $news = array(); $newsList = array(); require SOURCES.'project_hub.php';
 ob_start(); require '/var/www/html/templates/news/project_tpl.php'; $html = ob_get_clean();

@@ -138,7 +138,9 @@
 		$perPage = 12;
 		$startpoint = ($curPage * $perPage) - $perPage;
 		$limit = " limit ".$startpoint.",".$perPage;
-		$sql = "select id, id_list, id_user, name$lang, slugvi, slugen, photo, date_created, desc$lang, email, phone, address, tenkhachhang, ngayhopdong from #_news where $where order by numb,id desc $limit";
+		/* status thêm để project_hub.php đọc cờ "projecthub" (dự án nổi bật
+		   trang Dự án) - chỉ nhánh du-an dùng, các type khác bỏ qua cột này. */
+		$sql = "select id, id_list, id_user, name$lang, slugvi, slugen, photo, date_created, desc$lang, email, phone, address, tenkhachhang, ngayhopdong, status from #_news where $where order by numb,id desc $limit";
 		$news = $d->rawQuery($sql,$params);
 		$sqlNum = "select count(*) as 'num' from #_news where $where order by numb,id desc";
 		$count = $d->rawQueryOne($sqlNum,$params);
@@ -361,7 +363,9 @@
 		$perPage = 12;
 		$startpoint = ($curPage * $perPage) - $perPage;
 		$limit = " limit ".$startpoint.",".$perPage;
-		$sql = "select id, id_list, id_user, name$lang, slugvi, slugen, photo, date_created, desc$lang, email, phone, address, tenkhachhang, ngayhopdong from #_news where $where order by numb,id desc $limit";
+		/* status thêm để project_hub.php đọc cờ "projecthub" (dự án nổi bật
+		   trang Dự án) - chỉ nhánh du-an dùng, các type khác bỏ qua cột này. */
+		$sql = "select id, id_list, id_user, name$lang, slugvi, slugen, photo, date_created, desc$lang, email, phone, address, tenkhachhang, ngayhopdong, status from #_news where $where order by numb,id desc $limit";
 		$news = $d->rawQuery($sql,$params);
 		$sqlNum = "select count(*) as 'num' from #_news where $where order by numb,id desc";
 		$count = $d->rawQueryOne($sqlNum,$params);

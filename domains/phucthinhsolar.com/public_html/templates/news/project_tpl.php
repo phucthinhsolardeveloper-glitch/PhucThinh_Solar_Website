@@ -34,9 +34,42 @@
 
     <section class="pts-ph-results" aria-label="<?=$projectEscape($projectHeroTitle)?>">
         <div class="uk-container">
-            <?php if($news) { ?>
+            <?php if($projectFeatured) {
+                $projectFeaturedName = isset($projectFeatured['name'.$lang]) ? solutionHubText($projectFeatured['name'.$lang]) : '';
+                $projectFeaturedSlug = isset($projectFeatured[$sluglang]) ? solutionHubText($projectFeatured[$sluglang]) : '';
+                $projectFeaturedPhoto = solutionHubImage($projectFeatured['photo'], UPLOAD_NEWS_L);
+                $projectFeaturedAddress = solutionHubText(isset($projectFeatured['address']) ? $projectFeatured['address'] : '');
+                $projectFeaturedDesc = solutionHubField($projectFeatured, 'desc', $lang);
+            ?>
+            <?php if($projectFeaturedSlug !== '') { ?>
+            <article class="pts-ph-featured">
+                <div class="pts-ph-featured-media<?=$projectFeaturedPhoto ? '' : ' is-placeholder'?>">
+                    <?php if($projectFeaturedPhoto) { ?><img src="<?=$projectEscape(ASSET.$projectFeaturedPhoto)?>" alt="<?=$projectEscape($projectFeaturedName)?>" width="860" height="600" loading="lazy" decoding="async"><?php } else { ?><span class="pts-ph-placeholder" aria-hidden="true">01</span><?php } ?>
+                    <?php if($projectFeaturedCategoryName !== '') { ?>
+                    <span class="pts-ph-badge"><?php if($projectFeaturedCategoryImage) { ?><img src="<?=$projectEscape(ASSET.$projectFeaturedCategoryImage)?>" alt="" width="20" height="20"><?php } else { ?><i class="fas fa-solar-panel" aria-hidden="true"></i><?php } ?><?=$projectEscape($projectFeaturedCategoryName)?></span>
+                    <?php } ?>
+                </div>
+                <div class="pts-ph-featured-body">
+                    <span class="pts-ph-eyebrow"><?=$projectEscape($projectUi['featured_eyebrow'])?></span>
+                    <h2><?=$projectEscape($projectFeaturedName)?></h2>
+                    <div class="pts-ph-meta">
+                        <?php if($projectFeaturedAddress !== '') { ?><span><i class="fas fa-map-marker-alt" aria-hidden="true"></i><?=$projectEscape($projectFeaturedAddress)?></span><?php } ?>
+                        <?php if($projectFeaturedCategoryName !== '') { ?><span><i class="fas fa-bolt" aria-hidden="true"></i><?=$projectEscape($projectFeaturedCategoryName)?></span><?php } ?>
+                    </div>
+                    <?php if($projectFeaturedDesc !== '') { ?><p class="pts-ph-featured-desc"><?=$projectEscape($projectFeaturedDesc)?></p><?php } ?>
+                    <ul class="pts-ph-featured-list">
+                        <?php foreach($projectUi['featured_benefits'] as $projectBenefit) { ?>
+                        <li><i class="fas fa-bolt" aria-hidden="true"></i><span><?=$projectEscape($projectBenefit)?></span></li>
+                        <?php } ?>
+                    </ul>
+                    <a class="pts-ph-featured-cta" href="<?=$projectEscape($projectFeaturedSlug.'/')?>"><?=$projectEscape($projectUi['featured_cta'])?> <span aria-hidden="true">→</span></a>
+                </div>
+            </article>
+            <?php } ?>
+            <?php } ?>
+            <?php if($projectGridRows) { ?>
             <div class="pts-ph-grid">
-                <?php foreach($news as $projectIndex => $projectRow) {
+                <?php foreach($projectGridRows as $projectIndex => $projectRow) {
                     $projectName = isset($projectRow['name'.$lang]) ? solutionHubText($projectRow['name'.$lang]) : '';
                     $projectSlug = isset($projectRow[$sluglang]) ? solutionHubText($projectRow[$sluglang]) : '';
                     $projectPhoto = solutionHubImage($projectRow['photo'], UPLOAD_NEWS_L);
@@ -44,6 +77,7 @@
                     $projectCategory = isset($projectCategoryById[(int)$projectRow['id_list']]) ? $projectCategoryById[(int)$projectRow['id_list']] : array();
                     $projectCategoryName = $projectCategory ? solutionHubField($projectCategory, 'name', $lang) : '';
                     $projectCategoryImage = $projectCategory ? solutionHubImage($projectCategory['photo'], UPLOAD_NEWS_L) : '';
+                    $projectDesc = solutionHubField($projectRow, 'desc', $lang);
                     if($projectSlug === '') continue;
                 ?>
                 <a class="pts-ph-card" href="<?=$projectEscape($projectSlug.'/')?>">
@@ -59,13 +93,15 @@
                             <?php if($projectAddress !== '') { ?><span><i class="fas fa-map-marker-alt" aria-hidden="true"></i><?=$projectEscape($projectAddress)?></span><?php } ?>
                             <?php if($projectCategoryName !== '') { ?><span><i class="fas fa-bolt" aria-hidden="true"></i><?=$projectEscape($projectCategoryName)?></span><?php } ?>
                         </div>
+                        <?php if($projectDesc !== '') { ?><p class="pts-ph-card-desc"><?=$projectEscape($projectDesc)?></p><?php } ?>
                         <span class="pts-ph-arrow" aria-hidden="true">→</span>
                     </div>
                 </a>
                 <?php } ?>
             </div>
+            <?php } ?>
             <?php if(!empty($paging)) { ?><div class="pagination-home w-100"><?=$paging?></div><?php } ?>
-            <?php } else { ?>
+            <?php if(!$news) { ?>
             <div class="pts-ph-empty"><i class="far fa-images" aria-hidden="true"></i><p><?=$projectEscape($projectUi['empty'])?></p><a href="#ptsContactModal" data-toggle="modal" data-target="#ptsContactModal"><?=$projectEscape($projectCtaButton)?> →</a></div>
             <?php } ?>
         </div>

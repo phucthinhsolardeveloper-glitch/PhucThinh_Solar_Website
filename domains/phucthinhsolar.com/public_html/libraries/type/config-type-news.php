@@ -106,10 +106,15 @@
     $config['news'][$nametype]['copy_image'] = true;
     $config['news'][$nametype]['comment'] = false;
     $config['news'][$nametype]['slug'] = true;
-    $config['news'][$nametype]['check'] = array("noibat" => "Nổi bật", "hienthi" => "Hiển thị");
+    // "projecthub": chọn dự án nào lên khối "Dự án nổi bật" lớn ở đầu trang
+    // Dự án - độc lập với "Nổi bật" (trang chủ), vì cờ đó đang bật đều cho
+    // mọi dự án nên không phân biệt được. Không chọn dòng nào thì trang tự
+    // lấy dự án đầu tiên làm nổi bật (2026-09-14).
+    $config['news'][$nametype]['check'] = array("noibat" => "Nổi bật", "projecthub" => "Nổi bật trang Dự án", "hienthi" => "Hiển thị");
+    $config['news'][$nametype]['admin_note'] = 'Cờ "Nổi bật trang Dự án" chọn dự án hiện ở khối lớn đầu trang Dự án (ảnh + mô tả + lợi ích); không chọn dòng nào thì tự lấy dự án mới nhất. Mô tả ngắn dùng trên card lưới và khối nổi bật; để trống thì card không hiện dòng mô tả.';
     $config['news'][$nametype]['images'] = true;
     $config['news'][$nametype]['show_images'] = true;
-    $config['news'][$nametype]['desc'] = false;
+    $config['news'][$nametype]['desc'] = true;
     $config['news'][$nametype]['content'] = true;
     $config['news'][$nametype]['content_cke'] = true;
     $config['news'][$nametype]['seo'] = true;
