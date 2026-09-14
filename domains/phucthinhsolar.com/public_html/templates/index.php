@@ -28,7 +28,7 @@
         </div>
 
         <div class="wap-main <?=($template=="news/news_detail" || $template=="news/project_detail")?'news_detail':''?> <?= ($source == 'user' || $source == 'order') ? 'user-pages': ''?> ">
-            <div class="wrap-main  <?=($source == 'index' || $source == 'about' || $template == 'news/service_list' || $template == 'news/service' || $template == 'news/project_list' || $template == 'news/project' || $template == 'news/news' || $template == 'daily/daily' || $template == 'contact/contact') ? 'wrap-home' : 'wrap-content mt-5 mb-5'?> w-clear">
+            <div class="wrap-main  <?=($source == 'index' || $source == 'about' || $template == 'news/service_list' || $template == 'news/service' || $template == 'news/project' || $template == 'news/news' || $template == 'daily/daily' || $template == 'contact/contact') ? 'wrap-home' : 'wrap-content mt-5 mb-5'?> w-clear">
                 <?php include TEMPLATE.$template."_tpl.php"; ?>
             </div>
         </div>

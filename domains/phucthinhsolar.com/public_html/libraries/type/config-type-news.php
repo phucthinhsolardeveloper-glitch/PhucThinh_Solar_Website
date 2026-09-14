@@ -658,7 +658,7 @@
     /* Lý do chọn chúng tôi */
     $nametype = "ly-do-chon-chung-toi";
     $config['news'][$nametype]['title_main'] = "Lý do chọn chúng tôi";
-    $config['news'][$nametype]['admin_note'] = "Tên/tiêu đề ngắn, mô tả và ảnh của record tạo card Lý do lựa chọn tại /ve-chung-toi/. Chọn tối đa 4 mục bằng cờ Trang Về chúng tôi; nếu chưa chọn mục nào, frontend dùng bốn mục phù hợp hiện hữu làm fallback.";
+    $config['news'][$nametype]['admin_note'] = "Tên/tiêu đề ngắn, mô tả và ảnh của record tạo card Lý do lựa chọn tại /ve-chung-toi/. NÊN LUÔN bật cờ Trang Về chúng tôi cho đúng 4 record muốn hiện - nếu chưa bật mục nào, hệ thống tự đoán theo TỪ KHOÁ TRONG TÊN record (vd tên có \"bảo hành\"/\"chính hãng\"...) để không bỏ trống khối, dễ ra kết quả không như ý nếu đổi tên record. Bật cờ rõ ràng để không phụ thuộc cách đoán này.";
     $config['news'][$nametype]['check'] = array("about" => "Trang Về chúng tôi", "hienthi" => "Hiển thị");
     $config['news'][$nametype]['view'] = false;
     $config['news'][$nametype]['slug'] = false;
@@ -681,6 +681,7 @@
     /* Số liệu thống kê */
     $nametype = "so-lieu-thong-ke";
     $config['news'][$nametype]['title_main'] = "Số liệu thống kê";
+    $config['news'][$nametype]['admin_note'] = "Khối \"Con số ấn tượng\" trên trang chủ đang TẮT tạm (2026-09-12) vì số liệu chưa được xác nhận - sửa ở đây hiện chưa lên giao diện. Có số liệu thật muốn công bố, báo lại để bật lại khối này trên trang chủ.";
     $config['news'][$nametype]['check'] = array("hienthi" => "Hiển thị");
     $config['news'][$nametype]['solieu'] = true;
     $config['news'][$nametype]['slug'] = false;
