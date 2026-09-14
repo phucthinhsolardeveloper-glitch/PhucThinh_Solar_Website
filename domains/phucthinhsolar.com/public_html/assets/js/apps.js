@@ -505,6 +505,18 @@ GA_FRAMEWORK.Photobox = function(){
     }
 };
 
+/* Trang Về chúng tôi dùng lại lightbox chứng nhận hiện hữu. Hai nút chữ chỉ
+   chuyển thao tác sang thumbnail tương ứng, vì vậy gallery không bị nhân đôi
+   ảnh và không phát sinh một cơ chế xem chứng nhận thứ hai. */
+GA_FRAMEWORK.AboutCertificates = function(){
+    $(document).on('click', '[data-about-cert-open]', function(){
+        $('.pts-about-certificate-grid .album-item:visible .album-image').first().trigger('click');
+    });
+    $(document).on('click', '[data-about-cert-item-open]', function(){
+        $(this).closest('.pts-about-certificate-card').find('.album-image').first().trigger('click');
+    });
+};
+
 /* Comment */
 GA_FRAMEWORK.Comment = function(){
     if(isExist($(".comment-page")))
@@ -1237,6 +1249,7 @@ $(document).ready(function(){
     GA_FRAMEWORK.Cart();
     GA_FRAMEWORK.Videos();
     GA_FRAMEWORK.Photobox();
+    GA_FRAMEWORK.AboutCertificates();
     GA_FRAMEWORK.Comment();
     GA_FRAMEWORK.Search();
     GA_FRAMEWORK.DomChange();

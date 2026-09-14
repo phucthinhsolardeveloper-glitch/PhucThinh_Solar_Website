@@ -130,8 +130,8 @@
                                 </div>
                                 <?php if(isset($config['news'][$type]['solieu']) && $config['news'][$type]['solieu'] == true) { ?>
                                     <div class="form-group">
-                                        <label for="solieu">Số liệu:</label>
-                                        <input type="number" class="form-control for-seo text-sm" name="data[solieu]" id="solieu" placeholder="Số liệu" value="<?=(!empty($flash->has('solieu'))) ? $flash->get('solieu') : @$item['solieu']?>" required>
+                                        <label for="solieu"><?=(isset($config['news'][$type]['solieu_label']) ? $config['news'][$type]['solieu_label'] : 'Số liệu')?>:</label>
+                                        <input type="number" class="form-control for-seo text-sm" name="data[solieu]" id="solieu" placeholder="<?=(isset($config['news'][$type]['solieu_placeholder']) ? $config['news'][$type]['solieu_placeholder'] : 'Số liệu')?>" value="<?=(!empty($flash->has('solieu'))) ? $flash->get('solieu') : @$item['solieu']?>" <?=(isset($config['news'][$type]['solieu_required']) && $config['news'][$type]['solieu_required'] === false) ? '' : 'required'?>>
                                     </div>
                                 <?php } ?>
                                 <?php if(isset($config['news'][$type]['map_iframe']) && $config['news'][$type]['map_iframe'] == true) { ?>

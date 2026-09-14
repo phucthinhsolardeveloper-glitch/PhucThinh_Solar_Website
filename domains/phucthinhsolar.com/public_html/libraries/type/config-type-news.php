@@ -501,9 +501,14 @@
     $config['news'][$nametype]['copy'] = false;
     $config['news'][$nametype]['images'] = true;
     $config['news'][$nametype]['show_images'] = true;
-    $config['news'][$nametype]['desc'] = false;
+    $config['news'][$nametype]['desc'] = true;
+    $config['news'][$nametype]['desc_cke'] = false;
     $config['news'][$nametype]['content'] = true;
     $config['news'][$nametype]['content_cke'] = true;
+    $config['news'][$nametype]['solieu'] = true;
+    $config['news'][$nametype]['solieu_label'] = "Năm cột mốc";
+    $config['news'][$nametype]['solieu_placeholder'] = "Ví dụ: 2019";
+    $config['news'][$nametype]['solieu_required'] = false;
     $config['news'][$nametype]['seo'] = false;
     $config['news'][$nametype]['width'] = 320;
     $config['news'][$nametype]['height'] = 240;
@@ -519,7 +524,8 @@
     $config['news'][$nametype]['copy'] = false;
     $config['news'][$nametype]['images'] = true;
     $config['news'][$nametype]['show_images'] = false;
-    $config['news'][$nametype]['desc'] = false;
+    $config['news'][$nametype]['desc'] = true;
+    $config['news'][$nametype]['desc_cke'] = false;
     $config['news'][$nametype]['content'] = true;
     $config['news'][$nametype]['content_cke'] = true;
     $config['news'][$nametype]['seo'] = false;
@@ -537,7 +543,8 @@
     $config['news'][$nametype]['copy'] = false;
     $config['news'][$nametype]['images'] = true;
     $config['news'][$nametype]['show_images'] = false;
-    $config['news'][$nametype]['desc'] = false;
+    $config['news'][$nametype]['desc'] = true;
+    $config['news'][$nametype]['desc_cke'] = false;
     $config['news'][$nametype]['content'] = false;
     $config['news'][$nametype]['content_cke'] = false;
     $config['news'][$nametype]['seo'] = false;

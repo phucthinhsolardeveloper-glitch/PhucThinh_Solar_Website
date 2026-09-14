@@ -287,6 +287,8 @@
     $config['photo']['man_photo'][$nametype]['avatar_photo'] = true;
     $config['photo']['man_photo'][$nametype]['link_photo'] = false;
     $config['photo']['man_photo'][$nametype]['name_photo'] = true;
+    $config['photo']['man_photo'][$nametype]['desc_photo'] = true;
+    $config['photo']['man_photo'][$nametype]['desc_cke_photo'] = false;
     $config['photo']['man_photo'][$nametype]['width_photo'] = 175;
     $config['photo']['man_photo'][$nametype]['height_photo'] = 95;
     $config['photo']['man_photo'][$nametype]['thumb_photo'] = '175x95x2';

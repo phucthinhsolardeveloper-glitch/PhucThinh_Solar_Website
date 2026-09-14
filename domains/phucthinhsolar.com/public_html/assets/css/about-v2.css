@@ -1,0 +1,148 @@
+/* Trang Về chúng tôi 2026-09-14. Mọi selector được scope để không tác động
+   header, footer, trang chủ hoặc các trang nội dung khác. */
+.pts-about-page{
+    --about-navy:#061b46;
+    --about-navy-soft:#0d3268;
+    --about-gold:#d29a28;
+    --about-gold-light:#efc95e;
+    --about-text:#66758f;
+    --about-border:#e2e8f0;
+    --about-surface:#f5f8fc;
+    color:var(--about-navy);
+    overflow:hidden;
+    background:#fff;
+}
+.pts-about-page *{box-sizing:border-box;}
+.pts-about-page figure{margin:0;}
+.pts-about-page h1,.pts-about-page h2,.pts-about-page h3{font-family:inherit;color:var(--about-navy);}
+.pts-about-page p{color:var(--about-text);}
+.pts-about-eyebrow{display:block;margin:0 0 10px;color:var(--about-gold);font-size:12px;font-weight:900;letter-spacing:.16em;line-height:1.4;text-transform:uppercase;}
+.pts-about-story h1,.pts-about-page .pts-about-section-heading h2,.pts-about-certificates-heading h2,.pts-about-people h2{margin:0;color:var(--about-navy)!important;font-size:clamp(30px,3.2vw,44px)!important;font-weight:900!important;letter-spacing:-.035em;line-height:1.12!important;text-transform:none!important;}
+.pts-about-lead{max-width:670px;margin:14px 0 0!important;font-size:16px!important;line-height:1.65!important;}
+
+.pts-about-story{padding:82px 0 88px;}
+.pts-about-story-grid{display:grid;grid-template-columns:minmax(0,1.18fr) minmax(350px,.82fr);align-items:center;gap:64px;}
+.pts-about-story-media,.pts-about-people-media{overflow:hidden;border-radius:12px;background:#e8edf4;}
+.pts-about-story-media{aspect-ratio:1.22/1;}
+.pts-about-story-media img,.pts-about-people-media img{display:block;width:100%!important;height:100%!important;object-fit:cover!important;}
+.pts-about-timeline{display:grid;grid-template-columns:repeat(var(--milestone-count,1),minmax(0,1fr));gap:0;margin:38px 0 0;padding:0;list-style:none;}
+.pts-about-milestone{position:relative;min-width:0;padding-right:22px;}
+.pts-about-milestone:not(:last-child):after{position:absolute;top:22px;left:46px;right:0;height:1px;background:var(--about-gold);content:"";}
+.pts-about-milestone-icon{position:relative;z-index:1;display:flex;width:46px;height:46px;align-items:center;justify-content:center;margin-bottom:12px;border:1.5px solid var(--about-gold);border-radius:50%;background:#fff;color:var(--about-gold);font-size:17px;}
+.pts-about-year{display:block;margin-bottom:3px;color:var(--about-gold);font-size:19px;font-weight:900;line-height:1.2;}
+.pts-about-milestone h2{margin:0 0 6px!important;color:var(--about-navy)!important;font-size:15px!important;font-weight:850!important;line-height:1.3!important;}
+.pts-about-milestone p{margin:0!important;font-size:12.5px!important;line-height:1.55!important;}
+
+.pts-about-people{padding:82px 0;background:var(--about-surface);}
+.pts-about-people-grid{display:grid;grid-template-columns:minmax(340px,.92fr) minmax(0,1.08fr);align-items:center;gap:64px;}
+.pts-about-people-media{aspect-ratio:1.3/1;}
+.pts-about-principles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px;margin-top:34px;}
+.pts-about-principle{min-width:0;}
+.pts-about-principle-icon{display:flex;height:42px;align-items:center;color:var(--about-gold);font-size:30px;}
+.pts-about-principle h3{margin:11px 0 7px!important;font-size:17px!important;font-weight:850!important;line-height:1.25!important;}
+.pts-about-principle p{margin:0!important;font-size:13px!important;line-height:1.55!important;}
+
+.pts-about-trust{padding:82px 0 90px;}
+.pts-about-section-heading{margin-bottom:30px;}
+.pts-about-trust-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px;}
+.pts-about-trust-card{min-width:0;padding:24px 22px 23px;border:1px solid var(--about-border);border-radius:12px;background:#fff;box-shadow:0 7px 18px rgba(6,27,70,.035);}
+.pts-about-trust-icon{display:flex;height:38px;align-items:center;color:var(--about-gold);font-size:29px;}
+.pts-about-trust-card h3{margin:13px 0 7px!important;font-size:17px!important;font-weight:850!important;line-height:1.3!important;}
+.pts-about-trust-card p{margin:0!important;font-size:13.5px!important;line-height:1.55!important;}
+
+.pts-about-compass{position:relative;padding:76px 0 80px;background:var(--about-navy);isolation:isolate;}
+.pts-about-compass:before{position:absolute;inset:0;z-index:-1;background:radial-gradient(circle at 85% 10%,rgba(44,92,154,.32),transparent 38%),linear-gradient(115deg,rgba(255,255,255,.015),transparent 46%);content:"";}
+.pts-about-compass .pts-about-section-heading h2{color:#fff!important;}
+.pts-about-compass-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px;}
+.pts-about-compass-item{display:grid;grid-template-columns:48px minmax(0,1fr);gap:17px;min-width:0;padding:22px 20px;border:1px solid rgba(255,255,255,.09);border-radius:10px;background:rgba(255,255,255,.035);}
+.pts-about-compass-icon{color:var(--about-gold-light);font-size:31px;line-height:1;}
+.pts-about-compass-item h3{margin:0 0 10px!important;color:#fff!important;font-size:18px!important;font-weight:850!important;line-height:1.25!important;}
+.pts-about-compass-item p{margin:0!important;color:#c4cee0!important;font-size:13.5px!important;line-height:1.6!important;}
+.pts-about-keywords{display:flex;flex-wrap:wrap;gap:7px 15px;margin:0;padding:0;list-style:none;}
+.pts-about-keywords li{position:relative;color:#dce5f3;font-size:13px;font-weight:700;}
+.pts-about-keywords li:not(:last-child):after{position:absolute;right:-9px;color:var(--about-gold-light);content:"•";}
+
+.pts-about-certificates{padding:82px 0 76px;background:#fff;}
+.pts-about-certificates-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:30px;margin-bottom:28px;}
+.pts-about-certificates-heading p{margin:11px 0 0!important;font-size:14px!important;line-height:1.55!important;}
+.pts-about-view-certificates{flex:0 0 auto;padding:8px 0;border:0;background:transparent;color:var(--about-navy);font-size:13px;font-weight:850;cursor:pointer;}
+.pts-about-view-certificates i{margin-left:7px;color:var(--about-gold);font-size:11px;}
+.pts-about-view-certificates:hover,.pts-about-view-certificates:focus{color:var(--about-gold);}
+.pts-about-certificate-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px;}
+.pts-about-certificate-card{display:grid;grid-template-columns:102px minmax(0,1fr);align-items:center;min-width:0;min-height:174px;padding:12px;border:1px solid var(--about-border);border-radius:11px;background:#fff;box-shadow:0 7px 18px rgba(6,27,70,.035);}
+.pts-about-certificate-thumb{display:block;height:148px;overflow:hidden;border-radius:6px;background:#f2f4f7;}
+.pts-about-certificate-thumb img{display:block;width:100%!important;height:100%!important;object-fit:contain!important;}
+.pts-about-certificate-copy{min-width:0;padding:5px 5px 5px 14px;}
+.pts-about-certificate-copy>span{display:block;margin-bottom:7px;color:var(--about-gold);font-size:9px;font-weight:900;letter-spacing:.12em;}
+.pts-about-certificate-copy h3{overflow-wrap:anywhere;margin:0 0 8px!important;font-size:14px!important;font-weight:850!important;line-height:1.35!important;}
+.pts-about-certificate-copy p{margin:0 0 9px!important;font-size:11.5px!important;line-height:1.45!important;}
+.pts-about-certificate-link{display:inline-flex;align-items:center;gap:6px;border:0;background:transparent;color:var(--about-navy)!important;font-size:11px;font-weight:850;text-decoration:none!important;cursor:pointer;}
+.pts-about-certificate-link i{color:var(--about-gold);font-size:9px;}
+.pts-about-certificate-hidden{display:none!important;}
+
+.pts-about-contact{padding:0 0 74px;background:#fff;}
+.pts-about-contact-band{display:grid;grid-template-columns:48px minmax(260px,1fr) auto;align-items:center;gap:20px;padding:22px 26px;border-radius:12px;background:var(--about-navy);}
+.pts-about-contact-icon{display:flex;width:48px;height:48px;align-items:center;justify-content:center;color:var(--about-gold-light);font-size:27px;}
+.pts-about-contact-copy h2{margin:0 0 4px!important;color:#fff!important;font-size:19px!important;font-weight:850!important;line-height:1.3!important;}
+.pts-about-contact-copy p{margin:0!important;color:#c4cee0!important;font-size:12.5px!important;line-height:1.5!important;}
+.pts-about-contact-actions{display:flex;align-items:center;gap:10px;}
+.pts-about-contact-button{display:inline-flex;min-height:44px;align-items:center;justify-content:center;gap:8px;padding:11px 18px;border:1px solid rgba(255,255,255,.32);border-radius:8px;color:#fff!important;font-size:12.5px;font-weight:850;text-decoration:none!important;white-space:nowrap;transition:background .2s ease,border-color .2s ease,color .2s ease;}
+.pts-about-contact-button.is-hotline{border-color:var(--about-gold-light);background:var(--about-gold-light);color:var(--about-navy)!important;}
+.pts-about-contact-button.is-zalo{min-width:78px;background:#fff;color:#0877c9!important;}
+.pts-about-contact-button.is-primary{border-color:var(--about-gold);background:var(--about-gold);color:var(--about-navy)!important;}
+.pts-about-contact-button:hover{transform:none!important;border-color:#fff;background:#fff;color:var(--about-navy)!important;}
+
+@media (max-width:1100px){
+    .pts-about-story-grid,.pts-about-people-grid{gap:38px;}
+    .pts-about-principles{gap:18px;}
+    .pts-about-trust-grid,.pts-about-certificate-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .pts-about-contact-band{grid-template-columns:48px minmax(0,1fr);}
+    .pts-about-contact-actions{grid-column:2;flex-wrap:wrap;}
+}
+
+@media (max-width:800px){
+    .pts-about-story,.pts-about-people,.pts-about-trust,.pts-about-certificates{padding-top:60px;padding-bottom:64px;}
+    .pts-about-story-grid,.pts-about-people-grid{grid-template-columns:1fr;gap:0;}
+    .pts-about-story-copy,.pts-about-people-copy{display:contents;}
+    .pts-about-story-copy>.pts-about-eyebrow,.pts-about-people-copy>.pts-about-eyebrow{order:1;}
+    .pts-about-story-copy>h1,.pts-about-people-copy>h2{order:2;}
+    .pts-about-story-media,.pts-about-people-media{order:3;aspect-ratio:16/10;margin-top:26px;}
+    .pts-about-story-copy>.pts-about-lead,.pts-about-people-copy>.pts-about-lead{order:4;margin-top:22px!important;}
+    .pts-about-timeline,.pts-about-principles{order:5;}
+    .pts-about-principles{grid-template-columns:repeat(3,minmax(0,1fr));}
+    .pts-about-compass{padding:60px 0 64px;}
+    .pts-about-compass-grid{grid-template-columns:1fr;}
+    .pts-about-certificates-heading{align-items:flex-start;}
+}
+
+@media (max-width:600px){
+    .pts-about-story,.pts-about-people,.pts-about-trust,.pts-about-certificates{padding-top:48px;padding-bottom:52px;}
+    .pts-about-story h1,.pts-about-page .pts-about-section-heading h2,.pts-about-certificates-heading h2,.pts-about-people h2{font-size:30px!important;}
+    .pts-about-lead{font-size:14.5px!important;}
+    .pts-about-timeline{display:block;margin-top:28px;padding-left:5px;}
+    .pts-about-milestone{display:grid;grid-template-columns:46px minmax(0,1fr);column-gap:14px;padding:0 0 27px;}
+    .pts-about-milestone:not(:last-child):after{top:46px;bottom:0;left:22px;right:auto;width:1px;height:auto;}
+    .pts-about-milestone-icon{grid-column:1;grid-row:1/5;margin:0;}
+    .pts-about-year,.pts-about-milestone h2,.pts-about-milestone p{grid-column:2;}
+    .pts-about-year{margin-top:1px;}
+    .pts-about-principles{grid-template-columns:1fr;gap:23px;margin-top:28px;}
+    .pts-about-principle{display:grid;grid-template-columns:40px minmax(0,1fr);column-gap:13px;}
+    .pts-about-principle-icon{grid-row:1/3;}
+    .pts-about-principle h3{margin:2px 0 5px!important;}
+    .pts-about-principle p{grid-column:2;}
+    .pts-about-trust-grid,.pts-about-certificate-grid{grid-template-columns:1fr;}
+    .pts-about-trust-card{padding:21px;}
+    .pts-about-compass{padding:48px 0 52px;}
+    .pts-about-compass-item{padding:20px 18px;}
+    .pts-about-certificates-heading{display:block;}
+    .pts-about-view-certificates{margin-top:10px;}
+    .pts-about-contact{padding-bottom:52px;}
+    .pts-about-contact-band{grid-template-columns:1fr;gap:12px;padding:24px 20px;text-align:center;}
+    .pts-about-contact-icon{margin:0 auto;}
+    .pts-about-contact-actions{grid-column:1;display:grid;width:100%;margin-top:6px;}
+    .pts-about-contact-button{width:100%;}
+}
+
+@media (prefers-reduced-motion:reduce){
+    .pts-about-page *{scroll-behavior:auto!important;transition:none!important;}
+}
