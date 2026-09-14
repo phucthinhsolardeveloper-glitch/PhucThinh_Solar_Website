@@ -106,6 +106,35 @@
 .pts-about-contact-button.is-primary{border-color:var(--about-gold);background:var(--about-gold);color:var(--about-navy)!important;}
 .pts-about-contact-button:hover{transform:none!important;border-color:#fff;background:#fff;color:var(--about-navy)!important;}
 
+/* Corporate layout inherited from the pre-redesign About: introduction image
+   on the left, formation image on the right. Keep the Admin-backed sections. */
+.pts-about-story{padding:56px 0 64px;}
+.pts-about-story-grid{grid-template-columns:1fr 1fr;gap:54px;}
+.pts-about-story-media{grid-column:1;grid-row:1;aspect-ratio:10/7;border-radius:8px;box-shadow:none;}
+.pts-about-story-copy{grid-column:2;grid-row:1;}
+.pts-about-story h1,.pts-about-page .pts-about-section-heading h2,.pts-about-certificates-heading h2,.pts-about-people h2,.pts-about-history h2{font-size:clamp(28px,2.6vw,36px)!important;line-height:1.22!important;letter-spacing:-.025em;font-weight:850!important;}
+.pts-about-history{padding:64px 0;background:var(--about-surface);}
+.pts-about-history-grid{display:grid;grid-template-columns:1fr 1fr;gap:54px;align-items:center;}
+.pts-about-history h2{margin:0;}
+.pts-about-history-media{overflow:hidden;aspect-ratio:10/7;border-radius:8px;}
+.pts-about-history-media img{display:block;width:100%!important;height:100%!important;object-fit:cover!important;}
+.pts-about-history .pts-about-timeline{display:block;margin-top:26px;}
+.pts-about-history .pts-about-milestone{display:grid;grid-template-columns:66px minmax(0,1fr);gap:5px 18px;padding:0 0 20px;}
+.pts-about-history .pts-about-milestone-marker{display:none;}
+.pts-about-history .pts-about-milestone:after{display:none;}
+.pts-about-history .pts-about-year{grid-column:1;grid-row:1/4;font-size:25px;}
+.pts-about-history .pts-about-milestone h3,.pts-about-history .pts-about-milestone p{grid-column:2;margin:0!important;}
+.pts-about-history .pts-about-milestone h3{font-size:17px!important;line-height:1.4!important;}
+.pts-about-people{padding:64px 0;background:#fff;}
+.pts-about-people-grid{gap:54px;}
+.pts-about-people-media{aspect-ratio:10/7;border-radius:8px;box-shadow:none;}
+.pts-about-trust{padding:58px 0 64px;background:var(--about-surface);}
+.pts-about-compass{padding:64px 0;}
+.pts-about-certificates{padding:64px 0;}
+.pts-about-contact{padding-bottom:64px;}
+.pts-about-story-grid:not(:has(.pts-about-story-media)),.pts-about-history-grid:not(:has(.pts-about-history-media)),.pts-about-people-grid:not(:has(.pts-about-people-media)){grid-template-columns:1fr;}
+.pts-about-story-grid:not(:has(.pts-about-story-media)) .pts-about-story-copy{grid-column:1;}
+
 @media (max-width:1100px){
     .pts-about-story-grid,.pts-about-people-grid{gap:42px;}
     .pts-about-principle{padding-right:18px;padding-left:18px;}
@@ -116,6 +145,10 @@
 }
 
 @media (max-width:800px){
+    .pts-about-history{padding:54px 0;}
+    .pts-about-history-grid{grid-template-columns:1fr;gap:26px;}
+    .pts-about-history-media{aspect-ratio:16/10;}
+    .pts-about-story-media{grid-column:auto;grid-row:auto;}
     .pts-about-story,.pts-about-people,.pts-about-trust,.pts-about-certificates{padding-top:62px;padding-bottom:66px;}
     .pts-about-story-grid,.pts-about-people-grid{grid-template-columns:1fr;gap:0;}
     .pts-about-story-copy,.pts-about-people-copy{display:contents;}
@@ -138,6 +171,7 @@
 }
 
 @media (max-width:600px){
+    .pts-about-history{padding:44px 0;}
     .pts-about-story,.pts-about-people,.pts-about-trust,.pts-about-certificates{padding-top:50px;padding-bottom:54px;}
     .pts-about-story h1,.pts-about-page .pts-about-section-heading h2,.pts-about-certificates-heading h2,.pts-about-people h2{font-size:29px!important;}
     .pts-about-eyebrow{font-size:12px;letter-spacing:.12em;}

@@ -2,7 +2,7 @@
     $aboutEscape = static function($value) {
         return htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8');
     };
-    $aboutStoryImage = !empty($aboutHistoryRecord['photo']) ? $aboutHistoryRecord['photo'] : (!empty($aboutStoryRecord['photo']) ? $aboutStoryRecord['photo'] : '');
+    $aboutStoryImage = !empty($aboutStoryRecord['photo']) ? $aboutStoryRecord['photo'] : '';
     $aboutCtaHasImage = !empty($aboutCta['photo']);
 ?>
 <main class="pts-about-page">
@@ -16,20 +16,7 @@
                     <p class="pts-about-lead"><?=$aboutEscape($aboutStoryIntro)?></p>
                     <?php } ?>
 
-                    <?php if(!empty($aboutTimeline)) { ?>
-                    <ol class="pts-about-timeline" style="--milestone-count:<?=count($aboutTimeline)?>" aria-label="<?=$aboutEscape($aboutUi['timeline_label'])?>">
-                        <?php foreach($aboutTimeline as $index => $milestone) { ?>
-                        <li class="pts-about-milestone">
-                            <span class="pts-about-milestone-marker" aria-hidden="true"><?=str_pad((string)($index + 1), 2, '0', STR_PAD_LEFT)?></span>
-                            <strong class="pts-about-year"><?=$aboutEscape($milestone['year'])?></strong>
-                            <?php if($milestone['title'] !== '') { ?><h2><?=$aboutEscape($milestone['title'])?></h2><?php } ?>
-                            <?php if($milestone['description'] !== '') { ?><p><?=$aboutEscape($milestone['description'])?></p><?php } ?>
-                        </li>
-                        <?php } ?>
-                    </ol>
-                    <?php } ?>
                 </div>
-
                 <?php if($aboutStoryImage !== '') { ?>
                 <figure class="pts-about-story-media">
                     <?=$func->getImage(['class' => 'lazy', 'sizes' => '780x600x1', 'upload' => UPLOAD_NEWS_L, 'image' => $aboutStoryImage, 'alt' => $aboutStoryTitle])?>
@@ -38,6 +25,34 @@
             </div>
         </div>
     </section>
+
+    <?php if(!empty($aboutTimeline)) { ?>
+    <section class="pts-about-history" aria-labelledby="about-history-title">
+        <div class="uk-container">
+            <div class="pts-about-history-grid">
+                <div class="pts-about-history-copy">
+                    <span class="pts-about-eyebrow"><?=$aboutEscape($aboutUi['story_eyebrow'])?></span>
+                    <h2 id="about-history-title"><?=$aboutEscape(!empty($aboutHistoryRecord['title_index'.$lang]) ? $aboutHistoryRecord['title_index'.$lang] : $aboutHistoryRecord['name'.$lang])?></h2>
+                    <ol class="pts-about-timeline" style="--milestone-count:<?=count($aboutTimeline)?>" aria-label="<?=$aboutEscape($aboutUi['timeline_label'])?>">
+                        <?php foreach($aboutTimeline as $index => $milestone) { ?>
+                        <li class="pts-about-milestone">
+                            <span class="pts-about-milestone-marker" aria-hidden="true"><?=str_pad((string)($index + 1), 2, '0', STR_PAD_LEFT)?></span>
+                            <strong class="pts-about-year"><?=$aboutEscape($milestone['year'])?></strong>
+                            <?php if($milestone['title'] !== '' && count($aboutTimeline) > 1) { ?><h3><?=$aboutEscape($milestone['title'])?></h3><?php } ?>
+                            <?php if($milestone['description'] !== '') { ?><p><?=$aboutEscape($milestone['description'])?></p><?php } ?>
+                        </li>
+                        <?php } ?>
+                    </ol>
+                </div>
+                <?php if(!empty($aboutHistoryRecord['photo'])) { ?>
+                <figure class="pts-about-history-media">
+                    <?=$func->getImage(['class' => 'lazy', 'sizes' => '780x600x1', 'upload' => UPLOAD_NEWS_L, 'image' => $aboutHistoryRecord['photo'], 'alt' => $aboutHistoryRecord['name'.$lang]])?>
+                </figure>
+                <?php } ?>
+            </div>
+        </div>
+    </section>
+    <?php } ?>
 
     <section class="pts-about-people" aria-labelledby="about-people-title">
         <div class="uk-container">

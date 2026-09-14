@@ -11,15 +11,30 @@ async function openAbout(page) {
   });
   await page.goto('/ve-chung-toi/', { waitUntil: 'domcontentloaded' });
   await page.waitForTimeout(1000);
+  // Visit below-fold sections before checking lazy images; moving the People
+  // section below history must not classify a deferred image as broken.
+  for (const section of await page.locator('.pts-about-page > section').all()) {
+    await section.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(150);
+  }
+  await page.locator('.pts-about-page img').evaluateAll(async images => {
+    await Promise.all(images.map(image => image.decode().catch(() => {})));
+  });
+  await page.evaluate(() => window.scrollTo(0, 0));
   return { pageErrors, failedLocalRequests };
 }
 
-test('About page has the concise six-section corporate layout', async ({ page }) => {
+test('About page keeps alternating introduction and history with Admin-backed sections', async ({ page }) => {
   const health = await openAbout(page);
   const main = page.locator('.pts-about-page');
 
   await expect(main).toBeVisible();
-  await expect(main.locator('> section')).toHaveCount(6);
+  await expect(main.locator('> section')).toHaveCount(7);
+  await expect(main.locator('.pts-about-history .pts-about-milestone')).toHaveCount(1);
+  const introImage = main.locator('.pts-about-story-media img');
+  const historyImage = main.locator('.pts-about-history-media img');
+  await expect(introImage).toHaveCount(1);
+  await expect(historyImage).toHaveCount(1);
   await expect(main.locator('.pts-about-principle')).toHaveCount(3);
   await expect(main.locator('.pts-about-trust-card')).toHaveCount(4);
   await expect(main.locator('.pts-about-compass-item')).toHaveCount(3);
