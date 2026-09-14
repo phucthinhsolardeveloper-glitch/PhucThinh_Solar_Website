@@ -53,7 +53,7 @@
         'story_title' => 'Câu chuyện Phúc Thịnh Solar',
         'timeline_label' => 'Các mốc phát triển của Phúc Thịnh Solar',
         'people_eyebrow' => 'Con người là nền tảng',
-        'people_title' => 'Con người Phúc Thịnh Solar',
+        'people_title' => 'Nhân sự Phúc Thịnh Solar',
         'people_fallback' => 'Đội ngũ giàu kinh nghiệm, tư vấn sát nhu cầu thực tế, triển khai có trách nhiệm và đồng hành lâu dài cùng khách hàng.',
         'principle_expertise' => 'Chuyên môn thực tế',
         'principle_expertise_desc' => 'Đội ngũ kỹ sư, kỹ thuật viên giàu kinh nghiệm, am hiểu thực tế.',
