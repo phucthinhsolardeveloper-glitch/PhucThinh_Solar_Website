@@ -71,6 +71,7 @@ fi
 
 docker cp scripts/test-security-hardening.php "$web_container:/tmp/test-security-hardening.php"
 docker cp scripts/test-admin-readiness.php "$web_container:/tmp/test-admin-readiness.php"
+docker cp scripts/test-news-hub.php "$web_container:/tmp/test-news-hub.php"
 docker cp scripts/test-product-bulk.php "$web_container:/tmp/test-product-bulk.php"
 docker cp scripts/test-product-project-links.php "$web_container:/tmp/test-product-project-links.php"
 docker cp scripts/test-product-power-filter.php "$web_container:/tmp/test-product-power-filter.php"
@@ -106,6 +107,8 @@ docker cp migrations/000_check_hosting_runtime.php "$web_container:/tmp/000_chec
 docker cp migrations/025_compress_oversized_images.php "$web_container:/tmp/025_compress_oversized_images.php"
 docker cp migrations/031_grant_contact_content_section_permissions.php "$web_container:/tmp/031_grant_contact_content_section_permissions.php"
 docker cp migrations/032_adv_banner_popup_links.php "$web_container:/tmp/032_adv_banner_popup_links.php"
+docker cp migrations/037_grant_redesign_page_permissions.php "$web_container:/tmp/037_grant_redesign_page_permissions.php"
+docker cp migrations/038_grant_news_hub_permissions.php "$web_container:/tmp/038_grant_news_hub_permissions.php"
 docker cp scripts/import-oriana-images-local.php "$web_container:/tmp/import-oriana-images.php"
 docker cp scripts/create-local-rbac-demo-accounts.php "$web_container:/tmp/create-local-rbac-demo-accounts.php"
 docker compose -f "$compose_file" exec -T web sh -lc '
@@ -167,6 +170,7 @@ php -l /tmp/000_check_hosting_runtime.php
 php -l /tmp/025_compress_oversized_images.php
 php -l /tmp/031_grant_contact_content_section_permissions.php
 php -l /tmp/032_adv_banner_popup_links.php
+php -l /tmp/037_grant_redesign_page_permissions.php
 php -l /tmp/import-oriana-images.php
 php -l /tmp/create-local-rbac-demo-accounts.php
 php -l /tmp/test-admin-self-profile-integrity.php
@@ -180,6 +184,7 @@ php -l /tmp/test-admin-button-visibility.php
 php -l /tmp/test-proxy-https.php
 php /tmp/test-security-hardening.php
 php /tmp/test-admin-readiness.php
+php /tmp/test-news-hub.php
 php /tmp/test-product-bulk.php
 php /tmp/test-product-project-links.php
 php /tmp/test-product-power-filter.php
@@ -214,6 +219,8 @@ php /tmp/000_preflight_production.php --require-all
 php /tmp/000_check_hosting_runtime.php
 php /tmp/031_grant_contact_content_section_permissions.php
 php /tmp/032_adv_banner_popup_links.php
+php /tmp/037_grant_redesign_page_permissions.php
+php /tmp/038_grant_news_hub_permissions.php
 '
 
 redirect_table="$(docker compose -f "$compose_file" exec -T db mariadb -N -B -upts_local -ppts_local_only phucthinhs_local -e "SHOW TABLES LIKE 'table_url_redirect';")"
@@ -310,9 +317,14 @@ grep -qF 'name="twitter:title"' /tmp/pts-predeploy-product-filtered.html
 grep -qF 'rel="canonical" href="http://localhost:8080/san-pham/"' /tmp/pts-predeploy-product-filtered.html
 grep -qF 'name="robots" content="noindex,nofollow"' /tmp/pts-predeploy-search.html
 grep -qF 'name="robots" content="noindex,nofollow"' /tmp/pts-predeploy-cart.html
-grep -qF 'pts-card-grid' /tmp/pts-predeploy-news.html
-grep -qF 'pts-card-grid' /tmp/pts-predeploy-solutions.html
-grep -qF 'pts-card-grid' /tmp/pts-predeploy-projects.html
+grep -qF 'pts-news-hub' /tmp/pts-predeploy-news.html
+assert_css_shipped /tmp/pts-predeploy-news.html 'assets/css/news-hub.css' '.pts-news-hub'
+grep -qF 'pts-solution-hub' /tmp/pts-predeploy-solutions.html
+grep -qF 'pts-sh-choice' /tmp/pts-predeploy-solutions.html
+assert_css_shipped /tmp/pts-predeploy-solutions.html 'assets/css/solution-hub.css' '.pts-solution-hub'
+grep -qF 'pts-project-hub' /tmp/pts-predeploy-projects.html
+grep -qF 'pts-ph-card' /tmp/pts-predeploy-projects.html
+assert_css_shipped /tmp/pts-predeploy-projects.html 'assets/css/project-hub.css' '.pts-project-hub'
 grep -qE '^Sitemap: https://phucthinhsolar.com/sitemap.xml$' /tmp/pts-predeploy-robots.txt
 grep -qF '<urlset ' /tmp/pts-predeploy-sitemap.xml
 # Trước đây check này dò một danh sách slug cứng đã lỗi thời: 3/4 slug không còn

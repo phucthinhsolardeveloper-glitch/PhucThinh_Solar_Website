@@ -130,8 +130,9 @@
                                             <?php } ?>
                                             <?php if(isset($config['news'][$type]['content1']) && $config['news'][$type]['content1'] == true) { ?>
                                                 <div class="form-group">
-                                                    <label for="content1<?=$k?>">Nội dung kết luận (<?=$k?>):</label>
-                                                    <textarea class="form-control for-seo text-sm <?=(isset($config['news'][$type]['content1_cke']) && $config['news'][$type]['content1_cke'] == true)?'form-control-ckeditor':''?>" name="data[content1<?=$k?>]" id="content1<?=$k?>" rows="5" placeholder="Nội dung kết luận (<?=$k?>)"><?=htmlspecialchars_decode((!empty($flash->has('content1'.$k))) ? $flash->get('content1'.$k) : @$item['content1'.$k])?></textarea>
+                                                    <?php $content1Label = !empty($config['news'][$type]['content1_label']) ? $config['news'][$type]['content1_label'] : 'Nội dung kết luận'; ?>
+                                                    <label for="content1<?=$k?>"><?=htmlspecialchars($content1Label, ENT_QUOTES, 'UTF-8')?> (<?=$k?>):</label>
+                                                    <textarea class="form-control for-seo text-sm <?=(isset($config['news'][$type]['content1_cke']) && $config['news'][$type]['content1_cke'] == true)?'form-control-ckeditor':''?>" name="data[content1<?=$k?>]" id="content1<?=$k?>" rows="5" placeholder="<?=htmlspecialchars($content1Label, ENT_QUOTES, 'UTF-8')?> (<?=$k?>)"><?=htmlspecialchars_decode((!empty($flash->has('content1'.$k))) ? $flash->get('content1'.$k) : @$item['content1'.$k])?></textarea>
                                                 </div>
                                             <?php } ?>
                                         </div>

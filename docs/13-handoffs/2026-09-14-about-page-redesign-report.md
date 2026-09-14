@@ -63,7 +63,7 @@ Không thêm bảng hay page builder. Chỉ mở các cột schema đã tồn t�
 
 - Chưa deploy production và không ghi đè dữ liệu production.
 - Deploy theo quy trình release hiện hữu; CSS About chỉ được nạp khi `$source === 'about'`.
-- Không có migration DB bắt buộc.
+- Sau khi deploy code, chạy `migrations/037_grant_redesign_page_permissions.php --apply` để các nhóm vốn quản lý Lịch sử/Chứng nhận nhận quyền cho Con người, Điểm nhấn và CTA mới. Migration chỉ thêm quyền, dùng transaction và có thể chạy lặp.
 - Snapshot trước kết hợp: `9132a60`, nhánh `backup/about-redesign-v1`. Công việc kết hợp trên `refactor/about-page-v2`. Nếu cần quay lại bản thử nghiệm, phục hồi chọn lọc presentation từ snapshot sau khi kiểm tra diff; giữ dữ liệu và các trường Admin.
 
 ## Rủi ro còn lại

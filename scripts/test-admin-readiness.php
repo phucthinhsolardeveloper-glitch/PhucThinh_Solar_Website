@@ -341,6 +341,71 @@ try
     readinessAssert(strpos($solutionGroupForm['body'], 'name="data[descvi]"') !== false, 'Admin sửa được mô tả nhóm giải pháp');
     readinessAssert(strpos($solutionEquipmentForm['body'], 'name="status[solutionhub]"') !== false, 'Admin chọn được danh mục thiết bị trên hub');
     readinessAssert(strpos($solutionEquipmentForm['body'], 'name="data[descvi]"') !== false, 'Admin sửa được mô tả danh mục thiết bị');
+    foreach(array('project-intro', 'project-cta', 'news-intro', 'news-cta') as $projectBlockType) {
+        $blockPublicUrl = strpos($projectBlockType, 'news-') === 0 ? 'http://127.0.0.1/tin-tuc/' : 'http://127.0.0.1/du-an-da-thuc-hien/';
+        $projectBlockForm = readinessHttp($base.'index.php?com=news&act=add&type='.$projectBlockType, 'GET', array(), $newCookie);
+        $projectFormOk = $projectBlockForm['status'] === 200
+            && strpos($projectBlockForm['body'], 'name="data[namevi]"') !== false
+            && strpos($projectBlockForm['body'], 'name="data[descvi]"') !== false
+            && strpos($projectBlockForm['body'], 'name="data[title_indexvi]"') !== false;
+        if(in_array($projectBlockType, array('project-cta','news-cta'), true)) $projectFormOk = $projectFormOk
+            && strpos($projectBlockForm['body'], 'name="data[content1vi]"') !== false
+            && strpos($projectBlockForm['body'], 'name="file"') !== false;
+        readinessAssert($projectFormOk, 'Admin '.$projectBlockType.' có đủ nội dung giao diện cần dùng');
+        preg_match('/name="admin_csrf"[^>]*value="([^"]+)"/', $projectBlockForm['body'], $projectToken);
+        $projectFixtureName = $prefix.'-'.$projectBlockType;
+        try {
+            $projectSave = readinessHttp($base.'index.php?com=news&act=save&type='.$projectBlockType, 'POST', array(
+                'admin_csrf' => isset($projectToken[1]) ? $projectToken[1] : '',
+                'data' => array('namevi' => $projectFixtureName, 'nameen' => $projectFixtureName, 'descvi' => 'Nội dung thử nghiệm trang dự án', 'descen' => 'Project page test copy', 'title_indexvi' => 'Dấu ấn', 'title_indexen' => 'Highlights', 'content1vi' => 'Nhận tư vấn', 'content1en' => 'Get advice', 'numb' => 0),
+                'status' => array('hienthi' => 'hienthi')
+            ), $newCookie);
+            $projectSaved = $d->rawQueryOne('select id from #_news where namevi=? and type=?', array($projectFixtureName, $projectBlockType));
+            readinessAssert($projectSave['status'] === 200 && !empty($projectSaved['id']), 'Admin lưu '.$projectBlockType.' không bắt buộc ảnh');
+            $projectPublic = readinessHttp($blockPublicUrl);
+            readinessAssert(strpos($projectPublic['body'], $projectFixtureName) !== false, 'Nội dung '.$projectBlockType.' xuất hiện trên trang Dự án');
+            $projectHide = readinessHttp($base.'index.php?com=news&act=save&type='.$projectBlockType, 'POST', array(
+                'id' => $projectSaved['id'], 'admin_csrf' => $projectToken[1],
+                'data' => array('namevi' => $projectFixtureName, 'nameen' => $projectFixtureName, 'numb' => 0)
+            ), $newCookie);
+            $projectHiddenPublic = readinessHttp($blockPublicUrl);
+            readinessAssert($projectHide['status'] === 200 && strpos($projectHiddenPublic['body'], $projectFixtureName) === false, 'Admin tắt '.$projectBlockType.' được áp dụng ngay');
+        } finally {
+            $d->rawQuery('delete from #_news where namevi=? and type=?', array($projectFixtureName, $projectBlockType));
+        }
+    }
+    $newsHubForm = readinessHttp($base.'index.php?com=news&act=add&type=tin-tuc', 'GET', array(), $newCookie);
+    readinessAssert(strpos($newsHubForm['body'], 'name="status[newshub]"') !== false, 'Admin có cờ nổi bật Tin tức riêng trang chủ');
+    $newsHubGroupForm = readinessHttp($base.'index.php?com=news&act=add_list&type=tin-tuc', 'GET', array(), $newCookie);
+    readinessAssert(strpos($newsHubGroupForm['body'], 'name="data[descvi]"') !== false && strpos($newsHubGroupForm['body'], 'name="file"') !== false, 'Admin danh mục Tin tức có mô tả và ảnh icon');
+    preg_match('/name="admin_csrf"[^>]*value="([^"]+)"/', $newsHubForm['body'], $nhAdminToken);
+    $nhFixtureName = $prefix.'-news-featured';
+    $d->insert('news', array('type'=>'tin-tuc', 'namevi'=>$nhFixtureName, 'slugvi'=>strtolower($nhFixtureName), 'status'=>'hienthi', 'numb'=>-99999, 'date_created'=>time()));
+    $nhFixtureId = (int)$d->getLastInsertId();
+    try {
+        $nhStatusArgs = array('id'=>$nhFixtureId, 'table'=>'news', 'com'=>'news', 'type'=>'tin-tuc', 'attr'=>'newshub', 'value'=>'1');
+        $nhRejected = readinessHttp($base.'api/status.php', 'POST', $nhStatusArgs, $newCookie);
+        readinessAssert($nhRejected['status'] === 403, 'Chọn nổi bật Tin tức thiếu CSRF bị chặn');
+        $nhStatusArgs['admin_csrf'] = $nhAdminToken[1];
+        $nhSaved = readinessHttp($base.'api/status.php', 'POST', $nhStatusArgs, $newCookie);
+        $nhPublic = readinessHttp('http://127.0.0.1/tin-tuc/');
+        readinessAssert($nhSaved['status'] === 200 && preg_match('~<section class="nh-featured".*?'.preg_quote($nhFixtureName,'~').'.*?</section>~s', $nhPublic['body']), 'Chọn nổi bật qua API Admin xuất hiện trong hero public');
+        $nhStatusArgs['attr']='hienthi'; $nhStatusArgs['value']='0';
+        readinessHttp($base.'api/status.php', 'POST', $nhStatusArgs, $newCookie);
+        $nhPublic = readinessHttp('http://127.0.0.1/tin-tuc/');
+        readinessAssert(strpos($nhPublic['body'],$nhFixtureName) === false, 'Ẩn bài nổi bật loại bài khỏi public ngay');
+    } finally {
+        $d->rawQuery('delete from #_news where id=?', array($nhFixtureId));
+    }
+    $projectForm = readinessHttp($base.'index.php?com=news&act=add&type=du-an', 'GET', array(), $newCookie);
+    $projectGroupForm = readinessHttp($base.'index.php?com=news&act=add_list&type=du-an', 'GET', array(), $newCookie);
+    readinessAssert(strpos($projectForm['body'], 'name="data[address]"') !== false
+        && strpos($projectForm['body'], 'name="data[tenkhachhang]"') !== false
+        && strpos($projectForm['body'], 'name="data[ngayhopdong]"') !== false,
+        'Admin dự án giữ địa điểm, khách hàng và ngày hợp đồng hiện hữu');
+    readinessAssert(strpos($projectGroupForm['body'], 'name="data[descvi]"') !== false
+        && strpos($projectGroupForm['body'], 'name="file"') !== false,
+        'Admin nhóm dự án quản trị được mô tả và icon bộ lọc');
     $aboutPrincipleForm = readinessHttp($base.'index.php?com=news&act=add&type=about-principle', 'GET', array(), $newCookie);
     $aboutTrustForm = readinessHttp($base.'index.php?com=news&act=add&type=ly-do-chon-chung-toi', 'GET', array(), $newCookie);
     $aboutCompassForm = readinessHttp($base.'index.php?com=news&act=add&type=su-menh', 'GET', array(), $newCookie);

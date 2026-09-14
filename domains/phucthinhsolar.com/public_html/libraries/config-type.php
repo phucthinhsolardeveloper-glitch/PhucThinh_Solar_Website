@@ -47,6 +47,20 @@
                 array("title" => "Xem trang Giải pháp", "href" => "../giai-phap/", "icon" => "fas fa-external-link-alt")
             )
         ),
+        "Trang Dự án" => array(
+            "news" => array("project-intro", "du-an", "project-cta"),
+            "shortcut" => array(
+                array("title" => "Quản lý nhóm dự án", "href" => "index.php?com=news&act=man_list&type=du-an", "icon" => "fas fa-filter", "permission" => array("news", "man_list", "du-an")),
+                array("title" => "Xem trang Dự án", "href" => "../du-an-da-thuc-hien/", "icon" => "fas fa-external-link-alt")
+            )
+        ),
+        "Trang Tin tức" => array(
+            "news" => array("news-intro", "tin-tuc", "news-cta"),
+            "shortcut" => array(
+                array("title"=>"Quản lý danh mục tin tức", "href"=>"index.php?com=news&act=man_list&type=tin-tuc", "icon"=>"fas fa-filter", "permission"=>array("news","man_list","tin-tuc")),
+                array("title"=>"Xem trang Tin tức", "href"=>"../tin-tuc/", "icon"=>"fas fa-external-link-alt")
+            )
+        ),
         "Lợi ích" => array(
             "news" => array("loi-ich"),
             "static" => array("loi-ich"),

@@ -1,6 +1,7 @@
 <?php
 	if(!defined('SOURCES')) die("Error");
 	require_once LIBRARIES.'product_projects.php';
+    if($type === 'tin-tuc') $getPage = isset($_GET['p']) && is_scalar($_GET['p']) ? max(1, min(1000000, (int)$_GET['p'])) : 1;
 
 	/* Tên tác giả thật (tài khoản đã tạo bài) thay vì chữ cứng giống nhau cho
 	   mọi bài. Bài cũ/id_user=0 vẫn hiện tên mặc định như trước. */
@@ -137,7 +138,7 @@
 		$perPage = 12;
 		$startpoint = ($curPage * $perPage) - $perPage;
 		$limit = " limit ".$startpoint.",".$perPage;
-		$sql = "select id, id_user, name$lang, slugvi, slugen, photo, date_created, desc$lang, email, phone, address from #_news where $where order by numb,id desc $limit";
+		$sql = "select id, id_list, id_user, name$lang, slugvi, slugen, photo, date_created, desc$lang, email, phone, address, tenkhachhang, ngayhopdong from #_news where $where order by numb,id desc $limit";
 		$news = $d->rawQuery($sql,$params);
 		$sqlNum = "select count(*) as 'num' from #_news where $where order by numb,id desc";
 		$count = $d->rawQueryOne($sqlNum,$params);
@@ -360,7 +361,7 @@
 		$perPage = 12;
 		$startpoint = ($curPage * $perPage) - $perPage;
 		$limit = " limit ".$startpoint.",".$perPage;
-		$sql = "select id, id_user, name$lang, slugvi, slugen, photo, date_created, desc$lang, email, phone, address from #_news where $where order by numb,id desc $limit";
+		$sql = "select id, id_list, id_user, name$lang, slugvi, slugen, photo, date_created, desc$lang, email, phone, address, tenkhachhang, ngayhopdong from #_news where $where order by numb,id desc $limit";
 		$news = $d->rawQuery($sql,$params);
 		$sqlNum = "select count(*) as 'num' from #_news where $where order by numb,id desc";
 		$count = $d->rawQueryOne($sqlNum,$params);
@@ -372,5 +373,7 @@
 		if(!empty($titleMain)) $breadcr->set($com,$titleMain);
 		$breadcrumbs = $breadcr->get();
 	}
+    if($type === 'tin-tuc') require SOURCES.'news_hub.php';
     if($type === 'giai-phap' && ($template === 'news/service_list' || $template === 'news/service')) require SOURCES.'solution_hub.php';
+    if($type === 'du-an' && ($template === 'news/project' || $template === 'news/project_detail')) require SOURCES.'project_hub.php';
 ?>

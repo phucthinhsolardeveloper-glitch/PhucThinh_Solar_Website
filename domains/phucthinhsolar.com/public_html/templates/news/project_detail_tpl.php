@@ -140,19 +140,4 @@
 </section>
 <?php } ?>
 
-<?php /* CTA tư vấn cuối trang dự án. */ ?>
-<section class="pts-project-cta">
-    <div class="wrap-content">
-        <div class="pts-project-cta-inner">
-            <div class="pts-project-cta-copy">
-                <span>Bạn có công trình tương tự?</span>
-                <h3>Nhận tư vấn &amp; báo giá miễn phí</h3>
-                <p>Đội ngũ kỹ thuật <span class="pts-brand-text">Phúc Thịnh Solar</span> khảo sát tận nơi, thiết kế phương án phù hợp với hiện trạng công trình của bạn.</p>
-            </div>
-            <div class="pts-project-cta-actions">
-                <a class="pts-btn pts-btn-gold" href="tel:<?=preg_replace('/[^0-9]/','',$optsetting['hotline'])?>"><i class="fas fa-phone-alt"></i> <?=$optsetting['hotline']?></a>
-                <a class="pts-btn pts-btn-ghost" href="#ptsContactModal" data-toggle="modal" data-target="#ptsContactModal">Gửi yêu cầu tư vấn</a>
-            </div>
-        </div>
-    </div>
-</section>
+<?php include TEMPLATE.'news/project_cta_tpl.php'; ?>

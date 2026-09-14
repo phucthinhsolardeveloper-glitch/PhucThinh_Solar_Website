@@ -79,11 +79,21 @@ $orderCode = 'LEADTEST-'.strtoupper($suffix);
 $settingBefore = $d->rawQueryOne('select id, options from #_setting limit 0,1');
 $settingOptionsBefore = isset($settingBefore['options']) ? (string)$settingBefore['options'] : '';
 $settingChanged = false;
-$existingRateLimitIds = array();
-foreach ($d->rawQuery("select id from #_user_limit where login_ip like 'form:%'") as $rateRow)
-    $existingRateLimitIds[(int)$rateRow['id']] = true;
+$testRateLimitRows = array();
+foreach (array('newsletter-consulting', 'review') as $testForm)
+{
+    /* HTTP fixture gọi 127.0.0.1 nên Apache cũng nhận đúng IP này. Tách hai
+       bucket mà test sử dụng khỏi trạng thái runtime local; nếu chỉ dọn dòng
+       mới thì test chạy lặp vẫn cộng dồn vào dòng đã tồn tại và tự chạm ngưỡng. */
+    $rateKey = 'form:'.sha1($testForm.'|127.0.0.1');
+    $testRateLimitRows[$rateKey] = $d->rawQuery(
+        'select id, login_ip, login_attempts, attempt_time, locked_time from #_user_limit where login_ip = ?',
+        array($rateKey)
+    );
+    $d->rawQuery('delete from #_user_limit where login_ip = ?', array($rateKey));
+}
 
-register_shutdown_function(function () use (&$orderId, &$settingChanged, $settingBefore, $settingOptionsBefore, $existingRateLimitIds, $d, $suffix, $orderCode) {
+register_shutdown_function(function () use (&$orderId, &$settingChanged, $settingBefore, $settingOptionsBefore, $testRateLimitRows, $d, $suffix, $orderCode) {
     $d->rawQuery("delete from #_newsletter where email like ?", array('leadtest-'.$suffix.'%'));
     $d->rawQuery("delete from #_comment where email like ?", array('reviewtest-'.$suffix.'%'));
     if ($orderId)
@@ -97,11 +107,11 @@ register_shutdown_function(function () use (&$orderId, &$settingChanged, $settin
         $d->where('id', (int)$settingBefore['id']);
         $d->update('setting', array('options' => $settingOptionsBefore));
     }
-    /* Không giả định REMOTE_ADDR là loopback: chỉ xoá các bucket form được tạo
-       sau thời điểm test bắt đầu, giữ nguyên toàn bộ dòng đã có trước đó. */
-    foreach ($d->rawQuery("select id from #_user_limit where login_ip like 'form:%'") as $rateRow)
-        if (!isset($existingRateLimitIds[(int)$rateRow['id']]))
-            $d->rawQuery('delete from #_user_limit where id = ?', array((int)$rateRow['id']));
+    foreach ($testRateLimitRows as $rateKey => $originalRows)
+    {
+        $d->rawQuery('delete from #_user_limit where login_ip = ?', array($rateKey));
+        foreach ($originalRows as $rateRow) $d->insert('user_limit', $rateRow);
+    }
 });
 
 /* Lấy một sản phẩm đang hiển thị để làm đối tượng thật. */

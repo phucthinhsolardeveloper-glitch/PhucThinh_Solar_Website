@@ -31,6 +31,6 @@ Script `scripts/setup-solution-hub-local.php` chỉ thêm cờ `solutionhub` và
 
 ## Deploy và rollback
 
-- Deploy code trước, sau đó cấu hình dữ liệu thật trong Admin; không có migration bắt buộc.
+- Deploy code trước, chạy `migrations/037_grant_redesign_page_permissions.php --apply`, sau đó cấu hình dữ liệu thật trong Admin. Migration chỉ cộng quyền cho nhóm đã có đủ quyền Giải pháp gốc và có thể chạy lặp.
 - Production cần tự chọn các danh mục thiết bị nếu muốn giới hạn bốn lối tắt. Khi chưa chọn cờ nào, hub dùng danh mục đang Hiển thị theo fallback.
-- Rollback code bằng revert commit triển khai. Việc bỏ các cờ `solutionhub` là tùy chọn; không xóa field, bảng hoặc nội dung.
+- Rollback code bằng revert commit triển khai. Nếu rollback toàn bộ redesign CMS, bỏ tám quyền `solution-intro`/`solution-cta` khỏi các nhóm trong Admin; việc bỏ các cờ `solutionhub` là tùy chọn, không xóa field, bảng hoặc nội dung.

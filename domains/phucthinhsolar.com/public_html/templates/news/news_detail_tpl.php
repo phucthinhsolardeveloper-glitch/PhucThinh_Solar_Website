@@ -1,7 +1,9 @@
 <div class="row justify-content-center row-servoce-detail">
     <div class="col-lg-12">
         <div class="box-detail-news">
+            <?php if($type === 'tin-tuc') { ?><h1 class="nh-detail-title"><?=htmlspecialchars($rowDetail['name'.$lang], ENT_QUOTES, 'UTF-8')?></h1><?php } else { ?>
             <div class="title-main"><span class=""><?=$rowDetail['name'.$lang]?></span></div>
+            <?php } ?>
             <div class="time-main">
                 <i class="fas fa-clock"></i><span><?=date("M d, Y",$rowDetail['date_created'])?></span>
                 <i class="fas fa-user ml-4"></i><span><?=htmlspecialchars(newsAuthorName($d, isset($rowDetail['id_user']) ? $rowDetail['id_user'] : 0), ENT_QUOTES, 'UTF-8')?></span>
@@ -118,3 +120,4 @@
     </div>
 </div>
 <?php } ?>
+<?php if($type === 'tin-tuc') include TEMPLATE.'news/news_cta_tpl.php'; ?>

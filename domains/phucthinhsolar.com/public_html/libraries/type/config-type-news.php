@@ -13,7 +13,8 @@
     $config['news'][$nametype]['copy_image'] = true;
     $config['news'][$nametype]['comment'] = false;
     $config['news'][$nametype]['slug'] = true;
-    $config['news'][$nametype]['check'] = array("noibat" => "Nổi bật", "hienthi" => "Hiển thị");
+    $config['news'][$nametype]['check'] = array("noibat" => "Nổi bật trang chủ", "newshub" => "Nổi bật trang Tin tức", "hienthi" => "Hiển thị");
+    $config['news'][$nametype]['admin_note'] = 'Trang Tin tức lấy tối đa 3 bài Nổi bật trang Tin tức theo STT rồi ngày mới nhất. Chưa chọn thì dùng bài mới nhất. Cờ trang chủ độc lập. Mô tả dùng trên card; thời gian đọc tự tính từ Nội dung. Ảnh ngang 16:9 phù hợp nhất.';
     $config['news'][$nametype]['images'] = true;
     $config['news'][$nametype]['show_images'] = true;
     $config['news'][$nametype]['desc'] = true;
@@ -31,7 +32,7 @@
     $config['news'][$nametype]['show_images_list'] = true;
     $config['news'][$nametype]['slug_list'] = true;
     $config['news'][$nametype]['check_list'] = array("hienthi" => "Hiển thị");
-    $config['news'][$nametype]['desc_list'] = false;
+    $config['news'][$nametype]['desc_list'] = true;
     $config['news'][$nametype]['desc_cke_list'] = false;
     $config['news'][$nametype]['content_list'] = false;
     $config['news'][$nametype]['content_cke_list'] = false;
@@ -40,6 +41,22 @@
     $config['news'][$nametype]['height_list'] = 240;
     $config['news'][$nametype]['thumb_list'] = '100x100x1';
     $config['news'][$nametype]['img_type_list'] = '.jpg|.gif|.png|.jpeg|.gif';
+
+    foreach(array('news-intro' => 'Tin tức - Mở đầu', 'news-cta' => 'Tin tức - CTA') as $nametype => $newsBlockTitle) {
+        $config['news'][$nametype] = array(
+            'title_main' => $newsBlockTitle,
+            'admin_note' => $nametype === 'news-intro'
+                ? 'Tên: tiêu đề trang; mô tả: lời giới thiệu; nhãn nhỏ: phía trên tiêu đề. Chưa có record dùng mặc định; tắt tất cả record ẩn mở đầu. Cờ Hiện bài nổi bật bật/tắt cụm 3 bài khi có record mở đầu.'
+                : 'CTA cuối danh sách và chi tiết Tin tức. Sửa tên, nhãn nhỏ, mô tả, chữ nút và ảnh nền. Nút mở popup tư vấn dùng chung; hotline lấy từ Cấu hình website. Tắt tất cả record để ẩn CTA.',
+            'check' => $nametype === 'news-intro' ? array('hienthi'=>'Hiển thị', 'hero'=>'Hiện bài nổi bật') : array('hienthi'=>'Hiển thị'),
+            'view'=>false, 'slug'=>false, 'copy'=>false, 'seo'=>false,
+            'images'=>$nametype === 'news-cta', 'show_images'=>$nametype === 'news-cta',
+            'title_index'=>true, 'title_index_required'=>false, 'title_index_label'=>'Nhãn nhỏ',
+            'desc'=>true, 'desc_cke'=>false, 'content'=>false,
+            'content1'=>$nametype === 'news-cta', 'content1_cke'=>false, 'content1_label'=>'Chữ trên nút tư vấn',
+            'width'=>1600, 'height'=>400, 'thumb'=>'200x50x1', 'img_type'=>'.jpg|.jpeg|.png|.webp'
+        );
+    }
 
     /* Chính sách (hiển thị bằng các link riêng ở chân trang) */
     $nametype = "chinh-sach";
@@ -135,7 +152,7 @@
     $config['news'][$nametype]['show_images_list'] = true;
     $config['news'][$nametype]['slug_list'] = true;
     $config['news'][$nametype]['check_list'] = array("hienthi" => "Hiển thị");
-    $config['news'][$nametype]['desc_list'] = false;
+    $config['news'][$nametype]['desc_list'] = true;
     $config['news'][$nametype]['desc_cke_list'] = false;
     $config['news'][$nametype]['content_list'] = false;
     $config['news'][$nametype]['content_cke_list'] = false;
@@ -144,6 +161,28 @@
     $config['news'][$nametype]['height_list'] = 240;
     $config['news'][$nametype]['thumb_list'] = '100x100x1';
     $config['news'][$nametype]['img_type_list'] = '.jpg|.gif|.png|.jpeg|.gif';
+
+    /* Phần mở đầu và CTA của trang danh sách dự án. Bài dự án và nhóm dự án
+       vẫn dùng type du-an hiện hữu để giữ URL, SEO, gallery và liên kết sản phẩm. */
+    foreach(array('project-intro' => 'Dự án - Mở đầu', 'project-cta' => 'Dự án - CTA') as $nametype => $projectBlockTitle) {
+        $config['news'][$nametype] = array(
+            'title_main' => $projectBlockTitle,
+            'admin_note' => $nametype === 'project-intro'
+                ? 'Mở đầu trang Dự án: tên là tiêu đề lớn, tiêu đề phụ là nhãn nhỏ, mô tả là đoạn giới thiệu. Lấy record Hiển thị đầu tiên theo STT. Nếu có record nhưng tắt tất cả, phần giới thiệu được ẩn.'
+                : 'CTA cuối trang Dự án: tên là tiêu đề, tiêu đề phụ là nhãn nhỏ, mô tả là lời mời tư vấn, Nội dung kết luận là chữ trên nút. Ảnh nền tùy chọn. Nút mở popup tư vấn hiện hữu; hotline lấy từ Cấu hình website.',
+            'check' => array('hienthi' => 'Hiển thị'),
+            'view' => false, 'slug' => false, 'copy' => false,
+            'images' => $nametype === 'project-cta', 'show_images' => $nametype === 'project-cta',
+            'title_index' => true, 'title_index_required' => false,
+            'title_index_label' => 'Nhãn nhỏ phía trên tiêu đề',
+            'desc' => true, 'desc_cke' => false,
+            'content' => false, 'seo' => false,
+            'content1' => $nametype === 'project-cta', 'content1_cke' => false,
+            'content1_label' => 'Chữ trên nút tư vấn',
+            'width' => 1600, 'height' => 500, 'thumb' => '150x70x1',
+            'img_type' => '.jpg|.jpeg|.png|.webp'
+        );
+    }
 
     /* Hệ thống cửa hàng - gộp với "Hệ thống đại lý" cũ (2026-09-10): footer và
        trang Liên hệ giờ dùng chung 1 danh sách chi nhánh thay vì 2 bản riêng

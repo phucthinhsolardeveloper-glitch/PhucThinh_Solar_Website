@@ -10,7 +10,8 @@
 <meta name="description" content="<?=$seo->get('description')?>"/>
 
 <!-- Robots -->
-<?php $robotsContent = in_array($com, array('tim-kiem', 'gio-hang', 'cam-on', 'account', 'ngon-ngu'), true) ? 'noindex,nofollow' : 'index,follow'; ?>
+<?php $robotsContent = in_array($com, array('tim-kiem', 'gio-hang', 'cam-on', 'account', 'ngon-ngu'), true) ? 'noindex,nofollow' : 'index,follow';
+if(isset($nhQuery) && $nhQuery !== '') $robotsContent = 'noindex,follow'; ?>
 <meta name="robots" content="<?=$robotsContent?>" />
 
 <!-- Favicon -->

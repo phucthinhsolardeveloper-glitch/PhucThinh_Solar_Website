@@ -508,14 +508,14 @@
                                         <div class="item none">
                                             <div class="project">
                                                 <div class="img">
-                                                    <a href="store-manager/<?=$c[$sluglang]?>/"
+                                                    <a href="<?=$c[$sluglang]?>/"
                                                         title="<?=$c['name'.$lang]?>">
                                                         <?=$func->getImage(['isLazy' => false, 'size-error' => '183x78x1', 'upload' => UPLOAD_NEWS_L, 'image' => $c['photo'], 'alt' => $c['name'.$lang]])?>
                                                     </a>
                                                 </div>
                                                 <div class="group_content">
                                                     <p class="name"><a
-                                                            href="store-manager/<?=$c[$sluglang]?>/"><?=$c['name'.$lang]?></a>
+                                                            href="<?=$c[$sluglang]?>/"><?=$c['name'.$lang]?></a>
                                                     </p>
                                                     <div class="content">
                                                         <ul>
@@ -536,7 +536,7 @@
                                                             <?php } ?>
                                                         </ul>
                                                     </div>
-                                                    <a class="link_project" href="store-manager/<?=$c[$sluglang]?>/"
+                                                    <a class="link_project" href="<?=$c[$sluglang]?>/"
                                                         title="<?=$c['name'.$lang]?>"></a>
                                                 </div>
                                             </div>

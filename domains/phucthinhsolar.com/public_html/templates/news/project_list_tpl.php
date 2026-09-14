@@ -29,7 +29,7 @@
                 <?php if(count($da_item)){foreach($da_item as $c) { ?>
                 <div class="inf_item_project col-lg-4 col-md-4 col-sm-6 col-12">
                     <div class="wrap">
-                        <a title="<?=$c['name'.$lang]?>" href="store-manager/<?=$c[$sluglang]?>/"></a>
+                        <a title="<?=$c['name'.$lang]?>" href="<?=$c[$sluglang]?>/"></a>
                         <div class="thumbnail">
                             <?=$func->getImage(['class' => 'lazy w-100','size-error' => '300x200x1', 'upload' => UPLOAD_NEWS_L, 'image' => $c['photo'], 'alt' => $c['name'.$lang]])?>
                         </div>
