@@ -1,12 +1,28 @@
 # Current status
 
-Cập nhật gần nhất: 2026-09-09. Phần lớn nội dung bên dưới (tới dòng "Checkout
+Cập nhật gần nhất: 2026-09-14. Phần lớn nội dung bên dưới (tới dòng "Checkout
 idempotency local") là log tích lũy từ trước 2026-09-06 và mới ở Git + Docker
 local tại thời điểm ghi — KHÔNG tự suy ra các mục đó đã lên production chỉ vì
 đợt 2026-09-08/09 đã bắt đầu deploy thật (xem mục riêng bên dưới); mỗi mục cũ
 giữ nguyên phạm vi "local" như lúc viết trừ khi có ghi chú deploy production
 rõ ràng. Trạng thái dữ liệu trống đã được chủ project xác nhận là do chưa có
 nguồn thật; không coi đó là blocker kỹ thuật và không tự lấp.
+
+## 2026-09-12 → 2026-09-14: hoàn tất redesign local, chưa deploy
+
+- Nhánh `NewLayoutWeb` đã hoàn tất tái bố cục trang chủ theo nhịp mockup mới,
+  vẫn giữ nhận diện xanh navy – vàng, dữ liệu thật, URL public và các backend
+  form hiện hữu. Chi tiết, test và phần chờ duyệt xem
+  `docs/13-handoffs/2026-09-12-homepage-redesign-continuation-report.md`.
+- Trang Về chúng tôi đã được thiết kế lại cho cả `/ve-chung-toi/` và
+  `/gioi-thieu/`, dùng nguồn dữ liệu Admin hiện hữu và không tạo schema mới.
+  Chi tiết xem `docs/13-handoffs/2026-09-14-about-page-redesign-report.md`.
+- PHP 7.4 lint, Playwright desktop/mobile và toàn bộ cổng
+  `LOCAL_ENFORCE_RBAC=1 ./scripts/predeploy-local.sh` đã đạt ở mốc bàn giao.
+- Các thay đổi này mới ở Git + Docker local, chưa deploy demo/production và
+  không ghi dữ liệu production. Trước khi deploy vẫn cần chủ project duyệt
+  giao diện, xác minh SEO homepage, metadata đối tác, ảnh upload CTA và dữ liệu
+  timeline About.
 
 ## 2026-09-08 → 2026-09-09: đã lên PRODUCTION
 

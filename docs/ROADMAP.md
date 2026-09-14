@@ -1,8 +1,10 @@
 # Roadmap
 
-Checklist thực thi hiện hành: `docs/13-handoffs/2026-08-29-next-work-checklist.md`
-(lưu ý: đã cũ so với `docs/13-handoffs/2026-09-09-category-restructure-and-mobile-audit.md`,
-đọc file mới trước để biết việc gần nhất đã xong).
+Trạng thái giao diện gần nhất nằm tại
+`docs/13-handoffs/2026-09-12-homepage-redesign-continuation-report.md` và
+`docs/13-handoffs/2026-09-14-about-page-redesign-report.md`. Checklist
+`docs/13-handoffs/2026-08-29-next-work-checklist.md` chỉ còn giá trị lịch sử;
+không dùng nó để suy ra việc hiện tại còn thiếu.
 
 ## Theme V2 - ưu tiên trước quảng cáo
 
@@ -15,7 +17,14 @@ Checklist thực thi hiện hành: `docs/13-handoffs/2026-08-29-next-work-checkl
   (2026-09-09, xem `docs/13-handoffs/2026-09-09-category-restructure-and-mobile-audit.md`
   — vẫn còn 1 báo cáo chưa xác minh: lưới sản phẩm 2 cột/1 cột lệch giữa
   giả lập desktop và điện thoại thật, đang chờ ảnh chụp thật để đối chiếu).
-- [ ] Thay dần các section trang chủ legacy còn lại bằng cấu trúc Theme V2.
+- [x] Thay các section trang chủ legacy còn lại bằng cấu trúc Theme V2
+  (2026-09-14; còn các bước duyệt nội dung/asset và baseline trước deploy).
+- [x] Redesign trang Về chúng tôi bằng dữ liệu Admin hiện hữu, giữ nguyên hai
+  route public `/ve-chung-toi/` và `/gioi-thieu/`.
+- [ ] Chủ project duyệt trực quan homepage và About trên local/demo; sau duyệt
+  mới chốt baseline ảnh và chuẩn bị deploy.
+- [ ] Bổ sung dữ liệu thật còn thiếu: SEO homepage, tên/link đối tác, ảnh CTA
+  ở môi trường đích và tối đa bốn mốc lịch sử About có năm xác thực.
 
 ## Trước khi chạy quảng cáo / production
 
