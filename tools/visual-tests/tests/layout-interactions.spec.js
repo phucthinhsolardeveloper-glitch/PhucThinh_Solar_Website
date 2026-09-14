@@ -32,13 +32,23 @@ async function assertHealthyAjaxResponse(responsePromise) {
 
 test('header, menu, breadcrumb and footer remain usable', async ({ page, isMobile }) => {
   const pageErrors = [];
+  const failedFontRequests = [];
   page.on('pageerror', error => pageErrors.push(error.message));
+  page.on('requestfailed', request => {
+    if (/\.(?:woff2?|ttf|eot)(?:\?|$)/i.test(request.url())) failedFontRequests.push(request.url());
+  });
 
   await page.goto('/san-pham/', { waitUntil: 'domcontentloaded' });
   await expect(page.locator('#headerscroll')).toBeVisible();
   await expect(page.locator('.breadCrumbs')).toBeVisible();
   await expect(page.locator('#headerscroll .icon-cart-header')).toHaveCount(0);
   await expect(page.locator('#headerscroll .hdr-call-txt')).toContainText('Tư vấn sản phẩm');
+  const headsetIcon = page.locator('#headerscroll .hdr-call-ic .fa-headset');
+  await expect(headsetIcon).toBeVisible();
+  await page.evaluate(() => document.fonts.ready);
+  expect(await headsetIcon.evaluate(element => getComputedStyle(element).fontFamily)).toContain('Font Awesome 5 Free');
+  expect(await page.evaluate(() => document.fonts.check('900 16px "Font Awesome 5 Free"'))).toBeTruthy();
+  expect(failedFontRequests).toEqual([]);
 
   if (isMobile) {
     const hamburger = page.locator('#hamburger');
@@ -162,6 +172,9 @@ test('home solution, projects and closing CTA follow the responsive redesign', a
   expect(await closingImage.evaluate(element => element.naturalWidth)).toBeGreaterThan(0);
   await expect(page.locator('.pts-process-step')).toHaveCount(4);
   await expect(page.locator('.pts-process-step-desc')).toHaveCount(4);
+  const processDescriptions = await page.locator('.pts-process-step-desc').allTextContents();
+  expect(processDescriptions.every(description => /[.!?]$/.test(description.trim()))).toBeTruthy();
+  expect(await page.locator('.pts-process-step-desc').first().evaluate(element => getComputedStyle(element).webkitLineClamp)).toBe('none');
   await expect(page.locator('.pts-news-card')).toHaveCount(6);
 });
 

@@ -13,6 +13,9 @@
 		private $cacheLink = '';
 		private $cacheSize = false;
 		private $cacheTime = 3600*24*30;
+		/* Đổi version khi format bundle thay đổi để không dùng lại cache cũ đã
+		   đóng cứng host nội bộ trong url() của font/icon. */
+		private $cacheFormatVersion = 'root-relative-assets-v2';
 		private $file = [];
 
 		function __construct($debug, $func)
@@ -49,7 +52,7 @@
 
 		public function get()
 		{
-			$signature = array();
+			$signature = array($this->cacheFormatVersion);
 			foreach($this->path as $index => $path)
 				$signature[] = $this->file[$index].':'.(is_file($path['server']) ? filemtime($path['server']) : 0);
 			$this->init(md5(implode(",",$signature)));
@@ -110,13 +113,16 @@
 		}
 
 		/* File gộp nằm ở caches/, khác thư mục file gốc, nên url() tương đối trong
-		   CSS gốc (vd font Linearicons "fonts/Linearicons-Free....woff2") sẽ trỏ
-		   sai chỗ nếu giữ nguyên. Viết lại thành đường dẫn tuyệt đối tính từ thư
-		   mục file gốc, bỏ qua url() đã tuyệt đối/data:/http(s) (audit UX
-		   2026-09-08, phát hiện khi bật lại minify production đã tắt từ lâu). */
+		   CSS gốc sẽ trỏ sai chỗ nếu giữ nguyên. Chỉ giữ path từ URL asset và viết
+		   lại thành root-relative để một bundle dùng được qua domain, reverse proxy
+		   và port khác nhau. Nếu đóng cứng host của request sinh cache (127.0.0.1),
+		   request sau qua localhost:8080 sẽ mất font và icon hiện ô vuông. */
 		private function rebaseUrls($css, $assetPath)
 		{
-			$baseDir = rtrim(dirname($assetPath), '/').'/';
+			$assetUrlPath = parse_url($assetPath, PHP_URL_PATH);
+			if(!is_string($assetUrlPath) || $assetUrlPath === '') $assetUrlPath = $assetPath;
+			$baseDir = rtrim(str_replace('\\', '/', dirname($assetUrlPath)), '/').'/';
+			if(substr($baseDir, 0, 1) !== '/') $baseDir = '/'.ltrim($baseDir, '/');
 			return preg_replace_callback('/url\(\s*([\'"]?)(?!data:|https?:\/\/|\/\/|\/)([^\'")]+)\1\s*\)/i', function($m) use ($baseDir) {
 				return 'url('.$m[1].$baseDir.$m[2].$m[1].')';
 			}, $css);

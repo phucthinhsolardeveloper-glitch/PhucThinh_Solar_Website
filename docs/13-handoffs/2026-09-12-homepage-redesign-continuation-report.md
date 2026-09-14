@@ -31,8 +31,10 @@ Trang chủ hiện đi theo nhịp chính của mockup:
 - Đưa Giới thiệu lên trước Hệ sinh thái; đưa Quy trình lên trước Dự án.
 - Đổi Quy trình từ bốn card navy sang timeline biên tập mở, không đóng card:
   desktop dùng một trục vàng liên tục với số lớn, ảnh thật, tiêu đề và mô tả
-  ngắn lấy từ Admin; mobile chuyển thành trục dọc. Nội dung đọc được ngay, không
-  phải bấm/vuốt và vẫn giữ dữ liệu/mã legacy để rollback.
+  lấy từ Admin; mobile chuyển thành trục dọc. Mỗi bước chỉ lấy một câu hoàn
+  chỉnh phù hợp từ nội dung Admin và hiển thị trọn câu, không line-clamp hay dấu
+  ba chấm giữa chừng. Record không có mô tả thì không render vùng mô tả. Nội
+  dung đọc được ngay, không phải bấm/vuốt và vẫn giữ dữ liệu/mã legacy để rollback.
 - Ẩn sơ đồ Lợi ích bằng điều kiện render, không xóa query, code hay dữ liệu.
 - Bỏ phần “Hoạt động dự án” trùng nguồn `du-an` với “Dự án đã thực hiện”, đồng
   thời bỏ query `$dahoatdong` dư thừa.
@@ -80,6 +82,10 @@ Trang chủ hiện đi theo nhịp chính của mockup:
 - Guard cleanup predeploy không còn coi mọi bucket rate-limit `form:*` là
   fixture test, vì đây cũng là trạng thái runtime hợp lệ của form public. Các
   fixture có namespace nhận diện chắc chắn `CODEX-*` vẫn bị chặn.
+- Sửa CSS minifier để URL font/icon trong bundle là root-relative thay vì đóng
+  cứng host/port của request tạo cache đầu tiên; tăng version cache để bản cũ tự
+  mất hiệu lực. Nhờ đó Font Awesome không còn biến thành ô vuông khi runtime
+  được mở qua hostname khác.
 
 ## File thay đổi
 
@@ -94,6 +100,8 @@ Trang chủ hiện đi theo nhịp chính của mockup:
 - `tools/visual-tests/tests/layout-interactions.spec.js`
 - `scripts/test-public-lead-and-review.php`
 - `scripts/predeploy-local.sh`
+- `domains/phucthinhsolar.com/public_html/libraries/class/class.CssMinify.php`
+- `scripts/test-cache-performance.php`
 
 ## Kiểm thử
 
@@ -131,6 +139,11 @@ Trang chủ hiện đi theo nhịp chính của mockup:
   trong volume local và tải có `naturalWidth > 0`.
 - Test form tư vấn/nhận xét sau khi cô lập cấu hình: 19 pass, 0 fail; options
   Admin được đối chiếu đã trở lại đúng giá trị trước test.
+- Regression cache CSS: 7 pass, gồm URL font root-relative, không chứa host/port
+  nội bộ và vẫn giữ nguyên URL CDN.
+- Playwright tập trung sau sửa font + nội dung Quy trình: 4 pass trên desktop và
+  mobile; Font Awesome được tải thật, không có request font thất bại, bốn mô tả
+  đều kết thúc thành câu hoàn chỉnh và không còn `line-clamp`.
 - `predeploy-local.sh`: PASS toàn bộ. Đã chạy lint PHP 7.4, security hardening,
   Admin readiness/screen sweep, bulk import, RBAC, upload/file manager, form
   public, checkout/transaction, route resolver 500 slug, migration/runtime

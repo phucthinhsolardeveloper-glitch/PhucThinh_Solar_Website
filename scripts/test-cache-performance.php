@@ -13,6 +13,21 @@ function cacheAssert($condition, $message)
     echo 'PASS: '.$message.PHP_EOL;
 }
 
+/* Bundle CSS được dùng chung cho nhiều host/port. URL font phải root-relative,
+   nếu giữ host của request tạo cache đầu tiên thì Font Awesome sẽ thành ô vuông
+   khi người dùng truy cập qua hostname khác. */
+$cssMinifier = new CssMinify(false, new stdClass());
+$rebaseMethod = new ReflectionMethod('CssMinify', 'rebaseUrls');
+$rebaseMethod->setAccessible(true);
+$rebasedCss = $rebaseMethod->invoke(
+    $cssMinifier,
+    '.icon{src:url("../fonts/icon.woff2?v=1")} .remote{src:url(https://cdn.example/icon.woff2)}',
+    'http://127.0.0.1:8080/subdir/assets/themes/local/css/main.css'
+);
+cacheAssert(strpos($rebasedCss, 'url("/subdir/assets/themes/local/css/../fonts/icon.woff2?v=1")') !== false, 'CssMinify rebase font theo path gốc của website');
+cacheAssert(strpos($rebasedCss, '127.0.0.1') === false, 'CssMinify không đóng cứng host/port vào bundle dùng chung');
+cacheAssert(strpos($rebasedCss, 'url(https://cdn.example/icon.woff2)') !== false, 'CssMinify giữ nguyên URL font ngoài website');
+
 /* Bug đã vá: một file cache lỗi quyền đứng giữa thư mục từng làm delete()
    return false sớm, bỏ dở toàn bộ phần còn lại chưa xoá — khiến mỗi lần Lưu ở
    Admin phải chờ cache dọn dở dang rồi vẫn còn rác, và lần sau lại chậm hơn. */

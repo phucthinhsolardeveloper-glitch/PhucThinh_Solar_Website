@@ -430,11 +430,19 @@
                          đủ đúng 4 dòng nên hiện tĩnh luôn, đọc được không cần thao
                          tác - JS Swiper cho .home-7 đã được guard querySelector nên
                          không khởi tạo khi markup này không còn .swiper-container.
-                         Mô tả vẫn lấy trực tiếp từ Admin, loại markup và CSS giới hạn
-                         2 dòng để section giàu thông tin nhưng không kéo dài. */ ?>
+                         Mô tả vẫn lấy trực tiếp từ Admin, loại markup và chỉ lấy
+                         câu hoàn chỉnh đầu tiên; không cắt dòng bằng dấu ba chấm. */ ?>
                 <div class="pts-process-grid">
                     <?php foreach($quytrinh as $k => $v){
-                        $processDescription = trim(preg_replace('/\s+/u', ' ', strip_tags(htmlspecialchars_decode((string)$v['desc'.$lang], ENT_QUOTES))));
+                        $processDescriptionFull = trim(preg_replace('/\s+/u', ' ', strip_tags(htmlspecialchars_decode((string)$v['desc'.$lang], ENT_QUOTES))));
+                        $processDescription = '';
+                        if($processDescriptionFull !== '')
+                        {
+                            /* Trang chủ chỉ lấy một câu hoàn chỉnh từ nội dung Admin:
+                               đủ nghĩa, không cắt ký tự và không hiện dấu ba chấm. */
+                            if(preg_match('/^.*?[.!?](?=\s|$)/u', $processDescriptionFull, $processSentence)) $processDescription = trim($processSentence[0]);
+                            else $processDescription = $processDescriptionFull;
+                        }
                     ?>
                     <div class="pts-process-step">
                         <div class="pts-process-marker">

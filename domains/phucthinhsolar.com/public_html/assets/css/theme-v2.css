@@ -1145,7 +1145,7 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 .pts-process-step-img img{display:block;width:100%;height:100%;object-fit:cover;}
 .pts-process-copy{min-width:0;margin-top:15px;}
 .pts-process-step-title{margin:0 0 8px;font-size:17px;font-weight:900;line-height:1.35;color:var(--pts-navy-deep);}
-.pts-process-step-desc{display:-webkit-box;max-width:270px;margin:0 auto!important;overflow:hidden;color:#64748b;font-size:13px;line-height:1.55;-webkit-box-orient:vertical;-webkit-line-clamp:2;}
+.pts-process-step-desc{max-width:285px;margin:0 auto!important;color:#64748b;font-size:13px;line-height:1.55;}
 @media(max-width:991px){
     .home-2 .pts-solution-tabs{justify-content:flex-start;}
     .pts-process-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:30px 20px;}
@@ -1165,7 +1165,6 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
     .pts-process-step{grid-template-columns:80px minmax(0,1fr);min-height:82px;padding:0;text-align:left;}
     .pts-process-marker{width:72px;height:82px;background:#f8fafc;}
     .pts-process-step-title{font-size:16px;}
-    .pts-process-step-desc{-webkit-line-clamp:3;}
 }
 .home-7 .icon-slider{margin-top:30px!important;}
 /* Nút bước quy trình: phần NHÌN THẤY được là .text (có viền, cao 48px), còn
