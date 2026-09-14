@@ -7,10 +7,10 @@ if($projectShowCta) {
         <?php if($projectCtaImage) { ?><img class="pts-ph-contact-bg" src="<?=$projectEscape(ASSET.$projectCtaImage)?>" alt="" loading="lazy" decoding="async"><?php } ?>
         <div class="pts-ph-contact-copy">
             <span><?=$projectEscape($projectCtaEyebrow)?></span><h2 id="project-contact-title"><?=$projectEscape($projectCtaTitle)?></h2><p><?=$projectEscape($projectCtaDesc)?></p>
-            <?php if(!empty($projectUi['cta_trust'])) { ?>
+            <?php if(!empty($projectTrustItems)) { ?>
             <ul class="pts-ph-contact-trust">
-                <?php foreach($projectUi['cta_trust'] as $projectTrustItem) { ?>
-                <li><i class="fas <?=$projectEscape($projectTrustItem['icon'])?>" aria-hidden="true"></i><span><?=$projectEscape($projectTrustItem['label'])?></span></li>
+                <?php foreach($projectTrustItems as $projectTrustItem) { ?>
+                <li><?php if($projectTrustItem['icon'] !== '') { ?><img src="<?=$projectEscape(ASSET.$projectTrustItem['icon'])?>" alt="" width="18" height="18" loading="lazy"><?php } else { ?><i class="fas <?=$projectEscape(!empty($projectTrustItem['faIcon']) ? $projectTrustItem['faIcon'] : 'fa-check')?>" aria-hidden="true"></i><?php } ?><span><?=$projectEscape($projectTrustItem['label'])?></span></li>
                 <?php } ?>
             </ul>
             <?php } ?>

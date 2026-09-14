@@ -67,6 +67,16 @@ require SOURCES.'project_hub.php';
 ob_start(); require '/var/www/html/templates/news/project_tpl.php'; $html = ob_get_clean();
 projectHubAssert(strpos($html, 'href="du-an-b/"') !== false && strpos($html, '>Dự án B (nổi bật)<') !== false, 'Cờ "Nổi bật trang Dự án" được ưu tiên chọn làm khối nổi bật');
 
+/* project-benefit/project-trust từ Admin phải thay hẳn 3 gạch đầu dòng/3 icon
+   tin cậy mặc định trong code, không hiện lẫn cả hai. */
+$d->rows['project-benefit'] = array(array('namevi'=>'Lợi ích Admin nhập', 'nameen'=>'', 'photo'=>'missing.png', 'status'=>'hienthi'));
+$d->rows['project-trust'] = array(array('namevi'=>'Tin cậy Admin nhập', 'nameen'=>'', 'photo'=>'missing.png', 'status'=>'hienthi'));
+require SOURCES.'project_hub.php';
+ob_start(); require '/var/www/html/templates/news/project_tpl.php'; $html = ob_get_clean();
+projectHubAssert(strpos($html, 'Lợi ích Admin nhập') !== false && strpos($html, 'Khảo sát và tư vấn') === false, 'project-benefit từ Admin thay đúng 3 gạch đầu dòng mặc định');
+projectHubAssert(strpos($html, 'Tin cậy Admin nhập') !== false && strpos($html, 'Tư vấn tận tâm') === false, 'project-trust từ Admin thay đúng 3 icon CTA mặc định');
+unset($d->rows['project-benefit'], $d->rows['project-trust']);
+
 $d->rows = array('project-intro'=>array(array('status'=>'')), 'project-cta'=>array(array('status'=>'')), 'du-an'=>array());
 $news = array(); $newsList = array(); require SOURCES.'project_hub.php';
 ob_start(); require '/var/www/html/templates/news/project_tpl.php'; $html = ob_get_clean();

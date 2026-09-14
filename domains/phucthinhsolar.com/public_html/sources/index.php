@@ -9,6 +9,36 @@
     // hiện card lớn khỏi 6 danh mục còn lại (card nhỏ) ở khối "Hệ sinh thái
     // sản phẩm" trang chủ - 2026-09-12, không đổi điều kiện lọc/sắp xếp.
     $splistnb = $cache->get("select pl.name$lang, pl.slugvi, pl.slugen, pl.id, pl.photo, pl.status from #_product_list pl where pl.type = ? and find_in_set('noibat',pl.status) and find_in_set('hienthi',pl.status) and exists (select 1 from #_product p where p.id_list = pl.id and p.type = ? and find_in_set('hienthi',p.status)) order by pl.numb,pl.id desc", array('san-pham','san-pham'), 'result', 7200);
+
+    /* Giới thiệu ngắn (About teaser) trang chủ - thêm Admin 2026-09-14 (trước
+       đó hardcode). Ảnh/nhãn/tiêu đề/mô tả/chữ nút lấy record home-about hiển
+       thị đầu tiên; 4 gạch đầu dòng lấy tối đa 4 record home-about-point.
+       Không có record nào (hoặc tắt hết) thì dùng đúng nội dung mặc định đã
+       duyệt trước đây, giữ nguyên hành vi cũ - không tự đổi copy. */
+    $homeAboutRows = $cache->get("select name$lang, title_index$lang, desc$lang, content1$lang, photo, status from #_news where type = ? and find_in_set('hienthi',status) order by numb,id desc limit 0,1", array('home-about'), 'result', 7200);
+    $homeAboutPointRows = $cache->get("select name$lang, photo, status from #_news where type = ? and find_in_set('hienthi',status) order by numb,id desc limit 0,4", array('home-about-point'), 'result', 7200);
+    $homeAbout = !empty($homeAboutRows) ? $homeAboutRows[0] : array();
+    $homeAboutEyebrow = !empty($homeAbout['title_index'.$lang]) ? $homeAbout['title_index'.$lang] : 'VỀ PHÚC THỊNH SOLAR';
+    $homeAboutTitle = !empty($homeAbout['name'.$lang]) ? $homeAbout['name'.$lang] : 'Đồng hành cùng khách hàng trên hành trình năng lượng sạch';
+    $homeAboutDesc = !empty($homeAbout['desc'.$lang]) ? $homeAbout['desc'.$lang] : 'Phúc Thịnh Solar cung cấp đèn năng lượng mặt trời chính hãng, thiết bị điện mặt trời và giải pháp thi công cho gia đình, đại lý và công trình.';
+    $homeAboutButton = !empty($homeAbout['content1'.$lang]) ? $homeAbout['content1'.$lang] : 'Tìm hiểu về chúng tôi';
+    $homeAboutImage = !empty($homeAbout['photo']) ? $homeAbout['photo'] : '';
+    $homeAboutImageUpload = UPLOAD_NEWS_L;
+    if($homeAboutImage === '') { $homeAboutImage = '1-27050.png'; $homeAboutImageUpload = UPLOAD_PHOTO_L; }
+    $homeAboutDefaultIcons = array('fa-certificate', 'fa-tools', 'fa-shield-alt', 'fa-truck');
+    $homeAboutDefaultPoints = array('Cam kết chính hãng', 'Đội ngũ kỹ thuật giàu kinh nghiệm', 'Chính sách bảo hành rõ ràng', 'Giao hàng toàn quốc');
+    $homeAboutPoints = array();
+    if(!empty($homeAboutPointRows)) {
+        foreach($homeAboutPointRows as $pointIndex => $pointRow) {
+            $homeAboutPoints[] = array(
+                'label' => !empty($pointRow['name'.$lang]) ? $pointRow['name'.$lang] : '',
+                'icon' => isset($homeAboutDefaultIcons[$pointIndex]) ? $homeAboutDefaultIcons[$pointIndex] : 'fa-check',
+                'photo' => !empty($pointRow['photo']) ? $pointRow['photo'] : ''
+            );
+        }
+    } else {
+        foreach($homeAboutDefaultPoints as $pointIndex => $pointLabel) $homeAboutPoints[] = array('label' => $pointLabel, 'icon' => $homeAboutDefaultIcons[$pointIndex], 'photo' => '');
+    }
     $newsnb = $cache->get("select name$lang, slugvi, slugen, desc$lang, date_created, id, photo from #_news where type = ? and find_in_set('noibat',status) and find_in_set('hienthi',status) order by numb,id desc limit 0,6", array('tin-tuc'), 'result', 7200);
     $solieu = $cache->get("select name$lang, solieu, id, photo from #_news where type = ? and find_in_set('hienthi',status) order by numb,id desc limit 0,4", array('so-lieu-thong-ke'), 'result', 7200);
     // loi ich

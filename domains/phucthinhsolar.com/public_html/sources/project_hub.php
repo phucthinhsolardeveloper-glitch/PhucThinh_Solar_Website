@@ -45,6 +45,8 @@ $projectUi = $lang === 'en' ? array(
 $projectIntroRows = $d->rawQuery('select namevi,nameen,title_indexvi,title_indexen,descvi,descen,status from #_news where type=? order by numb,id desc', array('project-intro'));
 $projectCtaRows = $d->rawQuery('select namevi,nameen,title_indexvi,title_indexen,descvi,descen,content1vi,content1en,photo,status from #_news where type=? order by numb,id desc', array('project-cta'));
 $projectFilterRows = $d->rawQuery("select id,namevi,nameen,descvi,descen,photo,slugvi,slugen,status from #_news_list where type=? and find_in_set('hienthi',status) order by numb,id desc", array('du-an'));
+$projectBenefitRows = $d->rawQuery("select namevi,nameen,photo from #_news where type=? and find_in_set('hienthi',status) order by numb,id desc limit 0,3", array('project-benefit'));
+$projectTrustRows = $d->rawQuery("select namevi,nameen,photo from #_news where type=? and find_in_set('hienthi',status) order by numb,id desc limit 0,3", array('project-trust'));
 
 $projectIntroVisible = solutionHubSelect($projectIntroRows, '', 1);
 $projectCtaVisible = solutionHubSelect($projectCtaRows, '', 1);
@@ -78,6 +80,17 @@ $projectCtaImage = solutionHubImage(isset($projectCta['photo']) ? $projectCta['p
 if($projectCtaImage === '') $projectCtaImage = solutionHubImage('anh-quan-gl-4-9449.jpg', UPLOAD_NEWS_L);
 $projectHotline = !empty($optsetting['hotline']) ? $optsetting['hotline'] : '';
 $projectHotlineTel = preg_replace('/[^0-9+]/', '', $projectHotline);
+
+/* 3 lợi ích nổi bật + 3 tin cậy CTA (2026-09-14): ưu tiên record Admin
+   (project-benefit/project-trust), rơi về đúng nội dung mặc định đã duyệt
+   trong $projectUi khi chưa có record nào. */
+$projectBenefitItems = array();
+foreach($projectBenefitRows as $row) { $label = solutionHubField($row, 'name', $lang); if($label !== '') $projectBenefitItems[] = array('label' => $label, 'icon' => solutionHubImage(isset($row['photo']) ? $row['photo'] : '', UPLOAD_NEWS_L)); }
+if(!$projectBenefitItems) foreach($projectUi['featured_benefits'] as $label) $projectBenefitItems[] = array('label' => $label, 'icon' => '');
+
+$projectTrustItems = array();
+foreach($projectTrustRows as $row) { $label = solutionHubField($row, 'name', $lang); if($label !== '') $projectTrustItems[] = array('label' => $label, 'icon' => solutionHubImage(isset($row['photo']) ? $row['photo'] : '', UPLOAD_NEWS_L)); }
+if(!$projectTrustItems) foreach($projectUi['cta_trust'] as $item) $projectTrustItems[] = array('label' => $item['label'], 'icon' => '', 'faIcon' => $item['icon']);
 
 /* Dự án nổi bật (2026-09-14, theo mockup mới): tách 1 dự án ra khối lớn đầu
    trang, phần còn lại xuống lưới. Chỉ áp dụng ở trang danh sách GỐC (chưa lọc

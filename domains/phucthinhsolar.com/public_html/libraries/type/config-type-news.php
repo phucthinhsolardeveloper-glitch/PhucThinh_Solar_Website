@@ -189,6 +189,26 @@
         );
     }
 
+    /* 3 gạch đầu dòng lợi ích trên khối "Dự án nổi bật" + 3 icon tin cậy ở
+       CTA cuối trang Dự án - thêm 2026-09-14 theo audit tích hợp Admin (trước
+       đó hardcode trong sources/project_hub.php). Cố ý dùng chung 1 bộ cho
+       mọi dự án (không phải số liệu riêng từng dự án), giống cách đã làm ở
+       home-about-point. */
+    foreach(array('project-benefit' => 'Dự án - Lợi ích nổi bật', 'project-trust' => 'Dự án - Tin cậy CTA') as $nametype => $projectPointTitle) {
+        $config['news'][$nametype] = array(
+            'title_main' => $projectPointTitle,
+            'admin_note' => $nametype === 'project-benefit'
+                ? 'Tối đa 3 record đang Hiển thị tạo 3 gạch đầu dòng trong khối "Dự án nổi bật" đầu trang Dự án. Tên record là nội dung dòng, dùng chung cho mọi dự án (không phải số liệu riêng dự án đó). Icon tuỳ chọn.'
+                : 'Tối đa 3 record đang Hiển thị tạo hàng icon tin cậy ở CTA cuối trang Dự án. Tên record là nhãn ngắn. Icon tuỳ chọn.',
+            'check' => array('hienthi' => 'Hiển thị'),
+            'view' => false, 'slug' => false, 'copy' => false,
+            'images' => true, 'show_images' => true,
+            'desc' => false, 'content' => false, 'seo' => false,
+            'width' => 80, 'height' => 80, 'thumb' => '100x100x2',
+            'img_type' => '.jpg|.gif|.png|.jpeg|.gif'
+        );
+    }
+
     /* Hệ thống cửa hàng - gộp với "Hệ thống đại lý" cũ (2026-09-10): footer và
        trang Liên hệ giờ dùng chung 1 danh sách chi nhánh thay vì 2 bản riêng
        hay lệch nhau. */
@@ -602,6 +622,52 @@
     $config['news'][$nametype]['seo'] = false;
     $config['news'][$nametype]['width'] = 160;
     $config['news'][$nametype]['height'] = 160;
+    $config['news'][$nametype]['thumb'] = '100x100x2';
+    $config['news'][$nametype]['img_type'] = '.jpg|.gif|.png|.jpeg|.gif';
+
+    /* Giới thiệu ngắn (About teaser) trang chủ - thêm 2026-09-14 theo audit
+       tích hợp Admin sau đợt redesign trang chủ. Trước đó toàn bộ hardcode
+       trong templates/index/index_tpl.php. */
+    $nametype = "home-about";
+    $config['news'][$nametype]['title_main'] = "Trang chủ - Giới thiệu ngắn";
+    $config['news'][$nametype]['admin_note'] = "Khối \"Giới thiệu ngắn\" ngay dưới danh mục sản phẩm ở trang chủ: nhãn nhỏ, tiêu đề, mô tả, ảnh và chữ trên nút (nút luôn trỏ /ve-chung-toi/). Lấy đúng 1 record đang Hiển thị có thứ tự (STT) nhỏ nhất; chưa tạo record nào, hoặc đã tạo nhưng tắt hết Hiển thị, thì dùng nội dung mặc định có sẵn trong code.";
+    $config['news'][$nametype]['check'] = array("hienthi" => "Hiển thị");
+    $config['news'][$nametype]['view'] = false;
+    $config['news'][$nametype]['slug'] = false;
+    $config['news'][$nametype]['copy'] = false;
+    $config['news'][$nametype]['images'] = true;
+    $config['news'][$nametype]['show_images'] = true;
+    $config['news'][$nametype]['title_index'] = true;
+    $config['news'][$nametype]['title_index_label'] = "Nhãn nhỏ phía trên tiêu đề";
+    $config['news'][$nametype]['title_index_required'] = false;
+    $config['news'][$nametype]['desc'] = true;
+    $config['news'][$nametype]['desc_cke'] = false;
+    $config['news'][$nametype]['content'] = false;
+    $config['news'][$nametype]['content1'] = true;
+    $config['news'][$nametype]['content1_cke'] = false;
+    $config['news'][$nametype]['content1_label'] = "Chữ trên nút";
+    $config['news'][$nametype]['seo'] = false;
+    $config['news'][$nametype]['width'] = 860;
+    $config['news'][$nametype]['height'] = 680;
+    $config['news'][$nametype]['thumb'] = '100x100x1';
+    $config['news'][$nametype]['img_type'] = '.jpg|.gif|.png|.jpeg|.gif';
+
+    /* 4 gạch đầu dòng trong khối Giới thiệu ngắn - dùng tên (name) làm nội
+       dung dòng, ảnh tuỳ chọn làm icon. */
+    $nametype = "home-about-point";
+    $config['news'][$nametype]['title_main'] = "Trang chủ - Điểm nhấn giới thiệu";
+    $config['news'][$nametype]['admin_note'] = "Tối đa 4 record đang Hiển thị tạo 4 gạch đầu dòng trong khối Giới thiệu ngắn ở trang chủ, theo đúng thứ tự (STT). Tên record là nội dung dòng; ảnh tuỳ chọn dùng làm icon (PNG nền trong suốt), không tải ảnh thì dùng icon mặc định.";
+    $config['news'][$nametype]['check'] = array("hienthi" => "Hiển thị");
+    $config['news'][$nametype]['view'] = false;
+    $config['news'][$nametype]['slug'] = false;
+    $config['news'][$nametype]['copy'] = false;
+    $config['news'][$nametype]['images'] = true;
+    $config['news'][$nametype]['show_images'] = true;
+    $config['news'][$nametype]['desc'] = false;
+    $config['news'][$nametype]['content'] = false;
+    $config['news'][$nametype]['seo'] = false;
+    $config['news'][$nametype]['width'] = 80;
+    $config['news'][$nametype]['height'] = 80;
     $config['news'][$nametype]['thumb'] = '100x100x2';
     $config['news'][$nametype]['img_type'] = '.jpg|.gif|.png|.jpeg|.gif';
 

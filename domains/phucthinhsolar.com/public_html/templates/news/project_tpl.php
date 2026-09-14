@@ -58,8 +58,8 @@
                     </div>
                     <?php if($projectFeaturedDesc !== '') { ?><p class="pts-ph-featured-desc"><?=$projectEscape($projectFeaturedDesc)?></p><?php } ?>
                     <ul class="pts-ph-featured-list">
-                        <?php foreach($projectUi['featured_benefits'] as $projectBenefit) { ?>
-                        <li><i class="fas fa-bolt" aria-hidden="true"></i><span><?=$projectEscape($projectBenefit)?></span></li>
+                        <?php foreach($projectBenefitItems as $projectBenefit) { ?>
+                        <li><?php if($projectBenefit['icon'] !== '') { ?><img src="<?=$projectEscape(ASSET.$projectBenefit['icon'])?>" alt="" width="22" height="22" loading="lazy"><?php } else { ?><i class="fas fa-bolt" aria-hidden="true"></i><?php } ?><span><?=$projectEscape($projectBenefit['label'])?></span></li>
                         <?php } ?>
                     </ul>
                     <a class="pts-ph-featured-cta" href="<?=$projectEscape($projectFeaturedSlug.'/')?>"><?=$projectEscape($projectUi['featured_cta'])?> <span aria-hidden="true">→</span></a>

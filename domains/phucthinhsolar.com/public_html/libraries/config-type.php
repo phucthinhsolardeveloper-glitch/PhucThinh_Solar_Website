@@ -27,6 +27,20 @@
                 )
             )
         ),
+        "Trang chủ" => array(
+            /* Khối "Giới thiệu ngắn" (About teaser) - thêm 2026-09-14. Các
+               khối khác của trang chủ (danh mục sản phẩm, quy trình, dự án,
+               thương hiệu) đều dùng lại Admin sẵn có ở nhóm khác, không lặp
+               shortcut ở đây. */
+            "news" => array("home-about", "home-about-point"),
+            "shortcut" => array(
+                array(
+                    "title" => "Xem trang chủ",
+                    "href" => "../",
+                    "icon" => "fas fa-external-link-alt"
+                )
+            )
+        ),
         "Trang Về chúng tôi" => array(
             /* Mọi nội dung có tác động tới GUI About được gom vào một nhóm.
                Static su-menh cũ không dùng vì chứa dữ liệu demo legacy. */
@@ -48,7 +62,7 @@
             )
         ),
         "Trang Dự án" => array(
-            "news" => array("project-intro", "du-an", "project-cta"),
+            "news" => array("project-intro", "du-an", "project-cta", "project-benefit", "project-trust"),
             "shortcut" => array(
                 array("title" => "Quản lý nhóm dự án", "href" => "index.php?com=news&act=man_list&type=du-an", "icon" => "fas fa-filter", "permission" => array("news", "man_list", "du-an")),
                 array("title" => "Xem trang Dự án", "href" => "../du-an-da-thuc-hien/", "icon" => "fas fa-external-link-alt")

@@ -31,32 +31,28 @@
     </div>
 </nav>
 
-<?php /* Giới thiệu ngắn (MỚI, 2026-09-12) - trang chủ trước đây chưa có khối About
-     teaser. $tomtat (table_static type=tom-tat-gioi-thieu) là dữ liệu demo cũ
-     của template gốc (nói về 1 công ty máy tính khác, không phải PTS, không
-     có ảnh) - KHÔNG dùng. Copy dưới đây lấy nguyên văn câu mô tả đã có sẵn và
-     được duyệt ở Hero (templates/layout/slide.php, layout 1/2), không tự viết
-     nội dung/số liệu mới; 4 gạch đầu dòng tái dùng nguyên .trust-badge-strip
-     cũ (chỉ đổi cách trình bày, gộp vào khối này thay vì đứng riêng 1 dải).
-     Ảnh dùng lại đúng 1 trong 4 ảnh thật của Hero carousel (upload/photo có
-     sẵn, không cần ảnh mới). */ ?>
+<?php /* Giới thiệu ngắn (About teaser, 2026-09-12) - đọc từ Admin type
+     home-about/home-about-point (thêm 2026-09-14, xem sources/index.php),
+     rơi về đúng nội dung mặc định đã duyệt trước đây khi chưa có record. */ ?>
 <section class="pts-about-teaser uk-section-large">
     <div class="uk-container">
         <div class="pts-about-teaser-grid">
             <div class="pts-about-teaser-media">
-                <?=$func->getImage(['class' => 'lazy', 'sizes' => '860x680x1', 'upload' => UPLOAD_PHOTO_L, 'image' => '1-27050.png', 'alt' => 'Công trình điện mặt trời Phúc Thịnh Solar'])?>
+                <?=$func->getImage(['class' => 'lazy', 'sizes' => '860x680x1', 'upload' => $homeAboutImageUpload, 'image' => $homeAboutImage, 'alt' => 'Công trình điện mặt trời Phúc Thịnh Solar'])?>
             </div>
             <div class="pts-about-teaser-copy">
-                <span class="pts-about-teaser-eyebrow">VỀ PHÚC THỊNH SOLAR</span>
-                <h3>Đồng hành cùng khách hàng trên hành trình năng lượng sạch</h3>
-                <p>Phúc Thịnh Solar cung cấp đèn năng lượng mặt trời chính hãng, thiết bị điện mặt trời và giải pháp thi công cho gia đình, đại lý và công trình.</p>
+                <span class="pts-about-teaser-eyebrow"><?=htmlspecialchars($homeAboutEyebrow, ENT_QUOTES, 'UTF-8')?></span>
+                <h3><?=htmlspecialchars($homeAboutTitle, ENT_QUOTES, 'UTF-8')?></h3>
+                <p><?=htmlspecialchars($homeAboutDesc, ENT_QUOTES, 'UTF-8')?></p>
                 <ul class="pts-about-teaser-list">
-                    <li><i class="fas fa-certificate" aria-hidden="true"></i><span>Cam kết chính hãng</span></li>
-                    <li><i class="fas fa-tools" aria-hidden="true"></i><span>Đội ngũ kỹ thuật giàu kinh nghiệm</span></li>
-                    <li><i class="fas fa-shield-alt" aria-hidden="true"></i><span>Chính sách bảo hành rõ ràng</span></li>
-                    <li><i class="fas fa-truck" aria-hidden="true"></i><span>Giao hàng toàn quốc</span></li>
+                    <?php foreach($homeAboutPoints as $homeAboutPoint) { if($homeAboutPoint['label'] === '') continue; ?>
+                    <li>
+                        <?php if($homeAboutPoint['photo'] !== '') { ?><img src="<?=htmlspecialchars(ASSET.UPLOAD_NEWS_L.$homeAboutPoint['photo'], ENT_QUOTES, 'UTF-8')?>" alt="" width="20" height="20" loading="lazy"><?php } else { ?><i class="fas <?=htmlspecialchars($homeAboutPoint['icon'], ENT_QUOTES, 'UTF-8')?>" aria-hidden="true"></i><?php } ?>
+                        <span><?=htmlspecialchars($homeAboutPoint['label'], ENT_QUOTES, 'UTF-8')?></span>
+                    </li>
+                    <?php } ?>
                 </ul>
-                <a class="pts-btn pts-btn-gold" href="ve-chung-toi/">Tìm hiểu về chúng tôi <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+                <a class="pts-btn pts-btn-gold" href="ve-chung-toi/"><?=htmlspecialchars($homeAboutButton, ENT_QUOTES, 'UTF-8')?> <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
             </div>
         </div>
     </div>
