@@ -148,20 +148,29 @@ chéo cho khối Tin cậy/Kim chỉ nam), `chungnhan` (chứng nhận), `about-
 
 ## Danh sách xử lý đề xuất (ưu tiên cao → thấp)
 
-| # | Việc | Loại | File chính |
-|---|---|---|---|
-| 1 | Sửa label "Hero chữ (mặc định cũ)" trong Cài đặt chung cho đúng thực tế 3 layout | Sửa nhanh, không đổi hành vi | `administrator/templates/setting/man/man_add_tpl.php` |
-| 2 | Thêm Admin cho khối "Giới thiệu ngắn" trang chủ (ảnh/eyebrow/tiêu đề/mô tả/4 bullet) | Bổ sung Admin | `libraries/type/config-type-*.php`, `sources/index.php`, `templates/index/index_tpl.php` |
-| 3 | Ghi `admin_note` cho `so-lieu-thong-ke` là "đang ẩn tạm trên trang chủ" | Sửa nhanh | `libraries/type/config-type-news.php` |
-| 4 | Chốt xử lý sơ đồ "Lợi ích" trùng ý trên trang chủ (ẩn/gộp) | Quyết định nội dung — hỏi chủ project | `templates/index/index_tpl.php` |
-| 5 | Dọn 4 quyền `*_he-thong-dai-ly` lỗi thời | Dọn dẹp Admin | bảng phân quyền (qua màn Nhóm quyền) |
-| 6 | Xoá `templates/news/project_list_tpl.php` (code chết) sau khi xác nhận | Dọn dẹp code | `templates/news/project_list_tpl.php` |
-| 7 | Thêm Admin cho copy Hero layout 3 (carousel) — theo hướng `options` JSON đã ghi sẵn trong code | Bổ sung Admin, việc lớn hơn | `libraries/home_hero_carousel.php`, `administrator/sources/photo.php` |
-| 8 | Thêm `admin_note` giải thích cơ chế đoán từ-khoá ở khối Tin cậy/Kim chỉ nam trang Về chúng tôi | Sửa nhanh, làm rõ UX Admin | `libraries/type/config-type-news.php` |
-| 9 | Cân nhắc đưa 3 bullet lợi ích + 3 icon CTA trang Dự án vào Admin | Bổ sung Admin, ưu tiên thấp | `sources/project_hub.php` |
+**Cập nhật 2026-09-14 (cùng ngày, sau khi chủ project duyệt "triển khai hết"):**
+mục 1/2/3/6/7/8/9 đã triển khai xong trên nhánh `refactor/about-page-v2`
+(commit `72cc40f`, `4c12f32`, `8b68120`), verify đầy đủ (PHP lint,
+`predeploy-local.sh`, Playwright, thao tác thật qua Admin UI). Mục 4 và 5
+khi bắt tay vào làm thì phát hiện **đã được xử lý từ trước** (rất có thể do
+Codex ở 1 commit sau audit ngày 11/09) — kiểm tra lại thấy khối "Lợi ích"
+không còn trên trang chủ, và `sync-permission-groups.php` báo cả 3 nhóm
+quyền đều khớp danh mục — không cần làm gì thêm.
 
-Mục 1, 3, 8 là sửa text/ghi chú, rủi ro gần như bằng 0, có thể làm ngay. Mục
-2 và 7 là việc thêm field/Admin thật, cần thời gian tương đương lúc thêm
-`project-intro`/`project-cta`. Mục 4 cần chủ project quyết định nội dung
-trước khi code. Mục 5–6 là dọn dẹp, nên làm sau khi xác nhận không còn ai
+| # | Việc | Loại | Trạng thái |
+|---|---|---|---|
+| 1 | Sửa label "Hero chữ (mặc định cũ)" trong Cài đặt chung cho đúng thực tế 3 layout | Sửa nhanh | ✅ Xong |
+| 2 | Thêm Admin cho khối "Giới thiệu ngắn" trang chủ (ảnh/eyebrow/tiêu đề/mô tả/4 bullet) | Bổ sung Admin | ✅ Xong — type `home-about`/`home-about-point` |
+| 3 | Ghi `admin_note` cho `so-lieu-thong-ke` là "đang ẩn tạm trên trang chủ" | Sửa nhanh | ✅ Xong |
+| 4 | Chốt xử lý sơ đồ "Lợi ích" trùng ý trên trang chủ (ẩn/gộp) | Quyết định nội dung | ✅ Đã được xử lý từ trước (không phải bởi audit/đợt sửa này) |
+| 5 | Dọn 4 quyền `*_he-thong-dai-ly` lỗi thời | Dọn dẹp Admin | ✅ Đã được xử lý từ trước |
+| 6 | Xoá `templates/news/project_list_tpl.php` (code chết) | Dọn dẹp code | ✅ Xong, kèm dọn 1 dòng so sánh chết trong `templates/index.php` |
+| 7 | Thêm Admin cho copy Hero layout 3 (carousel) | Bổ sung Admin | ✅ Xong — type ảnh mới `hero-carousel` (man_photo, 4 slide, field nâng cao lưu qua `options` JSON); sửa thêm 1 gap thật trong lúc làm: `savePhoto()` chưa có logic merge JSON mảng như `savePhotoStatic()` đã có |
+| 8 | Thêm `admin_note` giải thích cơ chế đoán từ-khoá ở khối Tin cậy trang Về chúng tôi | Sửa nhanh | ✅ Xong |
+| 9 | Đưa 3 bullet lợi ích + 3 icon CTA trang Dự án vào Admin | Bổ sung Admin | ✅ Xong — type `project-benefit`/`project-trust` |
+
+Quyền cho các type Admin mới (2, 7, 9) đã cấp qua migration 039/040 (neo vào
+quyền `tin-tuc`/`du-an`/`home-hero-bg` sẵn có, cùng khuôn migration 037),
+áp dụng và xác nhận sạch trên local (`predeploy-local.sh` không còn cảnh
+báo thiếu quyền). Toàn bộ vẫn chỉ ở local, chưa đụng demo/production.
 phụ thuộc.
