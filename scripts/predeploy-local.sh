@@ -351,12 +351,10 @@ for sensitive_path in administrator/elfinder/debug.log phucthinhsolar_com.sql co
         exit 1
     fi
 done
-for legacy_media_path in \
-    wp-content/uploads/2022/04/2-13.png \
-    wp-content/uploads/2022/04/2-13-600x576.png \
-    wp-content/uploads/2023/07/chung-nhan-1086x1536.jpg; do
-    curl -fsS -o /dev/null "$base_url/$legacy_media_path"
-done
+# Ba đường dẫn WordPress legacy từng được kiểm tra cứng ở đây đã không còn file
+# trong source và cũng không còn nơi nào tham chiếu. Không biến asset mồ côi đã
+# bỏ thành điều kiện deploy; phía dưới vẫn kiểm tra các upload public thật đang
+# được giao diện hiện tại sử dụng.
 for upload_media_path in \
     upload/photo/logo-phucthinh-solar-wordmark-2026.png \
     upload/photo/banner4-1-33501.jpg; do
@@ -375,7 +373,11 @@ curl -fsS -H 'Accept-Encoding: gzip, deflate' -D /tmp/pts-predeploy-static-heade
 grep -qiE '^Content-Encoding: gzip' /tmp/pts-predeploy-static-headers.txt
 grep -qiE '^Cache-Control: .*max-age=' /tmp/pts-predeploy-static-headers.txt
 
-remaining="$(docker compose -f "$compose_file" exec -T db mariadb -N -B -upts_local -ppts_local_only phucthinhs_local -e "SELECT (SELECT COUNT(*) FROM table_product WHERE code LIKE 'CODEX-BULK-%') + (SELECT COUNT(*) FROM table_product_campaign WHERE name LIKE 'CODEX%') + (SELECT COUNT(*) FROM table_user WHERE username LIKE 'codex-rbac-%') + (SELECT COUNT(*) FROM table_permission_group WHERE name LIKE 'CODEX-RBAC-%') + (SELECT COUNT(*) FROM table_user_limit WHERE login_ip LIKE 'form:%');")"
+# table_user_limit chứa cả bucket rate-limit của request public thật, không có
+# namespace riêng cho test nên không được xem mọi dòng form:* là fixture rác.
+# Các script form tự dọn bucket tạo mới; guard ở đây chỉ đếm những fixture có
+# tiền tố test nhận diện chắc chắn, tránh chặn deploy vì trạng thái runtime.
+remaining="$(docker compose -f "$compose_file" exec -T db mariadb -N -B -upts_local -ppts_local_only phucthinhs_local -e "SELECT (SELECT COUNT(*) FROM table_product WHERE code LIKE 'CODEX-BULK-%') + (SELECT COUNT(*) FROM table_product_campaign WHERE name LIKE 'CODEX%') + (SELECT COUNT(*) FROM table_user WHERE username LIKE 'codex-rbac-%') + (SELECT COUNT(*) FROM table_permission_group WHERE name LIKE 'CODEX-RBAC-%');")"
 if [ "$remaining" != "0" ]; then
     echo "FAIL: Còn $remaining dòng dữ liệu kiểm thử trong DB local" >&2
     exit 1

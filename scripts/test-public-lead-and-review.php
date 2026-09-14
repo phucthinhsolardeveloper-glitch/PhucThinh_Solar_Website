@@ -76,11 +76,14 @@ function phone() { return '09'.str_pad((string)random_int(0, 99999999), 8, '0', 
 $suffix = bin2hex(random_bytes(4));
 $orderId = 0;
 $orderCode = 'LEADTEST-'.strtoupper($suffix);
+$settingBefore = $d->rawQueryOne('select id, options from #_setting limit 0,1');
+$settingOptionsBefore = isset($settingBefore['options']) ? (string)$settingBefore['options'] : '';
+$settingChanged = false;
 $existingRateLimitIds = array();
 foreach ($d->rawQuery("select id from #_user_limit where login_ip like 'form:%'") as $rateRow)
     $existingRateLimitIds[(int)$rateRow['id']] = true;
 
-register_shutdown_function(function () use (&$orderId, $existingRateLimitIds, $d, $suffix, $orderCode) {
+register_shutdown_function(function () use (&$orderId, &$settingChanged, $settingBefore, $settingOptionsBefore, $existingRateLimitIds, $d, $suffix, $orderCode) {
     $d->rawQuery("delete from #_newsletter where email like ?", array('leadtest-'.$suffix.'%'));
     $d->rawQuery("delete from #_comment where email like ?", array('reviewtest-'.$suffix.'%'));
     if ($orderId)
@@ -89,6 +92,11 @@ register_shutdown_function(function () use (&$orderId, $existingRateLimitIds, $d
         $d->rawQuery('delete from #_order where id = ?', array($orderId));
     }
     $d->rawQuery("delete from #_order where code = ?", array($orderCode));
+    if($settingChanged && !empty($settingBefore['id']))
+    {
+        $d->where('id', (int)$settingBefore['id']);
+        $d->update('setting', array('options' => $settingOptionsBefore));
+    }
     /* Không giả định REMOTE_ADDR là loopback: chỉ xoá các bucket form được tạo
        sau thời điểm test bắt đầu, giữ nguyên toàn bộ dòng đã có trước đó. */
     foreach ($d->rawQuery("select id from #_user_limit where login_ip like 'form:%'") as $rateRow)
@@ -151,6 +159,23 @@ ok(empty($d->rawQueryOne('select id from #_newsletter where email = ? limit 1', 
 /* ------------------------------------------------------- NHẬN XÉT SẢN PHẨM */
 
 echo PHP_EOL, '== Gửi nhận xét sản phẩm ==', PHP_EOL;
+
+/* Bài test này kiểm tra nhánh chống spam mạnh, nên phải chủ động bật đúng cờ
+   Admin trong DB fixture. Trước đây test luôn kỳ vọng mã sai bị chặn nhưng lại
+   phụ thuộc cấu hình local đang bật/tắt, mâu thuẫn với hành vi sản phẩm. Giá
+   trị options nguyên bản được khôi phục trong shutdown handler kể cả khi test
+   dừng giữa chừng. */
+$settingOptionsTest = ($settingOptionsBefore !== '') ? json_decode($settingOptionsBefore, true) : array();
+if(!is_array($settingOptionsTest)) $settingOptionsTest = array();
+$settingOptionsTest['review_require_order_code'] = '1';
+if(!empty($settingBefore['id']))
+{
+    $d->where('id', (int)$settingBefore['id']);
+    $settingChanged = $d->update('setting', array(
+        'options' => json_encode($settingOptionsTest, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
+    ));
+}
+ok($settingChanged, 'Bật fixture yêu cầu mã đơn cho nhánh kiểm tra xác minh mua hàng');
 
 $reviewEmail = 'reviewtest-'.$suffix.'@example.test';
 $reviewPhone = phone();

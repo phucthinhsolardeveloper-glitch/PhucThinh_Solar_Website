@@ -424,22 +424,29 @@
                     <p>THI CÔNG AN TOÀN, LẮP ĐẶT NHANH CHÓNG</p>
                     <h3>QUY TRÌNH CHUYÊN NGHIỆP</h3>
                 </div>
-                <?php /* Lưới tĩnh 4 cột (2026-09-12) - trước là 2 Swiper (icon-slider
+                <?php /* Timeline biên tập 4 bước (2026-09-14) - trước là 2 Swiper (icon-slider
                          "tab" đồng bộ với process-slider ảnh lớn) cho đúng 4 bước
                          $quytrinh, phải tương tác (bấm/vuốt) mới đọc hết. Dữ liệu đã
                          đủ đúng 4 dòng nên hiện tĩnh luôn, đọc được không cần thao
                          tác - JS Swiper cho .home-7 đã được guard querySelector nên
                          không khởi tạo khi markup này không còn .swiper-container.
-                         Phần mô tả dài vẫn giữ trong DB nhưng không render tại trang
-                         chủ; trang này chỉ cần cho khách nắm nhanh bốn bước. */ ?>
+                         Mô tả vẫn lấy trực tiếp từ Admin, loại markup và CSS giới hạn
+                         2 dòng để section giàu thông tin nhưng không kéo dài. */ ?>
                 <div class="pts-process-grid">
-                    <?php foreach($quytrinh as $k => $v){ ?>
+                    <?php foreach($quytrinh as $k => $v){
+                        $processDescription = trim(preg_replace('/\s+/u', ' ', strip_tags(htmlspecialchars_decode((string)$v['desc'.$lang], ENT_QUOTES))));
+                    ?>
                     <div class="pts-process-step">
-                        <span class="pts-process-step-num"><?=($k<10)?'0'.($k+1):($k+1)?></span>
-                        <div class="pts-process-step-img">
-                            <?=$func->getImage(['class' => 'lazy','size-error' => '500x500x1', 'upload' => UPLOAD_NEWS_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
+                        <div class="pts-process-marker">
+                            <span class="pts-process-step-num"><?=($k<10)?'0'.($k+1):($k+1)?></span>
+                            <div class="pts-process-step-img">
+                                <?=$func->getImage(['class' => 'lazy','size-error' => '500x500x1', 'upload' => UPLOAD_NEWS_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
+                            </div>
                         </div>
-                        <h4 class="pts-process-step-title"><?=$v['name'.$lang]?></h4>
+                        <div class="pts-process-copy">
+                            <h4 class="pts-process-step-title"><?=$v['name'.$lang]?></h4>
+                            <?php if($processDescription !== '') { ?><p class="pts-process-step-desc"><?=htmlspecialchars($processDescription, ENT_QUOTES, 'UTF-8')?></p><?php } ?>
+                        </div>
                     </div>
                     <?php } ?>
                 </div>

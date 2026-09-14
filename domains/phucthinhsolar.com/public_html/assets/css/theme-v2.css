@@ -1134,31 +1134,38 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 .home-7{padding-top:52px!important;padding-bottom:52px!important;background:#f8fafc!important;border-top:1px solid var(--pts-line);border-bottom:1px solid var(--pts-line);}
 .home-7 .section-title p{color:var(--pts-gold-dark)!important;}
 .home-7 .section-title h3{color:var(--pts-navy-deep)!important;}
-/* Quy trình dạng timeline sáng theo hướng mockup: bốn bước ngắn đọc ngay trên
-   một hàng, không lặp mô tả dài. CSS Swiper cũ phía dưới vẫn được giữ để có
-   thể rollback markup mà không phải khôi phục asset legacy. */
-.pts-process-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:38px;margin-top:32px;}
-.pts-process-step{position:relative;display:grid;grid-template-columns:34px 54px minmax(0,1fr);align-items:center;gap:10px;min-height:74px;padding:8px 0;text-align:left;}
-.pts-process-step:not(:last-child):before{content:"";position:absolute;z-index:0;top:50%;left:calc(100% + 5px);width:28px;height:1px;background:#cbd5e1;}
-.pts-process-step:not(:last-child):after{content:"";position:absolute;z-index:1;top:calc(50% - 4px);right:-33px;width:8px;height:8px;border-top:1px solid #94a3b8;border-right:1px solid #94a3b8;transform:rotate(45deg);}
-.pts-process-step-num{display:block;font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:800;letter-spacing:.06em;color:var(--pts-gold-dark);}
-.pts-process-step-img{width:50px;height:50px;border-radius:50%;overflow:hidden;background:#fff7df;border:1px solid #f1dfad;box-shadow:0 6px 18px rgba(15,23,42,.06);}
+/* Timeline biên tập mở: một trục vàng, ảnh thật và mô tả ngắn từ Admin;
+   không dùng card, không yêu cầu khách bấm mới đọc được nội dung. */
+.pts-process-grid{position:relative;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;margin-top:36px;}
+.pts-process-grid:before{content:"";position:absolute;z-index:0;top:57px;left:12.5%;right:12.5%;height:2px;background:linear-gradient(90deg,#b67d2e,#f4dc81 50%,#b67d2e);}
+.pts-process-step{position:relative;z-index:1;display:flex;min-width:0;flex-direction:column;align-items:center;padding:0 24px;text-align:center;}
+.pts-process-marker{position:relative;width:96px;height:92px;}
+.pts-process-step-num{position:absolute;z-index:2;top:2px;left:0;display:block;padding:3px 6px;background:#f8fafc;font-family:"IBM Plex Mono",monospace;font-size:15px;font-weight:850;letter-spacing:.08em;color:var(--pts-gold-dark);}
+.pts-process-step-img{position:absolute;z-index:1;bottom:0;left:50%;width:70px;height:70px;overflow:hidden;transform:translateX(-50%);border:3px solid #fff;border-radius:50%;background:#fff7df;box-shadow:0 0 0 2px #dfb448,0 9px 24px rgba(15,35,70,.12);}
 .pts-process-step-img img{display:block;width:100%;height:100%;object-fit:cover;}
-.pts-process-step-title{margin:0;font-size:15.5px;font-weight:900;line-height:1.35;color:var(--pts-navy-deep);}
+.pts-process-copy{min-width:0;margin-top:15px;}
+.pts-process-step-title{margin:0 0 8px;font-size:17px;font-weight:900;line-height:1.35;color:var(--pts-navy-deep);}
+.pts-process-step-desc{display:-webkit-box;max-width:270px;margin:0 auto!important;overflow:hidden;color:#64748b;font-size:13px;line-height:1.55;-webkit-box-orient:vertical;-webkit-line-clamp:2;}
 @media(max-width:991px){
     .home-2 .pts-solution-tabs{justify-content:flex-start;}
-    .pts-process-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 44px;}
-    .pts-process-step{padding:12px 16px;border:1px solid var(--pts-line);border-radius:12px;background:#fff;}
-    .pts-process-step:nth-child(2n):before,.pts-process-step:nth-child(2n):after{display:none;}
+    .pts-process-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:30px 20px;}
+    .pts-process-grid:before{display:none;}
+    .pts-process-step{display:grid;grid-template-columns:82px minmax(0,1fr);align-items:center;padding:0 12px;text-align:left;}
+    .pts-process-marker{width:72px;height:82px;}
+    .pts-process-step-img{width:62px;height:62px;}
+    .pts-process-step-num{font-size:12px;}
+    .pts-process-copy{margin:0;}
+    .pts-process-step-desc{max-width:none;margin:0!important;}
 }
 @media(max-width:640px){
     .home-2 .pts-solution-tabs{flex-wrap:nowrap!important;justify-content:flex-start;max-width:100%;overflow-x:auto;padding:2px 0 8px!important;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;}
     .home-2 .pts-solution-tabs>li{scroll-snap-align:start;}
-    .pts-process-grid{grid-template-columns:1fr;}
-    .pts-process-step{grid-template-columns:32px 48px minmax(0,1fr);min-height:68px;padding:9px 14px;}
-    .pts-process-step:not(:last-child):before{display:block;top:100%;left:56px;width:1px;height:18px;}
-    .pts-process-step:not(:last-child):after{display:none;}
-    .pts-process-step-img{width:46px;height:46px;}
+    .pts-process-grid{grid-template-columns:1fr;gap:26px;margin-top:28px;}
+    .pts-process-grid:before{display:block;top:20px;bottom:20px;left:46px;right:auto;width:2px;height:auto;background:linear-gradient(180deg,#b67d2e,#f4dc81 50%,#b67d2e);}
+    .pts-process-step{grid-template-columns:80px minmax(0,1fr);min-height:82px;padding:0;text-align:left;}
+    .pts-process-marker{width:72px;height:82px;background:#f8fafc;}
+    .pts-process-step-title{font-size:16px;}
+    .pts-process-step-desc{-webkit-line-clamp:3;}
 }
 .home-7 .icon-slider{margin-top:30px!important;}
 /* Nút bước quy trình: phần NHÌN THẤY được là .text (có viền, cao 48px), còn

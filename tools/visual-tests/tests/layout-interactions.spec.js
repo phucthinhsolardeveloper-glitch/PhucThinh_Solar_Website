@@ -160,6 +160,8 @@ test('home solution, projects and closing CTA follow the responsive redesign', a
   await closingImage.scrollIntoViewIfNeeded();
   await expect(closingImage).toBeVisible();
   expect(await closingImage.evaluate(element => element.naturalWidth)).toBeGreaterThan(0);
+  await expect(page.locator('.pts-process-step')).toHaveCount(4);
+  await expect(page.locator('.pts-process-step-desc')).toHaveCount(4);
   await expect(page.locator('.pts-news-card')).toHaveCount(6);
 });
 
