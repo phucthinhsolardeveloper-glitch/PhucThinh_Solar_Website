@@ -26,6 +26,11 @@
         </div>
 
         <?=$flash->getMessages('admin')?>
+        <?php if(!empty($config['photo']['man_photo'][$type]['admin_note_photo'])) { ?>
+        <div class="alert alert-info text-sm">
+            <i class="fas fa-info-circle mr-2"></i><?=htmlspecialchars($config['photo']['man_photo'][$type]['admin_note_photo'], ENT_QUOTES, 'UTF-8')?>
+        </div>
+        <?php } ?>
         
         <div class="card card-primary card-outline text-sm">
             <div class="card-header">
@@ -104,8 +109,9 @@
                     </div>
                     <?php } ?>
                     <div class="form-group">
-                        <label for="link"><?=$type === 'adv' ? 'Link (khi chọn "Liên kết bình thường")' : 'Link'?>:</label>
-                        <input type="text" class="form-control text-sm" name="data[link]" id="link" placeholder="Link" <?=$isAdvPopupLink ? 'readonly' : ''?> value="<?=htmlspecialchars((string)$currentLink, ENT_QUOTES, 'UTF-8')?>">
+                        <?php $linkLabel = !empty($config['photo']['man_photo'][$type]['link_label_photo']) ? $config['photo']['man_photo'][$type]['link_label_photo'] : ($type === 'adv' ? 'Link (khi chọn "Liên kết bình thường")' : 'Link'); ?>
+                        <label for="link"><?=htmlspecialchars($linkLabel, ENT_QUOTES, 'UTF-8')?>:</label>
+                        <input type="text" class="form-control text-sm" name="data[link]" id="link" placeholder="<?=htmlspecialchars($linkLabel, ENT_QUOTES, 'UTF-8')?>" <?=$isAdvPopupLink ? 'readonly' : ''?> value="<?=htmlspecialchars((string)$currentLink, ENT_QUOTES, 'UTF-8')?>">
                     </div>
                 <?php } ?>
                 <?php if(isset($config['photo']['man_photo'][$type]['video_photo']) && $config['photo']['man_photo'][$type]['video_photo'] == true) { ?>
@@ -155,14 +161,16 @@
                                     <div class="tab-pane fade show <?=($k=='vi')?'active':''?>" id="tabs-lang-<?=$k?>" role="tabpanel" aria-labelledby="tabs-lang">
                                         <?php if(isset($config['photo']['man_photo'][$type]['name_photo']) && $config['photo']['man_photo'][$type]['name_photo'] == true) { ?>
                                             <div class="form-group">
-                                                <label for="name<?=$k?>">Tiêu đề (<?=$k?>):</label>
-                                                <input type="text" class="form-control text-sm" name="data[name<?=$k?>]" id="name<?=$k?>" placeholder="Tiêu đề (<?=$k?>)" value="<?=(!empty($flash->has('name'.$k))) ? $flash->get('name'.$k) : @$item['name'.$k]?>">
+                                                <?php $nameLabel = !empty($config['photo']['man_photo'][$type]['name_label_photo']) ? $config['photo']['man_photo'][$type]['name_label_photo'] : 'Tiêu đề'; ?>
+                                                <label for="name<?=$k?>"><?=htmlspecialchars($nameLabel, ENT_QUOTES, 'UTF-8')?> (<?=$k?>):</label>
+                                                <input type="text" class="form-control text-sm" name="data[name<?=$k?>]" id="name<?=$k?>" placeholder="<?=htmlspecialchars($nameLabel, ENT_QUOTES, 'UTF-8')?> (<?=$k?>)" value="<?=(!empty($flash->has('name'.$k))) ? $flash->get('name'.$k) : @$item['name'.$k]?>">
                                             </div>
                                         <?php } ?>
                                         <?php if(isset($config['photo']['man_photo'][$type]['desc_photo']) && $config['photo']['man_photo'][$type]['desc_photo'] == true) { ?>
                                             <div class="form-group">
-                                                <label for="desc<?=$k?>">Mô tả (<?=$k?>):</label>
-                                                <textarea class="form-control text-sm <?=(isset($config['photo']['man_photo'][$type]['desc_cke_photo']) && $config['photo']['man_photo'][$type]['desc_cke_photo'] == true)?'form-control-ckeditor':''?>" name="data[desc<?=$k?>]" id="desc<?=$k?>" rows="5" placeholder="Mô tả (<?=$k?>)"><?=htmlspecialchars_decode((!empty($flash->has('desc'.$k))) ? $flash->get('desc'.$k) : @$item['desc'.$k])?></textarea>
+                                                <?php $descLabel = !empty($config['photo']['man_photo'][$type]['desc_label_photo']) ? $config['photo']['man_photo'][$type]['desc_label_photo'] : 'Mô tả'; ?>
+                                                <label for="desc<?=$k?>"><?=htmlspecialchars($descLabel, ENT_QUOTES, 'UTF-8')?> (<?=$k?>):</label>
+                                                <textarea class="form-control text-sm <?=(isset($config['photo']['man_photo'][$type]['desc_cke_photo']) && $config['photo']['man_photo'][$type]['desc_cke_photo'] == true)?'form-control-ckeditor':''?>" name="data[desc<?=$k?>]" id="desc<?=$k?>" rows="5" placeholder="<?=htmlspecialchars($descLabel, ENT_QUOTES, 'UTF-8')?> (<?=$k?>)"><?=htmlspecialchars_decode((!empty($flash->has('desc'.$k))) ? $flash->get('desc'.$k) : @$item['desc'.$k])?></textarea>
                                             </div>
                                         <?php } ?>
                                         <?php if(isset($config['photo']['man_photo'][$type]['content_photo']) && $config['photo']['man_photo'][$type]['content_photo'] == true) { ?>

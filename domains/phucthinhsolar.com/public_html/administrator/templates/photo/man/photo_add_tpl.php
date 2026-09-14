@@ -26,6 +26,11 @@
         </div>
 
         <?=$flash->getMessages('admin')?>
+        <?php if(!empty($config['photo']['man_photo'][$type]['admin_note_photo'])) { ?>
+        <div class="alert alert-info text-sm">
+            <i class="fas fa-info-circle mr-2"></i><?=htmlspecialchars($config['photo']['man_photo'][$type]['admin_note_photo'], ENT_QUOTES, 'UTF-8')?>
+        </div>
+        <?php } ?>
 
 		<?php $numberPhoto = (isset($config['photo']['man_photo'][$type]['number_photo'])) ? $config['photo']['man_photo'][$type]['number_photo'] : 0; ?>
 		<?php for($i=0;$i<$numberPhoto;$i++) { $numb = $i+1; ?>
@@ -102,8 +107,9 @@
 		                </div>
 		                <?php } ?>
 		                <div class="form-group">
-		                    <label for="link<?=$i?>"><?=$type === 'adv' ? 'Link (khi chọn "Liên kết bình thường")' : 'Link'?>:</label>
-		                    <input type="text" class="form-control text-sm" name="dataMulti[<?=$i?>][link]" id="link<?=$i?>" placeholder="Link" value="<?=(!empty($flash->has('link'.$i))) ? $flash->get('link'.$i) : ''?>">
+		                    <?php $linkLabel = !empty($config['photo']['man_photo'][$type]['link_label_photo']) ? $config['photo']['man_photo'][$type]['link_label_photo'] : ($type === 'adv' ? 'Link (khi chọn "Liên kết bình thường")' : 'Link'); ?>
+		                    <label for="link<?=$i?>"><?=htmlspecialchars($linkLabel, ENT_QUOTES, 'UTF-8')?>:</label>
+		                    <input type="text" class="form-control text-sm" name="dataMulti[<?=$i?>][link]" id="link<?=$i?>" placeholder="<?=htmlspecialchars($linkLabel, ENT_QUOTES, 'UTF-8')?>" value="<?=(!empty($flash->has('link'.$i))) ? $flash->get('link'.$i) : ''?>">
 		                </div>
 		            <?php } ?>
 		            <?php if(isset($config['photo']['man_photo'][$type]['video_photo']) && $config['photo']['man_photo'][$type]['video_photo'] == true) { ?>
@@ -152,14 +158,16 @@
 		                                <div class="tab-pane fade show <?=($k=='vi')?'active':''?>" id="tabs-lang-<?=$k?>-<?=$i?>" role="tabpanel" aria-labelledby="tabs-lang">
 		                                    <?php if((isset($config['photo']['man_photo'][$type]['name_photo']) && $config['photo']['man_photo'][$type]['name_photo'] == true)) { ?>
 		                                        <div class="form-group">
-		                                            <label for="name<?=$k?><?=$i?>">Tiêu đề (<?=$k?>):</label>
-		                                            <input type="text" class="form-control text-sm" name="dataMulti[<?=$i?>][name<?=$k?>]" id="name<?=$k?><?=$i?>" placeholder="Tiêu đề (<?=$k?>)" value="<?=(!empty($flash->has('name'.$k.$i))) ? $flash->get('name'.$k.$i) : ''?>">
+		                                            <?php $nameLabel = !empty($config['photo']['man_photo'][$type]['name_label_photo']) ? $config['photo']['man_photo'][$type]['name_label_photo'] : 'Tiêu đề'; ?>
+		                                            <label for="name<?=$k?><?=$i?>"><?=htmlspecialchars($nameLabel, ENT_QUOTES, 'UTF-8')?> (<?=$k?>):</label>
+		                                            <input type="text" class="form-control text-sm" name="dataMulti[<?=$i?>][name<?=$k?>]" id="name<?=$k?><?=$i?>" placeholder="<?=htmlspecialchars($nameLabel, ENT_QUOTES, 'UTF-8')?> (<?=$k?>)" value="<?=(!empty($flash->has('name'.$k.$i))) ? $flash->get('name'.$k.$i) : ''?>">
 		                                        </div>
 		                                    <?php } ?>
 		                                    <?php if((isset($config['photo']['man_photo'][$type]['desc_photo']) && $config['photo']['man_photo'][$type]['desc_photo'] == true)) { ?>
 		                                        <div class="form-group">
-		                                            <label for="desc<?=$k?><?=$i?>">Mô tả (<?=$k?>):</label>
-		                                            <textarea class="form-control text-sm <?=((isset($config['photo']['man_photo'][$type]['desc_cke_photo']) && $config['photo']['man_photo'][$type]['desc_cke_photo'] == true))?'form-control-ckeditor':''?>" name="dataMulti[<?=$i?>][desc<?=$k?>]" id="desc<?=$k?><?=$i?>" rows="5" placeholder="Mô tả (<?=$k?>)"><?=htmlspecialchars_decode((!empty($flash->has('desc'.$k.$i))) ? $flash->get('desc'.$k.$i) : '')?></textarea>
+		                                            <?php $descLabel = !empty($config['photo']['man_photo'][$type]['desc_label_photo']) ? $config['photo']['man_photo'][$type]['desc_label_photo'] : 'Mô tả'; ?>
+		                                            <label for="desc<?=$k?><?=$i?>"><?=htmlspecialchars($descLabel, ENT_QUOTES, 'UTF-8')?> (<?=$k?>):</label>
+		                                            <textarea class="form-control text-sm <?=((isset($config['photo']['man_photo'][$type]['desc_cke_photo']) && $config['photo']['man_photo'][$type]['desc_cke_photo'] == true))?'form-control-ckeditor':''?>" name="dataMulti[<?=$i?>][desc<?=$k?>]" id="desc<?=$k?><?=$i?>" rows="5" placeholder="<?=htmlspecialchars($descLabel, ENT_QUOTES, 'UTF-8')?> (<?=$k?>)"><?=htmlspecialchars_decode((!empty($flash->has('desc'.$k.$i))) ? $flash->get('desc'.$k.$i) : '')?></textarea>
 		                                        </div>
 		                                    <?php } ?>
 		                                    <?php if((isset($config['photo']['man_photo'][$type]['content_photo']) && $config['photo']['man_photo'][$type]['content_photo'] == true)) { ?>

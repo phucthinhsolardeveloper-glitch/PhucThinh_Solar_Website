@@ -278,10 +278,32 @@
     $config['photo']['man_photo'][$nametype]['thumb_photo'] = '175x95x2';
     $config['photo']['man_photo'][$nametype]['img_type_photo'] = '.jpg|.gif|.png|.jpeg|.gif';
 
+    /* CTA riêng cho trang About. Record đầu tiên đang hiển thị cung cấp tiêu
+       đề, mô tả, link nút chính và ảnh nền; frontend có fallback khi chưa có. */
+    $nametype = "about-cta";
+    $config['photo']['man_photo'][$nametype]['title_main_photo'] = "About - CTA tư vấn";
+    $config['photo']['man_photo'][$nametype]['admin_note_photo'] = "Điều khiển dải CTA cuối /ve-chung-toi/. Tiêu đề, mô tả, link và ảnh nền đều lấy từ record đầu tiên đang Hiển thị; link để trống sẽ mở popup tư vấn hiện hữu.";
+    $config['photo']['man_photo'][$nametype]['check_photo'] = array("hienthi" => "Hiển thị");
+    $config['photo']['man_photo'][$nametype]['number_photo'] = 1;
+    $config['photo']['man_photo'][$nametype]['images_photo'] = true;
+    $config['photo']['man_photo'][$nametype]['avatar_photo'] = true;
+    $config['photo']['man_photo'][$nametype]['link_photo'] = true;
+    $config['photo']['man_photo'][$nametype]['name_photo'] = true;
+    $config['photo']['man_photo'][$nametype]['name_label_photo'] = "Tiêu đề CTA";
+    $config['photo']['man_photo'][$nametype]['desc_photo'] = true;
+    $config['photo']['man_photo'][$nametype]['desc_label_photo'] = "Mô tả CTA";
+    $config['photo']['man_photo'][$nametype]['desc_cke_photo'] = false;
+    $config['photo']['man_photo'][$nametype]['link_label_photo'] = "Link nút Nhận tư vấn";
+    $config['photo']['man_photo'][$nametype]['width_photo'] = 1600;
+    $config['photo']['man_photo'][$nametype]['height_photo'] = 520;
+    $config['photo']['man_photo'][$nametype]['thumb_photo'] = '320x104x1';
+    $config['photo']['man_photo'][$nametype]['img_type_photo'] = '.jpg|.gif|.png|.jpeg|.gif';
+
     // /* Chứng nhận */
     $nametype = "chungnhan";
     $config['photo']['man_photo'][$nametype]['title_main_photo'] = "Chứng nhận";
-    $config['photo']['man_photo'][$nametype]['check_photo'] = array("hienthi" => "Hiển thị");
+    $config['photo']['man_photo'][$nametype]['admin_note_photo'] = "Trang /ve-chung-toi/ hiển thị tối đa 3 chứng nhận có cờ Nổi bật theo bố cục ngang; nếu chưa chọn mục nào sẽ lấy 3 record đầu theo thứ tự. Tên là tên đối tác/chứng nhận, Mô tả là dòng thông tin ngắn. Toàn bộ record Hiển thị vẫn có trong hộp xem ảnh.";
+    $config['photo']['man_photo'][$nametype]['check_photo'] = array("noibat" => "Nổi bật trên About", "hienthi" => "Hiển thị");
     $config['photo']['man_photo'][$nametype]['number_photo'] = 5;
     $config['photo']['man_photo'][$nametype]['images_photo'] = true;
     $config['photo']['man_photo'][$nametype]['avatar_photo'] = true;

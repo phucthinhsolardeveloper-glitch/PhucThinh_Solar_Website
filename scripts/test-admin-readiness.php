@@ -128,6 +128,20 @@ readinessAssert(
     'Sidebar mở thư viện chiến dịch và CSS Admin có cache-busting theo phiên bản file'
 );
 readinessAssert(!isset($config['static']['tom-tat-gioi-thieu']), 'Không khôi phục type Tóm tắt giới thiệu khi template public chưa render dữ liệu này');
+readinessAssert(
+    isset($config['news']['about-team'])
+        && !empty($config['news']['about-team']['title_index'])
+        && !empty($config['news']['about-team']['desc'])
+        && !empty($config['news']['about-team']['content'])
+        && !empty($config['news']['about-team']['images'])
+        && isset($config['news']['about-principle'])
+        && !empty($config['news']['about-principle']['images'])
+        && !empty($config['news']['about-principle']['desc'])
+        && isset($config['news']['ly-do-chon-chung-toi']['check']['about'])
+        && isset($config['photo']['man_photo']['chungnhan']['check_photo']['noibat'])
+        && isset($config['photo']['man_photo']['about-cta']),
+    'Cấu hình About nối đủ Con người, điểm nhấn, card nổi bật, chứng nhận nổi bật và CTA với Admin'
+);
 $apiBootstrapSource = file_get_contents('/var/www/html/administrator/api/config.php');
     readinessAssert(strpos($apiBootstrapSource, 'adminInstallApiExceptionHandler();') !== false, 'Bootstrap chung cài exception boundary cho mọi Admin API');
 $adminBootstrapSource = file_get_contents('/var/www/html/libraries/requick.php');
@@ -287,6 +301,59 @@ try
     list($newCookie, $authenticatedSetCookie) = readinessSessionCookie($login['cookies']);
     $loginJson = json_decode($login['body'], true);
     readinessAssert($login['status'] === 200 && !empty($loginJson['success']), 'Đăng nhập HTTP bằng tài khoản superadmin fixture thành công');
+
+    $aboutTeamForm = readinessHttp($base.'index.php?com=news&act=add&type=about-team', 'GET', array(), $newCookie);
+    $aboutPrincipleForm = readinessHttp($base.'index.php?com=news&act=add&type=about-principle', 'GET', array(), $newCookie);
+    $aboutTrustForm = readinessHttp($base.'index.php?com=news&act=add&type=ly-do-chon-chung-toi', 'GET', array(), $newCookie);
+    $aboutCompassForm = readinessHttp($base.'index.php?com=news&act=add&type=su-menh', 'GET', array(), $newCookie);
+    $aboutCtaForm = readinessHttp($base.'index.php?com=photo&act=add_photo&type=about-cta', 'GET', array(), $newCookie);
+    $aboutCertificateForm = readinessHttp($base.'index.php?com=photo&act=add_photo&type=chungnhan', 'GET', array(), $newCookie);
+    readinessAssert(
+        $aboutTeamForm['status'] === 200
+            && strpos($aboutTeamForm['body'], 'Điều khiển riêng section Con người') !== false
+            && strpos($aboutTeamForm['body'], 'name="data[title_indexvi]"') !== false
+            && strpos($aboutTeamForm['body'], 'name="data[descvi]"') !== false
+            && strpos($aboutTeamForm['body'], 'name="data[contentvi]"') !== false
+            && strpos($aboutTeamForm['body'], 'name="file"') !== false,
+        'Admin About - Con người có đủ nhãn nhỏ, tiêu đề, mô tả, nội dung và ảnh'
+    );
+    readinessAssert(
+        $aboutPrincipleForm['status'] === 200
+            && strpos($aboutPrincipleForm['body'], 'Tối đa 3 record đang Hiển thị') !== false
+            && strpos($aboutPrincipleForm['body'], 'name="data[title_indexvi]"') !== false
+            && strpos($aboutPrincipleForm['body'], 'name="data[descvi]"') !== false
+            && strpos($aboutPrincipleForm['body'], 'name="file"') !== false,
+        'Admin About - Điểm nhấn con người có đủ tiêu đề, mô tả, icon và thứ tự'
+    );
+    readinessAssert(
+        $aboutTrustForm['status'] === 200
+            && strpos($aboutTrustForm['body'], 'name="status[about]"') !== false
+            && strpos($aboutTrustForm['body'], 'name="data[title_indexvi]"') !== false
+            && strpos($aboutTrustForm['body'], 'name="data[descvi]"') !== false,
+        'Admin Lý do lựa chọn cho phép chọn card About và sửa tiêu đề ngắn/mô tả'
+    );
+    readinessAssert(
+        $aboutCompassForm['status'] === 200
+            && strpos($aboutCompassForm['body'], 'ảnh/icon, thứ tự và Hiển thị') !== false
+            && strpos($aboutCompassForm['body'], 'name="data[title_indexvi]"') !== false
+            && strpos($aboutCompassForm['body'], 'name="data[descvi]"') !== false
+            && strpos($aboutCompassForm['body'], 'name="file"') !== false,
+        'Admin Tầm nhìn - Sứ mệnh - Giá trị quản lý được nội dung và icon About'
+    );
+    readinessAssert(
+        $aboutCtaForm['status'] === 200
+            && strpos($aboutCtaForm['body'], 'Điều khiển dải CTA cuối') !== false
+            && strpos($aboutCtaForm['body'], 'name="dataMulti[0][namevi]"') !== false
+            && strpos($aboutCtaForm['body'], 'name="dataMulti[0][descvi]"') !== false
+            && strpos($aboutCtaForm['body'], 'name="dataMulti[0][link]"') !== false,
+        'Admin CTA About có đủ tiêu đề, mô tả, link và ảnh nền'
+    );
+    readinessAssert(
+        $aboutCertificateForm['status'] === 200
+            && strpos($aboutCertificateForm['body'], 'name="dataMulti[0][status][]"') !== false
+            && strpos($aboutCertificateForm['body'], 'value="noibat"') !== false,
+        'Admin Chứng nhận có lựa chọn Nổi bật trên About'
+    );
     readinessAssert($newCookie !== '' && $newCookie !== $oldCookie, 'Session ID được regenerate sau đăng nhập');
     readinessAssert(stripos($authenticatedSetCookie, 'HttpOnly') !== false && stripos($authenticatedSetCookie, 'SameSite=Lax') !== false, 'Cookie sau đăng nhập giữ thuộc tính bảo mật');
 

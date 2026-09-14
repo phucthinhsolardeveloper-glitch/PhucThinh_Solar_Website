@@ -64,6 +64,11 @@
         </div>
 
         <?=$flash->getMessages('admin')?>
+        <?php if(!empty($config['news'][$type]['admin_note'])) { ?>
+        <div class="alert alert-info text-sm">
+            <i class="fas fa-info-circle mr-2"></i><?=htmlspecialchars($config['news'][$type]['admin_note'], ENT_QUOTES, 'UTF-8')?>
+        </div>
+        <?php } ?>
         
         <div class="row">
             <div class="<?=$colLeft?>">
@@ -102,9 +107,13 @@
                                                 <input type="text" class="form-control for-seo text-sm" name="data[name<?=$k?>]" id="name<?=$k?>" placeholder="Tiêu đề (<?=$k?>)" value="<?=(!empty($flash->has('name'.$k))) ? $flash->get('name'.$k) : @$item['name'.$k]?>" required>
                                             </div>
                                             <?php if(isset($config['news'][$type]['title_index']) && $config['news'][$type]['title_index'] == true) { ?>
+                                                <?php
+                                                    $titleIndexLabel = !empty($config['news'][$type]['title_index_label']) ? $config['news'][$type]['title_index_label'] : 'Tiêu đề trang chủ';
+                                                    $titleIndexRequired = !isset($config['news'][$type]['title_index_required']) || $config['news'][$type]['title_index_required'] !== false;
+                                                ?>
                                                 <div class="form-group">
-                                                    <label for="title_index<?=$k?>">Tiêu đề trang chủ (<?=$k?>):</label>
-                                                    <input type="text" class="form-control text-sm" name="data[title_index<?=$k?>]" id="title_index<?=$k?>" placeholder="Tiêu đề trang chủ (<?=$k?>)" value="<?=(!empty($flash->has('title_index'.$k))) ? $flash->get('title_index'.$k) : @$item['title_index'.$k]?>" required>
+                                                    <label for="title_index<?=$k?>"><?=htmlspecialchars($titleIndexLabel, ENT_QUOTES, 'UTF-8')?> (<?=$k?>):</label>
+                                                    <input type="text" class="form-control text-sm" name="data[title_index<?=$k?>]" id="title_index<?=$k?>" placeholder="<?=htmlspecialchars($titleIndexLabel, ENT_QUOTES, 'UTF-8')?> (<?=$k?>)" value="<?=(!empty($flash->has('title_index'.$k))) ? $flash->get('title_index'.$k) : @$item['title_index'.$k]?>" <?=$titleIndexRequired ? 'required' : ''?>>
                                                 </div>
                                             <?php } ?>
                                             <?php if(isset($config['news'][$type]['desc']) && $config['news'][$type]['desc'] == true) { ?>

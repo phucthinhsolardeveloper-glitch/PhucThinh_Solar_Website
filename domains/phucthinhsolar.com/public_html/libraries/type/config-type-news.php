@@ -492,15 +492,67 @@
     // $config['news'][$nametype]['img_type'] = '.jpg|.gif|.png|.jpeg|.gif';
 
 
-    /* Lịch sử */
-    $nametype = "lich-su";
-    $config['news'][$nametype]['title_main'] = "Lịch sử";
+    /* Nội dung và ảnh riêng cho section Con người trên trang About. Dùng bảng
+       news hiện hữu; frontend vẫn có fallback legacy khi chưa tạo record. */
+    $nametype = "about-team";
+    $config['news'][$nametype]['title_main'] = "About - Con người";
+    $config['news'][$nametype]['admin_note'] = "Điều khiển riêng section Con người tại /ve-chung-toi/: nhãn nhỏ, tiêu đề, mô tả, nội dung và ảnh. Frontend lấy record đang hiển thị có thứ tự nhỏ nhất.";
     $config['news'][$nametype]['check'] = array("hienthi" => "Hiển thị");
     $config['news'][$nametype]['view'] = false;
     $config['news'][$nametype]['slug'] = false;
     $config['news'][$nametype]['copy'] = false;
     $config['news'][$nametype]['images'] = true;
     $config['news'][$nametype]['show_images'] = true;
+    $config['news'][$nametype]['title_index'] = true;
+    $config['news'][$nametype]['title_index_label'] = "Nhãn nhỏ phía trên tiêu đề";
+    $config['news'][$nametype]['title_index_required'] = false;
+    $config['news'][$nametype]['desc'] = true;
+    $config['news'][$nametype]['desc_cke'] = false;
+    $config['news'][$nametype]['content'] = true;
+    $config['news'][$nametype]['content_cke'] = true;
+    $config['news'][$nametype]['seo'] = false;
+    $config['news'][$nametype]['width'] = 1200;
+    $config['news'][$nametype]['height'] = 900;
+    $config['news'][$nametype]['thumb'] = '100x100x1';
+    $config['news'][$nametype]['img_type'] = '.jpg|.gif|.png|.jpeg|.gif';
+
+    /* Ba điểm nhấn dưới section Con người của trang About. Tách thành record
+       riêng để cả icon, tiêu đề, mô tả và thứ tự đều biên tập được. */
+    $nametype = "about-principle";
+    $config['news'][$nametype]['title_main'] = "About - Điểm nhấn con người";
+    $config['news'][$nametype]['admin_note'] = "Tối đa 3 record đang Hiển thị tạo dải Chuyên môn / Đồng hành / Khách hàng ngay dưới section Con người tại /ve-chung-toi/. Ảnh tải lên được dùng như icon; nên dùng PNG nền trong, cùng một phong cách.";
+    $config['news'][$nametype]['check'] = array("hienthi" => "Hiển thị");
+    $config['news'][$nametype]['view'] = false;
+    $config['news'][$nametype]['slug'] = false;
+    $config['news'][$nametype]['copy'] = false;
+    $config['news'][$nametype]['images'] = true;
+    $config['news'][$nametype]['show_images'] = true;
+    $config['news'][$nametype]['title_index'] = true;
+    $config['news'][$nametype]['title_index_label'] = "Tiêu đề ngắn trên giao diện";
+    $config['news'][$nametype]['title_index_required'] = false;
+    $config['news'][$nametype]['desc'] = true;
+    $config['news'][$nametype]['desc_cke'] = false;
+    $config['news'][$nametype]['content'] = false;
+    $config['news'][$nametype]['content_cke'] = false;
+    $config['news'][$nametype]['seo'] = false;
+    $config['news'][$nametype]['width'] = 160;
+    $config['news'][$nametype]['height'] = 160;
+    $config['news'][$nametype]['thumb'] = '100x100x2';
+    $config['news'][$nametype]['img_type'] = '.jpg|.gif|.png|.jpeg|.gif';
+
+    /* Lịch sử */
+    $nametype = "lich-su";
+    $config['news'][$nametype]['title_main'] = "Lịch sử";
+    $config['news'][$nametype]['admin_note'] = "Điều khiển phần Câu chuyện và timeline tại /ve-chung-toi/. Record giới thiệu có thể để trống Năm cột mốc; mỗi record có năm hợp lệ tạo một mốc trên timeline.";
+    $config['news'][$nametype]['check'] = array("hienthi" => "Hiển thị");
+    $config['news'][$nametype]['view'] = false;
+    $config['news'][$nametype]['slug'] = false;
+    $config['news'][$nametype]['copy'] = false;
+    $config['news'][$nametype]['images'] = true;
+    $config['news'][$nametype]['show_images'] = true;
+    $config['news'][$nametype]['title_index'] = true;
+    $config['news'][$nametype]['title_index_label'] = "Tiêu đề ngắn hiển thị trên About";
+    $config['news'][$nametype]['title_index_required'] = false;
     $config['news'][$nametype]['desc'] = true;
     $config['news'][$nametype]['desc_cke'] = false;
     $config['news'][$nametype]['content'] = true;
@@ -518,12 +570,16 @@
     /* Sứ mệnh - Tầm nhìn - Giá trị */
     $nametype = "su-menh";
     $config['news'][$nametype]['title_main'] = "Sứ mệnh - Tầm nhìn - Giá trị";
+    $config['news'][$nametype]['admin_note'] = "Ba record đầu tạo khối Tầm nhìn - Sứ mệnh - Giá trị cốt lõi tại /ve-chung-toi/. Tiêu đề ngắn, mô tả, ảnh/icon, thứ tự và Hiển thị được áp dụng trực tiếp.";
     $config['news'][$nametype]['check'] = array("hienthi" => "Hiển thị");
     $config['news'][$nametype]['view'] = false;
     $config['news'][$nametype]['slug'] = false;
     $config['news'][$nametype]['copy'] = false;
     $config['news'][$nametype]['images'] = true;
-    $config['news'][$nametype]['show_images'] = false;
+    $config['news'][$nametype]['show_images'] = true;
+    $config['news'][$nametype]['title_index'] = true;
+    $config['news'][$nametype]['title_index_label'] = "Tiêu đề ngắn trên card About";
+    $config['news'][$nametype]['title_index_required'] = false;
     $config['news'][$nametype]['desc'] = true;
     $config['news'][$nametype]['desc_cke'] = false;
     $config['news'][$nametype]['content'] = true;
@@ -537,12 +593,16 @@
     /* Lý do chọn chúng tôi */
     $nametype = "ly-do-chon-chung-toi";
     $config['news'][$nametype]['title_main'] = "Lý do chọn chúng tôi";
-    $config['news'][$nametype]['check'] = array("hienthi" => "Hiển thị");
+    $config['news'][$nametype]['admin_note'] = "Tên/tiêu đề ngắn, mô tả và ảnh của record tạo card Lý do lựa chọn tại /ve-chung-toi/. Chọn tối đa 4 mục bằng cờ Trang Về chúng tôi; nếu chưa chọn mục nào, frontend dùng bốn mục phù hợp hiện hữu làm fallback.";
+    $config['news'][$nametype]['check'] = array("about" => "Trang Về chúng tôi", "hienthi" => "Hiển thị");
     $config['news'][$nametype]['view'] = false;
     $config['news'][$nametype]['slug'] = false;
     $config['news'][$nametype]['copy'] = false;
     $config['news'][$nametype]['images'] = true;
     $config['news'][$nametype]['show_images'] = false;
+    $config['news'][$nametype]['title_index'] = true;
+    $config['news'][$nametype]['title_index_label'] = "Tiêu đề ngắn trên card About";
+    $config['news'][$nametype]['title_index_required'] = false;
     $config['news'][$nametype]['desc'] = true;
     $config['news'][$nametype]['desc_cke'] = false;
     $config['news'][$nametype]['content'] = false;

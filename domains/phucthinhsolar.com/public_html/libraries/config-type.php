@@ -27,18 +27,18 @@
                 )
             )
         ),
-        "Giới thiệu" => array(
-            // "product" => array("san-pham"),
-            // "tags" => array("san-pham"),
-            /* "gioi-thieu" (static) va "thong-tin-lien-he" (news) da bi vo
-               hieu hoa o dot don dep 2026-09-11 (noi dung demo/rac tu theme
-               goc, xem config-type-static.php/config-type-news.php) - phai
-               xoa luon tham chieu o day, neu khong $config['static']['gioi-thieu']
-               / $config['news']['thong-tin-lien-he'] la null va menu.php
-               bao Undefined index khi render sidebar nhom nay. */
-            "static" => array("su-menh"),
-            "news" => array("lich-su","su-menh","ly-do-chon-chung-toi"),
-            "photo" => array("chungnhan")
+        "Trang Về chúng tôi" => array(
+            /* Mọi nội dung có tác động tới GUI About được gom vào một nhóm.
+               Static su-menh cũ không dùng vì chứa dữ liệu demo legacy. */
+            "news" => array("lich-su","about-team","about-principle","ly-do-chon-chung-toi","su-menh"),
+            "photo" => array("chungnhan","about-cta"),
+            "shortcut" => array(
+                array(
+                    "title" => "Xem trang Về chúng tôi",
+                    "href" => "../ve-chung-toi/",
+                    "icon" => "fas fa-external-link-alt"
+                )
+            )
         ),
         "Lợi ích" => array(
             "news" => array("loi-ich"),
