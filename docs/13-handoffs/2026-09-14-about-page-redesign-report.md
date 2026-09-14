@@ -5,6 +5,7 @@
 - Chỉ thay giao diện nguồn `about`, phục vụ hai route hiện hữu `/ve-chung-toi/` và `/gioi-thieu/`.
 - Không sửa template header, footer, homepage hoặc route public.
 - Bản kết hợp giữ bố cục ảnh–chữ xen kẽ từ bản trước redesign (`70e0f89`): giới thiệu, lịch sử riêng, con người và ba điểm nhấn, bốn lý do lựa chọn, khối navy tầm nhìn/sứ mệnh/giá trị, ba chứng nhận ngang và CTA gọn.
+- Câu chuyện hiển thị tối đa hai câu mở đầu và phần nội dung tiếp theo khi có; mỗi mốc lịch sử hiển thị tối đa hai câu từ Nội dung Admin. Dấu chấm lửng Unicode được nhận là điểm kết câu để không kéo theo tuyên bố dài ngoài đoạn chọn.
 - Loại khỏi trang About dải logo đối tác, sản phẩm, dự án, giải pháp, tin tức, chính sách bán hàng và form liên hệ lớn.
 - Responsive không dùng cuộn ngang. Trên mobile, các section chia đôi theo thứ tự tiêu đề → ảnh → nội dung.
 

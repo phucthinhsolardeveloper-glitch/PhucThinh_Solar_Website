@@ -112,6 +112,7 @@
 .pts-about-story-grid{grid-template-columns:1fr 1fr;gap:54px;}
 .pts-about-story-media{grid-column:1;grid-row:1;aspect-ratio:10/7;border-radius:8px;box-shadow:none;}
 .pts-about-story-copy{grid-column:2;grid-row:1;}
+.pts-about-story-body{margin:16px 0 0!important;padding-top:16px;border-top:1px solid var(--about-border);font-size:16px!important;line-height:1.72!important;}
 .pts-about-story h1,.pts-about-page .pts-about-section-heading h2,.pts-about-certificates-heading h2,.pts-about-people h2,.pts-about-history h2{font-size:clamp(28px,2.6vw,36px)!important;line-height:1.22!important;letter-spacing:-.025em;font-weight:850!important;}
 .pts-about-history{padding:64px 0;background:var(--about-surface);}
 .pts-about-history-grid{display:grid;grid-template-columns:1fr 1fr;gap:54px;align-items:center;}
@@ -125,6 +126,7 @@
 .pts-about-history .pts-about-year{grid-column:1;grid-row:1/4;font-size:25px;}
 .pts-about-history .pts-about-milestone h3,.pts-about-history .pts-about-milestone p{grid-column:2;margin:0!important;}
 .pts-about-history .pts-about-milestone h3{font-size:17px!important;line-height:1.4!important;}
+.pts-about-history .pts-about-milestone p{font-size:16px!important;line-height:1.72!important;}
 .pts-about-people{padding:64px 0;background:#fff;}
 .pts-about-people-grid{gap:54px;}
 .pts-about-people-media{aspect-ratio:10/7;border-radius:8px;box-shadow:none;}

@@ -15,6 +15,9 @@
                     <?php if($aboutStoryIntro !== '') { ?>
                     <p class="pts-about-lead"><?=$aboutEscape($aboutStoryIntro)?></p>
                     <?php } ?>
+                    <?php if($aboutStoryBody !== '') { ?>
+                    <p class="pts-about-story-body"><?=$aboutEscape($aboutStoryBody)?></p>
+                    <?php } ?>
 
                 </div>
                 <?php if($aboutStoryImage !== '') { ?>

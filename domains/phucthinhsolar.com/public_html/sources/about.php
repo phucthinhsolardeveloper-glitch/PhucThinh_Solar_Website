@@ -90,7 +90,7 @@
     $aboutSentences = static function($value, $limit = 1) use ($aboutPlainText) {
         $plain = $aboutPlainText($value);
         if($plain === '') return '';
-        $sentences = preg_split('/(?<=[.!?])\s+/u', $plain, -1, PREG_SPLIT_NO_EMPTY);
+        $sentences = preg_split('/(?<=[.!?…])\s+/u', $plain, -1, PREG_SPLIT_NO_EMPTY);
         return trim(implode(' ', array_slice($sentences ?: array($plain), 0, max(1, (int)$limit))));
     };
 
@@ -118,7 +118,12 @@
     $aboutStoryTitle = !empty($aboutStoryRecord['title_index'.$lang]) ? $aboutPlainText($aboutStoryRecord['title_index'.$lang]) : $aboutUi['story_title'];
     $aboutStoryIntro = '';
     if(!empty($aboutStoryRecord['desc'.$lang])) $aboutStoryIntro = $aboutPlainText($aboutStoryRecord['desc'.$lang]);
-    if($aboutStoryIntro === '' && !empty($aboutStoryRecord['content'.$lang])) $aboutStoryIntro = $aboutSentences($aboutStoryRecord['content'.$lang], 1);
+    if($aboutStoryIntro === '' && !empty($aboutStoryRecord['content'.$lang])) $aboutStoryIntro = $aboutSentences($aboutStoryRecord['content'.$lang], 2);
+    $aboutStoryBody = !empty($aboutStoryRecord['content'.$lang]) ? $aboutSentences($aboutStoryRecord['content'.$lang], 4) : '';
+    if($aboutStoryIntro !== '' && strpos($aboutStoryBody, $aboutStoryIntro) === 0) {
+        $aboutStoryBody = trim(substr($aboutStoryBody, strlen($aboutStoryIntro)));
+    }
+    if($aboutStoryBody === $aboutStoryIntro) $aboutStoryBody = '';
 
     /* Một record tương ứng một mốc. Chỉ render khi năm hợp lệ; không dựng thêm
        2021/2023/2026 từ mockup nếu Admin chưa có dữ liệu xác thực. */
@@ -132,12 +137,10 @@
         }
         if($year === '' || isset($aboutTimelineYears[$year])) continue;
         $aboutTimelineYears[$year] = true;
-        $hasManagedDescription = !empty($row['desc'.$lang]);
-        $description = $hasManagedDescription ? $aboutPlainText($row['desc'.$lang]) : $aboutSentences($row['content'.$lang], 1);
+        $managedDescription = !empty($row['desc'.$lang]) ? $aboutPlainText($row['desc'.$lang]) : '';
+        $contentDescription = !empty($row['content'.$lang]) ? $aboutSentences($row['content'.$lang], 2) : '';
+        $description = $contentDescription !== '' ? $contentDescription : $managedDescription;
         $description = preg_replace('/^'.$year.'\s*[—–-]?\s*/u', '', $description);
-        if(!$hasManagedDescription && strpos($description, ':') !== false) {
-            $description = rtrim(strtok($description, ':'), " \t\n\r\0\x0B.,;—–-").'.';
-        }
         $aboutTimeline[] = array(
             'year' => $year,
             'title' => !empty($row['title_index'.$lang]) ? $aboutPlainText($row['title_index'.$lang]) : $aboutPlainText($row['name'.$lang]),
