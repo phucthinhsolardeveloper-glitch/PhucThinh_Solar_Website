@@ -1,53 +1,68 @@
-<section class="CRlist_term_blog inf_default_news_page">
-    <div class="container">
-        <div class="CRlist_term_blog_box row inf_dots">
-            <?php if(count($gplist)){foreach($gplist as $v) { ?>
-            <div class="CRitem_term_blog">
-                <div class="content <?=(isset($newsList[$sluglang])&& $newsList[$sluglang] == $v[$sluglang]) ? 'active' : ''?>">
-                    <a title="<?=$v['name'.$lang]?>" href="danh-muc-giai-phap/<?=$v[$sluglang]?>/"></a>
-                    <div class="ico">
-                        <?=$func->getImage(['class' => 'lazy w-100','size-error' => '60x60x1', 'upload' => UPLOAD_NEWS_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
-                    </div>
-                    <h2><?=$v['name'.$lang]?></h2>
-                </div>
-            </div>
-            <?php }} ?>
+<?php
+$solutionEscape = static function($value) { return htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8'); };
+$solutionCategoryName = !empty($newsList['name'.$lang]) ? solutionHubText($newsList['name'.$lang]) : $titleCate;
+$solutionCategoryDesc = !empty($newsList['desc'.$lang]) ? solutionHubText($newsList['desc'.$lang]) : $solutionUi['category_intro'];
+?>
+<main class="pts-solution-hub pts-solution-category">
+    <section class="pts-sh-category-head" aria-labelledby="solution-category-title">
+        <div class="uk-container">
+            <span class="pts-sh-eyebrow"><?=$solutionEscape($solutionUi['category_prefix'])?></span>
+            <h1 id="solution-category-title"><?=$solutionEscape($solutionCategoryName)?></h1>
+            <p><?=$solutionEscape($solutionCategoryDesc)?></p>
+            <?php if($gplist) { ?>
+            <nav class="pts-sh-category-nav" aria-label="<?=$solutionEscape($solutionUi['choices'])?>">
+                <?php foreach($gplist as $solutionGroup) {
+                    $solutionGroupSlug = solutionHubField($solutionGroup, 'slug', $lang);
+                    $solutionGroupName = solutionHubField($solutionGroup, 'name', $lang);
+                    if($solutionGroupSlug === '') continue;
+                ?>
+                <a class="<?=$newsList[$sluglang] === $solutionGroup[$sluglang] ? 'is-active' : ''?>" href="<?=$solutionEscape('danh-muc-giai-phap/'.$solutionGroupSlug.'/')?>"><?=$solutionEscape($solutionGroupName)?></a>
+                <?php } ?>
+            </nav>
+            <?php } ?>
         </div>
-    </div>
-</section>
-<section class="CRlist_item_blog">
-    <div class="container">
-        <div class="CRrow_term_blog_box">
-            <div class="CRrow_term_bottom">
-                <div id="inf_loadmore_post" class="row pts-card-grid">
-                    <?php if(count($news)) { foreach($news as $v) { ?>
-                    <div data-id="<?=$v['id']?>" class="inf_item_postSlide item_post_slider col-lg-4 col-md-4 col-sm-6 col-12">
-                        <div class="wrap item_cont_post_slider">
-                            <a title="<?=$v['name'.$lang]?>"
-                                href="solution/<?=$v[$sluglang]?>/"></a>
-                            <div itemprop="image" class="CRthumb_post">
-                                <?=$func->getImage(['class' => 'lazy w-100','size-error' => '300x200x1', 'upload' => UPLOAD_NEWS_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
-                            </div>
-                            <div class="CRcont_post box_cont_post_slider">
-                                <div class="CRbox">
-                                    <p class="date_content"><i class="fa fa-clock-o" aria-hidden="true"></i><?=date('d/m/Y', $v['date_created'])?></p>
-                                    <p>-</p>
-                                    <p class="author_post"><i class="fa fa-user-o" aria-hidden="true"></i><?=htmlspecialchars(newsAuthorName($d, isset($v['id_user']) ? $v['id_user'] : 0), ENT_QUOTES, 'UTF-8')?></p>
-                                </div>
-                                <h3><?=$v['name'.$lang]?></h3>
-                            </div>
-                        </div>
+    </section>
+
+    <section class="pts-sh-category-results" aria-label="<?=$solutionEscape($solutionUi['choices'])?>">
+        <div class="uk-container">
+            <?php if($news) { ?>
+            <div class="pts-sh-category-grid">
+                <?php foreach($news as $solutionIndex => $solutionItem) {
+                    $solutionItemName = solutionHubField($solutionItem, 'name', $lang);
+                    $solutionItemDesc = solutionHubField($solutionItem, 'desc', $lang);
+                    $solutionItemSlug = solutionHubField($solutionItem, 'slug', $lang);
+                    $solutionItemPhoto = solutionHubImage($solutionItem['photo'], UPLOAD_NEWS_L);
+                    if($solutionItemSlug === '') continue;
+                ?>
+                <a class="pts-sh-category-card" href="<?=$solutionEscape('solution/'.$solutionItemSlug.'/')?>">
+                    <div class="pts-sh-category-media<?=$solutionItemPhoto ? '' : ' is-placeholder'?>">
+                        <?php if($solutionItemPhoto) { ?><img src="<?=$solutionEscape(ASSET.$solutionItemPhoto)?>" alt="" width="640" height="430" loading="lazy" decoding="async"><?php } else { ?><span aria-hidden="true"><?=str_pad((string)($solutionIndex + 1), 2, '0', STR_PAD_LEFT)?></span><?php } ?>
                     </div>
-                    <?php } } else { ?>
-                    <div class="col-12 pts-grid-full">
-                        <div class="pts-empty-state">
-                            <i class="fas fa-file-alt"></i>
-                            <p><?=khongtimthayketqua?></p>
-                        </div>
+                    <div class="pts-sh-category-copy">
+                        <h2><?=$solutionEscape($solutionItemName)?></h2>
+                        <?php if($solutionItemDesc !== '') { ?><p><?=$solutionEscape($solutionItemDesc)?></p><?php } ?>
+                        <span><?=$solutionEscape($solutionUi['choice'])?> <b aria-hidden="true">→</b></span>
                     </div>
-                    <?php } ?>
-                </div>
+                </a>
+                <?php } ?>
             </div>
+            <?php if(!empty($paging)) { ?><div class="pagination-home w-100"><?=$paging?></div><?php } ?>
+            <?php } else { ?>
+            <div class="pts-sh-empty"><p><?=$solutionEscape($solutionUi['empty'])?></p><a href="#ptsContactModal" data-toggle="modal" data-target="#ptsContactModal"><?=$solutionEscape($solutionUi['consult'])?> →</a></div>
+            <?php } ?>
         </div>
-    </div>
-</section>
+    </section>
+
+    <?php if($solutionShowCta) { ?>
+    <section class="pts-sh-contact" aria-labelledby="solution-contact-title">
+        <div class="uk-container"><div class="pts-sh-contact-band">
+            <?php if($solutionCtaImage) { ?><img class="pts-sh-contact-background" src="<?=$solutionEscape(ASSET.$solutionCtaImage)?>" alt="" loading="lazy"><?php } ?>
+            <div class="pts-sh-contact-copy"><h2 id="solution-contact-title"><?=$solutionEscape($solutionCtaTitle)?></h2><p><?=$solutionEscape($solutionCtaDesc)?></p></div>
+            <div class="pts-sh-contact-actions">
+                <a class="pts-sh-consult" href="#ptsContactModal" data-toggle="modal" data-target="#ptsContactModal"><?=$solutionEscape($solutionCtaButton)?> <span aria-hidden="true">→</span></a>
+                <?php if($solutionHotlineTel !== '') { ?><a class="pts-sh-hotline" href="tel:<?=$solutionEscape($solutionHotlineTel)?>"><small><?=$solutionEscape($solutionUi['phone'])?></small><strong><?=$solutionEscape($solutionHotline)?></strong></a><?php } ?>
+            </div>
+        </div></div>
+    </section>
+    <?php } ?>
+</main>

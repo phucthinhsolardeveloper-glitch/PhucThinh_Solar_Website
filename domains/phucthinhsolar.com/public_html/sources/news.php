@@ -103,7 +103,7 @@
 	else if($idl!='')
 	{
 		/* Lấy cấp 1 detail */
-		$newsList = $d->rawQueryOne("select id, name$lang, slugvi, slugen, type, photo, options from #_news_list where id = ? and type = ? limit 0,1",array($idl,$type));
+		$newsList = $d->rawQueryOne("select id, name$lang, desc$lang, slugvi, slugen, type, photo, options from #_news_list where id = ? and type = ? limit 0,1",array($idl,$type));
 
 		/* SEO */
 		$titleCate = $newsList['name'.$lang];
@@ -372,4 +372,5 @@
 		if(!empty($titleMain)) $breadcr->set($com,$titleMain);
 		$breadcrumbs = $breadcr->get();
 	}
+    if($type === 'giai-phap' && ($template === 'news/service_list' || $template === 'news/service')) require SOURCES.'solution_hub.php';
 ?>

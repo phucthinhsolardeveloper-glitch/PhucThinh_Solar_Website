@@ -364,6 +364,8 @@
 
     /* Giải pháp */
     $nametype = "giai-phap";
+    $config['news'][$nametype]['admin_note'] = "Trang /giai-phap/ điều hướng theo Giải pháp cấp 1 (ví dụ Doanh nghiệp, Hộ gia đình). Cờ Đại diện trên Trang Giải pháp chọn bài cung cấp ảnh/nội dung đại diện cho nhóm; nếu chưa chọn, bài Hiển thị đầu tiên trong nhóm được dùng. Tiêu đề ngắn, Ảnh cấp 1 và Thông tin phụ vẫn dùng ở trang chủ. Không đổi slug của nội dung đã xuất bản.";
+    $config['news'][$nametype]['title_index_label'] = "Tiêu đề ngắn trên trang chủ";
     $config['news'][$nametype]['title_main'] = "Giải pháp";
     $config['news'][$nametype]['dropdown'] = true;
     $config['news'][$nametype]['list'] = true;
@@ -377,7 +379,7 @@
     $config['news'][$nametype]['copy_image'] = true;
     $config['news'][$nametype]['comment'] = false;
     $config['news'][$nametype]['slug'] = true;
-    $config['news'][$nametype]['check'] = array("noibat" => "Nổi bật", "hienthi" => "Hiển thị");
+    $config['news'][$nametype]['check'] = array("noibat" => "Nổi bật", "hienthi" => "Hiển thị", "solutionhub" => "Đại diện trên Trang Giải pháp");
     $config['news'][$nametype]['images'] = true;
     $config['news'][$nametype]['show_images'] = true;
     $config['news'][$nametype]['images1'] = true;
@@ -423,8 +425,8 @@
     $config['news'][$nametype]['images_list'] = true;
     $config['news'][$nametype]['show_images_list'] = true;
     $config['news'][$nametype]['slug_list'] = true;
-    $config['news'][$nametype]['check_list'] = array("hienthi" => "Hiển thị");
-    $config['news'][$nametype]['desc_list'] = false;
+    $config['news'][$nametype]['check_list'] = array("hienthi" => "Hiển thị", "solutionhub" => "Trang Giải pháp");
+    $config['news'][$nametype]['desc_list'] = true;
     $config['news'][$nametype]['desc_cke_list'] = false;
     $config['news'][$nametype]['content_list'] = false;
     $config['news'][$nametype]['content_cke_list'] = false;
@@ -433,6 +435,25 @@
     $config['news'][$nametype]['height_list'] = 240;
     $config['news'][$nametype]['thumb_list'] = '100x100x1';
     $config['news'][$nametype]['img_type_list'] = '.jpg|.gif|.png|.jpeg|.gif';
+
+    /* Khối mở đầu/CTA của hub: dùng news để có thể lưu chỉ chữ, không bắt
+       buộc ảnh. Cùng session, phân quyền, CSRF và upload validator hiện hữu. */
+    foreach(array('solution-intro' => 'Giải pháp - Mở đầu', 'solution-cta' => 'Giải pháp - CTA') as $nametype => $solutionBlockTitle) {
+        $config['news'][$nametype] = array(
+            'title_main' => $solutionBlockTitle,
+            'admin_note' => $nametype === 'solution-intro'
+                ? 'Mở đầu /giai-phap/: tên là tiêu đề lớn, tiêu đề phụ là nhãn nhỏ, mô tả là đoạn giới thiệu, ảnh là ảnh công trình. Lấy record Hiển thị đầu tiên theo STT. Nếu có record nhưng tắt tất cả, phần mở đầu được ẩn (vẫn giữ H1 cho trang).'
+                : 'CTA cuối /giai-phap/: tên là tiêu đề, mô tả là lời mời tư vấn, tiêu đề phụ là chữ trên nút. Ảnh nền tùy chọn. Nút mở popup tư vấn hiện hữu; hotline lấy từ Cấu hình website. Tắt tất cả record để ẩn CTA.',
+            'check' => array('hienthi' => 'Hiển thị'),
+            'view' => false, 'slug' => false, 'copy' => false,
+            'images' => true, 'show_images' => true,
+            'title_index' => true, 'title_index_required' => false,
+            'title_index_label' => $nametype === 'solution-intro' ? 'Nhãn nhỏ phía trên tiêu đề' : 'Chữ trên nút tư vấn',
+            'desc' => true, 'desc_cke' => false, 'content' => false, 'seo' => false,
+            'width' => 1200, 'height' => 800, 'thumb' => '150x100x1',
+            'img_type' => '.jpg|.jpeg|.png|.webp'
+        );
+    }
 
     /* Tiêu chí */
     $nametype = "tieu-chi";

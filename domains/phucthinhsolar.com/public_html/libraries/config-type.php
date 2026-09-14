@@ -40,6 +40,13 @@
                 )
             )
         ),
+        "Trang Giải pháp" => array(
+            "news" => array("solution-intro", "giai-phap", "solution-cta"),
+            "shortcut" => array(
+                array("title" => "Chọn danh mục tìm nhanh", "href" => "index.php?com=product&act=man_list&type=san-pham", "icon" => "fas fa-th-large", "permission" => array("product", "man_list", "san-pham")),
+                array("title" => "Xem trang Giải pháp", "href" => "../giai-phap/", "icon" => "fas fa-external-link-alt")
+            )
+        ),
         "Lợi ích" => array(
             "news" => array("loi-ich"),
             "static" => array("loi-ich"),

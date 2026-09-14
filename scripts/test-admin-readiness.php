@@ -303,6 +303,44 @@ try
     readinessAssert($login['status'] === 200 && !empty($loginJson['success']), 'Đăng nhập HTTP bằng tài khoản superadmin fixture thành công');
 
     $aboutTeamForm = readinessHttp($base.'index.php?com=news&act=add&type=about-team', 'GET', array(), $newCookie);
+    foreach(array('solution-intro', 'solution-cta') as $solutionBlockType) {
+        $solutionForm = readinessHttp($base.'index.php?com=news&act=add&type='.$solutionBlockType, 'GET', array(), $newCookie);
+        readinessAssert($solutionForm['status'] === 200
+            && strpos($solutionForm['body'], 'name="data[namevi]"') !== false
+            && strpos($solutionForm['body'], 'name="data[descvi]"') !== false
+            && strpos($solutionForm['body'], 'name="data[title_indexvi]"') !== false
+            && strpos($solutionForm['body'], 'name="file"') !== false,
+            'Admin '.$solutionBlockType.' có tiêu đề, mô tả, nhãn/nút và ảnh');
+        preg_match('/name="admin_csrf"[^>]*value="([^"]+)"/', $solutionForm['body'], $solutionToken);
+        $solutionFixtureName = $prefix.'-'.$solutionBlockType;
+        try {
+            $solutionSave = readinessHttp($base.'index.php?com=news&act=save&type='.$solutionBlockType, 'POST', array(
+                'admin_csrf' => isset($solutionToken[1]) ? $solutionToken[1] : '',
+                'data' => array('namevi' => $solutionFixtureName, 'nameen' => $solutionFixtureName, 'descvi' => 'Nội dung thử nghiệm hub', 'descen' => 'Hub test copy', 'title_indexvi' => 'Tư vấn', 'title_indexen' => 'Advice', 'numb' => 0),
+                'status' => array('hienthi' => 'hienthi')
+            ), $newCookie);
+            $solutionSaved = $d->rawQueryOne('select id,status from #_news where namevi=? and type=?', array($solutionFixtureName, $solutionBlockType));
+            readinessAssert($solutionSave['status'] === 200 && !empty($solutionSaved['id']), 'Admin lưu '.$solutionBlockType.' không bắt buộc ảnh');
+            $solutionPublic = readinessHttp('http://127.0.0.1/giai-phap/');
+            readinessAssert(strpos($solutionPublic['body'], $solutionFixtureName) !== false, 'Nội dung '.$solutionBlockType.' vừa lưu xuất hiện trên hub');
+            $solutionHide = readinessHttp($base.'index.php?com=news&act=save&type='.$solutionBlockType, 'POST', array(
+                'id' => $solutionSaved['id'], 'admin_csrf' => $solutionToken[1],
+                'data' => array('namevi' => $solutionFixtureName, 'nameen' => $solutionFixtureName, 'numb' => 0)
+            ), $newCookie);
+            $solutionHiddenPublic = readinessHttp('http://127.0.0.1/giai-phap/');
+            readinessAssert($solutionHide['status'] === 200 && strpos($solutionHiddenPublic['body'], $solutionFixtureName) === false, 'Admin tắt '.$solutionBlockType.' được áp dụng ngay');
+        } finally {
+            $d->rawQuery('delete from #_news where namevi=? and type=?', array($solutionFixtureName, $solutionBlockType));
+        }
+    }
+    $solutionChoiceForm = readinessHttp($base.'index.php?com=news&act=add&type=giai-phap', 'GET', array(), $newCookie);
+    $solutionGroupForm = readinessHttp($base.'index.php?com=news&act=add_list&type=giai-phap', 'GET', array(), $newCookie);
+    $solutionEquipmentForm = readinessHttp($base.'index.php?com=product&act=add_list&type=san-pham', 'GET', array(), $newCookie);
+    readinessAssert(strpos($solutionChoiceForm['body'], 'name="status[solutionhub]"') !== false, 'Admin chọn được bài đại diện trên hub');
+    readinessAssert(strpos($solutionGroupForm['body'], 'name="status[solutionhub]"') !== false, 'Admin chọn được nhóm giải pháp trên hub');
+    readinessAssert(strpos($solutionGroupForm['body'], 'name="data[descvi]"') !== false, 'Admin sửa được mô tả nhóm giải pháp');
+    readinessAssert(strpos($solutionEquipmentForm['body'], 'name="status[solutionhub]"') !== false, 'Admin chọn được danh mục thiết bị trên hub');
+    readinessAssert(strpos($solutionEquipmentForm['body'], 'name="data[descvi]"') !== false, 'Admin sửa được mô tả danh mục thiết bị');
     $aboutPrincipleForm = readinessHttp($base.'index.php?com=news&act=add&type=about-principle', 'GET', array(), $newCookie);
     $aboutTrustForm = readinessHttp($base.'index.php?com=news&act=add&type=ly-do-chon-chung-toi', 'GET', array(), $newCookie);
     $aboutCompassForm = readinessHttp($base.'index.php?com=news&act=add&type=su-menh', 'GET', array(), $newCookie);
