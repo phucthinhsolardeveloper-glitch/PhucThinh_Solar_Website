@@ -27,7 +27,7 @@
 .nh-lead .nh-media{aspect-ratio:16/7.7}
 .nh-lead h2{font-size:21px!important}
 .nh-lead .nh-card-copy{padding:15px 17px 19px}
-.nh-secondary{display:grid;grid-template-columns:38% 1fr;padding:8px;gap:4px}
+.nh-secondary{display:grid;grid-template-columns:38% 1fr;padding:8px;gap:14px}
 .nh-secondary .nh-media{aspect-ratio:auto;height:100%;min-height:155px;border-radius:6px}
 .nh-secondary .nh-card-copy{padding:12px 10px 12px}
 .nh-secondary h2{font-size:17px!important}
