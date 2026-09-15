@@ -75,7 +75,23 @@
 .pts-category-content{border-top:0!important}
 .pts-category-hero:after{display:none!important;content:none!important}
 .pts-category-copy>span{display:none!important}
-.pts-catalog-jump a,.pts-catblock-all{border:0!important;background:transparent!important}
+/* Chip nhảy nhanh danh mục: bỏ viền trắng-trên-trắng cũ nhưng vẫn cần đọc
+   được là control bấm được - dùng nền màu phẳng thay vì border. */
+.pts-catalog-jump a{
+  border:0!important;border-radius:999px;background:var(--pts-cream);
+  color:var(--pts-navy)!important;font-weight:750;padding:8px 16px!important;
+  transition:.15s;
+}
+.pts-catalog-jump a:hover{background:var(--pts-gold)!important;color:var(--pts-navy)!important}
+.pts-catblock-all{
+  display:inline-flex;align-items:center;gap:8px;
+  border:0!important;border-bottom:1px solid rgba(13,39,82,.24)!important;border-radius:0!important;
+  background:transparent!important;padding:0 0 6px!important;
+  color:var(--pts-navy)!important;font-weight:850;transition:.18s;
+}
+.pts-catblock-all:hover{border-color:var(--pts-gold)!important;color:var(--pts-gold-dark)!important}
+.pts-catblock-all i{font-size:11px;transition:transform .18s}
+.pts-catblock-all:hover i{transform:translateX(3px)}
 .pts-filter-card .aside-filter,.pts-filter-card .product-pages__price{border-bottom:0!important}
 
 /* Home retail: category/product/logo nổi trực tiếp trên nền section. */
@@ -190,7 +206,6 @@
 .comment-statistic .card,
 #comment-product .card,
 .comment-list .card,
-#inf_single_project .des_wrap,
 #inf_single_project .tabs-pro-detail{
   border:0!important;
   border-radius:0!important;
@@ -211,8 +226,20 @@
 #comment-product .card-header{border-bottom:0!important;background:transparent!important}
 .title-product-orther span:after,
 #inf_single_project .title_wrap h1:after{display:none!important;content:none!important}
-#inf_single_project .des_wrap{padding-left:0!important;padding-right:0!important}
-#inf_single_project .des_wrap:before{display:none!important;content:none!important}
+/* Mô tả dự án: bỏ khung thẻ trắng+shadow cũ nhưng không để trôi tự do -
+   dùng vạch nhấn trái (ranh giới có ý nghĩa: đánh dấu khối tóm tắt) và giữ
+   lại nhãn "Tổng quan công trình" để người đọc biết đang xem phần nào. */
+#inf_single_project .des_wrap{
+  border:0!important;border-left:3px solid var(--pts-gold)!important;border-radius:0!important;
+  background:transparent!important;box-shadow:none!important;
+  padding:2px 0 2px 24px!important;
+}
+#inf_single_project .des_wrap:before{
+  display:block!important;content:"Tổng quan công trình"!important;
+  margin-bottom:14px!important;color:var(--pts-gold-dark)!important;
+  font-size:11px!important;font-weight:900!important;letter-spacing:.13em!important;
+  text-transform:uppercase!important;
+}
 .pts-project-gallery .album-image{border-radius:2px!important;background:transparent!important}
 .pts-empty-state{border-radius:0!important;background:transparent!important}
 
