@@ -66,3 +66,17 @@
 @media(max-width:800px){.nh-featured{grid-template-columns:1fr 1fr;grid-template-rows:auto}.nh-lead{grid-column:span 2;grid-row:auto}.nh-lead .nh-media{aspect-ratio:16/8}.nh-secondary{display:flex;padding:0;gap:0}.nh-secondary .nh-media{aspect-ratio:16/9;height:auto;min-height:0;border-radius:0}.nh-secondary .nh-card-copy{padding:13px 14px 17px}.nh-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.nh-toolbar{flex-direction:column;align-items:stretch;gap:10px}.nh-search{flex:0 0 44px}.nh-cta-band{align-items:flex-start}.nh-cta-copy h2{font-size:20px!important}}
 @media(max-width:540px){.pts-news-hub{padding:20px 0 34px}.nh-heading{text-align:left;margin-bottom:20px}.nh-heading p{font-size:14px}.nh-featured{display:flex;flex-direction:column;gap:12px;margin-bottom:20px}.nh-lead h2{font-size:20px!important}.nh-secondary{display:grid;grid-template-columns:35% 1fr;padding:7px;gap:3px}.nh-secondary .nh-media{height:100%;aspect-ratio:auto;min-height:130px;border-radius:5px}.nh-secondary h2{font-size:15px!important}.nh-secondary p{-webkit-line-clamp:2;font-size:12px!important}.nh-secondary .nh-card-copy{padding:7px 7px 13px}.nh-secondary .nh-meta{gap:7px;font-size:10px}.nh-secondary .nh-badge{font-size:9px;left:5px;top:5px;max-width:calc(100% - 10px);padding:5px}.nh-grid{grid-template-columns:1fr;gap:16px}.nh-media{aspect-ratio:16/8}.nh-card h2{font-size:18px!important}.nh-card p{font-size:14px!important}.nh-filter{min-height:44px}.nh-cta-band{flex-direction:column;padding:25px 22px;gap:20px}.nh-cta-actions{border-left:0;border-top:1px solid #dae5f2;padding:17px 0 0;width:100%;align-items:stretch}.nh-phone{text-align:center}.nh-consult{white-space:normal;text-align:center}.nh-badge{font-size:10px}}
 @media(prefers-reduced-motion:reduce){.nh-card,.nh-image{transition:none}}
+
+/* Nút chia sẻ mạng xã hội cuối bài (2026-09-15): trước dùng icon vuông màu
+   fa-*-square đời cũ, đổi sang icon tròn viền phẳng khớp hệ thiết kế. Bài
+   chi tiết (news_detail_tpl.php) không nằm trong .pts-news-hub nên dùng
+   thẳng biến toàn site (--pts-*), không dùng --nh-* (chỉ scope ở trang danh sách). */
+.pts-share{display:flex;align-items:center;gap:14px;margin-top:34px;padding-top:22px;border-top:1px solid var(--pts-line);}
+.pts-share-label{color:var(--pts-navy);font-size:12.5px;font-weight:850;letter-spacing:.06em;text-transform:uppercase;}
+.pts-share .social-product ul{display:flex;align-items:center;gap:9px;margin:0;padding:0;list-style:none;}
+/* assets/css/style.css .social-product button{background:transparent!important}
+   và .social-product .sharerN{color:...} (đặc thù hơn .pts-share-btn) đè lên
+   style cũ - phải !important + để nguyên .social-product trong selector mới
+   thắng được. */
+.pts-share .social-product button.pts-share-btn{display:flex!important;width:38px!important;height:38px!important;align-items:center;justify-content:center;border:1px solid var(--pts-line)!important;border-radius:50%!important;background:#fff!important;color:var(--pts-navy)!important;font-size:14px!important;cursor:pointer;transition:.18s;}
+.pts-share .social-product button.pts-share-btn:hover{border-color:var(--pts-gold)!important;background:var(--pts-gold)!important;color:var(--pts-navy-deep)!important;transform:none!important;}

@@ -58,7 +58,7 @@
 .pts-header-nav .menu>div>ul{display:flex!important;align-items:stretch!important;justify-content:flex-start!important;gap:0!important}
 .pts-header-nav .menu>div>ul>li{display:flex;align-items:stretch;padding:0!important}
 .pts-header-nav .menu>div>ul>li.menu-catalog{order:-2;flex:0 0 250px;margin-right:17px}
-.pts-header-nav .menu>div>ul>li>a{display:flex;align-items:center;padding:0 16px!important;color:#f8fafc!important;font-size:13px!important;font-weight:750!important;text-transform:none!important;letter-spacing:0!important}
+.pts-header-nav .menu>div>ul>li>a{display:flex;align-items:center;padding:0 16px!important;color:#f8fafc!important;font-size:15px!important;font-weight:750!important;text-transform:none!important;letter-spacing:0!important}
 .pts-header-nav .menu>div>ul>li>a:before{content:"";position:absolute;left:16px;right:16px;bottom:0;height:3px;background:var(--pts-gold-light);transform:scaleX(0);transform-origin:center;transition:transform .18s}
 .pts-header-nav .menu>div>ul>li>a:hover,.pts-header-nav .menu>div>ul>li>a.active{color:var(--pts-gold-light)!important}
 .pts-header-nav .menu>div>ul>li>a:hover:before,.pts-header-nav .menu>div>ul>li>a.active:before{transform:scaleX(1)}
@@ -85,7 +85,7 @@
   .pts-header-v3 .logo-header{padding:11px 15px}
   .pts-header-v3 .logo-header img{max-width:190px!important}
   .pts-header-nav .menu>div>ul>li.menu-catalog{flex-basis:220px;margin-right:8px}
-  .pts-header-nav .menu>div>ul>li>a{padding-left:11px!important;padding-right:11px!important;font-size:12.5px!important}
+  .pts-header-nav .menu>div>ul>li>a{padding-left:11px!important;padding-right:11px!important;font-size:13.5px!important}
   .hdr-warranty span{display:none}
 }
 @media(max-width:1280px){
@@ -95,7 +95,7 @@
   .pts-header-v3 .hdr-call{padding-right:13px}
   .hdr-cart-copy{display:none}
   .hdr-cart-badge{display:flex}
-  .pts-header-nav .menu>div>ul>li>a{padding-left:9px!important;padding-right:9px!important;font-size:12px!important}
+  .pts-header-nav .menu>div>ul>li>a{padding-left:9px!important;padding-right:9px!important;font-size:13px!important}
 }
 @media(max-width:1120px){
   .pts-header-nav{display:none}

@@ -43,36 +43,42 @@
                 </blockquote>
             </div>
             <?php } ?>
-            <div class="share">
+            <div class="share pts-share">
+                <span class="pts-share-label">Chia sẻ</span>
                 <div class="social-plugin w-clear">
                     <div class="social-product">
                         <ul>
                             <li>
-                                <button class="sharer sharer1 btn btn-primary btn-lg" data-sharer="twitter"
+                                <button class="sharer sharer1 pts-share-btn" data-sharer="twitter"
                                     data-title="<?=$rowDetail['name'.$lang]?>"
+                                    aria-label="Chia sẻ lên Twitter/X"
                                     data-url="<?=$func->getCurrentPageURL()?>"><i
-                                        class="fab fa-twitter-square"></i></button>
+                                        class="fab fa-twitter" aria-hidden="true"></i></button>
                             </li>
                             <li>
-                                <button class="sharer sharer2 btn btn-primary btn-lg" data-sharer="facebook"
+                                <button class="sharer sharer2 pts-share-btn" data-sharer="facebook"
+                                    aria-label="Chia sẻ lên Facebook"
                                     data-url="<?=$func->getCurrentPageURL()?>"><i
-                                        class="fab fa-facebook-square"></i></button>
+                                        class="fab fa-facebook-f" aria-hidden="true"></i></button>
                             </li>
                             <li>
-                                <button class="sharer sharer3 btn btn-primary btn-lg" data-sharer="linkedin"
-                                    data-url="<?=$func->getCurrentPageURL()?>"><i class="fab fa-linkedin"></i></button>
+                                <button class="sharer sharer3 pts-share-btn" data-sharer="linkedin"
+                                    aria-label="Chia sẻ lên LinkedIn"
+                                    data-url="<?=$func->getCurrentPageURL()?>"><i class="fab fa-linkedin-in" aria-hidden="true"></i></button>
                             </li>
                             <li>
-                                <button class="sharer sharer4 btn btn-primary btn-lg" data-sharer="email"
+                                <button class="sharer sharer4 pts-share-btn" data-sharer="email"
                                     data-title="<?=$rowDetail['name'.$lang]?>"
+                                    aria-label="Chia sẻ qua Email"
                                     data-url="<?=$func->getCurrentPageURL()?>"
                                     data-subject="<?=$rowDetail['name'.$lang]?>" data-to=""><i
-                                        class="fas fa-envelope-square"></i></button>
+                                        class="fas fa-envelope" aria-hidden="true"></i></button>
                             </li>
                             <li>
-                                <button class="sharer sharer5 btn btn-primary btn-lg" data-sharer="pinterest"
+                                <button class="sharer sharer5 pts-share-btn" data-sharer="pinterest"
+                                    aria-label="Chia sẻ lên Pinterest"
                                     data-url="<?=$func->getCurrentPageURL()?>"><i
-                                        class="fab fa-pinterest-square"></i></button>
+                                        class="fab fa-pinterest-p" aria-hidden="true"></i></button>
                             </li>
                         </ul>
                     </div>

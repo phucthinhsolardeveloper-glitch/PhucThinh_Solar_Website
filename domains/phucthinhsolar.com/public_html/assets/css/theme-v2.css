@@ -3219,6 +3219,18 @@ body .home-6 .btn-all:hover i{transform:translateX(3px);}
    nền tròn trắng của nút này) - đổi sang icon FontAwesome, không phụ thuộc
    file ảnh dễ hỏng, khớp icon "fa-phone" dùng ở nơi khác trên site. */
 #button-contact-vr.pts-contact-dock .pts-contact-dock-phone{color:var(--pts-navy)!important;font-size:19px;}
+/* Bug thật có từ trước (không do đổi icon ở trên): nhiều rule cũ
+   (#button-contact-vr .phone-vr-img-circle, .pts-contact-dock .button-contact,
+   .pts-contact-dock .button-contact .phone-vr - tất cả đều !important) viết
+   cho bản nút nổi cũ luôn hiện, không biết trạng thái đóng/mở của
+   .pts-contact-dock mới nên vẫn bật pointer-events xuyên qua khi đang ĐÓNG
+   (#gom-all-in-one opacity:0/visibility:hidden nhưng không chặn được click
+   vì các rule cụ thể hơn này đè lên). 3 vòng tròn ẩn đó nằm đúng vị trí nút
+   "lên đầu trang" (.progress-wrap) bên cạnh -> bấm nút đó vô tình trúng
+   vòng tròn ẩn, không chạy hành động back-to-top. Chặn lại cả 3 tầng. */
+#button-contact-vr.pts-contact-dock.is-enhanced:not(.is-open) .button-contact,
+#button-contact-vr.pts-contact-dock.is-enhanced:not(.is-open) .phone-vr,
+#button-contact-vr.pts-contact-dock.is-enhanced:not(.is-open) .phone-vr-img-circle{pointer-events:none!important;}
 .pts-contact-dock-toggle{
     display:none;width:48px;height:48px;border:0;border-radius:50%;
     align-items:center;justify-content:center;background:var(--pts-gold);color:var(--pts-navy-deep);

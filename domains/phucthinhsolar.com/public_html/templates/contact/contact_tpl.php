@@ -103,12 +103,20 @@
 	                <?php if($contactVisual) { ?>
 	                <div class="col-lg-7 pts-contact-intro-media">
 	                    <?=$func->getImage(['isLazy' => false, 'class' => '', 'sizes' => '1400x875x1', 'upload' => $contactVisual['upload'], 'image' => $contactVisual['photo'], 'alt' => $contactVisual['name']])?>
+	                    <span class="pts-contact-intro-badge">
+	                        <i class="fas fa-phone-alt" aria-hidden="true"></i>
+	                        <span>
+	                            <small>Hotline hỗ trợ</small>
+	                            <strong><?=$optsetting['hotline']?></strong>
+	                        </span>
+	                    </span>
 	                </div>
 	                <?php } ?>
 	                <div class="<?=$contactVisual ? 'col-lg-5' : 'col-12'?> pts-contact-intro-copy">
+	                    <span class="pts-contact-intro-eyebrow">LIÊN HỆ PHÚC THỊNH SOLAR</span>
 	                    <h2><?=htmlspecialchars($contactVisual ? $contactVisual['name'] : 'Liên hệ Phúc Thịnh Solar', ENT_QUOTES, 'UTF-8')?></h2>
 	                    <?php if($contactVisual && $contactVisual['desc'] !== '') { ?><p class="pts-contact-intro-desc"><?=htmlspecialchars($contactVisual['desc'], ENT_QUOTES, 'UTF-8')?></p><?php } ?>
-	                    <p class="pts-contact-company">Công ty TNHH Công Nghệ - Thương Mại và Dịch Vụ <span class="pts-brand-text">Phúc Thịnh Solar</span></p>
+	                    <p class="pts-contact-company">Công ty TNHH Công Nghệ - Thương Mại và Dịch Vụ Phúc Thịnh Solar</p>
 	                    <ul class="custContContact mb-4">
 	                        <li><a href="tel:<?=preg_replace('/[^0-9]/','',$optsetting['hotline']);?>">Hotline: <b><?=$optsetting['hotline']?></b></a></li>
 	                        <li><a href="mailto:<?=$optsetting['email']?>">Email: <b><?=$optsetting['email']?></b></a></li>
