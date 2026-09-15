@@ -418,8 +418,7 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 .cat-highlight-img img{width:100%;height:100%;object-fit:contain!important;border-radius:12px;mix-blend-mode:multiply;}
 .cat-highlight-name{padding:0!important;color:var(--pts-navy)!important;font-size:17px!important;line-height:1.4;}
 .cat-highlight-link{padding:10px 0 0!important;color:var(--pts-gold-dark)!important;}
-.home-3,.home-2,.home_loi_ich,.home-4,.home-5,.home-6,.home-7,.home-8{padding-top:64px!important;padding-bottom:64px!important;}
-.home-3{background:#f8fafc!important;}
+.home-3,.home-2,.home_loi_ich,.home-4,.home-6,.home-7,.home-8{padding-top:64px!important;padding-bottom:64px!important;}
 .home-products-featured{padding-top:56px!important;}
 
 /* Product cards */
@@ -1038,9 +1037,6 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
     .home-2 .tabs-container .wrapper>.img{height:auto!important;border-radius:18px 18px 0 0!important;aspect-ratio:16/8;}
 }
 
-/* Chuẩn hóa khoảng cách dọc của banner khuyến mại. */
-.wrap-promo-banners{margin:0!important;padding:64px 0!important;background:#fff!important;}
-.promo-banner{min-height:110px!important;border-radius:16px!important;padding:22px 48px!important;background:linear-gradient(115deg,var(--pts-gold),#e4b94e)!important;box-shadow:0 18px 40px rgba(156,116,32,.18)!important;}
 .promo-banner:after{content:"";position:absolute;right:-60px;top:-120px;width:340px;height:340px;border:52px solid rgba(255,255,255,.14);border-radius:50%;}
 .promo-banner .promo-copy{display:flex;flex:1;min-width:0;flex-direction:column;align-items:flex-start;justify-content:center;gap:5px;position:relative;z-index:1;}
 .promo-eyebrow{color:var(--pts-navy)!important;font-size:12px!important;font-weight:900!important;letter-spacing:.14em!important;}
@@ -1085,23 +1081,6 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 .home-4 .text{color:#dbeafe!important;font-size:12px!important;margin-top:10px!important;text-transform:none!important;}
 .con-so-cta .btn-gold{display:inline-flex!important;margin-top:34px;border-radius:7px!important;background:var(--pts-gold)!important;color:var(--pts-navy)!important;padding:12px 22px!important;font-weight:900!important;}
 
-.home-5{padding-top:48px!important;padding-bottom:48px!important;background:#fff!important;}
-.home-5 .section-title p{margin-bottom:8px!important;}
-.home-5 .section-title h3{display:none!important;}
-#inf_list_partner{display:flex!important;align-items:center;justify-content:center;flex-wrap:wrap;gap:26px 42px!important;margin-top:25px!important;}
-#inf_list_partner .inf_item_partner{width:auto!important;}
-#inf_list_partner .wrap{width:130px!important;height:58px!important;border:0!important;background:transparent!important;filter:none;opacity:1;transition:.2s;}
-#inf_list_partner img{width:100%!important;height:100%!important;object-fit:contain!important;}
-@media(max-width:767px){
-    #inf_list_partner{flex-wrap:nowrap!important;justify-content:flex-start!important;overflow-x:auto!important;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity;padding-bottom:10px;gap:22px!important;}
-    #inf_list_partner .inf_item_partner{flex:0 0 auto!important;scroll-snap-align:start;}
-}
-
-.wrap-testimonial{margin:0!important;padding:64px 0!important;background:#f8fafc!important;}
-.wrap-testimonial .row{margin-top:30px!important;}
-.testimonial-card{height:100%;min-height:210px;border:1px solid var(--pts-line)!important;border-radius:14px!important;background:#fff!important;padding:25px!important;box-shadow:none!important;}
-.testimonial-card:before{content:"★★★★★";display:block;color:var(--pts-gold);font-size:15px;letter-spacing:2px;margin-bottom:16px;}
-.testimonial-name{color:var(--pts-navy)!important;font-weight:900!important;}
 .testimonial-role{color:var(--pts-gold-dark)!important;font-size:13.5px!important;}
 .testimonial-content{color:#475569!important;font-size:15.5px!important;line-height:1.75!important;}
 
