@@ -75,6 +75,8 @@ test('header, menu, breadcrumb and footer remain usable', async ({ page, isMobil
 
   await page.locator('footer').scrollIntoViewIfNeeded();
   await expect(page.locator('footer')).toBeVisible();
+  await page.locator('#footer_logo').scrollIntoViewIfNeeded();
+  await page.waitForTimeout(300);
   await expect(page.locator('#footer_logo img')).toBeVisible();
   expect(pageErrors).toEqual([]);
 });
@@ -261,9 +263,9 @@ test('dealer CTA opens a complete, styled and enabled form', async ({ page }) =>
 
 test('mobile news and project category rails do not re-layout into Slick after load', async ({ page, isMobile }) => {
   test.skip(!isMobile, 'The native category rail is a mobile/tablet layout.');
-  for (const path of ['/tin-tuc/', '/du-an-da-thuc-hien/']) {
+  for (const [path, selector] of [['/tin-tuc/', '.nh-filters'], ['/du-an-da-thuc-hien/', '.pts-ph-filters > div']]) {
     await page.goto(path, { waitUntil: 'domcontentloaded' });
-    const rail = page.locator('.CRlist_term_blog_box').first();
+    const rail = page.locator(selector).first();
     await expect(rail).toBeVisible();
     const initial = await rail.evaluate(element => ({
       height: element.getBoundingClientRect().height,

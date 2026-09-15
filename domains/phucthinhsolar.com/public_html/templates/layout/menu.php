@@ -8,12 +8,12 @@
     <div class="">
         <ul class="d-flex align-items-center justify-content-between">
             
-            <li><a class="<?php if($com=='' || $com=='index') echo 'active'; ?> transition" href="" title="<?=trangchu?>"><?=trangchu?></a></li>
+            <li class="menu-home"><a class="<?php if($com=='' || $com=='index') echo 'active'; ?> transition" href="" title="<?=trangchu?>"><?=trangchu?></a></li>
 
             <li><a class="<?php if($com=='gioi-thieu' || $com=='ve-chung-toi') echo 'active'; ?> transition" href="ve-chung-toi/" title="Về chúng tôi">Về chúng tôi</a></li>
 
             <li class="menu-catalog">
-                <a class="has-child <?php if($com=='san-pham') echo 'active'; ?> transition" href="san-pham/" title="Sản phẩm"><i class="fas fa-th-large"></i> Sản phẩm</a>
+                <a class="has-child <?php if($com=='san-pham') echo 'active'; ?> transition" href="san-pham/" title="Danh mục sản phẩm"><i class="fas fa-bars"></i> Danh mục sản phẩm</a>
                 <?php if(count($splist)) { ?>
                     <ul>
                         <?php foreach($splist as $klist => $vlist) {
@@ -145,9 +145,9 @@
                 <?php } ?>
             </li>
 
-            <li><a class="<?php if($com=='dai-ly') echo 'active'; ?> transition" href="dai-ly" title="Đại lý">Đại lý</a></li>
+            <li class="menu-dealer"><a class="<?php if($com=='dai-ly') echo 'active'; ?> transition" href="dai-ly" title="Đại lý">Đại lý</a></li>
 
-            <li><a class="<?php if($com=='lien-he') echo 'active'; ?> transition" href="lien-he" title="<?=lienhe?>"><?=lienhe?></a></li>
+            <li class="menu-contact"><a class="<?php if($com=='lien-he') echo 'active'; ?> transition" href="lien-he" title="<?=lienhe?>"><?=lienhe?></a></li>
 
         </ul>
     </div>

@@ -121,6 +121,12 @@ readinessAssert(
 );
 $adminLayoutCssSource = file_get_contents('/var/www/html/administrator/templates/layout/css.php');
 $adminStyleSource = file_get_contents('/var/www/html/administrator/assets/css/adminlte-style.css');
+$adminSettingFormSource = file_get_contents('/var/www/html/administrator/templates/setting/man/man_add_tpl.php');
+readinessAssert(
+    strpos($adminSettingFormSource, 'data[options][header_promise]') !== false
+        && strpos($adminSettingFormSource, 'maxlength="100"') !== false,
+    'Cài đặt website cho phép sửa thông điệp ngắn Header với giới hạn độ dài'
+);
 readinessAssert(
     strpos(file_get_contents('/var/www/html/libraries/config-type.php'), 'product_campaign&act=man') !== false
         && strpos($adminLayoutCssSource, 'filemtime(ROOT') !== false

@@ -26,8 +26,10 @@ async function settlePage(page) {
     if (document.fonts && document.fonts.ready) await document.fonts.ready;
     const pending = Array.from(document.images).filter(image => !image.complete);
     await Promise.all(pending.map(image => new Promise(resolve => {
-      image.addEventListener('load', resolve, { once: true });
-      image.addEventListener('error', resolve, { once: true });
+      const finish = () => { clearTimeout(timer); resolve(); };
+      const timer = setTimeout(finish, 3000);
+      image.addEventListener('load', finish, { once: true });
+      image.addEventListener('error', finish, { once: true });
     })));
   });
   await page.waitForTimeout(1000);
@@ -59,7 +61,7 @@ test('home featured categories visual baseline', async ({ page }) => {
   await page.goto('/', { waitUntil: 'domcontentloaded' });
   await dismissEntrancePopup(page);
   await settlePage(page);
-  const categories = page.locator('.pts-home-category-wrap');
+  const categories = page.locator('.pts-home-category-wrap, .pts-ecosystem').first();
   await categories.scrollIntoViewIfNeeded();
   await page.locator('.top-utility-bar, #headerscroll, #button-contact-vr').evaluateAll(elements => elements.forEach(element => {
     element.style.setProperty('display', 'none', 'important');

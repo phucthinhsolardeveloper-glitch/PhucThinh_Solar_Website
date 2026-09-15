@@ -147,7 +147,7 @@ GA_FRAMEWORK.Menu = function(){
         }
         var delta = currentScrollPos - prevScrollpos;
         if (Math.abs(delta) > 8) {
-            document.getElementById("headerscroll").style.top = (delta < 0) ? "0" : "-130px";
+            document.getElementById("headerscroll").style.top = (delta < 0) ? "0" : (-headerHeight - 8) + "px";
             prevScrollpos = currentScrollPos;
         }
         }
@@ -850,6 +850,7 @@ GA_FRAMEWORK.Cart = function(){
                     if(action=='addnow')
                     {
                         $('.count-cart').html(result.max);
+                        $('.icon-cart-header').attr('aria-label', 'Giỏ hàng có ' + result.max + ' sản phẩm');
                         $.ajax({
                             url:'api/cart.php',
                             type: "POST",

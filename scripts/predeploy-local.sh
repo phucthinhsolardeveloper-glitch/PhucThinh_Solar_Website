@@ -278,9 +278,12 @@ for public_path in "${public_paths[@]}"; do
 done
 
 grep -qF '<title>' /tmp/pts-predeploy-home.html
+grep -qF 'class="header pts-header-v3"' /tmp/pts-predeploy-home.html
 grep -qF 'pts-brand-wordmark' /tmp/pts-predeploy-home.html
-grep -qF '<span class="pts-brand-text">PHÚC THỊNH SOLAR</span>' /tmp/pts-predeploy-home.html
-grep -qF '<i class="fas fa-phone-alt"></i> Hotline:' /tmp/pts-predeploy-home.html
+grep -qF 'class="hdr-search-form"' /tmp/pts-predeploy-home.html
+grep -qF 'class="hdr-call"' /tmp/pts-predeploy-home.html
+grep -qF 'id="keyword-res"' /tmp/pts-predeploy-home.html
+assert_css_shipped /tmp/pts-predeploy-home.html 'assets/css/header-v3.css' '.pts-header-v3'
 grep -qF 'name="form_csrf"' /tmp/pts-predeploy-contact.html
 grep -qF 'title-pro-detail' /tmp/pts-predeploy-product.html
 grep -qF 'Gọi báo giá' /tmp/pts-predeploy-product.html

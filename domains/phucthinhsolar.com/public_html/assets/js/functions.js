@@ -476,6 +476,7 @@ function deleteCart(obj)
         },
         success: function(result){
             $('.count-cart').html(result.max);
+            $('.icon-cart-header').attr('aria-label', 'Giỏ hàng có ' + result.max + ' sản phẩm');
             if(result.max)
             {
                 formCart.find('.load-price-temp').html(result.tempText);

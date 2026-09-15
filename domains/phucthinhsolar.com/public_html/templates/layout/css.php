@@ -73,6 +73,7 @@
     if($template == 'news/service_list' || $template == 'news/service') $css->set("css/solution-hub.css");
     if($template == 'news/project' || $template == 'news/project_detail') $css->set("css/project-hub.css");
     if(isset($type) && $type === 'tin-tuc' && $source === 'news') $css->set('css/news-hub.css');
+    $css->set("css/header-v3.css");
     echo $css->get();
 ?>
 <script type="text/javascript" src="assets/js/jquery.min.js?v=NMr3JZBT0U"></script>

@@ -243,6 +243,11 @@
 						<label for="thoigianlamviec">Thời gian làm việc:</label>
 						<input type="text" class="form-control text-sm" name="data[options][thoigianlamviec]" id="thoigianlamviec" placeholder="Thời gian làm việc" value="<?=(!empty($flash->has('thoigianlamviec'))) ? $flash->get('thoigianlamviec') : @$options['thoigianlamviec']?>">
 					</div>
+					<div class="form-group col-md-8 col-sm-6">
+						<label for="header_promise">Thông điệp ngắn trên đầu website:</label>
+						<input type="text" class="form-control text-sm" name="data[options][header_promise]" id="header_promise" maxlength="100" placeholder="Giải pháp năng lượng tối ưu cho mọi công trình" value="<?=htmlspecialchars((!empty($flash->has('header_promise'))) ? $flash->get('header_promise') : (isset($options['header_promise']) ? $options['header_promise'] : ''), ENT_QUOTES, 'UTF-8')?>">
+						<small class="form-text text-muted">Để trống sẽ dùng thông điệp mặc định. Nội dung hiển thị ở thanh trên cùng của header.</small>
+					</div>
 				</div>
 				<?php if(isset($config['setting']['coords_iframe']) && $config['setting']['coords_iframe'] == true) { ?>
 					<div class="form-group">
