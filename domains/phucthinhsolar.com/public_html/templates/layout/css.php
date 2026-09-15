@@ -74,6 +74,7 @@
     if(in_array($template, array('news/service_list', 'news/service', 'news/service_detail'), true)) $css->set("css/solution-hub.css");
     if($template == 'news/project' || $template == 'news/project_detail') $css->set("css/project-hub.css");
     if(isset($type) && $type === 'tin-tuc' && $source === 'news') $css->set('css/news-hub.css');
+    if($source == 'daily') $css->set("css/dealer-v2.css");
     $css->set("css/header-v3.css");
     /* Quy tắc surface phẳng dùng toàn site phải nạp cuối để thắng CSS legacy
        và các stylesheet từng hub mà không sửa rải rác nhiều nguồn. */

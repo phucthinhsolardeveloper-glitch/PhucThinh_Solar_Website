@@ -20,9 +20,12 @@
     }
     if(!$dealerHeroRows)
     {
+        /* 2026-09-15: đổi ảnh mẫu - dealer-distribution.jpg bị crop cao/hẹp
+           xấu trong banner ngang mới; catalog-equipment-system.jpg đã có sẵn
+           mảng tối bên trái vừa đúng cho chữ overlay, không cần crop gượng. */
         $dealerHero = array(
-            'name' => 'Năng lực phân phối thiết bị năng lượng mặt trời',
-            'photo' => 'dealer-distribution.jpg',
+            'name' => 'Thiết bị năng lượng mặt trời phân phối chính hãng',
+            'photo' => 'catalog-equipment-system.jpg',
             'upload' => 'assets/images/site-visuals/'
         );
     }

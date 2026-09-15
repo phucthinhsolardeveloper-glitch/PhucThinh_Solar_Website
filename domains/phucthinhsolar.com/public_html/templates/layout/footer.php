@@ -190,7 +190,7 @@
                 <div class="phone-vr-img-circle">
 
                     <a target="_blank" href="https://zalo.me/<?=$func->parsePhone($optsetting['zalo'])?>">
-                        <img alt="Zalo" src="assets/images/zalo.png"
+                        <img alt="Zalo" src="assets/images/zalo-icon.png"
                             class="lazyloaded" data-ll-status="loaded">
                     </a>
                 </div>
@@ -204,9 +204,8 @@
             <div class="phone-vr">
                 <div class="phone-vr-circle-fill"></div>
                 <div class="phone-vr-img-circle">
-                    <a href="tel:<?=$func->parsePhone($optsetting['hotline'])?>">
-                        <img alt="Phone" src="assets/images/phone.png"
-                            class="lazyloaded" data-ll-status="loaded">
+                    <a href="tel:<?=$func->parsePhone($optsetting['hotline'])?>" class="pts-contact-dock-phone" aria-label="Gọi điện">
+                        <i class="fas fa-phone-alt" aria-hidden="true"></i>
                     </a>
                 </div>
             </div>

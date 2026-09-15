@@ -3215,6 +3215,10 @@ body .home-6 .btn-all:hover i{transform:translateX(3px);}
     position:static!important;width:auto!important;height:auto!important;max-width:23px!important;max-height:23px!important;
     transform:none!important;animation:none!important;
 }
+/* 2026-09-15: assets/images/phone.png hỏng (ảnh trắng tinh, không thấy trên
+   nền tròn trắng của nút này) - đổi sang icon FontAwesome, không phụ thuộc
+   file ảnh dễ hỏng, khớp icon "fa-phone" dùng ở nơi khác trên site. */
+#button-contact-vr.pts-contact-dock .pts-contact-dock-phone{color:var(--pts-navy)!important;font-size:19px;}
 .pts-contact-dock-toggle{
     display:none;width:48px;height:48px;border:0;border-radius:50%;
     align-items:center;justify-content:center;background:var(--pts-gold);color:var(--pts-navy-deep);

@@ -289,7 +289,7 @@
        static dai-ly-1; tách ảnh để có kích thước/công tắc đúng mục đích. */
     $nametype = "dealer-hero";
     $config['photo']['man_photo'][$nametype]['title_main_photo'] = "Đại lý - Ảnh năng lực phân phối";
-    $config['photo']['man_photo'][$nametype]['admin_note_photo'] = "Ảnh cạnh form đăng ký đại lý, chuẩn 1600x1000 (8:5). Ưu tiên ảnh kho hàng, showroom hoặc đội vận hành thật; không dùng ảnh dự án/khách hàng không xác minh. Tắt cờ Hiển thị để ẩn ảnh.";
+    $config['photo']['man_photo'][$nametype]['admin_note_photo'] = "Banner đầu trang Đại lý, chuẩn 1920x600 (16:5) - giống banner giữa catalog. Chủ thể/chi tiết quan trọng nằm bên phải, 1/3 bên trái tối hoặc thoáng vì chữ tiêu đề phủ lên đó (không chèn chữ vào ảnh). Ưu tiên ảnh kho hàng, showroom, thiết bị hoặc đội vận hành thật; không dùng ảnh dự án/khách hàng không xác minh. Tắt cờ Hiển thị để ẩn ảnh.";
     $config['photo']['man_photo'][$nametype]['check_photo'] = array("hienthi" => "Hiển thị");
     $config['photo']['man_photo'][$nametype]['number_photo'] = 1;
     $config['photo']['man_photo'][$nametype]['images_photo'] = true;
@@ -298,9 +298,9 @@
     $config['photo']['man_photo'][$nametype]['name_photo'] = true;
     $config['photo']['man_photo'][$nametype]['name_label_photo'] = "Mô tả ảnh";
     $config['photo']['man_photo'][$nametype]['desc_photo'] = false;
-    $config['photo']['man_photo'][$nametype]['width_photo'] = 1600;
-    $config['photo']['man_photo'][$nametype]['height_photo'] = 1000;
-    $config['photo']['man_photo'][$nametype]['thumb_photo'] = '320x200x1';
+    $config['photo']['man_photo'][$nametype]['width_photo'] = 1920;
+    $config['photo']['man_photo'][$nametype]['height_photo'] = 600;
+    $config['photo']['man_photo'][$nametype]['thumb_photo'] = '320x100x1';
     $config['photo']['man_photo'][$nametype]['img_type_photo'] = '.jpg|.jpeg|.png|.webp';
 
 

@@ -382,8 +382,8 @@
 
     // /* Câu chuyện khách hàng và đối tác */
     $nametype = "phan-hoi-dai-ly";
-    $config['news'][$nametype]['title_main'] = "Trang chủ - Khách hàng & đối tác";
-    $config['news'][$nametype]['admin_note'] = "Tối đa 4 câu chuyện ở gần cuối trang chủ. Tên là tên người chia sẻ, Mô tả là chức danh/đơn vị, Nội dung là lời nhận xét và ảnh là ảnh đại diện. Giữ type cũ để không làm mất dữ liệu đã nhập.";
+    $config['news'][$nametype]['title_main'] = "Đại lý - Khách hàng & đối tác";
+    $config['news'][$nametype]['admin_note'] = "Tối đa 3 câu chuyện hiển thị ở trang Đại lý (/dai-ly/). Tên là tên người chia sẻ, Mô tả là chức danh/đơn vị, Nội dung là lời nhận xét và ảnh là ảnh đại diện. Giữ type cũ để không làm mất dữ liệu đã nhập.";
     $config['news'][$nametype]['check'] = array("hienthi" => "Hiển thị");
     $config['news'][$nametype]['view'] = false;
     $config['news'][$nametype]['slug'] = false;
