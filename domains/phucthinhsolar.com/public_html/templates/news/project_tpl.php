@@ -25,7 +25,7 @@
                 if($projectFilterSlug === '') continue;
             ?>
             <a class="pts-ph-filter<?=(!empty($newsList['id']) && (int)$newsList['id'] === (int)$projectFilter['id']) ? ' is-active' : ''?>" href="<?=$projectEscape('danh-muc-du-an/'.$projectFilterSlug.'/')?>">
-                <?php if($projectFilterImage) { ?><img src="<?=$projectEscape(ASSET.$projectFilterImage)?>" alt="" width="22" height="22"><?php } else { ?><i class="fas fa-solar-panel" aria-hidden="true"></i><?php } ?>
+                <?php if($projectFilterImage) { ?><img src="<?=$projectEscape(ASSET.THUMBS.'/48x48x2/'.$projectFilterImage)?>" alt="" width="22" height="22"><?php } else { ?><i class="fas fa-solar-panel" aria-hidden="true"></i><?php } ?>
                 <span><?=$projectEscape($projectFilterName)?></span>
             </a>
             <?php } ?>
@@ -44,9 +44,9 @@
             <?php if($projectFeaturedSlug !== '') { ?>
             <article class="pts-ph-featured">
                 <div class="pts-ph-featured-media<?=$projectFeaturedPhoto ? '' : ' is-placeholder'?>">
-                    <?php if($projectFeaturedPhoto) { ?><img src="<?=$projectEscape(ASSET.$projectFeaturedPhoto)?>" alt="<?=$projectEscape($projectFeaturedName)?>" width="860" height="600" loading="lazy" decoding="async"><?php } else { ?><span class="pts-ph-placeholder" aria-hidden="true">01</span><?php } ?>
+                    <?php if($projectFeaturedPhoto) { ?><img src="<?=$projectEscape(ASSET.THUMBS.'/1200x900x1/'.$projectFeaturedPhoto)?>" alt="<?=$projectEscape($projectFeaturedName)?>" width="1200" height="900" loading="lazy" decoding="async"><?php } else { ?><span class="pts-ph-placeholder" aria-hidden="true">01</span><?php } ?>
                     <?php if($projectFeaturedCategoryName !== '') { ?>
-                    <span class="pts-ph-badge"><?php if($projectFeaturedCategoryImage) { ?><img src="<?=$projectEscape(ASSET.$projectFeaturedCategoryImage)?>" alt="" width="20" height="20"><?php } else { ?><i class="fas fa-solar-panel" aria-hidden="true"></i><?php } ?><?=$projectEscape($projectFeaturedCategoryName)?></span>
+                    <span class="pts-ph-badge"><?php if($projectFeaturedCategoryImage) { ?><img src="<?=$projectEscape(ASSET.THUMBS.'/48x48x2/'.$projectFeaturedCategoryImage)?>" alt="" width="20" height="20"><?php } else { ?><i class="fas fa-solar-panel" aria-hidden="true"></i><?php } ?><?=$projectEscape($projectFeaturedCategoryName)?></span>
                     <?php } ?>
                 </div>
                 <div class="pts-ph-featured-body">
@@ -82,9 +82,9 @@
                 ?>
                 <a class="pts-ph-card" href="<?=$projectEscape($projectSlug.'/')?>">
                     <div class="pts-ph-card-media<?=$projectPhoto ? '' : ' is-placeholder'?>">
-                        <?php if($projectPhoto) { ?><img src="<?=$projectEscape(ASSET.$projectPhoto)?>" alt="<?=$projectEscape($projectName)?>" width="760" height="480" loading="lazy" decoding="async"><?php } else { ?><span class="pts-ph-placeholder" aria-hidden="true"><?=str_pad((string)($projectIndex + 1), 2, '0', STR_PAD_LEFT)?></span><?php } ?>
+                        <?php if($projectPhoto) { ?><img src="<?=$projectEscape(ASSET.THUMBS.'/960x600x1/'.$projectPhoto)?>" alt="<?=$projectEscape($projectName)?>" width="960" height="600" loading="lazy" decoding="async"><?php } else { ?><span class="pts-ph-placeholder" aria-hidden="true"><?=str_pad((string)($projectIndex + 1), 2, '0', STR_PAD_LEFT)?></span><?php } ?>
                         <?php if($projectCategoryName !== '') { ?>
-                        <span class="pts-ph-badge"><?php if($projectCategoryImage) { ?><img src="<?=$projectEscape(ASSET.$projectCategoryImage)?>" alt="" width="20" height="20"><?php } else { ?><i class="fas fa-solar-panel" aria-hidden="true"></i><?php } ?><?=$projectEscape($projectCategoryName)?></span>
+                        <span class="pts-ph-badge"><?php if($projectCategoryImage) { ?><img src="<?=$projectEscape(ASSET.THUMBS.'/48x48x2/'.$projectCategoryImage)?>" alt="" width="20" height="20"><?php } else { ?><i class="fas fa-solar-panel" aria-hidden="true"></i><?php } ?><?=$projectEscape($projectCategoryName)?></span>
                         <?php } ?>
                     </div>
                     <div class="pts-ph-card-body">

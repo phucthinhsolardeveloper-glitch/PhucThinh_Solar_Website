@@ -33,9 +33,20 @@ function solutionHubField(array $row, $field, $lang)
     return $value !== '' ? $value : (isset($row[$field.'vi']) ? solutionHubText($row[$field.'vi']) : '');
 }
 
+function solutionHubNavName(array $row, $lang)
+{
+    return solutionHubField($row, 'title_index', $lang) ?: solutionHubField($row, 'name', $lang);
+}
+
 function solutionHubImage($filename, $upload)
 {
     if(!$filename || basename($filename) !== $filename) return '';
     if(!preg_match('/\.(?:png|jpe?g|gif|webp)$/i', $filename)) return '';
     return is_file($upload.$filename) ? $upload.$filename : '';
+}
+
+function solutionHubPublicPath(array $row, $lang = 'vi')
+{
+    $slug = solutionHubField($row, 'slug', $lang);
+    return $slug !== '' ? 'giai-phap/'.$slug.'/' : 'giai-phap/';
 }

@@ -10,6 +10,66 @@
     // sản phẩm" trang chủ - 2026-09-12, không đổi điều kiện lọc/sắp xếp.
     $splistnb = $cache->get("select pl.name$lang, pl.slugvi, pl.slugen, pl.id, pl.photo, pl.status from #_product_list pl where pl.type = ? and find_in_set('noibat',pl.status) and find_in_set('hienthi',pl.status) and exists (select 1 from #_product p where p.id_list = pl.id and p.type = ? and find_in_set('hienthi',p.status)) order by pl.numb,pl.id desc", array('san-pham','san-pham'), 'result', 7200);
 
+    /* Ba banner dẫn vào nhóm sản phẩm/chiến dịch ở đầu trang. Lấy cả record đã
+       tắt để phân biệt "chưa từng cấu hình" với "Admin chủ động tắt": chỉ khi
+       type hoàn toàn chưa có record mới dùng bộ ảnh mặc định đóng gói cùng
+       website. Khi đã có record, cờ Hiển thị được tôn trọng tuyệt đối. */
+    $homeCampaignRows = $cache->get("select name$lang, desc$lang, photo, link, status from #_photo where type = ? order by numb,id desc", array('home-campaign'), 'result', 7200);
+    $homeCampaigns = array();
+    foreach($homeCampaignRows as $campaignRow)
+    {
+        if(empty($campaignRow['photo']) || strpos(','.(string)$campaignRow['status'].',', ',hienthi,') === false) continue;
+        $homeCampaigns[] = array(
+            'name' => !empty($campaignRow['name'.$lang]) ? $campaignRow['name'.$lang] : 'Giải pháp năng lượng',
+            'desc' => !empty($campaignRow['desc'.$lang]) ? trim(strip_tags(htmlspecialchars_decode($campaignRow['desc'.$lang], ENT_QUOTES))) : '',
+            'photo' => $campaignRow['photo'],
+            'upload' => UPLOAD_PHOTO_L,
+            'link' => !empty($campaignRow['link']) ? $campaignRow['link'] : 'san-pham/'
+        );
+        if(count($homeCampaigns) >= 3) break;
+    }
+    if(!$homeCampaignRows)
+    {
+        $homeCampaigns = array(
+            array(
+                'name' => 'Chiếu sáng năng lượng mặt trời cho công trình',
+                'desc' => 'Thiết bị đồng bộ cho đường nội bộ, khuôn viên và hạ tầng thương mại.',
+                'photo' => 'home-street-lighting.jpg',
+                'upload' => 'assets/images/site-visuals/',
+                'link' => 'san-pham/'
+            ),
+            array(
+                'name' => 'Hệ điện mặt trời và lưu trữ',
+                'desc' => 'Tấm pin, inverter và lưu trữ được lựa chọn theo đúng quy mô sử dụng.',
+                'photo' => 'home-solar-storage.jpg',
+                'upload' => 'assets/images/site-visuals/',
+                'link' => 'giai-phap/'
+            ),
+            array(
+                'name' => 'Chiếu sáng sân vườn và lối đi',
+                'desc' => 'Tạo không gian an toàn, chỉn chu và vận hành độc lập bằng năng lượng sạch.',
+                'photo' => 'home-outdoor-lighting.jpg',
+                'upload' => 'assets/images/site-visuals/',
+                'link' => 'san-pham/'
+            )
+        );
+    }
+
+    /* Trang chủ mới ưu tiên catalog: lấy ba nhóm chủ lực theo cờ major rồi
+       hiển thị tối đa 10 sản phẩm/nhóm. Mỗi truy vấn đều parameterized; thứ tự
+       sản phẩm dùng đúng rule chung của toàn site. */
+    $homeProductCategoryPool = array();
+    foreach($splistnb as $categoryRow) if(!empty($categoryRow['status']) && strpos(','.$categoryRow['status'].',', ',major,') !== false) $homeProductCategoryPool[] = $categoryRow;
+    foreach($splistnb as $categoryRow) if(empty($categoryRow['status']) || strpos(','.$categoryRow['status'].',', ',major,') === false) $homeProductCategoryPool[] = $categoryRow;
+    $homeProductGroups = array();
+    foreach($homeProductCategoryPool as $homeProductCategory)
+    {
+        if(count($homeProductGroups) >= 3) break;
+        $homeGroupProducts = $cache->get("select name$lang, slugvi, slugen, id, id_list, id_cat, id_brand, photo, photo_khuyenmai, regular_price, sale_price, discount, type, status, cong_suat, waterproof_rating, lighting_time from #_product where type = ? and id_list = ? and photo <> '' and find_in_set('hienthi',status)".publicProductDefaultOrder()." limit 0,10", array('san-pham', (int)$homeProductCategory['id']), 'result', 7200);
+        if(!$homeGroupProducts) continue;
+        $homeProductGroups[] = array('category' => $homeProductCategory, 'products' => $homeGroupProducts);
+    }
+
     /* Giới thiệu ngắn (About teaser) trang chủ - thêm Admin 2026-09-14 (trước
        đó hardcode). Ảnh/nhãn/tiêu đề/mô tả/chữ nút lấy record home-about hiển
        thị đầu tiên; 4 gạch đầu dòng lấy tối đa 4 record home-about-point.

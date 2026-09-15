@@ -36,6 +36,9 @@
 	$router->map('GET', '@^he-thong-dai-ly/?$', function(){ global $configBase; header('Location: '.$configBase.'lien-he/', true, 301); exit; }, 'legacy-he-thong-dai-ly');
 	$router->map('GET', 'product/?', function(){ global $configBase; header('Location: '.$configBase.'san-pham/', true, 301); exit; }, 'legacy-product');
 	$router->map('GET', 'product/[a:product]/?', function($product){ global $d, $configBase; $row=$d->rawQueryOne("select slugvi from #_product where slugvi=? and type=? and find_in_set('hienthi',status) limit 1",array($product,'san-pham')); if(empty($row)){ header('HTTP/1.0 404 Not Found',true,404); include('404.php'); exit; } header('Location: '.$configBase.'san-pham/'.$row['slugvi'],true,301); exit; }, 'legacy-product-detail');
+	/* Canonical mới cho landing Giải pháp. Các URL bare slug và solution/...
+	   vẫn được resolver bên dưới nhận rồi chuyển 301, nên không làm mất link cũ. */
+	$router->map('GET|POST', 'giai-phap/[a:solution]/?', 'solutionLanding', 'solution-landing');
 	$router->map('GET', 'danh-muc-san-pham/[a:list]/[a:cat]/[a:item]/[a:sub]/?', 'productHierarchy', 'product-hierarchy-4');
 	$router->map('GET', 'danh-muc-san-pham/[a:list]/[a:cat]/[a:item]/?', 'productHierarchy', 'product-hierarchy-3');
 	$router->map('GET', 'danh-muc-san-pham/[a:list]/[a:cat]/?', 'productHierarchy', 'product-hierarchy-2');
@@ -185,6 +188,14 @@
 		foreach(array('ids','idi','idc','idl') as $field) if(isset($hierarchy[$field])) { $_GET[$field] = $hierarchy[$field]; break; }
 		$com = 'san-pham';
 	}
+	if($com === 'solutionLanding')
+	{
+		$solutionSlug = !empty($match['params']['solution']) ? $match['params']['solution'] : '';
+		$solutionRow = $d->rawQueryOne("select id from #_news where $sluglang = ? and type = ? and find_in_set('hienthi',status) limit 1", array($solutionSlug, 'giai-phap'));
+		if(empty($solutionRow)) { header('HTTP/1.0 404 Not Found', true, 404); include('404.php'); exit; }
+		$_GET['id'] = (int)$solutionRow['id'];
+		$com = 'giai-phap';
+	}
 	if(!empty($com) && !in_array($com, ['tim-kiem', 'account', 'sitemap']))
 	{
 		require_once LIBRARIES.'public_route_resolver.php';
@@ -204,6 +215,21 @@
 			}
 			$_GET[$routeMatch['route_field']] = $routeMatch['id'];
 			$com = $routeMatch['route_com'];
+			/* Gom các URL chi tiết Giải pháp cũ (bare slug, solution/slug) về
+			   một cấu trúc rõ hierarchy. Category cũ vẫn giữ nguyên để rollback. */
+			if($_SERVER['REQUEST_METHOD'] === 'GET' && $com === 'giai-phap' && $routeMatch['route_field'] === 'id')
+			{
+				$solutionCanonical = $d->rawQueryOne("select $sluglang from #_news where id = ? and type = ? limit 1", array((int)$routeMatch['id'], 'giai-phap'));
+				if(!empty($solutionCanonical[$sluglang]))
+				{
+					$solutionPath = 'giai-phap/'.$solutionCanonical[$sluglang].'/';
+					if(trim($solutionPath, '/') !== trim($requestPath, '/'))
+					{
+						header('Location: '.$configBase.$solutionPath, true, 301);
+						exit;
+					}
+				}
+			}
 		}
 	}
 
@@ -231,7 +257,7 @@
 			$template = "daily/daily";
 			$type = 'dai-ly';
 			$seo->set('type','article');
-			$titleMain = "Đại lý";
+			$titleMain = "Hợp tác đại lý";
 			break;
 
 		case 'tin-tuc':
@@ -239,7 +265,7 @@
 			$template = isset($_GET['id']) ? "news/news_detail" : "news/news";
 			$seo->set('type',isset($_GET['id']) ? "article" : "object");
 			$type = $com;
-			$titleMain = tintuc;
+			$titleMain = "Kiến thức";
 			break;
 
 		// case 'dich-vu':

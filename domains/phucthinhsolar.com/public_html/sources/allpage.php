@@ -15,6 +15,20 @@
     /* Ẩn danh mục rỗng khỏi điều hướng, cùng quy tắc đang áp cho $splist ở trên:
        menu không nên dẫn tới trang danh mục không có bài nào. */
     $gplist = $cache->get("select nl.namevi, nl.nameen, nl.slugvi, nl.slugen, nl.id, nl.photo from #_news_list nl where nl.type = ? and find_in_set('hienthi',nl.status) and exists (select 1 from #_news n where n.id_list = nl.id and n.type = ? and find_in_set('hienthi',n.status)) order by nl.numb,nl.id desc", array('giai-phap','giai-phap'), 'result', 7200);
+    /* Menu đi thẳng tới bài Giải pháp. Các nhóm news_list vẫn giữ URL legacy
+       nhưng không còn tạo thêm một bước click trong điều hướng công khai. */
+    $solutionMenuLinks = array();
+    $solutionMenuRows = $cache->get("select id,namevi,nameen,title_indexvi,title_indexen,slugvi,slugen,status from #_news where type = ? order by numb,id desc", array('giai-phap'), 'result', 7200);
+    $solutionMenuHasSelection = false;
+    foreach($solutionMenuRows as $solutionMenuRow)
+        if(in_array('solutionhub', explode(',', $solutionMenuRow['status']), true)) $solutionMenuHasSelection = true;
+    foreach($solutionMenuRows as $solutionMenuRow)
+    {
+        $solutionMenuStatuses = explode(',', $solutionMenuRow['status']);
+        if(!in_array('hienthi', $solutionMenuStatuses, true)) continue;
+        if($solutionMenuHasSelection && !in_array('solutionhub', $solutionMenuStatuses, true)) continue;
+        $solutionMenuLinks[] = $solutionMenuRow;
+    }
     $ttlist = $cache->get("select nl.name$lang, nl.slugvi, nl.slugen, nl.id from #_news_list nl where nl.type = ? and find_in_set('hienthi',nl.status) and exists (select 1 from #_news n where n.id_list = nl.id and n.type = ? and find_in_set('hienthi',n.status)) order by nl.numb,nl.id desc", array('tin-tuc','tin-tuc'), 'result', 7200);
     $dalist = $cache->get("select nl.name$lang, nl.slugvi, nl.slugen, nl.id, nl.photo from #_news_list nl where nl.type = ? and find_in_set('hienthi',nl.status) and exists (select 1 from #_news n where n.id_list = nl.id and n.type = ? and find_in_set('hienthi',n.status)) order by nl.numb,nl.id desc", array('du-an','du-an'), 'result', 7200);
     $groupMenuRows = function($rows, $parentKey) {

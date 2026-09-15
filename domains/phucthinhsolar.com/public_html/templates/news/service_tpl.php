@@ -15,8 +15,14 @@ $solutionCategoryDesc = !empty($newsList['desc'.$lang]) ? solutionHubText($newsL
                     $solutionGroupSlug = solutionHubField($solutionGroup, 'slug', $lang);
                     $solutionGroupName = solutionHubField($solutionGroup, 'name', $lang);
                     if($solutionGroupSlug === '') continue;
+                    $solutionGroupTarget = 'danh-muc-giai-phap/'.$solutionGroupSlug.'/';
+                    foreach($solutionCards as $solutionCard) {
+                        if((int)$solutionCard['id'] !== (int)$solutionGroup['id']) continue;
+                        $solutionGroupTarget = solutionHubPublicPath($solutionCard['_representative'], $lang);
+                        break;
+                    }
                 ?>
-                <a class="<?=$newsList[$sluglang] === $solutionGroup[$sluglang] ? 'is-active' : ''?>" href="<?=$solutionEscape('danh-muc-giai-phap/'.$solutionGroupSlug.'/')?>"><?=$solutionEscape($solutionGroupName)?></a>
+                <a class="<?=$newsList[$sluglang] === $solutionGroup[$sluglang] ? 'is-active' : ''?>" href="<?=$solutionEscape($solutionGroupTarget)?>"><?=$solutionEscape($solutionGroupName)?></a>
                 <?php } ?>
             </nav>
             <?php } ?>
@@ -34,7 +40,7 @@ $solutionCategoryDesc = !empty($newsList['desc'.$lang]) ? solutionHubText($newsL
                     $solutionItemPhoto = solutionHubImage($solutionItem['photo'], UPLOAD_NEWS_L);
                     if($solutionItemSlug === '') continue;
                 ?>
-                <a class="pts-sh-category-card" href="<?=$solutionEscape('solution/'.$solutionItemSlug.'/')?>">
+                <a class="pts-sh-category-card" href="<?=$solutionEscape(solutionHubPublicPath($solutionItem, $lang))?>">
                     <div class="pts-sh-category-media<?=$solutionItemPhoto ? '' : ' is-placeholder'?>">
                         <?php if($solutionItemPhoto) { ?><img src="<?=$solutionEscape(ASSET.$solutionItemPhoto)?>" alt="" width="640" height="430" loading="lazy" decoding="async"><?php } else { ?><span aria-hidden="true"><?=str_pad((string)($solutionIndex + 1), 2, '0', STR_PAD_LEFT)?></span><?php } ?>
                     </div>

@@ -17,6 +17,16 @@ $_GET['p'] = 1;
     </div>
 </div>
 <?php } ?>
+<?php
+    $catalogVisibleCategoryCount = count($productListHasItems);
+    $catalogCampaignCount = !empty($catalogCampaigns) ? count($catalogCampaigns) : 0;
+    $catalogCampaignPositions = array();
+    for($catalogPositionIndex = 0; $catalogPositionIndex < $catalogCampaignCount; $catalogPositionIndex++) {
+        $catalogCampaignPositions[] = max(1, (int)round((($catalogPositionIndex + 1) * $catalogVisibleCategoryCount) / ($catalogCampaignCount + 1)));
+    }
+    $catalogRenderedCategoryCount = 0;
+    $catalogCampaignPointer = 0;
+?>
 <?php if(count($splist)){foreach($splist as $productListRow){ ?>
     <?php if(isset($productListHasItems[(int)$productListRow['id']])){ ?>
     <section class="pts-catblock" id="pts-cat-<?=$productListRow['id']?>">
@@ -41,6 +51,30 @@ $_GET['p'] = 1;
             <?php if($previewPaging !== '') { ?><div class="pagination-ajax"><?=$previewPaging?></div><?php } ?>
         </div>
     </section>
+    <?php
+        $catalogRenderedCategoryCount++;
+        while($catalogCampaignPointer < $catalogCampaignCount && $catalogRenderedCategoryCount >= $catalogCampaignPositions[$catalogCampaignPointer]) {
+            $catalogCampaign = $catalogCampaigns[$catalogCampaignPointer];
+            $catalogCampaignLink = !empty($catalogCampaign['link']) ? $catalogCampaign['link'] : 'lien-he/';
+            $catalogCampaignModal = in_array($catalogCampaignLink, array('#ptsContactModal', '#ptsDealerModal'), true) ? ltrim($catalogCampaignLink, '#') : '';
+    ?>
+    <section class="pts-catalog-campaign" aria-labelledby="pts-catalog-campaign-<?=$catalogCampaignPointer?>">
+        <a href="<?=htmlspecialchars($catalogCampaignLink, ENT_QUOTES, 'UTF-8')?>"<?=$catalogCampaignModal !== '' ? ' data-toggle="modal" data-target="#'.$catalogCampaignModal.'"' : ''?>>
+            <span class="pts-catalog-campaign-media">
+                <?=$func->getImage(['isLazy' => false, 'class' => '', 'sizes' => '1600x500x1', 'upload' => $catalogCampaign['upload'], 'image' => $catalogCampaign['photo'], 'alt' => $catalogCampaign['name']])?>
+            </span>
+            <span class="pts-catalog-campaign-shade" aria-hidden="true"></span>
+            <span class="pts-catalog-campaign-copy">
+                <h3 id="pts-catalog-campaign-<?=$catalogCampaignPointer?>"><?=htmlspecialchars($catalogCampaign['name'], ENT_QUOTES, 'UTF-8')?></h3>
+                <?php if($catalogCampaign['desc'] !== '') { ?><p><?=htmlspecialchars($catalogCampaign['desc'], ENT_QUOTES, 'UTF-8')?></p><?php } ?>
+                <span>Tìm hiểu giải pháp <i class="fas fa-arrow-right" aria-hidden="true"></i></span>
+            </span>
+        </a>
+    </section>
+    <?php
+            $catalogCampaignPointer++;
+        }
+    ?>
     <?php } ?>
 <?php }} ?>
 <?php if($productListSavedPage === null) unset($_GET['p']); else $_GET['p'] = $productListSavedPage; ?>

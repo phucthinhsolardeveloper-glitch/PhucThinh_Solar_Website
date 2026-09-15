@@ -19,6 +19,11 @@ const PAGES = [
   ['trang chủ', '/'],
   ['về chúng tôi', '/ve-chung-toi/'],
   ['danh sách sản phẩm', '/san-pham/'],
+  ['giải pháp', '/giai-phap/'],
+  ['dự án', '/du-an-da-thuc-hien/'],
+  ['tin tức', '/tin-tuc/'],
+  ['đại lý', '/dai-ly'],
+  ['liên hệ', '/lien-he/'],
 ];
 
 async function measureImages(page) {
@@ -26,7 +31,8 @@ async function measureImages(page) {
     const rows = [];
     document.querySelectorAll('img').forEach(img => {
       const src = img.currentSrc || img.src;
-      // Chỉ xét ảnh nội dung do CMS quản lý, bỏ qua icon tĩnh trong assets/.
+      // Xét ảnh nội dung qua upload/thumbs; bộ ảnh campaign đóng gói cũng đi
+      // qua thumbs nên chịu cùng ngưỡng nét với ảnh Admin.
       if (!/\/(thumbs|upload)\//.test(src)) return;
       const box = img.getBoundingClientRect();
       if (box.width < 4 || img.naturalWidth === 0) return;

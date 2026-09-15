@@ -49,3 +49,27 @@ test('News gallery, pagination, categories, search and consultation', async ({ p
   await expect(page.locator('.nh-cta')).toBeVisible();
   expect(errors).toEqual([]);
 });
+
+test('News detail does not render the featured image twice when CKEditor already contains the same visual', async ({ page }) => {
+  const duplicateCoverArticles = [
+    '/phuc-thinh-solar-chinh-thuc-la-doi-tac-phan-phoi-doc-quyen-den-nang-luong-mat-troi-blue-carbon-tai-viet-nam/',
+    '/duoc-gi-khi-hop-tac-cung-phuc-thinh-solar/',
+    '/blue-carbon-den-nang-luong-mat-troi-cho-du-an/',
+    '/4-luu-y-quan-trong-khi-lap-dat-va-su-dung-den-nang-luong-mat-troi/',
+    '/top-4-loi-ich-khi-su-dung-den-nang-luong-mat-troi/',
+    '/pho-thu-tuong-can-giai-phap-thuc-day-dien-mat-troi-mai-nha/',
+  ];
+  for(const path of duplicateCoverArticles) {
+    const response = await page.goto(path, { waitUntil: 'domcontentloaded' });
+    expect(response.status(), path).toBe(200);
+    await expect(page.locator('.box-detail-news')).toBeVisible();
+    await expect(page.locator('.pts-news-detail-cover'), path).toHaveCount(0);
+    expect(await page.locator('#toc-content img').count(), path).toBeGreaterThan(0);
+  }
+
+  const distinctImagesPath = '/chip-led-cree-thuong-hieu-top-1/';
+  const distinctResponse = await page.goto(distinctImagesPath, { waitUntil: 'domcontentloaded' });
+  expect(distinctResponse.status()).toBe(200);
+  await expect(page.locator('.pts-news-detail-cover')).toHaveCount(1);
+  await expect(page.locator('#toc-content img')).toHaveCount(1);
+});

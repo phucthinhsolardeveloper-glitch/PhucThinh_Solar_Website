@@ -4,13 +4,13 @@ require_once LIBRARIES.'solution_hub.php';
 $nhLang = $lang === 'en' ? 'en' : 'vi';
 $nhEscape = static function($v) { return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8'); };
 $nhUi = $nhLang === 'en' ? array(
-'title'=>'News & Insights','intro'=>'Solar energy knowledge, product updates and stories from Phuc Thinh Solar.',
+'title'=>'Knowledge & Insights','intro'=>'Solar energy knowledge, product updates and stories from Phuc Thinh Solar.',
 'all'=>'All','search'=>'Search articles','empty'=>'No matching articles found.','reset'=>'View all articles',
 'read'=>'min read','featured'=>'Featured articles','results'=>'Articles','pages'=>'Article pages',
 'cta'=>'Phuc Thinh Solar is ready to help','cta_desc'=>'Contact us for advice and the latest information.',
 'cta_label'=>'Need advice or have a topic in mind?','button'=>'Get advice','phone'=>'Call our hotline'
 ) : array(
-'title'=>'Tin tức & Kiến thức','intro'=>'Kiến thức năng lượng mặt trời, thông tin sản phẩm và câu chuyện từ Phúc Thịnh Solar.',
+'title'=>'Kiến thức','intro'=>'Kiến thức năng lượng mặt trời, thông tin sản phẩm và câu chuyện từ Phúc Thịnh Solar.',
 'all'=>'Tất cả','search'=>'Tìm kiếm bài viết','empty'=>'Chưa tìm thấy bài viết phù hợp.','reset'=>'Xem tất cả bài viết',
 'read'=>'phút đọc','featured'=>'Bài viết nổi bật','results'=>'Bài viết','pages'=>'Trang bài viết',
 'cta'=>'Đội ngũ Phúc Thịnh Solar luôn sẵn sàng hỗ trợ','cta_desc'=>'Liên hệ ngay để được tư vấn và cập nhật những thông tin mới nhất.',

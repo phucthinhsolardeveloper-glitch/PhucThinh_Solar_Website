@@ -21,10 +21,10 @@
     $config['news'][$nametype]['content'] = true;
     $config['news'][$nametype]['content_cke'] = true;
     $config['news'][$nametype]['seo'] = true;
-    $config['news'][$nametype]['width'] = 424;
-    $config['news'][$nametype]['height'] = 363;
-    $config['news'][$nametype]['thumb'] = '100x100x1';
-    $config['news'][$nametype]['img_type'] = '.jpg|.gif|.png|.jpeg|.gif';
+    $config['news'][$nametype]['width'] = 1600;
+    $config['news'][$nametype]['height'] = 900;
+    $config['news'][$nametype]['thumb'] = '240x135x1';
+    $config['news'][$nametype]['img_type'] = '.jpg|.jpeg|.png|.webp';
 
     /* Tin tức (List) */
     $config['news'][$nametype]['title_main_list'] = "Tin tức cấp 1";
@@ -61,7 +61,9 @@
     /* Chính sách (hiển thị bằng các link riêng ở chân trang) */
     $nametype = "chinh-sach";
     $config['news'][$nametype]['title_main'] = "Chính sách";
-    $config['news'][$nametype]['dropdown'] = false;
+    /* Giữ màn nhóm legacy trong Admin để URL/quyền cũ còn quản trị được; public
+       menu và card không dùng các nhóm này làm bước điều hướng. */
+    $config['news'][$nametype]['dropdown'] = true;
     $config['news'][$nametype]['list'] = false;
     $config['news'][$nametype]['cat'] = false;
     $config['news'][$nametype]['item'] = false;
@@ -118,10 +120,10 @@
     $config['news'][$nametype]['content'] = true;
     $config['news'][$nametype]['content_cke'] = true;
     $config['news'][$nametype]['seo'] = true;
-    $config['news'][$nametype]['width'] = 397;
-    $config['news'][$nametype]['height'] = 340;
-    $config['news'][$nametype]['thumb'] = '100x100x1';
-    $config['news'][$nametype]['img_type'] = '.jpg|.gif|.png|.jpeg|.gif';
+    $config['news'][$nametype]['width'] = 1600;
+    $config['news'][$nametype]['height'] = 1200;
+    $config['news'][$nametype]['thumb'] = '200x150x1';
+    $config['news'][$nametype]['img_type'] = '.jpg|.jpeg|.png|.webp';
     $config['news'][$nametype]['gallery'] = array(
         $nametype => array(
                 "title_main_photo" => "Hình ảnh dự án",
@@ -131,10 +133,10 @@
                 "images_photo" => true,
                 "avatar_photo" => true,
                 "name_photo" => true,
-                "width_photo" => 300,
-                "height_photo" => 200,
-                "thumb_photo" => '100x100x1',
-                "img_type_photo" => '.jpg|.gif|.png|.jpeg|.gif',
+                "width_photo" => 1600,
+                "height_photo" => 1200,
+                "thumb_photo" => '200x150x1',
+                "img_type_photo" => '.jpg|.jpeg|.png|.webp',
         ),
         "video" => array
         (
@@ -378,9 +380,10 @@
     $config['news'][$nametype]['img_type1'] = '.jpg|.gif|.png|.jpeg|.gif';
 
 
-    // /* Phản hồi từ đại lý */
+    // /* Câu chuyện khách hàng và đối tác */
     $nametype = "phan-hoi-dai-ly";
-    $config['news'][$nametype]['title_main'] = "Phản hồi từ đại lý";
+    $config['news'][$nametype]['title_main'] = "Trang chủ - Khách hàng & đối tác";
+    $config['news'][$nametype]['admin_note'] = "Tối đa 4 câu chuyện ở gần cuối trang chủ. Tên là tên người chia sẻ, Mô tả là chức danh/đơn vị, Nội dung là lời nhận xét và ảnh là ảnh đại diện. Giữ type cũ để không làm mất dữ liệu đã nhập.";
     $config['news'][$nametype]['check'] = array("hienthi" => "Hiển thị");
     $config['news'][$nametype]['view'] = false;
     $config['news'][$nametype]['slug'] = false;
@@ -428,10 +431,10 @@
 
     /* Giải pháp */
     $nametype = "giai-phap";
-    $config['news'][$nametype]['admin_note'] = "Trang /giai-phap/ điều hướng theo Giải pháp cấp 1 (ví dụ Doanh nghiệp, Hộ gia đình). Cờ Đại diện trên Trang Giải pháp chọn bài cung cấp ảnh/nội dung đại diện cho nhóm; nếu chưa chọn, bài Hiển thị đầu tiên trong nhóm được dùng. Tiêu đề ngắn, Ảnh cấp 1 và Thông tin phụ vẫn dùng ở trang chủ. Không đổi slug của nội dung đã xuất bản.";
-    $config['news'][$nametype]['title_index_label'] = "Tiêu đề ngắn trên trang chủ";
+    $config['news'][$nametype]['admin_note'] = "Mỗi record là một landing Giải pháp và đi thẳng từ /giai-phap/ tới /giai-phap/{slug}/. Mô tả dùng cho Hero/card; Nội dung CKEditor bắt đầu từ H2/H3; không chép Hero, sản phẩm, dự án, CTA hoặc form vào editor vì template render riêng. Cờ Trang Giải pháp chọn bài xuất hiện ở landing/menu. Nhóm cấp 1 cũ chỉ giữ để tương thích URL, không còn là bước điều hướng công khai.";
+    $config['news'][$nametype]['title_index_label'] = "Tên ngắn trong menu/card";
     $config['news'][$nametype]['title_main'] = "Giải pháp";
-    $config['news'][$nametype]['dropdown'] = true;
+    $config['news'][$nametype]['dropdown'] = false;
     $config['news'][$nametype]['list'] = true;
     $config['news'][$nametype]['title_index'] = true;
     $config['news'][$nametype]['cat'] = false;
@@ -443,7 +446,7 @@
     $config['news'][$nametype]['copy_image'] = true;
     $config['news'][$nametype]['comment'] = false;
     $config['news'][$nametype]['slug'] = true;
-    $config['news'][$nametype]['check'] = array("noibat" => "Nổi bật", "hienthi" => "Hiển thị", "solutionhub" => "Đại diện trên Trang Giải pháp");
+    $config['news'][$nametype]['check'] = array("noibat" => "Nổi bật", "hienthi" => "Hiển thị", "solutionhub" => "Trang Giải pháp và menu");
     $config['news'][$nametype]['images'] = true;
     $config['news'][$nametype]['show_images'] = true;
     $config['news'][$nametype]['images1'] = true;
@@ -453,14 +456,14 @@
     $config['news'][$nametype]['content1'] = true;
     $config['news'][$nametype]['content1_cke'] = true;
     $config['news'][$nametype]['seo'] = true;
-    $config['news'][$nametype]['width'] = 424;
-    $config['news'][$nametype]['height'] = 363;
-    $config['news'][$nametype]['thumb'] = '100x100x1';
-    $config['news'][$nametype]['img_type'] = '.jpg|.gif|.png|.jpeg|.gif';
-    $config['news'][$nametype]['width1'] = 424;
-    $config['news'][$nametype]['height1'] = 363;
-    $config['news'][$nametype]['thumb1'] = '100x100x1';
-    $config['news'][$nametype]['img_type1'] = '.jpg|.gif|.png|.jpeg|.gif';
+    $config['news'][$nametype]['width'] = 1600;
+    $config['news'][$nametype]['height'] = 1000;
+    $config['news'][$nametype]['thumb'] = '240x150x1';
+    $config['news'][$nametype]['img_type'] = '.jpg|.jpeg|.png|.webp';
+    $config['news'][$nametype]['width1'] = 1600;
+    $config['news'][$nametype]['height1'] = 1000;
+    $config['news'][$nametype]['thumb1'] = '240x150x1';
+    $config['news'][$nametype]['img_type1'] = '.jpg|.jpeg|.png|.webp';
     $config['news'][$nametype]['gallery'] = array
     (
         "thongtinphu" => array
@@ -485,7 +488,7 @@
     );
 
     /* giải pháp (List) */
-    $config['news'][$nametype]['title_main_list'] = "Giải pháp cấp 1";
+    $config['news'][$nametype]['title_main_list'] = "Nhóm Giải pháp cũ (giữ URL)";
     $config['news'][$nametype]['images_list'] = true;
     $config['news'][$nametype]['show_images_list'] = true;
     $config['news'][$nametype]['slug_list'] = true;
@@ -506,15 +509,20 @@
         $config['news'][$nametype] = array(
             'title_main' => $solutionBlockTitle,
             'admin_note' => $nametype === 'solution-intro'
-                ? 'Mở đầu /giai-phap/: tên là tiêu đề lớn, tiêu đề phụ là nhãn nhỏ, mô tả là đoạn giới thiệu, ảnh là ảnh công trình. Lấy record Hiển thị đầu tiên theo STT. Nếu có record nhưng tắt tất cả, phần mở đầu được ẩn (vẫn giữ H1 cho trang).'
+                ? 'Trang tổng /giai-phap/: tên là H1, tiêu đề phụ là ngữ cảnh ngắn, mô tả là đoạn mở đầu, ảnh là ảnh công trình. Nội dung CKEditor chứa các section biên tập tiếp theo; dùng H2/H3 đúng cấp, ảnh ngang đồng nhất, không tự bọc card/viền. Lấy record Hiển thị đầu tiên theo STT. Nếu có record nhưng tắt tất cả, phần mở đầu và nội dung biên tập được ẩn (vẫn giữ H1 cho trang).'
                 : 'CTA cuối /giai-phap/: tên là tiêu đề, mô tả là lời mời tư vấn, tiêu đề phụ là chữ trên nút. Ảnh nền tùy chọn. Nút mở popup tư vấn hiện hữu; hotline lấy từ Cấu hình website. Tắt tất cả record để ẩn CTA.',
             'check' => array('hienthi' => 'Hiển thị'),
             'view' => false, 'slug' => false, 'copy' => false,
             'images' => true, 'show_images' => true,
             'title_index' => true, 'title_index_required' => false,
             'title_index_label' => $nametype === 'solution-intro' ? 'Nhãn nhỏ phía trên tiêu đề' : 'Chữ trên nút tư vấn',
-            'desc' => true, 'desc_cke' => false, 'content' => false, 'seo' => false,
-            'width' => 1200, 'height' => 800, 'thumb' => '150x100x1',
+            'desc' => true, 'desc_cke' => false,
+            'content' => $nametype === 'solution-intro',
+            'content_cke' => $nametype === 'solution-intro',
+            'seo' => false,
+            'width' => 1600,
+            'height' => $nametype === 'solution-cta' ? 500 : 1000,
+            'thumb' => $nametype === 'solution-cta' ? '320x100x1' : '240x150x1',
             'img_type' => '.jpg|.jpeg|.png|.webp'
         );
     }
@@ -581,7 +589,7 @@
        news hiện hữu; frontend vẫn có fallback legacy khi chưa tạo record. */
     $nametype = "about-team";
     $config['news'][$nametype]['title_main'] = "About - Con người";
-    $config['news'][$nametype]['admin_note'] = "Điều khiển riêng section Con người tại /ve-chung-toi/: nhãn nhỏ, tiêu đề, mô tả, nội dung và ảnh. Frontend lấy record đang hiển thị có thứ tự nhỏ nhất.";
+    $config['news'][$nametype]['admin_note'] = "Điều khiển riêng section Con người tại /ve-chung-toi/. Ảnh chuẩn 1600x1120, ưu tiên ảnh đội ngũ/showroom/workshop thật có thể xác minh; chủ thể nằm trong vùng giữa để crop responsive. Frontend lấy record đang hiển thị có thứ tự nhỏ nhất.";
     $config['news'][$nametype]['check'] = array("hienthi" => "Hiển thị");
     $config['news'][$nametype]['view'] = false;
     $config['news'][$nametype]['slug'] = false;
@@ -596,10 +604,10 @@
     $config['news'][$nametype]['content'] = true;
     $config['news'][$nametype]['content_cke'] = true;
     $config['news'][$nametype]['seo'] = false;
-    $config['news'][$nametype]['width'] = 1200;
-    $config['news'][$nametype]['height'] = 900;
-    $config['news'][$nametype]['thumb'] = '100x100x1';
-    $config['news'][$nametype]['img_type'] = '.jpg|.gif|.png|.jpeg|.gif';
+    $config['news'][$nametype]['width'] = 1600;
+    $config['news'][$nametype]['height'] = 1120;
+    $config['news'][$nametype]['thumb'] = '200x140x1';
+    $config['news'][$nametype]['img_type'] = '.jpg|.jpeg|.png|.webp';
 
     /* Ba điểm nhấn dưới section Con người của trang About. Tách thành record
        riêng để cả icon, tiêu đề, mô tả và thứ tự đều biên tập được. */
@@ -674,7 +682,7 @@
     /* Lịch sử */
     $nametype = "lich-su";
     $config['news'][$nametype]['title_main'] = "Lịch sử";
-    $config['news'][$nametype]['admin_note'] = "Điều khiển phần Câu chuyện và timeline tại /ve-chung-toi/. Record giới thiệu có thể để trống Năm cột mốc; mỗi record có năm hợp lệ tạo một mốc trên timeline.";
+    $config['news'][$nametype]['admin_note'] = "Điều khiển phần Câu chuyện và timeline tại /ve-chung-toi/. Ảnh câu chuyện chuẩn 1600x1120, dùng ảnh doanh nghiệp thật và không chèn chữ vào ảnh. Record giới thiệu có thể để trống Năm cột mốc; mỗi record có năm hợp lệ tạo một mốc trên timeline.";
     $config['news'][$nametype]['check'] = array("hienthi" => "Hiển thị");
     $config['news'][$nametype]['view'] = false;
     $config['news'][$nametype]['slug'] = false;
@@ -693,10 +701,10 @@
     $config['news'][$nametype]['solieu_placeholder'] = "Ví dụ: 2019";
     $config['news'][$nametype]['solieu_required'] = false;
     $config['news'][$nametype]['seo'] = false;
-    $config['news'][$nametype]['width'] = 320;
-    $config['news'][$nametype]['height'] = 240;
-    $config['news'][$nametype]['thumb'] = '100x100x1';
-    $config['news'][$nametype]['img_type'] = '.jpg|.gif|.png|.jpeg|.gif';
+    $config['news'][$nametype]['width'] = 1600;
+    $config['news'][$nametype]['height'] = 1120;
+    $config['news'][$nametype]['thumb'] = '200x140x1';
+    $config['news'][$nametype]['img_type'] = '.jpg|.jpeg|.png|.webp';
 
     /* Sứ mệnh - Tầm nhìn - Giá trị */
     $nametype = "su-menh";

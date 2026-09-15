@@ -2,6 +2,7 @@
     /* Sản phẩm */
     $nametype = "san-pham";
     $config['product'][$nametype]['title_main'] = "Sản Phẩm";
+    $config['product'][$nametype]['admin_note'] = "Ảnh sản phẩm chuẩn 1200x1200, nền trắng hoặc trong suốt, sản phẩm nằm gọn trong 85% khung và không chèn chữ/khung quảng cáo. Frontend dùng contain nên không cắt sản phẩm; ảnh chiến dịch riêng quản lý tại Thư viện khung chiến dịch.";
     $config['product'][$nametype]['dropdown'] = true;
     $config['product'][$nametype]['list'] = true;
     $config['product'][$nametype]['cat'] = true;
@@ -38,9 +39,9 @@
             "cart_photo" => true,
             "avatar_photo" => true,
             "name_photo" => true,
-            "width_photo" => 540,
-            "height_photo" => 540,
-            "thumb_photo" => '100x100x1',
+            "width_photo" => 1200,
+            "height_photo" => 1200,
+            "thumb_photo" => '160x160x2',
             "img_type_photo" => '.jpg|.gif|.png|.jpeg|.webp'
         ),
         // 'thuoctinh' => array
@@ -79,10 +80,10 @@
     $config['product'][$nametype]['chinhsachmuahang'] = true;
     $config['product'][$nametype]['chinhsachmuahang_cke'] = true;
     $config['product'][$nametype]['seo'] = true;
-    $config['product'][$nametype]['width'] = 600;
-    $config['product'][$nametype]['height'] = 600;
-    $config['product'][$nametype]['width2'] = 600;
-    $config['product'][$nametype]['height2'] = 600;
+    $config['product'][$nametype]['width'] = 1200;
+    $config['product'][$nametype]['height'] = 1200;
+    $config['product'][$nametype]['width2'] = 1200;
+    $config['product'][$nametype]['height2'] = 1200;
     $config['product'][$nametype]['thumb'] = '';
     $config['product'][$nametype]['img_type'] = '.jpg|.png|.jpeg|.webp';
     $config['product'][$nametype]['img_type2'] = '.jpg|.png|.jpeg|.webp';
@@ -111,10 +112,10 @@
     $config['product'][$nametype]['check_list'] = array("noibat" => "Trang chủ","hienthi" => "Hiển thị","major" => "Chủ lực (card lớn trang chủ)","solutionhub" => "Tìm nhanh trên trang Giải pháp");
     $config['product'][$nametype]['desc_list'] = true;
     $config['product'][$nametype]['seo_list'] = true;
-    $config['product'][$nametype]['width_list'] = 1200;
-    $config['product'][$nametype]['height_list'] = 200;
-    $config['product'][$nametype]['thumb_list'] = '1200x200x1';
-    $config['product'][$nametype]['img_type_list'] = '.jpg|.gif|.png|.jpeg|.gif';
+    $config['product'][$nametype]['width_list'] = 800;
+    $config['product'][$nametype]['height_list'] = 800;
+    $config['product'][$nametype]['thumb_list'] = '200x200x2';
+    $config['product'][$nametype]['img_type_list'] = '.jpg|.jpeg|.png|.webp';
 
     /* Sản phẩm (Cat) */
     $config['product'][$nametype]['title_main_cat'] = "Sản phẩm cấp 2";
@@ -124,10 +125,10 @@
     $config['product'][$nametype]['check_cat'] = array("noibat" => "Nổi bật", "hienthi" => "Hiển thị");
     $config['product'][$nametype]['desc_cat'] = true;
     $config['product'][$nametype]['seo_cat'] = true;
-    $config['product'][$nametype]['width_cat'] = 300;
-    $config['product'][$nametype]['height_cat'] = 200;
-    $config['product'][$nametype]['thumb_cat'] = '100x100x1';
-    $config['product'][$nametype]['img_type_cat'] = '.jpg|.gif|.png|.jpeg|.gif';
+    $config['product'][$nametype]['width_cat'] = 1200;
+    $config['product'][$nametype]['height_cat'] = 800;
+    $config['product'][$nametype]['thumb_cat'] = '180x120x2';
+    $config['product'][$nametype]['img_type_cat'] = '.jpg|.jpeg|.png|.webp';
 
     // /* Sản phẩm (Item) */
     // $config['product'][$nametype]['title_main_item'] = "Sản phẩm cấp 3";
@@ -162,10 +163,10 @@
     $config['product'][$nametype]['slug_brand'] = true;
     $config['product'][$nametype]['check_brand'] = array("hienthi" => "Hiển thị");
     $config['product'][$nametype]['seo_brand'] = true;
-    $config['product'][$nametype]['width_brand'] = 150;
-    $config['product'][$nametype]['height_brand'] = 150;
-    $config['product'][$nametype]['thumb_brand'] = '100x100x1';
-    $config['product'][$nametype]['img_type_brand'] = '.jpg|.gif|.png|.jpeg|.gif';
+    $config['product'][$nametype]['width_brand'] = 600;
+    $config['product'][$nametype]['height_brand'] = 240;
+    $config['product'][$nametype]['thumb_brand'] = '200x80x2';
+    $config['product'][$nametype]['img_type_brand'] = '.jpg|.jpeg|.png|.webp';
 
     /* Thư viện ảnh */
     // $nametype = "thu-vien-anh";

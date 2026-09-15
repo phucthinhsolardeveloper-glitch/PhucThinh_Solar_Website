@@ -1,0 +1,139 @@
+/* Media system — tỷ lệ và cách fit ảnh dùng chung toàn public site.
+   Ảnh nội dung không bị kéo giãn; ảnh sản phẩm/logo/chứng nhận dùng contain,
+   ảnh bối cảnh/campaign dùng cover trong một tỷ lệ đã định trước. */
+
+.product-card-img{
+  display:grid!important;
+  width:100%!important;
+  aspect-ratio:1/1!important;
+  place-items:center;
+  overflow:hidden!important
+}
+.product-card-img>picture,
+.product-card-img>picture>img,
+.product-card-img>.pts-product-photo{
+  display:block;
+  width:100%!important;
+  height:100%!important
+}
+.product-card-img>picture>img,
+.product-card-img>.pts-product-photo{object-fit:contain!important;object-position:center!important}
+.product-card-img .pts-promo-frame{object-fit:fill!important}
+
+.left-pro-detail>a.MagicZoom,
+.left-pro-detail>a.MagicZoom>img{aspect-ratio:1/1!important}
+.left-pro-detail>a.MagicZoom>img{object-fit:contain!important;object-position:center!important}
+
+.nh-media{aspect-ratio:16/9!important;overflow:hidden!important}
+.nh-media picture,.nh-media img{display:block;width:100%!important;height:100%!important}
+.nh-media img{object-fit:cover!important;object-position:center!important}
+
+.pts-ph-card-media{aspect-ratio:8/5!important;overflow:hidden!important}
+.pts-ph-featured-media{aspect-ratio:4/3!important;overflow:hidden!important}
+.pts-ph-card-media>picture,.pts-ph-card-media>img,
+.pts-ph-featured-media>picture,.pts-ph-featured-media>img{display:block;width:100%!important;height:100%!important}
+.pts-ph-card-media>img,.pts-ph-featured-media>img{object-fit:cover!important;object-position:center!important}
+
+.pts-sh-choice{grid-template-columns:minmax(0,1fr)!important;align-content:start!important;min-height:0!important}
+.pts-sh-choice-media{width:100%!important;min-width:0!important;min-height:0!important;aspect-ratio:8/5!important;overflow:hidden!important}
+.pts-sh-choice-media picture,.pts-sh-choice-media img{display:block;width:100%!important;height:100%!important}
+.pts-sh-choice-media img{object-fit:cover!important;object-position:center!important}
+.pts-sh-choice-copy{min-height:190px}
+
+.pts-proof-card img,
+.pts-about-certificate-thumb img,
+.pts-brands-item img,
+#inf_partner img{object-fit:contain!important;object-position:center!important}
+
+.box-detail-news img,
+.pts-content-page img,
+.pts-category-content img,
+.content-main img{max-width:100%;height:auto}
+
+/* Banner ngắt catalog: hình là nội dung bán hàng, không thêm card/border bao. */
+.pts-catalog-campaign{margin:10px 0 54px}
+.pts-catalog-campaign>a{
+  position:relative;
+  display:block;
+  min-height:280px;
+  overflow:hidden;
+  border:0;
+  border-radius:3px;
+  background:#081a38;
+  color:#fff!important;
+  isolation:isolate
+}
+.pts-catalog-campaign-media,
+.pts-catalog-campaign-media picture{
+  position:absolute;
+  z-index:-2;
+  inset:0;
+  display:block;
+  width:100%;
+  height:100%
+}
+.pts-catalog-campaign-media img{display:block;width:100%!important;height:100%!important;object-fit:cover!important;object-position:center!important}
+.pts-catalog-campaign-shade{position:absolute;z-index:-1;inset:0;background:linear-gradient(90deg,rgba(4,17,46,.96) 0,rgba(4,17,46,.76) 37%,rgba(4,17,46,.12) 72%)}
+.pts-catalog-campaign-copy{display:flex;min-height:280px;max-width:620px;flex-direction:column;align-items:flex-start;justify-content:center;padding:38px clamp(24px,4vw,58px)}
+.pts-catalog-campaign-copy h3{margin:0;color:#fff;font-size:clamp(25px,3vw,39px);font-weight:900;line-height:1.15;letter-spacing:-.02em}
+.pts-catalog-campaign-copy p{max-width:540px;margin:12px 0 0;color:#dbe7f7;font-size:14px;line-height:1.65}
+.pts-catalog-campaign-copy>span{display:inline-flex;align-items:center;gap:9px;margin-top:20px;color:#f3c850;font-size:13px;font-weight:850}
+.pts-catalog-campaign-copy i{transition:transform .18s}
+.pts-catalog-campaign>a:hover .pts-catalog-campaign-copy i{transform:translateX(4px)}
+
+/* Contact: ảnh 8:5 làm điểm neo, nội dung và form vẫn nổi trực tiếp trên nền. */
+.pts-contact-intro-row{align-items:center;margin-bottom:54px}
+.pts-contact-intro-media{overflow:hidden;border-radius:3px}
+.pts-contact-intro-media picture,.pts-contact-intro-media img{display:block;width:100%!important;aspect-ratio:8/5!important}
+.pts-contact-intro-media img{height:100%!important;object-fit:cover!important;object-position:center!important}
+.pts-contact-intro-copy{padding-left:42px!important}
+.pts-contact-intro-copy h2{margin:0 0 16px!important;text-align:left!important}
+.pts-contact-intro-desc{margin:0 0 16px;color:#475569;font-size:16px;line-height:1.7}
+.pts-contact-company{margin:0 0 20px;color:#0b2147;font-size:15px;font-weight:750;line-height:1.6}
+.pts-contact-intro-copy .custContContact{display:grid!important;justify-content:start;gap:9px!important;margin-bottom:20px!important}
+.pts-contact-intro-copy .custContContact li a,
+.pts-contact-intro-copy .custContContact li span{color:#475569!important;font-size:14.5px!important;text-decoration:none!important}
+.pts-contact-intro-action{display:inline-flex;align-items:center;gap:9px;color:#9b6b06!important;font-size:13.5px;font-weight:850;text-decoration:none!important}
+#yeu-cau-tu-van .formContact{max-width:980px;margin:0 auto!important;padding:0!important}
+
+/* Đại lý: ảnh 8:5 đứng riêng, nội dung không đè lên ảnh như layout legacy. */
+.agency_1 .inner_content{position:relative!important;display:block!important;width:100%!important;min-height:0!important;padding:0!important;overflow:visible!important;border:0!important;border-radius:0!important;background:transparent!important;isolation:auto}
+.agency_1 .inner_content:before{display:none!important;content:none!important}
+.pts-dealer-hero-media,.pts-dealer-hero-media picture{position:relative;display:block;width:100%;aspect-ratio:8/5;overflow:hidden;border-radius:3px}
+.pts-dealer-hero-media img{display:block;width:100%!important;height:100%!important;object-fit:cover!important;object-position:center!important}
+.agency_1 .inner{display:block;min-height:0;padding:30px 0 0!important}
+.agency_1 .inner .content.text{max-width:760px;color:#e5edf8!important}
+.agency_1 .inner .content.text h3{color:#fff!important;margin:0 0 14px!important}
+.agency_1 .inner .content.text p,.agency_1 .inner .content.text li{color:#dbe7f7!important;text-shadow:none!important}
+.agency_1 .inf_default_form{border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important}
+.agency_2 .list_item .item,
+.agency_3 .list_item .item,
+.agency_4 .list_item .item{border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important}
+.agency_2 .item_img{aspect-ratio:8/5;overflow:hidden;border-radius:3px}
+.agency_2 .item_img picture,.agency_2 .item_img img{display:block;width:100%!important;height:100%!important}
+.agency_2 .item_img img{object-fit:cover!important;object-position:center!important}
+
+@media(max-width:991px){
+  .pts-contact-intro-copy{padding:28px 15px 0!important}
+  .agency_1 .inner{padding-top:24px!important}
+}
+
+@media(max-width:767px){
+  .pts-catalog-campaign{margin:2px 0 40px}
+  .pts-catalog-campaign>a,.pts-catalog-campaign-copy{min-height:330px}
+  .pts-catalog-campaign-media img{object-position:62% center!important}
+  .pts-catalog-campaign-shade{background:linear-gradient(0deg,rgba(4,17,46,.96) 0,rgba(4,17,46,.64) 56%,rgba(4,17,46,.16) 100%)}
+  .pts-catalog-campaign-copy{justify-content:flex-end;padding:26px 22px}
+  .pts-catalog-campaign-copy h3{font-size:25px}
+  .pts-contact-intro-row{margin-bottom:38px}
+  .pts-contact-intro-media{padding:0 15px;border-radius:0}
+  .pts-contact-intro-media picture,.pts-contact-intro-media img{aspect-ratio:1/1!important;border-radius:3px}
+  .pts-contact-intro-media img{object-position:center!important}
+  #yeu-cau-tu-van .formContact{padding:0!important}
+  .agency_1 .inner{padding:22px 0 0!important}
+  .pts-sh-choice-copy{min-height:0}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .pts-catalog-campaign-copy i{transition:none}
+}

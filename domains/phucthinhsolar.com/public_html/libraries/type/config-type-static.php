@@ -19,9 +19,11 @@
 
     /* Bài giới thiệu đại lý 1 */
     $nametype = "dai-ly-1";
-    $config['static'][$nametype]['title_main'] = "Bài giới thiệu 1";
+    $config['static'][$nametype]['title_main'] = "Đại lý - Nội dung cạnh form đăng ký";
     $config['static'][$nametype]['check'] = array("hienthi" => "Hiển thị");
-    $config['static'][$nametype]['images'] = true;
+    /* Ảnh đã tách sang photo type dealer-hero để có đúng tỷ lệ 8:5 và công
+       tắc bật/tắt độc lập. Giữ file/dữ liệu ảnh legacy, không xoá. */
+    $config['static'][$nametype]['images'] = false;
     $config['static'][$nametype]['namkinhnghiem'] = false;
     $config['static'][$nametype]['name'] = true;
     $config['static'][$nametype]['desc'] = true;

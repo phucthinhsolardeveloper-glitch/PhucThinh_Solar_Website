@@ -92,7 +92,7 @@ test('search with no match shows the not-found notice', async ({ page, baseURL }
   await expect(page.locator('.breadCrumbs')).toBeVisible();
 });
 
-test('empty product category keeps navigation, filters and consultation entry points', async ({ page, baseURL, isMobile }) => {
+test('empty product category keeps navigation, filters and consultation entry points', async ({ page, baseURL }) => {
   // Trước đây bám vào "Đèn AC" vì danh mục đó vốn không có sản phẩm nào. Sau đợt
   // tái cấu trúc cây danh mục 2026-09-08, "Đèn AC" đã bị ẩn (không còn route),
   // và cả 10 danh mục còn hoạt động đều có sản phẩm. Ép rỗng bằng bộ lọc is_cat
@@ -106,12 +106,9 @@ test('empty product category keeps navigation, filters and consultation entry po
   await expect(page.locator('.product-item')).toHaveCount(0);
   await expect(page.locator('.filter_product')).toBeVisible();
   await expect(page.locator('.breadCrumbs')).toBeVisible();
-  if (!isMobile) {
-    await expect(page.locator('.sidebar-consult-box')).toBeVisible();
-    await expect(page.locator('.sidebar-consult-box .sc-btn')).toHaveAttribute('data-target', '#ptsContactModal');
-    await page.locator('.sidebar-consult-box .sc-btn').click();
-    await expect(page.locator('#ptsContactModal')).toBeVisible();
-  }
+  // Sidebar consult box đã bị bỏ vì trùng CTA (audit 2026-09-10); hotline
+  // Header V3 là lối tư vấn dùng chung và vẫn phải tồn tại khi kết quả rỗng.
+  await expect(page.locator('#headerscroll .hdr-call')).toHaveAttribute('href', /^tel:/);
 });
 
 test('search with matches lists product cards', async ({ page, baseURL }) => {

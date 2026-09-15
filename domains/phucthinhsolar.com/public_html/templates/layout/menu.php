@@ -8,14 +8,11 @@
     <div class="">
         <ul class="d-flex align-items-center justify-content-between">
             
-            <li class="menu-home"><a class="<?php if($com=='' || $com=='index') echo 'active'; ?> transition" href="" title="<?=trangchu?>"><?=trangchu?></a></li>
-
-            <li><a class="<?php if($com=='gioi-thieu' || $com=='ve-chung-toi') echo 'active'; ?> transition" href="ve-chung-toi/" title="Về chúng tôi">Về chúng tôi</a></li>
-
             <li class="menu-catalog">
                 <a class="has-child <?php if($com=='san-pham') echo 'active'; ?> transition" href="san-pham/" title="Danh mục sản phẩm"><i class="fas fa-bars"></i> Danh mục sản phẩm</a>
                 <?php if(count($splist)) { ?>
                     <ul>
+                        <li><a class="transition" title="Xem tất cả sản phẩm" href="san-pham/">Xem tất cả sản phẩm</a></li>
                         <?php foreach($splist as $klist => $vlist) {
                             $spcat = isset($productMenuCats[(int)$vlist['id']]) ? $productMenuCats[(int)$vlist['id']] : array(); ?>
                             <li>
@@ -57,43 +54,28 @@
                 <?php } ?>
             </li>
 
+            <li class="menu-about">
+                <a class="has-child <?php if($com=='gioi-thieu' || $com=='ve-chung-toi' || $com=='lien-he') echo 'active'; ?> transition" href="ve-chung-toi/" title="Giới thiệu">Giới thiệu</a>
+                <ul>
+                    <li><a class="transition" href="ve-chung-toi/#ve-phuc-thinh" title="Về Phúc Thịnh Solar">Về Phúc Thịnh Solar</a></li>
+                    <li><a class="transition" href="ve-chung-toi/#lich-su-phat-trien" title="Lịch sử phát triển">Lịch sử phát triển</a></li>
+                    <li><a class="transition" href="ve-chung-toi/#tam-nhin-su-menh" title="Tầm nhìn - Sứ mệnh">Tầm nhìn - Sứ mệnh</a></li>
+                    <li><a class="transition" href="ve-chung-toi/#about-certificates" title="Năng lực và chứng nhận">Năng lực &amp; chứng nhận</a></li>
+                    <li><a class="transition" href="lien-he/#he-thong-chi-nhanh" title="Hệ thống chi nhánh">Hệ thống chi nhánh</a></li>
+                    <li><a class="transition" href="lien-he/#yeu-cau-tu-van" title="Liên hệ">Liên hệ</a></li>
+                </ul>
+            </li>
+
             <li>
                 <a class="has-child <?php if($com=='giai-phap') echo 'active'; ?> transition" href="giai-phap/" title="Giải pháp">Giải pháp</a>
-                <?php if(count($gplist)) { ?>
+                <?php if(count($solutionMenuLinks)) { ?>
                     <ul>
-                        <?php foreach($gplist as $klist => $vlist) {
-                            $ttcat = isset($newsMenuCats[(int)$vlist['id']]) ? $newsMenuCats[(int)$vlist['id']] : array(); ?>
+                        <li><a class="transition" title="Tất cả giải pháp" href="giai-phap/">Tất cả giải pháp</a></li>
+                        <?php foreach($solutionMenuLinks as $solutionMenuLink) {
+                            $solutionMenuHref = 'giai-phap/'.$solutionMenuLink[$sluglang].'/';
+                            $solutionMenuLabel = !empty($solutionMenuLink['title_index'.$lang]) ? $solutionMenuLink['title_index'.$lang] : $solutionMenuLink['name'.$lang]; ?>
                             <li>
-                                <a class="has-child transition" title="<?=$vlist['name'.$lang]?>" href="<?=$vlist[$sluglang]?>"><?=$vlist['name'.$lang]?></a>
-                                <?php if(!empty($ttcat)) { ?>
-                                    <ul>
-                                        <?php foreach($ttcat as $kcat => $vcat) {
-                                            $ttitem = isset($newsMenuItems[(int)$vcat['id']]) ? $newsMenuItems[(int)$vcat['id']] : array(); ?>
-                                            <li>
-                                                <a class="has-child transition" title="<?=$vcat['name'.$lang]?>" href="<?=$vcat[$sluglang]?>"><?=$vcat['name'.$lang]?></a>
-                                                <?php if(!empty($ttitem)) { ?>
-                                                    <ul>
-                                                        <?php foreach($ttitem as $kitem => $vitem) {
-                                                            $ttsub = isset($newsMenuSubs[(int)$vitem['id']]) ? $newsMenuSubs[(int)$vitem['id']] : array(); ?>
-                                                            <li>
-                                                                <a class="has-child transition" title="<?=$vitem['name'.$lang]?>" href="<?=$vitem[$sluglang]?>"><?=$vitem['name'.$lang]?></a>
-                                                                <?php if(!empty($ttsub)) { ?>
-                                                                    <ul>
-                                                                        <?php foreach($ttsub as $ksub => $vsub) { ?>
-                                                                            <li>
-                                                                                <a class="transition" title="<?=$vsub['name'.$lang]?>" href="<?=$vsub[$sluglang]?>"><?=$vsub['name'.$lang]?></a>
-                                                                            </li>
-                                                                        <?php } ?>
-                                                                    </ul>
-                                                                <?php } ?>
-                                                            </li>
-                                                        <?php } ?>
-                                                    </ul>
-                                                <?php } ?>
-                                            </li>
-                                        <?php } ?>
-                                    </ul>
-                                <?php } ?>
+                                <a class="transition" title="<?=$solutionMenuLink['name'.$lang]?>" href="<?=$solutionMenuHref?>"><?=$solutionMenuLabel?></a>
                             </li>
                         <?php } ?>
                     </ul>
@@ -102,14 +84,15 @@
 
             <li><a class="<?php if($com=='du-an' || $com=='du-an-da-thuc-hien') echo 'active'; ?> transition" href="du-an-da-thuc-hien/" title="Dự án">Dự án</a></li>
      
-            <li>
-                <a class="<?php if($com=='tin-tuc') echo 'active'; ?> transition" href="tin-tuc/" title="<?=tintuc?>"><?=tintuc?></a>
+            <li class="menu-knowledge">
+                <a class="has-child <?php if($com=='tin-tuc') echo 'active'; ?> transition" href="tin-tuc/" title="Kiến thức">Kiến thức</a>
                 <?php if(count($ttlist)) { ?>
                     <ul>
+                        <li><a class="transition" title="Tất cả bài viết" href="tin-tuc/">Tất cả bài viết</a></li>
                         <?php foreach($ttlist as $klist => $vlist) {
                             $ttcat = isset($newsMenuCats[(int)$vlist['id']]) ? $newsMenuCats[(int)$vlist['id']] : array(); ?>
                             <li>
-                                <a class="has-child transition" title="<?=$vlist['name'.$lang]?>" href="category/<?=$vlist[$sluglang]?>/"><?=$vlist['name'.$lang]?></a>
+                                <a class="<?php if(!empty($ttcat)) echo 'has-child '; ?>transition" title="<?=$vlist['name'.$lang]?>" href="category/<?=$vlist[$sluglang]?>/"><?=$vlist['name'.$lang]?></a>
                                 <?php if(!empty($ttcat)) { ?>
                                     <ul>
                                         <?php foreach($ttcat as $kcat => $vcat) {
@@ -145,9 +128,15 @@
                 <?php } ?>
             </li>
 
-            <li class="menu-dealer"><a class="<?php if($com=='dai-ly') echo 'active'; ?> transition" href="dai-ly" title="Đại lý">Đại lý</a></li>
-
-            <li class="menu-contact"><a class="<?php if($com=='lien-he') echo 'active'; ?> transition" href="lien-he" title="<?=lienhe?>"><?=lienhe?></a></li>
+            <li class="menu-cooperation">
+                <a class="has-child <?php if($com=='dai-ly') echo 'active'; ?> transition" href="dai-ly" title="Hợp tác">Hợp tác</a>
+                <ul>
+                    <li><a class="transition" href="dai-ly#dang-ky-dai-ly" title="Đăng ký đại lý">Đăng ký đại lý</a></li>
+                    <li><a class="transition" href="dai-ly#nang-luc-phan-phoi" title="Năng lực phân phối">Năng lực phân phối</a></li>
+                    <li><a class="transition" href="dai-ly#ho-tro-dai-ly" title="Chính sách và hỗ trợ đại lý">Chính sách &amp; hỗ trợ đại lý</a></li>
+                    <li><a class="transition" href="lien-he/#yeu-cau-tu-van" title="Liên hệ kinh doanh">Liên hệ kinh doanh</a></li>
+                </ul>
+            </li>
 
         </ul>
     </div>

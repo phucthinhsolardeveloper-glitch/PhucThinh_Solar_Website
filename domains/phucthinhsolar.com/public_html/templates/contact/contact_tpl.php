@@ -98,19 +98,27 @@
 </div> -->
 <div id="inf_contact_page">
     <section id="top_content">
-        <div class="container">
-            <div class="row">
-                <div class="col-xl-12 col-lg-12 col-md-12">
-                    <h2 class="text-center">Công ty TNHH Công Nghệ - Thương Mại và Dịch Vụ <span class="pts-brand-text">Phúc Thịnh Solar</span></h2>
-                    <center>
-                        <ul class="custContContact mb-4">
-                            <li><a href="tel:<?=preg_replace('/[^0-9]/','',$optsetting['hotline']);?>">Hotline: <b><?=$optsetting['hotline']?></b></a></li>
-                            <li><a href="mailto:<?=$optsetting['email']?>">Email: <b><?=$optsetting['email']?></b></a></li>
-                            <li><a href="javascript:void(0)">Thời gian làm việc: <b><?=$optsetting['thoigianlamviec']?></b></a></li>
-                        </ul>
-                    </center>
-                </div>
-                <div class="col-xl-12 col-lg-12 col-md-12" id="yeu-cau-tu-van">
+	        <div class="container">
+	            <div class="row pts-contact-intro-row<?=$contactVisual ? ' has-visual' : ''?>">
+	                <?php if($contactVisual) { ?>
+	                <div class="col-lg-7 pts-contact-intro-media">
+	                    <?=$func->getImage(['isLazy' => false, 'class' => '', 'sizes' => '1400x875x1', 'upload' => $contactVisual['upload'], 'image' => $contactVisual['photo'], 'alt' => $contactVisual['name']])?>
+	                </div>
+	                <?php } ?>
+	                <div class="<?=$contactVisual ? 'col-lg-5' : 'col-12'?> pts-contact-intro-copy">
+	                    <h2><?=htmlspecialchars($contactVisual ? $contactVisual['name'] : 'Liên hệ Phúc Thịnh Solar', ENT_QUOTES, 'UTF-8')?></h2>
+	                    <?php if($contactVisual && $contactVisual['desc'] !== '') { ?><p class="pts-contact-intro-desc"><?=htmlspecialchars($contactVisual['desc'], ENT_QUOTES, 'UTF-8')?></p><?php } ?>
+	                    <p class="pts-contact-company">Công ty TNHH Công Nghệ - Thương Mại và Dịch Vụ <span class="pts-brand-text">Phúc Thịnh Solar</span></p>
+	                    <ul class="custContContact mb-4">
+	                        <li><a href="tel:<?=preg_replace('/[^0-9]/','',$optsetting['hotline']);?>">Hotline: <b><?=$optsetting['hotline']?></b></a></li>
+	                        <li><a href="mailto:<?=$optsetting['email']?>">Email: <b><?=$optsetting['email']?></b></a></li>
+	                        <li><span>Thời gian làm việc: <b><?=$optsetting['thoigianlamviec']?></b></span></li>
+	                    </ul>
+	                    <?php if($contactVisual && !empty($contactVisual['link'])) { ?><a class="pts-contact-intro-action" href="<?=htmlspecialchars($contactVisual['link'], ENT_QUOTES, 'UTF-8')?>">Gửi yêu cầu tư vấn <i class="fas fa-arrow-down" aria-hidden="true"></i></a><?php } ?>
+	                </div>
+	            </div>
+	            <div class="row">
+	                <div class="col-xl-12 col-lg-12 col-md-12" id="yeu-cau-tu-van">
                     <div class="content formContact">
                         <div role="form" class="wpcf7" id="wpcf7-f623-o1" lang="en-US" dir="ltr">
                             <div class="screen-reader-response">
@@ -175,7 +183,7 @@
                     </div>
                 </div>
             </div>
-            <h2 class="text-center mt-4">Hệ thống cửa hàng</h2>
+            <h2 class="text-center mt-4" id="he-thong-chi-nhanh">Hệ thống chi nhánh</h2>
         </div>
         <div class="hts-wrapper">
 

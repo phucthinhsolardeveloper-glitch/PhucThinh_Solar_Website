@@ -1,5 +1,20 @@
 # Audit tích hợp Admin sau đợt redesign Hero/Trang chủ/Dự án/Tin tức/Về chúng tôi — 2026-09-14
 
+> Cập nhật 2026-09-15: quyết định product-first trong [ADR 0001](../09-decisions/0001-product-first-homepage-and-content-density.md) thay thế phần kiến nghị dành cho trang chủ. About teaser, Giải pháp, Quy trình và Dự án không còn render ở trang chủ; type `home-about`/`home-about-point` được giữ tạm để không xóa cấu hình kế thừa khi chưa có kế hoạch migration.
+
+> Cập nhật tiếp 2026-09-15: ba banner chiến dịch product-first dùng type ảnh
+> `home-campaign`. Quyền được cấp bằng migration 041, chỉ cho nhóm đã có đủ
+> bốn quyền `adv`; migration mặc định preview, `--apply` mới ghi và có thể chạy
+> lặp. Predeploy kiểm tra preview các migration quyền 037–041 để tránh type Admin
+> mới lại làm danh mục quyền lệch sau này.
+
+> Cập nhật 2026-09-15 (hệ thống ảnh): đã bổ sung ba type ảnh
+> `catalog-campaign`, `contact-visual`, `dealer-hero`, quy tắc bật/tắt không làm
+> fallback tự xuất hiện lại và migration quyền 042. Kích thước/cách fit cùng
+> danh sách ảnh thật cần thay được chốt tại
+> [audit hệ thống ảnh](2026-09-15-public-image-system-and-slot-inventory.md) và
+> [ADR 0003](../09-decisions/0003-public-image-system-and-admin-visual-slots.md).
+
 ## Mục đích và phạm vi
 
 Rà soát toàn bộ giao diện đã nâng cấp trong phiên làm việc này (Claude +

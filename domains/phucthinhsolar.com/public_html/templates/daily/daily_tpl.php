@@ -63,8 +63,12 @@
                 </form>
             </div>
         </div>
-        <div class="inner_content rocket-lazyload lazyloaded"
-            style="--agency-bg: url(<?=ASSET.UPLOAD_NEWS_L.$about1['photo']?>);" data-ll-status="loaded">
+        <div class="inner_content<?=$dealerHero ? ' has-visual' : ' no-visual'?>">
+            <?php if($dealerHero) { ?>
+            <span class="pts-dealer-hero-media">
+                <?=$func->getImage(['isLazy' => false, 'class' => '', 'sizes' => '1600x1000x1', 'upload' => $dealerHero['upload'], 'image' => $dealerHero['photo'], 'alt' => $dealerHero['name']])?>
+            </span>
+            <?php } ?>
             <div class="inner">
                 <div class="content text">
                     <h3><?=$about1['name'.$lang]?></h3>
@@ -78,7 +82,7 @@
 <?php } ?>
 
 <?php if(!empty($about2)){ ?>
-<section class="agency agency_2">
+<section class="agency agency_2" id="nang-luc-phan-phoi">
     <div class="container">
         <div class="section-title uk-text-center">
             <h3 class="CRstyle_title"><?=htmlspecialchars_decode($about2['name'.$lang])?></h3>
@@ -91,7 +95,7 @@
             <div class="item wrap">
                 <a href="<?=$v['link']?>" target="_blank" title="<?=$v['name'.$lang]?>"></a>
                 <div class="item_img">
-                    <?=$func->getImage(['class' => 'lazy w-100','size-error' => '300x200x1', 'upload' => UPLOAD_PHOTO_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
+                    <?=$func->getImage(['isLazy' => false, 'class' => 'w-100','sizes' => '800x500x1', 'size-error' => '800x500x1', 'upload' => UPLOAD_PHOTO_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
                 </div>
                 <div class="item_cont"><?=$v['name'.$lang]?></div>
             </div>
@@ -102,7 +106,7 @@
 <?php } ?>
 
 <?php if(!empty($about3)){ ?>
-<section class="agency agency_3">
+<section class="agency agency_3" id="ho-tro-dai-ly">
     <div class="container">
         <div class="section-title uk-text-center">
             <h3 class="CRstyle_title"><?=htmlspecialchars_decode($about3['name'.$lang])?></h3>

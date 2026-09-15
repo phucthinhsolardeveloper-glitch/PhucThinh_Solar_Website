@@ -92,13 +92,22 @@
 			$seo->set('photo:type',$imgJson['m']);
 		}
 
-		/* breadCrumbs */
-		if(!empty($titleMain)) $breadcr->set($com,$titleMain);
-		if(!empty($newsList)) $breadcr->set($newsList[$sluglang],$newsList['name'.$lang]);
-		if(!empty($newsCat)) $breadcr->set($newsCat[$sluglang],$newsCat['name'.$lang]);
-		if(!empty($newsItem)) $breadcr->set($newsItem[$sluglang],$newsItem['name'.$lang]);
-		if(!empty($newsSub)) $breadcr->set($newsSub[$sluglang],$newsSub['name'.$lang]);
-		$breadcr->set($rowDetail[$sluglang],$rowDetail['name'.$lang]);
+		/* Breadcrumb chi tiết Giải pháp chỉ phản ánh hành trình công khai:
+		   landing -> bài. Các nhóm legacy không còn là bước điều hướng. */
+		if($type === 'giai-phap')
+		{
+			$breadcr->set('giai-phap/', $titleMain);
+			$breadcr->set('giai-phap/'.$rowDetail[$sluglang].'/', $rowDetail['name'.$lang]);
+		}
+		else
+		{
+			if(!empty($titleMain)) $breadcr->set($com,$titleMain);
+			if(!empty($newsList)) $breadcr->set($newsList[$sluglang],$newsList['name'.$lang]);
+			if(!empty($newsCat)) $breadcr->set($newsCat[$sluglang],$newsCat['name'.$lang]);
+			if(!empty($newsItem)) $breadcr->set($newsItem[$sluglang],$newsItem['name'.$lang]);
+			if(!empty($newsSub)) $breadcr->set($newsSub[$sluglang],$newsSub['name'.$lang]);
+			$breadcr->set($rowDetail[$sluglang],$rowDetail['name'.$lang]);
+		}
 		$breadcrumbs = $breadcr->get();
 	}
 	else if($idl!='')
@@ -378,6 +387,6 @@
 		$breadcrumbs = $breadcr->get();
 	}
     if($type === 'tin-tuc') require SOURCES.'news_hub.php';
-    if($type === 'giai-phap' && ($template === 'news/service_list' || $template === 'news/service')) require SOURCES.'solution_hub.php';
+    if($type === 'giai-phap' && in_array($template, array('news/service_list', 'news/service', 'news/service_detail'), true)) require SOURCES.'solution_hub.php';
     if($type === 'du-an' && ($template === 'news/project' || $template === 'news/project_detail')) require SOURCES.'project_hub.php';
 ?>

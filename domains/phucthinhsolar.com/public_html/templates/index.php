@@ -20,12 +20,13 @@
             <?php include TEMPLATE.LAYOUT."mmenu.php"; ?>
         </div>
 
-        <div class="wap-slider<?=($source != 'index' && $source != 'daily') ? ' pts-breadcrumb-shell' : ''?>">
-            <?php 
-                if($source == 'index') include TEMPLATE.LAYOUT."slide.php";
-                if($source != 'index' && $source != 'daily') include TEMPLATE.LAYOUT."breadcrumb.php"; 
-            ?>
+        <?php /* Hero trang chủ được tắt theo quyết định product-first 2026-09-15.
+                 Không xoá template/dữ liệu Hero; các trang con vẫn giữ breadcrumb. */ ?>
+        <?php if($source != 'index'){ ?>
+        <div class="wap-slider<?=($source != 'daily') ? ' pts-breadcrumb-shell' : ''?>">
+            <?php if($source != 'daily') include TEMPLATE.LAYOUT."breadcrumb.php"; ?>
         </div>
+        <?php } ?>
 
         <div class="wap-main <?=($template=="news/news_detail" || $template=="news/project_detail")?'news_detail':''?> <?= ($source == 'user' || $source == 'order') ? 'user-pages': ''?> ">
             <div class="wrap-main  <?=($source == 'index' || $source == 'about' || $template == 'news/service_list' || $template == 'news/service' || $template == 'news/project' || $template == 'news/news' || $template == 'daily/daily' || $template == 'contact/contact') ? 'wrap-home' : 'wrap-content mt-5 mb-5'?> w-clear">

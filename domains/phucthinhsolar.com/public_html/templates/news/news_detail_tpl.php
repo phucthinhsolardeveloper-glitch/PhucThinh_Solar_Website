@@ -1,3 +1,7 @@
+<?php
+    require_once LIBRARIES.'news_detail_media.php';
+    $newsDetailContent = !empty($rowDetail['content'.$lang]) ? htmlspecialchars_decode($rowDetail['content'.$lang], ENT_QUOTES) : '';
+?>
 <div class="row justify-content-center row-servoce-detail">
     <div class="col-lg-12">
         <div class="box-detail-news">
@@ -15,21 +19,22 @@
                    cho nội dung pháp lý. Không dùng $config['news'][$type]['show_images']
                    vì config-type-news.php chỉ được nạp bên administrator/, không
                    tồn tại ở phía frontend. */
-                $showDetailCover = $rowDetail['type'] !== 'chinh-sach';
+                $showDetailCover = $rowDetail['type'] !== 'chinh-sach'
+                    && !newsDetailContentRepeatsCover($newsDetailContent, isset($rowDetail['photo']) ? $rowDetail['photo'] : '');
             ?>
             <?php if(!empty($rowDetail['photo']) && $showDetailCover) { ?>
             <div class="pts-news-detail-cover">
                 <?=$func->getImage(array_merge(['class' => 'w-100', 'isLazy' => false, 'sizes' => '1000x560x1', 'upload' => UPLOAD_NEWS_L, 'image' => $rowDetail['photo'], 'alt' => $rowDetail['name'.$lang]], watermarkImageArgs('news')))?>
             </div>
             <?php } ?>
-            <?php if(!empty($rowDetail['content'.$lang])) { ?>
+            <?php if($newsDetailContent !== '') { ?>
             <div class="meta-toc">
                 <div class="box-readmore">
                     <p><i class="fa fa-bars" aria-hidden="true"></i>NỘI DUNG BÀI VIẾT</p>
                     <ul class="toc-list" data-toc="article" data-toc-headings="h1, h2, h3"></ul>
                 </div>
             </div>
-            <div class="content-main w-clear" id="toc-content"><?=htmlspecialchars_decode($rowDetail['content'.$lang])?>
+            <div class="content-main w-clear" id="toc-content"><?=$newsDetailContent?>
             </div>
             <?php if(!empty($rowDetail['content1'.$lang])) { ?>
             <div class="CRpost_cont">

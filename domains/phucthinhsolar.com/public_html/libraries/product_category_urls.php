@@ -59,6 +59,10 @@ function publicProductEntityPath($d, $table, $id, $lang = 'vi')
         $row = $d->rawQueryOne("select $slug from #_news where id = ? and type = ? limit 1", array((int)$id,'chinh-sach'));
         return !empty($row[$slug]) ? 'ho-tro/'.$row[$slug].'/' : '';
     }
+    if($table === 'news_giai_phap') {
+        $row = $d->rawQueryOne("select $slug from #_news where id = ? and type = ? limit 1", array((int)$id,'giai-phap'));
+        return !empty($row[$slug]) ? 'giai-phap/'.$row[$slug].'/' : '';
+    }
     return '';
 }
 
@@ -98,7 +102,9 @@ function publicCanonicalEntityPath($d, $com, array $params, $lang = 'vi')
         {
             if(empty($params[$key])) continue;
             $row = $d->rawQueryOne("select $slug from #_$table where id = ? limit 1", array((int) $params[$key]));
-            return !empty($row[$slug]) ? $row[$slug] : '';
+            if(empty($row[$slug])) return '';
+            if($com === 'giai-phap' && $key === 'id') return 'giai-phap/'.$row[$slug].'/';
+            return $row[$slug];
         }
     }
     return '';

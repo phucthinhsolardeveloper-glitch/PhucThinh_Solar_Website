@@ -5,7 +5,9 @@ test('header and product quote phone icons render', async ({ page }) => {
   page.on('pageerror', error => browserErrors.push(error.message));
 
   await page.goto('/', { waitUntil: 'domcontentloaded' });
-  const headerIcon = page.locator('.top-utility-left .fa-phone-alt').first();
+  // Utility bar đã tắt theo quyết định product-first; Header V3 dùng headset
+  // làm icon tư vấn chính ở cả desktop và mobile.
+  const headerIcon = page.locator('#headerscroll .hdr-call-ic .fa-headset').first();
   await expect(headerIcon).toBeVisible();
   await expect(headerIcon).toHaveCSS('font-family', /Font Awesome/);
   expect(await headerIcon.evaluate(element => getComputedStyle(element, '::before').content)).not.toBe('none');

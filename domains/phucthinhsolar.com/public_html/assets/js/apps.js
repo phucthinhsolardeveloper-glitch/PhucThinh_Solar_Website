@@ -218,8 +218,15 @@ GA_FRAMEWORK.Pagings = function(){
             var list = $(this).data("list");
             loadPaging("api/product2.php?perpage=16&idList="+list,'.paging-product-category');
         })
-        $(document).on('click', '.get-product-category', function(event) {
-            var list = $(this).data("list");
+        /* Rail chỉ có một vùng kết quả AJAX nên không cần UIkit switcher.
+           Quản lý active state trực tiếp, tránh stopImmediatePropagation của
+           UIkit làm tab đổi màu nhưng nội dung vẫn thuộc danh mục trước. */
+        $(".get-product-category").on('click.ptsProductCategory', function(event) {
+            event.preventDefault();
+            var trigger = $(this);
+            var list = trigger.data("list");
+            trigger.attr('aria-pressed', 'true').closest('li').addClass('uk-active')
+                .siblings().removeClass('uk-active').find('.get-product-category').attr('aria-pressed', 'false');
             loadPaging("api/product2.php?perpage=16&idList="+list,'.paging-product-category');
         });
     }
@@ -1096,15 +1103,16 @@ GA_FRAMEWORK.HomeCategoryScroller = function(){
     });
 };
 
-/* Dải logo thương hiệu: ẩn scrollbar thị giác, điều khiển bằng nút ở desktop
-   và vẫn hỗ trợ kéo chuột/vuốt chạm trực tiếp trên track. */
+/* Các rail ngang của homepage: ẩn scrollbar thị giác, dải thương hiệu có nút
+   điều khiển; rail danh mục kéo chuột/trackpad hoặc vuốt chạm trực tiếp. */
 GA_FRAMEWORK.HomeBrandScroller = function(){
     $('[data-pts-horizontal-rail]').each(function(){
         var rail = $(this);
-        var track = rail.find('.pts-brands-grid').get(0);
-        var prev = rail.find('.pts-brands-arrow--prev');
-        var next = rail.find('.pts-brands-arrow--next');
+        var track = rail.find('[data-pts-horizontal-track], .pts-brands-grid').first().get(0);
+        var prev = rail.find('.pts-rail-prev, .pts-brands-arrow--prev');
+        var next = rail.find('.pts-rail-next, .pts-brands-arrow--next');
         var drag = null;
+        var suppressClick = false;
         if(!track) return;
 
         function updateButtons(){
@@ -1124,22 +1132,33 @@ GA_FRAMEWORK.HomeBrandScroller = function(){
         $(window).on('resize', updateButtons);
         track.addEventListener('pointerdown', function(event){
             if(event.pointerType === 'touch' || event.button !== 0) return;
-            drag = {id:event.pointerId, x:event.clientX, left:track.scrollLeft};
-            track.setPointerCapture(event.pointerId);
-            track.classList.add('is-dragging');
+            drag = {id:event.pointerId, x:event.clientX, left:track.scrollLeft, moved:false};
         });
         track.addEventListener('pointermove', function(event){
             if(!drag || drag.id !== event.pointerId) return;
+            if(!drag.moved && Math.abs(event.clientX - drag.x) > 6) {
+                drag.moved = true;
+                track.setPointerCapture(event.pointerId);
+                track.classList.add('is-dragging');
+            }
+            if(!drag.moved) return;
             track.scrollLeft = drag.left - (event.clientX - drag.x);
         });
         function endDrag(event){
             if(!drag || drag.id !== event.pointerId) return;
             if(track.hasPointerCapture(event.pointerId)) track.releasePointerCapture(event.pointerId);
+            suppressClick = drag.moved;
             drag = null;
             track.classList.remove('is-dragging');
+            window.setTimeout(function(){ suppressClick = false; }, 0);
         }
         track.addEventListener('pointerup', endDrag);
         track.addEventListener('pointercancel', endDrag);
+        track.addEventListener('click', function(event){
+            if(!suppressClick) return;
+            event.preventDefault();
+            event.stopPropagation();
+        }, true);
         updateButtons();
     });
 };

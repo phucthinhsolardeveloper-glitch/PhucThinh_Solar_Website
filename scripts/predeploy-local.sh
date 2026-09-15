@@ -101,6 +101,7 @@ docker cp scripts/test-checkout-atomicity.php "$web_container:/tmp/test-checkout
 docker cp scripts/test-commerce-transaction.php "$web_container:/tmp/test-commerce-transaction.php"
 docker cp scripts/test-public-route-resolver.php "$web_container:/tmp/test-public-route-resolver.php"
 docker cp scripts/test-proxy-https.php "$web_container:/tmp/test-proxy-https.php"
+docker cp scripts/import-solution-content-local.php "$web_container:/tmp/import-solution-content-local.php"
 docker cp scripts/preflight-commerce-migrations.php "$web_container:/tmp/preflight-commerce-migrations.php"
 docker cp migrations/000_preflight_production.php "$web_container:/tmp/000_preflight_production.php"
 docker cp migrations/000_check_hosting_runtime.php "$web_container:/tmp/000_check_hosting_runtime.php"
@@ -109,6 +110,10 @@ docker cp migrations/031_grant_contact_content_section_permissions.php "$web_con
 docker cp migrations/032_adv_banner_popup_links.php "$web_container:/tmp/032_adv_banner_popup_links.php"
 docker cp migrations/037_grant_redesign_page_permissions.php "$web_container:/tmp/037_grant_redesign_page_permissions.php"
 docker cp migrations/038_grant_news_hub_permissions.php "$web_container:/tmp/038_grant_news_hub_permissions.php"
+docker cp migrations/039_grant_home_and_project_point_permissions.php "$web_container:/tmp/039_grant_home_and_project_point_permissions.php"
+docker cp migrations/040_grant_hero_carousel_photo_permission.php "$web_container:/tmp/040_grant_hero_carousel_photo_permission.php"
+docker cp migrations/041_grant_home_campaign_photo_permissions.php "$web_container:/tmp/041_grant_home_campaign_photo_permissions.php"
+docker cp migrations/042_grant_site_visual_photo_permissions.php "$web_container:/tmp/042_grant_site_visual_photo_permissions.php"
 docker cp scripts/import-oriana-images-local.php "$web_container:/tmp/import-oriana-images.php"
 docker cp scripts/create-local-rbac-demo-accounts.php "$web_container:/tmp/create-local-rbac-demo-accounts.php"
 docker compose -f "$compose_file" exec -T web sh -lc '
@@ -141,6 +146,13 @@ php -l libraries/class/class.Email.php
 php -l libraries/public_route_resolver.php
 php -l libraries/product_category_urls.php
 php -l libraries/product_promo.php
+php -l libraries/solution_hub.php
+php -l libraries/news_detail_media.php
+php -l libraries/config-type.php
+php -l libraries/type/config-type-news.php
+php -l libraries/type/config-type-photo.php
+php -l libraries/type/config-type-product.php
+php -l libraries/type/config-type-static.php
 php -l administrator/sources/product_campaign.php
 php -l administrator/templates/product_campaign/list_tpl.php
 php -l administrator/templates/product_campaign/form_tpl.php
@@ -154,23 +166,42 @@ php -l administrator/templates/user/permission/permission_group_tpl.php
 php -l administrator/templates/setting/man/man_add_tpl.php
 php -l sources/allpage.php
 php -l sources/contact.php
+php -l sources/daily.php
+php -l sources/index.php
 php -l sources/product.php
+php -l sources/news_hub.php
+php -l sources/solution_hub.php
+php -l templates/about/about_tpl.php
 php -l templates/contact/contact_tpl.php
+php -l templates/daily/daily_tpl.php
 php -l templates/account/forgot_password_tpl.php
 php -l templates/index/index_tpl.php
+php -l templates/layout/css.php
 php -l templates/layout/js.php
+php -l templates/layout/menu.php
+php -l templates/layout/mmenu.php
 php -l templates/layout/modal.php
+php -l templates/news/project_cta_tpl.php
+php -l templates/news/project_tpl.php
+php -l templates/news/service_list_tpl.php
+php -l templates/news/service_detail_tpl.php
 php -l templates/news/project_detail_tpl.php
 php -l templates/product/product_detail_tpl.php
 php -l templates/product/product_list_tpl.php
 php -l templates/product/product_tpl.php
 php -l libraries/router.php
+php -l /tmp/import-solution-content-local.php
 php -l /tmp/000_preflight_production.php
 php -l /tmp/000_check_hosting_runtime.php
 php -l /tmp/025_compress_oversized_images.php
 php -l /tmp/031_grant_contact_content_section_permissions.php
 php -l /tmp/032_adv_banner_popup_links.php
 php -l /tmp/037_grant_redesign_page_permissions.php
+php -l /tmp/038_grant_news_hub_permissions.php
+php -l /tmp/039_grant_home_and_project_point_permissions.php
+php -l /tmp/040_grant_hero_carousel_photo_permission.php
+php -l /tmp/041_grant_home_campaign_photo_permissions.php
+php -l /tmp/042_grant_site_visual_photo_permissions.php
 php -l /tmp/import-oriana-images.php
 php -l /tmp/create-local-rbac-demo-accounts.php
 php -l /tmp/test-admin-self-profile-integrity.php
@@ -221,6 +252,10 @@ php /tmp/031_grant_contact_content_section_permissions.php
 php /tmp/032_adv_banner_popup_links.php
 php /tmp/037_grant_redesign_page_permissions.php
 php /tmp/038_grant_news_hub_permissions.php
+php /tmp/039_grant_home_and_project_point_permissions.php
+php /tmp/040_grant_hero_carousel_photo_permission.php
+php /tmp/041_grant_home_campaign_photo_permissions.php
+php /tmp/042_grant_site_visual_photo_permissions.php
 '
 
 redirect_table="$(docker compose -f "$compose_file" exec -T db mariadb -N -B -upts_local -ppts_local_only phucthinhs_local -e "SHOW TABLES LIKE 'table_url_redirect';")"
@@ -241,6 +276,8 @@ node --check domains/phucthinhsolar.com/public_html/assets/js/apps.js
 node --check domains/phucthinhsolar.com/public_html/assets/wp-content/themes/local/js/main080f.js
 
 curl -fsS -L -o /tmp/pts-predeploy-contact.html "$base_url/lien-he"
+curl -fsS -L -o /tmp/pts-predeploy-dealer.html "$base_url/dai-ly"
+curl -fsS -L -o /tmp/pts-predeploy-catalog.html "$base_url/san-pham/"
 product_slug="$(docker compose -f "$compose_file" exec -T db mariadb -N -B -upts_local -ppts_local_only phucthinhs_local -e "SELECT slugvi FROM table_product WHERE FIND_IN_SET('hienthi',status) AND slugvi<>'' ORDER BY id DESC LIMIT 1;")"
 if [ -z "$product_slug" ]; then
     echo "FAIL: DB local không có sản phẩm hiển thị để smoke" >&2
@@ -283,7 +320,12 @@ grep -qF 'pts-brand-wordmark' /tmp/pts-predeploy-home.html
 grep -qF 'class="hdr-search-form"' /tmp/pts-predeploy-home.html
 grep -qF 'class="hdr-call"' /tmp/pts-predeploy-home.html
 grep -qF 'id="keyword-res"' /tmp/pts-predeploy-home.html
+grep -qF 'class="menu-knowledge"' /tmp/pts-predeploy-home.html
+grep -qF 'class="menu-cooperation"' /tmp/pts-predeploy-home.html
+grep -qF '>Kiến thức</a>' /tmp/pts-predeploy-home.html
+grep -qF '>Hợp tác</a>' /tmp/pts-predeploy-home.html
 assert_css_shipped /tmp/pts-predeploy-home.html 'assets/css/header-v3.css' '.pts-header-v3'
+assert_css_shipped /tmp/pts-predeploy-home.html 'assets/css/media-system.css' '.pts-contact-intro-row'
 grep -qF 'name="form_csrf"' /tmp/pts-predeploy-contact.html
 grep -qF 'title-pro-detail' /tmp/pts-predeploy-product.html
 grep -qF 'Gọi báo giá' /tmp/pts-predeploy-product.html
@@ -292,6 +334,12 @@ test -s domains/phucthinhsolar.com/public_html/assets/fontawesome512/all.css
 test -s domains/phucthinhsolar.com/public_html/assets/fonts/awesome/fa-solid-900.woff2
 test -s domains/phucthinhsolar.com/public_html/assets/fonts/awesome/fa-brands-400.woff2
 test -s domains/phucthinhsolar.com/public_html/assets/themes/local/fonts/Linearicons/fonts/Linearicons-Free54e9.woff2
+for site_visual in \
+    home-street-lighting.jpg home-solar-storage.jpg home-outdoor-lighting.jpg \
+    catalog-street-lighting.jpg catalog-equipment-system.jpg \
+    contact-consultation.jpg dealer-distribution.jpg; do
+    test -s "domains/phucthinhsolar.com/public_html/assets/images/site-visuals/$site_visual"
+done
 if grep -Eq 'class="addcart"|"priceCurrency"|"price"[[:space:]]*:' /tmp/pts-predeploy-product.html; then
     echo "FAIL: Trang sản phẩm còn lộ giá hoặc nút mua khi chế độ báo giá đang bật" >&2
     exit 1
@@ -299,7 +347,13 @@ fi
 grep -qE '<title>[^<]+</title>' /tmp/pts-predeploy-news-detail.html
 grep -qF 'class="box-detail-news"' /tmp/pts-predeploy-news-detail.html
 grep -qE '<title>[^<]+</title>' /tmp/pts-predeploy-solution-detail.html
-grep -qF 'class="box-detail-news"' /tmp/pts-predeploy-solution-detail.html
+grep -qF 'pts-solution-detail' /tmp/pts-predeploy-solution-detail.html
+grep -qF 'id="solution-detail-title"' /tmp/pts-predeploy-solution-detail.html
+grep -qE 'rel="canonical" href="http://localhost:8080/giai-phap/[a-z0-9-]+/"' /tmp/pts-predeploy-solution-detail.html
+if grep -Eq 'class="[^"]*(date_content|author_post)' /tmp/pts-predeploy-solution-detail.html; then
+    echo "FAIL: Chi tiết Giải pháp còn render metadata bài blog" >&2
+    exit 1
+fi
 grep -qE '<title>[^<]+</title>' /tmp/pts-predeploy-project-detail.html
 grep -qF 'id="inf_single_project"' /tmp/pts-predeploy-project-detail.html
 assert_css_shipped /tmp/pts-predeploy-project-detail.html 'assets/photobox/photobox.css' '#pbOverlay'

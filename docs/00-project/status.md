@@ -1,12 +1,24 @@
 # Current status
 
-Cập nhật gần nhất: 2026-09-14. Phần lớn nội dung bên dưới (tới dòng "Checkout
+Cập nhật gần nhất: 2026-09-15. Phần lớn nội dung bên dưới (tới dòng "Checkout
 idempotency local") là log tích lũy từ trước 2026-09-06 và mới ở Git + Docker
 local tại thời điểm ghi — KHÔNG tự suy ra các mục đó đã lên production chỉ vì
 đợt 2026-09-08/09 đã bắt đầu deploy thật (xem mục riêng bên dưới); mỗi mục cũ
 giữ nguyên phạm vi "local" như lúc viết trừ khi có ghi chú deploy production
 rõ ràng. Trạng thái dữ liệu trống đã được chủ project xác nhận là do chưa có
 nguồn thật; không coi đó là blocker kỹ thuật và không tự lấp.
+
+## 2026-09-15: nội dung và điều hướng Giải pháp local, chưa deploy
+
+- Đã chuyển hành trình chính sang một landing `/giai-phap/` và năm bài chi tiết
+  đi thẳng; nhóm Doanh nghiệp/Hộ gia đình cũ chỉ còn để giữ URL tương thích.
+- Menu, card và switcher dùng tên ngắn; breadcrumb bài chi tiết còn ba nấc và
+  canonical thống nhất `/giai-phap/{slug}/`.
+- Đã nhập có transaction toàn bộ nội dung Markdown do chủ project cung cấp vào
+  CKEditor local: một landing, năm bài chi tiết, SEO và CTA dùng chung. Backup
+  trước import: `backup/local/20260915-144101`. Không ghi production.
+- Playwright Giải pháp đạt 8/8 trên desktop/mobile, gồm URL cũ chuyển 301. Chi
+  tiết xem `docs/13-handoffs/2026-09-15-solution-content-routing-report.md`.
 
 ## 2026-09-12 → 2026-09-14: hoàn tất redesign local, chưa deploy
 

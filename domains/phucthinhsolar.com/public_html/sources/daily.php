@@ -6,6 +6,26 @@
     $about3 = $cache->get("select name$lang, desc$lang,photo from #_static where type = ? and find_in_set('hienthi',status) limit 0,1", array('dai-ly-3'), 'fetch', 7200);
     $city = $d->rawQuery("select name, id from #_city order by id asc");
     $photo_daily = $cache->get("select name$lang, link, photo from #_photo where type = ? and find_in_set('hienthi',status) order by numb, id desc", array('hinh-anh-dai-ly'), 'result', 7200);
+    $dealerHeroRows = $cache->get("select name$lang, photo, status from #_photo where type = ? order by numb,id desc", array('dealer-hero'), 'result', 7200);
+    $dealerHero = array();
+    foreach($dealerHeroRows as $dealerHeroRow)
+    {
+        if(empty($dealerHeroRow['photo']) || strpos(','.(string)$dealerHeroRow['status'].',', ',hienthi,') === false) continue;
+        $dealerHero = array(
+            'name' => !empty($dealerHeroRow['name'.$lang]) ? $dealerHeroRow['name'.$lang] : 'Năng lực phân phối thiết bị năng lượng mặt trời',
+            'photo' => $dealerHeroRow['photo'],
+            'upload' => UPLOAD_PHOTO_L
+        );
+        break;
+    }
+    if(!$dealerHeroRows)
+    {
+        $dealerHero = array(
+            'name' => 'Năng lực phân phối thiết bị năng lượng mặt trời',
+            'photo' => 'dealer-distribution.jpg',
+            'upload' => 'assets/images/site-visuals/'
+        );
+    }
     $camketdaily = $cache->get("select name$lang, desc$lang, id, photo from #_news where type = ? and find_in_set('hienthi',status) order by numb,id desc limit 0,4", array('cam-ket-dai-ly'), 'result', 7200);
 	$phanhoidaily = $cache->get("select name$lang, desc$lang, content$lang, id, photo from #_news where type = ? and find_in_set('hienthi',status) order by numb,id desc limit 0,3", array('phan-hoi-dai-ly'), 'result', 7200);
 

@@ -3,6 +3,7 @@
     $config['group'] = array(
         "Sản phẩm" => array(
             "product" => array("san-pham"),
+            "photo" => array("catalog-campaign"),
             // "tags" => array("san-pham"),
             // "static" => array("su-menh","gioi-thieu","tom-tat-gioi-thieu"),
             "news" => array("tieu-chi", "cam-ket"),
@@ -33,6 +34,7 @@
                thương hiệu) đều dùng lại Admin sẵn có ở nhóm khác, không lặp
                shortcut ở đây. */
             "news" => array("home-about", "home-about-point"),
+            "photo" => array("home-campaign"),
             "shortcut" => array(
                 array(
                     "title" => "Xem trang chủ",
@@ -80,10 +82,20 @@
             "static" => array("loi-ich"),
         ),
         "Đại lý" => array(
-            "photo" => array("hinh-anh-dai-ly"),
+            "photo" => array("dealer-hero", "hinh-anh-dai-ly"),
             "static" => array("dai-ly-1","dai-ly-2","dai-ly-3"),
             "newsletter" => array("dangkynhantin2"),
             "news" => array("cam-ket-dai-ly","phan-hoi-dai-ly","so-lieu-thong-ke-dai-ly"),
+        ),
+        "Liên hệ" => array(
+            "photo" => array("contact-visual"),
+            "shortcut" => array(
+                array(
+                    "title" => "Xem trang Liên hệ",
+                    "href" => "../lien-he/",
+                    "icon" => "fas fa-external-link-alt"
+                )
+            )
         ),
         "Hệ thống cửa hàng" => array(
             "news" => array("he-thong-cua-hang"),

@@ -30,8 +30,36 @@
 		}
 	}
 	
-    $lienhe = $d->rawQueryOne("select content$lang from #_static where type = ? limit 0,1",array('lienhe'));
+	$lienhe = $d->rawQueryOne("select content$lang from #_static where type = ? limit 0,1",array('lienhe'));
 	$hethongcuahang = $cache->get("select name$lang, address, id, map_iframe from #_news where type = ? and find_in_set('hienthi',status) order by numb,id desc", array('he-thong-cua-hang'), 'result', 7200);
+
+	/* Ảnh tư vấn đầu trang: fallback đóng gói chỉ xuất hiện khi type chưa từng
+	   được cấu hình. Khi Admin đã tạo record, trạng thái Hiển thị quyết định
+	   hoàn toàn việc có render ảnh hay không. */
+	$contactVisualRows = $cache->get("select name$lang, desc$lang, link, photo, status from #_photo where type = ? order by numb,id desc", array('contact-visual'), 'result', 7200);
+	$contactVisual = array();
+	foreach($contactVisualRows as $contactVisualRow)
+	{
+		if(empty($contactVisualRow['photo']) || strpos(','.(string)$contactVisualRow['status'].',', ',hienthi,') === false) continue;
+		$contactVisual = array(
+			'name' => !empty($contactVisualRow['name'.$lang]) ? $contactVisualRow['name'.$lang] : 'Tư vấn đúng thiết bị, đúng nhu cầu sử dụng',
+			'desc' => !empty($contactVisualRow['desc'.$lang]) ? trim(strip_tags(htmlspecialchars_decode($contactVisualRow['desc'.$lang], ENT_QUOTES))) : '',
+			'link' => !empty($contactVisualRow['link']) ? $contactVisualRow['link'] : '#yeu-cau-tu-van',
+			'photo' => $contactVisualRow['photo'],
+			'upload' => UPLOAD_PHOTO_L
+		);
+		break;
+	}
+	if(!$contactVisualRows)
+	{
+		$contactVisual = array(
+			'name' => 'Tư vấn đúng thiết bị, đúng nhu cầu sử dụng',
+			'desc' => 'Trao đổi cùng đội ngũ Phúc Thịnh Solar để chọn cấu hình phù hợp cho gia đình, cửa hàng hoặc công trình.',
+			'link' => '#yeu-cau-tu-van',
+			'photo' => 'contact-consultation.jpg',
+			'upload' => 'assets/images/site-visuals/'
+		);
+	}
 
 	/* breadCrumbs */
 	if(!empty($titleMain)) $breadcr->set($com,$titleMain);

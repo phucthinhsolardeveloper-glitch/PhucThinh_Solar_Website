@@ -1,5 +1,7 @@
-<!-- Bốn hành trình theo mockup 2026-09-12. Hai hành trình đầu chuyển đúng tab
-     giải pháp đang có; Dự án và Đối tác dùng route public hiện hữu. -->
+<?php /* Retail V3 không render dải hành trình: trang chủ ưu tiên sản phẩm và
+         điều hướng danh mục. Giữ markup để rollback nhanh nếu cần. */ ?>
+<?php if(false){ ?>
+<!-- Bốn hành trình theo nhu cầu. -->
 <nav class="pts-need-nav" aria-label="Chọn hành trình theo nhu cầu">
     <div class="uk-container">
         <div class="pts-need-grid">
@@ -30,49 +32,50 @@
         </div>
     </div>
 </nav>
+<?php } ?>
 
-<?php /* Giới thiệu ngắn (About teaser, 2026-09-12) - đọc từ Admin type
-     home-about/home-about-point (thêm 2026-09-14, xem sources/index.php),
-     rơi về đúng nội dung mặc định đã duyệt trước đây khi chưa có record. */ ?>
-<section class="pts-about-teaser uk-section-large">
+<?php if(count($homeCampaigns)){ ?>
+<!-- Nhịp bán hàng đầu trang lấy từ Admin > Trang chủ - Banner chiến dịch;
+     fallback về danh mục nổi bật khi chưa biên tập banner riêng. -->
+<section class="pts-retail-campaigns uk-section-large" aria-labelledby="pts-campaign-title">
     <div class="uk-container">
-        <div class="pts-about-teaser-grid">
-            <div class="pts-about-teaser-media">
-                <?=$func->getImage(['class' => 'lazy', 'sizes' => '860x680x1', 'upload' => $homeAboutImageUpload, 'image' => $homeAboutImage, 'alt' => 'Công trình điện mặt trời Phúc Thịnh Solar'])?>
+        <div class="pts-retail-section-head">
+            <div class="section-title">
+                <h3 id="pts-campaign-title">DANH MỤC SẢN PHẨM NỔI BẬT</h3>
             </div>
-            <div class="pts-about-teaser-copy">
-                <span class="pts-about-teaser-eyebrow"><?=htmlspecialchars($homeAboutEyebrow, ENT_QUOTES, 'UTF-8')?></span>
-                <h3><?=htmlspecialchars($homeAboutTitle, ENT_QUOTES, 'UTF-8')?></h3>
-                <p><?=htmlspecialchars($homeAboutDesc, ENT_QUOTES, 'UTF-8')?></p>
-                <ul class="pts-about-teaser-list">
-                    <?php foreach($homeAboutPoints as $homeAboutPoint) { if($homeAboutPoint['label'] === '') continue; ?>
-                    <li>
-                        <?php if($homeAboutPoint['photo'] !== '') { ?><img src="<?=htmlspecialchars(ASSET.UPLOAD_NEWS_L.$homeAboutPoint['photo'], ENT_QUOTES, 'UTF-8')?>" alt="" width="20" height="20" loading="lazy"><?php } else { ?><i class="fas <?=htmlspecialchars($homeAboutPoint['icon'], ENT_QUOTES, 'UTF-8')?>" aria-hidden="true"></i><?php } ?>
-                        <span><?=htmlspecialchars($homeAboutPoint['label'], ENT_QUOTES, 'UTF-8')?></span>
-                    </li>
-                    <?php } ?>
-                </ul>
-                <a class="pts-btn pts-btn-gold" href="ve-chung-toi/"><?=htmlspecialchars($homeAboutButton, ENT_QUOTES, 'UTF-8')?> <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
-            </div>
+            <a href="san-pham/" class="pts-retail-text-link">Khám phá tất cả <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+        </div>
+        <div class="pts-retail-campaign-grid">
+            <?php foreach($homeCampaigns as $campaignIndex => $campaign){
+                $campaignLink = !empty($campaign['link']) ? $campaign['link'] : 'san-pham/';
+                $campaignModal = in_array($campaignLink, array('#ptsContactModal', '#ptsDealerModal'), true) ? ltrim($campaignLink, '#') : '';
+            ?>
+            <a class="pts-retail-campaign-card<?=($campaignIndex === 0) ? ' is-featured' : ''?>" href="<?=htmlspecialchars($campaignLink, ENT_QUOTES, 'UTF-8')?>"<?=$campaignModal !== '' ? ' data-toggle="modal" data-target="#'.$campaignModal.'"' : ''?>>
+                <span class="pts-retail-campaign-media">
+                    <?=$func->getImage(['isLazy' => false, 'class' => '', 'sizes' => ($campaignIndex === 0 ? '1600x1092x1' : '1120x540x1'), 'upload' => $campaign['upload'], 'image' => $campaign['photo'], 'alt' => $campaign['name']])?>
+                </span>
+                <span class="pts-retail-campaign-shade" aria-hidden="true"></span>
+                <span class="pts-retail-campaign-copy">
+                    <strong><?=htmlspecialchars($campaign['name'], ENT_QUOTES, 'UTF-8')?></strong>
+                    <?php if($campaign['desc'] !== ''){ ?><small><?=htmlspecialchars($campaign['desc'], ENT_QUOTES, 'UTF-8')?></small><?php } ?>
+                    <span class="pts-retail-campaign-action">Xem chi tiết <i class="fas fa-arrow-right" aria-hidden="true"></i></span>
+                </span>
+            </a>
+            <?php } ?>
         </div>
     </div>
 </section>
+<?php } ?>
 
 <!-- San pham -->
 <section class="home-3 home-products-featured uk-section-large pts-ecosystem" style="background-image: url();">
     <div class="uk-container">
         <div class="Module Module-324">
-            <div class="ModuleContent">
-                <?php /* Lưới tĩnh 4 lớn + 6 nhỏ (2026-09-12, bản 2 - đổi từ thanh cuộn
-                         ngang sang lưới 2 hàng cố định theo hướng thiết kế mới chủ
-                         project đưa - "vẫn hơi hướng layout cũ", thanh cuộn ngang với
-                         icon nhỏ đúng là gần giống bản gốc). Bấm card -> AJAX đổi lưới
-                         sản phẩm bên dưới (api/product2.php + apps.js, không đổi JS).
-                         Tách theo cờ pl.status có 'major' (Đèn NLMT, Trụ đèn & phụ
-                         kiện, Đèn sân vườn, Biến tần - chủ project chọn), render
-                         trước để nổi bật, giữ đủ cả 10 danh mục. Lưới 12 cột: 4 card
-                         major span 3 (đủ 1 hàng), 6 card minor span 2 (đủ 1 hàng) -
-                         không cần JS, tự xuống hàng đúng theo CSS grid. */
+            <div class="ModuleContent" data-pts-horizontal-rail>
+                <?php /* Giữ thứ tự nhóm chủ lực trước nhưng Home Retail V3 trình bày
+                         đồng đều 5 card mỗi hàng, gần nhịp danh mục của Kitawa hơn.
+                         Trên mobile chuyển thành rail ngang. Bấm card vẫn dùng API
+                         product2.php hiện hữu để đổi lưới sản phẩm bên dưới. */
                     $splistMajor = array();
                     $splistMinor = array();
                     foreach($splistnb as $splistRow) {
@@ -83,18 +86,21 @@
                 ?>
                 <div class="pts-ecosystem-head">
                     <div class="section-title">
-                        <p>SẢN PHẨM</p>
                         <h3>HỆ SINH THÁI THIẾT BỊ</h3>
                     </div>
-                    <a class="pts-ecosystem-viewall" href="san-pham/">Xem tất cả sản phẩm <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+                    <div class="pts-ecosystem-actions">
+                        <button class="pts-rail-control pts-rail-prev" type="button" aria-label="Xem danh mục trước"><i class="fas fa-chevron-left" aria-hidden="true"></i></button>
+                        <button class="pts-rail-control pts-rail-next" type="button" aria-label="Xem danh mục tiếp theo"><i class="fas fa-chevron-right" aria-hidden="true"></i></button>
+                        <a class="pts-ecosystem-viewall" href="san-pham/">Xem tất cả sản phẩm <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+                    </div>
                 </div>
                 <div class="tab-switcher">
-                    <ul class="pts-ecosystem-grid" uk-switcher="connect: .product-tabs-container">
+                    <ul class="pts-ecosystem-grid" data-pts-horizontal-track>
                         <?php if(count($splistOrdered)){foreach($splistOrdered as $k => $v){
                             $isMajorCategory = !empty($v['status']) && strpos(','.$v['status'].',', ',major,') !== false;
                         ?>
-                        <li class="<?=$isMajorCategory ? 'is-major' : ''?>">
-                            <a href="javascript:void(0)" class="get-product-category" data-list="<?=$v['id']?>">
+                        <li class="<?=$isMajorCategory ? 'is-major' : ''?><?=($k === 0) ? ' uk-active' : ''?>">
+                            <a href="javascript:void(0)" class="get-product-category" data-list="<?=$v['id']?>" aria-pressed="<?=($k === 0) ? 'true' : 'false'?>">
                                 <?php if($isMajorCategory) { ?><span class="pts-home-category-badge">HOT</span><?php } ?>
                                 <span class="pts-home-category-image">
                                     <?php if(!empty($v['photo'])) { ?>
@@ -123,6 +129,83 @@
         </div>
     </div>
 </section>
+
+<?php if(count($chungnhan)){ ?>
+<!-- Dải năng lực dùng đúng nguồn Chứng nhận đang quản lý trong Admin. -->
+<section class="pts-proof-band" aria-labelledby="pts-proof-title">
+    <div class="uk-container">
+        <div class="pts-proof-shell">
+            <div class="pts-proof-copy">
+                <h3 id="pts-proof-title">Sản phẩm chính hãng, nguồn gốc rõ ràng</h3>
+                <p>Hồ sơ chứng nhận và thương hiệu được cập nhật trực tiếp từ hệ thống quản trị.</p>
+                <a href="ve-chung-toi/">Xem hồ sơ năng lực <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+            </div>
+            <div class="pts-proof-grid" role="list" aria-label="Chứng nhận và thương hiệu ủy quyền">
+                <?php foreach(array_slice($chungnhan, 0, 3) as $certificate){ ?>
+                <div class="pts-proof-card" role="listitem">
+                    <?=$func->getImage(['isLazy' => false, 'class' => '', 'sizes' => '360x230x2', 'upload' => UPLOAD_PHOTO_L, 'image' => $certificate['photo'], 'alt' => $certificate['name'.$lang]])?>
+                    <?php if(!empty($certificate['name'.$lang])){ ?><strong><?=htmlspecialchars($certificate['name'.$lang], ENT_QUOTES, 'UTF-8')?></strong><?php } ?>
+                </div>
+                <?php } ?>
+            </div>
+        </div>
+    </div>
+</section>
+<?php } ?>
+
+<?php if(count($homeProductGroups)){ ?>
+<div class="pts-product-showroom" aria-label="Các nhóm sản phẩm chủ lực">
+    <?php foreach($homeProductGroups as $homeGroupIndex => $homeProductGroup){
+        $homeGroupCategory = $homeProductGroup['category'];
+    ?>
+    <section class="pts-product-family uk-section-large<?=($homeGroupIndex % 2) ? ' is-tinted' : ''?>" aria-labelledby="pts-product-family-<?=$homeGroupCategory['id']?>">
+        <div class="uk-container">
+            <div class="pts-retail-section-head">
+                <div class="section-title">
+                    <h3 id="pts-product-family-<?=$homeGroupCategory['id']?>"><?=htmlspecialchars($homeGroupCategory['name'.$lang], ENT_QUOTES, 'UTF-8')?></h3>
+                </div>
+                <a class="pts-retail-text-link" href="danh-muc-san-pham/<?=$homeGroupCategory[$sluglang]?>/">Xem toàn bộ <?=htmlspecialchars($homeGroupCategory['name'.$lang], ENT_QUOTES, 'UTF-8')?> <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+            </div>
+            <div class="pts-product-family-grid">
+                <?php /* Catalog là nội dung chính nên ảnh thumbnail được render bằng
+                         src ngay; tránh card trắng khi thư viện lazy-load legacy bỏ
+                         qua section nằm sâu trong trang. */
+                      $pcNoLazy = true; foreach($homeProductGroup['products'] as $v){ include ROOT."templates/product/_product_card.php"; } ?>
+            </div>
+        </div>
+    </section>
+    <?php } ?>
+</div>
+<?php } ?>
+
+<?php /* Giới thiệu ngắn (About teaser, 2026-09-12) - đọc từ Admin type
+     home-about/home-about-point (thêm 2026-09-14, xem sources/index.php),
+     rơi về đúng nội dung mặc định đã duyệt trước đây khi chưa có record. */ ?>
+<?php if(false){ /* Chuyển nội dung giới thiệu về trang /ve-chung-toi/. */ ?>
+<section class="pts-about-teaser uk-section-large">
+    <div class="uk-container">
+        <div class="pts-about-teaser-grid">
+            <div class="pts-about-teaser-media">
+                <?=$func->getImage(['class' => 'lazy', 'sizes' => '860x680x1', 'upload' => $homeAboutImageUpload, 'image' => $homeAboutImage, 'alt' => 'Công trình điện mặt trời Phúc Thịnh Solar'])?>
+            </div>
+            <div class="pts-about-teaser-copy">
+                <span class="pts-about-teaser-eyebrow"><?=htmlspecialchars($homeAboutEyebrow, ENT_QUOTES, 'UTF-8')?></span>
+                <h3><?=htmlspecialchars($homeAboutTitle, ENT_QUOTES, 'UTF-8')?></h3>
+                <p><?=htmlspecialchars($homeAboutDesc, ENT_QUOTES, 'UTF-8')?></p>
+                <ul class="pts-about-teaser-list">
+                    <?php foreach($homeAboutPoints as $homeAboutPoint) { if($homeAboutPoint['label'] === '') continue; ?>
+                    <li>
+                        <?php if($homeAboutPoint['photo'] !== '') { ?><img src="<?=htmlspecialchars(ASSET.UPLOAD_NEWS_L.$homeAboutPoint['photo'], ENT_QUOTES, 'UTF-8')?>" alt="" width="20" height="20" loading="lazy"><?php } else { ?><i class="fas <?=htmlspecialchars($homeAboutPoint['icon'], ENT_QUOTES, 'UTF-8')?>" aria-hidden="true"></i><?php } ?>
+                        <span><?=htmlspecialchars($homeAboutPoint['label'], ENT_QUOTES, 'UTF-8')?></span>
+                    </li>
+                    <?php } ?>
+                </ul>
+                <a class="pts-btn pts-btn-gold" href="ve-chung-toi/"><?=htmlspecialchars($homeAboutButton, ENT_QUOTES, 'UTF-8')?> <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+            </div>
+        </div>
+    </div>
+</section>
+<?php } ?>
 
 <?php /* Banner carousel cũ giữ lại để rollback; giao diện mới tách CTA đại lý
      về đúng vị trí sau dải thương hiệu và dùng CTA tư vấn ở cuối trang. */ ?>
@@ -164,7 +247,7 @@
     </div>
 <?php } ?>
 
-<?php if(count($gplist)){ ?>
+<?php if(false && count($gplist)){ /* Nội dung giải pháp đã có trang chuyên biệt. */ ?>
 <!-- Giai phap -->
 <section class="home-2 uk-section-large" id="giai-phap">
     <div class="uk-container">
@@ -230,7 +313,7 @@
                                                     </div>
                                                     <div class="clearfix"></div>
                                                     <div class="btn-view-all">
-                                                        <a class="" href="danh-muc-giai-phap/<?=$c[$sluglang]?>/"
+                                                        <a class="" href="giai-phap/<?=$c[$sluglang]?>/"
                                                             title="<?=$c['name'.$lang]?>">Xem
                                                             chi tiết<span
                                                                 class="link_arrow lnr lnr-arrow-right"></span></a>
@@ -241,7 +324,7 @@
                                         <div class="wrapper">
                                             <div class="img">
                                                 <?=$func->getImage(['class' => 'lazy','size-error' => '600x600x1', 'upload' => UPLOAD_NEWS_L, 'image' => $c['photo1'], 'alt' => $c['name'.$lang]])?>
-                                                <a class="view-more" href="danh-muc-giai-phap/<?=$c[$sluglang]?>/"
+                                                <a class="view-more" href="giai-phap/<?=$c[$sluglang]?>/"
                                                     title="<?=$c['name'.$lang]?>">
                                                     <span class="text">Xem chi tiết</span>
                                                     <span class="icon">
@@ -410,7 +493,7 @@
 	     theo yêu cầu chủ site (2026-09-08) - dồn hết vào việc gộp/rút gọn để tránh
 	     trang chủ dài, không cần làm lại giao diện riêng cho phần này nữa. */ ?>
 
-<?php if(count($quytrinh)){ ?>
+<?php if(false && count($quytrinh)){ /* Không kéo quy trình vào showroom sản phẩm. */ ?>
 <!-- Quy trinh -->
 <div class="Module Module-332">
     <div class="ModuleContent">
@@ -460,7 +543,7 @@
 </div>
 <?php } ?>
 
-<?php if(count($dalist)){ ?>
+<?php if(false && count($dalist)){ /* Dự án hiển thị tại hub Dự án. */ ?>
 <!-- Du an -->
 <section class="home-6">
     <div class="uk-container">
@@ -561,7 +644,6 @@
 <section class="pts-brands uk-section-large">
     <div class="uk-container">
         <div class="section-title uk-text-center">
-            <p>ĐỒNG HÀNH CÙNG THƯƠNG HIỆU UY TÍN</p>
             <h3>THƯƠNG HIỆU HỢP TÁC</h3>
         </div>
         <div class="pts-brands-rail" data-pts-horizontal-rail>
@@ -622,7 +704,6 @@
     </div>
     <div class="uk-container pts-dealer-banner-inner">
         <div class="pts-dealer-banner-copy">
-            <span>HỢP TÁC CÙNG PHÚC THỊNH SOLAR</span>
             <h3><?=htmlspecialchars_decode($dealerAdv['name'.$lang])?></h3>
             <div><?=htmlspecialchars_decode($dealerAdv['desc'.$lang])?></div>
         </div>
@@ -639,7 +720,6 @@
             <div class="uk-container">
                 <div class="pts-news-heading">
                     <div class="section-title">
-                        <p>CẬP NHẬT MỚI NHẤT</p>
                         <h3>KIẾN THỨC NĂNG LƯỢNG</h3>
                     </div>
                     <a href="tin-tuc/" class="pts-news-viewall">Xem tất cả bài viết <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
@@ -648,7 +728,7 @@
                     <?php foreach($newsnb as $v) { ?>
                     <a class="pts-news-card" href="<?=$v[$sluglang]?>/" title="<?=$v['name'.$lang]?>">
                         <span class="pts-news-thumb">
-                            <?=$func->getImage(['class' => 'lazy', 'size-error' => '420x250x2', 'upload' => UPLOAD_NEWS_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
+                            <?=$func->getImage(['isLazy' => false, 'class' => '', 'sizes' => '420x250x2', 'upload' => UPLOAD_NEWS_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
                         </span>
                         <span class="pts-news-info">
                             <span class="pts-news-date"><?=date('d/m/Y',$v['date_created'])?></span>
@@ -664,6 +744,38 @@
 </div>
 <?php } ?>
 
+<?php if(false && count($testimonial)){ /* Lời chứng thực không nằm trong retail homepage. */ ?>
+<!-- Câu chuyện khách hàng lấy từ Admin > Phản hồi từ đại lý. -->
+<section class="pts-customer-stories uk-section-large" aria-labelledby="pts-stories-title">
+    <div class="uk-container">
+        <div class="pts-retail-section-head">
+            <div class="section-title">
+                <p>TRẢI NGHIỆM THỰC TẾ</p>
+                <h3 id="pts-stories-title">KHÁCH HÀNG &amp; ĐỐI TÁC ĐỒNG HÀNH</h3>
+            </div>
+            <a href="dai-ly" class="pts-retail-text-link">Trở thành đối tác <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+        </div>
+        <div class="pts-story-grid">
+            <?php foreach($testimonial as $story){
+                $storyRole = trim(strip_tags(htmlspecialchars_decode((string)$story['desc'.$lang], ENT_QUOTES)));
+                $storyQuote = trim(strip_tags(htmlspecialchars_decode((string)$story['content'.$lang], ENT_QUOTES)));
+            ?>
+            <article class="pts-story-card">
+                <div class="pts-story-person">
+                    <span class="pts-story-avatar">
+                        <?=$func->getImage(['class' => 'lazy', 'sizes' => '180x180x1', 'upload' => UPLOAD_NEWS_L, 'image' => $story['photo'], 'alt' => $story['name'.$lang]])?>
+                    </span>
+                    <span><strong><?=htmlspecialchars($story['name'.$lang], ENT_QUOTES, 'UTF-8')?></strong><?php if($storyRole !== ''){ ?><small><?=htmlspecialchars($storyRole, ENT_QUOTES, 'UTF-8')?></small><?php } ?></span>
+                </div>
+                <?php if($storyQuote !== ''){ ?><p>“<?=htmlspecialchars($storyQuote, ENT_QUOTES, 'UTF-8')?>”</p><?php } ?>
+                <span class="pts-story-mark" aria-hidden="true"><i class="fas fa-quote-right"></i></span>
+            </article>
+            <?php } ?>
+        </div>
+    </div>
+</section>
+<?php } ?>
+
 <!-- CTA tư vấn chốt trang; CTA đại lý đã được đặt riêng trước khối Kiến thức. -->
 <section class="pts-home-closing-cta">
     <div class="uk-container">
@@ -674,7 +786,6 @@
             </div>
             <?php } ?>
             <div class="pts-closing-cta-main">
-                <span class="pts-closing-cta-eyebrow">NHẬN TƯ VẤN</span>
                 <h3><?=$contactAdv ? strip_tags(htmlspecialchars_decode($contactAdv['name'.$lang])) : 'Chưa biết chọn sản phẩm phù hợp?'?></h3>
                 <p><?=$contactAdv ? strip_tags(htmlspecialchars_decode($contactAdv['desc'.$lang])) : 'Để lại số điện thoại hoặc nhắn Zalo, Phúc Thịnh Solar tư vấn miễn phí ngay.'?></p>
                 <div class="pts-closing-cta-actions">

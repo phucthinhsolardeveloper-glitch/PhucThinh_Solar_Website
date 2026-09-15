@@ -9,9 +9,10 @@ test('Project hub matches the new gallery layout and keeps real routes', async (
   await expect(hub).toBeVisible();
   await expect(hub.locator('h1')).toHaveCount(1);
   await expect(hub.locator('.pts-ph-filter')).toHaveCount(3); // All + two existing Admin groups.
-  await expect(hub.locator('.pts-ph-card')).toHaveCount(4);
+  await expect(hub.locator('.pts-ph-featured')).toHaveCount(1);
+  await expect(hub.locator('.pts-ph-card')).toHaveCount(3);
   await expect(hub.locator('.date_content, .author_post')).toHaveCount(0);
-  const hrefs = await hub.locator('.pts-ph-card').evaluateAll(nodes => nodes.map(node => node.getAttribute('href')));
+  const hrefs = await hub.locator('.pts-ph-featured-cta, .pts-ph-card').evaluateAll(nodes => nodes.map(node => node.getAttribute('href')));
   expect(hrefs.every(href => href && !href.includes('store-manager'))).toBe(true);
   for(const href of hrefs) expect((await page.request.get(href)).status(), href).toBe(200);
   for(const image of await hub.locator('img').all()) {

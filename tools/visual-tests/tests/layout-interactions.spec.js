@@ -41,6 +41,7 @@ test('header, menu, breadcrumb and footer remain usable', async ({ page, isMobil
   await page.goto('/san-pham/', { waitUntil: 'domcontentloaded' });
   await expect(page.locator('#headerscroll')).toBeVisible();
   await expect(page.locator('.breadCrumbs')).toBeVisible();
+  await expect(page.locator('.pts-breadcrumb-bar')).toHaveCSS('border-bottom-width', '0px');
   await expect(page.locator('#headerscroll .icon-cart-header')).toHaveCount(0);
   await expect(page.locator('#headerscroll .hdr-call-txt')).toContainText('Tư vấn sản phẩm');
   const headsetIcon = page.locator('#headerscroll .hdr-call-ic .fa-headset');
@@ -81,49 +82,58 @@ test('header, menu, breadcrumb and footer remain usable', async ({ page, isMobil
   expect(pageErrors).toEqual([]);
 });
 
-test('mobile home hero defaults to layout 3 and keeps legacy layouts usable', async ({ page, isMobile }) => {
-  test.skip(!isMobile, 'The asymmetric-gutter regression only affected mobile.');
+test('content surfaces stay flat across product and content hubs', async ({ page }) => {
+  const assertFlat = async selector => {
+    const surface = page.locator(selector).first();
+    await expect(surface).toBeVisible();
+    expect(await surface.evaluate(element => ({
+      border: getComputedStyle(element).borderTopWidth,
+      background: getComputedStyle(element).backgroundColor,
+      shadow: getComputedStyle(element).boxShadow
+    }))).toEqual({ border: '0px', background: 'rgba(0, 0, 0, 0)', shadow: 'none' });
+  };
+
+  await page.goto('/danh-muc-san-pham/den-nlmt/', { waitUntil: 'domcontentloaded' });
+  await assertFlat('.product-card');
+  await assertFlat('.filter_product');
+  await assertFlat('.pts-filter-card');
+  const productHref = await page.locator('.product-card .product-item').first().getAttribute('href');
+  expect(productHref).toBeTruthy();
+  await page.goto(`/${productHref}`, { waitUntil: 'domcontentloaded' });
+  await assertFlat('.left-pro-detail > .MagicZoom');
+  await assertFlat('.tabs-pro-detail');
+
+  await page.goto('/tin-tuc/', { waitUntil: 'domcontentloaded' });
+  await assertFlat('.nh-card');
+  await expect(page.locator('.nh-eyebrow')).toBeHidden();
+
+  await page.goto('/du-an-da-thuc-hien/', { waitUntil: 'domcontentloaded' });
+  await assertFlat('.pts-ph-card');
+  await expect(page.locator('.pts-ph-mark')).toBeHidden();
+
+  await page.goto('/giai-phap/', { waitUntil: 'domcontentloaded' });
+  await assertFlat('.pts-sh-choice');
+  await expect(page.locator('.pts-sh-eyebrow').first()).toBeHidden();
+
+  await page.goto('/ve-chung-toi/', { waitUntil: 'domcontentloaded' });
+  await assertFlat('.pts-about-certificate-card');
+  await expect(page.locator('.pts-about-eyebrow').first()).toBeHidden();
+
+  // Border của field vẫn được giữ vì là ranh giới nhập liệu có ý nghĩa.
+  await page.goto('/lien-he', { waitUntil: 'domcontentloaded' });
+  const contactField = page.locator('.formContact input[type="text"]').first();
+  await expect(contactField).toBeVisible();
+  expect(await contactField.evaluate(element => parseFloat(getComputedStyle(element).borderTopWidth))).toBeGreaterThan(0);
+});
+
+test('mobile home starts with the product campaign and does not render legacy hero layouts', async ({ page, isMobile }) => {
+  test.skip(!isMobile, 'Mobile-only homepage gutter regression.');
   await page.goto('/', { waitUntil: 'domcontentloaded' });
   await dismissEntrancePopup(page);
 
-  const assertSymmetric = async selector => {
-    const metrics = await page.locator(selector).evaluate(element => {
-      const rect = element.getBoundingClientRect();
-      return {
-        left: rect.left,
-        right: document.documentElement.clientWidth - rect.right,
-        viewport: document.documentElement.clientWidth,
-        scrollWidth: document.documentElement.scrollWidth,
-      };
-    });
-    expect(Math.abs(metrics.left - metrics.right)).toBeLessThanOrEqual(1);
-    expect(metrics.scrollWidth).toBe(metrics.viewport);
-  };
-
-  await expect(page.locator('.pts-hero-carousel')).toBeVisible();
-  await expect(page.locator('.pts-hero-layout-toggle')).toBeHidden();
-  await assertSymmetric('.pts-hero-carousel-slide.is-active .pts-hero-carousel-copy');
-
-  await page.evaluate(() => window.localStorage.setItem('ptsHeroLayout20260912', '2'));
-  await page.reload({ waitUntil: 'domcontentloaded' });
-  await dismissEntrancePopup(page);
-  await expect(page.locator('.pts-hero2')).toBeVisible();
-  await expect(page.locator('.pts-hero-layout-toggle')).toBeVisible();
-  await assertSymmetric('.pts-hero2-copy');
-  await assertSymmetric('.pts-hero2-form-card');
-  await assertSymmetric('.pts-hero2-stats');
-
-  await page.locator('.pts-hero-layout-toggle').click();
-  await expect(page.locator('.pts-hero-carousel')).toBeVisible();
-  await expect(page.locator('.pts-hero-layout-toggle')).toBeHidden();
-  await assertSymmetric('.pts-hero-carousel-slide.is-active .pts-hero-carousel-copy');
-
-  await page.evaluate(() => window.localStorage.setItem('ptsHeroLayout20260912', '1'));
-  await page.reload({ waitUntil: 'domcontentloaded' });
-  await dismissEntrancePopup(page);
-  await expect(page.locator('.pts-home-hero')).toBeVisible();
-  await expect(page.locator('.pts-hero-layout-toggle')).toBeVisible();
-  await assertSymmetric('.pts-home-hero .pts-hero-inner');
+  await expect(page.locator('.wap-slider, .pts-hero-carousel, .pts-hero2, .pts-home-hero, .pts-hero-layout-toggle')).toHaveCount(0);
+  await expect(page.locator('.pts-retail-campaigns')).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(await page.evaluate(() => document.documentElement.clientWidth));
 });
 
 test('home contact dock stays compact and exposes existing contact links', async ({ page }) => {
@@ -146,37 +156,20 @@ test('home contact dock stays compact and exposes existing contact links', async
   await expect(toggle).toHaveAttribute('aria-expanded', 'false');
 });
 
-test('home solution, projects and closing CTA follow the responsive redesign', async ({ page, isMobile }) => {
+test('home product showroom and closing CTA follow the product-first decision', async ({ page }) => {
   await page.goto('/', { waitUntil: 'domcontentloaded' });
   await dismissEntrancePopup(page);
 
-  const solution = page.locator('.home-2 .tabs-container .item').first();
-  const copy = solution.locator('.wrapper').first();
-  const image = solution.locator('.wrapper').nth(1);
-  await solution.scrollIntoViewIfNeeded();
-  await expect(solution.locator('.btn-view-all a')).toHaveCSS('background-image', /linear-gradient/);
-  const positions = await Promise.all([copy.boundingBox(), image.boundingBox()]);
-  expect(positions[0]).toBeTruthy();
-  expect(positions[1]).toBeTruthy();
-  if (isMobile) expect(positions[1].y).toBeLessThan(positions[0].y);
-  else expect(positions[1].x).toBeLessThan(positions[0].x);
-
-  const activeProjectCards = page.locator('.projects-switcher > .uk-active .slider_6_slick .slick-active');
-  await expect(activeProjectCards).toHaveCount(isMobile ? 1 : 2);
-  if (!isMobile) {
-    const projectImageHeight = await activeProjectCards.first().locator('.project .img').evaluate(element => element.getBoundingClientRect().height);
-    expect(projectImageHeight).toBeLessThanOrEqual(260);
-  }
+  await expect(page.locator('.wap-slider')).toHaveCount(0);
+  await expect(page.locator('.pts-retail-campaign-card')).toHaveCount(3);
+  await expect(page.locator('.pts-product-family')).toHaveCount(3);
+  expect(await page.locator('.pts-product-family .product-card').count()).toBeGreaterThanOrEqual(24);
+  await expect(page.locator('section.home-2, section.home-6, section.home-7, .pts-about-teaser')).toHaveCount(0);
 
   const closingImage = page.locator('.pts-home-closing-cta .pts-closing-cta-media img');
   await closingImage.scrollIntoViewIfNeeded();
   await expect(closingImage).toBeVisible();
   expect(await closingImage.evaluate(element => element.naturalWidth)).toBeGreaterThan(0);
-  await expect(page.locator('.pts-process-step')).toHaveCount(4);
-  await expect(page.locator('.pts-process-step-desc')).toHaveCount(4);
-  const processDescriptions = await page.locator('.pts-process-step-desc').allTextContents();
-  expect(processDescriptions.every(description => /[.!?]$/.test(description.trim()))).toBeTruthy();
-  expect(await page.locator('.pts-process-step-desc').first().evaluate(element => getComputedStyle(element).webkitLineClamp)).toBe('none');
   await expect(page.locator('.pts-news-card')).toHaveCount(6);
 });
 
@@ -355,25 +348,15 @@ test('home exposes every featured category and switches its product grid', async
   const categories = categoryTrack.locator(':scope > li');
   expect(await categories.count()).toBeGreaterThan(0);
   await expect(categoryTrack.locator('a[href="danh-muc-san-pham/den-ac/"]')).toHaveCount(0);
-  await expect(categoryTrack).toHaveCSS('display', 'grid');
+  await expect(categoryTrack).toHaveCSS('display', 'flex');
+  await expect(categoryTrack).toHaveCSS('flex-wrap', 'nowrap');
+  await expect(page.locator('.paging-product-category .product-card').first()).toBeVisible();
 
   const majorCategories = categories.filter({ has: page.locator('.pts-home-category-badge') });
   await expect(majorCategories).toHaveCount(4);
   await expect(categories).toHaveCount(10);
-  if((page.viewportSize()?.width || 0) > 991) {
-    const layout = await categories.evaluateAll(items => items.map(item => ({
-      major: item.classList.contains('is-major'),
-      top: Math.round(item.getBoundingClientRect().top),
-      width: Math.round(item.getBoundingClientRect().width),
-    })));
-    const major = layout.filter(item => item.major);
-    const minor = layout.filter(item => !item.major);
-    expect(major).toHaveLength(4);
-    expect(minor).toHaveLength(6);
-    expect(new Set(major.map(item => item.top)).size).toBe(1);
-    expect(new Set(minor.map(item => item.top)).size).toBe(1);
-    expect(minor[0].width).toBeLessThan(major[0].width);
-  }
+  const categoryTops = await categories.evaluateAll(items => items.map(item => Math.round(item.offsetTop)));
+  expect(new Set(categoryTops).size).toBe(1);
 
   for (const category of await categories.all()) {
     await category.scrollIntoViewIfNeeded();
@@ -390,8 +373,7 @@ test('home exposes every featured category and switches its product grid', async
   expect(productBody).toContain('product-item');
   await expect(secondCategory).toHaveClass(/uk-active/);
 
-  // Grid mới phải giữ nguyên hành vi AJAX với cả card ở cuối danh sách; không
-  // còn kỳ vọng scrollLeft/nút điều hướng của rail legacy.
+  // Rail một hàng phải giữ nguyên hành vi AJAX với cả card ở cuối danh sách.
   const clickIndex = Math.min(7, (await categories.count()) - 1);
   const clickedCategory = categories.nth(clickIndex);
   const clickedListId = await clickedCategory.locator('a').getAttribute('data-list');

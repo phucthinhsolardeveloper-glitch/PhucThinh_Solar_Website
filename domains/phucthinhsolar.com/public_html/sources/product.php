@@ -43,6 +43,43 @@
 			$productListPreviewCount[$productListId] = isset($productListPreviewCount[$productListId]) ? $productListPreviewCount[$productListId] + 1 : 1;
 			if(empty($productListPreview[$productListId]) || count($productListPreview[$productListId]) < 4) $productListPreview[$productListId][] = $productListPreviewRow;
 		}
+
+		/* Banner hình ảnh ngắt nhịp cho catalog dài. Giống home-campaign, truy
+		   vấn cả record tắt để Admin có thể ẩn hoàn toàn mà fallback không tự
+		   xuất hiện lại. Fallback chỉ dùng khi type chưa từng được cấu hình. */
+		$catalogCampaignRows = $cache->get("select name$lang, desc$lang, photo, link, status from #_photo where type = ? order by numb,id desc", array('catalog-campaign'), 'result', 7200);
+		$catalogCampaigns = array();
+		foreach($catalogCampaignRows as $catalogCampaignRow)
+		{
+			if(empty($catalogCampaignRow['photo']) || strpos(','.(string)$catalogCampaignRow['status'].',', ',hienthi,') === false) continue;
+			$catalogCampaigns[] = array(
+				'name' => !empty($catalogCampaignRow['name'.$lang]) ? $catalogCampaignRow['name'.$lang] : 'Giải pháp thiết bị đồng bộ',
+				'desc' => !empty($catalogCampaignRow['desc'.$lang]) ? trim(strip_tags(htmlspecialchars_decode($catalogCampaignRow['desc'.$lang], ENT_QUOTES))) : '',
+				'photo' => $catalogCampaignRow['photo'],
+				'upload' => UPLOAD_PHOTO_L,
+				'link' => !empty($catalogCampaignRow['link']) ? $catalogCampaignRow['link'] : 'lien-he/'
+			);
+			if(count($catalogCampaigns) >= 3) break;
+		}
+		if(!$catalogCampaignRows)
+		{
+			$catalogCampaigns = array(
+				array(
+					'name' => 'Chiếu sáng đúng nhu cầu công trình',
+					'desc' => 'Chọn công suất, thời gian sáng và kiểu lắp đặt phù hợp ngay từ đầu.',
+					'photo' => 'catalog-street-lighting.jpg',
+					'upload' => 'assets/images/site-visuals/',
+					'link' => 'giai-phap/'
+				),
+				array(
+					'name' => 'Thiết bị đồng bộ, thông số rõ ràng',
+					'desc' => 'Từ tấm pin, bộ đèn đến phụ kiện lắp đặt trong cùng một hệ giải pháp.',
+					'photo' => 'catalog-equipment-system.jpg',
+					'upload' => 'assets/images/site-visuals/',
+					'link' => 'lien-he/'
+				)
+			);
+		}
 	}
 	if($orderby !="")
 	{

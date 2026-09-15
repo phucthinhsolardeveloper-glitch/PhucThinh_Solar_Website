@@ -6,7 +6,7 @@
     $aboutCtaHasImage = !empty($aboutCta['photo']);
 ?>
 <main class="pts-about-page">
-    <section class="pts-about-story" aria-labelledby="about-story-title">
+    <section class="pts-about-story" id="ve-phuc-thinh" aria-labelledby="about-story-title">
         <div class="uk-container">
             <div class="pts-about-story-grid">
                 <div class="pts-about-story-copy">
@@ -30,7 +30,7 @@
     </section>
 
     <?php if(!empty($aboutTimeline)) { ?>
-    <section class="pts-about-history" aria-labelledby="about-history-title">
+    <section class="pts-about-history" id="lich-su-phat-trien" aria-labelledby="about-history-title">
         <div class="uk-container">
             <div class="pts-about-history-grid">
                 <div class="pts-about-history-copy">
@@ -123,7 +123,7 @@
     <?php } ?>
 
     <?php if(!empty($aboutCompass)) { ?>
-    <section class="pts-about-compass" aria-labelledby="about-compass-title">
+    <section class="pts-about-compass" id="tam-nhin-su-menh" aria-labelledby="about-compass-title">
         <div class="uk-container">
             <header class="pts-about-section-heading">
                 <span class="pts-about-eyebrow"><?=$aboutEscape($aboutUi['compass_eyebrow'])?></span>

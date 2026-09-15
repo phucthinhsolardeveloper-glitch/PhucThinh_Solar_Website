@@ -2,6 +2,7 @@
 if(!defined('SOURCES')) die('Error');
 require_once LIBRARIES.'solution_hub.php';
 require_once LIBRARIES.'product_category_urls.php';
+$pageRendersVisibleH1 = true;
 $solutionUi = $lang === 'en' ? array(
     'eyebrow' => 'Solutions for your needs', 'title' => 'Choose the right solution for your needs',
     'intro' => 'Explore our solar energy solutions or go directly to the equipment you need. Our team can help you choose.',
@@ -22,23 +23,19 @@ $solutionUi = $lang === 'en' ? array(
 // Read hidden records too, so Admin hide actions override fallback content.
 $solutionRows = $d->rawQuery('select id,id_list,namevi,nameen,title_indexvi,title_indexen,descvi,descen,photo,photo1,slugvi,slugen,status from #_news where type=? order by numb,id desc', array('giai-phap'));
 $solutionGroupRows = $d->rawQuery('select id,namevi,nameen,descvi,descen,photo,slugvi,slugen,status from #_news_list where type=? order by numb,id desc', array('giai-phap'));
-$solutionIntroRows = $d->rawQuery('select namevi,nameen,title_indexvi,title_indexen,descvi,descen,photo,status from #_news where type=? order by numb,id desc', array('solution-intro'));
+$solutionIntroRows = $d->rawQuery('select namevi,nameen,title_indexvi,title_indexen,descvi,descen,contentvi,contenten,photo,status from #_news where type=? order by numb,id desc', array('solution-intro'));
 $solutionCtaRows = $d->rawQuery('select namevi,nameen,title_indexvi,title_indexen,descvi,descen,photo,status from #_news where type=? order by numb,id desc', array('solution-cta'));
 $solutionProductRows = $d->rawQuery('select id,namevi,nameen,descvi,descen,photo,slugvi,slugen,status from #_product_list where type=? order by numb,id desc', array('san-pham'));
 $solutionGroups = solutionHubSelect($solutionGroupRows, 'solutionhub');
 $solutionVisibleRows = solutionHubSelect($solutionRows);
+/* Landing đi thẳng tới từng bài Giải pháp. news_list chỉ còn phục vụ URL
+   nhóm legacy, không còn là một bước trong hành trình chính. */
+$solutionFeaturedRows = solutionHubSelect($solutionRows, 'solutionhub');
 $solutionCards = array();
-foreach($solutionGroups as $solutionGroup) {
-    $representative = array();
-    foreach($solutionVisibleRows as $solutionRow) {
-        if((int)$solutionRow['id_list'] !== (int)$solutionGroup['id']) continue;
-        if(!$representative || solutionHubHasStatus($solutionRow, 'solutionhub')) $representative = $solutionRow;
-        if(solutionHubHasStatus($solutionRow, 'solutionhub')) break;
-    }
-    // Do not advertise an empty category; its public page would have no choice.
-    if(!$representative) continue;
-    $solutionGroup['_representative'] = $representative;
-    $solutionCards[] = $solutionGroup;
+foreach($solutionFeaturedRows as $solutionRow) {
+    if(solutionHubField($solutionRow, 'slug', $lang) === '') continue;
+    $solutionRow['_representative'] = $solutionRow;
+    $solutionCards[] = $solutionRow;
 }
 $solutionEquipment = solutionHubSelect($solutionProductRows, 'solutionhub', 4);
 $solutionIntroVisible = solutionHubSelect($solutionIntroRows, '', 1);
@@ -50,6 +47,9 @@ $solutionShowCta = !$solutionCtaRows || (bool)$solutionCtaVisible;
 $solutionHeroTitle = solutionHubField($solutionIntro, 'name', $lang) ?: $solutionUi['title'];
 $solutionHeroEyebrow = solutionHubField($solutionIntro, 'title_index', $lang) ?: $solutionUi['eyebrow'];
 $solutionHeroDesc = solutionHubField($solutionIntro, 'desc', $lang) ?: $solutionUi['intro'];
+$solutionEditorialHtml = !empty($solutionIntro['content'.$lang])
+    ? htmlspecialchars_decode($solutionIntro['content'.$lang], ENT_QUOTES)
+    : (!empty($solutionIntro['contentvi']) ? htmlspecialchars_decode($solutionIntro['contentvi'], ENT_QUOTES) : '');
 $solutionHeroImage = solutionHubImage(isset($solutionIntro['photo']) ? $solutionIntro['photo'] : '', UPLOAD_NEWS_L);
 if(!$solutionIntroRows && !$solutionHeroImage) {
     foreach($solutionCards as $solutionGroup) {

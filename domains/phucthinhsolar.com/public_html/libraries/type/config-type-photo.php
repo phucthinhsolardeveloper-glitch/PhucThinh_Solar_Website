@@ -210,6 +210,7 @@
     /* Banner quảng cáo */
     $nametype = "adv";
     $config['photo']['man_photo'][$nametype]['title_main_photo'] = "Banner quảng cáo";
+    $config['photo']['man_photo'][$nametype]['admin_note_photo'] = "Banner CTA dùng ở các khối chuyển đổi hiện hữu. Ảnh nguồn 1600x900, chủ thể nằm trong 70% vùng giữa để crop desktop/mobile không che nội dung; không chèn chữ trực tiếp vào ảnh vì tiêu đề và nút do website render.";
     $config['photo']['man_photo'][$nametype]['check_photo'] = array("hienthi" => "Hiển thị");
     $config['photo']['man_photo'][$nametype]['number_photo'] = 3;
     $config['photo']['man_photo'][$nametype]['images_photo'] = true;
@@ -218,10 +219,89 @@
     $config['photo']['man_photo'][$nametype]['name_photo'] = true;
     $config['photo']['man_photo'][$nametype]['desc_photo'] = true;
     $config['photo']['man_photo'][$nametype]['desc_cke_photo'] = true;
-    $config['photo']['man_photo'][$nametype]['width_photo'] = 379;
-    $config['photo']['man_photo'][$nametype]['height_photo'] = 171;
-    $config['photo']['man_photo'][$nametype]['thumb_photo'] = '379x171x1';
-    $config['photo']['man_photo'][$nametype]['img_type_photo'] = '.jpg|.gif|.png|.jpeg|.gif';
+    $config['photo']['man_photo'][$nametype]['width_photo'] = 1600;
+    $config['photo']['man_photo'][$nametype]['height_photo'] = 900;
+    $config['photo']['man_photo'][$nametype]['thumb_photo'] = '320x180x1';
+    $config['photo']['man_photo'][$nametype]['img_type_photo'] = '.jpg|.jpeg|.png|.webp';
+
+    /* Ba ô chiến dịch ngay dưới Hero trang chủ. Tách khỏi type adv vì adv đang
+       được dùng cho CTA tư vấn/đại lý; nhờ đó biên tập viên có thể đổi ảnh,
+       tiêu đề, mô tả và đích đến mà không làm thay đổi các popup hiện hữu. */
+    $nametype = "home-campaign";
+    $config['photo']['man_photo'][$nametype]['title_main_photo'] = "Trang chủ - Banner chiến dịch";
+    $config['photo']['man_photo'][$nametype]['admin_note_photo'] = "Tối đa 3 banner ở đầu trang chủ product-first. Ảnh chuẩn 1600x900 (16:9), chủ thể và chi tiết quan trọng nằm trong 70% vùng giữa; không chèn chữ vào ảnh. Nếu type chưa từng có record, website dùng bộ ảnh mặc định. Khi đã có record, tắt cờ Hiển thị sẽ ẩn đúng banner đó và không tự lấp lại.";
+    $config['photo']['man_photo'][$nametype]['check_photo'] = array("hienthi" => "Hiển thị");
+    $config['photo']['man_photo'][$nametype]['number_photo'] = 3;
+    $config['photo']['man_photo'][$nametype]['images_photo'] = true;
+    $config['photo']['man_photo'][$nametype]['avatar_photo'] = true;
+    $config['photo']['man_photo'][$nametype]['link_photo'] = true;
+    $config['photo']['man_photo'][$nametype]['name_photo'] = true;
+    $config['photo']['man_photo'][$nametype]['name_label_photo'] = "Tiêu đề banner";
+    $config['photo']['man_photo'][$nametype]['desc_photo'] = true;
+    $config['photo']['man_photo'][$nametype]['desc_label_photo'] = "Mô tả ngắn";
+    $config['photo']['man_photo'][$nametype]['desc_cke_photo'] = false;
+    $config['photo']['man_photo'][$nametype]['width_photo'] = 1600;
+    $config['photo']['man_photo'][$nametype]['height_photo'] = 900;
+    $config['photo']['man_photo'][$nametype]['thumb_photo'] = '320x180x1';
+    $config['photo']['man_photo'][$nametype]['img_type_photo'] = '.jpg|.jpeg|.png|.webp';
+
+    /* Banner ngắt nhịp trong trang /san-pham/. Mỗi record được đặt tự động
+       giữa các nhóm danh mục, không chen vào kết quả lọc của trang con. */
+    $nametype = "catalog-campaign";
+    $config['photo']['man_photo'][$nametype]['title_main_photo'] = "Sản phẩm - Banner giữa danh mục";
+    $config['photo']['man_photo'][$nametype]['admin_note_photo'] = "Tối đa 3 banner ngắt nhịp trong trang /san-pham/, tự phân bố giữa các nhóm sản phẩm. Ảnh chuẩn 1920x600 (16:5), chủ thể nằm bên phải và vùng trái đủ tối/thoáng cho chữ HTML. Không chèn chữ hoặc logo trực tiếp vào ảnh. Tắt cờ Hiển thị để ẩn từng banner.";
+    $config['photo']['man_photo'][$nametype]['check_photo'] = array("hienthi" => "Hiển thị");
+    $config['photo']['man_photo'][$nametype]['number_photo'] = 3;
+    $config['photo']['man_photo'][$nametype]['images_photo'] = true;
+    $config['photo']['man_photo'][$nametype]['avatar_photo'] = true;
+    $config['photo']['man_photo'][$nametype]['link_photo'] = true;
+    $config['photo']['man_photo'][$nametype]['name_photo'] = true;
+    $config['photo']['man_photo'][$nametype]['name_label_photo'] = "Tiêu đề banner";
+    $config['photo']['man_photo'][$nametype]['desc_photo'] = true;
+    $config['photo']['man_photo'][$nametype]['desc_label_photo'] = "Mô tả ngắn";
+    $config['photo']['man_photo'][$nametype]['desc_cke_photo'] = false;
+    $config['photo']['man_photo'][$nametype]['width_photo'] = 1920;
+    $config['photo']['man_photo'][$nametype]['height_photo'] = 600;
+    $config['photo']['man_photo'][$nametype]['thumb_photo'] = '320x100x1';
+    $config['photo']['man_photo'][$nametype]['img_type_photo'] = '.jpg|.jpeg|.png|.webp';
+
+    /* Ảnh tư vấn của trang Liên hệ. Một record duy nhất để có công tắc bật/tắt
+       rõ ràng và không trộn lẫn với banner quảng cáo trang chủ. */
+    $nametype = "contact-visual";
+    $config['photo']['man_photo'][$nametype]['title_main_photo'] = "Liên hệ - Ảnh tư vấn";
+    $config['photo']['man_photo'][$nametype]['admin_note_photo'] = "Ảnh mở đầu trang /lien-he/, đặt cạnh thông tin công ty. Ảnh chuẩn 1600x1000 (8:5), ưu tiên showroom/tư vấn/kỹ thuật thật; chủ thể nằm trong 75% vùng giữa để dùng được trên mobile. Tắt cờ Hiển thị để ẩn toàn bộ ảnh.";
+    $config['photo']['man_photo'][$nametype]['check_photo'] = array("hienthi" => "Hiển thị");
+    $config['photo']['man_photo'][$nametype]['number_photo'] = 1;
+    $config['photo']['man_photo'][$nametype]['images_photo'] = true;
+    $config['photo']['man_photo'][$nametype]['avatar_photo'] = true;
+    $config['photo']['man_photo'][$nametype]['link_photo'] = true;
+    $config['photo']['man_photo'][$nametype]['name_photo'] = true;
+    $config['photo']['man_photo'][$nametype]['name_label_photo'] = "Tiêu đề tư vấn";
+    $config['photo']['man_photo'][$nametype]['desc_photo'] = true;
+    $config['photo']['man_photo'][$nametype]['desc_label_photo'] = "Mô tả ngắn";
+    $config['photo']['man_photo'][$nametype]['desc_cke_photo'] = false;
+    $config['photo']['man_photo'][$nametype]['width_photo'] = 1600;
+    $config['photo']['man_photo'][$nametype]['height_photo'] = 1000;
+    $config['photo']['man_photo'][$nametype]['thumb_photo'] = '320x200x1';
+    $config['photo']['man_photo'][$nametype]['img_type_photo'] = '.jpg|.jpeg|.png|.webp';
+
+    /* Ảnh năng lực phân phối ở đầu trang Đại lý. Nội dung chữ vẫn nằm trong
+       static dai-ly-1; tách ảnh để có kích thước/công tắc đúng mục đích. */
+    $nametype = "dealer-hero";
+    $config['photo']['man_photo'][$nametype]['title_main_photo'] = "Đại lý - Ảnh năng lực phân phối";
+    $config['photo']['man_photo'][$nametype]['admin_note_photo'] = "Ảnh cạnh form đăng ký đại lý, chuẩn 1600x1000 (8:5). Ưu tiên ảnh kho hàng, showroom hoặc đội vận hành thật; không dùng ảnh dự án/khách hàng không xác minh. Tắt cờ Hiển thị để ẩn ảnh.";
+    $config['photo']['man_photo'][$nametype]['check_photo'] = array("hienthi" => "Hiển thị");
+    $config['photo']['man_photo'][$nametype]['number_photo'] = 1;
+    $config['photo']['man_photo'][$nametype]['images_photo'] = true;
+    $config['photo']['man_photo'][$nametype]['avatar_photo'] = true;
+    $config['photo']['man_photo'][$nametype]['link_photo'] = false;
+    $config['photo']['man_photo'][$nametype]['name_photo'] = true;
+    $config['photo']['man_photo'][$nametype]['name_label_photo'] = "Mô tả ảnh";
+    $config['photo']['man_photo'][$nametype]['desc_photo'] = false;
+    $config['photo']['man_photo'][$nametype]['width_photo'] = 1600;
+    $config['photo']['man_photo'][$nametype]['height_photo'] = 1000;
+    $config['photo']['man_photo'][$nametype]['thumb_photo'] = '320x200x1';
+    $config['photo']['man_photo'][$nametype]['img_type_photo'] = '.jpg|.jpeg|.png|.webp';
 
 
     /* Giá trị cốt lõi — mồ côi: sources/index.php từng query nhưng
@@ -243,17 +323,18 @@
 
     /* Hình ảnh */
     $nametype = "hinh-anh-dai-ly";
-    $config['photo']['man_photo'][$nametype]['title_main_photo'] = "Hình ảnh";
+    $config['photo']['man_photo'][$nametype]['title_main_photo'] = "Đại lý - Hình ảnh thực tế";
+    $config['photo']['man_photo'][$nametype]['admin_note_photo'] = "Gallery ở trang Đại lý. Ảnh chuẩn 1600x1000 (8:5), cùng tỷ lệ để hàng ảnh không cao thấp; chỉ dùng kho hàng, showroom, trưng bày hoặc hoạt động đại lý có thể xác minh.";
     $config['photo']['man_photo'][$nametype]['check_photo'] = array("hienthi" => "Hiển thị");
     $config['photo']['man_photo'][$nametype]['number_photo'] = 3;
     $config['photo']['man_photo'][$nametype]['images_photo'] = true;
     $config['photo']['man_photo'][$nametype]['avatar_photo'] = true;
     $config['photo']['man_photo'][$nametype]['link_photo'] = true;
     $config['photo']['man_photo'][$nametype]['name_photo'] = true;
-    $config['photo']['man_photo'][$nametype]['width_photo'] = 379;
-    $config['photo']['man_photo'][$nametype]['height_photo'] = 171;
-    $config['photo']['man_photo'][$nametype]['thumb_photo'] = '379x171x1';
-    $config['photo']['man_photo'][$nametype]['img_type_photo'] = '.jpg|.gif|.png|.jpeg|.gif';
+    $config['photo']['man_photo'][$nametype]['width_photo'] = 1600;
+    $config['photo']['man_photo'][$nametype]['height_photo'] = 1000;
+    $config['photo']['man_photo'][$nametype]['thumb_photo'] = '320x200x1';
+    $config['photo']['man_photo'][$nametype]['img_type_photo'] = '.jpg|.jpeg|.png|.webp';
 
     /* Slideshow product */
     // $nametype = "slide-product";
@@ -290,19 +371,20 @@
     // $config['photo']['man_photo'][$nametype]['video_photo'] = true;
     // $config['photo']['man_photo'][$nametype]['name_photo'] = true;
 
-    // /* Đối tác */
+    // /* Thương hiệu hợp tác */
     $nametype = "doitac";
-    $config['photo']['man_photo'][$nametype]['title_main_photo'] = "Đối tác";
+    $config['photo']['man_photo'][$nametype]['title_main_photo'] = "Thương hiệu hợp tác";
+    $config['photo']['man_photo'][$nametype]['admin_note_photo'] = "Logo xuất hiện trong dải Thương hiệu hợp tác gần cuối trang chủ và tại trang Về chúng tôi. Upload canvas 600x240 nền trong suốt hoặc trắng, logo nằm gọn trong 80% vùng giữa; frontend dùng contain, không cắt logo. Chỉ record đang Hiển thị mới xuất hiện.";
     $config['photo']['man_photo'][$nametype]['check_photo'] = array("hienthi" => "Hiển thị");
     $config['photo']['man_photo'][$nametype]['number_photo'] = 5;
     $config['photo']['man_photo'][$nametype]['images_photo'] = true;
     $config['photo']['man_photo'][$nametype]['avatar_photo'] = true;
     $config['photo']['man_photo'][$nametype]['link_photo'] = true;
     $config['photo']['man_photo'][$nametype]['name_photo'] = true;
-    $config['photo']['man_photo'][$nametype]['width_photo'] = 175;
-    $config['photo']['man_photo'][$nametype]['height_photo'] = 95;
-    $config['photo']['man_photo'][$nametype]['thumb_photo'] = '175x95x2';
-    $config['photo']['man_photo'][$nametype]['img_type_photo'] = '.jpg|.gif|.png|.jpeg|.gif';
+    $config['photo']['man_photo'][$nametype]['width_photo'] = 600;
+    $config['photo']['man_photo'][$nametype]['height_photo'] = 240;
+    $config['photo']['man_photo'][$nametype]['thumb_photo'] = '200x80x2';
+    $config['photo']['man_photo'][$nametype]['img_type_photo'] = '.jpg|.jpeg|.png|.webp';
 
     /* CTA riêng cho trang About. Record đầu tiên đang hiển thị cung cấp tiêu
        đề, mô tả, link nút chính và ảnh nền; frontend có fallback khi chưa có. */
@@ -328,7 +410,7 @@
     // /* Chứng nhận */
     $nametype = "chungnhan";
     $config['photo']['man_photo'][$nametype]['title_main_photo'] = "Chứng nhận";
-    $config['photo']['man_photo'][$nametype]['admin_note_photo'] = "Trang /ve-chung-toi/ hiển thị tối đa 3 chứng nhận có cờ Nổi bật theo bố cục ngang; nếu chưa chọn mục nào sẽ lấy 3 record đầu theo thứ tự. Tên là tên đối tác/chứng nhận, Mô tả là dòng thông tin ngắn. Toàn bộ record Hiển thị vẫn có trong hộp xem ảnh.";
+    $config['photo']['man_photo'][$nametype]['admin_note_photo'] = "Trang /ve-chung-toi/ hiển thị tối đa 3 chứng nhận có cờ Nổi bật. Upload bản quét dọc rõ nét 1600x2200, không crop mép, không kéo giãn; frontend dùng contain. Tên là tên chứng nhận, Mô tả là thông tin ngắn. Chỉ dùng hồ sơ có thể xác minh.";
     $config['photo']['man_photo'][$nametype]['check_photo'] = array("noibat" => "Nổi bật trên About", "hienthi" => "Hiển thị");
     $config['photo']['man_photo'][$nametype]['number_photo'] = 5;
     $config['photo']['man_photo'][$nametype]['images_photo'] = true;
@@ -337,10 +419,10 @@
     $config['photo']['man_photo'][$nametype]['name_photo'] = true;
     $config['photo']['man_photo'][$nametype]['desc_photo'] = true;
     $config['photo']['man_photo'][$nametype]['desc_cke_photo'] = false;
-    $config['photo']['man_photo'][$nametype]['width_photo'] = 175;
-    $config['photo']['man_photo'][$nametype]['height_photo'] = 95;
-    $config['photo']['man_photo'][$nametype]['thumb_photo'] = '175x95x2';
-    $config['photo']['man_photo'][$nametype]['img_type_photo'] = '.jpg|.gif|.png|.jpeg|.gif';
+    $config['photo']['man_photo'][$nametype]['width_photo'] = 1600;
+    $config['photo']['man_photo'][$nametype]['height_photo'] = 2200;
+    $config['photo']['man_photo'][$nametype]['thumb_photo'] = '160x220x2';
+    $config['photo']['man_photo'][$nametype]['img_type_photo'] = '.jpg|.jpeg|.png|.webp';
 
     // /* Đối tác - giới thiệu — mồ côi: sources/about.php từng query nhưng
     //    templates/about/about_tpl.php không dùng biến này. Dữ liệu cũ là 6
