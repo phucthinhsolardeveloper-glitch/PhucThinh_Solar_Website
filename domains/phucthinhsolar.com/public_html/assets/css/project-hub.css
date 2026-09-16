@@ -127,3 +127,103 @@
  .pts-ph-featured-body h2{font-size:21px!important;}
 }
 @media(prefers-reduced-motion:reduce){.pts-project-hub *{transition:none!important;scroll-behavior:auto!important;}}
+
+/* ============================================================
+   ĐỒNG BỘ NGÔN NGỮ THIẾT KẾ — 2026-09-16
+   Trang Dự án được làm TRƯỚC khi chốt ADR 0002 (bề mặt phẳng) và ADR 0001
+   (tiêu đề một cấp, canh trái) nên còn giữ ngôn ngữ cũ: bo góc 13-16px, pill
+   999px, 9 lớp shadow, gradient vàng, tiêu đề canh giữa + dòng phụ. Chủ project
+   phản hồi trang này "lệch" so với phần còn lại của website — đúng.
+
+   Chuẩn hoá theo đúng token đang dùng ở trang chủ/Sản phẩm/Đại lý:
+   bo 3-4px, không shadow/viền trang trí, gold phẳng, tiêu đề canh trái.
+   Ghi thành khối override cuối file (không xoá rule cũ) để rollback chỉ cần
+   cắt khối này, và không phá các selector regression đang assert.
+   ============================================================ */
+
+/* 1. Tiêu đề: một cấp, canh trái như .pts-retail-section-head ở trang chủ.
+      Bỏ dấu trang trí (gạch + icon tròn) và eyebrow theo ADR 0001. */
+.pts-ph-heading{text-align:left!important;padding:8px 0 26px!important;}
+.pts-ph-heading h1{margin-bottom:10px!important;}
+.pts-ph-heading p{max-width:760px;margin:0!important;}
+.pts-ph-heading .pts-ph-mark{display:none!important;}
+.pts-ph-heading .pts-ph-eyebrow{display:none!important;}
+
+/* 2. Filter: chip phẳng nền cream, khớp .pts-catalog-jump ở trang Sản phẩm.
+      Không pill 999px, không gradient, không nhấc lên khi hover. */
+.pts-ph-filters>div{justify-content:flex-start!important;gap:9px!important;}
+.pts-ph-filter{
+  min-height:42px!important;padding:9px 16px!important;
+  border:0!important;border-radius:3px!important;
+  background:var(--pts-cream,#fffbeb)!important;
+  font-size:13.5px!important;font-weight:750!important;
+  box-shadow:none!important;transition:background .15s,color .15s!important;
+}
+.pts-ph-filter:hover{transform:none!important;background:var(--pts-gold,#c9962e)!important;color:var(--ph-navy)!important;}
+.pts-ph-filter.is-active{background:var(--ph-navy)!important;color:#fff!important;box-shadow:none!important;}
+.pts-ph-filter.is-active i,.pts-ph-filter.is-active img{filter:brightness(0) invert(1);}
+
+/* 3. Khối nổi bật + card: phẳng, bo 4px, không shadow/viền trang trí.
+      Giữ hover bằng chính ảnh (scale) thay vì nhấc thẻ + đổ bóng. */
+.pts-ph-featured{border:0!important;border-radius:4px!important;box-shadow:none!important;}
+.pts-ph-featured-body{padding:32px 0 32px 38px!important;}
+.pts-ph-card{border:0!important;border-radius:4px!important;box-shadow:none!important;}
+.pts-ph-card:hover{border-color:transparent!important;box-shadow:none!important;transform:none!important;}
+.pts-ph-card-media,.pts-ph-featured-media{border-radius:3px!important;}
+.pts-ph-card-body{padding:16px 64px 6px 0!important;min-height:0!important;}
+
+/* 4. Badge danh mục trên ảnh: nhãn phẳng, không pill/shadow. */
+.pts-ph-badge{
+  min-height:0!important;padding:6px 11px!important;
+  border-radius:3px!important;background:rgba(7,27,70,.9)!important;
+  color:#fff!important;font-size:11px!important;font-weight:800!important;
+  letter-spacing:.04em;text-transform:uppercase;box-shadow:none!important;
+}
+.pts-ph-badge img{filter:brightness(0) invert(1);}
+
+/* 5. CTA/nút: nền gold phẳng bo 4px, khớp .pts-btn-gold toàn site. */
+.pts-ph-featured-cta,.pts-ph-consult{
+  min-height:46px!important;border-radius:4px!important;
+  background:var(--pts-gold,#c9962e)!important;color:var(--pts-navy-deep,#061537)!important;
+  box-shadow:none!important;
+}
+.pts-ph-featured-cta:hover,.pts-ph-consult:hover{background:var(--pts-gold-light,#e0b654)!important;}
+
+/* 6. Mũi tên card: text-link có gạch chân như .pts-retail-text-link, bỏ vòng
+      tròn viền vàng (dấu trang trí không mang thêm thông tin). */
+.pts-ph-arrow{
+  position:static!important;display:inline-flex!important;
+  width:auto!important;height:auto!important;margin-top:14px;
+  padding-bottom:5px!important;
+  border:0!important;border-bottom:1px solid rgba(13,39,82,.24)!important;border-radius:0!important;
+  color:var(--ph-navy)!important;font-size:13px!important;font-weight:850!important;
+}
+.pts-ph-card:hover .pts-ph-arrow{background:transparent!important;border-bottom-color:var(--pts-gold,#c9962e)!important;color:var(--pts-gold-dark,#9c7420)!important;}
+
+/* 7. Empty state + dải CTA cuối trang: nền trắng theo yêu cầu 2026-09-15,
+      bỏ gradient xanh nhạt và họa tiết sọc chéo trang trí. */
+.pts-ph-empty{border:0!important;border-radius:0!important;background:transparent!important;}
+.pts-ph-contact-band{
+  border-radius:4px!important;
+  background:linear-gradient(122deg,#061735 0,#0b2b59 72%,#123c72 100%)!important;
+}
+.pts-ph-contact-band:after{display:none!important;content:none!important;}
+.pts-ph-contact-copy>span{color:var(--pts-gold-light,#e0b654)!important;}
+.pts-ph-contact-copy h2{color:#fff!important;}
+.pts-ph-contact-copy p{color:#cbd5f5!important;}
+.pts-ph-contact-trust li{color:#fff!important;}
+.pts-ph-contact-trust li i,.pts-ph-contact-trust li img{
+  border-radius:3px!important;background:rgba(255,255,255,.1)!important;
+  color:var(--pts-gold-light,#e0b654)!important;box-shadow:none!important;
+}
+.pts-ph-phone{color:#fff!important;}
+.pts-ph-phone>i{border-radius:3px!important;}
+.pts-ph-phone small{color:#cbd5f5!important;}
+
+@media(max-width:900px){
+  .pts-ph-featured-body{padding:26px 0 26px!important;}
+  .pts-ph-card-body{padding-right:0!important;}
+}
+.pts-ph-arrow{gap:8px;}
+.pts-ph-arrow i{font-size:10px;transition:transform .18s;}
+.pts-ph-card:hover .pts-ph-arrow i{transform:translateX(3px);}

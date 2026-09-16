@@ -53,11 +53,13 @@
 .pts-dl-product-card:hover .pts-dl-product-media img{transform:scale(1.04);}
 .pts-dl-product-name{display:block;margin-top:10px;font-size:13.5px;font-weight:750;color:var(--pts-navy);}
 
-/* Hỗ trợ đại lý: mô tả + lưới 4 lợi ích. */
-.pts-dl-support{background:var(--pts-surface);}
+/* Hỗ trợ đại lý: mô tả + lưới 4 lợi ích.
+   2026-09-16: bỏ nền xám --pts-surface theo nguyên tắc nền trắng đồng nhất;
+   4 card lợi ích tự phân tách bằng khoảng trắng + viền mảnh phía dưới. */
+.pts-dl-support{background:#fff;border-top:1px solid var(--pts-line);}
 .pts-dl-support-desc{max-width:900px;color:#475569;font-size:15.5px;line-height:1.85;margin-bottom:30px;}
 .pts-dl-support-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:22px;}
-.pts-dl-support-card{background:#fff;border-radius:4px;padding:26px 22px;}
+.pts-dl-support-card{background:#fff;border:1px solid var(--pts-line);border-radius:4px;padding:26px 22px;}
 .pts-dl-support-icon{display:flex;width:46px;height:46px;align-items:center;justify-content:center;margin-bottom:16px;}
 .pts-dl-support-icon img{width:100%;height:100%;object-fit:contain;}
 .pts-dl-support-card h4{color:var(--pts-navy);font-size:16px;font-weight:850;margin:0 0 10px;}

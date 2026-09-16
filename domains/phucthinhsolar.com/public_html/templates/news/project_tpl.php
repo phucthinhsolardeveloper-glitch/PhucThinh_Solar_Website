@@ -94,7 +94,11 @@
                             <?php if($projectCategoryName !== '') { ?><span><i class="fas fa-bolt" aria-hidden="true"></i><?=$projectEscape($projectCategoryName)?></span><?php } ?>
                         </div>
                         <?php if($projectDesc !== '') { ?><p class="pts-ph-card-desc"><?=$projectEscape($projectDesc)?></p><?php } ?>
-                        <span class="pts-ph-arrow" aria-hidden="true">→</span>
+                        <?php /* 2026-09-16: mũi tên cũ là vòng tròn viền vàng thuần trang trí.
+                                 Chuyển sang text-link có nhãn thật (khớp .pts-retail-text-link ở
+                                 trang chủ) - mũi tên đứng một mình không nói cho người đọc biết
+                                 bấm vào sẽ đi đâu. */ ?>
+                        <span class="pts-ph-arrow">Xem dự án <i class="fas fa-arrow-right" aria-hidden="true"></i></span>
                     </div>
                 </a>
                 <?php } ?>
