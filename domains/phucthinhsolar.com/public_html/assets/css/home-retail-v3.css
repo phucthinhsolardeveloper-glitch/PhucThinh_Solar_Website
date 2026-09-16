@@ -54,20 +54,30 @@ body.home .wrap-home .section-title h3:after{display:none!important;content:none
 .pts-retail-product-head p{max-width:390px;margin:0!important;color:#c9d6e8;font-size:12.5px;line-height:1.55;text-align:right}
 .pts-ecosystem .product-tabs-container{padding-top:26px!important}
 
-/* Dải chứng nhận đóng vai trò panel niềm tin giữa các nhóm sản phẩm. */
-.pts-proof-band{padding:24px 0 70px;background:#fff}
-.pts-proof-shell{position:relative;display:grid;grid-template-columns:minmax(280px,.86fr) minmax(0,1.4fr);gap:36px;align-items:center;overflow:hidden;padding:34px;border-radius:5px;background:linear-gradient(122deg,#061735 0,#0b2b59 72%,#123c72 100%);box-shadow:0 20px 55px rgba(5,23,53,.2)}
-.pts-proof-shell:after{content:"";position:absolute;right:-110px;bottom:-160px;width:360px;height:360px;border:1px solid rgba(245,207,100,.18);border-radius:50%;box-shadow:0 0 0 45px rgba(245,207,100,.035),0 0 0 90px rgba(245,207,100,.025);pointer-events:none}
-.pts-proof-copy{position:relative;z-index:1}
-.pts-proof-copy h3{margin:0;color:#fff;font-size:clamp(23px,2.4vw,34px);font-weight:900;line-height:1.22}
-.pts-proof-copy p{margin:13px 0 18px;color:#c7d4e6;font-size:13px;line-height:1.65}
-.pts-proof-copy a{display:inline-flex;align-items:center;gap:8px;color:#fff!important;font-size:12px;font-weight:850}
-.pts-proof-copy a i{color:#f5cf64;font-size:10px}
-.pts-proof-grid{position:relative;z-index:1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
-.pts-proof-card{position:relative;min-width:0;overflow:hidden;border:1px solid rgba(255,255,255,.15);border-radius:4px;background:#fff;box-shadow:0 10px 26px rgba(0,0,0,.15)}
-.pts-proof-card picture{display:block;aspect-ratio:1.42/1}
-.pts-proof-card img{display:block;width:100%!important;height:100%!important;object-fit:cover!important}
-.pts-proof-card strong{position:absolute;right:7px;bottom:7px;left:7px;padding:7px 8px;border-radius:2px;background:rgba(5,22,51,.88);color:#fff;font-size:9.5px;font-weight:850;text-align:center;backdrop-filter:blur(5px)}
+/* Nền chỉ tạo bối cảnh; bản quét trong Admin vẫn là bằng chứng thật. Tài liệu
+   được ưu tiên diện tích đủ lớn và luôn contain để không mất mép chứng nhận. */
+.pts-proof-band{position:relative;isolation:isolate;overflow:hidden;padding:58px 0 64px;background:#f4f7fb}
+.pts-proof-background{position:absolute;z-index:-2;inset:0;margin:0;overflow:hidden}
+.pts-proof-background picture,.pts-proof-background img{display:block;width:100%!important;height:100%!important}
+.pts-proof-background img{object-fit:cover!important;object-position:center!important}
+.pts-proof-shade{position:absolute;z-index:-1;inset:0;background:linear-gradient(90deg,rgba(3,15,39,.94) 0,rgba(5,24,57,.88) 38%,rgba(4,19,46,.74) 100%)}
+.pts-proof-band>.uk-container{position:relative;z-index:1}
+.pts-proof-shell{display:grid;grid-template-columns:minmax(290px,.68fr) minmax(0,1.62fr);gap:58px;align-items:center;min-height:250px;padding:0;background:transparent;box-shadow:none}
+.pts-proof-shell:after{display:none;content:none}
+.pts-proof-copy{min-width:0}
+.pts-proof-copy h3{margin:0;color:var(--pts-navy);font-size:clamp(24px,2.4vw,34px);font-weight:900;line-height:1.22}
+.pts-proof-copy p{max-width:430px;margin:13px 0 18px;color:#64748b;font-size:13.5px;line-height:1.65}
+.pts-proof-copy a{display:inline-flex;align-items:center;gap:8px;color:var(--pts-navy)!important;font-size:12.5px;font-weight:850}
+.pts-proof-copy a i{color:var(--pts-gold-dark);font-size:10px}
+.pts-proof-band.has-background .pts-proof-copy h3,.pts-proof-band.has-background .pts-proof-copy a{color:#fff!important}
+.pts-proof-band.has-background .pts-proof-copy p{color:#d7e2f1}
+.pts-proof-band.has-background .pts-proof-copy a i{color:#f0bd43}
+.pts-proof-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
+.pts-proof-card{display:flex;min-width:0;flex-direction:column;align-items:center;gap:13px;overflow:visible;background:transparent;text-align:center}
+.pts-proof-card picture{display:block;width:150px;height:208px;padding:7px;overflow:hidden;background:#fff}
+.pts-proof-card img{display:block;width:100%!important;height:100%!important;object-fit:contain!important}
+.pts-proof-card strong{position:static;max-width:190px;min-height:36px;padding:0;background:transparent;color:var(--pts-navy);font-size:12px;font-weight:850;line-height:1.5;text-align:center;backdrop-filter:none}
+.pts-proof-band.has-background .pts-proof-card strong{color:#fff}
 
 /* Các family grid chiếm phần lớn chiều dài trang, giống nhịp catalog Kitawa.
    2026-09-15: bỏ xen kẽ màu nền giữa các nhóm - nền trắng đồng nhất, chỉ
@@ -94,9 +104,23 @@ body.home .pts-btn{border-radius:4px!important}
 @media (max-width:1199px){
   .pts-retail-campaign-grid{grid-template-columns:minmax(0,1.08fr) minmax(300px,.92fr);min-height:470px}
   .pts-ecosystem .pts-ecosystem-grid>li,.pts-ecosystem .pts-ecosystem-grid>li.is-major{flex-basis:178px!important}
-  .pts-proof-shell{grid-template-columns:1fr;padding:30px}
+  .pts-proof-shell{grid-template-columns:1fr;gap:34px;padding:0}
   .pts-proof-copy{max-width:650px}
   .pts-product-family-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+@media (min-width:1800px){
+  body.home .uk-section-large{padding-top:82px;padding-bottom:82px}
+  .pts-retail-campaign-grid{grid-template-columns:minmax(0,1.3fr) minmax(430px,.7fr);grid-template-rows:repeat(2,minmax(235px,1fr));min-height:570px;gap:22px}
+  .pts-retail-campaign-copy{max-width:660px;padding:36px}
+  .pts-retail-campaign-card.is-featured .pts-retail-campaign-copy{padding:54px}
+  .pts-ecosystem .pts-ecosystem-grid>li,.pts-ecosystem .pts-ecosystem-grid>li.is-major{flex-basis:215px!important}
+  .pts-ecosystem .pts-ecosystem-grid>li>a,.pts-ecosystem .pts-ecosystem-grid>li.is-major>a{min-height:190px!important;padding:20px 16px 18px!important}
+  .pts-ecosystem .pts-home-category-image,.pts-ecosystem .pts-ecosystem-grid>li.is-major .pts-home-category-image{max-height:120px!important}
+  .pts-ecosystem .pts-ecosystem-name,.pts-ecosystem .pts-ecosystem-grid>li.is-major .pts-ecosystem-name{font-size:14.5px!important}
+  .pts-product-family-grid{gap:24px}
+  .pts-product-family-grid .product-card .caption .name{font-size:15px!important;line-height:1.48!important}
+  .pts-product-family-grid .product-card .price-product .price-new{font-size:17px!important}
+  .pts-proof-shell{gap:64px}
 }
 @media (max-width:767px){
   body.home .uk-section-large{padding-top:48px;padding-bottom:48px}
@@ -115,10 +139,13 @@ body.home .pts-btn{border-radius:4px!important}
   .pts-ecosystem .pts-ecosystem-grid>li>a,.pts-ecosystem .pts-ecosystem-grid>li.is-major>a{min-height:150px!important;padding:14px 10px!important}
   .pts-retail-product-head{display:block;margin-top:24px;padding:20px}
   .pts-retail-product-head p{margin-top:9px!important;text-align:left}
-  .pts-proof-band{padding:10px 0 48px}
-  .pts-proof-shell{gap:24px;padding:24px 18px;border-radius:5px}
-  .pts-proof-grid{display:flex;overflow-x:auto;padding:2px 2px 10px;scroll-snap-type:x mandatory}
-  .pts-proof-card{flex:0 0 70%;scroll-snap-align:start}
+  .pts-proof-band{padding:44px 0 48px}
+  .pts-proof-shell{gap:28px;padding:0}
+  .pts-proof-shade{background:linear-gradient(180deg,rgba(3,15,39,.95),rgba(5,24,57,.86))}
+  .pts-proof-grid{display:flex;overflow-x:auto;gap:18px;padding:2px 2px 10px;scroll-snap-type:x mandatory;scrollbar-width:none}
+  .pts-proof-grid::-webkit-scrollbar{display:none}
+  .pts-proof-card{flex:0 0 210px;scroll-snap-align:start}
+  .pts-proof-card picture{width:136px;height:188px}
   .pts-product-family-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
   .pts-product-family-grid .product-card{padding:7px!important}
   .pts-product-family-grid .product-card .caption .name{font-size:12.5px!important}
@@ -126,7 +153,8 @@ body.home .pts-btn{border-radius:4px!important}
 @media (max-width:420px){
   .pts-retail-campaign-card,.pts-retail-campaign-card.is-featured{min-height:270px;aspect-ratio:auto}
   .pts-retail-campaign-action{margin-top:13px;padding:8px 11px}
-  .pts-proof-card{flex-basis:82%}
+  .pts-proof-card{flex-basis:188px}
+  .pts-proof-card picture{width:126px;height:176px}
 }
 @media (prefers-reduced-motion:reduce){
   .pts-retail-campaign-media img,.pts-retail-text-link i{transition:none!important}

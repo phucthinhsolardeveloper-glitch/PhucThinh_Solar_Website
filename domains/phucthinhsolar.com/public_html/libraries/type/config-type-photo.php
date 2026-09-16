@@ -245,6 +245,23 @@
     $config['photo']['man_photo'][$nametype]['thumb_photo'] = '320x180x1';
     $config['photo']['man_photo'][$nametype]['img_type_photo'] = '.jpg|.jpeg|.png|.webp';
 
+    /* Ảnh bối cảnh phía sau dải chứng nhận thật trên trang chủ. Đây chỉ là
+       background marketing, tuyệt đối không thay thế tài liệu chứng nhận. */
+    $nametype = "home-proof-background";
+    $config['photo']['man_photo'][$nametype]['title_main_photo'] = "Trang chủ - Nền dải chứng nhận";
+    $config['photo']['man_photo'][$nametype]['admin_note_photo'] = "Một ảnh nền 1920x600 (16:5) cho dải chứng nhận. Chọn ảnh ít chi tiết, tông tối và giữ chủ thể trong 75% vùng giữa để chữ cùng bản quét chứng nhận vẫn rõ trên mọi màn hình. Không đưa chữ, logo hoặc chứng nhận giả vào ảnh nền. Tắt cờ Hiển thị để dùng nền sáng phẳng.";
+    $config['photo']['man_photo'][$nametype]['check_photo'] = array("hienthi" => "Hiển thị");
+    $config['photo']['man_photo'][$nametype]['number_photo'] = 1;
+    $config['photo']['man_photo'][$nametype]['images_photo'] = true;
+    $config['photo']['man_photo'][$nametype]['avatar_photo'] = true;
+    $config['photo']['man_photo'][$nametype]['link_photo'] = false;
+    $config['photo']['man_photo'][$nametype]['name_photo'] = true;
+    $config['photo']['man_photo'][$nametype]['name_label_photo'] = "Tên ảnh / mô tả nội bộ";
+    $config['photo']['man_photo'][$nametype]['width_photo'] = 1920;
+    $config['photo']['man_photo'][$nametype]['height_photo'] = 600;
+    $config['photo']['man_photo'][$nametype]['thumb_photo'] = '320x100x1';
+    $config['photo']['man_photo'][$nametype]['img_type_photo'] = '.jpg|.jpeg|.png|.webp';
+
     /* Banner ngắt nhịp trong trang /san-pham/. Mỗi record được đặt tự động
        giữa các nhóm danh mục, không chen vào kết quả lọc của trang con. */
     $nametype = "catalog-campaign";
@@ -386,11 +403,30 @@
     $config['photo']['man_photo'][$nametype]['thumb_photo'] = '200x80x2';
     $config['photo']['man_photo'][$nametype]['img_type_photo'] = '.jpg|.jpeg|.png|.webp';
 
+    /* Banner ảnh theo từng danh mục sản phẩm. Trường Link chứa canonical path
+       (ví dụ danh-muc-san-pham/den-san-vuon/) để không phải hard-code quan hệ
+       vào template. */
+    $nametype = "product-category-hero";
+    $config['photo']['man_photo'][$nametype]['title_main_photo'] = "Banner danh mục sản phẩm";
+    $config['photo']['man_photo'][$nametype]['admin_note_photo'] = "Mỗi record áp dụng cho một danh mục. Nhập Link đúng canonical path, ví dụ danh-muc-san-pham/den-san-vuon/. Ảnh chuẩn 1800x600 (16:5), không chèn chữ; giữ chủ thể trong vùng giữa 75% để crop responsive. Frontend phủ lớp tối và tự render tiêu đề/nút.";
+    $config['photo']['man_photo'][$nametype]['check_photo'] = array("hienthi" => "Hiển thị");
+    $config['photo']['man_photo'][$nametype]['number_photo'] = 3;
+    $config['photo']['man_photo'][$nametype]['images_photo'] = true;
+    $config['photo']['man_photo'][$nametype]['avatar_photo'] = true;
+    $config['photo']['man_photo'][$nametype]['link_photo'] = true;
+    $config['photo']['man_photo'][$nametype]['link_label_photo'] = "Canonical path danh mục";
+    $config['photo']['man_photo'][$nametype]['name_photo'] = true;
+    $config['photo']['man_photo'][$nametype]['name_label_photo'] = "Tên ảnh / mô tả nội bộ";
+    $config['photo']['man_photo'][$nametype]['width_photo'] = 1800;
+    $config['photo']['man_photo'][$nametype]['height_photo'] = 600;
+    $config['photo']['man_photo'][$nametype]['thumb_photo'] = '300x100x1';
+    $config['photo']['man_photo'][$nametype]['img_type_photo'] = '.jpg|.jpeg|.png|.webp';
+
     /* CTA riêng cho trang About. Record đầu tiên đang hiển thị cung cấp tiêu
        đề, mô tả, link nút chính và ảnh nền; frontend có fallback khi chưa có. */
     $nametype = "about-cta";
     $config['photo']['man_photo'][$nametype]['title_main_photo'] = "About - CTA tư vấn";
-    $config['photo']['man_photo'][$nametype]['admin_note_photo'] = "Điều khiển dải CTA cuối /ve-chung-toi/. Tiêu đề, mô tả, link và ảnh nền đều lấy từ record đầu tiên đang Hiển thị; link để trống sẽ mở popup tư vấn hiện hữu.";
+    $config['photo']['man_photo'][$nametype]['admin_note_photo'] = "Điều khiển dải CTA cuối /gioi-thieu/. Tiêu đề, mô tả, link và ảnh nền đều lấy từ record đầu tiên đang Hiển thị; link để trống sẽ mở popup tư vấn hiện hữu.";
     $config['photo']['man_photo'][$nametype]['check_photo'] = array("hienthi" => "Hiển thị");
     $config['photo']['man_photo'][$nametype]['number_photo'] = 1;
     $config['photo']['man_photo'][$nametype]['images_photo'] = true;
@@ -410,7 +446,7 @@
     // /* Chứng nhận */
     $nametype = "chungnhan";
     $config['photo']['man_photo'][$nametype]['title_main_photo'] = "Chứng nhận";
-    $config['photo']['man_photo'][$nametype]['admin_note_photo'] = "Trang /ve-chung-toi/ hiển thị tối đa 3 chứng nhận có cờ Nổi bật. Upload bản quét dọc rõ nét 1600x2200, không crop mép, không kéo giãn; frontend dùng contain. Tên là tên chứng nhận, Mô tả là thông tin ngắn. Chỉ dùng hồ sơ có thể xác minh.";
+    $config['photo']['man_photo'][$nametype]['admin_note_photo'] = "Trang /gioi-thieu/ hiển thị tối đa 3 chứng nhận có cờ Nổi bật. Upload bản quét dọc rõ nét 1600x2200, không crop mép, không kéo giãn; frontend dùng contain. Tên là tên chứng nhận, Mô tả là thông tin ngắn. Chỉ dùng hồ sơ có thể xác minh.";
     $config['photo']['man_photo'][$nametype]['check_photo'] = array("noibat" => "Nổi bật trên About", "hienthi" => "Hiển thị");
     $config['photo']['man_photo'][$nametype]['number_photo'] = 5;
     $config['photo']['man_photo'][$nametype]['images_photo'] = true;

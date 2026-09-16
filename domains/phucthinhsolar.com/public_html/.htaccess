@@ -3,6 +3,10 @@ Options -Indexes
 DirectoryIndex index.php
 ServerSignature Off
 
+<IfModule mod_mime.c>
+    AddType image/webp .webp
+</IfModule>
+
 <FilesMatch "(?i)(^\.env|^\.git|\.sql$|\.log$|\.bak$|\.ini$|\.old$|\.orig$|\.swp$)">
     Require all denied
 </FilesMatch>
@@ -48,6 +52,7 @@ RewriteRule ^$ /? [R=301,L]
     ExpiresByType image/jpeg "access 1 year"
     ExpiresByType image/gif "access 1 year"
     ExpiresByType image/png "access 1 year"
+    ExpiresByType image/webp "access 1 year"
     ExpiresByType text/css "access 1 month"
     ExpiresByType text/html "access 1 month"
     ExpiresByType application/pdf "access 1 month"
@@ -72,7 +77,7 @@ RewriteRule ^$ /? [R=301,L]
     Header set Cache-Control "max-age=29030400, public"
 </FilesMatch>
 
-<FilesMatch ".(jpg|jpeg|png|gif|swf)$">
+<FilesMatch ".(jpg|jpeg|png|gif|webp|swf)$">
     Header set Cache-Control "max-age=604800, public"
 </FilesMatch>
 

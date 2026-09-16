@@ -80,7 +80,9 @@ function solutionImportSimplifyLanguage($markdown)
         'Phúc Thịnh Solar chỉ nên đưa ra ước tính sau khi có dữ liệu đầu vào cụ thể.' => 'Phúc Thịnh Solar chỉ đưa ra ước tính sau khi có đủ dữ liệu đầu vào.',
         'Có thể bố trí khảo sát theo quy trình tư vấn dự án và phạm vi dịch vụ tại từng khu vực.' => 'Phúc Thịnh Solar thực hiện khảo sát theo quy trình tư vấn dự án và phạm vi phục vụ tại từng khu vực.',
         'Có thể nghiên cứu. BESS cần được thiết kế dựa trên phụ tải, công suất, mục tiêu vận hành và bài toán kinh tế cụ thể.' => 'Phúc Thịnh Solar sẽ đánh giá khả năng tích hợp pin lưu trữ dựa trên mức sử dụng điện, công suất cần thiết, mục tiêu vận hành và hiệu quả đầu tư.',
-        '## SECTION 5 — BAO NHIÊU kWp LÀ PHÙ HỢP?' => '## SECTION 5 — CÔNG SUẤT BAO NHIÊU LÀ PHÙ HỢP?',
+        '## SECTION 5 — BAO NHIÊU kWp LÀ PHÙ HỢP?' => '## SECTION 5 — XÁC ĐỊNH CÔNG SUẤT PHÙ HỢP',
+        'Không nên chọn hệ thống chỉ bằng cách nhìn vào hóa đơn điện.' => 'Công suất hệ thống cần được xác định từ hóa đơn điện cùng đặc điểm sử dụng và điều kiện lắp đặt thực tế.',
+        'Hệ thống pin lưu trữ cho doanh nghiệp cần được tính toán trên dữ liệu sử dụng điện theo từng thời điểm thực tế; không nên thiết kế chỉ dựa trên tổng điện năng tiêu thụ theo tháng.' => 'Phúc Thịnh Solar tính toán hệ thống pin lưu trữ cho doanh nghiệp từ dữ liệu sử dụng điện theo từng thời điểm, thay vì chỉ dựa trên tổng điện năng tiêu thụ theo tháng.',
         'Không cần biết trước nên lắp 5 kWp, 10 kWp hay dùng inverter nào.' => 'Bạn không cần biết trước hệ thống nên có công suất bao nhiêu hoặc dùng loại bộ biến tần nào.',
         '`Solar + Grid ↔ EMS/BESS ↔ Load`' => '`Điện mặt trời + Điện lưới ↔ Hệ thống quản lý và pin lưu trữ ↔ Thiết bị sử dụng điện`',
         '`Đường phát solar → Đường phụ tải → Phần năng lượng dư theo thời gian → Chiến lược lưu trữ`' => '`Sản lượng điện mặt trời theo giờ → Mức điện sử dụng theo giờ → Phần điện còn dư → Dung lượng pin phù hợp`',
@@ -167,6 +169,10 @@ function solutionImportSimplifyLanguage($markdown)
         'bài toán sử dụng' => 'nhu cầu sử dụng',
         'một số bài toán công suất' => 'một số yêu cầu về công suất',
         'các bài toán tưới tiêu' => 'nhu cầu tưới tiêu',
+        'các bài toán tưới tiêu, cấp nước và vận hành' => 'nhu cầu tưới tiêu, cấp nước và vận hành',
+        'Đây là một hướng thiết kế có thể giúp đơn giản hóa bài toán lưu trữ ở những ứng dụng phù hợp.' => 'Cách thiết kế này có thể giảm nhu cầu dùng pin lưu trữ trong các ứng dụng phù hợp.',
+        'Đối với những nơi đang sử dụng máy phát hoặc động cơ nhiên liệu, solar có thể là một phương án đáng cân nhắc tùy bài toán.' => 'Tại nơi đang sử dụng máy phát hoặc động cơ nhiên liệu, Phúc Thịnh Solar sẽ đánh giá khả năng thay thế một phần bằng điện mặt trời theo nhu cầu vận hành thực tế.',
+        'Đối với những nơi đang sử dụng máy phát hoặc động cơ nhiên liệu, điện mặt trời có thể là một phương án đáng cân nhắc tùy bài toán.' => 'Tại nơi đang sử dụng máy phát hoặc động cơ nhiên liệu, Phúc Thịnh Solar sẽ đánh giá khả năng thay thế một phần bằng điện mặt trời theo nhu cầu vận hành thực tế.',
         '### 03. Mô phỏng sản lượng' => '### 03. Ước tính sản lượng điện',
         '### 04. Phân tích tỷ lệ tự sử dụng' => '### 04. Phân tích phần điện dùng trực tiếp tại chỗ',
         'tỷ lệ tự sử dụng năng lượng mặt trời' => 'phần điện mặt trời được dùng trực tiếp tại chỗ',
@@ -431,7 +437,14 @@ try
         }
     }
 
-    if(!preg_match('/^# 21\. .*?^###\s+(.+?)\s*\n^#\s+(.+?)\s*\n(.*?)(?=^\*\*Primary CTA:)/msu', $source, $ctaMatch))
+    $ctaSource = strtr($source, array(
+        '### BẠN CÓ NHU CẦU' => '### TƯ VẤN THEO NHU CẦU THỰC TẾ',
+        '# CHÚNG TÔI XÂY PHƯƠNG ÁN' => '# PHÚC THỊNH SOLAR ĐỀ XUẤT GIẢI PHÁP',
+        'Không cần bắt đầu bằng tên thiết bị.' => 'Khách hàng không cần tự chọn thiết bị trước khi liên hệ.',
+        'Chỉ cần cho Phúc Thịnh Solar biết **bạn đang sử dụng năng lượng như thế nào và muốn cải thiện điều gì**.' => 'Phúc Thịnh Solar tiếp nhận thông tin về **cách sử dụng năng lượng và mục tiêu cần cải thiện**.',
+        'Đội ngũ của chúng tôi sẽ cùng bạn xác định giải pháp phù hợp từ khảo sát, thiết kế đến triển khai.' => 'Đội ngũ kỹ thuật sẽ khảo sát, thiết kế và đề xuất phương án phù hợp trước khi triển khai.'
+    ));
+    if(!preg_match('/^# 21\. .*?^###\s+(.+?)\s*\n^#\s+(.+?)\s*\n(.*?)(?=^\*\*Primary CTA:)/msu', $ctaSource, $ctaMatch))
         throw new RuntimeException('Không đọc được CTA dùng chung ở mục 21.');
     $ctaTitle = solutionImportPlain($ctaMatch[1]).' — '.solutionImportPlain($ctaMatch[2]);
     $ctaDesc = implode(' ', array_filter(array_map('solutionImportPlain', preg_split('/\R\s*\R/u', trim($ctaMatch[3])))));

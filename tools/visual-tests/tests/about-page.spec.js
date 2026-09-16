@@ -1,5 +1,9 @@
 const { test, expect } = require('@playwright/test');
 
+test.beforeEach(async ({ page }) => {
+  await page.route('https://cdn.gtranslate.net/**', route => route.abort());
+});
+
 async function openAbout(page) {
   const pageErrors = [];
   const failedLocalRequests = [];
@@ -9,7 +13,7 @@ async function openAbout(page) {
       failedLocalRequests.push(`${request.method()} ${request.url()} ${request.failure()?.errorText || ''}`);
     }
   });
-  await page.goto('/ve-chung-toi/', { waitUntil: 'domcontentloaded' });
+  await page.goto('/gioi-thieu/', { waitUntil: 'domcontentloaded' });
   await page.waitForTimeout(1000);
   // Visit below-fold sections before checking lazy images; moving the People
   // section below history must not classify a deferred image as broken.
@@ -29,6 +33,8 @@ test('About page keeps alternating introduction and history with Admin-backed se
   const main = page.locator('.pts-about-page');
 
   await expect(main).toBeVisible();
+  await expect(main.locator('h1')).toContainText(/Phúc Thịnh Solar|Phuc Thinh Solar/);
+  await expect(main.locator('.pts-about-section-nav a')).toHaveCount(5);
   await expect(main.locator('> section')).toHaveCount(7);
   await expect(main.locator('.pts-about-history .pts-about-milestone')).toHaveCount(1);
   const introImage = main.locator('.pts-about-story-media img');
@@ -39,7 +45,6 @@ test('About page keeps alternating introduction and history with Admin-backed se
   await expect(main.locator('.pts-about-trust-card')).toHaveCount(4);
   await expect(main.locator('.pts-about-compass-item')).toHaveCount(3);
   await expect(main.locator('.pts-about-certificate-card')).toHaveCount(3);
-
   await expect(main).not.toContainText('Đối tác chiến lược');
   await expect(main).not.toContainText('Giao hàng toàn quốc');
   await expect(main).not.toContainText('Thanh toán linh hoạt');
@@ -70,6 +75,12 @@ test('About page keeps alternating introduction and history with Admin-backed se
   expect(health.failedLocalRequests).toEqual([]);
 });
 
+test('Legacy About URL redirects permanently to the Giới thiệu canonical route', async ({ request }) => {
+  const response = await request.get('/ve-chung-toi/', { maxRedirects: 0 });
+  expect(response.status()).toBe(301);
+  expect(response.headers().location).toMatch(/\/gioi-thieu\/$/);
+});
+
 test('About certificate gallery and contact CTA reuse current interactions', async ({ page }) => {
   await openAbout(page);
 
@@ -93,14 +104,39 @@ test('About mobile layout stacks without horizontal overflow', async ({ page }, 
   await expect(page.locator('.pts-about-story-grid')).toHaveCSS('grid-template-columns', /\d+(\.\d+)?px/);
   await expect(page.locator('.pts-about-timeline')).toHaveCSS('display', 'block');
   await expect(page.locator('.pts-about-contact-actions')).toHaveCSS('display', 'grid');
+  const trustLayout = await page.locator('.pts-about-trust-layout').evaluate(layout => {
+    const layoutBox = layout.getBoundingClientRect();
+    const headingBox = layout.querySelector('.pts-about-section-heading').getBoundingClientRect();
+    const firstCard = layout.querySelector('.pts-about-trust-card').getBoundingClientRect();
+    const firstTitle = layout.querySelector('.pts-about-trust-card h3').getBoundingClientRect();
+    const firstDescription = layout.querySelector('.pts-about-trust-card p').getBoundingClientRect();
+    return {
+      columns: getComputedStyle(layout).gridTemplateColumns.split(' ').length,
+      headingBottom: headingBox.bottom,
+      firstCardTop: firstCard.top,
+      titleWidth: firstTitle.width,
+      descriptionWidth: firstDescription.width,
+      cardRight: firstCard.right,
+      layoutRight: layoutBox.right,
+    };
+  });
+  expect(trustLayout.columns).toBe(1);
+  expect(trustLayout.firstCardTop).toBeGreaterThanOrEqual(trustLayout.headingBottom - 1);
+  expect(trustLayout.titleWidth).toBeGreaterThan(120);
+  expect(trustLayout.descriptionWidth).toBeGreaterThan(120);
+  expect(trustLayout.cardRight).toBeLessThanOrEqual(trustLayout.layoutRight + 1);
   const peopleOrder = await page.locator('.pts-about-people').evaluate(section => {
     const heading = section.querySelector('h2').getBoundingClientRect().top;
-    const image = section.querySelector('.pts-about-people-media').getBoundingClientRect().top;
+    const imageNode = section.querySelector('.pts-about-people-media');
+    const image = imageNode ? imageNode.getBoundingClientRect().top : null;
     const lead = section.querySelector('.pts-about-lead').getBoundingClientRect().top;
     return { heading, image, lead };
   });
-  expect(peopleOrder.heading).toBeLessThan(peopleOrder.image);
-  expect(peopleOrder.image).toBeLessThan(peopleOrder.lead);
+  expect(peopleOrder.heading).toBeLessThan(peopleOrder.lead);
+  if (peopleOrder.image !== null) {
+    expect(peopleOrder.heading).toBeLessThan(peopleOrder.image);
+    expect(peopleOrder.image).toBeLessThan(peopleOrder.lead);
+  }
   const horizontalOverflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
   expect(horizontalOverflow).toBeLessThanOrEqual(1);
 });

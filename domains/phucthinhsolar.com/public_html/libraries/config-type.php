@@ -3,7 +3,7 @@
     $config['group'] = array(
         "Sản phẩm" => array(
             "product" => array("san-pham"),
-            "photo" => array("catalog-campaign"),
+            "photo" => array("catalog-campaign", "product-category-hero"),
             // "tags" => array("san-pham"),
             // "static" => array("su-menh","gioi-thieu","tom-tat-gioi-thieu"),
             "news" => array("tieu-chi", "cam-ket"),
@@ -34,7 +34,7 @@
                thương hiệu) đều dùng lại Admin sẵn có ở nhóm khác, không lặp
                shortcut ở đây. */
             "news" => array("home-about", "home-about-point"),
-            "photo" => array("home-campaign"),
+            "photo" => array("home-campaign", "home-proof-background"),
             "shortcut" => array(
                 array(
                     "title" => "Xem trang chủ",
@@ -43,15 +43,15 @@
                 )
             )
         ),
-        "Trang Về chúng tôi" => array(
+        "Trang Giới thiệu" => array(
             /* Mọi nội dung có tác động tới GUI About được gom vào một nhóm.
                Static su-menh cũ không dùng vì chứa dữ liệu demo legacy. */
             "news" => array("lich-su","about-team","about-principle","ly-do-chon-chung-toi","su-menh"),
             "photo" => array("chungnhan","about-cta"),
             "shortcut" => array(
                 array(
-                    "title" => "Xem trang Về chúng tôi",
-                    "href" => "../ve-chung-toi/",
+                    "title" => "Xem trang Giới thiệu",
+                    "href" => "../gioi-thieu/",
                     "icon" => "fas fa-external-link-alt"
                 )
             )
@@ -81,11 +81,18 @@
             "news" => array("loi-ich"),
             "static" => array("loi-ich"),
         ),
-        "Đại lý" => array(
+        "Hợp tác đại lý" => array(
             "photo" => array("dealer-hero", "hinh-anh-dai-ly"),
             "static" => array("dai-ly-1","dai-ly-2","dai-ly-3"),
             "newsletter" => array("dangkynhantin2"),
             "news" => array("cam-ket-dai-ly","phan-hoi-dai-ly","so-lieu-thong-ke-dai-ly"),
+            "shortcut" => array(
+                array(
+                    "title" => "Xem trang Hợp tác đại lý",
+                    "href" => "../dai-ly/",
+                    "icon" => "fas fa-external-link-alt"
+                )
+            )
         ),
         "Liên hệ" => array(
             "photo" => array("contact-visual"),

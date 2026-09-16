@@ -358,7 +358,8 @@
 
     // /* Cam két đại lý */
     $nametype = "cam-ket-dai-ly";
-    $config['news'][$nametype]['title_main'] = "Cam két đại lý";
+    $config['news'][$nametype]['title_main'] = "Đại lý - Chính sách cam kết";
+    $config['news'][$nametype]['admin_note'] = "Tối đa 4 nội dung hỗ trợ hiển thị tại mục Chính sách và hỗ trợ đại lý trên /dai-ly/. Tên là tiêu đề, Mô tả là nội dung ngắn và ảnh là biểu tượng hoặc minh họa có thể xác minh.";
     $config['news'][$nametype]['check'] = array("hienthi" => "Hiển thị");
     $config['news'][$nametype]['view'] = false;
     $config['news'][$nametype]['slug'] = false;
@@ -589,7 +590,7 @@
        news hiện hữu; frontend vẫn có fallback legacy khi chưa tạo record. */
     $nametype = "about-team";
     $config['news'][$nametype]['title_main'] = "About - Con người";
-    $config['news'][$nametype]['admin_note'] = "Điều khiển riêng section Con người tại /ve-chung-toi/. Ảnh chuẩn 1600x1120, ưu tiên ảnh đội ngũ/showroom/workshop thật có thể xác minh; chủ thể nằm trong vùng giữa để crop responsive. Frontend lấy record đang hiển thị có thứ tự nhỏ nhất.";
+    $config['news'][$nametype]['admin_note'] = "Điều khiển riêng section Con người tại /gioi-thieu/. Ảnh chuẩn 1600x1120, chỉ dùng ảnh đội ngũ thật có thể xác minh; chủ thể nằm trong vùng giữa để crop responsive. Frontend lấy record đang hiển thị có thứ tự nhỏ nhất và tự bỏ ảnh trỏ tới file đã mất.";
     $config['news'][$nametype]['check'] = array("hienthi" => "Hiển thị");
     $config['news'][$nametype]['view'] = false;
     $config['news'][$nametype]['slug'] = false;
@@ -613,7 +614,7 @@
        riêng để cả icon, tiêu đề, mô tả và thứ tự đều biên tập được. */
     $nametype = "about-principle";
     $config['news'][$nametype]['title_main'] = "About - Điểm nhấn con người";
-    $config['news'][$nametype]['admin_note'] = "Tối đa 3 record đang Hiển thị tạo dải Chuyên môn / Đồng hành / Khách hàng ngay dưới section Con người tại /ve-chung-toi/. Ảnh tải lên được dùng như icon; nên dùng PNG nền trong, cùng một phong cách.";
+    $config['news'][$nametype]['admin_note'] = "Tối đa 3 record đang Hiển thị tạo dải Chuyên môn / Đồng hành / Khách hàng ngay dưới section Con người tại /gioi-thieu/. Ảnh tải lên được dùng như icon; nên dùng PNG nền trong, cùng một phong cách.";
     $config['news'][$nametype]['check'] = array("hienthi" => "Hiển thị");
     $config['news'][$nametype]['view'] = false;
     $config['news'][$nametype]['slug'] = false;
@@ -638,7 +639,7 @@
        trong templates/index/index_tpl.php. */
     $nametype = "home-about";
     $config['news'][$nametype]['title_main'] = "Trang chủ - Giới thiệu ngắn";
-    $config['news'][$nametype]['admin_note'] = "Khối \"Giới thiệu ngắn\" ngay dưới danh mục sản phẩm ở trang chủ: nhãn nhỏ, tiêu đề, mô tả, ảnh và chữ trên nút (nút luôn trỏ /ve-chung-toi/). Lấy đúng 1 record đang Hiển thị có thứ tự (STT) nhỏ nhất; chưa tạo record nào, hoặc đã tạo nhưng tắt hết Hiển thị, thì dùng nội dung mặc định có sẵn trong code.";
+    $config['news'][$nametype]['admin_note'] = "Khối \"Giới thiệu ngắn\" ngay dưới danh mục sản phẩm ở trang chủ: nhãn nhỏ, tiêu đề, mô tả, ảnh và chữ trên nút (nút luôn trỏ /gioi-thieu/). Lấy đúng 1 record đang Hiển thị có thứ tự (STT) nhỏ nhất; chưa tạo record nào, hoặc đã tạo nhưng tắt hết Hiển thị, thì dùng nội dung mặc định có sẵn trong code.";
     $config['news'][$nametype]['check'] = array("hienthi" => "Hiển thị");
     $config['news'][$nametype]['view'] = false;
     $config['news'][$nametype]['slug'] = false;
@@ -682,7 +683,7 @@
     /* Lịch sử */
     $nametype = "lich-su";
     $config['news'][$nametype]['title_main'] = "Lịch sử";
-    $config['news'][$nametype]['admin_note'] = "Điều khiển phần Câu chuyện và timeline tại /ve-chung-toi/. Ảnh câu chuyện chuẩn 1600x1120, dùng ảnh doanh nghiệp thật và không chèn chữ vào ảnh. Record giới thiệu có thể để trống Năm cột mốc; mỗi record có năm hợp lệ tạo một mốc trên timeline.";
+    $config['news'][$nametype]['admin_note'] = "Điều khiển phần Câu chuyện và timeline tại /gioi-thieu/. Ảnh câu chuyện chuẩn 1600x1120, dùng ảnh doanh nghiệp thật và không chèn chữ vào ảnh. Record giới thiệu có thể để trống Năm cột mốc; mỗi record có năm hợp lệ tạo một mốc trên timeline.";
     $config['news'][$nametype]['check'] = array("hienthi" => "Hiển thị");
     $config['news'][$nametype]['view'] = false;
     $config['news'][$nametype]['slug'] = false;
@@ -709,7 +710,7 @@
     /* Sứ mệnh - Tầm nhìn - Giá trị */
     $nametype = "su-menh";
     $config['news'][$nametype]['title_main'] = "Sứ mệnh - Tầm nhìn - Giá trị";
-    $config['news'][$nametype]['admin_note'] = "Ba record đầu tạo khối Tầm nhìn - Sứ mệnh - Giá trị cốt lõi tại /ve-chung-toi/. Tiêu đề ngắn, mô tả, ảnh/icon, thứ tự và Hiển thị được áp dụng trực tiếp.";
+    $config['news'][$nametype]['admin_note'] = "Ba record đầu tạo khối Tầm nhìn - Sứ mệnh - Giá trị cốt lõi tại /gioi-thieu/. Tiêu đề ngắn, mô tả, ảnh/icon, thứ tự và Hiển thị được áp dụng trực tiếp.";
     $config['news'][$nametype]['check'] = array("hienthi" => "Hiển thị");
     $config['news'][$nametype]['view'] = false;
     $config['news'][$nametype]['slug'] = false;
@@ -732,7 +733,7 @@
     /* Lý do chọn chúng tôi */
     $nametype = "ly-do-chon-chung-toi";
     $config['news'][$nametype]['title_main'] = "Lý do chọn chúng tôi";
-    $config['news'][$nametype]['admin_note'] = "Tên/tiêu đề ngắn, mô tả và ảnh của record tạo card Lý do lựa chọn tại /ve-chung-toi/. NÊN LUÔN bật cờ Trang Về chúng tôi cho đúng 4 record muốn hiện - nếu chưa bật mục nào, hệ thống tự đoán theo TỪ KHOÁ TRONG TÊN record (vd tên có \"bảo hành\"/\"chính hãng\"...) để không bỏ trống khối, dễ ra kết quả không như ý nếu đổi tên record. Bật cờ rõ ràng để không phụ thuộc cách đoán này.";
+    $config['news'][$nametype]['admin_note'] = "Tên/tiêu đề ngắn, mô tả và ảnh của record tạo card Lý do lựa chọn tại /gioi-thieu/. NÊN LUÔN bật cờ Trang Giới thiệu cho đúng 4 record muốn hiện - nếu chưa bật mục nào, hệ thống tự đoán theo TỪ KHOÁ TRONG TÊN record (vd tên có \"bảo hành\"/\"chính hãng\"...) để không bỏ trống khối, dễ ra kết quả không như ý nếu đổi tên record. Bật cờ rõ ràng để không phụ thuộc cách đoán này.";
     $config['news'][$nametype]['check'] = array("about" => "Trang Về chúng tôi", "hienthi" => "Hiển thị");
     $config['news'][$nametype]['view'] = false;
     $config['news'][$nametype]['slug'] = false;

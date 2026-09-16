@@ -118,8 +118,15 @@ test('search with matches lists product cards', async ({ page, baseURL }) => {
   });
   await expect(page.locator('.alert-warning')).toHaveCount(0);
   expect(await page.locator('.product-item').count()).toBeGreaterThan(0);
-  // Quote-only mode: cards must not expose add-to-cart controls.
-  await expect(page.locator('.product-card .addcart')).toHaveCount(0);
+  // Cấu hình Admin có thể bật giá công khai/giỏ hàng hoặc giữ chế độ báo giá.
+  // Card phải đồng bộ với chính trạng thái đang được Header công bố.
+  const commerceEnabled = await page.locator('#headerscroll .icon-cart-header').count() > 0;
+  if (commerceEnabled) {
+    expect(await page.locator('.product-card .addcart').count()).toBeGreaterThan(0);
+  } else {
+    await expect(page.locator('.product-card .addcart')).toHaveCount(0);
+    expect(await page.locator('.product-card .pts-card-ask').count()).toBeGreaterThan(0);
+  }
 
   const filteredResponse = page.waitForResponse(response => response.url().includes('/api/fillter_service.php?'));
   await page.locator('select[name="orderby"]').selectOption('new');
@@ -191,8 +198,13 @@ test('imageless imported product detail renders without broken media or bad requ
     expect(response && response.ok()).toBeTruthy();
   });
   await expect(page.locator('.right-pro-detail > .title-pro-detail')).toBeVisible();
-  await expect(page.locator('.btn-contact-price a[href^="tel:"]')).toBeVisible();
-  await expect(page.locator('.btn-product-detail .addcart')).toHaveCount(0);
+  const quoteCta = page.locator('.btn-contact-price');
+  if (await quoteCta.count()) {
+    await expect(quoteCta.locator('a[href^="tel:"]')).toBeVisible();
+    await expect(page.locator('.btn-product-detail .addcart')).toHaveCount(0);
+  } else {
+    await expect(page.locator('.btn-product-detail .addcart')).toHaveCount(2);
+  }
   // No photo -> the MagicZoom trigger must fall back to the placeholder, never request the bare upload dir.
   await expect(page.locator('#Zoom-1')).not.toHaveAttribute('href', /upload\/product\/?$/);
   await expect(page.locator('#Zoom-1 img').first()).toBeVisible();

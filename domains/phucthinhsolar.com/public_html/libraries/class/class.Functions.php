@@ -882,6 +882,16 @@
 		    return false;
 		}
 
+		/* URL thumbnail dùng chung cho các template tự render thẻ img/background.
+		   SEO/social image vẫn giữ định dạng gốc để tương thích crawler cũ. */
+		public function getThumbUrl($sizes='', $path='', $preferWebp=true)
+		{
+			$url = ASSET.THUMBS.'/'.trim((string) $sizes, '/').'/'.ltrim((string) $path, '/');
+			$extension = strtolower(pathinfo((string) $path, PATHINFO_EXTENSION));
+			if($preferWebp && $this->canEncodeWebp() && in_array($extension, array('jpg','jpeg','png'), true)) $url .= '.webp';
+			return $url;
+		}
+
 		/* Get image */
 		// public function getImage($data=array())
 		// {
@@ -1064,17 +1074,20 @@
         $info['hasURL'] = true;
     }
 
-    // Chỉ convert sang webp nếu ảnh không phải .webp gốc
-    if ($config['website']['image']['hasWebp'] && strtolower(pathinfo($info['image'], PATHINFO_EXTENSION)) !== 'webp') {
-        if (!$info['sizes']) {
-            if (!$info['hasURL']) {
-                $this->converWebp($info['pathSrc']);
-            }
-        }
-        if (!$info['hasURL']) {
-            $info['pathSrc'] .= '.webp';
-        }
-    }
+	/* Chỉ phát URL WebP khi runtime có codec. Ảnh gốc không resize phải tạo
+	   biến thể thành công trước; thumbnail sẽ được createThumb tạo theo yêu cầu. */
+	$imageExtension = strtolower(pathinfo($info['image'], PATHINFO_EXTENSION));
+	$canUseWebp = $this->canEncodeWebp()
+		&& in_array($imageExtension, array('jpg','jpeg','png'), true)
+		&& !$info['hasURL'];
+	if ($canUseWebp) {
+		$useWebp = !empty($info['sizes']);
+		if (!$useWebp) {
+			$webpQuality = !empty($config['website']['image']['webp-quality']) ? (int) $config['website']['image']['webp-quality'] : 82;
+			$useWebp = $this->converWebp($info['pathSrc'], $webpQuality);
+		}
+		if ($useWebp) $info['pathSrc'] .= '.webp';
+	}
 
     /* Src */
     $info['src'] = (!empty($info['isLazy']) && strpos($info['class'], 'lazy') !== false)
@@ -1783,6 +1796,14 @@
 				$maxHeight = $config['website']['upload']['max-height'];
 				if($image_w > $maxWidth) $this->smartResizeImage($folder.$_FILES[$file]['name'],null,$maxWidth,$maxHeight,true);
 
+				/* Tạo WebP ngay sau upload khi runtime hỗ trợ. Không để lỗi tối ưu ảnh
+				   làm hỏng thao tác lưu nội dung hoặc làm mất ảnh gốc. */
+				if($this->canEncodeWebp())
+				{
+					$webpQuality = !empty($config['website']['image']['webp-quality']) ? (int) $config['website']['image']['webp-quality'] : 82;
+					$this->converWebp($folder.$_FILES[$file]['name'], $webpQuality);
+				}
+
 				return $_FILES[$file]['name'];
 			}
 			return false;
@@ -1927,45 +1948,88 @@
 			*/
 		}
 
-		/* Convert Webp */
-		public function converWebp($in)
+		private function validWebpFile($path)
+		{
+			if(!is_file($path) || filesize($path) < 16) return false;
+			$header = @file_get_contents($path, false, null, 0, 12);
+			return strlen((string) $header) === 12 && substr($header, 0, 4) === 'RIFF' && substr($header, 8, 4) === 'WEBP';
+		}
+
+		public function canEncodeWebp()
+		{
+			return function_exists('imagewebp');
+		}
+
+		/* Tạo biến thể WebP cạnh ảnh gốc (ten.jpg.webp). Luôn giữ ảnh gốc làm
+		   fallback và chỉ công bố biến thể sau khi đã kiểm tra đúng header WebP. */
+		public function converWebp($in, $quality=82)
 		{
 			global $config;
 
-			$in = $_SERVER['DOCUMENT_ROOT'].$config['database']['url'].str_replace(ASSET, "", $in);
-
-			if(!extension_loaded('imagick'))
+			if(empty($in)) return false;
+			$isAbsolute = substr($in, 0, 1) === '/' && is_file($in);
+			if(!$isAbsolute)
 			{
-				ob_start();
-
-				WebPConvert::serveConverted($in,$in.".webp", [
-					'fail' => 'original',
-					//'show-report' => true,
-					'serve-image' => [
-						'headers' => [
-							'cache-control' => true,
-							'vary-accept' => true,
-						],
-						'cache-control-header' => 'max-age=2',
-					],
-					'convert' => [
-						"quality" => 100
-					]
-				]);
-
-				file_put_contents($in.".webp",ob_get_contents());
-				ob_end_clean();
+				$documentRoot = !empty($_SERVER['DOCUMENT_ROOT']) ? rtrim($_SERVER['DOCUMENT_ROOT'], '/').'/' : ROOT;
+				$baseUrl = !empty($config['database']['url']) ? trim($config['database']['url'], '/').'/' : '';
+				$in = $documentRoot.$baseUrl.ltrim(str_replace(ASSET, '', $in), '/');
 			}
-			else
+
+			$extension = strtolower(pathinfo($in, PATHINFO_EXTENSION));
+			if(!is_file($in) || !in_array($extension, array('jpg','jpeg','png'), true)) return false;
+
+			$out = $in.'.webp';
+			if($this->validWebpFile($out) && filemtime($out) >= filemtime($in) && filesize($out) < filesize($in)) return true;
+
+			$quality = max(55, min(92, (int) $quality));
+			$temp = $out.'.tmp-'.getmypid().'-'.uniqid('', true).'.webp';
+			$converted = false;
+
+			try
 			{
-				WebPConvert::convert($in,$in.".webp", [
-					'fail' => 'original',
-					'convert' => [
-						'quality' => 100,
-						'max-quality' => 100,
-					]
-				]);
+				if(function_exists('imagewebp'))
+				{
+					$info = @getimagesize($in);
+					$image = false;
+					if(!empty($info['mime']) && $info['mime'] === 'image/jpeg') $image = @imagecreatefromjpeg($in);
+					elseif(!empty($info['mime']) && $info['mime'] === 'image/png') $image = @imagecreatefrompng($in);
+					if($image)
+					{
+						if(function_exists('imagepalettetotruecolor')) @imagepalettetotruecolor($image);
+						imagealphablending($image, true);
+						imagesavealpha($image, true);
+						$converted = @imagewebp($image, $temp, $quality);
+						imagedestroy($image);
+					}
+				}
+				else
+				{
+					WebPConvert::convert($in, $temp, array(
+						'quality' => $quality,
+						'metadata' => 'none',
+						'converters' => array('cwebp','imagick','imagemagick','gd')
+					));
+					$converted = true;
+				}
 			}
+			catch(\Throwable $exception)
+			{
+				$converted = false;
+			}
+
+			if(!$converted || !$this->validWebpFile($temp) || filesize($temp) >= filesize($in))
+			{
+				if(is_file($temp)) @unlink($temp);
+				return false;
+			}
+
+			if(!@rename($temp, $out))
+			{
+				@unlink($temp);
+				return false;
+			}
+
+			return true;
 		}
 
 		/* Create thumb */
@@ -2322,26 +2386,33 @@
 				$this->RemoveEmptySubFolders(WATERMARK.'/'.$path."/");
 			}
 
+			$webpQuality = !empty($config['website']['image']['webp-quality']) ? (int) $config['website']['image']['webp-quality'] : 82;
+			$serveWebp = $webp && $this->canEncodeWebp();
+
 			if($upload_dir)
 			{
 				if(!isset($_GET['preview']))
 				{
-					if($func == 'imagejpeg') $func($canvas, $upload_dir.$image_name,100);
+					if($serveWebp) @imagewebp($canvas, $upload_dir.$image_name.'.webp', $webpQuality);
+					elseif($func == 'imagejpeg') $func($canvas, $upload_dir.$image_name,100);
 					else $func($canvas, $upload_dir.$image_name,floor($quality * 0.09));
 				}
 
 				$this->removeZeroByte($path);
 			}
 
-			header('Content-Type: image/' . $mime_type);
-			if($func=='imagejpeg') $func($canvas, NULL,100);
-			else $func($canvas, NULL,floor($quality * 0.09));
-			imagedestroy($canvas);
-
-			if($config['website']['image']['hasWebp'] && ($webp || !$preview))
+			if($serveWebp)
 			{
-				$this->converWebp($upload_dir.$image_name);
+				header('Content-Type: image/webp');
+				imagewebp($canvas, NULL, $webpQuality);
 			}
+			else
+			{
+				header('Content-Type: image/' . $mime_type);
+				if($func=='imagejpeg') $func($canvas, NULL,100);
+				else $func($canvas, NULL,floor($quality * 0.09));
+			}
+			imagedestroy($canvas);
 
 			exit;
 		}

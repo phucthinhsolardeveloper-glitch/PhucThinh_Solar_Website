@@ -42,8 +42,13 @@ test('header, menu, breadcrumb and footer remain usable', async ({ page, isMobil
   await expect(page.locator('#headerscroll')).toBeVisible();
   await expect(page.locator('.breadCrumbs')).toBeVisible();
   await expect(page.locator('.pts-breadcrumb-bar')).toHaveCSS('border-bottom-width', '0px');
-  await expect(page.locator('#headerscroll .icon-cart-header')).toHaveCount(0);
-  await expect(page.locator('#headerscroll .hdr-call-txt')).toContainText('Tư vấn sản phẩm');
+  const headerCart = page.locator('#headerscroll .icon-cart-header');
+  if (await headerCart.count()) {
+    await expect(headerCart).toBeVisible();
+    await expect(page.locator('#headerscroll .hdr-call-txt')).toContainText('Gọi mua hàng');
+  } else {
+    await expect(page.locator('#headerscroll .hdr-call-txt')).toContainText('Tư vấn sản phẩm');
+  }
   const headsetIcon = page.locator('#headerscroll .hdr-call-ic .fa-headset');
   await expect(headsetIcon).toBeVisible();
   await page.evaluate(() => document.fonts.ready);
@@ -115,7 +120,7 @@ test('content surfaces stay flat across product and content hubs', async ({ page
   await assertFlat('.pts-sh-choice');
   await expect(page.locator('.pts-sh-eyebrow').first()).toBeHidden();
 
-  await page.goto('/ve-chung-toi/', { waitUntil: 'domcontentloaded' });
+  await page.goto('/gioi-thieu/', { waitUntil: 'domcontentloaded' });
   await assertFlat('.pts-about-certificate-card');
   await expect(page.locator('.pts-about-eyebrow').first()).toBeHidden();
 
@@ -173,7 +178,7 @@ test('home product showroom and closing CTA follow the product-first decision', 
   await expect(page.locator('.pts-news-card')).toHaveCount(6);
 });
 
-test('product detail keeps gallery and quote-only CTA', async ({ page }) => {
+test('product detail keeps gallery and the CTA configured by Admin', async ({ page }) => {
   await page.goto('/san-pham/', { waitUntil: 'domcontentloaded' });
   const productLink = page.locator('.grid-product a[href]').filter({ has: page.locator('img') }).first();
   await expect(productLink).toBeVisible();
@@ -185,9 +190,14 @@ test('product detail keeps gallery and quote-only CTA', async ({ page }) => {
   await expect(page.locator('.breadCrumbs')).toBeVisible();
   await expect(page.locator('#Zoom-1 img').first()).toBeVisible();
   await expect(page.locator('.right-pro-detail > .title-pro-detail')).toBeVisible();
-  await expect(page.locator('.btn-contact-price')).toBeVisible();
-  await expect(page.locator('.btn-contact-price a[href^="tel:"]')).toBeVisible();
-  await expect(page.locator('.btn-product-detail .addcart')).toHaveCount(0);
+  const quoteCta = page.locator('.btn-contact-price');
+  if (await quoteCta.count()) {
+    await expect(quoteCta).toBeVisible();
+    await expect(quoteCta.locator('a[href^="tel:"]')).toBeVisible();
+    await expect(page.locator('.btn-product-detail .addcart')).toHaveCount(0);
+  } else {
+    await expect(page.locator('.btn-product-detail .addcart')).toHaveCount(2);
+  }
 
   // Tab "Mô tả sản phẩm": một cột, đã bỏ các khối story/duo/canvas rời rạc.
   await expect(page.locator('.pts-story-card, .pts-detail-duo, .pts-description-canvas')).toHaveCount(0);
@@ -199,7 +209,10 @@ test('product detail keeps gallery and quote-only CTA', async ({ page }) => {
 
 test('quote request CTA opens the protected consultation form', async ({ page }) => {
   await page.goto('/san-pham/', { waitUntil: 'domcontentloaded' });
-  const href = await page.locator('.grid-product a[href]').filter({ has: page.locator('img') }).first().getAttribute('href');
+  const quoteCard = page.locator('.product-card:has(.pts-card-ask)').first();
+  const quoteCardCount = await quoteCard.count();
+  test.skip(quoteCardCount === 0, 'Catalogue hiện không có sản phẩm ở chế độ báo giá để mở modal này.');
+  const href = await quoteCard.locator('.product-item').getAttribute('href');
   expect(href).toBeTruthy();
 
   await page.goto(href, { waitUntil: 'domcontentloaded' });

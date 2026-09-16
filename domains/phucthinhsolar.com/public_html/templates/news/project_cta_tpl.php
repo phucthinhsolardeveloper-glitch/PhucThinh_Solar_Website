@@ -4,7 +4,7 @@ if($projectShowCta) {
 ?>
 <section class="pts-ph-contact" aria-labelledby="project-contact-title">
     <div class="uk-container"><div class="pts-ph-contact-band">
-        <?php if($projectCtaImage) { ?><img class="pts-ph-contact-bg" src="<?=$projectEscape(ASSET.THUMBS.'/1600x500x1/'.$projectCtaImage)?>" alt="" width="1600" height="500" loading="lazy" decoding="async"><?php } ?>
+        <?php if($projectCtaImage) { ?><img class="pts-ph-contact-bg" src="<?=$projectEscape($func->getThumbUrl('1600x500x1', $projectCtaImage))?>" alt="" width="1600" height="500" loading="lazy" decoding="async"><?php } ?>
         <div class="pts-ph-contact-copy">
             <span><?=$projectEscape($projectCtaEyebrow)?></span><h2 id="project-contact-title"><?=$projectEscape($projectCtaTitle)?></h2><p><?=$projectEscape($projectCtaDesc)?></p>
             <?php if(!empty($projectTrustItems)) { ?>

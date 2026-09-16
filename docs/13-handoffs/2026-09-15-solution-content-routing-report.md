@@ -56,13 +56,15 @@
   dữ liệu local.
 - HTTP: landing và bài gia đình trả 200; bài gia đình có một H1, bảy H2 nội dung
   CKEditor và breadcrumb ba nấc.
-- Playwright `solution-hub.spec.js`: 8/8 đạt trên desktop và mobile; kiểm tra đủ
+- Playwright `solution-hub.spec.js`: 10/10 đạt trên desktop và mobile; kiểm tra đủ
   năm nhãn ngắn, link trực tiếp, không tràn ngang, modal tư vấn, canonical và
   bốn redirect legacy.
 - Đã chụp và kiểm tra trực quan landing cùng bài gia đình ở viewport desktop.
 - Đối chiếu ảnh cho thấy sáu bài Tin tức có ảnh cover và ảnh CKEditor cùng hình
   nhưng khác tên do resize. Template chỉ ẩn cover ở đúng các trường hợp đó;
   bài có hai ảnh khác nhau vẫn hiển thị đủ.
+- Card landing dùng thumbnail 600×375: đạt cả kiểm tra không phóng mờ và không tải
+  dư trên desktop; card thiếu ảnh dùng placeholder có chủ đích.
 
 ## Deploy
 

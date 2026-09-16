@@ -11,7 +11,7 @@
 .nh-featured{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:14px 20px;margin-bottom:28px}
 .nh-card{display:flex;flex-direction:column;min-width:0;border:1px solid var(--nh-line);border-radius:9px;overflow:hidden;background:#fff;color:var(--nh-navy)!important;transition:box-shadow .2s,border-color .2s}
 .nh-card:hover{border-color:#dbb66a;box-shadow:0 9px 24px #091f4c0d}
-.nh-media{position:relative;aspect-ratio:16/7;overflow:hidden;background:#edf2f7;flex:none}
+.nh-media{position:relative;min-width:0;aspect-ratio:16/7;overflow:hidden;background:#edf2f7;flex:none}
 .nh-media>img,.nh-media>picture,.nh-media>picture>img{display:block;width:100%!important;height:100%!important;object-fit:cover}
 .nh-image{transition:transform .3s}
 .nh-card:hover .nh-image{transform:scale(1.025)}
@@ -27,10 +27,11 @@
 .nh-lead .nh-media{aspect-ratio:16/7.7}
 .nh-lead h2{font-size:21px!important}
 .nh-lead .nh-card-copy{padding:15px 17px 19px}
-.nh-secondary{display:grid;grid-template-columns:38% 1fr;padding:8px;gap:14px}
-.nh-secondary .nh-media{aspect-ratio:auto;height:100%;min-height:155px;border-radius:6px}
-.nh-secondary .nh-card-copy{padding:12px 10px 12px}
+.nh-secondary{display:grid;grid-template-columns:minmax(0,38%) minmax(0,1fr);padding:8px;gap:14px}
+.nh-secondary .nh-media{width:100%;aspect-ratio:auto;height:100%;min-height:155px;border-radius:6px}
+.nh-secondary .nh-card-copy{display:flex;min-width:0;flex-direction:column;justify-content:center;padding:18px 18px}
 .nh-secondary h2{font-size:17px!important}
+.nh-secondary .nh-arrow{position:static;align-self:flex-start;width:auto;height:auto;margin-top:12px;color:var(--nh-gold);font-size:22px;line-height:1}
 .nh-toolbar{display:flex;align-items:center;justify-content:space-between;gap:20px;margin:0 0 24px;min-width:0}
 .nh-filters{display:flex;gap:7px;overflow-x:auto;min-width:0;padding:4px 2px 7px;scrollbar-width:thin}
 .nh-filter{display:inline-flex;flex:none;align-items:center;gap:9px;padding:11px 17px;min-height:44px;border-radius:28px;background:#f1f5fb;color:var(--nh-navy)!important;font-size:12px;font-weight:750;white-space:nowrap}

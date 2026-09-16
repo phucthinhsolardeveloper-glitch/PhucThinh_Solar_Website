@@ -1,5 +1,9 @@
 const { test, expect } = require('@playwright/test');
 
+test.beforeEach(async ({ page }) => {
+  await page.route('https://cdn.gtranslate.net/**', route => route.abort());
+});
+
 test('header and product quote phone icons render', async ({ page }) => {
   const browserErrors = [];
   page.on('pageerror', error => browserErrors.push(error.message));

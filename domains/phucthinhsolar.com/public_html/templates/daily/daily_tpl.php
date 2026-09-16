@@ -1,50 +1,54 @@
 <div class="pts-dealer-hub">
 
 <?php if(!empty($about1)){ ?>
-<section class="pts-dl-hero" id="dang-ky-dai-ly">
-    <?php if($dealerHero) { ?>
-    <div class="pts-dl-hero-banner">
+<section class="pts-dl-hero">
+    <div class="pts-dl-hero-banner<?=$dealerHero ? '' : ' is-text-only'?>">
+        <?php if($dealerHero) { ?>
         <span class="pts-dl-hero-banner-media">
             <?=$func->getImage(['isLazy' => false, 'class' => '', 'sizes' => '1920x600x1', 'upload' => $dealerHero['upload'], 'image' => $dealerHero['photo'], 'alt' => $dealerHero['name']])?>
         </span>
         <span class="pts-dl-hero-banner-shade" aria-hidden="true"></span>
+        <?php } ?>
         <div class="uk-container">
             <div class="pts-dl-hero-banner-copy">
-                <span class="pts-dl-eyebrow">HỢP TÁC ĐẠI LÝ</span>
                 <h1><?=$about1['name'.$lang]?></h1>
             </div>
         </div>
     </div>
-    <?php } ?>
     <div class="uk-container">
         <div class="pts-dl-hero-grid">
             <div class="pts-dl-hero-copy">
                 <div class="pts-dl-hero-desc"><?=htmlspecialchars_decode($about1['desc'.$lang])?></div>
             </div>
-            <div class="pts-dl-form-card">
+            <div class="pts-dl-form-card" id="dang-ky-dai-ly">
                 <h2>Đăng ký làm đối tác phân phối</h2>
                 <p class="pts-dl-form-note">Để lại thông tin, Phúc Thịnh Solar sẽ liên hệ tư vấn chính sách đại lý phù hợp.</p>
                 <form action="" method="post" class="pts-dl-form">
                     <input type="hidden" name="form_csrf" value="<?=htmlspecialchars(formCsrfToken(), ENT_QUOTES, 'UTF-8')?>">
                     <div class="pts-dl-form-field">
-                        <input type="text" name="dataNewsletter[fullname]" class="pts-dl-input" required placeholder="Họ và tên*">
+                        <label class="pts-dl-label" for="dealer-fullname">Họ và tên</label>
+                        <input id="dealer-fullname" type="text" name="dataNewsletter[fullname]" class="pts-dl-input" autocomplete="name" maxlength="100" required placeholder="Nguyễn Văn A">
                     </div>
                     <div class="pts-dl-form-field">
-                        <input type="tel" name="dataNewsletter[phone]" class="pts-dl-input" required placeholder="Số điện thoại*">
+                        <label class="pts-dl-label" for="dealer-phone">Số điện thoại</label>
+                        <input id="dealer-phone" type="tel" name="dataNewsletter[phone]" class="pts-dl-input" autocomplete="tel" maxlength="20" inputmode="tel" required placeholder="09xx xxx xxx">
                     </div>
                     <div class="pts-dl-form-field">
-                        <input type="email" name="dataNewsletter[email]" class="pts-dl-input" required placeholder="Email*">
+                        <label class="pts-dl-label" for="dealer-email">Email</label>
+                        <input id="dealer-email" type="email" name="dataNewsletter[email]" class="pts-dl-input" autocomplete="email" maxlength="150" required placeholder="email@doanhnghiep.vn">
                     </div>
                     <div class="pts-dl-form-field">
-                        <select name="dataNewsletter[address]" class="pts-dl-input pts-dl-select devvn_cities" id="devvn_cities">
-                            <option value="Tỉnh thành">Tỉnh thành</option>
+                        <label class="pts-dl-label" for="devvn_cities">Tỉnh/thành phố</label>
+                        <select name="dataNewsletter[address]" class="pts-dl-input pts-dl-select devvn_cities" id="devvn_cities" autocomplete="address-level1" required>
+                            <option value="">Chọn tỉnh/thành phố</option>
                             <?php if(count($city)){foreach($city as $k => $v){ ?>
-                            <option value="<?=$v['name']?>"><?=$v['name']?></option>
+                            <option value="<?=htmlspecialchars($v['name'], ENT_QUOTES, 'UTF-8')?>"><?=htmlspecialchars($v['name'], ENT_QUOTES, 'UTF-8')?></option>
                             <?php }} ?>
                         </select>
                     </div>
                     <div class="pts-dl-form-field">
-                        <input type="text" name="dataNewsletter[company]" class="pts-dl-input" required placeholder="Tên doanh nghiệp/Cửa hàng*">
+                        <label class="pts-dl-label" for="dealer-company">Doanh nghiệp hoặc cửa hàng</label>
+                        <input id="dealer-company" type="text" name="dataNewsletter[company]" class="pts-dl-input" autocomplete="organization" maxlength="180" required placeholder="Tên đơn vị của bạn">
                     </div>
                     <input type="hidden" name="recaptcha_response_newsletter2" id="recaptchaResponseNewsletter2">
                     <button type="submit" name="submit-newsletter2" class="pts-btn pts-btn-gold pts-dl-submit">Đăng ký ngay <i class="fas fa-arrow-right" aria-hidden="true"></i></button>
@@ -60,7 +64,7 @@
     <div class="uk-container">
         <div class="pts-retail-section-head">
             <div class="section-title">
-                <h3><?=htmlspecialchars_decode($about2['name'.$lang])?></h3>
+                <h2><?=htmlspecialchars_decode($about2['name'.$lang])?></h2>
             </div>
         </div>
         <div class="pts-dl-confidence-desc"><?=htmlspecialchars_decode($about2['desc'.$lang])?></div>
@@ -85,7 +89,7 @@
     <div class="uk-container">
         <div class="pts-retail-section-head">
             <div class="section-title">
-                <h3><?=htmlspecialchars_decode($about3['name'.$lang])?></h3>
+                <h2><?=htmlspecialchars_decode($about3['name'.$lang])?></h2>
             </div>
         </div>
         <div class="pts-dl-support-desc"><?=htmlspecialchars_decode($about3['desc'.$lang])?></div>
@@ -111,7 +115,7 @@
     <div class="uk-container">
         <div class="pts-retail-section-head">
             <div class="section-title">
-                <h3>Khách hàng, đối tác nói gì về Phúc Thịnh Solar</h3>
+                <h2>Phản hồi từ khách hàng và đối tác</h2>
             </div>
         </div>
         <div class="pts-dl-testimonial-grid">

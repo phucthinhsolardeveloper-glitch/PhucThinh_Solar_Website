@@ -102,6 +102,7 @@ docker cp scripts/test-commerce-transaction.php "$web_container:/tmp/test-commer
 docker cp scripts/test-public-route-resolver.php "$web_container:/tmp/test-public-route-resolver.php"
 docker cp scripts/test-proxy-https.php "$web_container:/tmp/test-proxy-https.php"
 docker cp scripts/import-solution-content-local.php "$web_container:/tmp/import-solution-content-local.php"
+docker cp scripts/optimize-webp.php "$web_container:/tmp/optimize-webp.php"
 docker cp scripts/preflight-commerce-migrations.php "$web_container:/tmp/preflight-commerce-migrations.php"
 docker cp migrations/000_preflight_production.php "$web_container:/tmp/000_preflight_production.php"
 docker cp migrations/000_check_hosting_runtime.php "$web_container:/tmp/000_check_hosting_runtime.php"
@@ -114,6 +115,9 @@ docker cp migrations/039_grant_home_and_project_point_permissions.php "$web_cont
 docker cp migrations/040_grant_hero_carousel_photo_permission.php "$web_container:/tmp/040_grant_hero_carousel_photo_permission.php"
 docker cp migrations/041_grant_home_campaign_photo_permissions.php "$web_container:/tmp/041_grant_home_campaign_photo_permissions.php"
 docker cp migrations/042_grant_site_visual_photo_permissions.php "$web_container:/tmp/042_grant_site_visual_photo_permissions.php"
+docker cp migrations/043_install_about_showroom_image.php "$web_container:/tmp/043_install_about_showroom_image.php"
+docker exec "$web_container" mkdir -p /tmp/assets/043-about-showroom
+docker cp migrations/assets/043-about-showroom/. "$web_container:/tmp/assets/043-about-showroom/"
 docker cp scripts/import-oriana-images-local.php "$web_container:/tmp/import-oriana-images.php"
 docker cp scripts/create-local-rbac-demo-accounts.php "$web_container:/tmp/create-local-rbac-demo-accounts.php"
 docker compose -f "$compose_file" exec -T web sh -lc '
@@ -191,6 +195,7 @@ php -l templates/product/product_list_tpl.php
 php -l templates/product/product_tpl.php
 php -l libraries/router.php
 php -l /tmp/import-solution-content-local.php
+php -l /tmp/optimize-webp.php
 php -l /tmp/000_preflight_production.php
 php -l /tmp/000_check_hosting_runtime.php
 php -l /tmp/025_compress_oversized_images.php
@@ -202,6 +207,9 @@ php -l /tmp/039_grant_home_and_project_point_permissions.php
 php -l /tmp/040_grant_hero_carousel_photo_permission.php
 php -l /tmp/041_grant_home_campaign_photo_permissions.php
 php -l /tmp/042_grant_site_visual_photo_permissions.php
+php -l /tmp/043_install_about_showroom_image.php
+php -r "exit(function_exists(\"imagewebp\") ? 0 : 1);"
+cwebp -version
 php -l /tmp/import-oriana-images.php
 php -l /tmp/create-local-rbac-demo-accounts.php
 php -l /tmp/test-admin-self-profile-integrity.php
@@ -256,6 +264,8 @@ php /tmp/039_grant_home_and_project_point_permissions.php
 php /tmp/040_grant_hero_carousel_photo_permission.php
 php /tmp/041_grant_home_campaign_photo_permissions.php
 php /tmp/042_grant_site_visual_photo_permissions.php
+php /tmp/043_install_about_showroom_image.php
+php /tmp/optimize-webp.php /var/www/html/assets/images/site-visuals --quality=82 --min-bytes=150000 --dry-run
 '
 
 redirect_table="$(docker compose -f "$compose_file" exec -T db mariadb -N -B -upts_local -ppts_local_only phucthinhs_local -e "SHOW TABLES LIKE 'table_url_redirect';")"
@@ -329,7 +339,10 @@ assert_css_shipped /tmp/pts-predeploy-home.html 'assets/css/media-system.css' '.
 grep -qF 'name="form_csrf"' /tmp/pts-predeploy-contact.html
 grep -qF 'title-pro-detail' /tmp/pts-predeploy-product.html
 grep -qF 'Gọi báo giá' /tmp/pts-predeploy-product.html
-grep -qE 'class="pts-card-ask"[^>]*><i class="fas fa-phone-alt"></i>' /tmp/pts-predeploy-product.html
+# Nút báo giá dạng icon thuộc card listing, không phải template chi tiết. Sản
+# phẩm mới nhất có thể không có related products nên dò trong product detail sẽ
+# tạo fail giả dù catalog đang render đúng CTA.
+grep -qE 'class="pts-card-ask"[^>]*><i class="fas fa-phone-alt"></i>' /tmp/pts-predeploy-catalog.html
 test -s domains/phucthinhsolar.com/public_html/assets/fontawesome512/all.css
 test -s domains/phucthinhsolar.com/public_html/assets/fonts/awesome/fa-solid-900.woff2
 test -s domains/phucthinhsolar.com/public_html/assets/fonts/awesome/fa-brands-400.woff2

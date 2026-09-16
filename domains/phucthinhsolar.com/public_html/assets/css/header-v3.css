@@ -15,8 +15,8 @@
 .pts-header-v3 .pts-header-primary{position:relative;background:linear-gradient(112deg,#061537 0%,#0a2251 64%,#0e2e68 100%)!important;overflow:visible}
 .pts-header-v3 .pts-header-primary:before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 30% -80%,rgba(225,185,79,.18),transparent 40%),linear-gradient(100deg,transparent 72%,rgba(255,255,255,.035))}
 .pts-header-v3 .pts-header-primary>.wrap-content{position:relative;display:grid!important;grid-template-columns:minmax(220px,280px) minmax(360px,1fr) auto;align-items:center;gap:34px!important;min-height:98px!important;padding-top:12px!important;padding-bottom:11px!important}
-.pts-header-v3 .logo-header{position:relative;justify-content:center;min-width:0;padding:12px 20px;border:1px solid rgba(255,255,255,.2);border-radius:4px;background:rgba(255,255,255,.96);box-shadow:0 14px 30px rgba(1,8,25,.22),inset 4px 0 0 var(--pts-gold)}
-.pts-header-v3 .logo-header:after{content:"";position:absolute;right:12px;bottom:8px;width:34px;height:2px;background:var(--pts-gold-metal);border-radius:2px;opacity:.75}
+.pts-header-v3 .logo-header{position:relative;justify-content:center;min-width:0;padding:6px 0;border:0;border-radius:0;background:transparent;box-shadow:none}
+.pts-header-v3 .logo-header:after{display:none;content:none}
 .pts-header-v3 .logo-header picture{display:flex;align-items:center;justify-content:center;width:100%}
 .pts-header-v3 .logo-header img{display:block;width:auto!important;max-width:220px!important;max-height:52px!important;object-fit:contain}
 
@@ -82,11 +82,20 @@
 
 @media(max-width:1500px){
   .pts-header-v3 .pts-header-primary>.wrap-content{grid-template-columns:220px minmax(310px,1fr) auto;gap:24px!important}
-  .pts-header-v3 .logo-header{padding:11px 15px}
+  .pts-header-v3 .logo-header{padding:6px 0}
   .pts-header-v3 .logo-header img{max-width:190px!important}
   .pts-header-nav .menu>div>ul>li.menu-catalog{flex-basis:220px;margin-right:8px}
   .pts-header-nav .menu>div>ul>li>a{padding-left:11px!important;padding-right:11px!important;font-size:13.5px!important}
   .hdr-warranty span{display:none}
+}
+@media(min-width:1800px){
+  .pts-header-v3 .pts-header-primary>.wrap-content{grid-template-columns:290px minmax(520px,1fr) auto;gap:42px!important;min-height:104px!important}
+  .pts-header-v3 .logo-header img{max-width:230px!important}
+  .hdr-search-zone{max-width:860px}
+  .pts-header-nav>.wrap-content{gap:38px;min-height:54px}
+  .pts-header-nav .menu>div>ul>li.menu-catalog{flex-basis:280px;margin-right:24px}
+  .pts-header-nav .menu>div>ul>li>a{padding-right:19px!important;padding-left:19px!important;font-size:16px!important}
+  .hdr-warranty{font-size:13px}
 }
 @media(max-width:1280px){
   .pts-header-v3 .pts-header-primary>.wrap-content{grid-template-columns:195px minmax(280px,1fr) auto;gap:18px!important}
@@ -108,7 +117,7 @@
   .top-utility-promise{font-size:11px}
   .pts-header-v3 .pts-header-primary>.wrap-content{display:flex!important;gap:13px!important;min-height:74px!important;padding-top:10px!important;padding-bottom:10px!important}
   .pts-header-v3 .btn-mmenu{flex:0 0 40px}
-  .pts-header-v3 .logo-header{margin-right:auto;min-width:0;padding:8px 12px;border-radius:4px}
+  .pts-header-v3 .logo-header{margin-right:auto;min-width:0;padding:4px 0;border-radius:0}
   .pts-header-v3 .logo-header img{max-width:145px!important;max-height:42px!important}
   .hdr-search-zone{display:none}
   .pts-header-v3 .header-right-style{flex:none;gap:12px!important}
@@ -127,7 +136,7 @@
   .top-utility-bar .wrap-content{justify-content:center!important}
   .top-utility-promise{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .pts-header-v3 .pts-header-primary>.wrap-content{gap:9px!important}
-  .pts-header-v3 .logo-header{padding:7px 10px;box-shadow:none}
+  .pts-header-v3 .logo-header{padding:3px 0;box-shadow:none}
   .pts-header-v3 .logo-header img{max-width:116px!important;max-height:36px!important}
   .pts-header-v3 .hdr-call{padding-right:8px;border-right:0}
   .pts-header-v3 .header-right-style{gap:11px!important}

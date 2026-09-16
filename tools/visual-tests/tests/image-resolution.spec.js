@@ -17,7 +17,7 @@ test.beforeEach(async ({ page }) => {
 // Khoảng giữa để dành cho màn retina và các khác biệt bố cục nhỏ.
 const PAGES = [
   ['trang chủ', '/'],
-  ['về chúng tôi', '/ve-chung-toi/'],
+  ['giới thiệu', '/gioi-thieu/'],
   ['danh sách sản phẩm', '/san-pham/'],
   ['giải pháp', '/giai-phap/'],
   ['dự án', '/du-an-da-thuc-hien/'],
@@ -25,6 +25,20 @@ const PAGES = [
   ['đại lý', '/dai-ly'],
   ['liên hệ', '/lien-he/'],
 ];
+
+async function waitForImages(page) {
+  // Một plugin/lazy loader bên thứ ba có thể để lại request ảnh ở trạng thái
+  // pending vô hạn. Giới hạn thời gian chờ để audit vẫn đo được các ảnh đã tải
+  // và không treo cả suite vì một tài nguyên không quan trọng.
+  await page.evaluate(async () => {
+    const pending = Array.from(document.images).filter(image => !image.complete);
+    const settled = Promise.all(pending.map(image => new Promise(done => {
+      image.addEventListener('load', done, { once: true });
+      image.addEventListener('error', done, { once: true });
+    })));
+    await Promise.race([settled, new Promise(done => setTimeout(done, 3000))]);
+  });
+}
 
 async function measureImages(page) {
   return page.evaluate(() => {
@@ -59,13 +73,7 @@ for (const [label, path] of PAGES) {
       }
       window.scrollTo(0, 0);
     });
-    await page.evaluate(async () => {
-      const pending = Array.from(document.images).filter(i => !i.complete);
-      await Promise.all(pending.map(i => new Promise(done => {
-        i.addEventListener('load', done, { once: true });
-        i.addEventListener('error', done, { once: true });
-      })));
-    });
+    await waitForImages(page);
 
     const images = await measureImages(page);
     expect(images.length, 'trang phải có ảnh để đo').toBeGreaterThan(0);
@@ -84,13 +92,7 @@ for (const [label, path] of PAGES) {
   test(`ảnh trên ${label} không tải thừa dung lượng`, async ({ page, isMobile }) => {
     test.skip(isMobile, 'Ảnh dùng chung cho mọi khung hình; chỉ đo lãng phí ở desktop.');
     await page.goto(path, { waitUntil: 'domcontentloaded' });
-    await page.evaluate(async () => {
-      const pending = Array.from(document.images).filter(i => !i.complete);
-      await Promise.all(pending.map(i => new Promise(done => {
-        i.addEventListener('load', done, { once: true });
-        i.addEventListener('error', done, { once: true });
-      })));
-    });
+    await waitForImages(page);
 
     const images = await measureImages(page);
     const wasteful = images.filter(i => i.ratio > 3.0);

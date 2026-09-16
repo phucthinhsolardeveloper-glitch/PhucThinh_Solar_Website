@@ -113,8 +113,7 @@
 	                </div>
 	                <?php } ?>
 	                <div class="<?=$contactVisual ? 'col-lg-5' : 'col-12'?> pts-contact-intro-copy">
-	                    <span class="pts-contact-intro-eyebrow">LIÊN HỆ PHÚC THỊNH SOLAR</span>
-	                    <h2><?=htmlspecialchars($contactVisual ? $contactVisual['name'] : 'Liên hệ Phúc Thịnh Solar', ENT_QUOTES, 'UTF-8')?></h2>
+	                    <h1><?=htmlspecialchars($contactVisual ? $contactVisual['name'] : 'Liên hệ Phúc Thịnh Solar', ENT_QUOTES, 'UTF-8')?></h1>
 	                    <?php if($contactVisual && $contactVisual['desc'] !== '') { ?><p class="pts-contact-intro-desc"><?=htmlspecialchars($contactVisual['desc'], ENT_QUOTES, 'UTF-8')?></p><?php } ?>
 	                    <p class="pts-contact-company">Công ty TNHH Công Nghệ - Thương Mại và Dịch Vụ Phúc Thịnh Solar</p>
 	                    <ul class="custContContact mb-4">
@@ -136,7 +135,7 @@
                             <form action="" method="post" class="wpcf7-form init" data-status="init">
                                 <input type="hidden" name="form_csrf" value="<?=htmlspecialchars(formCsrfToken(), ENT_QUOTES, 'UTF-8')?>">
                                 <div class="inf_default_form">
-                                    <h4 class="title">Gửi tin nhắn cho chúng tôi</h4>
+                                    <h2 class="title">Gửi tin nhắn cho chúng tôi</h2>
                                     <p class="des">Chúng tôi sẵn sàng phục vụ bạn!</p>
                                     <ul>
                                         <li class="inf_default_row inf_row_half">

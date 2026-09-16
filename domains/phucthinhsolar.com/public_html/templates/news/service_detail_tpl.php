@@ -4,6 +4,10 @@ $solutionDetailName = solutionHubField($rowDetail, 'name', $lang);
 $solutionDetailDesc = solutionHubField($rowDetail, 'desc', $lang);
 $solutionDetailImage = solutionHubImage(isset($rowDetail['photo1']) ? $rowDetail['photo1'] : '', UPLOAD_NEWS_L)
     ?: solutionHubImage(isset($rowDetail['photo']) ? $rowDetail['photo'] : '', UPLOAD_NEWS_L);
+$solutionDetailFallbackKey = solutionHubField($rowDetail, 'slug', 'vi');
+if(!$solutionDetailImage && isset($solutionFallbackImages[$solutionDetailFallbackKey]) && is_file(ROOT.$solutionFallbackImages[$solutionDetailFallbackKey])) {
+    $solutionDetailImage = $solutionFallbackImages[$solutionDetailFallbackKey];
+}
 $solutionDetailContent = !empty($rowDetail['content'.$lang])
     ? htmlspecialchars_decode($rowDetail['content'.$lang], ENT_QUOTES)
     : (!empty($rowDetail['contentvi']) ? htmlspecialchars_decode($rowDetail['contentvi'], ENT_QUOTES) : '');
@@ -25,7 +29,7 @@ $solutionDetailExtra = !empty($rowDetail['content1'.$lang])
                 </div>
                 <?php if($solutionDetailImage) { ?>
                 <figure class="pts-sd-hero-media">
-                    <img src="<?=$solutionEscape(ASSET.THUMBS.'/1600x1000x1/'.$solutionDetailImage)?>" alt="<?=$solutionEscape($solutionDetailName)?>" width="1600" height="1000" fetchpriority="high">
+                    <img src="<?=$solutionEscape($func->getThumbUrl('1600x1000x1', $solutionDetailImage))?>" alt="<?=$solutionEscape($solutionDetailName)?>" width="1600" height="1000" fetchpriority="high">
                 </figure>
                 <?php } ?>
             </div>
@@ -90,7 +94,7 @@ $solutionDetailExtra = !empty($rowDetail['content1'.$lang])
                         $solutionCategoryImage = solutionHubImage($solutionCategory['photo'], UPLOAD_PRODUCT_L);
                     ?>
                     <a class="pts-sh-equipment-link" href="<?=$solutionEscape(publicProductCategoryPath($solutionCategory, 'list', $solutionCategoryLang))?>">
-                        <?php if($solutionCategoryImage) { ?><img src="<?=$solutionEscape(ASSET.THUMBS.'/160x160x2/'.$solutionCategoryImage)?>" alt="" width="80" height="80" loading="lazy" decoding="async"><?php } ?>
+                        <?php if($solutionCategoryImage) { ?><img src="<?=$solutionEscape($func->getThumbUrl('160x160x2', $solutionCategoryImage))?>" alt="" width="80" height="80" loading="lazy" decoding="async"><?php } ?>
                         <span><strong><?=$solutionEscape(solutionHubField($solutionCategory, 'name', $lang))?></strong><?php if(solutionHubField($solutionCategory, 'desc', $lang) !== '') { ?><small><?=$solutionEscape(solutionHubField($solutionCategory, 'desc', $lang))?></small><?php } ?></span>
                         <span class="pts-sh-equipment-arrow" aria-hidden="true">→</span>
                     </a>
@@ -104,7 +108,7 @@ $solutionDetailExtra = !empty($rowDetail['content1'.$lang])
     <?php if($solutionShowCta) { ?>
     <section class="pts-sh-contact" aria-labelledby="solution-contact-title">
         <div class="uk-container"><div class="pts-sh-contact-band">
-            <?php if($solutionCtaImage) { ?><img class="pts-sh-contact-background" src="<?=$solutionEscape(ASSET.THUMBS.'/1600x500x1/'.$solutionCtaImage)?>" alt="" width="1600" height="500" loading="lazy" decoding="async"><?php } ?>
+            <?php if($solutionCtaImage) { ?><img class="pts-sh-contact-background" src="<?=$solutionEscape($func->getThumbUrl('1600x500x1', $solutionCtaImage))?>" alt="" width="1600" height="500" loading="lazy" decoding="async"><?php } ?>
             <div class="pts-sh-contact-copy"><h2 id="solution-contact-title"><?=$solutionEscape($solutionCtaTitle)?></h2><p><?=$solutionEscape($solutionCtaDesc)?></p></div>
             <div class="pts-sh-contact-actions">
                 <a class="pts-sh-consult" href="#ptsContactModal" data-toggle="modal" data-target="#ptsContactModal"><?=$solutionEscape($solutionCtaButton)?> <span aria-hidden="true">→</span></a>

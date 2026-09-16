@@ -4,6 +4,8 @@
  * - catalog-campaign: banner ngắt catalog sản phẩm
  * - contact-visual: ảnh tư vấn trang Liên hệ
  * - dealer-hero: ảnh năng lực phân phối trang Đại lý
+ * - product-category-hero: banner ảnh của từng danh mục sản phẩm
+ * - home-proof-background: nền dải chứng nhận trang chủ
  *
  * Chỉ nhóm đã có đủ bốn quyền `adv` mới nhận quyền mới. Mặc định dry-run;
  * --apply dùng transaction và có thể chạy lặp an toàn.
@@ -53,7 +55,9 @@ function siteVisualPhotoPermissions($type)
 $types = array(
     'catalog-campaign' => 'Banner giữa catalog sản phẩm',
     'contact-visual' => 'Ảnh tư vấn trang Liên hệ',
-    'dealer-hero' => 'Ảnh năng lực phân phối trang Đại lý'
+    'dealer-hero' => 'Ảnh năng lực phân phối trang Đại lý',
+    'product-category-hero' => 'Banner danh mục sản phẩm',
+    'home-proof-background' => 'Nền dải chứng nhận trang chủ'
 );
 $anchor = siteVisualPhotoPermissions('adv');
 $groups = $pdo->query("select id, name from `{$prefix}permission_group` order by id")

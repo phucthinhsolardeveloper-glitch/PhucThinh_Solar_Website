@@ -55,12 +55,12 @@
             </li>
 
             <li class="menu-about">
-                <a class="has-child <?php if($com=='gioi-thieu' || $com=='ve-chung-toi' || $com=='lien-he') echo 'active'; ?> transition" href="ve-chung-toi/" title="Giới thiệu">Giới thiệu</a>
+                <a class="has-child <?php if($com=='gioi-thieu' || $com=='ve-chung-toi' || $com=='lien-he') echo 'active'; ?> transition" href="gioi-thieu/" title="Giới thiệu">Giới thiệu</a>
                 <ul>
-                    <li><a class="transition" href="ve-chung-toi/#ve-phuc-thinh" title="Về Phúc Thịnh Solar">Về Phúc Thịnh Solar</a></li>
-                    <li><a class="transition" href="ve-chung-toi/#lich-su-phat-trien" title="Lịch sử phát triển">Lịch sử phát triển</a></li>
-                    <li><a class="transition" href="ve-chung-toi/#tam-nhin-su-menh" title="Tầm nhìn - Sứ mệnh">Tầm nhìn - Sứ mệnh</a></li>
-                    <li><a class="transition" href="ve-chung-toi/#about-certificates" title="Năng lực và chứng nhận">Năng lực &amp; chứng nhận</a></li>
+                    <li><a class="transition" href="gioi-thieu/#ve-phuc-thinh" title="Về Phúc Thịnh Solar">Về Phúc Thịnh Solar</a></li>
+                    <li><a class="transition" href="gioi-thieu/#lich-su-phat-trien" title="Lịch sử phát triển">Lịch sử phát triển</a></li>
+                    <li><a class="transition" href="gioi-thieu/#tam-nhin-su-menh" title="Tầm nhìn - Sứ mệnh">Tầm nhìn - Sứ mệnh</a></li>
+                    <li><a class="transition" href="gioi-thieu/#about-certificates" title="Năng lực và chứng nhận">Năng lực &amp; chứng nhận</a></li>
                     <li><a class="transition" href="lien-he/#he-thong-chi-nhanh" title="Hệ thống chi nhánh">Hệ thống chi nhánh</a></li>
                     <li><a class="transition" href="lien-he/#yeu-cau-tu-van" title="Liên hệ">Liên hệ</a></li>
                 </ul>

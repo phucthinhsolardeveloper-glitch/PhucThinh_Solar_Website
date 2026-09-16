@@ -1,12 +1,26 @@
 # Current status
 
-Cập nhật gần nhất: 2026-09-15. Phần lớn nội dung bên dưới (tới dòng "Checkout
+Cập nhật gần nhất: 2026-09-16. Phần lớn nội dung bên dưới (tới dòng "Checkout
 idempotency local") là log tích lũy từ trước 2026-09-06 và mới ở Git + Docker
 local tại thời điểm ghi — KHÔNG tự suy ra các mục đó đã lên production chỉ vì
 đợt 2026-09-08/09 đã bắt đầu deploy thật (xem mục riêng bên dưới); mỗi mục cũ
 giữ nguyên phạm vi "local" như lúc viết trừ khi có ghi chú deploy production
 rõ ràng. Trạng thái dữ liệu trống đã được chủ project xác nhận là do chưa có
 nguồn thật; không coi đó là blocker kỹ thuật và không tự lấp.
+
+## 2026-09-16: WebP, ảnh showroom và media responsive local, chưa deploy
+
+- Docker PHP 7.4 đã có GD WebP + `cwebp`; frontend tự ưu tiên WebP cho thumbnail
+  JPG/PNG, tự fallback ảnh gốc nếu hosting thiếu codec và giữ ảnh gốc sau upload.
+- Có CLI `scripts/optimize-webp.php` chạy file/thư mục theo dry-run; 18 ảnh
+  marketing đang dùng đã giảm tổng dung lượng 41,9% mà không xóa JPG nguồn.
+- Trang Giới thiệu dùng ảnh showroom thật do chủ project cung cấp: WebP 1920 px,
+  WebP 960 px cho mobile và JPEG fallback. Migration 043 đóng gói asset + cập nhật
+  DB theo điều kiện, mặc định chỉ preview và có rollback không xóa file.
+- 10 banner danh mục đã được rà đúng ngữ cảnh; ba card Giải pháp từng thiếu ảnh đã
+  có minh họa; dải chứng nhận trang chủ có nền quản trị được và bản quét lớn hơn.
+- Media regression đạt 28/28 desktop/mobile. Full pre-deploy gồm 113 màn Admin,
+  503 route, security, form và commerce đã đạt; chưa ghi/deploy production.
 
 ## 2026-09-15: nội dung và điều hướng Giải pháp local, chưa deploy
 
@@ -17,8 +31,22 @@ nguồn thật; không coi đó là blocker kỹ thuật và không tự lấp.
 - Đã nhập có transaction toàn bộ nội dung Markdown do chủ project cung cấp vào
   CKEditor local: một landing, năm bài chi tiết, SEO và CTA dùng chung. Backup
   trước import: `backup/local/20260915-144101`. Không ghi production.
-- Playwright Giải pháp đạt 8/8 trên desktop/mobile, gồm URL cũ chuyển 301. Chi
+- Playwright Giải pháp đạt 10/10 trên desktop/mobile, gồm URL cũ chuyển 301. Chi
   tiết xem `docs/13-handoffs/2026-09-15-solution-content-routing-report.md`.
+
+## 2026-09-15: audit Admin, GUI và responsive local, chưa deploy
+
+- Trang Đại lý đã bỏ khoảng trắng sau breadcrumb, thu gọn hero, cân lại form/nội
+  dung và giữ H1 kể cả khi Admin tắt ảnh hero.
+- Container/header/card được mở rộng theo Full HD, 2K và màn hình rộng; ma trận
+  360–2560 px phủ năm hành trình public, kiểm tra cả tràn ngang, breakpoint, logo,
+  lưới sản phẩm và form Đại lý.
+- Quét 113/113 màn Admin, 248 quyền và 503 route đạt; các form/commerce/security
+  preflight local đạt. Không ghi production.
+- Bài Tin tức tự loại cover khi CKEditor đã có cùng hình; nội dung Giải pháp được
+  đơn giản hóa về giọng chính thức Phúc Thịnh Solar.
+- Chi tiết test, rủi ro nội dung và deploy/rollback xem
+  `docs/10-audits/2026-09-15-admin-gui-responsive-audit.md`.
 
 ## 2026-09-12 → 2026-09-14: hoàn tất redesign local, chưa deploy
 

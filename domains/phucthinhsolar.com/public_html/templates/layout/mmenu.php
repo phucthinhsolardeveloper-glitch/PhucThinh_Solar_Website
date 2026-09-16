@@ -47,12 +47,12 @@
             </li>
 
             <li class="menu-about">
-                <a class="<?php if($com=='gioi-thieu' || $com=='ve-chung-toi' || $com=='lien-he') echo 'active'; ?> transition" href="ve-chung-toi/" title="Giới thiệu">Giới thiệu</a>
+                <a class="<?php if($com=='gioi-thieu' || $com=='ve-chung-toi' || $com=='lien-he') echo 'active'; ?> transition" href="gioi-thieu/" title="Giới thiệu">Giới thiệu</a>
                 <ul>
-                    <li><a href="ve-chung-toi/#ve-phuc-thinh">Về Phúc Thịnh Solar</a></li>
-                    <li><a href="ve-chung-toi/#lich-su-phat-trien">Lịch sử phát triển</a></li>
-                    <li><a href="ve-chung-toi/#tam-nhin-su-menh">Tầm nhìn - Sứ mệnh</a></li>
-                    <li><a href="ve-chung-toi/#about-certificates">Năng lực &amp; chứng nhận</a></li>
+                    <li><a href="gioi-thieu/#ve-phuc-thinh">Về Phúc Thịnh Solar</a></li>
+                    <li><a href="gioi-thieu/#lich-su-phat-trien">Lịch sử phát triển</a></li>
+                    <li><a href="gioi-thieu/#tam-nhin-su-menh">Tầm nhìn - Sứ mệnh</a></li>
+                    <li><a href="gioi-thieu/#about-certificates">Năng lực &amp; chứng nhận</a></li>
                     <li><a href="lien-he/#he-thong-chi-nhanh">Hệ thống chi nhánh</a></li>
                     <li><a href="lien-he/#yeu-cau-tu-van">Liên hệ</a></li>
                 </ul>

@@ -145,32 +145,43 @@
 .pts-solution-editorial figure{margin:32px 0;}
 .pts-solution-editorial figcaption{margin-top:9px;color:var(--sh-muted);font-size:13px;text-align:center;}
 .pts-solution-editorial blockquote{margin:30px 0!important;padding:24px 26px!important;border:0!important;border-radius:3px;background:#f2f5f9;color:var(--sh-navy);font-size:18px;font-weight:700;}
+/* 2026-09-16: <code> trong nội dung là sơ đồ luồng ("Điện mặt trời → Bộ biến
+   tần → ..."), chuỗi dài không có dấu cách ngắt được nên tràn ra ngoài viewport
+   trên mobile. Cho ngắt dòng mềm (dễ đọc khi đang đọc bài) thay vì cuộn ngang,
+   và hiển thị dạng khối để mũi tên không dính vào câu văn xung quanh. */
+.pts-solution-editorial code{display:block;max-width:100%;margin:6px 0;padding:12px 14px;border-radius:3px;background:#f2f5f9;color:var(--sh-navy);font-size:15px;line-height:1.7;overflow-wrap:anywhere;word-break:break-word;}
 .pts-solution-editorial table{width:100%!important;margin:30px 0;border-collapse:collapse;background:#fff;}
 .pts-solution-editorial th,.pts-solution-editorial td{padding:13px 10px!important;border:0!important;border-bottom:1px solid #dfe5ed!important;text-align:left;vertical-align:top;}
 .pts-solution-editorial th{color:var(--sh-navy);font-weight:800;}
 
 .pts-solution-detail{padding-top:0;}
-.pts-sd-hero{padding:42px 0 36px;background:#fff;}
-.pts-sd-hero-grid{display:grid;grid-template-columns:minmax(0,.9fr) minmax(440px,1.1fr);align-items:center;gap:54px;}
+.pts-sd-hero{padding:34px 0 0;background:#fff;}
+.pts-sd-hero-grid{display:grid;grid-template-columns:minmax(0,.9fr) minmax(440px,1.1fr);align-items:stretch;min-height:440px;overflow:hidden;border-radius:3px;background:var(--sh-navy);}
 .pts-sd-hero-grid.is-text-only{grid-template-columns:1fr;}
-.pts-sd-hero-grid.is-text-only .pts-sd-hero-copy{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);grid-template-rows:auto auto;column-gap:72px;align-items:start;}
+.pts-sd-hero-copy{display:flex;flex-direction:column;justify-content:center;padding:clamp(38px,4.3vw,68px);}
+.pts-sd-hero-grid.is-text-only .pts-sd-hero-copy{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);grid-template-rows:auto auto;column-gap:72px;align-items:center;}
 .pts-sd-hero-grid.is-text-only h1{grid-column:1;grid-row:1 / span 2;max-width:600px;margin-bottom:0!important;}
 .pts-sd-hero-grid.is-text-only .pts-sd-lead{grid-column:2;grid-row:1;max-width:none;}
 .pts-sd-hero-grid.is-text-only .pts-sd-actions{grid-column:2;grid-row:2;}
+.pts-sd-hero .pts-sd-hero-copy h1{color:#fff!important;}
 .pts-sd-context{margin:0 0 14px!important;color:#97661f;font-size:13px!important;line-height:1.5!important;font-weight:800;text-transform:uppercase;letter-spacing:.065em;}
-.pts-sd-lead{max-width:650px;margin:0!important;color:var(--sh-muted);font-size:18px!important;line-height:1.72!important;}
+.pts-sd-lead{max-width:650px;margin:0!important;color:#dbe4f1;font-size:18px!important;line-height:1.72!important;}
 .pts-sd-actions{display:flex;align-items:center;gap:24px;margin-top:27px;}
-.pts-sd-explore{color:var(--sh-navy)!important;font-size:15px;font-weight:800;}
-.pts-sd-hero-media{aspect-ratio:8/5;overflow:hidden;border-radius:3px;}
+.pts-sd-explore{color:#fff!important;font-size:15px;font-weight:800;}
+.pts-sd-hero-media{position:relative;min-height:440px;overflow:hidden;}
+.pts-sd-hero-media:after{position:absolute;inset:0 auto 0 0;width:18%;background:linear-gradient(90deg,rgba(7,27,70,.48),transparent);content:"";pointer-events:none;}
 .pts-sd-hero-media img{display:block;width:100%!important;height:100%!important;object-fit:cover;}
-.pts-sd-switcher{padding:0 0 26px;background:#fff;}
+.pts-sd-switcher{padding:18px 0 26px;background:#fff;}
 .pts-sd-switcher>div{display:flex;align-items:center;gap:10px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
 .pts-sd-switcher>div::-webkit-scrollbar{display:none;}
 .pts-sd-switcher a{flex:none;padding:9px 13px;color:#485970!important;font-size:14px;font-weight:750;white-space:nowrap;}
 .pts-sd-switcher a.is-active{border-radius:3px;background:var(--sh-navy);color:#fff!important;}
 .pts-sd-switcher-all{padding-left:0!important;color:var(--sh-navy)!important;font-weight:850!important;}
-.pts-sd-body{padding:48px 0 42px;background:#fff;scroll-margin-top:118px;}
-.pts-sd-content-grid{display:grid;grid-template-columns:190px minmax(0,820px);justify-content:center;gap:96px;align-items:start;}
+/* 2026-09-16: bỏ nền xanh nhạt #eef3f8 hai bên khối nội dung theo yêu cầu
+   chủ project - nền trắng đồng nhất toàn site, khối nội dung tự phân tách
+   bằng khoảng trắng và mục lục bên trái. */
+.pts-sd-body{padding:56px 0 54px;background:#fff;scroll-margin-top:118px;}
+.pts-sd-content-grid{display:grid;grid-template-columns:250px minmax(0,820px);justify-content:center;gap:72px;align-items:start;}
 .pts-sd-toc{position:sticky;top:124px;margin:0!important;padding:0!important;background:transparent!important;}
 .pts-sd-toc>strong{display:block;margin-bottom:14px;color:var(--sh-navy);font-size:14px;font-weight:850;}
 .pts-sd-toc .toc-list{margin:0!important;padding:0!important;list-style:none!important;counter-reset:none!important;}
@@ -179,7 +190,20 @@
 .pts-sd-toc .toc-list ol{margin:8px 0 0 12px!important;padding:0!important;list-style:none!important;}
 .pts-sd-toc a{display:block;color:#607087!important;font-size:13px;font-weight:650;line-height:1.45;cursor:pointer;}
 .pts-sd-toc a:hover{color:#97661f!important;}
-.pts-sd-content-grid .pts-solution-editorial{width:100%;max-width:none;margin:0;}
+/* 2026-09-16: landing /giai-phap/ dùng CHUNG kiểu mục lục navy với trang chi
+   tiết. Trước đó landing rơi vào .pts-sd-toc nền transparent nên mục lục gần
+   như vô hình, chủ project tưởng trang landing không có mục lục. */
+.pts-solution-detail .pts-sd-toc,
+.pts-sh-editorial-grid>.pts-sd-toc{max-height:calc(100vh - 150px);overflow-y:auto;overscroll-behavior:contain;padding:25px 23px!important;border-radius:3px;background:var(--sh-navy)!important;}
+.pts-solution-detail .pts-sd-toc>strong,
+.pts-sh-editorial-grid>.pts-sd-toc>strong{color:#efc45b;}
+.pts-solution-detail .pts-sd-toc a,
+.pts-sh-editorial-grid>.pts-sd-toc a{padding:3px 0 3px 12px;border-left:2px solid transparent;color:#c9d5e6!important;}
+.pts-solution-detail .pts-sd-toc a:hover,.pts-solution-detail .pts-sd-toc a.is-active,
+.pts-sh-editorial-grid>.pts-sd-toc a:hover,.pts-sh-editorial-grid>.pts-sd-toc a.is-active{border-left-color:#e0aa36;color:#fff!important;}
+.pts-solution-detail .pts-sd-toc .toc-list ol,
+.pts-sh-editorial-grid>.pts-sd-toc .toc-list ol{margin-left:8px!important;}
+.pts-sd-content-grid .pts-solution-editorial{width:100%;max-width:none;margin:0;padding:46px 52px 56px;background:#fff;}
 .pts-sd-extra{margin-top:42px;padding-top:12px;}
 .pts-sd-gallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-top:42px;}
 .pts-sd-gallery a{display:block;aspect-ratio:8/5;overflow:hidden;border-radius:3px;}
@@ -189,17 +213,30 @@
 .pts-solution-detail .pts-sh-contact{padding-bottom:56px;}
 
 @media(max-width:900px){
- .pts-sd-hero-grid{grid-template-columns:1fr;gap:28px;}
+ .pts-sd-hero-grid{grid-template-columns:1fr;min-height:0;}
  .pts-sd-hero-grid.is-text-only .pts-sd-hero-copy{display:block;}
  .pts-sd-hero-grid.is-text-only h1{max-width:none;margin-bottom:18px!important;}
- .pts-sd-hero-media{max-height:480px;}
- .pts-sd-content-grid{grid-template-columns:1fr;gap:28px;}
- .pts-sh-editorial-grid{grid-template-columns:1fr;gap:28px;}
+ .pts-sd-hero-media{min-height:0;aspect-ratio:16/9;}
+ .pts-sd-hero-media:after{inset:0 0 auto;width:100%;height:18%;background:linear-gradient(180deg,rgba(7,27,70,.42),transparent);}
+ /* 2026-09-16: BẮT BUỘC minmax(0,1fr) + min-width:0, không dùng 1fr trần.
+    Grid item mặc định min-width:auto nên cột 1fr bị "blow out" theo min-content
+    của mục lục (link tiêu đề dài, không ngắt được): cột phình 651px trong khi
+    container chỉ 311px, làm mục lục và nội dung bài chi tiết lệch âm ra ngoài
+    viewport (x=-138) và cắt mất chữ bên trái trên mobile. */
+ .pts-sd-content-grid{grid-template-columns:minmax(0,1fr);gap:22px;}
+ .pts-sh-editorial-grid{grid-template-columns:minmax(0,1fr);gap:28px;}
+ .pts-sd-content-grid>*,
+ .pts-sh-editorial-grid>*{min-width:0;}
  .pts-sd-toc{display:none!important;position:static;}
  .pts-sd-toc .toc-list{columns:2;column-gap:24px;}
+ .pts-solution-detail .pts-sd-toc,
+ .pts-sh-editorial-grid>.pts-sd-toc{display:block!important;max-height:none;overflow:visible;}
+ .pts-solution-detail .pts-sd-toc .toc-list,
+ .pts-sh-editorial-grid>.pts-sd-toc .toc-list{max-height:220px;overflow-y:auto;overscroll-behavior:contain;columns:1;}
 }
 @media(max-width:520px){
- .pts-sd-hero{padding:28px 0 24px;}
+ .pts-sd-hero{padding:20px 0 0;}
+ .pts-sd-hero-copy{padding:30px 24px 32px;}
  .pts-sd-context{font-size:12px!important;}
  .pts-sd-lead{font-size:16px!important;}
  .pts-sd-actions{align-items:stretch;flex-direction:column;gap:15px;}
@@ -208,6 +245,8 @@
  .pts-sd-switcher a{padding:8px 10px;}
  .pts-sd-body{padding:34px 0 30px;}
  .pts-sd-toc .toc-list{columns:1;}
+ .pts-solution-detail .pts-sd-toc{padding:21px 19px!important;}
+ .pts-sd-content-grid .pts-solution-editorial{padding:32px 22px 40px;}
  .pts-solution-editorial{font-size:16px;line-height:1.72;}
  .pts-solution-editorial>h2{margin-top:42px!important;font-size:25px!important;}
  .pts-solution-editorial h3{font-size:19px!important;}

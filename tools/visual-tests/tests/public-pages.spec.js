@@ -6,7 +6,8 @@ const routes = [
   ['solutions', '/giai-phap/'],
   ['projects', '/du-an-da-thuc-hien/'],
   ['news', '/tin-tuc/'],
-  ['about', '/ve-chung-toi/'],
+  ['about', '/gioi-thieu/'],
+  ['dealer', '/dai-ly/'],
   ['contact', '/lien-he/']
 ];
 

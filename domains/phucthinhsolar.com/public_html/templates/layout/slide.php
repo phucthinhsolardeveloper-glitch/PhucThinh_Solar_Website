@@ -96,7 +96,7 @@
         foreach($heroBgList as $heroBgItem)
         {
             if(empty($heroBgItem['photo'])) continue;
-            $heroBgUrls[] = THUMBS.'/1920x900x1/'.UPLOAD_PHOTO_L.$heroBgItem['photo'];
+            $heroBgUrls[] = $func->getThumbUrl('1920x900x1', UPLOAD_PHOTO_L.$heroBgItem['photo']);
         }
     }
 
@@ -193,7 +193,7 @@
                     <?php } ?>
                 </ul>
             <?php } ?>
-            <a class="pts-hero-trust-link" href="ve-chung-toi/">Xem chứng nhận <i class="fas fa-arrow-right"></i></a>
+            <a class="pts-hero-trust-link" href="gioi-thieu/">Xem chứng nhận <i class="fas fa-arrow-right"></i></a>
         </aside>
         <?php } ?>
     </div>
@@ -273,8 +273,8 @@
         <?php foreach($heroCarouselSlides as $heroSlideIndex => $heroSlideData) {
             $heroIsFirst = ($heroSlideIndex === 0);
             $heroSlideAlt = htmlspecialchars((string)$heroSlideData['alt'], ENT_QUOTES, 'UTF-8');
-            $heroDesktopSrc = ASSET.THUMBS.'/1920x900x1/'.UPLOAD_PHOTO_L.$heroSlideData['image'];
-            $heroMobileSrc = ASSET.THUMBS.'/900x1100x1/'.UPLOAD_PHOTO_L.$heroSlideData['image'];
+            $heroDesktopSrc = $func->getThumbUrl('1920x900x1', UPLOAD_PHOTO_L.$heroSlideData['image']);
+            $heroMobileSrc = $func->getThumbUrl('900x1100x1', UPLOAD_PHOTO_L.$heroSlideData['image']);
             /* Layout 3 dùng chung <h1> với layout 1/2 (chỉ 1 layout hiển thị tại
                1 thời điểm) - slide đầu vẫn dùng h1 để giữ đúng 1 H1/trang khi
                layout 3 là bản đang active; các slide sau dùng h2. */

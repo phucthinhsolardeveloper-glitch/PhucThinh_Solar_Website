@@ -1,5 +1,6 @@
 <?php
 	if(!defined('SOURCES')) die("Error");
+	$pageRendersVisibleH1 = true;
 
 	/* Xử lý submit-contact đã chuyển sang sources/allpage.php để form Liên hệ
 	   dùng được từ MỌI trang (popup toàn site), không chỉ riêng trang lien-he

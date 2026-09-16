@@ -651,4 +651,49 @@
 		if(!empty($titleMain)) $breadcr->set($com,$titleMain);
 		$breadcrumbs = $breadcr->get();
 	}
+
+	/* Banner danh mục: Admin có thể gán một ảnh 16:5 bằng trường Link chứa
+	   canonical path của danh mục. Mỗi nhóm có fallback đúng ngữ cảnh, nhưng
+	   một record Admin đã tắt vẫn được coi là đã cấu hình để công tắc Hiển thị
+	   không bị fallback tự bật lại. */
+	$productCategoryHero = array();
+	if($id == '')
+	{
+		$productCategoryPath = trim(parse_url(isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '', PHP_URL_PATH), '/');
+		$productCategoryHeroRows = $cache->get("select name$lang, desc$lang, link, photo, status from #_photo where type = ? order by numb,id desc", array('product-category-hero'), 'result', 7200);
+		$productCategoryHeroConfigured = false;
+		foreach($productCategoryHeroRows as $productCategoryHeroRow)
+		{
+			$productCategoryHeroLink = trim(parse_url((string)$productCategoryHeroRow['link'], PHP_URL_PATH), '/');
+			if($productCategoryHeroLink === '' || $productCategoryHeroLink !== $productCategoryPath) continue;
+			$productCategoryHeroConfigured = true;
+			if(empty($productCategoryHeroRow['photo']) || strpos(','.(string)$productCategoryHeroRow['status'].',', ',hienthi,') === false) break;
+			$productCategoryHero = array(
+				'photo' => $productCategoryHeroRow['photo'],
+				'upload' => UPLOAD_PHOTO_L,
+				'alt' => !empty($productCategoryHeroRow['name'.$lang]) ? $productCategoryHeroRow['name'.$lang] : $titleCate
+			);
+			break;
+		}
+		$productCategoryHeroFallbacks = array(
+			'danh-muc-san-pham/den-nlmt' => array('catalog-street-lighting.jpg', 'Chiếu sáng năng lượng mặt trời cho đường và công trình'),
+			'danh-muc-san-pham/bien-tan-inverter' => array('catalog-inverter-system-v2.jpg', 'Hệ thống biến tần điện mặt trời được lắp đặt gọn gàng'),
+			'danh-muc-san-pham/tam-pin-nang-luong-mat-troi' => array('catalog-solar-panel-mounting-v2.jpg', 'Tấm pin và hệ khung điện mặt trời trên mái công trình'),
+			'danh-muc-san-pham/tru-den' => array('catalog-lamp-posts-v2.jpg', 'Trụ đèn cổ điển và phụ kiện lắp đặt ngoài trời'),
+			'danh-muc-san-pham/den-san-vuon' => array('catalog-garden-lighting-v2.jpg', 'Không gian sân vườn sử dụng đèn năng lượng mặt trời'),
+			'danh-muc-san-pham/quat-nang-luong-mat-troi' => array('catalog-solar-fan-v3.jpg', 'Quạt đứng sử dụng năng lượng mặt trời cho không gian gia đình'),
+			'danh-muc-san-pham/bien-tan-bom' => array('catalog-solar-pump-v2.jpg', 'Hệ thống bơm nước sử dụng năng lượng mặt trời'),
+			'danh-muc-san-pham/thiet-bi-dien-nang-luong-mat-troi' => array('catalog-solar-electrical-accessories-v2.jpg', 'Dây dẫn, đầu nối và thiết bị bảo vệ cho hệ thống điện mặt trời'),
+			'danh-muc-san-pham/he-thong-khung-nhom' => array('catalog-solar-panel-mounting-v2.jpg', 'Hệ khung và phụ kiện lắp đặt tấm pin năng lượng mặt trời'),
+			'danh-muc-san-pham/pin-luu-tru' => array('catalog-battery-storage-v2.jpg', 'Hệ thống pin lưu trữ năng lượng cho gia đình và doanh nghiệp')
+		);
+		if(empty($productCategoryHero) && !$productCategoryHeroConfigured && isset($productCategoryHeroFallbacks[$productCategoryPath]))
+		{
+			$productCategoryHero = array(
+				'photo' => $productCategoryHeroFallbacks[$productCategoryPath][0],
+				'upload' => 'assets/images/site-visuals/',
+				'alt' => $productCategoryHeroFallbacks[$productCategoryPath][1]
+			);
+		}
+	}
 ?>

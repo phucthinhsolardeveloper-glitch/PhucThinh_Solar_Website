@@ -6,10 +6,11 @@ $nhExcerpt=mb_strlen($nhExcerpt,'UTF-8')>180 ? mb_substr($nhExcerpt,0,177,'UTF-8
 $nhMinutes=$nhText==='' ? 0 : max(1,(int)ceil(count(preg_split('/\s+/u',$nhText,-1,PREG_SPLIT_NO_EMPTY))/220));
 $nhGroup=isset($nhCategoryMap[(int)$nhArticle['id_list']]) ? $nhCategoryMap[(int)$nhArticle['id_list']] : array();
 $nhPhoto=solutionHubImage($nhArticle['photo'],UPLOAD_NEWS_L);
+$nhImageSize=strpos($nhCardClass,'nh-lead')!==false ? '900x506x1' : '600x338x1';
 ?>
 <a class="nh-card<?=$nhCardClass?>" href="<?=$nhEscape($nhArticle['slugvi'].'/')?>">
     <div class="nh-media">
-        <?php if($nhPhoto) { echo $func->getImage(array_merge(array('class'=>'nh-image','isLazy'=>false,'sizes'=>'900x506x1','upload'=>UPLOAD_NEWS_L,'image'=>$nhArticle['photo'],'alt'=>$nhName),watermarkImageArgs('news','900x506x1'))); } else { ?><span class="nh-placeholder" aria-hidden="true"><i class="fas fa-solar-panel"></i></span><?php } ?>
+        <?php if($nhPhoto) { echo $func->getImage(array_merge(array('class'=>'nh-image','isLazy'=>false,'sizes'=>$nhImageSize,'upload'=>UPLOAD_NEWS_L,'image'=>$nhArticle['photo'],'alt'=>$nhName),watermarkImageArgs('news',$nhImageSize))); } else { ?><span class="nh-placeholder" aria-hidden="true"><i class="fas fa-solar-panel"></i></span><?php } ?>
         <?php if($nhGroup) { ?><span class="nh-badge"><?=$nhEscape(solutionHubField($nhGroup,'name',$nhLang))?></span><?php } ?>
     </div>
     <div class="nh-card-copy">
@@ -22,4 +23,3 @@ $nhPhoto=solutionHubImage($nhArticle['photo'],UPLOAD_NEWS_L);
         <span class="nh-arrow" aria-hidden="true">→</span>
     </div>
 </a>
-

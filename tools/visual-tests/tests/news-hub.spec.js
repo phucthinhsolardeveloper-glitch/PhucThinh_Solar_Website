@@ -1,7 +1,39 @@
 const { test, expect } = require('@playwright/test');
-test('News gallery, pagination, categories, search and consultation', async ({ page }, info) => {
+
+// Giữ DOM tiếng Việt ổn định và loại nhiễu pageerror từ widget dịch bên thứ ba;
+// bản thân hub/bài viết Tin tức không phụ thuộc widget này để hoạt động.
+test.beforeEach(async ({ page }) => {
+  await page.route('https://cdn.gtranslate.net/**', route => route.abort());
+});
+
+test('News feature cards keep image, copy and action separated on wide screens', async ({ page }) => {
+  await page.setViewportSize({ width: 2048, height: 1080 });
+  await page.goto('/tin-tuc/', { waitUntil: 'domcontentloaded' });
+
+  const cards = await page.locator('.nh-secondary').evaluateAll(nodes => nodes.map(card => {
+    const media = card.querySelector('.nh-media').getBoundingClientRect();
+    const copy = card.querySelector('.nh-card-copy').getBoundingClientRect();
+    const arrow = card.querySelector('.nh-arrow').getBoundingClientRect();
+    return {
+      mediaRight: media.right,
+      copyLeft: copy.left,
+      copyRight: copy.right,
+      arrowLeft: arrow.left,
+      arrowRight: arrow.right,
+    };
+  }));
+
+  expect(cards).toHaveLength(2);
+  for (const card of cards) {
+    expect(card.mediaRight).toBeLessThanOrEqual(card.copyLeft + 1);
+    expect(card.arrowLeft).toBeGreaterThanOrEqual(card.copyLeft);
+    expect(card.arrowRight).toBeLessThan(card.copyRight - 24);
+  }
+});
+
+test('News gallery, pagination, categories, search and consultation', async ({ page }) => {
   const errors=[];
-  page.on('pageerror', e=>errors.push(e.message));
+  page.on('pageerror', e=>errors.push({ message: e.message, stack: e.stack }));
   await page.goto('/tin-tuc/', {waitUntil:'domcontentloaded'});
   await expect(page.locator('main.pts-news-hub')).toBeVisible();
   await expect(page.locator('h1')).toHaveCount(1);
@@ -14,9 +46,11 @@ test('News gallery, pagination, categories, search and consultation', async ({ p
     await expect.poll(()=>img.evaluate(e=>e.complete && e.naturalWidth>0)).toBe(true);
   }
   await page.evaluate(()=>window.scrollTo(0,0));
-  await page.screenshot({path:info.outputPath('news-hub.png'),fullPage:true});
   expect(await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
-  await page.locator('.nh-pagination [rel=next]').click();
+  await Promise.all([
+    page.waitForURL(url=>url.searchParams.get('p')==='2'),
+    page.locator('.nh-pagination [rel=next]').click()
+  ]);
   await expect(page.locator('.nh-featured')).toHaveCount(0);
   const second=await page.locator('.nh-grid .nh-card').evaluateAll(es=>es.map(e=>e.getAttribute('href')));
   expect(second.length).toBeGreaterThan(0);
@@ -24,11 +58,18 @@ test('News gallery, pagination, categories, search and consultation', async ({ p
   await page.goto('/tin-tuc/');
   const category=page.locator('.nh-filter').nth(1);
   const categoryName=await category.innerText();
-  await category.click();
+  const categoryHref=await category.getAttribute('href');
+  await Promise.all([
+    page.waitForURL(url=>url.pathname.endsWith('/'+categoryHref.replace(/^\//,''))),
+    category.click()
+  ]);
   await expect(page.locator('.nh-filter.is-active')).toContainText(categoryName.trim());
   await expect(page.locator('.nh-featured')).toHaveCount(0);
   await page.locator('#nh-search-input').fill('zz-no-match-pts-2026');
-  await page.locator('.nh-search button').click();
+  await Promise.all([
+    page.waitForURL(url=>url.searchParams.get('q')==='zz-no-match-pts-2026'),
+    page.locator('.nh-search button').click()
+  ]);
   await expect(page.locator('.nh-empty')).toBeVisible();
   await expect(page.locator('meta[name=robots]')).toHaveAttribute('content','noindex,follow');
   await expect(page.locator('#nh-search-input')).toHaveValue('zz-no-match-pts-2026');

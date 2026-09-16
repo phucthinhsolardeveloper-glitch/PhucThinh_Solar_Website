@@ -1,5 +1,6 @@
 <?php
 	if(!defined('SOURCES')) die("Error");
+	$pageRendersVisibleH1 = true;
 
     /*
      * Trang Về chúng tôi dùng lại các module Admin đang có. Không đọc hai
@@ -87,6 +88,11 @@
         return trim(preg_replace('/\s+/u', ' ', $value));
     };
 
+    $aboutImageExists = static function($filename, $uploadPath) {
+        $filename = (string)$filename;
+        return $filename !== '' && basename($filename) === $filename && is_file($uploadPath.$filename);
+    };
+
     $aboutSentences = static function($value, $limit = 1) use ($aboutPlainText) {
         $plain = $aboutPlainText($value);
         if($plain === '') return '';
@@ -115,7 +121,7 @@
     if(empty($aboutHistoryRecord)) $aboutHistoryRecord = $aboutStoryRecord;
 
     $aboutStoryEyebrow = $aboutUi['story_eyebrow'];
-    $aboutStoryTitle = !empty($aboutStoryRecord['title_index'.$lang]) ? $aboutPlainText($aboutStoryRecord['title_index'.$lang]) : $aboutUi['story_title'];
+    $aboutStoryTitle = ($lang === 'en') ? 'About Phuc Thinh Solar' : 'Giới thiệu Phúc Thịnh Solar';
     $aboutStoryIntro = '';
     if(!empty($aboutStoryRecord['desc'.$lang])) $aboutStoryIntro = $aboutPlainText($aboutStoryRecord['desc'.$lang]);
     if($aboutStoryIntro === '' && !empty($aboutStoryRecord['content'.$lang])) $aboutStoryIntro = $aboutSentences($aboutStoryRecord['content'.$lang], 2);
@@ -164,20 +170,18 @@
 
     $aboutPeopleImage = '';
     $aboutPeopleUpload = UPLOAD_PHOTO_L;
-    if(!empty($aboutPeopleRecord['photo'])) {
+    if(!empty($aboutPeopleRecord['photo']) && $aboutImageExists($aboutPeopleRecord['photo'], ROOT.UPLOAD_NEWS_L)) {
         $aboutPeopleImage = $aboutPeopleRecord['photo'];
         $aboutPeopleUpload = UPLOAD_NEWS_L;
     }
     foreach($aboutAdv as $advRow) {
-        if($aboutPeopleImage === '' && isset($advRow['link']) && $advRow['link'] === '#ptsContactModal' && !empty($advRow['photo'])) {
+        if($aboutPeopleImage === '' && isset($advRow['link']) && $advRow['link'] === '#ptsContactModal' && !empty($advRow['photo']) && $aboutImageExists($advRow['photo'], ROOT.UPLOAD_PHOTO_L)) {
             $aboutPeopleImage = $advRow['photo'];
             break;
         }
     }
-    if($aboutPeopleImage === '' && !empty($aboutHistoryRecord['photo'])) {
-        $aboutPeopleImage = $aboutHistoryRecord['photo'];
-        $aboutPeopleUpload = UPLOAD_NEWS_L;
-    }
+    /* Không lấy ảnh showroom làm ảnh nhân sự và không dựng người giả. Khi
+       Admin chưa có ảnh đội ngũ thật, section tự chuyển sang bố cục chỉ chữ. */
 
     /* Ba điểm nhấn dưới section Con người có module Admin riêng. Dữ liệu cũ
        chỉ làm fallback để giao diện không bị trống trước khi biên tập viên

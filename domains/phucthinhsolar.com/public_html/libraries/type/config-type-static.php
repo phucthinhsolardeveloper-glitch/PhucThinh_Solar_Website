@@ -21,7 +21,7 @@
     $nametype = "dai-ly-1";
     $config['static'][$nametype]['title_main'] = "Đại lý - Nội dung cạnh form đăng ký";
     $config['static'][$nametype]['check'] = array("hienthi" => "Hiển thị");
-    /* Ảnh đã tách sang photo type dealer-hero để có đúng tỷ lệ 8:5 và công
+    /* Ảnh đã tách sang photo type dealer-hero để có đúng tỷ lệ 16:5 và công
        tắc bật/tắt độc lập. Giữ file/dữ liệu ảnh legacy, không xoá. */
     $config['static'][$nametype]['images'] = false;
     $config['static'][$nametype]['namkinhnghiem'] = false;
@@ -38,7 +38,8 @@
 
     /* Bài giới thiệu đại lý 2 */
     $nametype = "dai-ly-2";
-    $config['static'][$nametype]['title_main'] = "Bài giới thiệu 2";
+    $config['static'][$nametype]['title_main'] = "Đại lý - Năng lực phân phối";
+    $config['static'][$nametype]['admin_note'] = "Tên là tiêu đề section; Mô tả là nội dung năng lực hiển thị trước thư viện ảnh thực tế tại /dai-ly/.";
     $config['static'][$nametype]['check'] = array("hienthi" => "Hiển thị");
     $config['static'][$nametype]['images'] = false;
     $config['static'][$nametype]['namkinhnghiem'] = false;
@@ -55,7 +56,8 @@
 
     /* Bài giới thiệu đại lý 3 */
     $nametype = "dai-ly-3";
-    $config['static'][$nametype]['title_main'] = "Bài giới thiệu 3";
+    $config['static'][$nametype]['title_main'] = "Đại lý - Chính sách và hỗ trợ";
+    $config['static'][$nametype]['admin_note'] = "Tên là tiêu đề section; Mô tả là lời dẫn trước tối đa 4 nội dung hỗ trợ đại lý tại /dai-ly/.";
     $config['static'][$nametype]['check'] = array("hienthi" => "Hiển thị");
     $config['static'][$nametype]['images'] = false;
     $config['static'][$nametype]['namkinhnghiem'] = false;

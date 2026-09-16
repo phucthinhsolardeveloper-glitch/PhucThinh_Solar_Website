@@ -2,7 +2,10 @@
     $aboutEscape = static function($value) {
         return htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8');
     };
-    $aboutStoryImage = !empty($aboutStoryRecord['photo']) ? $aboutStoryRecord['photo'] : '';
+    $aboutStoryImage = (!empty($aboutStoryRecord['photo']) && $aboutImageExists($aboutStoryRecord['photo'], ROOT.UPLOAD_NEWS_L)) ? $aboutStoryRecord['photo'] : '';
+    $aboutStoryWebpLarge = $aboutStoryImage !== '' && $aboutImageExists($aboutStoryImage.'.webp', ROOT.UPLOAD_NEWS_L) ? $aboutStoryImage.'.webp' : '';
+    $aboutStoryWebpMobileName = $aboutStoryImage !== '' ? pathinfo($aboutStoryImage, PATHINFO_FILENAME).'-960.webp' : '';
+    $aboutStoryWebpMobile = $aboutStoryWebpMobileName !== '' && $aboutImageExists($aboutStoryWebpMobileName, ROOT.UPLOAD_NEWS_L) ? $aboutStoryWebpMobileName : '';
     $aboutCtaHasImage = !empty($aboutCta['photo']);
 ?>
 <main class="pts-about-page">
@@ -10,7 +13,6 @@
         <div class="uk-container">
             <div class="pts-about-story-grid">
                 <div class="pts-about-story-copy">
-                    <span class="pts-about-eyebrow"><?=$aboutEscape($aboutStoryEyebrow)?></span>
                     <h1 id="about-story-title"><?=$aboutEscape($aboutStoryTitle)?></h1>
                     <?php if($aboutStoryIntro !== '') { ?>
                     <p class="pts-about-lead"><?=$aboutEscape($aboutStoryIntro)?></p>
@@ -22,19 +24,35 @@
                 </div>
                 <?php if($aboutStoryImage !== '') { ?>
                 <figure class="pts-about-story-media">
-                    <?=$func->getImage(['class' => 'lazy', 'sizes' => '780x600x1', 'upload' => UPLOAD_NEWS_L, 'image' => $aboutStoryImage, 'alt' => $aboutStoryTitle])?>
+                    <?php if($aboutStoryWebpLarge !== '') { ?>
+                    <picture>
+                        <source type="image/webp" srcset="<?php if($aboutStoryWebpMobile !== '') { ?><?=$aboutEscape(ASSET.UPLOAD_NEWS_L.$aboutStoryWebpMobile)?> 960w, <?php } ?><?=$aboutEscape(ASSET.UPLOAD_NEWS_L.$aboutStoryWebpLarge)?> 1920w" sizes="(max-width: 800px) 100vw, 56vw">
+                        <img src="<?=$aboutEscape($func->getThumbUrl('1600x900x1', UPLOAD_NEWS_L.$aboutStoryImage, false))?>" alt="<?=$aboutEscape($aboutStoryTitle)?>" width="1600" height="900" fetchpriority="high" decoding="async">
+                    </picture>
+                    <?php } else { ?>
+                    <?=$func->getImage(['isLazy' => false, 'class' => '', 'sizes' => '1600x900x1', 'upload' => UPLOAD_NEWS_L, 'image' => $aboutStoryImage, 'alt' => $aboutStoryTitle])?>
+                    <?php } ?>
                 </figure>
                 <?php } ?>
             </div>
         </div>
     </section>
 
+    <nav class="pts-about-section-nav" aria-label="Đi nhanh trong trang Giới thiệu">
+        <div class="uk-container">
+            <a href="#ve-phuc-thinh">Về Phúc Thịnh Solar</a>
+            <?php if(!empty($aboutTimeline)) { ?><a href="#lich-su-phat-trien">Lịch sử phát triển</a><?php } ?>
+            <a href="#con-nguoi">Con người</a>
+            <?php if(!empty($aboutCompass)) { ?><a href="#tam-nhin-su-menh">Tầm nhìn và sứ mệnh</a><?php } ?>
+            <?php if(!empty($chungnhan)) { ?><a href="#about-certificates">Năng lực và chứng nhận</a><?php } ?>
+        </div>
+    </nav>
+
     <?php if(!empty($aboutTimeline)) { ?>
     <section class="pts-about-history" id="lich-su-phat-trien" aria-labelledby="about-history-title">
         <div class="uk-container">
             <div class="pts-about-history-grid">
                 <div class="pts-about-history-copy">
-                    <span class="pts-about-eyebrow"><?=$aboutEscape($aboutUi['story_eyebrow'])?></span>
                     <h2 id="about-history-title"><?=$aboutEscape(!empty($aboutHistoryRecord['title_index'.$lang]) ? $aboutHistoryRecord['title_index'.$lang] : $aboutHistoryRecord['name'.$lang])?></h2>
                     <ol class="pts-about-timeline" style="--milestone-count:<?=count($aboutTimeline)?>" aria-label="<?=$aboutEscape($aboutUi['timeline_label'])?>">
                         <?php foreach($aboutTimeline as $index => $milestone) { ?>
@@ -47,7 +65,7 @@
                         <?php } ?>
                     </ol>
                 </div>
-                <?php if(!empty($aboutHistoryRecord['photo'])) { ?>
+                <?php if(!empty($aboutHistoryRecord['photo']) && $aboutImageExists($aboutHistoryRecord['photo'], ROOT.UPLOAD_NEWS_L)) { ?>
                 <figure class="pts-about-history-media">
                     <?=$func->getImage(['class' => 'lazy', 'sizes' => '780x600x1', 'upload' => UPLOAD_NEWS_L, 'image' => $aboutHistoryRecord['photo'], 'alt' => $aboutHistoryRecord['name'.$lang]])?>
                 </figure>
@@ -57,7 +75,7 @@
     </section>
     <?php } ?>
 
-    <section class="pts-about-people" aria-labelledby="about-people-title">
+    <section class="pts-about-people" id="con-nguoi" aria-labelledby="about-people-title">
         <div class="uk-container">
             <div class="pts-about-people-grid">
                 <?php if($aboutPeopleImage !== '') { ?>
@@ -67,7 +85,6 @@
                 <?php } ?>
 
                 <div class="pts-about-people-copy">
-                    <span class="pts-about-eyebrow"><?=$aboutEscape($aboutPeopleEyebrow)?></span>
                     <h2 id="about-people-title"><?=$aboutEscape($aboutPeopleTitle)?></h2>
                     <?php if($aboutPeopleIntro !== '') { ?><p class="pts-about-lead"><?=$aboutEscape($aboutPeopleIntro)?></p><?php } ?>
                     <?php if($aboutPeopleBody !== '') { ?><p class="pts-about-people-body"><?=$aboutEscape($aboutPeopleBody)?></p><?php } ?>
@@ -99,7 +116,6 @@
         <div class="uk-container">
             <div class="pts-about-trust-layout">
                 <header class="pts-about-section-heading">
-                    <span class="pts-about-eyebrow"><?=$aboutEscape($aboutUi['trust_eyebrow'])?></span>
                     <h2 id="about-trust-title"><?=$aboutEscape($aboutUi['trust_title'])?></h2>
                 </header>
                 <div class="pts-about-trust-grid">
@@ -126,7 +142,6 @@
     <section class="pts-about-compass" id="tam-nhin-su-menh" aria-labelledby="about-compass-title">
         <div class="uk-container">
             <header class="pts-about-section-heading">
-                <span class="pts-about-eyebrow"><?=$aboutEscape($aboutUi['compass_eyebrow'])?></span>
                 <h2 id="about-compass-title"><?=$aboutEscape($aboutUi['compass_title'])?></h2>
             </header>
             <div class="pts-about-compass-grid">
@@ -153,7 +168,6 @@
         <div class="uk-container">
             <header class="pts-about-certificates-heading">
                 <div>
-                    <span class="pts-about-eyebrow"><?=$aboutEscape($aboutUi['cert_eyebrow'])?></span>
                     <h2 id="about-certificates-title"><?=$aboutEscape($aboutUi['cert_title'])?></h2>
                     <p><?=$aboutEscape($aboutUi['cert_intro'])?></p>
                 </div>

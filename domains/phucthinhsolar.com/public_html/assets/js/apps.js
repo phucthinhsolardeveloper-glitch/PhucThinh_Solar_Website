@@ -1048,6 +1048,25 @@ GA_FRAMEWORK.Toc = function(){
             var x = $(this).attr('data-rel');
             goToByScroll(x);
         });
+        if ('IntersectionObserver' in window && isExist($('.pts-solution-detail .toc-list'))) {
+            var solutionTocLinks = $('.pts-solution-detail .toc-list a');
+            var solutionHeadings = [];
+            solutionTocLinks.each(function(){
+                var targetId = ($(this).attr('data-rel') || '').replace(/^#/, '');
+                var target = document.getElementById(targetId);
+                if(target) solutionHeadings.push(target);
+            });
+            var setActiveSolutionToc = function(id){
+                solutionTocLinks.removeClass('is-active').removeAttr('aria-current');
+                solutionTocLinks.filter(function(){ return $(this).attr('data-rel') === '#'+id; }).addClass('is-active').attr('aria-current','location');
+            };
+            var solutionTocObserver = new IntersectionObserver(function(entries){
+                var visible = entries.filter(function(entry){ return entry.isIntersecting; }).sort(function(a,b){ return a.boundingClientRect.top-b.boundingClientRect.top; });
+                if(visible.length) setActiveSolutionToc(visible[0].target.id);
+            }, {rootMargin:'-22% 0px -62% 0px',threshold:0});
+            solutionHeadings.forEach(function(heading){ solutionTocObserver.observe(heading); });
+            if(solutionHeadings.length) setActiveSolutionToc(solutionHeadings[0].id);
+        }
     }
 };
 GA_FRAMEWORK.SlickPage = function(){

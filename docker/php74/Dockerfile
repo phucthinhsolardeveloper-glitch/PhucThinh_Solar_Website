@@ -1,13 +1,19 @@
 FROM php:7.4-apache
 
-RUN apt-get update -o Acquire::Check-Valid-Until=false \
+RUN sed -ri \
+		-e 's!http://deb.debian.org/debian-security!http://snapshot.debian.org/archive/debian-security/20221114T000000Z!g' \
+		-e 's!http://deb.debian.org/debian!http://snapshot.debian.org/archive/debian/20221114T000000Z!g' \
+		/etc/apt/sources.list \
+	&& apt-get update -o Acquire::Check-Valid-Until=false -o Acquire::Retries=3 \
     && apt-get install -y --no-install-recommends \
         libfreetype6-dev \
         libjpeg62-turbo-dev \
         libonig-dev \
         libpng-dev \
+		libwebp-dev \
+		webp \
         libzip-dev \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+	&& docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
     && docker-php-ext-install -j"$(nproc)" calendar exif gd mbstring mysqli pdo_mysql zip \
     && a2enmod rewrite headers expires \
     && sed -ri 's!AllowOverride None!AllowOverride All!g' /etc/apache2/apache2.conf \

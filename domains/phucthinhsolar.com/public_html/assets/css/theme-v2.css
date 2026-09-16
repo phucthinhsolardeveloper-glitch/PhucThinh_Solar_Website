@@ -16,10 +16,19 @@
     --pts-line:#e5e7eb;
     --pts-surface:#f8fafc;
     --pts-cream:#fffbeb;
-    --pts-container:1440px;
-    --pts-gutter:24px;
+    --pts-container:1560px;
+    --pts-gutter:32px;
     --pts-radius:12px;
     --pts-shadow:0 14px 36px rgba(6,21,55,.10);
+}
+/* Màn 2K/Retina trước đây vẫn bị khóa ở 1440px nên showroom chỉ chiếm một
+   dải hẹp giữa màn hình. Mở rộng theo hai nấc, vẫn giữ giới hạn để dòng chữ
+   bài biên tập không kéo dài mất khả năng đọc. */
+@media(min-width:1800px){
+    :root{--pts-container:1680px;--pts-gutter:34px;}
+}
+@media(min-width:2300px){
+    :root{--pts-container:1920px;--pts-gutter:36px;}
 }
 
 /* Quan hệ Sản phẩm - Dự án dùng chung một kiểu card, dữ liệu ảnh thuộc Dự án. */
@@ -583,7 +592,7 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 .product-right{min-width:0;}
 .grid-product.grid-product-3{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:18px!important;}
 .product-card{padding-bottom:13px!important;}
-.product-card .product-item{min-width:0;}
+.product-card .product-item{display:flex!important;min-width:0;flex:1 1 auto;flex-direction:column;}
 /* padding-right chừa chỗ ngang cho nút tròn "+" (position:absolute, bottom
    right); padding-bottom chừa thêm chỗ dọc - khi card hẹp, giá khuyến mãi
    (giá mới + giá cũ gạch ngang) xuống dòng 2 và không có padding-bottom thì
@@ -595,7 +604,7 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
    chỉ lộ rõ ở khung hẹp (mobile, tablet), khung rộng (desktop) thừa chỗ nên
    không tràn. Canh trái + cho xuống dòng để không bao giờ tràn ra ngoài
    (phản hồi mobile 2026-09-08). */
-.product-card .price-product{padding-right:46px!important;padding-bottom:44px!important;margin-top:auto!important;justify-content:flex-start!important;flex-wrap:wrap!important;row-gap:2px!important;}
+.product-card .price-product{min-height:38px;padding-right:48px!important;padding-bottom:10px!important;margin-top:auto!important;align-items:flex-end!important;justify-content:flex-start!important;flex-wrap:wrap!important;row-gap:2px!important;}
 .product-card-btns{position:absolute;right:10px;bottom:10px;display:block!important;padding:0!important;z-index:4;}
 .product-card-btns .pts-card-add{display:flex!important;width:36px!important;height:36px!important;min-height:36px!important;align-items:center!important;justify-content:center!important;border:0!important;border-radius:50%!important;background:var(--pts-gold)!important;color:#fff!important;box-shadow:0 6px 14px rgba(156,116,32,.28);padding:0!important;}
 .product-card-btns .pts-card-add:hover{background:var(--pts-gold-dark)!important;transform:translateY(-2px);}
@@ -609,6 +618,14 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 .btn-contact-price a:last-child{border:2px solid var(--pts-navy)!important;background:#fff!important;color:var(--pts-navy)!important;}
 .btn-contact-price a:last-child:hover{background:var(--pts-navy)!important;color:#fff!important;}
 .product-card-btns .pts-card-add i{font-size:12px;}
+.pts-category-hero-media{position:absolute;z-index:0;inset:0;margin:0;overflow:hidden}
+.pts-category-hero-media picture,.pts-category-hero-media img{display:block;width:100%!important;height:100%!important}
+.pts-category-hero-media img{object-fit:cover!important;object-position:center!important}
+.pts-category-hero-shade{position:absolute;z-index:1;inset:0;background:linear-gradient(90deg,rgba(4,17,46,.97) 0,rgba(4,17,46,.84) 38%,rgba(4,17,46,.3) 72%,rgba(4,17,46,.16) 100%)}
+.pts-category-hero.has-image{min-height:280px;border-radius:3px;background:#071b3e}
+.pts-category-hero.has-image .pts-category-copy{z-index:2}
+.pts-category-hero.has-image .pts-category-copy h2{color:#f3c850!important}
+.pts-category-hero.has-image .pts-category-copy p{color:#edf4ff!important}
 .pagination-home a,.pagination-ajax a,.pagination-home span,.pagination-ajax span{border-radius:7px!important;}
 .mask-sidebar{display:none;margin:0;padding:0;border:0;}
 @media(max-width:1100px){
@@ -642,13 +659,19 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
     .grid-product.grid-product-3{gap:10px!important;}
 }
 
-/* Nội dung mô tả riêng của danh mục (cấp 1/2), hiện dưới lưới sản phẩm ở
-   trang danh mục - học theo Kitawa. Dùng lại .pts-desc-* (đã có sẵn từ trang
-   chi tiết sản phẩm) nên chỉ cần định khung + khoảng cách ở đây. */
-.pts-category-content{margin-top:46px;padding-top:34px;border-top:1px solid var(--pts-line);}
-.pts-category-content-inner{max-width:860px;}
+/* Nội dung tư vấn danh mục nằm thành một dải biên tập cân giữa thay vì bám
+   theo cột filter phía trên. Bề mặt phẳng, phân cấp bằng khoảng trắng và chữ. */
+.pts-category-content{position:relative;margin-top:68px;padding:52px clamp(24px,6vw,86px) 58px;border:0;background:#f4f7fb;}
+.pts-category-content-inner{width:100%;max-width:980px;margin:0 auto;}
+.pts-category-content .pts-desc-block-flow{max-width:900px;margin:0 auto;}
+.pts-category-content .pts-desc-subtitle{margin-top:42px!important;font-size:clamp(19px,1.8vw,24px)!important;line-height:1.35!important;}
+.pts-category-content .pts-desc-subtitle:first-child{margin-top:0!important;}
+.pts-category-content .pts-desc-para,.pts-category-content .pts-desc-list li{font-size:15px;line-height:1.8;}
+.pts-category-content .pts-desc-list li{padding-top:8px;padding-bottom:8px;}
 @media(max-width:767px){
-    .pts-category-content{margin-top:32px;padding-top:24px;}
+    .pts-category-content{margin-top:42px;padding:36px 20px 42px;}
+    .pts-category-content .pts-desc-subtitle{margin-top:32px!important;font-size:19px!important;}
+    .pts-category-content .pts-desc-para,.pts-category-content .pts-desc-list li{font-size:14px;line-height:1.72;}
 }
 
 /* ===== Card bài viết dùng chung (canonical) =====
@@ -1849,8 +1872,7 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
    Khối này nạp sau cùng nên thắng mọi rule trước đó.
    ===================================================================== */
 
-/* --- Container: rộng hơn để trang có sức nặng, không "nhỏ nhẹ" --- */
-:root{--pts-container:1560px;--pts-gutter:32px;}
+/* Container được điều khiển một lần ở đầu file, gồm cả hai nấc màn rộng. */
 
 /* --- Thang chữ nền tảng: to & chắc, dễ đọc từ xa --- */
 body,p{font-size:18px!important;line-height:1.75!important;}

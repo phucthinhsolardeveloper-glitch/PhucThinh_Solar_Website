@@ -80,7 +80,7 @@
                                             </li>
                                             <li id="menu-item-56208"
                                                 class="menu-item menu-item-type-post_type menu-item-object-page CRcustomMenu CRcustomMenu2 menu-item-56208">
-                                                <a href="ve-chung-toi/" itemprop="url"><span
+                                                <a href="gioi-thieu/" itemprop="url"><span
                                                         itemprop="name">Giới thiệu</span></a>
                                             </li>
                                             <li id="menu-item-56209"

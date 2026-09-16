@@ -55,6 +55,30 @@
         );
     }
 
+    /* Nền cho dải chứng nhận trang chủ. Lấy cả record đã tắt để công tắc
+       Hiển thị có ý nghĩa: chỉ dùng ảnh đóng gói khi Admin chưa từng cấu hình
+       type này; nếu đã cấu hình rồi tắt thì section trở về nền sáng an toàn. */
+    $homeProofBackgroundRows = $cache->get("select name$lang, photo, status from #_photo where type = ? order by numb,id desc", array('home-proof-background'), 'result', 7200);
+    $homeProofBackground = array();
+    foreach($homeProofBackgroundRows as $homeProofBackgroundRow)
+    {
+        if(empty($homeProofBackgroundRow['photo']) || strpos(','.(string)$homeProofBackgroundRow['status'].',', ',hienthi,') === false) continue;
+        $homeProofBackground = array(
+            'photo' => $homeProofBackgroundRow['photo'],
+            'upload' => UPLOAD_PHOTO_L,
+            'alt' => !empty($homeProofBackgroundRow['name'.$lang]) ? $homeProofBackgroundRow['name'.$lang] : ''
+        );
+        break;
+    }
+    if(!$homeProofBackgroundRows)
+    {
+        $homeProofBackground = array(
+            'photo' => 'home-proof-showroom-v2.jpg',
+            'upload' => 'assets/images/site-visuals/',
+            'alt' => ''
+        );
+    }
+
     /* Trang chủ mới ưu tiên catalog: lấy ba nhóm chủ lực theo cờ major rồi
        hiển thị tối đa 10 sản phẩm/nhóm. Mỗi truy vấn đều parameterized; thứ tự
        sản phẩm dùng đúng rule chung của toàn site. */

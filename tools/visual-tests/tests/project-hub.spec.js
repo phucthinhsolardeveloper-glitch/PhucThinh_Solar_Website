@@ -1,5 +1,9 @@
 const { test, expect } = require('@playwright/test');
 
+test.beforeEach(async ({ page }) => {
+  await page.route('https://cdn.gtranslate.net/**', route => route.abort());
+});
+
 test('Project hub matches the new gallery layout and keeps real routes', async ({ page }, testInfo) => {
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));

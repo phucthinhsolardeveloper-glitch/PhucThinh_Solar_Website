@@ -34,6 +34,7 @@
 	   dưới bị lỗi y hệt từ trước, chưa từng chạy. Dùng delimiter '@' để ép
 	   preg_match thật. */
 	$router->map('GET', '@^he-thong-dai-ly/?$', function(){ global $configBase; header('Location: '.$configBase.'lien-he/', true, 301); exit; }, 'legacy-he-thong-dai-ly');
+	$router->map('GET', '@^ve-chung-toi/?$', function(){ global $configBase; header('Location: '.$configBase.'gioi-thieu/', true, 301); exit; }, 'legacy-about');
 	$router->map('GET', 'product/?', function(){ global $configBase; header('Location: '.$configBase.'san-pham/', true, 301); exit; }, 'legacy-product');
 	$router->map('GET', 'product/[a:product]/?', function($product){ global $d, $configBase; $row=$d->rawQueryOne("select slugvi from #_product where slugvi=? and type=? and find_in_set('hienthi',status) limit 1",array($product,'san-pham')); if(empty($row)){ header('HTTP/1.0 404 Not Found',true,404); include('404.php'); exit; } header('Location: '.$configBase.'san-pham/'.$row['slugvi'],true,301); exit; }, 'legacy-product-detail');
 	/* Canonical mới cho landing Giải pháp. Các URL bare slug và solution/...
@@ -249,7 +250,7 @@
 			$template = "about/about";
 			$type = 'gioi-thieu';
 			$seo->set('type','article');
-			$titleMain = "Về chúng tôi";
+			$titleMain = "Giới thiệu";
 			break;
 
 		case 'dai-ly':

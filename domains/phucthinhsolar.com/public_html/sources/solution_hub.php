@@ -37,6 +37,13 @@ foreach($solutionFeaturedRows as $solutionRow) {
     $solutionRow['_representative'] = $solutionRow;
     $solutionCards[] = $solutionRow;
 }
+/* Ảnh minh hoạ an toàn cho card và hero bài chưa được biên tập ảnh trong
+   Admin. Ảnh gắn theo đúng slug; upload từ Admin luôn được ưu tiên. */
+$solutionFallbackImages = array(
+    'dien-mat-troi-ho-gia-dinh' => 'assets/images/site-visuals/solution-home-solar-v2.jpg',
+    'he-thong-luu-tru-bess' => 'assets/images/site-visuals/solution-bess-v2.jpg',
+    'bom-nuoc-nang-luong-mat-troi' => 'assets/images/site-visuals/solution-solar-pump-v2.jpg'
+);
 $solutionEquipment = solutionHubSelect($solutionProductRows, 'solutionhub', 4);
 $solutionIntroVisible = solutionHubSelect($solutionIntroRows, '', 1);
 $solutionCtaVisible = solutionHubSelect($solutionCtaRows, '', 1);

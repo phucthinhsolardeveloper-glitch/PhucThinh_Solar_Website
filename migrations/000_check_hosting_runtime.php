@@ -52,6 +52,11 @@ foreach($requiredExtensions as $extension) if(!extension_loaded($extension)) $mi
 runtimeResult(empty($missingExtensions), 'PHP extensions', empty($missingExtensions) ? implode(', ', $requiredExtensions) : 'thiếu '.implode(', ', $missingExtensions));
 if(!empty($missingExtensions)) $failures[] = 'Thiếu PHP extension: '.implode(', ', $missingExtensions).'.';
 
+$webpOk = function_exists('imagewebp') && function_exists('imagecreatefromjpeg') && function_exists('imagecreatefrompng');
+runtimeResult($webpOk || !$requireProduction, 'Mã hóa WebP', $webpOk ? 'GD hỗ trợ đọc JPG/PNG và ghi WebP' : 'chưa có codec (local được phép fallback ảnh gốc)');
+if($requireProduction && !$webpOk) $failures[] = 'Hosting chưa có GD WebP; cài codec trước để kích hoạt tối ưu ảnh.';
+if(!$requireProduction && !$webpOk) $warnings[] = 'Local chưa có GD WebP; website vẫn dùng ảnh gốc nhưng chưa kiểm thử được pipeline tối ưu.';
+
 $runtimeDirs = array('upload','thumbs','caches','logs');
 $badDirs = array();
 foreach($runtimeDirs as $directory)

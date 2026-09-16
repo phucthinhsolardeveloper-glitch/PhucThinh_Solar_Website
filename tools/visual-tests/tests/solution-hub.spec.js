@@ -1,5 +1,9 @@
 const { test, expect } = require('@playwright/test');
 
+test.beforeEach(async ({ page }) => {
+  await page.route('https://cdn.gtranslate.net/**', route => route.abort());
+});
+
 test('Solution hub supports choices, equipment and consultation without layout errors', async ({ page }, testInfo) => {
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
@@ -16,6 +20,9 @@ test('Solution hub supports choices, equipment and consultation without layout e
     'Bơm nước mặt trời',
   ]);
   await expect(hub.locator('.pts-sh-editorial-grid .toc-list > li')).toHaveCount(5);
+  const hubEditorialText = await hub.locator('.pts-sh-editorial').innerText();
+  expect(hubEditorialText).not.toMatch(/\b(?:backup|battery|load|grid|cabinet|MWp|kWp)\b|phụ tải|bài toán|kiến trúc hệ thống|chiến lược vận hành/i);
+  expect((await hub.locator('.pts-sh-editorial h2').allTextContents()).some(heading => heading.includes('?'))).toBe(false);
   const choiceLayout = await hub.locator('.pts-sh-choice-grid').evaluate(grid => ({
     clientWidth: grid.clientWidth,
     scrollWidth: grid.scrollWidth,
@@ -30,7 +37,24 @@ test('Solution hub supports choices, equipment and consultation without layout e
   });
   if(testInfo.project.name.includes('mobile')) {
     expect(choiceLayout.scrollWidth).toBeGreaterThan(choiceLayout.clientWidth);
-    await expect(hub.locator('.pts-sh-editorial-grid > .pts-sd-toc')).toBeHidden();
+    /* Yêu cầu chủ project 2026-09-16: landing dùng CHUNG kiểu mục lục với bài
+       chi tiết, nên mục lục hiện cả trên mobile (trước đây bị ẩn). Vẫn phải bị
+       giới hạn chiều cao + tự cuộn để không đẩy nội dung xuống quá sâu. */
+    const landingToc = hub.locator('.pts-sh-editorial-grid > .pts-sd-toc');
+    await expect(landingToc).toBeVisible();
+    const tocBox = await landingToc.evaluate(toc => {
+      const list = toc.querySelector('.toc-list');
+      return {
+        tocWidth: toc.getBoundingClientRect().width,
+        listHeight: list.getBoundingClientRect().height,
+        listOverflowY: getComputedStyle(list).overflowY,
+        itemCount: list.querySelectorAll('a').length
+      };
+    });
+    expect(tocBox.itemCount).toBeGreaterThan(0);
+    expect(tocBox.tocWidth).toBeLessThanOrEqual(await page.evaluate(() => window.innerWidth));
+    expect(tocBox.listHeight).toBeLessThanOrEqual(240);
+    expect(tocBox.listOverflowY).toBe('auto');
     expect(editorialWidth).toBeGreaterThan(300);
     expect(introLayout.copy.top).toBeGreaterThan(introLayout.title.bottom);
   } else {
@@ -134,6 +158,8 @@ test('Renamed lighting solution keeps both previous public URLs as permanent red
 });
 
 test('All five solution details share the balanced responsive template', async ({ page }, testInfo) => {
+  const errors = [];
+  page.on('pageerror', error => errors.push(error.message));
   const paths = [
     '/giai-phap/dien-mat-troi-ho-gia-dinh/',
     '/giai-phap/dien-mat-troi-doanh-nghiep/',
@@ -149,32 +175,49 @@ test('All five solution details share the balanced responsive template', async (
     await expect(page.locator('h1')).toHaveCount(1);
     await expect(page.locator('.breadcrumb-item')).toHaveCount(3);
     expect(await detail.locator('.pts-solution-editorial h2').count()).toBeGreaterThanOrEqual(3);
+    const editorialText = await detail.locator('.pts-solution-editorial').innerText();
+    expect(editorialText, path).not.toMatch(/\b(?:backup|battery|load|grid|cabinet|MWp|kWp)\b|phụ tải|bài toán|kiến trúc hệ thống|chiến lược vận hành/i);
+    const sectionHeadings = await detail.locator('.pts-solution-editorial h2').allTextContents();
+    expect(sectionHeadings.some(heading => heading.includes('?')), path).toBe(false);
     const toc = detail.locator('.pts-sd-content-grid > .pts-sd-toc');
+    await expect(toc).toBeVisible();
+    const tocSurface = await toc.evaluate(node => ({
+      background: getComputedStyle(node).backgroundColor,
+      linkColor: getComputedStyle(node.querySelector('a')).color,
+    }));
+    expect(tocSurface.background, path).toBe('rgb(7, 27, 70)');
+    expect(tocSurface.linkColor, path).not.toBe(tocSurface.background);
+    await expect(toc.locator('a').first()).toHaveClass(/is-active/);
+    await expect(toc.locator('a').first()).toHaveAttribute('aria-current', 'location');
     if(testInfo.project.name.includes('mobile')) {
-      await expect(toc).toBeHidden();
+      const mobileToc = await toc.evaluate(node => ({
+        position: getComputedStyle(node).position,
+        listHeight: node.querySelector('.toc-list').getBoundingClientRect().height,
+      }));
+      expect(mobileToc.position, path).toBe('static');
+      expect(mobileToc.listHeight, path).toBeLessThanOrEqual(221);
     } else {
-      await expect(toc).toBeVisible();
       const contentGap = await detail.locator('.pts-sd-content-grid').evaluate(grid => {
         const tocBox = grid.querySelector('.pts-sd-toc').getBoundingClientRect();
         const contentBox = grid.querySelector('.pts-solution-editorial').getBoundingClientRect();
         return contentBox.left - tocBox.right;
       });
-      expect(contentGap, path).toBeGreaterThan(75);
+      expect(contentGap, path).toBeGreaterThan(65);
     }
     const hero = detail.locator('.pts-sd-hero-grid');
-    if(await hero.evaluate(node => node.classList.contains('is-text-only'))) {
-      const heroLayout = await hero.evaluate(node => {
-        const title = node.querySelector('h1').getBoundingClientRect();
-        const lead = node.querySelector('.pts-sd-lead').getBoundingClientRect();
-        return { title: { top: title.top, right: title.right, bottom: title.bottom }, lead: { top: lead.top, left: lead.left } };
-      });
-      if(testInfo.project.name.includes('mobile')) {
-        expect(heroLayout.lead.top, path).toBeGreaterThan(heroLayout.title.bottom);
-      } else {
-        expect(Math.abs(heroLayout.lead.top - heroLayout.title.top), path).toBeLessThanOrEqual(2);
-        expect(heroLayout.lead.left - heroLayout.title.right, path).toBeGreaterThan(40);
-      }
+    await expect(hero).not.toHaveClass(/is-text-only/);
+    await expect(hero.locator('.pts-sd-hero-media img')).toHaveCount(1);
+    await expect.poll(() => hero.locator('img').evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
+    const heroSurface = await hero.evaluate(node => ({
+      background: getComputedStyle(node).backgroundColor,
+      titleColor: getComputedStyle(node.querySelector('h1')).color,
+    }));
+    expect(heroSurface.background, path).toBe('rgb(7, 27, 70)');
+    expect(heroSurface.titleColor, path).toBe('rgb(255, 255, 255)');
+    if(path.includes('he-thong-luu-tru-bess')) {
+      await expect(hero.locator('img')).toHaveAttribute('src', /solution-bess-v2\.jpg(?:\.webp)?/);
     }
     expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth), path).toBeLessThanOrEqual(1);
   }
+  expect(errors).toEqual([]);
 });

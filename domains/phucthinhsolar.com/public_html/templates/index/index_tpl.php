@@ -132,18 +132,24 @@
 
 <?php if(count($chungnhan)){ ?>
 <!-- Dải năng lực dùng đúng nguồn Chứng nhận đang quản lý trong Admin. -->
-<section class="pts-proof-band" aria-labelledby="pts-proof-title">
+<section class="pts-proof-band<?=!empty($homeProofBackground) ? ' has-background' : ''?>" aria-labelledby="pts-proof-title">
+    <?php if(!empty($homeProofBackground)){ ?>
+    <div class="pts-proof-background" aria-hidden="true">
+        <?=$func->getImage(['isLazy' => false, 'class' => '', 'sizes' => '1920x600x1', 'upload' => $homeProofBackground['upload'], 'image' => $homeProofBackground['photo'], 'alt' => ''])?>
+    </div>
+    <div class="pts-proof-shade" aria-hidden="true"></div>
+    <?php } ?>
     <div class="uk-container">
         <div class="pts-proof-shell">
             <div class="pts-proof-copy">
                 <h3 id="pts-proof-title">Sản phẩm chính hãng, nguồn gốc rõ ràng</h3>
                 <p>Hồ sơ chứng nhận và thương hiệu được cập nhật trực tiếp từ hệ thống quản trị.</p>
-                <a href="ve-chung-toi/">Xem hồ sơ năng lực <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+                <a href="gioi-thieu/">Xem hồ sơ năng lực <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
             </div>
             <div class="pts-proof-grid" role="list" aria-label="Chứng nhận và thương hiệu ủy quyền">
                 <?php foreach(array_slice($chungnhan, 0, 3) as $certificate){ ?>
                 <div class="pts-proof-card" role="listitem">
-                    <?=$func->getImage(['isLazy' => false, 'class' => '', 'sizes' => '360x230x2', 'upload' => UPLOAD_PHOTO_L, 'image' => $certificate['photo'], 'alt' => $certificate['name'.$lang]])?>
+                    <?=$func->getImage(['isLazy' => false, 'class' => '', 'sizes' => '300x420x2', 'upload' => UPLOAD_PHOTO_L, 'image' => $certificate['photo'], 'alt' => $certificate['name'.$lang]])?>
                     <?php if(!empty($certificate['name'.$lang])){ ?><strong><?=htmlspecialchars($certificate['name'.$lang], ENT_QUOTES, 'UTF-8')?></strong><?php } ?>
                 </div>
                 <?php } ?>
@@ -181,7 +187,7 @@
 <?php /* Giới thiệu ngắn (About teaser, 2026-09-12) - đọc từ Admin type
      home-about/home-about-point (thêm 2026-09-14, xem sources/index.php),
      rơi về đúng nội dung mặc định đã duyệt trước đây khi chưa có record. */ ?>
-<?php if(false){ /* Chuyển nội dung giới thiệu về trang /ve-chung-toi/. */ ?>
+<?php if(false){ /* Chuyển nội dung giới thiệu về trang /gioi-thieu/. */ ?>
 <section class="pts-about-teaser uk-section-large">
     <div class="uk-container">
         <div class="pts-about-teaser-grid">
@@ -200,7 +206,7 @@
                     </li>
                     <?php } ?>
                 </ul>
-                <a class="pts-btn pts-btn-gold" href="ve-chung-toi/"><?=htmlspecialchars($homeAboutButton, ENT_QUOTES, 'UTF-8')?> <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+                <a class="pts-btn pts-btn-gold" href="gioi-thieu/"><?=htmlspecialchars($homeAboutButton, ENT_QUOTES, 'UTF-8')?> <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
             </div>
         </div>
     </div>
@@ -477,7 +483,7 @@
                     <?php } ?>
                 </div>
                 <div class="text-center con-so-cta">
-                    <a href="ve-chung-toi/" class="btn-gold">Xem hành trình của chúng tôi</a>
+                    <a href="gioi-thieu/" class="btn-gold">Xem hành trình của chúng tôi</a>
                 </div>
             </div>
         </section>

@@ -26,9 +26,17 @@ test('header v3 keeps navigation and search usable', async ({ page, isMobile }, 
   await expect(header).toBeVisible();
   await expect(header.locator('.logo-header img')).toBeVisible();
   expect(await header.locator('.logo-header img').evaluate(image => image.naturalWidth)).toBeGreaterThan(0);
+  const logoSurface = await header.locator('.logo-header').evaluate(logo => ({
+    background: getComputedStyle(logo).backgroundColor,
+    border: getComputedStyle(logo).borderTopWidth,
+    shadow: getComputedStyle(logo).boxShadow,
+  }));
+  expect(logoSurface.background).toBe('rgba(0, 0, 0, 0)');
+  expect(logoSurface.border).toBe('0px');
+  expect(logoSurface.shadow).toBe('none');
   await expect(header.locator('.menu-home')).toHaveCount(0);
   await expect(page.locator('#menu a').filter({ hasText: 'Trang chủ' })).toHaveCount(0);
-  await expect(page.locator('a[href="ve-chung-toi/"]').filter({ hasText: 'Giới thiệu' }).first()).toBeAttached();
+  await expect(page.locator('a[href="gioi-thieu/"]').filter({ hasText: 'Giới thiệu' }).first()).toBeAttached();
   const expectedPrimaryNavigation = ['Danh mục sản phẩm', 'Giới thiệu', 'Giải pháp', 'Dự án', 'Kiến thức', 'Hợp tác'];
   const primaryNavigation = await header.locator('.pts-header-nav .menu > div > ul > li > a').evaluateAll(links => links.map(link => link.childNodes[link.childNodes.length - 1].textContent.trim()));
   expect(primaryNavigation).toEqual(expectedPrimaryNavigation);
@@ -61,7 +69,7 @@ test('header v3 keeps navigation and search usable', async ({ page, isMobile }, 
       await expect(group.locator(':scope > ul')).toBeVisible();
     }
     const catalogX = await header.locator('.menu-catalog').evaluate(element => element.getBoundingClientRect().x);
-    const introX = await header.locator('.pts-header-nav a[href="ve-chung-toi/"]').evaluate(element => element.getBoundingClientRect().x);
+    const introX = await header.locator('.pts-header-nav a[href="gioi-thieu/"]').evaluate(element => element.getBoundingClientRect().x);
     expect(catalogX).toBeLessThan(introX);
     const input = header.locator('#keyword-res');
     await input.fill('tấm pin');
@@ -77,10 +85,10 @@ test('header v3 keeps navigation and search usable', async ({ page, isMobile }, 
 
 test('các nhóm menu gộp trỏ đến đúng landing và section hiện hữu', async ({ page }) => {
   for (const [path, selector] of [
-    ['/ve-chung-toi/#ve-phuc-thinh', '#ve-phuc-thinh'],
-    ['/ve-chung-toi/#lich-su-phat-trien', '#lich-su-phat-trien'],
-    ['/ve-chung-toi/#tam-nhin-su-menh', '#tam-nhin-su-menh'],
-    ['/ve-chung-toi/#about-certificates', '#about-certificates'],
+    ['/gioi-thieu/#ve-phuc-thinh', '#ve-phuc-thinh'],
+    ['/gioi-thieu/#lich-su-phat-trien', '#lich-su-phat-trien'],
+    ['/gioi-thieu/#tam-nhin-su-menh', '#tam-nhin-su-menh'],
+    ['/gioi-thieu/#about-certificates', '#about-certificates'],
     ['/lien-he/#he-thong-chi-nhanh', '#he-thong-chi-nhanh'],
     ['/lien-he/#yeu-cau-tu-van', '#yeu-cau-tu-van'],
     ['/dai-ly#dang-ky-dai-ly', '#dang-ky-dai-ly'],

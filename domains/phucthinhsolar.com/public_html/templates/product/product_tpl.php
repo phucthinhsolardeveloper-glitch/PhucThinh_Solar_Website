@@ -6,8 +6,13 @@
         $ptsCategoryTitle = $productList['name'.$lang];
     }
 ?>
-<section class="pts-category-hero">
-    <div class="pts-category-sun" aria-hidden="true"><i class="far fa-sun"></i></div>
+<section class="pts-category-hero<?=!empty($productCategoryHero) ? ' has-image' : ''?>">
+    <?php if(!empty($productCategoryHero)) { ?>
+    <figure class="pts-category-hero-media" aria-hidden="true">
+        <?=$func->getImage(['isLazy' => false, 'class' => '', 'sizes' => '1800x600x1', 'upload' => $productCategoryHero['upload'], 'image' => $productCategoryHero['photo'], 'alt' => ''])?>
+    </figure>
+    <span class="pts-category-hero-shade" aria-hidden="true"></span>
+    <?php } ?>
     <div class="pts-category-copy">
         <span class="pts-brand-text">PHÚC THỊNH SOLAR</span>
         <h2><?=htmlspecialchars($ptsCategoryTitle, ENT_QUOTES, 'UTF-8')?></h2>
