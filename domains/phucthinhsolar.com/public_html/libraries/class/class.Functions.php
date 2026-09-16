@@ -1090,12 +1090,25 @@
 	}
 
     /* Src */
-    $info['src'] = (!empty($info['isLazy']) && strpos($info['class'], 'lazy') !== false)
+    $isJsLazy = (!empty($info['isLazy']) && strpos($info['class'], 'lazy') !== false);
+    $info['src'] = $isJsLazy
         ? "data-src='" . $info['pathSrc'] . "'"
         : "src='" . $info['pathSrc'] . "'";
 
+    /* Lazy-load NATIVE của trình duyệt cho ảnh phát src ngay (2026-09-16).
+       Vì sao: đo trang chủ thấy 91 thẻ img, trong đó 77 ảnh nằm DƯỚI màn hình
+       nhưng vẫn tải ngay -> 68 file WebP = 1.2 MB tải một lượt, 126 request,
+       đúng nguyên nhân chủ project báo "hơi đơ và lag".
+       Dùng loading="lazy" của trình duyệt thay vì thư viện lazy JS legacy:
+       không cần JS, không bị lỗi "card trắng" khi thư viện bỏ qua section nằm
+       sâu trong trang (chính lý do trước đây phải tắt lazy cho card sản phẩm),
+       và trình duyệt tự quyết định tải khi ảnh gần viewport.
+       Ảnh đã dùng lazy JS thì giữ nguyên, không gắn hai cơ chế lên một thẻ.
+       Ảnh ưu tiên (LCP: logo, hero) có thể tắt bằng 'noNativeLazy' => true. */
+    $nativeLazy = (!$isJsLazy && empty($info['noNativeLazy'])) ? " loading='lazy' decoding='async'" : '';
+
     /* Image */
-    $result = "<img " . $info['class'] . " " . $info['id'] . " onerror=\"this.src='" . $info['pathError'] . "';\" " . $info['src'] . " alt='" . $info['alt'] . "'/>";
+    $result = "<img " . $info['class'] . " " . $info['id'] . " onerror=\"this.src='" . $info['pathError'] . "';\" " . $info['src'] . $nativeLazy . " alt='" . $info['alt'] . "'/>";
 
     return $result;
 }

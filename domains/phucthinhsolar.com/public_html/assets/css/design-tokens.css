@@ -186,3 +186,178 @@
   letter-spacing:.04em;text-transform:uppercase;
   box-shadow:none!important;
 }
+
+/* ============================================================
+   TRANG CHI TIẾT SẢN PHẨM — trang quyết định chuyển đổi cao nhất nhưng bị
+   bỏ sót khỏi đợt đồng bộ. Đo trực tiếp 2026-09-16 cho thấy vẫn dùng ngôn
+   ngữ cũ:
+     - khối giá: nền cream #fffbeb (chính màu chủ project không ưng), bo 12px
+     - nút "Mua ngay": GRADIENT vàng (linear-gradient) thay vì gold phẳng
+     - nút "Thêm giỏ hàng": bo 8px, viền 2px (chuẩn 4px/1px)
+   ============================================================ */
+
+/* Khối giá: nền trung tính thay cream, bo nhỏ theo hệ phẳng. Giá là thông tin
+   quan trọng nhất trang - để nó nổi bằng cỡ chữ và màu chữ, không bằng nền
+   vàng cạnh tranh với nút hành động ngay bên dưới. */
+.attr-pro-detail>li:first-child{
+  border-radius:3px!important;
+  background:var(--pts-surface)!important;
+  border-left:3px solid var(--pts-gold)!important;
+}
+
+/* Nút chính/phụ trên trang sản phẩm: cùng hệ với .pts-btn-gold toàn site. */
+.btn-product-detail a{border-radius:4px!important;border-width:1px!important;}
+.btn-product-detail a:first-child,
+.btn-product-detail .add-cart,
+.btn-product-detail .buy-now{
+  background:var(--pts-gold)!important;background-image:none!important;
+  border-color:var(--pts-gold)!important;color:var(--pts-navy)!important;
+  box-shadow:none!important;
+}
+.btn-product-detail a:first-child:hover,
+.btn-product-detail .add-cart:hover,
+.btn-product-detail .buy-now:hover{
+  background:var(--pts-gold-light)!important;border-color:var(--pts-gold-light)!important;
+}
+.btn-product-detail a:last-child{
+  background:#fff!important;border-color:var(--pts-navy)!important;color:var(--pts-navy)!important;
+}
+.btn-product-detail a:last-child:hover{background:var(--pts-surface)!important;}
+
+/* Tab thông số/mô tả: bỏ nền xám của thanh tab, giữ phẳng như hub khác. */
+.tabs-pro-detail{border-radius:4px!important;}
+.tabs-pro-detail>#tabsProDetail{background:transparent!important;}
+.tabs-pro-detail>#tabsProDetail .nav-link{border-radius:3px!important;}
+
+/* Ô số lượng + khung ảnh: bo nhỏ theo hệ. */
+.quantity-pro-detail{border-radius:3px!important;}
+.left-pro-detail>a.MagicZoom{border-radius:3px!important;}
+
+/* ============================================================
+   NHẢY ANCHOR — bù chiều cao header sticky
+   Bug thật (chủ project 2026-09-16: "các dòng ở trang giới thiệu này nó link
+   tới đâu đâu á"): header sticky cao 154px nhưng các section đích có
+   scroll-margin-top = 0, nên bấm mục lục/anchor thì tiêu đề section bị header
+   che hoàn toàn - người dùng tưởng link hỏng hoặc nhảy sai chỗ.
+   Các anchor đã có khai báo riêng (.pts-catblock 130px, .pts-sd-body 118px,
+   .home-2 100px) giữ nguyên, phần dưới bù cho những đích còn thiếu.
+   ============================================================ */
+#ve-phuc-thinh,#lich-su-phat-trien,#con-nguoi,#tam-nhin-su-menh,
+#about-certificates,#cac-giai-phap,#noi-dung-giai-phap,#giai-phap,
+#dang-ky-dai-ly,#nang-luc-phan-phoi,#ho-tro-dai-ly,
+#yeu-cau-tu-van,#toc-content,#pts-hero2-form,
+#info-pro-detail,#tskt-pro-detail,#cs-pro-detail,
+#certificate-pro-detail,#video-pro-detail,#commentfb-pro-detail{
+  scroll-margin-top:170px;
+}
+@media(max-width:991px){
+  #ve-phuc-thinh,#lich-su-phat-trien,#con-nguoi,#tam-nhin-su-menh,
+  #about-certificates,#cac-giai-phap,#noi-dung-giai-phap,#giai-phap,
+  #dang-ky-dai-ly,#nang-luc-phan-phoi,#ho-tro-dai-ly,
+  #yeu-cau-tu-van,#toc-content,#pts-hero2-form{
+    scroll-margin-top:96px;
+  }
+}
+
+/* ============================================================
+   RAIL CUỘN NGANG — căn giữa khi nội dung không lấp đủ chiều rộng
+   Chủ project 2026-09-16: "thiếu 2 ô thì lại thụt về 1 bên". Rail danh mục
+   dùng flex + overflow-x:auto nên khi số ô ít hơn chiều rộng container, các ô
+   dồn hết về bên trái, để trống một khoảng lớn bên phải - trông như lỗi layout.
+
+   Dùng `justify-content: safe center`: căn giữa khi nội dung vừa khung, nhưng
+   KHÔNG cắt mất ô đầu khi nội dung tràn (khác `center` thuần - với flex có
+   overflow, `center` làm phần đầu bị cắt và không cuộn tới được).
+   ============================================================ */
+.pts-ecosystem-grid,
+.pts-catalog-jump,
+.nh-filters,
+.pts-sd-switcher>div,
+.pts-ph-filters>div{
+  justify-content:safe center!important;
+}
+/* Fallback cho trình duyệt chưa hỗ trợ từ khoá `safe`: căn giữa bằng margin
+   auto trên chính track, chỉ có tác dụng khi track hẹp hơn container. */
+@supports not (justify-content: safe center){
+  .pts-ecosystem-grid,.pts-catalog-jump,.nh-filters,
+  .pts-sd-switcher>div,.pts-ph-filters>div{justify-content:flex-start!important;}
+  .pts-ecosystem-grid>*,.pts-catalog-jump>*,.nh-filters>*{margin-inline:auto}
+}
+
+/* ============================================================
+   DẢI CTA CÓ ẢNH NỀN — cho ảnh hiện rõ, chữ vẫn đọc được
+   Chủ project 2026-09-16: "thay vì 1 nền màu như vậy" - muốn ô CTA có ảnh như
+   các khối khác. Cơ chế ảnh nền đã có sẵn trong template, nhưng ảnh bị
+   opacity:.12 (mờ 12%) nên gần như vô hình, trông đúng như một nền đơn sắc.
+
+   Cách xử lý giống .pts-catalog-campaign đã làm tốt ở trang Sản phẩm: cho ảnh
+   hiện rõ hơn, rồi phủ gradient navy đặc ở phía có chữ và nhạt dần sang phía
+   ảnh - chữ luôn đủ tương phản mà ảnh vẫn nhìn ra được nội dung.
+   ============================================================ */
+.pts-sh-contact-background,
+.pts-ph-contact-bg,
+.nh-cta-bg{opacity:.5!important;}
+.pts-sh-contact-band:before,
+.pts-ph-contact-band:before,
+.nh-cta-band:before{
+  content:"";position:absolute;z-index:-1;inset:0;pointer-events:none;
+  background:linear-gradient(90deg,
+    rgba(10,34,81,.97) 0,
+    rgba(10,34,81,.9) 38%,
+    rgba(10,34,81,.55) 68%,
+    rgba(10,34,81,.3) 100%);
+}
+/* Mobile: chữ xếp dọc phủ gần hết chiều ngang nên cần phủ đậm theo trục dọc. */
+@media(max-width:900px){
+  .pts-sh-contact-band:before,
+  .pts-ph-contact-band:before,
+  .nh-cta-band:before{
+    background:linear-gradient(180deg,rgba(10,34,81,.96) 0,rgba(10,34,81,.86) 100%);
+  }
+}
+/* Dải CTA Tin tức trước đây nền sáng (gradient xanh nhạt) + chữ navy; giờ có
+   ảnh phủ navy nên chữ phải đảo sang sáng cho đủ tương phản. */
+.nh-cta-band{background:var(--pts-navy)!important;}
+.nh-cta-copy h2{color:#fff!important;}
+.nh-cta-copy p{color:#cbd5f5!important;}
+.nh-cta-icon{background:rgba(255,255,255,.1)!important;color:var(--pts-gold-light)!important;border-radius:3px!important;}
+.nh-cta-actions{border-left-color:rgba(255,255,255,.22)!important;}
+.nh-phone{color:#fff!important;}
+.nh-phone small{color:#cbd5f5!important;}
+
+/* ============================================================
+   ĐẦU SECTION (tiêu đề + link "xem tất cả") — dùng chung toàn site
+   Phát hiện 2026-09-16: .pts-retail-section-head và .pts-retail-text-link chỉ
+   được định nghĩa trong home-retail-v3.css, mà file đó CHỈ nạp khi
+   $source == 'index'. Mọi trang khác dùng lại 2 class này (Đại lý, khối "Dự án
+   khác" ở chi tiết dự án) đều mất layout: tiêu đề rơi về canh giữa chữ hoa
+   theo CSS legacy, link "xem tất cả" tụt xuống dưới thay vì cùng hàng bên phải.
+   Đây đúng là kiểu "chỗ không liên kết" chủ project nói.
+   ============================================================ */
+.pts-retail-section-head{
+  display:flex;align-items:flex-end;justify-content:space-between;
+  gap:28px;margin-bottom:30px;
+}
+.pts-retail-section-head .section-title{margin:0;text-align:left;}
+.pts-retail-section-head .section-title h2,
+.pts-retail-section-head .section-title h3{
+  margin:0!important;padding:0!important;text-align:left!important;
+  color:var(--pts-navy)!important;text-transform:none!important;
+  font-size:clamp(24px,2.6vw,34px)!important;font-weight:900!important;
+  line-height:1.2!important;letter-spacing:-.02em;
+}
+.pts-retail-section-head .section-title h2:after,
+.pts-retail-section-head .section-title h3:after,
+.pts-retail-section-head .section-title>p{display:none!important;content:none!important;}
+.pts-retail-text-link{
+  display:inline-flex;align-items:center;gap:9px;flex:0 0 auto;
+  padding-bottom:7px;border-bottom:1px solid rgba(13,39,82,.24);
+  color:var(--pts-navy)!important;font-size:13px;font-weight:850;
+}
+.pts-retail-text-link i{font-size:10px;color:var(--pts-gold-dark);transition:transform .18s ease;}
+.pts-retail-text-link:hover{border-color:var(--pts-gold);color:var(--pts-gold-dark)!important;}
+.pts-retail-text-link:hover i{transform:translateX(3px);}
+@media(max-width:767px){
+  .pts-retail-section-head{display:block;margin-bottom:22px;}
+  .pts-retail-text-link{margin-top:13px;}
+}

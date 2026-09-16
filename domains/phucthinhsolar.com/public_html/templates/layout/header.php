@@ -41,7 +41,8 @@ $headerQuickCategories = !empty($splist) ? array_slice($splist, 0, 5) : array();
 			</div>
 
 			<a class="logo-header pts-brand pts-brand-wordmark" href="" aria-label="Phúc Thịnh Solar - Trang chủ">
-				<?=$func->getImage(['class' => '', 'sizes' => '420x90x3', 'upload' => UPLOAD_PHOTO_L, 'image' => $logo['photo'], 'alt' => $setting['name'.$lang]])?>
+				<?php /* Logo là ảnh LCP, nằm ngay đầu viewport - không lazy-load. */ ?>
+				<?=$func->getImage(['class' => '', 'noNativeLazy' => true, 'sizes' => '420x90x3', 'upload' => UPLOAD_PHOTO_L, 'image' => $logo['photo'], 'alt' => $setting['name'.$lang]])?>
 			</a>
 
 			<div class="hdr-search-zone">

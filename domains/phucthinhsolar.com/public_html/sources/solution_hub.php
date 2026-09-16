@@ -69,5 +69,10 @@ $solutionCtaTitle = solutionHubField($solutionCta, 'name', $lang) ?: $solutionUi
 $solutionCtaDesc = solutionHubField($solutionCta, 'desc', $lang) ?: $solutionUi['contact_desc'];
 $solutionCtaButton = solutionHubField($solutionCta, 'title_index', $lang) ?: $solutionUi['consult'];
 $solutionCtaImage = solutionHubImage(isset($solutionCta['photo']) ? $solutionCta['photo'] : '', UPLOAD_NEWS_L);
+/* 2026-09-16: Admin chưa nhập ảnh cho solution-cta nên dải CTA hiện nền navy
+   đơn sắc, chủ project phản hồi muốn có ảnh như các khối khác. Fallback về ảnh
+   mẫu 16:5 đóng gói cùng site (đúng tỷ lệ CTA cần), vẫn ưu tiên tuyệt đối ảnh
+   Admin nhập nếu có - cùng cơ chế project_hub.php đã dùng. */
+if($solutionCtaImage === '') $solutionCtaImage = 'assets/images/site-visuals/catalog-street-lighting.jpg';
 $solutionHotline = !empty($optsetting['hotline']) ? $optsetting['hotline'] : '';
 $solutionHotlineTel = preg_replace('/[^0-9+]/', '', $solutionHotline);

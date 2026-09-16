@@ -109,4 +109,47 @@
 </section>
 <?php } ?>
 
+<?php /* Dự án khác cùng danh mục (2026-09-16). Chủ project: trang chi tiết nên
+         có khối "dự án tương tự" như trang bài viết đã có "Tin liên quan".
+
+         Chọn "cùng danh mục" thay vì "đã xem": đúng ngữ cảnh hơn (khách xem dự
+         án hộ gia đình thường muốn xem thêm dự án hộ gia đình khác), luôn có nội
+         dung, và không cần lưu hành vi người dùng vào máy họ.
+
+         $news do sources/news.php dựng sẵn - đã lọc cùng id_list, loại chính bài
+         đang xem, chỉ lấy bài đang hiển thị. Không cần query thêm. */ ?>
+<?php if(!empty($news)) { ?>
+<section class="pts-project-hub pts-project-related" aria-labelledby="project-related-title">
+    <div class="uk-container">
+        <div class="pts-retail-section-head">
+            <div class="section-title">
+                <h3 id="project-related-title">Dự án khác</h3>
+            </div>
+            <a class="pts-retail-text-link" href="du-an-da-thuc-hien/">Xem tất cả dự án <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+        </div>
+        <div class="pts-ph-grid">
+            <?php foreach(array_slice($news, 0, 3) as $relatedProject) {
+                $relatedName = !empty($relatedProject['name'.$lang]) ? $relatedProject['name'.$lang] : '';
+                if($relatedName === '') continue;
+            ?>
+            <a class="pts-ph-card" href="<?=htmlspecialchars($relatedProject[$sluglang].'/', ENT_QUOTES, 'UTF-8')?>" title="<?=htmlspecialchars($relatedName, ENT_QUOTES, 'UTF-8')?>">
+                <div class="pts-ph-card-media">
+                    <?=$func->getImage(['class' => '', 'sizes' => '640x400x1', 'upload' => UPLOAD_NEWS_L, 'image' => $relatedProject['photo'], 'alt' => $relatedName])?>
+                </div>
+                <div class="pts-ph-card-body">
+                    <h2><?=htmlspecialchars($relatedName, ENT_QUOTES, 'UTF-8')?></h2>
+                    <?php if(!empty($relatedProject['address'])) { ?>
+                    <div class="pts-ph-meta">
+                        <span><i class="fas fa-map-marker-alt" aria-hidden="true"></i><?=htmlspecialchars($relatedProject['address'], ENT_QUOTES, 'UTF-8')?></span>
+                    </div>
+                    <?php } ?>
+                    <span class="pts-ph-arrow">Xem dự án <i class="fas fa-arrow-right" aria-hidden="true"></i></span>
+                </div>
+            </a>
+            <?php } ?>
+        </div>
+    </div>
+</section>
+<?php } ?>
+
 <?php include TEMPLATE.'news/project_cta_tpl.php'; ?>

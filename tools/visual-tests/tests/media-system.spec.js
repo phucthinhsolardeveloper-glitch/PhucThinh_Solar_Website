@@ -5,6 +5,20 @@ test.beforeEach(async ({ page }) => {
 });
 
 async function imageMetrics(locator) {
+  /* 2026-09-16: ảnh nằm dưới màn hình giờ dùng loading="lazy" của trình duyệt
+     (trang chủ trước đây tải ngay 68 ảnh = 1.2MB, đúng nguyên nhân chủ project
+     báo "đơ và lag"). Nên phải cuộn tới ảnh và đợi tải xong trước khi đo -
+     đúng những gì người dùng thật gặp. Vẫn kiểm tra đủ: ảnh tải được, đủ nét,
+     object-fit đúng; không nới lỏng assertion nào. */
+  await locator.scrollIntoViewIfNeeded();
+  await locator.evaluate(img => img.complete && img.naturalWidth > 0
+    ? true
+    : new Promise(resolve => {
+        const done = () => resolve(true);
+        img.addEventListener('load', done, {once: true});
+        img.addEventListener('error', done, {once: true});
+        setTimeout(done, 3000);
+      }));
   return locator.evaluate(img => {
     const box = img.getBoundingClientRect();
     return {
