@@ -20,6 +20,8 @@ $nhImageSize=strpos($nhCardClass,'nh-lead')!==false ? '900x506x1' : '600x338x1';
         </div>
         <h2><?=$nhEscape($nhName)?></h2>
         <?php if($nhExcerpt !== '') { ?><p><?=$nhEscape($nhExcerpt)?></p><?php } ?>
-        <span class="nh-arrow" aria-hidden="true">→</span>
+        <?php /* 2026-09-16: thêm nhãn thật thay mũi tên đứng một mình, khớp
+                 "Xem dự án" ở trang Dự án và .pts-retail-text-link trang chủ. */ ?>
+        <span class="nh-arrow">Đọc tiếp <i class="fas fa-arrow-right" aria-hidden="true"></i></span>
     </div>
 </a>

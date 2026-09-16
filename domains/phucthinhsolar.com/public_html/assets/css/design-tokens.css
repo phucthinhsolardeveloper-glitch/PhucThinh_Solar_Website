@@ -1,0 +1,188 @@
+/* ============================================================
+   DESIGN TOKENS — nguồn sự thật duy nhất cho bảng màu và chip lọc
+   Tạo 2026-09-16.
+
+   VÌ SAO CẦN: chủ project phản hồi website "ngôn ngữ thiết kế chưa liền mạch,
+   cứ lệch lệch, thiếu thiếu cái gì đó". Đo lại thì đúng và có gốc rễ rõ ràng:
+   mỗi trang hub tự định nghĩa bảng màu RIÊNG thay vì dùng chung một bộ, nên
+   cùng một vai trò màu có tới 4 giá trị khác nhau:
+
+     navy   : --pts-navy #0a2251 | --ph-navy #071b46 | --nh-navy #091f4c | --about-navy #061b46
+     gold   : --pts-gold #c9962e | --ph-gold #c58a24 | --sh-gold #b67d2e   | --about-gold #d29a28
+     muted  : --pts-muted #64748b | --ph-muted #5d6d85 | --nh-muted #6a7894 | --sh-muted #52627a
+     line   : --pts-line #e5e7eb | --ph-line #dfe6ef | --nh-line #e1e7f0   | --sh-line #e1e7ef
+
+   Chênh lệch chỉ 2-5% nên không ai chỉ ra được sai ở đâu, nhưng khi lướt từ
+   trang này sang trang khác thì mắt nhận ra ngay - đó chính là cảm giác "lệch".
+
+   CÁCH LÀM: không sửa rải rác hàng trăm chỗ dùng biến cũ (rủi ro cao, khó
+   rollback). Thay vào đó trỏ TẤT CẢ biến riêng của từng hub về đúng token
+   chung ở đây. Mỗi hub vẫn giữ tên biến của mình nên không file nào phải
+   viết lại, nhưng giá trị thì thống nhất tuyệt đối.
+
+   Nạp SAU mọi stylesheet hub để thắng khai báo :root cục bộ của chúng.
+   Rollback: bỏ dòng nạp file này trong templates/layout/css.php.
+   ============================================================ */
+
+:root{
+  /* Navy: lấy --pts-navy #0a2251 làm chuẩn (đang dùng ở header, trang chủ,
+     footer - tức là bề mặt thương hiệu xuất hiện trên MỌI trang). */
+  --pts-navy:#0a2251;
+  --pts-navy-deep:#061537;
+  --pts-navy-light:#123a7a;
+
+  /* Gold: giữ --pts-gold #c9962e (dùng ở logo wordmark, nút chính, header). */
+  --pts-gold:#c9962e;
+  --pts-gold-light:#e0b654;
+  --pts-gold-dark:#9c7420;
+
+  /* Chữ phụ + đường kẻ + bề mặt trung tính. */
+  --pts-muted:#64748b;
+  --pts-line:#e5e7eb;
+  --pts-surface:#f8fafc;
+  --pts-cream:#fffbeb;
+
+  /* Chip lọc/chuyển mục: trung tính xám-xanh, KHÔNG dùng vàng kem cho trạng
+     thái chưa chọn (chủ project 2026-09-16: "mấy nút có cái màu này là tôi
+     không ưng"). Vàng được giữ riêng cho hành động chính và điểm nhấn, nếu
+     đem dùng cho cả chip chưa chọn thì mất hết thứ bậc thị giác. */
+  --pts-chip-bg:#eef2f7;
+  --pts-chip-bg-hover:#dfe6ef;
+  --pts-chip-text:#0a2251;
+}
+
+/* Trỏ biến riêng của từng hub về token chung. Giữ nguyên tên biến để không
+   file nào phải viết lại selector, chỉ đồng nhất giá trị. */
+.pts-project-hub,.pts-ph-contact{
+  --ph-navy:var(--pts-navy);
+  --ph-gold:var(--pts-gold);
+  --ph-gold-soft:var(--pts-cream);
+  --ph-muted:var(--pts-muted);
+  --ph-line:var(--pts-line);
+}
+.pts-news-hub,.nh-cta{
+  --nh-navy:var(--pts-navy);
+  --nh-gold:var(--pts-gold);
+  --nh-muted:var(--pts-muted);
+  --nh-line:var(--pts-line);
+}
+.pts-solution-hub{
+  --sh-navy:var(--pts-navy);
+  --sh-gold:var(--pts-gold);
+  --sh-muted:var(--pts-muted);
+  --sh-line:var(--pts-line);
+  --sh-surface:var(--pts-surface);
+}
+.pts-about-page,.pts-about-hero,.pts-about-story,.pts-about-people,
+.pts-about-certificates,.pts-about-contact{
+  --about-navy:var(--pts-navy);
+  --about-navy-soft:var(--pts-navy-light);
+  --about-gold:var(--pts-gold);
+  --about-gold-light:var(--pts-gold-light);
+  --about-border:var(--pts-line);
+}
+
+/* ============================================================
+   CHIP LỌC / CHUYỂN MỤC — một kiểu duy nhất cho mọi trang
+   Trước đây cùng vai trò này có 4 kiểu: Dự án bo 3px nền kem, Sản phẩm pill
+   999px nền kem, Tin tức bo 28px nền xám + active gradient vàng nhạt, Giải
+   pháp bo 3px nền trong suốt. Cỡ chữ 12/13.5/14px, chiều cao 44/48px.
+   ============================================================ */
+.pts-ph-filter,
+.pts-catalog-jump a,
+.nh-filter,
+.pts-sd-switcher a{
+  border:0!important;
+  border-radius:3px!important;
+  background:var(--pts-chip-bg)!important;
+  color:var(--pts-chip-text)!important;
+  min-height:42px!important;
+  padding:9px 16px!important;
+  font-size:13.5px!important;
+  font-weight:750!important;
+  box-shadow:none!important;
+  transition:background .15s ease,color .15s ease!important;
+}
+.pts-ph-filter:hover,
+.pts-catalog-jump a:hover,
+.nh-filter:hover,
+.pts-sd-switcher a:hover{
+  transform:none!important;
+  background:var(--pts-chip-bg-hover)!important;
+  color:var(--pts-chip-text)!important;
+  border-color:transparent!important;
+}
+/* Trạng thái đang chọn: navy đầy - tương phản mạnh nhất, đọc được ngay là
+   "đang ở đây", và không tiêu vào quota màu vàng của hành động chính. */
+.pts-ph-filter.is-active,
+.nh-filter.is-active,
+.pts-sd-switcher a.is-active{
+  background:var(--pts-navy)!important;
+  color:#fff!important;
+  box-shadow:none!important;
+}
+.pts-ph-filter.is-active i,.pts-ph-filter.is-active img,
+.nh-filter.is-active i,.nh-filter.is-active img{filter:brightness(0) invert(1);}
+
+/* ============================================================
+   NÚT HÀNH ĐỘNG CHÍNH — gold phẳng, chữ navy, bo 4px
+   Tin tức đang dùng riêng pill bo 28px + gradient vàng đậm + chữ TRẮNG, khác
+   hẳn .pts-btn-gold (gold phẳng + chữ navy) dùng ở mọi nơi khác.
+   ============================================================ */
+.nh-consult{
+  border-radius:4px!important;
+  background:var(--pts-gold)!important;
+  color:var(--pts-navy)!important;
+  box-shadow:none!important;
+  gap:10px!important;
+  font-size:14px!important;
+  font-weight:850!important;
+}
+.nh-consult:hover{background:var(--pts-gold-light)!important;}
+/* Shadow nặng của nút gold chuẩn cũng không còn phù hợp hệ phẳng. */
+.pts-btn-gold{box-shadow:none!important;}
+
+/* ============================================================
+   TIÊU ĐỀ TRANG HUB — canh trái, một cấp, cùng cỡ
+   Trang chủ/Dự án/Đại lý canh trái nhưng Tin tức canh giữa; cỡ h1 lệch nhau
+   (Tin tức tối đa 40px, Dự án 44px, Đại lý 34px) và letter-spacing khác nhau.
+   Chốt theo trang chủ - bề mặt xuất hiện trên mọi phiên truy cập.
+   ============================================================ */
+.nh-heading{text-align:left!important;margin-left:0!important;margin-right:0!important;}
+.nh-heading p{margin-left:0!important;margin-right:0!important;}
+.nh-heading h1,
+.pts-ph-heading h1{
+  font-size:clamp(28px,2.9vw,40px)!important;
+  letter-spacing:-.03em!important;
+  line-height:1.2!important;
+}
+
+/* Mũi tên "đọc tiếp/xem thêm" trên card: text-link có nhãn, cùng một kiểu. */
+.nh-arrow,
+.pts-ph-arrow{
+  position:static!important;
+  display:inline-flex!important;align-items:center;gap:8px;
+  width:auto!important;height:auto!important;
+  margin-top:14px!important;padding:0 0 5px!important;
+  border:0!important;border-bottom:1px solid rgba(13,39,82,.24)!important;border-radius:0!important;
+  background:transparent!important;
+  color:var(--pts-navy)!important;font-size:13px!important;font-weight:850!important;
+}
+.nh-arrow i,.pts-ph-arrow i{font-size:10px;transition:transform .18s ease;}
+.nh-card:hover .nh-arrow,
+.pts-ph-card:hover .pts-ph-arrow{
+  border-bottom-color:var(--pts-gold)!important;color:var(--pts-gold-dark)!important;
+}
+.nh-card:hover .nh-arrow i,
+.pts-ph-card:hover .pts-ph-arrow i{transform:translateX(3px);}
+
+/* Badge danh mục trên ảnh: cùng một nhãn navy phẳng ở mọi hub. */
+.nh-badge,
+.pts-ph-badge{
+  border-radius:3px!important;
+  background:rgba(10,34,81,.9)!important;
+  color:#fff!important;
+  font-size:11px!important;font-weight:800!important;
+  letter-spacing:.04em;text-transform:uppercase;
+  box-shadow:none!important;
+}

@@ -214,8 +214,23 @@ test('dải nhảy nhanh danh mục đủ tương phản và giữ một hàng t
     color: getComputedStyle(link).color,
     radius: parseFloat(getComputedStyle(link).borderTopLeftRadius),
   }));
-  expect(styles.background).toBe('rgb(231, 196, 95)');
-  expect(styles.color).toBe('rgb(7, 27, 63)');
+  /* 2026-09-16: trước đây khoá cứng nền vàng rgb(231,196,95). Chủ project bỏ
+     màu đó cho chip chưa chọn ("mấy nút có cái màu này là tôi không ưng") -
+     vàng giờ chỉ dành cho hành động chính và điểm nhấn, chip dùng nền trung
+     tính. Kiểm tra đúng bất biến cần giữ (tương phản chữ/nền đạt chuẩn đọc
+     được, bo góc nhỏ theo hệ phẳng) thay vì khoá một mã màu cụ thể. */
+  const srgb = value => {
+    const channel = value / 255;
+    return channel <= 0.03928 ? channel / 12.92 : Math.pow((channel + 0.055) / 1.055, 2.4);
+  };
+  const luminance = color => {
+    const [r, g, b] = color.match(/\d+/g).map(Number);
+    return 0.2126 * srgb(r) + 0.7152 * srgb(g) + 0.0722 * srgb(b);
+  };
+  const lighter = Math.max(luminance(styles.background), luminance(styles.color));
+  const darker = Math.min(luminance(styles.background), luminance(styles.color));
+  const contrastRatio = (lighter + 0.05) / (darker + 0.05);
+  expect(contrastRatio).toBeGreaterThanOrEqual(4.5);
   expect(styles.radius).toBeLessThanOrEqual(5);
 
   if (testInfo.project.name.includes('mobile')) {

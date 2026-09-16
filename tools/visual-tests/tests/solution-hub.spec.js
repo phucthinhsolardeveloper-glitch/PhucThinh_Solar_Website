@@ -184,8 +184,21 @@ test('All five solution details share the balanced responsive template', async (
     const tocSurface = await toc.evaluate(node => ({
       background: getComputedStyle(node).backgroundColor,
       linkColor: getComputedStyle(node.querySelector('a')).color,
+      /* 2026-09-16: trước đây khoá cứng rgb(7,27,70) = --sh-navy riêng của hub
+         Giải pháp. Mỗi hub từng tự định nghĩa navy riêng (4 giá trị lệch nhau
+         2-5%) nên toàn site trông không liền mạch; nay tất cả trỏ về token
+         chung --pts-navy. So với chính token đó để test còn đúng khi thương
+         hiệu đổi màu, nhưng vẫn bắt được nếu mục lục dùng màu lạ ngoài hệ. */
+      tokenNavy: getComputedStyle(document.documentElement).getPropertyValue('--pts-navy').trim(),
     }));
-    expect(tocSurface.background, path).toBe('rgb(7, 27, 70)');
+    const hexToRgb = hex => {
+      const value = hex.replace('#', '');
+      const full = value.length === 3 ? value.split('').map(c => c + c).join('') : value;
+      const int = parseInt(full, 16);
+      return `rgb(${(int >> 16) & 255}, ${(int >> 8) & 255}, ${int & 255})`;
+    };
+    expect(tocSurface.tokenNavy, path).toMatch(/^#[0-9a-fA-F]{3,6}$/);
+    expect(tocSurface.background, path).toBe(hexToRgb(tocSurface.tokenNavy));
     expect(tocSurface.linkColor, path).not.toBe(tocSurface.background);
     await expect(toc.locator('a').first()).toHaveClass(/is-active/);
     await expect(toc.locator('a').first()).toHaveAttribute('aria-current', 'location');
@@ -211,8 +224,17 @@ test('All five solution details share the balanced responsive template', async (
     const heroSurface = await hero.evaluate(node => ({
       background: getComputedStyle(node).backgroundColor,
       titleColor: getComputedStyle(node.querySelector('h1')).color,
+      /* Cùng lý do như mục lục ở trên: so với token navy chung thay vì mã màu
+         cứng của bảng màu riêng cũ. */
+      tokenNavy: getComputedStyle(document.documentElement).getPropertyValue('--pts-navy').trim(),
     }));
-    expect(heroSurface.background, path).toBe('rgb(7, 27, 70)');
+    const heroHexToRgb = hex => {
+      const value = hex.replace('#', '');
+      const full = value.length === 3 ? value.split('').map(c => c + c).join('') : value;
+      const int = parseInt(full, 16);
+      return `rgb(${(int >> 16) & 255}, ${(int >> 8) & 255}, ${int & 255})`;
+    };
+    expect(heroSurface.background, path).toBe(heroHexToRgb(heroSurface.tokenNavy));
     expect(heroSurface.titleColor, path).toBe('rgb(255, 255, 255)');
     if(path.includes('he-thong-luu-tru-bess')) {
       await expect(hero.locator('img')).toHaveAttribute('src', /solution-bess-v2\.jpg(?:\.webp)?/);

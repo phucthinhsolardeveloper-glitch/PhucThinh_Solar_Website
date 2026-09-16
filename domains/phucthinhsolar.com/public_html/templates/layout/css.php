@@ -82,6 +82,10 @@
     /* Chuẩn tỷ lệ/object-fit và các vị trí ảnh có mục đích. Nạp sau surface
        system vì đây là lớp cuối chịu trách nhiệm kích thước media responsive. */
     $css->set("css/media-system.css");
+    /* Bảng màu + chip lọc dùng chung. Phải nạp CUỐI CÙNG để thắng khai báo
+       :root cục bộ của từng hub (mỗi hub trước đây tự định nghĩa navy/gold/
+       muted/line riêng, lệch nhau 2-5% nên toàn site trông không liền mạch). */
+    $css->set("css/design-tokens.css");
     echo $css->get();
 ?>
 <script type="text/javascript" src="assets/js/jquery.min.js?v=NMr3JZBT0U"></script>
