@@ -452,7 +452,7 @@
 			            </div>
 			            <div class="card-body">
 			                <div class="alert alert-info py-2">
-			                    Ảnh riêng cho quảng cáo (Google Shopping, Facebook Catalog...): chỉ có sản phẩm trên nền sạch, <strong>không logo, không chữ, không khung/huy hiệu</strong>. Bỏ trống thì khi xuất CSV Shopping hệ thống tự dùng ảnh chính.
+			                    Ảnh riêng cho quảng cáo (Google Shopping, Facebook Catalog...): chỉ có sản phẩm trên nền sạch, <strong>không logo, không chữ, không khung/huy hiệu</strong>. Sản phẩm chưa có ảnh này sẽ không được đưa vào CSV Merchant Center.
 			                </div>
 			                <?php if(!empty($item['photo_feed'])) { ?>
 			                <div class="mb-2">
@@ -460,13 +460,13 @@
 			                </div>
 			                <div class="custom-control custom-checkbox mb-2">
 			                    <input type="checkbox" class="custom-control-input" name="remove_photo_feed" id="remove_photo_feed" value="1">
-			                    <label class="custom-control-label" for="remove_photo_feed">Xoá ảnh Shopping (quay lại dùng ảnh chính)</label>
+			                    <label class="custom-control-label" for="remove_photo_feed">Xoá ảnh Shopping (sản phẩm sẽ tạm ngừng xuất feed)</label>
 			                </div>
 			                <?php } ?>
 			                <div class="custom-file my-custom-file">
 			                    <input type="file" class="custom-file-input" name="file_feed" id="file_feed" lang="vi">
 			                    <label class="custom-file-label mb-0" data-browse="Chọn" for="file_feed">Chọn ảnh Shopping</label>
-			<strong class="d-block text-sm mt-2">Width: 200 px - Height: 200 px (nền trắng/sạch, không logo)</strong>
+			                    <strong class="d-block text-sm mt-2">Khuyến nghị 1000×1000 px; tối thiểu 500×500 px, nền trắng/sạch và không logo/chữ.</strong>
 			                </div>
 			            </div>
 			        </div>

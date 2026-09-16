@@ -1,7 +1,15 @@
 <?php
 /**
  * Partial hiển thị card sản phẩm dùng chung.
- * $pcNoLazy tắt lazy-load cho card nằm trong carousel.
+ *
+ * $pcNoLazy     tắt lazy-load JS (thư viện legacy bỏ qua section nằm sâu trong
+ *               trang nên card bị trắng) - ảnh vẫn phát src ngay.
+ * $pcInCarousel card nằm trong carousel (Owl/Slick). Slider dùng transform đẩy
+ *               slide ra ngoài vùng nhìn nên lazy-load NATIVE của trình duyệt
+ *               hoãn tải vô thời hạn, chỉ tải khi bấm mũi tên -> ô trắng chớp.
+ *               Cờ này tắt luôn native lazy. Lưới TĨNH (trang chủ, danh mục)
+ *               KHÔNG set cờ này: ảnh ở đó chiếm phần lớn dung lượng trang nên
+ *               vẫn cần native lazy.
  */
 require_once LIBRARIES.'product_promo.php';
 
@@ -19,7 +27,7 @@ $pcPromoFrame = productPromoFrameForCard($v, $cache);
             <span class="badge-discount">-<?=$pcDiscount?>%</span>
             <?php } ?>
             <?php if(!empty($pcNoLazy)) { ?>
-            <?=$func->getImage(array_merge(['isLazy' => false, 'class' => 'w-100 pts-product-photo', 'sizes' => '300x300x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]], watermarkImageArgs('product')))?>
+            <?=$func->getImage(array_merge(['isLazy' => false, 'noNativeLazy' => !empty($pcInCarousel), 'class' => 'w-100 pts-product-photo', 'sizes' => '300x300x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]], watermarkImageArgs('product')))?>
             <?php } else { ?>
             <?=$func->getImage(array_merge(['class' => 'lazy w-100 pts-product-photo', 'sizes' => '300x300x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]], watermarkImageArgs('product')))?>
             <?php } ?>

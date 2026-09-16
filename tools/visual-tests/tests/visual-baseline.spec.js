@@ -24,13 +24,28 @@ async function settlePage(page) {
   // decode làm dịch layout vài px, khiến baseline lệch ngẫu nhiên giữa các lần chạy.
   await page.evaluate(async () => {
     if (document.fonts && document.fonts.ready) await document.fonts.ready;
-    const pending = Array.from(document.images).filter(image => !image.complete);
-    await Promise.all(pending.map(image => new Promise(resolve => {
-      const finish = () => { clearTimeout(timer); resolve(); };
-      const timer = setTimeout(finish, 3000);
-      image.addEventListener('load', finish, { once: true });
-      image.addEventListener('error', finish, { once: true });
-    })));
+    /* 2026-09-16: ảnh dưới màn hình giờ dùng loading="lazy" nên sẽ KHÔNG bao
+       giờ complete khi ở đầu trang - chờ chúng chỉ tốn 3s timeout rồi vẫn chụp
+       trong lúc ảnh TRONG viewport có thể chưa decode xong, làm baseline đỏ
+       ngẫu nhiên rồi pass ở retry. Chỉ chờ đúng ảnh đang nằm trong viewport
+       (phần thực sự bị chụp), và chờ decode() thay vì chỉ sự kiện load để pixel
+       đã sẵn sàng khi screenshot. */
+    const inViewport = Array.from(document.images).filter(image => {
+      const box = image.getBoundingClientRect();
+      return box.width > 0 && box.height > 0 && box.bottom > 0 && box.top < window.innerHeight;
+    });
+    await Promise.all(inViewport.map(image => {
+      const settled = image.complete && image.naturalWidth > 0
+        ? Promise.resolve()
+        : new Promise(resolve => {
+            const finish = () => { clearTimeout(timer); resolve(); };
+            const timer = setTimeout(finish, 5000);
+            image.addEventListener('load', finish, { once: true });
+            image.addEventListener('error', finish, { once: true });
+          });
+      return settled
+        .then(() => (image.decode ? image.decode().catch(() => {}) : undefined));
+    }));
   });
   await page.waitForTimeout(1000);
 }
@@ -63,6 +78,23 @@ test('home featured categories visual baseline', async ({ page }) => {
   await settlePage(page);
   const categories = page.locator('.pts-home-category-wrap, .pts-ecosystem').first();
   await categories.scrollIntoViewIfNeeded();
+  /* 2026-09-16: settlePage() chỉ chờ ảnh trong viewport ở ĐẦU trang (xem chú
+     thích trong hàm), nên ảnh của rail danh mục - vốn dùng lazy JS và nằm dưới
+     màn hình - chưa kịp tải khi chụp, làm baseline đỏ ổn định. Sau khi cuộn tới
+     đúng vùng sắp chụp thì chờ thêm cho ảnh của riêng vùng đó tải.
+     Không dùng image.decode(): với ảnh lazy JS chưa được gán src, decode() có
+     thể treo vô thời hạn và làm cả test timeout 30s. */
+  await categories.evaluate(node => new Promise(resolve => {
+    const done = () => {
+      const images = Array.from(node.querySelectorAll('img'));
+      return images.every(image => !image.getAttribute('src') || image.complete);
+    };
+    if (done()) return resolve();
+    const deadline = Date.now() + 6000;
+    const timer = setInterval(() => {
+      if (done() || Date.now() > deadline) { clearInterval(timer); resolve(); }
+    }, 150);
+  }));
   await page.locator('.top-utility-bar, #headerscroll, #button-contact-vr').evaluateAll(elements => elements.forEach(element => {
     element.style.setProperty('display', 'none', 'important');
   }));

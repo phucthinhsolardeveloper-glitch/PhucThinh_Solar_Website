@@ -76,6 +76,8 @@ docker cp scripts/test-product-bulk.php "$web_container:/tmp/test-product-bulk.p
 docker cp scripts/test-product-project-links.php "$web_container:/tmp/test-product-project-links.php"
 docker cp scripts/test-product-power-filter.php "$web_container:/tmp/test-product-power-filter.php"
 docker cp scripts/test-product-content-blocks.php "$web_container:/tmp/test-product-content-blocks.php"
+docker cp scripts/test-product-merchant-feed.php "$web_container:/tmp/test-product-merchant-feed.php"
+docker cp scripts/test-product-structured-data.php "$web_container:/tmp/test-product-structured-data.php"
 docker cp scripts/test-cache-performance.php "$web_container:/tmp/test-cache-performance.php"
 docker cp scripts/test-admin-transfer-toast.php "$web_container:/tmp/test-admin-transfer-toast.php"
 docker cp scripts/test-admin-permission-gate.php "$web_container:/tmp/test-admin-permission-gate.php"
@@ -150,6 +152,8 @@ php -l libraries/class/class.Email.php
 php -l libraries/public_route_resolver.php
 php -l libraries/product_category_urls.php
 php -l libraries/product_promo.php
+php -l libraries/product_merchant_feed.php
+php -l libraries/product_structured_data.php
 php -l libraries/solution_hub.php
 php -l libraries/news_detail_media.php
 php -l libraries/config-type.php
@@ -182,6 +186,7 @@ php -l templates/account/forgot_password_tpl.php
 php -l templates/index/index_tpl.php
 php -l templates/layout/css.php
 php -l templates/layout/js.php
+php -l templates/layout/strucdata.php
 php -l templates/layout/menu.php
 php -l templates/layout/mmenu.php
 php -l templates/layout/modal.php
@@ -220,6 +225,8 @@ php -l /tmp/test-email-tls-security.php
 php -l /tmp/test-email-production-config.php
 php -l /tmp/test-public-session-security.php
 php -l /tmp/test-admin-button-visibility.php
+php -l /tmp/test-product-merchant-feed.php
+php -l /tmp/test-product-structured-data.php
 php -l /tmp/test-proxy-https.php
 php /tmp/test-security-hardening.php
 php /tmp/test-admin-readiness.php
@@ -228,6 +235,8 @@ php /tmp/test-product-bulk.php
 php /tmp/test-product-project-links.php
 php /tmp/test-product-power-filter.php
 php /tmp/test-product-content-blocks.php
+php /tmp/test-product-merchant-feed.php
+php /tmp/test-product-structured-data.php
 php /tmp/test-cache-performance.php
 php /tmp/test-admin-transfer-toast.php
 php /tmp/test-admin-permission-gate.php
@@ -338,6 +347,11 @@ assert_css_shipped /tmp/pts-predeploy-home.html 'assets/css/header-v3.css' '.pts
 assert_css_shipped /tmp/pts-predeploy-home.html 'assets/css/media-system.css' '.pts-contact-intro-row'
 grep -qF 'name="form_csrf"' /tmp/pts-predeploy-contact.html
 grep -qF 'title-pro-detail' /tmp/pts-predeploy-product.html
+grep -qF '"@type":"Product"' /tmp/pts-predeploy-product.html
+if grep -Eq '925872|Executive Objects|UsedCondition|2020-11-05|priceValidUntil' /tmp/pts-predeploy-product.html; then
+    echo "FAIL: Product JSON-LD còn dữ liệu mẫu/giả hoặc hạn giá lỗi thời" >&2
+    exit 1
+fi
 grep -qF 'Gọi báo giá' /tmp/pts-predeploy-product.html
 # Nút báo giá dạng icon thuộc card listing, không phải template chi tiết. Sản
 # phẩm mới nhất có thể không có related products nên dò trong product detail sẽ

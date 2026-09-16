@@ -361,3 +361,65 @@
   .pts-retail-section-head{display:block;margin-bottom:22px;}
   .pts-retail-text-link{margin-top:13px;}
 }
+
+/* ============================================================
+   TRANG CHI TIẾT SẢN PHẨM — nâng cấp tab và nhịp nội dung (2026-09-16)
+   Chủ project: "mấy cái nút này nằm ở đây có phải hợp lí k".
+
+   Đo ra hai vấn đề thật:
+   1. Tab nằm ở lề trái container (x=32) nhưng nội dung trong tab có
+      margin:270px auto (căn giữa, rộng 820px) -> tab lơ lửng, không dính với
+      nội dung nó điều khiển. Đó chính là cảm giác "không hợp lý".
+   2. Nút tab đang chọn vẫn dùng GRADIENT vàng (rule .nav-link.active gộp chung
+      với nhiều thành phần khác ở theme-v2), trái hệ gold phẳng.
+
+   Xử lý: đưa tab và nội dung về cùng một trục, và làm tab ra dáng TAB thật -
+   có đường kẻ chạy hết chiều rộng, mục đang chọn gắn liền vào vùng nội dung
+   bằng gạch chân vàng, thay vì 3 viên nút rời rạc trông như nút bấm.
+   ============================================================ */
+
+/* Thanh tab: đường kẻ nền chạy hết chiều rộng để neo nhóm tab vào nội dung. */
+.tabs-pro-detail>#tabsProDetail{
+  gap:0!important;padding:0!important;
+  border-bottom:1px solid var(--pts-line)!important;
+  background:transparent!important;
+}
+.tabs-pro-detail>#tabsProDetail .nav-item{margin:0!important;}
+.tabs-pro-detail>#tabsProDetail .nav-link{
+  position:relative;
+  border:0!important;border-radius:0!important;
+  padding:14px 22px!important;
+  background:transparent!important;background-image:none!important;
+  color:var(--pts-muted)!important;
+  font-size:14.5px!important;font-weight:800!important;
+}
+.tabs-pro-detail>#tabsProDetail .nav-link:hover{color:var(--pts-navy)!important;}
+/* Mục đang chọn: chữ navy + gạch vàng dày dưới chân, nối trực tiếp xuống vùng
+   nội dung - đọc ra ngay "đang xem phần này", không cần nền gradient. */
+#tabsProDetail .nav-link.active,
+.tabs-pro-detail>#tabsProDetail .nav-link.active{
+  background:transparent!important;background-image:none!important;
+  color:var(--pts-navy)!important;
+  box-shadow:none!important;
+}
+.tabs-pro-detail>#tabsProDetail .nav-link.active:after{
+  content:"";position:absolute;left:0;right:0;bottom:-1px;
+  height:3px;background:var(--pts-gold);
+}
+
+/* Nội dung tab về cùng trục với tab (canh trái), vẫn giữ giới hạn bề ngang
+   cho dễ đọc thay vì căn giữa lệch khỏi tab. */
+.pts-product-desc{margin:0!important;padding:30px 0 40px!important;}
+#tabsProDetailContent .tab-pane{padding-top:0!important;}
+
+/* Tiêu đề khối "Đánh giá sản phẩm" / "Sản phẩm liên quan": dùng đúng hệ tiêu
+   đề section của site thay vì chữ hoa nhỏ rời rạc. */
+.title-product-orther>span,
+.comment-statistic-title,
+.pts-related-showcase .title-product-orther>span{
+  display:block;
+  color:var(--pts-navy)!important;
+  font-size:clamp(22px,2.2vw,30px)!important;font-weight:900!important;
+  text-transform:none!important;letter-spacing:-.02em;
+}
+.title-product-orther{margin-bottom:24px!important;}

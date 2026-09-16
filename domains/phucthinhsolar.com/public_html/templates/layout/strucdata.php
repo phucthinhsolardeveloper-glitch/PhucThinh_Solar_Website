@@ -1,64 +1,21 @@
-<?php if($template == 'product/product_detail') { ?>
-    <!-- Product -->
-    <script type="application/ld+json">
-        {
-            "@context": "https://schema.org/",
-            "@type": "Product",
-            "name": "<?=@$rowDetail['name'.$lang]?>",
-            "image":
-            [
-                "<?=$configBase.UPLOAD_PRODUCT_L.@$rowDetail['photo']?>"
-            ],
-            "description": "<?=$seo->get('description')?>",
-            "sku":"SP0<?=@$rowDetail['id']?>",
-            "mpn": "925872",
-            "brand":
-            {
-                "@type": "Brand",
-                "name": "<?=(!empty($productList['name'.$lang])) ? $productList['name'.$lang] : $setting['name'.$lang]?>"
-            },
-            "review":
-            {
-                "@type": "Review",
-                "reviewRating":
-                {
-                    "@type": "Rating",
-                    "ratingValue": "5",
-                    "bestRating": "5"
-                },
-                "author":
-                {
-                    "@type": "Person",
-                    "name": "<?=@$setting['name'.$lang]?>"
-                }
-            },
-            "aggregateRating":
-            {
-                "@type": "AggregateRating",
-                "ratingValue": "4.4",
-                "reviewCount": "89"
-            },
-            <?php if(!publicProductRequiresQuote(isset($rowDetail) ? $rowDetail : array())) { ?>
-            "offers":
-            {
-                "@type": "Offer",
-                "url": "<?=$func->getCurrentPageURL_CANO()?>",
-                "priceCurrency": "VND",
-                "price": "<?=@$rowDetail['regular_price']?>",
-                "priceValidUntil": "2020-11-05",
-                "itemCondition": "https://schema.org/UsedCondition",
-                "availability": "https://schema.org/InStock",
-                "seller":
-                {
-                    "@type": "Organization",
-                    "name": "Executive Objects"
-                }
-            }
-            <?php } else { ?>
-            "url": "<?=$func->getCurrentPageURL_CANO()?>"
-            <?php } ?>
-        }
-    </script>
+<?php if($template == 'product/product_detail') {
+    require_once LIBRARIES.'product_structured_data.php';
+    $productSchemaImage = !empty($rowDetail['photo']) ? $configBase.UPLOAD_PRODUCT_L.$rowDetail['photo'] : '';
+    $productSchema = productStructuredData(
+        isset($rowDetail) && is_array($rowDetail) ? $rowDetail : array(),
+        isset($productBrand) && is_array($productBrand) ? $productBrand : array(),
+        isset($setting) && is_array($setting) ? $setting : array(),
+        $lang,
+        $func->getCurrentPageURL_CANO(),
+        $productSchemaImage,
+        $seo->get('description'),
+        publicProductRequiresQuote(isset($rowDetail) ? $rowDetail : array()),
+        isset($comment) ? $comment->avgPoint() : 0,
+        isset($comment) ? $comment->total : 0
+    );
+?>
+    <!-- Product: chỉ xuất dữ liệu thực, không tạo MPN/đánh giá/hạn giá giả -->
+    <script type="application/ld+json"><?=json_encode($productSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)?></script>
 <?php } else if($template == 'news/news_detail') { ?>
     <!-- News -->
     <script type="application/ld+json">

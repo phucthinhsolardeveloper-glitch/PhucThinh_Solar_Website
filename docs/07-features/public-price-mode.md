@@ -20,6 +20,7 @@ Khi công tắc toàn site bật giá, từng sản phẩm vẫn có checkbox **
 - Card và trang chi tiết không xuất số tiền hoặc phần trăm giảm giá.
 - Không có filter/sort theo giá (`is_price` bị bỏ qua ở `product.php`, `fillter_service.php`, `search_product.php`).
 - Product structured data không có `Offer.price` (`templates/layout/strucdata.php`).
+- Admin khóa xuất Merchant feed để không tạo giá feed lệch landing page.
 - Nút mua/giỏ được thay bằng CTA gọi hoặc gửi yêu cầu báo giá.
 - `api/cart.php` trả HTTP 409; `sources/order.php` không tạo đơn giá 0.
 

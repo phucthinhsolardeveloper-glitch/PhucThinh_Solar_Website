@@ -3,6 +3,8 @@
 	require_once LIBRARIES.'product_projects.php';
 	require_once LIBRARIES.'product_content_blocks.php';
 	require_once LIBRARIES.'product_promo.php';
+	require_once LIBRARIES.'product_merchant_feed.php';
+	require_once LIBRARIES.'public_pricing.php';
 
 	/* Kiểm tra active product */
 	if(isset($config['product']))
@@ -64,14 +66,43 @@
 		return (int)$product['num'] + (int)$child['num'];
 	}
 
-	/* Xuat CSV cho quang cao Shopping: uu tien anh sach photo_feed (khong watermark,
-	   khong khung/huy hieu), rot ve photo chinh neu chua co. Link anh tro thang file
-	   goc trong upload/product/ - watermark chi ap luc tao thumbnail nen file goc sach. */
+	/* Xuất feed Google Merchant Center (Shopping).
+	   Nâng cấp 2026-09-16: bản trước chỉ có 6 cột (code/title/link/image_link/
+	   price/sale_price) nên chưa phù hợp để gửi thẳng lên Merchant Center: thiếu
+	   các cột bắt buộc
+	   (id, description, availability, condition, brand) và price không có đơn vị
+	   tiền tệ. Nay xuất đúng tên cột theo đặc tả Google, price dạng
+	   "1356000 VND", và chỉ xuất dòng đủ điều kiện để feed không bị lỗi hàng loạt.
+
+	   Ảnh: chỉ dùng photo_feed đã biên tập nền sạch, không logo/chữ/khung. */
 	function productExportFeedCsv()
 	{
-		global $d, $type, $configBase;
+		global $d, $type, $configBase, $func;
 
-		$rows = $d->rawQuery("select code, namevi, slugvi, regular_price, sale_price, photo, photo_feed from #_product where type = ? and find_in_set('hienthi',status) order by id", array($type));
+		/* Merchant yêu cầu giá feed khớp giá nhìn thấy trên landing page. */
+		if(!publicProductPricesVisible())
+		{
+			$func->transfer('Chưa thể xuất feed: website đang ở chế độ liên hệ báo giá. Hãy bật hiển thị giá công khai trước để giá trên feed khớp trang sản phẩm.', 'index.php?com=product&act=man&type='.$type, false);
+		}
+
+		$rows = $d->rawQuery("select p.code, p.namevi, p.slugvi, p.regular_price, p.sale_price, p.photo_feed, p.descvi, p.cong_suat, p.status,
+			b.namevi as brand_name, pl.namevi as list_name, pc.namevi as cat_name
+			from #_product p
+			left join #_product_brand b on b.id = p.id_brand and b.type = p.type
+			left join #_product_list pl on pl.id = p.id_list and pl.type = p.type
+			left join #_product_cat pc on pc.id = p.id_cat and pc.type = p.type
+			where p.type = ? and find_in_set('hienthi',p.status) order by p.id", array($type));
+
+		$feedRows = array();
+		foreach($rows as $row)
+		{
+			$feedRow = productMerchantFeedRow($row, $configBase, ROOT.UPLOAD_PRODUCT_L);
+			if($feedRow !== null) $feedRows[] = $feedRow;
+		}
+		if(!$feedRows)
+		{
+			$func->transfer('Chưa có sản phẩm đủ điều kiện xuất feed. Cần mã sản phẩm, giá hợp lệ và ảnh Shopping sạch tối thiểu 500×500 px.', 'index.php?com=product&act=man&type='.$type.'&data_status=missing_photo_feed', false);
+		}
 
 		$filename = 'shopping-feed-'.preg_replace('/[^a-z0-9\-]/i', '', (string) $type).'-'.date('Ymd-His').'.csv';
 		header('Content-Type: text/csv; charset=UTF-8');
@@ -79,14 +110,12 @@
 
 		$out = fopen('php://output', 'w');
 		fwrite($out, "\xEF\xBB\xBF");
-		fputcsv($out, array('code', 'title', 'link', 'image_link', 'price', 'sale_price'));
+		/* Tên cột đúng đặc tả Google Merchant Center. */
+		fputcsv($out, productMerchantFeedHeaders());
 
-		foreach($rows as $row)
+		foreach($feedRows as $feedRow)
 		{
-			$image = !empty($row['photo_feed']) ? $row['photo_feed'] : $row['photo'];
-			$imageLink = !empty($image) ? $configBase.'upload/product/'.$image : '';
-			$link = !empty($row['slugvi']) ? $configBase.'san-pham/'.$row['slugvi'] : '';
-			fputcsv($out, array($row['code'], $row['namevi'], $link, $imageLink, $row['regular_price'], $row['sale_price']));
+			fputcsv($out, $feedRow);
 		}
 
 		fclose($out);
@@ -607,6 +636,14 @@
 					$response['messages'][] = 'Đường dẫn ('.$v.') không được trống';
 				}
 			}
+		}
+
+		/* Chặn ảnh Shopping quá nhỏ ngay trên form thay vì âm thầm loại sản
+		   phẩm khỏi CSV sau khi Admin đã lưu. Kiểm tra trên file tạm; bước
+		   uploadImage() tiếp tục chịu trách nhiệm MIME, extension và dung lượng. */
+		if($func->hasFile('file_feed') && !productMerchantImageMeetsMinimum($_FILES['file_feed']['tmp_name']))
+		{
+			$response['messages'][] = 'Ảnh Shopping phải có kích thước tối thiểu 500×500 px';
 		}
 
 		if(!empty($response))

@@ -7,6 +7,27 @@ const { test, expect } = require('@playwright/test');
 // đây cho nhất quán, để test đo giao diện thật chứ không đo bản dịch máy.
 test.beforeEach(async ({ page }) => {
   await page.route('https://cdn.gtranslate.net/**', route => route.abort());
+  /* 2026-09-16: popup chào mừng chỉ hiện SAU khi apps.js chạy, nên
+     dismissEntrancePopup() gọi lúc popup chưa kịp render sẽ thấy "không có
+     popup" rồi popup bung lên sau đó, chắn mọi tương tác và kéo
+     visibility:hidden lên cụm nút liên hệ nổi (rule .modal-open
+     #button-contact-vr) - làm 4 test đỏ ngẫu nhiên kèm timeout 30s.
+     Chặn tất định: ghi đè sessionStorage.getItem để khoá 'pts-popup-campaign'
+     luôn trả đúng data-campaign-key của trang. Không hardcode 'current' được
+     vì key thật là hash động theo chiến dịch (vd "c90a85b8b62ba4fd4c06").
+     Popup vẫn được kiểm tra riêng ở test dành cho nó. */
+  await page.addInitScript(() => {
+    try {
+      const original = window.sessionStorage.getItem.bind(window.sessionStorage);
+      window.sessionStorage.getItem = key => {
+        if (key === 'pts-popup-campaign') {
+          const popup = document.querySelector('#popup');
+          return popup ? (popup.getAttribute('data-campaign-key') || 'current') : 'current';
+        }
+        return original(key);
+      };
+    } catch (error) {}
+  });
 });
 
 async function dismissEntrancePopup(page) {

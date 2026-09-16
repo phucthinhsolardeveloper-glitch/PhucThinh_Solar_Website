@@ -162,19 +162,18 @@ Source mới đã có:
 - Cột `table_product.photo_feed` qua migration 036.
 - Upload/xóa ảnh riêng trên form sản phẩm.
 - Cột tương ứng trong bulk import/export.
-- Nút xuất CSV Shopping, ưu tiên `photo_feed` rồi fallback về ảnh chính.
+- Nút xuất CSV Shopping. **Cập nhật 2026-09-16:** chỉ dùng `photo_feed` đạt tối
+  thiểu 500×500 px; không còn fallback về ảnh chính có thể chứa chữ/khung.
 
 Hiện trạng vận hành:
 
 - Schema local có cột `photo_feed`.
 - 0/417 sản phẩm có dữ liệu ở cột này.
-- Chưa có regression riêng cho migration, upload/xóa, fallback và nội dung CSV.
-- Pre-deploy chưa copy/lint/check migration 036 và chưa assert cột tồn tại.
-- Fallback về ảnh chính giúp CSV không trống nhưng không chứng minh ảnh đáp ứng
-  yêu cầu “không logo, không text”. Hệ thống cũng chưa tự kiểm tra nền sạch,
-  logo hay chữ trong ảnh.
-- CSV hiện là file hỗ trợ nội bộ sáu cột; chưa có bằng chứng trong bộ test rằng
-  nó đã được nhập thử thành công vào nền tảng quảng cáo đích.
+- Đã có regression cho schema CSV, mã/giá, ảnh tối thiểu, trạng thái báo giá và
+  Product JSON-LD; pre-deploy đã assert cột migration 036.
+- Hệ thống chưa tự kiểm tra nền sạch, logo hay chữ trong ảnh và chưa có lần gửi
+  thử vào Merchant Center. Chi tiết hiện hành xem
+  [`2026-09-16-merchant-feed-and-product-schema-audit.md`](2026-09-16-merchant-feed-and-product-schema-audit.md).
 
 Đây là tính năng Admin có giao diện nhưng chưa hoàn tất chu trình vận hành.
 
@@ -288,7 +287,7 @@ vào pipeline để lần sau không phụ thuộc kiểm tra tay.
   review; không tiếp tục đổi giao diện trong lúc chạy release gate.
 - [ ] Sửa khả năng build Docker với nguồn Debian còn hiệu lực, sau đó chạy lại
   full pre-deploy từ image sạch.
-- [ ] Đưa migration 036 vào manifest/preflight, assert cột `photo_feed` trước
+- [x] Đưa migration 036 vào preflight, assert cột `photo_feed` trước
   khi source Admin query; thử trên bản sao DB trước production.
 - [ ] Đồng bộ đủ bảy ảnh chính sách vào shared upload/release asset theo đúng
   cơ chế deploy, kèm kiểm tra filename; không chỉ copy vào container tạm.
@@ -316,8 +315,8 @@ vào pipeline để lần sau không phụ thuộc kiểm tra tay.
   duyệt, hoặc xóa CSS/test dư nếu chủ ý thiết kế đã đổi.
 - [ ] Tạo ảnh Shopping sạch cho sản phẩm ưu tiên, không coi ảnh chính fallback
   là đã đáp ứng yêu cầu quảng cáo.
-- [ ] Thêm regression cho migration 036, upload/remove, bulk, auth, CSV escaping,
-  fallback và URL ảnh; import thử file vào nền tảng quảng cáo staging.
+- [ ] Regression đã phủ migration 036, điều kiện feed và URL ảnh; còn cần test
+  upload/remove qua HTTP có auth và import thử vào nền tảng quảng cáo staging.
 - [ ] Tối ưu sáu icon trang “Về chúng tôi” hoặc phục vụ đúng kích thước.
 - [ ] Chỉ cập nhật visual baseline sau khi Hero và nội dung được duyệt bằng mắt.
 
@@ -328,7 +327,7 @@ vào pipeline để lần sau không phụ thuộc kiểm tra tay.
   trải.
 - [ ] Điều tra vì sao content/SEO giảm so với 05/09 bằng báo cáo ID dry-run;
   không backfill hoặc xóa tự động.
-- [ ] Gắn completeness cho ảnh chính, ảnh Shopping, mô tả, thông số và SEO.
+- [x] Gắn completeness cho ảnh chính, ảnh Shopping, mô tả, thông số và SEO.
 - [ ] Tiếp tục audit các media/type legacy trước khi archive; giữ nguyên upload
   cho tới khi có backup, owner và thời hạn rollback.
 - [ ] Thêm route policy/redirect và Hero form vào bộ regression chính thức để

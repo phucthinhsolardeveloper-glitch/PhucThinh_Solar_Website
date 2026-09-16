@@ -198,6 +198,7 @@ foreach(array(
 }
 preflightAdd($checks, '026', $visitIndexes, 4, '4 index thống kê truy cập');
 preflightAdd($checks, '029', preflightIndexExists($d, $schema, $user, 'uniq_user_username', true) ? 1 : 0, 1, 'unique username');
+preflightAdd($checks, '036', preflightColumnExists($d, $schema, $product, 'photo_feed') ? 1 : 0, 1, 'table_product.photo_feed');
 
 $unsafe = array();
 if(preflightTableExists($d, $schema, $user))

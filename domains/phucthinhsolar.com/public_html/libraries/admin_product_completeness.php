@@ -15,6 +15,7 @@ if(!function_exists('adminProductDataStatusDefinitions'))
 
         return array(
             'missing_photo' => array('label' => 'Thiếu ảnh đại diện', 'sql' => "coalesce(trim(p.photo), '') = ''"),
+            'missing_photo_feed' => array('label' => 'Thiếu ảnh Shopping sạch', 'sql' => "coalesce(trim(p.photo_feed), '') = ''"),
             'missing_desc' => array('label' => 'Thiếu mô tả ngắn', 'sql' => "coalesce(trim(p.descvi), '') = ''"),
             'missing_content' => array('label' => 'Thiếu nội dung chi tiết', 'sql' => "coalesce(trim(p.contentvi), '') = ''"),
             'missing_specs' => array('label' => 'Thiếu thông số kỹ thuật', 'sql' => '('.implode(' and ', $emptySpecs).')'),

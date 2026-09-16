@@ -365,7 +365,7 @@ $hasProductPolicy = $productPolicyOverride !== '' || !empty($policy);
             data-touchdrag="1"
             data-navtext="<svg xmlns='http://www.w3.org/2000/svg' class='icon icon-tabler icon-tabler-chevron-left' width='44' height='45' viewBox='0 0 24 24' stroke-width='1.5' stroke='#2c3e50' fill='none' stroke-linecap='round' stroke-linejoin='round'><path stroke='none' d='M0 0h24v24H0z' fill='none'/><polyline points='15 6 9 12 15 18' /></svg>|<svg xmlns='http://www.w3.org/2000/svg' class='icon icon-tabler icon-tabler-chevron-right' width='44' height='45' viewBox='0 0 24 24' stroke-width='1.5' stroke='#2c3e50' fill='none' stroke-linecap='round' stroke-linejoin='round'><path stroke='none' d='M0 0h24v24H0z' fill='none'/><polyline points='9 6 15 12 9 18' /></svg>"
             data-navcontainer=".control-pro-detail2">
-            <?php $pcNoLazy = true; /* card nằm trong Owl carousel - xem chú thích ở partial */ ?>
+            <?php $pcNoLazy = true; $pcInCarousel = true; /* card nằm trong Owl carousel - xem chú thích ở partial */ ?>
             <?php foreach($product as $k => $v) { include ROOT."templates/product/_product_card.php"; } ?>
         </div>
         <div class="control-pro-detail2 control-owl transition"></div>

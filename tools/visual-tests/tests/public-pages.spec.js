@@ -17,6 +17,12 @@ for (const [name, path] of routes) {
     const failedLocalResponses = [];
     const baseOrigin = new URL(baseURL).origin;
 
+    /* 2026-09-16: chặn widget dịch GTranslate như news-hub.spec.js đã làm.
+       Script bên thứ ba này lỗi ngẫu nhiên (bắt được message cắt dở kiểu "La"),
+       làm test chớp đỏ dù trang của mình không có lỗi nào - chạy lại 3 lần đều
+       pass. Chặn ở tầng mạng để chỉ còn bắt lỗi từ mã nguồn của site. */
+    await page.route('https://cdn.gtranslate.net/**', route => route.abort());
+
     page.on('pageerror', error => pageErrors.push(error.message));
     page.on('response', response => {
       const url = response.url();
@@ -49,3 +55,29 @@ for (const [name, path] of routes) {
     expect(horizontalOverflow).toBeLessThanOrEqual(1);
   });
 }
+
+test('Product JSON-LD không còn dữ liệu mẫu hoặc giá giả', async ({ page, baseURL }) => {
+  await page.route('https://cdn.gtranslate.net/**', route => route.abort());
+  await page.goto('/san-pham/', { waitUntil: 'domcontentloaded' });
+  const href = await page.locator('.product-card .product-item').first().getAttribute('href');
+  expect(href).toBeTruthy();
+
+  await page.goto(new URL(href, `${baseURL}/`).href, { waitUntil: 'domcontentloaded' });
+  const schemas = await page.locator('script[type="application/ld+json"]').evaluateAll(nodes => nodes.map(node => {
+    try { return JSON.parse(node.textContent); } catch (error) { return null; }
+  }).filter(Boolean));
+  const product = schemas.find(schema => schema['@type'] === 'Product');
+
+  expect(product).toBeTruthy();
+  expect(product.name).toBeTruthy();
+  expect(product.url).toMatch(/^https?:\/\//);
+  const serialized = JSON.stringify(product);
+  for (const forbidden of ['925872', 'Executive Objects', 'UsedCondition', '2020-11-05', 'priceValidUntil']) {
+    expect(serialized).not.toContain(forbidden);
+  }
+  if (product.offers) {
+    expect(product.offers.itemCondition).toBe('https://schema.org/NewCondition');
+    expect(product.offers.priceCurrency).toBe('VND');
+    expect(Number(product.offers.price)).toBeGreaterThan(0);
+  }
+});

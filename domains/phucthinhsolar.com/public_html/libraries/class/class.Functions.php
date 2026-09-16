@@ -1104,8 +1104,19 @@
        sâu trong trang (chính lý do trước đây phải tắt lazy cho card sản phẩm),
        và trình duyệt tự quyết định tải khi ảnh gần viewport.
        Ảnh đã dùng lazy JS thì giữ nguyên, không gắn hai cơ chế lên một thẻ.
-       Ảnh ưu tiên (LCP: logo, hero) có thể tắt bằng 'noNativeLazy' => true. */
-    $nativeLazy = (!$isJsLazy && empty($info['noNativeLazy'])) ? " loading='lazy' decoding='async'" : '';
+       Ảnh ưu tiên (LCP: logo, hero) có thể tắt bằng 'noNativeLazy' => true.
+
+       Ảnh trong CAROUSEL phải truyền 'noNativeLazy' => true: slider dùng
+       transform đẩy slide ra ngoài vùng nhìn nên trình duyệt hoãn tải vô thời
+       hạn - đo trang chi tiết sản phẩm thấy 10/15 ảnh "Sản phẩm liên quan" có
+       src trả 200 nhưng naturalWidth=0, chỉ tải khi bấm mũi tên (ô trắng chớp).
+       Lưu ý KHÔNG suy ra điều đó từ 'isLazy' => false: cờ đó chỉ có nghĩa "tắt
+       lazy JS", và lưới sản phẩm tĩnh ở trang chủ cũng dùng nó (để tránh lỗi
+       card trắng của thư viện JS legacy) - những ảnh đó vẫn cần native lazy vì
+       chúng chiếm phần lớn dung lượng trang. */
+    $nativeLazy = (!$isJsLazy && empty($info['noNativeLazy']))
+        ? " loading='lazy' decoding='async'"
+        : '';
 
     /* Image */
     $result = "<img " . $info['class'] . " " . $info['id'] . " onerror=\"this.src='" . $info['pathError'] . "';\" " . $info['src'] . $nativeLazy . " alt='" . $info['alt'] . "'/>";

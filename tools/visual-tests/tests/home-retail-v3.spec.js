@@ -2,6 +2,21 @@ const { test, expect } = require('@playwright/test');
 
 test.beforeEach(async ({ page }) => {
   await page.route('https://cdn.gtranslate.net/**', route => route.abort());
+  /* Chặn popup chào mừng tất định - xem chú thích đầy đủ ở
+     layout-interactions.spec.js. Popup bung lên sau khi apps.js chạy sẽ phủ
+     backdrop lên rail danh mục, làm click vào ô danh mục treo tới timeout 30s. */
+  await page.addInitScript(() => {
+    try {
+      const original = window.sessionStorage.getItem.bind(window.sessionStorage);
+      window.sessionStorage.getItem = key => {
+        if (key === 'pts-popup-campaign') {
+          const popup = document.querySelector('#popup');
+          return popup ? (popup.getAttribute('data-campaign-key') || 'current') : 'current';
+        }
+        return original(key);
+      };
+    } catch (error) {}
+  });
 });
 
 async function dismissEntrancePopup(page) {
