@@ -8,20 +8,24 @@ và [vps-operations.md](../06-operations/vps-operations.md) (vận hành).
 
 ## 1. Tóm tắt một dòng
 
-Website **đã chạy được trên VPS mới với dữ liệu production thật**, nhưng **chưa
-cutover DNS** — host cũ vẫn là bản đang phục vụ khách.
+**Đã cutover ngày 2026-09-17.** `phucthinhsolar.com` giờ do VPS
+`222.255.182.182` phục vụ, với dữ liệu production thật. Host cũ chỉ còn giữ
+`mail` và `ftp`.
 
 ---
 
 ## 2. Hai hệ đang song song
 
-| | Host cũ (đang phục vụ khách) | VPS mới (chưa nhận traffic) |
+| | Host cũ (chỉ còn mail/ftp) | VPS — **là production** |
 |---|---|---|
 | Địa chỉ | `103.82.21.26` | `222.255.182.182` (`pts-prod-01`) |
 | Truy cập | **Không SSH.** FTP + phpMyAdmin | `ssh -i ~/.ssh/id_ed25519 root@...` |
 | Stack | Apache/PHP 7.4.29, MariaDB 10.4.24 | Docker: Caddy → Apache/PHP 7.4 → MariaDB 10.11 |
-| Deploy | `curl -T` từng file, rồi xoá cache | `deploy-release.sh` (checksum + build + healthcheck + auto-rollback) |
-| DNS | đang trỏ vào đây | chưa trỏ; `.env` dùng `staging.phucthinhsolar.com` |
+| Deploy | — | `deploy-release.sh` (checksum + build + healthcheck + auto-rollback) |
+| DNS trỏ tới | chỉ `mail`, `ftp` | `@`, `www` (301 về non-www), `*`, `staging` |
+
+⚠️ `staging.phucthinhsolar.com` trỏ **cùng máy và cùng database** với domain
+thật, chỉ khác là bị chặn index. **Ghi trên staging là ghi vào dữ liệu thật.**
 
 Domain/DNS ở **P.A Vietnam**, tách hoàn toàn khỏi hosting VNPT. Đây là tài sản
 duy nhất không lấy lại được nếu mất — ưu tiên bảo vệ trên hết.
@@ -109,33 +113,34 @@ mốc thời gian của nó phải khớp với vòng chờ của script deploy.
 
 ## 6. Việc còn phải làm, theo thứ tự
 
-1. **Off-site backup** — `backup.sh` đang cảnh báo
-   `chưa có /usr/local/sbin/pts-backup-offsite`. Backup nằm cùng máy với dữ liệu
-   thì không bảo vệ được trước mất máy. Cần credential S3/Object Storage ở
-   **nhà cung cấp khác**; snapshot CloudFly không thay được. Bundle runtime
-   image 420 MB cũng cần mang ra ngoài.
-2. **`staging.phucthinhsolar.com` → VPS** để Caddy xin cert thật.
-   `verify-stack.sh` hiện báo `self-signed certificate`, đúng như dự kiến khi
-   chưa có DNS.
-3. **Smoke test đầy đủ** theo [runbook mục 10](../06-operations/vps-cloudfly-runbook.md):
-   đăng nhập Admin và quyền tài khoản nghiệp vụ, upload WebP/JPG + thumbnail +
-   file manager, luồng category → product → cart → checkout, form liên hệ/đại lý
-   ghi DB, robots/sitemap/canonical/structured data/Merchant feed, và desktop
-   2K + tablet + mobile.
-   **Quan trọng:** phải xác nhận đăng nhập Admin bằng mật khẩu hiện có — đó là
-   bằng chứng duy nhất rằng `app_secret`/`app_salt` đã lấy đúng từ production cũ
-   (hash là `md5(secret + password + salt)`).
-4. **User `deploy`** có sudo, kiểm ở **phiên SSH thứ hai**, rồi mới tắt
+Đã xong: DNS cutover, cert Let's Encrypt cho 3 hostname, đăng nhập Admin xác
+nhận `app_secret`/`app_salt` đúng, smoke 11 trang, responsive 4 khổ, gộp www,
+`upload/` không thực thi script, preflight READY.
+
+1. **SMTP** — website **chưa gửi được mail**. Không phải do chuyển host: hỏng từ
+   2026-09-07 và cấu hình cũ không thể hoạt động vì máy chủ mail host cũ dùng
+   cert tự ký `CN=localhost`. Phải chuyển sang relay có cert hợp lệ
+   (Brevo/Gmail), rồi cập nhật SPF. Xem
+   [smtp-production.md](../08-integrations/smtp-production.md) mục 2026-09-17.
+2. **Theo dõi 24–48 giờ** trước khi huỷ hosting cũ: log web, đơn/form, cert,
+   kiểm từ nhiều mạng khác nhau. Đây là đường quay lại duy nhất — chỉ cần đổi
+   bản ghi A về `103.82.21.26`.
+3. **Nội dung Admin còn thiếu** — xem mục 8, không chặn vận hành.
+4. **Sau khi SMTP mới chạy ổn**: dọn `mail`, `ftp`, MX, SPF khỏi host cũ; tải
+   backup host cũ về giữ ngoài cả hai nhà cung cấp; rồi huỷ dịch vụ và **đổi mật
+   khẩu FTP `phucthinhs`**. Lưu ý `creator=admin` — tài khoản cấp trên vẫn reset
+   được mật khẩu này bất kể đổi gì, nên rút hẳn khỏi host cũ mới là biện pháp
+   thật.
+5. **Off-site backup tự động** — chủ project đã quyết **không làm** ngày
+   2026-09-17. Hiện có bản chụp thủ công tại `/home/admin01/pts-migration/out/`
+   trên máy dev (checksum OK, và `restore-check.sh` đã PASS trên chính gói này),
+   cộng dump gốc trong `Downloads`. Hạn chế: không tự cập nhật.
+   `backup.sh` vẫn cảnh báo `chưa có /usr/local/sbin/pts-backup-offsite` — đúng.
+6. **User `deploy`** có sudo, kiểm ở **phiên SSH thứ hai**, rồi mới tắt
    password/root login (runbook mục 4).
-5. **Cutover DNS** (runbook mục 11): hạ TTL → backup cuối + ngừng nhập liệu trên
-   host cũ → đồng bộ delta DB/upload → đổi bản ghi A (**không** đổi nameserver
-   cùng lúc) → theo dõi → **giữ host cũ tối thiểu 7 ngày**.
-6. **Sau cutover**: đổi mật khẩu FTP `phucthinhs`. Hiện vẫn là mật khẩu cũ vì
-   còn cần để deploy lên host cũ. Lưu ý `creator=admin` — tài khoản cấp trên vẫn
-   reset được mật khẩu này bất kể đổi gì, nên chuyển host mới là biện pháp thật.
-7. **Đợt riêng, không làm chung**: nâng PHP 7.4 → 8.x; cân nhắc đổi 47 bảng
-   MyISAM sang InnoDB (thời điểm sạch nhất là lúc restore vào DB rỗng, nhưng có
-   rủi ro riêng và phải để chủ project quyết).
+7. **Đợt riêng, không làm chung**: nâng PHP 7.4 → 8.x; thêm CSRF cho form đăng
+   nhập Admin; cân nhắc đổi 47 bảng MyISAM sang InnoDB (phải để chủ project
+   quyết).
 
 ---
 
@@ -146,9 +151,15 @@ Lấy từ runbook mục 10, nhắc lại vì đây là hàng rào cuối:
 - Còn fatal/warning trên trang public. → **đã kiểm 2026-09-17: sạch**
 - `upload/` thực thi được script. → **đã kiểm 2026-09-17: 403, an toàn**
 - Preflight PARTIAL. → **đã kiểm 2026-09-17: READY**
-- SMTP sai certificate.
-- **Backup chưa từng restore thử thành công.**
-- Chưa có đường rollback.
+- SMTP sai certificate. → **vẫn đỏ**: cert mail host cũ là tự ký `CN=localhost`;
+  đã quyết chuyển sang relay ngoài. Không chặn website vì mail vốn đã hỏng từ
+  trước khi chuyển host.
+- **Backup chưa từng restore thử thành công.** → **xanh**: `restore-check.sh`
+  PASS trên gói `migration-prod-20260917` (54 bảng, 1.125 file).
+- Chưa có đường rollback. → **xanh**: đổi bản ghi A về `103.82.21.26`; host cũ
+  còn nguyên dữ liệu.
+
+**Cutover đã thực hiện 2026-09-17** với hiểu biết rõ ràng rằng mục SMTP còn đỏ.
 
 ---
 

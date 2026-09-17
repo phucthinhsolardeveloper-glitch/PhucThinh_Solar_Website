@@ -211,6 +211,13 @@ class AltoRouter
             $requestMethod = isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : 'GET';
         }
 
+        // HEAD phải dùng cùng route với GET. Apache/PHP sẽ không gửi response
+        // body, còn router vẫn trả đúng status/header thay vì 404 cho monitor,
+        // crawler và công cụ kiểm tra uptime.
+        if (strcasecmp($requestMethod, 'HEAD') === 0) {
+            $requestMethod = 'GET';
+        }
+
         foreach ($this->routes as $handler) {
             list($methods, $route, $target, $name) = $handler;
 

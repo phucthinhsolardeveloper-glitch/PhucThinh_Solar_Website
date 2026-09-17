@@ -334,6 +334,11 @@ for public_path in "${public_paths[@]}"; do
 done
 
 grep -qF '<title>' /tmp/pts-predeploy-home.html
+head_status="$(curl -sS -I -o /dev/null -w '%{http_code}' "$base_url/")"
+if [ "$head_status" != "200" ]; then
+    echo "FAIL: HEAD trang chủ trả HTTP $head_status, cần trả 200 như GET." >&2
+    exit 1
+fi
 grep -qF '<meta property="og:site_name" content="Phúc Thịnh Solar"' /tmp/pts-predeploy-home.html
 grep -qF '"@type":"WebSite"' /tmp/pts-predeploy-home.html
 grep -qF '"name":"Phúc Thịnh Solar"' /tmp/pts-predeploy-home.html
