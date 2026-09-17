@@ -32,8 +32,9 @@ if(isset($nhQuery) && $nhQuery !== '') $robotsContent = 'noindex,follow'; ?>
 <meta name="copyright" content="<?=$setting['name'.$lang]." - [".$optsetting['email']."]"?>" />
 
 <!-- Facebook -->
+<?php $publicBrandName = 'Phúc Thịnh Solar'; ?>
 <meta property="og:type" content="<?=$seo->get('type')?>" />
-<meta property="og:site_name" content="<?=$setting['name'.$lang]?>" />
+<meta property="og:site_name" content="<?=$publicBrandName?>" />
 <meta property="og:title" content="<?=$seo->get('title')?>" />
 <meta property="og:description" content="<?=$seo->get('description')?>" />
 <meta property="og:url" content="<?=$seo->get('url')?>" />

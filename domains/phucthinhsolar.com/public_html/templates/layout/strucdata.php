@@ -42,7 +42,7 @@
             "publisher":
             {
                 "@type": "Organization",
-                "name": "Google",
+                "name": "Phúc Thịnh Solar",
                 "logo":
                 {
                     "@type": "ImageObject",
@@ -78,7 +78,7 @@
             "publisher":
             {
                 "@type": "Organization",
-                "name": "Google",
+                "name": "Phúc Thịnh Solar",
                 "logo":
                 {
                     "@type": "ImageObject",
@@ -90,26 +90,57 @@
     </script>
 <?php } else { ?>
     <!-- General -->
-    <script type="application/ld+json">
+    <?php
+        $publicBrandName = 'Phúc Thịnh Solar';
+        $organizationId = $configBase.'#organization';
+        $websiteId = $configBase.'#website';
+        $sameAs = array();
+        if(!empty($social)) foreach($social as $socialItem)
         {
-            "@context" : "https://schema.org",
-            "@type" : "Organization",
-            "name" : "<?=@$setting['name'.$lang]?>",
-            "url" : "<?=$configBase?>",
-            "sameAs" :
-            [
-                <?php if(!empty($social)) { $sum_social = count($social); foreach($social as $key => $value) { ?>
-                    "<?=@$value['link']?>"<?=(($key+1)<$sum_social)?',':''?>
-                <?php } } ?>
-            ],
-            "address":
-            {
-                "@type": "PostalAddress",
-                "streetAddress": "<?=$optsetting['address']?>",
-                "addressRegion": "Ho Chi Minh",
-                "postalCode": "70000",
-                "addressCountry": "vi"
-            }
+            if(!empty($socialItem['link'])) $sameAs[] = $socialItem['link'];
         }
-    </script>
+        $organizationSchema = array(
+            '@type' => 'Organization',
+            '@id' => $organizationId,
+            'name' => $publicBrandName,
+            'legalName' => isset($setting['name'.$lang]) ? $setting['name'.$lang] : $publicBrandName,
+            'alternateName' => 'PHUCTHINH SOLAR',
+            'url' => $configBase,
+            'logo' => array(
+                '@type' => 'ImageObject',
+                'url' => $configBase.UPLOAD_PHOTO_L.@$logo['photo']
+            ),
+            'sameAs' => $sameAs,
+            'address' => array(
+                '@type' => 'PostalAddress',
+                'streetAddress' => isset($optsetting['address']) ? $optsetting['address'] : '',
+                'addressRegion' => 'Gia Lai',
+                'addressCountry' => 'VN'
+            )
+        );
+        $schemaData = $organizationSchema;
+        if(isset($source) && $source === 'index')
+        {
+            $schemaData = array(
+                '@context' => 'https://schema.org',
+                '@graph' => array(
+                    $organizationSchema,
+                    array(
+                        '@type' => 'WebSite',
+                        '@id' => $websiteId,
+                        'url' => $configBase,
+                        'name' => $publicBrandName,
+                        'alternateName' => 'PHUCTHINH SOLAR',
+                        'publisher' => array('@id' => $organizationId),
+                        'inLanguage' => 'vi-VN'
+                    )
+                )
+            );
+        }
+        else
+        {
+            $schemaData['@context'] = 'https://schema.org';
+        }
+    ?>
+    <script type="application/ld+json"><?=json_encode($schemaData, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)?></script>
 <?php } ?>

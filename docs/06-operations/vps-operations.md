@@ -15,10 +15,17 @@ xem [vps-cloudfly-runbook.md](vps-cloudfly-runbook.md).
 | Docker / Compose | 29.8.1 / 5.5.1 |
 | Gốc stack | `/srv/phucthinhsolar` |
 | Truy cập | `ssh -i ~/.ssh/id_ed25519 root@222.255.182.182` |
-| Domain public | **chưa trỏ DNS.** `.env` dùng `staging.phucthinhsolar.com` |
+| Domain public | **đã cutover 2026-09-17**: `phucthinhsolar.com` + `www` trỏ về VPS |
+| `.env` | `SITE_DOMAIN=phucthinhsolar.com`, `SITE_ALIASES=", www.phucthinhsolar.com"` |
+| Certificate | Let's Encrypt cho domain chính và `www`, hạn 16/12/2026 |
 
-Website thật vẫn đang chạy ở host cũ (`103.82.21.26`, FTP + phpMyAdmin) cho tới
-khi cutover. Xem [deployment.md](deployment.md).
+**VPS này giờ là production.** `www` được 301 về non-www ở tầng Caddy.
+Hostname `staging.phucthinhsolar.com` đã được gỡ khỏi Caddy ngày 2026-09-17;
+còn phải xóa bản ghi DNS staging ở P.A để kết thúc hẳn.
+
+Host cũ (`103.82.21.26`) vẫn còn website, database, mail và FTP nguyên trạng.
+Đợt xóa qua DirectAdmin không làm thay đổi dữ liệu và đã dừng; xem
+[cutover-dns-va-host-cu.md](cutover-dns-va-host-cu.md) trước khi rút hẳn.
 
 ---
 
@@ -71,11 +78,21 @@ docker compose logs --tail=100 db
 # Khởi động lại chỉ web (không mất DB, không mất upload)
 docker compose up -d --force-recreate web
 
-# Sau khi SỬA Caddyfile hoặc config/config.php: PHẢI restart, không phải up -d.
-# `up -d` so sánh spec container; file bind-mount đổi nội dung mà spec không đổi
-# nên Compose bỏ qua và container vẫn chạy CONFIG CŨ — đã suýt báo cáo sai vì
-# chuyện này ngày 2026-09-17. Kiểm lại bằng admin API của Caddy ở dưới.
+# HAI LOẠI THAY ĐỔI, HAI LỆNH KHÁC NHAU — nhầm là mất thời gian hoặc báo cáo sai.
+#
+# 1) Sửa NỘI DUNG file bind-mount (Caddyfile, config/config.php, secrets/*):
+#    phải `restart`. `up -d` so sánh spec container; nội dung file đổi mà spec
+#    không đổi nên Compose bỏ qua và container vẫn chạy CONFIG CŨ.
 docker compose restart proxy
+#
+# 2) Sửa BIẾN MÔI TRƯỜNG trong .env (SITE_DOMAIN, SITE_ALIASES, RECAPTCHA_*):
+#    phải `up -d --force-recreate`. Compose nội suy biến vào container lúc TẠO,
+#    nên `restart` giữ nguyên giá trị cũ. Ngày 2026-09-17 tôi đã restart proxy
+#    sau khi đổi SITE_DOMAIN và Caddy vẫn chỉ nhận hostname staging — website
+#    thật tiếp tục chết thêm mấy phút.
+docker compose up -d --force-recreate web proxy
+#
+# Luôn kiểm lại bằng admin API của Caddy, đừng tin lệnh đã chạy xong:
 docker exec "$(docker compose ps -q proxy)" wget -qO- http://127.0.0.1:2019/config/ | head -c 400
 
 # Kiểm tra tổng thể: container, digest image, PHP runtime, HTTPS
@@ -138,6 +155,11 @@ ls -lh /srv/phucthinhsolar/backups/
 ```
 
 Mỗi bản backup có `MANIFEST.txt` và checksum; script tự verify sau khi tạo.
+
+Backup đầy đủ `20260917T075137Z-full` đã qua kiểm tra checksum và diễn tập
+restore (54 bảng, 1.127 file upload). Một bản đã tải về máy phát triển tại
+`backup/vps/20260917T075137Z-full`; đây chỉ là bản sao tạm, chưa thay thế
+off-site backup độc lập.
 
 **Cảnh báo đang hiện và chưa xử lý:**
 
@@ -269,10 +291,17 @@ hết hỗ trợ; khả năng build lại từ Internet trong vài năm tới kh
 
 ## 9. Việc còn phải làm trên VPS
 
-- [ ] Tạo `/usr/local/sbin/pts-backup-offsite` (backup hiện chỉ nằm trên VPS).
-- [ ] Trỏ `staging.phucthinhsolar.com` về VPS để Caddy lấy cert thật.
-- [ ] Chạy `export-runtime-images.sh` và mang bundle ra ngoài.
-- [ ] Smoke test đầy đủ theo [runbook mục 10](vps-cloudfly-runbook.md).
-- [ ] Tạo user `deploy` có sudo, kiểm tra ở **phiên SSH thứ hai**, rồi mới tắt
-      root login (runbook mục 4).
-- [ ] Cutover DNS (runbook mục 11). Giữ host cũ tối thiểu 7 ngày.
+- [ ] Tạo `/usr/local/sbin/pts-backup-offsite`; bản tải về máy phát triển chưa
+      phải kho off-site độc lập lâu dài.
+- [ ] Xóa bản ghi DNS `staging.phucthinhsolar.com` tại P.A; Caddy đã ngừng phục
+      vụ hostname này.
+- [x] Chạy `export-runtime-images.sh` trên VPS.
+- [ ] Mang bundle runtime image sang kho off-site độc lập.
+- [ ] Chạy smoke test production-safe đầy đủ theo
+      [runbook mục 10](vps-cloudfly-runbook.md).
+- [x] Tạo user `deploy` có sudo và xác minh ở phiên SSH riêng.
+- [x] Cutover domain chính và `www` sang VPS.
+- [ ] Cấu hình SMTP Brevo sau khi chủ project cung cấp tài khoản/API credential.
+- [ ] Cấu hình reCAPTCHA production nếu tiếp tục dùng form công khai.
+- [ ] Chỉ rút website/database/mail/FTP ở host cũ sau khi có xác nhận riêng và
+      đã đủ thời gian theo dõi production.

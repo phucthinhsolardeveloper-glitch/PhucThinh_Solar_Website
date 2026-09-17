@@ -334,6 +334,9 @@ for public_path in "${public_paths[@]}"; do
 done
 
 grep -qF '<title>' /tmp/pts-predeploy-home.html
+grep -qF '<meta property="og:site_name" content="Phúc Thịnh Solar"' /tmp/pts-predeploy-home.html
+grep -qF '"@type":"WebSite"' /tmp/pts-predeploy-home.html
+grep -qF '"name":"Phúc Thịnh Solar"' /tmp/pts-predeploy-home.html
 grep -qF 'class="header pts-header-v3"' /tmp/pts-predeploy-home.html
 grep -qF 'pts-brand-wordmark' /tmp/pts-predeploy-home.html
 grep -qF 'class="hdr-search-form"' /tmp/pts-predeploy-home.html
