@@ -26,5 +26,7 @@ docker compose exec -T web php -r '
 '
 
 curl -fsS --max-time 15 "https://$SITE_DOMAIN/robots.txt" >/dev/null
-curl -fsS --max-time 15 "https://$SITE_DOMAIN/" | grep -q '<title>'
+# Không dùng `grep -q` ở đây: với `set -o pipefail`, grep đóng pipe ngay sau
+# match làm curl trả 23 (write error) và báo fail giả dù trang đang hoạt động.
+curl -fsS --max-time 15 "https://$SITE_DOMAIN/" | grep -F '<title>' >/dev/null
 echo "PASS: stack, runtime và HTTPS public đang hoạt động."
