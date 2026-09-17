@@ -149,3 +149,61 @@ Lấy từ runbook mục 10, nhắc lại vì đây là hàng rào cuối:
 - SMTP sai certificate.
 - **Backup chưa từng restore thử thành công.**
 - Chưa có đường rollback.
+
+---
+
+## 8. Sau cutover — nội dung còn thiếu, đo chính xác 2026-09-17
+
+Suite Playwright chạy trên domain thật: **161 pass / 8 fail**. Tám lỗi là 4 test
+× 2 khổ màn hình, **tất cả đều do thiếu nội dung**, không phải lỗi code. Đây là
+việc của chủ project trong Admin, không chặn vận hành.
+
+### 8.1 Badge "HOT" trên rail danh mục trang chủ — 0/4
+
+Badge hiện khi danh mục cấp 1 có cờ `major`. Production có **0** danh mục, local
+có **4**.
+
+Admin → **Danh mục cấp 1** → tick **"Chủ lực (card lớn trang chủ)"**. Bốn danh
+mục local đang đánh dấu:
+
+| id | Danh mục |
+|---:|---|
+| 20 | Đèn năng lượng mặt trời |
+| 19 | Biến tần (Inverter) |
+| 27 | Trụ đèn & phụ kiện |
+| 28 | Đèn sân vườn |
+
+### 8.2 Popup quảng cáo — có record nhưng đang tắt
+
+`table_photo` type `popup`: production có **1 record, 0 đang Hiển thị**; local
+có 1 record đang hiện. Admin → **Popup quảng cáo (hiện khi vào trang chủ)** →
+tick "Hiển thị". Đây là quyết định marketing, không tự bật.
+
+### 8.3 Trang chủ chỉ có 20 sản phẩm thay vì ≥24
+
+`sources/index.php:92` lấy 3 nhóm đầu theo thứ tự `numb, id` trong các danh mục
+`noibat,hienthi`, mỗi nhóm `limit 10`, và **chỉ lấy sản phẩm có `photo <> ''`**.
+Nên con số phụ thuộc hoàn toàn vào việc đã nhập ảnh hay chưa:
+
+| id | Danh mục | Có ảnh + hiển thị | Tổng SP | Hiện trên trang chủ |
+|---:|---|---:|---:|---:|
+| 20 | Đèn năng lượng mặt trời | 94 | 133 | 10 (đã chạm giới hạn) |
+| 19 | Biến tần (Inverter) | **7** | 34 | 7 |
+| 21 | Tấm pin năng lượng mặt trời | **3** | 29 | 3 |
+| | | | | **20** |
+
+Chỉ cần nhập ảnh cho **4 sản phẩm nữa** thuộc Biến tần hoặc Tấm pin là trang chủ
+đạt 24. Nhập tới 10 mỗi nhóm thì đạt 30 (mức tối đa của layout).
+
+Hai danh mục **chưa có ảnh nào**, nên hoàn toàn không xuất hiện trên trang chủ:
+
+| id | Danh mục | Có ảnh | Tổng SP |
+|---:|---|---:|---:|
+| 27 | Trụ đèn & phụ kiện | **0** | 25 |
+| 24 | Hệ thống bơm năng lượng mặt trời | **0** | 26 |
+
+### 8.4 Hai lỗi đã sửa trong đợt này, giờ đã pass
+
+- Ảnh showroom nằm sai bản ghi → `migrations/045`.
+- Bản ghi Giải pháp trùng còn sót, URL cũ trả 200 không redirect →
+  `migrations/044`.
