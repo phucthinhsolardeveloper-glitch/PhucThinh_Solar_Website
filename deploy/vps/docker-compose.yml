@@ -70,12 +70,19 @@ services:
         condition: service_healthy
     mem_limit: 3g
     pids_limit: 300
+    # Phải gọi một trang PHP thật và đòi đúng HTTP 200. Bản cũ gọi robots.txt
+    # (file tĩnh) nên container vẫn báo healthy trong khi 100% trang PHP trả
+    # 500 vì không đọc được secret — deploy-release.sh do đó cũng không tự
+    # rollback. ignore_errors=true để đọc được status của cả phản hồi lỗi.
     healthcheck:
-      test: ["CMD-SHELL", "php -r 'exit(@file_get_contents(\"http://127.0.0.1/robots.txt\") === false ? 1 : 0);'"]
-      interval: 15s
-      timeout: 5s
-      retries: 12
-      start_period: 30s
+      test: ["CMD-SHELL", "php -r '$$c=stream_context_create([\"http\"=>[\"method\"=>\"GET\",\"timeout\"=>4,\"ignore_errors\"=>true]]); $$b=@file_get_contents(\"http://127.0.0.1/\",false,$$c); exit(($$b!==false && isset($$http_response_header[0]) && strpos($$http_response_header[0],\" 200 \")!==false) ? 0 : 1);'"]
+      # Mốc thời gian phải khớp vòng chờ trong deploy-release.sh (xem chú thích
+      # ở đó): probe đầu tiên phải xảy ra sớm hơn hạn chờ của script, nếu không
+      # mọi deploy tốt cũng bị rollback oan vì trạng thái còn là "starting".
+      interval: 10s
+      timeout: 8s
+      retries: 6
+      start_period: 15s
     logging: *bounded-logging
 
   db:

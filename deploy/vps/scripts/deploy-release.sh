@@ -81,7 +81,10 @@ docker compose up -d web proxy
 
 healthy=0
 web_container="$(docker compose ps -q web)"
-for attempt in $(seq 1 30); do
+# 120s. Healthcheck web có start_period 15s + interval 10s (xem compose), nên
+# probe đầu tiên rơi vào ~15-25s và vòng này còn dư biên. Không hạ xuống dưới
+# start_period + 2*interval, nếu không deploy tốt sẽ bị rollback oan.
+for attempt in $(seq 1 60); do
     status="$(docker inspect --format '{{if .State.Health}}{{.State.Health.Status}}{{else}}{{.State.Status}}{{end}}' "$web_container" 2>/dev/null || true)"
     if [ "$status" = "healthy" ]; then healthy=1; break; fi
     sleep 2

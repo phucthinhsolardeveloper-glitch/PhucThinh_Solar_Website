@@ -55,5 +55,21 @@ if [ "$missing" -ne 0 ]; then
 fi
 
 chmod 0700 "$stack_root/secrets" "$stack_root/backups"
-chmod 0600 "$stack_root/secrets"/* "$stack_root/.env"
+chmod 0600 "$stack_root/.env"
+
+# Docker Compose (không swarm) bind-mount secret vào /run/secrets GIỮ NGUYÊN
+# owner/mode của file trên host, và `mode:` trong compose bị bỏ qua. Để mode
+# 0600 root thì Apache worker (www-data, uid 33) không đọc được và mọi trang
+# PHP trả 500 với "Missing required runtime secret" — đã xảy ra thật ngày
+# 2026-09-17. Thư mục vẫn 0700 root nên host vẫn chỉ root vào được; phần bảo
+# vệ nằm ở thư mục, không ở mode từng file.
+web_secrets="db_password app_secret app_salt pts_mail_config.php ckfinder_license_name ckfinder_license_key"
+for secret in $web_secrets; do
+    [ -e "$stack_root/secrets/$secret" ] || continue
+    chown 0:33 "$stack_root/secrets/$secret"
+    chmod 0640 "$stack_root/secrets/$secret"
+done
+# db_root_password chỉ container db dùng, và entrypoint MariaDB đọc bằng root.
+chown 0:0 "$stack_root/secrets/db_root_password"
+chmod 0600 "$stack_root/secrets/db_root_password"
 echo "PASS: stack files đã cài tại $stack_root."

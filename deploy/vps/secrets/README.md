@@ -1,8 +1,21 @@
 # Secrets cần tạo trên VPS
 
-Thư mục runtime: `/srv/phucthinhsolar/secrets`, owner `root`, mode `0700`;
-mỗi file mode `0600`. Không commit, không gửi qua chat và không đặt trong
-webroot.
+Thư mục runtime: `/srv/phucthinhsolar/secrets`, owner `root`, mode `0700` —
+đây là lớp bảo vệ chính, trên host chỉ root vào được.
+
+Mode từng file **không** phải `0600`. Docker Compose (không swarm) bind-mount
+secret vào `/run/secrets` và **giữ nguyên owner/mode của file trên host**; khai
+báo `mode:` trong compose bị bỏ qua. Apache worker chạy bằng `www-data`
+(uid 33), nên file `0600 root` làm mọi trang PHP trả 500 với
+`Missing required runtime secret` — đã xảy ra thật ngày 2026-09-17.
+
+- Secret cho container web (`db_password`, `app_secret`, `app_salt`,
+  `pts_mail_config.php`, hai file ckfinder): `root:33`, mode `0640`.
+- `db_root_password` chỉ container db dùng và entrypoint MariaDB đọc bằng
+  root: giữ `root:root`, mode `0600`.
+
+`install-stack.sh` tự đặt đúng các quyền này. Không commit, không gửi qua chat
+và không đặt trong webroot.
 
 - `db_password`: mật khẩu riêng của user database ứng dụng.
 - `db_root_password`: mật khẩu root MariaDB, khác `db_password`.
