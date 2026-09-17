@@ -6,6 +6,14 @@ Cập nhật: 2026-09-17. Mọi số liệu dưới đây **đo thật** từ DN
 Đọc kèm [vps-cloudfly-runbook.md](vps-cloudfly-runbook.md) mục 11 và
 [handoff 2026-09-17](../13-handoffs/2026-09-17-vps-migration-state.md).
 
+> **Trạng thái sau cutover (2026-09-17):** domain chính và `www` đã chạy trên
+> VPS `222.255.182.182`. Theo xác nhận của chủ project, website cũ đã được làm
+> rỗng qua FTP (28.213 file, 2.713 thư mục) và database `phucthinhs_data` đã
+> xóa; hậu kiểm cho thấy webroot `0` mục, DirectAdmin `0` database. Mailbox,
+> DirectAdmin account và FTP account vẫn giữ nguyên vì MX/mail còn trỏ host cũ.
+> Do đó phần "quay lại host cũ" dưới đây chỉ còn giá trị lịch sử, không còn là
+> phương án rollback khả dụng.
+
 ---
 
 ## 0. Cảnh báo "chưa xác thực Email" ở P.A — nó chặn cái gì
@@ -212,10 +220,11 @@ này thì thư gửi được nhưng vào spam.
 13. Theo dõi 24–48 giờ: log web, đơn/form có về không, certificate, và kiểm tra
     từ **nhiều mạng khác nhau** (4G, wifi công ty, máy khác).
 
-### Giai đoạn E: dọn host cũ — sớm nhất là sau 7 ngày
+### Giai đoạn E: dọn host cũ
 
-14. **Giữ host cũ tối thiểu 7 ngày** sau cutover, nguyên vẹn dữ liệu. Đây là
-    đường quay lại duy nhất: đổi bản ghi A về `103.82.21.26` là xong.
+14. Website và database cũ đã được xóa ngày 2026-09-17 theo xác nhận của chủ
+    project. Rollback từ đây phải dùng image/backup đã kiểm tra của VPS, không
+    thể đổi A record về host cũ.
 15. Chuyển SMTP sang nhà cung cấp mới (lúc này mới bắt buộc, xem mục 2), cập
     nhật SPF thêm `include:` của nhà cung cấp, gửi thử. Chỉ khi thư về đúng và
     không vào spam mới đổi `mail` A và MX.
@@ -223,9 +232,9 @@ này thì thư gửi được nhưng vào spam.
     lúc chọn Google Workspace / Zoho / email hosting P.A — VPS sẽ không bao giờ
     có DirectAdmin để tạo hộp thư.
 16. Tải toàn bộ backup host cũ về giữ **ngoài** cả hai nhà cung cấp.
-17. Bây giờ mới xoá source/DB trên host cũ và huỷ dịch vụ. Xoá bản ghi `ftp`
-    (không còn dùng). **Đổi mật khẩu FTP `phucthinhs`** — hiện vẫn là mật khẩu cũ
-    vì còn cần để deploy.
+17. Source/DB trên host cũ đã xóa. Chưa hủy hosting và chưa xóa bản ghi `ftp`,
+    `mail`, `MX` vì mailbox vẫn nằm trong DirectAdmin cũ. Sau khi chuyển mail,
+    xóa các bản ghi/tài khoản này và đổi mọi credential liên quan.
 
 Lưu ý về `creator=admin` trên host cũ: tài khoản cấp trên vẫn reset được mật khẩu
 của `phucthinhs` bất kể anh đổi gì. Nên đổi mật khẩu **không** phải biện pháp
@@ -233,10 +242,10 @@ bảo vệ thật; chuyển hẳn sang host mới mới là.
 
 ---
 
-## 4. Nếu cần quay lại host cũ
+## 4. Nếu cần quay lại host cũ — không còn áp dụng
 
-Trong 7 ngày đầu, chỉ cần đổi 3 bản ghi về `103.82.21.26`. Với TTL 300 thì lan
-trong khoảng 5 phút.
+Website/database cũ đã xóa theo xác nhận của chủ project. Không đổi bản ghi A
+về `103.82.21.26`; rollback bằng image trước hoặc bản backup VPS đã kiểm tra.
 
 **Tuyệt đối không để hai host cùng nhận đơn/form.** Nếu quay lại, phải chắc
 website trên VPS không còn nhận traffic — dừng stack hoặc đổi `SITE_DOMAIN` về

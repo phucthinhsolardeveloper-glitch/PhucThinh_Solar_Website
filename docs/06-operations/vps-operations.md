@@ -23,9 +23,11 @@ xem [vps-cloudfly-runbook.md](vps-cloudfly-runbook.md).
 Hostname `staging.phucthinhsolar.com` đã được gỡ khỏi Caddy ngày 2026-09-17;
 còn phải xóa bản ghi DNS staging ở P.A để kết thúc hẳn.
 
-Host cũ (`103.82.21.26`) vẫn còn website, database, mail và FTP nguyên trạng.
-Đợt xóa qua DirectAdmin không làm thay đổi dữ liệu và đã dừng; xem
-[cutover-dns-va-host-cu.md](cutover-dns-va-host-cu.md) trước khi rút hẳn.
+Host cũ (`103.82.21.26`) đã được rút phần website ngày 2026-09-17: `public_html`
+đã rỗng (đã xóa 28.213 file, 2.713 thư mục) và database `phucthinhs_data` đã
+xóa; kiểm tra lại cho kết quả webroot `0` mục và DirectAdmin `0` database.
+Mailbox, DirectAdmin account và FTP account vẫn được giữ để không làm gián đoạn
+email; xem [cutover-dns-va-host-cu.md](cutover-dns-va-host-cu.md).
 
 ---
 
@@ -157,9 +159,9 @@ ls -lh /srv/phucthinhsolar/backups/
 Mỗi bản backup có `MANIFEST.txt` và checksum; script tự verify sau khi tạo.
 
 Backup đầy đủ `20260917T075137Z-full` đã qua kiểm tra checksum và diễn tập
-restore (54 bảng, 1.127 file upload). Một bản đã tải về máy phát triển tại
-`backup/vps/20260917T075137Z-full`; đây chỉ là bản sao tạm, chưa thay thế
-off-site backup độc lập.
+restore (54 bảng, 1.127 file upload). Bản sao đã được chuyển ra ngoài project
+tới `D:\Docs\Backup\NEW01\20260917T075137Z-full` và kiểm tra lại toàn bộ
+checksum thành công; đây vẫn chưa thay thế off-site backup tự động, độc lập.
 
 **Cảnh báo đang hiện và chưa xử lý:**
 
@@ -303,5 +305,9 @@ hết hỗ trợ; khả năng build lại từ Internet trong vài năm tới kh
 - [x] Cutover domain chính và `www` sang VPS.
 - [ ] Cấu hình SMTP Brevo sau khi chủ project cung cấp tài khoản/API credential.
 - [ ] Cấu hình reCAPTCHA production nếu tiếp tục dùng form công khai.
-- [ ] Chỉ rút website/database/mail/FTP ở host cũ sau khi có xác nhận riêng và
-      đã đủ thời gian theo dõi production.
+- [x] Xóa website và database ở host cũ sau khi chủ project xác nhận; giữ
+      mailbox, DirectAdmin account và FTP account.
+- [ ] Chuyển mailbox sang dịch vụ mail chuyên dụng trước khi hủy hosting cũ;
+      sau đó mới xóa bản ghi `mail`, `MX`, `ftp` và tài khoản còn lại.
+- [ ] Gửi lại trang chủ và sitemap trong Google Search Console để Google thu
+      thập metadata thương hiệu vừa chuẩn hóa.
