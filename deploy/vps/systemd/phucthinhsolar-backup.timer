@@ -1,0 +1,11 @@
+[Unit]
+Description=Daily Phuc Thinh Solar backup timer
+
+[Timer]
+OnCalendar=*-*-* 02:30:00 Asia/Ho_Chi_Minh
+RandomizedDelaySec=10m
+Persistent=true
+Unit=phucthinhsolar-backup.service
+
+[Install]
+WantedBy=timers.target

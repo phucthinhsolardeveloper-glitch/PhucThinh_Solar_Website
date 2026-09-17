@@ -22,6 +22,12 @@ Restore test kiểm tra checksum, số bảng và số file upload rồi tự x�
 
 Trạng thái vẫn là PARTIAL. Bản bàn giao chứa DirectAdmin archive/database/config/mail metadata, nhưng chưa chứng minh job tự động, retention, encryption, off-site copy hoặc restore test.
 
+VPS mới có automation DB mỗi 6 giờ, full DB + upload hằng ngày và restore
+rehearsal tại `deploy/vps/scripts/`; xem
+[Runbook VPS CloudFly](vps-cloudfly-runbook.md). Trạng thái chỉ được nâng thành
+READY sau khi đã cấu hình off-site hook và chạy PASS một lần từ bản tải ngược
+về, không chỉ từ bản local trên cùng VPS.
+
 Nhà cung cấp cần xác nhận owner, lịch, phạm vi DB/upload/mail, nơi lưu, retention, encryption và RTO/RPO. Restore rehearsal production backup chỉ chạy trên staging: dựng account sạch, import DB, restore upload, cập nhật config/domain, kiểm tra login/content/product/order/email và ghi thời gian/kết quả.
 
 ## Đổi hosting (khẩn cấp hoặc chủ động)

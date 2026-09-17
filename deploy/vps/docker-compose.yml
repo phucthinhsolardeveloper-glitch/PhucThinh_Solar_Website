@@ -1,0 +1,138 @@
+name: ${COMPOSE_PROJECT_NAME:-phucthinhsolar}
+
+services:
+  proxy:
+    image: ${CADDY_IMAGE:?CADDY_IMAGE is required}
+    restart: unless-stopped
+    environment:
+      SITE_DOMAIN: ${SITE_DOMAIN:?SITE_DOMAIN is required}
+      SITE_ALIASES: ${SITE_ALIASES:-}
+      ACME_EMAIL: ${ACME_EMAIL:?ACME_EMAIL is required}
+      TZ: ${TZ:-Asia/Ho_Chi_Minh}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - edge
+    depends_on:
+      web:
+        condition: service_healthy
+    mem_limit: 512m
+    pids_limit: 200
+    logging: &bounded-logging
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  web:
+    image: ${PTS_WEB_IMAGE:?PTS_WEB_IMAGE is required}
+    restart: unless-stopped
+    environment:
+      APP_ENV: production
+      PTS_SITE_DOMAIN: ${SITE_DOMAIN:?SITE_DOMAIN is required}
+      DB_HOST: db
+      DB_PORT: "3306"
+      DB_NAME: ${DB_NAME:?DB_NAME is required}
+      DB_USER: ${DB_USER:?DB_USER is required}
+      PTS_DB_PASSWORD_FILE: /run/secrets/db_password
+      PTS_APP_SECRET_FILE: /run/secrets/app_secret
+      PTS_APP_SALT_FILE: /run/secrets/app_salt
+      PTS_MAIL_CONFIG_FILE: /run/secrets/pts_mail_config
+      CKFINDER_LICENSE_NAME_FILE: /run/secrets/ckfinder_license_name
+      CKFINDER_LICENSE_KEY_FILE: /run/secrets/ckfinder_license_key
+      TZ: ${TZ:-Asia/Ho_Chi_Minh}
+    secrets:
+      - db_password
+      - app_secret
+      - app_salt
+      - pts_mail_config
+      - ckfinder_license_name
+      - ckfinder_license_key
+    volumes:
+      - ./config/config.php:/var/www/html/libraries/config.php:ro
+      - ./shared/upload:/var/www/html/upload
+      - ./shared/thumbs:/var/www/html/thumbs
+      - ./shared/caches:/var/www/html/caches
+      - ./shared/assets-caches:/var/www/html/assets/caches
+      - ./shared/logs:/var/www/html/logs
+      - ./shared/watermark:/var/www/html/watermark
+    networks:
+      - edge
+      - data
+    depends_on:
+      db:
+        condition: service_healthy
+    mem_limit: 3g
+    pids_limit: 300
+    healthcheck:
+      test: ["CMD-SHELL", "php -r 'exit(@file_get_contents(\"http://127.0.0.1/robots.txt\") === false ? 1 : 0);'"]
+      interval: 15s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+    logging: *bounded-logging
+
+  db:
+    image: ${MARIADB_IMAGE:?MARIADB_IMAGE is required}
+    restart: unless-stopped
+    environment:
+      MARIADB_DATABASE: ${DB_NAME:?DB_NAME is required}
+      MARIADB_USER: ${DB_USER:?DB_USER is required}
+      MARIADB_PASSWORD_FILE: /run/secrets/db_password
+      MARIADB_ROOT_PASSWORD_FILE: /run/secrets/db_root_password
+      TZ: ${TZ:-Asia/Ho_Chi_Minh}
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --skip-name-resolve
+      - --innodb-buffer-pool-size=1G
+      - --key-buffer-size=256M
+      - --max-connections=100
+    secrets:
+      - db_password
+      - db_root_password
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - data
+    healthcheck:
+      test: ["CMD-SHELL", "mariadb-admin ping -h 127.0.0.1 -uroot --password=\"$$(cat /run/secrets/db_root_password)\" --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+    mem_limit: 4g
+    pids_limit: 300
+    logging: *bounded-logging
+
+networks:
+  edge:
+  data:
+    internal: true
+
+volumes:
+  db_data:
+  caddy_data:
+  caddy_config:
+
+secrets:
+  db_password:
+    file: ./secrets/db_password
+  db_root_password:
+    file: ./secrets/db_root_password
+  app_secret:
+    file: ./secrets/app_secret
+  app_salt:
+    file: ./secrets/app_salt
+  pts_mail_config:
+    file: ./secrets/pts_mail_config.php
+  ckfinder_license_name:
+    file: ./secrets/ckfinder_license_name
+  ckfinder_license_key:
+    file: ./secrets/ckfinder_license_key

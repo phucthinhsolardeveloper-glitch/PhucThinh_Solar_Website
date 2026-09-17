@@ -1,0 +1,21 @@
+{
+	email {$ACME_EMAIL:admin@phucthinhsolar.com}
+	servers {
+		protocols h1 h2 h3
+	}
+}
+
+{$SITE_DOMAIN}{$SITE_ALIASES} {
+	encode zstd gzip
+
+	log {
+		output stdout
+		format json
+	}
+
+	reverse_proxy web:80 {
+		health_uri /robots.txt
+		health_interval 30s
+		health_timeout 5s
+	}
+}

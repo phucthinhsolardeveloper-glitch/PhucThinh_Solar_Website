@@ -1,0 +1,11 @@
+[Unit]
+Description=Phuc Thinh Solar database-only backup
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/srv/phucthinhsolar/scripts/backup.sh --db-only
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7

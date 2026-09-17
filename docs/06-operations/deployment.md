@@ -9,3 +9,6 @@ Quy trình an toàn đề xuất: tạo staging subdomain/database -> clone sour
 Checklist Go/No-Go chi tiết: [Báo cáo sẵn sàng đưa website lên hosting — 2026-08-29](hosting-readiness-2026-08-29.md).
 
 Hướng dẫn tạo gói bàn giao: [Gói release đưa lên hosting](hosting-release-package.md).
+
+VPS Docker/Caddy chuẩn hóa và quy trình CloudFly/chuyển nhà:
+[Runbook VPS CloudFly](vps-cloudfly-runbook.md).
