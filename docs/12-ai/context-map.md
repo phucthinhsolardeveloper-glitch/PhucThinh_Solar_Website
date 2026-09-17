@@ -1,13 +1,30 @@
 # AI context map
 
+**Bắt đầu từ [docs/SO-TAY.md](../SO-TAY.md)** — nó tra cứu theo *việc cần làm*
+và liệt kê sẵn các cạm bẫy đã tốn thời gian thật.
+
 ```text
-All tasks -> AGENTS.md -> fact-map/status
-Frontend -> architecture + request-flow + feature inventory -> templates/assets
-Backend -> architecture + API/data -> sources/api/libraries
-Database -> database + data-safety -> SQL/query implementation
-Auth -> auth-rbac + security-model -> admin/source Functions
-Deployment -> deployment + backup-restore
-Unknown legacy behavior -> audit -> implementation -> runtime evidence
+Mọi task            -> SO-TAY.md -> AGENTS.md -> fact-map/status
+Hiểu code / tìm file-> 01-architecture/codebase-guide.md -> sources/templates/libraries
+Giao diện / CSS     -> 02-development/frontend-guide.md -> assets/css/design-tokens.css
+Nội dung sửa ở Admin-> 07-features/admin-guide.md -> libraries/type/config-type-*.php
+Database / schema   -> 03-data/database.md -> migrations/
+Sửa bug             -> 11-workflows/bug-fixing-playbook.md
+Làm tính năng       -> 11-workflows/feature-delivery-playbook.md
+Test / cổng deploy  -> 02-development/testing.md -> scripts/predeploy-local.sh, tools/visual-tests
+Deploy host cũ      -> 06-operations/deployment.md          (FTP, không SSH)
+Dựng VPS / chuyển   -> 06-operations/vps-cloudfly-runbook.md
+Vận hành VPS / sự cố-> 06-operations/vps-operations.md
+Backup / restore    -> 06-operations/backup-restore.md
+Auth / phân quyền   -> 05-security/auth-rbac.md -> libraries/requick.php, admin_security.php
+Quyết định đã chốt  -> 09-decisions/
+Hành vi legacy lạ   -> 10-audits/ -> implementation -> BẰNG CHỨNG RUNTIME
 ```
 
-Chỉ nạp context tối thiểu cần thiết. Không đọc/hiển thị secret values trong `config.php`, SQL INSERT, backup config hoặc mail data.
+## Ba quy tắc
+
+1. **Đo, đừng đoán.** Runtime > code > schema > docs. Khi mâu thuẫn, ghi rõ
+   xung đột và tin nguồn đáng tin hơn.
+2. Ghi `UNKNOWN` / `NEEDS VERIFICATION` thay vì suy diễn.
+3. Chỉ nạp context tối thiểu cần thiết. Không đọc/hiển thị secret trong
+   `config.php`, `deploy/vps/secrets/`, SQL INSERT, config backup hay dữ liệu mail.

@@ -1,5 +1,21 @@
 # Documentation index
 
+> **Mới bắt đầu, hoặc AI vừa mất context? Đọc [SO-TAY.md](SO-TAY.md) trước.**
+> File này liệt kê tài liệu theo thư mục; `SO-TAY.md` tra cứu theo *việc cần làm*
+> và nói trước các cạm bẫy.
+
+## Sổ tay thao tác (đọc vào là làm được)
+
+- `SO-TAY.md`: cửa vào duy nhất — tra cứu theo việc, bản đồ hệ thống, cạm bẫy đã gặp thật.
+- `01-architecture/codebase-guide.md`: URL → `$source` → `$template`; vai trò từng thư mục; hợp đồng `getImage()`.
+- `02-development/frontend-guide.md`: thứ tự nạp CSS, hệ design token, 4 lỗi layout thật và cách sửa.
+- `07-features/admin-guide.md`: 3 hệ lưu nội dung; 5 bước làm một khối sửa được ở Admin.
+- `11-workflows/bug-fixing-playbook.md`: đo đừng đoán; 4 lần kết luận sai và dấu hiệu nhận ra.
+- `11-workflows/feature-delivery-playbook.md`: từ yêu cầu tới production, kèm danh sách "không tự làm".
+- `06-operations/vps-operations.md`: vận hành VPS, backup, sự cố thường gặp.
+
+## Theo thư mục
+
 - `00-project/fact-map.md`, `status.md`: sự thật và trạng thái.
 - `01-architecture/overview.md`, `request-flow.md`: kiến trúc và luồng.
 - `02-development/local-setup.md`, `testing.md`: phát triển/kiểm thử.
