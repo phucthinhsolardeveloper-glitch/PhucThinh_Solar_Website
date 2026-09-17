@@ -24,6 +24,11 @@ và không đặt trong webroot.
 - `pts_mail_config.php`: array SMTP theo `docs/08-integrations/smtp-production.md`.
 - `ckfinder_license_name`, `ckfinder_license_key`: để file rỗng nếu chưa có
   license; không dùng giá trị demo.
+- `recaptcha_secret`: **secret key** reCAPTCHA v3, lấy đúng từ config production
+  cũ. Site key là giá trị công khai và đặt trong `.env` (`RECAPTCHA_SITE_KEY`),
+  không phải ở đây. Để file rỗng + `RECAPTCHA_ACTIVE=0` sẽ khiến form
+  **fail-open**: nhận mọi lượt gửi mà không kiểm bot — xem chú thích trong
+  `docker-compose.yml`.
 
 Tạo DB password mới bằng password manager. Không tái sử dụng mật khẩu hosting
 cũ. `app_secret`/`app_salt` là ngoại lệ tương thích dữ liệu, không tự rotate

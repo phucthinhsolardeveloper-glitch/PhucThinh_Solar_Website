@@ -34,7 +34,7 @@ fi
 
 # Chỉ optional license được phép là file rỗng. Secret bắt buộc không tự sinh
 # để buộc người vận hành lấy đúng giá trị tương thích từ hệ thống hiện tại.
-for optional_secret in ckfinder_license_name ckfinder_license_key; do
+for optional_secret in ckfinder_license_name ckfinder_license_key recaptcha_secret; do
     if [ ! -e "$stack_root/secrets/$optional_secret" ]; then
         install -m 0600 /dev/null "$stack_root/secrets/$optional_secret"
     fi
@@ -63,7 +63,7 @@ chmod 0600 "$stack_root/.env"
 # PHP trả 500 với "Missing required runtime secret" — đã xảy ra thật ngày
 # 2026-09-17. Thư mục vẫn 0700 root nên host vẫn chỉ root vào được; phần bảo
 # vệ nằm ở thư mục, không ở mode từng file.
-web_secrets="db_password app_secret app_salt pts_mail_config.php ckfinder_license_name ckfinder_license_key"
+web_secrets="db_password app_secret app_salt pts_mail_config.php ckfinder_license_name ckfinder_license_key recaptcha_secret"
 for secret in $web_secrets; do
     [ -e "$stack_root/secrets/$secret" ] || continue
     chown 0:33 "$stack_root/secrets/$secret"

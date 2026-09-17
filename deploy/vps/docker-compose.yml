@@ -46,6 +46,13 @@ services:
       PTS_MAIL_CONFIG_FILE: /run/secrets/pts_mail_config
       CKFINDER_LICENSE_NAME_FILE: /run/secrets/ckfinder_license_name
       CKFINDER_LICENSE_KEY_FILE: /run/secrets/ckfinder_license_key
+      # config/config.php đọc 3 biến này nhưng trước 2026-09-17 stack không hề
+      # truyền chúng, nên reCAPTCHA luôn active=false. Hậu quả không phải "tắt
+      # captcha" mà là FAIL-OPEN: checkRecaptcha() trả ['test'=>true] và điều
+      # kiện submit `... || $testCaptcha == true` cho qua mọi lượt gửi form.
+      RECAPTCHA_ACTIVE: ${RECAPTCHA_ACTIVE:-0}
+      RECAPTCHA_SITE_KEY: ${RECAPTCHA_SITE_KEY:-}
+      RECAPTCHA_SECRET_FILE: /run/secrets/recaptcha_secret
       TZ: ${TZ:-Asia/Ho_Chi_Minh}
     secrets:
       - db_password
@@ -54,6 +61,7 @@ services:
       - pts_mail_config
       - ckfinder_license_name
       - ckfinder_license_key
+      - recaptcha_secret
     volumes:
       - ./config/config.php:/var/www/html/libraries/config.php:ro
       - ./shared/upload:/var/www/html/upload
@@ -143,3 +151,5 @@ secrets:
     file: ./secrets/ckfinder_license_name
   ckfinder_license_key:
     file: ./secrets/ckfinder_license_key
+  recaptcha_secret:
+    file: ./secrets/recaptcha_secret
