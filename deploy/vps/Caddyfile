@@ -28,7 +28,20 @@
 		path /robots.txt
 	}
 
+	# Gộp www về non-www bằng 301.
+	#
+	# Đo sau cutover 2026-09-17: www và non-www đều trả 200, và canonical do app
+	# sinh theo HTTP_HOST nên mỗi bên tự trỏ canonical về chính nó -> toàn site
+	# có hai URL trùng nội dung, chia đôi giá trị liên kết. Redirect ở tầng proxy
+	# xử lý gọn hơn sửa canonical, vì nó gộp cả link equity về một URL.
+	#
+	# Hostname để cứng có chủ ý: host matcher của Caddy chỉ cho wildcard ở nhãn
+	# ngoài cùng (*.domain), không có dạng www.* nên không viết tổng quát được.
+	@www host www.phucthinhsolar.com
+
 	route {
+		redir @www https://phucthinhsolar.com{uri} permanent
+
 		header @staging X-Robots-Tag "noindex, nofollow, noarchive"
 		respond @staging_robots 200 {
 			body "User-agent: *
