@@ -117,47 +117,29 @@ VPS mới là stack Docker thuần: **không có DirectAdmin, không có mail se
 
 Nên trên VPS hiện tại, website **chưa gửi được mail**.
 
-### Tin tốt: hai việc này TÁCH ĐƯỢC ra hai thời điểm
+### SỬA LẠI 2026-09-17: cách "bắc cầu" qua SMTP host cũ KHÔNG dùng được
 
-Đây là điểm quan trọng, nó gỡ email ra khỏi đường găng của cutover.
+Trước đó mục này đề xuất: cứ điền SMTP hiện có của host cũ vào VPS, coi như
+xong email cho tới lúc huỷ host cũ. **Đề xuất đó sai.** Đã thử thật và thất bại,
+lý do:
 
-`mail.phucthinhsolar.com:587` là **SMTP có xác thực, truy cập được qua
-Internet** — không phải chỉ dùng được từ bên trong host cũ. Nên VPS mới hoàn
-toàn có thể dùng nó làm relay, miễn host cũ còn sống.
+Máy chủ mail của host cũ dùng certificate **tự ký `CN=localhost`** (snakeoil mặc
+định của Exim), trong khi app bắt buộc `verify_peer`/`verify_peer_name` và
+không cho gửi không mã hoá. Đo từ VPS: `connect()` OK, `startTLS()` **thất bại**.
 
-| Thời điểm | Cần gì |
-|---|---|
-| **Cutover website** | Chỉ cần điền SMTP hiện có (`mail.phucthinhsolar.com:587`, `website@phucthinhsolar.com`) vào `secrets/pts_mail_config.php` trên VPS. Host cũ vẫn sống nên mail vẫn gửi bình thường. **Không cần giải quyết email trong ngày cutover.** |
-| **Huỷ host cũ** | Lúc này mới bắt buộc phải chuyển sang nhà cung cấp SMTP mới. |
+Đồng thời phát hiện: **mail trên production hiện cũng KHÔNG gửi được** — file
+`~/.pts-mail.php` chưa bao giờ được tạo, nên mọi lần gửi bị chặn ngay ở bước
+kiểm cấu hình. Chi tiết đầy đủ và bằng chứng:
+[smtp-production.md](../08-integrations/smtp-production.md) mục 2026-09-17.
 
-SPF vẫn đạt trong giai đoạn bắc cầu: thư được **relay qua**
-`mail.phucthinhsolar.com`, nên IP mà Gmail nhìn thấy là IP host cũ, khớp đúng
-`mx` trong `v=spf1 a mx ~all`. Không cần sửa SPF ở bước này.
+Hệ quả cho kế hoạch: **không có bước bắc cầu.** Phải chuyển sang một SMTP relay
+có certificate hợp lệ — và việc đó sửa luôn cả mail production đang hỏng, nên
+làm một lần được cả hai. Không cần làm trong ngày cutover, nhưng nên làm sớm vì
+production đang không gửi được mail.
 
-Cách điền secret **mà không để mật khẩu đi qua chat** — anh tự chạy dòng này,
-thay `MAT_KHAU_THAT`:
-
-```bash
-ssh -i ~/.ssh/id_ed25519 root@222.255.182.182 \
-  "cat > /srv/phucthinhsolar/secrets/pts_mail_config.php <<'PHP'
-<?php
-return array(
-    'host'       => 'mail.phucthinhsolar.com',
-    'port'       => 587,
-    'encryption' => 'tls',
-    'username'   => 'website@phucthinhsolar.com',
-    'password'   => 'MAT_KHAU_THAT',
-    'from'       => 'website@phucthinhsolar.com',
-    'admin_to'   => 'phucthinhsolar.hr@gmail.com',
-);
-PHP
-chown 0:33 /srv/phucthinhsolar/secrets/pts_mail_config.php
-chmod 0640 /srv/phucthinhsolar/secrets/pts_mail_config.php
-cd /srv/phucthinhsolar && docker compose restart web"
-```
-
-Hai dòng `chown`/`chmod` là bắt buộc — xem [vps-operations § 6](vps-operations.md):
-để `0600 root` thì `www-data` không đọc được và **toàn bộ trang PHP trả 500**.
+Dữ liệu không mất trong lúc chưa sửa: form ghi vào `table_contact` **trước** khi
+gửi mail, nên lead vẫn nằm trong DB, chỉ là không ai được thông báo — phải vào
+Admin mới thấy.
 
 ### Chuyển SMTP đi đâu (cho lúc huỷ host cũ)
 
