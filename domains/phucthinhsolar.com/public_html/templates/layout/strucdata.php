@@ -97,7 +97,16 @@
         $sameAs = array();
         if(!empty($social)) foreach($social as $socialItem)
         {
-            if(!empty($socialItem['link'])) $sameAs[] = $socialItem['link'];
+            if(empty($socialItem['link'])) continue;
+            $socialLink = trim($socialItem['link']);
+            $genericLinks = array(
+                'http://google.com',
+                'http://www.google.com',
+                'https://google.com',
+                'https://www.google.com'
+            );
+            if(in_array(rtrim($socialLink, '/'), $genericLinks, true)) continue;
+            if(filter_var($socialLink, FILTER_VALIDATE_URL)) $sameAs[] = $socialLink;
         }
         $organizationSchema = array(
             '@type' => 'Organization',
@@ -110,7 +119,6 @@
                 '@type' => 'ImageObject',
                 'url' => $configBase.UPLOAD_PHOTO_L.@$logo['photo']
             ),
-            'sameAs' => $sameAs,
             'address' => array(
                 '@type' => 'PostalAddress',
                 'streetAddress' => isset($optsetting['address']) ? $optsetting['address'] : '',
@@ -118,6 +126,7 @@
                 'addressCountry' => 'VN'
             )
         );
+        if(!empty($sameAs)) $organizationSchema['sameAs'] = array_values(array_unique($sameAs));
         $schemaData = $organizationSchema;
         if(isset($source) && $source === 'index')
         {
