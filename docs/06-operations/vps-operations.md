@@ -71,6 +71,13 @@ docker compose logs --tail=100 db
 # Khởi động lại chỉ web (không mất DB, không mất upload)
 docker compose up -d --force-recreate web
 
+# Sau khi SỬA Caddyfile hoặc config/config.php: PHẢI restart, không phải up -d.
+# `up -d` so sánh spec container; file bind-mount đổi nội dung mà spec không đổi
+# nên Compose bỏ qua và container vẫn chạy CONFIG CŨ — đã suýt báo cáo sai vì
+# chuyện này ngày 2026-09-17. Kiểm lại bằng admin API của Caddy ở dưới.
+docker compose restart proxy
+docker exec "$(docker compose ps -q proxy)" wget -qO- http://127.0.0.1:2019/config/ | head -c 400
+
 # Kiểm tra tổng thể: container, digest image, PHP runtime, HTTPS
 ./scripts/verify-stack.sh
 

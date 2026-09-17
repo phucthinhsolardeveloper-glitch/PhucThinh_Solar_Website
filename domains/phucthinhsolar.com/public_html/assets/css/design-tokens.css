@@ -423,3 +423,88 @@
   text-transform:none!important;letter-spacing:-.02em;
 }
 .title-product-orther{margin-bottom:24px!important;}
+
+/* ==========================================================================
+   NHỊP DỌC — một thang duy nhất cho khoảng trắng trên/dưới mỗi section
+   (2026-09-17)
+
+   Đo bằng getComputedStyle ở 1440px và 390px, KHÔNG đọc CSS tĩnh: about-v2.css
+   khai báo .pts-about-story{padding:82px 0 90px} ở dòng 22 nhưng dòng 217 trong
+   CÙNG file ghi đè xuống 0/54 — đọc file sẽ cho số sai hoàn toàn.
+
+   Số đo trước khi sửa, desktop:
+     Trang chủ  : 70, 56/64, 58/64, 70, 44, 64, 64   -> 5 giá trị khác nhau
+     Giới thiệu : 0/54, 58/64, 64, 58/64, 64, 64
+     Đại ly     : 56 toàn trang (đều, nhưng lệch một bậc so với các trang khác)
+     Hub        : dự án 34/58, tin tức 28/50, giải pháp 32/56 -> 3 cặp khác nhau
+
+   Chốt 64px desktop / 48px mobile vì đó là giá trị đã phổ biến nhất (gần như
+   mọi padding-bottom đang là 64) và nằm trên lưới 8px; 44/56/58/70 thì không.
+
+   Hai thứ CỐ Ý giữ nguyên, không phải trôi dạt:
+     - padding 0 ở section mở đầu dạng dải ảnh (.pts-about-story,
+       .pts-about-contact, .pts-dl-hero) — hero tự lo khoảng trắng.
+     - khoảng cách BÊN TRONG hub (.pts-sh-choices, .pts-ph-heading...) — cộng
+       thêm nhịp section vào đó sẽ nhân đôi khoảng trắng.
+
+   Rollback: xoá khối này.
+   ========================================================================== */
+:root{
+  --pts-section-y:64px;
+  --pts-hub-y-top:32px;
+  --pts-hub-y-bottom:56px;
+}
+
+/* Section cấp trang: đưa mọi giá trị khác 0 về cùng một bậc. */
+.pts-retail-campaigns,
+.pts-product-family,
+.pts-proof-band,
+.pts-brands,
+.pts-home-closing-cta,
+.home-2,.home-3,.home-4,.home-6,.home-7,.home-8,.home_loi_ich,
+.wrap-cat-highlight,
+.pts-about-history,
+.pts-about-people,
+.pts-about-trust,
+.pts-about-compass,
+.pts-about-certificates,
+.pts-dealer-hub section{
+  padding-top:var(--pts-section-y)!important;
+  padding-bottom:var(--pts-section-y)!important;
+}
+
+/* Giữ mép trên bằng 0 cho các dải mở đầu / dải liền kề.
+   .pts-dl-hero cần đi kèm .pts-dealer-hub, nếu không rule chung
+   `.pts-dealer-hub section` (specificity 0,1,1) sẽ thắng và hero bị thêm 64px. */
+.pts-about-story,.pts-about-contact,.pts-dealer-hub .pts-dl-hero{padding-top:0!important;}
+.pts-about-story,.pts-about-contact,.pts-dealer-hub .pts-dl-hero{padding-bottom:var(--pts-section-y)!important;}
+
+/* Wrapper của trang dạng hub: mép trên hẹp hơn vì đã có breadcrumb phía trên. */
+.pts-project-hub,.pts-news-hub,.pts-solution-hub{
+  padding-top:var(--pts-hub-y-top)!important;
+  padding-bottom:var(--pts-hub-y-bottom)!important;
+}
+
+@media (max-width:800px){
+  :root{
+    --pts-section-y:48px;
+    --pts-hub-y-top:24px;
+    --pts-hub-y-bottom:40px;
+  }
+  /* theme-v2.css có `body.home .home-3,...{padding-top:40px!important}` trong
+     một media query mobile. Specificity (0,2,1) thắng `.home-3` (0,1,0) dù cả
+     hai đều !important, nên phải lặp lại tiền tố body.home ở đây. */
+  body.home .home-2,
+  body.home .home-3,
+  body.home .home-4,
+  body.home .home-6,
+  body.home .home-7,
+  body.home .home-8,
+  body.home .home_loi_ich{
+    padding-top:var(--pts-section-y)!important;
+    padding-bottom:var(--pts-section-y)!important;
+  }
+  /* Trên mobile .home-3 cố ý để mép dưới 0 để không cộng dồn với section kế
+     tiếp; giữ nguyên hành vi đó. */
+  body.home .home-3{padding-bottom:0!important;}
+}

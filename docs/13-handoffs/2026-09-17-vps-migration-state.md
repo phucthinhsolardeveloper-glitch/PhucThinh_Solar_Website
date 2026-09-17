@@ -37,8 +37,13 @@ duy nhất không lấy lại được nếu mất — ưu tiên bảo vệ trê
 - Preflight migration: **READY** — cả 17 migration schema đã áp dụng, gồm
   `036 photo_feed`.
 - Smoke: 9 trang chính **200**, admin **302** (redirect login), **0 cảnh báo PHP**.
-- Thumbnail sinh theo yêu cầu (WebP) hoạt động; `upload/.htaccess` chặn thực thi
-  script đã có mặt.
+- Thumbnail sinh theo yêu cầu (WebP) hoạt động.
+- **Đã test thật việc chặn thực thi script trong `upload/`** (một trong các điều
+  kiện chặn cutover): ghi một file `.php` vào `shared/upload/`, gọi qua HTTP →
+  **403**, không thực thi và cũng không serve; file `.txt` đối chiếu → 200 kèm
+  nội dung. Đã xoá file test. `AllowOverride All` đang bật nên
+  `upload/.htaccess` có hiệu lực, và `pts-security.conf` đã được enable.
+  **Host cũ cũng trả 403** với cùng phép thử.
 - Timer backup systemd đã bật (DB mỗi 6 giờ, DB+upload ~02:36). Đã chạy thử
   một lần: PASS.
 - Bundle runtime image đã xuất (420 MB) làm bảo hiểm cho PHP 7.4 EOL.
@@ -138,9 +143,9 @@ mốc thời gian của nó phải khớp với vòng chờ của script deploy.
 
 Lấy từ runbook mục 10, nhắc lại vì đây là hàng rào cuối:
 
-- Còn fatal/warning trên trang public.
-- `upload/` thực thi được script.
-- Preflight PARTIAL.
+- Còn fatal/warning trên trang public. → **đã kiểm 2026-09-17: sạch**
+- `upload/` thực thi được script. → **đã kiểm 2026-09-17: 403, an toàn**
+- Preflight PARTIAL. → **đã kiểm 2026-09-17: READY**
 - SMTP sai certificate.
 - **Backup chưa từng restore thử thành công.**
 - Chưa có đường rollback.

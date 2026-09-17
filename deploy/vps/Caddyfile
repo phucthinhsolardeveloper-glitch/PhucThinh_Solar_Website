@@ -13,9 +13,39 @@
 		format json
 	}
 
-	reverse_proxy web:80 {
-		health_uri /robots.txt
-		health_interval 30s
-		health_timeout 5s
+	# Chặn Google index bản thử.
+	#
+	# Matcher gắn cứng vào hostname staging, nên SAU CUTOVER nó không bao giờ
+	# khớp nữa và tự vô hiệu — không có rủi ro quên tháo rồi de-index website
+	# thật. Đừng đổi thành wildcard hay biến môi trường vì sẽ mất tính chất đó.
+	#
+	# Dùng header X-Robots-Tag thay vì chỉ sửa robots.txt: robots.txt chỉ ngăn
+	# thu thập, còn URL đã biết vẫn có thể lên kết quả tìm kiếm. Header này
+	# chặn ở mức từng phản hồi nên phủ mọi trang.
+	@staging host staging.phucthinhsolar.com
+	@staging_robots {
+		host staging.phucthinhsolar.com
+		path /robots.txt
+	}
+
+	route {
+		header @staging X-Robots-Tag "noindex, nofollow, noarchive"
+		respond @staging_robots 200 {
+			body "User-agent: *
+Disallow: /
+"
+		}
+
+		# health_uri để /robots.txt là CỐ Ý, khác với healthcheck của container
+		# web (xem chú thích trong docker-compose.yml). Đây là phép thử "Apache
+		# còn trả lời không" để Caddy quyết định có route hay không; nếu siết
+		# thành GET / đòi 200 thì khi PHP lỗi Caddy sẽ trả 502 và che mất thông
+		# báo lỗi thật, khó chẩn đoán hơn. Cổng gác deploy/rollback là
+		# healthcheck của container, không phải chỗ này.
+		reverse_proxy web:80 {
+			health_uri /robots.txt
+			health_interval 30s
+			health_timeout 5s
+		}
 	}
 }
