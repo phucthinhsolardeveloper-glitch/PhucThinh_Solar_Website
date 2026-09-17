@@ -174,10 +174,16 @@ test('All five solution details share the balanced responsive template', async (
     await expect(detail).toBeVisible();
     await expect(page.locator('h1')).toHaveCount(1);
     await expect(page.locator('.breadcrumb-item')).toHaveCount(3);
-    expect(await detail.locator('.pts-solution-editorial h2').count()).toBeGreaterThanOrEqual(3);
-    const editorialText = await detail.locator('.pts-solution-editorial').innerText();
+    /* Nhắm đúng bài chính bằng #toc-content. Class .pts-solution-editorial còn
+       được dùng cho khối "Thông tin bổ sung" (.pts-sd-extra); khối đó rỗng ở
+       local nên không render, nhưng CÓ dữ liệu trên production -> locator cũ
+       khớp 2 element và vỡ ở strict mode khi chạy với dữ liệu thật. */
+    const editorial = detail.locator('#toc-content.pts-solution-editorial');
+    await expect(editorial, path).toHaveCount(1);
+    expect(await editorial.locator('h2').count()).toBeGreaterThanOrEqual(3);
+    const editorialText = await editorial.innerText();
     expect(editorialText, path).not.toMatch(/\b(?:backup|battery|load|grid|cabinet|MWp|kWp)\b|phụ tải|bài toán|kiến trúc hệ thống|chiến lược vận hành/i);
-    const sectionHeadings = await detail.locator('.pts-solution-editorial h2').allTextContents();
+    const sectionHeadings = await editorial.locator('h2').allTextContents();
     expect(sectionHeadings.some(heading => heading.includes('?')), path).toBe(false);
     const toc = detail.locator('.pts-sd-content-grid > .pts-sd-toc');
     await expect(toc).toBeVisible();
