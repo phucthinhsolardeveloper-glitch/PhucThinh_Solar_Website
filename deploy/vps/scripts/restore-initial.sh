@@ -41,13 +41,26 @@ if find "$stack_root/shared/upload" -type f -print -quit | grep -q .; then
     exit 1
 fi
 
-gzip -dc "$backup_dir/database.sql.gz" | docker compose exec -T db sh -ec 'export MYSQL_PWD="$(cat /run/secrets/db_root_password)"; exec mariadb -uroot "$MARIADB_DATABASE"'
 tmp_upload="$(mktemp -d "$stack_root/state/upload-restore-XXXXXX")"
 cleanup() { rm -rf "$tmp_upload"; }
 trap cleanup EXIT
+if tar -tzf "$backup_dir/upload.tar.gz" | grep -Eq '(^/|(^|/)\.\.(/|$))'; then
+    echo "FAIL: archive upload chứa đường dẫn không an toàn." >&2
+    exit 1
+fi
 tar -xzf "$backup_dir/upload.tar.gz" -C "$tmp_upload"
-[ -d "$tmp_upload/upload" ] || { echo "FAIL: archive không có thư mục upload gốc." >&2; exit 1; }
-rsync -a "$tmp_upload/upload/" "$stack_root/shared/upload/"
+if [ -d "$tmp_upload/upload" ]; then
+    upload_root="$tmp_upload/upload"
+else
+    # Chấp nhận cả gói local legacy có nội dung upload ở ngay gốc archive.
+    upload_root="$tmp_upload"
+fi
+upload_count="$(find "$upload_root" -type f | wc -l)"
+[ "$upload_count" -gt 0 ] || { echo "FAIL: archive upload không có file." >&2; exit 1; }
+
+# Chỉ import DB sau khi archive upload đã được kiểm tra và giải nén thành công.
+gzip -dc "$backup_dir/database.sql.gz" | docker compose exec -T db sh -ec 'export MYSQL_PWD="$(cat /run/secrets/db_root_password)"; exec mariadb -uroot "$MARIADB_DATABASE"'
+rsync -a "$upload_root/" "$stack_root/shared/upload/"
 chown -R 33:33 "$stack_root/shared/upload"
 chmod -R u=rwX,g=rwX,o=rX "$stack_root/shared/upload"
-echo "PASS: đã restore lần đầu vào database rỗng và upload rỗng."
+echo "PASS: đã restore lần đầu vào database rỗng và $upload_count file upload."

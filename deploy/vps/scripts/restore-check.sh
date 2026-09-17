@@ -15,8 +15,19 @@ cleanup() {
 }
 trap cleanup EXIT
 
+if tar -tzf "$backup_dir/upload.tar.gz" | grep -Eq '(^/|(^|/)\.\.(/|$))'; then
+    echo "FAIL: archive upload chứa đường dẫn không an toàn." >&2
+    exit 1
+fi
 tar -xzf "$backup_dir/upload.tar.gz" -C "$tmp_dir"
-upload_count="$(find "$tmp_dir/upload" -type f | wc -l)"
+if [ -d "$tmp_dir/upload" ]; then
+    upload_root="$tmp_dir/upload"
+else
+    # Backup local cũ được tạo bằng `tar -C upload -cz .`, nên nội dung nằm
+    # trực tiếp ở gốc archive. Backup VPS mới có thư mục upload/ bao ngoài.
+    upload_root="$tmp_dir"
+fi
+upload_count="$(find "$upload_root" -type f | wc -l)"
 [ "$upload_count" -gt 0 ] || { echo "FAIL: archive upload không có file." >&2; exit 1; }
 
 root_password="$(openssl rand -hex 24)"

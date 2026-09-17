@@ -95,7 +95,7 @@ Từ hosting cũ lấy logical SQL dump và toàn bộ `upload/`, đóng thành:
 ```text
 migration-input/
   database.sql.gz
-  upload.tar.gz        # bên trong có thư mục upload/
+  upload.tar.gz        # nhận cả upload/ bao ngoài hoặc nội dung upload ở gốc
   SHA256SUMS
 ```
 
