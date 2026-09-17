@@ -1,12 +1,36 @@
 # Current status
 
-Cập nhật gần nhất: 2026-09-16. Phần lớn nội dung bên dưới (tới dòng "Checkout
+Cập nhật gần nhất: 2026-09-17. Phần lớn nội dung bên dưới (tới dòng "Checkout
 idempotency local") là log tích lũy từ trước 2026-09-06 và mới ở Git + Docker
 local tại thời điểm ghi — KHÔNG tự suy ra các mục đó đã lên production chỉ vì
 đợt 2026-09-08/09 đã bắt đầu deploy thật (xem mục riêng bên dưới); mỗi mục cũ
 giữ nguyên phạm vi "local" như lúc viết trừ khi có ghi chú deploy production
 rõ ràng. Trạng thái dữ liệu trống đã được chủ project xác nhận là do chưa có
 nguồn thật; không coi đó là blocker kỹ thuật và không tự lấp.
+
+## 2026-09-17: VPS mới chạy được với dữ liệu production, chưa cutover DNS
+
+- Website đã chạy trên VPS `222.255.182.182` với **dữ liệu production thật**
+  (54 bảng + 1.125 file upload). Preflight migration READY, 9 trang chính trả
+  200, 0 cảnh báo PHP. **DNS chưa trỏ** — host cũ vẫn phục vụ khách.
+- Phát hiện gói migration mà phiên trước đưa lên VPS là **backup local**, không
+  phải production (976 file = 949 local + 27 mới). Đã dựng lại gói đúng từ dump
+  phpMyAdmin production + mirror FTP `upload/`.
+- Hai lỗi hạ tầng đã sửa: secret mount `0600 root` khiến `www-data` không đọc
+  được → 500 toàn site; và healthcheck gọi `robots.txt` (file tĩnh) nên vẫn báo
+  healthy trong lúc đó, làm `deploy-release.sh` mất khả năng tự rollback.
+- Timer backup đã bật và chạy thử PASS; bundle runtime image (420 MB) đã xuất.
+  **Off-site vẫn chưa có** — `backup.sh` đang cảnh báo đúng.
+- Chi tiết và việc còn lại: [handoff 2026-09-17](../13-handoffs/2026-09-17-vps-migration-state.md).
+
+## 2026-09-17: nhịp dọc toàn site về một thang, local
+
+- Đo `getComputedStyle` ở 1440px và 390px: trang chủ có **5 giá trị padding
+  section khác nhau** (44/56/58/64/70), hub có 3 cặp khác nhau (34/58, 28/50,
+  32/56). Đã gom về 64px desktop / 48px mobile cho section cấp trang, và
+  32/56 desktop / 24/40 mobile cho wrapper hub.
+- Giữ nguyên `padding-top:0` ở các dải mở đầu và khoảng cách bên trong hub.
+- Làm qua token trong `design-tokens.css` (nạp cuối); rollback = xoá một khối.
 
 ## 2026-09-16: WebP, ảnh showroom và media responsive local, chưa deploy
 
