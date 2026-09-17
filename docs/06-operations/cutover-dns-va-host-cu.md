@@ -8,40 +8,41 @@ Cập nhật: 2026-09-17. Mọi số liệu dưới đây **đo thật** từ DN
 
 ---
 
-## 0. Việc từng CHẶN mọi thứ — ĐÃ XONG 2026-09-17
+## 0. Cảnh báo "chưa xác thực Email" ở P.A — nó chặn cái gì
 
-> **Cập nhật 13:26 ngày 2026-09-17: đã xác thực xong, DNS sửa được.** Chủ project
-> đã thêm `staging` A `222.255.182.182` TTL 300, và hạ TTL của `@` và `www` về
-> 300. Xác minh bằng `dig @ns1.dotvndns.vn`. Giữ lại mục này để lần chuyển nhà
-> sau biết cần làm gì.
-
-P.A Vietnam từng hiện cảnh báo:
+P.A Vietnam hiện cảnh báo trên trang **"Thay đổi DNS"**:
 
 > Tên miền hiện tại chưa xác thực Email nên không thay đổi DNS được. Vui lòng
 > kiểm tra hộp thư email chủ thể tên miền để xác thực.
 
-Đây là lý do nút **"Lưu cấu hình" bị mờ trên cả 4 trang** (bản ghi tên miền,
-thay đổi DNS, DNS con phụ, email chuyển tiếp). **Chưa xác thực thì không thêm
-được bản ghi nào, kể cả `staging`.**
+**Nó KHÔNG chặn việc thêm/sửa bản ghi DNS.** Đã kiểm bằng thực tế ngày
+2026-09-17: chủ project thêm `staging` A `222.255.182.182` TTL 300 và hạ TTL của
+`@`/`www` về 300 — **lưu thành công**, `dig @ns1.dotvndns.vn` xác nhận đã áp
+dụng. Nút "Lưu cấu hình" trông mờ chỉ là kiểu hiển thị của giao diện, không phải
+bị vô hiệu.
 
-Đây là yêu cầu bắt buộc của ICANN với tên miền `.com`: email của chủ thể đăng ký
-phải được xác nhận. Việc cần làm:
+Trang "Thay đổi DNS" trong giao diện P.A là nơi **đổi nameserver**, khác với
+trang "Cấu hình bản ghi tên miền". Nên cảnh báo đó giới hạn ở việc đổi
+nameserver.
 
-1. Mở hộp thư **email chủ thể tên miền** đã khai với P.A (không phải email đăng
-   nhập vào `access.pavietnam.vn` nếu hai cái khác nhau).
-2. Tìm thư xác thực từ P.A Vietnam / registrar, bấm link trong đó. Kiểm tra cả
-   thư mục Spam/Quảng cáo.
-3. Nếu không tìm thấy thư: gọi P.A **028 22317777** hoặc `info@pavietnam.vn`,
-   yêu cầu **gửi lại thư xác thực chủ thể** cho `phucthinhsolar.com`. Đồng thời
-   hỏi luôn email chủ thể đang là địa chỉ nào — nếu nó là email cũ mà anh không
-   còn truy cập được (ví dụ email do công ty web cũ đặt), phải yêu cầu **đổi
-   email chủ thể** trước, việc này cần giấy tờ doanh nghiệp.
-4. Tải lại trang DNS, xác nhận cảnh báo vàng đã mất và nút "Lưu cấu hình" sáng lên.
+Với dự án này, **không cần đổi nameserver**: DNS đang được quản lý tại P.A
+(`ns1.dotvndns.vn`, `ns2.dotvndns.vn`, `nsbak.dotvndns.com`) và cutover chỉ cần
+sửa bản ghi A. Nên cảnh báo này **không chặn cutover**.
 
-**Kiểm tra trước điều này:** email chủ thể có phải địa chỉ anh đang kiểm soát
-không. Nếu nó thuộc công ty web cũ thì đây là việc gấp nhất trong toàn bộ dự án —
-quan trọng hơn cả website, vì ai kiểm soát email chủ thể thì có đường tác động
-tới tên miền.
+### Nhưng vẫn nên xử lý, vì lý do khác
+
+Việc cần kiểm tra là: **email chủ thể tên miền có phải địa chỉ anh đang kiểm
+soát không.** Nếu nó là email do công ty web cũ đặt thì đây là việc gấp, độc lập
+với cutover — ai kiểm soát email chủ thể thì có đường tác động tới tên miền, và
+tên miền là tài sản duy nhất mất là không lấy lại được.
+
+1. Gọi P.A **028 22317777** hoặc `info@pavietnam.vn`, hỏi **email chủ thể của
+   `phucthinhsolar.com` đang là địa chỉ nào**.
+2. Nếu là địa chỉ của anh: mở hộp thư đó, tìm thư xác thực (xem cả Spam), bấm
+   link. Xong thì cảnh báo mất và cũng mở lại được quyền đổi nameserver nếu sau
+   này cần.
+3. Nếu **không** phải địa chỉ của anh: yêu cầu đổi email chủ thể. Việc này cần
+   giấy tờ doanh nghiệp, làm sớm.
 
 ---
 
@@ -179,16 +180,14 @@ này thì thư gửi được nhưng vào spam.
 
 ## 3. Thứ tự làm — không đảo
 
-### Giai đoạn A: mở đường (làm ngay)
+### Giai đoạn A: mở đường — ĐÃ XONG 2026-09-17
 
-1. **Xác thực email chủ thể tên miền** (mục 0). Chưa xong thì không làm được gì tiếp.
-2. **Hạ TTL xuống 300** cho `@`, `www`, `*`, `mail`. Chưa đổi giá trị, chỉ đổi TTL.
-   Chờ ít nhất 1 giờ (một chu kỳ TTL cũ) để thay đổi lan hết.
-3. **Thêm bản ghi staging:**
-   ```
-   Host: staging     Loại: A     Giá trị: 222.255.182.182     TTL: 300
-   ```
-   Không đổi nameserver. Không sửa bản ghi `@`, `www`, `*`.
+1. ~~Hạ TTL cho `@`, `www`~~ → **xong**, cả hai đã về 300.
+2. ~~Thêm bản ghi `staging` A `222.255.182.182` TTL 300~~ → **xong**, đã phân
+   giải đúng và certificate Let's Encrypt đã cấp.
+3. **Còn lại: hạ TTL của `*` từ 3600 về 300.** Bắt buộc trước cutover vì khi
+   cutover phải đổi cả bản ghi wildcard; để 3600 thì rollback chậm 1 giờ.
+   Không đổi nameserver, không sửa giá trị của `@`, `www`, `*` ở bước này.
 
 ### Giai đoạn B: kiểm thử trên staging (chưa ảnh hưởng khách)
 
@@ -270,7 +269,7 @@ staging — nếu không dữ liệu sẽ chia đôi giữa hai database và kh�
 | Không còn fatal/warning trên trang public | **xanh** — kiểm 11 trang qua HTTPS thật |
 | `upload/` không thực thi được script | **xanh** — trả 403 |
 | Preflight migration READY | **xanh** — 17/17 migration |
-| Email chủ thể tên miền đã xác thực | **xanh** — xong 2026-09-17 |
+| Bản ghi DNS sửa được | **xanh** — đã lưu và `dig` xác nhận |
 | DNS staging trỏ về VPS, TTL 300 | **xanh** — `dig` xác nhận |
 | Certificate HTTPS thật | **xanh** — Let's Encrypt, hạn 16/12/2026 |
 | Không có mixed content | **xanh** — 0 request `http://` |
