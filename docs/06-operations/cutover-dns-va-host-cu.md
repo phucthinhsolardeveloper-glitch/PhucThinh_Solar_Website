@@ -8,9 +8,14 @@ Cập nhật: 2026-09-17. Mọi số liệu dưới đây **đo thật** từ DN
 
 ---
 
-## 0. Việc đang CHẶN mọi thứ — phải làm trước
+## 0. Việc từng CHẶN mọi thứ — ĐÃ XONG 2026-09-17
 
-P.A Vietnam đang hiện cảnh báo:
+> **Cập nhật 13:26 ngày 2026-09-17: đã xác thực xong, DNS sửa được.** Chủ project
+> đã thêm `staging` A `222.255.182.182` TTL 300, và hạ TTL của `@` và `www` về
+> 300. Xác minh bằng `dig @ns1.dotvndns.vn`. Giữ lại mục này để lần chuyển nhà
+> sau biết cần làm gì.
+
+P.A Vietnam từng hiện cảnh báo:
 
 > Tên miền hiện tại chưa xác thực Email nên không thay đổi DNS được. Vui lòng
 > kiểm tra hộp thư email chủ thể tên miền để xác thực.
@@ -262,11 +267,68 @@ staging — nếu không dữ liệu sẽ chia đôi giữa hai database và kh�
 
 | Điều kiện | Trạng thái 2026-09-17 |
 |---|---|
-| Không còn fatal/warning trên trang public | **xanh** — kiểm 9 trang |
+| Không còn fatal/warning trên trang public | **xanh** — kiểm 11 trang qua HTTPS thật |
 | `upload/` không thực thi được script | **xanh** — trả 403 |
 | Preflight migration READY | **xanh** — 17/17 migration |
-| Email chủ thể tên miền đã xác thực | **đỏ** — đang chặn mọi thay đổi DNS |
-| Đăng nhập Admin được trên staging | chưa kiểm — cần DNS |
+| Email chủ thể tên miền đã xác thực | **xanh** — xong 2026-09-17 |
+| DNS staging trỏ về VPS, TTL 300 | **xanh** — `dig` xác nhận |
+| Certificate HTTPS thật | **xanh** — Let's Encrypt, hạn 16/12/2026 |
+| Không có mixed content | **xanh** — 0 request `http://` |
+| Chặn index bản staging | **xanh** — `X-Robots-Tag` + `robots.txt Disallow: /` |
+| Đăng nhập Admin được trên staging | **chờ chủ project tự thử** — xem mục 6 |
 | SMTP gửi thật được từ VPS, không vào spam | **đỏ** — `pts_mail_config.php` còn là stub 22 byte. Bắc cầu qua SMTP host cũ là đủ cho cutover (mục 2) |
 | Backup off-site đã restore thử thành công | **đỏ** — chưa có off-site |
 | Có đường rollback | **xanh** — đổi A record, giữ host cũ 7 ngày |
+
+
+---
+
+## 6. Việc chỉ chủ project làm được: thử đăng nhập Admin
+
+Địa chỉ: **https://staging.phucthinhsolar.com/administrator/**
+
+Đăng nhập bằng **đúng tài khoản và mật khẩu đang dùng trên host cũ**.
+
+Vì sao chỉ mục này mới kiểm được điều đó: mật khẩu Admin được hash bằng
+`md5(secret + password + salt)`, và `secret`/`salt` nằm trong
+`/srv/phucthinhsolar/secrets/`. Không có cách nào xác minh hai giá trị đó đúng
+ngoài việc **đăng nhập thật bằng một mật khẩu có sẵn**. Nếu chúng sai thì toàn
+bộ mật khẩu hiện có sẽ không dùng được sau cutover.
+
+Cũng vì lý do đó, người triển khai không nên biết mật khẩu của chủ project —
+nên đây là việc chủ project tự làm.
+
+Đã kiểm sẵn phần hạ tầng cho bước này:
+
+- Trang đăng nhập trả HTTP 200, có form `username`/`password`.
+- Cookie phiên đã có `secure; HttpOnly; SameSite=Lax` — nên **chỉ đăng nhập
+  được qua HTTPS**, đây là lý do phải có staging chứ không thể test qua HTTP.
+
+### Kết quả cần báo lại
+
+| Kết quả | Ý nghĩa | Làm gì tiếp |
+|---|---|---|
+| Vào được | `app_secret`/`app_salt` đúng | Tiếp tục smoke test phần Admin |
+| Sai mật khẩu | Hai giá trị đó **lấy sai** | Dừng. Phải lấy lại đúng từ `libraries/config.php` của host cũ trước khi tính cutover |
+| Lỗi 500 | Vấn đề khác | Đọc `docker compose logs web`, xem [vps-operations § 7](vps-operations.md) |
+
+Sau khi vào được, kiểm thêm trong Admin: sửa một nội dung rồi xem trang public
+đổi đúng, upload một ảnh xem thumbnail sinh ra, và kiểm quyền của một tài khoản
+nghiệp vụ (không phải superadmin).
+
+**Lưu ý:** staging dùng **bản database đã restore sáng 2026-09-17**. Mọi thay
+đổi anh nhập trên staging **không** tự về host cũ, và sẽ bị ghi đè nếu tôi
+restore lại. Nên chỉ nhập dữ liệu thử, đừng nhập nội dung thật vào staging.
+
+---
+
+## 7. Ghi nhận thêm — chưa chặn cutover
+
+- **Form đăng nhập Admin không có CSRF token.** `libraries/form_security.php`
+  có sẵn helper CSRF nhưng form login không dùng, và không có kiểm
+  `Origin`/`Referer`. Mức độ thấp (kẻ tấn công chỉ ép được nạn nhân đăng nhập
+  vào tài khoản của kẻ tấn công, không leo thang quyền), nhưng nên xử lý thành
+  một đợt riêng. Cơ chế lockout theo IP vẫn đang hoạt động.
+- **TTL của `*`, `mail`, `ftp` vẫn là 3600.** Phải hạ `*` xuống 300 trước
+  cutover, vì khi cutover phải đổi cả bản ghi wildcard. `mail` và `ftp` giữ
+  nguyên cũng được vì chúng vẫn trỏ host cũ sau cutover.
