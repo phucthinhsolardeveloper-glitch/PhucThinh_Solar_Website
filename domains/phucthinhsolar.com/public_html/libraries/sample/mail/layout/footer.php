@@ -3,7 +3,7 @@
 		<table role="presentation" border="0" cellpadding="0" cellspacing="0" width="640" style="width:100%;max-width:640px;background:#09285e">
 			<tr>
 				<td style="padding:22px 28px;color:#ffffff;font-size:13px;line-height:21px">
-					<strong style="display:block;color:#f1c75b;font-size:15px;margin-bottom:6px">Cần hỗ trợ thêm?</strong>
+					<strong style="display:block;color:#f1c75b;font-size:15px;margin-bottom:6px">Phúc Thịnh Solar luôn sẵn sàng hỗ trợ</strong>
 					Hotline: <strong>{emailCompanyHotline}</strong><br>
 					Thời gian làm việc: {emailCompanyWorktime}<br>
 					Website: <a href="{emailHome}" style="color:#f1c75b;text-decoration:none" target="_blank">{emailCompanyWebsite}</a>

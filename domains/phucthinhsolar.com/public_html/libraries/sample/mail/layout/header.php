@@ -8,7 +8,7 @@
 			</tr>
 			<tr>
 				<td style="padding:10px 28px;color:#dbe7ff;font-size:12px;line-height:18px;letter-spacing:.2px">
-					Giải pháp năng lượng và thiết bị điện mặt trời cho gia đình, doanh nghiệp và công trình
+					Giải pháp năng lượng mặt trời phù hợp cho gia đình, doanh nghiệp và công trình
 				</td>
 			</tr>
 		</table>
