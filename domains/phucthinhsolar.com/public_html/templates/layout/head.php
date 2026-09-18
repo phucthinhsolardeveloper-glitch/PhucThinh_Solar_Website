@@ -1,6 +1,14 @@
 <!-- Basehref -->
 <base href="<?=$configBase?>"/>
 
+<?php /* Đánh dấu "có JavaScript" NGAY trong <head>, trước lần vẽ đầu tiên.
+   Cụm liên hệ nổi ở footer mặc định hiện cả 3 nút (gọi/Zalo/Facebook) để người
+   không có JS vẫn liên hệ được; apps.js mới thêm class is-enhanced để thu gọn.
+   Vì apps.js chạy sau khi trang đã vẽ, người dùng thấy 3 nút NHÁY rồi mới thu
+   lại. Class này cho CSS thu gọn ngay từ đầu mà vẫn giữ nguyên fallback: không
+   có JS thì không có class, dock giữ nguyên 3 nút. Xem design-tokens.css. */ ?>
+<script>document.documentElement.className+=' pts-js';</script>
+
 <!-- UTF-8 -->
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 

@@ -48,6 +48,17 @@ async function measureImages(page) {
       // Xét ảnh nội dung qua upload/thumbs; bộ ảnh campaign đóng gói cũng đi
       // qua thumbs nên chịu cùng ngưỡng nét với ảnh Admin.
       if (!/\/(thumbs|upload)\//.test(src)) return;
+      /* 2026-09-18: BỎ QUA ảnh phục vụ qua srcset/<picture>. Với những ảnh đó
+         naturalWidth KHÔNG phải kích thước file mà đã bị trình duyệt chia theo
+         mật độ của ứng viên được chọn, nên ratio luôn xấp xỉ 1.0 và đỏ ngẫu
+         nhiên do làm tròn. Đo thực nghiệm trên CÙNG một file 1920x1020:
+           <img src> thường        -> naturalWidth 1920
+           <img> trong <picture>   -> naturalWidth  980
+         Độ nét của nhóm này được kiểm đúng cách ở media-system.spec.js
+         ("trang Giới thiệu dùng ảnh showroom thật và chọn WebP đúng kích thước
+         màn hình"), nơi so trực tiếp ứng viên srcset với viewport. */
+      const picture = img.closest('picture');
+      if (img.srcset || (picture && picture.querySelector('source[srcset]'))) return;
       const box = img.getBoundingClientRect();
       if (box.width < 4 || img.naturalWidth === 0) return;
       rows.push({

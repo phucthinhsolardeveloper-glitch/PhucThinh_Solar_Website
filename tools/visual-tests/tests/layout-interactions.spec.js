@@ -182,6 +182,41 @@ test('home contact dock stays compact and exposes existing contact links', async
   await expect(toggle).toHaveAttribute('aria-expanded', 'false');
 });
 
+/* 2026-09-18: chủ project báo "mới load trang thì nháy 3 nút call/Zalo/Facebook
+   rồi mới gom thành 1 icon". Nguyên nhân: theme-v2.css chỉ thu gọn dock khi có
+   class .is-enhanced, mà class đó do apps.js thêm - tức sau khi trang đã vẽ.
+   Đã sửa bằng cách gắn class `pts-js` vào <html> từ inline script trong <head>
+   (chạy trước lần vẽ đầu tiên) và nhân đôi quy tắc thu gọn theo class đó.
+   Test chặn apps.js để mô phỏng đúng khoảnh khắc trước khi JS chính chạy. */
+test('cụm liên hệ nổi đã thu gọn từ lần vẽ đầu, không nháy 3 nút', async ({ page }) => {
+  await page.route('**/assets/js/apps.js*', route => route.abort());
+  await page.goto('/', { waitUntil: 'load' });
+
+  await expect(page.locator('html')).toHaveClass(/\bpts-js\b/);
+  // apps.js bị chặn nên .is-enhanced KHÔNG được thêm - đúng trạng thái lúc chớm tải.
+  await expect(page.locator('#button-contact-vr.pts-contact-dock')).not.toHaveClass(/is-enhanced/);
+
+  const group = page.locator('#gom-all-in-one');
+  expect(await group.evaluate(node => getComputedStyle(node).opacity)).toBe('0');
+  expect(await group.evaluate(node => getComputedStyle(node).visibility)).toBe('hidden');
+  await expect(page.locator('.pts-contact-dock-toggle')).toBeVisible();
+});
+
+/* Mặt còn lại của cùng một quyết định: mở sẵn 3 nút là FALLBACK có chủ ý cho
+   người không chạy được JS. Nếu ai đó "sửa" bằng cách đảo mặc định CSS thành
+   thu gọn thì test này đỏ, vì lúc đó không có JS sẽ mất hẳn kênh liên hệ. */
+test('không có JavaScript thì cụm liên hệ vẫn hiện đủ 3 kênh', async ({ browser, baseURL }) => {
+  const context = await browser.newContext({ javaScriptEnabled: false });
+  const page = await context.newPage();
+  await page.goto(`${baseURL}/`, { waitUntil: 'load' });
+
+  await expect(page.locator('#gom-all-in-one')).toBeVisible();
+  await expect(page.locator('#gom-all-in-one .button-contact')).toHaveCount(3);
+  await expect(page.locator('#gom-all-in-one a[href^="tel:"]')).toBeVisible();
+  await expect(page.locator('#gom-all-in-one a[href*="zalo.me"]')).toBeVisible();
+  await context.close();
+});
+
 test('home product showroom and closing CTA follow the product-first decision', async ({ page }) => {
   await page.goto('/', { waitUntil: 'domcontentloaded' });
   await dismissEntrancePopup(page);
