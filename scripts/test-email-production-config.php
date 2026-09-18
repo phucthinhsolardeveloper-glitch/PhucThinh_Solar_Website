@@ -21,6 +21,7 @@ $valid = array(
     'username' => 'website@example.test',
     'password' => 'unit-test-placeholder-only',
     'from' => 'website@example.test',
+    'from_name' => 'Phúc Thịnh Solar',
     'admin_to' => 'admin@example.test',
     'timeout' => 10
 );
@@ -51,6 +52,7 @@ $source = file_get_contents(LIBRARIES.'class/class.Email.php');
 emailConfigOk(strpos($source, "['password_host']") === false && strpos($source, "['password_gmail']") === false, 'runtime không còn đọc SMTP password legacy từ DB');
 emailConfigOk(strpos($source, 'addBCC') !== false, 'newsletter nhiều người dùng BCC để không lộ danh sách');
 emailConfigOk(strpos($source, 'addReplyTo') !== false, 'wrapper hỗ trợ Reply-To đã validate');
+emailConfigOk(strpos($source, "self::cleanHeaderText(\$config['from_name'])") !== false, 'readiness dùng From name đã cấu hình và làm sạch header');
 emailConfigOk(strpos($source, "getMessage()") === false, 'không ghi raw SMTP exception vào log');
 
 $settingTemplate = file_get_contents('/var/www/html/administrator/templates/setting/man/man_add_tpl.php');

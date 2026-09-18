@@ -219,7 +219,9 @@
 			try
 			{
 				self::configureMailer($mail, $config);
-				$mail->setFrom(trim((string)$config['from']), 'PTS Website');
+				$fromName = isset($config['from_name']) && trim((string)$config['from_name']) !== ''
+					? self::cleanHeaderText($config['from_name']) : 'Phúc Thịnh Solar';
+				$mail->setFrom(trim((string)$config['from']), $fromName);
 				if($sendTest)
 				{
 					$mail->addAddress(trim((string)$config['admin_to']));
