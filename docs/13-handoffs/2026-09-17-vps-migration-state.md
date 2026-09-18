@@ -13,6 +13,13 @@ và [vps-operations.md](../06-operations/vps-operations.md) (vận hành).
 - Release `e60ebdfd4050` đã triển khai và healthy. Release bổ sung màn Admin
   `Mẫu email`, 8 workflow có nội dung thương hiệu chung, xem trước và gửi thử
   an toàn. Không có migration DB.
+- Release `a654266b7661` đã triển khai và healthy lúc 13:38 ngày 2026-09-18,
+  thay release `e60ebdfd4050`. Release chuẩn hóa câu chữ email giao dịch và làm
+  rõ giao diện quản lý mẫu: không hiển thị trạng thái SMTP local như thể đó là
+  trạng thái production; thao tác gửi thử chỉ xuất hiện ở môi trường có SMTP và
+  `test_to` hợp lệ. Predeploy local PASS, Playwright 178 pass/18 skip/0 fail,
+  verify stack PASS, preflight production READY và SMTP connect PASS. Không có
+  migration DB.
 - DNS vẫn thiếu SPF/DKIM hoàn chỉnh và chưa có MX/mailbox nhận thư cho
   `lienhe@phucthinhsolar.com`; xem trạng thái mới nhất tại
   [smtp-production.md](../08-integrations/smtp-production.md). Các mô tả SMTP

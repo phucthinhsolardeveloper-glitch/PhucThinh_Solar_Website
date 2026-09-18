@@ -28,10 +28,10 @@ Route account hiện không public do thứ tự router hiện hữu; không b�
 vòng SMTP này. Gửi newsletter nhiều người dùng dùng BCC; các recipient không
 nhìn thấy địa chỉ của nhau.
 
-Màn `Admin → Thông tin công ty → Hệ thống email` chỉ hiển thị trạng thái,
-From/recipient/transport không nhạy cảm và bản đồ workflow. Password không xuất
-hiện trong HTML. Admin chỉ soạn nội dung thủ công khi gửi Newsletter; template
-tự động hiện được version hóa trong source, chưa có chức năng chỉnh sửa từ DB.
+Màn `Admin → Thông tin công ty` có lối sang `Mẫu email tự động`, không hiển thị
+credential hoặc trạng thái SMTP theo môi trường. Password không xuất hiện trong
+HTML. Admin vẫn soạn nội dung thủ công khi gửi Newsletter; các template tự động
+được quản lý tại màn `Mẫu email` như mô tả bên dưới.
 
 ## Giá trị đã xác minh và giá trị còn thiếu
 
@@ -243,3 +243,7 @@ thông báo nghiệp vụ. Hai địa chỉ này có mục đích khác nhau.
 Newsletter thủ công vẫn có editor riêng tại danh sách đăng ký; tiêu đề Admin
 nhập nay được dùng làm SMTP Subject thực tế và nội dung đi qua lớp sanitize
 trước khi render trong layout thương hiệu chung.
+
+Release production hiện hành từ 13:38 ngày 2026-09-18 là `a654266b7661`.
+Hậu kiểm sau deploy: stack/HTTPS PASS, schema preflight READY, SMTP
+connect/auth PASS và không có PHP warning/fatal trong log thời điểm kiểm tra.
