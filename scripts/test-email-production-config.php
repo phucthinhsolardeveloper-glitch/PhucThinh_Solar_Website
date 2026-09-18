@@ -38,9 +38,10 @@ $badFrom = $valid;
 $badFrom['from'] = "attacker@example.test\r\nBcc: victim@example.test";
 emailConfigOk(in_array('from', Email::validateConfig($badFrom), true), 'chặn CRLF/header injection trong sender');
 
-$mismatchedFrom = $valid;
-$mismatchedFrom['from'] = 'other@example.test';
-emailConfigOk(in_array('from_must_match_username', Email::validateConfig($mismatchedFrom), true), 'From phải trùng SMTP username');
+$relayConfig = $valid;
+$relayConfig['username'] = 'relay-account@smtp.example.test';
+$relayConfig['from'] = 'website@example.test';
+emailConfigOk(Email::validateConfig($relayConfig) === array(), 'SMTP relay cho phép credential đăng nhập khác From đã xác thực');
 
 $placeholderPassword = $valid;
 $placeholderPassword['password'] = 'REPLACE_WITH_MAILBOX_PASSWORD';

@@ -7,7 +7,7 @@ không rollback riêng ba file PHPMailer về bản cũ.
 
 ## Luồng và địa chỉ
 
-- Authenticated sender/From: `website@phucthinhsolar.com`.
+- Authenticated sender/From: `lienhe@phucthinhsolar.com`.
 - Notification recipient: `phucthinhsolar.hr@gmail.com`.
 - Form có email khách: `Reply-To` là email khách sau validation.
 - `phucthinhs@phucthinhsolar.com`: account mặc định/legacy, không dùng làm SMTP
@@ -15,6 +15,11 @@ không rollback riêng ba file PHPMailer về bản cũ.
 - Source Git không chứa SMTP password. Runtime không còn đọc `password_host`,
   `password_gmail`, `password_host_as` hoặc các sender/recipient SMTP cũ trong
   `table_setting.options`.
+
+Với SMTP relay, credential đăng nhập có thể khác địa chỉ From. Runtime kiểm tra
+hai giá trị là địa chỉ hợp lệ nhưng không buộc chúng trùng nhau; relay chịu trách
+nhiệm xác minh quyền sử dụng sender/domain. Điều này cần thiết cho Brevo, SES và
+các dịch vụ relay tương tự.
 
 Các workflow qua cùng wrapper `Email`: liên hệ (admin + xác nhận khách), yêu cầu
 tư vấn (admin), đăng ký đại lý (admin), đơn hàng (admin + xác nhận khách), các
@@ -196,3 +201,13 @@ này thì thư gửi được nhưng dễ vào spam.
 - **VPS**: ghi vào `/srv/phucthinhsolar/secrets/pts_mail_config.php`, rồi
   `chown 0:33` + `chmod 0640` + `docker compose restart web` — xem
   [vps-operations § 6](../06-operations/vps-operations.md).
+
+## 2026-09-18: cấu hình Brevo hiện hành
+
+- Provider: Brevo SMTP relay, tài khoản developer (không phải tài khoản HR).
+- Transport: `smtp-relay.brevo.com:587`, STARTTLS và xác minh certificate.
+- From: `Phúc Thịnh Solar <lienhe@phucthinhsolar.com>`.
+- Recipient thông báo nghiệp vụ: `phucthinhsolar.hr@gmail.com`.
+- Mail readiness kỹ thuật gửi tới hộp thư developer riêng, không dùng recipient
+  nghiệp vụ và không nộp form public để tránh tạo dữ liệu thử.
+- SMTP login/key chỉ nằm trong secret runtime, không ghi vào Git hoặc tài liệu.

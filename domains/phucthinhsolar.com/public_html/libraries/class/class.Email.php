@@ -182,8 +182,10 @@
 			if($password === '' || $password === 'REPLACE_WITH_MAILBOX_PASSWORD') $errors[] = 'password';
 			if(!self::validAddress(isset($config['from']) ? $config['from'] : '')) $errors[] = 'from';
 			if(!self::validAddress(isset($config['admin_to']) ? $config['admin_to'] : '')) $errors[] = 'admin_to';
-			if(!in_array('username', $errors, true) && !in_array('from', $errors, true)
-				&& strcasecmp(trim((string)$config['username']), trim((string)$config['from'])) !== 0) $errors[] = 'from_must_match_username';
+			/* SMTP relay (Brevo, SES, Mailgun...) dùng một credential đăng nhập
+			   riêng với địa chỉ From đã xác thực. Không bắt hai giá trị phải trùng;
+			   quyền dùng From do relay xác minh ở cấp sender/domain. Cả hai field
+			   vẫn được kiểm tra độc lập để chặn địa chỉ sai và header injection. */
 			$timeout = isset($config['timeout']) ? (int)$config['timeout'] : 10;
 			if($timeout < 3 || $timeout > 30) $errors[] = 'timeout';
 			return array_values(array_unique($errors));
