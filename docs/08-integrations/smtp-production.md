@@ -211,3 +211,18 @@ này thì thư gửi được nhưng dễ vào spam.
 - Mail readiness kỹ thuật gửi tới hộp thư developer riêng, không dùng recipient
   nghiệp vụ và không nộp form public để tránh tạo dữ liệu thử.
 - SMTP login/key chỉ nằm trong secret runtime, không ghi vào Git hoặc tài liệu.
+
+Kết quả triển khai 2026-09-18:
+
+- Config, STARTTLS/authentication và một lần gửi readiness tới hộp thư developer
+  đều PASS; production không gửi mail thử tới HR.
+- Secret production ở `/srv/phucthinhsolar/secrets/pts_mail_config.php`, owner
+  `root:www-data`, mode `0640`. File key và config thử trong `/tmp` đã được xóa.
+- Log container và log ứng dụng không chứa SMTP key.
+- Website outbound không còn phụ thuộc SMTP/certificate của host DirectAdmin cũ.
+
+DNS công khai tại thời điểm kiểm tra có TXT xác minh Brevo và DMARC `p=none`,
+nhưng **chưa có SPF và không có MX**. Vì vậy SMTP có thể chấp nhận thư nhưng độ
+tin cậy Inbox chưa hoàn chỉnh; thư khách Reply về `lienhe@phucthinhsolar.com`
+không có hạ tầng nhận. Cần lấy đúng SPF/DKIM từ Brevo hiện tại và chọn nhà cung
+cấp mailbox/MX trước khi cấu hình DNS; không suy đoán giá trị DKIM/MX.
