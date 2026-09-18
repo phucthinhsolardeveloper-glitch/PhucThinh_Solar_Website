@@ -86,6 +86,9 @@
        :root cục bộ của từng hub (mỗi hub trước đây tự định nghĩa navy/gold/
        muted/line riêng, lệch nhau 2-5% nên toàn site trông không liền mạch). */
     $css->set("css/design-tokens.css");
+    /* Kiến trúc responsive nạp cuối: desktop giữ nguyên; mobile chỉ còn một
+       lớp sở hữu gutter và flatten các wrapper cấu trúc theo từng page. */
+    $css->set("css/responsive-architecture.css");
     echo $css->get();
 ?>
 <script type="text/javascript" src="assets/js/jquery.min.js?v=NMr3JZBT0U"></script>

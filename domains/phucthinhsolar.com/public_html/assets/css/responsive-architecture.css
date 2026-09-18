@@ -1,0 +1,262 @@
+/*
+ * Responsive architecture — mobile owns one horizontal gutter.
+ *
+ * Desktop keeps the existing boxed hierarchy. At <= 767px, structural
+ * wrappers are flattened and only the page/container owner supplies the
+ * viewport gutter. Entity cards and form controls keep their own UI.
+ */
+@media (max-width: 767px) {
+  :root {
+    --pts-mobile-gutter: 16px;
+    --pts-gutter: var(--pts-mobile-gutter);
+  }
+
+  /* Shared gutter ownership. Home/hub templates already contain a page
+     container; their outer application wrapper must not add another one. */
+  .wrap-content,
+  .wrap-main,
+  .uk-container,
+  .container {
+    padding-left: var(--pts-mobile-gutter) !important;
+    padding-right: var(--pts-mobile-gutter) !important;
+  }
+  .wrap-main.wrap-home {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  /* Home: section containers own the gutter. Marketing media may reach the
+     viewport edge, while its copy is inset exactly once. */
+  .pts-retail-campaign-grid,
+  .pts-retail-product-head {
+    margin-left: calc(-1 * var(--pts-mobile-gutter)) !important;
+    margin-right: calc(-1 * var(--pts-mobile-gutter)) !important;
+  }
+  .pts-retail-campaign-card,
+  .pts-retail-product-head {
+    border-radius: 0 !important;
+  }
+  .pts-retail-campaign-card.is-featured .pts-retail-campaign-copy,
+  .pts-retail-campaign-copy,
+  .pts-retail-product-head {
+    padding-left: var(--pts-mobile-gutter) !important;
+    padding-right: var(--pts-mobile-gutter) !important;
+  }
+  .pts-brand-services {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  /* About: the story/history media are editorial bands, while timeline and
+     certificate shells should not preserve their desktop column geometry. */
+  .pts-about-story-grid,
+  .pts-about-history-media,
+  .pts-about-contact-band {
+    margin-left: calc(-1 * var(--pts-mobile-gutter)) !important;
+    margin-right: calc(-1 * var(--pts-mobile-gutter)) !important;
+    border-radius: 0 !important;
+  }
+  .pts-about-story-copy,
+  .pts-about-contact-band {
+    padding-left: var(--pts-mobile-gutter) !important;
+    padding-right: var(--pts-mobile-gutter) !important;
+  }
+  .pts-about-history-media {
+    width: calc(100% + (2 * var(--pts-mobile-gutter))) !important;
+    max-width: none !important;
+  }
+  .pts-about-history .pts-about-milestone {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 5px !important;
+    padding: 0 0 24px !important;
+  }
+  .pts-about-history .pts-about-year,
+  .pts-about-history .pts-about-milestone h3,
+  .pts-about-history .pts-about-milestone p {
+    grid-column: 1 !important;
+    grid-row: auto !important;
+  }
+  .pts-about-history .pts-about-year {
+    margin: 0 0 3px !important;
+    font-size: 21px !important;
+  }
+  .pts-about-certificate-grid {
+    gap: 18px !important;
+  }
+  .pts-about-certificate-card {
+    grid-template-columns: 88px minmax(0, 1fr) !important;
+    min-height: 0 !important;
+    align-items: start !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+  .pts-about-certificate-thumb {
+    height: 124px !important;
+    border-radius: 2px !important;
+  }
+  .pts-about-certificate-copy {
+    padding: 4px 0 0 14px !important;
+  }
+
+  /* Category: wrap-content is the sole page gutter. Hero and editorial band
+     become full-bleed sections; filters are controls, not nested cards. */
+  .pts-category-hero,
+  .pts-category-content,
+  .pts-catalog-campaign {
+    margin-left: calc(-1 * var(--pts-mobile-gutter)) !important;
+    margin-right: calc(-1 * var(--pts-mobile-gutter)) !important;
+    border-radius: 0 !important;
+  }
+  .pts-category-hero,
+  .pts-category-content,
+  .pts-catalog-campaign-copy {
+    padding-left: var(--pts-mobile-gutter) !important;
+    padding-right: var(--pts-mobile-gutter) !important;
+  }
+  .product-left > .mb40,
+  .pts-filter-card {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+  .pts-category-content-inner {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  /* Product detail: keep the gallery/form controls, flatten the surrounding
+     desktop panels. The outer wrap-content remains the only page gutter. */
+  .grid-pro-detail .right-pro-detail {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  .tabs-pro-detail,
+  .comment-page .card {
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+  }
+  .tabs-pro-detail > #tabsProDetail {
+    margin-left: calc(-1 * var(--pts-mobile-gutter)) !important;
+    margin-right: calc(-1 * var(--pts-mobile-gutter)) !important;
+    padding-left: var(--pts-mobile-gutter) !important;
+    padding-right: var(--pts-mobile-gutter) !important;
+    border-radius: 0 !important;
+  }
+  .pts-product-desc,
+  #tskt-pro-detail,
+  #video-pro-detail,
+  #certificate-pro-detail,
+  #cs-pro-detail,
+  .comment-page .card-header,
+  .comment-page .card-body {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  .comment-page .card-header {
+    background: transparent !important;
+  }
+  .comment-page .card-body > .row,
+  .comment-page .card-body > form > .row {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+  .comment-page .card-body > .row > [class*="col-"],
+  .comment-page .card-body > form > .row > [class*="col-"] {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  .comment-write .form-row > .col-4 {
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+    margin-bottom: 8px;
+  }
+
+  /* News hub: article cards remain entities; the outer app wrapper and the
+     secondary-card shell no longer create a card inside a card. */
+  .nh-secondary {
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+  .nh-cta-band {
+    margin-left: calc(-1 * var(--pts-mobile-gutter)) !important;
+    margin-right: calc(-1 * var(--pts-mobile-gutter)) !important;
+    padding-left: var(--pts-mobile-gutter) !important;
+    padding-right: var(--pts-mobile-gutter) !important;
+    border-radius: 0 !important;
+  }
+
+  /* News detail: Bootstrap row/column are only pass-through wrappers here.
+     Removing both sides together avoids both a second inset and overflow. */
+  .news_detail .row-servoce-detail {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+  .news_detail .row-servoce-detail > [class*="col-"] {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  .news_detail .box-detail-news {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  .news_detail .nh-cta > .uk-container {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  /* Contact: container owns the gutter. Intro is a meaningful full-width
+     contact band; the consultation form itself is content, not a card. */
+  #top_content > .container {
+    padding-left: var(--pts-mobile-gutter) !important;
+    padding-right: var(--pts-mobile-gutter) !important;
+  }
+  .pts-contact-intro-row {
+    margin-left: calc(-1 * var(--pts-mobile-gutter)) !important;
+    margin-right: calc(-1 * var(--pts-mobile-gutter)) !important;
+  }
+  .pts-contact-intro-media,
+  .pts-contact-intro-copy {
+    border-radius: 0 !important;
+  }
+  .pts-contact-intro-copy {
+    padding-left: var(--pts-mobile-gutter) !important;
+    padding-right: var(--pts-mobile-gutter) !important;
+  }
+  #yeu-cau-tu-van .formContact {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+}
+
+@media (max-width: 359px) {
+  :root {
+    --pts-mobile-gutter: 12px;
+  }
+  .pts-about-certificate-card {
+    grid-template-columns: 80px minmax(0, 1fr) !important;
+  }
+  .pts-about-certificate-thumb {
+    height: 112px !important;
+  }
+}

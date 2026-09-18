@@ -28,7 +28,7 @@ assert_css_shipped() {
     if [ ! -s "$bundle_cache" ]; then
         curl -fsS -L -o "$bundle_cache" "$bundle_url"
     fi
-    if ! grep -qF "$distinctive_rule" "$bundle_cache"; then
+    if ! grep -qF -- "$distinctive_rule" "$bundle_cache"; then
         echo "FAIL: CSS bundle thiếu \"$distinctive_rule\" — $literal_path có thể không được gộp vào bundle" >&2
         exit 1
     fi
@@ -353,6 +353,7 @@ grep -qF '>Kiến thức</a>' /tmp/pts-predeploy-home.html
 grep -qF '>Hợp tác</a>' /tmp/pts-predeploy-home.html
 assert_css_shipped /tmp/pts-predeploy-home.html 'assets/css/header-v3.css' '.pts-header-v3'
 assert_css_shipped /tmp/pts-predeploy-home.html 'assets/css/media-system.css' '.pts-contact-intro-row'
+assert_css_shipped /tmp/pts-predeploy-home.html 'assets/css/responsive-architecture.css' '--pts-mobile-gutter'
 grep -qF 'name="form_csrf"' /tmp/pts-predeploy-contact.html
 grep -qF 'title-pro-detail' /tmp/pts-predeploy-product.html
 grep -qF '"@type":"Product"' /tmp/pts-predeploy-product.html
