@@ -4,6 +4,21 @@
 [vps-cloudfly-runbook.md](../06-operations/vps-cloudfly-runbook.md) (quy trình)
 và [vps-operations.md](../06-operations/vps-operations.md) (vận hành).
 
+## Cập nhật 2026-09-18
+
+- SMTP production đã chuyển hẳn sang Brevo developer account; STARTTLS/auth
+  và gửi readiness đã PASS. From là `Phúc Thịnh Solar
+  <lienhe@phucthinhsolar.com>`, thông báo nghiệp vụ tới HR, gửi thử cố định tới
+  hộp thư developer. Website không còn phụ thuộc mail server host cũ.
+- Release `e60ebdfd4050` đã triển khai và healthy. Release bổ sung màn Admin
+  `Mẫu email`, 8 workflow có nội dung thương hiệu chung, xem trước và gửi thử
+  an toàn. Không có migration DB.
+- DNS vẫn thiếu SPF/DKIM hoàn chỉnh và chưa có MX/mailbox nhận thư cho
+  `lienhe@phucthinhsolar.com`; xem trạng thái mới nhất tại
+  [smtp-production.md](../08-integrations/smtp-production.md). Các mô tả SMTP
+  “đỏ/chưa gửi được” bên dưới là ảnh chụp trạng thái tại thời điểm cutover
+  2026-09-17, không còn là trạng thái runtime hiện tại.
+
 ---
 
 ## 1. Tóm tắt một dòng
