@@ -5,25 +5,27 @@ $mailTemplateStatus = isset($mailTemplateStatus) ? $mailTemplateStatus : array()
 $mailEsc = function($value) { return htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8'); };
 ?>
 <section class="content-header text-sm">
-    <div class="container-fluid"><ol class="breadcrumb float-sm-left">
-        <li class="breadcrumb-item"><a href="index.php">Bảng điều khiển</a></li>
-        <li class="breadcrumb-item active">Mẫu email</li>
-    </ol></div>
+    <div class="container-fluid">
+        <div class="row">
+            <ol class="breadcrumb float-sm-left">
+                <li class="breadcrumb-item"><a href="index.php">Bảng điều khiển</a></li>
+                <li class="breadcrumb-item active">Mẫu email</li>
+            </ol>
+        </div>
+    </div>
 </section>
 <section class="content">
     <?=$flash->getMessages('admin')?>
-    <div class="alert <?=!empty($mailTemplateStatus['configured']) ? 'alert-success' : 'alert-warning'?> text-sm">
-        <strong><?=!empty($mailTemplateStatus['configured']) ? 'SMTP production đã sẵn sàng.' : 'SMTP production chưa đủ cấu hình.'?></strong>
-        From: <?=$mailEsc($mailTemplateStatus['from'])?> · Nhận nội bộ: <?=$mailEsc($mailTemplateStatus['admin_to'])?>.
-        Nội dung được phép sửa là văn bản thuần; bố cục, dữ liệu nghiệp vụ và thông tin đăng nhập SMTP không thể sửa tại đây.
-    </div>
-    <?php if(empty($mailTemplateStatus['test_to'])) { ?>
-        <div class="alert alert-info text-sm">Chưa đặt <code>test_to</code> trong secret production nên nút gửi thử đang khóa. Địa chỉ nhận thử không lấy từ form để tránh gửi nhầm ra ngoài.</div>
-    <?php } ?>
     <form method="post" action="index.php?com=mail_template&amp;act=save">
         <?=adminCsrfField()?>
-        <div class="card-footer text-sm sticky-top mb-3">
-            <button type="submit" class="btn btn-sm bg-gradient-primary"><i class="far fa-save mr-2"></i>Lưu mẫu email</button>
+        <div class="card card-outline card-primary text-sm mb-3">
+            <div class="card-body py-3 d-flex flex-column flex-md-row align-items-md-center">
+                <div class="mr-md-auto mb-3 mb-md-0">
+                    <strong class="d-block mb-1">Nội dung email tự động</strong>
+                    <span class="text-muted">Chỉnh câu chữ gửi cho khách hàng và bộ phận phụ trách. Bố cục, dữ liệu nghiệp vụ và thông tin gửi email luôn được hệ thống bảo vệ.</span>
+                </div>
+                <button type="submit" class="btn btn-sm bg-gradient-primary flex-shrink-0"><i class="far fa-save mr-2"></i>Lưu mẫu email</button>
+            </div>
         </div>
         <div class="row">
             <?php foreach($mailTemplateDefinitions as $key => $definition) { $value = $mailTemplateValues[$key]; ?>
@@ -41,9 +43,11 @@ $mailEsc = function($value) { return htmlspecialchars((string)$value, ENT_QUOTES
                             <div class="form-group"><label>Lời kết</label><textarea maxlength="500" rows="2" class="form-control" name="mail_templates[<?=$mailEsc($key)?>][closing]"><?=$mailEsc($value['closing'])?></textarea></div>
                             <small class="text-muted">Biến dùng được: <?=$mailEsc(implode(', ', $definition['tokens']))?></small>
                         </div>
-                        <div class="card-footer">
-                            <button type="submit" name="key" value="<?=$mailEsc($key)?>" formaction="index.php?com=mail_template&amp;act=save_test" class="btn btn-xs btn-outline-secondary" <?=empty($mailTemplateStatus['test_to']) || empty($mailTemplateStatus['configured']) ? 'disabled' : ''?>><i class="far fa-paper-plane mr-1"></i>Gửi thử tới <?=$mailEsc($mailTemplateStatus['test_to'])?></button>
-                        </div>
+                        <?php if(!empty($mailTemplateStatus['test_to']) && !empty($mailTemplateStatus['configured'])) { ?>
+                            <div class="card-footer">
+                                <button type="submit" name="key" value="<?=$mailEsc($key)?>" formaction="index.php?com=mail_template&amp;act=save_test" class="btn btn-xs btn-outline-secondary"><i class="far fa-paper-plane mr-1"></i>Gửi thử tới <?=$mailEsc($mailTemplateStatus['test_to'])?></button>
+                            </div>
+                        <?php } ?>
                     </div>
                 </div>
             <?php } ?>

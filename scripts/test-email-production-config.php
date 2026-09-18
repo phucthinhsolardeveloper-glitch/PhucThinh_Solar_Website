@@ -64,7 +64,9 @@ $settingTemplate = file_get_contents('/var/www/html/administrator/templates/sett
 $settingSource = file_get_contents('/var/www/html/administrator/sources/setting.php');
 emailConfigOk(strpos($settingTemplate, 'name="data[options][password_host]"') === false, 'Admin không render input SMTP password legacy');
 emailConfigOk(strpos($settingSource, "'password_host'") !== false && strpos($settingSource, 'legacyMailKeys') !== false, 'backend bỏ qua direct POST khóa SMTP legacy');
-emailConfigOk(strpos($settingTemplate, 'Hệ thống email (chỉ đọc)') !== false, 'Admin hiển thị trạng thái và bản đồ workflow mail');
+emailConfigOk(strpos($settingTemplate, 'Mẫu email tự động') !== false && strpos($settingTemplate, 'Quản lý mẫu email') !== false, 'Admin dẫn rõ sang màn quản lý mẫu email');
+emailConfigOk(strpos($settingTemplate, 'contact/admin') === false && strpos($settingTemplate, '<table class="table table-sm table-bordered') === false, 'Cài đặt không còn lộ bảng workflow kỹ thuật dư thừa');
+emailConfigOk(strpos($settingTemplate, 'Chưa kết nối') === false && strpos($settingTemplate, 'SMTP') === false, 'Cài đặt không hiển thị trạng thái SMTP theo môi trường gây hiểu nhầm');
 emailConfigOk(strpos($settingTemplate, '$mailView(\'password\')') === false, 'Admin không hiển thị SMTP password mới');
 
 $allpageSource = file_get_contents('/var/www/html/sources/allpage.php');
@@ -99,6 +101,9 @@ $mailTemplateView = file_get_contents('/var/www/html/administrator/templates/mai
 $securitySource = file_get_contents('/var/www/html/libraries/admin_security.php');
 emailConfigOk(strpos($mailTemplateSource, "\$mailConfig['test_to']") !== false && strpos($mailTemplateSource, "\$_POST['test_to']") === false, 'gửi thử chỉ dùng recipient cố định từ secret');
 emailConfigOk(strpos($mailTemplateView, 'adminCsrfField()') !== false, 'lưu và gửi thử có CSRF field');
+emailConfigOk(preg_match('/content-header[\s\S]*?class="row"[\s\S]*?breadcrumb/', $mailTemplateView) === 1, 'breadcrumb màn mẫu email có row giữ chiều cao, không bị nội dung đè');
+emailConfigOk(strpos($mailTemplateView, 'Môi trường này chưa kết nối SMTP production') === false, 'màn mẫu email không đánh đồng cấu hình local với trạng thái production');
+emailConfigOk(strpos($mailTemplateView, "if(!empty(\$mailTemplateStatus['test_to']) && !empty(\$mailTemplateStatus['configured']))") !== false, 'chỉ hiện thao tác gửi thử khi môi trường hiện tại hỗ trợ');
 emailConfigOk(strpos($securitySource, "\$com === 'mail_template'") !== false && strpos($securitySource, "return 'setting_update'") !== false, 'màn mẫu email kế thừa quyền setting_update');
 
 $allpageSource = file_get_contents('/var/www/html/sources/allpage.php');

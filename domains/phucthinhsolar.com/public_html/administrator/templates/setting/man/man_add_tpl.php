@@ -41,40 +41,13 @@
 				</div>
 			</div>
 		<?php } ?>
-		<?php
-			$mailConfig = isset($config['mail']) && is_array($config['mail']) ? $config['mail'] : array();
-			$mailConfigured = empty(Email::validateConfig($mailConfig));
-			$mailView = function($key) use ($mailConfig) {
-				return htmlspecialchars(isset($mailConfig[$key]) && trim((string)$mailConfig[$key]) !== '' ? (string)$mailConfig[$key] : '—', ENT_QUOTES, 'UTF-8');
-			};
-		?>
 		<div class="card card-primary card-outline text-sm">
-			<div class="card-header">
-				<h3 class="card-title">Hệ thống email (chỉ đọc)</h3>
-			</div>
-			<div class="card-body">
-				<div class="alert <?=$mailConfigured ? 'alert-success' : 'alert-warning'?>">
-					<strong><?=$mailConfigured ? 'SMTP đã đủ cấu hình.' : 'SMTP chưa đủ cấu hình production.'?></strong>
-					Password mailbox được quản lý ngoài Git/webroot và không hiển thị hoặc cập nhật tại Admin.
+			<div class="card-body d-flex flex-column flex-md-row align-items-md-center">
+				<div class="mr-md-auto mb-3 mb-md-0">
+					<h3 class="h6 mb-1">Mẫu email tự động</h3>
+					<p class="text-muted mb-0">Quản lý câu chữ của email liên hệ, tư vấn, đại lý và đơn hàng.</p>
 				</div>
-				<div class="row mb-3">
-					<div class="col-md-4"><strong>SMTP:</strong> <?=$mailView('host')?>:<?=$mailView('port')?> / <?=$mailView('encryption')?></div>
-					<div class="col-md-4"><strong>From:</strong> <?=$mailView('from')?></div>
-					<div class="col-md-4"><strong>Nhận thông báo:</strong> <?=$mailView('admin_to')?></div>
-				</div>
-				<div class="table-responsive">
-					<table class="table table-sm table-bordered mb-0">
-						<thead><tr><th>Workflow</th><th>Nội dung/khung mẫu</th><th>Người nhận</th></tr></thead>
-						<tbody>
-							<tr><td>Liên hệ</td><td><code>contact/admin</code>, <code>contact/customer</code></td><td>Công ty + xác nhận khách; Reply-To khách</td></tr>
-							<tr><td>Tư vấn / Đại lý</td><td>Bảng tóm tắt dữ liệu form đã validate</td><td>Công ty; Reply-To khách</td></tr>
-							<tr><td>Đơn hàng</td><td><code>order/admin</code>, <code>order/customer</code></td><td>Công ty + xác nhận khách; Reply-To khách</td></tr>
-							<tr><td>Thành viên (legacy, route chưa public)</td><td><code>member/active</code>, <code>member/forgot-password</code></td><td>Email thành viên</td></tr>
-							<tr><td>Newsletter Admin</td><td>Admin nhập tiêu đề/nội dung/file khi gửi</td><td>Danh sách đã chọn qua BCC</td></tr>
-						</tbody>
-					</table>
-				</div>
-				<small class="text-muted d-block mt-2">Nội dung các email tự động được quản lý tại <a href="index.php?com=mail_template&amp;act=man"><strong>Mẫu email</strong></a>. Credential SMTP vẫn chỉ nằm trong secret ngoài webroot.</small>
+				<a class="btn btn-sm btn-outline-primary flex-shrink-0" href="index.php?com=mail_template&amp;act=man"><i class="far fa-envelope mr-2"></i>Quản lý mẫu email</a>
 			</div>
 		</div>
 		<div class="card card-primary card-outline text-sm">
