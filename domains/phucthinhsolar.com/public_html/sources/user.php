@@ -595,7 +595,6 @@
 		$iduser = $row['id'];
 		$confirm_code = $row['confirm_code'];
 		$tendangnhap = $row['username'];
-		$matkhau = $row['password'];
 		$tennguoidung = $row['fullname'];
 		$emailnguoidung = $row['email'];
 		$dienthoainguoidung = $row['phone'];
@@ -603,7 +602,7 @@
 		$linkkichhoat = $configBase."account/kich-hoat?id=".$iduser;
 
 		/* Thông tin đăng ký */
-		$thongtindangky='<td style="padding:3px 9px 9px 0px;border-top:0;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#444;line-height:18px;font-weight:normal" valign="top"><span style="text-transform:normal">Username: '.$tendangnhap.'</span><br>Mật khẩu: *******'.substr($matkhau,-3).'<br>Mã kích hoạt: '.$confirm_code.'</td><td style="padding:3px 0px 9px 9px;border-top:0;border-left:0;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#444;line-height:18px;font-weight:normal" valign="top">';
+		$thongtindangky='<td style="padding:10px 12px;background:#f3f6fa;color:#405270;font-size:13px;line-height:21px" valign="top"><strong>Tên đăng nhập:</strong> '.htmlspecialchars($tendangnhap, ENT_QUOTES, 'UTF-8').'<br><strong>Mã kích hoạt:</strong> '.htmlspecialchars($confirm_code, ENT_QUOTES, 'UTF-8').'</td><td style="padding:10px 12px;color:#405270;font-size:13px;line-height:21px" valign="top">';
 		if($tennguoidung)
 		{
 			$thongtindangky.='<span style="text-transform:capitalize">'.$tennguoidung.'</span><br>';
@@ -645,8 +644,8 @@
 				"email" => $row['email']
 			)
 		);
-		$subject = "Thư kích hoạt tài khoản thành viên từ ".$setting['name'.$lang];
-		$message = str_replace($emailVars, $emailVals, $emailer->markdown('member/active'));
+		$subject = $emailer->templateSubject('member_active', array('customer_name' => $tennguoidung), "Kích hoạt tài khoản Phúc Thịnh Solar");
+		$message = str_replace($emailVars, $emailVals, $emailer->markdown('member/active', array('customer_name' => $tennguoidung)));
 		$file = '';
 
 		if(!$emailer->send("customer", $arrayEmail, $subject, $message, $file))
@@ -725,14 +724,13 @@
 		/* Gán giá trị gửi email */
 		$iduser = $row['id'];
 		$tendangnhap = $row['username'];
-		$matkhau = $row['password'];
 		$tennguoidung = $row['fullname'];
 		$emailnguoidung = $row['email'];
 		$dienthoainguoidung = $row['phone'];
 		$diachinguoidung = $row['address'];
 
 	    /* Thông tin đăng ký */
-	    $thongtindangky='<td style="padding:3px 9px 9px 0px;border-top:0;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#444;line-height:18px;font-weight:normal" valign="top"><span style="text-transform:normal">Username: '.$tendangnhap.'</span><br>Mật khẩu: *******'.substr($matkhau,-3).'</td><td style="padding:3px 0px 9px 9px;border-top:0;border-left:0;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#444;line-height:18px;font-weight:normal" valign="top">';
+	    $thongtindangky='<td style="padding:10px 12px;background:#f3f6fa;color:#405270;font-size:13px;line-height:21px" valign="top"><strong>Tên đăng nhập:</strong> '.htmlspecialchars($tendangnhap, ENT_QUOTES, 'UTF-8').'</td><td style="padding:10px 12px;color:#405270;font-size:13px;line-height:21px" valign="top">';
 	    if($tennguoidung)
 	    {
 	    	$thongtindangky.='<span style="text-transform:capitalize">'.$tennguoidung.'</span><br>';
@@ -777,8 +775,8 @@
 				"email" => $email
 			)
 		);
-		$subject = "Thư cấp lại mật khẩu từ ".$setting['name'.$lang];
-		$message = str_replace($emailVars, $emailVals, $emailer->markdown('member/forgot-password'));
+		$subject = $emailer->templateSubject('member_forgot', array('customer_name' => $tennguoidung), "Thông tin đăng nhập mới từ Phúc Thịnh Solar");
+		$message = str_replace($emailVars, $emailVals, $emailer->markdown('member/forgot-password', array('customer_name' => $tennguoidung)));
 		$file = '';
 
 		if($emailer->send("customer", $arrayEmail, $subject, $message, $file))

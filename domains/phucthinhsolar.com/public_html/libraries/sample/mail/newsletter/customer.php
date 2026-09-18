@@ -1,34 +1,16 @@
-<table align="center" bgcolor="#dcf0f8" border="0" cellpadding="0" cellspacing="0" style="margin:0;padding:0;background-color:#f2f2f2;width:100%!important;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#444;line-height:18px" width="100%">
+<table align="center" bgcolor="#eef2f7" border="0" cellpadding="0" cellspacing="0" style="margin:0;padding:0;background:#eef2f7;width:100%!important;font-family:Arial,Helvetica,sans-serif;color:#15284b" width="100%">
 	<tbody>
 		<?php include LIBRARIES."sample/mail/layout/header.php"; ?>
-		<tr>
-			<td align="center" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#444;line-height:18px;font-weight:normal" valign="top">
-				<table border="0" cellpadding="0" cellspacing="0" width="600">
-					<tbody>
-						<tr style="background:#fff">
-							<td align="left" height="auto" style="padding:15px" width="600">
-								<table width="100%">
-									<tbody>
-										<tr>
-											<td>
-												<h1 style="font-size:17px;font-weight:bold;color:#444;padding:0 0 5px 0;margin:0">Kính chào Quý khách</h1>
-												<p style="margin:4px 0;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#444;line-height:18px;font-weight:normal">Thông tin của quý khách đã được tiếp nhận. {emailCompanyWebsite} xin gửi các tin tức và thông báo mới nhất từ chúng tôi.</p>
-												<h3 style="font-size:13px;font-weight:bold;color:{emailColor};text-transform:uppercase;margin:20px 0 0 0;padding: 0 0 5px;border-bottom:1px solid #ddd">{emailSubjectSender}</h3>
-											</td>
-										</tr>
-										<tr>
-											<td>
-												<p style="margin:4px 0;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#444;line-height:18px;font-weight:normal">{emailContentSender}</p>
-											</td>
-										</tr>
-									</tbody>
-								</table>
-							</td>
-						</tr>
-					</tbody>
-				</table>
-			</td>
-		</tr>
+		<tr><td align="center" style="padding:0 12px 24px">
+			<table border="0" cellpadding="0" cellspacing="0" width="640" style="width:100%;max-width:640px;background:#fff">
+				<tbody><tr><td style="padding:30px 28px">
+					<p style="margin:0 0 8px;color:#a56f00;font-size:12px;font-weight:bold;letter-spacing:.7px;text-transform:uppercase">Thông tin từ Phúc Thịnh Solar</p>
+					<h1 style="margin:0 0 18px;color:#09285e;font-size:24px;line-height:32px">{emailSubjectSender}</h1>
+					<div style="color:#405270;font-size:15px;line-height:24px">{emailContentSender}</div>
+					<p style="margin:24px 0 0;padding-top:18px;border-top:1px solid #e7ebf1;color:#61708a;font-size:13px;line-height:21px">Email này được gửi từ hệ thống Phúc Thịnh Solar tới địa chỉ đã được lựa chọn trong Admin.</p>
+				</td></tr></tbody>
+			</table>
+		</td></tr>
 		<?php include LIBRARIES."sample/mail/layout/footer.php"; ?>
 	</tbody>
 </table>

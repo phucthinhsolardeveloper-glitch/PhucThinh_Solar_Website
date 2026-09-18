@@ -448,6 +448,17 @@
                     </a>
                 </li>
 
+				<?php
+					$mailTemplateActive = $com === 'mail_template' ? 'active' : '';
+					$mailTemplateHidden = '';
+					if(isset($is_permission) && $is_permission == true && $func->checkPermission('setting', 'update', '', null, 'phrase-1')) $mailTemplateHidden = 'd-none';
+				?>
+				<li class="nav-item <?=$mailTemplateActive?> <?=$mailTemplateHidden?>">
+					<a class="nav-link <?=$mailTemplateActive?>" href="index.php?com=mail_template&amp;act=man" title="Mẫu email">
+						<i class="nav-icon text-sm far fa-envelope"></i><p>Mẫu email</p>
+					</a>
+				</li>
+
                 <!-- Khối nội dung mô tả (soạn nội dung dài cho sản phẩm) -->
                 <?php if(isset($config['product'])) { $csType = array_key_first($config['product']); if($csType) {
                     $none = "";

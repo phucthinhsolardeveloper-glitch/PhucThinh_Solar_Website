@@ -1,20 +1,22 @@
-<table align="center" bgcolor="#dcf0f8" border="0" cellpadding="0" cellspacing="0" style="margin:0;padding:0;background-color:#f2f2f2;width:100%!important;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#444;line-height:18px" width="100%">
+<?php $copy = $this->templateCopy('order_admin', array('order_code' => isset($params['order_code']) ? $params['order_code'] : '', 'customer_name' => isset($params['customer_name']) ? $params['customer_name'] : '', 'customer_phone' => isset($params['customer_phone']) ? $params['customer_phone'] : '')); ?>
+<table align="center" bgcolor="#eef2f7" border="0" cellpadding="0" cellspacing="0" style="margin:0;padding:0;background-color:#eef2f7;width:100%!important;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#15284b;line-height:22px" width="100%">
 	<tbody>
 		<?php include LIBRARIES."sample/mail/layout/header.php"; ?>
 		<tr>
 			<td align="center" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#444;line-height:18px;font-weight:normal" valign="top">
-				<table border="0" cellpadding="0" cellspacing="0" width="600">
+				<table border="0" cellpadding="0" cellspacing="0" width="640" style="width:100%;max-width:640px">
 					<tbody>
 						<tr style="background:#fff">
-							<td align="left" height="auto" style="padding:15px" width="600">
+								<td align="left" height="auto" style="padding:30px 28px" width="640">
 								<table width="100%">
 									<tbody>
 										<tr>
 											<td>
-												<h1 style="font-size:17px;font-weight:bold;color:#444;padding:0 0 5px 0;margin:0">Kính chào</h1>
-												<p style="margin:4px 0;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#444;line-height:18px;font-weight:normal">Quý khách nhận được thông tin đặt hàng tại website {emailCompanyWebsite}</p>
-												<h3 style="font-size:13px;font-weight:bold;color:{emailColor};text-transform:uppercase;margin:20px 0 0 0;padding: 0 0 5px;border-bottom:1px solid #ddd">Thông tin đơn hàng #{emailOrderCode} <span style="font-size:12px;color:#777;text-transform:none;font-weight:normal">({emailDateSend}).')</span></h3>
-											</td>
+													<p style="margin:0 0 8px;color:#b27b08;font-size:12px;font-weight:bold;letter-spacing:.8px;text-transform:uppercase">Đơn hàng mới</p>
+													<h1 style="font-size:24px;line-height:32px;font-weight:bold;color:#09285e;padding:0;margin:0 0 10px"><?=htmlspecialchars($copy['heading'], ENT_QUOTES, 'UTF-8')?></h1>
+													<p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:15px;color:#405270;line-height:24px;font-weight:normal"><?=nl2br(htmlspecialchars($copy['intro'], ENT_QUOTES, 'UTF-8'))?></p>
+													<h3 style="font-size:13px;font-weight:bold;color:#09285e;text-transform:uppercase;margin:22px 0 0;padding:0 0 8px;border-bottom:2px solid {emailColor}">Thông tin đơn hàng #{emailOrderCode} <span style="font-size:12px;color:#777;text-transform:none;font-weight:normal">({emailDateSend})</span></h3>
+								</td>
 										</tr>
 										<tr>
 											<td style="font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#444;line-height:18px">
@@ -47,6 +49,9 @@
 												</tbody>
 											</table>
 											</td>
+										</tr>
+										<tr>
+											<td style="padding-top:22px;color:#405270;font-size:13px;line-height:21px"><?=nl2br(htmlspecialchars($copy['closing'], ENT_QUOTES, 'UTF-8'))?></td>
 										</tr>
 										<tr>
 											<td>

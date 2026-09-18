@@ -21,8 +21,8 @@
 
 	    /* Values email */
 	    $emailVals = array(
-	    	htmlspecialchars($_POST['subject']),
-	    	htmlspecialchars_decode($_POST['content'])
+			htmlspecialchars(ptsMailTemplateCleanText($_POST['subject'], 180), ENT_QUOTES, 'UTF-8'),
+			$func->sanitize(htmlspecialchars_decode($_POST['content']))
 	    );
 	    $emailVals = $emailer->addAttrs($emailVals, $emailDefaultAttrs['vals']);
 
@@ -42,7 +42,9 @@
 				$arrayEmail["dataEmail".$i] = $data;
 			}
 		}
-		$subject = "Thư phản hồi từ ".$setting['namevi'];
+		/* Tiêu đề Admin nhập phải là Subject thật của email, không chỉ là một
+		   dòng nằm trong nội dung như trước đây. */
+		$subject = ptsMailTemplateCleanText($_POST['subject'], 180);
 		$message = str_replace($emailVars, $emailVals, $emailer->markdown('newsletter/customer'));
 		$file = 'file';
 

@@ -119,7 +119,8 @@
                         'Tỉnh/Thành phố' => $dataNewsletter['address']
                     ),
                     $dataNewsletter['email'],
-                    $dataNewsletter['fullname']
+                    $dataNewsletter['fullname'],
+                    'consult_admin'
                 );
                 $func->transfer("Đăng ký tư vấn thành công. Chúng tôi sẽ liên hệ với bạn sớm.", $func->getPageURL());
             }
@@ -185,7 +186,8 @@
                         'Doanh nghiệp/Cửa hàng' => $dataNewsletter['company']
                     ),
                     $dataNewsletter['email'],
-                    $dataNewsletter['fullname']
+                    $dataNewsletter['fullname'],
+                    'dealer_admin'
                 );
                 $func->transfer("Đăng ký đại lý thành công. Chúng tôi sẽ liên hệ với bạn sớm.", $func->getPageURL());
             }
@@ -306,7 +308,12 @@
 
             /* Send email admin */
             $arrayEmail = null;
-            $subject = "Thư liên hệ từ ".$setting['name'.$lang];
+            $mailValues = array(
+				'contact_subject' => $emailer->get('tieudelienhe'),
+				'customer_name' => $emailer->get('tennguoigui'),
+				'customer_phone' => $emailer->get('dienthoainguoigui')
+			);
+            $subject = $emailer->templateSubject('contact_admin', $mailValues, "Thư liên hệ từ ".$setting['name'.$lang]);
             $message = str_replace($emailVars, $emailVals, $emailer->markdown('contact/admin'));
             $file = 'file_attach';
 
@@ -317,7 +324,7 @@
             {
                 /* Send email customer */
                 $arrayEmail = array("dataEmail" => array("name" => $emailer->get('tennguoigui'), "email" => $emailer->get('emailnguoigui')));
-                $subject = "Thư liên hệ từ ".$setting['name'.$lang];
+                $subject = $emailer->templateSubject('contact_customer', $mailValues, "Phúc Thịnh Solar đã nhận được yêu cầu của Quý khách");
                 $message = str_replace($emailVars, $emailVals, $emailer->markdown('contact/customer'));
                 $file = 'file_attach';
 

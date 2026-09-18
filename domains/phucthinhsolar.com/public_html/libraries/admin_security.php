@@ -329,6 +329,11 @@ if(!function_exists('adminCsrfToken'))
             return 'SUPERADMIN_ONLY';
         }
 
+		/* Mẫu email là một phần của cấu hình doanh nghiệp. Mọi thao tác xem,
+		   lưu, xem trước và gửi thử đều dùng chung quyền setting_update; không
+		   tạo thêm một permission rời dễ bị bỏ sót khi nâng cấp nhóm quyền. */
+		if($com === 'mail_template') return 'setting_update';
+
         /* act ghi -> quyền add/edit tương ứng. Giá trị là hậu tố sau tên module. */
         $writeActions = array(
             'save'        => array('add', 'edit'),

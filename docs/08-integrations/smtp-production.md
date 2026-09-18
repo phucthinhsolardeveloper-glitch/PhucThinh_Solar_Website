@@ -226,3 +226,20 @@ nhưng **chưa có SPF và không có MX**. Vì vậy SMTP có thể chấp nh�
 tin cậy Inbox chưa hoàn chỉnh; thư khách Reply về `lienhe@phucthinhsolar.com`
 không có hạ tầng nhận. Cần lấy đúng SPF/DKIM từ Brevo hiện tại và chọn nhà cung
 cấp mailbox/MX trước khi cấu hình DNS; không suy đoán giá trị DKIM/MX.
+
+### Quản trị nội dung email
+
+Admin có màn `Mẫu email`, dùng chung quyền `setting_update`, để sửa tiêu đề,
+tiêu đề nội dung, lời mở đầu và lời kết của 8 workflow tự động. Giá trị được lưu
+trong `setting.options.mail_templates`; backend chỉ nhận các workflow/field đã
+allowlist và lưu plain text. Bố cục HTML, dữ liệu đơn hàng/liên hệ, recipient và
+credential SMTP không thể sửa từ màn này.
+
+Mỗi workflow có xem trước bằng dữ liệu minh họa. Gửi thử chỉ được phép tới
+`mail.test_to` trong secret runtime, không nhận địa chỉ từ request. Production
+hiện dùng hộp thư developer làm `test_to`; `admin_to` vẫn là địa chỉ HR nhận
+thông báo nghiệp vụ. Hai địa chỉ này có mục đích khác nhau.
+
+Newsletter thủ công vẫn có editor riêng tại danh sách đăng ký; tiêu đề Admin
+nhập nay được dùng làm SMTP Subject thực tế và nội dung đi qua lớp sanitize
+trước khi render trong layout thương hiệu chung.

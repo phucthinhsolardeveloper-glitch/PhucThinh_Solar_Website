@@ -23,6 +23,7 @@ $valid = array(
     'from' => 'website@example.test',
     'from_name' => 'Phúc Thịnh Solar',
     'admin_to' => 'admin@example.test',
+	'test_to' => 'developer@example.test',
     'timeout' => 10
 );
 
@@ -43,6 +44,10 @@ $relayConfig = $valid;
 $relayConfig['username'] = 'relay-account@smtp.example.test';
 $relayConfig['from'] = 'website@example.test';
 emailConfigOk(Email::validateConfig($relayConfig) === array(), 'SMTP relay cho phép credential đăng nhập khác From đã xác thực');
+
+$badTestRecipient = $valid;
+$badTestRecipient['test_to'] = "developer@example.test\r\nBcc: victim@example.test";
+emailConfigOk(in_array('test_to', Email::validateConfig($badTestRecipient), true), 'chặn header injection trong địa chỉ gửi thử cố định');
 
 $placeholderPassword = $valid;
 $placeholderPassword['password'] = 'REPLACE_WITH_MAILBOX_PASSWORD';
@@ -72,6 +77,34 @@ emailConfigOk(strpos($orderSource, "'email' => \$email") !== false, 'mail đơn 
 emailConfigOk(strpos($userSource, "formPersistentRateLimit(\$d, 'member-forgot-password'") !== false, 'forgot-password có persistent rate limit');
 emailConfigOk(strpos($forgotTemplate, 'name="form_csrf"') !== false && strpos($userSource, 'formCsrfValid(') !== false, 'forgot-password có CSRF protection');
 emailConfigOk(strpos($userSource, "array('password' => \$oldPasswordHash)") !== false, 'SMTP fail phục hồi password cũ có điều kiện');
+emailConfigOk(strpos($userSource, "substr(\$matkhau,-3)") === false, 'email thành viên không còn lộ một phần password hash');
+
+$definitions = ptsMailTemplateDefinitions();
+$cleanTemplates = ptsMailTemplateCleanPosted(array(
+	'consult_admin' => array(
+		'subject' => "<b>Yêu cầu</b> {customer_name}\r\nBcc: bad@example.test",
+		'heading' => '<script>alert(1)</script>Tiêu đề',
+		'intro' => 'Nội dung',
+		'closing' => 'Kết thúc'
+	),
+	'unknown' => array('subject' => 'Không được lưu')
+));
+emailConfigOk(count($definitions) === 8 && count($cleanTemplates) === 8, 'allowlist đủ 8 workflow và loại workflow không xác định');
+emailConfigOk(strpos($cleanTemplates['consult_admin']['heading'], '<script>') === false, 'nội dung Admin được lưu dưới dạng plain text');
+emailConfigOk(strpos($cleanTemplates['consult_admin']['subject'], "\r") === false && strpos($cleanTemplates['consult_admin']['subject'], "\n") === false, 'tiêu đề tùy chỉnh loại control character');
+emailConfigOk(ptsMailTemplateReplace('Đơn {order_code}', array('order_code' => 'PTS-001')) === 'Đơn PTS-001', 'placeholder mẫu email được thay đúng');
+
+$mailTemplateSource = file_get_contents('/var/www/html/administrator/sources/mail_template.php');
+$mailTemplateView = file_get_contents('/var/www/html/administrator/templates/mail_template/man_tpl.php');
+$securitySource = file_get_contents('/var/www/html/libraries/admin_security.php');
+emailConfigOk(strpos($mailTemplateSource, "\$mailConfig['test_to']") !== false && strpos($mailTemplateSource, "\$_POST['test_to']") === false, 'gửi thử chỉ dùng recipient cố định từ secret');
+emailConfigOk(strpos($mailTemplateView, 'adminCsrfField()') !== false, 'lưu và gửi thử có CSRF field');
+emailConfigOk(strpos($securitySource, "\$com === 'mail_template'") !== false && strpos($securitySource, "return 'setting_update'") !== false, 'màn mẫu email kế thừa quyền setting_update');
+
+$allpageSource = file_get_contents('/var/www/html/sources/allpage.php');
+emailConfigOk(strpos($allpageSource, "'consult_admin'") !== false && strpos($allpageSource, "'dealer_admin'") !== false, 'tư vấn và đại lý chọn đúng workflow template');
+$newsletterSource = file_get_contents('/var/www/html/administrator/sources/newsletter.php');
+emailConfigOk(strpos($newsletterSource, 'ptsMailTemplateCleanText($_POST[\'subject\']') !== false, 'newsletter dùng Subject Admin nhập đã làm sạch');
 
 echo $failures ? 'Email production config tests failed.'.PHP_EOL : 'Email production config tests completed.'.PHP_EOL;
 exit($failures ? 1 : 0);

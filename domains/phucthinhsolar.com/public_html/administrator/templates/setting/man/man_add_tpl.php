@@ -74,7 +74,7 @@
 						</tbody>
 					</table>
 				</div>
-				<small class="text-muted d-block mt-2">Các template tự động đang được version hóa trong source; Admin chưa chỉnh sửa trực tiếp.</small>
+				<small class="text-muted d-block mt-2">Nội dung các email tự động được quản lý tại <a href="index.php?com=mail_template&amp;act=man"><strong>Mẫu email</strong></a>. Credential SMTP vẫn chỉ nằm trong secret ngoài webroot.</small>
 			</div>
 		</div>
 		<div class="card card-primary card-outline text-sm">

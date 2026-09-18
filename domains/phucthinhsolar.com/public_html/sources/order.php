@@ -441,8 +441,9 @@
 			try
 			{
 				$arrayEmail = null;
-				$subject = "Thông tin đơn hàng từ ".$setting['name'.$lang];
-				$message = str_replace($emailVars, $emailVals, $emailer->markdown('order/admin', ['shipPrice' => $ship_price]));
+				$mailValues = array('order_code' => $code, 'customer_name' => $fullname, 'customer_phone' => $phone);
+				$subject = $emailer->templateSubject('order_admin', $mailValues, "Thông tin đơn hàng từ ".$setting['name'.$lang]);
+				$message = str_replace($emailVars, $emailVals, $emailer->markdown('order/admin', array('shipPrice' => $ship_price, 'order_code' => $code, 'customer_name' => $fullname, 'customer_phone' => $phone)));
 				$file = '';
 				$emailer->send("admin", $arrayEmail, $subject, $message, $file, array(
 					'email' => $email,
@@ -455,8 +456,8 @@
 						"email" => $email
 					)
 				);
-				$subject = "Thông tin đơn hàng từ ".$setting['name'.$lang];
-				$message = str_replace($emailVars, $emailVals, $emailer->markdown('order/customer', ['shipPrice' => $ship_price]));
+				$subject = $emailer->templateSubject('order_customer', $mailValues, "Phúc Thịnh Solar đã nhận đơn hàng ".$code);
+				$message = str_replace($emailVars, $emailVals, $emailer->markdown('order/customer', array('shipPrice' => $ship_price, 'order_code' => $code, 'customer_name' => $fullname)));
 				$file = '';
 				$emailer->send("customer", $arrayEmail, $subject, $message, $file);
 			}

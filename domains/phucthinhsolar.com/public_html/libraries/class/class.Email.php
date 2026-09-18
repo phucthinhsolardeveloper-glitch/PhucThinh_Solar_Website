@@ -6,6 +6,7 @@
 	include_once LIBRARIES."PHPMailer/PHPMailer.php";
 	include_once LIBRARIES."PHPMailer/SMTP.php";
 	include_once LIBRARIES."PHPMailer/Exception.php";
+	require_once LIBRARIES."mail_templates.php";
 
 	class Email
 	{
@@ -44,17 +45,17 @@
 			}
 
 			$this->data['email'] = isset($this->mailConfig['from']) ? trim((string)$this->mailConfig['from']) : '';
-			$this->data['color'] = '#94130F';
+			$this->data['color'] = '#D9A326';
 			$this->data['home'] = $configBase;
-			$this->data['logo'] = '<img src="'.$configBase.UPLOAD_PHOTO_L.$logo['photo'].'" style="max-height:70px;" >';
+			$this->data['logo'] = '<img src="'.$configBase.UPLOAD_PHOTO_L.$logo['photo'].'" alt="Phúc Thịnh Solar" width="210" style="display:block;width:210px;max-width:100%;height:auto;border:0;" >';
 			$this->data['social'] = $socialString;
 			$this->data['datesend'] = time();
 			$this->data['company'] = $this->company['namevi'];
 			$this->data['company:address'] = $this->optcompany['address'];
-			$this->data['company:email'] = $this->optcompany['email'];
-			$this->data['company:hotline'] = $this->optcompany['hotline'];
-			$this->data['company:website'] = $this->optcompany['website'];
-			$this->data['company:worktime'] = '(8-21h cả T7,CN)';
+			$this->data['company:email'] = isset($this->mailConfig['from']) ? trim((string)$this->mailConfig['from']) : (isset($this->optcompany['email']) ? $this->optcompany['email'] : '');
+			$this->data['company:hotline'] = isset($this->optcompany['hotline']) ? $this->optcompany['hotline'] : '';
+			$this->data['company:website'] = isset($this->optcompany['website']) ? $this->optcompany['website'] : '';
+			$this->data['company:worktime'] = !empty($this->optcompany['thoigianlamviec']) ? $this->optcompany['thoigianlamviec'] : 'Thứ Hai - Thứ Bảy, 08:00 - 17:00';
 		}
 
 		public function set($key, $value)
@@ -83,6 +84,45 @@
 			}
 
 			return $content;
+		}
+
+		public function templateCopy($key, $values = array())
+		{
+			return ptsMailTemplateResolvedCopy($this->optcompany, $key, $values);
+		}
+
+		public function templateSubject($key, $values = array(), $fallback = '')
+		{
+			$copy = $this->templateCopy($key, $values);
+			return !empty($copy['subject']) ? self::cleanHeaderText($copy['subject']) : self::cleanHeaderText($fallback);
+		}
+
+		public function workflowPreview($key)
+		{
+			$definitions = ptsMailTemplateDefinitions();
+			if(!isset($definitions[$key])) return '';
+			$values = array(
+				'customer_name' => 'Nguyễn Văn An',
+				'customer_phone' => '0900 000 000',
+				'company' => 'Công ty Minh An',
+				'contact_subject' => 'Tư vấn hệ thống điện mặt trời',
+				'order_code' => 'PTS-DEMO-001'
+			);
+			$copy = $this->templateCopy($key, $values);
+			$message = $this->markdown('notification/preview', array(
+				'copy' => $copy,
+				'workflow' => $definitions[$key],
+				'fields' => array(
+					'Họ tên' => $values['customer_name'],
+					'Điện thoại' => $values['customer_phone'],
+					'Email' => 'khachhang@example.com',
+					'Nội dung minh họa' => $key === 'order_admin' || $key === 'order_customer'
+						? 'Đơn hàng '.$values['order_code'].' gồm các sản phẩm được khách lựa chọn.'
+						: 'Nội dung này chỉ dùng để xem trước cách trình bày email.'
+				)
+			));
+			$defaults = $this->defaultAttrs();
+			return str_replace($defaults['vars'], $defaults['vals'], $message);
 		}
 
 		public function defaultAttrs()
@@ -182,6 +222,7 @@
 			if($password === '' || $password === 'REPLACE_WITH_MAILBOX_PASSWORD') $errors[] = 'password';
 			if(!self::validAddress(isset($config['from']) ? $config['from'] : '')) $errors[] = 'from';
 			if(!self::validAddress(isset($config['admin_to']) ? $config['admin_to'] : '')) $errors[] = 'admin_to';
+			if(isset($config['test_to']) && trim((string)$config['test_to']) !== '' && !self::validAddress($config['test_to'])) $errors[] = 'test_to';
 			/* SMTP relay (Brevo, SES, Mailgun...) dùng một credential đăng nhập
 			   riêng với địa chỉ From đã xác thực. Không bắt hai giá trị phải trùng;
 			   quyền dùng From do relay xác minh ở cấp sender/domain. Cả hai field
@@ -262,15 +303,18 @@
 			return true;
 		}
 
-		public function sendAdminNotification($subject, $fields, $replyToEmail = '', $replyToName = '')
+		public function sendAdminNotification($subject, $fields, $replyToEmail = '', $replyToName = '', $workflow = '')
 		{
-			$rows = '';
-			foreach((array)$fields as $label => $value)
-			{
-				$rows .= '<tr><th align="left" style="padding:6px 10px">'.htmlspecialchars((string)$label, ENT_QUOTES, 'UTF-8').'</th>'
-					.'<td style="padding:6px 10px">'.nl2br(htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8')).'</td></tr>';
-			}
-			$message = '<table border="1" cellpadding="0" cellspacing="0" style="border-collapse:collapse">'.$rows.'</table>';
+			$templateValues = array(
+				'customer_name' => isset($fields['Họ tên']) ? $fields['Họ tên'] : '',
+				'customer_phone' => isset($fields['Điện thoại']) ? $fields['Điện thoại'] : '',
+				'company' => isset($fields['Doanh nghiệp/Cửa hàng']) ? $fields['Doanh nghiệp/Cửa hàng'] : ''
+			);
+			$copy = $workflow !== '' ? $this->templateCopy($workflow, $templateValues) : array();
+			if(!empty($copy['subject'])) $subject = $copy['subject'];
+			$message = $this->markdown('notification/admin', array('copy' => $copy, 'fields' => (array)$fields));
+			$defaults = $this->defaultAttrs();
+			$message = str_replace($defaults['vars'], $defaults['vals'], $message);
 			return $this->send('admin', array(), $subject, $message, '', array('email' => $replyToEmail, 'name' => $replyToName));
 		}
 
@@ -337,7 +381,10 @@
 				}
 
 				$mail->CharSet = "utf-8";
-				$mail->AltBody = "To view the message, please use an HTML compatible email viewer!";
+				$plainBody = preg_replace('/<\s*br\s*\/?\s*>/i', "\n", (string)$message);
+				$plainBody = html_entity_decode(strip_tags($plainBody), ENT_QUOTES, 'UTF-8');
+				$plainBody = trim(preg_replace('/[ \t]+/', ' ', preg_replace('/\n{3,}/', "\n\n", $plainBody)));
+				$mail->AltBody = $plainBody !== '' ? $plainBody : 'Thông báo từ Phúc Thịnh Solar.';
 				$mail->Subject = self::cleanHeaderText($subject);
 				$mail->MsgHTML($message);
 				if($file !== '' && self::attachmentAllowed($file))
