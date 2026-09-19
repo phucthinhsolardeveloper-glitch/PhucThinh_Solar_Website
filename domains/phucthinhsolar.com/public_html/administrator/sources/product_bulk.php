@@ -424,7 +424,7 @@ function productBulkNormalizeAction($value)
     return isset($map[$value]) ? $map[$value] : $value;
 }
 
-function productBulkParseSpecLines($value)
+function productBulkParseSpecLines($value, $allowDuplicateLabels=false)
 {
     $result = array('specs' => array(), 'errors' => array());
     $labels = array();
@@ -438,7 +438,7 @@ function productBulkParseSpecLines($value)
         $label = trim(strip_tags($parts[0]));
         $value = trim(strip_tags($parts[1]));
         $key = mb_strtolower(preg_replace('/\s+/u', ' ', $label), 'UTF-8');
-        if(isset($labels[$key])) {
+        if(!$allowDuplicateLabels && isset($labels[$key])) {
             $result['errors'][] = 'Tên thông số bị trùng: '.$label;
             continue;
         }

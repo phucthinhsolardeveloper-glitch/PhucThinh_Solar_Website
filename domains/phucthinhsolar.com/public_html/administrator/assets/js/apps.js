@@ -1930,7 +1930,9 @@ $(document).ready(function(){
 	if($('.submit-check').length)
 	{
 		$('.submit-check').click(function(){
+			var submitButton = $(this);
 			var formCheck = $(this).parents("form.validation-form");
+			if(formCheck.data('saving')) return false;
 
 			/* Holdon */
 			holdonOpen();
@@ -2000,17 +2002,21 @@ $(document).ready(function(){
 				}
 			}
 
-			/* Holdon close */
-			holdonClose();
-
 			/* Check form validated */
 			if(!flag)
 			{
+				holdonClose();
 				formCheck.addClass("was-validated");
 			}
 			else
 			{
 				formCheck.removeClass("was-validated");
+				/* Giữ trạng thái đang xử lý tới khi trang chuyển hướng, đồng thời
+				   khóa các nút lưu để tránh gửi trùng khi upload/encode ảnh lâu. */
+				formCheck.data('saving', true);
+				/* Trì hoãn disable để trình duyệt kịp đưa name="save-here" của nút
+				   vừa bấm vào POST trước khi khóa thao tác lặp. */
+				setTimeout(function(){ formCheck.find('.submit-check').prop('disabled', true); }, 0);
 			}
 
 			return flag;

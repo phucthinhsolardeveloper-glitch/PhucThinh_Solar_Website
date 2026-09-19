@@ -22,4 +22,8 @@
 		echo json_encode(adminApiEnvelope(false, 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.', 'AUTH_REQUIRED', array(), array('success'=>false)));
 		exit();
 	}
+
+	/* API phía dưới chỉ đọc thông tin đăng nhập/CSRF. Không giữ khóa session
+	   trong lúc xử lý upload hoặc truy vấn để các thao tác Admin không chặn nhau. */
+	closeSessionWrite();
 ?>

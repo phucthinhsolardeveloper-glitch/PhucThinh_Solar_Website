@@ -150,6 +150,8 @@ try {
     testAssert($duplicateSpecs['errors'] > 0, 'Từ chối tên thông số riêng bị trùng');
     $formSpecs = productBulkParseSpecLines("Model | TEST\nMàu | Trắng");
     testAssert(empty($formSpecs['errors']) && count($formSpecs['specs']) === 2, 'Parser dùng chung cho CRUD form đọc đủ thông số riêng');
+    $legacyFormSpecs = productBulkParseSpecLines("Cánh quạt | 5 cánh\nCánh quạt | 16 inch", true);
+    testAssert(empty($legacyFormSpecs['errors']) && count($legacyFormSpecs['specs']) === 2, 'CRUD form giữ được thông số legacy trùng nhãn');
     $duplicateRender = productStructuredSpecs(array('additional_specs' => '[{"label":"Cánh quạt","value":"5 cánh"},{"label":"Cánh quạt","value":"16 inch"}]'), 'vi');
     testAssert(!$duplicateRender['use_legacy'] && count($duplicateRender['specs']) === 2, 'Frontend giữ đủ thông số legacy trùng nhãn');
     $legacyRender = productStructuredSpecs(array('additional_specs' => '{json lỗi', 'thongsokythuatvi' => '<table><tr><td>Legacy</td></tr></table>'), 'vi');

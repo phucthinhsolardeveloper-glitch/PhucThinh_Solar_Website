@@ -49,8 +49,20 @@
 <script src="assets/js/bootstrap.js"></script>
 <script src="assets/js/adminlte.js"></script>
 <script src="assets/js/sidebar-state.js?v=<?=@filemtime(ROOT.'administrator/assets/js/sidebar-state.js')?>"></script>
+<?php
+	$ckeditorTemplates = array(
+		'news/cat/cat_add', 'news/item/item_add', 'news/list/list_add', 'news/man/man_add', 'news/sub/sub_add',
+		'newsletter/man/mans', 'photo/man/photo_add', 'photo/man/photo_edit', 'photo/static/photo_static',
+		'product/brand/brand_add', 'product/cat/cat_add', 'product/item/item_add', 'product/list/list_add',
+		'product/man/man_add', 'product/sub/sub_add', 'static/man/man_add', 'tags/man/man_add'
+	);
+?>
+<?php if(!empty($template) && in_array($template, $ckeditorTemplates, true)) { ?>
 <script src="ckeditor/ckeditor.js"></script>
+<?php } ?>
+<?php if(!empty($template) && $template === 'index') { ?>
 <script src="assets/apexcharts/apexcharts.min.js"></script>
+<?php } ?>
 <script src="assets/simplenotify/simple-notify.js"></script>
 <script src="assets/comment/comment.js"></script>
 <script src="assets/js/apps.js?v=<?=@filemtime(ROOT.'administrator/assets/js/apps.js')?>"></script>

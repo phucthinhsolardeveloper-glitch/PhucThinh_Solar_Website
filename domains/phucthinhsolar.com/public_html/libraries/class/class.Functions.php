@@ -1083,8 +1083,9 @@
 	if ($canUseWebp) {
 		$useWebp = !empty($info['sizes']);
 		if (!$useWebp) {
-			$webpQuality = !empty($config['website']['image']['webp-quality']) ? (int) $config['website']['image']['webp-quality'] : 82;
-			$useWebp = $this->converWebp($info['pathSrc'], $webpQuality);
+			/* Không encode ảnh trong lúc render HTML. Upload đã tạo WebP; nếu
+			   sidecar chưa có thì dùng ảnh gốc để TTFB không bất chợt tăng. */
+			$useWebp = $this->hasFreshWebpVariant($info['pathSrc']);
 		}
 		if ($useWebp) $info['pathSrc'] .= '.webp';
 	}
@@ -1972,6 +1973,18 @@
 			*/
 		}
 
+		private function resolveLocalImagePath($in)
+		{
+			global $config;
+
+			if(empty($in)) return '';
+			if(substr($in, 0, 1) === '/' && is_file($in)) return $in;
+
+			$documentRoot = !empty($_SERVER['DOCUMENT_ROOT']) ? rtrim($_SERVER['DOCUMENT_ROOT'], '/').'/' : ROOT;
+			$baseUrl = !empty($config['database']['url']) ? trim($config['database']['url'], '/').'/' : '';
+			return $documentRoot.$baseUrl.ltrim(str_replace(ASSET, '', $in), '/');
+		}
+
 		private function validWebpFile($path)
 		{
 			if(!is_file($path) || filesize($path) < 16) return false;
@@ -1984,6 +1997,20 @@
 			return function_exists('imagewebp');
 		}
 
+		/* Chỉ kiểm tra sidecar có sẵn; tuyệt đối không phát sinh encode trong
+		   đường render HTML vì một ảnh lớn có thể chặn toàn bộ phản hồi trang. */
+		public function hasFreshWebpVariant($in)
+		{
+			$in = $this->resolveLocalImagePath($in);
+			$extension = strtolower(pathinfo($in, PATHINFO_EXTENSION));
+			if(!is_file($in) || !in_array($extension, array('jpg','jpeg','png'), true)) return false;
+
+			$out = $in.'.webp';
+			return $this->validWebpFile($out)
+				&& filemtime($out) >= filemtime($in)
+				&& filesize($out) < filesize($in);
+		}
+
 		/* Tạo biến thể WebP cạnh ảnh gốc (ten.jpg.webp). Luôn giữ ảnh gốc làm
 		   fallback và chỉ công bố biến thể sau khi đã kiểm tra đúng header WebP. */
 		public function converWebp($in, $quality=82)
@@ -1991,13 +2018,7 @@
 			global $config;
 
 			if(empty($in)) return false;
-			$isAbsolute = substr($in, 0, 1) === '/' && is_file($in);
-			if(!$isAbsolute)
-			{
-				$documentRoot = !empty($_SERVER['DOCUMENT_ROOT']) ? rtrim($_SERVER['DOCUMENT_ROOT'], '/').'/' : ROOT;
-				$baseUrl = !empty($config['database']['url']) ? trim($config['database']['url'], '/').'/' : '';
-				$in = $documentRoot.$baseUrl.ltrim(str_replace(ASSET, '', $in), '/');
-			}
+			$in = $this->resolveLocalImagePath($in);
 
 			$extension = strtolower(pathinfo($in, PATHINFO_EXTENSION));
 			if(!is_file($in) || !in_array($extension, array('jpg','jpeg','png'), true)) return false;
@@ -2056,10 +2077,42 @@
 			return true;
 		}
 
+		/* Dọn file phát sinh tối đa một lần mỗi interval trên mỗi thư mục.
+		   flock ngăn nhiều request ảnh đầu tiên cùng quét toàn bộ cây cache. */
+		public function cleanupGeneratedImagesIfDue($dir, $seconds=3600, $interval=3600)
+		{
+			if(empty($dir) || !is_dir($dir)) return false;
+			$interval = max(60, (int) $interval);
+			$key = hash('sha256', (string) (realpath($dir) ?: $dir));
+			$stamp = rtrim(sys_get_temp_dir(), '/').'/pts-image-cleanup-'.$key.'.stamp';
+			if(is_file($stamp) && time() - filemtime($stamp) < $interval) return false;
+
+			$lock = @fopen($stamp.'.lock', 'c');
+			if(!$lock || !@flock($lock, LOCK_EX | LOCK_NB))
+			{
+				if($lock) fclose($lock);
+				return false;
+			}
+
+			$cleaned = false;
+			if(!is_file($stamp) || time() - filemtime($stamp) >= $interval)
+			{
+				$this->RemoveFilesFromDirInXSeconds($dir, max(1, (int) $seconds));
+				$this->RemoveEmptySubFolders($dir);
+				@touch($stamp);
+				$cleaned = true;
+			}
+
+			@flock($lock, LOCK_UN);
+			fclose($lock);
+			return $cleaned;
+		}
+
 		/* Create thumb */
 		public function createThumb($width_thumb=0, $height_thumb=0, $zoom_crop='1', $src='', $watermark=null, $path=THUMBS, $preview=false, $args=array(), $quality=100)
 		{
 			global $config;
+			if(function_exists('closeSessionWrite')) closeSessionWrite();
 
 			$webp = false;
 			$t = 3600*24*30;
@@ -2070,17 +2123,15 @@
 				$src = str_replace(".webp", "", $src);
 			}
 
-			$this->RemoveFilesFromDirInXSeconds(UPLOAD_TEMP_L, 1);
+			$this->cleanupGeneratedImagesIfDue(UPLOAD_TEMP_L, 3600, 300);
 
 			if($watermark != null)
 			{
-				$this->RemoveFilesFromDirInXSeconds(WATERMARK.'/'.$path."/", $t);
-				$this->RemoveEmptySubFolders(WATERMARK.'/'.$path."/");
+				$this->cleanupGeneratedImagesIfDue(WATERMARK.'/'.$path."/", $t, 3600);
 			}
 			else
 			{
-				$this->RemoveFilesFromDirInXSeconds($path."/", $t);
-				$this->RemoveEmptySubFolders($path."/");
+				$this->cleanupGeneratedImagesIfDue($path."/", $t, 3600);
 			}
 
 			$src = str_replace("%20"," ",$src);
@@ -2102,6 +2153,14 @@
 				header($_SERVER['SERVER_PROTOCOL'] . ' 500 Internal Server Error', true, 500);
 				die("Width and height less than 2000px");
 			}
+
+			/* URL thumbnail chứa kích thước + tên file, nên có thể cache dài hạn.
+			   Gỡ header no-cache do session_start() tự thêm. */
+			header_remove('Pragma');
+			header_remove('Expires');
+			header_remove('Cache-Control');
+			header('Cache-Control: public, max-age=2592000, immutable');
+			header('Expires: '.gmdate('D, d M Y H:i:s', time() + 2592000).' GMT');
 
 			$array = getimagesize($image_url);
 			if($array) list($image_w, $image_h) = $array;
@@ -2417,12 +2476,15 @@
 			{
 				if(!isset($_GET['preview']))
 				{
-					if($serveWebp) @imagewebp($canvas, $upload_dir.$image_name.'.webp', $webpQuality);
-					elseif($func == 'imagejpeg') $func($canvas, $upload_dir.$image_name,100);
-					else $func($canvas, $upload_dir.$image_name,floor($quality * 0.09));
-				}
+					$generatedPath = $upload_dir.$image_name.($serveWebp ? '.webp' : '');
+					$tempGeneratedPath = $generatedPath.'.tmp-'.getmypid().'-'.uniqid('', true);
+					if($serveWebp) $written = @imagewebp($canvas, $tempGeneratedPath, $webpQuality);
+					elseif($func == 'imagejpeg') $written = @$func($canvas, $tempGeneratedPath, 100);
+					else $written = @$func($canvas, $tempGeneratedPath, floor($quality * 0.09));
 
-				$this->removeZeroByte($path);
+					if($written && is_file($tempGeneratedPath) && filesize($tempGeneratedPath) > 0) @rename($tempGeneratedPath, $generatedPath);
+					elseif(is_file($tempGeneratedPath)) @unlink($tempGeneratedPath);
+				}
 			}
 
 			if($serveWebp)

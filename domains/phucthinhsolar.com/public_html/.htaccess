@@ -90,5 +90,12 @@ RewriteRule ^$ /? [R=301,L]
 </FilesMatch>
 
 <FilesMatch "\.php$">
-    Header set Cache-Control "no-store, no-cache, must-revalidate"
+    Header set Cache-Control "no-store, no-cache, must-revalidate" "expr=%{THE_REQUEST} !~ m#^[A-Z]+[[:space:]]+/(thumbs|watermark)/#"
 </FilesMatch>
+
+<IfModule mod_headers.c>
+    # Thumbnail động đi qua index.php ở lần đầu, nhưng URL đã gắn kích thước và
+    # tên file. Ghi đè chính sách PHP no-store để lần đầu cũng được browser/CDN cache.
+    Header onsuccess unset Cache-Control "expr=%{THE_REQUEST} =~ m#^[A-Z]+[[:space:]]+/(thumbs|watermark)/#"
+    Header always set Cache-Control "public, max-age=2592000, immutable" "expr=%{THE_REQUEST} =~ m#^[A-Z]+[[:space:]]+/(thumbs|watermark)/#"
+</IfModule>

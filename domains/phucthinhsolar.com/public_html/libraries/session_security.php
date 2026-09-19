@@ -21,4 +21,12 @@ if(!function_exists('startSecureSession'))
         ));
         session_start();
     }
+
+    /* Các request chỉ đọc session (thumbnail/API đã xác thực) không cần giữ
+       file session bị khóa cho tới khi PHP kết thúc. Giải phóng sớm để những
+       request ảnh/AJAX song song của cùng một người dùng không xếp hàng. */
+    function closeSessionWrite()
+    {
+        if(session_status() === PHP_SESSION_ACTIVE) session_write_close();
+    }
 }

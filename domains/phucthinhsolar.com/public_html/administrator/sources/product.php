@@ -513,7 +513,10 @@
 		if(isset($_POST['additional_specs_text']))
 		{
 			$additionalSpecsText = (string) $_POST['additional_specs_text'];
-			$parsedAdditionalSpecs = productBulkParseSpecLines($additionalSpecsText);
+			/* Sản phẩm legacy có thể có nhiều thông số cùng nhãn (ví dụ hai dòng
+			   "Cánh quạt"). Form sửa phải bảo toàn chúng; bulk import vẫn kiểm tra
+			   trùng nhãn theo mặc định để bắt lỗi dữ liệu mới. */
+			$parsedAdditionalSpecs = productBulkParseSpecLines($additionalSpecsText, true);
 			foreach($parsedAdditionalSpecs['errors'] as $specError) $response['messages'][] = 'Thông số riêng '.$specError;
 			foreach($parsedAdditionalSpecs['specs'] as $spec)
 			{

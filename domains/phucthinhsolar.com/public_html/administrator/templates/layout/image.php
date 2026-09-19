@@ -1,6 +1,6 @@
 <div class="photoUpload-zone">
 	<div class="photoUpload-detail" id="photoUpload-preview">
-		<?=$func->getImage(['class' => 'rounded', 'size-error' => '250x250x1', 'upload' => $photoDetail['upload'], 'image' => $photoDetail['image'], 'alt' => 'Alt Photo'])?>
+		<?=$func->getImage(['class' => 'rounded', 'sizes' => '250x250x2', 'isLazy' => false, 'noNativeLazy' => true, 'upload' => $photoDetail['upload'], 'image' => $photoDetail['image'], 'alt' => 'Alt Photo'])?>
 	</div>
 	<label class="photoUpload-file" id="photo-zone" for="file-zone">
 		<input type="file" name="file" id="file-zone">
