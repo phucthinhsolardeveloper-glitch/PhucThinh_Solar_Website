@@ -40,7 +40,9 @@ thay đổi, truyền `PTS_DEPLOY_HOST`, `PTS_DEPLOY_SSH_KEY`, `PTS_STACK_ROOT` 
 ## Deploy một lệnh
 
 Trước hết commit và push thay đổi. Script cố ý từ chối working tree bẩn hoặc
-commit chưa có trên remote để release luôn truy ngược được.
+commit chưa có trên remote để release luôn truy ngược được. Phạm vi SAFE/FAST
+được tính từ image đang active trên VPS tới `HEAD`, nên chuỗi nhiều commit không
+làm bỏ sót file chưa deploy.
 
 ### SAFE
 

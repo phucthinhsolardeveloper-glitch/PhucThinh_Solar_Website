@@ -92,10 +92,15 @@ upstream="$(git rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>/dev/null |
 commit="$(git rev-parse HEAD)"
 upstream_commit="$(git rev-parse "$upstream")"
 [ "$commit" = "$upstream_commit" ] || fail "HEAD chưa khớp $upstream; pull/push xong rồi deploy."
-parent="$(git rev-parse HEAD^)"
-changed_paths="$(git diff --name-only "$parent" "$commit")"
+current_image="$(remote "cat $stack_root/state/current-image")"
+printf '%s' "$current_image" | grep -Eq '^phucthinhsolar-web:[0-9a-f]{12}$' || fail "không nhận diện được current-image trên VPS: $current_image"
+deployed_short="${current_image#phucthinhsolar-web:}"
+deployed_commit="$(git rev-parse --verify "${deployed_short}^{commit}" 2>/dev/null || true)"
+[ -n "$deployed_commit" ] || fail "Git local không có commit production $deployed_short; fetch đầy đủ history rồi thử lại."
+git merge-base --is-ancestor "$deployed_commit" "$commit" || fail "commit production không phải ancestor của HEAD; dừng để kiểm tra nhánh."
+changed_paths="$(git diff --name-only "$deployed_commit" "$commit")"
 printf '%s\n' "$changed_paths" | grep -q '^domains/phucthinhsolar.com/public_html/' || fail "commit không đổi source website; không cần deploy production."
-git diff --check "$parent" "$commit"
+git diff --check "$deployed_commit" "$commit"
 bash -n scripts/package-hosting-release.sh scripts/predeploy-local.sh scripts/deploy-production.sh
 
 if [ "$mode" = "fast" ]; then
@@ -137,6 +142,7 @@ release_id="${commit:0:12}"
 remote_release="$stack_root/incoming/$release_name"
 
 step "Kiểm tra VPS trước deploy"
+echo "Production hiện tại: $current_image ($deployed_commit)"
 remote "cd $stack_root && docker compose ps && df -h $stack_root && cat state/current-image"
 deploy_started_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 
