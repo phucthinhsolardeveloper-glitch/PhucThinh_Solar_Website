@@ -1,6 +1,6 @@
 # Sổ tay Phúc Thịnh Solar — đọc vào là làm được
 
-Cập nhật: 2026-09-17.
+Cập nhật: 2026-09-20.
 
 Tài liệu này là **cửa vào duy nhất** khi bắt đầu một phiên làm việc mới, cho
 người thật hoặc cho AI vừa mất hết context. Nó không giải thích chi tiết — nó
@@ -14,10 +14,11 @@ liệt kê theo **việc cần làm**.
 
 ## 0. Ba câu phải biết trước khi gõ dòng lệnh đầu tiên
 
-1. **Website thật đang chạy ở host cũ** (VNPT, `103.82.21.26`), không có SSH —
-   file đi bằng FTP, SQL đi bằng phpMyAdmin. Xem [§ Deploy lên host cũ](#5-deploy).
-2. **Đang chuyển sang VPS mới** (`222.255.182.182`, Ubuntu 24.04 + Docker).
-   Chưa trỏ DNS. Xem [§ VPS](#7-vps).
+1. **Website thật đang chạy trên VPS** `222.255.182.182` (Ubuntu 24.04,
+   Docker/Caddy). DNS `phucthinhsolar.com` đã cutover; deploy production bằng
+   SAFE/FAST một lệnh, không còn upload FTP vào host cũ.
+2. **Host VNPT cũ không còn phục vụ website/database.** Chỉ còn tài nguyên mail
+   trong giai đoạn chuyển tiếp; không xem FTP/phpMyAdmin cũ là production.
 3. **Không suy đoán.** Khi runtime, code, schema và docs mâu thuẫn, ghi rõ xung
    đột và tin bằng chứng có độ tin cậy cao hơn — runtime > code > schema > docs.
    Đây là quy tắc trong `CLAUDE.md`, không phải lời khuyên.
@@ -37,7 +38,7 @@ liệt kê theo **việc cần làm**.
 | Sửa một con bug | [11-workflows/bug-fixing-playbook.md](11-workflows/bug-fixing-playbook.md) |
 | Làm một tính năng mới từ đầu tới deploy | [11-workflows/feature-delivery-playbook.md](11-workflows/feature-delivery-playbook.md) |
 | Chạy test / cổng kiểm tra trước deploy | [02-development/testing.md](02-development/testing.md) |
-| Deploy lên host cũ (FTP) | [06-operations/deployment.md](06-operations/deployment.md) |
+| Deploy production SAFE/FAST một lệnh | [06-operations/deploy-production-owner.md](06-operations/deploy-production-owner.md) |
 | Dựng VPS mới từ số không | [06-operations/vps-cloudfly-runbook.md](06-operations/vps-cloudfly-runbook.md) |
 | VPS đang chạy mà có vấn đề | [06-operations/vps-operations.md](06-operations/vps-operations.md) |
 | Backup / restore / kiểm tra backup còn dùng được | [06-operations/backup-restore.md](06-operations/backup-restore.md) |
@@ -102,7 +103,11 @@ Không có API router chung.
 
 ---
 
-## 4. Cổng kiểm tra bắt buộc trước mọi deploy
+## 4. Cổng kiểm tra trước deploy
+
+Người trực deploy không cần gõ hai cổng dưới đây bằng tay. Chế độ `SAFE` chạy
+cả hai; chế độ `FAST` chỉ dành cho frontend rủi ro thấp và tự chặn file nhạy
+cảm. Xem [deploy-production-owner.md](06-operations/deploy-production-owner.md).
 
 Hai cổng, cả hai phải sạch:
 
@@ -114,7 +119,7 @@ LOCAL_ENFORCE_RBAC=1 ./scripts/predeploy-local.sh
 # Cổng 2: browser regression desktop + mobile (~10 phút)
 cd tools/visual-tests
 PLAYWRIGHT_BROWSERS_PATH=.browsers npx playwright test --workers=1
-# Baseline: 178 passed / 18 skipped / 0 failed
+# Kết quả phải có 0 failed; số pass/skip thay đổi khi bộ test được mở rộng.
 ```
 
 Nếu con số pass tụt so với baseline, **đừng nới lỏng assertion**. Tìm nguyên
@@ -126,7 +131,23 @@ không phải hardcode màu mới.
 
 ## 5. Deploy
 
-### Host cũ (đang chạy thật) — FTP, không có SSH
+### Production VPS — Docker, có SSH
+
+```bash
+# Thay đổi PHP/API/commerce/Admin hoặc khi không chắc:
+./scripts/deploy-production.sh --safe --confirm-production
+
+# Chỉ CSS/chữ/ảnh/responsive/template frontend rủi ro thấp:
+./scripts/deploy-production.sh --fast --confirm-production
+```
+
+Quyết định mode, success criteria và rollback:
+[deploy-production-owner.md](06-operations/deploy-production-owner.md).
+
+### Host cũ — tài liệu lịch sử, không còn là production
+
+Các lệnh FTP dưới đây chỉ để điều tra bản lưu cũ khi có phê duyệt rõ ràng;
+không dùng cho deploy thường ngày.
 
 ```bash
 # 1. Xem file nào đổi so với bản đang chạy trên production
@@ -144,14 +165,9 @@ curl --ftp-pasv -u 'phucthinhs:<pass>' \
 # 4. Xác minh bằng URL thật, KHÔNG tin "upload thành công"
 ```
 
-SQL đi bằng phpMyAdmin — chuẩn bị câu lệnh idempotent (`IF NOT EXISTS`) rồi đưa
-chủ project chạy. Chi tiết: [06-operations/deployment.md](06-operations/deployment.md).
-
-### VPS mới — Docker, có SSH
-
-Xem [06-operations/vps-cloudfly-runbook.md](06-operations/vps-cloudfly-runbook.md)
-cho lần dựng đầu, và [06-operations/vps-operations.md](06-operations/vps-operations.md)
-cho vận hành hằng ngày.
+Trên host cũ, SQL từng đi bằng phpMyAdmin. Không áp dụng quy trình đó cho VPS
+production hiện tại. Bối cảnh lịch sử:
+[06-operations/deployment.md](06-operations/deployment.md).
 
 ---
 
@@ -173,12 +189,13 @@ trang giải pháp và **kết luận sai** là "CSS chưa nạp". Chủ project
 
 ## 7. VPS
 
-Trạng thái tại 2026-09-17: Ubuntu 24.04, Docker 29.8.1, Compose 5.5.1,
-`/srv/phucthinhsolar` đã dựng, image `phucthinhsolar-web` đã build, release đã
-giải nén, rehearsal restore đã PASS. **Chưa** restore dữ liệu thật, **chưa** chạy
-stack, **chưa** trỏ DNS.
+Trạng thái tại 2026-09-20: Ubuntu 24.04, Docker 29.8.1, Compose 5.5.1,
+`/srv/phucthinhsolar` đang chạy production và DNS domain chính đã cutover.
+Image active sau đợt commerce/mobile là `phucthinhsolar-web:86811592c357`;
+image rollback là `phucthinhsolar-web:62f31b6a6284`.
 
 - Dựng mới / chuyển nhà: [vps-cloudfly-runbook.md](06-operations/vps-cloudfly-runbook.md)
+- Deploy SAFE/FAST: [deploy-production-owner.md](06-operations/deploy-production-owner.md)
 - Vận hành, đọc log, xử lý sự cố: [vps-operations.md](06-operations/vps-operations.md)
 
 ---

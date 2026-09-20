@@ -44,6 +44,7 @@ fi
 
 git diff --check
 bash -n scripts/package-hosting-release.sh
+bash -n scripts/deploy-production.sh
 bash -n scripts/package-oriana-media.sh
 if grep -qE '\$auth_users|FM_ROOT_PATH|function[[:space:]]+fm_' domains/phucthinhsolar.com/public_html/administrator/api/component.php; then
     echo "FAIL: component.php còn implementation/credential file manager legacy" >&2

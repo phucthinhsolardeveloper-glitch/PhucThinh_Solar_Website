@@ -114,6 +114,17 @@ docker exec "$(docker compose ps -q web)" curl -sS -o /dev/null -w '%{http_code}
 
 ## 4. Deploy một release mới
 
+Đường vận hành mặc định cho chủ website là
+[deploy production SAFE/FAST một lệnh](deploy-production-owner.md):
+
+```bash
+./scripts/deploy-production.sh --safe --confirm-production
+# Hoặc chỉ cho thay đổi frontend rủi ro thấp:
+./scripts/deploy-production.sh --fast --confirm-production
+```
+
+Các lệnh dưới đây là quy trình thủ công để cứu hộ/điều tra.
+
 ```bash
 # Trên máy dev: cả hai cổng phải sạch trước
 LOCAL_ENFORCE_RBAC=1 ./scripts/predeploy-local.sh
@@ -158,10 +169,11 @@ ls -lh /srv/phucthinhsolar/backups/
 
 Mỗi bản backup có `MANIFEST.txt` và checksum; script tự verify sau khi tạo.
 
-Backup đầy đủ `20260917T075137Z-full` đã qua kiểm tra checksum và diễn tập
-restore (54 bảng, 1.127 file upload). Bản sao đã được chuyển ra ngoài project
-tới `D:\Docs\Backup\NEW01\20260917T075137Z-full` và kiểm tra lại toàn bộ
-checksum thành công; đây vẫn chưa thay thế off-site backup tự động, độc lập.
+Ngày 2026-09-20 VPS giữ hai full backup gần nhất
+`20260919T193835Z-full` và `20260920T082429Z-full`; cả hai được script backup
+xác minh checksum khi tạo. Ba full backup cũ ngày 17–18/09 đã xóa khỏi VPS để
+giảm khoảng 2 GB. Bản từng diễn tập restore ngày 17/09 chỉ còn có thể dùng nếu
+bản sao ngoài VPS vẫn tồn tại và vượt checksum; không mặc định nó còn sẵn sàng.
 
 **Cảnh báo đang hiện và chưa xử lý:**
 

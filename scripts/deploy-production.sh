@@ -1,0 +1,186 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+repo_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+mode=""
+confirmed=0
+activated=0
+
+usage() {
+    cat <<'EOF'
+Usage:
+  ./scripts/deploy-production.sh --safe --confirm-production
+  ./scripts/deploy-production.sh --fast --confirm-production
+
+Modes:
+  --safe  Full local predeploy + full Playwright + full production backup.
+  --fast  Quick guards + DB backup; only accepts low-risk frontend changes.
+
+Optional environment:
+  PTS_DEPLOY_HOST      SSH target (default: root@222.255.182.182)
+  PTS_DEPLOY_SSH_KEY   Private key (default: /home/admin01/.ssh/id_ed25519)
+  PTS_STACK_ROOT       VPS stack root (default: /srv/phucthinhsolar)
+  PTS_SITE_URL         Public origin (default: https://phucthinhsolar.com)
+EOF
+}
+
+fail() {
+    echo "FAIL: $*" >&2
+    exit 1
+}
+
+step() {
+    printf '\n[%s] %s\n' "$(date '+%H:%M:%S')" "$*"
+}
+
+for argument in "$@"; do
+    case "$argument" in
+        --safe|--fast)
+            [ -z "$mode" ] || fail "chỉ chọn một trong --safe hoặc --fast."
+            mode="${argument#--}"
+            ;;
+        --confirm-production) confirmed=1 ;;
+        -h|--help) usage; exit 0 ;;
+        *) usage; fail "tham số không hợp lệ: $argument" ;;
+    esac
+done
+
+[ -n "$mode" ] || { usage; fail "phải chọn --safe hoặc --fast."; }
+[ "$confirmed" -eq 1 ] || { usage; fail "thiếu --confirm-production."; }
+
+deploy_host="${PTS_DEPLOY_HOST:-root@222.255.182.182}"
+ssh_key="${PTS_DEPLOY_SSH_KEY:-/home/admin01/.ssh/id_ed25519}"
+stack_root="${PTS_STACK_ROOT:-/srv/phucthinhsolar}"
+site_url="${PTS_SITE_URL:-https://phucthinhsolar.com}"
+
+printf '%s' "$deploy_host" | grep -Eq '^([A-Za-z0-9._-]+@)?[A-Za-z0-9.-]+$' || fail "PTS_DEPLOY_HOST không hợp lệ."
+printf '%s' "$stack_root" | grep -Eq '^/[A-Za-z0-9._/-]+$' || fail "PTS_STACK_ROOT không hợp lệ."
+printf '%s' "$site_url" | grep -Eq '^https://[A-Za-z0-9.-]+(:[0-9]+)?$' || fail "PTS_SITE_URL phải là HTTPS origin, không kèm path."
+[ -f "$ssh_key" ] || fail "không thấy SSH key: $ssh_key"
+
+for command in bash git docker curl ssh scp sha256sum sed npx node find; do
+    command -v "$command" >/dev/null 2>&1 || fail "máy deploy thiếu lệnh $command."
+done
+
+ssh_args=(-i "$ssh_key" -o BatchMode=yes -o ConnectTimeout=15)
+scp_args=(-i "$ssh_key" -o BatchMode=yes -o ConnectTimeout=15)
+remote() {
+    ssh "${ssh_args[@]}" "$deploy_host" "$1"
+}
+
+on_error() {
+    local status=$?
+    echo >&2
+    echo "FAIL: deploy dừng tại dòng $1 (exit $status)." >&2
+    if [ "$activated" -eq 1 ]; then
+        echo "Release mới đã từng được kích hoạt. Nếu website lỗi, rollback code bằng:" >&2
+        printf 'ssh -i %q %q %q\n' "$ssh_key" "$deploy_host" "$stack_root/scripts/rollback-release.sh" >&2
+    else
+        echo "Release mới chưa được xác nhận kích hoạt; production cũ vẫn là mốc an toàn." >&2
+    fi
+    exit "$status"
+}
+trap 'on_error "$LINENO"' ERR
+
+cd "$repo_dir"
+step "Kiểm tra Git và phạm vi release"
+[ -z "$(git status --porcelain --untracked-files=normal)" ] || fail "working tree chưa sạch; commit hoặc cất thay đổi trước."
+branch="$(git branch --show-current)"
+[ -n "$branch" ] || fail "đang ở detached HEAD."
+upstream="$(git rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>/dev/null || true)"
+[ -n "$upstream" ] || fail "nhánh $branch chưa có upstream; push nhánh trước khi deploy."
+commit="$(git rev-parse HEAD)"
+upstream_commit="$(git rev-parse "$upstream")"
+[ "$commit" = "$upstream_commit" ] || fail "HEAD chưa khớp $upstream; pull/push xong rồi deploy."
+parent="$(git rev-parse HEAD^)"
+changed_paths="$(git diff --name-only "$parent" "$commit")"
+printf '%s\n' "$changed_paths" | grep -q '^domains/phucthinhsolar.com/public_html/' || fail "commit không đổi source website; không cần deploy production."
+git diff --check "$parent" "$commit"
+bash -n scripts/package-hosting-release.sh scripts/predeploy-local.sh scripts/deploy-production.sh
+
+if [ "$mode" = "fast" ]; then
+    if printf '%s\n' "$changed_paths" | grep -Eq '^(migrations/|deploy/|docker/|docker-compose[^/]*|domains/phucthinhsolar\.com/public_html/(api/|administrator/|libraries/|sources/|templates/order/|templates/layout/|templates/product/product_detail_tpl\.php|assets/js/(apps|functions)\.js))'; then
+        fail "--fast từ chối commerce/global layout/API/Admin/library/source/migration/hạ tầng; dùng --safe."
+    fi
+    other_script_paths="$(printf '%s\n' "$changed_paths" | grep -E '^scripts/' | grep -Ev '^scripts/deploy-production\.sh$' || true)"
+    if [ -n "$other_script_paths" ]; then
+        fail "--fast từ chối thay đổi script vận hành; dùng --safe."
+    fi
+    step "FAST: syntax guard cho file JavaScript/PHP đã đổi"
+    while IFS= read -r javascript; do
+        [ -z "$javascript" ] || [ ! -f "$javascript" ] || node --check "$javascript"
+    done < <(printf '%s\n' "$changed_paths" | grep -E '\.js$' || true)
+    if printf '%s\n' "$changed_paths" | grep -qE '^domains/phucthinhsolar\.com/public_html/.*\.php$'; then
+        running="$(docker inspect --format '{{.State.Running}}' pts-php74-local 2>/dev/null || true)"
+        [ "$running" = "true" ] || fail "FAST cần container pts-php74-local đang chạy để lint PHP 7.4; hoặc dùng --safe."
+        while IFS= read -r php_file; do
+            [ -z "$php_file" ] && continue
+            relative="${php_file#domains/phucthinhsolar.com/public_html/}"
+            docker exec pts-php74-local php -l "/var/www/html/$relative"
+        done < <(printf '%s\n' "$changed_paths" | grep -E '^domains/phucthinhsolar\.com/public_html/.*\.php$' || true)
+    fi
+else
+    step "SAFE: chạy full predeploy local"
+    LOCAL_ENFORCE_RBAC=1 ./scripts/predeploy-local.sh
+    step "SAFE: chạy toàn bộ Playwright một worker"
+    (cd tools/visual-tests && npx playwright test --workers=1)
+fi
+
+step "Đóng gói release theo commit $commit"
+package_output="$(./scripts/package-hosting-release.sh)"
+printf '%s\n' "$package_output"
+release_dir="$(printf '%s\n' "$package_output" | sed -n 's/^PASS: Release được tạo tại //p' | tail -1)"
+[ -d "$release_dir" ] || fail "không đọc được release directory từ package output."
+release_name="$(basename "$release_dir")"
+printf '%s' "$release_name" | grep -Eq '^[0-9]{8}T[0-9]{6}Z-[0-9a-f]{12}$' || fail "release name không hợp lệ."
+release_id="${commit:0:12}"
+remote_release="$stack_root/incoming/$release_name"
+
+step "Kiểm tra VPS trước deploy"
+remote "cd $stack_root && docker compose ps && df -h $stack_root && cat state/current-image"
+deploy_started_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+
+if [ "$mode" = "safe" ]; then
+    step "SAFE: full backup production"
+    remote "$stack_root/scripts/backup.sh --full"
+else
+    step "FAST: backup database production"
+    remote "$stack_root/scripts/backup.sh --db-only"
+fi
+
+step "Upload và kiểm checksum phía VPS"
+remote "install -d -m 0755 $remote_release"
+mapfile -d '' release_files < <(find "$release_dir" -maxdepth 1 -type f -print0)
+[ "${#release_files[@]}" -ge 6 ] || fail "release thiếu file bàn giao."
+scp "${scp_args[@]}" "${release_files[@]}" "$deploy_host:$remote_release/"
+remote "cd $remote_release && sha256sum -c SHA256SUMS"
+
+step "Build, chuyển image và chờ healthcheck"
+remote "$stack_root/scripts/deploy-release.sh $remote_release"
+activated=1
+
+step "Xóa cache sinh lại được"
+remote "page_count=\$(find $stack_root/shared/caches -maxdepth 1 -type f -name 'cache_*' | wc -l); asset_count=\$(find $stack_root/shared/assets-caches -maxdepth 1 -type f | wc -l); find $stack_root/shared/caches -maxdepth 1 -type f -name 'cache_*' -delete; find $stack_root/shared/assets-caches -maxdepth 1 -type f -delete; echo CLEARED_page_cache=\$page_count CLEARED_asset_cache=\$asset_count"
+
+step "Verify stack và schema preflight chỉ đọc"
+remote "cd $stack_root && ./scripts/verify-stack.sh && web_container=\$(docker compose ps -q web) && docker cp releases/$release_id/migrations/000_preflight_production.php \$web_container:/tmp/pts-preflight.php && docker exec \$web_container php /tmp/pts-preflight.php --require-all"
+
+step "HTTP smoke test public"
+for path in / /san-pham/ /san-pham/den-pha-nang-luong-mat-troi-jindian-jd-t300-300w /gio-hang/ /tin-tuc/; do
+    curl -fsS -L --max-time 20 -o /dev/null "$site_url$path"
+    echo "PASS: $site_url$path"
+done
+
+step "Playwright production: mobile commerce, ngôn ngữ và typography"
+(cd tools/visual-tests && PTS_VISUAL_BASE_URL="$site_url" npx playwright test \
+    tests/mobile-commerce-experience.spec.js tests/typography-system.spec.js --workers=1)
+
+step "Quét lỗi mới trong log và xác nhận image active"
+remote "cd $stack_root && web_bad=\$(docker compose logs --since=$deploy_started_at web 2>&1 | grep -Eci 'PHP (Fatal|Warning)|Uncaught|AH[0-9]+:error|HTTP/[0-9.]+ 5[0-9][0-9]' || true); proxy_bad=\$(docker compose logs --since=$deploy_started_at proxy 2>&1 | grep -Eci 'level=(error|fatal)|status.:5[0-9][0-9]' || true); echo ERROR_SCAN_web=\$web_bad ERROR_SCAN_proxy=\$proxy_bad; test \$web_bad -eq 0; test \$proxy_bad -eq 0; test \"\$(cat state/current-image)\" = \"phucthinhsolar-web:$release_id\""
+
+trap - ERR
+printf '\nPASS: deploy %s hoàn tất.\n' "$mode"
+echo "Commit: $commit"
+echo "Image: phucthinhsolar-web:$release_id"
+echo "Release: $remote_release"
+echo "Rollback code: ssh -i $ssh_key $deploy_host $stack_root/scripts/rollback-release.sh"

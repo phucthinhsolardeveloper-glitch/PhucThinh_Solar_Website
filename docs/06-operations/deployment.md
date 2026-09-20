@@ -1,5 +1,12 @@
 # Deployment
 
+Production hiện chạy trên VPS Docker/Caddy. Chủ website hoặc người trực deploy
+dùng [Deploy production SAFE/FAST một lệnh](deploy-production-owner.md). Tài
+liệu bên dưới về DirectAdmin là bối cảnh hosting cũ, không phải đường deploy
+production hiện hành.
+
+## Bối cảnh host DirectAdmin cũ (lịch sử)
+
 Đã xác nhận mô hình DirectAdmin account backup và webroot `domains/phucthinhsolar.com/public_html`. Đã có công cụ đóng gói source theo commit kèm checksum và rollback metadata; chưa có CI/CD, staging runner, vhost/IaC hoặc quyền xác minh trực tiếp trên hosting.
 
 Production được chủ project cung cấp: 2 vCPU, khoảng 3.7 GB RAM, không swap, Apache/PHP 7.4.29, MariaDB 10.4.24, SSL Let's Encrypt. Header/proxy chain cần xác minh.
