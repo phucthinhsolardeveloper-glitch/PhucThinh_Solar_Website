@@ -351,9 +351,17 @@ grep -qF 'class="menu-knowledge"' /tmp/pts-predeploy-home.html
 grep -qF 'class="menu-cooperation"' /tmp/pts-predeploy-home.html
 grep -qF '>Kiến thức</a>' /tmp/pts-predeploy-home.html
 grep -qF '>Hợp tác</a>' /tmp/pts-predeploy-home.html
+grep -qF '"default_language": "vi"' /tmp/pts-predeploy-home.html
+grep -qF '"detect_browser_language": true' /tmp/pts-predeploy-home.html
 assert_css_shipped /tmp/pts-predeploy-home.html 'assets/css/header-v3.css' '.pts-header-v3'
 assert_css_shipped /tmp/pts-predeploy-home.html 'assets/css/media-system.css' '.pts-contact-intro-row'
 assert_css_shipped /tmp/pts-predeploy-home.html 'assets/css/responsive-architecture.css' '--pts-mobile-gutter'
+assert_css_shipped /tmp/pts-predeploy-home.html 'assets/css/commerce-experience.css' '.form-cart .procart-row{display:grid!important'
+assert_css_shipped /tmp/pts-predeploy-home.html 'assets/css/typography-system.css' '--pts-type-base'
+if grep -qF 'async: false' domains/phucthinhsolar.com/public_html/assets/js/apps.js; then
+    echo "FAIL: Add-to-cart vẫn dùng synchronous XHR và khóa giao diện" >&2
+    exit 1
+fi
 grep -qF 'name="form_csrf"' /tmp/pts-predeploy-contact.html
 grep -qF 'title-pro-detail' /tmp/pts-predeploy-product.html
 grep -qF '"@type":"Product"' /tmp/pts-predeploy-product.html

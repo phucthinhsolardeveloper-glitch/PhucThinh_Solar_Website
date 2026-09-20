@@ -825,12 +825,13 @@ GA_FRAMEWORK.DomChange = function(){
 GA_FRAMEWORK.Cart = function(){
     /* Add */
     $("body").on("click",".addcart",function(){
-        $this = $(this);
-        $parents = $this.parents(".right-pro-detail");
+        var $this = $(this);
+        if($this.hasClass('is-loading')) return;
+        var $parents = $this.parents(".right-pro-detail");
         var id = $this.data("id");
         var action = $this.data("action");
         var quantity = $parents.find(".quantity-pro-detail").find(".qty-pro").val();
-        quantity = (quantity) ? quantity : 1;
+        quantity = Math.max(1, Math.min(999, parseInt(quantity, 10) || 1));
         var color = $parents.find(".color-block-pro-detail").find(".color-pro-detail input:checked").val();
         color = (color) ? color : 0;
         var size = $parents.find(".size-block-pro-detail").find(".size-pro-detail input:checked").val();
@@ -842,7 +843,6 @@ GA_FRAMEWORK.Cart = function(){
                 url:'api/cart.php',
                 type: "POST",
                 dataType: 'json',
-                async: false,
                 data: {
                     cmd: 'add-cart',
                     id: id,
@@ -851,6 +851,7 @@ GA_FRAMEWORK.Cart = function(){
                     quantity: quantity
                 },
                 beforeSend: function(){
+                    $this.addClass('is-loading').attr({'aria-busy':'true','aria-disabled':'true'});
                     holdonOpen();
                 },
                 success: function(result){
@@ -862,7 +863,6 @@ GA_FRAMEWORK.Cart = function(){
                             url:'api/cart.php',
                             type: "POST",
                             dataType: 'html',
-                            async: false,
                             data: {
                                 cmd: 'popup-cart'
                             },
@@ -870,6 +870,12 @@ GA_FRAMEWORK.Cart = function(){
                                 $("#popup-cart .modal-body").html(result);
                                 $('#popup-cart').modal('show');
                                 GA_FRAMEWORK.Lazys();
+                            },
+                            error: function(){
+                                showNotify('Không thể tải giỏ hàng. Vui lòng thử lại.', 'Thông báo', 'error');
+                            },
+                            complete: function(){
+                                $this.removeClass('is-loading').removeAttr('aria-busy aria-disabled');
                                 holdonClose();
                             }
                         });
@@ -878,6 +884,12 @@ GA_FRAMEWORK.Cart = function(){
                     {
                         window.location = CONFIG_BASE + "gio-hang";
                     }
+                },
+                error: function(xhr){
+                    var message = (xhr.responseJSON && xhr.responseJSON.error) ? xhr.responseJSON.error : 'Không thể thêm sản phẩm vào giỏ. Vui lòng thử lại.';
+                    showNotify(message, 'Thông báo', 'error');
+                    $this.removeClass('is-loading').removeAttr('aria-busy aria-disabled');
+                    holdonClose();
                 }
             });
         }
@@ -896,15 +908,15 @@ GA_FRAMEWORK.Cart = function(){
         var id = input.data('pid');
         var code = input.data('code');
         var oldValue = $button.parent().find("input").val();
-        if($button.text() == "+") quantity = parseFloat(oldValue) + 1;
-        else if(oldValue > 1) quantity = parseFloat(oldValue) - 1;
+        if($button.hasClass('counter-procart-plus')) quantity = Math.min(999, (parseInt(oldValue, 10) || 1) + 1);
+        else if(oldValue > 1) quantity = Math.max(1, (parseInt(oldValue, 10) || 1) - 1);
         $button.parent().find("input").val(quantity);
         updateCart(id,code,quantity);
     });
 
     /* Quantity */
     $("body").on("change","input.quantity-procart",function(){
-        var quantity = ($(this).val() < 1) ? 1 : $(this).val();
+        var quantity = Math.max(1, Math.min(999, parseInt($(this).val(), 10) || 1));
         $(this).val(quantity);
         var id = $(this).data("pid");
         var code = $(this).data("code");
@@ -1004,21 +1016,24 @@ GA_FRAMEWORK.Cart = function(){
     }
 
     /* Quantity detail page */
-    if(isExist($(".quantity-pro-detail span")))
+    if(isExist($(".quantity-pro-detail .quantity-step")))
     {
-        $(".quantity-pro-detail span").click(function(){
+        $(".quantity-pro-detail .quantity-step").click(function(){
             var $button = $(this);
-            var oldValue = $button.parent().find("input").val();
-            if($button.text() == "+")
+            var oldValue = parseInt($button.parent().find("input").val(), 10) || 1;
+            if($button.hasClass('quantity-step-plus'))
             {
-                var newVal = parseFloat(oldValue) + 1;
+                var newVal = Math.min(999, oldValue + 1);
             }
             else
             {
-                if(oldValue > 1) var newVal = parseFloat(oldValue) - 1;
+                if(oldValue > 1) var newVal = oldValue - 1;
                 else var newVal = 1;
             }
             $button.parent().find("input").val(newVal);
+        });
+        $(".quantity-pro-detail .qty-pro").on('change', function(){
+            $(this).val(Math.max(1, Math.min(999, parseInt($(this).val(), 10) || 1)));
         });
     }
 };
@@ -1229,6 +1244,18 @@ GA_FRAMEWORK.ContactDock = function(){
 
     dock.addClass('is-enhanced');
     setOpen(false);
+
+    /* Khi footer đã vào viewport, footer tự cung cấp đầy đủ thông tin liên hệ.
+       Ẩn dock/back-to-top thay vì chừa một khoảng rỗng 152px ở cuối trang. */
+    var footer = document.querySelector('.wap-footer footer');
+    if(footer && 'IntersectionObserver' in window) {
+        var footerObserver = new IntersectionObserver(function(entries){
+            var visible = entries.some(function(entry){ return entry.isIntersecting; });
+            document.body.classList.toggle('pts-footer-in-view', visible);
+            if(visible) setOpen(false);
+        }, {threshold:0.01});
+        footerObserver.observe(footer);
+    }
     toggle.on('click', function(event){
         event.stopPropagation();
         setOpen(!dock.hasClass('is-open'));

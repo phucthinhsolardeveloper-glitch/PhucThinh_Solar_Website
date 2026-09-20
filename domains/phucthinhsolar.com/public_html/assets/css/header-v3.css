@@ -14,11 +14,11 @@
 .pts-header-v3{background:var(--pts-navy-deep)!important;box-shadow:0 7px 24px rgba(4,17,46,.17)!important;transition:top .3s ease!important}
 .pts-header-v3 .pts-header-primary{position:relative;background:linear-gradient(112deg,#061537 0%,#0a2251 64%,#0e2e68 100%)!important;overflow:visible}
 .pts-header-v3 .pts-header-primary:before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 30% -80%,rgba(225,185,79,.18),transparent 40%),linear-gradient(100deg,transparent 72%,rgba(255,255,255,.035))}
-.pts-header-v3 .pts-header-primary>.wrap-content{position:relative;display:grid!important;grid-template-columns:minmax(220px,280px) minmax(360px,1fr) auto;align-items:center;gap:34px!important;min-height:98px!important;padding-top:12px!important;padding-bottom:11px!important}
+.pts-header-v3 .pts-header-primary>.wrap-content{position:relative;display:grid!important;grid-template-columns:minmax(250px,310px) minmax(360px,1fr) auto;align-items:center;gap:34px!important;min-height:98px!important;padding-top:12px!important;padding-bottom:11px!important}
 .pts-header-v3 .logo-header{position:relative;justify-content:center;min-width:0;padding:6px 0;border:0;border-radius:0;background:transparent;box-shadow:none}
 .pts-header-v3 .logo-header:after{display:none;content:none}
 .pts-header-v3 .logo-header picture{display:flex;align-items:center;justify-content:center;width:100%}
-.pts-header-v3 .logo-header img{display:block;width:auto!important;max-width:220px!important;max-height:52px!important;object-fit:contain}
+.pts-header-v3 .logo-header img{display:block;width:auto!important;max-width:255px!important;max-height:58px!important;object-fit:contain}
 
 .hdr-search-zone{min-width:0;max-width:690px;width:100%;justify-self:center}
 .hdr-search-form{display:grid;grid-template-columns:minmax(0,1fr) 58px;height:48px;border:2px solid rgba(255,255,255,.14);border-radius:4px;overflow:hidden;background:#fff;box-shadow:0 12px 28px rgba(1,8,25,.2);transition:border-color .2s,box-shadow .2s}
@@ -81,16 +81,16 @@
 .pts-header-v3 a:focus-visible,.pts-header-v3 button:focus-visible,.pts-header-v3 input:focus-visible,.top-utility-bar a:focus-visible{outline:3px solid var(--pts-gold-light)!important;outline-offset:3px}
 
 @media(max-width:1500px){
-  .pts-header-v3 .pts-header-primary>.wrap-content{grid-template-columns:220px minmax(310px,1fr) auto;gap:24px!important}
+  .pts-header-v3 .pts-header-primary>.wrap-content{grid-template-columns:245px minmax(310px,1fr) auto;gap:24px!important}
   .pts-header-v3 .logo-header{padding:6px 0}
-  .pts-header-v3 .logo-header img{max-width:190px!important}
+  .pts-header-v3 .logo-header img{max-width:215px!important;max-height:54px!important}
   .pts-header-nav .menu>div>ul>li.menu-catalog{flex-basis:220px;margin-right:8px}
   .pts-header-nav .menu>div>ul>li>a{padding-left:11px!important;padding-right:11px!important;font-size:13.5px!important}
   .hdr-warranty span{display:none}
 }
 @media(min-width:1800px){
-  .pts-header-v3 .pts-header-primary>.wrap-content{grid-template-columns:290px minmax(520px,1fr) auto;gap:42px!important;min-height:104px!important}
-  .pts-header-v3 .logo-header img{max-width:230px!important}
+  .pts-header-v3 .pts-header-primary>.wrap-content{grid-template-columns:320px minmax(520px,1fr) auto;gap:42px!important;min-height:104px!important}
+  .pts-header-v3 .logo-header img{max-width:275px!important;max-height:62px!important}
   .hdr-search-zone{max-width:860px}
   .pts-header-nav>.wrap-content{gap:38px;min-height:54px}
   .pts-header-nav .menu>div>ul>li.menu-catalog{flex-basis:280px;margin-right:24px}
@@ -98,8 +98,8 @@
   .hdr-warranty{font-size:13px}
 }
 @media(max-width:1280px){
-  .pts-header-v3 .pts-header-primary>.wrap-content{grid-template-columns:195px minmax(280px,1fr) auto;gap:18px!important}
-  .pts-header-v3 .logo-header img{max-width:165px!important}
+  .pts-header-v3 .pts-header-primary>.wrap-content{grid-template-columns:215px minmax(280px,1fr) auto;gap:18px!important}
+  .pts-header-v3 .logo-header img{max-width:188px!important;max-height:49px!important}
   .pts-header-v3 .hdr-call .hdr-call-txt{display:none!important}
   .pts-header-v3 .hdr-call{padding-right:13px}
   .hdr-cart-copy{display:none}
@@ -109,7 +109,7 @@
 @media(max-width:1120px){
   .pts-header-nav{display:none}
   .pts-header-v3 .btn-mmenu{display:block!important;width:42px;order:-1}
-  .pts-header-v3 .pts-header-primary>.wrap-content{grid-template-columns:42px 180px minmax(260px,1fr) auto}
+  .pts-header-v3 .pts-header-primary>.wrap-content{grid-template-columns:42px 200px minmax(260px,1fr) auto}
 }
 @media(max-width:820px){
   .top-utility-bar .wrap-content{min-height:30px!important}
@@ -118,7 +118,7 @@
   .pts-header-v3 .pts-header-primary>.wrap-content{display:flex!important;gap:13px!important;min-height:74px!important;padding-top:10px!important;padding-bottom:10px!important}
   .pts-header-v3 .btn-mmenu{flex:0 0 40px}
   .pts-header-v3 .logo-header{margin-right:auto;min-width:0;padding:4px 0;border-radius:0}
-  .pts-header-v3 .logo-header img{max-width:168px!important;max-height:46px!important}
+  .pts-header-v3 .logo-header img{max-width:180px!important;max-height:48px!important}
   .hdr-search-zone{display:none}
   .pts-header-v3 .header-right-style{flex:none;gap:12px!important}
   .pts-header-v3 .header-right-style>.gtranslate_wrapper{display:none!important}
@@ -137,12 +137,12 @@
   .top-utility-promise{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .pts-header-v3 .pts-header-primary>.wrap-content{gap:9px!important}
   .pts-header-v3 .logo-header{padding:3px 0;box-shadow:none}
-  .pts-header-v3 .logo-header img{max-width:150px!important;max-height:42px!important}
+  .pts-header-v3 .logo-header img{max-width:158px!important;max-height:44px!important}
   .pts-header-v3 .hdr-call{padding-right:8px;border-right:0}
   .pts-header-v3 .header-right-style{gap:11px!important}
 }
 @media(max-width:360px){
-  .pts-header-v3 .logo-header img{max-width:112px!important;max-height:34px!important}
+  .pts-header-v3 .logo-header img{max-width:118px!important;max-height:35px!important}
   .pts-header-v3 .btn-mmenu{flex-basis:36px;width:36px}
   .bg-mmenu{width:35px;height:35px}
 }

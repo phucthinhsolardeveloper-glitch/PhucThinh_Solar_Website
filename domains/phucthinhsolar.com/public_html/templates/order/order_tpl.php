@@ -1,7 +1,3 @@
-<style type="text/css">
-	.procart{    padding: 10px 10px;}
-	.group-cart-od{position: sticky;top: 0;z-index: 999}
-</style>
 <form class="form-cart validation-cart" novalidate method="post" action="" enctype="multipart/form-data">
 	<input type="hidden" name="form_csrf" value="<?=htmlspecialchars(formCsrfToken(), ENT_QUOTES, 'UTF-8')?>">
 	<input type="hidden" name="checkout_token" value="<?=htmlspecialchars(checkoutIdempotencyToken(), ENT_QUOTES, 'UTF-8')?>">
@@ -101,16 +97,16 @@
 								$pro_price_new = $proinfo['sale_price'];
 								$pro_price_qty = $pro_price*$quantity;
 								$pro_price_new_qty = $pro_price_new*$quantity; ?>
-								<div class="procart procart-<?=$code?>">
-									<div class="form-row">
+							<div class="procart procart-<?=$code?>">
+									<div class="form-row procart-row">
 										<div class="pic-procart col-3 col-md-2">
-											<a class="text-decoration-none" href="<?=$proinfo[$sluglang]?>" target="_blank" title="<?=$proinfo['name'.$lang]?>">
+											<a class="text-decoration-none" href="san-pham/<?=$proinfo[$sluglang]?>" target="_blank" title="<?=$proinfo['name'.$lang]?>">
 												<?=$func->getImage(['sizes' => '85x85x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $proinfo['photo'], 'alt' => $proinfo['name'.$lang]])?>
 											</a>
 											
 										</div>
 										<div class="info-procart col-6 col-md-5">
-											<h3 class="name-procart"><a class="text-decoration-none" href="<?=$proinfo[$sluglang]?>" target="_blank" title="<?=$proinfo['name'.$lang]?>"><?=$proinfo['name'.$lang]?></a></h3>
+											<h3 class="name-procart"><a class="text-decoration-none" href="san-pham/<?=$proinfo[$sluglang]?>" target="_blank" title="<?=$proinfo['name'.$lang]?>"><?=$proinfo['name'.$lang]?></a></h3>
 											<div class="properties-procart">
 												<?php if($color) { $color_detail = $d->rawQueryOne("select name$lang from #_color where type = ? and id = ? limit 0,1",array($proinfo['type'],$color)); ?>
 													<p>Màu: <strong><?=$color_detail['name'.$lang]?></strong></p>
@@ -121,7 +117,7 @@
 											</div>
 										</div>
 										
-										<div class="price-procart text-center col-3 col-md-3">
+										<div class="price-procart procart-price-desktop text-center col-3 col-md-3">
 											<?php if($proinfo['sale_price']) { ?>
 												<p class="price-new-cart load-price-new-<?=$code?>">
 													<?=$func->formatMoney($pro_price_new_qty)?>
@@ -135,7 +131,7 @@
 												</p>
 											<?php } ?>
 										</div>
-										<div class="quantity-procart col-3 col-md-2">
+										<div class="quantity-procart procart-actions col-3 col-md-2">
 											<div class="price-procart price-procart-rp">
 												<?php if($proinfo['sale_price']) { ?>
 													<p class="price-new-cart load-price-new-<?=$code?>">
@@ -150,15 +146,15 @@
 													</p>
 												<?php } ?>
 											</div>
-							                <div class="quantity-counter-procart quantity-counter-procart-<?=$code?> d-flex align-items-stretch justify-content-between">
-						                        <span class="counter-procart-minus counter-procart">-</span>
-						                        <input type="number" class="quantity-procart" min="1" value="<?=$quantity?>" data-pid="<?=$pid?>" data-code="<?=$code?>"/>
-						                        <span class="counter-procart-plus counter-procart">+</span>
-						                    </div>
-						                    <a class="del-procart text-decoration-none mt-2 text-center d-block" data-code="<?=$code?>">
-												<i class="fa fa-times-circle"></i>
-												<span><?=xoa?></span>
-											</a>
+							                <div class="quantity-counter-procart quantity-counter-procart-<?=$code?>">
+							                        <button type="button" class="counter-procart-minus counter-procart" aria-label="Giảm số lượng">−</button>
+							                        <input type="number" class="quantity-procart" min="1" max="999" step="1" inputmode="numeric" value="<?=$quantity?>" data-pid="<?=$pid?>" data-code="<?=$code?>" aria-label="Số lượng sản phẩm"/>
+							                        <button type="button" class="counter-procart-plus counter-procart" aria-label="Tăng số lượng">+</button>
+							                    </div>
+							                    <button type="button" class="del-procart text-decoration-none mt-2 text-center d-block" data-code="<?=$code?>">
+													<i class="fa fa-times-circle"></i>
+													<span><?=xoa?></span>
+												</button>
 										</div>
 									</div>
 								</div>

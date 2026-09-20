@@ -132,33 +132,50 @@
 
             <li class="mm-lang mm-listitem_nosubitems">
                 <span class="mm-lang-title">Ngôn ngữ</span>
-                <span class="mm-lang-links" id="mm-lang-links"></span>
+                <?php /* Render sẵn để Mmenu sao chép cả link. Trước đây JS chèn
+                    link sau khi plugin clone nav nên drawer nhìn thấy bị rỗng. */ ?>
+                <span class="mm-lang-links" data-gt-source="vi">
+                    <a href="#" data-gtlang="vi">VI</a>
+                    <a href="#" data-gtlang="en">EN</a>
+                    <a href="#" data-gtlang="zh-CN">中文</a>
+                    <a href="#" data-gtlang="ko">한국어</a>
+                    <a href="#" data-gtlang="ja">日本語</a>
+                </span>
             </li>
     </ul>
 </nav>
 <script>
-document.addEventListener('DOMContentLoaded', function(){
-    var LABELS = { 'vi':'VI', 'en':'EN', 'zh-CN':'中文', 'zh-TW':'中文', 'ko':'한국어', 'ja':'日本語',
-                   'fr':'FR', 'de':'DE', 'ru':'RU', 'th':'ไทย', 'es':'ES', 'ja-JP':'日本語' };
-    var langs = (window.gtranslateSettings && window.gtranslateSettings.languages) ? window.gtranslateSettings.languages : ['vi','en'];
-    var src = (window.gtranslateSettings && window.gtranslateSettings.default_language) ? window.gtranslateSettings.default_language : 'vi';
-    var cur = (document.cookie.match(/googtrans=\/[a-zA-Z-]+\/([a-zA-Z-]+)/) || [])[1] || src;
-    var box = document.getElementById('mm-lang-links');
-    if(!box) return;
-    langs.forEach(function(l){
-        var a = document.createElement('a');
-        a.href = 'javascript:void(0)';
-        a.setAttribute('data-gtlang', l);
-        a.textContent = LABELS[l] || l.toUpperCase();
-        if(l === cur) a.className = 'active';
-        a.addEventListener('click', function(){
-            var val = '/' + src + '/' + l;
-            var host = location.hostname;
-            document.cookie = 'googtrans=' + val + ';path=/';
-            document.cookie = 'googtrans=' + val + ';path=/;domain=.' + host;
-            location.reload();
+(function(){
+    function currentLanguage(){
+        return (document.cookie.match(/(?:^|;\s*)googtrans=\/[a-zA-Z-]+\/([a-zA-Z-]+)/) || [])[1] || 'vi';
+    }
+    function refreshLanguageLinks(){
+        var current = currentLanguage();
+        document.querySelectorAll('.mm-lang-links [data-gtlang]').forEach(function(link){
+            var active = link.getAttribute('data-gtlang') === current;
+            link.classList.toggle('active', active);
+            if(active) link.setAttribute('aria-current', 'true');
+            else link.removeAttribute('aria-current');
         });
-        box.appendChild(a);
+    }
+    function setTranslateCookie(language, source){
+        var host = location.hostname;
+        var value = '/' + source + '/' + language;
+        var expires = language === source ? ';expires=Thu, 01 Jan 1970 00:00:00 GMT' : ';max-age=31536000';
+        document.cookie = 'googtrans=' + (language === source ? '' : value) + ';path=/' + expires + ';SameSite=Lax';
+        if(host.indexOf('.') !== -1 && !/^\d+\.\d+\.\d+\.\d+$/.test(host)) {
+            document.cookie = 'googtrans=' + (language === source ? '' : value) + ';path=/;domain=.' + host + expires + ';SameSite=Lax';
+        }
+    }
+    document.addEventListener('DOMContentLoaded', refreshLanguageLinks);
+    document.addEventListener('click', function(event){
+        var link = event.target.closest && event.target.closest('.mm-lang-links [data-gtlang]');
+        if(!link) return;
+        event.preventDefault();
+        var sourceBox = link.closest('.mm-lang-links');
+        var source = sourceBox ? sourceBox.getAttribute('data-gt-source') || 'vi' : 'vi';
+        setTranslateCookie(link.getAttribute('data-gtlang'), source);
+        location.reload();
     });
-});
+})();
 </script>

@@ -14,7 +14,16 @@ async function settlePage(page) {
       window.scrollTo(0, position);
       await new Promise(resolve => setTimeout(resolve, 30));
     }
+    /* theme-v2 đặt scroll-behavior:smooth. Nếu gọi scrollTo(0, 0) rồi chụp
+       ngay, trang dài trên mobile vẫn có thể đang chạy animation cuộn và ảnh
+       baseline vô tình ghi lại sticky header giữa trang. Ép lần trở về đầu
+       trang là tức thời, đồng thời chờ sự kiện scroll cập nhật class .fixed. */
+    const root = document.documentElement;
+    const inlineScrollBehavior = root.style.scrollBehavior;
+    root.style.scrollBehavior = 'auto';
     window.scrollTo(0, 0);
+    await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    root.style.scrollBehavior = inlineScrollBehavior;
     if (window.jQuery) {
       window.jQuery('.slick-initialized').slick?.('slickPause');
       window.jQuery('.owl-carousel').trigger('stop.owl.autoplay');

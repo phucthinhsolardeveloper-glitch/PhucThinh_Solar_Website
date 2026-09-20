@@ -68,14 +68,14 @@ $hasProductPolicy = $productPolicyOverride !== '' || !empty($policy);
                                     <a class="thumb-pro-detail" data-zoom-id="Zoom-1"
                                         href="<?=$detailZoomHref?>"
                                         title="<?=$rowDetail['name'.$lang]?>">
-                                        <?=$func->getImage(array_merge(['isLazy' => false, 'sizes' => '600x600x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $rowDetail['photo'], 'alt' => $rowDetail['name'.$lang]], watermarkImageArgs('product')))?>
+                                        <?=$func->getImage(array_merge(['isLazy' => false, 'sizes' => '120x120x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $rowDetail['photo'], 'alt' => $rowDetail['name'.$lang]], watermarkImageArgs('product')))?>
                                     </a>
                                 </div>
                                 <?php foreach($rowDetailPhoto as $v) { $thumbAlt = !empty($v['caption']) ? $v['caption'] : $rowDetail['name'.$lang]; ?>
                                 <div>
                                     <a class="thumb-pro-detail" data-zoom-id="Zoom-1"
                                         href="<?=!empty($v['photo']) ? watermarkImageHref('product', '600x600x2', UPLOAD_PRODUCT_L.$v['photo']) : 'assets/images/noimage.png'?>" title="<?=htmlspecialchars($thumbAlt, ENT_QUOTES, 'UTF-8')?>">
-                                        <?=$func->getImage(array_merge(['isLazy' => false, 'sizes' => '600x600x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $v['photo'], 'alt' => $thumbAlt], watermarkImageArgs('product')))?>
+                                        <?=$func->getImage(array_merge(['isLazy' => false, 'sizes' => '120x120x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $v['photo'], 'alt' => $thumbAlt], watermarkImageArgs('product')))?>
                                     </a>
                                 </div>
                                 <?php } ?>
@@ -157,9 +157,9 @@ $hasProductPolicy = $productPolicyOverride !== '' || !empty($policy);
                         <?php if(!$isContactPrice) { ?>
                         <div class="quantity-pro-detail">
                             <label class="attr-label-pro-detail d-block">Số lượng:</label>
-                            <span>-</span>
-                            <input type="number" class="qty-pro" value="1" min="1">
-                            <span>+</span>
+                            <button type="button" class="quantity-step quantity-step-minus" aria-label="Giảm số lượng">−</button>
+                            <input type="number" class="qty-pro" value="1" min="1" max="999" step="1" inputmode="numeric" aria-label="Số lượng sản phẩm">
+                            <button type="button" class="quantity-step quantity-step-plus" aria-label="Tăng số lượng">+</button>
                         </div>
                         <?php } ?>
                         <div class=" product-info">

@@ -1,6 +1,6 @@
 # Sửa giao diện mà không làm vỡ trang khác
 
-Cập nhật: 2026-09-17. Đường dẫn tính từ
+Cập nhật: 2026-09-20. Đường dẫn tính từ
 `domains/phucthinhsolar.com/public_html/`.
 
 Website này có **13 năm CSS chồng lớp**: theme WordPress cũ, theme "local",
@@ -30,15 +30,31 @@ không phải đánh nhau với cascade.
  7. css/header-v3.css
  8. css/flat-surface-system.css
  9. css/media-system.css
-10. css/design-tokens.css                                ← NẠP CUỐI, thắng tất cả
+10. css/design-tokens.css
+11. css/responsive-architecture.css
+12. css/commerce-experience.css                          ← lưới PDP/cart/checkout
+13. css/typography-system.css                            ← NẠP CUỐI, thắng tất cả
 ```
 
-**Quy tắc: thay đổi mang tính toàn site thì viết vào `design-tokens.css`.**
-Nó nạp cuối nên không cần đua `!important` với legacy, và rollback là xoá một
-khối hoặc một dòng `$css->set()`.
+**Quy tắc: thay đổi màu/khoảng cách dùng `design-tokens.css`; thay đổi cỡ chữ
+public dùng `typography-system.css`; kiến trúc mobile dùng
+`responsive-architecture.css`; luồng mua hàng dùng `commerce-experience.css`.**
+Các lớp này nạp cuối theo đúng trách nhiệm để
+không phải vá rải rác CSS legacy. Rollback bằng cách bỏ rule tương ứng hoặc dòng
+`$css->set()` của lớp đó.
 
 Thêm CSS cho một trang mới: thêm một dòng `if(...) $css->set("css/<ten>.css");`
 vào nhóm 6, **trước** `header-v3.css`.
+
+`typography-system.css` có thêm breakpoint `min-width:1600px` cho màn Full HD/
+2K: body 20px, menu 17–17.5px, tên sản phẩm 19px và footer link 17px. Không dùng
+`zoom` vì nó làm sai breakpoint và vùng bấm. Tên card sản phẩm không còn clamp
+hai dòng; card tự tăng chiều cao và `overflow-wrap:anywhere` chỉ ngắt khẩn cấp
+các model/cụm từ không có điểm ngắt.
+
+`commerce-experience.css` là chủ sở hữu duy nhất của lưới giỏ hàng. Không khôi
+phục tổng cột Bootstrap `3+6+3+3` (15/12) ở mobile. Dưới 992px, tóm tắt đơn nằm
+trước form nhận hàng; dưới 768px mỗi dòng dùng grid `72px minmax(0,1fr)`.
 
 ---
 

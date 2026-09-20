@@ -451,6 +451,11 @@ function updateCart(id=0,code='',quantity=1)
                     formCart.find('.load-price-total').html(result.totalText);
                 }
                 holdonClose();
+            },
+            error: function(xhr){
+                var message = (xhr.responseJSON && xhr.responseJSON.error) ? xhr.responseJSON.error : 'Không thể cập nhật giỏ hàng. Vui lòng thử lại.';
+                showNotify(message, 'Thông báo', 'error');
+                holdonClose();
             }
         });
     }
@@ -487,6 +492,11 @@ function deleteCart(obj)
             {
                 $(".wrap-cart").html('<a href="" class="empty-cart text-decoration-none"><i class="fa fa-cart-arrow-down"></i><p>'+LANG['no_products_in_cart']+'</p><span>'+LANG['back_to_home']+'</span></a>');
             }
+            holdonClose();
+        },
+        error: function(xhr){
+            var message = (xhr.responseJSON && xhr.responseJSON.error) ? xhr.responseJSON.error : 'Không thể xóa sản phẩm. Vui lòng thử lại.';
+            showNotify(message, 'Thông báo', 'error');
             holdonClose();
         }
     });

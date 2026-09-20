@@ -84,6 +84,10 @@
 		
 		public function addToCart($q=1, $pid=0, $color=0, $size=0)
 		{
+			$q = max(1, min(999, (int)$q));
+			$pid = (int)$pid;
+			$color = (int)$color;
+			$size = (int)$size;
 			if($pid<1 or $q<1) return;
 			
 			$code_order = md5($pid.$color.$size);
@@ -124,7 +128,7 @@
 				{
 					if($code_order == $_SESSION['cart'][$i]['code'])
 					{
-						$_SESSION['cart'][$i]['qty'] += $q;
+						$_SESSION['cart'][$i]['qty'] = min(999, (int)$_SESSION['cart'][$i]['qty'] + $q);
 						$flag = 1;
 					}
 				}

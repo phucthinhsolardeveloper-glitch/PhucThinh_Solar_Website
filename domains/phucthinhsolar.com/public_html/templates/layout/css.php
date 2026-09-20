@@ -1,7 +1,7 @@
 <?php if(!isGoogleSpeed()){ ?>
-<style>
-    @import url('https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,200..1000;1,200..1000&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
-</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,200..1000;1,200..1000&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap">
 <?php } ?>
 <!-- Css Files -->
 <?php
@@ -89,6 +89,12 @@
     /* Kiến trúc responsive nạp cuối: desktop giữ nguyên; mobile chỉ còn một
        lớp sở hữu gutter và flatten các wrapper cấu trúc theo từng page. */
     $css->set("css/responsive-architecture.css");
+    /* Luồng mua hàng có lưới và breakpoint riêng. Nạp sau kiến trúc responsive
+       chung để không quay lại các cột Bootstrap 15/12 ở giỏ hàng mobile. */
+    $css->set("css/commerce-experience.css");
+    /* Thang chữ public dùng chung nạp sau cùng để thay các cỡ chữ legacy
+       rời rạc mà không phải vá từng template. */
+    $css->set("css/typography-system.css");
     echo $css->get();
 ?>
 <script type="text/javascript" src="assets/js/jquery.min.js?v=NMr3JZBT0U"></script>
