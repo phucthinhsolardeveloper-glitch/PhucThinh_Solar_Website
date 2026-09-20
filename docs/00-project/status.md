@@ -1,12 +1,28 @@
 # Current status
 
-Cập nhật gần nhất: 2026-09-17. Phần lớn nội dung bên dưới (tới dòng "Checkout
+Cập nhật gần nhất: 2026-09-20. Phần lớn nội dung bên dưới (tới dòng "Checkout
 idempotency local") là log tích lũy từ trước 2026-09-06 và mới ở Git + Docker
 local tại thời điểm ghi — KHÔNG tự suy ra các mục đó đã lên production chỉ vì
 đợt 2026-09-08/09 đã bắt đầu deploy thật (xem mục riêng bên dưới); mỗi mục cũ
 giữ nguyên phạm vi "local" như lúc viết trừ khi có ghi chú deploy production
 rõ ràng. Trạng thái dữ liệu trống đã được chủ project xác nhận là do chưa có
 nguồn thật; không coi đó là blocker kỹ thuật và không tự lấp.
+
+## 2026-09-20: production đã cutover sang VPS và có quy trình vận hành chuẩn
+
+- DNS `phucthinhsolar.com` đã trỏ vào VPS `222.255.182.182`; production hiện
+  chạy bằng Docker/Caddy trong `/srv/phucthinhsolar`, có SSH. Host DirectAdmin
+  cũ không còn là đường deploy website/database thường ngày.
+- Deploy dùng `scripts/deploy-production.sh`: `--safe` cho thay đổi thông thường
+  hoặc rủi ro cao; `--fast` chỉ cho frontend rủi ro thấp và có danh sách file
+  nhạy cảm bị chặn tự động.
+- Image đang chạy sau đợt commerce/mobile là `phucthinhsolar-web:86811592c357`;
+  image rollback gần nhất là `phucthinhsolar-web:62f31b6a6284`.
+- Backup tự động trên VPS hoạt động; bản full gần nhất đã được kiểm tra trong
+  deploy. **Bản sao off-site vẫn chưa được cấu hình**, nên hỏng/mất toàn VPS
+  vẫn là rủi ro chưa được loại bỏ.
+- Điểm bắt đầu cho chủ hệ thống:
+  [owner-system-handbook.md](../06-operations/owner-system-handbook.md).
 
 ## 2026-09-17: VPS mới chạy được với dữ liệu production, chưa cutover DNS
 
@@ -88,10 +104,11 @@ nguồn thật; không coi đó là blocker kỹ thuật và không tự lấp.
   giao diện, xác minh SEO homepage, metadata đối tác, ảnh upload CTA và dữ liệu
   timeline About.
 
-## 2026-09-08 → 2026-09-09: đã lên PRODUCTION
+## 2026-09-08 → 2026-09-09: lịch sử production trên host cũ
 
-Production không có SSH — toàn bộ deploy dưới đây thực hiện qua FTP (file) +
-phpMyAdmin (SQL do chủ project tự chạy), không qua CI/CD hay migration runner.
+Tại thời điểm này production chưa có SSH — toàn bộ deploy bên dưới từng thực
+hiện qua FTP (file) + phpMyAdmin (SQL do chủ project tự chạy), không qua CI/CD
+hay migration runner. Thông tin này chỉ là lịch sử; production hiện đã ở VPS.
 
 - Tái cấu trúc cây danh mục sản phẩm: 12→10 danh mục cấp 1, +25 danh mục cấp 2,
   xếp lại 405 sản phẩm, dựa theo audit ChatGPT Plus chủ project cung cấp.

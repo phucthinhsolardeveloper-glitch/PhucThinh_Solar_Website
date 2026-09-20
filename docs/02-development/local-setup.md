@@ -1,5 +1,8 @@
 # Local/staging setup
 
+Quy trình nối từ local → test → Git → deploy/VPS dành cho người tiếp quản nằm
+tại [Sổ tay chủ hệ thống](../06-operations/owner-system-handbook.md).
+
 ## Docker local (dev nhanh)
 
 Mặc định local bật `debug-developer` để phát triển. Khi cần cho chủ project test

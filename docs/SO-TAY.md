@@ -39,6 +39,7 @@ liệt kê theo **việc cần làm**.
 | Làm một tính năng mới từ đầu tới deploy | [11-workflows/feature-delivery-playbook.md](11-workflows/feature-delivery-playbook.md) |
 | Chạy test / cổng kiểm tra trước deploy | [02-development/testing.md](02-development/testing.md) |
 | Deploy production SAFE/FAST một lệnh | [06-operations/deploy-production-owner.md](06-operations/deploy-production-owner.md) |
+| Tự vận hành toàn hệ thống khi không có developer/AI | [06-operations/owner-system-handbook.md](06-operations/owner-system-handbook.md) |
 | Dựng VPS mới từ số không | [06-operations/vps-cloudfly-runbook.md](06-operations/vps-cloudfly-runbook.md) |
 | VPS đang chạy mà có vấn đề | [06-operations/vps-operations.md](06-operations/vps-operations.md) |
 | Backup / restore / kiểm tra backup còn dùng được | [06-operations/backup-restore.md](06-operations/backup-restore.md) |

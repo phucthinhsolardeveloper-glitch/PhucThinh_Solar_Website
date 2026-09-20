@@ -7,6 +7,9 @@ trên server. Có thể chạy toàn bộ cổng kiểm tra local bằng:
 ./scripts/predeploy-local.sh
 ```
 
+Người vận hành có thể dùng wrapper SAFE/FAST thay vì nhớ từng cổng; xem
+[Sổ tay chủ hệ thống](../06-operations/owner-system-handbook.md).
+
 Script build lại Docker PHP 7.4, lint PHP/JS, chạy security/RBAC/session/Excel regression, smoke frontend, kiểm log và từ chối hoàn tất nếu còn dữ liệu test.
 
 - Production homepage/category HTTP: PASS.

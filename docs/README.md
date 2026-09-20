@@ -13,6 +13,7 @@
 - `11-workflows/bug-fixing-playbook.md`: đo đừng đoán; 4 lần kết luận sai và dấu hiệu nhận ra.
 - `11-workflows/feature-delivery-playbook.md`: từ yêu cầu tới production, kèm danh sách "không tự làm".
 - `06-operations/vps-operations.md`: vận hành VPS, backup, sự cố thường gặp.
+- `06-operations/owner-system-handbook.md`: sổ tay end-to-end cho chủ website: local, script, deploy, dựng/cứu VPS.
 - `06-operations/deploy-production-owner.md`: deploy production SAFE/FAST một lệnh và rollback cho chủ website.
 - `06-operations/cutover-dns-va-host-cu.md`: hướng dẫn từng bước đổi DNS và xử lý host cũ, kèm rủi ro SMTP.
 

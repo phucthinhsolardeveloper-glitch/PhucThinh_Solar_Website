@@ -16,6 +16,7 @@ fi
 untracked_release_files="$(git ls-files --others --exclude-standard -- \
     "$webroot_tree" migrations scripts deploy/vps \
     docs/06-operations/deploy-production-owner.md \
+    docs/06-operations/owner-system-handbook.md \
     docs/06-operations/vps-cloudfly-runbook.md \
     docs/13-handoffs/2026-09-06-runbook-deploy-directadmin.md)"
 if [ -n "$untracked_release_files" ]; then
@@ -45,6 +46,7 @@ git archive --format=tar.gz \
     "$release_commit" \
     migrations scripts deploy/vps \
     docs/06-operations/deploy-production-owner.md \
+    docs/06-operations/owner-system-handbook.md \
     docs/06-operations/vps-cloudfly-runbook.md \
     docs/13-handoffs/2026-09-06-runbook-deploy-directadmin.md
 

@@ -89,7 +89,7 @@ LOCAL_ENFORCE_RBAC=1 ./scripts/predeploy-local.sh
 # Cổng 2 — browser regression desktop + mobile (~10 phút)
 cd tools/visual-tests
 PLAYWRIGHT_BROWSERS_PATH=.browsers npx playwright test --workers=1
-# Baseline: 178 passed / 18 skipped / 0 failed
+# Điều kiện: 0 failed; số pass/skip thay đổi khi bộ test được mở rộng.
 ```
 
 Chạy `LOCAL_ENFORCE_RBAC=1` để kiểm phân quyền giống production.
@@ -122,33 +122,20 @@ chỉ liệt kê file đã sửa. Trước khi commit, đọc lại diff tìm se
 
 ## 5. Deploy
 
-### Host cũ (đang chạy thật) — FTP
+### Production VPS — Docker
 
 ```bash
-git diff --name-status <commit-production>..HEAD -- domains/phucthinhsolar.com/public_html/
+# PHP/API/commerce/Admin/migration hoặc khi không chắc
+./scripts/deploy-production.sh --safe --confirm-production
+
+# Frontend phạm vi hẹp
+./scripts/deploy-production.sh --fast --confirm-production
 ```
 
-Chỉ upload file **trong `public_html/`**. `docs/`, `migrations/`, `scripts/`,
-`tools/` **không** lên webroot.
-
-```bash
-curl --ftp-pasv --ftp-create-dirs -u 'phucthinhs:<pass>' \
-     -T <file> "ftp://103.82.21.26/domains/phucthinhsolar.com/public_html/<rel>"
-```
-
-Rồi **xoá cache** (bắt buộc, nếu không sẽ thấy bản cũ), rồi verify bằng URL
-thật. Chi tiết [deployment.md](../06-operations/deployment.md).
-
-SQL: đưa câu lệnh idempotent cho chủ project chạy qua phpMyAdmin. **Migration
-trước code.**
-
-### VPS mới — Docker
-
-Gói release tách sẵn: `public_html-<commit>.tar.gz` chỉ chứa source website
-(đã kiểm: 5.912 file, 0 entry thuộc `docs/`, `tools/`, `scripts/`);
-`deployment-tools-<commit>.tar.gz` chứa tooling riêng và không được serve.
-
-Chi tiết [vps-operations § 4](../06-operations/vps-operations.md).
+Wrapper tách source web và deployment tools, backup, checksum, healthcheck,
+clear cache, schema preflight, production smoke và log scan. Nó không tự chạy
+migration. Chi tiết [deploy-production-owner.md](../06-operations/deploy-production-owner.md)
+và [owner-system-handbook.md](../06-operations/owner-system-handbook.md).
 
 ---
 

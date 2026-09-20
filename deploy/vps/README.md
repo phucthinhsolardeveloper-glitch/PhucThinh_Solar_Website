@@ -2,6 +2,8 @@
 
 Hạ tầng chuẩn cho Ubuntu 24.04, dùng được cho CloudFly hiện tại và lần chuyển
 VPS sau. Runbook đầy đủ: `docs/06-operations/vps-cloudfly-runbook.md`.
+Hướng dẫn dành cho chủ hệ thống, gồm cả vận hành hằng ngày và cứu hộ:
+`docs/06-operations/owner-system-handbook.md`.
 
 ```text
 Internet -> Cloud Firewall -> Caddy :80/:443 -> Apache/PHP 7.4 -> MariaDB 10.11

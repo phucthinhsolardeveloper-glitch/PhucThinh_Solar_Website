@@ -1,7 +1,9 @@
 # Vận hành VPS hằng ngày và xử lý sự cố
 
-Cập nhật: 2026-09-17. Dùng cho VPS **đã dựng xong**. Lần dựng đầu và chuyển nhà
+Cập nhật: 2026-09-20. Dùng cho VPS **đã dựng xong**. Lần dựng đầu và chuyển nhà
 xem [vps-cloudfly-runbook.md](vps-cloudfly-runbook.md).
+Luồng end-to-end dành cho chủ website xem
+[owner-system-handbook.md](owner-system-handbook.md).
 
 ---
 
@@ -11,7 +13,7 @@ xem [vps-cloudfly-runbook.md](vps-cloudfly-runbook.md).
 |---|---|
 | IP | `222.255.182.182`, hostname `pts-prod-01` |
 | OS / kernel | Ubuntu 24.04, `6.8.0-139-generic` |
-| CPU / RAM / disk | 8 vCPU / 15 GiB / 116 GB (đang dùng 11 GB = 9%) |
+| CPU / RAM / disk | 8 vCPU / 15 GiB / 116 GB (đo 20/09: dùng 25 GB = 22%, trống 91 GB) |
 | Docker / Compose | 29.8.1 / 5.5.1 |
 | Gốc stack | `/srv/phucthinhsolar` |
 | Truy cập | `ssh -i ~/.ssh/id_ed25519 root@222.255.182.182` |

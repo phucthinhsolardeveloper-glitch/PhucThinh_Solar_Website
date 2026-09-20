@@ -12,10 +12,12 @@ Database / schema   -> 03-data/database.md -> migrations/
 Sửa bug             -> 11-workflows/bug-fixing-playbook.md
 Làm tính năng       -> 11-workflows/feature-delivery-playbook.md
 Test / cổng deploy  -> 02-development/testing.md -> scripts/predeploy-local.sh, tools/visual-tests
-Deploy host cũ      -> 06-operations/deployment.md          (FTP, không SSH)
+Tự vận hành end-to-end-> 06-operations/owner-system-handbook.md
+Deploy production   -> 06-operations/deploy-production-owner.md (SAFE/FAST, VPS)
 Dựng VPS / chuyển   -> 06-operations/vps-cloudfly-runbook.md
 Vận hành VPS / sự cố-> 06-operations/vps-operations.md
 Backup / restore    -> 06-operations/backup-restore.md
+Điều tra host cũ    -> 06-operations/deployment.md          (lịch sử FTP)
 Auth / phân quyền   -> 05-security/auth-rbac.md -> libraries/requick.php, admin_security.php
 Quyết định đã chốt  -> 09-decisions/
 Hành vi legacy lạ   -> 10-audits/ -> implementation -> BẰNG CHỨNG RUNTIME
