@@ -15,7 +15,7 @@
     <div class="wap-all-page">
 
         <?php include TEMPLATE.LAYOUT."topbar-banner.php"; ?>
-        <div class="wap-hearder">
+        <div class="wap-hearder pts-header-shell-v4">
             <?php include TEMPLATE.LAYOUT."header.php"; ?>
             <?php include TEMPLATE.LAYOUT."mmenu.php"; ?>
         </div>

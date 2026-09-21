@@ -70,6 +70,13 @@ async function dismissEntrancePopup(page) {
 for (const [name, path] of [['home', '/'], ['products', '/san-pham/']]) {
   test(`${name} visual baseline`, async ({ page }) => {
     await page.goto(path, { waitUntil: 'domcontentloaded' });
+    if (name === 'home') {
+      // Đóng băng slide đầu để ảnh baseline không phụ thuộc lúc chụp vào
+      // autoplay 4,2 giây đã được bật cho khách truy cập.
+      await page.locator('[data-home-hero-slider]').evaluate(slider => {
+        slider.dispatchEvent(new Event('touchstart'));
+      });
+    }
     await dismissEntrancePopup(page);
     await settlePage(page);
     await expect(page).toHaveScreenshot(`${name}.png`, {
@@ -85,7 +92,7 @@ test('home featured categories visual baseline', async ({ page }) => {
   await page.goto('/', { waitUntil: 'domcontentloaded' });
   await dismissEntrancePopup(page);
   await settlePage(page);
-  const categories = page.locator('.pts-home-category-wrap, .pts-ecosystem').first();
+  const categories = page.locator('.pts-home-catalog').first();
   await categories.scrollIntoViewIfNeeded();
   /* 2026-09-16: settlePage() chỉ chờ ảnh trong viewport ở ĐẦU trang (xem chú
      thích trong hàm), nên ảnh của rail danh mục - vốn dùng lazy JS và nằm dưới

@@ -52,17 +52,17 @@ test('wrapper cấu trúc được flatten nhưng entity card vẫn giữ trên 
 
   await page.goto('/', { waitUntil: 'domcontentloaded' });
   const home = await page.evaluate(() => {
-    const campaign = document.querySelector('.pts-retail-campaign-grid').getBoundingClientRect();
-    const product = document.querySelector('.product-card');
+    const showcase = document.querySelector('.pts-home-category-featured').getBoundingClientRect();
+    const category = document.querySelector('.pts-home-category');
     return {
-      campaignLeft: campaign.left,
-      campaignRight: window.innerWidth - campaign.right,
-      productExists: Boolean(product),
+      showcaseLeft: showcase.left,
+      showcaseRight: window.innerWidth - showcase.right,
+      categoryExists: Boolean(category),
     };
   });
-  expect(Math.abs(home.campaignLeft)).toBeLessThanOrEqual(1);
-  expect(Math.abs(home.campaignRight)).toBeLessThanOrEqual(1);
-  expect(home.productExists).toBeTruthy();
+  expect(home.showcaseLeft).toBeGreaterThanOrEqual(12);
+  expect(Math.abs(home.showcaseLeft - home.showcaseRight)).toBeLessThanOrEqual(1);
+  expect(home.categoryExists).toBeTruthy();
 
   await page.goto('/gioi-thieu/', { waitUntil: 'domcontentloaded' });
   const about = await page.evaluate(() => {

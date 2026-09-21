@@ -29,24 +29,22 @@
     $config['photo']['man_photo'][$nametype]['thumb_photo'] = '1920x900x1';
     $config['photo']['man_photo'][$nametype]['img_type_photo'] = '.jpg|.gif|.png|.jpeg|.gif';
 
-    /* Hero carousel trang chủ (layout 3, thêm 2026-09-12, Admin hoá 2026-09-14)
-       - đúng 4 slide cố định, mỗi slide 1 record. Field chuẩn (tên/mô tả/
-       link/ảnh) dùng hệ thống có sẵn; eyebrow/dòng tiêu đề 2/nhãn+link CTA
-       phụ/tag/theme không có cột riêng nên lưu qua options JSON (field khối
-       "hero-carousel-extra" tự thêm trong photo_add_tpl.php/photo_edit_tpl.php,
-       merge JSON đã có sẵn trong savePhoto() - xem administrator/sources/photo.php).
-       libraries/home_hero_carousel.php đọc đúng 4 record này, rơi về mảng
-       tĩnh cũ nếu chưa đủ/chưa có record nào (không để trang chủ trống Hero). */
+    /* Bốn banner ảnh trong Hero trang chủ V4. Giữ type hero-carousel để không
+       tạo schema/quyền mới; mỗi record tương ứng một nhóm Tấm pin, Đèn đường,
+       Biến tần hoặc Pin lưu trữ. Frontend chỉ dùng bộ Admin khi nhận diện đủ
+       bốn nhóm, nếu không sẽ dùng trọn bộ fallback đóng gói để không trộn ảnh
+       đang tắt với ảnh mặc định. Các field options cũ vẫn được giữ để không
+       làm mất dữ liệu lịch sử và phục vụ rollback layout carousel. */
     $nametype = "hero-carousel";
-    $config['photo']['man_photo'][$nametype]['title_main_photo'] = "Hero carousel trang chủ";
-    $config['photo']['man_photo'][$nametype]['admin_note_photo'] = "Layout 3 của Hero (carousel 4 slide, bấm nút tròn giữa Hero để xem). Đúng 4 slide theo thứ tự Số thứ tự. \"Tiêu đề\" là dòng 1 (chữ trắng đậm); dòng 2 (chữ mờ hơn), nhãn nhỏ phía trên, CTA phụ và tag nằm trong khối riêng bên dưới. Link chính có thể mở popup tư vấn/đại lý thay vì đường dẫn thường. Chưa đủ 4 slide Hiển thị thì trang chủ tự dùng nội dung mặc định có sẵn trong code, không để trống.";
+    $config['photo']['man_photo'][$nametype]['title_main_photo'] = "Trang chủ - 4 banner Hero";
+    $config['photo']['man_photo'][$nametype]['admin_note_photo'] = "Tạo đúng 4 banner với tiêu đề chứa lần lượt: Tấm pin, Đèn đường, Biến tần, Pin lưu trữ. Ảnh chuẩn 1200x900 (4:3), không chèn chữ vào ảnh, chủ thể nằm trong 75% vùng giữa. Mỗi banner có ảnh, mô tả ngắn, link tới danh mục thật và bật Hiển thị. Nếu chưa đủ đúng bốn nhóm, website dùng trọn bộ ảnh mặc định an toàn.";
     $config['photo']['man_photo'][$nametype]['check_photo'] = array("hienthi" => "Hiển thị");
     $config['photo']['man_photo'][$nametype]['number_photo'] = 4;
     $config['photo']['man_photo'][$nametype]['images_photo'] = true;
     $config['photo']['man_photo'][$nametype]['avatar_photo'] = true;
-    $config['photo']['man_photo'][$nametype]['width_photo'] = 1920;
+    $config['photo']['man_photo'][$nametype]['width_photo'] = 1200;
     $config['photo']['man_photo'][$nametype]['height_photo'] = 900;
-    $config['photo']['man_photo'][$nametype]['thumb_photo'] = '1920x900x1';
+    $config['photo']['man_photo'][$nametype]['thumb_photo'] = '400x300x1';
     $config['photo']['man_photo'][$nametype]['img_type_photo'] = '.jpg|.gif|.png|.jpeg|.gif';
     $config['photo']['man_photo'][$nametype]['name_photo'] = true;
     $config['photo']['man_photo'][$nametype]['name_label_photo'] = 'Tiêu đề (dòng 1)';

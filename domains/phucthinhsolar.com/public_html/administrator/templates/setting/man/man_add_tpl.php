@@ -66,7 +66,7 @@
 						<label for="home-hero-mode-text" class="custom-control-label font-weight-normal"><strong>Hero chữ (mặc định cũ)</strong> — tiêu đề "Năng lượng mặt trời...", số liệu tin cậy, chứng nhận uỷ quyền.</label>
 					</div>
 					<small class="text-muted d-block mt-2">Muốn dùng ảnh thật làm nền cho "Hero chữ" thay vì nền màu, tải ảnh ở mục <a href="index.php?com=photo&act=man_photo&type=home-hero-bg">Ảnh nền Hero trang chủ</a> — chữ, số liệu và hiệu ứng vẫn giữ nguyên, hiện trên ảnh. Tải nhiều ảnh thì tự đổi vòng (crossfade), 1 ảnh thì đứng yên.</small>
-					<small class="text-muted d-block mt-2">Từ 2026-09-12, chọn "Hero chữ" thực chất hiện <strong>3 bản</strong> khách tự bấm nút tròn để chuyển qua lại (không lưu được vào đây): bản gốc có cột chứng nhận, bản có form tư vấn nổi (mặc định), và 1 carousel 4 slide biên tập/kiểu ảnh riêng. Nội dung carousel hiện chưa có màn Admin (đang ở <code>libraries/home_hero_carousel.php</code>), chỉ sửa được qua code.</small>
+					<small class="text-muted d-block mt-2">Trang chủ V4 dùng khối chữ cố định bên trái và bốn banner ảnh bên phải. Quản lý bốn banner tại <strong>Trang chủ - 4 banner Hero</strong>; lựa chọn Hero legacy này chỉ còn được giữ để rollback và không chi phối giao diện V4.</small>
 				</div>
 			</div>
 		</div>

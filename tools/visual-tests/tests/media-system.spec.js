@@ -47,9 +47,9 @@ test('media system thắng CSS legacy ở các thành phần chính', async ({ p
   expect(styles.ratio).toBe('1 / 1');
 });
 
-test('ảnh campaign trang chủ đủ nét và giữ cover', async ({ page }) => {
+test('ảnh ứng dụng trang chủ đủ nét và giữ cover', async ({ page }) => {
   await page.goto('/', { waitUntil: 'networkidle' });
-  const images = page.locator('.pts-retail-campaign-media img');
+  const images = page.locator('.pts-home-use-media img');
   expect(await images.count()).toBeGreaterThan(0);
   for (let index = 0; index < await images.count(); index++) {
     const metrics = await imageMetrics(images.nth(index));
@@ -59,25 +59,18 @@ test('ảnh campaign trang chủ đủ nét và giữ cover', async ({ page }) =
   }
 });
 
-test('dải chứng nhận có nền quản trị được và bản quét đủ lớn để nhận diện', async ({ page }, testInfo) => {
+test('hero trang chủ có đủ bốn ảnh quản trị được và hiển thị cover', async ({ page }) => {
   await page.goto('/', { waitUntil: 'networkidle' });
-  const proof = page.locator('.pts-proof-band');
-  await expect(proof).toBeVisible();
-
-  const background = proof.locator('.pts-proof-background img');
-  await expect(background).toBeVisible();
-  await expect(background).toHaveAttribute('src', /home-proof-showroom-v2\.jpg/);
-  expect((await imageMetrics(background)).fit).toBe('cover');
-
-  const certificates = proof.locator('.pts-proof-card img');
-  expect(await certificates.count()).toBeGreaterThan(0);
-  expect(await certificates.count()).toBeLessThanOrEqual(3);
-  for (let index = 0; index < await certificates.count(); index++) {
-    const metrics = await imageMetrics(certificates.nth(index));
-    expect(metrics.complete).toBeTruthy();
-    expect(metrics.fit).toBe('contain');
-    expect(metrics.height).toBeGreaterThanOrEqual(testInfo.project.name.includes('mobile') ? 150 : 185);
-  }
+  const slider = page.locator('[data-home-hero-slider]');
+  await expect(slider).toBeVisible();
+  const images = slider.locator('.pts-home-hero-banner-media img');
+  await expect(images).toHaveCount(4);
+  await expect.poll(() => images.evaluateAll(items => items.every(image => image.complete && image.naturalWidth > 0))).toBeTruthy();
+  const metrics = await images.evaluateAll(items => items.map(image => ({ width: image.naturalWidth, fit: getComputedStyle(image).objectFit })));
+  metrics.forEach(image => {
+    expect(image.width).toBeGreaterThan(0);
+    expect(image.fit).toBe('cover');
+  });
 });
 
 test('banner catalog tải trực tiếp và được phân bố giữa các nhóm sản phẩm', async ({ page }) => {
@@ -208,13 +201,15 @@ test('ảnh card Giải pháp nằm trên nội dung và không che chữ', asyn
   }
 });
 
-test('card sản phẩm dùng khung vuông và contain', async ({ page }) => {
+test('card sản phẩm dùng ảnh chuẩn hóa, khung vuông và contain', async ({ page }) => {
   await page.goto('/san-pham/', { waitUntil: 'domcontentloaded' });
   const cardImage = page.locator('.product-card-img img.pts-product-photo').first();
   await expect(cardImage).toBeVisible();
   const metrics = await imageMetrics(cardImage);
   expect(metrics.fit).toBe('contain');
   expect(metrics.width / metrics.height).toBeCloseTo(1, 1);
+  expect(metrics.naturalWidth).toBe(300);
+  expect(await cardImage.getAttribute('src')).toContain('/300x300x4/');
 });
 
 test('dải nhảy nhanh danh mục đủ tương phản và giữ một hàng trên mobile', async ({ page }, testInfo) => {

@@ -44,20 +44,42 @@ $productSpecParagraph = ($productSectionsHtml === '' && $productSections['source
 $hasProductDescription = $productSpecHighlights || $productSectionsHtml !== '' || $productSpecParagraph !== '';
 $hasProductSpecs = !empty($structuredSpecs) || ($useLegacySpecs && $productLegacySpecs !== '');
 $hasProductPolicy = $productPolicyOverride !== '' || !empty($policy);
+
+/* Nếu ảnh đại diện bị thiếu trên đĩa nhưng gallery còn ảnh thật, dùng ảnh đó
+   làm ảnh chính và bỏ các mục gallery đã mất. Chỉ đọc filesystem, không sửa DB. */
+$detailMainPhoto = '';
+$detailPhotoCandidate = !empty($rowDetail['photo']) ? basename((string)$rowDetail['photo']) : '';
+if($detailPhotoCandidate !== '' && is_file(UPLOAD_PRODUCT_L.$detailPhotoCandidate)) $detailMainPhoto = $detailPhotoCandidate;
+$detailGalleryPhotos = array();
+if(!empty($rowDetailPhoto) && is_array($rowDetailPhoto))
+{
+    foreach($rowDetailPhoto as $detailPhotoRow)
+    {
+        $detailPhotoCandidate = !empty($detailPhotoRow['photo']) ? basename((string)$detailPhotoRow['photo']) : '';
+        if($detailPhotoCandidate === '' || !is_file(UPLOAD_PRODUCT_L.$detailPhotoCandidate)) continue;
+        if($detailMainPhoto === '') $detailMainPhoto = $detailPhotoCandidate;
+        if($detailPhotoCandidate !== $detailMainPhoto)
+        {
+            $detailPhotoRow['photo'] = $detailPhotoCandidate;
+            $detailGalleryPhotos[] = $detailPhotoRow;
+        }
+    }
+}
+$detailZoomHref = $detailMainPhoto !== '' ? watermarkImageHref('product', '600x600x4', UPLOAD_PRODUCT_L.$detailMainPhoto) : 'assets/images/noimage.png';
 ?>
-<div class="box-detail">
+<main class="pts-pdp-v2">
+<div class="box-detail pts-pdp-hero">
     <div class="">
         <div class="">
             <div class="grid-pro-detail w-clear">
                 <div class="row">
                     <div class="left-pro-detail col-md-5 col-lg-5">
-                        <?php $detailZoomHref = !empty($rowDetail['photo']) ? watermarkImageHref('product', '600x600x2', UPLOAD_PRODUCT_L.$rowDetail['photo']) : 'assets/images/noimage.png'; ?>
                         <a id="Zoom-1" class="MagicZoom"
                             data-options="zoomMode: on; hint: off; rightClick: true; selectorTrigger: hover; expandCaption: false; history: false;"
                             href="<?=$detailZoomHref?>" title="<?=$rowDetail['name'.$lang]?>">
-                            <?=$func->getImage(array_merge(['isLazy' => false, 'sizes' => '600x600x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $rowDetail['photo'], 'alt' => $rowDetail['name'.$lang]], watermarkImageArgs('product')))?>
+                            <?=$func->getImage(array_merge(['isLazy' => false, 'sizes' => '600x600x4', 'upload' => UPLOAD_PRODUCT_L, 'image' => $detailMainPhoto, 'alt' => $rowDetail['name'.$lang]], watermarkImageArgs('product')))?>
                         </a>
-                        <?php if($rowDetailPhoto) { if(count($rowDetailPhoto) > 0) { ?>
+                        <?php if(!empty($detailGalleryPhotos)) { ?>
                         <div class="gallery-thumb-pro">
                             <div class="owl-page owl-carousel owl-theme owl-pro-detail" data-xsm-items="5:10"
                                 data-sm-items="5:10" data-md-items="5:10" data-lg-items="5:10" data-xlg-items="5:10"
@@ -68,33 +90,34 @@ $hasProductPolicy = $productPolicyOverride !== '' || !empty($policy);
                                     <a class="thumb-pro-detail" data-zoom-id="Zoom-1"
                                         href="<?=$detailZoomHref?>"
                                         title="<?=$rowDetail['name'.$lang]?>">
-                                        <?=$func->getImage(array_merge(['isLazy' => false, 'sizes' => '120x120x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $rowDetail['photo'], 'alt' => $rowDetail['name'.$lang]], watermarkImageArgs('product')))?>
+                                        <?=$func->getImage(array_merge(['isLazy' => false, 'sizes' => '600x600x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $detailMainPhoto, 'alt' => $rowDetail['name'.$lang]], watermarkImageArgs('product')))?>
                                     </a>
                                 </div>
-                                <?php foreach($rowDetailPhoto as $v) { $thumbAlt = !empty($v['caption']) ? $v['caption'] : $rowDetail['name'.$lang]; ?>
+                                <?php foreach($detailGalleryPhotos as $v) { $thumbAlt = !empty($v['caption']) ? $v['caption'] : $rowDetail['name'.$lang]; ?>
                                 <div>
                                     <a class="thumb-pro-detail" data-zoom-id="Zoom-1"
-                                        href="<?=!empty($v['photo']) ? watermarkImageHref('product', '600x600x2', UPLOAD_PRODUCT_L.$v['photo']) : 'assets/images/noimage.png'?>" title="<?=htmlspecialchars($thumbAlt, ENT_QUOTES, 'UTF-8')?>">
-                                        <?=$func->getImage(array_merge(['isLazy' => false, 'sizes' => '120x120x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $v['photo'], 'alt' => $thumbAlt], watermarkImageArgs('product')))?>
+                                        href="<?=!empty($v['photo']) ? watermarkImageHref('product', '600x600x4', UPLOAD_PRODUCT_L.$v['photo']) : 'assets/images/noimage.png'?>" title="<?=htmlspecialchars($thumbAlt, ENT_QUOTES, 'UTF-8')?>">
+                                        <?=$func->getImage(array_merge(['isLazy' => false, 'sizes' => '600x600x4', 'upload' => UPLOAD_PRODUCT_L, 'image' => $v['photo'], 'alt' => $thumbAlt], watermarkImageArgs('product')))?>
                                     </a>
                                 </div>
                                 <?php } ?>
                             </div>
                         </div>
-                        <?php } } ?>
+                        <?php } ?>
                     </div>
 
                     <div class="right-pro-detail col-md-7 col-lg-7">
-                        <p class="title-pro-detail"><?=$func->noBreakModelCode($rowDetail['name'.$lang])?></p>
+                        <h1 class="title-pro-detail"><?=$func->noBreakModelCode($rowDetail['name'.$lang])?></h1>
                         <div class="desc-pro-detail">
                             <?=(!empty($rowDetail['desc'.$lang])) ? htmlspecialchars_decode($rowDetail['desc'.$lang]) : ''?>
                         </div>
                         <ul class="attr-pro-detail">
-                            <li class="w-clear">
+                            <li class="w-clear pts-pdp-price-row">
                                 <label class="attr-label-pro-detail"><?=gia?>:</label>
                                 <div class="attr-content-pro-detail">
                                     <?php if(publicProductRequiresQuote($rowDetail)) { ?>
                                     <span class="price-new-pro-detail"><?=lienhe?></span>
+                                    <small class="pts-pdp-price-note">Nhận báo giá theo số lượng và nhu cầu sử dụng</small>
                                     <?php } elseif($rowDetail['sale_price']) { $discountPercent = ($rowDetail['regular_price'] > $rowDetail['sale_price']) ? round((($rowDetail['regular_price'] - $rowDetail['sale_price']) / $rowDetail['regular_price']) * 100) : 0; ?>
                                     <span
                                         class="price-new-pro-detail"><?=$func->formatMoney($rowDetail['sale_price'])?></span>
@@ -180,7 +203,7 @@ $hasProductPolicy = $productPolicyOverride !== '' || !empty($policy);
                         <?php if($isContactPrice) { ?>
                         <div class="btn-product-detail btn-contact-price">
                             <a href="tel:<?=preg_replace('/[^0-9]/','',$optsetting['hotline'])?>" title="Gọi báo giá: <?=$optsetting['hotline']?>"><i class="fas fa-phone-alt"></i> Gọi báo giá</a>
-                            <a href="#exampleModal" data-toggle="modal" data-target="#exampleModal" title="Gửi yêu cầu báo giá">Gửi yêu cầu báo giá</a>
+                            <a href="#exampleModal" data-toggle="modal" data-target="#exampleModal" title="Gửi yêu cầu báo giá"><i class="far fa-file-alt" aria-hidden="true"></i> Gửi yêu cầu báo giá</a>
                         </div>
                         <?php } else { ?>
                         <div class="btn-product-detail">
@@ -234,37 +257,11 @@ $hasProductPolicy = $productPolicyOverride !== '' || !empty($policy);
     </div>
 </div>
 
-<?php if($hasProductDescription || $hasProductSpecs || !empty($videoEmbedUrl) || !empty($certificateContent) || $hasProductPolicy) { $activeProductTab = $hasProductDescription ? 'info' : ($hasProductSpecs ? 'specs' : (!empty($videoEmbedUrl) ? 'video' : (!empty($certificateContent) ? 'certificate' : 'policy'))); ?>
-<div class="box-detail mg-top-30">
-    <div class="tabs-pro-detail">
-        <ul class="nav nav-tabs" id="tabsProDetail" data-click-scroll="center" role="tablist">
-            <?php if($hasProductDescription) { ?><li class="nav-item">
-                <a class="nav-link <?=$activeProductTab==='info'?'active':''?>" id="info-pro-detail-tab" data-toggle="tab" href="#info-pro-detail"
-                    role="tab">Mô tả sản phẩm</a>
-            </li><?php } ?>
-            <?php if($hasProductSpecs) { ?><li class="nav-item">
-                <a class="nav-link <?=$activeProductTab==='specs'?'active':''?>" id="tskt-pro-detail-tab" data-toggle="tab" href="#tskt-pro-detail" role="tab">Thông
-                    số kỹ thuật</a>
-            </li><?php } ?>
-            <?php if(!empty($videoEmbedUrl)) { ?>
-            <li class="nav-item">
-                <a class="nav-link <?=$activeProductTab==='video'?'active':''?>" id="video-pro-detail-tab" data-toggle="tab" href="#video-pro-detail"
-                    role="tab">Video thực tế</a>
-            </li>
-            <?php } ?>
-            <?php if(!empty($certificateContent)) { ?>
-            <li class="nav-item">
-                <a class="nav-link <?=$activeProductTab==='certificate'?'active':''?>" id="certificate-pro-detail-tab" data-toggle="tab" href="#certificate-pro-detail"
-                    role="tab">Chứng nhận</a>
-            </li>
-            <?php } ?>
-            <?php if($hasProductPolicy) { ?><li class="nav-item">
-                <a class="nav-link <?=$activeProductTab==='policy'?'active':''?>" id="cs-pro-detail-tab" data-toggle="tab" href="#cs-pro-detail" role="tab">Chính sách
-                    mua hàng</a>
-            </li><?php } ?>
-        </ul>
-        <div class="tab-content pt-4 pb-4" id="tabsProDetailContent">
-            <?php if($hasProductDescription) { ?><div class="tab-pane fade <?=$activeProductTab==='info'?'show active':''?> pts-product-content" id="info-pro-detail" role="tabpanel">
+<?php if($hasProductDescription || $hasProductSpecs || !empty($videoEmbedUrl) || !empty($certificateContent) || $hasProductPolicy) { $activeProductTab = !empty($videoEmbedUrl) ? 'video' : (!empty($certificateContent) ? 'certificate' : 'policy'); ?>
+<div class="box-detail mg-top-30 pts-pdp-details">
+    <div class="pts-pdp-editorial-grid <?=$hasProductSpecs?'has-specs':''?>">
+        <div class="pts-pdp-editorial-main">
+            <?php if($hasProductDescription) { ?><div class="pts-product-content" id="info-pro-detail">
             <div class="pts-product-desc">
                 <?php if($productSpecHighlights) { ?>
                 <section>
@@ -284,9 +281,42 @@ $hasProductPolicy = $productPolicyOverride !== '' || !empty($policy);
                 <?php } ?>
             </div>
             </div><?php } ?>
-            <?php if($hasProductSpecs) { ?><div class="tab-pane fade <?=$activeProductTab==='specs'?'show active':''?>" id="tskt-pro-detail" role="tabpanel">
+
+            <?php if(!empty($videoEmbedUrl) || !empty($certificateContent) || $hasProductPolicy) { ?>
+            <div class="tabs-pro-detail pts-pdp-supporting-tabs">
+                <ul class="nav nav-tabs" id="tabsProDetail" data-click-scroll="center" role="tablist">
+                    <?php if(!empty($videoEmbedUrl)) { ?><li class="nav-item"><a class="nav-link <?=$activeProductTab==='video'?'active':''?>" id="video-pro-detail-tab" data-toggle="tab" href="#video-pro-detail" role="tab">Video thực tế</a></li><?php } ?>
+                    <?php if(!empty($certificateContent)) { ?><li class="nav-item"><a class="nav-link <?=$activeProductTab==='certificate'?'active':''?>" id="certificate-pro-detail-tab" data-toggle="tab" href="#certificate-pro-detail" role="tab">Chứng nhận</a></li><?php } ?>
+                    <?php if($hasProductPolicy) { ?><li class="nav-item"><a class="nav-link <?=$activeProductTab==='policy'?'active':''?>" id="cs-pro-detail-tab" data-toggle="tab" href="#cs-pro-detail" role="tab">Chính sách mua hàng</a></li><?php } ?>
+                </ul>
+                <div class="tab-content" id="tabsProDetailContent">
+                    <?php if(!empty($videoEmbedUrl)) { ?>
+                    <div class="tab-pane fade <?=$activeProductTab==='video'?'show active':''?>" id="video-pro-detail" role="tabpanel">
+                        <div class="embed-responsive embed-responsive-16by9">
+                            <iframe class="embed-responsive-item" src="<?=htmlspecialchars($videoEmbedUrl, ENT_QUOTES, 'UTF-8')?>"
+                                title="Video thực tế <?=$rowDetail['name'.$lang]?>" loading="lazy"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowfullscreen></iframe>
+                        </div>
+                    </div>
+                    <?php } ?>
+                    <?php if(!empty($certificateContent)) { ?>
+                    <div class="tab-pane fade <?=$activeProductTab==='certificate'?'show active':''?> pts-product-content" id="certificate-pro-detail" role="tabpanel"><?=$certificateContent?></div>
+                    <?php } ?>
+                    <?php if($hasProductPolicy) { ?><div class="tab-pane fade <?=$activeProductTab==='policy'?'show active':''?> pts-product-content" id="cs-pro-detail" role="tabpanel">
+                        <?php if($productPolicyOverride !== '') { ?><div class="alert alert-info py-2"><strong>Chính sách riêng của sản phẩm</strong></div><?=$productPolicyOverride?><?php } else { ?><p>Áp dụng chính sách chung hiện hành của Phúc Thịnh Solar:</p><div class="pts-policy-links"><?php foreach($policy as $policyItem) { ?><a href="ho-tro/<?=$policyItem[$sluglang]?>/"><i class="fas fa-shield-alt mr-2"></i><?=htmlspecialchars($policyItem['name'.$lang],ENT_QUOTES,'UTF-8')?></a><?php } ?></div><?php } ?>
+                    </div><?php } ?>
+                </div>
+            </div>
+            <?php } ?>
+        </div>
+
+        <?php if($hasProductSpecs) { ?>
+        <aside class="pts-pdp-spec-column" id="tskt-pro-detail" aria-labelledby="pts-pdp-spec-title">
+            <div class="pts-pdp-spec-panel">
+                <h2 id="pts-pdp-spec-title">Thông số kỹ thuật</h2>
                 <?php if(!empty($structuredSpecs)) { ?>
-                    <div class="table-responsive mb-4">
+                    <div class="table-responsive">
                         <table class="table table-bordered table-striped mb-0">
                             <tbody>
                                 <?php foreach($structuredSpecs as $spec) { ?>
@@ -302,35 +332,18 @@ $hasProductPolicy = $productPolicyOverride !== '' || !empty($policy);
                 <?php if($useLegacySpecs) { ?>
                     <?=$productLegacySpecs?>
                 <?php } ?>
-            </div><?php } ?>
-            <?php if(!empty($videoEmbedUrl)) { ?>
-            <div class="tab-pane fade <?=$activeProductTab==='video'?'show active':''?>" id="video-pro-detail" role="tabpanel">
-                <div class="embed-responsive embed-responsive-16by9">
-                    <iframe class="embed-responsive-item" src="<?=htmlspecialchars($videoEmbedUrl, ENT_QUOTES, 'UTF-8')?>"
-                        title="Video thực tế <?=$rowDetail['name'.$lang]?>" loading="lazy"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowfullscreen></iframe>
-                </div>
             </div>
-            <?php } ?>
-            <?php if(!empty($certificateContent)) { ?>
-            <div class="tab-pane fade <?=$activeProductTab==='certificate'?'show active':''?> pts-product-content" id="certificate-pro-detail" role="tabpanel">
-                <?=$certificateContent?>
-            </div>
-            <?php } ?>
-            <?php if($hasProductPolicy) { ?><div class="tab-pane fade <?=$activeProductTab==='policy'?'show active':''?> pts-product-content" id="cs-pro-detail" role="tabpanel">
-                <?php if($productPolicyOverride !== '') { ?><div class="alert alert-info py-2"><strong>Chính sách riêng của sản phẩm</strong></div><?=$productPolicyOverride?><?php } else { ?><p>Áp dụng chính sách chung hiện hành của Phúc Thịnh Solar:</p><div class="pts-policy-links"><?php foreach($policy as $policyItem) { ?><a href="ho-tro/<?=$policyItem[$sluglang]?>/"><i class="fas fa-shield-alt mr-2"></i><?=htmlspecialchars($policyItem['name'.$lang],ENT_QUOTES,'UTF-8')?></a><?php } ?></div><?php } ?>
-            </div><?php } ?>
-        </div>
+        </aside>
+        <?php } ?>
     </div>
 </div>
 <?php } ?>
 
-<div class="box-detail mg-top-30">
+<div class="box-detail mg-top-30 pts-pdp-reviews">
     <?php include TEMPLATE."product/comment.php"; ?>
 </div>
 <?php if(!empty($productRelatedProjects)) { ?>
-<div class="box-detail mg-top-30 pts-related-showcase pts-product-projects">
+<div class="box-detail mg-top-30 pts-related-showcase pts-product-projects pts-pdp-projects">
     <div class="title-product-orther"><span>Dự án thực tế sử dụng sản phẩm</span></div>
     <div class="pts-related-grid">
         <?php foreach($productRelatedProjects as $relatedProject) { ?>
@@ -356,7 +369,7 @@ $hasProductPolicy = $productPolicyOverride !== '' || !empty($policy);
 </div>
 <?php } ?>
 <?php if(!empty($product)) {?>
-<div class="box-detail mg-top-30">
+<div class="box-detail mg-top-30 pts-pdp-related-products">
     <div class="title-product-orther"><span>Sản phẩm liên quan</span></div>
     <?php if(!empty($product)) {?>
     <div class="position-relative">
@@ -373,6 +386,8 @@ $hasProductPolicy = $productPolicyOverride !== '' || !empty($policy);
     <?php } ?>
 </div>
 <?php } ?>
+
+</main>
 
 <div class="modal fade pts-lead-modal pts-quote-modal" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="quoteRequestModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">

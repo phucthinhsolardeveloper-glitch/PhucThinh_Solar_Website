@@ -7,7 +7,8 @@ test.beforeEach(async ({ page }) => {
 test('mobile product names expand instead of being clipped by the legacy two-line card', async ({ page, isMobile }) => {
   test.skip(!isMobile, 'Kiểm tra này dành cho lưới hai cột mobile.');
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  // Trang chủ V4 không còn lưới sản phẩm; kiểm tra card trên danh mục đang bán.
+  await page.goto('/danh-muc-san-pham/den-nlmt/', { waitUntil: 'domcontentloaded' });
 
   const names = page.locator('.product-card .caption .name');
   expect(await names.count()).toBeGreaterThan(0);
@@ -83,6 +84,6 @@ test('mobile product detail keeps price and purchase controls inside the buy box
   const thumbnails = page.locator('.gallery-thumb-pro img');
   if (await thumbnails.count()) {
     const src = await thumbnails.first().getAttribute('src');
-    expect(src).toContain('120x120x2');
+    expect(src).toMatch(/600x600x[24]/);
   }
 });

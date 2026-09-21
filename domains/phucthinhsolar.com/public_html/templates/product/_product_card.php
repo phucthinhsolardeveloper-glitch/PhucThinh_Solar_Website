@@ -27,9 +27,9 @@ $pcPromoFrame = productPromoFrameForCard($v, $cache);
             <span class="badge-discount">-<?=$pcDiscount?>%</span>
             <?php } ?>
             <?php if(!empty($pcNoLazy)) { ?>
-            <?=$func->getImage(array_merge(['isLazy' => false, 'noNativeLazy' => !empty($pcInCarousel), 'class' => 'w-100 pts-product-photo', 'sizes' => '300x300x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]], watermarkImageArgs('product')))?>
+            <?=$func->getImage(array_merge(['isLazy' => false, 'noNativeLazy' => !empty($pcInCarousel), 'class' => 'w-100 pts-product-photo', 'sizes' => '300x300x4', 'upload' => UPLOAD_PRODUCT_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]], watermarkImageArgs('product')))?>
             <?php } else { ?>
-            <?=$func->getImage(array_merge(['class' => 'lazy w-100 pts-product-photo', 'sizes' => '300x300x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]], watermarkImageArgs('product')))?>
+            <?=$func->getImage(array_merge(['class' => 'lazy w-100 pts-product-photo', 'sizes' => '300x300x4', 'upload' => UPLOAD_PRODUCT_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]], watermarkImageArgs('product')))?>
             <?php } ?>
             <?php if(!empty($pcPromoFrame)) { ?>
             <?=$func->getImage(['isLazy' => false, 'class' => 'w-100 pts-promo-frame', 'sizes' => '300x300x2', 'upload' => $pcPromoFrame['upload'], 'image' => $pcPromoFrame['photo'], 'alt' => ''])?>

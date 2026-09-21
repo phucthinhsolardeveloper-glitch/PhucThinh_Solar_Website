@@ -41,25 +41,26 @@ for (const viewport of viewports) {
     const configuredContainer = await page.evaluate(() => parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--pts-container')));
     expect(configuredContainer).toBe(expectedContainer);
 
-    if (viewport.width <= 1120) {
+    if (viewport.width <= 1320) {
       await expect(page.locator('.pts-header-nav')).toBeHidden();
       await expect(page.locator('.pts-header-v3 .btn-mmenu')).toBeVisible();
     } else {
       await expect(page.locator('.pts-header-nav')).toBeVisible();
     }
+    if (viewport.width <= 1320) {
+      await expect(page.locator('.pts-header-v3 .pts-header-actions>.gtranslate_wrapper')).toBeHidden();
+    }
 
-    const familyColumns = await page.locator('.pts-product-family-grid').first().evaluate(grid =>
-      new Set(Array.from(grid.children).slice(0, 5).map(item => Math.round(item.getBoundingClientRect().top))).size
+    const categoryRows = await page.locator('.pts-home-category-rail').evaluate(grid =>
+      new Set(Array.from(grid.children).map(item => Math.round(item.getBoundingClientRect().top))).size
     );
-    if (viewport.width <= 767) expect(familyColumns).toBeGreaterThanOrEqual(2);
-    else if (viewport.width <= 1199) expect(familyColumns).toBeGreaterThanOrEqual(1);
-    else expect(familyColumns).toBe(1);
+    expect(categoryRows).toBe(1);
 
     if (viewport.width >= 1800) {
-      const containerWidth = await page.locator('.pts-retail-campaigns .uk-container').evaluate(node => node.getBoundingClientRect().width);
+      const containerWidth = await page.locator('.pts-home-container').first().evaluate(node => node.getBoundingClientRect().width);
       expect(containerWidth / viewport.width).toBeGreaterThanOrEqual(0.74);
-      const productNameSize = await page.locator('.pts-product-family-grid .product-card .caption .name').first().evaluate(node => parseFloat(getComputedStyle(node).fontSize));
-      expect(productNameSize).toBeGreaterThanOrEqual(15);
+      const categoryNameSize = await page.locator('.pts-home-category-copy strong').first().evaluate(node => parseFloat(getComputedStyle(node).fontSize));
+      expect(categoryNameSize).toBeGreaterThanOrEqual(17);
     }
 
     await page.goto('/dai-ly/', { waitUntil: 'domcontentloaded' });

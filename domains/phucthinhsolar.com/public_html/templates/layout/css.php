@@ -5,6 +5,7 @@
 <?php } ?>
 <!-- Css Files -->
 <?php
+    $css->set("css/font-be-vietnam-pro.css");
     $css->set("bootstrap/bootstrap.css");
     $css->set("css/style.min080f.css");
     $css->set("css/vendors-style6b00.css");
@@ -69,7 +70,7 @@
     $css->set("comment/comment.css");
     $css->set("css/style.css");
     $css->set("css/theme-v2.css");
-    if($source == 'index') $css->set("css/home-retail-v3.css");
+    if($source == 'index') $css->set("css/home-story-v4.css");
     if($source == 'about') $css->set("css/about-v2.css");
     if(in_array($template, array('news/service_list', 'news/service', 'news/service_detail'), true)) $css->set("css/solution-hub.css");
     if($template == 'news/project' || $template == 'news/project_detail') $css->set("css/project-hub.css");
@@ -95,6 +96,7 @@
     /* Thang chữ public dùng chung nạp sau cùng để thay các cỡ chữ legacy
        rời rạc mà không phải vá từng template. */
     $css->set("css/typography-system.css");
+    if($template === 'product/product_detail') $css->set("css/product-detail-v2.css");
     echo $css->get();
 ?>
 <script type="text/javascript" src="assets/js/jquery.min.js?v=NMr3JZBT0U"></script>

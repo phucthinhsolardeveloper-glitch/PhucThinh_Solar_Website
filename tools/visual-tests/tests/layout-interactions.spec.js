@@ -66,19 +66,25 @@ test('header, menu, breadcrumb and footer remain usable', async ({ page, isMobil
   const headerCart = page.locator('#headerscroll .icon-cart-header');
   if (await headerCart.count()) {
     await expect(headerCart).toBeVisible();
-    await expect(page.locator('#headerscroll .hdr-call-txt')).toContainText('Gọi mua hàng');
-  } else {
-    await expect(page.locator('#headerscroll .hdr-call-txt')).toContainText('Tư vấn sản phẩm');
   }
-  const headsetIcon = page.locator('#headerscroll .hdr-call-ic .fa-headset');
-  await expect(headsetIcon).toBeVisible();
+  const phoneLink = page.locator('#headerscroll .hdr-call');
+  await expect(phoneLink).toHaveAttribute('href', /^tel:/);
+  const phoneIcon = phoneLink.locator('.hdr-call-ic .fa-phone-alt');
+  await expect(phoneIcon).toBeAttached();
+  if (isMobile) {
+    await expect(phoneLink).toBeHidden();
+  } else {
+    await expect(phoneLink).toBeVisible();
+    await expect(phoneLink.locator('.hdr-call-txt')).toContainText('Mua hàng');
+    await expect(phoneIcon).toBeVisible();
+  }
   await page.evaluate(() => document.fonts.ready);
-  expect(await headsetIcon.evaluate(element => getComputedStyle(element).fontFamily)).toContain('Font Awesome 5 Free');
+  expect(await phoneIcon.evaluate(element => getComputedStyle(element).fontFamily)).toContain('Font Awesome 5 Free');
   expect(await page.evaluate(() => document.fonts.check('900 16px "Font Awesome 5 Free"'))).toBeTruthy();
   expect(failedFontRequests).toEqual([]);
 
-  if (isMobile) {
-    const hamburger = page.locator('#hamburger');
+  const hamburger = page.locator('#hamburger');
+  if (isMobile || await hamburger.isVisible()) {
     await expect(hamburger).toBeVisible();
     await hamburger.click();
     await expect(page.locator('#menu')).toBeVisible();
@@ -126,7 +132,13 @@ test('content surfaces stay flat across product and content hubs', async ({ page
   const productHref = await page.locator('.product-card .product-item').first().getAttribute('href');
   expect(productHref).toBeTruthy();
   await page.goto(`/${productHref}`, { waitUntil: 'domcontentloaded' });
-  await assertFlat('.left-pro-detail > .MagicZoom');
+  const gallery = page.locator('.left-pro-detail > .MagicZoom');
+  await expect(gallery).toBeVisible();
+  expect(await gallery.evaluate(element => ({
+    border: getComputedStyle(element).borderTopWidth,
+    background: getComputedStyle(element).backgroundColor,
+    shadow: getComputedStyle(element).boxShadow
+  }))).toEqual({ border: '0px', background: 'rgb(255, 255, 255)', shadow: 'none' });
   await assertFlat('.tabs-pro-detail');
 
   await page.goto('/tin-tuc/', { waitUntil: 'domcontentloaded' });
@@ -152,13 +164,16 @@ test('content surfaces stay flat across product and content hubs', async ({ page
   expect(await contactField.evaluate(element => parseFloat(getComputedStyle(element).borderTopWidth))).toBeGreaterThan(0);
 });
 
-test('mobile home starts with the product campaign and does not render legacy hero layouts', async ({ page, isMobile }) => {
+test('mobile home starts with the approved full-width hero slider', async ({ page, isMobile }) => {
   test.skip(!isMobile, 'Mobile-only homepage gutter regression.');
   await page.goto('/', { waitUntil: 'domcontentloaded' });
   await dismissEntrancePopup(page);
 
-  await expect(page.locator('.wap-slider, .pts-hero-carousel, .pts-hero2, .pts-home-hero, .pts-hero-layout-toggle')).toHaveCount(0);
-  await expect(page.locator('.pts-retail-campaigns')).toBeVisible();
+  await expect(page.locator('.wap-slider, .pts-hero-carousel, .pts-hero2, .pts-hero-layout-toggle')).toHaveCount(0);
+  await expect(page.locator('.pts-home-hero')).toBeVisible();
+  await expect(page.locator('[data-home-hero-slide]')).toHaveCount(4);
+  await expect(page.locator('[data-home-hero-slide].is-active')).toHaveCount(1);
+  await expect(page.locator('.pts-home-category-featured')).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(await page.evaluate(() => document.documentElement.clientWidth));
 });
 
@@ -217,21 +232,18 @@ test('không có JavaScript thì cụm liên hệ vẫn hiện đủ 3 kênh', a
   await context.close();
 });
 
-test('home product showroom and closing CTA follow the product-first decision', async ({ page }) => {
+test('home follows the approved storytelling layout with real commerce links', async ({ page }) => {
   await page.goto('/', { waitUntil: 'domcontentloaded' });
   await dismissEntrancePopup(page);
 
-  await expect(page.locator('.wap-slider')).toHaveCount(0);
-  await expect(page.locator('.pts-retail-campaign-card')).toHaveCount(3);
-  await expect(page.locator('.pts-product-family')).toHaveCount(3);
-  expect(await page.locator('.pts-product-family .product-card').count()).toBeGreaterThanOrEqual(24);
-  await expect(page.locator('section.home-2, section.home-6, section.home-7, .pts-about-teaser')).toHaveCount(0);
-
-  const closingImage = page.locator('.pts-home-closing-cta .pts-closing-cta-media img');
-  await closingImage.scrollIntoViewIfNeeded();
-  await expect(closingImage).toBeVisible();
-  expect(await closingImage.evaluate(element => element.naturalWidth)).toBeGreaterThan(0);
-  await expect(page.locator('.pts-news-card')).toHaveCount(6);
+  await expect(page.locator('.pts-home-hero')).toBeVisible();
+  await expect(page.locator('.pts-home-category')).toHaveCount(5);
+  await expect(page.locator('.pts-home-use')).toHaveCount(3);
+  await expect(page.locator('.pts-home-tab')).toHaveCount(4);
+  await expect(page.locator('.pts-home-steps li')).toHaveCount(5);
+  await expect(page.locator('.pts-home-dealer')).toBeVisible();
+  await expect(page.locator('.pts-home-about')).toBeVisible();
+  await expect(page.locator('#yeu-cau-tu-van form')).toBeVisible();
 });
 
 test('product detail keeps gallery and the CTA configured by Admin', async ({ page }) => {
@@ -245,6 +257,23 @@ test('product detail keeps gallery and the CTA configured by Admin', async ({ pa
   expect(response && response.ok()).toBeTruthy();
   await expect(page.locator('.breadCrumbs')).toBeVisible();
   await expect(page.locator('#Zoom-1 img').first()).toBeVisible();
+  const mainGallery = page.locator('#Zoom-1');
+  const measureGallery = () => mainGallery.evaluate(element => {
+    const rect = element.getBoundingClientRect();
+    const image = element.querySelector('.mz-figure > img, :scope > img');
+    const imageRect = image ? image.getBoundingClientRect() : null;
+    return {
+      width: rect.width,
+      height: rect.height,
+      imageWidth: imageRect ? imageRect.width : 0,
+      imageHeight: imageRect ? imageRect.height : 0,
+      fit: image ? getComputedStyle(image).objectFit : ''
+    };
+  });
+  const galleryBefore = await measureGallery();
+  expect(galleryBefore.width).toBeGreaterThan(0);
+  expect(Math.abs(galleryBefore.width - galleryBefore.height)).toBeLessThanOrEqual(1);
+  expect(galleryBefore.fit).toBe('contain');
   await expect(page.locator('.right-pro-detail > .title-pro-detail')).toBeVisible();
   const quoteCta = page.locator('.btn-contact-price');
   if (await quoteCta.count()) {
@@ -261,6 +290,61 @@ test('product detail keeps gallery and the CTA configured by Admin', async ({ pa
   if (await descPane.count()) {
     await expect(descPane.locator('.pts-product-desc')).toHaveCount(1);
   }
+});
+
+test('switching product photos does not shrink the detail gallery', async ({ page }) => {
+  await page.goto('/san-pham/', { waitUntil: 'domcontentloaded' });
+  const productHrefs = await page.locator('.grid-product a.product-item[href]').evaluateAll(links =>
+    Array.from(new Set(links.map(link => link.getAttribute('href')).filter(Boolean))).slice(0, 20)
+  );
+
+  let galleryFound = false;
+  for (const href of productHrefs) {
+    const response = await page.goto(href, { waitUntil: 'domcontentloaded' });
+    if (!response || !response.ok()) continue;
+    if (await page.locator('.gallery-thumb-pro .thumb-pro-detail').count() > 1) {
+      galleryFound = true;
+      break;
+    }
+  }
+  expect(galleryFound, 'test data must include a product with multiple gallery photos').toBeTruthy();
+
+  const gallery = page.locator('#Zoom-1');
+  const measure = () => gallery.evaluate(element => {
+    const frame = element.getBoundingClientRect();
+    const image = Array.from(element.querySelectorAll('.mz-figure > img, :scope > img'))
+      .filter(candidate => {
+        const rect = candidate.getBoundingClientRect();
+        const style = getComputedStyle(candidate);
+        return rect.width > 0 && rect.height > 0 && style.display !== 'none' && style.visibility !== 'hidden';
+      })
+      .sort((left, right) => right.getBoundingClientRect().width * right.getBoundingClientRect().height - left.getBoundingClientRect().width * left.getBoundingClientRect().height)[0];
+    const imageRect = image ? image.getBoundingClientRect() : { width: 0, height: 0 };
+    return {
+      width: frame.width,
+      height: frame.height,
+      imageSource: image ? image.currentSrc : '',
+      imageNaturalWidth: image ? image.naturalWidth : 0,
+      imageWidth: imageRect.width,
+      imageHeight: imageRect.height,
+      fit: image ? getComputedStyle(image).objectFit : '',
+    };
+  });
+  const before = await measure();
+  expect(before.width).toBeGreaterThan(0);
+  expect(Math.abs(before.width - before.height)).toBeLessThanOrEqual(1);
+  const secondPhoto = page.locator('.gallery-thumb-pro .thumb-pro-detail').nth(1);
+  await secondPhoto.click();
+  await expect.poll(async () => (await measure()).imageSource).not.toBe(before.imageSource);
+  const after = await measure();
+  expect(Math.abs(before.width - after.width)).toBeLessThanOrEqual(1);
+  expect(Math.abs(before.height - after.height)).toBeLessThanOrEqual(1);
+  expect(after.fit).toBe('contain');
+  // Ảnh giữ khung vuông ổn định nhưng chừa khoảng thở bên trong showroom.
+  expect(after.imageWidth).toBeGreaterThanOrEqual(after.width * 0.85);
+  expect(after.imageHeight).toBeGreaterThanOrEqual(after.height * 0.85);
+  expect(after.imageNaturalWidth).toBeGreaterThanOrEqual(600);
+  expect(after.imageSource).toContain('/600x600x4/');
 });
 
 test('quote request CTA opens the protected consultation form', async ({ page }) => {
@@ -346,29 +430,28 @@ test('mobile news and project category rails do not re-layout into Slick after l
   }
 });
 
-test('mobile product detail tabs fit the viewport and switch content', async ({ page, isMobile }) => {
-  test.skip(!isMobile, 'The two-column tab layout only applies on mobile.');
+test('mobile product detail separates description and specifications without overflow', async ({ page, isMobile }) => {
+  test.skip(!isMobile, 'The stacked editorial layout only applies on mobile.');
   await page.goto('/san-pham/den-pha-nang-luong-mat-troi-jindian-jd-t300-300w', { waitUntil: 'domcontentloaded' });
-  const tabs = page.locator('#tabsProDetail');
-  await expect(tabs).toBeVisible();
-  const layout = await tabs.evaluate(element => {
-    const parent = element.getBoundingClientRect();
+  const editorial = page.locator('.pts-pdp-editorial-grid');
+  const description = page.locator('.pts-pdp-editorial-main');
+  const specifications = page.locator('.pts-pdp-spec-column');
+  await expect(editorial).toBeVisible();
+  await expect(description).toBeVisible();
+  await expect(specifications).toBeVisible();
+  const layout = await editorial.evaluate(element => {
+    const main = element.querySelector('.pts-pdp-editorial-main').getBoundingClientRect();
+    const specs = element.querySelector('.pts-pdp-spec-column').getBoundingClientRect();
     return {
-      columns: getComputedStyle(element).gridTemplateColumns.split(' ').length,
-      childrenInside: Array.from(element.children).every(child => {
-        const rect = child.getBoundingClientRect();
-        return rect.left >= parent.left - 1 && rect.right <= parent.right + 1;
-      }),
+      direction: getComputedStyle(element).flexDirection,
+      specsPosition: getComputedStyle(element.querySelector('.pts-pdp-spec-panel')).position,
+      descriptionBeforeSpecs: main.top < specs.top,
     };
   });
-  expect(layout.columns).toBe(2);
-  expect(layout.childrenInside).toBeTruthy();
-  const specTab = page.locator('#tskt-pro-detail-tab');
-  if (await specTab.count()) {
-    await specTab.click();
-    await expect(specTab).toHaveClass(/active/);
-    await expect(page.locator('#tskt-pro-detail')).toBeVisible();
-  }
+  expect(layout.direction).toBe('column');
+  expect(layout.specsPosition).toBe('relative');
+  expect(layout.descriptionBeforeSpecs).toBeTruthy();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
 });
 
 test('mobile child breadcrumb stays vertically aligned with its parent', async ({ page, isMobile }) => {
@@ -410,47 +493,23 @@ test('mobile back-to-top arrow uses the same box center as its circle', async ({
   expect(metrics.justifyContent).toBe('center');
 });
 
-test('home exposes every featured category and switches its product grid', async ({ page }) => {
+test('home exposes the five approved category slots with real destinations', async ({ page }) => {
   await page.goto('/', { waitUntil: 'domcontentloaded' });
   await dismissEntrancePopup(page);
-  const categoryTrack = page.locator('.pts-ecosystem-grid');
-  const categories = categoryTrack.locator(':scope > li');
-  expect(await categories.count()).toBeGreaterThan(0);
-  await expect(categoryTrack.locator('a[href="danh-muc-san-pham/den-ac/"]')).toHaveCount(0);
-  await expect(categoryTrack).toHaveCSS('display', 'flex');
-  await expect(categoryTrack).toHaveCSS('flex-wrap', 'nowrap');
-  await expect(page.locator('.paging-product-category .product-card').first()).toBeVisible();
-
-  const majorCategories = categories.filter({ has: page.locator('.pts-home-category-badge') });
-  await expect(majorCategories).toHaveCount(4);
-  await expect(categories).toHaveCount(10);
+  const categoryTrack = page.locator('.pts-home-category-rail');
+  const categories = page.locator('.pts-home-category');
+  await expect(page.locator('.pts-home-category-featured')).toHaveCount(1);
+  await expect(categoryTrack.locator(':scope > .pts-home-category')).toHaveCount(4);
+  await expect(categories).toHaveCount(5);
   const categoryTops = await categories.evaluateAll(items => items.map(item => Math.round(item.offsetTop)));
-  expect(new Set(categoryTops).size).toBe(1);
+  expect(new Set(categoryTops).size).toBe(2);
 
   for (const category of await categories.all()) {
     await category.scrollIntoViewIfNeeded();
     await expect(category).toBeVisible();
-    await expect(category.locator('.pts-home-category-image').locator('img, i')).toBeVisible();
+    await expect(category.locator('.pts-home-category-bg img')).toBeVisible();
+    expect(await category.getAttribute('href')).toBeTruthy();
   }
-
-  const secondCategory = categories.nth(1);
-  const listId = await secondCategory.locator('a').getAttribute('data-list');
-  expect(listId).toBeTruthy();
-  const productResponse = page.waitForResponse(response => response.url().includes(`api/product2.php?perpage=16&idList=${listId}`));
-  await secondCategory.locator('a').click();
-  const productBody = await assertHealthyAjaxResponse(productResponse);
-  expect(productBody).toContain('product-item');
-  await expect(secondCategory).toHaveClass(/uk-active/);
-
-  // Rail một hàng phải giữ nguyên hành vi AJAX với cả card ở cuối danh sách.
-  const clickIndex = Math.min(7, (await categories.count()) - 1);
-  const clickedCategory = categories.nth(clickIndex);
-  const clickedListId = await clickedCategory.locator('a').getAttribute('data-list');
-  const clickedResponse = page.waitForResponse(response => response.url().includes(`api/product2.php?perpage=16&idList=${clickedListId}`));
-  await clickedCategory.locator('a').evaluate(element => element.click());
-  const clickedBody = await assertHealthyAjaxResponse(clickedResponse);
-  expect(clickedBody).toContain('product-item');
-  await expect(clickedCategory).toHaveClass(/uk-active/);
 });
 
 test('product category sidebar keeps child categories only in the type filter', async ({ page }) => {

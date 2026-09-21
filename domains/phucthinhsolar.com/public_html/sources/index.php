@@ -55,6 +55,88 @@
         );
     }
 
+    /* Bốn banner ảnh trong Hero V4. Tái sử dụng type hero-carousel đã có màn
+       Admin, quyền và đúng bốn slot; chỉ nhận bộ dữ liệu Admin khi đủ cả bốn
+       nhóm thiết bị để nội dung carousel cũ không xuất hiện sai ngữ cảnh.
+       Không đủ bộ thì dùng ảnh ngành đã đóng gói, tuyệt đối không trộn lẫn
+       record Admin đang bị tắt với fallback. */
+    $homeCategoryHref = static function($categories, $slugKey, $needles) {
+        foreach($categories as $category) {
+            $candidate = isset($category[$slugKey]) ? strtolower((string)$category[$slugKey]) : '';
+            foreach($needles as $needle) {
+                if($candidate !== '' && strpos($candidate, $needle) !== false) return 'danh-muc-san-pham/'.$category[$slugKey].'/';
+            }
+        }
+        return 'san-pham/';
+    };
+    $homeHeroDefaults = array(
+        array(
+            'key' => 'panel',
+            'name' => 'Tấm pin',
+            'desc' => 'Thiết bị quang điện cho hệ thống năng lượng mặt trời.',
+            'photo' => 'solution-home-solar-v2.jpg',
+            'upload' => 'assets/images/site-visuals/',
+            'link' => $homeCategoryHref($splist, $sluglang, array('tam-pin', 'solar-panel')),
+            'needles' => array('tấm pin', 'tam pin', 'solar panel')
+        ),
+        array(
+            'key' => 'street-light',
+            'name' => 'Đèn đường',
+            'desc' => 'Chiếu sáng đường nội bộ, khu dân cư và công trình.',
+            'photo' => 'home-street-lighting.jpg',
+            'upload' => 'assets/images/site-visuals/',
+            'link' => $homeCategoryHref($splist, $sluglang, array('den-nang-luong-mat-troi', 'den-duong', 'street-light')),
+            'needles' => array('đèn đường', 'den duong', 'street light')
+        ),
+        array(
+            'key' => 'inverter',
+            'name' => 'Biến tần',
+            'desc' => 'Thiết bị chuyển đổi và quản lý nguồn điện.',
+            'photo' => 'catalog-inverter-system-v2.jpg',
+            'upload' => 'assets/images/site-visuals/',
+            'link' => $homeCategoryHref($splist, $sluglang, array('bien-tan', 'inverter')),
+            'needles' => array('biến tần', 'bien tan', 'inverter')
+        ),
+        array(
+            'key' => 'storage',
+            'name' => 'Pin lưu trữ',
+            'desc' => 'Chủ động lưu trữ điện theo nhu cầu sử dụng.',
+            'photo' => 'catalog-battery-storage-v2.jpg',
+            'upload' => 'assets/images/site-visuals/',
+            'link' => $homeCategoryHref($splist, $sluglang, array('pin-luu-tru', 'luu-tru', 'battery')),
+            'needles' => array('pin lưu trữ', 'pin luu tru', 'battery', 'lưu trữ')
+        )
+    );
+    $homeHeroRows = $cache->get("select name$lang, desc$lang, photo, link, status from #_photo where type = ? order by numb,id desc", array('hero-carousel'), 'result', 7200);
+    $homeHeroTiles = array();
+    foreach($homeHeroDefaults as $homeHeroDefault) {
+        foreach($homeHeroRows as $homeHeroRow) {
+            if(empty($homeHeroRow['photo']) || strpos(','.(string)$homeHeroRow['status'].',', ',hienthi,') === false) continue;
+            $homeHeroRowName = mb_strtolower(trim((string)$homeHeroRow['name'.$lang]), 'UTF-8');
+            $homeHeroMatches = false;
+            foreach($homeHeroDefault['needles'] as $homeHeroNeedle) {
+                if(strpos($homeHeroRowName, mb_strtolower($homeHeroNeedle, 'UTF-8')) !== false) { $homeHeroMatches = true; break; }
+            }
+            if(!$homeHeroMatches) continue;
+            $homeHeroTiles[] = array(
+                'key' => $homeHeroDefault['key'],
+                'name' => !empty($homeHeroRow['name'.$lang]) ? $homeHeroRow['name'.$lang] : $homeHeroDefault['name'],
+                'desc' => !empty($homeHeroRow['desc'.$lang]) ? trim(strip_tags(htmlspecialchars_decode($homeHeroRow['desc'.$lang], ENT_QUOTES))) : $homeHeroDefault['desc'],
+                'photo' => $homeHeroRow['photo'],
+                'upload' => UPLOAD_PHOTO_L,
+                'link' => !empty($homeHeroRow['link']) ? $homeHeroRow['link'] : $homeHeroDefault['link']
+            );
+            break;
+        }
+    }
+    if(count($homeHeroTiles) !== 4) {
+        $homeHeroTiles = array();
+        foreach($homeHeroDefaults as $homeHeroDefault) {
+            unset($homeHeroDefault['needles']);
+            $homeHeroTiles[] = $homeHeroDefault;
+        }
+    }
+
     /* Nền cho dải chứng nhận trang chủ. Lấy cả record đã tắt để công tắc
        Hiển thị có ý nghĩa: chỉ dùng ảnh đóng gói khi Admin chưa từng cấu hình
        type này; nếu đã cấu hình rồi tắt thì section trở về nền sáng an toàn. */
@@ -130,7 +212,7 @@
     $loiich_title = $cache->get("select name$lang, desc$lang,photo from #_static where type = ? and find_in_set('hienthi',status) limit 0,1", array('loi-ich'), 'fetch', 7200);    
     
     // quy trinh
-    $quytrinh = $cache->get("select name$lang, solieu, id, photo, desc$lang from #_news where type = ? and find_in_set('hienthi',status) order by numb,id desc limit 0,4", array('quy-trinh'), 'result', 7200);
+    $quytrinh = $cache->get("select name$lang, solieu, id, photo, desc$lang from #_news where type = ? and find_in_set('hienthi',status) order by numb,id desc limit 0,5", array('quy-trinh'), 'result', 7200);
     /* Không tải lại danh sách "Hoạt động dự án" ở cuối trang chủ: dữ liệu type
        du-an đã được lấy theo nhóm trong $featuredProjects và hiển thị ở khối
        "Dự án đã thực hiện" bên dưới. Trang danh sách dự án vẫn giữ nguyên. */

@@ -23,8 +23,7 @@ test('public typography scale is readable and responsive', async ({ page, isMobi
   });
 
   expect(await fontSize(page.locator('body'))).toBe(isMobile ? 17 : 18);
-  expect(await fontSize(page.locator('.pts-ecosystem-name').first())).toBeGreaterThanOrEqual(isMobile ? 14.5 : 15.5);
-  expect(await fontSize(page.locator('.product-card .caption .name').first())).toBeGreaterThanOrEqual(isMobile ? 15.5 : 17);
+  expect(await fontSize(page.locator('.pts-home-category-copy strong').last())).toBeGreaterThanOrEqual(isMobile ? 14.5 : 17);
   expect(await fontSize(page.locator('.footer-link a').first())).toBeGreaterThanOrEqual(isMobile ? 14.5 : 15);
   const logoWidth = await page.locator('.pts-header-v3 .logo-header img').evaluate(image => image.getBoundingClientRect().width);
   expect(logoWidth).toBeGreaterThanOrEqual(isMobile ? 155 : 210);
@@ -50,9 +49,7 @@ test('wide 2K desktop uses the large-screen reading scale', async ({ page, isMob
 
   expect(await fontSize(page.locator('body'))).toBeGreaterThanOrEqual(20);
   expect(await fontSize(page.locator('.pts-header-nav .menu-catalog > a'))).toBeGreaterThanOrEqual(17);
-  expect(await fontSize(page.locator('.pts-ecosystem-name').first())).toBeGreaterThanOrEqual(17.5);
-  expect(await fontSize(page.locator('.product-card .caption .name').first())).toBeGreaterThanOrEqual(19);
-  expect(await fontSize(page.locator('.product-card .price-product .price-new').first())).toBeGreaterThanOrEqual(21);
+  expect(await fontSize(page.locator('.pts-home-category-copy strong').last())).toBeGreaterThanOrEqual(18);
   expect(await fontSize(page.locator('.footer-link a').first())).toBeGreaterThanOrEqual(17);
   expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
 });

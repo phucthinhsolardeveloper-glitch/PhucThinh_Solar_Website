@@ -79,6 +79,8 @@ if($source != 'index'){
 $js->set("comment/comment.js");
 $js->set("js/share.js");
 $js->set("js/apps.js");
+$js->set("js/header-v4.js");
+if($source == 'index') $js->set("js/home-story-v4.js");
 echo $js->get();
 ?>
 <script>
@@ -238,6 +240,7 @@ $('.view_maps').click(function() {
                    trùng id thì generateCaptcha() chỉ set được 1 trong 2 field
                    (yêu cầu 2026-09-11). */
                 if(document.getElementById('recaptchaResponseHero')) generateCaptcha('contact', 'recaptchaResponseHero');
+                if(document.getElementById('recaptchaResponseHomeV4')) generateCaptcha('contact', 'recaptchaResponseHomeV4');
             });
         </script>
     <?php } ?>

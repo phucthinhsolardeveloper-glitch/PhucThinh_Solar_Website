@@ -37,8 +37,12 @@ test('header v3 keeps navigation and search usable', async ({ page, isMobile }, 
     if (document.fonts && document.fonts.ready) await document.fonts.ready;
   });
 
-  const header = page.locator('#headerscroll.pts-header-v3');
+  const header = page.locator('#headerscroll.pts-header-v3.pts-header-v4');
   await expect(header).toBeVisible();
+  if (!isMobile) {
+    const headerHeight = await header.evaluate(element => element.getBoundingClientRect().height);
+    expect(headerHeight).toBeGreaterThanOrEqual(150);
+  }
   await expect(header.locator('.logo-header img')).toBeVisible();
   expect(await header.locator('.logo-header img').evaluate(image => image.naturalWidth)).toBeGreaterThan(0);
   const logoSurface = await header.locator('.logo-header').evaluate(logo => ({
@@ -66,26 +70,55 @@ test('header v3 keeps navigation and search usable', async ({ page, isMobile }, 
   if (isMobile) {
     await expect(header.locator('.hdr-search-zone')).toBeHidden();
     await expect(header.locator('.pts-header-nav')).toBeHidden();
-    await header.locator('.hdr-mobile-search .icon-search').click();
-    const mobileInput = header.locator('#keyword-res-mobile');
+    await expect(header.locator('.pts-header-actions>.gtranslate_wrapper')).toBeHidden();
+    await header.locator('.pts-header-search-toggle').click();
+    const mobileInput = header.locator('#keyword-res');
     await expect(mobileInput).toBeVisible();
     await mobileInput.fill('đèn đường');
     await Promise.all([
       page.waitForURL(/tim-kiem\?keyword=/),
-      header.locator('.hdr-mobile-search .search-grid button').click()
+      header.locator('.hdr-search-submit').click()
     ]);
   } else {
-    await expect(header.locator('.hdr-search-zone')).toBeVisible();
+    await expect(header.locator('.hdr-search-zone')).toBeHidden();
     await expect(header.locator('.pts-header-nav')).toBeVisible();
+    await header.locator('.pts-header-search-toggle').click();
+    await expect(header.locator('.hdr-search-zone')).toBeVisible();
     await expect(header.locator('.hdr-quick-links a').first()).toBeVisible();
+    await header.locator('.pts-header-search-toggle').click();
+    await expect(header.locator('.hdr-search-zone')).toBeHidden();
     for (const menuClass of ['menu-about', 'menu-knowledge', 'menu-cooperation']) {
       const group = header.locator(`.${menuClass}`);
       await group.hover();
-      await expect(group.locator(':scope > ul')).toBeVisible();
+      const submenu = group.locator(':scope > ul');
+      await expect(submenu).toBeVisible();
+      if (menuClass === 'menu-about') {
+        const firstLink = submenu.locator('a').first();
+        const submenuMetrics = await submenu.evaluate(element => {
+          const firstItem = element.querySelector('a');
+          const itemStyle = getComputedStyle(firstItem);
+          return {
+            width: element.getBoundingClientRect().width,
+            itemHeight: firstItem.getBoundingClientRect().height,
+            fontSize: parseFloat(itemStyle.fontSize),
+          };
+        });
+        expect(submenuMetrics.width).toBeGreaterThanOrEqual(300);
+        expect(submenuMetrics.itemHeight).toBeGreaterThanOrEqual(48);
+        expect(submenuMetrics.fontSize).toBeGreaterThanOrEqual(15);
+        await page.screenshot({ path: testInfo.outputPath('header-v3-submenu.png'), fullPage: false });
+        const target = await firstLink.boundingBox();
+        expect(target).toBeTruthy();
+        await page.mouse.move(target.x + target.width / 2, target.y + target.height / 2, { steps: 12 });
+        await expect(submenu).toBeVisible();
+        await expect(firstLink).toBeVisible();
+      }
     }
     const catalogX = await header.locator('.menu-catalog').evaluate(element => element.getBoundingClientRect().x);
     const introX = await header.locator('.pts-header-nav a[href="gioi-thieu/"]').evaluate(element => element.getBoundingClientRect().x);
     expect(catalogX).toBeLessThan(introX);
+    await header.locator('.pts-header-search-toggle').click();
+    await expect(header.locator('.hdr-search-zone')).toBeVisible();
     const input = header.locator('#keyword-res');
     await input.fill('tấm pin');
     await Promise.all([
@@ -96,6 +129,56 @@ test('header v3 keeps navigation and search usable', async ({ page, isMobile }, 
 
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1)).toBeTruthy();
   expect(pageErrors).toEqual([]);
+});
+
+test('header scrolls away naturally with the page', async ({ page }) => {
+  await page.setViewportSize({ width: 1920, height: 900 });
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+
+  const header = page.locator('#headerscroll.pts-header-v4');
+  await page.evaluate(() => {
+    document.documentElement.style.setProperty('scroll-behavior', 'auto', 'important');
+    document.body.style.setProperty('scroll-behavior', 'auto', 'important');
+    window.scrollTo(0, 0);
+  });
+  await page.evaluate(() => window.scrollTo(0, 700));
+  await expect.poll(() => header.evaluate(element => element.getBoundingClientRect().bottom)).toBeLessThanOrEqual(0);
+  await expect(header).not.toHaveClass(/fixed|is-scroll-hidden/);
+  expect(await header.evaluate(element => element.style.top)).toBe('');
+
+  await page.evaluate(() => window.scrollTo(0, 400));
+  await expect.poll(() => header.evaluate(element => element.getBoundingClientRect().bottom)).toBeLessThanOrEqual(0);
+
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expect.poll(() => header.evaluate(element => element.getBoundingClientRect().top)).toBeGreaterThanOrEqual(-1);
+});
+
+test('desktop logo never collides with the category navigation', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'Desktop header collision check.');
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+
+  const layouts = [];
+  for (const width of [1321, 1366, 1440, 1600, 1904, 2200, 2300, 2560]) {
+    await page.setViewportSize({ width, height: 900 });
+    layouts.push(await page.evaluate(() => {
+      const logo = document.querySelector('#headerscroll .logo-header img').getBoundingClientRect();
+      const category = document.querySelector('#headerscroll .menu-catalog > a').getBoundingClientRect();
+      const items = document.querySelectorAll('#headerscroll .pts-header-nav .menu > div > ul > li');
+      const lastItem = items[items.length - 1].getBoundingClientRect();
+      const actions = document.querySelector('#headerscroll .pts-header-actions').getBoundingClientRect();
+      return {
+        width: window.innerWidth,
+        logoGap: category.left - logo.right,
+        navigationGap: actions.left - lastItem.right,
+        documentOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      };
+    }));
+  }
+  for (const layout of layouts) {
+    expect(layout.logoGap, `${layout.width}px logo/category gap: ${JSON.stringify(layouts)}`).toBeGreaterThanOrEqual(8);
+    expect(layout.navigationGap, `${layout.width}px navigation/actions gap: ${JSON.stringify(layouts)}`).toBeGreaterThanOrEqual(0);
+    expect(layout.documentOverflow, `${layout.width}px horizontal overflow`).toBeLessThanOrEqual(1);
+  }
 });
 
 test('các nhóm menu gộp trỏ đến đúng landing và section hiện hữu', async ({ page }) => {

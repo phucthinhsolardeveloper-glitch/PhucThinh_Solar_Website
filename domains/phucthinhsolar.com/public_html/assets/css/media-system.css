@@ -20,9 +20,33 @@
 .product-card-img>.pts-product-photo{object-fit:contain!important;object-position:center!important}
 .product-card-img .pts-promo-frame{object-fit:fill!important}
 
-.left-pro-detail>a.MagicZoom,
-.left-pro-detail>a.MagicZoom>img{aspect-ratio:1/1!important}
-.left-pro-detail>a.MagicZoom>img{object-fit:contain!important;object-position:center!important}
+/* Khung gallery không đổi kích thước theo tỷ lệ ảnh gốc khi MagicZoom đổi
+   selector. Một canvas vuông và contain giữ đồng nhất cả ảnh tách nền lẫn
+   ảnh bối cảnh mà không crop chủ thể. */
+.left-pro-detail>a.MagicZoom{
+  position:relative!important;
+  display:block!important;
+  width:100%!important;
+  height:auto!important;
+  aspect-ratio:1/1!important;
+  overflow:hidden!important;
+  box-sizing:border-box!important;
+  line-height:0!important;
+  font-size:0!important
+}
+.left-pro-detail>a.MagicZoom>img,
+.left-pro-detail .mz-figure,
+.left-pro-detail .mz-figure>img,
+.left-pro-detail .mz-figure>.mz-image{
+  width:100%!important;
+  height:100%!important;
+  max-width:100%!important;
+  max-height:100%!important;
+  aspect-ratio:1/1!important;
+  object-fit:contain!important;
+  object-position:center!important
+}
+.left-pro-detail .mz-figure{display:block!important;overflow:hidden!important}
 
 .nh-media{aspect-ratio:16/9!important;overflow:hidden!important}
 .nh-media picture,.nh-media img{display:block;width:100%!important;height:100%!important}

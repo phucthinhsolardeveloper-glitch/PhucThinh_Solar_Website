@@ -120,36 +120,38 @@ GA_FRAMEWORK.Menu = function(){
     }
 
     /* Menu fixed */
-    if(isExist($(".header")))
+    if(isExist($(".header:not(.pts-header-v4)")))
     {
-        var headerHeight = $(".header").height();
+        var headerHeight = $(".header:not(.pts-header-v4)").height();
         $(window).scroll(function(){
             if($(window).scrollTop() >= headerHeight)
             {
-                $(".header").addClass('fixed');
+                $(".header:not(.pts-header-v4)").addClass('fixed');
             }
             else
             {
-                $(".header").removeClass('fixed');
+                $(".header:not(.pts-header-v4)").removeClass('fixed');
             }
         });
-         var prevScrollpos = window.pageYOffset;
-        window.onscroll = function() {
-        var currentScrollPos = Math.max(0, window.pageYOffset);
-        /* Gần đầu trang: luôn hiện header, không xét hướng cuộn (tránh bị ẩn
-           oan bởi các sự kiện scroll ảo do thanh địa chỉ Android tự ẩn/hiện).
-           Xa hơn: chỉ đổi trạng thái khi cuộn tích lũy vượt ngưỡng 8px, để
-           không giật liên tục theo từng rung nhỏ khi vuốt chạm (đà/đàn hồi). */
-        if (currentScrollPos <= headerHeight) {
-            document.getElementById("headerscroll").style.top = "0";
-            prevScrollpos = currentScrollPos;
-            return;
-        }
-        var delta = currentScrollPos - prevScrollpos;
-        if (Math.abs(delta) > 8) {
-            document.getElementById("headerscroll").style.top = (delta < 0) ? "0" : (-headerHeight - 8) + "px";
-            prevScrollpos = currentScrollPos;
-        }
+        var scrollHeaderElement = document.getElementById("headerscroll");
+        if (scrollHeaderElement && !scrollHeaderElement.classList.contains("pts-header-v4")) {
+            /* Keep the legacy behavior for older headers without assigning
+               window.onscroll, which scrolly.min can replace. Header V4 owns
+               its direction-aware hide/reveal behavior in header-v4.js. */
+            var previousScrollPosition = window.pageYOffset;
+            window.addEventListener("scroll", function() {
+                var currentScrollPosition = Math.max(0, window.pageYOffset);
+                if (currentScrollPosition <= headerHeight) {
+                    scrollHeaderElement.style.top = "0";
+                    previousScrollPosition = currentScrollPosition;
+                    return;
+                }
+                var scrollDelta = currentScrollPosition - previousScrollPosition;
+                if (Math.abs(scrollDelta) > 8) {
+                    scrollHeaderElement.style.top = (scrollDelta < 0) ? "0" : (-headerHeight - 8) + "px";
+                    previousScrollPosition = currentScrollPosition;
+                }
+            }, { passive: true });
         }
     }
 

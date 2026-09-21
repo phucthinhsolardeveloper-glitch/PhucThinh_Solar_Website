@@ -25,6 +25,7 @@
    ============================================================ */
 
 :root{
+  --pts-font:"Be Vietnam Pro","Plus Jakarta Sans","Mulish",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   /* Navy: lấy --pts-navy #0a2251 làm chuẩn (đang dùng ở header, trang chủ,
      footer - tức là bề mặt thương hiệu xuất hiện trên MỌI trang). */
   --pts-navy:#0a2251;
@@ -50,6 +51,8 @@
   --pts-chip-bg-hover:#dfe6ef;
   --pts-chip-text:#0a2251;
 }
+
+body{font-family:var(--pts-font)!important;}
 
 /* Trỏ biến riêng của từng hub về token chung. Giữ nguyên tên biến để không
    file nào phải viết lại selector, chỉ đồng nhất giá trị. */

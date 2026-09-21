@@ -2108,6 +2108,102 @@
 			return $cleaned;
 		}
 
+		/*
+		 * Tìm vùng có nội dung cho thumbnail sản phẩm (chỉ dùng với mode x4).
+		 * Chỉ trim PNG trong suốt hoặc nền trắng gần như đồng nhất ở cả bốn góc;
+		 * ảnh chụp bối cảnh/nền phức tạp trả về null và giữ nguyên contain.
+		 */
+		private function detectProductThumbnailContentBounds($image, $width, $height)
+		{
+			if(!function_exists('imagecolorsforindex') || $width < 16 || $height < 16) return null;
+
+			$corners = array(
+				array(0, 0), array($width - 1, 0),
+				array(0, $height - 1), array($width - 1, $height - 1)
+			);
+			$cornerColors = array();
+			$transparentCorners = 0;
+			foreach($corners as $corner)
+			{
+				$color = imagecolorsforindex($image, imagecolorat($image, $corner[0], $corner[1]));
+				$cornerColors[] = $color;
+				if(isset($color['alpha']) && $color['alpha'] >= 32) $transparentCorners++;
+			}
+
+			$transparentBackground = $transparentCorners >= 3;
+			$whiteBackground = false;
+			$background = array('red' => 0, 'green' => 0, 'blue' => 0);
+			if(!$transparentBackground)
+			{
+				foreach($cornerColors as $color)
+				{
+					$background['red'] += $color['red'];
+					$background['green'] += $color['green'];
+					$background['blue'] += $color['blue'];
+				}
+				foreach($background as $channel => $value) $background[$channel] = (int) round($value / count($cornerColors));
+				$whiteBackground = min($background['red'], $background['green'], $background['blue']) >= 225;
+				foreach($cornerColors as $color)
+				{
+					$distance = max(
+						abs($color['red'] - $background['red']),
+						abs($color['green'] - $background['green']),
+						abs($color['blue'] - $background['blue'])
+					);
+					if($distance > 28) $whiteBackground = false;
+				}
+			}
+			if(!$transparentBackground && !$whiteBackground) return null;
+
+			/* Lấy mẫu tối đa 160×160 để không quét hàng triệu pixel ảnh gốc. */
+			$scanWidth = min(160, $width);
+			$scanHeight = min(160, $height);
+			$minX = $scanWidth;
+			$minY = $scanHeight;
+			$maxX = -1;
+			$maxY = -1;
+			for($sampleY = 0; $sampleY < $scanHeight; $sampleY++)
+			{
+				$sourceY = min($height - 1, (int) floor(($sampleY + 0.5) * $height / $scanHeight));
+				for($sampleX = 0; $sampleX < $scanWidth; $sampleX++)
+				{
+					$sourceX = min($width - 1, (int) floor(($sampleX + 0.5) * $width / $scanWidth));
+					$color = imagecolorsforindex($image, imagecolorat($image, $sourceX, $sourceY));
+					if($transparentBackground)
+					{
+						$isBackground = isset($color['alpha']) && $color['alpha'] >= 100;
+					}
+					else
+					{
+						$distance = max(
+							abs($color['red'] - $background['red']),
+							abs($color['green'] - $background['green']),
+							abs($color['blue'] - $background['blue'])
+						);
+						$isBackground = min($color['red'], $color['green'], $color['blue']) >= 218 && $distance <= 42;
+					}
+					if($isBackground) continue;
+					$minX = min($minX, $sampleX);
+					$maxX = max($maxX, $sampleX);
+					$minY = min($minY, $sampleY);
+					$maxY = max($maxY, $sampleY);
+				}
+			}
+			if($maxX < $minX || $maxY < $minY) return null;
+			if(($maxX - $minX + 1) >= $scanWidth * 0.99 && ($maxY - $minY + 1) >= $scanHeight * 0.99) return null;
+
+			$left = (int) floor($minX * $width / $scanWidth);
+			$top = (int) floor($minY * $height / $scanHeight);
+			$right = (int) ceil(($maxX + 1) * $width / $scanWidth) - 1;
+			$bottom = (int) ceil(($maxY + 1) * $height / $scanHeight) - 1;
+			$padding = (int) round(max($right - $left + 1, $bottom - $top + 1) * 0.08);
+			$left = max(0, $left - $padding);
+			$top = max(0, $top - $padding);
+			$right = min($width - 1, $right + $padding);
+			$bottom = min($height - 1, $bottom + $padding);
+			return array('x' => $left, 'y' => $top, 'width' => $right - $left + 1, 'height' => $bottom - $top + 1);
+		}
+
 		/* Create thumb */
 		public function createThumb($width_thumb=0, $height_thumb=0, $zoom_crop='1', $src='', $watermark=null, $path=THUMBS, $preview=false, $args=array(), $quality=100)
 		{
@@ -2238,7 +2334,29 @@
 
 			imagesavealpha($canvas, true);
 
-			if($zoom_crop > 0)
+			if($zoom_crop == 4)
+			{
+				$bounds = $this->detectProductThumbnailContentBounds($image, $width, $height);
+				if($bounds)
+				{
+					$scale = min($new_width / $bounds['width'], $new_height / $bounds['height'], 1);
+					$copy_width = max(1, (int) floor($bounds['width'] * $scale));
+					$copy_height = max(1, (int) floor($bounds['height'] * $scale));
+					$origin_x = (int) floor(($new_width - $copy_width) / 2);
+					$origin_y = (int) floor(($new_height - $copy_height) / 2);
+					imagecopyresampled($canvas, $image, $origin_x, $origin_y, $bounds['x'], $bounds['y'], $copy_width, $copy_height, $bounds['width'], $bounds['height']);
+				}
+				else
+				{
+					$scale = min($new_width / $width, $new_height / $height, 1);
+					$copy_width = max(1, (int) floor($width * $scale));
+					$copy_height = max(1, (int) floor($height * $scale));
+					$origin_x = (int) floor(($new_width - $copy_width) / 2);
+					$origin_y = (int) floor(($new_height - $copy_height) / 2);
+					imagecopyresampled($canvas, $image, $origin_x, $origin_y, 0, 0, $copy_width, $copy_height, $width, $height);
+				}
+			}
+			else if($zoom_crop > 0)
 			{
 				$align = '';
 				$src_x = $src_y = 0;
