@@ -164,8 +164,10 @@ test('trang Liên hệ có nhịp nội dung gọn, một H1 và form nằm ngay
     };
   });
 
-  expect(layout.introGap).toBeLessThanOrEqual(testInfo.project.name.includes('mobile') ? 8 : 30);
-  expect(layout.formGap).toBeLessThanOrEqual(testInfo.project.name.includes('mobile') ? 16 : 20);
+  /* Bản contact-v3 chủ động giữ khoảng thở giữa hero và form để tách hai
+     nhiệm vụ: khám phá kênh liên hệ trước, sau đó mới nhập yêu cầu. */
+  expect(layout.introGap).toBeLessThanOrEqual(testInfo.project.name.includes('mobile') ? 48 : 56);
+  expect(layout.formGap).toBeLessThanOrEqual(testInfo.project.name.includes('mobile') ? 48 : 72);
   expect(layout.overflow).toBeLessThanOrEqual(1);
 });
 

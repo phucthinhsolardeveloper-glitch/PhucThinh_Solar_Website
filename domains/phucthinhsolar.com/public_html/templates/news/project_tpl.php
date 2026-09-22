@@ -3,10 +3,12 @@
     <?php if($projectShowIntro) { ?>
     <section class="pts-ph-heading" aria-labelledby="project-hub-title">
         <div class="uk-container">
-            <div class="pts-ph-mark" aria-hidden="true"><span></span><i class="fas fa-bolt"></i><span></span></div>
-            <?php if($projectHeroEyebrow !== '') { ?><span class="pts-ph-eyebrow"><?=$projectEscape($projectHeroEyebrow)?></span><?php } ?>
-            <h1 id="project-hub-title"><?=$projectEscape($projectHeroTitle)?></h1>
-            <p><?=$projectEscape($projectHeroDesc)?></p>
+            <div class="pts-ph-heading-copy">
+                <div class="pts-ph-mark" aria-hidden="true"><span></span><i class="fas fa-bolt"></i><span></span></div>
+                <?php if($projectHeroEyebrow !== '') { ?><span class="pts-ph-eyebrow"><?=$projectEscape($projectHeroEyebrow)?></span><?php } ?>
+                <h1 id="project-hub-title"><?=$projectEscape($projectHeroTitle)?></h1>
+                <p><?=$projectEscape($projectHeroDesc)?></p>
+            </div>
         </div>
     </section>
     <?php } else { ?>
@@ -45,6 +47,7 @@
             <article class="pts-ph-featured">
                 <div class="pts-ph-featured-media<?=$projectFeaturedPhoto ? '' : ' is-placeholder'?>">
                     <?php if($projectFeaturedPhoto) { ?><img src="<?=$projectEscape($func->getThumbUrl('1200x900x1', $projectFeaturedPhoto))?>" alt="<?=$projectEscape($projectFeaturedName)?>" width="1200" height="900" loading="lazy" decoding="async"><?php } else { ?><span class="pts-ph-placeholder" aria-hidden="true">01</span><?php } ?>
+                    <span class="pts-ph-featured-stamp"><?=($lang === 'en' ? 'FEATURED PROJECT' : 'DỰ ÁN NỔI BẬT')?></span>
                     <?php if($projectFeaturedCategoryName !== '') { ?>
                     <span class="pts-ph-badge"><?php if($projectFeaturedCategoryImage) { ?><img src="<?=$projectEscape($func->getThumbUrl('48x48x2', $projectFeaturedCategoryImage))?>" alt="" width="20" height="20"><?php } else { ?><i class="fas fa-solar-panel" aria-hidden="true"></i><?php } ?><?=$projectEscape($projectFeaturedCategoryName)?></span>
                     <?php } ?>

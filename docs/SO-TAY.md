@@ -1,6 +1,6 @@
 # Sổ tay Phúc Thịnh Solar — đọc vào là làm được
 
-Cập nhật: 2026-09-20.
+Cập nhật: 2026-09-22.
 
 Tài liệu này là **cửa vào duy nhất** khi bắt đầu một phiên làm việc mới, cho
 người thật hoặc cho AI vừa mất hết context. Nó không giải thích chi tiết — nó
@@ -32,7 +32,8 @@ liệt kê theo **việc cần làm**.
 | Dựng môi trường local để chạy thử | [02-development/local-setup.md](02-development/local-setup.md) |
 | Hiểu một URL chạy qua những file nào | [01-architecture/codebase-guide.md](01-architecture/codebase-guide.md) |
 | Tìm code của một trang cụ thể | [01-architecture/codebase-guide.md § Tra cứu nhanh](01-architecture/codebase-guide.md) |
-| Sửa giao diện / thêm CSS mà không làm vỡ trang khác | [02-development/frontend-guide.md](02-development/frontend-guide.md) |
+| Hiểu chuẩn UI/UX, component, responsive và accessibility đã duyệt | [02-development/public-ui-ux-design-system.md](02-development/public-ui-ux-design-system.md) |
+| Sửa giao diện / thêm CSS mà không làm vỡ trang khác | [02-development/public-ui-ux-design-system.md](02-development/public-ui-ux-design-system.md) → [02-development/frontend-guide.md](02-development/frontend-guide.md) |
 | Làm một nội dung sửa được ở Admin | [07-features/admin-guide.md](07-features/admin-guide.md) |
 | Hiểu bảng nào chứa gì, đổi schema thế nào | [03-data/database.md](03-data/database.md) |
 | Sửa một con bug | [11-workflows/bug-fixing-playbook.md](11-workflows/bug-fixing-playbook.md) |
@@ -101,6 +102,7 @@ Không có API router chung.
 | `ERR_CONNECTION_REFUSED` / `MySQL server has gone away` giữa lúc chạy test | Container WSL tự restart. **Kiểm tra uptime container trước khi nghi code** |
 | `git commit -m` với tiếng Việt báo `pathspec ... did not match` | Shell ăn dấu. Dùng `git commit -F -` với heredoc |
 | Màu trên trang "cứ lệch lệch" | Từng hub tự định nghĩa bảng màu riêng. Giờ đã gom về `design-tokens.css` — **sửa màu ở đó, không sửa rải rác** |
+| Trang con lệch mép dù dùng cùng `max-width` | Wrapper ngoài và container trong cùng cộng gutter. Mỗi trục chỉ có một gutter owner; xem [UI/UX design system](02-development/public-ui-ux-design-system.md) |
 
 ---
 

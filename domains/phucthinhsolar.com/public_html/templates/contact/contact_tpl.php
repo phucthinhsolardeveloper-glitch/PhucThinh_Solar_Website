@@ -96,7 +96,7 @@
     </div>
     
 </div> -->
-<div id="inf_contact_page">
+<div id="inf_contact_page" class="pts-contact-v3">
     <section id="top_content">
 	        <div class="container">
 	            <div class="row pts-contact-intro-row<?=$contactVisual ? ' has-visual' : ''?>">
@@ -166,7 +166,7 @@
                                                         <option value="Đèn năng lượng mặt trời">Đèn năng lượng mặt trời</option>
                                                         <option value="Điện mặt trời">Điện mặt trời</option>
                                                         <option value="Thiết bị (inverter, tấm pin, pin lưu trữ...)">Thiết bị (inverter, tấm pin, pin lưu trữ...)</option>
-                                                        <option value="Đại lý">Đại lý</option>
+                                                        <option value="Hợp tác đại lý">Hợp tác đại lý</option>
                                                         <option value="Khác">Khác</option>
                                                     </select></span></div>
                                         </li>

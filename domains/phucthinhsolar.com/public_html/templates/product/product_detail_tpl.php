@@ -262,6 +262,7 @@ $detailZoomHref = $detailMainPhoto !== '' ? watermarkImageHref('product', '600x6
     <div class="pts-pdp-editorial-grid <?=$hasProductSpecs?'has-specs':''?>">
         <div class="pts-pdp-editorial-main">
             <?php if($hasProductDescription) { ?><div class="pts-product-content" id="info-pro-detail">
+            <h2 class="pts-product-section-title">Mô tả sản phẩm</h2>
             <div class="pts-product-desc">
                 <?php if($productSpecHighlights) { ?>
                 <section>
@@ -287,7 +288,7 @@ $detailZoomHref = $detailMainPhoto !== '' ? watermarkImageHref('product', '600x6
                 <ul class="nav nav-tabs" id="tabsProDetail" data-click-scroll="center" role="tablist">
                     <?php if(!empty($videoEmbedUrl)) { ?><li class="nav-item"><a class="nav-link <?=$activeProductTab==='video'?'active':''?>" id="video-pro-detail-tab" data-toggle="tab" href="#video-pro-detail" role="tab">Video thực tế</a></li><?php } ?>
                     <?php if(!empty($certificateContent)) { ?><li class="nav-item"><a class="nav-link <?=$activeProductTab==='certificate'?'active':''?>" id="certificate-pro-detail-tab" data-toggle="tab" href="#certificate-pro-detail" role="tab">Chứng nhận</a></li><?php } ?>
-                    <?php if($hasProductPolicy) { ?><li class="nav-item"><a class="nav-link <?=$activeProductTab==='policy'?'active':''?>" id="cs-pro-detail-tab" data-toggle="tab" href="#cs-pro-detail" role="tab">Chính sách mua hàng</a></li><?php } ?>
+                    <?php if($hasProductPolicy) { ?><li class="nav-item"><a class="nav-link <?=$activeProductTab==='policy'?'active':''?>" id="cs-pro-detail-tab" data-toggle="tab" href="#cs-pro-detail" role="tab">Chính sách bán hàng</a></li><?php } ?>
                 </ul>
                 <div class="tab-content" id="tabsProDetailContent">
                     <?php if(!empty($videoEmbedUrl)) { ?>

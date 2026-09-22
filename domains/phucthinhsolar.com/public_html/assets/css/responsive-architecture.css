@@ -5,6 +5,53 @@
  * wrappers are flattened and only the page/container owner supplies the
  * viewport gutter. Entity cards and form controls keep their own UI.
  */
+
+/* Màn hình rộng: các trang trong dùng cùng nhịp ngang với container của
+   homepage. Giữ --pts-container dạng token số để không phá các logic cũ,
+   nhưng dùng một token hiển thị riêng cho wrapper public. */
+@media (min-width: 1600px) {
+  :root {
+    /* max() với --pts-container (theme-v2.css) để không bao giờ hẹp hơn giá
+       trị hệ thống cũ đang áp dụng ngay dưới mốc 1600px - nếu không, đúng
+       tại 1600px container tụt từ 1560px xuống 1472px, ép logo/menu gần
+       chạm nhau (xác minh bằng Playwright: logoGap 75px ở 1440px còn 1px ở
+       1600px trước khi có max() này). */
+    --pts-page-container: min(max(var(--pts-container, 1560px), calc(100vw - clamp(96px, 8vw, 220px))), 2200px);
+  }
+
+  .wrap-content,
+  .wrap-main:not(.wrap-home),
+  .uk-container,
+  .container,
+  #top_content > .container {
+    max-width: var(--pts-page-container) !important;
+  }
+
+  /* wrap-home là lớp full-bleed của homepage và các hub dùng banner ngang;
+     không được biến nó thành một cột hẹp rồi làm nội dung dồn về trái. */
+  .wrap-main.wrap-home {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Wrapper ngoài đã tạo khoảng cách với viewport. Không cộng thêm gutter
+     lần hai trong vùng nội dung, nếu không các hub sẽ lệch 34-36px so với
+     homepage, Dealer và Contact trên Full HD/iMac. */
+  .wap-main > .wrap-main:not(.wrap-home),
+  .wap-main .uk-container,
+  .pts-breadcrumb-bar .wrap-content2 {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  /* Hai hub có width riêng để bỏ qua gutter Bootstrap; đưa chúng về cùng
+     công thức thay vì để mỗi trang tự co theo một mốc khác nhau. */
+  .pts-dealer-hub .uk-container {
+    width: var(--pts-page-container) !important;
+    max-width: var(--pts-page-container) !important;
+  }
+}
+
 @media (max-width: 767px) {
   :root {
     --pts-mobile-gutter: 16px;

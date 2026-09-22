@@ -6,7 +6,8 @@ và liệt kê sẵn các cạm bẫy đã tốn thời gian thật.
 ```text
 Mọi task            -> SO-TAY.md -> AGENTS.md -> fact-map/status
 Hiểu code / tìm file-> 01-architecture/codebase-guide.md -> sources/templates/libraries
-Giao diện / CSS     -> 02-development/frontend-guide.md -> assets/css/design-tokens.css
+Giao diện / UX      -> 02-development/public-ui-ux-design-system.md -> ADR 0007
+CSS implementation -> 02-development/frontend-guide.md -> assets/css/design-tokens.css
 Nội dung sửa ở Admin-> 07-features/admin-guide.md -> libraries/type/config-type-*.php
 Database / schema   -> 03-data/database.md -> migrations/
 Sửa bug             -> 11-workflows/bug-fixing-playbook.md

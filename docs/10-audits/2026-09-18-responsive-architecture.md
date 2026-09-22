@@ -80,3 +80,21 @@ Kết quả audit 320px sau thay đổi:
 - Chưa deploy production trong task này.
 - Rollback code: bỏ lệnh nạp `responsive-architecture.css`, rồi xóa stylesheet và
   hai file Playwright mới. Không có migration hoặc dữ liệu cần rollback.
+
+## Addendum 2026-09-22 — container màn rộng
+
+Audit ban đầu chỉ sở hữu mobile. Sau phản hồi thực tế trên PC Full HD và iMac,
+`responsive-architecture.css` được mở rộng ở `min-width:1600px` để homepage và
+các trang con dùng cùng nhịp ngang:
+
+```css
+--pts-page-container: min(calc(100vw - clamp(96px, 8vw, 220px)), 2200px);
+```
+
+Wrapper ngoài sở hữu khoảng cách viewport; wrapper pass-through bên trong bỏ
+padding ngang để không cộng gutter hai lần. `wrap-home` vẫn full-width.
+
+Test `tools/visual-tests/tests/container-balance.spec.js` đo tám route public tại
+1920 và 2560px, so mép trái/phải với homepage và kiểm tra overflow. Kết quả tại
+thời điểm bổ sung: 2/2 test pass. Hợp đồng chính thức và ma trận viewport nằm ở
+[public-ui-ux-design-system.md](../02-development/public-ui-ux-design-system.md).

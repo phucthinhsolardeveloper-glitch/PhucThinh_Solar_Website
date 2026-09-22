@@ -8,6 +8,7 @@
 
 - `SO-TAY.md`: cửa vào duy nhất — tra cứu theo việc, bản đồ hệ thống, cạm bẫy đã gặp thật.
 - `01-architecture/codebase-guide.md`: URL → `$source` → `$template`; vai trò từng thư mục; hợp đồng `getImage()`.
+- `02-development/public-ui-ux-design-system.md`: nguồn chuẩn UI/UX public — định hướng, token, component, ảnh, responsive, accessibility và Definition of Done.
 - `02-development/frontend-guide.md`: thứ tự nạp CSS, hệ design token, 4 lỗi layout thật và cách sửa.
 - `07-features/admin-guide.md`: 3 hệ lưu nội dung; 5 bước làm một khối sửa được ở Admin.
 - `11-workflows/bug-fixing-playbook.md`: đo đừng đoán; 4 lần kết luận sai và dấu hiệu nhận ra.

@@ -3,7 +3,7 @@
 .pts-pdp-v2>.box-detail{margin-bottom:0}
 
 /* Product stage */
-.pts-pdp-v2 .pts-pdp-hero{padding:28px 0 58px}
+.pts-pdp-v2 .pts-pdp-hero{padding:28px 0 30px}
 .pts-pdp-v2 .grid-pro-detail>.row{display:grid!important;grid-template-columns:minmax(440px,.94fr) minmax(0,1.06fr)!important;align-items:start!important;gap:clamp(52px,5vw,92px)!important;margin:0!important}
 .pts-pdp-v2 .left-pro-detail,.pts-pdp-v2 .right-pro-detail{width:auto!important;max-width:none!important;min-width:0!important;padding:0!important}
 .pts-pdp-v2 .left-pro-detail{position:sticky;top:24px;align-self:start;overflow:visible!important}
@@ -125,7 +125,7 @@
 
 @media(max-width:991px){
   .pts-pdp-v2{padding-top:8px}
-  .pts-pdp-v2 .pts-pdp-hero{padding:20px 0 44px}
+  .pts-pdp-v2 .pts-pdp-hero{padding:20px 0 30px}
   .pts-pdp-v2 .grid-pro-detail>.row{display:flex!important;gap:30px!important}
   .pts-pdp-v2 .left-pro-detail{position:relative;top:auto;width:min(100%,620px)!important;max-width:620px!important;contain:none!important}
   .pts-pdp-v2 .left-pro-detail>a.MagicZoom{aspect-ratio:1!important;padding:18px!important}
@@ -178,3 +178,31 @@
 }
 
 @media(prefers-reduced-motion:reduce){.pts-pdp-v2 *{scroll-behavior:auto!important;transition:none!important}}
+
+/* Nhãn "Mô tả sản phẩm" dùng cùng cách trình bày với tab
+   "Chính sách bán hàng": chữ gọn, đường kẻ nền và gạch vàng trạng thái. */
+.pts-pdp-v2 .pts-product-section-title{
+  position:relative;
+  margin:0 0 42px!important;
+  padding:0 0 14px!important;
+  border-bottom:1px solid var(--pdp-line)!important;
+  color:var(--pdp-navy)!important;
+  font-size:16px!important;
+  font-weight:700!important;
+  line-height:1.4!important;
+  letter-spacing:0!important;
+}
+.pts-pdp-v2 .pts-product-section-title:after{
+  position:absolute;
+  bottom:-1px;
+  left:0;
+  display:block!important;
+  width:145px;
+  height:3px;
+  background:var(--pdp-gold)!important;
+  content:"";
+}
+.pts-pdp-v2 .tabs-pro-detail>#tabsProDetail #cs-pro-detail-tab{
+  font-size:16px!important;
+  font-weight:700!important;
+}

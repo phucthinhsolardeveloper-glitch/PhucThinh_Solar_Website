@@ -1,5 +1,15 @@
 # Documentation changelog
 
+## 2026-09-22
+
+- Thêm nguồn chuẩn duy nhất cho UI/UX public: định hướng, token, layout,
+  component, media, responsive, accessibility, ownership và Definition of Done.
+- Thêm ADR 0007 để ngăn từng trang tự tạo container/ngôn ngữ thiết kế riêng.
+- Cập nhật README, Sổ tay, AI context và `AGENTS.md` để route mọi thay đổi giao
+  diện qua Design System trước frontend implementation guide.
+- Sửa thứ tự CSS trong frontend guide theo runtime hiện tại và bổ sung addendum
+  audit container Full HD/iMac.
+
 ## 2026-08-26
 
 - Tạo documentation bootstrap từ source/schema/backup/runtime evidence.

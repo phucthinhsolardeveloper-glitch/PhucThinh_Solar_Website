@@ -22,6 +22,11 @@ Project được kế thừa. Không mặc định hành vi hiện có là chủ
 
 ## Quy tắc UX/UI đã duyệt
 
+Trước mọi thay đổi giao diện public, đọc
+`docs/02-development/public-ui-ux-design-system.md`. Đây là nguồn chuẩn đầy đủ
+cho token, component, media, responsive, accessibility và Definition of Done;
+các gạch đầu dòng dưới đây là bản tóm tắt bắt buộc, không phải một hệ riêng.
+
 - Trang chủ là showroom bán hàng: sản phẩm và danh mục chiếm phần lớn nội dung; giới thiệu công ty, giải pháp dài, quy trình và dự án để ở trang chuyên biệt.
 - Mỗi section dùng một tiêu đề chính rõ ràng. Không thêm eyebrow, gạch chân, nhãn nhỏ hoặc họa tiết chỉ để trang trí nếu chúng chiếm không gian mà không bổ sung thông tin hay hành động.
 - Danh mục sản phẩm trang chủ nằm trên một hàng ngang và cuộn ngang khi thiếu chỗ; không tự xuống thành nhiều hàng làm kéo dài trang. Ẩn thanh scrollbar thị giác, nhưng phải giữ kéo chuột/trackpad và vuốt cảm ứng hoạt động.

@@ -1,7 +1,12 @@
 # Sửa giao diện mà không làm vỡ trang khác
 
-Cập nhật: 2026-09-20. Đường dẫn tính từ
+Cập nhật: 2026-09-22. Đường dẫn tính từ
 `domains/phucthinhsolar.com/public_html/`.
+
+> Đọc [public-ui-ux-design-system.md](public-ui-ux-design-system.md) trước.
+> Design System quyết định **giao diện phải như thế nào**; tài liệu này chỉ dẫn
+> **triển khai vào đâu và kiểm tra cascade ra sao**. Nếu code hiện tại khác
+> Design System, ghi nhận đó là drift, không nâng hiện trạng thành chuẩn.
 
 Website này có **13 năm CSS chồng lớp**: theme WordPress cũ, theme "local",
 `theme-v2`, rồi các hub redesign từng trang. Hệ quả là `!important` nằm khắp nơi
@@ -21,7 +26,7 @@ không phải đánh nhau với cascade.
  4. css/style.css
  5. css/theme-v2.css                                     ← theme hiện tại
  6. CSS riêng của từng trang (chỉ nạp khi đúng trang):
-      $source == 'index'                → home-retail-v3.css
+      $source == 'index'                → home-story-v4.css
       $source == 'about'                → about-v2.css
       $source == 'daily'                → dealer-v2.css
       $template news/service*           → solution-hub.css
@@ -33,18 +38,29 @@ không phải đánh nhau với cascade.
 10. css/design-tokens.css
 11. css/responsive-architecture.css
 12. css/commerce-experience.css                          ← lưới PDP/cart/checkout
-13. css/typography-system.css                            ← NẠP CUỐI, thắng tất cả
+13. css/typography-system.css                            ← thang chữ public
+14. css/footer-v3.css
+15. contact-v3.css nếu `$source == 'contact'`
+16. product-detail-v2.css nếu là chi tiết sản phẩm
 ```
 
-**Quy tắc: thay đổi màu/khoảng cách dùng `design-tokens.css`; thay đổi cỡ chữ
-public dùng `typography-system.css`; kiến trúc mobile dùng
+**Quy tắc: thay đổi màu/shared role dùng `design-tokens.css`; thay đổi cỡ chữ
+public dùng `typography-system.css`; kiến trúc responsive và container dùng
 `responsive-architecture.css`; luồng mua hàng dùng `commerce-experience.css`.**
 Các lớp này nạp cuối theo đúng trách nhiệm để
 không phải vá rải rác CSS legacy. Rollback bằng cách bỏ rule tương ứng hoặc dòng
 `$css->set()` của lớp đó.
 
-Thêm CSS cho một trang mới: thêm một dòng `if(...) $css->set("css/<ten>.css");`
-vào nhóm 6, **trước** `header-v3.css`.
+Thêm CSS cho một trang mới: mặc định thêm một dòng
+`if(...) $css->set("css/<ten>.css");` vào nhóm 6, **trước** `header-v3.css`.
+Chỉ nạp sau shared layer khi file thật sự là lớp hiệu chỉnh cuối đã được ghi rõ
+owner, như Contact/PDP hiện tại; không dùng vị trí nạp cuối để tạo design system
+riêng cho một route.
+
+`responsive-architecture.css` không còn chỉ xử lý mobile. Từ 1600px nó sở hữu
+container public màn rộng theo công thức trong Design System, để homepage và
+các hub cùng mép trên Full HD/iMac. Không thêm `max-width` cục bộ để sửa một
+route; trước hết tìm wrapper đang cộng gutter lần hai.
 
 `typography-system.css` có thêm breakpoint `min-width:1600px` cho màn Full HD/
 2K: body 20px, menu 17–17.5px, tên sản phẩm 19px và footer link 17px. Không dùng
