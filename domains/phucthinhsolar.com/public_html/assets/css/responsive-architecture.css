@@ -21,6 +21,16 @@
     padding-right: 0 !important;
   }
 
+  /* Giải pháp chi tiết là trường hợp đặc biệt: wrap-main bên ngoài chứa
+     thêm các .uk-container trong template. Nếu áp gutter cho cả hai lớp sẽ
+     bị cộng hai lần và nội dung hẹp hơn các trang khác. */
+  .wap-main > .wrap-main.solution-page {
+    width: 100% !important;
+    max-width: none !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
   .pts-project-hub .uk-container,
   .pts-solution-hub .uk-container,
   .pts-about-page .uk-container,
