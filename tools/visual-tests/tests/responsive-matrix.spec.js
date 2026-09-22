@@ -64,8 +64,7 @@ for (const viewport of viewports) {
     }
 
     await page.goto('/dai-ly/', { waitUntil: 'domcontentloaded' });
-    const dealerGridColumns = await page.locator('.pts-dl-hero-grid').evaluate(grid => getComputedStyle(grid).gridTemplateColumns.split(' ').length);
-    expect(dealerGridColumns).toBe(viewport.width <= 991 ? 1 : 2);
+    await expect(page.locator('.pts-dl-confidence-layout')).toBeVisible();
     await expect(page.locator('#dang-ky-dai-ly form')).toBeVisible();
 
     await page.goto('/lien-he/', { waitUntil: 'domcontentloaded' });

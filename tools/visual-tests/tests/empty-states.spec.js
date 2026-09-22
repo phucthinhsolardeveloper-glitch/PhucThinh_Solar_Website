@@ -187,6 +187,8 @@ test('contact page serves a CSRF-protected lead form wired to the PHP handler', 
   await expect(form).toHaveCount(1);
   await expect(form.locator('input[name="form_csrf"]')).toHaveCount(1);
   await expect(form.locator('input[name="submit-contact"]')).toBeVisible();
+  await expect(form.locator('.title')).toHaveText('Đăng ký nhận tư vấn');
+  await expect(form.locator('input[name="submit-contact"]')).toHaveValue('Gửi yêu cầu tư vấn');
   // Email was made optional in the 2026-09-08 UX pass (hotline/Zalo are the
   // primary channels here); fullname stays required and still blocks an
   // empty submit via native constraint validation.

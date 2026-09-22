@@ -85,6 +85,20 @@ test('header v3 keeps navigation and search usable', async ({ page, isMobile }, 
     await header.locator('.pts-header-search-toggle').click();
     await expect(header.locator('.hdr-search-zone')).toBeVisible();
     await expect(header.locator('.hdr-quick-links a').first()).toBeVisible();
+    const aboutMenuWhileSearching = header.locator('.menu-about');
+    await aboutMenuWhileSearching.hover();
+    const aboutSubmenuWhileSearching = aboutMenuWhileSearching.locator(':scope > ul');
+    const aboutLinksWhileSearching = aboutSubmenuWhileSearching.locator('a');
+    await expect(aboutSubmenuWhileSearching).toBeVisible();
+    const searchPanelBounds = await header.locator('.hdr-search-zone').boundingBox();
+    const overlappedLinkIndex = await aboutLinksWhileSearching.evaluateAll((links, panel) => links.findIndex(link => {
+      const bounds = link.getBoundingClientRect();
+      return bounds.top < panel.y + panel.height && bounds.bottom > panel.y;
+    }), searchPanelBounds);
+    expect(overlappedLinkIndex).toBeGreaterThanOrEqual(0);
+    await aboutLinksWhileSearching.nth(overlappedLinkIndex).hover();
+    await expect(aboutSubmenuWhileSearching).toBeVisible();
+    await expect(header.locator('.hdr-search-zone')).toBeVisible();
     await header.locator('.pts-header-search-toggle').click();
     await expect(header.locator('.hdr-search-zone')).toBeHidden();
     for (const menuClass of ['menu-about', 'menu-knowledge', 'menu-cooperation']) {

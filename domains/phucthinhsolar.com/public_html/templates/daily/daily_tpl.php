@@ -15,13 +15,57 @@
             </div>
         </div>
     </div>
+    <div class="pts-dl-quick-nav-wrap">
+        <nav class="uk-container pts-dl-quick-nav" aria-label="Điều hướng trang đại lý">
+            <a href="#dang-ky-dai-ly"><i class="far fa-edit" aria-hidden="true"></i><span>Đăng ký hợp tác</span></a>
+            <a href="#nang-luc-phan-phoi"><i class="fas fa-solar-panel" aria-hidden="true"></i><span>Sản phẩm phân phối</span></a>
+            <a href="#ho-tro-dai-ly"><i class="fas fa-handshake" aria-hidden="true"></i><span>Quyền lợi đại lý</span></a>
+        </nav>
+    </div>
+</section>
+<?php } ?>
+
+<?php if(!empty($about1) || !empty($about2)){ ?>
+<section class="pts-dl-confidence pts-dl-overview" id="nang-luc-phan-phoi">
     <div class="uk-container">
-        <div class="pts-dl-hero-grid">
-            <div class="pts-dl-hero-copy">
-                <div class="pts-dl-hero-desc"><?=htmlspecialchars_decode($about1['desc'.$lang])?></div>
+        <div class="pts-dl-confidence-layout">
+            <div class="pts-dl-confidence-main">
+                <?php if(!empty($about1)){ ?>
+                <div class="pts-dl-hero-copy">
+                    <div class="pts-dl-hero-desc"><?=htmlspecialchars_decode($about1['desc'.$lang])?></div>
+                </div>
+                <?php } ?>
+                <?php if(!empty($about2)){ ?>
+                <div class="pts-dl-confidence-content">
+                <div class="pts-retail-section-head">
+                    <div class="section-title">
+                        <h2><?=htmlspecialchars_decode($about2['name'.$lang])?></h2>
+                    </div>
+                </div>
+                <div class="pts-dl-confidence-desc"><?=htmlspecialchars_decode($about2['desc'.$lang])?></div>
+                <?php if(count($photo_daily)){ ?>
+                <div class="pts-dl-product-grid">
+                    <?php foreach($photo_daily as $v){ ?>
+                    <a class="pts-dl-product-card" href="<?=$v['link']?>" target="_blank" title="<?=$v['name'.$lang]?>">
+                        <span class="pts-dl-product-media">
+                            <?php /* 2026-09-22: 480x500 -> 480x300 (giữ đúng tỉ lệ 8:5 của .pts-dl-product-media).
+                               Lưới 3 cột hiện hiển thị ảnh này rộng 239-423px tùy màn hình (đo thật 1440-2560px),
+                               nhưng thumbnail cũ 800px luôn tải full bất kể khung hiển thị nhỏ hơn nhiều lần -
+                               tỉ lệ natural/displayed tới 3.35x ở 1440px, vượt ngưỡng cảnh báo lãng phí băng
+                               thông (image-resolution.spec.js, ngưỡng 3.0x). 480px vẫn đủ nét ở 2x DPR cho
+                               khung hiển thị phổ biến nhất (1440px), chỉ hơi mềm ở màn 2K/2560px rộng nhất. */ ?>
+                            <?=$func->getImage(['isLazy' => false, 'class' => 'w-100', 'sizes' => '480x300x1', 'size-error' => '480x300x1', 'upload' => UPLOAD_PHOTO_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
+                        </span>
+                        <span class="pts-dl-product-name"><?=$v['name'.$lang]?></span>
+                    </a>
+                    <?php } ?>
+                </div>
+                <?php } ?>
+                </div>
+                <?php } ?>
             </div>
             <div class="pts-dl-form-card" id="dang-ky-dai-ly">
-                <h2>Đăng ký làm đối tác phân phối</h2>
+                <h2 id="pts-dl-registration-title">Đăng ký làm đối tác phân phối</h2>
                 <p class="pts-dl-form-note">Để lại thông tin, Phúc Thịnh Solar sẽ liên hệ tư vấn chính sách đại lý phù hợp.</p>
                 <form action="" method="post" class="pts-dl-form">
                     <input type="hidden" name="form_csrf" value="<?=htmlspecialchars(formCsrfToken(), ENT_QUOTES, 'UTF-8')?>">
@@ -59,37 +103,12 @@
 </section>
 <?php } ?>
 
-<?php if(!empty($about2)){ ?>
-<section class="pts-dl-confidence" id="nang-luc-phan-phoi">
-    <div class="uk-container">
-        <div class="pts-retail-section-head">
-            <div class="section-title">
-                <h2><?=htmlspecialchars_decode($about2['name'.$lang])?></h2>
-            </div>
-        </div>
-        <div class="pts-dl-confidence-desc"><?=htmlspecialchars_decode($about2['desc'.$lang])?></div>
-        <?php if(count($photo_daily)){ ?>
-        <div class="pts-dl-product-grid">
-            <?php foreach($photo_daily as $v){ ?>
-            <a class="pts-dl-product-card" href="<?=$v['link']?>" target="_blank" title="<?=$v['name'.$lang]?>">
-                <span class="pts-dl-product-media">
-                    <?=$func->getImage(['isLazy' => false, 'class' => 'w-100', 'sizes' => '800x500x1', 'size-error' => '800x500x1', 'upload' => UPLOAD_PHOTO_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
-                </span>
-                <span class="pts-dl-product-name"><?=$v['name'.$lang]?></span>
-            </a>
-            <?php } ?>
-        </div>
-        <?php } ?>
-    </div>
-</section>
-<?php } ?>
-
 <?php if(!empty($about3)){ ?>
 <section class="pts-dl-support" id="ho-tro-dai-ly">
     <div class="uk-container">
         <div class="pts-retail-section-head">
             <div class="section-title">
-                <h2><?=htmlspecialchars_decode($about3['name'.$lang])?></h2>
+                <h2><?=preg_replace('/<\/?br\s*\/?>/i', ' ', htmlspecialchars_decode($about3['name'.$lang]))?></h2>
             </div>
         </div>
         <div class="pts-dl-support-desc"><?=htmlspecialchars_decode($about3['desc'.$lang])?></div>

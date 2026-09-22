@@ -72,7 +72,16 @@
 					if($extension != 'js') die("Invalid file");
 					$myfile = fopen($path['server'], "r") or die("Unable to open file");
 					$sizefile = filesize($path['server']);
-			        if($sizefile) $strJs .= $this->compress(fread($myfile,$sizefile));
+					/* KHÔNG gọi compress(): nó strip comment bằng regex chạy TRƯỚC
+					   bước tách theo dấu nháy, nên "//" bên trong một chuỗi (vd URL
+					   'http://...' hoặc '//cdn...') bị hiểu nhầm là comment và cắt
+					   mất phần còn lại của dòng - phá vỡ cú pháp. Xác minh thật ngày
+					   2026-09-21: bundle đã "minify" báo `SyntaxError: Unexpected
+					   identifier 'url'` khi parse bằng Node. Ghép nguyên văn vẫn gộp
+					   được 24 file thành 1 request cache được lâu dài (mục tiêu
+					   chính), và Caddy đã nén gzip/zstd nên không tốn thêm băng
+					   thông đáng kể so với bản minify đúng. */
+			        if($sizefile) $strJs .= fread($myfile,$sizefile)."\n;\n";
 					fclose($myfile);
 				}
 

@@ -34,6 +34,33 @@ assert_css_shipped() {
     fi
 }
 
+# Cùng lý do với assert_css_shipped, áp cho JS: 2026-09-21 chuyển debug-js
+# sang false (JsMinify::minify() gộp toàn bộ ~24 file JS thành một
+# assets/caches/<hash>.js — xem chú thích trong class.JsMinify.php về việc
+# KHÔNG bật lại compress() cũ, nó có bug cắt nhầm "//" trong chuỗi URL làm
+# hỏng cú pháp). Từ đây đường dẫn JS gốc (photobox.js, fancybox.js...) không
+# còn xuất hiện nguyên văn trong HTML.
+assert_js_shipped() {
+    local html_file="$1" literal_path="$2" distinctive_rule="$3"
+    if grep -qF "$literal_path" "$html_file"; then
+        return 0
+    fi
+    local bundle_url
+    bundle_url="$(grep -oE 'src="[^"]*assets/caches/[a-f0-9]+\.js[^"]*"' "$html_file" | head -1 | sed -E 's/^src="//; s/"$//')"
+    if [ -z "$bundle_url" ]; then
+        echo "FAIL: Không thấy $literal_path (không script riêng, không có JS bundle) trong $html_file" >&2
+        exit 1
+    fi
+    local bundle_cache="/tmp/pts-predeploy-bundle-$(basename "${bundle_url%%\?*}")"
+    if [ ! -s "$bundle_cache" ]; then
+        curl -fsS -L -o "$bundle_cache" "$bundle_url"
+    fi
+    if ! grep -qF -- "$distinctive_rule" "$bundle_cache"; then
+        echo "FAIL: JS bundle thiếu \"$distinctive_rule\" — $literal_path có thể không được gộp vào bundle" >&2
+        exit 1
+    fi
+}
+
 # ripgrep không có trên máy deploy (trong Claude Code nó chỉ là shell function
 # của phiên tương tác, script non-interactive không thấy). Mọi guard phải dùng
 # grep, nếu không script chết giữa chừng và assertion phía sau không chạy.
@@ -402,19 +429,19 @@ fi
 grep -qE '<title>[^<]+</title>' /tmp/pts-predeploy-project-detail.html
 grep -qF 'id="inf_single_project"' /tmp/pts-predeploy-project-detail.html
 assert_css_shipped /tmp/pts-predeploy-project-detail.html 'assets/photobox/photobox.css' '#pbOverlay'
-grep -qF 'assets/photobox/photobox.js' /tmp/pts-predeploy-project-detail.html
+assert_js_shipped /tmp/pts-predeploy-project-detail.html 'assets/photobox/photobox.js' 'pbOverlay'
 assert_css_shipped /tmp/pts-predeploy-project-detail.html 'assets/fancybox3/jquery.fancybox.css' '.fancybox-bg'
-grep -qF 'assets/fancybox3/jquery.fancybox.js' /tmp/pts-predeploy-project-detail.html
+assert_js_shipped /tmp/pts-predeploy-project-detail.html 'assets/fancybox3/jquery.fancybox.js' 'data-fancybox'
 assert_css_shipped /tmp/pts-predeploy-product.html 'assets/magiczoomplus/magiczoomplus.css' '.MagicZoom'
-grep -qF 'assets/magiczoomplus/magiczoomplus.js' /tmp/pts-predeploy-product.html
-grep -qF 'assets/fileuploader/jquery.fileuploader.min.js' /tmp/pts-predeploy-product.html
-grep -qF 'assets/comment/comment.js' /tmp/pts-predeploy-product.html
+assert_js_shipped /tmp/pts-predeploy-product.html 'assets/magiczoomplus/magiczoomplus.js' 'MagicZoomPlus'
+assert_js_shipped /tmp/pts-predeploy-product.html 'assets/fileuploader/jquery.fileuploader.min.js' 'fileuploader'
+assert_js_shipped /tmp/pts-predeploy-product.html 'assets/comment/comment.js' 'comment-lists'
 assert_css_shipped /tmp/pts-predeploy-product.html 'assets/owlcarousel2/owl.carousel.css' '.owl-carousel'
-grep -qF 'assets/owlcarousel2/owl.carousel.js' /tmp/pts-predeploy-product.html
+assert_js_shipped /tmp/pts-predeploy-product.html 'assets/owlcarousel2/owl.carousel.js' 'owl.carousel'
 assert_css_shipped /tmp/pts-predeploy-home.html 'assets/css/jssor.css' 'jssorl-009-spin'
-grep -qF 'assets/js/jssor.slider.min.js' /tmp/pts-predeploy-home.html
+assert_js_shipped /tmp/pts-predeploy-home.html 'assets/js/jssor.slider.min.js' 'JssorArrowNavigator'
 assert_css_shipped /tmp/pts-predeploy-home.html 'assets/owlcarousel2/owl.carousel.css' '.owl-carousel'
-grep -qF 'assets/owlcarousel2/owl.carousel.js' /tmp/pts-predeploy-home.html
+assert_js_shipped /tmp/pts-predeploy-home.html 'assets/owlcarousel2/owl.carousel.js' 'owl.carousel'
 grep -qF 'name="twitter:title"' /tmp/pts-predeploy-product-filtered.html
 grep -qF 'rel="canonical" href="http://localhost:8080/san-pham/"' /tmp/pts-predeploy-product-filtered.html
 grep -qF 'name="robots" content="noindex,nofollow"' /tmp/pts-predeploy-search.html

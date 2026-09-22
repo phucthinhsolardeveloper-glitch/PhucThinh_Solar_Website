@@ -132,11 +132,12 @@
 .pts-contact-intro-copy .custContContact li b{color:#f3c850!important}
 .pts-contact-intro-action{display:inline-flex;align-items:center;align-self:flex-start;gap:9px;color:#f3c850!important;font-size:13.5px;font-weight:850;text-decoration:none!important}
 #yeu-cau-tu-van{padding:0!important}
-#yeu-cau-tu-van .formContact{max-width:none;margin:0!important;padding:40px 44px!important;border-radius:3px!important;background:#f4f7fb!important}
+#yeu-cau-tu-van .formContact{max-width:1120px;margin:0 auto!important;padding:48px 0 64px!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important}
 #yeu-cau-tu-van .inf_default_form{display:grid;grid-template-columns:minmax(220px,300px) minmax(0,1fr);grid-template-rows:auto 1fr;column-gap:54px;align-items:start}
 #yeu-cau-tu-van .inf_default_form .title{grid-column:1;grid-row:1;margin-top:3px!important}
 #yeu-cau-tu-van .inf_default_form .des{grid-column:1;grid-row:2;max-width:240px;line-height:1.7}
 #yeu-cau-tu-van .inf_default_form ul{grid-column:2;grid-row:1/span 2}
+#yeu-cau-tu-van .pts-required-mark{color:#b3261e;font-weight:900}
 
 /* Đại lý: ảnh 8:5 đứng riêng, nội dung không đè lên ảnh như layout legacy. */
 .agency_1 .inner_content{position:relative!important;display:block!important;width:100%!important;min-height:0!important;padding:0!important;overflow:visible!important;border:0!important;border-radius:0!important;background:transparent!important;isolation:auto}

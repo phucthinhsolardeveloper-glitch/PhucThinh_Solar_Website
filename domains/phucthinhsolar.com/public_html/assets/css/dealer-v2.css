@@ -1,75 +1,90 @@
 /* Trang Đại lý (/dai-ly/) — redesign 2026-09-15, khớp hệ thiết kế phẳng
    navy/gold đã dùng cho About/Dự án/Giải pháp/Tin tức. Thay hẳn theme cũ
    frontendd82d.css (agency/agency_1..5) cho đúng trang này. */
-.pts-dealer-hub{color:var(--pts-ink);background:#fff;padding:0 0 8px;}
-.pts-dealer-hub section{padding:56px 0;}
-.pts-dealer-hub .pts-retail-section-head{margin-bottom:26px;}
-.pts-dealer-hub .section-title h2{font-size:clamp(24px,2.6vw,34px);font-weight:900;color:var(--pts-navy);margin:0;}
+.pts-dealer-hub{--dealer-navy:var(--pts-navy-deep,#061537);--dealer-gold:var(--pts-gold,#c9962e);color:var(--pts-ink);background:#fff;padding:0;}
+.pts-dealer-hub section{padding:clamp(56px,5vw,78px) 0;}
+.pts-dealer-hub .uk-container{width:min(calc(100% - clamp(40px,5vw,96px)),var(--pts-container,1560px));max-width:none;margin-right:auto;margin-left:auto;padding-right:0;padding-left:0;}
+.pts-dealer-hub .pts-retail-section-head{margin-bottom:30px;}
+.pts-dealer-hub .section-title h2{font-size:clamp(30px,2.8vw,44px);font-weight:850;color:var(--dealer-navy);line-height:1.2;margin:0;letter-spacing:-.025em;}
 
 /* Hero: banner ảnh full-bleed (chữ phủ vùng tối bên trái, khớp
    .pts-catalog-campaign) + giới thiệu/form ngay bên dưới. Không dùng ảnh
    dọc trong khung hẹp nữa - từng làm ảnh bị crop cao/hẹp, mất bố cục gốc. */
-.pts-dealer-hub .pts-dl-hero{padding-top:0;}
-.pts-dl-hero-banner{position:relative;display:block;min-height:270px;margin-bottom:28px;overflow:hidden;isolation:isolate;background:#081a38;}
+.pts-dealer-hub .pts-dl-hero{padding:0 0 clamp(18px,2vw,26px);}
+.pts-dl-hero-banner{position:relative;display:block;min-height:270px;margin-bottom:0;overflow:hidden;isolation:isolate;background:#081a38;}
 .pts-dl-hero-banner-media{position:absolute;inset:0;z-index:-2;display:block;}
 .pts-dl-hero-banner-media img{display:block;width:100%!important;height:100%!important;object-fit:cover!important;object-position:center!important;}
-.pts-dl-hero-banner-shade{position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(4,17,46,.96) 0,rgba(4,17,46,.82) 38%,rgba(4,17,46,.2) 72%,rgba(4,17,46,.04) 100%);}
+.pts-dl-hero-banner-shade{position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(4,17,46,.86) 0,rgba(4,17,46,.68) 38%,rgba(4,17,46,.18) 72%,rgba(4,17,46,.02) 100%);}
 .pts-dl-hero-banner.is-text-only{background:linear-gradient(115deg,#061735,#123c72);}
 .pts-dl-hero-banner-copy{display:flex;max-width:680px;min-height:270px;align-items:center;padding:42px 0;}
-.pts-dl-hero-banner-copy h1{max-width:650px;color:#fff;font-size:clamp(28px,3vw,42px);font-weight:900;line-height:1.16;margin:0;letter-spacing:-.02em;text-wrap:balance;}
+.pts-dl-hero-banner-copy h1{max-width:760px;color:#fff;font-size:clamp(34px,3.4vw,52px);font-weight:850;line-height:1.13;margin:0;letter-spacing:-.03em;text-wrap:balance;text-shadow:0 2px 18px rgba(0,0,0,.2);}
+.pts-dl-quick-nav-wrap{border-bottom:1px solid var(--pts-line);background:#fff;}
+.pts-dl-quick-nav{display:flex;min-height:66px;align-items:stretch;overflow-x:auto;scrollbar-width:none;}
+.pts-dl-quick-nav::-webkit-scrollbar{display:none;}
+.pts-dl-quick-nav a{display:flex;min-width:max-content;align-items:center;gap:10px;padding:0 clamp(22px,3vw,42px);border-right:1px solid var(--pts-line);color:var(--dealer-navy)!important;font-size:15px;font-weight:750;transition:background .16s ease,color .16s ease;}
+.pts-dl-quick-nav a:first-child{padding-left:0;}
+.pts-dl-quick-nav a:hover{background:var(--pts-surface);color:var(--pts-gold-dark)!important;}
+.pts-dl-quick-nav i{display:flex;width:26px;height:26px;align-items:center;justify-content:center;color:var(--dealer-gold);font-size:14px;}
 
-.pts-dl-hero-grid{
-    display:grid;
-    grid-template-columns:minmax(0,1fr) minmax(360px,520px);
-    gap:18px 44px;
-    align-items:start;
-    padding-bottom:8px;
-}
-.pts-dl-hero-desc{color:#475569;font-size:15.5px;line-height:1.8;}
+.pts-dl-hero-copy{max-width:980px;}
+.pts-dl-hero-desc{color:#475569;font-size:17px;line-height:1.78;}
 .pts-dl-hero-desc p{margin:0 0 10px;}
 .pts-dl-hero-desc strong,.pts-dl-hero-desc b{color:var(--pts-navy);}
 
-.pts-dl-form-card{width:100%;max-width:520px;justify-self:end;border:0;border-radius:4px;padding:28px;background:linear-gradient(145deg,#061735,#123c72);box-shadow:0 18px 42px rgba(6,23,53,.16);}
-.pts-dl-form-card h2{color:#fff;font-size:21px;font-weight:900;margin:0 0 8px;}
-.pts-dl-form-note{color:#d9e6f8;font-size:13.5px;line-height:1.6;margin:0 0 18px;}
-.pts-dl-form-field{margin-bottom:12px;}
-.pts-dl-label{display:block;margin:0 0 6px;color:#fff;font-size:12.5px;font-weight:750;}
-.pts-dl-input{width:100%;height:46px;padding:0 14px;border:1px solid var(--pts-line);border-radius:4px;background:#fff;color:var(--pts-ink);font-size:14px;transition:.15s;}
+.pts-dl-form-card{width:100%;max-width:560px;justify-self:end;border:1px solid rgba(255,255,255,.12);border-radius:4px;padding:32px;background:linear-gradient(145deg,var(--dealer-navy),#123c72);box-shadow:0 14px 34px rgba(6,23,53,.14);}
+.pts-dl-form-card h2{color:#fff;font-size:clamp(24px,2vw,29px);font-weight:850;line-height:1.2;margin:0 0 10px;}
+.pts-dl-form-note{color:#d9e6f8;font-size:15px;line-height:1.6;margin:0 0 20px;}
+.pts-dl-form-field{margin-bottom:14px;}
+.pts-dl-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:14px;}
+.pts-dl-form-field:nth-of-type(5),.pts-dl-submit{grid-column:1 / -1;}
+.pts-dl-label{display:block;margin:0 0 6px;color:#fff;font-size:14px;font-weight:750;}
+.pts-dl-input{width:100%;height:48px;padding:0 14px;border:1px solid var(--pts-line);border-radius:3px;background:#fff;color:var(--pts-ink);font-size:15px;transition:.15s;}
 .pts-dl-input:focus{outline:none;border-color:var(--pts-gold);}
 .pts-dl-select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23475569' stroke-width='1.6' fill='none' fill-rule='evenodd'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:34px;}
-.pts-dl-submit{display:flex;width:100%;align-items:center;justify-content:center;gap:10px;height:48px;border:0;border-radius:4px;margin-top:4px;font-size:14.5px;font-weight:850;cursor:pointer;}
+.pts-dl-submit{display:flex;width:100%;align-items:center;justify-content:center;gap:10px;height:50px;border:0;border-radius:3px;margin-top:6px;font-size:15px;font-weight:850;cursor:pointer;}
 
 /* Năng lực phân phối: mô tả + lưới ảnh sản phẩm chuẩn hoá. */
 /* Nội dung CKEditor cũ dùng <p>♦ ...</p> đơn giản, không phải <ul><li> -
    chỉ chỉnh khoảng cách/đọc được, giữ nguyên dấu ♦ đã nhập, không viết lại
    nội dung khách hàng. */
-.pts-dl-confidence-desc{max-width:900px;color:#475569;font-size:15.5px;line-height:1.85;margin-bottom:30px;}
+.pts-dl-confidence-desc{max-width:980px;color:#475569;font-size:17px;line-height:1.78;margin-bottom:34px;}
 .pts-dl-confidence-desc p{margin:0 0 8px;}
 .pts-dl-confidence-desc p:empty{display:none;}
-.pts-dl-product-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;}
+.pts-dl-confidence{padding-top:clamp(28px,2.5vw,40px)!important;}
+.pts-dealer-hub section.pts-dl-hero{padding-bottom:0!important;}
+.pts-dealer-hub section.pts-dl-confidence{padding-top:clamp(24px,2.5vw,36px)!important;}
+.pts-dl-confidence-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(360px,520px);align-items:start;gap:clamp(44px,5vw,84px);}
+.pts-dl-confidence-main{min-width:0;}
+.pts-dl-confidence-main>.pts-dl-hero-copy{margin-bottom:clamp(42px,5vw,72px);}
+.pts-dl-confidence-content .pts-retail-section-head{margin-bottom:30px;}
+.pts-dl-confidence-layout>.pts-dl-form-card{position:sticky;top:24px;max-width:520px;justify-self:end;}
+.pts-dl-product-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(20px,2vw,32px);}
 .pts-dl-product-card{display:block;color:var(--pts-ink)!important;}
 .pts-dl-product-media{display:block;border-radius:4px;overflow:hidden;background:var(--pts-surface);aspect-ratio:8/5;}
 .pts-dl-product-media img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s;}
 .pts-dl-product-card:hover .pts-dl-product-media img{transform:scale(1.04);}
-.pts-dl-product-name{display:block;margin-top:10px;font-size:13.5px;font-weight:750;color:var(--pts-navy);}
+.pts-dl-product-name{display:block;margin-top:12px;font-size:16px;font-weight:750;color:var(--dealer-navy);line-height:1.45;}
 
-/* Hỗ trợ đại lý: mô tả + lưới 4 lợi ích.
-   2026-09-16: bỏ nền xám --pts-surface theo nguyên tắc nền trắng đồng nhất;
-   4 card lợi ích tự phân tách bằng khoảng trắng + viền mảnh phía dưới. */
-.pts-dl-support{background:#fff;border-top:1px solid var(--pts-line);}
-.pts-dl-support-desc{max-width:900px;color:#475569;font-size:15.5px;line-height:1.85;margin-bottom:30px;}
+/* Hỗ trợ đại lý: dải nội dung navy để tách nhịp kể chuyện, đồng bộ CTA
+   và footer của trang chủ. Dữ liệu/ảnh vẫn lấy nguyên từ Admin. */
+.pts-dl-support{background:var(--dealer-navy);border-top:0;color:#fff;}
+.pts-dl-support>.uk-container{display:grid;grid-template-columns:minmax(300px,.8fr) minmax(420px,1.2fr);column-gap:clamp(44px,6vw,96px);align-items:start;}
+.pts-dl-support .pts-retail-section-head{grid-column:1;grid-row:1;margin-bottom:0;}
+.pts-dealer-hub .pts-dl-support .section-title h2{max-width:600px;color:#fff!important;-webkit-text-fill-color:#fff;font-size:clamp(30px,2.55vw,42px);line-height:1.16;}
+.pts-dl-support-desc{grid-column:2;grid-row:1;max-width:760px;color:#cbd5e1;font-size:17px;line-height:1.78;margin:2px 0 0;}
 .pts-dl-support-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:22px;}
-.pts-dl-support-card{background:#fff;border:1px solid var(--pts-line);border-radius:4px;padding:26px 22px;}
-.pts-dl-support-icon{display:flex;width:46px;height:46px;align-items:center;justify-content:center;margin-bottom:16px;}
+.pts-dl-support-grid{grid-column:1/-1;margin-top:38px;}
+.pts-dl-support-card{background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.16);border-radius:3px;padding:28px 24px;}
+.pts-dl-support-icon{display:flex;width:48px;height:48px;align-items:center;justify-content:center;margin-bottom:18px;padding:8px;border-radius:3px;background:#f3cf79;}
 .pts-dl-support-icon img{width:100%;height:100%;object-fit:contain;}
-.pts-dl-support-card h4{color:var(--pts-navy);font-size:16px;font-weight:850;margin:0 0 10px;}
-.pts-dl-support-copy{color:#64748b;font-size:14px;line-height:1.7;}
+.pts-dl-support-card h4{color:#fff;font-size:18px;font-weight:850;margin:0 0 10px;}
+.pts-dl-support-copy{color:#cbd5e1;font-size:15px;line-height:1.7;}
 .pts-dl-support-copy p{margin:0 0 6px;}
 
 /* Câu chuyện khách hàng/đối tác. */
 .pts-dl-testimonial-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px;}
-.pts-dl-testimonial-card{border:1px solid var(--pts-line);border-radius:4px;padding:26px 24px;display:flex;flex-direction:column;gap:20px;}
-.pts-dl-testimonial-quote{color:#334155;font-size:14.5px;line-height:1.75;flex:1 1 auto;}
+.pts-dl-testimonial-card{border:0;border-radius:3px;background:var(--pts-surface);padding:28px 26px;display:flex;flex-direction:column;gap:20px;}
+.pts-dl-testimonial-quote{color:#334155;font-size:16px;line-height:1.75;flex:1 1 auto;}
 .pts-dl-testimonial-quote p{margin:0;}
 .pts-dl-testimonial-quote:before{content:"\201C";display:block;color:var(--pts-gold);font-size:34px;font-weight:900;line-height:1;margin-bottom:4px;font-family:Georgia,serif;}
 .pts-dl-testimonial-person{display:flex;align-items:center;gap:12px;}
@@ -86,12 +101,17 @@
 .pts-dl-stats-label{color:#cbd5f5;font-size:13.5px;font-weight:700;}
 
 @media(max-width:991px){
-    .pts-dl-hero-grid{grid-template-columns:1fr;}
     .pts-dl-form-card{order:-1;justify-self:stretch;max-width:none;}
     .pts-dl-hero-banner,.pts-dl-hero-banner-copy{min-height:230px;}
     .pts-dl-hero-banner-copy{padding:36px 0;}
-    .pts-dl-product-grid{grid-template-columns:repeat(3,minmax(0,1fr));}
+    .pts-dl-product-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .pts-dl-confidence-layout{grid-template-columns:1fr;gap:34px;}
+    .pts-dl-confidence-layout>.pts-dl-form-card{position:static;max-width:none;justify-self:stretch;}
     .pts-dl-support-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .pts-dl-support>.uk-container{grid-template-columns:1fr;}
+    .pts-dl-support .pts-retail-section-head,.pts-dl-support-desc{grid-column:1;grid-row:auto;}
+    .pts-dl-support-desc{margin-top:18px;}
+    .pts-dl-support-grid{margin-top:30px;}
     .pts-dl-testimonial-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
     .pts-dl-stats-grid{grid-template-columns:repeat(3,minmax(0,1fr));}
 }
@@ -99,7 +119,6 @@
     .pts-dl-hero-banner,.pts-dl-hero-banner-copy{min-height:300px;}
     .pts-dl-hero-banner-copy{max-width:780px;padding:50px 0;}
     .pts-dl-hero-banner-copy h1{max-width:760px;font-size:48px;}
-    .pts-dl-hero-grid{grid-template-columns:minmax(0,900px) minmax(400px,560px);justify-content:space-between;gap:64px;}
     .pts-dl-form-card{max-width:560px;}
     .pts-dl-hero-desc,.pts-dl-confidence-desc,.pts-dl-support-desc{font-size:16.5px;}
     .pts-dl-product-grid{gap:24px;}
@@ -107,13 +126,18 @@
 @media(max-width:767px){
     .pts-dealer-hub section{padding:40px 0;}
     .pts-dl-confidence-desc ul{grid-template-columns:1fr;}
-    .pts-dl-product-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .pts-dl-product-grid{grid-template-columns:1fr;}
     .pts-dl-support-grid{grid-template-columns:1fr;}
     .pts-dl-testimonial-grid{grid-template-columns:1fr;}
     .pts-dl-stats-grid{grid-template-columns:1fr;gap:26px;}
-    .pts-dl-hero-banner{margin-bottom:30px;}
+    .pts-dl-hero-banner{margin-bottom:0;}
     .pts-dl-hero-banner,.pts-dl-hero-banner-copy{min-height:210px;}
     .pts-dl-hero-banner-copy{padding:30px 0;}
     .pts-dl-hero-banner-shade{background:linear-gradient(90deg,rgba(4,17,46,.94),rgba(4,17,46,.62));}
     .pts-dl-form-card{padding:22px 18px;}
+    .pts-dl-form{grid-template-columns:1fr;}
+    .pts-dl-form-field:nth-of-type(5),.pts-dl-submit{grid-column:auto;}
+    .pts-dl-quick-nav{min-height:58px;margin-right:-20px;padding-right:20px;}
+    .pts-dl-quick-nav a{padding:0 18px;font-size:13.5px;}
+    .pts-dl-quick-nav a:first-child{padding-left:0;}
 }

@@ -111,6 +111,17 @@ test('header, menu, breadcrumb and footer remain usable', async ({ page, isMobil
   await page.locator('#footer_logo').scrollIntoViewIfNeeded();
   await page.waitForTimeout(300);
   await expect(page.locator('#footer_logo img')).toBeVisible();
+  await expect(page.locator('footer .footer-policy-column .footer-bct-badge')).toHaveCount(1);
+  await expect(page.locator('footer .footer-brand-column .footer-bct-badge')).toHaveCount(0);
+  await expect(page.locator('footer .footer-legal-name')).toContainText('CÔNG TY TNHH CÔNG NGHỆ');
+  await expect(page.locator('footer .footer-legal-name')).toContainText('PHÚC THỊNH SOLAR');
+  await expect(page.locator('footer .CRlist_office_center')).toContainText('Phường Hội Phú');
+  await expect(page.locator('footer .footer-contact-lines a')).toHaveCount(2);
+  await expect(page.locator('footer .footer-contact-lines')).toContainText('Tư vấn bán hàng');
+  await expect(page.locator('footer .footer-contact-lines')).toContainText('Hỗ trợ kỹ thuật');
+  await expect(page.locator('footer .content_cn')).toContainText('Kho TP.HCM');
+  await expect(page.locator('footer .content_cn')).toContainText('Kho Đà Nẵng');
+  await expect(page.locator('footer .content_cn')).toContainText('Kho Gia Lai');
   expect(pageErrors).toEqual([]);
 });
 
@@ -202,9 +213,21 @@ test('home contact dock stays compact and exposes existing contact links', async
    class .is-enhanced, mà class đó do apps.js thêm - tức sau khi trang đã vẽ.
    Đã sửa bằng cách gắn class `pts-js` vào <html> từ inline script trong <head>
    (chạy trước lần vẽ đầu tiên) và nhân đôi quy tắc thu gọn theo class đó.
-   Test chặn apps.js để mô phỏng đúng khoảnh khắc trước khi JS chính chạy. */
+   Test chặn script chứa apps.js để mô phỏng đúng khoảnh khắc trước khi JS
+   chính chạy.
+   2026-09-21: debug-js chuyển sang false (xem class.JsMinify.php) nên apps.js
+   không còn là request riêng - nó được GỘP vào 1 file
+   assets/caches/<hash>.js cùng ~23 script khác. Chặn đúng file apps.js gốc
+   không còn tác dụng vì trình duyệt không bao giờ gọi URL đó nữa. Chặn theo
+   nội dung phản hồi (chứa "GA_FRAMEWORK.ContactDock") để test đúng cả hai chế
+   độ debug-js, không phải đoán tên file bundle theo hash. */
 test('cụm liên hệ nổi đã thu gọn từ lần vẽ đầu, không nháy 3 nút', async ({ page }) => {
-  await page.route('**/assets/js/apps.js*', route => route.abort());
+  await page.route('**/*.js*', async route => {
+    const response = await route.fetch();
+    const body = await response.text();
+    if (body.includes('GA_FRAMEWORK.ContactDock')) { await route.abort(); return; }
+    await route.fulfill({ response });
+  });
   await page.goto('/', { waitUntil: 'load' });
 
   await expect(page.locator('html')).toHaveClass(/\bpts-js\b/);

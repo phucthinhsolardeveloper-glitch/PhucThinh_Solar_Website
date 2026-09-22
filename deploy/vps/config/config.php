@@ -45,7 +45,18 @@ $config = array(
         'salt' => $ptsReadSecret('PTS_APP_SALT_FILE'),
         'debug-developer' => false,
         'debug-css' => false,
-        'debug-js' => true,
+        /* 2026-09-21: false thay vì true. Khi true, JsMinify::links() render 38
+           thẻ <script> RIÊNG LẺ, mỗi thẻ kèm querystring NGẪU NHIÊN đổi mỗi lần
+           tải trang (func->stringRandom(10)) - trình duyệt KHÔNG BAO GIỜ cache
+           được, nên mỗi lượt xem trang tải lại toàn bộ ~1,24 MB JS. Vì các thẻ
+           này chặn parser tuần tự, $(document).ready() (nơi gọi Lazys() để bật
+           thư viện lazy-load ảnh) chỉ chạy SAU khi cả 38 request đó xong - đúng
+           triệu chứng "trang hiện rồi, ảnh một lúc sau mới hiện", nặng hơn hẳn
+           trên máy/mạng chậm vì đó là 38 vòng round-trip nối tiếp. Đổi thành
+           false dùng JsMinify::minify(): gộp 1 file, version bám filemtime nên
+           cache được lâu dài. Xem class.JsMinify.php để biết vì sao KHÔNG bật
+           lại bước compress() cũ - nó có bug đã xác minh làm hỏng cú pháp. */
+        'debug-js' => false,
         'index' => false,
         'image' => array('hasWebp'=>true),
         'video' => array(

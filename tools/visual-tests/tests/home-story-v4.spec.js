@@ -7,7 +7,8 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
-test('homepage v4 giữ đủ mạch nội dung và hero là một slider bốn ảnh', async ({ page }, testInfo) => {
+test('homepage v4 giữ đủ mạch nội dung và hero là một slider bốn ảnh', async ({ page, isMobile }, testInfo) => {
+  test.skip(isMobile, 'Đo khung hero toàn màn hình chỉ áp dụng cho trình duyệt desktop.');
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
   await page.setViewportSize({ width: 1920, height: 950 });
@@ -19,6 +20,7 @@ test('homepage v4 giữ đủ mạch nội dung và hero là một slider bốn 
   const slides = slider.locator('[data-home-hero-slide]');
   await expect(slider).toBeVisible();
   await expect(slides).toHaveCount(4);
+  expect(await slides.evaluateAll(items => items.map(item => item.getAttribute('data-home-hero-slide-key')))).toEqual(['street-light', 'inverter', 'panel', 'storage']);
   await expect(slider.locator('[data-home-hero-slide].is-active')).toHaveCount(1);
   await expect(slider.locator('[data-home-hero-current]')).toHaveText('01');
   await slider.locator('[data-home-hero-next]').click();
@@ -41,12 +43,19 @@ test('homepage v4 giữ đủ mạch nội dung và hero là một slider bốn 
   expect(heroMetrics.titleSize).toBeGreaterThanOrEqual(55);
   expect(heroMetrics.logoWidth).toBeGreaterThanOrEqual(360);
   expect(heroMetrics.heroBottom).toBeLessThan(heroMetrics.viewportHeight + 80);
+  expect(await page.locator('.pts-home-catalog h2').evaluate(title => title.getBoundingClientRect().top)).toBeGreaterThan(heroMetrics.viewportHeight);
 
   await expect(page.locator('.pts-home-category')).toHaveCount(await page.locator('.pts-home-category').count());
   expect(await page.locator('.pts-home-category').count()).toBeGreaterThanOrEqual(5);
+  expect(await page.locator('.pts-home-category').evaluateAll(items => items.map(item => item.getAttribute('data-home-category-key')))).toEqual(['lighting', 'panel', 'inverter', 'storage', 'pump']);
   await expect(page.locator('.pts-home-category-copy small').first()).not.toBeEmpty();
   await expect(page.locator('.pts-home-tab')).toHaveCount(4);
-  await expect(page.locator('.pts-home-solution-chips').first()).toBeVisible();
+  await expect(page.locator('.pts-home-tab').first()).toHaveText('Doanh nghiệp và nhà xưởng');
+  const businessChips = page.locator('.pts-home-solution-chips').first();
+  await expect(businessChips).toBeVisible();
+  await expect(businessChips.locator('a')).toHaveCount(3);
+  await expect(businessChips.locator('a').first()).toHaveAttribute('href', 'giai-phap/dien-mat-troi-doanh-nghiep/');
+  await expect(page.locator('.pts-home-tab-panel').first().locator('.pts-home-btn-primary')).toHaveAttribute('href', 'giai-phap/dien-mat-troi-doanh-nghiep/');
   await expect(page.locator('.pts-home-solution-visual').first()).toBeVisible();
   const solutionVisualMetrics = await page.locator('.pts-home-solution-visual').first().evaluate(visual => {
     const bounds = visual.getBoundingClientRect();
@@ -68,10 +77,19 @@ test('homepage v4 giữ đủ mạch nội dung và hero là một slider bốn 
   expect(brandColors.heading).toBe('rgb(6, 21, 55)');
   await expect(page.locator('.pts-home-steps li')).toHaveCount(5);
   await expect(page.locator('.pts-home-dealer')).toBeVisible();
-  const dealerPhoto = page.locator('.pts-home-dealer-media img');
-  await dealerPhoto.scrollIntoViewIfNeeded();
-  await expect.poll(() => dealerPhoto.evaluate(image => image.complete && image.naturalWidth > 0)).toBeTruthy();
-  expect(await dealerPhoto.evaluate(image => getComputedStyle(image).objectFit)).toBe('cover');
+  await expect(page.locator('.pts-home-dealer img')).toHaveCount(0);
+  expect(await page.locator('.pts-home-dealer').evaluate(section => getComputedStyle(section).backgroundColor)).toBe('rgb(6, 21, 55)');
+  const dealer = page.locator('.pts-home-dealer');
+  await expect(dealer.locator('h2')).toHaveText('TRỞ THÀNH ĐẠI LÝ PHÚC THỊNH SOLAR');
+  await expect(dealer.locator('.pts-home-dealer-brand')).toHaveCSS('white-space', 'nowrap');
+  await expect(dealer.locator('p')).toHaveText('Cùng phát triển kinh doanh thiết bị năng lượng mặt trời với nguồn hàng đa dạng, chính sách hợp tác rõ ràng và sự đồng hành của đội ngũ Phúc Thịnh Solar.');
+  await expect(dealer.locator('li')).toHaveCount(3);
+  await expect(dealer.locator('.pts-home-btn-primary')).toHaveAttribute('href', '#yeu-cau-tu-van');
+  await expect(dealer.locator('.pts-home-btn-primary')).toHaveAttribute('data-home-quote', 'Hợp tác đại lý');
+  await dealer.locator('.pts-home-btn-primary').click();
+  await expect(page.locator('#ptsHomeInterest')).toHaveValue('Hợp tác đại lý');
+  expect(await page.locator('.pts-home-category-shade').first().evaluate(shade => getComputedStyle(shade).backgroundImage)).toBe('none');
+  expect(await page.locator('.pts-home-category-rail .pts-home-category-copy').first().evaluate(copy => getComputedStyle(copy).backgroundImage)).toContain('linear-gradient');
   await expect(page.locator('.pts-home-about')).toBeVisible();
   await expect(page.locator('#yeu-cau-tu-van form input[name="form_csrf"]')).toHaveCount(1);
   const contactFooterMetrics = await page.evaluate(() => {
@@ -101,7 +119,8 @@ test('homepage v4 giữ đủ mạch nội dung và hero là một slider bốn 
   expect(errors).toEqual([]);
 });
 
-test('hero tự chuyển slide kể cả khi con trỏ nằm trên banner và bật giảm chuyển động', async ({ page }) => {
+test('hero tự chuyển slide kể cả khi con trỏ nằm trên banner và bật giảm chuyển động', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'Kiểm tra rê chuột dành cho desktop; mobile được kiểm tra bằng thao tác vuốt.');
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/', { waitUntil: 'domcontentloaded' });
@@ -170,20 +189,33 @@ test('homepage v4 tải đủ ảnh và giữ đúng thứ tự câu chuyện', 
   await page.waitForTimeout(250);
 
   for (const [slot, asset] of [
-    ['storage', 'category-battery-storage-v1.png'],
-    ['pump', 'category-solar-pump-v1.png'],
+    ['inverter', 'category-inverter-user-2026.jpg'],
+    ['panel', 'category-panels-user-2026.jpg'],
+    ['storage', 'category-storage-user-2026.jpg'],
+    ['pump', 'category-pump-user-2026.jpg'],
   ]) {
     const image = page.locator(`.pts-home-category--${slot} img`).first();
+    await image.scrollIntoViewIfNeeded();
     await expect(image).toBeVisible();
     expect(await image.evaluate(element => element.currentSrc)).toContain(asset);
   }
+  await page.locator('.pts-home-catalog').screenshot({ path: testInfo.outputPath('homepage-v4-catalog-glass.png') });
 
   const heroPhotos = await page.locator('[data-home-hero-slide] img').evaluateAll(images => images.map(image => image.currentSrc || image.getAttribute('data-src') || image.src));
   expect(heroPhotos).toHaveLength(4);
   expect(heroPhotos.every(source => source && !source.includes('noimage.png'))).toBeTruthy();
+  for (const asset of [
+    'home-hero-street-lighting-v1.webp',
+    'home-hero-inverter-v1.webp',
+    'home-hero-solar-panels-v1.webp',
+    'home-hero-battery-storage-v1.webp',
+  ]) {
+    expect(heroPhotos.some(source => source.includes(asset)), asset).toBeTruthy();
+  }
   const solutionPhotos = await page.locator('.pts-home-solution-visual img').evaluateAll(images => images.map(image => image.currentSrc || image.getAttribute('data-src') || image.src));
   expect(solutionPhotos).toHaveLength(4);
   expect(solutionPhotos.every(source => source && !source.includes('noimage.png'))).toBeTruthy();
+  expect(solutionPhotos.some(source => source.includes('home-solution-construction-v1.png'))).toBeTruthy();
 
   const failedImages = await page.locator('.pts-home-v4 img').evaluateAll(images => images
     .filter(image => image.currentSrc && image.naturalWidth === 0)

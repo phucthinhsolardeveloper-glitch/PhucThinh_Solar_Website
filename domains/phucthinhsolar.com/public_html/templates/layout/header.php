@@ -18,7 +18,7 @@ $headerQuickCategories = !empty($splist) ? array_slice($splist, 0, 5) : array();
             </div>
 
             <a class="logo-header pts-brand pts-brand-wordmark" href="" aria-label="Phúc Thịnh Solar - Trang chủ">
-                <?=$func->getImage(['class' => '', 'noNativeLazy' => true, 'sizes' => '420x90x3', 'upload' => UPLOAD_PHOTO_L, 'image' => $logo['photo'], 'alt' => $setting['name'.$lang]])?>
+                <?=$func->getImage(['class' => '', 'noNativeLazy' => true, 'sizes' => '520x112x3', 'upload' => UPLOAD_PHOTO_L, 'image' => $logo['photo'], 'alt' => $setting['name'.$lang]])?>
             </a>
 
             <div class="pts-header-nav" aria-label="Điều hướng chính">

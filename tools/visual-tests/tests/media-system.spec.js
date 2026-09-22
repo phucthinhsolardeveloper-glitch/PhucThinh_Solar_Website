@@ -148,7 +148,10 @@ test('thumbnail động ưu tiên WebP và trả đúng MIME', async ({ page, re
 test('trang Liên hệ có nhịp nội dung gọn, một H1 và form nằm ngay sau dải tư vấn', async ({ page }, testInfo) => {
   await page.goto('/lien-he/', { waitUntil: 'domcontentloaded' });
   await expect(page.locator('#inf_contact_page h1')).toHaveCount(1);
-  await expect(page.locator('#yeu-cau-tu-van h2')).toHaveText('Gửi tin nhắn cho chúng tôi');
+  // 2026-09-22: tiêu đề form đổi từ "Gửi tin nhắn cho chúng tôi" (chung chung)
+  // sang "Đăng ký nhận tư vấn" theo bản redesign Liên hệ — nội dung, không
+  // phải lỗi; cập nhật assertion theo copy đã duyệt.
+  await expect(page.locator('#yeu-cau-tu-van h2')).toHaveText('Đăng ký nhận tư vấn');
 
   const layout = await page.evaluate(() => {
     const breadcrumb = document.querySelector('.pts-breadcrumb-bar').getBoundingClientRect();

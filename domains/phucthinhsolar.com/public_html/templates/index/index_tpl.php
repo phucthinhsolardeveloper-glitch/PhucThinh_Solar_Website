@@ -23,11 +23,11 @@ $homeCategorySummary = static function($category, $slugKey) {
     return 'Khám phá thiết bị và lựa chọn cấu hình phù hợp với nhu cầu sử dụng.';
 };
 $homeCategorySlots = array(
-    array('key' => 'lighting', 'needles' => array('den-nlmt'), 'name' => 'Đèn năng lượng mặt trời', 'desc' => 'Đèn đường, đèn pha và đèn sân vườn cho nhiều không gian sử dụng.', 'action' => 'Xem các dòng đèn', 'photo' => 'home-street-lighting.jpg', 'upload' => 'assets/images/site-visuals/', 'link' => 'san-pham/'),
-    array('key' => 'panel', 'needles' => array('tam-pin'), 'name' => 'Tấm pin điện mặt trời', 'desc' => 'Thiết bị tạo điện từ ánh nắng, sử dụng trong hệ thống điện mặt trời.', 'action' => 'Xem tấm pin', 'photo' => 'category-solar-panels-v1.jpg', 'upload' => 'assets/images/site-visuals/', 'link' => 'san-pham/'),
-    array('key' => 'inverter', 'needles' => array('bien-tan-inverter', 'inverter'), 'name' => 'Biến tần (Inverter)', 'desc' => 'Thiết bị chuyển đổi và quản lý nguồn điện trong hệ thống điện mặt trời.', 'action' => 'Xem biến tần', 'photo' => 'category-inverter-brands-v1.jpg', 'upload' => 'assets/images/site-visuals/', 'link' => 'san-pham/'),
-    array('key' => 'storage', 'needles' => array('pin-luu-tru', 'luu-tru'), 'name' => 'Pin lưu trữ', 'desc' => 'Lưu trữ điện để sử dụng theo nhu cầu và cấu hình hệ thống.', 'action' => 'Xem pin lưu trữ', 'photo' => 'category-battery-storage-v1.png', 'upload' => 'assets/images/site-visuals/', 'link' => 'san-pham/'),
-    array('key' => 'pump', 'needles' => array('bien-tan-bom', 'bom-nang-luong', 'bom'), 'name' => 'Bơm nước năng lượng mặt trời', 'desc' => 'Thiết bị bơm nước phục vụ tưới tiêu và cấp nước bằng năng lượng mặt trời.', 'action' => 'Xem bơm nước', 'photo' => 'category-solar-pump-v1.png', 'upload' => 'assets/images/site-visuals/', 'link' => 'giai-phap/')
+    array('key' => 'lighting', 'needles' => array('den-nlmt'), 'name' => 'Đèn năng lượng mặt trời', 'desc' => 'Đèn đường, đèn pha và đèn sân vườn cho nhiều không gian sử dụng.', 'action' => 'Xem các dòng đèn', 'photo' => 'home-street-lighting-v2.png', 'upload' => 'assets/images/site-visuals/', 'link' => 'san-pham/'),
+    array('key' => 'panel', 'needles' => array('tam-pin'), 'name' => 'Tấm pin điện mặt trời', 'desc' => 'Thiết bị tạo điện từ ánh nắng, sử dụng trong hệ thống điện mặt trời.', 'action' => 'Xem tấm pin', 'photo' => 'category-panels-user-2026.jpg', 'upload' => 'assets/images/site-visuals/', 'link' => 'san-pham/'),
+    array('key' => 'inverter', 'needles' => array('bien-tan-inverter', 'inverter'), 'name' => 'Biến tần (Inverter)', 'desc' => 'Thiết bị chuyển đổi và quản lý nguồn điện trong hệ thống điện mặt trời.', 'action' => 'Xem biến tần', 'photo' => 'category-inverter-user-2026.jpg', 'upload' => 'assets/images/site-visuals/', 'link' => 'san-pham/'),
+    array('key' => 'storage', 'needles' => array('pin-luu-tru', 'luu-tru'), 'name' => 'Pin lưu trữ', 'desc' => 'Lưu trữ điện để sử dụng theo nhu cầu và cấu hình hệ thống.', 'action' => 'Xem pin lưu trữ', 'photo' => 'category-storage-user-2026.jpg', 'upload' => 'assets/images/site-visuals/', 'link' => 'san-pham/'),
+    array('key' => 'pump', 'needles' => array('bien-tan-bom', 'bom-nang-luong', 'bom'), 'name' => 'Bơm nước năng lượng mặt trời', 'desc' => 'Thiết bị bơm nước phục vụ tưới tiêu và cấp nước bằng năng lượng mặt trời.', 'action' => 'Xem bơm nước', 'photo' => 'category-pump-user-2026.jpg', 'upload' => 'assets/images/site-visuals/', 'link' => 'giai-phap/')
 );
 $homeShowcaseCategories = array();
 foreach($homeCategorySlots as $homeCategorySlotIndex => $homeCategorySlot) {
@@ -39,8 +39,15 @@ foreach($homeCategorySlots as $homeCategorySlotIndex => $homeCategorySlot) {
         }
     }
     if($homeCategorySlotIndex === 0 && !empty($homeCampaigns[0]['photo'])) {
-        $homeCategorySlot['photo'] = $homeCampaigns[0]['photo'];
-        $homeCategorySlot['upload'] = $homeCampaigns[0]['upload'];
+        $homeCampaignPhoto = (string)$homeCampaigns[0]['photo'];
+        $homeCampaignPhotoName = strtolower(basename(str_replace('\\', '/', $homeCampaignPhoto)));
+        if(in_array($homeCampaignPhotoName, array('home-street-lighting.jpg', 'home-street-lighting.jpg.webp'), true)) {
+            $homeCategorySlot['photo'] = 'home-street-lighting-v2.png';
+            $homeCategorySlot['upload'] = 'assets/images/site-visuals/';
+        } else {
+            $homeCategorySlot['photo'] = $homeCampaignPhoto;
+            $homeCategorySlot['upload'] = $homeCampaigns[0]['upload'];
+        }
     } elseif(!in_array($homeCategorySlot['key'], array('panel', 'inverter', 'storage', 'pump'), true) && !empty($homeCategoryMatch['photo'])) {
         $homeCategorySlot['photo'] = $homeCategoryMatch['photo'];
         $homeCategorySlot['upload'] = UPLOAD_PRODUCT_L;
@@ -51,14 +58,14 @@ foreach($homeCategorySlots as $homeCategorySlotIndex => $homeCategorySlot) {
 }
 
 $homeSolutionFallbacks = array(
-    array('name' => 'Điện mặt trời cho gia đình', 'label' => 'Gia đình', 'desc' => 'Tư vấn hệ thống theo nhu cầu dùng điện, diện tích mái và nhu cầu lưu trữ của gia đình.', 'chips' => array('Điện mặt trời mái nhà', 'Biến tần (Inverter)', 'Pin lưu trữ'), 'photo' => 'solution-home-solar-v2.jpg', 'link' => 'giai-phap/'),
-    array('name' => 'Điện mặt trời cho doanh nghiệp', 'label' => 'Doanh nghiệp và nhà xưởng', 'desc' => 'Đề xuất phương án theo nhu cầu vận hành, đặc điểm mái và điều kiện lắp đặt tại cơ sở.', 'chips' => array('Điện mặt trời mái nhà', 'Biến tần (Inverter)', 'Tấm pin điện mặt trời'), 'photo' => 'solution-bess-v2.jpg', 'link' => 'giai-phap/'),
-    array('name' => 'Chiếu sáng đường và công trình', 'label' => 'Chiếu sáng công trình', 'desc' => 'Tư vấn lựa chọn thiết bị và phương án bố trí đèn theo đặc điểm từng khu vực.', 'chips' => array('Đèn năng lượng mặt trời', 'Trụ đèn và phụ kiện'), 'photo' => 'home-street-lighting.jpg', 'link' => 'giai-phap/'),
+    array('name' => 'Điện mặt trời cho doanh nghiệp', 'label' => 'Doanh nghiệp và nhà xưởng', 'desc' => 'Đề xuất phương án theo nhu cầu vận hành, đặc điểm mái và điều kiện lắp đặt tại cơ sở.', 'chips' => array('Điện mặt trời mái nhà', 'Biến tần (Inverter)', 'Tấm pin điện mặt trời'), 'photo' => 'solution-bess-v2.jpg', 'link' => 'giai-phap/dien-mat-troi-doanh-nghiep/'),
+    array('name' => 'Điện mặt trời cho gia đình', 'label' => 'Gia đình', 'desc' => 'Tư vấn hệ thống theo nhu cầu dùng điện, diện tích mái và nhu cầu lưu trữ của gia đình.', 'chips' => array('Điện mặt trời mái nhà', 'Biến tần (Inverter)', 'Pin lưu trữ'), 'photo' => 'solution-home-solar-v2.jpg', 'link' => 'giai-phap/dien-mat-troi-ho-gia-dinh/'),
+    array('name' => 'Chiếu sáng đường và công trình', 'label' => 'Chiếu sáng công trình', 'desc' => 'Tư vấn lựa chọn thiết bị và phương án bố trí đèn theo đặc điểm từng khu vực.', 'chips' => array('Đèn năng lượng mặt trời', 'Trụ đèn và phụ kiện'), 'photo' => 'home-solution-construction-v1.png', 'link' => 'giai-phap/'),
     array('name' => 'Bơm nước năng lượng mặt trời', 'label' => 'Nông nghiệp', 'desc' => 'Tư vấn hệ thống theo nguồn nước, nhu cầu tưới tiêu và điều kiện sử dụng.', 'chips' => array('Bơm nước năng lượng mặt trời', 'Tấm pin điện mặt trời'), 'photo' => 'solution-solar-pump-v2.jpg', 'link' => 'giai-phap/')
 );
 $homeSolutionNeedles = array(
-    array('gia đình', 'gia dinh', 'hộ gia đình', 'ho gia dinh'),
     array('doanh nghiệp', 'doanh nghiep', 'nhà xưởng', 'nha xuong'),
+    array('gia đình', 'gia dinh', 'hộ gia đình', 'ho gia dinh'),
     array('chiếu sáng', 'chieu sang', 'đèn', 'den'),
     array('nông nghiệp', 'nong nghiep', 'bơm', 'bom')
 );
@@ -71,23 +78,43 @@ foreach($homeSolutionFallbacks as $homeSolutionIndex => $homeSolutionFallback) {
             if(strpos($homeSolutionSearch, mb_strtolower($homeSolutionNeedle, 'UTF-8')) !== false) { $homeMatchedSolution = $homeSolutionRow; break 2; }
         }
     }
+    /* Hình minh họa tab công trình là asset art-directed riêng của trang chủ;
+       nội dung/slug vẫn lấy từ Admin, chỉ cố định ảnh để đúng câu chuyện showroom. */
+    $homeSolutionPhoto = $homeSolutionIndex === 2 ? 'home-solution-construction-v1.png' : (!empty($homeMatchedSolution['photo1']) ? $homeMatchedSolution['photo1'] : $homeSolutionFallback['photo']);
+    $homeSolutionUpload = $homeSolutionIndex === 2 ? 'assets/images/site-visuals/' : (!empty($homeMatchedSolution['photo1']) ? UPLOAD_NEWS_L : 'assets/images/site-visuals/');
     $homeSolutions[] = array(
         'name' => !empty($homeMatchedSolution['name'.$lang]) ? $homePlainText($homeMatchedSolution['name'.$lang]) : $homeSolutionFallback['name'],
         'label' => $homeSolutionFallback['label'],
         'desc' => !empty($homeMatchedSolution['desc'.$lang]) ? $homePlainText($homeMatchedSolution['desc'.$lang]) : $homeSolutionFallback['desc'],
         'chips' => $homeSolutionFallback['chips'],
-        'photo' => !empty($homeMatchedSolution['photo1']) ? $homeMatchedSolution['photo1'] : $homeSolutionFallback['photo'],
-        'upload' => !empty($homeMatchedSolution['photo1']) ? UPLOAD_NEWS_L : 'assets/images/site-visuals/',
+        'photo' => $homeSolutionPhoto,
+        'upload' => $homeSolutionUpload,
         'link' => !empty($homeMatchedSolution[$sluglang]) ? 'giai-phap/'.$homeMatchedSolution[$sluglang].'/' : $homeSolutionFallback['link']
     );
 }
+$homeSolutionChipHref = static function($chip, $solution, $categories) {
+    $label = mb_strtolower(trim((string)$chip), 'UTF-8');
+    if(strpos($label, 'mái nhà') !== false || strpos($label, 'mai nha') !== false) return $solution['link'];
+
+    $categoryKey = '';
+    if(strpos($label, 'biến tần') !== false || strpos($label, 'bien tan') !== false || strpos($label, 'inverter') !== false) $categoryKey = 'inverter';
+    elseif(strpos($label, 'pin lưu trữ') !== false || strpos($label, 'pin luu tru') !== false || strpos($label, 'lưu trữ') !== false || strpos($label, 'luu tru') !== false) $categoryKey = 'storage';
+    elseif(strpos($label, 'tấm pin') !== false || strpos($label, 'tam pin') !== false) $categoryKey = 'panel';
+    elseif(strpos($label, 'bơm') !== false || strpos($label, 'bom') !== false) $categoryKey = 'pump';
+    elseif(strpos($label, 'đèn') !== false || strpos($label, 'den') !== false || strpos($label, 'trụ') !== false || strpos($label, 'tru') !== false) $categoryKey = 'lighting';
+
+    foreach($categories as $category) {
+        if($categoryKey !== '' && $category['key'] === $categoryKey) return $category['link'];
+    }
+    return $solution['link'];
+};
 
 $homeProcessDefaults = array(
-    array('number' => '01', 'name' => 'Tiếp nhận nhu cầu', 'desc' => 'Trao đổi về mục đích sử dụng và yêu cầu của khách hàng.'),
-    array('number' => '02', 'name' => 'Khảo sát thực tế', 'desc' => 'Đánh giá vị trí và điều kiện lắp đặt tại công trình.'),
-    array('number' => '03', 'name' => 'Đề xuất phương án', 'desc' => 'Tư vấn cấu hình thiết bị, phạm vi công việc và báo giá.'),
-    array('number' => '04', 'name' => 'Thi công và bàn giao', 'desc' => 'Lắp đặt theo phương án thống nhất, kiểm tra và hướng dẫn sử dụng.'),
-    array('number' => '05', 'name' => 'Hỗ trợ sau lắp đặt', 'desc' => 'Tiếp nhận yêu cầu và hỗ trợ kỹ thuật trong quá trình sử dụng.')
+    array('number' => '01', 'name' => 'Tư vấn & khảo sát', 'desc' => 'Lắng nghe nhu cầu, khảo sát hiện trạng và điều kiện lắp đặt để đề xuất giải pháp phù hợp với mục tiêu sử dụng và ngân sách của khách hàng.'),
+    array('number' => '02', 'name' => 'Thiết kế & báo giá', 'desc' => 'Xây dựng phương án kỹ thuật, lựa chọn thiết bị phù hợp và báo giá rõ ràng. Thống nhất phạm vi công việc, tiến độ và chính sách bảo hành trước khi triển khai.'),
+    array('number' => '03', 'name' => 'Thi công & lắp đặt', 'desc' => 'Triển khai theo phương án đã thống nhất, chú trọng an toàn, chất lượng và tính thẩm mỹ. Kiểm tra thiết bị, kết nối và các hạng mục trong quá trình thi công.'),
+    array('number' => '04', 'name' => 'Nghiệm thu & bàn giao', 'desc' => 'Kiểm tra, chạy thử và nghiệm thu cùng khách hàng. Bàn giao hồ sơ, hướng dẫn sử dụng, theo dõi hoạt động và những lưu ý để vận hành an toàn.'),
+    array('number' => '05', 'name' => 'Bảo hành & đồng hành', 'desc' => 'Tiếp nhận yêu cầu hỗ trợ, thực hiện bảo hành theo chính sách và cung cấp dịch vụ kiểm tra, vệ sinh, bảo trì theo nhu cầu. Hỗ trợ theo dõi từ xa với hệ thống có tính năng phù hợp.')
 );
 $homeProcessSteps = array();
 foreach($homeProcessDefaults as $homeProcessIndex => $homeProcessDefault) {
@@ -99,21 +126,8 @@ foreach($homeProcessDefaults as $homeProcessIndex => $homeProcessDefault) {
     );
 }
 
-$homeDealerTitle = 'Hợp tác phân phối cùng Phúc Thịnh Solar';
-$homeDealerDesc = 'Dành cho cửa hàng thiết bị điện, đại lý và đơn vị thi công quan tâm đến sản phẩm năng lượng mặt trời.';
-$homeDealerPhoto = 'dealer-solar-partnership-v1.png';
-$homeDealerPhotoUpload = 'assets/images/site-visuals/';
-foreach($adv as $homeAdvItem) {
-    if(isset($homeAdvItem['link']) && $homeAdvItem['link'] === '#ptsDealerModal') {
-        if(!empty($homeAdvItem['name'.$lang])) $homeDealerTitle = $homePlainText($homeAdvItem['name'.$lang]);
-        if(!empty($homeAdvItem['desc'.$lang])) $homeDealerDesc = $homePlainText($homeAdvItem['desc'.$lang]);
-        if(!empty($homeAdvItem['photo'])) {
-            $homeDealerPhoto = $homeAdvItem['photo'];
-            $homeDealerPhotoUpload = UPLOAD_PHOTO_L;
-        }
-        break;
-    }
-}
+$homeDealerTitle = 'TRỞ THÀNH ĐẠI LÝ PHÚC THỊNH SOLAR';
+$homeDealerDesc = 'Cùng phát triển kinh doanh thiết bị năng lượng mặt trời với nguồn hàng đa dạng, chính sách hợp tác rõ ràng và sự đồng hành của đội ngũ Phúc Thịnh Solar.';
 $homeAboutTitle = $homePlainText($homeAboutTitle);
 $homeAboutText = $homePlainText($homeAboutDesc);
 ?>
@@ -123,7 +137,7 @@ $homeAboutText = $homePlainText($homeAboutDesc);
         <div class="pts-home-hero-slider" data-home-hero-slider aria-roledescription="carousel" aria-label="Banner nhóm thiết bị nổi bật">
             <div class="pts-home-hero-track">
                 <?php foreach($homeHeroTiles as $homeHeroIndex => $homeHeroTile) { ?>
-                <article class="pts-home-hero-slide<?=$homeHeroIndex === 0 ? ' is-active' : ''?>" data-home-hero-slide="<?=$homeHeroIndex?>" aria-label="<?=$homeHeroIndex + 1?> trên <?=count($homeHeroTiles)?>: <?=$homeEscape($homeHeroTile['name'])?>"<?=$homeHeroIndex === 0 ? '' : ' aria-hidden="true"'?>>
+                <article class="pts-home-hero-slide<?=$homeHeroIndex === 0 ? ' is-active' : ''?>" data-home-hero-slide="<?=$homeHeroIndex?>" data-home-hero-slide-key="<?=$homeEscape($homeHeroTile['key'])?>" aria-label="<?=$homeHeroIndex + 1?> trên <?=count($homeHeroTiles)?>: <?=$homeEscape($homeHeroTile['name'])?>"<?=$homeHeroIndex === 0 ? '' : ' aria-hidden="true"'?>>
                     <a href="<?=$homeEscape($homeHeroTile['link'])?>">
                     <span class="pts-home-hero-banner-media">
                         <?=$func->getImage(['isLazy' => false, 'class' => '', 'sizes' => '1600x720x1', 'upload' => $homeHeroTile['upload'], 'image' => $homeHeroTile['photo'], 'alt' => $homeHeroTile['name']])?>
@@ -168,7 +182,7 @@ $homeAboutText = $homePlainText($homeAboutDesc);
             </div>
 
             <?php $homeFeaturedCategory = $homeShowcaseCategories[0]; ?>
-            <a class="pts-home-category pts-home-category-featured is-featured" href="<?=$homeEscape($homeFeaturedCategory['link'])?>">
+            <a class="pts-home-category pts-home-category-featured is-featured" data-home-category-key="<?=$homeEscape($homeFeaturedCategory['key'])?>" href="<?=$homeEscape($homeFeaturedCategory['link'])?>">
                 <span class="pts-home-category-bg"><?=$func->getImage(['class' => 'lazy', 'sizes' => '1440x420x1', 'upload' => $homeFeaturedCategory['upload'], 'image' => $homeFeaturedCategory['photo'], 'alt' => $homeFeaturedCategory['name']])?></span>
                 <span class="pts-home-category-shade" aria-hidden="true"></span>
                 <span class="pts-home-category-copy">
@@ -183,7 +197,7 @@ $homeAboutText = $homePlainText($homeAboutDesc);
 
             <div class="pts-home-category-rail" tabindex="0" aria-label="Bốn nhóm thiết bị nổi bật, có thể cuộn ngang">
                 <?php foreach(array_slice($homeShowcaseCategories, 1) as $homeCategory) { ?>
-                <a class="pts-home-category pts-home-category--<?=$homeEscape($homeCategory['key'])?>" href="<?=$homeEscape($homeCategory['link'])?>">
+                <a class="pts-home-category pts-home-category--<?=$homeEscape($homeCategory['key'])?>" data-home-category-key="<?=$homeEscape($homeCategory['key'])?>" href="<?=$homeEscape($homeCategory['link'])?>">
                     <span class="pts-home-category-bg"><?=$func->getImage(['class' => 'lazy', 'sizes' => '640x500x1', 'upload' => $homeCategory['upload'], 'image' => $homeCategory['photo'], 'alt' => $homeCategory['name']])?></span>
                     <span class="pts-home-category-shade" aria-hidden="true"></span>
                     <span class="pts-home-category-copy">
@@ -244,7 +258,7 @@ $homeAboutText = $homePlainText($homeAboutDesc);
                     <h3><?=$homeEscape($homeSolution['name'])?></h3>
                     <p><?=$homeEscape($homeSolution['desc'])?></p>
                     <div class="pts-home-solution-chips" aria-label="Thiết bị liên quan">
-                        <?php foreach($homeSolution['chips'] as $homeSolutionChip) { ?><span><?=$homeEscape($homeSolutionChip)?></span><?php } ?>
+                        <?php foreach($homeSolution['chips'] as $homeSolutionChip) { ?><a href="<?=$homeEscape($homeSolutionChipHref($homeSolutionChip, $homeSolution, $homeShowcaseCategories))?>"><?=$homeEscape($homeSolutionChip)?></a><?php } ?>
                     </div>
                     <div class="pts-home-actions">
                         <a class="pts-home-btn pts-home-btn-primary" href="<?=$homeEscape($homeSolution['link'])?>">Xem giải pháp</a>
@@ -266,7 +280,7 @@ $homeAboutText = $homePlainText($homeAboutDesc);
         <div class="pts-home-container">
             <div class="pts-home-section-head">
                 <h2 id="pts-home-services-title">Đồng hành từ tư vấn đến vận hành</h2>
-                <p>Mỗi bước đều tập trung vào nhu cầu sử dụng và điều kiện thực tế của khách hàng.</p>
+                <p>Phúc Thịnh Solar tư vấn giải pháp phù hợp, thi công chuyên nghiệp và tận tâm hỗ trợ sau bàn giao, giúp khách hàng an tâm sử dụng lâu dài.</p>
             </div>
             <ol class="pts-home-steps">
                 <?php foreach($homeProcessSteps as $homeProcessStep) { ?>
@@ -282,23 +296,19 @@ $homeAboutText = $homePlainText($homeAboutDesc);
     <?php } ?>
 
     <section class="pts-home-dealer" aria-labelledby="pts-home-dealer-title">
-        <div class="pts-home-dealer-media" aria-hidden="true">
-            <?=$func->getImage(['class' => 'pts-home-dealer-image', 'sizes' => '1920x600x1', 'upload' => $homeDealerPhotoUpload, 'image' => $homeDealerPhoto, 'alt' => ''])?>
-        </div>
-        <div class="pts-home-dealer-shade" aria-hidden="true"></div>
         <div class="pts-home-container pts-home-dealer-grid">
             <div>
-                <h2 id="pts-home-dealer-title"><?=$homeEscape($homeDealerTitle)?></h2>
+                    <h2 id="pts-home-dealer-title">TRỞ THÀNH ĐẠI LÝ <span class="pts-home-dealer-brand">PHÚC THỊNH SOLAR</span></h2>
                 <p><?=$homeEscape($homeDealerDesc)?></p>
                 <ul>
-                    <li><i class="fas fa-check" aria-hidden="true"></i> Tìm hiểu danh mục sản phẩm phù hợp thị trường</li>
-                    <li><i class="fas fa-check" aria-hidden="true"></i> Trao đổi nhu cầu phân phối và dự án</li>
-                    <li><i class="fas fa-check" aria-hidden="true"></i> Kết nối tư vấn sản phẩm, kỹ thuật và hợp tác</li>
+                    <li><i class="fas fa-check" aria-hidden="true"></i> Danh mục sản phẩm phù hợp nhu cầu thị trường.</li>
+                    <li><i class="fas fa-check" aria-hidden="true"></i> Hệ thống kho tại TP.HCM, Đà Nẵng và Gia Lai.</li>
+                    <li><i class="fas fa-check" aria-hidden="true"></i> Hỗ trợ tư vấn sản phẩm, kỹ thuật và bảo hành theo chính sách.</li>
                 </ul>
             </div>
             <div class="pts-home-dealer-actions">
-                <a class="pts-home-btn pts-home-btn-primary" href="#ptsDealerModal" data-toggle="modal" data-target="#ptsDealerModal">Đăng ký hợp tác</a>
-                <?php if(!empty($optsetting['hotline'])) { ?><a class="pts-home-btn pts-home-btn-light" href="tel:<?=$homeEscape($func->parsePhone($optsetting['hotline']))?>">Liên hệ kinh doanh</a><?php } ?>
+                <a class="pts-home-btn pts-home-btn-primary" href="#yeu-cau-tu-van" data-home-quote="Hợp tác đại lý">Đăng ký làm đại lý</a>
+                <a class="pts-home-btn pts-home-btn-light" href="#yeu-cau-tu-van" data-home-quote="Hợp tác đại lý">Tư vấn chính sách đại lý</a>
             </div>
         </div>
     </section>

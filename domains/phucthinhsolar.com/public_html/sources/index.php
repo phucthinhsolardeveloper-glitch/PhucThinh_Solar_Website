@@ -34,7 +34,7 @@
             array(
                 'name' => 'Chiếu sáng năng lượng mặt trời cho công trình',
                 'desc' => 'Thiết bị đồng bộ cho đường nội bộ, khuôn viên và hạ tầng thương mại.',
-                'photo' => 'home-street-lighting.jpg',
+                'photo' => 'home-street-lighting-v2.png',
                 'upload' => 'assets/images/site-visuals/',
                 'link' => 'san-pham/'
             ),
@@ -55,11 +55,10 @@
         );
     }
 
-    /* Bốn banner ảnh trong Hero V4. Tái sử dụng type hero-carousel đã có màn
-       Admin, quyền và đúng bốn slot; chỉ nhận bộ dữ liệu Admin khi đủ cả bốn
-       nhóm thiết bị để nội dung carousel cũ không xuất hiện sai ngữ cảnh.
-       Không đủ bộ thì dùng ảnh ngành đã đóng gói, tuyệt đối không trộn lẫn
-       record Admin đang bị tắt với fallback. */
+    /* Bốn banner ảnh trong Hero V4. Dùng bộ ảnh sáng đã tối ưu, đóng gói theo
+       từng nhóm để bộ nhận diện hình ảnh không bị ảnh cũ trong Admin phủ lại.
+       Tên, mô tả và liên kết vẫn lấy từ Admin khi đủ cả bốn nhóm; thiếu bộ thì
+       dùng nội dung fallback. Tuyệt đối không trộn record Admin đang bị tắt. */
     $homeCategoryHref = static function($categories, $slugKey, $needles) {
         foreach($categories as $category) {
             $candidate = isset($category[$slugKey]) ? strtolower((string)$category[$slugKey]) : '';
@@ -71,37 +70,37 @@
     };
     $homeHeroDefaults = array(
         array(
-            'key' => 'panel',
-            'name' => 'Tấm pin',
-            'desc' => 'Thiết bị quang điện cho hệ thống năng lượng mặt trời.',
-            'photo' => 'solution-home-solar-v2.jpg',
-            'upload' => 'assets/images/site-visuals/',
-            'link' => $homeCategoryHref($splist, $sluglang, array('tam-pin', 'solar-panel')),
-            'needles' => array('tấm pin', 'tam pin', 'solar panel')
-        ),
-        array(
             'key' => 'street-light',
-            'name' => 'Đèn đường',
+            'name' => 'Đèn đường năng lượng mặt trời',
             'desc' => 'Chiếu sáng đường nội bộ, khu dân cư và công trình.',
-            'photo' => 'home-street-lighting.jpg',
+            'photo' => 'home-hero-street-lighting-v1.webp',
             'upload' => 'assets/images/site-visuals/',
             'link' => $homeCategoryHref($splist, $sluglang, array('den-nang-luong-mat-troi', 'den-duong', 'street-light')),
             'needles' => array('đèn đường', 'den duong', 'street light')
         ),
         array(
             'key' => 'inverter',
-            'name' => 'Biến tần',
+            'name' => 'Biến tần năng lượng mặt trời',
             'desc' => 'Thiết bị chuyển đổi và quản lý nguồn điện.',
-            'photo' => 'catalog-inverter-system-v2.jpg',
+            'photo' => 'home-hero-inverter-v1.webp',
             'upload' => 'assets/images/site-visuals/',
             'link' => $homeCategoryHref($splist, $sluglang, array('bien-tan', 'inverter')),
             'needles' => array('biến tần', 'bien tan', 'inverter')
         ),
         array(
+            'key' => 'panel',
+            'name' => 'Tấm pin năng lượng mặt trời',
+            'desc' => 'Thiết bị quang điện cho hệ thống năng lượng mặt trời.',
+            'photo' => 'home-hero-solar-panels-v1.webp',
+            'upload' => 'assets/images/site-visuals/',
+            'link' => $homeCategoryHref($splist, $sluglang, array('tam-pin', 'solar-panel')),
+            'needles' => array('tấm pin', 'tam pin', 'solar panel')
+        ),
+        array(
             'key' => 'storage',
             'name' => 'Pin lưu trữ',
             'desc' => 'Chủ động lưu trữ điện theo nhu cầu sử dụng.',
-            'photo' => 'catalog-battery-storage-v2.jpg',
+            'photo' => 'home-hero-battery-storage-v1.webp',
             'upload' => 'assets/images/site-visuals/',
             'link' => $homeCategoryHref($splist, $sluglang, array('pin-luu-tru', 'luu-tru', 'battery')),
             'needles' => array('pin lưu trữ', 'pin luu tru', 'battery', 'lưu trữ')
@@ -118,12 +117,16 @@
                 if(strpos($homeHeroRowName, mb_strtolower($homeHeroNeedle, 'UTF-8')) !== false) { $homeHeroMatches = true; break; }
             }
             if(!$homeHeroMatches) continue;
+            $homeHeroDisplayName = !empty($homeHeroRow['name'.$lang]) ? $homeHeroRow['name'.$lang] : $homeHeroDefault['name'];
+            if($homeHeroDefault['key'] !== 'storage' && strpos(mb_strtolower($homeHeroDisplayName, 'UTF-8'), 'năng lượng mặt trời') === false) {
+                $homeHeroDisplayName .= ' năng lượng mặt trời';
+            }
             $homeHeroTiles[] = array(
                 'key' => $homeHeroDefault['key'],
-                'name' => !empty($homeHeroRow['name'.$lang]) ? $homeHeroRow['name'.$lang] : $homeHeroDefault['name'],
+                'name' => $homeHeroDisplayName,
                 'desc' => !empty($homeHeroRow['desc'.$lang]) ? trim(strip_tags(htmlspecialchars_decode($homeHeroRow['desc'.$lang], ENT_QUOTES))) : $homeHeroDefault['desc'],
-                'photo' => $homeHeroRow['photo'],
-                'upload' => UPLOAD_PHOTO_L,
+                'photo' => $homeHeroDefault['photo'],
+                'upload' => $homeHeroDefault['upload'],
                 'link' => !empty($homeHeroRow['link']) ? $homeHeroRow['link'] : $homeHeroDefault['link']
             );
             break;

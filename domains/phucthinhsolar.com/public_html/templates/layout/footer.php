@@ -1,3 +1,8 @@
+<?php
+$footerContentHtml = htmlspecialchars_decode($footer['content'.$lang]);
+/* Tên pháp lý vẫn lấy từ nội dung Admin, chỉ gắn hook để làm nổi bật bằng CSS. */
+$footerContentHtml = preg_replace('/(<strong\b[^>]*>)(.*?)(<\/strong>)/is', '$1<span class="footer-legal-name">$2</span>$3', $footerContentHtml, 1);
+?>
 <!-- <div class="fixed-stuff">
     <div class="fixed-list">
         <div class="fixed-social">
@@ -24,7 +29,7 @@
     <div class="footer_top">
         <div class="container">
             <div class="row">
-                <div class="col-md-2">
+                <div class="col-md-2 footer-brand-column">
                     <div id="footer_logo" style="max-width: 141px; margin-bottom: 29px">
                         <a href="">
                             <?=$func->getImage(['class' => 'lazy','sizes' => '368x144x3', 'upload' => UPLOAD_PHOTO_L, 'image' => $logof['photo'], 'alt' => $setting['name'.$lang]])?>
@@ -33,19 +38,14 @@
                 </div>
                 <div class="ft_mn ft_mn_left col-md-5">
                     <div class="item">
-                        <p class="footer-title pts-brand-text">
+                        <p class="footer-title footer-company-label">
                             <?=$footer['name'.$lang]?>
                         </p>
                         <div class="CRcont_nav_mobile">
                             <div class="CRlist_office_center">
-                                <?=htmlspecialchars_decode($footer['content'.$lang])?>
+                                <?=$footerContentHtml?>
                             </div>
                         </div>
-                        <?php if(!empty($bct)){ ?>
-                        <a class="footer-bct-badge" href="<?=$bct['link']?>">
-                            <?=$func->getImage(['class' => 'lazy','sizes' => '400x152x3', 'upload' => UPLOAD_PHOTO_L, 'image' => $bct['photo'], 'alt' => $setting['name'.$lang]])?>
-                        </a>
-                        <?php } ?>
                     </div>
                 </div>
                 <div class="ft_mn ft_mn_right col-md-5">
@@ -93,7 +93,7 @@
                                 </nav>
                             </div>
                         </div>*/?>
-                        <div class="item col-md-5">
+                        <div class="item col-md-5 footer-policy-column">
                             <p class="footer-title">Chính sách &amp; Hỗ trợ khách hàng</p>
                             <div class="CRcont_nav_mobile">
                                 <nav class="footer-link">
@@ -112,10 +112,15 @@
                                     </div>
                                 </nav>
                             </div>
+                            <?php if(!empty($bct)){ ?>
+                            <a class="footer-bct-badge" href="<?=$bct['link']?>">
+                                <?=$func->getImage(['class' => 'lazy','sizes' => '400x152x3', 'upload' => UPLOAD_PHOTO_L, 'image' => $bct['photo'], 'alt' => $setting['name'.$lang]])?>
+                            </a>
+                            <?php } ?>
                         </div>
                         <div class="item col-md-7">
                             <p class="footer-title">
-                                Chi nhánh </p>
+                                Hệ thống kho &amp; điểm giao dịch </p>
                             <div class="content_cn">
                                 <?php foreach($cn as $k => $v){ ?>
                                 <div class="item_cn">

@@ -96,6 +96,7 @@
     /* Thang chữ public dùng chung nạp sau cùng để thay các cỡ chữ legacy
        rời rạc mà không phải vá từng template. */
     $css->set("css/typography-system.css");
+    $css->set("css/footer-v3.css");
     if($template === 'product/product_detail') $css->set("css/product-detail-v2.css");
     echo $css->get();
 ?>

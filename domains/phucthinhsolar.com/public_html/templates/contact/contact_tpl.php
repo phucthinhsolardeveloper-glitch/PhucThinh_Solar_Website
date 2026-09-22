@@ -135,18 +135,18 @@
                             <form action="" method="post" class="wpcf7-form init" data-status="init">
                                 <input type="hidden" name="form_csrf" value="<?=htmlspecialchars(formCsrfToken(), ENT_QUOTES, 'UTF-8')?>">
                                 <div class="inf_default_form">
-                                    <h2 class="title">Gửi tin nhắn cho chúng tôi</h2>
-                                    <p class="des">Chúng tôi sẵn sàng phục vụ bạn!</p>
+                                    <h2 class="title">Đăng ký nhận tư vấn</h2>
+                                    <p class="des">Để lại thông tin và nhu cầu, Phúc Thịnh Solar sẽ liên hệ để tư vấn giải pháp phù hợp.</p>
                                     <ul>
                                         <li class="inf_default_row inf_row_half">
-                                            <div class="inf_input"><label>Họ và tên</label><span
+                                            <div class="inf_input"><label>Họ và tên <span class="pts-required-mark" aria-hidden="true">*</span></label><span
                                                     class="wpcf7-form-control-wrap name-contact"><input type="text"
                                                         name="dataContact[fullname]" value="" size="40" maxlength="100" autocomplete="name"
                                                         class="wpcf7-form-control wpcf7-text wpcf7-validates-as-required"
                                                         placeholder="Nguyễn Văn A" required></span></div>
                                         </li>
                                         <li class="inf_default_row inf_row_half">
-                                            <div class="inf_input"><label>Số điện thoại</label><span
+                                            <div class="inf_input"><label>Số điện thoại <span class="pts-required-mark" aria-hidden="true">*</span></label><span
                                                     class="wpcf7-form-control-wrap tel-contact"><input type="tel"
                                                         name="dataContact[phone]" value="" size="40" maxlength="20" autocomplete="tel" inputmode="tel"
                                                         class="wpcf7-form-control wpcf7-text wpcf7-tel wpcf7-validates-as-required wpcf7-validates-as-tel"
@@ -171,14 +171,14 @@
                                                     </select></span></div>
                                         </li>
                                         <li class="inf_default_row inf_row_full">
-                                            <div class="inf_input"><label>Nội dung liên hệ</label><span
+                                            <div class="inf_input"><label>Nhu cầu cần tư vấn <span class="pts-required-mark" aria-hidden="true">*</span></label><span
                                                     class="wpcf7-form-control-wrap content-contact"><textarea
                                                         name="dataContact[content]" cols="40" rows="10" maxlength="5000" required
                                                         class="wpcf7-form-control wpcf7-textarea wpcf7-validates-as-required"
-                                                        placeholder="Nhập tin nhắn..."></textarea></span></div>
+                                                        placeholder="Ví dụ: nhu cầu chiếu sáng sân vườn, điện mặt trời cho gia đình..."></textarea></span></div>
                                         </li>
                                         <li class="inf_default_row inf_row_full">
-                                            <div class="inf_input inf_button"><input type="submit" name="submit-contact" value="Gửi ngay"
+                                            <div class="inf_input inf_button"><input type="submit" name="submit-contact" value="Gửi yêu cầu tư vấn"
                                                     class="wpcf7-form-control has-spinner wpcf7-submit"><span
                                                     class="wpcf7-spinner"></span></div>
                                         </li>
