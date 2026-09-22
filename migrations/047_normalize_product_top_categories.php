@@ -275,4 +275,3 @@ if((int)$mismatch->fetchColumn() !== 0)
 
 echo "\nAPPLY xong: đúng 9 danh mục cấp 1; đã chuyển ".count($affectedProducts)." sản phẩm Hệ khung sang Tấm pin; không tạo cấp 3.\n";
 echo "Cần xoá cache ứng dụng để header/listview nhận thứ tự mới.\n";
-
