@@ -182,7 +182,10 @@
    chủ project - nền trắng đồng nhất toàn site, khối nội dung tự phân tách
    bằng khoảng trắng và mục lục bên trái. */
 .pts-sd-body{padding:56px 0 54px;background:#fff;scroll-margin-top:118px;}
-.pts-sd-content-grid{display:grid;grid-template-columns:minmax(240px,300px) minmax(0,1020px);justify-content:center;gap:clamp(76px,4.2vw,96px);align-items:start;}
+/* Trang chi tiết dùng toàn bộ bề rộng wrapper chung. Bản cũ khóa bài viết ở
+   1020px rồi căn giữa, khiến phần thân hẹp hơn hero và tạo khoảng trắng hai
+   bên dù các hub khác đã dùng cùng gutter với trang chủ. */
+.pts-sd-content-grid{display:grid;grid-template-columns:minmax(240px,300px) minmax(0,1fr);width:100%;justify-content:stretch;gap:clamp(76px,4.2vw,96px);align-items:start;}
 .pts-sd-toc{position:sticky;top:124px;margin:0!important;padding:0!important;background:transparent!important;}
 .pts-sd-toc>strong{display:block;margin-bottom:14px;color:var(--sh-navy);font-size:14px;font-weight:850;}
 .pts-sd-toc .toc-list{margin:0!important;padding:0!important;list-style:none!important;counter-reset:none!important;}

@@ -11,6 +11,16 @@
    viewport có trang gần sát mép, có trang lại chừa rất rộng. Chỉ chuẩn hóa
    wrapper ngoài; các cột biên tập bên trong vẫn giữ max-width riêng để đọc dễ. */
 @media (min-width: 768px) {
+  .wap-main > .wrap-main:not(.wrap-home),
+  .wap-slider .wrap-content2 {
+    width: min(calc(100% - clamp(40px, 5vw, 96px)), var(--pts-container, 1560px)) !important;
+    max-width: none !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
   .pts-project-hub .uk-container,
   .pts-solution-hub .uk-container,
   .pts-about-page .uk-container,
@@ -25,13 +35,22 @@
 }
 
 @media (min-width: 1600px) {
-  /* max() để không lặp lại lỗi hụt container đột ngột đúng tại 1600px đã
-     vá ở --pts-page-container bên dưới (xem comment tại rule đó). */
+  /* Dùng var(--pts-page-container) thay vì lặp lại công thức vw thuần: xem
+     comment tại rule định nghĩa --pts-page-container bên dưới - công thức
+     vw thuần co hẹp đột ngột đúng tại 1600px (đo được bằng Playwright,
+     logo/category nav header gần chạm nhau). .pts-home-container cũng bị
+     chặn ở var(--pts-container) nên dùng max() ở đây KHÔNG làm trang con
+     rộng hơn trang chủ - chúng bằng nhau. */
+  .wap-main > .wrap-main:not(.wrap-home),
+  .wap-slider .wrap-content2 {
+    width: var(--pts-page-container) !important;
+  }
+
   .pts-project-hub .uk-container,
   .pts-solution-hub .uk-container,
   .pts-about-page .uk-container,
   .pts-dealer-hub .uk-container {
-    width: min(max(var(--pts-container, 1560px), calc(100% - clamp(96px, 8vw, 220px))), 2200px) !important;
+    width: var(--pts-page-container) !important;
   }
 }
 
@@ -40,11 +59,11 @@
    nhưng dùng một token hiển thị riêng cho wrapper public. */
 @media (min-width: 1600px) {
   :root {
-    /* max() với --pts-container (theme-v2.css) để không bao giờ hẹp hơn giá
-       trị hệ thống cũ đang áp dụng ngay dưới mốc 1600px - nếu không, đúng
-       tại 1600px container tụt từ 1560px xuống 1472px, ép logo/menu gần
-       chạm nhau (xác minh bằng Playwright: logoGap 75px ở 1440px còn 1px ở
-       1600px trước khi có max() này). */
+    /* max() để không bao giờ hẹp hơn --pts-container hệ thống (giá trị
+       .pts-home-container CŨNG bị chặn ở, xem home-story-v4.css) - công
+       thức vw thuần một mình co hẹp đột ngột đúng tại 1600px (1560px ->
+       1472px), gây va chạm logo/category nav ở header. Không làm trang con
+       rộng hơn trang chủ vì trang chủ dùng chung mức trần này. */
     --pts-page-container: min(max(var(--pts-container, 1560px), calc(100vw - clamp(96px, 8vw, 220px))), 2200px);
   }
 
