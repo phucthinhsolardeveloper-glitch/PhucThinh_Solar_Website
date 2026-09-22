@@ -33,6 +33,7 @@
 .pts-home-v4 .pts-home-hero h1 .pts-home-title-primary{display:inline-block;font-size:.88em}
 .pts-home-v4 .pts-home-hero h1 .pts-home-title-secondary{display:inline-block;font-size:.78em}
 .pts-home-v4 .pts-home-lead{max-width:760px;margin:22px 0 30px!important;color:var(--home-navy)!important;font-size:clamp(17px,1.1vw,19px)!important;line-height:1.65;text-shadow:0 1px 9px rgba(255,255,255,.52)}
+.pts-home-v4 .pts-home-hero h1{max-width:none!important;white-space:nowrap}
 .pts-home-hero .pts-home-btn-outline{border-color:var(--home-navy);background:rgba(255,255,255,.56);color:var(--home-navy)!important}
 .pts-home-hero .pts-home-btn-outline:hover{background:#fff;color:var(--home-navy)!important}
 .pts-home-hero-slider{position:absolute;inset:0;z-index:0;width:100%;overflow:hidden;background:var(--home-navy);color:#fff}
@@ -238,6 +239,7 @@
   .pts-home-v4 .pts-home-hero h1 .pts-home-title-secondary{font-size:.78em}
   .pts-home-v4 .pts-home-kicker{margin-bottom:11px!important;font-size:12px!important;line-height:1.5}
   .pts-home-v4 .pts-home-lead{margin:18px 0 25px!important;font-size:17px!important;line-height:1.65}
+  .pts-home-v4 .pts-home-hero h1{white-space:normal}
   .pts-home-actions{gap:10px}
   .pts-home-btn{min-height:45px;padding:0 17px;font-size:13.5px}
   .pts-home-hero-banner-copy{right:20px;bottom:83px;width:fit-content;max-width:calc(100vw - 40px);padding:11px 14px 10px;border-bottom:1px solid rgba(255,255,255,.2);border-radius:0;background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.23));text-align:right}
