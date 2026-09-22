@@ -48,7 +48,10 @@
     $policy = $cache->get("select name$lang, slugvi, slugen, id, photo from #_news where type = ? and find_in_set('hienthi',status) order by numb,id desc", array('chinh-sach'), 'result', 7200);
     /* Dùng chung 1 nguồn với trang Liên hệ (was 'he-thong-dai-ly', tách rời,
        phải sửa 2 nơi mỗi lần đổi địa chỉ chi nhánh - gộp lại 2026-09-10). */
-    $cn = $cache->get("select name$lang, address, id, photo, ggmap from #_news where type = ? and find_in_set('hienthi',status) order by numb,id desc", array('he-thong-cua-hang'), 'result', 7200);
+    /* Thứ tự hiển thị thống nhất ở footer và các khu vực dùng hệ thống điểm giao
+       dịch: Trụ sở -> Kho Gia Lai -> các kho còn lại. Phần còn lại vẫn tôn trọng
+       numb/id để Admin tiếp tục điều khiển thứ tự sau hai mục ưu tiên. */
+    $cn = $cache->get("select name$lang, address, id, photo, ggmap from #_news where type = ? and find_in_set('hienthi',status) order by case when namevi like 'Trụ sở%' then 0 when namevi like 'Kho Gia Lai%' then 1 else 2 end, numb,id desc", array('he-thong-cua-hang'), 'result', 7200);
     $footer = $cache->get("select name$lang, content$lang,photo from #_static where type = ? and find_in_set('hienthi',status) limit 0,1", array('footer'), 'fetch', 7200);
     $city = $cache->get("select name, id from #_city order by id asc", null, 'result', 7200);
     /* Get statistic */

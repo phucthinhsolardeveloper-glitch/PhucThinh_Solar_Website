@@ -32,7 +32,9 @@
 	}
 	
 	$lienhe = $d->rawQueryOne("select content$lang from #_static where type = ? limit 0,1",array('lienhe'));
-	$hethongcuahang = $cache->get("select name$lang, address, id, map_iframe from #_news where type = ? and find_in_set('hienthi',status) order by numb,id desc", array('he-thong-cua-hang'), 'result', 7200);
+	/* Giữ thứ tự điểm giao dịch đồng nhất với footer: Trụ sở -> Kho Gia Lai
+	   -> các kho còn lại. Admin vẫn điều khiển thứ tự nhóm còn lại bằng numb. */
+	$hethongcuahang = $cache->get("select name$lang, address, id, map_iframe from #_news where type = ? and find_in_set('hienthi',status) order by case when namevi like 'Trụ sở%' then 0 when namevi like 'Kho Gia Lai%' then 1 else 2 end, numb,id desc", array('he-thong-cua-hang'), 'result', 7200);
 
 	/* Ảnh tư vấn đầu trang: fallback đóng gói chỉ xuất hiện khi type chưa từng
 	   được cấu hình. Khi Admin đã tạo record, trạng thái Hiển thị quyết định

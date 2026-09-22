@@ -1,5 +1,8 @@
 <?php
 $footerContentHtml = htmlspecialchars_decode($footer['content'.$lang]);
+/* Không hiển thị MST trên footer public theo yêu cầu nội dung mới. Giữ dữ liệu
+   Admin để không làm mất thông tin pháp lý trong backend/lịch sử chỉnh sửa. */
+$footerContentHtml = preg_replace('/MST:\s*5901151081\b.*?(?:<br\s*\/?>|$)/iu', '', $footerContentHtml, 1);
 /* Tên pháp lý vẫn lấy từ nội dung Admin, chỉ gắn hook để làm nổi bật bằng CSS. */
 $footerContentHtml = preg_replace('/(<strong\b[^>]*>)(.*?)(<\/strong>)/is', '$1<span class="footer-legal-name">$2</span>$3', $footerContentHtml, 1);
 ?>
