@@ -163,8 +163,8 @@ $homeAboutText = $homePlainText($homeAboutDesc);
         <div class="pts-home-container pts-home-hero-grid">
             <div class="pts-home-hero-copy">
                 <p class="pts-home-kicker">Phân phối thiết bị · Tư vấn · Thi công lắp đặt</p>
-                <h1 id="pts-home-title">Thiết bị và giải pháp năng lượng mặt trời</h1>
-                <p class="pts-home-lead">Phúc Thịnh Solar cung cấp thiết bị chiếu sáng, điện mặt trời và lưu trữ năng lượng; tư vấn phương án phù hợp cho gia đình, doanh nghiệp và công trình.</p>
+                <h1 id="pts-home-title"><span class="pts-home-title-primary">Thiết bị và giải pháp</span> <span class="pts-home-title-secondary">năng lượng mặt trời</span></h1>
+                <p class="pts-home-lead">Phúc Thịnh Solar cung cấp thiết bị chiếu sáng, điện mặt trời và lưu trữ năng lượng; tư&nbsp;vấn phương án phù hợp cho gia đình, doanh nghiệp và công trình.</p>
                 <div class="pts-home-actions">
                     <a class="pts-home-btn pts-home-btn-primary" href="#danh-muc-thiet-bi">Xem sản phẩm</a>
                     <a class="pts-home-btn pts-home-btn-outline" href="#yeu-cau-tu-van">Tư vấn lắp đặt</a>
@@ -298,7 +298,7 @@ $homeAboutText = $homePlainText($homeAboutDesc);
     <section class="pts-home-dealer" aria-labelledby="pts-home-dealer-title">
         <div class="pts-home-container pts-home-dealer-grid">
             <div>
-                    <h2 id="pts-home-dealer-title">TRỞ THÀNH ĐẠI LÝ <span class="pts-home-dealer-brand">PHÚC THỊNH SOLAR</span></h2>
+                    <h2 id="pts-home-dealer-title">ĐĂNG KÝ ĐẠI LÝ</h2>
                 <p><?=$homeEscape($homeDealerDesc)?></p>
                 <ul>
                     <li><i class="fas fa-check" aria-hidden="true"></i> Danh mục sản phẩm phù hợp nhu cầu thị trường.</li>
@@ -318,12 +318,17 @@ $homeAboutText = $homePlainText($homeAboutDesc);
             <div>
                 <h2 id="pts-home-about-title"><?=$homeEscape($homeAboutTitle)?></h2>
                 <p><?=$homeEscape($homeAboutText)?></p>
-                <p>Chúng tôi tập trung tìm hiểu nhu cầu sử dụng để tư vấn lựa chọn thiết bị và phương án triển khai phù hợp cho gia đình, doanh nghiệp và công trình.</p>
-                <a class="pts-home-text-link" href="gioi-thieu/">Tìm hiểu về Phúc Thịnh Solar <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+                <a class="pts-home-text-link" href="gioi-thieu/"><?=$homeEscape($homeAboutButton)?> <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
             </div>
             <ul class="pts-home-about-points">
                 <?php foreach($homeAboutPoints as $homeAboutPoint) { if($homeAboutPoint['label'] === '') continue; ?>
-                <li><i class="fas fa-check" aria-hidden="true"></i><span><?=$homeEscape($homeAboutPoint['label'])?></span></li>
+                <li>
+                    <i class="fas fa-check" aria-hidden="true"></i>
+                    <span>
+                        <strong><?=$homeEscape($homeAboutPoint['label'])?></strong>
+                        <?php if(!empty($homeAboutPoint['desc'])) { ?><small><?=$homeEscape($homeAboutPoint['desc'])?></small><?php } ?>
+                    </span>
+                </li>
                 <?php } ?>
             </ul>
         </div>

@@ -118,11 +118,11 @@
 .pts-proof-shell{border-radius:0!important}
 .pts-brand-services>a{border-right:0!important}
 
-/* Hiện đủ 10 danh mục trên desktop rộng; hẹp hơn vẫn là rail một hàng. */
+/* Hiện đủ 9 danh mục trên desktop rộng; hẹp hơn vẫn là rail một hàng. */
 .pts-ecosystem .tab-switcher ul.pts-ecosystem-grid{gap:8px!important;padding:0!important}
 .pts-ecosystem .pts-ecosystem-grid>li,
 .pts-ecosystem .pts-ecosystem-grid>li.is-major{
-  flex:0 0 calc((100% - 72px)/10)!important;
+  flex:0 0 calc((100% - 64px)/9)!important;
   min-width:0!important
 }
 .pts-ecosystem .pts-ecosystem-grid>li>a,

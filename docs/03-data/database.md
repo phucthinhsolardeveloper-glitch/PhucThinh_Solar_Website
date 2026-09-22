@@ -1,6 +1,6 @@
 # Database
 
-Cập nhật: 2026-09-17. Số liệu đo trực tiếp trên DB local và trên dump
+Cập nhật: 2026-09-22. Số liệu bảng đo trực tiếp trên DB local và trên dump
 production ngày 2026-09-17 (phpMyAdmin, MariaDB 10.4.24).
 
 Tài liệu này thay bản cũ nói "48 bảng, toàn bộ MyISAM" — số đó đã lỗi thời.
@@ -117,8 +117,9 @@ chủ project quyết, không tự làm kèm trong đợt chuyển host.
 
 ## 6. Migration
 
-Không có framework tự động. Migration là **file SQL đánh số** trong
-`migrations/` (hiện có 45 file), chạy tay.
+Không có framework tự động. Migration gồm **49 file SQL/PHP đánh số** trong
+`migrations/`, chạy tay. Migration PHP phải mặc định dry-run và chỉ ghi khi có
+tham số áp dụng rõ ràng.
 
 Quy tắc:
 

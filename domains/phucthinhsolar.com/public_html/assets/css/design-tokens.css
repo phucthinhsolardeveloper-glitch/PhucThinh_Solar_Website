@@ -488,11 +488,69 @@ body{font-family:var(--pts-font)!important;}
   padding-bottom:var(--pts-hub-y-bottom)!important;
 }
 
+/* Các trang Giải pháp đã có breadcrumb ngay phía trên nên không cộng thêm
+   margin của wrapper legacy. Giữ một nhịp nhỏ, liền mạch giữa breadcrumb,
+   nội dung đầu trang và footer thay vì tạo hai dải trắng lớn. */
+.wrap-main.solution-page{
+  margin-top:0!important;
+  margin-bottom:0!important;
+}
+.wrap-main.solution-page .pts-solution-hub{
+  padding-top:16px!important;
+  padding-bottom:24px!important;
+}
+.wrap-main.solution-page .pts-solution-detail{
+  padding-top:0!important;
+  padding-bottom:0!important;
+}
+.wrap-main.solution-page .pts-solution-detail .pts-sd-hero{
+  padding-top:10px!important;
+}
+.wrap-main.solution-page .pts-solution-detail .pts-sd-switcher{
+  padding-top:14px!important;
+  padding-bottom:18px!important;
+}
+.wrap-main.solution-page .pts-solution-detail .pts-sd-body{
+  padding-top:40px!important;
+  padding-bottom:36px!important;
+}
+.wrap-main.solution-page .pts-solution-detail .pts-sh-equipment{
+  padding-top:28px!important;
+  padding-bottom:16px!important;
+}
+.wrap-main.solution-page .pts-solution-detail .pts-sh-contact{
+  margin-top:22px!important;
+  padding-bottom:36px!important;
+}
+
 @media (max-width:800px){
   :root{
     --pts-section-y:48px;
     --pts-hub-y-top:24px;
     --pts-hub-y-bottom:40px;
+  }
+  .wrap-main.solution-page .pts-solution-hub{
+    padding-top:10px!important;
+    padding-bottom:16px!important;
+  }
+  .wrap-main.solution-page .pts-solution-detail .pts-sd-hero{
+    padding-top:8px!important;
+  }
+  .wrap-main.solution-page .pts-solution-detail .pts-sd-switcher{
+    padding-top:12px!important;
+    padding-bottom:14px!important;
+  }
+  .wrap-main.solution-page .pts-solution-detail .pts-sd-body{
+    padding-top:28px!important;
+    padding-bottom:24px!important;
+  }
+  .wrap-main.solution-page .pts-solution-detail .pts-sh-equipment{
+    padding-top:22px!important;
+    padding-bottom:14px!important;
+  }
+  .wrap-main.solution-page .pts-solution-detail .pts-sh-contact{
+    margin-top:18px!important;
+    padding-bottom:26px!important;
   }
   /* theme-v2.css có `body.home .home-3,...{padding-top:40px!important}` trong
      một media query mobile. Specificity (0,2,1) thắng `.home-3` (0,1,0) dù cả

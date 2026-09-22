@@ -4,7 +4,7 @@ test.beforeEach(async ({ page }) => {
   await page.route('https://cdn.gtranslate.net/**', route => route.abort());
 });
 
-test('mobile product names expand instead of being clipped by the legacy two-line card', async ({ page, isMobile }) => {
+test('mobile product names clamp to three lines with a fixed card height', async ({ page, isMobile }) => {
   test.skip(!isMobile, 'Kiểm tra này dành cho lưới hai cột mobile.');
   await page.setViewportSize({ width: 390, height: 844 });
   // Trang chủ V4 không còn lưới sản phẩm; kiểm tra card trên danh mục đang bán.
@@ -16,37 +16,34 @@ test('mobile product names expand instead of being clipped by the legacy two-lin
     const style = getComputedStyle(node);
     return {
       height: node.getBoundingClientRect().height,
-      scrollHeight: node.scrollHeight,
       clamp: style.webkitLineClamp,
       overflow: style.overflow,
     };
   }));
+  /* 2026-09-22: đổi lại thành giới hạn 3 dòng + chiều cao cố định (4.44em) để
+     ảnh, thông số, giá và CTA thẳng hàng giữa các card trên cùng một hàng lưới
+     - đánh đổi có chủ đích, tên quá dài sẽ hiện dấu ... Test trước kiểm tra
+     hành vi cũ (không giới hạn dòng); cập nhật theo thiết kế đã duyệt. */
+  const heights = metrics.map(metric => metric.height);
   for (const metric of metrics) {
-    expect(metric.clamp).toBe('none');
-    expect(metric.height).toBeGreaterThanOrEqual(metric.scrollHeight - 1);
-    expect(metric.overflow).toBe('visible');
+    expect(metric.clamp).toBe('3');
+    expect(metric.overflow).toBe('hidden');
   }
+  for (const height of heights) expect(Math.abs(height - heights[0])).toBeLessThanOrEqual(1);
   expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
 });
 
-test('mobile language choices survive the Mmenu clone and set the translation cookie', async ({ page, context, isMobile }) => {
-  test.skip(!isMobile, 'Bộ đổi ngôn ngữ này nằm trong drawer mobile.');
+test('mobile hides the language switcher entirely (desktop keeps it)', async ({ page, isMobile }) => {
+  test.skip(!isMobile, 'Chủ ý ẩn công tắc ngôn ngữ chỉ áp dụng cho mobile.');
+  /* 2026-09-22: chủ project chủ ý ẩn hoàn toàn chức năng đổi ngôn ngữ trên
+     mobile (cả header lẫn drawer mmenu), không phải bug. Test trước kiểm tra
+     hành vi ngược lại (mong đợi thấy được và đổi được ngôn ngữ); cập nhật
+     theo đúng chủ ý đã xác nhận. */
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/', { waitUntil: 'domcontentloaded' });
-  const languageSettings = await page.evaluate(() => window.gtranslateSettings);
-  expect(languageSettings.default_language).toBe('vi');
-  expect(languageSettings.detect_browser_language).toBe(true);
+  await expect(page.locator('.flex-search-lang>.gtranslate_wrapper')).toBeHidden();
   await page.evaluate(() => document.querySelector('#hamburger').click());
-
-  const languageBox = page.locator('.mm-menu:visible .mm-lang-links').first();
-  await expect(languageBox).toBeVisible();
-  await expect(languageBox.locator('[data-gtlang]')).toHaveCount(5);
-
-  const navigation = page.waitForNavigation({ waitUntil: 'domcontentloaded' });
-  await languageBox.locator('[data-gtlang="en"]').evaluate(link => link.click());
-  await navigation;
-  const cookie = (await context.cookies()).find(item => item.name === 'googtrans');
-  expect(cookie && cookie.value).toBe('/vi/en');
+  await expect(page.locator('.mm-menu .mm-lang').first()).toBeHidden();
 });
 
 test('mobile footer finishes compactly and floating actions yield to footer content', async ({ page, isMobile }) => {

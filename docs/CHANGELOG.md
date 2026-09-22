@@ -2,6 +2,11 @@
 
 ## 2026-09-22
 
+- Chuẩn hóa catalogue còn 9 danh mục cấp 1; ẩn `Hệ khung & phụ kiện tấm pin`,
+  chuyển ba nhóm con và 12 sản phẩm sang `Tấm pin năng lượng mặt trời`, không
+  tạo cấp 3; giữ URL cũ bằng redirect 301.
+- Đồng bộ thứ tự 9 danh mục cho header desktop/mobile, landing sản phẩm và rail
+  trang chủ; cập nhật rail từ 10 sang 9 ô và bổ sung regression cho URL cũ.
 - Thêm nguồn chuẩn duy nhất cho UI/UX public: định hướng, token, layout,
   component, media, responsive, accessibility, ownership và Definition of Done.
 - Thêm ADR 0007 để ngăn từng trang tự tạo container/ngôn ngữ thiết kế riêng.

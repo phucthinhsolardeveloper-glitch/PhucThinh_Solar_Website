@@ -53,7 +53,7 @@
 
 /* Chi nhánh: danh sách dễ quét bên trái, map có tỷ lệ ổn định bên phải. */
 .pts-contact-v3 #he-thong-chi-nhanh{max-width:none!important;margin:0!important;padding:0 0 26px!important;color:var(--contact-navy)!important;font-size:clamp(30px,2.7vw,43px)!important;font-weight:900!important;line-height:1.15!important;letter-spacing:-.035em;text-align:left!important;}
-.pts-contact-v3 .hts-wrapper{display:grid!important;grid-template-columns:minmax(280px,340px) minmax(0,1fr);gap:clamp(26px,3vw,48px);align-items:stretch;width:min(calc(100% - clamp(40px,5vw,96px)),var(--pts-container,1560px));margin:0 auto!important;padding:0 0 clamp(72px,8vw,120px);position:static!important;background:transparent!important;}
+.pts-contact-v3 .hts-wrapper{display:grid!important;grid-template-columns:minmax(280px,340px) minmax(0,1fr);gap:clamp(26px,3vw,48px);align-items:stretch;width:calc(min(calc(100% - clamp(40px,5vw,96px)),var(--pts-container,1560px)) + 30px);margin:0 auto!important;padding:0 0 clamp(72px,8vw,120px);position:static!important;background:transparent!important;}
 .pts-contact-v3 .hts-fixed-wrap{position:static!important;width:auto!important;height:auto!important;max-height:none!important;padding:0!important;background:transparent!important;overflow:visible!important;}
 .pts-contact-v3 .officeContact{display:grid;height:auto!important;max-height:none!important;gap:0;margin:0;padding:0;overflow:visible!important;list-style:none;}
 .pts-contact-v3 .officeContact li{padding:20px 0!important;border:0!important;border-bottom:1px solid var(--contact-line)!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;}
@@ -68,10 +68,8 @@
 /* Màn hình lớn dùng cùng nhịp container với showroom trang chủ, tránh để
    trang Liên hệ bị co vào giữa trong khi homepage đã mở rộng theo viewport. */
 @media(min-width:1600px){
-  .pts-contact-v3 #top_content>.container,
-  .pts-contact-v3 .hts-wrapper{
-    width:min(calc(100% - clamp(96px,8vw,220px)),2200px)!important;
-  }
+  .pts-contact-v3 #top_content>.container{width:min(calc(100% - clamp(96px,8vw,220px)),2200px)!important;}
+  .pts-contact-v3 .hts-wrapper{width:calc(min(calc(100% - clamp(96px,8vw,220px)),2200px) + 30px)!important;}
 }
 
 @media(max-width:991px){

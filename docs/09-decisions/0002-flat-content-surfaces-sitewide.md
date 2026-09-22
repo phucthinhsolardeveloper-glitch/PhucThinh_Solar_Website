@@ -20,7 +20,7 @@ bo góc và shadow cho hầu hết card. Cách phân tầng này tạo cảm gi�
 4. Breadcrumb không có đường viền phía dưới.
 5. Vẫn giữ border khi nó truyền đạt thao tác hoặc cấu trúc: input/select/textarea,
    bảng dữ liệu, focus-visible, trạng thái chọn, modal và control cần ranh giới.
-6. Hệ sinh thái thiết bị giữ một hàng. Ở desktop rộng, 10 danh mục được thu gọn
+6. Hệ sinh thái thiết bị giữ một hàng. Ở desktop rộng, 9 danh mục được thu gọn
    để hiện đủ; màn hình hẹp tiếp tục cuộn ngang và ẩn scrollbar thị giác.
 
 ## Triển khai

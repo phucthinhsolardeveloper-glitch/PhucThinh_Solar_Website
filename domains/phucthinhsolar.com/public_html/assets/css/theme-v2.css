@@ -295,6 +295,8 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 .pts-hero-eyebrow{display:inline-flex;align-items:center;gap:8px;border-radius:999px;background:var(--pts-gold);color:var(--pts-navy);padding:7px 16px;margin-bottom:22px;font-size:12px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;box-shadow:0 8px 22px rgba(0,0,0,.2);}
 .pts-home-hero h1{color:#fff;font-size:clamp(40px,5.3vw,72px);font-weight:950;line-height:1.05;letter-spacing:-.035em;margin:0 0 22px;text-transform:uppercase;}
 .pts-home-hero h1 strong{color:var(--pts-gold-light);font:inherit;}
+.pts-home-hero h1 .pts-hero-title-primary{display:inline-block;font-size:clamp(36px,4.5vw,60px);}
+.pts-home-hero h1 .pts-hero-title-secondary{display:inline-block;font-size:clamp(32px,4vw,54px);}
 .pts-home-hero p{max-width:650px;color:#dbeafe!important;font-size:17px;line-height:1.75;margin:0 0 30px;}
 .pts-hero-actions{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:18px;}
 .pts-hero-dealer-link{margin:0 0 24px!important;font-size:13.5px!important;color:#cbd5e1!important;}
@@ -512,6 +514,8 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
     .pts-brand-copy small{font-size:9px;}
     .pts-brand-wordmark img{max-width:165px!important;max-height:38px!important;}
     .pts-home-hero h1{font-size:clamp(36px,11vw,52px);}
+    .pts-home-hero h1 .pts-hero-title-primary{font-size:clamp(32px,9.5vw,46px);}
+    .pts-home-hero h1 .pts-hero-title-secondary{font-size:clamp(29px,8.7vw,42px);}
     .pts-home-hero p{font-size:15px;}
     .pts-hero-stats{gap:32px;}
     .pts-hero-stats strong{font-size:34px;}
@@ -2598,9 +2602,12 @@ h4{font-size:21px!important;font-weight:800!important;}
 }
 .mm-lang .mm-lang-links a.active{background:var(--pts-navy);border-color:var(--pts-navy);color:#fff;}
 .mm-lang .mm-lang-links a:active{opacity:.75;}
-/* Ẩn công tắc ngôn ngữ ở header khi vào chế độ mobile (đã chuyển vào sidebar) */
+/* Ẩn hoàn toàn chức năng đổi ngôn ngữ trên mobile (chủ ý của chủ project,
+   2026-09-22) - cả bản ở header lẫn bản trong sidebar mmenu. Desktop giữ
+   nguyên bình thường. */
 @media(max-width:991px){
     .flex-search-lang>.gtranslate_wrapper{display:none!important;}
+    .mm-menu .mm-lang{display:none!important;}
 }
 
 /* =====================================================================

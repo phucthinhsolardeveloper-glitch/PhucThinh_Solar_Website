@@ -288,7 +288,7 @@ test('danh mục Đèn sân vườn dùng banner ảnh và card có cùng hàng 
   for (const card of metrics) expect(Math.abs(card.priceCenter - card.actionCenter)).toBeLessThanOrEqual(12);
 });
 
-test('mười nhóm danh mục có ảnh nền đúng ngữ cảnh thay vì lặp một ảnh', async ({ page }) => {
+test('chín nhóm danh mục có ảnh nền đúng ngữ cảnh thay vì lặp một ảnh', async ({ page }) => {
   const expectedHeroes = [
     ['den-nlmt', 'catalog-street-lighting.jpg'],
     ['bien-tan-inverter', 'catalog-inverter-system-v2.jpg'],
@@ -298,7 +298,6 @@ test('mười nhóm danh mục có ảnh nền đúng ngữ cảnh thay vì lặ
     ['quat-nang-luong-mat-troi', 'catalog-solar-fan-v3.jpg'],
     ['bien-tan-bom', 'catalog-solar-pump-v2.jpg'],
     ['thiet-bi-dien-nang-luong-mat-troi', 'catalog-solar-electrical-accessories-v2.jpg'],
-    ['he-thong-khung-nhom', 'catalog-solar-panel-mounting-v2.jpg'],
     ['pin-luu-tru', 'catalog-battery-storage-v2.jpg'],
   ];
 
@@ -309,6 +308,14 @@ test('mười nhóm danh mục có ảnh nền đúng ngữ cảnh thay vì lặ
     await expect(hero).toHaveAttribute('src', new RegExp(filename.replace('.', '\\.')));
     expect((await imageMetrics(hero)).fit).toBe('cover');
   }
+});
+
+test('URL Hệ khung cũ chuyển về danh mục Tấm pin', async ({ request }) => {
+  const response = await request.get('/danh-muc-san-pham/he-thong-khung-nhom/', {
+    maxRedirects: 0,
+  });
+  expect(response.status()).toBe(301);
+  expect(new URL(response.headers().location).pathname).toBe('/danh-muc-san-pham/tam-pin-nang-luong-mat-troi/');
 });
 
 test('nội dung tư vấn danh mục được cân giữa và tách nhịp khỏi lưới sản phẩm', async ({ page }) => {

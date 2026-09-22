@@ -9,7 +9,7 @@
 .pts-header-v4 .logo-header{display:flex;align-items:center;justify-content:flex-start;min-width:0;margin:0;padding:0;border:0;border-radius:0;background:transparent!important;box-shadow:none!important}
 .pts-header-v4 .logo-header:after{display:none!important}
 .pts-header-v4 .logo-header picture{display:flex;align-items:center;width:100%}
-.pts-header-v4 .logo-header img{display:block;width:auto!important;max-width:min(290px,100%)!important;max-height:76px!important;object-fit:contain}
+.pts-header-v4 .logo-header img{display:block;width:auto!important;max-width:min(400px,100%)!important;max-height:100px!important;object-fit:contain}
 
 .pts-header-v4 .pts-header-nav{position:relative;z-index:30;display:block;min-width:0;background:transparent!important;border:0!important}
 .pts-header-v4 .pts-header-nav .menu{position:static;display:block;min-width:0;z-index:20}
@@ -69,15 +69,19 @@
 .pts-header-v4 .hdr-quick-links a:hover{color:#8a6526!important}
 
 .pts-header-v4 .btn-mmenu{display:none!important}
-.pts-header-v4 #hamburger{position:relative;display:flex;width:100%;height:100%;align-items:center;justify-content:center}
-.pts-header-v4 #hamburger>span,.pts-header-v4 #hamburger>span:before,.pts-header-v4 #hamburger>span:after{position:absolute;display:block;width:19px;height:2px;border-radius:2px;background:#10243a;content:"";transition:transform .18s ease,opacity .18s ease}
-.pts-header-v4 #hamburger>span:before{top:-6px}
-.pts-header-v4 #hamburger>span:after{top:6px}
+.pts-header-v4 #hamburger{position:relative;display:block;width:22px;height:22px;margin:auto}
+.pts-header-v4 #hamburger:before,.pts-header-v4 #hamburger:after,.pts-header-v4 #hamburger>span{position:absolute;left:0;display:block;width:22px;height:2px;border:0;border-bottom:2px solid #10243a;background:transparent;content:"";transition:transform .24s cubic-bezier(.4,0,.2,1),opacity .18s ease}
+.pts-header-v4 #hamburger:before{top:10px;transform:translateY(-7px)}
+.pts-header-v4 #hamburger>span{top:10px;opacity:1!important}
+.pts-header-v4 #hamburger:after{top:10px;transform:translateY(7px)}
+body.mm-wrapper_opening .pts-header-v4 #hamburger:before,body.mm-wrapper_opened .pts-header-v4 #hamburger:before{transform:rotate(45deg)}
+body.mm-wrapper_opening .pts-header-v4 #hamburger:after,body.mm-wrapper_opened .pts-header-v4 #hamburger:after{transform:rotate(-45deg)}
+body.mm-wrapper_opening .pts-header-v4 #hamburger>span,body.mm-wrapper_opened .pts-header-v4 #hamburger>span{left:-50px;opacity:0!important}
 .pts-header-v4 a:focus-visible,.pts-header-v4 button:focus-visible,.pts-header-v4 input:focus-visible{outline:2px solid #8a6526!important;outline-offset:2px}
 
 @media(min-width:1800px){
   .pts-header-v4 .pts-header-row{grid-template-columns:420px minmax(0,1fr) auto;min-height:174px!important;padding-top:8px!important;padding-bottom:8px!important}
-  .pts-header-v4 .logo-header img{max-width:400px!important;max-height:100px!important}
+  .pts-header-v4 .logo-header img{max-width:530px!important;max-height:124px!important}
   .pts-header-v4 .pts-header-nav .menu>div>ul>li>a{min-height:54px;padding-left:14px!important;padding-right:14px!important;font-size:17px!important}
   .pts-header-v4 .pts-header-nav .menu ul li ul{min-width:310px;padding:11px!important}
   .pts-header-v4 .pts-header-nav .menu>div>ul>li.menu-catalog>ul{min-width:355px}
@@ -89,7 +93,7 @@
   /* iMac/4K có nhiều khoảng trống ngang: tăng nhận diện logo nhưng vẫn
      chừa đủ không gian cho menu và nhóm hành động bên phải. */
   .pts-header-v4 .pts-header-row{grid-template-columns:460px minmax(0,1fr) auto}
-  .pts-header-v4 .logo-header img{max-width:440px!important;max-height:104px!important}
+  .pts-header-v4 .logo-header img{max-width:590px!important;max-height:130px!important}
 }
 @media(max-width:1500px){
   .pts-header-v4 .pts-header-row{grid-template-columns:280px minmax(0,1fr) auto;gap:18px!important;min-height:132px!important}
@@ -102,8 +106,8 @@
 /* 1501–2299px là dải container vẫn còn hẹp hơn 2K thật (max-width 1680px).
    Dùng bộ điều hướng compact ở đây để logo/menu/actions không đè lên nhau. */
 @media(min-width:1501px) and (max-width:2299px){
-  .pts-header-v4 .pts-header-row{grid-template-columns:clamp(320px,20vw,390px) minmax(0,1fr) auto;gap:18px!important;min-height:clamp(148px,8vw,164px)!important;padding-top:8px!important;padding-bottom:8px!important}
-  .pts-header-v4 .logo-header img{max-width:min(380px,100%)!important;max-height:92px!important}
+  .pts-header-v4 .pts-header-row{grid-template-columns:clamp(360px,22vw,460px) minmax(0,1fr) auto;gap:18px!important;min-height:clamp(148px,8vw,164px)!important;padding-top:8px!important;padding-bottom:8px!important}
+  .pts-header-v4 .logo-header img{max-width:min(530px,100%)!important;max-height:108px!important}
   .pts-header-v4 .pts-header-nav .menu>div>ul>li>a{min-height:48px;padding-left:7px!important;padding-right:7px!important;font-size:14px!important}
   .pts-header-v4 .pts-header-nav .menu>div>ul>li.menu-catalog>a{padding-left:10px!important;padding-right:10px!important}
   .pts-header-v4 .pts-header-actions{gap:6px!important}
@@ -128,7 +132,7 @@
   .pts-header-v4 .hdr-search-zone>.wrap-content{grid-template-columns:1fr;gap:11px}
 }
 @media(max-width:560px){
-  .pts-header-v4 .pts-header-row{gap:8px!important;min-height:90px!important}
+  .pts-header-v4 .pts-header-row{gap:8px!important;min-height:64px!important;padding-top:6px!important;padding-bottom:6px!important}
   .pts-header-v4 .btn-mmenu{flex-basis:38px;width:38px}
   .pts-header-v4 .bg-mmenu{width:38px;height:38px}
   .pts-header-v4 .logo-header img{max-width:198px!important;max-height:55px!important}

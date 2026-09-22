@@ -100,7 +100,7 @@ test('search with no match shows the not-found notice', async ({ page, baseURL }
 test('empty product category keeps navigation, filters and consultation entry points', async ({ page, baseURL }) => {
   // Trước đây bám vào "Đèn AC" vì danh mục đó vốn không có sản phẩm nào. Sau đợt
   // tái cấu trúc cây danh mục 2026-09-08, "Đèn AC" đã bị ẩn (không còn route),
-  // và cả 10 danh mục còn hoạt động đều có sản phẩm. Ép rỗng bằng bộ lọc is_cat
+  // và các danh mục còn hoạt động đều có sản phẩm. Ép rỗng bằng bộ lọc is_cat
   // trỏ tới một danh mục con không tồn tại, trên một danh mục cấp 1 còn thật —
   // vẫn đúng mục đích test là kiểm tra khung trang khi 0 kết quả.
   await collectHealth(page, baseURL, async () => {

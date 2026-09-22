@@ -1,12 +1,26 @@
 # Current status
 
-Cập nhật gần nhất: 2026-09-20. Phần lớn nội dung bên dưới (tới dòng "Checkout
+Cập nhật gần nhất: 2026-09-22. Phần lớn nội dung bên dưới (tới dòng "Checkout
 idempotency local") là log tích lũy từ trước 2026-09-06 và mới ở Git + Docker
 local tại thời điểm ghi — KHÔNG tự suy ra các mục đó đã lên production chỉ vì
 đợt 2026-09-08/09 đã bắt đầu deploy thật (xem mục riêng bên dưới); mỗi mục cũ
 giữ nguyên phạm vi "local" như lúc viết trừ khi có ghi chú deploy production
 rõ ràng. Trạng thái dữ liệu trống đã được chủ project xác nhận là do chưa có
 nguồn thật; không coi đó là blocker kỹ thuật và không tự lấp.
+
+## 2026-09-22: chuẩn hóa còn 9 danh mục sản phẩm, local, chưa deploy
+
+- Cây sản phẩm public còn đúng 9 danh mục cấp 1 theo thứ tự đã duyệt. Đổi nhãn
+  `Trụ đèn & phụ kiện` thành `Trụ đèn` và `Hệ thống bơm năng lượng mặt trời`
+  thành `Bơm nước năng lượng mặt trời`; giữ slug public để bảo toàn SEO.
+- `Hệ khung & phụ kiện tấm pin` không còn hiển thị như danh mục cấp 1. Bản ghi
+  được ẩn, không xóa; ba danh mục cấp 2 và 12 sản phẩm của nó được chuyển thẳng
+  sang `Tấm pin năng lượng mặt trời`. Không tạo danh mục cấp 3.
+- URL cũ có redirect 301, phạm vi campaign được giữ ở ba danh mục cấp 2 và rail
+  trang chủ đã đổi từ công thức 10 ô sang 9 ô. Migration
+  `047_normalize_product_top_categories.php` đã áp dụng, hậu kiểm trên local;
+  production chưa chạy migration và chưa deploy code này.
+- Backup local trước khi ghi: `backup/local/20260922-150810` (checksum đạt).
 
 ## 2026-09-20: production đã cutover sang VPS và có quy trình vận hành chuẩn
 

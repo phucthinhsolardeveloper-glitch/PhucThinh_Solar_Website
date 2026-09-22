@@ -181,32 +181,37 @@
 
     /* Giới thiệu ngắn (About teaser) trang chủ - thêm Admin 2026-09-14 (trước
        đó hardcode). Ảnh/nhãn/tiêu đề/mô tả/chữ nút lấy record home-about hiển
-       thị đầu tiên; 4 gạch đầu dòng lấy tối đa 4 record home-about-point.
-       Không có record nào (hoặc tắt hết) thì dùng đúng nội dung mặc định đã
-       duyệt trước đây, giữ nguyên hành vi cũ - không tự đổi copy. */
+       thị đầu tiên; bốn ô lợi ích lấy tối đa 4 record home-about-point.
+       Không có record nào (hoặc tắt hết) thì dùng nội dung mặc định đã duyệt. */
     $homeAboutRows = $cache->get("select name$lang, title_index$lang, desc$lang, content1$lang, photo, status from #_news where type = ? and find_in_set('hienthi',status) order by numb,id desc limit 0,1", array('home-about'), 'result', 7200);
-    $homeAboutPointRows = $cache->get("select name$lang, photo, status from #_news where type = ? and find_in_set('hienthi',status) order by numb,id desc limit 0,4", array('home-about-point'), 'result', 7200);
+    $homeAboutPointRows = $cache->get("select name$lang, desc$lang, photo, status from #_news where type = ? and find_in_set('hienthi',status) order by numb,id desc limit 0,4", array('home-about-point'), 'result', 7200);
     $homeAbout = !empty($homeAboutRows) ? $homeAboutRows[0] : array();
     $homeAboutEyebrow = !empty($homeAbout['title_index'.$lang]) ? $homeAbout['title_index'.$lang] : 'VỀ PHÚC THỊNH SOLAR';
-    $homeAboutTitle = !empty($homeAbout['name'.$lang]) ? $homeAbout['name'.$lang] : 'Đồng hành cùng khách hàng trên hành trình năng lượng sạch';
-    $homeAboutDesc = !empty($homeAbout['desc'.$lang]) ? $homeAbout['desc'.$lang] : 'Phúc Thịnh Solar cung cấp đèn năng lượng mặt trời chính hãng, thiết bị điện mặt trời và giải pháp thi công cho gia đình, đại lý và công trình.';
-    $homeAboutButton = !empty($homeAbout['content1'.$lang]) ? $homeAbout['content1'.$lang] : 'Tìm hiểu về chúng tôi';
+    $homeAboutTitle = !empty($homeAbout['name'.$lang]) ? $homeAbout['name'.$lang] : 'Cung cấp thiết bị và thi công năng lượng mặt trời';
+    $homeAboutDesc = !empty($homeAbout['desc'.$lang]) ? $homeAbout['desc'.$lang] : 'Phúc Thịnh Solar cung cấp đèn năng lượng mặt trời, tấm pin, biến tần, pin lưu trữ và thiết bị bơm nước. Chúng tôi tư vấn lựa chọn thiết bị, thiết kế và thi công hệ thống phù hợp với nhu cầu sử dụng và ngân sách của khách hàng.';
+    $homeAboutButton = !empty($homeAbout['content1'.$lang]) ? $homeAbout['content1'.$lang] : 'Tìm hiểu về Phúc Thịnh Solar';
     $homeAboutImage = !empty($homeAbout['photo']) ? $homeAbout['photo'] : '';
     $homeAboutImageUpload = UPLOAD_NEWS_L;
     if($homeAboutImage === '') { $homeAboutImage = '1-27050.png'; $homeAboutImageUpload = UPLOAD_PHOTO_L; }
-    $homeAboutDefaultIcons = array('fa-certificate', 'fa-tools', 'fa-shield-alt', 'fa-truck');
-    $homeAboutDefaultPoints = array('Cam kết chính hãng', 'Đội ngũ kỹ thuật giàu kinh nghiệm', 'Chính sách bảo hành rõ ràng', 'Giao hàng toàn quốc');
+    $homeAboutDefaultIcons = array('fa-certificate', 'fa-tools', 'fa-shield-alt', 'fa-warehouse');
+    $homeAboutDefaultPoints = array(
+        array('label' => 'Sản phẩm chính hãng', 'desc' => 'Thông tin thương hiệu, thông số kỹ thuật và chính sách bảo hành rõ ràng.'),
+        array('label' => 'Tư vấn và thi công', 'desc' => 'Đề xuất thiết bị và phương án lắp đặt phù hợp với điều kiện thực tế của từng công trình.'),
+        array('label' => 'Hỗ trợ sau bàn giao', 'desc' => 'Hướng dẫn sử dụng, tiếp nhận yêu cầu bảo hành và hỗ trợ kỹ thuật trong quá trình vận hành.'),
+        array('label' => 'Hệ thống kho ba khu vực', 'desc' => 'Kho tại TP.HCM, Đà Nẵng và Gia Lai, hỗ trợ giao hàng toàn quốc.')
+    );
     $homeAboutPoints = array();
     if(!empty($homeAboutPointRows)) {
         foreach($homeAboutPointRows as $pointIndex => $pointRow) {
             $homeAboutPoints[] = array(
                 'label' => !empty($pointRow['name'.$lang]) ? $pointRow['name'.$lang] : '',
+                'desc' => !empty($pointRow['desc'.$lang]) ? $pointRow['desc'.$lang] : (isset($homeAboutDefaultPoints[$pointIndex]) ? $homeAboutDefaultPoints[$pointIndex]['desc'] : ''),
                 'icon' => isset($homeAboutDefaultIcons[$pointIndex]) ? $homeAboutDefaultIcons[$pointIndex] : 'fa-check',
                 'photo' => !empty($pointRow['photo']) ? $pointRow['photo'] : ''
             );
         }
     } else {
-        foreach($homeAboutDefaultPoints as $pointIndex => $pointLabel) $homeAboutPoints[] = array('label' => $pointLabel, 'icon' => $homeAboutDefaultIcons[$pointIndex], 'photo' => '');
+        foreach($homeAboutDefaultPoints as $pointIndex => $point) $homeAboutPoints[] = array('label' => $point['label'], 'desc' => $point['desc'], 'icon' => $homeAboutDefaultIcons[$pointIndex], 'photo' => '');
     }
     $newsnb = $cache->get("select name$lang, slugvi, slugen, desc$lang, date_created, id, photo from #_news where type = ? and find_in_set('noibat',status) and find_in_set('hienthi',status) order by numb,id desc limit 0,6", array('tin-tuc'), 'result', 7200);
     $solieu = $cache->get("select name$lang, solieu, id, photo from #_news where type = ? and find_in_set('hienthi',status) order by numb,id desc limit 0,4", array('so-lieu-thong-ke'), 'result', 7200);

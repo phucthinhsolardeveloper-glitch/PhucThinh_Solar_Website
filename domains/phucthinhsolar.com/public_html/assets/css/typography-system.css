@@ -66,19 +66,18 @@ body{font-size:var(--pts-type-base)!important;}
 .pts-product-family-grid .product-card .caption .name{
   font-size:17px!important;
   line-height:1.48!important;
-  display:block!important;
-  height:auto!important;
-  max-height:none!important;
-  min-height:2.96em!important;
-  overflow:visible!important;
+  display:-webkit-box!important;
+  height:4.44em!important;
+  max-height:4.44em!important;
+  min-height:4.44em!important;
+  overflow:hidden!important;
   overflow-wrap:anywhere;
   word-break:normal;
-  -webkit-line-clamp:unset!important;
-  -webkit-box-orient:unset!important;
+  -webkit-line-clamp:3!important;
+  -webkit-box-orient:vertical!important;
 }
-/* Tên được phép mở đủ dòng, vì vậy chiều cao nội dung có thể khác nhau giữa
-   các sản phẩm. Cho các hàng grid dùng cùng một track linh hoạt để đáy giá và
-   CTA vẫn đều, thay vì quay lại cắt tên bằng line-clamp. */
+/* Tên sản phẩm tối đa ba dòng; tên dài sẽ tự hiện dấu …, còn vùng tên vẫn
+   giữ cùng chiều cao để ảnh, thông số, giá và CTA thẳng hàng trên mọi card. */
 .grid-product{grid-auto-rows:1fr;}
 .grid-product>.product-card{height:100%;}
 .product-card .pts-card-specs{font-size:var(--pts-type-meta)!important;}
@@ -148,6 +147,8 @@ body{font-size:var(--pts-type-base)!important;}
   .product-card .caption .name{
     font-size:15.5px!important;
     line-height:1.48!important;
+    height:4.44em!important;
+    max-height:4.44em!important;
     min-height:4.44em!important;
   }
   .pts-ecosystem .pts-ecosystem-name,

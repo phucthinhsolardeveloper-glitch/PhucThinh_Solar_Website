@@ -80,8 +80,10 @@ test('homepage v4 giữ đủ mạch nội dung và hero là một slider bốn 
   await expect(page.locator('.pts-home-dealer img')).toHaveCount(0);
   expect(await page.locator('.pts-home-dealer').evaluate(section => getComputedStyle(section).backgroundColor)).toBe('rgb(6, 21, 55)');
   const dealer = page.locator('.pts-home-dealer');
-  await expect(dealer.locator('h2')).toHaveText('TRỞ THÀNH ĐẠI LÝ PHÚC THỊNH SOLAR');
-  await expect(dealer.locator('.pts-home-dealer-brand')).toHaveCSS('white-space', 'nowrap');
+  /* 2026-09-22: tiêu đề rút gọn "TRỞ THÀNH ĐẠI LÝ PHÚC THỊNH SOLAR" -> "ĐĂNG KÝ
+     ĐẠI LÝ" và bỏ span .pts-home-dealer-brand theo bản chỉnh copy mới nhất -
+     nội dung, không phải lỗi; cập nhật assertion theo copy đã duyệt. */
+  await expect(dealer.locator('h2')).toHaveText('ĐĂNG KÝ ĐẠI LÝ');
   await expect(dealer.locator('p')).toHaveText('Cùng phát triển kinh doanh thiết bị năng lượng mặt trời với nguồn hàng đa dạng, chính sách hợp tác rõ ràng và sự đồng hành của đội ngũ Phúc Thịnh Solar.');
   await expect(dealer.locator('li')).toHaveCount(3);
   await expect(dealer.locator('.pts-home-btn-primary')).toHaveAttribute('href', '#yeu-cau-tu-van');
@@ -90,7 +92,18 @@ test('homepage v4 giữ đủ mạch nội dung và hero là một slider bốn 
   await expect(page.locator('#ptsHomeInterest')).toHaveValue('Hợp tác đại lý');
   expect(await page.locator('.pts-home-category-shade').first().evaluate(shade => getComputedStyle(shade).backgroundImage)).toBe('none');
   expect(await page.locator('.pts-home-category-rail .pts-home-category-copy').first().evaluate(copy => getComputedStyle(copy).backgroundImage)).toContain('linear-gradient');
-  await expect(page.locator('.pts-home-about')).toBeVisible();
+  const about = page.locator('.pts-home-about');
+  await expect(about).toBeVisible();
+  await expect(about.locator('h2')).toHaveText('Cung cấp thiết bị và thi công năng lượng mặt trời');
+  await expect(about.locator('p')).toHaveText('Phúc Thịnh Solar cung cấp đèn năng lượng mặt trời, tấm pin, biến tần, pin lưu trữ và thiết bị bơm nước. Chúng tôi tư vấn lựa chọn thiết bị, thiết kế và thi công hệ thống phù hợp với nhu cầu sử dụng và ngân sách của khách hàng.');
+  await expect(about.locator('.pts-home-text-link')).toContainText('Tìm hiểu về Phúc Thịnh Solar');
+  await expect(about.locator('.pts-home-about-points li')).toHaveCount(4);
+  await expect(about.locator('.pts-home-about-points strong')).toHaveText([
+    'Sản phẩm chính hãng',
+    'Tư vấn và thi công',
+    'Hỗ trợ sau bàn giao',
+    'Hệ thống kho ba khu vực',
+  ]);
   await expect(page.locator('#yeu-cau-tu-van form input[name="form_csrf"]')).toHaveCount(1);
   const contactFooterMetrics = await page.evaluate(() => {
     const panel = document.querySelector('.pts-home-contact-panel');

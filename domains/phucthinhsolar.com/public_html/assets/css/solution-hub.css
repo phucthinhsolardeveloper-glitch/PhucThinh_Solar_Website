@@ -1,6 +1,7 @@
 /* Scoped to the Solutions hub and its two existing category routes. News,
    project and solution-detail layouts retain their existing styles. */
 .pts-solution-hub{--sh-navy:#071b46;--sh-gold:#b67d2e;--sh-line:#e1e7ef;--sh-muted:#52627a;--sh-surface:#f3f6fa;color:var(--sh-navy);background:#fff;padding:32px 0 56px;}
+.wrap-main.solution-detail-page{margin-top:0!important;margin-bottom:0!important;}
 .pts-solution-hub *{box-sizing:border-box;}
 .pts-solution-hub figure{margin:0;}
 .pts-solution-hub a{text-decoration:none!important;}
@@ -154,8 +155,8 @@
 .pts-solution-editorial th,.pts-solution-editorial td{padding:13px 10px!important;border:0!important;border-bottom:1px solid #dfe5ed!important;text-align:left;vertical-align:top;}
 .pts-solution-editorial th{color:var(--sh-navy);font-weight:800;}
 
-.pts-solution-detail{padding-top:0;}
-.pts-sd-hero{padding:34px 0 0;background:#fff;}
+.pts-solution-detail{padding-top:0!important;padding-bottom:0!important;}
+.pts-sd-hero{padding:24px 0 0;background:#fff;}
 .pts-sd-hero-grid{display:grid;grid-template-columns:minmax(0,.9fr) minmax(440px,1.1fr);align-items:stretch;min-height:440px;overflow:hidden;border-radius:3px;background:var(--sh-navy);}
 .pts-sd-hero-grid.is-text-only{grid-template-columns:1fr;}
 .pts-sd-hero-copy{display:flex;flex-direction:column;justify-content:center;padding:clamp(38px,4.3vw,68px);}

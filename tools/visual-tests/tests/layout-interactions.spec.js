@@ -408,6 +408,15 @@ test('product landing renders category products in the initial HTML without star
   expect(await blocks.count()).toBeGreaterThan(0);
   await expect(blocks.first().locator('.product-card').first()).toBeAttached();
   expect(await blocks.first().locator('.product-card').count()).toBeLessThanOrEqual(4);
+  const productNames = blocks.first().locator('.product-card .caption .name');
+  if (await productNames.count()) {
+    const nameMetrics = await productNames.evaluateAll(names => names.map(name => {
+      const style = getComputedStyle(name);
+      return {height: Math.round(name.getBoundingClientRect().height), clamp: style.webkitLineClamp, overflow: style.overflow};
+    }));
+    expect(nameMetrics.every(metric => metric.clamp === '3' && metric.overflow === 'hidden')).toBeTruthy();
+    expect(new Set(nameMetrics.map(metric => metric.height)).size).toBe(1);
+  }
   await page.waitForTimeout(700);
   expect(product3Requests).toEqual([]);
 });

@@ -242,6 +242,27 @@ test('All five solution details share the balanced responsive template', async (
     };
     expect(heroSurface.background, path).toBe(heroHexToRgb(heroSurface.tokenNavy));
     expect(heroSurface.titleColor, path).toBe('rgb(255, 255, 255)');
+    const pageSpacing = await page.evaluate(() => {
+      const breadcrumb = document.querySelector('.pts-breadcrumb-shell');
+      const heroGrid = document.querySelector('.pts-sd-hero-grid');
+      const wrapper = document.querySelector('.wrap-main.solution-page');
+      const footer = document.querySelector('footer');
+      if(!breadcrumb || !heroGrid || !wrapper || !footer) return null;
+      const wrapperBox = wrapper.getBoundingClientRect();
+      const footerBox = footer.getBoundingClientRect();
+      const wrapperStyle = getComputedStyle(wrapper);
+      return {
+        breadcrumbToHero: heroGrid.getBoundingClientRect().top - breadcrumb.getBoundingClientRect().bottom,
+        footerAfterWrapper: footerBox.top - wrapperBox.bottom,
+        marginTop: wrapperStyle.marginTop,
+        marginBottom: wrapperStyle.marginBottom,
+      };
+    });
+    expect(pageSpacing, path).not.toBeNull();
+    expect(pageSpacing.breadcrumbToHero, path).toBeLessThanOrEqual(testInfo.project.name.includes('mobile') ? 28 : 34);
+    expect(pageSpacing.footerAfterWrapper, path).toBeLessThanOrEqual(1);
+    expect(pageSpacing.marginTop, path).toBe('0px');
+    expect(pageSpacing.marginBottom, path).toBe('0px');
     if(path.includes('he-thong-luu-tru-bess')) {
       await expect(hero.locator('img')).toHaveAttribute('src', /solution-bess-v2\.jpg(?:\.webp)?/);
     }
