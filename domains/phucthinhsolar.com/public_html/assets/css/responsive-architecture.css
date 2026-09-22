@@ -6,6 +6,35 @@
  * viewport gutter. Entity cards and form controls keep their own UI.
  */
 
+/* Public hubs phải dùng cùng nhịp mép với trang chủ. Trước đây các trang Dự án,
+   Giải pháp, Giới thiệu và Đại lý giữ width của UIkit/Bootstrap nên ở cùng một
+   viewport có trang gần sát mép, có trang lại chừa rất rộng. Chỉ chuẩn hóa
+   wrapper ngoài; các cột biên tập bên trong vẫn giữ max-width riêng để đọc dễ. */
+@media (min-width: 768px) {
+  .pts-project-hub .uk-container,
+  .pts-solution-hub .uk-container,
+  .pts-about-page .uk-container,
+  .pts-dealer-hub .uk-container {
+    width: min(calc(100% - clamp(40px, 5vw, 96px)), var(--pts-container, 1560px)) !important;
+    max-width: none !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+}
+
+@media (min-width: 1600px) {
+  /* max() để không lặp lại lỗi hụt container đột ngột đúng tại 1600px đã
+     vá ở --pts-page-container bên dưới (xem comment tại rule đó). */
+  .pts-project-hub .uk-container,
+  .pts-solution-hub .uk-container,
+  .pts-about-page .uk-container,
+  .pts-dealer-hub .uk-container {
+    width: min(max(var(--pts-container, 1560px), calc(100% - clamp(96px, 8vw, 220px))), 2200px) !important;
+  }
+}
+
 /* Màn hình rộng: các trang trong dùng cùng nhịp ngang với container của
    homepage. Giữ --pts-container dạng token số để không phá các logic cũ,
    nhưng dùng một token hiển thị riêng cho wrapper public. */
