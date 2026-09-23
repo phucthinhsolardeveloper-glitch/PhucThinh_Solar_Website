@@ -1,6 +1,6 @@
 # Hệ thống UI/UX public — nguồn chuẩn duy nhất
 
-Cập nhật: 2026-09-22. Phạm vi: toàn bộ website public Phúc Thịnh Solar trên
+Cập nhật: 2026-09-23. Phạm vi: toàn bộ website public Phúc Thịnh Solar trên
 desktop, iMac/2K, tablet và mobile.
 
 Tài liệu này trả lời câu hỏi **giao diện phải như thế nào**. Cách đặt CSS vào
@@ -190,6 +190,23 @@ Kiểm tra tối thiểu tại `320, 360, 390, 414, 768, 1024, 1366, 1440, 1600,
 1920, 2560px`. 1920 và 2560 đại diện PC Full HD và iMac/2K; không kết luận
 responsive ổn chỉ từ laptop 1366px.
 
+### 4.4 Hero trang chủ — ĐÃ DUYỆT
+
+- Hero full-width dùng một lớp nội dung HTML độc lập trên ảnh nền; vị trí dọc của
+  kicker, H1, mô tả và CTA phải thay đổi theo chiều rộng/chiều cao viewport, không
+  căn bằng một giá trị `top` hoặc `translateY` cố định cho mọi màn hình.
+- Khi hero tăng chiều cao ở desktop lớn, khối nội dung phải được nâng dần theo
+  breakpoint hoặc `clamp()` có giới hạn. Mục tiêu là giữ nội dung ở vùng trên-trung
+  của hero, tránh bị rơi xuống chính giữa hoặc sát đáy khi xem trên màn 1920/2560px.
+- H1 phải ngắt theo cụm nghĩa. Với tiêu đề “Thiết bị và giải pháp năng lượng mặt
+  trời”, giữ nguyên hai cụm “Thiết bị và giải pháp” và “năng lượng mặt trời”; không
+  chèn `<br>` cứng theo một viewport và không để cụm từ bị bẻ giữa từ trên mobile.
+- Mobile có rule cỡ chữ và khoảng đặt hero riêng; phải kiểm tra tối thiểu ở 360,
+  390 và 430px để hai cụm tiêu đề không tràn ngang, không bị tách thành “giải /
+  pháp” hoặc “mặt / trời”.
+- Mọi thay đổi vị trí hero phải kiểm tra đồng thời desktop laptop, desktop lớn và
+  mobile; không kết luận đạt chỉ vì một screenshot ở một độ rộng.
+
 ## 5. Hợp đồng component dùng chung
 
 ### 5.1 Header và navigation
@@ -197,6 +214,14 @@ responsive ổn chỉ từ laptop 1366px.
 - Một header chung, không tạo header riêng cho hub.
 - Logo, menu, ngôn ngữ, tìm kiếm, điện thoại, giỏ hàng và CTA có cùng baseline,
   hit area và trạng thái ở mọi route.
+- Ở mobile, tăng kích thước logo chỉ được tăng phần hình trong hàng header; không
+  được làm hàng header cao/dày hơn hoặc đẩy nội dung đầu trang xuống bất thường.
+- Hamburger mobile có hit area tối thiểu 44×44px và chuyển 3 gạch ↔ X bằng
+  `transform`/`opacity` đồng bộ; không để pseudo-element hoặc thanh trong suốt
+  thừa xuất hiện giữa các gạch. Chuyển trạng thái phải mượt và không làm layout
+  nhảy.
+- Bộ chọn ngôn ngữ là chức năng desktop; không đưa cụm ngôn ngữ vào sidebar
+  mobile nếu không có nhu cầu sử dụng tương đương đã được duyệt.
 - Dropdown có thể có shadow/radius nhẹ vì là bề mặt nổi. Menu cha vẫn có đường
   vào landing bằng click/keyboard, không hover-only.
 - Mobile menu có nút đóng/mở dễ hiểu, focus được và không che logo.
@@ -273,6 +298,32 @@ responsive ổn chỉ từ laptop 1366px.
   riêng theo trang.
 - Nút chat/back-to-top không che CTA, form, carousel control hoặc nội dung ở
   320px; có vùng an toàn cho mobile browser và keyboard.
+
+### 5.10 Commerce, cart và checkout responsive
+
+- Bộ tăng/giảm số lượng trên trang chi tiết và trong giỏ là một component dùng
+  chung cho mọi sản phẩm. Nhãn, nút giảm, ô số lượng và nút tăng nằm cùng một
+  hàng; nút thao tác có vùng chạm tối thiểu 42px, ô số lượng không bị co hoặc
+  tràn ngang ở 320px.
+- Popup giỏ hàng và trang checkout dùng cùng hợp đồng dòng sản phẩm, theo đúng
+  bốn cột ngữ nghĩa `ảnh | tên | thành tiền | số lượng`. Header và dòng dữ liệu
+  phải dùng cùng class/cùng vị trí grid; không dựa vào auto-placement khi thứ tự
+  DOM khác thứ tự hiển thị. Với item đặt cột tường minh, đặt cả `grid-row` để
+  tránh item sau bị đẩy sang hàng mới.
+- Trên desktop/laptop, tên sản phẩm, giá và bộ tăng/giảm dùng chung một trục giữa
+  theo chiều dọc. Nút `Xóa` là hành động phụ nằm dưới bộ đếm và không được tham
+  gia vào chiều cao dùng để căn giữa, nếu không bộ đếm sẽ bị kéo lên so với tên.
+- Hợp đồng số lượng hiện tại là số nguyên `1–999`. Ô nhập phải hiển thị trọn ba
+  chữ số, không đè nút cộng/trừ; khi đổi kích thước ô phải đổi đồng bộ cột grid,
+  counter và vùng nút `Xóa` ở cả popup lẫn checkout. Luôn test `999`, tên dài và
+  tổng tiền từ hàng trăm triệu đến hàng tỷ thay vì chỉ test giá trị `1`.
+- Lựa chọn phương thức thanh toán dùng một radio input thật gắn với label. Radio
+  hiển thị nằm giữa theo chiều dọc của thẻ, còn nội dung label căn trái và có
+  khoảng đệm đủ để không đè lên radio; trạng thái chọn và `:focus-visible` phải
+  nhìn thấy rõ.
+- Checkout mobile chỉ có một wrapper sở hữu gutter ngang. Không cộng padding
+  lần hai cho section, nhóm sản phẩm hoặc thẻ thanh toán khiến các mép bị lệch
+  so với phần còn lại của trang.
 
 ## 6. Hệ thống ảnh và media — ĐÃ DUYỆT
 

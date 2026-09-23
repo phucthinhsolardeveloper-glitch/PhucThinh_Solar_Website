@@ -487,10 +487,9 @@
 		$params = array();
 
 		$id_city = isset($_REQUEST['id_city']) ? (int)$_REQUEST['id_city'] : 0;
-		$id_district = isset($_REQUEST['id_district']) ? (int)$_REQUEST['id_district'] : 0;
 
 		if($id_city > 0) { $where .= " and id_city = ?"; $params[] = $id_city; }
-		if($id_district > 0) { $where .= " and id_district = ?"; $params[] = $id_district; }
+		$where .= " and id_district = 0";
 		if(isset($_REQUEST['keyword']))
 		{
 			$keywordClause = adminKeywordLikeClause($_REQUEST['keyword'], array('name'), $params);
@@ -575,10 +574,7 @@
 			$response['messages'][] = 'Chưa chọn tỉnh/thành phố';
 		}
 
-		if(empty($data['id_district']))
-		{
-			$response['messages'][] = 'Chưa chọn quận/huyện';
-		}
+		$data['id_district'] = 0;
 
 		if(empty($data['name']))
 		{

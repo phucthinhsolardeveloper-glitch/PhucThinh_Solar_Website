@@ -18,6 +18,7 @@ Project được kế thừa. Không mặc định hành vi hiện có là chủ
 - Upload phải kiểm tra extension, MIME, size, filename và lưu ở nơi không thực thi PHP.
 - Giữ URL/slug public trừ khi có kế hoạch redirect/SEO.
 - Test file thay đổi bằng đúng PHP mục tiêu; commerce smoke test theo category -> product -> cart -> checkout -> confirmation.
+- Địa chỉ nghiệp vụ mới chỉ dùng hai cấp `Tỉnh/TP -> Phường/Xã`. Không thêm lại Quận/Huyện vào checkout, bộ lọc đơn hàng hoặc form mới; `district` chỉ là dữ liệu legacy và đơn mới ghi `district = 0`. Backend phải xác thực Phường/Xã đang hiển thị và thuộc đúng Tỉnh/TP đã chọn.
 - Cập nhật docs nếu implementation chứng minh tài liệu sai.
 
 ## Quy tắc UX/UI đã duyệt

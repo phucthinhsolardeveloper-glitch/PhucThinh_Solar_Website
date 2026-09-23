@@ -35,7 +35,6 @@
     </div>
     <div class="card-footer form-group-category text-sm bg-light row">
         <div class="form-group col-xl-2 col-lg-3 col-md-4 col-sm-4 mb-2"><?=$func->getLinkPlace("city")?></div>
-        <div class="form-group col-xl-2 col-lg-3 col-md-4 col-sm-4 mb-2"><?=$func->getLinkPlace("district")?></div>
     </div>
     <div class="card card-primary card-outline text-sm mb-0">
         <div class="card-header">

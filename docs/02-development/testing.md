@@ -26,9 +26,12 @@ Nhóm giao diện commerce/mobile chạy riêng bằng:
 
 ```bash
 cd tools/visual-tests
-npx playwright test tests/mobile-commerce-experience.spec.js tests/typography-system.spec.js
+npx playwright test tests/mobile-commerce-experience.spec.js tests/checkout-controls.spec.js tests/typography-system.spec.js
 ```
 
 Test phủ card tên dài không bị cắt, ngôn ngữ trong Mmenu, footer không còn đệm
-152px, buy box mobile và thang chữ 2K. Luồng có giá phải được smoke trên local
-với fixture có rollback; không đổi công tắc giá production chỉ để chạy test.
+152px, buy box mobile, cart/checkout và thang chữ 2K. Với giỏ hàng phải kiểm cả
+popup và trang checkout ở 320/390/768/1024/1440px, số lượng `1` và `999`, tên
+dài, giá/tổng tiền dài, tâm dọc tên–giá–counter và `scrollWidth` không vượt
+viewport. Luồng có giá phải được smoke trên local với fixture có rollback;
+không đổi công tắc giá production chỉ để chạy test.

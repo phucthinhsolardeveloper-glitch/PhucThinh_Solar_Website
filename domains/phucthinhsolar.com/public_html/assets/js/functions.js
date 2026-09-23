@@ -539,6 +539,29 @@ function loadWard(id=0)
     });
 }
 
+/* Checkout uses the current two-level address model: city -> ward/commune. */
+function loadWardByCity(id=0)
+{
+    $.ajax({
+        type: 'post',
+        url: 'api/ward-city.php',
+        data: {
+            id_city: id
+        },
+        beforeSend: function(){
+            holdonOpen();
+        },
+        success: function(result){
+            $(".select-ward-cart").html(result);
+            holdonClose();
+        },
+        error: function(){
+            $(".select-ward-cart").html('<option value="">'+LANG['ward']+'</option>');
+            holdonClose();
+        }
+    });
+}
+
 function loadShip(id=0)
 {
     if(SHIP_CART)

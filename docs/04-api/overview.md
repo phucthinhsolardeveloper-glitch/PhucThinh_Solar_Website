@@ -7,7 +7,9 @@ Các endpoint là PHP file, không phải REST API versioned và không có Open
 - `api/fillter_service.php`: GET filter/sort/pagination, trả HTML fragment; dynamic brand/origin list cần hardening.
 - `api/product.php`, `product2.php`, `product3.php`, `search_product.php`: product fragments/search.
 - `api/color.php`, `video.php`: product media fragments.
-- `api/district.php`, `ward.php`: dependent location options.
+- `api/ward-city.php`: danh sách phường/xã theo tỉnh/TP cho checkout hai cấp.
+  `api/district.php` và `ward.php` vẫn giữ để tương thích màn hình legacy chưa
+  chuyển dữ liệu.
 - `api/addons.php`: lazy-loaded blocks.
 - `administrator/api/*`: login, upload, status/order/category/component/sort/delete helpers; dựa vào CMS session/bootstrap theo từng file.
 

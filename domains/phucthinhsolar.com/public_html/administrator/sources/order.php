@@ -9,7 +9,7 @@
 
 	$strUrl = "";
 	$urlParams = array();
-	foreach(array('order_status', 'payment_status', 'order_payment', 'order_date', 'range_price', 'id_city', 'id_district', 'id_ward', 'keyword') as $param)
+	foreach(array('order_status', 'payment_status', 'order_payment', 'order_date', 'range_price', 'id_city', 'id_ward', 'keyword') as $param)
 	{
 		if(isset($_REQUEST[$param]) && $_REQUEST[$param] !== '') $urlParams[$param] = $_REQUEST[$param];
 	}
@@ -47,7 +47,6 @@
 		$order_date = isset($_REQUEST['order_date']) ? trim($_REQUEST['order_date']) : '';
 		$range_price = isset($_REQUEST['range_price']) ? trim($_REQUEST['range_price']) : '';
 		$city = isset($_REQUEST['id_city']) ? (int) $_REQUEST['id_city'] : 0;
-		$district = isset($_REQUEST['id_district']) ? (int) $_REQUEST['id_district'] : 0;
 		$ward = isset($_REQUEST['id_ward']) ? (int) $_REQUEST['id_ward'] : 0;
 
 		if($order_status !== null && $order_status > 0)
@@ -92,7 +91,7 @@
 				$params[] = $price_to;
 			}
 		}
-		foreach(array('city' => $city, 'district' => $district, 'ward' => $ward) as $column => $value)
+		foreach(array('city' => $city, 'ward' => $ward) as $column => $value)
 		{
 			if($value > 0)
 			{

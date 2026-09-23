@@ -20,20 +20,21 @@ footer .footer-policy-column .footer-bct-badge img{display:block;width:100%;heig
 /* Desktop footer: logo là điểm nhận diện chính, không giữ giới hạn legacy
    120/141px khiến nó lọt thỏm giữa khoảng navy rộng. */
 @media(min-width:768px){
-  footer #footer_logo{max-width:180px!important;margin-bottom:29px!important;}
-  footer #footer_logo img{display:block;width:100%!important;max-width:180px!important;height:auto!important;}
+  footer .footer_top>.container>.row{grid-template-columns:200px minmax(280px,1fr) minmax(460px,1.3fr)!important;}
+  footer #footer_logo{max-width:200px!important;margin-bottom:29px!important;}
+  footer #footer_logo img{display:block;width:100%!important;max-width:200px!important;height:auto!important;}
 }
 @media(min-width:1201px){
   footer .footer_top>.container>.row{
-    grid-template-columns:230px minmax(280px,1fr) minmax(460px,1.3fr)!important;
+    grid-template-columns:290px minmax(280px,1fr) minmax(460px,1.3fr)!important;
   }
-  footer #footer_logo{max-width:220px!important;}
-  footer #footer_logo img{max-width:220px!important;}
+  footer #footer_logo{max-width:280px!important;}
+  footer #footer_logo img{max-width:280px!important;}
 }
 
 @media(max-width:767px){
-  footer #footer_logo{max-width:150px!important;}
-  footer #footer_logo img{display:block;width:100%!important;max-width:150px!important;height:auto!important;}
+  footer #footer_logo{max-width:180px!important;}
+  footer #footer_logo img{display:block;width:100%!important;max-width:180px!important;height:auto!important;}
   footer .footer-company-label{font-size:15px!important;}
   footer .footer-legal-name{font-size:16px!important;}
   footer .CRlist_office_center,

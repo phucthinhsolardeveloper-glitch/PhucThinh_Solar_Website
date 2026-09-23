@@ -8,6 +8,9 @@ const routes = [
   ['product-detail', '/san-pham/den-pha-nang-luong-mat-troi-jindian-jd-t300-300w'],
   ['news', '/tin-tuc/'],
   ['news-detail', '/tin-tuc/8-ly-do-ban-nen-su-dung-den-nang-luong-mat-troi-ngay-bay-gio/'],
+  ['solution-detail', '/giai-phap/dien-mat-troi-doanh-nghiep/'],
+  ['dealer', '/dai-ly/'],
+  ['project-detail', '/du-an-dien-nlmt-ho-anh-hoa-thanh-an/'],
   ['contact', '/lien-he/'],
 ];
 
@@ -39,7 +42,8 @@ test('responsive matrix không tràn ngang và chỉ có một page gutter trên
       expect(layout.overflow, `${name} ${width}px overflow`).toBeLessThanOrEqual(1);
       if (width < 768) {
         const gutter = width <= 359 ? 12 : 16;
-        const expected = layout.homeWrapper ? 0 : gutter;
+        const passThroughWrapper = ['solution-detail', 'project-detail'].includes(name);
+        const expected = layout.homeWrapper || passThroughWrapper ? 0 : gutter;
         expect(layout.paddingLeft, `${name} ${width}px left gutter owner`).toBe(expected);
         expect(layout.paddingRight, `${name} ${width}px right gutter owner`).toBe(expected);
       }
@@ -140,6 +144,40 @@ test('wrapper cấu trúc được flatten nhưng entity card vẫn giữ trên 
   expect(Math.abs(newsDetail.ctaLeft)).toBeLessThanOrEqual(1);
   expect(Math.abs(newsDetail.ctaRight)).toBeLessThanOrEqual(1);
   expect(newsDetail.articlePaddingLeft).toBe('0px');
+
+  await page.goto('/giai-phap/dien-mat-troi-doanh-nghiep/', { waitUntil: 'domcontentloaded' });
+  const solutionDetail = await page.evaluate(() => {
+    const article = document.querySelector('#toc-content').getBoundingClientRect();
+    const articleStyle = getComputedStyle(document.querySelector('#toc-content'));
+    return { left: article.left, right: innerWidth - article.right, paddingLeft: articleStyle.paddingLeft };
+  });
+  expect(solutionDetail.left).toBe(12);
+  expect(solutionDetail.right).toBe(12);
+  expect(solutionDetail.paddingLeft).toBe('0px');
+
+  await page.goto('/dai-ly/', { waitUntil: 'domcontentloaded' });
+  const dealer = await page.locator('.pts-dl-confidence-layout').evaluate(element => {
+    const rect = element.getBoundingClientRect();
+    return { left: rect.left, right: innerWidth - rect.right };
+  });
+  expect(dealer.left).toBe(12);
+  expect(dealer.right).toBe(12);
+
+  await page.goto('/du-an-dien-nlmt-ho-anh-hoa-thanh-an/', { waitUntil: 'domcontentloaded' });
+  const projectDetail = await page.evaluate(() => {
+    const title = document.querySelector('#inf_single_project .title_wrap').getBoundingClientRect();
+    const gallery = document.querySelector('#inf_single_project .tabs-pro-detail').getBoundingClientRect();
+    return {
+      titleLeft: title.left,
+      titleRight: innerWidth - title.right,
+      galleryLeft: gallery.left,
+      galleryRight: innerWidth - gallery.right,
+    };
+  });
+  expect(projectDetail.titleLeft).toBe(12);
+  expect(projectDetail.titleRight).toBe(12);
+  expect(projectDetail.galleryLeft).toBe(12);
+  expect(projectDetail.galleryRight).toBe(12);
 
   await page.goto('/lien-he/', { waitUntil: 'domcontentloaded' });
   const contact = await page.evaluate(() => {

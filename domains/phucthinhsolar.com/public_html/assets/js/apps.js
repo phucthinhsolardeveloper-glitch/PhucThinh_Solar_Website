@@ -930,17 +930,7 @@ GA_FRAMEWORK.Cart = function(){
     {
         $(".select-city-cart").change(function(){
             var id = $(this).val();
-            loadDistrict(id);
-            loadShip();
-        });
-    }
-
-    /* District */
-    if(isExist($(".select-district-cart")))
-    {
-        $(".select-district-cart").change(function(){
-            var id = $(this).val();
-            loadWard(id);
+            loadWardByCity(id);
             loadShip();
         });
     }

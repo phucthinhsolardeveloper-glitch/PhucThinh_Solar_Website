@@ -50,7 +50,7 @@ if(!function_exists('adminOrderExportFilter'))
             }
         }
 
-        foreach(array('order_status' => 'order_status', 'order_payment' => 'order_payment', 'id_city' => 'city', 'id_district' => 'district', 'id_ward' => 'ward') as $requestKey => $column)
+        foreach(array('order_status' => 'order_status', 'order_payment' => 'order_payment', 'id_city' => 'city', 'id_ward' => 'ward') as $requestKey => $column)
         {
             $value = isset($request[$requestKey]) && is_scalar($request[$requestKey]) ? (int)$request[$requestKey] : 0;
             if($value > 0)

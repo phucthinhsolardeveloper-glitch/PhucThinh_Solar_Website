@@ -61,7 +61,7 @@ trên trang đọc từ đây.
 | Thương mại | `order`, `order_detail`, `order_status` |
 | Người dùng / RBAC | `user`, `member`, `permission`, `permission_group`, `user_limit`, `user_log`, `user_online` |
 | Tương tác | `comment`, `comment_photo`, `comment_video`, `contact`, `newsletter` |
-| Hạ tầng | `city`, `district`, `ward`, `counter`, `sortable`, `sortable_detail`, `sortable_index`, `excel`, `pushonesignal` |
+| Hạ tầng | `city`, `district` (legacy), `ward`, `counter`, `sortable`, `sortable_detail`, `sortable_index`, `excel`, `pushonesignal` |
 
 ---
 

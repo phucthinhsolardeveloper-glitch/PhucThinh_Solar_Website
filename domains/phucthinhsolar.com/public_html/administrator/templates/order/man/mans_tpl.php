@@ -120,15 +120,11 @@
                 </div>
                 <div class="form-group col-md-3 col-sm-3">
                     <label>Tỉnh thành:</label>
-                    <?=$func->getAjaxPlace("city")?>
-                </div>
-                <div class="form-group col-md-3 col-sm-3">
-                    <label>Quận huyện:</label>
-                    <?=$func->getAjaxPlace("district")?>
+                    <?=$func->getAjaxPlace("city", "Chọn tỉnh/thành phố", true)?>
                 </div>
                 <div class="form-group col-md-3 col-sm-3">
                     <label>Phường xã:</label>
-                    <?=$func->getAjaxPlace("ward")?>
+                    <?=$func->getAjaxPlace("ward", "Chọn phường/xã", true)?>
                 </div>
                 <div class="form-group col-md-6 col-sm-6">
                     <label>Khoảng giá:</label>

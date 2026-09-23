@@ -38,7 +38,10 @@
 
 		if($id)
 		{
-			$row = $d->rawQuery("select name, id from #_{$table} where {$id_temp} = ? order by id asc",array($id));
+			$where = "{$id_temp} = ? and find_in_set('hienthi', status)";
+			$params = array($id);
+			if($table === 'ward') $where .= ' and id_district = 0';
+			$row = $d->rawQuery("select name, id from #_{$table} where {$where} order by id asc", $params);
 		}
 
 		$str = '<option value="0">Chọn danh mục</option>';

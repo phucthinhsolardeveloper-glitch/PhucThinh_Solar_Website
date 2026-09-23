@@ -2995,7 +2995,7 @@
 	    }
 
 	    /* Get place by ajax */
-		public function getAjaxPlace($table='', $title_select='Chọn danh mục')
+		public function getAjaxPlace($table='', $title_select='Chọn danh mục', $directWard=false)
 	    {
 	    	$where = '';
 	    	$params = array('0');
@@ -3008,8 +3008,8 @@
 	    	if($table == 'city')
 	    	{
 	    		$data_level = 'data-level="0"';
-		    	$data_table = 'data-table="#_district"';
-		    	$data_child = 'data-child="id_district"';
+				$data_table = $directWard ? 'data-table="#_ward"' : 'data-table="#_district"';
+				$data_child = $directWard ? 'data-child="id_ward"' : 'data-child="id_district"';
 	    	}
 	    	else if($table == 'district')
 	    	{
@@ -3032,13 +3032,22 @@
 	    		$where .= ' and id_city = ?';
 	    		array_push($params, $idcity);
 
-	    		$iddistrict = (isset($_REQUEST['id_district'])) ? htmlspecialchars($_REQUEST['id_district']) : 0;
-	    		$where .= ' and id_district = ?';
-	    		array_push($params, $iddistrict);
+			if($directWard)
+			{
+				$where .= ' and id_district = 0';
+				$loadRows = ((int)$idcity > 0);
+			}
+			else
+			{
+				$iddistrict = (isset($_REQUEST['id_district'])) ? htmlspecialchars($_REQUEST['id_district']) : 0;
+				$where .= ' and id_district = ?';
+				array_push($params, $iddistrict);
 				$loadRows = ((int)$idcity > 0 && (int)$iddistrict > 0);
+			}
 	    	}
 
-	        $rows = $loadRows ? $this->cache->get("select name, id from #_".$table." where id <> ? ".$where." order by id asc", $params, "result", 7200) : array();
+		$statusWhere = $directWard ? " and find_in_set('hienthi', status)" : '';
+	        $rows = $loadRows ? $this->cache->get("select name, id from #_".$table." where id <> ? ".$where.$statusWhere." order by id asc", $params, "result", 7200) : array();
 
 	        $str = '<select id="'.$id_parent.'" name="data['.$id_parent.']" '.$data_level.' '.$data_table.' '.$data_child.' class="form-control select2 select-place"><option value="0">'.$title_select.'</option>';
 	        foreach($rows as $v)

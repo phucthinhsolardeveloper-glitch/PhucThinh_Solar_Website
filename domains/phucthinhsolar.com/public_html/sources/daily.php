@@ -4,7 +4,7 @@
     $about1 = $cache->get("select name$lang, desc$lang,photo from #_static where type = ? and find_in_set('hienthi',status) limit 0,1", array('dai-ly-1'), 'fetch', 7200);
     $about2 = $cache->get("select name$lang, desc$lang,photo from #_static where type = ? and find_in_set('hienthi',status) limit 0,1", array('dai-ly-2'), 'fetch', 7200);
     $about3 = $cache->get("select name$lang, desc$lang,photo from #_static where type = ? and find_in_set('hienthi',status) limit 0,1", array('dai-ly-3'), 'fetch', 7200);
-    $city = $d->rawQuery("select name, id from #_city order by id asc");
+    $city = $d->rawQuery("select name, id from #_city where find_in_set('hienthi', status) order by numb asc, id asc");
     $photo_daily = $cache->get("select name$lang, link, photo from #_photo where type = ? and find_in_set('hienthi',status) order by numb, id desc", array('hinh-anh-dai-ly'), 'result', 7200);
     $dealerHeroRows = $cache->get("select name$lang, photo, status from #_photo where type = ? order by numb,id desc", array('dealer-hero'), 'result', 7200);
     $dealerHero = array();

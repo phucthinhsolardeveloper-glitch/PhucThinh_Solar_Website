@@ -71,6 +71,11 @@ các model/cụm từ không có điểm ngắt.
 `commerce-experience.css` là chủ sở hữu duy nhất của lưới giỏ hàng. Không khôi
 phục tổng cột Bootstrap `3+6+3+3` (15/12) ở mobile. Dưới 992px, tóm tắt đơn nằm
 trước form nhận hàng; dưới 768px mỗi dòng dùng grid `72px minmax(0,1fr)`.
+Desktop dùng bốn cột `ảnh | tên | thành tiền | số lượng`; cột và hàng phải được
+đặt tường minh để popup/API và checkout/template không phụ thuộc thứ tự DOM.
+Counter hỗ trợ `1–999`, hiện dùng tổng rộng 132px với ô nhập 56px. Tên, giá và
+counter cùng trục giữa; nút Xóa nằm dưới và không tham gia phép căn giữa. Mọi
+thay đổi kích thước phải kiểm tra đồng thời popup và checkout.
 
 ---
 

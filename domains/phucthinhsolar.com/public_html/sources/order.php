@@ -141,7 +141,7 @@
 	$breadcrumbs = $breadcr->get();
 
 	/* Tỉnh thành */
-	$city = $cache->get("select name, id from #_city order by id asc", null, 'result', 7200);
+	$city = $cache->get("select name, id from #_city where find_in_set('hienthi', status) order by numb asc, id asc", null, 'result', 7200);
 
 	/* Hình thức thanh toán */
 	$payments_info = checkoutVisiblePaymentMethods($d, $lang);
@@ -207,13 +207,16 @@
 		    $requirements = (!empty($dataOrder['requirements'])) ? htmlspecialchars($dataOrder['requirements']) : '';
 
 		    /* Place */
-		    $city = (!empty($dataOrder['city'])) ? htmlspecialchars($dataOrder['city']) : 0;
-		    $district = (!empty($dataOrder['district'])) ? htmlspecialchars($dataOrder['district']) : 0;
-		    $ward = (!empty($dataOrder['ward'])) ? htmlspecialchars($dataOrder['ward']) : 0;
+		    $city = (!empty($dataOrder['city']) && is_scalar($dataOrder['city'])) ? (int)$dataOrder['city'] : 0;
+		    $ward = (!empty($dataOrder['ward']) && is_scalar($dataOrder['ward'])) ? (int)$dataOrder['ward'] : 0;
+		    $cityValid = $city > 0 ? $d->rawQueryOne("select id, name from #_city where id = ? and find_in_set('hienthi', status) limit 0,1", array($city)) : array();
+		    $wardValid = ($city > 0 && $ward > 0) ? $d->rawQueryOne("select id, name, ship_price from #_ward where id = ? and id_city = ? and id_district = 0 and find_in_set('hienthi', status) limit 0,1", array($ward, $city)) : array();
 		    $city_text = $func->getInfoDetail('name', "city", $city);
-		    $district_text = $func->getInfoDetail('name', "district", $district);
 		    $ward_text = $func->getInfoDetail('name', "ward", $ward);
-		    $address = htmlspecialchars($dataOrder['address']).', '.$ward_text['name'].', '.$district_text['name'].', '.$city_text['name'];
+		    $addressParts = array(htmlspecialchars($dataOrder['address']));
+		    if(!empty($ward_text['name'])) $addressParts[] = $ward_text['name'];
+		    if(!empty($city_text['name'])) $addressParts[] = $city_text['name'];
+		    $address = implode(', ', $addressParts);
 
 		    /* Payment */
 		    $order_payment = (!empty($dataOrder['payments'])) ? (int)$dataOrder['payments'] : 0;
@@ -223,7 +226,7 @@
 		    /* Ship */
 		    if(!empty($config['order']['ship']))
 		    {
-				$ship_data = (!empty($dataOrder['ward'])) ? $func->getInfoDetail('ship_price', "ward", $dataOrder['ward']) : array();
+				$ship_data = !empty($wardValid) ? $wardValid : array();
 				$ship_price = (!empty($ship_data['ship_price'])) ? $ship_data['ship_price'] : 0;
 		    }
 		    else
@@ -265,15 +268,18 @@
 		{
 			$response['messages'][] = 'Chưa chọn tỉnh/thành phố';
 		}
-
-		if(empty($dataOrder['district']))
+		elseif(empty($cityValid))
 		{
-			$response['messages'][] = 'Chưa chọn quận/huyện';
+			$response['messages'][] = 'Tỉnh/thành phố không hợp lệ';
 		}
 
 		if(empty($dataOrder['ward']))
 		{
 			$response['messages'][] = 'Chưa chọn phường/xã';
+		}
+		elseif(empty($wardValid))
+		{
+			$response['messages'][] = 'Phường/xã không thuộc tỉnh/thành phố đã chọn';
 		}
 
 
@@ -392,7 +398,8 @@
 		$data_donhang['date_created'] = $order_date;
 		$data_donhang['order_status'] = 1;
 		$data_donhang['city'] = $city;
-		$data_donhang['district'] = $district;
+		/* Giữ cột cũ để đọc các đơn lịch sử; đơn mới không còn cấp huyện. */
+		$data_donhang['district'] = 0;
 		$data_donhang['ward'] = $ward;
 		$data_donhang['numb'] = 1;
 		$faultInjector = isset($checkoutAtomicityFault) && is_callable($checkoutAtomicityFault) ? $checkoutAtomicityFault : null;

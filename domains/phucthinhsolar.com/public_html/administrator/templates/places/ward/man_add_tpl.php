@@ -41,11 +41,8 @@
                         <label class="d-block" for="id_city">Danh sách tỉnh thành:</label>
                         <?=$func->getAjaxPlace("city")?>
                     </div>
-                    <div class="form-group col-md-3 col-sm-4">
-                        <label class="d-block" for="id_district">Danh sách quận huyện:</label>
-                        <?=$func->getAjaxPlace("district")?>
-                    </div>
                 </div>
+				<input type="hidden" name="data[id_district]" value="0">
 				<div class="form-group">
 					<label for="name">Tiêu đề: <span class="text-danger">*</span></label>
 					<input type="text" class="form-control text-sm" name="data[name]" id="name" placeholder="Tiêu đề" value="<?=(!empty($flash->has('name'))) ? $flash->get('name') : @$item['name']?>" required>

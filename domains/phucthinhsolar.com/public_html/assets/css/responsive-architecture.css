@@ -137,6 +137,44 @@
     padding-right: 0 !important;
   }
 
+  /* Các template chi tiết này đã có container/cột con sở hữu gutter. Bỏ
+     padding wrapper ngoài để tránh cộng 16px hai lần trên điện thoại. */
+  .wrap-main.solution-detail-page,
+  .wrap-main.project-detail-page {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  /* Chi tiết Giải pháp dùng nền phẳng: bài CKEditor không phải một card nên
+     text bám đúng gutter của .uk-container, giống landing /giai-phap/. */
+  .solution-detail-page .pts-sd-content-grid .pts-solution-editorial {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  /* Dealer cũ vừa co width 40px vừa nhận gutter chung, tạo mép thực 36px.
+     Trên mobile container chiếm toàn viewport và chỉ sở hữu một gutter. */
+  .pts-dealer-hub .uk-container {
+    width: 100% !important;
+    max-width: none !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-left: var(--pts-mobile-gutter) !important;
+    padding-right: var(--pts-mobile-gutter) !important;
+  }
+
+  /* Chi tiết Dự án: wrapper ngoài đã pass-through; left/right là owner duy
+     nhất. Gallery là bề mặt phẳng nên không giữ padding ngang của card cũ. */
+  .project-detail-page #inf_single_project .left,
+  .project-detail-page #inf_single_project .right {
+    padding-left: var(--pts-mobile-gutter) !important;
+    padding-right: var(--pts-mobile-gutter) !important;
+  }
+  .project-detail-page #inf_single_project .tabs-pro-detail {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
   /* Home: section containers own the gutter. Marketing media may reach the
      viewport edge, while its copy is inset exactly once. */
   .pts-retail-campaign-grid,

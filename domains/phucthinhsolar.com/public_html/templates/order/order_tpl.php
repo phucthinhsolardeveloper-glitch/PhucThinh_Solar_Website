@@ -26,7 +26,7 @@
 				                <div class="invalid-feedback"><?=vuilongnhapdiachiemail?></div>
 				            </div>
 				            <div class="form-row">
-				            	<div class="input-cart col-md-4">
+					<div class="input-cart col-md-6">
 									<select class="select-city-cart custom-select text-sm" required id="city" name="dataOrder[city]">
 										<option value=""><?=tinhthanh?></option>
 										<?php foreach($city as $k => $v) { ?>
@@ -35,13 +35,7 @@
 									</select>
 									<div class="invalid-feedback"><?=vuilongchontinhthanh?></div>
 				            	</div>
-				            	<div class="input-cart col-md-4">
-									<select class="select-district-cart select-district custom-select text-sm" required id="district" name="dataOrder[district]">
-										<option value=""><?=quanhuyen?></option>
-									</select>
-									<div class="invalid-feedback"><?=vuilongchonquanhuyen?></div>
-								</div>
-								<div class="input-cart col-md-4">
+					<div class="input-cart col-md-6">
 									<select class="select-ward-cart select-ward custom-select text-sm" required id="ward" name="dataOrder[ward]">
 										<option value=""><?=phuongxa?></option>
 									</select>
@@ -60,10 +54,13 @@
 				    	<div class="information-cart">
 				    		<?php $flashPayment = $flash->get('payments'); ?>
 				    		<?php foreach($payments_info as $key => $value) { ?>
+							<?php $paymentDescription = trim((string)($value['desc'.$lang] ?? '')); ?>
 				    			<div class="payments-cart custom-control custom-radio">
 									<input type="radio" class="custom-control-input" id="payments-<?=$value['id']?>" name="dataOrder[payments]" value="<?=$value['id']?>" <?=(!empty($flashPayment) && $flashPayment == $value['id']) ? 'checked' : ''?> required>
 									<label class="payments-label custom-control-label" for="payments-<?=$value['id']?>" data-payments="<?=$value['id']?>"><?=$value['name'.$lang]?></label>
-									<div class="payments-info payments-info-<?=$value['id']?> transition"><?=str_replace("\n","<br>",$value['desc'.$lang])?></div>
+									<?php if($paymentDescription !== '') { ?>
+										<div class="payments-info payments-info-<?=$value['id']?> transition"><?=str_replace("\n","<br>",$paymentDescription)?></div>
+									<?php } ?>
 								</div>
 				    		<?php } ?>
 				    	</div>
@@ -79,11 +76,8 @@
 								<div class="form-row">
 									<div class="pic-procart col-3 col-md-2"><?=hinhanh?></div>
 									<div class="info-procart col-6 col-md-5"><?=tensanpham?></div>
-									<div class="quantity-procart col-3 col-md-2">
-										<p><?=soluong?></p>
-										<p><?=thanhtien?></p>
-									</div>
-									<div class="price-procart col-3 col-md-3"><?=thanhtien?></div>
+									<div class="quantity-procart procart-actions col-3 col-md-2"><?=soluong?></div>
+									<div class="price-procart procart-price-desktop col-3 col-md-3"><?=thanhtien?></div>
 								</div>
 							</div>*/ ?>
 							<?php $max = count($_SESSION['cart']); for($i=0;$i<$max;$i++) {

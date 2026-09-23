@@ -9,6 +9,10 @@
 	$quantity = max(1, min(999, $quantity));
 	$code = (!empty($_POST['code'])) ? htmlspecialchars($_POST['code']) : '';
 	$ward = (!empty($_POST['ward'])) ? htmlspecialchars($_POST['ward']) : 0;
+	$getWardShip = function($wardId) use ($d) {
+		$wardId = (int)$wardId;
+		return $wardId > 0 ? $d->rawQueryOne("select ship_price from #_ward where id = ? and id_district = 0 and find_in_set('hienthi', status) limit 0,1", array($wardId)) : array();
+	};
 	if(!publicProductPricesVisible())
 	{
 		unset($_SESSION['cart']);
@@ -60,7 +64,7 @@
 
 		if(!empty($config['order']['ship']))
 		{
-			$shipData = (!empty($ward)) ? $func->getInfoDetail('ship_price', "ward", $ward) : array();
+			$shipData = $getWardShip($ward);
 			$ship = (!empty($shipData)) ? $shipData['ship_price'] : 0;
 		}
 		
@@ -80,7 +84,7 @@
 	{
 		if(!empty($config['order']['ship']))
 		{
-			$shipData = (!empty($ward)) ? $func->getInfoDetail('ship_price', "ward", $ward) : array();
+			$shipData = $getWardShip($ward);
 			$ship = (!empty($shipData)) ? $shipData['ship_price'] : 0;
 		}
 
@@ -103,7 +107,7 @@
 		$total = 0;
 		$totalText = '';
 
-		if($id) $shipData = $func->getInfoDetail('ship_price', "ward", $id);
+		if($id) $shipData = $getWardShip($id);
 
 		$total = $cart->getOrderTotal();
 		if(!empty($shipData['ship_price']))
@@ -127,11 +131,8 @@
 								<div class="form-row procart-row">
 								<div class="pic-procart col-3 col-md-2"><?=hinhanh?></div>
 								<div class="info-procart col-6 col-md-5"><?=tensanpham?></div>
-								<div class="quantity-procart col-3 col-md-2">
-									<p><?=soluong?></p>
-									<p><?=thanhtien?></p>
-								</div>
-								<div class="price-procart col-3 col-md-3"><?=thanhtien?></div>
+								<div class="quantity-procart procart-actions col-3 col-md-2"><?=soluong?></div>
+								<div class="price-procart procart-price-desktop col-3 col-md-3"><?=thanhtien?></div>
 							</div>
 						</div>
 						<?php $max = count($_SESSION['cart']); for($i=0;$i<$max;$i++) {

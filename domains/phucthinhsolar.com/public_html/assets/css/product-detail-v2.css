@@ -155,6 +155,11 @@
   .pts-pdp-v2 .attr-pro-detail>li:not(.pts-pdp-price-row){display:grid!important;grid-template-columns:88px minmax(0,1fr);gap:10px}
   .pts-pdp-v2 .attr-label-pro-detail{min-width:0!important;font-size:11px!important}
   .pts-pdp-v2 .price-new-pro-detail{font-size:29px!important}
+  .pts-pdp-v2 .quantity-pro-detail{display:flex!important;width:100%!important;max-width:none!important;align-items:center!important;justify-content:flex-start!important;flex-wrap:nowrap!important;gap:0!important}
+  .pts-pdp-v2 .quantity-pro-detail .attr-label-pro-detail{width:auto!important;flex:0 0 auto!important;margin:0 12px 0 0!important;white-space:nowrap!important}
+  .pts-pdp-v2 .quantity-pro-detail .quantity-step{flex:0 0 42px!important;width:42px!important}
+  .pts-pdp-v2 .quantity-pro-detail .qty-pro{flex:0 0 52px!important;width:52px!important;min-width:52px!important;padding:0 4px!important;appearance:textfield!important;-moz-appearance:textfield!important}
+  .pts-pdp-v2 .quantity-pro-detail .qty-pro::-webkit-inner-spin-button,.pts-pdp-v2 .quantity-pro-detail .qty-pro::-webkit-outer-spin-button{margin:0;-webkit-appearance:none}
   .pts-pdp-v2 .product-info{grid-template-columns:1fr 1fr;gap:12px}
   .pts-pdp-v2 .btn-product-detail{grid-template-columns:1fr!important}
   .pts-pdp-v2 .btn-product-detail a{min-height:50px!important;padding:11px 15px!important}
