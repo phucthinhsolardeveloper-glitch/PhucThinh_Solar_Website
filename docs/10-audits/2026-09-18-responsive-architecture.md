@@ -94,7 +94,15 @@ các trang con dùng cùng nhịp ngang:
 Wrapper ngoài sở hữu khoảng cách viewport; wrapper pass-through bên trong bỏ
 padding ngang để không cộng gutter hai lần. `wrap-home` vẫn full-width.
 
-Test `tools/visual-tests/tests/container-balance.spec.js` đo tám route public tại
-1920 và 2560px, so mép trái/phải với homepage và kiểm tra overflow. Kết quả tại
-thời điểm bổ sung: 2/2 test pass. Hợp đồng chính thức và ma trận viewport nằm ở
+Test `tools/visual-tests/tests/container-balance.spec.js` đo 13 route public,
+gồm landing, danh mục và các trang chi tiết Sản phẩm/Giải pháp/Dự án/Kiến thức,
+tại 1366, 1440, 1600, 1920 và 2560px; so mép trái/phải với homepage, kiểm tra
+breadcrumb và tràn ngang. Mốc 1600 bảo vệ riêng trường hợp laptop dùng display
+scale 125%, nơi viewport CSS vừa chạm breakpoint màn rộng. Hợp đồng chính thức
+và ma trận viewport nằm ở
 [public-ui-ux-design-system.md](../02-development/public-ui-ux-design-system.md).
+
+Rà soát bổ sung 2026-09-22 phát hiện hub Kiến thức ở 1366–1440px vẫn dựa vào
+padding của `uk-container` full-width thay vì cùng gutter owner với các hub
+khác. `.pts-news-hub .uk-container` đã được đưa vào rule container chung để
+không còn phụ thuộc vào bù trừ padding theo từng stylesheet.

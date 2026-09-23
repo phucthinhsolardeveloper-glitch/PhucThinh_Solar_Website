@@ -130,7 +130,7 @@
 /* Nội dung Giải pháp dùng CKEditor: template lo nhịp trang và các module động,
    editor chỉ cần dùng H2/H3, đoạn văn, danh sách, bảng và ảnh thông thường. */
 .pts-sh-editorial{padding:58px 0 64px;background:#fff;}
-.pts-sh-editorial-grid{display:grid;grid-template-columns:minmax(240px,300px) minmax(0,1020px);justify-content:center;gap:clamp(76px,4.2vw,96px);align-items:start;}
+.pts-sh-editorial-grid{display:grid;grid-template-columns:minmax(240px,300px) minmax(0,1fr);justify-content:stretch;gap:clamp(76px,4.2vw,96px);align-items:start;}
 .pts-sh-editorial-grid .pts-solution-editorial{width:100%;max-width:none;margin:0;}
 .pts-sh-editorial-grid>.pts-sd-toc{padding-top:7px!important;}
 .pts-sh-editorial-grid>.pts-sd-toc .toc-list li{margin-bottom:11px!important;}

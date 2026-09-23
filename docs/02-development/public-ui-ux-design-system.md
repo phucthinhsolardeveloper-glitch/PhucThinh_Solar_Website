@@ -156,6 +156,11 @@ Ví dụ: viewport 1920px chừa 76.8px mỗi bên; viewport 2560px chừa 180px
 bên. Trang con phải cân giữa và cùng mép nội dung với trang chủ. Không đặt một
 `max-width` riêng theo trang chỉ vì ảnh chụp ở một màn hình trông vừa mắt.
 
+Header là ngoại lệ cấu trúc, không phải page content: tại đoạn chuyển tiếp
+1600–1699px, shell điều hướng được phép giữ tối thiểu `--pts-container` để logo,
+menu và nhóm hành động không va nhau. Ngoại lệ này không được truyền xuống
+breadcrumb, hero hoặc nội dung trang.
+
 Quy tắc owner:
 
 - Mỗi trục chỉ có **một** wrapper sở hữu gutter.

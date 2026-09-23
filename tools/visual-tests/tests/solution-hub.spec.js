@@ -63,6 +63,14 @@ test('Solution hub supports choices, equipment and consultation without layout e
     expect(editorialWidth).toBeGreaterThan(700);
     expect(Math.abs(introLayout.copy.top - introLayout.title.top)).toBeLessThanOrEqual(2);
     expect(introLayout.copy.left - introLayout.title.right).toBeGreaterThan(40);
+    const editorialEdges = await hub.locator('.pts-sh-editorial-grid').evaluate(grid => {
+      const toc = grid.querySelector('.pts-sd-toc').getBoundingClientRect();
+      const content = grid.querySelector('#toc-content').getBoundingClientRect();
+      const gridBox = grid.getBoundingClientRect();
+      return { tocLeft: toc.left, contentRight: content.right, gridLeft: gridBox.left, gridRight: gridBox.right };
+    });
+    expect(Math.abs(editorialEdges.tocLeft - editorialEdges.gridLeft)).toBeLessThanOrEqual(1);
+    expect(Math.abs(editorialEdges.contentRight - editorialEdges.gridRight)).toBeLessThanOrEqual(1);
     const editorialGap = await hub.locator('.pts-sh-editorial-grid').evaluate(grid => {
       const toc = grid.querySelector('.pts-sd-toc').getBoundingClientRect();
       const content = grid.querySelector('#toc-content').getBoundingClientRect();

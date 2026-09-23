@@ -33,6 +33,7 @@
 
   .pts-project-hub .uk-container,
   .pts-solution-hub .uk-container,
+  .pts-news-hub .uk-container,
   .pts-about-page .uk-container,
   .pts-dealer-hub .uk-container {
     width: min(calc(100% - clamp(40px, 5vw, 96px)), var(--pts-container, 1560px)) !important;
@@ -45,12 +46,10 @@
 }
 
 @media (min-width: 1600px) {
-  /* Dùng var(--pts-page-container) thay vì lặp lại công thức vw thuần: xem
-     comment tại rule định nghĩa --pts-page-container bên dưới - công thức
-     vw thuần co hẹp đột ngột đúng tại 1600px (đo được bằng Playwright,
-     logo/category nav header gần chạm nhau). .pts-home-container cũng bị
-     chặn ở var(--pts-container) nên dùng max() ở đây KHÔNG làm trang con
-     rộng hơn trang chủ - chúng bằng nhau. */
+  /* Từ 1600px trở lên mọi trang public dùng đúng token hiển thị của homepage.
+     Không ép tối thiểu 1560px ở đây: trên laptop có scale 125%, viewport CSS
+     thường vừa vượt 1600px; mức tối thiểu cũ làm trang con chỉ còn 20px mép
+     trong khi homepage vẫn chừa 64px. */
   .wap-main > .wrap-main:not(.wrap-home),
   .wap-slider .wrap-content2 {
     width: var(--pts-page-container) !important;
@@ -58,6 +57,7 @@
 
   .pts-project-hub .uk-container,
   .pts-solution-hub .uk-container,
+  .pts-news-hub .uk-container,
   .pts-about-page .uk-container,
   .pts-dealer-hub .uk-container {
     width: var(--pts-page-container) !important;
@@ -69,12 +69,13 @@
    nhưng dùng một token hiển thị riêng cho wrapper public. */
 @media (min-width: 1600px) {
   :root {
-    /* max() để không bao giờ hẹp hơn --pts-container hệ thống (giá trị
-       .pts-home-container CŨNG bị chặn ở, xem home-story-v4.css) - công
-       thức vw thuần một mình co hẹp đột ngột đúng tại 1600px (1560px ->
-       1472px), gây va chạm logo/category nav ở header. Không làm trang con
-       rộng hơn trang chủ vì trang chủ dùng chung mức trần này. */
-    --pts-page-container: min(max(var(--pts-container, 1560px), calc(100vw - clamp(96px, 8vw, 220px))), 2200px);
+    /* Đồng nhất tuyệt đối với .pts-home-container trong home-story-v4.css.
+       Đây là chiều rộng nội dung public, không phải min-width của header. */
+    --pts-page-container: min(calc(100vw - clamp(96px, 8vw, 220px)), 2200px);
+    /* Header có logo và cụm điều hướng kích thước cố định. Giữ shell rộng
+       tối thiểu theo token hệ thống ở đoạn chuyển tiếp 1600-1699px để không
+       làm logo đè nút Danh mục; token này không được dùng cho page content. */
+    --pts-header-container: min(max(var(--pts-container, 1560px), calc(100vw - clamp(96px, 8vw, 220px))), 2200px);
   }
 
   .wrap-content,
@@ -90,6 +91,12 @@
   .wrap-main.wrap-home {
     width: 100% !important;
     max-width: 100% !important;
+  }
+
+  .pts-header-v4 .pts-header-row,
+  .pts-header-v4 .hdr-search-zone > .wrap-content {
+    width: var(--pts-header-container) !important;
+    max-width: var(--pts-header-container) !important;
   }
 
   /* Wrapper ngoài đã tạo khoảng cách với viewport. Không cộng thêm gutter
