@@ -52,8 +52,17 @@ async function settlePage(page) {
             image.addEventListener('load', finish, { once: true });
             image.addEventListener('error', finish, { once: true });
           });
-      return settled
-        .then(() => (image.decode ? image.decode().catch(() => {}) : undefined));
+      return settled.then(() => {
+        if (!image.decode) return undefined;
+        /* decode() không tự có timeout — nếu treo (ảnh hỏng/máy đang thiếu
+           RAM) thì cả Promise.all treo vô thời hạn, kéo cả test theo dù ảnh
+           khác đã sẵn sàng. Ép trần 4s mỗi ảnh, không chờ decode nữa thì vẫn
+           chụp (giống nhánh timeout của bước load ở trên). */
+        return Promise.race([
+          image.decode().catch(() => {}),
+          new Promise(resolve => setTimeout(resolve, 4000)),
+        ]);
+      });
     }));
   });
   await page.waitForTimeout(1000);
@@ -69,6 +78,15 @@ async function dismissEntrancePopup(page) {
 
 for (const [name, path] of [['home', '/'], ['products', '/san-pham/']]) {
   test(`${name} visual baseline`, async ({ page }) => {
+    if (name === 'products') {
+      /* /san-pham/ liệt kê hàng trăm sản phẩm thật (415 ở thời điểm viết) nên
+         settlePage() phải chờ decode() nhiều ảnh hơn hẳn trang chủ — trên máy
+         CI/host đang bận (ít RAM trống) việc này có thể vượt timeout mặc định
+         30s dù trang render đúng (đã xác nhận bằng ảnh chụp thủ công không
+         lỗi). Nới thời gian riêng cho đúng trang nặng này, không đụng dung
+         sai pixel của assertion bên dưới. */
+      test.setTimeout(180000);
+    }
     await page.goto(path, { waitUntil: 'domcontentloaded' });
     if (name === 'home') {
       // Đóng băng slide đầu để ảnh baseline không phụ thuộc lúc chụp vào
