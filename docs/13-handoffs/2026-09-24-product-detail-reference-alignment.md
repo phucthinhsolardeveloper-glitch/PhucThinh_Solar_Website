@@ -1,6 +1,6 @@
 # PDP — đối chiếu mẫu sếp gửi và checklist triển khai
 
-Ngày: 2026-09-24  
+Ngày: 2026-09-24
 Mẫu đối chiếu: `C:\Users\ADMIN\Downloads\PTS_Chi_Tiet_Xem_Thu.html` và ảnh
 `1790209968568_...jpg`.
 
