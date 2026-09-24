@@ -73,23 +73,22 @@ test('hero trang chủ có đủ bốn ảnh quản trị được và hiển th
   });
 });
 
-test('banner catalog tải trực tiếp và được phân bố giữa các nhóm sản phẩm', async ({ page }) => {
+test('banner catalog tải trực tiếp và hiện đúng 1 CTA cuối trang', async ({ page }) => {
+  /* Landing danh mục v3 (2026-09-23): slot Admin catalog-campaign giờ render
+     1 CTA tư vấn cuối trang (.pts-catalog-support), không còn nhiều banner
+     xen giữa các khối danh mục (.pts-catblock đã bị thay bằng bố cục lưới
+     dùng chung). Xem docs/13-handoffs/2026-09-23-product-category-landing-v3.md. */
   await page.goto('/san-pham/', { waitUntil: 'networkidle' });
-  const banners = page.locator('.pts-catalog-campaign');
-  expect(await banners.count()).toBe(2);
-  const order = await page.locator('.pts-catblock, .pts-catalog-campaign').evaluateAll(nodes => nodes.map(node => node.classList.contains('pts-catalog-campaign') ? 'banner' : 'category'));
-  expect(order[0]).toBe('category');
-  expect(order[order.length - 1]).toBe('category');
-  expect(order.filter(value => value === 'banner')).toHaveLength(2);
+  const banner = page.locator('.pts-catalog-support');
+  await expect(banner).toHaveCount(1);
 
-  for (let index = 0; index < await banners.count(); index++) {
-    const image = banners.nth(index).locator('img');
-    const metrics = await imageMetrics(image);
-    expect(metrics.complete).toBeTruthy();
-    expect(metrics.naturalWidth).toBeGreaterThanOrEqual(metrics.width);
-    expect(metrics.fit).toBe('cover');
-    await expect(banners.nth(index).locator('h3')).not.toBeEmpty();
-  }
+  const image = banner.locator('.pts-catalog-support-media img');
+  const metrics = await imageMetrics(image);
+  expect(metrics.complete).toBeTruthy();
+  expect(metrics.naturalWidth).toBeGreaterThanOrEqual(metrics.width);
+  expect(metrics.fit).toBe('cover');
+  await expect(banner.locator('h2')).not.toBeEmpty();
+  await expect(banner.locator('a')).toBeVisible();
 });
 
 test('ảnh tư vấn Liên hệ và ảnh Đại lý không bị kéo giãn hoặc đè chữ', async ({ page }) => {
@@ -218,9 +217,12 @@ test('card sản phẩm dùng ảnh chuẩn hóa, khung vuông và contain', asy
 });
 
 test('dải nhảy nhanh danh mục đủ tương phản và giữ một hàng trên mobile', async ({ page }, testInfo) => {
+  /* Landing danh mục v3 (2026-09-23): .pts-catalog-jump được thay bằng rail
+     ảnh ngang "Tất cả + danh mục đang có dữ liệu" (.pts-category-tabs, mục
+     con .pts-category-tab) — cùng vai trò nhảy nhanh, khác tên class. */
   await page.goto('/san-pham/', { waitUntil: 'domcontentloaded' });
-  const jump = page.locator('.pts-catalog-jump');
-  const firstLink = jump.locator('a').first();
+  const jump = page.locator('.pts-category-tabs').first();
+  const firstLink = jump.locator('.pts-category-tab').first();
   await expect(firstLink).toBeVisible();
 
   const styles = await firstLink.evaluate(link => ({
@@ -279,13 +281,24 @@ test('danh mục Đèn sân vườn dùng banner ảnh và card có cùng hàng 
     return {
       height: cardBox.height,
       mediaHeight: media.height,
-      priceCenter: price.top + price.height / 2,
-      actionCenter: action.top + action.height / 2,
+      actionBelowPrice: action.top - (price.top + price.height),
+      /* Khoảng cách từ đáy CTA tới đáy card — bất biến NỘI TẠI của card, không
+         phụ thuộc hàng lưới đang nằm ở đâu trên trang (khác absolute top/bottom
+         vốn lệch hàng trăm px giữa các hàng khi lưới xuống dòng, ví dụ lưới 2
+         cột trên mobile so với 4 cột trên desktop). */
+      actionBottomGap: cardBox.top + cardBox.height - (action.top + action.height),
     };
   }));
   expect(Math.max(...metrics.map(item => item.height)) - Math.min(...metrics.map(item => item.height))).toBeLessThanOrEqual(1);
   expect(Math.max(...metrics.map(item => item.mediaHeight)) - Math.min(...metrics.map(item => item.mediaHeight))).toBeLessThanOrEqual(1);
-  for (const card of metrics) expect(Math.abs(card.priceCenter - card.actionCenter)).toBeLessThanOrEqual(12);
+  /* CTA giờ là hàng chữ đầy đủ nằm DƯỚI giá (product-category-v3.css:
+     .product-right .product-card-btns{position:static;margin-top:auto}),
+     không còn là nút icon tròn nổi cùng hàng với giá như bản cũ — kiểm tra
+     đúng bất biến còn lại: CTA nằm dưới giá, và đáy CTA cách đáy card đều
+     nhau giữa các card (đúng ý "cùng hàng đáy" của tên test, tính tương đối
+     theo từng card để không vỡ khi lưới xuống nhiều hàng ở mobile). */
+  for (const card of metrics) expect(card.actionBelowPrice).toBeGreaterThanOrEqual(-1);
+  expect(Math.max(...metrics.map(item => item.actionBottomGap)) - Math.min(...metrics.map(item => item.actionBottomGap))).toBeLessThanOrEqual(1);
 });
 
 test('chín nhóm danh mục có ảnh nền đúng ngữ cảnh thay vì lặp một ảnh', async ({ page }) => {

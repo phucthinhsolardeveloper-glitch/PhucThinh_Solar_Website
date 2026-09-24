@@ -340,8 +340,15 @@
   .pts-pdp-v2 .pts-pdp-use-case-grid{margin-right:-16px;padding-right:16px}
   .pts-pdp-v2 .pts-pdp-use-case-visual{min-height:145px}
   .pts-pdp-v2 .pts-pdp-guide-item{padding:16px}
-  .pts-pdp-v2 .pts-pdp-spec-section .table{min-width:560px}
-  .pts-pdp-v2 .pts-pdp-spec-section .table th,.pts-pdp-v2 .pts-pdp-spec-section .table td{padding:11px 12px!important}
+  /* min-width:560px cũ ép bảng rộng hơn màn hình mobile (~360-420px), sinh
+     thanh cuộn ngang và cắt mất cột "Thông tin sản phẩm". Bỏ min-width, đồng
+     thời đổi 50/50 thành lệch tỉ lệ: nhãn ("Hạng mục") thường ngắn 1-2 từ nên
+     thừa chỗ ở 50%, còn giá trị thường dài (kích thước, thông số, vật liệu)
+     nên bị bóp hẹp — đúng bất cập chủ project chỉ ra. */
+  .pts-pdp-v2 .pts-pdp-spec-section .table{min-width:0}
+  .pts-pdp-v2 .pts-pdp-spec-section .table th,.pts-pdp-v2 .pts-pdp-spec-section .table td{width:auto!important;padding:11px 12px!important}
+  .pts-pdp-v2 .pts-pdp-spec-section .table tr>:first-child{width:38%!important}
+  .pts-pdp-v2 .pts-pdp-spec-section .table tr>:last-child{width:62%!important}
   .pts-pdp-v2 .pts-pdp-consultation{margin-top:48px!important;padding:24px 18px!important}
   .pts-pdp-v2 .pts-pdp-consultation-form form{grid-template-columns:1fr}
   .pts-pdp-v2 .pts-pdp-consultation-form .pts-form-half,.pts-pdp-v2 .pts-pdp-consultation-form .pts-form-full,.pts-pdp-v2 .pts-pdp-consultation-form .newsletter-button{grid-column:1}

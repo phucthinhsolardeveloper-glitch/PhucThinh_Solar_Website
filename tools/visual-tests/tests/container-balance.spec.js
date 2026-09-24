@@ -2,7 +2,7 @@ const { test, expect } = require('@playwright/test');
 
 const routes = [
   ['Trang chủ', '/', '.pts-home-container'],
-  ['Danh mục sản phẩm', '/san-pham/', '.pts-catblock'],
+  ['Danh mục sản phẩm', '/san-pham/', '.wap-main > .wrap-main'],
   ['Danh mục sản phẩm con', '/danh-muc-san-pham/den-nlmt/', '.wap-main > .wrap-main'],
   ['Chi tiết sản phẩm', '/san-pham/den-pha-nang-luong-mat-troi-jindian-jd-t300-300w', '.wap-main > .wrap-main'],
   ['Giải pháp', '/giai-phap/', '.pts-solution-hub .uk-container'],
