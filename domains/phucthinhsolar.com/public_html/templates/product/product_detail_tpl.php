@@ -179,6 +179,15 @@ foreach((array)$productSections['blocks'] as $contentBlock)
         if(count($pdpUseCases) >= 3) break 2;
     }
 }
+/* Mỗi profile có bộ ảnh minh hoạ dùng chung làm fallback an toàn. Nội dung
+   do Admin nhập trong content block vẫn được ưu tiên, chỉ bổ sung ảnh còn
+   thiếu để card không rơi về placeholder icon. */
+if(!$pdpUseCases && $pdpProfileKey !== 'general') $pdpUseCases = productPdpUseCaseDefaults($pdpProfileKey);
+foreach($pdpUseCases as $pdpUseCaseIndex => &$pdpUseCase)
+{
+    if(empty($pdpUseCase['photo'])) $pdpUseCase['photo'] = productPdpUseCasePhoto($pdpProfileKey, isset($pdpUseCase['title']) ? $pdpUseCase['title'] : '', $pdpUseCaseIndex);
+}
+unset($pdpUseCase);
 $pdpWarrantyPolicies = array();
 if(!empty($policy) && is_array($policy))
 {
