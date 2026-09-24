@@ -99,6 +99,7 @@
     $css->set("css/footer-v3.css");
     if($source == 'contact') $css->set("css/contact-v3.css");
     if($template === 'product/product_detail') $css->set("css/product-detail-v2.css");
+    if($template === 'product/product') $css->set("css/product-category-v3.css");
     echo $css->get();
 ?>
 <script type="text/javascript" src="assets/js/jquery.min.js?v=NMr3JZBT0U"></script>

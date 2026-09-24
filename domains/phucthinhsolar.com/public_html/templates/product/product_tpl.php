@@ -5,6 +5,16 @@
     } elseif(!empty($productList['name'.$lang])) {
         $ptsCategoryTitle = $productList['name'.$lang];
     }
+    $ptsCategoryDescription = !empty($productCategoryDescription) ? $productCategoryDescription : 'Chọn thiết bị phù hợp với nhu cầu chiếu sáng, phát điện và vận hành công trình.';
+    $productFilterPath = parse_url(isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '/san-pham/', PHP_URL_PATH);
+    $ptsFilterQueryKeys = array('is_brand', 'is_origin', 'is_congsuat', 'is_price', 'is_cat', 'keyword', 'is_orderby');
+    $ptsHasActiveFilter = false;
+    foreach($ptsFilterQueryKeys as $ptsFilterQueryKey) {
+        if(isset($_GET[$ptsFilterQueryKey]) && is_scalar($_GET[$ptsFilterQueryKey]) && trim((string)$_GET[$ptsFilterQueryKey]) !== '') {
+            $ptsHasActiveFilter = true;
+            break;
+        }
+    }
 ?>
 <section class="pts-category-hero<?=!empty($productCategoryHero) ? ' has-image' : ''?>">
     <?php if(!empty($productCategoryHero)) { ?>
@@ -14,9 +24,8 @@
     <span class="pts-category-hero-shade" aria-hidden="true"></span>
     <?php } ?>
     <div class="pts-category-copy">
-        <span class="pts-brand-text">PHÚC THỊNH SOLAR</span>
-        <h2><?=htmlspecialchars($ptsCategoryTitle, ENT_QUOTES, 'UTF-8')?></h2>
-        <p>Thiết bị năng lượng mặt trời chính hãng, tư vấn đúng nhu cầu và đồng hành kỹ thuật trên toàn quốc.</p>
+        <h1><?=htmlspecialchars($ptsCategoryTitle, ENT_QUOTES, 'UTF-8')?></h1>
+        <p><?=htmlspecialchars($ptsCategoryDescription, ENT_QUOTES, 'UTF-8')?></p>
         <?php if(!empty($optsetting['hotline'])) { ?>
         <a href="tel:<?=$func->parsePhone($optsetting['hotline'])?>"><i class="fas fa-phone-alt"></i> Gọi ngay <?=$optsetting['hotline']?></a>
         <?php } ?>
@@ -31,8 +40,65 @@
         <div class="col-md-3 trust-badge-item"><i class="fas fa-truck"></i><span>Giao hàng toàn quốc</span></div>
     </div>
 </div>
+
+<?php
+    /* Vùng ghim thứ 2 (dưới dải cam kết) chỉ nên có MỘT hàng: dải "Loại sản
+       phẩm" nếu danh mục đang xem có nhóm con, ngược lại dùng chính dải danh
+       mục cấp 1 này - tránh để trống hoặc ghim chồng 2 hàng cùng lúc. */
+    $ptsHasSubcategoryRail = !empty($productSubcategoryNav) && count($productSubcategoryNav) > 1;
+?>
+<?php if(!empty($productCategoryNav)) { ?>
+<nav class="pts-category-tabs pts-category-tabs--primary<?=$ptsHasSubcategoryRail ? '' : ' is-sticky-row'?>" aria-label="Danh mục sản phẩm">
+    <?php foreach($productCategoryNav as $ptsCategoryNavItem) {
+        $ptsCategoryNavName = !empty($ptsCategoryNavItem['nav_name']) ? $ptsCategoryNavItem['nav_name'] : (!empty($ptsCategoryNavItem['name'.$lang]) ? $ptsCategoryNavItem['name'.$lang] : '');
+        if($ptsCategoryNavName === '') continue;
+        $ptsCategoryNavUrl = !empty($ptsCategoryNavItem['url']) ? $ptsCategoryNavItem['url'] : publicProductCategoryPath($ptsCategoryNavItem, 'cat', $lang);
+        $ptsCategoryNavActive = !empty($ptsCategoryNavItem['is_active']) || (!empty($productCat['id']) && !empty($ptsCategoryNavItem['id']) && (int)$productCat['id'] === (int)$ptsCategoryNavItem['id']);
+    ?>
+    <a href="<?=$ptsCategoryNavUrl?>" class="pts-category-tab<?=$ptsCategoryNavActive ? ' is-active' : ''?>"<?=$ptsCategoryNavActive ? ' aria-current="page"' : ''?>>
+        <span class="pts-category-tab-media">
+            <?php if(!empty($ptsCategoryNavItem['photo'])) { ?>
+            <?=$func->getImage(['isLazy' => true, 'class' => '', 'sizes' => '96x96x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $ptsCategoryNavItem['photo'], 'alt' => $ptsCategoryNavName])?>
+            <?php } else { ?>
+            <i class="fas fa-th-large" aria-hidden="true"></i>
+            <?php } ?>
+        </span>
+        <span class="pts-category-tab-name"><?=htmlspecialchars($ptsCategoryNavName, ENT_QUOTES, 'UTF-8')?></span>
+    </a>
+    <?php } ?>
+</nav>
+<?php } ?>
+
 <?php $currentSort = (isset($_GET['is_orderby'])) ? $_GET['is_orderby'] : ''; ?>
-<div class="filter_product">
+<div class="filter_product<?=$ptsHasSubcategoryRail ? ' is-sticky-row' : ''?>">
+    <div class="filter-heading">
+        <span class="filter-heading-icon"><i class="fas fa-solar-panel" aria-hidden="true"></i></span>
+        <span>
+            <strong class="name_title">Danh sách sản phẩm</strong>
+            <small><span class="pts-product-result-count"><?=number_format((int)$total, 0, ',', '.')?></span> sản phẩm đang hiển thị</small>
+        </span>
+    </div>
+    <?php if(!empty($productSubcategoryNav) && count($productSubcategoryNav) > 1) { ?>
+    <div class="pts-subcategory-rail">
+        <nav class="pts-subcategory-tabs" aria-label="Loại sản phẩm trong danh mục">
+            <?php foreach($productSubcategoryNav as $ptsSubcategoryItem) {
+                $ptsSubcategoryName = !empty($ptsSubcategoryItem['nav_name']) ? $ptsSubcategoryItem['nav_name'] : (!empty($ptsSubcategoryItem['name'.$lang]) ? $ptsSubcategoryItem['name'.$lang] : '');
+                if($ptsSubcategoryName === '') continue;
+            ?>
+            <a href="<?=$ptsSubcategoryItem['url']?>" class="pts-subcategory-tab<?=!empty($ptsSubcategoryItem['is_active']) ? ' is-active' : ''?>"<?=!empty($ptsSubcategoryItem['is_active']) ? ' aria-current="page"' : ''?>>
+                <span class="pts-subcategory-media">
+                    <?php if(!empty($ptsSubcategoryItem['nav_photo']) && empty($ptsSubcategoryItem['nav_name'])) { ?>
+                    <?=$func->getImage(['isLazy' => true, 'class' => '', 'sizes' => '64x64x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $ptsSubcategoryItem['nav_photo'], 'alt' => $ptsSubcategoryName])?>
+                    <?php } else { ?>
+                    <i class="fas fa-th-large" aria-hidden="true"></i>
+                    <?php } ?>
+                </span>
+                <span><?=htmlspecialchars($ptsSubcategoryName, ENT_QUOTES, 'UTF-8')?></span>
+            </a>
+            <?php } ?>
+        </nav>
+    </div>
+    <?php } ?>
     <button type="button" class="btn-filter-product toggle-sidebar" id="opensideBar-product" aria-controls="product-filter-drawer" aria-expanded="false">
         <i class="fas fa-filter" aria-hidden="true"></i> Bộ lọc
     </button>
@@ -61,7 +127,7 @@
 <div class="product-row row">
     <div class="product-left col-lg-3" id="product-filter-drawer" aria-hidden="false">
         <div class="pts-filter-drawer-head">
-            <strong><i class="fas fa-filter" aria-hidden="true"></i> Bộ lọc sản phẩm</strong>
+            <strong><i class="fas fa-filter" aria-hidden="true"></i> Bộ lọc</strong>
             <button type="button" class="pts-filter-drawer-close toggle-sidebar" aria-label="Đóng bộ lọc"><i class="fas fa-times" aria-hidden="true"></i></button>
         </div>
         <div class="mb40">
@@ -69,37 +135,7 @@
                      "Gọi ngay" đã có sẵn ở banner đầu trang danh mục (audit 2026-09-10). */ ?>
             <?php /* Nhóm bộ lọc sản phẩm trong một card dùng chung. */ ?>
             <div class="pts-filter-card">
-            <?php if(count($splist)){ ?>
-            <div class="aside-item aside-filter collection-category pts-filter-group pts-filter-open">
-                <div class="aside-title aside-title-f pts-filter-toggle" role="button" tabindex="0" aria-expanded="true">
-                    <h3 class="title-head margin-top-0"><span>Danh mục</span></h3>
-                    <i class="fas fa-chevron-down pts-filter-chevron" aria-hidden="true"></i>
-                </div>
-                <div class="aside-hidden-mobile pts-filter-body" style="">
-                    <div class="filter-container">
-                        <aside class="aside-item filter-cat">
-                            <div class="aside-content filter-group">
-                                <ul>
-                                    <?php if(count($splist)){foreach($splist as $k => $v){ ?>
-                                    <li class="filter-item filter-item--check-box filter-item--green <?=(isset($slug_param)&& $slug_param == $v[$sluglang])?'checked':''?>">
-                                        <a href="danh-muc-san-pham/<?=$v[$sluglang]?>/">
-                                            <span>
-                                                <label for="">
-                                                <?=$v['name'.$lang]?>
-                                                </label>
-                                            </span>
-                                        </a>
-                                    </li>
-                                    <?php }} ?>
-                                </ul>
-                            </div>
-                        </aside>
-                    </div>
-                </div>
-            </div>
-            <?php } ?>
-
-            <?php /* Thương hiệu / Công suất / Loại sản phẩm luôn hiển thị; chỉ "Mức giá" phụ thuộc chế độ giá công khai.
+            <?php /* Thương hiệu / Công suất luôn hiển thị; chỉ "Mức giá" phụ thuộc chế độ giá công khai.
                      Mỗi nhóm có thể tự thu gọn (accordion, xem apps.js .pts-filter-toggle) nhưng
                      mặc định MỞ SẴN hết - đóng mặc định bị phản hồi là bất tiện (audit 2026-09-10). */ ?>
             <?php
@@ -173,58 +209,6 @@
             <?php } ?>
 
             <?php
-                $catFilterListId = (!empty($productList['id'])) ? $productList['id'] : 0;
-                $catFilterList = ($catFilterListId && empty($id_cat)) ? $d->rawQuery("select pc.name$lang, pc.id, pc.slugvi, pc.slugen, pl.slugvi list_slugvi, pl.slugen list_slugen from #_product_cat pc join #_product_list pl on pl.id=pc.id_list where pc.id_list = ? and find_in_set('hienthi',pc.status) and exists (select 1 from #_product p where p.id_cat = pc.id and p.type = ? and find_in_set('hienthi',p.status)) order by pc.numb,pc.id desc",array($catFilterListId,'san-pham')) : array();
-            ?>
-            <?php
-                $cat_get = [];
-                if(isset($_GET['is_cat'])){
-                    $cat_get = explode(",", $_GET['is_cat']);
-                }
-            ?>
-            <?php if(count($catFilterList)) { ?>
-            <?php
-                /* Gợi ý "dùng cho" theo TÊN LOẠI ĐÈN - đây là kiến thức phổ thông về công
-                   dụng của từng KIỂU đèn (đèn pha/đèn đường/UFO/ốp trần), không phải số
-                   liệu riêng của sản phẩm nên không tính là bịa dữ liệu. Chỉ gắn khi tên
-                   khớp đúng 1 trong 4 loại đã biết, không đoán cho tên lạ (audit UX 2026-09-08). */
-                $catUseHints = array(
-                    'đèn pha' => 'Sân bãi, công trình rộng',
-                    'đèn đường' => 'Đường giao thông, đường nội bộ',
-                    'đèn ufo' => 'Nhà xưởng, nhà kho, trần cao',
-                    'đèn ốp trần' => 'Hiên nhà, hành lang, mái che',
-                );
-            ?>
-            <div class="product-pages__price mb20 pts-filter-group pts-filter-open">
-                <div class="product-pages__price-aside pts-filter-toggle" role="button" tabindex="0" aria-expanded="true">
-                    <span class="product-pages__price-name">Loại đèn - dùng cho</span>
-                    <i class="fas fa-chevron-down pts-filter-chevron" aria-hidden="true"></i>
-                </div>
-
-                <div class="wrappers-aside__filter-scroll pts-filter-body">
-                    <ul class="product-pages__price-nav">
-                        <?php foreach($catFilterList as $k => $v) {
-                            $catUseHintKey = mb_strtolower(trim($v['name'.$lang]), 'UTF-8');
-                            $catUseHint = isset($catUseHints[$catUseHintKey]) ? $catUseHints[$catUseHintKey] : '';
-                        ?>
-                        <li class="product-pages__price-items">
-                            <label class="mg0 cs-pointer checker product-pages__price-label d-flex p-relative">
-                                <input type="checkbox" onchange="fetch_product()" <?=(in_array($v['id'],$cat_get))?'checked':''?> name="car_cat" id="car_cat<?=$k?>"
-                                    value="<?=$v['id']?>" data-url="<?=publicProductCategoryPath($v,'cat',$lang)?>">
-                                <label class="mg0 checked-fake" for="car_cat<?=$k?>"></label>
-                                <span class="ml10 pts-cat-filter-label" for="car_cat<?=$k?>">
-                                    <?=$v['name'.$lang]?>
-                                    <?php if($catUseHint) { ?><small class="pts-cat-filter-hint"><?=$catUseHint?></small><?php } ?>
-                                </span>
-                            </label>
-                        </li>
-                        <?php } ?>
-                    </ul>
-                </div>
-            </div>
-            <?php } ?>
-
-            <?php
                 $price_get = [];
                 if(isset($_GET['is_price'])){
                     $price_get = explode(",", $_GET['is_price']);
@@ -258,6 +242,8 @@
             </div>
             <?php } ?>
             </div>
+
+            <a class="pts-filter-reset" href="<?=htmlspecialchars($productFilterPath ?: '/san-pham/', ENT_QUOTES, 'UTF-8')?>" data-filter-reset<?=$ptsHasActiveFilter ? '' : ' hidden'?> aria-hidden="<?=$ptsHasActiveFilter ? 'false' : 'true'?>"><i class="fas fa-undo-alt" aria-hidden="true"></i> Xóa bộ lọc</a>
 
         </div>
     </div>
@@ -297,7 +283,31 @@
     </div>
 </section>
 <?php } ?>
-<?php $productFilterPath = parse_url(isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '/san-pham/', PHP_URL_PATH); ?>
+<?php
+    /* Câu hỏi thường gặp: soạn ở admin > Khối nội dung mô tả > Danh mục cấp
+       1/2 (khối kiểu "Câu hỏi thường gặp"), cùng nơi soạn nội dung mô tả ở
+       trên. Không hiện gì nếu Admin chưa nhập khối FAQ nào cho danh mục. */
+    $categoryFaqHtml = (!empty($categoryFaqBlocks)) ? productRenderFaqBlocks($categoryFaqBlocks) : '';
+?>
+<?php if($categoryFaqHtml !== '') { ?>
+<section class="pts-category-faq" aria-labelledby="pts-category-faq-title">
+    <h2 id="pts-category-faq-title">Câu hỏi thường gặp</h2>
+    <div class="pts-category-faq-list"><?=$categoryFaqHtml?></div>
+</section>
+<?php } ?>
+<?php if(!empty($productCatalogSupport)) {
+    $productCatalogSupportLink = !empty($productCatalogSupport['link']) ? $productCatalogSupport['link'] : 'lien-he/';
+    $productCatalogSupportModal = in_array($productCatalogSupportLink, array('#ptsContactModal', '#ptsDealerModal'), true) ? ltrim($productCatalogSupportLink, '#') : '';
+?>
+<section class="pts-catalog-support" aria-labelledby="pts-catalog-support-title">
+    <span class="pts-catalog-support-media" aria-hidden="true"><?=$func->getImage(['isLazy' => true, 'class' => '', 'sizes' => '1600x500x1', 'upload' => $productCatalogSupport['upload'], 'image' => $productCatalogSupport['photo'], 'alt' => ''])?></span>
+    <span class="pts-catalog-support-shade" aria-hidden="true"></span>
+    <div class="pts-catalog-support-copy">
+        <div><h2 id="pts-catalog-support-title"><?=htmlspecialchars($productCatalogSupport['name'], ENT_QUOTES, 'UTF-8')?></h2><p><?=htmlspecialchars($productCatalogSupport['desc'], ENT_QUOTES, 'UTF-8')?></p></div>
+        <a href="<?=htmlspecialchars($productCatalogSupportLink, ENT_QUOTES, 'UTF-8')?>"<?=$productCatalogSupportModal !== '' ? ' data-toggle="modal" data-target="#'.$productCatalogSupportModal.'"' : ''?>>Nhận tư vấn <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+    </div>
+</section>
+<?php } ?>
 <input type="hidden" name="keywords" id="keyword" value="<?=htmlspecialchars(isset($_GET['keyword']) ? $_GET['keyword'] : '',ENT_QUOTES,'UTF-8')?>">
 <input type="hidden" name="alias" value="<?=htmlspecialchars($productFilterPath ?: '/san-pham/',ENT_QUOTES,'UTF-8')?>">
 <input type="hidden" name="id_list" value="<?= (isset($id_list)) ? $id_list : 0 ?>">

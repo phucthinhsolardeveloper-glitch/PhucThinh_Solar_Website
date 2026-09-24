@@ -1,5 +1,6 @@
 <?php
     if(!defined('SOURCES')) die("Error");
+    require_once LIBRARIES.'product_pdp_profiles.php';
 
     /* Query allpage */
     $favicon = $cache->get("select photo from #_photo where type = ? and act = ? and find_in_set('hienthi',status) limit 0,1", array('favicon','photo_static'), 'fetch', 7200);
@@ -84,15 +85,35 @@
             'email' => $formLeadValue($dataNewsletterInput, 'email', 150),
             'loaihinh' => $formLeadValue($dataNewsletterInput, 'loaihinh', 180),
             'congsuat' => $formLeadValue($dataNewsletterInput, 'congsuat', 255),
-            'address' => $formLeadValue($dataNewsletterInput, 'address', 180),
+            'product_id' => (int)$formLeadValue($dataNewsletterInput, 'product_id', 12),
+            'profile_key' => productPdpNormalizeProfile($formLeadValue($dataNewsletterInput, 'profile_key', 32), false),
+            'need_code' => $formLeadValue($dataNewsletterInput, 'need_code', 64),
+            'details' => $formLeadValue($dataNewsletterInput, 'details', 1000),
+            'city_id' => (int)$formLeadValue($dataNewsletterInput, 'city_id', 12),
+            'ward_id' => (int)$formLeadValue($dataNewsletterInput, 'ward_id', 12),
         );
+        $leadProduct = $dataNewsletter['product_id'] > 0 ? $d->rawQueryOne(
+            "select p.id,p.namevi,p.pdp_profile,pl.slugvi list_slugvi,pl.pdp_profile list_pdp_profile from #_product p left join #_product_list pl on pl.id=p.id_list where p.id=? and find_in_set('hienthi',p.status) limit 0,1",
+            array($dataNewsletter['product_id'])
+        ) : array();
+        $leadProfileKey = $leadProduct ? productPdpResolveProfile(
+            array('pdp_profile' => $leadProduct['pdp_profile']),
+            array('pdp_profile' => $leadProduct['list_pdp_profile'], 'slugvi' => $leadProduct['list_slugvi'])
+        ) : 'general';
+        $leadProfile = productPdpProfile($leadProfileKey);
+        $leadPlace = ($dataNewsletter['city_id'] > 0 && $dataNewsletter['ward_id'] > 0) ? $d->rawQueryOne(
+            "select c.name city_name,w.name ward_name from #_ward w inner join #_city c on c.id=w.id_city where w.id=? and w.id_city=? and w.id_district=0 and find_in_set('hienthi',w.status) and find_in_set('hienthi',c.status) limit 0,1",
+            array($dataNewsletter['ward_id'], $dataNewsletter['city_id'])
+        ) : array();
         $leadErrors = array();
         if($dataNewsletter['fullname'] === '') $leadErrors[] = 'Vui lòng nhập họ và tên';
         if($dataNewsletter['phone'] === '' || !$func->isPhone($dataNewsletter['phone'])) $leadErrors[] = 'Số điện thoại không hợp lệ';
         if($dataNewsletter['email'] === '' || !$func->isEmail($dataNewsletter['email'])) $leadErrors[] = 'Email không hợp lệ';
         if($dataNewsletter['loaihinh'] === '') $leadErrors[] = 'Vui lòng chọn đối tượng tư vấn';
-        if($dataNewsletter['congsuat'] === '') $leadErrors[] = 'Vui lòng nhập nhu cầu sản phẩm';
-        if($dataNewsletter['address'] === '') $leadErrors[] = 'Vui lòng chọn tỉnh/thành phố';
+        if(!$leadProduct) $leadErrors[] = 'Sản phẩm cần tư vấn không hợp lệ';
+        if($dataNewsletter['profile_key'] !== $leadProfileKey) $leadErrors[] = 'Nhóm tư vấn không hợp lệ';
+        if($dataNewsletter['need_code'] === '' || !isset($leadProfile['needs'][$dataNewsletter['need_code']])) $leadErrors[] = 'Vui lòng chọn nhu cầu tư vấn hợp lệ';
+        if(!$leadPlace) $leadErrors[] = 'Phường/Xã không thuộc Tỉnh/Thành phố đã chọn';
         if($leadErrors) $func->transfer(implode('. ', $leadErrors).'.', $func->getPageURL(), false);
 
         /* Save data */
@@ -104,7 +125,13 @@
             $data['email'] = htmlspecialchars($dataNewsletter['email']);
             $data['loaihinh'] = htmlspecialchars($dataNewsletter['loaihinh']);
             $data['congsuat'] = htmlspecialchars($dataNewsletter['congsuat']);
-            $data['address'] = htmlspecialchars($dataNewsletter['address']);
+            $data['address'] = htmlspecialchars($leadPlace['ward_name'].', '.$leadPlace['city_name']);
+            $data['product_id'] = (int)$leadProduct['id'];
+            $data['profile_key'] = $leadProfileKey;
+            $data['need_code'] = $dataNewsletter['need_code'];
+            $data['details'] = htmlspecialchars($dataNewsletter['details']);
+            $data['city_id'] = $dataNewsletter['city_id'];
+            $data['ward_id'] = $dataNewsletter['ward_id'];
             $data['date_created'] = time();
             $data['type'] = 'dangkynhantin';
 
@@ -118,8 +145,11 @@
                         'Điện thoại' => $dataNewsletter['phone'],
                         'Email' => $dataNewsletter['email'],
                         'Đối tượng tư vấn' => $dataNewsletter['loaihinh'],
-                        'Nhu cầu' => $dataNewsletter['congsuat'],
-                        'Tỉnh/Thành phố' => $dataNewsletter['address']
+                        'Sản phẩm' => $leadProduct['namevi'],
+                        'Nhu cầu' => $leadProfile['needs'][$dataNewsletter['need_code']],
+                        'Số lượng dự kiến' => $dataNewsletter['congsuat'],
+                        'Thông tin thêm' => $dataNewsletter['details'],
+                        'Địa chỉ' => $leadPlace['ward_name'].', '.$leadPlace['city_name']
                     ),
                     $dataNewsletter['email'],
                     $dataNewsletter['fullname'],

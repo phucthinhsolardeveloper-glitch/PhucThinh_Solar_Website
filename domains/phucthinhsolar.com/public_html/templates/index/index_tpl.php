@@ -313,6 +313,7 @@ $homeAboutText = $homePlainText($homeAboutDesc);
         </div>
     </section>
 
+    <?php if(!$homeAboutConfigured || !empty($homeAboutRows)) { ?>
     <section class="pts-home-section pts-home-about" aria-labelledby="pts-home-about-title">
         <div class="pts-home-container pts-home-about-grid">
             <div>
@@ -323,7 +324,9 @@ $homeAboutText = $homePlainText($homeAboutDesc);
             <ul class="pts-home-about-points">
                 <?php foreach($homeAboutPoints as $homeAboutPoint) { if($homeAboutPoint['label'] === '') continue; ?>
                 <li>
-                    <i class="fas fa-check" aria-hidden="true"></i>
+                    <?php if(!empty($homeAboutPoint['photo'])) { ?>
+                    <?=$func->getImage(['class' => 'pts-home-about-point-icon', 'sizes' => '48x48x1', 'upload' => UPLOAD_NEWS_L, 'image' => $homeAboutPoint['photo'], 'alt' => ''])?>
+                    <?php } else { ?><i class="fas <?=$homeEscape($homeAboutPoint['icon'])?>" aria-hidden="true"></i><?php } ?>
                     <span>
                         <strong><?=$homeEscape($homeAboutPoint['label'])?></strong>
                         <?php if(!empty($homeAboutPoint['desc'])) { ?><small><?=$homeEscape($homeAboutPoint['desc'])?></small><?php } ?>
@@ -333,6 +336,7 @@ $homeAboutText = $homePlainText($homeAboutDesc);
             </ul>
         </div>
     </section>
+    <?php } ?>
 
     <section class="pts-home-section pts-home-contact" id="yeu-cau-tu-van" aria-labelledby="pts-home-contact-title">
         <div class="pts-home-container">

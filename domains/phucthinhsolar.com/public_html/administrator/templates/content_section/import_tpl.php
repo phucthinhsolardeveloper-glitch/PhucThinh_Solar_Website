@@ -34,7 +34,7 @@
 		<div class="card-body">
 			<div class="alert alert-info text-sm mb-2">
 				File JSON xuất từ nút <strong>Xuất JSON</strong> (cùng hoặc khác môi trường). Khớp theo <strong>tên thương hiệu / danh mục</strong>, không theo ID.
-				Chỉ nhận scope <code>brand</code> / <code>cat</code> / <code>list</code>. Chỉ <strong>thêm / cập nhật</strong>, không xoá.
+				Chỉ nhận scope <code>brand</code> / <code>cat</code> / <code>list</code>. Chỉ <strong>thêm / cập nhật</strong>, không xoá; trạng thái bật/ẩn được giữ theo file.
 			</div>
 			<div class="alert alert-warning text-sm">
 				<i class="fas fa-image mr-1"></i><strong>Ảnh không đi kèm file JSON.</strong> Khối ảnh chỉ mang <em>tên file</em>; ảnh phải đã có sẵn trong <code>upload/product/</code> ở môi trường này.

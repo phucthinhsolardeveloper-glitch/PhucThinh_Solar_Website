@@ -1,5 +1,7 @@
 <?php
 	if(!defined('SOURCES')) die("Error");
+	// Trang chủ sở hữu H1 hiển thị trong Hero; layout SEO không tạo thêm H1 ẩn.
+	$pageRendersVisibleH1 = true;
 	require_once LIBRARIES.'product_sort.php';
 
 	$popup = $cache->get("select id, date_updated, name$lang, photo, link from #_photo where type = ? and act = ? and find_in_set('hienthi',status) limit 0,1", array('popup','photo_static'), 'fetch', 7200);
@@ -55,10 +57,10 @@
         );
     }
 
-    /* Bốn banner ảnh trong Hero V4. Dùng bộ ảnh sáng đã tối ưu, đóng gói theo
-       từng nhóm để bộ nhận diện hình ảnh không bị ảnh cũ trong Admin phủ lại.
-       Tên, mô tả và liên kết vẫn lấy từ Admin khi đủ cả bốn nhóm; thiếu bộ thì
-       dùng nội dung fallback. Tuyệt đối không trộn record Admin đang bị tắt. */
+    /* Hero V4: record hero-carousel đang Hiển thị là nguồn nội dung và ảnh.
+       Khi chưa có record nào, dùng fallback đóng gói; record bị tắt không được
+       tự bật lại. Tên nhóm vẫn dùng key ổn định để layout/test không phụ thuộc
+       vào cách biên tập viên viết tên. */
     $homeCategoryHref = static function($categories, $slugKey, $needles) {
         foreach($categories as $category) {
             $candidate = isset($category[$slugKey]) ? strtolower((string)$category[$slugKey]) : '';
@@ -107,32 +109,30 @@
         )
     );
     $homeHeroRows = $cache->get("select name$lang, desc$lang, photo, link, status from #_photo where type = ? order by numb,id desc", array('hero-carousel'), 'result', 7200);
-    $homeHeroTiles = array();
-    foreach($homeHeroDefaults as $homeHeroDefault) {
-        foreach($homeHeroRows as $homeHeroRow) {
-            if(empty($homeHeroRow['photo']) || strpos(','.(string)$homeHeroRow['status'].',', ',hienthi,') === false) continue;
-            $homeHeroRowName = mb_strtolower(trim((string)$homeHeroRow['name'.$lang]), 'UTF-8');
-            $homeHeroMatches = false;
-            foreach($homeHeroDefault['needles'] as $homeHeroNeedle) {
-                if(strpos($homeHeroRowName, mb_strtolower($homeHeroNeedle, 'UTF-8')) !== false) { $homeHeroMatches = true; break; }
-            }
-            if(!$homeHeroMatches) continue;
-            $homeHeroDisplayName = !empty($homeHeroRow['name'.$lang]) ? $homeHeroRow['name'.$lang] : $homeHeroDefault['name'];
-            if($homeHeroDefault['key'] !== 'storage' && strpos(mb_strtolower($homeHeroDisplayName, 'UTF-8'), 'năng lượng mặt trời') === false) {
-                $homeHeroDisplayName .= ' năng lượng mặt trời';
-            }
-            $homeHeroTiles[] = array(
-                'key' => $homeHeroDefault['key'],
-                'name' => $homeHeroDisplayName,
-                'desc' => !empty($homeHeroRow['desc'.$lang]) ? trim(strip_tags(htmlspecialchars_decode($homeHeroRow['desc'.$lang], ENT_QUOTES))) : $homeHeroDefault['desc'],
-                'photo' => $homeHeroDefault['photo'],
-                'upload' => $homeHeroDefault['upload'],
-                'link' => !empty($homeHeroRow['link']) ? $homeHeroRow['link'] : $homeHeroDefault['link']
-            );
-            break;
-        }
+    $homeHeroEnabledRows = array();
+    foreach($homeHeroRows as $homeHeroRow) {
+        if(!empty($homeHeroRow['photo']) && strpos(','.(string)$homeHeroRow['status'].',', ',hienthi,') !== false) $homeHeroEnabledRows[] = $homeHeroRow;
     }
-    if(count($homeHeroTiles) !== 4) {
+    $homeHeroTiles = array();
+    foreach($homeHeroDefaults as $homeHeroIndex => $homeHeroDefault) {
+        $homeHeroRow = isset($homeHeroEnabledRows[$homeHeroIndex]) ? $homeHeroEnabledRows[$homeHeroIndex] : array();
+        foreach($homeHeroEnabledRows as $homeHeroCandidate) {
+            foreach($homeHeroDefault['needles'] as $homeHeroNeedle) {
+                if(strpos(mb_strtolower(trim((string)$homeHeroCandidate['name'.$lang]), 'UTF-8'), mb_strtolower($homeHeroNeedle, 'UTF-8')) !== false) { $homeHeroRow = $homeHeroCandidate; break; }
+            }
+        }
+        if(!$homeHeroRow) continue;
+        $homeHeroDisplayName = !empty($homeHeroRow['name'.$lang]) ? $homeHeroRow['name'.$lang] : $homeHeroDefault['name'];
+        $homeHeroTiles[] = array(
+            'key' => $homeHeroDefault['key'],
+            'name' => $homeHeroDisplayName,
+            'desc' => !empty($homeHeroRow['desc'.$lang]) ? trim(strip_tags(htmlspecialchars_decode($homeHeroRow['desc'.$lang], ENT_QUOTES))) : $homeHeroDefault['desc'],
+            'photo' => $homeHeroRow['photo'],
+            'upload' => UPLOAD_PHOTO_L,
+            'link' => !empty($homeHeroRow['link']) ? $homeHeroRow['link'] : $homeHeroDefault['link']
+        );
+    }
+    if(!$homeHeroRows || !$homeHeroEnabledRows) {
         $homeHeroTiles = array();
         foreach($homeHeroDefaults as $homeHeroDefault) {
             unset($homeHeroDefault['needles']);
@@ -183,8 +183,13 @@
        đó hardcode). Ảnh/nhãn/tiêu đề/mô tả/chữ nút lấy record home-about hiển
        thị đầu tiên; bốn ô lợi ích lấy tối đa 4 record home-about-point.
        Không có record nào (hoặc tắt hết) thì dùng nội dung mặc định đã duyệt. */
-    $homeAboutRows = $cache->get("select name$lang, title_index$lang, desc$lang, content1$lang, photo, status from #_news where type = ? and find_in_set('hienthi',status) order by numb,id desc limit 0,1", array('home-about'), 'result', 7200);
-    $homeAboutPointRows = $cache->get("select name$lang, desc$lang, photo, status from #_news where type = ? and find_in_set('hienthi',status) order by numb,id desc limit 0,4", array('home-about-point'), 'result', 7200);
+    $homeAboutAllRows = $cache->get("select name$lang, title_index$lang, desc$lang, content1$lang, photo, status from #_news where type = ? order by numb,id desc", array('home-about'), 'result', 7200);
+    $homeAboutPointAllRows = $cache->get("select name$lang, desc$lang, photo, status from #_news where type = ? order by numb,id desc", array('home-about-point'), 'result', 7200);
+    $homeAboutRows = array();
+    foreach($homeAboutAllRows as $homeAboutRow) if(strpos(','.(string)$homeAboutRow['status'].',', ',hienthi,') !== false) { $homeAboutRows[] = $homeAboutRow; if(count($homeAboutRows) >= 1) break; }
+    $homeAboutPointRows = array();
+    foreach($homeAboutPointAllRows as $homeAboutPointRow) if(strpos(','.(string)$homeAboutPointRow['status'].',', ',hienthi,') !== false) { $homeAboutPointRows[] = $homeAboutPointRow; if(count($homeAboutPointRows) >= 4) break; }
+    $homeAboutConfigured = !empty($homeAboutAllRows);
     $homeAbout = !empty($homeAboutRows) ? $homeAboutRows[0] : array();
     $homeAboutEyebrow = !empty($homeAbout['title_index'.$lang]) ? $homeAbout['title_index'.$lang] : 'VỀ PHÚC THỊNH SOLAR';
     $homeAboutTitle = !empty($homeAbout['name'.$lang]) ? $homeAbout['name'.$lang] : 'Cung cấp thiết bị và thi công năng lượng mặt trời';

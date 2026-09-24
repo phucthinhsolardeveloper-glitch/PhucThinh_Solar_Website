@@ -4,7 +4,7 @@ test.beforeEach(async ({ page }) => {
   await page.route('https://cdn.gtranslate.net/**', route => route.abort());
 });
 
-test('header and product quote phone icons render', async ({ page, isMobile }) => {
+test('header phone and product quote icons render', async ({ page, isMobile }) => {
   const browserErrors = [];
   page.on('pageerror', error => browserErrors.push(error.message));
 
@@ -18,7 +18,7 @@ test('header and product quote phone icons render', async ({ page, isMobile }) =
   expect(await headerIcon.evaluate(element => getComputedStyle(element, '::before').content)).not.toBe('none');
 
   await page.goto('/san-pham/', { waitUntil: 'domcontentloaded' });
-  const cardIcon = page.locator('.pts-card-ask .fa-phone-alt').first();
+  const cardIcon = page.locator('.pts-card-ask .fa-file-alt').first();
   await expect(cardIcon).toBeVisible();
   await expect(cardIcon).toHaveCSS('font-family', /Font Awesome/);
   expect(await cardIcon.evaluate(element => getComputedStyle(element, '::before').content)).not.toBe('none');

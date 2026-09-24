@@ -3034,7 +3034,7 @@ $(function(){
 
 	var uploadBase = $composer.data('upload') || 'upload/product/';
 	var uploadUrl = $composer.data('upload-url') || '';
-	var LABELS = { heading:'Tiêu đề', text:'Đoạn văn', image:'Ảnh', media:'Ảnh + mô tả', list:'Danh sách' };
+	var LABELS = { heading:'Tiêu đề', text:'Đoạn văn', image:'Ảnh', media:'Ảnh + mô tả', list:'Danh sách', faq:'Câu hỏi thường gặp' };
 
 	function el(html){ return $(html); }
 
@@ -3124,6 +3124,12 @@ $(function(){
 			$body.find('.f-text').val(data.text || '');
 			$body.find('.f-side').val(['left', 'right', 'center'].indexOf(data.side) !== -1 ? data.side : 'left');
 		}
+		else if(type === 'faq'){
+			$body.append('<div class="form-group mb-2"><label class="mb-1 d-block">Câu hỏi</label><input type="text" class="form-control form-control-sm f-question" placeholder="Vd: Nên chọn sản phẩm theo tiêu chí nào?"></div>');
+			$body.append('<div class="form-group mb-0"><label class="mb-1 d-block">Trả lời</label><textarea class="form-control form-control-sm f-answer" rows="3" placeholder="Câu trả lời"></textarea></div>');
+			$body.find('.f-question').val(data.question || '');
+			$body.find('.f-answer').val(data.answer || '');
+		}
 
 		return $b.append($bar).append($body);
 	}
@@ -3160,6 +3166,10 @@ $(function(){
 			o.text = $b.find('.f-text').val() || '';
 			o.side = $b.find('.f-side').val() || 'left';
 		}
+		else if(type === 'faq'){
+			o.question = ($b.find('.f-question').val() || '').trim();
+			o.answer = ($b.find('.f-answer').val() || '').trim();
+		}
 		return o;
 	}
 
@@ -3190,7 +3200,7 @@ $(function(){
 		var $b = $(this).closest('.pts-section-block').toggleClass('is-collapsed');
 		if($b.hasClass('is-collapsed')){
 			var o = serializeOne($b);
-			var t = [o.title, o.text, (o.items || []).join(' · '), o.caption, o.photo].filter(Boolean).join(' — ');
+			var t = [o.title, o.text, (o.items || []).join(' · '), o.caption, o.photo, o.question].filter(Boolean).join(' — ');
 			$b.find('.pts-section-block__bar .preview').text(t ? ('— ' + String(t).replace(/\s+/g, ' ').slice(0, 70)) : '');
 		} else $b.find('.pts-section-block__bar .preview').text('');
 	});

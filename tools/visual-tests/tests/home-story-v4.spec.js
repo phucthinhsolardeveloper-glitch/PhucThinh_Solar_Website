@@ -217,14 +217,8 @@ test('homepage v4 tải đủ ảnh và giữ đúng thứ tự câu chuyện', 
   const heroPhotos = await page.locator('[data-home-hero-slide] img').evaluateAll(images => images.map(image => image.currentSrc || image.getAttribute('data-src') || image.src));
   expect(heroPhotos).toHaveLength(4);
   expect(heroPhotos.every(source => source && !source.includes('noimage.png'))).toBeTruthy();
-  for (const asset of [
-    'home-hero-street-lighting-v1.webp',
-    'home-hero-inverter-v1.webp',
-    'home-hero-solar-panels-v1.webp',
-    'home-hero-battery-storage-v1.webp',
-  ]) {
-    expect(heroPhotos.some(source => source.includes(asset)), asset).toBeTruthy();
-  }
+  expect(new Set(heroPhotos).size).toBe(4);
+  expect(await page.locator('[data-home-hero-slide-key]').evaluateAll(nodes => nodes.map(node => node.getAttribute('data-home-hero-slide-key')))).toEqual(['street-light', 'inverter', 'panel', 'storage']);
   const solutionPhotos = await page.locator('.pts-home-solution-visual img').evaluateAll(images => images.map(image => image.currentSrc || image.getAttribute('data-src') || image.src));
   expect(solutionPhotos).toHaveLength(4);
   expect(solutionPhotos.every(source => source && !source.includes('noimage.png'))).toBeTruthy();

@@ -4,6 +4,8 @@
 	else if($act=="copy")  $labelAct = "Sao chép";
 
 	$linkMan = "index.php?com=product&act=man&type=".$type;
+	$pdpAdminProfiles = productPdpProfiles();
+	$pdpAdminSelectedProfile = isset($item['pdp_profile']) ? (string)$item['pdp_profile'] : '';
 	/* Quay lại ĐÚNG trang danh sách (kèm trang/lọc) đã mở link Thêm/Sửa này,
 	   không phải danh sách trắng trang 1 - xem adminReturnUrl(). */
 	$returnUrl = adminReturnUrl($linkMan);
@@ -120,9 +122,24 @@
 													if(!empty($__sm['mode'])) $sectionMode = $__sm['mode'];
 													if(!empty($__sm['inherit_source'])) $sectionInheritSource = $__sm['inherit_source'];
 												}
-												if($flash->has('section_mode')) $sectionMode = $flash->get('section_mode');
-												if($flash->has('section_inherit_source')) $sectionInheritSource = $flash->get('section_inherit_source');
-											?>
+								if($flash->has('section_mode')) $sectionMode = $flash->get('section_mode');
+								if($flash->has('section_inherit_source')) $sectionInheritSource = $flash->get('section_inherit_source');
+								$sectionResolvedSource = '';
+								$sectionResolvedCount = 0;
+								if(!empty($item['id']) && function_exists('productResolveSections')) {
+									$__resolvedSections = productResolveSections($d, $item, isset($lang) ? $lang : 'vi');
+									$sectionResolvedSource = isset($__resolvedSections['source']) ? (string) $__resolvedSections['source'] : '';
+									$sectionResolvedCount = !empty($__resolvedSections['blocks']) ? count($__resolvedSections['blocks']) : 0;
+								}
+								$sectionResolvedLabels = array(
+									'product' => 'nội dung riêng sản phẩm',
+									'brand' => 'thương hiệu',
+									'cat' => 'danh mục cấp 2',
+									'list' => 'danh mục cấp 1',
+									'both' => 'nội dung riêng + nguồn kế thừa',
+									'hide' => 'đang ẩn mô tả dài'
+								);
+							?>
 											<div class="card card-outline card-primary text-sm mb-3">
 												<div class="card-header py-2"><h3 class="card-title" style="font-size:13px;font-weight:700;">Nội dung mô tả dài</h3></div>
 												<div class="card-body">
@@ -138,15 +155,22 @@
 													</div>
 													<div class="form-group mb-2" id="pts-section-inherit-source-wrap">
 														<label class="mb-1">Nguồn kế thừa <span class="text-muted font-weight-normal">(áp dụng khi chế độ là "Kế thừa" hoặc "Nội dung riêng + kế thừa")</span>:</label>
-														<select name="section_inherit_source" class="form-control form-control-sm" style="max-width:420px">
+									<select name="section_inherit_source" class="form-control form-control-sm" style="max-width:420px">
 															<option value="auto" <?=$sectionInheritSource==='auto'?'selected':''?>>Tự động (thương hiệu &gt; danh mục cấp 2 &gt; danh mục cấp 1)</option>
 															<option value="brand" <?=$sectionInheritSource==='brand'?'selected':''?>>Chỉ thương hiệu</option>
 															<option value="category" <?=$sectionInheritSource==='category'?'selected':''?>>Chỉ danh mục (ưu tiên cấp 2, cấp 1 nếu cấp 2 chưa có)</option>
 															<option value="stack" <?=$sectionInheritSource==='stack'?'selected':''?>>Cộng dồn tất cả nguồn có nội dung (danh mục cấp 2 + cấp 1 + thương hiệu)</option>
-														</select>
-														<small class="form-text text-muted">Mặc định "Tự động" ưu tiên thương hiệu trước. Danh mục thường sát nội dung sản phẩm hơn thương hiệu, đặc biệt danh mục cấp 2 - chọn "Chỉ danh mục" nếu muốn ưu tiên danh mục thay vì thương hiệu.</small>
-													</div>
-													<?php if(!empty($item['id'])) { ?>
+									</select>
+									<small class="form-text text-muted">Mặc định "Tự động" ưu tiên thương hiệu trước. Danh mục thường sát nội dung sản phẩm hơn thương hiệu, đặc biệt danh mục cấp 2 - chọn "Chỉ danh mục" nếu muốn ưu tiên danh mục thay vì thương hiệu.</small>
+								</div>
+								<?php if(!empty($item['id'])) { ?>
+									<div class="alert alert-light border py-2 mb-2">
+										<strong>Nguồn đang hiển thị:</strong>
+										<?=htmlspecialchars(isset($sectionResolvedLabels[$sectionResolvedSource]) ? $sectionResolvedLabels[$sectionResolvedSource] : ($sectionResolvedSource !== '' ? $sectionResolvedSource : 'chưa có khối nội dung'), ENT_QUOTES, 'UTF-8')?>
+										<?php if($sectionResolvedCount > 0) { ?><span class="text-muted">(<?=$sectionResolvedCount?> khối)</span><?php } ?>
+									</div>
+								<?php } ?>
+								<?php if(!empty($item['id'])) { ?>
 														<a class="btn btn-sm bg-gradient-primary text-white" href="index.php?com=content_section&act=edit&type=<?=htmlspecialchars($type, ENT_QUOTES, 'UTF-8')?>&scope=product&scope_id=<?=(int)$item['id']?>"><i class="far fa-edit mr-1"></i>Mở trình soạn khối cho sản phẩm này</a>
 														<span class="text-muted ml-2">Lưu form này sau khi đổi chế độ.</span>
 													<?php } else { ?>
@@ -209,6 +233,16 @@
                                 <small class="form-text text-muted">Chỉ nhận URL YouTube/youtu.be. Không dán mã iframe.</small>
                             </div>
                         <?php } ?>
+                        <?php
+                        $productDocumentLines = array();
+                        if($flash->has('product_documents_text')) $productDocumentLines = preg_split('/\R/u', (string)$flash->get('product_documents_text'));
+                        elseif(!empty($productDocuments)) foreach($productDocuments as $documentRow) $productDocumentLines[] = $documentRow['document_type'].' | '.$documentRow['titlevi'].' | '.$documentRow['file_path'];
+                        ?>
+                        <div class="form-group">
+                            <label for="product_documents_text">Tài liệu tải về:</label>
+                            <textarea class="form-control text-sm" name="product_documents_text" id="product_documents_text" rows="4" placeholder="datasheet | Thông số kỹ thuật PDF | upload/product-documents/model.pdf"><?=htmlspecialchars(implode("\n", $productDocumentLines), ENT_QUOTES, 'UTF-8')?></textarea>
+                            <small class="form-text text-muted">Mỗi dòng: loại | tiêu đề | đường dẫn. Loại: datasheet, manual, warranty, certificate, other. Mục trống sẽ không hiện ngoài website.</small>
+                        </div>
                         <?php if(!empty($config['product'][$type]['structured_specs'])) { ?>
                             <div class="row">
                                 <?php
@@ -249,15 +283,15 @@
                             } elseif(!empty($item['additional_specs'])) {
                                 $additionalSpecRows = json_decode(htmlspecialchars_decode($item['additional_specs'], ENT_QUOTES), true);
                                 if(is_array($additionalSpecRows)) foreach($additionalSpecRows as $spec) {
-                                    if(!empty($spec['label']) && isset($spec['value'])) $additionalSpecLines[] = $spec['label'].' | '.$spec['value'];
+                                    if(!empty($spec['label']) && isset($spec['value'])) $additionalSpecLines[] = (!empty($spec['key']) ? $spec['key'].' | ' : '').$spec['label'].' | '.$spec['value'];
                                 }
                             }
                             ?>
                             <div class="form-group">
                                 <label for="additional_specs_text">Thông số riêng khác:</label>
                                 <textarea class="form-control text-sm" name="additional_specs_text" id="additional_specs_text" rows="8"
-                                    placeholder="Mỗi dòng: Tên thông số | Giá trị"><?=htmlspecialchars(implode("\n", $additionalSpecLines), ENT_QUOTES, 'UTF-8')?></textarea>
-                                <small class="form-text text-muted">Ví dụ: Model | JD-T200. Dùng cho thông số riêng của inverter, tấm pin, phụ kiện…</small>
+                                    placeholder="Mỗi dòng: ma_thong_so | Tên thông số | Giá trị"><?=htmlspecialchars(implode("\n", $additionalSpecLines), ENT_QUOTES, 'UTF-8')?></textarea>
+                                <small class="form-text text-muted">Ví dụ: ac_power | Công suất AC định mức | 10 kW. Dữ liệu cũ “Tên | Giá trị” vẫn được hỗ trợ.</small>
                             </div>
                             <div class="alert alert-info mb-0">
                                 Mỗi thông số nhập vào một ô riêng. Phần giải thích và ứng dụng tiếp tục nhập trong “Nội dung”; không cần soạn bảng HTML.
@@ -300,6 +334,14 @@
 			            </div>
 			            <div class="card-body">
 		            		<div class="form-group-category row">
+							<div class="form-group col-12">
+								<label for="pdp_profile">Profile trang chi tiết:</label>
+								<select class="form-control select2" name="data[pdp_profile]" id="pdp_profile">
+									<option value="">Kế thừa từ danh mục cấp 1</option>
+									<?php foreach($pdpAdminProfiles as $profileKey => $profileMeta) { ?><option value="<?=htmlspecialchars($profileKey, ENT_QUOTES, 'UTF-8')?>" <?=$pdpAdminSelectedProfile === $profileKey ? 'selected' : ''?>><?=htmlspecialchars($profileMeta['label'], ENT_QUOTES, 'UTF-8')?></option><?php } ?>
+								</select>
+								<small class="form-text text-muted">Chỉ chọn khác danh mục khi sản phẩm thực sự thuộc loại đặc biệt, ví dụ máy bơm vật lý trong nhóm biến tần bơm.</small>
+							</div>
 				            	<?php if(isset($config['product'][$type]['dropdown']) && $config['product'][$type]['dropdown'] == true) { ?>
 				            		<?php if(isset($config['product'][$type]['list']) && $config['product'][$type]['list'] == true) { ?>
 						                <div class="form-group col-xl-6 col-sm-4">

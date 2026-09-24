@@ -20,12 +20,9 @@
             <?php include TEMPLATE.LAYOUT."mmenu.php"; ?>
         </div>
 
-        <?php /* Hero trang chủ được tắt theo quyết định product-first 2026-09-15.
-                 Không xoá template/dữ liệu Hero; các trang con vẫn giữ breadcrumb.
-                 2026-09-15: bỏ luôn cờ loại trừ "daily" - viết từ hồi hero cũ của
-                 trang Đại lý nằm sát ngay dưới header, không có chỗ cho breadcrumb.
-                 Giao diện Đại lý mới (banner ảnh + nội dung bên dưới) đã có chỗ,
-                 giữ loại trừ cũ làm trang này mất breadcrumb so với mọi trang khác. */ ?>
+        <?php /* Hero V4 hiện là phần trình bày được duyệt theo ADR 0006; không
+                 bật lại Hero legacy/slide.php từ cấu hình cũ. Các trang con vẫn
+                 giữ breadcrumb dùng chung. */ ?>
         <?php if($source != 'index'){ ?>
         <div class="wap-slider pts-breadcrumb-shell">
             <?php include TEMPLATE.LAYOUT."breadcrumb.php"; ?>

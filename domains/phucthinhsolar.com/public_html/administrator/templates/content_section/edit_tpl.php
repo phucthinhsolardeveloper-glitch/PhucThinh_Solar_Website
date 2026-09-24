@@ -48,6 +48,9 @@
 						<button type="button" class="btn btn-outline-primary" data-add="image"><i class="far fa-image mr-1"></i>Ảnh</button>
 						<button type="button" class="btn btn-outline-primary" data-add="media"><i class="far fa-images mr-1"></i>Ảnh + mô tả</button>
 						<button type="button" class="btn btn-outline-primary" data-add="list"><i class="fas fa-list-ul mr-1"></i>Danh sách</button>
+						<?php if(in_array($sectionScope, array('cat', 'list', 'product'), true)) { ?>
+						<button type="button" class="btn btn-outline-primary" data-add="faq"><i class="far fa-question-circle mr-1"></i>Câu hỏi thường gặp</button>
+						<?php } ?>
 					</div>
 					<button type="button" class="btn btn-sm btn-outline-secondary" id="pts-paste-blocks"><i class="far fa-clipboard mr-1"></i>Dán nhanh</button>
 					<?php if($sectionScope === 'product') { ?>

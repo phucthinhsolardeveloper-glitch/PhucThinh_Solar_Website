@@ -129,11 +129,12 @@ test('content surfaces stay flat across product and content hubs', async ({ page
   const assertFlat = async selector => {
     const surface = page.locator(selector).first();
     await expect(surface).toBeVisible();
-    expect(await surface.evaluate(element => ({
+    const measured = await surface.evaluate(element => ({
       border: getComputedStyle(element).borderTopWidth,
       background: getComputedStyle(element).backgroundColor,
       shadow: getComputedStyle(element).boxShadow
-    }))).toEqual({ border: '0px', background: 'rgba(0, 0, 0, 0)', shadow: 'none' });
+    }));
+    expect(measured).toEqual({ border: '0px', background: 'rgba(0, 0, 0, 0)', shadow: 'none' });
   };
 
   await page.goto('/danh-muc-san-pham/den-nlmt/', { waitUntil: 'domcontentloaded' });
@@ -145,12 +146,18 @@ test('content surfaces stay flat across product and content hubs', async ({ page
   await page.goto(`/${productHref}`, { waitUntil: 'domcontentloaded' });
   const gallery = page.locator('.left-pro-detail > .MagicZoom');
   await expect(gallery).toBeVisible();
+  /* 2026-09-23: khung ảnh đổi nền trắng thuần sang xám nhạt #f5f6f7 làm điểm
+     tựa cho ảnh sản phẩm đã tách nền - chủ ý thiết kế (xem comment tại
+     product-detail-v2.css), không phải lỗi; cập nhật theo màu đã duyệt. */
   expect(await gallery.evaluate(element => ({
     border: getComputedStyle(element).borderTopWidth,
     background: getComputedStyle(element).backgroundColor,
     shadow: getComputedStyle(element).boxShadow
-  }))).toEqual({ border: '0px', background: 'rgb(255, 255, 255)', shadow: 'none' });
-  await assertFlat('.tabs-pro-detail');
+  }))).toEqual({ border: '0px', background: 'rgb(245, 246, 247)', shadow: 'none' });
+  /* 2026-09-23: .tabs-pro-detail (khung tab spec/mô tả cũ) đã bị thay bằng
+     luồng section dọc .pts-pdp-content-section trong bản redesign - không
+     phải lỗi; đổi selector theo cấu trúc mới. */
+  await assertFlat('.pts-pdp-content-section');
 
   await page.goto('/tin-tuc/', { waitUntil: 'domcontentloaded' });
   await assertFlat('.nh-card');
@@ -279,6 +286,7 @@ test('product detail keeps gallery and the CTA configured by Admin', async ({ pa
   const response = await page.goto(href, { waitUntil: 'domcontentloaded' });
   expect(response && response.ok()).toBeTruthy();
   await expect(page.locator('.breadCrumbs')).toBeVisible();
+  await expect(page.locator('h1')).toHaveCount(1);
   await expect(page.locator('#Zoom-1 img').first()).toBeVisible();
   const mainGallery = page.locator('#Zoom-1');
   const measureGallery = () => mainGallery.evaluate(element => {
@@ -298,6 +306,43 @@ test('product detail keeps gallery and the CTA configured by Admin', async ({ pa
   expect(Math.abs(galleryBefore.width - galleryBefore.height)).toBeLessThanOrEqual(1);
   expect(galleryBefore.fit).toBe('contain');
   await expect(page.locator('.right-pro-detail > .title-pro-detail')).toBeVisible();
+  const sectionNav = page.locator('.pts-pdp-section-nav');
+  if (await sectionNav.count()) {
+    await expect(sectionNav).not.toHaveClass(/pts-catalog-jump/);
+    const productPath = new URL(page.url()).pathname;
+    const navLinks = sectionNav.locator('a');
+    expect(await navLinks.count()).toBeLessThanOrEqual(4);
+    const conditionalTargets = await navLinks.evaluateAll(links => links.map(link => {
+      const url = new URL(link.href);
+      return { path: url.pathname, targetExists: Boolean(document.getElementById(url.hash.slice(1))) };
+    }));
+    expect(conditionalTargets.every(item => item.path === productPath && item.targetExists)).toBeTruthy();
+    const navLinkStyle = await sectionNav.locator('a').first().evaluate(element => {
+      const nav = element.closest('.pts-pdp-section-nav');
+      const track = element.parentElement;
+      return {
+        background: getComputedStyle(element).backgroundColor,
+        border: getComputedStyle(element).borderTopWidth,
+        separator: getComputedStyle(element, '::after').content,
+        height: Math.round(nav.getBoundingClientRect().height),
+        justify: getComputedStyle(track).justifyContent,
+        viewport: innerWidth,
+      };
+    });
+    expect(navLinkStyle).toEqual({
+      background: 'rgba(0, 0, 0, 0)',
+      border: '0px',
+      separator: '""',
+      height: navLinkStyle.viewport > 640 ? 42 : 40,
+      justify: navLinkStyle.viewport > 991 ? 'center' : 'flex-start',
+      viewport: navLinkStyle.viewport,
+    });
+    await expect(sectionNav.locator('a').first()).toHaveClass(/is-active/);
+    await sectionNav.locator('a').first().click();
+    expect(new URL(page.url()).pathname).toBe(productPath);
+    await page.locator('#thong-so-ky-thuat').scrollIntoViewIfNeeded();
+    await expect(sectionNav.locator('a[href$="#thong-so-ky-thuat"]')).toHaveClass(/is-active/);
+  }
   const quoteCta = page.locator('.btn-contact-price');
   if (await quoteCta.count()) {
     await expect(quoteCta).toBeVisible();
@@ -307,11 +352,18 @@ test('product detail keeps gallery and the CTA configured by Admin', async ({ pa
     await expect(page.locator('.btn-product-detail .addcart')).toHaveCount(2);
   }
 
-  // Tab "Mô tả sản phẩm": một cột, đã bỏ các khối story/duo/canvas rời rạc.
+  // Nội dung mô tả là một luồng dọc, không dùng lại các khối story/duo/canvas cũ.
   await expect(page.locator('.pts-story-card, .pts-detail-duo, .pts-description-canvas')).toHaveCount(0);
-  const descPane = page.locator('#info-pro-detail');
+  /* id của section mô tả đổi theo có/không khối "phù hợp nhu cầu" (use-case) -
+     xem product_detail_tpl.php - nên nhận diện bằng class ổn định thay vì id. */
+  const descPane = page.locator('.pts-pdp-content-section.pts-product-content');
   if (await descPane.count()) {
     await expect(descPane.locator('.pts-product-desc')).toHaveCount(1);
+    const navLink = page.locator('.pts-pdp-section-nav a', { hasText: 'Tổng quan' });
+    if (await navLink.count()) {
+      const descId = await descPane.getAttribute('id');
+      await expect(navLink).toHaveAttribute('href', new RegExp(`#${descId}$`));
+    }
   }
 });
 
@@ -370,33 +422,31 @@ test('switching product photos does not shrink the detail gallery', async ({ pag
   expect(after.imageSource).toContain('/600x600x4/');
 });
 
-test('quote request CTA opens the protected consultation form', async ({ page }) => {
+test('quote request CTA scrolls to the protected consultation form', async ({ page }) => {
   await page.goto('/san-pham/', { waitUntil: 'domcontentloaded' });
   const quoteCard = page.locator('.product-card:has(.pts-card-ask)').first();
   const quoteCardCount = await quoteCard.count();
-  test.skip(quoteCardCount === 0, 'Catalogue hiện không có sản phẩm ở chế độ báo giá để mở modal này.');
+  test.skip(quoteCardCount === 0, 'Catalogue hiện không có sản phẩm ở chế độ báo giá để mở form này.');
   const href = await quoteCard.locator('.product-item').getAttribute('href');
   expect(href).toBeTruthy();
 
   await page.goto(href, { waitUntil: 'domcontentloaded' });
-  const modal = page.locator('#exampleModal');
-  await expect(modal).not.toBeVisible();
-  await page.locator('.btn-contact-price [data-target="#exampleModal"]').click();
-  await expect(modal).toBeVisible();
-  await expect(modal.locator('#quoteRequestModalLabel')).toContainText('Tư vấn & báo giá');
+  /* 2026-09-23: "Yêu cầu báo giá" đổi từ mở modal #exampleModal sang cuộn
+     tới form tư vấn nằm ngay trong trang (#pts-pdp-consultation) - nội
+     dung/UX mới, không phải lỗi; cập nhật test theo hành vi đã duyệt. */
+  const section = page.locator('#pts-pdp-consultation');
+  await page.locator('.btn-contact-price a[href$="#pts-pdp-consultation"]').click();
+  await expect(section).toBeInViewport();
 
-  const form = modal.locator('form.validation-newsletter');
+  const form = section.locator('form.validation-newsletter');
   await expect(form.locator('input[name="form_csrf"]')).toHaveCount(1);
   await expect(form.locator('[name="dataNewsletter[fullname]"]')).toBeVisible();
   await expect(form.locator('[name="dataNewsletter[phone]"]')).toBeVisible();
   await expect(form.locator('[name="submit-newsletter"]')).toBeVisible();
   await expect(form.locator('[name="submit-newsletter"]')).toBeEnabled();
-
-  await modal.locator('[data-dismiss="modal"]').click();
-  await expect(modal).not.toBeVisible();
 });
 
-test('product landing renders category products in the initial HTML without startup API requests', async ({ page }) => {
+test('product landing renders one all-products grid and a data-driven top-level category rail', async ({ page }) => {
   const product3Requests = [];
   page.on('request', request => {
     if (request.url().includes('/api/product3.php')) product3Requests.push(request.url());
@@ -404,11 +454,25 @@ test('product landing renders category products in the initial HTML without star
 
   const response = await page.goto('/san-pham/', { waitUntil: 'domcontentloaded' });
   expect(response && response.ok()).toBeTruthy();
-  const blocks = page.locator('.paging-prolist[data-server-rendered="1"]');
-  expect(await blocks.count()).toBeGreaterThan(0);
-  await expect(blocks.first().locator('.product-card').first()).toBeAttached();
-  expect(await blocks.first().locator('.product-card').count()).toBeLessThanOrEqual(4);
-  const productNames = blocks.first().locator('.product-card .caption .name');
+  await expect(page.locator('h1')).toHaveCount(1);
+  await expect(page.locator('.pts-category-copy h1')).toBeVisible();
+  await expect(page.locator('.paging-prolist[data-server-rendered="1"]')).toHaveCount(0);
+  const categoryTabs = page.locator('.pts-category-tabs--primary .pts-category-tab');
+  expect(await categoryTabs.count()).toBeGreaterThan(4);
+  await expect(categoryTabs.first()).toHaveText('Tất cả');
+  await expect(categoryTabs.first()).toHaveClass(/is-active/);
+  await expect(page.locator('.pts-filter-card .collection-category')).toHaveCount(0);
+  const cards = page.locator('#show-product .product-card');
+  await expect(cards.first()).toBeAttached();
+  await expect(cards.first().locator('.pts-card-action-label').first()).toBeVisible();
+  await expect(page.locator('.pts-filter-reset')).toBeHidden();
+  const activeFilterPage = await page.goto('/san-pham/?is_orderby=abc', { waitUntil: 'domcontentloaded' });
+  expect(activeFilterPage && activeFilterPage.ok()).toBeTruthy();
+  await expect(page.locator('.pts-filter-reset')).toBeVisible();
+  await expect(page.locator('.pts-catalog-support')).toBeVisible();
+  await expect(page.locator('.pts-catalog-support h2')).not.toBeEmpty();
+  expect(await cards.count()).toBeLessThanOrEqual(20);
+  const productNames = cards.locator('.caption .name');
   if (await productNames.count()) {
     const nameMetrics = await productNames.evaluateAll(names => names.map(name => {
       const style = getComputedStyle(name);
@@ -462,28 +526,57 @@ test('mobile news and project category rails do not re-layout into Slick after l
   }
 });
 
-test('mobile product detail separates description and specifications without overflow', async ({ page, isMobile }) => {
-  test.skip(!isMobile, 'The stacked editorial layout only applies on mobile.');
+test('mobile product detail presents description, guidance and specifications without overflow', async ({ page, isMobile }) => {
+  test.skip(!isMobile, 'The stacked product-detail layout only applies on mobile.');
   await page.goto('/san-pham/den-pha-nang-luong-mat-troi-jindian-jd-t300-300w', { waitUntil: 'domcontentloaded' });
-  const editorial = page.locator('.pts-pdp-editorial-grid');
-  const description = page.locator('.pts-pdp-editorial-main');
-  const specifications = page.locator('.pts-pdp-spec-column');
-  await expect(editorial).toBeVisible();
-  await expect(description).toBeVisible();
+  const overview = page.locator('#tong-quan');
+  const specifications = page.locator('#thong-so-ky-thuat');
+  await expect(overview).toBeVisible();
   await expect(specifications).toBeVisible();
-  const layout = await editorial.evaluate(element => {
-    const main = element.querySelector('.pts-pdp-editorial-main').getBoundingClientRect();
-    const specs = element.querySelector('.pts-pdp-spec-column').getBoundingClientRect();
-    return {
-      direction: getComputedStyle(element).flexDirection,
-      specsPosition: getComputedStyle(element.querySelector('.pts-pdp-spec-panel')).position,
-      descriptionBeforeSpecs: main.top < specs.top,
-    };
-  });
-  expect(layout.direction).toBe('column');
-  expect(layout.specsPosition).toBe('relative');
-  expect(layout.descriptionBeforeSpecs).toBeTruthy();
+  const overviewBox = await overview.boundingBox();
+  const specificationsBox = await specifications.boundingBox();
+  expect(overviewBox.y).toBeLessThan(specificationsBox.y);
+  const guide = page.locator('.pts-pdp-buying-guide');
+  if (await guide.count()) {
+    const guideBox = await guide.boundingBox();
+    expect(overviewBox.y).toBeLessThan(guideBox.y);
+    expect(guideBox.y).toBeLessThan(specificationsBox.y);
+  }
+  await expect(page.locator('.pts-pdp-section-nav')).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
+});
+
+test('product detail reference layout holds from 320px to 2560px', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'One explicit viewport matrix is sufficient for this composition check.');
+  test.setTimeout(90000);
+  const widths = [320, 360, 390, 414, 768, 1024, 1366, 1440, 1600, 1920, 2560];
+
+  for (const width of widths) {
+    await page.setViewportSize({ width, height: 900 });
+    const response = await page.goto('/san-pham/den-pha-nang-luong-mat-troi-jindian-jd-t300-300w', { waitUntil: 'domcontentloaded' });
+    expect(response && response.ok(), `${width}px status`).toBeTruthy();
+    const layout = await page.evaluate(() => {
+      const left = document.querySelector('.left-pro-detail').getBoundingClientRect();
+      const right = document.querySelector('.right-pro-detail').getBoundingClientRect();
+      const metricGrid = document.querySelector('.pts-pdp-decision-metrics');
+      return {
+        overflow: document.documentElement.scrollWidth - innerWidth,
+        leftWidth: Math.round(left.width),
+        rightWidth: Math.round(right.width),
+        leftTop: Math.round(left.top),
+        rightTop: Math.round(right.top),
+        metricColumns: metricGrid ? getComputedStyle(metricGrid).gridTemplateColumns.split(' ').length : 0,
+      };
+    });
+    expect(layout.overflow, `${width}px overflow`).toBeLessThanOrEqual(1);
+    expect(layout.metricColumns, `${width}px metric columns`).toBe(width <= 359 ? 1 : 2);
+    if (width >= 992) {
+      expect(Math.abs(layout.leftWidth - layout.rightWidth), `${width}px equal hero columns`).toBeLessThanOrEqual(2);
+      expect(Math.abs(layout.leftTop - layout.rightTop), `${width}px aligned hero columns`).toBeLessThanOrEqual(4);
+    } else {
+      expect(layout.leftTop, `${width}px gallery precedes buy box`).toBeLessThan(layout.rightTop);
+    }
+  }
 });
 
 test('mobile child breadcrumb stays vertically aligned with its parent', async ({ page, isMobile }) => {
@@ -544,13 +637,22 @@ test('home exposes the five approved category slots with real destinations', asy
   }
 });
 
-test('product category sidebar keeps child categories only in the type filter', async ({ page }) => {
+test('product category sidebar avoids repeating the subcategory rail', async ({ page }) => {
   await page.goto('/danh-muc-san-pham/den-nlmt/', { waitUntil: 'domcontentloaded' });
 
-  await expect(page.locator('.pts-filter-card .filter-cat li > ul')).toHaveCount(0);
-  await expect(page.locator('.pts-filter-card .filter-cat > .aside-content > ul > li').first()).toBeVisible();
-  await expect(page.locator('input[name="car_cat"]')).not.toHaveCount(0);
-  await expect(page.locator('input[name="car_cat"]').first()).toBeAttached();
+  const hero = page.locator('.pts-category-hero');
+  if (await hero.evaluate(node => node.classList.contains('has-image'))) {
+    await expect(hero.locator('h1')).toHaveCSS('color', 'rgb(255, 255, 255)');
+  }
+  await expect(page.locator('.pts-filter-card .collection-category')).toHaveCount(0);
+  await expect(page.locator('.pts-subcategory-tabs .pts-subcategory-tab').first()).toBeVisible();
+  await expect(page.locator('input[name="car_cat"]')).toHaveCount(0);
+  await expect(page.locator('.pts-filter-card')).not.toContainText('Loại đèn - dùng cho');
+  await expect(page.locator('.pts-category-faq details')).toHaveCount(3);
+  const sidebarLabelSize = await page.locator('.pts-filter-card .product-pages__price-label').first().evaluate(node => parseFloat(getComputedStyle(node).fontSize));
+  expect(sidebarLabelSize).toBeGreaterThanOrEqual(15);
+  await page.locator('.pts-category-faq summary').first().click();
+  await expect(page.locator('.pts-category-faq details').first()).toHaveAttribute('open', '');
 
   await page.goto('/den-op-tran/', { waitUntil: 'domcontentloaded' });
   await expect(page.locator('input[name="car_cat"]')).toHaveCount(0);
@@ -586,6 +688,9 @@ test('mobile product filters open as an accessible drawer and close after filter
   test.skip(!isMobile, 'The filter drawer is a mobile/tablet interaction.');
   await page.goto('/danh-muc-san-pham/den-nlmt/', { waitUntil: 'domcontentloaded' });
 
+  const trustColumns = await page.locator('.category-trust-strip > .row').evaluate(node => getComputedStyle(node).gridTemplateColumns.split(' ').length);
+  expect(trustColumns).toBe(2);
+
   const trigger = page.locator('#opensideBar-product');
   const drawer = page.locator('#product-filter-drawer');
   await expect(trigger).toBeVisible();
@@ -615,6 +720,11 @@ test('mobile product filters open as an accessible drawer and close after filter
     input.dispatchEvent(new Event('change', { bubbles: true }));
   });
   await assertHealthyAjaxResponse(filteredResponse);
+  const resultMeta = page.locator('#show-product .pts-filter-result-meta');
+  await expect(resultMeta).toBeAttached();
+  const resultCount = Number(await resultMeta.getAttribute('data-filter-result-count'));
+  await expect(page.locator('.pts-product-result-count')).toHaveText(resultCount.toLocaleString('vi-VN'));
+  await expect(page.locator('.pts-filter-reset')).toBeVisible();
   await expect(drawer).not.toHaveClass(/show/);
   await expect(trigger).toHaveAttribute('aria-expanded', 'false');
   await expect(page.locator('body')).not.toHaveClass(/pts-filter-drawer-open/);

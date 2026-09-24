@@ -37,7 +37,7 @@ logo thương hiệu do HTML render để responsive, dễ sửa và không bị
 | Type | Số lượng | Nội dung | Khi chưa có record | Khi đã có record |
 |---|---:|---|---|---|
 | `home-campaign` | tối đa 3 | ảnh, tên, mô tả, link | dùng 3 ảnh mẫu đóng gói | chỉ record có **Hiển thị** xuất hiện |
-| `catalog-campaign` | tối đa 3 | ảnh, tên, mô tả, link | dùng 2 ảnh mẫu đóng gói | phân bố record Hiển thị giữa các nhóm sản phẩm |
+| `catalog-campaign` | tối đa 3, dùng record bật đầu tiên | ảnh, tên, mô tả, link | dùng ảnh thiết bị mẫu đóng gói | CTA tư vấn cuối catalog; tắt toàn bộ record sẽ ẩn CTA |
 | `contact-visual` | 1 | ảnh, tên, mô tả/link tùy chọn | dùng ảnh tư vấn mẫu | tắt **Hiển thị** sẽ bỏ hẳn ảnh mở đầu |
 | `dealer-hero` | 1 | ảnh, tên | dùng ảnh phân phối mẫu | tắt **Hiển thị** sẽ bỏ hẳn ảnh cạnh form |
 

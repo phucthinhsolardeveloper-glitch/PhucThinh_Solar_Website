@@ -4,6 +4,7 @@ if (!defined('SOURCES')) die('Error');
 require_once LIBRARIES.'admin_product_pricing.php';
 require_once LIBRARIES.'admin_product_completeness.php';
 require_once LIBRARIES.'product_content_blocks.php';
+require_once LIBRARIES.'product_pdp_profiles.php';
 
 function productValidateCommercialFields($data)
 {
@@ -32,6 +33,7 @@ function productBulkColumns()
         '_cat_name' => array('label' => 'Danh mục cấp 2', 'kind' => 'category_name', 'target' => 'id_cat'),
         'id_brand' => array('label' => 'ID thương hiệu', 'kind' => 'category', 'db' => 'id_brand', 'export' => false),
         '_brand_name' => array('label' => 'Thương hiệu', 'kind' => 'category_name', 'target' => 'id_brand'),
+        'pdp_profile' => array('label' => 'Profile trang chi tiết', 'kind' => 'pdp_profile', 'db' => 'pdp_profile'),
         'cong_suat' => array('label' => 'Công suất (W)', 'kind' => 'decimal', 'db' => 'cong_suat'),
         'regular_price' => array('label' => 'Giá gốc', 'kind' => 'money', 'db' => 'regular_price'),
         'sale_price' => array('label' => 'Giá bán/khuyến mãi', 'kind' => 'money', 'db' => 'sale_price'),
@@ -49,7 +51,7 @@ function productBulkColumns()
         'highlightsvi' => array('label' => 'Điểm nổi bật (Tiêu đề | Giải thích)', 'kind' => 'content_block_paired', 'db' => 'highlightsvi', 'limit' => 6),
         'applicationsvi' => array('label' => 'Ứng dụng phù hợp (mỗi dòng một ý)', 'kind' => 'content_block', 'db' => 'applicationsvi', 'limit' => 8),
         'installationvi' => array('label' => 'Bộ sản phẩm / hướng dẫn (mỗi dòng một ý)', 'kind' => 'content_block', 'db' => 'installationvi', 'limit' => 10),
-        'sectionsvi' => array('label' => 'Mô tả dài (khối) — ## tiêu đề, - danh sách, ![](file) ảnh', 'kind' => 'content_sections'),
+        'sectionsvi' => array('label' => 'Mô tả dài/FAQ — ## tiêu đề, - danh sách, [faq] Hỏi | Đáp', 'kind' => 'content_sections'),
         'chinhsachmuahangvi' => array('label' => 'Chính sách mua hàng', 'kind' => 'html', 'db' => 'chinhsachmuahangvi'),
         'video_url' => array('label' => 'Video YouTube', 'kind' => 'youtube', 'db' => 'video_url', 'max' => 500),
         'light_source' => array('label' => 'Nguồn sáng', 'kind' => 'text', 'db' => 'light_source', 'max' => 255),
@@ -70,7 +72,7 @@ function productBulkColumns()
         'carton_quantity' => array('label' => 'Số lượng / thùng', 'kind' => 'text', 'db' => 'carton_quantity', 'max' => 100),
         'carton_dimensions' => array('label' => 'Kích thước thùng', 'kind' => 'text', 'db' => 'carton_dimensions', 'max' => 150),
         'warranty' => array('label' => 'Bảo hành', 'kind' => 'text', 'db' => 'warranty', 'max' => 150),
-        'additional_specs' => array('label' => 'Thông số khác (Tên | Giá trị)', 'kind' => 'spec_lines', 'db' => 'additional_specs'),
+        'additional_specs' => array('label' => 'Thông số khác (Mã | Tên | Giá trị)', 'kind' => 'spec_lines', 'db' => 'additional_specs'),
         'certificatevi' => array('label' => 'Chứng nhận/kiểm nghiệm', 'kind' => 'html', 'db' => 'certificatevi'),
         'photo' => array('label' => 'Tên ảnh hiện tại (chỉ đọc)', 'kind' => 'readonly')
     );
@@ -107,6 +109,8 @@ function productBulkHeaderMap()
         $map[productBulkNormalizeHeader($key)] = $key;
         $map[productBulkNormalizeHeader($meta['label'])] = $key;
     }
+    /* Tên cột đã phát hành trước migration 050 vẫn phải import được. */
+    $map[productBulkNormalizeHeader('Thông số khác (Tên | Giá trị)')] = 'additional_specs';
     return $map;
 }
 
@@ -430,20 +434,31 @@ function productBulkParseSpecLines($value, $allowDuplicateLabels=false)
     $labels = array();
     foreach(preg_split('/\R/u', (string) $value) as $lineNumber => $line) {
         if(trim($line) === '') continue;
-        $parts = explode('|', $line, 2);
-        if(count($parts) !== 2 || trim($parts[0]) === '' || trim($parts[1]) === '') {
-            $result['errors'][] = 'Dòng '.($lineNumber + 1).' phải theo mẫu: Tên thông số | Giá trị';
+        $parts = array_map('trim', explode('|', $line));
+        if(count($parts) !== 2 && count($parts) !== 3) {
+            $result['errors'][] = 'Dòng '.($lineNumber + 1).' phải theo mẫu: Mã | Tên thông số | Giá trị (hoặc Tên | Giá trị với dữ liệu cũ)';
             continue;
         }
-        $label = trim(strip_tags($parts[0]));
-        $value = trim(strip_tags($parts[1]));
-        $key = mb_strtolower(preg_replace('/\s+/u', ' ', $label), 'UTF-8');
-        if(!$allowDuplicateLabels && isset($labels[$key])) {
+        $specKey = count($parts) === 3 ? strtolower($parts[0]) : '';
+        $label = trim(strip_tags(count($parts) === 3 ? $parts[1] : $parts[0]));
+        $specValue = trim(strip_tags(count($parts) === 3 ? $parts[2] : $parts[1]));
+        if($label === '' || $specValue === '') {
+            $result['errors'][] = 'Dòng '.($lineNumber + 1).' thiếu tên thông số hoặc giá trị';
+            continue;
+        }
+        if($specKey !== '' && !preg_match('/^[a-z0-9_]+$/', $specKey)) {
+            $result['errors'][] = 'Mã thông số ở dòng '.($lineNumber + 1).' chỉ dùng chữ thường, số và dấu gạch dưới';
+            continue;
+        }
+        $duplicateKey = $specKey !== '' ? 'key:'.$specKey : 'label:'.mb_strtolower(preg_replace('/\s+/u', ' ', $label), 'UTF-8');
+        if(!$allowDuplicateLabels && isset($labels[$duplicateKey])) {
             $result['errors'][] = 'Tên thông số bị trùng: '.$label;
             continue;
         }
-        $labels[$key] = true;
-        $result['specs'][] = array('label' => $label, 'value' => $value);
+        $labels[$duplicateKey] = true;
+        $spec = array('label' => $label, 'value' => $specValue);
+        if($specKey !== '') $spec['key'] = $specKey;
+        $result['specs'][] = $spec;
     }
     return $result;
 }
@@ -930,6 +945,9 @@ function productBulkValidateRows($rawRows, $type, $baseline = array(), $overwrit
             } elseif ($meta['kind'] === 'category') {
                 if (filter_var($value, FILTER_VALIDATE_INT, array('options' => array('min_range' => 0))) === false) $item['errors'][] = $meta['label'].' phải là ID hợp lệ.';
                 else $item['data'][$meta['db']] = (int) $value;
+            } elseif ($meta['kind'] === 'pdp_profile') {
+                if(!in_array($value, productPdpProfileKeys(), true)) $item['errors'][] = $meta['label'].' không hợp lệ.';
+                else $item['data'][$meta['db']] = $value;
             } elseif ($meta['kind'] === 'slug') {
                 $item['data'][$meta['db']] = $func->changeTitle($value);
             } elseif ($meta['kind'] === 'status') {
@@ -1310,7 +1328,8 @@ function productBulkExportValue($key, $row, $categories)
                 $labelCounts[$specKey] = isset($labelCounts[$specKey]) ? $labelCounts[$specKey] + 1 : 1;
                 $label = trim((string) $spec['label']);
                 if($labelCounts[$specKey] > 1) $label .= ' ('.$labelCounts[$specKey].')';
-                $lines[] = $label.' | '.trim((string) $spec['value']);
+                $prefix = !empty($spec['key']) ? trim((string)$spec['key']).' | ' : '';
+                $lines[] = $prefix.$label.' | '.trim((string) $spec['value']);
             }
         }
         return implode("\n", $lines);
@@ -1445,7 +1464,8 @@ function productBulkExport($templateOnly = false)
         array('3. DANH MỤC', 'Chọn Danh mục cấp 1, cấp 2 và Thương hiệu từ danh sách có sẵn. Không tự gõ tên mới nếu tên đó chưa có trong hệ thống.'),
         array('Quan hệ danh mục', 'Danh mục cấp 2 phải thuộc đúng Danh mục cấp 1. Nếu không dùng danh mục cấp 2 hoặc thương hiệu thì có thể để trống.'),
         array('4. THÔNG SỐ', 'Thông số phổ biến nhập vào đúng cột riêng như Công suất, Pin, Chất liệu, Chống nước, Kích thước, Bảo hành…'),
-        array('Thông số khác', "Thông số chưa có cột riêng nhập mỗi dòng theo mẫu Tên | Giá trị. Ví dụ:\nModel | JD-T200\nGóc chiếu | 120°"),
+        array('Profile trang chi tiết', 'Chọn đúng nhóm dữ liệu. Để trống chỉ khi muốn sản phẩm kế thừa profile của danh mục.'),
+        array('Thông số khác', "Nên nhập mã chuẩn để giao diện đặt đúng vị trí: Mã | Tên | Giá trị. Ví dụ:\nac_power | Công suất AC định mức | 10 kW. File cũ Tên | Giá trị vẫn dùng được."),
         array('Quy tắc thông số', 'Không lặp tên thông số trong cùng một sản phẩm. Không dán bảng HTML. Nội dung giải thích dài nên nhập ở cột Nội dung.'),
         array('5. TRẠNG THÁI', 'Hiển thị điều khiển công khai; Bán chạy điều khiển nhóm nổi bật; Liên hệ báo giá ẩn giá và nút mua riêng sản phẩm. Đặt Hiển thị = 0 mới là tạm ẩn.'),
         array('Archive', 'Dùng thao tác archive khi cần ẩn hàng loạt. Archive không xóa vĩnh viễn sản phẩm, hình ảnh hoặc lịch sử liên quan.'),
@@ -1498,6 +1518,10 @@ function productBulkExport($templateOnly = false)
         } elseif (in_array($key, array('is_visible', 'is_featured', 'requires_quote', 'is_promo'), true)) {
             $validation = $sheet->getCell($letter.'2')->getDataValidation();
             $validation->setType(PHPExcel_Cell_DataValidation::TYPE_LIST)->setAllowBlank(true)->setShowErrorMessage(true)->setErrorTitle('Giá trị không hợp lệ')->setError('Chỉ chọn 1 (bật) hoặc 0 (tắt).')->setFormula1('"1,0"');
+            for ($validationRow = 3; $validationRow <= 501; $validationRow++) $sheet->getCell($letter.$validationRow)->setDataValidation(clone $validation);
+        } elseif ($key === 'pdp_profile') {
+            $validation = $sheet->getCell($letter.'2')->getDataValidation();
+            $validation->setType(PHPExcel_Cell_DataValidation::TYPE_LIST)->setAllowBlank(true)->setShowErrorMessage(true)->setErrorTitle('Profile không hợp lệ')->setError('Hãy chọn profile có trong danh sách.')->setFormula1('"'.implode(',', productPdpProfileKeys()).'"');
             for ($validationRow = 3; $validationRow <= 501; $validationRow++) $sheet->getCell($letter.$validationRow)->setDataValidation(clone $validation);
         }
     }

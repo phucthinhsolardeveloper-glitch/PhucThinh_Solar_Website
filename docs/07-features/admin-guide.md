@@ -38,6 +38,19 @@ CRUD, upload ảnh, phân trang, sắp xếp đã có sẵn và dùng chung.
 | **Khối tĩnh một bản** | `table_static`, phân biệt bằng cột `type` | Cần **một** khối tiêu đề + mô tả + ảnh | `footer`, `su-menh`, `loi-ich`, `dai-ly-1..3`, `tom-tat-gioi-thieu` |
 | **Khối mô tả dùng chung cho sản phẩm** | `table_content_section` (`scope` = `product`/`cat`/`brand`/`list`) | Mô tả sản phẩm có kế thừa theo danh mục/thương hiệu | mô tả sản phẩm, 247 record scope `product` ở local |
 
+### Vận hành khối nội dung mô tả
+
+- Admin có thể bật/ẩn trực tiếp khối nội dung của thương hiệu và danh mục bằng
+  nút trạng thái trong màn **Khối nội dung mô tả**. Frontend chỉ dùng bản có cờ
+  `hienthi`.
+- Sản phẩm vẫn dùng bốn chế độ `inherit`, `own`, `both`, `hide`; form sản phẩm
+  hiển thị thêm nguồn thực tế đang được render và số khối đang dùng.
+- Trước khi xoá hoặc phục hồi ghi đè, hệ thống lưu snapshot vào
+  `table_content_section_backup`. Màn danh sách có thể phục hồi bản sao gần
+  nhất; migration tương ứng là `049_add_content_section_backups.sql`.
+- JSON export/import giữ cả trạng thái hiển thị để không vô tình bật lại nội
+  dung đã ẩn khi chuyển môi trường.
+
 Chọn sai hệ là lỗi tốn công nhất: đưa một khối "một bản duy nhất" vào
 `table_news` thì chủ project sẽ thấy màn hình danh sách có nút "Thêm mới" và
 tạo ra 5 bản, trang thì chỉ hiển thị bản đầu.

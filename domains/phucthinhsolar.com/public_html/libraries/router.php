@@ -320,7 +320,10 @@
 
 		case 'san-pham':
 			$source = "product";
-			$template = "product/product_list";
+			/* Landing catalog dùng chung một lưới "Tất cả sản phẩm" với category
+			   rail và bộ lọc. URL danh mục con vẫn giữ nguyên; template cũ chia
+			   nhiều block không còn là entry point chính. */
+			$template = "product/product";
 			if(isset($_GET['id']))
 			{
 				$template = "product/product_detail";

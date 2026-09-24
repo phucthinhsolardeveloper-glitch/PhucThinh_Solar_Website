@@ -1,7 +1,7 @@
 <?php
 /**
  * Cấp quyền cho các type ảnh mới của hệ thống media public:
- * - catalog-campaign: banner ngắt catalog sản phẩm
+ * - catalog-campaign: CTA tư vấn cuối catalog sản phẩm
  * - contact-visual: ảnh tư vấn trang Liên hệ
  * - dealer-hero: ảnh năng lực phân phối trang Đại lý
  * - product-category-hero: banner ảnh của từng danh mục sản phẩm
@@ -53,7 +53,7 @@ function siteVisualPhotoPermissions($type)
 }
 
 $types = array(
-    'catalog-campaign' => 'Banner giữa catalog sản phẩm',
+    'catalog-campaign' => 'CTA tư vấn cuối catalog sản phẩm',
     'contact-visual' => 'Ảnh tư vấn trang Liên hệ',
     'dealer-hero' => 'Ảnh năng lực phân phối trang Đại lý',
     'product-category-hero' => 'Banner danh mục sản phẩm',

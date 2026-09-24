@@ -615,6 +615,7 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 /* Sản phẩm chưa niêm yết giá: nút gọi tư vấn thay cho nút thêm giỏ */
 .product-card-btns .pts-card-ask{display:flex!important;width:36px!important;height:36px!important;align-items:center!important;justify-content:center!important;border:1px solid var(--pts-navy)!important;border-radius:50%!important;background:#fff!important;color:var(--pts-navy)!important;padding:0!important;font-size:12px;transition:.18s;}
 .product-card-btns .pts-card-ask:hover{background:var(--pts-navy)!important;color:#fff!important;transform:translateY(-2px);}
+.product-card-btns .pts-card-action-label{display:none}
 /* CTA báo giá ở trang chi tiết */
 .btn-contact-price{grid-template-columns:1fr 1fr!important;}
 .btn-contact-price a:first-child{border-color:transparent!important;background:var(--pts-gold-metal)!important;color:var(--pts-navy)!important;box-shadow:0 6px 18px rgba(182,125,46,.28);}

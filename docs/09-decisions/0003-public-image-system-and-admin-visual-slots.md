@@ -36,6 +36,9 @@ bản quá lớn, logo có nguy cơ bị crop và một số trang quan trọng 
    bằng chứng dự án, khách hàng, nhân sự, chứng nhận hoặc thành tích có thật.
 6. Kích thước nguồn, tỷ lệ và vùng an toàn được ghi ở Admin, audit ảnh và
    `AGENTS.md` để các lần sửa giao diện sau không tái tạo lỗi.
+7. Sau khi `/san-pham/` chuyển sang lưới catalog có bộ lọc thống nhất,
+   `catalog-campaign` dùng record **Hiển thị** đầu tiên làm CTA tư vấn cuối
+   catalog và các landing danh mục; không còn phân bố giữa các nhóm sản phẩm.
 
 ## Phương án đã cân nhắc
 

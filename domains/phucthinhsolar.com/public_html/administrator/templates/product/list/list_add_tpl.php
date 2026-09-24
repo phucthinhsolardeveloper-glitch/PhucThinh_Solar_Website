@@ -84,6 +84,14 @@
                             <label for="numb" class="d-inline-block align-middle mb-0 mr-2">Số thứ tự:</label>
                             <input type="number" class="form-control form-control-mini d-inline-block align-middle text-sm" min="0" name="data[numb]" id="numb" placeholder="Số thứ tự" value="<?=isset($item['numb']) ? $item['numb'] : 1?>">
                         </div>
+                        <div class="form-group">
+                            <label for="pdp_profile_list">Profile trang chi tiết mặc định:</label>
+                            <select class="form-control select2" name="data[pdp_profile]" id="pdp_profile_list">
+                                <option value="">Tự nhận diện theo đường dẫn danh mục</option>
+                                <?php foreach(productPdpProfiles() as $profileKey => $profileMeta) { ?><option value="<?=htmlspecialchars($profileKey, ENT_QUOTES, 'UTF-8')?>" <?=(!empty($item['pdp_profile']) && $item['pdp_profile'] === $profileKey) ? 'selected' : ''?>><?=htmlspecialchars($profileMeta['label'], ENT_QUOTES, 'UTF-8')?></option><?php } ?>
+                            </select>
+                            <small class="form-text text-muted">Mọi sản phẩm trong danh mục sẽ kế thừa profile này, trừ sản phẩm có thiết lập riêng.</small>
+                        </div>
                         <div class="card card-primary card-outline card-outline-tabs">
                             <div class="card-header p-0 border-bottom-0">
                                 <ul class="nav nav-tabs" id="custom-tabs-three-tab-lang" role="tablist">

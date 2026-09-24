@@ -2,6 +2,7 @@
 	if(!defined('SOURCES')) die("Error");
 	require_once LIBRARIES.'product_projects.php';
 	require_once LIBRARIES.'product_content_blocks.php';
+	require_once LIBRARIES.'product_pdp_profiles.php';
 	require_once LIBRARIES.'product_promo.php';
 	require_once LIBRARIES.'product_merchant_feed.php';
 	require_once LIBRARIES.'public_pricing.php';
@@ -64,6 +65,46 @@
 			$child = array('num'=>0);
 		}
 		return (int)$product['num'] + (int)$child['num'];
+	}
+	function productAdminParseDocuments($text)
+	{
+		$out = array('items' => array(), 'errors' => array());
+		$types = array('datasheet', 'manual', 'warranty', 'certificate', 'other');
+		foreach(preg_split('/\R/u', trim((string)$text)) as $lineNo => $line)
+		{
+			if(trim($line) === '') continue;
+			if(count($out['items']) >= 10) { $out['errors'][] = 'Tài liệu chỉ nhận tối đa 10 dòng'; break; }
+			$parts = array_map('trim', explode('|', $line, 3));
+			if(count($parts) !== 3 || !in_array($parts[0], $types, true) || $parts[1] === '' || $parts[2] === '')
+			{
+				$out['errors'][] = 'Tài liệu dòng '.($lineNo + 1).' phải theo mẫu: loại | tiêu đề | đường dẫn';
+				continue;
+			}
+			$path = $parts[2];
+			$isHttps = filter_var($path, FILTER_VALIDATE_URL) && strtolower((string)parse_url($path, PHP_URL_SCHEME)) === 'https';
+			$isLocal = preg_match('#^(?:upload|assets)/[A-Za-z0-9._/-]+$#', ltrim($path, '/'));
+			$extension = strtolower(pathinfo((string)parse_url($path, PHP_URL_PATH), PATHINFO_EXTENSION));
+			if((!$isHttps && !$isLocal) || !in_array($extension, array('pdf','doc','docx','xls','xlsx'), true))
+			{
+				$out['errors'][] = 'Tài liệu dòng '.($lineNo + 1).' phải là HTTPS hoặc đường dẫn nội bộ và có định dạng PDF/DOC/DOCX/XLS/XLSX';
+				continue;
+			}
+			$out['items'][] = array('document_type' => $parts[0], 'titlevi' => strip_tags($parts[1]), 'file_path' => $path);
+		}
+		return $out;
+	}
+	function productAdminSaveDocuments($d, $productId, $items)
+	{
+		$d->rawQuery("update #_product_document set status='an',date_updated=? where id_product=?", array(time(), (int)$productId));
+		foreach((array)$items as $numb => $item)
+		{
+			$item['id_product'] = (int)$productId;
+			$item['numb'] = $numb + 1;
+			$item['status'] = 'hienthi';
+			$item['date_created'] = time();
+			$item['date_updated'] = time();
+			$d->insert('product_document', $item);
+		}
 	}
 
 	/* Xuất feed Google Merchant Center (Shopping).
@@ -441,7 +482,7 @@
 	/* Edit man */
 	function editMan()
 	{
-		global $d, $func, $strUrl, $curPage, $item, $gallery, $linkedProjects, $type, $com, $act;
+		global $d, $func, $strUrl, $curPage, $item, $gallery, $linkedProjects, $productDocuments, $type, $com, $act;
 
 		if(!empty($_GET['id'])) $id = htmlspecialchars($_GET['id']);
 		else if(!empty($_GET['id_copy'])) $id = htmlspecialchars($_GET['id_copy']);
@@ -462,6 +503,7 @@
 			else
 			{
 				$linkedProjects = $d->rawQuery("select n.id, n.namevi, n.status from #_product_project pp inner join #_news n on n.id = pp.id_project where pp.id_product = ? and n.type = ? order by pp.numb,pp.id", array($id, 'du-an'));
+				$productDocuments = $d->rawQuery("select document_type,titlevi,file_path from #_product_document where id_product=? and find_in_set('hienthi',status) order by numb,id", array($id));
 				if($act != 'copy')
 				{
 					/* Get gallery */
@@ -489,6 +531,12 @@
 		$id = (!empty($_POST['id'])) ? (int)$_POST['id'] : 0;
 		$oldSlugRow = $id ? $d->rawQueryOne("select slugvi from #_product where id=? and type=? limit 1", array($id,$type)) : array();
 		$data = (!empty($_POST['data'])) ? $_POST['data'] : null;
+		if(is_array($data) && array_key_exists('pdp_profile', $data))
+		{
+			$profileInput = trim((string)$data['pdp_profile']);
+			if($profileInput !== '' && !in_array($profileInput, productPdpProfileKeys(), true)) $response['messages'][] = 'Profile trang chi tiết không hợp lệ';
+			$data['pdp_profile'] = $profileInput !== '' ? $profileInput : null;
+		}
 		$dataTags = (!empty($_POST['dataTags'])) ? $_POST['dataTags'] : null;
 		$dataColor = (!empty($_POST['dataColor'])) ? $_POST['dataColor'] : null;
 		$dataSize = (!empty($_POST['dataSize'])) ? $_POST['dataSize'] : null;
@@ -510,6 +558,9 @@
 			}
 		}
 		$additionalSpecs = array();
+		$productDocumentsText = isset($_POST['product_documents_text']) ? (string)$_POST['product_documents_text'] : '';
+		$parsedProductDocuments = productAdminParseDocuments($productDocumentsText);
+		foreach($parsedProductDocuments['errors'] as $documentError) $response['messages'][] = $documentError;
 		if(isset($_POST['additional_specs_text']))
 		{
 			$additionalSpecsText = (string) $_POST['additional_specs_text'];
@@ -520,10 +571,12 @@
 			foreach($parsedAdditionalSpecs['errors'] as $specError) $response['messages'][] = 'Thông số riêng '.$specError;
 			foreach($parsedAdditionalSpecs['specs'] as $spec)
 			{
-				$additionalSpecs[] = array(
+				$additionalSpec = array(
 					'label' => trim(strip_tags($func->sanitize($spec['label']))),
 					'value' => trim(strip_tags($func->sanitize($spec['value'])))
 				);
+				if(!empty($spec['key'])) $additionalSpec['key'] = $spec['key'];
+				$additionalSpecs[] = $additionalSpec;
 			}
 			$data['additional_specs'] = $additionalSpecs ? json_encode($additionalSpecs, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : null;
 		}
@@ -532,6 +585,7 @@
 		{
 			foreach($data as $column => $value)
 			{
+				if($column === 'pdp_profile') continue; /* null nghia la ke thua; sanitize() bien null thanh '' */
                 if(strpos($column, 'content') !== false || strpos($column, 'desc') !== false 	|| strpos($column, 'thongsokythuat') !== false || strpos($column, 'chinhsachmuahang') !== false || strpos($column, 'certificate') !== false)
 				{
 					$data[$column] = htmlspecialchars($func->sanitize($value, 'iframe'));
@@ -652,6 +706,7 @@
 		if(!empty($response))
 		{
 			if(isset($additionalSpecsText)) $flash->set('additional_specs_text', $additionalSpecsText);
+			$flash->set('product_documents_text', $productDocumentsText);
 			/* Flash data */
 			if(!empty($data))
 			{
@@ -708,6 +763,7 @@
 			{
 				require_once LIBRARIES.'product_content_blocks.php';
 				if(isset($_POST['section_mode'])) productContentSectionSetMode($d, $id, $_POST['section_mode'], isset($_POST['section_inherit_source']) ? $_POST['section_inherit_source'] : null);
+				productAdminSaveDocuments($d, $id, $parsedProductDocuments['items']);
 				if(!empty($oldSlugRow['slugvi']) && $oldSlugRow['slugvi'] !== $data['slugvi']) productAdminRememberRedirect($d, 'san-pham/'.$oldSlugRow['slugvi'], 'product', $id);
 				/* Photo */
 				if($func->hasFile("file"))
@@ -936,6 +992,7 @@
 				$id_insert = $d->getLastInsertId();
 				require_once LIBRARIES.'product_content_blocks.php';
 				if(isset($_POST['section_mode'])) productContentSectionSetMode($d, $id_insert, $_POST['section_mode'], isset($_POST['section_inherit_source']) ? $_POST['section_inherit_source'] : null);
+				productAdminSaveDocuments($d, $id_insert, $parsedProductDocuments['items']);
 
 				/* Photo */
 				if($func->hasFile("file"))
@@ -1842,6 +1899,12 @@
 		$oldSlugRow = $id ? $d->rawQueryOne("select slugvi from #_product_list where id=? and type=? limit 1", array($id,$type)) : array();
 		$oldChildRows = $id ? $d->rawQuery("select id, slugvi from #_product_cat where id_list=? and type=?", array($id,$type)) : array();
 		$data = (!empty($_POST['data'])) ? $_POST['data'] : null;
+		if(is_array($data) && array_key_exists('pdp_profile', $data))
+		{
+			$profileInput = trim((string)$data['pdp_profile']);
+			if($profileInput !== '' && !in_array($profileInput, productPdpProfileKeys(), true)) $response['messages'][] = 'Profile trang chi tiết không hợp lệ';
+			$data['pdp_profile'] = $profileInput !== '' ? $profileInput : null;
+		}
 		if($data)
 		{
 			foreach($data as $column => $value)

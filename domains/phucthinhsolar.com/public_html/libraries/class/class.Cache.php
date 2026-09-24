@@ -54,13 +54,13 @@
 
             if(!$data)
             {
-                unlink($filename);
+                @unlink($filename);
                 return false;
             }
 
             if(time() > $data[0])
             {
-                unlink($filename);
+                @unlink($filename);
                 return false;
             }
 

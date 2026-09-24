@@ -665,14 +665,14 @@
        dung dòng, ảnh tuỳ chọn làm icon. */
     $nametype = "home-about-point";
     $config['news'][$nametype]['title_main'] = "Trang chủ - Điểm nhấn giới thiệu";
-    $config['news'][$nametype]['admin_note'] = "Tối đa 4 record đang Hiển thị tạo 4 gạch đầu dòng trong khối Giới thiệu ngắn ở trang chủ, theo đúng thứ tự (STT). Tên record là nội dung dòng; ảnh tuỳ chọn dùng làm icon (PNG nền trong suốt), không tải ảnh thì dùng icon mặc định.";
+    $config['news'][$nametype]['admin_note'] = "Tối đa 4 record đang Hiển thị tạo 4 gạch đầu dòng trong khối Giới thiệu ngắn ở trang chủ, theo đúng thứ tự (STT). Tên record là nội dung dòng; mô tả là phần giải thích ngắn; ảnh tuỳ chọn dùng làm icon (PNG nền trong suốt), không tải ảnh thì dùng icon mặc định.";
     $config['news'][$nametype]['check'] = array("hienthi" => "Hiển thị");
     $config['news'][$nametype]['view'] = false;
     $config['news'][$nametype]['slug'] = false;
     $config['news'][$nametype]['copy'] = false;
     $config['news'][$nametype]['images'] = true;
     $config['news'][$nametype]['show_images'] = true;
-    $config['news'][$nametype]['desc'] = false;
+    $config['news'][$nametype]['desc'] = true;
     $config['news'][$nametype]['content'] = false;
     $config['news'][$nametype]['seo'] = false;
     $config['news'][$nametype]['width'] = 80;

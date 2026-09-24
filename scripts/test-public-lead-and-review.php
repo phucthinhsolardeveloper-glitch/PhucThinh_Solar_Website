@@ -27,6 +27,7 @@ require LIBRARIES.'config.php';
 require LIBRARIES.'config-type.php';
 require LIBRARIES.'autoload.php';
 new AutoLoad();
+require_once LIBRARIES.'product_pdp_profiles.php';
 $d = new PDODb($config['database']);
 
 $base = 'http://127.0.0.1/';
@@ -116,11 +117,28 @@ register_shutdown_function(function () use (&$orderId, &$settingChanged, $settin
 
 /* Lấy một sản phẩm đang hiển thị để làm đối tượng thật. */
 $product = $d->rawQueryOne(
-    "select id, slugvi, namevi from #_product where type = 'san-pham' and find_in_set('hienthi',status) order by id desc limit 1"
+    "select p.id, p.slugvi, p.namevi, p.pdp_profile, pl.slugvi list_slugvi, pl.pdp_profile list_pdp_profile
+     from #_product p left join #_product_list pl on pl.id = p.id_list
+     where p.type = 'san-pham' and find_in_set('hienthi',p.status) order by p.id desc limit 1"
 );
 ok(!empty($product['id']), 'Có sản phẩm đang hiển thị để kiểm thử');
 if (empty($product['id'])) exit(1);
 $productUrl = $product['slugvi'].'/';
+
+/* Migration 050 (profile PDP + tỉnh/phường 2 cấp): form giờ bắt buộc
+   product_id/profile_key/need_code hợp lệ và city_id+ward_id là một cặp
+   Phường/Xã có thật, thay cho ô "address" tự do trước đây - xem allpage.php
+   nhánh 'newsletter-consulting'. */
+$leadProfileKey = productPdpResolveProfile(
+    array('pdp_profile' => $product['pdp_profile']),
+    array('pdp_profile' => $product['list_pdp_profile'], 'slugvi' => $product['list_slugvi'])
+);
+$leadWard = $d->rawQueryOne(
+    "select w.id ward_id, w.id_city city_id from #_ward w inner join #_city c on c.id = w.id_city
+     where w.id_district = 0 and find_in_set('hienthi',w.status) and find_in_set('hienthi',c.status) limit 0,1"
+);
+ok(!empty($leadWard['ward_id']), 'Có Phường/Xã thật để kiểm thử địa chỉ 2 cấp');
+if (empty($leadWard['ward_id'])) exit(1);
 
 /* ------------------------------------------------ ĐĂNG KÝ TƯ VẤN (lead) */
 
@@ -142,7 +160,12 @@ $lead = array(
         'email' => $leadEmail,
         'loaihinh' => 'Ho gia dinh',
         'congsuat' => '5kW',
-        'address' => 'Gia Lai'
+        'product_id' => $product['id'],
+        'profile_key' => $leadProfileKey,
+        'need_code' => 'bao-gia',
+        'details' => 'Test tự động - bỏ qua',
+        'city_id' => $leadWard['city_id'],
+        'ward_id' => $leadWard['ward_id']
     )
 );
 $response = request($base.$productUrl, $cookie, $lead);

@@ -30,21 +30,19 @@
     $config['photo']['man_photo'][$nametype]['img_type_photo'] = '.jpg|.gif|.png|.jpeg|.gif';
 
     /* Bốn banner ảnh trong Hero trang chủ V4. Giữ type hero-carousel để không
-       tạo schema/quyền mới; mỗi record tương ứng một nhóm Tấm pin, Đèn đường,
-       Biến tần hoặc Pin lưu trữ. Frontend chỉ dùng bộ Admin khi nhận diện đủ
-       bốn nhóm, nếu không sẽ dùng trọn bộ fallback đóng gói để không trộn ảnh
-       đang tắt với ảnh mặc định. Các field options cũ vẫn được giữ để không
-       làm mất dữ liệu lịch sử và phục vụ rollback layout carousel. */
+       tạo schema/quyền mới. Frontend dùng ảnh/nội dung của các record đang
+       Hiển thị theo thứ tự STT; khi chưa có record nào mới dùng fallback.
+       Record tắt không tự xuất hiện lại. */
     $nametype = "hero-carousel";
     $config['photo']['man_photo'][$nametype]['title_main_photo'] = "Trang chủ - 4 banner Hero";
-    $config['photo']['man_photo'][$nametype]['admin_note_photo'] = "Tạo đúng 4 banner với tiêu đề chứa lần lượt: Tấm pin, Đèn đường, Biến tần, Pin lưu trữ. Ảnh chuẩn 1200x900 (4:3), không chèn chữ vào ảnh, chủ thể nằm trong 75% vùng giữa. Mỗi banner có ảnh, mô tả ngắn, link tới danh mục thật và bật Hiển thị. Nếu chưa đủ đúng bốn nhóm, website dùng trọn bộ ảnh mặc định an toàn.";
+    $config['photo']['man_photo'][$nametype]['admin_note_photo'] = "Tối đa 4 banner theo thứ tự STT. Ảnh hiển thị trực tiếp trên Hero tỉ lệ 1600x720 (16:7), khuyến nghị chủ thể nằm trong 75% vùng giữa, không chèn chữ vào ảnh. Mỗi banner có ảnh, mô tả ngắn, link tới danh mục thật và bật Hiển thị; tắt banner sẽ ẩn banner đó. Khi chưa có banner nào, website dùng fallback an toàn.";
     $config['photo']['man_photo'][$nametype]['check_photo'] = array("hienthi" => "Hiển thị");
     $config['photo']['man_photo'][$nametype]['number_photo'] = 4;
     $config['photo']['man_photo'][$nametype]['images_photo'] = true;
     $config['photo']['man_photo'][$nametype]['avatar_photo'] = true;
-    $config['photo']['man_photo'][$nametype]['width_photo'] = 1200;
-    $config['photo']['man_photo'][$nametype]['height_photo'] = 900;
-    $config['photo']['man_photo'][$nametype]['thumb_photo'] = '400x300x1';
+    $config['photo']['man_photo'][$nametype]['width_photo'] = 1600;
+    $config['photo']['man_photo'][$nametype]['height_photo'] = 720;
+    $config['photo']['man_photo'][$nametype]['thumb_photo'] = '400x180x1';
     $config['photo']['man_photo'][$nametype]['img_type_photo'] = '.jpg|.gif|.png|.jpeg|.gif';
     $config['photo']['man_photo'][$nametype]['name_photo'] = true;
     $config['photo']['man_photo'][$nametype]['name_label_photo'] = 'Tiêu đề (dòng 1)';
@@ -260,11 +258,12 @@
     $config['photo']['man_photo'][$nametype]['thumb_photo'] = '320x100x1';
     $config['photo']['man_photo'][$nametype]['img_type_photo'] = '.jpg|.jpeg|.png|.webp';
 
-    /* Banner ngắt nhịp trong trang /san-pham/. Mỗi record được đặt tự động
-       giữa các nhóm danh mục, không chen vào kết quả lọc của trang con. */
+    /* CTA hình ảnh cuối landing catalog. Frontend dùng record Hiển thị đầu
+       tiên; giữ tối đa 3 record để Admin có thể chuẩn bị và đổi chiến dịch
+       mà không phải ghi đè ảnh đang chạy. */
     $nametype = "catalog-campaign";
-    $config['photo']['man_photo'][$nametype]['title_main_photo'] = "Sản phẩm - Banner giữa danh mục";
-    $config['photo']['man_photo'][$nametype]['admin_note_photo'] = "Tối đa 3 banner ngắt nhịp trong trang /san-pham/, tự phân bố giữa các nhóm sản phẩm. Ảnh chuẩn 1920x600 (16:5), chủ thể nằm bên phải và vùng trái đủ tối/thoáng cho chữ HTML. Không chèn chữ hoặc logo trực tiếp vào ảnh. Tắt cờ Hiển thị để ẩn từng banner.";
+    $config['photo']['man_photo'][$nametype]['title_main_photo'] = "Sản phẩm - CTA tư vấn cuối catalog";
+    $config['photo']['man_photo'][$nametype]['admin_note_photo'] = "Frontend dùng record Hiển thị đầu tiên làm CTA cuối /san-pham/ và các landing danh mục. Có thể lưu tối đa 3 phương án để đổi chiến dịch bằng thứ tự/cờ Hiển thị. Ảnh chuẩn 1920x600 (16:5), chủ thể trong vùng an toàn giữa; chữ và nút do HTML render. Tắt toàn bộ cờ Hiển thị để ẩn CTA.";
     $config['photo']['man_photo'][$nametype]['check_photo'] = array("hienthi" => "Hiển thị");
     $config['photo']['man_photo'][$nametype]['number_photo'] = 3;
     $config['photo']['man_photo'][$nametype]['images_photo'] = true;

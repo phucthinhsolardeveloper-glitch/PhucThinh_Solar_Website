@@ -9,6 +9,16 @@ function pushState(options,targetTitle,targetUrl) {
     /*get state console.log(window.history.state);*/
 
 }
+function updateProductFilterResetVisibility() {
+    var reset = document.querySelector('[data-filter-reset]');
+    if (!reset) return;
+    var hasChecked = Array.prototype.some.call(document.querySelectorAll('input[name="car_brand"]:checked, input[name="car_xuatxu"]:checked, input[name="car_congsuat"]:checked, input[name="car_price"]:checked, input[name="car_cat"]:checked'), function() { return true; });
+    var keyword = document.querySelector('input[name="keywords"]');
+    var sort = document.querySelector('select[name="orderby"]');
+    var active = hasChecked || (keyword && keyword.value.trim() !== '') || (sort && sort.value.trim() !== '');
+    reset.hidden = !active;
+    reset.setAttribute('aria-hidden', active ? 'false' : 'true');
+}
 function fetch_product(t=1) {
     var n = ""
       , a = ""
@@ -61,6 +71,7 @@ function fetch_product(t=1) {
     "" != g && (n += "is_cat=" + g + "&"),
     "" != i && (n += "is_orderby=" + i + "&"),
     browserQuery = n.substr(0, n.length - 1),
+    updateProductFilterResetVisibility(),
     1 == $('input[name="car_cat"]:checked').length && (categoryUrl = $('input[name="car_cat"]:checked').attr("data-url") || ""),
     "" != categoryUrl && (a = categoryUrl, browserQuery = browserQuery.split("&").filter(function(part) { return part.indexOf("id_list=") !== 0 && part.indexOf("id_cat=") !== 0 && part.indexOf("is_cat=") !== 0 }).join("&")),
     "" != categoryUrl && (window.location.href = a + (browserQuery ? "?" + browserQuery : ""));
@@ -78,48 +89,60 @@ function fetch_product(t=1) {
         is_cat: g
     })
 }
-function doSearch(t) {
-    t || (t = {});
-    var e = "";
-    $.each(t, function(t, n) {
-        e += t + "=" + n + "&"
-    }),
-    $("#show-product").html(`
-    <div id="loader" class="">
-
-        <div class="loader">
-
-            <div class="inner one"></div>
-
-            <div class="inner two"></div>
-
-            <div class="inner three"></div>
-
-        </div>
-
-    </div>
-`),
-    setTimeout( () => {
-        $.ajax({
-            url: "api/fillter_service.php?" + e.substr(0, e.length - 1),
-            type: "GET",
-            data: {
-                eShow: "#show-product"
-            },
-            success: function(t) {
-
-                $("#show-product").html(t),
-                $("body,html").animate({
-                    scrollTop: $("#show-product").offset().top - 110
-                }, 500)
-                GA_FRAMEWORK.Lazys();
-                $('.product-left').removeClass('show');
-                $('.mask-sidebar').removeClass('show');
-            }
-        })
-    }
-    , 400)
+var productFilterRequest = null;
+var productFilterSequence = 0;
+function doSearch(options, restoreHistory) {
+    var sequence = ++productFilterSequence;
+    if (productFilterRequest) productFilterRequest.abort();
+    var grid = $("#show-product");
+    grid.attr('aria-busy', 'true').html('<div id="loader" role="status">Đang tải sản phẩm…</div>');
+    $('.pts-product-result-count').text('…');
+    productFilterRequest = $.ajax({
+        url: 'api/fillter_service.php',
+        type: 'GET',
+        timeout: 15000,
+        data: $.extend({}, options || {}, {eShow: '#show-product'}),
+        success: function(html) {
+            if (sequence !== productFilterSequence) return;
+            grid.html(html);
+            $('.pts-product-result-count').text((parseInt(grid.find('[data-filter-result-count]').attr('data-filter-result-count'), 10) || 0).toLocaleString('vi-VN'));
+            if (!restoreHistory) $('body,html').stop(true).animate({scrollTop: grid.offset().top - 110}, 300);
+            GA_FRAMEWORK.Lazys();
+            $('.product-left, .mask-sidebar').removeClass('show');
+        },
+        error: function(xhr, status) {
+            if (sequence !== productFilterSequence || status === 'abort') return;
+            $('.pts-product-result-count').text('—');
+            grid.html('<div role="alert" class="pts-filter-error"><p>Chưa tải được sản phẩm. Vui lòng thử lại.</p><button type="button" class="btn btn-primary" data-filter-retry>Thử lại</button></div>');
+            grid.find('[data-filter-retry]').on('click', function() { doSearch(options, restoreHistory); });
+        },
+        complete: function() {
+            if (sequence === productFilterSequence) grid.attr('aria-busy', 'false');
+        }
+    });
 }
+window.addEventListener('popstate', function() {
+    if (!document.querySelector('#show-product')) return;
+    var query = new URLSearchParams(window.location.search);
+    var options = {
+        id_list: query.get('id_list') || $('input[name="id_list"]').val() || '',
+        id_cat: query.get('id_cat') || $('input[name="id_cat"]').val() || '',
+        keyword: query.get('keyword') || '',
+        is_orderby: query.get('is_orderby') || '',
+        p: query.get('p') || 1
+    };
+    var controls = {car_brand: 'is_brand', car_xuatxu: 'is_origin', car_congsuat: 'is_congsuat', car_price: 'is_price', car_cat: 'is_cat'};
+    $.each(controls, function(name, key) {
+        options[key] = query.get(key) || '';
+        var selected = options[key].split(',');
+        $('input[name="' + name + '"]').each(function() { this.checked = selected.indexOf(this.value) !== -1; });
+    });
+    $('input[name="keywords"]').val(options.keyword);
+    var sort = $('select[name="orderby"]');
+    sort.val(options.is_orderby || sort.find('option').first().val());
+    updateProductFilterResetVisibility();
+    doSearch(options, true);
+});
 function doSearchProduct(options) {
 
     if(!options) options = {};

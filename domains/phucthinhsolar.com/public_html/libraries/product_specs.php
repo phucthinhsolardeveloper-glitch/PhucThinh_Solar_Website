@@ -1,6 +1,7 @@
 <?php
 if(!function_exists('productSpecFieldHasValue'))
 {
+    require_once __DIR__.'/product_pdp_profiles.php';
     /**
      * `cong_suat` là cột số, mặc định 0 cho MỌI sản phẩm kể cả loại không
      * có công suất (trụ đèn, khung nhôm...) -> 0 nghĩa là CHƯA NHẬP, không
@@ -19,9 +20,9 @@ if(!function_exists('productSpecFieldHasValue'))
 
 if(!function_exists('productStructuredSpecs'))
 {
-    function productStructuredSpecs($row, $lang = 'vi')
+    function productStructuredSpecs($row, $lang = 'vi', $profileKey = 'general')
     {
-        $labels = array(
+        $legacyLabels = array(
             'cong_suat' => 'Công suất', 'light_source' => 'Nguồn sáng', 'lamp_dimensions' => 'Kích thước đèn',
             'color_temperature' => 'Nhiệt độ màu (CCT)', 'light_color' => 'Màu ánh sáng',
             'battery_capacity' => 'Dung lượng pin', 'panel_power' => 'Công suất tấm pin', 'material' => 'Chất liệu',
@@ -31,22 +32,28 @@ if(!function_exists('productStructuredSpecs'))
             'panel_dimensions' => 'Kích thước tấm pin', 'package_contents' => 'Bộ sản phẩm gồm',
             'carton_quantity' => 'Số lượng / thùng', 'carton_dimensions' => 'Kích thước thùng', 'warranty' => 'Bảo hành'
         );
+        $profile = productPdpProfile($profileKey);
+        $labels = !empty($profile['fields']) ? $profile['fields'] : $legacyLabels;
         $specs = array();
+        $usedAdditionalKeys = array();
         foreach($labels as $field => $label) {
-            if(!productSpecFieldHasValue($row, $field)) continue;
-            $value = $row[$field];
+            $value = productPdpSpecValue($row, $field);
+            if($value === '') continue;
             if($field === 'cong_suat' && is_numeric(str_replace(',', '.', trim((string) $value))))
                 $value = sprintf('%g', (float) str_replace(',', '.', trim((string) $value))).'W';
-            $specs[] = array('label' => $label, 'value' => $value);
+            $specs[] = array('key' => $field, 'label' => $label, 'value' => $value);
+            $usedAdditionalKeys[$field] = true;
         }
         $additionalValid = true;
         if(!empty($row['additional_specs'])) {
             $additional = json_decode(htmlspecialchars_decode($row['additional_specs'], ENT_QUOTES), true);
             $additionalValid = is_array($additional);
             if($additionalValid) foreach($additional as $spec) {
+                $key = !empty($spec['key']) ? trim((string)$spec['key']) : '';
                 $label = !empty($spec['label']) ? trim((string) $spec['label']) : '';
                 $value = isset($spec['value']) ? trim((string) $spec['value']) : '';
-                if($label !== '' && $value !== '') $specs[] = array('label' => $label, 'value' => $value);
+                if($key !== '' && isset($usedAdditionalKeys[$key])) continue;
+                if($label !== '' && $value !== '') $specs[] = array('key' => $key, 'label' => $label, 'value' => $value);
             }
         }
         $legacyField = 'thongsokythuat'.$lang;
@@ -62,14 +69,15 @@ if(!function_exists('productAutoHighlights'))
      * Không cần biên tập gõ tay: điền bảng thông số là có ngay.
      * $type để dành cho cấu hình theo loại sản phẩm về sau.
      */
-    function productAutoHighlights($row, $lang = 'vi', $type = '')
+    function productAutoHighlights($row, $lang = 'vi', $type = '', $profileKey = 'general')
     {
-        $order = array(
+        $profile = productPdpProfile($profileKey);
+        $order = !empty($profile['metrics']) ? $profile['metrics'] : array(
             'cong_suat', 'light_source', 'battery_capacity', 'panel_power',
             'waterproof_rating', 'warranty', 'lighting_time', 'led_chip',
             'color_temperature', 'charging_time', 'material', 'installation_height'
         );
-        $prefix = array(
+        $prefix = !empty($profile['fields']) ? $profile['fields'] : array(
             'cong_suat' => 'Công suất', 'light_source' => 'Quang thông', 'battery_capacity' => 'Pin',
             'panel_power' => 'Tấm pin', 'waterproof_rating' => 'Chống nước', 'warranty' => 'Bảo hành',
             'lighting_time' => 'Chiếu sáng', 'led_chip' => 'Chip LED', 'color_temperature' => 'Nhiệt độ màu',
@@ -79,8 +87,9 @@ if(!function_exists('productAutoHighlights'))
         $chips = array();
         foreach($order as $field) {
             if(count($chips) >= $max) break;
-            if(!productSpecFieldHasValue($row, $field)) continue;
-            $value = trim(preg_replace('/\s+/u', ' ', strip_tags((string) $row[$field])));
+            $rawValue = productPdpSpecValue($row, $field);
+            if($rawValue === '') continue;
+            $value = trim(preg_replace('/\s+/u', ' ', strip_tags((string) $rawValue)));
             if($value === '') continue;
             if($field === 'cong_suat' && is_numeric(str_replace(',', '.', $value)))
                 $value = sprintf('%g', (float) str_replace(',', '.', $value)).'W';
@@ -100,12 +109,15 @@ if(!function_exists('productAutoDescription'))
      * sản phẩm chưa có bất kỳ khối nội dung / ứng dụng / lắp đặt nào.
      * Trả về '' nếu quá ít thông số để tạo câu có nghĩa.
      */
-    function productAutoDescription($row, $lang = 'vi', $type = '')
+    function productAutoDescription($row, $lang = 'vi', $type = '', $profileKey = 'general')
     {
         $name = trim(isset($row['name'.$lang]) ? strip_tags((string) $row['name'.$lang]) : '');
         if($name === '') return '';
 
-        $clauseFields = array(
+        $profile = productPdpProfile($profileKey);
+        $clauseFields = array();
+        foreach((array)$profile['fields'] as $field => $label) $clauseFields[$field] = mb_strtolower($label, 'UTF-8').' %s';
+        if(empty($clauseFields)) $clauseFields = array(
             'cong_suat'         => 'công suất %s',
             'light_source'      => 'nguồn sáng %s',
             'led_chip'          => 'chip LED %s',
@@ -119,8 +131,9 @@ if(!function_exists('productAutoDescription'))
         $clauses = array();
         foreach($clauseFields as $field => $tpl) {
             if(count($clauses) >= 5) break;
-            if(!productSpecFieldHasValue($row, $field)) continue;
-            $value = trim(preg_replace('/\s+/u', ' ', strip_tags((string) $row[$field])));
+            $rawValue = productPdpSpecValue($row, $field);
+            if($rawValue === '') continue;
+            $value = trim(preg_replace('/\s+/u', ' ', strip_tags((string) $rawValue)));
             if($value === '') continue;
             if($field === 'cong_suat' && is_numeric(str_replace(',', '.', $value)))
                 $value = sprintf('%g', (float) str_replace(',', '.', $value)).'W';

@@ -111,7 +111,7 @@ test('wrapper cấu trúc được flatten nhưng entity card vẫn giữ trên 
 
   await page.goto('/san-pham/den-pha-nang-luong-mat-troi-jindian-jd-t300-300w', { waitUntil: 'domcontentloaded' });
   const detail = await page.evaluate(() => {
-    const tabs = getComputedStyle(document.querySelector('.tabs-pro-detail'));
+    const tabs = getComputedStyle(document.querySelector('.pts-pdp-section-nav'));
     const copy = getComputedStyle(document.querySelector('.pts-product-desc'));
     return {
       tabsBorder: tabs.borderTopWidth,

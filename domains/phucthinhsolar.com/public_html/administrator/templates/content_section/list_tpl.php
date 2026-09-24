@@ -5,6 +5,9 @@
 		array('scope' => 'list',  'label' => 'Danh mục cấp 1', 'items' => isset($sectionLists) ? $sectionLists : array()),
 	);
 	$sectionExisting = isset($sectionExisting) ? $sectionExisting : array();
+	$sectionBackups = isset($sectionBackups) ? $sectionBackups : array();
+	$canSectionEdit = adminUiCan('content_section', 'edit', '', $type, true);
+	$canSectionDelete = adminUiCan('content_section', 'delete', '', $type, true);
 ?>
 <section class="content-header text-sm">
 	<div class="container-fluid">
@@ -30,6 +33,7 @@
 			<div class="alert alert-info text-sm">
 				Mỗi bản khối nội dung gắn vào <strong>thương hiệu</strong> hoặc <strong>danh mục</strong>. Sản phẩm tự kế thừa theo thứ tự
 				<strong>bản riêng của sản phẩm &rarr; thương hiệu &rarr; danh mục cấp 2 &rarr; danh mục cấp 1</strong>. Sửa một bản là áp cho mọi sản phẩm trong nhóm.
+				Bản đang ẩn sẽ không được dùng làm nguồn kế thừa. Khi xoá, hệ thống tạo bản sao để có thể phục hồi.
 			</div>
 
 			<?php if(!empty($sectionSummary)) { $s = $sectionSummary; ?>
@@ -47,14 +51,24 @@
 			<h6 class="mt-3 mb-2 text-primary"><?=$group['label']?></h6>
 			<div class="table-responsive mb-3">
 				<table class="table table-bordered table-striped table-sm mb-0">
-					<thead><tr><th style="width:55%">Tên</th><th style="width:20%">Khối nội dung</th><th style="width:25%"></th></tr></thead>
+					<thead><tr><th style="width:34%">Tên</th><th style="width:26%">Nguồn / trạng thái</th><th style="width:15%">Khối nội dung</th><th style="width:25%"></th></tr></thead>
 					<tbody>
 						<?php foreach($group['items'] as $it) {
 							$key = $group['scope'].':'.(int)$it['id'];
 							$info = isset($sectionExisting[$key]) ? $sectionExisting[$key] : null;
+							$backup = ($info && !empty($info['backup'])) ? $info['backup'] : (isset($sectionBackups[$key]) ? $sectionBackups[$key] : null);
 							$editUrl = 'index.php?com=content_section&act=edit&type='.htmlspecialchars($type, ENT_QUOTES, 'UTF-8').'&scope='.$group['scope'].'&scope_id='.(int)$it['id']; ?>
 						<tr>
 							<td><?=htmlspecialchars($it['namevi'], ENT_QUOTES, 'UTF-8')?></td>
+							<td>
+								<span class="badge badge-info">Nội dung gắn trực tiếp</span>
+								<?php if($info && !empty($info['visible'])) { ?>
+									<span class="badge badge-success">Đang hiển thị</span>
+								<?php } elseif($info) { ?>
+									<span class="badge badge-secondary">Đang ẩn</span>
+								<?php } ?>
+								<?php if($backup) { ?><small class="d-block text-muted mt-1">Có bản sao <?=date('d/m/Y H:i', (int)$backup['date_created'])?></small><?php } ?>
+							</td>
 							<td>
 								<?php if($info && $info['count'] > 0) { ?>
 									<span class="badge badge-success"><?=$info['count']?> khối</span>
@@ -64,20 +78,38 @@
 							</td>
 							<td>
 								<div class="d-flex justify-content-between align-items-center">
-								<a class="btn btn-xs bg-gradient-primary text-white" href="<?=$editUrl?>"><i class="far fa-edit mr-1"></i><?=($info && $info['count'] > 0) ? 'Sửa' : 'Tạo'?></a>
-								<?php if($info && $info['count'] > 0) { ?>
-								<form method="post" action="index.php?com=content_section&act=delete&type=<?=htmlspecialchars($type, ENT_QUOTES, 'UTF-8')?>" onsubmit="return confirm('Xoá toàn bộ khối nội dung của mục này? Các sản phẩm sẽ quay lại kế thừa.');">
+								<?php if($canSectionEdit) { ?><a class="btn btn-xs bg-gradient-primary text-white" href="<?=$editUrl?>"><i class="far fa-edit mr-1"></i><?=($info && $info['count'] > 0) ? 'Sửa' : 'Tạo'?></a><?php } ?>
+								<?php if($canSectionEdit && $info && $info['count'] > 0) { ?>
+								<form method="post" action="index.php?com=content_section&act=toggle&type=<?=htmlspecialchars($type, ENT_QUOTES, 'UTF-8')?>" onsubmit="return confirm('Xác nhận <?=!empty($info['visible']) ? 'ẩn' : 'bật hiển thị'?> nội dung này?');">
 									<?=adminCsrfField()?>
 									<input type="hidden" name="scope" value="<?=$group['scope']?>">
 									<input type="hidden" name="scope_id" value="<?=(int)$it['id']?>">
-									<button type="submit" class="btn btn-xs bg-gradient-danger text-white"><i class="far fa-trash-alt"></i></button>
+									<input type="hidden" name="visible" value="<?=!empty($info['visible']) ? '0' : '1'?>">
+									<button type="submit" class="btn btn-xs <?=!empty($info['visible']) ? 'btn-outline-secondary' : 'btn-outline-success'?>" title="<?=!empty($info['visible']) ? 'Ẩn nội dung' : 'Bật nội dung'?>"><i class="fas <?=!empty($info['visible']) ? 'fa-eye-slash' : 'fa-eye'?>"></i></button>
+								</form>
+								<?php } ?>
+								<?php if($canSectionEdit && $backup) { ?>
+								<form method="post" action="index.php?com=content_section&act=restore&type=<?=htmlspecialchars($type, ENT_QUOTES, 'UTF-8')?>" onsubmit="return confirm('Phục hồi bản sao ngày <?=date('d/m/Y H:i', (int)$backup['date_created'])?>?');">
+									<?=adminCsrfField()?>
+									<input type="hidden" name="scope" value="<?=$group['scope']?>">
+									<input type="hidden" name="scope_id" value="<?=(int)$it['id']?>">
+									<input type="hidden" name="backup_id" value="<?=(int)$backup['id']?>">
+									<button type="submit" class="btn btn-xs btn-outline-warning" title="Phục hồi bản sao gần nhất"><i class="fas fa-history"></i></button>
+								</form>
+								<?php } ?>
+								<?php if($canSectionDelete && $info && $info['count'] > 0) { ?>
+								<form method="post" action="index.php?com=content_section&act=delete&type=<?=htmlspecialchars($type, ENT_QUOTES, 'UTF-8')?>" onsubmit="return confirm('Xoá toàn bộ khối nội dung của mục này? Hệ thống sẽ tạo bản sao để phục hồi.');">
+									<?=adminCsrfField()?>
+									<input type="hidden" name="scope" value="<?=$group['scope']?>">
+									<input type="hidden" name="scope_id" value="<?=(int)$it['id']?>">
+									<button type="submit" class="btn btn-xs bg-gradient-danger text-white" title="Xóa nội dung"><i class="far fa-trash-alt"></i></button>
 								</form>
 								<?php } ?>
 								</div>
 							</td>
 						</tr>
 						<?php } ?>
-						<?php if(!$group['items']) { ?><tr><td colspan="3" class="text-muted">Chưa có <?=mb_strtolower($group['label'])?>.</td></tr><?php } ?>
+						<?php if(!$group['items']) { ?><tr><td colspan="4" class="text-muted">Chưa có <?=mb_strtolower($group['label'])?>.</td></tr><?php } ?>
 					</tbody>
 				</table>
 			</div>

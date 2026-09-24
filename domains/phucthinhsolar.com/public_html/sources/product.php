@@ -117,6 +117,20 @@
 	}
 
 	/* Lọc công suất + mức giá (mục 2 checklist ads) - dùng chung cho các khối liệt kê sản phẩm */
+	/* Thu hẹp danh sách thương hiệu (đọc sẵn ở allpage.php, dùng chung toàn
+	   site) chỉ còn thương hiệu có sản phẩm hienthi trong đúng phạm vi danh
+	   mục đang xem - tránh hiện cố định mọi thương hiệu bất kể trang nào. */
+	function productContextualBrands($d, $brand, $scopeWhere, $scopeParams)
+	{
+		$rows = $d->rawQuery("select distinct id_brand from #_product where $scopeWhere and id_brand > 0", $scopeParams);
+		$ids = array();
+		foreach((array)$rows as $row) $ids[(int)$row['id_brand']] = true;
+		if(!$ids) return array();
+		$out = array();
+		foreach((array)$brand as $b) if(isset($ids[(int)$b['id']])) $out[] = $b;
+		return $out;
+	}
+
 	function productExtraFilters()
 	{
 		$extraWhere = '';
@@ -157,6 +171,8 @@
 
 	if($id!='')
 	{
+		/* PDP tự render H1 tên sản phẩm; ngăn layout SEO thêm H1 ẩn thứ hai. */
+		$pageRendersVisibleH1 = true;
 		/* Lấy sản phẩm detail */
 		$rowDetail = $d->rawQueryOne("select * from #_product where id = ? and type = ? and find_in_set('hienthi',status) limit 0,1",array($id,$type));
 
@@ -194,7 +210,7 @@
 		}
 
 		/* Lấy cấp 1 */
-		$productList = $d->rawQueryOne("select id, name$lang, slugvi, slugen from #_product_list where id = ? and type = ? and find_in_set('hienthi',status) limit 0,1",array($rowDetail['id_list'],$type));
+		$productList = $d->rawQueryOne("select id, name$lang, slugvi, slugen, pdp_profile from #_product_list where id = ? and type = ? and find_in_set('hienthi',status) limit 0,1",array($rowDetail['id_list'],$type));
 
 		/* Lấy cấp 2 */
 		$productCat = $d->rawQueryOne("select id, name$lang, slugvi, slugen from #_product_cat where id = ? and type = ? and find_in_set('hienthi',status) limit 0,1",array($rowDetail['id_cat'],$type));
@@ -218,6 +234,7 @@
 		/* Khối nội dung mô tả: kế thừa sản phẩm > hãng > danh mục */
 		require_once LIBRARIES.'product_content_blocks.php';
 		$productSections = productResolveSections($d, $rowDetail, $lang);
+		$productDocuments = $d->rawQuery("select document_type,title$lang as title,file_path from #_product_document where id_product=? and find_in_set('hienthi',status) and file_path<>'' order by numb,id", array($rowDetail['id']));
 		$productRelatedProjects = $d->rawQuery("select n.id, n.name$lang, n.slugvi, n.slugen, n.photo, n.address from #_product_project pp inner join #_news n on n.id = pp.id_project where pp.id_product = ? and find_in_set('hienthi',pp.status) and n.type = ? and find_in_set('hienthi',n.status) order by pp.numb,pp.id", array($rowDetail['id'], 'du-an'));
 		$productProjectGallery = array();
 		if($productRelatedProjects)
@@ -282,10 +299,14 @@
 	else if($idl!='')
 	{
 		/* Lấy cấp 1 detail */
-		$productList = $d->rawQueryOne("select id, name$lang, slugvi, slugen, type, photo, options from #_product_list where id = ? and type = ? limit 0,1",array($idl,$type));
+		$productList = $d->rawQueryOne("select id, name$lang, desc$lang, slugvi, slugen, type, photo, options from #_product_list where id = ? and type = ? limit 0,1",array($idl,$type));
 		$slug_param = $productList[$sluglang];
 		$id_list = $productList['id'];
+		$brand = productContextualBrands($d, $brand, "id_list = ? and type = ? and find_in_set('hienthi',status)", array($id_list, $type));
 		$categorySectionBlocks = productCategorySectionBlocks($d, 'list', $id_list, $lang);
+		$categorySectionSplit = productSplitFaqBlocks($categorySectionBlocks);
+		$categorySectionBlocks = $categorySectionSplit['rest'];
+		$categoryFaqBlocks = $categorySectionSplit['faq'];
 		/* SEO */
 		$titleCate = $productList['name'.$lang];
 		$seoDB = $seo->getOnDB($productList['id'],'product','man_list',$productList['type']);
@@ -352,13 +373,17 @@
 	else if($idc!='')
 	{
 		/* Lấy cấp 2 detail */
-		$productCat = $d->rawQueryOne("select id, id_list, name$lang, slugvi, slugen, type, photo, options from #_product_cat where id = ? and type = ? limit 0,1",array($idc,$type));
+		$productCat = $d->rawQueryOne("select id, id_list, name$lang, desc$lang, slugvi, slugen, type, photo, options from #_product_cat where id = ? and type = ? limit 0,1",array($idc,$type));
 
 		/* Lấy cấp 1 */
-		$productList = $d->rawQueryOne("select id, name$lang, slugvi, slugen from #_product_list where id = ? and type = ? limit 0,1",array($productCat['id_list'],$type));
+		$productList = $d->rawQueryOne("select id, name$lang, desc$lang, slugvi, slugen, photo from #_product_list where id = ? and type = ? limit 0,1",array($productCat['id_list'],$type));
 		$slug_param = $productCat[$sluglang];
 		$id_cat = $productCat['id'];
+		$brand = productContextualBrands($d, $brand, "id_cat = ? and type = ? and find_in_set('hienthi',status)", array($id_cat, $type));
 		$categorySectionBlocks = productCategorySectionBlocks($d, 'cat', $id_cat, $lang);
+		$categorySectionSplit = productSplitFaqBlocks($categorySectionBlocks);
+		$categorySectionBlocks = $categorySectionSplit['rest'];
+		$categoryFaqBlocks = $categorySectionSplit['faq'];
 		/* Lấy sản phẩm */
 		$where = "";
 		$where = "id_cat = ? and type = ? and find_in_set('hienthi',status)";
@@ -434,6 +459,7 @@
 		$where = "";
 		$where = "id_item = ? and type = ? and find_in_set('hienthi',status)";
 		$params = array($idi,$type);
+		$brand = productContextualBrands($d, $brand, $where, $params);
 
 		$curPage = $getPage;
 		$perPage = 20;
@@ -495,6 +521,7 @@
 		$where = "";
 		$where = "id_sub = ? and type = ? and find_in_set('hienthi',status)";
 		$params = array($ids,$type);
+		$brand = productContextualBrands($d, $brand, $where, $params);
 
 		$curPage = $getPage;
 		$perPage = 20;
@@ -652,6 +679,81 @@
 		$breadcrumbs = $breadcr->get();
 	}
 
+	/* Dữ liệu điều hướng của landing danh mục. Trang danh mục vẫn giữ toàn bộ
+	   URL cấp list/cat hiện có, nhưng trình bày theo một rail "Tất cả + nhóm
+	   con" giống catalog mẫu. Mọi nhãn, slug và số lượng đều lấy từ taxonomy
+	   đang bật trong Admin; không dựng danh mục giả ở frontend. */
+	$productCategoryNav = array();
+	$productSubcategoryNav = array();
+	$productCategoryDescription = '';
+	$productCatalogSupport = array();
+	if($id == '')
+	{
+		/* Landing catalog tự render H1 nhìn thấy trong hero. */
+		$pageRendersVisibleH1 = true;
+		if(!empty($productCat['desc'.$lang])) $productCategoryDescription = trim(strip_tags(htmlspecialchars_decode($productCat['desc'.$lang], ENT_QUOTES)));
+		if($productCategoryDescription === '' && !empty($productList['desc'.$lang])) $productCategoryDescription = trim(strip_tags(htmlspecialchars_decode($productList['desc'.$lang], ENT_QUOTES)));
+		if($productCategoryDescription === '' && !empty($seoDB['description'.$seolang])) $productCategoryDescription = trim(strip_tags(htmlspecialchars_decode($seoDB['description'.$seolang], ENT_QUOTES)));
+		if($productCategoryDescription === '' && !empty($seopage['description'.$seolang])) $productCategoryDescription = trim(strip_tags(htmlspecialchars_decode($seopage['description'.$seolang], ENT_QUOTES)));
+		if(mb_strlen($productCategoryDescription, 'UTF-8') > 210) $productCategoryDescription = rtrim(mb_substr($productCategoryDescription, 0, 207, 'UTF-8')).'…';
+
+		$productCategoryNav = $d->rawQuery("select pl.id, pl.name$lang, pl.desc$lang, pl.slugvi, pl.slugen, pl.photo from #_product_list pl where pl.type = ? and find_in_set('hienthi',pl.status) and exists (select 1 from #_product p where p.id_list = pl.id and p.type = ? and find_in_set('hienthi',p.status)) order by pl.numb,pl.id desc", array($type, $type));
+		foreach($productCategoryNav as &$productCategoryNavItem)
+		{
+			$productCategoryNavItem['url'] = publicProductCategoryPath($productCategoryNavItem, 'list', $lang);
+			$productCategoryNavItem['is_active'] = !empty($productList['id']) && (int)$productList['id'] === (int)$productCategoryNavItem['id'];
+		}
+		unset($productCategoryNavItem);
+		array_unshift($productCategoryNav, array(
+			'name'.$lang => 'Tất cả',
+			'url' => 'san-pham/',
+			'is_active' => empty($productList['id'])
+		));
+
+		if(!empty($productList['id']))
+		{
+			$productSubcategoryNav[] = array(
+				'name'.$lang => $productList['name'.$lang],
+				'nav_name' => 'Tất cả',
+				'url' => publicProductCategoryPath($productList, 'list', $lang),
+				'is_active' => empty($idc) && empty($idi) && empty($ids)
+			);
+			$productSubcategoryRows = $d->rawQuery("select pc.id, pc.name$lang, pc.desc$lang, pc.slugvi, pc.slugen, pc.photo, coalesce(nullif(pc.photo,''),(select pnav.photo from #_product pnav where pnav.id_cat = pc.id and pnav.type = pc.type and find_in_set('hienthi',pnav.status) and pnav.photo <> '' order by pnav.numb,pnav.id desc limit 1)) nav_photo, pl.slugvi list_slugvi, pl.slugen list_slugen from #_product_cat pc join #_product_list pl on pl.id = pc.id_list and pl.type = pc.type where pc.id_list = ? and pc.type = ? and find_in_set('hienthi',pc.status) and exists (select 1 from #_product p where p.id_cat = pc.id and p.type = ? and find_in_set('hienthi',p.status)) order by pc.numb,pc.id desc", array((int)$productList['id'], $type, $type));
+			foreach($productSubcategoryRows as $productSubcategoryRow)
+			{
+				$productSubcategoryRow['url'] = publicProductCategoryPath($productSubcategoryRow, 'cat', $lang);
+				$productSubcategoryRow['is_active'] = !empty($productCat['id']) && (int)$productCat['id'] === (int)$productSubcategoryRow['id'];
+				$productSubcategoryNav[] = $productSubcategoryRow;
+			}
+		}
+
+		/* Dải hỗ trợ cuối catalog dùng slot Admin hiện có. Nếu Admin từng cấu
+		   hình nhưng tắt toàn bộ thì tôn trọng công tắc và không dựng fallback. */
+		$productCatalogSupportRows = $cache->get("select name$lang, desc$lang, photo, link, status from #_photo where type = ? order by numb,id desc", array('catalog-campaign'), 'result', 7200);
+		foreach($productCatalogSupportRows as $productCatalogSupportRow)
+		{
+			if(empty($productCatalogSupportRow['photo']) || strpos(','.(string)$productCatalogSupportRow['status'].',', ',hienthi,') === false) continue;
+			$productCatalogSupport = array(
+				'name' => !empty($productCatalogSupportRow['name'.$lang]) ? $productCatalogSupportRow['name'.$lang] : 'Cần hỗ trợ chọn sản phẩm phù hợp?',
+				'desc' => !empty($productCatalogSupportRow['desc'.$lang]) ? trim(strip_tags(htmlspecialchars_decode($productCatalogSupportRow['desc'.$lang], ENT_QUOTES))) : 'Chia sẻ nhu cầu để được tư vấn cấu hình và báo giá phù hợp.',
+				'photo' => $productCatalogSupportRow['photo'],
+				'upload' => UPLOAD_PHOTO_L,
+				'link' => !empty($productCatalogSupportRow['link']) ? $productCatalogSupportRow['link'] : 'lien-he/'
+			);
+			break;
+		}
+		if(!$productCatalogSupportRows)
+		{
+			$productCatalogSupport = array(
+				'name' => 'Cần hỗ trợ chọn sản phẩm phù hợp?',
+				'desc' => 'Chia sẻ nhu cầu để đội ngũ Phúc Thịnh Solar tư vấn cấu hình và báo giá phù hợp.',
+				'photo' => 'catalog-equipment-system.jpg',
+				'upload' => 'assets/images/site-visuals/',
+				'link' => 'lien-he/'
+			);
+		}
+	}
+
 	/* Banner danh mục: Admin có thể gán một ảnh 16:5 bằng trường Link chứa
 	   canonical path của danh mục. Mỗi nhóm có fallback đúng ngữ cảnh, nhưng
 	   một record Admin đã tắt vẫn được coi là đã cấu hình để công tắc Hiển thị
@@ -676,6 +778,7 @@
 			break;
 		}
 		$productCategoryHeroFallbacks = array(
+			'san-pham' => array('catalog-equipment-system.jpg', 'Danh mục thiết bị năng lượng mặt trời Phúc Thịnh Solar'),
 			'danh-muc-san-pham/den-nlmt' => array('catalog-street-lighting.jpg', 'Chiếu sáng năng lượng mặt trời cho đường và công trình'),
 			'danh-muc-san-pham/bien-tan-inverter' => array('catalog-inverter-system-v2.jpg', 'Hệ thống biến tần điện mặt trời được lắp đặt gọn gàng'),
 			'danh-muc-san-pham/tam-pin-nang-luong-mat-troi' => array('catalog-solar-panel-mounting-v2.jpg', 'Tấm pin và hệ khung điện mặt trời trên mái công trình'),
@@ -694,6 +797,16 @@
 				'upload' => 'assets/images/site-visuals/',
 				'alt' => $productCategoryHeroFallbacks[$productCategoryPath][1]
 			);
+		}
+		/* Nếu chưa có banner riêng, ưu tiên ảnh danh mục do Admin quản lý. Chỉ
+		   dùng ảnh site-visuals fallback khi danh mục chưa có ảnh dữ liệu. */
+		if(empty($productCategoryHero) && !empty($productCat['photo']))
+		{
+			$productCategoryHero = array('photo' => $productCat['photo'], 'upload' => UPLOAD_PRODUCT_L, 'alt' => $titleCate);
+		}
+		if(empty($productCategoryHero) && !empty($productList['photo']))
+		{
+			$productCategoryHero = array('photo' => $productList['photo'], 'upload' => UPLOAD_PRODUCT_L, 'alt' => $titleCate);
 		}
 	}
 ?>

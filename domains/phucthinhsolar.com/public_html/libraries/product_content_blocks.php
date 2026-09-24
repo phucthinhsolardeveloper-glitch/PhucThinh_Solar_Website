@@ -258,6 +258,12 @@ if(!function_exists('productContentBlockParse'))
                 if(!empty($b['text']))  $chunk .= "\n".trim((string)$b['text']);
                 $out[] = $chunk;
             }
+            elseif($t === 'faq')
+            {
+                $question = trim((string)(isset($b['question']) ? $b['question'] : ''));
+                $answer = trim((string)(isset($b['answer']) ? $b['answer'] : ''));
+                if($question !== '' && $answer !== '') $out[] = '[faq] '.$question.' | '.$answer;
+            }
         }
         return implode("\n\n", array_filter($out, function($x){ return $x !== ''; }));
     }
@@ -285,6 +291,11 @@ if(!function_exists('productContentBlockParse'))
             if(count($lines) === 1 && preg_match('#^!\[([^\]]*)\]\(([^)]*)\)$#', $lines[0], $m))
             {
                 $blocks[] = array('type' => 'image', 'photo' => trim($m[2]), 'caption' => trim($m[1]));
+                continue;
+            }
+            if(count($lines) === 1 && preg_match('/^\[faq\]\s*(.+?)\s*\|\s*(.+)$/u', $lines[0], $m))
+            {
+                $blocks[] = array('type' => 'faq', 'question' => trim($m[1]), 'answer' => trim($m[2]));
                 continue;
             }
             if(count($lines) > 1 && !array_filter($lines, function($l){ return !preg_match('/^([-•*]|\d+[.)])\s+/', $l); }))
@@ -420,6 +431,37 @@ if(!function_exists('productContentBlockParse'))
         }
 
         return $html !== '' ? '<div class="pts-desc-block-flow">'.$html.'</div>' : '';
+    }
+
+    /** Tách khối FAQ (type='faq') ra khỏi mảng khối chung — dùng cho mục
+     *  "Câu hỏi thường gặp" hiện riêng dưới lưới sản phẩm danh mục, phần
+     *  khối còn lại vẫn đi qua productRenderSections() như cũ. */
+    function productSplitFaqBlocks($blocks)
+    {
+        $faq = array();
+        $rest = array();
+        foreach((array) $blocks as $block)
+        {
+            if(is_array($block) && isset($block['type']) && $block['type'] === 'faq') $faq[] = $block;
+            else $rest[] = $block;
+        }
+        return array('faq' => $faq, 'rest' => $rest);
+    }
+
+    /** Dựng HTML danh sách FAQ (mảng khối type='faq', mỗi khối 1 cặp hỏi-đáp). */
+    function productRenderFaqBlocks($faqBlocks)
+    {
+        if(empty($faqBlocks) || !is_array($faqBlocks)) return '';
+        $esc = function($v) { return htmlspecialchars((string) $v, ENT_QUOTES, 'UTF-8'); };
+        $html = '';
+        foreach($faqBlocks as $block)
+        {
+            $question = trim(isset($block['question']) ? $block['question'] : '');
+            $answer = trim(isset($block['answer']) ? $block['answer'] : '');
+            if($question === '' || $answer === '') continue;
+            $html .= '<details><summary>'.$esc($question).'</summary><p>'.nl2br($esc($answer)).'</p></details>';
+        }
+        return $html;
     }
 
     /**

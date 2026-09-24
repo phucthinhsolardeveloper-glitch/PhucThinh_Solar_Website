@@ -53,7 +53,11 @@
 
 		public function get()
 		{
-			$this->init(md5(implode(",",$this->file)));
+			$signature = array('raw-js-v2');
+			foreach($this->path as $index => $path) {
+				$signature[] = $this->file[$index].':'.(is_file($path['server']) ? hash_file('sha256', $path['server']) : 'missing');
+			}
+			$this->init(md5(implode(',', $signature)));
 			if(empty($this->path)) die("No files to optimize");
 			return ($this->debug) ? $this->links() : $this->minify();
 		}

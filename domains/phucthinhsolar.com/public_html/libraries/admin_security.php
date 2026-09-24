@@ -108,8 +108,8 @@ if(!function_exists('adminCsrfToken'))
 
     function adminLegacyMutationNeedsCsrf($com, $act, $method, $post = array())
     {
-        if(strtoupper((string)$method) !== 'POST') return preg_match('/^(?:delete|save|upload|sync$|create$)/i', (string)$act) === 1;
-        if(preg_match('/^(?:delete|save|upload)/i', (string)$act)) return true;
+        if(strtoupper((string)$method) !== 'POST') return preg_match('/^(?:delete|save|upload|toggle|restore|sync$|create$)/i', (string)$act) === 1;
+        if(preg_match('/^(?:delete|save|upload|toggle|restore)/i', (string)$act)) return true;
         if(in_array($act, array('sync', 'create'), true)) return true;
         return $com === 'newsletter' && $act === 'man' && !empty($post['listemail']);
     }
@@ -371,7 +371,7 @@ if(!function_exists('adminCsrfToken'))
            xem khối kế thừa) cũng chỉ là một phần của việc soạn nội dung, nên
            gộp chung một quyền "edit" thay vì tách vụn theo từng endpoint nội
            bộ mà người dùng không hề thấy là hành động riêng. */
-        if($com === 'content_section' && in_array($act, array('edit', 'save', 'upload_image', 'import_legacy', 'inherited_blocks'), true))
+        if($com === 'content_section' && in_array($act, array('edit', 'save', 'toggle', 'restore', 'upload_image', 'import_legacy', 'inherited_blocks'), true))
             return $type !== '' ? 'content_section_edit_'.$type : 'SUPERADMIN_ONLY';
 
         /* Mặc định giữ nguyên quy ước cũ: com_act[_variant][_type]. */

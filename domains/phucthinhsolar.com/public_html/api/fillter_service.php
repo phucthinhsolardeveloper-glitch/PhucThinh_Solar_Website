@@ -135,6 +135,7 @@
 	/* Get page result */
 	$pagingItems = $pagingAjax->getAllPageLinks($countItems, $pageLink, $eShow);
 ?>
+<span class="pts-filter-result-meta" data-filter-result-count="<?=intval($countItems)?>" hidden></span>
 <?php if(count($items)){ ?>
 <div class="grid-product grid-product-3" id="search-body">
     <?php foreach($items as $k => $v) { include ROOT."templates/product/_product_card.php"; } ?>

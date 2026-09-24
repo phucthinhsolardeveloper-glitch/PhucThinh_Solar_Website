@@ -1,6 +1,6 @@
 # Hệ thống UI/UX public — nguồn chuẩn duy nhất
 
-Cập nhật: 2026-09-23. Phạm vi: toàn bộ website public Phúc Thịnh Solar trên
+Cập nhật: 2026-09-24. Phạm vi: toàn bộ website public Phúc Thịnh Solar trên
 desktop, iMac/2K, tablet và mobile.
 
 Tài liệu này trả lời câu hỏi **giao diện phải như thế nào**. Cách đặt CSS vào
@@ -344,7 +344,8 @@ fallback trung tính đúng loại; không dùng một placeholder cho mọi ng�
 
 ### Trang chủ
 
-- Product-first, hiện không render Hero; không tự bật lại banner/slider.
+- Product-first nhưng Hero V4 đã được duyệt theo ADR 0006 và được render khi có
+  cấu hình; không tự bật lại Hero legacy/slide.php.
 - Danh mục một hàng ngang và cuộn khi thiếu chỗ.
 - Phần lớn diện tích dành cho danh mục/sản phẩm. Giới thiệu dài, quy trình, dự
   án và giải pháp dài đi về landing chuyên biệt.
@@ -354,7 +355,19 @@ fallback trung tính đúng loại; không dùng một placeholder cho mọi ng�
 - Landing danh mục truy cập được; filter/sort là control, không là card trang
   trí. Nội dung SEO không chặn đường tới sản phẩm.
 - Chi tiết ưu tiên gallery, tên, thông số quyết định, tư vấn/mua hàng, rồi nội
-  dung dài. Ảnh 1:1 contain; tab và bảng vẫn dùng được ở mobile.
+  dung dài. Ảnh 1:1 contain; điều hướng nội dung cuộn ngang và bảng vẫn dùng
+  được ở mobile.
+- Hero PDP desktop dùng hai cột cân nhau. Tối đa bốn thông số quyết định hiển
+  thị theo lưới 2×2 từ field có cấu trúc; không dùng giá trị mẫu hoặc “đang cập
+  nhật” để lấp ô. Ở 320px lưới chuyển một cột để giữ khả năng đọc.
+- PDP dùng luồng dọc: gallery + buy box, điều hướng mục, mô tả, hướng dẫn lựa
+  chọn sinh từ thông số thật, bảng thông số toàn chiều ngang, chính sách bảo
+  hành, đánh giá, form tư vấn và sản phẩm liên quan. Không dựng khối tài liệu,
+  video hoặc ảnh ứng dụng khi Admin chưa có dữ liệu tương ứng; FAQ chỉ được lấy
+  từ field kỹ thuật thực tế hoặc nội dung do Admin quản lý.
+- CTA báo giá cuộn đến form tư vấn trong trang; sản phẩm có giá vẫn giữ nguyên
+  số lượng, Mua ngay và Thêm giỏ hàng. Chính sách bảo hành chỉ liệt kê đúng mục
+  bảo hành thay vì gom toàn bộ chính sách hỗ trợ dưới một nhãn.
 
 ### Giới thiệu, Giải pháp, Dự án và Kiến thức
 

@@ -317,6 +317,18 @@ if [ "$campaign_table_count" != "2" ]; then
     exit 1
 fi
 
+content_section_backup_table="$(docker compose -f "$compose_file" exec -T db mariadb -N -B -upts_local -ppts_local_only phucthinhs_local -e "SHOW TABLES LIKE 'table_content_section_backup';")"
+if [ "$content_section_backup_table" != "table_content_section_backup" ]; then
+    echo "FAIL: Chưa áp dụng migrations/049_add_content_section_backups.sql trên DB local" >&2
+    exit 1
+fi
+
+pdp_profile_markers="$(docker compose -f "$compose_file" exec -T db mariadb -N -B -upts_local -ppts_local_only information_schema -e "SELECT (SELECT COUNT(*) FROM COLUMNS WHERE TABLE_SCHEMA='phucthinhs_local' AND TABLE_NAME='table_product' AND COLUMN_NAME='pdp_profile') + (SELECT COUNT(*) FROM COLUMNS WHERE TABLE_SCHEMA='phucthinhs_local' AND TABLE_NAME='table_product_list' AND COLUMN_NAME='pdp_profile') + (SELECT COUNT(*) FROM TABLES WHERE TABLE_SCHEMA='phucthinhs_local' AND TABLE_NAME='table_product_document');")"
+if [ "$pdp_profile_markers" != "3" ]; then
+    echo "FAIL: Chưa áp dụng migrations/050_add_product_pdp_profiles_and_documents.sql trên DB local" >&2
+    exit 1
+fi
+
 node --check domains/phucthinhsolar.com/public_html/administrator/assets/js/apps.js
 node --check domains/phucthinhsolar.com/public_html/administrator/assets/js/sidebar-state.js
 node --check domains/phucthinhsolar.com/public_html/assets/js/apps.js
@@ -397,7 +409,7 @@ if grep -Eq '925872|Executive Objects|UsedCondition|2020-11-05|priceValidUntil' 
     echo "FAIL: Product JSON-LD còn dữ liệu mẫu/giả hoặc hạn giá lỗi thời" >&2
     exit 1
 fi
-grep -qF 'Gọi báo giá' /tmp/pts-predeploy-product.html
+grep -qF 'Yêu cầu báo giá' /tmp/pts-predeploy-product.html
 # Nút báo giá dạng icon thuộc card listing, không phải template chi tiết. Sản
 # phẩm mới nhất có thể không có related products nên dò trong product detail sẽ
 # tạo fail giả dù catalog đang render đúng CTA.
