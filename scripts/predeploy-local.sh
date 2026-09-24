@@ -413,7 +413,7 @@ grep -qF 'Yêu cầu báo giá' /tmp/pts-predeploy-product.html
 # Nút báo giá dạng icon thuộc card listing, không phải template chi tiết. Sản
 # phẩm mới nhất có thể không có related products nên dò trong product detail sẽ
 # tạo fail giả dù catalog đang render đúng CTA.
-grep -qE 'class="pts-card-ask"[^>]*><i class="fas fa-phone-alt"></i>' /tmp/pts-predeploy-catalog.html
+grep -qE 'class="pts-card-ask"[^>]*><i class="fas fa-file-alt"' /tmp/pts-predeploy-catalog.html
 test -s domains/phucthinhsolar.com/public_html/assets/fontawesome512/all.css
 test -s domains/phucthinhsolar.com/public_html/assets/fonts/awesome/fa-solid-900.woff2
 test -s domains/phucthinhsolar.com/public_html/assets/fonts/awesome/fa-brands-400.woff2
