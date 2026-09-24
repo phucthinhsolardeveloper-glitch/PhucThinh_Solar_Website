@@ -334,6 +334,30 @@
 		        </div>
 			<?php } ?>
 		<?php } ?>
+		<?php if(isset($config['product'])) { ?>
+			<?php $productDocumentTypes = array('datasheet' => 'Datasheet', 'manual' => 'Hướng dẫn sử dụng', 'warranty' => 'Bảo hành', 'certificate' => 'Chứng nhận', 'other' => 'Khác'); ?>
+			<div class="card card-permission card-primary card-outline text-sm">
+				<div class="card-header">
+					<h3 class="card-title">Quản lý Tài liệu sản phẩm</h3>
+					<div class="card-tools">
+						<button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
+					</div>
+				</div>
+				<div class="card-body">
+					<div class="form-group row">
+						<label class="d-inline-block align-middle mb-2 mr-2 text-md col-md-3">Theo loại tài liệu (áp dụng cho mọi danh mục sản phẩm):</label>
+						<div class="col-md-7">
+							<?php foreach($productDocumentTypes as $docType => $docLabel) { ?>
+								<div class="custom-control custom-checkbox d-inline-block align-middle mb-2 mr-4 text-md">
+									<input type="checkbox" class="custom-control-input" name="dataPermission[]" id="quyen-product-document-<?=$docType?>" value="product_document_manage_<?=$docType?>" <?=(isset($lists_permission) && in_array('product_document_manage_'.$docType, $lists_permission))?'checked':'';?>>
+									<label for="quyen-product-document-<?=$docType?>" class="custom-control-label font-weight-normal">Quản lý <?=$docLabel?></label>
+								</div>
+							<?php } ?>
+						</div>
+					</div>
+				</div>
+			</div>
+		<?php } ?>
         <?php if(isset($config['news'])) { ?>
         	<?php foreach($config['news'] as $key => $value) { if(isset($value['dropdown']) && $value['dropdown'] == true) { ?>
 				<div class="card card-permission card-primary card-outline text-sm">

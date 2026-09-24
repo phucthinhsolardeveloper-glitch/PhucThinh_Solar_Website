@@ -173,6 +173,15 @@ if(!function_exists('adminCsrfToken'))
             if(in_array($capability, array('add', 'status'), true)) return 'product_edit_'.$type;
             if($capability === 'delete') return 'product_delete_'.$type;
         }
+        /* Tài liệu sản phẩm: $type ở đây là LOẠI TÀI LIỆU (datasheet/manual/
+           warranty/certificate/other), không phải danh mục sản phẩm — lớp
+           quyền thứ 2 cộng thêm vào quyền sửa sản phẩm, xem
+           adminLegacyScreenPermission(). */
+        if($table === 'product_document' && $capability === 'manage')
+        {
+            return in_array($type, array('datasheet', 'manual', 'warranty', 'certificate', 'other'), true)
+                ? 'product_document_manage_'.$type : null;
+        }
         $actions = array('status' => 'edit', 'numb' => 'edit', 'copy' => 'add', 'database' => 'update');
         $suffixes = array(
             'product' => array('product', ''), 'product_list' => array('product', 'list'),
@@ -373,6 +382,15 @@ if(!function_exists('adminCsrfToken'))
            bộ mà người dùng không hề thấy là hành động riêng. */
         if($com === 'content_section' && in_array($act, array('edit', 'save', 'toggle', 'restore', 'upload_image', 'import_legacy', 'inherited_blocks'), true))
             return $type !== '' ? 'content_section_edit_'.$type : 'SUPERADMIN_ONLY';
+
+        /* Tài liệu sản phẩm (datasheet/manual/warranty/certificate/other):
+           vào được màn hình vì đang có quyền sửa sản phẩm — quyền theo TỪNG
+           loại tài liệu là một lớp kiểm tra riêng, thêm vào bên trong
+           saveDocument()/deleteDocument() (product.php), không phải ở đây,
+           vì loại tài liệu là dữ liệu người dùng chọn chứ không phải 1 phần
+           cố định của route. */
+        if($com === 'product' && in_array($act, array('man_document', 'add_document', 'edit_document', 'save_document', 'delete_document'), true))
+            return $type !== '' ? 'product_edit_'.$type : 'SUPERADMIN_ONLY';
 
         /* Mặc định giữ nguyên quy ước cũ: com_act[_variant][_type]. */
         $permission = $com.'_'.$act;

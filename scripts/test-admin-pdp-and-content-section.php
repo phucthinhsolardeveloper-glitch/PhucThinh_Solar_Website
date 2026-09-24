@@ -18,6 +18,7 @@ require LIBRARIES.'autoload.php';
 new AutoLoad();
 require_once LIBRARIES.'product_pdp_profiles.php';
 require_once LIBRARIES.'product_content_blocks.php';
+require_once LIBRARIES.'admin_security.php';
 $d = new PDODb($config['database']);
 $cache = new Cache($d);
 $func = new Functions($d, $cache);
@@ -33,9 +34,10 @@ function ok($condition, $message)
     else { $failures++; echo 'FAIL: ', $message, PHP_EOL; }
 }
 
-function request($url, $cookie = '', $post = null)
+function request($url, $cookie = '', $post = null, $enforceRbac = false)
 {
     $header = "User-Agent: PTS-Admin-PDP-ContentSection-Test\r\n";
+    if ($enforceRbac) $header .= "X-PTS-Permission-Test: enforce\r\n";
     if ($cookie !== '') $header .= 'Cookie: '.$cookie."\r\n";
     $options = array('http' => array('ignore_errors' => true, 'timeout' => 30,
         'method' => $post === null ? 'GET' : 'POST', 'follow_location' => 0));
@@ -159,8 +161,6 @@ ok(!empty($addFields['admin_csrf']), 'Form thêm sản phẩm có admin_csrf');
 $code = 'ADMPDPTEST-'.$suffix;
 $name = 'ADMPDPTEST-'.$suffix.' San pham kiem thu PDP';
 $validProfile = 'inverter';
-$goodDoc = "datasheet | Datasheet thu | upload/product/adm-pdp-test-{$suffix}.pdf";
-$badDoc = "khongton_tai | Thieu duong dan hop le |";
 
 $addFields['data']['code'] = $code;
 $addFields['data']['namevi'] = $name;
@@ -169,31 +169,8 @@ $addFields['data']['regular_price'] = 123000;
 $addFields['data']['pdp_profile'] = $validProfile;
 $addFields['status'] = array('hienthi');
 
-/* Dòng tài liệu sai định dạng phải chặn TOÀN BỘ lần lưu (không âm thầm bỏ
-   qua dòng lỗi rồi vẫn tạo sản phẩm) — kiểm tra riêng trước, không được tạo
-   sản phẩm nào ở bước này. */
-$rejectFields = $addFields;
-$rejectFields['product_documents_text'] = $goodDoc."\n".$badDoc;
-$rejectSave = request($base.'index.php?com=product&act=save&type=san-pham', $cookie, $rejectFields);
-ok(in_array($rejectSave['status'], array(200, 302), true), 'Gửi form với dòng tài liệu sai định dạng');
-$rejectRow = $d->rawQueryOne('select id from #_product where code = ? limit 0,1', array($code));
-ok(empty($rejectRow['id']), 'Dòng tài liệu sai định dạng chặn toàn bộ lần lưu, không tạo sản phẩm');
-if (preg_match('/FLASH_TOAST\s*=\s*(\{.*?\});/s', $rejectSave['body'], $toast))
-    ok(mb_stripos($toast[1], 'dòng 2') !== false, 'Báo lỗi rõ cho dòng tài liệu sai định dạng (dòng 2)');
-elseif ($rejectSave['location'] !== '')
-{
-    $followUrl = preg_match('#^https?://#i', $rejectSave['location']) ? $rejectSave['location'] : $base.ltrim($rejectSave['location'], '/');
-    $followed = request($followUrl, $cookie);
-    preg_match_all('/<p class="mb-1">(.*?)<\/p>/s', $followed['body'], $msgLines);
-    $joined = implode(' ', array_map('strip_tags', $msgLines[1]));
-    ok(mb_stripos($joined, 'dòng 2') !== false, 'Báo lỗi rõ cho dòng tài liệu sai định dạng (dòng 2)');
-}
-else ok(false, 'Báo lỗi rõ cho dòng tài liệu sai định dạng (dòng 2)');
-
-/* Lần lưu hợp lệ (chỉ dòng tài liệu đúng) phải tạo được sản phẩm thật. */
-$addFields['product_documents_text'] = $goodDoc;
 $save = request($base.'index.php?com=product&act=save&type=san-pham', $cookie, $addFields);
-ok(in_array($save['status'], array(200, 302), true), 'Gửi form lưu sản phẩm (pdp_profile + tài liệu hợp lệ)');
+ok(in_array($save['status'], array(200, 302), true), 'Gửi form lưu sản phẩm (pdp_profile)');
 
 $row = $d->rawQueryOne('select id, pdp_profile from #_product where code = ? limit 0,1', array($code));
 ok(!empty($row['id']), 'Sản phẩm mới xuất hiện trong DB');
@@ -202,14 +179,151 @@ if (!empty($row['id']))
     $createdProductId = (int)$row['id'];
     ok($row['pdp_profile'] === $validProfile, 'pdp_profile lưu đúng giá trị hợp lệ đã chọn ("'.$validProfile.'")');
 
-    $docs = $d->rawQuery('select document_type, titlevi, file_path, status from #_product_document where id_product = ? order by numb, id', array($createdProductId));
+    /* --------------------------------- Tài liệu sản phẩm: danh sách CRUD riêng */
+
+    echo PHP_EOL, '== Tài liệu sản phẩm (bảng quản lý riêng) ==', PHP_EOL;
+
+    $addDocForm = request($base.'index.php?com=product&act=add_document&type=san-pham&id_parent='.$createdProductId, $cookie);
+    ok($addDocForm['status'] === 200, 'Mở form thêm tài liệu');
+    $addDocCsrf = csrfFromBody($addDocForm['body']);
+    ok($addDocCsrf !== '', 'Form thêm tài liệu có admin_csrf');
+
+    /* Dòng tài liệu sai định dạng phải bị chặn, không tạo bản ghi. */
+    $badDocSave = request($base.'index.php?com=product&act=save_document&type=san-pham&id_parent='.$createdProductId, $cookie, array(
+        'admin_csrf' => $addDocCsrf, 'id' => '',
+        'data' => array('document_type' => 'khongtontai', 'titlevi' => 'Thieu duong dan hop le', 'titleen' => '', 'file_path' => '', 'numb' => 1),
+    ));
+    ok(in_array($badDocSave['status'], array(200, 302), true), 'Gửi tài liệu sai định dạng');
+    $badDocCount = $d->rawQueryOne('select count(*) num from #_product_document where id_product = ?', array($createdProductId));
+    ok((int)$badDocCount['num'] === 0, 'Tài liệu sai định dạng không tạo bản ghi nào');
+    $badDocErrorText = '';
+    if (preg_match('/FLASH_TOAST\s*=\s*(\{.*?\});/s', $badDocSave['body'], $badDocToast)) $badDocErrorText = $badDocToast[1];
+    elseif ($badDocSave['location'] !== '')
+    {
+        $followUrl = preg_match('#^https?://#i', $badDocSave['location']) ? $badDocSave['location'] : $base.ltrim($badDocSave['location'], '/');
+        $followed = request($followUrl, $cookie);
+        preg_match_all('/<p class="mb-1">(.*?)<\/p>/s', $followed['body'], $msgLines);
+        $badDocErrorText = implode(' ', array_map('strip_tags', $msgLines[1]));
+    }
+    ok(mb_stripos($badDocErrorText, 'Loại tài liệu không hợp lệ') !== false, 'Báo lỗi rõ cho tài liệu sai định dạng');
+
+    /* Tài liệu hợp lệ phải tạo được đúng 1 bản ghi. */
+    $goodDocPath = 'upload/product/adm-pdp-test-'.$suffix.'.pdf';
+    $goodDocSave = request($base.'index.php?com=product&act=save_document&type=san-pham&id_parent='.$createdProductId, $cookie, array(
+        'admin_csrf' => $addDocCsrf, 'id' => '',
+        'data' => array('document_type' => 'datasheet', 'titlevi' => 'Datasheet thu', 'titleen' => 'Datasheet', 'file_path' => $goodDocPath, 'numb' => 1),
+        'status' => array('hienthi' => 'hienthi'),
+    ));
+    ok(in_array($goodDocSave['status'], array(200, 302), true), 'Gửi tài liệu hợp lệ');
+
+    $docs = $d->rawQuery('select id, document_type, titlevi, file_path, status from #_product_document where id_product = ? order by numb, id', array($createdProductId));
     ok(count($docs) === 1, 'Tài liệu hợp lệ được lưu đúng 1 bản ghi (có '.count($docs).' bản ghi)');
     if (count($docs) === 1)
     {
         ok($docs[0]['document_type'] === 'datasheet', 'Loại tài liệu lưu đúng "datasheet"');
-        ok(strpos($docs[0]['file_path'], 'adm-pdp-test-'.$suffix) !== false, 'Đường dẫn tài liệu lưu đúng');
+        ok($docs[0]['file_path'] === $goodDocPath, 'Đường dẫn tài liệu lưu đúng');
         ok(strpos((string)$docs[0]['status'], 'hienthi') !== false, 'Tài liệu mới ở trạng thái hiển thị');
+
+        /* Sửa 1 tài liệu đã có — cập nhật đúng dòng, không tạo thêm bản ghi. */
+        $docId = (int)$docs[0]['id'];
+        $editDocForm = request($base.'index.php?com=product&act=edit_document&type=san-pham&id_parent='.$createdProductId.'&id='.$docId, $cookie);
+        ok($editDocForm['status'] === 200, 'Mở form sửa tài liệu');
+        $editDocCsrf = csrfFromBody($editDocForm['body']);
+        $editDocSave = request($base.'index.php?com=product&act=save_document&type=san-pham&id_parent='.$createdProductId, $cookie, array(
+            'admin_csrf' => $editDocCsrf, 'id' => $docId,
+            'data' => array('document_type' => 'datasheet', 'titlevi' => 'Datasheet thu ban cap nhat', 'titleen' => 'Datasheet updated', 'file_path' => $goodDocPath, 'numb' => 2),
+            'status' => array('hienthi' => 'hienthi'),
+        ));
+        ok(in_array($editDocSave['status'], array(200, 302), true), 'Gửi sửa tài liệu');
+        $docsAfterEdit = $d->rawQuery('select id, titlevi, numb from #_product_document where id_product = ?', array($createdProductId));
+        ok(count($docsAfterEdit) === 1, 'Sửa tài liệu không tạo thêm bản ghi (vẫn 1 bản ghi)');
+        ok(!empty($docsAfterEdit) && $docsAfterEdit[0]['titlevi'] === 'Datasheet thu ban cap nhat', 'Sửa tài liệu cập nhật đúng tiêu đề');
+
+        /* Xoá — soft-delete, danh sách quản lý vẫn thấy để có thể phục hồi.
+           apps.js gửi thao tác xoá bằng POST kèm CSRF (submitAdminMutation),
+           không phải GET thuần trên href hiển thị. */
+        $deleteDocRes = request($base.'index.php?com=product&act=delete_document&type=san-pham&id_parent='.$createdProductId.'&id='.$docId, $cookie, array('admin_csrf' => $editDocCsrf));
+        ok(in_array($deleteDocRes['status'], array(200, 302), true), 'Gửi xoá tài liệu');
+        $docAfterDelete = $d->rawQueryOne('select status from #_product_document where id = ? limit 0,1', array($docId));
+        ok(!empty($docAfterDelete) && strpos((string)$docAfterDelete['status'], 'an') !== false, 'Tài liệu chuyển sang trạng thái ẩn sau khi xoá (soft-delete, còn trong DB)');
     }
+
+    /* --------------------------- Phân quyền theo loại tài liệu: HTTP thật */
+
+    echo PHP_EOL, '== Phân quyền theo loại tài liệu (HTTP thật, ép enforcement) ==', PHP_EOL;
+
+    ok(adminMutationPermissionKey('product_document', 'manage', 'datasheet', 'product') === 'product_document_manage_datasheet',
+        'adminMutationPermissionKey() map đúng khoá quyền theo loại tài liệu');
+    ok(adminMutationPermissionKey('product_document', 'manage', 'khong-ton-tai', 'product') === null,
+        'adminMutationPermissionKey() từ chối loại tài liệu không tồn tại');
+    ok(adminLegacyScreenPermission('product', 'save_document', '', 'san-pham', false) === 'product_edit_san-pham',
+        'Cổng màn hình quy act=save_document về đúng quyền sửa sản phẩm (danh mục)');
+
+    /* Container local mặc định bật debug-developer nên bỏ qua mọi kiểm tra
+       quyền; test-admin-permission-gate.php đã có sẵn cơ chế header
+       "X-PTS-Permission-Test: enforce" để config-type.php tắt debug-developer
+       CHỈ cho request đó (chỉ nhận khi APP_ENV=local) — dùng lại đúng cơ chế
+       này để kiểm chứng bằng HTTP thật thay vì mô phỏng gọi hàm. */
+    /* Dọn tài liệu (kể cả bản đã soft-delete) còn sót từ phần CRUD ở trên,
+       tránh đếm nhầm bản ghi cũ khi kiểm tra phần phân quyền dưới đây. */
+    $d->rawQuery('delete from #_product_document where id_product = ?', array($createdProductId));
+
+    $gateGroupName = 'DOCGATE-'.$suffix;
+    $gateStaffName = 'docgate-staff-'.$suffix;
+    $gatePassword = bin2hex(random_bytes(12));
+    $d->insert('permission_group', array('name' => $gateGroupName, 'numb' => 0, 'status' => 'hienthi', 'date_created' => time()));
+    $gateGroupId = (int)$d->getLastInsertId();
+    $d->insert('permission', array('id_permission_group' => $gateGroupId, 'permission' => 'product_edit_san-pham'));
+    $d->insert('user', array(
+        'id_permission' => $gateGroupId, 'username' => $gateStaffName,
+        'password' => $func->encryptPassword($config['website']['secret'], $gatePassword, $config['website']['salt']),
+        'fullname' => 'Doc gate test', 'status' => 'hienthi', 'role' => 1,
+        'secret_key' => bin2hex(random_bytes(16)), 'numb' => 0
+    ));
+    $gateStaffId = (int)$d->getLastInsertId();
+
+    $gatePage = request($base.'index.php?com=user&act=login', '', null, true);
+    $gateCookie = $gatePage['cookie'];
+    $gatePage = request($base.'index.php?com=user&act=login', $gateCookie, null, true);
+    $gateCsrf = csrfFromBody($gatePage['body']);
+    $gateLogin = request($base.'api/login.php', $gateCookie, array('username' => $gateStaffName, 'password' => $gatePassword, 'admin_csrf' => $gateCsrf), true);
+    if ($gateLogin['cookie'] !== '') $gateCookie = $gateLogin['cookie'];
+    $gateLoginPayload = json_decode($gateLogin['body'], true);
+    ok(!empty($gateLoginPayload['success']), 'Đăng nhập tài khoản staff chỉ có quyền sửa sản phẩm (chưa có quyền tài liệu)');
+
+    if (!empty($gateLoginPayload['success']))
+    {
+        $gateAddForm = request($base.'index.php?com=product&act=add_document&type=san-pham&id_parent='.$createdProductId, $gateCookie, null, true);
+        ok($gateAddForm['status'] === 200, 'Staff có quyền sửa sản phẩm vẫn mở được màn quản lý tài liệu');
+        $gateCsrf2 = csrfFromBody($gateAddForm['body']);
+
+        $gateBlockedSave = request($base.'index.php?com=product&act=save_document&type=san-pham&id_parent='.$createdProductId, $gateCookie, array(
+            'admin_csrf' => $gateCsrf2, 'id' => '',
+            'data' => array('document_type' => 'datasheet', 'titlevi' => 'Datasheet cho staff', 'titleen' => '', 'file_path' => $goodDocPath, 'numb' => 1),
+            'status' => array('hienthi' => 'hienthi'),
+        ), true);
+        ok($gateBlockedSave['status'] === 403, 'Staff KHÔNG có quyền "Quản lý Datasheet" bị chặn 403 khi lưu tài liệu loại datasheet');
+        $gateCountAfterBlock = $d->rawQueryOne('select count(*) num from #_product_document where id_product = ?', array($createdProductId));
+        ok((int)$gateCountAfterBlock['num'] === 0, 'Bị chặn thì không có bản ghi tài liệu nào được tạo');
+
+        /* Cấp thêm đúng quyền loại tài liệu rồi thử lại — không cần đăng nhập
+           lại vì requick.php nạp permissions từ DB ở mỗi request. */
+        $d->insert('permission', array('id_permission_group' => $gateGroupId, 'permission' => 'product_document_manage_datasheet'));
+        $gateAllowedSave = request($base.'index.php?com=product&act=save_document&type=san-pham&id_parent='.$createdProductId, $gateCookie, array(
+            'admin_csrf' => $gateCsrf2, 'id' => '',
+            'data' => array('document_type' => 'datasheet', 'titlevi' => 'Datasheet cho staff', 'titleen' => '', 'file_path' => $goodDocPath, 'numb' => 1),
+            'status' => array('hienthi' => 'hienthi'),
+        ), true);
+        ok(in_array($gateAllowedSave['status'], array(200, 302), true), 'Cấp thêm quyền "Quản lý Datasheet" -> staff lưu được tài liệu loại datasheet');
+        $gateCountAfterAllow = $d->rawQueryOne('select count(*) num from #_product_document where id_product = ?', array($createdProductId));
+        ok((int)$gateCountAfterAllow['num'] === 1, 'Sau khi được cấp quyền, tài liệu được ghi vào DB thật');
+    }
+
+    $d->rawQuery('delete from #_product_document where id_product = ?', array($createdProductId));
+    $d->rawQuery('delete from #_user_log where id_user = ?', array($gateStaffId));
+    $d->rawQuery('delete from #_user where id = ?', array($gateStaffId));
+    $d->rawQuery('delete from #_permission where id_permission_group = ?', array($gateGroupId));
+    $d->rawQuery('delete from #_permission_group where id = ?', array($gateGroupId));
 
     /* Lưu pdp_profile rỗng phải quay về NULL (kế thừa), không phải chuỗi rỗng. */
     $editForm = request($base.'index.php?com=product&act=edit&type=san-pham&id='.$createdProductId, $cookie);

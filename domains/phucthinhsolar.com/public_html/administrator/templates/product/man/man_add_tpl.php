@@ -233,16 +233,13 @@
                                 <small class="form-text text-muted">Chỉ nhận URL YouTube/youtu.be. Không dán mã iframe.</small>
                             </div>
                         <?php } ?>
-                        <?php
-                        $productDocumentLines = array();
-                        if($flash->has('product_documents_text')) $productDocumentLines = preg_split('/\R/u', (string)$flash->get('product_documents_text'));
-                        elseif(!empty($productDocuments)) foreach($productDocuments as $documentRow) $productDocumentLines[] = $documentRow['document_type'].' | '.$documentRow['titlevi'].' | '.$documentRow['file_path'];
-                        ?>
+                        <?php if(!empty($item['id'])) { ?>
                         <div class="form-group">
-                            <label for="product_documents_text">Tài liệu tải về:</label>
-                            <textarea class="form-control text-sm" name="product_documents_text" id="product_documents_text" rows="4" placeholder="datasheet | Thông số kỹ thuật PDF | upload/product-documents/model.pdf"><?=htmlspecialchars(implode("\n", $productDocumentLines), ENT_QUOTES, 'UTF-8')?></textarea>
-                            <small class="form-text text-muted">Mỗi dòng: loại | tiêu đề | đường dẫn. Loại: datasheet, manual, warranty, certificate, other. Mục trống sẽ không hiện ngoài website.</small>
+                            <label class="d-block">Tài liệu tải về:</label>
+                            <a class="btn btn-sm bg-gradient-secondary" href="index.php?com=product&act=man_document&type=<?=$type?>&id_parent=<?=$item['id']?>" title="Quản lý tài liệu"><i class="fas fa-file-pdf mr-2"></i>Quản lý tài liệu (<?=(int)$productDocumentCount?>)</a>
+                            <small class="form-text text-muted">Datasheet, hướng dẫn sử dụng, bảo hành, chứng nhận... Chỉ hiện ngoài website khi tài liệu ở trạng thái Hiển thị.</small>
                         </div>
+                        <?php } ?>
                         <?php if(!empty($config['product'][$type]['structured_specs'])) { ?>
                             <div class="row">
                                 <?php

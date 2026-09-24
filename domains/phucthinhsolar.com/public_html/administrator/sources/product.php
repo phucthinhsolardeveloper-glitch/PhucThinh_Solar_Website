@@ -66,44 +66,180 @@
 		}
 		return (int)$product['num'] + (int)$child['num'];
 	}
-	function productAdminParseDocuments($text)
+	/* Tài liệu sản phẩm: quản lý qua man/add/edit/save/delete_document (danh
+	   sách riêng, mỗi dòng 1 bản ghi thật) thay vì ô nhập nhiều dòng cũ. */
+	function productAdminValidateDocument($documentType, $titlevi, $filePath)
 	{
-		$out = array('items' => array(), 'errors' => array());
+		$errors = array();
 		$types = array('datasheet', 'manual', 'warranty', 'certificate', 'other');
-		foreach(preg_split('/\R/u', trim((string)$text)) as $lineNo => $line)
+		$documentType = trim((string)$documentType);
+		$titlevi = trim((string)$titlevi);
+		$filePath = trim((string)$filePath);
+
+		if(!in_array($documentType, $types, true)) $errors[] = 'Loại tài liệu không hợp lệ';
+		if($titlevi === '') $errors[] = 'Tiêu đề tài liệu không được trống';
+
+		if($filePath === '')
 		{
-			if(trim($line) === '') continue;
-			if(count($out['items']) >= 10) { $out['errors'][] = 'Tài liệu chỉ nhận tối đa 10 dòng'; break; }
-			$parts = array_map('trim', explode('|', $line, 3));
-			if(count($parts) !== 3 || !in_array($parts[0], $types, true) || $parts[1] === '' || $parts[2] === '')
-			{
-				$out['errors'][] = 'Tài liệu dòng '.($lineNo + 1).' phải theo mẫu: loại | tiêu đề | đường dẫn';
-				continue;
-			}
-			$path = $parts[2];
-			$isHttps = filter_var($path, FILTER_VALIDATE_URL) && strtolower((string)parse_url($path, PHP_URL_SCHEME)) === 'https';
-			$isLocal = preg_match('#^(?:upload|assets)/[A-Za-z0-9._/-]+$#', ltrim($path, '/'));
-			$extension = strtolower(pathinfo((string)parse_url($path, PHP_URL_PATH), PATHINFO_EXTENSION));
+			$errors[] = 'Đường dẫn tài liệu không được trống';
+		}
+		else
+		{
+			$isHttps = filter_var($filePath, FILTER_VALIDATE_URL) && strtolower((string)parse_url($filePath, PHP_URL_SCHEME)) === 'https';
+			$isLocal = preg_match('#^(?:upload|assets)/[A-Za-z0-9._/-]+$#', ltrim($filePath, '/'));
+			$extension = strtolower(pathinfo((string)parse_url($filePath, PHP_URL_PATH), PATHINFO_EXTENSION));
 			if((!$isHttps && !$isLocal) || !in_array($extension, array('pdf','doc','docx','xls','xlsx'), true))
 			{
-				$out['errors'][] = 'Tài liệu dòng '.($lineNo + 1).' phải là HTTPS hoặc đường dẫn nội bộ và có định dạng PDF/DOC/DOCX/XLS/XLSX';
-				continue;
+				$errors[] = 'Đường dẫn tài liệu phải là HTTPS hoặc đường dẫn nội bộ và có định dạng PDF/DOC/DOCX/XLS/XLSX';
 			}
-			$out['items'][] = array('document_type' => $parts[0], 'titlevi' => strip_tags($parts[1]), 'file_path' => $path);
 		}
-		return $out;
+
+		return $errors;
 	}
-	function productAdminSaveDocuments($d, $productId, $items)
+
+	/* Sản phẩm cha cho màn quản lý tài liệu — 404 rõ ràng nếu id/type không khớp. */
+	function productAdminRequireProductForDocuments($d, $func, $id_parent, $type)
 	{
-		$d->rawQuery("update #_product_document set status='an',date_updated=? where id_product=?", array(time(), (int)$productId));
-		foreach((array)$items as $numb => $item)
+		if(empty($id_parent)) $func->transfer("Không nhận được dữ liệu", "index.php?com=product&act=man&type=".$type, false);
+		$product = $d->rawQueryOne("select id, namevi from #_product where id = ? and type = ? limit 0,1", array($id_parent, $type));
+		if(empty($product)) $func->transfer("Dữ liệu không có thực", "index.php?com=product&act=man&type=".$type, false);
+		return $product;
+	}
+
+	/* View documents */
+	function viewDocuments()
+	{
+		global $d, $func, $type, $id_parent, $items, $product;
+
+		$product = productAdminRequireProductForDocuments($d, $func, $id_parent, $type);
+		$items = $d->rawQuery("select * from #_product_document where id_product = ? order by numb,id", array($id_parent));
+	}
+
+	/* Add/Edit document */
+	function editDocument()
+	{
+		global $d, $func, $type, $id_parent, $id, $item, $product;
+
+		$product = productAdminRequireProductForDocuments($d, $func, $id_parent, $type);
+		$item = array();
+
+		if(!empty($id))
 		{
-			$item['id_product'] = (int)$productId;
-			$item['numb'] = $numb + 1;
-			$item['status'] = 'hienthi';
-			$item['date_created'] = time();
-			$item['date_updated'] = time();
-			$d->insert('product_document', $item);
+			$item = $d->rawQueryOne("select * from #_product_document where id = ? and id_product = ? limit 0,1", array($id, $id_parent));
+			if(empty($item))
+			{
+				$func->transfer("Dữ liệu không có thực", "index.php?com=product&act=man_document&type=".$type."&id_parent=".$id_parent, false);
+			}
+		}
+	}
+
+	/* Save document */
+	function saveDocument()
+	{
+		global $d, $func, $flash, $type, $id_parent, $id;
+
+		if(empty($_POST))
+		{
+			$func->transfer("Không nhận được dữ liệu", "index.php?com=product&act=man_document&type=".$type."&id_parent=".$id_parent, false);
+		}
+
+		$product = productAdminRequireProductForDocuments($d, $func, $id_parent, $type);
+
+		$data = (!empty($_POST['data'])) ? $_POST['data'] : array();
+		$documentType = isset($data['document_type']) ? trim((string)$data['document_type']) : '';
+		$titlevi = isset($data['titlevi']) ? trim((string)$data['titlevi']) : '';
+		$titleen = isset($data['titleen']) ? trim((string)$data['titleen']) : '';
+		$filePath = isset($data['file_path']) ? trim((string)$data['file_path']) : '';
+		$numb = isset($data['numb']) ? (int)$data['numb'] : 0;
+
+		$errors = productAdminValidateDocument($documentType, $titlevi, $filePath);
+
+		if(!empty($errors))
+		{
+			$response = array('status' => 'danger', 'messages' => $errors);
+			$flash->set('message', base64_encode(json_encode($response)));
+			$flash->set('document_type', $documentType);
+			$flash->set('titlevi', $titlevi);
+			$flash->set('titleen', $titleen);
+			$flash->set('file_path', $filePath);
+
+			$redirect = $id ? "index.php?com=product&act=edit_document&type=".$type."&id_parent=".$id_parent."&id=".$id
+				: "index.php?com=product&act=add_document&type=".$type."&id_parent=".$id_parent;
+			$func->redirect($redirect);
+		}
+
+		/* Đây là quyền lớp 2 theo TỪNG loại tài liệu, cộng thêm vào quyền
+		   sửa sản phẩm (đã được cổng requick.php kiểm ở mức màn hình) —
+		   chặn cả khi user có quyền vào màn hình nhưng không được giao
+		   quản lý đúng loại tài liệu này. */
+		adminRequireMutationPermission('product_document', 'manage', $documentType, 'product');
+
+		$status = (!empty($_POST['status']['hienthi'])) ? 'hienthi' : 'an';
+		$row = array(
+			'id_product' => (int)$id_parent,
+			'document_type' => $documentType,
+			'titlevi' => strip_tags(htmlspecialchars($titlevi)),
+			'titleen' => $titleen !== '' ? strip_tags(htmlspecialchars($titleen)) : null,
+			'file_path' => $filePath,
+			'numb' => $numb,
+			'status' => $status,
+			'date_updated' => time()
+		);
+
+		if($id)
+		{
+			$existing = $d->rawQueryOne("select id from #_product_document where id = ? and id_product = ? limit 0,1", array($id, $id_parent));
+			if(empty($existing))
+			{
+				$func->transfer("Dữ liệu không có thực", "index.php?com=product&act=man_document&type=".$type."&id_parent=".$id_parent, false);
+			}
+			$d->where('id', $id);
+			$ok = $d->update('product_document', $row);
+		}
+		else
+		{
+			$row['date_created'] = time();
+			$ok = $d->insert('product_document', $row);
+		}
+
+		if($ok)
+		{
+			$func->transfer("Lưu dữ liệu thành công", "index.php?com=product&act=man_document&type=".$type."&id_parent=".$id_parent);
+		}
+		else
+		{
+			$func->transfer("Lưu dữ liệu bị lỗi", "index.php?com=product&act=man_document&type=".$type."&id_parent=".$id_parent, false);
+		}
+	}
+
+	/* Delete document */
+	function deleteDocument()
+	{
+		global $d, $func, $type, $id_parent, $id;
+
+		if(empty($id))
+		{
+			$func->transfer("Xóa dữ liệu bị lỗi", "index.php?com=product&act=man_document&type=".$type."&id_parent=".$id_parent, false);
+		}
+
+		$row = $d->rawQueryOne("select id, document_type from #_product_document where id = ? and id_product = ? limit 0,1", array($id, $id_parent));
+
+		if(empty($row))
+		{
+			$func->transfer("Xóa dữ liệu bị lỗi", "index.php?com=product&act=man_document&type=".$type."&id_parent=".$id_parent, false);
+		}
+
+		adminRequireMutationPermission('product_document', 'manage', $row['document_type'], 'product');
+
+		$d->where('id', $id);
+		$d->where('id_product', $id_parent);
+		if($d->update('product_document', array('status' => 'an', 'date_updated' => time())))
+		{
+			$func->transfer("Xóa dữ liệu thành công", "index.php?com=product&act=man_document&type=".$type."&id_parent=".$id_parent);
+		}
+		else
+		{
+			$func->transfer("Xóa dữ liệu bị lỗi", "index.php?com=product&act=man_document&type=".$type."&id_parent=".$id_parent, false);
 		}
 	}
 
@@ -287,6 +423,26 @@
 			break;
 		case "delete_color":
 			deleteColor();
+			break;
+
+		/* Document */
+		case "man_document":
+			viewDocuments();
+			$template = "product/document/documents";
+			break;
+		case "add_document":
+			editDocument();
+			$template = "product/document/document_add";
+			break;
+		case "edit_document":
+			editDocument();
+			$template = "product/document/document_add";
+			break;
+		case "save_document":
+			saveDocument();
+			break;
+		case "delete_document":
+			deleteDocument();
 			break;
 
 		/* Brand */
@@ -482,7 +638,7 @@
 	/* Edit man */
 	function editMan()
 	{
-		global $d, $func, $strUrl, $curPage, $item, $gallery, $linkedProjects, $productDocuments, $type, $com, $act;
+		global $d, $func, $strUrl, $curPage, $item, $gallery, $linkedProjects, $productDocumentCount, $type, $com, $act;
 
 		if(!empty($_GET['id'])) $id = htmlspecialchars($_GET['id']);
 		else if(!empty($_GET['id_copy'])) $id = htmlspecialchars($_GET['id_copy']);
@@ -503,7 +659,8 @@
 			else
 			{
 				$linkedProjects = $d->rawQuery("select n.id, n.namevi, n.status from #_product_project pp inner join #_news n on n.id = pp.id_project where pp.id_product = ? and n.type = ? order by pp.numb,pp.id", array($id, 'du-an'));
-				$productDocuments = $d->rawQuery("select document_type,titlevi,file_path from #_product_document where id_product=? and find_in_set('hienthi',status) order by numb,id", array($id));
+				$productDocumentCount = $d->rawQueryOne("select count(*) num from #_product_document where id_product=? and status<>'an'", array($id));
+				$productDocumentCount = !empty($productDocumentCount['num']) ? (int)$productDocumentCount['num'] : 0;
 				if($act != 'copy')
 				{
 					/* Get gallery */
@@ -558,9 +715,6 @@
 			}
 		}
 		$additionalSpecs = array();
-		$productDocumentsText = isset($_POST['product_documents_text']) ? (string)$_POST['product_documents_text'] : '';
-		$parsedProductDocuments = productAdminParseDocuments($productDocumentsText);
-		foreach($parsedProductDocuments['errors'] as $documentError) $response['messages'][] = $documentError;
 		if(isset($_POST['additional_specs_text']))
 		{
 			$additionalSpecsText = (string) $_POST['additional_specs_text'];
@@ -706,7 +860,6 @@
 		if(!empty($response))
 		{
 			if(isset($additionalSpecsText)) $flash->set('additional_specs_text', $additionalSpecsText);
-			$flash->set('product_documents_text', $productDocumentsText);
 			/* Flash data */
 			if(!empty($data))
 			{
@@ -763,7 +916,6 @@
 			{
 				require_once LIBRARIES.'product_content_blocks.php';
 				if(isset($_POST['section_mode'])) productContentSectionSetMode($d, $id, $_POST['section_mode'], isset($_POST['section_inherit_source']) ? $_POST['section_inherit_source'] : null);
-				productAdminSaveDocuments($d, $id, $parsedProductDocuments['items']);
 				if(!empty($oldSlugRow['slugvi']) && $oldSlugRow['slugvi'] !== $data['slugvi']) productAdminRememberRedirect($d, 'san-pham/'.$oldSlugRow['slugvi'], 'product', $id);
 				/* Photo */
 				if($func->hasFile("file"))
@@ -992,7 +1144,6 @@
 				$id_insert = $d->getLastInsertId();
 				require_once LIBRARIES.'product_content_blocks.php';
 				if(isset($_POST['section_mode'])) productContentSectionSetMode($d, $id_insert, $_POST['section_mode'], isset($_POST['section_inherit_source']) ? $_POST['section_inherit_source'] : null);
-				productAdminSaveDocuments($d, $id_insert, $parsedProductDocuments['items']);
 
 				/* Photo */
 				if($func->hasFile("file"))
