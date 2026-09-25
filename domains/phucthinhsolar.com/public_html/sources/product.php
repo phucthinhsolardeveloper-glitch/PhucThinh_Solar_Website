@@ -286,13 +286,14 @@
 			$seo->set('photo:type',$imgJson['m']);
 		}
 
-		/* breadCrumbs */
-		if(!empty($titleMain)) $breadcr->set($com,$titleMain);
-		if(!empty($productList)) $breadcr->set($productList[$sluglang],$productList['name'.$lang]);
-		if(!empty($productCat)) $breadcr->set($productCat[$sluglang],$productCat['name'.$lang]);
-		if(!empty($productItem)) $breadcr->set($productItem[$sluglang],$productItem['name'.$lang]);
-		if(!empty($productSub)) $breadcr->set($productSub[$sluglang],$productSub['name'.$lang]);
-		$breadcr->set($rowDetail[$sluglang],$rowDetail['name'.$lang]);
+		/* breadCrumbs: dùng URL phân cấp đầy đủ (khớp canonical), không phải slug
+		   rời - xem libraries/product_category_urls.php::publicProductEntityPath() */
+		if(!empty($titleMain)) $breadcr->set('san-pham/',$titleMain);
+		if(!empty($productList)) $breadcr->set(publicProductEntityPath($d,'product_list',$productList['id'],$lang),$productList['name'.$lang]);
+		if(!empty($productCat)) $breadcr->set(publicProductEntityPath($d,'product_cat',$productCat['id'],$lang),$productCat['name'.$lang]);
+		if(!empty($productItem)) $breadcr->set(publicProductEntityPath($d,'product_item',$productItem['id'],$lang),$productItem['name'.$lang]);
+		if(!empty($productSub)) $breadcr->set(publicProductEntityPath($d,'product_sub',$productSub['id'],$lang),$productSub['name'.$lang]);
+		$breadcr->set(publicProductEntityPath($d,'product',$rowDetail['id'],$lang),$rowDetail['name'.$lang]);
 		$breadcrumbs = $breadcr->get();
 	}
 	else if($idl!='')
@@ -365,9 +366,9 @@
 		$paging = $func->pagination($total,$perPage,$curPage,$url);
 
 		/* breadCrumbs */
-		if(!empty($titleMain)) $breadcr->set($com,$titleMain);
-		if(!empty($productList)) $breadcr->set($productList[$sluglang],$productList['name'.$lang]);
-		$breadcrumbs = $breadcr->get();	
+		if(!empty($titleMain)) $breadcr->set('san-pham/',$titleMain);
+		if(!empty($productList)) $breadcr->set(publicProductCategoryPath($productList,'list',$lang),$productList['name'.$lang]);
+		$breadcrumbs = $breadcr->get();
 	}
 	else if($idc!='')
 	{
@@ -438,9 +439,9 @@
 		}
 
 		/* breadCrumbs */
-		if(!empty($titleMain)) $breadcr->set($com,$titleMain);
-		if(!empty($productList)) $breadcr->set($productList[$sluglang],$productList['name'.$lang]);
-		if(!empty($productCat)) $breadcr->set($productCat[$sluglang],$productCat['name'.$lang]);
+		if(!empty($titleMain)) $breadcr->set('san-pham/',$titleMain);
+		if(!empty($productList)) $breadcr->set(publicProductEntityPath($d,'product_list',$productList['id'],$lang),$productList['name'.$lang]);
+		if(!empty($productCat)) $breadcr->set(publicProductEntityPath($d,'product_cat',$productCat['id'],$lang),$productCat['name'.$lang]);
 		$breadcrumbs = $breadcr->get();
 	}
 	else if($idi!='')
@@ -496,10 +497,10 @@
 		}
 
 		/* breadCrumbs */
-		if(!empty($titleMain)) $breadcr->set($com,$titleMain);
-		if(!empty($productList)) $breadcr->set($productList[$sluglang],$productList['name'.$lang]);
-		if(!empty($productCat)) $breadcr->set($productCat[$sluglang],$productCat['name'.$lang]);
-		if(!empty($productItem)) $breadcr->set($productItem[$sluglang],$productItem['name'.$lang]);
+		if(!empty($titleMain)) $breadcr->set('san-pham/',$titleMain);
+		if(!empty($productList)) $breadcr->set(publicProductEntityPath($d,'product_list',$productList['id'],$lang),$productList['name'.$lang]);
+		if(!empty($productCat)) $breadcr->set(publicProductEntityPath($d,'product_cat',$productCat['id'],$lang),$productCat['name'.$lang]);
+		if(!empty($productItem)) $breadcr->set(publicProductEntityPath($d,'product_item',$productItem['id'],$lang),$productItem['name'.$lang]);
 		$breadcrumbs = $breadcr->get();
 	}
 	else if($ids!='')
@@ -558,11 +559,11 @@
 		}
 
 		/* breadCrumbs */
-		if(!empty($titleMain)) $breadcr->set($com,$titleMain);
-		if(!empty($productList)) $breadcr->set($productList[$sluglang],$productList['name'.$lang]);
-		if(!empty($productCat)) $breadcr->set($productCat[$sluglang],$productCat['name'.$lang]);
-		if(!empty($productItem)) $breadcr->set($productItem[$sluglang],$productItem['name'.$lang]);
-		if(!empty($productSub)) $breadcr->set($productSub[$sluglang],$productSub['name'.$lang]);
+		if(!empty($titleMain)) $breadcr->set('san-pham/',$titleMain);
+		if(!empty($productList)) $breadcr->set(publicProductEntityPath($d,'product_list',$productList['id'],$lang),$productList['name'.$lang]);
+		if(!empty($productCat)) $breadcr->set(publicProductEntityPath($d,'product_cat',$productCat['id'],$lang),$productCat['name'.$lang]);
+		if(!empty($productItem)) $breadcr->set(publicProductEntityPath($d,'product_item',$productItem['id'],$lang),$productItem['name'.$lang]);
+		if(!empty($productSub)) $breadcr->set(publicProductEntityPath($d,'product_sub',$productSub['id'],$lang),$productSub['name'.$lang]);
 		$breadcrumbs = $breadcr->get();
 	}
 	else if($idb!='')
@@ -674,7 +675,7 @@
 		$paging = $func->pagination($total,$perPage,$curPage,$url);
 
 		/* breadCrumbs */
-		if(!empty($titleMain)) $breadcr->set($com,$titleMain);
+		if(!empty($titleMain)) $breadcr->set('san-pham/',$titleMain);
 		$breadcrumbs = $breadcr->get();
 	}
 

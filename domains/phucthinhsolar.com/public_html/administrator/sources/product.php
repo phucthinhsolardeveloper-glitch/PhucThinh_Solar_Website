@@ -556,7 +556,7 @@
 	/* View man */
 	function viewMans()
 	{
-		global $d, $func, $comment, $commentTotals, $commentNewTotals, $strUrl, $curPage, $items, $paging, $type, $productStatusFilter, $productStatusFilterTotal, $adminPerPage;
+		global $d, $func, $comment, $commentTotals, $commentNewTotals, $strUrl, $curPage, $items, $paging, $type, $productStatusFilter, $productStatusFilterTotal, $adminPerPage, $productListCache;
 
 		$where = "";
 		$params = array($type);
@@ -586,7 +586,20 @@
 
 		$dataStatus = !empty($_REQUEST['data_status']) ? (string)$_REQUEST['data_status'] : '';
 		$dataStatusDefinition = adminProductDataStatus($dataStatus);
-		if($dataStatusDefinition) $where .= ' and '.$dataStatusDefinition['sql'];
+		if($dataStatusDefinition && isset($dataStatusDefinition['sql'])) $where .= ' and '.$dataStatusDefinition['sql'];
+		elseif($dataStatusDefinition)
+		{
+			/* missing_content/missing_wattage/missing_specs không có 'sql' -
+			   lọc bằng PHP rồi thu hẹp lại về "p.id in (...)" để tái dùng
+			   nguyên cách phân trang/đếm hiện có, không viết lại 2 lần. */
+			$phpFilteredIds = adminProductFilterIdsByStatus($d, $dataStatus, "where p.type = ? $where", $params);
+			if(!empty($phpFilteredIds))
+			{
+				$where .= " and p.id in (".implode(',', array_fill(0, count($phpFilteredIds), '?')).")";
+				$params = array_merge($params, $phpFilteredIds);
+			}
+			else $where .= " and 1 = 0";
+		}
 		else $dataStatus = '';
 
 		if(isset($_REQUEST['keyword']) && trim($_REQUEST['keyword']) !== '')
@@ -603,6 +616,20 @@
 		$limit = " limit ".$startpoint.",".$perPage;
 		$sql = "select p.*, case when p.id_cat = 0 then 1 when pc.id is null then 2 else 0 end as _category_issue from #_product p left join #_product_cat pc on pc.id = p.id_cat where p.type = ? $where order by p.numb,p.id desc $limit";
 		$items = $d->rawQuery($sql,$params);
+		/* Batch fetch danh mục cấp 1 của các dòng đang hiện, để badge "Thiếu
+		   Thông số" biết đúng profile PDP (biến tần/pin lưu trữ/bơm... khác
+		   cong_suat) mà không query lại DB cho từng dòng riêng lẻ. */
+		$productListCache = array();
+		if(!empty($items))
+		{
+			$listIds = array_values(array_unique(array_filter(array_map(function($item){ return (int)$item['id_list']; }, $items))));
+			if(!empty($listIds))
+			{
+				$listPlaceholders = implode(',', array_fill(0, count($listIds), '?'));
+				foreach($d->rawQuery("select id, slugvi, pdp_profile from #_product_list where id in ($listPlaceholders)", $listIds) as $listRow)
+					$productListCache[(int)$listRow['id']] = $listRow;
+			}
+		}
 		$sqlNum = "select count(*) as 'num' from #_product p where p.type = ? $where";
 		$count = $d->rawQueryOne($sqlNum,$params);
 		$total = (!empty($count)) ? $count['num'] : 0;

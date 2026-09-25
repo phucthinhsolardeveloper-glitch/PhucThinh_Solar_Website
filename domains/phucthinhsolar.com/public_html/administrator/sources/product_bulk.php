@@ -1367,8 +1367,20 @@ function productBulkExport($templateOnly = false)
     $products = array();
     if(!$templateOnly)
     {
-        $where = $dataStatusDefinition ? ' and '.$dataStatusDefinition['sql'] : '';
-        $products = $d->rawQuery("select p.* from #_product p where p.type = ?$where order by p.numb,p.id desc", array($type));
+        $where = '';
+        $params = array($type);
+        if($dataStatusDefinition && isset($dataStatusDefinition['sql'])) $where = ' and '.$dataStatusDefinition['sql'];
+        elseif($dataStatusDefinition)
+        {
+            $phpFilteredIds = adminProductFilterIdsByStatus($d, $dataStatus, "where p.type = ?", $params);
+            if(!empty($phpFilteredIds))
+            {
+                $where = " and p.id in (".implode(',', array_fill(0, count($phpFilteredIds), '?')).")";
+                $params = array_merge($params, $phpFilteredIds);
+            }
+            else $where = " and 1 = 0";
+        }
+        $products = $d->rawQuery("select p.* from #_product p where p.type = ?$where order by p.numb,p.id desc", $params);
         /* Đính kèm mô tả khối (chỉ bản riêng của sản phẩm) cho cột sectionsvi. */
         $sectionsByProduct = array();
         foreach($d->rawQuery("select scope_id, mode, blocksvi from #_content_section where scope='product'") as $sec)

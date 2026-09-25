@@ -2,6 +2,8 @@
 	include "config.php";
 	adminRequirePostCsrf(true);
 	require_once LIBRARIES.'admin_product_completeness.php';
+	require_once LIBRARIES.'product_content_blocks.php';
+	require_once LIBRARIES.'product_pdp_profiles.php';
 
 	$result = array('success' => false, 'updated' => 0, 'message' => 'Yêu cầu cập nhật không hợp lệ.');
 	$table = (!empty($_POST['table'])) ? (string) $_POST['table'] : '';
@@ -31,8 +33,19 @@
 				$where .= " and exists (select 1 from #_comment c where c.id_variant = p.id and c.type = ? and find_in_set('new-admin', c.status))";
 				$params[] = $type;
 			}
-			$dataStatusDefinition = adminProductDataStatus(isset($_POST['data_status']) ? (string)$_POST['data_status'] : '');
-			if($dataStatusDefinition) $where .= ' and '.$dataStatusDefinition['sql'];
+			$dataStatus = isset($_POST['data_status']) ? (string)$_POST['data_status'] : '';
+			$dataStatusDefinition = adminProductDataStatus($dataStatus);
+			if($dataStatusDefinition && isset($dataStatusDefinition['sql'])) $where .= ' and '.$dataStatusDefinition['sql'];
+			elseif($dataStatusDefinition)
+			{
+				$phpFilteredIds = adminProductFilterIdsByStatus($d, $dataStatus, $where, $params);
+				if(!empty($phpFilteredIds))
+				{
+					$where .= " and p.id in (".implode(',', array_fill(0, count($phpFilteredIds), '?')).")";
+					$params = array_merge($params, $phpFilteredIds);
+				}
+				else $where .= " and 1 = 0";
+			}
 			if(isset($_POST['keyword']) && trim((string)$_POST['keyword']) !== '')
 			{
 				$keyword = '%'.trim((string)$_POST['keyword']).'%';

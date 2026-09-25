@@ -74,9 +74,9 @@
                 </a>
             </div>
             <div class="col-12 col-sm-6 col-lg-4 col-xl-2">
-                <a class="info-box" href="index.php?com=product&act=man&type=san-pham&data_status=missing_wattage" title="Xem sản phẩm thiếu công suất">
+                <a class="info-box" href="index.php?com=product&act=man&type=san-pham&data_status=missing_wattage" title="Xem sản phẩm thiếu thông số quyết định (theo đúng profile PDP)">
                     <span class="info-box-icon bg-secondary"><i class="fas fa-bolt"></i></span>
-                    <div class="info-box-content text-dark"><span class="info-box-text">Thiếu công suất</span><span class="info-box-number"><?=$dashboardMissingWattage?></span></div>
+                    <div class="info-box-content text-dark"><span class="info-box-text">Thiếu thông số quyết định</span><span class="info-box-number"><?=$dashboardMissingWattage?></span></div>
                 </a>
             </div>
             <div class="col-12 col-sm-6 col-lg-4 col-xl-2">
