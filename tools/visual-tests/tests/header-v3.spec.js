@@ -59,7 +59,7 @@ test('header v3 keeps navigation and search usable', async ({ page, isMobile }, 
   const expectedPrimaryNavigation = ['Danh mục sản phẩm', 'Giới thiệu', 'Giải pháp', 'Dự án', 'Kiến thức', 'Hợp tác'];
   const primaryNavigation = await header.locator('.pts-header-nav .menu > div > ul > li > a').evaluateAll(links => links.map(link => link.childNodes[link.childNodes.length - 1].textContent.trim()));
   expect(primaryNavigation).toEqual(expectedPrimaryNavigation);
-  await expect(header.locator('.menu-knowledge > ul a[href="tin-tuc/"]').first()).toContainText('Tất cả bài viết');
+  await expect(header.locator('.menu-knowledge > ul a[href="/tin-tuc/"]').first()).toContainText('Tất cả bài viết');
   await expect(header.locator('.menu-cooperation > ul a[href="dai-ly#dang-ky-dai-ly"]')).toContainText('Đăng ký đại lý');
   await expect(header.locator('.menu-about > ul a[href="lien-he/#he-thong-chi-nhanh"]')).toContainText('Hệ thống chi nhánh');
   await expect(header.locator('.pts-header-nav .menu > div > ul > li.menu-dealer, .pts-header-nav .menu > div > ul > li.menu-contact')).toHaveCount(0);

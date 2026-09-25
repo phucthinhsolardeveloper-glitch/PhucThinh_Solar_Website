@@ -115,6 +115,7 @@ docker cp scripts/test-email-tls-security.php "$web_container:/tmp/test-email-tl
 docker cp scripts/test-email-production-config.php "$web_container:/tmp/test-email-production-config.php"
 docker cp scripts/test-public-session-security.php "$web_container:/tmp/test-public-session-security.php"
 docker cp scripts/test-admin-button-visibility.php "$web_container:/tmp/test-admin-button-visibility.php"
+docker cp scripts/test-admin-bulk-status-reporting.php "$web_container:/tmp/test-admin-bulk-status-reporting.php"
 docker cp scripts/test-admin-crud-lifecycle.php "$web_container:/tmp/test-admin-crud-lifecycle.php"
 docker cp scripts/test-public-form-submissions.php "$web_container:/tmp/test-public-form-submissions.php"
 docker cp scripts/test-public-lead-and-review.php "$web_container:/tmp/test-public-lead-and-review.php"
@@ -146,6 +147,12 @@ docker cp migrations/040_grant_hero_carousel_photo_permission.php "$web_containe
 docker cp migrations/041_grant_home_campaign_photo_permissions.php "$web_container:/tmp/041_grant_home_campaign_photo_permissions.php"
 docker cp migrations/042_grant_site_visual_photo_permissions.php "$web_container:/tmp/042_grant_site_visual_photo_permissions.php"
 docker cp migrations/043_install_about_showroom_image.php "$web_container:/tmp/043_install_about_showroom_image.php"
+docker cp migrations/052_add_product_category_intro_text.php "$web_container:/tmp/052_add_product_category_intro_text.php"
+docker cp migrations/053_fix_solar_light_article_claims_and_typos.php "$web_container:/tmp/053_fix_solar_light_article_claims_and_typos.php"
+docker cp migrations/054_remove_dealer_page_stale_claims.php "$web_container:/tmp/054_remove_dealer_page_stale_claims.php"
+docker cp migrations/055_fix_news_typos_and_stale_claims.php "$web_container:/tmp/055_fix_news_typos_and_stale_claims.php"
+docker cp migrations/056_cleanup_removed_admin_permissions.php "$web_container:/tmp/056_cleanup_removed_admin_permissions.php"
+docker cp migrations/057_expand_public_form_email_columns.php "$web_container:/tmp/057_expand_public_form_email_columns.php"
 docker exec "$web_container" mkdir -p /tmp/assets/043-about-showroom
 docker cp migrations/assets/043-about-showroom/. "$web_container:/tmp/assets/043-about-showroom/"
 docker cp scripts/import-oriana-images-local.php "$web_container:/tmp/import-oriana-images.php"
@@ -241,6 +248,12 @@ php -l /tmp/040_grant_hero_carousel_photo_permission.php
 php -l /tmp/041_grant_home_campaign_photo_permissions.php
 php -l /tmp/042_grant_site_visual_photo_permissions.php
 php -l /tmp/043_install_about_showroom_image.php
+php -l /tmp/052_add_product_category_intro_text.php
+php -l /tmp/053_fix_solar_light_article_claims_and_typos.php
+php -l /tmp/054_remove_dealer_page_stale_claims.php
+php -l /tmp/055_fix_news_typos_and_stale_claims.php
+php -l /tmp/056_cleanup_removed_admin_permissions.php
+php -l /tmp/057_expand_public_form_email_columns.php
 php -r "exit(function_exists(\"imagewebp\") ? 0 : 1);"
 cwebp -version
 php -l /tmp/import-oriana-images.php
@@ -253,6 +266,7 @@ php -l /tmp/test-email-tls-security.php
 php -l /tmp/test-email-production-config.php
 php -l /tmp/test-public-session-security.php
 php -l /tmp/test-admin-button-visibility.php
+php -l /tmp/test-admin-bulk-status-reporting.php
 php -l /tmp/test-product-merchant-feed.php
 php -l /tmp/test-product-structured-data.php
 php -l /tmp/test-proxy-https.php
@@ -274,6 +288,7 @@ php /tmp/test-email-tls-security.php
 php /tmp/test-email-production-config.php
 php /tmp/test-public-session-security.php
 php /tmp/test-admin-button-visibility.php
+php /tmp/test-admin-bulk-status-reporting.php
 php /tmp/test-admin-crud-lifecycle.php
 php /tmp/test-public-form-submissions.php
 php /tmp/test-public-lead-and-review.php
@@ -302,6 +317,8 @@ php /tmp/040_grant_hero_carousel_photo_permission.php
 php /tmp/041_grant_home_campaign_photo_permissions.php
 php /tmp/042_grant_site_visual_photo_permissions.php
 php /tmp/043_install_about_showroom_image.php
+php /tmp/056_cleanup_removed_admin_permissions.php
+php /tmp/057_expand_public_form_email_columns.php
 php /tmp/optimize-webp.php /var/www/html/assets/images/site-visuals --quality=82 --min-bytes=150000 --dry-run
 '
 

@@ -96,6 +96,7 @@ foreach (array('newsletter-consulting', 'review') as $testForm)
 
 register_shutdown_function(function () use (&$orderId, &$settingChanged, $settingBefore, $settingOptionsBefore, $testRateLimitRows, $d, $suffix, $orderCode) {
     $d->rawQuery("delete from #_newsletter where email like ?", array('leadtest-'.$suffix.'%'));
+    $d->rawQuery("delete from #_newsletter where fullname like ?", array('Lead Minimal '.$suffix.'%'));
     $d->rawQuery("delete from #_comment where email like ?", array('reviewtest-'.$suffix.'%'));
     if ($orderId)
     {
@@ -148,6 +149,8 @@ list($cookie, $csrf, $detailBody) = sessionAndCsrf($base, $productUrl);
 ok($cookie !== '', 'Mở trang chi tiết sản phẩm và nhận session');
 ok($csrf !== '', 'Trang chi tiết có form_csrf token');
 ok(strpos($detailBody, 'submit-newsletter') !== false, 'Trang chi tiết có form đăng ký tư vấn');
+ok(strpos($detailBody, 'name="dataNewsletter[email]" maxlength="150" autocomplete="email" placeholder="Nhập email" required') === false,
+   'Email không còn bị đánh dấu bắt buộc ở form tư vấn');
 
 $leadEmail = 'leadtest-'.$suffix.'@example.test';
 $lead = array(
@@ -178,6 +181,29 @@ if (!empty($leadRow['id']))
     ok($leadRow['type'] === 'dangkynhantin', 'Gắn đúng loại "dangkynhantin" (phân biệt với đăng ký đại lý)');
     ok(trim($leadRow['congsuat']) === '5kW', 'Công suất khách quan tâm lưu đúng');
 }
+
+/* Luồng rút gọn: chỉ Họ tên + SĐT cùng context sản phẩm ẩn là bắt buộc. */
+list($minimalCookie, $minimalCsrf) = sessionAndCsrf($base, $productUrl);
+$minimalName = 'Lead Minimal '.$suffix;
+$minimalPhone = phone();
+$minimalLead = array(
+    'submit-newsletter' => '1',
+    'form_csrf' => $minimalCsrf,
+    'recaptcha_response_newsletter' => '',
+    'dataNewsletter' => array(
+        'fullname' => $minimalName,
+        'phone' => $minimalPhone,
+        'product_id' => $product['id'],
+        'profile_key' => $leadProfileKey
+    )
+);
+$minimalResponse = request($base.$productUrl, $minimalCookie, $minimalLead);
+ok(in_array($minimalResponse['status'], array(200, 302), true), 'Nộp form chỉ có Họ tên + SĐT');
+$minimalRow = $d->rawQueryOne('select id,email,loaihinh,need_code,city_id,ward_id from #_newsletter where fullname=? and phone=? order by id desc limit 1', array($minimalName, $minimalPhone));
+ok(!empty($minimalRow['id']), 'Form rút gọn tạo bản ghi tư vấn');
+ok($minimalRow && trim((string)$minimalRow['email']) === '' && trim((string)$minimalRow['loaihinh']) === ''
+   && trim((string)$minimalRow['need_code']) === '' && (int)$minimalRow['city_id'] === 0 && (int)$minimalRow['ward_id'] === 0,
+   'Các field tùy chọn được lưu rỗng sạch, không phát sinh giá trị rác');
 
 /* CSRF sai phải bị chặn. */
 list($cookie2, ) = sessionAndCsrf($base, $productUrl);

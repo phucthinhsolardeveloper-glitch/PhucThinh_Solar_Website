@@ -138,7 +138,7 @@ test('Solution detail uses the canonical nested route and keeps legacy links wor
   await expect(page.locator('.breadcrumb-item')).toHaveCount(3);
   await expect(detail.locator('.pts-solution-editorial h2')).toHaveCount(7);
   await expect(detail.locator('.date_content, .author_post')).toHaveCount(0);
-  await expect(detail.locator('.pts-sd-switcher-all')).toHaveAttribute('href', 'giai-phap/');
+  await expect(detail.locator('.pts-sd-switcher-all')).toHaveAttribute('href', '/giai-phap/');
   await expect(detail.locator('.pts-sd-switcher a')).toHaveCount(6);
   const switcherPaths = await detail.locator('.pts-sd-switcher a').evaluateAll(links => links.map(link => new URL(link.href).pathname));
   expect(switcherPaths).toEqual([

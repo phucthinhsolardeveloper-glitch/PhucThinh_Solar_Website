@@ -8,6 +8,8 @@ $d = new PDODb($config['database']);
 $cache = new Cache($d);
 $func = new Functions($d, $cache);
 require LIBRARIES.'admin_security.php';
+require LIBRARIES.'product_content_blocks.php';
+require LIBRARIES.'product_pdp_profiles.php';
 require LIBRARIES.'admin_product_completeness.php';
 require LIBRARIES.'product_promo.php';
 require LIBRARIES.'login_security.php';
@@ -123,9 +125,8 @@ $adminLayoutCssSource = file_get_contents('/var/www/html/administrator/templates
 $adminStyleSource = file_get_contents('/var/www/html/administrator/assets/css/adminlte-style.css');
 $adminSettingFormSource = file_get_contents('/var/www/html/administrator/templates/setting/man/man_add_tpl.php');
 readinessAssert(
-    strpos($adminSettingFormSource, 'data[options][header_promise]') !== false
-        && strpos($adminSettingFormSource, 'maxlength="100"') !== false,
-    'Cài đặt website cho phép sửa thông điệp ngắn Header với giới hạn độ dài'
+	strpos($adminSettingFormSource, 'data[options][header_promise]') === false,
+	'Cài đặt website không khôi phục field header_promise đã không còn consumer public'
 );
 readinessAssert(
     strpos(file_get_contents('/var/www/html/libraries/config-type.php'), 'product_campaign&act=man') !== false
@@ -922,8 +923,17 @@ try
     readinessAssert($apiSelectedStatus['status'] === 200 && !empty($apiSelectedPayload['success']) && (int)$apiSelectedPayload['updated'] === 2 && $selectedStatusApplied, 'API trạng thái cập nhật set-based các dòng được chọn');
     $apiFilteredStatus = readinessHttp($base.'api/status.php', 'POST', array('admin_csrf' => $authenticatedToken[1], 'scope' => 'filtered', 'table' => 'product', 'attr' => 'baogia', 'value' => '1', 'type' => 'san-pham', 'com' => 'product', 'keyword' => $bulkStatusPrefix), $newCookie);
     $apiFilteredPayload = json_decode($apiFilteredStatus['body'], true);
-    $bulkStatusRow = $d->rawQueryOne('select status from #_product where id = ?', array($bulkStatusProductId));
-    readinessAssert($apiFilteredStatus['status'] === 200 && !empty($apiFilteredPayload['success']) && (int)$apiFilteredPayload['updated'] === 3 && strpos(','.$bulkStatusRow['status'].',', ',baogia,') !== false, 'API trạng thái áp dụng được toàn bộ kết quả theo bộ lọc');
+    $filteredStatusRows = $d->rawQuery('select status from #_product where code like ?', array($bulkStatusPrefix.'%'));
+    $filteredStatusApplied = count($filteredStatusRows) === 3;
+    foreach($filteredStatusRows as $filteredStatusRow)
+        if(strpos(','.$filteredStatusRow['status'].',', ',baogia,') === false) $filteredStatusApplied = false;
+    readinessAssert(
+        $apiFilteredStatus['status'] === 200
+            && !empty($apiFilteredPayload['success'])
+            && (int)$apiFilteredPayload['updated'] === 1
+            && $filteredStatusApplied,
+        'API trạng thái áp dụng bộ lọc và báo đúng số dòng thực sự thay đổi'
+    );
 
     // ADM-P1-012: form liên hệ Theme V2 đã bỏ trường địa chỉ; Admin phải lưu được liên hệ khi địa chỉ trống.
     $contactFixtureCode = 'CODEX-CONTACT-'.bin2hex(random_bytes(4));
@@ -1109,11 +1119,19 @@ try
     $expectedQueue = array(
         'orders' => (int) $d->rawQueryOne("select count(id) as t from #_order where order_status = ?", array(1))['t'],
         'reviews' => (int) $d->rawQueryOne("select count(id) as t from #_comment where id_parent = 0 and find_in_set('new-admin', status)")['t'],
-        'wattage' => (int) $d->rawQueryOne("select count(id) as t from #_product where type = ? and (cong_suat is null or cong_suat <= 0)", array('san-pham'))['t'],
+        'wattage' => count(adminProductFilterIdsByStatus($d, 'missing_wattage', "where p.type = ?", array('san-pham'))),
     );
-    $queueMatches = strpos($dashboard['body'], '>'.$expectedQueue['orders'].'</span>') !== false
-        && strpos($dashboard['body'], '>'.$expectedQueue['wattage'].'</span>') !== false;
-    readinessAssert($queueMatches, 'Ô hàng đợi bảng điều khiển khớp số liệu truy vấn trực tiếp');
+    preg_match('/Đơn hàng mới<\/span>\s*<span class="info-box-number">(\d+)<\/span>/', $dashboard['body'], $dashboardOrderMatch);
+    preg_match('/Thiếu thông số quyết định<\/span>\s*<span class="info-box-number">(\d+)<\/span>/', $dashboard['body'], $dashboardWattageMatch);
+    $queueMatches = isset($dashboardOrderMatch[1], $dashboardWattageMatch[1])
+        && (int)$dashboardOrderMatch[1] === $expectedQueue['orders']
+        && (int)$dashboardWattageMatch[1] === $expectedQueue['wattage'];
+    readinessAssert(
+        $queueMatches,
+        'Ô hàng đợi bảng điều khiển khớp số liệu truy vấn trực tiếp'
+            .' [orders='.(isset($dashboardOrderMatch[1]) ? $dashboardOrderMatch[1] : 'missing').'/'.$expectedQueue['orders']
+            .', wattage='.(isset($dashboardWattageMatch[1]) ? $dashboardWattageMatch[1] : 'missing').'/'.$expectedQueue['wattage'].']'
+    );
     readinessAssert(preg_match('/data:\s*\[[0-9,\s]*\]/', $dashboard['body']) === 1, 'Chart bảng điều khiển vẫn nhận mảng dữ liệu ngày');
 
     /* Form sửa sản phẩm phải chọn sẵn danh mục/thương hiệu đang lưu. Thiếu bước

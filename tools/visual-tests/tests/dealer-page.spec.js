@@ -38,9 +38,11 @@ test('Dealer page has a compact hero and a complete registration journey', async
 
   const quickLinks = hub.locator('.pts-dl-quick-nav a');
   await expect(quickLinks).toHaveCount(3);
-  await expect(quickLinks.nth(0)).toHaveAttribute('href', '#dang-ky-dai-ly');
-  await expect(quickLinks.nth(1)).toHaveAttribute('href', '#nang-luc-phan-phoi');
-  await expect(quickLinks.nth(2)).toHaveAttribute('href', '#ho-tro-dai-ly');
+  /* Dùng URL canonical đầy đủ thay vì fragment trần: website có <base href>,
+     fragment trần có thể bị resolve về trang chủ khi route hiện tại đổi dạng. */
+  await expect(quickLinks.nth(0)).toHaveAttribute('href', '/dai-ly/#dang-ky-dai-ly');
+  await expect(quickLinks.nth(1)).toHaveAttribute('href', '/dai-ly/#nang-luc-phan-phoi');
+  await expect(quickLinks.nth(2)).toHaveAttribute('href', '/dai-ly/#ho-tro-dai-ly');
   await expect(hub.locator('.pts-dl-support')).toHaveCSS('background-color', 'rgb(6, 21, 55)');
   await expect(hub.locator('.pts-dl-support .section-title h2')).toHaveCSS('color', 'rgb(255, 255, 255)');
 

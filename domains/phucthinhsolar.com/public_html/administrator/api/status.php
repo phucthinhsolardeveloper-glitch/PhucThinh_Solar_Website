@@ -62,8 +62,20 @@
 					$sql = "update #_product p set p.status = trim(both ',' from replace(concat(',',p.status,','), concat(',',?,','), ',')) $where and find_in_set(?,p.status)";
 				$updateParams = array_merge(array($attr), $params, array($attr));
 				$d->rawQuery($sql, $updateParams);
-				$cache->delete();
-				$result = array('success' => true, 'updated' => $targetCount, 'message' => 'Đã áp dụng cho toàn bộ kết quả đang lọc.');
+				/* $targetCount là quy mô bộ lọc, không phải số dòng thực sự đổi.
+				   UPDATE còn có điều kiện find_in_set/not find_in_set nên phần lớn
+				   sản phẩm có thể đã ở đúng trạng thái. Lấy ROW_COUNT() ngay trên
+				   cùng connection để API và thông báo Admin không báo tăng giả. */
+				$affectedRow = $d->rawQueryOne('select row_count() as total');
+				$affectedCount = !empty($affectedRow) ? (int)$affectedRow['total'] : 0;
+				if($affectedCount > 0) $cache->delete();
+				$result = array(
+					'success' => true,
+					'updated' => $affectedCount,
+					'message' => $affectedCount > 0
+						? 'Đã cập nhật '.number_format($affectedCount, 0, ',', '.').' sản phẩm trong kết quả đang lọc.'
+						: 'Toàn bộ sản phẩm trong kết quả lọc đã ở đúng trạng thái.'
+				);
 			}
 			elseif($targetCount === 0) $result['message'] = 'Không có sản phẩm phù hợp bộ lọc hiện tại.';
 			else $result['message'] = 'Phạm vi vượt quá 5.000 sản phẩm; hãy thu hẹp bộ lọc.';

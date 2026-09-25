@@ -152,7 +152,7 @@ $screens = array(
     array('Thương hiệu SP',      'product_man_brand_san-pham',     'index.php?com=product&act=man_brand&type=san-pham',  true),
     array('Tin tức',             'news_man_tin-tuc',               'index.php?com=news&act=man&type=tin-tuc',            true),
     array('Danh mục tin tức',    'news_man_list_tin-tuc',          'index.php?com=news&act=man_list&type=tin-tuc',       true),
-    array('Hình ảnh slide',      'photo_man_photo_slide',          'index.php?com=photo&act=man_photo&type=slide',       true),
+	array('Hero trang chủ V4',   'photo_man_photo_hero-carousel',  'index.php?com=photo&act=man_photo&type=hero-carousel', true),
     array('Đăng ký nhận tin',    'newsletter_man_dangkynhantin',   'index.php?com=newsletter&act=man&type=dangkynhantin', true),
     array('Đơn hàng',            'order_man',                      'index.php?com=order&act=man',                       false),
 );

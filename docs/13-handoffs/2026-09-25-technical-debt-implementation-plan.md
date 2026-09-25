@@ -184,12 +184,45 @@ kinh doanh thật từ bạn (không tự bịa). Đã làm xong loại đầu:
     thay đổi trong phiên này. Cập nhật lại giá trị đúng (khớp production đã audit trước đó) trực
     tiếp qua SQL, không cần migration riêng vì chỉ là đồng bộ local theo giá trị đã biết đúng.
 
-**Chưa làm, cần bạn cho số liệu/quyết định thật trước:**
-- [ ] Case study dự án chi tiết hơn (thông số hệ thống, ảnh thực tế, sản lượng) — cần dữ liệu dự án
-      thật, không thể bịa số.
-- [ ] Rà toàn bộ content tin tức cũ khác (mới sửa 1 bài mẫu) — cần thời gian đọc hết, hoặc bạn chỉ
-      định bài ưu tiên.
-- [ ] Rút gọn tiếp form (bỏ email/loaihinh/need_code) nếu bạn chấp nhận đánh đổi chất lượng lead.
+**Cập nhật 2026-09-25 (cùng ngày, lượt 2) — đã làm thêm theo yêu cầu:**
+
+- [x] **Rà toàn bộ tin tức + dự án cũ** (không chỉ 1 bài mẫu) — đọc hết 11 bài `tin-tuc` + 4 bài
+      `du-an` còn lại, qua `migrations/055_fix_news_typos_and_stale_claims.php`:
+  - Bài Sharp (#100): "Gp solar" — **tên công ty sai hoàn toàn**, rõ ràng copy nguyên văn từ
+        website khác chưa từng sửa lại thành "Phúc Thịnh Solar". Sửa luôn câu mở đầu tự mâu thuẫn
+        với chính thân bài ("... đầu tiên trên thế giới" ở đầu, nhưng thân bài lại viết đúng hơn
+        "một trong những công ty đầu tiên").
+  - Bài #108: lặp lại claim lỗi thời "chương trình mục tiêu Quốc gia... (giai đoạn 2021-2025)"
+        giống hệt static `dai-ly-1` đã sửa — bỏ.
+  - Bài #110: lỗi gõ "chIp" (I hoa giữa từ), "Bạn Nghĩ sao về điều này ?" (hoa nhầm chữ, thừa
+        khoảng trắng trước dấu ?).
+  - Dự án #73, #74 (Thu Hiền/Thu Hồng): "khuông viên nhà" → "khuôn viên nhà" (lỗi chính tả),
+        "Phúc thịnh solar" → "Phúc Thịnh Solar" (viết hoa không nhất quán).
+  - Các bài còn lại (#101-107, #109, dự án #75/#124) đọc hết, không có lỗi chính tả/claim sai rõ
+        ràng đáng sửa — dự án #75/#124 chỉ có 1 đoạn mô tả chung chung, không đủ chi tiết thành case
+        study thật (vẫn cần số liệu thật từ bạn, chưa làm được).
+- [x] **Rút gọn form sâu hơn** — bỏ `required` ở Email/"Bạn là..."/"Nhu cầu cần tư vấn", chỉ còn
+      Họ tên + SĐT thật sự bắt buộc (khớp đề xuất audit gốc). Sửa cả server-side
+      (`sources/allpage.php`) để khớp, không chỉ bỏ `required` ở HTML.
+  - **Phát hiện + sửa luôn 1 bug thật phát sinh từ lượt rút gọn trước:** khi bỏ `required` ở
+        Tỉnh/Phường (lượt 1), tôi mới chỉ đọc dòng validate `fullname/phone/email/loaihinh` mà bỏ
+        sót dòng `if(!$leadPlace) $leadErrors[] = ...` ngay phía dưới — server vẫn âm thầm **bắt
+        buộc** chọn đủ cả Tỉnh lẫn Phường mới cho submit qua, mâu thuẫn với việc đã bỏ `required`
+        client-side. Sửa lại: chỉ báo lỗi khi đã chọn 1 trong 2 mà thiếu cái còn lại (chọn Tỉnh mà
+        bỏ trống Phường), còn bỏ trống cả hai thì cho qua bình thường.
+  - Sửa thêm: `$leadProfile['needs'][$dataNewsletter['need_code']]` và
+        `$leadPlace['ward_name'].', '.$leadPlace['city_name']` dùng trực tiếp không kiểm tra rỗng
+        trước đó — sẽ tạo "Undefined index" khi field để trống; thêm biến `$leadNeedLabel`/
+        `$leadAddress` tính an toàn trước khi dùng.
+  - Verify **submit thật** (không chỉ đọc code) qua Playwright, 3 kịch bản: (1) chỉ Họ tên+SĐT →
+        lưu đúng, các field khác rỗng sạch, không lỗi; (2) đầy đủ field (email, địa chỉ, loại
+        khách, nhu cầu) → vẫn lưu đúng như trước, không bị lượt rút gọn làm hỏng; (3) chọn Tỉnh mà
+        bỏ trống Phường → bị từ chối đúng như thiết kế, không tạo data rác, không crash. Cả 3 test
+        record đã xoá khỏi DB sau khi xác nhận.
+
+**Chưa làm, vẫn cần bạn cho số liệu thật trước:**
+- [ ] Case study dự án chi tiết hơn (thông số hệ thống, ảnh thực tế, sản lượng) — 2 dự án còn lại
+      (#75, #124) chỉ có 1 đoạn mô tả chung, cần dữ liệu dự án thật, không thể bịa số.
 
 **Verify:** lint PHP 7.4 toàn bộ file sửa + 3 migration, `git diff --check` pass, xóa cache local
 (`caches/` là Docker volume, xóa qua `docker exec`, không xóa được từ host) sau mỗi lần cập nhật
@@ -260,7 +293,32 @@ Giữ nguyên key `missing_wattage` trong code/URL để không phá link cũ.
 - Lint PHP 7.4 toàn bộ 8 file sửa, `git diff --check` pass, browser test dashboard/filter/export
   qua Admin thật (đăng nhập, click, không chỉ đọc code) - 0 console error liên quan.
 
-**Chưa test trực tiếp:** hành vi ghi (UPDATE) thật của `api/status.php` scope=filtered - vì đây là
-thao tác ghi dữ liệu hàng loạt, không nên tự ý trigger trên local để "test cho biết". Đã xác nhận
-đúng qua: cùng pattern/helper y hệt 2 nơi đã test trực tiếp (list filter, export), lint sạch, đọc
-lại code cẩn thận từng dòng.
+**Cập nhật 2026-09-25 (lượt 3) — đã test trực tiếp `api/status.php` scope=filtered, tìm ra thêm 1
+bug thật:**
+
+Viết `scripts/test-admin-bulk-status-reporting.php` (fixture tự tạo user + product, tự dọn qua
+`register_shutdown_function`) để gọi API thật (login → CSRF → POST `scope=filtered`) thay vì suy
+luận từ code. Phát hiện: response trả `updated = $targetCount` (**quy mô bộ lọc**, tức số sản phẩm
+KHỚP điều kiện lọc) chứ không phải số dòng THỰC SỰ đổi trạng thái — UPDATE có thêm điều kiện
+`not find_in_set(...)`/`find_in_set(...)` nên nhiều sản phẩm trong bộ lọc có thể đã ở đúng trạng
+thái từ trước, không đổi gì, nhưng vẫn được báo là "đã cập nhật". Gọi lặp lại cùng 1 thao tác trên
+cùng bộ lọc sẽ luôn báo "thành công, đã cập nhật N sản phẩm" dù lần 2 trở đi không đổi gì thật —
+thông báo Admin nhìn thấy sai lệch với thực tế.
+
+Sửa: dùng `ROW_COUNT()` ngay trên cùng connection sau UPDATE để lấy đúng số dòng thực sự đổi, đổi
+thông điệp thành "Đã cập nhật N sản phẩm" / "Toàn bộ đã ở đúng trạng thái" tuỳ N=0 hay N>0, chỉ xoá
+cache khi thực sự có thay đổi (N>0).
+
+Verify bằng test tự động thật (không chỉ đọc code): tạo 1 sản phẩm fixture, gọi API bật `hienthi`
+qua filter → phải báo đúng 1; gọi lại y hệt lần 2 (không đổi gì) → phải báo đúng 0 thay vì báo lại
+"toàn bộ N trong bộ lọc"; tắt lại → phải báo đúng 1. Cả 3 kịch bản pass. Đồng thời cập nhật
+`scripts/test-admin-readiness.php` (assertion cũ giả định sai `updated===3` cho toàn bộ batch, giờ
+kiểm đúng `updated===1` + đối chiếu trực tiếp DB) và đăng ký test mới vào
+`scripts/predeploy-local.sh` để không tái phát trong tương lai.
+
+**Verify toàn bộ (tổng hợp cả 3 lượt) trước khi commit:** chạy thật 4 bộ test qua Docker
+(`test-admin-bulk-status-reporting.php` 5/5 pass, `test-public-lead-and-review.php` 24/24 pass gồm
+cả kịch bản form rút gọn, `test-admin-button-visibility.php` 46/46 pass,
+`test-admin-readiness.php` 184/184 pass) - không chỉ lint mà chạy hành vi thật end-to-end, kể cả
+ghi/đọc DB thật. `git diff --check` pass. Migration 056/057 xác nhận đã `--apply` thành công trước
+đó (bảng backup + schema đúng).

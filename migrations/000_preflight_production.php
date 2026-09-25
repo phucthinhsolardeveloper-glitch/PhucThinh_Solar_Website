@@ -190,6 +190,7 @@ preflightAdd($checks, '049', $contentSectionBackupMarkers, 2, 'bảng + index ba
 $productList = preflightTableName($prefix, 'product_list');
 $productDocument = preflightTableName($prefix, 'product_document');
 $newsletter = preflightTableName($prefix, 'newsletter');
+$contact = preflightTableName($prefix, 'contact');
 $pdpMarkers = 0;
 if(preflightColumnExists($d, $schema, $product, 'pdp_profile')) $pdpMarkers++;
 if(preflightColumnExists($d, $schema, $productList, 'pdp_profile')) $pdpMarkers++;
@@ -214,6 +215,10 @@ foreach(array(
 preflightAdd($checks, '026', $visitIndexes, 4, '4 index thống kê truy cập');
 preflightAdd($checks, '029', preflightIndexExists($d, $schema, $user, 'uniq_user_username', true) ? 1 : 0, 1, 'unique username');
 preflightAdd($checks, '036', preflightColumnExists($d, $schema, $product, 'photo_feed') ? 1 : 0, 1, 'table_product.photo_feed');
+$emailColumns = 0;
+if(preflightColumnType($d, $schema, $newsletter, 'email') === 'varchar(150)') $emailColumns++;
+if(preflightColumnType($d, $schema, $contact, 'email') === 'varchar(150)') $emailColumns++;
+preflightAdd($checks, '057', $emailColumns, 2, 'email form public varchar(150)');
 
 $unsafe = array();
 if(preflightTableExists($d, $schema, $user))
@@ -244,7 +249,7 @@ foreach($checks as $check)
 }
 
 echo "\nMigration dữ liệu/PHP không suy đoán bằng schema; luôn chạy dry-run và đọc kết quả:\n";
-echo "002, 005, 006, 014, 015, 018, 019, 020, 023, 024, 027, 028\n";
+echo "002, 005, 006, 014, 015, 018, 019, 020, 023, 024, 027, 028, 052, 053, 054, 055, 056\n";
 echo "025 nén ảnh là tác vụ tùy chọn, không phải điều kiện deploy code.\n\n";
 
 if(!empty($unsafe))

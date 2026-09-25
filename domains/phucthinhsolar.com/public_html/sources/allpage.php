@@ -104,18 +104,25 @@
             "select c.name city_name,w.name ward_name from #_ward w inner join #_city c on c.id=w.id_city where w.id=? and w.id_city=? and w.id_district=0 and find_in_set('hienthi',w.status) and find_in_set('hienthi',c.status) limit 0,1",
             array($dataNewsletter['ward_id'], $dataNewsletter['city_id'])
         ) : array();
+        /* Rút gọn form: chỉ họ tên + số điện thoại thật sự bắt buộc để gửi
+           được yêu cầu tư vấn (giảm ma sát, khớp khuyến nghị audit SEO
+           2026-09-25). Email/đối tượng/nhu cầu/địa chỉ giữ lại để hiển thị
+           nếu khách có điền, nhưng không còn chặn submit nếu bỏ trống -
+           theo dõi và bổ sung sau qua CRM/gọi lại thay vì bắt điền hết ngay
+           trên form sản phẩm. */
         $leadErrors = array();
         if($dataNewsletter['fullname'] === '') $leadErrors[] = 'Vui lòng nhập họ và tên';
         if($dataNewsletter['phone'] === '' || !$func->isPhone($dataNewsletter['phone'])) $leadErrors[] = 'Số điện thoại không hợp lệ';
-        if($dataNewsletter['email'] === '' || !$func->isEmail($dataNewsletter['email'])) $leadErrors[] = 'Email không hợp lệ';
-        if($dataNewsletter['loaihinh'] === '') $leadErrors[] = 'Vui lòng chọn đối tượng tư vấn';
+        if($dataNewsletter['email'] !== '' && !$func->isEmail($dataNewsletter['email'])) $leadErrors[] = 'Email không hợp lệ';
         if(!$leadProduct) $leadErrors[] = 'Sản phẩm cần tư vấn không hợp lệ';
         if($dataNewsletter['profile_key'] !== $leadProfileKey) $leadErrors[] = 'Nhóm tư vấn không hợp lệ';
-        if($dataNewsletter['need_code'] === '' || !isset($leadProfile['needs'][$dataNewsletter['need_code']])) $leadErrors[] = 'Vui lòng chọn nhu cầu tư vấn hợp lệ';
-        if(!$leadPlace) $leadErrors[] = 'Phường/Xã không thuộc Tỉnh/Thành phố đã chọn';
+        if($dataNewsletter['need_code'] !== '' && !isset($leadProfile['needs'][$dataNewsletter['need_code']])) $leadErrors[] = 'Nhu cầu tư vấn không hợp lệ';
+        if(($dataNewsletter['city_id'] > 0 || $dataNewsletter['ward_id'] > 0) && !$leadPlace) $leadErrors[] = 'Phường/Xã không thuộc Tỉnh/Thành phố đã chọn';
         if($leadErrors) $func->transfer(implode('. ', $leadErrors).'.', $func->getPageURL(), false);
 
         /* Save data */
+        $leadAddress = $leadPlace ? $leadPlace['ward_name'].', '.$leadPlace['city_name'] : '';
+        $leadNeedLabel = ($dataNewsletter['need_code'] !== '' && isset($leadProfile['needs'][$dataNewsletter['need_code']])) ? $leadProfile['needs'][$dataNewsletter['need_code']] : '';
         if(($scoreCaptcha >= 0.5 && $actionCaptcha == 'Newsletter') || $testCaptcha == true)
         {
             $data = array();
@@ -124,7 +131,7 @@
             $data['email'] = htmlspecialchars($dataNewsletter['email']);
             $data['loaihinh'] = htmlspecialchars($dataNewsletter['loaihinh']);
             $data['congsuat'] = htmlspecialchars($dataNewsletter['congsuat']);
-            $data['address'] = htmlspecialchars($leadPlace['ward_name'].', '.$leadPlace['city_name']);
+            $data['address'] = htmlspecialchars($leadAddress);
             $data['product_id'] = (int)$leadProduct['id'];
             $data['profile_key'] = $leadProfileKey;
             $data['need_code'] = $dataNewsletter['need_code'];
@@ -145,10 +152,10 @@
                         'Email' => $dataNewsletter['email'],
                         'Đối tượng tư vấn' => $dataNewsletter['loaihinh'],
                         'Sản phẩm' => $leadProduct['namevi'],
-                        'Nhu cầu' => $leadProfile['needs'][$dataNewsletter['need_code']],
+                        'Nhu cầu' => $leadNeedLabel,
                         'Số lượng dự kiến' => $dataNewsletter['congsuat'],
                         'Thông tin thêm' => $dataNewsletter['details'],
-                        'Địa chỉ' => $leadPlace['ward_name'].', '.$leadPlace['city_name']
+                        'Địa chỉ' => $leadAddress
                     ),
                     $dataNewsletter['email'],
                     $dataNewsletter['fullname'],

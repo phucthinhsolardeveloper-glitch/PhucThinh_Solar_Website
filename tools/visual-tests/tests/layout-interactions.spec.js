@@ -125,7 +125,7 @@ test('header, menu, breadcrumb and footer remain usable', async ({ page, isMobil
   expect(pageErrors).toEqual([]);
 });
 
-test('content surfaces stay flat across product and content hubs', async ({ page }) => {
+test('content surfaces stay flat across product and content hubs', async ({ page, isMobile }) => {
   const assertFlat = async selector => {
     const surface = page.locator(selector).first();
     await expect(surface).toBeVisible();
@@ -139,11 +139,21 @@ test('content surfaces stay flat across product and content hubs', async ({ page
 
   await page.goto('/danh-muc-san-pham/den-nlmt/', { waitUntil: 'domcontentloaded' });
   await assertFlat('.product-card');
-  await assertFlat('.filter_product');
+  /* Toolbar sticky là ranh giới thao tác có chủ đích: nền kín ngăn ảnh sản
+     phẩm xuyên qua khi cuộn. Mobile bỏ sticky/shadow nhưng vẫn giữ nền kín. */
+  const toolbarSurface = await page.locator('.filter_product').evaluate(element => ({
+    border: getComputedStyle(element).borderTopWidth,
+    background: getComputedStyle(element).backgroundColor,
+    shadow: getComputedStyle(element).boxShadow
+  }));
+  expect(toolbarSurface.border).toBe('0px');
+  expect(toolbarSurface.background).toBe('rgb(255, 255, 255)');
+  if (isMobile) expect(toolbarSurface.shadow).toBe('none');
+  else expect(toolbarSurface.shadow).not.toBe('none');
   await assertFlat('.pts-filter-card');
   const productHref = await page.locator('.product-card .product-item').first().getAttribute('href');
   expect(productHref).toBeTruthy();
-  await page.goto(`/${productHref}`, { waitUntil: 'domcontentloaded' });
+  await page.goto(productHref.startsWith('/') ? productHref : `/${productHref}`, { waitUntil: 'domcontentloaded' });
   const gallery = page.locator('.left-pro-detail > .MagicZoom');
   await expect(gallery).toBeVisible();
   expect(await gallery.evaluate(element => ({
@@ -734,8 +744,8 @@ test('parent type query and legacy product links canonicalize without changing r
   expect(new URL(page.url()).pathname).toBe('/danh-muc-san-pham/den-nlmt/den-op-tran/');
   const cards = page.locator('#show-product .product-item');
   expect(await cards.evaluateAll(els => els.map(e => e.getAttribute('href')))).toEqual(canonicalHrefs);
-  for(const card of await cards.all()) await expect(card).toHaveAttribute('href', /^san-pham\/[a-z0-9-]+$/);
-  const legacyHref = 'product/' + (await cards.first().getAttribute('href')).replace(/^san-pham\//, '') + '/';
+  for(const card of await cards.all()) await expect(card).toHaveAttribute('href', /^\/san-pham\/[a-z0-9-]+$/);
+  const legacyHref = 'product/' + (await cards.first().getAttribute('href')).replace(/^\/?san-pham\//, '') + '/';
   const legacyProduct = await request.get('/' + legacyHref, { maxRedirects: 0 });
   expect(legacyProduct.status()).toBe(301);
   expect(legacyProduct.headers().location).toMatch(/\/san-pham\/[a-z0-9-]+$/);
