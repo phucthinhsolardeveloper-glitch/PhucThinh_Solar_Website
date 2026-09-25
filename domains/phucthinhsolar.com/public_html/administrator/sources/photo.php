@@ -423,6 +423,32 @@
 		$message = '';
 		$response = array();
 		$id = (!empty($_POST['id'])) ? htmlspecialchars($_POST['id']) : 0;
+		/* PHP không đưa file vào tmp khi vượt upload_max_filesize hoặc
+		   post_max_size; trước đây hasFile() coi trường hợp này như "không chọn
+		   file" rồi vẫn báo lưu thành công. Dừng sớm để Admin biết đúng nguyên
+		   nhân và không tạo record/banner rỗng. */
+		$uploadLimitError = false;
+		if(!empty($_FILES))
+		{
+			foreach($_FILES as $upload)
+			{
+				if(isset($upload['error']) && in_array((int) $upload['error'], array(1, 2), true))
+				{
+					$uploadLimitError = true;
+					break;
+				}
+			}
+		}
+		if($uploadLimitError)
+		{
+			$response['messages'][] = 'Tệp upload vượt giới hạn của máy chủ (tối đa '.$func->getUploadLimitLabel().'). Hãy nén ảnh hoặc video nhẹ hơn rồi thử lại.';
+			$response['status'] = 'danger';
+			$message = base64_encode(json_encode($response));
+			$flash->set('message', $message);
+			$target = $id ? "index.php?com=photo&act=edit_photo&type=".$type."&id=".$id : "index.php?com=photo&act=add_photo&type=".$type;
+			$func->redirect($target);
+			return;
+		}
 		$data = (!empty($_POST['data'])) ? $_POST['data'] : null;
 		$dataMultiTemp = (!empty($_POST['dataMulti'])) ? $_POST['dataMulti'] : null;
 		/* Merge field dạng mảng (data[options][...]) vào cột options JSON của

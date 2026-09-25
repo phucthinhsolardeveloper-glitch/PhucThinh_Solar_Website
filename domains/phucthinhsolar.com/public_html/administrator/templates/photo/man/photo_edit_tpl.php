@@ -1,6 +1,7 @@
 <?php
     $linkMan = "index.php?com=photo&act=man_photo&type=".$type;
     $linkSave = "index.php?com=photo&act=save_photo&type=".$type;
+    $uploadLimitLabel = (method_exists($func, 'getUploadLimitLabel')) ? $func->getUploadLimitLabel() : '';
 ?>
 <!-- Content Header -->
 <section class="content-header text-sm">
@@ -55,11 +56,12 @@
                                     <?=$func->getImage(['class' => 'rounded img-upload', 'size-error' => '250x250x1', 'upload' => UPLOAD_PHOTO_L, 'image' => (!empty($item['photo'])) ? $item['photo'] : '', 'alt' => 'Alt Photo'])?>
                                 </div>
                                 <div class="custom-file my-custom-file">
-                                    <input type="file" class="custom-file-input" name="file" id="file" lang="vi">
+                                    <input type="file" class="custom-file-input" name="file" id="file" lang="vi" accept="image/jpeg,image/png,image/webp,image/gif">
                                     <label class="custom-file-label mb-0" data-browse="Chọn" for="file">Chọn file</label>
                                 </div>
                             </label>
                             <strong class="d-block text-sm"><?php echo "Width: ".$config['photo']['man_photo'][$type]['width_photo']." px - Height: ".$config['photo']['man_photo'][$type]['height_photo']." px (".$config['photo']['man_photo'][$type]['img_type_photo'].")" ?></strong>
+                            <?php if($uploadLimitLabel !== '') { ?><small class="text-muted d-block">Giới hạn upload hiệu dụng của máy chủ: <?=$uploadLimitLabel?> (tính theo mức thấp hơn giữa upload_max_filesize và post_max_size).</small><?php } ?>
                         </div>
                     </div>
                 <?php } ?>

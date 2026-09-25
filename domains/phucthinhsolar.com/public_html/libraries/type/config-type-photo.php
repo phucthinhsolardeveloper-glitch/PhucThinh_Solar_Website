@@ -27,7 +27,7 @@
     $config['photo']['man_photo'][$nametype]['width_photo'] = 1920;
     $config['photo']['man_photo'][$nametype]['height_photo'] = 900;
     $config['photo']['man_photo'][$nametype]['thumb_photo'] = '1920x900x1';
-    $config['photo']['man_photo'][$nametype]['img_type_photo'] = '.jpg|.gif|.png|.jpeg|.gif';
+    $config['photo']['man_photo'][$nametype]['img_type_photo'] = '.jpg|.gif|.png|.jpeg|.webp';
 
     /* Bốn banner ảnh trong Hero trang chủ V4. Giữ type hero-carousel để không
        tạo schema/quyền mới. Frontend dùng ảnh/nội dung của các record đang
@@ -35,7 +35,7 @@
        Record tắt không tự xuất hiện lại. */
     $nametype = "hero-carousel";
     $config['photo']['man_photo'][$nametype]['title_main_photo'] = "Trang chủ - 4 banner Hero";
-    $config['photo']['man_photo'][$nametype]['admin_note_photo'] = "Tối đa 4 banner theo thứ tự STT. Ảnh hiển thị trực tiếp trên Hero tỉ lệ 1600x720 (16:7), khuyến nghị chủ thể nằm trong 75% vùng giữa, không chèn chữ vào ảnh. Mỗi banner có ảnh, mô tả ngắn, link tới danh mục thật và bật Hiển thị; tắt banner sẽ ẩn banner đó. Khi chưa có banner nào, website dùng fallback an toàn.";
+    $config['photo']['man_photo'][$nametype]['admin_note_photo'] = "Đây là nguồn duy nhất của Hero trang chủ hiện tại. Tối đa 4 banner theo thứ tự STT; ảnh tỉ lệ 1600x720 (16:7), hỗ trợ JPG/PNG/WebP/GIF, khuyến nghị chủ thể nằm trong 75% vùng giữa và không chèn chữ vào ảnh. Mỗi banner có ảnh, mô tả ngắn, link tới danh mục thật và bật Hiển thị; tắt banner sẽ ẩn banner đó. Khi chưa có banner nào, website dùng fallback an toàn.";
     $config['photo']['man_photo'][$nametype]['check_photo'] = array("hienthi" => "Hiển thị");
     $config['photo']['man_photo'][$nametype]['number_photo'] = 4;
     $config['photo']['man_photo'][$nametype]['images_photo'] = true;
@@ -43,7 +43,7 @@
     $config['photo']['man_photo'][$nametype]['width_photo'] = 1600;
     $config['photo']['man_photo'][$nametype]['height_photo'] = 720;
     $config['photo']['man_photo'][$nametype]['thumb_photo'] = '400x180x1';
-    $config['photo']['man_photo'][$nametype]['img_type_photo'] = '.jpg|.gif|.png|.jpeg|.gif';
+    $config['photo']['man_photo'][$nametype]['img_type_photo'] = '.jpg|.gif|.png|.jpeg|.webp';
     $config['photo']['man_photo'][$nametype]['name_photo'] = true;
     $config['photo']['man_photo'][$nametype]['name_label_photo'] = 'Tiêu đề (dòng 1)';
     $config['photo']['man_photo'][$nametype]['desc_photo'] = true;
@@ -198,7 +198,7 @@
     $config['photo']['man_photo'][$nametype]['width_photo'] = 1920;
     $config['photo']['man_photo'][$nametype]['height_photo'] = 712;
     $config['photo']['man_photo'][$nametype]['thumb_photo'] = '1920x712x1';
-    $config['photo']['man_photo'][$nametype]['img_type_photo'] = '.jpg|.gif|.png|.jpeg|.gif';
+    $config['photo']['man_photo'][$nametype]['img_type_photo'] = '.jpg|.gif|.png|.jpeg|.webp';
     $config['photo']['man_photo'][$nametype]['video_mp4'] = true;
     $config['photo']['man_photo'][$nametype]['show_stt'] = true;
     $config['photo']['man_photo'][$nametype]['video_type'] = 'mp4';

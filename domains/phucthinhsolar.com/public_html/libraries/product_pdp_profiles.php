@@ -138,74 +138,134 @@ if(!function_exists('productPdpProfiles'))
     }
 
     /**
-     * Ảnh minh hoạ ứng dụng dùng chung cho PDP.
+     * Ảnh minh hoạ ứng dụng fallback theo profile/biến thể cho PDP.
      *
      * Đây là fallback theo nhóm sản phẩm, không thay thế ảnh do Admin nhập
      * trong content block. Ảnh đều là minh hoạ bối cảnh, không phải bằng
      * chứng công trình/khách hàng.
      */
-    function productPdpUseCaseDefaults($profileKey)
+    function productPdpUseCaseDefaults($profileKey, $variant = '')
     {
-        $asset = 'assets/images/site-visuals/pdp-usecase/';
+        $asset = 'assets/images/site-visuals/pdp-usecase-v2/';
         $defaults = array(
             'lighting' => array(
-                array('title' => 'Tường rào & cổng', 'text' => 'Bổ sung ánh sáng cho tường rào, cổng và lối vào nhà vào ban đêm.', 'photo' => $asset.'lighting-fence-gate.png'),
-                array('title' => 'Lối đi bên hông nhà', 'text' => 'Tạo điểm sáng gọn cho lối đi bên hông, sân nhà hoặc mặt tiền hẹp.', 'photo' => $asset.'lighting-home.png'),
-                array('title' => 'Nhà vườn & khuôn viên', 'text' => 'Phù hợp cho nhà vườn, homestay, quán cà phê và khu nghỉ dưỡng ngoài trời.', 'photo' => $asset.'lighting-garden.png')
+                array('title' => 'Đường nội bộ', 'text' => 'Chiếu sáng đường nội bộ, lối lưu thông và khu dân cư bằng hệ đèn độc lập.', 'photo' => $asset.'lighting-road.webp'),
+                array('title' => 'Nhà & lối đi', 'text' => 'Bổ sung ánh sáng cho cổng, sân nhà và lối đi bên hông vào ban đêm.', 'photo' => $asset.'lighting-home-gate.webp'),
+                array('title' => 'Khuôn viên công trình', 'text' => 'Hỗ trợ chiếu sáng lối vào, bãi xe và khuôn viên nhà xưởng hoặc công trình.', 'photo' => $asset.'lighting-commercial-campus.webp')
             ),
             'solar_panel' => array(
-                array('title' => 'Mái nhà dân dụng', 'text' => 'Tạo nguồn điện mặt trời cho nhà ở và công trình có diện tích mái phù hợp.', 'photo' => $asset.'panel-residential-roof.png'),
-                array('title' => 'Mái nhà xưởng', 'text' => 'Kết hợp theo chuỗi pin và thiết bị bảo vệ cho công trình thương mại, nhà xưởng.', 'photo' => $asset.'panel-commercial-roof.png'),
-                array('title' => 'Trang trại điện mặt trời', 'text' => 'Lựa chọn theo công suất, điện áp và quy mô phát điện của hệ thống.', 'photo' => $asset.'solar-farm.png')
+                array('title' => 'Mái nhà dân dụng', 'text' => 'Tạo nguồn điện mặt trời cho nhà ở và công trình có diện tích mái phù hợp.', 'photo' => $asset.'panel-residential-roof.webp'),
+                array('title' => 'Mái nhà xưởng', 'text' => 'Kết hợp theo chuỗi pin và thiết bị bảo vệ cho công trình thương mại, nhà xưởng.', 'photo' => $asset.'panel-commercial-roof.webp'),
+                array('title' => 'Trang trại điện mặt trời', 'text' => 'Lựa chọn theo công suất, điện áp và quy mô phát điện của hệ thống.', 'photo' => $asset.'solar-farm.webp')
             ),
             'fan' => array(
-                array('title' => 'Phòng ở & không gian sinh hoạt', 'text' => 'Bổ sung luồng gió cho phòng khách, phòng ngủ hoặc không gian sinh hoạt cần sự linh hoạt.', 'photo' => $asset.'fan-living-room.png'),
-                array('title' => 'Gian hàng & khu vực nhỏ', 'text' => 'Giải pháp làm mát cơ động cho quầy hàng, chốt trực và khu vực cần dùng điện linh hoạt.', 'photo' => $asset.'fan-shop-kiosk.png'),
-                array('title' => 'Không gian ngoài trời', 'text' => 'Sử dụng ở khu vực bán ngoài trời theo thời lượng và điều kiện môi trường phù hợp.', 'photo' => $asset.'lighting-campus.png')
+                array('title' => 'Phòng ở & không gian sinh hoạt', 'text' => 'Bổ sung luồng gió cho phòng khách, phòng ngủ hoặc không gian sinh hoạt cần sự linh hoạt.', 'photo' => $asset.'fan-living-room.webp'),
+                array('title' => 'Gian hàng & khu vực nhỏ', 'text' => 'Giải pháp làm mát cơ động cho quầy hàng, chốt trực và khu vực cần dùng điện linh hoạt.', 'photo' => $asset.'fan-shop-kiosk.webp'),
+                array('title' => 'Hiên có mái & khu vực bán ngoài trời', 'text' => 'Làm mát cho hiên, chòi nghỉ hoặc khu vực bán ngoài trời có mái che.', 'photo' => $asset.'fan-covered-patio.webp')
             ),
             'inverter' => array(
-                array('title' => 'Nhà ở & dân dụng', 'text' => 'Điều phối nguồn điện mặt trời, tải tiêu thụ và pin lưu trữ cho nhu cầu gia đình.', 'photo' => $asset.'energy-system.png'),
-                array('title' => 'Nhà xưởng & thương mại', 'text' => 'Lựa chọn theo công suất tải, số pha và phương án giám sát của công trình.', 'photo' => $asset.'energy-commercial-room.png'),
-                array('title' => 'Lưu trữ & dự phòng', 'text' => 'Kết hợp với pin lưu trữ để chủ động hơn khi mất điện hoặc cần tối ưu thời gian sử dụng.', 'photo' => $asset.'energy-system.png')
+                array('title' => 'Nhà ở & dân dụng', 'text' => 'Điều phối nguồn điện mặt trời, tải tiêu thụ và pin lưu trữ cho nhu cầu gia đình.', 'photo' => $asset.'inverter-home-room.webp'),
+                array('title' => 'Nhà xưởng & thương mại', 'text' => 'Lựa chọn theo công suất tải, số pha và phương án giám sát của công trình.', 'photo' => $asset.'inverter-commercial-room.webp'),
+                array('title' => 'Lưu trữ & dự phòng', 'text' => 'Kết hợp với pin lưu trữ để chủ động hơn khi mất điện hoặc cần tối ưu thời gian sử dụng.', 'photo' => $asset.'inverter-hybrid-backup.webp')
             ),
             'storage' => array(
-                array('title' => 'Lưu trữ cho gia đình', 'text' => 'Dự trữ điện cho các tải thiết yếu và nhu cầu sử dụng vào buổi tối.', 'photo' => $asset.'energy-system.png'),
-                array('title' => 'Dự phòng cho công trình', 'text' => 'Bổ sung nguồn dự phòng theo công suất tải và thời gian cần duy trì.', 'photo' => $asset.'energy-commercial-room.png'),
-                array('title' => 'Hệ thống điện mặt trời', 'text' => 'Kết hợp cùng biến tần tương thích và hệ thống giám sát phù hợp.', 'photo' => $asset.'solar-farm.png')
+                array('title' => 'Lưu trữ cho gia đình', 'text' => 'Dự trữ điện cho các tải thiết yếu và nhu cầu sử dụng vào buổi tối.', 'photo' => $asset.'storage-home-room.webp'),
+                array('title' => 'Dự phòng cho công trình', 'text' => 'Bổ sung nguồn dự phòng theo công suất tải và thời gian cần duy trì.', 'photo' => $asset.'storage-commercial-backup.webp'),
+                array('title' => 'Hệ thống điện mặt trời', 'text' => 'Kết hợp cùng biến tần tương thích và hệ thống giám sát phù hợp.', 'photo' => $asset.'storage-hybrid-system.webp')
             ),
             'pump_controller' => array(
-                array('title' => 'Tưới tiêu nông nghiệp', 'text' => 'Điều khiển bơm theo nguồn pin mặt trời cho ruộng, vườn và khu vực sản xuất.', 'photo' => $asset.'water-pump.png'),
-                array('title' => 'Bơm nước sinh hoạt', 'text' => 'Phù hợp với hệ bơm cần kiểm soát công suất, điện áp và lưu lượng theo thực tế.', 'photo' => $asset.'pump-water-tank.png'),
-                array('title' => 'Trang trại & ao hồ', 'text' => 'Tư vấn theo cột áp, lưu lượng, nguồn nước và điều kiện lắp đặt cụ thể.', 'photo' => $asset.'water-pump.png')
+                array('title' => 'Tưới tiêu nông nghiệp', 'text' => 'Điều khiển bơm theo nguồn pin mặt trời cho ruộng, vườn và khu vực sản xuất.', 'photo' => $asset.'pump-controller-irrigation.webp'),
+                array('title' => 'Bơm nước sinh hoạt', 'text' => 'Phù hợp với hệ bơm cần kiểm soát công suất, điện áp và lưu lượng theo thực tế.', 'photo' => $asset.'pump-controller-water-tank.webp'),
+                array('title' => 'Nhà kính & hồ chứa', 'text' => 'Tư vấn theo cột áp, lưu lượng, nguồn nước và điều kiện lắp đặt cụ thể.', 'photo' => $asset.'pump-controller-greenhouse.webp')
             ),
             'pump_hardware' => array(
-                array('title' => 'Tưới tiêu nông nghiệp', 'text' => 'Bơm nước cho ruộng, vườn và hệ thống tưới theo nhu cầu thực tế.', 'photo' => $asset.'water-pump.png'),
-                array('title' => 'Bơm nước sinh hoạt', 'text' => 'Giải pháp bơm cho bồn chứa, giếng hoặc nguồn nước cần cấp ổn định.', 'photo' => $asset.'pump-water-tank.png'),
-                array('title' => 'Trang trại & ao hồ', 'text' => 'Chọn máy bơm theo nguồn nước, cột áp, lưu lượng và công suất phù hợp.', 'photo' => $asset.'water-pump.png')
+                array('title' => 'Tưới tiêu nông nghiệp', 'text' => 'Bơm nước cho ruộng, vườn và hệ thống tưới theo nhu cầu thực tế.', 'photo' => $asset.'pump-irrigation-field.webp'),
+                array('title' => 'Bơm nước sinh hoạt', 'text' => 'Giải pháp bơm cho bồn chứa, giếng hoặc nguồn nước cần cấp ổn định.', 'photo' => $asset.'pump-water-tank.webp'),
+                array('title' => 'Nhà kính & ao hồ', 'text' => 'Chọn máy bơm theo nguồn nước, cột áp, lưu lượng và công suất phù hợp.', 'photo' => $asset.'pump-greenhouse-pond.webp')
             ),
             'accessory' => array(
-                array('title' => 'Kết nối hệ điện mặt trời', 'text' => 'Bổ sung thiết bị kết nối, bảo vệ và phân phối trong hệ thống điện mặt trời.', 'photo' => $asset.'solar-farm.png'),
-                array('title' => 'Tủ điện & thiết bị', 'text' => 'Lựa chọn theo điện áp, dòng điện và thiết bị tương thích trong hệ thống.', 'photo' => $asset.'energy-protection-box.png'),
-                array('title' => 'Lắp đặt ngoài trời', 'text' => 'Kiểm tra cấp bảo vệ, vật liệu và quy cách lắp đặt trước khi sử dụng.', 'photo' => $asset.'energy-protection-box.png')
+                array('title' => 'Bảo vệ trên mái', 'text' => 'Bổ sung thiết bị kết nối và bảo vệ cho các chuỗi pin trên mái.', 'photo' => $asset.'accessory-rooftop-protection.webp'),
+                array('title' => 'Tủ điện & phân phối', 'text' => 'Lựa chọn theo điện áp, dòng điện và thiết bị tương thích trong hệ thống.', 'photo' => $asset.'accessory-distribution-cabinet.webp'),
+                array('title' => 'Kết nối ngoài trời', 'text' => 'Kiểm tra cấp bảo vệ, vật liệu và quy cách lắp đặt trước khi sử dụng.', 'photo' => $asset.'accessory-outdoor-connectors.webp')
             )
         );
+        $variants = array(
+            'lighting_street' => array(
+                array('title' => 'Đường nội bộ', 'text' => 'Chiếu sáng tuyến đường nội bộ, lối lưu thông và khu dân cư theo mặt bằng thực tế.', 'photo' => $asset.'lighting-street-road.webp'),
+                array('title' => 'Bãi xe & lối vào', 'text' => 'Bố trí ánh sáng cho bãi xe, cổng vào và khu vực cần quan sát vào ban đêm.', 'photo' => $asset.'lighting-street-parking.webp'),
+                array('title' => 'Khuôn viên công trình', 'text' => 'Hỗ trợ chiếu sáng tuyến đường và khuôn viên nhà xưởng, công trình hoặc khu dịch vụ.', 'photo' => $asset.'lighting-street-campus.webp')
+            ),
+            'lighting_flood' => array(
+                array('title' => 'Sân & bãi ngoài trời', 'text' => 'Phủ sáng sân, bãi xe và khu vực ngoài trời cần góc chiếu rộng.', 'photo' => $asset.'lighting-flood-yard.webp'),
+                array('title' => 'Nhà xưởng & kho', 'text' => 'Bổ sung ánh sáng cho mặt tiền, bãi thao tác và khu vực quanh nhà xưởng.', 'photo' => $asset.'lighting-flood-warehouse.webp'),
+                array('title' => 'Khu vực sản xuất', 'text' => 'Phù hợp khu vực sản xuất hoặc công trình cần bố trí đèn chiếu tập trung ngoài trời.', 'photo' => $asset.'lighting-flood-worksite.webp')
+            ),
+            'lighting_garden' => array(
+                array('title' => 'Lối đi sân vườn', 'text' => 'Tạo điểm sáng dẫn hướng dọc lối đi, bồn cây và khuôn viên cảnh quan.', 'photo' => $asset.'lighting-side-path.webp'),
+                array('title' => 'Cổng & sân nhà', 'text' => 'Bổ sung ánh sáng cho cổng, sân nhà và lối vào theo phong cách cảnh quan.', 'photo' => $asset.'lighting-home-gate.webp'),
+                array('title' => 'Homestay & khu nghỉ dưỡng', 'text' => 'Tăng khả năng sử dụng buổi tối cho sân vườn, homestay, resort hoặc quán cà phê.', 'photo' => $asset.'lighting-garden-homestay.webp')
+            ),
+            'lighting_pole' => array(
+                array('title' => 'Cổng & hàng rào', 'text' => 'Bố trí đèn trên trụ cổng, hàng rào hoặc lối vào cần điểm sáng định hướng.', 'photo' => $asset.'lighting-home-gate.webp'),
+                array('title' => 'Lối vào công trình', 'text' => 'Tạo nhịp ánh sáng cho lối vào, sân trước và tuyến tiếp cận công trình.', 'photo' => $asset.'lighting-pole-estate.webp'),
+                array('title' => 'Khuôn viên cảnh quan', 'text' => 'Phù hợp khuôn viên biệt thự, nhà vườn, dịch vụ hoặc công trình cần đồng bộ cảnh quan.', 'photo' => $asset.'lighting-garden-homestay.webp')
+            ),
+            'lighting_wall' => array(
+                array('title' => 'Tường rào & cổng', 'text' => 'Bổ sung ánh sáng gọn trên tường rào, cổng và hiên nhà.', 'photo' => $asset.'lighting-home-gate.webp'),
+                array('title' => 'Lối đi bên hông nhà', 'text' => 'Tạo điểm sáng cho lối đi hẹp, ban công hoặc mặt tiền mà không chiếm diện tích.', 'photo' => $asset.'lighting-side-path.webp'),
+                array('title' => 'Nhà vườn & homestay', 'text' => 'Kết hợp chiếu sáng và trang trí cho nhà vườn, homestay, quán cà phê hoặc resort.', 'photo' => $asset.'lighting-garden-homestay.webp')
+            ),
+            'lighting_ceiling' => array(
+                array('title' => 'Hiên & sảnh có mái', 'text' => 'Chiếu sáng hiên, sảnh và khu vực có mái che cần bố trí đèn gọn.', 'photo' => $asset.'lighting-ceiling-porch.webp'),
+                array('title' => 'Khu vực sinh hoạt', 'text' => 'Bổ sung ánh sáng cho chòi nghỉ, hành lang hoặc không gian sinh hoạt có mái.', 'photo' => $asset.'lighting-ceiling-courtyard.webp'),
+                array('title' => 'Kho & khu vực kỹ thuật', 'text' => 'Phù hợp khu vực có mái cần nguồn sáng độc lập, dễ bố trí theo mặt bằng.', 'photo' => $asset.'lighting-ceiling-warehouse.webp')
+            ),
+            'lighting_ufo' => array(
+                array('title' => 'Kho & nhà xưởng cao', 'text' => 'Bố trí tại không gian cao, cần vùng sáng rộng cho kho hoặc nhà xưởng.', 'photo' => $asset.'lighting-ufo-warehouse.webp'),
+                array('title' => 'Sân sản xuất & bãi thao tác', 'text' => 'Hỗ trợ chiếu sáng vùng thao tác, sân sản xuất hoặc bãi tập kết ngoài trời.', 'photo' => $asset.'lighting-ufo-worksite.webp'),
+                array('title' => 'Trang trại & khu vực rộng', 'text' => 'Phù hợp khu vực rộng cần nguồn sáng độc lập và dễ bố trí theo vị trí sử dụng.', 'photo' => $asset.'lighting-ufo-farm.webp')
+            ),
+            'accessory_cable' => array(
+                array('title' => 'Tuyến cáp & dây dẫn', 'text' => 'Bố trí tuyến cáp, dây nối và phụ kiện dẫn điện trong hệ thống mặt trời.', 'photo' => $asset.'accessory-cable-rooftop.webp'),
+                array('title' => 'Ống & bảo vệ đường dây', 'text' => 'Bảo vệ tuyến dây tại mái, tường hoặc khu vực ngoài trời theo điều kiện lắp đặt.', 'photo' => $asset.'accessory-cable-conduit.webp'),
+                array('title' => 'Tiếp địa & kết nối', 'text' => 'Hoàn thiện các điểm kết nối, tiếp địa và bảo vệ đường dây theo thiết kế hệ thống.', 'photo' => $asset.'accessory-cable-grounding.webp')
+            ),
+            'accessory_controller' => array(
+                array('title' => 'Tủ điều khiển sạc', 'text' => 'Bố trí bộ điều khiển sạc và thiết bị giám sát trong tủ kỹ thuật phù hợp.', 'photo' => $asset.'accessory-controller-cabinet.webp'),
+                array('title' => 'Điểm giám sát hệ thống', 'text' => 'Theo dõi trạng thái sạc, tải và dữ liệu vận hành tại khu vực kỹ thuật.', 'photo' => $asset.'accessory-controller-monitoring.webp'),
+                array('title' => 'Phòng kỹ thuật điện mặt trời', 'text' => 'Tích hợp thiết bị điều khiển, đo lường và kết nối trong phòng kỹ thuật.', 'photo' => $asset.'accessory-controller-room.webp')
+            )
+        );
+        if($variant !== '' && isset($variants[$variant])) return $variants[$variant];
         return isset($defaults[$profileKey]) ? $defaults[$profileKey] : $defaults['lighting'];
     }
 
-    function productPdpUseCasePhoto($profileKey, $title = '', $index = 0)
+    function productPdpUseCasePhoto($profileKey, $title = '', $index = 0, $variant = '')
     {
-        $defaults = productPdpUseCaseDefaults($profileKey);
+        $defaults = productPdpUseCaseDefaults($profileKey, $variant);
+        $asset = 'assets/images/site-visuals/pdp-usecase-v2/';
         $title = mb_strtolower(trim(strip_tags((string)$title)), 'UTF-8');
+        if($variant !== '' && !empty($defaults)) return $defaults[$index % count($defaults)]['photo'];
         if($profileKey === 'lighting')
         {
-            if(strpos($title, 'đường nội bộ') !== false || strpos($title, 'bãi đỗ') !== false) return 'assets/images/site-visuals/pdp-usecase/lighting-road.png';
-            if(strpos($title, 'tường rào') !== false || strpos($title, 'cổng') !== false) return $defaults[0]['photo'];
-            if(strpos($title, 'lối đi') !== false || strpos($title, 'sân nhà') !== false) return $defaults[1]['photo'];
-            if(strpos($title, 'nhà vườn') !== false) return $defaults[2]['photo'];
-            if(strpos($title, 'khuôn viên') !== false || strpos($title, 'công trình') !== false || strpos($title, 'nhà xưởng') !== false || strpos($title, 'resort') !== false) return 'assets/images/site-visuals/pdp-usecase/lighting-campus.png';
+            if(strpos($title, 'đường nội bộ') !== false || strpos($title, 'bãi đỗ') !== false) return $defaults[0]['photo'];
+            if(strpos($title, 'tường rào') !== false || strpos($title, 'cổng') !== false) return $defaults[1]['photo'];
+            if(strpos($title, 'lối đi') !== false || strpos($title, 'sân nhà') !== false) return $asset.'lighting-side-path.webp';
+            if(strpos($title, 'nhà vườn') !== false || strpos($title, 'homestay') !== false) return $asset.'lighting-garden-homestay.webp';
+            if(strpos($title, 'khuôn viên') !== false || strpos($title, 'công trình') !== false || strpos($title, 'nhà xưởng') !== false || strpos($title, 'resort') !== false) return $defaults[2]['photo'];
         }
-        if($profileKey === 'solar_panel' && (strpos($title, 'mái') !== false || strpos($title, 'nhà') !== false)) return $defaults[0]['photo'];
-        if(($profileKey === 'pump_controller' || $profileKey === 'pump_hardware') && (strpos($title, 'tưới') !== false || strpos($title, 'bơm') !== false || strpos($title, 'nước') !== false)) return $defaults[0]['photo'];
+        if($profileKey === 'solar_panel')
+        {
+            if(strpos($title, 'trang trại') !== false || strpos($title, 'farm') !== false) return $defaults[2]['photo'];
+            if(strpos($title, 'nhà xưởng') !== false || strpos($title, 'thương mại') !== false || strpos($title, 'công nghiệp') !== false) return $defaults[1]['photo'];
+            if(strpos($title, 'mái') !== false || strpos($title, 'nhà') !== false) return $defaults[0]['photo'];
+        }
+        if($profileKey === 'pump_controller' || $profileKey === 'pump_hardware')
+        {
+            if(strpos($title, 'nhà kính') !== false || strpos($title, 'ao hồ') !== false || strpos($title, 'hồ chứa') !== false) return $defaults[2]['photo'];
+            if(strpos($title, 'sinh hoạt') !== false || strpos($title, 'bồn') !== false || strpos($title, 'bể') !== false || strpos($title, 'giếng') !== false) return $defaults[1]['photo'];
+            if(strpos($title, 'tưới') !== false || strpos($title, 'ruộng') !== false || strpos($title, 'vườn') !== false || strpos($title, 'nông nghiệp') !== false) return $defaults[0]['photo'];
+        }
         return isset($defaults[$index % count($defaults)]) ? $defaults[$index % count($defaults)]['photo'] : '';
     }
 
@@ -233,6 +293,54 @@ if(!function_exists('productPdpProfiles'))
         if(!empty($product['pdp_profile'])) return productPdpNormalizeProfile($product['pdp_profile'], false);
         if(!empty($list['pdp_profile'])) return productPdpNormalizeProfile($list['pdp_profile'], false);
         return productPdpProfileFromSlug(isset($list['slugvi']) ? $list['slugvi'] : '');
+    }
+
+    /**
+     * Tách bối cảnh minh hoạ trong cùng một danh mục cha.
+     * Chỉ dùng cho khối ứng dụng; không thay đổi profile thông số/checkout.
+     */
+    function productPdpUseCaseVariant($product = array(), $list = array(), $profileKey = '')
+    {
+        $name = isset($product['namevi']) ? htmlspecialchars_decode((string)$product['namevi'], ENT_QUOTES) : '';
+        $slug = isset($product['slugvi']) ? (string)$product['slugvi'] : '';
+        $listSlug = isset($list['slugvi']) ? (string)$list['slugvi'] : '';
+        /* Tên sản phẩm không phải lúc nào cũng nói rõ vị trí lắp đặt (một số
+           model chỉ có mã DB/UFO). Đọc thêm các trường ứng dụng/lắp đặt đã
+           nhập trong Admin để tránh rơi về ảnh minh hoạ sai ngữ cảnh. */
+        $context = '';
+        foreach(array('applicationsvi', 'installationvi', 'highlightsvi', 'descvi') as $field)
+        {
+            if(isset($product[$field]) && trim((string)$product[$field]) !== '')
+            {
+                $context .= ' '.htmlspecialchars_decode(strip_tags((string)$product[$field]), ENT_QUOTES);
+            }
+        }
+        $context = mb_strtolower($context, 'UTF-8');
+        $identity = mb_strtolower(trim($name.' '.$slug.' '.$listSlug), 'UTF-8');
+        $haystack = mb_strtolower(trim($identity.' '.$context), 'UTF-8');
+        if($profileKey === 'lighting')
+        {
+            /* Các tín hiệu kiểu sản phẩm chỉ lấy từ tên/slug; phần mô tả có
+               thể nhắc “cần đèn”, “tương thích”, “trần” nhưng không có nghĩa
+               sản phẩm thuộc nhóm trụ, tường hay ốp trần. */
+            if(strpos($identity, 'trụ cổng') !== false || strpos($identity, 'tru-cong') !== false || strpos($identity, 'cần đèn') !== false || strpos($identity, 'can-den') !== false || $listSlug === 'tru-den') return 'lighting_pole';
+            if(strpos($identity, 'ufo') !== false) return 'lighting_ufo';
+            if(strpos($identity, 'treo tường') !== false || strpos($identity, 'treo-tuong') !== false || strpos($identity, 'tường') !== false) return 'lighting_wall';
+            if(strpos($identity, 'ốp trần') !== false || strpos($identity, 'op-tran') !== false || strpos($identity, 'trần') !== false) return 'lighting_ceiling';
+            if($listSlug === 'den-san-vuon') return 'lighting_garden';
+            if(strpos($identity, 'pha') !== false || strpos($identity, 'đèn pha') !== false) return 'lighting_flood';
+            if(strpos($identity, 'đường') !== false || strpos($identity, 'den-duong') !== false || strpos($context, 'đường nội bộ') !== false || strpos($context, 'tuyến đường') !== false || strpos($context, 'đường nông thôn') !== false || strpos($context, 'khu dân cư') !== false) return 'lighting_street';
+            if(strpos($identity, 'sân vườn') !== false || strpos($identity, 'san-vuon') !== false) return 'lighting_garden';
+            /* Đèn NLMT chỉ có mã model vẫn cần bối cảnh an toàn; dùng nhóm
+               floodlight trung tính thay vì rơi vào ảnh đường/sân vườn. */
+            return 'lighting_flood';
+        }
+        if($profileKey === 'accessory')
+        {
+            if(strpos($haystack, 'điều khiển sạc') !== false || strpos($haystack, 'dieu-khien-sac') !== false || strpos($haystack, 'mppt') !== false || strpos($haystack, 'pwm') !== false || strpos($haystack, 'meter') !== false || strpos($haystack, 'metter') !== false || strpos($haystack, 'ems') !== false || strpos($haystack, 'bám tải') !== false || strpos($haystack, 'bam-tai') !== false) return 'accessory_controller';
+            if(strpos($haystack, 'cáp') !== false || strpos($haystack, 'cap-') !== false || strpos($haystack, 'dây') !== false || strpos($haystack, 'day-') !== false || strpos($haystack, 'ống') !== false || strpos($haystack, 'ong-') !== false || strpos($haystack, 'ruột gà') !== false || strpos($haystack, 'keo') !== false || strpos($haystack, 'băng keo') !== false || strpos($haystack, 'tiếp địa') !== false || strpos($haystack, 'tiep-dia') !== false || strpos($haystack, 'mc4') !== false || strpos($haystack, 'đầu nối') !== false) return 'accessory_cable';
+        }
+        return '';
     }
 
     function productPdpProfile($key)

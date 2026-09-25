@@ -31,6 +31,7 @@ require_once LIBRARIES.'product_specs.php';
 require_once LIBRARIES.'product_content_blocks.php';
 $pdpProfileKey = productPdpResolveProfile($rowDetail, isset($productList) ? $productList : array());
 $pdpProfile = productPdpProfile($pdpProfileKey);
+$pdpUseCaseVariant = productPdpUseCaseVariant($rowDetail, isset($productList) ? $productList : array(), $pdpProfileKey);
 $structuredSpecResult = productStructuredSpecs($rowDetail, $lang, $pdpProfileKey);
 $structuredSpecs = $structuredSpecResult['specs'];
 $useLegacySpecs = $structuredSpecResult['use_legacy'];
@@ -179,13 +180,39 @@ foreach((array)$productSections['blocks'] as $contentBlock)
         if(count($pdpUseCases) >= 3) break 2;
     }
 }
-/* Mỗi profile có bộ ảnh minh hoạ dùng chung làm fallback an toàn. Nội dung
-   do Admin nhập trong content block vẫn được ưu tiên, chỉ bổ sung ảnh còn
-   thiếu để card không rơi về placeholder icon. */
-if(!$pdpUseCases && $pdpProfileKey !== 'general') $pdpUseCases = productPdpUseCaseDefaults($pdpProfileKey);
+/* Mỗi profile/biến thể có bộ ảnh minh hoạ làm fallback an toàn. Nội dung do
+   Admin nhập trong content block vẫn được ưu tiên, chỉ bổ sung ảnh còn thiếu
+   để card không rơi về placeholder icon. */
+if(!$pdpUseCases && $pdpProfileKey !== 'general') $pdpUseCases = productPdpUseCaseDefaults($pdpProfileKey, $pdpUseCaseVariant);
+$pdpUseCasePhotoSeen = array();
 foreach($pdpUseCases as $pdpUseCaseIndex => &$pdpUseCase)
 {
-    if(empty($pdpUseCase['photo'])) $pdpUseCase['photo'] = productPdpUseCasePhoto($pdpProfileKey, isset($pdpUseCase['title']) ? $pdpUseCase['title'] : '', $pdpUseCaseIndex);
+    if(empty($pdpUseCase['photo'])) $pdpUseCase['photo'] = productPdpUseCasePhoto($pdpProfileKey, isset($pdpUseCase['title']) ? $pdpUseCase['title'] : '', $pdpUseCaseIndex, $pdpUseCaseVariant);
+    /* Content block cũ đôi khi lặp cùng một ảnh cho cả 3 ứng dụng. Giữ ảnh
+       Admin đầu tiên, nhưng thay các bản lặp bằng fallback đúng ngữ cảnh để
+       card không còn hiển thị ba lần cùng một cảnh. */
+    $pdpUseCasePhotoKey = strtolower(trim((string)$pdpUseCase['photo']));
+    if($pdpProfileKey !== 'general' && $pdpUseCasePhotoKey !== '' && isset($pdpUseCasePhotoSeen[$pdpUseCasePhotoKey]))
+    {
+        $pdpFallbackDefaults = productPdpUseCaseDefaults($pdpProfileKey, $pdpUseCaseVariant);
+        $pdpFallbackCandidates = array(productPdpUseCasePhoto($pdpProfileKey, isset($pdpUseCase['title']) ? $pdpUseCase['title'] : '', $pdpUseCaseIndex, $pdpUseCaseVariant));
+        if(!empty($pdpFallbackDefaults))
+        {
+            $pdpFallbackCandidates[] = $pdpFallbackDefaults[$pdpUseCaseIndex % count($pdpFallbackDefaults)]['photo'];
+            $pdpFallbackCandidates[] = $pdpFallbackDefaults[($pdpUseCaseIndex + 1) % count($pdpFallbackDefaults)]['photo'];
+        }
+        foreach($pdpFallbackCandidates as $pdpFallbackPhoto)
+        {
+            $pdpFallbackPhotoKey = strtolower(trim((string)$pdpFallbackPhoto));
+            if($pdpFallbackPhotoKey !== '' && !isset($pdpUseCasePhotoSeen[$pdpFallbackPhotoKey]))
+            {
+                $pdpUseCase['photo'] = $pdpFallbackPhoto;
+                $pdpUseCasePhotoKey = $pdpFallbackPhotoKey;
+                break;
+            }
+        }
+    }
+    if($pdpUseCasePhotoKey !== '') $pdpUseCasePhotoSeen[$pdpUseCasePhotoKey] = true;
 }
 unset($pdpUseCase);
 $pdpWarrantyPolicies = array();
@@ -445,7 +472,9 @@ else $pdpSupportLabel = 'Video sản phẩm';
             <article class="pts-pdp-use-case-item">
                 <?php if(!empty($useCase['photo'])) { ?>
                 <div class="pts-pdp-use-case-visual has-image">
-                    <?php if(strpos($useCase['photo'], '/') !== false) { ?><img src="<?=htmlspecialchars(ltrim($useCase['photo'], '/'), ENT_QUOTES, 'UTF-8')?>" alt="<?=htmlspecialchars($useCase['title'], ENT_QUOTES, 'UTF-8')?>" loading="lazy"><?php } else { ?>
+                    <?php if(strpos($useCase['photo'], '/') !== false) { $useCasePhotoSrc = ltrim($useCase['photo'], '/'); $useCasePhotoFallback = (strpos($useCasePhotoSrc, 'assets/images/site-visuals/pdp-usecase-v2/') === 0 && preg_match('/\.webp$/i', $useCasePhotoSrc)) ? preg_replace('/\.webp$/i', '.png', $useCasePhotoSrc) : $useCasePhotoSrc; ?>
+                    <?php if($useCasePhotoFallback !== $useCasePhotoSrc) { ?><picture><source type="image/webp" srcset="<?=htmlspecialchars($useCasePhotoSrc, ENT_QUOTES, 'UTF-8')?>"><img src="<?=htmlspecialchars($useCasePhotoFallback, ENT_QUOTES, 'UTF-8')?>" alt="<?=htmlspecialchars($useCase['title'], ENT_QUOTES, 'UTF-8')?>" loading="lazy"></picture><?php } else { ?><img src="<?=htmlspecialchars($useCasePhotoSrc, ENT_QUOTES, 'UTF-8')?>" alt="<?=htmlspecialchars($useCase['title'], ENT_QUOTES, 'UTF-8')?>" loading="lazy"><?php } ?>
+                    <?php } else { ?>
                     <?=$func->getImage(['class' => '', 'sizes' => '760x475x1', 'upload' => UPLOAD_PRODUCT_L, 'image' => $useCase['photo'], 'alt' => $useCase['title']])?>
                     <?php } ?>
                 </div>

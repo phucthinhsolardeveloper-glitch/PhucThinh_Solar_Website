@@ -234,8 +234,8 @@
     $partner = $cache->get("select name$lang, link, photo from #_photo where type = ? and find_in_set('hienthi',status) order by numb, id desc", array('doitac'), 'result', 7200);
     /* Chứng nhận uỷ quyền cho khối tin cậy ở hero; dùng chung nguồn với trang Về chúng tôi nên Admin chỉ cần quản lý một chỗ. */
     $chungnhan = $cache->get("select name$lang, link, photo from #_photo where type = ? and find_in_set('hienthi',status) order by numb, id desc", array('chungnhan'), 'result', 7200);
-    /* Ảnh nền Hero (chế độ 'text') - tuỳ chọn, quản lý qua Admin > Ảnh nền Hero trang chủ.
-       Nhiều ảnh thì slide.php tự crossfade; không có ảnh nào thì dùng nền gradient mặc định. */
+    /* Legacy rollback data only. Luồng Hero V4 không dùng danh sách này; giữ
+       query để templates/layout/slide.php vẫn có thể phục hồi khi cần. */
     $heroBgList = $cache->get("select photo from #_photo where type = ? and find_in_set('hienthi',status) order by numb,id desc", array('home-hero-bg'), 'result', 7200);
     $tieuchi = $cache->get("select name$lang, slugvi, slugen, desc$lang, date_created, id, photo from #_news where type = ? and find_in_set('hienthi',status) order by numb,id desc", array('tieu-chi'), 'result', 7200);
     $solutionTabs = array();

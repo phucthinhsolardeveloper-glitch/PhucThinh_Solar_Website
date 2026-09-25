@@ -55,19 +55,17 @@
 				<h3 class="card-title">Hero trang chủ</h3>
 			</div>
 			<div class="card-body">
-				<?php $heroModeIsText = isset($options['home_hero_mode']) && (string)$options['home_hero_mode'] === 'text'; ?>
-				<div class="form-group mb-2">
-					<div class="custom-control custom-radio mb-2">
-						<input class="custom-control-input" type="radio" id="home-hero-mode-slider" name="data[options][home_hero_mode]" value="slider" <?=!$heroModeIsText ? 'checked' : ''?>>
-						<label for="home-hero-mode-slider" class="custom-control-label font-weight-normal"><strong>Banner slide ảnh/video</strong> — quản lý ảnh, thứ tự, link riêng từng slide ở mục <a href="index.php?com=photo&act=man_photo&type=slide">Slideshow</a>. Chưa có slide nào thì tự hiện lại bản chữ.</label>
+				<div class="alert alert-primary mb-0">
+					<div class="d-flex align-items-start">
+						<i class="fas fa-images mt-1 mr-2"></i>
+						<div>
+							<strong>Hero hiện tại dùng 4 banner ảnh.</strong>
+							<div class="mt-1">Đổi ảnh, thứ tự, nội dung và link tại <a class="font-weight-bold" href="index.php?com=photo&amp;act=man_photo&amp;type=hero-carousel">Trang chủ - 4 banner Hero</a>.</div>
+							<div class="mt-1">Kích thước chuẩn 1600 × 720 (16:7), hỗ trợ JPG, PNG, WebP, GIF. Nên nén ảnh trước khi tải và giữ chủ thể trong vùng giữa để hiển thị tốt trên mobile.</div>
+						</div>
 					</div>
-					<div class="custom-control custom-radio">
-						<input class="custom-control-input" type="radio" id="home-hero-mode-text" name="data[options][home_hero_mode]" value="text" <?=$heroModeIsText ? 'checked' : ''?>>
-						<label for="home-hero-mode-text" class="custom-control-label font-weight-normal"><strong>Hero chữ (mặc định cũ)</strong> — tiêu đề "Năng lượng mặt trời...", số liệu tin cậy, chứng nhận uỷ quyền.</label>
-					</div>
-					<small class="text-muted d-block mt-2">Muốn dùng ảnh thật làm nền cho "Hero chữ" thay vì nền màu, tải ảnh ở mục <a href="index.php?com=photo&act=man_photo&type=home-hero-bg">Ảnh nền Hero trang chủ</a> — chữ, số liệu và hiệu ứng vẫn giữ nguyên, hiện trên ảnh. Tải nhiều ảnh thì tự đổi vòng (crossfade), 1 ảnh thì đứng yên.</small>
-					<small class="text-muted d-block mt-2">Trang chủ V4 dùng khối chữ cố định bên trái và bốn banner ảnh bên phải. Quản lý bốn banner tại <strong>Trang chủ - 4 banner Hero</strong>; lựa chọn Hero legacy này chỉ còn được giữ để rollback và không chi phối giao diện V4.</small>
 				</div>
+				<small class="text-muted d-block mt-2">Các mục <em>Slideshow</em> và <em>Ảnh nền Hero trang chủ</em> là dữ liệu legacy chỉ giữ cho rollback; chúng không điều khiển giao diện trang chủ V4.</small>
 			</div>
 		</div>
 		<div class="card card-primary card-outline text-sm">

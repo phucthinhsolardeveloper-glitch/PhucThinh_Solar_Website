@@ -146,14 +146,11 @@ test('content surfaces stay flat across product and content hubs', async ({ page
   await page.goto(`/${productHref}`, { waitUntil: 'domcontentloaded' });
   const gallery = page.locator('.left-pro-detail > .MagicZoom');
   await expect(gallery).toBeVisible();
-  /* 2026-09-23: khung ảnh đổi nền trắng thuần sang xám nhạt #f5f6f7 làm điểm
-     tựa cho ảnh sản phẩm đã tách nền - chủ ý thiết kế (xem comment tại
-     product-detail-v2.css), không phải lỗi; cập nhật theo màu đã duyệt. */
   expect(await gallery.evaluate(element => ({
     border: getComputedStyle(element).borderTopWidth,
     background: getComputedStyle(element).backgroundColor,
     shadow: getComputedStyle(element).boxShadow
-  }))).toEqual({ border: '0px', background: 'rgb(245, 246, 247)', shadow: 'none' });
+  }))).toEqual({ border: '0px', background: 'rgb(255, 255, 255)', shadow: 'none' });
   /* 2026-09-23: .tabs-pro-detail (khung tab spec/mô tả cũ) đã bị thay bằng
      luồng section dọc .pts-pdp-content-section trong bản redesign - không
      phải lỗi; đổi selector theo cấu trúc mới. */
@@ -276,6 +273,21 @@ test('home follows the approved storytelling layout with real commerce links', a
   await expect(page.locator('#yeu-cau-tu-van form')).toBeVisible();
 });
 
+test('large desktop hero copy keeps a comfortable top inset', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'Kiểm tra vị trí Hero trên màn hình lớn.');
+  await page.setViewportSize({ width: 2560, height: 1440 });
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await dismissEntrancePopup(page);
+
+  const metrics = await page.locator('.pts-home-hero').evaluate(element => {
+    const hero = element.getBoundingClientRect();
+    const copy = element.querySelector('.pts-home-hero-copy').getBoundingClientRect();
+    return { offset: copy.top - hero.top, heroHeight: hero.height };
+  });
+  expect(metrics.offset).toBeGreaterThanOrEqual(110);
+  expect(metrics.offset).toBeLessThan(metrics.heroHeight * 0.45);
+});
+
 test('product detail keeps gallery and the CTA configured by Admin', async ({ page }) => {
   await page.goto('/san-pham/', { waitUntil: 'domcontentloaded' });
   const productLink = page.locator('.grid-product a[href]').filter({ has: page.locator('img') }).first();
@@ -365,6 +377,28 @@ test('product detail keeps gallery and the CTA configured by Admin', async ({ pa
       await expect(navLink).toHaveAttribute('href', new RegExp(`#${descId}$`));
     }
   }
+});
+
+test('product detail quantity control stays in one aligned row', async ({ page }) => {
+  await page.goto('/san-pham/den-pha-nang-luong-mat-troi-jindian-jd-t300-300w', { waitUntil: 'domcontentloaded' });
+  const counter = page.locator('.quantity-pro-detail');
+  const input = counter.locator('input.qty-pro');
+  await expect(counter).toBeVisible();
+  await expect(counter.locator('button.quantity-step')).toHaveCount(2);
+
+  const boxes = await counter.locator('button, input').evaluateAll(elements => elements.map(element => {
+    const rect = element.getBoundingClientRect();
+    return { x: rect.x, right: rect.right, y: rect.y, height: rect.height };
+  }));
+  expect(Math.max(...boxes.map(box => box.y)) - Math.min(...boxes.map(box => box.y))).toBeLessThanOrEqual(1);
+  expect(Math.abs(boxes[0].right - boxes[1].x)).toBeLessThanOrEqual(1);
+  expect(Math.abs(boxes[1].right - boxes[2].x)).toBeLessThanOrEqual(1);
+  expect(await counter.evaluate(element => element.getBoundingClientRect().right)).toBeGreaterThanOrEqual(boxes[2].right - 1);
+
+  await counter.locator('.quantity-step-plus').click();
+  await expect(input).toHaveValue('2');
+  await counter.locator('.quantity-step-minus').click();
+  await expect(input).toHaveValue('1');
 });
 
 test('switching product photos does not shrink the detail gallery', async ({ page }) => {
@@ -501,6 +535,29 @@ test('dealer CTA opens a complete, styled and enabled form', async ({ page }) =>
   await expect(modal.locator('[name="dataNewsletter[company]"]')).toHaveAttribute('required', '');
   await expect(modal.locator('[name="submit-newsletter2"]')).toBeEnabled();
   await expect(page.locator('#button-contact-vr')).toBeHidden();
+});
+
+test('PDP consultation comboboxes keep text clear of the arrow', async ({ page }) => {
+  await page.goto('/san-pham/den-pha-nang-luong-mat-troi-jindian-jd-t300-300w', { waitUntil: 'domcontentloaded' });
+  const form = page.locator('#pts-pdp-consultation .pts-pdp-consultation-form');
+  await expect(form).toBeVisible();
+
+  const metrics = await form.locator('select.form-control, input.form-control').evaluateAll(elements => elements.map(element => {
+    const style = getComputedStyle(element);
+    const rect = element.getBoundingClientRect();
+    return {
+      tag: element.tagName,
+      width: rect.width,
+      height: rect.height,
+      paddingRight: parseFloat(style.paddingRight),
+      boxSizing: style.boxSizing,
+      overflowX: style.overflowX,
+    };
+  }));
+  expect(metrics.length).toBeGreaterThanOrEqual(4);
+  expect(metrics.every(metric => metric.width > 0 && metric.height >= 44 && metric.boxSizing === 'border-box')).toBeTruthy();
+  expect(metrics.filter(metric => metric.tag === 'SELECT').every(metric => metric.paddingRight >= 40)).toBeTruthy();
+  expect(metrics.every(metric => metric.overflowX !== 'visible')).toBeTruthy();
 });
 
 test('mobile news and project category rails do not re-layout into Slick after load', async ({ page, isMobile }) => {

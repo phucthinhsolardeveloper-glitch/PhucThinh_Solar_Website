@@ -34,7 +34,10 @@
                thương hiệu) đều dùng lại Admin sẵn có ở nhóm khác, không lặp
                shortcut ở đây. */
             "news" => array("home-about", "home-about-point"),
-            "photo" => array("home-campaign", "home-proof-background"),
+            /* Hero đang chạy trên trang chủ V4 được quản lý tại đúng một
+               entry. Hai type home-hero-bg/slide cũ vẫn giữ trong config để
+               rollback nhưng không còn hiện ở menu chung. */
+            "photo" => array("hero-carousel", "home-campaign", "home-proof-background"),
             "shortcut" => array(
                 array(
                     "title" => "Xem trang chủ",

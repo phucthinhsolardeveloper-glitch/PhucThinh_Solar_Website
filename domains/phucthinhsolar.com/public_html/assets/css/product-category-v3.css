@@ -94,9 +94,10 @@
     align-items:center;
     /* Cách xa tiêu đề "Danh sách sản phẩm" để không bị đọc nhầm là một cụm
        với tiêu đề - khoảng trống rõ ràng phân tách hai vùng chức năng. */
-    margin-left:96px;
+    margin-left:32px;
+    overflow:hidden;
 }
-.pts-subcategory-tabs{display:flex;align-items:stretch;gap:6px;width:100%;min-width:0;overflow-x:auto;scrollbar-width:none;}
+.pts-subcategory-tabs{display:flex;align-items:stretch;gap:6px;width:100%;min-width:0;overflow-x:auto;scrollbar-width:none;scroll-behavior:smooth;}
 .pts-subcategory-tabs::-webkit-scrollbar{display:none;}
 .pts-subcategory-tab{
     display:inline-flex;flex:0 0 auto;min-height:0;align-items:center;justify-content:flex-start;gap:6px;
@@ -161,14 +162,14 @@
     box-shadow:0 2px 0 rgba(255,255,255,.98),0 6px 12px -8px rgba(15,23,42,.18)!important;
     isolation:isolate;
 }
-.filter-heading,.filter_product .filter-heading{display:flex!important;align-items:center;gap:11px;min-width:0;}
+.filter-heading,.filter_product .filter-heading{display:flex!important;flex:0 0 245px;align-items:center;gap:11px;min-width:0;}
 .filter-heading-icon{
     display:inline-flex;width:38px;height:38px;flex:0 0 38px;
     align-items:center;justify-content:center;
     border-radius:3px;background:#fff7e5;color:var(--pts-gold-dark);
 }
 .filter-heading>span:last-child{display:flex;flex-direction:column;gap:2px;}
-.filter_product .name_title{display:block!important;font-size:20px!important;font-weight:900!important;color:var(--pts-navy)!important;line-height:1.2;}
+.filter_product .name_title{display:block!important;font-size:20px!important;font-weight:900!important;color:var(--pts-navy)!important;line-height:1.2;white-space:nowrap;}
 .filter-heading small{color:#64748b;font-size:13px;line-height:1.3;}
 .filter_product .fp-sort{display:flex;align-items:center;gap:8px;}
 .filter_product .fp-sort label{color:#64748b;font-size:13px;font-weight:700;}
@@ -358,6 +359,7 @@
     .product-left > .mb40,.pts-filter-card{padding-left:0!important;padding-right:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;}
     .filter_product{align-items:flex-start!important;flex-wrap:wrap!important;gap:12px;margin-bottom:14px!important;}
     .filter-heading,.filter_product .filter-heading{width:100%!important;flex:0 0 100%!important;}
+    .filter_product .name_title{white-space:normal;}
     .filter_product .fp-sort{margin-left:auto;}
     .filter_product .fp-sort label{display:none;}
     .filter_product select.orderby{max-width:160px;}

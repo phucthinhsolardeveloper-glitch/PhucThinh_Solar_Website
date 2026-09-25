@@ -606,7 +606,7 @@
                                 <?php } } ?>
                             <?php } ?>
                             <?php if(isset($config['photo']['man_photo'])) { ?>
-                                <?php foreach($config['photo']['man_photo'] as $k => $v) { if(!isset($disabled['photo'][$k])) {
+                                <?php foreach($config['photo']['man_photo'] as $k => $v) { if(!isset($disabled['photo'][$k]) && !in_array($k, array('home-hero-bg', 'slide'), true)) {
                                     $none = "";
                                     $active = "";
                                     if(isset($is_permission) && $is_permission == true) if($func->checkPermission('photo', 'man_photo', $k, null, 'phrase-1')) $none = "d-none";

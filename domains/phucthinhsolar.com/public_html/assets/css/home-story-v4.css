@@ -202,6 +202,9 @@
 @media(min-width:1800px){
   .pts-home-hero{min-height:max(670px,calc(100vh - 174px - clamp(12px,1.2vw,24px)))}
   @supports (height:100svh){.pts-home-hero{min-height:max(670px,calc(100svh - 174px - clamp(12px,1.2vw,24px)))}}
+  /* Màn hình iMac/2K có hero cao theo viewport; đưa cụm copy xuống thêm một
+     nhịp để không dính lên vùng đầu ảnh khi canvas lớn. */
+  .pts-home-hero-grid{transform:translateY(calc(-10px - clamp(0px, calc(25vw - 400px), 240px)))}
   .pts-home-hero-grid{padding-top:clamp(64px,7vh,100px);padding-bottom:clamp(92px,9vh,130px)}
   .pts-home-v4 .pts-home-hero h1{font-size:clamp(59px,3.25vw,76px)!important}
   .pts-home-category-featured{min-height:262px}

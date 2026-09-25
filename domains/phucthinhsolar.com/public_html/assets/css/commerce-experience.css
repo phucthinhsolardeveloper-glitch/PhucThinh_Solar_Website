@@ -260,12 +260,12 @@
 .quantity-pro-detail button.quantity-step,
 .quantity-pro-detail .qty-pro{height:42px!important;margin:0!important;border:1px solid var(--pts-line)!important;border-radius:0!important;}
 .quantity-pro-detail button.quantity-step{
-  display:inline-flex;align-items:center;justify-content:center;width:42px!important;
+  display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;width:42px!important;
   padding:0;background:#f8fafc;color:var(--pts-navy);font-size:20px;cursor:pointer;
 }
-.quantity-pro-detail button.quantity-step:first-of-type{border-radius:4px 0 0 4px!important;}
-.quantity-pro-detail button.quantity-step:last-of-type{border-radius:0 4px 4px 0!important;}
-.quantity-pro-detail .qty-pro{width:52px!important;border-right:0!important;border-left:0!important;text-align:center;}
+.quantity-pro-detail button.quantity-step-minus{border-radius:4px 0 0 4px!important;}
+.quantity-pro-detail button.quantity-step-plus{border-radius:0 4px 4px 0!important;}
+.quantity-pro-detail .qty-pro{box-sizing:border-box;width:52px!important;min-width:52px!important;border-right:0!important;border-left:0!important;text-align:center;}
 .addcart.is-loading{opacity:.65;pointer-events:none;}
 body.pts-footer-in-view #button-contact-vr.pts-contact-dock,
 body.pts-footer-in-view .progress-wrap{

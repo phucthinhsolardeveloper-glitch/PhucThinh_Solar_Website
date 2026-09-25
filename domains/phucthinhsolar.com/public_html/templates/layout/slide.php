@@ -1,13 +1,8 @@
 <?php
-    /* Hero trang chủ có 2 chế độ, admin chọn ở Cài đặt chung > "Hero trang chủ"
-       (options['home_hero_mode'], mặc định 'slider'):
-       - 'slider': banner slide ảnh/video thật, quản lý qua "Slideshow"
-         (index.php?com=photo&act=man_photo&type=slide) - hạ tầng đã có sẵn từ
-         trước (upload, sắp xếp, bật/tắt, link riêng từng slide), chỉ là bị tắt
-         render ở Theme V2.
-       - 'text': Hero chữ tĩnh trước đó (headline, số liệu tin cậy, chứng nhận) -
-         giữ lại làm phương án dự phòng, không xoá hẳn (audit UX 2026-09-08,
-         yêu cầu chủ site "có thể giữ nguyên như hiện tại hoặc bật dạng slide"). */
+    /* LEGACY ROLLBACK ONLY: trang chủ V4 hiện render Hero từ
+       templates/index/index_tpl.php và type hero-carousel. File này không được
+       include trong luồng V4; home_hero_mode, slide và home-hero-bg chỉ giữ
+       để phục hồi phiên bản cũ khi có quyết định riêng. */
     $heroMode = (isset($optsetting['home_hero_mode']) && $optsetting['home_hero_mode'] === 'text') ? 'text' : 'slider';
     $heroSlides = (!empty($slider) && is_array($slider)) ? $slider : array();
     if($heroMode === 'slider' && !count($heroSlides)) $heroMode = 'text'; /* chưa có slide nào thì tự rơi về bản chữ, tránh trang chủ trống đầu trang */

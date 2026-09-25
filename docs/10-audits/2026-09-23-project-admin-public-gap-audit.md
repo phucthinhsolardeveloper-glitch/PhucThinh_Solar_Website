@@ -121,3 +121,15 @@ Không có deploy ở đợt audit. Rollback báo cáo chỉ là bỏ file Markd
 - Test responsive đổi sang selector PDP v3; CSS catalog bỏ surface trắng/shadow của filter/card theo chuẩn flat UI.
 
 Kết quả follow-up: PHP lint các file nguồn/template/class thay đổi PASS; probe filter Back/Forward và API lỗi PASS; responsive architecture 6/6 PASS; content-surface 2/2 PASS; home-story 6 PASS (2 test mobile được skip theo cấu hình suite). Chưa deploy production.
+
+## 8. Follow-up Hero Admin và upload — 2026-09-25
+
+Đã xử lý riêng AUD-03 và phần luồng Admin gây nhầm:
+
+- Nguồn đang chạy của Hero V4 được chốt là `hero-carousel`; Admin nhóm `Trang chủ` dẫn thẳng tới `Trang chủ - 4 banner Hero`.
+- `slide` và `home-hero-bg` vẫn giữ trong code/dữ liệu để rollback nhưng được ẩn khỏi menu photo chung và ghi rõ là legacy, không điều khiển Hero V4.
+- Đồng bộ cấu hình ảnh Hero về 1600×720 (16:7), cho phép JPG/PNG/WebP/GIF. Các file WebP hiện hữu không cần đổi tên.
+- Upload dùng giới hạn hiệu dụng là mức thấp hơn giữa `upload_max_filesize` và `post_max_size`; form Admin hiển thị giới hạn này.
+- Khi PHP trả lỗi file quá lớn (mã 1/2), `savePhoto()` dừng trước khi ghi record và trả thông báo rõ ràng thay vì báo lưu thành công nhưng không đổi ảnh.
+
+Kiểm tra sau thay đổi: PHP 7.4 lint các file liên quan PASS; `git diff --check` PASS; runtime local tính đúng giới hạn 64 MB; trang chủ local vẫn render đủ 4 ảnh `hero-*.webp` từ `hero-carousel`. Chưa đăng nhập thao tác form Admin và chưa deploy production; cần kiểm tra lại trên hosting vì giới hạn PHP production có thể khác local.

@@ -25,16 +25,48 @@
 			return array_keys($allowed);
 		}
 
-		private function uploadLimitBytes()
+		private function iniBytes($value)
 		{
-			$value = trim((string) ini_get('post_max_size'));
-			if(!preg_match('/^(\d+(?:\.\d+)?)\s*([KMG])?$/i', $value, $match)) return 5 * 1048576;
+			$value = trim((string) $value);
+			if(!preg_match('/^(\d+(?:\.\d+)?)\s*([KMG])?$/i', $value, $match)) return 0;
 			$bytes = (float) $match[1];
 			$unit = !empty($match[2]) ? strtoupper($match[2]) : '';
 			if($unit === 'G') $bytes *= 1073741824;
 			elseif($unit === 'M') $bytes *= 1048576;
 			elseif($unit === 'K') $bytes *= 1024;
 			return (int) $bytes;
+		}
+
+		/* PHP rejects a request when it exceeds either limit. Use the lower
+		   effective cap so Admin shows the same limit that upload actually has. */
+		private function uploadLimitBytes()
+		{
+			$limits = array();
+			foreach(array('upload_max_filesize', 'post_max_size') as $key)
+			{
+				$bytes = $this->iniBytes(ini_get($key));
+				if($bytes > 0) $limits[] = $bytes;
+			}
+			return !empty($limits) ? min($limits) : 5 * 1048576;
+		}
+
+		public function getUploadLimitBytes()
+		{
+			return $this->uploadLimitBytes();
+		}
+
+		public function getUploadLimitLabel()
+		{
+			$bytes = $this->uploadLimitBytes();
+			$units = array('B', 'KB', 'MB', 'GB', 'TB');
+			$index = 0;
+			while($bytes >= 1024 && $index < count($units) - 1)
+			{
+				$bytes /= 1024;
+				$index++;
+			}
+			$precision = ($index === 0) ? 0 : (($bytes >= 10) ? 0 : 1);
+			return number_format($bytes, $precision, ',', '.').' '.$units[$index];
 		}
 
 		private function validImageUpload($file, $extension)
@@ -1762,19 +1794,18 @@
 		{
 			global $config;
 
-			if(isset($_FILES[$file]) && !$_FILES[$file]['error'])
+			if(isset($_FILES[$file]))
 			{
+				$error = (int) $_FILES[$file]['error'];
+				if($error !== 0)
+				{
+					if(in_array($error, array(1, 2), true)) $this->alert('Ảnh vượt giới hạn upload của máy chủ (tối đa '.$this->getUploadLimitLabel().').');
+					return false;
+				}
+
 				if(!$this->validImageUpload($file, $extension))
 				{
 					$this->alert('File ảnh không hợp lệ, sai định dạng hoặc vượt quá dung lượng cho phép.');
-					return false;
-				}
-				$postMaxSize = ini_get('post_max_size');
-				$MaxSize = explode('M', $postMaxSize);
-				$MaxSize = $MaxSize[0];
-				if($_FILES[$file]['size'] > $MaxSize*1048576)
-				{
-					$this->alert('Dung lượng file không được vượt quá '.$postMaxSize);
 					return false;
 				}
 

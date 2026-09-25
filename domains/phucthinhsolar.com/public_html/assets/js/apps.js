@@ -1285,6 +1285,20 @@ GA_FRAMEWORK.ClickScrollTracks = function(){
     });
 };
 
+/* Dải loại sản phẩm trong toolbar có thể dài hơn phần còn lại của hàng. Khi
+   trang mở một danh mục con, đưa chip đang chọn vào vùng nhìn thấy ngay thay
+   vì để người dùng tự kéo tìm; bản thân dải vẫn kéo ngang bằng touch/trackpad. */
+GA_FRAMEWORK.ProductSubcategoryRail = function(){
+    $('.pts-subcategory-tabs').each(function(){
+        var track = this;
+        var active = track.querySelector('.pts-subcategory-tab.is-active');
+        if(!active || track.scrollWidth <= track.clientWidth + 1) return;
+        var desired = active.offsetLeft - Math.max(0, (track.clientWidth - active.offsetWidth) / 2);
+        var maximum = Math.max(0, track.scrollWidth - track.clientWidth);
+        track.scrollLeft = Math.max(0, Math.min(maximum, desired));
+    });
+};
+
 /* Ready */
 $(document).ready(function(){
     GA_FRAMEWORK.Lazys();
@@ -1298,6 +1312,7 @@ $(document).ready(function(){
     GA_FRAMEWORK.HomeSolutionPaths();
     GA_FRAMEWORK.ContactDock();
     GA_FRAMEWORK.ClickScrollTracks();
+    GA_FRAMEWORK.ProductSubcategoryRail();
     GA_FRAMEWORK.AltImg();
     GA_FRAMEWORK.Toc();
     // GA_FRAMEWORK.GoTop();
