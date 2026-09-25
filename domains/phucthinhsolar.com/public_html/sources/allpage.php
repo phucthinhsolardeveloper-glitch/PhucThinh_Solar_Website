@@ -10,7 +10,6 @@
     $congSuatList = $cache->get("select distinct cong_suat from #_product where type = ? and cong_suat is not null and find_in_set('hienthi',status) order by cong_suat asc", array('san-pham'), 'result', 7200);
     $bct = $cache->get("select photo, link from #_photo where type = ? and act = ? and find_in_set('hienthi',status) limit 0,1", array('bct','photo_static'), 'fetch', 7200);
     // $slogan = $cache->get("select name$lang from #_static where type = ? limit 0,1", array('slogan'), 'fetch', 7200);
-    $slider = $cache->get("select name$lang, photo, link, show_stt, video from #_photo where type = ? and find_in_set('hienthi',status) order by numb,id desc", array('slide'), 'result', 7200);
     $social = $cache->get("select name$lang, photo, link from #_photo where type = ? and find_in_set('hienthi',status) order by numb,id desc", array('social'), 'result', 7200);
     $splist = $cache->get("select pl.name$lang, pl.slugvi, pl.slugen, pl.id, pl.photo from #_product_list pl where pl.type = ? and find_in_set('hienthi',pl.status) and exists (select 1 from #_product p where p.id_list = pl.id and p.type = ? and find_in_set('hienthi',p.status)) order by pl.numb,pl.id desc", array('san-pham','san-pham'), 'result', 7200);
     /* Ẩn danh mục rỗng khỏi điều hướng, cùng quy tắc đang áp cho $splist ở trên:

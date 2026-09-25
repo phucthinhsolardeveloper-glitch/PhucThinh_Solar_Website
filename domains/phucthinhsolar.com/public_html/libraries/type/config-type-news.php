@@ -334,28 +334,6 @@
     // $config['news'][$nametype]['thumb_sub'] = '100x100x1';
     // $config['news'][$nametype]['img_type_sub'] = '.jpg|.gif|.png|.jpeg|.gif';
 
-    // /* Lợi ích */
-    $nametype = "loi-ich";
-    $config['news'][$nametype]['title_main'] = "Lợi ích";
-    $config['news'][$nametype]['check'] = array("hienthi" => "Hiển thị");
-    $config['news'][$nametype]['view'] = false;
-    $config['news'][$nametype]['slug'] = false;
-    $config['news'][$nametype]['copy'] = true;
-    $config['news'][$nametype]['images'] = true;
-    $config['news'][$nametype]['images1'] = true;
-    $config['news'][$nametype]['show_images'] = true;
-    $config['news'][$nametype]['desc'] = true;
-    $config['news'][$nametype]['content'] = false;
-    $config['news'][$nametype]['content_cke'] = false;
-    $config['news'][$nametype]['seo'] = false;
-    $config['news'][$nametype]['width'] = 320;
-    $config['news'][$nametype]['height'] = 240;
-    $config['news'][$nametype]['width1'] = 320;
-    $config['news'][$nametype]['height1'] = 240;
-    $config['news'][$nametype]['thumb'] = '100x100x1';
-    $config['news'][$nametype]['img_type'] = '.jpg|.gif|.png|.jpeg|.gif';
-    $config['news'][$nametype]['img_type1'] = '.jpg|.gif|.png|.jpeg|.gif';
-
     // /* Cam két đại lý */
     $nametype = "cam-ket-dai-ly";
     $config['news'][$nametype]['title_main'] = "Đại lý - Chính sách cam kết";
@@ -527,24 +505,6 @@
             'img_type' => '.jpg|.jpeg|.png|.webp'
         );
     }
-
-    /* Tiêu chí */
-    $nametype = "tieu-chi";
-    $config['news'][$nametype]['title_main'] = "Tiêu chí";
-    $config['news'][$nametype]['check'] = array("hienthi" => "Hiển thị");
-    $config['news'][$nametype]['view'] = false;
-    $config['news'][$nametype]['slug'] = false;
-    $config['news'][$nametype]['copy'] = false;
-    $config['news'][$nametype]['images'] = true;
-    $config['news'][$nametype]['show_images'] = true;
-    $config['news'][$nametype]['desc'] = false;
-    $config['news'][$nametype]['content'] = false;
-    $config['news'][$nametype]['content_cke'] = false;
-    $config['news'][$nametype]['seo'] = false;
-    $config['news'][$nametype]['width'] = 320;
-    $config['news'][$nametype]['height'] = 240;
-    $config['news'][$nametype]['thumb'] = '100x100x1';
-    $config['news'][$nametype]['img_type'] = '.jpg|.gif|.png|.jpeg|.gif';
 
     /* Cam kết */
     $nametype = "cam-ket";
@@ -745,25 +705,6 @@
     $config['news'][$nametype]['title_index_required'] = false;
     $config['news'][$nametype]['desc'] = true;
     $config['news'][$nametype]['desc_cke'] = false;
-    $config['news'][$nametype]['content'] = false;
-    $config['news'][$nametype]['content_cke'] = false;
-    $config['news'][$nametype]['seo'] = false;
-    $config['news'][$nametype]['width'] = 320;
-    $config['news'][$nametype]['height'] = 240;
-    $config['news'][$nametype]['thumb'] = '100x100x1';
-    $config['news'][$nametype]['img_type'] = '.jpg|.gif|.png|.jpeg|.gif';
-
-    /* Số liệu thống kê */
-    $nametype = "so-lieu-thong-ke";
-    $config['news'][$nametype]['title_main'] = "Số liệu thống kê";
-    $config['news'][$nametype]['admin_note'] = "Khối \"Con số ấn tượng\" trên trang chủ đang TẮT tạm (2026-09-12) vì số liệu chưa được xác nhận - sửa ở đây hiện chưa lên giao diện. Có số liệu thật muốn công bố, báo lại để bật lại khối này trên trang chủ.";
-    $config['news'][$nametype]['check'] = array("hienthi" => "Hiển thị");
-    $config['news'][$nametype]['solieu'] = true;
-    $config['news'][$nametype]['slug'] = false;
-    $config['news'][$nametype]['copy'] = false;
-    $config['news'][$nametype]['images'] = true;
-    $config['news'][$nametype]['show_images'] = true;
-    $config['news'][$nametype]['desc'] = false;
     $config['news'][$nametype]['content'] = false;
     $config['news'][$nametype]['content_cke'] = false;
     $config['news'][$nametype]['seo'] = false;

@@ -65,7 +65,6 @@
 						</div>
 					</div>
 				</div>
-				<small class="text-muted d-block mt-2">Các mục <em>Slideshow</em> và <em>Ảnh nền Hero trang chủ</em> là dữ liệu legacy chỉ giữ cho rollback; chúng không điều khiển giao diện trang chủ V4.</small>
 			</div>
 		</div>
 		<div class="card card-primary card-outline text-sm">
@@ -162,22 +161,10 @@
 							<input type="text" class="form-control text-sm" name="data[options][hotline]" id="hotline" placeholder="Hotline" value="<?=(!empty($flash->has('hotline'))) ? $flash->get('hotline') : @$options['hotline']?>" required>
 						</div>
 					<?php } ?>
-					<?php if(isset($config['setting']['phone']) && $config['setting']['phone'] == true) { ?>
-						<div class="form-group col-md-4 col-sm-6">
-							<label for="phone">Điện thoại:</label>
-							<input type="text" class="form-control text-sm" name="data[options][phone]" id="phone" placeholder="Điện thoại" value="<?=(!empty($flash->has('phone'))) ? $flash->get('phone') : @$options['phone']?>" required>
-						</div>
-					<?php } ?>
 					<?php if(isset($config['setting']['zalo']) && $config['setting']['zalo'] == true) { ?>
 						<div class="form-group col-md-4 col-sm-6">
 							<label for="zalo">Zalo:</label>
 							<input type="text" class="form-control text-sm" name="data[options][zalo]" id="zalo" placeholder="Zalo" value="<?=(!empty($flash->has('zalo'))) ? $flash->get('zalo') : @$options['zalo']?>">
-						</div>
-					<?php } ?>
-					<?php if(isset($config['setting']['oaidzalo']) && $config['setting']['oaidzalo'] == true) { ?>
-						<div class="form-group col-md-4 col-sm-6">
-							<label for="oaidzalo">OAID Zalo:</label>
-							<input type="text" class="form-control text-sm" name="data[options][oaidzalo]" id="oaidzalo" placeholder="OAID Zalo" value="<?=(!empty($flash->has('oaidzalo'))) ? $flash->get('oaidzalo') : @$options['oaidzalo']?>">
 						</div>
 					<?php } ?>
 					<?php if(isset($config['setting']['website']) && $config['setting']['website'] == true) { ?>
@@ -192,32 +179,13 @@
 							<input type="text" class="form-control text-sm" name="data[options][fanpage]" id="fanpage" placeholder="Fanpage" value="<?=(!empty($flash->has('fanpage'))) ? $flash->get('fanpage') : @$options['fanpage']?>">
 						</div>
 						<div class="form-group col-md-4 col-sm-6">
-							<label for="twitter">Twitter:</label>
-							<input type="text" class="form-control text-sm" name="data[options][twitter]" id="twitter" placeholder="twitter" value="<?=(!empty($flash->has('twitter'))) ? $flash->get('twitter') : @$options['twitter']?>">
-						</div>
-						<div class="form-group col-md-4 col-sm-6">
 							<label for="youtube">Youtube:</label>
 							<input type="text" class="form-control text-sm" name="data[options][youtube]" id="youtube" placeholder="youtube" value="<?=(!empty($flash->has('youtube'))) ? $flash->get('youtube') : @$options['youtube']?>">
-						</div>
-						<div class="form-group col-md-4 col-sm-6">
-							<label for="linkedin">Linkedin:</label>
-							<input type="text" class="form-control text-sm" name="data[options][linkedin]" id="linkedin" placeholder="linkedin" value="<?=(!empty($flash->has('linkedin'))) ? $flash->get('linkedin') : @$options['linkedin']?>">
-						</div>
-					<?php } ?>
-					<?php if(isset($config['setting']['coords']) && $config['setting']['coords'] == true) { ?>
-						<div class="form-group col-md-4 col-sm-6">
-							<label for="coords">Tọa độ google map:</label>
-							<input type="text" class="form-control text-sm" name="data[options][coords]" id="coords" placeholder="Tọa độ google map" value="<?=(!empty($flash->has('coords'))) ? $flash->get('coords') : @$options['coords']?>">
 						</div>
 					<?php } ?>
 					<div class="form-group col-md-4 col-sm-6">
 						<label for="thoigianlamviec">Thời gian làm việc:</label>
 						<input type="text" class="form-control text-sm" name="data[options][thoigianlamviec]" id="thoigianlamviec" placeholder="Thời gian làm việc" value="<?=(!empty($flash->has('thoigianlamviec'))) ? $flash->get('thoigianlamviec') : @$options['thoigianlamviec']?>">
-					</div>
-					<div class="form-group col-md-8 col-sm-6">
-						<label for="header_promise">Thông điệp ngắn trên đầu website:</label>
-						<input type="text" class="form-control text-sm" name="data[options][header_promise]" id="header_promise" maxlength="100" placeholder="Giải pháp năng lượng tối ưu cho mọi công trình" value="<?=htmlspecialchars((!empty($flash->has('header_promise'))) ? $flash->get('header_promise') : (isset($options['header_promise']) ? $options['header_promise'] : ''), ENT_QUOTES, 'UTF-8')?>">
-						<small class="form-text text-muted">Để trống sẽ dùng thông điệp mặc định. Nội dung hiển thị ở thanh trên cùng của header.</small>
 					</div>
 				</div>
 				<?php if(isset($config['setting']['coords_iframe']) && $config['setting']['coords_iframe'] == true) { ?>

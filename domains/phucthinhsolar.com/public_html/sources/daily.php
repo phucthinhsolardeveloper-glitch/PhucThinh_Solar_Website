@@ -34,19 +34,6 @@
 
 	$solieudaily = $cache->get("select name$lang, solieu, id, photo from #_news where type = ? and find_in_set('hienthi',status) order by numb,id desc limit 0,3", array('so-lieu-thong-ke-dai-ly'), 'result', 7200);
 
-    // $sumenh_title = $cache->get("select name$lang, desc$lang, content$lang,photo from #_static where type = ? and find_in_set('hienthi',status) limit 0,1", array('su-menh'), 'fetch', 7200);
-    // $sumenh = $cache->get("select name$lang, content$lang, id, photo from #_news where type = ? and find_in_set('hienthi',status) order by numb,id desc limit 0,4", array('su-menh'), 'result', 7200);
-	
-	// $doitacgioithieu = $cache->get("select name$lang, link, photo from #_photo where type = ? and find_in_set('hienthi',status) order by numb, id desc", array('doitacgioithieu'), 'result', 7200);
-	// $partner = $cache->get("select name$lang, link, photo from #_photo where type = ? and find_in_set('hienthi',status) order by numb, id desc", array('doitac'), 'result', 7200);
-
-	// // why
-	// $lydo = $cache->get("select name$lang, content$lang, id, photo from #_news where type = ? and find_in_set('hienthi',status) order by numb,id desc", array('ly-do-chon-chung-toi'), 'result', 7200);
-
-	// $ttlh = $cache->get("select name$lang, desc$lang, id, photo from #_news where type = ? and find_in_set('hienthi',status) order by numb,id desc", array('thong-tin-lien-he'), 'result', 7200);
-	// $photo_about = $cache->get("select id, photo, options from #_photo where type = ? and act = ? and find_in_set('hienthi',status) limit 0,1", array('hinh-anh-gioi-thieu','photo_static'), 'fetch', 7200);
-	// $partner = $cache->get("select name$lang, link, photo from #_photo where type = ? and find_in_set('hienthi',status) order by numb, id desc", array('doitac'), 'result', 7200);
-	// $chungnhan = $cache->get("select name$lang, link, photo from #_photo where type = ? and find_in_set('hienthi',status) order by numb, id desc", array('chungnhan'), 'result', 7200);
 	/* SEO */
 	$seopage = $d->rawQueryOne("select * from #_seopage where type = ? limit 0,1",array('dai-ly'));
 	$seo->set('h1',$titleMain);

@@ -10,25 +10,6 @@
     // $config['photo']['photo_static'][$nametype]['thumb'] = '900x300x1';
     // $config['photo']['photo_static'][$nametype]['img_type'] = '.jpg|.gif|.png|.jpeg|.gif';
 
-    /* Ảnh nền Hero trang chủ (chế độ "text") - dùng thay cho nền gradient mặc
-       định khi chủ site muốn có ảnh thật phía sau chữ/số liệu/khối chứng
-       nhận. Nhiều ảnh -> tự chuyển dạng crossfade (không dùng chế độ
-       "slider" toàn banner vì chủ site chưa hợp gu, có thể thiết kế lại
-       sau). man_photo cho phép thêm/xoá/sắp thứ tự nhiều ảnh, giống
-       Slideshow/Đối tác. sources/index.php đọc, render+cycle trong
-       templates/layout/slide.php (audit UX 2026-09-08, phản hồi tiếp
-       theo). */
-    $nametype = "home-hero-bg";
-    $config['photo']['man_photo'][$nametype]['title_main_photo'] = "Ảnh nền Hero trang chủ";
-    $config['photo']['man_photo'][$nametype]['check_photo'] = array("hienthi" => "Hiển thị");
-    $config['photo']['man_photo'][$nametype]['number_photo'] = 5;
-    $config['photo']['man_photo'][$nametype]['images_photo'] = true;
-    $config['photo']['man_photo'][$nametype]['avatar_photo'] = true;
-    $config['photo']['man_photo'][$nametype]['width_photo'] = 1920;
-    $config['photo']['man_photo'][$nametype]['height_photo'] = 900;
-    $config['photo']['man_photo'][$nametype]['thumb_photo'] = '1920x900x1';
-    $config['photo']['man_photo'][$nametype]['img_type_photo'] = '.jpg|.gif|.png|.jpeg|.webp';
-
     /* Bốn banner ảnh trong Hero trang chủ V4. Giữ type hero-carousel để không
        tạo schema/quyền mới. Frontend dùng ảnh/nội dung của các record đang
        Hiển thị theo thứ tự STT; khi chưa có record nào mới dùng fallback.
@@ -186,23 +167,6 @@
     // $config['photo']['photo_static'][$nametype]['thumb'] = '1280x720x1';
     // $config['photo']['photo_static'][$nametype]['img_type'] = '.jpg|.gif|.png|.jpeg|.gif';
 
-    /* Slideshow */
-    $nametype = "slide";
-    $config['photo']['man_photo'][$nametype]['title_main_photo'] = "Slideshow";
-    $config['photo']['man_photo'][$nametype]['check_photo'] = array("hienthi" => "Hiển thị");
-    $config['photo']['man_photo'][$nametype]['number_photo'] = 2;
-    $config['photo']['man_photo'][$nametype]['images_photo'] = true;
-    $config['photo']['man_photo'][$nametype]['avatar_photo'] = true;
-    $config['photo']['man_photo'][$nametype]['link_photo'] = true;
-    $config['photo']['man_photo'][$nametype]['name_photo'] = true;
-    $config['photo']['man_photo'][$nametype]['width_photo'] = 1920;
-    $config['photo']['man_photo'][$nametype]['height_photo'] = 712;
-    $config['photo']['man_photo'][$nametype]['thumb_photo'] = '1920x712x1';
-    $config['photo']['man_photo'][$nametype]['img_type_photo'] = '.jpg|.gif|.png|.jpeg|.webp';
-    $config['photo']['man_photo'][$nametype]['video_mp4'] = true;
-    $config['photo']['man_photo'][$nametype]['show_stt'] = true;
-    $config['photo']['man_photo'][$nametype]['video_type'] = 'mp4';
-
     /* Banner quảng cáo */
     $nametype = "adv";
     $config['photo']['man_photo'][$nametype]['title_main_photo'] = "Banner quảng cáo";
@@ -239,23 +203,6 @@
     $config['photo']['man_photo'][$nametype]['width_photo'] = 1600;
     $config['photo']['man_photo'][$nametype]['height_photo'] = 900;
     $config['photo']['man_photo'][$nametype]['thumb_photo'] = '320x180x1';
-    $config['photo']['man_photo'][$nametype]['img_type_photo'] = '.jpg|.jpeg|.png|.webp';
-
-    /* Ảnh bối cảnh phía sau dải chứng nhận thật trên trang chủ. Đây chỉ là
-       background marketing, tuyệt đối không thay thế tài liệu chứng nhận. */
-    $nametype = "home-proof-background";
-    $config['photo']['man_photo'][$nametype]['title_main_photo'] = "Trang chủ - Nền dải chứng nhận";
-    $config['photo']['man_photo'][$nametype]['admin_note_photo'] = "Một ảnh nền 1920x600 (16:5) cho dải chứng nhận. Chọn ảnh ít chi tiết, tông tối và giữ chủ thể trong 75% vùng giữa để chữ cùng bản quét chứng nhận vẫn rõ trên mọi màn hình. Không đưa chữ, logo hoặc chứng nhận giả vào ảnh nền. Tắt cờ Hiển thị để dùng nền sáng phẳng.";
-    $config['photo']['man_photo'][$nametype]['check_photo'] = array("hienthi" => "Hiển thị");
-    $config['photo']['man_photo'][$nametype]['number_photo'] = 1;
-    $config['photo']['man_photo'][$nametype]['images_photo'] = true;
-    $config['photo']['man_photo'][$nametype]['avatar_photo'] = true;
-    $config['photo']['man_photo'][$nametype]['link_photo'] = false;
-    $config['photo']['man_photo'][$nametype]['name_photo'] = true;
-    $config['photo']['man_photo'][$nametype]['name_label_photo'] = "Tên ảnh / mô tả nội bộ";
-    $config['photo']['man_photo'][$nametype]['width_photo'] = 1920;
-    $config['photo']['man_photo'][$nametype]['height_photo'] = 600;
-    $config['photo']['man_photo'][$nametype]['thumb_photo'] = '320x100x1';
     $config['photo']['man_photo'][$nametype]['img_type_photo'] = '.jpg|.jpeg|.png|.webp';
 
     /* CTA hình ảnh cuối landing catalog. Frontend dùng record Hiển thị đầu
@@ -384,21 +331,6 @@
     // $config['photo']['man_photo'][$nametype]['number_photo'] = 2;
     // $config['photo']['man_photo'][$nametype]['video_photo'] = true;
     // $config['photo']['man_photo'][$nametype]['name_photo'] = true;
-
-    // /* Thương hiệu hợp tác */
-    $nametype = "doitac";
-    $config['photo']['man_photo'][$nametype]['title_main_photo'] = "Thương hiệu hợp tác";
-    $config['photo']['man_photo'][$nametype]['admin_note_photo'] = "Logo xuất hiện trong dải Thương hiệu hợp tác gần cuối trang chủ và tại trang Về chúng tôi. Upload canvas 600x240 nền trong suốt hoặc trắng, logo nằm gọn trong 80% vùng giữa; frontend dùng contain, không cắt logo. Chỉ record đang Hiển thị mới xuất hiện.";
-    $config['photo']['man_photo'][$nametype]['check_photo'] = array("hienthi" => "Hiển thị");
-    $config['photo']['man_photo'][$nametype]['number_photo'] = 5;
-    $config['photo']['man_photo'][$nametype]['images_photo'] = true;
-    $config['photo']['man_photo'][$nametype]['avatar_photo'] = true;
-    $config['photo']['man_photo'][$nametype]['link_photo'] = true;
-    $config['photo']['man_photo'][$nametype]['name_photo'] = true;
-    $config['photo']['man_photo'][$nametype]['width_photo'] = 600;
-    $config['photo']['man_photo'][$nametype]['height_photo'] = 240;
-    $config['photo']['man_photo'][$nametype]['thumb_photo'] = '200x80x2';
-    $config['photo']['man_photo'][$nametype]['img_type_photo'] = '.jpg|.jpeg|.png|.webp';
 
     /* Banner ảnh theo từng danh mục sản phẩm. Trường Link chứa canonical path
        (ví dụ danh-muc-san-pham/den-san-vuon/) để không phải hard-code quan hệ

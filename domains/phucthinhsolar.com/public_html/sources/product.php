@@ -226,7 +226,6 @@
 
 		/* Lấy thương hiệu */
 		// $productXuatXu = $d->rawQueryOne("select name$lang, slugvi, slugen, id from #_product_xuatxu where id = ? and type = ? and find_in_set('hienthi',status)",array($rowDetail['id_xuatxu'],$type));
-		$tc = $cache->get("select name$lang, address, id, photo from #_news where type = ? and find_in_set('hienthi',status) order by numb,id desc", array('tieu-chi'), 'result', 7200);
 		$ck = $cache->get("select name$lang, address, id, photo from #_news where type = ? and find_in_set('hienthi',status) order by numb,id desc", array('cam-ket'), 'result', 7200);
 		/* Lấy hình ảnh con */
 		$rowDetailPhoto = $d->rawQuery("select photo, name$lang as caption from #_gallery where id_parent = ? and com='product' and type = ? and kind='man' and val = ? and find_in_set('hienthi',status) order by numb,id desc",array($rowDetail['id'],$type,$type));

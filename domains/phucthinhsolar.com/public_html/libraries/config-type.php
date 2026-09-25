@@ -6,7 +6,7 @@
             "photo" => array("catalog-campaign", "product-category-hero"),
             // "tags" => array("san-pham"),
             // "static" => array("su-menh","gioi-thieu","tom-tat-gioi-thieu"),
-            "news" => array("tieu-chi", "cam-ket"),
+            "news" => array("cam-ket"),
             // "photo" => array("chungnhan")
         ),
         "Chiến dịch hiển thị" => array(
@@ -34,10 +34,7 @@
                thương hiệu) đều dùng lại Admin sẵn có ở nhóm khác, không lặp
                shortcut ở đây. */
             "news" => array("home-about", "home-about-point"),
-            /* Hero đang chạy trên trang chủ V4 được quản lý tại đúng một
-               entry. Hai type home-hero-bg/slide cũ vẫn giữ trong config để
-               rollback nhưng không còn hiện ở menu chung. */
-            "photo" => array("hero-carousel", "home-campaign", "home-proof-background"),
+            "photo" => array("hero-carousel", "home-campaign"),
             "shortcut" => array(
                 array(
                     "title" => "Xem trang chủ",
@@ -79,10 +76,6 @@
                 array("title"=>"Quản lý danh mục tin tức", "href"=>"index.php?com=news&act=man_list&type=tin-tuc", "icon"=>"fas fa-filter", "permission"=>array("news","man_list","tin-tuc")),
                 array("title"=>"Xem trang Tin tức", "href"=>"../tin-tuc/", "icon"=>"fas fa-external-link-alt")
             )
-        ),
-        "Lợi ích" => array(
-            "news" => array("loi-ich"),
-            "static" => array("loi-ich"),
         ),
         "Hợp tác đại lý" => array(
             "photo" => array("dealer-hero", "hinh-anh-dai-ly"),
@@ -151,14 +144,11 @@
 
     /* Setting */
     $config['setting']['address'] = true;
-    $config['setting']['phone'] = true;
     $config['setting']['hotline'] = true;
     $config['setting']['zalo'] = true;
-    $config['setting']['oaidzalo'] = true;
     $config['setting']['email'] = true;
     $config['setting']['website'] = true;
     $config['setting']['fanpage'] = true;
-    $config['setting']['coords'] = true;
     $config['setting']['coords_iframe'] = true;
 
     /* Quản lý import */

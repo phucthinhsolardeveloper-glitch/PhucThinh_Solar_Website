@@ -20,9 +20,8 @@
             <?php include TEMPLATE.LAYOUT."mmenu.php"; ?>
         </div>
 
-        <?php /* Hero V4 hiện là phần trình bày được duyệt theo ADR 0006; không
-                 bật lại Hero legacy/slide.php từ cấu hình cũ. Các trang con vẫn
-                 giữ breadcrumb dùng chung. */ ?>
+        <?php /* Hero V4 hiện là phần trình bày được duyệt theo ADR 0006. Các
+                 trang con vẫn giữ breadcrumb dùng chung. */ ?>
         <?php if($source != 'index'){ ?>
         <div class="wap-slider pts-breadcrumb-shell">
             <?php include TEMPLATE.LAYOUT."breadcrumb.php"; ?>

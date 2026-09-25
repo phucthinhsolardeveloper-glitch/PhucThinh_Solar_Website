@@ -1,22 +1,5 @@
 <?php
 
-    /* Sứ mệnh - tầm nhìn-giá trị */
-    $nametype = "su-menh";
-    $config['static'][$nametype]['title_main'] = "Sứ mệnh - Tầm nhìn - Giá trị (title)";
-    $config['static'][$nametype]['check'] = array("hienthi" => "Hiển thị");
-    $config['static'][$nametype]['images'] = false;
-    $config['static'][$nametype]['namkinhnghiem'] = false;
-    $config['static'][$nametype]['name'] = true;
-    $config['static'][$nametype]['desc'] = false;
-    $config['static'][$nametype]['desc_cke'] = false;
-    $config['static'][$nametype]['content'] = false;
-    $config['static'][$nametype]['content_cke'] = false;
-    $config['static'][$nametype]['seo'] = false;
-    $config['static'][$nametype]['width'] = 470;
-    $config['static'][$nametype]['height'] = 470;
-    $config['static'][$nametype]['img_type'] = '.jpg|.gif|.png|.jpeg|.gif';
-    $config['static'][$nametype]['file_type'] = '.doc|.docx|.pdf|.rar|.zip|.ppt|.pptx|.xls|.xlsx|.jpg|.png|.gif';
-
     /* Bài giới thiệu đại lý 1 */
     $nametype = "dai-ly-1";
     $config['static'][$nametype]['title_main'] = "Đại lý - Nội dung cạnh form đăng ký";
@@ -64,23 +47,6 @@
     $config['static'][$nametype]['name'] = true;
     $config['static'][$nametype]['desc'] = true;
     $config['static'][$nametype]['desc_cke'] = true;
-    $config['static'][$nametype]['content'] = false;
-    $config['static'][$nametype]['content_cke'] = false;
-    $config['static'][$nametype]['seo'] = false;
-    $config['static'][$nametype]['width'] = 470;
-    $config['static'][$nametype]['height'] = 470;
-    $config['static'][$nametype]['img_type'] = '.jpg|.gif|.png|.jpeg|.gif';
-    $config['static'][$nametype]['file_type'] = '.doc|.docx|.pdf|.rar|.zip|.ppt|.pptx|.xls|.xlsx|.jpg|.png|.gif';
-
-    /* Cấu trúc cơ cấu */
-    $nametype = "loi-ich";
-    $config['static'][$nametype]['title_main'] = "Tiêu đề trang chủ";
-    $config['static'][$nametype]['check'] = array("hienthi" => "Hiển thị");
-    $config['static'][$nametype]['images'] = false;
-    $config['static'][$nametype]['namkinhnghiem'] = false;
-    $config['static'][$nametype]['name'] = true;
-    $config['static'][$nametype]['desc'] = true;
-    $config['static'][$nametype]['desc_cke'] = false;
     $config['static'][$nametype]['content'] = false;
     $config['static'][$nametype]['content_cke'] = false;
     $config['static'][$nametype]['seo'] = false;
