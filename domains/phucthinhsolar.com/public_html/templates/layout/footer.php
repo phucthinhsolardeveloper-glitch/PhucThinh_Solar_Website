@@ -68,7 +68,7 @@ $footerContentHtml = preg_replace('/(<strong\b[^>]*>)(.*?)(<\/strong>)/is', '$1<
                                             </li>
                                             <li id="menu-item-55188"
                                                 class="menu-item menu-item-type-post_type menu-item-object-page CRcustomMenu CRcustomMenu2 menu-item-55188">
-                                                <a href="tin-tuc/" itemprop="url"><span itemprop="name">Tin
+                                                <a href="/tin-tuc/" itemprop="url"><span itemprop="name">Tin
                                                         tức</span></a>
                                             </li>
                                             <li id="menu-item-55189"
@@ -88,7 +88,7 @@ $footerContentHtml = preg_replace('/(<strong\b[^>]*>)(.*?)(<\/strong>)/is', '$1<
                                             </li>
                                             <li id="menu-item-56209"
                                                 class="menu-item menu-item-type-post_type menu-item-object-page CRcustomMenu CRcustomMenu2 menu-item-56209">
-                                                <a href="san-pham/" itemprop="url"><span itemprop="name">Sản
+                                                <a href="/san-pham/" itemprop="url"><span itemprop="name">Sản
                                                         phẩm</span></a>
                                             </li>
                                         </ul>

@@ -28,7 +28,7 @@
         <?php if($nhArticles) { ?><div class="nh-grid">
             <?php foreach($nhArticles as $nhArticle) { $nhCardClass=''; include TEMPLATE.'news/news_card_tpl.php'; } ?>
         </div><?php } elseif(!$nhShowFeatured) { ?>
-        <div class="nh-empty"><i class="far fa-newspaper" aria-hidden="true"></i><p><?=$nhEscape($nhUi['empty'])?></p><a href="tin-tuc/"><?=$nhEscape($nhUi['reset'])?> →</a></div>
+        <div class="nh-empty"><i class="far fa-newspaper" aria-hidden="true"></i><p><?=$nhEscape($nhUi['empty'])?></p><a href="/tin-tuc/"><?=$nhEscape($nhUi['reset'])?> →</a></div>
         <?php } ?>
     </section>
     <?php if($nhPages>1) { ?><nav class="nh-pagination" aria-label="<?=$nhEscape($nhUi['pages'])?>">

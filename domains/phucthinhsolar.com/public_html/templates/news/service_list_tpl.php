@@ -72,7 +72,7 @@
             <div class="pts-sh-equipment-surface">
                 <header class="pts-sh-equipment-heading">
                     <div><h2 id="solution-equipment-title"><?=$solutionEscape($solutionUi['equipment'])?></h2></div>
-                    <a href="san-pham/" class="pts-sh-all-products"><?=$solutionEscape($solutionUi['all_products'])?> <span aria-hidden="true">→</span></a>
+                    <a href="/san-pham/" class="pts-sh-all-products"><?=$solutionEscape($solutionUi['all_products'])?> <span aria-hidden="true">→</span></a>
                 </header>
                 <div class="pts-sh-equipment-grid">
                     <?php foreach($solutionEquipment as $solutionCategory) {

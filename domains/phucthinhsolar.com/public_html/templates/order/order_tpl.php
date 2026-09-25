@@ -94,13 +94,13 @@
 							<div class="procart procart-<?=$code?>">
 									<div class="form-row procart-row">
 										<div class="pic-procart col-3 col-md-2">
-											<a class="text-decoration-none" href="san-pham/<?=$proinfo[$sluglang]?>" target="_blank" title="<?=$proinfo['name'.$lang]?>">
+											<a class="text-decoration-none" href="/san-pham/<?=$proinfo[$sluglang]?>" target="_blank" title="<?=$proinfo['name'.$lang]?>">
 												<?=$func->getImage(['sizes' => '85x85x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $proinfo['photo'], 'alt' => $proinfo['name'.$lang]])?>
 											</a>
 											
 										</div>
 										<div class="info-procart col-6 col-md-5">
-											<h3 class="name-procart"><a class="text-decoration-none" href="san-pham/<?=$proinfo[$sluglang]?>" target="_blank" title="<?=$proinfo['name'.$lang]?>"><?=$proinfo['name'.$lang]?></a></h3>
+											<h3 class="name-procart"><a class="text-decoration-none" href="/san-pham/<?=$proinfo[$sluglang]?>" target="_blank" title="<?=$proinfo['name'.$lang]?>"><?=$proinfo['name'.$lang]?></a></h3>
 											<div class="properties-procart">
 												<?php if($color) { $color_detail = $d->rawQueryOne("select name$lang from #_color where type = ? and id = ? limit 0,1",array($proinfo['type'],$color)); ?>
 													<p>Màu: <strong><?=$color_detail['name'.$lang]?></strong></p>
@@ -175,7 +175,7 @@
 					</div>
 			    </div>
 			<?php } else { ?>
-				<a href="san-pham/" class="empty-cart text-decoration-none w-100">
+				<a href="/san-pham/" class="empty-cart text-decoration-none w-100">
 					<i class="fa fa-cart-plus"></i>
 					<p><?=khongtontaisanphamtronggiohang?></p>
 					<span><?=tieptucmuahang?></span>

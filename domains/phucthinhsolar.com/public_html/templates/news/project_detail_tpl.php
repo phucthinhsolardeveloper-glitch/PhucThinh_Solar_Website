@@ -125,7 +125,7 @@
             <div class="section-title">
                 <h3 id="project-related-title">Dự án khác</h3>
             </div>
-            <a class="pts-retail-text-link" href="du-an-da-thuc-hien/">Xem tất cả dự án <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+            <a class="pts-retail-text-link" href="/du-an-da-thuc-hien/">Xem tất cả dự án <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
         </div>
         <div class="pts-ph-grid">
             <?php foreach(array_slice($news, 0, 3) as $relatedProject) {

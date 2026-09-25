@@ -17,7 +17,7 @@
 
     <nav class="pts-ph-filters" aria-label="<?=$projectEscape($projectUi['filters'])?>">
         <div class="uk-container">
-            <a class="pts-ph-filter<?=empty($newsList['id']) ? ' is-active' : ''?>" href="du-an-da-thuc-hien/">
+            <a class="pts-ph-filter<?=empty($newsList['id']) ? ' is-active' : ''?>" href="/du-an-da-thuc-hien/">
                 <i class="fas fa-th-large" aria-hidden="true"></i><span><?=$projectEscape($projectUi['all'])?></span>
             </a>
             <?php foreach($projectFilterRows as $projectFilter) {

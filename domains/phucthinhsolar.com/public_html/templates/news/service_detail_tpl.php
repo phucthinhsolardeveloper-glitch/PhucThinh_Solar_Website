@@ -39,7 +39,7 @@ $solutionDetailExtra = !empty($rowDetail['content1'.$lang])
     <?php if($solutionCards) { ?>
     <nav class="pts-sd-switcher" aria-label="Các giải pháp khác">
         <div class="uk-container">
-            <a class="pts-sd-switcher-all" href="giai-phap/">Tất cả giải pháp</a>
+            <a class="pts-sd-switcher-all" href="/giai-phap/">Tất cả giải pháp</a>
             <?php foreach($solutionCards as $solutionCard) {
                 $solutionRepresentative = $solutionCard['_representative'];
                 $solutionSwitchName = solutionHubNavName($solutionRepresentative, $lang);
@@ -86,7 +86,7 @@ $solutionDetailExtra = !empty($rowDetail['content1'.$lang])
             <div class="pts-sh-equipment-surface">
                 <header class="pts-sh-equipment-heading">
                     <div><h2 id="solution-detail-equipment-title">Thiết bị cho một hệ thống hoàn chỉnh</h2></div>
-                    <a href="san-pham/" class="pts-sh-all-products">Xem tất cả sản phẩm <span aria-hidden="true">→</span></a>
+                    <a href="/san-pham/" class="pts-sh-all-products">Xem tất cả sản phẩm <span aria-hidden="true">→</span></a>
                 </header>
                 <div class="pts-sh-equipment-grid">
                     <?php foreach($solutionEquipment as $solutionCategory) {

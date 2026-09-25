@@ -1,14 +1,14 @@
 <nav id="menu">
     <ul>
             <li>
-                <a class="has-child <?php if($com=='san-pham') echo 'active'; ?> transition" href="san-pham/" title="Danh mục sản phẩm">Danh mục sản phẩm</a>
+                <a class="has-child <?php if($com=='san-pham') echo 'active'; ?> transition" href="/san-pham/" title="Danh mục sản phẩm">Danh mục sản phẩm</a>
                 <?php if(count($splist)) { ?>
                     <ul>
-                        <li><a class="transition" title="Xem tất cả sản phẩm" href="san-pham/">Xem tất cả sản phẩm</a></li>
+                        <li><a class="transition" title="Xem tất cả sản phẩm" href="/san-pham/">Xem tất cả sản phẩm</a></li>
                         <?php foreach($splist as $klist => $vlist) {
                             $spcat = isset($productMenuCats[(int)$vlist['id']]) ? $productMenuCats[(int)$vlist['id']] : array(); ?>
                             <li>
-                                <a class="transition" title="<?=$vlist['name'.$lang]?>" href="danh-muc-san-pham/<?=$vlist[$sluglang]?>/">
+                                <a class="transition" title="<?=$vlist['name'.$lang]?>" href="/danh-muc-san-pham/<?=$vlist[$sluglang]?>/">
                                     <?=$vlist['name'.$lang]?>
                                 </a>
                                 <?php if(!empty($spcat)) { ?>
@@ -59,10 +59,10 @@
             </li>
 
             <li>
-                <a class="has-child <?php if($com=='giai-phap') echo 'active'; ?> transition" href="giai-phap/" title="Giải pháp">Giải pháp</a>
+                <a class="has-child <?php if($com=='giai-phap') echo 'active'; ?> transition" href="/giai-phap/" title="Giải pháp">Giải pháp</a>
                 <?php if(count($solutionMenuLinks)) { ?>
                     <ul>
-                        <li><a title="Tất cả giải pháp" href="giai-phap/">Tất cả giải pháp</a></li>
+                        <li><a title="Tất cả giải pháp" href="/giai-phap/">Tất cả giải pháp</a></li>
                         <?php foreach($solutionMenuLinks as $solutionMenuLink) {
                             $solutionMenuHref = 'giai-phap/'.$solutionMenuLink[$sluglang].'/';
                             $solutionMenuLabel = !empty($solutionMenuLink['title_index'.$lang]) ? $solutionMenuLink['title_index'.$lang] : $solutionMenuLink['name'.$lang]; ?>
@@ -74,13 +74,13 @@
                 <?php } ?>
             </li>
 
-            <li><a class="<?php if($com=='du-an' || $com=='du-an-da-thuc-hien') echo 'active'; ?> transition" href="du-an-da-thuc-hien/" title="Dự án">Dự án</a></li>
+            <li><a class="<?php if($com=='du-an' || $com=='du-an-da-thuc-hien') echo 'active'; ?> transition" href="/du-an-da-thuc-hien/" title="Dự án">Dự án</a></li>
      
             <li class="menu-knowledge">
-                <a class="<?php if($com=='tin-tuc') echo 'active'; ?> transition" href="tin-tuc/" title="Kiến thức">Kiến thức</a>
+                <a class="<?php if($com=='tin-tuc') echo 'active'; ?> transition" href="/tin-tuc/" title="Kiến thức">Kiến thức</a>
                 <?php if(count($ttlist)) { ?>
                     <ul>
-                        <li><a title="Tất cả bài viết" href="tin-tuc/">Tất cả bài viết</a></li>
+                        <li><a title="Tất cả bài viết" href="/tin-tuc/">Tất cả bài viết</a></li>
                         <?php foreach($ttlist as $klist => $vlist) {
                             $ttcat = isset($newsMenuCats[(int)$vlist['id']]) ? $newsMenuCats[(int)$vlist['id']] : array(); ?>
                             <li>

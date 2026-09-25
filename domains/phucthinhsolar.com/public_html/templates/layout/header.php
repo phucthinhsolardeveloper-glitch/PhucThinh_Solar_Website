@@ -65,7 +65,7 @@ $headerQuickCategories = !empty($splist) ? array_slice($splist, 0, 5) : array();
             <nav class="hdr-quick-links" aria-label="Danh mục tìm nhanh">
                 <span>Tìm nhanh:</span>
                 <?php foreach($headerQuickCategories as $headerCategory) { ?>
-                <a href="danh-muc-san-pham/<?=$headerEscape($headerCategory[$sluglang])?>/"><?=$headerEscape($headerCategory['name'.$lang])?></a>
+                <a href="/danh-muc-san-pham/<?=$headerEscape($headerCategory[$sluglang])?>/"><?=$headerEscape($headerCategory['name'.$lang])?></a>
                 <?php } ?>
             </nav>
             <?php } ?>

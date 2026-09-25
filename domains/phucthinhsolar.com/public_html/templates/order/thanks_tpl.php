@@ -5,7 +5,7 @@
     <?php if(!empty($orderThanks)) { ?>
     <p style="font-size:16px;">Mã đơn hàng: <strong><?=htmlspecialchars($orderThanks['code'])?></strong></p>
     <?php } ?>
-    <a href="san-pham/" class="btn btn-primary" style="margin-top:20px;">Tiếp tục mua sắm</a>
+    <a href="/san-pham/" class="btn btn-primary" style="margin-top:20px;">Tiếp tục mua sắm</a>
 </div>
 
 <?php if(!empty($orderThanks) && !empty($fireOrderConversion)) { ?>

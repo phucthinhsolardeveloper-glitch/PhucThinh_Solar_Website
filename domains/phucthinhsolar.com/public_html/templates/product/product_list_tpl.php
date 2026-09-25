@@ -34,7 +34,7 @@ $_GET['p'] = 1;
             <div class="section-title">
                 <h3><?=$productListRow['name'.$lang]?></h3>
             </div>
-            <a href="danh-muc-san-pham/<?=$productListRow[$sluglang]?>/" class="pts-catblock-all" title="Xem thêm sản phẩm">
+            <a href="/danh-muc-san-pham/<?=$productListRow[$sluglang]?>/" class="pts-catblock-all" title="Xem thêm sản phẩm">
                 Xem tất cả <i class="fas fa-arrow-right"></i>
             </a>
         </div>
