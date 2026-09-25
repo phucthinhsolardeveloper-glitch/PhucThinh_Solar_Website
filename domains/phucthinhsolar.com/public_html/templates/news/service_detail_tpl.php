@@ -24,7 +24,7 @@ $solutionDetailExtra = !empty($rowDetail['content1'.$lang])
                     <?php if($solutionDetailDesc !== '') { ?><p class="pts-sd-lead"><?=$solutionEscape($solutionDetailDesc)?></p><?php } ?>
                     <div class="pts-sd-actions">
                         <a class="pts-sh-consult" href="#ptsContactModal" data-toggle="modal" data-target="#ptsContactModal">Nhận tư vấn giải pháp <span aria-hidden="true">→</span></a>
-                        <?php if($solutionDetailContent !== '') { ?><a class="pts-sd-explore" href="#noi-dung-giai-phap">Tìm hiểu phương án</a><?php } ?>
+                        <?php if($solutionDetailContent !== '') { ?><a class="pts-sd-explore" href="<?=$func->getCurrentPagePath()?>#noi-dung-giai-phap">Tìm hiểu phương án</a><?php } ?>
                     </div>
                 </div>
                 <?php if($solutionDetailImage) { ?>

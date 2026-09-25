@@ -12,7 +12,7 @@
                     <p><?=$solutionEscape($solutionHeroDesc)?></p>
                     <div class="pts-sd-actions">
                         <a class="pts-sh-consult" href="#ptsContactModal" data-toggle="modal" data-target="#ptsContactModal"><?=$solutionEscape($solutionUi['consult'])?> <span aria-hidden="true">→</span></a>
-                        <a class="pts-sd-explore" href="#cac-giai-phap">Khám phá các giải pháp</a>
+                        <a class="pts-sd-explore" href="<?=$func->getCurrentPagePath()?>#cac-giai-phap">Khám phá các giải pháp</a>
                     </div>
                 </div>
             </div>

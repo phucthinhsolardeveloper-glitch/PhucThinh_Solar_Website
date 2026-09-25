@@ -171,18 +171,22 @@ checklist đã hiệu chỉnh theo bằng chứng thật:
 
 ### P0 — Không có mục nào (2 claim P0 gốc đã bị bác bỏ qua kiểm chứng)
 
-### P1 — Thật, ảnh hưởng SEO/dữ liệu, cần chốt hướng rồi làm
+### P1 — Thật, ảnh hưởng SEO/dữ liệu/người dùng thật, cần chốt hướng rồi làm
 
+- [x] **[FIX MỚI, quan trọng nhất phiên]** Anchor link `href="#muc"` bị `<base href>` đá về trang
+      chủ trên 4 trang (Giới thiệu, Đại lý, Giải pháp list/detail) — đã sửa bằng
+      `$func->getCurrentPagePath()`, verify bằng click thật. Xem D1.
 - [x] ~~Canonical bài viết `/tin-tuc/slug/` vs `/slug/`~~ — **đã đính chính, không phải bug** (xem
       A3), không cần sửa.
 - [x] ~~Route danh mục ngắn `/den-nlmt`~~ — **đã đúng từ đầu** (xem A3), không cần sửa.
 - [x] ~~Chuyển sản phẩm khung/kẹp ra khỏi "Tấm pin"~~ — **KHÔNG LÀM**, đây là quyết định có chủ
-      đích ngày 2026-09-22 (migration 047), không phải bug. Xem đính chính ở bảng trên.
+      đích ngày 2026-09-22 (migration 047), production đã áp dụng đúng (xem D3), không phải bug.
 - [x] Chuẩn hoá NAP — root cause đã xác định: field `Setting.address` (Admin > Thiết lập thông
       tin > Địa chỉ) trên **production** vẫn còn `TP.Pleiku` (giá trị cũ trước đợt đổi địa giới
       hành chính), trong khi mọi nơi khác đã đổi sang `Phường Hội Phú`. Local đã đúng sẵn — chỉ
-      cần chủ project tự sửa 1 field này trên Admin production (không cần code, ~1 phút). Xem chi
-      tiết mục A-NAP bên dưới.
+      cần chủ project tự sửa 1 field này trên Admin production (không cần code, ~1 phút). Phạm vi
+      ảnh hưởng chỉ các trang "chung", không phải PDP/bài viết (xem D4). Nhân tiện đã bổ sung
+      `telephone`/`email` còn thiếu hẳn trong Organization schema (code, đã sửa ở local).
 
 ### P2 — Thật nhưng không khẩn, dọn dần
 
@@ -199,6 +203,11 @@ checklist đã hiệu chỉnh theo bằng chứng thật:
       logic build canonical qua `$configBase`, thêm `/` vào đó sẽ tạo double-slash) — các href do 2
       hàm này sinh ra (menu dropdown nhiều cấp, `$solutionMenuHref`...) vẫn còn tương đối, vẫn chạy
       đúng nhờ `<base>`, để nguyên.
+- [x] Sitemap: `giai-phap` không còn công bố URL pre-redirect (đã sửa `createSitemap()`, xem D7).
+- [ ] Sitemap: `tru-den`/`bien-tan-bom` thiếu trên production — không tái hiện ở local (code đúng),
+      cần đối chiếu trực tiếp trên production, không phải việc sửa code (xem D7).
+- [ ] Bare-slug alias cho 205 sản phẩm (không chỉ 1 sản phẩm) — không phải risk thật (canonical
+      luôn đúng), nhưng là route thừa cùng nhóm với mục absolute-href ở trên (xem D6).
 - [ ] Bổ sung `Offer` (giá/trạng thái) và `AggregateRating`/`Review` vào Product schema đã có sẵn.
 - [ ] Quyết định rõ: giữ Google Translate widget (miễn phí, chạy được nhưng không phải i18n SEO
       thật) hay bỏ, hay làm i18n thật (`/en/`, `hreflang`) — hiện đang lấp lửng.
@@ -219,6 +228,108 @@ checklist đã hiệu chỉnh theo bằng chứng thật:
 
 - Không thêm khối "Thương hiệu & chứng nhận" hay trang mới vào trang chủ — giữ nguyên bố cục hiện
   tại.
+
+---
+
+## Phần D — Rà soát sâu lần 2 (đa góc độ, theo yêu cầu "kiểm tra kỹ, không lướt qua")
+
+Lượt đầu verify 1 mẫu cho mỗi claim rồi kết luận. Lượt này chạy 3 nhánh song song, mỗi nhánh test
+nhiều mẫu, nhiều loại trang, cả mobile viewport, cả local lẫn production, để không bỏ sót góc nào.
+
+### D1. PHÁT HIỆN MỚI QUAN TRỌNG NHẤT PHIÊN NÀY: `<base href>` gây lỗi điều hướng thật — đã sửa
+
+`<base href>` (thứ đã "cứu" link sản phẩm relative ở Phần A) lại gây ra tác dụng phụ thật: mọi
+`href="#muc-luc"` thuần (không tiền tố path) trên trang KHÔNG PHẢI trang chủ bị trình duyệt resolve
+về **trang chủ + fragment**, không phải cuộn trong trang hiện tại. Tái hiện bằng click thật
+(Playwright) trên production: bấm "Về Phúc Thịnh Solar" ở `/gioi-thieu/` → điều hướng hẳn sang
+`https://phucthinhsolar.com/#ve-phuc-thinh`, rời khỏi trang About.
+
+**Phạm vi xác nhận:** `templates/about/about_tpl.php` (5 anchor), `templates/daily/daily_tpl.php`
+(3 anchor), `templates/news/service_list_tpl.php` (1 anchor), `templates/news/service_detail_tpl.php`
+(1 anchor) — tổng 10 vị trí ở 4 file. **Không bị ảnh hưởng:** mọi `href="#..."` có kèm
+`data-toggle="modal"`/`data-toggle="tab"` (Bootstrap tự `preventDefault()` trước khi trình duyệt
+kịp điều hướng — đã verify không cần sửa), `href="#menu"` trong header (cùng lý do), và anchor trên
+chính trang chủ (base = root = trang chủ nên tự đúng).
+
+**Phát hiện phụ thú vị:** `templates/product/product_detail_tpl.php` **đã có sẵn fix đúng cho
+chính lỗi này** từ trước (biến `$pdpCurrentPath`, kèm comment giải thích rõ nguyên nhân) — nhưng
+chưa được lan sang 4 template còn lại bị cùng lỗi.
+
+**Đã sửa (local):** thêm hàm dùng chung `$func->getCurrentPagePath()` (trong
+`libraries/class/class.Functions.php`, cùng logic PDP đã dùng) rồi áp vào đúng 10 vị trí. Không
+đụng PDP (đã đúng sẵn, đã test kỹ ở phiên trước, giữ nguyên để giảm rủi ro). Verify: lint PHP 7.4
+sạch, Playwright click thật trên cả 4 trang (`/gioi-thieu/`, `/dai-ly/`, `/giai-phap/`,
+`/giai-phap/dien-mat-troi-ho-gia-dinh/`) — anchor giữ đúng trang hiện tại, 0 console error.
+
+### D2. www/non-www + absolute-href fix — kiểm tra sâu hơn, đứng vững
+
+- Test thêm: path con qua `www`+`http`, query string qua redirect (giữ nguyên), port tường minh
+  `:443`, `http://` không `www` — toàn bộ 301/308 sạch, không có URL nào lọt lưới, không redirect
+  loop, path luôn được giữ nguyên qua các hop.
+- Absolute-href fix (13 file) kiểm tra thêm trên mobile viewport (390×844) qua `mmenu.php` thật —
+  hamburger mở đúng, mọi link đích đúng. `git diff --check` + `php -l` lại toàn bộ: sạch.
+- Form `action=""` không bị `<base>` kéo lệch (HTML spec có exception riêng cho action rỗng —
+  resolve về trang hiện tại, không phải root) — đã verify, không phải bug.
+
+### D3. Taxonomy — đính chính lại câu chữ (không đổi kết luận hành động)
+
+Xác nhận: production **đã** ở đúng trạng thái "9 category, đã gộp" — có redirect 301
+`danh-muc-san-pham/he-thong-khung-nhom/` → `danh-muc-san-pham/tam-pin-nang-luong-mat-troi/`, khớp
+y hệt cặp `old_path`/đích mà migration 047 tạo ra khi `--apply`. `docs/00-project/status.md` và
+`docs/13-handoffs/2026-09-22-product-category-normalization.md` ghi "production chưa deploy" —
+dòng này **hiện không còn đúng với thực tế**, nhưng không tìm thấy commit/doc nào ghi lại việc
+deploy migration 047 lên production giữa 22–25/9. Đây là **lỗ hổng tài liệu** (doc chưa cập nhật
+theo kịp), không phải nghi vấn kỹ thuật cần điều tra thêm. **Kết luận hành động không đổi:** không
+di chuyển sản phẩm khung/kẹp ra khỏi Tấm pin — vì production hiện tại (bằng chứng trực tiếp, không
+qua suy luận từ doc) đã và đang chạy đúng cấu trúc gộp.
+
+### D4. NAP — thu hẹp đúng phạm vi, thêm 1 lỗ hổng khác đã sửa
+
+Rà theo từng loại trang: `TP.Pleiku` (JSON-LD Organization) xuất hiện ở mọi trang "chung" (trang
+chủ, `/gioi-thieu/`, `/dai-ly/`, `/tin-tuc/`, `/gio-hang/`) nhưng **không xuất hiện ở PDP hay bài
+viết chi tiết** — vì `templates/layout/strucdata.php` chỉ render `Organization` đầy đủ cho các loại
+trang không phải `product/product_detail` hay `news/news_detail`/`static`. Gốc rễ vẫn là 1 field
+`Setting.address` trên production (đã nêu ở mục A-NAP), không đổi.
+
+**Phát hiện thêm, đã sửa (local):** Organization JSON-LD hoàn toàn thiếu `telephone` và `email` —
+NAP (Name-Address-Phone) thiếu hẳn phần Phone trong structured data. Đã thêm 2 field này vào
+`templates/layout/strucdata.php`, lấy từ `$optsetting['hotline']`/`$optsetting['email']` (field
+đang dùng thật cho hotline công khai, không phải field `phone` đã xoá ở đợt dọn Admin trước). Verify
+trên trang chủ + `/gioi-thieu/`: `"telephone":"0944 555 957","email":"phucthinhsolar@gmail.com"`
+xuất hiện đúng trong JSON-LD, 0 console error.
+
+### D5. Canonical bài viết/danh mục — test rộng hơn (5 bài + toàn bộ 9 category), kết luận cũ đứng vững
+
+Không phát hiện lệch nào mới. Củng cố thêm bằng chứng, không đổi kết luận A3 (không phải bug).
+
+### D6. PHÁT HIỆN MỚI: bare-slug alias cho sản phẩm là kiến trúc toàn site (205 sản phẩm), không phải cá biệt
+
+Test 7 sản phẩm ngẫu nhiên (không chỉ 1 như lượt đầu): **tất cả** đều có URL "trần" (không tiền tố
+`san-pham/`) trả 200, trùng 100% nội dung với bản `san-pham/slug`, và canonical của bản trần luôn
+trỏ đúng về bản `san-pham/slug`. Đây là pattern áp dụng cho toàn bộ sitemap (205 sản phẩm), giống
+hệt cách category hoạt động (Phần A3) — **không phải duplicate-content risk thật với Google** vì
+canonical luôn nhất quán đúng, chỉ là bề mặt route thừa. Không cần hành động khẩn; nằm chung nhóm
+"dọn route thừa" P2 đã ghi (mục A2).
+
+### D7. Sitemap — 2 vấn đề thật, 1 đã sửa, 1 không tái hiện được ở local
+
+- **Đã sửa (local):** `giai-phap` route 301-redirect bare slug → `giai-phap/<slug>/`, nhưng sitemap
+  generator (`class.Functions.php::createSitemap()`) trước đó công bố bản trần (pre-redirect) thay
+  vì URL đích — tốn crawl budget của Google qua 1 hop thừa. Sửa hẹp đúng phạm vi: chỉ khi
+  `$com==='giai-phap' && $field==='id'`, dùng lại `publicCanonicalEntityPath()` (đã có sẵn, dùng
+  chung với thẻ `<link rel="canonical">`) để lấy đúng URL đích. Không đổi hành vi của bất kỳ `$com`
+  nào khác (tin-tuc, du-an, category, sản phẩm...) — giữ nguyên để tránh phá vỡ những gì đã đúng.
+  Verify: sitemap local sau fix có `giai-phap/dien-mat-troi-ho-gia-dinh/` (đúng đích) thay vì bản
+  trần; test redirect + canonical lại vẫn khớp.
+- **Không tái hiện ở local:** báo cáo production thiếu 2 category `tru-den`/`bien-tan-bom` trong
+  sitemap — kiểm tra lại sitemap local thì **đã có đủ cả 9 category** kể cả 2 cái này (code hoạt
+  động đúng). Vậy đây nhiều khả năng là dữ liệu/trạng thái riêng của production (hoặc cache tầng
+  ngoài code), không phải bug trong code. Không có gì để sửa ở local cho mục này — cần đối chiếu
+  trực tiếp trên production khi có dịp, không tự suy đoán thêm.
+
+### D8. robots.txt — sạch, không có gì cần sửa
+
+Chỉ chặn `/cgi-bin/`, `/administrator/`; khai báo đúng sitemap. Không phát hiện vấn đề.
 
 ---
 

@@ -126,6 +126,8 @@
                 'addressCountry' => 'VN'
             )
         );
+        if(!empty($optsetting['hotline'])) $organizationSchema['telephone'] = $optsetting['hotline'];
+        if(!empty($optsetting['email'])) $organizationSchema['email'] = $optsetting['email'];
         if(!empty($sameAs)) $organizationSchema['sameAs'] = array_values(array_unique($sameAs));
         $schemaData = $organizationSchema;
         if(isset($source) && $source === 'index')

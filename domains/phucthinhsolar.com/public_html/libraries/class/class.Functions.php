@@ -263,9 +263,14 @@
                     if(!empty($value['slug'.$lang]))
                     {
 						/* Sitemap phải công bố đúng URL canonical mà site đang liên kết:
-						   sản phẩm là san-pham/<slug>, danh mục là dạng phân cấp. */
+						   sản phẩm là san-pham/<slug>, danh mục là dạng phân cấp. Riêng
+						   com=giai-phap, route bare-slug tự 301 sang giai-phap/<slug>/ (xem
+						   router.php) nên sitemap phải công bố thẳng URL đích, tránh Google
+						   tốn crawl budget đi qua redirect. */
 						$hierarchyTables = array('product','product_list','product_cat','product_item','product_sub');
 						$hierarchyPath = in_array($table, $hierarchyTables, true) && function_exists('publicProductEntityPath') ? publicProductEntityPath($this->d, $table, $value['id'], $lang) : '';
+						if($hierarchyPath === '' && $com === 'giai-phap' && $field === 'id' && function_exists('publicCanonicalEntityPath'))
+							$hierarchyPath = publicCanonicalEntityPath($this->d, $com, array($field => $value['id']), $lang);
 						$urlSm = $configBase.($hierarchyPath !== '' ? $hierarchyPath : $value['slug'.$lang]);
                         echo '<url>';
                         echo '<loc>'.$urlSm.'</loc>';
@@ -1484,6 +1489,17 @@
 			$pageURL = explode("?", $pageURL, 2)[0];
 			$pageURL = explode("#", $pageURL, 2)[0];
 			return preg_replace('~/index(?:\.php)?/?$~', '/', $pageURL);
+		}
+
+		/* Website khai báo <base href="..."> nên href="#muc" thô sẽ bị trình
+		   duyệt ghép với domain gốc và nhảy về trang chủ thay vì cuộn trong
+		   trang hiện tại. Neo mọi fragment link (href="#muc") vào path hiện
+		   tại: href="<?=$func->getCurrentPagePath()?>#muc". */
+		public function getCurrentPagePath()
+		{
+			$path = !empty($_SERVER['REQUEST_URI']) ? parse_url((string)$_SERVER['REQUEST_URI'], PHP_URL_PATH) : '';
+			if(!is_string($path) || $path === '' || substr($path, 0, 1) !== '/') $path = '/';
+			return htmlspecialchars($path, ENT_QUOTES, 'UTF-8');
 		}
 
 		/* Has file */

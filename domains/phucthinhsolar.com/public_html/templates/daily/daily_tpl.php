@@ -17,9 +17,9 @@
     </div>
     <div class="pts-dl-quick-nav-wrap">
         <nav class="uk-container pts-dl-quick-nav" aria-label="Điều hướng trang đại lý">
-            <a href="#dang-ky-dai-ly"><i class="far fa-edit" aria-hidden="true"></i><span>Đăng ký hợp tác</span></a>
-            <a href="#nang-luc-phan-phoi"><i class="fas fa-solar-panel" aria-hidden="true"></i><span>Sản phẩm phân phối</span></a>
-            <a href="#ho-tro-dai-ly"><i class="fas fa-handshake" aria-hidden="true"></i><span>Quyền lợi đại lý</span></a>
+            <a href="<?=$func->getCurrentPagePath()?>#dang-ky-dai-ly"><i class="far fa-edit" aria-hidden="true"></i><span>Đăng ký hợp tác</span></a>
+            <a href="<?=$func->getCurrentPagePath()?>#nang-luc-phan-phoi"><i class="fas fa-solar-panel" aria-hidden="true"></i><span>Sản phẩm phân phối</span></a>
+            <a href="<?=$func->getCurrentPagePath()?>#ho-tro-dai-ly"><i class="fas fa-handshake" aria-hidden="true"></i><span>Quyền lợi đại lý</span></a>
         </nav>
     </div>
 </section>

@@ -40,11 +40,11 @@
 
     <nav class="pts-about-section-nav" aria-label="Đi nhanh trong trang Giới thiệu">
         <div class="uk-container">
-            <a href="#ve-phuc-thinh">Về Phúc Thịnh Solar</a>
-            <?php if(!empty($aboutTimeline)) { ?><a href="#lich-su-phat-trien">Lịch sử phát triển</a><?php } ?>
-            <a href="#con-nguoi">Con người</a>
-            <?php if(!empty($aboutCompass)) { ?><a href="#tam-nhin-su-menh">Tầm nhìn và sứ mệnh</a><?php } ?>
-            <?php if(!empty($chungnhan)) { ?><a href="#about-certificates">Năng lực và chứng nhận</a><?php } ?>
+            <a href="<?=$func->getCurrentPagePath()?>#ve-phuc-thinh">Về Phúc Thịnh Solar</a>
+            <?php if(!empty($aboutTimeline)) { ?><a href="<?=$func->getCurrentPagePath()?>#lich-su-phat-trien">Lịch sử phát triển</a><?php } ?>
+            <a href="<?=$func->getCurrentPagePath()?>#con-nguoi">Con người</a>
+            <?php if(!empty($aboutCompass)) { ?><a href="<?=$func->getCurrentPagePath()?>#tam-nhin-su-menh">Tầm nhìn và sứ mệnh</a><?php } ?>
+            <?php if(!empty($chungnhan)) { ?><a href="<?=$func->getCurrentPagePath()?>#about-certificates">Năng lực và chứng nhận</a><?php } ?>
         </div>
     </nav>
 
