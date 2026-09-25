@@ -155,8 +155,11 @@
     position:sticky!important;
     top:0!important;
     z-index:15!important;
-    background:transparent!important;
-    box-shadow:none!important;
+    /* Hàng ghim phải là một mặt phẳng kín; nền trong suốt làm ảnh sản phẩm
+       phía dưới xuyên qua tiêu đề/chip khi cuộn. */
+    background:#fff!important;
+    box-shadow:0 2px 0 rgba(255,255,255,.98),0 6px 12px -8px rgba(15,23,42,.18)!important;
+    isolation:isolate;
 }
 .filter-heading,.filter_product .filter-heading{display:flex!important;align-items:center;gap:11px;min-width:0;}
 .filter-heading-icon{
@@ -358,6 +361,19 @@
     .filter_product .fp-sort{margin-left:auto;}
     .filter_product .fp-sort label{display:none;}
     .filter_product select.orderby{max-width:160px;}
+    /* Mobile không ghim dải điều hướng/bộ lọc: tránh chồng tiêu đề, chip và
+       ảnh sản phẩm khi trình duyệt xử lý sticky trong vùng cuộn ngang. */
+    .pts-category-tabs.is-sticky-row,
+    .filter_product.is-sticky-row{
+        position:relative!important;
+        top:auto!important;
+        z-index:auto!important;
+        background:#fff!important;
+        box-shadow:none!important;
+        isolation:auto;
+    }
+    .pts-category-tab{transition:none!important;}
+    .pts-category-tab:hover,.pts-category-tab:focus-visible{transform:none!important;}
     .product-right .product-card .caption .name{min-height:42px;font-size:13.5px;}
     .product-right .product-card .pts-card-specs{font-size:11.5px;}
     .product-right .product-card-btns .pts-card-add,
