@@ -147,11 +147,55 @@ trang).
 
 ---
 
-## Nhóm nội dung/biên tập (P3) — chưa phân tích kỹ thuật, cần bạn quyết định hướng trước
+## Nhóm nội dung/biên tập (P3) — đã triển khai phần an toàn, để lại phần cần số liệu thật
 
-Các mục này (category intro text, rút gọn form báo giá, case study dự án, rewrite content cũ, cập
-nhật số liệu trang Đại lý, chuẩn hóa title pattern) đợi bạn cho hướng cụ thể — không phải việc tôi
-tự phân tích code được, cần góc nhìn kinh doanh/biên tập của bạn.
+P3 chia làm 2 loại rõ rệt: việc có thể làm ngay bằng dữ liệu đã có/code thuần, và việc cần số liệu
+kinh doanh thật từ bạn (không tự bịa). Đã làm xong loại đầu:
+
+- [x] **Category intro text** — viết mô tả riêng cho 9 danh mục cấp 1 (trước đó tất cả rỗng, tự
+      rơi về 1 câu fallback chung). Nội dung dựa trên thương hiệu thật đang bán trong từng danh
+      mục (query trực tiếp DB), không thêm số liệu. Áp qua `migrations/052_add_product_category_intro_text.php`
+      (đã chạy `--apply` ở local).
+- [x] **Rút gọn form báo giá sản phẩm** — bỏ `required` ở Tỉnh/Thành phố và Phường/Xã sau khi xác
+      nhận server-side (`sources/allpage.php:108-114`) **chưa từng validate 2 field này** — client
+      yêu cầu nhưng backend không cần, thuần túy ma sát thừa. Không đụng đến
+      fullname/phone/email/loaihinh/need_code (vẫn bắt buộc, khớp đúng validate server) vì rút gọn
+      tiếp là quyết định kinh doanh (ảnh hưởng chất lượng lead cho CRM), không tự quyết thay bạn.
+- [x] **Rà content tin tức cũ** — sửa bài "8 lý do..." qua `migrations/053_...php`: bỏ "An toàn
+      tuyệt đối 100%" (claim marketing không bằng chứng), sửa 4 lỗi chính tả ("Tiết kiện", "cho
+      phí", "có để đạt", "tốt đa"). Chỉ sửa đúng 1 bài này (mẫu điển hình audit ChatGPT chỉ ra);
+      rà toàn bộ tin tức cũ khác cần thêm thời gian, chưa làm.
+- [x] **Trang Đại lý: bỏ số liệu lỗi thời/không kiểm chứng được** — qua
+      `migrations/054_remove_dealer_page_stale_claims.php`: bỏ nhắc "Chương trình mục tiêu Quốc
+      gia (2021-2025)" (đã hết giai đoạn), bỏ "doanh thu ngành đèn NLMT... hàng nghìn tỉ đồng/năm"
+      (không có nguồn), bỏ "chưa nhiều Đại lý... tại Việt Nam" (claim thị trường không có căn cứ),
+      thay ảnh check-mark nhúng từ `static.xx.fbcdn.net` (phụ thuộc domain Facebook ngoài, có thể
+      hỏng bất cứ lúc nào) bằng ký tự ✔ thuần text. **Không đụng** khối `dai-ly-2` (thông số kỹ
+      thuật Blue Carbon như "tuổi thọ >25 năm") vì đọc như spec nhà sản xuất thật, không phải
+      marketing claim rõ ràng sai — không đủ căn cứ để tự sửa/bỏ.
+- [x] **Chuẩn hoá title pattern** — sửa 1 điểm trung tâm (`class.Seo.php::set()`) tự thêm hậu tố
+      "| Phúc Thịnh Solar" cho MỌI trang đang thiếu (trước đó chỉ trang có SEO title tự nhập tay
+      trong Admin mới có hậu tố, 21 điểm fallback rải rác trong `sources/*.php` đều thiếu). Có
+      check tránh double-suffix, kể cả cho các SEO title cũ bị cắt ngắn giữa chừng trong DB (phát
+      hiện phụ: một số title admin nhập bị cắt còn "...Phúc Thịnh So" thiếu "lar" — dữ liệu cũ, để
+      nguyên không sửa vì ngoài phạm vi task này).
+  - **Phát hiện phụ đã sửa luôn (không phải P3 nhưng tiện phát hiện khi test):** title trang chủ
+    local đang hoàn toàn rỗng (`<title></title>`) — 1 hàng `#_seo` bị rỗng ở local, không phải do
+    thay đổi trong phiên này. Cập nhật lại giá trị đúng (khớp production đã audit trước đó) trực
+    tiếp qua SQL, không cần migration riêng vì chỉ là đồng bộ local theo giá trị đã biết đúng.
+
+**Chưa làm, cần bạn cho số liệu/quyết định thật trước:**
+- [ ] Case study dự án chi tiết hơn (thông số hệ thống, ảnh thực tế, sản lượng) — cần dữ liệu dự án
+      thật, không thể bịa số.
+- [ ] Rà toàn bộ content tin tức cũ khác (mới sửa 1 bài mẫu) — cần thời gian đọc hết, hoặc bạn chỉ
+      định bài ưu tiên.
+- [ ] Rút gọn tiếp form (bỏ email/loaihinh/need_code) nếu bạn chấp nhận đánh đổi chất lượng lead.
+
+**Verify:** lint PHP 7.4 toàn bộ file sửa + 3 migration, `git diff --check` pass, xóa cache local
+(`caches/` là Docker volume, xóa qua `docker exec`, không xóa được từ host) sau mỗi lần cập nhật
+nội dung DB để tránh đọc nhầm bản cache 7200s cũ, browser test qua nhiều loại trang (trang chủ,
+category, PDP có/không SEO title tự nhập, bài viết, Đại lý, giỏ hàng) - 0 console error, không còn
+double-suffix title.
 
 ---
 
