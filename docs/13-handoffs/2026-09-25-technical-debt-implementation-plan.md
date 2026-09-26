@@ -322,3 +322,16 @@ cả kịch bản form rút gọn, `test-admin-button-visibility.php` 46/46 pass
 `test-admin-readiness.php` 184/184 pass) - không chỉ lint mà chạy hành vi thật end-to-end, kể cả
 ghi/đọc DB thật. `git diff --check` pass. Migration 056/057 xác nhận đã `--apply` thành công trước
 đó (bảng backup + schema đúng).
+
+**Cập nhật 2026-09-26 (lượt kiểm thử giao diện):**
+
+- Cài đúng Chrome Headless Shell v1234 cho `tools/visual-tests`.
+- Chạy tuần tự `container-balance`, `responsive-architecture` và `responsive-matrix`: **32/32
+  pass** ở cả desktop/mobile. Các lỗi trước đó khi chạy 6 worker là timeout tài nguyên, không phải
+  lỗi tràn ngang.
+- Nhóm contract UI sau khi đồng bộ URL canonical: **14/14 pass** (header, Đại lý, category/PDP,
+  ảnh nền 9 danh mục và solution detail).
+- Cập nhật test để phản ánh URL tuyệt đối có dấu `/` đầu và anchor Đại lý đầy đủ route; giữ toolbar
+  sticky desktop có nền/shadow kín, mobile bỏ sticky/shadow theo thiết kế đã duyệt.
+- Chưa chạy lại toàn bộ 258 visual case ở chế độ một worker; các nhóm từng fail đã được chạy lại
+  tuần tự và pass. Không cập nhật snapshot chỉ để làm xanh test.
