@@ -63,8 +63,8 @@ if (!empty($argv[1]) && $argv[1] === '--inspect-workbook' && !empty($argv[2])) {
     );
     testAssert(strpos((string) $guideSheet->getCell('B2')->getValue(), 'Mã sản phẩm và Tên sản phẩm') !== false, 'Sheet hướng dẫn nêu rõ dữ liệu bắt buộc');
     testAssert(strpos((string) $guideSheet->getCell('B3')->getValue(), 'ô trống sẽ giữ') !== false, 'Sheet hướng dẫn giải thích cách cập nhật tối giản');
-    testAssert(strpos((string) $guideSheet->getCell('B17')->getValue(), 'Model | JD-T200') !== false, 'Sheet hướng dẫn có ví dụ thông số khác');
-    testAssert(strpos((string) $guideSheet->getCell('B21')->getValue(), 'Bước 1') !== false && strpos((string) $guideSheet->getCell('B21')->getValue(), 'đã kiểm tra') !== false, 'Sheet hướng dẫn có quy trình import từng bước');
+    testAssert(strpos((string) $guideSheet->getCell('B18')->getValue(), 'ac_power | Công suất AC định mức | 10 kW') !== false, 'Sheet hướng dẫn có ví dụ thông số khác');
+    testAssert(strpos((string) $guideSheet->getCell('B22')->getValue(), 'Bước 1') !== false && strpos((string) $guideSheet->getCell('B22')->getValue(), 'đã kiểm tra') !== false, 'Sheet hướng dẫn có quy trình import từng bước');
     testAssert(!empty($headerColumns['Danh mục cấp 1']) && $productSheet->getCell($headerColumns['Danh mục cấp 1'].'2')->getDataValidation()->getType() === PHPExcel_Cell_DataValidation::TYPE_LIST, 'Danh mục có danh sách chọn trong Excel');
     testAssert(!empty($headerColumns['Hiển thị (1/0)']) && !empty($headerColumns['Bán chạy (1/0)']) && !empty($headerColumns['Liên hệ báo giá (1/0)']), 'Template dùng các cột trạng thái boolean thay cho text thủ công');
     testAssert($productSheet->getCell($headerColumns['Hiển thị (1/0)'].'2')->getDataValidation()->getFormula1() === '"1,0"', 'Cột Hiển thị chỉ cho chọn 1 hoặc 0');
@@ -128,6 +128,7 @@ $createdBrandId = 0;
 $createdImagePath = '';
 $createdGalleryPath = '';
 $createdGalleryId = 0;
+$legacyDuplicateId = 0;
 try {
     $csvPath = tempnam(sys_get_temp_dir(), 'pts-csv-');
     $csv = fopen($csvPath, 'wb');
@@ -152,6 +153,8 @@ try {
     testAssert(empty($formSpecs['errors']) && count($formSpecs['specs']) === 2, 'Parser dùng chung cho CRUD form đọc đủ thông số riêng');
     $legacyFormSpecs = productBulkParseSpecLines("Cánh quạt | 5 cánh\nCánh quạt | 16 inch", true);
     testAssert(empty($legacyFormSpecs['errors']) && count($legacyFormSpecs['specs']) === 2, 'CRUD form giữ được thông số legacy trùng nhãn');
+    $escapedPipeSpecs = productBulkParseSpecLines('Điện áp / Tần số | 110-240V \\| 50/60Hz', true);
+    testAssert(empty($escapedPipeSpecs['errors']) && $escapedPipeSpecs['specs'][0]['value'] === '110-240V | 50/60Hz', 'Parser giữ dấu gạch đứng trong giá trị thông số đã escape');
     $duplicateRender = productStructuredSpecs(array('additional_specs' => '[{"label":"Cánh quạt","value":"5 cánh"},{"label":"Cánh quạt","value":"16 inch"}]'), 'vi');
     testAssert(!$duplicateRender['use_legacy'] && count($duplicateRender['specs']) === 2, 'Frontend giữ đủ thông số legacy trùng nhãn');
     $legacyRender = productStructuredSpecs(array('additional_specs' => '{json lỗi', 'thongsokythuatvi' => '<table><tr><td>Legacy</td></tr></table>'), 'vi');
@@ -240,6 +243,26 @@ try {
     testAssert(stripos(htmlspecialchars_decode($created['descvi']), '<script') === false, 'HTML nguy hiểm bị loại bỏ');
     $savedSpecs = json_decode(htmlspecialchars_decode($created['additional_specs'], ENT_QUOTES), true);
     testAssert($created['light_source'] === 'LED SMD' && count($savedSpecs) === 2 && $savedSpecs[0]['label'] === 'Model', 'Lưu đúng thông số cấu trúc và JSON thông số riêng');
+
+    /* Hệ thống production có một số bản ghi ẩn legacy dùng lại đúng mã/slug.
+       File export vẫn phải nhập ngược được khi từng dòng giữ nguyên ID, nhưng
+       không được tự match theo mã nếu thiếu ID. */
+    $legacyDuplicate = $created;
+    unset($legacyDuplicate['id']);
+    $legacyDuplicate['status'] = '';
+    $legacyDuplicate['date_updated'] = 0;
+    testAssert($d->insert('product', $legacyDuplicate), 'Tạo dữ liệu mô phỏng sản phẩm legacy trùng mã/slug');
+    $legacyDuplicateId = (int) $d->getLastInsertId();
+    $legacyDuplicateRows = array(
+        array('_row_number' => 2, 'id' => $createdId, 'code' => $created['code'], 'namevi' => $created['namevi'], 'slugvi' => $created['slugvi']),
+        array('_row_number' => 3, 'id' => $legacyDuplicateId, 'code' => $created['code'], 'namevi' => $created['namevi'], 'slugvi' => $created['slugvi'])
+    );
+    $legacyDuplicatePreview = productBulkValidateRows($legacyDuplicateRows, $type);
+    testAssert($legacyDuplicatePreview['errors'] === 0, 'Cho phép file export giữ nguyên mã/slug legacy trùng khi mỗi dòng có đúng ID');
+    $ambiguousCodePreview = productBulkValidateRows(array(array('_row_number' => 4, 'code' => $created['code'], 'material' => 'Không được tự ghép')), $type);
+    testAssert($ambiguousCodePreview['errors'] > 0, 'Từ chối tự ghép theo mã legacy trùng khi file thiếu ID');
+    $d->rawQuery('delete from #_product where id = ? and type = ?', array($legacyDuplicateId, $type));
+    $legacyDuplicateId = 0;
 
     $slugMatchRows = array(array('_row_number' => 6, 'action' => 'create', 'code' => $code.'-NEW-CODE', 'namevi' => $created['namevi'], '_list_name' => $firstListName, 'slugvi' => $created['slugvi']));
     $slugMatchKey = productBulkProductMatchKey(6, $created['slugvi'], $createdId);
@@ -386,6 +409,7 @@ try {
     if ($createdGalleryId > 0) $d->rawQuery('delete from #_gallery where id = ?', array($createdGalleryId));
     if ($createdGalleryPath !== '' && is_file($createdGalleryPath)) @unlink($createdGalleryPath);
     if ($createdImagePath !== '' && is_file($createdImagePath)) @unlink($createdImagePath);
+    if ($legacyDuplicateId > 0) $d->rawQuery('delete from #_product where id = ? and type = ?', array($legacyDuplicateId, $type));
     if ($createdId > 0) {
         $d->rawQuery('delete from #_seo where id_parent = ? and com = ? and type = ?', array($createdId, 'product', $type));
         $d->rawQuery('delete from #_product where id = ? and type = ?', array($createdId, $type));
