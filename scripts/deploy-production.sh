@@ -106,9 +106,8 @@ if [ -z "$deployed_commit" ]; then
         for release_file in $stack_root/incoming/*/RELEASE.txt; do
             [ -f \"\$release_file\" ] || continue
             release_commit=\$(sed -n 's/^commit=//p' \"\$release_file\" | head -1)
-            [ \"\${release_commit#\$deployed_short}\" != \"\$release_commit\" ] || continue
+            case \"\$release_commit\" in \"$deployed_short\"*) ;; *) continue ;; esac
             [ \"\${#release_commit}\" -eq 40 ] || continue
-            [ \"\${release_commit:0:12}\" = \"$deployed_short\" ] || continue
             parent_commit=\$(sed -n 's/^parent_commit=//p' \"\$release_file\" | head -1)
             printf '%s\\n' \"\$parent_commit\"
             exit 0
