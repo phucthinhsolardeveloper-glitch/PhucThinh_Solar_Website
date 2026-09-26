@@ -99,4 +99,3 @@ bulkStatusOk(!empty($third['success']) && (int)$third['updated'] === 1, 'Tắt t
 
 echo PHP_EOL.'Kết quả: '.$passes.' pass, '.$failures.' fail'.PHP_EOL;
 exit($failures ? 1 : 0);
-

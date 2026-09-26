@@ -1,7 +1,7 @@
 # Handoff: rà soát sâu Admin dư thừa và độ lệch Admin ↔ public
 
-Ngày rà soát: 2026-09-25  
-Phạm vi: code và DB local của `phucthinhsolar.com`  
+Ngày rà soát: 2026-09-25
+Phạm vi: code và DB local của `phucthinhsolar.com`
 Mục tiêu tài liệu: cung cấp đủ bằng chứng và checklist để lượt triển khai tiếp theo có thể thu gọn Admin mà không làm mất dữ liệu hoặc vô tình tắt consumer public/backend còn dùng.
 
 ## 1. Kết luận điều hành

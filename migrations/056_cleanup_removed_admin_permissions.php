@@ -113,4 +113,3 @@ $backupStmt->execute(array_merge(array(time()), $permissions));
 $deleteStmt = $pdo->prepare("delete from $permissionTable where permission in ($marks)");
 $deleteStmt->execute($permissions);
 echo "APPLY xong: đã dọn ".$deleteStmt->rowCount()." quyền legacy; backup giữ tại {$prefix}permission_legacy_backup_056.\n";
-

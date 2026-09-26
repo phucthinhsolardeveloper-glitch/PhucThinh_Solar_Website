@@ -81,4 +81,3 @@ if(!$apply && !$rollback)
     exit(0);
 }
 echo ($rollback ? 'ROLLBACK' : 'APPLY')." xong: đã đổi schema $changed bảng.\n";
-
