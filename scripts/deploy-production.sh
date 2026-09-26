@@ -83,6 +83,8 @@ on_error() {
 trap 'on_error "$LINENO"' ERR
 
 cd "$repo_dir"
+export PLAYWRIGHT_BROWSERS_PATH="${PLAYWRIGHT_BROWSERS_PATH:-$repo_dir/tools/visual-tests/.browsers}"
+[ -d "$PLAYWRIGHT_BROWSERS_PATH" ] || fail "không thấy Playwright browser bundle: $PLAYWRIGHT_BROWSERS_PATH"
 step "Kiểm tra Git và phạm vi release"
 [ -z "$(git status --porcelain --untracked-files=normal)" ] || fail "working tree chưa sạch; commit hoặc cất thay đổi trước."
 branch="$(git branch --show-current)"
