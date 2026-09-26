@@ -474,14 +474,20 @@ function productBulkParseSpecLines($value, $allowDuplicateLabels=false)
     $labels = array();
     foreach(preg_split('/\R/u', (string) $value) as $lineNumber => $line) {
         if(trim($line) === '') continue;
-        $parts = array_map('trim', productBulkSpecLineParts($line));
-        if(count($parts) !== 2 && count($parts) !== 3) {
+        $parts = productBulkSpecLineParts($line);
+        if(count($parts) < 2) {
             $result['errors'][] = 'Dòng '.($lineNumber + 1).' phải theo mẫu: Mã | Tên thông số | Giá trị (hoặc Tên | Giá trị với dữ liệu cũ)';
             continue;
         }
-        $specKey = count($parts) === 3 ? strtolower($parts[0]) : '';
-        $label = trim(strip_tags(count($parts) === 3 ? $parts[1] : $parts[0]));
-        $specValue = trim(strip_tags(count($parts) === 3 ? $parts[2] : $parts[1]));
+        $firstPart = trim($parts[0]);
+        $hasExplicitKey = count($parts) >= 3 && preg_match('/^[a-z0-9_]+$/', strtolower($firstPart));
+        $specKey = $hasExplicitKey ? strtolower($firstPart) : '';
+        $label = trim(strip_tags($hasExplicitKey ? $parts[1] : $parts[0]));
+        /* File đã xuất trước bản vá không escape dấu | nằm trong giá trị
+           (ví dụ "110-240V | 50/60Hz" hoặc "STC || NOCT"). Ghép nguyên
+           phần còn lại để các file production cũ vẫn nhập lại được. */
+        $valueParts = array_slice($parts, $hasExplicitKey ? 2 : 1);
+        $specValue = trim(strip_tags(implode('|', $valueParts)));
         if($label === '' || $specValue === '') {
             $result['errors'][] = 'Dòng '.($lineNumber + 1).' thiếu tên thông số hoặc giá trị';
             continue;

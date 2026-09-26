@@ -155,6 +155,13 @@ try {
     testAssert(empty($legacyFormSpecs['errors']) && count($legacyFormSpecs['specs']) === 2, 'CRUD form giữ được thông số legacy trùng nhãn');
     $escapedPipeSpecs = productBulkParseSpecLines('Điện áp / Tần số | 110-240V \\| 50/60Hz', true);
     testAssert(empty($escapedPipeSpecs['errors']) && $escapedPipeSpecs['specs'][0]['value'] === '110-240V | 50/60Hz', 'Parser giữ dấu gạch đứng trong giá trị thông số đã escape');
+    $legacyPipeSpecs = productBulkParseSpecLines("Điện áp / Tần số | 110-240V | 50/60Hz\nĐiều kiện thử nghiệm | STC || NOCT", true);
+    testAssert(
+        empty($legacyPipeSpecs['errors'])
+        && $legacyPipeSpecs['specs'][0]['value'] === '110-240V | 50/60Hz'
+        && $legacyPipeSpecs['specs'][1]['value'] === 'STC || NOCT',
+        'Parser tương thích file production cũ chưa escape dấu gạch đứng'
+    );
     $duplicateRender = productStructuredSpecs(array('additional_specs' => '[{"label":"Cánh quạt","value":"5 cánh"},{"label":"Cánh quạt","value":"16 inch"}]'), 'vi');
     testAssert(!$duplicateRender['use_legacy'] && count($duplicateRender['specs']) === 2, 'Frontend giữ đủ thông số legacy trùng nhãn');
     $legacyRender = productStructuredSpecs(array('additional_specs' => '{json lỗi', 'thongsokythuatvi' => '<table><tr><td>Legacy</td></tr></table>'), 'vi');
