@@ -44,6 +44,12 @@ commit chưa có trên remote để release luôn truy ngược được. Phạm
 được tính từ image đang active trên VPS tới `HEAD`, nên chuỗi nhiều commit không
 làm bỏ sót file chưa deploy.
 
+Một số hotfix giao diện cũ có thể dùng image tag content-hash thay vì Git SHA
+(ví dụ `028bcc280b0f`). Script sẽ đọc `parent_commit` từ `RELEASE.txt` còn lưu
+trên VPS, xác minh parent có trong Git và là ancestor của `HEAD`, rồi mới tính
+phạm vi thay đổi. Nếu thiếu metadata hoặc parent không xác minh được, deploy sẽ
+dừng; không dùng tùy chọn bỏ qua guard.
+
 ### SAFE
 
 ```bash

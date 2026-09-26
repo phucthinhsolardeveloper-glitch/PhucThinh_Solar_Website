@@ -96,7 +96,30 @@ current_image="$(remote "cat $stack_root/state/current-image")"
 printf '%s' "$current_image" | grep -Eq '^phucthinhsolar-web:[0-9a-f]{12}$' || fail "không nhận diện được current-image trên VPS: $current_image"
 deployed_short="${current_image#phucthinhsolar-web:}"
 deployed_commit="$(git rev-parse --verify "${deployed_short}^{commit}" 2>/dev/null || true)"
-[ -n "$deployed_commit" ] || fail "Git local không có commit production $deployed_short; fetch đầy đủ history rồi thử lại."
+baseline_note="Git commit"
+if [ -z "$deployed_commit" ]; then
+    # Một số CSS/JS hotfix cũ được đóng gói ngoài Git bằng content-hash 12 ký
+    # tự. RELEASE.txt của release đó giữ parent Git commit thật; dùng parent
+    # làm baseline sau khi xác minh tag và parent khớp, không coi content-hash
+    # là một commit Git giả.
+    external_baseline="$(remote "
+        for release_file in $stack_root/incoming/*/RELEASE.txt; do
+            [ -f \"\$release_file\" ] || continue
+            release_commit=\$(sed -n 's/^commit=//p' \"\$release_file\" | head -1)
+            [ \"\${release_commit#\$deployed_short}\" != \"\$release_commit\" ] || continue
+            [ \"\${#release_commit}\" -eq 40 ] || continue
+            [ \"\${release_commit:0:12}\" = \"$deployed_short\" ] || continue
+            parent_commit=\$(sed -n 's/^parent_commit=//p' \"\$release_file\" | head -1)
+            printf '%s\\n' \"\$parent_commit\"
+            exit 0
+        done
+    " 2>/dev/null || true)"
+    external_baseline="$(printf '%s\n' "$external_baseline" | sed -n '/^[0-9a-f]\{40\}$/p' | head -1)"
+    [ -n "$external_baseline" ] || fail "Git local không có commit production $deployed_short và không tìm thấy RELEASE.txt chứa parent baseline trên VPS."
+    deployed_commit="$(git rev-parse --verify "${external_baseline}^{commit}" 2>/dev/null || true)"
+    [ -n "$deployed_commit" ] || fail "Release production $deployed_short trỏ tới parent $external_baseline nhưng Git local không có parent; fetch đầy đủ history rồi thử lại."
+    baseline_note="parent Git commit của release ngoài Git $deployed_short"
+fi
 git merge-base --is-ancestor "$deployed_commit" "$commit" || fail "commit production không phải ancestor của HEAD; dừng để kiểm tra nhánh."
 changed_paths="$(git diff --name-only "$deployed_commit" "$commit")"
 printf '%s\n' "$changed_paths" | grep -q '^domains/phucthinhsolar.com/public_html/' || fail "commit không đổi source website; không cần deploy production."
@@ -142,7 +165,7 @@ release_id="${commit:0:12}"
 remote_release="$stack_root/incoming/$release_name"
 
 step "Kiểm tra VPS trước deploy"
-echo "Production hiện tại: $current_image ($deployed_commit)"
+echo "Production hiện tại: $current_image ($deployed_commit; baseline $baseline_note)"
 remote "cd $stack_root && docker compose ps && df -h $stack_root && cat state/current-image"
 deploy_started_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 
