@@ -46,7 +46,10 @@ $pdpSectionSplit = productSplitFaqBlocks(isset($productSections['blocks']) ? $pr
 $productSectionsHtml = (!empty($pdpSectionSplit['rest'])) ? productRenderSections($pdpSectionSplit['rest'], UPLOAD_PRODUCT_L, $func) : '';
 $productSpecParagraph = ($productSectionsHtml === '' && $productSections['source'] !== 'hide') ? productAutoDescription($rowDetail, $lang, isset($type) ? $type : '', $pdpProfileKey) : '';
 $hasProductDescription = $productSpecHighlights || $productSectionsHtml !== '' || $productSpecParagraph !== '';
-$hasProductSpecs = !empty($structuredSpecs) || ($useLegacySpecs && $productLegacySpecs !== '');
+/* Luôn hiện bảng thông số đủ khung (xem $pdpFullSpecRows bên dưới) - không
+   còn ẩn cả bảng chỉ vì chưa có structuredSpecs, để Admin thấy rõ còn thiếu
+   field nào cần nhập thay vì tưởng đã xong vì bảng "biến mất". */
+$hasProductSpecs = true;
 $hasProductPolicy = $productPolicyOverride !== '' || !empty($policy);
 
 /* Nếu ảnh đại diện bị thiếu trên đĩa nhưng gallery còn ảnh thật, dùng ảnh đó
@@ -74,61 +77,88 @@ $pdpCategoryName = '';
 if(!empty($productCat['name'.$lang])) $pdpCategoryName = $productCat['name'.$lang];
 else if(!empty($productList['name'.$lang])) $pdpCategoryName = $productList['name'.$lang];
 
-/* Ma trận thông số quyết định ở hero: chỉ lấy dữ liệu thật đã có, ưu tiên các
-   field có cấu trúc rồi mới bổ sung từ additional_specs. Không dựng số liệu
-   mẫu của file tham chiếu cho sản phẩm chưa được xác minh. */
-$pdpDecisionMetrics = array();
-$pdpMetricDefinitions = array(
-    'cong_suat' => array('Công suất', 'fa-bolt', 'Công suất định mức của sản phẩm'),
-    'battery_capacity' => array('Pin lưu trữ', 'fa-battery-three-quarters', 'Dung lượng năng lượng lưu trữ'),
-    'panel_power' => array('Tấm pin', 'fa-solar-panel', 'Công suất tấm pin đi kèm'),
-    'lighting_area' => array('Phạm vi sử dụng', 'fa-expand', 'Diện tích chiếu sáng tham khảo'),
-    'installation_height' => array('Chiều cao lắp', 'fa-ruler-vertical', 'Theo khuyến nghị của sản phẩm'),
-    'lighting_time' => array('Thời gian hoạt động', 'fa-clock', 'Theo điều kiện sử dụng công bố'),
-    'waterproof_rating' => array('Cấp bảo vệ', 'fa-shield-alt', 'Khả năng bảo vệ ngoài trời'),
-    'warranty' => array('Bảo hành', 'fa-award', 'Xem điều kiện áp dụng')
-);
-$pdpMetricIcons = array(
-    'ac_power' => 'fa-bolt', 'motor_power' => 'fa-bolt', 'phase_count' => 'fa-wave-square',
-    'mppt_count' => 'fa-th', 'usable_capacity' => 'fa-battery-three-quarters', 'battery_voltage' => 'fa-plug',
-    'cycle_life' => 'fa-sync-alt', 'cell_type' => 'fa-solar-panel', 'efficiency' => 'fa-chart-line',
-    'runtime' => 'fa-clock', 'max_flow' => 'fa-water', 'max_head' => 'fa-ruler-vertical',
-    'rated_voltage' => 'fa-plug', 'rated_current' => 'fa-bolt', 'compatibility' => 'fa-link'
-);
-$profileMetricDefinitions = array();
-foreach((array)$pdpProfile['metrics'] as $metricKey)
-{
-    $metricLabel = isset($pdpProfile['fields'][$metricKey]) ? $pdpProfile['fields'][$metricKey] : $metricKey;
-    $profileMetricDefinitions[$metricKey] = array($metricLabel, isset($pdpMetricIcons[$metricKey]) ? $pdpMetricIcons[$metricKey] : 'fa-check-circle', 'Thông tin theo đúng model');
-}
-$pdpMetricDefinitions = array_merge($pdpMetricDefinitions, $profileMetricDefinitions);
-$pdpMetricLabels = array();
-$pdpMetricKeys = array();
-foreach(array_keys($profileMetricDefinitions) as $metricField)
-{
-    $metricMeta = $pdpMetricDefinitions[$metricField];
-    if(count($pdpDecisionMetrics) >= 4) continue;
-    $metricValue = trim(strip_tags(productPdpSpecValue($rowDetail, $metricField)));
-    if($metricValue === '') continue;
-    if($metricField === 'cong_suat' && is_numeric(str_replace(',', '.', $metricValue))) $metricValue = sprintf('%g', (float)str_replace(',', '.', $metricValue)).'W';
-    $pdpDecisionMetrics[] = array('label' => $metricMeta[0], 'icon' => $metricMeta[1], 'note' => $metricMeta[2], 'value' => $metricValue);
-    $pdpMetricLabels[mb_strtolower($metricMeta[0], 'UTF-8')] = true;
-    $pdpMetricKeys[$metricField] = true;
-}
-foreach($structuredSpecs as $metricSpec)
-{
-    if(count($pdpDecisionMetrics) >= 4) break;
-    $metricKey = isset($metricSpec['key']) ? (string)$metricSpec['key'] : '';
-    if($metricKey !== '' && isset($pdpMetricKeys[$metricKey])) continue;
-    if($pdpProfileKey !== 'general' && ($metricKey === '' || !in_array($metricKey, (array)$pdpProfile['metrics'], true))) continue;
-    $metricLabel = trim((string)$metricSpec['label']);
-    $metricValue = trim(htmlspecialchars_decode((string)$metricSpec['value'], ENT_QUOTES));
-    if($metricLabel === '' || $metricValue === '' || isset($pdpMetricLabels[mb_strtolower($metricLabel, 'UTF-8')])) continue;
-    $pdpDecisionMetrics[] = array('label' => $metricLabel, 'icon' => 'fa-check-circle', 'note' => 'Thông tin theo đúng model', 'value' => $metricValue);
-    $pdpMetricLabels[mb_strtolower($metricLabel, 'UTF-8')] = true;
-    if($metricKey !== '') $pdpMetricKeys[$metricKey] = true;
-}
 $pdpPackageContents = !empty($rowDetail['package_contents']) ? trim(strip_tags((string)$rowDetail['package_contents'])) : '';
+
+/* Bố cục "hero + bảng thông số luôn đủ dòng" theo mockup 2026-09-26 - khung/
+   icon cố định, dữ liệu thật hiện khi có, còn thiếu thì hiện placeholder
+   "[...]" để Admin tự biết chỗ cần cập nhật. Áp dụng cho MỌI profile, nhưng
+   chọn field theo đúng nhóm (mỗi profile đã có sẵn metrics/fields riêng ở
+   product_pdp_profiles.php - không ép chung 1 bộ field cho tất cả). Riêng
+   nhóm đèn dùng đúng 4 field trong mockup gốc (quang thông không phải field
+   cố định của DB, phải tra theo nhãn trong additional_specs). */
+$pdpSpecLookup = function($needleLabel) use ($structuredSpecs) {
+    $needleLabel = mb_strtolower(trim($needleLabel), 'UTF-8');
+    foreach($structuredSpecs as $spec) {
+        $specLabel = mb_strtolower(trim((string)$spec['label']), 'UTF-8');
+        if($specLabel === $needleLabel || mb_strpos($specLabel, $needleLabel) !== false)
+            return trim(htmlspecialchars_decode((string)$spec['value'], ENT_QUOTES));
+    }
+    return '';
+};
+/* Đơn vị hiển thị trong placeholder khi field chưa có dữ liệu - chỉ mang
+   tính gợi ý cho người nhập liệu, không in kèm khi đã có giá trị thật (giá
+   trị thật tự mang đơn vị người nhập gõ vào, vd "6-8m", "2 năm"). */
+$pdpFieldUnits = array(
+    'cong_suat' => 'W', 'ac_power' => 'W', 'motor_power' => 'HP', 'panel_power' => 'W',
+    'battery_capacity' => 'Wh', 'usable_capacity' => 'kWh', 'battery_voltage' => 'V',
+    'lighting_time' => 'giờ', 'runtime' => 'giờ', 'cycle_life' => 'chu kỳ', 'efficiency' => '%',
+    'phase_count' => 'pha', 'mppt_count' => 'MPPT', 'input_voltage' => 'V', 'max_flow' => 'm³/h',
+    'max_head' => 'm', 'rated_voltage' => 'V', 'rated_current' => 'A', 'installation_height' => 'm',
+    'warranty' => 'tháng'
+);
+$pdpHeroIconByField = array(
+    'battery_capacity' => 'battery', 'usable_capacity' => 'battery', 'battery_voltage' => 'battery',
+    'installation_height' => 'height', 'max_head' => 'height',
+    'warranty' => 'shield', 'waterproof_rating' => 'shield',
+    'cong_suat' => 'bolt', 'ac_power' => 'bolt', 'motor_power' => 'bolt', 'rated_voltage' => 'bolt', 'rated_current' => 'bolt'
+);
+if($pdpProfileKey === 'lighting')
+{
+    /* Đúng 4 field trong mockup gốc, không dùng $pdpProfile['metrics'] mặc
+       định (cong_suat/panel_power/battery_capacity/lighting_time) vì sếp
+       chọn khác cho khung hero của nhóm đèn. */
+    $pdpHeroMetricFields = array(
+        array('key' => 'quang_thong', 'label' => 'Quang thông', 'value' => $pdpSpecLookup('quang thông'), 'unit' => 'lm', 'icon' => 'sun'),
+        array('key' => 'battery_capacity', 'label' => 'Pin lưu trữ', 'value' => productPdpSpecValue($rowDetail, 'battery_capacity'), 'unit' => 'Wh', 'icon' => 'battery'),
+        array('key' => 'installation_height', 'label' => 'Chiều cao lắp', 'value' => productPdpSpecValue($rowDetail, 'installation_height'), 'unit' => 'm', 'icon' => 'height'),
+        array('key' => 'warranty', 'label' => 'Bảo hành', 'value' => productPdpSpecValue($rowDetail, 'warranty'), 'unit' => 'tháng', 'icon' => 'shield')
+    );
+}
+else
+{
+    $pdpHeroMetricFields = array();
+    foreach((array)$pdpProfile['metrics'] as $metricKey)
+    {
+        $pdpHeroMetricFields[] = array(
+            'key' => $metricKey,
+            'label' => isset($pdpProfile['fields'][$metricKey]) ? $pdpProfile['fields'][$metricKey] : $metricKey,
+            'value' => productPdpSpecValue($rowDetail, $metricKey),
+            'unit' => isset($pdpFieldUnits[$metricKey]) ? $pdpFieldUnits[$metricKey] : '',
+            'icon' => isset($pdpHeroIconByField[$metricKey]) ? $pdpHeroIconByField[$metricKey] : 'bolt'
+        );
+    }
+}
+/* Bảng thông số kỹ thuật đầy đủ: liệt kê hết field của đúng profile, không
+   ẩn dòng thiếu dữ liệu như trước (audit SEO 2026-09-25 khuyến nghị luôn
+   hiện đủ khung, tránh Admin quên chưa nhập vì bảng "trông có vẻ đủ"). */
+$pdpFullSpecRows = array();
+if($pdpProfileKey === 'lighting')
+{
+    $pdpFullSpecRows[] = array('Công suất LED thực', productPdpSpecValue($rowDetail, 'cong_suat'), 'cong_suat');
+    $pdpFullSpecRows[] = array('Quang thông', $pdpSpecLookup('quang thông'), 'quang_thong');
+    $pdpFullSpecRows[] = array('Dung lượng pin lưu trữ', productPdpSpecValue($rowDetail, 'battery_capacity'), 'battery_capacity');
+    $pdpFullSpecRows[] = array('Công suất tấm pin', productPdpSpecValue($rowDetail, 'panel_power'), 'panel_power');
+    $pdpFullSpecRows[] = array('Màu ánh sáng', productPdpSpecValue($rowDetail, 'light_color'), 'light_color');
+    $pdpFullSpecRows[] = array('Chế độ hoạt động', $pdpSpecLookup('chế độ'), 'operating_mode');
+    $lightingDims = trim(productPdpSpecValue($rowDetail, 'lamp_dimensions').(productPdpSpecValue($rowDetail, 'waterproof_rating') !== '' ? ' - '.productPdpSpecValue($rowDetail, 'waterproof_rating') : ''), ' -');
+    $pdpFullSpecRows[] = array('Kích thước & cấp bảo vệ', $lightingDims, 'lamp_dimensions');
+    $pdpFullSpecRows[] = array('Thời hạn bảo hành', productPdpSpecValue($rowDetail, 'warranty'), 'warranty');
+}
+else
+{
+    foreach((array)$pdpProfile['fields'] as $fieldKey => $fieldLabel)
+        $pdpFullSpecRows[] = array($fieldLabel, productPdpSpecValue($rowDetail, $fieldKey), $fieldKey);
+}
 
 /* Chỉ dựng hướng dẫn lựa chọn từ dữ liệu kỹ thuật thật của sản phẩm. */
 $pdpBuyingGuides = array();
@@ -317,12 +347,27 @@ else $pdpSupportLabel = 'Video sản phẩm';
                         <div class="desc-pro-detail">
                             <?=(!empty($rowDetail['desc'.$lang])) ? htmlspecialchars_decode($rowDetail['desc'.$lang]) : ''?>
                         </div>
-                        <?php if($pdpDecisionMetrics) { ?>
+                        <?php if($pdpHeroMetricFields) { ?>
                         <div class="pts-pdp-decision-metrics" aria-label="Thông số chính của sản phẩm">
-                            <?php foreach($pdpDecisionMetrics as $pdpMetric) { ?>
-                            <div class="pts-pdp-decision-metric">
-                                <i class="fas <?=$pdpMetric['icon']?>" aria-hidden="true"></i>
-                                <div><span><?=htmlspecialchars($pdpMetric['label'], ENT_QUOTES, 'UTF-8')?></span><strong><?=htmlspecialchars($pdpMetric['value'], ENT_QUOTES, 'UTF-8')?></strong><small><?=htmlspecialchars($pdpMetric['note'], ENT_QUOTES, 'UTF-8')?></small></div>
+                            <?php foreach($pdpHeroMetricFields as $pdpMetric) {
+                                $metricHasValue = $pdpMetric['value'] !== '';
+                                $metricDisplay = $metricHasValue ? $pdpMetric['value'] : '[...]'.($pdpMetric['unit'] !== '' ? ' '.$pdpMetric['unit'] : '');
+                            ?>
+                            <div class="pts-pdp-decision-metric<?=$metricHasValue ? '' : ' is-placeholder'?>">
+                                <span class="pts-pdp-decision-icon" aria-hidden="true">
+                                    <?php if($pdpMetric['icon'] === 'battery') { ?>
+                                    <svg viewBox="0 0 32 32" role="presentation"><rect x="6" y="7" width="19" height="18" rx="2"></rect><path d="M25 13h3v6h-3M10 12h11M10 16h11M10 20h11"></path></svg>
+                                    <?php } elseif($pdpMetric['icon'] === 'height') { ?>
+                                    <svg viewBox="0 0 32 32" role="presentation"><path d="M16 4v24M12 8l4-4 4 4M12 24l4 4 4-4M8 9h7M8 13h5M8 19h5M8 23h7"></path></svg>
+                                    <?php } elseif($pdpMetric['icon'] === 'shield') { ?>
+                                    <svg viewBox="0 0 32 32" role="presentation"><path d="M16 4l10 4v7c0 6-4.2 10.7-10 13-5.8-2.3-10-7-10-13V8l10-4z"></path><path d="M11 16l3 3 7-7"></path></svg>
+                                    <?php } elseif($pdpMetric['icon'] === 'sun') { ?>
+                                    <svg viewBox="0 0 32 32" role="presentation"><circle cx="16" cy="16" r="6"></circle><path d="M16 3v5M16 24v5M3 16h5M24 16h5M7 7l4 4M21 21l4 4M25 7l-4 4M11 21l-4 4"></path></svg>
+                                    <?php } else { ?>
+                                    <svg viewBox="0 0 32 32" role="presentation"><path d="M18 3L8 18h7l-1 11 10-15h-7l1-11z"></path></svg>
+                                    <?php } ?>
+                                </span>
+                                <div><span><?=htmlspecialchars(mb_strtoupper($pdpMetric['label'], 'UTF-8'), ENT_QUOTES, 'UTF-8')?></span><strong><?=htmlspecialchars($metricDisplay, ENT_QUOTES, 'UTF-8')?></strong><small><?=$metricHasValue ? 'Theo thông số sản phẩm' : 'Chưa cập nhật trong Admin'?></small></div>
                             </div>
                             <?php } ?>
                         </div>
@@ -330,22 +375,25 @@ else $pdpSupportLabel = 'Video sản phẩm';
                         <?php if($pdpPackageContents !== '') { ?><p class="pts-pdp-package"><strong>Bộ sản phẩm gồm:</strong> <?=htmlspecialchars($pdpPackageContents, ENT_QUOTES, 'UTF-8')?></p><?php } ?>
                         <ul class="attr-pro-detail">
                             <li class="w-clear pts-pdp-price-row">
-                                <label class="attr-label-pro-detail"><?=gia?>:</label>
+                                <label class="attr-label-pro-detail pts-pdp-price-label">GIÁ BÁN</label>
                                 <div class="attr-content-pro-detail">
                                     <?php if(publicProductRequiresQuote($rowDetail)) { ?>
                                     <span class="price-new-pro-detail"><?=lienhe?></span>
                                     <small class="pts-pdp-price-note">Nhận báo giá theo số lượng và nhu cầu sử dụng</small>
                                     <?php } elseif($rowDetail['sale_price']) { $discountPercent = ($rowDetail['regular_price'] > $rowDetail['sale_price']) ? round((($rowDetail['regular_price'] - $rowDetail['sale_price']) / $rowDetail['regular_price']) * 100) : 0; ?>
                                     <span
-                                        class="price-new-pro-detail"><?=$func->formatMoney($rowDetail['sale_price'])?></span>
+                                        class="price-new-pro-detail"><?=$func->formatMoney($rowDetail['sale_price'])?></span><span class="pts-pdp-price-unit">/ bộ</span>
                                     <span
                                         class="price-old-pro-detail"><?=$func->formatMoney($rowDetail['regular_price'])?></span>
                                     <?php if($discountPercent > 0) { ?>
                                     <span class="badge-discount badge-discount-inline">-<?=$discountPercent?>%</span>
                                     <?php } ?>
+                                    <small class="pts-pdp-price-note">Giá đã gồm VAT; chi phí vận chuyển và lắp đặt báo riêng theo khu vực.</small>
                                     <?php } else { ?>
                                     <span
-                                        class="price-new-pro-detail"><?=($rowDetail['regular_price']) ? $func->formatMoney($rowDetail['regular_price']) : lienhe?></span>
+                                        class="price-new-pro-detail"><?=($rowDetail['regular_price']) ? $func->formatMoney($rowDetail['regular_price']) : lienhe?></span><?php if($rowDetail['regular_price']) { ?><span class="pts-pdp-price-unit">/ bộ</span>
+                                    <small class="pts-pdp-price-note">Giá đã gồm VAT; chi phí vận chuyển và lắp đặt báo riêng theo khu vực.</small>
+                                    <?php } ?>
                                     <?php } ?>
                                 </div>
                             </li>
@@ -441,8 +489,11 @@ else $pdpSupportLabel = 'Video sản phẩm';
 <nav class="pts-pdp-section-nav" aria-label="Điều hướng nội dung sản phẩm">
     <div class="box-detail">
         <?php if($pdpOverviewAnchor !== '') { ?><a href="<?=$pdpCurrentPath?>#<?=$pdpOverviewAnchor?>">Tổng quan</a><?php } ?>
+        <?php if($pdpUseCases) { ?><a href="<?=$pdpCurrentPath?>#ung-dung-san-pham">Ứng dụng</a><?php } ?>
+        <?php if($pdpBuyingGuides) { ?><a href="<?=$pdpCurrentPath?>#huong-dan-lua-chon">Lựa chọn</a><?php } ?>
         <?php if($hasProductSpecs) { ?><a href="<?=$pdpCurrentPath?>#thong-so-ky-thuat">Thông số kỹ thuật</a><?php } ?>
-        <?php if($pdpSupportAnchor !== '') { ?><a href="<?=$pdpCurrentPath?>#<?=$pdpSupportAnchor?>"><?=htmlspecialchars($pdpSupportLabel, ENT_QUOTES, 'UTF-8')?></a><?php } ?>
+        <?php if($hasProductWarranty) { ?><a href="<?=$pdpCurrentPath?>#chinh-sach-bao-hanh">Chính sách bảo hành</a><?php } ?>
+        <?php if($pdpFaqs) { ?><a href="<?=$pdpCurrentPath?>#cau-hoi-thuong-gap">Câu hỏi thường gặp</a><?php } ?>
         <a href="<?=$pdpCurrentPath?>#pts-pdp-consultation">Yêu cầu tư vấn</a>
     </div>
 </nav>
@@ -502,10 +553,12 @@ else $pdpSupportLabel = 'Video sản phẩm';
     <?php if($hasProductSpecs) { ?>
     <section class="pts-pdp-content-section pts-pdp-spec-section" id="thong-so-ky-thuat" aria-labelledby="pts-pdp-spec-title">
         <h2 class="pts-pdp-section-title" id="pts-pdp-spec-title">Thông số kỹ thuật</h2>
-        <?php if(!empty($structuredSpecs)) { ?>
-        <div class="table-responsive"><table class="table mb-0"><thead><tr><th>Hạng mục</th><th>Thông tin sản phẩm</th></tr></thead><tbody>
-            <?php foreach($structuredSpecs as $spec) { ?><tr><th><?=htmlspecialchars($spec['label'], ENT_QUOTES, 'UTF-8')?></th><td><?=htmlspecialchars(htmlspecialchars_decode($spec['value'], ENT_QUOTES), ENT_QUOTES, 'UTF-8')?></td></tr><?php } ?>
+        <p class="pts-pdp-spec-intro">Các thông số có thể thay đổi theo từng model. Vui lòng đối chiếu tài liệu chính thức trước khi công bố.</p>
+        <?php if(!empty($pdpFullSpecRows)) { ?>
+        <div class="table-responsive"><table class="table mb-0"><thead><tr><th>Hạng mục</th><th>Thông tin theo model</th></tr></thead><tbody>
+            <?php foreach($pdpFullSpecRows as $specRow) { $specHasValue = $specRow[1] !== ''; ?><tr class="<?=$specHasValue ? '' : 'is-placeholder'?>"><th><?=htmlspecialchars($specRow[0], ENT_QUOTES, 'UTF-8')?></th><td><?=$specHasValue ? htmlspecialchars(htmlspecialchars_decode($specRow[1], ENT_QUOTES), ENT_QUOTES, 'UTF-8') : '[Cập nhật dữ liệu đã xác minh]'?></td></tr><?php } ?>
         </tbody></table></div>
+        <p class="pts-pdp-spec-footnote">Đối chiếu tài liệu của đúng mã sản phẩm trước khi công bố.</p>
         <?php } ?>
         <?php if($useLegacySpecs) { ?><div class="pts-product-content pts-pdp-legacy-specs"><?=$productLegacySpecs?></div><?php } ?>
     </section>
@@ -520,7 +573,7 @@ else $pdpSupportLabel = 'Video sản phẩm';
             <div class="pts-product-content pts-pdp-certificate"><?=$certificateContent?></div>
         </div><?php } ?>
         <?php if($validProductDocuments) { ?><div class="pts-pdp-support-block" id="tai-lieu-san-pham"><h2 class="pts-pdp-section-title">Tài liệu sản phẩm</h2><div class="pts-policy-links">
-            <?php foreach($validProductDocuments as $document) { ?><a href="<?=htmlspecialchars($document['file_path'], ENT_QUOTES, 'UTF-8')?>" target="_blank" rel="noopener"><i class="far fa-file-pdf" aria-hidden="true"></i><?=htmlspecialchars($document['title'], ENT_QUOTES, 'UTF-8')?></a><?php } ?>
+            <?php foreach($validProductDocuments as $document) { ?><a href="<?=htmlspecialchars($document['file_path'], ENT_QUOTES, 'UTF-8')?>" target="_blank" rel="noopener"><i class="far fa-file-pdf" aria-hidden="true"></i><span><?=htmlspecialchars($document['title'], ENT_QUOTES, 'UTF-8')?></span><i class="fas fa-download pts-pdp-document-download" aria-hidden="true"></i></a><?php } ?>
         </div></div><?php } ?>
         <?php if($hasProductWarranty) { ?><div class="pts-pdp-support-block" id="chinh-sach-bao-hanh"><h2 class="pts-pdp-section-title">Chính sách bảo hành</h2>
             <?php if(!empty($rowDetail['warranty'])) { ?><div class="pts-pdp-warranty-summary"><i class="fas fa-shield-alt" aria-hidden="true"></i><div><strong>Bảo hành <?=htmlspecialchars($rowDetail['warranty'], ENT_QUOTES, 'UTF-8')?></strong><span>Thời hạn theo thông tin công bố của sản phẩm.</span></div></div><?php } ?>
