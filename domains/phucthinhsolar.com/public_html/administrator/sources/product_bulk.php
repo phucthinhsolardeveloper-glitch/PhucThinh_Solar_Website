@@ -428,13 +428,53 @@ function productBulkNormalizeAction($value)
     return isset($map[$value]) ? $map[$value] : $value;
 }
 
+function productBulkSpecLineEscape($value)
+{
+    return str_replace(
+        array('\\', '|', "\r", "\n"),
+        array('\\\\', '\\|', '\\r', '\\n'),
+        (string) $value
+    );
+}
+
+function productBulkSpecLineParts($line)
+{
+    $parts = array('');
+    $partIndex = 0;
+    $escaped = false;
+    $length = strlen((string) $line);
+    for($index = 0; $index < $length; $index++) {
+        $character = $line[$index];
+        if($escaped) {
+            if($character === 'n') $parts[$partIndex] .= "\n";
+            elseif($character === 'r') $parts[$partIndex] .= "\r";
+            elseif($character === '|' || $character === '\\') $parts[$partIndex] .= $character;
+            else $parts[$partIndex] .= '\\'.$character;
+            $escaped = false;
+            continue;
+        }
+        if($character === '\\') {
+            $escaped = true;
+            continue;
+        }
+        if($character === '|') {
+            $parts[] = '';
+            $partIndex++;
+            continue;
+        }
+        $parts[$partIndex] .= $character;
+    }
+    if($escaped) $parts[$partIndex] .= '\\';
+    return $parts;
+}
+
 function productBulkParseSpecLines($value, $allowDuplicateLabels=false)
 {
     $result = array('specs' => array(), 'errors' => array());
     $labels = array();
     foreach(preg_split('/\R/u', (string) $value) as $lineNumber => $line) {
         if(trim($line) === '') continue;
-        $parts = array_map('trim', explode('|', $line));
+        $parts = array_map('trim', productBulkSpecLineParts($line));
         if(count($parts) !== 2 && count($parts) !== 3) {
             $result['errors'][] = 'Dòng '.($lineNumber + 1).' phải theo mẫu: Mã | Tên thông số | Giá trị (hoặc Tên | Giá trị với dữ liệu cũ)';
             continue;
@@ -492,11 +532,17 @@ function productBulkCategoryMaps($type)
 function productBulkProductMaps($type)
 {
     global $d;
-    $maps = array('id' => array(), 'code' => array());
+    $maps = array('id' => array(), 'code' => array(), 'code_owners' => array());
     foreach ($d->rawQuery('select * from #_product where type = ?', array($type)) as $row) {
         $maps['id'][(int) $row['id']] = $row;
         $code = strtolower(trim((string) $row['code']));
-        if ($code !== '') $maps['code'][$code] = $row;
+        if ($code !== '') $maps['code_owners'][$code][] = $row;
+    }
+    /* Chỉ cho phép tự nhận diện bằng mã khi mã đó thực sự duy nhất. Dữ liệu
+       legacy có thể còn nhiều bản ghi ẩn dùng chung mã; trường hợp đó bắt
+       buộc file phải mang ID để tránh cập nhật nhầm sản phẩm. */
+    foreach ($maps['code_owners'] as $code => $owners) {
+        if (count($owners) === 1) $maps['code'][$code] = $owners[0];
     }
     return $maps;
 }
@@ -792,14 +838,26 @@ function productBulkValidateRows($rawRows, $type, $baseline = array(), $overwrit
             if (isset($seenIds[$item['id']])) $item['errors'][] = 'ID bị lặp trong file (đã có ở dòng '.$seenIds[$item['id']].').';
             $seenIds[$item['id']] = $item['row'];
         }
+        $existingById = $item['id'] > 0 && isset($products['id'][$item['id']]) ? $products['id'][$item['id']] : null;
+        $codeOwners = $codeKey !== '' && isset($products['code_owners'][$codeKey]) ? $products['code_owners'][$codeKey] : array();
+        $existingByCode = count($codeOwners) === 1 ? $codeOwners[0] : null;
+        $codeUnchangedForExistingId = $existingById && $codeKey !== '' && strtolower(trim((string) $existingById['code'])) === $codeKey;
         if ($codeKey !== '') {
-            if (isset($seenCodes[$codeKey])) $item['errors'][] = 'Mã sản phẩm bị lặp trong file (đã có ở dòng '.$seenCodes[$codeKey].').';
-            $seenCodes[$codeKey] = $item['row'];
+            if (isset($seenCodes[$codeKey])) {
+                $previousCode = $seenCodes[$codeKey];
+                $isExistingLegacyDuplicate = $codeUnchangedForExistingId
+                    && !empty($previousCode['unchanged'])
+                    && (int) $previousCode['id'] > 0
+                    && (int) $previousCode['id'] !== (int) $item['id'];
+                if (!$isExistingLegacyDuplicate) $item['errors'][] = 'Mã sản phẩm bị lặp trong file (đã có ở dòng '.$previousCode['row'].').';
+            }
+            $seenCodes[$codeKey] = array('row' => $item['row'], 'id' => $item['id'], 'unchanged' => $codeUnchangedForExistingId);
         }
         if ($item['action'] === 'create' && $item['id'] > 0) $item['errors'][] = 'Dòng tạo mới không được nhập ID.';
         if (in_array($item['action'], array('update', 'archive'), true) && $item['id'] <= 0) $item['errors'][] = 'Dòng update/archive bắt buộc có ID để tránh cập nhật nhầm.';
-        $existingById = $item['id'] > 0 && isset($products['id'][$item['id']]) ? $products['id'][$item['id']] : null;
-        $existingByCode = $codeKey !== '' && isset($products['code'][$codeKey]) ? $products['code'][$codeKey] : null;
+        if (!$existingById && count($codeOwners) > 1) {
+            $item['errors'][] = 'Mã sản phẩm đang thuộc nhiều sản phẩm trong hệ thống; bắt buộc dùng đúng ID để cập nhật.';
+        }
         if ($existingById && $existingByCode && (int) $existingById['id'] !== (int) $existingByCode['id']) {
             $item['errors'][] = 'ID và mã sản phẩm đang chỉ đến hai sản phẩm khác nhau.';
         }
@@ -845,8 +903,9 @@ function productBulkValidateRows($rawRows, $type, $baseline = array(), $overwrit
         }
         if (!$existing && $item['action'] === 'upsert' && $existingByCode) $existing = $existingByCode;
         if (in_array($item['action'], array('update', 'archive'), true) && !$existing) $item['errors'][] = 'Không tìm thấy sản phẩm thuộc đúng loại với ID này.';
-        if ($item['action'] === 'create' && $existingByCode) $item['errors'][] = 'Mã sản phẩm đã tồn tại trong database.';
-        if ($existing && $codeKey !== '' && isset($products['code'][$codeKey]) && (int) $products['code'][$codeKey]['id'] !== (int) $existing['id']) {
+        if ($item['action'] === 'create' && !empty($codeOwners)) $item['errors'][] = 'Mã sản phẩm đã tồn tại trong database.';
+        $existingCodeKey = $existing ? strtolower(trim((string) $existing['code'])) : '';
+        if ($existing && $codeKey !== '' && $codeKey !== $existingCodeKey && !empty($codeOwners)) {
             $item['errors'][] = 'Mã sản phẩm đang thuộc về một sản phẩm khác.';
         }
         $item['existing'] = $existing;
@@ -961,7 +1020,9 @@ function productBulkValidateRows($rawRows, $type, $baseline = array(), $overwrit
                 foreach ($statuses as $status) if (!in_array($status, $allowedStatus, true)) $item['errors'][] = 'Trạng thái không hỗ trợ: '.$status;
                 $item['data'][$meta['db']] = implode(',', $statuses);
             } elseif ($meta['kind'] === 'spec_lines') {
-                $parsedSpecs = productBulkParseSpecLines($value);
+                /* Update phải giữ được thông số legacy trùng nhãn đã tồn tại;
+                   tạo mới vẫn áp quy tắc mỗi nhãn chỉ xuất hiện một lần. */
+                $parsedSpecs = productBulkParseSpecLines($value, !$isCreate);
                 foreach($parsedSpecs['errors'] as $specError) $item['errors'][] = $meta['label'].': '.$specError.'.';
                 $item['data'][$meta['db']] = $parsedSpecs['specs'] ? json_encode($parsedSpecs['specs'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : null;
             } elseif ($meta['kind'] === 'content_block' || $meta['kind'] === 'content_block_paired') {
@@ -993,11 +1054,21 @@ function productBulkValidateRows($rawRows, $type, $baseline = array(), $overwrit
         $slug = isset($item['data']['slugvi']) ? strtolower(trim($item['data']['slugvi'])) : ($existing ? strtolower(trim($existing['slugvi'])) : '');
         if ($slug === '') $item['errors'][] = 'Slug không được trống.';
         if ($slug !== '') {
-            if (isset($seenSlugs[$slug])) $item['errors'][] = 'Slug bị lặp trong file (đã có ở dòng '.$seenSlugs[$slug].').';
-            $seenSlugs[$slug] = $item['row'];
+            $slugUnchangedForExistingId = $existing && strtolower(trim((string) $existing['slugvi'])) === $slug;
+            if (isset($seenSlugs[$slug])) {
+                $previousSlug = $seenSlugs[$slug];
+                $isExistingLegacyDuplicate = $slugUnchangedForExistingId
+                    && !empty($previousSlug['unchanged'])
+                    && (int) $previousSlug['id'] > 0
+                    && (int) $previousSlug['id'] !== (int) $item['id'];
+                if (!$isExistingLegacyDuplicate) $item['errors'][] = 'Slug bị lặp trong file (đã có ở dòng '.$previousSlug['row'].').';
+            }
+            $seenSlugs[$slug] = array('row' => $item['row'], 'id' => $item['id'], 'unchanged' => $slugUnchangedForExistingId);
             if (!empty($slugOwners[$slug])) {
                 foreach ($slugOwners[$slug] as $owner) {
-                    if ($item['pending_product_key'] === '' && !($owner['table'] === 'product' && $existing && $owner['id'] === (int) $existing['id'])) {
+                    /* Một URL legacy đã trùng từ trước được phép giữ nguyên khi
+                       update đúng ID. Tạo mới hoặc đổi URL vẫn bị chặn. */
+                    if ($item['pending_product_key'] === '' && !$slugUnchangedForExistingId && !($owner['table'] === 'product' && $existing && $owner['id'] === (int) $existing['id'])) {
                         $item['errors'][] = 'Slug đã được sử dụng trong hệ thống.';
                         break;
                     }
@@ -1319,17 +1390,16 @@ function productBulkExportValue($key, $row, $categories)
     }
     if ($key === 'additional_specs' && !empty($row[$key])) {
         $lines = array();
-        $labelCounts = array();
         $specs = json_decode(htmlspecialchars_decode((string) $row[$key], ENT_QUOTES), true);
         if (is_array($specs)) foreach ($specs as $spec) {
             if (!empty($spec['label']) && isset($spec['value'])) {
-                $specKey = mb_strtolower(preg_replace('/\s+/u', ' ', trim((string) $spec['label'])), 'UTF-8');
-                if ($specKey === '') continue;
-                $labelCounts[$specKey] = isset($labelCounts[$specKey]) ? $labelCounts[$specKey] + 1 : 1;
                 $label = trim((string) $spec['label']);
-                if($labelCounts[$specKey] > 1) $label .= ' ('.$labelCounts[$specKey].')';
-                $prefix = !empty($spec['key']) ? trim((string)$spec['key']).' | ' : '';
-                $lines[] = $prefix.$label.' | '.trim((string) $spec['value']);
+                if ($label === '') continue;
+                $storedKey = !empty($spec['key']) ? trim((string)$spec['key']) : '';
+                $prefix = $storedKey !== '' && preg_match('/^[a-z0-9_]+$/', $storedKey)
+                    ? productBulkSpecLineEscape($storedKey).' | '
+                    : '';
+                $lines[] = $prefix.productBulkSpecLineEscape($label).' | '.productBulkSpecLineEscape(trim((string) $spec['value']));
             }
         }
         return implode("\n", $lines);
