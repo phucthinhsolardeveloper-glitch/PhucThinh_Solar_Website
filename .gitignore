@@ -32,6 +32,9 @@ domains/phucthinhsolar.com/private_html
 # Backup website của bên thứ ba - KHÔNG commit
 domains/phucthinhsolar.com/public_html/*.zip
 
+# Trang bảo trì nháp giữ lại để dùng sau (chưa có ý định deploy) - 2026-09-28
+domains/phucthinhsolar.com/public_html/maintenance.html
+
 # Ảnh/dữ liệu nguồn giữ ngoài Git (audit dọn dẹp 2026-09-11): ảnh nhà cung
 # cấp Oriana chờ upload cho sản phẩm, artifact tạo icon/ảnh chính sách/quy
 # trình đã dùng - không phải rác, chỉ không cần track trong Git.
