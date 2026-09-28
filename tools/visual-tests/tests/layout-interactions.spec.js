@@ -333,7 +333,11 @@ test('product detail keeps gallery and the CTA configured by Admin', async ({ pa
     await expect(sectionNav).not.toHaveClass(/pts-catalog-jump/);
     const productPath = new URL(page.url()).pathname;
     const navLinks = sectionNav.locator('a');
-    expect(await navLinks.count()).toBeLessThanOrEqual(4);
+    // PDP rail follows the reference composition: each available content
+    // section gets its own label, so a fully populated product can show up to
+    // seven links (Tổng quan, Ứng dụng, Lựa chọn, Thông số, Bảo hành, FAQ,
+    // Tư vấn). Missing content remains conditionally hidden by the template.
+    expect(await navLinks.count()).toBeLessThanOrEqual(7);
     const conditionalTargets = await navLinks.evaluateAll(links => links.map(link => {
       const url = new URL(link.href);
       return { path: url.pathname, targetExists: Boolean(document.getElementById(url.hash.slice(1))) };

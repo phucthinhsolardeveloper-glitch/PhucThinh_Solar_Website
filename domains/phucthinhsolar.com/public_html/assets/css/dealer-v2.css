@@ -128,7 +128,22 @@
     .pts-dl-confidence-desc ul{grid-template-columns:1fr;}
     .pts-dl-product-grid{grid-template-columns:1fr;}
     .pts-dl-support-grid{grid-template-columns:1fr;}
-    .pts-dl-testimonial-grid{grid-template-columns:1fr;}
+    .pts-dl-testimonial-grid{
+        display:flex;
+        grid-template-columns:none;
+        gap:16px;
+        margin-right:-20px;
+        padding:0 20px 8px 0;
+        overflow-x:auto;
+        overscroll-behavior-inline:contain;
+        scroll-snap-type:x proximity;
+        scrollbar-width:none;
+    }
+    .pts-dl-testimonial-grid::-webkit-scrollbar{display:none;}
+    .pts-dl-testimonial-card{
+        flex:0 0 min(86vw,340px);
+        scroll-snap-align:start;
+    }
     .pts-dl-stats-grid{grid-template-columns:1fr;gap:26px;}
     .pts-dl-hero-banner{margin-bottom:0;}
     .pts-dl-hero-banner,.pts-dl-hero-banner-copy{min-height:210px;}

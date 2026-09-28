@@ -16,6 +16,7 @@
     $gia = (publicProductPricesVisible() && isset($_GET['is_price']) && $_GET['is_price'] != '') ? htmlspecialchars($_GET['is_price']) : '';
     $idCongSuat = (isset($_GET['is_congsuat']) && $_GET['is_congsuat'] != '') ? htmlspecialchars($_GET['is_congsuat']) : '';
     $idCatFilter = (isset($_GET['is_cat']) && $_GET['is_cat'] != '') ? htmlspecialchars($_GET['is_cat']) : '';
+    $idNeed = (isset($_GET['is_need']) && $_GET['is_need'] != '') ? htmlspecialchars($_GET['is_need']) : '';
 	$keywordRaw = isset($_GET['keyword']) ? trim((string) $_GET['keyword']) : '';
 	$keyword = ($keywordRaw !== '' && strlen($keywordRaw) <= 100) ? $func->changeTitle($keywordRaw) : '';
 	$idType = 'dich-vu';
@@ -85,6 +86,13 @@
 		$where .= $priceWhere;
 		$params = array_merge($params, $priceParams);
 	}
+	if($idNeed !="")
+	{
+		$tempLink .= "&is_need=".$idNeed;
+		list($needWhere, $needParams) = productNeedFilterSql($idNeed);
+		$where .= $needWhere;
+		$params = array_merge($params, $needParams);
+	}
 	if($orderby !="")
 	{
 		$tempLink .= "&is_orderby=".$orderby;
@@ -135,7 +143,6 @@
 	/* Get page result */
 	$pagingItems = $pagingAjax->getAllPageLinks($countItems, $pageLink, $eShow);
 ?>
-<span class="pts-filter-result-meta" data-filter-result-count="<?=intval($countItems)?>" hidden></span>
 <?php if(count($items)){ ?>
 <div class="grid-product grid-product-3" id="search-body">
     <?php foreach($items as $k => $v) { include ROOT."templates/product/_product_card.php"; } ?>

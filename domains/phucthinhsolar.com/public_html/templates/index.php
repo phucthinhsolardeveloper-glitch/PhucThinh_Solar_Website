@@ -29,7 +29,7 @@
         <?php } ?>
 
         <div class="wap-main <?=($template=="news/news_detail" || $template=="news/project_detail")?'news_detail':''?> <?= ($source == 'user' || $source == 'order') ? 'user-pages': ''?> ">
-            <div class="wrap-main  <?=($source == 'index' || $source == 'about' || $template == 'news/service_list' || $template == 'news/service' || $template == 'news/project' || $template == 'news/news' || $template == 'daily/daily' || $template == 'contact/contact') ? 'wrap-home' : 'wrap-content mt-5 mb-5'?> <?=in_array($template, array('news/service_list', 'news/service', 'news/service_detail'), true) ? 'solution-page' : ''?> <?=($template == 'news/service_detail') ? 'solution-detail-page' : ''?> <?=($template == 'news/project_detail') ? 'project-detail-page' : ''?> w-clear">
+            <div class="wrap-main  <?=($source == 'index' || $source == 'about' || $template == 'news/service_list' || $template == 'news/service' || $template == 'news/project' || $template == 'news/news' || $template == 'daily/daily' || $template == 'contact/contact') ? 'wrap-home' : (($template == 'product/product') ? 'wrap-content mt-0 mb-5' : 'wrap-content mt-5 mb-5')?> <?=($template == 'product/product') ? 'product-category-page' : ''?> <?=in_array($template, array('news/service_list', 'news/service', 'news/service_detail'), true) ? 'solution-page' : ''?> <?=($template == 'news/service_detail') ? 'solution-detail-page' : ''?> <?=($template == 'news/project_detail') ? 'project-detail-page' : ''?> w-clear">
                 <?php include TEMPLATE.$template."_tpl.php"; ?>
             </div>
         </div>

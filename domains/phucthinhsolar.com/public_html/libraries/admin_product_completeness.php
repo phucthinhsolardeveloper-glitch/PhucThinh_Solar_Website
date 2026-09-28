@@ -16,6 +16,13 @@ if(!function_exists('adminProductDataStatusDefinitions'))
             'missing_content' => array('label' => 'Thiếu nội dung chi tiết'),
             'missing_specs' => array('label' => 'Thiếu thông số kỹ thuật'),
             'missing_wattage' => array('label' => 'Thiếu thông số quyết định'),
+            /* Chuẩn bị cho lúc bật GHN/GHTK/Viettel Post/Nhất Tín thật (đang tắt
+               vì thiếu credential - xem administrator > Thanh toán & vận chuyển):
+               các hãng này cần kích thước đóng gói để gọi API tính phí thật, phí
+               hiện tại KHÔNG dùng field này (chỉ tính theo bảng giá cố định theo
+               phường/xã). Đánh dấu trước để biết sản phẩm nào cần bổ sung, tránh
+               bật provider thật rồi mới phát hiện thiếu dữ liệu hàng loạt. */
+            'missing_shipping_dims' => array('label' => 'Thiếu kích thước đóng gói', 'sql' => "(coalesce(trim(p.carton_dimensions), '') = '' or coalesce(p.weight, 0) = 0)"),
             'campaign_active' => array(
                 'label' => 'Đang có khung chiến dịch',
                 'sql' => "((coalesce(trim(p.photo_khuyenmai), '') <> '' and find_in_set('khuyenmai', p.status)) or exists (select 1 from #_product_campaign c inner join #_product_campaign_scope pcs on pcs.id_campaign = c.id where find_in_set('hienthi',c.status) and coalesce(trim(c.photo), '') <> '' and (c.start_at = 0 or c.start_at <= unix_timestamp()) and (c.end_at = 0 or c.end_at >= unix_timestamp()) and (pcs.scope_type = 'all' or (pcs.scope_type = 'product' and pcs.scope_id = p.id) or (pcs.scope_type = 'cat' and pcs.scope_id = p.id_cat) or (pcs.scope_type = 'brand' and pcs.scope_id = p.id_brand) or (pcs.scope_type = 'list' and pcs.scope_id = p.id_list))))"

@@ -162,10 +162,18 @@
 
 	$projectProducts = array();
 	$projectProductIds = array();
+	$projectCities = array();
+	$projectWards = array();
+	$projectCityId = 0;
+	$projectWardId = 0;
 	if($type === 'du-an' && in_array($act, array('add', 'edit'), true))
 	{
 		$projectProducts = $d->rawQuery("select id, code, namevi, status from #_product where type = ? order by namevi,id", array('san-pham'));
 		if(!empty($item['id'])) $projectProductIds = productProjectIdsForProject($d, $item['id']);
+		$projectCityId = !empty($flash->has('project_city_id')) ? (int)$flash->get('project_city_id') : (!empty($item['project_city_id']) ? (int)$item['project_city_id'] : 0);
+		$projectWardId = !empty($flash->has('project_ward_id')) ? (int)$flash->get('project_ward_id') : (!empty($item['project_ward_id']) ? (int)$item['project_ward_id'] : 0);
+		$projectCities = $d->rawQuery("select id, name from #_city where find_in_set('hienthi', status) order by numb asc, id asc");
+		$projectWards = $projectCityId > 0 ? $d->rawQuery("select id, name from #_ward where id_city = ? and id_district = 0 and find_in_set('hienthi', status) order by numb asc, id asc", array($projectCityId)) : array();
 	}
 
 	/* View man */
@@ -260,7 +268,7 @@
 		$response = array();
 		$savehere = (isset($_POST['save-here'])) ? true : false;
 		$id = (!empty($_POST['id'])) ? htmlspecialchars($_POST['id']) : 0;
-		$data = !empty($_POST['data']) ? $_POST['data'] : null;
+		$data = !empty($_POST['data']) ? $_POST['data'] : array();
 		$dataTags = (!empty($_POST['dataTags'])) ? $_POST['dataTags'] : null;
 		$dataProjectProducts = ($type === 'du-an') ? productProjectNormalizeIds(isset($_POST['project_products']) ? $_POST['project_products'] : array()) : array();
 
@@ -314,6 +322,32 @@
 		}
 
 		/* Valid data */
+		if($type === 'du-an')
+		{
+			$projectCityId = isset($data['project_city_id']) && is_scalar($data['project_city_id']) ? (int)$data['project_city_id'] : 0;
+			$projectWardId = isset($data['project_ward_id']) && is_scalar($data['project_ward_id']) ? (int)$data['project_ward_id'] : 0;
+			$projectCity = $projectCityId > 0 ? $d->rawQueryOne("select id, name from #_city where id = ? and find_in_set('hienthi', status) limit 0,1", array($projectCityId)) : array();
+			$projectWard = ($projectCityId > 0 && $projectWardId > 0) ? $d->rawQueryOne("select id, name from #_ward where id = ? and id_city = ? and id_district = 0 and find_in_set('hienthi', status) limit 0,1", array($projectWardId, $projectCityId)) : array();
+			if(empty($projectCity)) $response['messages'][] = 'Dự án cần chọn Tỉnh/TP hợp lệ';
+			if(empty($projectWard)) $response['messages'][] = 'Dự án cần chọn Phường/Xã thuộc đúng Tỉnh/TP';
+			$projectStart = isset($data['project_start_date']) && is_scalar($data['project_start_date']) ? trim((string)$data['project_start_date']) : '';
+			$projectEnd = isset($data['project_end_date']) && is_scalar($data['project_end_date']) ? trim((string)$data['project_end_date']) : '';
+			$startDateObject = $projectStart !== '' ? DateTime::createFromFormat('!Y-m-d', $projectStart) : false;
+			$startDateErrors = DateTime::getLastErrors();
+			$endDateObject = $projectEnd !== '' ? DateTime::createFromFormat('!Y-m-d', $projectEnd) : false;
+			$endDateErrors = DateTime::getLastErrors();
+			$validStart = $projectStart === '' || ($startDateObject !== false && ($startDateErrors === false || ((int)$startDateErrors['warning_count'] === 0 && (int)$startDateErrors['error_count'] === 0)));
+			$validEnd = $projectEnd === '' || ($endDateObject !== false && ($endDateErrors === false || ((int)$endDateErrors['warning_count'] === 0 && (int)$endDateErrors['error_count'] === 0)));
+			if(!$validStart || !$validEnd) $response['messages'][] = 'Ngày dự án không hợp lệ';
+			if($validStart && $validEnd && $projectStart !== '' && $projectEnd !== '' && $projectStart > $projectEnd) $response['messages'][] = 'Ngày hoàn thành không được trước ngày bắt đầu';
+			if(!empty($projectCity) && !empty($projectWard))
+			{
+				$detail = trim(isset($data['project_address_detail']) ? (string)$data['project_address_detail'] : '');
+				$data['address'] = ($detail !== '' ? $detail.', ' : '').$projectWard['name'].', '.$projectCity['name'];
+			}
+			$data['project_city_id'] = $projectCityId;
+			$data['project_ward_id'] = $projectWardId;
+		}
 		if($type === 'du-an' && !productProjectIdsExist($d, $dataProjectProducts))
 			$response['messages'][] = 'Danh sách sản phẩm liên kết có dữ liệu không hợp lệ';
 		$checkTitle = $func->checkTitle($data);

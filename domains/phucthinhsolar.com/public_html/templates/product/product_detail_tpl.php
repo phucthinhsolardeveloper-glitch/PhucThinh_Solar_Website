@@ -87,11 +87,16 @@ $pdpPackageContents = !empty($rowDetail['package_contents']) ? trim(strip_tags((
    nhóm đèn dùng đúng 4 field trong mockup gốc (quang thông không phải field
    cố định của DB, phải tra theo nhãn trong additional_specs). */
 $pdpSpecLookup = function($needleLabel) use ($structuredSpecs) {
-    $needleLabel = mb_strtolower(trim($needleLabel), 'UTF-8');
+    /* Cho phép truyền nhiều cách gọi tên cùng 1 thông số (vd "quang thông"
+       hoặc "lumen") - Admin nhập tự do nên nhãn không đồng nhất giữa các model. */
+    $needles = array_map(function($n) { return mb_strtolower(trim($n), 'UTF-8'); }, (array)$needleLabel);
     foreach($structuredSpecs as $spec) {
         $specLabel = mb_strtolower(trim((string)$spec['label']), 'UTF-8');
-        if($specLabel === $needleLabel || mb_strpos($specLabel, $needleLabel) !== false)
-            return trim(htmlspecialchars_decode((string)$spec['value'], ENT_QUOTES));
+        foreach($needles as $needleLabel)
+        {
+            if($specLabel === $needleLabel || mb_strpos($specLabel, $needleLabel) !== false)
+                return trim(htmlspecialchars_decode((string)$spec['value'], ENT_QUOTES));
+        }
     }
     return '';
 };
@@ -112,20 +117,57 @@ $pdpHeroIconByField = array(
     'warranty' => 'shield', 'waterproof_rating' => 'shield',
     'cong_suat' => 'bolt', 'ac_power' => 'bolt', 'motor_power' => 'bolt', 'rated_voltage' => 'bolt', 'rated_current' => 'bolt'
 );
+/* Icon PNG do sếp tự vẽ, chỉ có cho field của nhóm đèn - field nào không có
+   trong danh sách này (vd "material") vẫn dùng fa-check-circle mặc định. */
+$pdpLightingFieldIconImage = array(
+    'light_source' => 'nguonsang.png', 'lamp_dimensions' => 'kichthuocsanpham.png',
+    'panel_power' => 'congsuattampin.png', 'cong_suat' => 'congsuatden.png',
+    'battery_capacity' => 'pin.png', 'charging_time' => 'thoigiansac.png',
+    'lighting_time' => 'thoigianchieusang.png', 'lighting_area' => 'vungchieusang.png',
+    'waterproof_rating' => 'chuanchongnuoc.png', 'installation_height' => 'chieucaoLapdat.png',
+    'warranty' => 'baohanh.png'
+);
 if($pdpProfileKey === 'lighting')
 {
+    /* Một số sản phẩm (vd trụ đèn) không có field "installation_height" nhập
+       riêng, chỉ ghi trong "Mô tả kỹ thuật" dạng văn xuôi (vd "Trụ đôi cao 8
+       mét,..."). Tra theo nhãn thật trước, chỉ trích số từ mô tả khi không có
+       field/nhãn nào khác - tránh đoán bừa trên các mẫu mô tả khác. */
+    $pdpInstallationHeightValue = productPdpSpecValue($rowDetail, 'installation_height');
+    if($pdpInstallationHeightValue === '') $pdpInstallationHeightValue = $pdpSpecLookup(array('chiều cao lắp đặt', 'độ cao lắp đặt'));
+    if($pdpInstallationHeightValue === '')
+    {
+        $pdpTechDescText = $pdpSpecLookup(array('mô tả kỹ thuật', 'cấu tạo'));
+        if($pdpTechDescText !== '' && preg_match('/tr[ụu]\s*(?:đôi|đơn)?\s*cao\s+(\d+(?:[.,]\d+)?)\s*(?:mét|m)\b/ui', $pdpTechDescText, $pdpHeightMatch))
+            $pdpInstallationHeightValue = str_replace('.', ',', $pdpHeightMatch[1]).'m (theo mô tả kỹ thuật)';
+    }
     /* Đúng 4 field trong mockup gốc, không dùng $pdpProfile['metrics'] mặc
        định (cong_suat/panel_power/battery_capacity/lighting_time) vì sếp
-       chọn khác cho khung hero của nhóm đèn. */
+       chọn khác cho khung hero của nhóm đèn. Icon dùng ảnh PNG do sếp tự vẽ
+       (assets/images/icons/pdp-lighting/), không dùng SVG mặc định nữa. */
     $pdpHeroMetricFields = array(
-        array('key' => 'quang_thong', 'label' => 'Quang thông', 'value' => $pdpSpecLookup('quang thông'), 'unit' => 'lm', 'icon' => 'sun'),
-        array('key' => 'battery_capacity', 'label' => 'Pin lưu trữ', 'value' => productPdpSpecValue($rowDetail, 'battery_capacity'), 'unit' => 'Wh', 'icon' => 'battery'),
-        array('key' => 'installation_height', 'label' => 'Chiều cao lắp', 'value' => productPdpSpecValue($rowDetail, 'installation_height'), 'unit' => 'm', 'icon' => 'height'),
-        array('key' => 'warranty', 'label' => 'Bảo hành', 'value' => productPdpSpecValue($rowDetail, 'warranty'), 'unit' => 'tháng', 'icon' => 'shield')
+        array('key' => 'quang_thong', 'label' => 'Quang thông', 'value' => $pdpSpecLookup(array('quang thông', 'lumen')), 'unit' => 'lm', 'icon' => 'sun', 'iconImage' => 'quanthong.png', 'iconDir' => 'pdp-lighting'),
+        array('key' => 'battery_capacity', 'label' => 'Pin lưu trữ', 'value' => productPdpSpecValue($rowDetail, 'battery_capacity'), 'unit' => 'Wh', 'icon' => 'battery', 'iconImage' => 'pin.png', 'iconDir' => 'pdp-lighting'),
+        array('key' => 'installation_height', 'label' => 'Chiều cao lắp', 'value' => $pdpInstallationHeightValue, 'unit' => 'm', 'icon' => 'height', 'iconImage' => 'chieucaoLapdat.png', 'iconDir' => 'pdp-lighting'),
+        array('key' => 'warranty', 'label' => 'Bảo hành', 'value' => productPdpSpecValue($rowDetail, 'warranty'), 'unit' => 'tháng', 'icon' => 'shield', 'iconImage' => 'baohanh.png', 'iconDir' => 'pdp-lighting')
     );
 }
 else
 {
+    /* Icon PNG theo đúng bản mẫu riêng của từng nhóm (vdbientan/vdtampin/
+       vdpinluutru/vdbom/vdquat/vdphukien.jpg sếp gửi) - chỉ map field nào có
+       icon khớp thật, field còn lại vẫn dùng SVG mặc định qua $pdpHeroIconByField. */
+    $pdpHeroIconImageByProfile = array(
+        'inverter' => array('ac_power' => 'congsuatAC.png', 'phase_count' => 'sopha.png', 'mppt_count' => 'somppt.png', 'warranty' => 'baohanh.png'),
+        'pump_controller' => array('motor_power' => 'congsuatden.png', 'phase_count' => 'sopha.png', 'input_voltage' => 'congsuatAC.png', 'warranty' => 'baohanh.png'),
+        'pump_hardware' => array('motor_power' => 'congsuatden.png', 'max_flow' => 'luuluonglamviec.png', 'max_head' => 'cotaplamviec.png', 'warranty' => 'baohanh.png'),
+        'solar_panel' => array('cong_suat' => 'congsuatstc.png', 'cell_type' => 'congnghecell.png', 'efficiency' => 'quanthong.png', 'warranty' => 'baohanh.png'),
+        'storage' => array('usable_capacity' => 'pin.png', 'battery_voltage' => 'congsuatAC.png', 'cycle_life' => 'tuoichuky.png', 'warranty' => 'baohanh.png'),
+        'fan' => array('cong_suat' => 'congsuatden.png', 'battery_capacity' => 'pin.png', 'runtime' => 'thoigianhoatdong.png', 'warranty' => 'baohanh.png'),
+        'accessory' => array('rated_voltage' => 'congsuatAC.png', 'rated_current' => 'congsuatden.png', 'compatibility' => 'tuongthich.png', 'warranty' => 'baohanh.png'),
+        'general' => array('cong_suat' => 'congsuatden.png', 'material' => 'vatlieu.png', 'waterproof_rating' => 'chuanchongnuoc.png', 'warranty' => 'baohanh.png')
+    );
+    $pdpProfileIconMap = isset($pdpHeroIconImageByProfile[$pdpProfileKey]) ? $pdpHeroIconImageByProfile[$pdpProfileKey] : array();
     $pdpHeroMetricFields = array();
     foreach((array)$pdpProfile['metrics'] as $metricKey)
     {
@@ -134,7 +176,9 @@ else
             'label' => isset($pdpProfile['fields'][$metricKey]) ? $pdpProfile['fields'][$metricKey] : $metricKey,
             'value' => productPdpSpecValue($rowDetail, $metricKey),
             'unit' => isset($pdpFieldUnits[$metricKey]) ? $pdpFieldUnits[$metricKey] : '',
-            'icon' => isset($pdpHeroIconByField[$metricKey]) ? $pdpHeroIconByField[$metricKey] : 'bolt'
+            'icon' => isset($pdpHeroIconByField[$metricKey]) ? $pdpHeroIconByField[$metricKey] : 'bolt',
+            'iconImage' => isset($pdpProfileIconMap[$metricKey]) ? $pdpProfileIconMap[$metricKey] : '',
+            'iconDir' => isset($pdpProfileIconMap[$metricKey]) && in_array($metricKey, array('cycle_life', 'runtime', 'compatibility', 'material', 'waterproof_rating'), true) ? 'pdp-extra' : 'pdp'
         );
     }
 }
@@ -145,13 +189,20 @@ $pdpFullSpecRows = array();
 if($pdpProfileKey === 'lighting')
 {
     $pdpFullSpecRows[] = array('Công suất LED thực', productPdpSpecValue($rowDetail, 'cong_suat'), 'cong_suat');
-    $pdpFullSpecRows[] = array('Quang thông', $pdpSpecLookup('quang thông'), 'quang_thong');
+    $pdpFullSpecRows[] = array('Quang thông', $pdpSpecLookup(array('quang thông', 'lumen')), 'quang_thong');
     $pdpFullSpecRows[] = array('Dung lượng pin lưu trữ', productPdpSpecValue($rowDetail, 'battery_capacity'), 'battery_capacity');
     $pdpFullSpecRows[] = array('Công suất tấm pin', productPdpSpecValue($rowDetail, 'panel_power'), 'panel_power');
     $pdpFullSpecRows[] = array('Màu ánh sáng', productPdpSpecValue($rowDetail, 'light_color'), 'light_color');
+    $pdpFullSpecRows[] = array('Màu sắc thân đèn', $pdpSpecLookup('màu sắc'), 'housing_color');
     $pdpFullSpecRows[] = array('Chế độ hoạt động', $pdpSpecLookup('chế độ'), 'operating_mode');
     $lightingDims = trim(productPdpSpecValue($rowDetail, 'lamp_dimensions').(productPdpSpecValue($rowDetail, 'waterproof_rating') !== '' ? ' - '.productPdpSpecValue($rowDetail, 'waterproof_rating') : ''), ' -');
     $pdpFullSpecRows[] = array('Kích thước & cấp bảo vệ', $lightingDims, 'lamp_dimensions');
+    $pdpFullSpecRows[] = array('Chiều cao lắp đặt', $pdpInstallationHeightValue, 'installation_height');
+    $pdpFullSpecRows[] = array('Chuẩn chống va đập', $pdpSpecLookup('chống va đập'), 'impact_rating');
+    $pdpFullSpecRows[] = array('Khoảng cách lắp đặt khuyến nghị', $pdpSpecLookup('khoảng cách lắp đặt'), 'installation_spacing');
+    $pdpFullSpecRows[] = array('Thời gian chiếu sáng', productPdpSpecValue($rowDetail, 'lighting_time'), 'lighting_time');
+    $pdpFullSpecRows[] = array('Thời gian sạc', productPdpSpecValue($rowDetail, 'charging_time'), 'charging_time');
+    $pdpFullSpecRows[] = array('Diện tích chiếu sáng', productPdpSpecValue($rowDetail, 'lighting_area'), 'lighting_area');
     $pdpFullSpecRows[] = array('Thời hạn bảo hành', productPdpSpecValue($rowDetail, 'warranty'), 'warranty');
 }
 else
@@ -160,14 +211,59 @@ else
         $pdpFullSpecRows[] = array($fieldLabel, productPdpSpecValue($rowDetail, $fieldKey), $fieldKey);
 }
 
+/* Bổ sung mọi thông số Admin đã nhập trong additional_specs nhưng chưa được
+   field cứng nào ở trên hiển thị (đa số entry chỉ có label/value, không có
+   key nên productPdpSpecValue() không bắt được qua field key). Không giới
+   hạn theo profile - áp dụng chung mọi nhóm sản phẩm để không sót dữ liệu
+   Admin đã nhập thật. */
+$pdpExtraSpecDenylist = array('model', 'ghi chú', 'thông tin', 'mã/model nguồn', 'model nguồn', 'tên/phiên bản bảng giá');
+$pdpUsedSpecLabels = array();
+foreach($pdpFullSpecRows as $usedRow) $pdpUsedSpecLabels[] = mb_strtolower(trim($usedRow[0]), 'UTF-8');
+/* Bí danh không bắt được qua so khớp chuỗi con (vd "Lumen" ~ "Quang thông")
+   - khai báo tay để tránh hiện trùng 2 dòng cùng 1 giá trị. */
+if($pdpProfileKey === 'lighting') $pdpUsedSpecLabels[] = 'lumen';
+if($pdpProfileKey === 'lighting') $pdpUsedSpecLabels[] = 'độ cao lắp đặt';
+foreach(productPdpAdditionalSpecs($rowDetail) as $extraSpec)
+{
+    $extraLabel = trim((string)$extraSpec['label']);
+    $extraValue = trim(htmlspecialchars_decode((string)$extraSpec['value'], ENT_QUOTES));
+    if($extraLabel === '' || $extraValue === '') continue;
+    $extraLabelLower = mb_strtolower($extraLabel, 'UTF-8');
+    if(in_array($extraLabelLower, $pdpExtraSpecDenylist, true)) continue;
+    $alreadyShown = false;
+    foreach($pdpUsedSpecLabels as $usedLabel)
+    {
+        if($usedLabel === $extraLabelLower || mb_strpos($usedLabel, $extraLabelLower) !== false || mb_strpos($extraLabelLower, $usedLabel) !== false)
+        {
+            $alreadyShown = true;
+            break;
+        }
+    }
+    if($alreadyShown) continue;
+    $pdpFullSpecRows[] = array($extraLabel, $extraValue, $extraSpec['key']);
+    $pdpUsedSpecLabels[] = $extraLabelLower;
+}
+
 /* Chỉ dựng hướng dẫn lựa chọn từ dữ liệu kỹ thuật thật của sản phẩm. */
+$pdpGuideIconImageByField = array(
+    'material' => array('vatlieu.png', 'pdp-extra'), 'waterproof_rating' => array('chuanchongnuoc.png', 'pdp-extra'),
+    'compatibility' => array('tuongthich.png', 'pdp-extra'), 'runtime' => array('thoigianhoatdong.png', 'pdp-extra'),
+    'cycle_life' => array('tuoichuky.png', 'pdp-extra'), 'efficiency' => array('quanthong.png', 'pdp'),
+    'input_voltage' => array('congsuatAC.png', 'pdp'), 'rated_voltage' => array('congsuatAC.png', 'pdp'),
+    'rated_current' => array('congsuatden.png', 'pdp'), 'package_contents' => array('quycach.png', 'pdp')
+);
 $pdpBuyingGuides = array();
 foreach((array)$pdpProfile['fields'] as $guideKey => $guideLabel)
 {
     if(in_array($guideKey, (array)$pdpProfile['metrics'], true)) continue;
     $guideValue = productPdpSpecValue($rowDetail, $guideKey);
     if($guideValue === '') continue;
-    $pdpBuyingGuides[] = array(isset($pdpMetricIcons[$guideKey]) ? $pdpMetricIcons[$guideKey] : 'fa-check-circle', $guideLabel, $guideLabel.': '.$guideValue.'.');
+    $guideIconImage = '';
+    $guideIconDir = '';
+    if($pdpProfileKey === 'lighting' && isset($pdpLightingFieldIconImage[$guideKey])) { $guideIconImage = $pdpLightingFieldIconImage[$guideKey]; $guideIconDir = 'pdp-lighting'; }
+    elseif(isset($pdpGuideIconImageByField[$guideKey])) { $guideIconImage = $pdpGuideIconImageByField[$guideKey][0]; $guideIconDir = $pdpGuideIconImageByField[$guideKey][1]; }
+    else { $guideIconImage = 'ungdung.png'; $guideIconDir = 'pdp'; }
+    $pdpBuyingGuides[] = array('fa-check-circle', $guideLabel, $guideLabel.': '.$guideValue.'.', $guideIconImage, $guideIconDir);
     if(count($pdpBuyingGuides) >= 3) break;
 }
 $pdpBuyingGuides = array_slice($pdpBuyingGuides, 0, 3);
@@ -265,7 +361,9 @@ foreach((array)(isset($productDocuments) ? $productDocuments : array()) as $docu
     $isLocalDocument = $documentPath !== '' && is_file(ROOT.ltrim($documentPath, '/'));
     if($documentTitle !== '' && ($isRemoteDocument || $isLocalDocument)) $validProductDocuments[] = $document;
 }
-$hasPdpSupport = !empty($videoEmbedUrl) || $hasCertificate || $hasProductWarranty || !empty($validProductDocuments);
+/* Luôn hiện khối video (có placeholder khi chưa có link) như bản mẫu gốc,
+   để Admin thấy thiếu mà bổ sung, không ẩn hẳn section như trước. */
+$hasPdpSupport = true;
 $pdpFaqs = array();
 foreach((array)$pdpSectionSplit['faq'] as $faqBlock)
 {
@@ -296,7 +394,7 @@ if(!is_string($pdpCurrentPath) || $pdpCurrentPath === '' || substr($pdpCurrentPa
     $pdpCurrentPath = '/san-pham/'.ltrim((string)$rowDetail[$sluglang], '/');
 $pdpCurrentPath = htmlspecialchars($pdpCurrentPath, ENT_QUOTES, 'UTF-8');
 $pdpOverviewAnchor = $hasProductDescription ? 'tong-quan' : ($pdpUseCases ? 'ung-dung-san-pham' : ($pdpBuyingGuides ? 'huong-dan-lua-chon' : ($pdpFaqs ? 'cau-hoi-thuong-gap' : '')));
-$pdpSupportAnchor = $validProductDocuments ? 'tai-lieu-san-pham' : ($hasProductWarranty ? 'chinh-sach-bao-hanh' : ($hasCertificate ? 'chung-nhan-san-pham' : (!empty($videoEmbedUrl) ? 'video-san-pham' : '')));
+$pdpSupportAnchor = $validProductDocuments ? 'tai-lieu-san-pham' : ($hasProductWarranty ? 'chinh-sach-bao-hanh' : ($hasCertificate ? 'chung-nhan-san-pham' : 'video-san-pham'));
 if($validProductDocuments || $hasCertificate) $pdpSupportLabel = $hasProductWarranty ? 'Tài liệu & bảo hành' : 'Tài liệu sản phẩm';
 elseif($hasProductWarranty) $pdpSupportLabel = 'Chính sách bảo hành';
 else $pdpSupportLabel = 'Video sản phẩm';
@@ -355,7 +453,9 @@ else $pdpSupportLabel = 'Video sản phẩm';
                             ?>
                             <div class="pts-pdp-decision-metric<?=$metricHasValue ? '' : ' is-placeholder'?>">
                                 <span class="pts-pdp-decision-icon" aria-hidden="true">
-                                    <?php if($pdpMetric['icon'] === 'battery') { ?>
+                                    <?php if(!empty($pdpMetric['iconImage'])) { ?>
+                                    <img src="assets/images/icons/<?=htmlspecialchars(isset($pdpMetric['iconDir']) ? $pdpMetric['iconDir'] : ($pdpProfileKey === 'lighting' ? 'pdp-lighting' : 'pdp'), ENT_QUOTES, 'UTF-8')?>/<?=htmlspecialchars($pdpMetric['iconImage'], ENT_QUOTES, 'UTF-8')?>" alt="" loading="lazy" width="28" height="28">
+                                    <?php } elseif($pdpMetric['icon'] === 'battery') { ?>
                                     <svg viewBox="0 0 32 32" role="presentation"><rect x="6" y="7" width="19" height="18" rx="2"></rect><path d="M25 13h3v6h-3M10 12h11M10 16h11M10 20h11"></path></svg>
                                     <?php } elseif($pdpMetric['icon'] === 'height') { ?>
                                     <svg viewBox="0 0 32 32" role="presentation"><path d="M16 4v24M12 8l4-4 4 4M12 24l4 4 4-4M8 9h7M8 13h5M8 19h5M8 23h7"></path></svg>
@@ -367,7 +467,7 @@ else $pdpSupportLabel = 'Video sản phẩm';
                                     <svg viewBox="0 0 32 32" role="presentation"><path d="M18 3L8 18h7l-1 11 10-15h-7l1-11z"></path></svg>
                                     <?php } ?>
                                 </span>
-                                <div><span><?=htmlspecialchars(mb_strtoupper($pdpMetric['label'], 'UTF-8'), ENT_QUOTES, 'UTF-8')?></span><strong><?=htmlspecialchars($metricDisplay, ENT_QUOTES, 'UTF-8')?></strong><small><?=$metricHasValue ? 'Theo thông số sản phẩm' : 'Chưa cập nhật trong Admin'?></small></div>
+                                <div><span><?=htmlspecialchars(mb_strtoupper($pdpMetric['label'], 'UTF-8'), ENT_QUOTES, 'UTF-8')?></span><strong><?=htmlspecialchars($metricDisplay, ENT_QUOTES, 'UTF-8')?></strong><small><?=$metricHasValue ? 'Theo thông số sản phẩm' : 'Đang cập nhật'?></small></div>
                             </div>
                             <?php } ?>
                         </div>
@@ -544,7 +644,7 @@ else $pdpSupportLabel = 'Video sản phẩm';
         <h2 class="pts-pdp-section-title" id="pts-pdp-guide-title">Thông tin cần biết trước khi lựa chọn</h2>
         <div class="pts-pdp-guide-grid">
             <?php foreach($pdpBuyingGuides as $guide) { ?>
-            <div class="pts-pdp-guide-item"><i class="fas <?=$guide[0]?>" aria-hidden="true"></i><div><strong><?=htmlspecialchars($guide[1], ENT_QUOTES, 'UTF-8')?></strong><p><?=htmlspecialchars($guide[2], ENT_QUOTES, 'UTF-8')?></p></div></div>
+            <div class="pts-pdp-guide-item"><?php if(!empty($guide[3])) { ?><img class="pts-pdp-guide-icon" src="assets/images/icons/<?=htmlspecialchars($guide[4] !== '' ? $guide[4] : 'pdp', ENT_QUOTES, 'UTF-8')?>/<?=htmlspecialchars($guide[3], ENT_QUOTES, 'UTF-8')?>" alt="" loading="lazy"><?php } else { ?><i class="fas <?=$guide[0]?>" aria-hidden="true"></i><?php } ?><div><strong><?=htmlspecialchars($guide[1], ENT_QUOTES, 'UTF-8')?></strong><p><?=htmlspecialchars($guide[2], ENT_QUOTES, 'UTF-8')?></p></div></div>
             <?php } ?>
         </div>
     </section>
@@ -556,7 +656,7 @@ else $pdpSupportLabel = 'Video sản phẩm';
         <p class="pts-pdp-spec-intro">Các thông số có thể thay đổi theo từng model. Vui lòng đối chiếu tài liệu chính thức trước khi công bố.</p>
         <?php if(!empty($pdpFullSpecRows)) { ?>
         <div class="table-responsive"><table class="table mb-0"><thead><tr><th>Hạng mục</th><th>Thông tin theo model</th></tr></thead><tbody>
-            <?php foreach($pdpFullSpecRows as $specRow) { $specHasValue = $specRow[1] !== ''; ?><tr class="<?=$specHasValue ? '' : 'is-placeholder'?>"><th><?=htmlspecialchars($specRow[0], ENT_QUOTES, 'UTF-8')?></th><td><?=$specHasValue ? htmlspecialchars(htmlspecialchars_decode($specRow[1], ENT_QUOTES), ENT_QUOTES, 'UTF-8') : '[Cập nhật dữ liệu đã xác minh]'?></td></tr><?php } ?>
+            <?php foreach($pdpFullSpecRows as $specRow) { $specHasValue = $specRow[1] !== ''; ?><tr class="<?=$specHasValue ? '' : 'is-placeholder'?>"><th><?=htmlspecialchars($specRow[0], ENT_QUOTES, 'UTF-8')?></th><td><?=$specHasValue ? htmlspecialchars(htmlspecialchars_decode($specRow[1], ENT_QUOTES), ENT_QUOTES, 'UTF-8') : 'Đang cập nhật'?></td></tr><?php } ?>
         </tbody></table></div>
         <p class="pts-pdp-spec-footnote">Đối chiếu tài liệu của đúng mã sản phẩm trước khi công bố.</p>
         <?php } ?>
@@ -566,18 +666,22 @@ else $pdpSupportLabel = 'Video sản phẩm';
 
     <?php if($hasPdpSupport) { ?>
     <section class="pts-pdp-content-section pts-pdp-support-grid" aria-label="Video, chứng nhận và bảo hành">
-        <?php if(!empty($videoEmbedUrl)) { ?>
-        <div class="pts-pdp-support-block" id="video-san-pham"><h2 class="pts-pdp-section-title">Video sản phẩm &amp; lắp đặt</h2><div class="embed-responsive embed-responsive-16by9"><iframe class="embed-responsive-item" src="<?=htmlspecialchars($videoEmbedUrl, ENT_QUOTES, 'UTF-8')?>" title="Video thực tế <?=$rowDetail['name'.$lang]?>" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div></div>
-        <?php } ?>
+        <div class="pts-pdp-support-block" id="video-san-pham"><h2 class="pts-pdp-section-title">Video sản phẩm &amp; lắp đặt</h2>
+            <?php if(!empty($videoEmbedUrl)) { ?>
+            <div class="embed-responsive embed-responsive-16by9"><iframe class="embed-responsive-item" src="<?=htmlspecialchars($videoEmbedUrl, ENT_QUOTES, 'UTF-8')?>" title="Video thực tế <?=$rowDetail['name'.$lang]?>" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+            <?php } else { ?>
+            <div class="pts-pdp-video-placeholder" aria-hidden="true"><span class="pts-pdp-video-play">&#9654;</span><p>Video đang được cập nhật</p></div>
+            <?php } ?>
+        </div>
         <?php if($hasCertificate) { ?><div class="pts-pdp-support-block" id="chung-nhan-san-pham"><h2 class="pts-pdp-section-title">Chứng nhận / kiểm nghiệm</h2>
             <div class="pts-product-content pts-pdp-certificate"><?=$certificateContent?></div>
         </div><?php } ?>
         <?php if($validProductDocuments) { ?><div class="pts-pdp-support-block" id="tai-lieu-san-pham"><h2 class="pts-pdp-section-title">Tài liệu sản phẩm</h2><div class="pts-policy-links">
-            <?php foreach($validProductDocuments as $document) { ?><a href="<?=htmlspecialchars($document['file_path'], ENT_QUOTES, 'UTF-8')?>" target="_blank" rel="noopener"><i class="far fa-file-pdf" aria-hidden="true"></i><span><?=htmlspecialchars($document['title'], ENT_QUOTES, 'UTF-8')?></span><i class="fas fa-download pts-pdp-document-download" aria-hidden="true"></i></a><?php } ?>
+            <?php foreach($validProductDocuments as $document) { ?><a href="<?=htmlspecialchars($document['file_path'], ENT_QUOTES, 'UTF-8')?>" target="_blank" rel="noopener"><img class="pts-pdp-support-icon" src="assets/images/icons/pdp/tieuchuantailieu.png" alt="" loading="lazy" width="24" height="24"><span><?=htmlspecialchars($document['title'], ENT_QUOTES, 'UTF-8')?></span><i class="fas fa-download pts-pdp-document-download" aria-hidden="true"></i></a><?php } ?>
         </div></div><?php } ?>
         <?php if($hasProductWarranty) { ?><div class="pts-pdp-support-block" id="chinh-sach-bao-hanh"><h2 class="pts-pdp-section-title">Chính sách bảo hành</h2>
-            <?php if(!empty($rowDetail['warranty'])) { ?><div class="pts-pdp-warranty-summary"><i class="fas fa-shield-alt" aria-hidden="true"></i><div><strong>Bảo hành <?=htmlspecialchars($rowDetail['warranty'], ENT_QUOTES, 'UTF-8')?></strong><span>Thời hạn theo thông tin công bố của sản phẩm.</span></div></div><?php } ?>
-            <?php if($hasProductWarranty) { ?><div class="pts-product-content pts-pdp-policy"><?php if($productPolicyOverride !== '') { ?><h3>Chính sách riêng của sản phẩm</h3><?=$productPolicyOverride?><?php } else { ?><p>Áp dụng chính sách bảo hành hiện hành của Phúc Thịnh Solar:</p><div class="pts-policy-links"><?php foreach($pdpWarrantyPolicies as $policyItem) { ?><a href="ho-tro/<?=$policyItem[$sluglang]?>/"><i class="fas fa-shield-alt" aria-hidden="true"></i><?=htmlspecialchars($policyItem['name'.$lang],ENT_QUOTES,'UTF-8')?></a><?php } ?></div><?php } ?></div><?php } ?>
+            <?php if(!empty($rowDetail['warranty'])) { ?><div class="pts-pdp-warranty-summary"><img class="pts-pdp-support-icon" src="assets/images/icons/pdp/baohanh.png" alt="" loading="lazy" width="42" height="42"><div><strong>Bảo hành <?=htmlspecialchars($rowDetail['warranty'], ENT_QUOTES, 'UTF-8')?></strong><span>Thời hạn theo thông tin công bố của sản phẩm.</span></div></div><?php } ?>
+            <?php if($hasProductWarranty) { ?><div class="pts-product-content pts-pdp-policy"><?php if($productPolicyOverride !== '') { ?><h3>Chính sách riêng của sản phẩm</h3><?=$productPolicyOverride?><?php } else { ?><p>Áp dụng chính sách bảo hành hiện hành của Phúc Thịnh Solar:</p><div class="pts-policy-links"><?php foreach($pdpWarrantyPolicies as $policyItem) { ?><a href="ho-tro/<?=$policyItem[$sluglang]?>/"><img class="pts-pdp-support-icon" src="assets/images/icons/pdp/baohanh.png" alt="" loading="lazy" width="24" height="24"><span><?=htmlspecialchars($policyItem['name'.$lang],ENT_QUOTES,'UTF-8')?></span></a><?php } ?></div><?php } ?></div><?php } ?>
         </div><?php } ?>
     </section>
     <?php } ?>
@@ -623,11 +727,21 @@ else $pdpSupportLabel = 'Video sản phẩm';
         </form>
     </div>
 </section>
-<?php if(!empty($productRelatedProjects)) { ?>
+<?php
+    /* Admin chưa liên kết dự án nào với sản phẩm cụ thể (#_product_project
+       đang rỗng 2026-09-28) thì rơi về danh sách "dự án tiêu biểu" chung,
+       không ẩn hẳn section - tránh trang trắng trơn khi chưa kịp gắn dữ liệu. */
+    /* Giới hạn 3 để luôn lấp kín 1 hàng lưới 3 cột, tránh lẻ 1 card ở hàng
+       dưới trông vỡ bố cục (sếp báo 2026-09-28) - kể cả khi Admin lỡ gắn hơn
+       3 dự án cho cùng 1 sản phẩm. */
+    $pdpProjectsToShow = array_slice(!empty($productRelatedProjects) ? $productRelatedProjects : $productFeaturedProjects, 0, 3);
+    $pdpProjectsIsSpecific = !empty($productRelatedProjects);
+?>
+<?php if(!empty($pdpProjectsToShow)) { ?>
 <div class="box-detail mg-top-30 pts-related-showcase pts-product-projects pts-pdp-projects">
-    <div class="title-product-orther"><span>Dự án thực tế sử dụng sản phẩm</span></div>
+    <div class="title-product-orther"><span><?=$pdpProjectsIsSpecific ? 'Dự án thực tế sử dụng sản phẩm' : 'Dự án tiêu biểu đã triển khai'?></span></div>
     <div class="pts-related-grid">
-        <?php foreach($productRelatedProjects as $relatedProject) { ?>
+        <?php foreach($pdpProjectsToShow as $relatedProject) { ?>
             <a class="pts-related-card" href="<?=$relatedProject[$sluglang]?>" title="<?=$relatedProject['name'.$lang]?>">
                 <span class="pts-project-media">
                     <?=$func->getImage(['class' => 'w-100 pts-project-media-main', 'sizes' => '397x340x1', 'upload' => UPLOAD_NEWS_L, 'image' => $relatedProject['photo'], 'alt' => $relatedProject['name'.$lang]])?>
@@ -666,6 +780,19 @@ else $pdpSupportLabel = 'Video sản phẩm';
     </div>
     <?php } ?>
 </div>
+<?php } ?>
+<?php if(!empty($productWhyChooseUs)) { ?>
+<section class="box-detail mg-top-30 pts-why-choose-us" aria-labelledby="pts-why-choose-title">
+    <h2 class="title-product-orther" id="pts-why-choose-title"><span>Lý do chọn Phúc Thịnh Solar</span></h2>
+    <div class="pts-why-choose-grid">
+        <?php foreach($productWhyChooseUs as $whyChooseItem) { ?>
+        <div class="pts-why-choose-item">
+            <span class="pts-why-choose-icon"><?=$func->getImage(['class' => '', 'sizes' => '64x64x2', 'upload' => UPLOAD_NEWS_L, 'image' => $whyChooseItem['photo'], 'alt' => ''])?></span>
+            <strong><?=$whyChooseItem['name'.$lang]?></strong>
+        </div>
+        <?php } ?>
+    </div>
+</section>
 <?php } ?>
 
 </main>

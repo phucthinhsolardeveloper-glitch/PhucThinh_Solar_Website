@@ -43,6 +43,26 @@
 .pts-related-card-body{display:flex;flex-direction:column;gap:6px;padding:14px 16px;}
 .pts-related-card-body strong{font-size:16px;line-height:1.45;}
 .pts-related-card-body small{color:#657184;line-height:1.45;}
+
+/* "Lý do chọn Phúc Thịnh Solar" - dùng chung trang danh mục và trang chi tiết
+   sản phẩm (2026-09-28). Phẳng, không card trang trí (viền/đổ bóng) theo
+   đúng thiết kế mới đang áp dụng cho toàn bộ PDP/danh mục trong đợt này. */
+.pts-why-choose-us{margin:0 0 40px;}
+.pts-why-choose-us>.title-product-orther{margin-bottom:20px!important;}
+/* Dải nền nhạt + viền phân cách giữa các mục, giống đúng dải "Cam kết chính
+   hãng" đã có (category-trust-strip) thay vì icon trôi nổi giữa khoảng trắng
+   - tránh trông sơ sài/thiếu điểm nhấn (sếp báo 2026-09-28). */
+.pts-why-choose-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));background:var(--pts-surface,#eef2f6);border-radius:4px;overflow:hidden;}
+.pts-why-choose-item{display:flex;align-items:center;gap:16px;padding:24px 26px;border-right:1px solid rgba(10,35,66,.08);border-bottom:1px solid rgba(10,35,66,.08);}
+.pts-why-choose-item:last-child{border-right:0;}
+.pts-why-choose-icon{display:flex;width:56px;height:56px;flex:0 0 auto;align-items:center;justify-content:center;border-radius:50%;background:#fff;box-shadow:0 3px 10px rgba(10,35,66,.09);}
+.pts-why-choose-icon img{display:block;width:28px;height:28px;object-fit:contain;}
+.pts-why-choose-item strong{font-size:15px;font-weight:800;line-height:1.4;color:var(--pts-navy,#0a2251);text-align:left;}
+@media(max-width:768px){
+    .pts-why-choose-grid{grid-template-columns:1fr;}
+    .pts-why-choose-item{border-right:0;}
+    .pts-why-choose-item:last-child{border-bottom:0;}
+}
 @media(max-width:767px){.pts-related-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;}}
 @media(max-width:480px){.pts-related-grid{grid-template-columns:1fr;}}
 html{scroll-behavior:smooth;}
@@ -1804,7 +1824,7 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 
 /* =====================================================================
    SIDEBAR FILTER DANH MỤC SẢN PHẨM
-   Trước đây mỗi khối filter (Danh mục/Thương hiệu/Công suất/Loại SP/Mức
+   Trước đây mỗi khối filter (Danh mục/Thương hiệu/Loại SP/Mức
    giá) là 1 khung viền riêng (5 viền chồng nhau) VÀ tiêu đề mỗi khối vẫn
    giữ nguyên style cũ chưa từng đụng tới: khối nền xám #f7f7f7 + viền trái
    xanh 4px kiểu form thời xưa. Gộp về 1 thẻ card duy nhất, phân cách bằng
@@ -1852,12 +1872,6 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 .pts-filter-card .filter-item a{color:#475569!important;font-size:13.5px!important;text-decoration:none!important;padding:6px 0;display:block;}
 .pts-filter-card .filter-item a:hover{color:var(--pts-navy)!important;}
 .pts-filter-card .filter-item.checked>a{color:var(--pts-gold-dark)!important;font-weight:800!important;}
-/* Công suất thường liệt kê rất nhiều mức -> giới hạn chiều cao, cuộn riêng
-   thay vì kéo dài cả sidebar */
-.pts-filter-card .product-pages__price:has(input[name="car_congsuat"]) .wrappers-aside__filter-scroll{
-    max-height:260px;overflow-y:auto;padding-right:6px;
-}
-
 /* Accordion cho từng nhóm filter sidebar - mặc định MỞ SẴN hết (thử đóng mặc
    định thấy phản tác dụng: cảm giác thiếu, phải bấm mở lại mỗi lần vào trang -
    phản hồi chủ project 2026-09-10). Người dùng có thể tự thu gọn nhóm nào

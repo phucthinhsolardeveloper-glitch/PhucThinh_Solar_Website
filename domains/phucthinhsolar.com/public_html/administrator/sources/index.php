@@ -80,6 +80,10 @@
 	   thay vì SQL viết tay riêng chỉ nhìn cong_suat - card dashboard và filter
 	   list phải luôn khớp số, không lệch nhau. */
 	$dashboardMissingWattage = count(adminProductFilterIdsByStatus($d, 'missing_wattage', "where p.type = ?", array('san-pham')));
+	/* missing_shipping_dims là điều kiện SQL tĩnh thật (không như missing_wattage
+	   phải resolve qua PHP) nên đếm trực tiếp, không cần adminProductFilterIdsByStatus. */
+	$dashboardMissingShippingDims = $d->rawQueryOne("select count(id) as total from #_product p where p.type = ? and find_in_set('hienthi',p.status) and coalesce(trim(p.carton_dimensions), '') = ''", array('san-pham'));
+	$dashboardMissingShippingDims = (int)$dashboardMissingShippingDims['total'];
 	$dashboardPolicies = $d->rawQueryOne("select count(id) as total, sum(case when trim(coalesce(contentvi, '')) <> '' and find_in_set('hienthi', status) then 1 else 0 end) as completed from #_news where type = ?", array('chinh-sach'));
 
 	$dashboardNewOrders = (int) $dashboardNewOrders['total'];

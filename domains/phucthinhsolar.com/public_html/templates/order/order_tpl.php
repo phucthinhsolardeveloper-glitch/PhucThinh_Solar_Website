@@ -164,7 +164,7 @@
 					        <?php if($config['order']['ship']) { ?>
 					        	<div class="total-procart d-flex align-items-center justify-content-between">
 						        	<p><?=phivanchuyen?>:</p>
-						        	<p class="total-price load-price-ship">0đ</p>
+								<p class="total-price load-price-ship">Sẽ xác nhận sau</p>
 						        </div>
 						    <?php } ?>
 					        <div class="total-procart d-flex align-items-center justify-content-between">

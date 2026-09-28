@@ -27,6 +27,14 @@
                                     <?=$rowDetail['address']?>
                                 </b></p>
                         </div>
+                        <?php if(!empty($rowDetail['project_start_date']) || !empty($rowDetail['project_end_date'])) { ?>
+                        <div class="date">
+                            <p>Thời gian thực hiện<b>
+                                <?=!empty($rowDetail['project_start_date']) ? date('d/m/Y', strtotime($rowDetail['project_start_date'])) : 'Đang cập nhật'?>
+                                <?php if(!empty($rowDetail['project_end_date'])) { ?> – <?=date('d/m/Y', strtotime($rowDetail['project_end_date']))?><?php } ?>
+                            </b></p>
+                        </div>
+                        <?php } ?>
                     </div>
                     <div class="des_wrap">
                         <?=htmlspecialchars_decode($rowDetail['content'.$lang])?>

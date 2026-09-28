@@ -60,12 +60,15 @@ $pcPromoFrame = productPromoFrameForCard($v, $cache);
             <?php } ?>
         </p>
     </a>
-    <?php /* Hiển thị CTA báo giá khi giá công khai bị ẩn. */ ?>
+    <?php /* Hiển thị CTA báo giá khi giá công khai bị ẩn. Luôn kèm nút "Xem chi
+             tiết" phụ để khách xem đủ thông số trước khi quyết định (mẫu bố
+             cục đề xuất - trang danh mục đèn). */ ?>
     <div class="product-card-btns">
         <?php if(publicProductRequiresQuote($v)) { ?>
-        <a href="/san-pham/<?=$v[$sluglang]?>" class="pts-card-ask" title="Xem sản phẩm và liên hệ báo giá" aria-label="Xem sản phẩm và liên hệ báo giá"><i class="fas fa-file-alt" aria-hidden="true"></i><span class="pts-card-action-label">Yêu cầu báo giá</span></a>
+        <a href="/san-pham/<?=$v[$sluglang]?>" class="pts-card-ask" title="Xem sản phẩm và liên hệ báo giá" aria-label="Xem sản phẩm và liên hệ báo giá"><i class="fas fa-file-alt" aria-hidden="true"></i><span class="pts-card-action-label">Nhận báo giá</span></a>
         <?php } else { ?>
         <a href="javascript:void(0)" class="addcart pts-card-add" data-id="<?=$v['id']?>" data-action="addnow" title="Thêm vào giỏ hàng" aria-label="Thêm vào giỏ hàng"><i class="fas fa-cart-plus" aria-hidden="true"></i><span class="pts-card-action-label">Thêm giỏ hàng</span></a>
         <?php } ?>
+        <a href="/san-pham/<?=$v[$sluglang]?>" class="pts-card-detail" title="Xem chi tiết sản phẩm" aria-label="Xem chi tiết sản phẩm"><span class="pts-card-action-label">Xem chi tiết</span></a>
     </div>
 </div>

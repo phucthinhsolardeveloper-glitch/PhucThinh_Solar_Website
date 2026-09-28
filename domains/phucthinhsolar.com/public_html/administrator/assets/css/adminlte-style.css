@@ -1,3 +1,22 @@
+/* Chống lỗi banner/nội dung đè lên breadcrumb: nếu template trang mới quên
+   bọc <ol class="breadcrumb float-sm-left"> trong <div class="row">, phần tử
+   float không được clear khiến .content-header sập chiều cao về 0 và phần
+   .content phía dưới trèo lên che mất breadcrumb. Rule này clear float ngay
+   ở tầng CSS dùng chung, áp dụng cho MỌI trang admin hiện tại và trang mới
+   thêm sau này, không phụ thuộc việc từng file template có nhớ bọc .row hay
+   không (lỗi lặp lại nhiều lần khi thêm trang admin mới - 2026-09-26). */
+.content-header .container-fluid::after,
+.content-header .container-fluid::before {
+    content: "";
+    display: table;
+}
+.content-header .container-fluid::after {
+    clear: both;
+}
+.content-header {
+    min-height: 2.5rem;
+}
+
 /* Login */
 .sidebar-header {
     text-align: center;

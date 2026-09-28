@@ -827,6 +827,15 @@
 				if($wattage !== '' && (!is_numeric($wattage) || (float)$wattage < 0)) $response['messages'][] = 'Công suất không hợp lệ';
 				else $data['cong_suat'] = ($wattage !== '') ? (float)$wattage : null;
 			}
+			/* weight là cột INT - để trống gửi lên chuỗi rỗng, MySQL strict mode
+			   từ chối ép kiểu số ("Incorrect integer value"), phải đổi thành
+			   null giống cong_suat ở trên (lỗi thật gặp khi lưu sản phẩm 2026-09-26). */
+			if(isset($data['weight']))
+			{
+				$weightValue = trim((string)$data['weight']);
+				if($weightValue !== '' && (!is_numeric($weightValue) || (float)$weightValue < 0)) $response['messages'][] = 'Cân nặng không hợp lệ';
+				else $data['weight'] = ($weightValue !== '') ? (int)$weightValue : null;
+			}
 			$data['type'] = $type;
 		}
 

@@ -3,6 +3,7 @@
 	require_once LIBRARIES.'product_projects.php';
 	require_once LIBRARIES.'product_power_filter.php';
 	require_once LIBRARIES.'product_price_filter.php';
+	require_once LIBRARIES.'product_need_filter.php';
 	require_once LIBRARIES.'product_sort.php';
 	require_once LIBRARIES.'product_content_blocks.php';
 
@@ -164,6 +165,15 @@
 			list($priceWhere, $priceParams) = productPriceFilterSql($idPrice);
 			$extraWhere .= $priceWhere;
 			$extraParams = array_merge($extraParams, $priceParams);
+		}
+
+		/* Nhu cầu sử dụng (chỉ nhóm đèn - suy từ tên/mô tả sản phẩm) */
+		$idNeed = (isset($_GET['is_need']) && $_GET['is_need'] != '') ? $_GET['is_need'] : '';
+		if($idNeed != '')
+		{
+			list($needWhere, $needParams) = productNeedFilterSql($idNeed);
+			$extraWhere .= $needWhere;
+			$extraParams = array_merge($extraParams, $needParams);
 		}
 
 		return array($extraWhere, $extraParams);
@@ -809,4 +819,18 @@
 			$productCategoryHero = array('photo' => $productList['photo'], 'upload' => UPLOAD_PRODUCT_L, 'alt' => $titleCate);
 		}
 	}
+
+	/* "Lý do chọn Phúc Thịnh Solar" và "Dự án tiêu biểu" - dùng chung cho cả
+	   trang danh mục và trang chi tiết sản phẩm (yêu cầu sếp 2026-09-28), đặt
+	   ngoài 2 nhánh if($id=='')/nếu không để áp dụng được cho cả hai loại
+	   trang. Dữ liệu lấy từ content Admin đã có sẵn (cam-ket, du-an) - không
+	   tạo content type mới, không suy đoán. */
+	$productWhyChooseUs = $cache->get("select name$lang, photo from #_news where type = ? and find_in_set('hienthi',status) order by numb,id desc", array('cam-ket'), 'result', 7200);
+	/* "Dự án tiêu biểu" chung (không gắn theo sản phẩm cụ thể) - trang chi
+	   tiết sản phẩm ưu tiên $productRelatedProjects (dự án gắn đúng sản phẩm
+	   này qua #_product_project) nếu Admin đã liên kết; chưa liên kết cái nào
+	   thì rơi về danh sách chung này, không ẩn hẳn section. */
+	/* Đúng 3 để luôn lấp kín 1 hàng lưới 3 cột - 4 dự án từng bị lẻ 1 card ở
+	   hàng dưới trông vỡ bố cục (sếp báo 2026-09-28). */
+	$productFeaturedProjects = $cache->get("select id, name$lang, slugvi, slugen, photo, address from #_news where type = ? and find_in_set('hienthi',status) order by numb,id desc limit 0,3", array('du-an'), 'result', 7200);
 ?>

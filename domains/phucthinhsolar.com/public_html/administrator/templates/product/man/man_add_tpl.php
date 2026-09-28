@@ -272,6 +272,12 @@
                                             value="<?=(!empty($flash->has($field))) ? $flash->get($field) : @$item[$field]?>">
                                     </div>
                                 <?php } ?>
+                                <div class="form-group col-md-6">
+                                    <label for="weight">Cân nặng (gram):</label>
+                                    <input type="number" min="0" step="1" class="form-control text-sm" name="data[weight]" id="weight"
+                                        placeholder="Cân nặng (gram) - cần để tính phí Nhất Tín/nhà xe theo cân nặng"
+                                        value="<?=(!empty($flash->has('weight'))) ? $flash->get('weight') : @$item['weight']?>">
+                                </div>
                             </div>
                             <?php
                             $additionalSpecLines = array();

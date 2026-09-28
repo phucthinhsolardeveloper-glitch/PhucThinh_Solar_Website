@@ -206,7 +206,47 @@
                     </div>
                 <?php } ?>
 
-                <?php if($type === 'du-an') { ?>
+                    <?php if($type === 'du-an') { ?>
+                    <div class="card card-primary card-outline text-sm">
+                        <div class="card-header"><h3 class="card-title">Thông tin có cấu trúc</h3></div>
+                        <div class="card-body">
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="project_city_id">Tỉnh/TP:</label>
+                                    <select class="form-control select2" name="data[project_city_id]" id="project_city_id" required>
+                                        <option value="0">Chọn Tỉnh/TP</option>
+                                        <?php foreach($projectCities as $projectCityOption) { ?>
+                                            <option value="<?= (int)$projectCityOption['id']?>" <?=((int)$projectCityOption['id'] === (int)$projectCityId) ? 'selected' : ''?>><?=htmlspecialchars($projectCityOption['name'], ENT_QUOTES, 'UTF-8')?></option>
+                                        <?php } ?>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="project_ward_id">Phường/Xã:</label>
+                                    <select class="form-control select2" name="data[project_ward_id]" id="project_ward_id" required>
+                                        <option value="0">Chọn Phường/Xã</option>
+                                        <?php foreach($projectWards as $projectWardOption) { ?>
+                                            <option value="<?= (int)$projectWardOption['id']?>" <?=((int)$projectWardOption['id'] === (int)$projectWardId) ? 'selected' : ''?>><?=htmlspecialchars($projectWardOption['name'], ENT_QUOTES, 'UTF-8')?></option>
+                                        <?php } ?>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="project_address_detail">Địa chỉ chi tiết <span class="text-muted">(tùy chọn)</span>:</label>
+                                <input type="text" class="form-control text-sm" name="data[project_address_detail]" id="project_address_detail" placeholder="Số nhà, thôn/ấp, tuyến đường..." value="<?=(!empty($flash->has('project_address_detail'))) ? htmlspecialchars($flash->get('project_address_detail'), ENT_QUOTES, 'UTF-8') : htmlspecialchars((string)@$item['project_address_detail'], ENT_QUOTES, 'UTF-8')?>">
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="project_start_date">Ngày bắt đầu:</label>
+                                    <input type="date" class="form-control text-sm" name="data[project_start_date]" id="project_start_date" value="<?=(!empty($flash->has('project_start_date'))) ? htmlspecialchars($flash->get('project_start_date'), ENT_QUOTES, 'UTF-8') : htmlspecialchars((string)@$item['project_start_date'], ENT_QUOTES, 'UTF-8')?>">
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="project_end_date">Ngày hoàn thành:</label>
+                                    <input type="date" class="form-control text-sm" name="data[project_end_date]" id="project_end_date" value="<?=(!empty($flash->has('project_end_date'))) ? htmlspecialchars($flash->get('project_end_date'), ENT_QUOTES, 'UTF-8') : htmlspecialchars((string)@$item['project_end_date'], ENT_QUOTES, 'UTF-8')?>">
+                                </div>
+                            </div>
+                            <small class="form-text text-muted">Hệ thống tự ghép địa chỉ public từ địa chỉ chi tiết + Phường/Xã + Tỉnh/TP. Không cần gõ lại tên địa giới.</small>
+                        </div>
+                    </div>
                     <div class="card card-primary card-outline text-sm">
                         <div class="card-header">
                             <h3 class="card-title">Sản phẩm sử dụng trong dự án</h3>
@@ -327,13 +367,13 @@
                             <input type="text" class="form-control for-seo text-sm" name="data[tenkhachhang]" id="tenkhachhang" placeholder="Tên khách hàng" value="<?=(!empty($flash->has('tenkhachhang'))) ? $flash->get('tenkhachhang') : @$item['tenkhachhang']?>">
                         </div>
                     <?php } ?>
-                    <?php if(isset($config['news'][$type]['address']) && $config['news'][$type]['address'] == true) { ?>
+                    <?php if(isset($config['news'][$type]['address']) && $config['news'][$type]['address'] == true && $type !== 'du-an') { ?>
                         <div class="form-group col-md-4">
                             <label for="address">Địa chỉ:</label>
                             <input type="text" class="form-control for-seo text-sm" name="data[address]" id="address" placeholder="Địa chỉ" value="<?=(!empty($flash->has('address'))) ? $flash->get('address') : @$item['address']?>">
                         </div>
                     <?php } ?>
-                    <?php if(isset($config['news'][$type]['ngayhopdong']) && $config['news'][$type]['ngayhopdong'] == true) { ?>
+                    <?php if(isset($config['news'][$type]['ngayhopdong']) && $config['news'][$type]['ngayhopdong'] == true && $type !== 'du-an') { ?>
                         <div class="form-group col-md-4">
                             <label for="ngayhopdong">Ngày hợp đồng:</label>
                             <input type="text" class="form-control for-seo text-sm" name="data[ngayhopdong]" id="ngayhopdong" placeholder="Ngày hợp đồng" value="<?=(!empty($flash->has('ngayhopdong'))) ? $flash->get('ngayhopdong') : @$item['ngayhopdong']?>">
@@ -413,3 +453,22 @@
         </div>
     </form>
 </section>
+<?php if($type === 'du-an') { ?>
+<script>
+(function($) {
+    var city = $('#project_city_id');
+    var ward = $('#project_ward_id');
+    if(!city.length || !ward.length) return;
+    city.on('change', function() {
+        var cityId = parseInt($(this).val(), 10) || 0;
+        ward.html('<option value="0">Đang tải...</option>').prop('disabled', true).trigger('change.select2');
+        if(!cityId) { ward.html('<option value="0">Chọn Phường/Xã</option>').prop('disabled', false).trigger('change.select2'); return; }
+        $.post('api/place.php', {id: cityId, level: 0, table: '#_ward'}, function(html) {
+            ward.html(html).prop('disabled', false).trigger('change.select2');
+        }).fail(function() {
+            ward.html('<option value="0">Không tải được Phường/Xã</option>').prop('disabled', false).trigger('change.select2');
+        });
+    });
+})(jQuery);
+</script>
+<?php } ?>

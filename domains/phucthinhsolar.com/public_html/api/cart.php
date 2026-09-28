@@ -1,5 +1,6 @@
 <?php
 	include "config.php";
+	require_once LIBRARIES.'commerce_integrations.php';
 
     $cmd = (!empty($_POST['cmd'])) ? htmlspecialchars($_POST['cmd']) : '';
 	$id = (!empty($_POST['id'])) ? (int)$_POST['id'] : 0;
@@ -9,9 +10,28 @@
 	$quantity = max(1, min(999, $quantity));
 	$code = (!empty($_POST['code'])) ? htmlspecialchars($_POST['code']) : '';
 	$ward = (!empty($_POST['ward'])) ? htmlspecialchars($_POST['ward']) : 0;
-	$getWardShip = function($wardId) use ($d) {
+	/* Giỏ hàng có sản phẩm cồng kềnh (đèn đường/trụ đèn) thì KHÔNG áp giá cố
+	   định theo khu vực - thực tế đang gửi nhà xe/Nhất Tín báo giá thủ công
+	   theo cân nặng, áp giá cố định ở đây dễ sai. Ép shipping_pending=true để
+	   tái dùng UI "Sẽ xác nhận sau" đã có sẵn. */
+	$cartHasBulkyItem = function() use ($d) {
+		if(empty($_SESSION['cart'])) return false;
+		foreach($_SESSION['cart'] as $cartItem)
+		{
+			$product = $d->rawQueryOne("select id_cat, id_list from #_product where id = ? limit 0,1", array((int)$cartItem['productid']));
+			if(commerceShippingIsBulkyProduct($product)) return true;
+		}
+		return false;
+	};
+	$getWardShip = function($wardId) use ($d, $config, $cartHasBulkyItem) {
 		$wardId = (int)$wardId;
-		return $wardId > 0 ? $d->rawQueryOne("select ship_price from #_ward where id = ? and id_district = 0 and find_in_set('hienthi', status) limit 0,1", array($wardId)) : array();
+		if($wardId <= 0) return array();
+		$ward = $d->rawQueryOne("select id_city from #_ward where id = ? and id_district = 0 and find_in_set('hienthi', status) limit 0,1", array($wardId));
+		$shippingConfig = isset($config['integrations']['shipping']) && is_array($config['integrations']['shipping']) ? $config['integrations']['shipping'] : array();
+		$quote = !empty($ward['id_city']) ? commerceShippingQuote($d, $shippingConfig, $ward['id_city'], $wardId) : array();
+		$selected = !empty($quote['selected']) && is_array($quote['selected']) ? $quote['selected'] : array();
+		$isBulky = $cartHasBulkyItem();
+		return !empty($quote['ok']) ? array('ship_price'=>($isBulky || empty($selected['amount'])) ? 0 : (float)$selected['amount'], 'shipping_pending'=>$isBulky || empty($quote['priced'])) : array();
 	};
 	if(!publicProductPricesVisible())
 	{
@@ -76,7 +96,7 @@
 		$total = $cart->getOrderTotal();
 		if(!empty($ship)) $total += $ship;
 		$totalText = $func->formatMoney($total);
-		$data = array('regularPrice' => $regular_price, 'salePrice' => $sale_price, 'tempText' => $tempText, 'totalText' => $totalText);
+		$data = array('regularPrice' => $regular_price, 'salePrice' => $sale_price, 'tempText' => $tempText, 'totalText' => $totalText, 'shipText' => !empty($shipData['shipping_pending']) ? 'Sẽ xác nhận sau' : $func->formatMoney($ship), 'shippingPending' => !empty($shipData['shipping_pending']));
 
 		echo json_encode($data);
 	}
@@ -95,7 +115,7 @@
 		$total = $cart->getOrderTotal();
 		if(!empty($ship)) $total += $ship;
 		$totalText = $func->formatMoney($total);
-		$data = array('max' => $max, 'tempText' => $tempText, 'totalText' => $totalText);
+		$data = array('max' => $max, 'tempText' => $tempText, 'totalText' => $totalText, 'shipText' => !empty($shipData['shipping_pending']) ? 'Sẽ xác nhận sau' : $func->formatMoney($ship), 'shippingPending' => !empty($shipData['shipping_pending']));
 
 		echo json_encode($data);
 	}
@@ -103,7 +123,8 @@
 	{
 		$shipData = array();
 		$shipPrice = 0;
-		$shipText = '0đ';
+		$shipText = 'Sẽ xác nhận sau';
+		$shippingPending = true;
 		$total = 0;
 		$totalText = '';
 
@@ -114,10 +135,11 @@
 		{
 			$total += $shipData['ship_price'];
 			$shipText = $func->formatMoney($shipData['ship_price']);
+			$shippingPending = false;
 		}
 		$totalText = $func->formatMoney($total);
 		$shipPrice = (!empty($shipData['ship_price'])) ? $shipData['ship_price'] : 0;
-		$data = array('shipText' => $shipText, 'ship' => $shipPrice, 'totalText' => $totalText);
+		$data = array('shipText' => $shipText, 'ship' => $shipPrice, 'totalText' => $totalText, 'shippingPending' => $shippingPending);
 
 		echo json_encode($data);
 	}

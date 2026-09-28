@@ -104,6 +104,7 @@
     $config['news'][$nametype]['tenkhachhang'] = true;
     $config['news'][$nametype]['address'] = true;
     $config['news'][$nametype]['ngayhopdong'] = true;
+    $config['news'][$nametype]['project_structured_fields'] = true;
     $config['news'][$nametype]['copy'] = false;
     $config['news'][$nametype]['copy_image'] = true;
     $config['news'][$nametype]['comment'] = false;

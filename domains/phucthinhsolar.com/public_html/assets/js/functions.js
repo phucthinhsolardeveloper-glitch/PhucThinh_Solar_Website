@@ -12,7 +12,7 @@ function pushState(options,targetTitle,targetUrl) {
 function updateProductFilterResetVisibility() {
     var reset = document.querySelector('[data-filter-reset]');
     if (!reset) return;
-    var hasChecked = Array.prototype.some.call(document.querySelectorAll('input[name="car_brand"]:checked, input[name="car_xuatxu"]:checked, input[name="car_congsuat"]:checked, input[name="car_price"]:checked, input[name="car_cat"]:checked'), function() { return true; });
+    var hasChecked = Array.prototype.some.call(document.querySelectorAll('input[name="car_brand"]:checked, input[name="car_xuatxu"]:checked, input[name="car_congsuat"]:checked, input[name="car_price"]:checked, input[name="car_cat"]:checked, input[name="car_need"]:checked'), function() { return true; });
     var keyword = document.querySelector('input[name="keywords"]');
     var sort = document.querySelector('select[name="orderby"]');
     var active = hasChecked || (keyword && keyword.value.trim() !== '') || (sort && sort.value.trim() !== '');
@@ -29,6 +29,7 @@ function fetch_product(t=1) {
       , p = ""
       , g = ""
       , k = ""
+      , d = ""
       , l2 = ""
       , c2 = ""
       , browserQuery = ""
@@ -50,6 +51,9 @@ function fetch_product(t=1) {
     g = $('input[name="car_cat"]:checked').map(function() {
         return this.value
     }).get().join(","),
+    d = $('input[name="car_need"]:checked').map(function() {
+        return this.value
+    }).get().join(","),
     i = $('select[name="orderby"] option:selected').map(function() {
         return this.value
     }).get().join(","),
@@ -69,6 +73,7 @@ function fetch_product(t=1) {
     "" != w && (n += "is_congsuat=" + w + "&"),
     "" != p && (n += "is_price=" + p + "&"),
     "" != g && (n += "is_cat=" + g + "&"),
+    "" != d && (n += "is_need=" + d + "&"),
     "" != i && (n += "is_orderby=" + i + "&"),
     browserQuery = n.substr(0, n.length - 1),
     updateProductFilterResetVisibility(),
@@ -86,7 +91,8 @@ function fetch_product(t=1) {
         is_origin: x,
         is_congsuat: w,
         is_price: p,
-        is_cat: g
+        is_cat: g,
+        is_need: d
     })
 }
 var productFilterRequest = null;
@@ -96,7 +102,6 @@ function doSearch(options, restoreHistory) {
     if (productFilterRequest) productFilterRequest.abort();
     var grid = $("#show-product");
     grid.attr('aria-busy', 'true').html('<div id="loader" role="status">Đang tải sản phẩm…</div>');
-    $('.pts-product-result-count').text('…');
     productFilterRequest = $.ajax({
         url: 'api/fillter_service.php',
         type: 'GET',
@@ -105,14 +110,12 @@ function doSearch(options, restoreHistory) {
         success: function(html) {
             if (sequence !== productFilterSequence) return;
             grid.html(html);
-            $('.pts-product-result-count').text((parseInt(grid.find('[data-filter-result-count]').attr('data-filter-result-count'), 10) || 0).toLocaleString('vi-VN'));
             if (!restoreHistory) $('body,html').stop(true).animate({scrollTop: grid.offset().top - 110}, 300);
             GA_FRAMEWORK.Lazys();
             $('.product-left, .mask-sidebar').removeClass('show');
         },
         error: function(xhr, status) {
             if (sequence !== productFilterSequence || status === 'abort') return;
-            $('.pts-product-result-count').text('—');
             grid.html('<div role="alert" class="pts-filter-error"><p>Chưa tải được sản phẩm. Vui lòng thử lại.</p><button type="button" class="btn btn-primary" data-filter-retry>Thử lại</button></div>');
             grid.find('[data-filter-retry]').on('click', function() { doSearch(options, restoreHistory); });
         },
@@ -131,7 +134,7 @@ window.addEventListener('popstate', function() {
         is_orderby: query.get('is_orderby') || '',
         p: query.get('p') || 1
     };
-    var controls = {car_brand: 'is_brand', car_xuatxu: 'is_origin', car_congsuat: 'is_congsuat', car_price: 'is_price', car_cat: 'is_cat'};
+    var controls = {car_brand: 'is_brand', car_xuatxu: 'is_origin', car_congsuat: 'is_congsuat', car_price: 'is_price', car_cat: 'is_cat', car_need: 'is_need'};
     $.each(controls, function(name, key) {
         options[key] = query.get(key) || '';
         var selected = options[key].split(',');
@@ -472,6 +475,7 @@ function updateCart(id=0,code='',quantity=1)
                     formCart.find('.load-price-new-'+code).html(result.salePrice);
                     formCart.find('.load-price-temp').html(result.tempText);
                     formCart.find('.load-price-total').html(result.totalText);
+                    if(result.shipText) formCart.find('.load-price-ship').html(result.shipText);
                 }
                 holdonClose();
             },
@@ -509,6 +513,7 @@ function deleteCart(obj)
             {
                 formCart.find('.load-price-temp').html(result.tempText);
                 formCart.find('.load-price-total').html(result.totalText);
+                if(result.shipText) formCart.find('.load-price-ship').html(result.shipText);
                 formCart.find(".procart-"+code).remove();
             }
             else
@@ -605,7 +610,7 @@ function loadShip(id=0)
             success: function(result){
                 if(result)
                 {
-                    formCart.find('.load-price-ship').html(result.shipText);
+                    formCart.find('.load-price-ship').html(result.shipText || 'Sẽ xác nhận sau');
                     formCart.find('.load-price-total').html(result.totalText);
                 }   
                 holdonClose();

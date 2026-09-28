@@ -7,7 +7,10 @@
  */
 .pts-category-hero{
     min-height:240px!important;
-    margin:0 0 18px!important;
+    /* Margin-bottom này mới thực sự quyết định khoảng trắng bên dưới dải cam
+       kết (margin-top ở .pts-category-tabs bị "collapse" vào đây khi nhỏ hơn
+       - sửa nhầm chỗ trước đó không thấy hiệu quả, sếp báo 2026-09-28). */
+    margin:0 0 10px!important;
     padding:34px 46px!important;
     border-radius:3px!important;
 }
@@ -26,8 +29,19 @@
     display:flex;
     width:100%;
     align-items:stretch;
+    /* Canh giữa cả nhóm - ít mục thì các ô co lại vừa đủ nội dung thay vì
+       kéo giãn choán hết hàng (sếp báo nhìn kỳ khi ít mục 2026-09-26); container
+       vẫn full-width thẳng mép như các khối khác trên trang, chỉ nội dung bên
+       trong co gọn. "safe" bắt buộc khi nội dung TRÀN khung (nhiều mục, vd
+       trang gốc /san-pham/ có 9 mục) phải lùi về canh trái cuộn ngang bình
+       thường - thiếu "safe" thì center thường sẽ cắt che đều cả 2 đầu hàng khi
+       tràn, khiến mục đầu/cuối bị khuất chữ (lỗi thật gặp phải 2026-09-26). */
+    justify-content:safe center;
     gap:10px;
     overflow-x:auto;
+    /* Khoảng cách với dải cam kết phía trên do .pts-category-hero margin-bottom
+       quyết định (2 margin liền kề bị collapse) - không đặt margin-top ở đây
+       nữa để tránh 2 nguồn margin gây nhầm lẫn khi chỉnh sau này. */
     margin:0 0 18px;
     padding:2px 0 5px;
     background:transparent;
@@ -46,15 +60,21 @@
 }
 .pts-category-tab{
     display:flex;
-    flex:1 0 104px;
-    max-width:210px;
+    /* Co vừa đủ nội dung (không kéo giãn) - hàng có ít mục sẽ ngắn gọn và
+       canh giữa nhờ justify-content:center ở .pts-category-tabs, thay vì
+       từng ô bị kéo dài choán hết hàng trông kỳ (sếp báo 2026-09-26). */
+    flex:0 0 auto;
+    min-width:160px;
     scroll-snap-align:start;
     flex-direction:row;
     align-items:center;
     justify-content:flex-start;
-    gap:8px;
+    gap:7px;
     min-height:0;
-    padding:8px 10px;
+    /* Giảm mạnh hơn padding dọc - 8px vẫn còn "dày" theo phản hồi sếp
+       2026-09-26, xuống 6px + icon nhỏ lại (xem .pts-category-tab-media)
+       để hàng mỏng gọn hẳn, giữ nguyên padding ngang 18px cho độ dài vừa ý. */
+    padding:6px 18px;
     border:0;
     border-radius:4px;
     background:#f3f6f9;
@@ -70,8 +90,8 @@
 .pts-category-tab.is-active{background:var(--pts-navy);color:#fff!important;}
 .pts-category-tab-media{
     display:flex;
-    width:36px;
-    height:36px;
+    width:28px;
+    height:28px;
     flex:0 0 auto;
     align-items:center;
     justify-content:center;
@@ -82,38 +102,9 @@
 }
 .pts-category-tab-media picture,.pts-category-tab-media img{width:100%;height:100%;}
 .pts-category-tab-media img{display:block;object-fit:contain;padding:4px;}
-.pts-category-tab-media i{font-size:15px;}
+.pts-category-tab-media i{font-size:13px;}
 .pts-category-tab.is-active .pts-category-tab-media{background:#fff;color:var(--pts-gold-dark);}
 .pts-category-tab-name{display:-webkit-box;overflow:hidden;-webkit-box-orient:vertical;-webkit-line-clamp:2;}
-/* Nằm trong .filter_product, lấp khoảng trống giữa tiêu đề "Danh sách sản
-   phẩm" và ô "Sắp xếp" thay vì chiếm hẳn một hàng ngang riêng bên trên. */
-.pts-subcategory-rail{
-    display:flex;
-    flex:1 1 auto;
-    min-width:0;
-    align-items:center;
-    /* Cách xa tiêu đề "Danh sách sản phẩm" để không bị đọc nhầm là một cụm
-       với tiêu đề - khoảng trống rõ ràng phân tách hai vùng chức năng. */
-    margin-left:32px;
-    overflow:hidden;
-}
-.pts-subcategory-tabs{display:flex;align-items:stretch;gap:6px;width:100%;min-width:0;overflow-x:auto;scrollbar-width:none;scroll-behavior:smooth;}
-.pts-subcategory-tabs::-webkit-scrollbar{display:none;}
-.pts-subcategory-tab{
-    display:inline-flex;flex:0 0 auto;min-height:0;align-items:center;justify-content:flex-start;gap:6px;
-    padding:5px 10px 5px 5px;border:0;border-radius:3px;background:#fff;
-    color:#475569;font-size:12px;font-weight:800;line-height:1.25;white-space:nowrap;text-decoration:none!important;
-}
-.pts-subcategory-tab:hover{background:#fff3d5;color:#8a5b08;}
-.pts-subcategory-tab.is-active{background:var(--pts-gold);color:var(--pts-navy)!important;}
-.pts-subcategory-media{
-    display:flex;width:24px;height:24px;flex:0 0 24px;align-items:center;justify-content:center;
-    border-radius:50%;background:#f4f6f8;color:var(--pts-gold-dark);overflow:hidden;
-}
-.pts-subcategory-media picture,.pts-subcategory-media img{width:100%;height:100%;}
-.pts-subcategory-media img{display:block;object-fit:contain;padding:3px;}
-.pts-subcategory-media i{font-size:11px;}
-.pts-subcategory-tab.is-active .pts-subcategory-media{background:#fff;}
 .category-trust-strip{
     margin:0 0 22px!important;
     padding:0!important;
@@ -177,16 +168,25 @@
 .product-row{margin-left:-9px!important;margin-right:-9px!important;}
 .product-left,.product-right{padding-left:9px!important;padding-right:9px!important;}
 .product-left{top:85px;}
-.pts-filter-card{border:0!important;border-radius:0!important;background:transparent!important;padding:20px 0 5px!important;}
-.pts-filter-card .aside-filter,.pts-filter-card .product-pages__price{border-bottom:0!important;margin-bottom:22px!important;}
+.pts-filter-card{border:0!important;border-radius:0!important;background:transparent!important;padding:16px 0 5px!important;}
+.pts-filter-card .aside-filter,.pts-filter-card .product-pages__price{
+    border:0!important;border-bottom:1px solid var(--pts-line)!important;
+    margin:0 0 18px!important;padding:0 0 18px!important;
+}
+.pts-filter-card .aside-filter:last-child,.pts-filter-card .product-pages__price:last-child{
+    border-bottom:0!important;margin-bottom:0!important;padding-bottom:2px!important;
+}
 .pts-filter-card .title-head,.pts-filter-card .product-pages__price-name{
     font-size:14px!important;
     letter-spacing:.055em!important;
     line-height:1.35!important;
 }
 .pts-filter-card .product-pages__price-label{
-    font-size:15px!important;
-    line-height:1.5!important;
+    min-height:32px!important;
+    padding:6px 0!important;
+    font-size:14px!important;
+    line-height:1.35!important;
+    color:#475569!important;
 }
 .pts-filter-card .pts-cat-filter-hint{
     font-size:12px!important;
@@ -232,6 +232,8 @@
 .product-right .product-card-btns{
     position:static!important;
     display:flex!important;
+    flex-direction:column!important;
+    gap:8px;
     margin-top:auto;
     padding:0 10px 10px!important;
 }
@@ -251,9 +253,26 @@
     font-weight:850!important;
     transform:none!important;
 }
+.product-right .product-card-btns .pts-card-detail{
+    display:flex!important;
+    align-items:center;
+    justify-content:center;
+    width:100%!important;
+    height:auto!important;
+    min-height:44px!important;
+    border:1px solid var(--pts-navy)!important;
+    border-radius:3px!important;
+    background:#fff!important;
+    color:var(--pts-navy)!important;
+    font-size:13.5px!important;
+    font-weight:750!important;
+    text-decoration:none!important;
+    transition:background .16s ease,color .16s ease,border-color .16s ease;
+}
 .product-right .product-card-btns .pts-card-action-label{display:inline}
 .product-right .product-card-btns .pts-card-add:hover,
 .product-right .product-card-btns .pts-card-ask:hover{background:var(--pts-gold-light)!important;color:var(--pts-navy)!important}
+.product-right .product-card-btns .pts-card-detail:hover{background:var(--pts-navy)!important;color:#fff!important}
 .pts-category-content{margin-top:42px!important;}
 .pts-category-faq{
     margin:52px 0 8px;
@@ -317,16 +336,8 @@
     background:var(--pts-navy);
     isolation:isolate;
 }
-.pts-catalog-support-media,.pts-catalog-support-media picture{
-    position:absolute;
-    z-index:-2;
-    inset:0;
-    display:block;
-    width:100%;
-    height:100%;
-}
-.pts-catalog-support-media img{width:100%!important;height:100%!important;object-fit:cover!important;object-position:center!important}
-.pts-catalog-support-shade{position:absolute;z-index:-1;inset:0;background:rgba(6,21,55,.82)}
+/* Nền navy phẳng theo đúng mẫu bố cục đề xuất - không dùng ảnh nền/lớp phủ
+   tối như trước (sếp báo lệch mockup 2026-09-26). */
 .pts-catalog-support-copy{
     display:grid;
     min-height:190px;
@@ -335,6 +346,8 @@
     gap:32px;
     padding:32px clamp(24px,4vw,56px);
 }
+.pts-catalog-support-text{display:flex;align-items:flex-start;gap:18px;min-width:0}
+.pts-catalog-support-icon{flex:0 0 auto;margin-top:6px;color:var(--pts-gold);font-size:26px}
 .pts-catalog-support-copy h2{margin:0 0 8px;color:#fff;font-size:clamp(24px,2.4vw,34px);font-weight:900;line-height:1.2}
 .pts-catalog-support-copy p{max-width:720px;margin:0;color:#dbe7f7;font-size:15px;line-height:1.65}
 .pts-catalog-support-copy>a{display:inline-flex;min-height:46px;align-items:center;justify-content:center;gap:9px;padding:0 20px;border-radius:3px;background:var(--pts-gold);color:var(--pts-navy)!important;font-size:13px;font-weight:850;white-space:nowrap;text-decoration:none!important}
@@ -346,23 +359,24 @@
     .pts-category-hero{min-height:205px!important;margin-left:calc(-1 * var(--pts-mobile-gutter))!important;margin-right:calc(-1 * var(--pts-mobile-gutter))!important;border-radius:0!important;padding:28px var(--pts-mobile-gutter)!important;}
     .pts-category-copy h1{font-size:28px!important;}
     .pts-category-copy p{font-size:13px!important;line-height:1.5!important;}
-    .pts-category-tabs{margin-bottom:13px;gap:7px;}
-    .pts-category-tab{flex-basis:104px;max-width:132px;min-height:0;padding:8px 9px;font-size:12px;}
-    .pts-category-tab-media{width:32px;height:32px;}
-    .pts-subcategory-rail{flex:0 0 100%;width:100%;margin-left:0;}
-    .pts-subcategory-tabs{width:100%;}
-    .pts-subcategory-tab{padding:7px 10px 7px 6px;font-size:12px;}
-    .pts-subcategory-media{width:26px;height:26px;flex-basis:26px;}
+    .pts-category-tabs{margin-bottom:8px;padding-bottom:3px;gap:5px;}
+    .pts-category-tab{flex-basis:88px;min-width:88px;min-height:0;padding:5px 7px;gap:5px;font-size:10.5px;line-height:1.2;}
+    .pts-category-tab-media{width:24px;height:24px;flex-basis:24px;}
+    .pts-category-tab-media i{font-size:12px;}
     .category-trust-strip>.row{grid-template-columns:repeat(2,1fr);}
     .category-trust-strip .trust-badge-item{min-height:60px!important;padding:10px 11px!important;font-size:12px!important;line-height:1.35!important;}
     .category-trust-strip .trust-badge-item:nth-child(2){border-right:0!important;}
     .product-left > .mb40,.pts-filter-card{padding-left:0!important;padding-right:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;}
-    .filter_product{align-items:flex-start!important;flex-wrap:wrap!important;gap:12px;margin-bottom:14px!important;}
+    .filter_product{align-items:center!important;flex-wrap:wrap!important;gap:7px 10px;margin-bottom:10px!important;padding:4px 0!important;}
     .filter-heading,.filter_product .filter-heading{width:100%!important;flex:0 0 100%!important;}
+    .filter-heading,.filter_product .filter-heading{gap:7px;}
+    .filter-heading-icon{width:28px;height:28px;flex-basis:28px;font-size:12px;}
+    .filter_product .name_title{font-size:16px!important;line-height:1.15;}
     .filter_product .name_title{white-space:normal;}
+    .btn-filter-product{min-height:34px!important;padding:0 10px!important;border-radius:4px!important;font-size:11px!important;gap:5px;}
     .filter_product .fp-sort{margin-left:auto;}
     .filter_product .fp-sort label{display:none;}
-    .filter_product select.orderby{max-width:160px;}
+    .filter_product select.orderby{min-height:34px;max-width:130px;padding:0 24px 0 10px;font-size:11px;}
     /* Mobile không ghim dải điều hướng/bộ lọc: tránh chồng tiêu đề, chip và
        ảnh sản phẩm khi trình duyệt xử lý sticky trong vùng cuộn ngang. */
     .pts-category-tabs.is-sticky-row,
@@ -379,7 +393,8 @@
     .product-right .product-card .caption .name{min-height:42px;font-size:13.5px;}
     .product-right .product-card .pts-card-specs{font-size:11.5px;}
     .product-right .product-card-btns .pts-card-add,
-    .product-right .product-card-btns .pts-card-ask{min-height:42px!important;font-size:12px!important;}
+    .product-right .product-card-btns .pts-card-ask,
+    .product-right .product-card-btns .pts-card-detail{min-height:42px!important;font-size:12px!important;}
     .pts-category-faq{margin-top:38px;padding:28px 16px 30px;}
     .pts-category-faq summary{padding:14px 44px 14px 15px;font-size:13px;}
     .pts-category-faq summary:after{right:15px;}
@@ -400,3 +415,187 @@
     .filter_product .fp-sort{width:auto;flex:1 1 auto;justify-content:flex-end;}
     .filter_product select.orderby{width:auto;max-width:160px;}
 }
+
+/* Banner catalog theo layout mới: banner thoát khỏi wrap-content để bám toàn
+   chiều ngang ngay dưới breadcrumb; trust strip kính phủ sát mép dưới. */
+.product-category-page .pts-category-hero{
+    width:100vw!important;
+    max-width:none!important;
+    height:250px!important;
+    min-height:250px!important;
+    max-height:250px!important;
+    margin-left:calc(50% - 50vw)!important;
+    margin-right:calc(50% - 50vw)!important;
+    margin-bottom:24px!important;
+    padding:14px var(--pts-gutter)!important;
+    border-radius:0!important;
+    justify-content:center;
+}
+.product-category-page .pts-category-hero.has-image .pts-category-hero-shade{
+    background:linear-gradient(90deg,rgba(6,21,55,.38),rgba(6,21,55,.16) 52%,rgba(6,21,55,.42)),linear-gradient(0deg,rgba(6,21,55,.32),rgba(6,21,55,.08));
+}
+.product-category-page .pts-category-copy{
+    display:block;
+    width:calc(100% - 64px)!important;
+    max-width:1200px!important;
+    flex:0 1 1200px;
+    box-sizing:border-box;
+    margin:0 auto;
+    padding:6px 0 66px;
+    border:0;
+    border-radius:0;
+    background:transparent;
+    box-shadow:none;
+    backdrop-filter:none;
+    -webkit-backdrop-filter:none;
+    text-align:left;
+}
+.product-category-page .pts-category-copy-content{min-width:0;}
+.product-category-page .pts-category-copy h1{
+    max-width:none!important;
+    margin:0 0 5px!important;
+    color:#e5b743!important;
+    font-size:clamp(24px,2.1vw,32px)!important;
+    font-weight:900!important;
+    line-height:1.12!important;
+    text-transform:uppercase;
+    text-shadow:0 2px 12px rgba(0,0,0,.25);
+}
+.product-category-page .pts-category-copy p{
+    max-width:700px!important;
+    margin:0!important;
+    color:rgba(255,255,255,.88)!important;
+    font-size:14px!important;
+    line-height:1.4!important;
+}
+.product-category-page .category-trust-strip{
+    position:absolute;
+    z-index:3;
+    right:0;
+    bottom:0;
+    left:0;
+    width:100%;
+    margin:0!important;
+    padding:9px var(--pts-gutter)!important;
+    border-top:1px solid rgba(255,255,255,.2)!important;
+    background:linear-gradient(180deg,rgba(6,21,55,.28),rgba(6,21,55,.52))!important;
+    box-shadow:0 -6px 20px rgba(4,17,46,.08);
+    backdrop-filter:blur(5px);
+    -webkit-backdrop-filter:blur(5px);
+}
+.product-category-page .category-trust-strip>.row{
+    display:grid!important;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:18px;
+    margin:0!important;
+}
+.product-category-page .category-trust-strip .trust-badge-item{
+    display:flex!important;
+    min-height:0!important;
+    height:auto!important;
+    min-width:0;
+    align-items:center;
+    justify-content:center;
+    gap:12px;
+    padding:3px 8px!important;
+    border:0!important;
+    border-radius:0!important;
+    background:transparent!important;
+    color:#fff!important;
+    font-size:13px!important;
+    font-weight:400!important;
+    line-height:1.25!important;
+    text-shadow:0 1px 5px rgba(0,0,0,.75);
+}
+.product-category-page .category-trust-strip .trust-badge-item i{
+    flex:0 0 30px;
+    color:#f5c343!important;
+    font-size:27px!important;
+    text-align:center;
+}
+.product-category-page .category-trust-strip .trust-badge-copy{
+    display:flex!important;
+    min-width:0;
+    flex-direction:column;
+    gap:2px;
+    text-align:left;
+}
+.product-category-page .category-trust-strip .trust-badge-copy strong{
+    overflow:hidden;
+    color:#fff;
+    font-size:13px;
+    font-weight:800;
+    line-height:1.2;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+}
+.product-category-page .category-trust-strip .trust-badge-copy small{
+    color:rgba(255,255,255,.76);
+    font-size:11px;
+    font-weight:500;
+    line-height:1.25;
+}
+
+@media(max-width:767px){
+    .product-category-page .pts-category-hero{
+        height:230px!important;
+        min-height:230px!important;
+        max-height:230px!important;
+        padding:12px var(--pts-gutter)!important;
+    }
+    .product-category-page .pts-category-copy{
+        width:100%!important;
+        max-width:none!important;
+        padding:9px 12px 94px;
+    }
+    .product-category-page .pts-category-copy h1{font-size:22px!important;}
+    .product-category-page .pts-category-copy p{display:none!important;}
+    .product-category-page .category-trust-strip{padding:6px 10px!important;overflow:visible;}
+    .product-category-page .category-trust-strip>.row{
+        display:grid!important;
+        width:100%;
+        grid-template-columns:repeat(2,minmax(0,1fr));
+        gap:4px 8px;
+    }
+    .product-category-page .category-trust-strip .trust-badge-item{
+        min-height:36px!important;
+        justify-content:flex-start;
+        gap:7px;
+        padding:2px 4px!important;
+    }
+    .product-category-page .category-trust-strip .trust-badge-item i{
+        flex-basis:22px;
+        font-size:19px!important;
+    }
+    .product-category-page .category-trust-strip .trust-badge-copy strong{
+        display:-webkit-box;
+        overflow:hidden;
+        font-size:11px;
+        line-height:1.2;
+        white-space:normal;
+        -webkit-box-orient:vertical;
+        -webkit-line-clamp:2;
+    }
+    .product-category-page .category-trust-strip .trust-badge-copy small{display:none;}
+}
+@media(max-width:480px){
+    .product-category-page .pts-category-hero{height:220px!important;min-height:220px!important;max-height:220px!important;padding:8px 15px!important;}
+    .product-category-page .pts-category-copy{text-align:left;}
+    .product-category-page .pts-category-copy h1{font-size:20px!important;}
+    .product-category-page .category-trust-strip{padding:6px 8px!important;}
+}
+
+/* "Dự án tiêu biểu" trên trang danh mục dùng chung markup pts-related-card
+   với trang chi tiết sản phẩm, nhưng .pts-related-card mặc định (theme-v2.css)
+   là card trang trí (viền + đổ bóng + bo góc) - phẳng hoá lại giống PDP
+   (.pts-pdp-v2 override) để không lệch thiết kế mới của sếp (2026-09-28). */
+.product-category-page .pts-related-showcase{margin:0 0 40px!important;}
+.product-category-page .pts-related-grid{gap:24px;}
+.product-category-page .pts-related-card{border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;}
+/* Bỏ khung card thô (viền/đổ bóng) nhưng KHÔNG bỏ luôn điểm nhấn thị giác -
+   bo góc + hiệu ứng nhấc nhẹ trên chính tấm ảnh, giống đúng kiểu đã duyệt ở
+   khối "Chọn đèn đúng nhu cầu" - làm phẳng quá tay lần trước khiến ảnh vuông
+   cạnh dính sát nhau trông thô (sếp báo 2026-09-28). */
+.product-category-page .pts-project-media-main{border-radius:6px!important;transition:transform .25s ease;}
+.product-category-page .pts-related-card:hover .pts-project-media-main{transform:translateY(-3px);}
+.product-category-page .pts-related-card-body{padding:14px 2px 0!important;}

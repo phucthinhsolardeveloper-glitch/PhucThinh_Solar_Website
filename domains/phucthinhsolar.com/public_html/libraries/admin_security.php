@@ -341,7 +341,11 @@ if(!function_exists('adminCsrfToken'))
 		/* Mẫu email là một phần của cấu hình doanh nghiệp. Mọi thao tác xem,
 		   lưu, xem trước và gửi thử đều dùng chung quyền setting_update; không
 		   tạo thêm một permission rời dễ bị bỏ sót khi nâng cấp nhóm quyền. */
-		if($com === 'mail_template') return 'setting_update';
+        if($com === 'mail_template') return 'setting_update';
+
+        /* Màn hình trạng thái payment/shipping là phần vận hành đơn hàng,
+           không tạo thêm permission rời cho module read-only mới. */
+        if($com === 'integrations') return 'order_man';
 
         /* act ghi -> quyền add/edit tương ứng. Giá trị là hậu tố sau tên module. */
         $writeActions = array(

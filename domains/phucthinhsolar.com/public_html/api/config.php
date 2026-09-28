@@ -14,6 +14,7 @@
     require_once LIBRARIES."public_watermark.php";
     require_once LIBRARIES."product_power_filter.php";
     require_once LIBRARIES."product_price_filter.php";
+    require_once LIBRARIES."product_need_filter.php";
     require_once LIBRARIES."product_sort.php";
     require_once LIBRARIES.'autoload.php';
     new AutoLoad();

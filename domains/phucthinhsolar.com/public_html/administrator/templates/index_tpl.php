@@ -80,6 +80,12 @@
                 </a>
             </div>
             <div class="col-12 col-sm-6 col-lg-4 col-xl-2">
+                <a class="info-box" href="index.php?com=product&act=man&type=san-pham&data_status=missing_shipping_dims" title="Sản phẩm chưa có kích thước đóng gói - cần bổ sung trước khi bật GHN/GHTK/Viettel Post/Nhất Tín thật">
+                    <span class="info-box-icon bg-secondary"><i class="fas fa-box"></i></span>
+                    <div class="info-box-content text-dark"><span class="info-box-text">Thiếu kích thước đóng gói</span><span class="info-box-number"><?=$dashboardMissingShippingDims?></span></div>
+                </a>
+            </div>
+            <div class="col-12 col-sm-6 col-lg-4 col-xl-2">
                 <a class="info-box" href="index.php?com=news&act=man&type=chinh-sach" title="Kiểm tra nội dung chính sách">
                     <span class="info-box-icon bg-success"><i class="fas fa-file-contract"></i></span>
                     <div class="info-box-content text-dark">

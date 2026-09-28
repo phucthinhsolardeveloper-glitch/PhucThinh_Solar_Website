@@ -1,5 +1,6 @@
 <?php
 	if(!defined('SOURCES')) die("Error");		
+	require_once LIBRARIES.'commerce_integrations.php';
 
 	if(!function_exists('checkoutPersistOrder'))
 	{
@@ -35,18 +36,28 @@
 		function checkoutVisiblePaymentMethods($d, $lang = 'vi')
 		{
 			$lang = in_array($lang, array('vi', 'en'), true) ? $lang : 'vi';
-			return $d->rawQuery(
+			$methods = $d->rawQuery(
 				"select name{$lang}, desc{$lang}, id from #_news where type = ? and find_in_set('hienthi',status) order by numb,id desc",
 				array('hinh-thuc-thanh-toan')
 			);
+			global $config;
+			$vnpay = isset($config['integrations']['payment']['vnpay']) ? $config['integrations']['payment']['vnpay'] : array();
+			if(commerceVnpayConfigured($vnpay)) $methods[] = array('namevi'=>'Thanh toán online qua VNPay', 'descvi'=>'Thanh toán qua ứng dụng ngân hàng, thẻ hoặc ví được VNPay hỗ trợ.', 'id'=>-1, 'slugvi'=>'vnpay');
+			return $methods;
 		}
 
 		function checkoutVisiblePaymentMethod($d, $paymentId)
 		{
 			$paymentId = (int)$paymentId;
+			if($paymentId === -1)
+			{
+				global $config;
+				$vnpay = isset($config['integrations']['payment']['vnpay']) ? $config['integrations']['payment']['vnpay'] : array();
+				return commerceVnpayConfigured($vnpay) ? array('id'=>-1, 'namevi'=>'Thanh toán online qua VNPay', 'slugvi'=>'vnpay') : array();
+			}
 			if($paymentId <= 0) return array();
 			return $d->rawQueryOne(
-				"select id, namevi from #_news where id = ? and type = ? and find_in_set('hienthi',status) limit 0,1",
+				"select id, namevi, slugvi from #_news where id = ? and type = ? and find_in_set('hienthi',status) limit 0,1",
 				array($paymentId, 'hinh-thuc-thanh-toan')
 			);
 		}
@@ -194,6 +205,7 @@
 		$order_payment = 0;
 		$order_payment_data = array();
 		$order_payment_text = '';
+		$shippingPending = false;
 
 		/* Check data */
 		if(!empty($dataOrder))
@@ -226,13 +238,21 @@
 		    /* Ship */
 		    if(!empty($config['order']['ship']))
 		    {
-				$ship_data = !empty($wardValid) ? $wardValid : array();
-				$ship_price = (!empty($ship_data['ship_price'])) ? $ship_data['ship_price'] : 0;
+				$shippingConfig = isset($config['integrations']['shipping']) && is_array($config['integrations']['shipping']) ? $config['integrations']['shipping'] : array();
+				$shippingQuote = commerceShippingQuote($d, $shippingConfig, $city, $ward, $cart->getOrderTotal());
+				$ship_data = !empty($shippingQuote['selected']) && is_array($shippingQuote['selected']) ? $shippingQuote['selected'] : array();
+				$ship_price = !empty($shippingQuote['ok']) && !empty($shippingQuote['priced']) ? (float)$shippingQuote['selected']['amount'] : 0;
+				$shippingPending = empty($shippingQuote['priced']);
 		    }
-		    else
-		    {
-		    	$ship_price = 0;
-		    }
+			else
+			{
+				$ship_price = 0;
+			}
+			if($shippingPending)
+			{
+				$shippingNotice = 'Phí vận chuyển: chờ xác nhận trước khi chốt đơn.';
+				$requirements = trim($requirements) !== '' ? $requirements.' | '.$shippingNotice : $shippingNotice;
+			}
 
 		    /* Price */
 			$temp_price = $cart->getOrderTotal();
@@ -391,6 +411,8 @@
 		$data_donhang['address'] = $address;
 		$data_donhang['email'] = $email;
 		$data_donhang['order_payment'] = $order_payment;
+		$data_donhang['payment_method_code'] = !empty($order_payment_data['slugvi']) ? (string)$order_payment_data['slugvi'] : 'legacy';
+		$data_donhang['payment_status'] = 0;
 		$data_donhang['ship_price'] = $ship_price;
 		$data_donhang['temp_price'] = $temp_price;
 		$data_donhang['total_price'] = $total_price;
@@ -410,6 +432,22 @@
 		}
 		$id_insert = (int)$persistedOrder['id'];
 		$code = (string)$persistedOrder['code'];
+		/* Tạo giao dịch pending trước khi redirect sang VNPay. Không đánh dấu
+		   paid ở đây; trạng thái chỉ đổi bởi callback đã kiểm tra chữ ký. */
+		if((int)$order_payment === -1 && empty($persistedOrder['reused']))
+		{
+			$vnpay = isset($config['integrations']['payment']['vnpay']) ? $config['integrations']['payment']['vnpay'] : array();
+			$paymentUrl = commerceVnpayCreateUrl($vnpay, $code, $total_price, 'Thanh toan don hang '.$code, formClientIp($_SERVER, isset($config['login']['trusted-proxies']) ? $config['login']['trusted-proxies'] : array()));
+			if(empty($paymentUrl['ok'])) $func->transfer('Cổng thanh toán đang tạm thời chưa sẵn sàng. Vui lòng chọn chuyển khoản hoặc COD.', 'gio-hang/', false);
+			$now = time();
+			$d->insert('payment_transaction', array('id_order'=>$id_insert, 'provider'=>'vnpay', 'transaction_ref'=>$code, 'amount'=>$total_price, 'status'=>'pending', 'created_at'=>$now, 'updated_at'=>$now));
+			/* Giữ token trong session để callback trình duyệt quay lại trang cảm ơn
+			   mà không phải đưa thông tin đơn hàng vào URL công khai. */
+			$thanksToken = checkoutRegisterThanks($id_insert, $code);
+			checkoutRotateIdempotencyToken();
+			unset($_SESSION['cart']);
+			$func->redirect($paymentUrl['url']);
+		}
 
 		/* Defaults attributes email */
 	    $emailDefaultAttrs = $emailer->defaultAttrs();

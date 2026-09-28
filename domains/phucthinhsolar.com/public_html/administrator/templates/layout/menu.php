@@ -435,6 +435,18 @@
                         </a>
                     </li>
                 <?php } ?>
+                <?php if(isset($config['order']['active']) && $config['order']['active'] == true) { ?>
+                    <?php
+                        $integrationActive = ($com === 'integrations') ? 'active' : '';
+                        $integrationNone = '';
+                        if(isset($is_permission) && $is_permission == true) if($func->checkPermission('order', 'man', '', null, 'phrase-1')) $integrationNone = 'd-none';
+                    ?>
+                    <li class="nav-item <?=$integrationActive?> <?=$integrationNone?>">
+                        <a class="nav-link <?=$integrationActive?>" href="index.php?com=integrations&act=man" title="Thanh toán và vận chuyển">
+                            <i class="nav-icon text-sm fas fa-plug"></i><p>Thanh toán &amp; vận chuyển</p>
+                        </a>
+                    </li>
+                <?php } ?>
                 <!-- Contact -->
                 <?php
                     $active = ($com == 'contact') ? 'active' : '';
