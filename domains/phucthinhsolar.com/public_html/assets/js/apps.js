@@ -1289,9 +1289,9 @@ GA_FRAMEWORK.ClickScrollTracks = function(){
    trang mở một danh mục con, đưa chip đang chọn vào vùng nhìn thấy ngay thay
    vì để người dùng tự kéo tìm; bản thân dải vẫn kéo ngang bằng touch/trackpad. */
 GA_FRAMEWORK.ProductSubcategoryRail = function(){
-    $('.pts-subcategory-tabs').each(function(){
+    $('.pts-category-tabs').each(function(){
         var track = this;
-        var active = track.querySelector('.pts-subcategory-tab.is-active');
+        var active = track.querySelector('.pts-category-tab.is-active');
         if(!active || track.scrollWidth <= track.clientWidth + 1) return;
         var desired = active.offsetLeft - Math.max(0, (track.clientWidth - active.offsetWidth) / 2);
         var maximum = Math.max(0, track.scrollWidth - track.clientWidth);

@@ -139,9 +139,12 @@ test('content surfaces stay flat across product and content hubs', async ({ page
 
   await page.goto('/danh-muc-san-pham/den-nlmt/', { waitUntil: 'domcontentloaded' });
   await assertFlat('.product-card');
-  /* Toolbar sticky là ranh giới thao tác có chủ đích: nền kín ngăn ảnh sản
-     phẩm xuyên qua khi cuộn. Mobile bỏ sticky/shadow nhưng vẫn giữ nền kín. */
-  const toolbarSurface = await page.locator('.filter_product').evaluate(element => ({
+  /* 2026-09-28: dải "Loại sản phẩm"/danh mục cấp 1 đã gộp về chung 1 nav
+     (.pts-category-tabs, xem product_tpl.php) và chính nav này mới là hàng
+     ghim sát đỉnh - .filter_product không còn is-sticky-row nữa nên luôn
+     phẳng. Nền kín ngăn ảnh sản phẩm xuyên qua khi cuộn nằm ở nav; mobile bỏ
+     sticky/shadow nhưng vẫn giữ nền kín. */
+  const toolbarSurface = await page.locator('.pts-category-tabs').evaluate(element => ({
     border: getComputedStyle(element).borderTopWidth,
     background: getComputedStyle(element).backgroundColor,
     shadow: getComputedStyle(element).boxShadow
@@ -150,6 +153,7 @@ test('content surfaces stay flat across product and content hubs', async ({ page
   expect(toolbarSurface.background).toBe('rgb(255, 255, 255)');
   if (isMobile) expect(toolbarSurface.shadow).toBe('none');
   else expect(toolbarSurface.shadow).not.toBe('none');
+  await assertFlat('.filter_product');
   await assertFlat('.pts-filter-card');
   const productHref = await page.locator('.product-card .product-item').first().getAttribute('href');
   expect(productHref).toBeTruthy();
@@ -716,7 +720,11 @@ test('product category sidebar avoids repeating the subcategory rail', async ({ 
     await expect(hero.locator('h1')).toHaveCSS('color', 'rgb(255, 255, 255)');
   }
   await expect(page.locator('.pts-filter-card .collection-category')).toHaveCount(0);
-  await expect(page.locator('.pts-subcategory-tabs .pts-subcategory-tab').first()).toBeVisible();
+  /* 2026-09-28: dải danh mục con riêng (.pts-subcategory-tabs/-tab) đã gộp
+     vào chung nav cấp 1 (.pts-category-tabs/.pts-category-tab) - xem
+     product_tpl.php, xác nhận với sếp 2026-09-26. Không còn 2 dải chồng
+     nhau nên đổi selector theo cấu trúc mới thay vì lỗi thật. */
+  await expect(page.locator('.pts-category-tabs .pts-category-tab').first()).toBeVisible();
   await expect(page.locator('input[name="car_cat"]')).toHaveCount(0);
   await expect(page.locator('.pts-filter-card')).not.toContainText('Loại đèn - dùng cho');
   await expect(page.locator('.pts-category-faq details')).toHaveCount(3);
@@ -791,10 +799,13 @@ test('mobile product filters open as an accessible drawer and close after filter
     input.dispatchEvent(new Event('change', { bubbles: true }));
   });
   await assertHealthyAjaxResponse(filteredResponse);
-  const resultMeta = page.locator('#show-product .pts-filter-result-meta');
-  await expect(resultMeta).toBeAttached();
-  const resultCount = Number(await resultMeta.getAttribute('data-filter-result-count'));
-  await expect(page.locator('.pts-product-result-count')).toHaveText(resultCount.toLocaleString('vi-VN'));
+  /* 2026-09-28: span ẩn .pts-filter-result-meta (fillter_service.php) và
+     nhãn hiển thị .pts-product-result-count (product_tpl.php) đã bị bỏ khi
+     gộp dải danh mục - không có JS nào từng đọc data-filter-result-count để
+     cập nhật nhãn kia, thuần là markup chết đã dọn theo commit message. Kiểm
+     tra grid đã render xong (hết trạng thái loading) thay vì đếm kết quả. */
+  await expect(page.locator('#show-product')).toHaveAttribute('aria-busy', 'false');
+  await expect(page.locator('#show-product #loader')).toHaveCount(0);
   await expect(page.locator('.pts-filter-reset')).toBeVisible();
   await expect(drawer).not.toHaveClass(/show/);
   await expect(trigger).toHaveAttribute('aria-expanded', 'false');

@@ -140,19 +140,10 @@
     border:0!important;
     border-radius:0!important;
 }
-/* Hàng này ghim sát đỉnh khi có "Loại sản phẩm" (xem product_tpl.php) - nếu
-   không thì dải danh mục cấp 1 ghim thay (.pts-category-tabs.is-sticky-row
-   ở trên), tránh ghim chồng 2 hàng. */
-.filter_product.is-sticky-row{
-    position:sticky!important;
-    top:0!important;
-    z-index:15!important;
-    /* Hàng ghim phải là một mặt phẳng kín; nền trong suốt làm ảnh sản phẩm
-       phía dưới xuyên qua tiêu đề/chip khi cuộn. */
-    background:#fff!important;
-    box-shadow:0 2px 0 rgba(255,255,255,.98),0 6px 12px -8px rgba(15,23,42,.18)!important;
-    isolation:isolate;
-}
+/* 2026-09-28: dải "Loại sản phẩm"/danh mục cấp 1 đã gộp về chung 1 nav
+   (.pts-category-tabs.is-sticky-row, xem product_tpl.php + comment ở trên);
+   nav đó mới là hàng ghim sát đỉnh. .filter_product không bao giờ nhận
+   class is-sticky-row nữa nên luôn là mặt phẳng thường, không ghim. */
 .filter-heading,.filter_product .filter-heading{display:flex!important;flex:0 0 245px;align-items:center;gap:11px;min-width:0;}
 .filter-heading-icon{
     display:inline-flex;width:38px;height:38px;flex:0 0 38px;
@@ -184,7 +175,7 @@
 .pts-filter-card .product-pages__price-label{
     min-height:32px!important;
     padding:6px 0!important;
-    font-size:14px!important;
+    font-size:15px!important;
     line-height:1.35!important;
     color:#475569!important;
 }
@@ -377,10 +368,9 @@
     .filter_product .fp-sort{margin-left:auto;}
     .filter_product .fp-sort label{display:none;}
     .filter_product select.orderby{min-height:34px;max-width:130px;padding:0 24px 0 10px;font-size:11px;}
-    /* Mobile không ghim dải điều hướng/bộ lọc: tránh chồng tiêu đề, chip và
-       ảnh sản phẩm khi trình duyệt xử lý sticky trong vùng cuộn ngang. */
-    .pts-category-tabs.is-sticky-row,
-    .filter_product.is-sticky-row{
+    /* Mobile không ghim dải điều hướng: tránh chồng tiêu đề, chip và ảnh sản
+       phẩm khi trình duyệt xử lý sticky trong vùng cuộn ngang. */
+    .pts-category-tabs.is-sticky-row{
         position:relative!important;
         top:auto!important;
         z-index:auto!important;

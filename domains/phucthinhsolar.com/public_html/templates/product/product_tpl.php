@@ -81,7 +81,7 @@
     <a href="<?=$ptsSubcategoryItem['url']?>" class="pts-category-tab<?=!empty($ptsSubcategoryItem['is_active']) ? ' is-active' : ''?>"<?=!empty($ptsSubcategoryItem['is_active']) ? ' aria-current="page"' : ''?>>
         <span class="pts-category-tab-media">
             <?php if(!empty($ptsSubcategoryItem['nav_photo']) && empty($ptsSubcategoryItem['nav_name'])) { ?>
-            <?=$func->getImage(['isLazy' => true, 'class' => '', 'sizes' => '96x96x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $ptsSubcategoryItem['nav_photo'], 'alt' => $ptsSubcategoryName])?>
+            <?=$func->getImage(['isLazy' => true, 'class' => '', 'sizes' => '64x64x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $ptsSubcategoryItem['nav_photo'], 'alt' => $ptsSubcategoryName])?>
             <?php } else { ?>
             <i class="fas fa-th-large" aria-hidden="true"></i>
             <?php } ?>
@@ -101,7 +101,7 @@
     <a href="<?=$ptsCategoryNavUrl?>" class="pts-category-tab<?=$ptsCategoryNavActive ? ' is-active' : ''?>"<?=$ptsCategoryNavActive ? ' aria-current="page"' : ''?>>
         <span class="pts-category-tab-media">
             <?php if(!empty($ptsCategoryNavItem['photo'])) { ?>
-            <?=$func->getImage(['isLazy' => true, 'class' => '', 'sizes' => '96x96x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $ptsCategoryNavItem['photo'], 'alt' => $ptsCategoryNavName])?>
+            <?=$func->getImage(['isLazy' => true, 'class' => '', 'sizes' => '64x64x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $ptsCategoryNavItem['photo'], 'alt' => $ptsCategoryNavName])?>
             <?php } else { ?>
             <i class="fas fa-th-large" aria-hidden="true"></i>
             <?php } ?>

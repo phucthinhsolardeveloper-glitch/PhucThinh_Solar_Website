@@ -212,5 +212,9 @@ test('mốc 768px giữ nguyên boxed hierarchy', async ({ page }) => {
   }
 
   await page.goto('/danh-muc-san-pham/den-nlmt/', { waitUntil: 'domcontentloaded' });
-  await expect(page.locator('.pts-category-hero')).toHaveCSS('border-radius', '3px');
+  /* 2026-09-28: banner hero danh mục đổi sang full-bleed (100vw, thoát khỏi
+     wrap-content, xem .product-category-page .pts-category-hero trong
+     product-category-v3.css) - cạnh sát viền màn hình nên không còn bo góc
+     ở mọi viewport, không phải lỗi. */
+  await expect(page.locator('.pts-category-hero')).toHaveCSS('border-radius', '0px');
 });

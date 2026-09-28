@@ -77,16 +77,14 @@ test('banner catalog tải trực tiếp và hiện đúng 1 CTA cuối trang', 
   /* Landing danh mục v3 (2026-09-23): slot Admin catalog-campaign giờ render
      1 CTA tư vấn cuối trang (.pts-catalog-support), không còn nhiều banner
      xen giữa các khối danh mục (.pts-catblock đã bị thay bằng bố cục lưới
-     dùng chung). Xem docs/13-handoffs/2026-09-23-product-category-landing-v3.md. */
+     dùng chung). Xem docs/13-handoffs/2026-09-23-product-category-landing-v3.md.
+     2026-09-28: banner này đổi sang nền phẳng (không còn ảnh nền
+     .pts-catalog-support-media) - chỉ còn icon + chữ, xem product_tpl.php. */
   await page.goto('/san-pham/', { waitUntil: 'networkidle' });
   const banner = page.locator('.pts-catalog-support');
   await expect(banner).toHaveCount(1);
 
-  const image = banner.locator('.pts-catalog-support-media img');
-  const metrics = await imageMetrics(image);
-  expect(metrics.complete).toBeTruthy();
-  expect(metrics.naturalWidth).toBeGreaterThanOrEqual(metrics.width);
-  expect(metrics.fit).toBe('cover');
+  await expect(banner.locator('.pts-catalog-support-icon')).toBeVisible();
   await expect(banner.locator('h2')).not.toBeEmpty();
   await expect(banner.locator('a')).toBeVisible();
 });
