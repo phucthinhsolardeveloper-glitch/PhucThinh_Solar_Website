@@ -406,10 +406,18 @@ try
     }
     $projectForm = readinessHttp($base.'index.php?com=news&act=add&type=du-an', 'GET', array(), $newCookie);
     $projectGroupForm = readinessHttp($base.'index.php?com=news&act=add_list&type=du-an', 'GET', array(), $newCookie);
-    readinessAssert(strpos($projectForm['body'], 'name="data[address]"') !== false
-        && strpos($projectForm['body'], 'name="data[tenkhachhang]"') !== false
-        && strpos($projectForm['body'], 'name="data[ngayhopdong]"') !== false,
-        'Admin dự án giữ địa điểm, khách hàng và ngày hợp đồng hiện hữu');
+    // 2026-09-28: form Dự án đổi address/ngayhopdong rời rạc sang cấu trúc
+    // Tỉnh/TP -> Phường/Xã dùng chung site (project_city_id/project_ward_id/
+    // project_address_detail) + ngày bắt đầu/hoàn thành riêng, xem
+    // administrator/templates/news/man/man_add_tpl.php. address/ngayhopdong
+    // cũ vẫn còn field nhưng bị ẩn hẳn khỏi form du-an (type !== 'du-an').
+    readinessAssert(strpos($projectForm['body'], 'name="data[project_city_id]"') !== false
+        && strpos($projectForm['body'], 'name="data[project_ward_id]"') !== false
+        && strpos($projectForm['body'], 'name="data[project_address_detail]"') !== false
+        && strpos($projectForm['body'], 'name="data[project_start_date]"') !== false
+        && strpos($projectForm['body'], 'name="data[project_end_date]"') !== false
+        && strpos($projectForm['body'], 'name="data[tenkhachhang]"') !== false,
+        'Admin dự án giữ địa điểm cấu trúc, khách hàng và mốc thời gian hiện hữu');
     readinessAssert(strpos($projectGroupForm['body'], 'name="data[descvi]"') !== false
         && strpos($projectGroupForm['body'], 'name="file"') !== false,
         'Admin nhóm dự án quản trị được mô tả và icon bộ lọc');
