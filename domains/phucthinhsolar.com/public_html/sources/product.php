@@ -830,7 +830,7 @@
 	   tiết sản phẩm ưu tiên $productRelatedProjects (dự án gắn đúng sản phẩm
 	   này qua #_product_project) nếu Admin đã liên kết; chưa liên kết cái nào
 	   thì rơi về danh sách chung này, không ẩn hẳn section. */
-	/* Đúng 3 để luôn lấp kín 1 hàng lưới 3 cột - 4 dự án từng bị lẻ 1 card ở
-	   hàng dưới trông vỡ bố cục (sếp báo 2026-09-28). */
-	$productFeaturedProjects = $cache->get("select id, name$lang, slugvi, slugen, photo, address from #_news where type = ? and find_in_set('hienthi',status) order by numb,id desc limit 0,3", array('du-an'), 'result', 7200);
+	/* Lấy tối đa 4 dự án để module bằng chứng giữ nhịp 4 cột gọn trên desktop
+	   rộng; mobile chuyển thành rail vuốt ngang thay vì kéo dài bốn card. */
+	$productFeaturedProjects = $cache->get("select id, name$lang, slugvi, slugen, photo, address from #_news where type = ? and find_in_set('hienthi',status) order by numb,id desc limit 0,4", array('du-an'), 'result', 7200);
 ?>

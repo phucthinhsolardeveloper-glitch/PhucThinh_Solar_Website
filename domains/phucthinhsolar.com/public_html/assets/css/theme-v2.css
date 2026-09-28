@@ -44,25 +44,6 @@
 .pts-related-card-body strong{font-size:16px;line-height:1.45;}
 .pts-related-card-body small{color:#657184;line-height:1.45;}
 
-/* "Lý do chọn Phúc Thịnh Solar" - dùng chung trang danh mục và trang chi tiết
-   sản phẩm (2026-09-28). Phẳng, không card trang trí (viền/đổ bóng) theo
-   đúng thiết kế mới đang áp dụng cho toàn bộ PDP/danh mục trong đợt này. */
-.pts-why-choose-us{margin:0 0 40px;}
-.pts-why-choose-us>.title-product-orther{margin-bottom:20px!important;}
-/* Dải nền nhạt + viền phân cách giữa các mục, giống đúng dải "Cam kết chính
-   hãng" đã có (category-trust-strip) thay vì icon trôi nổi giữa khoảng trắng
-   - tránh trông sơ sài/thiếu điểm nhấn (sếp báo 2026-09-28). */
-.pts-why-choose-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));background:var(--pts-surface,#eef2f6);border-radius:4px;overflow:hidden;}
-.pts-why-choose-item{display:flex;align-items:center;gap:16px;padding:24px 26px;border-right:1px solid rgba(10,35,66,.08);border-bottom:1px solid rgba(10,35,66,.08);}
-.pts-why-choose-item:last-child{border-right:0;}
-.pts-why-choose-icon{display:flex;width:56px;height:56px;flex:0 0 auto;align-items:center;justify-content:center;border-radius:50%;background:#fff;box-shadow:0 3px 10px rgba(10,35,66,.09);}
-.pts-why-choose-icon img{display:block;width:28px;height:28px;object-fit:contain;}
-.pts-why-choose-item strong{font-size:15px;font-weight:800;line-height:1.4;color:var(--pts-navy,#0a2251);text-align:left;}
-@media(max-width:768px){
-    .pts-why-choose-grid{grid-template-columns:1fr;}
-    .pts-why-choose-item{border-right:0;}
-    .pts-why-choose-item:last-child{border-bottom:0;}
-}
 @media(max-width:767px){.pts-related-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;}}
 @media(max-width:480px){.pts-related-grid{grid-template-columns:1fr;}}
 html{scroll-behavior:smooth;}

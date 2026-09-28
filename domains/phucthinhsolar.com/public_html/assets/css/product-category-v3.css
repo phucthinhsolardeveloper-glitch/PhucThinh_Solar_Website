@@ -584,18 +584,3 @@
     .product-category-page .pts-category-copy h1{font-size:20px!important;}
     .product-category-page .category-trust-strip{padding:6px 8px!important;}
 }
-
-/* "Dự án tiêu biểu" trên trang danh mục dùng chung markup pts-related-card
-   với trang chi tiết sản phẩm, nhưng .pts-related-card mặc định (theme-v2.css)
-   là card trang trí (viền + đổ bóng + bo góc) - phẳng hoá lại giống PDP
-   (.pts-pdp-v2 override) để không lệch thiết kế mới của sếp (2026-09-28). */
-.product-category-page .pts-related-showcase{margin:0 0 40px!important;}
-.product-category-page .pts-related-grid{gap:24px;}
-.product-category-page .pts-related-card{border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;}
-/* Bỏ khung card thô (viền/đổ bóng) nhưng KHÔNG bỏ luôn điểm nhấn thị giác -
-   bo góc + hiệu ứng nhấc nhẹ trên chính tấm ảnh, giống đúng kiểu đã duyệt ở
-   khối "Chọn đèn đúng nhu cầu" - làm phẳng quá tay lần trước khiến ảnh vuông
-   cạnh dính sát nhau trông thô (sếp báo 2026-09-28). */
-.product-category-page .pts-project-media-main{border-radius:6px!important;transition:transform .25s ease;}
-.product-category-page .pts-related-card:hover .pts-project-media-main{transform:translateY(-3px);}
-.product-category-page .pts-related-card-body{padding:14px 2px 0!important;}

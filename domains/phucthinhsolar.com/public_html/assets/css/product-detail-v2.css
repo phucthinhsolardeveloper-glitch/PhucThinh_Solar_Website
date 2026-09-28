@@ -111,13 +111,6 @@
 .pts-pdp-v2 .title-product-orther{margin:0 0 30px!important;text-align:left!important}
 .pts-pdp-v2 .title-product-orther>span{padding:0!important;color:var(--pdp-navy)!important;font-size:clamp(27px,2.2vw,36px)!important;font-weight:780!important;letter-spacing:-.025em;text-transform:none!important}
 .pts-pdp-v2 .title-product-orther>span:after,.pts-pdp-v2 .title-product-orther>span:before{display:none!important}
-.pts-pdp-v2 .pts-related-grid{gap:28px}
-.pts-pdp-v2 .pts-related-card{border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important}
-/* Bo góc + hiệu ứng nhấc nhẹ trên ảnh thay vì khung card thô (đồng bộ với
-   trang danh mục - sếp báo thiết kế chưa đẹp 2026-09-28). */
-.pts-pdp-v2 .pts-project-media-main{border-radius:6px!important;transition:transform .25s ease}
-.pts-pdp-v2 .pts-related-card:hover .pts-project-media-main{transform:translateY(-3px)}
-.pts-pdp-v2 .pts-related-card-body{padding:16px 0!important}
 .pts-pdp-v2 .pts-pdp-related-products .product-card{height:100%}
 .pts-pdp-v2 .pts-pdp-related-products .product-card-img{background:#f7f9fb!important}
 .pts-pdp-v2 .control-pro-detail2 .owl-prev,.pts-pdp-v2 .control-pro-detail2 .owl-next{border-radius:3px!important;box-shadow:0 8px 22px rgba(6,21,55,.12)!important}

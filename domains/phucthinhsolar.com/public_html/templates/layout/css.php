@@ -100,6 +100,9 @@
     if($source == 'contact') $css->set("css/contact-v3.css");
     if($template === 'product/product_detail') $css->set("css/product-detail-v2.css");
     if($template === 'product/product') $css->set("css/product-category-v3.css");
+    /* Module bằng chứng thương hiệu dùng chung cho catalog và PDP. Nạp sau
+       stylesheet từng trang để có một owner duy nhất cho project/trust band. */
+    if(in_array($template, array('product/product', 'product/product_detail'), true)) $css->set("css/product-proof.css");
     echo $css->get();
 ?>
 <script type="text/javascript" src="assets/js/jquery.min.js?v=NMr3JZBT0U"></script>

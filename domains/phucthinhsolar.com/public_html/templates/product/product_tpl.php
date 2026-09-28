@@ -323,17 +323,20 @@
        kế, không dựng nội dung riêng cho từng danh mục. */
 ?>
 <?php if(!empty($productFeaturedProjects)) { ?>
-<section class="box-detail pts-related-showcase pts-product-projects pts-pdp-projects" aria-labelledby="pts-category-projects-title">
-    <div class="title-product-orther" id="pts-category-projects-title"><span>Dự án tiêu biểu đã triển khai</span></div>
-    <div class="pts-related-grid">
+<section class="box-detail pts-product-proof-section pts-related-showcase pts-product-projects pts-pdp-projects" aria-labelledby="pts-category-projects-title">
+    <header class="pts-product-proof-heading">
+        <h2 class="title-product-orther" id="pts-category-projects-title"><span>Dự án tiêu biểu đã triển khai</span></h2>
+        <a class="pts-product-proof-link" href="/du-an-da-thuc-hien/">Xem tất cả dự án <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+    </header>
+    <div class="pts-related-grid pts-product-project-grid pts-product-project-grid--<?=min(4, count($productFeaturedProjects))?>">
         <?php foreach($productFeaturedProjects as $featuredProject) { ?>
-            <a class="pts-related-card" href="<?=$featuredProject[$sluglang]?>" title="<?=$featuredProject['name'.$lang]?>">
+            <a class="pts-related-card" href="<?=htmlspecialchars($featuredProject[$sluglang], ENT_QUOTES, 'UTF-8')?>" title="<?=htmlspecialchars($featuredProject['name'.$lang], ENT_QUOTES, 'UTF-8')?>">
                 <span class="pts-project-media">
-                    <?=$func->getImage(['class' => 'w-100 pts-project-media-main', 'sizes' => '397x340x1', 'upload' => UPLOAD_NEWS_L, 'image' => $featuredProject['photo'], 'alt' => $featuredProject['name'.$lang]])?>
+                    <?=$func->getImage(['class' => 'w-100 pts-project-media-main', 'sizes' => '640x480x1', 'upload' => UPLOAD_NEWS_L, 'image' => $featuredProject['photo'], 'alt' => $featuredProject['name'.$lang]])?>
                 </span>
                 <span class="pts-related-card-body">
-                    <strong><?=$featuredProject['name'.$lang]?></strong>
-                    <?php if(!empty($featuredProject['address'])) { ?><small><i class="fas fa-map-marker-alt"></i> <?=$featuredProject['address']?></small><?php } ?>
+                    <strong><?=htmlspecialchars($featuredProject['name'.$lang], ENT_QUOTES, 'UTF-8')?></strong>
+                    <?php if(!empty($featuredProject['address'])) { ?><small><i class="fas fa-map-marker-alt" aria-hidden="true"></i> <?=htmlspecialchars($featuredProject['address'], ENT_QUOTES, 'UTF-8')?></small><?php } ?>
                 </span>
             </a>
         <?php } ?>
@@ -347,7 +350,7 @@
         <?php foreach($productWhyChooseUs as $whyChooseItem) { ?>
         <div class="pts-why-choose-item">
             <span class="pts-why-choose-icon"><?=$func->getImage(['class' => '', 'sizes' => '64x64x2', 'upload' => UPLOAD_NEWS_L, 'image' => $whyChooseItem['photo'], 'alt' => ''])?></span>
-            <strong><?=$whyChooseItem['name'.$lang]?></strong>
+            <strong><?=htmlspecialchars($whyChooseItem['name'.$lang], ENT_QUOTES, 'UTF-8')?></strong>
         </div>
         <?php } ?>
     </div>

@@ -731,20 +731,22 @@ else $pdpSupportLabel = 'Video sản phẩm';
     /* Admin chưa liên kết dự án nào với sản phẩm cụ thể (#_product_project
        đang rỗng 2026-09-28) thì rơi về danh sách "dự án tiêu biểu" chung,
        không ẩn hẳn section - tránh trang trắng trơn khi chưa kịp gắn dữ liệu. */
-    /* Giới hạn 3 để luôn lấp kín 1 hàng lưới 3 cột, tránh lẻ 1 card ở hàng
-       dưới trông vỡ bố cục (sếp báo 2026-09-28) - kể cả khi Admin lỡ gắn hơn
-       3 dự án cho cùng 1 sản phẩm. */
-    $pdpProjectsToShow = array_slice(!empty($productRelatedProjects) ? $productRelatedProjects : $productFeaturedProjects, 0, 3);
+    /* Tối đa 4 dự án để component giữ kích thước ảnh gọn trên desktop rộng;
+       mobile chuyển thành rail vuốt ngang do stylesheet dùng chung quản lý. */
+    $pdpProjectsToShow = array_slice(!empty($productRelatedProjects) ? $productRelatedProjects : $productFeaturedProjects, 0, 4);
     $pdpProjectsIsSpecific = !empty($productRelatedProjects);
 ?>
 <?php if(!empty($pdpProjectsToShow)) { ?>
-<div class="box-detail mg-top-30 pts-related-showcase pts-product-projects pts-pdp-projects">
-    <div class="title-product-orther"><span><?=$pdpProjectsIsSpecific ? 'Dự án thực tế sử dụng sản phẩm' : 'Dự án tiêu biểu đã triển khai'?></span></div>
-    <div class="pts-related-grid">
+<section class="box-detail pts-product-proof-section pts-related-showcase pts-product-projects pts-pdp-projects" aria-labelledby="pts-pdp-projects-title">
+    <header class="pts-product-proof-heading">
+        <h2 class="title-product-orther" id="pts-pdp-projects-title"><span><?=$pdpProjectsIsSpecific ? 'Dự án thực tế sử dụng sản phẩm' : 'Dự án tiêu biểu đã triển khai'?></span></h2>
+        <a class="pts-product-proof-link" href="/du-an-da-thuc-hien/">Xem tất cả dự án <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+    </header>
+    <div class="pts-related-grid pts-product-project-grid pts-product-project-grid--<?=min(4, count($pdpProjectsToShow))?>">
         <?php foreach($pdpProjectsToShow as $relatedProject) { ?>
-            <a class="pts-related-card" href="<?=$relatedProject[$sluglang]?>" title="<?=$relatedProject['name'.$lang]?>">
+            <a class="pts-related-card" href="<?=htmlspecialchars($relatedProject[$sluglang], ENT_QUOTES, 'UTF-8')?>" title="<?=htmlspecialchars($relatedProject['name'.$lang], ENT_QUOTES, 'UTF-8')?>">
                 <span class="pts-project-media">
-                    <?=$func->getImage(['class' => 'w-100 pts-project-media-main', 'sizes' => '397x340x1', 'upload' => UPLOAD_NEWS_L, 'image' => $relatedProject['photo'], 'alt' => $relatedProject['name'.$lang]])?>
+                    <?=$func->getImage(['class' => 'w-100 pts-project-media-main', 'sizes' => '640x480x1', 'upload' => UPLOAD_NEWS_L, 'image' => $relatedProject['photo'], 'alt' => $relatedProject['name'.$lang]])?>
                     <?php $relatedGallery = isset($productProjectGallery[(int)$relatedProject['id']]) ? array_slice($productProjectGallery[(int)$relatedProject['id']], 0, 3) : array(); ?>
                     <?php if($relatedGallery) { ?>
                         <span class="pts-project-media-thumbs" aria-label="Ảnh thực tế dự án">
@@ -755,13 +757,13 @@ else $pdpSupportLabel = 'Video sản phẩm';
                     <?php } ?>
                 </span>
                 <span class="pts-related-card-body">
-                    <strong><?=$relatedProject['name'.$lang]?></strong>
-                    <?php if(!empty($relatedProject['address'])) { ?><small><i class="fas fa-map-marker-alt"></i> <?=$relatedProject['address']?></small><?php } ?>
+                    <strong><?=htmlspecialchars($relatedProject['name'.$lang], ENT_QUOTES, 'UTF-8')?></strong>
+                    <?php if(!empty($relatedProject['address'])) { ?><small><i class="fas fa-map-marker-alt" aria-hidden="true"></i> <?=htmlspecialchars($relatedProject['address'], ENT_QUOTES, 'UTF-8')?></small><?php } ?>
                 </span>
             </a>
         <?php } ?>
     </div>
-</div>
+</section>
 <?php } ?>
 <?php if(!empty($product)) {?>
 <div class="box-detail mg-top-30 pts-pdp-related-products">
@@ -788,7 +790,7 @@ else $pdpSupportLabel = 'Video sản phẩm';
         <?php foreach($productWhyChooseUs as $whyChooseItem) { ?>
         <div class="pts-why-choose-item">
             <span class="pts-why-choose-icon"><?=$func->getImage(['class' => '', 'sizes' => '64x64x2', 'upload' => UPLOAD_NEWS_L, 'image' => $whyChooseItem['photo'], 'alt' => ''])?></span>
-            <strong><?=$whyChooseItem['name'.$lang]?></strong>
+            <strong><?=htmlspecialchars($whyChooseItem['name'.$lang], ENT_QUOTES, 'UTF-8')?></strong>
         </div>
         <?php } ?>
     </div>
