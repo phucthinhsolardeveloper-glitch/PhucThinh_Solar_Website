@@ -311,13 +311,25 @@ class PHPExcel_Reader_Excel2007 extends PHPExcel_Reader_Abstract implements PHPE
         //    so we need to load case-insensitively from the zip file
         
         // Apache POI fixes
-        $contents = $archive->getFromIndex(
-            $archive->locateName($fileName, ZIPARCHIVE::FL_NOCASE)
-        );
+        /* 2026-09-29: locateName() trả false khi không tìm thấy entry, nhưng
+           PHP 7.4 ép kiểu false -> 0 khi truyền thẳng vào getFromIndex() -
+           0 lại là MỘT INDEX HỢP LỆ (entry đầu tiên trong zip), nên đọc
+           nhầm sang file khác thay vì rơi xuống fallback bên dưới như ý định
+           gốc. Lỗi lộ ra khi workbook dùng relationship Target dạng tuyệt
+           đối "/xl/worksheets/sheetN.xml" (một số công cụ lưu lại từ Excel
+           tạo ra dạng này) - vòng "Root-relative paths" phía trên đã cắt
+           đúng thành "/xl/worksheets/sheetN.xml", nhưng lần dò tên ĐẦU TIÊN
+           (còn dấu "/" ở đầu) không khớp entry nào trong zip -> locateName
+           trả false -> đọc nhầm entry index 0 (vd docProps/app.xml) thay vì
+           rơi xuống fallback bỏ dấu "/" ở dòng dưới. Sếp phát hiện qua file
+           export bị Excel lưu lại rồi nhập lại báo thiếu cột dù ảnh chụp
+           màn hình rõ ràng có cột ID/Mã sản phẩm. */
+        $contents = false;
+        $index = $archive->locateName($fileName, ZIPARCHIVE::FL_NOCASE);
+        if ($index !== false) $contents = $archive->getFromIndex($index);
         if ($contents === false) {
-            $contents = $archive->getFromIndex(
-                $archive->locateName(substr($fileName, 1), ZIPARCHIVE::FL_NOCASE)
-            );
+            $index = $archive->locateName(substr($fileName, 1), ZIPARCHIVE::FL_NOCASE);
+            if ($index !== false) $contents = $archive->getFromIndex($index);
         }
 
         // PHPExcel 1.x only recognises Transitional OOXML namespaces. Some
@@ -945,6 +957,20 @@ class PHPExcel_Reader_Excel2007 extends PHPExcel_Reader_Abstract implements PHPE
                                         // Rich text?
                                         if ($value instanceof PHPExcel_RichText && $this->readDataOnly) {
                                             $value = $value->getPlainText();
+                                        }
+
+                                        /* 2026-09-29: ô trống khai báo t="n" (số) nhưng không có
+                                           <v> (vd <c r="G2" t="n"/>) đọc ra $value=null đúng, nhưng
+                                           PHPExcel_Cell::setValueExplicit() ép TYPE_NUMERIC bằng
+                                           (float)$pValue - (float)null = 0.0, biến ô trống thật
+                                           thành số 0 giả. File Excel do Excel lưu lại (không phải
+                                           bản xuất gốc của hệ thống) hay tạo ô kiểu này cho MỌI ô
+                                           trống, khiến toàn bộ cột rỗng trong file nhập lại đọc
+                                           thành chuỗi "0" - sếp phát hiện qua import báo lỗi hàng
+                                           loạt dù ảnh chụp file gốc trống thật. Bỏ qua gán giá trị
+                                           khi ô trống kiểu số, giữ đúng "không có giá trị". */
+                                        if ($value === null && $cellDataType === PHPExcel_Cell_DataType::TYPE_NUMERIC) {
+                                            $cellDataType = '';
                                         }
 
                                         $cell = $docSheet->getCell($r);
