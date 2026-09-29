@@ -189,10 +189,12 @@ deploy yêu cầu working tree sạch và `HEAD` khớp upstream.
 |---|---|
 | `SAFE` | PHP/API, cart/checkout, Admin, auth/RBAC, email, migration, Docker, script, global layout hoặc không chắc |
 | `FAST` | CSS, ảnh, chữ, responsive hoặc frontend có phạm vi hẹp |
+| `AUTO` | Để script tự chọn FAST/SAFE theo phạm vi thay đổi; dùng cho deploy thường ngày |
 
 ```bash
 ./scripts/deploy-production.sh --safe --confirm-production
 ./scripts/deploy-production.sh --fast --confirm-production
+./scripts/deploy-production.sh --auto --confirm-production
 ```
 
 Script tự làm: so Git với image active → test theo mode → package/checksum →
@@ -200,6 +202,10 @@ kiểm VPS → backup → upload → build image → healthcheck → clear cache
 preflight chỉ đọc → HTTP/Playwright production → log scan.
 
 Chi tiết output và rollback: [Deploy production cho chủ website](deploy-production-owner.md).
+
+Sau mỗi deploy phải cập nhật [nhật ký triển khai](deployment-log.md) với commit,
+image, mode, migration, backup, smoke test, log scan và rollback point. Docs là
+runbook và lịch sử vận hành; không chờ đến lúc dọn disk mới ghi lại.
 
 ### 5.2 Sau deploy tự kiểm bằng mắt
 
