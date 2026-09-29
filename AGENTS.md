@@ -14,6 +14,10 @@ Project được kế thừa. Không mặc định hành vi hiện có là chủ
 - Không xóa code/upload/cache/legacy asset trước khi xác minh.
 - Không đưa credential, token, password hash hoặc PII vào tài liệu/chat.
 - Không cleanup/refactor ngoài phạm vi task.
+- Sau mỗi production deploy, migration hoặc cleanup vận hành, phải cập nhật
+  `docs/06-operations/deployment-log.md` với commit/image, mode, backup,
+  migration, kiểm tra sau thay đổi và rollback point; nếu chỉ đổi tài liệu thì
+  ghi rõ `docs-only` và không rebuild runtime.
 - SQL mới phải parameterized; form mutation phải kiểm tra session/quyền và CSRF.
 - Upload phải kiểm tra extension, MIME, size, filename và lưu ở nơi không thực thi PHP.
 - Giữ URL/slug public trừ khi có kế hoạch redirect/SEO.
