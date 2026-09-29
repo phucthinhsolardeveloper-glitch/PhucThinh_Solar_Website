@@ -57,6 +57,27 @@ Không cần gửi toàn bộ docs Phúc Thịnh Solar. Những file như
 `vps-operations.md`, `deployment-log.md` và `owner-system-handbook.md` chỉ nên
 dùng làm **mẫu cấu trúc**, sau đó viết lại theo hạ tầng và dữ liệu của CRM.
 
+## GitHub và quyền push
+
+Remote của repo này là SSH:
+
+```text
+git@github.com:phucthinhsolardeveloper-glitch/PhucThinh_Solar_Website.git
+```
+
+Quyền push đến từ SSH key của môi trường làm việc, không nằm trong source và
+không được chép vào docs/chat. Khi một cửa sổ Codex khác không push được, kiểm
+tra ba thứ: `git remote -v`, SSH key/agent của chính môi trường đó và quyền của
+tài khoản GitHub trên repo. Nếu máy có file SSH system config lỗi quyền, thử
+command-scoped config (không ghi secret vào repo):
+
+```bash
+GIT_SSH_COMMAND='/usr/bin/ssh -F /dev/null' git push origin <branch>
+```
+
+Không mặc định đổi remote sang HTTPS hoặc chia sẻ token giữa các cửa sổ. Nếu
+DNS/network hoặc key chưa có quyền, báo đúng blocker thay vì retry vòng lặp.
+
 ## Prompt khởi tạo ngắn
 
 ```text
