@@ -48,7 +48,7 @@ email; xem [cutover-dns-va-host-cu.md](cutover-dns-va-host-cu.md).
 │                          restore-initial, export-runtime-images
 ├── systemd/               2 service + 2 timer backup
 ├── releases/<commit>/     release đã giải nén: public_html + migrations + scripts + docs
-├── incoming/              gói release và gói migration mới tải lên
+├── incoming/              gói release/migration đang chờ kiểm checksum và triển khai
 ├── shared/                DỮ LIỆU SỐNG, mount vào container
 │   ├── upload/            1.126 file / 852 MB  ← KHÔNG TÁI TẠO ĐƯỢC
 │   ├── thumbs/            sinh lại được
@@ -57,7 +57,7 @@ email; xem [cutover-dns-va-host-cu.md](cutover-dns-va-host-cu.md).
 │   ├── watermark/         sinh lại được
 │   └── logs/
 ├── state/                 thư mục tạm của script restore
-└── backups/               [0700] bản backup local
+└── backups/               [0700] 1–2 full backup ứng dụng gần nhất
 ```
 
 Nguyên tắc: **`shared/upload` và DB là thứ duy nhất không tái tạo được.** Mọi
@@ -171,22 +171,37 @@ ls -lh /srv/phucthinhsolar/backups/
 
 Mỗi bản backup có `MANIFEST.txt` và checksum; script tự verify sau khi tạo.
 
-Ngày 2026-09-20 VPS giữ hai full backup gần nhất
-`20260919T193835Z-full` và `20260920T082429Z-full`; cả hai được script backup
-xác minh checksum khi tạo. Ba full backup cũ ngày 17–18/09 đã xóa khỏi VPS để
-giảm khoảng 2 GB. Bản từng diễn tập restore ngày 17/09 chỉ còn có thể dùng nếu
-bản sao ngoài VPS vẫn tồn tại và vượt checksum; không mặc định nó còn sẵn sàng.
+Tại lần rà soát ngày 2026-09-29, VPS giữ đúng hai full backup ứng dụng gần nhất:
+`20260929T013137Z-full` và `20260929T012822Z-full`; cả hai đã được script backup
+xác minh checksum khi tạo. Các bản cũ hơn đã được dọn theo chính sách lưu giữ.
 
-**Cảnh báo đang hiện và chưa xử lý:**
+**Phân biệt các lớp backup:**
 
 ```text
-WARN: chưa có /usr/local/sbin/pts-backup-offsite; backup hiện chỉ nằm trên VPS.
+WARN: chưa có /usr/local/sbin/pts-backup-offsite; script ứng dụng chưa có uploader riêng.
 ```
 
-Backup nằm cùng máy với dữ liệu thì **không phải backup** trước sự cố mất máy.
-Phải tạo `/usr/local/sbin/pts-backup-offsite` đẩy sang S3/Object Storage/rclone
-(mã hoá) **ở nhà cung cấp khác**. Snapshot tự động của CloudFly cũng cùng nhà
-cung cấp, không thay được bản sao độc lập.
+CloudFly backup/snapshot là lớp khôi phục toàn VPS do nhà cung cấp quản lý, nằm
+ngoài `/srv/phucthinhsolar/backups`; không cần dọn cùng thư mục backup ứng dụng.
+Backup ứng dụng vẫn giữ DB + `shared/upload` để phục hồi chọn lọc. Uploader
+off-site độc lập (S3/Object Storage/rclone mã hoá) là lớp phòng vệ bổ sung, không
+phải điều kiện chặn deploy khi CloudFly backup đang hoạt động.
+
+### Chính sách lưu giữ và dọn an toàn
+
+- `backups/`: chỉ giữ 1–2 bản `*-full` gần nhất đã kiểm checksum; không xóa bản
+  mới nhất hoặc bản đang được restore-check.
+- `incoming/`: chỉ là vùng staging. Sau khi checksum, deploy và smoke test thành
+  công, có thể xóa archive/migration cũ; giữ gói hiện tại và tối đa một gói
+  rollback nếu còn cần.
+- `releases/`: giữ release đang chạy, release trước đó (theo
+  `state/current-image`/`state/previous-image`) và tối đa một release rollback
+  thêm. Không xóa release đang được symlink hoặc container tham chiếu.
+- `shared/upload/`: dữ liệu sống, không xóa. `thumbs/`, `caches/`, `logs/` và
+  `assets-caches/` có thể tái tạo hoặc dọn theo runbook sau khi kiểm tra.
+- Docker build cache có thể kiểm tra bằng `docker system df` rồi dọn bằng
+  `docker builder prune -af`. Với image, chỉ dọn sau khi xác định current,
+  previous và một rollback candidate; không dùng `docker system prune -a --volumes`.
 
 Mỗi tháng: tải một bản off-site về và chạy
 `./scripts/restore-check.sh /duong/dan/backup`. Backup chưa từng restore thử

@@ -116,7 +116,21 @@ Các file nguồn nằm ở `deploy/vps/scripts/`, bản cài chạy tại
 | `restore-initial.sh` | DESTRUCTIVE-GUARDED initial restore | Chỉ DB/upload rỗng + token `INITIAL_EMPTY_DATABASE` |
 | `export-runtime-images.sh` | Tạo archive Docker images | Phải copy off-site |
 
-## 8. Script không thay thế quyết định con người
+## 8. Chính sách lưu giữ và dọn tài nguyên
+
+- Backup ứng dụng: giữ 1–2 bản `*-full` gần nhất, có checksum và restore-check
+  khi cần; không xóa bản đang dùng cho rollback.
+- Release: giữ current, previous và tối đa một rollback candidate. `incoming/`
+  là staging, chỉ giữ gói hiện tại và tối đa một gói trước đó sau khi triển khai
+  thành công.
+- Docker: kiểm tra `docker system df` trước khi dọn. `docker builder prune -af`
+  chỉ dọn build cache không dùng; image chỉ được dọn sau khi đối chiếu
+  `state/current-image`, `state/previous-image` và container đang chạy. Không
+  dùng `docker system prune -a --volumes` trong production.
+- `shared/upload` là dữ liệu sống, không dọn; thumbs/cache/logs chỉ dọn theo
+  runbook và sau khi xác minh có thể tái tạo.
+
+## 9. Script không thay thế quyết định con người
 
 Không script nào được hiểu là quyền tự động để:
 

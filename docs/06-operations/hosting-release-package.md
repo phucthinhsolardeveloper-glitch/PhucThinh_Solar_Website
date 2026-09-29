@@ -51,3 +51,13 @@ sản phẩm theo `code`, không theo ID của DB local.
 ## Rollback
 
 Triển khai lại archive release trước có checksum đã lưu. Không tự động rollback database: chỉ phục hồi từ backup pre-deploy đã kiểm chứng nếu release thực sự thay đổi schema/data và việc hoàn nguyên đã được đánh giá. Giữ nguyên upload phát sinh sau cutover, trừ khi có kế hoạch đối soát riêng.
+
+## Chính sách lưu giữ release và backup
+
+- Giữ 1–2 full backup ứng dụng gần nhất, đã kiểm checksum; backup CloudFly là
+  lớp snapshot VPS riêng do nhà cung cấp quản lý.
+- Trên VPS, giữ release hiện tại, release trước đó và tối đa một release rollback
+  thêm. `incoming/` chỉ là staging và có thể dọn archive cũ sau khi deploy,
+  smoke test và checksum đã hoàn tất.
+- Không xóa `shared/upload` hoặc dữ liệu runtime đang được mount. Chỉ dọn
+  thumbnail/cache/log khi đã kiểm tra chúng có thể tái tạo theo runbook.
