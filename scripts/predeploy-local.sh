@@ -61,8 +61,8 @@ assert_js_shipped() {
     fi
 }
 
-# ripgrep không có trên máy deploy (trong Claude Code nó chỉ là shell function
-# của phiên tương tác, script non-interactive không thấy). Mọi guard phải dùng
+# ripgrep không được giả định có trên máy deploy; script non-interactive phải
+# dùng công cụ POSIX có sẵn. Mọi guard phải dùng
 # grep, nếu không script chết giữa chừng và assertion phía sau không chạy.
 if grep -n '^\s*rg -q' scripts/*.sh; then
     echo "FAIL: Script deploy còn dùng ripgrep; chuyển sang grep -qF/-qE" >&2

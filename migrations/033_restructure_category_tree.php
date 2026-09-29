@@ -1,7 +1,7 @@
 <?php
 /**
  * Tái cấu trúc cây danh mục sản phẩm (12 -> 10 danh mục cấp 1, +25 danh mục
- * cấp 2) theo audit ChatGPT Plus ngày 2026-09-08, đã áp dụng và kiểm chứng
+ * cấp 2) theo mapping đã được kiểm chứng ngày 2026-09-08, đã áp dụng và kiểm chứng
  * trên local (:8080) và demo (:8081) trong cùng ngày. Migration này đưa đúng
  * thay đổi đó lên production theo chuẩn dry-run/--apply của dự án, vì production
  * chưa nhận các thay đổi local trong repository (xem runbook 2026-09-06).
@@ -61,7 +61,7 @@ $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 $p = $config['database']['prefix'];
 $type = 'san-pham';
 
-/* ---- dữ liệu nguồn (từ audit ChatGPT Plus 2026-09-08, Mapping405) ---- */
+/* ---- dữ liệu nguồn (mapping đã kiểm chứng ngày 2026-09-08) ---- */
 
 $l1Renames = array(
 	array('Hệ thống khung nhôm', 'Hệ khung & phụ kiện tấm pin'),
