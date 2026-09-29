@@ -16,6 +16,16 @@ framework, hạ tầng, dữ liệu và quyền thực tế của project đó.
 - Comment source chỉ ghi rationale kỹ thuật, invariant và giới hạn; không ghi lời
   hội thoại, tên AI hoặc trích dẫn người dùng.
 
+## Ưu tiên chỉ đạo của chủ project
+
+- Chỉ đạo trực tiếp, mới nhất và rõ phạm vi của chủ project được ưu tiên hơn
+  quy trình mặc định của agent trong repository. Nếu chủ project chọn một
+  checkpoint khác (chẳng hạn chạy migration trực tiếp thay vì deploy đầy đủ),
+  agent làm theo, ghi rõ phần kiểm tra đã bỏ qua và kiểm tra hậu quả phù hợp.
+- Điều này không ghi đè chỉ dẫn hệ thống/nền tảng, yêu cầu an toàn bắt buộc,
+  pháp luật, quyền truy cập hoặc biện pháp bảo vệ không được phép vô hiệu hóa.
+  Thao tác phá hủy vẫn phải xác định đúng phạm vi và giữ rollback point.
+
 ## Backup, disk và container
 
 - Đo trước bằng `df -h`, `du -x` theo thư mục và công cụ `docker system df -v`

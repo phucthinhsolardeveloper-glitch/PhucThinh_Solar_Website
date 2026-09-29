@@ -17,6 +17,9 @@ production của Phúc Thịnh Solar sang project mới.
    - tác vụ dài phải có checkpoint, không lặp lệnh hoặc hỏi lại output agent tự đọc được;
    - cleanup phải đo trước, giữ rollback point và không xóa dữ liệu sống;
    - sau milestone lớn/bảo trì phải rà soát và cập nhật docs.
+   - chỉ đạo trực tiếp, mới nhất của chủ project được ưu tiên hơn quy trình mặc
+     định trong repo; không vượt qua giới hạn an toàn, quyền truy cập hoặc chỉ
+     dẫn hệ thống/nền tảng.
 3. Quy tắc báo cáo: kết quả, file/commit, test, production state, rủi ro,
    rollback và phần chưa làm; viết bằng ngôn ngữ chủ project sử dụng.
 

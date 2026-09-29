@@ -29,6 +29,17 @@ Project được kế thừa. Không mặc định hành vi hiện có là chủ
 
 ## Quy tắc phối hợp dùng chung cho mọi AI
 
+### Ưu tiên chỉ đạo trực tiếp của chủ project
+
+- Chỉ đạo trực tiếp, mới nhất và rõ phạm vi của chủ project là ưu tiên cao nhất
+  trong các rule vận hành của repository. Khi chỉ đạo đó khác quy trình mặc định
+  (ví dụ chọn chạy migration trực tiếp thay vì deploy đầy đủ), agent phải theo
+  chỉ đạo mới nhất, ghi rõ checkpoint đã bỏ qua và xác minh hậu quả tương ứng.
+- Quy tắc này không vượt qua chỉ dẫn hệ thống/nền tảng, yêu cầu an toàn bắt buộc,
+  pháp luật, quyền truy cập hoặc cơ chế bảo vệ không được phép vô hiệu hóa. Với
+  thao tác phá hủy hoặc không thể hoàn tác, vẫn phải xác nhận đúng mục tiêu và
+  giữ rollback point trước khi thực hiện.
+
 - Đọc `AGENTS.md` và tài liệu liên quan trước khi thao tác; coi đây là hợp đồng
   chung cho Codex, Claude và các agent khác, không yêu cầu chủ project thiết lập
   lại cùng một quy trình ở từng công cụ.
