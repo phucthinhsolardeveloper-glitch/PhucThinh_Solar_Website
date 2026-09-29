@@ -113,6 +113,12 @@
 .pts-pdp-v2 .title-product-orther>span:after,.pts-pdp-v2 .title-product-orther>span:before{display:none!important}
 .pts-pdp-v2 .pts-pdp-related-products .product-card{height:100%}
 .pts-pdp-v2 .pts-pdp-related-products .product-card-img{background:#f7f9fb!important}
+/* 2026-09-29: nút nổi góc ảnh vẫn giữ đúng vị trí/kiểu tròn như thiết kế gốc,
+   chỉ kéo rộng ra đủ hiện thêm chữ cạnh icon thay vì chỉ icon (sếp yêu cầu -
+   chỉ áp dụng khối "Sản phẩm liên quan" PDP, không đổi nơi khác). */
+.pts-pdp-v2 .pts-pdp-related-products .pts-card-add,
+.pts-pdp-v2 .pts-pdp-related-products .pts-card-ask{width:auto!important;padding:0 16px!important;gap:8px;border-radius:999px!important;}
+.pts-pdp-v2 .pts-pdp-related-products .pts-card-action-label{display:inline!important}
 .pts-pdp-v2 .control-pro-detail2 .owl-prev,.pts-pdp-v2 .control-pro-detail2 .owl-next{border-radius:3px!important;box-shadow:0 8px 22px rgba(6,21,55,.12)!important}
 
 @media(max-width:1200px){
