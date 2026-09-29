@@ -44,3 +44,6 @@ và liên kết về runbook đang có hiệu lực.
   không phải thiết lập lại quy trình.
 - Rà soát comment source: loại bỏ lời hội thoại, câu trích dẫn và cách kể lại
   phản hồi cá nhân; giữ lại rationale kỹ thuật, invariant và mốc kiểm chứng.
+- Thêm tài liệu bàn giao quy trình cho AI ở project khác tại
+  `docs/12-ai/codex-project-handoff.md`; phân biệt rõ rule có thể chia sẻ với
+  skill phụ thuộc môi trường.

@@ -17,6 +17,7 @@
 - `06-operations/owner-system-handbook.md`: sổ tay end-to-end cho chủ website: local, script, deploy, dựng/cứu VPS.
 - `06-operations/deploy-production-owner.md`: deploy production AUTO/SAFE/FAST một lệnh và rollback cho chủ website.
 - `06-operations/documentation-maintenance.md`: lịch rà soát, bảo trì và lịch sử cập nhật tài liệu.
+- `12-ai/codex-project-handoff.md`: gói bàn giao rule/workflow cho Codex ở project khác.
 - `06-operations/cutover-dns-va-host-cu.md`: hướng dẫn từng bước đổi DNS và xử lý host cũ, kèm rủi ro SMTP.
 
 ## Theo thư mục
