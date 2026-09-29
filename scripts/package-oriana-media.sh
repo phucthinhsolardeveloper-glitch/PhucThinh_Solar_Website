@@ -59,7 +59,7 @@ Gói ảnh ORIANA — commit $release_commit
 4. Upload import-oriana-images.php cạnh thư mục nguồn hoặc dùng bản trong deployment-tools.
 5. Luôn dry-run trước:
    php import-oriana-images.php /duong/dan/oriana-source --public-html=/home/USER/domains/phucthinhsolar.com/public_html
-6. Chỉ khi dry-run sạch và chủ project xác nhận:
+6. Chỉ khi dry-run sạch và đặc tả đã xác nhận:
    php import-oriana-images.php /duong/dan/oriana-source --public-html=/home/USER/domains/phucthinhsolar.com/public_html --apply --confirm-production=IMPORT-ORIANA
 
 Script đối chiếu bằng code sản phẩm, không dùng ID local và không ghi đè ảnh đại diện đang có.

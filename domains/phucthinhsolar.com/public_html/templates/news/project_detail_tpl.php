@@ -117,7 +117,7 @@
 </section>
 <?php } ?>
 
-<?php /* Dự án khác cùng danh mục (2026-09-16). Chủ project: trang chi tiết nên
+<?php /* Dự án khác cùng danh mục (2026-09-16). Quy tắc UX: trang chi tiết nên
          có khối "dự án tương tự" như trang bài viết đã có "Tin liên quan".
 
          Chọn "cùng danh mục" thay vì "đã xem": đúng ngữ cảnh hơn (khách xem dự

@@ -1,6 +1,6 @@
 <?php
 /**
- * Nhập bộ Markdown Giải pháp đã được chủ project cung cấp vào DB local.
+ * Nhập bộ Markdown Giải pháp đã được nguồn dữ liệu đã phê duyệt vào DB local.
  *
  * Mặc định chỉ preview. Chỉ --apply mới ghi; toàn bộ thay đổi dùng transaction.
  * Script không tải ảnh, không đụng production và không xoá nhóm/URL legacy.

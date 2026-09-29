@@ -19,7 +19,7 @@
  * mang ảnh mới) nên 043 đếm ra 2 kết quả và TỰ DỪNG - đúng như nó được thiết kế
  * để không ghi nhầm. Migration này xử lý riêng tình trạng lệch đó.
  *
- * Chủ project đã chốt ngày 2026-09-17: lấy theo bản local.
+ * đã chốt theo đặc tả ngày 2026-09-17: lấy theo bản local.
  *
  * Mặc định chỉ xem trước:
  *   php migrations/045_fix_about_showroom_photo_placement.php

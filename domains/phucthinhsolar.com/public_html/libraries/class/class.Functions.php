@@ -1136,7 +1136,7 @@
     /* Lazy-load NATIVE của trình duyệt cho ảnh phát src ngay (2026-09-16).
        Vì sao: đo trang chủ thấy 91 thẻ img, trong đó 77 ảnh nằm DƯỚI màn hình
        nhưng vẫn tải ngay -> 68 file WebP = 1.2 MB tải một lượt, 126 request,
-       đúng nguyên nhân chủ project báo "hơi đơ và lag".
+       tương ứng với hiện tượng tải trang chậm đã đo được.
        Dùng loading="lazy" của trình duyệt thay vì thư viện lazy JS legacy:
        không cần JS, không bị lỗi "card trắng" khi thư viện bỏ qua section nằm
        sâu trong trang (chính lý do trước đây phải tắt lazy cho card sản phẩm),

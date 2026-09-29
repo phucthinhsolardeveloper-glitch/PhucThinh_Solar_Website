@@ -13,8 +13,8 @@
  * sang đường dẫn mới vào #_url_redirect — đúng cơ chế Admin dùng khi đổi slug,
  * đã kiểm chứng router trả 301. Không có URL nào bị mất.
  *
- * Slug ngắn gọn nhưng vẫn đúng chủ đề được liệt kê để chủ project tự quyết,
- * script không tự đổi. Các slug chủ project đã duyệt đổi được liệt kê trong
+ * Slug ngắn gọn nhưng vẫn đúng chủ đề được liệt kê để cần phê duyệt thủ công,
+ * script không tự đổi. Các slug đã được phê duyệt đổi được liệt kê trong
  * $approvedRenames bên dưới và xử lý y hệt nhánh sai hẳn (kèm 301).
  *
  * BACKUP DB trước khi chạy --apply.
@@ -70,7 +70,7 @@ foreach($pdo->query("select slugvi from {$p}product_list") as $r) $existingSlugs
 foreach($pdo->query("select slugvi from {$p}product_cat") as $r) $existingSlugs[$r['slugvi']] = true;
 foreach($pdo->query("select slugvi from {$p}product") as $r) $existingSlugs[$r['slugvi']] = true;
 
-/* Slug tuy vẫn đúng chủ đề nhưng chủ project đã duyệt đổi cho rõ nghĩa hơn.
+/* Slug tuy vẫn đúng chủ đề nhưng đã được phê duyệt đổi cho rõ nghĩa hơn.
    Khoá theo slug hiện tại để chạy được trên mọi môi trường và không đổi nhầm
    nếu danh mục đó đã được sửa từ trước. */
 $approvedRenames = array(
@@ -102,7 +102,7 @@ foreach($rows as $row)
 	while(isset($existingSlugs[$newSlug]) && $newSlug !== $current) { $suffix++; $newSlug = $expected.'-'.$suffix; }
 	$existingSlugs[$newSlug] = true;
 
-	printf("  #%-3d %s%s\n", $row['id'], $row['namevi'], $approved ? '  [chủ project duyệt]' : '');
+	printf("  #%-3d %s%s\n", $row['id'], $row['namevi'], $approved ? '  [đã được phê duyệt]' : '');
 	printf("       slug  %s  ->  %s\n", $current, $newSlug);
 	printf("       301   danh-muc-san-pham/%s  ->  danh-muc-san-pham/%s/\n", $current, $newSlug);
 	if($apply)
@@ -117,7 +117,7 @@ echo "\n---\n";
 echo "Danh mục cấp 1        : ".count($rows)."\n";
 echo "  slug đã khớp tên    : {$ok}\n";
 echo "  slug sai hẳn, đã sửa: {$changed}\n";
-echo "  slug ngắn gọn, giữ nguyên (chủ project tự quyết): ".count($partial)."\n";
+echo "  slug ngắn gọn, giữ nguyên (cần phê duyệt thủ công): ".count($partial)."\n";
 foreach($partial as $row) printf("     #%-3d %-34s slug=%-38s gợi ý=%s\n", $row[0], $row[1], $row[2], $row[3]);
 /* Menu/danh mục công khai đọc qua cache file 2 giờ; ghi thẳng DB không tự dọn
    nên phải xoá cache, nếu không menu vẫn trỏ slug cũ cho tới khi cache hết hạn. */

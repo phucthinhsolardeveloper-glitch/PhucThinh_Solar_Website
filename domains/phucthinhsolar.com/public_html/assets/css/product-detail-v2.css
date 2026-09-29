@@ -364,7 +364,7 @@
      thanh cuộn ngang và cắt mất cột "Thông tin sản phẩm". Bỏ min-width, đồng
      thời đổi 50/50 thành lệch tỉ lệ: nhãn ("Hạng mục") thường ngắn 1-2 từ nên
      thừa chỗ ở 50%, còn giá trị thường dài (kích thước, thông số, vật liệu)
-     nên bị bóp hẹp — đúng bất cập chủ project chỉ ra. */
+     nên bị bóp hẹp — đúng bất cập audit UX xác định. */
   .pts-pdp-v2 .pts-pdp-spec-section .table{min-width:0}
   .pts-pdp-v2 .pts-pdp-spec-section .table th,.pts-pdp-v2 .pts-pdp-spec-section .table td{width:auto!important;padding:11px 12px!important}
   .pts-pdp-v2 .pts-pdp-spec-section .table tr>:first-child{width:38%!important}

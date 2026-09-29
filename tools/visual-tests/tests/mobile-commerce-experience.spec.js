@@ -35,7 +35,7 @@ test('mobile product names clamp to three lines with a fixed card height', async
 
 test('mobile hides the language switcher entirely (desktop keeps it)', async ({ page, isMobile }) => {
   test.skip(!isMobile, 'Chủ ý ẩn công tắc ngôn ngữ chỉ áp dụng cho mobile.');
-  /* 2026-09-22: chủ project chủ ý ẩn hoàn toàn chức năng đổi ngôn ngữ trên
+  /* 2026-09-22: quyết định sản phẩm là ẩn hoàn toàn chức năng đổi ngôn ngữ trên
      mobile (cả header lẫn drawer mmenu), không phải bug. Test trước kiểm tra
      hành vi ngược lại (mong đợi thấy được và đổi được ngôn ngữ); cập nhật
      theo đúng chủ ý đã xác nhận. */

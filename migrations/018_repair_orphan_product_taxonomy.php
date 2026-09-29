@@ -11,7 +11,7 @@
  *     đã được phân loại thống nhất;
  *   - sản phẩm trỏ tới danh mục đã bị xoá, trong khi có danh mục cùng cấp khớp
  *     tên sản phẩm và đang chứa sản phẩm tương tự.
- * Trường hợp mơ hồ sẽ được liệt kê để chủ project tự quyết, không tự đoán.
+ * Trường hợp mơ hồ sẽ được liệt kê để cần phê duyệt thủ công, không tự đoán.
  *
  * BACKUP DB trước khi chạy --apply. Rollback: khôi phục từ backup, hoặc đặt lại
  * thủ công id_list/id_cat/id_brand theo giá trị "cũ" in ra ở bảng dưới.

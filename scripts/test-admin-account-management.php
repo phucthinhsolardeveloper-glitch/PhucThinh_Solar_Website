@@ -2,10 +2,10 @@
 /**
  * Kiểm thử tab quản trị "Nhóm quyền" và "Tài khoản admin" qua HTTP thật.
  *
- * Đây là màn hình chủ project dùng để tự cấp tài khoản cho nhân viên và tự chọn
+ * Đây là màn hình chủ tài khoản dùng để tự cấp tài khoản cho nhân viên và tự chọn
  * nhóm đó được làm những gì. Sau khi siết cổng phân quyền (chỉ role 3 vào được
  * khu vực này), cần chứng minh chính role 3 vẫn làm trọn được việc, chứ không
- * phải siết xong rồi chủ project cũng không vào nổi.
+ * phải siết xong rồi người quản trị cũng không thể truy cập.
  *
  * Đi hết vòng: tạo nhóm quyền -> gán quyền cho nhóm -> tạo tài khoản nhân viên
  * gắn vào nhóm -> đăng nhập bằng tài khoản đó -> xác nhận vào được đúng màn
@@ -93,7 +93,7 @@ register_shutdown_function(function () use (&$ownerId, $d, $suffix) {
     }
 });
 
-/* Chủ project: role 3. */
+/* Tài khoản owner: role 3. */
 $d->insert('user', array(
     'id_permission' => 0, 'username' => $ownerName,
     'password' => $func->encryptPassword($config['website']['secret'], $password, $config['website']['salt']),
@@ -103,16 +103,16 @@ $d->insert('user', array(
 $ownerId = (int)$d->getLastInsertId();
 
 $owner = login($base, $ownerName, $password);
-ok($owner !== '', 'Chủ project (role 3) đăng nhập được');
+ok($owner !== '', 'Tài khoản owner (role 3) đăng nhập được');
 if ($owner === '') { echo 'Không đăng nhập được, dừng.', PHP_EOL; exit(1); }
 
 /* 1. Vào được khu vực quản trị tài khoản. */
 $groupList = request($base.'index.php?com=user&act=permission_group', $owner);
 ok($groupList['status'] === 200 && stripos($groupList['body'], 'không có quyền') === false,
-   'Chủ project mở được màn hình Nhóm quyền');
+   'Tài khoản owner mở được màn hình Nhóm quyền');
 $adminList = request($base.'index.php?com=user&act=man_admin', $owner);
 ok($adminList['status'] === 200 && stripos($adminList['body'], 'không có quyền') === false,
-   'Chủ project mở được màn hình Tài khoản admin');
+   'Tài khoản owner mở được màn hình Tài khoản admin');
 
 /* 2. Tạo nhóm quyền mới, cấp đúng một quyền. */
 $addGroup = request($base.'index.php?com=user&act=add_permission_group', $owner);
@@ -205,7 +205,7 @@ else if (!empty($staffRow['id']))
            'Nhân viên KHÔNG vào được khu vực quản lý tài khoản');
     }
 
-    /* 5. Chủ project cấp thêm quyền -> nhân viên dùng được ngay. */
+    /* 5. Cấp thêm quyền cho nhóm -> nhân viên dùng được ngay. */
     $editGroup = request($base.'index.php?com=user&act=edit_permission_group&id='.$groupId, $owner);
     preg_match('/name="admin_csrf"\s+value="([^"]+)"/', $editGroup['body'], $editCsrf);
     request($base.'index.php?com=user&act=save_permission_group&id='.$groupId, $owner, array(
@@ -218,7 +218,7 @@ else if (!empty($staffRow['id']))
     $grantedAfter = array();
     foreach ($d->rawQuery('select permission from #_permission where id_permission_group = ?', array($groupId)) as $row)
         $grantedAfter[] = $row['permission'];
-    ok(in_array('news_man_tin-tuc', $grantedAfter, true), 'Chủ project cấp thêm được quyền cho nhóm');
+    ok(in_array('news_man_tin-tuc', $grantedAfter, true), 'Tài khoản owner cấp thêm được quyền cho nhóm');
 
     $staffAgain = login($base, $staffName, $staffPassword);
     if ($staffAgain !== '')

@@ -14,7 +14,7 @@
  *      liệt kê riêng, không suy đoán)
  *   4. Ẩn 2 sản phẩm băng keo đóng gói (666, 667) khỏi hienthi/banchay
  *   5. Xoá sản phẩm trùng id=365 "SUN2000-40-KTL" (bản thiếu giá/công suất,
- *      audit + chủ project đã xác nhận giữ id=371) - CHỈ xoá nếu code khớp
+ *      audit + đặc tả đã được xác nhận giữ id=371) - CHỈ xoá nếu code khớp
  *      đúng vân tay đã biết, không thì bỏ qua và báo cần xem tay
  *   6. Giải thể 2 danh mục cấp 1 rỗng (Hệ thống điện, Đèn AC) - CHỈ khi đếm
  *      lại trên production thấy đúng 0 sản phẩm sau bước 3

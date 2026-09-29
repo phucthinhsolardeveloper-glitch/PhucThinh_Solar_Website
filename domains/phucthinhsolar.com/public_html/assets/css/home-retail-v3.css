@@ -14,7 +14,7 @@ body.home .wrap-home .section-title h3:after{display:none!important;content:none
 .pts-retail-text-link:hover i{transform:translateX(3px)}
 
 /* Ba banner tạo nhịp chiến dịch giống một showroom, không dùng ảnh hardcode.
-   2026-09-15: bỏ nền xám/gradient trang trí theo yêu cầu chủ project - nền
+   2026-09-15: bỏ nền xám/gradient trang trí theo đặc tả đã phê duyệt - nền
    trắng đồng nhất toàn trang, nội dung/ảnh tự tạo nhịp, không cần đổi màu nền. */
 .pts-retail-campaigns{position:relative;background:#fff!important}
 .pts-retail-campaigns>.uk-container{position:relative}

@@ -14,7 +14,7 @@
  * KHÔNG kiểm tra khu vực tài khoản khách (/account/...): route đó bị route tổng
  * quát '[a:sub]/[a:com]' trong libraries/router.php chặn trước nên không bao giờ
  * tới nơi, và site cũng không có link nào trỏ tới. Đây là tính năng chưa dùng,
- * bật lên là quyết định của chủ project chứ không phải việc của test.
+ * bật lên là cấu hình sản phẩm, không phải trách nhiệm của test.
  *
  * Mọi dữ liệu test mang tiền tố LEADTEST/REVIEWTEST và được dọn ở cuối.
  *

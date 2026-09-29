@@ -37,7 +37,7 @@ test('Solution hub supports choices, equipment and consultation without layout e
   });
   if(testInfo.project.name.includes('mobile')) {
     expect(choiceLayout.scrollWidth).toBeGreaterThan(choiceLayout.clientWidth);
-    /* Yêu cầu chủ project 2026-09-16: landing dùng CHUNG kiểu mục lục với bài
+    /* Quy tắc UX 2026-09-16: landing dùng CHUNG kiểu mục lục với bài
        chi tiết, nên mục lục hiện cả trên mobile (trước đây bị ẩn). Vẫn phải bị
        giới hạn chiều cao + tự cuộn để không đẩy nội dung xuống quá sâu. */
     const landingToc = hub.locator('.pts-sh-editorial-grid > .pts-sd-toc');

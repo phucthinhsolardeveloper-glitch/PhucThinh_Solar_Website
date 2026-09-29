@@ -2,8 +2,8 @@
    DESIGN TOKENS — nguồn sự thật duy nhất cho bảng màu và chip lọc
    Tạo 2026-09-16.
 
-   VÌ SAO CẦN: chủ project phản hồi website "ngôn ngữ thiết kế chưa liền mạch,
-   cứ lệch lệch, thiếu thiếu cái gì đó". Đo lại thì đúng và có gốc rễ rõ ràng:
+   VÌ SAO CẦN: audit giao diện cho thấy ngôn ngữ thiết kế chưa liền mạch. Đo lại
+   thì đúng và có gốc rễ rõ ràng:
    mỗi trang hub tự định nghĩa bảng màu RIÊNG thay vì dùng chung một bộ, nên
    cùng một vai trò màu có tới 4 giá trị khác nhau:
 
@@ -44,8 +44,8 @@
   --pts-cream:#fffbeb;
 
   /* Chip lọc/chuyển mục: trung tính xám-xanh, KHÔNG dùng vàng kem cho trạng
-     thái chưa chọn (chủ project 2026-09-16: "mấy nút có cái màu này là tôi
-     không ưng"). Vàng được giữ riêng cho hành động chính và điểm nhấn, nếu
+     thái chưa chọn (audit 2026-09-16 xác định màu vàng làm mất thứ bậc). Vàng
+     được giữ riêng cho hành động chính và điểm nhấn, nếu
      đem dùng cho cả chip chưa chọn thì mất hết thứ bậc thị giác. */
   --pts-chip-bg:#eef2f7;
   --pts-chip-bg-hover:#dfe6ef;
@@ -194,7 +194,7 @@ body{font-family:var(--pts-font)!important;}
    TRANG CHI TIẾT SẢN PHẨM — trang quyết định chuyển đổi cao nhất nhưng bị
    bỏ sót khỏi đợt đồng bộ. Đo trực tiếp 2026-09-16 cho thấy vẫn dùng ngôn
    ngữ cũ:
-     - khối giá: nền cream #fffbeb (chính màu chủ project không ưng), bo 12px
+     - khối giá: nền cream #fffbeb (chính màu màu cũ không đạt tiêu chí), bo 12px
      - nút "Mua ngay": GRADIENT vàng (linear-gradient) thay vì gold phẳng
      - nút "Thêm giỏ hàng": bo 8px, viền 2px (chuẩn 4px/1px)
    ============================================================ */
@@ -238,8 +238,7 @@ body{font-family:var(--pts-font)!important;}
 
 /* ============================================================
    NHẢY ANCHOR — bù chiều cao header sticky
-   Bug thật (chủ project 2026-09-16: "các dòng ở trang giới thiệu này nó link
-   tới đâu đâu á"): header sticky cao 154px nhưng các section đích có
+   Bug thật (audit 2026-09-16): header sticky cao 154px nhưng các section đích có
    scroll-margin-top = 0, nên bấm mục lục/anchor thì tiêu đề section bị header
    che hoàn toàn - người dùng tưởng link hỏng hoặc nhảy sai chỗ.
    Các anchor đã có khai báo riêng (.pts-catblock 130px, .pts-sd-body 118px,
@@ -264,7 +263,7 @@ body{font-family:var(--pts-font)!important;}
 
 /* ============================================================
    RAIL CUỘN NGANG — căn giữa khi nội dung không lấp đủ chiều rộng
-   Chủ project 2026-09-16: "thiếu 2 ô thì lại thụt về 1 bên". Rail danh mục
+   Audit 2026-09-16: rail danh mục
    dùng flex + overflow-x:auto nên khi số ô ít hơn chiều rộng container, các ô
    dồn hết về bên trái, để trống một khoảng lớn bên phải - trông như lỗi layout.
 
@@ -289,8 +288,8 @@ body{font-family:var(--pts-font)!important;}
 
 /* ============================================================
    DẢI CTA CÓ ẢNH NỀN — cho ảnh hiện rõ, chữ vẫn đọc được
-   Chủ project 2026-09-16: "thay vì 1 nền màu như vậy" - muốn ô CTA có ảnh như
-   các khối khác. Cơ chế ảnh nền đã có sẵn trong template, nhưng ảnh bị
+   Audit 2026-09-16 xác định CTA cần hiển thị ảnh nền như các khối khác. Cơ chế
+   ảnh nền đã có sẵn trong template, nhưng ảnh bị
    opacity:.12 (mờ 12%) nên gần như vô hình, trông đúng như một nền đơn sắc.
 
    Cách xử lý giống .pts-catalog-campaign đã làm tốt ở trang Sản phẩm: cho ảnh
@@ -335,7 +334,7 @@ body{font-family:var(--pts-font)!important;}
    $source == 'index'. Mọi trang khác dùng lại 2 class này (Đại lý, khối "Dự án
    khác" ở chi tiết dự án) đều mất layout: tiêu đề rơi về canh giữa chữ hoa
    theo CSS legacy, link "xem tất cả" tụt xuống dưới thay vì cùng hàng bên phải.
-   Đây đúng là kiểu "chỗ không liên kết" chủ project nói.
+   Đây đúng là kiểu "chỗ không liên kết" vấn đề đã được ghi nhận.
    ============================================================ */
 .pts-retail-section-head{
   display:flex;align-items:flex-end;justify-content:space-between;
@@ -367,7 +366,7 @@ body{font-family:var(--pts-font)!important;}
 
 /* ============================================================
    TRANG CHI TIẾT SẢN PHẨM — nâng cấp tab và nhịp nội dung (2026-09-16)
-   Chủ project: "mấy cái nút này nằm ở đây có phải hợp lí k".
+   Audit UX xác định vị trí tab chưa gắn với nội dung mà nó điều khiển.
 
    Đo ra hai vấn đề thật:
    1. Tab nằm ở lề trái container (x=32) nhưng nội dung trong tab có
@@ -573,7 +572,7 @@ body{font-family:var(--pts-font)!important;}
 /* ==========================================================================
    CỤM LIÊN HỆ NỔI — bỏ nháy 3 nút lúc mới tải trang (2026-09-18)
 
-   Triệu chứng chủ project báo: mới load trang thì thấy 3 nút gọi/Zalo/Facebook
+   Triệu chứng phát hiện thực tế: mới load trang thì thấy 3 nút gọi/Zalo/Facebook
    hiện đầy đủ, một lúc sau mới thu về 1 icon.
 
    Nguyên nhân: theme-v2.css chỉ thu gọn dock khi có class .is-enhanced, mà class

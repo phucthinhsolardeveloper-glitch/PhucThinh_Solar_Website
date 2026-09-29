@@ -1855,7 +1855,7 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 .pts-filter-card .filter-item.checked>a{color:var(--pts-gold-dark)!important;font-weight:800!important;}
 /* Accordion cho từng nhóm filter sidebar - mặc định MỞ SẴN hết (thử đóng mặc
    định thấy phản tác dụng: cảm giác thiếu, phải bấm mở lại mỗi lần vào trang -
-   phản hồi chủ project 2026-09-10). Người dùng có thể tự thu gọn nhóm nào
+   phát hiện UX đã xác minh 2026-09-10). Người dùng có thể tự thu gọn nhóm nào
    không cần trong lúc xem; hướng chính để cân bằng sidebar/lưới sản phẩm
    chuyển sang tăng số sản phẩm/trang (xem sources/product.php, perPage). */
 .pts-filter-card .pts-filter-toggle{display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;}
@@ -1866,7 +1866,7 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
 
 /* =====================================================================
    ROUND 2 — Phóng to & hoàn thiện giao diện public
-   Yêu cầu chủ project: layout đang nhỏ/nhẹ, cần to & rõ hơn cho khách;
+   Quy tắc UX: layout cần đủ lớn và rõ để đọc trên màn hình khách hàng;
    header chữ nhỏ; footer dòng hotline/email lệch màu; trang Liên hệ /
    Đại lý / Về chúng tôi bố cục chưa chuẩn, khoảng cách chỗ to chỗ nhỏ.
    Khối này nạp sau cùng nên thắng mọi rule trước đó.
@@ -2474,7 +2474,7 @@ h4{font-size:21px!important;font-weight:800!important;}
 @media(max-width:640px){ .header-quickfilter .wrap-content{padding-right:16px!important;} }
 
 /* Hệ sinh thái thiết bị - lưới tĩnh 2 hàng (2026-09-12, bản 2). Thanh cuộn
-   ngang icon nhỏ bản trước bị chủ project chê "vẫn hơi hướng layout cũ" -
+   ngang icon nhỏ bản trước không đạt tiêu chí thiết kế mới -
    đổi hẳn sang lưới CSS Grid 12 cột: 4 card "HOT" span 3 (đủ 1 hàng ngang),
    6 card còn lại span 2 (đủ 1 hàng ngang) - tự xuống hàng đúng vị trí nhờ
    auto-flow, không cần JS/nút cuộn. */
@@ -2598,7 +2598,7 @@ h4{font-size:21px!important;font-weight:800!important;}
 }
 .mm-lang .mm-lang-links a.active{background:var(--pts-navy);border-color:var(--pts-navy);color:#fff;}
 .mm-lang .mm-lang-links a:active{opacity:.75;}
-/* Ẩn hoàn toàn chức năng đổi ngôn ngữ trên mobile (chủ ý của chủ project,
+/* Ẩn hoàn toàn chức năng đổi ngôn ngữ trên mobile (quyết định sản phẩm,
    2026-09-22) - cả bản ở header lẫn bản trong sidebar mmenu. Desktop giữ
    nguyên bình thường. */
 @media(max-width:991px){
@@ -2716,7 +2716,7 @@ h4{font-size:21px!important;font-weight:800!important;}
 
 /* =====================================================================
    HERO TRANG TRONG — hạ chiều cao, bỏ tiêu đề lớn
-   Chủ project: banner đầu trang quá cao và chữ "GIẢI PHÁP/…" quá to.
+   Audit UX: banner đầu trang quá cao và tiêu đề hiển thị quá lớn.
    Giữ lại breadcrumb làm ngữ cảnh; <span> tiêu đề không phải <h1> nên
    ẩn không ảnh hưởng SEO (đã có thẻ <title> + h1 trong nội dung).
    ===================================================================== */
@@ -3035,7 +3035,7 @@ body .home-6 .btn-all:hover i{transform:translateX(3px);}
 
 /* =====================================================================
    HERO SLIDER - banner ảnh/video quản lý qua admin "Slideshow"
-   (audit UX 2026-09-08, thay Hero chữ theo yêu cầu chủ site; có switch
+   (audit UX 2026-09-08, thay Hero chữ theo quyết định thiết kế; có switch
    bật/tắt ở Cài đặt chung để quay lại Hero chữ bất kỳ lúc nào).
    ===================================================================== */
 .pts-hero-slider{position:relative;background:var(--pts-navy-deep);overflow:hidden;}

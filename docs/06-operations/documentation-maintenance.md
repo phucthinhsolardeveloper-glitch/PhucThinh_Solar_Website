@@ -42,3 +42,5 @@ và liên kết về runbook đang có hiệu lực.
 - Chuẩn hóa quy tắc phối hợp dùng chung trong `AGENTS.md`: phân loại rủi ro,
   checkpoint tác vụ dài, cleanup có kiểm soát và format báo cáo để agent khác
   không phải thiết lập lại quy trình.
+- Rà soát comment source: loại bỏ lời hội thoại, câu trích dẫn và cách kể lại
+  phản hồi cá nhân; giữ lại rationale kỹ thuật, invariant và mốc kiểm chứng.

@@ -1,6 +1,6 @@
 <?php
 /**
- * Rà thêm nội dung tin tức/dự án cũ theo yêu cầu chủ project, sửa lỗi chính
+ * Rà thêm nội dung tin tức/dự án cũ theo đặc tả đã phê duyệt, sửa lỗi chính
  * tả và claim lỗi thời còn sót (đợt trước mới sửa 1 bài mẫu #111).
  *
  * table_news id=100 (bài Sharp): "Gp solar" là tên công ty SAI hoàn toàn -

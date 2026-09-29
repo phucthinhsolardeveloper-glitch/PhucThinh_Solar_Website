@@ -21,7 +21,7 @@
  *
  * QUY ƯỚC CỦA DỰ ÁN: không xoá trắng. Trước khi chạy --apply hãy tạo backup
  * (scripts/backup-local.sh), và sau khi xoá thì trích đúng những dòng vừa mất
- * từ bản backup đó ra file .sql đặt trong thư mục chủ project dùng để kiểm tra:
+ * từ bản backup đó ra file .sql đặt trong thư mục chủ tài khoản dùng để kiểm tra:
  *
  *   D:\FIleLinhTinh\phucthinhsolar-donkho-20260905\du-lieu-da-xoa-khoi-database\
  *

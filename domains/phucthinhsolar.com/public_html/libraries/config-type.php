@@ -162,7 +162,7 @@
     /* Quản lý tài khoản */
     /* Cờ này chỉ điều khiển đúng một thứ: hiện khối "Quản lý user" trong menu
        Admin (templates/layout/menu.php dòng 771) — nơi có Thông tin admin, Tài
-       khoản admin, Tài khoản khách và Nhóm quyền. Để false thì chủ project
+       khoản admin, Tài khoản khách và Nhóm quyền. Để false thì đặc tả
        không nhìn thấy đường vào cấp tài khoản cho nhân viên, dù các màn hình đó
        vẫn tồn tại và hoạt động bình thường. Bật lên để dùng được phân quyền.
        Riêng mục "Nhóm quyền" còn cần thêm $config['permission']['active']. */

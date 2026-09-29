@@ -10,7 +10,7 @@
  *   - Kiến thức sản phẩm : giải thích sản phẩm/công nghệ, lợi ích, lưu ý sử dụng
  *   - Tin truyền thông   : thông cáo của công ty, hợp tác, phân phối độc quyền
  *   - Tin mới nhất       : tin ngành/chính sách bên ngoài
- * Bài không khớp tiêu chí nào sẽ được liệt kê để chủ project tự quyết.
+ * Bài không khớp tiêu chí nào sẽ được liệt kê để cần phê duyệt thủ công.
  *
  * An toàn: chỉ ghi cho bài đang có id_list = 0, và chỉ khi danh mục đích tồn
  * tại. Không đụng bài đã được phân loại.

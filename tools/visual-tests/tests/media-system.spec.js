@@ -6,7 +6,7 @@ test.beforeEach(async ({ page }) => {
 
 async function imageMetrics(locator) {
   /* 2026-09-16: ảnh nằm dưới màn hình giờ dùng loading="lazy" của trình duyệt
-     (trang chủ trước đây tải ngay 68 ảnh = 1.2MB, đúng nguyên nhân chủ project
+     (trang chủ trước đây tải ngay 68 ảnh = 1.2MB, đúng nguyên nhân đặc tả
      báo "đơ và lag"). Nên phải cuộn tới ảnh và đợi tải xong trước khi đo -
      đúng những gì người dùng thật gặp. Vẫn kiểm tra đủ: ảnh tải được, đủ nét,
      object-fit đúng; không nới lỏng assertion nào. */
@@ -228,8 +228,8 @@ test('dải nhảy nhanh danh mục đủ tương phản và giữ một hàng t
     color: getComputedStyle(link).color,
     radius: parseFloat(getComputedStyle(link).borderTopLeftRadius),
   }));
-  /* 2026-09-16: trước đây khoá cứng nền vàng rgb(231,196,95). Chủ project bỏ
-     màu đó cho chip chưa chọn ("mấy nút có cái màu này là tôi không ưng") -
+  /* 2026-09-16: trước đây khoá cứng nền vàng rgb(231,196,95). Audit UX xác định
+     màu đó không phù hợp cho chip chưa chọn -
      vàng giờ chỉ dành cho hành động chính và điểm nhấn, chip dùng nền trung
      tính. Kiểm tra đúng bất biến cần giữ (tương phản chữ/nền đạt chuẩn đọc
      được, bo góc nhỏ theo hệ phẳng) thay vì khoá một mã màu cụ thể. */

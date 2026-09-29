@@ -1,6 +1,6 @@
 <?php
 /**
- * Xoá các sản phẩm đã ngừng kinh doanh theo danh sách mã do chủ project cung cấp.
+ * Xoá các sản phẩm đã ngừng kinh doanh theo danh sách mã do nguồn dữ liệu đã phê duyệt.
  *
  * Danh sách gồm nhiều cặp trùng lặp được nhập hai lần với mã khác nhau
  * (UFO1000/UFO-1000, UFO500-500W/UFO-500, JD-9300/JD9300,
@@ -15,7 +15,7 @@
  *   product_campaign_scope
  *
  * Sản phẩm còn nằm trong #_order_detail sẽ bị BỎ QUA và liệt kê riêng, vì xoá
- * sẽ làm hỏng lịch sử đơn hàng — chủ project tự quyết thay vì script đoán.
+ * sẽ làm hỏng lịch sử đơn hàng — cần phê duyệt thủ công thay vì script đoán.
  * Mã không tìm thấy cũng được liệt kê riêng (có thể đã xoá tay trước đó).
  *
  * Ảnh chỉ bị xoá khỏi đĩa khi không còn sản phẩm nào khác dùng chung tên file.
@@ -63,7 +63,7 @@ $uploadFile    = $publicHtml.'/upload/file/';
 $uploadPhoto   = $publicHtml.'/upload/photo/';
 $uploadVideo   = $publicHtml.'/upload/video/';
 
-/* Mã do chủ project cung cấp ngày 2026-09-05. Giữ nguyên khoảng trắng trong
+/* Mã do nguồn dữ liệu đã phê duyệt ngày 2026-09-05. Giữ nguyên khoảng trắng trong
    "BCT - OLC1.0": đó là mã có thật trong DB, khác với "BCT-OLC1.0". */
 $codes = array(
 	'JDL-BULB200', 'JD-19600L', 'JD-19400L', 'JD-5100', 'JD-5648', 'JD-4624',
@@ -135,7 +135,7 @@ foreach($counts as $label => $total) printf("  %-18s %d\n", $label, $total);
 
 if($blocked)
 {
-	echo "\nBỎ QUA - còn trong đơn hàng, chủ project tự quyết:\n";
+	echo "\nBỎ QUA - còn trong đơn hàng, cần phê duyệt thủ công:\n";
 	foreach($blocked as $row) printf("  #%-5s %-18s %s\n", $row['id'], $row['code'], mb_substr((string)$row['namevi'], 0, 62));
 }
 if($missing)

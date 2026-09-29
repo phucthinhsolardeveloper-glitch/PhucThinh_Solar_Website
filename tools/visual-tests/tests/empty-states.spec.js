@@ -144,7 +144,7 @@ test('search with matches lists product cards', async ({ page, baseURL }) => {
 });
 
 test('search preserves the promotional frame layered over the product image', async ({ page, baseURL }) => {
-  // Trước đây test bám cứng vào mã JD-200NEW. Chủ project xoá mã đó khỏi
+  // Trước đây test bám cứng vào mã JD-200NEW. Dữ liệu sản phẩm đã loại mã đó khỏi
   // catalogue là test gãy, dù tính năng không hỏng. Giờ tự tìm sản phẩm nào
   // đang thực sự gắn khung khuyến mãi; không còn cái nào thì skip có lý do
   // thay vì báo đỏ giả.

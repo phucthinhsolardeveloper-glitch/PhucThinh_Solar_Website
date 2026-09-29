@@ -52,6 +52,11 @@ Project được kế thừa. Không mặc định hành vi hiện có là chủ
   tối đa một rollback release/image; không xóa `shared/upload`, DB volume,
   secrets hoặc state reference. Docker build cache có thể prune sau khi kiểm tra;
   không dùng `docker system prune -a --volumes` trên production.
+- Bảo trì disk/Docker phải bắt đầu bằng `df -h`, `du -x` theo từng thư mục và
+  `docker system df -v`. Ưu tiên dọn build cache không dùng; image chỉ dọn sau
+  khi đối chiếu container, current/previous image và rollback candidate. Khi disk
+  tăng bất thường phải báo thư mục chiếm dụng và mức reclaim trước khi xóa.
+  Không dọn mù bằng glob, không xóa volume DB, upload hoặc backup chưa xác minh.
 - Phân biệt backup ứng dụng với backup/snapshot VPS của CloudFly. Không báo thiếu
   backup chỉ vì chưa có uploader off-site riêng; nêu rõ lớp bảo vệ nào đang có và
   lớp nào chỉ là khuyến nghị bổ sung.
@@ -63,6 +68,17 @@ Project được kế thừa. Không mặc định hành vi hiện có là chủ
   state, cleanup/backup đã tác động, rủi ro còn lại, rollback point và việc chưa
   làm. Không dùng câu “đang chạy” nếu agent không còn process/checkpoint để theo
   dõi.
+- Với yêu cầu tính năng, đi theo chuỗi: xác định route/source/template/schema và
+  dữ liệu bị tác động → chọn phạm vi tối thiểu → triển khai → test đúng luồng →
+  cập nhật docs nếu hành vi đã trở thành kiến thức ổn định. Không tự mở rộng thành
+  redesign/refactor ngoài yêu cầu.
+- Comment trong code chỉ ghi rationale kỹ thuật, invariant, giới hạn hoặc mốc
+  kiểm chứng cần thiết; không chép lời hội thoại, câu nói của chủ project, tên AI
+  hoặc lịch sử trao đổi vào source. Nếu cần ghi quyết định sản phẩm, đặt trong
+  docs/runbook và dùng ngôn ngữ trung tính.
+- Giao tiếp mặc định bằng tiếng Việt, cập nhật ngắn theo checkpoint; chỉ hỏi lại
+  khi thiếu quyền hoặc thiếu lựa chọn làm thay đổi đáng kể kết quả. Khi đã được
+  giao rõ phạm vi thì tự thực hiện, không bắt chủ project lặp lại thông tin.
 
 ## Quy tắc UX/UI đã duyệt
 

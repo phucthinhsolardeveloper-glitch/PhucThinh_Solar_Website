@@ -179,7 +179,7 @@
 .pts-sd-switcher a.is-active{border-radius:3px;background:var(--sh-navy);color:#fff!important;}
 .pts-sd-switcher-all{padding-left:0!important;color:var(--sh-navy)!important;font-weight:850!important;}
 /* 2026-09-16: bỏ nền xanh nhạt #eef3f8 hai bên khối nội dung theo yêu cầu
-   chủ project - nền trắng đồng nhất toàn site, khối nội dung tự phân tách
+   đặc tả thiết kế - nền trắng đồng nhất toàn site, khối nội dung tự phân tách
    bằng khoảng trắng và mục lục bên trái. */
 .pts-sd-body{padding:56px 0 54px;background:#fff;scroll-margin-top:118px;}
 /* Trang chi tiết dùng toàn bộ bề rộng wrapper chung. Bản cũ khóa bài viết ở
@@ -196,7 +196,7 @@
 .pts-sd-toc a:hover{color:#97661f!important;}
 /* 2026-09-16: landing /giai-phap/ dùng CHUNG kiểu mục lục navy với trang chi
    tiết. Trước đó landing rơi vào .pts-sd-toc nền transparent nên mục lục gần
-   như vô hình, chủ project tưởng trang landing không có mục lục. */
+   như vô hình, người kiểm thử có thể tưởng trang landing không có mục lục. */
 .pts-solution-detail .pts-sd-toc,
 .pts-sh-editorial-grid>.pts-sd-toc{max-height:calc(100vh - 150px);overflow-y:auto;overscroll-behavior:contain;padding:25px 23px!important;border-radius:3px;background:var(--sh-navy)!important;}
 .pts-solution-detail .pts-sd-toc>strong,

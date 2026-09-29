@@ -226,8 +226,8 @@ test('home contact dock stays compact and exposes existing contact links', async
   await expect(toggle).toHaveAttribute('aria-expanded', 'false');
 });
 
-/* 2026-09-18: chủ project báo "mới load trang thì nháy 3 nút call/Zalo/Facebook
-   rồi mới gom thành 1 icon". Nguyên nhân: theme-v2.css chỉ thu gọn dock khi có
+/* 2026-09-18: audit phát hiện dock liên hệ nhấp nháy khi JS nâng cấp giao diện.
+   Nguyên nhân: theme-v2.css chỉ thu gọn dock khi có
    class .is-enhanced, mà class đó do apps.js thêm - tức sau khi trang đã vẽ.
    Đã sửa bằng cách gắn class `pts-js` vào <html> từ inline script trong <head>
    (chạy trước lần vẽ đầu tiên) và nhân đôi quy tắc thu gọn theo class đó.
