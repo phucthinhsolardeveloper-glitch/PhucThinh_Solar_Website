@@ -8,7 +8,7 @@ bên cạnh. Mục tiêu là trả lời ba câu:
 3. Nếu thất bại thì dừng ở đâu và khôi phục thế nào?
 
 Production hiện tại chạy tại `222.255.182.182` bằng Docker/Caddy. Repository
-chuẩn nằm ở `/home/admin01/Web_PTS_PHP` trên máy phát triển. Không sửa trực tiếp
+chuẩn nằm ở `/home/admin01/src/Web_PTS_PHP` trên máy phát triển. Không sửa trực tiếp
 file trong container production; mọi thay đổi code phải đi qua Git và release.
 
 ## 1. Năm lệnh nên nhớ
@@ -38,7 +38,7 @@ layout, API, Admin, library, migration, Docker và script vận hành.
 
 ```text
 Máy phát triển
-  /home/admin01/Web_PTS_PHP
+  /home/admin01/src/Web_PTS_PHP
   ├── source Git
   ├── Docker local :8080
   ├── test + backup local
@@ -87,7 +87,7 @@ Danh sách đầy đủ nằm ở [Danh mục script](../../scripts/README.md).
 ### 4.1 Bắt đầu một phiên làm việc
 
 ```bash
-cd /home/admin01/Web_PTS_PHP
+cd /home/admin01/src/Web_PTS_PHP
 git status --short
 git branch -vv
 git pull --rebase
@@ -144,7 +144,7 @@ npx playwright test tests/mobile-commerce-experience.spec.js --workers=1
 Cổng đầy đủ trước SAFE deploy:
 
 ```bash
-cd /home/admin01/Web_PTS_PHP
+cd /home/admin01/src/Web_PTS_PHP
 LOCAL_ENFORCE_RBAC=1 ./scripts/predeploy-local.sh
 
 cd tools/visual-tests

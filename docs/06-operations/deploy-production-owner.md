@@ -30,7 +30,7 @@ Máy deploy cần có repository, Docker local, Node/npm/Playwright, SSH key đ�
 tại:
 
 ```text
-Repository: /home/admin01/Web_PTS_PHP
+Repository: /home/admin01/src/Web_PTS_PHP
 SSH target: root@222.255.182.182
 SSH key: /home/admin01/.ssh/id_ed25519
 VPS stack: /srv/phucthinhsolar
@@ -57,7 +57,7 @@ dừng; không dùng tùy chọn bỏ qua guard.
 ### SAFE
 
 ```bash
-cd /home/admin01/Web_PTS_PHP
+cd /home/admin01/src/Web_PTS_PHP
 git pull --rebase
 ./scripts/deploy-production.sh --safe --confirm-production
 ```
@@ -65,7 +65,7 @@ git pull --rebase
 ### FAST
 
 ```bash
-cd /home/admin01/Web_PTS_PHP
+cd /home/admin01/src/Web_PTS_PHP
 git pull --rebase
 ./scripts/deploy-production.sh --fast --confirm-production
 ```
@@ -73,7 +73,7 @@ git pull --rebase
 ### AUTO
 
 ```bash
-cd /home/admin01/Web_PTS_PHP
+cd /home/admin01/src/Web_PTS_PHP
 git pull --rebase
 ./scripts/deploy-production.sh --auto --confirm-production
 ```
