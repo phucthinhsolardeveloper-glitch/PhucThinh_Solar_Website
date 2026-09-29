@@ -109,7 +109,9 @@ try {
     linkAssert(preg_match("/ADMIN_CSRF\s*=\s*'([^']+)'/", $editForm['body'], $editToken) === 1, 'Form Dự án giữ CSRF');
     $save = linkHttp('http://127.0.0.1/administrator/index.php?com=news&act=save&type=du-an', 'POST', array(
         'admin_csrf'=>$editToken[1], 'id'=>$projectId,
-        'data'=>array('namevi'=>'Fixture dự án sản phẩm '.$suffix, 'numb'=>1),
+        /* Dự án mới bắt buộc địa chỉ hai cấp; dùng fixture địa giới ổn định
+           thay vì bỏ trống khiến test bị chặn trước khi kiểm tra thứ tự liên kết. */
+        'data'=>array('namevi'=>'Fixture dự án sản phẩm '.$suffix, 'numb'=>1, 'project_city_id'=>64, 'project_ward_id'=>10600),
         'slugvi'=>'fixture-du-an-san-pham-'.$suffix,
         'status'=>array('hienthi'=>'hienthi'),
         'project_products'=>array($productId, $secondProductId),
