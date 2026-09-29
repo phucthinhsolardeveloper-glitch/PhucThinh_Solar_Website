@@ -7,6 +7,28 @@
 	require_once LIBRARIES.'product_sort.php';
 	require_once LIBRARIES.'product_content_blocks.php';
 
+	/* Dùng chung các chứng nhận đang quản lý ở Giới thiệu cho catalog/PDP.
+	 * Chỉ lấy record đang hiển thị và ảnh tồn tại thật; ưu tiên record Admin
+	 * đánh dấu nổi bật, sau đó fallback về thứ tự quản trị. */
+	$productGlobalCertificateRows = $cache->get("select id, name$lang, desc$lang, link, photo, status from #_photo where type = ? and find_in_set('hienthi',status) order by numb, id desc", array('chungnhan'), 'result', 7200);
+	$productGlobalFeaturedCertificates = array_values(array_filter((array)$productGlobalCertificateRows, static function($row) {
+		return !empty($row['status']) && in_array('noibat', explode(',', $row['status']), true);
+	}));
+	$productGlobalCertificatePool = !empty($productGlobalFeaturedCertificates) ? $productGlobalFeaturedCertificates : (array)$productGlobalCertificateRows;
+	$productGlobalCertificates = array();
+	foreach($productGlobalCertificatePool as $certificateRow)
+	{
+		$certificatePhoto = !empty($certificateRow['photo']) ? basename((string)$certificateRow['photo']) : '';
+		if($certificatePhoto === '' || !is_file(ROOT.UPLOAD_PHOTO_L.$certificatePhoto)) continue;
+		$productGlobalCertificates[] = array(
+			'id' => (int)$certificateRow['id'],
+			'name' => !empty($certificateRow['name'.$lang]) ? trim(strip_tags(htmlspecialchars_decode($certificateRow['name'.$lang], ENT_QUOTES))) : '',
+			'desc' => !empty($certificateRow['desc'.$lang]) ? trim(preg_replace('/\s+/u', ' ', strip_tags(htmlspecialchars_decode($certificateRow['desc'.$lang], ENT_QUOTES)))) : '',
+			'photo' => $certificatePhoto
+		);
+		if(count($productGlobalCertificates) >= 3) break;
+	}
+
 	@$id = htmlspecialchars($_GET['id']);
 	@$idl = htmlspecialchars($_GET['idl']);
 	@$idc = htmlspecialchars($_GET['idc']);

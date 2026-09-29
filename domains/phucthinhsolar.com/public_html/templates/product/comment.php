@@ -4,6 +4,12 @@
 		<div class="card">
 			<div class="card-header text-uppercase"><strong>Đánh giá sản phẩm</strong></div>
 			<div class="card-body">
+				<?php if((int)$comment->total === 0) { ?>
+				<div class="pts-review-empty-state" role="status">
+					<strong>Sản phẩm chưa có đánh giá xác minh</strong>
+					<p>Hãy là người đầu tiên chia sẻ trải nghiệm thực tế sau khi sử dụng sản phẩm.</p>
+				</div>
+				<?php } ?>
 				<div class="row align-items-center py-3">
 					<div class="col-sm-6 col-lg-4 mb-4">
 						<div class="text-center">

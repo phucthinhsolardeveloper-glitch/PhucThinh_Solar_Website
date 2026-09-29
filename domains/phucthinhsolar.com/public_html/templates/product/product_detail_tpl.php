@@ -686,6 +686,28 @@ else $pdpSupportLabel = 'Video sản phẩm';
     </section>
     <?php } ?>
 
+    <?php if(!empty($productGlobalCertificates)) { ?>
+    <section class="pts-pdp-content-section pts-product-certificates" aria-labelledby="pts-pdp-global-certificates-title">
+        <header class="pts-product-proof-heading">
+            <h2 class="pts-pdp-section-title" id="pts-pdp-global-certificates-title">Chứng nhận &amp; năng lực</h2>
+            <a class="pts-product-proof-link" href="gioi-thieu/#about-certificates">Xem tất cả chứng nhận <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+        </header>
+        <div class="pts-product-certificate-grid">
+            <?php foreach($productGlobalCertificates as $productCertificate) { ?>
+            <article class="pts-product-certificate-item">
+                <a class="pts-product-certificate-media" href="<?=ASSET.UPLOAD_PHOTO_L.htmlspecialchars($productCertificate['photo'], ENT_QUOTES, 'UTF-8')?>" title="<?=htmlspecialchars($productCertificate['name'], ENT_QUOTES, 'UTF-8')?>">
+                    <?=$func->getImage(['isLazy' => true, 'class' => '', 'sizes' => '360x240x2', 'upload' => UPLOAD_PHOTO_L, 'image' => $productCertificate['photo'], 'alt' => $productCertificate['name']])?>
+                </a>
+                <div class="pts-product-certificate-copy">
+                    <h3><?=htmlspecialchars($productCertificate['name'], ENT_QUOTES, 'UTF-8')?></h3>
+                    <?php if($productCertificate['desc'] !== '') { ?><p><?=htmlspecialchars($productCertificate['desc'], ENT_QUOTES, 'UTF-8')?></p><?php } ?>
+                </div>
+            </article>
+            <?php } ?>
+        </div>
+    </section>
+    <?php } ?>
+
     <?php if($pdpFaqs) { ?>
     <section class="pts-pdp-content-section pts-pdp-faq" id="cau-hoi-thuong-gap" aria-labelledby="pts-pdp-faq-title">
         <h2 class="pts-pdp-section-title" id="pts-pdp-faq-title">Câu hỏi thường gặp</h2>

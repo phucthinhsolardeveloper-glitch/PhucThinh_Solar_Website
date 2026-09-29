@@ -180,9 +180,26 @@
   text-align:left;
 }
 
+.pts-product-certificates{margin-top:64px!important}
+.pts-product-certificates .pts-product-proof-heading{margin-bottom:22px}
+.pts-product-certificate-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
+.pts-product-certificate-item{display:grid;min-width:0;grid-template-columns:minmax(120px,38%) minmax(0,1fr);align-items:center;gap:18px;padding:0;border:0;background:transparent}
+.pts-product-certificate-media{display:block;overflow:hidden;aspect-ratio:4/3;border-radius:3px;background:var(--pts-surface)}
+.pts-product-certificate-media img{display:block;width:100%;height:100%;object-fit:contain}
+.pts-product-certificate-copy{min-width:0}
+.pts-product-certificate-copy h3{margin:0 0 8px;color:var(--pts-navy);font-size:17px;font-weight:800;line-height:1.35}
+.pts-product-certificate-copy p{margin:0;color:var(--pts-muted);font-size:14px;line-height:1.55}
+.pts-product-certificate-media:focus-visible{outline:3px solid var(--pts-gold);outline-offset:4px;border-radius:3px}
+.pts-pdp-content-section.pts-product-certificates .pts-product-proof-heading{align-items:center}
+.pts-pdp-content-section.pts-product-certificates .pts-pdp-section-title{margin:0!important}
+.pts-review-empty-state{margin:0 0 20px;padding:16px 18px;border-left:3px solid var(--pts-gold);background:var(--pts-surface);color:var(--pts-navy)}
+.pts-review-empty-state strong{display:block;font-size:16px;line-height:1.4}
+.pts-review-empty-state p{margin:5px 0 0;color:var(--pts-muted);font-size:14px;line-height:1.55}
+
 @media(max-width:1199px){
   .pts-product-project-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
   .pts-product-project-grid--1{grid-template-columns:minmax(0,1fr)}
+  .pts-product-certificate-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media(max-width:767px){
   .pts-product-proof-section{margin-top:48px!important}
@@ -211,6 +228,11 @@
   .pts-product-project-grid .pts-related-card-body strong{font-size:16px;line-height:1.4;text-wrap:initial}
   .pts-product-project-grid .pts-related-card-body small{font-size:13px}
   .pts-why-choose-us{margin-top:48px!important}
+  .pts-product-certificates{margin-top:48px!important}
+  .pts-product-certificate-grid{grid-template-columns:1fr;gap:20px}
+  .pts-product-certificate-item{grid-template-columns:116px minmax(0,1fr);gap:15px}
+  .pts-product-certificate-copy h3{font-size:16px}
+  .pts-product-certificate-copy p{font-size:14px}
   .pts-why-choose-grid{grid-template-columns:1fr}
   .pts-why-choose-item,
   .pts-why-choose-item:first-child,
