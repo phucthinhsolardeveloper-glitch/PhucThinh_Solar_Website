@@ -11,7 +11,14 @@ if(!function_exists('publicProductDefaultOrder'))
         $alias = trim((string)$alias);
         if($alias !== '' && !preg_match('/^[A-Za-z][A-Za-z0-9_]*$/', $alias)) throw new InvalidArgumentException('Alias SQL không hợp lệ');
         $prefix = $alias !== '' ? $alias.'.' : '';
-        return " order by case when {$prefix}photo is null or trim({$prefix}photo) = '' then 1 else 0 end, {$prefix}numb,{$prefix}id desc";
+        /* 2026-09-29: field photo (ảnh đại diện) trống không có nghĩa sản
+           phẩm không có ảnh thật - PDP tự lấy ảnh gallery làm ảnh chính khi
+           field này trống (xem product_detail_tpl.php:55-74, cùng lỗi với
+           bộ lọc "Thiếu ảnh đại diện" ở admin_product_completeness.php). Chỉ
+           đẩy xuống cuối khi CẢ ảnh đại diện lẫn gallery đều trống, tránh
+           chôn vùi sản phẩm khách đã thấy ảnh thật trên site. */
+        $hasPhoto = "({$prefix}photo is not null and trim({$prefix}photo) <> '') or exists (select 1 from #_gallery g where g.id_parent = {$prefix}id and g.com = 'product' and g.kind = 'man' and g.val = {$prefix}type and find_in_set('hienthi', g.status))";
+        return " order by case when $hasPhoto then 0 else 1 end, {$prefix}numb,{$prefix}id desc";
     }
 }
 

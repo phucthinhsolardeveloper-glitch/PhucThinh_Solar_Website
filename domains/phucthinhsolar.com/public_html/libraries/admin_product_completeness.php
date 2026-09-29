@@ -10,7 +10,13 @@ if(!function_exists('adminProductDataStatusDefinitions'))
     function adminProductDataStatusDefinitions()
     {
         return array(
-            'missing_photo' => array('label' => 'Thiếu ảnh đại diện', 'sql' => "coalesce(trim(p.photo), '') = ''"),
+            /* 2026-09-29: field p.photo (ảnh đại diện) trống không có nghĩa
+               sản phẩm không có ảnh thật - PDP tự lấy ảnh gallery làm ảnh
+               chính khi field này trống (xem product_detail_tpl.php:55-74).
+               Sản phẩm chỉ thật sự "thiếu ảnh" khi CẢ HAI đều trống, tránh
+               báo giả những sản phẩm khách đã thấy ảnh thật trên site (sếp
+               phát hiện qua ví dụ JD-19600L). */
+            'missing_photo' => array('label' => 'Thiếu ảnh đại diện', 'sql' => "coalesce(trim(p.photo), '') = '' and not exists (select 1 from #_gallery g where g.id_parent = p.id and g.com = 'product' and g.kind = 'man' and g.val = p.type and find_in_set('hienthi', g.status))"),
             'missing_photo_feed' => array('label' => 'Thiếu ảnh Shopping sạch', 'sql' => "coalesce(trim(p.photo_feed), '') = ''"),
             'missing_desc' => array('label' => 'Thiếu mô tả ngắn', 'sql' => "coalesce(trim(p.descvi), '') = ''"),
             'missing_content' => array('label' => 'Thiếu nội dung chi tiết'),
@@ -86,10 +92,24 @@ if(!function_exists('adminProductDataStatusDefinitions'))
         return true;
     }
 
+    /* Cùng điều kiện với definition 'missing_photo' ở trên - tách hàm để
+       adminProductMissingLabels() dùng chung, tránh lệch logic giữa badge
+       từng dòng và bộ lọc/export (đúng lỗi sếp phát hiện 2026-09-29). */
+    function adminProductIsMissingPhoto($d, $product)
+    {
+        if(trim(isset($product['photo']) ? (string)$product['photo'] : '') !== '') return false;
+        if($d === null) return true;
+        $id = isset($product['id']) ? (int)$product['id'] : 0;
+        $type = isset($product['type']) ? (string)$product['type'] : '';
+        if($id <= 0) return true;
+        $gallery = $d->rawQueryOne("select id from #_gallery where id_parent = ? and com = 'product' and kind = 'man' and val = ? and find_in_set('hienthi', status) limit 0,1", array($id, $type));
+        return empty($gallery);
+    }
+
     function adminProductMissingLabels($product, $d = null, $list = array())
     {
         $labels = array();
-        if(trim(isset($product['photo']) ? (string)$product['photo'] : '') === '') $labels[] = 'Ảnh';
+        if(adminProductIsMissingPhoto($d, $product)) $labels[] = 'Ảnh';
         if(trim(isset($product['descvi']) ? (string)$product['descvi'] : '') === '') $labels[] = 'Mô tả';
         if(adminProductIsMissingContent($d, $product)) $labels[] = 'Nội dung';
         if(adminProductIsMissingSpecs($product, $list)) $labels[] = 'Thông số';
