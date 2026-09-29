@@ -1,5 +1,16 @@
 # Current status
 
+## 2026-09-29: production và tài liệu vận hành đã đồng bộ
+
+- Production đang chạy image `phucthinhsolar-web:14fdb2672665`; migration 058–060
+  đã được xác minh và các route public chính trả HTTP 200.
+- Giữ hai full backup ứng dụng gần nhất; Docker build cache không dùng đã được
+  dọn, không xóa container/volume đang chạy.
+- Quy trình deploy có `AUTO`, `SAFE`, `FAST`; chính sách release/backup và lịch
+  rà soát tài liệu được ghi trong `docs/06-operations/`.
+- Các mục lịch sử bên dưới giữ nguyên bối cảnh tại thời điểm ghi; không dùng
+  image, số liệu hoặc trạng thái cũ trong đó để suy ra production hiện tại.
+
 Cập nhật gần nhất: 2026-09-22. Phần lớn nội dung bên dưới (tới dòng "Checkout
 idempotency local") là log tích lũy từ trước 2026-09-06 và mới ở Git + Docker
 local tại thời điểm ghi — KHÔNG tự suy ra các mục đó đã lên production chỉ vì

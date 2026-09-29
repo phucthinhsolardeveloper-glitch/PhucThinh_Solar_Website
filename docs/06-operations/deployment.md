@@ -1,7 +1,7 @@
 # Deployment
 
 Production hiện chạy trên VPS Docker/Caddy. Chủ website hoặc người trực deploy
-dùng [Deploy production SAFE/FAST một lệnh](deploy-production-owner.md). Tài
+dùng [Deploy production AUTO/SAFE/FAST một lệnh](deploy-production-owner.md). Tài
 liệu bên dưới về DirectAdmin là bối cảnh hosting cũ, không phải đường deploy
 production hiện hành.
 

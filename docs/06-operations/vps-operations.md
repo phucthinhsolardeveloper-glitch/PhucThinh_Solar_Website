@@ -1,6 +1,6 @@
 # Vận hành VPS hằng ngày và xử lý sự cố
 
-Cập nhật: 2026-09-20. Dùng cho VPS **đã dựng xong**. Lần dựng đầu và chuyển nhà
+Cập nhật: 2026-09-29. Dùng cho VPS **đã dựng xong**. Lần dựng đầu và chuyển nhà
 xem [vps-cloudfly-runbook.md](vps-cloudfly-runbook.md).
 Luồng end-to-end dành cho chủ website xem
 [owner-system-handbook.md](owner-system-handbook.md).
@@ -50,7 +50,7 @@ email; xem [cutover-dns-va-host-cu.md](cutover-dns-va-host-cu.md).
 ├── releases/<commit>/     release đã giải nén: public_html + migrations + scripts + docs
 ├── incoming/              gói release/migration đang chờ kiểm checksum và triển khai
 ├── shared/                DỮ LIỆU SỐNG, mount vào container
-│   ├── upload/            1.126 file / 852 MB  ← KHÔNG TÁI TẠO ĐƯỢC
+│   ├── upload/            dữ liệu upload production  ← KHÔNG TÁI TẠO ĐƯỢC
 │   ├── thumbs/            sinh lại được
 │   ├── caches/            sinh lại được
 │   ├── assets-caches/     sinh lại được

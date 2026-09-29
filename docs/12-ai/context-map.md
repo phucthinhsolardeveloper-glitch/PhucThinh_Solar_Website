@@ -14,7 +14,7 @@ Sửa bug             -> 11-workflows/bug-fixing-playbook.md
 Làm tính năng       -> 11-workflows/feature-delivery-playbook.md
 Test / cổng deploy  -> 02-development/testing.md -> scripts/predeploy-local.sh, tools/visual-tests
 Tự vận hành end-to-end-> 06-operations/owner-system-handbook.md
-Deploy production   -> 06-operations/deploy-production-owner.md (SAFE/FAST, VPS)
+Deploy production   -> 06-operations/deploy-production-owner.md (AUTO/SAFE/FAST, VPS)
 Dựng VPS / chuyển   -> 06-operations/vps-cloudfly-runbook.md
 Vận hành VPS / sự cố-> 06-operations/vps-operations.md
 Backup / restore    -> 06-operations/backup-restore.md

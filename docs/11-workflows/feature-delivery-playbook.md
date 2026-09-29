@@ -130,6 +130,9 @@ chỉ liệt kê file đã sửa. Trước khi commit, đọc lại diff tìm se
 
 # Frontend phạm vi hẹp
 ./scripts/deploy-production.sh --fast --confirm-production
+
+# Deploy thường ngày để script tự phân loại
+./scripts/deploy-production.sh --auto --confirm-production
 ```
 
 Wrapper tách source web và deployment tools, backup, checksum, healthcheck,

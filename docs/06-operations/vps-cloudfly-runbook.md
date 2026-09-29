@@ -184,8 +184,10 @@ sudo /srv/phucthinhsolar/scripts/install-systemd.sh
 
 - DB logic mỗi 6 giờ; full DB + upload hằng ngày khoảng 02:30.
 - Retention local mặc định 14 ngày.
-- CloudFly automatic backup chỉ là snapshot cùng nhà cung cấp, không thay bản
-  sao off-site độc lập.
+- CloudFly automatic backup là snapshot toàn VPS do nhà cung cấp quản lý, phù
+  hợp cho khôi phục sự cố VPS. Nó không thay thế backup ứng dụng chọn lọc DB +
+  upload; uploader off-site độc lập chỉ là lớp phòng vệ bổ sung nếu cần tách nhà
+  cung cấp.
 
 Tạo `/usr/local/sbin/pts-backup-offsite` để đẩy backup sang nơi khác nhà cung
 cấp (S3/Object Storage/rclone encryption). Khi thiếu hook, script cảnh báo.

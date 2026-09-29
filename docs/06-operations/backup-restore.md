@@ -22,13 +22,14 @@ Restore test kiểm tra checksum, số bảng và số file upload rồi tự x�
 
 VPS có automation DB mỗi 6 giờ, full DB + upload hằng ngày và restore
 rehearsal tại `deploy/vps/scripts/`; xem
-[Runbook VPS CloudFly](vps-cloudfly-runbook.md). Trạng thái chỉ được nâng thành
-READY sau khi đã cấu hình off-site hook và chạy PASS một lần từ bản tải ngược
-về, không chỉ từ bản local trên cùng VPS.
+[Runbook VPS CloudFly](vps-cloudfly-runbook.md). Backup CloudFly là lớp snapshot
+toàn VPS do nhà cung cấp quản lý; backup ứng dụng là lớp phục hồi chọn lọc DB và
+upload. Uploader off-site độc lập là lớp tăng cường, không phải điều kiện chặn
+deploy khi CloudFly backup đang hoạt động.
 
-Tại 2026-09-20, backup/checksum và timer nội bộ hoạt động nhưng off-site hook
-vẫn chưa cấu hình. Vì vậy khả năng phục hồi khi chỉ hỏng app/DB là có, còn tình
-huống mất toàn VPS vẫn là rủi ro mở.
+Tại lần rà soát 2026-09-29, backup/checksum và timer nội bộ hoạt động; VPS cũng
+có lớp backup CloudFly. Uploader off-site riêng chưa cấu hình, nên đây vẫn là
+lớp phòng vệ bổ sung có thể triển khai nếu cần yêu cầu độc lập nhà cung cấp.
 
 Nhà cung cấp cần xác nhận owner, lịch, phạm vi DB/upload/mail, nơi lưu, retention, encryption và RTO/RPO. Restore rehearsal production backup chỉ chạy trên staging: dựng account sạch, import DB, restore upload, cập nhật config/domain, kiểm tra login/content/product/order/email và ghi thời gian/kết quả.
 

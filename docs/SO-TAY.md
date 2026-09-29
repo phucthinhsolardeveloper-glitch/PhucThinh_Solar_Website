@@ -192,14 +192,15 @@ trang giải pháp và **kết luận sai** là "CSS chưa nạp". Chủ project
 
 ## 7. VPS
 
-Trạng thái tại 2026-09-20: Ubuntu 24.04, Docker 29.8.1, Compose 5.5.1,
+Trạng thái tại 2026-09-29: Ubuntu 24.04, Docker 29.8.1, Compose 5.5.1,
 `/srv/phucthinhsolar` đang chạy production và DNS domain chính đã cutover.
-Image active sau đợt commerce/mobile là `phucthinhsolar-web:86811592c357`;
-image rollback là `phucthinhsolar-web:62f31b6a6284`.
+Image active là `phucthinhsolar-web:14fdb2672665`; image rollback được theo dõi
+qua `state/previous-image` trên VPS.
 
 - Dựng mới / chuyển nhà: [vps-cloudfly-runbook.md](06-operations/vps-cloudfly-runbook.md)
-- Deploy SAFE/FAST: [deploy-production-owner.md](06-operations/deploy-production-owner.md)
+- Deploy AUTO/SAFE/FAST: [deploy-production-owner.md](06-operations/deploy-production-owner.md)
 - Vận hành, đọc log, xử lý sự cố: [vps-operations.md](06-operations/vps-operations.md)
+- Rà soát và lịch sử bảo trì docs: [documentation-maintenance.md](06-operations/documentation-maintenance.md)
 
 ---
 

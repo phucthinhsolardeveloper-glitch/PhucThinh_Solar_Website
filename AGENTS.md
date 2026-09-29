@@ -27,6 +27,43 @@ Project được kế thừa. Không mặc định hành vi hiện có là chủ
 - Địa chỉ nghiệp vụ mới chỉ dùng hai cấp `Tỉnh/TP -> Phường/Xã`. Không thêm lại Quận/Huyện vào checkout, bộ lọc đơn hàng hoặc form mới; `district` chỉ là dữ liệu legacy và đơn mới ghi `district = 0`. Backend phải xác thực Phường/Xã đang hiển thị và thuộc đúng Tỉnh/TP đã chọn.
 - Cập nhật docs nếu implementation chứng minh tài liệu sai.
 
+## Quy tắc phối hợp dùng chung cho mọi AI
+
+- Đọc `AGENTS.md` và tài liệu liên quan trước khi thao tác; coi đây là hợp đồng
+  chung cho Codex, Claude và các agent khác, không yêu cầu chủ project thiết lập
+  lại cùng một quy trình ở từng công cụ.
+- Trước khi chạy lệnh, phân loại phạm vi: `docs-only`, frontend rủi ro thấp,
+  backend/API/commerce/Admin, migration/schema, security/hạ tầng. Chọn cách làm
+  nhỏ nhất phù hợp: `AUTO` cho deploy thường ngày; `FAST` chỉ cho frontend hẹp;
+  `SAFE` cho backend, dữ liệu, migration, bảo mật, hạ tầng hoặc khi chưa chắc.
+- Không chạy full SAFE cho thay đổi nhỏ chỉ vì thói quen. Ngược lại, không dùng
+  FAST để né test khi thay đổi có thể ảnh hưởng dữ liệu, auth, checkout, Admin
+  hoặc layout toàn cục.
+- Với tác vụ dài: chạy một quy trình có checkpoint rõ ràng, theo dõi tiến độ từ
+  log/process hiện có và chẩn đoán lỗi tại điểm dừng; không lặp lại cùng một lệnh
+  hoặc yêu cầu chủ project cung cấp output mà agent có thể tự đọc. Nếu timeout là
+  giới hạn công cụ chứ không phải lỗi dự án, nói rõ và dùng cách chạy phù hợp.
+- Khi được yêu cầu deploy/migration, thực hiện đến checkpoint an toàn cuối cùng,
+  không dừng giữa chừng vì hỏi lại những lựa chọn đã được chỉ định. Nếu fail,
+  giữ nguyên rollback point, báo nguyên nhân và chỉ retry sau khi đã thay đổi
+  chẩn đoán hoặc cách chạy.
+- Cleanup phải theo thứ tự: đo trước → xác định current/previous/rollback → chỉ
+  xóa mục cụ thể. Mặc định giữ 1–2 full backup ứng dụng, current + previous +
+  tối đa một rollback release/image; không xóa `shared/upload`, DB volume,
+  secrets hoặc state reference. Docker build cache có thể prune sau khi kiểm tra;
+  không dùng `docker system prune -a --volumes` trên production.
+- Phân biệt backup ứng dụng với backup/snapshot VPS của CloudFly. Không báo thiếu
+  backup chỉ vì chưa có uploader off-site riêng; nêu rõ lớp bảo vệ nào đang có và
+  lớp nào chỉ là khuyến nghị bổ sung.
+- Không cần ghi docs theo thời gian thực cho mọi thay đổi nhỏ, nhưng sau milestone
+  lớn hoặc đợt bảo trì phải rà soát tài liệu, ghi lịch sử và cập nhật rule nếu đã
+  hình thành kiến thức vận hành mới. Xem
+  `docs/06-operations/documentation-maintenance.md`.
+- Báo cáo cuối luôn có: đã làm gì, commit/file nào, test và kết quả, production
+  state, cleanup/backup đã tác động, rủi ro còn lại, rollback point và việc chưa
+  làm. Không dùng câu “đang chạy” nếu agent không còn process/checkpoint để theo
+  dõi.
+
 ## Quy tắc UX/UI đã duyệt
 
 Trước mọi thay đổi giao diện public, đọc

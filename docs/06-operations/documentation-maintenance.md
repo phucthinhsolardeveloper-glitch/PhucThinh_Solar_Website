@@ -25,6 +25,11 @@ kiến trúc hoặc hành vi ổn định của project.
 
 Không đưa credential, token, PII hoặc log chứa dữ liệu nhạy cảm vào docs.
 
+Các file trong `docs/13-handoffs/`, audit có ngày tháng và các mục lịch sử trong
+`docs/00-project/status.md` được giữ để truy nguyên quyết định cũ. Khi rà soát,
+không sửa ngược sự kiện lịch sử; nếu trạng thái hiện tại khác, thêm mục hiện tại
+và liên kết về runbook đang có hiệu lực.
+
 ## Lịch sử rà soát
 
 ### 2026-09-29 — retention, backup và deploy workflow
@@ -34,3 +39,6 @@ Không đưa credential, token, PII hoặc log chứa dữ liệu nhạy cảm v
 - Phân biệt backup ứng dụng với backup/snapshot VPS CloudFly.
 - Ghi quy tắc dọn Docker build cache/image an toàn và rollback candidate.
 - Bổ sung `AUTO` deploy, deployment log và quy trình rà soát định kỳ.
+- Chuẩn hóa quy tắc phối hợp dùng chung trong `AGENTS.md`: phân loại rủi ro,
+  checkpoint tác vụ dài, cleanup có kiểm soát và format báo cáo để agent khác
+  không phải thiết lập lại quy trình.

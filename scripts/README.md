@@ -14,7 +14,7 @@ hành chỉ để pipeline tiếp tục.
 
 | Script | Phạm vi | Tác động | Dùng khi |
 |---|---|---|---|
-| `deploy-production.sh` | Local điều khiển VPS | Production code | Deploy `--safe` hoặc `--fast`; không tự migration |
+| `deploy-production.sh` | Local điều khiển VPS | Production code | Deploy `--auto`, `--safe` hoặc `--fast`; không tự migration |
 | `predeploy-local.sh` | Local Docker | Test fixture local, tự cleanup | Cổng regression/lint/smoke/security trước deploy |
 | `package-hosting-release.sh` | Local | Tạo `backup/releases/*` | Đóng gói source/tools theo Git commit + checksum |
 | `backup-local.sh` | Local | Tạo `backup/local/*` | Trước import/migration/thay đổi dữ liệu local |
@@ -26,6 +26,7 @@ Lệnh chuẩn:
 LOCAL_ENFORCE_RBAC=1 ./scripts/predeploy-local.sh
 ./scripts/deploy-production.sh --safe --confirm-production
 ./scripts/deploy-production.sh --fast --confirm-production
+./scripts/deploy-production.sh --auto --confirm-production
 ```
 
 ## 2. Dữ liệu sản phẩm và nội dung

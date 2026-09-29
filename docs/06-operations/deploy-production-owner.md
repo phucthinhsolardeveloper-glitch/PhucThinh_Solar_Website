@@ -9,6 +9,7 @@ runbook dài vẫn là tài liệu cứu hộ; thao tác hằng ngày dùng scri
 |---|---|---|---|---|
 | `SAFE` | PHP/API, giỏ hàng, checkout, Admin, phân quyền, migration, hạ tầng, hoặc chưa chắc mức rủi ro | Full predeploy local và toàn bộ Playwright | DB + upload | Lâu hơn, thường 10–25 phút |
 | `FAST` | CSS, chữ, ảnh, responsive hoặc template giao diện rủi ro thấp | Git/syntax/PHP 7.4 guard; tự từ chối đường dẫn nhạy cảm | DB-only | Thường 2–5 phút |
+| `AUTO` | Deploy thường ngày khi muốn script tự phân loại phạm vi thay đổi | Tự chọn SAFE/FAST theo guard của script | Theo mode được chọn | Tùy phạm vi |
 
 `FAST` chỉ rút ngắn phần test local và không nén lại toàn bộ upload. Nó **không
 bỏ** checksum, image healthcheck, cache clear, schema preflight, HTTP smoke,
@@ -18,6 +19,9 @@ không ghi vào upload.
 Nếu không chắc, chọn `SAFE`. Script sẽ từ chối `FAST` khi commit đụng commerce,
 global layout, API, Admin, library, source, migration, Docker hoặc công cụ vận
 hành.
+
+Khi không muốn tự phân loại, dùng `AUTO`; script vẫn giữ các guard và tự nâng
+phạm vi lên SAFE nếu phát hiện file/rủi ro nhạy cảm.
 
 ## Chuẩn bị một lần
 
@@ -64,6 +68,14 @@ git pull --rebase
 cd /home/admin01/Web_PTS_PHP
 git pull --rebase
 ./scripts/deploy-production.sh --fast --confirm-production
+```
+
+### AUTO
+
+```bash
+cd /home/admin01/Web_PTS_PHP
+git pull --rebase
+./scripts/deploy-production.sh --auto --confirm-production
 ```
 
 Không đóng terminal cho tới dòng `PASS: deploy ... hoàn tất`. Website chỉ đổi
