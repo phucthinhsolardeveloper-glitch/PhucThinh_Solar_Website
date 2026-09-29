@@ -1,0 +1,36 @@
+# Lịch rà soát và bảo trì tài liệu
+
+Tài liệu là một phần của sản phẩm vận hành. Không cần ghi mọi thay đổi nhỏ theo
+thời gian thực, nhưng phải cập nhật khi kiến thức đã trở thành quy tắc, workflow,
+kiến trúc hoặc hành vi ổn định của project.
+
+## Nhịp rà soát
+
+- **Sau milestone lớn:** rà soát ngay khi hoàn tất tính năng lớn, migration,
+  thay đổi schema, thay đổi deploy/rollback, bảo mật, backup hoặc cấu trúc thư mục.
+- **Hàng tháng:** rà soát nhanh runbook vận hành, route/chức năng chính, mode
+  deploy, retention backup/release/image, timer và các liên kết tài liệu.
+- **Hàng quý:** rà soát sâu toàn bộ docs liên quan đến kiến trúc, quyền hạn,
+  dữ liệu, restore/rollback và checklist release; đánh dấu tài liệu lỗi thời,
+  gộp tài liệu trùng và cập nhật owner/assumption.
+- **Trước release lớn:** không đóng release nếu docs vẫn mô tả workflow cũ hoặc
+  thiếu hướng dẫn rollback/khôi phục tương ứng.
+
+## Cách thực hiện
+
+1. Đọc thay đổi thực tế trong code, script, schema/config và output vận hành.
+2. Tìm các docs có lệnh, đường dẫn, tên bảng, mode deploy hoặc giả định liên quan.
+3. Cập nhật runbook/README trước; ghi quyết định và kiến thức mới vào lịch sử.
+4. Chạy `git diff --check`, kiểm tra link/path quan trọng và ghi rủi ro còn lại.
+
+Không đưa credential, token, PII hoặc log chứa dữ liệu nhạy cảm vào docs.
+
+## Lịch sử rà soát
+
+### 2026-09-29 — retention, backup và deploy workflow
+
+- Ghi nhận vai trò của `incoming/`, `releases/`, `shared/` và chính sách giữ 1–2
+  backup ứng dụng gần nhất.
+- Phân biệt backup ứng dụng với backup/snapshot VPS CloudFly.
+- Ghi quy tắc dọn Docker build cache/image an toàn và rollback candidate.
+- Bổ sung `AUTO` deploy, deployment log và quy trình rà soát định kỳ.

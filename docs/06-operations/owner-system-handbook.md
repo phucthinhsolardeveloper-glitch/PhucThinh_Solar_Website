@@ -336,6 +336,11 @@ df -h /
 
 ### 6.6 Việc định kỳ
 
+Rà soát tài liệu theo [lịch bảo trì tài liệu](documentation-maintenance.md):
+ít nhất hàng tháng, và ngay sau milestone/chức năng lớn hoặc thay đổi workflow.
+Mỗi đợt rà soát phải cập nhật lịch sử nếu phát hiện kiến thức mới, giả định sai
+hoặc runbook lỗi thời.
+
 Hằng ngày:
 
 - Website trả 200, container healthy.
