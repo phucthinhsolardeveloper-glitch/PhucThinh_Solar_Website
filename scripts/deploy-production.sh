@@ -11,10 +11,12 @@ usage() {
 Usage:
   ./scripts/deploy-production.sh --safe --confirm-production
   ./scripts/deploy-production.sh --fast --confirm-production
+  ./scripts/deploy-production.sh --auto --confirm-production
 
 Modes:
   --safe  Full local predeploy + full Playwright + full production backup.
   --fast  Quick guards + DB backup; only accepts low-risk frontend changes.
+  --auto  Tự chọn --fast cho CSS/JS/ảnh/HTML; còn lại tự chọn --safe.
 
 Optional environment:
   PTS_DEPLOY_HOST      SSH target (default: root@222.255.182.182)
@@ -35,7 +37,7 @@ step() {
 
 for argument in "$@"; do
     case "$argument" in
-        --safe|--fast)
+        --safe|--fast|--auto)
             [ -z "$mode" ] || fail "chỉ chọn một trong --safe hoặc --fast."
             mode="${argument#--}"
             ;;
@@ -126,6 +128,16 @@ changed_paths="$(git diff --name-only "$deployed_commit" "$commit")"
 printf '%s\n' "$changed_paths" | grep -q '^domains/phucthinhsolar.com/public_html/' || fail "commit không đổi source website; không cần deploy production."
 git diff --check "$deployed_commit" "$commit"
 bash -n scripts/package-hosting-release.sh scripts/predeploy-local.sh scripts/deploy-production.sh
+
+if [ "$mode" = "auto" ]; then
+    if printf '%s\n' "$changed_paths" | grep -Eq '^(migrations/|deploy/|docker/|docker-compose[^/]*|scripts/|domains/phucthinhsolar\.com/public_html/(api/|administrator/|libraries/|sources/|templates/.*\.php$|.*\.php$))'; then
+        mode="safe"
+        echo "AUTO: phát hiện thay đổi backend/Admin/template/migration/hạ tầng -> SAFE"
+    else
+        mode="fast"
+        echo "AUTO: chỉ phát hiện thay đổi frontend tĩnh -> FAST"
+    fi
+fi
 
 if [ "$mode" = "fast" ]; then
     if printf '%s\n' "$changed_paths" | grep -Eq '^(migrations/|deploy/|docker/|docker-compose[^/]*|domains/phucthinhsolar\.com/public_html/(api/|administrator/|libraries/|sources/|templates/order/|templates/layout/|templates/product/product_detail_tpl\.php|assets/js/(apps|functions)\.js))'; then
