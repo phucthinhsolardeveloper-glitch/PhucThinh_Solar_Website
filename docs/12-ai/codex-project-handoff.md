@@ -90,4 +90,4 @@ Tuân thủ inspect -> understand -> plan -> implement -> test -> debug -> verif
 dài phải có checkpoint; cleanup phải đo trước và giữ rollback. Không chép lời
 hội thoại vào comment source. Sau milestone lớn hoặc bảo trì, cập nhật docs và
 lịch sử bảo trì. Báo cáo ngắn gọn bằng tiếng Việt, nêu rõ test, rủi ro và rollback.
-``` 
+```
