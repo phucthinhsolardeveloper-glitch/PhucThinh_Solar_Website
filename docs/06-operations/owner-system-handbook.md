@@ -34,6 +34,27 @@ ssh -i /home/admin01/.ssh/id_ed25519 root@222.255.182.182 \
 Nếu chưa chắc chọn lệnh nào, dùng `SAFE`. `FAST` tự chặn commerce, global
 layout, API, Admin, library, migration, Docker và script vận hành.
 
+### Quy tắc xử lý deploy bị dừng (dùng chung cho mọi AI agent)
+
+Không ngồi chờ hoặc chạy lại nguyên quy trình nhiều lần khi lệnh deploy dừng.
+Ngay lập tức phải:
+
+1. Xác nhận tiến trình còn chạy hay đã thoát, production image có đổi chưa.
+2. Lấy phần cuối log và chạy trace (`bash -x` hoặc chạy riêng bước lỗi) để xác
+   định chính xác lệnh trả mã khác 0.
+3. Phân loại lỗi: lỗi code/test thật, test stale/false positive, lỗi Docker/RAM,
+   hay lỗi mạng/SSH. Chỉ sửa đúng nguyên nhân; không nới assertion để làm xanh.
+4. Nếu lỗi là test stale, sửa guard để phản ánh dữ liệu và contract hiện hành,
+   commit/push rồi chạy lại SAFE một lần. Nếu là thiếu tài nguyên, kiểm tra
+   `free -h`, Docker và WSL trước khi thử lại.
+5. Không upload hoặc báo “đã deploy” khi chưa thấy image production đổi sang
+   đúng commit và smoke/healthcheck sau deploy PASS.
+
+Một lần SAFE có thể lâu vì build Docker và chạy toàn bộ Playwright. Theo dõi
+tiến độ bằng mốc rõ ràng (predeploy, Playwright, backup, upload, healthcheck),
+không tạo các phiên deploy song song. Đây là quy tắc vận hành bắt buộc cho
+Claude/Codex/agent khác dùng chung project.
+
 ## 2. Bản đồ hệ thống
 
 ```text
