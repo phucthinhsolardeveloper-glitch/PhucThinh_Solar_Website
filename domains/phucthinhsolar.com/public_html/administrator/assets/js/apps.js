@@ -1257,7 +1257,23 @@ function photoZone(eDrag,iDrag,eLoad)
 
 			if(lengthZone == 1)
 			{
-				$(iDrag).prop("files", e.originalEvent.dataTransfer.files);
+				/* `input.files` là thuộc tính read-only trong nhiều browser. Gán
+				   trực tiếp bằng jQuery có thể chỉ cập nhật preview nhưng khi submit
+				   lại không gửi file, khiến form lưu ảnh bị đứng/không nhất quán.
+				   Dùng DataTransfer để tạo FileList thật, giống thao tác chọn file. */
+				var input = $(iDrag).get(0);
+				var droppedFile = e.originalEvent.dataTransfer.files[0];
+				try
+				{
+					var transfer = new DataTransfer();
+					transfer.items.add(droppedFile);
+					input.files = transfer.files;
+				}
+				catch(error)
+				{
+					/* Browser cũ: giữ fallback cũ để không làm mất hỗ trợ kéo-thả. */
+					$(iDrag).prop("files", e.originalEvent.dataTransfer.files);
+				}
 				readImage($(iDrag),eLoad);
 			}
 			else if(lengthZone > 1)
