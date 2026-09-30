@@ -384,7 +384,6 @@ function createSortFiler()
 					url: 'api/filer.php',
 					type: 'POST',
 					dataType: 'json',
-					async: false,
 					data: {
 						id_parent: id_parent,
 						listid: listid,
@@ -453,7 +452,6 @@ function refreshFilerIfEmpty()
 		type: 'POST',
 		dataType: 'html',
 		url: 'api/filer.php',
-		async: false,
 		data: {
 			id_parent: id_parent,
 			com: com,
@@ -1088,7 +1086,6 @@ function slugCheck()
 					url: 'api/slug.php',
 					type: 'POST',
 					dataType: 'json',
-					async: false,
 					data: {
 						slug: slug,
 						id: id,
@@ -1373,7 +1370,6 @@ function login()
 		type: 'POST',
 		dataType: 'json',
 		url: 'api/login.php',
-		async: false,
 		data: {username:username,password:password,admin_csrf:ADMIN_CSRF},
 		success: function(result)
 		{
@@ -1769,12 +1765,21 @@ $(document).ready(function(){
 		});
 	}
 
-	/* Ckeditor */
+	/* CKEditor is expensive (core + plugins + toolbar). Initialise only the
+	   editor the user opens instead of blocking every edit page at load. */
 	if($(".form-control-ckeditor").length)
 	{
-		$(".form-control-ckeditor").each(function(){
-			var id = $(this).attr("id");
-			CKEDITOR.replace(id);
+		function initAdminCkeditor(element)
+		{
+			var field = $(element);
+			var id = field.attr("id");
+			if(!id || !window.CKEDITOR || CKEDITOR.instances[id]) return;
+			var editor = CKEDITOR.replace(id);
+			editor.once('instanceReady', function(){ editor.focus(); });
+		}
+
+		$(document).on('focusin', '.form-control-ckeditor', function(){
+			initAdminCkeditor(this);
 		});
 	}
 
@@ -1953,8 +1958,8 @@ $(document).ready(function(){
 			/* Holdon */
 			holdonOpen();
 
-			/* Check slug */
-			slugCheck();
+			/* Slug uniqueness is checked authoritatively on the server during save.
+			   Avoid a synchronous AJAX request here because it freezes the Admin UI. */
 
 			/* Elements */
 			var flag = true;
@@ -2153,7 +2158,7 @@ $(document).ready(function(){
 				url: 'api/status.php',
 				type: 'POST',
 				dataType: 'json',
-				data: {
+			data: {
 					admin_csrf: ADMIN_CSRF,
 					id: id,
 					table: table,
@@ -2368,7 +2373,6 @@ $(document).ready(function(){
 				url: 'api/copy.php',
 				type: 'POST',
 				dataType: 'json',
-				async: false,
 				data: {
 					admin_csrf: ADMIN_CSRF,
 					id: id,
@@ -2498,7 +2502,6 @@ $(document).ready(function(){
 			type: 'POST',
 			dataType: 'json',
 			url: 'api/filer.php',
-			async: false,
 			data: {
 				id: id,
 				id_parent: id_parent,
@@ -2588,7 +2591,6 @@ $(document).ready(function(){
 				type: 'POST',
 				enctype: 'multipart/form-data',
 				dataType: 'json',
-				async: false,
 				beforeSend: function(){
 					holdonOpen();
 				},

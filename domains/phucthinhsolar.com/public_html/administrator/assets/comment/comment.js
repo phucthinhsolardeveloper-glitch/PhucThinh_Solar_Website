@@ -99,7 +99,6 @@ $.fn.comments = function(options){
             url: base_url + '?get=status',
             method: 'POST',
             dataType: 'json',
-            async: false,
             data: {
                 id: id,
                 status: status,
@@ -151,7 +150,6 @@ $.fn.comments = function(options){
                             url: base_url + '?get=delete',
                             method: 'POST',
                             dataType: 'json',
-                            async: false,
                             data: {
                                 id: id,
                                 admin_csrf: ADMIN_CSRF
@@ -244,7 +242,6 @@ $.fn.comments = function(options){
             url: base_url + '?get=limitLists',
             method: 'GET',
             dataType: 'json',
-            async: false,
             data: {
                 limitFrom: limitFrom,
                 limitGet: limitGet,
@@ -298,7 +295,6 @@ $.fn.comments = function(options){
             url: base_url + '?get=limitReplies',
             method: 'GET',
             dataType: 'json',
-            async: false,
             data: {
                 limitFrom: limitFrom,
                 limitGet: limitGet,
@@ -356,7 +352,6 @@ $.fn.comments = function(options){
                 enctype: 'multipart/form-data',
                 dataType: 'json',
                 data: formData,
-                async: false,
                 processData: false,
                 contentType: false,
                 cache: false,
