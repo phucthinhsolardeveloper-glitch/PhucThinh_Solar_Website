@@ -653,12 +653,10 @@ else $pdpSupportLabel = 'Video sản phẩm';
     <?php if($hasProductSpecs) { ?>
     <section class="pts-pdp-content-section pts-pdp-spec-section" id="thong-so-ky-thuat" aria-labelledby="pts-pdp-spec-title">
         <h2 class="pts-pdp-section-title" id="pts-pdp-spec-title">Thông số kỹ thuật</h2>
-        <p class="pts-pdp-spec-intro">Các thông số có thể thay đổi theo từng model. Vui lòng đối chiếu tài liệu chính thức trước khi công bố.</p>
         <?php if(!empty($pdpFullSpecRows)) { ?>
         <div class="table-responsive"><table class="table mb-0"><thead><tr><th>Hạng mục</th><th>Thông tin theo model</th></tr></thead><tbody>
             <?php foreach($pdpFullSpecRows as $specRow) { $specHasValue = $specRow[1] !== ''; ?><tr class="<?=$specHasValue ? '' : 'is-placeholder'?>"><th><?=htmlspecialchars($specRow[0], ENT_QUOTES, 'UTF-8')?></th><td><?=$specHasValue ? htmlspecialchars(htmlspecialchars_decode($specRow[1], ENT_QUOTES), ENT_QUOTES, 'UTF-8') : 'Đang cập nhật'?></td></tr><?php } ?>
         </tbody></table></div>
-        <p class="pts-pdp-spec-footnote">Đối chiếu tài liệu của đúng mã sản phẩm trước khi công bố.</p>
         <?php } ?>
         <?php if($useLegacySpecs) { ?><div class="pts-product-content pts-pdp-legacy-specs"><?=$productLegacySpecs?></div><?php } ?>
     </section>
