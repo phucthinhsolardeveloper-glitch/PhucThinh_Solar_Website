@@ -198,7 +198,10 @@ scp "${scp_args[@]}" "${release_files[@]}" "$deploy_host:$remote_release/"
 remote "cd $remote_release && sha256sum -c SHA256SUMS"
 
 step "Build, chuyển image và chờ healthcheck"
-remote "$stack_root/scripts/deploy-release.sh $remote_release"
+# Chạy đúng deploy script đã đi cùng archive và được checksum. Không dùng
+# bản copy cố định trên VPS: bản đó có thể cũ hơn release và lấy nhầm runtime
+# Dockerfile của stack (đã từng khiến release PHP 8.1 build bằng PHP 7.4).
+remote "tar -xzf $remote_release/deployment-tools-${release_id}.tar.gz -C $remote_release deploy/vps && bash $remote_release/deploy/vps/scripts/deploy-release.sh $remote_release"
 activated=1
 
 step "Xóa cache sinh lại được"
