@@ -51,7 +51,19 @@ fi
 
 install -d -m 0755 "$build_dir/public_html" "$build_dir/app"
 rsync -a "$release_dir/public_html/" "$build_dir/public_html/"
-rsync -a "$stack_root/app/" "$build_dir/app/"
+# The runtime definition is part of the checksummed release. Falling back to
+# the stack copy keeps older releases deployable, but a new release must not
+# silently inherit an old PHP base image from the VPS.
+if [ -d "$release_dir/deploy/vps/app" ]; then
+    rsync -a "$release_dir/deploy/vps/app/" "$build_dir/app/"
+else
+    rsync -a "$stack_root/app/" "$build_dir/app/"
+fi
+
+if ! grep -Eq '^FROM[[:space:]]+php:8\.1-apache([[:space:]]|$)' "$build_dir/app/Dockerfile"; then
+    echo "FAIL: release runtime không phải PHP 8.1; dừng trước khi build/activate." >&2
+    exit 1
+fi
 
 new_image="phucthinhsolar-web:$release_id"
 docker build --pull=false --label "com.phucthinhsolar.commit=$commit" -f "$build_dir/app/Dockerfile" -t "$new_image" "$build_dir"
