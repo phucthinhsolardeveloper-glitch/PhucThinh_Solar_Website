@@ -208,7 +208,7 @@ step "Xóa cache sinh lại được"
 remote "page_count=\$(find $stack_root/shared/caches -maxdepth 1 -type f -name 'cache_*' | wc -l); asset_count=\$(find $stack_root/shared/assets-caches -maxdepth 1 -type f | wc -l); find $stack_root/shared/caches -maxdepth 1 -type f -name 'cache_*' -delete; find $stack_root/shared/assets-caches -maxdepth 1 -type f -delete; echo CLEARED_page_cache=\$page_count CLEARED_asset_cache=\$asset_count"
 
 step "Verify stack và schema preflight chỉ đọc"
-remote "cd $stack_root && ./scripts/verify-stack.sh && web_container=\$(docker compose ps -q web) && docker cp releases/$release_id/migrations/000_preflight_production.php \$web_container:/tmp/pts-preflight.php && docker exec \$web_container php /tmp/pts-preflight.php --require-all"
+remote "bash $remote_release/deploy/vps/scripts/verify-stack.sh && cd $stack_root && web_container=\$(docker compose ps -q web) && docker cp releases/$release_id/migrations/000_preflight_production.php \$web_container:/tmp/pts-preflight.php && docker exec \$web_container php /tmp/pts-preflight.php --require-all"
 
 step "HTTP smoke test public"
 for path in / /san-pham/ /san-pham/den-pha-nang-luong-mat-troi-jindian-jd-t300-300w /gio-hang/ /tin-tuc/; do
