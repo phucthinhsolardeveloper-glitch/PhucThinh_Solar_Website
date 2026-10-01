@@ -760,14 +760,36 @@
 			}
 		}
 		else
-		{		
+		{
+			global $emailer;
+			/* Giữ mật khẩu gốc trước khi hash để còn gửi qua email cho tài
+			   khoản mới (nếu có email) - hash xong thì không đọc lại được. */
+			$plainPassword = !empty($data['password']) ? $data['password'] : '';
 			if(!empty($data['password']))
 			{
 				$data['password'] = adminPasswordHash($data['password']);
 			}
-			
+
 			if($d->insert('user',$data))
 			{
+				/* Email không bắt buộc khi tạo tài khoản admin; chỉ gửi khi
+				   admin có nhập, và gửi thất bại không được chặn việc tạo
+				   tài khoản đã thành công (cùng nguyên tắc với lead form). */
+				if(!empty($data['email']) && $plainPassword !== '' && isset($emailer) && is_object($emailer))
+				{
+					$newAdminMessage = $emailer->markdown('notification/admin', array(
+						'copy' => array(
+							'heading' => 'Tài khoản Admin mới',
+							'intro' => 'Tài khoản quản trị website của bạn đã được tạo. Vui lòng đổi mật khẩu sau khi đăng nhập lần đầu.',
+							'closing' => 'Nếu bạn không yêu cầu tài khoản này, vui lòng liên hệ quản trị website.'
+						),
+						'fields' => array(
+							'Tài khoản' => $data['username'],
+							'Mật khẩu' => $plainPassword
+						)
+					));
+					$emailer->send('customer', array(array('name' => $data['fullname'], 'email' => $data['email'])), 'Tài khoản Admin mới - '.$data['username'], $newAdminMessage);
+				}
 				$func->transfer("Lưu dữ liệu thành công", adminReturnUrl("index.php?com=user&act=man_admin&p=".$curPage));
 			}
 			else

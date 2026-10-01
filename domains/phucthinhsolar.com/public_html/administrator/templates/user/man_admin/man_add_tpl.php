@@ -62,8 +62,8 @@
 						<input type="email" class="form-control text-sm" name="data[email]" id="email" placeholder="Email" value="<?=(!empty($flash->has('email'))) ? $flash->get('email') : @$item['email']?>">
 					</div>
 					<div class="form-group col-md-4">
-						<label for="phone">Điện thoại:</label>
-						<input type="text" class="form-control text-sm" name="data[phone]" id="phone" placeholder="Điện thoại" value="<?=(!empty($flash->has('phone'))) ? $flash->get('phone') : @$item['phone']?>" required>
+						<label for="phone">Điện thoại (không bắt buộc):</label>
+						<input type="text" class="form-control text-sm" name="data[phone]" id="phone" placeholder="Điện thoại" value="<?=(!empty($flash->has('phone'))) ? $flash->get('phone') : @$item['phone']?>">
 					</div>
 					<div class="form-group col-md-4">
 						<label for="gender">Giới tính (không bắt buộc):</label>
