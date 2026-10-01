@@ -95,7 +95,7 @@
                         <input id="dealer-company" type="text" name="dataNewsletter[company]" class="pts-dl-input" autocomplete="organization" maxlength="180" required placeholder="Tên đơn vị của bạn">
                     </div>
                     <input type="hidden" name="recaptcha_response_newsletter2" id="recaptchaResponseNewsletter2">
-                    <button type="submit" name="submit-newsletter2" class="pts-btn pts-btn-gold pts-dl-submit">Đăng ký ngay <i class="fas fa-arrow-right" aria-hidden="true"></i></button>
+                    <button type="submit" name="submit-newsletter2" value="1" class="pts-btn pts-btn-gold pts-dl-submit">Đăng ký ngay <i class="fas fa-arrow-right" aria-hidden="true"></i></button>
                 </form>
             </div>
         </div>
