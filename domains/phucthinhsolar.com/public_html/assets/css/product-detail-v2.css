@@ -111,11 +111,15 @@
 .pts-pdp-v2 .title-product-orther{margin:0 0 30px!important;text-align:left!important}
 .pts-pdp-v2 .title-product-orther>span{padding:0!important;color:var(--pdp-navy)!important;font-size:clamp(27px,2.2vw,36px)!important;font-weight:780!important;letter-spacing:-.025em;text-transform:none!important}
 .pts-pdp-v2 .title-product-orther>span:after,.pts-pdp-v2 .title-product-orther>span:before{display:none!important}
-.pts-pdp-v2 .pts-pdp-related-products .product-card{height:100%}
+.pts-pdp-v2 .pts-pdp-related-products .owl-stage{display:flex}
+.pts-pdp-v2 .pts-pdp-related-products .owl-item{display:flex;height:auto}
+.pts-pdp-v2 .pts-pdp-related-products .product-card{width:100%;height:auto}
+.pts-pdp-v2 .pts-pdp-related-products .product-card .price-product{padding-right:2px!important}
+.pts-pdp-v2 .pts-pdp-related-products .product-card-btns{position:static!important;display:flex!important;width:100%;align-items:center;flex-direction:column;gap:4px!important;margin-top:auto;padding:0 2px!important}
+.pts-pdp-v2 .pts-pdp-related-products .product-card-btns>a{flex:0 0 auto}
 .pts-pdp-v2 .pts-pdp-related-products .product-card-img{background:#f7f9fb!important}
-/* 2026-09-29: nút nổi góc ảnh vẫn giữ đúng vị trí/kiểu tròn như thiết kế gốc,
-   chỉ kéo rộng ra đủ hiện thêm chữ cạnh icon thay vì chỉ icon (sếp yêu cầu -
-   chỉ áp dụng khối "Sản phẩm liên quan" PDP, không đổi nơi khác). */
+/* Giữ CTA dạng gọn có nhãn trong khối sản phẩm liên quan; cụm nút nằm trong
+   luồng card để mọi card thẳng hàng và không chồng lên tên, thông số hoặc giá. */
 .pts-pdp-v2 .pts-pdp-related-products .pts-card-add,
 .pts-pdp-v2 .pts-pdp-related-products .pts-card-ask{width:auto!important;padding:0 16px!important;gap:8px;border-radius:999px!important;}
 .pts-pdp-v2 .pts-pdp-related-products .pts-card-action-label{display:inline!important}

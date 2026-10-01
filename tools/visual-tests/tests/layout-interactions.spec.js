@@ -745,6 +745,42 @@ test('legacy child category redirects permanently to its hierarchical canonical 
   expect(canonical.ok()).toBeTruthy();
 });
 
+test('related product cards keep prices and actions aligned without overlap', async ({ page }) => {
+  await page.goto('/san-pham/tam-pin-nang-luong-mat-troi-bct-300m-24', { waitUntil: 'domcontentloaded' });
+
+  const cards = page.locator('.pts-pdp-related-products .owl-item.active .product-card');
+  await expect(cards.first()).toBeVisible();
+  expect(await cards.count()).toBeGreaterThan(1);
+
+  const geometry = await cards.evaluateAll(nodes => nodes.map(card => {
+    const box = selector => card.querySelector(selector)?.getBoundingClientRect() || null;
+    const price = box('.price-product');
+    const actions = box('.product-card-btns');
+    const primary = box('.pts-card-add, .pts-card-ask');
+    const detail = box('.pts-card-detail');
+    const cardBox = card.getBoundingClientRect();
+    return {
+      cardBottom: cardBox.bottom,
+      priceTop: price?.top,
+      priceBottom: price?.bottom,
+      actionsTop: actions?.top,
+      primaryTop: primary?.top,
+      detailTop: detail?.top,
+      actionsBottom: actions?.bottom
+    };
+  }));
+  const spread = values => Math.max(...values) - Math.min(...values);
+
+  expect(spread(geometry.map(item => item.cardBottom))).toBeLessThanOrEqual(1);
+  expect(spread(geometry.map(item => item.priceTop))).toBeLessThanOrEqual(1);
+  expect(spread(geometry.map(item => item.primaryTop))).toBeLessThanOrEqual(1);
+  expect(spread(geometry.map(item => item.detailTop))).toBeLessThanOrEqual(1);
+  for (const item of geometry) {
+    expect(item.actionsTop).toBeGreaterThanOrEqual(item.priceBottom - 1);
+    expect(item.actionsBottom).toBeLessThanOrEqual(item.cardBottom + 1);
+  }
+});
+
 test('parent type query and legacy product links canonicalize without changing results', async ({ page, request }) => {
   // Kết quả của URL dạng query phải trùng URL canonical. So sánh chính hai tập
   // kết quả thay vì chốt cứng số sản phẩm — số đó đổi theo dữ liệu thật.
