@@ -241,6 +241,12 @@ hay migration runner. Thông tin này chỉ là lịch sử; production hiện �
 - Lịch sử gồm lô ORIANA `san-pham-20260831-da-bo-sung-oriana.xlsx` và file master `san-pham-master-fixed-2026-09-01.xlsx`; từ 2026-09-12 các file nguồn nằm tại `D:\LinhTinh01\artifacts\`, tiếp tục được giữ ngoài Git/release. Xem `docs/13-handoffs/2026-09-12-source-assets-moved-to-d-drive.md`.
 - Chứng nhận và video chỉ hiển thị khi admin nhập dữ liệu thật.
 - Dữ liệu kỹ thuật thật sẽ được cập nhật từ file Excel bên ngoài; không chạy migration 006 apply nếu chưa có phê duyệt riêng.
+- Rà soát workbook `san-pham-20261001-152706NEWUpdate.xlsx` ngày 2026-10-01:
+  đọc được 399 dòng (300 có thay đổi, 99 không đổi), nhưng preview chặn batch vì
+  185 dòng tham chiếu `photo_feed` chưa có file/không phải PNG, một dòng ghi chú
+  thông số sai mẫu và 9 dòng đưa giá gốc hiện hữu về 0. Không import production
+  cho tới khi xác nhận các giá trị này; ảnh Shopping tiếp tục nhập bằng file ảnh
+  riêng sau khi upload vào `upload/product`.
 - Nội dung mô tả chi tiết từng sản phẩm cần biên tập theo tài liệu kỹ thuật thật.
 - SMTP production và extension PHP trên hosting chưa được xác minh; chạy
   `migrations/000_check_hosting_runtime.php --require-production` khi deploy.

@@ -469,6 +469,16 @@ function productBulkSpecLineParts($line)
     return $parts;
 }
 
+function productBulkSpecText($value)
+{
+    $value = (string) $value;
+    /* PHP strip_tags() coi giá trị kỹ thuật như "<105 kg" là một thẻ HTML
+       và làm mất toàn bộ nội dung. Chỉ gọi strip_tags khi chuỗi thực sự có
+       thẻ bắt đầu bằng tên phần tử; dấu so sánh trong thông số phải được giữ. */
+    if (preg_match('/<\/?[a-z][a-z0-9]*(?:\s[^>]*)?>/iu', $value)) $value = strip_tags($value);
+    return trim($value);
+}
+
 function productBulkParseSpecLines($value, $allowDuplicateLabels=false)
 {
     $result = array('specs' => array(), 'errors' => array());
@@ -483,12 +493,12 @@ function productBulkParseSpecLines($value, $allowDuplicateLabels=false)
         $firstPart = trim($parts[0]);
         $hasExplicitKey = count($parts) >= 3 && preg_match('/^[a-z0-9_]+$/', strtolower($firstPart));
         $specKey = $hasExplicitKey ? strtolower($firstPart) : '';
-        $label = trim(strip_tags($hasExplicitKey ? $parts[1] : $parts[0]));
+        $label = productBulkSpecText($hasExplicitKey ? $parts[1] : $parts[0]);
         /* File đã xuất trước bản vá không escape dấu | nằm trong giá trị
            (ví dụ "110-240V | 50/60Hz" hoặc "STC || NOCT"). Ghép nguyên
            phần còn lại để các file production cũ vẫn nhập lại được. */
         $valueParts = array_slice($parts, $hasExplicitKey ? 2 : 1);
-        $specValue = trim(strip_tags(implode('|', $valueParts)));
+        $specValue = productBulkSpecText(implode('|', $valueParts));
         if($label === '' || $specValue === '') {
             $result['errors'][] = 'Dòng '.($lineNumber + 1).' thiếu tên thông số hoặc giá trị';
             continue;

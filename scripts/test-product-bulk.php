@@ -155,6 +155,8 @@ try {
     testAssert(empty($legacyFormSpecs['errors']) && count($legacyFormSpecs['specs']) === 2, 'CRUD form giữ được thông số legacy trùng nhãn');
     $escapedPipeSpecs = productBulkParseSpecLines('Điện áp / Tần số | 110-240V \\| 50/60Hz', true);
     testAssert(empty($escapedPipeSpecs['errors']) && $escapedPipeSpecs['specs'][0]['value'] === '110-240V | 50/60Hz', 'Parser giữ dấu gạch đứng trong giá trị thông số đã escape');
+    $comparisonSpecs = productBulkParseSpecLines("Khối lượng | <105 kg\nHiệu suất | >98%");
+    testAssert(empty($comparisonSpecs['errors']) && $comparisonSpecs['specs'][0]['value'] === '<105 kg' && $comparisonSpecs['specs'][1]['value'] === '>98%', 'Parser giữ dấu so sánh trong thông số kỹ thuật');
     $legacyPipeSpecs = productBulkParseSpecLines("Điện áp / Tần số | 110-240V | 50/60Hz\nĐiều kiện thử nghiệm | STC || NOCT", true);
     testAssert(
         empty($legacyPipeSpecs['errors'])
