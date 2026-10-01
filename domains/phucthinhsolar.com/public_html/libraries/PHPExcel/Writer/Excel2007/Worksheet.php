@@ -768,7 +768,11 @@ class PHPExcel_Writer_Excel2007_Worksheet extends PHPExcel_Writer_Excel2007_Writ
             $objWriter->writeAttribute('ref', str_replace('$', '', $range));
 
             $columns = $pSheet->getAutoFilter()->getColumns();
-            if (count($columns > 0)) {
+            /* Lỗi ngoặc có sẵn: count($columns > 0) so mảng với 0 (luôn true
+               trong PHP), không phải đếm phần tử - PHP 7.4 coi count(true)=1
+               nên "vô tình chạy đúng"; PHP 8 ném TypeError fatal vì count()
+               không nhận bool. Sửa đúng ý định: chỉ ghi khi thật sự có cột. */
+            if (count($columns) > 0) {
                 foreach ($columns as $columnID => $column) {
                     $rules = $column->getRules();
                     if (count($rules) > 0) {

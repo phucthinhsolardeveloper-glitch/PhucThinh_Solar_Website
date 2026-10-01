@@ -23,6 +23,12 @@
 $_SERVER['SERVER_NAME'] = 'localhost';
 define('LIBRARIES', '/var/www/html/libraries/');
 require LIBRARIES.'config.php';
+/* config-type.php điền $config['product']/['news']/['static']/['photo']/
+   ['tags']/['newsletter'] (danh sách type hợp lệ cho từng com). Thiếu require
+   này khiến typesFor() luôn rơi về fallback type='' cho MỌI com dùng type,
+   tức là toàn bộ nhóm màn hình đó chỉ test được trang "Trang không tồn tại"
+   thay vì nội dung thật - sweep báo sạch dù chưa thực sự chạy qua code. */
+require LIBRARIES.'config-type.php';
 require LIBRARIES.'autoload.php';
 new AutoLoad();
 $d = new PDODb($config['database']);

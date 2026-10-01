@@ -175,10 +175,17 @@ Tại lần rà soát ngày 2026-09-29, VPS giữ đúng hai full backup ứng d
 `20260929T013137Z-full` và `20260929T012822Z-full`; cả hai đã được script backup
 xác minh checksum khi tạo. Các bản cũ hơn đã được dọn theo chính sách lưu giữ.
 
+Theo gói hạ tầng hiện hành, CloudFly cũng cung cấp backup/snapshot tự động cho
+toàn VPS. Đây là lớp khôi phục sự cố do nhà cung cấp quản lý, tách biệt với
+`/srv/phucthinhsolar/backups`; khi kiểm tra định kỳ cần đối chiếu lịch chạy,
+retention và khả năng restore trên CloudFly Console.
+
 **Phân biệt các lớp backup:**
 
 ```text
-WARN: chưa có /usr/local/sbin/pts-backup-offsite; script ứng dụng chưa có uploader riêng.
+WARN: chưa có /usr/local/sbin/pts-backup-offsite; script ứng dụng chưa có uploader
+riêng. Cảnh báo này chỉ nói về lớp copy sang nhà cung cấp/object storage độc lập,
+không có nghĩa là CloudFly backup/snapshot đang thiếu.
 ```
 
 CloudFly backup/snapshot là lớp khôi phục toàn VPS do nhà cung cấp quản lý, nằm
@@ -322,12 +329,16 @@ hết hỗ trợ; khả năng build lại từ Internet trong vài năm tới kh
 
 ## 9. Việc còn phải làm trên VPS
 
-- [ ] Tạo `/usr/local/sbin/pts-backup-offsite`; bản tải về máy phát triển chưa
-      phải kho off-site độc lập lâu dài.
+- [x] Duy trì backup/snapshot tự động của CloudFly theo gói hạ tầng hiện hành;
+      định kỳ đối chiếu lịch chạy, retention và restore trên CloudFly Console.
+- [ ] Tạo `/usr/local/sbin/pts-backup-offsite` nếu cần thêm một bản copy độc lập
+      ngoài CloudFly; đây là lớp bổ sung, không phải điều kiện để coi hệ thống
+      hiện đã có backup.
 - [ ] Xóa bản ghi DNS `staging.phucthinhsolar.com` tại P.A; Caddy đã ngừng phục
       vụ hostname này.
 - [x] Chạy `export-runtime-images.sh` trên VPS.
-- [ ] Mang bundle runtime image sang kho off-site độc lập.
+- [ ] Mang bundle runtime image sang kho lưu trữ độc lập nếu muốn thêm lớp bảo vệ
+      ngoài CloudFly; không đồng nhất mục này với backup/snapshot CloudFly.
 - [ ] Chạy smoke test production-safe đầy đủ theo
       [runbook mục 10](vps-cloudfly-runbook.md).
 - [x] Tạo user `deploy` có sudo và xác minh ở phiên SSH riêng.

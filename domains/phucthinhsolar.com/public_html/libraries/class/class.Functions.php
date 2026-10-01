@@ -143,9 +143,9 @@
 					$_FILES[$file]['name'] = $newname.'.'.$ext;
 				}
 
-				if(!copy($_FILES[$file]["tmp_name"], $folder.$_FILES[$file]['name']))	
+				if(!copy($_FILES[$file]["tmp_name"], $folder.$_FILES[$file]['name']))
 				{
-					if(!move_uploaded_file($_FILES[$file]["tmp_name"], $folder.$_FILES[$file]['name']))	
+					if(!move_uploaded_file($_FILES[$file]["tmp_name"], $folder.$_FILES[$file]['name']))
 					{
 						return false;
 					}
@@ -180,7 +180,7 @@
 		public function checkURL($index=false)
 		{
 			global $configBase;
-			
+
 			$url = '';
 			$urls = array('index','index.html','trang-chu','trang-chu.html');
 
@@ -380,7 +380,7 @@
 				{
 					unset($search[$type]);
 				}
-				
+
 				$output = preg_replace($search, '', $input);
 			}
 
@@ -435,9 +435,9 @@
 		public function checkPermission($com='', $act='', $type='', $array=null, $case='')
 		{
 			global $loginAdmin;
-			
+
 			$str = $com;
-			
+
 			if($act) $str .= '_'.$act;
 
 			if($case == 'phrase-1')
@@ -477,7 +477,7 @@
 		public function checkRole()
 		{
 			global $config, $loginAdmin;
-			
+
 			if((!empty($_SESSION[$loginAdmin]['role']) && $_SESSION[$loginAdmin]['role'] == 3) || !empty($config['website']['debug-developer'])) return false;
 			else return true;
 		}
@@ -519,7 +519,7 @@
 					foreach($v as $table)
 					{
 						$result = $this->d->rawQuery("$action TABLE $table");
-						
+
 						if(!empty($result))
 						{
 							$row[$k]['table'] = $result[0]['Table'];
@@ -897,12 +897,12 @@
 		}
 
 		/* Lấy youtube */
-		public function getYoutube($url='') 
+		public function getYoutube($url='')
 		{
 			if($url != '')
 			{
 			    $parts = parse_url($url);
-			    if(isset($parts['query'])) 
+			    if(isset($parts['query']))
 			    {
 			        parse_str($parts['query'], $qs);
 			        if(isset($qs['v'])) return $qs['v'];
@@ -1008,7 +1008,7 @@
 		// 	{
 		// 		$info['hasURL'] = true;
 		// 	}
-			
+
 		// 	if($config['website']['image']['hasWebp'])
 		// 	{
 		// 		if(!$info['sizes'])
@@ -1162,7 +1162,7 @@
     return $result;
 }
 
-		
+
 
 		/* Get list gallery */
 		public function listsGallery($file='')
@@ -1199,7 +1199,7 @@
 
 			/* Get markdown */
 			$str = $this->markdown('gallery/admin', $params);
-			
+
 			return $str;
 		}
 
@@ -1222,7 +1222,7 @@
 				$this->d->rawQuery("delete from #_gallery where id in ($placeholders)", $ids);
 			}
 		}
-		
+
 		/* Generate hash */
 		public function generateHash()
 		{
@@ -1278,14 +1278,18 @@
 		/* Redirect */
 		public function redirect($url='', $response=null)
 		{
-			header("location:$url", true, $response);
+			/* PHP 8.1 deprecate truyền null cho tham số $response_code (int) của
+			   header() dù đó là giá trị mặc định cũ - gọi thiếu/đủ tham số tùy
+			   theo có mã response hay không thay vì truyền null trực tiếp. */
+			if($response === null) header("location:$url", true);
+			else header("location:$url", true, $response);
 			exit();
 		}
 
 		/* Dump */
 		public function dump($value='', $exit=false)
 		{
-			echo "<pre>";	
+			echo "<pre>";
 			print_r($value);
 			echo "</pre>";
 			if($exit) exit();
@@ -1424,7 +1428,7 @@
 				$text = preg_replace("/\-\-\-/","-",$text);
 				$text = preg_replace("/\-\-/","-",$text);
 				$text = '@'.$text.'@';
-				$text = preg_replace('/\@\-|\-\@|\@/', '', $text);	
+				$text = preg_replace('/\@\-|\-\@|\@/', '', $text);
 			}
 
 			return $text;
@@ -1687,8 +1691,11 @@
 		        $widthX = $width_old / $width;
 		        $heightX = $height_old / $height;
 		        $x = min($widthX, $heightX);
-		        $cropWidth = ($width_old - $width * $x) / 2;
-		        $cropHeight = ($height_old - $height * $x) / 2;
+		        /* PHP 8.1 deprecate truyền float lẻ cho tham số int của GD
+		           (imagecopyresampled $src_x/$src_y/$src_w/$src_h bên dưới) -
+		           làm tròn ngay tại đây thay vì giữ float nguyên như cũ. */
+		        $cropWidth = (int) round(($width_old - $width * $x) / 2);
+		        $cropHeight = (int) round(($height_old - $height * $x) / 2);
 		    }
 		    switch($info[2])
 		    {
@@ -1801,7 +1808,7 @@
 						imagejpeg($image, $filename, 90);
 					}
 
-				} 
+				}
 			}
 		}
 
@@ -1849,9 +1856,9 @@
 					$_FILES[$file]['name'] = $newname.'.'.$ext;
 				}
 
-				if(!copy($_FILES[$file]["tmp_name"], $folder.$_FILES[$file]['name']))	
+				if(!copy($_FILES[$file]["tmp_name"], $folder.$_FILES[$file]['name']))
 				{
-					if(!move_uploaded_file($_FILES[$file]["tmp_name"], $folder.$_FILES[$file]['name']))	
+					if(!move_uploaded_file($_FILES[$file]["tmp_name"], $folder.$_FILES[$file]['name']))
 					{
 						return false;
 					}
@@ -1965,19 +1972,19 @@
 			if($files)
 			{
 				foreach($files as $file)
-				{ 
+				{
 					if(is_file($file))
-					{ 
+					{
 						if(!filesize($file))
-						{ 
-							unlink($file); 
-						} 
+						{
+							unlink($file);
+						}
 					}
 					else
-					{ 
-						$this->removeZeroByte($file); 
+					{
+						$this->removeZeroByte($file);
 					}
-				} 
+				}
 			}
 		}
 
@@ -2312,8 +2319,12 @@
 			$width = $image_w;
 			$height = $image_h;
 
-			if($new_height && !$new_width) $new_width = $width * ($new_height / $height);
-			else if($new_width && !$new_height) $new_height = $height * ($new_width / $width);
+			/* PHP 8.1 deprecate truyền float lẻ cho tham số int của GD
+			   (imagecreatetruecolor/imagecopyresampled bên dưới dùng trực
+			   tiếp $new_width/$new_height) - làm tròn ngay khi tính theo tỉ
+			   lệ thay vì giữ float suốt hàm như cũ. */
+			if($new_height && !$new_width) $new_width = (int) round($width * ($new_height / $height));
+			else if($new_width && !$new_height) $new_height = (int) round($height * ($new_width / $width));
 
 			$image_ext = explode('.', $image_url);
 			$image_ext = trim(strtolower(end($image_ext)));
@@ -2353,29 +2364,33 @@
 			if($zoom_crop == 3)
 			{
 				$final_height = $height * ($new_width / $width);
-				if($final_height > $new_height) $new_width = $width * ($new_height / $height);
-				else $new_height = $final_height;
+				if($final_height > $new_height) $new_width = (int) round($width * ($new_height / $height));
+				else $new_height = (int) round($final_height);
 			}
 
+			/* Chốt lại thành int trước khi đưa vào GD - phòng còn nhánh nào
+			   phía trên lọt mất chưa làm tròn float. */
+			$new_width = (int) round($new_width);
+			$new_height = (int) round($new_height);
 			$canvas = imagecreatetruecolor($new_width, $new_height);
 			imagealphablending($canvas, false);
 			$color = imagecolorallocatealpha($canvas, 255, 255, 255, 0);
 			imagefill ($canvas, 0, 0, $color);
-			
+
 			if($zoom_crop == 2)
 			{
 				$final_height = $height * ($new_width / $width);
 				if($final_height > $new_height)
 				{
 					$origin_x = $new_width / 2;
-					$new_width = $width * ($new_height / $height);
-					$origin_x = round($origin_x - ($new_width / 2));
+					$new_width = (int) round($width * ($new_height / $height));
+					$origin_x = (int) round($origin_x - ($new_width / 2));
 				}
 				else
 				{
 					$origin_y = $new_height / 2;
-					$new_height = $final_height;
-					$origin_y = round($origin_y - ($new_height / 2));
+					$new_height = (int) round($final_height);
+					$origin_y = (int) round($origin_y - ($new_height / 2));
 				}
 			}
 
@@ -2458,7 +2473,7 @@
 				$options = $args;
 				$overlay_url = $args['watermark'];
 			}
-			
+
 			$upload_dir = '';
 			$folder_old = dirname($image_url).'/';
 
@@ -2503,17 +2518,17 @@
 
 					default: die("UNKNOWN IMAGE TYPE: $overlay_url");
 				}
-				
+
 				$this->filterOpacity($overlay_image,$opacity);
 				$overlay_width = imagesx($overlay_image);
 				$overlay_height = imagesy($overlay_image);
-				$overlay_padding = 5;				
+				$overlay_padding = 5;
 		        imagealphablending($canvas, true);
-				
+
 				if(min($_new_width,$_new_height) <= 300) $per_scale = $per_small_scale;
-					
-				$oz = max($overlay_width,$overlay_height);				
-				
+
+				$oz = max($overlay_width,$overlay_height);
+
 				if($overlay_width > $overlay_height)
 				{
 					$scale = $_new_width/$oz;
@@ -2532,7 +2547,7 @@
 				$scale_w = $new_overlay_width/$new_overlay_height;
 				$scale_h = $new_overlay_height/$new_overlay_width;
 				$new_overlay_height = $new_overlay_width/$scale_w;
-				
+
 				if($new_overlay_height > $_new_height)
 				{
 					$new_overlay_height = $_new_height / $per_scale;
@@ -2560,12 +2575,12 @@
 				}
 				if($new_overlay_width < $min_width_w && $_new_width <= $min_width_w*3)
 				{
-					$new_overlay_width = $min_width_w;	
+					$new_overlay_width = $min_width_w;
 					$new_overlay_height = $new_overlay_width * $scale_h;
 				}
 				$new_overlay_width = round($new_overlay_width);
 				$new_overlay_height = round($new_overlay_height);
-				
+
 				switch($options['position'])
 				{
 					case 1:
@@ -2612,13 +2627,21 @@
 						$khoancachx = abs($_new_width - $new_overlay_width)/2;
 						$khoancachy = abs($_new_height - $new_overlay_height)/2;
 						break;
-					
+
 					default:
 						$khoancachx = $overlay_padding;
 						$khoancachy = $overlay_padding;
 						break;
 				}
-				
+
+	            /* PHP 8.1 deprecate truyen float le cho tham so int cua GD;
+	               phep chia/2 o cac case lech tam ben tren co the ra so le du
+	               new_overlay_width/height da round(). Chot int truoc khi goi
+	               GD thay vi rai (int) o tung case switch phia tren. */
+	            $new_overlay_width = (int) $new_overlay_width;
+	            $new_overlay_height = (int) $new_overlay_height;
+	            $khoancachx = (int) round($khoancachx);
+	            $khoancachy = (int) round($khoancachy);
 	            $overlay_new_image = imagecreatetruecolor($new_overlay_width, $new_overlay_height);
 	            imagealphablending($overlay_new_image, false);
 	            imagesavealpha($overlay_new_image, true);
@@ -2627,7 +2650,7 @@
 				imagealphablending($canvas, false);
 				imagesavealpha($canvas, true);
 			}
-			
+
 			if($preview)
 			{
 				$upload_dir = '';
@@ -2699,7 +2722,7 @@
 				}
 			}
 
-			return $result;	
+			return $result;
 		}
 
 		/* Get permission */
@@ -2713,7 +2736,7 @@
 				if($v["id"] == (int)@$id_permission) $selected = "selected";
 				else $selected = "";
 
-				$str .= '<option value='.$v["id"].' '.$selected.'>'.$v["name"].'</option>';			
+				$str .= '<option value='.$v["id"].' '.$selected.'>'.$v["name"].'</option>';
 			}
 			$str .= '</select>';
 
@@ -2845,7 +2868,7 @@
 			for($i=0;$i<count($row_size);$i++)
 			{
 				if(!empty($temps))
-				{	
+				{
 					if(in_array($row_size[$i]['id'],$temps)) $selected = 'selected="selected"';
 					else $selected = '';
 				}
@@ -2856,7 +2879,7 @@
 				$str .= '<option value="'.$row_size[$i]["id"].'" '.$selected.' /> '.$row_size[$i]["namevi"].'</option>';
 			}
 			$str .= '</select>';
-			
+
 			return $str;
 		}
 
@@ -2957,7 +2980,7 @@
 	    		$idlist = $this->categoryFieldValue('id_list');
 	    		$where .= ' and id_list = ?';
 	    		array_push($params, $idlist);
-	    		
+
 	    		$idcat = $this->categoryFieldValue('id_cat');
 	    		$where .= ' and id_cat = ?';
 	    		array_push($params, $idcat);
@@ -3016,7 +3039,7 @@
 	    		$idlist = (isset($_REQUEST['id_list'])) ? htmlspecialchars($_REQUEST['id_list']) : 0;
 	    		$where .= ' and id_list = ?';
 	    		array_push($params, $idlist);
-	    		
+
 	    		$idcat = (isset($_REQUEST['id_cat'])) ? htmlspecialchars($_REQUEST['id_cat']) : 0;
 	    		$where .= ' and id_cat = ?';
 	    		array_push($params, $idcat);

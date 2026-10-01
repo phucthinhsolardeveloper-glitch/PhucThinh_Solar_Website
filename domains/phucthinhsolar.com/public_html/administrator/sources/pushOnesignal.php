@@ -267,7 +267,7 @@
 	}
 
 	/* Send onesignal */	
-	function sendMessageOnesignal($heading,$content,$url='https://www.google.com/',$photo)
+	function sendMessageOnesignal($heading,$content,$url,$photo)
 	{
 		global $d, $configBase, $config;
 		

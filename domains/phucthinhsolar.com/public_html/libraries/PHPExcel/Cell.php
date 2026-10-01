@@ -842,11 +842,14 @@ class PHPExcel_Cell
             if ($pColumnIndex < 26) {
                 $_indexCache[$pColumnIndex] = chr(65 + $pColumnIndex);
             } elseif ($pColumnIndex < 702) {
-                $_indexCache[$pColumnIndex] = chr(64 + ($pColumnIndex / 26)) .
+                /* PHP 8.1 deprecate truyền float cho chr() (int); các phép chia
+                   này vốn luôn nhằm lấy phần nguyên, ép intdiv() để không mất
+                   độ chính xác và tắt deprecation. */
+                $_indexCache[$pColumnIndex] = chr(64 + intdiv($pColumnIndex, 26)) .
                                               chr(65 + $pColumnIndex % 26);
             } else {
-                $_indexCache[$pColumnIndex] = chr(64 + (($pColumnIndex - 26) / 676)) .
-                                              chr(65 + ((($pColumnIndex - 26) % 676) / 26)) .
+                $_indexCache[$pColumnIndex] = chr(64 + intdiv($pColumnIndex - 26, 676)) .
+                                              chr(65 + intdiv(($pColumnIndex - 26) % 676, 26)) .
                                               chr(65 + $pColumnIndex % 26);
             }
         }

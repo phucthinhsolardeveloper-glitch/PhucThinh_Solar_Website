@@ -1,10 +1,6 @@
-FROM php:7.4-apache
+FROM php:8.1-apache
 
-RUN sed -ri \
-        -e 's!http://deb.debian.org/debian-security!http://snapshot.debian.org/archive/debian-security/20221114T000000Z!g' \
-        -e 's!http://deb.debian.org/debian!http://snapshot.debian.org/archive/debian/20221114T000000Z!g' \
-        /etc/apt/sources.list \
-    && apt-get update -o Acquire::Check-Valid-Until=false -o Acquire::Retries=3 \
+RUN apt-get update -o Acquire::Retries=3 \
     && apt-get install -y --no-install-recommends \
         ca-certificates \
         libcurl4-openssl-dev \

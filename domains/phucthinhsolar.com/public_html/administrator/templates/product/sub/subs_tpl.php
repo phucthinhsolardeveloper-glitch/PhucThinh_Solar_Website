@@ -10,7 +10,7 @@
         <div class="row">
             <ol class="breadcrumb float-sm-left">
                 <li class="breadcrumb-item"><a href="index.php" title="Bảng điều khiển">Bảng điều khiển</a></li>
-                <li class="breadcrumb-item active">Quản lý <?=$config['product'][$type]['title_main_sub']?></li>
+                <li class="breadcrumb-item active">Quản lý <?=($config['product'][$type]['title_main_sub'] ?? '')?></li>
             </ol>
         </div>
     </div>
@@ -39,7 +39,7 @@
     </div>
     <div class="card card-primary card-outline text-sm mb-0">
         <div class="card-header">
-            <h3 class="card-title">Danh sách <?=$config['product'][$type]['title_main_sub']?></h3>
+            <h3 class="card-title">Danh sách <?=($config['product'][$type]['title_main_sub'] ?? '')?></h3>
         </div>
         <div class="card-body table-responsive p-0">
             <table class="table table-hover">

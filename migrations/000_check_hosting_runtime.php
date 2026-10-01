@@ -42,9 +42,16 @@ function runtimeResult($ok, $label, $detail)
 echo "HOSTING RUNTIME PREFLIGHT — CHỈ ĐỌC\n";
 echo str_repeat('=', 76), "\n";
 
-$phpOk = PHP_VERSION_ID >= 70400 && PHP_VERSION_ID < 80000;
-runtimeResult($phpOk, 'PHP', PHP_MAJOR_VERSION.'.'.PHP_MINOR_VERSION.' (mục tiêu đã test: 7.4.x)');
-if(!$phpOk) $failures[] = 'PHP phải là 7.4.x cho lần deploy này; PHP 8.x cần đợt kiểm thử riêng.';
+/* 2026-10-01: nâng từ 7.4.x lên 8.1.x sau đợt kiểm thử riêng (rà toàn bộ
+   675+ file bằng php -l, vá các điểm gãy thật: curly-brace offset trong
+   PHPExcel/PHPWord, header()/preg_split() nhận null, Symfony FileBag không
+   nhận diện key full_path mới của $_FILES, Pimple thiếu return type, và
+   quan trọng nhất: PDO đổi ERRMODE mặc định sang EXCEPTION làm vỡ toàn bộ
+   cơ chế bắt lỗi thủ công của PDODb). Chỉ mở đúng dải đã test (8.1.x), chưa
+   test 8.2+ (còn deprecate utf8_encode, dynamic properties...). */
+$phpOk = PHP_VERSION_ID >= 80100 && PHP_VERSION_ID < 80200;
+runtimeResult($phpOk, 'PHP', PHP_MAJOR_VERSION.'.'.PHP_MINOR_VERSION.' (mục tiêu đã test: 8.1.x)');
+if(!$phpOk) $failures[] = 'PHP phải là 8.1.x cho lần deploy này; bản khác cần đợt kiểm thử riêng.';
 
 $requiredExtensions = array('calendar','curl','exif','fileinfo','gd','json','mbstring','openssl','pdo_mysql','zip');
 $missingExtensions = array();

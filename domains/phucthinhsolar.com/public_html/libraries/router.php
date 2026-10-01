@@ -16,12 +16,19 @@
 	/* Router */
 	require_once LIBRARIES.'product_category_urls.php';
     $router->setBasePath($config['database']['url']);
-    $router->map('GET', array(ADMIN.'/', 'administrator'), function(){
+    /* AltoRouter->map() nhận $route là string (hoặc '*'/'@regex'), không phải
+       mảng nhiều pattern - truyền mảng khiến match() gọi strpos($route,'[')
+       trên một array. PHP 7.4 chỉ cảnh báo "Array to string conversion" rồi
+       coi $route như chuỗi "Array" (route coi như chết, không bao giờ khớp);
+       PHP 8 ném TypeError fatal cho MỌI request vì route này được duyệt sớm.
+       ADMIN === 'administrator' (xem config.php) nên tách thành 2 route
+       string tương đương, giữ đúng hành vi redirect dự định ban đầu. */
+    $router->map('GET', ADMIN.'/', function(){
     	global $func, $config;
     	$func->redirect($config['database']['url'].ADMIN."/index.php");
     	exit;
     });
-    $router->map('GET', array(ADMIN, 'administrator'), function(){
+    $router->map('GET', ADMIN, function(){
     	global $func, $config;
     	$func->redirect($config['database']['url'].ADMIN."/index.php");
     	exit;

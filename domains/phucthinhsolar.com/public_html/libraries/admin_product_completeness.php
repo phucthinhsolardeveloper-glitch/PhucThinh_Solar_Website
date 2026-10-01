@@ -74,8 +74,10 @@ if(!function_exists('adminProductDataStatusDefinitions'))
         return productPdpSpecValue($product, $primary) === '';
     }
 
-    /* Thiếu TOÀN BỘ thông số quyết định của profile (không chỉ cái đầu) -
-       dùng cho filter "missing_specs", nghiêm hơn missing_wattage. */
+    /* Thiếu ÍT NHẤT MỘT thông số quyết định của profile - dùng cho filter
+       "missing_specs" để xuất đúng toàn bộ sản phẩm còn phải bổ sung.
+       "missing_wattage" chỉ kiểm metric đầu tiên và được dùng riêng cho hàng
+       đợi thông số quyết định trên dashboard. */
     function adminProductIsMissingSpecs($product, $list = array())
     {
         if(!function_exists('productPdpResolveProfile') || !function_exists('productPdpSpecValue'))
@@ -88,8 +90,8 @@ if(!function_exists('adminProductDataStatusDefinitions'))
         }
         $profile = productPdpProfile(productPdpResolveProfile($product, $list));
         $metrics = isset($profile['metrics']) ? $profile['metrics'] : array();
-        foreach($metrics as $metric) if(productPdpSpecValue($product, $metric) !== '') return false;
-        return true;
+        foreach($metrics as $metric) if(productPdpSpecValue($product, $metric) === '') return true;
+        return false;
     }
 
     /* Cùng điều kiện với definition 'missing_photo' ở trên - tách hàm để
@@ -133,7 +135,11 @@ if(!function_exists('adminProductDataStatusDefinitions'))
     function adminProductFilterIdsByStatus($d, $status, $whereSql, $params)
     {
         if(!in_array($status, array('missing_content','missing_wattage','missing_specs'), true)) return array();
-        $rows = $d->rawQuery("select p.id, p.contentvi, p.id_brand, p.id_cat, p.id_list, p.cong_suat, p.additional_specs, p.pdp_profile from #_product p $whereSql", $params);
+        /* Các profile PDP dùng nhiều cột structured khác nhau (pin, MPPT,
+           điện áp, thời gian hoạt động...). Phải đọc đủ row sản phẩm để
+           productPdpSpecValue() không đánh dấu nhầm sản phẩm chỉ vì projection
+           cũ bỏ sót metric của profile đó. */
+        $rows = $d->rawQuery("select p.* from #_product p $whereSql", $params);
         if(empty($rows)) return array();
 
         $listCache = array();

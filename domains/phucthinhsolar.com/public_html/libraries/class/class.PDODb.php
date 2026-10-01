@@ -678,7 +678,14 @@ class PDODb
                 }
             }
             $connectionString = rtrim($connectionString, ';');
-            $this->pdo = new PDO($connectionString, $this->connectionParams['username'], $this->connectionParams['password']);
+            /* PHP 8.0 đổi ERRMODE mặc định của PDO từ SILENT sang EXCEPTION.
+               Toàn bộ class này (prepare()/rawQuery()...) tự đọc errorInfo()
+               sau mỗi lệnh rồi bọc lại thành PDODbException - PDO ném thẳng
+               exception gốc trước khi chạy tới đoạn đó khiến lỗi thoát ra
+               ngoài thô, không được wrap, không rollback được qua catch
+               PDODbException ở nơi gọi. Ép lại SILENT để giữ đúng hành vi cũ
+               toàn bộ codebase đang dựa vào. */
+            $this->pdo = new PDO($connectionString, $this->connectionParams['username'], $this->connectionParams['password'], array(PDO::ATTR_ERRMODE => PDO::ERRMODE_SILENT));
         }
         catch(Exception $e)
         {
@@ -1824,7 +1831,7 @@ class PDODb
         else $queryLogs = $query;
         return $queryLogs;
     }
-    public function createLogs($user = 'Unnamed', $act, $com, $id)
+    public function createLogs($user, $act, $com, $id)
     {
         $logsfile = $_SERVER['DOCUMENT_ROOT'] . $this->connectionParams['url'] . "logs";
 

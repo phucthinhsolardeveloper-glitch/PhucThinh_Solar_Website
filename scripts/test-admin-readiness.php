@@ -1117,7 +1117,7 @@ try
     // ADM-P2-001: bảng điều khiển nạp dữ liệu ở controller sources/index.php, template chỉ render.
     $dashboard = readinessHttp($base.'index.php', 'GET', array(), $newCookie);
     $dashboardNoPhpError = true;
-    foreach(array('Notice:', 'Warning:', 'Fatal error', 'Undefined variable') as $needle)
+    foreach(array('Notice:', 'Warning:', 'Fatal error', 'Undefined variable', 'Deprecated:') as $needle)
         if(strpos($dashboard['body'], $needle) !== false) $dashboardNoPhpError = false;
     $dashboardClean = $dashboard['status'] === 200
         && strpos($dashboard['body'], 'Việc cần xử lý') !== false

@@ -33,7 +33,7 @@
         <div class="row">
             <ol class="breadcrumb float-sm-left">
                 <li class="breadcrumb-item"><a href="index.php" title="Bảng điều khiển">Bảng điều khiển</a></li>
-                <li class="breadcrumb-item active">Chi tiết <?=$config['news'][$type]['title_main_list']?></li>
+                <li class="breadcrumb-item active">Chi tiết <?=($config['news'][$type]['title_main_list'] ?? '')?></li>
             </ol>
         </div>
     </div>
@@ -62,7 +62,7 @@
                 ?>
                 <div class="card card-primary card-outline text-sm">
                     <div class="card-header">
-                        <h3 class="card-title">Nội dung <?=$config['news'][$type]['title_main_list']?></h3>
+                        <h3 class="card-title">Nội dung <?=($config['news'][$type]['title_main_list'] ?? '')?></h3>
                         <div class="card-tools">
                             <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
                         </div>
@@ -126,7 +126,7 @@
                 <?php if(isset($config['news'][$type]['images_list']) && $config['news'][$type]['images_list'] == true) { ?>
                     <div class="card card-primary card-outline text-sm">
                         <div class="card-header">
-                            <h3 class="card-title">Hình ảnh <?=$config['news'][$type]['title_main_list']?></h3>
+                            <h3 class="card-title">Hình ảnh <?=($config['news'][$type]['title_main_list'] ?? '')?></h3>
                             <div class="card-tools">
                                 <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
                             </div>
@@ -150,7 +150,7 @@
         <?php if(isset($flagGallery) && $flagGallery == true) { ?>
             <div class="card card-primary card-outline text-sm">
                 <div class="card-header">
-                    <h3 class="card-title">Bộ sưu tập <?=$config['news'][$type]['title_main_list']?></h3>
+                    <h3 class="card-title">Bộ sưu tập <?=($config['news'][$type]['title_main_list'] ?? '')?></h3>
                     <div class="card-tools">
                         <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
                     </div>

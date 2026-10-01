@@ -10,7 +10,7 @@
         <div class="row">
             <ol class="breadcrumb float-sm-left">
                 <li class="breadcrumb-item"><a href="index.php" title="Bảng điều khiển">Bảng điều khiển</a></li>
-                <li class="breadcrumb-item active">Chi tiết <?=$config['product'][$type]['title_main_item']?></li>
+                <li class="breadcrumb-item active">Chi tiết <?=($config['product'][$type]['title_main_item'] ?? '')?></li>
             </ol>
         </div>
     </div>
@@ -39,7 +39,7 @@
                 ?>
                 <div class="card card-primary card-outline text-sm">
                     <div class="card-header">
-                        <h3 class="card-title">Nội dung <?=$config['product'][$type]['title_main_item']?></h3>
+                        <h3 class="card-title">Nội dung <?=($config['product'][$type]['title_main_item'] ?? '')?></h3>
                         <div class="card-tools">
                             <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
                         </div>
@@ -102,7 +102,7 @@
             <div class="col-xl-4">
                 <div class="card card-primary card-outline text-sm">
                     <div class="card-header">
-                        <h3 class="card-title">Danh mục <?=$config['product'][$type]['title_main_item']?></h3>
+                        <h3 class="card-title">Danh mục <?=($config['product'][$type]['title_main_item'] ?? '')?></h3>
                         <div class="card-tools">
                             <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
                         </div>
@@ -124,7 +124,7 @@
                 <?php if(isset($config['product'][$type]['images_item']) && $config['product'][$type]['images_item'] == true) { ?>
                     <div class="card card-primary card-outline text-sm">
                         <div class="card-header">
-                            <h3 class="card-title">Hình ảnh <?=$config['product'][$type]['title_main_item']?></h3>
+                            <h3 class="card-title">Hình ảnh <?=($config['product'][$type]['title_main_item'] ?? '')?></h3>
                             <div class="card-tools">
                                 <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
                             </div>

@@ -744,7 +744,7 @@ class PHPExcel_Shared_String
      *
      * @param string $pValue Character for thousands separator
      */
-    public static function setThousandsSeparator($pValue = ',')
+function setThousandsSeparator($pValue = ',')
     {
         self::$thousandsSeparator = $pValue;
     }

@@ -28,7 +28,6 @@
 	$month = date('m', $date);
 	$year = date('Y', $date);
 	$firstDay = mktime(0,0,0,$month, 1, $year);
-	$title = strftime('%B', $firstDay);
 	$dayOfWeek = date('D', $firstDay);
 	$daysInMonth = (int) date('t', $date);
 	$timestamp = strtotime('next Sunday');

@@ -167,7 +167,7 @@ class PHPExcel_Writer_CSV extends PHPExcel_Writer_Abstract implements PHPExcel_W
      * @param    string    $pValue        Delimiter, defaults to ,
      * @return PHPExcel_Writer_CSV
      */
-    public function setDelimiter($pValue = ',')
+function setDelimiter($pValue = ',')
     {
         $this->delimiter = $pValue;
         return $this;

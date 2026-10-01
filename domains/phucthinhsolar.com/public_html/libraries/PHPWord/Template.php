@@ -115,6 +115,11 @@ class PHPWord_Template {
 	* @param mixed $replace
 	*/
 	public function setValue($search, $replace, $limit=-1) {
+		/* PHP 8.1 deprecate truyền null cho $replacement (string|array) của
+		   preg_replace(); giá trị cột setting trống (vd hotline_company khi
+		   chưa cấu hình) tới đây là null. Ép về chuỗi rỗng, giữ đúng hành vi
+		   cũ (preg_replace tự coi null như '' trước PHP 8.1). */
+		if($replace === null) $replace = '';
 		if(substr($search, 0, 1) !== '{' && substr($search, -1) !== '}') {
 			$search = '{'.$search.'}';
 		}
@@ -123,7 +128,7 @@ class PHPWord_Template {
 			$no_tag = strip_tags($match);
 			if ($no_tag == $search) {
 				$match = '{'.$match.'}';
-				$this->_documentXML = preg_replace($match, $replace, $this->_documentXML, $limit);	
+				$this->_documentXML = preg_replace($match, $replace, $this->_documentXML, $limit);
 				if ($limit == 1) {
 					break;
 				}			

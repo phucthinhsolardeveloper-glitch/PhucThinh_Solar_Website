@@ -76,6 +76,13 @@ class FileBag extends ParameterBag
         }
 
         if (\is_array($file)) {
+            /* PHP 8.1 thêm key 'full_path' vào mỗi entry $_FILES (hỗ trợ
+               webkitdirectory) khiến so khớp cứng FILE_KEYS (5 key, phiên
+               bản Symfony này chưa biết key mới) luôn lệch, nên không bao
+               giờ dựng được UploadedFile - cả quick upload lẫn mọi lệnh
+               khác dùng file đều fatal. CKFinder không cần full_path, bỏ
+               qua trước khi so khớp, không đổi hành vi còn lại. */
+            unset($file['full_path']);
             $file = $this->fixPhpFilesArray($file);
             $keys = array_keys($file);
             sort($keys);

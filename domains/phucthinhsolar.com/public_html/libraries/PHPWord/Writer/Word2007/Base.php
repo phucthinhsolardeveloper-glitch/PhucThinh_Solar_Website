@@ -28,7 +28,7 @@
 
 class PHPWord_Writer_Word2007_Base extends PHPWord_Writer_Word2007_WriterPart {
 	
-	protected function _writeText(PHPWord_Shared_XMLWriter $objWriter = null, PHPWord_Section_Text $text, $withoutP = false) {
+	protected function _writeText(PHPWord_Shared_XMLWriter $objWriter, PHPWord_Section_Text $text, $withoutP = false) {
 		$styleFont = $text->getFontStyle();
 		
 		$SfIsObject = ($styleFont instanceof PHPWord_Style_Font) ? true : false;
@@ -77,7 +77,7 @@ class PHPWord_Writer_Word2007_Base extends PHPWord_Writer_Word2007_WriterPart {
 		}
 	}
 	
-	protected function _writeTextRun(PHPWord_Shared_XMLWriter $objWriter = null, PHPWord_Section_TextRun $textrun) {
+	protected function _writeTextRun(PHPWord_Shared_XMLWriter $objWriter, PHPWord_Section_TextRun $textrun) {
 		$elements = $textrun->getElements();
 		$styleParagraph = $textrun->getParagraphStyle();
 		
@@ -108,7 +108,7 @@ class PHPWord_Writer_Word2007_Base extends PHPWord_Writer_Word2007_WriterPart {
 		$objWriter->endElement();
 	}
 	
-	protected function _writeParagraphStyle(PHPWord_Shared_XMLWriter $objWriter = null, PHPWord_Style_Paragraph $style, $withoutPPR = false) {
+	protected function _writeParagraphStyle(PHPWord_Shared_XMLWriter $objWriter, PHPWord_Style_Paragraph $style, $withoutPPR = false) {
 		$align = $style->getAlign();
 		$spaceBefore = $style->getSpaceBefore();
 		$spaceAfter = $style->getSpaceAfter();
@@ -151,7 +151,7 @@ class PHPWord_Writer_Word2007_Base extends PHPWord_Writer_Word2007_WriterPart {
 		}
 	}
 	
-	protected function _writeLink(PHPWord_Shared_XMLWriter $objWriter = null, PHPWord_Section_Link $link, $withoutP = false) {
+	protected function _writeLink(PHPWord_Shared_XMLWriter $objWriter, PHPWord_Section_Link $link, $withoutP = false) {
 		$rID = $link->getRelationId();
 		$linkName = $link->getLinkName();
 		if(is_null($linkName)) {
@@ -206,7 +206,7 @@ class PHPWord_Writer_Word2007_Base extends PHPWord_Writer_Word2007_WriterPart {
 		}
 	}
 	
-	protected function _writePreserveText(PHPWord_Shared_XMLWriter $objWriter = null, PHPWord_Section_Footer_PreserveText $textrun) {
+	protected function _writePreserveText(PHPWord_Shared_XMLWriter $objWriter, PHPWord_Section_Footer_PreserveText $textrun) {
 		$styleFont = $textrun->getFontStyle();
 		$styleParagraph = $textrun->getParagraphStyle();
 		
@@ -294,7 +294,7 @@ class PHPWord_Writer_Word2007_Base extends PHPWord_Writer_Word2007_WriterPart {
 		$objWriter->endElement(); // p
 	}
 	
-	protected function _writeTextStyle(PHPWord_Shared_XMLWriter $objWriter = null, PHPWord_Style_Font $style) {
+	protected function _writeTextStyle(PHPWord_Shared_XMLWriter $objWriter, PHPWord_Style_Font $style) {
 		$font = $style->getName();
 		$bold = $style->getBold();
 		$italic = $style->getItalic();
@@ -369,7 +369,7 @@ class PHPWord_Writer_Word2007_Base extends PHPWord_Writer_Word2007_WriterPart {
 		$objWriter->writeElement('w:p', null);
 	}
 	
-	protected function _writeTable(PHPWord_Shared_XMLWriter $objWriter = null, PHPWord_Section_Table $table) {
+	protected function _writeTable(PHPWord_Shared_XMLWriter $objWriter, PHPWord_Section_Table $table) {
 		$_rows = $table->getRows();
 		$_cRows = count($_rows);
 		
@@ -580,7 +580,7 @@ class PHPWord_Writer_Word2007_Base extends PHPWord_Writer_Word2007_WriterPart {
 		}
 	}
 	
-	protected function _writeImage(PHPWord_Shared_XMLWriter $objWriter = null, $image) {
+	protected function _writeImage(PHPWord_Shared_XMLWriter $objWriter, $image) {
 		$rId = $image->getRelationId();
 		
 		$style = $image->getStyle();
@@ -619,7 +619,7 @@ class PHPWord_Writer_Word2007_Base extends PHPWord_Writer_Word2007_WriterPart {
 		$objWriter->endElement();
 	}
 	
-	protected function _writeWatermark(PHPWord_Shared_XMLWriter $objWriter = null, $image) {
+	protected function _writeWatermark(PHPWord_Shared_XMLWriter $objWriter, $image) {
 		$rId = $image->getRelationId();
 		
 		$style = $image->getStyle();
@@ -662,7 +662,7 @@ class PHPWord_Writer_Word2007_Base extends PHPWord_Writer_Word2007_WriterPart {
 		$objWriter->endElement();
 	}
 	
-	protected function _writeTitle(PHPWord_Shared_XMLWriter $objWriter = null, PHPWord_Section_Title $title) {
+	protected function _writeTitle(PHPWord_Shared_XMLWriter $objWriter, PHPWord_Section_Title $title) {
 		$text = htmlspecialchars($title->getText());
 		$text = PHPWord_Shared_String::ControlCharacterPHP2OOXML($text);
 		$anchor = $title->getAnchor();

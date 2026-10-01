@@ -112,4 +112,9 @@
 	flush();
 	readfile($exportPath);
 	@unlink($exportPath);
+	/* Thiếu exit() khiến dispatcher Admin chạy tiếp xuống phần render template
+	   sau khi include file này, nối thêm cả trang HTML admin vào sau file
+	   .docx vừa stream - hỏng file tải về. excel.php/excelAll.php bên cạnh
+	   đã exit() đúng, word.php thiếu từ trước, không liên quan bản PHP. */
+	exit();
 ?>

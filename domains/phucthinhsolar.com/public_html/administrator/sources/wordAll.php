@@ -56,9 +56,9 @@
 		/* Thông tin đơn hàng */
 		$data["code"][$i] = @$orders[$i]['code'];
 		$data["order_date"][$i] = date('H:i A d-m-Y',@$orders[$i]['date_created']);
-		$data["order_status"][$i] = $order_status_info['namevi'];
+		$data["order_status"][$i] = @$order_status_info['namevi'];
 		$order_payment = $func->getInfoDetail('namevi', 'news', @$orders[$i]['order_payment']);
-		$data["order_payment"][$i] = $order_payment['namevi'];
+		$data["order_payment"][$i] = @$order_payment['namevi'];
 
 		/* Thông tin khách hàng */
 		$data["fullname_customer"][$i] = @$orders[$i]['fullname'];
@@ -94,4 +94,8 @@
 	flush();
 	readfile($exportPath);
 	@unlink($exportPath);
+	/* Thiếu exit() khiến dispatcher Admin chạy tiếp xuống phần render template
+	   sau khi include file này, nối thêm cả trang HTML admin vào sau file
+	   .docx vừa stream - hỏng file tải về (xem word.php). */
+	exit();
 ?>
