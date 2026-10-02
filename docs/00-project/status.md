@@ -225,6 +225,7 @@ hay migration runner. Thông tin này chỉ là lịch sử; production hiện �
 - Admin API batch 17: hai endpoint legacy `component.php` và `save_add_item.php` tiếp tục bị vô hiệu hóa HTTP 404 nhưng nay trả contract JSON `LEGACY_API_DISABLED`; không khôi phục file manager hoặc đường ghi sortable cũ.
 - Admin API batch 18: integration test dùng assertion schema chung để khóa đủ `ok/message/code/data` và kiểu dữ liệu cho lỗi hết phiên, endpoint fragment/legacy, validation, CSRF, gallery và sortable; tài liệu API được đồng bộ với trạng thái code hiện tại.
 - Checkout idempotency local: form phát token ngẫu nhiên 256-bit, migration 009 thêm unique index trên đơn hàng; request replay trả lại đúng đơn đã commit, không tạo detail hoặc gửi email lần hai. Token được kiểm tra cùng session và chỉ xoay sau khi đã tạo trạng thái trang cảm ơn; regression hai tiến trình đồng thời cùng nhận một order ID.
+- Ảnh đại diện 4 bài dự án đã được retouch từ chính ảnh công trình thật (không dựng dự án mới), giữ ảnh gốc để rollback. Local đã cập nhật các bài #73, #74, #75 và #124 qua migration `062_refresh_project_cover_images.php`; ảnh mới là PNG và đã kiểm tra render trên trang `/du-an-da-thuc-hien/`.
 
 ## PARTIAL / CHỜ DỮ LIỆU THẬT
 
