@@ -185,6 +185,21 @@
   .pts-pdp-v2 .pts-pdp-spec-panel{position:relative;top:auto;padding:20px 16px}
   .pts-pdp-v2 .pts-pdp-spec-panel>h2{font-size:21px}
   .pts-pdp-v2 .pts-pdp-supporting-tabs{margin-top:38px!important}
+  /* Card liên quan có hai CTA dạng chữ; trên card 2 cột hẹp không đủ chỗ
+     để giữ cùng hàng. Xếp dọc theo từng card để nhãn không chồng lấn. */
+  .pts-pdp-v2 .pts-pdp-related-products .product-card-btns{
+    align-items:stretch!important;
+    flex-direction:column!important;
+    gap:6px!important;
+    padding:0 10px 12px!important;
+  }
+  .pts-pdp-v2 .pts-pdp-related-products .product-card-btns>a{
+    width:100%!important;
+    min-height:36px!important;
+    flex:0 0 auto!important;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
   .pts-pdp-v2 .tabs-pro-detail>#tabsProDetail{gap:22px!important;margin-right:-16px!important;margin-bottom:30px!important;padding-right:16px!important}
   .pts-pdp-v2 .tabs-pro-detail>#tabsProDetail .nav-link{min-height:48px;font-size:13px!important}
   .pts-pdp-v2 .pts-product-content{font-size:15px!important}
