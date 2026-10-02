@@ -29,13 +29,14 @@
     display:flex;
     width:100%;
     align-items:stretch;
-    /* Canh giữa cả nhóm - ít mục thì các ô co lại vừa đủ nội dung thay vì
-       kéo giãn choán hết hàng (sếp báo nhìn kỳ khi ít mục 2026-09-26); container
-       vẫn full-width thẳng mép như các khối khác trên trang, chỉ nội dung bên
-       trong co gọn. "safe" bắt buộc khi nội dung TRÀN khung (nhiều mục, vd
-       trang gốc /san-pham/ có 9 mục) phải lùi về canh trái cuộn ngang bình
-       thường - thiếu "safe" thì center thường sẽ cắt che đều cả 2 đầu hàng khi
-       tràn, khiến mục đầu/cuối bị khuất chữ (lỗi thật gặp phải 2026-09-26). */
+    /* Từ 2026-10-02, mỗi ô tự flex:1 lấp đầy hàng (xem .pts-category-tab) nên
+       bình thường không còn khoảng trống để "center" phải xử lý - dòng này
+       giờ chỉ còn là lưới an toàn cho đúng 1 tình huống: khi nhiều mục quá
+       (vd trang gốc /san-pham/ có 9 mục) khiến tổng chiều rộng vượt khung dù
+       mỗi ô đã co về đúng min-width, overflow-x:auto chuyển qua cuộn ngang -
+       "safe" lúc đó bắt buộc phải có, thiếu nó thì center thường sẽ cắt che
+       đều cả 2 đầu hàng, khiến mục đầu/cuối bị khuất chữ (lỗi thật gặp phải
+       2026-09-26, vẫn giữ nguyên lưới an toàn này dù đã đổi flex-basis). */
     justify-content:safe center;
     gap:10px;
     overflow-x:auto;
@@ -49,26 +50,62 @@
     scroll-snap-type:x proximity;
 }
 .pts-category-tabs::-webkit-scrollbar{display:none;}
-/* Dải danh mục cấp 1 ghim sát đỉnh khi trang không có "Loại sản phẩm" (vd
-   /san-pham/ gốc) - xem product_tpl.php. */
+/* Dải danh mục cấp 1 CHỈ hiện ở đầu trang, cuộn qua là trôi mất tự nhiên
+   theo luồng tài liệu bình thường (không position:sticky nữa) - sếp xác
+   nhận 2026-10-02 "chỉ hiện đầu trang, không cần cuộn hiện lại". Trước đây
+   dùng sticky + JS ẩn bằng transform, nhưng ngưỡng JS tính theo CHIỀU CAO
+   dải tab (quá nhỏ, ~47px) thay vì KHOẢNG CÁCH THẬT từ đầu trang, khiến
+   dải tab dính cứng rồi bị đẩy lệch chồng lên hero khi cuộn ít (lỗi sếp
+   chụp ảnh báo lại). Bỏ sticky luôn cho chắc, không còn lớp bug nào thuộc
+   nhóm này nữa - JS giờ chỉ còn việc hiện/ẩn bản sidebar tương ứng, xem
+   assets/js/functions.js. */
 .pts-category-tabs.is-sticky-row{
-    position:sticky;
-    top:0;
-    z-index:15;
-    background:#fff;
-    box-shadow:0 2px 0 #fff,0 6px 10px -6px rgba(15,23,42,.12);
+    background:transparent;
+}
+/* Sidebar "Loại đèn" chỉ hiện khi dải tab trên đã cuộn ẩn đi (JS đồng bộ 2
+   trạng thái này, xem assets/js/functions.js) - tránh 2 nơi cùng hiện danh
+   mục một lúc. Trên mobile sidebar là drawer off-canvas riêng (chỉ thấy khi
+   bấm "Bộ lọc"), không có vấn đề trùng lặp nhìn thấy cùng lúc nên luôn hiện
+   bình thường trong drawer, không áp quy tắc ẩn/hiện theo cuộn này. */
+.pts-sidebar-category-filter{display:none;}
+body.pts-sidebar-category-visible .pts-sidebar-category-filter{display:block;}
+@media(max-width:1001px){.pts-sidebar-category-filter{display:block!important;}}
+/* Danh sách liên kết "Danh mục sản phẩm" (trang gốc /san-pham/) - cần phân
+   biệt rõ mục đang xem, không chỉ là 9 dòng chữ xám giống hệt nhau (sếp
+   2026-10-02: "nhìn không đẹp lắm"). Gạch chân vàng vừa đúng độ rộng chữ
+   (inline-block, không phải full-width) + chữ đậm/màu navy cho mục active -
+   sếp đổi ý từ vạch bên trái sang gạch chân (2026-10-02: "vạch vàng gạch
+   chân đẹp hơn ấy"). */
+.pts-sidebar-root-item>a{
+    display:inline-block!important;
+    padding-bottom:3px!important;
+    border-bottom:2px solid transparent;
+    transition:color .15s ease,border-color .15s ease;
+}
+.pts-sidebar-root-item.is-active>a{
+    color:var(--pts-navy)!important;
+    font-weight:800!important;
+    border-bottom-color:var(--pts-gold);
 }
 .pts-category-tab{
     display:flex;
-    /* Co vừa đủ nội dung (không kéo giãn) - hàng có ít mục sẽ ngắn gọn và
-       canh giữa nhờ justify-content:center ở .pts-category-tabs, thay vì
-       từng ô bị kéo dài choán hết hàng trông kỳ (sếp báo 2026-09-26). */
-    flex:0 0 auto;
+    /* Đảo lại quyết định 2026-09-26 (khi đó chọn co gọn + canh giữa vì kéo
+       giãn "nhìn kỳ" khi ít mục) - sếp xác nhận lại 2026-10-02: muốn mỗi ô
+       tự giãn đều lấp hết hàng, thẳng mép 2 bên như khối "Bộ lọc"/"Danh sách
+       sản phẩm" bên dưới. min-width giữ nguyên làm sàn: ít mục (2-5) thì giãn
+       rộng lấp đầy; nhiều mục (vd 9 ở trang gốc /san-pham/) chạm sàn
+       min-width trước, overflow-x:auto ở .pts-category-tabs tự chuyển qua
+       cuộn ngang - không tái phát lỗi "mục đầu/cuối bị khuất chữ" đã sửa
+       trước đó. */
+    flex:1 1 0;
     min-width:160px;
     scroll-snap-align:start;
     flex-direction:row;
     align-items:center;
-    justify-content:flex-start;
+    /* center, không phải flex-start - ô giờ giãn rộng lấp đầy hàng
+       (flex:1 ở trên) nên icon+chữ cần nằm giữa ô, không dồn lệch trái
+       (sếp chỉ ra 2026-10-02, kèm ảnh). */
+    justify-content:center;
     gap:7px;
     min-height:0;
     /* Giảm mạnh hơn padding dọc - 8px vẫn còn "dày" theo phản hồi sếp
@@ -158,7 +195,15 @@
 .filter_product select.orderby{min-height:40px;padding:0 30px 0 13px;border:1px solid #dbe3ec;border-radius:3px;background:#fff;color:var(--pts-navy);font-size:13px;font-weight:700;}
 .product-row{margin-left:-9px!important;margin-right:-9px!important;}
 .product-left,.product-right{padding-left:9px!important;padding-right:9px!important;}
-.product-left{top:85px;}
+/* top:0 (trước là 85px) - 85px vốn chừa chỗ cho header dính cứng khi cuộn,
+   nhưng header site này KHÔNG sticky/fixed (assets/js/apps.js chủ động loại
+   trừ đúng header đang dùng - class pts-header-v4 - khỏi logic đó; header-v4.js
+   cũng không có code sticky nào). Chừa chỗ cho thứ không tồn tại tạo khoảng
+   trắng thật phía trên "Bộ lọc" khi cuộn (sếp chụp ảnh báo lại 2026-10-02). */
+/* top:0 làm "Bộ lọc" dính sát hẳn mép trên cùng khi cuộn, nhìn chật/thiếu
+   thở (sếp chỉ ra 2026-10-02) - chừa 1 khoảng nhỏ cho thoáng, không cần đủ
+   lớn như trước (85px, dành cho header sticky không tồn tại). */
+.product-left{top:16px;}
 .pts-filter-card{border:0!important;border-radius:0!important;background:transparent!important;padding:16px 0 5px!important;}
 .pts-filter-card .aside-filter,.pts-filter-card .product-pages__price{
     border:0!important;border-bottom:1px solid var(--pts-line)!important;
@@ -265,6 +310,39 @@
 .product-right .product-card-btns .pts-card-ask:hover{background:var(--pts-gold-light)!important;color:var(--pts-navy)!important}
 .product-right .product-card-btns .pts-card-detail:hover{background:var(--pts-navy)!important;color:#fff!important}
 .pts-category-content{margin-top:42px!important;}
+.pts-filter-desktop-head{display:flex;align-items:center;margin:0 0 16px;}
+.pts-filter-desktop-head strong{display:flex;align-items:center;gap:9px;color:var(--pts-navy);font-size:20px;font-weight:900;line-height:1.2;}
+@media(max-width:1001px){.pts-filter-desktop-head{display:none;}}
+/* "Bộ lọc" (sidebar, không padding) và "Danh sách sản phẩm"/"Sắp xếp" (trong
+   .filter_product, có padding:10px 0 ở trên) trước đây không cùng hàng -
+   "Danh sách sản phẩm" thấp hơn "Bộ lọc" đúng bằng phần padding-top đó. Đưa
+   padding-top về 0 tại đúng vị trí này để 2 bên bằng hàng (sếp xác nhận
+   2026-10-02, không đụng các nơi khác còn dùng .filter_product). */
+.product-right>.filter_product{padding-top:0!important;}
+/* Khối "Chọn X đúng nhu cầu" (productRenderCardsBlocks, type='cards') - wrapper
+   thật là .pts-content-cards, không phải .pts-lighting-needs (tên cũ từ bản
+   hardcode đã gỡ, đổi tên theo cho khớp DOM thật, lỗi khiến margin dưới
+   không áp dụng). Lưới .pts-product-project-grid--1/--2/--3 vốn có
+   max-width cố định (380/780/1180px, dùng cho "Dự án tiêu biểu" khi ít mục
+   cố tình không giãn hết) - với đúng 3-4 thẻ (lấp đầy hàng) khối NÀY cần
+   rộng bằng đúng lưới sản phẩm/FAQ phía trên/dưới, nhất là màn hình lớn
+   (--pts-container tới 1920px) nên phải ép full-width riêng (sếp chỉ ra
+   2026-10-02 kèm ảnh: "chưa bằng với mép 2 bên"). CHỈ áp cho --3/--4 - với
+   1-2 thẻ (vd Biến tần chỉ 2 "nhu cầu" thật) ép full-width làm ảnh bị giãn
+   to bất thường ("vỡ layout", sếp chỉ ra 2026-10-02) nên giữ nguyên
+   max-width gốc, căn giữa cho các trường hợp này. */
+.pts-content-cards{margin:42px 0 0!important;}
+.pts-content-cards .pts-related-grid.pts-product-project-grid--3,
+.pts-content-cards .pts-related-grid.pts-product-project-grid--4{max-width:none!important;width:100%!important;}
+.pts-lighting-needs-title{
+    margin:0 0 24px;
+    color:var(--pts-navy);
+    font-size:clamp(22px,2.2vw,30px);
+    font-weight:900;
+    line-height:1.25;
+    text-align:center;
+}
+.pts-content-cards .pts-related-card-body small{display:block;margin-top:4px;color:#5b6676;font-size:13px;}
 .pts-category-faq{
     margin:52px 0 8px;
     padding:34px clamp(18px,3vw,40px) 38px;

@@ -591,6 +591,13 @@ docker exec pts-php74-local php /tmp/commit-product-bulk-file.php \
 Không chạy commit script này trực tiếp trên production. Quy trình bàn giao chi
 tiết: [Hướng dẫn nhập sản phẩm](../11-workflows/huong-dan-ban-giao-nhap-san-pham.md).
 
+File audit thông số kỹ thuật không phải file import trực tiếp. File này dùng để
+phân loại field theo nhóm sản phẩm trước; chỉ đưa dữ liệu đã xác định vào file
+bulk đúng schema. Các nhãn nguồn/xác minh như “hãng xác nhận”, “nguồn ngoài”,
+“theo datasheet” bị chặn khi parse thông số riêng. Trên PDP, field chưa có dữ
+liệu không hiển thị placeholder hàng loạt; vẫn phải theo dõi và bổ sung qua
+Excel/Admin.
+
 ### 8.2 Nhập nội dung/ảnh
 
 Các importer mặc định dry-run. Luôn chạy dry-run → đọc mapping → backup → apply

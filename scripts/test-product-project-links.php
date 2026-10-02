@@ -122,8 +122,8 @@ try {
     $projectPage = linkHttp('http://127.0.0.1/fixture-du-an-san-pham-'.$suffix);
     $productPage = linkHttp('http://127.0.0.1/fixture-san-pham-du-an-'.$suffix);
     linkAssert($projectPage['status'] === 200 && strpos($projectPage['body'], 'Sản phẩm sử dụng trong dự án') !== false && strpos($projectPage['body'], 'fixture-san-pham-du-an-'.$suffix) !== false, 'Trang Dự án render link tới sản phẩm');
-    linkAssert($productPage['status'] === 200 && strpos($productPage['body'], 'Dự án thực tế sử dụng sản phẩm') !== false && strpos($productPage['body'], 'fixture-du-an-san-pham-'.$suffix) !== false, 'Trang Sản phẩm render link ngược tới Dự án');
-    if($galleryId > 0) linkAssert(strpos($productPage['body'], 'pts-project-media-thumbs') !== false, 'Trang Sản phẩm render ảnh gallery Dự án');
+    linkAssert($productPage['status'] === 200 && strpos($productPage['body'], 'Dự án thực tế sử dụng sản phẩm') === false && strpos($productPage['body'], 'fixture-du-an-san-pham-'.$suffix) === false, 'Trang Sản phẩm không render khối Dự án');
+    if($galleryId > 0) linkAssert(strpos($productPage['body'], 'pts-project-media-thumbs') === false, 'Trang Sản phẩm không render gallery Dự án');
     linkAssert(!productProjectSync($d, $projectId, array(999999999)), 'Từ chối ID sản phẩm không tồn tại');
     linkAssert(productProjectIdsForProject($d, $projectId) === array($productId, $secondProductId), 'Validation lỗi không xóa quan hệ đang có');
 

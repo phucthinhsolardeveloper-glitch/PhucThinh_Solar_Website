@@ -35,17 +35,36 @@ $pdpUseCaseVariant = productPdpUseCaseVariant($rowDetail, isset($productList) ? 
 $structuredSpecResult = productStructuredSpecs($rowDetail, $lang, $pdpProfileKey);
 $structuredSpecs = $structuredSpecResult['specs'];
 $useLegacySpecs = $structuredSpecResult['use_legacy'];
-$certificateContent = (!empty($rowDetail['certificate'.$lang])) ? htmlspecialchars_decode($rowDetail['certificate'.$lang]) : '';
 /* Mô tả sản phẩm = MỘT loại: chip thông số (tự động) + khối content_section
    (kế thừa sản phẩm > hãng > danh mục) + đoạn văn tự sinh khi chưa có khối. */
 $productSpecHighlights = productAutoHighlights($rowDetail, $lang, isset($type) ? $type : '', $pdpProfileKey);
 $productLegacySpecs = trim(isset($rowDetail['thongsokythuat'.$lang]) ? htmlspecialchars_decode($rowDetail['thongsokythuat'.$lang]) : '');
 $productPolicyOverride = trim(isset($rowDetail['chinhsachmuahang'.$lang]) ? htmlspecialchars_decode($rowDetail['chinhsachmuahang'.$lang]) : '');
+$productPolicyOverrideItems = array();
+$productPolicyOverrideListHtml = '';
+if($productPolicyOverride !== '') {
+    /* Chuẩn hóa dữ liệu cũ nhập từ Excel/CKEditor về danh sách thống nhất. */
+    $plainPolicy = trim(strip_tags($productPolicyOverride));
+    if($plainPolicy !== '') {
+        $policyLines = preg_split('/(?:\R+|\s+)(?=[–—]\s*)/u', $plainPolicy, -1, PREG_SPLIT_NO_EMPTY);
+        if(count($policyLines) < 2) $policyLines = preg_split('/\R+/u', $plainPolicy, -1, PREG_SPLIT_NO_EMPTY);
+        foreach($policyLines as $policyLine) {
+            $policyLine = trim(preg_replace('/^[–—-]\s*/u', '', $policyLine));
+            if($policyLine !== '') $productPolicyOverrideItems[] = $policyLine;
+        }
+    }
+    if(empty($productPolicyOverrideItems) && preg_match_all('/<p\b[^>]*>(.*?)<\/p>/isu', $productPolicyOverride, $policyParagraphs) && count($policyParagraphs[1]) >= 2) {
+        foreach($policyParagraphs[1] as $policyParagraph) {
+            $policyLine = trim(preg_replace('/^[–—-]\s*/u', '', strip_tags($policyParagraph)));
+            if($policyLine !== '') $productPolicyOverrideItems[] = $policyLine;
+        }
+    }
+}
 $productSections = isset($productSections) ? $productSections : array('blocks' => array(), 'source' => '');
 $pdpSectionSplit = productSplitFaqBlocks(isset($productSections['blocks']) ? $productSections['blocks'] : array());
-$productSectionsHtml = (!empty($pdpSectionSplit['rest'])) ? productRenderSections($pdpSectionSplit['rest'], UPLOAD_PRODUCT_L, $func) : '';
-$productSpecParagraph = ($productSectionsHtml === '' && $productSections['source'] !== 'hide') ? productAutoDescription($rowDetail, $lang, isset($type) ? $type : '', $pdpProfileKey) : '';
-$hasProductDescription = $productSpecHighlights || $productSectionsHtml !== '' || $productSpecParagraph !== '';
+$productSectionsHtml = '';
+$productSpecParagraph = '';
+$hasProductDescription = false;
 /* Luôn hiện bảng thông số đủ khung (xem $pdpFullSpecRows bên dưới) - không
    còn ẩn cả bảng chỉ vì chưa có structuredSpecs, để Admin thấy rõ còn thiếu
    field nào cần nhập thay vì tưởng đã xong vì bảng "biến mất". */
@@ -77,7 +96,7 @@ $pdpCategoryName = '';
 if(!empty($productCat['name'.$lang])) $pdpCategoryName = $productCat['name'.$lang];
 else if(!empty($productList['name'.$lang])) $pdpCategoryName = $productList['name'.$lang];
 
-$pdpPackageContents = !empty($rowDetail['package_contents']) ? trim(strip_tags((string)$rowDetail['package_contents'])) : '';
+$pdpPackageContents = productNormalizePackageContents(isset($rowDetail['package_contents']) ? $rowDetail['package_contents'] : '');
 
 /* Bố cục "hero + bảng thông số luôn đủ dòng" theo mockup 2026-09-26 - khung/
    icon cố định, dữ liệu thật hiện khi có, còn thiếu thì hiện placeholder
@@ -182,9 +201,8 @@ else
         );
     }
 }
-/* Bảng thông số kỹ thuật đầy đủ: liệt kê hết field của đúng profile, không
-   ẩn dòng thiếu dữ liệu như trước (audit SEO 2026-09-25 khuyến nghị luôn
-   hiện đủ khung, tránh Admin quên chưa nhập vì bảng "trông có vẻ đủ"). */
+/* Bảng thông số kỹ thuật theo profile. Field cốt lõi thiếu dữ liệu vẫn giữ
+   hàng để báo "Đang cập nhật"; chỉ field tùy chọn/không phù hợp mới được rút. */
 $pdpFullSpecRows = array();
 if($pdpProfileKey === 'lighting')
 {
@@ -216,9 +234,28 @@ else
    key nên productPdpSpecValue() không bắt được qua field key). Không giới
    hạn theo profile - áp dụng chung mọi nhóm sản phẩm để không sót dữ liệu
    Admin đã nhập thật. */
-$pdpExtraSpecDenylist = array('model', 'ghi chú', 'thông tin', 'mã/model nguồn', 'model nguồn', 'tên/phiên bản bảng giá');
+$pdpExtraSpecDenylist = array('model', 'ghi chú', 'thông tin', 'mã/model nguồn', 'model nguồn', 'tên/phiên bản bảng giá', 'chứng nhận', 'kiểm nghiệm', 'tiêu chuẩn', 'hiệu suất châu âu', 'hiệu suất theo datasheet');
+$pdpExtraSpecInternalPatterns = array(
+    '/\bghi chú\b/u', '/\bsuy luận\b/u', '/\bxác minh\b/u', '/\bđối chiếu\b/u',
+    '/\brevision\b/u', '/\bbatch\d*/u', '/\bfamily\b/u', '/\bcatalog(?:ue)?\b/u',
+    '/\btrích nguồn\b/u', '/\bnguồn tham khảo\b/u', '/\bnguồn exact\b/u', '/\btham khảo\b/u', '/\bcăn cứ\b/u',
+    '/\bnguồn (?:đúng|xác nhận|hiện tại|phổ biến|độc lập|hãng)\b/u',
+    '/\btrạng thái nguồn\b/u', '/\bmức xác minh\b/u', '/\bkhuyến nghị\b/u', '/\bgiữ cấu hình\b/u',
+    '/\blưu ý\b/u', '/\btrạng thái\b/u', '/\bxử lý\b/u', '/\bphân loại\b/u', '/\btham khảo\b/u', '/\bcăn cứ\b/u'
+);
 $pdpUsedSpecLabels = array();
 foreach($pdpFullSpecRows as $usedRow) $pdpUsedSpecLabels[] = mb_strtolower(trim($usedRow[0]), 'UTF-8');
+/* Một số file cũ dùng đảo thứ tự nhãn "Giám sát / kết nối" thay vì nhãn
+   canonical "Kết nối giám sát" của profile inverter. Đăng ký cả hai alias để
+   additional_specs không in lại cùng một giá trị thành dòng thứ hai. */
+if($pdpProfileKey === 'inverter') {
+    $pdpUsedSpecLabels[] = 'giám sát / kết nối';
+    $pdpUsedSpecLabels[] = 'kết nối giám sát';
+    $pdpUsedSpecLabels[] = 'mã model';
+    $pdpUsedSpecLabels[] = 'số mppt / chuỗi mỗi mppt';
+    $pdpUsedSpecLabels[] = 'dòng mppt tối đa';
+    $pdpUsedSpecLabels[] = 'hiệu suất tối đa';
+}
 /* Bí danh không bắt được qua so khớp chuỗi con (vd "Lumen" ~ "Quang thông")
    - khai báo tay để tránh hiện trùng 2 dòng cùng 1 giá trị. */
 if($pdpProfileKey === 'lighting') $pdpUsedSpecLabels[] = 'lumen';
@@ -230,6 +267,16 @@ foreach(productPdpAdditionalSpecs($rowDetail) as $extraSpec)
     if($extraLabel === '' || $extraValue === '') continue;
     $extraLabelLower = mb_strtolower($extraLabel, 'UTF-8');
     if(in_array($extraLabelLower, $pdpExtraSpecDenylist, true)) continue;
+    /* additional_specs còn có dữ liệu kiểm tra nội bộ từ quá trình rà model.
+       Không được đưa URL nhà cung cấp/đối thủ, revision hay suy luận ra public. */
+    $isInternalExtra = false;
+    foreach($pdpExtraSpecInternalPatterns as $internalPattern) {
+        if(preg_match($internalPattern, $extraLabelLower)) { $isInternalExtra = true; break; }
+    }
+    if($extraLabelLower !== 'nguồn sáng' && preg_match('/\b(?:nguồn|source)\b/u', $extraLabelLower)) $isInternalExtra = true;
+    if(preg_match('/https?:\/\//i', $extraValue)) $isInternalExtra = true;
+    if(preg_match('/\b(?:không công bố|chưa xác minh|chưa tìm được|không tự suy|chưa có nguồn|theo nguồn|theo revision|theo family|catalog(?:ue)?)\b/iu', $extraValue)) $isInternalExtra = true;
+    if($isInternalExtra) continue;
     $alreadyShown = false;
     foreach($pdpUsedSpecLabels as $usedLabel)
     {
@@ -243,6 +290,14 @@ foreach(productPdpAdditionalSpecs($rowDetail) as $extraSpec)
     $pdpFullSpecRows[] = array($extraLabel, $extraValue, $extraSpec['key']);
     $pdpUsedSpecLabels[] = $extraLabelLower;
 }
+/* Chỉ rút các field thực sự tùy chọn; field thuộc bộ thông số chính của
+   profile vẫn giữ lại để hiển thị "Đang cập nhật" khi chưa có dữ liệu. */
+$pdpOptionalMissingFields = array('light_color', 'lighting_area', 'housing_color', 'operating_mode', 'impact_rating', 'installation_spacing', 'package_contents');
+$pdpFullSpecRows = array_values(array_filter($pdpFullSpecRows, function($specRow) use ($pdpOptionalMissingFields) {
+    if (isset($specRow[1]) && trim((string)$specRow[1]) !== '') return true;
+    return !isset($specRow[2]) || !in_array($specRow[2], $pdpOptionalMissingFields, true);
+}));
+$hasProductSpecs = !empty($pdpFullSpecRows);
 
 /* Chỉ dựng hướng dẫn lựa chọn từ dữ liệu kỹ thuật thật của sản phẩm. */
 $pdpGuideIconImageByField = array(
@@ -310,6 +365,26 @@ foreach((array)$productSections['blocks'] as $contentBlock)
    Admin nhập trong content block vẫn được ưu tiên, chỉ bổ sung ảnh còn thiếu
    để card không rơi về placeholder icon. */
 if(!$pdpUseCases && $pdpProfileKey !== 'general') $pdpUseCases = productPdpUseCaseDefaults($pdpProfileKey, $pdpUseCaseVariant);
+/* Khi đã có section Ứng dụng riêng, không render lại heading/list ứng dụng
+   nằm trong phần mô tả legacy. Nếu giữ cả hai, cùng một nội dung xuất hiện
+   một lần trong Mô tả và một lần nữa ở section Ứng dụng bên dưới. */
+$pdpDescriptionBlocks = array();
+$skipPdpApplicationBlocks = false;
+foreach((array)$pdpSectionSplit['rest'] as $descriptionBlock)
+{
+    $descriptionType = isset($descriptionBlock['type']) ? $descriptionBlock['type'] : '';
+    if($descriptionType === 'heading')
+    {
+        $descriptionHeading = trim(isset($descriptionBlock['text']) ? (string)$descriptionBlock['text'] : '');
+        $isApplicationHeading = mb_stripos($descriptionHeading, 'ứng dụng', 0, 'UTF-8') !== false || mb_stripos($descriptionHeading, 'phù hợp', 0, 'UTF-8') !== false;
+        $skipPdpApplicationBlocks = $isApplicationHeading && !empty($pdpUseCases);
+        if($skipPdpApplicationBlocks) continue;
+    }
+    if(!$skipPdpApplicationBlocks) $pdpDescriptionBlocks[] = $descriptionBlock;
+}
+$productSectionsHtml = !empty($pdpDescriptionBlocks) ? productRenderSections($pdpDescriptionBlocks, UPLOAD_PRODUCT_L, $func) : '';
+$productSpecParagraph = ($productSectionsHtml === '' && $productSections['source'] !== 'hide') ? productAutoDescription($rowDetail, $lang, isset($type) ? $type : '', $pdpProfileKey) : '';
+$hasProductDescription = $productSpecHighlights || $productSectionsHtml !== '' || $productSpecParagraph !== '';
 $pdpUseCasePhotoSeen = array();
 foreach($pdpUseCases as $pdpUseCaseIndex => &$pdpUseCase)
 {
@@ -351,7 +426,6 @@ if(!empty($policy) && is_array($policy))
     }
 }
 $hasProductWarranty = $productPolicyOverride !== '' || !empty($pdpWarrantyPolicies);
-$hasCertificate = !empty($certificateContent);
 $validProductDocuments = array();
 foreach((array)(isset($productDocuments) ? $productDocuments : array()) as $document)
 {
@@ -394,8 +468,8 @@ if(!is_string($pdpCurrentPath) || $pdpCurrentPath === '' || substr($pdpCurrentPa
     $pdpCurrentPath = '/san-pham/'.ltrim((string)$rowDetail[$sluglang], '/');
 $pdpCurrentPath = htmlspecialchars($pdpCurrentPath, ENT_QUOTES, 'UTF-8');
 $pdpOverviewAnchor = $hasProductDescription ? 'tong-quan' : ($pdpUseCases ? 'ung-dung-san-pham' : ($pdpBuyingGuides ? 'huong-dan-lua-chon' : ($pdpFaqs ? 'cau-hoi-thuong-gap' : '')));
-$pdpSupportAnchor = $validProductDocuments ? 'tai-lieu-san-pham' : ($hasProductWarranty ? 'chinh-sach-bao-hanh' : ($hasCertificate ? 'chung-nhan-san-pham' : 'video-san-pham'));
-if($validProductDocuments || $hasCertificate) $pdpSupportLabel = $hasProductWarranty ? 'Tài liệu & bảo hành' : 'Tài liệu sản phẩm';
+$pdpSupportAnchor = $validProductDocuments ? 'tai-lieu-san-pham' : ($hasProductWarranty ? 'chinh-sach-bao-hanh' : 'video-san-pham');
+if($validProductDocuments) $pdpSupportLabel = $hasProductWarranty ? 'Tài liệu & bảo hành' : 'Tài liệu sản phẩm';
 elseif($hasProductWarranty) $pdpSupportLabel = 'Chính sách bảo hành';
 else $pdpSupportLabel = 'Video sản phẩm';
 ?>
@@ -663,7 +737,7 @@ else $pdpSupportLabel = 'Video sản phẩm';
     <?php } ?>
 
     <?php if($hasPdpSupport) { ?>
-    <section class="pts-pdp-content-section pts-pdp-support-grid" aria-label="Video, chứng nhận và bảo hành">
+    <section class="pts-pdp-content-section pts-pdp-support-grid" aria-label="Video, tài liệu và bảo hành">
         <div class="pts-pdp-support-block" id="video-san-pham"><h2 class="pts-pdp-section-title">Video sản phẩm &amp; lắp đặt</h2>
             <?php if(!empty($videoEmbedUrl)) { ?>
             <div class="embed-responsive embed-responsive-16by9"><iframe class="embed-responsive-item" src="<?=htmlspecialchars($videoEmbedUrl, ENT_QUOTES, 'UTF-8')?>" title="Video thực tế <?=$rowDetail['name'.$lang]?>" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
@@ -671,38 +745,13 @@ else $pdpSupportLabel = 'Video sản phẩm';
             <div class="pts-pdp-video-placeholder" aria-hidden="true"><span class="pts-pdp-video-play">&#9654;</span><p>Video đang được cập nhật</p></div>
             <?php } ?>
         </div>
-        <?php if($hasCertificate) { ?><div class="pts-pdp-support-block" id="chung-nhan-san-pham"><h2 class="pts-pdp-section-title">Chứng nhận / kiểm nghiệm</h2>
-            <div class="pts-product-content pts-pdp-certificate"><?=$certificateContent?></div>
-        </div><?php } ?>
         <?php if($validProductDocuments) { ?><div class="pts-pdp-support-block" id="tai-lieu-san-pham"><h2 class="pts-pdp-section-title">Tài liệu sản phẩm</h2><div class="pts-policy-links">
             <?php foreach($validProductDocuments as $document) { ?><a href="<?=htmlspecialchars($document['file_path'], ENT_QUOTES, 'UTF-8')?>" target="_blank" rel="noopener"><img class="pts-pdp-support-icon" src="assets/images/icons/pdp/tieuchuantailieu.png" alt="" loading="lazy" width="24" height="24"><span><?=htmlspecialchars($document['title'], ENT_QUOTES, 'UTF-8')?></span><i class="fas fa-download pts-pdp-document-download" aria-hidden="true"></i></a><?php } ?>
         </div></div><?php } ?>
         <?php if($hasProductWarranty) { ?><div class="pts-pdp-support-block" id="chinh-sach-bao-hanh"><h2 class="pts-pdp-section-title">Chính sách bảo hành</h2>
             <?php if(!empty($rowDetail['warranty'])) { ?><div class="pts-pdp-warranty-summary"><img class="pts-pdp-support-icon" src="assets/images/icons/pdp/baohanh.png" alt="" loading="lazy" width="42" height="42"><div><strong>Bảo hành <?=htmlspecialchars($rowDetail['warranty'], ENT_QUOTES, 'UTF-8')?></strong><span>Thời hạn theo thông tin công bố của sản phẩm.</span></div></div><?php } ?>
-            <?php if($hasProductWarranty) { ?><div class="pts-product-content pts-pdp-policy"><?php if($productPolicyOverride !== '') { ?><h3>Chính sách riêng của sản phẩm</h3><?=$productPolicyOverride?><?php } else { ?><p>Áp dụng chính sách bảo hành hiện hành của Phúc Thịnh Solar:</p><div class="pts-policy-links"><?php foreach($pdpWarrantyPolicies as $policyItem) { ?><a href="ho-tro/<?=$policyItem[$sluglang]?>/"><img class="pts-pdp-support-icon" src="assets/images/icons/pdp/baohanh.png" alt="" loading="lazy" width="24" height="24"><span><?=htmlspecialchars($policyItem['name'.$lang],ENT_QUOTES,'UTF-8')?></span></a><?php } ?></div><?php } ?></div><?php } ?>
+            <?php if($hasProductWarranty) { ?><div class="pts-product-content pts-pdp-policy"><?php if($productPolicyOverride !== '') { ?><h3>Chính sách riêng của sản phẩm</h3><?php if(!empty($productPolicyOverrideItems)) { ?><ul><?php foreach($productPolicyOverrideItems as $policyLine) { ?><li><?=htmlspecialchars($policyLine, ENT_QUOTES, 'UTF-8')?></li><?php } ?></ul><?php } else { ?><p><?=nl2br(htmlspecialchars($productPolicyOverride, ENT_QUOTES, 'UTF-8'))?></p><?php } ?><?php } else { ?><p>Áp dụng chính sách bảo hành hiện hành của Phúc Thịnh Solar:</p><div class="pts-policy-links"><?php foreach($pdpWarrantyPolicies as $policyItem) { ?><a href="ho-tro/<?=$policyItem[$sluglang]?>/"><img class="pts-pdp-support-icon" src="assets/images/icons/pdp/baohanh.png" alt="" loading="lazy" width="24" height="24"><span><?=htmlspecialchars($policyItem['name'.$lang],ENT_QUOTES,'UTF-8')?></span></a><?php } ?></div><?php } ?></div><?php } ?>
         </div><?php } ?>
-    </section>
-    <?php } ?>
-
-    <?php if(!empty($productGlobalCertificates)) { ?>
-    <section class="pts-pdp-content-section pts-product-certificates" aria-labelledby="pts-pdp-global-certificates-title">
-        <header class="pts-product-proof-heading">
-            <h2 class="pts-pdp-section-title" id="pts-pdp-global-certificates-title">Chứng nhận &amp; năng lực</h2>
-            <a class="pts-product-proof-link" href="gioi-thieu/#about-certificates">Xem tất cả chứng nhận <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
-        </header>
-        <div class="pts-product-certificate-grid">
-            <?php foreach($productGlobalCertificates as $productCertificate) { ?>
-            <article class="pts-product-certificate-item">
-                <a class="pts-product-certificate-media" href="<?=ASSET.UPLOAD_PHOTO_L.htmlspecialchars($productCertificate['photo'], ENT_QUOTES, 'UTF-8')?>" title="<?=htmlspecialchars($productCertificate['name'], ENT_QUOTES, 'UTF-8')?>">
-                    <?=$func->getImage(['isLazy' => true, 'class' => '', 'sizes' => '360x240x2', 'upload' => UPLOAD_PHOTO_L, 'image' => $productCertificate['photo'], 'alt' => $productCertificate['name']])?>
-                </a>
-                <div class="pts-product-certificate-copy">
-                    <h3><?=htmlspecialchars($productCertificate['name'], ENT_QUOTES, 'UTF-8')?></h3>
-                    <?php if($productCertificate['desc'] !== '') { ?><p><?=htmlspecialchars($productCertificate['desc'], ENT_QUOTES, 'UTF-8')?></p><?php } ?>
-                </div>
-            </article>
-            <?php } ?>
-        </div>
     </section>
     <?php } ?>
 
@@ -747,44 +796,6 @@ else $pdpSupportLabel = 'Video sản phẩm';
         </form>
     </div>
 </section>
-<?php
-    /* Admin chưa liên kết dự án nào với sản phẩm cụ thể (#_product_project
-       đang rỗng 2026-09-28) thì rơi về danh sách "dự án tiêu biểu" chung,
-       không ẩn hẳn section - tránh trang trắng trơn khi chưa kịp gắn dữ liệu. */
-    /* Tối đa 4 dự án để component giữ kích thước ảnh gọn trên desktop rộng;
-       mobile chuyển thành rail vuốt ngang do stylesheet dùng chung quản lý. */
-    $pdpProjectsToShow = array_slice(!empty($productRelatedProjects) ? $productRelatedProjects : $productFeaturedProjects, 0, 4);
-    $pdpProjectsIsSpecific = !empty($productRelatedProjects);
-?>
-<?php if(!empty($pdpProjectsToShow)) { ?>
-<section class="box-detail pts-product-proof-section pts-related-showcase pts-product-projects pts-pdp-projects" aria-labelledby="pts-pdp-projects-title">
-    <header class="pts-product-proof-heading">
-        <h2 class="title-product-orther" id="pts-pdp-projects-title"><span><?=$pdpProjectsIsSpecific ? 'Dự án thực tế sử dụng sản phẩm' : 'Dự án tiêu biểu đã triển khai'?></span></h2>
-        <a class="pts-product-proof-link" href="/du-an-da-thuc-hien/">Xem tất cả dự án <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
-    </header>
-    <div class="pts-related-grid pts-product-project-grid pts-product-project-grid--<?=min(4, count($pdpProjectsToShow))?>">
-        <?php foreach($pdpProjectsToShow as $relatedProject) { ?>
-            <a class="pts-related-card" href="<?=htmlspecialchars($relatedProject[$sluglang], ENT_QUOTES, 'UTF-8')?>" title="<?=htmlspecialchars($relatedProject['name'.$lang], ENT_QUOTES, 'UTF-8')?>">
-                <span class="pts-project-media">
-                    <?=$func->getImage(['class' => 'w-100 pts-project-media-main', 'sizes' => '640x480x1', 'upload' => UPLOAD_NEWS_L, 'image' => $relatedProject['photo'], 'alt' => $relatedProject['name'.$lang]])?>
-                    <?php $relatedGallery = isset($productProjectGallery[(int)$relatedProject['id']]) ? array_slice($productProjectGallery[(int)$relatedProject['id']], 0, 3) : array(); ?>
-                    <?php if($relatedGallery) { ?>
-                        <span class="pts-project-media-thumbs" aria-label="Ảnh thực tế dự án">
-                            <?php foreach($relatedGallery as $projectPhoto) { ?>
-                                <?=$func->getImage(['class' => 'w-100', 'sizes' => '160x120x1', 'upload' => UPLOAD_NEWS_L, 'image' => $projectPhoto, 'alt' => $relatedProject['name'.$lang]])?>
-                            <?php } ?>
-                        </span>
-                    <?php } ?>
-                </span>
-                <span class="pts-related-card-body">
-                    <strong><?=htmlspecialchars($relatedProject['name'.$lang], ENT_QUOTES, 'UTF-8')?></strong>
-                    <?php if(!empty($relatedProject['address'])) { ?><small><i class="fas fa-map-marker-alt" aria-hidden="true"></i> <?=htmlspecialchars($relatedProject['address'], ENT_QUOTES, 'UTF-8')?></small><?php } ?>
-                </span>
-            </a>
-        <?php } ?>
-    </div>
-</section>
-<?php } ?>
 <?php if(!empty($product)) {?>
 <div class="box-detail mg-top-30 pts-pdp-related-products">
     <div class="title-product-orther"><span>Sản phẩm liên quan</span></div>

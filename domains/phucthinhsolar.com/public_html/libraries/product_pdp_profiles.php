@@ -7,6 +7,93 @@
  */
 if(!function_exists('productPdpProfiles'))
 {
+    /**
+     * Chuẩn hóa nội dung bộ sản phẩm về một cách trình bày duy nhất.
+     *
+     * Dữ liệu cũ có cả dấu phân cách, HTML và chuỗi bị dính từ Excel
+     * (ví dụ: "ĐènTấm pinPhụ kiện lắp đặtRemote"). Không tách theo từng
+     * ký tự viết hoa vì sẽ làm hỏng tên model; chỉ tách theo các thành phần
+     * đóng gói đã biết, đồng thời giữ nguyên phần không nhận diện được.
+     */
+    function productNormalizePackageContents($value)
+    {
+        $value = html_entity_decode(strip_tags((string) $value), ENT_QUOTES, 'UTF-8');
+        $value = trim(preg_replace('/\s+/u', ' ', $value));
+        if ($value === '') return '';
+
+        $canonical = array(
+            'trục và giá đỡ tấm pin' => 'Trục và giá đỡ tấm pin',
+            'giá đỡ tấm pin' => 'Giá đỡ tấm pin',
+            'tấm pin năng lượng mặt trời' => 'Tấm pin năng lượng mặt trời',
+            'điều khiển từ xa' => 'Điều khiển từ xa',
+            'phụ kiện lắp đặt' => 'Phụ kiện lắp đặt',
+            'tấm pin nlmt' => 'Tấm pin NLMT',
+            'dây sạc' => 'Dây sạc',
+            'đèn liền thể' => 'Đèn liền thể',
+            'trục đèn' => 'Trục đèn',
+            'cần đèn' => 'Cần đèn',
+            'tấm pin' => 'Tấm pin',
+            'remote' => 'Remote',
+            'quạt' => 'Quạt',
+            'đèn' => 'Đèn'
+        );
+
+        /* Các dấu này là phân cách hợp lệ trong file cũ và file Excel. */
+        $separated = preg_replace('/[ \t]*[+,;|·][ \t]*/u', '|', $value);
+        $separated = preg_replace('/[ \t]*\R+[ \t]*/u', '|', $separated);
+        $separated = preg_replace('/[ \t]+-[ \t]+/u', '|', $separated);
+        $parts = preg_split('/\|+/', $separated, -1, PREG_SPLIT_NO_EMPTY);
+        $segments = array();
+        foreach ($parts as $part) {
+            $part = trim($part);
+            if ($part === '') continue;
+            $lower = mb_strtolower($part, 'UTF-8');
+            $matched = false;
+            foreach ($canonical as $needle => $label) {
+                if ($lower === $needle) {
+                    $segments[] = $label;
+                    $matched = true;
+                    break;
+                }
+            }
+            if ($matched) continue;
+
+            /* Chuỗi dính không có dấu phân cách: tìm token theo thứ tự dài trước. */
+            $remaining = $part;
+            $found = array();
+            while (trim($remaining) !== '') {
+                $remaining = ltrim($remaining);
+                $matchedAt = false;
+                foreach ($canonical as $needle => $label) {
+                    $length = mb_strlen($needle, 'UTF-8');
+                    if (mb_strtolower(mb_substr($remaining, 0, $length, 'UTF-8'), 'UTF-8') === $needle) {
+                        $found[] = $label;
+                        $remaining = mb_substr($remaining, $length, null, 'UTF-8');
+                        $matchedAt = true;
+                        break;
+                    }
+                }
+                if (!$matchedAt) {
+                    /* Giữ phần còn lại, tránh làm mất thông tin hợp lệ mới. */
+                    $found[] = trim($remaining);
+                    break;
+                }
+            }
+            $segments = array_merge($segments, $found);
+        }
+
+        $result = array();
+        foreach ($segments as $segment) {
+            $segment = trim(preg_replace('/\s+/u', ' ', (string) $segment));
+            if (preg_match('/^\(/u', $segment) && !empty($result)) {
+                $result[count($result) - 1] .= ' '.$segment;
+                continue;
+            }
+            if ($segment !== '' && !in_array(mb_strtolower($segment, 'UTF-8'), array_map('mb_strtolower', $result), true)) $result[] = $segment;
+        }
+        return implode(' · ', $result);
+    }
+
     function productPdpProfiles()
     {
         static $profiles = null;
@@ -73,7 +160,7 @@ if(!function_exists('productPdpProfiles'))
                     'inverter_type' => 'Loại biến tần', 'ac_power' => 'Công suất AC định mức', 'phase_count' => 'Số pha',
                     'mppt_count' => 'Số MPPT / số chuỗi đầu vào', 'max_dc_voltage' => 'Điện áp DC tối đa',
                     'mppt_voltage_range' => 'Dải điện áp MPPT', 'max_mppt_current' => 'Dòng đầu vào tối đa mỗi MPPT',
-                    'efficiency' => 'Hiệu suất theo datasheet', 'battery_voltage_range' => 'Dải điện áp pin lưu trữ',
+                    'efficiency' => 'Hiệu suất chuyển đổi', 'battery_voltage_range' => 'Dải điện áp pin lưu trữ',
                     'backup_power' => 'Công suất dự phòng', 'monitoring' => 'Kết nối giám sát',
                     'waterproof_rating' => 'Cấp bảo vệ', 'dimensions_weight' => 'Kích thước & khối lượng', 'warranty' => 'Bảo hành'
                 ),
@@ -367,15 +454,78 @@ if(!function_exists('productPdpProfiles'))
         return $out;
     }
 
+    function productPdpValueIsMissing($value)
+    {
+        $normalized = mb_strtolower(trim(strip_tags(htmlspecialchars_decode((string)$value, ENT_QUOTES))), 'UTF-8');
+        if($normalized === '') return true;
+        return (bool) preg_match('/^(?:không công bố|không áp dụng|không có thông tin|chưa cập nhật|đang cập nhật|chưa xác minh|chưa tìm được|n\/a|na|-)\b[^\S\r\n]*(?:exact-model)?\.?$/iu', $normalized);
+    }
+
+    function productPdpSpecAliases($key)
+    {
+        static $aliases = array(
+            'cell_type' => array('loại cell', 'công nghệ cell', 'loại tế bào', 'công nghệ'),
+            'efficiency' => array('hiệu suất module', 'hiệu suất tối đa'),
+            'open_circuit_voltage' => array('voc', 'điện áp hở mạch'),
+            'short_circuit_current' => array('isc', 'dòng ngắn mạch'),
+            'max_power_voltage' => array('vmp', 'điện áp tại pmax', 'điện áp tại công suất cực đại'),
+            'max_power_current' => array('imp', 'dòng tại pmax', 'dòng điện công suất cực đại'),
+            'panel_dimensions' => array('kích thước tấm pin', 'kích thước hiện có trong file', 'kích thước'),
+            'weight' => array('khối lượng', 'trọng lượng'),
+            'connector_type' => array('đầu nối', 'kiểu kết nối', 'cáp đầu nối'),
+            'inverter_type' => array('loại biến tần', 'loại thiết bị'),
+            'ac_power' => array('công suất ac danh định', 'công suất ac'),
+            'phase_count' => array('số pha'),
+            'mppt_count' => array('số mppt / chuỗi mỗi mppt', 'số mppt / số chuỗi pv', 'số mppt'),
+            'max_dc_voltage' => array('điện áp dc tối đa'),
+            'mppt_voltage_range' => array('dải điện áp mppt', 'dải mppt đầy tải', 'dải điện áp làm việc mppt'),
+            'max_mppt_current' => array('dòng vào tối đa mỗi mppt', 'dòng vào tối đa mppt', 'dòng mppt tối đa'),
+            'battery_voltage_range' => array('dải điện áp pin'),
+            'backup_power' => array('công suất eps định mức', 'công suất eps đỉnh', 'eps'),
+            'monitoring' => array('giám sát / kết nối', 'giám sát cloud', 'giao tiếp'),
+            'battery_chemistry' => array('loại pin', 'công nghệ pin'),
+            'nominal_capacity' => array('dung lượng danh định'),
+            'usable_capacity' => array('dung lượng sử dụng'),
+            'battery_voltage' => array('điện áp pin', 'điện áp danh định'),
+            'max_charge_current' => array('dòng sạc tối đa', 'dòng sạc định mức'),
+            'max_discharge_current' => array('dòng xả tối đa', 'dòng xả định mức'),
+            'depth_of_discharge' => array('độ sâu xả', 'dod'),
+            'cycle_life' => array('tuổi thọ chu kỳ', 'chu kỳ'),
+            'communication' => array('giao tiếp', 'rs485', 'can', 'ethernet'),
+            'fan_type' => array('loại quạt'),
+            'blade_size' => array('đường kính cánh', 'cánh quạt'),
+            'airflow' => array('lưu lượng gió', 'tốc độ gió tối đa'),
+            'speed_levels' => array('số cấp gió', 'cấp độ gió'),
+            'runtime' => array('thời gian hoạt động', 'thời gian sử dụng'),
+            'motor_power' => array('công suất động cơ'),
+            'input_voltage' => array('điện áp đầu vào', 'điện áp pv đầu vào'),
+            'output_voltage' => array('điện áp đầu ra'),
+            'max_current' => array('dòng điện tối đa'),
+            'solar_input_range' => array('dải điện áp dc từ pin', 'dải điện áp pv'),
+            'control_mode' => array('chế độ điều khiển', 'chế độ làm việc'),
+            'protections' => array('chức năng bảo vệ', 'bảo vệ')
+        );
+        return isset($aliases[$key]) ? $aliases[$key] : array();
+    }
+
     function productPdpSpecValue($row, $key)
     {
         if(isset($row[$key]) && trim((string)$row[$key]) !== '' && !($key === 'cong_suat' && (float)$row[$key] <= 0))
         {
             $value = trim((string)$row[$key]);
+            if(productPdpValueIsMissing($value)) return '';
+            if($key === 'package_contents') return productNormalizePackageContents($value);
             if($key === 'cong_suat' && is_numeric(str_replace(',', '.', $value))) $value = sprintf('%g', (float)str_replace(',', '.', $value)).'W';
             return $value;
         }
-        foreach(productPdpAdditionalSpecs($row) as $spec) if($spec['key'] === $key) return $spec['value'];
+        $aliases = productPdpSpecAliases($key);
+        if($aliases) foreach(productPdpAdditionalSpecs($row) as $spec) {
+            $label = mb_strtolower(trim($spec['label']), 'UTF-8');
+            foreach($aliases as $alias) {
+                if($label === $alias && !productPdpValueIsMissing($spec['value'])) return $spec['value'];
+            }
+        }
+        foreach(productPdpAdditionalSpecs($row) as $spec) if($spec['key'] === $key && !productPdpValueIsMissing($spec['value'])) return $key === 'package_contents' ? productNormalizePackageContents($spec['value']) : $spec['value'];
         return '';
     }
 }

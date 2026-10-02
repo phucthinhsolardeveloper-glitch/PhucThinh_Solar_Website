@@ -18,6 +18,34 @@ function productValidateCommercialFields($data)
     return $errors;
 }
 
+function productBulkSuggestImageFilename($value)
+{
+    static $files = null;
+    if ($files === null)
+    {
+        $files = is_dir(UPLOAD_PRODUCT) ? scandir(UPLOAD_PRODUCT) : array();
+        $files = array_values(array_diff($files, array('.', '..')));
+    }
+    if (empty($files)) return null;
+
+    /* 1. Đúng tên, chỉ khác hoa/thường - lỗi gõ phổ biến nhất khi copy từ Excel. */
+    foreach ($files as $file) if ($file !== $value && strcasecmp($file, $value) === 0) return $file;
+
+    /* 2. Cùng tên gốc, khác đuôi - file thật đã có sẵn, Excel đang ghi sai đuôi. */
+    $base = pathinfo($value, PATHINFO_FILENAME);
+    foreach ($files as $file) if (strcasecmp(pathinfo($file, PATHINFO_FILENAME), $base) === 0) return $file;
+
+    /* 3. Gõ nhầm vài ký tự - so khoảng cách Levenshtein, chỉ nhận khi đủ gần. */
+    $closest = null; $bestDistance = null;
+    foreach ($files as $file)
+    {
+        if (abs(strlen($file) - strlen($value)) > 6) continue;
+        $distance = levenshtein(strtolower($file), strtolower($value));
+        if ($bestDistance === null || $distance < $bestDistance) { $bestDistance = $distance; $closest = $file; }
+    }
+    return ($closest !== null && $bestDistance <= 4) ? $closest : null;
+}
+
 function productBulkColumns()
 {
     return array(
@@ -503,6 +531,13 @@ function productBulkParseSpecLines($value, $allowDuplicateLabels=false)
             $result['errors'][] = 'Dòng '.($lineNumber + 1).' thiếu tên thông số hoặc giá trị';
             continue;
         }
+        /* Không cho import lại metadata nguồn/xác minh vào bảng thông số.
+           Các giá trị kiểu này phải được đưa vào đúng cột kỹ thuật tương ứng
+           (panel_power, battery_capacity, warranty...) hoặc bỏ khỏi file. */
+        if (preg_match('/(?:hãng\s+xác\s+nhận|hãng\s+hiện\s+tại|hãng\s+công\s+bố|nguồn\s+ngoài|đối\s+chiếu|căn\s+cứ|tham\s+khảo|theo\s+(?:datasheet|series|hãng)|được\s+.+?\s+xác\s+nhận)/iu', $label)) {
+            $result['errors'][] = 'Dòng '.($lineNumber + 1).' không nhận nhãn nguồn/xác minh “'.$label.'”; hãy tách thành cột thông số kỹ thuật hoặc bỏ dòng này';
+            continue;
+        }
         if($specKey !== '' && !preg_match('/^[a-z0-9_]+$/', $specKey)) {
             $result['errors'][] = 'Mã thông số ở dòng '.($lineNumber + 1).' chỉ dùng chữ thường, số và dấu gạch dưới';
             continue;
@@ -834,7 +869,7 @@ function productBulkValidateRows($rawRows, $type, $baseline = array(), $overwrit
     $allowedStatus = !empty($config['product'][$type]['check']) ? array_keys($config['product'][$type]['check']) : array('hienthi');
     foreach ($rawRows as $raw) {
         $requestedAction = productBulkNormalizeAction(isset($raw['action']) ? $raw['action'] : '');
-        $item = array('row' => (int) $raw['_row_number'], 'action' => $requestedAction, 'id' => 0, 'code' => '', 'name' => '', 'data' => array(), 'sections_raw' => '', 'existing' => null, 'pending_brand_key' => '', 'pending_product_key' => '', 'errors' => array(), 'warnings' => array(), 'conflicts' => array(), 'changes' => array());
+        $item = array('row' => isset($raw['_row_number']) ? (int) $raw['_row_number'] : 0, 'action' => $requestedAction, 'id' => 0, 'code' => '', 'name' => '', 'data' => array(), 'sections_raw' => '', 'existing' => null, 'pending_brand_key' => '', 'pending_product_key' => '', 'errors' => array(), 'warnings' => array(), 'conflicts' => array(), 'changes' => array());
         if ($item['action'] === '') $item['action'] = 'auto';
         if (!in_array($item['action'], array('auto', 'create', 'update', 'upsert', 'archive', 'skip'), true)) {
             $item['errors'][] = 'Thao tác không hợp lệ.';
@@ -1046,10 +1081,28 @@ function productBulkValidateRows($rawRows, $type, $baseline = array(), $overwrit
                 $parsedBlock = productContentBlockParse($value, $meta['kind'] === 'content_block_paired', $meta['limit']);
                 foreach($parsedBlock['errors'] as $blockError) $item['errors'][] = $meta['label'].': '.$blockError;
                 $item['data'][$meta['db']] = $parsedBlock['items'] ? json_encode($parsedBlock['items'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : null;
+            } elseif ($meta['db'] === 'package_contents') {
+                $item['data'][$meta['db']] = productNormalizePackageContents($value);
             } elseif ($meta['kind'] === 'image_filename') {
-                if (!preg_match('/^[A-Za-z0-9_.-]+$/', $value)) $item['errors'][] = $meta['label'].' chỉ nhận tên file (không đường dẫn, không ký tự đặc biệt).';
-                elseif (strtolower(pathinfo($value, PATHINFO_EXTENSION)) !== 'png') $item['errors'][] = $meta['label'].' chỉ nhận file PNG để giữ nền trong suốt.';
-                elseif (!file_exists(UPLOAD_PRODUCT.$value)) $item['errors'][] = $meta['label'].': file "'.$value.'" chưa tồn tại trong upload/product — upload qua Quản lý file trước.';
+                /* Excel export echo lại đúng giá trị photo_feed hiện có trong DB, kể cả
+                   những ảnh được upload từ trước qua form sửa sản phẩm (form đó chấp nhận
+                   cả jpg/jpeg/webp, không chỉ png - xem $config['product'][$type]['img_type']).
+                   Nếu admin chỉ sửa cột khác (thông số, giá...) và không đổi giá trị ảnh này,
+                   không được bắt lỗi dữ liệu cũ vốn đã hợp lệ khi được lưu - chỉ áp luật
+                   PNG-only + phải tồn tại cho giá trị MỚI/THAY ĐỔI thật sự. */
+                $unchangedFromExisting = $existing && array_key_exists($meta['db'], $existing) && trim((string) $existing[$meta['db']]) === $value;
+                if ($unchangedFromExisting) {
+                    $item['data'][$meta['db']] = $value;
+                }
+                elseif (!preg_match('/^[A-Za-z0-9_.-]+$/', $value)) $item['errors'][] = $meta['label'].' chỉ nhận tên file (không đường dẫn, không ký tự đặc biệt).';
+                elseif (strtolower(pathinfo($value, PATHINFO_EXTENSION)) !== 'png') {
+                    $suggestion = productBulkSuggestImageFilename($value);
+                    $item['errors'][] = $meta['label'].' chỉ nhận file PNG để giữ nền trong suốt.'.($suggestion !== null ? ' Có phải bạn muốn dùng "'.$suggestion.'" (đã có sẵn trong upload/product)?' : '');
+                }
+                elseif (!file_exists(UPLOAD_PRODUCT.$value)) {
+                    $suggestion = productBulkSuggestImageFilename($value);
+                    $item['errors'][] = $meta['label'].': file "'.$value.'" chưa tồn tại trong upload/product'.($suggestion !== null ? ' — có phải bạn muốn dùng "'.$suggestion.'"?' : ' — upload qua Quản lý file trước.');
+                }
                 else $item['data'][$meta['db']] = $value;
             } elseif ($meta['kind'] === 'youtube') {
                 if ($value !== '') {
@@ -1312,7 +1365,19 @@ function productBulkCommit()
         return;
     }
     $overwriteChoices = array();
-    foreach (!empty($_POST['overwrite_conflict']) && is_array($_POST['overwrite_conflict']) ? $_POST['overwrite_conflict'] : array() as $choice) {
+    /*
+     * Conflict lists can contain more than max_input_vars (typically 1000)
+     * checkboxes. The preview form sends the selected keys as one JSON value;
+     * keep the old array input as a fallback for older open preview tabs.
+     */
+    $postedOverwriteChoices = array();
+    if (!empty($_POST['overwrite_conflict_json']) && is_string($_POST['overwrite_conflict_json'])) {
+        $decodedOverwriteChoices = json_decode($_POST['overwrite_conflict_json'], true);
+        if (is_array($decodedOverwriteChoices)) $postedOverwriteChoices = $decodedOverwriteChoices;
+    } elseif (!empty($_POST['overwrite_conflict']) && is_array($_POST['overwrite_conflict'])) {
+        $postedOverwriteChoices = $_POST['overwrite_conflict'];
+    }
+    foreach ($postedOverwriteChoices as $choice) {
         if (preg_match('/^\d+:[a-zA-Z0-9_]+$/', $choice)) $overwriteChoices[$choice] = true;
     }
     $brandChoices = productBulkBrandChoicesFromPost();

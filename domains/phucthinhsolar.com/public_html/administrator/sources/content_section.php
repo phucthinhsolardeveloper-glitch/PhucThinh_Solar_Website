@@ -40,6 +40,22 @@ if(!function_exists('contentSectionScopeName'))
 		return implode(',', $flags);
 	}
 
+	/* Cờ phụ cộng thêm vào status (comma-list), tách biệt với hienthi/an - vd
+	   "show_description" bật/tắt riêng khối mô tả dài, không ảnh hưởng tới
+	   công tắc hiện/ẩn toàn bộ nội dung (FAQ/Lưới thẻ vẫn theo hienthi/an). */
+	function contentSectionStatusSetFlag($status, $flag, $enabled)
+	{
+		$flags = array_filter(array_map('trim', explode(',', (string) $status)));
+		$flags = array_values(array_diff($flags, array($flag)));
+		if($enabled) $flags[] = $flag;
+		return implode(',', $flags);
+	}
+
+	function contentSectionStatusHasFlag($status, $flag)
+	{
+		return in_array($flag, array_filter(array_map('trim', explode(',', (string) $status))), true);
+	}
+
 	function contentSectionSourceLabel($scope, $mode)
 	{
 		if($scope !== 'product') return 'Nội dung gắn trực tiếp';
@@ -189,20 +205,30 @@ if(!function_exists('contentSectionScopeName'))
 
 		$blocksJson = $clean ? htmlspecialchars(json_encode($clean, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), ENT_QUOTES) : null;
 
+		/* "Hiện khối mô tả dài" - cờ riêng, chỉ áp dụng danh mục (cat/list), độc
+		   lập với công tắc hiện/ẩn toàn bộ nội dung. Mặc định TẮT (sếp yêu cầu
+		   2026-10-02: không còn mặc định học theo bố cục Kitawa cho khối mô tả
+		   dài dưới lưới sản phẩm) - admin tự bật lại cho từng danh mục nếu
+		   muốn giữ nội dung SEO dài ở đó. */
+		$showDescription = in_array($scope, array('cat', 'list'), true) && isset($_POST['show_description']) && (string) $_POST['show_description'] === '1';
+
 		/* Soạn khối cho sản phẩm = chế độ "own". Có khối rồi mà đang inherit thì
 		   chuyển sang own; xoá hết khối ở sản phẩm -> quay lại inherit. */
-		$exists = $d->rawQueryOne("select id, mode from #_content_section where scope = ? and scope_id = ? limit 0,1", array($scope, $scopeId));
+		$exists = $d->rawQueryOne("select id, mode, status from #_content_section where scope = ? and scope_id = ? limit 0,1", array($scope, $scopeId));
 		if($exists)
 		{
 			$upd = array('blocksvi' => $blocksJson, 'date_updated' => time());
 			if($scope === 'product')
 				$upd['mode'] = $clean ? ($exists['mode'] === 'both' ? 'both' : 'own') : ($exists['mode'] === 'hide' ? 'hide' : 'inherit');
+			if(in_array($scope, array('cat', 'list'), true))
+				$upd['status'] = contentSectionStatusSetFlag($exists['status'], 'show_description', $showDescription);
 			$d->where('id', $exists['id']);
 			$d->update('content_section', $upd);
 		}
 		elseif($clean)
 		{
-			$d->insert('content_section', array('scope' => $scope, 'scope_id' => $scopeId, 'mode' => ($scope === 'product' ? 'own' : 'own'), 'blocksvi' => $blocksJson, 'status' => 'hienthi', 'date_updated' => time()));
+			$insertStatus = $showDescription ? 'hienthi,show_description' : 'hienthi';
+			$d->insert('content_section', array('scope' => $scope, 'scope_id' => $scopeId, 'mode' => ($scope === 'product' ? 'own' : 'own'), 'blocksvi' => $blocksJson, 'status' => $insertStatus, 'date_updated' => time()));
 		}
 
 		$func->transfer('Đã lưu khối nội dung ('.count($clean).' khối)', $back);
@@ -396,6 +422,35 @@ if(!function_exists('contentSectionScopeName'))
 				$out['question'] = trim(strip_tags((string) (isset($block['question']) ? $block['question'] : '')));
 				$out['answer'] = trim(strip_tags((string) (isset($block['answer']) ? $block['answer'] : '')));
 				if($out['question'] === '' || $out['answer'] === '') continue;
+			}
+			elseif($t === 'cards')
+			{
+				/* Lưới thẻ "Chọn X đúng nhu cầu" - admin tự soạn tiêu đề mục +
+				   N thẻ (ảnh/tiêu đề/mô tả/link). Ảnh đã được upload riêng qua
+				   act=upload_image (JS tự AJAX khi chọn file), ở đây chỉ nhận
+				   lại tên file string nên không cần đọc $_FILES. Link chỉ cho
+				   đường dẫn nội bộ tương đối, chặn URL ngoài để tránh mở
+				   redirect/XSS qua href khi admin dán nhầm nội dung. */
+				$out['title'] = trim(strip_tags((string) (isset($block['title']) ? $block['title'] : '')));
+				$items = array();
+				if(!empty($block['items']) && is_array($block['items']))
+				{
+					foreach($block['items'] as $item)
+					{
+						if(!is_array($item)) continue;
+						$itemPhoto = trim((string) (isset($item['photo']) ? $item['photo'] : ''));
+						$itemPhoto = preg_replace('#[^A-Za-z0-9._/-]#', '', $itemPhoto);
+						$itemPhoto = ltrim(str_replace('..', '', $itemPhoto), '/');
+						$itemTitle = trim(strip_tags((string) (isset($item['title']) ? $item['title'] : '')));
+						$itemDesc = trim(strip_tags((string) (isset($item['desc']) ? $item['desc'] : '')));
+						$itemLink = trim((string) (isset($item['link']) ? $item['link'] : ''));
+						if($itemLink !== '' && (strpos($itemLink, '//') !== false || preg_match('#^[a-z][a-z0-9+.-]*:#i', $itemLink))) $itemLink = '';
+						if($itemPhoto === '' && $itemTitle === '') continue;
+						$items[] = array('photo' => $itemPhoto, 'title' => $itemTitle, 'desc' => $itemDesc, 'link' => $itemLink);
+					}
+				}
+				if(!$items) continue;
+				$out['items'] = $items;
 			}
 			else continue;
 

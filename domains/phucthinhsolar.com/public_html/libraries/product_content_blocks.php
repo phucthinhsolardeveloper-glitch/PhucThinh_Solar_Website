@@ -328,6 +328,18 @@ if(!function_exists('productContentBlockParse'))
         return empty($row) ? array() : productSectionsDecode($row['blocks']);
     }
 
+    /** Cờ "Hiện khối mô tả dài" của danh mục - mặc định false (xem contentSectionStatusSetFlag). */
+    function productCategoryShowDescription($d, $scope, $scopeId)
+    {
+        if(!in_array($scope, array('cat', 'list'), true) || (int) $scopeId <= 0) return false;
+        $row = $d->rawQueryOne(
+            "select status from #_content_section where scope=? and scope_id=? and find_in_set('hienthi',status) limit 0,1",
+            array($scope, (int) $scopeId)
+        );
+        if(empty($row)) return false;
+        return in_array('show_description', array_filter(array_map('trim', explode(',', (string) $row['status']))), true);
+    }
+
     /** Khối mà sản phẩm đang KẾ THỪA (bỏ qua bản riêng) — để nút "chép từ hãng". */
     function productInheritedSectionBlocks($d, $rowDetail, $lang = 'vi')
     {
@@ -442,8 +454,37 @@ if(!function_exists('productContentBlockParse'))
         $rest = array();
         foreach((array) $blocks as $block)
         {
-            if(is_array($block) && isset($block['type']) && $block['type'] === 'faq') $faq[] = $block;
-            else $rest[] = $block;
+            if(!is_array($block)) continue;
+            if(isset($block['type']) && $block['type'] === 'faq') {
+                $faq[] = $block;
+                continue;
+            }
+
+            /* Dữ liệu legacy có thể lưu nhiều dòng [faq] trong một block text
+               thay vì tạo block type=faq. Tách chúng trước khi render để không
+               lộ cú pháp nội bộ ra phần Mô tả/Lựa chọn. */
+            if(isset($block['type']) && $block['type'] === 'text' && isset($block['text'])) {
+                $textLines = preg_split('/\R/u', trim((string)$block['text']), -1, PREG_SPLIT_NO_EMPTY);
+                $remainingLines = array();
+                $foundFaq = false;
+                foreach($textLines as $textLine) {
+                    $textLine = trim($textLine);
+                    if(preg_match('/^\[faq\]\s*(.+?)\s*\|\s*(.+)$/u', $textLine, $faqMatch)) {
+                        $faq[] = array('type' => 'faq', 'question' => trim($faqMatch[1]), 'answer' => trim($faqMatch[2]));
+                        $foundFaq = true;
+                    } else {
+                        $remainingLines[] = $textLine;
+                    }
+                }
+                if($foundFaq && $remainingLines) {
+                    $block['text'] = implode("\n", $remainingLines);
+                    $rest[] = $block;
+                } elseif(!$foundFaq) {
+                    $rest[] = $block;
+                }
+                continue;
+            }
+            $rest[] = $block;
         }
         return array('faq' => $faq, 'rest' => $rest);
     }
@@ -460,6 +501,75 @@ if(!function_exists('productContentBlockParse'))
             $answer = trim(isset($block['answer']) ? $block['answer'] : '');
             if($question === '' || $answer === '') continue;
             $html .= '<details><summary>'.$esc($question).'</summary><p>'.nl2br($esc($answer)).'</p></details>';
+        }
+        return $html;
+    }
+
+    /** Tách khối type='cards' (lưới thẻ "Chọn X đúng nhu cầu") khỏi mảng khối còn lại. */
+    function productSplitCardsBlocks($blocks)
+    {
+        $cards = array();
+        $rest = array();
+        foreach((array) $blocks as $block)
+        {
+            if(is_array($block) && isset($block['type']) && $block['type'] === 'cards') $cards[] = $block;
+            else $rest[] = $block;
+        }
+        return array('cards' => $cards, 'rest' => $rest);
+    }
+
+    /**
+     * Dựng HTML cho mảng khối type='cards' (mỗi khối: 1 tiêu đề mục + N thẻ
+     * ảnh/tiêu đề/mô tả/link tuỳ chọn) - admin tự soạn qua Admin > Khối nội
+     * dung mô tả, KHÔNG hardcode nội dung theo danh mục trong code. Dùng
+     * đúng class .pts-related-grid/.pts-related-card đã có sẵn CSS responsive
+     * (xem product-proof.css) để tái dùng style, không tạo CSS mới.
+     */
+    function productRenderCardsBlocks($cardsBlocks, $uploadDir, $func)
+    {
+        if(empty($cardsBlocks) || !is_array($cardsBlocks)) return '';
+        $esc = function($v) { return htmlspecialchars((string) $v, ENT_QUOTES, 'UTF-8'); };
+        $html = '';
+        foreach($cardsBlocks as $block)
+        {
+            $title = trim(isset($block['title']) ? $block['title'] : '');
+            $items = (!empty($block['items']) && is_array($block['items'])) ? $block['items'] : array();
+            $validItems = array();
+            foreach($items as $item)
+            {
+                if(!is_array($item)) continue;
+                $itemTitle = trim(isset($item['title']) ? $item['title'] : '');
+                $itemPhoto = trim(isset($item['photo']) ? $item['photo'] : '');
+                if($itemTitle === '' && $itemPhoto === '') continue;
+                $validItems[] = $item;
+            }
+            if(!$validItems) continue;
+
+            $count = min(4, count($validItems));
+            $html .= '<section class="box-detail pts-related-showcase pts-content-cards" aria-label="'.$esc($title !== '' ? $title : 'Chọn theo nhu cầu').'">';
+            if($title !== '') $html .= '<h2 class="pts-lighting-needs-title">'.$esc($title).'</h2>';
+            $html .= '<div class="pts-related-grid pts-product-project-grid pts-product-project-grid--'.$count.'">';
+            foreach($validItems as $item)
+            {
+                $itemTitle = trim(isset($item['title']) ? $item['title'] : '');
+                $itemDesc = trim(isset($item['desc']) ? $item['desc'] : '');
+                $itemPhoto = trim(isset($item['photo']) ? $item['photo'] : '');
+                $itemLink = trim(isset($item['link']) ? $item['link'] : '');
+                $tag = $itemLink !== '' ? 'a' : 'div';
+                $attrs = $itemLink !== '' ? ' href="'.$esc($itemLink).'"' : '';
+                $html .= '<'.$tag.' class="pts-related-card"'.$attrs.($itemTitle !== '' ? ' title="'.$esc($itemTitle).'"' : '').'>';
+                if($itemPhoto !== '')
+                {
+                    $html .= '<span class="pts-project-media">';
+                    $html .= $func->getImage(array('class' => 'w-100 pts-project-media-main', 'sizes' => '640x480x1', 'upload' => $uploadDir, 'image' => $itemPhoto, 'alt' => $itemTitle));
+                    $html .= '</span>';
+                }
+                $html .= '<span class="pts-related-card-body">';
+                if($itemTitle !== '') $html .= '<strong>'.$esc($itemTitle).'</strong>';
+                if($itemDesc !== '') $html .= '<small>'.$esc($itemDesc).'</small>';
+                $html .= '</span></'.$tag.'>';
+            }
+            $html .= '</div></section>';
         }
         return $html;
     }

@@ -10,6 +10,16 @@
 .btn-gold:hover{background:var(--color-gold-dark);border-color:var(--color-gold-dark);color:#fff;}
 .btn-navy-outline{display:inline-block;padding:10px 24px;background:transparent;color:var(--color-primary);font-weight:700;font-size:14px;border-radius:6px;border:1px solid var(--color-primary);text-align:center;transition:all .2s;}
 .btn-navy-outline:hover{background:var(--color-primary);color:#fff;}
+/* jquery-confirm (assets/confirm/) dùng sẵn trên TOÀN SITE qua confirmDialog()/
+   notifyDialog() (assets/js/functions.js) - mặc định type="blue" của thư viện
+   là xanh dương Bootstrap generic (#3498db), không thuộc bộ nhận diện. Đổi
+   viền/icon sang navy thương hiệu; nút bấm đã đổi class sang btn-gold/
+   btn-navy-outline ở JS nhưng cần ép kích thước/bo góc cho khớp box nhỏ của
+   jconfirm (sếp 2026-10-02: "nhiều dạng nút kiểu này vẫn còn kiểu cũ"). */
+.jconfirm .jconfirm-box.jconfirm-type-blue{border-top-color:var(--color-primary)!important;}
+.jconfirm .jconfirm-box.jconfirm-type-blue .jconfirm-title-c .jconfirm-icon-c{color:var(--color-primary)!important;}
+.jconfirm .jconfirm-buttons .btn-gold,
+.jconfirm .jconfirm-buttons .btn-navy-outline{padding:7px 18px;font-size:13px;border-radius:4px;}
 .section-heading{text-align:center;margin-bottom:30px;}
 .section-heading .eyebrow{display:inline-block;background:var(--color-gold-light);color:var(--color-gold-dark);font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:4px 14px;border-radius:20px;margin-bottom:10px;}
 .section-heading h2{color:var(--color-primary);font-weight:800;text-transform:uppercase;position:relative;padding-bottom:14px;margin:0;}
@@ -1356,12 +1366,12 @@ footer {
 
 /* Paging */
 .pagination-home .pagination .page-item .page-link{color:#555555;font-size:.875rem;font-weight: 600;}
-.pagination-home .pagination .page-item.active .page-link{color:#ffffff;background-color: #0089cd;border-color: #0089cd;}
+.pagination-home .pagination .page-item.active .page-link{color:#ffffff;background-color: var(--bg_button);border-color: var(--bg_button);}
 
 /* Paging Ajax */
 .pagination-ajax{text-align:center;margin-top: 20px;}
 .pagination-ajax a{display:inline-block;vertical-align:top;margin:0px 3px 3px 3px;width:35px;height:35px;line-height:33px;color:#666!important;border:1px solid #e6e6e6;font-size:13px;cursor:pointer;text-decoration:none!important;background-color:#ffffff;}
-.pagination-ajax a.current,.pagination-ajax a:hover{color:#ffffff!important;border-color: var(--color-primary);background-color: var(--color-primary);}
+.pagination-ajax a.current,.pagination-ajax a:hover{color:#ffffff!important;border-color: var(--bg_button);background-color: var(--bg_button);}
 .pagination-ajax a.first,.pagination-ajax a.last,.pagination-ajax a.prev,.pagination-ajax a.next{text-indent:-9999px;position:relative;background-color:#ffffff!important;}
 .pagination-ajax a.first:before,.pagination-ajax a.last:before,.pagination-ajax a.prev:before,.pagination-ajax a.next:before{content:'';position:absolute;top:0px;left:0px;width:100%;height:100%;z-index:2;background-color:transparent;background-repeat:no-repeat;background-position:center;}
 .pagination-ajax a.first:before{background-image:url(../images/page-first.png);}

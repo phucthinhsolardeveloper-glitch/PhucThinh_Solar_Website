@@ -440,3 +440,17 @@ testAssert(isset(productBulkDatabaseColumns()['photo_khuyenmai']), 'Cột photo_
 testAssert(in_array('photo_khuyenmai', productBulkEditableFields(), true), 'photo_khuyenmai nằm trong danh sách field bulk áp dụng được');
 testAssert(productBulkExportValue('is_promo', array('status' => 'hienthi,khuyenmai'), array()) === 1, 'is_promo xuất ra 1 khi status có khuyenmai');
 testAssert(productBulkExportValue('is_promo', array('status' => 'hienthi'), array()) === 0, 'is_promo xuất ra 0 khi status không có khuyenmai');
+
+/* Nhiều sản phẩm thật đã có photo_feed dạng .jpg từ trước (form sửa sản phẩm
+   chấp nhận jpg/jpeg/webp, không chỉ png - xem $config['product'][$type]['img_type']).
+   Export rồi chỉ sửa field khác (vd công suất) không được tự bắt lỗi dữ liệu ảnh
+   cũ vốn đã hợp lệ khi lưu; chỉ áp luật PNG-only + phải tồn tại cho giá trị
+   THAY ĐỔI thật sự. */
+$legacyFeedCode = 'CODEX-BULK-FEED-'.bin2hex(random_bytes(3));
+$d->insert('product', array('code' => $legacyFeedCode, 'namevi' => 'Sản phẩm kiểm thử ảnh feed legacy', 'slugvi' => strtolower($legacyFeedCode), 'type' => $type, 'status' => 'hienthi', 'numb' => 0, 'cong_suat' => 100, 'regular_price' => 100000, 'sale_price' => 100000, 'discount' => 0, 'photo_feed' => 'legacy-feed-khong-phai-png.jpg', 'date_created' => time(), 'date_updated' => 0, 'view' => 0));
+$legacyFeedId = (int) $d->getLastInsertId();
+$legacyFeedRow = productBulkValidateRows(array(array('action' => 'update', 'id' => (string) $legacyFeedId, 'code' => $legacyFeedCode, 'cong_suat' => '150', 'photo_feed' => 'legacy-feed-khong-phai-png.jpg')), $type)['rows'][0];
+testAssert(empty($legacyFeedRow['errors']), 'Giữ nguyên photo_feed .jpg cũ khi chỉ sửa field khác không bị chặn PNG-only');
+$legacyFeedChangedRow = productBulkValidateRows(array(array('action' => 'update', 'id' => (string) $legacyFeedId, 'code' => $legacyFeedCode, 'photo_feed' => 'legacy-feed-moi.jpg')), $type)['rows'][0];
+testAssert(!empty($legacyFeedChangedRow['errors']) && stripos(implode(' ', $legacyFeedChangedRow['errors']), 'PNG') !== false, 'Đổi sang giá trị ảnh mới vẫn bị chặn đúng luật PNG-only');
+$d->rawQuery('delete from #_product where id = ? and type = ?', array($legacyFeedId, $type));

@@ -41,6 +41,14 @@
 					<?php if($sectionScope === 'product') { ?><br>Đây là <strong>bản riêng của sản phẩm</strong> — có nội dung ở đây thì sản phẩm không kế thừa từ thương hiệu/danh mục nữa. Xoá hết khối để quay lại kế thừa.<?php } ?>
 				</div>
 
+				<?php if(in_array($sectionScope, array('cat', 'list'), true)) { ?>
+				<div class="custom-control custom-checkbox mb-3">
+					<?php $showDescriptionChecked = !empty($sectionItem['status']) && contentSectionStatusHasFlag($sectionItem['status'], 'show_description'); ?>
+					<input type="checkbox" class="custom-control-input" name="show_description" id="pts-show-description" value="1" <?=$showDescriptionChecked ? 'checked' : ''?>>
+					<label class="custom-control-label" for="pts-show-description">Hiện khối Tiêu đề/Đoạn văn/Danh sách/Ảnh dưới dạng mô tả dài trên trang danh mục (mặc định tắt — không còn tự động hiện theo bố cục cũ)</label>
+				</div>
+				<?php } ?>
+
 				<div class="d-flex flex-wrap align-items-center mb-3" style="gap:8px">
 					<div class="btn-group btn-group-sm flex-wrap" role="group">
 						<button type="button" class="btn btn-outline-primary" data-add="heading"><i class="fas fa-heading mr-1"></i>Tiêu đề</button>
@@ -50,6 +58,9 @@
 						<button type="button" class="btn btn-outline-primary" data-add="list"><i class="fas fa-list-ul mr-1"></i>Danh sách</button>
 						<?php if(in_array($sectionScope, array('cat', 'list', 'product'), true)) { ?>
 						<button type="button" class="btn btn-outline-primary" data-add="faq"><i class="far fa-question-circle mr-1"></i>Câu hỏi thường gặp</button>
+						<?php } ?>
+						<?php if(in_array($sectionScope, array('cat', 'list'), true)) { ?>
+						<button type="button" class="btn btn-outline-primary" data-add="cards"><i class="fas fa-th-large mr-1"></i>Lưới thẻ (vd "Chọn theo nhu cầu")</button>
 						<?php } ?>
 					</div>
 					<button type="button" class="btn btn-sm btn-outline-secondary" id="pts-paste-blocks"><i class="far fa-clipboard mr-1"></i>Dán nhanh</button>

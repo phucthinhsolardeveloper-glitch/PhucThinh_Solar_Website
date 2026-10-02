@@ -3052,7 +3052,7 @@ $(function(){
 
 	var uploadBase = $composer.data('upload') || 'upload/product/';
 	var uploadUrl = $composer.data('upload-url') || '';
-	var LABELS = { heading:'Tiêu đề', text:'Đoạn văn', image:'Ảnh', media:'Ảnh + mô tả', list:'Danh sách', faq:'Câu hỏi thường gặp' };
+	var LABELS = { heading:'Tiêu đề', text:'Đoạn văn', image:'Ảnh', media:'Ảnh + mô tả', list:'Danh sách', faq:'Câu hỏi thường gặp', cards:'Lưới thẻ' };
 
 	function el(html){ return $(html); }
 
@@ -3148,6 +3148,34 @@ $(function(){
 			$body.find('.f-question').val(data.question || '');
 			$body.find('.f-answer').val(data.answer || '');
 		}
+		else if(type === 'cards'){
+			$body.append('<div class="form-group mb-2"><label class="mb-1 d-block">Tiêu đề mục</label><input type="text" class="form-control form-control-sm f-title" placeholder="Vd: Chọn đèn đúng nhu cầu"></div>');
+			$body.find('.f-title').val(data.title || '');
+			var $items = el('<div class="pts-cards-items">');
+			$body.append($items);
+			function addItem(itemData){
+				itemData = itemData || {};
+				var $item = el('<div class="pts-cards-item" style="border:1px dashed #cfd6dd;border-radius:6px;padding:10px;margin-bottom:8px">');
+				$item.append(fileField(itemData));
+				$item.append('<div class="form-group mb-2"><input type="text" class="form-control form-control-sm fi-title" placeholder="Tiêu đề thẻ (vd: Đường giao thông)"></div>');
+				$item.append('<div class="form-group mb-2"><textarea class="form-control form-control-sm fi-desc" rows="2" placeholder="Mô tả ngắn (tuỳ chọn)"></textarea></div>');
+				$item.append('<div class="form-group mb-2"><input type="text" class="form-control form-control-sm fi-link" placeholder="Link khi bấm thẻ (tuỳ chọn, vd: ?is_need=duong-giao-thong)"></div>');
+				$item.append('<button type="button" class="btn btn-xs btn-outline-danger pts-cards-item-del"><i class="far fa-trash-alt mr-1"></i>Xoá thẻ này</button>');
+				$item.find('.fi-title').val(itemData.title || '');
+				$item.find('.fi-desc').val(itemData.desc || '');
+				$item.find('.fi-link').val(itemData.link || '');
+				$items.append($item);
+			}
+			(data.items || []).forEach(function(it){ addItem(it); });
+			if(!(data.items || []).length) addItem({});
+			var $addItemBtn = el('<button type="button" class="btn btn-sm btn-outline-secondary pts-cards-item-add"><i class="fas fa-plus mr-1"></i>Thêm thẻ</button>');
+			$addItemBtn.on('click', function(){ addItem({}); });
+			$body.append($addItemBtn);
+			$body.on('click', '.pts-cards-item-del', function(){
+				if($items.children('.pts-cards-item').length <= 1){ window.alert('Cần ít nhất 1 thẻ.'); return; }
+				$(this).closest('.pts-cards-item').remove();
+			});
+		}
 
 		return $b.append($bar).append($body);
 	}
@@ -3187,6 +3215,19 @@ $(function(){
 		else if(type === 'faq'){
 			o.question = ($b.find('.f-question').val() || '').trim();
 			o.answer = ($b.find('.f-answer').val() || '').trim();
+		}
+		else if(type === 'cards'){
+			o.title = ($b.find('.f-title').val() || '').trim();
+			o.items = [];
+			$b.find('.pts-cards-item').each(function(){
+				var $it = $(this);
+				o.items.push({
+					photo: $it.find('.f-photo').val() || '',
+					title: ($it.find('.fi-title').val() || '').trim(),
+					desc: ($it.find('.fi-desc').val() || '').trim(),
+					link: ($it.find('.fi-link').val() || '').trim()
+				});
+			});
 		}
 		return o;
 	}

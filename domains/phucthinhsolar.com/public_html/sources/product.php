@@ -1,33 +1,10 @@
 <?php  
 	if(!defined('SOURCES')) die("Error");
-	require_once LIBRARIES.'product_projects.php';
 	require_once LIBRARIES.'product_power_filter.php';
 	require_once LIBRARIES.'product_price_filter.php';
 	require_once LIBRARIES.'product_need_filter.php';
 	require_once LIBRARIES.'product_sort.php';
 	require_once LIBRARIES.'product_content_blocks.php';
-
-	/* Dùng chung các chứng nhận đang quản lý ở Giới thiệu cho catalog/PDP.
-	 * Chỉ lấy record đang hiển thị và ảnh tồn tại thật; ưu tiên record Admin
-	 * đánh dấu nổi bật, sau đó fallback về thứ tự quản trị. */
-	$productGlobalCertificateRows = $cache->get("select id, name$lang, desc$lang, link, photo, status from #_photo where type = ? and find_in_set('hienthi',status) order by numb, id desc", array('chungnhan'), 'result', 7200);
-	$productGlobalFeaturedCertificates = array_values(array_filter((array)$productGlobalCertificateRows, static function($row) {
-		return !empty($row['status']) && in_array('noibat', explode(',', $row['status']), true);
-	}));
-	$productGlobalCertificatePool = !empty($productGlobalFeaturedCertificates) ? $productGlobalFeaturedCertificates : (array)$productGlobalCertificateRows;
-	$productGlobalCertificates = array();
-	foreach($productGlobalCertificatePool as $certificateRow)
-	{
-		$certificatePhoto = !empty($certificateRow['photo']) ? basename((string)$certificateRow['photo']) : '';
-		if($certificatePhoto === '' || !is_file(ROOT.UPLOAD_PHOTO_L.$certificatePhoto)) continue;
-		$productGlobalCertificates[] = array(
-			'id' => (int)$certificateRow['id'],
-			'name' => !empty($certificateRow['name'.$lang]) ? trim(strip_tags(htmlspecialchars_decode($certificateRow['name'.$lang], ENT_QUOTES))) : '',
-			'desc' => !empty($certificateRow['desc'.$lang]) ? trim(preg_replace('/\s+/u', ' ', strip_tags(htmlspecialchars_decode($certificateRow['desc'.$lang], ENT_QUOTES)))) : '',
-			'photo' => $certificatePhoto
-		);
-		if(count($productGlobalCertificates) >= 3) break;
-	}
 
 	@$id = htmlspecialchars($_GET['id']);
 	@$idl = htmlspecialchars($_GET['idl']);
@@ -266,16 +243,6 @@
 		require_once LIBRARIES.'product_content_blocks.php';
 		$productSections = productResolveSections($d, $rowDetail, $lang);
 		$productDocuments = $d->rawQuery("select document_type,title$lang as title,file_path from #_product_document where id_product=? and find_in_set('hienthi',status) and file_path<>'' order by numb,id", array($rowDetail['id']));
-		$productRelatedProjects = $d->rawQuery("select n.id, n.name$lang, n.slugvi, n.slugen, n.photo, n.address from #_product_project pp inner join #_news n on n.id = pp.id_project where pp.id_product = ? and find_in_set('hienthi',pp.status) and n.type = ? and find_in_set('hienthi',n.status) order by pp.numb,pp.id", array($rowDetail['id'], 'du-an'));
-		$productProjectGallery = array();
-		if($productRelatedProjects)
-		{
-			$projectIds = array_map(function($project) { return (int)$project['id']; }, $productRelatedProjects);
-			$projectPlaceholders = implode(',', array_fill(0, count($projectIds), '?'));
-			$galleryRows = $d->rawQuery("select id_parent, photo from #_gallery where id_parent in ($projectPlaceholders) and com = ? and type = ? and kind = ? and val = ? and find_in_set('hienthi',status) order by numb,id desc", array_merge($projectIds, array('news', 'du-an', 'man', 'du-an')));
-			foreach($galleryRows as $galleryRow) $productProjectGallery[(int)$galleryRow['id_parent']][] = $galleryRow['photo'];
-		}
-
 		/* Lấy sản phẩm cùng loại */
 		$where = "";
 		$where = "id <> ? and id_list = ? and type = ? and find_in_set('hienthi',status)";
@@ -339,6 +306,10 @@
 		$categorySectionSplit = productSplitFaqBlocks($categorySectionBlocks);
 		$categorySectionBlocks = $categorySectionSplit['rest'];
 		$categoryFaqBlocks = $categorySectionSplit['faq'];
+		$categoryCardsSplit = productSplitCardsBlocks($categorySectionBlocks);
+		$categorySectionBlocks = $categoryCardsSplit['rest'];
+		$categoryCardsBlocks = $categoryCardsSplit['cards'];
+		$categoryShowDescription = productCategoryShowDescription($d, 'list', $id_list);
 		/* SEO */
 		$titleCate = $productList['name'.$lang];
 		$seoDB = $seo->getOnDB($productList['id'],'product','man_list',$productList['type']);
@@ -416,6 +387,28 @@
 		$categorySectionSplit = productSplitFaqBlocks($categorySectionBlocks);
 		$categorySectionBlocks = $categorySectionSplit['rest'];
 		$categoryFaqBlocks = $categorySectionSplit['faq'];
+		$categoryCardsSplit = productSplitCardsBlocks($categorySectionBlocks);
+		$categorySectionBlocks = $categoryCardsSplit['rest'];
+		$categoryCardsBlocks = $categoryCardsSplit['cards'];
+		$categoryShowDescription = productCategoryShowDescription($d, 'cat', $id_cat);
+		/* Danh mục cấp 2 (vd "Đèn UFO", "Đèn Đường") nhiều cái đã có mô tả
+		   riêng (heading/list, soạn từ trước) nhưng CHƯA có FAQ/Lưới thẻ
+		   riêng - trước đây rơi về trắng 2 khối đó nên $ptsHasCuratedContent
+		   = false, làm lộ lại Chứng nhận/Dự án/Lý do chọn dù danh mục cấp 1
+		   cha đã soạn đầy đủ (bug phát hiện qua ảnh chụp thực tế của sếp
+		   2026-10-02 - mọi danh mục con đều thiếu, không riêng 1 cái). Kế
+		   thừa ĐÚNG PHẦN CÒN THIẾU (FAQ và/hoặc Lưới thẻ) từ cấp 1 cha, giữ
+		   nguyên mô tả riêng và công tắc show_description của cấp 2 - không
+		   trộn hay ghi đè phần cấp 2 đã tự có. */
+		if((empty($categoryFaqBlocks) || empty($categoryCardsBlocks)) && !empty($productCat['id_list']))
+		{
+			$parentListId = (int) $productCat['id_list'];
+			$parentBlocks = productCategorySectionBlocks($d, 'list', $parentListId, $lang);
+			$parentFaq = productSplitFaqBlocks($parentBlocks);
+			$parentCards = productSplitCardsBlocks($parentFaq['rest']);
+			if(empty($categoryFaqBlocks)) $categoryFaqBlocks = $parentFaq['faq'];
+			if(empty($categoryCardsBlocks)) $categoryCardsBlocks = $parentCards['cards'];
+		}
 		/* Lấy sản phẩm */
 		$where = "";
 		$where = "id_cat = ? and type = ? and find_in_set('hienthi',status)";
@@ -842,17 +835,7 @@
 		}
 	}
 
-	/* "Lý do chọn Phúc Thịnh Solar" và "Dự án tiêu biểu" - dùng chung cho cả
-	   trang danh mục và trang chi tiết sản phẩm (yêu cầu sếp 2026-09-28), đặt
-	   ngoài 2 nhánh if($id=='')/nếu không để áp dụng được cho cả hai loại
-	   trang. Dữ liệu lấy từ content Admin đã có sẵn (cam-ket, du-an) - không
-	   tạo content type mới, không suy đoán. */
+	/* "Lý do chọn Phúc Thịnh Solar" dùng chung cho cả trang danh mục và trang
+	   chi tiết sản phẩm. Dữ liệu lấy từ content Admin đã có sẵn. */
 	$productWhyChooseUs = $cache->get("select name$lang, photo from #_news where type = ? and find_in_set('hienthi',status) order by numb,id desc", array('cam-ket'), 'result', 7200);
-	/* "Dự án tiêu biểu" chung (không gắn theo sản phẩm cụ thể) - trang chi
-	   tiết sản phẩm ưu tiên $productRelatedProjects (dự án gắn đúng sản phẩm
-	   này qua #_product_project) nếu Admin đã liên kết; chưa liên kết cái nào
-	   thì rơi về danh sách chung này, không ẩn hẳn section. */
-	/* Lấy tối đa 4 dự án để module bằng chứng giữ nhịp 4 cột gọn trên desktop
-	   rộng; mobile chuyển thành rail vuốt ngang thay vì kéo dài bốn card. */
-	$productFeaturedProjects = $cache->get("select id, name$lang, slugvi, slugen, photo, address from #_news where type = ? and find_in_set('hienthi',status) order by numb,id desc limit 0,4", array('du-an'), 'result', 7200);
 ?>

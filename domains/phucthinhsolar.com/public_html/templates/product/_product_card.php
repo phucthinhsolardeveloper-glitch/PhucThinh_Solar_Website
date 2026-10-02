@@ -12,6 +12,7 @@
  *               vẫn cần native lazy.
  */
 require_once LIBRARIES.'product_promo.php';
+require_once LIBRARIES.'product_pdp_profiles.php';
 
 $pcDiscount = publicProductPricesVisible() && (!empty($v['sale_price']) && !empty($v['regular_price']) && $v['regular_price'] > $v['sale_price'])
     ? round((($v['regular_price'] - $v['sale_price']) / $v['regular_price']) * 100)
@@ -42,8 +43,8 @@ $pcPromoFrame = productPromoFrameForCard($v, $cache);
                    (audit UX 2026-09-08: card cũ chỉ có ảnh+tên+giá, không đủ để so sánh nhanh). */
                 $pcSpecs = array();
                 if((float)($v['cong_suat'] ?? 0) > 0) $pcSpecs[] = round((float)$v['cong_suat']).'W';
-                if(!empty($v['waterproof_rating'])) $pcSpecs[] = $v['waterproof_rating'];
-                if(!empty($v['lighting_time'])) $pcSpecs[] = $v['lighting_time'];
+                if(!empty($v['waterproof_rating']) && (!function_exists('productPdpValueIsMissing') || !productPdpValueIsMissing($v['waterproof_rating']))) $pcSpecs[] = $v['waterproof_rating'];
+                if(!empty($v['lighting_time']) && (!function_exists('productPdpValueIsMissing') || !productPdpValueIsMissing($v['lighting_time']))) $pcSpecs[] = $v['lighting_time'];
             ?>
             <?php if($pcSpecs) { ?>
             <p class="pts-card-specs"><?=implode(' · ', array_map(function($s){ return htmlspecialchars($s, ENT_QUOTES, 'UTF-8'); }, $pcSpecs))?></p>

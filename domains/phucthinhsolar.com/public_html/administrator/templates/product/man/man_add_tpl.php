@@ -498,6 +498,7 @@
 			            <div class="card-body">
 			                <div class="alert alert-info py-2">
 			                    Ảnh riêng cho quảng cáo (Google Shopping, Facebook Catalog...): chỉ có sản phẩm trên nền sạch, <strong>không logo, không chữ, không khung/huy hiệu</strong>. Sản phẩm chưa có ảnh này sẽ không được đưa vào CSV Merchant Center.
+			                    <br><small class="text-muted">Khác với <em>Ảnh sản phẩm</em> và <em>Khung khuyến mãi</em> ở trên - hai mục đó có thể hiện khung/banner khi xem trên web, còn Google/Facebook từ chối thẳng mọi ảnh có khung/banner trong feed quảng cáo, nên cần ảnh gốc sạch riêng ở đây.</small>
 			                </div>
 			                <?php if(!empty($item['photo_feed'])) { ?>
 			                <div class="mb-2">

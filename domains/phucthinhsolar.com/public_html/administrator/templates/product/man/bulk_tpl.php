@@ -223,9 +223,10 @@ $bulkScopeQuery = $bulkDataStatusDefinition ? '&data_status='.urlencode($bulkDat
             <div class="card-footer">
                 <?php if ($bulkPreview['errors'] === 0 && !empty($bulkPreview['token'])) { ?>
                     <form method="post" action="<?=$bulkBase?>&act=bulk_commit" class="form-inline">
-        <?=adminCsrfField()?>
+                        <?=adminCsrfField()?>
                         <input type="hidden" name="product_bulk_csrf" value="<?=htmlspecialchars($bulkCsrf)?>">
                         <input type="hidden" name="preview_token" value="<?=htmlspecialchars($bulkPreview['token'])?>">
+                        <input type="hidden" name="overwrite_conflict_json" value="" data-conflict-payload>
                         <?php if (!empty($bulkPreview['product_matches'])) { ?>
                             <div class="w-100 mb-3">
                                 <div class="alert alert-info py-2 mb-2"><strong>Sản phẩm đã có cùng URL:</strong> hệ thống mặc định cập nhật đúng sản phẩm hiện có. Anh có thể đổi sang tạo bản mới hoặc bỏ qua từng dòng.</div>
@@ -278,6 +279,32 @@ $bulkScopeQuery = $bulkDataStatusDefinition ? '&data_status='.urlencode($bulkDat
                         <?php if (!empty($bulkPreview['conflicts'])) { ?>
                             <div class="w-100 mb-3">
                                 <div class="alert alert-info py-2">Website và Excel cùng thay đổi các ô dưới đây. Mặc định hệ thống giữ dữ liệu website; đánh dấu ô nếu muốn dùng dữ liệu Excel.</div>
+                                <?php
+                                    $conflictFieldLabels = array();
+                                    foreach ($bulkPreview['rows'] as $conflictRow) {
+                                        foreach ($conflictRow['conflicts'] as $conflictField) {
+                                            $conflictLabel = trim((string) $conflictField['label']);
+                                            if ($conflictLabel !== '') $conflictFieldLabels[$conflictLabel] = true;
+                                        }
+                                    }
+                                    $conflictFieldLabels = array_keys($conflictFieldLabels);
+                                    sort($conflictFieldLabels, SORT_NATURAL | SORT_FLAG_CASE);
+                                ?>
+                                <div class="border rounded bg-light p-2 mb-2 d-flex flex-wrap align-items-center" data-conflict-toolbar>
+                                    <strong class="mr-3 mb-1"><i class="fas fa-tasks mr-1"></i>Chọn nhanh:</strong>
+                                    <button type="button" class="btn btn-sm btn-outline-primary mr-1 mb-1" data-conflict-select-all>Chọn tất cả ô xung đột</button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary mr-2 mb-1" data-conflict-clear>Tắt chọn tất cả</button>
+                                    <?php if (!empty($conflictFieldLabels)) { ?>
+                                        <select class="form-control form-control-sm mr-2 mb-1" style="max-width:280px" data-conflict-field-select aria-label="Chọn theo trường">
+                                            <option value="">Chọn theo trường...</option>
+                                            <?php foreach ($conflictFieldLabels as $conflictLabel) { ?>
+                                                <option value="<?=htmlspecialchars($conflictLabel, ENT_QUOTES, 'UTF-8')?>"><?=htmlspecialchars($conflictLabel, ENT_QUOTES, 'UTF-8')?></option>
+                                            <?php } ?>
+                                        </select>
+                                        <button type="button" class="btn btn-sm btn-outline-info mr-2 mb-1" data-conflict-select-field>Chọn trường này</button>
+                                    <?php } ?>
+                                    <span class="small text-muted mb-1" data-conflict-count>Đã chọn 0 ô</span>
+                                </div>
                                 <div class="table-responsive"><table class="table table-sm table-bordered bg-white mb-0">
                                     <thead><tr><th>Dòng</th><th>Sản phẩm</th><th>Trường</th><th>Website hiện tại</th><th>Excel</th><th>Dùng Excel</th></tr></thead>
                                     <tbody>
@@ -288,7 +315,7 @@ $bulkScopeQuery = $bulkDataStatusDefinition ? '&data_status='.urlencode($bulkDat
                                             <td><?=htmlspecialchars($conflict['label'])?></td>
                                             <td class="text-break"><?=htmlspecialchars(mb_strimwidth($conflict['current'], 0, 180, '…', 'UTF-8'))?></td>
                                             <td class="text-break"><?=htmlspecialchars(mb_strimwidth($conflict['incoming'], 0, 180, '…', 'UTF-8'))?></td>
-                                            <td class="text-center"><input type="checkbox" name="overwrite_conflict[]" value="<?=htmlspecialchars($conflict['key'])?>"></td>
+                                            <td class="text-center"><input type="checkbox" value="<?=htmlspecialchars($conflict['key'])?>" data-conflict-checkbox data-conflict-label="<?=htmlspecialchars($conflict['label'], ENT_QUOTES, 'UTF-8')?>"></td>
                                         </tr>
                                     <?php } } ?>
                                     </tbody>
@@ -313,3 +340,46 @@ $bulkScopeQuery = $bulkDataStatusDefinition ? '&data_status='.urlencode($bulkDat
     <?php } ?>
 
 </section>
+<?php if (!empty($bulkPreview['conflicts'])) { ?>
+<script>
+(function(){
+    var toolbar = document.querySelector('[data-conflict-toolbar]');
+    if (!toolbar) return;
+    var boxes = Array.prototype.slice.call(document.querySelectorAll('[data-conflict-checkbox]'));
+    var count = toolbar.querySelector('[data-conflict-count]');
+    var fieldSelect = toolbar.querySelector('[data-conflict-field-select]');
+    var payload = document.querySelector('[data-conflict-payload]');
+    var form = payload ? payload.form : null;
+    function updateCount(){
+        var selected = boxes.filter(function(box){ return box.checked; }).length;
+        if (count) count.textContent = 'Đã chọn ' + selected + '/' + boxes.length + ' ô';
+    }
+    toolbar.querySelector('[data-conflict-select-all]').addEventListener('click', function(){
+        boxes.forEach(function(box){ box.checked = true; });
+        updateCount();
+    });
+    toolbar.querySelector('[data-conflict-clear]').addEventListener('click', function(){
+        boxes.forEach(function(box){ box.checked = false; });
+        updateCount();
+    });
+    var selectFieldButton = toolbar.querySelector('[data-conflict-select-field]');
+    if (selectFieldButton && fieldSelect) {
+        selectFieldButton.addEventListener('click', function(){
+            var label = fieldSelect.value;
+            if (!label) return;
+            boxes.forEach(function(box){
+                if (box.getAttribute('data-conflict-label') === label) box.checked = true;
+            });
+            updateCount();
+        });
+    }
+    boxes.forEach(function(box){ box.addEventListener('change', updateCount); });
+    if (form && payload) {
+        form.addEventListener('submit', function(){
+            payload.value = JSON.stringify(boxes.filter(function(box){ return box.checked; }).map(function(box){ return box.value; }));
+        });
+    }
+    updateCount();
+})();
+</script>
+<?php } ?>
