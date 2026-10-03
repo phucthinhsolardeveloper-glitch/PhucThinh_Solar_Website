@@ -52,7 +52,7 @@ git archive --format=tar.gz \
 
 tar -tzf "$release_dir/$tools_archive_name" > "$release_dir/DEPLOYMENT-TOOLS-FILES.txt"
 
-allowed_tracked_media='^public_html/upload/news/du-an-(anh-quan|hoa-thanh-an|thu-hien|thu-hong)-enhanced-20261002\.png$'
+allowed_tracked_media='^public_html/upload(/news)?$|^public_html/upload/news/du-an-(anh-quan|hoa-thanh-an|thu-hong)-enhanced-20261002\.png$'
 for forbidden in \
     '^public_html/(backup|artifacts|caches|logs|upload|thumbs|watermark)/' \
     '^public_html/libraries/config\.php$' \
