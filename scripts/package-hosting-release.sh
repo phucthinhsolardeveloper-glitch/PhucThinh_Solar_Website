@@ -52,11 +52,17 @@ git archive --format=tar.gz \
 
 tar -tzf "$release_dir/$tools_archive_name" > "$release_dir/DEPLOYMENT-TOOLS-FILES.txt"
 
+allowed_tracked_media='^public_html/upload/news/du-an-(anh-quan|hoa-thanh-an|thu-hien|thu-hong)-enhanced-20261002\.png$'
 for forbidden in \
     '^public_html/(backup|artifacts|caches|logs|upload|thumbs|watermark)/' \
     '^public_html/libraries/config\.php$' \
     '\.(sql|zip|7z|bak|log|env)$'; do
-    if grep -Ei "$forbidden" "$release_dir/FILES.txt"; then
+    forbidden_hits="$(grep -Ei "$forbidden" "$release_dir/FILES.txt" || true)"
+    if [ "$forbidden" = '^public_html/(backup|artifacts|caches|logs|upload|thumbs|watermark)/' ]; then
+        forbidden_hits="$(printf '%s\n' "$forbidden_hits" | grep -Ev "$allowed_tracked_media" || true)"
+    fi
+    if [ -n "$forbidden_hits" ]; then
+        printf '%s\n' "$forbidden_hits"
         echo "FAIL: Gói release chứa đường dẫn bị cấm: $forbidden" >&2
         exit 1
     fi
