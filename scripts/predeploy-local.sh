@@ -14,6 +14,10 @@ if [ -f domains/phucthinhsolar.com/public_html/index.html ]; then
     echo "FAIL: public_html/index.html là entrypoint legacy ngoài ứng dụng; xóa trước khi deploy." >&2
     exit 1
 fi
+if [ -f domains/phucthinhsolar.com/public_html/logo.png ]; then
+    echo "FAIL: public_html/logo.png là asset root legacy chưa xác minh; xóa hoặc xác minh trước khi deploy." >&2
+    exit 1
+fi
 
 # Khi debug-css=false (đúng cấu hình production), toàn bộ <link> CSS được gộp
 # vào một file assets/caches/<hash>.css nên đường dẫn CSS gốc (photobox.css,

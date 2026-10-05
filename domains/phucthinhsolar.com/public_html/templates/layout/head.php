@@ -23,7 +23,8 @@ if(isset($nhQuery) && $nhQuery !== '') $robotsContent = 'noindex,follow'; ?>
 <meta name="robots" content="<?=$robotsContent?>" />
 
 <!-- Favicon -->
-<link href="thumbs/50x50x2/<?=UPLOAD_PHOTO_L.$favicon['photo']?>" rel="shortcut icon" type="image/x-icon" />
+<link href="assets/images/favicon-pts.png?v=20261005" rel="icon" type="image/png" sizes="32x32" />
+<link href="assets/images/favicon-pts.png?v=20261005" rel="shortcut icon" type="image/png" />
 
 <!-- Webmaster Tool -->
 <?=htmlspecialchars_decode($setting['mastertool'])?>
