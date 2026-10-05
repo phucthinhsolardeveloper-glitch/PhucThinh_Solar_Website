@@ -200,6 +200,7 @@ body.mm-wrapper_opening .pts-header-v4 #hamburger>span,body.mm-wrapper_opened .p
 .pts-catalog-item-icon{display:flex;align-items:center;justify-content:center;flex:0 0 28px;width:28px;height:28px;color:#0a2251}
 .pts-catalog-item-icon>.pts-catalog-icon{width:22px;height:22px}
 .pts-catalog-list-link>span{min-width:0;flex:1}
+.pts-catalog-list-link>.pts-catalog-item-icon{flex:0 0 28px}
 .pts-catalog-list-link .pts-catalog-row-arrow{flex:none;color:#64748b;font-size:13px}
 .pts-catalog-sublist{display:none;position:absolute;top:0;left:100%;z-index:3;width:260px;max-height:320px;margin:0;padding:6px;overflow-y:auto;list-style:none;border:1px solid #e5e7eb;border-radius:4px;background:#fff;box-shadow:0 12px 30px rgba(6,21,55,.16)}
 .pts-catalog-list-item:hover>.pts-catalog-sublist,.pts-catalog-list-item:focus-within>.pts-catalog-sublist{display:block}
