@@ -225,7 +225,8 @@ test('desktop product mega-menu follows the selected 4/4/2 layout and supports s
 
   const trigger = page.locator('.menu-catalog-trigger');
   const overlay = page.locator('#ptsCatalogOverlay');
-  await trigger.click();
+  await expect(trigger).toHaveAttribute('href', '/san-pham/');
+  await trigger.hover();
   await expect(trigger).toHaveAttribute('aria-expanded', 'true');
   await expect(overlay.getByRole('dialog')).toBeVisible();
   await expect(overlay.locator('.pts-catalog-group')).toHaveCount(3);
@@ -255,12 +256,23 @@ test('desktop product mega-menu follows the selected 4/4/2 layout and supports s
   await expect(trigger).toBeFocused();
 });
 
+test('product catalogue trigger opens the landing page when activated', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'Desktop product catalogue landing link.');
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await dismissEntrancePopup(page);
+  await expect(page.locator('.menu-catalog-trigger')).toHaveAttribute('href', '/san-pham/');
+  await page.locator('.menu-catalog-trigger').click();
+  await expect(page).toHaveURL(/\/san-pham\/$/);
+  await expect(page.locator('h1')).toBeVisible();
+});
+
 test('desktop catalogue reveals real child categories on hover and keeps leaf rows plain', async ({ page, isMobile }) => {
   test.skip(isMobile, 'Desktop category flyout.');
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/', { waitUntil: 'domcontentloaded' });
   await dismissEntrancePopup(page);
-  await page.locator('.menu-catalog-trigger').click();
+  await page.locator('.menu-catalog-trigger').hover();
 
   const overlay = page.locator('#ptsCatalogOverlay');
   const garden = overlay.locator('.pts-catalog-list-item').filter({ has: page.locator('a[href="/danh-muc-san-pham/den-san-vuon/"]') });

@@ -48,7 +48,7 @@ test('wide 2K desktop uses the large-screen reading scale', async ({ page, isMob
   expect(response && response.ok()).toBeTruthy();
 
   expect(await fontSize(page.locator('body'))).toBeGreaterThanOrEqual(20);
-  expect(await fontSize(page.locator('.pts-header-nav .menu-catalog > button'))).toBeGreaterThanOrEqual(14);
+  expect(await fontSize(page.locator('.pts-header-nav .menu-catalog-trigger'))).toBeGreaterThanOrEqual(14);
   expect(await fontSize(page.locator('.pts-home-category-copy strong').last())).toBeGreaterThanOrEqual(18);
   expect(await fontSize(page.locator('.footer-link a').first())).toBeGreaterThanOrEqual(17);
   expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);

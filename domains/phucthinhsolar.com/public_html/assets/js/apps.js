@@ -358,20 +358,6 @@ GA_FRAMEWORK.Menu = function(){
             }
         });
         catalogPanel.addEventListener('pointerleave', scheduleCatalogHoverClose);
-        catalogTrigger.addEventListener('click', function(event) {
-            /* First click after hover pins the open panel; a second click can
-               still toggle it closed. Keyboard activation always toggles. */
-            if(!catalogOverlay.hidden && !catalogClosing && catalogOpenedByHover && event.detail > 0) {
-                catalogOpenedByHover = false;
-                cancelCatalogHoverClose();
-                if(catalogSearch) catalogSearch.focus({preventScroll: true});
-                return;
-            }
-            if(catalogOverlay.hidden || catalogClosing) {
-                catalogOpenedByHover = false;
-                openCatalog(true);
-            } else closeCatalog(false);
-        });
         window.addEventListener('resize', function() {
             if(!catalogOverlay.hidden && !catalogClosing) positionCatalog();
         });

@@ -91,9 +91,9 @@
         <ul class="d-flex align-items-center justify-content-between">
             
             <li class="menu-catalog">
-                <button class="menu-catalog-trigger <?php if($com=='san-pham') echo 'active'; ?> transition" type="button" aria-expanded="false" aria-controls="ptsCatalogOverlay">
+                <a class="menu-catalog-trigger <?php if($com=='san-pham') echo 'active'; ?> transition" href="/san-pham/" title="Danh mục sản phẩm" aria-expanded="false" aria-controls="ptsCatalogOverlay">
                     <i class="fas fa-bars" aria-hidden="true"></i><span>Danh mục sản phẩm</span><i class="fas fa-chevron-down menu-catalog-chevron" aria-hidden="true"></i>
-                </button>
+                </a>
             </li>
 
             <li class="menu-about">
