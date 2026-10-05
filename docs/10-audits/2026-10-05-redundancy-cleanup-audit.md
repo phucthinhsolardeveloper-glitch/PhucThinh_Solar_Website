@@ -39,6 +39,17 @@ persistent.
   và upload tar, chưa đủ căn cứ để coi là rác. Artifact kiểm thử/candidate local
   cũng chưa xóa vì có thể còn phục vụ các đợt kiểm tra hoặc import ảnh.
 
+## Sự cố SEO/nội dung ngoài thương hiệu đã xử lý
+
+- Phát hiện `public_html/index.html` là trang mặc định cũ chứa
+  `kimthienbao.mrgiang.net`; đây là nguồn khiến URL `/index.html` có thể bị công
+  cụ tìm kiếm lập chỉ mục ngoài nội dung Phúc Thịnh Solar.
+- Đã xóa file khỏi source và production bằng release `35f06aaab381`, đồng thời
+  thêm guard trong `scripts/predeploy-local.sh` để chặn file này tái xuất hiện.
+- Xác minh production: `/`, `/index.html`, `/index.php`, `/san-pham/`,
+  `/robots.txt` và `/sitemap.xml` không còn marker ngoại thương hiệu; `/index.html`
+  đã về URL chuẩn `/`.
+
 ## Ứng viên dọn theo mức độ chắc chắn
 
 ### Có thể dọn sau khi chốt retention
