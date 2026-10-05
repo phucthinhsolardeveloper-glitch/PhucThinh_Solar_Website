@@ -88,11 +88,11 @@ $headerQuickCategories = !empty($splist) ? array_slice($splist, 0, 5) : array();
         <div class="pts-catalog-columns">
             <?php foreach($menuCatalogGroups as $menuCatalogGroupKey => $menuCatalogGroup) { if(!$menuCatalogGroup['items']) continue; ?>
             <section class="pts-catalog-group" aria-labelledby="ptsCatalogGroup-<?=$menuCatalogGroupKey?>">
-                <h3 id="ptsCatalogGroup-<?=$menuCatalogGroupKey?>"><i class="fas <?=$menuCatalogGroup['icon']?>" aria-hidden="true"></i><span><?=$menuCatalogEscape($menuCatalogGroup['title'])?><?php if($menuCatalogGroup['subtitle'] !== '') { ?><small><?=$menuCatalogEscape($menuCatalogGroup['subtitle'])?></small><?php } ?></span></h3>
+                <h3 id="ptsCatalogGroup-<?=$menuCatalogGroupKey?>"><span class="pts-catalog-group-icon"><?=$menuCatalogRenderIcon($menuCatalogGroup['icon'])?></span><span><?=$menuCatalogEscape($menuCatalogGroup['title'])?><?php if($menuCatalogGroup['subtitle'] !== '') { ?><small><?=$menuCatalogEscape($menuCatalogGroup['subtitle'])?></small><?php } ?></span></h3>
                 <ul>
                     <?php foreach($menuCatalogGroup['items'] as $menuCatalogItem) { ?>
                     <li class="pts-catalog-list-item" data-search="<?=$menuCatalogEscape($menuCatalogItem['search'])?>">
-                        <a class="pts-catalog-list-link" href="<?=$menuCatalogEscape($menuCatalogItem['href'])?>"><i class="fas <?=$menuCatalogEscape($menuCatalogItem['icon'])?>" aria-hidden="true"></i><span><?=$menuCatalogEscape($menuCatalogItem['label'])?></span><?php if($menuCatalogItem['children']) { ?><i class="fas fa-angle-right pts-catalog-row-arrow" aria-hidden="true"></i><?php } ?></a>
+                        <a class="pts-catalog-list-link" href="<?=$menuCatalogEscape($menuCatalogItem['href'])?>"><span class="pts-catalog-item-icon"><?=$menuCatalogRenderIcon($menuCatalogItem['icon'])?></span><span><?=$menuCatalogEscape($menuCatalogItem['label'])?></span><?php if($menuCatalogItem['children']) { ?><i class="fas fa-angle-right pts-catalog-row-arrow" aria-hidden="true"></i><?php } ?></a>
                         <?php if($menuCatalogItem['children']) { ?>
                         <ul class="pts-catalog-sublist" aria-label="Danh mục con: <?=$menuCatalogEscape($menuCatalogItem['label'])?>">
                             <?php foreach($menuCatalogItem['children'] as $menuCatalogChild) { ?>
@@ -104,7 +104,7 @@ $headerQuickCategories = !empty($splist) ? array_slice($splist, 0, 5) : array();
                     <?php } ?>
                 </ul>
                 <?php if($menuCatalogGroupKey === 'devices') { ?>
-                <a class="pts-catalog-help-card" href="#ptsContactModal" data-toggle="modal" data-target="#ptsContactModal"><i class="fas fa-headset" aria-hidden="true"></i><span><strong>Cần hỗ trợ lựa chọn?</strong><small>Nhận tư vấn <i class="fas fa-arrow-right" aria-hidden="true"></i></small></span></a>
+                <a class="pts-catalog-help-card" href="#ptsContactModal" data-toggle="modal" data-target="#ptsContactModal"><?=$menuCatalogRenderIcon('headset', 'pts-catalog-help-svg')?><span><strong>Cần hỗ trợ lựa chọn?</strong><small>Nhận tư vấn <i class="fas fa-arrow-right" aria-hidden="true"></i></small></span></a>
                 <?php } ?>
             </section>
             <?php } ?>

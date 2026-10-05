@@ -11,17 +11,6 @@
                 <?php if(count($splist)) { ?>
                     <ul>
                         <li><a class="transition" title="Xem tất cả sản phẩm" href="/san-pham/">Xem tất cả sản phẩm</a></li>
-                        <?php $mobileMenuIconSvg = array(
-                            'sun' => '<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/>',
-                            'street' => '<path d="M8 22V7l8-3m-9 4 1-3 7-2 4 2-1 2-6 1M5 22h6"/>',
-                            'garden' => '<path d="m4 7 8-4 8 4H4Zm2 1 2 9h8l2-9M8 10h8M12 8v13M8 22h8"/>',
-                            'panel' => '<path d="m5 3-3 13h20L19 3H5ZM3 10h18M4 6h16M9 3 8 16m7-13 1 13M12 16v5m-5 0h10"/>',
-                            'inverter' => '<rect x="5" y="2" width="14" height="20" rx="2"/><rect x="8" y="5" width="8" height="5" rx="1"/><path d="m13 12-3 4h4l-3 4"/>',
-                            'battery' => '<path d="M9 3V1h6v2"/><rect x="5" y="3" width="14" height="19" rx="2"/><path d="m13 7-4 6h6l-4 5"/>',
-                            'pump' => '<path d="M7 5h10v15H7V5Zm3 0V2h4v3m-4 15v2m4-2v2M7 14H3v-4h4m10 4h4v5"/><circle cx="12" cy="12" r="2"/>',
-                            'fan' => '<circle cx="12" cy="10" r="8"/><circle cx="12" cy="10" r="1.5"/><path d="M12 8c-5-8-8 2-2 2m4 0c9 0 3-9 0-2m-2 4c-3 8 7 6 2 0M12 18v4m-5 0h10"/>',
-                            'tools' => '<path d="m14 5 4-3 1 5 3 2-3 4-4-1L6 21l-3-3 9-9-1-4 3-3Z"/>'
-                        ); ?>
                         <?php foreach($splist as $klist => $vlist) {
                             $spcat = isset($productMenuCats[(int)$vlist['id']]) ? $productMenuCats[(int)$vlist['id']] : array(); ?>
                             <?php
@@ -40,7 +29,7 @@
                             ?>
                             <li class="pts-mobile-product-category">
                                 <a class="transition" title="<?=$vlist['name'.$lang]?>" href="/danh-muc-san-pham/<?=$vlist[$sluglang]?>/">
-                                    <svg class="pts-mobile-menu-icon pts-mobile-menu-icon-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><?=$mobileMenuIconSvg[$mobileCategoryIcon]?></svg><?=$vlist['name'.$lang]?>
+                                    <?=$menuCatalogRenderIcon($mobileCategoryIcon, 'pts-mobile-menu-icon pts-mobile-menu-icon-svg')?><?=$vlist['name'.$lang]?>
                                 </a>
                                 <?php if(!empty($spcat)) { ?>
                                     <ul>

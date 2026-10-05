@@ -6,26 +6,46 @@
  ?>
 <?php
     $menuCatalogEscape = static function($value) { return htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8'); };
+    /* Dùng chung icon SVG nét mảnh cho mega menu desktop và danh mục mobile. */
+    $menuCatalogIconSvg = array(
+        'sun' => '<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/>',
+        'light' => '<path d="M7 3h10l3 13H4L7 3Zm3 14v2a2 2 0 0 0 4 0v-2M6 7h12"/>',
+        'street' => '<path d="M8 22V7l8-3m-9 4 1-3 7-2 4 2-1 2-6 1M5 22h6"/>',
+        'flood' => '<rect x="4" y="3" width="16" height="13" rx="2"/><rect x="7" y="6" width="10" height="7" rx="1"/><path d="m8 17-2 4h12l-2-4"/>',
+        'ceiling' => '<ellipse cx="12" cy="10" rx="9" ry="5"/><path d="M3 10v3c0 7 18 7 18 0v-3"/>',
+        'garden' => '<path d="m4 7 8-4 8 4H4Zm2 1 2 9h8l2-9M8 10h8M12 8v13M8 22h8"/>',
+        'panel' => '<path d="m5 3-3 13h20L19 3H5ZM3 10h18M4 6h16M9 3 8 16m7-13 1 13M12 16v5m-5 0h10"/>',
+        'inverter' => '<rect x="5" y="2" width="14" height="20" rx="2"/><rect x="8" y="5" width="8" height="5" rx="1"/><path d="m13 12-3 4h4l-3 4"/>',
+        'battery' => '<path d="M9 3V1h6v2"/><rect x="5" y="3" width="14" height="19" rx="2"/><path d="m13 7-4 6h6l-4 5"/>',
+        'pump' => '<path d="M7 5h10v15H7V5Zm3 0V2h4v3m-4 15v2m4-2v2M7 14H3v-4h4m10 4h4v5"/><circle cx="12" cy="12" r="2"/>',
+        'fan' => '<circle cx="12" cy="10" r="8"/><circle cx="12" cy="10" r="1.5"/><path d="M12 8c-5-8-8 2-2 2m4 0c9 0 3-9 0-2m-2 4c-3 8 7 6 2 0M12 18v4m-5 0h10"/>',
+        'tools' => '<path d="m14 5 4-3 1 5 3 2-3 4-4-1L6 21l-3-3 9-9-1-4 3-3Z"/>',
+        'headset' => '<path d="M4 13v-3a8 8 0 0 1 16 0v3M4 12H2v7h4v-7H4Zm16 0h2v7h-4v-7h2ZM19 19v2h-7"/>'
+    );
+    $menuCatalogRenderIcon = static function($name, $class = 'pts-catalog-icon') use ($menuCatalogIconSvg) {
+        if(!isset($menuCatalogIconSvg[$name])) return '';
+        return '<svg class="'.$class.'" viewBox="0 0 24 24" aria-hidden="true" focusable="false">'.$menuCatalogIconSvg[$name].'</svg>';
+    };
     $menuCatalogGroups = array(
-        'lighting' => array('title' => 'Chiếu sáng', 'subtitle' => 'Đèn năng lượng mặt trời', 'icon' => 'fa-lightbulb', 'items' => array()),
-        'solar' => array('title' => 'Điện mặt trời', 'subtitle' => '', 'icon' => 'fa-solar-panel', 'items' => array()),
-        'devices' => array('title' => 'Thiết bị ứng dụng', 'subtitle' => '', 'icon' => 'fa-cogs', 'items' => array())
+        'lighting' => array('title' => 'Chiếu sáng', 'subtitle' => 'Đèn năng lượng mặt trời', 'icon' => 'light', 'items' => array()),
+        'solar' => array('title' => 'Điện mặt trời', 'subtitle' => '', 'icon' => 'panel', 'items' => array()),
+        'devices' => array('title' => 'Thiết bị ứng dụng', 'subtitle' => '', 'icon' => 'tools', 'items' => array())
     );
     $menuCatalogListsBySlug = array();
     foreach((array)$splist as $menuCatalogList) {
         if(!empty($menuCatalogList['slugvi'])) $menuCatalogListsBySlug[$menuCatalogList['slugvi']] = $menuCatalogList;
     }
     $menuCatalogSlots = array(
-        array('group'=>'lighting', 'list'=>'den-nlmt', 'cat'=>'den-duong', 'label'=>'Đèn đường năng lượng mặt trời', 'icon'=>'fa-road'),
-        array('group'=>'lighting', 'list'=>'den-nlmt', 'cat'=>'den-pha-nang-luong-mat-troi', 'label'=>'Đèn pha năng lượng mặt trời', 'icon'=>'fa-lightbulb'),
-        array('group'=>'lighting', 'list'=>'den-san-vuon', 'label'=>'Đèn sân vườn', 'icon'=>'fa-seedling'),
-        array('group'=>'lighting', 'list'=>'den-nlmt', 'cat'=>'den-op-tran', 'label'=>'Đèn ốp trần', 'icon'=>'fa-circle-notch'),
-        array('group'=>'solar', 'list'=>'tam-pin-nang-luong-mat-troi', 'label'=>'Tấm pin năng lượng mặt trời', 'icon'=>'fa-solar-panel'),
-        array('group'=>'solar', 'list'=>'bien-tan-inverter', 'label'=>'Biến tần / Inverter', 'icon'=>'fa-bolt'),
-        array('group'=>'solar', 'list'=>'pin-luu-tru', 'label'=>'Pin lưu trữ', 'icon'=>'fa-car-battery'),
-        array('group'=>'solar', 'list'=>'thiet-bi-dien-nang-luong-mat-troi', 'label'=>'Thiết bị & phụ kiện', 'icon'=>'fa-cogs'),
-        array('group'=>'devices', 'list'=>'bien-tan-bom', 'label'=>'Bơm nước năng lượng mặt trời', 'icon'=>'fa-water'),
-        array('group'=>'devices', 'list'=>'quat-nang-luong-mat-troi', 'label'=>'Quạt năng lượng mặt trời', 'icon'=>'fa-fan')
+        array('group'=>'lighting', 'list'=>'den-nlmt', 'cat'=>'den-duong', 'label'=>'Đèn đường năng lượng mặt trời', 'icon'=>'street'),
+        array('group'=>'lighting', 'list'=>'den-nlmt', 'cat'=>'den-pha-nang-luong-mat-troi', 'label'=>'Đèn pha năng lượng mặt trời', 'icon'=>'flood'),
+        array('group'=>'lighting', 'list'=>'den-san-vuon', 'label'=>'Đèn sân vườn', 'icon'=>'garden'),
+        array('group'=>'lighting', 'list'=>'den-nlmt', 'cat'=>'den-op-tran', 'label'=>'Đèn ốp trần', 'icon'=>'ceiling'),
+        array('group'=>'solar', 'list'=>'tam-pin-nang-luong-mat-troi', 'label'=>'Tấm pin năng lượng mặt trời', 'icon'=>'panel'),
+        array('group'=>'solar', 'list'=>'bien-tan-inverter', 'label'=>'Biến tần / Inverter', 'icon'=>'inverter'),
+        array('group'=>'solar', 'list'=>'pin-luu-tru', 'label'=>'Pin lưu trữ', 'icon'=>'battery'),
+        array('group'=>'solar', 'list'=>'thiet-bi-dien-nang-luong-mat-troi', 'label'=>'Thiết bị & phụ kiện', 'icon'=>'tools'),
+        array('group'=>'devices', 'list'=>'bien-tan-bom', 'label'=>'Bơm nước năng lượng mặt trời', 'icon'=>'pump'),
+        array('group'=>'devices', 'list'=>'quat-nang-luong-mat-troi', 'label'=>'Quạt năng lượng mặt trời', 'icon'=>'fan')
     );
     foreach($menuCatalogSlots as $menuCatalogSlot) {
         if(empty($menuCatalogListsBySlug[$menuCatalogSlot['list']])) continue;
