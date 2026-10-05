@@ -8,6 +8,13 @@ base_url="http://localhost:8080"
 
 cd "$repo_dir"
 
+# Chỉ index.php là entrypoint public. Một index.html cũ từng chứa landing của
+# domain khác có thể bị công cụ tìm kiếm lập chỉ mục trực tiếp dưới /index.html.
+if [ -f domains/phucthinhsolar.com/public_html/index.html ]; then
+    echo "FAIL: public_html/index.html là entrypoint legacy ngoài ứng dụng; xóa trước khi deploy." >&2
+    exit 1
+fi
+
 # Khi debug-css=false (đúng cấu hình production), toàn bộ <link> CSS được gộp
 # vào một file assets/caches/<hash>.css nên đường dẫn CSS gốc (photobox.css,
 # fancybox.css...) không còn xuất hiện nguyên văn trong HTML nữa. Kiểm tra cả
