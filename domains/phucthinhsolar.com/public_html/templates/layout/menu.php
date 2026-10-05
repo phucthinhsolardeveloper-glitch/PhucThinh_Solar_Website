@@ -20,6 +20,9 @@
         'pump' => '<path d="M7 5h10v15H7V5Zm3 0V2h4v3m-4 15v2m4-2v2M7 14H3v-4h4m10 4h4v5"/><circle cx="12" cy="12" r="2"/>',
         'fan' => '<circle cx="12" cy="10" r="8"/><circle cx="12" cy="10" r="1.5"/><path d="M12 8c-5-8-8 2-2 2m4 0c9 0 3-9 0-2m-2 4c-3 8 7 6 2 0M12 18v4m-5 0h10"/>',
         'tools' => '<path d="m14 5 4-3 1 5 3 2-3 4-4-1L6 21l-3-3 9-9-1-4 3-3Z"/>',
+        'cog' => '<circle cx="12" cy="12" r="3"/><path d="M10 2h4l.7 2.4a8 8 0 0 1 1.5.9l2.4-.7 2 3.5-1.8 1.7a8 8 0 0 1 0 1.8l1.8 1.7-2 3.5-2.4-.7a8 8 0 0 1-1.5.9L14 22h-4l-.7-2.4a8 8 0 0 1-1.5-.9l-2.4.7-2-3.5 1.8-1.7a8 8 0 0 1 0-1.8L3.4 10.7l2-3.5 2.4.7a8 8 0 0 1 1.5-.9L10 2Z"/>',
+        'book' => '<path d="M12 6c-2-2-6-3-9-2v15c3-1 7 0 9 2m0-15c2-2 6-3 9-2v15c-3-1-7 0-9 2M12 6v15"/>',
+        'users' => '<circle cx="9" cy="8" r="3"/><path d="M3 21v-2a6 6 0 0 1 12 0v2M16 5.5a3 3 0 0 1 0 5.8m2 2.2a5 5 0 0 1 3 4.5V20"/>',
         'headset' => '<path d="M4 13v-3a8 8 0 0 1 16 0v3M4 12H2v7h4v-7H4Zm16 0h2v7h-4v-7h2ZM19 19v2h-7"/>'
     );
     $menuCatalogRenderIcon = static function($name, $class = 'pts-catalog-icon') use ($menuCatalogIconSvg) {
@@ -29,7 +32,7 @@
     $menuCatalogGroups = array(
         'lighting' => array('title' => 'Chiếu sáng', 'subtitle' => 'Đèn năng lượng mặt trời', 'icon' => 'light', 'items' => array()),
         'solar' => array('title' => 'Điện mặt trời', 'subtitle' => '', 'icon' => 'panel', 'items' => array()),
-        'devices' => array('title' => 'Thiết bị ứng dụng', 'subtitle' => '', 'icon' => 'tools', 'items' => array())
+        'devices' => array('title' => 'Thiết bị ứng dụng', 'subtitle' => '', 'icon' => 'cog', 'items' => array())
     );
     $menuCatalogListsBySlug = array();
     foreach((array)$splist as $menuCatalogList) {
@@ -43,7 +46,7 @@
         array('group'=>'solar', 'list'=>'tam-pin-nang-luong-mat-troi', 'label'=>'Tấm pin năng lượng mặt trời', 'icon'=>'panel'),
         array('group'=>'solar', 'list'=>'bien-tan-inverter', 'label'=>'Biến tần / Inverter', 'icon'=>'inverter'),
         array('group'=>'solar', 'list'=>'pin-luu-tru', 'label'=>'Pin lưu trữ', 'icon'=>'battery'),
-        array('group'=>'solar', 'list'=>'thiet-bi-dien-nang-luong-mat-troi', 'label'=>'Thiết bị & phụ kiện', 'icon'=>'tools'),
+        array('group'=>'solar', 'list'=>'thiet-bi-dien-nang-luong-mat-troi', 'label'=>'Thiết bị & phụ kiện', 'icon'=>'cog'),
         array('group'=>'devices', 'list'=>'bien-tan-bom', 'label'=>'Bơm nước năng lượng mặt trời', 'icon'=>'pump'),
         array('group'=>'devices', 'list'=>'quat-nang-luong-mat-troi', 'label'=>'Quạt năng lượng mặt trời', 'icon'=>'fan')
     );

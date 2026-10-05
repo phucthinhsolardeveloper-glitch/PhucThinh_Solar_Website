@@ -16,16 +16,16 @@
                             <?php
                                 $mobileCategoryName = mb_strtolower((string)$vlist['name'.$lang], 'UTF-8');
                                 $mobileCategorySlug = strtolower((string)$vlist[$sluglang]);
-                                $mobileCategoryIcon = 'tools';
+                                $mobileCategoryIcon = 'cog';
                                 if (strpos($mobileCategorySlug, 'san-vuon') !== false || strpos($mobileCategoryName, 'sân vườn') !== false) $mobileCategoryIcon = 'garden';
                                 elseif (strpos($mobileCategorySlug, 'tru-den') !== false || strpos($mobileCategoryName, 'trụ đèn') !== false) $mobileCategoryIcon = 'street';
                                 elseif (strpos($mobileCategorySlug, 'quat') !== false || strpos($mobileCategoryName, 'quạt') !== false) $mobileCategoryIcon = 'fan';
                                 elseif (strpos($mobileCategorySlug, 'tam-pin') !== false || strpos($mobileCategoryName, 'tấm pin') !== false) $mobileCategoryIcon = 'panel';
+                                elseif (strpos($mobileCategorySlug, 'bom') !== false || strpos($mobileCategoryName, 'bơm') !== false) $mobileCategoryIcon = 'pump';
                                 elseif (strpos($mobileCategorySlug, 'bien-tan') !== false || strpos($mobileCategoryName, 'biến tần') !== false || strpos($mobileCategoryName, 'inverter') !== false) $mobileCategoryIcon = 'inverter';
                                 elseif (strpos($mobileCategorySlug, 'pin-luu-tru') !== false || strpos($mobileCategoryName, 'pin lưu trữ') !== false) $mobileCategoryIcon = 'battery';
-                                elseif (strpos($mobileCategorySlug, 'bom') !== false || strpos($mobileCategoryName, 'bơm') !== false) $mobileCategoryIcon = 'pump';
-                                elseif (strpos($mobileCategorySlug, 'thiet-bi') !== false || strpos($mobileCategoryName, 'thiết bị') !== false || strpos($mobileCategoryName, 'phụ kiện') !== false) $mobileCategoryIcon = 'tools';
-                                elseif (strpos($mobileCategoryName, 'đèn') !== false) $mobileCategoryIcon = 'sun';
+                                elseif (strpos($mobileCategorySlug, 'thiet-bi') !== false || strpos($mobileCategoryName, 'thiết bị') !== false || strpos($mobileCategoryName, 'phụ kiện') !== false) $mobileCategoryIcon = 'cog';
+                                elseif (strpos($mobileCategoryName, 'đèn') !== false) $mobileCategoryIcon = 'panel';
                             ?>
                             <li class="pts-mobile-product-category">
                                 <a class="transition" title="<?=$vlist['name'.$lang]?>" href="/danh-muc-san-pham/<?=$vlist[$sluglang]?>/">
@@ -97,7 +97,7 @@
             <li class="menu-projects"><a class="<?php if($com=='du-an' || $com=='du-an-da-thuc-hien') echo 'active'; ?> transition" href="/du-an-da-thuc-hien/" title="Dự án"><i class="far fa-file-alt pts-mobile-menu-icon" aria-hidden="true"></i>Dự án</a></li>
      
             <li class="menu-knowledge">
-                <a class="<?php if($com=='tin-tuc') echo 'active'; ?> transition" href="/tin-tuc/" title="Kiến thức"><i class="fas fa-book-open pts-mobile-menu-icon" aria-hidden="true"></i>Kiến thức</a>
+                <a class="<?php if($com=='tin-tuc') echo 'active'; ?> transition" href="/tin-tuc/" title="Kiến thức"><?=$menuCatalogRenderIcon('book', 'pts-mobile-menu-icon pts-mobile-menu-icon-svg')?>Kiến thức</a>
                 <?php if(count($ttlist)) { ?>
                     <ul>
                         <li><a title="Tất cả bài viết" href="/tin-tuc/">Tất cả bài viết</a></li>
@@ -141,7 +141,7 @@
             </li>
 
             <li class="menu-cooperation">
-                <a class="<?php if($com=='dai-ly') echo 'active'; ?> transition" href="dai-ly" title="Hợp tác"><i class="fas fa-users pts-mobile-menu-icon" aria-hidden="true"></i>Hợp tác</a>
+                <a class="<?php if($com=='dai-ly') echo 'active'; ?> transition" href="dai-ly" title="Hợp tác"><?=$menuCatalogRenderIcon('users', 'pts-mobile-menu-icon pts-mobile-menu-icon-svg')?>Hợp tác</a>
                 <ul>
                     <li><a href="dai-ly#dang-ky-dai-ly">Đăng ký đại lý</a></li>
                     <li><a href="dai-ly#nang-luc-phan-phoi">Năng lực phân phối</a></li>
