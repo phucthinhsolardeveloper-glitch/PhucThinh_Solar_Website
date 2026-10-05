@@ -32,6 +32,23 @@ và liên kết về runbook đang có hiệu lực.
 
 ## Lịch sử rà soát
 
+### 2026-10-04 — tối ưu tiếp public và Admin local
+
+- Bổ sung số đo bốn route public, nguyên nhân bundle thừa Jssor/Bootstrap 4.0,
+  ảnh banner đầu lazy và nút lưu Admin chờ `window.load` vào
+  [audit hiệu năng](../10-audits/2026-10-03-website-admin-performance.md).
+- Chỉ loại asset được xác minh không dùng hoặc bị ghi đè; giữ hai bản Bootstrap
+  còn lại cho đến khi kiểm chứng đầy đủ tương thích Popper/dropdown.
+
+### 2026-10-03 — đo hiệu năng website và Admin local
+
+- Ghi baseline trình duyệt, truy vấn Admin, nguyên nhân ảnh gốc ở danh sách
+  sản phẩm, tải thư viện theo màn và hiệu ứng đóng mega-menu tại
+  [audit hiệu năng](../10-audits/2026-10-03-website-admin-performance.md).
+- Xác nhận bài học từ đợt tách asset công khai trước: chỉ tối ưu theo route
+  sau khi có regression tương tác và visual; giữ các bundle hiện hành cho
+  những route chưa được kiểm chứng.
+
 ### 2026-09-29 — retention, backup và deploy workflow
 
 - Ghi nhận vai trò của `incoming/`, `releases/`, `shared/` và chính sách giữ 1–2

@@ -1281,7 +1281,15 @@
 			/* PHP 8.1 deprecate truyền null cho tham số $response_code (int) của
 			   header() dù đó là giá trị mặc định cũ - gọi thiếu/đủ tham số tùy
 			   theo có mã response hay không thay vì truyền null trực tiếp. */
-			if($response === null) header("location:$url", true);
+			if(headers_sent())
+			{
+				/* Validation errors from uploadImage() may already have emitted an
+				   alert script. Preserve that message and navigate without calling
+				   header() after the response has started. */
+				$target = json_encode((string) $url, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
+				echo '<script>window.location.replace('.$target.')</script>';
+			}
+			elseif($response === null) header("location:$url", true);
 			else header("location:$url", true, $response);
 			exit();
 		}

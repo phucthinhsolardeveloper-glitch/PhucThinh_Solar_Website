@@ -224,7 +224,24 @@ responsive ổn chỉ từ laptop 1366px.
   mobile nếu không có nhu cầu sử dụng tương đương đã được duyệt.
 - Dropdown có thể có shadow/radius nhẹ vì là bề mặt nổi. Menu cha vẫn có đường
   vào landing bằng click/keyboard, không hover-only.
+- Nút `Danh mục sản phẩm` trên desktop mở mega-menu overlay khi rê chuột (thiết
+  bị có hover) hoặc click/keyboard; menu không tự mở theo hover trên cảm ứng.
+  Overlay có thể đóng bằng nút đóng, click vùng nền hoặc Escape; focus được đưa
+  vào menu khi mở có chủ ý, giữ trong menu khi Tab và trả về nút mở khi đóng.
+  Panel desktop trình bày ba cột lối tắt 4–4–2: Chiếu sáng, Điện mặt trời,
+  Thiết bị ứng dụng. Mỗi lối tắt khớp category đang hiển thị trong Admin qua
+  slug public và lấy URL thật từ dữ liệu; panel mặc định không dàn toàn bộ cấp
+  gốc/cấp con. Lối tắt có danh mục con mở flyout theo hover/focus, còn danh mục
+  không có con không hiển thị mũi tên. Các nhóm còn lại đi qua landing `Xem tất cả sản phẩm` hoặc menu
+  mobile. Tìm kiếm dùng route tìm sản phẩm hiện có; chân panel có lối tư vấn,
+  không lặp bộ chọn ngôn ngữ của header.
 - Mobile menu có nút đóng/mở dễ hiểu, focus được và không che logo.
+- Mobile drawer có ô tìm sản phẩm gửi tới cùng chức năng tìm kiếm hiện có;
+  nhóm danh mục sản phẩm mở inline dạng accordion khi người dùng bấm, không tự
+  bung nhóm con khi vào menu. Danh mục nhiều cấp dùng URL và dữ liệu Admin hiện hữu; không ẩn nhóm
+  chỉ để khớp số lượng trong mockup. Có lối xem tất cả sản phẩm, nút nhận tư vấn
+  ở đáy drawer và nút đóng; tên danh mục dài được phép xuống dòng, không cắt cụt.
+  Không hiển thị bộ chọn ngôn ngữ trong mobile drawer.
 
 ### 5.2 Breadcrumb
 

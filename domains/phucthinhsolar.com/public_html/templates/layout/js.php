@@ -36,7 +36,6 @@ $js->set("wp-includes/js/dist/vendor/wp-polyfill.min2c7c.js");
 // $js->set("wp-content/plugins/woocommerce/assets/js/frontend/cart-fragments.min4698.js");
 $js->set("wp-includes/js/underscore.min0028.js");
 $js->set("wp-content/themes/local/js/bootstrap.bundle.min080f.js");
-$js->set("wp-content/themes/local/js/bootstrap.min080f.js");
 $js->set("wp-content/themes/local/js/labory080f.js");
 $js->set("wp-content/themes/local/js/notice080f.js");
 $js->set("wp-content/themes/local/js/scrolly.min080f.js");
@@ -55,7 +54,6 @@ $js->set("js/lazyload.min.js");
 // Native browser scrolling is used. The legacy wheel smoother cached page heights
 // and could stop before the footer after lazy-loaded content changed the layout.
 $js->set("bootstrap/bootstrap.js");
-$js->set("js/jssor.slider.min.js");
 // $js->set("js/wow.min.js");
 $js->set("confirm/confirm.js");
 $js->set("holdon/HoldOn.js");
@@ -73,14 +71,13 @@ $js->set("fileuploader/jquery.fileuploader.min.js");
 // $js->set("datetimepicker/jquery.mousewheel.js");
 // $js->set("datetimepicker/jquery.datetimepicker.js");
 $js->set("js/functions.js");
-if($source != 'index'){
-    $js->set("js/toc.js");
-}
+$js->set("js/toc.js");
 $js->set("comment/comment.js");
 $js->set("js/share.js");
 $js->set("js/apps.js");
 $js->set("js/header-v4.js");
-if($source == 'index') $js->set("js/home-story-v4.js");
+// Giữ cùng một URL bundle trên các route để trình duyệt tái sử dụng cache khi chuyển trang.
+$js->set("js/home-story-v4.js");
 echo $js->get();
 ?>
 <script>
@@ -173,42 +170,6 @@ $('.view_maps').click(function() {
     <script src="https://cdn.gtranslate.net/widgets/latest/popup.js" defer=""></script>
     
 <?php } ?>
-<script>
-    if (isExist($("#jssor_1"))) {
-        $(document).ready(function($) {
-            var jssor_1_options = {
-                $AutoPlay: 1,
-                $SlideDuration: 800,
-                $SlideEasing: $Jease$.$OutQuint,
-                $ArrowNavigatorOptions: {
-                    $Class: $JssorArrowNavigator$
-                },
-                $BulletNavigatorOptions: {
-                    $Class: $JssorBulletNavigator$
-                }
-            };
-            var jssor_1_slider = new $JssorSlider$("jssor_1", jssor_1_options);
-            /*#region responsive code begin*/
-            var MAX_WIDTH = 3000;
-
-            function ScaleSlider() {
-                var containerElement = jssor_1_slider.$Elmt.parentNode;
-                var containerWidth = containerElement.clientWidth;
-                if (containerWidth) {
-                    var expectedWidth = Math.min(MAX_WIDTH || containerWidth, containerWidth);
-                    jssor_1_slider.$ScaleWidth(expectedWidth);
-                } else {
-                    window.setTimeout(ScaleSlider, 30);
-                }
-            }
-            ScaleSlider();
-            $(window).bind("load", ScaleSlider);
-            $(window).bind("resize", ScaleSlider);
-            $(window).bind("orientationchange", ScaleSlider);
-            /*#endregion responsive code end*/
-        });
-    }
-</script>
 <script>
     $('.trigger-fixed-list').on('click', function() {
         $('.fixed-social-list').toggleClass('active');

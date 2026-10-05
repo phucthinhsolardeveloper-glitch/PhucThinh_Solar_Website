@@ -1,15 +1,46 @@
 <nav id="menu">
     <ul>
-            <li>
+            <li class="mmenu-search-item mm-listitem_nosubitems">
+                <label class="hdr-sr-only" for="ptsMobileMenuSearch">Tìm sản phẩm</label>
+                <form class="mmenu-search-control" role="search" onsubmit="onSearch('ptsMobileMenuSearch'); return false;">
+                    <i class="fas fa-search" aria-hidden="true"></i><input type="search" id="ptsMobileMenuSearch" name="ptsMobileMenuSearch" placeholder="Tìm sản phẩm..." autocomplete="off">
+                </form>
+            </li>
+            <li class="mmenu-product-root">
                 <a class="has-child <?php if($com=='san-pham') echo 'active'; ?> transition" href="/san-pham/" title="Danh mục sản phẩm">Danh mục sản phẩm</a>
                 <?php if(count($splist)) { ?>
                     <ul>
                         <li><a class="transition" title="Xem tất cả sản phẩm" href="/san-pham/">Xem tất cả sản phẩm</a></li>
+                        <?php $mobileMenuIconSvg = array(
+                            'sun' => '<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/>',
+                            'street' => '<path d="M8 22V7l8-3m-9 4 1-3 7-2 4 2-1 2-6 1M5 22h6"/>',
+                            'garden' => '<path d="m4 7 8-4 8 4H4Zm2 1 2 9h8l2-9M8 10h8M12 8v13M8 22h8"/>',
+                            'panel' => '<path d="m5 3-3 13h20L19 3H5ZM3 10h18M4 6h16M9 3 8 16m7-13 1 13M12 16v5m-5 0h10"/>',
+                            'inverter' => '<rect x="5" y="2" width="14" height="20" rx="2"/><rect x="8" y="5" width="8" height="5" rx="1"/><path d="m13 12-3 4h4l-3 4"/>',
+                            'battery' => '<path d="M9 3V1h6v2"/><rect x="5" y="3" width="14" height="19" rx="2"/><path d="m13 7-4 6h6l-4 5"/>',
+                            'pump' => '<path d="M7 5h10v15H7V5Zm3 0V2h4v3m-4 15v2m4-2v2M7 14H3v-4h4m10 4h4v5"/><circle cx="12" cy="12" r="2"/>',
+                            'fan' => '<circle cx="12" cy="10" r="8"/><circle cx="12" cy="10" r="1.5"/><path d="M12 8c-5-8-8 2-2 2m4 0c9 0 3-9 0-2m-2 4c-3 8 7 6 2 0M12 18v4m-5 0h10"/>',
+                            'tools' => '<path d="m14 5 4-3 1 5 3 2-3 4-4-1L6 21l-3-3 9-9-1-4 3-3Z"/>'
+                        ); ?>
                         <?php foreach($splist as $klist => $vlist) {
                             $spcat = isset($productMenuCats[(int)$vlist['id']]) ? $productMenuCats[(int)$vlist['id']] : array(); ?>
-                            <li>
+                            <?php
+                                $mobileCategoryName = mb_strtolower((string)$vlist['name'.$lang], 'UTF-8');
+                                $mobileCategorySlug = strtolower((string)$vlist[$sluglang]);
+                                $mobileCategoryIcon = 'tools';
+                                if (strpos($mobileCategorySlug, 'san-vuon') !== false || strpos($mobileCategoryName, 'sân vườn') !== false) $mobileCategoryIcon = 'garden';
+                                elseif (strpos($mobileCategorySlug, 'tru-den') !== false || strpos($mobileCategoryName, 'trụ đèn') !== false) $mobileCategoryIcon = 'street';
+                                elseif (strpos($mobileCategorySlug, 'quat') !== false || strpos($mobileCategoryName, 'quạt') !== false) $mobileCategoryIcon = 'fan';
+                                elseif (strpos($mobileCategorySlug, 'tam-pin') !== false || strpos($mobileCategoryName, 'tấm pin') !== false) $mobileCategoryIcon = 'panel';
+                                elseif (strpos($mobileCategorySlug, 'bien-tan') !== false || strpos($mobileCategoryName, 'biến tần') !== false || strpos($mobileCategoryName, 'inverter') !== false) $mobileCategoryIcon = 'inverter';
+                                elseif (strpos($mobileCategorySlug, 'pin-luu-tru') !== false || strpos($mobileCategoryName, 'pin lưu trữ') !== false) $mobileCategoryIcon = 'battery';
+                                elseif (strpos($mobileCategorySlug, 'bom') !== false || strpos($mobileCategoryName, 'bơm') !== false) $mobileCategoryIcon = 'pump';
+                                elseif (strpos($mobileCategorySlug, 'thiet-bi') !== false || strpos($mobileCategoryName, 'thiết bị') !== false || strpos($mobileCategoryName, 'phụ kiện') !== false) $mobileCategoryIcon = 'tools';
+                                elseif (strpos($mobileCategoryName, 'đèn') !== false) $mobileCategoryIcon = 'sun';
+                            ?>
+                            <li class="pts-mobile-product-category">
                                 <a class="transition" title="<?=$vlist['name'.$lang]?>" href="/danh-muc-san-pham/<?=$vlist[$sluglang]?>/">
-                                    <?=$vlist['name'.$lang]?>
+                                    <svg class="pts-mobile-menu-icon pts-mobile-menu-icon-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><?=$mobileMenuIconSvg[$mobileCategoryIcon]?></svg><?=$vlist['name'.$lang]?>
                                 </a>
                                 <?php if(!empty($spcat)) { ?>
                                     <ul>
@@ -47,7 +78,7 @@
             </li>
 
             <li class="menu-about">
-                <a class="<?php if($com=='gioi-thieu' || $com=='ve-chung-toi' || $com=='lien-he') echo 'active'; ?> transition" href="gioi-thieu/" title="Giới thiệu">Giới thiệu</a>
+                <a class="<?php if($com=='gioi-thieu' || $com=='ve-chung-toi' || $com=='lien-he') echo 'active'; ?> transition" href="gioi-thieu/" title="Giới thiệu"><i class="far fa-building pts-mobile-menu-icon" aria-hidden="true"></i>Giới thiệu</a>
                 <ul>
                     <li><a href="gioi-thieu/#ve-phuc-thinh">Về Phúc Thịnh Solar</a></li>
                     <li><a href="gioi-thieu/#lich-su-phat-trien">Lịch sử phát triển</a></li>
@@ -58,8 +89,8 @@
                 </ul>
             </li>
 
-            <li>
-                <a class="has-child <?php if($com=='giai-phap') echo 'active'; ?> transition" href="/giai-phap/" title="Giải pháp">Giải pháp</a>
+            <li class="menu-solutions">
+                <a class="has-child <?php if($com=='giai-phap') echo 'active'; ?> transition" href="/giai-phap/" title="Giải pháp"><i class="far fa-lightbulb pts-mobile-menu-icon" aria-hidden="true"></i>Giải pháp</a>
                 <?php if(count($solutionMenuLinks)) { ?>
                     <ul>
                         <li><a title="Tất cả giải pháp" href="/giai-phap/">Tất cả giải pháp</a></li>
@@ -74,10 +105,10 @@
                 <?php } ?>
             </li>
 
-            <li><a class="<?php if($com=='du-an' || $com=='du-an-da-thuc-hien') echo 'active'; ?> transition" href="/du-an-da-thuc-hien/" title="Dự án">Dự án</a></li>
+            <li class="menu-projects"><a class="<?php if($com=='du-an' || $com=='du-an-da-thuc-hien') echo 'active'; ?> transition" href="/du-an-da-thuc-hien/" title="Dự án"><i class="far fa-file-alt pts-mobile-menu-icon" aria-hidden="true"></i>Dự án</a></li>
      
             <li class="menu-knowledge">
-                <a class="<?php if($com=='tin-tuc') echo 'active'; ?> transition" href="/tin-tuc/" title="Kiến thức">Kiến thức</a>
+                <a class="<?php if($com=='tin-tuc') echo 'active'; ?> transition" href="/tin-tuc/" title="Kiến thức"><i class="fas fa-book-open pts-mobile-menu-icon" aria-hidden="true"></i>Kiến thức</a>
                 <?php if(count($ttlist)) { ?>
                     <ul>
                         <li><a title="Tất cả bài viết" href="/tin-tuc/">Tất cả bài viết</a></li>
@@ -121,7 +152,7 @@
             </li>
 
             <li class="menu-cooperation">
-                <a class="<?php if($com=='dai-ly') echo 'active'; ?> transition" href="dai-ly" title="Hợp tác">Hợp tác</a>
+                <a class="<?php if($com=='dai-ly') echo 'active'; ?> transition" href="dai-ly" title="Hợp tác"><i class="fas fa-users pts-mobile-menu-icon" aria-hidden="true"></i>Hợp tác</a>
                 <ul>
                     <li><a href="dai-ly#dang-ky-dai-ly">Đăng ký đại lý</a></li>
                     <li><a href="dai-ly#nang-luc-phan-phoi">Năng lực phân phối</a></li>
@@ -130,52 +161,5 @@
                 </ul>
             </li>
 
-            <li class="mm-lang mm-listitem_nosubitems">
-                <span class="mm-lang-title">Ngôn ngữ</span>
-                <?php /* Render sẵn để Mmenu sao chép cả link. Trước đây JS chèn
-                    link sau khi plugin clone nav nên drawer nhìn thấy bị rỗng. */ ?>
-                <span class="mm-lang-links" data-gt-source="vi">
-                    <a href="#" data-gtlang="vi">VI</a>
-                    <a href="#" data-gtlang="en">EN</a>
-                    <a href="#" data-gtlang="zh-CN">中文</a>
-                    <a href="#" data-gtlang="ko">한국어</a>
-                    <a href="#" data-gtlang="ja">日本語</a>
-                </span>
-            </li>
     </ul>
 </nav>
-<script>
-(function(){
-    function currentLanguage(){
-        return (document.cookie.match(/(?:^|;\s*)googtrans=\/[a-zA-Z-]+\/([a-zA-Z-]+)/) || [])[1] || 'vi';
-    }
-    function refreshLanguageLinks(){
-        var current = currentLanguage();
-        document.querySelectorAll('.mm-lang-links [data-gtlang]').forEach(function(link){
-            var active = link.getAttribute('data-gtlang') === current;
-            link.classList.toggle('active', active);
-            if(active) link.setAttribute('aria-current', 'true');
-            else link.removeAttribute('aria-current');
-        });
-    }
-    function setTranslateCookie(language, source){
-        var host = location.hostname;
-        var value = '/' + source + '/' + language;
-        var expires = language === source ? ';expires=Thu, 01 Jan 1970 00:00:00 GMT' : ';max-age=31536000';
-        document.cookie = 'googtrans=' + (language === source ? '' : value) + ';path=/' + expires + ';SameSite=Lax';
-        if(host.indexOf('.') !== -1 && !/^\d+\.\d+\.\d+\.\d+$/.test(host)) {
-            document.cookie = 'googtrans=' + (language === source ? '' : value) + ';path=/;domain=.' + host + expires + ';SameSite=Lax';
-        }
-    }
-    document.addEventListener('DOMContentLoaded', refreshLanguageLinks);
-    document.addEventListener('click', function(event){
-        var link = event.target.closest && event.target.closest('.mm-lang-links [data-gtlang]');
-        if(!link) return;
-        event.preventDefault();
-        var sourceBox = link.closest('.mm-lang-links');
-        var source = sourceBox ? sourceBox.getAttribute('data-gt-source') || 'vi' : 'vi';
-        setTranslateCookie(link.getAttribute('data-gtlang'), source);
-        location.reload();
-    });
-})();
-</script>

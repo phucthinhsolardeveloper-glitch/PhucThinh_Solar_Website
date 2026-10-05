@@ -170,11 +170,7 @@
                                     <td class="align-middle">
 									<a<?=$canEdit ? ' href="'.$linkEdit.$linkID.'&id='.$items[$i]['id'].'"' : ''?> title="<?=$items[$i]['namevi']?>">
                                             <span class="pts-admin-product-thumb">
-                                                <?php if(!empty($config['product'][$type]['thumb'])){ ?>
-                                                    <?=$func->getImage(['class' => 'rounded img-preview pts-admin-product-thumb-base', 'sizes' => $config['product'][$type]['thumb'], 'upload' => UPLOAD_PRODUCT_L, 'image' => $items[$i]['photo'], 'alt' => $items[$i]['namevi']])?>
-                                                <?php }else{ ?>
-                                                    <?=$func->getImage(['class' => 'rounded img-preview pts-admin-product-thumb-base', 'size-error' => '50x50x1', 'upload' => UPLOAD_PRODUCT_L, 'image' => $items[$i]['photo'], 'alt' => $items[$i]['namevi']])?>
-                                                <?php } ?>
+                                                <?=$func->getImage(['class' => 'rounded img-preview pts-admin-product-thumb-base', 'sizes' => '70x55x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $items[$i]['photo'], 'alt' => $items[$i]['namevi']])?>
                                                 <?php $adminPromoFrame = productPromoFrameForCard($items[$i], $cache); if(!empty($adminPromoFrame)) { ?>
                                                     <?=$func->getImage(['isLazy' => false, 'class' => 'pts-admin-product-thumb-overlay', 'sizes' => '70x55x2', 'upload' => $adminPromoFrame['upload'], 'image' => $adminPromoFrame['photo'], 'alt' => ''])?>
                                                 <?php } ?>

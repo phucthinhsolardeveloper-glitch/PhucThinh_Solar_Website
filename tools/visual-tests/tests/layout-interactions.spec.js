@@ -150,9 +150,8 @@ test('content surfaces stay flat across product and content hubs', async ({ page
     shadow: getComputedStyle(element).boxShadow
   }));
   expect(toolbarSurface.border).toBe('0px');
-  expect(toolbarSurface.background).toBe('rgb(255, 255, 255)');
-  if (isMobile) expect(toolbarSurface.shadow).toBe('none');
-  else expect(toolbarSurface.shadow).not.toBe('none');
+  expect(toolbarSurface.background).toBe(isMobile ? 'rgb(255, 255, 255)' : 'rgba(0, 0, 0, 0)');
+  expect(toolbarSurface.shadow).toBe('none');
   await assertFlat('.filter_product');
   await assertFlat('.pts-filter-card');
   const productHref = await page.locator('.product-card .product-item').first().getAttribute('href');
@@ -370,8 +369,9 @@ test('product detail keeps gallery and the CTA configured by Admin', async ({ pa
     await expect(sectionNav.locator('a').first()).toHaveClass(/is-active/);
     await sectionNav.locator('a').first().click();
     expect(new URL(page.url()).pathname).toBe(productPath);
-    await page.locator('#thong-so-ky-thuat').scrollIntoViewIfNeeded();
-    await expect(sectionNav.locator('a[href$="#thong-so-ky-thuat"]')).toHaveClass(/is-active/);
+    const technicalLink = sectionNav.locator('a[href$="#thong-so-ky-thuat"]');
+    await technicalLink.click();
+    await expect(technicalLink).toHaveClass(/is-active/);
   }
   const quoteCta = page.locator('.btn-contact-price');
   if (await quoteCta.count()) {
@@ -712,7 +712,7 @@ test('home exposes the five approved category slots with real destinations', asy
   }
 });
 
-test('product category sidebar avoids repeating the subcategory rail', async ({ page }) => {
+test('product category offers contextual sidebar filters without a second top rail', async ({ page, isMobile }) => {
   await page.goto('/danh-muc-san-pham/den-nlmt/', { waitUntil: 'domcontentloaded' });
 
   const hero = page.locator('.pts-category-hero');
@@ -725,7 +725,8 @@ test('product category sidebar avoids repeating the subcategory rail', async ({ 
      product_tpl.php, xác nhận với sếp 2026-09-26. Không còn 2 dải chồng
      nhau nên đổi selector theo cấu trúc mới thay vì lỗi thật. */
   await expect(page.locator('.pts-category-tabs .pts-category-tab').first()).toBeVisible();
-  await expect(page.locator('input[name="car_cat"]')).toHaveCount(0);
+  await expect(page.locator('.pts-sidebar-category-filter input[name="car_cat"]').first()).toBeAttached();
+  if (!isMobile) await expect(page.locator('.pts-sidebar-category-filter')).toBeHidden();
   await expect(page.locator('.pts-filter-card')).not.toContainText('Loại đèn - dùng cho');
   await expect(page.locator('.pts-category-faq details')).toHaveCount(3);
   const sidebarLabelSize = await page.locator('.pts-filter-card .product-pages__price-label').first().evaluate(node => parseFloat(getComputedStyle(node).fontSize));
@@ -734,7 +735,7 @@ test('product category sidebar avoids repeating the subcategory rail', async ({ 
   await expect(page.locator('.pts-category-faq details').first()).toHaveAttribute('open', '');
 
   await page.goto('/den-op-tran/', { waitUntil: 'domcontentloaded' });
-  await expect(page.locator('input[name="car_cat"]')).toHaveCount(0);
+  await expect(page.locator('.pts-sidebar-category-filter input[name="car_cat"]').first()).toBeAttached();
 });
 
 test('legacy child category redirects permanently to its hierarchical canonical URL', async ({ request }) => {

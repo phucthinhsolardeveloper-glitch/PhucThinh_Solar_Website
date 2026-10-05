@@ -49,7 +49,9 @@
 
             if(!file_exists($filename) || !is_readable($filename)) return false;
 
-            $data = file_get_contents($filename);
+            /* Cache có thể bị xoá bởi request khác sau khi kiểm tra file. */
+            $data = @file_get_contents($filename);
+            if($data === false) return false;
             $data = @unserialize($data);
 
             if(!$data)

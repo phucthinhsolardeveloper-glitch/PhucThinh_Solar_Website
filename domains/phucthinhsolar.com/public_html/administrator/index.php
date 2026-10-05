@@ -42,6 +42,7 @@
 	   và trước đây thiếu dữ liệu nên sinh hàng loạt "Undefined variable:
 	   dashboardNewOrders / dashboardNewConsults / ...". */
 	if((empty($com) || $com === 'index') && !empty($template) && $template === 'index' && is_file(SOURCES.'index.php')) require_once SOURCES.'index.php';
+	$adminLeanAssetScreen = in_array((string)($template ?? ''), array('index', 'product/man/mans', 'news/man/mans', 'order/man/mans'), true);
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -56,9 +57,7 @@
 	<?php include TEMPLATE.LAYOUT."css.php"; ?>
 </head>
 <body class="sidebar-mini hold-transition text-sm <?=(isset($_SESSION[$loginAdmin]['active']) && $_SESSION[$loginAdmin]['active']==true)?'layout-fixed':'login-page'?>">
-    <!-- Loader -->
 	<?php $template = isset($template) ? $template : ''; /* Source nào chỉ redirect hoặc stream file rồi exit sẽ không đặt biến này. */ ?>
-	<?php if($template === 'index' || $template === 'user/login') include TEMPLATE.LAYOUT."loader.php"; ?>
 
     <!-- Wrapper -->
 	<?php if(isset($_SESSION[$loginAdmin]['active']) && ($_SESSION[$loginAdmin]['active'] == true)) { ?>

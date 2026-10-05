@@ -48,7 +48,6 @@
     $css->set("simplenotify/simple-notify.css");
     $css->set("fileuploader/font-fileuploader.css");
     $css->set("fileuploader/jquery.fileuploader.min.css");
-    $css->set("css/jssor.css");
     $css->set("fancybox3/jquery.fancybox.css");
     $css->set("fancybox3/jquery.fancybox.style.css");
     // $css->set("css/account.css");

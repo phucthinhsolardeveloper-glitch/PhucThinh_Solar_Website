@@ -57,7 +57,7 @@ test('header v3 keeps navigation and search usable', async ({ page, isMobile }, 
   await expect(page.locator('#menu a').filter({ hasText: 'Trang chủ' })).toHaveCount(0);
   await expect(page.locator('a[href="gioi-thieu/"]').filter({ hasText: 'Giới thiệu' }).first()).toBeAttached();
   const expectedPrimaryNavigation = ['Danh mục sản phẩm', 'Giới thiệu', 'Giải pháp', 'Dự án', 'Kiến thức', 'Hợp tác'];
-  const primaryNavigation = await header.locator('.pts-header-nav .menu > div > ul > li > a').evaluateAll(links => links.map(link => link.childNodes[link.childNodes.length - 1].textContent.trim()));
+  const primaryNavigation = await header.locator('.pts-header-nav .menu > div > ul > li > a, .pts-header-nav .menu > div > ul > li > button').evaluateAll(links => links.map(link => link.textContent.trim()));
   expect(primaryNavigation).toEqual(expectedPrimaryNavigation);
   await expect(header.locator('.menu-knowledge > ul a[href="/tin-tuc/"]').first()).toContainText('Tất cả bài viết');
   await expect(header.locator('.menu-cooperation > ul a[href="dai-ly#dang-ky-dai-ly"]')).toContainText('Đăng ký đại lý');
@@ -176,7 +176,7 @@ test('desktop logo never collides with the category navigation', async ({ page, 
     await page.setViewportSize({ width, height: 900 });
     layouts.push(await page.evaluate(() => {
       const logo = document.querySelector('#headerscroll .logo-header img').getBoundingClientRect();
-      const category = document.querySelector('#headerscroll .menu-catalog > a').getBoundingClientRect();
+      const category = document.querySelector('#headerscroll .menu-catalog-trigger').getBoundingClientRect();
       const items = document.querySelectorAll('#headerscroll .pts-header-nav .menu > div > ul > li');
       const lastItem = items[items.length - 1].getBoundingClientRect();
       const actions = document.querySelector('#headerscroll .pts-header-actions').getBoundingClientRect();
@@ -215,4 +215,269 @@ test('các nhóm menu gộp trỏ đến đúng landing và section hiện hữu
 
   await page.goto('/tin-tuc/', { waitUntil: 'domcontentloaded' });
   await expect(page.locator('.pts-news-hub h1')).toHaveText('Kiến thức');
+});
+
+test('desktop product mega-menu follows the selected 4/4/2 layout and supports search', async ({ page, isMobile }, testInfo) => {
+  test.skip(isMobile, 'Desktop product catalogue overlay.');
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await dismissEntrancePopup(page);
+
+  const trigger = page.locator('.menu-catalog-trigger');
+  const overlay = page.locator('#ptsCatalogOverlay');
+  await trigger.click();
+  await expect(trigger).toHaveAttribute('aria-expanded', 'true');
+  await expect(overlay.getByRole('dialog')).toBeVisible();
+  await expect(overlay.locator('.pts-catalog-group')).toHaveCount(3);
+  for (const [index, count] of [[0, 4], [1, 4], [2, 2]]) {
+    await expect(overlay.locator('.pts-catalog-group').nth(index).locator('.pts-catalog-list-item')).toHaveCount(count);
+  }
+  await expect(overlay.locator('.pts-catalog-sublist:visible')).toHaveCount(0);
+  await expect(overlay.locator('.pts-catalog-help-card')).toBeVisible();
+  await expect(overlay.locator('.pts-catalog-footer a[href="/san-pham/"]')).toBeVisible();
+  await expect(overlay.locator('.pts-catalog-footer-advice')).toBeVisible();
+  const categoryPaths = await overlay.locator('.pts-catalog-list-link').evaluateAll(links => links.map(link => link.getAttribute('href')));
+  expect(new Set(categoryPaths).size).toBe(10);
+  for (const path of categoryPaths) {
+    const response = await page.request.get(new URL(path, page.url()).href);
+    expect(response.ok(), path).toBeTruthy();
+  }
+  await overlay.locator('.pts-catalog-panel').screenshot({ path: testInfo.outputPath('desktop-catalog-1440.png'), scale: 'css' });
+  await overlay.locator('a[href="/danh-muc-san-pham/den-san-vuon/"]').hover();
+  await overlay.locator('.pts-catalog-panel').screenshot({ path: testInfo.outputPath('desktop-catalog-garden-hover-1440.png'), scale: 'css' });
+
+  await overlay.locator('#ptsCatalogKeyword').fill('Hybrid');
+  await expect(overlay.locator('.pts-catalog-list-item:visible')).toHaveCount(1);
+  await expect(overlay.locator('.pts-catalog-group:visible')).toHaveCount(1);
+  await page.keyboard.press('Escape');
+  await expect(overlay).toBeHidden();
+  await expect(trigger).toHaveAttribute('aria-expanded', 'false');
+  await expect(trigger).toBeFocused();
+});
+
+test('desktop catalogue reveals real child categories on hover and keeps leaf rows plain', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'Desktop category flyout.');
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await dismissEntrancePopup(page);
+  await page.locator('.menu-catalog-trigger').click();
+
+  const overlay = page.locator('#ptsCatalogOverlay');
+  const garden = overlay.locator('.pts-catalog-list-item').filter({ has: page.locator('a[href="/danh-muc-san-pham/den-san-vuon/"]') });
+  await garden.locator('.pts-catalog-list-link').hover();
+  const children = garden.locator('.pts-catalog-sublist');
+  await expect(children).toBeVisible();
+  await expect(children.getByRole('link', { name: 'Đèn trụ cổng' })).toHaveAttribute('href', 'danh-muc-san-pham/den-san-vuon/den-tru-cong/');
+  await children.getByRole('link', { name: 'Đèn trụ cổng' }).hover();
+  await expect(children).toBeVisible();
+  const panel = overlay.locator('.pts-catalog-panel');
+  const geometry = await panel.evaluate(element => {
+    const flyout = element.querySelector('.pts-catalog-list-item:hover > .pts-catalog-sublist').getBoundingClientRect();
+    const bounds = element.getBoundingClientRect();
+    return { left: flyout.left, right: flyout.right, top: flyout.top, bottom: flyout.bottom, panelLeft: bounds.left, panelRight: bounds.right, panelTop: bounds.top, panelBottom: bounds.bottom, overflow: element.scrollWidth - element.clientWidth };
+  });
+  expect(geometry.left).toBeGreaterThanOrEqual(geometry.panelLeft);
+  expect(geometry.right).toBeLessThanOrEqual(geometry.panelRight);
+  expect(geometry.top).toBeGreaterThanOrEqual(geometry.panelTop);
+  expect(geometry.bottom).toBeLessThanOrEqual(geometry.panelBottom);
+  expect(geometry.overflow).toBeLessThanOrEqual(1);
+
+  await overlay.locator('#ptsCatalogKeyword').hover();
+  await garden.locator('.pts-catalog-list-link').focus();
+  await expect(children).toBeVisible();
+  await page.keyboard.press('Tab');
+  await expect(children.getByRole('link', { name: 'Đèn trụ cổng' })).toBeFocused();
+
+  await overlay.locator('#ptsCatalogKeyword').focus();
+  for (const row of await overlay.locator('.pts-catalog-list-item').all()) {
+    await overlay.locator('#ptsCatalogTitle').hover();
+    await row.locator('.pts-catalog-list-link').hover();
+    const flyout = row.locator('.pts-catalog-sublist');
+    if (await row.locator('.pts-catalog-row-arrow').count()) {
+      await expect(flyout).toBeVisible();
+      const position = await flyout.evaluate(element => {
+        const flyoutBounds = element.getBoundingClientRect();
+        const panelBounds = element.closest('.pts-catalog-panel').getBoundingClientRect();
+        return { left: flyoutBounds.left, right: flyoutBounds.right, top: flyoutBounds.top, bottom: flyoutBounds.bottom, panelLeft: panelBounds.left, panelRight: panelBounds.right, panelTop: panelBounds.top, panelBottom: panelBounds.bottom };
+      });
+      expect(position.left).toBeGreaterThanOrEqual(position.panelLeft);
+      expect(position.right).toBeLessThanOrEqual(position.panelRight);
+      expect(position.top).toBeGreaterThanOrEqual(position.panelTop);
+      expect(position.bottom).toBeLessThanOrEqual(position.panelBottom);
+    } else {
+      await expect(flyout).toHaveCount(0);
+    }
+  }
+
+  const fan = overlay.locator('.pts-catalog-list-item').filter({ hasText: 'Quạt năng lượng mặt trời' });
+  await expect(fan.locator('.pts-catalog-row-arrow')).toHaveCount(0);
+  await expect(fan.locator('.pts-catalog-sublist')).toHaveCount(0);
+});
+
+test('desktop catalogue advice card opens the existing consultation form', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'Desktop catalogue overlay.');
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await dismissEntrancePopup(page);
+  await page.locator('.menu-catalog-trigger').click();
+  await page.locator('#ptsCatalogOverlay .pts-catalog-help-card').click();
+  await expect(page.locator('#ptsContactModal')).toBeVisible();
+  await expect(page.locator('#ptsContactModal form')).toBeVisible();
+});
+
+test('desktop product mega-menu opens on hover without flicker and remains keyboard accessible', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'Desktop hover interaction.');
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await dismissEntrancePopup(page);
+
+  const trigger = page.locator('.menu-catalog-trigger');
+  const overlay = page.locator('#ptsCatalogOverlay');
+  const panel = overlay.locator('.pts-catalog-panel');
+  const search = overlay.locator('#ptsCatalogKeyword');
+
+  const triggerXBefore = await trigger.evaluate(element => element.getBoundingClientRect().x);
+  const bodyStylesBefore = await page.locator('body').evaluate(element => ({overflow: element.style.overflow, paddingRight: element.style.paddingRight}));
+  await trigger.hover();
+  await expect(trigger).toHaveAttribute('aria-expanded', 'true');
+  await expect(overlay.getByRole('dialog')).toBeVisible();
+  await expect(search).not.toBeFocused();
+  const triggerXAfter = await trigger.evaluate(element => element.getBoundingClientRect().x);
+  expect(Math.abs(triggerXAfter - triggerXBefore)).toBeLessThan(1);
+
+  const triggerBox = await trigger.boundingBox();
+  const panelBox = await panel.boundingBox();
+  expect(triggerBox).toBeTruthy();
+  expect(panelBox).toBeTruthy();
+  const startX = triggerBox.x + triggerBox.width / 2;
+  const startY = triggerBox.y + triggerBox.height / 2;
+  const endX = panelBox.x + 150;
+  const endY = panelBox.y + 30;
+  await page.mouse.move(startX, startY);
+  for (let step = 1; step <= 8; step += 1) {
+    await page.mouse.move(startX + (endX - startX) * step / 8, startY + (endY - startY) * step / 8);
+    await page.waitForTimeout(35);
+  }
+  await expect(overlay.getByRole('dialog')).toBeVisible();
+
+  await page.mouse.move(12, 700);
+  await expect(overlay).toBeHidden({ timeout: 1200 });
+  await expect(trigger).toHaveAttribute('aria-expanded', 'false');
+  await expect.poll(() => page.locator('body').evaluate(element => ({overflow: element.style.overflow, paddingRight: element.style.paddingRight}))).toEqual(bodyStylesBefore);
+
+  /* Click after hover pins and focuses; the next click toggles closed. */
+  await trigger.click();
+  await expect(overlay.getByRole('dialog')).toBeVisible();
+  await expect(search).toBeFocused();
+  const closingState = await trigger.evaluate(element => {
+    element.click();
+    const menu = document.querySelector('#ptsCatalogOverlay');
+    return { hidden: menu.hidden, open: menu.classList.contains('is-open') };
+  });
+  expect(closingState).toEqual({ hidden: false, open: false });
+  await expect(overlay).toBeHidden();
+
+  await trigger.focus();
+  await page.keyboard.press('Enter');
+  await expect(overlay.getByRole('dialog')).toBeVisible();
+  await expect(search).toBeFocused();
+  await page.keyboard.press('Escape');
+  await expect(overlay).toBeHidden();
+  await expect(trigger).toBeFocused();
+});
+
+test('mobile drawer keeps product links and submits product search', async ({ page, isMobile }, testInfo) => {
+  test.skip(!isMobile, 'Mobile drawer.');
+  await page.setViewportSize({ width: 390, height: 895 });
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await dismissEntrancePopup(page);
+  await page.locator('#hamburger').click();
+
+  const drawer = page.locator('#menu');
+  const search = drawer.locator('#ptsMobileMenuSearch');
+  await expect(search).toBeVisible();
+  await expect(drawer.getByRole('link', { name: 'Danh mục sản phẩm' })).toBeVisible();
+  const productRoot = drawer.locator('.mm-panel_opened > .mm-listview > .mmenu-product-root');
+  await expect(productRoot).toHaveClass(/mm-listitem_opened/);
+  await expect(productRoot.locator('.pts-mobile-product-category').first()).toBeVisible();
+  const firstCategory = productRoot.locator('.pts-mobile-product-category').first();
+  await expect(firstCategory).not.toHaveClass(/mm-listitem_opened/);
+  await expect(drawer.locator('.pts-mmenu-advice')).toBeVisible();
+  await expect(drawer.locator('.mm-lang')).toHaveCount(0);
+  await expect(drawer.locator('.menu-about')).toBeVisible();
+  await drawer.screenshot({ path: testInfo.outputPath('mobile-drawer-390x895.png'), scale: 'css' });
+  await firstCategory.locator(':scope > .mm-listitem__btn').click();
+  await expect(firstCategory).toHaveClass(/mm-listitem_opened/);
+  await firstCategory.locator(':scope > .mm-listitem__btn').click();
+  await expect(firstCategory).not.toHaveClass(/mm-listitem_opened/);
+  await page.setViewportSize({ width: 320, height: 740 });
+  expect(Math.round((await drawer.boundingBox()).width)).toBe(296);
+  await drawer.screenshot({ path: testInfo.outputPath('mobile-drawer-320x740.png'), scale: 'css' });
+  await drawer.locator('.mm-panel_opened').first().evaluate(panel => { panel.scrollTop = panel.scrollHeight; });
+  const adviceBounds = await drawer.locator('.pts-mmenu-advice').boundingBox();
+  const cooperationBounds = await drawer.locator('.menu-cooperation').boundingBox();
+  expect(cooperationBounds.y + cooperationBounds.height).toBeLessThanOrEqual(adviceBounds.y);
+  await page.setViewportSize({ width: 390, height: 895 });
+  await firstCategory.locator(':scope > .mm-listitem__btn').click();
+  await expect(firstCategory).toHaveClass(/mm-listitem_opened/);
+  await page.mouse.click(365, 180);
+  await expect(drawer).not.toHaveClass(/mm-menu_opened/);
+  await page.locator('#hamburger').click();
+  await expect(firstCategory).not.toHaveClass(/mm-listitem_opened/);
+  const closeButton = drawer.locator('.pts-mmenu-close').first();
+  await expect(closeButton).toBeVisible();
+  const closeBounds = await closeButton.boundingBox();
+  const drawerBounds = await drawer.boundingBox();
+  expect(closeBounds.x).toBeGreaterThanOrEqual(drawerBounds.x);
+  expect(closeBounds.x + closeBounds.width).toBeLessThanOrEqual(drawerBounds.x + drawerBounds.width);
+  await closeButton.click();
+  await expect(page.locator('body')).not.toHaveClass(/mm-wrapper_opened/);
+  await expect(drawer).not.toHaveClass(/mm-menu_opened/);
+  await page.locator('#hamburger').click();
+  await expect(search).toBeVisible();
+  await productRoot.locator(':scope > .mm-listitem__btn').click();
+  await expect(productRoot).not.toHaveClass(/mm-listitem_opened/);
+  await productRoot.locator(':scope > .mm-listitem__btn').click();
+  await expect(productRoot).toHaveClass(/mm-listitem_opened/);
+  await drawer.locator('.pts-mmenu-close').first().click();
+  await expect(page.locator('body')).not.toHaveClass(/mm-wrapper_opened/);
+  await expect(drawer).not.toHaveClass(/mm-menu_opened/);
+  await page.locator('#hamburger').click();
+  await expect(search).toBeVisible();
+  await search.fill('đèn đường');
+  await Promise.all([
+    page.waitForURL(/tim-kiem\?keyword=/),
+    search.press('Enter')
+  ]);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1)).toBeTruthy();
+});
+
+test('mobile category label opens its landing instead of only toggling the accordion', async ({ page, isMobile }) => {
+  test.skip(!isMobile, 'Mobile drawer.');
+  await page.setViewportSize({ width: 390, height: 895 });
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await dismissEntrancePopup(page);
+  await page.locator('#hamburger').click();
+  const category = page.locator('#menu .pts-mobile-product-category').first();
+  const href = await category.locator(':scope > .mm-listitem__text').getAttribute('href');
+  expect(href).toMatch(/^\/danh-muc-san-pham\//);
+  await Promise.all([
+    page.waitForURL(url => url.pathname === href),
+    category.locator(':scope > .mm-listitem__text').click()
+  ]);
+  await expect(page.locator('h1').first()).toBeVisible();
+});
+
+test('tablet drawer uses the same compact accordion and keeps its advice CTA visible', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'Tablet width in desktop browser context.');
+  await page.setViewportSize({ width: 768, height: 900 });
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await dismissEntrancePopup(page);
+  await page.locator('#hamburger').click();
+  const drawer = page.locator('#menu');
+  expect(Math.round((await drawer.boundingBox()).width)).toBe(360);
+  await expect(drawer.locator('.mmenu-product-root')).toHaveClass(/mm-listitem_opened/);
+  await expect(drawer.locator('.pts-mobile-product-category').first()).not.toHaveClass(/mm-listitem_opened/);
+  await expect(drawer.locator('.pts-mmenu-advice')).toBeVisible();
+  await expect(drawer.locator('.mm-lang')).toHaveCount(0);
 });

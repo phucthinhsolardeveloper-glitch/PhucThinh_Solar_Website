@@ -72,3 +72,46 @@ $headerQuickCategories = !empty($splist) ? array_slice($splist, 0, 5) : array();
         </div>
     </div>
 </header>
+
+<div class="pts-catalog-overlay" id="ptsCatalogOverlay" hidden>
+    <button class="pts-catalog-scrim" type="button" aria-label="Đóng danh mục sản phẩm"></button>
+    <section class="pts-catalog-panel" role="dialog" aria-modal="true" aria-labelledby="ptsCatalogTitle">
+        <div class="pts-catalog-heading">
+            <div><h2 id="ptsCatalogTitle">Khám phá sản phẩm</h2><p>Chọn thiết bị phù hợp với nhu cầu của bạn</p></div>
+            <form class="pts-catalog-search" role="search" onsubmit="onSearch('ptsCatalogKeyword'); return false;">
+                <label class="hdr-sr-only" for="ptsCatalogKeyword">Tìm sản phẩm, mã sản phẩm</label>
+                <i class="fas fa-search" aria-hidden="true"></i>
+                <input type="search" id="ptsCatalogKeyword" placeholder="Tìm sản phẩm, mã sản phẩm..." autocomplete="off">
+            </form>
+            <button class="pts-catalog-close" type="button" aria-label="Đóng danh mục sản phẩm"><i class="fas fa-times" aria-hidden="true"></i></button>
+        </div>
+        <div class="pts-catalog-columns">
+            <?php foreach($menuCatalogGroups as $menuCatalogGroupKey => $menuCatalogGroup) { if(!$menuCatalogGroup['items']) continue; ?>
+            <section class="pts-catalog-group" aria-labelledby="ptsCatalogGroup-<?=$menuCatalogGroupKey?>">
+                <h3 id="ptsCatalogGroup-<?=$menuCatalogGroupKey?>"><i class="fas <?=$menuCatalogGroup['icon']?>" aria-hidden="true"></i><span><?=$menuCatalogEscape($menuCatalogGroup['title'])?><?php if($menuCatalogGroup['subtitle'] !== '') { ?><small><?=$menuCatalogEscape($menuCatalogGroup['subtitle'])?></small><?php } ?></span></h3>
+                <ul>
+                    <?php foreach($menuCatalogGroup['items'] as $menuCatalogItem) { ?>
+                    <li class="pts-catalog-list-item" data-search="<?=$menuCatalogEscape($menuCatalogItem['search'])?>">
+                        <a class="pts-catalog-list-link" href="<?=$menuCatalogEscape($menuCatalogItem['href'])?>"><i class="fas <?=$menuCatalogEscape($menuCatalogItem['icon'])?>" aria-hidden="true"></i><span><?=$menuCatalogEscape($menuCatalogItem['label'])?></span><?php if($menuCatalogItem['children']) { ?><i class="fas fa-angle-right pts-catalog-row-arrow" aria-hidden="true"></i><?php } ?></a>
+                        <?php if($menuCatalogItem['children']) { ?>
+                        <ul class="pts-catalog-sublist" aria-label="Danh mục con: <?=$menuCatalogEscape($menuCatalogItem['label'])?>">
+                            <?php foreach($menuCatalogItem['children'] as $menuCatalogChild) { ?>
+                            <li><a href="<?=$menuCatalogEscape($menuCatalogChild['href'])?>"><?=$menuCatalogEscape($menuCatalogChild['label'])?></a></li>
+                            <?php } ?>
+                        </ul>
+                        <?php } ?>
+                    </li>
+                    <?php } ?>
+                </ul>
+                <?php if($menuCatalogGroupKey === 'devices') { ?>
+                <a class="pts-catalog-help-card" href="#ptsContactModal" data-toggle="modal" data-target="#ptsContactModal"><i class="fas fa-headset" aria-hidden="true"></i><span><strong>Cần hỗ trợ lựa chọn?</strong><small>Nhận tư vấn <i class="fas fa-arrow-right" aria-hidden="true"></i></small></span></a>
+                <?php } ?>
+            </section>
+            <?php } ?>
+        </div>
+        <div class="pts-catalog-footer">
+            <a href="/san-pham/">Xem tất cả sản phẩm <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+            <a class="pts-catalog-footer-advice" href="#ptsContactModal" data-toggle="modal" data-target="#ptsContactModal">Tư vấn chọn sản phẩm <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+        </div>
+    </section>
+</div>

@@ -32,9 +32,13 @@
 
 <!-- Js Files -->
 <script src="assets/js/jquery.min.js"></script>
+<?php if(!empty($_SESSION[$loginAdmin]['active'])) { ?>
+<?php if(!$adminLeanAssetScreen || $template === 'order/man/mans') { ?>
 <script src="assets/js/moment.min.js"></script>
+<?php } ?>
 <script src="assets/confirm/confirm.js"></script>
 <script src="assets/select2/select2.full.js"></script>
+<?php if(!$adminLeanAssetScreen) { ?>
 <script src="assets/sumoselect/jquery.sumoselect.js"></script>
 <script src="assets/datetimepicker/php-date-formatter.min.js"></script>
 <script src="assets/datetimepicker/jquery.mousewheel.js"></script>
@@ -44,11 +48,19 @@
 <script src="assets/js/priceFormat.js"></script>
 <script src="assets/jscolor/jscolor.js"></script>
 <script src="assets/filer/jquery.filer.js"></script>
+<?php } ?>
+<?php if($template === 'order/man/mans' && $adminLeanAssetScreen) { ?>
+<script src="assets/daterangepicker/daterangepicker.js"></script>
+<script src="assets/rangeSlider/ion.rangeSlider.js"></script>
+<?php } ?>
 <script src="assets/holdon/HoldOn.js"></script>
+<?php if(!$adminLeanAssetScreen) { ?>
 <script src="assets/sortable/Sortable.js"></script>
+<?php } ?>
 <script src="assets/js/bootstrap.js"></script>
 <script src="assets/js/adminlte.js"></script>
 <script src="assets/js/sidebar-state.js?v=<?=@filemtime(ROOT.'administrator/assets/js/sidebar-state.js')?>"></script>
+<?php } ?>
 <?php
 	$ckeditorTemplates = array(
 		'news/cat/cat_add', 'news/item/item_add', 'news/list/list_add', 'news/man/man_add', 'news/sub/sub_add',
@@ -64,7 +76,9 @@
 <script src="assets/apexcharts/apexcharts.min.js"></script>
 <?php } ?>
 <script src="assets/simplenotify/simple-notify.js"></script>
+<?php if(!empty($_SESSION[$loginAdmin]['active']) && !$adminLeanAssetScreen) { ?>
 <script src="assets/comment/comment.js"></script>
+<?php } ?>
 <script src="assets/js/apps.js?v=<?=@filemtime(ROOT.'administrator/assets/js/apps.js')?>"></script>
 <script>
 	/* Kết quả Lưu/Xoá... hiện bằng toast thay vì màn "Thông báo" chờ 4.5s trước đây. */

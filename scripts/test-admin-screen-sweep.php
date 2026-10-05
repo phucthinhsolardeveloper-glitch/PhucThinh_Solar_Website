@@ -56,7 +56,9 @@ function httpGet($url, $cookie)
         'method' => 'GET', 'ignore_errors' => true, 'timeout' => 25,
         'header' => "User-Agent: PTS-Admin-Sweep\r\nCookie: ".$cookie
     )));
+    $startedAt = microtime(true);
     $body = @file_get_contents($url, false, $context);
+    $elapsedMs = (microtime(true) - $startedAt) * 1000;
     $headers = isset($http_response_header) ? (array)$http_response_header : array();
     $status = 0;
     $contentType = '';
@@ -65,7 +67,7 @@ function httpGet($url, $cookie)
         if (preg_match('#^HTTP/\S+\s+(\d+)#i', $header, $m)) $status = (int)$m[1];
         if (stripos($header, 'Content-Type:') === 0) $contentType = strtolower(trim(substr($header, 13)));
     }
-    return array('status' => $status, 'body' => (string)$body, 'type' => $contentType);
+    return array('status' => $status, 'body' => (string)$body, 'type' => $contentType, 'elapsed_ms' => $elapsedMs);
 }
 
 /* Tài khoản fixture role=3 để không bị chặn quyền; xoá ở cuối. */
@@ -148,6 +150,7 @@ $warnings = array();
 $empty = array();
 $ok = 0;
 $checked = 0;
+$timings = array();
 
 foreach ($screens as $screen)
 {
@@ -156,6 +159,7 @@ foreach ($screens as $screen)
     $label = $screen['com'].'/'.$screen['act'].($screen['type'] !== '' ? '/'.$screen['type'] : '');
     $response = httpGet($url, $cookie);
     $checked++;
+    if(getenv('PTS_PROFILE_ADMIN') === '1') $timings[] = array('screen' => $label, 'ms' => $response['elapsed_ms'], 'bytes' => strlen($response['body']), 'status' => $response['status']);
 
     if ($response['status'] >= 500 || preg_match('/(Fatal error|Parse error|Uncaught)/i', $response['body']))
     {
@@ -192,6 +196,14 @@ echo "QUÉT MÀN HÌNH ADMIN\n";
 echo str_repeat('=', 78), "\n";
 printf("Đã gọi %d màn hình chỉ-đọc | OK: %d | Lỗi: %d | Cảnh báo: %d | Nghi trống: %d\n\n",
        $checked, $ok, count($errors), count($warnings), count($empty));
+if($timings)
+{
+    usort($timings, function($a, $b) { return $b['ms'] <=> $a['ms']; });
+    echo "15 màn hình chậm nhất (thời gian HTTP nội bộ, chưa tính tải CSS/JS/ảnh):\n";
+    foreach(array_slice($timings, 0, 15) as $timing)
+        printf("  %-46s %6.1f ms %7d bytes HTTP %d\n", $timing['screen'], $timing['ms'], $timing['bytes'], $timing['status']);
+    echo "\n";
+}
 
 if ($errors)
 {

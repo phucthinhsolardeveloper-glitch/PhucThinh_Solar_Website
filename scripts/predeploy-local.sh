@@ -99,6 +99,7 @@ fi
 
 docker cp scripts/test-security-hardening.php "$web_container:/tmp/test-security-hardening.php"
 docker cp scripts/test-admin-readiness.php "$web_container:/tmp/test-admin-readiness.php"
+docker cp scripts/test-admin-asset-bootstrap.php "$web_container:/tmp/test-admin-asset-bootstrap.php"
 docker cp scripts/test-news-hub.php "$web_container:/tmp/test-news-hub.php"
 docker cp scripts/test-product-bulk.php "$web_container:/tmp/test-product-bulk.php"
 docker cp scripts/test-product-project-links.php "$web_container:/tmp/test-product-project-links.php"
@@ -272,6 +273,7 @@ php -l /tmp/test-product-structured-data.php
 php -l /tmp/test-proxy-https.php
 php /tmp/test-security-hardening.php
 php /tmp/test-admin-readiness.php
+php /tmp/test-admin-asset-bootstrap.php
 php /tmp/test-news-hub.php
 php /tmp/test-product-bulk.php
 php /tmp/test-product-project-links.php
@@ -470,8 +472,10 @@ assert_js_shipped /tmp/pts-predeploy-product.html 'assets/fileuploader/jquery.fi
 assert_js_shipped /tmp/pts-predeploy-product.html 'assets/comment/comment.js' 'comment-lists'
 assert_css_shipped /tmp/pts-predeploy-product.html 'assets/owlcarousel2/owl.carousel.css' '.owl-carousel'
 assert_js_shipped /tmp/pts-predeploy-product.html 'assets/owlcarousel2/owl.carousel.js' 'owl.carousel'
-assert_css_shipped /tmp/pts-predeploy-home.html 'assets/css/jssor.css' 'jssorl-009-spin'
-assert_js_shipped /tmp/pts-predeploy-home.html 'assets/js/jssor.slider.min.js' 'JssorArrowNavigator'
+if grep -qF 'id="jssor_1"' /tmp/pts-predeploy-home.html; then
+    echo 'FAIL: Trang chủ còn markup Jssor sau khi đã bỏ thư viện khỏi bundle.' >&2
+    exit 1
+fi
 assert_css_shipped /tmp/pts-predeploy-home.html 'assets/owlcarousel2/owl.carousel.css' '.owl-carousel'
 assert_js_shipped /tmp/pts-predeploy-home.html 'assets/owlcarousel2/owl.carousel.js' 'owl.carousel'
 grep -qF 'name="twitter:title"' /tmp/pts-predeploy-product-filtered.html

@@ -329,23 +329,8 @@ test('URL Hệ khung cũ chuyển về danh mục Tấm pin', async ({ request }
   expect(new URL(response.headers().location).pathname).toBe('/danh-muc-san-pham/tam-pin-nang-luong-mat-troi/');
 });
 
-test('nội dung tư vấn danh mục được cân giữa và tách nhịp khỏi lưới sản phẩm', async ({ page }) => {
+test('danh mục không tự bật khối mô tả dài khi Admin chưa bật', async ({ page }) => {
   await page.goto('/danh-muc-san-pham/pin-luu-tru/', { waitUntil: 'domcontentloaded' });
-  const section = page.locator('.pts-category-content');
-  const inner = section.locator('.pts-category-content-inner');
-  await expect(section).toBeVisible();
-  await expect(inner.locator('.pts-desc-subtitle').first()).toBeVisible();
-
-  const layout = await inner.evaluate(element => {
-    const innerBox = element.getBoundingClientRect();
-    const sectionBox = element.parentElement.getBoundingClientRect();
-    return {
-      centerDelta: Math.abs((innerBox.left + innerBox.width / 2) - (sectionBox.left + sectionBox.width / 2)),
-      maxWidth: parseFloat(getComputedStyle(element).maxWidth),
-      background: getComputedStyle(element.parentElement).backgroundColor,
-    };
-  });
-  expect(layout.centerDelta).toBeLessThanOrEqual(1);
-  expect(layout.maxWidth).toBeLessThanOrEqual(980);
-  expect(layout.background).toBe('rgb(244, 247, 251)');
+  await expect(page.locator('.pts-category-content')).toHaveCount(0);
+  await expect(page.locator('.grid-product .product-card').first()).toBeVisible();
 });

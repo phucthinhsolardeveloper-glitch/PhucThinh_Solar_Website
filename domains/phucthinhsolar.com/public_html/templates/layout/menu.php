@@ -4,54 +4,73 @@
         $order_mn['type'][$value_mn['type']] = $value_mn['display_order'];    
     }
  ?>
+<?php
+    $menuCatalogEscape = static function($value) { return htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8'); };
+    $menuCatalogGroups = array(
+        'lighting' => array('title' => 'Chiếu sáng', 'subtitle' => 'Đèn năng lượng mặt trời', 'icon' => 'fa-lightbulb', 'items' => array()),
+        'solar' => array('title' => 'Điện mặt trời', 'subtitle' => '', 'icon' => 'fa-solar-panel', 'items' => array()),
+        'devices' => array('title' => 'Thiết bị ứng dụng', 'subtitle' => '', 'icon' => 'fa-cogs', 'items' => array())
+    );
+    $menuCatalogListsBySlug = array();
+    foreach((array)$splist as $menuCatalogList) {
+        if(!empty($menuCatalogList['slugvi'])) $menuCatalogListsBySlug[$menuCatalogList['slugvi']] = $menuCatalogList;
+    }
+    $menuCatalogSlots = array(
+        array('group'=>'lighting', 'list'=>'den-nlmt', 'cat'=>'den-duong', 'label'=>'Đèn đường năng lượng mặt trời', 'icon'=>'fa-road'),
+        array('group'=>'lighting', 'list'=>'den-nlmt', 'cat'=>'den-pha-nang-luong-mat-troi', 'label'=>'Đèn pha năng lượng mặt trời', 'icon'=>'fa-lightbulb'),
+        array('group'=>'lighting', 'list'=>'den-san-vuon', 'label'=>'Đèn sân vườn', 'icon'=>'fa-seedling'),
+        array('group'=>'lighting', 'list'=>'den-nlmt', 'cat'=>'den-op-tran', 'label'=>'Đèn ốp trần', 'icon'=>'fa-circle-notch'),
+        array('group'=>'solar', 'list'=>'tam-pin-nang-luong-mat-troi', 'label'=>'Tấm pin năng lượng mặt trời', 'icon'=>'fa-solar-panel'),
+        array('group'=>'solar', 'list'=>'bien-tan-inverter', 'label'=>'Biến tần / Inverter', 'icon'=>'fa-bolt'),
+        array('group'=>'solar', 'list'=>'pin-luu-tru', 'label'=>'Pin lưu trữ', 'icon'=>'fa-car-battery'),
+        array('group'=>'solar', 'list'=>'thiet-bi-dien-nang-luong-mat-troi', 'label'=>'Thiết bị & phụ kiện', 'icon'=>'fa-cogs'),
+        array('group'=>'devices', 'list'=>'bien-tan-bom', 'label'=>'Bơm nước năng lượng mặt trời', 'icon'=>'fa-water'),
+        array('group'=>'devices', 'list'=>'quat-nang-luong-mat-troi', 'label'=>'Quạt năng lượng mặt trời', 'icon'=>'fa-fan')
+    );
+    foreach($menuCatalogSlots as $menuCatalogSlot) {
+        if(empty($menuCatalogListsBySlug[$menuCatalogSlot['list']])) continue;
+        $menuCatalogList = $menuCatalogListsBySlug[$menuCatalogSlot['list']];
+        $menuCatalogHref = '/danh-muc-san-pham/'.$menuCatalogList[$sluglang].'/';
+        $menuCatalogSearch = $menuCatalogSlot['label'];
+        $menuCatalogChildren = array();
+        if(!empty($menuCatalogSlot['cat'])) {
+            $menuCatalogHref = '';
+            foreach((array)(isset($productMenuCats[(int)$menuCatalogList['id']]) ? $productMenuCats[(int)$menuCatalogList['id']] : array()) as $menuCatalogCat) {
+                if(isset($menuCatalogCat['slugvi']) && $menuCatalogCat['slugvi'] === $menuCatalogSlot['cat']) {
+                    $menuCatalogHref = publicProductCategoryPath($menuCatalogCat, 'cat', $lang);
+                    $menuCatalogSearch .= ' '.$menuCatalogCat['name'.$lang];
+                    foreach((array)(isset($productMenuItems[(int)$menuCatalogCat['id']]) ? $productMenuItems[(int)$menuCatalogCat['id']] : array()) as $menuCatalogChild) {
+                        $menuCatalogChildren[] = array('label' => $menuCatalogChild['name'.$lang], 'href' => publicProductCategoryPath($menuCatalogChild, 'item', $lang));
+                        $menuCatalogSearch .= ' '.$menuCatalogChild['name'.$lang];
+                    }
+                    break;
+                }
+            }
+            if($menuCatalogHref === '') continue;
+        } else {
+            $menuCatalogSearch .= ' '.$menuCatalogList['name'.$lang];
+            foreach((array)(isset($productMenuCats[(int)$menuCatalogList['id']]) ? $productMenuCats[(int)$menuCatalogList['id']] : array()) as $menuCatalogCat) {
+                $menuCatalogSearch .= ' '.$menuCatalogCat['name'.$lang];
+                $menuCatalogChildren[] = array('label' => $menuCatalogCat['name'.$lang], 'href' => publicProductCategoryPath($menuCatalogCat, 'cat', $lang));
+            }
+        }
+        $menuCatalogGroups[$menuCatalogSlot['group']]['items'][] = array(
+            'label' => $menuCatalogSlot['label'],
+            'href' => $menuCatalogHref,
+            'icon' => $menuCatalogSlot['icon'],
+            'search' => $menuCatalogSearch,
+            'children' => $menuCatalogChildren
+        );
+    }
+?>
 <div class="menu">
     <div class="">
         <ul class="d-flex align-items-center justify-content-between">
             
             <li class="menu-catalog">
-                <a class="has-child <?php if($com=='san-pham') echo 'active'; ?> transition" href="/san-pham/" title="Danh mục sản phẩm"><i class="fas fa-bars"></i> Danh mục sản phẩm</a>
-                <?php if(count($splist)) { ?>
-                    <ul>
-                        <li><a class="transition" title="Xem tất cả sản phẩm" href="/san-pham/">Xem tất cả sản phẩm</a></li>
-                        <?php foreach($splist as $klist => $vlist) {
-                            $spcat = isset($productMenuCats[(int)$vlist['id']]) ? $productMenuCats[(int)$vlist['id']] : array(); ?>
-                            <li>
-                                <a class="<?php if(!empty($spcat)) echo 'has-child '; ?>transition" title="<?=$vlist['name'.$lang]?>" href="/danh-muc-san-pham/<?=$vlist[$sluglang]?>/">
-                                    <?=$vlist['name'.$lang]?>
-                                </a>
-                                <?php if(!empty($spcat)) { ?>
-                                    <ul>
-                                        <?php foreach($spcat as $kcat => $vcat) {
-                                            $spitem = isset($productMenuItems[(int)$vcat['id']]) ? $productMenuItems[(int)$vcat['id']] : array(); ?>
-                                            <li>
-                                                <a class="<?php if(!empty($spitem)) echo 'has-child '; ?>transition" title="<?=$vcat['name'.$lang]?>" href="<?=publicProductCategoryPath($vcat,'cat',$lang)?>"><?=$vcat['name'.$lang]?></a>
-                                                <?php if(!empty($spitem)) { ?>
-                                                    <ul>
-                                                        <?php foreach($spitem as $kitem => $vitem) {
-                                                            $spsub = isset($productMenuSubs[(int)$vitem['id']]) ? $productMenuSubs[(int)$vitem['id']] : array(); ?>
-                                                            <li>
-                                                                <a class="<?php if(!empty($spsub)) echo 'has-child '; ?>transition" title="<?=$vitem['name'.$lang]?>" href="<?=publicProductCategoryPath($vitem,'item',$lang)?>"><?=$vitem['name'.$lang]?></a>
-                                                                <?php if(!empty($spsub)) { ?>
-                                                                    <ul>
-                                                                        <?php foreach($spsub as $ksub => $vsub) { ?>
-                                                                            <li>
-                                                                                <a class="transition" title="<?=$vsub['name'.$lang]?>" href="<?=publicProductCategoryPath($vsub,'sub',$lang)?>"><?=$vsub['name'.$lang]?></a>
-                                                                            </li>
-                                                                        <?php } ?>
-                                                                    </ul>
-                                                                <?php } ?>
-                                                            </li>
-                                                        <?php } ?>
-                                                    </ul>
-                                                <?php } ?>
-                                            </li>
-                                        <?php } ?>
-                                    </ul>
-                                <?php } ?>
-                            </li>
-                        <?php } ?>
-                    </ul>
-                <?php } ?>
+                <button class="menu-catalog-trigger <?php if($com=='san-pham') echo 'active'; ?> transition" type="button" aria-expanded="false" aria-controls="ptsCatalogOverlay">
+                    <i class="fas fa-bars" aria-hidden="true"></i><span>Danh mục sản phẩm</span><i class="fas fa-chevron-down menu-catalog-chevron" aria-hidden="true"></i>
+                </button>
             </li>
 
             <li class="menu-about">
@@ -141,7 +160,6 @@
         </ul>
     </div>
 </div>
-
 
 <?php /*
 

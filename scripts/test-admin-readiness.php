@@ -266,6 +266,7 @@ try
 
     $productListTemplate = file_get_contents('/var/www/html/administrator/templates/product/man/mans_tpl.php');
     readinessAssert(strpos($productListTemplate, 'totalByID(') === false && strpos($productListTemplate, '$commentTotals') !== false, 'Danh sách sản phẩm dùng thống kê đánh giá theo batch');
+    readinessAssert(strpos($productListTemplate, "'sizes' => '70x55x2'") !== false, 'Danh sách sản phẩm tải thumbnail đúng kích thước card Admin');
 
     unset($_REQUEST['id_city'], $_REQUEST['id_district']);
     $emptyDistrict = $func->getAjaxPlace('district');
@@ -606,6 +607,12 @@ try
         'Page load đến hạn cập nhật activity nhưng giữ nguyên token phiên'
     );
     $adminList = readinessHttp($base.'index.php?com=product&act=man&type=san-pham', 'GET', array(), $newCookie);
+    readinessAssert(
+        $adminList['status'] === 200
+            && strpos($adminList['body'], 'assets/select2/select2.full.js') !== false
+            && strpos($adminList['body'], 'assets/filer/jquery.filer.js') === false,
+        'Danh sách sản phẩm giữ Select2 nhưng không tải thư viện upload của form chỉnh sửa'
+    );
     $campaignList = readinessHttp($base.'index.php?com=product&act=man&type=san-pham&data_status=campaign_active', 'GET', array(), $newCookie);
     readinessAssert($campaignList['status'] === 200 && strpos($campaignList['body'], 'Đang lọc: Đang có khung chiến dịch') !== false, 'Lối vào chiến dịch mở đúng danh sách sản phẩm đã lọc');
 	$specialSearchKeyword = "O'Reilly % Đèn";

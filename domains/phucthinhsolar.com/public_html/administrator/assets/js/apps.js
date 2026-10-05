@@ -2,7 +2,7 @@
 /* Validation form */
 function validateForm(ele)
 {
-    window.addEventListener('load', function(){
+    var initValidation = function(){
         var forms = document.getElementsByClassName(ele);
         var validation = Array.prototype.filter.call(forms, function(form) {
             form.addEventListener('submit', function(event) {
@@ -14,7 +14,9 @@ function validateForm(ele)
             }, false);
         });
         $("."+ele).find("input[type=submit],button[type=submit]").removeAttr("disabled");
-    }, false);
+    };
+    if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initValidation, { once: true });
+    else initValidation();
 }
 
 /* Validation form chung */
@@ -1486,14 +1488,6 @@ $(document).ready(function(){
 			$('#project-product-picker option[value="' + item.data('id') + '"]').prop('disabled', false);
 			item.remove();
 		});
-	}
-
-	/* Loader */
-	if($(".loader-wrapper").length)
-	{
-		setTimeout(function(){
-			$(".loader-wrapper").fadeOut("medium");
-		},300);
 	}
 
 	/* Login */

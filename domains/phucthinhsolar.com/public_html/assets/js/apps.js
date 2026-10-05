@@ -158,11 +158,74 @@ GA_FRAMEWORK.Menu = function(){
     /* Mmenu */
     if(isExist($("nav#menu")))
     {
+        var mobileMenuSearchInput = document.getElementById('ptsMobileMenuSearch');
+        var mobileMenuSearchItem = mobileMenuSearchInput ? mobileMenuSearchInput.closest('.mmenu-search-item') : null;
+        var mobileMenuSearchLabel = mobileMenuSearchItem ? mobileMenuSearchItem.querySelector('label') : null;
+        var mobileMenuSearchControl = mobileMenuSearchItem ? mobileMenuSearchItem.querySelector('.mmenu-search-control') : null;
+        if(mobileMenuSearchItem && mobileMenuSearchItem.parentNode) mobileMenuSearchItem.parentNode.removeChild(mobileMenuSearchItem);
         $('nav#menu').mmenu({
             // "extensions": ["border-full", "position-left", "position-front"],
+            slidingSubmenus: false,
              navbar: {
-                title: "Phúc Thịnh Solar"
+                title: "PHÚC THỊNH SOLAR"
             }
+        });
+        if(mobileMenuSearchControl) {
+            var mobileMenuPanel = document.querySelector('#menu .mm-panels > .mm-panel');
+            if(mobileMenuPanel) {
+                var searchSlot = document.createElement('div');
+                searchSlot.className = 'pts-mmenu-search';
+                if(mobileMenuSearchLabel) searchSlot.appendChild(mobileMenuSearchLabel);
+                searchSlot.appendChild(mobileMenuSearchControl);
+                var mobileMenuList = mobileMenuPanel.querySelector('.mm-listview');
+                mobileMenuPanel.insertBefore(searchSlot, mobileMenuList || null);
+            }
+        }
+        var mobileMenuElement = document.querySelector('nav#menu');
+        var mobileRootPanel = mobileMenuElement && mobileMenuElement.querySelector('.mm-panels > .mm-panel');
+        function syncMobileRootAccessibility() {
+            if(mobileRootPanel && mobileRootPanel.classList.contains('mm-panel_opened')) {
+                mobileRootPanel.setAttribute('aria-hidden', 'false');
+            }
+        }
+        if(mobileMenuElement && mobileMenuElement.mmApi) {
+            mobileMenuElement.mmApi.bind('openPanel:after', syncMobileRootAccessibility);
+            mobileMenuElement.mmApi.bind('closePanel:after', syncMobileRootAccessibility);
+        }
+        function openDefaultMobileCategories() {
+            if(!mobileRootPanel) return;
+            var productRoot = mobileRootPanel.querySelector('.mm-listview > .mmenu-product-root');
+            var productToggle = productRoot && productRoot.querySelector(':scope > .mm-btn_next');
+            if(productToggle && !productRoot.classList.contains('mm-listitem_opened')) productToggle.click();
+            syncMobileRootAccessibility();
+        }
+        openDefaultMobileCategories();
+        function resetMobileMenu() {
+            mobileMenuElement.mmApi.closeAllPanels();
+            openDefaultMobileCategories();
+        }
+        if(mobileMenuElement && mobileMenuElement.mmApi) {
+            mobileMenuElement.mmApi.bind('close:after', resetMobileMenu);
+        }
+        var mobileAdviceLink = document.createElement('a');
+        mobileAdviceLink.className = 'pts-mmenu-advice';
+        mobileAdviceLink.href = '/lien-he/#yeu-cau-tu-van';
+        mobileAdviceLink.textContent = 'Nhận tư vấn';
+        mobileMenuElement.appendChild(mobileAdviceLink);
+        document.querySelectorAll('#menu .mm-navbar').forEach(function(navbar) {
+            if(navbar.querySelector('.pts-mmenu-close')) return;
+            var closeButton = document.createElement('button');
+            closeButton.type = 'button';
+            closeButton.className = 'pts-mmenu-close';
+            closeButton.setAttribute('aria-label', 'Đóng menu');
+            closeButton.innerHTML = '<i class="fas fa-times" aria-hidden="true"></i>';
+            closeButton.addEventListener('click', function() {
+                if(mobileMenuElement && mobileMenuElement.mmApi) {
+                    resetMobileMenu();
+                    mobileMenuElement.mmApi.close();
+                }
+            });
+            navbar.appendChild(closeButton);
         });
         /* mmenu tự đo chiều cao trang lúc khởi tạo (lúc DOM vừa sẵn sàng)
            để canh wrapper .mm-page/.wap-all-page, nhưng lúc đó ảnh/khối cuối
@@ -174,6 +237,178 @@ GA_FRAMEWORK.Menu = function(){
             setTimeout(function(){ window.dispatchEvent(new Event('resize')); }, 300);
         });
     }
+
+    /* Product catalogue mega-menu: desktop hover plus click/keyboard access,
+       focus return, Escape/backdrop close, and local filtering of categories. */
+    var catalogOverlay = document.getElementById('ptsCatalogOverlay');
+    var catalogTrigger = document.querySelector('.menu-catalog-trigger');
+    if(catalogOverlay && catalogTrigger) {
+        var catalogPanel = catalogOverlay.querySelector('.pts-catalog-panel');
+        var catalogSearch = catalogOverlay.querySelector('#ptsCatalogKeyword');
+        var catalogItems = Array.prototype.slice.call(catalogOverlay.querySelectorAll('.pts-catalog-list-item'));
+        var catalogGroups = Array.prototype.slice.call(catalogOverlay.querySelectorAll('.pts-catalog-group'));
+        var catalogHoverTimer = null;
+        var catalogHideTimer = null;
+        var catalogOpenFrame = null;
+        var catalogClosing = false;
+        var catalogOpenedByHover = false;
+        var catalogBodyLock = null;
+        var catalogHoverDelay = 450;
+        var canHoverCatalog = function() {
+            return window.matchMedia && window.matchMedia('(min-width: 1321px) and (hover: hover) and (pointer: fine)').matches;
+        };
+        var cancelCatalogHoverClose = function() {
+            if(catalogHoverTimer) {
+                window.clearTimeout(catalogHoverTimer);
+                catalogHoverTimer = null;
+            }
+        };
+        var positionCatalog = function() {
+            var header = document.getElementById('headerscroll');
+            if(header) catalogOverlay.style.setProperty('--pts-catalog-top', Math.max(0, header.getBoundingClientRect().bottom) + 'px');
+        };
+        var lockCatalogPage = function() {
+            if(catalogBodyLock) return;
+            var body = document.body;
+            var computedPadding = parseFloat(window.getComputedStyle(body).paddingRight) || 0;
+            var scrollbarWidth = Math.max(0, window.innerWidth - document.documentElement.clientWidth);
+            catalogBodyLock = {overflow: body.style.overflow, paddingRight: body.style.paddingRight};
+            body.classList.add('pts-catalog-open');
+            body.style.overflow = 'hidden';
+            if(scrollbarWidth) body.style.paddingRight = (computedPadding + scrollbarWidth) + 'px';
+        };
+        var unlockCatalogPage = function() {
+            if(!catalogBodyLock) return;
+            document.body.classList.remove('pts-catalog-open');
+            document.body.style.overflow = catalogBodyLock.overflow;
+            document.body.style.paddingRight = catalogBodyLock.paddingRight;
+            catalogBodyLock = null;
+        };
+        var catalogFocusables = function() {
+            return Array.prototype.filter.call(catalogPanel.querySelectorAll('a[href], button:not([disabled]), input:not([disabled])'), function(item) {
+                return item.offsetParent !== null;
+            });
+        };
+        var finishCatalogClose = function() {
+            if(!catalogClosing) return;
+            catalogClosing = false;
+            catalogHideTimer = null;
+            catalogOverlay.hidden = true;
+            unlockCatalogPage();
+        };
+        var openCatalog = function(focusSearch) {
+            if(catalogHideTimer) {
+                window.clearTimeout(catalogHideTimer);
+                catalogHideTimer = null;
+            }
+            catalogClosing = false;
+            positionCatalog();
+            var wasHidden = catalogOverlay.hidden;
+            catalogOverlay.hidden = false;
+            catalogTrigger.setAttribute('aria-expanded', 'true');
+            lockCatalogPage();
+            if(wasHidden) catalogOpenFrame = window.requestAnimationFrame(function() {
+                catalogOpenFrame = null;
+                catalogOverlay.classList.add('is-open');
+                if(focusSearch && catalogSearch) catalogSearch.focus({preventScroll: true});
+            });
+            else {
+                catalogOverlay.classList.add('is-open');
+                if(focusSearch && catalogSearch) catalogSearch.focus({preventScroll: true});
+            }
+        };
+        var closeCatalog = function(returnFocus) {
+            if(catalogOverlay.hidden || catalogClosing) return;
+            cancelCatalogHoverClose();
+            catalogOpenedByHover = false;
+            if(catalogOpenFrame) {
+                window.cancelAnimationFrame(catalogOpenFrame);
+                catalogOpenFrame = null;
+            }
+            var wasOpen = catalogOverlay.classList.contains('is-open');
+            catalogOverlay.classList.remove('is-open');
+            catalogTrigger.setAttribute('aria-expanded', 'false');
+            catalogClosing = true;
+            if(!wasOpen || window.matchMedia('(prefers-reduced-motion: reduce)').matches) finishCatalogClose();
+            else catalogHideTimer = window.setTimeout(finishCatalogClose, 220);
+            if(returnFocus) catalogTrigger.focus();
+        };
+        var scheduleCatalogHoverClose = function() {
+            if(!catalogOpenedByHover || !canHoverCatalog()) return;
+            cancelCatalogHoverClose();
+            catalogHoverTimer = window.setTimeout(function() {
+                var focusInsidePanel = catalogPanel.contains(document.activeElement);
+                closeCatalog(focusInsidePanel);
+            }, catalogHoverDelay);
+        };
+        catalogTrigger.addEventListener('pointerenter', function() {
+            if(!canHoverCatalog()) return;
+            cancelCatalogHoverClose();
+            if(catalogOverlay.hidden || catalogClosing) {
+                catalogOpenedByHover = true;
+                openCatalog(false);
+            }
+        });
+        catalogTrigger.addEventListener('pointerleave', scheduleCatalogHoverClose);
+        catalogPanel.addEventListener('pointerenter', function() {
+            cancelCatalogHoverClose();
+            if(catalogClosing && canHoverCatalog()) {
+                catalogOpenedByHover = true;
+                openCatalog(false);
+            }
+        });
+        catalogPanel.addEventListener('pointerleave', scheduleCatalogHoverClose);
+        catalogTrigger.addEventListener('click', function(event) {
+            /* First click after hover pins the open panel; a second click can
+               still toggle it closed. Keyboard activation always toggles. */
+            if(!catalogOverlay.hidden && !catalogClosing && catalogOpenedByHover && event.detail > 0) {
+                catalogOpenedByHover = false;
+                cancelCatalogHoverClose();
+                if(catalogSearch) catalogSearch.focus({preventScroll: true});
+                return;
+            }
+            if(catalogOverlay.hidden || catalogClosing) {
+                catalogOpenedByHover = false;
+                openCatalog(true);
+            } else closeCatalog(false);
+        });
+        window.addEventListener('resize', function() {
+            if(!catalogOverlay.hidden && !catalogClosing) positionCatalog();
+        });
+        catalogOverlay.querySelectorAll('.pts-catalog-close, .pts-catalog-scrim').forEach(function(button) {
+            button.addEventListener('click', function() { closeCatalog(true); });
+        });
+        document.addEventListener('keydown', function(event) {
+            if(catalogOverlay.hidden || catalogClosing) return;
+            if(event.key === 'Escape') {
+                event.preventDefault();
+                closeCatalog(true);
+            } else if(event.key === 'Tab') {
+                var focusables = catalogFocusables();
+                if(!focusables.length) return;
+                var first = focusables[0];
+                var last = focusables[focusables.length - 1];
+                if(event.shiftKey && document.activeElement === first) {
+                    event.preventDefault();
+                    last.focus();
+                } else if(!event.shiftKey && document.activeElement === last) {
+                    event.preventDefault();
+                    first.focus();
+                }
+            }
+        });
+        if(catalogSearch) catalogSearch.addEventListener('input', function() {
+            var query = catalogSearch.value.trim().toLocaleLowerCase();
+            catalogItems.forEach(function(item) {
+                var searchText = item.textContent + ' ' + (item.getAttribute('data-search') || '');
+                item.hidden = query !== '' && searchText.toLocaleLowerCase().indexOf(query) === -1;
+            });
+            catalogGroups.forEach(function(group) {
+                group.hidden = !group.querySelector('.pts-catalog-list-item:not([hidden])');
+            });
+        });
+    }
+
 };
 
 /* Tools */

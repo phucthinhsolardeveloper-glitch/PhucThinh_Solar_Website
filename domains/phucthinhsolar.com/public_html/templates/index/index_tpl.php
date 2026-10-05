@@ -140,7 +140,7 @@ $homeAboutText = $homePlainText($homeAboutDesc);
                 <article class="pts-home-hero-slide<?=$homeHeroIndex === 0 ? ' is-active' : ''?>" data-home-hero-slide="<?=$homeHeroIndex?>" data-home-hero-slide-key="<?=$homeEscape($homeHeroTile['key'])?>" aria-label="<?=$homeHeroIndex + 1?> trên <?=count($homeHeroTiles)?>: <?=$homeEscape($homeHeroTile['name'])?>"<?=$homeHeroIndex === 0 ? '' : ' aria-hidden="true"'?>>
                     <a href="<?=$homeEscape($homeHeroTile['link'])?>">
                     <span class="pts-home-hero-banner-media">
-                        <?=$func->getImage(['isLazy' => false, 'class' => '', 'sizes' => '1600x720x1', 'upload' => $homeHeroTile['upload'], 'image' => $homeHeroTile['photo'], 'alt' => $homeHeroTile['name']])?>
+                        <?=$func->getImage(['isLazy' => false, 'noNativeLazy' => $homeHeroIndex === 0, 'class' => '', 'sizes' => '1600x720x1', 'upload' => $homeHeroTile['upload'], 'image' => $homeHeroTile['photo'], 'alt' => $homeHeroTile['name']])?>
                     </span>
                     <span class="pts-home-hero-banner-shade" aria-hidden="true"></span>
                     <span class="pts-home-hero-banner-copy">
