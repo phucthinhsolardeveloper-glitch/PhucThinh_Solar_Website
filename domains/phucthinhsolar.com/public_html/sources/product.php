@@ -806,7 +806,7 @@
 			break;
 		}
 		$productCategoryHeroFallbacks = array(
-			'san-pham' => array('catalog-equipment-system.jpg', 'Danh mục thiết bị năng lượng mặt trời Phúc Thịnh Solar'),
+			'san-pham' => array('catalog-products-hero-20261007.png', 'Danh mục thiết bị năng lượng mặt trời Phúc Thịnh Solar'),
 			'danh-muc-san-pham/den-nlmt' => array('catalog-ai-solar-lighting.webp', 'Chiếu sáng năng lượng mặt trời cho đường và công trình'),
 			'danh-muc-san-pham/bien-tan-inverter' => array('catalog-ai-inverter.webp', 'Hệ thống biến tần điện mặt trời được lắp đặt gọn gàng'),
 			'danh-muc-san-pham/tam-pin-nang-luong-mat-troi' => array('catalog-ai-solar-panels.webp', 'Tấm pin và hệ khung điện mặt trời trên mái công trình'),
