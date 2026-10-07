@@ -12,6 +12,11 @@ function pushState(options,targetTitle,targetUrl) {
 function updateProductFilterResetVisibility() {
     var reset = document.querySelector('[data-filter-reset]');
     if (!reset) return;
+    if (reset.hasAttribute('data-filter-reset-always')) {
+        reset.hidden = false;
+        reset.setAttribute('aria-hidden', 'false');
+        return;
+    }
     var hasChecked = Array.prototype.some.call(document.querySelectorAll('input[name="car_brand"]:checked, input[name="car_xuatxu"]:checked, input[name="car_congsuat"]:checked, input[name="car_price"]:checked, input[name="car_cat"]:checked, input[name="car_need"]:checked'), function() { return true; });
     var keyword = document.querySelector('input[name="keywords"]');
     var sort = document.querySelector('select[name="orderby"]');

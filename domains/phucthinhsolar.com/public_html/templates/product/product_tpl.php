@@ -389,8 +389,7 @@ $productSubcategoryNav = isset($productSubcategoryNav) && is_array($productSubca
                             <label class="mg0 cs-pointer checker product-pages__price-label d-flex p-relative">
                                 <input type="checkbox" onchange="fetch_product()" <?=(in_array($pk,$price_get))?'checked':''?> name="car_price" id="car_price<?=$pk?>"
                                     value="<?=$pk?>">
-                                <label class="mg0 checked-fake" for="car_price<?=$pk?>"></label>
-                                <span class=" ml10" for="car_price<?=$pk?>"><?=$pv?></span>
+                                <span><?=$pv?></span>
                             </label>
                         </li>
                         <?php } ?>
@@ -400,7 +399,7 @@ $productSubcategoryNav = isset($productSubcategoryNav) && is_array($productSubca
             <?php } ?>
             </div>
 
-            <a class="pts-filter-reset" href="<?=htmlspecialchars($productFilterPath ?: '/san-pham/', ENT_QUOTES, 'UTF-8')?>" data-filter-reset<?=$ptsHasActiveFilter ? '' : ' hidden'?> aria-hidden="<?=$ptsHasActiveFilter ? 'false' : 'true'?>"><i class="fas fa-undo-alt" aria-hidden="true"></i> Xóa bộ lọc</a>
+            <a class="pts-filter-reset" href="<?=htmlspecialchars($productFilterPath ?: '/san-pham/', ENT_QUOTES, 'UTF-8')?>" data-filter-reset data-filter-reset-always aria-hidden="false"><i class="fas fa-undo-alt" aria-hidden="true"></i> Xóa bộ lọc</a>
 
         </div>
     </div>
