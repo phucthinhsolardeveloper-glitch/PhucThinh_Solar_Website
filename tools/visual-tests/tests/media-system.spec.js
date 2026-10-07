@@ -136,7 +136,7 @@ test('thumbnail động ưu tiên WebP và trả đúng MIME', async ({ page, re
   const hero = page.locator('.pts-category-hero-media img');
   await expect(hero).toBeVisible();
   const src = await hero.getAttribute('src');
-  expect(src).toMatch(/catalog-garden-lighting-v2\.jpg\.webp$/);
+  expect(src).toMatch(/catalog-ai-garden-lighting\.webp$/);
   const response = await request.get(src);
   expect(response.ok()).toBeTruthy();
   expect(response.headers()['content-type']).toContain('image/webp');

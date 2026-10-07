@@ -1,5 +1,24 @@
 # Design QA — menu danh mục sản phẩm — 03/10/2026
 
+## Trang danh mục sản phẩm 07/10/2026 — desktop và mobile đạt
+
+- Nguồn bố cục: ảnh mockup danh mục đèn
+  `/mnt/c/Users/ADMIN/Downloads/1790391587621_9048970982745282477_g7263129555270226418_adfef13ccb7864ea559a794928b251c6.jpg`
+  và ảnh đối chiếu layout 1905px do chủ project cung cấp.
+- Local desktop 1905×1000: hero 250px, dải cam kết nền trắng tách khỏi hero,
+  bốn mục trải đều; tab cân hàng; sidebar 340px; lưới bốn sản phẩm; ảnh vuông
+  `contain`, nội dung card căn trái và hai CTA cùng chiều rộng. Không tràn ngang
+  (`scrollWidth = viewportWidth = 1905`). Ảnh kiểm tra: `/tmp/pts-category-desktop.png`.
+- Local mobile 390×895: hero co theo màn hình, dải cam kết thành hai cột, tab
+  cuộn ngang, filter là drawer ngoài viewport khi đóng và lưới sản phẩm hai cột.
+  Không tràn ngang (`scrollWidth = viewportWidth = 390`). Ảnh kiểm tra:
+  `/tmp/pts-category-mobile.png`.
+- Giữ nguyên dữ liệu thật, logic giá công khai/báo giá và hành vi giỏ hàng.
+  Thay đổi này áp dụng từ template chung nên trang Đèn NLMT và các danh mục
+  sản phẩm khác dùng cùng hệ bố cục.
+- PHP 8.1 lint, HTTP local cho `/san-pham/` và
+  `/danh-muc-san-pham/den-nlmt/`, cùng `git diff --check` đều đạt.
+
 ## Desktop 04/10/2026 — final result: passed
 
 - Nguồn: `/mnt/c/Users/ADMIN/Pictures/Screenshots/Screenshot 2026-10-04 150434.png`, 978×468px, ảnh panel desktop.

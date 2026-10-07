@@ -4,7 +4,7 @@ test.beforeEach(async ({ page }) => {
   await page.route('https://cdn.gtranslate.net/**', route => route.abort());
 });
 
-test('mobile product names clamp to three lines with a fixed card height', async ({ page, isMobile }) => {
+test('mobile product names clamp to two lines with a fixed card height', async ({ page, isMobile }) => {
   test.skip(!isMobile, 'Kiểm tra này dành cho lưới hai cột mobile.');
   await page.setViewportSize({ width: 390, height: 844 });
   // Trang chủ V4 không còn lưới sản phẩm; kiểm tra card trên danh mục đang bán.
@@ -20,13 +20,13 @@ test('mobile product names clamp to three lines with a fixed card height', async
       overflow: style.overflow,
     };
   }));
-  /* 2026-09-22: đổi lại thành giới hạn 3 dòng + chiều cao cố định (4.44em) để
+  /* 2026-10-07: catalog card dùng giới hạn 2 dòng + chiều cao cố định để
      ảnh, thông số, giá và CTA thẳng hàng giữa các card trên cùng một hàng lưới
      - đánh đổi có chủ đích, tên quá dài sẽ hiện dấu ... Test trước kiểm tra
      hành vi cũ (không giới hạn dòng); cập nhật theo thiết kế đã duyệt. */
   const heights = metrics.map(metric => metric.height);
   for (const metric of metrics) {
-    expect(metric.clamp).toBe('3');
+    expect(metric.clamp).toBe('2');
     expect(metric.overflow).toBe('hidden');
   }
   for (const height of heights) expect(Math.abs(height - heights[0])).toBeLessThanOrEqual(1);

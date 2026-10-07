@@ -68,32 +68,31 @@ $productSubcategoryNav = isset($productSubcategoryNav) && is_array($productSubca
             <p><?=htmlspecialchars($ptsCategoryDescription, ENT_QUOTES, 'UTF-8')?></p>
         </div>
     </div>
-    <div class="trust-badge-strip category-trust-strip lv-trust">
-        <div class="row">
-            <div class="col-md-3 trust-badge-item">
-                <i class="fas fa-lightbulb" aria-hidden="true"></i>
-                <span class="trust-badge-copy"><strong>Tư vấn lựa chọn</strong><small>Đúng nhu cầu, hiệu quả</small></span>
-            </div>
-            <div class="col-md-3 trust-badge-item">
-                <i class="fas fa-tools" aria-hidden="true"></i>
-                <span class="trust-badge-copy"><strong>Hỗ trợ kỹ thuật</strong><small>Trong suốt quá trình sử dụng</small></span>
-            </div>
-            <div class="col-md-3 trust-badge-item">
-                <i class="fas fa-shield-alt" aria-hidden="true"></i>
-                <span class="trust-badge-copy"><strong>Chính sách rõ ràng</strong><small>Minh bạch, dễ hiểu</small></span>
-            </div>
-            <div class="col-md-3 trust-badge-item">
-                <i class="fas fa-truck" aria-hidden="true"></i>
-                <span class="trust-badge-copy"><strong>Giao hàng toàn quốc</strong><small>Nhanh chóng, an toàn</small></span>
-            </div>
+</section>
+<div class="trust-badge-strip category-trust-strip lv-trust">
+    <div class="row">
+        <div class="col-md-3 trust-badge-item">
+            <i class="fas fa-lightbulb" aria-hidden="true"></i>
+            <span class="trust-badge-copy"><strong>Tư vấn lựa chọn</strong><small>Đúng nhu cầu, hiệu quả</small></span>
+        </div>
+        <div class="col-md-3 trust-badge-item">
+            <i class="fas fa-tools" aria-hidden="true"></i>
+            <span class="trust-badge-copy"><strong>Hỗ trợ kỹ thuật</strong><small>Trong suốt quá trình sử dụng</small></span>
+        </div>
+        <div class="col-md-3 trust-badge-item">
+            <i class="fas fa-shield-alt" aria-hidden="true"></i>
+            <span class="trust-badge-copy"><strong>Chính sách rõ ràng</strong><small>Minh bạch, dễ hiểu</small></span>
+        </div>
+        <div class="col-md-3 trust-badge-item">
+            <i class="fas fa-truck" aria-hidden="true"></i>
+            <span class="trust-badge-copy"><strong>Giao hàng toàn quốc</strong><small>Nhanh chóng, an toàn</small></span>
         </div>
     </div>
-</section>
+</div>
 
 <?php
-    /* Điều hướng danh mục chỉ có một nơi hiển thị: dải tab ngay dưới hero.
-       Tất cả nhóm con trực tiếp đều được đưa vào dải này, kể cả chỉ có 1–3
-       nhóm. Sidebar bên dưới chỉ còn bộ lọc sản phẩm, không lặp lại taxonomy. */
+    /* Dải tab dùng để chuyển nhanh giữa các nhóm con. Sidebar lấy cùng nguồn
+       taxonomy để khách có thể lọc ngay trong danh sách theo đúng mockup. */
     $ptsSubcategoryRealCount = 0;
     foreach((array) $productSubcategoryNav as $ptsSubcategoryCountItem) if(!empty($ptsSubcategoryCountItem['id'])) $ptsSubcategoryRealCount++;
     $ptsShowSubcategoryTabBar = $ptsSubcategoryRealCount > 0;
@@ -189,7 +188,7 @@ $productSubcategoryNav = isset($productSubcategoryNav) && is_array($productSubca
             <?php if($ptsShowSubcategoryTabBar) { ?>
             <div class="product-pages__price mb20 pts-filter-group pts-filter-open">
                 <div class="product-pages__price-aside pts-filter-toggle" role="button" tabindex="0" aria-expanded="true">
-                    <span class="product-pages__price-name">Danh mục sản phẩm</span>
+                    <span class="product-pages__price-name"><?=$ptsIsLightingCategory ? 'Loại đèn' : 'Loại sản phẩm'?></span>
                     <i class="fas fa-chevron-down pts-filter-chevron" aria-hidden="true"></i>
                 </div>
                 <div class="wrappers-aside__filter-scroll pts-filter-body">
