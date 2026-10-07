@@ -59,7 +59,7 @@ test('admin sidebar preserves the clicked child position after navigation', asyn
 });
 
 function runFixturePhp(code, args = []) {
-  return execFileSync('docker', ['exec', 'pts-php74-local', 'php', '-r', code, ...args], { encoding: 'utf8' }).trim();
+  return execFileSync('docker', ['exec', 'pts-php81-local', 'php', '-r', code, ...args], { encoding: 'utf8' }).trim();
 }
 
 function createAdminFixture() {
