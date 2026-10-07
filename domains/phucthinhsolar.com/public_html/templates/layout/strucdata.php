@@ -1,6 +1,6 @@
 <?php if($template == 'product/product_detail') {
     require_once LIBRARIES.'product_structured_data.php';
-    $productSchemaImage = !empty($rowDetail['photo']) ? $configBase.UPLOAD_PRODUCT_L.$rowDetail['photo'] : '';
+    $productSchemaImage = !empty($rowDetail['_display_photo']) ? $configBase.UPLOAD_PRODUCT_L.$rowDetail['_display_photo'] : '';
     $productSchema = productStructuredData(
         isset($rowDetail) && is_array($rowDetail) ? $rowDetail : array(),
         isset($productBrand) && is_array($productBrand) ? $productBrand : array(),

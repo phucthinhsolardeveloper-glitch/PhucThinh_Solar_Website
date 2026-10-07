@@ -12,7 +12,12 @@
 
 - 443 sản phẩm public: 181 có ảnh đại diện, 262 chưa có ảnh.
 - Toàn bộ tên file ảnh đại diện đang được ưu tiên đều tồn tại trong `upload/product`.
-- Sản phẩm chỉ có gallery nhưng thiếu ảnh đại diện vẫn thuộc nhóm chưa có ảnh, đúng với card danh sách vì card dùng trường `photo`.
+- Ghi chú cập nhật 2026-10-07: card, PDP, SEO, structured data và Admin đã dùng
+  chung `libraries/product_images.php`. Nếu `photo` trống hoặc trỏ tới file đã
+  mất, ảnh gallery đang hiển thị đầu tiên còn file thật được dùng làm fallback.
+  Bộ lọc Admin “Thiếu ảnh hiển thị” chỉ báo khi không còn ảnh dùng được ở cả hai
+  nguồn. Thứ tự SQL mặc định vẫn ưu tiên theo field `photo`; chưa đổi schema hay
+  dữ liệu chỉ để phục vụ sắp xếp.
 
 ## Ảnh hưởng hành vi
 

@@ -73,9 +73,7 @@ $hasProductPolicy = $productPolicyOverride !== '' || !empty($policy);
 
 /* Nếu ảnh đại diện bị thiếu trên đĩa nhưng gallery còn ảnh thật, dùng ảnh đó
    làm ảnh chính và bỏ các mục gallery đã mất. Chỉ đọc filesystem, không sửa DB. */
-$detailMainPhoto = '';
-$detailPhotoCandidate = !empty($rowDetail['photo']) ? basename((string)$rowDetail['photo']) : '';
-if($detailPhotoCandidate !== '' && is_file(UPLOAD_PRODUCT_L.$detailPhotoCandidate)) $detailMainPhoto = $detailPhotoCandidate;
+$detailMainPhoto = !empty($rowDetail['_display_photo']) ? $rowDetail['_display_photo'] : '';
 $detailGalleryPhotos = array();
 if(!empty($rowDetailPhoto) && is_array($rowDetailPhoto))
 {
@@ -83,7 +81,6 @@ if(!empty($rowDetailPhoto) && is_array($rowDetailPhoto))
     {
         $detailPhotoCandidate = !empty($detailPhotoRow['photo']) ? basename((string)$detailPhotoRow['photo']) : '';
         if($detailPhotoCandidate === '' || !is_file(UPLOAD_PRODUCT_L.$detailPhotoCandidate)) continue;
-        if($detailMainPhoto === '') $detailMainPhoto = $detailPhotoCandidate;
         if($detailPhotoCandidate !== $detailMainPhoto)
         {
             $detailPhotoRow['photo'] = $detailPhotoCandidate;

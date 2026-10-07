@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__.'/product_images.php';
+
 if(!function_exists('adminProductDataStatusDefinitions'))
 {
     /* missing_content/missing_wattage/missing_specs KHÔNG có key 'sql': độ
@@ -10,13 +12,10 @@ if(!function_exists('adminProductDataStatusDefinitions'))
     function adminProductDataStatusDefinitions()
     {
         return array(
-            /* 2026-09-29: field p.photo (ảnh đại diện) trống không có nghĩa
-               sản phẩm không có ảnh thật - PDP tự lấy ảnh gallery làm ảnh
-               chính khi field này trống (xem product_detail_tpl.php:55-74).
-               Sản phẩm chỉ thật sự "thiếu ảnh" khi CẢ HAI đều trống, tránh
-               báo giả những sản phẩm khách đã thấy ảnh thật trên site (sếp
-               phát hiện qua ví dụ JD-19600L). */
-            'missing_photo' => array('label' => 'Thiếu ảnh đại diện', 'sql' => "coalesce(trim(p.photo), '') = '' and not exists (select 1 from #_gallery g where g.id_parent = p.id and g.com = 'product' and g.kind = 'man' and g.val = p.type and find_in_set('hienthi', g.status))"),
+            /* Field p.photo trống hoặc trỏ tới file mất chưa đủ để kết luận.
+               Resolver dùng chung còn xét gallery đang hiển thị và kiểm tra file
+               vật lý, nên trạng thái này phải lọc bằng PHP thay vì SQL tĩnh. */
+            'missing_photo' => array('label' => 'Thiếu ảnh hiển thị'),
             'missing_photo_feed' => array('label' => 'Thiếu ảnh Shopping sạch', 'sql' => "coalesce(trim(p.photo_feed), '') = ''"),
             'missing_desc' => array('label' => 'Thiếu mô tả ngắn', 'sql' => "coalesce(trim(p.descvi), '') = ''"),
             'missing_content' => array('label' => 'Thiếu nội dung chi tiết'),
@@ -94,24 +93,17 @@ if(!function_exists('adminProductDataStatusDefinitions'))
         return false;
     }
 
-    /* Cùng điều kiện với definition 'missing_photo' ở trên - tách hàm để
-       adminProductMissingLabels() dùng chung, tránh lệch logic giữa badge
-       từng dòng và bộ lọc/export (đúng lỗi sếp phát hiện 2026-09-29). */
+    /* Dùng resolver chung để badge kiểm tra cả file vật lý và gallery fallback,
+       thay vì chỉ tin tên file đang lưu trong DB. */
     function adminProductIsMissingPhoto($d, $product)
     {
-        if(trim(isset($product['photo']) ? (string)$product['photo'] : '') !== '') return false;
-        if($d === null) return true;
-        $id = isset($product['id']) ? (int)$product['id'] : 0;
-        $type = isset($product['type']) ? (string)$product['type'] : '';
-        if($id <= 0) return true;
-        $gallery = $d->rawQueryOne("select id from #_gallery where id_parent = ? and com = 'product' and kind = 'man' and val = ? and find_in_set('hienthi', status) limit 0,1", array($id, $type));
-        return empty($gallery);
+        return !productImageResolveFromDatabase($d, $product)['has_image'];
     }
 
     function adminProductMissingLabels($product, $d = null, $list = array())
     {
         $labels = array();
-        if(adminProductIsMissingPhoto($d, $product)) $labels[] = 'Ảnh';
+        if(adminProductIsMissingPhoto($d, $product)) $labels[] = 'Ảnh hiển thị';
         if(trim(isset($product['descvi']) ? (string)$product['descvi'] : '') === '') $labels[] = 'Mô tả';
         if(adminProductIsMissingContent($d, $product)) $labels[] = 'Nội dung';
         if(adminProductIsMissingSpecs($product, $list)) $labels[] = 'Thông số';
@@ -134,7 +126,7 @@ if(!function_exists('adminProductDataStatusDefinitions'))
        int - rỗng nghĩa là không sản phẩm nào khớp filter. */
     function adminProductFilterIdsByStatus($d, $status, $whereSql, $params)
     {
-        if(!in_array($status, array('missing_content','missing_wattage','missing_specs'), true)) return array();
+        if(!in_array($status, array('missing_photo','missing_content','missing_wattage','missing_specs'), true)) return array();
         /* Các profile PDP dùng nhiều cột structured khác nhau (pin, MPPT,
            điện áp, thời gian hoạt động...). Phải đọc đủ row sản phẩm để
            productPdpSpecValue() không đánh dấu nhầm sản phẩm chỉ vì projection
@@ -143,7 +135,22 @@ if(!function_exists('adminProductDataStatusDefinitions'))
         if(empty($rows)) return array();
 
         $listCache = array();
-        if($status !== 'missing_content' && function_exists('productPdpResolveProfile'))
+        $galleryCache = array();
+        if($status === 'missing_photo')
+        {
+            $productIds = array_map(function($r){ return (int)$r['id']; }, $rows);
+            $productTypes = array();
+            foreach($rows as $row) $productTypes[(int)$row['id']] = (string)$row['type'];
+            $placeholders = implode(',', array_fill(0, count($productIds), '?'));
+            $galleryParams = array_merge(array('product', 'man'), $productIds);
+            foreach($d->rawQuery("select id_parent,photo,status,numb,id,val from #_gallery where com = ? and kind = ? and find_in_set('hienthi',status) and id_parent in ($placeholders) order by id_parent,numb,id", $galleryParams) as $galleryRow)
+            {
+                $galleryProductId = (int)$galleryRow['id_parent'];
+                if(isset($productTypes[$galleryProductId]) && (string)$galleryRow['val'] === $productTypes[$galleryProductId])
+                    $galleryCache[$galleryProductId][] = $galleryRow;
+            }
+        }
+        if($status !== 'missing_content' && $status !== 'missing_photo' && function_exists('productPdpResolveProfile'))
         {
             $listIds = array_values(array_unique(array_filter(array_map(function($r){ return (int)$r['id_list']; }, $rows))));
             if(!empty($listIds))
@@ -159,7 +166,12 @@ if(!function_exists('adminProductDataStatusDefinitions'))
         {
             $list = isset($listCache[(int)$row['id_list']]) ? $listCache[(int)$row['id_list']] : array();
             $matches = false;
-            if($status === 'missing_content') $matches = adminProductIsMissingContent($d, $row);
+            if($status === 'missing_photo')
+            {
+                $galleryRows = isset($galleryCache[(int)$row['id']]) ? $galleryCache[(int)$row['id']] : array();
+                $matches = !productImageResolve($row, $galleryRows, productImageUploadDirectory())['has_image'];
+            }
+            elseif($status === 'missing_content') $matches = adminProductIsMissingContent($d, $row);
             elseif($status === 'missing_wattage') $matches = adminProductIsMissingWattage($row, $list);
             elseif($status === 'missing_specs') $matches = adminProductIsMissingSpecs($row, $list);
             if($matches) $ids[] = (int)$row['id'];

@@ -201,6 +201,26 @@ về rỗng.** `administrator/sources/product.php` SELECT trực tiếp `photo_f
 (dòng 88 và 793) — nếu deploy code mà quên chạy migration thì màn hình danh
 sách/sửa sản phẩm sẽ chết. Luôn deploy migration **trước** code.
 
+### Vai trò ảnh sản phẩm
+
+- `table_product.photo`: ảnh đại diện ưu tiên cho card, PDP, SEO và dữ liệu có
+  cấu trúc.
+- `table_gallery`: ảnh phụ; ảnh đầu tiên đang hiển thị và còn file thật được dùng
+  làm fallback khi `photo` trống hoặc file đã mất.
+- `table_product.photo_feed`: ảnh nền sạch dành cho Google Shopping. Trạng thái
+  “Thiếu ảnh Shopping sạch” độc lập với “Thiếu ảnh hiển thị”.
+- `table_product.photo_khuyenmai`: khung chiến dịch; không được tính là ảnh sản
+  phẩm.
+- `photo2`: field legacy đang tắt trong cấu hình sản phẩm, không dùng làm nguồn
+  ảnh đại diện mới.
+
+File runtime tiếp tục nằm trong `shared/upload/product` trên production và
+volume `pts_web_upload` ở local. Không tách hoặc di chuyển file vật lý theo thư
+mục con nếu chưa có migration tương thích cho thumbnail, watermark, backup và
+rollback. Tên file ZIP mới theo quy ước `MÃ-01` (ảnh chính), `MÃ-02...` (gallery).
+Logic chọn ảnh và kiểm tra file vật lý nằm tại `libraries/product_images.php`;
+không tự viết fallback riêng trong template mới.
+
 ---
 
 ## 5. Xác thực và phân quyền

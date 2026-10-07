@@ -589,7 +589,7 @@
 		if($dataStatusDefinition && isset($dataStatusDefinition['sql'])) $where .= ' and '.$dataStatusDefinition['sql'];
 		elseif($dataStatusDefinition)
 		{
-			/* missing_content/missing_wattage/missing_specs không có 'sql' -
+			/* Trạng thái cần resolve nội dung hoặc file vật lý không có 'sql' -
 			   lọc bằng PHP rồi thu hẹp lại về "p.id in (...)" để tái dùng
 			   nguyên cách phân trang/đếm hiện có, không viết lại 2 lần. */
 			$phpFilteredIds = adminProductFilterIdsByStatus($d, $dataStatus, "where p.type = ? $where", $params);

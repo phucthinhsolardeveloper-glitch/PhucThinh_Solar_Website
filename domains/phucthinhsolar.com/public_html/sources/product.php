@@ -238,6 +238,9 @@
 		$ck = $cache->get("select name$lang, address, id, photo from #_news where type = ? and find_in_set('hienthi',status) order by numb,id desc", array('cam-ket'), 'result', 7200);
 		/* Lấy hình ảnh con */
 		$rowDetailPhoto = $d->rawQuery("select photo, name$lang as caption from #_gallery where id_parent = ? and com='product' and type = ? and kind='man' and val = ? and find_in_set('hienthi',status) order by numb,id desc",array($rowDetail['id'],$type,$type));
+		require_once LIBRARIES.'product_images.php';
+		$productResolvedImage = productImageResolve($rowDetail, $rowDetailPhoto, productImageUploadDirectory());
+		$rowDetail['_display_photo'] = $productResolvedImage['photo'];
 
 		/* Khối nội dung mô tả: kế thừa sản phẩm > hãng > danh mục */
 		require_once LIBRARIES.'product_content_blocks.php';
@@ -272,14 +275,14 @@
 		if(!empty($seoDB['description'.$seolang])) $seo->set('description',$seoDB['description'.$seolang]);
 		$seo->set('url',$func->getPageURL());
 		$imgJson = (!empty($rowDetail['options'])) ? json_decode($rowDetail['options'],true) : null;
-		if(empty($imgJson) || ($imgJson['p'] != $rowDetail['photo']))
+		if(empty($imgJson) || ($imgJson['p'] != $rowDetail['_display_photo']))
 		{
-			$imgJson = $func->getImgSize($rowDetail['photo'],UPLOAD_PRODUCT_L.$rowDetail['photo']);
+			$imgJson = $func->getImgSize($rowDetail['_display_photo'],UPLOAD_PRODUCT_L.$rowDetail['_display_photo']);
 			$seo->updateSeoDB(json_encode($imgJson),'product',$rowDetail['id']);
 		}
 		if(!empty($imgJson))
 		{
-			$seo->set('photo',$configBase.THUMBS.'/'.$imgJson['w'].'x'.$imgJson['h'].'x2/'.UPLOAD_PRODUCT_L.$rowDetail['photo']);
+			$seo->set('photo',$configBase.THUMBS.'/'.$imgJson['w'].'x'.$imgJson['h'].'x2/'.UPLOAD_PRODUCT_L.$rowDetail['_display_photo']);
 			$seo->set('photo:width',$imgJson['w']);
 			$seo->set('photo:height',$imgJson['h']);
 			$seo->set('photo:type',$imgJson['m']);

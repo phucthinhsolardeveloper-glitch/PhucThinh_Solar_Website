@@ -10,7 +10,10 @@ if(!function_exists('publicProductDefaultOrder'))
     {
         $alias = trim((string)$alias);
         if($alias !== '' && !preg_match('/^[A-Za-z][A-Za-z0-9_]*$/', $alias)) throw new InvalidArgumentException('Alias SQL không hợp lệ');
-        $prefix = $alias !== '' ? $alias.'.' : '';
+        /* Luôn định danh cột bảng ngoài. Trong subquery gallery, `id`/`type`
+           không prefix sẽ bị MariaDB hiểu là cột của gallery, làm fallback
+           gallery bị xếp nhầm vào nhóm thiếu ảnh. */
+        $prefix = $alias !== '' ? $alias.'.' : '#_product.';
         /* 2026-09-29: field photo (ảnh đại diện) trống không có nghĩa sản
            phẩm không có ảnh thật - PDP tự lấy ảnh gallery làm ảnh chính khi
            field này trống (xem product_detail_tpl.php:55-74, cùng lỗi với
@@ -21,4 +24,3 @@ if(!function_exists('publicProductDefaultOrder'))
         return " order by case when $hasPhoto then 0 else 1 end, {$prefix}numb,{$prefix}id desc";
     }
 }
-

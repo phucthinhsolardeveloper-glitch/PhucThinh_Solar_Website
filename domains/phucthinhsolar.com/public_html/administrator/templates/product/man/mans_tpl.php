@@ -155,7 +155,8 @@
 							if($items[$i]['id_cat']) $linkID .= "&id_cat=".$items[$i]['id_cat'];
 							if($items[$i]['id_item']) $linkID .= "&id_item=".$items[$i]['id_item'];
 							if($items[$i]['id_sub']) $linkID .= "&id_sub=".$items[$i]['id_sub'];
-							if($items[$i]['id_brand']) $linkID .= "&id_brand=".$items[$i]['id_brand']; ?>
+							if($items[$i]['id_brand']) $linkID .= "&id_brand=".$items[$i]['id_brand'];
+                            $adminProductImage = productImageResolveFromDatabase($d, $items[$i]); ?>
                             <tr>
                                 <td class="align-middle">
                                     <div class="custom-control custom-checkbox my-checkbox">
@@ -170,7 +171,7 @@
                                     <td class="align-middle">
 									<a<?=$canEdit ? ' href="'.$linkEdit.$linkID.'&id='.$items[$i]['id'].'"' : ''?> title="<?=$items[$i]['namevi']?>">
                                             <span class="pts-admin-product-thumb">
-                                                <?=$func->getImage(['class' => 'rounded img-preview pts-admin-product-thumb-base', 'sizes' => '70x55x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $items[$i]['photo'], 'alt' => $items[$i]['namevi']])?>
+                                                <?=$func->getImage(['class' => 'rounded img-preview pts-admin-product-thumb-base', 'sizes' => '70x55x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $adminProductImage['photo'], 'alt' => $items[$i]['namevi']])?>
                                                 <?php $adminPromoFrame = productPromoFrameForCard($items[$i], $cache); if(!empty($adminPromoFrame)) { ?>
                                                     <?=$func->getImage(['isLazy' => false, 'class' => 'pts-admin-product-thumb-overlay', 'sizes' => '70x55x2', 'upload' => $adminPromoFrame['upload'], 'image' => $adminPromoFrame['photo'], 'alt' => ''])?>
                                                 <?php } ?>
@@ -181,6 +182,7 @@
                                 <td class="align-middle">
                                     <a class="text-dark text-break"<?=$canEdit ? ' href="'.$linkEdit.$linkID.'&id='.$items[$i]['id'].'"' : ''?> title="<?=$items[$i]['namevi']?>"><?=$items[$i]['namevi']?></a>
                                     <span class="badge <?=adminProductHasStructuredContent($items[$i]) ? 'badge-success' : 'badge-secondary'?> ml-1"><?=adminProductHasStructuredContent($items[$i]) ? 'Nội dung chuẩn' : 'Nội dung legacy'?></span>
+                                    <?php if($adminProductImage['source'] === 'gallery') { ?><span class="badge badge-info ml-1"><?=!empty($adminProductImage['broken']) ? 'Ảnh chính lỗi, đang dùng gallery' : 'Ảnh hiển thị từ gallery'?></span><?php } ?>
                                     <?php if(!empty($adminPromoFrame)) { ?><span class="badge badge-info ml-1"><?=$adminPromoFrame['source'] === 'product' ? 'Khung riêng' : 'Chiến dịch: '.htmlspecialchars($adminPromoFrame['campaign_name'], ENT_QUOTES, 'UTF-8')?></span><?php } ?>
                                     <?php $missingLabels = adminProductMissingLabels($items[$i], $d, isset($productListCache[(int)$items[$i]['id_list']]) ? $productListCache[(int)$items[$i]['id_list']] : array()); if($missingLabels) { ?>
                                         <div class="mt-1" aria-label="Dữ liệu còn thiếu">

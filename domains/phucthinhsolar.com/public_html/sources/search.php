@@ -80,7 +80,7 @@
 			$startpoint = ($curPage * $perPage) - $perPage;
 			$limit = " limit ".$startpoint.",".$perPage;
 			/* Card dùng status + photo_khuyenmai để ghép lớp khung campaign giống trang danh mục. */
-			$sql = "select p.photo, p.photo2, p.photo_khuyenmai, p.status, p.name$lang, p.slugvi, p.slugen, p.sale_price, p.regular_price, p.discount, p.id, p.id_list, p.id_cat, p.id_brand from #_product p where $where".publicProductDefaultOrder('p')." $limit";
+			$sql = "select p.photo, p.photo2, p.photo_khuyenmai, p.status, p.type, p.name$lang, p.slugvi, p.slugen, p.sale_price, p.regular_price, p.discount, p.id, p.id_list, p.id_cat, p.id_brand from #_product p where $where".publicProductDefaultOrder('p')." $limit";
 			$product = $d->rawQuery($sql,$params);
 			$sqlNum = "select count(*) as 'num' from #_product p where $where";
 			$count = $d->rawQueryOne($sqlNum,$params);

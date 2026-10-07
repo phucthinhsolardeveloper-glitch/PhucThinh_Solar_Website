@@ -331,7 +331,10 @@ test('desktop catalogue advice card opens the existing consultation form', async
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/', { waitUntil: 'domcontentloaded' });
   await dismissEntrancePopup(page);
-  await page.locator('.menu-catalog-trigger').click();
+  /* The catalogue trigger remains a real landing link. Hover opens the
+     discovery overlay; activating the advice card is tested from that state. */
+  await page.locator('.menu-catalog-trigger').hover();
+  await expect(page.locator('#ptsCatalogOverlay')).toBeVisible();
   await page.locator('#ptsCatalogOverlay .pts-catalog-help-card').click();
   await expect(page.locator('#ptsContactModal')).toBeVisible();
   await expect(page.locator('#ptsContactModal form')).toBeVisible();
@@ -377,25 +380,16 @@ test('desktop product mega-menu opens on hover without flicker and remains keybo
   await expect(trigger).toHaveAttribute('aria-expanded', 'false');
   await expect.poll(() => page.locator('body').evaluate(element => ({overflow: element.style.overflow, paddingRight: element.style.paddingRight}))).toEqual(bodyStylesBefore);
 
-  /* Click after hover pins and focuses; the next click toggles closed. */
+  /* The trigger is intentionally a real landing link: hover is the
+     progressive desktop preview, click and Enter keep the landing reachable. */
   await trigger.click();
-  await expect(overlay.getByRole('dialog')).toBeVisible();
-  await expect(search).toBeFocused();
-  const closingState = await trigger.evaluate(element => {
-    element.click();
-    const menu = document.querySelector('#ptsCatalogOverlay');
-    return { hidden: menu.hidden, open: menu.classList.contains('is-open') };
-  });
-  expect(closingState).toEqual({ hidden: false, open: false });
-  await expect(overlay).toBeHidden();
-
+  await expect(page).toHaveURL(/\/san-pham\/$/);
+  await expect(page.locator('h1')).toBeVisible();
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await dismissEntrancePopup(page);
   await trigger.focus();
   await page.keyboard.press('Enter');
-  await expect(overlay.getByRole('dialog')).toBeVisible();
-  await expect(search).toBeFocused();
-  await page.keyboard.press('Escape');
-  await expect(overlay).toBeHidden();
-  await expect(trigger).toBeFocused();
+  await expect(page).toHaveURL(/\/san-pham\/$/);
 });
 
 test('mobile drawer keeps product links and submits product search', async ({ page, isMobile }, testInfo) => {

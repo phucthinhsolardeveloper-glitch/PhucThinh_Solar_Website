@@ -13,6 +13,7 @@
  */
 require_once LIBRARIES.'product_promo.php';
 require_once LIBRARIES.'product_pdp_profiles.php';
+require_once LIBRARIES.'product_images.php';
 
 $pcDiscount = publicProductPricesVisible() && (!empty($v['sale_price']) && !empty($v['regular_price']) && $v['regular_price'] > $v['sale_price'])
     ? round((($v['regular_price'] - $v['sale_price']) / $v['regular_price']) * 100)
@@ -20,6 +21,7 @@ $pcDiscount = publicProductPricesVisible() && (!empty($v['sale_price']) && !empt
 
 /* Ảnh riêng của sản phẩm thắng; nếu không có thì resolver xét chiến dịch/phạm vi. */
 $pcPromoFrame = productPromoFrameForCard($v, $cache);
+$pcResolvedImage = productImageResolveFromDatabase($d, $v);
 ?>
 <div class="product-card">
     <a class="product-item" href="/san-pham/<?=$v[$sluglang]?>" title="<?=$v['name'.$lang]?>">
@@ -28,9 +30,9 @@ $pcPromoFrame = productPromoFrameForCard($v, $cache);
             <span class="badge-discount">-<?=$pcDiscount?>%</span>
             <?php } ?>
             <?php if(!empty($pcNoLazy)) { ?>
-            <?=$func->getImage(array_merge(['isLazy' => false, 'noNativeLazy' => !empty($pcInCarousel), 'class' => 'w-100 pts-product-photo', 'sizes' => '300x300x4', 'upload' => UPLOAD_PRODUCT_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]], watermarkImageArgs('product')))?>
+            <?=$func->getImage(array_merge(['isLazy' => false, 'noNativeLazy' => !empty($pcInCarousel), 'class' => 'w-100 pts-product-photo', 'sizes' => '300x300x4', 'upload' => UPLOAD_PRODUCT_L, 'image' => $pcResolvedImage['photo'], 'alt' => $v['name'.$lang]], watermarkImageArgs('product')))?>
             <?php } else { ?>
-            <?=$func->getImage(array_merge(['class' => 'lazy w-100 pts-product-photo', 'sizes' => '300x300x4', 'upload' => UPLOAD_PRODUCT_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]], watermarkImageArgs('product')))?>
+            <?=$func->getImage(array_merge(['class' => 'lazy w-100 pts-product-photo', 'sizes' => '300x300x4', 'upload' => UPLOAD_PRODUCT_L, 'image' => $pcResolvedImage['photo'], 'alt' => $v['name'.$lang]], watermarkImageArgs('product')))?>
             <?php } ?>
             <?php if(!empty($pcPromoFrame)) { ?>
             <?=$func->getImage(['isLazy' => false, 'class' => 'w-100 pts-promo-frame', 'sizes' => '300x300x2', 'upload' => $pcPromoFrame['upload'], 'image' => $pcPromoFrame['photo'], 'alt' => ''])?>
