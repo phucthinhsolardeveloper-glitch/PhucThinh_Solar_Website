@@ -990,3 +990,51 @@ body.pts-sidebar-category-visible .pts-sidebar-category-filter{display:block;}
 .product-category-page .pts-lighting-category-v2 .lv-tabs .pts-category-tab.is-active{background:#c99a32!important;border-color:#c99a32!important;color:#fff!important;}
 .product-category-page .pts-lighting-category-v2 .lv-search,
 .product-category-page .pts-lighting-category-v2 .lv-active-filters{display:none!important;}
+
+/* Hero treatment for the product page: the trust items belong to the hero's
+   bottom overlay, matching the approved dark banner composition. */
+.product-category-page .pts-lighting-category-v2 .lv-hero{
+    min-height:185px!important;
+    max-height:185px!important;
+    background:#071b3e!important;
+}
+.product-category-page .pts-lighting-category-v2 .lv-hero.has-image .pts-category-copy h1,
+.product-category-page .pts-lighting-category-v2 .lv-hero h1{
+    color:#fff!important;
+    font-size:clamp(24px,2.2vw,32px)!important;
+    text-shadow:0 2px 12px rgba(0,0,0,.35);
+}
+.product-category-page .pts-lighting-category-v2 .lv-hero p{margin-bottom:0!important;color:#edf4ff!important;font-size:13px!important;}
+.product-category-page .pts-lighting-category-v2 .lv-trust{
+    position:absolute!important;
+    right:0!important;
+    bottom:0!important;
+    left:0!important;
+    width:100%!important;
+    margin:0!important;
+    padding:8px 32px!important;
+    border-top:1px solid rgba(255,255,255,.16)!important;
+    border-right:0!important;
+    border-bottom:0!important;
+    border-left:0!important;
+    background:rgba(6,21,55,.62)!important;
+    color:#fff!important;
+}
+.product-category-page .pts-lighting-category-v2 .lv-trust>.row{width:100%!important;max-width:none!important;}
+.product-category-page .pts-lighting-category-v2 .lv-trust .trust-badge-item{
+    min-height:32px!important;
+    justify-content:center!important;
+    padding:2px 8px!important;
+    color:#fff!important;
+    font-size:11px!important;
+    text-shadow:0 1px 4px rgba(0,0,0,.45)!important;
+}
+.product-category-page .pts-lighting-category-v2 .lv-trust .trust-badge-item i{color:#f5c343!important;font-size:18px!important;}
+.product-category-page .pts-lighting-category-v2 .lv-trust .trust-badge-copy small{display:block!important;color:rgba(255,255,255,.78)!important;font-size:9px!important;}
+@media(max-width:768px){
+    .product-category-page .pts-lighting-category-v2 .lv-hero{min-height:215px!important;max-height:215px!important;}
+    .product-category-page .pts-lighting-category-v2 .lv-trust{padding:7px 12px!important;}
+    .product-category-page .pts-lighting-category-v2 .lv-trust>.row{grid-template-columns:repeat(2,minmax(0,1fr));gap:2px 6px;}
+    .product-category-page .pts-lighting-category-v2 .lv-trust .trust-badge-item{justify-content:flex-start!important;min-height:34px!important;padding:2px 4px!important;font-size:10px!important;}
+    .product-category-page .pts-lighting-category-v2 .lv-trust .trust-badge-copy small{display:none!important;}
+}

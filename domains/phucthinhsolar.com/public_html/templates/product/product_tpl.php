@@ -68,7 +68,6 @@ $productSubcategoryNav = isset($productSubcategoryNav) && is_array($productSubca
             <p><?=htmlspecialchars($ptsCategoryDescription, ENT_QUOTES, 'UTF-8')?></p>
         </div>
     </div>
-</section>
     <div class="trust-badge-strip category-trust-strip lv-trust">
         <div class="row">
             <div class="col-md-3 trust-badge-item">
@@ -89,6 +88,7 @@ $productSubcategoryNav = isset($productSubcategoryNav) && is_array($productSubca
             </div>
         </div>
     </div>
+</section>
 
 <?php
     /* Chỉ hiện MỘT dải ở vị trí này, không bao giờ chồng 2 dải cùng lúc (đây

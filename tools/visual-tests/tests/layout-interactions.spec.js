@@ -717,7 +717,7 @@ test('product category offers contextual sidebar filters without a second top ra
 
   const hero = page.locator('.pts-category-hero');
   if (await hero.evaluate(node => node.classList.contains('has-image'))) {
-    await expect(hero.locator('h1')).toHaveCSS('color', 'rgb(229, 183, 67)');
+    await expect(hero.locator('h1')).toHaveCSS('color', 'rgb(255, 255, 255)');
   }
   await expect(page.locator('.pts-filter-card .collection-category')).toHaveCount(0);
   /* 2026-09-28: dải danh mục con riêng (.pts-subcategory-tabs/-tab) đã gộp
