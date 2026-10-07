@@ -726,7 +726,9 @@ test('product category offers contextual sidebar filters without a second top ra
      nhau nên đổi selector theo cấu trúc mới thay vì lỗi thật. */
   await expect(page.locator('.pts-category-tabs .pts-category-tab').first()).toBeVisible();
   await expect(page.locator('.pts-sidebar-category-filter input[name="car_cat"]').first()).toBeAttached();
-  if (!isMobile) await expect(page.locator('.pts-sidebar-category-filter')).toBeHidden();
+  /* Desktop follows the approved catalog mockup: keep contextual filters in
+     the left rail; mobile moves the same controls into the filter drawer. */
+  if (!isMobile) await expect(page.locator('.pts-sidebar-category-filter')).toBeVisible();
   await expect(page.locator('.pts-filter-card')).not.toContainText('Loại đèn - dùng cho');
   const needs = page.locator('.pts-content-cards');
   await expect(needs).toHaveCount(1);

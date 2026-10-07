@@ -12,6 +12,7 @@
         'light' => '<path d="M7 3h10l3 13H4L7 3Zm3 14v2a2 2 0 0 0 4 0v-2M6 7h12"/>',
         'street' => '<path d="M8 22V7l8-3m-9 4 1-3 7-2 4 2-1 2-6 1M5 22h6"/>',
         'flood' => '<rect x="4" y="3" width="16" height="13" rx="2"/><rect x="7" y="6" width="10" height="7" rx="1"/><path d="m8 17-2 4h12l-2-4"/>',
+        'ufo' => '<path d="M9 3h6v3l3 5H6l3-5V3Zm-3 8h12l2 4H4l2-4Zm2 7h8M10 15v3m4-3v3"/>',
         'ceiling' => '<ellipse cx="12" cy="10" rx="9" ry="5"/><path d="M3 10v3c0 7 18 7 18 0v-3"/>',
         'garden' => '<path d="m4 7 8-4 8 4H4Zm2 1 2 9h8l2-9M8 10h8M12 8v13M8 22h8"/>',
         'panel' => '<path d="m5 3-3 13h20L19 3H5ZM3 10h18M4 6h16M9 3 8 16m7-13 1 13M12 16v5m-5 0h10"/>',

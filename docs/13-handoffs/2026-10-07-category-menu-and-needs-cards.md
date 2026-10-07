@@ -22,6 +22,10 @@
 - Mega-menu desktop dùng chiều rộng `min(1200px, 85vw)` cùng `clamp()` cho
   khoảng đệm, icon, tiêu đề nhóm và chiều cao dòng; breakpoint mobile hiện có
   vẫn giữ drawer riêng.
+- Template danh mục đã đóng đúng `section` hero trước dải trust; hero chạy
+  full-bleed theo class thật `pts-lighting-category-v2`, desktop giữ sidebar
+  bộ lọc theo mockup, mobile dùng drawer. Tab active dùng màu chữ navy trên nền
+  vàng để đạt tương phản đọc được.
 - Thêm `migrations/071_restore_lighting_needs_cards.php`: dry-run mặc định,
   `--apply` chỉ thêm block khi chưa tồn tại và giữ nguyên mọi block khác.
 - Bổ sung kiểm thử cho ba card/ba ảnh và kiểm thử menu không tràn ngang ở
@@ -43,4 +47,12 @@ migration 071 không có thao tác xóa hoặc ghi đè block hiện hữu.
 - Predeploy local PHP 8.1, regression, security/admin readiness, commerce smoke
   và restore rehearsal: PASS.
 - Playwright menu desktop 1440px và responsive 1360/1920px: PASS.
-- Playwright category desktop/mobile, gồm khối cards: PASS.
+- Playwright category desktop/mobile, gồm khối cards: PASS (10 test mục tiêu).
+- Visual baseline `/san-pham/` desktop/mobile đã được cập nhật theo layout mới.
+
+## Trạng thái production
+
+- SAFE deploy trước đó dừng ở bước Playwright vì assertion cũ không còn khớp
+  layout mới; chưa package/activate release và chưa ghi production DB/upload.
+- Sau khi commit và chạy lại SAFE, vẫn phải thực hiện riêng migration 071 và
+  đồng bộ ba ảnh runtime; Git deploy không tự mang dữ liệu này lên production.

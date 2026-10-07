@@ -912,9 +912,12 @@ body.pts-sidebar-category-visible .pts-sidebar-category-filter{display:block;}
     .product-category-page .pts-lighting-category-v2 .lv-results{display:block!important;width:100%!important;}
     .product-category-page .pts-lighting-category-v2 .lv-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;}
 }
-@media(min-width:1101px) and (max-width:1439px){
-    /* Màn hình desktop thông thường giữ đúng mật độ của bản cũ; chỉ màn hình
-       rất rộng mới mở thêm cột thứ năm để card không bị ép hẹp. */
+@media(min-width:1200px){
+    /* Desktop chuẩn: 5 sản phẩm mỗi hàng theo yêu cầu catalog. */
+    .product-category-page .pts-lighting-category-v2 .lv-grid{grid-template-columns:repeat(5,minmax(0,1fr))!important;}
+}
+@media(min-width:1002px) and (max-width:1199px){
+    /* Khoảng desktop hẹp giữ 4 cột để card không bị ép quá nhỏ. */
     .product-category-page .pts-lighting-category-v2 .lv-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;}
 }
 @media(max-width:768px){
@@ -991,50 +994,344 @@ body.pts-sidebar-category-visible .pts-sidebar-category-filter{display:block;}
 .product-category-page .pts-lighting-category-v2 .lv-search,
 .product-category-page .pts-lighting-category-v2 .lv-active-filters{display:none!important;}
 
-/* Hero treatment for the product page: the trust items belong to the hero's
-   bottom overlay, matching the approved dark banner composition. */
+/* Final reference composition: banner first, then the white four-item trust
+   strip. Category icons reuse the mega-menu SVGs without a decorative disc. */
 .product-category-page .pts-lighting-category-v2 .lv-hero{
-    min-height:185px!important;
-    max-height:185px!important;
+    min-height:250px!important;
+    max-height:250px!important;
     background:#071b3e!important;
 }
 .product-category-page .pts-lighting-category-v2 .lv-hero.has-image .pts-category-copy h1,
 .product-category-page .pts-lighting-category-v2 .lv-hero h1{
-    color:#fff!important;
-    font-size:clamp(24px,2.2vw,32px)!important;
+    color:#e5b743!important;
+    font-size:clamp(28px,3.4vw,45px)!important;
     text-shadow:0 2px 12px rgba(0,0,0,.35);
 }
 .product-category-page .pts-lighting-category-v2 .lv-hero p{margin-bottom:0!important;color:#edf4ff!important;font-size:13px!important;}
 .product-category-page .pts-lighting-category-v2 .lv-trust{
+    position:static!important;
+    width:100%!important;
+    margin:0 0 24px!important;
+    padding:12px 32px!important;
+    border-top:0!important;
+    border-right:0!important;
+    border-bottom:1px solid #e6ebef!important;
+    border-left:0!important;
+    background:#fff!important;
+    color:var(--lv-navy)!important;
+    box-shadow:none!important;
+    backdrop-filter:none!important;
+    -webkit-backdrop-filter:none!important;
+}
+.product-category-page .pts-lighting-category-v2 .lv-trust>.row{width:min(1320px,100%)!important;max-width:1320px!important;margin:0 auto!important;}
+.product-category-page .pts-lighting-category-v2 .lv-trust .trust-badge-item{
+    width:auto!important;
+    max-width:none!important;
+    flex:none!important;
+    min-width:0!important;
+    min-height:58px!important;
+    justify-content:center!important;
+    padding:8px 12px!important;
+    color:var(--lv-navy)!important;
+    font-size:12px!important;
+    text-shadow:none!important;
+}
+.product-category-page .pts-lighting-category-v2 .lv-trust .trust-badge-item i{color:#c99a32!important;font-size:20px!important;}
+.product-category-page .pts-lighting-category-v2 .lv-trust .trust-badge-copy{min-width:0!important;text-align:left!important;}
+.product-category-page .pts-lighting-category-v2 .lv-trust .trust-badge-copy strong{display:block!important;overflow:visible!important;text-overflow:clip!important;white-space:normal!important;color:var(--lv-navy)!important;}
+.product-category-page .pts-lighting-category-v2 .lv-trust .trust-badge-copy small{display:block!important;color:#627184!important;font-size:10px!important;}
+.product-category-page .pts-lighting-category-v2 .lv-tabs .pts-category-tab-media,
+.product-category-page .pts-lighting-category-v2 .lv-tabs .pts-category-tab.is-active .pts-category-tab-media{
+    display:flex!important;
+    width:30px!important;
+    height:30px!important;
+    flex:0 0 30px!important;
+    align-items:center!important;
+    justify-content:center!important;
+    padding:0!important;
+    border:0!important;
+    border-radius:0!important;
+    background:transparent!important;
+    box-shadow:none!important;
+    overflow:visible!important;
+}
+.product-category-page .pts-lighting-category-v2 .lv-tabs .pts-category-tab{gap:9px!important;}
+.product-category-page .pts-lighting-category-v2 .lv-tabs .pts-product-category-icon{width:25px;height:25px;color:#0b2b59;fill:none;stroke:currentColor;stroke-width:1.65;stroke-linecap:round;stroke-linejoin:round;}
+.product-category-page .pts-lighting-category-v2 .lv-tabs .pts-category-tab.is-active .pts-product-category-icon{color:#fff;}
+@media(max-width:768px){
+    .product-category-page .pts-lighting-category-v2 .lv-hero{min-height:215px!important;max-height:215px!important;}
+    .product-category-page .pts-lighting-category-v2 .lv-trust{padding:8px 16px!important;}
+    .product-category-page .pts-lighting-category-v2 .lv-trust>.row{grid-template-columns:repeat(2,minmax(0,1fr));gap:2px 6px;}
+    .product-category-page .pts-lighting-category-v2 .lv-trust .trust-badge-item{justify-content:flex-start!important;min-height:48px!important;padding:6px 4px!important;font-size:11px!important;}
+    .product-category-page .pts-lighting-category-v2 .lv-trust .trust-badge-copy small{display:none!important;}
+}
+
+
+/* 2026-10-07: chốt lại catalog theo mockup duyệt.
+   Override cuối file để triệt xung đột legacy Bootstrap/grid cũ. */
+.product-category-page .pts-lighting-category-v2 .lv-trust{
+    display:block!important;
+}
+.product-category-page .pts-lighting-category-v2 .lv-trust>.row{
+    display:grid!important;
+    width:100%!important;
+    max-width:1320px!important;
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    margin:0 auto!important;
+}
+.product-category-page .pts-lighting-category-v2 .lv-trust .trust-badge-item{
+    width:auto!important;
+    max-width:none!important;
+}
+.product-category-page .pts-lighting-category-v2 .pts-sidebar-category-filter{
+    display:block!important;
+}
+.product-category-page .pts-lighting-category-v2 .lv-filter .product-pages__price-label>input[type="checkbox"]{
+    position:static!important;
+    left:auto!important;
+    top:auto!important;
+    display:inline-block!important;
+    width:15px!important;
+    height:15px!important;
+    flex:0 0 15px!important;
+    margin:0!important;
+    opacity:1!important;
+    visibility:visible!important;
+    clip:auto!important;
+    appearance:auto!important;
+}
+.product-category-page .pts-lighting-category-v2 .lv-filter .checked-fake{
+    display:none!important;
+}
+.product-category-page .pts-lighting-category-v2 .lv-filter .product-pages__price-label{
+    align-items:center!important;
+    gap:8px!important;
+}
+@media(max-width:768px){
+    .product-category-page .pts-lighting-category-v2 .lv-trust>.row{
+        grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    }
+}
+
+/* Final scope correction: the catalog root is the main element itself.
+   Keep the approved full-bleed hero and responsive trust strip active even
+   when no legacy body class is present. */
+.pts-lighting-category-v2 .pts-category-hero{
+    width:100vw!important;
+    max-width:none!important;
+    margin-left:calc(50% - 50vw)!important;
+    margin-right:calc(50% - 50vw)!important;
+    border-radius:0!important;
+}
+.pts-lighting-category-v2 .pts-category-hero.has-image .pts-category-copy h1,
+.pts-lighting-category-v2 .lv-hero h1{
+    color:#e5b743!important;
+}
+.pts-lighting-category-v2 .lv-trust>.row{
+    display:grid!important;
+    width:min(1320px,100%)!important;
+    max-width:1320px!important;
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    margin:0 auto!important;
+}
+main.pts-lighting-category-v2 .pts-category-tabs .pts-category-tab.is-active,
+main.pts-lighting-category-v2 .lv-tabs .pts-category-tab.is-active{
+    color:#071b3e!important;
+}
+.product-category-page main.pts-lighting-category-v2 .lv-tabs .pts-category-tab.is-active{
+    color:#071b3e!important;
+}
+@media(max-width:768px){
+    .pts-lighting-category-v2 .lv-tabs{
+        background:#fff!important;
+    }
+    .pts-lighting-category-v2 .lv-trust>.row{
+        grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    }
+}
+
+
+/* 2026-10-07 — hero catalog theo reference banner đã duyệt:
+   ảnh cover + nội dung trái + trust strip tối phủ đáy banner. */
+.product-category-page .pts-lighting-category-v2 .lv-hero{
+    position:relative!important;
+    width:100vw!important;
+    max-width:none!important;
+    height:250px!important;
+    min-height:250px!important;
+    max-height:250px!important;
+    margin:0 calc(50% - 50vw) 24px!important;
+    padding:0!important;
+    overflow:hidden!important;
+    border:0!important;
+    border-radius:0!important;
+    background:#071b3e!important;
+}
+.product-category-page .pts-lighting-category-v2 .lv-hero .pts-category-hero-media{
     position:absolute!important;
+    inset:0!important;
+    z-index:0!important;
+    margin:0!important;
+}
+.product-category-page .pts-lighting-category-v2 .lv-hero .pts-category-hero-media picture,
+.product-category-page .pts-lighting-category-v2 .lv-hero .pts-category-hero-media img{
+    display:block!important;
+    width:100%!important;
+    height:100%!important;
+}
+.product-category-page .pts-lighting-category-v2 .lv-hero .pts-category-hero-media img{
+    object-fit:cover!important;
+    object-position:center 44%!important;
+}
+.product-category-page .pts-lighting-category-v2 .lv-hero.has-image .pts-category-hero-shade{
+    position:absolute!important;
+    inset:0!important;
+    z-index:1!important;
+    background:
+        linear-gradient(90deg,rgba(5,24,58,.96) 0%,rgba(5,24,58,.84) 30%,rgba(5,24,58,.42) 54%,rgba(5,24,58,.12) 78%,rgba(5,24,58,.08) 100%)!important;
+}
+.product-category-page .pts-lighting-category-v2 .lv-hero .pts-category-copy{
+    position:relative!important;
+    z-index:2!important;
+    display:flex!important;
+    width:min(calc(100vw - 96px),1320px)!important;
+    height:192px!important;
+    max-width:1320px!important;
+    align-items:center!important;
+    margin:0 auto!important;
+    padding:0 0 16px!important;
+}
+.product-category-page .pts-lighting-category-v2 .lv-hero .pts-category-copy-content{
+    width:min(520px,48vw)!important;
+    max-width:520px!important;
+}
+.product-category-page .pts-lighting-category-v2 .lv-hero.has-image .pts-category-copy h1,
+.product-category-page .pts-lighting-category-v2 .lv-hero h1{
+    margin:0 0 7px!important;
+    color:#fff!important;
+    font-size:clamp(27px,2.15vw,36px)!important;
+    font-weight:800!important;
+    line-height:1.08!important;
+    letter-spacing:-.02em!important;
+    text-transform:uppercase!important;
+    text-shadow:none!important;
+}
+.product-category-page .pts-lighting-category-v2 .lv-hero .pts-category-copy p{
+    max-width:560px!important;
+    margin:0!important;
+    color:#fff!important;
+    font-size:14px!important;
+    line-height:1.45!important;
+}
+.product-category-page .pts-lighting-category-v2 .lv-hero .lv-trust{
+    position:absolute!important;
+    z-index:3!important;
     right:0!important;
     bottom:0!important;
     left:0!important;
+    display:block!important;
     width:100%!important;
+    height:58px!important;
     margin:0!important;
-    padding:8px 32px!important;
-    border-top:1px solid rgba(255,255,255,.16)!important;
-    border-right:0!important;
-    border-bottom:0!important;
-    border-left:0!important;
-    background:rgba(6,21,55,.62)!important;
+    padding:0!important;
+    border:0!important;
+    border-top:1px solid rgba(255,255,255,.12)!important;
+    background:rgba(3,19,49,.78)!important;
     color:#fff!important;
+    box-shadow:none!important;
+    backdrop-filter:blur(3px)!important;
+    -webkit-backdrop-filter:blur(3px)!important;
 }
-.product-category-page .pts-lighting-category-v2 .lv-trust>.row{width:100%!important;max-width:none!important;}
-.product-category-page .pts-lighting-category-v2 .lv-trust .trust-badge-item{
-    min-height:32px!important;
+.product-category-page .pts-lighting-category-v2 .lv-hero .lv-trust>.row{
+    display:grid!important;
+    width:min(calc(100vw - 96px),1320px)!important;
+    height:58px!important;
+    max-width:1320px!important;
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    gap:32px!important;
+    align-items:center!important;
+    margin:0 auto!important;
+}
+.product-category-page .pts-lighting-category-v2 .lv-hero .lv-trust .trust-badge-item{
+    display:flex!important;
+    width:auto!important;
+    max-width:none!important;
+    min-width:0!important;
+    min-height:0!important;
+    height:58px!important;
+    align-items:center!important;
     justify-content:center!important;
-    padding:2px 8px!important;
+    gap:12px!important;
+    padding:0!important;
     color:#fff!important;
-    font-size:11px!important;
-    text-shadow:0 1px 4px rgba(0,0,0,.45)!important;
+    font-size:12px!important;
+    text-shadow:none!important;
 }
-.product-category-page .pts-lighting-category-v2 .lv-trust .trust-badge-item i{color:#f5c343!important;font-size:18px!important;}
-.product-category-page .pts-lighting-category-v2 .lv-trust .trust-badge-copy small{display:block!important;color:rgba(255,255,255,.78)!important;font-size:9px!important;}
+.product-category-page .pts-lighting-category-v2 .lv-hero .lv-trust .trust-badge-item i{
+    flex:0 0 28px!important;
+    color:#f5bf35!important;
+    font-size:26px!important;
+    text-align:center!important;
+}
+.product-category-page .pts-lighting-category-v2 .lv-hero .lv-trust .trust-badge-copy{
+    min-width:0!important;
+    text-align:left!important;
+}
+.product-category-page .pts-lighting-category-v2 .lv-hero .lv-trust .trust-badge-copy strong{
+    display:block!important;
+    overflow:visible!important;
+    color:#fff!important;
+    font-size:12px!important;
+    font-weight:800!important;
+    line-height:1.2!important;
+    text-overflow:clip!important;
+    white-space:nowrap!important;
+}
+.product-category-page .pts-lighting-category-v2 .lv-hero .lv-trust .trust-badge-copy small{
+    display:block!important;
+    margin-top:2px!important;
+    color:rgba(255,255,255,.78)!important;
+    font-size:10px!important;
+    font-weight:500!important;
+    line-height:1.2!important;
+}
 @media(max-width:768px){
-    .product-category-page .pts-lighting-category-v2 .lv-hero{min-height:215px!important;max-height:215px!important;}
-    .product-category-page .pts-lighting-category-v2 .lv-trust{padding:7px 12px!important;}
-    .product-category-page .pts-lighting-category-v2 .lv-trust>.row{grid-template-columns:repeat(2,minmax(0,1fr));gap:2px 6px;}
-    .product-category-page .pts-lighting-category-v2 .lv-trust .trust-badge-item{justify-content:flex-start!important;min-height:34px!important;padding:2px 4px!important;font-size:10px!important;}
-    .product-category-page .pts-lighting-category-v2 .lv-trust .trust-badge-copy small{display:none!important;}
+    .product-category-page .pts-lighting-category-v2 .lv-hero{
+        height:230px!important;
+        min-height:230px!important;
+        max-height:230px!important;
+    }
+    .product-category-page .pts-lighting-category-v2 .lv-hero .pts-category-copy{
+        width:calc(100vw - 32px)!important;
+        height:154px!important;
+        padding:0 0 10px!important;
+    }
+    .product-category-page .pts-lighting-category-v2 .lv-hero .pts-category-copy-content{
+        width:min(82vw,440px)!important;
+    }
+    .product-category-page .pts-lighting-category-v2 .lv-hero h1{font-size:25px!important;}
+    .product-category-page .pts-lighting-category-v2 .lv-hero .pts-category-copy p{font-size:12px!important;}
+    .product-category-page .pts-lighting-category-v2 .lv-hero .lv-trust{
+        height:76px!important;
+    }
+    .product-category-page .pts-lighting-category-v2 .lv-hero .lv-trust>.row{
+        width:calc(100vw - 32px)!important;
+        height:76px!important;
+        grid-template-columns:repeat(2,minmax(0,1fr))!important;
+        gap:0 14px!important;
+    }
+    .product-category-page .pts-lighting-category-v2 .lv-hero .lv-trust .trust-badge-item{
+        height:38px!important;
+        justify-content:flex-start!important;
+        gap:7px!important;
+    }
+    .product-category-page .pts-lighting-category-v2 .lv-hero .lv-trust .trust-badge-item i{
+        flex-basis:20px!important;
+        font-size:18px!important;
+    }
+    .product-category-page .pts-lighting-category-v2 .lv-hero .lv-trust .trust-badge-copy strong{
+        font-size:10px!important;
+        white-space:normal!important;
+    }
+    .product-category-page .pts-lighting-category-v2 .lv-hero .lv-trust .trust-badge-copy small{display:none!important;}
 }

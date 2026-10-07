@@ -111,6 +111,27 @@ $productSubcategoryNav = isset($productSubcategoryNav) && is_array($productSubca
     $ptsSubcategoryTabThreshold = 4;
     $ptsShowSubcategoryTabBar = $ptsHasSubcategoryRail && $ptsSubcategoryRealCount >= $ptsSubcategoryTabThreshold;
     $ptsShowSubcategorySidebarAlways = $ptsHasSubcategoryRail && $ptsSubcategoryRealCount > 0 && $ptsSubcategoryRealCount < $ptsSubcategoryTabThreshold;
+    /* Dùng đúng bộ icon SVG của mega menu cho rail danh mục; không lấy ảnh
+       nav_photo vì ảnh thumbnail nhỏ bị vỡ và lệch phong cách với menu. */
+    $ptsResolveCategoryIcon = static function($item) use ($lang) {
+        $haystack = strtolower((string)($item['url'] ?? '').' '.(string)($item['nav_name'] ?? '').' '.(string)($item['name'.$lang] ?? ''));
+        $map = array(
+            'den-duong' => 'street',
+            'den-pha' => 'flood',
+            'den-ufo' => 'ufo',
+            'den-san-vuon' => 'garden',
+            'den-op-tran' => 'ceiling',
+            'tam-pin' => 'panel',
+            'bien-tan-bom' => 'pump',
+            'bien-tan' => 'inverter',
+            'pin-luu' => 'battery',
+            'quat-' => 'fan',
+            'thiet-bi' => 'cog',
+            'tru-den' => 'street'
+        );
+        foreach($map as $needle => $icon) if(strpos($haystack, $needle) !== false) return $icon;
+        return 'cog';
+    };
 ?>
 <?php if($ptsShowSubcategoryTabBar) { ?>
 <nav class="pts-category-tabs pts-category-tabs--primary is-sticky-row lv-tabs" aria-label="Loại sản phẩm trong danh mục">
@@ -119,13 +140,12 @@ $productSubcategoryNav = isset($productSubcategoryNav) && is_array($productSubca
         if($ptsSubcategoryName === '') continue;
     ?>
     <a href="<?=$ptsSubcategoryItem['url']?>" class="pts-category-tab<?=!empty($ptsSubcategoryItem['is_active']) ? ' is-active' : ''?>"<?=!empty($ptsSubcategoryItem['is_active']) ? ' aria-current="page"' : ''?>>
+        <?php if(!empty($ptsSubcategoryItem['id'])) { ?>
         <span class="pts-category-tab-media">
-            <?php if(!empty($ptsSubcategoryItem['nav_photo']) && empty($ptsSubcategoryItem['nav_name'])) { ?>
-            <?=$func->getImage(['isLazy' => true, 'class' => '', 'sizes' => '64x64x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $ptsSubcategoryItem['nav_photo'], 'alt' => $ptsSubcategoryName])?>
-            <?php } else { ?>
-            <i class="fas fa-th-large" aria-hidden="true"></i>
-            <?php } ?>
+            <?php $ptsCategoryIcon = $ptsResolveCategoryIcon($ptsSubcategoryItem); ?>
+            <?php if(isset($menuCatalogRenderIcon) && is_callable($menuCatalogRenderIcon)) { ?><?=$menuCatalogRenderIcon($ptsCategoryIcon, 'pts-catalog-icon pts-product-category-icon')?><?php } else { ?><i class="fas fa-solar-panel" aria-hidden="true"></i><?php } ?>
         </span>
+        <?php } ?>
         <span class="pts-category-tab-name"><?=htmlspecialchars($ptsSubcategoryName, ENT_QUOTES, 'UTF-8')?></span>
     </a>
     <?php } ?>
@@ -148,11 +168,8 @@ $productSubcategoryNav = isset($productSubcategoryNav) && is_array($productSubca
     ?>
     <a href="<?=$ptsCategoryNavUrl?>" class="pts-category-tab<?=$ptsCategoryNavActive ? ' is-active' : ''?>"<?=$ptsCategoryNavActive ? ' aria-current="page"' : ''?>>
         <span class="pts-category-tab-media">
-            <?php if(!empty($ptsCategoryNavItem['photo'])) { ?>
-            <?=$func->getImage(['isLazy' => true, 'class' => '', 'sizes' => '64x64x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => $ptsCategoryNavItem['photo'], 'alt' => $ptsCategoryNavName])?>
-            <?php } else { ?>
-            <i class="fas fa-th-large" aria-hidden="true"></i>
-            <?php } ?>
+            <?php $ptsCategoryIcon = $ptsResolveCategoryIcon($ptsCategoryNavItem); ?>
+            <?php if(isset($menuCatalogRenderIcon) && is_callable($menuCatalogRenderIcon)) { ?><?=$menuCatalogRenderIcon($ptsCategoryIcon, 'pts-catalog-icon pts-product-category-icon')?><?php } else { ?><i class="fas fa-solar-panel" aria-hidden="true"></i><?php } ?>
         </span>
         <span class="pts-category-tab-name"><?=htmlspecialchars($ptsCategoryNavName, ENT_QUOTES, 'UTF-8')?></span>
     </a>
