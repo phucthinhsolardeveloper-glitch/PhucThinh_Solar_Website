@@ -445,7 +445,19 @@ if grep -Eq '925872|Executive Objects|UsedCondition|2020-11-05|priceValidUntil' 
     echo "FAIL: Product JSON-LD còn dữ liệu mẫu/giả hoặc hạn giá lỗi thời" >&2
     exit 1
 fi
-grep -qF 'Yêu cầu báo giá' /tmp/pts-predeploy-product.html
+# Kiểm tra theo trạng thái render thực tế: catalog có thể đang ở chế độ báo
+# giá hoặc bán công khai tùy cấu hình Admin. Không bắt một chế độ cố định.
+if grep -qF 'Yêu cầu báo giá' /tmp/pts-predeploy-product.html; then
+    if grep -Eq 'class="addcart"|"priceCurrency"|"price"[[:space:]]*:' /tmp/pts-predeploy-product.html; then
+        echo "FAIL: Trang sản phẩm vừa hiển thị báo giá vừa lộ giá/nút mua" >&2
+        exit 1
+    fi
+else
+    if ! grep -Eq 'class="addcart"|"priceCurrency"|"price"[[:space:]]*:' /tmp/pts-predeploy-product.html; then
+        echo "FAIL: Trang sản phẩm bán công khai nhưng thiếu giá/nút mua" >&2
+        exit 1
+    fi
+fi
 # Nút báo giá dạng icon thuộc card listing, không phải template chi tiết. Sản
 # phẩm mới nhất có thể không có related products nên dò trong product detail sẽ
 # tạo fail giả dù catalog đang render đúng CTA.
@@ -460,10 +472,6 @@ for site_visual in \
     contact-consultation.jpg dealer-distribution.jpg; do
     test -s "domains/phucthinhsolar.com/public_html/assets/images/site-visuals/$site_visual"
 done
-if grep -Eq 'class="addcart"|"priceCurrency"|"price"[[:space:]]*:' /tmp/pts-predeploy-product.html; then
-    echo "FAIL: Trang sản phẩm còn lộ giá hoặc nút mua khi chế độ báo giá đang bật" >&2
-    exit 1
-fi
 grep -qE '<title>[^<]+</title>' /tmp/pts-predeploy-news-detail.html
 grep -qF 'class="box-detail-news"' /tmp/pts-predeploy-news-detail.html
 grep -qE '<title>[^<]+</title>' /tmp/pts-predeploy-solution-detail.html
