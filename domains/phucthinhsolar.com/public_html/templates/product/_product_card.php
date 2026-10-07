@@ -72,6 +72,6 @@ $pcResolvedImage = productImageResolveFromDatabase($d, $v);
         <?php } else { ?>
         <a href="javascript:void(0)" class="addcart pts-card-add" data-id="<?=$v['id']?>" data-action="addnow" title="Thêm vào giỏ hàng" aria-label="Thêm vào giỏ hàng"><i class="fas fa-cart-plus" aria-hidden="true"></i><span class="pts-card-action-label">Thêm giỏ hàng</span></a>
         <?php } ?>
-        <a href="/san-pham/<?=$v[$sluglang]?>" class="pts-card-detail lv-detail" title="Xem chi tiết sản phẩm" aria-label="Xem chi tiết sản phẩm"><span class="pts-card-action-label">Xem chi tiết</span><span aria-hidden="true">↗</span></a>
+        <a href="/san-pham/<?=$v[$sluglang]?>" class="pts-card-detail lv-detail" title="Xem chi tiết sản phẩm" aria-label="Xem chi tiết sản phẩm"><span class="pts-card-action-label">Xem chi tiết</span></a>
     </div>
 </div>

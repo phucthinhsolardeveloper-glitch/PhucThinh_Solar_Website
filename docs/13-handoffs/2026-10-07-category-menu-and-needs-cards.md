@@ -30,6 +30,9 @@
   `--apply` chỉ thêm block khi chưa tồn tại và giữ nguyên mọi block khác.
 - Bổ sung kiểm thử cho ba card/ba ảnh và kiểm thử menu không tràn ngang ở
   viewport 1360px và 1920px.
+- Banner fallback của các nhóm catalog dùng bộ WebP 1800×600 theo từng ngữ
+  cảnh; mapping và kiểm thử đã cập nhật đồng bộ, không thay đổi dữ liệu banner
+  Admin đã cấu hình.
 
 ## Quy trình production
 

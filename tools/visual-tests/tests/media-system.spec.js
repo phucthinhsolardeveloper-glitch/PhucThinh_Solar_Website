@@ -265,7 +265,7 @@ test('danh mục Đèn sân vườn dùng banner ảnh và card có cùng hàng 
 
   const heroImage = page.locator('.pts-category-hero.has-image .pts-category-hero-media img');
   await expect(heroImage).toBeVisible();
-  await expect(heroImage).toHaveAttribute('src', /catalog-garden-lighting-v2\.jpg/);
+  await expect(heroImage).toHaveAttribute('src', /catalog-ai-garden-lighting\.webp/);
   await expect(page.locator('.pts-category-hero-shade')).toBeVisible();
   expect((await imageMetrics(heroImage)).fit).toBe('cover');
 
@@ -301,15 +301,15 @@ test('danh mục Đèn sân vườn dùng banner ảnh và card có cùng hàng 
 
 test('chín nhóm danh mục có ảnh nền đúng ngữ cảnh thay vì lặp một ảnh', async ({ page }) => {
   const expectedHeroes = [
-    ['den-nlmt', 'catalog-street-lighting.jpg'],
-    ['bien-tan-inverter', 'catalog-inverter-system-v2.jpg'],
-    ['tam-pin-nang-luong-mat-troi', 'catalog-solar-panel-mounting-v2.jpg'],
+    ['den-nlmt', 'catalog-ai-solar-lighting.webp'],
+    ['bien-tan-inverter', 'catalog-ai-inverter.webp'],
+    ['tam-pin-nang-luong-mat-troi', 'catalog-ai-solar-panels.webp'],
     ['tru-den', 'catalog-lamp-posts-v2.jpg'],
-    ['den-san-vuon', 'catalog-garden-lighting-v2.jpg'],
-    ['quat-nang-luong-mat-troi', 'catalog-solar-fan-v3.jpg'],
-    ['bien-tan-bom', 'catalog-solar-pump-v2.jpg'],
-    ['thiet-bi-dien-nang-luong-mat-troi', 'catalog-solar-electrical-accessories-v2.jpg'],
-    ['pin-luu-tru', 'catalog-battery-storage-v2.jpg'],
+    ['den-san-vuon', 'catalog-ai-garden-lighting.webp'],
+    ['quat-nang-luong-mat-troi', 'catalog-ai-solar-fan.webp'],
+    ['bien-tan-bom', 'catalog-ai-solar-pump.webp'],
+    ['thiet-bi-dien-nang-luong-mat-troi', 'catalog-ai-solar-accessories.webp'],
+    ['pin-luu-tru', 'catalog-ai-battery-storage.webp'],
   ];
 
   for (const [slug, filename] of expectedHeroes) {

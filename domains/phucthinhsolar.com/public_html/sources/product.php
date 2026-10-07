@@ -807,16 +807,16 @@
 		}
 		$productCategoryHeroFallbacks = array(
 			'san-pham' => array('catalog-equipment-system.jpg', 'Danh mục thiết bị năng lượng mặt trời Phúc Thịnh Solar'),
-			'danh-muc-san-pham/den-nlmt' => array('catalog-street-lighting.jpg', 'Chiếu sáng năng lượng mặt trời cho đường và công trình'),
-			'danh-muc-san-pham/bien-tan-inverter' => array('catalog-inverter-system-v2.jpg', 'Hệ thống biến tần điện mặt trời được lắp đặt gọn gàng'),
-			'danh-muc-san-pham/tam-pin-nang-luong-mat-troi' => array('catalog-solar-panel-mounting-v2.jpg', 'Tấm pin và hệ khung điện mặt trời trên mái công trình'),
+			'danh-muc-san-pham/den-nlmt' => array('catalog-ai-solar-lighting.webp', 'Chiếu sáng năng lượng mặt trời cho đường và công trình'),
+			'danh-muc-san-pham/bien-tan-inverter' => array('catalog-ai-inverter.webp', 'Hệ thống biến tần điện mặt trời được lắp đặt gọn gàng'),
+			'danh-muc-san-pham/tam-pin-nang-luong-mat-troi' => array('catalog-ai-solar-panels.webp', 'Tấm pin và hệ khung điện mặt trời trên mái công trình'),
 			'danh-muc-san-pham/tru-den' => array('catalog-lamp-posts-v2.jpg', 'Trụ đèn cổ điển và phụ kiện lắp đặt ngoài trời'),
-			'danh-muc-san-pham/den-san-vuon' => array('catalog-garden-lighting-v2.jpg', 'Không gian sân vườn sử dụng đèn năng lượng mặt trời'),
-			'danh-muc-san-pham/quat-nang-luong-mat-troi' => array('catalog-solar-fan-v3.jpg', 'Quạt đứng sử dụng năng lượng mặt trời cho không gian gia đình'),
-			'danh-muc-san-pham/bien-tan-bom' => array('catalog-solar-pump-v2.jpg', 'Hệ thống bơm nước sử dụng năng lượng mặt trời'),
-			'danh-muc-san-pham/thiet-bi-dien-nang-luong-mat-troi' => array('catalog-solar-electrical-accessories-v2.jpg', 'Dây dẫn, đầu nối và thiết bị bảo vệ cho hệ thống điện mặt trời'),
+			'danh-muc-san-pham/den-san-vuon' => array('catalog-ai-garden-lighting.webp', 'Không gian sân vườn sử dụng đèn năng lượng mặt trời'),
+			'danh-muc-san-pham/quat-nang-luong-mat-troi' => array('catalog-ai-solar-fan.webp', 'Quạt đứng sử dụng năng lượng mặt trời cho không gian gia đình'),
+			'danh-muc-san-pham/bien-tan-bom' => array('catalog-ai-solar-pump.webp', 'Hệ thống bơm nước sử dụng năng lượng mặt trời'),
+			'danh-muc-san-pham/thiet-bi-dien-nang-luong-mat-troi' => array('catalog-ai-solar-accessories.webp', 'Dây dẫn, đầu nối và thiết bị bảo vệ cho hệ thống điện mặt trời'),
 			'danh-muc-san-pham/he-thong-khung-nhom' => array('catalog-solar-panel-mounting-v2.jpg', 'Hệ khung và phụ kiện lắp đặt tấm pin năng lượng mặt trời'),
-			'danh-muc-san-pham/pin-luu-tru' => array('catalog-battery-storage-v2.jpg', 'Hệ thống pin lưu trữ năng lượng cho gia đình và doanh nghiệp')
+			'danh-muc-san-pham/pin-luu-tru' => array('catalog-ai-battery-storage.webp', 'Hệ thống pin lưu trữ năng lượng cho gia đình và doanh nghiệp')
 		);
 		if(empty($productCategoryHero) && !$productCategoryHeroConfigured && isset($productCategoryHeroFallbacks[$productCategoryPath]))
 		{
