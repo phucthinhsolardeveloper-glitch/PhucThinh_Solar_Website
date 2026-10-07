@@ -367,10 +367,13 @@ node --check domains/phucthinhsolar.com/public_html/assets/wp-content/themes/loc
 curl -fsS -L -o /tmp/pts-predeploy-contact.html "$base_url/lien-he"
 curl -fsS -L -o /tmp/pts-predeploy-dealer.html "$base_url/dai-ly"
 curl -fsS -L -o /tmp/pts-predeploy-catalog.html "$base_url/san-pham/"
-# Smoke the quote-flow product explicitly.  The newest catalog rows may be
-# intentionally public-priced, while this guard validates the separate
-# báo-giá rendering contract below.
+# Smoke a public product detail page. Prefer the quote-flow product when one
+# exists; public pricing may be enabled for the whole catalog, so fall back to
+# any visible product instead of treating that valid state as missing data.
 product_slug="$(docker compose -f "$compose_file" exec -T db mariadb -N -B -upts_local -ppts_local_only phucthinhs_local -e "SELECT slugvi FROM table_product WHERE FIND_IN_SET('hienthi',status) AND FIND_IN_SET('baogia',status) AND slugvi<>'' ORDER BY id DESC LIMIT 1;")"
+if [ -z "$product_slug" ]; then
+    product_slug="$(docker compose -f "$compose_file" exec -T db mariadb -N -B -upts_local -ppts_local_only phucthinhs_local -e "SELECT slugvi FROM table_product WHERE FIND_IN_SET('hienthi',status) AND slugvi<>'' ORDER BY id DESC LIMIT 1;")"
+fi
 if [ -z "$product_slug" ]; then
     echo "FAIL: DB local không có sản phẩm hiển thị để smoke" >&2
     exit 1
