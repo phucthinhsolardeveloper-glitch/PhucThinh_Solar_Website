@@ -69,7 +69,7 @@ Internet
   └── DNS phucthinhsolar.com
        └── VPS 222.255.182.182
             └── Caddy :80/:443
-                 └── Apache/PHP 7.4 container
+                 └── Apache/PHP 8.1 container
                       └── MariaDB 10.11 (mạng Docker private)
 
 Dữ liệu production sống ngoài image
@@ -127,7 +127,7 @@ người khác; không reset/xóa nếu chưa xác minh.
 2. Đọc route → source → template/API → schema/config liên quan.
 3. Ghi rõ dữ liệu có thể bị tác động và rollback.
 4. Sửa phạm vi nhỏ; không refactor ngoài yêu cầu.
-5. Test đúng PHP 7.4 qua container.
+5. Test đúng PHP 8.1 qua container.
 6. Kiểm desktop, mobile, 2K nếu thay đổi giao diện.
 7. Đọc `git diff`, tìm secret/PII và file ngoài phạm vi.
 
@@ -152,7 +152,7 @@ Thay đổi nhỏ trong lúc làm:
 
 ```bash
 # PHP
-docker exec pts-php74-local php -l /var/www/html/duong/dan/file.php
+docker exec pts-php81-local php -l /var/www/html/duong/dan/file.php
 
 # JavaScript
 node --check domains/phucthinhsolar.com/public_html/assets/js/apps.js
@@ -377,7 +377,7 @@ Hằng tháng:
 
 - Tải một full backup từ off-site về và chạy `restore-check.sh`.
 - Kiểm certificate, DNS, Cloud Firewall và user SSH.
-- Xuất/cập nhật bundle runtime PHP 7.4 nếu image thay đổi:
+- Xuất/cập nhật bundle runtime PHP 8.1 nếu image thay đổi:
 
 ```bash
 ./scripts/export-runtime-images.sh
@@ -575,16 +575,16 @@ ngày. Không đổi nameserver và server cùng một lúc.
 Ưu tiên Admin. Nếu cần CLI local:
 
 ```bash
-docker cp /path/products.xlsx pts-php74-local:/tmp/products.xlsx
-docker cp scripts/preview-product-bulk-file.php pts-php74-local:/tmp/
-docker exec pts-php74-local php /tmp/preview-product-bulk-file.php /tmp/products.xlsx
+docker cp /path/products.xlsx pts-php81-local:/tmp/products.xlsx
+docker cp scripts/preview-product-bulk-file.php pts-php81-local:/tmp/
+docker exec pts-php81-local php /tmp/preview-product-bulk-file.php /tmp/products.xlsx
 ```
 
 Chỉ khi preview không có error/conflict ngoài dự kiến và đã backup local:
 
 ```bash
-docker cp scripts/commit-product-bulk-file.php pts-php74-local:/tmp/
-docker exec pts-php74-local php /tmp/commit-product-bulk-file.php \
+docker cp scripts/commit-product-bulk-file.php pts-php81-local:/tmp/
+docker exec pts-php81-local php /tmp/commit-product-bulk-file.php \
   /tmp/products.xlsx --commit
 ```
 
@@ -606,14 +606,14 @@ token riêng nhưng token không thay thế phê duyệt của chủ project.
 
 ```bash
 # Nội dung Giải pháp local
-docker cp /path/content.md pts-php74-local:/tmp/content.md
-docker cp scripts/import-solution-content-local.php pts-php74-local:/tmp/
-docker exec pts-php74-local php /tmp/import-solution-content-local.php \
+docker cp /path/content.md pts-php81-local:/tmp/content.md
+docker cp scripts/import-solution-content-local.php pts-php81-local:/tmp/
+docker exec pts-php81-local php /tmp/import-solution-content-local.php \
   --file=/tmp/content.md
 
 # Tối ưu WebP: xem trước trước
-docker cp scripts/optimize-webp.php pts-php74-local:/tmp/
-docker exec pts-php74-local php /tmp/optimize-webp.php \
+docker cp scripts/optimize-webp.php pts-php81-local:/tmp/
+docker exec pts-php81-local php /tmp/optimize-webp.php \
   /var/www/html/upload --quality=82 --min-bytes=150000 --dry-run
 ```
 
@@ -625,10 +625,10 @@ vì đã tạo WebP.
 Copy script vào container có config cần kiểm. Ví dụ local:
 
 ```bash
-docker cp scripts/smtp-readiness.php pts-php74-local:/tmp/
-docker exec pts-php74-local php /tmp/smtp-readiness.php
-docker exec pts-php74-local php /tmp/smtp-readiness.php --connect
-docker exec pts-php74-local php /tmp/smtp-readiness.php --send-test
+docker cp scripts/smtp-readiness.php pts-php81-local:/tmp/
+docker exec pts-php81-local php /tmp/smtp-readiness.php
+docker exec pts-php81-local php /tmp/smtp-readiness.php --connect
+docker exec pts-php81-local php /tmp/smtp-readiness.php --send-test
 ```
 
 Trên production, lấy script từ `releases/<commit>/scripts/`, copy vào web

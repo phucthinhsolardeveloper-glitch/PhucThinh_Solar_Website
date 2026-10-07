@@ -8,7 +8,7 @@ runbook dài vẫn là tài liệu cứu hộ; thao tác hằng ngày dùng scri
 | Chế độ | Dùng khi | Kiểm tra trước deploy | Backup | Thời gian thường gặp |
 |---|---|---|---|---|
 | `SAFE` | PHP/API, giỏ hàng, checkout, Admin, phân quyền, migration, hạ tầng, hoặc chưa chắc mức rủi ro | Full predeploy local và toàn bộ Playwright | DB + upload | Lâu hơn, thường 10–25 phút |
-| `FAST` | CSS, chữ, ảnh, responsive hoặc template giao diện rủi ro thấp | Git/syntax/PHP 7.4 guard; tự từ chối đường dẫn nhạy cảm | DB-only | Thường 2–5 phút |
+| `FAST` | CSS, chữ, ảnh, responsive hoặc template giao diện rủi ro thấp | Git/syntax/PHP 8.1 guard; tự từ chối đường dẫn nhạy cảm | DB-only | Thường 2–5 phút |
 | `AUTO` | Deploy thường ngày khi muốn script tự phân loại phạm vi thay đổi | Tự chọn SAFE/FAST theo guard của script | Theo mode được chọn | Tùy phạm vi |
 
 `FAST` chỉ rút ngắn phần test local và không nén lại toàn bộ upload. Nó **không

@@ -7,7 +7,7 @@
  *
  * Refuses to run unless argv contains --commit.
  *
- * Usage (inside PHP 7.4 container):
+ * Usage (inside PHP 8.1 container):
  *   php /tmp/commit-product-bulk-file.php /tmp/wb.xlsx --commit
  */
 

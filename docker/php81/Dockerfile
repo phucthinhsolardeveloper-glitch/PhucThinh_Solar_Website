@@ -15,7 +15,7 @@ RUN apt-get update -o Acquire::Retries=3 \
     && sed -ri 's!AllowOverride None!AllowOverride All!g' /etc/apache2/apache2.conf \
     && rm -rf /var/lib/apt/lists/*
 
-COPY docker/php74/local-php.ini /usr/local/etc/php/conf.d/99-pts-local.ini
+COPY docker/php81/local-php.ini /usr/local/etc/php/conf.d/99-pts-local.ini
 COPY domains/phucthinhsolar.com/public_html/ /var/www/html/
 
 RUN mkdir -p /var/www/html/caches /var/www/html/logs \

@@ -1,7 +1,11 @@
 # Runbook VPS CloudFly — dựng mới, deploy, chuyển nhà và rollback
 
 Ngày chuẩn hóa: 2026-09-17. Baseline: Ubuntu 24.04, Docker Compose, Caddy,
-Apache/PHP 7.4 và MariaDB 10.11. Nguồn triển khai nằm ở `deploy/vps/`.
+Apache/PHP 8.1 và MariaDB 10.11. Nguồn triển khai nằm ở `deploy/vps/`.
+
+Ghi chú: các đoạn mô tả PHP 7.4 bên dưới là lịch sử của đợt dựng VPS ban đầu;
+runtime hiện hành của local và production là PHP 8.1.34. Mọi deploy mới phải
+dùng image PHP 8.1.
 
 ## 1. Kiến trúc xác nhận từ mã nguồn
 
@@ -20,9 +24,8 @@ Release không chứa `libraries/config.php`, `upload`, cache hoặc log. Config
 
 ## 2. Phiên bản và nợ kỹ thuật
 
-- Giữ PHP 7.4 trong lần chuyển đầu vì project mới được kiểm thử đầy đủ trên
-  nhánh này. PHP 7.4 đã EOL nên phải đặt sau proxy/firewall, export image
-  off-site và lập đợt riêng nâng lên PHP 8.x.
+- Production hiện chạy PHP 8.1; image runtime phải được kiểm tra checksum và
+  lưu cùng rollback release khi deploy. Không quay lại PHP 7.4.
 - Dùng MariaDB 10.11 LTS thay MariaDB 10.4 đã EOL. Chuyển bằng logical dump vào
   DB rỗng; không gắn trực tiếp data directory 10.4 vào container 10.11.
 - Caddy quản lý certificate/gia hạn HTTPS. Apache tiếp tục xử lý `.htaccess`
@@ -199,7 +202,7 @@ Sau release ổn định:
 sudo /srv/phucthinhsolar/scripts/export-runtime-images.sh
 ```
 
-Copy bundle image off-site. Đây là bảo hiểm vì PHP 7.4/base Debian đã EOL và
+Copy bundle image off-site. Đây là bảo hiểm cho rollback khi image/base runtime
 khả năng build lại từ Internet không được xem là đảm bảo lâu dài.
 
 ## 13. Rollback

@@ -6,6 +6,7 @@ $headerPhone = !empty($optsetting['hotline']) ? $func->parsePhone($optsetting['h
 $headerCartCount = !empty($_SESSION['cart']) ? count($_SESSION['cart']) : 0;
 $headerSalesLabel = publicProductPricesVisible() ? 'Mua hàng' : 'Tư vấn';
 $headerQuickCategories = !empty($splist) ? array_slice($splist, 0, 5) : array();
+$headerSearchKeyword = (isset($_GET['keyword']) && is_string($_GET['keyword'])) ? trim($_GET['keyword']) : '';
 ?>
 
 <header class="header pts-header-v3 pts-header-v4" id="headerscroll">
@@ -58,7 +59,7 @@ $headerQuickCategories = !empty($splist) ? array_slice($splist, 0, 5) : array();
         <div class="wrap-content">
             <form class="hdr-search-form" role="search" onsubmit="onSearch('keyword-res'); return false;">
                 <label class="hdr-sr-only" for="keyword-res">Tìm kiếm sản phẩm hoặc giải pháp</label>
-                <input type="search" name="keyword-res" id="keyword-res" placeholder="Bạn cần tìm sản phẩm hoặc giải pháp nào?" autocomplete="off">
+                <input type="search" name="keyword-res" id="keyword-res" value="<?=$headerEscape($headerSearchKeyword)?>" placeholder="Bạn cần tìm sản phẩm hoặc giải pháp nào?" autocomplete="off">
                 <button type="submit" class="hdr-search-submit" aria-label="Tìm kiếm"><i class="fas fa-search" aria-hidden="true"></i></button>
             </form>
             <?php if($headerQuickCategories) { ?>
@@ -81,7 +82,7 @@ $headerQuickCategories = !empty($splist) ? array_slice($splist, 0, 5) : array();
             <form class="pts-catalog-search" role="search" onsubmit="onSearch('ptsCatalogKeyword'); return false;">
                 <label class="hdr-sr-only" for="ptsCatalogKeyword">Tìm sản phẩm, mã sản phẩm</label>
                 <i class="fas fa-search" aria-hidden="true"></i>
-                <input type="search" id="ptsCatalogKeyword" placeholder="Tìm sản phẩm, mã sản phẩm..." autocomplete="off">
+                <input type="search" id="ptsCatalogKeyword" value="<?=$headerEscape($headerSearchKeyword)?>" placeholder="Tìm sản phẩm, mã sản phẩm..." autocomplete="off">
             </form>
             <button class="pts-catalog-close" type="button" aria-label="Đóng danh mục sản phẩm"><i class="fas fa-times" aria-hidden="true"></i></button>
         </div>

@@ -14,7 +14,7 @@
  *
  * Đặt file ảnh vào thư mục upload sản phẩm của container local
  * (UPLOAD_PRODUCT_L, tức /var/www/html/upload/product/ trong container
- * pts-php74-local) với đúng tên file bên dưới trước khi chạy --apply.
+ * pts-php81-local) với đúng tên file bên dưới trước khi chạy --apply.
  *
  * Mặc định chỉ preview:
  *   php migrations/069_add_remaining_needs_cards_images.php

@@ -32,7 +32,7 @@ docker compose -f docker-compose.local.yml ps
 
 - Website: http://localhost:8080/
 - CMS: http://localhost:8080/administrator/
-- Web container: `pts-php74-local`
+- Web container: `pts-php81-local`
 - Database container: `pts-mariadb-local`
 - Database local: `phucthinhs_local`
 
@@ -84,7 +84,7 @@ Mỗi thay đổi commerce phải smoke test:
 category -> product -> add cart -> cart -> checkout -> thank-you -> admin order
 ```
 
-Lint file PHP bằng đúng PHP 7.4 trong container. Kiểm tra cả desktop/mobile, AJAX filter, log PHP/Apache và dữ liệu DB sau test. Xóa hoặc hoàn nguyên toàn bộ dữ liệu kiểm thử giả.
+Lint file PHP bằng đúng PHP 8.1 trong container. Kiểm tra cả desktop/mobile, AJAX filter, log PHP/Apache và dữ liệu DB sau test. Xóa hoặc hoàn nguyên toàn bộ dữ liệu kiểm thử giả.
 
 ## Production
 

@@ -69,7 +69,7 @@ liệu cũ.
 ## 5. Regression test PHP
 
 Không cần chạy từng file trong vận hành thường ngày; `predeploy-local.sh` copy
-vào container PHP 7.4 và điều phối chúng. Nhóm chính:
+vào container PHP 8.1 và điều phối chúng. Nhóm chính:
 
 - Security/session/email: `test-security-hardening.php`,
   `test-public-session-security.php`, `test-email-*.php`, `test-proxy-https.php`.

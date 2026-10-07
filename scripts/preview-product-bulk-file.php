@@ -3,7 +3,7 @@
  * Read-only preview for a real product bulk workbook.
  * Runs the production parse + validation pipeline without committing anything.
  *
- * Usage (inside PHP 7.4 container):
+ * Usage (inside PHP 8.1 container):
  *   php /tmp/preview-product-bulk-file.php /tmp/<workbook>.xlsx
  */
 

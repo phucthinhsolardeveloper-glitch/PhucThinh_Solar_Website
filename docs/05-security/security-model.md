@@ -28,7 +28,7 @@
 
 ## P3/quality
 
-- PHP 7.4 và nhiều library legacy đã hết vòng đời hỗ trợ.
+- PHP 8.1 và nhiều library legacy đã hết vòng đời hỗ trợ.
 - Không có automated security/dependency scanning.
 
 Tìm kiếm baseline không xác nhận webshell trong vùng upload; đây không phải full penetration test. Không ghi secret/PII cụ thể vào tài liệu.

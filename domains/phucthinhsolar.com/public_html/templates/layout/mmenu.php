@@ -3,7 +3,7 @@
             <li class="mmenu-search-item mm-listitem_nosubitems">
                 <label class="hdr-sr-only" for="ptsMobileMenuSearch">Tìm sản phẩm</label>
                 <form class="mmenu-search-control" role="search" onsubmit="onSearch('ptsMobileMenuSearch'); return false;">
-                    <i class="fas fa-search" aria-hidden="true"></i><input type="search" id="ptsMobileMenuSearch" name="ptsMobileMenuSearch" placeholder="Tìm sản phẩm..." autocomplete="off">
+                    <i class="fas fa-search" aria-hidden="true"></i><input type="search" id="ptsMobileMenuSearch" name="ptsMobileMenuSearch" value="<?=$headerEscape($headerSearchKeyword)?>" placeholder="Tìm sản phẩm..." autocomplete="off">
                 </form>
             </li>
             <li class="mmenu-product-root">

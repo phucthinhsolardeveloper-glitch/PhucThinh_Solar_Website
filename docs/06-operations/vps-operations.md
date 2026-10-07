@@ -37,7 +37,7 @@ email; xem [cutover-dns-va-host-cu.md](cutover-dns-va-host-cu.md).
 
 ```text
 /srv/phucthinhsolar
-├── docker-compose.yml     3 service: proxy (Caddy) → web (Apache/PHP 7.4) → db (MariaDB 10.11)
+├── docker-compose.yml     3 service: proxy (Caddy) → web (Apache/PHP 8.1) → db (MariaDB 10.11)
 ├── Caddyfile              TLS + reverse proxy
 ├── .env                   domain, email ACME, DB name/user, PTS_WEB_IMAGE   [0600]
 ├── secrets/               [thư mục 0700 root] — xem §6
@@ -315,13 +315,13 @@ quản trị hiện tại — nếu IP động thì rule cũ đã hết đúng.
 
 ---
 
-## 8. Bảo hiểm cho PHP 7.4 đã EOL
+## 8. Bảo hiểm cho PHP 8.1 đã EOL
 
 ```bash
 ./scripts/export-runtime-images.sh
 ```
 
-Xuất bundle image ra file và **copy sang nơi khác**. PHP 7.4 và base Debian đã
+Xuất bundle image ra file và **copy sang nơi khác**. PHP 8.1 và base Debian đã
 hết hỗ trợ; khả năng build lại từ Internet trong vài năm tới không được coi là
 đảm bảo. Nâng lên PHP 8.x là đợt riêng, không làm chung với chuyển host.
 

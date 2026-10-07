@@ -6,7 +6,7 @@ Hướng dẫn dành cho chủ hệ thống, gồm cả vận hành hằng ngày
 `docs/06-operations/owner-system-handbook.md`.
 
 ```text
-Internet -> Cloud Firewall -> Caddy :80/:443 -> Apache/PHP 7.4 -> MariaDB 10.11
+Internet -> Cloud Firewall -> Caddy :80/:443 -> Apache/PHP 8.1 -> MariaDB 10.11
                                          |             |
                                     shared media    private network
 ```

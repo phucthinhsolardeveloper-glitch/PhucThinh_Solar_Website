@@ -152,12 +152,12 @@ if [ "$mode" = "fast" ]; then
         [ -z "$javascript" ] || [ ! -f "$javascript" ] || node --check "$javascript"
     done < <(printf '%s\n' "$changed_paths" | grep -E '\.js$' || true)
     if printf '%s\n' "$changed_paths" | grep -qE '^domains/phucthinhsolar\.com/public_html/.*\.php$'; then
-        running="$(docker inspect --format '{{.State.Running}}' pts-php74-local 2>/dev/null || true)"
-        [ "$running" = "true" ] || fail "FAST cần container pts-php74-local đang chạy để lint PHP 7.4; hoặc dùng --safe."
+        running="$(docker inspect --format '{{.State.Running}}' pts-php81-local 2>/dev/null || true)"
+        [ "$running" = "true" ] || fail "FAST cần container pts-php81-local đang chạy để lint PHP 8.1; hoặc dùng --safe."
         while IFS= read -r php_file; do
             [ -z "$php_file" ] && continue
             relative="${php_file#domains/phucthinhsolar.com/public_html/}"
-            docker exec pts-php74-local php -l "/var/www/html/$relative"
+            docker exec pts-php81-local php -l "/var/www/html/$relative"
         done < <(printf '%s\n' "$changed_paths" | grep -E '^domains/phucthinhsolar\.com/public_html/.*\.php$' || true)
     fi
 else
@@ -200,7 +200,7 @@ remote "cd $remote_release && sha256sum -c SHA256SUMS"
 step "Build, chuyển image và chờ healthcheck"
 # Chạy đúng deploy script đã đi cùng archive và được checksum. Không dùng
 # bản copy cố định trên VPS: bản đó có thể cũ hơn release và lấy nhầm runtime
-# Dockerfile của stack (đã từng khiến release PHP 8.1 build bằng PHP 7.4).
+# Dockerfile của stack phải giữ cùng major runtime PHP 8.1 với local và production.
 remote "tar -xzf $remote_release/deployment-tools-${release_id}.tar.gz -C $remote_release deploy/vps && bash $remote_release/deploy/vps/scripts/deploy-release.sh $remote_release"
 activated=1
 

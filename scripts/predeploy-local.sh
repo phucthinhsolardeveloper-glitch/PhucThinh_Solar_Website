@@ -3,7 +3,7 @@ set -euo pipefail
 
 repo_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 compose_file="$repo_dir/docker-compose.local.yml"
-web_container="pts-php74-local"
+web_container="pts-php81-local"
 base_url="http://localhost:8080"
 
 cd "$repo_dir"

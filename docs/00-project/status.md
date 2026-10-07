@@ -75,7 +75,7 @@ nguồn thật; không coi đó là blocker kỹ thuật và không tự lấp.
 
 ## 2026-09-16: WebP, ảnh showroom và media responsive local, chưa deploy
 
-- Docker PHP 7.4 đã có GD WebP + `cwebp`; frontend tự ưu tiên WebP cho thumbnail
+- Docker PHP 8.1 đã có GD WebP + `cwebp`; frontend tự ưu tiên WebP cho thumbnail
   JPG/PNG, tự fallback ảnh gốc nếu hosting thiếu codec và giữ ảnh gốc sau upload.
 - Có CLI `scripts/optimize-webp.php` chạy file/thư mục theo dry-run; 18 ảnh
   marketing đang dùng đã giảm tổng dung lượng 41,9% mà không xóa JPG nguồn.
@@ -122,7 +122,7 @@ nguồn thật; không coi đó là blocker kỹ thuật và không tự lấp.
 - Trang Về chúng tôi đã được thiết kế lại cho cả `/ve-chung-toi/` và
   `/gioi-thieu/`, dùng nguồn dữ liệu Admin hiện hữu và không tạo schema mới.
   Chi tiết xem `docs/13-handoffs/2026-09-14-about-page-redesign-report.md`.
-- PHP 7.4 lint, Playwright desktop/mobile và toàn bộ cổng
+- PHP 8.1 lint, Playwright desktop/mobile và toàn bộ cổng
   `LOCAL_ENFORCE_RBAC=1 ./scripts/predeploy-local.sh` đã đạt ở mốc bàn giao.
 - Các thay đổi này mới ở Git + Docker local, chưa deploy demo/production và
   không ghi dữ liệu production. Trước khi deploy vẫn cần chủ project duyệt
