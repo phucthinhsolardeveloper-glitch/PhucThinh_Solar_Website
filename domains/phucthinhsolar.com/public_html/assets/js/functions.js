@@ -419,7 +419,7 @@ function doEnter(event,obj)
 
 function onSearch(obj)
 {
-    var keyword = $("#"+obj).val();
+    var keyword = $.trim($("#"+obj).val());
     
     if(keyword=='')
     {
@@ -428,7 +428,7 @@ function onSearch(obj)
     }
     else
     {
-        location.href = "tim-kiem?keyword="+encodeURI(keyword);
+        location.href = "tim-kiem?keyword="+encodeURIComponent(keyword);
     }
 }
 
