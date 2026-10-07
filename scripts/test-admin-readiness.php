@@ -490,6 +490,13 @@ try
         'Form sản phẩm có xem trước ghép ảnh gốc và khung campaign PNG'
     );
     readinessAssert(
+        strpos($adminForm['body'], '1. Ảnh hiển thị trên website') !== false
+            && strpos($adminForm['body'], '2. Khung chiến dịch riêng') !== false
+            && strpos($adminForm['body'], '3. Ảnh quảng cáo') !== false
+            && substr_count($adminForm['body'], 'pts-product-image-optional collapsed-card') === 2,
+        'Form sản phẩm phân biệt ba vai trò ảnh và thu gọn hai mục tùy chọn'
+    );
+    readinessAssert(
         strpos($adminForm['body'], 'Chiến dịch hiển thị') !== false
             && strpos($adminForm['body'], 'data_status=campaign_active') !== false
             && strpos($adminForm['body'], 'product_campaign&act=man') !== false,
@@ -914,6 +921,14 @@ try
         'Danh sách Sản phẩm chọn và render đúng 50 dòng'
     );
     readinessAssert(substr_count($productPerPage['body'], 'title="Thêm mới"') === 1, 'Danh sách Sản phẩm chỉ render một thanh nút Thêm mới');
+    readinessAssert(
+        strpos($productPerPage['body'], 'Kiểm tra dữ liệu') !== false
+            && strpos($productPerPage['body'], 'Hình ảnh website và quảng cáo') !== false
+            && strpos($productPerPage['body'], 'Nội dung sản phẩm') !== false
+            && strpos($productPerPage['body'], '>Quản lý ảnh</button>') !== false
+            && substr_count($productPerPage['body'], 'id="dropdown-gallery-') === 50,
+        'Danh sách sản phẩm nhóm bộ lọc dữ liệu và đặt tên rõ thao tác gallery'
+    );
     $productInvalidPerPage = readinessHttp($base.'index.php?com=product&act=man&type=san-pham&per_page=999', 'GET', array(), $newCookie);
     readinessAssert(
         strpos($productInvalidPerPage['body'], 'value="20" selected') !== false

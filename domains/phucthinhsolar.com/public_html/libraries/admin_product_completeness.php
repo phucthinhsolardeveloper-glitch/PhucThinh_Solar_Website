@@ -45,6 +45,15 @@ if(!function_exists('adminProductDataStatusDefinitions'))
         return isset($definitions[$status]) ? $definitions[$status] : null;
     }
 
+    function adminProductDataStatusGroups()
+    {
+        return array(
+            'Hình ảnh website và quảng cáo' => array('missing_photo', 'missing_photo_feed'),
+            'Nội dung sản phẩm' => array('missing_desc', 'missing_content', 'missing_specs', 'missing_wattage'),
+            'Vận hành và bán hàng' => array('missing_shipping_dims', 'has_discount')
+        );
+    }
+
     /* $d truyền vào để dùng đúng logic kế thừa content_section thật
        (productResolveSections) thay vì chỉ nhìn contentvi. Không có $d (gọi
        cũ, chưa kịp cập nhật call site) thì lùi về check contentvi đơn thuần -

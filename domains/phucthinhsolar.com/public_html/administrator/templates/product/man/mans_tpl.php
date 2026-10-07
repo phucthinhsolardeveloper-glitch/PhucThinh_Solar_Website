@@ -51,10 +51,13 @@
         <span class="btn btn-sm btn-outline-secondary disabled" title="Website đang ẩn giá; Merchant Center yêu cầu giá feed khớp giá trên trang sản phẩm"><i class="fas fa-file-csv mr-2"></i>CSV Merchant Center: cần bật giá công khai</span>
         <?php } ?>
         <div class="dropdown d-inline-block ml-2">
-            <button class="btn btn-sm btn-outline-warning dropdown-toggle" type="button" data-toggle="dropdown"><i class="fas fa-tasks mr-1"></i>Điền dữ liệu thiếu</button>
+            <button class="btn btn-sm btn-outline-warning dropdown-toggle" type="button" data-toggle="dropdown"><i class="fas fa-tasks mr-1"></i>Kiểm tra dữ liệu</button>
             <div class="dropdown-menu">
-                <?php foreach(adminProductDataStatusDefinitions() as $statusKey => $statusDefinition) { if($statusKey === 'campaign_active') continue; ?>
-                    <a class="dropdown-item" href="<?=$linkMan?>&data_status=<?=urlencode($statusKey)?>"><?=htmlspecialchars($statusDefinition['label'], ENT_QUOTES, 'UTF-8')?></a>
+                <?php foreach(adminProductDataStatusGroups() as $groupLabel => $statusKeys) { ?>
+                    <h6 class="dropdown-header"><?=htmlspecialchars($groupLabel, ENT_QUOTES, 'UTF-8')?></h6>
+                    <?php foreach($statusKeys as $statusKey) { $statusDefinition = adminProductDataStatus($statusKey); if(!$statusDefinition) continue; ?>
+                        <a class="dropdown-item" href="<?=$linkMan?>&data_status=<?=urlencode($statusKey)?>"><?=htmlspecialchars($statusDefinition['label'], ENT_QUOTES, 'UTF-8')?></a>
+                    <?php } ?>
                 <?php } ?>
             </div>
         </div>
@@ -207,8 +210,8 @@
                                 <?php if(isset($config['product'][$type]['gallery']) && count($config['product'][$type]['gallery']) > 0) { ?>
 		                            <td class="align-middle">
 		                            	<div class="dropdown">
-		                            		<button type="button" class="btn btn-sm bg-gradient-success dropdown-toggle" id="dropdown-gallery" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Thêm</button>
-		                            		<div class="dropdown-menu" aria-labelledby="dropdown-gallery">
+                                        <button type="button" class="btn btn-sm bg-gradient-success dropdown-toggle" id="dropdown-gallery-<?=$items[$i]['id']?>" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Quản lý ảnh</button>
+                                        <div class="dropdown-menu" aria-labelledby="dropdown-gallery-<?=$items[$i]['id']?>">
 		                            			<?php foreach($config['product'][$type]['gallery'] as $key => $value) { ?>
 					                                <a class="dropdown-item text-dark" href="<?=$linkMulti?>&id_parent=<?=$items[$i]['id']?>&val=<?=$key?>" title="<?=$value['title_sub_photo']?>"><i class="far fa-caret-square-right text-secondary mr-2"></i><?=$value['title_sub_photo']?></a>
 					                            <?php } ?>

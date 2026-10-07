@@ -13,6 +13,9 @@
 	else if($act=='edit') $linkFilter = "index.php?com=product&act=edit&type=".$type."&id=".$id;
     if($act=="copy") $linkSave = "index.php?com=product&act=save_copy&type=".$type;
     else $linkSave = "index.php?com=product&act=save&type=".$type;
+    $activeDataStatus = !empty($_GET['data_status']) ? (string)$_GET['data_status'] : '';
+    $expandPromoImage = !empty($item['photo_khuyenmai']);
+    $expandFeedImage = !empty($item['photo_feed']) || $activeDataStatus === 'missing_photo_feed';
 
     /* Check cols */
     if(isset($config['product'][$type]['gallery']) && count($config['product'][$type]['gallery']) > 0)
@@ -403,7 +406,7 @@
 				<?php if(isset($config['product'][$type]['images']) && $config['product'][$type]['images'] == true) { ?>
 			        <div class="card card-primary card-outline text-sm">
 			            <div class="card-header">
-			                <h3 class="card-title">Hình ảnh <?=$config['product'][$type]['title_main']?></h3>
+			                <h3 class="card-title">1. Ảnh hiển thị trên website</h3>
 			                <div class="card-tools">
 			                	<button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
 			                </div>
@@ -414,11 +417,12 @@
 	                    		$photoDetail = array();
 	                    		$photoDetail['upload'] = UPLOAD_PRODUCT_L;
 	                    		$photoDetail['image'] = (!empty($item) && $act != 'copy') ? $item['photo'] : '';
-	                    		$photoDetail['dimension'] = "Width: ".$config['product'][$type]['width']." px - Height: ".$config['product'][$type]['height']." px (".$config['product'][$type]['img_type'].")";
+                            $photoDetail['dimension'] = "Kích thước đề xuất: ".$config['product'][$type]['width']." × ".$config['product'][$type]['height']." px (".$config['product'][$type]['img_type'].")";
 
 	                    		/* Image */
-	                    		include TEMPLATE.LAYOUT."image.php";
-	                    	?>
+                            include TEMPLATE.LAYOUT."image.php";
+	                    ?>
+	                    <small class="d-block text-muted mt-2">Ảnh chính trên danh sách và trang chi tiết. Nếu chưa có, website tạm dùng ảnh đầu tiên trong gallery.</small>
 			            </div>
 			        </div>
 		        <?php } ?>
@@ -457,16 +461,16 @@
 						$individualFrameSrc = !empty($item['photo_khuyenmai']) ? UPLOAD_PRODUCT_L.$item['photo_khuyenmai'] : '';
 						$campaignFallbackSrc = !empty($productCampaignFallback['photo']) ? $productCampaignFallback['upload'].$productCampaignFallback['photo'] : '';
 						?>
-				        <div class="card card-primary card-outline text-sm">
+				        <div class="card card-primary card-outline text-sm pts-product-image-optional<?=$expandPromoImage ? '' : ' collapsed-card'?>">
 				            <div class="card-header">
-				                <h3 class="card-title">Khung riêng của sản phẩm (không bắt buộc)</h3>
+				                <h3 class="card-title">2. Khung chiến dịch riêng <span class="badge badge-light ml-1">Tùy chọn</span></h3>
 				                <div class="card-tools">
-				                <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
+				                <button type="button" class="btn btn-tool" data-card-widget="collapse" aria-label="Mở hoặc thu gọn khung chiến dịch riêng"><i class="fas fa-<?=$expandPromoImage ? 'minus' : 'plus'?>"></i></button>
 				                </div>
 				            </div>
 				            <div class="card-body">
-				                <div class="alert alert-info py-2">
-				                    Khung chiến dịch nên tạo một lần trong <a href="index.php?com=product_campaign&act=man&type=<?=urlencode($type)?>"><strong>Thư viện khung chiến dịch</strong></a> rồi chọn phạm vi áp dụng. Chỉ upload ở đây khi sản phẩm này thật sự cần khung riêng khác chiến dịch.
+				                <div class="alert alert-info py-2 mb-3">
+				                    Chỉ dùng khi sản phẩm này cần khung khác chiến dịch chung. Khung dùng nhiều sản phẩm nên tạo tại <a href="index.php?com=product_campaign&act=man&type=<?=urlencode($type)?>"><strong>Thư viện khung</strong></a>.
 				                </div>
 				                <div class="pts-promo-frame-admin-preview mb-2" aria-label="Xem trước ảnh sản phẩm và khung khuyến mãi">
 				                    <?=$func->getImage(['isLazy' => false, 'class' => 'pts-promo-frame-admin-base', 'sizes' => '300x300x2', 'upload' => UPLOAD_PRODUCT_L, 'image' => (!empty($item['photo'])) ? $item['photo'] : '', 'alt' => 'Ảnh sản phẩm'])?>
@@ -488,17 +492,16 @@
 				        </div>
 			        <?php } ?>
 		        <?php if(isset($config['product'][$type]['images_feed']) && $config['product'][$type]['images_feed'] == true) { ?>
-			        <div class="card card-primary card-outline text-sm">
+			        <div class="card card-primary card-outline text-sm pts-product-image-optional<?=$expandFeedImage ? '' : ' collapsed-card'?>">
 			            <div class="card-header">
-			                <h3 class="card-title">Ảnh Shopping / quảng cáo (không bắt buộc)</h3>
+			                <h3 class="card-title">3. Ảnh quảng cáo <span class="badge badge-light ml-1">Tùy chọn</span></h3>
 			                <div class="card-tools">
-			                <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
+			                <button type="button" class="btn btn-tool" data-card-widget="collapse" aria-label="Mở hoặc thu gọn ảnh quảng cáo"><i class="fas fa-<?=$expandFeedImage ? 'minus' : 'plus'?>"></i></button>
 			                </div>
 			            </div>
 			            <div class="card-body">
-			                <div class="alert alert-info py-2">
-			                    Ảnh riêng cho quảng cáo (Google Shopping, Facebook Catalog...): chỉ có sản phẩm trên nền sạch, <strong>không logo, không chữ, không khung/huy hiệu</strong>. Sản phẩm chưa có ảnh này sẽ không được đưa vào CSV Merchant Center.
-			                    <br><small class="text-muted">Khác với <em>Ảnh sản phẩm</em> và <em>Khung khuyến mãi</em> ở trên - hai mục đó có thể hiện khung/banner khi xem trên web, còn Google/Facebook từ chối thẳng mọi ảnh có khung/banner trong feed quảng cáo, nên cần ảnh gốc sạch riêng ở đây.</small>
+			                <div class="alert alert-info py-2 mb-3">
+			                    Dùng cho Google Shopping và catalog quảng cáo: nền sạch, <strong>không logo, chữ hoặc khung</strong>. Không có ảnh này thì sản phẩm vẫn hiển thị trên website nhưng không được xuất Merchant Center.
 			                </div>
 			                <?php if(!empty($item['photo_feed'])) { ?>
 			                <div class="mb-2">

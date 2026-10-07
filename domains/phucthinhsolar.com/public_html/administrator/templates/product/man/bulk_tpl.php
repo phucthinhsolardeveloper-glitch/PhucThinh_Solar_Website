@@ -55,8 +55,11 @@ $bulkScopeQuery = $bulkDataStatusDefinition ? '&data_status='.urlencode($bulkDat
                         <a class="btn btn-primary pts-bulk-primary-action mr-2 mb-2" href="<?=$bulkBase?>&act=bulk_export&format=xlsx"><i class="fas fa-file-export mr-2"></i>Xuất tất cả sản phẩm</a>
                         <?php if($bulkDataStatusDefinition) { ?><a class="btn btn-warning pts-bulk-primary-action mr-2 mb-2" href="<?=$bulkBase?>&act=bulk_export&format=xlsx<?=$bulkScopeQuery?>"><i class="fas fa-filter mr-2"></i>Xuất nhóm đang lọc</a><?php } ?>
                         <a class="btn btn-outline-primary pts-bulk-primary-action mr-2 mb-2" href="<?=$bulkBase?>&act=bulk_template&format=xlsx"><i class="far fa-file-excel mr-2"></i>Tải file mẫu</a>
-                        <div class="dropdown mb-2"><button class="btn btn-light border pts-bulk-primary-action dropdown-toggle" type="button" data-toggle="dropdown">Xuất theo dữ liệu thiếu</button><div class="dropdown-menu dropdown-menu-right pts-bulk-export-menu">
-                            <?php foreach(adminProductDataStatusDefinitions() as $statusKey => $statusDefinition) { ?><a class="dropdown-item" href="<?=$bulkBase?>&act=bulk_export&format=xlsx&data_status=<?=urlencode($statusKey)?>">Excel: <?=htmlspecialchars($statusDefinition['label'], ENT_QUOTES, 'UTF-8')?></a><?php } ?>
+                        <div class="dropdown mb-2"><button class="btn btn-light border pts-bulk-primary-action dropdown-toggle" type="button" data-toggle="dropdown">Xuất theo tình trạng dữ liệu</button><div class="dropdown-menu dropdown-menu-right pts-bulk-export-menu">
+                            <?php foreach(adminProductDataStatusGroups() as $groupLabel => $statusKeys) { ?>
+                                <h6 class="dropdown-header"><?=htmlspecialchars($groupLabel, ENT_QUOTES, 'UTF-8')?></h6>
+                                <?php foreach($statusKeys as $statusKey) { $statusDefinition = adminProductDataStatus($statusKey); if(!$statusDefinition) continue; ?><a class="dropdown-item" href="<?=$bulkBase?>&act=bulk_export&format=xlsx&data_status=<?=urlencode($statusKey)?>">Excel: <?=htmlspecialchars($statusDefinition['label'], ENT_QUOTES, 'UTF-8')?></a><?php } ?>
+                            <?php } ?>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="<?=$bulkBase?>&act=bulk_export&format=csv">CSV: Tất cả sản phẩm</a>
                             <?php if($bulkDataStatusDefinition) { ?><a class="dropdown-item" href="<?=$bulkBase?>&act=bulk_export&format=csv<?=$bulkScopeQuery?>">CSV: Nhóm đang lọc</a><?php } ?>
