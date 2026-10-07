@@ -256,6 +256,24 @@ test('desktop product mega-menu follows the selected 4/4/2 layout and supports s
   await expect(trigger).toBeFocused();
 });
 
+test('desktop product mega-menu scales with wide viewports without horizontal overflow', async ({ page, isMobile }) => {
+  test.skip(isMobile, 'Desktop product catalogue overlay.');
+  for (const width of [1360, 1920]) {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    await dismissEntrancePopup(page);
+    const trigger = page.locator('.menu-catalog-trigger');
+    const overlay = page.locator('#ptsCatalogOverlay');
+    await trigger.hover();
+    const metrics = await overlay.locator('.pts-catalog-panel').evaluate(element => {
+      const box = element.getBoundingClientRect();
+      return { width: box.width, viewport: window.innerWidth, overflow: element.scrollWidth - element.clientWidth };
+    });
+    expect(Math.abs(metrics.width - Math.min(1200, width * 0.85))).toBeLessThanOrEqual(1);
+    expect(metrics.overflow).toBeLessThanOrEqual(1);
+  }
+});
+
 test('product catalogue trigger opens the landing page when activated', async ({ page, isMobile }) => {
   test.skip(isMobile, 'Desktop product catalogue landing link.');
   await page.setViewportSize({ width: 1440, height: 900 });

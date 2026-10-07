@@ -23,9 +23,9 @@ $pcDiscount = publicProductPricesVisible() && (!empty($v['sale_price']) && !empt
 $pcPromoFrame = productPromoFrameForCard($v, $cache);
 $pcResolvedImage = productImageResolveFromDatabase($d, $v);
 ?>
-<div class="product-card">
+<div class="product-card lv-card">
     <a class="product-item" href="/san-pham/<?=$v[$sluglang]?>" title="<?=$v['name'.$lang]?>">
-        <div class="product-card-img">
+        <div class="product-card-img lv-photo">
             <?php if($pcDiscount > 0) { ?>
             <span class="badge-discount">-<?=$pcDiscount?>%</span>
             <?php } ?>
@@ -38,7 +38,7 @@ $pcResolvedImage = productImageResolveFromDatabase($d, $v);
             <?=$func->getImage(['isLazy' => false, 'class' => 'w-100 pts-promo-frame', 'sizes' => '300x300x2', 'upload' => $pcPromoFrame['upload'], 'image' => $pcPromoFrame['photo'], 'alt' => ''])?>
             <?php } ?>
         </div>
-        <div class="caption">
+        <div class="caption lv-cardbody">
             <p class="name"><?=$func->noBreakModelCode($v['name'.$lang])?></p>
             <?php
                 /* Chỉ hiện thông số THẬT đang có, không bịa cho sản phẩm thiếu dữ liệu
@@ -49,10 +49,10 @@ $pcResolvedImage = productImageResolveFromDatabase($d, $v);
                 if(!empty($v['lighting_time']) && (!function_exists('productPdpValueIsMissing') || !productPdpValueIsMissing($v['lighting_time']))) $pcSpecs[] = $v['lighting_time'];
             ?>
             <?php if($pcSpecs) { ?>
-            <p class="pts-card-specs"><?=implode(' · ', array_map(function($s){ return htmlspecialchars($s, ENT_QUOTES, 'UTF-8'); }, $pcSpecs))?></p>
+            <p class="pts-card-specs lv-spec"><?=implode(' · ', array_map(function($s){ return htmlspecialchars($s, ENT_QUOTES, 'UTF-8'); }, $pcSpecs))?></p>
             <?php } ?>
         </div>
-        <p class="price-product">
+        <p class="price-product lv-price">
             <?php if(publicProductRequiresQuote($v)) { ?>
                 <span class="price-new"><?=lienhe?></span>
             <?php } elseif(!empty($v['sale_price'])) { ?>
@@ -72,6 +72,6 @@ $pcResolvedImage = productImageResolveFromDatabase($d, $v);
         <?php } else { ?>
         <a href="javascript:void(0)" class="addcart pts-card-add" data-id="<?=$v['id']?>" data-action="addnow" title="Thêm vào giỏ hàng" aria-label="Thêm vào giỏ hàng"><i class="fas fa-cart-plus" aria-hidden="true"></i><span class="pts-card-action-label">Thêm giỏ hàng</span></a>
         <?php } ?>
-        <a href="/san-pham/<?=$v[$sluglang]?>" class="pts-card-detail" title="Xem chi tiết sản phẩm" aria-label="Xem chi tiết sản phẩm"><span class="pts-card-action-label">Xem chi tiết</span></a>
+        <a href="/san-pham/<?=$v[$sluglang]?>" class="pts-card-detail lv-detail" title="Xem chi tiết sản phẩm" aria-label="Xem chi tiết sản phẩm"><span class="pts-card-action-label">Xem chi tiết</span><span aria-hidden="true">↗</span></a>
     </div>
 </div>

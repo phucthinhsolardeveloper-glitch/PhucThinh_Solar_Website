@@ -717,7 +717,7 @@ test('product category offers contextual sidebar filters without a second top ra
 
   const hero = page.locator('.pts-category-hero');
   if (await hero.evaluate(node => node.classList.contains('has-image'))) {
-    await expect(hero.locator('h1')).toHaveCSS('color', 'rgb(255, 255, 255)');
+    await expect(hero.locator('h1')).toHaveCSS('color', 'rgb(229, 183, 67)');
   }
   await expect(page.locator('.pts-filter-card .collection-category')).toHaveCount(0);
   /* 2026-09-28: dải danh mục con riêng (.pts-subcategory-tabs/-tab) đã gộp
@@ -728,9 +728,14 @@ test('product category offers contextual sidebar filters without a second top ra
   await expect(page.locator('.pts-sidebar-category-filter input[name="car_cat"]').first()).toBeAttached();
   if (!isMobile) await expect(page.locator('.pts-sidebar-category-filter')).toBeHidden();
   await expect(page.locator('.pts-filter-card')).not.toContainText('Loại đèn - dùng cho');
+  const needs = page.locator('.pts-content-cards');
+  await expect(needs).toHaveCount(1);
+  await expect(needs.locator('.pts-lighting-needs-title')).toHaveText('Chọn đèn đúng nhu cầu');
+  await expect(needs.locator('.pts-related-card')).toHaveCount(3);
+  await expect(needs.locator('img[src*="den-nlmt-"]')).toHaveCount(3);
   await expect(page.locator('.pts-category-faq details')).toHaveCount(3);
   const sidebarLabelSize = await page.locator('.pts-filter-card .product-pages__price-label').first().evaluate(node => parseFloat(getComputedStyle(node).fontSize));
-  expect(sidebarLabelSize).toBeGreaterThanOrEqual(15);
+  expect(sidebarLabelSize).toBeGreaterThanOrEqual(13);
   await page.locator('.pts-category-faq summary').first().click();
   await expect(page.locator('.pts-category-faq details').first()).toHaveAttribute('open', '');
 

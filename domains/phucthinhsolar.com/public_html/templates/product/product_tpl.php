@@ -53,7 +53,9 @@ $productSubcategoryNav = isset($productSubcategoryNav) && is_array($productSubca
         }
     }
 ?>
-<section class="pts-category-hero<?=!empty($productCategoryHero) ? ' has-image' : ''?>">
+<main class="pts-lighting-category-v2 pts-product-catalog-view">
+<div class="lv-container">
+<section class="pts-category-hero lv-hero<?=!empty($productCategoryHero) ? ' has-image' : ''?>">
     <?php if(!empty($productCategoryHero)) { ?>
     <figure class="pts-category-hero-media" aria-hidden="true">
         <?=$func->getImage(['isLazy' => false, 'class' => '', 'sizes' => '1800x600x1', 'upload' => $productCategoryHero['upload'], 'image' => $productCategoryHero['photo'], 'alt' => ''])?>
@@ -66,7 +68,8 @@ $productSubcategoryNav = isset($productSubcategoryNav) && is_array($productSubca
             <p><?=htmlspecialchars($ptsCategoryDescription, ENT_QUOTES, 'UTF-8')?></p>
         </div>
     </div>
-    <div class="trust-badge-strip category-trust-strip">
+</section>
+    <div class="trust-badge-strip category-trust-strip lv-trust">
         <div class="row">
             <div class="col-md-3 trust-badge-item">
                 <i class="fas fa-lightbulb" aria-hidden="true"></i>
@@ -86,7 +89,6 @@ $productSubcategoryNav = isset($productSubcategoryNav) && is_array($productSubca
             </div>
         </div>
     </div>
-</section>
 
 <?php
     /* Chỉ hiện MỘT dải ở vị trí này, không bao giờ chồng 2 dải cùng lúc (đây
@@ -111,7 +113,7 @@ $productSubcategoryNav = isset($productSubcategoryNav) && is_array($productSubca
     $ptsShowSubcategorySidebarAlways = $ptsHasSubcategoryRail && $ptsSubcategoryRealCount > 0 && $ptsSubcategoryRealCount < $ptsSubcategoryTabThreshold;
 ?>
 <?php if($ptsShowSubcategoryTabBar) { ?>
-<nav class="pts-category-tabs pts-category-tabs--primary is-sticky-row" aria-label="Loại sản phẩm trong danh mục">
+<nav class="pts-category-tabs pts-category-tabs--primary is-sticky-row lv-tabs" aria-label="Loại sản phẩm trong danh mục">
     <?php foreach($productSubcategoryNav as $ptsSubcategoryItem) {
         $ptsSubcategoryName = !empty($ptsSubcategoryItem['nav_name']) ? $ptsSubcategoryItem['nav_name'] : (!empty($ptsSubcategoryItem['name'.$lang]) ? $ptsSubcategoryItem['name'.$lang] : '');
         if($ptsSubcategoryName === '') continue;
@@ -137,7 +139,7 @@ $productSubcategoryNav = isset($productSubcategoryNav) && is_array($productSubca
              để trống hẳn khu vực này - sidebar lo việc lọc trong danh mục
              đang xem, menu header lo việc chuyển sang danh mục khác. */ ?>
 <?php } elseif(!$ptsShowSubcategorySidebarAlways && !empty($productCategoryNav)) { ?>
-<nav class="pts-category-tabs pts-category-tabs--primary is-sticky-row" aria-label="Danh mục sản phẩm">
+<nav class="pts-category-tabs pts-category-tabs--primary is-sticky-row lv-tabs" aria-label="Danh mục sản phẩm">
     <?php foreach($productCategoryNav as $ptsCategoryNavItem) {
         $ptsCategoryNavName = !empty($ptsCategoryNavItem['nav_name']) ? $ptsCategoryNavItem['nav_name'] : (!empty($ptsCategoryNavItem['name'.$lang]) ? $ptsCategoryNavItem['name'.$lang] : '');
         if($ptsCategoryNavName === '') continue;
@@ -159,8 +161,8 @@ $productSubcategoryNav = isset($productSubcategoryNav) && is_array($productSubca
 <?php } ?>
 
 <?php $currentSort = (isset($_GET['is_orderby'])) ? $_GET['is_orderby'] : ''; ?>
-<div class="product-row row">
-    <div class="product-left col-lg-3" id="product-filter-drawer" aria-hidden="false">
+<div class="product-row row lv-layout">
+    <div class="product-left col-lg-3 lv-filter" id="product-filter-drawer" aria-hidden="false">
         <div class="pts-filter-drawer-head">
             <strong><i class="fas fa-filter" aria-hidden="true"></i> Bộ lọc</strong>
             <button type="button" class="pts-filter-drawer-close toggle-sidebar" aria-label="Đóng bộ lọc"><i class="fas fa-times" aria-hidden="true"></i></button>
@@ -385,8 +387,8 @@ $productSubcategoryNav = isset($productSubcategoryNav) && is_array($productSubca
 
         </div>
     </div>
-    <div class="product-right col-lg-9">
-        <div class="filter_product">
+    <div class="product-right col-lg-9 lv-results">
+        <div class="filter_product lv-toolbar">
             <div class="filter-heading">
                 <span>
                     <strong class="name_title">Danh sách sản phẩm</strong>
@@ -417,10 +419,14 @@ $productSubcategoryNav = isset($productSubcategoryNav) && is_array($productSubca
                 </select>
             </div>
         </div>
+        <label class="lv-search pts-category-search" for="product-category-search">Tìm tên hoặc mã sản phẩm
+            <input type="search" id="product-category-search" name="keywords" value="<?=htmlspecialchars(isset($_GET['keyword']) ? $_GET['keyword'] : '', ENT_QUOTES, 'UTF-8')?>" placeholder="Ví dụ: JDE-6500, JD-V300…" autocomplete="off">
+        </label>
+        <div class="lv-active-filters" aria-live="polite"></div>
         <div class="content-main w-clear">
             <div id="show-product">
                 <?php if(!empty($product)) {?>
-                <div class="grid-product grid-product-3">
+                <div class="grid-product grid-product-3 lv-grid">
                     <?php foreach($product as $k => $v) { include ROOT."templates/product/_product_card.php"; } ?>
                 </div>
                 <?php } else { ?>
@@ -566,8 +572,24 @@ $productSubcategoryNav = isset($productSubcategoryNav) && is_array($productSubca
     </div>
 </section>
 <?php } ?>
-<input type="hidden" name="keywords" id="keyword" value="<?=htmlspecialchars(isset($_GET['keyword']) ? $_GET['keyword'] : '',ENT_QUOTES,'UTF-8')?>">
+<input type="hidden" name="keywords" id="product-keyword-state" value="<?=htmlspecialchars(isset($_GET['keyword']) ? $_GET['keyword'] : '',ENT_QUOTES,'UTF-8')?>">
 <input type="hidden" name="alias" value="<?=htmlspecialchars($productFilterPath ?: '/san-pham/',ENT_QUOTES,'UTF-8')?>">
 <input type="hidden" name="id_list" value="<?= (isset($id_list)) ? $id_list : 0 ?>">
 <input type="hidden" name="id_cat" value="<?= (isset($id_cat)) ? $id_cat : 0 ?>">
 <button type="button" class="mask-sidebar toggle-sidebar" aria-label="Đóng bộ lọc" tabindex="-1"></button>
+</div>
+</main>
+<script>
+(function(){
+    var root = document.querySelector('.pts-lighting-category-v2');
+    var input = root ? root.querySelector('.pts-category-search input[name="keywords"]') : null;
+    var state = root ? root.querySelector('#product-keyword-state') : null;
+    var timer = null;
+    if(!input || !state || typeof fetch_product !== 'function') return;
+    input.addEventListener('input', function(){
+        state.value = input.value;
+        window.clearTimeout(timer);
+        timer = window.setTimeout(function(){ fetch_product(1); }, 260);
+    });
+})();
+</script>
