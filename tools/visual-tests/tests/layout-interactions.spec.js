@@ -517,7 +517,7 @@ test('product landing renders one all-products grid and a data-driven top-level 
   const cards = page.locator('#show-product .product-card');
   await expect(cards.first()).toBeAttached();
   await expect(cards.first().locator('.pts-card-action-label').first()).toBeVisible();
-  await expect(page.locator('.pts-filter-reset')).toBeHidden();
+  await expect(page.locator('.pts-filter-reset')).toBeVisible();
   const activeFilterPage = await page.goto('/san-pham/?is_orderby=abc', { waitUntil: 'domcontentloaded' });
   expect(activeFilterPage && activeFilterPage.ok()).toBeTruthy();
   await expect(page.locator('.pts-filter-reset')).toBeVisible();
@@ -725,10 +725,10 @@ test('product category offers contextual sidebar filters without a second top ra
      product_tpl.php, xác nhận với sếp 2026-09-26. Không còn 2 dải chồng
      nhau nên đổi selector theo cấu trúc mới thay vì lỗi thật. */
   await expect(page.locator('.pts-category-tabs .pts-category-tab').first()).toBeVisible();
-  await expect(page.locator('.pts-sidebar-category-filter input[name="car_cat"]').first()).toBeAttached();
+  await expect(page.locator('.pts-filter-card input[name="car_cat"]').first()).toBeAttached();
   /* Desktop follows the approved catalog mockup: keep contextual filters in
      the left rail; mobile moves the same controls into the filter drawer. */
-  if (!isMobile) await expect(page.locator('.pts-sidebar-category-filter')).toBeVisible();
+  if (!isMobile) await expect(page.locator('.pts-filter-card')).toBeVisible();
   await expect(page.locator('.pts-filter-card')).not.toContainText('Loại đèn - dùng cho');
   const needs = page.locator('.pts-content-cards');
   await expect(needs).toHaveCount(1);
@@ -742,7 +742,7 @@ test('product category offers contextual sidebar filters without a second top ra
   await expect(page.locator('.pts-category-faq details').first()).toHaveAttribute('open', '');
 
   await page.goto('/den-op-tran/', { waitUntil: 'domcontentloaded' });
-  await expect(page.locator('.pts-sidebar-category-filter input[name="car_cat"]').first()).toBeAttached();
+  await expect(page.locator('.pts-filter-card input[name="car_cat"]').first()).toBeAttached();
 });
 
 test('legacy child category redirects permanently to its hierarchical canonical URL', async ({ request }) => {

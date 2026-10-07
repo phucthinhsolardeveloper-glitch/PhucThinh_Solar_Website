@@ -606,36 +606,6 @@ function loadWardByCity(id=0)
     });
 }
 
-/* Dải tab danh mục (.pts-category-tabs.is-sticky-row) không còn sticky nữa -
-   chỉ hiện tự nhiên ở đầu trang rồi trôi mất khi cuộn qua, như nội dung bình
-   thường (sếp 2026-10-02: "chỉ hiện đầu trang, không cần cuộn hiện xuống").
-   JS ở đây chỉ còn 1 việc: bật bản "Loại X" trong sidebar (class
-   pts-sidebar-category-visible trên body) ngay khi dải tab đã trôi qua khỏi
-   đầu màn hình, để không mất khả năng chọn danh mục. Ngưỡng đo bằng
-   KHOẢNG CÁCH THẬT từ đầu tài liệu tới dải tab (đo 1 lần lúc tải trang, lúc
-   chưa cuộn) - trước đó lỡ dùng offsetHeight (chiều cao dải tab, ~47px) làm
-   ngưỡng nên kích hoạt sai ngay khi vừa cuộn rất ít, kết hợp với sticky cũ
-   gây dính chồng lên hero (lỗi sếp chụp ảnh báo lại). */
-(function(){
-    var tabsEl = document.querySelector('.pts-category-tabs.is-sticky-row');
-    if(!tabsEl) return;
-    var naturalTop = tabsEl.getBoundingClientRect().top + (window.scrollY || window.pageYOffset || 0);
-    var ticking = false;
-    function onScroll(){
-        var currentY = window.scrollY || window.pageYOffset || 0;
-        var pastTabs = currentY > naturalTop;
-        document.body.classList.toggle('pts-sidebar-category-visible', pastTabs);
-        ticking = false;
-    }
-    window.addEventListener('scroll', function(){
-        if(!ticking){
-            window.requestAnimationFrame(onScroll);
-            ticking = true;
-        }
-    }, { passive: true });
-    onScroll();
-})();
-
 function loadShip(id=0)
 {
     if(SHIP_CART)

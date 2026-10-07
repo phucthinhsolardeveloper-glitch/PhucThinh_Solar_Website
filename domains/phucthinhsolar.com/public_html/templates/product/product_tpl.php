@@ -91,26 +91,13 @@ $productSubcategoryNav = isset($productSubcategoryNav) && is_array($productSubca
 </section>
 
 <?php
-    /* Chỉ hiện MỘT dải ở vị trí này, không bao giờ chồng 2 dải cùng lúc (đây
-       là điều sếp thấy rối trước đây - danh mục con vốn LUÔN có
-       $productCategoryNav không rỗng nên dải cấp 1 hiện song song với dải
-       "Loại sản phẩm" bên dưới). Quy tắc: trang gốc /san-pham/ (chưa chọn
-       danh mục, $productSubcategoryNav rỗng vì không có $productList) hiện
-       dải danh mục cấp 1; vào hẳn 1 danh mục có nhóm con thì dải cấp 1 biến
-       mất, thay bằng dải "Loại sản phẩm" (danh mục con) đúng vị trí đó, dùng
-       chung 1 kiểu hiển thị to/nổi bật (xác nhận với sếp 2026-09-26). */
-    $ptsHasSubcategoryRail = !empty($productSubcategoryNav) && count($productSubcategoryNav) > 1;
-    /* Số lựa chọn thật (bỏ mục "Tất cả" tổng hợp, không có 'id') quyết định
-       có đáng dựng hẳn 1 thanh ngang riêng hay không. Ít lựa chọn (dưới 4)
-       thì thanh ngang chỉ choán chỗ cho rất ít nút - bỏ hẳn thanh, để thẳng
-       trong sidebar luôn (không cần cuộn/JS gì), đỡ rối hơn (sếp xác nhận
-       2026-10-02: "dưới 4 ô thì cứ auto hiện ở sidebar luôn khỏi có cái
-       thanh đó" - áp dụng chung mọi danh mục, không riêng đèn). */
+    /* Điều hướng danh mục chỉ có một nơi hiển thị: dải tab ngay dưới hero.
+       Tất cả nhóm con trực tiếp đều được đưa vào dải này, kể cả chỉ có 1–3
+       nhóm. Sidebar bên dưới chỉ còn bộ lọc sản phẩm, không lặp lại taxonomy. */
     $ptsSubcategoryRealCount = 0;
     foreach((array) $productSubcategoryNav as $ptsSubcategoryCountItem) if(!empty($ptsSubcategoryCountItem['id'])) $ptsSubcategoryRealCount++;
-    $ptsSubcategoryTabThreshold = 4;
-    $ptsShowSubcategoryTabBar = $ptsHasSubcategoryRail && $ptsSubcategoryRealCount >= $ptsSubcategoryTabThreshold;
-    $ptsShowSubcategorySidebarAlways = $ptsHasSubcategoryRail && $ptsSubcategoryRealCount > 0 && $ptsSubcategoryRealCount < $ptsSubcategoryTabThreshold;
+    $ptsShowSubcategoryTabBar = $ptsSubcategoryRealCount > 0;
+    $ptsCategoryRailClass = 'is-fill';
     /* Dùng đúng bộ icon SVG của mega menu cho rail danh mục; không lấy ảnh
        nav_photo vì ảnh thumbnail nhỏ bị vỡ và lệch phong cách với menu. */
     $ptsResolveCategoryIcon = static function($item) use ($lang) {
@@ -134,7 +121,7 @@ $productSubcategoryNav = isset($productSubcategoryNav) && is_array($productSubca
     };
 ?>
 <?php if($ptsShowSubcategoryTabBar) { ?>
-<nav class="pts-category-tabs pts-category-tabs--primary is-sticky-row lv-tabs" aria-label="Loại sản phẩm trong danh mục">
+<nav class="pts-category-tabs pts-category-tabs--primary is-sticky-row lv-tabs <?=$ptsCategoryRailClass?>" aria-label="Loại sản phẩm trong danh mục">
     <?php foreach($productSubcategoryNav as $ptsSubcategoryItem) {
         $ptsSubcategoryName = !empty($ptsSubcategoryItem['nav_name']) ? $ptsSubcategoryItem['nav_name'] : (!empty($ptsSubcategoryItem['name'.$lang]) ? $ptsSubcategoryItem['name'.$lang] : '');
         if($ptsSubcategoryName === '') continue;
@@ -150,16 +137,11 @@ $productSubcategoryNav = isset($productSubcategoryNav) && is_array($productSubca
     </a>
     <?php } ?>
 </nav>
-    <?php /* Thử thêm dải cấp 1 ở đây rồi bỏ lại (2026-10-02) - menu header
-             "Danh mục sản phẩm" (templates/layout/menu.php) đã liệt kê đủ
-             toàn bộ 9 danh mục cấp 1 trên MỌI trang rồi, thêm 1 dải nữa ngay
-             trong trang là trùng đúng chức năng đó, chỉ gây rối thêm một chỗ
-             điều hướng thừa (sếp tự nhận ra, đúng tinh thần quyết định gốc
-             "người ta muốn gì bấm ở đó rồi"). Danh mục ít danh mục con thì
-             để trống hẳn khu vực này - sidebar lo việc lọc trong danh mục
-             đang xem, menu header lo việc chuyển sang danh mục khác. */ ?>
-<?php } elseif(!$ptsShowSubcategorySidebarAlways && !empty($productCategoryNav)) { ?>
-<nav class="pts-category-tabs pts-category-tabs--primary is-sticky-row lv-tabs" aria-label="Danh mục sản phẩm">
+    <?php /* Trang gốc mới hiển thị dải danh mục cha tổng quát. Trang con chỉ
+             hiển thị nhóm con trực tiếp của chính danh mục đang xem; không
+             đưa toàn bộ danh mục cha vào mọi trang con. */ ?>
+<?php } elseif(empty($productList['id']) && !empty($productCategoryNav)) { ?>
+<nav class="pts-category-tabs pts-category-tabs--primary is-sticky-row lv-tabs <?=$ptsCategoryRailClass?>" aria-label="Danh mục sản phẩm">
     <?php foreach($productCategoryNav as $ptsCategoryNavItem) {
         $ptsCategoryNavName = !empty($ptsCategoryNavItem['nav_name']) ? $ptsCategoryNavItem['nav_name'] : (!empty($ptsCategoryNavItem['name'.$lang]) ? $ptsCategoryNavItem['name'.$lang] : '');
         if($ptsCategoryNavName === '') continue;
@@ -200,72 +182,38 @@ $productSubcategoryNav = isset($productSubcategoryNav) && is_array($productSubca
                      Mỗi nhóm có thể tự thu gọn (accordion, xem apps.js .pts-filter-toggle) nhưng
                      mặc định MỞ SẴN hết - đóng mặc định bị phản hồi là bất tiện (audit 2026-09-10). */ ?>
             <?php
-                /* "Loại đèn" trong sidebar: checkbox lọc đa chọn (car_cat -> is_cat), tái
-                   dùng ĐÚNG MỘT nguồn dữ liệu với dải tab phía trên ($productSubcategoryNav)
-                   để không bao giờ lệch danh sách. name="car_cat" đã được wire sẵn 2 đầu
-                   (backend sources/product.php dòng ~172 nhận is_cat dạng nhiều ID phân
-                   tách dấu phẩy; JS assets/js/functions.js dòng 51/80 tự gom car_cat đã
-                   check + tự chuyển URL canonical khi chỉ chọn đúng 1 mục) - trước đây cố
-                   tình bỏ sidebar để khỏi lặp với dải tab, nay sếp muốn có cả 2 chỗ
-                   (mẫu bố cục đề xuất - trang danh mục đèn, xác nhận với sếp 2026-10-02). */
-                $cat_get = [];
-                if(isset($_GET['is_cat'])){
-                    $cat_get = explode(",", $_GET['is_cat']);
-                }
+                /* Dải tab và sidebar dùng chung một nguồn taxonomy theo đúng mẫu
+                   giao diện: tab để chuyển nhanh, sidebar để lọc nhiều lựa chọn. */
+                $cat_get = isset($_GET['is_cat']) ? explode(',', (string) $_GET['is_cat']) : array();
             ?>
-            <?php /* Áp dụng mọi danh mục có nhóm con (không riêng đèn nữa -
-                     sếp 2026-10-02: "tương tự áp dụng logic này đầy đủ cho
-                     các thành phần tính năng danh mục"). Nhãn tự rút từ tên
-                     danh mục ($ptsCategoryNoun, định nghĩa ở đầu file), không
-                     hardcode riêng "đèn".
-                     - $ptsShowSubcategoryTabBar (>=4 lựa chọn): có dải tab
-                       riêng phía trên rồi, sidebar chỉ hiện SAU khi dải tab
-                       đã cuộn ẩn (class pts-sidebar-category-filter, JS điều
-                       khiển qua pts-sidebar-category-visible trên body) -
-                       tránh trùng lặp 2 chỗ cùng lúc.
-                     - $ptsShowSubcategorySidebarAlways (<4 lựa chọn): không
-                       dựng dải tab riêng nữa (xem phía trên), sidebar hiện
-                       LUÔN, không cần cuộn/JS gì. */ ?>
-            <?php if($ptsShowSubcategoryTabBar || $ptsShowSubcategorySidebarAlways) { ?>
-            <div class="product-pages__price mb20 pts-filter-group pts-filter-open<?=$ptsShowSubcategoryTabBar ? ' pts-sidebar-category-filter' : ''?>">
+            <?php if($ptsShowSubcategoryTabBar) { ?>
+            <div class="product-pages__price mb20 pts-filter-group pts-filter-open">
                 <div class="product-pages__price-aside pts-filter-toggle" role="button" tabindex="0" aria-expanded="true">
-                    <span class="product-pages__price-name">Loại <?=htmlspecialchars($ptsCategoryNoun !== '' ? $ptsCategoryNoun : 'sản phẩm', ENT_QUOTES, 'UTF-8')?></span>
+                    <span class="product-pages__price-name">Danh mục sản phẩm</span>
                     <i class="fas fa-chevron-down pts-filter-chevron" aria-hidden="true"></i>
                 </div>
                 <div class="wrappers-aside__filter-scroll pts-filter-body">
                     <ul class="product-pages__price-nav">
                         <?php foreach($productSubcategoryNav as $ptsSidebarCatItem) {
-                            if(empty($ptsSidebarCatItem['id'])) continue;
-                            $ptsSidebarCatName = !empty($ptsSidebarCatItem['name'.$lang]) ? $ptsSidebarCatItem['name'.$lang] : '';
+                            $ptsSidebarCatName = !empty($ptsSidebarCatItem['nav_name']) ? $ptsSidebarCatItem['nav_name'] : (!empty($ptsSidebarCatItem['name'.$lang]) ? $ptsSidebarCatItem['name'.$lang] : '');
                             if($ptsSidebarCatName === '') continue;
+                            if(empty($ptsSidebarCatItem['id'])) {
                         ?>
+                        <li class="product-pages__price-items"><a class="product-pages__price-label" href="<?=htmlspecialchars($ptsSidebarCatItem['url'], ENT_QUOTES, 'UTF-8')?>"><?=htmlspecialchars($ptsSidebarCatName, ENT_QUOTES, 'UTF-8')?></a></li>
+                        <?php } else { ?>
                         <li class="product-pages__price-items">
                             <label class="mg0 cs-pointer checker product-pages__price-label d-flex p-relative">
-                                <?php /* is_active: đã ở đúng URL canonical của danh mục con đó (click
-                                         tab/vào thẳng link) - không có ?is_cat= trên URL dạng này nên
-                                         phải tự nhận biết, không chỉ dựa vào $cat_get. */ ?>
-                                <input type="checkbox" onchange="fetch_product()" <?=(in_array((string)$ptsSidebarCatItem['id'],$cat_get) || !empty($ptsSidebarCatItem['is_active']))?'checked':''?> name="car_cat" id="car_cat<?=$ptsSidebarCatItem['id']?>"
-                                    value="<?=$ptsSidebarCatItem['id']?>" data-url="<?=htmlspecialchars($ptsSidebarCatItem['url'], ENT_QUOTES, 'UTF-8')?>">
-                                <label class="mg0 checked-fake" for="car_cat<?=$ptsSidebarCatItem['id']?>"></label>
-                                <span class=" ml10" for="car_cat<?=$ptsSidebarCatItem['id']?>"><?=htmlspecialchars($ptsSidebarCatName, ENT_QUOTES, 'UTF-8')?></span>
+                                <input type="checkbox" onchange="fetch_product()" <?=(in_array((string)$ptsSidebarCatItem['id'], $cat_get, true) || !empty($ptsSidebarCatItem['is_active'])) ? 'checked' : ''?> name="car_cat" id="car_cat<?=$ptsSidebarCatItem['id']?>" value="<?=$ptsSidebarCatItem['id']?>" data-url="<?=htmlspecialchars($ptsSidebarCatItem['url'], ENT_QUOTES, 'UTF-8')?>">
+                                <span><?=htmlspecialchars($ptsSidebarCatName, ENT_QUOTES, 'UTF-8')?></span>
                             </label>
                         </li>
-                        <?php } ?>
+                        <?php }
+                        } ?>
                     </ul>
                 </div>
             </div>
-            <?php } ?>
-            <?php /* Trang gốc /san-pham/ (chưa chọn danh mục nào, không có
-                     $productSubcategoryNav): dải "Danh mục sản phẩm" trên
-                     đầu trang cũng cần cùng cơ chế ẩn khi cuộn + hiện lại ở
-                     sidebar như mọi dải danh mục con khác, thay vì biến mất
-                     không còn gì thay thế (sếp chỉ ra 2026-10-02: "tương tự
-                     chức năng hiện tại của danh mục con"). Đây là LINK điều
-                     hướng sang danh mục khác (đổi hẳn trang), không phải
-                     checkbox lọc AJAX như "Loại X" ở trên nên markup khác -
-                     danh sách liên kết thường, không có name="car_cat". */ ?>
-            <?php if(!$ptsShowSubcategoryTabBar && !$ptsShowSubcategorySidebarAlways && !empty($productCategoryNav)) { ?>
-            <div class="product-pages__price mb20 pts-filter-group pts-filter-open pts-sidebar-category-filter">
+            <?php } elseif(empty($productList['id']) && !empty($productCategoryNav)) { ?>
+            <div class="product-pages__price mb20 pts-filter-group pts-filter-open">
                 <div class="product-pages__price-aside pts-filter-toggle" role="button" tabindex="0" aria-expanded="true">
                     <span class="product-pages__price-name">Danh mục sản phẩm</span>
                     <i class="fas fa-chevron-down pts-filter-chevron" aria-hidden="true"></i>
@@ -275,22 +223,10 @@ $productSubcategoryNav = isset($productSubcategoryNav) && is_array($productSubca
                         <?php foreach($productCategoryNav as $ptsSidebarRootItem) {
                             $ptsSidebarRootName = !empty($ptsSidebarRootItem['nav_name']) ? $ptsSidebarRootItem['nav_name'] : (!empty($ptsSidebarRootItem['name'.$lang]) ? $ptsSidebarRootItem['name'.$lang] : '');
                             if($ptsSidebarRootName === '') continue;
-                            $ptsSidebarRootUrl = !empty($ptsSidebarRootItem['url']) ? $ptsSidebarRootItem['url'] : (!empty($ptsSidebarRootItem['id']) ? publicProductCategoryPath($ptsSidebarRootItem, 'list', $lang) : '');
+                            $ptsSidebarRootUrl = !empty($ptsSidebarRootItem['url']) ? $ptsSidebarRootItem['url'] : publicProductCategoryPath($ptsSidebarRootItem, 'list', $lang);
                             $ptsSidebarRootActive = !empty($ptsSidebarRootItem['is_active']);
                         ?>
-                        <li class="product-pages__price-items pts-sidebar-root-item<?=$ptsSidebarRootActive ? ' is-active' : ''?>">
-                            <?php /* Tái dùng .product-pages__price-label để thừa đúng màu chữ/khoảng
-                                     cách CSS đã có (thiếu class này chữ bị trắng trên nền trắng, vô
-                                     hình dù DOM vẫn đúng - lỗi thật gặp khi dựng khối này lần đầu).
-                                     Thêm .pts-sidebar-root-item cho trạng thái active rõ ràng hơn
-                                     (font-weight-bold của Bootstrap bị .product-pages__price-label
-                                     !important đè mất, không thấy khác biệt gì - sếp chỉ ra 2026-10-02
-                                     "nhìn không đẹp lắm"). */ ?>
-                            <?php /* Bỏ d-block (Bootstrap display:block!important) - gạch chân giờ
-                                     cần inline-block để chỉ rộng bằng đúng chữ, không kéo dài hết
-                                     hàng (xem .pts-sidebar-root-item>a). */ ?>
-                            <a class="product-pages__price-label" href="<?=htmlspecialchars($ptsSidebarRootUrl, ENT_QUOTES, 'UTF-8')?>"<?=$ptsSidebarRootActive ? ' aria-current="page"' : ''?>><?=htmlspecialchars($ptsSidebarRootName, ENT_QUOTES, 'UTF-8')?></a>
-                        </li>
+                        <li class="product-pages__price-items pts-sidebar-root-item<?=$ptsSidebarRootActive ? ' is-active' : ''?>"><a class="product-pages__price-label" href="<?=htmlspecialchars($ptsSidebarRootUrl, ENT_QUOTES, 'UTF-8')?>"<?=$ptsSidebarRootActive ? ' aria-current="page"' : ''?>><?=htmlspecialchars($ptsSidebarRootName, ENT_QUOTES, 'UTF-8')?></a></li>
                         <?php } ?>
                     </ul>
                 </div>

@@ -50,37 +50,14 @@
     scroll-snap-type:x proximity;
 }
 .pts-category-tabs::-webkit-scrollbar{display:none;}
-/* Dải danh mục cấp 1 CHỈ hiện ở đầu trang, cuộn qua là trôi mất tự nhiên
-   theo luồng tài liệu bình thường (không position:sticky nữa) - sếp xác
-   nhận 2026-10-02 "chỉ hiện đầu trang, không cần cuộn hiện lại". Trước đây
-   dùng sticky + JS ẩn bằng transform, nhưng ngưỡng JS tính theo CHIỀU CAO
-   dải tab (quá nhỏ, ~47px) thay vì KHOẢNG CÁCH THẬT từ đầu trang, khiến
-   dải tab dính cứng rồi bị đẩy lệch chồng lên hero khi cuộn ít (lỗi sếp
-   chụp ảnh báo lại). Bỏ sticky luôn cho chắc, không còn lớp bug nào thuộc
-   nhóm này nữa - JS giờ chỉ còn việc hiện/ẩn bản sidebar tương ứng, xem
-   assets/js/functions.js. */
+/* Dải danh mục chỉ là điều hướng đầu trang và trôi theo luồng tài liệu. */
 .pts-category-tabs.is-sticky-row{
     background:transparent;
 }
-/* Sidebar "Loại đèn" chỉ hiện khi dải tab trên đã cuộn ẩn đi (JS đồng bộ 2
-   trạng thái này, xem assets/js/functions.js) - tránh 2 nơi cùng hiện danh
-   mục một lúc. Trên mobile sidebar là drawer off-canvas riêng (chỉ thấy khi
-   bấm "Bộ lọc"), không có vấn đề trùng lặp nhìn thấy cùng lúc nên luôn hiện
-   bình thường trong drawer, không áp quy tắc ẩn/hiện theo cuộn này. */
-.pts-sidebar-category-filter{display:none;}
-body.pts-sidebar-category-visible .pts-sidebar-category-filter{display:block;}
-@media(max-width:1001px){.pts-sidebar-category-filter{display:block!important;}}
-/* Danh sách liên kết "Danh mục sản phẩm" (trang gốc /san-pham/) - cần phân
-   biệt rõ mục đang xem, không chỉ là 9 dòng chữ xám giống hệt nhau (sếp
-   2026-10-02: "nhìn không đẹp lắm"). Gạch chân vàng vừa đúng độ rộng chữ
-   (inline-block, không phải full-width) + chữ đậm/màu navy cho mục active -
-   sếp đổi ý từ vạch bên trái sang gạch chân (2026-10-02: "vạch vàng gạch
-   chân đẹp hơn ấy"). */
 .pts-sidebar-root-item>a{
     display:inline-block!important;
     padding-bottom:3px!important;
     border-bottom:2px solid transparent;
-    transition:color .15s ease,border-color .15s ease;
 }
 .pts-sidebar-root-item.is-active>a{
     color:var(--pts-navy)!important;
@@ -913,10 +890,21 @@ body.pts-sidebar-category-visible .pts-sidebar-category-filter{display:block;}
     .product-category-page .pts-lighting-category-v2 .lv-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;}
 }
 @media(min-width:1200px){
-    /* Desktop chuẩn: 5 sản phẩm mỗi hàng theo yêu cầu catalog. */
-    .product-category-page .pts-lighting-category-v2 .lv-grid{grid-template-columns:repeat(5,minmax(0,1fr))!important;}
+    /* Sidebar theo đúng nhịp bố cục catalog: đủ rộng để tên danh mục dài
+       không bị bó hẹp, phần sản phẩm vẫn giữ 4 cột. */
+    .product-category-page .pts-lighting-category-v2 .lv-layout{
+        grid-template-columns:260px minmax(0,1fr)!important;
+        gap:30px!important;
+    }
+    /* Desktop theo thiết kế gốc: 4 sản phẩm mỗi hàng để card đủ rộng cho
+       tên, thông số và hai nút hành động. */
+    .product-category-page .pts-lighting-category-v2 .lv-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;}
 }
 @media(min-width:1002px) and (max-width:1199px){
+    .product-category-page .pts-lighting-category-v2 .lv-layout{
+        grid-template-columns:240px minmax(0,1fr)!important;
+        gap:24px!important;
+    }
     /* Khoảng desktop hẹp giữ 4 cột để card không bị ép quá nhỏ. */
     .product-category-page .pts-lighting-category-v2 .lv-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;}
 }
@@ -982,6 +970,11 @@ body.pts-sidebar-category-visible .pts-sidebar-category-filter{display:block;}
     border:0!important;
     border-radius:0!important;
     background:#f4f7fb!important;
+    isolation:isolate!important;
+}
+.product-category-page .pts-lighting-category-v2 .lv-grid .lv-photo>img,
+.product-category-page .pts-lighting-category-v2 .lv-grid .lv-photo>picture>img{
+    mix-blend-mode:multiply!important;
 }
 .product-category-page .pts-lighting-category-v2 .lv-grid .lv-cardbody{padding:12px 0 8px!important;background:#fff!important;}
 .product-category-page .pts-lighting-category-v2 .lv-grid .lv-card .caption .name{color:#132b46!important;font-weight:700!important;}
@@ -989,6 +982,16 @@ body.pts-sidebar-category-visible .pts-sidebar-category-filter{display:block;}
 .product-category-page .pts-lighting-category-v2 .lv-grid .lv-price{padding:0 0 10px!important;background:#fff!important;}
 .product-category-page .pts-lighting-category-v2 .lv-grid .product-card-btns{padding:0 0 12px!important;background:#fff!important;}
 .product-category-page .pts-lighting-category-v2 .lv-grid .product-card-btns .lv-detail{border-color:#8391a0!important;border-radius:2px!important;}
+.product-category-page .pts-lighting-category-v2 .lv-grid .product-card-btns .lv-detail{
+    justify-content:center!important;
+    background:#fff!important;
+    color:#20344b!important;
+    font-weight:500!important;
+}
+.product-category-page .pts-lighting-category-v2 .lv-grid .product-card-btns .lv-detail:hover{
+    background:#fff!important;
+    color:#20344b!important;
+}
 .product-category-page .pts-lighting-category-v2 .lv-tabs .pts-category-tab{border-color:#e1e6ec!important;border-radius:2px!important;}
 .product-category-page .pts-lighting-category-v2 .lv-tabs .pts-category-tab.is-active{background:#c99a32!important;border-color:#c99a32!important;color:#fff!important;}
 .product-category-page .pts-lighting-category-v2 .lv-search,
@@ -1121,9 +1124,6 @@ body.pts-sidebar-category-visible .pts-sidebar-category-filter{display:block;}
     width:auto!important;
     max-width:none!important;
 }
-.product-category-page .pts-lighting-category-v2 .pts-sidebar-category-filter{
-    display:block!important;
-}
 .product-category-page .pts-lighting-category-v2 .lv-filter .product-pages__price-label>input[type="checkbox"]{
     position:static!important;
     left:auto!important;
@@ -1185,6 +1185,31 @@ main.pts-lighting-category-v2 .lv-tabs .pts-category-tab.is-active{
     }
     .pts-lighting-category-v2 .lv-trust>.row{
         grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    }
+}
+
+/* Dải tab phải chạm đều hai mép content. Ít mục thì chia đều toàn hàng;
+   nhiều mục giữ chiều rộng đọc được và cho phép cuộn ngang. */
+.product-category-page .pts-lighting-category-v2 .lv-tabs{
+    justify-content:flex-start!important;
+    align-items:stretch!important;
+    flex-wrap:nowrap!important;
+}
+.product-category-page .pts-lighting-category-v2 .lv-tabs.is-fill .pts-category-tab{
+    flex:1 1 0!important;
+    min-width:0!important;
+}
+@media(min-width:769px){
+    /* Desktop luôn dàn đều toàn bộ số mục hiện có, không giới hạn số ô. */
+    .product-category-page .pts-lighting-category-v2 .lv-tabs.is-fill .pts-category-tab{
+        flex:1 1 0!important;
+        min-width:0!important;
+    }
+}
+@media(max-width:768px){
+    .product-category-page .pts-lighting-category-v2 .lv-tabs.is-fill .pts-category-tab{
+        flex:0 0 145px!important;
+        min-width:145px!important;
     }
 }
 
@@ -1289,6 +1314,14 @@ main.pts-lighting-category-v2 .lv-tabs .pts-category-tab.is-active{
     gap:32px!important;
     align-items:center!important;
     margin:0 auto!important;
+}
+@media(min-width:769px){
+    /* Dải cam kết trải theo toàn banner; bốn nhóm không bị bó vào max-width
+       1320px nên khoảng cách hai mép cân với thiết kế mẫu. */
+    .product-category-page .pts-lighting-category-v2 .lv-hero .lv-trust>.row{
+        width:calc(100vw - 96px)!important;
+        max-width:none!important;
+    }
 }
 .product-category-page .pts-lighting-category-v2 .lv-hero .lv-trust .trust-badge-item{
     display:flex!important;
