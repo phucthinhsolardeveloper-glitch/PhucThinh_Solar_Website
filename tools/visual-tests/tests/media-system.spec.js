@@ -136,7 +136,7 @@ test('thumbnail động ưu tiên WebP và trả đúng MIME', async ({ page, re
   const hero = page.locator('.pts-category-hero-media img');
   await expect(hero).toBeVisible();
   const src = await hero.getAttribute('src');
-  expect(src).toMatch(/catalog-ai-garden-lighting\.webp$/);
+  expect(src).toMatch(/catalog-solar-garden-lighting-20261008-v2\.png\.webp$/);
   const response = await request.get(src);
   expect(response.ok()).toBeTruthy();
   expect(response.headers()['content-type']).toContain('image/webp');
@@ -329,7 +329,7 @@ test('danh mục Đèn sân vườn dùng banner ảnh và card có cùng hàng 
 
   const heroImage = page.locator('.pts-category-hero.has-image .pts-category-hero-media img');
   await expect(heroImage).toBeVisible();
-  await expect(heroImage).toHaveAttribute('src', /catalog-ai-garden-lighting\.webp/);
+  await expect(heroImage).toHaveAttribute('src', /catalog-solar-garden-lighting-20261008-v2\.png\.webp/);
   await expect(page.locator('.pts-category-hero-shade')).toBeVisible();
   expect((await imageMetrics(heroImage)).fit).toBe('cover');
 

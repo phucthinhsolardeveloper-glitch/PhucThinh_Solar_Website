@@ -530,7 +530,7 @@ test('product landing renders one all-products grid and a data-driven top-level 
       const style = getComputedStyle(name);
       return {height: Math.round(name.getBoundingClientRect().height), clamp: style.webkitLineClamp, overflow: style.overflow};
     }));
-    expect(nameMetrics.every(metric => metric.clamp === '3' && metric.overflow === 'hidden')).toBeTruthy();
+    expect(nameMetrics.every(metric => metric.clamp === '2' && metric.overflow === 'hidden')).toBeTruthy();
     expect(new Set(nameMetrics.map(metric => metric.height)).size).toBe(1);
   }
   await page.waitForTimeout(700);
