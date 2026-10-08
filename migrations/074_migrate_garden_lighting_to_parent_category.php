@@ -41,7 +41,29 @@ if(!$parent || !$legacy) { fwrite(STDERR, "Không tìm thấy đủ danh mục c
 $findCat = $pdo->prepare("select id, status from `{$prefix}product_cat` where id_list=? and slugvi=? and type=? limit 1");
 $findCat->execute(array((int)$parent['id'], 'den-san-vuon', 'san-pham'));
 $gardenCat = $findCat->fetch(PDO::FETCH_ASSOC);
-if(!$gardenCat) { fwrite(STDERR, "Không tìm thấy product_cat Đèn sân vườn dưới Đèn NLMT.\n"); exit(1); }
+if(!$gardenCat)
+{
+    if(!$apply)
+    {
+        echo "PREVIEW: sẽ tạo product_cat Đèn sân vườn dưới Đèn NLMT rồi chuyển sản phẩm.\n";
+        exit(0);
+    }
+    /* Production cũ chỉ có list sân vườn và các cat con. Tạo đúng một cat
+       cấp con dưới Đèn NLMT trước khi chuyển sản phẩm, không xoá dữ liệu cũ. */
+    $legacyMeta = $pdo->prepare("select namevi, nameen, descvi, descen, photo from `{$prefix}product_list` where id=? limit 1");
+    $legacyMeta->execute(array((int)$legacy['id']));
+    $legacyRow = $legacyMeta->fetch(PDO::FETCH_ASSOC) ?: array();
+    $insertCat = $pdo->prepare("insert into `{$prefix}product_cat` (id_list,slugvi,slugen,namevi,nameen,descvi,descen,photo,numb,status,type,date_created,date_updated) values (?,?,?,?,?,?,?,?,?,?,?,?,?)");
+    $now = time();
+    $insertCat->execute(array(
+        (int)$parent['id'], 'den-san-vuon', 'garden-solar-lights',
+        'Đèn Sân Vườn', 'Solar Garden Lights',
+        (string)($legacyRow['descvi'] ?? ''), (string)($legacyRow['descen'] ?? ''),
+        (string)($legacyRow['photo'] ?? ''), 1, 'hienthi', 'san-pham', $now, $now
+    ));
+    $gardenCat = array('id' => (int)$pdo->lastInsertId(), 'status' => 'hienthi');
+    echo 'Đã tạo product_cat Đèn sân vườn id='.$gardenCat['id'].".\n";
+}
 
 $countStmt = $pdo->prepare("select count(*) from `{$prefix}product` where id_list=? and type=?");
 $countStmt->execute(array((int)$legacy['id'], 'san-pham'));
@@ -54,6 +76,22 @@ $pdo->beginTransaction();
 try {
     $update = $pdo->prepare("update `{$prefix}product` set id_list=?, id_cat=? where id_list=? and type=?");
     $update->execute(array((int)$parent['id'], (int)$gardenCat['id'], (int)$legacy['id'], 'san-pham'));
+
+    /* Chuyển block nội dung list cũ sang scope cat mới để landing không mất
+       FAQ/cards đã biên tập. Nếu cat đã có block thì giữ nguyên block đó. */
+    $content = $pdo->prepare("select blocksvi, blocksen, mode from `{$prefix}content_section` where scope='list' and scope_id=? limit 1");
+    $content->execute(array((int)$legacy['id']));
+    $legacyContent = $content->fetch(PDO::FETCH_ASSOC);
+    if($legacyContent)
+    {
+        $content->execute(array((int)$gardenCat['id']));
+        $existingContent = $content->fetch(PDO::FETCH_ASSOC);
+        if(!$existingContent)
+        {
+            $insertContent = $pdo->prepare("insert into `{$prefix}content_section` (scope,scope_id,blocksvi,blocksen,mode,date_created,date_updated) values ('cat',?,?,?,?,?,?)");
+            $insertContent->execute(array((int)$gardenCat['id'], $legacyContent['blocksvi'], $legacyContent['blocksen'], $legacyContent['mode'], time(), time()));
+        }
+    }
     $pdo->commit();
     echo 'APPLY xong: '.$update->rowCount()." sản phẩm đã chuyển.\n";
 } catch(Throwable $e) {
