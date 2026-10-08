@@ -741,6 +741,10 @@ test('product category offers contextual sidebar filters without a second top ra
   await page.locator('.pts-category-faq summary').first().click();
   await expect(page.locator('.pts-category-faq details').first()).toHaveAttribute('open', '');
 
+  await page.goto('/danh-muc-san-pham/den-nlmt/den-pha-nang-luong-mat-troi/', { waitUntil: 'domcontentloaded' });
+  await expect(page.locator('.pts-content-cards .pts-related-card')).toHaveCount(3);
+  await expect(page.locator('.pts-category-faq details')).toHaveCount(3);
+
   await page.goto('/den-op-tran/', { waitUntil: 'domcontentloaded' });
   await expect(page.locator('.pts-filter-card input[name="car_cat"]').first()).toBeAttached();
 });

@@ -327,6 +327,12 @@
 		$categoryCardsSplit = productSplitCardsBlocks($categorySectionBlocks);
 		$categorySectionBlocks = $categoryCardsSplit['rest'];
 		$categoryCardsBlocks = $categoryCardsSplit['cards'];
+		if(!empty($productList['slugvi']) && $productList['slugvi'] === 'den-nlmt' && (empty($categoryFaqBlocks) || empty($categoryCardsBlocks)))
+		{
+			$lightingFallback = productLightingFallbackBlocks();
+			if(empty($categoryFaqBlocks)) $categoryFaqBlocks = $lightingFallback['faq'];
+			if(empty($categoryCardsBlocks)) $categoryCardsBlocks = $lightingFallback['cards'];
+		}
 		$categoryShowDescription = productCategoryShowDescription($d, 'list', $id_list);
 		/* SEO */
 		$titleCate = $productList['name'.$lang];
@@ -439,6 +445,12 @@
 			$parentCards = productSplitCardsBlocks($parentFaq['rest']);
 			if(empty($categoryFaqBlocks)) $categoryFaqBlocks = $parentFaq['faq'];
 			if(empty($categoryCardsBlocks)) $categoryCardsBlocks = $parentCards['cards'];
+		}
+		if(!empty($productList['slugvi']) && $productList['slugvi'] === 'den-nlmt' && (empty($categoryFaqBlocks) || empty($categoryCardsBlocks)))
+		{
+			$lightingFallback = productLightingFallbackBlocks();
+			if(empty($categoryFaqBlocks)) $categoryFaqBlocks = $lightingFallback['faq'];
+			if(empty($categoryCardsBlocks)) $categoryCardsBlocks = $lightingFallback['cards'];
 		}
 		/* Lấy sản phẩm */
 		$where = "";

@@ -4,6 +4,22 @@ test.beforeEach(async ({ page }) => {
   await page.route('https://cdn.gtranslate.net/**', route => route.abort());
 });
 
+test('lighting catalog always keeps needs cards and FAQ before the final CTA', async ({ page }) => {
+  for (const path of [
+    '/danh-muc-san-pham/den-nlmt/',
+    '/danh-muc-san-pham/den-nlmt/den-pha-nang-luong-mat-troi/',
+  ]) {
+    await page.goto(path, { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('.pts-content-cards .pts-related-card')).toHaveCount(3);
+    await expect(page.locator('.pts-category-faq details')).toHaveCount(3);
+    const order = await page.locator('.pts-content-cards, .pts-category-faq, .pts-catalog-support').evaluateAll(nodes => nodes.map(node => node.className));
+    expect(order).toHaveLength(3);
+    expect(order[0]).toContain('pts-content-cards');
+    expect(order[1]).toContain('pts-category-faq');
+    expect(order[2]).toContain('pts-catalog-support');
+  }
+});
+
 test('mobile product names clamp to two lines with a fixed card height', async ({ page, isMobile }) => {
   test.skip(!isMobile, 'Kiểm tra này dành cho lưới hai cột mobile.');
   await page.setViewportSize({ width: 390, height: 844 });

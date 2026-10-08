@@ -519,6 +519,33 @@ if(!function_exists('productContentBlockParse'))
     }
 
     /**
+     * Fallback an toàn cho landing Đèn NLMT. Nội dung chính vẫn lấy từ Admin;
+     * bộ này chỉ lấp đúng block còn thiếu khi dữ liệu giữa các môi trường chưa
+     * được đồng bộ, tránh trang danh mục rơi thẳng từ phân trang xuống CTA.
+     */
+    function productLightingFallbackBlocks()
+    {
+        return array(
+            'faq' => array(
+                array('type' => 'faq', 'question' => 'Nên chọn đèn theo những tiêu chí nào?', 'answer' => 'Xác định khu vực cần chiếu sáng, độ sáng mong muốn, thời gian sử dụng mỗi đêm, vị trí lắp đặt, khả năng chống bụi nước và chính sách bảo hành trước khi chọn sản phẩm.'),
+                array('type' => 'faq', 'question' => 'Thời gian chiếu sáng phụ thuộc vào đâu?', 'answer' => 'Thời gian hoạt động phụ thuộc vào dung lượng pin lưu trữ, công suất đèn, khả năng thu nắng của tấm pin, chế độ vận hành và điều kiện thời tiết thực tế.'),
+                array('type' => 'faq', 'question' => 'Cần lưu ý gì khi lắp đặt?', 'answer' => 'Tấm pin cần đặt ở vị trí nhận nắng tốt và hạn chế bóng che; thân đèn, móng hoặc giá đỡ phải phù hợp với vị trí sử dụng và được kiểm tra định kỳ.'),
+            ),
+            'cards' => array(
+                array(
+                    'type' => 'cards',
+                    'title' => 'Chọn đèn đúng nhu cầu',
+                    'items' => array(
+                        array('photo' => 'den-nlmt-duong-giao-thong.png', 'title' => 'Đường giao thông', 'desc' => 'Đảm bảo chiếu sáng an toàn, ổn định', 'link' => '/danh-muc-san-pham/den-nlmt/?is_need=duong-giao-thong'),
+                        array('photo' => 'den-nlmt-san-vuon.png', 'title' => 'Sân nhà & sân vườn', 'desc' => 'Tạo không gian sáng đẹp, tiện nghi', 'link' => '/danh-muc-san-pham/den-nlmt/?is_need=san-nha'),
+                        array('photo' => 'den-nlmt-cong-trinh.png', 'title' => 'Khuôn viên & công trình', 'desc' => 'Giải pháp chiếu sáng linh hoạt, bền bỉ', 'link' => '/danh-muc-san-pham/den-nlmt/?is_need=khuon-vien'),
+                    ),
+                ),
+            ),
+        );
+    }
+
+    /**
      * Dựng HTML cho mảng khối type='cards' (mỗi khối: 1 tiêu đề mục + N thẻ
      * ảnh/tiêu đề/mô tả/link tuỳ chọn) - admin tự soạn qua Admin > Khối nội
      * dung mô tả, KHÔNG hardcode nội dung theo danh mục trong code. Dùng
