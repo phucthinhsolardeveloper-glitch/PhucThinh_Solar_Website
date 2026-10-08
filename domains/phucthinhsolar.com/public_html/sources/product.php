@@ -824,6 +824,17 @@
 			if(!empty($productGardenList))
 			{
 				$productGardenRailItem = $productGardenList;
+				/* Dữ liệu cũ từng có một product_list riêng cho sân vườn. Sau khi
+				   gom sản phẩm về product_cat của Đèn NLMT, rail phải dùng URL cấp
+				   danh mục con canonical thay vì URL legacy cấp list. */
+				foreach((array)$productSubcategoryNav as $productSubcategoryItem)
+				{
+					if(!empty($productSubcategoryItem['slugvi']) && $productSubcategoryItem['slugvi'] === 'den-san-vuon')
+					{
+						$productGardenRailItem['url'] = $productSubcategoryItem['url'];
+						break;
+					}
+				}
 				$productGardenRailItem['nav_name'] = 'Đèn Sân Vườn';
 				$productGardenRailItem['is_virtual_list'] = true;
 				$productGardenRailItem['is_active'] = false;
