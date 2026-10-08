@@ -70,7 +70,7 @@ $countStmt->execute(array((int)$legacy['id'], 'san-pham'));
 $productCount = (int)$countStmt->fetchColumn();
 
 echo 'PREVIEW: chuyển '.$productCount.' sản phẩm từ list '.$legacy['id'].' sang list '.$parent['id'].' / cat '.$gardenCat['id'].".\n";
-if(!$apply || $productCount === 0) exit(0);
+if(!$apply) exit(0);
 
 $pdo->beginTransaction();
 try {
@@ -84,8 +84,9 @@ try {
     $legacyContent = $content->fetch(PDO::FETCH_ASSOC);
     if($legacyContent)
     {
-        $content->execute(array((int)$gardenCat['id']));
-        $existingContent = $content->fetch(PDO::FETCH_ASSOC);
+        $existingContentStmt = $pdo->prepare("select id from `{$prefix}content_section` where scope='cat' and scope_id=? limit 1");
+        $existingContentStmt->execute(array((int)$gardenCat['id']));
+        $existingContent = $existingContentStmt->fetch(PDO::FETCH_ASSOC);
         if(!$existingContent)
         {
             $insertContent = $pdo->prepare("insert into `{$prefix}content_section` (scope,scope_id,blocksvi,blocksen,mode,date_created,date_updated) values ('cat',?,?,?,?,?,?)");
