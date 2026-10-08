@@ -3,6 +3,9 @@
 $productSubcategoryNav = isset($productSubcategoryNav) && is_array($productSubcategoryNav)
     ? $productSubcategoryNav
     : array();
+$productCategoryRailNav = isset($productCategoryRailNav) && is_array($productCategoryRailNav)
+    ? $productCategoryRailNav
+    : $productSubcategoryNav;
     $ptsCategoryTitle = 'Sản phẩm năng lượng mặt trời';
     if(!empty($productCat['name'.$lang])) {
         $ptsCategoryTitle = $productCat['name'.$lang];
@@ -10,6 +13,16 @@ $productSubcategoryNav = isset($productSubcategoryNav) && is_array($productSubca
         $ptsCategoryTitle = $productList['name'.$lang];
     }
     $ptsCategoryPath = isset($productCategoryPath) ? (string)$productCategoryPath : '';
+    $ptsCategoryHeroVariant = '';
+    if(strpos($ptsCategoryPath, 'den-duong') !== false) $ptsCategoryHeroVariant = ' is-street-hero';
+    elseif(strpos($ptsCategoryPath, 'den-pha') !== false) $ptsCategoryHeroVariant = ' is-flood-hero';
+    elseif(strpos($ptsCategoryPath, 'den-san-vuon') !== false) $ptsCategoryHeroVariant = ' is-garden-hero';
+    elseif(strpos($ptsCategoryPath, 'den-ufo') !== false) $ptsCategoryHeroVariant = ' is-ufo-hero';
+    elseif(strpos($ptsCategoryPath, 'den-op-tran') !== false) $ptsCategoryHeroVariant = ' is-ceiling-hero';
+    elseif(strpos($ptsCategoryPath, 'tam-pin') !== false || strpos($ptsCategoryPath, 'kep-tam-pin') !== false) $ptsCategoryHeroVariant = ' is-solar-farm-hero';
+    elseif(strpos($ptsCategoryPath, 'bien-tan-inverter') !== false || strpos($ptsCategoryPath, 'hoa-luoi') !== false) $ptsCategoryHeroVariant = ' is-inverter-hero';
+    elseif(strpos($ptsCategoryPath, 'pin-luu-tru') !== false || strpos($ptsCategoryPath, 'hybrid-luu-tru') !== false) $ptsCategoryHeroVariant = ' is-storage-hero';
+    elseif(strpos($ptsCategoryPath, 'bien-tan-bom') !== false || strpos($ptsCategoryPath, 'may-bom-nlmt') !== false) $ptsCategoryHeroVariant = ' is-pump-hero';
     $ptsCategoryDescription = 'Giải pháp năng lượng phù hợp cho gia đình, doanh nghiệp và công trình';
     if(strpos($ptsCategoryPath, 'den-duong') !== false) $ptsCategoryDescription = 'Chiếu sáng ổn định cho đường phố, lối đi và khu vực công cộng';
     elseif(strpos($ptsCategoryPath, 'den-pha') !== false) $ptsCategoryDescription = 'Chiếu sáng mạnh mẽ cho sân bãi, nhà xưởng và công trình';
@@ -55,7 +68,7 @@ $productSubcategoryNav = isset($productSubcategoryNav) && is_array($productSubca
 ?>
 <main class="pts-lighting-category-v2 pts-product-catalog-view">
 <div class="lv-container">
-<section class="pts-category-hero lv-hero<?=!empty($productCategoryHero) ? ' has-image' : ''?>">
+<section class="pts-category-hero lv-hero<?=!empty($productCategoryHero) ? ' has-image' : ''?><?=$ptsCategoryPath === 'san-pham' ? ' is-root-catalog' : ''?><?=$ptsCategoryHeroVariant?>">
     <?php if(!empty($productCategoryHero)) { ?>
     <figure class="pts-category-hero-media" aria-hidden="true">
         <?=$func->getImage(['isLazy' => false, 'class' => '', 'sizes' => '1800x600x1', 'upload' => $productCategoryHero['upload'], 'image' => $productCategoryHero['photo'], 'alt' => ''])?>
@@ -91,29 +104,55 @@ $productSubcategoryNav = isset($productSubcategoryNav) && is_array($productSubca
 </div>
 
 <?php
-    /* Dải tab dùng để chuyển nhanh giữa các nhóm con. Sidebar lấy cùng nguồn
-       taxonomy để khách có thể lọc ngay trong danh sách theo đúng mockup. */
+    /* Dải tab dùng để chuyển nhanh giữa các nhóm con. Một số danh mục tổng
+       có rail tổng hợp riêng nhưng vẫn giữ taxonomy gốc cho sidebar. */
     $ptsSubcategoryRealCount = 0;
-    foreach((array) $productSubcategoryNav as $ptsSubcategoryCountItem) if(!empty($ptsSubcategoryCountItem['id'])) $ptsSubcategoryRealCount++;
+    foreach((array) $productCategoryRailNav as $ptsSubcategoryCountItem) if(!empty($ptsSubcategoryCountItem['id']) || !empty($ptsSubcategoryCountItem['is_virtual_list'])) $ptsSubcategoryRealCount++;
     $ptsShowSubcategoryTabBar = $ptsSubcategoryRealCount > 0;
     $ptsCategoryRailClass = 'is-fill';
-    /* Dùng đúng bộ icon SVG của mega menu cho rail danh mục; không lấy ảnh
-       nav_photo vì ảnh thumbnail nhỏ bị vỡ và lệch phong cách với menu. */
+    /* Dùng đúng bộ icon SVG của mega menu cho rail danh mục; rail không phụ
+       thuộc ảnh photo của danh mục hay ảnh đại diện sản phẩm. */
     $ptsResolveCategoryIcon = static function($item) use ($lang) {
         $haystack = strtolower((string)($item['url'] ?? '').' '.(string)($item['nav_name'] ?? '').' '.(string)($item['name'.$lang] ?? ''));
         $map = array(
             'den-duong' => 'street',
             'den-pha' => 'flood',
             'den-ufo' => 'ufo',
+            'den-san-vuon-den-nam' => 'bollard',
+            'den-tru-cong' => 'gate-lamp',
+            'den-treo-tuong' => 'wall-lamp',
+            'den-cam-co' => 'spike-light',
             'den-san-vuon' => 'garden',
             'den-op-tran' => 'ceiling',
+            'kep-tam-pin' => 'clamp',
             'tam-pin' => 'panel',
+            'bo-dieu-khien-sac-mppt' => 'controller-mppt',
+            'bo-dieu-khien-sac-pwm' => 'controller-pwm',
+            'bo-dieu-khien-sac' => 'controller',
+            'mppt' => 'controller-mppt',
+            'pwm' => 'controller-pwm',
+            'cap-day' => 'cable',
+            'giam-sat' => 'monitor',
+            'bms-rack' => 'rack',
+            'phu-kien' => 'accessory',
+            'tiep-dia' => 'ground',
+            'vat-tu' => 'supply',
+            'pin-battery' => 'battery',
+            'he-thong-ess' => 'storage',
+            'hoa-luoi' => 'inverter',
+            'hybrid-luu-tru' => 'storage',
+            'bien-tan-bom-nlmt' => 'pump-controller',
+            'may-bom-nlmt' => 'pump',
             'bien-tan-bom' => 'pump',
             'bien-tan' => 'inverter',
             'pin-luu' => 'battery',
             'quat-' => 'fan',
             'thiet-bi' => 'cog',
-            'tru-den' => 'street'
+            'tru-den-duong' => 'pole',
+            'tru-den-trang-tri' => 'decorative-pole',
+            'can-den-gia-do' => 'mount',
+            'mong-de-tru' => 'base',
+            'tru-den' => 'pole'
         );
         foreach($map as $needle => $icon) if(strpos($haystack, $needle) !== false) return $icon;
         return 'cog';
@@ -121,12 +160,12 @@ $productSubcategoryNav = isset($productSubcategoryNav) && is_array($productSubca
 ?>
 <?php if($ptsShowSubcategoryTabBar) { ?>
 <nav class="pts-category-tabs pts-category-tabs--primary is-sticky-row lv-tabs <?=$ptsCategoryRailClass?>" aria-label="Loại sản phẩm trong danh mục">
-    <?php foreach($productSubcategoryNav as $ptsSubcategoryItem) {
+    <?php foreach($productCategoryRailNav as $ptsSubcategoryItem) {
         $ptsSubcategoryName = !empty($ptsSubcategoryItem['nav_name']) ? $ptsSubcategoryItem['nav_name'] : (!empty($ptsSubcategoryItem['name'.$lang]) ? $ptsSubcategoryItem['name'.$lang] : '');
         if($ptsSubcategoryName === '') continue;
     ?>
     <a href="<?=$ptsSubcategoryItem['url']?>" class="pts-category-tab<?=!empty($ptsSubcategoryItem['is_active']) ? ' is-active' : ''?>"<?=!empty($ptsSubcategoryItem['is_active']) ? ' aria-current="page"' : ''?>>
-        <?php if(!empty($ptsSubcategoryItem['id'])) { ?>
+        <?php if(!empty($ptsSubcategoryItem['id']) || !empty($ptsSubcategoryItem['is_virtual_list'])) { ?>
         <span class="pts-category-tab-media">
             <?php $ptsCategoryIcon = $ptsResolveCategoryIcon($ptsSubcategoryItem); ?>
             <?php if(isset($menuCatalogRenderIcon) && is_callable($menuCatalogRenderIcon)) { ?><?=$menuCatalogRenderIcon($ptsCategoryIcon, 'pts-catalog-icon pts-product-category-icon')?><?php } else { ?><i class="fas fa-solar-panel" aria-hidden="true"></i><?php } ?>
@@ -142,6 +181,7 @@ $productSubcategoryNav = isset($productSubcategoryNav) && is_array($productSubca
 <?php } elseif(empty($productList['id']) && !empty($productCategoryNav)) { ?>
 <nav class="pts-category-tabs pts-category-tabs--primary is-sticky-row lv-tabs <?=$ptsCategoryRailClass?>" aria-label="Danh mục sản phẩm">
     <?php foreach($productCategoryNav as $ptsCategoryNavItem) {
+        if(!empty($ptsCategoryNavItem['hide_from_root_rail'])) continue;
         $ptsCategoryNavName = !empty($ptsCategoryNavItem['nav_name']) ? $ptsCategoryNavItem['nav_name'] : (!empty($ptsCategoryNavItem['name'.$lang]) ? $ptsCategoryNavItem['name'.$lang] : '');
         if($ptsCategoryNavName === '') continue;
         $ptsCategoryNavUrl = !empty($ptsCategoryNavItem['url']) ? $ptsCategoryNavItem['url'] : publicProductCategoryPath($ptsCategoryNavItem, 'cat', $lang);
@@ -181,8 +221,9 @@ $productSubcategoryNav = isset($productSubcategoryNav) && is_array($productSubca
                      Mỗi nhóm có thể tự thu gọn (accordion, xem apps.js .pts-filter-toggle) nhưng
                      mặc định MỞ SẴN hết - đóng mặc định bị phản hồi là bất tiện (audit 2026-09-10). */ ?>
             <?php
-                /* Dải tab và sidebar dùng chung một nguồn taxonomy theo đúng mẫu
-                   giao diện: tab để chuyển nhanh, sidebar để lọc nhiều lựa chọn. */
+                /* Rail và sidebar dùng cùng thứ tự hiển thị. Mục virtual list
+                   (Đèn Sân Vườn) là liên kết chuyển nhóm, không phải checkbox
+                   vì không thuộc cùng product_cat với các mục còn lại. */
                 $cat_get = isset($_GET['is_cat']) ? explode(',', (string) $_GET['is_cat']) : array();
             ?>
             <?php if($ptsShowSubcategoryTabBar) { ?>
@@ -193,10 +234,10 @@ $productSubcategoryNav = isset($productSubcategoryNav) && is_array($productSubca
                 </div>
                 <div class="wrappers-aside__filter-scroll pts-filter-body">
                     <ul class="product-pages__price-nav">
-                        <?php foreach($productSubcategoryNav as $ptsSidebarCatItem) {
+                        <?php foreach($productCategoryRailNav as $ptsSidebarCatItem) {
                             $ptsSidebarCatName = !empty($ptsSidebarCatItem['nav_name']) ? $ptsSidebarCatItem['nav_name'] : (!empty($ptsSidebarCatItem['name'.$lang]) ? $ptsSidebarCatItem['name'.$lang] : '');
                             if($ptsSidebarCatName === '') continue;
-                            if(empty($ptsSidebarCatItem['id'])) {
+                            if(empty($ptsSidebarCatItem['id']) || !empty($ptsSidebarCatItem['is_virtual_list'])) {
                         ?>
                         <li class="product-pages__price-items"><a class="product-pages__price-label" href="<?=htmlspecialchars($ptsSidebarCatItem['url'], ENT_QUOTES, 'UTF-8')?>"><?=htmlspecialchars($ptsSidebarCatName, ENT_QUOTES, 'UTF-8')?></a></li>
                         <?php } else { ?>
@@ -261,10 +302,9 @@ $productSubcategoryNav = isset($productSubcategoryNav) && is_array($productSubca
             </div>
 
             <?php
-                /* "Nhu cầu sử dụng" chỉ áp dụng nhóm đèn - suy từ từ khoá tên/mô
-                   tả (xem libraries/product_need_filter.php), không phải field
-                   thật nên chỉ hiện đúng ngữ cảnh, tránh gây hiểu nhầm ở nhóm
-                   sản phẩm khác. $ptsIsLightingCategory định nghĩa ở đầu file. */
+                /* "Nhu cầu sử dụng" chỉ áp dụng nhóm đèn. Ba lựa chọn dùng
+                   taxonomy danh mục đèn làm nguồn chính; bộ lọc giữ fallback
+                   từ khoá cho các list legacy chưa có taxonomy tương ứng. */
                 $need_get = [];
                 if(isset($_GET['is_need'])){
                     $need_get = explode(",", $_GET['is_need']);
@@ -280,9 +320,9 @@ $productSubcategoryNav = isset($productSubcategoryNav) && is_array($productSubca
                     <ul class="product-pages__price-nav">
                         <?php
                             $needOptions = array(
-                                'duong-giao-thong' => 'Đường giao thông',
-                                'san-nha' => 'Sân nhà & sân vườn',
-                                'khuon-vien' => 'Khuôn viên & công trình'
+                                'du-an-cong-trinh' => 'Dự án & công trình',
+                                'chieu-sang-gia-dinh' => 'Chiếu sáng gia đình',
+                                'san-vuon-canh-quan' => 'Sân vườn & cảnh quan'
                             );
                         ?>
                         <?php foreach($needOptions as $nk => $nv) { ?>

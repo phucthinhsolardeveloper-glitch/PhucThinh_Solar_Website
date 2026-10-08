@@ -48,9 +48,6 @@ foreach($homeCategorySlots as $homeCategorySlotIndex => $homeCategorySlot) {
             $homeCategorySlot['photo'] = $homeCampaignPhoto;
             $homeCategorySlot['upload'] = $homeCampaigns[0]['upload'];
         }
-    } elseif(!in_array($homeCategorySlot['key'], array('panel', 'inverter', 'storage', 'pump'), true) && !empty($homeCategoryMatch['photo'])) {
-        $homeCategorySlot['photo'] = $homeCategoryMatch['photo'];
-        $homeCategorySlot['upload'] = UPLOAD_PRODUCT_L;
     }
     if(!empty($homeCategoryMatch['name'.$lang])) $homeCategorySlot['name'] = $homePlainText($homeCategoryMatch['name'.$lang]);
     if(!empty($homeCategoryMatch[$sluglang])) $homeCategorySlot['link'] = 'danh-muc-san-pham/'.$homeCategoryMatch[$sluglang].'/';

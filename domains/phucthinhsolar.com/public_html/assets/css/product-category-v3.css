@@ -929,6 +929,7 @@
     .product-category-page .pts-lighting-category-v2 .lv-grid .lv-card .caption .name{font-size:12px!important;}
     .product-category-page .pts-lighting-category-v2 .lv-grid .product-card-btns{padding:0 12px 12px!important;}
 }
+
 @media(max-width:480px){
     .product-category-page .pts-lighting-category-v2 .lv-hero{min-height:205px!important;max-height:205px!important;padding:0 20px!important;}
     .product-category-page .pts-lighting-category-v2 .lv-hero h1{font-size:25px!important;}
@@ -1501,6 +1502,9 @@ main.pts-lighting-category-v2 .lv-hero .pts-category-copy p{
     font-size:14px!important;
     line-height:1.45!important;
 }
+main.pts-lighting-category-v2 .lv-hero.is-root-catalog .pts-category-hero-media img{
+    object-position:center 59%!important;
+}
 main.pts-lighting-category-v2 .lv-container > .lv-trust{
     position:relative!important;
     z-index:1!important;
@@ -1704,6 +1708,7 @@ main.pts-lighting-category-v2 .lv-grid .lv-card .caption .name{
     -webkit-line-clamp:2!important;
 }
 main.pts-lighting-category-v2 .lv-grid .lv-spec{
+    min-height:19px!important;
     margin:4px 0 0!important;
     padding:0!important;
     color:#5f6f82!important;
@@ -1711,6 +1716,7 @@ main.pts-lighting-category-v2 .lv-grid .lv-spec{
     line-height:1.45!important;
     text-align:left!important;
 }
+main.pts-lighting-category-v2 .lv-grid .pts-card-specs--empty{visibility:hidden!important;}
 main.pts-lighting-category-v2 .lv-grid .lv-price{
     min-height:34px!important;
     padding:0 0 10px!important;
@@ -1842,5 +1848,81 @@ main.pts-lighting-category-v2 .lv-grid .product-card-btns .lv-detail{
     main.pts-lighting-category-v2 .lv-grid .product-card-btns .lv-detail{
         min-height:42px!important;
         font-size:12px!important;
+    }
+}
+
+/* 2026-10-08: banner danh mục giữ tỷ lệ thị giác như mockup desktop.
+   Ảnh nguồn 3:1 không bị ép vào hero 250px ở màn hình lớn; riêng ảnh đèn ốp
+   trần có chủ thể ở vùng cao nên cần hạ điểm crop để không cắt mất đèn. */
+@media(min-width:769px){
+    main.pts-lighting-category-v2 .lv-hero{
+        height:clamp(250px,16.5vw,322px)!important;
+        min-height:clamp(250px,16.5vw,322px)!important;
+        max-height:322px!important;
+    }
+    main.pts-lighting-category-v2 .lv-hero .pts-category-copy{
+        height:100%!important;
+    }
+    main.pts-lighting-category-v2 .lv-hero .pts-category-hero-media img{
+        object-position:center 30%!important;
+    }
+    main.pts-lighting-category-v2 .lv-hero.is-street-hero .pts-category-hero-media img{
+        object-position:center 8%!important;
+    }
+    main.pts-lighting-category-v2 .lv-hero.is-flood-hero .pts-category-hero-media img,
+    main.pts-lighting-category-v2 .lv-hero.is-ufo-hero .pts-category-hero-media img{
+        object-position:center 12%!important;
+    }
+    main.pts-lighting-category-v2 .lv-hero.is-garden-hero .pts-category-hero-media img{
+        object-position:center 45%!important;
+    }
+    main.pts-lighting-category-v2 .lv-hero.is-solar-farm-hero .pts-category-hero-media img{
+        object-position:center 28%!important;
+    }
+    main.pts-lighting-category-v2 .lv-hero.is-inverter-hero .pts-category-hero-media img{
+        object-position:center 46%!important;
+    }
+    main.pts-lighting-category-v2 .lv-hero.is-storage-hero .pts-category-hero-media img{
+        object-position:center 58%!important;
+    }
+    main.pts-lighting-category-v2 .lv-hero.is-pump-hero .pts-category-hero-media img{
+        object-position:center 50%!important;
+    }
+    main.pts-lighting-category-v2 .lv-hero.is-ceiling-hero .pts-category-hero-media img{
+        object-position:center 8%!important;
+    }
+}
+
+/* 2026-10-08: mobile hero copy must have its own readable inset. The hero is
+   full-bleed, so relying on the parent width/padding made the H1 touch the
+   image edge on narrow screens. Keep the image full-bleed while giving the
+   title and description a consistent mobile gutter. */
+@media(max-width:768px){
+    .product-category-page main.pts-lighting-category-v2 .lv-hero{
+        padding:0 16px!important;
+        box-sizing:border-box!important;
+    }
+    .product-category-page main.pts-lighting-category-v2 .lv-hero .pts-category-copy{
+        width:100%!important;
+        max-width:none!important;
+        height:154px!important;
+        box-sizing:border-box!important;
+        padding:0 16px 10px!important;
+    }
+    .product-category-page main.pts-lighting-category-v2 .lv-hero .pts-category-copy-content{
+        width:100%!important;
+        max-width:420px!important;
+    }
+    .product-category-page main.pts-lighting-category-v2 .lv-hero .pts-category-copy h1{
+        margin-bottom:7px!important;
+        max-width:min(100%,300px)!important;
+        font-size:clamp(24px,7vw,28px)!important;
+        line-height:1.12!important;
+        text-wrap:pretty!important;
+    }
+    .product-category-page main.pts-lighting-category-v2 .lv-hero .pts-category-copy p{
+        max-width:300px!important;
+        font-size:13px!important;
+        line-height:1.45!important;
     }
 }

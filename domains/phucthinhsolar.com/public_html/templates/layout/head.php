@@ -23,8 +23,12 @@ if(isset($nhQuery) && $nhQuery !== '') $robotsContent = 'noindex,follow'; ?>
 <meta name="robots" content="<?=$robotsContent?>" />
 
 <!-- Favicon -->
-<link href="assets/images/favicon-pts.png?v=20261005" rel="icon" type="image/png" sizes="32x32" />
-<link href="assets/images/favicon-pts.png?v=20261005" rel="shortcut icon" type="image/png" />
+<link href="assets/images/favicon-pts.png?v=20261008" rel="icon" type="image/png" sizes="32x32" />
+<link href="assets/images/favicon-pts-mobile.png?v=20261008" rel="icon" type="image/png" sizes="192x192" />
+<link href="assets/images/favicon-pts-mobile.png?v=20261008" rel="icon" type="image/png" sizes="512x512" />
+<link href="assets/images/favicon-pts-mobile.png?v=20261008" rel="apple-touch-icon" sizes="180x180" />
+<link href="site.webmanifest?v=20261008" rel="manifest" />
+<meta name="theme-color" content="#0a2251" />
 
 <!-- Webmaster Tool -->
 <?=htmlspecialchars_decode($setting['mastertool'])?>

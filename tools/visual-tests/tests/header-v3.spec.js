@@ -217,7 +217,7 @@ test('các nhóm menu gộp trỏ đến đúng landing và section hiện hữu
   await expect(page.locator('.pts-news-hub h1')).toHaveText('Kiến thức');
 });
 
-test('desktop product mega-menu follows the selected 4/4/2 layout and supports search', async ({ page, isMobile }, testInfo) => {
+test('desktop product mega-menu follows the selected 5/4/2 layout and supports search', async ({ page, isMobile }, testInfo) => {
   test.skip(isMobile, 'Desktop product catalogue overlay.');
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto('/', { waitUntil: 'domcontentloaded' });
@@ -230,21 +230,40 @@ test('desktop product mega-menu follows the selected 4/4/2 layout and supports s
   await expect(trigger).toHaveAttribute('aria-expanded', 'true');
   await expect(overlay.getByRole('dialog')).toBeVisible();
   await expect(overlay.locator('.pts-catalog-group')).toHaveCount(3);
-  for (const [index, count] of [[0, 4], [1, 4], [2, 2]]) {
+  const groupLinks = overlay.locator('.pts-catalog-group h3 .pts-catalog-group-link');
+  await expect(groupLinks).toHaveCount(3);
+  expect(await groupLinks.evaluateAll(links => links.map(link => link.getAttribute('href')))).toEqual([
+    '/danh-muc-san-pham/den-nlmt/',
+    '/danh-muc-san-pham/tam-pin-nang-luong-mat-troi/',
+    '/danh-muc-san-pham/bien-tan-bom/'
+  ]);
+  for (const groupLink of await groupLinks.all()) {
+    const response = await page.request.get(new URL(await groupLink.getAttribute('href'), page.url()).href);
+    expect(response.ok()).toBeTruthy();
+  }
+  for (const [index, count] of [[0, 5], [1, 4], [2, 2]]) {
     await expect(overlay.locator('.pts-catalog-group').nth(index).locator('.pts-catalog-list-item')).toHaveCount(count);
   }
+  const lightingLabels = await overlay.locator('.pts-catalog-group').first().locator('.pts-catalog-list-link').evaluateAll(links => links.map(link => Array.from(link.children).find(child => !child.classList.contains('pts-catalog-item-icon')).textContent.trim()));
+  expect(lightingLabels).toEqual([
+    'Đèn pha năng lượng mặt trời',
+    'Đèn đường năng lượng mặt trời',
+    'Đèn sân vườn',
+    'Đèn UFO năng lượng mặt trời',
+    'Đèn ốp trần'
+  ]);
   await expect(overlay.locator('.pts-catalog-sublist:visible')).toHaveCount(0);
   await expect(overlay.locator('.pts-catalog-help-card')).toBeVisible();
   await expect(overlay.locator('.pts-catalog-footer a[href="/san-pham/"]')).toBeVisible();
   await expect(overlay.locator('.pts-catalog-footer-advice')).toBeVisible();
   const categoryPaths = await overlay.locator('.pts-catalog-list-link').evaluateAll(links => links.map(link => link.getAttribute('href')));
-  expect(new Set(categoryPaths).size).toBe(10);
+  expect(new Set(categoryPaths).size).toBe(11);
   for (const path of categoryPaths) {
     const response = await page.request.get(new URL(path, page.url()).href);
     expect(response.ok(), path).toBeTruthy();
   }
   await overlay.locator('.pts-catalog-panel').screenshot({ path: testInfo.outputPath('desktop-catalog-1440.png'), scale: 'css' });
-  await overlay.locator('a[href="/danh-muc-san-pham/den-san-vuon/"]').hover();
+  await overlay.locator('a[href="danh-muc-san-pham/den-nlmt/den-san-vuon/"]').hover();
   await overlay.locator('.pts-catalog-panel').screenshot({ path: testInfo.outputPath('desktop-catalog-garden-hover-1440.png'), scale: 'css' });
 
   await overlay.locator('#ptsCatalogKeyword').fill('Hybrid');
@@ -258,7 +277,7 @@ test('desktop product mega-menu follows the selected 4/4/2 layout and supports s
 
 test('desktop product mega-menu scales with wide viewports without horizontal overflow', async ({ page, isMobile }) => {
   test.skip(isMobile, 'Desktop product catalogue overlay.');
-  for (const width of [1360, 1920]) {
+  for (const width of [1360, 1920, 2560]) {
     await page.setViewportSize({ width, height: 1000 });
     await page.goto('/', { waitUntil: 'domcontentloaded' });
     await dismissEntrancePopup(page);
@@ -267,10 +286,15 @@ test('desktop product mega-menu scales with wide viewports without horizontal ov
     await trigger.hover();
     const metrics = await overlay.locator('.pts-catalog-panel').evaluate(element => {
       const box = element.getBoundingClientRect();
-      return { width: box.width, viewport: window.innerWidth, overflow: element.scrollWidth - element.clientWidth };
+      const search = element.querySelector('.pts-catalog-search').getBoundingClientRect();
+      return { width: box.width, viewport: window.innerWidth, overflow: element.scrollWidth - element.clientWidth, searchWidth: search.width, searchHeight: search.height, radius: getComputedStyle(element).borderTopLeftRadius };
     });
-    expect(Math.abs(metrics.width - Math.min(1200, width * 0.85))).toBeLessThanOrEqual(1);
+    const expectedWidth = Math.min(1200, width - 64);
+    expect(Math.abs(metrics.width - expectedWidth)).toBeLessThanOrEqual(1);
     expect(metrics.overflow).toBeLessThanOrEqual(1);
+    expect(Math.abs(metrics.searchWidth - 400)).toBeLessThanOrEqual(1);
+    expect(Math.abs(metrics.searchHeight - 48)).toBeLessThanOrEqual(1);
+    expect(metrics.radius).toBe('12px');
   }
 });
 
@@ -285,7 +309,7 @@ test('product catalogue trigger opens the landing page when activated', async ({
   await expect(page.locator('h1')).toBeVisible();
 });
 
-test('desktop catalogue reveals real child categories on hover and keeps leaf rows plain', async ({ page, isMobile }) => {
+test('desktop catalogue keeps the garden category as a leaf and validates any real flyouts', async ({ page, isMobile }) => {
   test.skip(isMobile, 'Desktop category flyout.');
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/', { waitUntil: 'domcontentloaded' });
@@ -293,30 +317,13 @@ test('desktop catalogue reveals real child categories on hover and keeps leaf ro
   await page.locator('.menu-catalog-trigger').hover();
 
   const overlay = page.locator('#ptsCatalogOverlay');
-  const garden = overlay.locator('.pts-catalog-list-item').filter({ has: page.locator('a[href="/danh-muc-san-pham/den-san-vuon/"]') });
+  const garden = overlay.locator('.pts-catalog-list-item').filter({ has: page.locator('a[href="danh-muc-san-pham/den-nlmt/den-san-vuon/"]') });
   await garden.locator('.pts-catalog-list-link').hover();
-  const children = garden.locator('.pts-catalog-sublist');
-  await expect(children).toBeVisible();
-  await expect(children.getByRole('link', { name: 'Đèn trụ cổng' })).toHaveAttribute('href', 'danh-muc-san-pham/den-san-vuon/den-tru-cong/');
-  await children.getByRole('link', { name: 'Đèn trụ cổng' }).hover();
-  await expect(children).toBeVisible();
-  const panel = overlay.locator('.pts-catalog-panel');
-  const geometry = await panel.evaluate(element => {
-    const flyout = element.querySelector('.pts-catalog-list-item:hover > .pts-catalog-sublist').getBoundingClientRect();
-    const bounds = element.getBoundingClientRect();
-    return { left: flyout.left, right: flyout.right, top: flyout.top, bottom: flyout.bottom, panelLeft: bounds.left, panelRight: bounds.right, panelTop: bounds.top, panelBottom: bounds.bottom, overflow: element.scrollWidth - element.clientWidth };
-  });
-  expect(geometry.left).toBeGreaterThanOrEqual(geometry.panelLeft);
-  expect(geometry.right).toBeLessThanOrEqual(geometry.panelRight);
-  expect(geometry.top).toBeGreaterThanOrEqual(geometry.panelTop);
-  expect(geometry.bottom).toBeLessThanOrEqual(geometry.panelBottom);
-  expect(geometry.overflow).toBeLessThanOrEqual(1);
-
+  await expect(garden.locator('.pts-catalog-row-arrow')).toHaveCount(0);
+  await expect(garden.locator('.pts-catalog-sublist')).toHaveCount(0);
   await overlay.locator('#ptsCatalogKeyword').hover();
   await garden.locator('.pts-catalog-list-link').focus();
-  await expect(children).toBeVisible();
-  await page.keyboard.press('Tab');
-  await expect(children.getByRole('link', { name: 'Đèn trụ cổng' })).toBeFocused();
+  await expect(garden.locator('.pts-catalog-list-link')).toBeFocused();
 
   await overlay.locator('#ptsCatalogKeyword').focus();
   for (const row of await overlay.locator('.pts-catalog-list-item').all()) {
@@ -334,6 +341,7 @@ test('desktop catalogue reveals real child categories on hover and keeps leaf ro
       expect(position.right).toBeLessThanOrEqual(position.panelRight);
       expect(position.top).toBeGreaterThanOrEqual(position.panelTop);
       expect(position.bottom).toBeLessThanOrEqual(position.panelBottom);
+      expect(position.right - position.left).toBeGreaterThan(0);
     } else {
       await expect(flyout).toHaveCount(0);
     }

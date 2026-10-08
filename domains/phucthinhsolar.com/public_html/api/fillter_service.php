@@ -25,7 +25,9 @@
 	$pageLink = "api/fillter_service.php?perpage=".$pagingAjax->perpage;
 	$tempLink = "";
 	$where = "";
-	$defaultProductOrder = publicProductDefaultOrder();
+	/* Giữ thứ tự nhóm Đèn giống lần tải trang đầu; nếu AJAX dùng rank cũ,
+	   danh sách sẽ nhảy thứ tự ngay sau khi người dùng chọn nhu cầu. */
+	$defaultProductOrder = publicProductDefaultOrder('', publicProductBossCategoryOrder('', 'san-pham'));
 	$order = $defaultProductOrder;
 	$params = array();
 

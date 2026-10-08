@@ -48,9 +48,7 @@ $pcResolvedImage = productImageResolveFromDatabase($d, $v);
                 if(!empty($v['waterproof_rating']) && (!function_exists('productPdpValueIsMissing') || !productPdpValueIsMissing($v['waterproof_rating']))) $pcSpecs[] = $v['waterproof_rating'];
                 if(!empty($v['lighting_time']) && (!function_exists('productPdpValueIsMissing') || !productPdpValueIsMissing($v['lighting_time']))) $pcSpecs[] = $v['lighting_time'];
             ?>
-            <?php if($pcSpecs) { ?>
-            <p class="pts-card-specs lv-spec"><?=implode(' · ', array_map(function($s){ return htmlspecialchars($s, ENT_QUOTES, 'UTF-8'); }, $pcSpecs))?></p>
-            <?php } ?>
+            <p class="pts-card-specs lv-spec<?=empty($pcSpecs) ? ' pts-card-specs--empty' : ''?>"<?=empty($pcSpecs) ? ' aria-hidden="true"' : ''?>><?=!empty($pcSpecs) ? implode(' · ', array_map(function($s){ return htmlspecialchars($s, ENT_QUOTES, 'UTF-8'); }, $pcSpecs)) : '&nbsp;'?></p>
         </div>
         <p class="price-product lv-price">
             <?php if(publicProductRequiresQuote($v)) { ?>

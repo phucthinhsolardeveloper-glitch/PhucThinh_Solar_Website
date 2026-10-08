@@ -26,7 +26,10 @@
 		}
 	}
 	$orderby = (isset($_GET['is_orderby']) && $_GET['is_orderby'] != '') ? htmlspecialchars($_GET['is_orderby']) : '';
-	$defaultProductOrder = publicProductDefaultOrder();
+	/* Dùng cùng thứ tự nhóm mà rail danh mục đèn đang hiển thị: Pha, Đường,
+	   Sân vườn, UFO, Ốp trần, rồi mới tới nhóm còn lại. Khi khách chọn một
+	   kiểu sắp xếp cụ thể bên giao diện, switch phía dưới sẽ ghi đè thứ tự này. */
+	$defaultProductOrder = publicProductDefaultOrder('', publicProductBossCategoryOrder('', $type));
 	$order_by = $defaultProductOrder;
 	$productListHasItems = array();
 	$productListPreview = array();
@@ -35,7 +38,7 @@
 	{
 		/* Render 4 card đầu của mỗi danh mục ngay trong HTML. Bản cũ trả về các
 		   khối rỗng rồi gọi riêng product3.php sau DOM ready cho từng danh mục. */
-		$productListPreviewRows = $cache->get("select name$lang, slugvi, slugen, id, id_list, id_cat, id_brand, photo, photo_khuyenmai, regular_price, sale_price, discount, type, status, cong_suat, waterproof_rating, lighting_time from #_product where type = ? and find_in_set('hienthi',status)".publicProductDefaultOrder(), array($type), 'result', 7200);
+		$productListPreviewRows = $cache->get("select name$lang, slugvi, slugen, id, id_list, id_cat, id_brand, photo, photo_khuyenmai, regular_price, sale_price, discount, type, status, cong_suat, waterproof_rating, lighting_time from #_product where type = ? and find_in_set('hienthi',status)".$defaultProductOrder, array($type), 'result', 7200);
 		foreach($productListPreviewRows as $productListPreviewRow)
 		{
 			$productListId = (int)$productListPreviewRow['id_list'];
@@ -166,7 +169,7 @@
 			$extraParams = array_merge($extraParams, $priceParams);
 		}
 
-		/* Nhu cầu sử dụng (chỉ nhóm đèn - suy từ tên/mô tả sản phẩm) */
+		/* Nhu cầu sử dụng (nhóm đèn lọc theo taxonomy; list legacy dùng fallback) */
 		$idNeed = (isset($_GET['is_need']) && $_GET['is_need'] != '') ? $_GET['is_need'] : '';
 		if($idNeed != '')
 		{
@@ -302,6 +305,18 @@
 	{
 		/* Lấy cấp 1 detail */
 		$productList = $d->rawQueryOne("select id, name$lang, desc$lang, slugvi, slugen, type, photo, options from #_product_list where id = ? and type = ? limit 0,1",array($idl,$type));
+		/* Danh mục Sân Vườn đã chuyển thành product_cat của Đèn NLMT. Giữ
+		   landing cũ làm URL legacy và chuyển thẳng sang canonical mới. */
+		if(!empty($productList['slugvi']) && $productList['slugvi'] === 'den-san-vuon')
+		{
+			$gardenParentList = $d->rawQueryOne("select id, slugvi, slugen from #_product_list where slugvi = ? and type = ? and find_in_set('hienthi',status) limit 1",array('den-nlmt',$type));
+			$gardenCategory = !empty($gardenParentList['id']) ? $d->rawQueryOne("select pc.id, pc.id_list, pc.slugvi, pc.slugen, pl.slugvi list_slugvi, pl.slugen list_slugen from #_product_cat pc join #_product_list pl on pl.id = pc.id_list and pl.type = pc.type where pc.id_list = ? and pc.slugvi = ? and pc.type = ? and find_in_set('hienthi',pc.status) limit 1",array($gardenParentList['id'],'den-san-vuon',$type)) : array();
+			if(!empty($gardenCategory))
+			{
+				header('Location: '.$configBase.publicProductCategoryPath($gardenCategory, 'cat', $lang), true, 301);
+				exit;
+			}
+		}
 		$slug_param = $productList[$sluglang];
 		$id_list = $productList['id'];
 		$brand = productContextualBrands($d, $brand, "id_list = ? and type = ? and find_in_set('hienthi',status)", array($id_list, $type));
@@ -383,6 +398,19 @@
 
 		/* Lấy cấp 1 */
 		$productList = $d->rawQueryOne("select id, name$lang, desc$lang, slugvi, slugen, photo from #_product_list where id = ? and type = ? limit 0,1",array($productCat['id_list'],$type));
+		/* Các URL phân loại cũ của Đèn Sân Vườn được giữ để chuyển hướng sau
+		   khi sản phẩm đã gom về danh mục con mới, tránh tạo trang rỗng hoặc
+		   mất SEO. */
+		if(!empty($productList['slugvi']) && $productList['slugvi'] === 'den-san-vuon')
+		{
+			$gardenParentList = $d->rawQueryOne("select id, slugvi, slugen from #_product_list where slugvi = ? and type = ? and find_in_set('hienthi',status) limit 1",array('den-nlmt',$type));
+			$gardenCategory = !empty($gardenParentList['id']) ? $d->rawQueryOne("select pc.id, pc.id_list, pc.slugvi, pc.slugen, pl.slugvi list_slugvi, pl.slugen list_slugen from #_product_cat pc join #_product_list pl on pl.id = pc.id_list and pl.type = pc.type where pc.id_list = ? and pc.slugvi = ? and pc.type = ? and find_in_set('hienthi',pc.status) limit 1",array($gardenParentList['id'],'den-san-vuon',$type)) : array();
+			if(!empty($gardenCategory))
+			{
+				header('Location: '.$configBase.publicProductCategoryPath($gardenCategory, 'cat', $lang), true, 301);
+				exit;
+			}
+		}
 		$slug_param = $productCat[$sluglang];
 		$id_cat = $productCat['id'];
 		$brand = productContextualBrands($d, $brand, "id_cat = ? and type = ? and find_in_set('hienthi',status)", array($id_cat, $type));
@@ -713,6 +741,7 @@
 	   đang bật trong Admin; không dựng danh mục giả ở frontend. */
 	$productCategoryNav = array();
 	$productSubcategoryNav = array();
+	$productCategoryRailNav = array();
 	$productCategoryDescription = '';
 	$productCatalogSupport = array();
 	if($id == '')
@@ -730,6 +759,9 @@
 		{
 			$productCategoryNavItem['url'] = publicProductCategoryPath($productCategoryNavItem, 'list', $lang);
 			$productCategoryNavItem['is_active'] = !empty($productList['id']) && (int)$productList['id'] === (int)$productCategoryNavItem['id'];
+			/* Đèn sân vườn được trình bày bên trong rail tổng của Đèn, không
+			   đứng ngang hàng với Quạt/Tấm pin/Thiết bị ở rail cấp gốc. */
+			$productCategoryNavItem['hide_from_root_rail'] = !empty($productCategoryNavItem['slugvi']) && $productCategoryNavItem['slugvi'] === 'den-san-vuon';
 		}
 		unset($productCategoryNavItem);
 		array_unshift($productCategoryNav, array(
@@ -746,13 +778,84 @@
 				'url' => publicProductCategoryPath($productList, 'list', $lang),
 				'is_active' => empty($idc) && empty($idi) && empty($ids)
 			);
-			$productSubcategoryRows = $d->rawQuery("select pc.id, pc.name$lang, pc.desc$lang, pc.slugvi, pc.slugen, pc.photo, coalesce(nullif(pc.photo,''),(select pnav.photo from #_product pnav where pnav.id_cat = pc.id and pnav.type = pc.type and find_in_set('hienthi',pnav.status) and pnav.photo <> '' order by pnav.numb,pnav.id desc limit 1)) nav_photo, pl.slugvi list_slugvi, pl.slugen list_slugen from #_product_cat pc join #_product_list pl on pl.id = pc.id_list and pl.type = pc.type where pc.id_list = ? and pc.type = ? and find_in_set('hienthi',pc.status) and exists (select 1 from #_product p where p.id_cat = pc.id and p.type = ? and find_in_set('hienthi',p.status)) order by pc.numb,pc.id desc", array((int)$productList['id'], $type, $type));
+			$productSubcategoryRows = $d->rawQuery("select pc.id, pc.name$lang, pc.desc$lang, pc.slugvi, pc.slugen, pc.photo, pl.slugvi list_slugvi, pl.slugen list_slugen from #_product_cat pc join #_product_list pl on pl.id = pc.id_list and pl.type = pc.type where pc.id_list = ? and pc.type = ? and find_in_set('hienthi',pc.status) and exists (select 1 from #_product p where p.id_cat = pc.id and p.type = ? and find_in_set('hienthi',p.status)) order by pc.numb,pc.id desc", array((int)$productList['id'], $type, $type));
 			foreach($productSubcategoryRows as $productSubcategoryRow)
 			{
 				$productSubcategoryRow['url'] = publicProductCategoryPath($productSubcategoryRow, 'cat', $lang);
+				if(!empty($productSubcategoryRow['slugvi']) && $productSubcategoryRow['slugvi'] === 'den-san-vuon') $productSubcategoryRow['nav_name'] = 'Đèn Sân Vườn';
 				$productSubcategoryRow['is_active'] = !empty($productCat['id']) && (int)$productCat['id'] === (int)$productSubcategoryRow['id'];
 				$productSubcategoryNav[] = $productSubcategoryRow;
 			}
+		}
+
+		/*
+		 * Trang den-nlmt là danh mục tổng của nhóm đèn. Dữ liệu cũ lưu Đèn sân
+		 * vườn ở một product_list riêng, nên không đưa bản ghi giả vào
+		 * product_cat (sẽ làm sai bộ lọc và URL cấp con). Rail hiển thị dùng một
+		 * bản sao tổng hợp; mục sân vườn vẫn trỏ về landing hiện có, nơi các
+		 * phân loại cũ được giữ trong dữ liệu nhưng không còn phát hành thành
+		 * nhóm lựa chọn trên giao diện.
+		 */
+		$productCategoryRailNav = $productSubcategoryNav;
+		if(!empty($productList['slugvi']) && $productList['slugvi'] === 'den-nlmt')
+		{
+			$productGardenList = array();
+			foreach((array)$productCategoryNav as $productCategoryNavItem)
+			{
+				if(!empty($productCategoryNavItem['slugvi']) && $productCategoryNavItem['slugvi'] === 'den-san-vuon')
+				{
+					$productGardenList = $productCategoryNavItem;
+					break;
+				}
+			}
+
+			if(!empty($productGardenList))
+			{
+				$productGardenRailItem = $productGardenList;
+				$productGardenRailItem['nav_name'] = 'Đèn Sân Vườn';
+				$productGardenRailItem['is_virtual_list'] = true;
+				$productGardenRailItem['is_active'] = false;
+				$productCategoryRailNav[] = $productGardenRailItem;
+			}
+
+			$productLightingRailOrder = array(
+				'den-pha-nang-luong-mat-troi' => 10,
+				'den-pha' => 10,
+				'den-duong-nang-luong-mat-troi' => 20,
+				'den-duong' => 20,
+				'den-san-vuon' => 30,
+				'den-ufo' => 40,
+				'den-op-tran' => 50
+			);
+			$productLightingRailAll = array();
+			$productLightingRailItems = array();
+			foreach($productCategoryRailNav as $productLightingRailIndex => $productLightingRailItem)
+			{
+				if(empty($productLightingRailItem['id']) && empty($productLightingRailItem['is_virtual_list']))
+				{
+					$productLightingRailAll[] = $productLightingRailItem;
+					continue;
+				}
+				$productLightingRailItem['_pts_rail_order'] = isset($productLightingRailOrder[$productLightingRailItem['slugvi']]) ? $productLightingRailOrder[$productLightingRailItem['slugvi']] : 1000;
+				$productLightingRailItem['_pts_rail_index'] = $productLightingRailIndex;
+				$productLightingRailItems[] = $productLightingRailItem;
+			}
+			usort($productLightingRailItems, static function($left, $right) {
+				if($left['_pts_rail_order'] === $right['_pts_rail_order']) return $left['_pts_rail_index'] <=> $right['_pts_rail_index'];
+				return $left['_pts_rail_order'] <=> $right['_pts_rail_order'];
+			});
+			foreach($productLightingRailItems as &$productLightingRailItem) {
+				unset($productLightingRailItem['_pts_rail_order'], $productLightingRailItem['_pts_rail_index']);
+			}
+			unset($productLightingRailItem);
+			$productCategoryRailNav = array_merge($productLightingRailAll, $productLightingRailItems);
+		}
+		elseif(!empty($productList['slugvi']) && $productList['slugvi'] === 'den-san-vuon')
+		{
+			/* Theo bố cục mới, sân vườn là một nhóm sản phẩm duy nhất. Giữ các
+			   product_cat cũ trong dữ liệu để bảo toàn URL/rollback, nhưng không
+			   phát hành chúng thành các tab phân loại trên landing sân vườn. */
+			$productCategoryRailNav = array();
 		}
 
 		/* Dải hỗ trợ cuối catalog dùng slot Admin hiện có. Nếu Admin từng cấu
@@ -806,17 +909,49 @@
 			break;
 		}
 		$productCategoryHeroFallbacks = array(
-			'san-pham' => array('catalog-products-hero-20261007.png', 'Danh mục thiết bị năng lượng mặt trời Phúc Thịnh Solar'),
-			'danh-muc-san-pham/den-nlmt' => array('catalog-ai-solar-lighting.webp', 'Chiếu sáng năng lượng mặt trời cho đường và công trình'),
-			'danh-muc-san-pham/bien-tan-inverter' => array('catalog-ai-inverter.webp', 'Hệ thống biến tần điện mặt trời được lắp đặt gọn gàng'),
-			'danh-muc-san-pham/tam-pin-nang-luong-mat-troi' => array('catalog-ai-solar-panels.webp', 'Tấm pin và hệ khung điện mặt trời trên mái công trình'),
+			'san-pham' => array('catalog-products-hero-20261007-v2.png', 'Danh mục thiết bị năng lượng mặt trời Phúc Thịnh Solar'),
+			'danh-muc-san-pham/den-nlmt' => array('catalog-lighting-overview-20261008.png', 'Tổng quan giải pháp chiếu sáng năng lượng mặt trời'),
+			'danh-muc-san-pham/den-nlmt/den-duong' => array('catalog-solar-street-lighting-20261008.png', 'Đèn đường năng lượng mặt trời cho đường phố và lối đi'),
+			'danh-muc-san-pham/den-nlmt/den-pha-nang-luong-mat-troi' => array('catalog-solar-flood-lighting-20261008.png', 'Đèn pha năng lượng mặt trời cho sân bãi và công trình'),
+			'danh-muc-san-pham/den-nlmt/den-pha' => array('catalog-solar-flood-lighting-20261008.png', 'Đèn pha năng lượng mặt trời cho sân bãi và công trình'),
+			'danh-muc-san-pham/den-nlmt/den-san-vuon' => array('catalog-solar-garden-lighting-20261008-v2.png', 'Đèn sân vườn năng lượng mặt trời cho nhà ở và khuôn viên'),
+			'danh-muc-san-pham/den-nlmt/den-ufo' => array('catalog-solar-ufo-highbay-20261008-v2.png', 'Đèn UFO năng lượng mặt trời cho nhà xưởng và không gian cao'),
+			'danh-muc-san-pham/den-nlmt/den-op-tran' => array('catalog-solar-ceiling-lighting-20261008.png', 'Đèn ốp trần năng lượng mặt trời cho hiên nhà và hành lang'),
+			'danh-muc-san-pham/tru-den/tru-den-duong' => array('catalog-solar-street-poles-20261008.png', 'Trụ đèn đường cho hệ thống chiếu sáng ngoài trời'),
+			'danh-muc-san-pham/tru-den/tru-den-trang-tri' => array('catalog-decorative-lamp-posts-20261008.png', 'Trụ đèn trang trí cho sân vườn và khuôn viên'),
+			'danh-muc-san-pham/tru-den/can-den-gia-do' => array('catalog-street-light-arms-20261008.png', 'Cần đèn và giá đỡ cho hệ thống chiếu sáng'),
+			'danh-muc-san-pham/tru-den/mong-de-tru' => array('catalog-street-pole-foundations-20261008.png', 'Móng và đế trụ cho công trình chiếu sáng'),
+			'danh-muc-san-pham/tam-pin-nang-luong-mat-troi/kep-tam-pin' => array('catalog-utility-solar-mounting-20261008.png', 'Kẹp tấm pin và phụ kiện cố định cho trang trại điện mặt trời'),
+			'danh-muc-san-pham/bien-tan-inverter/hoa-luoi' => array('catalog-grid-tie-solar-20261008.png', 'Biến tần hòa lưới cho nhà máy điện mặt trời quy mô lớn'),
+			'danh-muc-san-pham/bien-tan-inverter/hybrid-luu-tru' => array('catalog-hybrid-inverter-storage-20261008.png', 'Biến tần hybrid kết hợp điện mặt trời và hệ thống lưu trữ'),
+			'danh-muc-san-pham/pin-luu-tru/pin-battery' => array('catalog-lithium-battery-modules-20261008.png', 'Module pin lithium cho hệ thống lưu trữ năng lượng'),
+			'danh-muc-san-pham/pin-luu-tru/he-thong-ess' => array('catalog-ess-container-site-20261008.png', 'Hệ thống ESS container cho dự án lưu trữ năng lượng'),
+			'danh-muc-san-pham/pin-luu-tru/bms-rack-phu-kien' => array('catalog-bms-rack-20261008.png', 'BMS, rack và phụ kiện quản lý hệ thống pin lưu trữ'),
+			'danh-muc-san-pham/bien-tan-bom/bien-tan-bom-nlmt' => array('catalog-solar-pump-inverter-20261008.png', 'Biến tần bơm năng lượng mặt trời cho hệ thống tưới và cấp nước quy mô lớn'),
+			'danh-muc-san-pham/bien-tan-bom/may-bom-nlmt' => array('catalog-solar-water-pump-20261008.png', 'Máy bơm năng lượng mặt trời cho nông nghiệp và công trình'),
+			'danh-muc-san-pham/thiet-bi-dien-nang-luong-mat-troi/bo-dieu-khien-sac-mppt' => array('catalog-mppt-controller-20261008-v2.png', 'Bộ điều khiển sạc MPPT cho hệ thống điện mặt trời'),
+			'danh-muc-san-pham/thiet-bi-dien-nang-luong-mat-troi/bo-dieu-khien-sac-pwm' => array('catalog-pwm-controller-20261008.png', 'Bộ điều khiển sạc PWM cho hệ thống điện mặt trời'),
+			'danh-muc-san-pham/thiet-bi-dien-nang-luong-mat-troi/cap-day-dien' => array('catalog-solar-cables-wiring-20261008.png', 'Cáp và dây điện chuyên dụng cho hệ thống năng lượng mặt trời'),
+			'danh-muc-san-pham/thiet-bi-dien-nang-luong-mat-troi/giam-sat-do-luong' => array('catalog-solar-monitoring-20261008.png', 'Thiết bị giám sát và đo lường hệ thống điện mặt trời'),
+			'danh-muc-san-pham/thiet-bi-dien-nang-luong-mat-troi/phu-kien-den-nlmt' => array('catalog-solar-lighting-accessories-20261008.png', 'Phụ kiện lắp đặt đèn năng lượng mặt trời'),
+			'danh-muc-san-pham/thiet-bi-dien-nang-luong-mat-troi/tiep-dia-ong-bao-ve' => array('catalog-solar-protection-grounding-20261008.png', 'Tiếp địa và ống bảo vệ cho hệ thống điện mặt trời'),
+			'danh-muc-san-pham/thiet-bi-dien-nang-luong-mat-troi/vat-tu-phu-tro' => array('catalog-solar-electrical-accessories-v2.jpg', 'Vật tư phụ trợ cho thi công và lắp đặt điện mặt trời'),
+			/* Giữ các đường dẫn con cũ nếu còn được chia sẻ trong link/SEO legacy. */
+			'danh-muc-san-pham/den-duong' => array('catalog-solar-street-lighting-20261008.png', 'Đèn đường năng lượng mặt trời cho đường phố và lối đi'),
+			'danh-muc-san-pham/den-pha-nang-luong-mat-troi' => array('catalog-solar-flood-lighting-20261008.png', 'Đèn pha năng lượng mặt trời cho sân bãi và công trình'),
+			'danh-muc-san-pham/den-pha' => array('catalog-solar-flood-lighting-20261008.png', 'Đèn pha năng lượng mặt trời cho sân bãi và công trình'),
+			'danh-muc-san-pham/den-san-vuon' => array('catalog-solar-garden-lighting-20261008-v2.png', 'Đèn sân vườn năng lượng mặt trời cho nhà ở và khuôn viên'),
+			'danh-muc-san-pham/den-ufo' => array('catalog-solar-ufo-highbay-20261008-v2.png', 'Đèn UFO năng lượng mặt trời cho nhà xưởng và không gian cao'),
+			'danh-muc-san-pham/den-op-tran' => array('catalog-solar-ceiling-lighting-20261008.png', 'Đèn ốp trần năng lượng mặt trời cho hiên nhà và hành lang'),
+			'danh-muc-san-pham/bien-tan-inverter' => array('catalog-inverter-overview-20261008.png', 'Hệ thống biến tần điện mặt trời cho công trình và nhà máy'),
+			'danh-muc-san-pham/tam-pin-nang-luong-mat-troi' => array('catalog-utility-solar-farm-20261008.png', 'Trang trại tấm pin năng lượng mặt trời quy mô lớn'),
 			'danh-muc-san-pham/tru-den' => array('catalog-lamp-posts-v2.jpg', 'Trụ đèn cổ điển và phụ kiện lắp đặt ngoài trời'),
 			'danh-muc-san-pham/den-san-vuon' => array('catalog-ai-garden-lighting.webp', 'Không gian sân vườn sử dụng đèn năng lượng mặt trời'),
-			'danh-muc-san-pham/quat-nang-luong-mat-troi' => array('catalog-ai-solar-fan.webp', 'Quạt đứng sử dụng năng lượng mặt trời cho không gian gia đình'),
-			'danh-muc-san-pham/bien-tan-bom' => array('catalog-ai-solar-pump.webp', 'Hệ thống bơm nước sử dụng năng lượng mặt trời'),
-			'danh-muc-san-pham/thiet-bi-dien-nang-luong-mat-troi' => array('catalog-ai-solar-accessories.webp', 'Dây dẫn, đầu nối và thiết bị bảo vệ cho hệ thống điện mặt trời'),
-			'danh-muc-san-pham/he-thong-khung-nhom' => array('catalog-solar-panel-mounting-v2.jpg', 'Hệ khung và phụ kiện lắp đặt tấm pin năng lượng mặt trời'),
-			'danh-muc-san-pham/pin-luu-tru' => array('catalog-ai-battery-storage.webp', 'Hệ thống pin lưu trữ năng lượng cho gia đình và doanh nghiệp')
+			'danh-muc-san-pham/quat-nang-luong-mat-troi' => array('catalog-solar-fan-20261008-v2.png', 'Quạt đứng sử dụng năng lượng mặt trời cho không gian gia đình'),
+			'danh-muc-san-pham/bien-tan-bom' => array('catalog-solar-pumping-overview-20261008.png', 'Hệ thống bơm nước năng lượng mặt trời cho nông nghiệp và công trình'),
+			'danh-muc-san-pham/thiet-bi-dien-nang-luong-mat-troi' => array('catalog-solar-bos-accessories-20261008.png', 'Dây dẫn, đầu nối và thiết bị bảo vệ cho hệ thống điện mặt trời'),
+			'danh-muc-san-pham/he-thong-khung-nhom' => array('catalog-utility-solar-mounting-20261008.png', 'Hệ khung và phụ kiện lắp đặt tấm pin cho dự án quy mô lớn'),
+			'danh-muc-san-pham/pin-luu-tru' => array('catalog-utility-bess-20261008.png', 'Hệ thống pin lưu trữ năng lượng cho gia đình và doanh nghiệp')
 		);
 		if(empty($productCategoryHero) && !$productCategoryHeroConfigured && isset($productCategoryHeroFallbacks[$productCategoryPath]))
 		{
@@ -835,6 +970,24 @@
 		if(empty($productCategoryHero) && !empty($productList['photo']))
 		{
 			$productCategoryHero = array('photo' => $productList['photo'], 'upload' => UPLOAD_PRODUCT_L, 'alt' => $titleCate);
+		}
+		/* Dùng banner đang render làm ảnh chia sẻ. Trước đây photo danh mục
+		   được dùng cho og:image; sau khi rail chuyển sang SVG, metadata bị rỗng
+		   và nền tảng chia sẻ link tự rơi về favicon nhỏ. Với tunnel local, lấy
+		   host hiện tại để crawler có thể tải được ảnh thay vì trỏ về localhost. */
+		if(empty($seo->get('photo')) && !empty($productCategoryHero['photo']))
+		{
+			$shareHost = isset($_SERVER['HTTP_HOST']) ? trim((string)$_SERVER['HTTP_HOST']) : '';
+			$shareBase = $configBase;
+			if($shareHost !== '' && (strpos($shareHost, '.trycloudflare.com') !== false || $shareHost === $configUrl))
+			{
+				$shareForwardedProto = isset($_SERVER['HTTP_X_FORWARDED_PROTO']) ? strtolower(trim(explode(',', (string)$_SERVER['HTTP_X_FORWARDED_PROTO'])[0])) : '';
+				$shareScheme = ($shareForwardedProto === 'https' || (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')) ? 'https://' : 'http://';
+				$shareBase = $shareScheme.$shareHost.'/';
+			}
+			$shareUpload = trim((string)$productCategoryHero['upload'], '/\\');
+			$sharePhoto = ltrim((string)$productCategoryHero['photo'], '/\\');
+			$seo->set('photo', rtrim($shareBase, '/').'/'.($shareUpload !== '' ? $shareUpload.'/' : '').$sharePhoto);
 		}
 	}
 

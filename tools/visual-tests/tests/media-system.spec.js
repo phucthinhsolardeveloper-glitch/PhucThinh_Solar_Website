@@ -142,6 +142,70 @@ test('thumbnail động ưu tiên WebP và trả đúng MIME', async ({ page, re
   expect(response.headers()['content-type']).toContain('image/webp');
 });
 
+test('mọi trang danh mục có banner đúng ngữ cảnh và không rơi về ảnh sản phẩm', async ({ page }, testInfo) => {
+  test.setTimeout(120000);
+  if (testInfo.project.name.includes('mobile')) {
+    // Kiểm tra đúng vùng hẹp mà tiêu đề dài dễ bị rớt một từ xuống dòng.
+    await page.setViewportSize({ width: 360, height: 800 });
+  }
+  const categoryHeroes = [
+    ['/danh-muc-san-pham/den-nlmt/', /catalog-lighting-overview-20261008\.png(?:\.webp)?$/],
+    ['/danh-muc-san-pham/den-nlmt/den-duong/', /catalog-solar-street-lighting-20261008\.png(?:\.webp)?$/],
+    ['/danh-muc-san-pham/den-nlmt/den-pha-nang-luong-mat-troi/', /catalog-solar-flood-lighting-20261008\.png(?:\.webp)?$/],
+    ['/danh-muc-san-pham/den-nlmt/den-san-vuon/', /catalog-solar-garden-lighting-20261008-v2\.png(?:\.webp)?$/],
+    ['/danh-muc-san-pham/den-nlmt/den-ufo/', /catalog-solar-ufo-highbay-20261008-v2\.png(?:\.webp)?$/],
+    ['/danh-muc-san-pham/den-nlmt/den-op-tran/', /catalog-solar-ceiling-lighting-20261008\.png(?:\.webp)?$/],
+    ['/danh-muc-san-pham/tam-pin-nang-luong-mat-troi/kep-tam-pin/', /catalog-utility-solar-mounting-20261008\.png(?:\.webp)?$/],
+    ['/danh-muc-san-pham/bien-tan-inverter/hoa-luoi/', /catalog-grid-tie-solar-20261008\.png(?:\.webp)?$/],
+    ['/danh-muc-san-pham/bien-tan-inverter/hybrid-luu-tru/', /catalog-hybrid-inverter-storage-20261008\.png(?:\.webp)?$/],
+    ['/danh-muc-san-pham/pin-luu-tru/pin-battery/', /catalog-lithium-battery-modules-20261008\.png(?:\.webp)?$/],
+    ['/danh-muc-san-pham/pin-luu-tru/he-thong-ess/', /catalog-ess-container-site-20261008\.png(?:\.webp)?$/],
+    ['/danh-muc-san-pham/pin-luu-tru/bms-rack-phu-kien/', /catalog-bms-rack-20261008\.png(?:\.webp)?$/],
+    ['/danh-muc-san-pham/bien-tan-bom/bien-tan-bom-nlmt/', /catalog-solar-pump-inverter-20261008\.png(?:\.webp)?$/],
+    ['/danh-muc-san-pham/bien-tan-bom/may-bom-nlmt/', /catalog-solar-water-pump-20261008\.png(?:\.webp)?$/],
+    ['/danh-muc-san-pham/thiet-bi-dien-nang-luong-mat-troi/bo-dieu-khien-sac-mppt/', /catalog-mppt-controller-20261008-v2\.png(?:\.webp)?$/],
+    ['/danh-muc-san-pham/thiet-bi-dien-nang-luong-mat-troi/bo-dieu-khien-sac-pwm/', /catalog-pwm-controller-20261008\.png(?:\.webp)?$/],
+    ['/danh-muc-san-pham/thiet-bi-dien-nang-luong-mat-troi/cap-day-dien/', /catalog-solar-cables-wiring-20261008\.png(?:\.webp)?$/],
+    ['/danh-muc-san-pham/thiet-bi-dien-nang-luong-mat-troi/giam-sat-do-luong/', /catalog-solar-monitoring-20261008\.png(?:\.webp)?$/],
+    ['/danh-muc-san-pham/thiet-bi-dien-nang-luong-mat-troi/phu-kien-den-nlmt/', /catalog-solar-lighting-accessories-20261008\.png(?:\.webp)?$/],
+    ['/danh-muc-san-pham/thiet-bi-dien-nang-luong-mat-troi/tiep-dia-ong-bao-ve/', /catalog-solar-protection-grounding-20261008\.png(?:\.webp)?$/],
+    ['/danh-muc-san-pham/thiet-bi-dien-nang-luong-mat-troi/vat-tu-phu-tro/', /catalog-solar-electrical-accessories-v2\.jpg(?:\.webp)?$/],
+    ['/danh-muc-san-pham/tru-den/tru-den-duong/', /catalog-solar-street-poles-20261008\.png(?:\.webp)?$/],
+    ['/danh-muc-san-pham/tru-den/tru-den-trang-tri/', /catalog-decorative-lamp-posts-20261008\.png(?:\.webp)?$/],
+    ['/danh-muc-san-pham/tru-den/can-den-gia-do/', /catalog-street-light-arms-20261008\.png(?:\.webp)?$/],
+    ['/danh-muc-san-pham/tru-den/mong-de-tru/', /catalog-street-pole-foundations-20261008\.png(?:\.webp)?$/],
+    ['/danh-muc-san-pham/bien-tan-inverter/', /catalog-inverter-overview-20261008\.png(?:\.webp)?$/],
+    ['/danh-muc-san-pham/tam-pin-nang-luong-mat-troi/', /catalog-utility-solar-farm-20261008\.png(?:\.webp)?$/],
+    ['/danh-muc-san-pham/pin-luu-tru/', /catalog-utility-bess-20261008\.png(?:\.webp)?$/],
+    ['/danh-muc-san-pham/quat-nang-luong-mat-troi/', /catalog-solar-fan-20261008-v2\.png(?:\.webp)?$/],
+    ['/danh-muc-san-pham/bien-tan-bom/', /catalog-solar-pumping-overview-20261008\.png(?:\.webp)?$/],
+  ];
+
+  for (const [route, expected] of categoryHeroes) {
+    await page.goto(route, { waitUntil: 'domcontentloaded' });
+    const hero = page.locator('.pts-category-hero-media img');
+    await expect(hero, `${route} phải có banner danh mục`).toBeVisible();
+    await expect(hero).toHaveAttribute('src', expected);
+    const heroHeight = await hero.locator('xpath=ancestor::section[contains(@class,"pts-category-hero")]').evaluate(element => element.getBoundingClientRect().height);
+    expect(heroHeight).toBeGreaterThanOrEqual(testInfo.project.name.includes('mobile') ? 205 : 250);
+    if (testInfo.project.name.includes('mobile')) {
+      const titleMetrics = await page.locator('.pts-category-hero h1').evaluate((heading, heroElement) => {
+        const headingBox = heading.getBoundingClientRect();
+        const heroBox = heroElement.getBoundingClientRect();
+        return {
+          inset: headingBox.left - heroBox.left,
+          textWrap: getComputedStyle(heading).textWrap,
+          right: headingBox.right,
+          heroRight: heroBox.right,
+        };
+      }, await page.locator('.pts-category-hero').elementHandle());
+      expect(titleMetrics.inset, `${route} phải chừa khoảng đệm cho tiêu đề mobile`).toBeGreaterThanOrEqual(15);
+      expect(titleMetrics.right, `${route} không được để tiêu đề tràn ngang hero`).toBeLessThanOrEqual(titleMetrics.heroRight + 1);
+      expect(titleMetrics.textWrap, `${route} phải dùng cách ngắt dòng tránh cô độc từ cuối`).toBe('pretty');
+    }
+  }
+});
+
 test('trang Liên hệ có nhịp nội dung gọn, một H1 và form nằm ngay sau dải tư vấn', async ({ page }, testInfo) => {
   await page.goto('/lien-he/', { waitUntil: 'domcontentloaded' });
   await expect(page.locator('#inf_contact_page h1')).toHaveCount(1);
@@ -301,15 +365,15 @@ test('danh mục Đèn sân vườn dùng banner ảnh và card có cùng hàng 
 
 test('chín nhóm danh mục có ảnh nền đúng ngữ cảnh thay vì lặp một ảnh', async ({ page }) => {
   const expectedHeroes = [
-    ['den-nlmt', 'catalog-ai-solar-lighting.webp'],
-    ['bien-tan-inverter', 'catalog-ai-inverter.webp'],
-    ['tam-pin-nang-luong-mat-troi', 'catalog-ai-solar-panels.webp'],
+    ['den-nlmt', 'catalog-lighting-overview-20261008.png'],
+    ['bien-tan-inverter', 'catalog-inverter-overview-20261008.png'],
+    ['tam-pin-nang-luong-mat-troi', 'catalog-utility-solar-farm-20261008.png'],
     ['tru-den', 'catalog-lamp-posts-v2.jpg'],
-    ['den-san-vuon', 'catalog-ai-garden-lighting.webp'],
-    ['quat-nang-luong-mat-troi', 'catalog-ai-solar-fan.webp'],
-    ['bien-tan-bom', 'catalog-ai-solar-pump.webp'],
-    ['thiet-bi-dien-nang-luong-mat-troi', 'catalog-ai-solar-accessories.webp'],
-    ['pin-luu-tru', 'catalog-ai-battery-storage.webp'],
+    ['den-san-vuon', 'catalog-solar-garden-lighting-20261008-v2.png'],
+    ['quat-nang-luong-mat-troi', 'catalog-solar-fan-20261008-v2.png'],
+    ['bien-tan-bom', 'catalog-solar-pumping-overview-20261008.png'],
+    ['thiet-bi-dien-nang-luong-mat-troi', 'catalog-solar-bos-accessories-20261008.png'],
+    ['pin-luu-tru', 'catalog-utility-bess-20261008.png'],
   ];
 
   for (const [slug, filename] of expectedHeroes) {

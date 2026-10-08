@@ -89,7 +89,7 @@ $headerSearchKeyword = (isset($_GET['keyword']) && is_string($_GET['keyword'])) 
         <div class="pts-catalog-columns">
             <?php foreach($menuCatalogGroups as $menuCatalogGroupKey => $menuCatalogGroup) { if(!$menuCatalogGroup['items']) continue; ?>
             <section class="pts-catalog-group" aria-labelledby="ptsCatalogGroup-<?=$menuCatalogGroupKey?>">
-                <h3 id="ptsCatalogGroup-<?=$menuCatalogGroupKey?>"><span class="pts-catalog-group-icon"><?=$menuCatalogRenderIcon($menuCatalogGroup['icon'])?></span><span><?=$menuCatalogEscape($menuCatalogGroup['title'])?><?php if($menuCatalogGroup['subtitle'] !== '') { ?><small><?=$menuCatalogEscape($menuCatalogGroup['subtitle'])?></small><?php } ?></span></h3>
+                <h3 id="ptsCatalogGroup-<?=$menuCatalogGroupKey?>"><a class="pts-catalog-group-link" href="<?=$menuCatalogEscape($menuCatalogGroup['href'])?>"><span class="pts-catalog-group-icon"><?=$menuCatalogRenderIcon($menuCatalogGroup['icon'])?></span><span><?=$menuCatalogEscape($menuCatalogGroup['title'])?><?php if($menuCatalogGroup['subtitle'] !== '') { ?><small><?=$menuCatalogEscape($menuCatalogGroup['subtitle'])?></small><?php } ?></span></a></h3>
                 <ul>
                     <?php foreach($menuCatalogGroup['items'] as $menuCatalogItem) { ?>
                     <li class="pts-catalog-list-item" data-search="<?=$menuCatalogEscape($menuCatalogItem['search'])?>">
