@@ -89,8 +89,8 @@ try {
         $existingContent = $existingContentStmt->fetch(PDO::FETCH_ASSOC);
         if(!$existingContent)
         {
-            $insertContent = $pdo->prepare("insert into `{$prefix}content_section` (scope,scope_id,blocksvi,blocksen,mode,date_created,date_updated) values ('cat',?,?,?,?,?,?)");
-            $insertContent->execute(array((int)$gardenCat['id'], $legacyContent['blocksvi'], $legacyContent['blocksen'], $legacyContent['mode'], time(), time()));
+            $insertContent = $pdo->prepare("insert into `{$prefix}content_section` (scope,scope_id,mode,inherit_source,blocksvi,blocksen,status,date_updated) values ('cat',?,?,?, ?,?,?,?)");
+            $insertContent->execute(array((int)$gardenCat['id'], $legacyContent['mode'] ?: 'own', 'migration-074', $legacyContent['blocksvi'], $legacyContent['blocksen'], 'hienthi', time()));
         }
     }
     $pdo->commit();
