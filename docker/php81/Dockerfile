@@ -10,7 +10,7 @@ RUN apt-get update -o Acquire::Retries=3 \
 		webp \
         libzip-dev \
 	&& docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
-    && docker-php-ext-install -j"$(nproc)" calendar exif gd mbstring mysqli pdo_mysql zip \
+    && docker-php-ext-install -j2 calendar exif gd mbstring mysqli pdo_mysql zip \
     && a2enmod rewrite headers expires \
     && sed -ri 's!AllowOverride None!AllowOverride All!g' /etc/apache2/apache2.conf \
     && rm -rf /var/lib/apt/lists/*
