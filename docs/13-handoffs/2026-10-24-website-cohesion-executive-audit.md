@@ -74,7 +74,7 @@ Homepage đã có trật tự sản phẩm → nhu cầu → giải pháp → qu
 
 ### Tầng 2 — Thông tin thật, ảnh thật, uy tín, CTA
 
-Code có fallback và điều kiện ẩn khi thiếu dữ liệu — đây là nền đúng (`about_tpl.php:25-36, 51-76, 114-198`; `service_detail_tpl.php:63-78`; `product_detail_tpl.php:63-72`). Tuy nhiên status xác nhận dữ liệu sản phẩm còn thiếu đáng kể, chứng nhận/video chỉ hiện khi Admin nhập thật, và 5 trang chính sách còn rỗng. Vì vậy visual polish không thể bù cho proof trống. Cần content operations: một nguồn định danh, owner, due date, trạng thái xác minh, và fallback không biến nội dung thiếu thành claim.
+Code có fallback và điều kiện ẩn khi thiếu dữ liệu — đây là nền đúng (`about_tpl.php:25-36, 51-76, 114-198`; `service_detail_tpl.php:63-78`; `product_detail_tpl.php:63-72`). Tài liệu status cũ ghi một số trang chính sách còn rỗng, nhưng kiểm tra public trực tiếp ngày 24/10/2026 cho thấy các URL chính sách mới như `/ho-tro/chinh-sach-giao-hang-va-kiem-hang/` và `/ho-tro/chinh-sach-bao-hanh-bao-tri-va-ho-tro-ky-thuat/` trả HTTP 200 và có nội dung. Cần QA lại nội dung/owner và redirect URL cũ, **không được kết luận rằng 5 trang chính sách hiện tại rỗng**. Dữ liệu sản phẩm/chứng nhận/project vẫn phải kiểm theo bản DB dùng để release. Visual polish không thay thế proof thật. Cần content operations: một nguồn định danh, owner, due date, trạng thái xác minh, và fallback không biến nội dung thiếu thành claim.
 
 ### Tầng 3 — Nhịp thị giác, component, shared shell
 
@@ -84,7 +84,7 @@ Shared token/focus/CTA đã được first pass xử lý, nhưng CSS vẫn nhi�
 
 | # / ưu tiên | Evidence đã kiểm | UX/visual/narrative impact | Owner | Fix đề xuất tối thiểu | Phụ thuộc dữ liệu |
 |---|---|---|---|---|---|
-| **1 — P0** Governance proof | `status.md` phần PARTIAL: 5 policy URL rỗng; dữ liệu sản phẩm thiếu ảnh/mô tả/spec; chứng nhận/video chỉ hiện khi có dữ liệu thật. | Nếu release khi proof chưa xác minh, site có vẻ polished nhưng không đáng tin; rủi ro claim sai cao hơn rủi ro thẩm mỹ. | Sếp + marketing + kho/kỹ thuật | Lập proof register: claim, nguồn, người duyệt, ngày hết hạn, asset, route; slot thiếu thì ẩn/fallback trung tính. Chặn GO nếu claim P0 chưa owner sign-off. | Bắt buộc nguồn thật, không dùng AI/stock như bằng chứng. |
+| **1 — P0** Governance proof | Source/status cũ đánh dấu policy PARTIAL và SKU thiếu ảnh/mô tả/spec; kiểm tra public 24/10 xác nhận URL chính sách mới có nội dung, nhưng hai alias cũ `/ho-tro/chinh-sach-bao-hanh/`, `/ho-tro/chinh-sach-mua-ban/` trả 404 (xem xét 301/410). Chứng nhận/video/project phải xác minh trước khi làm proof. | Nếu release khi proof chưa xác minh, site có vẻ polished nhưng không đáng tin; rủi ro claim sai cao hơn rủi ro thẩm mỹ. | Sếp + marketing + kho/kỹ thuật | Lập proof register: claim, nguồn, người duyệt, ngày hết hạn, asset, route; slot thiếu thì ẩn/fallback trung tính. Chặn GO nếu claim P0 chưa owner sign-off. | Bắt buộc nguồn thật, không dùng AI/stock như bằng chứng. |
 | **2 — P1** Shared shell drift | Layout dùng chung là đúng (`templates/index.php:4-47`) nhưng public HTML của solution/dealer có crawl date cũ khác trang chủ; local có nhiều lớp header/menu/footer và legacy CSS. | Người dùng đổi route có thể cảm nhận như đổi website; mất nhịp tin cậy và tăng chi phí QA. | Dev + QA | Snapshot cùng commit trên 8 route; gom invariant header/nav/footer/CTA về owner shared; phân loại stale public cache trước khi sửa. | Cần staging cùng DB/cache và browser runtime. |
 | **3 — P1** Định vị chưa có một “reason to believe” xuyên site | Home lead nói phân phối/tư vấn/thi công (`index_tpl.php:162-167`); About, Dealer, Solution lặp các vai trò khác nhau; chưa có content contract cho một câu định vị duy nhất. | B2C khó biết nên mua thiết bị hay đặt hệ thống; B2B khó phân biệt năng lực phân phối/thi công/đại lý. | Sếp + marketing + sales | Chốt 1 positioning sentence + 3 proof pillars; map mỗi page H1/lead/CTA vào một pillar, không chép câu ở nhiều section. | Cần sếp duyệt ưu tiên B2C/B2B và claim được chứng minh. |
 | **4 — P1** Cầu nối solution → product còn generic | Solution detail có “Thiết bị cho một hệ thống hoàn chỉnh” và link `/san-pham/` (`service_detail_tpl.php:83-105`), nhưng mapping theo nhu cầu/category chưa được quy định là bắt buộc. | Visitor đọc giải pháp xong phải tự tìm lại sản phẩm; mất intent và giảm khả năng lead chất lượng. | Sales + kho/kỹ thuật + dev | Mỗi solution khai báo 3–6 category/product relation; card nêu vai trò thiết bị; fallback `/san-pham/` chỉ khi relation chưa được duyệt. | Cần taxonomy/spec/product mapping thật. |
@@ -113,8 +113,20 @@ Shared token/focus/CTA đã được first pass xử lý, nhưng CSS vẫn nhi�
 | Project proof | client/scope/location/date/media/outcome nếu được phép | Sales + kỹ thuật | Sếp/owner dự án | Chỉ hiển thị field đã xác minh; không tạo case mới |
 | About/trust | lịch sử, people, certificate, branch/warehouse | Marketing + sếp | Sếp | Ẩn certificate/slot rỗng; giữ story đã có |
 | Lead/CTA | FAQ, intent, SLA phản hồi, route/source context | Sales | Sếp + sales | Dùng form hiện tại với context tối thiểu, không hứa SLA mới |
-| Policy/support | 5 policy pages có nội dung đúng | Ops/legal/owner | Sếp | Không quảng bá link như proof nếu nội dung rỗng; P0 release hold nếu checkout cần |
+| Policy/support | Rà policy URL mới hiện có nội dung và mapping URL cũ 404; verify tính chính xác, hiệu lực, canonical/redirect | Ops/legal/owner + SEO | Sếp | Giữ chính sách đang duyệt; không tái sử dụng URL 404 trong journey; cần sign-off nếu đổi điều khoản |
 
 ## 7. Kết luận audit
 
 Đợt nâng cấp nên được xem là **cohesion/content-proof program**, không phải redesign toàn site. Có thể đạt cảm giác modern/polished bằng cách làm rõ journey, lấp đúng proof slot, chuẩn hóa CTA/context và migrate component shared theo lát dọc. Chưa có bằng chứng cần đổi framework; quyết định công nghệ nằm ở [ADR options](../09-decisions/2026-10-24-website-frontend-architecture-options.md), còn lịch và cổng release ở [delivery plan](2026-10-24-website-upgrade-delivery-plan.md).
+
+
+## 8. Browser QA bổ sung do điều phối viên thực hiện (24/10/2026)
+
+- Chụp mới trực tiếp 10 public routes bằng Chromium ở **1440x900** và **390x844** (20 lượt HTTP 200). Lưu ở `artifacts/website-baseline-20261024/`, gồm 20 PNG và `audit.json`.
+- Toàn bộ 20 viewport ban đầu không có `documentElement.scrollWidth > clientWidth`. Đây **không phải** full responsive pass (chưa có 768/1920, chưa đo tương tác hoặc scroll toàn trang).
+- Ảnh homepage desktop/mobile: identity, header và hero có hướng thiết kế nhất quán; trên mobile hero chiếm gần toàn bộ viewport đầu và slide overlay phụ ở đáy làm giảm khoảng nhìn về sản phẩm bên dưới. Đây là **đánh giá UX** cần người duyệt thử, không phải lỗi kỹ thuật.
+- Ảnh Giải pháp desktop/mobile: mobile trình bày một đoạn lead khá dài trước khi người xem tới các card nhu cầu; desktop card là lưới 5 cột với ảnh/độ dài copy khác nhau, cảm nhận mật độ lớn. Đề xuất prototype 2 hướng: copy compact + nhu cầu xuất hiện sớm; hoặc phân lớp intro + visible cards. Không sửa nội dung Admin trước approval.
+- Ảnh Đại lý desktop/mobile: copy đoạn đầu dùng chương trình 2021–2025 và số liệu 2021; trên mobile hero -> tab -> form chiếm gần hết first fold. Phải hỏi sales/marketing update hoặc bỏ số liệu cũ, quyết định ưu tiên lợi ích hợp tác vs form. Không tự sáng tác số liệu thay thế.
+- Trong JSON, trường `brokenImages` đếm `img` chưa load xong ở thời điểm DOM snapshot; **có thể là ảnh lazy-loaded chưa cuộn đến, không kết luận ảnh hỏng**. Cần kiểm network/scroll trước khi mở bug asset.
+- Trang policy `/ho-tro/chinh-sach-bao-hanh/` và `/ho-tro/chinh-sach-mua-ban/` cũ trả HTTP 404; route mới bảo hành/giao hàng trả 200. Trạng thái tài liệu cũ về "5 policy rỗng" không còn dùng làm nhận định hiện tại.
+- Ảnh chưa chứng minh sau-release code local. Chúng chỉ là bằng chứng thị giác hiện tại của public site, read-only. Không có prod mutation.
