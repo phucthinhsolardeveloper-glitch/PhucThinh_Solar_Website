@@ -153,6 +153,7 @@ $homeAboutText = $homePlainText($homeAboutDesc);
                 <button type="button" data-home-hero-prev aria-label="Banner trước"><i class="fas fa-chevron-left" aria-hidden="true"></i></button>
                 <span><b data-home-hero-current>01</b> / <?=str_pad(count($homeHeroTiles), 2, '0', STR_PAD_LEFT)?></span>
                 <button type="button" data-home-hero-next aria-label="Banner tiếp theo"><i class="fas fa-chevron-right" aria-hidden="true"></i></button>
+                <button type="button" data-home-hero-pause aria-pressed="false" aria-label="Dừng chuyển banner" title="Dừng chuyển banner"><i class="fas fa-pause" aria-hidden="true"></i></button>
             </div>
             <?php } ?>
         </div>

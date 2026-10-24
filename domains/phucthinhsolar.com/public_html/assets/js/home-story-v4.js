@@ -9,10 +9,12 @@
         var heroSlides = Array.prototype.slice.call(heroSlider.querySelectorAll('[data-home-hero-slide]'));
         var heroPrev = heroSlider.querySelector('[data-home-hero-prev]');
         var heroNext = heroSlider.querySelector('[data-home-hero-next]');
+        var heroPause = heroSlider.querySelector('[data-home-hero-pause]');
         var heroCurrent = heroSlider.querySelector('[data-home-hero-current]');
         var heroIndex = 0;
         var heroTimer = null;
         var heroTouchStart = null;
+        var heroPaused = false;
 
         function showHeroSlide(nextIndex) {
             if (!heroSlides.length) return;
@@ -34,16 +36,29 @@
 
         function startHeroAutoplay() {
             stopHeroAutoplay();
-            if (heroSlides.length > 1 && !document.hidden) {
+            if (heroSlides.length > 1 && !heroPaused && !document.hidden) {
                 heroTimer = window.setInterval(function () { showHeroSlide(heroIndex + 1); }, 4200);
             }
         }
 
+        function updateHeroPauseState() {
+            if (!heroPause) return;
+            var label = heroPaused ? 'Tiếp tục chuyển banner' : 'Dừng chuyển banner';
+            heroPause.setAttribute('aria-pressed', heroPaused ? 'true' : 'false');
+            heroPause.setAttribute('aria-label', label);
+            heroPause.title = label;
+            heroPause.innerHTML = heroPaused ? '<i class="fas fa-play" aria-hidden="true"></i>' : '<i class="fas fa-pause" aria-hidden="true"></i>';
+        }
+
         if (heroPrev) heroPrev.addEventListener('click', function () { showHeroSlide(heroIndex - 1); startHeroAutoplay(); });
         if (heroNext) heroNext.addEventListener('click', function () { showHeroSlide(heroIndex + 1); startHeroAutoplay(); });
-        /* Banner luôn tự chạy theo yêu cầu; không dừng vì hover/focus hoặc
-           cài đặt giảm chuyển động của hệ điều hành. Chỉ ngắt ngắn khi đang
-           vuốt và khi người dùng chuyển sang tab khác. */
+        if (heroPause) heroPause.addEventListener('click', function () {
+            heroPaused = !heroPaused;
+            updateHeroPauseState();
+            startHeroAutoplay();
+        });
+        /* Chỉ ngắt ngắn khi đang vuốt hoặc khi người dùng chuyển tab. Nút pause
+           giữ quyền kiểm soát rõ ràng mà không thay đổi autoplay mặc định. */
         heroSlider.addEventListener('touchstart', function (event) {
             heroTouchStart = event.touches && event.touches[0] ? event.touches[0].clientX : null;
             stopHeroAutoplay();
@@ -62,6 +77,7 @@
         });
 
         showHeroSlide(0);
+        updateHeroPauseState();
         startHeroAutoplay();
     }
 

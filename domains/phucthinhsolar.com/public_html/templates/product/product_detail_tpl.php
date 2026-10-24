@@ -482,7 +482,8 @@ else $pdpSupportLabel = 'Video sản phẩm';
                             href="<?=$detailZoomHref?>" title="<?=$rowDetail['name'.$lang]?>">
                             <?=$func->getImage(array_merge(['isLazy' => false, 'sizes' => '600x600x4', 'upload' => UPLOAD_PRODUCT_L, 'image' => $detailMainPhoto, 'alt' => $rowDetail['name'.$lang]], watermarkImageArgs('product')))?>
                         </a>
-                        <?php if($detailMainPhoto !== '' || !empty($detailGalleryPhotos)) { ?>
+                        <?php /* Một ảnh duy nhất đã hiển thị ở MagicZoom: không lặp thumbnail không có tác dụng. */ ?>
+                        <?php if(!empty($detailGalleryPhotos)) { ?>
                         <div class="gallery-thumb-pro">
                             <div class="owl-page owl-carousel owl-theme owl-pro-detail" data-xsm-items="5:10"
                                 data-sm-items="5:10" data-md-items="5:10" data-lg-items="5:10" data-xlg-items="5:10"
@@ -520,7 +521,7 @@ else $pdpSupportLabel = 'Video sản phẩm';
                         <div class="pts-pdp-decision-metrics" aria-label="Thông số chính của sản phẩm">
                             <?php foreach($pdpHeroMetricFields as $pdpMetric) {
                                 $metricHasValue = $pdpMetric['value'] !== '';
-                                $metricDisplay = $metricHasValue ? $pdpMetric['value'] : '[...]'.($pdpMetric['unit'] !== '' ? ' '.$pdpMetric['unit'] : '');
+                                $metricDisplay = $metricHasValue ? $pdpMetric['value'] : 'Đang cập nhật';
                             ?>
                             <div class="pts-pdp-decision-metric<?=$metricHasValue ? '' : ' is-placeholder'?>">
                                 <span class="pts-pdp-decision-icon" aria-hidden="true">
@@ -538,7 +539,7 @@ else $pdpSupportLabel = 'Video sản phẩm';
                                     <svg viewBox="0 0 32 32" role="presentation"><path d="M18 3L8 18h7l-1 11 10-15h-7l1-11z"></path></svg>
                                     <?php } ?>
                                 </span>
-                                <div><span><?=htmlspecialchars(mb_strtoupper($pdpMetric['label'], 'UTF-8'), ENT_QUOTES, 'UTF-8')?></span><strong><?=htmlspecialchars($metricDisplay, ENT_QUOTES, 'UTF-8')?></strong><small><?=$metricHasValue ? 'Theo thông số sản phẩm' : 'Đang cập nhật'?></small></div>
+                                <div><span><?=htmlspecialchars(mb_strtoupper($pdpMetric['label'], 'UTF-8'), ENT_QUOTES, 'UTF-8')?></span><strong><?=htmlspecialchars($metricDisplay, ENT_QUOTES, 'UTF-8')?></strong><small><?=$metricHasValue ? 'Theo thông số sản phẩm' : 'Thông tin đang được bổ sung'?></small></div>
                             </div>
                             <?php } ?>
                         </div>
