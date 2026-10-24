@@ -53,6 +53,13 @@
 
   /* Focus ring dùng navy trên nền sáng; không phụ thuộc màu riêng của hub. */
   --pts-focus-ring:var(--pts-navy);
+
+  /* Motion chỉ dành cho phản hồi thao tác, không dùng cho entrance/scroll. */
+  --pts-motion-fast:140ms;
+  --pts-motion-normal:200ms;
+  --pts-ease-out:cubic-bezier(.22,.75,.25,1);
+  --pts-motion-ease-out:var(--pts-ease-out);
+  --pts-motion-ease-standard:cubic-bezier(.2,.65,.3,1);
 }
 
 body{font-family:var(--pts-font)!important;}
@@ -120,7 +127,7 @@ summary:focus-visible{
   font-size:13.5px!important;
   font-weight:750!important;
   box-shadow:none!important;
-  transition:background .15s ease,color .15s ease!important;
+  transition:background var(--pts-motion-fast) var(--pts-motion-ease-out),color var(--pts-motion-fast) var(--pts-motion-ease-out),border-color var(--pts-motion-fast) var(--pts-motion-ease-out)!important;
 }
 .pts-ph-filter:hover,
 .pts-catalog-jump a:hover,
@@ -637,3 +644,241 @@ html.pts-js #button-contact-vr.pts-contact-dock:not(.is-open) #gom-all-in-one{
 html.pts-js #button-contact-vr.pts-contact-dock:not(.is-open) .button-contact,
 html.pts-js #button-contact-vr.pts-contact-dock:not(.is-open) .phone-vr,
 html.pts-js #button-contact-vr.pts-contact-dock:not(.is-open) .phone-vr-img-circle{pointer-events:none!important;}
+
+
+/* Keyboard ring for image-backed featured category; legacy home CSS sets
+   outline-style:none on this component despite inherited outline width. */
+a.pts-home-category:focus-visible{
+  outline:3px solid var(--pts-gold)!important;
+  outline-offset:4px;
+}
+/* Card product has a focusable child with an explicit legacy outline reset. */
+.product-card .product-item:focus-visible{
+  outline:3px solid var(--pts-gold)!important;
+  outline-offset:4px;
+}
+
+/* Keyboard focus should remain visible on content cards even when page
+   legacy CSS resets outline on the entire anchor. */
+.pts-sh-choice:focus-visible,
+.pts-sh-category-card:focus-visible,
+.pts-ph-card:focus-visible,
+.nh-card:focus-visible,
+.pts-dl-product-card:focus-visible{
+  outline:3px solid var(--pts-gold)!important;
+  outline-offset:4px;
+}
+
+/* ============================================================
+   SHARED INTERACTION MOTION
+
+   Chỉ áp dụng cho entity/control có semantics tương tác. Wrapper layout,
+   section và phần tử trang trí không nhận transition chung.
+   ============================================================ */
+
+/* CTA cùng phản hồi màu/border trên các route; transform chỉ giữ lại cho
+   rule legacy đã có ý nghĩa, không tạo animation lúc tải trang. */
+.pts-btn-gold,
+.pts-sh-consult,
+.pts-ph-featured-cta,
+.pts-ph-consult,
+.pts-about-contact-button.is-primary,
+.nh-consult,
+.pts-sd-explore,
+.pts-sh-all-products,
+.pts-ph-arrow,
+.nh-arrow,
+.pts-dl-overview-cta,
+.pts-home-btn,
+.pts-dl-submit,
+.product-card-btns .pts-card-add,
+.product-card-btns .pts-card-ask,
+.product-card-btns .pts-card-detail{
+  transition:background-color var(--pts-motion-fast) var(--pts-motion-ease-out),
+    border-color var(--pts-motion-fast) var(--pts-motion-ease-out),
+    color var(--pts-motion-fast) var(--pts-motion-ease-out),
+    box-shadow var(--pts-motion-fast) var(--pts-motion-ease-out),
+    transform var(--pts-motion-fast) var(--pts-motion-ease-out);
+}
+
+.pts-header-v4 .pts-header-nav .menu>div>ul>li>a,
+.pts-header-v4 .pts-header-action,
+.pts-header-v4 .pts-header-consult,
+.pts-header-v4 .menu-catalog-trigger,
+.pts-dl-quick-nav a{
+  transition:background-color var(--pts-motion-fast) var(--pts-motion-ease-out),
+    border-color var(--pts-motion-fast) var(--pts-motion-ease-out),
+    color var(--pts-motion-fast) var(--pts-motion-ease-out),
+    transform var(--pts-motion-fast) var(--pts-motion-ease-out);
+}
+
+/* Entity card transition: các route phẳng vẫn chỉ thay đổi khi có hover thật;
+   bóng mặc định không được thêm vào surface. */
+.pts-home-category,
+.pts-sh-choice,
+.pts-sh-category-card,
+.pts-ph-card,
+.nh-card,
+.product-card,
+.pts-dl-product-card{
+  transition:transform var(--pts-motion-normal) var(--pts-motion-ease-out),
+    box-shadow var(--pts-motion-normal) var(--pts-motion-ease-out),
+    border-color var(--pts-motion-normal) var(--pts-motion-ease-out);
+}
+
+/* Ảnh là vùng transform riêng, luôn có overflow hidden ở media parent và giữ
+   tỷ lệ nhỏ để không gây cảm giác phóng đại hoặc thay đổi layout. */
+.pts-home-category-bg img,
+.pts-sh-choice-media img,
+.pts-sh-category-media img,
+.pts-ph-card-media>img,
+.nh-card .nh-image,
+.product-card .pts-product-photo,
+.pts-dl-product-media img{
+  transition:transform var(--pts-motion-normal) var(--pts-motion-ease-out);
+}
+
+/* Form controls chuyển màu/ring cùng nhịp, không đổi kích thước field. */
+.pts-home-contact-form input,
+.pts-home-contact-form select,
+.pts-home-contact-form textarea,
+.pts-dl-input,
+.nh-search{
+  transition:border-color var(--pts-motion-fast) var(--pts-motion-ease-out),
+    box-shadow var(--pts-motion-fast) var(--pts-motion-ease-out),
+    background-color var(--pts-motion-fast) var(--pts-motion-ease-out);
+}
+
+/* Filter/chip/tab có cùng nhịp với chip shared ở phía trên. */
+.pts-category-tab,
+.pts-filter-reset{
+  transition:background-color var(--pts-motion-fast) var(--pts-motion-ease-out),
+    border-color var(--pts-motion-fast) var(--pts-motion-ease-out),
+    color var(--pts-motion-fast) var(--pts-motion-ease-out),
+    transform var(--pts-motion-fast) var(--pts-motion-ease-out);
+}
+
+@media (hover:hover) and (pointer:fine){
+  .pts-home-category:hover,
+  .pts-sh-choice:hover,
+  .pts-sh-category-card:hover,
+  .product-card:hover,
+  .pts-dl-product-card:hover{
+    transform:translateY(-2px);
+  }
+
+  .pts-home-category:hover .pts-home-category-bg img,
+  .pts-sh-choice:hover .pts-sh-choice-media img,
+  .pts-sh-category-card:hover .pts-sh-category-media img,
+  .pts-ph-card:hover .pts-ph-card-media>img,
+  .nh-card:hover .nh-image,
+  .product-card:hover .product-card-img .pts-product-photo,
+  .pts-dl-product-card:hover .pts-dl-product-media img{
+    transform:scale(1.015);
+  }
+}
+
+@media (hover:none), (pointer:coarse){
+  /* Touch giữ trạng thái tĩnh; selection vẫn do :active/:focus-visible và JS
+     hiện có quản lý, không tạo hover-sticky trên màn hình cảm ứng. */
+  .pts-home-category:hover,
+  .pts-sh-choice:hover,
+  .pts-sh-category-card:hover,
+  .product-card:hover,
+  .pts-dl-product-card:hover{
+    transform:none;
+  }
+
+  .pts-home-category:hover .pts-home-category-bg img,
+  .pts-sh-choice:hover .pts-sh-choice-media img,
+  .pts-sh-category-card:hover .pts-sh-category-media img,
+  .pts-ph-card:hover .pts-ph-card-media>img,
+  .nh-card:hover .nh-image,
+  .product-card:hover .product-card-img .pts-product-photo,
+  .pts-dl-product-card:hover .pts-dl-product-media img{
+    transform:none;
+  }
+}
+
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto;}
+
+  .pts-btn-gold,
+  .pts-sh-consult,
+  .pts-ph-featured-cta,
+  .pts-ph-consult,
+  .pts-about-contact-button.is-primary,
+  .nh-consult,
+  .pts-sd-explore,
+  .pts-sh-all-products,
+  .pts-ph-arrow,
+  .nh-arrow,
+  .pts-dl-overview-cta,
+  .pts-home-btn,
+  .pts-dl-submit,
+  .product-card-btns .pts-card-add,
+  .product-card-btns .pts-card-ask,
+  .product-card-btns .pts-card-detail,
+  .pts-home-category,
+  .pts-sh-choice,
+  .pts-sh-category-card,
+  .pts-ph-card,
+  .nh-card,
+  .product-card,
+  .product-card .product-item,
+  .pts-dl-product-card,
+  .pts-home-category-bg img,
+  .pts-sh-choice-media img,
+  .pts-sh-category-media img,
+  .pts-ph-card-media>img,
+  .nh-card .nh-image,
+  .product-card .pts-product-photo,
+  .pts-dl-product-media img,
+  .pts-header-v4 .pts-header-nav .menu>div>ul>li>a,
+  .pts-header-v4 .pts-header-action,
+  .pts-header-v4 .pts-header-consult,
+  .pts-header-v4 .menu-catalog-trigger,
+  .pts-dl-quick-nav a,
+  .pts-home-contact-form input,
+  .pts-home-contact-form select,
+  .pts-home-contact-form textarea,
+  .pts-dl-input,
+  .nh-search,
+  .pts-category-tab,
+  .pts-filter-reset,
+  .pts-ph-filter,
+  .pts-catalog-jump a,
+  .nh-filter,
+  .pts-sd-switcher a{
+    transition:none!important;
+  }
+
+  .pts-btn-gold:hover,
+  .pts-sh-consult:hover,
+  .pts-ph-featured-cta:hover,
+  .pts-ph-consult:hover,
+  .nh-consult:hover,
+  .pts-sd-explore:hover,
+  .pts-sh-all-products:hover,
+  .pts-ph-arrow:hover,
+  .nh-arrow:hover,
+  .pts-dl-overview-cta:hover,
+  .pts-home-btn:hover,
+  .pts-home-btn:active,
+  .pts-home-category:hover,
+  .pts-sh-choice:hover,
+  .pts-sh-category-card:hover,
+  .pts-ph-card:hover,
+  .nh-card:hover,
+  .product-card:hover,
+  .pts-dl-product-card:hover,
+  .pts-home-category:hover .pts-home-category-bg img,
+  .pts-sh-choice:hover .pts-sh-choice-media img,
+  .pts-sh-category-card:hover .pts-sh-category-media img,
+  .pts-ph-card:hover .pts-ph-card-media>img,
+  .nh-card:hover .nh-image,
+  .product-card:hover .product-card-img .pts-product-photo,
+  .pts-dl-product-card:hover .pts-dl-product-media img{
+    transform:none;
+  }
+}
