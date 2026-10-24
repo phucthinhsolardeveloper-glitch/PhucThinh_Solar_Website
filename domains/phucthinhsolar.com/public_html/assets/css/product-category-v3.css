@@ -600,7 +600,12 @@
     .pts-lighting-category-v2 .lv-grid .product-card-btns{padding:0 12px 12px!important;}
     .pts-lighting-category-v2 .pts-catalog-support{margin-right:0;margin-left:0;border-radius:10px!important;}
 }
-@media(prefers-reduced-motion:reduce){.pts-lighting-category-v2 .lv-card{transition:none!important;}}
+/* Cùng độ ưu tiên với selector card trong .lv-grid (transition có !important),
+   tránh hiệu ứng còn chạy khi hệ điều hành bật Reduced Motion. */
+@media(prefers-reduced-motion:reduce){
+  .pts-lighting-category-v2 .lv-card,
+  .pts-lighting-category-v2 .lv-grid .lv-card{transition:none!important;}
+}
 
 /* Banner catalog theo layout mới: banner thoát khỏi wrap-content để bám toàn
    chiều ngang ngay dưới breadcrumb; trust strip kính phủ sát mép dưới. */

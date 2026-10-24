@@ -142,6 +142,26 @@ Token semantic mục tiêu: `radius-none:0`, `radius-sm:3px`, `radius-control:4p
 `radius-round:999px` chỉ cho vai trò chức năng; `elevation-0:none`,
 `elevation-popover` và `elevation-modal`. Không có `card-shadow` mặc định.
 
+### 3.5 PTS Precision: Kỹ thuật tinh gọn — ĐỀ XUẤT NGUYÊN TẮC TRIỂN KHAI
+
+Trạng thái: đề xuất nguyên tắc triển khai, không tự thay thế ADR đã duyệt.
+PTS Precision giữ hình học đúng tỷ lệ và cùng trục; dùng `#0a2251` cho cấu trúc
+và trạng thái chọn, `#c9962e` cho hành động chính hoặc điểm nhấn có ích, cùng
+Be Vietnam Pro và thang chữ theo vai trò. Nội dung phải ưu tiên dữ liệu kỹ thuật
+thật, ảnh thật có thể xác minh và một mục tiêu rõ cho mỗi section; không sao chép
+template hay hành vi của website tham chiếu.
+
+Tương tác phản hồi nhanh bằng màu, trạng thái chọn, mũi tên, focus-visible và
+active có ý nghĩa; không dùng card lift, zoom ảnh hoặc shadow để trang trí. Hover
+không được làm dịch layout; `prefers-reduced-motion` vẫn tắt chuyển động, còn
+keyboard/touch phải giữ được focus, hit area và hành động tương đương.
+
+Khi triển khai, dùng decision tree sau: **shared primitive trước** (token,
+button, control, card/media, focus và motion) → kiểm tra trên các route dùng
+chung ở mobile/desktop → chỉ thêm **screen-specific sau khi QA** chứng minh
+primitive không đủ và ghi rõ owner. Không tạo CSS trang để thay thế token hoặc
+component đã có; không cần redesign bằng React để áp dụng nguyên tắc này.
+
 ## 4. Hợp đồng layout và responsive
 
 ### 4.1 Container ngang — ĐANG ÁP DỤNG

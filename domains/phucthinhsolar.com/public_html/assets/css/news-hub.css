@@ -38,7 +38,7 @@
 .nh-filter img{height:22px!important;width:22px!important;object-fit:contain}
 .nh-filter i{font-size:18px}
 .nh-filter.is-active{background:linear-gradient(110deg,#f4d99f,#f9e7bc)}
-.nh-search{display:flex;align-items:center;flex:0 0 250px;border:1px solid var(--nh-line);border-radius:8px;height:44px;background:white}
+.nh-search{display:flex;align-items:center;flex:0 0 250px;border:1px solid var(--nh-line);border-radius:var(--pts-radius-control,4px);height:44px;background:white}
 .nh-search:focus-within{outline:2px solid #c58a24;outline-offset:2px}
 .nh-search input{min-width:0;width:100%;border:0!important;background:transparent;padding:12px;font:inherit;font-size:12px;outline:none!important;box-shadow:none!important;color:var(--nh-navy)}
 .nh-search button{flex:none;width:44px;height:42px;border:0;background:transparent;color:var(--nh-navy);cursor:pointer}
@@ -79,5 +79,5 @@
    và .social-product .sharerN{color:...} (đặc thù hơn .pts-share-btn) đè lên
    style cũ - phải !important + để nguyên .social-product trong selector mới
    thắng được. */
-.pts-share .social-product button.pts-share-btn{display:flex!important;width:38px!important;height:38px!important;align-items:center;justify-content:center;border:1px solid var(--pts-line)!important;border-radius:50%!important;background:#fff!important;color:var(--pts-navy)!important;font-size:14px!important;cursor:pointer;transition:.18s;}
+.pts-share .social-product button.pts-share-btn{display:flex!important;width:38px!important;height:38px!important;align-items:center;justify-content:center;border:1px solid var(--pts-line)!important;border-radius:var(--pts-radius-round,999px)!important;background:#fff!important;color:var(--pts-navy)!important;font-size:14px!important;cursor:pointer;transition:.18s;}
 .pts-share .social-product button.pts-share-btn:hover{border-color:var(--pts-gold)!important;background:var(--pts-gold)!important;color:var(--pts-navy-deep)!important;transform:none!important;}

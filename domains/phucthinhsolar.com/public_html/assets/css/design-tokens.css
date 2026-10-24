@@ -41,7 +41,18 @@
   --pts-muted:#64748b;
   --pts-line:#e5e7eb;
   --pts-surface:#f8fafc;
+  --pts-white:#fff;
   --pts-cream:#fffbeb;
+
+  /* Spacing foundations: đúng thang trong design system và Figma PTS Precision. */
+  --pts-space-1:4px;
+  --pts-space-2:8px;
+  --pts-space-3:12px;
+  --pts-space-4:16px;
+  --pts-space-6:24px;
+  --pts-space-8:32px;
+  --pts-space-12:48px;
+  --pts-space-16:64px;
 
   /* Chip lọc/chuyển mục: trung tính xám-xanh, KHÔNG dùng vàng kem cho trạng
      thái chưa chọn (audit 2026-09-16 xác định màu vàng làm mất thứ bậc). Vàng
@@ -50,6 +61,16 @@
   --pts-chip-bg:#eef2f7;
   --pts-chip-bg-hover:#dfe6ef;
   --pts-chip-text:#0a2251;
+
+  /* Boundary/elevation semantic: card và surface nội dung phẳng; chỉ control
+     hoặc bề mặt nổi mới có radius/elevation theo vai trò. */
+  --pts-radius-none:0;
+  --pts-radius-sm:3px;
+  --pts-radius-control:4px;
+  --pts-radius-round:999px;
+  --pts-elevation-surface:none;
+  --pts-elevation-popover:0 10px 28px rgba(6,21,55,.12);
+  --pts-elevation-modal:0 18px 48px rgba(6,21,55,.18);
 
   /* Focus ring dùng navy trên nền sáng; không phụ thuộc màu riêng của hub. */
   --pts-focus-ring:var(--pts-navy);
@@ -119,7 +140,7 @@ summary:focus-visible{
 .nh-filter,
 .pts-sd-switcher a{
   border:0!important;
-  border-radius:3px!important;
+  border-radius:var(--pts-radius-sm,3px)!important;
   background:var(--pts-chip-bg)!important;
   color:var(--pts-chip-text)!important;
   min-height:42px!important;
@@ -156,7 +177,7 @@ summary:focus-visible{
    hẳn .pts-btn-gold (gold phẳng + chữ navy) dùng ở mọi nơi khác.
    ============================================================ */
 .nh-consult{
-  border-radius:4px!important;
+  border-radius:var(--pts-radius-control,4px)!important;
   background:var(--pts-gold)!important;
   color:var(--pts-navy)!important;
   box-shadow:none!important;
@@ -175,7 +196,7 @@ summary:focus-visible{
 .pts-ph-featured-cta,
 .pts-ph-consult,
 .pts-about-contact-button.is-primary{
-  border-radius:4px;
+  border-radius:var(--pts-radius-control,4px);
   background:var(--pts-gold);
   background-image:none;
   box-shadow:none;
@@ -227,7 +248,7 @@ summary:focus-visible{
 /* Badge danh mục trên ảnh: cùng một nhãn navy phẳng ở mọi hub. */
 .nh-badge,
 .pts-ph-badge{
-  border-radius:3px!important;
+  border-radius:var(--pts-radius-sm,3px)!important;
   background:rgba(10,34,81,.9)!important;
   color:#fff!important;
   font-size:11px!important;font-weight:800!important;
@@ -254,7 +275,7 @@ summary:focus-visible{
 }
 
 /* Nút chính/phụ trên trang sản phẩm: cùng hệ với .pts-btn-gold toàn site. */
-.btn-product-detail a{border-radius:4px!important;border-width:1px!important;}
+.btn-product-detail a{border-radius:var(--pts-radius-control,4px)!important;border-width:1px!important;}
 .btn-product-detail a:first-child,
 .btn-product-detail .add-cart,
 .btn-product-detail .buy-now{
@@ -273,13 +294,13 @@ summary:focus-visible{
 .btn-product-detail a:last-child:hover{background:var(--pts-surface)!important;}
 
 /* Tab thông số/mô tả: bỏ nền xám của thanh tab, giữ phẳng như hub khác. */
-.tabs-pro-detail{border-radius:4px!important;}
+.tabs-pro-detail{border-radius:var(--pts-radius-control,4px)!important;}
 .tabs-pro-detail>#tabsProDetail{background:transparent!important;}
-.tabs-pro-detail>#tabsProDetail .nav-link{border-radius:3px!important;}
+.tabs-pro-detail>#tabsProDetail .nav-link{border-radius:var(--pts-radius-none,0)!important;}
 
 /* Ô số lượng + khung ảnh: bo nhỏ theo hệ. */
-.quantity-pro-detail{border-radius:3px!important;}
-.left-pro-detail>a.MagicZoom{border-radius:3px!important;}
+.quantity-pro-detail{border-radius:var(--pts-radius-sm,3px)!important;}
+.left-pro-detail>a.MagicZoom{border-radius:var(--pts-radius-sm,3px)!important;}
 
 /* ============================================================
    NHẢY ANCHOR — bù chiều cao header sticky
@@ -367,7 +388,7 @@ summary:focus-visible{
 .nh-cta-band{background:var(--pts-navy)!important;}
 .nh-cta-copy h2{color:#fff!important;}
 .nh-cta-copy p{color:#cbd5f5!important;}
-.nh-cta-icon{background:rgba(255,255,255,.1)!important;color:var(--pts-gold-light)!important;border-radius:3px!important;}
+.nh-cta-icon{background:rgba(255,255,255,.1)!important;color:var(--pts-gold-light)!important;border-radius:var(--pts-radius-sm,3px)!important;}
 .nh-cta-actions{border-left-color:rgba(255,255,255,.22)!important;}
 .nh-phone{color:#fff!important;}
 .nh-phone small{color:#cbd5f5!important;}
@@ -721,21 +742,10 @@ a.pts-home-category:focus-visible{
 .nh-card,
 .product-card,
 .pts-dl-product-card{
-  transition:transform var(--pts-motion-normal) var(--pts-motion-ease-out),
-    box-shadow var(--pts-motion-normal) var(--pts-motion-ease-out),
-    border-color var(--pts-motion-normal) var(--pts-motion-ease-out);
-}
-
-/* Ảnh là vùng transform riêng, luôn có overflow hidden ở media parent và giữ
-   tỷ lệ nhỏ để không gây cảm giác phóng đại hoặc thay đổi layout. */
-.pts-home-category-bg img,
-.pts-sh-choice-media img,
-.pts-sh-category-media img,
-.pts-ph-card-media>img,
-.nh-card .nh-image,
-.product-card .pts-product-photo,
-.pts-dl-product-media img{
-  transition:transform var(--pts-motion-normal) var(--pts-motion-ease-out);
+  box-shadow:var(--pts-elevation-surface,none);
+  transition:background-color var(--pts-motion-fast) var(--pts-motion-ease-out),
+    color var(--pts-motion-fast) var(--pts-motion-ease-out),
+    border-color var(--pts-motion-fast) var(--pts-motion-ease-out);
 }
 
 /* Form controls chuyển màu/ring cùng nhịp, không đổi kích thước field. */
@@ -762,11 +772,15 @@ a.pts-home-category:focus-visible{
   .pts-home-category:hover,
   .pts-sh-choice:hover,
   .pts-sh-category-card:hover,
+  .pts-ph-card:hover,
+  .nh-card:hover,
   .product-card:hover,
   .pts-dl-product-card:hover{
-    transform:translateY(-2px);
+    transform:none;
   }
 
+  /* Override legacy hover zoom on neutral entity media. MagicZoom/PDP media
+     is intentionally outside this list and keeps its meaningful zoom affordance. */
   .pts-home-category:hover .pts-home-category-bg img,
   .pts-sh-choice:hover .pts-sh-choice-media img,
   .pts-sh-category-card:hover .pts-sh-category-media img,
@@ -774,8 +788,12 @@ a.pts-home-category:focus-visible{
   .nh-card:hover .nh-image,
   .product-card:hover .product-card-img .pts-product-photo,
   .pts-dl-product-card:hover .pts-dl-product-media img{
-    transform:scale(1.015);
+    transform:none;
   }
+
+  /* flat-surface-system.css deliberately protects this legacy transform with
+     !important; keep the shared owner authoritative for product cards. */
+  .product-card:hover{transform:none!important;}
 }
 
 @media (hover:none), (pointer:coarse){
@@ -784,6 +802,8 @@ a.pts-home-category:focus-visible{
   .pts-home-category:hover,
   .pts-sh-choice:hover,
   .pts-sh-category-card:hover,
+  .pts-ph-card:hover,
+  .nh-card:hover,
   .product-card:hover,
   .pts-dl-product-card:hover{
     transform:none;

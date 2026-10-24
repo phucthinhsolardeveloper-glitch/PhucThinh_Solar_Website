@@ -134,11 +134,12 @@ test('shared motion states are visible and stable on desktop routes', async ({ p
     expect(hasActiveTransition(await readMotionStyle(card)), route.name).toBeTruthy();
     expect(hasActiveTransition(await readMotionStyle(cta)), route.name).toBeTruthy();
 
-    const beforeCardHover = await readMotionStyle(visual);
+    // PTS Precision: neutral entity cards remain geometrically stable.
+    // Affordance belongs to CTA/selection; decorative image zoom is not a pass criterion.
     await card.hover();
     await page.waitForTimeout(230);
-    const afterCardHover = await readMotionStyle(visual);
-    expect(visualSignature(afterCardHover), route.name).not.toBe(visualSignature(beforeCardHover));
+    expect((await readMotionStyle(card)).transform, `${route.name} card`).toBe('none');
+    expect((await readMotionStyle(visual)).transform, `${route.name} media`).toBe('none');
 
     const beforeCtaHover = await readMotionStyle(cta);
     await cta.hover();
