@@ -25,45 +25,33 @@
 </section>
 <?php } ?>
 
+<?php if(!empty($photo_daily)){ ?>
+<section class="pts-dl-mobile-preview" aria-label="Sản phẩm phân phối">
+    <div class="uk-container">
+        <div class="pts-dl-mobile-preview-heading">
+            <h2>Sản phẩm phân phối</h2>
+            <a href="<?=$func->getCurrentPagePath()?>#nang-luc-phan-phoi">Xem tất cả <span aria-hidden="true">→</span></a>
+        </div>
+        <div class="pts-dl-mobile-preview-grid">
+            <?php foreach(array_slice($photo_daily, 0, 2) as $v){
+                $previewHref = !empty($v['link']) ? $v['link'] : $func->getCurrentPagePath().'#nang-luc-phan-phoi';
+            ?>
+            <a href="<?=htmlspecialchars($previewHref, ENT_QUOTES, 'UTF-8')?>" class="pts-dl-mobile-preview-item">
+                <span class="pts-dl-mobile-preview-image">
+                    <?=$func->getImage(['isLazy' => false, 'class' => '', 'sizes' => '480x300x1', 'upload' => UPLOAD_PHOTO_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
+                </span>
+                <strong><?=htmlspecialchars($v['name'.$lang], ENT_QUOTES, 'UTF-8')?></strong>
+            </a>
+            <?php } ?>
+        </div>
+    </div>
+</section>
+<?php } ?>
+
 <?php if(!empty($about1) || !empty($about2)){ ?>
 <section class="pts-dl-confidence pts-dl-overview" id="nang-luc-phan-phoi">
     <div class="uk-container">
         <div class="pts-dl-confidence-layout">
-            <div class="pts-dl-confidence-main">
-                <?php if(!empty($about1)){ ?>
-                <div class="pts-dl-hero-copy">
-                    <div class="pts-dl-hero-desc"><?=htmlspecialchars_decode($about1['desc'.$lang])?></div>
-                </div>
-                <?php } ?>
-                <?php if(!empty($about2)){ ?>
-                <div class="pts-dl-confidence-content">
-                <div class="pts-retail-section-head">
-                    <div class="section-title">
-                        <h2><?=htmlspecialchars_decode($about2['name'.$lang])?></h2>
-                    </div>
-                </div>
-                <div class="pts-dl-confidence-desc"><?=htmlspecialchars_decode($about2['desc'.$lang])?></div>
-                <?php if(count($photo_daily)){ ?>
-                <div class="pts-dl-product-grid">
-                    <?php foreach($photo_daily as $v){ ?>
-                    <a class="pts-dl-product-card" href="<?=$v['link']?>" target="_blank" title="<?=$v['name'.$lang]?>">
-                        <span class="pts-dl-product-media">
-                            <?php /* 2026-09-22: 480x500 -> 480x300 (giữ đúng tỉ lệ 8:5 của .pts-dl-product-media).
-                               Lưới 3 cột hiện hiển thị ảnh này rộng 239-423px tùy màn hình (đo thật 1440-2560px),
-                               nhưng thumbnail cũ 800px luôn tải full bất kể khung hiển thị nhỏ hơn nhiều lần -
-                               tỉ lệ natural/displayed tới 3.35x ở 1440px, vượt ngưỡng cảnh báo lãng phí băng
-                               thông (image-resolution.spec.js, ngưỡng 3.0x). 480px vẫn đủ nét ở 2x DPR cho
-                               khung hiển thị phổ biến nhất (1440px), chỉ hơi mềm ở màn 2K/2560px rộng nhất. */ ?>
-                            <?=$func->getImage(['isLazy' => false, 'class' => 'w-100', 'sizes' => '480x300x1', 'size-error' => '480x300x1', 'upload' => UPLOAD_PHOTO_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
-                        </span>
-                        <span class="pts-dl-product-name"><?=$v['name'.$lang]?></span>
-                    </a>
-                    <?php } ?>
-                </div>
-                <?php } ?>
-                </div>
-                <?php } ?>
-            </div>
             <div class="pts-dl-form-card" id="dang-ky-dai-ly">
                 <h2 id="pts-dl-registration-title">Đăng ký làm đối tác phân phối</h2>
                 <p class="pts-dl-form-note">Để lại thông tin, Phúc Thịnh Solar sẽ liên hệ tư vấn chính sách đại lý phù hợp.</p>
@@ -98,6 +86,43 @@
                     <button type="submit" name="submit-newsletter2" value="1" class="pts-btn pts-btn-gold pts-dl-submit">Đăng ký ngay <i class="fas fa-arrow-right" aria-hidden="true"></i></button>
                 </form>
             </div>
+            <div class="pts-dl-confidence-main">
+                <?php if(!empty($about1)){ ?>
+                <div class="pts-dl-hero-copy">
+                    <div class="pts-dl-hero-desc"><?=htmlspecialchars_decode($about1['desc'.$lang])?></div>
+                    <a class="pts-dl-overview-cta" href="<?=$func->getCurrentPagePath()?>#dang-ky-dai-ly">Đăng ký hợp tác <span aria-hidden="true">→</span></a>
+                </div>
+                <?php } ?>
+                <?php if(!empty($about2)){ ?>
+                <div class="pts-dl-confidence-content">
+                <div class="pts-retail-section-head">
+                    <div class="section-title">
+                        <h2><?=htmlspecialchars_decode($about2['name'.$lang])?></h2>
+                    </div>
+                </div>
+                <div class="pts-dl-confidence-desc"><?=htmlspecialchars_decode($about2['desc'.$lang])?></div>
+                <?php if(count($photo_daily)){ ?>
+                <div class="pts-dl-product-grid">
+                    <?php foreach($photo_daily as $v){ ?>
+                    <a class="pts-dl-product-card" href="<?=$v['link']?>" target="_blank" title="<?=$v['name'.$lang]?>">
+                        <span class="pts-dl-product-media">
+                            <?php /* 2026-09-22: 480x500 -> 480x300 (giữ đúng tỉ lệ 8:5 của .pts-dl-product-media).
+                               Lưới 3 cột hiện hiển thị ảnh này rộng 239-423px tùy màn hình (đo thật 1440-2560px),
+                               nhưng thumbnail cũ 800px luôn tải full bất kể khung hiển thị nhỏ hơn nhiều lần -
+                               tỉ lệ natural/displayed tới 3.35x ở 1440px, vượt ngưỡng cảnh báo lãng phí băng
+                               thông (image-resolution.spec.js, ngưỡng 3.0x). 480px vẫn đủ nét ở 2x DPR cho
+                               khung hiển thị phổ biến nhất (1440px), chỉ hơi mềm ở màn 2K/2560px rộng nhất. */ ?>
+                            <?=$func->getImage(['isLazy' => false, 'class' => 'w-100', 'sizes' => '480x300x1', 'size-error' => '480x300x1', 'upload' => UPLOAD_PHOTO_L, 'image' => $v['photo'], 'alt' => $v['name'.$lang]])?>
+                        </span>
+                        <span class="pts-dl-product-name"><?=$v['name'.$lang]?></span>
+                    </a>
+                    <?php } ?>
+                </div>
+                <?php } ?>
+                </div>
+                <?php } ?>
+            </div>
+
         </div>
     </div>
 </section>

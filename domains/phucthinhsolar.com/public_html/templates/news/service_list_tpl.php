@@ -39,8 +39,11 @@
     <?php } else { ?>
     <h1 class="pts-sh-sr-only"><?=$solutionEscape($solutionUi['title'])?></h1>
     <?php } ?>
-    <section class="pts-sh-choices" id="cac-giai-phap" aria-label="<?=$solutionEscape($solutionUi['choices'])?>">
+    <section class="pts-sh-choices" id="cac-giai-phap" aria-labelledby="solution-choices-title">
         <div class="uk-container">
+            <header class="pts-sh-choices-heading">
+                <h2 id="solution-choices-title"><?=$solutionEscape($solutionUi['choices'])?></h2>
+            </header>
             <?php if($solutionCards) { ?>
             <div class="pts-sh-choice-grid">
                 <?php foreach($solutionCards as $solutionIndex => $solutionCard) {
@@ -59,7 +62,7 @@
                         <?php if($solutionPhoto) { ?><img src="<?=$solutionEscape($func->getThumbUrl('600x375x1', $solutionPhoto))?>" alt="" width="600" height="375" loading="lazy" decoding="async"><?php } else { ?><span aria-hidden="true"><?=str_pad((string)($solutionIndex+1), 2, '0', STR_PAD_LEFT)?></span><?php } ?>
                     </div>
                     <div class="pts-sh-choice-copy">
-                        <h2><?=$solutionEscape($solutionName)?></h2>
+                        <h3><?=$solutionEscape($solutionName)?></h3>
                         <?php if($solutionDescription !== '') { ?><p><?=$solutionEscape($solutionDescription)?></p><?php } ?>
                         <span class="pts-sh-choice-action"><?=$solutionEscape($solutionUi['choice'])?><span class="pts-sh-arrow" aria-hidden="true">→</span></span>
                     </div>
