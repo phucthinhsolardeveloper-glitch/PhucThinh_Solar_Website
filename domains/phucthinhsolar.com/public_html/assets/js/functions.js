@@ -106,7 +106,9 @@ function doSearch(options, restoreHistory) {
     var sequence = ++productFilterSequence;
     if (productFilterRequest) productFilterRequest.abort();
     var grid = $("#show-product");
-    grid.attr('aria-busy', 'true').html('<div id="loader" role="status">Đang tải sản phẩm…</div>');
+    var statusLine = document.querySelector('[data-product-filter-status]');
+    if(statusLine) statusLine.textContent = 'Đang cập nhật sản phẩm';
+    grid.addClass('is-filter-loading').attr('aria-busy', 'true').html('<div id="loader" aria-hidden="true">Đang tải sản phẩm…</div>');
     productFilterRequest = $.ajax({
         url: 'api/fillter_service.php',
         type: 'GET',
@@ -115,13 +117,16 @@ function doSearch(options, restoreHistory) {
         success: function(html) {
             if (sequence !== productFilterSequence) return;
             grid.html(html);
+            grid.removeClass('is-filter-loading');
+            if(statusLine) statusLine.textContent = 'Đã cập nhật danh sách sản phẩm';
             if (!restoreHistory) $('body,html').stop(true).animate({scrollTop: grid.offset().top - 110}, 300);
             GA_FRAMEWORK.Lazys();
-            $('.product-left, .mask-sidebar').removeClass('show');
+            document.dispatchEvent(new CustomEvent('pts:product-filter-updated'));
         },
         error: function(xhr, status) {
             if (sequence !== productFilterSequence || status === 'abort') return;
-            grid.html('<div role="alert" class="pts-filter-error"><p>Chưa tải được sản phẩm. Vui lòng thử lại.</p><button type="button" class="btn btn-primary" data-filter-retry>Thử lại</button></div>');
+            grid.removeClass('is-filter-loading').html('<div class="pts-filter-error"><p>Chưa tải được sản phẩm. Vui lòng thử lại.</p><button type="button" class="btn btn-primary" data-filter-retry>Thử lại</button></div>');
+            if(statusLine) statusLine.textContent = 'Chưa tải được sản phẩm';
             grid.find('[data-filter-retry]').on('click', function() { doSearch(options, restoreHistory); });
         },
         complete: function() {

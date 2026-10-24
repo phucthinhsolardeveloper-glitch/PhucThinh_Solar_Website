@@ -185,6 +185,8 @@
 .pts-home-contact-form>.pts-home-btn{width:100%;margin-top:2px}
 .pts-home-form-note{margin:11px 0 0;color:var(--home-muted);font-size:13px;text-align:center}
 .pts-home-form-note i{margin-right:5px}
+.pts-home-form-status{margin:10px 0 0;color:#b3261e;font-size:14px;line-height:1.45}
+.pts-home-contact-form input[aria-invalid="true"],.pts-home-contact-form select[aria-invalid="true"],.pts-home-contact-form textarea[aria-invalid="true"]{border-color:#b3261e}
 
 .pts-home-v4 a:focus-visible,.pts-home-v4 button:focus-visible{outline:2px solid var(--home-bronze-dark);outline-offset:3px}
 

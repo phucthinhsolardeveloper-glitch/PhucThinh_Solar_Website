@@ -353,12 +353,12 @@ $homeAboutText = $homePlainText($homeAboutDesc);
                 <form class="pts-home-contact-form" action="#yeu-cau-tu-van" method="post">
                     <input type="hidden" name="form_csrf" value="<?=$homeEscape(formCsrfToken())?>">
                     <div class="pts-home-field-row">
-                        <label>Họ và tên <span>*</span><input type="text" name="dataContact[fullname]" maxlength="100" autocomplete="name" required></label>
-                        <label>Số điện thoại <span>*</span><input type="tel" name="dataContact[phone]" maxlength="20" autocomplete="tel" inputmode="tel" required></label>
+                        <label for="ptsHomeFullname">Họ và tên <span>*</span><input type="text" id="ptsHomeFullname" name="dataContact[fullname]" maxlength="100" autocomplete="name" required></label>
+                        <label for="ptsHomePhone">Số điện thoại <span>*</span><input type="tel" id="ptsHomePhone" name="dataContact[phone]" maxlength="20" autocomplete="tel" inputmode="tel" required></label>
                     </div>
                     <div class="pts-home-field-row">
-                        <label>Tỉnh/Thành phố<input type="text" name="dataContact[address]" maxlength="255" autocomplete="address-level1" placeholder="Ví dụ: Gia Lai"></label>
-                        <label>Nhu cầu tư vấn<select name="dataContact[subject]" id="ptsHomeInterest">
+                        <label for="ptsHomeAddress">Tỉnh/Thành phố<input type="text" id="ptsHomeAddress" name="dataContact[address]" maxlength="255" autocomplete="address-level1" placeholder="Ví dụ: Gia Lai"></label>
+                        <label for="ptsHomeInterest">Nhu cầu tư vấn<select name="dataContact[subject]" id="ptsHomeInterest">
                             <option value="">-- Chọn nhu cầu --</option>
                             <option value="Đèn năng lượng mặt trời">Đèn năng lượng mặt trời</option>
                             <option value="Điện mặt trời gia đình">Điện mặt trời gia đình</option>
@@ -369,12 +369,43 @@ $homeAboutText = $homePlainText($homeAboutDesc);
                             <option value="Khác">Khác</option>
                         </select></label>
                     </div>
-                    <label>Nội dung cần trao đổi <span>*</span><textarea name="dataContact[content]" id="ptsHomeMessage" maxlength="5000" rows="4" required placeholder="Mô tả ngắn nhu cầu của bạn"></textarea></label>
+                    <label for="ptsHomeMessage">Nội dung cần trao đổi <span>*</span><textarea name="dataContact[content]" id="ptsHomeMessage" maxlength="5000" rows="4" required placeholder="Mô tả ngắn nhu cầu của bạn"></textarea></label>
                     <input type="hidden" name="recaptcha_response_contact" id="recaptchaResponseHomeV4">
                     <button class="pts-home-btn pts-home-btn-primary" type="submit" name="submit-contact" value="Gửi yêu cầu tư vấn">Gửi yêu cầu tư vấn</button>
+                    <p class="pts-home-form-status" id="ptsHomeFormStatus" role="status" aria-live="polite" aria-atomic="true" hidden></p>
                     <p class="pts-home-form-note"><i class="fas fa-lock" aria-hidden="true"></i> Thông tin chỉ được sử dụng để liên hệ tư vấn.</p>
                 </form>
             </div>
         </div>
     </section>
 </div>
+<script>
+(function(){
+    var form = document.querySelector('.pts-home-contact-form');
+    var status = document.getElementById('ptsHomeFormStatus');
+    var invalidReported = false;
+    if(!form || !status) return;
+    form.addEventListener('invalid', function(event){
+        var field = event.target;
+        if(!field || field.type === 'hidden') return;
+        field.setAttribute('aria-invalid', 'true');
+        if(invalidReported) return;
+        invalidReported = true;
+        var label = field.labels && field.labels[0] ? field.labels[0].textContent.replace('*', '').trim() : 'thông tin này';
+        status.textContent = field.validity.valueMissing ? 'Vui lòng điền ' + label + '.' : 'Vui lòng kiểm tra ' + label + '.';
+        status.hidden = false;
+        window.setTimeout(function(){
+            invalidReported = false;
+            field.focus();
+        }, 0);
+    }, true);
+    form.addEventListener('input', function(event){
+        if(event.target && event.target.validity.valid) event.target.removeAttribute('aria-invalid');
+    });
+    form.addEventListener('submit', function(){
+        status.hidden = true;
+        status.textContent = '';
+    });
+}
+());
+</script>

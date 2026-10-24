@@ -414,6 +414,7 @@ $productCategoryRailNav = isset($productCategoryRailNav) && is_array($productCat
             <input type="search" id="product-category-search" name="keywords" value="<?=htmlspecialchars(isset($_GET['keyword']) ? $_GET['keyword'] : '', ENT_QUOTES, 'UTF-8')?>" placeholder="Ví dụ: JDE-6500, JD-V300…" autocomplete="off">
         </label>
         <div class="lv-active-filters" aria-live="polite"></div>
+        <p class="pts-filter-status" data-product-filter-status role="status" aria-live="polite" aria-atomic="true"></p>
         <div class="content-main w-clear">
             <div id="show-product">
                 <?php if(!empty($product)) {?>
@@ -567,7 +568,7 @@ $productCategoryRailNav = isset($productCategoryRailNav) && is_array($productCat
 <input type="hidden" name="alias" value="<?=htmlspecialchars($productFilterPath ?: '/san-pham/',ENT_QUOTES,'UTF-8')?>">
 <input type="hidden" name="id_list" value="<?= (isset($id_list)) ? $id_list : 0 ?>">
 <input type="hidden" name="id_cat" value="<?= (isset($id_cat)) ? $id_cat : 0 ?>">
-<button type="button" class="mask-sidebar toggle-sidebar" aria-label="Đóng bộ lọc" tabindex="-1"></button>
+<button type="button" class="mask-sidebar toggle-sidebar" aria-label="Đóng bộ lọc" aria-hidden="true" tabindex="-1"></button>
 </div>
 </main>
 <script>

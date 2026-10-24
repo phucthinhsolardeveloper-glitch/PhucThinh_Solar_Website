@@ -1926,3 +1926,20 @@ main.pts-lighting-category-v2 .lv-grid .product-card-btns .lv-detail{
         line-height:1.45!important;
     }
 }
+
+/* Keep result feedback separate from the refreshed grid so assistive technology
+   hears the state change without treating product markup as a live region. */
+main.pts-lighting-category-v2 .pts-filter-status{
+    min-height:20px;
+    margin:8px 0 0;
+    color:#526274;
+    font-size:13px;
+    line-height:1.45;
+    transition:opacity .16s ease;
+}
+main.pts-lighting-category-v2 #show-product{transition:opacity .16s ease;}
+main.pts-lighting-category-v2 #show-product.is-filter-loading{opacity:.68;}
+@media(prefers-reduced-motion:reduce){
+    main.pts-lighting-category-v2 .pts-filter-status,
+    main.pts-lighting-category-v2 #show-product{transition:none!important;}
+}

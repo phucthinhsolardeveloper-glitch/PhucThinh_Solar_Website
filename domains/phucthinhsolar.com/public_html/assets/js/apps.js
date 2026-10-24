@@ -289,14 +289,27 @@ GA_FRAMEWORK.Menu = function(){
                 return item.offsetParent !== null;
             });
         };
+        var setCatalogInteractive = function(interactive) {
+            if(interactive) {
+                catalogOverlay.setAttribute('aria-hidden', 'false');
+                catalogOverlay.removeAttribute('inert');
+                catalogOverlay.inert = false;
+            } else {
+                catalogOverlay.setAttribute('aria-hidden', 'true');
+                catalogOverlay.setAttribute('inert', '');
+                catalogOverlay.inert = true;
+            }
+        };
         var finishCatalogClose = function() {
             if(!catalogClosing) return;
             catalogClosing = false;
             catalogHideTimer = null;
+            setCatalogInteractive(false);
             catalogOverlay.hidden = true;
             unlockCatalogPage();
         };
         var openCatalog = function(focusSearch) {
+            document.dispatchEvent(new CustomEvent('pts:header-search-close', {detail: {restoreFocus: false}}));
             if(catalogHideTimer) {
                 window.clearTimeout(catalogHideTimer);
                 catalogHideTimer = null;
@@ -305,6 +318,7 @@ GA_FRAMEWORK.Menu = function(){
             positionCatalog();
             var wasHidden = catalogOverlay.hidden;
             catalogOverlay.hidden = false;
+            setCatalogInteractive(true);
             catalogTrigger.setAttribute('aria-expanded', 'true');
             lockCatalogPage();
             if(wasHidden) catalogOpenFrame = window.requestAnimationFrame(function() {
@@ -317,7 +331,7 @@ GA_FRAMEWORK.Menu = function(){
                 if(focusSearch && catalogSearch) catalogSearch.focus({preventScroll: true});
             }
         };
-        var closeCatalog = function(returnFocus) {
+        var closeCatalog = function(returnFocus, immediate) {
             if(catalogOverlay.hidden || catalogClosing) return;
             cancelCatalogHoverClose();
             catalogOpenedByHover = false;
@@ -327,12 +341,16 @@ GA_FRAMEWORK.Menu = function(){
             }
             var wasOpen = catalogOverlay.classList.contains('is-open');
             catalogOverlay.classList.remove('is-open');
+            setCatalogInteractive(false);
             catalogTrigger.setAttribute('aria-expanded', 'false');
             catalogClosing = true;
-            if(!wasOpen || window.matchMedia('(prefers-reduced-motion: reduce)').matches) finishCatalogClose();
+            if(!wasOpen || immediate || window.matchMedia('(prefers-reduced-motion: reduce)').matches) finishCatalogClose();
             else catalogHideTimer = window.setTimeout(finishCatalogClose, 220);
-            if(returnFocus) catalogTrigger.focus();
+            if(returnFocus) catalogTrigger.focus({preventScroll: true});
         };
+        document.addEventListener('pts:header-search-open', function() {
+            if(!catalogOverlay.hidden) closeCatalog(false, true);
+        });
         var scheduleCatalogHoverClose = function() {
             if(!catalogOpenedByHover || !canHoverCatalog()) return;
             cancelCatalogHoverClose();
@@ -383,16 +401,34 @@ GA_FRAMEWORK.Menu = function(){
                 }
             }
         });
-        if(catalogSearch) catalogSearch.addEventListener('input', function() {
+        var catalogEmpty = catalogOverlay.querySelector('#ptsCatalogEmpty');
+        var catalogClear = catalogOverlay.querySelector('#ptsCatalogKeywordClear');
+        var applyCatalogFilter = function() {
+            if(!catalogSearch) return;
             var query = catalogSearch.value.trim().toLocaleLowerCase();
+            var visibleItems = 0;
             catalogItems.forEach(function(item) {
                 var searchText = item.textContent + ' ' + (item.getAttribute('data-search') || '');
                 item.hidden = query !== '' && searchText.toLocaleLowerCase().indexOf(query) === -1;
+                if(!item.hidden) visibleItems++;
             });
             catalogGroups.forEach(function(group) {
                 group.hidden = !group.querySelector('.pts-catalog-list-item:not([hidden])');
             });
+            if(catalogEmpty) catalogEmpty.hidden = visibleItems !== 0;
+            if(catalogClear) catalogClear.hidden = query === '';
+        };
+        if(catalogSearch) {
+            catalogSearch.addEventListener('input', applyCatalogFilter);
+            applyCatalogFilter();
+        }
+        if(catalogClear) catalogClear.addEventListener('click', function() {
+            if(!catalogSearch) return;
+            catalogSearch.value = '';
+            applyCatalogFilter();
+            catalogSearch.focus({preventScroll: true});
         });
+        setCatalogInteractive(false);
     }
 
 };
@@ -1550,32 +1586,53 @@ $(document).ready(function(){
     GA_FRAMEWORK.TickerScroll();
     GA_FRAMEWORK.DatePicker();
     GA_FRAMEWORK.loadNameInputFile();
-    function setProductFilterDrawer(open) {
-        $('.product-left').toggleClass('show', open).attr('aria-hidden', open ? 'false' : 'true');
-        $('.mask-sidebar').toggleClass('show', open);
-        $('#opensideBar-product').toggleClass('active', open).attr('aria-expanded', open ? 'true' : 'false');
-        $('body').toggleClass('pts-filter-drawer-open', open);
-        if(open) $('.pts-filter-drawer-close').trigger('focus');
+    var productFilterDrawer = $('.product-left');
+    var productFilterTrigger = $('#opensideBar-product');
+    function isMobileProductFilter() {
+        return window.matchMedia ? window.matchMedia('(max-width: 1001px)').matches : $(window).width() <= 1001;
     }
-    if(window.matchMedia && window.matchMedia('(max-width: 1001px)').matches) {
-        $('.product-left').attr('aria-hidden', 'true');
+    function setProductFilterDrawer(open, restoreFocus) {
+        var mobile = isMobileProductFilter();
+        var shouldOpen = mobile && open;
+        productFilterDrawer.toggleClass('show', shouldOpen);
+        $('.mask-sidebar').toggleClass('show', shouldOpen).attr('aria-hidden', shouldOpen ? 'false' : 'true');
+        productFilterTrigger.toggleClass('active', shouldOpen).attr('aria-expanded', shouldOpen ? 'true' : 'false');
+        $('body').toggleClass('pts-filter-drawer-open', shouldOpen);
+        productFilterDrawer.attr('aria-hidden', mobile && !shouldOpen ? 'true' : 'false').each(function() {
+            if('inert' in this) this.inert = mobile && !shouldOpen;
+            if(mobile && !shouldOpen) this.setAttribute('inert', '');
+            else this.removeAttribute('inert');
+        });
+        if(shouldOpen) {
+            var closeButton = productFilterDrawer.find('.pts-filter-drawer-close').get(0);
+            if(closeButton) closeButton.focus({preventScroll: true});
+        } else if(restoreFocus && productFilterTrigger.length) {
+            productFilterTrigger.get(0).focus({preventScroll: true});
+        }
     }
+    setProductFilterDrawer(false, false);
     $(document).on('click', '.toggle-sidebar', function (event) {
         event.preventDefault();
-        if(window.matchMedia && !window.matchMedia('(max-width: 1001px)').matches) {
-            setProductFilterDrawer(false);
+        if(!isMobileProductFilter()) {
+            setProductFilterDrawer(false, false);
             return;
         }
-        setProductFilterDrawer(!$('.product-left').hasClass('show'));
+        var closing = productFilterDrawer.hasClass('show');
+        setProductFilterDrawer(!closing, closing);
     });
     $(window).on('resize', function () {
-        if(window.matchMedia && !window.matchMedia('(max-width: 1001px)').matches) setProductFilterDrawer(false);
+        setProductFilterDrawer(productFilterDrawer.hasClass('show'), false);
     });
     $(document).on('keydown', function (event) {
-        if(event.key === 'Escape' && $('.product-left').hasClass('show')) {
-            setProductFilterDrawer(false);
-            $('#opensideBar-product').trigger('focus');
+        if(event.key === 'Escape' && productFilterDrawer.hasClass('show')) {
+            event.preventDefault();
+            setProductFilterDrawer(false, true);
         }
+    });
+    document.addEventListener('pts:product-filter-updated', function() {
+        var active = document.activeElement;
+        var focusWasInside = active && productFilterDrawer.length && productFilterDrawer.get(0).contains(active);
+        setProductFilterDrawer(false, !!focusWasInside);
     });
     /* Accordion cho từng nhóm filter sidebar (Danh mục luôn mở, còn lại thu
        gọn mặc định - xem class .pts-filter-open được render sẵn ở PHP). */

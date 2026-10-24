@@ -74,7 +74,7 @@ $headerSearchKeyword = (isset($_GET['keyword']) && is_string($_GET['keyword'])) 
     </div>
 </header>
 
-<div class="pts-catalog-overlay" id="ptsCatalogOverlay" hidden>
+<div class="pts-catalog-overlay" id="ptsCatalogOverlay" aria-hidden="true" inert hidden>
     <button class="pts-catalog-scrim" type="button" aria-label="Đóng danh mục sản phẩm"></button>
     <section class="pts-catalog-panel" role="dialog" aria-modal="true" aria-labelledby="ptsCatalogTitle">
         <div class="pts-catalog-heading">
@@ -83,6 +83,7 @@ $headerSearchKeyword = (isset($_GET['keyword']) && is_string($_GET['keyword'])) 
                 <label class="hdr-sr-only" for="ptsCatalogKeyword">Tìm sản phẩm, mã sản phẩm</label>
                 <i class="fas fa-search" aria-hidden="true"></i>
                 <input type="search" id="ptsCatalogKeyword" value="<?=$headerEscape($headerSearchKeyword)?>" placeholder="Tìm sản phẩm, mã sản phẩm..." autocomplete="off">
+                <button type="button" class="pts-catalog-clear" id="ptsCatalogKeywordClear" aria-label="Xóa tìm kiếm danh mục" hidden><i class="fas fa-times" aria-hidden="true"></i></button>
             </form>
             <button class="pts-catalog-close" type="button" aria-label="Đóng danh mục sản phẩm"><i class="fas fa-times" aria-hidden="true"></i></button>
         </div>
@@ -110,6 +111,7 @@ $headerSearchKeyword = (isset($_GET['keyword']) && is_string($_GET['keyword'])) 
             </section>
             <?php } ?>
         </div>
+        <p class="pts-catalog-empty" id="ptsCatalogEmpty" role="status" aria-live="polite" hidden>Không tìm thấy danh mục phù hợp</p>
         <div class="pts-catalog-footer">
             <a href="/san-pham/">Xem tất cả sản phẩm <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
             <a class="pts-catalog-footer-advice" href="#ptsContactModal" data-toggle="modal" data-target="#ptsContactModal">Tư vấn chọn sản phẩm <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
