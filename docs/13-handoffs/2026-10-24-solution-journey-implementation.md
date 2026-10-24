@@ -14,7 +14,7 @@ Browser simulation *read-only* trên HTML public ngày 24/10, ghép DOM tương 
 - 390px: card giải pháp đầu tiên top từ ~723px xuống ~339px; đoạn giới thiệu vẫn tồn tại trong disclosure.
 - 1440px: card top từ ~518px xuống ~469px.
 - 4/4 lần tải HTTP 200; không có horizontal overflow ở 390/1440 trong viewport đo.
-- Screenshot trước/sau + review.json: artifacts/solution-review-20261024/. Đây là mô phỏng trên live public HTML, không phải QA local PHP build.
+- Screenshot trước/sau + review.json: artifacts/qa-20261024/solution-review-20261024/. Đây là mô phỏng trên live public HTML, không phải QA local PHP build.
 - Test mới: tools/visual-tests/tests/solution-journey-cohesion.spec.js kiểm tra viewport 390/768/1440/1920, text vẫn tồn tại, summary, link màu navy, grid overflow và anchor canonical. Test chưa có kết quả full local browser thực chạy trên phiên PHP sửa đổi.
 - Cần chạy PHP lint tại môi trường có php-cli, cùng bộ regression frontend, kiểm tra JS disabled, modal/CTA, site map và content thực trước GO.
 

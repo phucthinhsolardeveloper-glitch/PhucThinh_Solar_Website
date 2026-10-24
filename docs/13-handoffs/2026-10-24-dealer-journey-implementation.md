@@ -6,7 +6,7 @@
 - Mobile keeps the registration form near the first fold so prospects can contact sales without a multi-screen scroll. No new business copy/claim is introduced.
 
 ## Rejected implementation after real browser simulation
-The first agent patch moved pts-dl-support inside pts-dl-confidence-layout and the form to the bottom. On 390px public-content preview, form top moved from ~396px to ~5790px. At 1440px, support text/cards spilled beyond the left column into the registration card. This variant was reverted before commit. Evidence: artifacts/dealer-review-20261024 screenshots and review.json. Those after images document the rejected variant, not the final accepted changes.
+The first agent patch moved pts-dl-support inside pts-dl-confidence-layout and the form to the bottom. On 390px public-content preview, form top moved from ~396px to ~5790px. At 1440px, support text/cards spilled beyond the left column into the registration card. This variant was reverted before commit. Evidence: artifacts/qa-20261024/dealer-review-20261024 screenshots and review.json. Those after images document the rejected variant, not the final accepted changes.
 
 ## Content blockers
 Hero's market opportunity wording, figures from 2021, and the 2021–2025 national program require Sales/Marketing approval. Do not invent replacement evidence. A stronger B2B proof-first design is blocked until those assets/copy are verified.

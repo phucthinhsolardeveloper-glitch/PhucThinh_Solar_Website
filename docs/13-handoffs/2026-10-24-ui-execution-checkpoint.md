@@ -14,9 +14,10 @@ Status: UI candidate developed locally, NOT a production release. Owner: website
 5. Node syntax checks on both newly authored Playwright specs PASS; git diff --check PASS; candidate worktree clean.
 
 ## Proof and limitations
-- Screenshots and JSON preview remain in the two task worktrees:
-  /home/admin01/src/pts-solution-ux-20261024/artifacts/solution-review-20261024/
-  /home/admin01/src/pts-dealer-ux-20261024/artifacts/dealer-review-20261024/
+- Screenshots and JSON preview have been copied into the integration candidate worktree (12 PNGs):
+  /home/admin01/src/pts-ui-cohesion-20261024/artifacts/qa-20261024/solution-review-20261024/
+  /home/admin01/src/pts-ui-cohesion-20261024/artifacts/qa-20261024/dealer-review-20261024/
+  Both child worktrees and their temporary branches were cleaned up after cherry-pick.
 - Preview is a read-only browser DOM/CSS simulation using public site content, not an independently rebuilt local PHP site. Do NOT label full regression as PASS.
 - PHP CLI is absent from WSL runtime, no isolated PTS DB-backed local staging was booted. Full Playwright/PHP, mobile 768 and widescreen 1920, interactive form/checkout/SEO/accessibility/performance QA remain gated.
 - WSL service briefly became unresponsive while two Codex agents were active. The hung agent was stopped without restarting WSL; the service later recovered. Avoid more than one heavy CLI agent concurrently until memory/IO are stable.
