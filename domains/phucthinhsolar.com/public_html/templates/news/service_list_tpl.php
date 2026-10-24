@@ -9,15 +9,33 @@
                 <?php } ?>
                 <div class="pts-sh-intro-copy">
                     <h1 id="solution-hub-title"><?=$solutionEscape($solutionHeroTitle)?></h1>
-                    <p><?=$solutionEscape($solutionHeroDesc)?></p>
+                    <details class="pts-sh-intro-details" data-collapse-mobile open>
+                        <summary class="pts-sh-intro-summary"><span>Xem mô tả đầy đủ</span><span aria-hidden="true">+</span></summary>
+                        <p><?=$solutionEscape($solutionHeroDesc)?></p>
+                    </details>
                     <div class="pts-sd-actions">
-                        <a class="pts-sh-consult" href="#ptsContactModal" data-toggle="modal" data-target="#ptsContactModal"><?=$solutionEscape($solutionUi['consult'])?> <span aria-hidden="true">→</span></a>
                         <a class="pts-sd-explore" href="<?=$func->getCurrentPagePath()?>#cac-giai-phap">Khám phá các giải pháp</a>
                     </div>
                 </div>
             </div>
         </div>
     </section>
+    <script>
+        (function () {
+            var details = document.querySelector('.pts-sh-intro-details[data-collapse-mobile]');
+            if (!details || !window.matchMedia) return;
+            var mobileQuery = window.matchMedia('(max-width: 800px)');
+            var syncDetailsState = function (event) {
+                details.open = !event.matches;
+            };
+            syncDetailsState(mobileQuery);
+            if (mobileQuery.addEventListener) {
+                mobileQuery.addEventListener('change', syncDetailsState);
+            } else if (mobileQuery.addListener) {
+                mobileQuery.addListener(syncDetailsState);
+            }
+        }());
+    </script>
     <?php } else { ?>
     <h1 class="pts-sh-sr-only"><?=$solutionEscape($solutionUi['title'])?></h1>
     <?php } ?>
