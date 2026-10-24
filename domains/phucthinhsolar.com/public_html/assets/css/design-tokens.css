@@ -50,9 +50,25 @@
   --pts-chip-bg:#eef2f7;
   --pts-chip-bg-hover:#dfe6ef;
   --pts-chip-text:#0a2251;
+
+  /* Focus ring dùng navy trên nền sáng; không phụ thuộc màu riêng của hub. */
+  --pts-focus-ring:var(--pts-navy);
 }
 
 body{font-family:var(--pts-font)!important;}
+
+/* Legacy style.css đặt outline:none cho link/input toàn site. Khôi phục một
+   trạng thái bàn phím có thể nhìn thấy ở lớp shared cuối, không làm đổi trạng
+   thái focus do chuột hoặc touch. */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+summary:focus-visible{
+  outline:3px solid var(--pts-focus-ring);
+  outline-offset:3px;
+}
 
 /* Trỏ biến riêng của từng hub về token chung. Giữ nguyên tên biến để không
    file nào phải viết lại selector, chỉ đồng nhất giá trị. */
@@ -144,6 +160,28 @@ body{font-family:var(--pts-font)!important;}
 .nh-consult:hover{background:var(--pts-gold-light)!important;}
 /* Shadow nặng của nút gold chuẩn cũng không còn phù hợp hệ phẳng. */
 .pts-btn-gold{box-shadow:none!important;}
+
+/* Primary CTA dùng chung ở các hub. Các route đã có class riêng nhưng cùng
+   một vai trò: gold phẳng, bo nhẹ, không gradient/shadow. */
+.pts-btn-gold,
+.pts-sh-consult,
+.pts-ph-featured-cta,
+.pts-ph-consult,
+.pts-about-contact-button.is-primary{
+  border-radius:4px;
+  background:var(--pts-gold);
+  background-image:none;
+  box-shadow:none;
+}
+.pts-btn-gold:hover,
+.pts-sh-consult:hover,
+.pts-ph-featured-cta:hover,
+.pts-ph-consult:hover,
+.pts-about-contact-button.is-primary:hover{
+  background:var(--pts-gold-light);
+  background-image:none;
+  box-shadow:none;
+}
 
 /* ============================================================
    TIÊU ĐỀ TRANG HUB — canh trái, một cấp, cùng cỡ

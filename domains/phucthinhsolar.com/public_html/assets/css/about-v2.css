@@ -104,7 +104,7 @@
 .pts-about-contact-button.is-hotline{border-color:var(--about-gold-light);background:var(--about-gold-light);color:var(--about-navy)!important;}
 .pts-about-contact-button.is-zalo{min-width:78px;background:#fff;color:#0877c9!important;}
 .pts-about-contact-button.is-primary{border-color:var(--about-gold);background:var(--about-gold);color:var(--about-navy)!important;}
-.pts-about-contact-button:hover{transform:none!important;border-color:#fff;background:#fff;color:var(--about-navy)!important;}
+.pts-about-contact-button:not(.is-primary):hover{transform:none!important;border-color:#fff;background:#fff;color:var(--about-navy)!important;}
 
 /* Corporate layout inherited from the pre-redesign About: introduction image
    on the left, formation image on the right. Keep the Admin-backed sections. */

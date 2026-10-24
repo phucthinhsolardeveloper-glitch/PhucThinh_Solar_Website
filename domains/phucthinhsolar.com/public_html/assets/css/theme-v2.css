@@ -1499,8 +1499,8 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
    Nút và đường viền dùng chung
    ===================================================================== */
 
-/* Nút hành động dùng gradient vàng kim; chi tiết trang trí giữ màu phẳng. */
-.pts-btn-gold,
+/* Nút hành động dùng gradient vàng kim; chi tiết trang trí giữ màu phẳng.
+   Riêng .pts-btn-gold do shared design tokens quản lý (nền gold phẳng). */
 .btn-gold,
 .product-card-btns .pts-card-add,
 .btn-product-detail a:first-child,
@@ -1528,7 +1528,6 @@ h4{font-size:18.5px;font-weight:700;line-height:1.4;}
     color:var(--pts-navy)!important;
     box-shadow:0 6px 18px rgba(182,125,46,.28);
 }
-.pts-btn-gold:hover,
 .btn-gold:hover,
 .product-card-btns .pts-card-add:hover,
 .btn-product-detail a:first-child:hover,
