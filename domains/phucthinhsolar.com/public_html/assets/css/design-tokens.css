@@ -173,8 +173,8 @@ summary:focus-visible{
 
 /* ============================================================
    NÚT HÀNH ĐỘNG CHÍNH — gold phẳng, chữ navy, bo 4px
-   Tin tức đang dùng riêng pill bo 28px + gradient vàng đậm + chữ TRẮNG, khác
-   hẳn .pts-btn-gold (gold phẳng + chữ navy) dùng ở mọi nơi khác.
+   Các CTA public đã biết dùng chung contract; ngoại lệ light-on-navy vẫn giữ
+   selector riêng để không đổi vai trò màu của footer/banner.
    ============================================================ */
 .nh-consult{
   border-radius:var(--pts-radius-control,4px)!important;
@@ -192,22 +192,76 @@ summary:focus-visible{
 /* Primary CTA dùng chung ở các hub. Các route đã có class riêng nhưng cùng
    một vai trò: gold phẳng, bo nhẹ, không gradient/shadow. */
 .pts-btn-gold,
+.pts-home-btn-primary,
 .pts-sh-consult,
 .pts-ph-featured-cta,
 .pts-ph-consult,
-.pts-about-contact-button.is-primary{
+.pts-about-contact-button.is-primary,
+.pts-dl-submit{
   border-radius:var(--pts-radius-control,4px);
   background:var(--pts-gold);
   background-image:none;
+  border-color:var(--pts-gold);
+  color:var(--pts-navy)!important;
   box-shadow:none;
 }
 .pts-btn-gold:hover,
+.pts-home-btn-primary:hover,
 .pts-sh-consult:hover,
 .pts-ph-featured-cta:hover,
 .pts-ph-consult:hover,
-.pts-about-contact-button.is-primary:hover{
+.pts-about-contact-button.is-primary:hover,
+.pts-dl-submit:hover{
   background:var(--pts-gold-light);
   background-image:none;
+  border-color:var(--pts-gold-light);
+  color:var(--pts-navy)!important;
+  box-shadow:none;
+  transform:none;
+}
+.pts-btn-gold:active,
+.pts-home-btn-primary:active,
+.pts-sh-consult:active,
+.pts-ph-featured-cta:active,
+.pts-ph-consult:active,
+.pts-about-contact-button.is-primary:active,
+.pts-dl-submit:active{
+  background:var(--pts-gold-dark);
+  border-color:var(--pts-gold-dark);
+  color:#fff!important;
+}
+.pts-btn-gold:focus-visible,
+.pts-home-btn-primary:focus-visible,
+.pts-sh-consult:focus-visible,
+.pts-ph-featured-cta:focus-visible,
+.pts-ph-consult:focus-visible,
+.pts-about-contact-button.is-primary:focus-visible,
+.pts-dl-submit:focus-visible,
+.pts-solution-hub .pts-sh-consult:focus-visible,
+.pts-project-hub .pts-ph-featured-cta:focus-visible,
+.pts-project-hub .pts-ph-consult:focus-visible{
+  outline:3px solid var(--pts-focus-ring)!important;
+  outline-offset:3px;
+  box-shadow:none;
+}
+.pts-btn-gold:disabled,
+.pts-btn-gold[aria-disabled="true"],
+.pts-home-btn-primary:disabled,
+.pts-home-btn-primary[aria-disabled="true"],
+.pts-sh-consult[aria-disabled="true"],
+.nh-consult[aria-disabled="true"],
+.pts-ph-featured-cta[aria-disabled="true"],
+.pts-ph-consult[aria-disabled="true"],
+.pts-about-contact-button.is-primary[aria-disabled="true"],
+.pts-dl-submit:disabled,
+.pts-dl-submit[aria-disabled="true"]{
+  /* Legacy .nh-consult:hover uses !important: disabled must still win on hover. */
+  border-color:var(--pts-line)!important;
+  background:var(--pts-line)!important;
+  color:var(--pts-muted)!important;
+  cursor:not-allowed;
+  opacity:.72;
+  transform:none;
   box-shadow:none;
 }
 
