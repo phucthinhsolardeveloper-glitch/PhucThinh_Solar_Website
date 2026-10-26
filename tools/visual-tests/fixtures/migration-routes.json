@@ -1,0 +1,18 @@
+{
+  "description": "Local PHP 8080 to Nuxt 3100 route mapping. Preview paths are internal noindex pages; PHP remains public route owner.",
+  "routes": [
+    { "id": "home", "legacyPath": "/", "previewPath": "/migration-home-preview" },
+    { "id": "catalog", "legacyPath": "/san-pham/", "previewPath": "/migration-catalog-preview" },
+    { "id": "product-detail", "legacyPath": "/san-pham/den-ufo-nang-luong-mat-troi-oriana-ufo-1000-1000w/", "previewPath": "/migration-product-preview?slug=den-ufo-nang-luong-mat-troi-oriana-ufo-1000-1000w" },
+    { "id": "solutions", "legacyPath": "/giai-phap/", "previewPath": "/migration-solutions-preview" },
+    { "id": "solution-detail", "legacyPath": "/giai-phap/dien-mat-troi-ho-gia-dinh/", "previewPath": "/migration-solution-detail-preview?slug=dien-mat-troi-ho-gia-dinh" },
+    { "id": "projects", "legacyPath": "/du-an-da-thuc-hien/", "previewPath": "/migration-projects-preview" },
+    { "id": "project-detail", "legacyPath": "/du-an-dien-nlmt-ho-anh-hoa-thanh-an/", "previewPath": "/migration-project-detail-preview?slug=du-an-dien-nlmt-ho-anh-hoa-thanh-an" },
+    { "id": "news", "legacyPath": "/tin-tuc/", "previewPath": "/migration-news-preview" },
+    { "id": "news-detail", "legacyPath": "/8-ly-do-ban-nen-su-dung-den-nang-luong-mat-troi-ngay-bay-gio/", "previewPath": "/migration-news-detail-preview?slug=8-ly-do-ban-nen-su-dung-den-nang-luong-mat-troi-ngay-bay-gio" },
+    { "id": "about", "legacyPath": "/gioi-thieu/", "previewPath": "/migration-about-preview" },
+    { "id": "dealer", "legacyPath": "/dai-ly/", "previewPath": "/migration-dealer-preview" },
+    { "id": "contact", "legacyPath": "/lien-he/", "previewPath": "/migration-contact-preview" }
+  ],
+  "interactions": []
+}

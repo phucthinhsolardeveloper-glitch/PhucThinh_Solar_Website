@@ -67,7 +67,7 @@ function parseArgs(argv) {
   args.reducedMotion = args.reducedMotion || 'reduce'
   if (!['chromium', 'firefox', 'webkit'].includes(args.browser)) throw new Error('Browser must be chromium, firefox, or webkit')
   if (!['reduce', 'no-preference'].includes(args.reducedMotion)) throw new Error('reduced-motion must be reduce or no-preference')
-  args.viewports = args.viewports.length ? args.viewports : [{ width: 390, height: 844 }, { width: 1440, height: 900 }]
+  args.viewports = args.viewports.length ? args.viewports : [{ width: 390, height: 844 }, { width: 768, height: 900 }, { width: 1440, height: 900 }]
   args.output = args.output || DEFAULT_OUTPUT
   return args
 }
@@ -144,6 +144,31 @@ async function capturePage(browser, url, viewport, settings, fileStem, output) {
     const hrefs = [...document.querySelectorAll('a[href]')].map(link => link.href).filter(Boolean)
     const nav = [...document.querySelectorAll('header a[href], nav a[href]')].map(link => ({ text: link.textContent?.trim() || '', href: link.href }))
     const h1 = [...document.querySelectorAll('h1')].map(node => node.textContent?.trim()).filter(Boolean)
+    const normalize = value => String(value || '').replace(/\s+/g, ' ').trim()
+    const hash = value => {
+      let result = 2166136261
+      for (const character of value) {
+        result ^= character.charCodeAt(0)
+        result = Math.imul(result, 16777619)
+      }
+      return (result >>> 0).toString(16)
+    }
+    const visible = node => {
+      const rect = node.getBoundingClientRect()
+      const style = getComputedStyle(node)
+      return rect.width > 0 && rect.height > 0 && style.display !== 'none' && style.visibility !== 'hidden'
+    }
+    const layoutRows = [...document.querySelectorAll('body *')].filter(visible).slice(0, 2500).map(node => {
+      const rect = node.getBoundingClientRect()
+      return [node.tagName, Math.round(rect.x), Math.round(rect.y), Math.round(rect.width), Math.round(rect.height)]
+    })
+    const textRows = [...document.querySelectorAll('h1,h2,h3,h4,p,a,button,li,dt,dd,label')].filter(visible).map(node => normalize(node.textContent))
+    const mediaRows = [...document.querySelectorAll('img,video,iframe')].filter(visible).map(node => {
+      const rect = node.getBoundingClientRect()
+      return [node.tagName, node.getAttribute('src') || node.getAttribute('poster') || '', Math.round(rect.x), Math.round(rect.y), Math.round(rect.width), Math.round(rect.height)]
+    })
+    const dynamicSelectors = ['[data-dynamic]', 'time', '[aria-live]', '.price', '.cart-count', '.view-count']
+    const dynamicSignals = dynamicSelectors.flatMap(selector => [...document.querySelectorAll(selector)].filter(visible).map(node => `${selector}:${normalize(node.textContent)}`))
     return {
       title: document.title,
       canonical: document.querySelector('link[rel="canonical"]')?.href || content('link[rel="canonical"]'),
@@ -155,8 +180,16 @@ async function capturePage(browser, url, viewport, settings, fileStem, output) {
       viewportWidth: document.documentElement.clientWidth,
       horizontalOverflow: Math.max(0, document.documentElement.scrollWidth - document.documentElement.clientWidth),
       screenshotViewport: { width: window.innerWidth, height: window.innerHeight, deviceScaleFactor: window.devicePixelRatio },
+      fingerprints: {
+        layout: hash(JSON.stringify(layoutRows)),
+        text: hash(JSON.stringify(textRows)),
+        media: hash(JSON.stringify(mediaRows)),
+        links: hash(JSON.stringify([...new Set(hrefs)].sort())),
+      },
+      elementCounts: { layout: layoutRows.length, text: textRows.length, media: mediaRows.length },
+      dynamicSignals: dynamicSignals.slice(0, 40),
     }
-  }).catch(() => ({ title: '', canonical: '', robots: '', h1: [], hrefs: [], nav: [], scrollWidth: null, viewportWidth: null, horizontalOverflow: null, screenshotViewport: viewport }))
+  }).catch(() => ({ title: '', canonical: '', robots: '', h1: [], hrefs: [], nav: [], scrollWidth: null, viewportWidth: null, horizontalOverflow: null, screenshotViewport: viewport, fingerprints: { layout: '', text: '', media: '', links: '' }, elementCounts: { layout: 0, text: 0, media: 0 }, dynamicSignals: [] }))
 
   const screenshotPath = path.join(output, `${fileStem}.png`)
   const headerPath = path.join(output, `${fileStem}-header.png`)
@@ -180,6 +213,26 @@ async function capturePage(browser, url, viewport, settings, fileStem, output) {
   }
   await page.close()
   return result
+}
+
+function classifyDifference(legacy, preview, diff) {
+  const failedRequests = [...(legacy.failedRequests || []), ...(preview.failedRequests || [])]
+  const externalEmbedOnly = failedRequests.length > 0 && failedRequests.every(item => /https?:\/\/(?:www\.)?google\.com\/maps\/embed/i.test(item))
+  const hardRuntimeGaps = [legacy.navigationError, preview.navigationError, legacy.status === null, preview.status === null, legacy.status >= 400, preview.status >= 400, legacy.pageErrors?.length > 0, preview.pageErrors?.length > 0, legacy.consoleMessages?.length > 0, preview.consoleMessages?.length > 0, legacy.horizontalOverflow > 1, preview.horizontalOverflow > 1].some(Boolean)
+  if (hardRuntimeGaps) return { kind: 'runtime-or-route-error', confidence: 'high', reason: 'HTTP, browser console/pageerror hoặc responsive gate không đạt' }
+  if (externalEmbedOnly) return { kind: 'external-resource-blocked', confidence: 'high', reason: 'Third-party Google Maps embed bị browser/network abort; không phải lỗi Nuxt UI' }
+  if (failedRequests.length > 0) return { kind: 'runtime-or-route-error', confidence: 'high', reason: 'Có request media/resource bị lỗi' }
+  if (diff.status !== 'compared') return { kind: 'unknown', confidence: 'low', reason: diff.reason || 'Không đủ ảnh để phân loại' }
+  const dataSignals = []
+  if (legacy.fingerprints?.text !== preview.fingerprints?.text) dataSignals.push('text/content')
+  if (legacy.fingerprints?.media !== preview.fingerprints?.media) dataSignals.push('media')
+  if (legacy.fingerprints?.links !== preview.fingerprints?.links) dataSignals.push('links')
+  if (legacy.title !== preview.title || JSON.stringify(legacy.h1) !== JSON.stringify(preview.h1)) dataSignals.push('SEO/headings')
+  const layoutChanged = legacy.fingerprints?.layout !== preview.fingerprints?.layout
+  if (!layoutChanged && dataSignals.length) return { kind: 'dynamic-data-difference', confidence: 'medium', reason: dataSignals.join(', ') }
+  if (layoutChanged && dataSignals.length) return { kind: 'mixed-data-and-ui-difference', confidence: 'medium', reason: `layout + ${dataSignals.join(', ')}` }
+  if (layoutChanged || diff.changedRatio > 0.01) return { kind: 'ui-difference', confidence: 'medium', reason: layoutChanged ? 'geometry/layout fingerprint khác' : 'pixel diff vượt 1% nhưng DOM data không đổi' }
+  return { kind: 'stable-or-rendering-noise', confidence: 'medium', reason: 'DOM geometry và data fingerprint tương đồng' }
 }
 
 async function compareScreenshots(browser, leftBase64, rightBase64, diffPath) {
@@ -243,14 +296,14 @@ function stripBuffers(value) {
 }
 
 function renderMarkdown(report) {
-  const lines = ['# Migration visual comparison', '', `- Generated: ${report.generatedAt}`, `- Legacy: \`${report.legacyUrl}\``, `- Preview: \`${report.previewUrl}\``, `- Browser: ${report.browser}; reduced motion: ${report.reducedMotion}`, `- Viewports: ${report.viewports.map(item => `${item.width}x${item.height}`).join(', ')}`, '', 'This is read-only evidence, not an approved baseline and not a pixel-perfect gate.', '', '## Route results', '', '| Route | Viewport | Legacy | Preview | Screenshot diff | Gaps |', '| --- | --- | ---: | ---: | --- | --- |']
+  const lines = ['# Migration visual comparison', '', `- Generated: ${report.generatedAt}`, `- Legacy: \`${report.legacyUrl}\``, `- Preview: \`${report.previewUrl}\``, `- Browser: ${report.browser}; reduced motion: ${report.reducedMotion}`, `- Viewports: ${report.viewports.map(item => `${item.width}x${item.height}`).join(', ')}`, '', 'This is read-only evidence, not an approved baseline and not a pixel-perfect gate.', 'Classification is heuristic: `dynamic-data-difference` means the DOM geometry matched while content/media/links changed; it is not an approval.', '', '## Route results', '', '| Route | Viewport | Legacy | Preview | Classification | Changed pixels | Gaps |', '| --- | --- | ---: | ---: | --- | ---: | --- |']
   for (const route of report.routes) for (const viewport of route.viewports) {
-    const gap = [viewport.legacy.navigationError && 'legacy navigation error', viewport.preview.navigationError && 'preview navigation error', viewport.preview.status === null && 'preview route unavailable', viewport.legacy.horizontalOverflow > 1 && 'legacy overflow', viewport.preview.horizontalOverflow > 1 && 'preview overflow'].filter(Boolean).join('; ') || '—'
-    lines.push(`| ${route.id} | ${viewport.width}x${viewport.height} | ${viewport.legacy.status ?? 'ERR'} | ${viewport.preview.status ?? 'ERR'} | ${viewport.diff.diff || viewport.diff.status} | ${gap} |`)
+    const gap = [viewport.legacy.navigationError && 'legacy navigation error', viewport.preview.navigationError && 'preview navigation error', viewport.legacy.status >= 400 && `legacy HTTP ${viewport.legacy.status}`, viewport.preview.status >= 400 && `preview HTTP ${viewport.preview.status}`, viewport.preview.status === null && 'preview route unavailable', viewport.legacy.pageErrors?.length > 0 && 'legacy pageerror', viewport.preview.pageErrors?.length > 0 && 'preview pageerror', viewport.legacy.consoleMessages?.length > 0 && 'legacy console', viewport.preview.consoleMessages?.length > 0 && 'preview console', viewport.legacy.failedRequests?.length > 0 && 'legacy failed request', viewport.preview.failedRequests?.length > 0 && 'preview failed request', viewport.legacy.horizontalOverflow > 1 && 'legacy overflow', viewport.preview.horizontalOverflow > 1 && 'preview overflow'].filter(Boolean).join('; ') || '—'
+    lines.push(`| ${route.id} | ${viewport.width}x${viewport.height} | ${viewport.legacy.status ?? 'ERR'} | ${viewport.preview.status ?? 'ERR'} | ${viewport.classification?.kind || 'unknown'} | ${viewport.diff.changedRatio === undefined ? '—' : `${(viewport.diff.changedRatio * 100).toFixed(2)}%`} | ${gap} |`)
   }
   lines.push('', '## Interaction evidence', '', '| Route | Interaction | Legacy | Preview |', '| --- | --- | --- | --- |')
   for (const item of report.interactions) lines.push(`| ${item.route} | ${item.id} | ${item.legacy.status} | ${item.preview.status} |`)
-  lines.push('', '## Limitations', '', '- Route availability is reported, not inferred; an absent preview path is evidence of a gap.', '- Screenshots are first-fold viewport captures with a heuristic PNG diff. Fonts, remote media, animations and data may still vary.', '- No credentials, Admin login, production crawl, mutation, baseline update, push, merge or deploy was performed.')
+  lines.push('', '## Limitations', '', '- Route availability is reported, not inferred; an absent preview path is evidence of a gap.', '- Screenshots are first-fold viewport captures with a heuristic PNG diff. Fonts, remote media, animations and data may still vary.', '- `dynamic-data-difference` is based on content/media/link and geometry fingerprints; inspect `report.json` and both screenshots before accepting a gap.', '- No credentials, Admin login, production crawl, mutation, baseline update, push, merge or deploy was performed.')
   return `${lines.join('\n')}\n`
 }
 
@@ -269,8 +322,9 @@ async function run(args) {
         const legacy = await capturePage(browser, joinUrl(args.legacyUrl, route.legacyPath, args.allowRemote), viewport, args, `${prefix}-legacy`, args.output)
         const preview = await capturePage(browser, joinUrl(args.previewUrl, route.previewPath, args.allowRemote), viewport, args, `${prefix}-preview`, args.output)
         const diff = await compareScreenshots(browser, legacy.screenshotBase64, preview.screenshotBase64, path.join(args.output, `${prefix}-diff.png`))
-        routeReport.viewports.push({ ...viewport, legacy, preview, diff })
-        console.log(`${route.id} ${viewport.width}x${viewport.height}: legacy=${legacy.status ?? 'ERR'} preview=${preview.status ?? 'ERR'} diff=${diff.status}`)
+        const classification = classifyDifference(legacy, preview, diff)
+        routeReport.viewports.push({ ...viewport, legacy, preview, diff, classification })
+        console.log(`${route.id} ${viewport.width}x${viewport.height}: legacy=${legacy.status ?? 'ERR'} preview=${preview.status ?? 'ERR'} diff=${diff.status} class=${classification.kind}`)
       }
       report.routes.push(routeReport)
       for (const interaction of manifest.interactions.filter(item => item.route === route.id)) {
@@ -302,4 +356,4 @@ if (require.main === module) {
   })()
 }
 
-module.exports = { DEFAULT_MANIFEST, parseArgs, parseViewport, validateOrigin, loadManifest, renderMarkdown, safeFilePart }
+module.exports = { DEFAULT_MANIFEST, parseArgs, parseViewport, validateOrigin, loadManifest, renderMarkdown, safeFilePart, classifyDifference }

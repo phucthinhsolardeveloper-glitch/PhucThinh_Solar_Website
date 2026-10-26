@@ -1,4 +1,5 @@
 import { isCatalogSlugChain, isPublicCatalogPayload } from '../../../shared/contracts/public-catalog'
+import { fetchMigrationPayload, requireMigrationGet } from '../../utils/migration-api'
 
 function oneQueryValue(value: unknown): string | undefined {
   return typeof value === 'string' ? value : undefined
@@ -12,6 +13,7 @@ function positiveQuery(value: unknown, fallback: number, maximum: number): numbe
 }
 
 export default defineEventHandler(async (event) => {
+  requireMigrationGet(event)
   const query = getQuery(event)
   const allowed = new Set(['category', 'page', 'per_page'])
   if (Object.keys(query).some((key) => !allowed.has(key))) throw createError({ statusCode: 400, statusMessage: 'BAD_QUERY' })
@@ -25,19 +27,17 @@ export default defineEventHandler(async (event) => {
   const perPage = positiveQuery(perPageInput, 20, 48)
   if (page === null || perPage === null) throw createError({ statusCode: 400, statusMessage: 'BAD_QUERY' })
 
-  const config = useRuntimeConfig(event)
-  const params = new URLSearchParams()
-  if (category) params.set('category', category)
-  if (pageInput !== undefined) params.set('page', String(page))
-  if (perPageInput !== undefined) params.set('per_page', String(perPage))
-  const upstream = `${String(config.phpOrigin).replace(/\/$/, '')}/api/pts_v1_catalog.php${params.toString() ? `?${params.toString()}` : ''}`
-  let payload: unknown
-  try {
-    payload = await $fetch<unknown>(upstream, { timeout: 5000 })
-  } catch {
-    throw createError({ statusCode: 502, statusMessage: 'PHP catalog data source unavailable' })
-  }
-  if (!isPublicCatalogPayload(payload)) throw createError({ statusCode: 502, statusMessage: 'Invalid PHP catalog data contract' })
+  const payload = await fetchMigrationPayload(event, {
+    endpoint: '/api/pts_v1_catalog.php',
+    query: {
+      category,
+      page: pageInput === undefined ? undefined : String(page),
+      per_page: perPageInput === undefined ? undefined : String(perPage),
+    },
+    validate: isPublicCatalogPayload,
+    invalidMessage: 'Invalid PHP catalog data contract',
+    unavailableMessage: 'PHP catalog data source unavailable',
+  })
   setHeader(event, 'Cache-Control', 'private, max-age=60, stale-while-revalidate=60')
   return payload
 })
