@@ -1,0 +1,21 @@
+/*
+ * Phase A: migrate PTS-approved design tokens, not its legacy CSS cascade.
+ * These values come from docs/02-development/public-ui-ux-design-system.md.
+ * Do not use this file to silently redesign legacy pages.
+ */
+:root {
+  --pts-navy: #0a2251;
+  --pts-navy-deep: #061537;
+  --pts-gold: #c9962e;
+  --pts-gold-light: #e0b654;
+  --pts-gold-dark: #9c7420;
+  --pts-muted: #64748b;
+  --pts-line: #e5e7eb;
+  --pts-surface: #f8fafc;
+  --pts-chip-bg: #eef2f7;
+  font-family: 'Be Vietnam Pro', 'Plus Jakarta Sans', Mulish, system-ui, sans-serif;
+}
+* { box-sizing: border-box; }
+html { color: var(--pts-navy); background: white; }
+body { margin: 0; }
+:focus-visible { outline: 3px solid var(--pts-gold); outline-offset: 3px; }
