@@ -25,7 +25,7 @@ Chuyển theo HỌ TEMPLATE + LUỒNG, không tiếp tục mở một worktree c
 PHASE A: UI giống PHP/giữ nghiệp vụ; PHASE B mới cải tiến Apple-like. Không copy CSS/jQuery cũ toàn bộ hoặc để AI tạo bố cục marketing tùy ý.
 
 ## 2. Chuẩn dùng chung — thứ tự cần ưu tiên
-S1 Nitro fixed PHP client: một module server utils nhận ALLOWLIST endpoint, GET only, query validators, timeout, status 400/404/405/502, response unknown validator, không forward cookies/headers, không có arbitrary upstream URLs, safe no-store. Thí điểm refactor 2-3 adapters, regression giữ response như cũ; sau đó áp dụng cho 13 adapters. Không thay PHP session/cart.
+S1 Nitro fixed PHP client: Codex 0 đã bắt đầu tạo frontend/server/utils/migration-api.ts và sửa 13 adapters. Đây là owner DUY NHẤT của refactor này trong đợt hiện tại; review GET-only endpoint allowlist, query validators, timeout, 400/404/405/502, không forward cookie/header, response contract, và chạy regression 13 endpoint. KHÔNG tạo client thứ hai song song. Không thay PHP session/cart.
 S2 Shared DTO primitives: shared/contracts/core.ts cho record/text/slug/public URL/image/pagination, thống nhất schemaVersion=1; contract fixtures hidden/empty/unpublished/no media. Không thay API shape đang có; không suy đoán giá, tồn kho, publish state.
 S3 Shared layout: layouts/migration.vue hoặc layout component, composables/usePublicSite.ts và shared SSR site data, one-request shell per page, breadcrumb, SEO/noindex, loading/error/empty, CSS tokens; thí điểm migration-about-preview.vue, tránh sửa cùng lúc 16 trang.
 S4 PHP CMS safe content: riêng libraries/pts_public_richtext.php và test XSS để có HTML đã sanitize (h1-h6,p,a,img,ul,ol,strong,em,table theo dữ liệu CKEditor thực). Giữ headings/tables/images thay vì chuyển thành plain text; không v-html raw CKEditor; không render CSS/script/iframe unsafe.
@@ -33,18 +33,19 @@ S5 SEO + shared origin: SEO helper lấy canonical/meta/OG/JSON-LD từ PHP auth
 S6 QA parity: worktree parity-qa do người dùng đã giao. Screenshot PHP vs Nuxt cùng fixture 390/768/1440, sau đó 360/1366/1920; captures nav/hover/menu, keyboard, mobile, filter, products, SEO, status, network, console, text/markup, media. Không cập nhật golden tự động. HTTP 200 đơn thuần không là parity.
 
 ## 3. Lịch chạy và file ownership cho Codex
-Codex 0 — QA đang giao bởi user:
+Codex 0 — đã được user khởi chạy, QUYỀN SỞ HỮU THỰC TẾ MỞ RỘNG (quan sát Git):
   Worktree: /home/admin01/src/pts-nuxt4-parity-qa
-  Own: tools/visual-tests/**migration**, frontend/tests/**migration parity**, docs/14-nuxt-migration/NEXT-EXECUTION-PLAN.md, route matrix.
-  Không giao trùng, không merge khi còn P0, không sửa app/runtime nếu chưa thông báo.
+  Own: tools/visual-tests/**migration**, frontend/tests/**migration parity**, docs/14-nuxt-migration/NEXT-EXECUTION-PLAN.md, ROUTE_PARITY_MATRIX.md.
+  ĐANG SỬA frontend/server/routes/_migration/*.get.ts (13 adapters), TẠO frontend/server/utils/migration-api.ts. Phần Nitro shared client và refactor adapter CHUYỂN HẲN SANG CODEX 0, KHÔNG GIAO CODEX A.
+  Không merge khi P0, không tự sửa code runtime của Codex 0, chờ bài test/review độc lập.
 
-Codex A — shared PHP client + DTO validation (ưu tiên #1):
+Codex A — shared DTO types + validator primitives (ưu tiên #1, KHÔNG đụng Nitro):
   Branch: feature/pts-nuxt-shared-data-20261026
   Worktree: /home/admin01/src/pts-nuxt-shared-data-20261026
-  New files owner: frontend/server/utils/php-public-client.ts; frontend/shared/contracts/core.ts; frontend/tests/shared-data*.test.mjs.
-  Existing files permitted as SMALL pilot: frontend/server/routes/_migration/{site,about,projects}.get.ts; corresponding DTO types if needed.
-  Must preserve GET/headers/error status/schemaVersion, no cookie forwarding; compare live local fixture response. Unit tests incl malformed query/timeout/404/hidden/502. Do not touch PHP, UI/layout, QA, prod.
-  Done: 3 pilot adapters use single safe client and strict contract tests; no regression.
+  New files owner: frontend/shared/contracts/core.ts; frontend/tests/shared-data*.test.mjs.
+  Existing files permitted as SMALL pilot: frontend/shared/contracts/{public-about,public-projects,public-contact}.ts.
+  Không sửa frontend/server/** hay Nitro adapters (Codex 0 đang sở hữu), không sửa PHP, UI/layout, QA, prod; giữ nguyên schemaVersion=1, field names và payload validation cũ. Unit tests unsafe media URLs, slugs, published/empty, malformed DTO; compare real local CMS fixtures; 3 pilot validators dùng shared primitives nhưng dữ liệu/shape không đổi.
+  Done: shared validator primitives được tái sử dụng thật ở ba DTO, unit/typecheck PASS, regression 3 endpoints không bị từ chối.
 
 Codex B — common layout, CSS primitives (ưu tiên #1):
   Branch: feature/pts-nuxt-shared-layout-20261026
