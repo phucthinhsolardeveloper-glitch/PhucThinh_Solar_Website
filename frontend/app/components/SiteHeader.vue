@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { PublicProductCategory, PublicSitePayload } from '#shared/contracts/public-site'
+import type { PublicCatalogGroup, PublicProductCategoryNode, PublicSiteLink, PublicSitePayload } from '#shared/contracts/public-site'
 
 type MenuMode = 'hover' | 'intent' | null
 
@@ -9,6 +9,7 @@ const props = defineProps<{
 
 const brandName = computed(() => props.site.brand.name.trim() || 'Phúc Thịnh Solar')
 const hotline = computed(() => props.site.brand.hotline.trim())
+const brandLogo = computed(() => props.site.brand.logo || '')
 const searchOpen = ref(false)
 const searchKeyword = ref('')
 const catalogOpen = ref(false)
@@ -20,44 +21,24 @@ const mobileTrigger = ref<HTMLButtonElement | null>(null)
 const catalogPanel = ref<HTMLElement | null>(null)
 const mobilePanel = ref<HTMLElement | null>(null)
 const searchInput = ref<HTMLInputElement | null>(null)
+const mobileSearchInput = ref<HTMLInputElement | null>(null)
 
-const navItems = [
-  { label: 'Giới thiệu', to: '/ve-chung-toi/' },
-  { label: 'Giải pháp', to: '/giai-phap/' },
-  { label: 'Dự án', to: '/du-an-da-thuc-hien/' },
-  { label: 'Kiến thức', to: '/tin-tuc/' },
-  { label: 'Hợp tác', to: '/dai-ly/' },
+const fallbackNav: PublicSiteLink[] = [
+  { label: 'Giới thiệu', href: '/gioi-thieu/' },
+  { label: 'Giải pháp', href: '/giai-phap/' },
+  { label: 'Dự án', href: '/du-an-da-thuc-hien/' },
+  { label: 'Kiến thức', href: '/tin-tuc/' },
+  { label: 'Hợp tác', href: '/dai-ly/' },
 ]
-
-const groupDefinitions = [
-  { id: 'lighting', title: 'Chiếu sáng', matches: (slug: string) => /^den(?:-|$)/.test(slug) },
-  {
-    id: 'solar',
-    title: 'Điện mặt trời',
-    matches: (slug: string) => ['tam-pin-nang-luong-mat-troi', 'bien-tan-inverter', 'pin-luu-tru'].includes(slug),
-  },
-  {
-    id: 'devices',
-    title: 'Thiết bị ứng dụng',
-    matches: (slug: string) => /(?:bom|quat|thiet-bi|phu-kien)/.test(slug),
-  },
-]
-
-const categoryGroups = computed(() => {
-  const groups = groupDefinitions.map((definition) => ({ ...definition, categories: [] as PublicProductCategory[] }))
-  const other: PublicProductCategory[] = []
-
-  for (const category of props.site.productCategories) {
-    const group = groups.find((candidate) => candidate.matches(category.slug))
-    if (group) group.categories.push(category)
-    else other.push(category)
-  }
-
-  if (other.length) groups.push({ id: 'other', title: 'Danh mục sản phẩm', matches: () => false, categories: other })
-  return groups.filter((group) => group.categories.length)
+const navItems = computed(() => (props.site.navigation?.length ? props.site.navigation : fallbackNav).filter((item) => item.label !== 'Danh mục sản phẩm'))
+const catalogGroups = computed(() => {
+  if (props.site.catalog) return Object.entries(props.site.catalog).map(([id, group]) => ({ id, ...group })).filter((group) => group.items.length)
+  if (props.site.productCategoryTree?.length) return [{ id: 'catalog', label: 'Danh mục sản phẩm', href: '/san-pham/', items: props.site.productCategoryTree.map((node) => ({ label: node.name, href: node.url, children: [] })) }]
+  if (props.site.productCategories.length) return [{ id: 'catalog', label: 'Danh mục sản phẩm', href: '/san-pham/', items: props.site.productCategories.map((category) => ({ label: category.name, href: category.url, children: [] })) }]
+  return []
 })
-
-const hasCategories = computed(() => props.site.productCategories.length > 0)
+const hasCategories = computed(() => catalogGroups.value.length > 0)
+const mobileCategories = computed(() => props.site.productCategoryTree ?? [])
 
 function focusFirst(container: HTMLElement | null) {
   if (!container) return
@@ -117,6 +98,8 @@ async function submitSearch() {
   await navigateTo({ path: '/tim-kiem/', query: { keyword } })
 }
 
+function categoryChildren(node: PublicProductCategoryNode): PublicProductCategoryNode[] { return node.children }
+
 function trapFocus(event: KeyboardEvent, container: HTMLElement | null) {
   if (event.key !== 'Tab' || !container) return
   const focusable = [...container.querySelectorAll<HTMLElement>('a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])')]
@@ -170,7 +153,8 @@ onBeforeUnmount(() => {
         </button>
 
         <NuxtLink class="pts-brand" to="/" :aria-label="`${brandName} - Trang chủ`">
-          <span>{{ brandName }}</span>
+          <img v-if="brandLogo" :src="brandLogo" :alt="brandName" width="260" height="56">
+          <span v-else>{{ brandName }}</span>
         </NuxtLink>
 
         <nav class="pts-desktop-nav" aria-label="Điều hướng chính">
@@ -188,7 +172,7 @@ onBeforeUnmount(() => {
               <svg class="pts-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5" /></svg>
             </button>
           </div>
-          <NuxtLink v-for="item in navItems" :key="item.to" class="pts-nav-link" :to="item.to">{{ item.label }}</NuxtLink>
+          <NuxtLink v-for="item in navItems" :key="item.href" class="pts-nav-link" :to="item.href">{{ item.label }}</NuxtLink>
         </nav>
 
         <div class="pts-site-header__actions">
@@ -241,14 +225,17 @@ onBeforeUnmount(() => {
         </div>
 
         <div v-if="hasCategories" class="pts-catalog-columns">
-          <section v-for="group in categoryGroups" :key="group.id" class="pts-catalog-group">
-            <h3>{{ group.title }}</h3>
+          <section v-for="group in catalogGroups" :key="group.id" class="pts-catalog-group">
+            <h3><NuxtLink :to="group.href" @click="closeCatalog(false)">{{ group.label }}</NuxtLink></h3>
             <ul>
-              <li v-for="category in group.categories" :key="category.id">
-                <NuxtLink :to="category.url" @click="closeCatalog(false)">
-                  <span>{{ category.name }}</span>
+              <li v-for="item in group.items" :key="item.href + item.label">
+                <NuxtLink :to="item.href" @click="closeCatalog(false)">
+                  <span>{{ item.label }}</span>
                   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7" /></svg>
                 </NuxtLink>
+                <ul v-if="item.children.length" class="pts-catalog-sublist">
+                  <li v-for="child in item.children" :key="child.href + child.label"><NuxtLink :to="child.href" @click="closeCatalog(false)">{{ child.label }}</NuxtLink></li>
+                </ul>
               </li>
             </ul>
           </section>
@@ -274,14 +261,20 @@ onBeforeUnmount(() => {
           </button>
         </form>
         <nav aria-label="Điều hướng mobile">
-          <NuxtLink v-for="item in navItems" :key="item.to" class="pts-mobile-link" :to="item.to" @click="closeMobileMenu(false)">{{ item.label }}</NuxtLink>
+          <NuxtLink v-for="item in navItems" :key="item.href" class="pts-mobile-link" :to="item.href" @click="closeMobileMenu(false)">{{ item.label }}</NuxtLink>
           <button class="pts-mobile-catalog-toggle" type="button" :aria-expanded="mobileCatalogOpen" @click="mobileCatalogOpen = !mobileCatalogOpen">
             <span>Danh mục sản phẩm</span>
             <svg class="pts-chevron" :class="{ 'is-open': mobileCatalogOpen }" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5" /></svg>
           </button>
           <div v-if="mobileCatalogOpen" class="pts-mobile-catalog-list">
             <NuxtLink to="/san-pham/" @click="closeMobileMenu(false)">Xem tất cả sản phẩm</NuxtLink>
-            <NuxtLink v-for="category in props.site.productCategories" :key="category.id" :to="category.url" @click="closeMobileMenu(false)">{{ category.name }}</NuxtLink>
+            <template v-if="mobileCategories.length">
+              <template v-for="category in mobileCategories" :key="category.id">
+                <NuxtLink :to="category.url" @click="closeMobileMenu(false)">{{ category.name }}</NuxtLink>
+                <NuxtLink v-for="child in category.children" :key="child.id" :to="child.url" @click="closeMobileMenu(false)">{{ child.name }}</NuxtLink>
+              </template>
+            </template>
+            <NuxtLink v-else v-for="category in props.site.productCategories" :key="category.id" :to="category.url" @click="closeMobileMenu(false)">{{ category.name }}</NuxtLink>
             <span v-if="!hasCategories" class="pts-shell-empty">Danh mục sản phẩm chưa có dữ liệu.</span>
           </div>
         </nav>

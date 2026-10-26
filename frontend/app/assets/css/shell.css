@@ -32,6 +32,14 @@
   white-space: nowrap;
 }
 
+.pts-brand img {
+  display: block;
+  width: min(260px, 100%);
+  height: auto;
+  max-height: 64px;
+  object-fit: contain;
+}
+
 .pts-desktop-nav {
   display: flex;
   align-items: center;
@@ -302,6 +310,7 @@
 .pts-catalog-group { min-width: 0; }
 .pts-catalog-group + .pts-catalog-group { border-left: 1px solid var(--pts-line); padding-left: 24px; }
 .pts-catalog-group h3 { margin: 0 0 8px; color: var(--pts-gold-dark); font-size: 17px; line-height: 1.3; }
+.pts-catalog-group h3 a { color: inherit; text-decoration: none; }
 .pts-catalog-group ul { margin: 0; padding: 0; list-style: none; }
 .pts-catalog-group li { border-bottom: 1px solid #edf0f3; }
 .pts-catalog-group li:last-child { border-bottom: 0; }
@@ -309,6 +318,8 @@
 .pts-catalog-group a:hover,
 .pts-catalog-group a:focus-visible { color: var(--pts-gold-dark); }
 .pts-catalog-group a svg { flex: 0 0 18px; width: 18px; height: 18px; color: var(--pts-muted); }
+.pts-catalog-sublist { margin: 0 0 8px 16px !important; padding-left: 12px !important; border-left: 1px solid var(--pts-line); list-style: none; }
+.pts-catalog-sublist a { min-height: 36px; font-size: 14px; }
 
 .pts-shell-empty { margin: 0; padding: 16px 0 28px; color: var(--pts-muted); font-size: 15px; }
 
@@ -336,6 +347,10 @@
 .pts-site-footer__links a:focus-visible,
 .pts-site-footer__contact a:hover,
 .pts-site-footer__contact a:focus-visible { color: #fff; text-decoration: underline; text-underline-offset: 3px; }
+.pts-site-footer__contact-text p,
+.pts-site-footer__locations address { margin: 0; color: #dbeafe; font-size: 15px; font-style: normal; line-height: 1.6; white-space: pre-line; }
+.pts-site-footer__locations address + address { margin-top: 12px; }
+.pts-site-footer__locations a { color: inherit; text-decoration: none; }
 .pts-site-footer__bottom { border-top: 1px solid rgb(191 219 254 / 18%); color: #bfdbfe; font-size: 13px; line-height: 1.5; padding: 16px 0; }
 
 .pts-breadcrumb { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 16px 0 8px; color: var(--pts-muted); font-size: 13px; line-height: 1.4; }
