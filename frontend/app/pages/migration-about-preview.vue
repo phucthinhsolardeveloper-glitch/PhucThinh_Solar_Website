@@ -4,7 +4,6 @@ import AboutPreviewPage from '~/components/about/AboutPreviewPage.vue'
 
 definePageMeta({
   layout: 'migration',
-  breadcrumb: [{ label: 'Giới thiệu' }],
 })
 
 const { data, error, pending } = await useAsyncData<unknown>('migration-about', () => $fetch('/_migration/about'), { default: () => null })
@@ -14,6 +13,9 @@ useSeoMeta({ title: 'Giới thiệu — internal preview' })
 
 <template>
   <div class="about-preview">
+    <div class="pts-container">
+      <SiteBreadcrumb :items="[{ label: 'Giới thiệu' }]" />
+    </div>
     <div v-if="pending" class="about-fallback" role="status" aria-live="polite">
       <h1>Giới thiệu — internal preview</h1>
       <p>Đang tải dữ liệu CMS…</p>

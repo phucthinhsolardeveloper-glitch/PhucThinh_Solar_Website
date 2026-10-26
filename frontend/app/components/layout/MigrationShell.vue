@@ -1,21 +1,25 @@
 <script setup lang="ts">
-import type { BreadcrumbItem } from '~/components/SiteBreadcrumb.vue'
 import { usePublicSite } from '~/composables/usePublicSite'
 
 const route = useRoute()
 const { site, pending, hasError, errorMessage } = await usePublicSite()
 
-const breadcrumbItems = computed<BreadcrumbItem[]>(() => {
-  const value: unknown = route.meta.breadcrumb
-  if (!Array.isArray(value)) return []
+type ShellOptions = {
+  header: boolean
+  footer: boolean
+  status: boolean
+}
 
-  return value.filter((item: unknown): item is BreadcrumbItem => {
-    if (!item || typeof item !== 'object') return false
-    const candidate = item as { label?: unknown; to?: unknown }
-    return typeof candidate.label === 'string'
-      && candidate.label.trim() !== ''
-      && (candidate.to === undefined || typeof candidate.to === 'string')
-  })
+const shellOptions = computed<ShellOptions>(() => {
+  const value: unknown = route.meta.shell
+  if (!value || typeof value !== 'object') return { header: true, footer: true, status: true }
+
+  const options = value as Partial<ShellOptions>
+  return {
+    header: options.header !== false,
+    footer: options.footer !== false,
+    status: options.status !== false,
+  }
 })
 
 useSeoMeta({
@@ -25,9 +29,9 @@ useSeoMeta({
 
 <template>
   <div class="migration-shell">
-    <SiteHeader :site="site" />
+    <SiteHeader v-if="shellOptions.header" :site="site" />
 
-    <div v-if="pending || hasError" class="migration-shell__status" role="status" aria-live="polite">
+    <div v-if="shellOptions.status && (pending || hasError)" class="migration-shell__status" role="status" aria-live="polite">
       <div class="pts-container">
         <p v-if="pending">Đang tải dữ liệu điều hướng…</p>
         <p v-else>{{ errorMessage }}</p>
@@ -35,13 +39,10 @@ useSeoMeta({
     </div>
 
     <div class="migration-shell__content">
-      <div v-if="breadcrumbItems.length" class="pts-container">
-        <SiteBreadcrumb :items="breadcrumbItems" />
-      </div>
       <slot />
     </div>
 
-    <SiteFooter :site="site" />
+    <SiteFooter v-if="shellOptions.footer" :site="site" />
   </div>
 </template>
 
