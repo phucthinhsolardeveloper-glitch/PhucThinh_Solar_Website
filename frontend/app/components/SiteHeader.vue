@@ -138,72 +138,202 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="pts-shell" @mouseleave="handleShellLeave">
-    <header class="pts-site-header">
-      <div class="pts-container pts-site-header__row">
+    <!--
+      Mọi con số hình học dưới đây lấy từ assets/css/header-v3.css và đã đối
+      chiếu bằng cách đo pixel trên ảnh chụp production 2026-10-26 ở 1920px:
+        cao hàng   clamp(148px,8vw,164px) -> 153,6px   (ảnh đo 154px)
+        cột logo   clamp(360px,22vw,460px) -> 422px    (ảnh đo 422px)
+        nút consult cao 46px                            (ảnh đo 46px)
+      Đừng "làm tròn cho đẹp": trong giai đoạn chạy song song, lệch vài pixel ở
+      header là thứ người dùng thấy ngay khi đi qua ranh giới route PHP/Nuxt.
+    -->
+    <header
+      class="relative z-[1000] border-b border-hdr-line bg-white/98 backdrop-blur-[10px]"
+    >
+      <div
+        class="mx-auto flex w-full max-w-[1680px] items-center gap-[13px] px-4 min-h-[102px]
+               tb:min-h-[94px] tb:py-2
+               max-ph:min-h-[64px] max-ph:gap-2 max-ph:py-1.5
+               nav:grid nav:grid-cols-[280px_minmax(0,1fr)_auto] nav:gap-[18px] nav:min-h-[132px]
+               wd:grid-cols-[clamp(360px,22vw,460px)_minmax(0,1fr)_auto] wd:min-h-[clamp(148px,8vw,164px)] wd:py-2
+               ul:grid-cols-[460px_minmax(0,1fr)_auto]"
+      >
+        <!-- Hamburger: chỉ dưới mốc nav (1321px), đúng như .btn-mmenu của PHP. -->
         <button
           ref="mobileTrigger"
-          class="pts-icon-button pts-mobile-trigger"
+          class="order-first flex h-10 w-10 flex-none items-center justify-center rounded-chip border
+                 border-[#d8dee6] bg-white text-hdr-ink transition-colors hover:bg-hdr-surface
+                 max-ph:h-[38px] max-ph:w-[38px] nav:hidden"
           type="button"
           :aria-expanded="mobileOpen"
           aria-controls="ptsMobileMenu"
           aria-label="Mở danh mục điều hướng"
           @click="mobileOpen ? closeMobileMenu() : openMobileMenu()"
         >
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
+          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
         </button>
 
-        <a class="pts-brand" href="/" :aria-label="`${brandName} - Trang chủ`">
-          <img v-if="brandLogo" :src="brandLogo" :alt="brandName" width="260" height="56">
-          <span v-else>{{ brandName }}</span>
+        <a class="mr-auto flex min-w-0 items-center nav:mr-0" href="/" :aria-label="`${brandName} - Trang chủ`">
+          <!--
+            Logo là ảnh do CMS cấp (brand.logo). Chỉ giới hạn kích thước, không
+            ép tỉ lệ: file thật là wordmark ngang, ép aspect sẽ méo chữ.
+            CÒN THIẾU: DTO public hiện chưa trả brand.logo nên preview rơi về
+            chữ. Khi API navigation/brand bổ sung trường này thì ảnh hiện ngay,
+            không phải sửa component.
+          -->
+          <img
+            v-if="brandLogo"
+            :src="brandLogo"
+            :alt="brandName"
+            class="block h-auto w-auto object-contain max-w-[248px] max-h-[68px]
+                   max-ph:max-w-[198px] max-ph:max-h-[55px]
+                   tb:max-w-[228px] tb:max-h-[63px]
+                   nav:max-w-[270px] nav:max-h-[72px]
+                   wd:max-w-[min(530px,100%)] wd:max-h-[108px]
+                   ul:max-w-[590px] ul:max-h-[130px]"
+          >
+          <span v-else class="truncate text-xl font-black tracking-tight text-hdr-ink">{{ brandName }}</span>
         </a>
 
-        <nav class="pts-desktop-nav" aria-label="Điều hướng chính">
-          <div class="pts-catalog-control" @mouseenter="openCatalog('hover')">
-            <button
-              ref="catalogTrigger"
-              class="pts-catalog-trigger"
-              type="button"
-              :aria-expanded="catalogOpen"
-              aria-controls="ptsCatalogMenu"
-              @click="toggleCatalog"
-            >
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" /></svg>
-              <span>Danh mục sản phẩm</span>
-              <svg class="pts-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5" /></svg>
-            </button>
-          </div>
-          <NuxtLink external v-for="item in navItems" :key="item.href" class="pts-nav-link" :to="item.href">{{ item.label }}</NuxtLink>
+        <nav class="hidden min-w-0 nav:block" aria-label="Điều hướng chính">
+          <ul class="flex items-center justify-center gap-0.5">
+            <!-- Nút danh mục đứng đầu (order:-2 ở bản PHP) và là nút gold duy nhất trong thanh nav. -->
+            <li class="mr-1 flex flex-none items-center" @mouseenter="openCatalog('hover')">
+              <button
+                ref="catalogTrigger"
+                class="flex items-center gap-[9px] whitespace-nowrap rounded-chip bg-hdr-gold font-bold
+                       text-hdr-ink transition-colors hover:bg-hdr-gold-hover hover:text-white
+                       min-h-[50px] px-[13px] text-[15.5px]
+                       nav:px-2 nav:text-[13.2px]
+                       wd:px-[10px] wd:text-[17px]
+                       ul:px-[13px] ul:text-[15.5px]"
+                type="button"
+                :aria-expanded="catalogOpen"
+                aria-controls="ptsCatalogMenu"
+                @click="toggleCatalog"
+              >
+                <svg class="h-[13px] w-[13px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" /></svg>
+                <span>Danh mục sản phẩm</span>
+                <svg class="h-[7px] w-[7px]" viewBox="0 0 10 10" aria-hidden="true"><path d="M1 3l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" /></svg>
+              </button>
+            </li>
+            <li v-for="item in navItems" :key="item.href" class="flex items-center">
+              <NuxtLink
+                external
+                class="flex items-center whitespace-nowrap rounded-chip font-semibold leading-tight
+                       text-hdr-text transition-colors hover:bg-hdr-surface hover:text-hdr-ink
+                       min-h-[50px] px-3 text-[15.5px]
+                       nav:px-[5px] nav:text-[13.2px]
+                       wd:min-h-[48px] wd:px-[7px] wd:text-[17.5px]
+                       ul:min-h-[50px] ul:px-3 ul:text-[15.5px]"
+                :to="item.href"
+              >
+                {{ item.label }}
+                <!-- Mũi tên chỉ hiện ở mục thật sự có menu con, giống .has-child của PHP. -->
+                <svg v-if="item.children?.length" class="ml-[7px] mb-[4px] h-[7px] w-[7px] text-hdr-muted" viewBox="0 0 10 10" aria-hidden="true"><path d="M1 3l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" /></svg>
+              </NuxtLink>
+            </li>
+          </ul>
         </nav>
 
-        <div class="pts-site-header__actions">
+        <div class="flex min-w-0 items-center justify-end gap-[6px] max-ph:gap-[3px] nav:gap-2">
+          <!--
+            Ô ngôn ngữ: bản PHP render một <div class="gtranslate_wrapper"> RỖNG
+            và để script bên thứ ba (cdn.gtranslate.net) chèn cờ vào. Ở đây giữ
+            đúng chỗ trống đó, không tự vẽ lá cờ giả — một nút cờ không bấm được
+            còn tệ hơn là không có. Nạp script GTranslate hay không là quyết định
+            riêng (hiệu năng, CSP, SEO), chưa thuộc phạm vi bước này.
+          -->
+          <div class="hidden max-w-[58px] flex-none items-center nav:flex" aria-label="Chọn ngôn ngữ" />
+
           <button
-            class="pts-icon-button"
+            class="relative inline-flex h-11 w-11 items-center justify-center rounded-chip text-[19px]
+                   text-hdr-ink transition-colors hover:bg-hdr-surface hover:text-hdr-gold-deep
+                   max-ph:h-[38px] max-ph:w-[38px] nav:h-12 nav:w-12"
             type="button"
             :aria-expanded="searchOpen"
             aria-controls="ptsHeaderSearch"
             aria-label="Mở tìm kiếm"
             @click="toggleSearch"
           >
-            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.5" /><path d="m16 16 4.5 4.5" /></svg>
+            <svg class="h-[19px] w-[19px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.5" /><path d="m16 16 4.5 4.5" /></svg>
           </button>
-          <a v-if="hotline" class="pts-header-phone" :href="`tel:${hotline.replace(/[^+\d]/g, '')}`" :aria-label="`Gọi ${hotline}`">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 3.5 9 3l2 5-2 1.7a14 14 0 0 0 5.3 5.3L16 13l5 2-.5 2.5c-.3 1.5-1.7 2.5-3.2 2.2C10.8 18.5 5.5 13.2 4.3 6.7 4 5.2 5 3.8 6.5 3.5Z" /></svg>
-            <span>{{ hotline }}</span>
+
+          <a
+            v-if="hotline"
+            class="flex items-center gap-2 rounded-chip text-hdr-ink transition-colors hover:bg-hdr-surface
+                   max-tb:hidden"
+            :href="`tel:${hotline.replace(/[^+\d]/g, '')}`"
+            :aria-label="`Gọi ${hotline}`"
+          >
+            <span class="flex h-9 w-9 items-center justify-center rounded-full bg-hdr-surface text-[15px] text-hdr-gold-deep">
+              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.5 3.5 9 3l2 5-2 1.7a14 14 0 0 0 5.3 5.3L16 13l5 2-.5 2.5c-.3 1.5-1.7 2.5-3.2 2.2C10.8 18.5 5.5 13.2 4.3 6.7 4 5.2 5 3.8 6.5 3.5Z" /></svg>
+            </span>
+            <!-- Số điện thoại chỉ hiện dưới 1501px; từ 1501px trở lên bản PHP ẩn nó. -->
+            <span class="flex flex-col gap-0.5 leading-[1.05] whitespace-nowrap wd:hidden">
+              <small class="text-[11px] font-semibold text-hdr-muted">Tư vấn bán hàng</small>
+              <b class="text-[14.5px] font-bold text-hdr-ink">{{ hotline }}</b>
+            </span>
           </a>
-          <NuxtLink external class="pts-icon-button pts-cart-link" to="/gio-hang/" aria-label="Giỏ hàng" title="Giỏ hàng">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h2l1.5 11h10l2-8H7M9 20h.01M17 20h.01" /></svg>
+
+          <NuxtLink
+            external
+            class="relative inline-flex h-11 w-11 items-center justify-center rounded-chip text-hdr-ink
+                   transition-colors hover:bg-hdr-surface hover:text-hdr-gold-deep
+                   max-ph:h-[38px] max-ph:w-[38px] nav:h-12 nav:w-12"
+            to="/gio-hang/"
+            aria-label="Giỏ hàng"
+            title="Giỏ hàng"
+          >
+            <!--
+              Bản PHP có badge số lượng trên icon giỏ. DTO public hiện KHÔNG trả
+              số lượng giỏ hàng, và giỏ là state theo session do PHP giữ. Không
+              render badge "0" cứng: hiện số sai còn tệ hơn không hiện số.
+            -->
+            <svg class="h-[23px] w-[23px]" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 4h2l1 12h11l1.6-8H7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" /><circle cx="9" cy="20" r="1.5" fill="currentColor" /><circle cx="16" cy="20" r="1.5" fill="currentColor" /></svg>
           </NuxtLink>
-          <NuxtLink external class="pts-consult-link" to="/lien-he/#yeu-cau-tu-van">Nhận tư vấn</NuxtLink>
+
+          <NuxtLink
+            external
+            class="ml-[3px] inline-flex items-center justify-center whitespace-nowrap rounded-chip border
+                   border-hdr-gold bg-hdr-gold font-bold text-hdr-ink transition-colors
+                   hover:border-hdr-gold-deep hover:bg-hdr-gold-deep hover:text-white
+                   min-h-[50px] px-[21px] text-[14.5px] max-ph:hidden
+                   wd:min-h-[46px] wd:px-4 wd:text-[14px]
+                   ul:min-h-[50px] ul:px-[21px] ul:text-[14.5px]"
+            to="/lien-he/#yeu-cau-tu-van"
+          >
+            Nhận tư vấn
+          </NuxtLink>
         </div>
       </div>
 
-      <div v-if="searchOpen" id="ptsHeaderSearch" class="pts-header-search">
-        <div class="pts-container">
-          <form role="search" @submit.prevent="submitSearch">
-            <label for="ptsHeaderSearchInput">Tìm kiếm sản phẩm hoặc giải pháp</label>
-            <input id="ptsHeaderSearchInput" ref="searchInput" v-model="searchKeyword" type="search" placeholder="Bạn cần tìm sản phẩm hoặc giải pháp nào?" autocomplete="off">
-            <button type="submit" aria-label="Tìm kiếm">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.5" /><path d="m16 16 4.5 4.5" /></svg>
+      <div
+        v-if="searchOpen"
+        id="ptsHeaderSearch"
+        class="absolute inset-x-0 top-full z-[25] w-full border-t border-hdr-line-soft border-b-hdr-line
+               bg-white px-4 pt-[18px] pb-4 shadow-[0_14px_28px_rgba(16,36,58,.1)] max-ph:py-[13px]"
+      >
+        <div class="mx-auto w-full max-w-[1680px]">
+          <form class="flex items-center gap-3" role="search" @submit.prevent="submitSearch">
+            <label class="sr-only" for="ptsHeaderSearchInput">Tìm kiếm sản phẩm hoặc giải pháp</label>
+            <input
+              id="ptsHeaderSearchInput"
+              ref="searchInput"
+              v-model="searchKeyword"
+              class="min-h-[46px] w-full max-w-[720px] rounded-chip border border-hdr-line px-4 text-[14.5px]
+                     text-hdr-ink outline-none placeholder:text-hdr-muted focus:border-hdr-gold"
+              type="search"
+              placeholder="Bạn cần tìm sản phẩm hoặc giải pháp nào?"
+              autocomplete="off"
+            >
+            <button
+              class="inline-flex min-h-[46px] items-center justify-center rounded-chip bg-hdr-gold px-5
+                     font-bold text-hdr-ink transition-colors hover:bg-hdr-gold-deep hover:text-white"
+              type="submit"
+              aria-label="Tìm kiếm"
+            >
+              <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.5" /><path d="m16 16 4.5 4.5" /></svg>
             </button>
           </form>
         </div>

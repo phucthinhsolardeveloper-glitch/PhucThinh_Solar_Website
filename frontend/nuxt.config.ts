@@ -23,6 +23,23 @@ export default defineNuxtConfig({
    */
   css: ['~/assets/css/main.css', '~/assets/css/tokens.css'],
 
+  /*
+   * @nuxt/fonts đi kèm @nuxt/ui và MẶC ĐỊNH tự đi tải mọi font-family nó thấy
+   * trong CSS về self-host. Phát hiện khi đo: trang nạp song song 8 file woff2
+   * tên băm (bản Google tải về) CỘNG bộ self-host của repo — vừa trùng lặp,
+   * vừa khiến `nuxt build` ngầm phụ thuộc mạng ra Google Fonts.
+   *
+   * Nguy hiểm hơn cho parity: hai nguồn cùng tên "Be Vietnam Pro" không bảo đảm
+   * cùng phiên bản, mà metric chữ lệch một chút là lệch chiều rộng nút và điểm
+   * xuống dòng so với bản PHP.
+   *
+   * provider 'none' = tự quản. @font-face thật nằm trong app/assets/css/main.css,
+   * trỏ vào frontend/public/fonts/ — chính các file woff2 mà site PHP đang phục vụ.
+   */
+  fonts: {
+    families: [{ name: 'Be Vietnam Pro', provider: 'none' }],
+  },
+
   typescript: { strict: true },
 
   app: {
