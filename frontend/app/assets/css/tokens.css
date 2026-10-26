@@ -1,3 +1,5 @@
+@import './shell.css';
+
 /*
  * Phase A: migrate PTS-approved design tokens, not its legacy CSS cascade.
  * These values come from docs/02-development/public-ui-ux-design-system.md.
