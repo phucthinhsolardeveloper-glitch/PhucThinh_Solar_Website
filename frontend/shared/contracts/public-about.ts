@@ -1,3 +1,5 @@
+import { isPositiveId, isPublicImage, isPublicUrl, isRecord, isText as isCoreText } from './core.ts'
+
 export interface PublicAboutImageItem { image: string }
 export interface PublicAboutTextItem extends PublicAboutImageItem { title: string; description: string }
 export interface PublicAboutTimelineItem { year: string; title: string; description: string }
@@ -13,13 +15,12 @@ export interface PublicAboutPayload {
   labels: { story: string; history: string; people: string; compass: string; certificates: string; timeline: string; certLabel: string; certAll: string; certDetail: string }
 }
 
-function isRecord(value: unknown): value is Record<string, unknown> { return value !== null && typeof value === 'object' && !Array.isArray(value) }
-function isText(value: unknown, allowEmpty = true): value is string { return typeof value === 'string' && (allowEmpty || value.trim() !== '') && !/[\u0000-\u001F\u007F]/.test(value) }
-function isImage(value: unknown): value is string { return isText(value) && (value === '' || /^\/upload\/(?:news|photo)\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|gif|webp|avif)$/i.test(value)) }
+function isImage(value: unknown): value is string { return isPublicImage(value, ['/upload/news/', '/upload/photo/']) }
+function isText(value: unknown, allowEmpty = true): value is string { return isCoreText(value, allowEmpty) }
 function isImageItem(value: unknown): value is PublicAboutImageItem { return isRecord(value) && isImage(value.image) }
 function isTextItem(value: unknown): value is PublicAboutTextItem { return isRecord(value) && isImage(value.image) && isText(value.title) && isText(value.description) }
 function isTimelineItem(value: unknown): value is PublicAboutTimelineItem { return isRecord(value) && typeof value.year === 'string' && /^(?:19|20)\d{2}$/.test(value.year) && isText(value.title) && isText(value.description) }
-function isSafeHref(value: unknown): value is string { return typeof value === 'string' && (/^\/(?!\/)[A-Za-z0-9][A-Za-z0-9/_?&=.#%-]*$/.test(value) || /^https?:\/\/[^\s]+$/i.test(value)) }
+function isSafeHref(value: unknown): value is string { return isPublicUrl(value) }
 
 export function isPublicAboutPayload(value: unknown): value is PublicAboutPayload {
   if (!isRecord(value) || value.schemaVersion !== 1 || value.locale !== 'vi' || value.path !== '/gioi-thieu/' || !isText(value.title, false)) return false
@@ -28,7 +29,7 @@ export function isPublicAboutPayload(value: unknown): value is PublicAboutPayloa
   const people = value.people; if (!isRecord(people) || !['eyebrow', 'title', 'intro', 'body'].every((key) => isText(people[key])) || !isImage(people.image) || !Array.isArray(people.principles) || !people.principles.every(isTextItem)) return false
   for (const key of ['trust', 'compass']) { const section = value[key]; if (!isRecord(section) || !isText(section.title) || !Array.isArray(section.items) || !section.items.every(isTextItem)) return false }
   const certificates = value.certificates; if (!isRecord(certificates) || !isText(certificates.title) || !isText(certificates.intro) || !Array.isArray(certificates.items)) return false
-  if (!certificates.items.every((item) => isRecord(item) && typeof item.id === 'number' && Number.isSafeInteger(item.id) && item.id > 0 && isText(item.name) && isText(item.description) && isImage(item.image) && isSafeHref(item.href))) return false
+  if (!certificates.items.every((item) => isRecord(item) && isPositiveId(item.id) && isText(item.name) && isText(item.description) && isImage(item.image) && isSafeHref(item.href))) return false
   const cta = value.cta; if (!isRecord(cta) || !['title', 'description', 'buttonLabel'].every((key) => isText(cta[key])) || !isImage(cta.image) || (cta.href !== null && !isSafeHref(cta.href))) return false
   if (cta.hotline !== null && (!isRecord(cta.hotline) || !isText(cta.hotline.label) || !isText(cta.hotline.text) || !isText(cta.hotline.tel))) return false
   const labels = value.labels; return isRecord(labels) && ['story', 'history', 'people', 'compass', 'certificates', 'timeline', 'certLabel', 'certAll', 'certDetail'].every((key) => isText(labels[key], false))
