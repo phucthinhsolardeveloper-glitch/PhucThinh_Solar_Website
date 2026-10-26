@@ -28,6 +28,7 @@ Ngày khởi tạo: 2026-10-26. Phạm vi: THIẾT KẾ, không sửa giao diệ
 - `SCREEN-INVENTORY.md`: link chính xác 11 screen HTML V1 cuối và 22 ảnh tham chiếu trên Stitch.
 - `V1-QA-BASELINE.md`: phép đo DOM/pixel và phạm vi đã/chưa nghiệm thu.
 - `V2-CONCEPT-BRIEF.md`: hai phương án nâng cấp thiết kế từ clone V1.
+- `V2-QA-REVIEW.md`: liên kết screen V2 đã sửa dữ liệu nguồn, kết quả QA và gate trước handoff Nuxt.
 - `PAGES.md`: trạng thái 11 mẫu trang.
 - `.stitch/captures/`: bản HTML/screenshot local (chỉ là dữ liệu chụp, không cần đưa vào commit).
 

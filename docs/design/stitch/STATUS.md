@@ -18,8 +18,8 @@ Project riêng tư: https://stitch.google.com/projects/5456517467698612459
 - Đã sinh 2 màn V2 desktop: [Concept A](https://stitch.google.com/projects/5456517467698612459?node-id=a136d61bf2a24449b17709c8c4d81887) và [Concept B](https://stitch.google.com/projects/5456517467698612459?node-id=743a02bce7244d618bd529ea6515571d).
 - Đã audit nội dung: A giữ nhiều section hơn nhưng dùng ảnh/logo không chính chủ; B có thiếu section/logo giả/mốc năm sai.
 - Đã tạo [Concept A đã sửa tài sản thật](https://stitch.google.com/projects/5456517467698612459?node-id=8829550416884793261): logo gốc đầu/cuối trang và 10 ảnh từ chính website.
-- Concept A là **ứng viên thiết kế**, chưa phê duyệt cuối; mở rộng home mobile/category/PDP và QA rồi mới lựa chọn/handoff Nuxt.
-- Xem V2-CONCEPT-REVIEW.md; giữ nguyên V1 gốc.
+- Đã bổ sung V2 A homepage mobile, danh mục đèn NLMT và PDP JD-18500. Các bản này đã được sửa ảnh/logo theo website nguồn, làm sạch dữ liệu tự sinh và QA local static; vẫn là **DRAFT**, chưa phê duyệt chức năng/nội dung toàn diện.
+- Xem V2-CONCEPT-REVIEW.md và V2-QA-REVIEW.md để mở đúng màn đã chỉnh, nắm các gate còn mở; giữ nguyên V1 gốc.
 
 ## Nguồn và kỹ thuật
 - Repo worktree: /home/admin01/src/pts-stitch-design, branch feature/pts-stitch-design-baseline-20261026.
