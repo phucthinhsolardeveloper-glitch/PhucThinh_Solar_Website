@@ -23,7 +23,7 @@ export function isProductSlug(value: unknown): value is string { return typeof v
 export function isPublicProductDetailPayload(value: unknown): value is PublicProductDetailPayload {
   if (!record(value) || value.schemaVersion !== 1 || value.locale !== 'vi' || !record(value.product) || !record(value.pricing) || value.pricing.included !== false || !record(value.content) || value.content.rendered !== false || !record(value.canonical) || !text(value.canonical.url) || !record(value.parity)) return false
   const product = value.product
-  if (!id(product.id) || !text(product.name) || !isProductSlug(product.slug) || product.url !== `/san-pham/${product.slug}/` || !text(product.code, true) || !text(product.summary, true) || !/^[a-z0-9_]+$/.test(product.profile)) return false
+  if (!id(product.id) || !text(product.name) || !isProductSlug(product.slug) || product.url !== `/san-pham/${product.slug}/` || !text(product.code, true) || !text(product.summary, true) || !text(product.profile) || !/^[a-z0-9_]+$/.test(product.profile)) return false
   if (!Array.isArray(product.media) || !product.media.every(image) || !Array.isArray(product.specifications) || !product.specifications.every(spec)) return false
   if (!text(value.pricing.reason) || !text(value.content.reason)) return false
   return Object.values(value.parity).every((row) => record(row) && row.included === false && text(row.reason))

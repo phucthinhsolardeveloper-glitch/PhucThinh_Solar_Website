@@ -12,8 +12,8 @@ function isRecord(value: unknown): value is Record<string, unknown> { return val
 function isString(value: unknown): value is string { return typeof value === 'string' }
 function isSlug(value: unknown): value is string { return isString(value) && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value) }
 function isImage(value: unknown): value is string { return isString(value) && (value === '' || /^\/upload\/news\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|gif|webp|avif)$/i.test(value)) }
-function isCategory(value: unknown): value is PublicProjectCategory { return isRecord(value) && Number.isInteger(value.id) && value.id > 0 && isString(value.name) && isSlug(value.slug) && value.url === `/danh-muc-du-an/${value.slug}/` && isImage(value.image) }
-function isProject(value: unknown): value is PublicProject { return isRecord(value) && Number.isInteger(value.id) && value.id > 0 && isString(value.title) && isSlug(value.slug) && value.url === `/${value.slug}/` && isString(value.description) && isString(value.address) && isImage(value.image) && typeof value.featured === 'boolean' && (value.category === null || isCategory(value.category)) }
+function isCategory(value: unknown): value is PublicProjectCategory { return isRecord(value) && typeof value.id === 'number' && Number.isSafeInteger(value.id) && value.id > 0 && isString(value.name) && isSlug(value.slug) && value.url === `/danh-muc-du-an/${value.slug}/` && isImage(value.image) }
+function isProject(value: unknown): value is PublicProject { return isRecord(value) && typeof value.id === 'number' && Number.isSafeInteger(value.id) && value.id > 0 && isString(value.title) && isSlug(value.slug) && value.url === `/${value.slug}/` && isString(value.description) && isString(value.address) && isImage(value.image) && typeof value.featured === 'boolean' && (value.category === null || isCategory(value.category)) }
 
 export function isPublicProjectsPayload(value: unknown): value is PublicProjectsPayload {
   if (!isRecord(value) || value.schemaVersion !== 1 || value.locale !== 'vi' || value.path !== '/du-an-da-thuc-hien/' || !isString(value.title)) return false
@@ -21,7 +21,9 @@ export function isPublicProjectsPayload(value: unknown): value is PublicProjects
   if (!Array.isArray(value.categories) || !value.categories.every(isCategory)) return false
   if (value.featured !== null && !isProject(value.featured)) return false
   if (!Array.isArray(value.projects) || !value.projects.every(isProject)) return false
-  if (!isRecord(value.pagination) || !Number.isInteger(value.pagination.page) || value.pagination.page < 1 || !Number.isInteger(value.pagination.perPage) || value.pagination.perPage < 1 || !Number.isInteger(value.pagination.total) || value.pagination.total < 0) return false
+  if (!isRecord(value.pagination) || typeof value.pagination.page !== 'number' || !Number.isSafeInteger(value.pagination.page) || value.pagination.page < 1 || typeof value.pagination.perPage !== 'number' || !Number.isSafeInteger(value.pagination.perPage) || value.pagination.perPage < 1 || typeof value.pagination.total !== 'number' || !Number.isSafeInteger(value.pagination.total) || value.pagination.total < 0) return false
   if (value.cta !== null && (!isRecord(value.cta) || !isString(value.cta.title) || !isString(value.cta.description) || !isString(value.cta.buttonLabel) || !isImage(value.cta.image) || (value.cta.hotline !== null && (!isRecord(value.cta.hotline) || !isString(value.cta.hotline.label) || !isString(value.cta.hotline.text) || !isString(value.cta.hotline.tel))))) return false
-  return isRecord(value.labels) && ['all', 'filters', 'featured', 'view', 'empty', 'cta'].every((key) => isString(value.labels[key]))
+  if (!isRecord(value.labels)) return false
+  const labels = value.labels
+  return ['all', 'filters', 'featured', 'view', 'empty', 'cta'].every((key) => isString(labels[key]))
 }
