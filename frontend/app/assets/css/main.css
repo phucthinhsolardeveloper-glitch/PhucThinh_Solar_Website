@@ -112,6 +112,21 @@
   --color-hdr-line: #e2e6eb;
   --color-hdr-line-soft: #edf0f3;
 
+  /* --- Footer: chữ xanh nhạt trên nền navy-950 ----------------------------
+     Đo trực tiếp trên ảnh production và khớp đúng CSS gốc (theme-v2.css,
+     footer-v3.css): link chính sách #bfdbfe, dòng trong ô liên hệ #dbeafe.
+     Hai giá trị này không nằm trong thang navy/gold nên giữ làm token riêng
+     thay vì ép về bậc gần nhất — ép sẽ làm giảm tương phản trên nền sẫm. */
+  --color-ftr-text: #bfdbfe;
+  --color-ftr-strong: #dbeafe;
+
+  /* --- Khung trang ---------------------------------------------------------
+     theme-v2.css: --pts-container 1680px và --pts-gutter 34px từ 1800px trở
+     lên. Kiểm chứng trên ảnh 1920px: cột 2 của footer rơi đúng 474px
+     (154 + 290 + 30) so với 473px đo được, mép phải 1766px khớp tuyệt đối. */
+  --container-page: 1680px;
+  --spacing-gutter: 34px;
+
   /* --- Chữ -----------------------------------------------------------------
      Giữ đúng ngăn xếp font của tokens.css. Be Vietnam Pro có dấu tiếng Việt
      đầy đủ; các font dự phòng phía sau thì không đều, nên không đảo thứ tự. */

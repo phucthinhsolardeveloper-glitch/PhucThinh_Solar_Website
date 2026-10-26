@@ -10,69 +10,151 @@ const hotline = computed(() => props.site.brand.hotline.trim())
 const footerLogo = computed(() => props.site.brand.logoFooter || props.site.brand.logo || '')
 const footer = computed(() => props.site.footer)
 
-const footerLinks = [
-  { label: 'Giới thiệu', to: '/ve-chung-toi/' },
-  { label: 'Giải pháp', to: '/giai-phap/' },
-  { label: 'Dự án', to: '/du-an-da-thuc-hien/' },
-  { label: 'Kiến thức', to: '/tin-tuc/' },
-  { label: 'Hợp tác', to: '/dai-ly/' },
-]
+/**
+ * `contactText` là một khối văn bản tự do từ CMS (địa chỉ, email, website, giờ
+ * làm việc nằm chung). Bản PHP render nó thành nhiều thẻ <p> rời.
+ * Tách theo dòng để giữ đúng nhịp đọc đó thay vì đổ ra một đoạn dính liền.
+ */
+const contactLines = computed(() =>
+  (footer.value?.contactText ?? '')
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean),
+)
+
+const telHref = computed(() => `tel:${hotline.value.replace(/[^+\d]/g, '')}`)
 </script>
 
 <template>
-  <footer class="pts-site-footer">
-    <div class="pts-container pts-site-footer__grid">
-      <div class="pts-site-footer__brand">
-        <a class="pts-brand pts-brand--footer" href="/" :aria-label="`${brandName} - Trang chủ`">
-          <img v-if="footerLogo" :src="footerLogo" :alt="brandName" width="184" height="72">
-          <span v-else>{{ brandName }}</span>
+  <!--
+    Footer dựng theo ảnh production 2026-10-26 + theme-v2.css/footer-v3.css.
+    Số đo đã kiểm chứng ở 1920px:
+      nền            #061537  = navy-950 (đo pixel khớp tuyệt đối)
+      nhãn cột 2     #e0b654  = gold-400 (--pts-gold-light)
+      tiêu đề cột    #ffffff, 14px/850, gạch dưới rgba(255,255,255,.12)
+      link           #bfdbfe, 13px, line-height 1.7
+      lưới           290px | 1fr | 1.3fr, gap 30px (>=1201px)
+      cột 3 tự chia  1fr 1fr, gap 22px
+  -->
+  <footer class="bg-navy-950 pb-7 text-ftr-text">
+    <div class="mx-auto grid w-full max-w-(--container-page) gap-[30px] px-(--spacing-gutter) pt-12
+                grid-cols-1
+                tb:grid-cols-[180px_minmax(280px,1fr)]
+                nav:grid-cols-[180px_minmax(280px,1fr)_minmax(460px,1.3fr)]
+                wd:grid-cols-[290px_minmax(280px,1fr)_minmax(460px,1.3fr)]">
+      <!-- Cột 1: logo. Đây là bản emblem dọc, KHÁC wordmark ngang của header. -->
+      <div>
+        <a class="block max-w-[280px]" href="/" :aria-label="`${brandName} - Trang chủ`">
+          <img
+            v-if="footerLogo"
+            :src="footerLogo"
+            :alt="brandName"
+            class="block h-auto w-full max-w-[180px] wd:max-w-[280px]"
+          >
+          <span v-else class="text-lg font-black text-white">{{ brandName }}</span>
         </a>
       </div>
 
-      <nav aria-label="Điều hướng cuối trang">
-        <h2 class="pts-site-footer__title">Điều hướng</h2>
-        <ul class="pts-site-footer__links">
-          <li v-for="link in footerLinks" :key="link.to">
-            <NuxtLink external :to="link.to">{{ link.label }}</NuxtLink>
-          </li>
-        </ul>
-      </nav>
+      <!-- Cột 2: thông tin pháp lý và hai đường dây nóng. -->
+      <div>
+        <h2 class="mb-[15px] border-b border-white/12 pb-[10px] text-[16px] font-extrabold uppercase tracking-[.02em] text-gold-400">
+          Thông tin doanh nghiệp
+        </h2>
 
-      <div v-if="hotline" class="pts-site-footer__contact">
-        <h2 class="pts-site-footer__title">Liên hệ</h2>
-        <a :href="`tel:${hotline.replace(/[^+\d]/g, '')}`">{{ hotline }}</a>
+        <p v-if="footer?.companyName" class="text-[17px] font-black leading-[1.48] text-white">
+          {{ footer.companyName }}
+        </p>
+
+        <div v-if="contactLines.length" class="mt-4 text-[16px] leading-[1.78]">
+          <p v-for="line in contactLines" :key="line" class="mb-2 last:mb-0">{{ line }}</p>
+        </div>
+
+        <!--
+          Ảnh production có HAI ô: "Tư vấn bán hàng" và "Hỗ trợ kỹ thuật", mỗi ô
+          một số khác nhau. DTO public chỉ có đúng một trường `brand.hotline`.
+          Render một ô theo dữ liệu thật thay vì bịa số thứ hai — số điện thoại
+          sai là lỗi chạm thẳng vào khách hàng.
+          CÒN THIẾU: API cần trả danh sách đường dây (nhãn + số) để dựng đủ hai ô.
+        -->
+        <div v-if="hotline" class="mt-[18px] grid grid-cols-1 gap-[10px] ph:grid-cols-2">
+          <a
+            class="flex min-w-0 items-start gap-[10px] rounded-btn border border-[#bfdbfe]/20 border-l-[3px]
+                   border-l-gold-400 bg-white/[.045] px-3 py-[11px] text-[15px] leading-[1.45]
+                   transition-colors hover:bg-white/[.08]"
+            :href="telHref"
+          >
+            <svg class="mt-[3px] h-[14px] w-[14px] flex-none text-gold-400" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.5 3.5 9 3l2 5-2 1.7a14 14 0 0 0 5.3 5.3L16 13l5 2-.5 2.5c-.3 1.5-1.7 2.5-3.2 2.2C10.8 18.5 5.5 13.2 4.3 6.7 4 5.2 5 3.8 6.5 3.5Z" /></svg>
+            <span class="flex min-w-0 flex-col gap-0.5">
+              <small class="text-[12px] leading-[1.3] text-ftr-text">Tư vấn bán hàng</small>
+              <strong class="whitespace-nowrap text-[16px] leading-[1.3] font-bold text-white">{{ hotline }}</strong>
+            </span>
+          </a>
+        </div>
       </div>
 
-      <div v-if="footer?.contactText" class="pts-site-footer__contact-text">
-        <h2 class="pts-site-footer__title">Thông tin</h2>
-        <p>{{ footer.contactText }}</p>
+      <!-- Cột 3: tự chia đôi thành Chính sách và Hệ thống kho. -->
+      <div class="grid grid-cols-1 gap-[22px] ph:grid-cols-2">
+        <nav v-if="footer?.policies.length" aria-label="Chính sách và hỗ trợ khách hàng">
+          <h2 class="mb-[15px] border-b border-white/12 pb-[10px] text-[14px] font-extrabold text-white">
+            Chính sách &amp; Hỗ trợ khách hàng
+          </h2>
+          <ul>
+            <li v-for="policy in footer.policies" :key="policy.href">
+              <NuxtLink
+                external
+                class="block py-1 text-[13px] leading-[1.7] transition-colors hover:text-gold-400"
+                :to="policy.href"
+              >
+                {{ policy.label }}
+              </NuxtLink>
+            </li>
+          </ul>
+          <!--
+            CÒN THIẾU: ảnh production có huy hiệu "Đã thông báo Bộ Công Thương"
+            (rộng 130px) ngay dưới danh sách này. DTO chưa có trường cho nó.
+            Không nhúng ảnh cứng: huy hiệu pháp lý phải do CMS quản lý vì nó gắn
+            với hồ sơ đăng ký thật của doanh nghiệp.
+          -->
+        </nav>
+
+        <div v-if="footer?.locations.length">
+          <h2 class="mb-[15px] border-b border-white/12 pb-[10px] text-[14px] font-extrabold text-white">
+            Hệ thống kho &amp; điểm giao dịch
+          </h2>
+          <address
+            v-for="location in footer.locations"
+            :key="location.name + location.address"
+            class="mb-[14px] not-italic last:mb-0"
+          >
+            <component
+              :is="location.mapUrl ? 'a' : 'div'"
+              v-bind="location.mapUrl ? { href: location.mapUrl, target: '_blank', rel: 'noopener noreferrer' } : {}"
+              class="block transition-colors"
+              :class="location.mapUrl ? 'hover:text-gold-400' : ''"
+            >
+              <span class="flex items-center gap-2 text-[16px] font-bold leading-[1.45] text-white">
+                <svg class="h-[14px] w-[14px] flex-none text-gold-400" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3 3 10h2v9h5v-5h4v5h5v-9h2Z" /></svg>
+                {{ location.name }}
+              </span>
+              <span class="mt-1 flex items-start gap-2 text-[15px] leading-[1.65]">
+                <svg class="mt-[3px] h-[13px] w-[13px] flex-none text-gold-400" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5Z" /></svg>
+                {{ location.address }}
+              </span>
+            </component>
+          </address>
+        </div>
       </div>
-
-      <nav v-if="footer?.policies.length" aria-label="Chính sách">
-        <h2 class="pts-site-footer__title">Chính sách &amp; hỗ trợ</h2>
-        <ul class="pts-site-footer__links">
-          <li v-for="policy in footer.policies" :key="policy.href"><NuxtLink external :to="policy.href">{{ policy.label }}</NuxtLink></li>
-        </ul>
-      </nav>
-
-      <div v-if="footer?.locations.length" class="pts-site-footer__locations">
-        <h2 class="pts-site-footer__title">Hệ thống kho &amp; điểm giao dịch</h2>
-        <address v-for="location in footer.locations" :key="location.name + location.address">
-          <a v-if="location.mapUrl" :href="location.mapUrl" target="_blank" rel="noopener noreferrer">{{ location.name }}<br>{{ location.address }}</a>
-          <span v-else>{{ location.name }}<br>{{ location.address }}</span>
-        </address>
-      </div>
-
-      <nav v-if="footer?.socialLinks.length" aria-label="Mạng xã hội">
-        <h2 class="pts-site-footer__title">Kết nối</h2>
-        <ul class="pts-site-footer__links">
-          <li v-for="social in footer.socialLinks" :key="social.href"><a :href="social.href" target="_blank" rel="noopener noreferrer">{{ social.label }}</a></li>
-        </ul>
-      </nav>
     </div>
 
-    <div class="pts-site-footer__bottom">
-      <div class="pts-container">© {{ new Date().getFullYear() }} {{ brandName }}</div>
+    <!--
+      Dải bản quyền: bản PHP KHÔNG có dải này (ảnh production kết thúc ngay sau
+      lưới 4 cột). Giữ lại vì đây là thông tin đúng và hữu ích, nhưng tách bằng
+      đường kẻ mảnh để không bị đọc nhầm là một cột nữa.
+    -->
+    <div class="mt-10 border-t border-white/10 pt-5">
+      <div class="mx-auto w-full max-w-(--container-page) px-(--spacing-gutter) text-[13px]">
+        © {{ new Date().getFullYear() }} {{ brandName }}
+      </div>
     </div>
   </footer>
 </template>
