@@ -253,3 +253,16 @@ group key thành trường cấu hình Admin.
   `site.webmanifest` để Android/iOS nhận cùng logo khi thêm website ra màn hình.
 - Bản vuông `favicon-pts-mobile.png` được tạo từ chính logo hiện tại với nền
   trong suốt để tránh crop/méo mà không đổi nhận diện favicon.
+
+## Nuxt Contact + Dealer Tailwind — 26/10/2026
+
+- Nguồn Contact: `/mnt/c/Users/ADMIN/Downloads/screencapture-phucthinhsolar-lien-he-2026-10-26-11_11_53.png` (1920×3239).
+- Nguồn Dealer: `/mnt/c/Users/ADMIN/Downloads/screencapture-phucthinhsolar-dai-ly-2026-10-26-11_13_13.png` (1920×4411).
+- Bằng chứng local: `.migration-artifacts/contact-tailwind-1440.png` và `.migration-artifacts/dealer-tailwind-1440.png`.
+- Chromium tại 390×844, 768×1024 và 1440×1000: cả sáu tổ hợp route/viewport trả HTTP 200, không tràn ngang, không ảnh lỗi và không console error.
+- Mỗi route chỉ có một header, một footer, một h1 và một form; noindex là `noindex, nofollow, noarchive`.
+- Form nhận input bằng label và chuyển việc submit về PHP để giữ CSRF/session hiện hữu; Nuxt không tự nhận POST.
+- Header/Footer/Navigation/noindex/loading/error là phần dùng chung. Hero, quick-nav, form, product grid, support, testimonial, stats, spacing và responsive ordering vẫn thuộc từng trang.
+- Contact hiển thị empty state bản đồ vì API local hiện trả `mapUrl` rỗng cho bốn chi nhánh; không bịa URL embed.
+- Dealer giữ số liệu CMS hiện tại `5+`, `50+`, `5000+`; ba ảnh support dùng thumbnail PHP `480x300x1` để tuân thủ trần 8 MiB của media proxy.
+- Kết quả: **PASS**; không còn lỗi P1/P2 trong phạm vi Contact và Dealer.
