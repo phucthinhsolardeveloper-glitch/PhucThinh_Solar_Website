@@ -25,7 +25,10 @@ Ngày khởi tạo: 2026-10-26. Phạm vi: THIẾT KẾ, không sửa giao diệ
 ## Files
 - `PROMPT-01-FAITHFUL-CLONE.md`: prompt nhập Stitch khi tạo V1.
 - `PROMPT-02-IMPROVE.md`: prompt **chỉ chạy sau khi V1 đạt yêu cầu**.
-- `PAGES.md`: danh sách route cần chụp, độ ưu tiên và checklist.
+- `SCREEN-INVENTORY.md`: link chính xác 11 screen HTML V1 cuối và 22 ảnh tham chiếu trên Stitch.
+- `V1-QA-BASELINE.md`: phép đo DOM/pixel và phạm vi đã/chưa nghiệm thu.
+- `V2-CONCEPT-BRIEF.md`: hai phương án nâng cấp thiết kế từ clone V1.
+- `PAGES.md`: trạng thái 11 mẫu trang.
 - `.stitch/captures/`: bản HTML/screenshot local (chỉ là dữ liệu chụp, không cần đưa vào commit).
 
 ## Chạy Stitch CLI (WSL)
@@ -33,8 +36,8 @@ Ngày khởi tạo: 2026-10-26. Phạm vi: THIẾT KẾ, không sửa giao diệ
 cd /home/admin01/src/pts-stitch-design
 npx --yes @google/stitch status
 npx --yes @google/stitch capture https://phucthinhsolar.com/ -o .stitch/captures/home.html
-# Sau khi xác thực Stitch và có Canvas API key:
-# stitch create project ... ; stitch upload screen ... ; stitch generate variants ...
+# OAuth Stitch đã kết nối; project đã tạo và upload V1 thành công.
+# Link các screen có trong docs/design/stitch/SCREEN-INVENTORY.md
 ```
 
-Lưu ý: tài khoản Stitch chưa được xác thực ở thời điểm khởi tạo; HTML chụp local KHÔNG đồng nghĩa màn hình đã được upload lên Stitch.
+Lưu ý: đã đăng nhập Stitch OAuth và xác minh 11/11 HTML V1 cuối nhập thành công với 0 asset warning. File local trong .stitch/ không đồng nghĩa đã QA chức năng JS; xem V1-QA-BASELINE.md.

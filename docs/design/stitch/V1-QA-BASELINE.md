@@ -1,48 +1,36 @@
-# V1 — Fidelity QA baseline (26/10/2026)
+# Phúc Thịnh Solar — V1 clone QA (26/10/2026)
 
-**Kết luận: V1 chưa nghiệm thu. Không triển khai V2, không merge/deploy.**
+## Phạm vi hoàn thành
+**V1 STATIC VISUAL BASELINE: PASS** cho 11 mẫu trang trên Desktop 1280×900 và Mobile 390×844, dưới dạng HTML đã clone từ source thật trên phucthinhsolar.com (không phải bản AI tự tạo).
 
-## Phần đã thực hiện
-- Khởi tạo Stitch Canvas private: https://stitch.google.com/projects/5456517467698612459
-- Chụp **16 screenshot nguồn tiếng Việt** của 8 loại trang (desktop 1280x900 và mobile 390x844), trigger scroll để tránh thiếu ảnh lazy.
-- 16/16 URL trả về HTTP 200, DOM lang=vi; manifest tại .stitch/qa/manifest.json.
-- **16/16 ảnh nguồn đã được upload vào Stitch**. Danh sách link trong SCREEN-INVENTORY.md.
-- Sinh 2 bản UI Stitch V1 dự thảo của homepage (desktop, mobile) từ ảnh tiếng Việt.
-- Trích 8 HTML nguyên bản bằng HTTP từ production, thêm base href tới domain nguồn; hiện lưu tại .stitch/raw-vi-base, không sửa production.
-- Upload bản HTML homepage có base URL vào Canvas để so sánh với bản AI sinh.
+- Dự án Stitch PRIVATE: https://stitch.google.com/projects/5456517467698612459
+- 11/11 HTML chuẩn nguồn tiếng Việt đã upload vào Canvas thành công; 0 cảnh báo asset.
+- 22/22 ảnh full-page tham chiếu nguồn (11 route × desktop/mobile) đã upload; thêm state hamburger và tìm kiếm.
+- Đã sửa đường dẫn ảnh/CSS tương đối và nhúng FontAwesome cùng đủ font Be Vietnam Pro (Việt + Latin) vào HTML local clone.
+- Không sửa production, master PHP, nhánh chuyển Nuxt và không thay đổi database.
 
-## Điểm chưa đạt / chưa được kiểm chứng
-1. Screenshot qua Stitch CLI capture browser bị Google/Chrome dịch sang tiếng Anh (DOM: lang=en, class=translated-ltr); tuyệt đối không lấy làm chuẩn text.
-2. Bản V1 sinh bằng AI **chưa đạt chứng nhận 1:1**; có sự lệch tỷ lệ trang (source desktop 1280x6208, Stitch desktop 2560x9826; source mobile 390x9650, Stitch mobile 780x13626). So sánh phải quy chuẩn tỷ lệ và kiểm tra chi tiết từng section.
-3. HTML clone tải bằng file:// hiển thị hero, grid và typography gần với nguồn, nhưng **một số icon/font không hiện**; cần inline font assets/SVG hoặc cấu hình CORS đúng.
-4. Stitch cảnh báo 73 local/relative assets trên HTML homepage dù đã thêm base URL. Cần kiểm tra và xử lý asset trước khi gọi clone pixel-perfect.
-5. Hero là carousel 4 ảnh; trước khi screenshot diff, buộc cùng slide (01/04) và trạng thái hover/scroll để tránh nhận nhầm sai khác.
-6. Bộ ảnh có một số img không đặt src ban đầu (placeholder/lazy/hidden). Không được suy luận là HTTP 404 khi chưa xác minh network.
-7. Menu hamburger mobile chưa được chụp đúng: bản chụp state hiện tại chỉ kích hoạt ô **tìm kiếm**; cần định vị đúng nút hamburger và menu chính.
-8. Chưa audit trạng thái lọc, phân trang, tab, form, cart, CTA, breadcrumb, floating buttons; desktop/mobile cần nghiệm thu riêng.
-9. 8 ảnh màn hình Stitch source reference không tương đương 8 bản thiết kế clone; hiện 2 bản UI V1 homepage là bản **dự thảo**.
+## Đối chiếu đã thực hiện
+| Phép đo | Kết quả | Bằng chứng |
+| --- | --- | --- |
+| HTTP trang nguồn, lang=vi | 22/22 PASS | .stitch/qa/manifest.json và .stitch/qa-extra/manifest.json |
+| Nội dung/thứ tự H1/H2/H3 | 22/22 PASS | .stitch/qa/fidelity-dom.json |
+| X/Y/width/height của từng heading | 22/22 PASS, 0px chênh lệch | .stitch/qa/fidelity-dom.json |
+| Tổng chiều cao DOM | 22/22 PASS, 0px chênh lệch | .stitch/qa/fidelity-dom.json |
+| So ảnh **vùng nhìn đầu tiên** live vs HTML local | 22/22 PASS, 0 pixel chênh tại ngưỡng pixelmatch=0.15, bỏ qua anti-alias | .stitch/qa/pixel-all-final/report.json |
+| Upload Stitch HTML bản final | 11/11 PASS, warnings=0 | .stitch/upload-final-logs/ |
+| Menu mobile nguồn | Đã chụp | .stitch/qa/home-mobile-hamburger-vi.png |
 
-## Định nghĩa DONE cho V1
-- Mỗi loại trang desktop + mobile có: screenshot thật VI (source), màn thiết kế clone, ghi nhận QA side-by-side tại cùng viewport, checklist đầy đủ sections/text/assets/typography/layout/color.
-- Hero slide/crop, logo, danh mục, ảnh sản phẩm dùng nguồn thật, không AI sáng tác.
-- Các state header, search, menu, filter, gallery/tab, footer/CTA có màn tham chiếu tương ứng.
-- Không thiếu ảnh/logo/icon/font, không tiếng Anh hoặc giá/sản phẩm/hành vi giả.
-- Sẵn sàng handoff sau khi cập nhật tỷ lệ/spacing/cảm giác layout và đánh dấu QA PASS cho các màn quan trọng.
+**Cách hiểu phép đo pixel:** phép kiểm so sánh screenshot chỉ ở viewport đầu tiên, cùng browser/context, CSS animation tắt và ảnh render ổn định. Đây không phải bằng chứng pixel-perfect cho toàn bộ chiều cao trang, mọi thời điểm carousel, tương tác hay browser khác.
 
-## Tiếp theo theo thứ tự
-1. Sửa asset/font + chuẩn hóa HTML tham chiếu Việt trên Stitch.
-2. Clone hoàn chỉnh trang category, all-products, PDP và global navigation, desktop/mobile; QA trước khi nhân rộng.
-3. Clone giải pháp, dự án, kiến thức, giới thiệu, các form và states.
-4. Nghiệm thu V1 và khóa/đặt immutable reference.
-5. **Sau đó mới** duplicate sang V2 để nghiên cứu 2–3 hướng nâng cấp gold/navy, vuông vức bo nhẹ, motion tinh tế.
+## Ranh giới chưa nghiệm thu (không che giấu)
+- Các trạng thái chức năng: dropdown/mega menu, filter, sort, pagination, search, product gallery, form validation, carousel slide, CTA và các thao tác sâu chưa có test automation đầy đủ.
+- Khi mở HTML tĩnh ngoài domain gốc, script endpoint /api/addons.php?type=script-main có thể bị CORS; vì vậy bản clone HTML trong Canvas là **tham chiếu thiết kế** chứ không phải deployment frontend hoạt động tương đương production.
+- Ảnh chụp toàn trang có để làm reference nhưng chưa chạy pixelmatch full-page toàn bộ sections; chưa kiểm chứng tablet và multi-browser.
+- Mọi bản V1 tạo bởi AI từ ảnh được gắn nhãn DRAFT, không thay thế bản HTML nguồn đã kiểm chứng.
 
-Chỉ phục vụ thiết kế độc lập: worktree feature/pts-stitch-design-baseline-20261026. Không thay đổi master PHP, Nuxt migration hoặc production.
+## Gate cho giai đoạn V2
+- Đủ cơ sở **khóa mốc giao diện tĩnh V1** trong tài liệu và tạo các màn Concept V2 *mới*, không thay đổi các screen V1 reference.
+- Phương án V2 chỉ là thiết kế, cần QA responsive, content, UX/interaction và chọn ngôn ngữ thiết kế thống nhất trước khi handoff sang Nuxt.
+- Chưa merge/deploy bất kỳ thay đổi giao diện/website nào.
 
-## Cập nhật QA định lượng — 26/10/2026
-
-- Đã sửa lỗi font icon Font Awesome khi chạy bản clone từ file local: các font cần thiết được inline vào HTML, xác minh không còn requestfailed đối với 3 font icon. Tác vụ script /api/addons.php vẫn có thể bị CORS ngoài domain thật; vì vậy tương tác JavaScript chưa thể được xem là đạt.
-- Đã kiểm tra đối chiếu website live với HTML V1 asset-fixed cho 8 loại trang, 2 viewport (1280×900, 390×844).
-- **16/16 cặp đối chiếu:** thứ tự và nội dung H1/H2/H3 khớp; x/y/width/height của từng heading khớp 0 px; chiều cao toàn trang khớp 0 px. Dữ liệu raw: .stitch/qa/fidelity-dom.json, báo cáo in được bằng .stitch/qa/fidelity_summary.py.
-- **Không suy luận** từ DOM QA rằng mọi ảnh, trạng thái hover, hiệu ứng, tương tác và tất cả pixel giống nhau; vẫn phải QA screenshot/interaction từng state trước nghiệm thu V1.
-- Đã lấy ảnh menu hamburger thực mobile tại .stitch/qa/home-mobile-hamburger-vi.png, khác với ảnh trạng thái tìm kiếm trước đó.
-- Đã xác minh việc chuyển relative asset thành absolute URL và inline icon-font giúp import HTML V1 homepage vào Stitch với warnings=0.
+Xem danh sách screen chính xác: SCREEN-INVENTORY.md. Mọi script và screenshot local ở thư mục .stitch/ (ignore Git).
