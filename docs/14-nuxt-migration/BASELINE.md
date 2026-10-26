@@ -29,6 +29,6 @@
 - [x] Create isolation branch and worktree from latest local master.
 - [x] Scaffold Nuxt SSR frontend in `frontend/`.
 - [x] Nuxt 4.6.2 build/typecheck (exit 0), SSR preview HTTP 200, noindex and unknown route HTTP 404 verified. Vue Router 4.6.4 emits a non-fatal Volar plugin compatibility warning; investigate before scaling up.
-- [ ] Capture PHP local visual screenshots and route manifests on frozen fixtures.
+- [x] Capture 16 first-fold PHP local screenshots (8 routes × 390px/1440px) and route metadata in `frontend/.migration-artifacts/legacy-baseline/`; all HTTP 200, with no document horizontal overflow, missing H1/canonical or pageerror at capture. Data fixture freeze, more viewports, PDP and interactive states still pending.
 - [ ] Confirm production release SHA, then assess whether any deltas must be integrated into baseline.
 - [ ] Implement PHP data contracts with equivalent filtering/visibility rules.
