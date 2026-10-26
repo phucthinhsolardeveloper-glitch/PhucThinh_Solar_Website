@@ -20,3 +20,17 @@ npm run dev
 
 No legacy global CSS/JS import. No PHP direct DB access from Nuxt.
 No production deploy without an explicit separate authorization.
+
+## Capture PHP baseline screenshots (read-only)
+Run from the migration worktree, with the existing shared Playwright browser binaries:
+
+```bash
+cd tools/visual-tests
+npm ci
+PLAYWRIGHT_BROWSERS_PATH=/home/admin01/src/Web_PTS_PHP/tools/visual-tests/.browsers \
+  node scripts/capture-migration-baseline.cjs
+```
+
+Reports are local-only at `frontend/.migration-artifacts/legacy-baseline/`.
+The initial capture compares first-fold layouts; product detail and interactive
+states require further tests before claiming visual parity.
