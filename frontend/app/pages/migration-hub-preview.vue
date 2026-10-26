@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import type { PublicCatalogPayload } from '#shared/contracts/public-catalog'
 import { isPublicCatalogPayload } from '#shared/contracts/public-catalog'
+import { isPublicNewsPayload } from '#shared/contracts/public-news'
+import { isPublicProjectsPayload } from '#shared/contracts/public-projects'
+import { isPublicSolutionsPayload } from '#shared/contracts/public-solutions'
 import { MIGRATION_PREVIEW_ROUTES } from '#shared/contracts/migration-preview-routes'
 import { previewHref, phpHref } from '~/components/migration-hub/preview-links'
 
@@ -9,6 +12,12 @@ const { data: catalogData, error: catalogError } = await useAsyncData<unknown>('
 const catalog = computed(() => isPublicCatalogPayload(catalogData.value) ? catalogData.value : null)
 const sampleProduct = computed(() => catalog.value?.products[0] ?? null)
 const productHref = computed(() => sampleProduct.value ? previewHref('product', { slug: sampleProduct.value.slug }) : previewHref('product'))
+const { data: newsData } = await useAsyncData<unknown>('migration-hub-news', () => $fetch('/_migration/news'))
+const { data: projectsData } = await useAsyncData<unknown>('migration-hub-projects', () => $fetch('/_migration/projects'))
+const { data: solutionsData } = await useAsyncData<unknown>('migration-hub-solutions', () => $fetch('/_migration/solutions'))
+const sampleNews = computed(() => isPublicNewsPayload(newsData.value) ? (newsData.value.articles[0] ?? newsData.value.featured[0] ?? null) : null)
+const sampleProject = computed(() => isPublicProjectsPayload(projectsData.value) ? (projectsData.value.projects[0] ?? projectsData.value.featured ?? null) : null)
+const sampleSolution = computed(() => isPublicSolutionsPayload(solutionsData.value) ? (solutionsData.value.cards[0] ?? null) : null)
 
 useSeoMeta({ title: 'Trung tâm xem thử Nuxt — Phúc Thịnh Solar', robots: 'noindex, nofollow, noarchive' })
 </script>
@@ -45,6 +54,28 @@ useSeoMeta({ title: 'Trung tâm xem thử Nuxt — Phúc Thịnh Solar', robots:
             <a v-if="sampleProduct" class="migration-hub__link" :href="productHref">{{ sampleProduct.name }} — mở PDP preview <span aria-hidden="true">→</span></a>
             <p v-else role="status">CMS chưa trả về sản phẩm để tạo liên kết PDP.</p>
           </template>
+        </section>
+
+        <section class="migration-hub__data" aria-labelledby="migration-detail-samples-title">
+          <h2 id="migration-detail-samples-title">Xem các trang chi tiết với dữ liệu CMS thật</h2>
+          <p>Đường dẫn mẫu được lấy từ API local, không phải bài viết hoặc dự án giả lập.</p>
+          <div class="migration-hub__routes">
+            <article class="migration-hub__route">
+              <h3>Bài viết chi tiết</h3>
+              <a v-if="sampleNews" class="migration-hub__link migration-hub__link--primary" :href="'/migration-news-detail-preview?slug=' + encodeURIComponent(sampleNews.slug)">{{ sampleNews.title }} →</a>
+              <p v-else>Chưa có bài viết mẫu từ CMS.</p>
+            </article>
+            <article class="migration-hub__route">
+              <h3>Dự án chi tiết</h3>
+              <a v-if="sampleProject" class="migration-hub__link migration-hub__link--primary" :href="'/migration-project-detail-preview?slug=' + encodeURIComponent(sampleProject.slug)">{{ sampleProject.title }} →</a>
+              <p v-else>Chưa có dự án mẫu từ CMS.</p>
+            </article>
+            <article class="migration-hub__route">
+              <h3>Giải pháp chi tiết</h3>
+              <a v-if="sampleSolution" class="migration-hub__link migration-hub__link--primary" :href="'/migration-solution-detail-preview?slug=' + encodeURIComponent(sampleSolution.slug)">{{ sampleSolution.title }} →</a>
+              <p v-else>Chưa có giải pháp mẫu từ CMS.</p>
+            </article>
+          </div>
         </section>
 
         <aside class="migration-hub__notice" aria-labelledby="migration-notice-title">

@@ -1,7 +1,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { MIGRATION_PREVIEW_ROUTES } from '../shared/contracts/migration-preview-routes.ts'
-import { phpHref, previewHref, resolvePreviewLink } from '../app/components/migration-hub/preview-links.ts'
+import { phpHref, previewHref, resolvePreviewLink } from '../shared/contracts/migration-preview-routes.ts'
 
 test('registry is deterministic and contains only confirmed preview routes', () => {
   assert.deepEqual(MIGRATION_PREVIEW_ROUTES.map(({ key }) => key), ['home', 'catalog', 'product', 'solutions', 'projects', 'news', 'about', 'contact', 'dealer', 'shell'])

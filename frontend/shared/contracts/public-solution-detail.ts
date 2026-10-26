@@ -12,7 +12,7 @@ export interface PublicSolutionDetailPayload {
 const record = (value: unknown): value is Record<string, unknown> => value !== null && typeof value === 'object' && !Array.isArray(value)
 const text = (value: unknown, allowEmpty = false): value is string => typeof value === 'string' && (allowEmpty || value.trim() !== '') && !/[\u0000-\u001F\u007F<>]/.test(value)
 const slug = (value: unknown): value is string => typeof value === 'string' && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value)
-const image = (value: unknown): value is string => text(value, true) && (value === '' || /^\/upload\/news\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|gif|webp|avif)$/i.test(value))
+const image = (value: unknown): value is string => text(value, true) && (value === '' || /^\/(?:upload\/news\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|gif|webp|avif)|assets\/images\/site-visuals\/(?:solution-home-solar-v2|solution-bess-v2|solution-solar-pump-v2)\.jpg)$/i.test(value))
 const solutionUrl = (value: unknown, expected?: string): value is string => typeof value === 'string' && (!expected || value === `/giai-phap/${expected}/`) && /^\/giai-phap\/[a-z0-9]+(?:-[a-z0-9]+)*\/$/.test(value)
 const publicUrl = (value: unknown): value is string => typeof value === 'string' && /^\/(?:danh-muc-san-pham\/[^/?#]+|san-pham)\/?$/.test(value)
 

@@ -12,6 +12,10 @@
 - About preview: http://localhost:3100/migration-about-preview
 - Contact preview (read-only, PHP owns form): http://localhost:3100/migration-contact-preview
 - Dealer preview (read-only, PHP owns form): http://localhost:3100/migration-dealer-preview
+- Central migration preview hub: http://localhost:3100/migration-hub-preview
+- News detail preview: http://localhost:3100/migration-news-detail-preview?slug=8-ly-do-ban-nen-su-dung-den-nang-luong-mat-troi-ngay-bay-gio
+- Project detail preview: http://localhost:3100/migration-project-detail-preview?slug=du-an-dien-nlmt-ho-anh-hoa-thanh-an
+- Solution detail preview: http://localhost:3100/migration-solution-detail-preview?slug=dien-mat-troi-ho-gia-dinh
 - Local PHP reference (original master): http://localhost:8080/giai-phap/
 - Local PHP migration code/API: http://localhost:8088/giai-phap/
 
