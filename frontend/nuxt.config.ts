@@ -14,9 +14,13 @@ export default defineNuxtConfig({
     '/migration-preview': {
       headers: { 'X-Robots-Tag': 'noindex, nofollow, noarchive' },
     },
+    '/migration-site-preview': {
+      headers: { 'X-Robots-Tag': 'noindex, nofollow, noarchive' },
+    },
   },
   runtimeConfig: {
     // Override through NUXT_PHP_ORIGIN; never expose this in public runtimeConfig.
     phpOrigin: 'http://127.0.0.1:8080',
+    previewMediaProxy: false,
   },
 })
