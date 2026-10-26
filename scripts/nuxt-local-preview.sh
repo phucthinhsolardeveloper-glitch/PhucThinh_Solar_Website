@@ -49,8 +49,9 @@ start_preview() {
     (cd "$FRONTEND" && npm ci)
   fi
 
-  stop_nuxt
+  # Keep the prior preview available if a new build fails.
   (cd "$FRONTEND" && npm run build)
+  stop_nuxt
 
   python3 "$ROOT/scripts/nuxt-preview-launch.py"
   echo "PHP migration API: http://localhost:8088/api/pts_v1_site.php"

@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { PublicCatalogPayload } from '../../shared/contracts/public-catalog'
-import type { PublicSitePayload, PublicProductCategoryNode } from '../../shared/contracts/public-site'
-import { isPublicSitePayload } from '../../shared/contracts/public-site'
+import type { PublicCatalogPayload } from '#shared/contracts/public-catalog'
+import type { PublicSitePayload, PublicProductCategoryNode } from '#shared/contracts/public-site'
+import { isPublicSitePayload } from '#shared/contracts/public-site'
 import CatalogCategoryNav from '~/components/catalog/CatalogCategoryNav.vue'
 import CatalogProductGrid from '~/components/catalog/CatalogProductGrid.vue'
 import SiteHeader from '~/components/SiteHeader.vue'
