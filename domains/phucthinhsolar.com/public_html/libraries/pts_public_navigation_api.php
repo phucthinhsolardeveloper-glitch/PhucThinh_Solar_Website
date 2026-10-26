@@ -247,5 +247,13 @@ function ptsPublicSiteNavigationPayload(array $input)
     $locations = array(); foreach(isset($input['locations']) && is_array($input['locations']) ? $input['locations'] : array() as $row) { if(!is_array($row) || !ptsPublicNavPublished($row)) continue; $link = ptsPublicNavUrl(isset($row['ggmap']) ? $row['ggmap'] : ''); $name = ptsPublicNavName($row); $address = ptsPublicNavText(isset($row['address']) ? $row['address'] : ''); if($name !== '' && $address !== '') $locations[] = array('name'=>$name,'address'=>$address,'mapUrl'=>$link); }
     $social = array(); foreach(array('fanpage'=>'Facebook','youtube'=>'YouTube') as $key=>$label) { $link=ptsPublicNavUrl(isset($options[$key])?$options[$key]:''); if($link !== '') $social[] = array('label'=>$label,'href'=>$link); }
     $asset = isset($input['asset']) && is_array($input['asset']) ? $input['asset'] : array();
-    return array('navigationSchemaVersion'=>1,'locale'=>'vi','brand'=>array('name'=>$brandName,'hotline'=>ptsPublicNavText(isset($options['hotline'])?$options['hotline']:''),'logo'=>isset($asset['logo'])?$asset['logo']:'','logoFooter'=>isset($asset['logoFooter'])?$asset['logoFooter']:''),'navigation'=>$nav,'catalog'=>$catalog,'productCategoryTree'=>$tree,'footer'=>array('companyName'=>ptsPublicNavName($footer),'contactText'=>ptsPublicNavText(isset($footer['contentvi'])?$footer['contentvi']:''),'policies'=>$footerLinks,'locations'=>$locations,'socialLinks'=>$social));
+    $brand = array('name'=>$brandName,'hotline'=>ptsPublicNavText(isset($options['hotline'])?$options['hotline']:''),'logo'=>isset($asset['logo'])?$asset['logo']:'','logoFooter'=>isset($asset['logoFooter'])?$asset['logoFooter']:'');
+    $technicalHotline = ptsPublicNavText(isset($options['hotline_technical']) ? $options['hotline_technical'] : '');
+    if($technicalHotline !== '') $brand['technicalHotline'] = $technicalHotline;
+    $footerDto = array('companyName'=>ptsPublicNavName($footer),'contactText'=>ptsPublicNavText(isset($footer['contentvi'])?$footer['contentvi']:''),'policies'=>$footerLinks,'locations'=>$locations,'socialLinks'=>$social);
+    $trustBadge = isset($asset['trustBadge']) && is_array($asset['trustBadge']) ? $asset['trustBadge'] : array();
+    $trustBadgeImage = isset($trustBadge['image']) ? ptsPublicNavUrl($trustBadge['image']) : '';
+    $trustBadgeHref = isset($trustBadge['href']) ? ptsPublicNavUrl($trustBadge['href']) : '';
+    if($trustBadgeImage !== '' && $trustBadgeHref !== '') $footerDto['trustBadge'] = array('image'=>$trustBadgeImage,'href'=>$trustBadgeHref);
+    return array('navigationSchemaVersion'=>1,'locale'=>'vi','brand'=>$brand,'navigation'=>$nav,'catalog'=>$catalog,'productCategoryTree'=>$tree,'footer'=>$footerDto);
 }

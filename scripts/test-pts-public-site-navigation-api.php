@@ -5,8 +5,8 @@ require_once __DIR__.'/../domains/phucthinhsolar.com/public_html/libraries/pts_p
 function navCheck($condition, $message) { if(!$condition) { fwrite(STDERR, "FAIL: $message\n"); exit(1); } }
 $result = ptsPublicSiteNavigationPayload(array(
     'setting' => array('namevi' => 'PTS', 'private' => 'no'),
-    'options' => array('hotline' => '0900 123', 'fanpage' => 'https://facebook.com/pts', 'youtube' => 'javascript:alert(1)', 'secret' => 'no'),
-    'asset' => array('logo' => '/upload/photo/logo.webp', 'logoFooter' => ''),
+    'options' => array('hotline' => '0900 123', 'hotline_technical' => '0900 456', 'fanpage' => 'https://facebook.com/pts', 'youtube' => 'javascript:alert(1)', 'secret' => 'no'),
+    'asset' => array('logo' => '/upload/photo/logo.webp', 'logoFooter' => '', 'trustBadge' => array('image' => '/upload/photo/bct.webp', 'href' => 'https://online.gov.vn/Home/WebDetails/123')),
     'footer' => array('namevi' => 'PTS <b>Solar</b>', 'contentvi' => '<p>Địa chỉ <script>x</script><br>Hotline</p>'),
     'policy' => array(array('id'=>2,'namevi'=>'Bảo hành','slugvi'=>'bao-hanh'), array('id'=>9,'namevi'=>'Ẩn','slugvi'=>'an','status'=>'no')),
     'locations' => array(array('id'=>3,'namevi'=>'Trụ sở','address'=>'Hà Nội','ggmap'=>'https://maps.example/pts')),
@@ -30,8 +30,10 @@ navCheck(count($result['productCategoryTree']) === 1 && count($result['productCa
 navCheck($result['catalog']['lighting']['href'] === '/danh-muc-san-pham/den-nlmt/den-pha-nang-luong-mat-troi/', 'catalog category canonical URL');
 navCheck($result['catalog']['lighting']['items'][0]['href'] === '/danh-muc-san-pham/den-nlmt/den-pha-nang-luong-mat-troi/', 'catalog item canonical URL');
 navCheck($result['catalog']['lighting']['items'][0]['children'][0]['href'] === '/danh-muc-san-pham/den-nlmt/den-pha-nang-luong-mat-troi/den-pha-100w/', 'catalog child canonical URL');
+navCheck($result['brand']['technicalHotline'] === '0900 456', 'technical hotline projected from the public setting');
+navCheck($result['footer']['trustBadge'] === array('image' => '/upload/photo/bct.webp', 'href' => 'https://online.gov.vn/Home/WebDetails/123'), 'published commerce trust badge projected');
 navCheck(strpos($result['footer']['contactText'], '<script>') === false, 'footer text sanitized');
 navCheck(ptsPublicNavText('&lt;p&gt;Thông tin &lt;strong&gt;Phúc Thịnh Solar&lt;/strong&gt;&lt;/p&gt;') === 'Thông tin Phúc Thịnh Solar', 'encoded CMS HTML stripped before rendering');
 navCheck(count($result['footer']['socialLinks']) === 1, 'unsafe social URL omitted');
 navCheck(strpos(json_encode($result), 'private') === false && strpos(json_encode($result), 'secret') === false, 'private fields absent');
-echo "PASS: PTS public navigation DTO (17 assertions)\n";
+echo "PASS: PTS public navigation DTO (19 assertions)\n";

@@ -47,7 +47,34 @@ function ptsCatalogPublicMedia($value)
     return '/upload/product/'.$value;
 }
 
-function ptsCatalogProductDto(array $row)
+function ptsCatalogPositiveNumber($value)
+{
+    if(!is_scalar($value) || !is_numeric($value)) return null;
+    $number = (float)$value;
+    return is_finite($number) && $number > 0 ? $number : null;
+}
+
+function ptsCatalogMoney($value)
+{
+    $number = ptsCatalogPositiveNumber($value);
+    return $number === null || $number > PHP_INT_MAX ? null : (int)round($number);
+}
+
+function ptsCatalogPricingDto(array $row, $pricesVisible)
+{
+    $regular = ptsCatalogMoney(isset($row['regular_price']) ? $row['regular_price'] : null);
+    $sale = ptsCatalogMoney(isset($row['sale_price']) ? $row['sale_price'] : null);
+    $statuses = array_filter(array_map('trim', explode(',', isset($row['status']) ? (string)$row['status'] : '')));
+    $mode = $pricesVisible && !in_array('baogia', $statuses, true) && ($regular !== null || $sale !== null) ? 'price' : 'quote';
+    return array(
+        'mode' => $mode,
+        'currency' => 'VND',
+        'regularPrice' => $mode === 'price' ? $regular : null,
+        'salePrice' => $mode === 'price' ? $sale : null
+    );
+}
+
+function ptsCatalogProductDto(array $row, $pricesVisible = false)
 {
     if(!ptsCatalogPublished(isset($row['status']) ? $row['status'] : '')) return null;
     $id = isset($row['id']) ? (int)$row['id'] : 0;
@@ -61,7 +88,15 @@ function ptsCatalogProductDto(array $row)
         $path = ptsCatalogPublicMedia(isset($row['_pts_public_'.$field]) ? $row['_pts_public_'.$field] : (isset($row[$field]) ? $row[$field] : ''));
         if($path !== '' && !in_array($path, $media, true)) $media[] = $path;
     }
-    return array('id' => $id, 'name' => $name, 'slug' => $slug, 'url' => $url, 'media' => $media);
+    return array(
+        'id' => $id,
+        'name' => $name,
+        'slug' => $slug,
+        'url' => $url,
+        'media' => $media,
+        'powerWatts' => ptsCatalogPositiveNumber(isset($row['cong_suat']) ? $row['cong_suat'] : null),
+        'pricing' => ptsCatalogPricingDto($row, $pricesVisible)
+    );
 }
 
 function ptsCatalogCategoryDto(array $row, array $slugs)
@@ -74,13 +109,13 @@ function ptsCatalogCategoryDto(array $row, array $slugs)
     return array('id' => $id, 'name' => $name, 'slug' => end($slugs), 'url' => $url);
 }
 
-function ptsCatalogPayload(array $category, array $categories, array $rows, $page, $perPage, $total)
+function ptsCatalogPayload(array $category, array $categories, array $rows, $page, $perPage, $total, $pricesVisible = false)
 {
     $products = array();
     foreach($rows as $row)
     {
         if(!is_array($row)) continue;
-        $dto = ptsCatalogProductDto($row);
+        $dto = ptsCatalogProductDto($row, $pricesVisible);
         if($dto !== null) $products[] = $dto;
     }
     $categoryDtos = array();
@@ -98,7 +133,7 @@ function ptsCatalogPayload(array $category, array $categories, array $rows, $pag
         'products' => $products,
         'pagination' => array('page' => (int)$page, 'perPage' => (int)$perPage, 'total' => max(0, (int)$total)),
         'parity' => array(
-            'prices' => array('included' => false, 'reason' => 'public_pricing_authority_not_delegated'),
+            'prices' => $pricesVisible ? array('included' => true) : array('included' => false, 'reason' => 'public_pricing_disabled'),
             'filters' => array('included' => false, 'reason' => 'legacy_filter_parity_not_verified'),
             'sort' => array('included' => false, 'reason' => 'legacy_sort_parity_not_verified')
         )

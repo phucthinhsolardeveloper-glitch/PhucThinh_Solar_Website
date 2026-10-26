@@ -46,12 +46,17 @@ try
     $footer = $loadOne("select namevi,contentvi from #_static where type=? and find_in_set('hienthi',status) limit 0,1", array('footer'));
     $logo = $loadOne("select photo from #_photo where type=? and act=? limit 0,1", array('logo','photo_static'));
     $logoFooter = $loadOne("select photo from #_photo where type=? and act=? limit 0,1", array('logo-footer','photo_static'));
+    $trustBadge = $loadOne("select photo,link from #_photo where type=? and act=? and find_in_set('hienthi',status) limit 0,1", array('bct','photo_static'));
     if(function_exists('closeSessionWrite')) closeSessionWrite();
 
     $data = ptsPublicSitePayload(is_array($setting) ? $setting : array(), is_array($optsetting) ? $optsetting : array(), $productLists);
     $assets = array(
         'logo' => ptsPublicNavAsset(isset($logo['photo']) ? $logo['photo'] : '', UPLOAD_PHOTO_L, ROOT),
-        'logoFooter' => ptsPublicNavAsset(isset($logoFooter['photo']) ? $logoFooter['photo'] : '', UPLOAD_PHOTO_L, ROOT)
+        'logoFooter' => ptsPublicNavAsset(isset($logoFooter['photo']) ? $logoFooter['photo'] : '', UPLOAD_PHOTO_L, ROOT),
+        'trustBadge' => array(
+            'image' => ptsPublicNavAsset(isset($trustBadge['photo']) ? $trustBadge['photo'] : '', UPLOAD_PHOTO_L, ROOT),
+            'href' => ptsPublicNavUrl(isset($trustBadge['link']) ? $trustBadge['link'] : '')
+        )
     );
     $data = array_merge($data, ptsPublicSiteNavigationPayload(array(
         'setting' => is_array($setting) ? $setting : array(), 'options' => is_array($optsetting) ? $optsetting : array(),
