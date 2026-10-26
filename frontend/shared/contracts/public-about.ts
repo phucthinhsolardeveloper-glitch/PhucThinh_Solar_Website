@@ -17,7 +17,7 @@ function isRecord(value: unknown): value is Record<string, unknown> { return val
 function isText(value: unknown, allowEmpty = true): value is string { return typeof value === 'string' && (allowEmpty || value.trim() !== '') && !/[\u0000-\u001F\u007F]/.test(value) }
 function isImage(value: unknown): value is string { return isText(value) && (value === '' || /^\/upload\/(?:news|photo)\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|gif|webp|avif)$/i.test(value)) }
 function isImageItem(value: unknown): value is PublicAboutImageItem { return isRecord(value) && isImage(value.image) }
-function isTextItem(value: unknown): value is PublicAboutTextItem { return isImageItem(value) && isText(value.title) && isText(value.description) }
+function isTextItem(value: unknown): value is PublicAboutTextItem { return isRecord(value) && isImage(value.image) && isText(value.title) && isText(value.description) }
 function isTimelineItem(value: unknown): value is PublicAboutTimelineItem { return isRecord(value) && typeof value.year === 'string' && /^(?:19|20)\d{2}$/.test(value.year) && isText(value.title) && isText(value.description) }
 function isSafeHref(value: unknown): value is string { return typeof value === 'string' && (/^\/(?!\/)[A-Za-z0-9][A-Za-z0-9/_?&=.#%-]*$/.test(value) || /^https?:\/\/[^\s]+$/i.test(value)) }
 

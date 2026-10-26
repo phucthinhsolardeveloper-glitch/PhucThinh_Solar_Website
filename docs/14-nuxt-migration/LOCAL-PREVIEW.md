@@ -4,6 +4,14 @@
 - Unified header + real CMS Solutions + footer: http://localhost:3100/migration-site-preview
 - Header/menu/footer inspection: http://localhost:3100/migration-shell-preview
 - Solutions-only preview: http://localhost:3100/migration-solutions-preview
+- Home preview: http://localhost:3100/migration-home-preview
+- Product catalog preview: http://localhost:3100/migration-catalog-preview
+- Product detail preview (fixture record): http://localhost:3100/migration-product-preview?slug=den-ufo-nang-luong-mat-troi-oriana-ufo-1000-1000w
+- Projects preview: http://localhost:3100/migration-projects-preview
+- News preview: http://localhost:3100/migration-news-preview
+- About preview: http://localhost:3100/migration-about-preview
+- Contact preview (read-only, PHP owns form): http://localhost:3100/migration-contact-preview
+- Dealer preview (read-only, PHP owns form): http://localhost:3100/migration-dealer-preview
 - Local PHP reference (original master): http://localhost:8080/giai-phap/
 - Local PHP migration code/API: http://localhost:8088/giai-phap/
 

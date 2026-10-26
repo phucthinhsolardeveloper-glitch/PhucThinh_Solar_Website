@@ -30,5 +30,6 @@ export function isPublicNewsPayload(value: unknown): value is PublicNewsPayload 
   if(value.intro !== null && (!isRecord(value.intro) || !isText(value.intro.title) || !isText(value.intro.description, true))) return false
   if(value.cta !== null && !isCta(value.cta)) return false
   if(!isRecord(value.labels)) return false
-  return ['all', 'search', 'featured', 'results', 'empty', 'reset', 'read', 'pages', 'readMore', 'ctaPhone'].every((key) => isText(value.labels[key]))
+  const labels = value.labels
+  return ['all', 'search', 'featured', 'results', 'empty', 'reset', 'read', 'pages', 'readMore', 'ctaPhone'].every((key) => isText(labels[key]))
 }

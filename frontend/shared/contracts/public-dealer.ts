@@ -13,6 +13,8 @@ export function isPublicDealerPayload(v: unknown): v is PublicDealerPayload {
   if (!record(v.support) || !text(v.support.title) || !text(v.support.description) || !Array.isArray(v.support.items) || !v.support.items.every(item)) return false
   if (!Array.isArray(v.testimonials) || !v.testimonials.every(item) || !Array.isArray(v.stats) || !v.stats.every((x) => record(x) && text(x.label) && /^[0-9][0-9.,]*$/.test(String(x.value)))) return false
   if (!record(v.form) || v.form.action !== '/dai-ly/#dang-ky-dai-ly' || v.form.method !== 'POST' || !text(v.form.title) || !text(v.form.note)) return false
-  if (v.hotline !== null && (!record(v.hotline) || !text(v.hotline.text) || !/^[0-9+ -]+$/.test(v.hotline.tel))) return false
-  return record(v.labels) && ['overview','support','testimonials','stats','empty'].every((k) => text(v.labels[k]))
+  if (v.hotline !== null && (!record(v.hotline) || !text(v.hotline.text) || !text(v.hotline.tel) || !/^[0-9+ -]+$/.test(v.hotline.tel))) return false
+  if (!record(v.labels)) return false
+  const labels = v.labels
+  return ['overview','support','testimonials','stats','empty'].every((k) => text(labels[k]))
 }
