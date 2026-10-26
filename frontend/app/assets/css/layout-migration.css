@@ -1,0 +1,24 @@
+.migration-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+}
+
+.migration-shell__content {
+  flex: 1 0 auto;
+  min-width: 0;
+}
+
+.migration-shell__status {
+  border-bottom: 1px solid var(--pts-line);
+  background: var(--pts-surface);
+  color: var(--pts-muted);
+}
+
+.migration-shell__status p {
+  margin: 0;
+  padding: 10px 0;
+  font-size: 14px;
+  line-height: 1.5;
+}
