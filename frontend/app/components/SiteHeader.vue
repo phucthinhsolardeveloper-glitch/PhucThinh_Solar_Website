@@ -152,10 +152,10 @@ onBeforeUnmount(() => {
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
         </button>
 
-        <NuxtLink class="pts-brand" to="/" :aria-label="`${brandName} - Trang chủ`">
+        <a class="pts-brand" href="/" :aria-label="`${brandName} - Trang chủ`">
           <img v-if="brandLogo" :src="brandLogo" :alt="brandName" width="260" height="56">
           <span v-else>{{ brandName }}</span>
-        </NuxtLink>
+        </a>
 
         <nav class="pts-desktop-nav" aria-label="Điều hướng chính">
           <div class="pts-catalog-control" @mouseenter="openCatalog('hover')">
@@ -172,7 +172,7 @@ onBeforeUnmount(() => {
               <svg class="pts-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5" /></svg>
             </button>
           </div>
-          <NuxtLink v-for="item in navItems" :key="item.href" class="pts-nav-link" :to="item.href">{{ item.label }}</NuxtLink>
+          <NuxtLink external v-for="item in navItems" :key="item.href" class="pts-nav-link" :to="item.href">{{ item.label }}</NuxtLink>
         </nav>
 
         <div class="pts-site-header__actions">
@@ -190,10 +190,10 @@ onBeforeUnmount(() => {
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 3.5 9 3l2 5-2 1.7a14 14 0 0 0 5.3 5.3L16 13l5 2-.5 2.5c-.3 1.5-1.7 2.5-3.2 2.2C10.8 18.5 5.5 13.2 4.3 6.7 4 5.2 5 3.8 6.5 3.5Z" /></svg>
             <span>{{ hotline }}</span>
           </a>
-          <NuxtLink class="pts-icon-button pts-cart-link" to="/gio-hang/" aria-label="Giỏ hàng" title="Giỏ hàng">
+          <NuxtLink external class="pts-icon-button pts-cart-link" to="/gio-hang/" aria-label="Giỏ hàng" title="Giỏ hàng">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h2l1.5 11h10l2-8H7M9 20h.01M17 20h.01" /></svg>
           </NuxtLink>
-          <NuxtLink class="pts-consult-link" to="/lien-he/#yeu-cau-tu-van">Nhận tư vấn</NuxtLink>
+          <NuxtLink external class="pts-consult-link" to="/lien-he/#yeu-cau-tu-van">Nhận tư vấn</NuxtLink>
         </div>
       </div>
 
@@ -218,7 +218,7 @@ onBeforeUnmount(() => {
             <h2 id="ptsCatalogTitle">Danh mục sản phẩm</h2>
             <p>Dữ liệu danh mục đang được cung cấp từ API public.</p>
           </div>
-          <NuxtLink class="pts-catalog-all-link" to="/san-pham/" @click="closeCatalog(false)">Xem tất cả sản phẩm</NuxtLink>
+          <NuxtLink external class="pts-catalog-all-link" to="/san-pham/" @click="closeCatalog(false)">Xem tất cả sản phẩm</NuxtLink>
           <button class="pts-icon-button pts-catalog-close" type="button" aria-label="Đóng danh mục sản phẩm" @click="closeCatalog()">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>
           </button>
@@ -226,15 +226,15 @@ onBeforeUnmount(() => {
 
         <div v-if="hasCategories" class="pts-catalog-columns">
           <section v-for="group in catalogGroups" :key="group.id" class="pts-catalog-group">
-            <h3><NuxtLink :to="group.href" @click="closeCatalog(false)">{{ group.label }}</NuxtLink></h3>
+            <h3><NuxtLink external :to="group.href" @click="closeCatalog(false)">{{ group.label }}</NuxtLink></h3>
             <ul>
               <li v-for="item in group.items" :key="item.href + item.label">
-                <NuxtLink :to="item.href" @click="closeCatalog(false)">
+                <NuxtLink external :to="item.href" @click="closeCatalog(false)">
                   <span>{{ item.label }}</span>
                   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7" /></svg>
                 </NuxtLink>
                 <ul v-if="item.children.length" class="pts-catalog-sublist">
-                  <li v-for="child in item.children" :key="child.href + child.label"><NuxtLink :to="child.href" @click="closeCatalog(false)">{{ child.label }}</NuxtLink></li>
+                  <li v-for="child in item.children" :key="child.href + child.label"><NuxtLink external :to="child.href" @click="closeCatalog(false)">{{ child.label }}</NuxtLink></li>
                 </ul>
               </li>
             </ul>
@@ -261,24 +261,24 @@ onBeforeUnmount(() => {
           </button>
         </form>
         <nav aria-label="Điều hướng mobile">
-          <NuxtLink v-for="item in navItems" :key="item.href" class="pts-mobile-link" :to="item.href" @click="closeMobileMenu(false)">{{ item.label }}</NuxtLink>
+          <NuxtLink external v-for="item in navItems" :key="item.href" class="pts-mobile-link" :to="item.href" @click="closeMobileMenu(false)">{{ item.label }}</NuxtLink>
           <button class="pts-mobile-catalog-toggle" type="button" :aria-expanded="mobileCatalogOpen" @click="mobileCatalogOpen = !mobileCatalogOpen">
             <span>Danh mục sản phẩm</span>
             <svg class="pts-chevron" :class="{ 'is-open': mobileCatalogOpen }" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5" /></svg>
           </button>
           <div v-if="mobileCatalogOpen" class="pts-mobile-catalog-list">
-            <NuxtLink to="/san-pham/" @click="closeMobileMenu(false)">Xem tất cả sản phẩm</NuxtLink>
+            <NuxtLink external to="/san-pham/" @click="closeMobileMenu(false)">Xem tất cả sản phẩm</NuxtLink>
             <template v-if="mobileCategories.length">
               <template v-for="category in mobileCategories" :key="category.id">
-                <NuxtLink :to="category.url" @click="closeMobileMenu(false)">{{ category.name }}</NuxtLink>
-                <NuxtLink v-for="child in category.children" :key="child.id" :to="child.url" @click="closeMobileMenu(false)">{{ child.name }}</NuxtLink>
+                <NuxtLink external :to="category.url" @click="closeMobileMenu(false)">{{ category.name }}</NuxtLink>
+                <NuxtLink external v-for="child in category.children" :key="child.id" :to="child.url" @click="closeMobileMenu(false)">{{ child.name }}</NuxtLink>
               </template>
             </template>
-            <NuxtLink v-else v-for="category in props.site.productCategories" :key="category.id" :to="category.url" @click="closeMobileMenu(false)">{{ category.name }}</NuxtLink>
+            <NuxtLink external v-else v-for="category in props.site.productCategories" :key="category.id" :to="category.url" @click="closeMobileMenu(false)">{{ category.name }}</NuxtLink>
             <span v-if="!hasCategories" class="pts-shell-empty">Danh mục sản phẩm chưa có dữ liệu.</span>
           </div>
         </nav>
-        <NuxtLink class="pts-consult-link pts-mobile-consult" to="/lien-he/#yeu-cau-tu-van" @click="closeMobileMenu(false)">Nhận tư vấn</NuxtLink>
+        <NuxtLink external class="pts-consult-link pts-mobile-consult" to="/lien-he/#yeu-cau-tu-van" @click="closeMobileMenu(false)">Nhận tư vấn</NuxtLink>
       </aside>
     </div>
   </div>

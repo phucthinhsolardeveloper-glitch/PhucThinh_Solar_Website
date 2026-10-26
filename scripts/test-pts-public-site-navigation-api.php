@@ -31,6 +31,7 @@ navCheck($result['catalog']['lighting']['href'] === '/danh-muc-san-pham/den-nlmt
 navCheck($result['catalog']['lighting']['items'][0]['href'] === '/danh-muc-san-pham/den-nlmt/den-pha-nang-luong-mat-troi/', 'catalog item canonical URL');
 navCheck($result['catalog']['lighting']['items'][0]['children'][0]['href'] === '/danh-muc-san-pham/den-nlmt/den-pha-nang-luong-mat-troi/den-pha-100w/', 'catalog child canonical URL');
 navCheck(strpos($result['footer']['contactText'], '<script>') === false, 'footer text sanitized');
+navCheck(ptsPublicNavText('&lt;p&gt;Thông tin &lt;strong&gt;Phúc Thịnh Solar&lt;/strong&gt;&lt;/p&gt;') === 'Thông tin Phúc Thịnh Solar', 'encoded CMS HTML stripped before rendering');
 navCheck(count($result['footer']['socialLinks']) === 1, 'unsafe social URL omitted');
 navCheck(strpos(json_encode($result), 'private') === false && strpos(json_encode($result), 'secret') === false, 'private fields absent');
-echo "PASS: PTS public navigation DTO (16 assertions)\n";
+echo "PASS: PTS public navigation DTO (17 assertions)\n";

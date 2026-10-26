@@ -6,5 +6,5 @@ export default defineEventHandler(async (event) => {
   if (!media) throw createError({ statusCode: 404, statusMessage: 'Preview media not found' })
   setHeader(event, 'Content-Type', media.contentType)
   setHeader(event, 'Cache-Control', 'private, max-age=300')
-  return media.body
+  return new Uint8Array(media.body)
 })

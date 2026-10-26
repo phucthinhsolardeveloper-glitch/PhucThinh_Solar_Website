@@ -23,17 +23,17 @@ const footerLinks = [
   <footer class="pts-site-footer">
     <div class="pts-container pts-site-footer__grid">
       <div class="pts-site-footer__brand">
-        <NuxtLink class="pts-brand pts-brand--footer" to="/" :aria-label="`${brandName} - Trang chủ`">
+        <a class="pts-brand pts-brand--footer" href="/" :aria-label="`${brandName} - Trang chủ`">
           <img v-if="footerLogo" :src="footerLogo" :alt="brandName" width="184" height="72">
           <span v-else>{{ brandName }}</span>
-        </NuxtLink>
+        </a>
       </div>
 
       <nav aria-label="Điều hướng cuối trang">
         <h2 class="pts-site-footer__title">Điều hướng</h2>
         <ul class="pts-site-footer__links">
           <li v-for="link in footerLinks" :key="link.to">
-            <NuxtLink :to="link.to">{{ link.label }}</NuxtLink>
+            <NuxtLink external :to="link.to">{{ link.label }}</NuxtLink>
           </li>
         </ul>
       </nav>
@@ -51,7 +51,7 @@ const footerLinks = [
       <nav v-if="footer?.policies.length" aria-label="Chính sách">
         <h2 class="pts-site-footer__title">Chính sách &amp; hỗ trợ</h2>
         <ul class="pts-site-footer__links">
-          <li v-for="policy in footer.policies" :key="policy.href"><NuxtLink :to="policy.href">{{ policy.label }}</NuxtLink></li>
+          <li v-for="policy in footer.policies" :key="policy.href"><NuxtLink external :to="policy.href">{{ policy.label }}</NuxtLink></li>
         </ul>
       </nav>
 

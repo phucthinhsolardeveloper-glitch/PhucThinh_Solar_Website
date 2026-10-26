@@ -11,10 +11,10 @@ defineProps<{
 
 <template>
   <nav class="pts-breadcrumb" aria-label="Breadcrumb">
-    <NuxtLink to="/">Trang chủ</NuxtLink>
+    <NuxtLink external to="/">Trang chủ</NuxtLink>
     <template v-for="item in items" :key="`${item.label}-${item.to ?? 'current'}`">
       <span class="pts-breadcrumb__separator" aria-hidden="true">/</span>
-      <NuxtLink v-if="item.to" :to="item.to">{{ item.label }}</NuxtLink>
+      <NuxtLink external v-if="item.to" :to="item.to">{{ item.label }}</NuxtLink>
       <span v-else aria-current="page">{{ item.label }}</span>
     </template>
   </nav>

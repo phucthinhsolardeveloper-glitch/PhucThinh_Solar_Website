@@ -13,8 +13,10 @@ function ptsPublicNavText($value)
 {
     $value = ptsPublicNavScalar($value);
     if($value === '') return '';
-    $value = html_entity_decode(strip_tags($value), ENT_QUOTES, 'UTF-8');
-    return trim(preg_replace('/[\x00-\x1F\x7F]+/u', ' ', $value));
+    // Decode CMS-escaped rich-text first, then strip all markup. Never render it as HTML.
+    $value = html_entity_decode($value, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    $value = preg_replace('~<(?:br\s*/?|/?p|/?div|/?li)\b[^>]*>~i', ' ', $value);
+    return trim(preg_replace('/[\x00-\x1F\x7F]+/u', ' ', strip_tags($value)));
 }
 
 function ptsPublicNavUrl($value, $fallback = '')

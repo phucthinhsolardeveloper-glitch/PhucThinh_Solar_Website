@@ -1,5 +1,9 @@
 <script setup lang="ts">
 import type { PublicSolutionsPayload } from '../../shared/contracts/public-solutions'
+import SolutionsIntro from '~/components/solutions/SolutionsIntro.vue'
+import SolutionCards from '~/components/solutions/SolutionCards.vue'
+import SolutionsEquipment from '~/components/solutions/SolutionsEquipment.vue'
+import SolutionsCta from '~/components/solutions/SolutionsCta.vue'
 useSeoMeta({ title: 'Giải pháp — internal preview', robots: 'noindex, nofollow, noarchive' })
 const { data, error } = await useAsyncData<PublicSolutionsPayload>('migration-solutions', () => $fetch('/_migration/solutions'))
 </script>
