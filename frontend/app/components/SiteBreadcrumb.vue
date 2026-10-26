@@ -10,12 +10,13 @@ defineProps<{
 </script>
 
 <template>
-  <nav class="pts-breadcrumb" aria-label="Breadcrumb">
-    <NuxtLink external to="/">Trang chủ</NuxtLink>
+  <!-- shell.css: padding 16px 0 8px, font-size 13px, separator #94a3b8 = slate-400. -->
+  <nav class="flex flex-wrap items-center gap-2 py-4 pb-2 text-[13px] leading-[1.4] text-slate-500" aria-label="Breadcrumb">
+    <NuxtLink external class="text-inherit no-underline hover:text-gold-700" to="/">Trang chủ</NuxtLink>
     <template v-for="item in items" :key="`${item.label}-${item.to ?? 'current'}`">
-      <span class="pts-breadcrumb__separator" aria-hidden="true">/</span>
-      <NuxtLink external v-if="item.to" :to="item.to">{{ item.label }}</NuxtLink>
-      <span v-else aria-current="page">{{ item.label }}</span>
+      <span class="text-slate-400" aria-hidden="true">/</span>
+      <NuxtLink external v-if="item.to" class="text-inherit no-underline hover:text-gold-700" :to="item.to">{{ item.label }}</NuxtLink>
+      <span v-else class="font-bold text-navy-800" aria-current="page">{{ item.label }}</span>
     </template>
   </nav>
 </template>
