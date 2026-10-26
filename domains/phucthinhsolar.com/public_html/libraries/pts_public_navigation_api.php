@@ -54,8 +54,63 @@ function ptsPublicNavSlug(array $row, $lang = 'vi')
     return trim(ptsPublicNavScalar(isset($row[$key]) ? $row[$key] : (isset($row['slugvi']) ? $row['slugvi'] : '')), '/');
 }
 
+function ptsPublicNavProductIndexes(array $lists, array $cats, array $items, array $subs)
+{
+    $indexes = array('list'=>array(), 'cat'=>array(), 'item'=>array(), 'sub'=>array());
+    foreach(array('list'=>$lists, 'cat'=>$cats, 'item'=>$items, 'sub'=>$subs) as $level=>$rows)
+    {
+        foreach($rows as $row)
+        {
+            if(is_array($row) && ptsPublicNavPublished($row) && (int)($row['id'] ?? 0) > 0)
+                $indexes[$level][(int)$row['id']] = $row;
+        }
+    }
+    return $indexes;
+}
+
+function ptsPublicNavProductPath(array $row, $level, array $indexes, $lang = 'vi')
+{
+    $id = (int)($row['id'] ?? 0);
+    if($id <= 0 || !isset($indexes[$level][$id])) return '';
+
+    $chain = array();
+    if($level === 'list') $chain = array($indexes['list'][$id]);
+    elseif($level === 'cat')
+    {
+        $listId = (int)($indexes['cat'][$id]['id_list'] ?? 0);
+        if(!isset($indexes['list'][$listId])) return '';
+        $chain = array($indexes['list'][$listId], $indexes['cat'][$id]);
+    }
+    elseif($level === 'item')
+    {
+        $catId = (int)($indexes['item'][$id]['id_cat'] ?? 0);
+        $listId = (int)($indexes['cat'][$catId]['id_list'] ?? 0);
+        if(!isset($indexes['cat'][$catId]) || !isset($indexes['list'][$listId])) return '';
+        $chain = array($indexes['list'][$listId], $indexes['cat'][$catId], $indexes['item'][$id]);
+    }
+    elseif($level === 'sub')
+    {
+        $itemId = (int)($indexes['sub'][$id]['id_item'] ?? 0);
+        $catId = (int)($indexes['item'][$itemId]['id_cat'] ?? 0);
+        $listId = (int)($indexes['cat'][$catId]['id_list'] ?? 0);
+        if(!isset($indexes['item'][$itemId]) || !isset($indexes['cat'][$catId]) || !isset($indexes['list'][$listId])) return '';
+        $chain = array($indexes['list'][$listId], $indexes['cat'][$catId], $indexes['item'][$itemId], $indexes['sub'][$id]);
+    }
+    else return '';
+
+    $parts = array('danh-muc-san-pham');
+    foreach($chain as $ancestor)
+    {
+        $slug = ptsPublicNavSlug($ancestor, $lang);
+        if($slug === '') return '';
+        $parts[] = $slug;
+    }
+    return implode('/', $parts).'/';
+}
+
 function ptsPublicNavProductTree(array $lists, array $cats, array $items, array $subs, $lang = 'vi')
 {
+    $indexes = ptsPublicNavProductIndexes($lists, $cats, $items, $subs);
     $byList = $byCat = $byItem = array();
     foreach($cats as $row) if(is_array($row) && ptsPublicNavPublished($row)) $byList[(int)$row['id_list']][] = $row;
     foreach($items as $row) if(is_array($row) && ptsPublicNavPublished($row)) $byCat[(int)$row['id_cat']][] = $row;
@@ -64,16 +119,20 @@ function ptsPublicNavProductTree(array $lists, array $cats, array $items, array 
     foreach($lists as $list) {
         if(!is_array($list) || !ptsPublicNavPublished($list)) continue;
         $listId = (int)$list['id'];
-        $listNode = array('id' => $listId, 'name' => ptsPublicNavName($list, $lang), 'slug' => ptsPublicNavSlug($list, $lang), 'url' => ptsPublicNavUrl('danh-muc-san-pham/'.ptsPublicNavSlug($list, $lang).'/'), 'children' => array());
+        $listPath = ptsPublicNavProductPath($list, 'list', $indexes, $lang);
+        $listNode = array('id' => $listId, 'name' => ptsPublicNavName($list, $lang), 'slug' => ptsPublicNavSlug($list, $lang), 'url' => ptsPublicNavUrl($listPath), 'children' => array());
         if($listNode['id'] <= 0 || $listNode['name'] === '' || $listNode['slug'] === '') continue;
         foreach(isset($byList[$listId]) ? $byList[$listId] : array() as $cat) {
-            $catNode = array('id' => (int)$cat['id'], 'name' => ptsPublicNavName($cat, $lang), 'slug' => ptsPublicNavSlug($cat, $lang), 'url' => ptsPublicNavUrl(publicProductCategoryPath($cat, 'cat', $lang)), 'children' => array());
+            $catPath = ptsPublicNavProductPath($cat, 'cat', $indexes, $lang);
+            $catNode = array('id' => (int)$cat['id'], 'name' => ptsPublicNavName($cat, $lang), 'slug' => ptsPublicNavSlug($cat, $lang), 'url' => ptsPublicNavUrl($catPath), 'children' => array());
             if($catNode['id'] <= 0 || $catNode['name'] === '' || $catNode['slug'] === '') continue;
             foreach(isset($byCat[$catNode['id']]) ? $byCat[$catNode['id']] : array() as $item) {
-                $itemNode = array('id' => (int)$item['id'], 'name' => ptsPublicNavName($item, $lang), 'slug' => ptsPublicNavSlug($item, $lang), 'url' => ptsPublicNavUrl(publicProductCategoryPath($item, 'item', $lang)), 'children' => array());
+                $itemPath = ptsPublicNavProductPath($item, 'item', $indexes, $lang);
+                $itemNode = array('id' => (int)$item['id'], 'name' => ptsPublicNavName($item, $lang), 'slug' => ptsPublicNavSlug($item, $lang), 'url' => ptsPublicNavUrl($itemPath), 'children' => array());
                 if($itemNode['id'] <= 0 || $itemNode['name'] === '' || $itemNode['slug'] === '') continue;
                 foreach(isset($byItem[$itemNode['id']]) ? $byItem[$itemNode['id']] : array() as $sub) {
-                    $subNode = array('id' => (int)$sub['id'], 'name' => ptsPublicNavName($sub, $lang), 'slug' => ptsPublicNavSlug($sub, $lang), 'url' => ptsPublicNavUrl(publicProductCategoryPath($sub, 'sub', $lang)), 'children' => array());
+                    $subPath = ptsPublicNavProductPath($sub, 'sub', $indexes, $lang);
+                    $subNode = array('id' => (int)$sub['id'], 'name' => ptsPublicNavName($sub, $lang), 'slug' => ptsPublicNavSlug($sub, $lang), 'url' => ptsPublicNavUrl($subPath), 'children' => array());
                     if($subNode['id'] > 0 && $subNode['name'] !== '' && $subNode['slug'] !== '') $itemNode['children'][] = $subNode;
                 }
                 $catNode['children'][] = $itemNode;
@@ -100,6 +159,7 @@ function ptsPublicSiteNavigationPayload(array $input)
     $items = isset($input['productItems']) && is_array($input['productItems']) ? $input['productItems'] : array();
     $subs = isset($input['productSubs']) && is_array($input['productSubs']) ? $input['productSubs'] : array();
     $tree = ptsPublicNavProductTree($lists, $cats, $items, $subs, $lang);
+    $productIndexes = ptsPublicNavProductIndexes($lists, $cats, $items, $subs);
     $listBySlug = array();
     foreach($lists as $row) if(is_array($row) && ptsPublicNavPublished($row)) $listBySlug[ptsPublicNavSlug($row, $lang)] = $row;
 
@@ -119,22 +179,22 @@ function ptsPublicSiteNavigationPayload(array $input)
     $catalog = array('lighting'=>array('label'=>'Chiếu sáng','href'=>'','items'=>array()),'solar'=>array('label'=>'Điện mặt trời','href'=>'','items'=>array()),'devices'=>array('label'=>'Thiết bị ứng dụng','href'=>'','items'=>array()));
     foreach($catalogSlots as $slot) {
         if(!isset($listBySlug[$slot['list']])) continue;
-        $list = $listBySlug[$slot['list']]; $listSlug = ptsPublicNavSlug($list, $lang);
-        $href = isset($slot['cat']) ? '' : 'danh-muc-san-pham/'.$listSlug.'/';
+        $list = $listBySlug[$slot['list']];
+        $href = isset($slot['cat']) ? '' : ptsPublicNavProductPath($list, 'list', $productIndexes, $lang);
         $children = array();
         foreach($cats as $cat) {
             if(!is_array($cat) || !ptsPublicNavPublished($cat) || (int)$cat['id_list'] !== (int)$list['id']) continue;
             if(isset($slot['cat'])) {
                 if(ptsPublicNavSlug($cat, $lang) !== $slot['cat']) continue;
-                $href = publicProductCategoryPath($cat, 'cat', $lang);
+                $href = ptsPublicNavProductPath($cat, 'cat', $productIndexes, $lang);
                 foreach($items as $item) {
                     if(is_array($item) && ptsPublicNavPublished($item) && (int)$item['id_cat'] === (int)$cat['id']) {
-                        $children[] = ptsPublicNavLink(ptsPublicNavName($item, $lang), publicProductCategoryPath($item, 'item', $lang));
+                        $children[] = ptsPublicNavLink(ptsPublicNavName($item, $lang), ptsPublicNavProductPath($item, 'item', $productIndexes, $lang));
                     }
                 }
                 break;
             }
-            $children[] = ptsPublicNavLink(ptsPublicNavName($cat, $lang), publicProductCategoryPath($cat, 'cat', $lang));
+            $children[] = ptsPublicNavLink(ptsPublicNavName($cat, $lang), ptsPublicNavProductPath($cat, 'cat', $productIndexes, $lang));
         }
         if($href === '') continue; // Legacy menu omits unpublished/missing target category.
         $catalog[$slot['group']]['href'] = ptsPublicNavUrl($catalog[$slot['group']]['href'] ?: $href);

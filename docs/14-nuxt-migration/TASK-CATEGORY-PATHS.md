@@ -1,0 +1,7 @@
+# PHP public navigation DTO: canonical hierarchical category URL fix (26 Oct 2026)
+Base a06469b, branch feature/pts-nuxt-category-paths-20261026.
+Read AGENTS.md, docs/14-nuxt-migration/NAV-DTO.md, templates/layout/menu.php, libraries/product_category_urls.php, libraries/pts_public_navigation_api.php, api/pts_v1_site.php, scripts/test-pts-public-site-navigation-api.php.
+
+Verified local API issue: child den-pha-nang-luong-mat-troi of parent den-nlmt has DTO URL /danh-muc-san-pham/den-pha-nang-luong-mat-troi/ without needed /den-nlmt/ parent. productCategoryTree, catalog href and child href also affected. Function publicProductCategoryPath() is called on rows lacking list_slugvi/cat_slugvi parent fields.
+Fix canonical links by following ID-based published ancestors, never guessing based on a child slug. list -> /danh-muc-san-pham/{list}/ ; cat -> /{list}/{cat}/ ; item -> /{list}/{cat}/{item}/ ; sub -> /{list}/{cat}/{item}/{sub}/ . Ensure unknown/hidden parent => omitted link rather than invalid. All top-level nav preserved. Do not change schemaVersion=1.
+Allowed ONLY new projection libraries/pts_public_navigation_api.php, scripts/test-pts-public-site-navigation-api.php and NAV-DTO.md scoped notes. No backend router/product_category_urls/source PHP, Vue, DB, production. Add deterministic tests for multi-level URLs, absent/hidden parents, and published filtering. Sandbox may block PHP CLI/Docker; leave uncommitted and tell coordinator, who will run PHP Docker tests. No push/merge. Report concise Vietnamese.

@@ -26,3 +26,12 @@ Logo chỉ được trả khi filename hợp lệ và file thực tế tồn t�
 `UPLOAD_PHOTO_L`. URL ngoài chỉ nhận `http(s)`, còn nội dung footer được chuyển
 thành text an toàn; policy, bản đồ và social chỉ xuất hiện khi source public có
 giá trị tương ứng.
+
+## Canonical product category paths
+
+Projection public dựng URL danh mục bằng ID cha đã publish trong chính các row
+đầu vào, không phụ thuộc vào các cột slug cha được join sẵn. Vì vậy URL lần lượt
+là `/danh-muc-san-pham/{list}/`, `/{list}/{cat}/`,
+`/{list}/{cat}/{item}/` và `/{list}/{cat}/{item}/{sub}/`. Nếu một ancestor
+không tồn tại hoặc không publish, node/link đó không được phát hành; schema
+version không đổi.
