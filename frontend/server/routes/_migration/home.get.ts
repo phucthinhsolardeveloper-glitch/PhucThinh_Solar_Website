@@ -1,2 +1,14 @@
 import { isPublicHomePayload } from '../../../shared/contracts/public-home'
-export default defineEventHandler(async (event) => { if (getMethod(event) !== 'GET') { setHeader(event, 'Allow', 'GET'); throw createError({ statusCode: 405, statusMessage: 'Method Not Allowed' }) } const config = useRuntimeConfig(event); try { const payload = await $fetch<unknown>(`${String(config.phpOrigin).replace(/\/$/, '')}/api/pts_v1_home.php`, { method: 'GET', timeout: 5000 }); if (!isPublicHomePayload(payload)) throw new Error('invalid contract'); setHeader(event, 'Cache-Control', 'private, no-store'); return payload } catch { throw createError({ statusCode: 502, statusMessage: 'PHP home data source unavailable' }) } })
+import { fetchMigrationPayload, requireMigrationGet } from '../../utils/migration-api'
+
+export default defineEventHandler(async (event) => {
+  requireMigrationGet(event)
+  const payload = await fetchMigrationPayload(event, {
+    endpoint: '/api/pts_v1_home.php',
+    validate: isPublicHomePayload,
+    invalidMessage: 'Invalid PHP home data contract',
+    unavailableMessage: 'PHP home data source unavailable',
+  })
+  setHeader(event, 'Cache-Control', 'private, no-store')
+  return payload
+})
