@@ -1,16 +1,95 @@
 <script setup lang="ts">
 import type { PublicSolutionDetailPayload } from '../../../shared/contracts/public-solution-detail'
+
 defineProps<{ data: PublicSolutionDetailPayload }>()
 </script>
+
 <template>
-  <main class="solution-detail-preview"><div class="solution-detail-preview__inner">
-    <nav class="solution-detail-nav" aria-label="Các giải pháp khác"><a :href="data.navigation.allUrl">Tất cả giải pháp</a><a v-for="item in data.navigation.items" :key="item.slug" :class="{ 'is-active': item.active }" :href="item.url">{{ item.title }}</a></nav>
-    <article class="solution-detail-article">
-      <header class="solution-detail-hero"><div><h1>{{ data.solution.title }}</h1><p v-if="data.solution.summary">{{ data.solution.summary }}</p><a class="solution-detail-button" :href="data.cta.href">{{ data.cta.label }} <span aria-hidden="true">→</span></a></div><img v-if="data.solution.image" :src="data.solution.image" :alt="data.solution.title" width="1600" height="1000" fetchpriority="high"></header>
-      <div class="solution-detail-body"><div><p v-for="paragraph in data.solution.paragraphs" :key="paragraph">{{ paragraph }}</p><section v-if="data.solution.extraParagraphs.length" aria-label="Thông tin bổ sung"><p v-for="paragraph in data.solution.extraParagraphs" :key="`extra-${paragraph}`">{{ paragraph }}</p></section><p v-if="!data.solution.paragraphs.length && !data.solution.extraParagraphs.length" class="solution-detail-muted">Nội dung chi tiết đang được cập nhật.</p></div></div>
-      <section v-if="data.solution.gallery.length" class="solution-detail-gallery" aria-labelledby="solution-gallery-title"><h2 id="solution-gallery-title">Hình ảnh giải pháp</h2><div><a v-for="image in data.solution.gallery" :key="image" :href="image"><img :src="image" :alt="data.solution.title" width="960" height="600" loading="lazy" decoding="async"></a></div></section>
-      <p class="solution-detail-note">Nội dung biên tập HTML và mục lục chưa được render: {{ data.editorial.reason }}.</p>
+  <div>
+    <!--
+      Đo trên ảnh production (/giai-phap/dien-mat-troi-doanh-nghiep/, 1920px):
+      chip điều hướng ĐANG CHỌN là nền navy đặc + chữ trắng, các chip còn lại
+      nền xám nhạt — cùng quy ước active đã xác nhận ở Tin tức/Dự án/Giải pháp
+      (không phải chỉ đổi màu chữ như CSS preview cũ mô tả).
+    -->
+    <nav class="flex gap-2 overflow-x-auto px-4 py-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" aria-label="Các giải pháp khác">
+      <a
+        class="flex-none whitespace-nowrap rounded-chip bg-slate-50 px-4 py-2.5 text-sm font-bold text-navy-800 no-underline hover:bg-gray-200"
+        :href="data.navigation.allUrl"
+      >
+        Tất cả giải pháp
+      </a>
+      <a
+        v-for="item in data.navigation.items"
+        :key="item.slug"
+        class="flex-none whitespace-nowrap rounded-chip px-4 py-2.5 text-sm font-bold no-underline"
+        :class="item.active ? 'bg-navy-800 text-white' : 'bg-slate-50 text-navy-800 hover:bg-gray-200'"
+        :href="item.url"
+      >
+        {{ item.title }}
+      </a>
+    </nav>
+
+    <article>
+      <!--
+        Hero: panel navy-800 đặc bên trái chứa chữ (không phải chỉ nền trang),
+        ảnh bên phải tràn hết chiều cao panel — khác CSS preview cũ (nền trang
+        trắng, chữ navy thường). "Tìm hiểu phương án" là liên kết neo xuống
+        phần nội dung bên dưới, không có trong DTO vì là khung trang cố định.
+      -->
+      <header class="mx-4 grid grid-cols-1 overflow-hidden rounded-btn nav:grid-cols-2">
+        <div class="flex flex-col justify-center bg-navy-800 p-8 text-white nav:p-12">
+          <h1 class="m-0 mb-4 text-[clamp(30px,4vw,44px)] font-black leading-[1.15]">{{ data.solution.title }}</h1>
+          <p v-if="data.solution.summary" class="mb-5 text-lg leading-relaxed text-blue-100">{{ data.solution.summary }}</p>
+          <div class="flex flex-col items-stretch gap-4 ph:flex-row ph:items-center">
+            <a class="inline-flex min-h-11 items-center justify-center gap-4 rounded-btn bg-hdr-gold px-5 font-extrabold text-navy-950 no-underline transition-colors hover:bg-hdr-gold-hover" :href="data.cta.href">
+              {{ data.cta.label }} <span aria-hidden="true">→</span>
+            </a>
+            <a class="text-center font-bold text-white no-underline ph:text-left" href="#noi-dung-giai-phap">Tìm hiểu phương án</a>
+          </div>
+        </div>
+        <img v-if="data.solution.image" :src="data.solution.image" :alt="data.solution.title" class="h-full min-h-[280px] w-full object-cover" width="1600" height="1000" fetchpriority="high">
+      </header>
+
+      <div id="noi-dung-giai-phap" class="mx-auto max-w-[820px] px-4 py-12">
+        <div class="cms-content">
+          <p v-for="paragraph in data.solution.paragraphs" :key="paragraph">{{ paragraph }}</p>
+          <section v-if="data.solution.extraParagraphs.length" aria-label="Thông tin bổ sung">
+            <p v-for="paragraph in data.solution.extraParagraphs" :key="`extra-${paragraph}`">{{ paragraph }}</p>
+          </section>
+          <p v-if="!data.solution.paragraphs.length && !data.solution.extraParagraphs.length" class="text-slate-500">Nội dung chi tiết đang được cập nhật.</p>
+        </div>
+      </div>
+
+      <section v-if="data.solution.gallery.length" class="px-4 pb-12" aria-labelledby="solution-gallery-title">
+        <h2 id="solution-gallery-title" class="mb-5 text-[28px] font-black text-navy-800">Hình ảnh giải pháp</h2>
+        <div class="grid grid-cols-1 gap-4 tb:grid-cols-3">
+          <a v-for="image in data.solution.gallery" :key="image" :href="image">
+            <img :src="image" :alt="data.solution.title" class="block aspect-[8/5] w-full rounded-btn object-cover" width="960" height="600" loading="lazy" decoding="async">
+          </a>
+        </div>
+      </section>
+
+      <p class="mx-4 mb-10 border-t border-gray-200 pt-5 text-sm text-slate-500">
+        Nội dung biên tập HTML và mục lục chưa được render: {{ data.editorial.reason }}.
+      </p>
     </article>
-    <section v-if="data.equipment.length" class="solution-detail-equipment" aria-labelledby="solution-equipment-title"><header><h2 id="solution-equipment-title">Thiết bị liên quan</h2><a href="/san-pham/">Xem tất cả sản phẩm <span aria-hidden="true">→</span></a></header><div><a v-for="item in data.equipment" :key="item.url" :href="item.url"><img v-if="item.image" :src="item.image" alt="" width="80" height="80" loading="lazy"><span><strong>{{ item.name }}</strong><small v-if="item.description">{{ item.description }}</small></span><span aria-hidden="true">→</span></a></div></section>
-  </div></main>
+
+    <section v-if="data.equipment.length" class="mx-4 mb-12" aria-labelledby="solution-equipment-title">
+      <header class="mb-5 flex flex-col items-start gap-3 tb:flex-row tb:items-end tb:justify-between">
+        <h2 id="solution-equipment-title" class="m-0 text-[28px] font-black text-navy-800">Thiết bị liên quan</h2>
+        <a class="font-bold text-navy-800 no-underline" href="/san-pham/">Xem tất cả sản phẩm <span aria-hidden="true">→</span></a>
+      </header>
+      <div class="grid grid-cols-1 gap-3.5 tb:grid-cols-4">
+        <a v-for="item in data.equipment" :key="item.url" class="flex items-center gap-3 border-t border-gray-200 py-3.5 text-navy-800 no-underline" :href="item.url">
+          <img v-if="item.image" :src="item.image" alt="" class="h-16 w-16 flex-none object-contain" width="80" height="80" loading="lazy">
+          <span class="min-w-0">
+            <strong class="block">{{ item.name }}</strong>
+            <small v-if="item.description" class="mt-1 block leading-relaxed text-slate-500">{{ item.description }}</small>
+          </span>
+          <span class="ml-auto flex-none text-xl" aria-hidden="true">→</span>
+        </a>
+      </div>
+    </section>
+  </div>
 </template>
