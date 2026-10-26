@@ -253,13 +253,15 @@
 .pts-catalog-scrim,
 .pts-mobile-menu-scrim {
   position: fixed;
-  inset: 0;
   width: 100%;
   height: 100%;
   border: 0;
   background: transparent;
   cursor: default;
 }
+
+.pts-catalog-scrim { inset: 132px 0 0; }
+.pts-mobile-menu-scrim { inset: 0; }
 
 .pts-catalog-panel {
   position: relative;
@@ -374,6 +376,7 @@
   .pts-brand { font-size: clamp(26px, 2.4vw, 36px); }
   .pts-nav-link, .pts-catalog-trigger { padding-inline: 8px; font-size: 14px; }
   .pts-catalog-overlay { inset-block-start: 148px; }
+  .pts-catalog-scrim { inset-block-start: 148px; }
 }
 
 @media (max-width: 1320px) {
