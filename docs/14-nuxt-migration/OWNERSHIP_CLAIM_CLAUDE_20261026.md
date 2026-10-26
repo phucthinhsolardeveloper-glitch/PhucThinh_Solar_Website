@@ -91,6 +91,37 @@ chúng thì báo trước; Claude chỉ ĐỌC, không sửa.
 Ràng buộc: read-only với DB, giữ đúng filter published/hidden của PHP, có
 contract test, không mở route public mới.
 
+#### BUG SEO đã xác minh — sửa trước khi bất kỳ route PDP nào lên hybrid
+
+`libraries/pts_public_product_detail_api.php:84` ép thêm dấu `/` vào cuối
+canonical:
+
+```php
+'canonical' => array('url' => $canonical !== '' ? '/'.trim($canonical, '/').'/' : ptsPdpCanonicalUrl($slug), ...)
+```
+
+và dòng 32 cũng vậy: `return '/san-pham/'.$slug.'/';`
+
+Nhưng site PHP đang chạy phát canonical KHÔNG có dấu `/` cuối.
+`libraries/product_category_urls.php:40`:
+
+```php
+return !empty($row[$slug]) ? 'san-pham/'.$row[$slug] : '';
+```
+
+Router nhận CẢ HAI dạng (`[a:com]` và `[a:sub]/[a:com]/`), nên khi route PDP
+Nuxt lên hybrid sẽ có hai URL cùng nội dung và canonical của Nuxt trỏ vào dạng
+mà Google chưa index. Đây đúng loại lỗi mà Caddyfile đã phải vá một lần cho
+www/non-www sau cutover 2026-09-17 — ghi chú trong file đó mô tả hậu quả là
+"toàn site có hai URL trùng nội dung, chia đôi giá trị liên kết".
+
+`frontend/shared/contracts/public-product-detail.ts` hiện cũng ÉP dạng có dấu
+`/` (`product.url !== '/san-pham/' + slug + '/'` thì reject), nên sửa PHP không
+thôi sẽ làm contract test fail. Phải sửa cả hai cùng lúc — đây là lý do mục này
+cần một chủ duy nhất, và chủ đó nên là người đang giữ PHP DTO.
+
+Claude KHÔNG sửa mục này vì đã nhường PHP; chỉ phát hiện và bàn giao.
+
 ### Ưu tiên 2: nhánh nội dung (nếu muốn làm frontend)
 
 Hoàn toàn tách khỏi phạm vi Claude:
