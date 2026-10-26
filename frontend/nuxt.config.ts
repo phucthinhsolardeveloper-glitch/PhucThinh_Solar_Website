@@ -1,8 +1,13 @@
+import tailwindcss from '@tailwindcss/vite'
+
 // Migration only. No production route is switched to Nuxt until parity gates pass.
 export default defineNuxtConfig({
   ssr: true,
   devtools: { enabled: false },
-  css: ['~/assets/css/tokens.css'],
+  css: ['~/assets/css/tokens.css', '~/assets/css/tailwind.css'],
+  vite: {
+    plugins: [tailwindcss()],
+  },
   typescript: { strict: true },
   app: {
     head: {
