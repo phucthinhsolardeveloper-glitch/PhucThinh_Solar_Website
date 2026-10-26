@@ -41,6 +41,10 @@ if(!$parent || !$legacy) { fwrite(STDERR, "Không tìm thấy đủ danh mục c
 $findCat = $pdo->prepare("select id, status from `{$prefix}product_cat` where id_list=? and slugvi=? and type=? limit 1");
 $findCat->execute(array((int)$parent['id'], 'den-san-vuon', 'san-pham'));
 $gardenCat = $findCat->fetch(PDO::FETCH_ASSOC);
+
+// Gộp tạo category và chuyển dữ liệu vào một transaction để rollback đồng bộ.
+if($apply) $pdo->beginTransaction();
+try {
 if(!$gardenCat)
 {
     if(!$apply)
@@ -72,8 +76,6 @@ $productCount = (int)$countStmt->fetchColumn();
 echo 'PREVIEW: chuyển '.$productCount.' sản phẩm từ list '.$legacy['id'].' sang list '.$parent['id'].' / cat '.$gardenCat['id'].".\n";
 if(!$apply) exit(0);
 
-$pdo->beginTransaction();
-try {
     $update = $pdo->prepare("update `{$prefix}product` set id_list=?, id_cat=? where id_list=? and type=?");
     $update->execute(array((int)$parent['id'], (int)$gardenCat['id'], (int)$legacy['id'], 'san-pham'));
 
