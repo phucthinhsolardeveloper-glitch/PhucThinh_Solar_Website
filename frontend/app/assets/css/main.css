@@ -1,0 +1,96 @@
+@import "tailwindcss";
+@import "@nuxt/ui";
+
+/* ============================================================================
+   PTS — nền tảng theme Tailwind v4 + Nuxt UI v4
+   CODEX 1, theo docs/14-nuxt-migration/TAILWIND_NUXT_UI_FULL_MIGRATION_20261026.md
+
+   Bảng màu KHÔNG được bịa. Nguồn của từng giá trị được đánh dấu ngay tại chỗ:
+
+     [DUYỆT]  = token đã duyệt, lấy nguyên văn từ
+                frontend/app/assets/css/tokens.css và
+                domains/phucthinhsolar.com/public_html/assets/css/design-tokens.css
+                (cùng giá trị ở cả hai nơi — đã đối chiếu 2026-10-26).
+     [SUY RA] = bậc trung gian Tailwind bắt buộc phải có cho một thang 50-950,
+                nội suy giữa hai bậc [DUYỆT] liền kề. Chỉ dùng cho nền/viền/tint,
+                KHÔNG dùng cho logo, nút chính hay trạng thái đang chọn.
+
+   Vì sao phải tách rõ: thang màu Tailwind cần 11 bậc, nhưng thương hiệu chỉ
+   duyệt 6 giá trị. Nếu trộn lẫn hai loại, lần sau không ai phân biệt được đâu
+   là màu thương hiệu thật và đâu là màu máy nội suy — đúng cái bẫy đã làm bản
+   PHP có 4 sắc navy khác nhau trước khi phải gom lại bằng design-tokens.css.
+   ============================================================================ */
+
+@theme {
+  /* --- Navy: bề mặt thương hiệu, trạng thái đang chọn -------------------- */
+  --color-navy-50: #eef2f7;   /* [DUYỆT] --pts-chip-bg */
+  --color-navy-100: #dfe6ef;  /* [DUYỆT] --pts-chip-bg-hover */
+  --color-navy-200: #c2cfe0;  /* [SUY RA] */
+  --color-navy-300: #93a8c6;  /* [SUY RA] */
+  --color-navy-400: #5b78a5;  /* [SUY RA] */
+  --color-navy-500: #2f5490;  /* [SUY RA] */
+  --color-navy-600: #1d4584;  /* [SUY RA] */
+  --color-navy-700: #123a7a;  /* [DUYỆT] --pts-navy-light */
+  --color-navy-800: #0a2251;  /* [DUYỆT] --pts-navy — màu thương hiệu chính */
+  --color-navy-900: #081a3f;  /* [SUY RA] */
+  --color-navy-950: #061537;  /* [DUYỆT] --pts-navy-deep */
+
+  /* --- Gold: hành động chính và điểm nhấn --------------------------------
+     Audit 2026-09-16 đã chốt: vàng CHỈ dành cho hành động chính và điểm nhấn.
+     Đem vàng dùng cho chip chưa chọn thì mất hết thứ bậc thị giác. */
+  --color-gold-50: #fffbeb;   /* [DUYỆT] --pts-cream */
+  --color-gold-100: #fdf3d0;  /* [SUY RA] */
+  --color-gold-200: #f8e4a4;  /* [SUY RA] */
+  --color-gold-300: #eccd74;  /* [SUY RA] */
+  --color-gold-400: #e0b654;  /* [DUYỆT] --pts-gold-light */
+  --color-gold-500: #c9962e;  /* [DUYỆT] --pts-gold — màu hành động chính */
+  --color-gold-600: #b4851f;  /* [SUY RA] */
+  --color-gold-700: #9c7420;  /* [DUYỆT] --pts-gold-dark */
+  --color-gold-800: #7c5c1b;  /* [SUY RA] */
+  --color-gold-900: #654b18;  /* [SUY RA] */
+  --color-gold-950: #3b2a0c;  /* [SUY RA] */
+
+  /* --- Chữ -----------------------------------------------------------------
+     Giữ đúng ngăn xếp font của tokens.css. Be Vietnam Pro có dấu tiếng Việt
+     đầy đủ; các font dự phòng phía sau thì không đều, nên không đảo thứ tự. */
+  --font-sans: "Be Vietnam Pro", "Plus Jakarta Sans", Mulish, ui-sans-serif,
+    system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* --- Bo góc --------------------------------------------------------------
+     Hệ phẳng 2-5px theo ADR 0007. Nuxt UI đọc --ui-radius cho mọi control của
+     nó, nên đặt một lần ở đây là cả UButton/UModal/UInput theo cùng hệ. */
+  --radius-chip: 3px;
+  --radius-btn: 4px;
+}
+
+:root {
+  /* Nuxt UI v4 suy ra bán kính của mọi component từ biến này. */
+  --ui-radius: 4px;
+}
+
+/* ----------------------------------------------------------------------------
+   CHUNG SỐNG TẠM THỜI VỚI CSS PREVIEW CŨ — có chủ ý, có hạn dùng
+
+   nuxt.config.ts nạp main.css TRƯỚC tokens.css. Thứ tự này không phải ngẫu
+   nhiên: Preflight của Tailwind reset margin/border/font của thẻ gốc, và 16
+   route preview hiện có đang dựa vào shell.css + *-preview.css. Nạp Tailwind
+   sau sẽ reset nền dưới chân chúng và làm hỏng các route đang chạy, trong khi
+   CODEX 1 có yêu cầu rõ là "old preview routes still load".
+
+   Nạp trước nghĩa là: CSS preview cũ vẫn thắng ở chỗ hai bên trùng nhau, còn
+   utility Tailwind và component Nuxt UI vẫn hoạt động bình thường ở mọi chỗ
+   khác (chúng dùng class/layer riêng, không chạm selector .pts-*).
+
+   Đây là trạng thái bắc cầu. CODEX 2-4 chuyển từng trang sang Tailwind rồi gỡ
+   bỏ *-preview.css tương ứng; khi file preview cuối cùng biến mất thì xoá luôn
+   khối ghi chú này và đảo lại thứ tự nạp nếu cần.
+   ---------------------------------------------------------------------------- */
+
+@layer base {
+  /* Focus vàng dày 3px là cam kết tiếp cận đã có trong tokens.css. Nhắc lại ở
+     layer base để các control Nuxt UI cũng nhận, không chỉ thẻ HTML trần. */
+  :focus-visible {
+    outline: 3px solid var(--color-gold-500);
+    outline-offset: 3px;
+  }
+}
