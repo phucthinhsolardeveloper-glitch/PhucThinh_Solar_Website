@@ -3,6 +3,7 @@
 .catalog-preview h1 { margin: 0 0 12px; font-size: clamp(28px, 4vw, 48px); line-height: 1.15; }
 .catalog-preview__note { margin: 0 0 28px; color: var(--pts-muted); line-height: 1.6; }
 .catalog-category-nav h2 { margin: 0 0 16px; font-size: 18px; }
+.catalog-category-nav__toggle { display: none; }
 .catalog-category-nav ul { list-style: none; margin: 0; padding: 0; }
 .catalog-category-nav li + li { margin-top: 8px; }
 .catalog-category-nav ul ul { margin: 8px 0 12px 12px; padding-left: 12px; border-left: 1px solid var(--pts-line); }
@@ -23,5 +24,15 @@
 .catalog-pagination a, .catalog-pagination span { min-width: 44px; min-height: 44px; display: inline-grid; place-items: center; padding: 8px 12px; border: 1px solid var(--pts-line); border-radius: 3px; color: var(--pts-navy); text-decoration: none; }
 .catalog-pagination .is-current { background: var(--pts-navy); border-color: var(--pts-navy); color: white; }
 .catalog-error { padding-block: 64px; }
-@media (max-width: 900px) { .catalog-preview__inner { grid-template-columns: 1fr; gap: 32px; } .catalog-product-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 900px) {
+  .catalog-preview__inner { grid-template-columns: 1fr; gap: 32px; }
+  .catalog-category-nav h2 { display: none; }
+  .catalog-category-nav__toggle { width: 100%; min-height: 48px; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 10px 12px; border: 1px solid var(--pts-line); border-radius: 3px; background: transparent; color: var(--pts-navy); font: inherit; font-weight: 700; text-align: left; }
+  .catalog-category-nav__toggle svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; transition: transform 160ms ease; }
+  .catalog-category-nav__toggle[aria-expanded='true'] svg { transform: rotate(180deg); }
+  .catalog-category-nav__toggle:focus-visible { outline: 2px solid var(--pts-gold-dark); outline-offset: 2px; }
+  .catalog-category-nav__body { display: none; padding: 16px 12px 0; }
+  .catalog-category-nav__body.is-open { display: block; }
+  .catalog-product-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
 @media (max-width: 600px) { .catalog-preview__inner { padding-block: 24px 48px; } .catalog-product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 12px; } .catalog-product h3 { font-size: 16px; } }

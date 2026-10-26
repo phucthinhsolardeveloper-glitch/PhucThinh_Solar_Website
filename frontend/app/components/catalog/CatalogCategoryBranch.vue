@@ -11,7 +11,7 @@ function previewLink(url: string) {
 
 <template>
   <li>
-    <NuxtLink :class="{ 'is-selected': selected === node.url }" :to="previewLink(node.url)">{{ node.name }}</NuxtLink>
+    <NuxtLink :class="{ 'is-selected': selected === node.url }" :aria-current="selected === node.url ? 'page' : undefined" :to="previewLink(node.url)">{{ node.name }}</NuxtLink>
     <ul v-if="node.children.length">
       <CatalogCategoryBranch v-for="child in node.children" :key="child.id" :node="child" :selected="selected" />
     </ul>
