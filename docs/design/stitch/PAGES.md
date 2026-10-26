@@ -8,7 +8,7 @@ Trạng thái (2026-10-26): chỉ đánh dấu CAPTURED khi đã có file HTML t
 | P0 | Danh mục đèn NLMT | https://phucthinhsolar.com/danh-muc-san-pham/den-nlmt/ | CAPTURED | TODO | TODO |
 | P0 | Chi tiết sản phẩm JD-18500 | https://phucthinhsolar.com/san-pham/den-pha-nang-luong-mat-troi-jindian-jd-18500-500w | CAPTURED | TODO | TODO |
 | P0 | Tìm kiếm + mega menu + các state | Hành vi thực tế header | TODO | TODO | TODO |
-| P1 | Tất cả sản phẩm | https://phucthinhsolar.com/san-pham/ | TODO | TODO | TODO |
+| P1 | Tất cả sản phẩm | https://phucthinhsolar.com/san-pham/ | CAPTURED | TODO | TODO |
 | P1 | Giải pháp | https://phucthinhsolar.com/giai-phap/ | TODO | TODO | TODO |
 | P1 | Dự án | https://phucthinhsolar.com/du-an-da-thuc-hien/ | TODO | TODO | TODO |
 | P1 | Kiến thức / bài viết | https://phucthinhsolar.com/tin-tuc/ | TODO | TODO | TODO |
