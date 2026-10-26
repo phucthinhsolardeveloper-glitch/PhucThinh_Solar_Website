@@ -182,6 +182,16 @@
    ---------------------------------------------------------------------------- */
 
 @layer base {
+  /*
+   * Duy nhất một chỗ đặt font chữ toàn site. Trước đây nằm trong tokens.css
+   * dưới dạng `:root{font-family:...}` — dọn shell.css xong, tokens.css chỉ
+   * còn giữ reset thật sự (box-sizing, màu nền), nên font chuyển hẳn về đây
+   * cạnh @font-face và token --font-sans đã khai phía trên trong cùng file.
+   */
+  body {
+    font-family: var(--font-sans);
+  }
+
   /* Focus vàng dày 3px là cam kết tiếp cận đã có trong tokens.css. Nhắc lại ở
      layer base để các control Nuxt UI cũng nhận, không chỉ thẻ HTML trần. */
   :focus-visible {
