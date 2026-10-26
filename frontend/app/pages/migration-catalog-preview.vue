@@ -17,7 +17,7 @@ const { data: siteData } = await useAsyncData<PublicSitePayload>('migration-cata
   if (!isPublicSitePayload(payload)) throw createError({ statusCode: 502, statusMessage: 'Invalid PHP site data contract' })
   return payload
 })
-const { data: catalogData, error: catalogError } = await useAsyncData<PublicCatalogPayload>(
+const { data: catalogData, error: catalogError, pending: catalogPending } = await useAsyncData<PublicCatalogPayload>(
   () => `migration-catalog-${JSON.stringify(query.value)}`,
   () => $fetch('/_migration/catalog', { query: query.value }),
   { watch: [query] },
@@ -53,7 +53,8 @@ useSeoMeta({ title: 'Danh mục sản phẩm — internal preview', robots: 'noi
         <p class="pts-breadcrumb"><NuxtLink to="/migration-catalog-preview">Danh mục sản phẩm</NuxtLink><span v-if="selectedCategory"> / {{ selectedCategory.name }}</span></p>
         <h1 id="catalog-preview-title">{{ heading }}</h1>
         <p class="catalog-preview__note">Preview nội bộ từ dữ liệu CMS. Giá, bộ lọc, sắp xếp và tồn kho chưa được cung cấp trong Phase A.</p>
-        <div v-if="catalogError" class="catalog-error" role="status"><h2>Không thể tải danh mục</h2><p>Dữ liệu PHP local chưa khả dụng hoặc không khớp contract. Preview không hiển thị dữ liệu giả.</p></div>
+        <div v-if="catalogPending" class="catalog-loading" role="status" aria-live="polite"><p>Đang tải sản phẩm…</p></div>
+        <div v-else-if="catalogError" class="catalog-error" role="status"><h2>Không thể tải danh mục</h2><p>Dữ liệu PHP local chưa khả dụng hoặc không khớp contract. Preview không hiển thị dữ liệu giả.</p></div>
         <template v-else-if="catalogData">
           <CatalogProductGrid :products="catalogData.products" />
           <nav v-if="totalPages > 1" class="catalog-pagination" aria-label="Phân trang sản phẩm">

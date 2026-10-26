@@ -18,6 +18,7 @@
 .catalog-product h3 a:hover, .catalog-product h3 a:focus-visible { text-decoration: underline; text-underline-offset: 3px; }
 .catalog-product__quote { margin: 0; color: var(--pts-muted); font-size: 14px; }
 .catalog-empty { padding-block: 32px; color: var(--pts-muted); }
+.catalog-loading { padding-block: 32px; color: var(--pts-muted); }
 .catalog-pagination { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 40px; }
 .catalog-pagination a, .catalog-pagination span { min-width: 44px; min-height: 44px; display: inline-grid; place-items: center; padding: 8px 12px; border: 1px solid var(--pts-line); border-radius: 3px; color: var(--pts-navy); text-decoration: none; }
 .catalog-pagination .is-current { background: var(--pts-navy); border-color: var(--pts-navy); color: white; }
