@@ -36,6 +36,23 @@ const selectedCategory = computed(() => findCategory(siteData.value?.productCate
 const heading = computed(() => catalogData.value?.category && !Array.isArray(catalogData.value.category) ? catalogData.value.category.name : 'Danh mục sản phẩm')
 const totalPages = computed(() => catalogData.value ? Math.max(1, Math.ceil(catalogData.value.pagination.total / catalogData.value.pagination.perPage)) : 1)
 const currentPage = computed(() => catalogData.value?.pagination.page ?? 1)
+const paginationItems = computed(() => {
+  const total = totalPages.value
+  if (total <= 7) return Array.from({ length: total }, (_, index) => ({ key: `page-${index + 1}`, page: index + 1 }))
+
+  const current = Math.min(Math.max(currentPage.value, 1), total)
+  const candidates = new Set([1, total, current - 1, current, current + 1])
+  if (current <= 4) [2, 3, 4, 5].forEach((pageNumber) => candidates.add(pageNumber))
+  if (current >= total - 3) [total - 4, total - 3, total - 2, total - 1].forEach((pageNumber) => candidates.add(pageNumber))
+  const pages = [...candidates].filter((pageNumber) => pageNumber >= 1 && pageNumber <= total).sort((a, b) => a - b)
+  const items: Array<{ key: string; page: number | null }> = []
+  pages.forEach((pageNumber, index) => {
+    const previous = pages[index - 1]
+    if (previous && pageNumber - previous > 1) items.push({ key: `ellipsis-${previous}`, page: null })
+    items.push({ key: `page-${pageNumber}`, page: pageNumber })
+  })
+  return items
+})
 
 function pageLink(nextPage: number) {
   return { path: '/migration-catalog-preview', query: { ...query.value, page: String(nextPage) } }
@@ -59,9 +76,10 @@ useSeoMeta({ title: 'Danh mục sản phẩm — internal preview', robots: 'noi
           <CatalogProductGrid :products="catalogData.products" />
           <nav v-if="totalPages > 1" class="catalog-pagination" aria-label="Phân trang sản phẩm">
             <NuxtLink v-if="currentPage > 1" :to="pageLink(currentPage - 1)">Trước</NuxtLink>
-            <template v-for="number in totalPages" :key="number">
-              <span v-if="number === currentPage" class="is-current" aria-current="page">{{ number }}</span>
-              <NuxtLink v-else :to="pageLink(number)">{{ number }}</NuxtLink>
+            <template v-for="item in paginationItems" :key="item.key">
+              <span v-if="item.page === null" class="catalog-pagination__ellipsis" aria-hidden="true">…</span>
+              <span v-else-if="item.page === currentPage" class="is-current" aria-current="page" :aria-label="`Trang ${item.page}`">{{ item.page }}</span>
+              <NuxtLink v-else :to="pageLink(item.page)" :aria-label="`Trang ${item.page}`">{{ item.page }}</NuxtLink>
             </template>
             <NuxtLink v-if="currentPage < totalPages" :to="pageLink(currentPage + 1)">Sau</NuxtLink>
           </nav>

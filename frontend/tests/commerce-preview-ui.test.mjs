@@ -21,3 +21,11 @@ test('commerce media failures render explicit fallbacks instead of blank frames'
   assert.match(gallery, /markMediaFailed\(selectedMedia\)/)
   assert.match(gallery, /CMS chưa có ảnh sản phẩm hợp lệ/)
 })
+
+test('catalog pagination stays bounded for large CMS result sets', () => {
+  const catalog = read('pages/migration-catalog-preview.vue')
+  assert.match(catalog, /const paginationItems = computed/)
+  assert.match(catalog, /if \(total <= 7\)/)
+  assert.match(catalog, /catalog-pagination__ellipsis/)
+  assert.doesNotMatch(catalog, /v-for="number in totalPages"/)
+})

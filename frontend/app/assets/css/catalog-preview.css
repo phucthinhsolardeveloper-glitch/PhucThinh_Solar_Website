@@ -22,6 +22,7 @@
 .catalog-loading { padding-block: 32px; color: var(--pts-muted); }
 .catalog-pagination { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 40px; }
 .catalog-pagination a, .catalog-pagination span { min-width: 44px; min-height: 44px; display: inline-grid; place-items: center; padding: 8px 12px; border: 1px solid var(--pts-line); border-radius: 3px; color: var(--pts-navy); text-decoration: none; }
+.catalog-pagination .catalog-pagination__ellipsis { min-width: 24px; padding-inline: 4px; border-color: transparent; }
 .catalog-pagination .is-current { background: var(--pts-navy); border-color: var(--pts-navy); color: white; }
 .catalog-error { padding-block: 64px; }
 @media (max-width: 900px) {
