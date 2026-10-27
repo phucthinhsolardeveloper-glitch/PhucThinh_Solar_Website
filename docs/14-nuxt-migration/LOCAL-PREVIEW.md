@@ -1,4 +1,4 @@
-# Phúc Thịnh Solar — local Nuxt preview (2026-10-26)
+# Phúc Thịnh Solar — local Nuxt preview (2026-10-27)
 
 ## Open on Windows
 - Unified header + real CMS Solutions + footer: http://localhost:3100/migration-site-preview
@@ -7,23 +7,32 @@
 - Home preview: http://localhost:3100/migration-home-preview
 - Product catalog preview: http://localhost:3100/migration-catalog-preview
 - Product detail preview (fixture record): http://localhost:3100/migration-product-preview?slug=den-ufo-nang-luong-mat-troi-oriana-ufo-1000-1000w
+- Search preview: http://localhost:3100/migration-search-preview
+- Cart preview: http://localhost:3100/migration-cart-preview
+- Checkout preview: http://localhost:3100/migration-checkout-preview
+- Order success preview: http://localhost:3100/migration-order-success
 - Projects preview: http://localhost:3100/migration-projects-preview
-- News preview: http://localhost:3100/migration-news-preview
-- About preview: http://localhost:3100/migration-about-preview
-- Contact preview (read-only, PHP owns form): http://localhost:3100/migration-contact-preview
-- Dealer preview (read-only, PHP owns form): http://localhost:3100/migration-dealer-preview
-- Central migration preview hub: http://localhost:3100/migration-hub-preview
-- News detail preview: http://localhost:3100/migration-news-detail-preview?slug=8-ly-do-ban-nen-su-dung-den-nang-luong-mat-troi-ngay-bay-gio
 - Project detail preview: http://localhost:3100/migration-project-detail-preview?slug=du-an-dien-nlmt-ho-anh-hoa-thanh-an
+- News preview: http://localhost:3100/migration-news-preview
+- News detail preview: http://localhost:3100/migration-news-detail-preview?slug=8-ly-do-ban-nen-su-dung-den-nang-luong-mat-troi-ngay-bay-gio
 - Solution detail preview: http://localhost:3100/migration-solution-detail-preview?slug=dien-mat-troi-ho-gia-dinh
+- About preview: http://localhost:3100/migration-about-preview
+- Policy/support detail preview: http://localhost:3100/migration-policy-preview?slug=<cms-slug>
+- Contact preview (Nuxt UI, PHP-secured form adapter): http://localhost:3100/migration-contact-preview
+- Dealer preview (Nuxt UI, PHP-secured form adapter): http://localhost:3100/migration-dealer-preview
+- Central migration preview hub: http://localhost:3100/migration-hub-preview
 - Local PHP reference (original master): http://localhost:8080/giai-phap/
 - Local PHP migration code/API: http://localhost:8088/giai-phap/
 
-Nuxt is intentionally in **preview mode only**. Public /giai-phap/, /san-pham/, cart, payment and Admin are NOT migrated to Nuxt. Their links may not work within the direct :3100 preview until hybrid routing is implemented. Preview routes have noindex. Do not route production traffic to Nuxt.
+Nuxt is intentionally in **preview mode only**. Internal links from the preview
+are routed to corresponding Nuxt preview pages where available, but canonical
+public URLs, PHP resolver/redirects, account, Admin, media and production
+commerce ownership are not cut over. Preview routes have noindex. Do not route
+production traffic to Nuxt.
 
 ## Start, stop and rebuild (WSL Ubuntu)
 ```bash
-cd /home/admin01/src/pts-nuxt4-migration
+cd /home/admin01/src/pts-nuxt-integration-20261027
 ./scripts/nuxt-local-preview.sh status
 ./scripts/nuxt-local-preview.sh restart
 ./scripts/nuxt-local-preview.sh stop
@@ -38,11 +47,19 @@ cd /home/admin01/src/pts-nuxt4-migration
 - Build output, images and log are untracked in frontend/.migration-artifacts/.
 
 ## Latest local checks
-- PHP site, solutions, catalog GET APIs: 200 with published CMS data (local).
-- All 3 Nuxt preview pages: SSR HTTP 200 and noindex; unsafe executable media path 404.
-- Browser Chromium at 390x844 and 1440x900: responsive overflow 0, 6 images loaded, no broken images, 0 console errors, 0 pageerrors and no hydration mismatches.
+- Checkpoint: `3b9cade..57c786f`, kèm `35d0c5f` cho navigation.
+- 11 PHP file/library mới qua `php -l`; `npm test` 98/98; typecheck exit 0
+  với warning vue-router/Volar không fatal; production build PASS; smoke PASS.
+- 13/13 route preview quan trọng HTTP 200; preview giữ `noindex`.
+- Contact/dealer/home form UI chạy trên Nuxt và gửi qua PHP adapter an toàn;
+  cart/checkout/order-success dùng PHP session/calculation/transaction.
+- PDP preview đã có pricing/quote/cart, gallery lightbox/zoom, content/FAQ,
+  documents, video, warranty/policy, related, reviews/consultation và
+  Product/Breadcrumb/FAQ JSON-LD.
 - Images/QA output: frontend/.migration-artifacts/local-preview-qa/{mobile-390.png,desktop-1440.png,manifest.json}
-- Visual fidelity and functionality against the current PHP site are **not** fully accepted: pricing, filters, order flow, rich-text sanitizer, image transformation fidelity and all page routing remain Phase A gates.
+- Các gate trước cutover còn lại: production route cutover/hybrid routing, SEO
+  canonical/OG/sitemap/robots/redirect parity, catalog filter/sort/stock parity,
+  public brand/gallery/video/account routes và final visual/browser QA.
 - Existing optional Vue Router/Volar typechecker warning and npm dependency advisories require a separate pre-production security review.
 
 ## Rollback / isolation

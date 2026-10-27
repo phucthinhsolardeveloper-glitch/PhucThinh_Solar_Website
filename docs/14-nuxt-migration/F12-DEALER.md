@@ -1,6 +1,8 @@
-# F12 dealer preview parity
+# F12 dealer preview parity (checkpoint 2026-10-27)
 
-Preview route: `/migration-dealer-preview` (noindex). PHP remains the owner of public `/dai-ly/`, CSRF, reCAPTCHA and `POST submit-newsletter2`.
+Preview route: `/migration-dealer-preview` (noindex). Nội dung và form đều
+render bằng Nuxt; PHP adapter vẫn là authority của public `/dai-ly/`, CSRF,
+validation, rate-limit, reCAPTCHA khi cấu hình, DB/email và mutation legacy.
 
 ## Read contract
 
@@ -8,8 +10,15 @@ Preview route: `/migration-dealer-preview` (noindex). PHP remains the owner of p
 
 Hero fallback is used only when no `dealer-hero` rows are configured. A configured but hidden/missing-image row suppresses fallback, matching the Admin hide rule.
 
-The Nuxt CTA links to `/dai-ly/#dang-ky-dai-ly`; it never creates a CSRF token or submits a form. No public Nuxt `/dai-ly/` route is added.
+Form preview lấy CSRF/session cần thiết qua adapter PHP và submit về PHP; không
+tạo business state riêng trong Nuxt. Điều hướng nội bộ preview dùng route Nuxt
+tương ứng sau `35d0c5f`/`57c786f`; không thêm public Nuxt `/dai-ly/` route.
 
 ## Files and verification
 
-New files are limited to the F12 allowlist in `TASK-F12-DEALER.md`. Run `node --test frontend/tests/dealer-contract.test.mjs` and `php scripts/test-pts-public-dealer-api.php` when the target PHP runtime is available. Nuxt build/browser/Docker/production checks are intentionally outside this task.
+Validation checkpoint: `3b9cade..57c786f`, kèm `35d0c5f` cho navigation; local
+hub là `http://localhost:3100/migration-hub-preview`. Milestone đã ghi nhận
+`php -l` cho 11 PHP file/library mới, `npm test` 98/98, typecheck exit 0 với
+warning vue-router/Volar không fatal, production build PASS, smoke PASS và
+13/13 route preview quan trọng HTTP 200. Đây vẫn là local noindex preview; chưa
+production cutover, deploy hoặc public SEO handoff.

@@ -1,26 +1,28 @@
 # PTS Nuxt migration — next execution plan
 
-Checkpoint: `feature/pts-nuxt4-parity-qa-20261026`, branched from
-`feature/pts-nuxt4-migration` at `b5865ac`. Phạm vi đã thực hiện là audit,
-chuẩn hóa adapter read-only và QA parity; không merge/push/deploy, không ghi DB.
+Kế hoạch gốc được lập tại `feature/pts-nuxt4-parity-qa-20261026`, branched from
+`feature/pts-nuxt4-migration` ở `b5865ac`. Current-state sync: HEAD
+`57c786f`, với checkpoint triển khai `3b9cade..57c786f` và navigation
+`35d0c5f`. Không merge/push/deploy production, không ghi DB trong đợt sync này.
 
 ## Kết luận audit hiện tại
 
-- PHP vẫn là owner của public resolver, canonical/redirect, giá, cart, account,
-  checkout, payment, admin và media transform. Nuxt hiện mới có các preview
-  noindex và Nitro bridge GET-only.
-- Mười bốn adapter Nitro lặp cùng ba trách nhiệm: kiểm tra GET, ghép
-  `runtimeConfig.phpOrigin` với endpoint allowlist và gọi `$fetch` với timeout/
-  contract guard. Các rule query/slug và cache header vẫn là trách nhiệm từng
-  module, không gom mù vào helper.
+- PHP vẫn là owner của public resolver, canonical/redirect, pricing authority,
+  session/cart calculation, order/payment, account, admin và media transform.
+  Nuxt hiện có các preview noindex cho home, catalog, PDP, search, cart,
+  checkout, order success, editorial/corporate pages, policy/support detail và
+  các detail route; form/review/order mutations đi qua adapter PHP allowlist.
+- Các adapter Nitro dùng chung trách nhiệm ghép `runtimeConfig.phpOrigin` với
+  endpoint allowlist, timeout và contract guard; rule query/slug, CSRF/session
+  forwarding và cache header vẫn thuộc từng module theo nghiệp vụ.
 - `frontend/server/utils/migration-api.ts` là điểm dùng chung mới cho phần lặp
   trên. Các validator DTO vẫn nằm trong `frontend/shared/contracts/*`; PHP DTO
   vẫn nằm cạnh `api/pts_v1_*.php` và `libraries/pts_public_*_api.php`, tránh tạo
   thêm projection song song.
-- Các gap nghiệp vụ đã xác định: rich-text CKEditor chưa có sanitizer allowlist;
-  catalog chưa có pricing/filter/sort parity; route public/canonical/redirect,
-  forms/session/cart/payment/admin và SEO JSON-LD chưa được chuyển. Không tự
-  sửa các gap này trong batch chuẩn hóa.
+- Các gap trước cutover: production route/hybrid routing; catalog filter/sort/
+  stock parity; public canonical/OG/sitemap/robots/redirect parity ngoài PDP
+  preview JSON-LD; brand/gallery/video/account routes; final visual/browser QA
+  và deployment gates. Không dùng preview 200 để claim production migration.
 
 ## QA nền tảng chuẩn
 
@@ -85,7 +87,7 @@ chuyển checkpoint thay vì bịa fixture.
    chung của mọi preview.
 4. Tách sanitizer rich-text thành một gate độc lập trước khi có bất kỳ claim
    parity nội dung CKEditor nào.
-5. Chỉ sau khi P0 đạt mới giao catalog pricing/filter hoặc SEO crawl; không trộn
+5. Chỉ sau khi P0 đạt mới giao catalog filter/sort/stock hoặc SEO crawl; không trộn
    business migration vào công cụ QA.
 
 ## Rollback / production state
