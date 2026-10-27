@@ -45,3 +45,31 @@ test('accepts category chain only at the supported 0..4 slug boundaries', () => 
 test('accepts a resolved category object with its canonical full path', () => {
   assert.equal(isPublicCatalogPayload({ ...good, category: { id: 11, name: 'Đèn', slug: 'den', url: '/danh-muc-san-pham/dien-mat-troi/den/' } }), true)
 })
+
+const extended = {
+  ...good,
+  filters: {
+    brands: [{ id: 5, name: 'LONGI' }, { id: 6, name: 'ASTRONERGY' }],
+    priceRanges: [{ key: '1', label: 'Dưới 1.000.000đ' }, { key: '2', label: '1.000.000đ - 3.000.000đ' }, { key: '3', label: 'Trên 3.000.000đ' }],
+    subcategories: [{ id: 7, name: 'Kẹp tấm pin', slug: 'kep-tam-pin' }],
+  },
+  selected: { brandIds: [5], priceKeys: ['2'], subcategoryIds: [], sort: 'default' },
+  parity: { ...good.parity, filters: { included: true }, sort: { included: true } },
+}
+
+test('accepts the extended shape with real brand/price/subcategory filters and sort', () => {
+  assert.equal(isPublicCatalogPayload(extended), true)
+})
+test('rejects a sort key or price key outside the real backend whitelist', () => {
+  assert.equal(isPublicCatalogPayload({ ...extended, selected: { ...extended.selected, sort: 'relevance' } }), false)
+  assert.equal(isPublicCatalogPayload({ ...extended, selected: { ...extended.selected, priceKeys: ['4'] } }), false)
+  assert.equal(isPublicCatalogPayload({ ...extended, filters: { ...extended.filters, priceRanges: [{ key: '9', label: 'x' }] } }), false)
+})
+test('rejects an extended payload missing filters or selected (not a valid staggered shape)', () => {
+  const { selected: _selected, ...withoutSelected } = extended
+  assert.equal(isPublicCatalogPayload(withoutSelected), false)
+})
+test('rejects invented IDs that are not safe positive integers in selected filters', () => {
+  assert.equal(isPublicCatalogPayload({ ...extended, selected: { ...extended.selected, brandIds: [-1] } }), false)
+  assert.equal(isPublicCatalogPayload({ ...extended, selected: { ...extended.selected, brandIds: [1.5] } }), false)
+})

@@ -109,7 +109,76 @@ function ptsCatalogCategoryDto(array $row, array $slugs)
     return array('id' => $id, 'name' => $name, 'slug' => end($slugs), 'url' => $url);
 }
 
-function ptsCatalogPayload(array $category, array $categories, array $rows, $page, $perPage, $total, $pricesVisible = false)
+function ptsCatalogBrandDto(array $row)
+{
+    $id = isset($row['id']) ? (int)$row['id'] : 0;
+    $name = ptsCatalogPlainText(isset($row['namevi']) ? $row['namevi'] : '');
+    if($id <= 0 || $name === '') return null;
+    return array('id' => $id, 'name' => $name);
+}
+
+function ptsCatalogSubcategoryDto(array $row)
+{
+    if(!ptsCatalogPublished(isset($row['status']) ? $row['status'] : '')) return null;
+    $id = isset($row['id']) ? (int)$row['id'] : 0;
+    $name = ptsCatalogPlainText(isset($row['namevi']) ? $row['namevi'] : '');
+    $slug = ptsCatalogSlug(isset($row['slugvi']) ? $row['slugvi'] : '');
+    if($id <= 0 || $name === '' || $slug === '') return null;
+    return array('id' => $id, 'name' => $name, 'slug' => $slug);
+}
+
+/*
+ * Doc dung 3 bac gia tu libraries/product_price_filter.php::productPriceFilterRanges()
+ * - mot nguon duy nhat voi where-builder da dung o pts_v1_catalog.php, tranh
+ * lech nhan hien thi voi logic loc that.
+ */
+function ptsCatalogPriceRangeDto()
+{
+    if(!function_exists('productPriceFilterRanges')) return array();
+    $ranges = array();
+    foreach(productPriceFilterRanges() as $key => $range)
+    {
+        if(!isset($range[2])) continue;
+        $ranges[] = array('key' => (string)$key, 'label' => ptsCatalogPlainText($range[2]));
+    }
+    return $ranges;
+}
+
+/*
+ * Whitelist sap xep - khop dung cac option that cua sources/product.php
+ * (switch $orderby). 'price'/'price-desc' van duoc chap nhan la gia tri
+ * selected hop le ke ca khi publicProductPricesVisible() dang tat (giong
+ * legacy: dropdown van giu lua chon, chi order by thuc te la khong doi) -
+ * xem ptsCatalogSortOrderBy() cho phan ap dung.
+ */
+function ptsCatalogSortKey($value)
+{
+    $allowed = array('default', 'abc', 'abc-desc', 'price', 'price-desc', 'new', 'new-desc');
+    $value = is_scalar($value) ? (string)$value : '';
+    return in_array($value, $allowed, true) ? $value : 'default';
+}
+
+/*
+ * Tra ve fragment ORDER BY co dinh cho mot sort key da whitelist, hoac null
+ * khi khong co sap xep rieng (dung default p.id desc o noi goi). 'price'/
+ * 'price-desc' tra null khi gia cong khai dang tat - dung hanh vi "break"
+ * cua switch legacy (khong tu suy doan sap xep theo gia an).
+ */
+function ptsCatalogSortOrderBy($key, $pricesVisible)
+{
+    switch($key)
+    {
+        case 'abc': return 'p.namevi asc';
+        case 'abc-desc': return 'p.namevi desc';
+        case 'price': return $pricesVisible ? 'p.regular_price asc' : null;
+        case 'price-desc': return $pricesVisible ? 'p.regular_price desc' : null;
+        case 'new': return 'p.date_created desc';
+        case 'new-desc': return 'p.date_created asc';
+        default: return null;
+    }
+}
+
+function ptsCatalogPayload(array $category, array $categories, array $rows, $page, $perPage, $total, $pricesVisible = false, array $filterOptions = array(), array $selectedFilters = array())
 {
     $products = array();
     foreach($rows as $row)
@@ -125,6 +194,23 @@ function ptsCatalogPayload(array $category, array $categories, array $rows, $pag
         $dto = ptsCatalogCategoryDto($row, array(isset($row['slugvi']) ? $row['slugvi'] : ''));
         if($dto !== null) $categoryDtos[] = $dto;
     }
+    $brandDtos = array();
+    foreach(isset($filterOptions['brands']) && is_array($filterOptions['brands']) ? $filterOptions['brands'] : array() as $row)
+    {
+        if(!is_array($row)) continue;
+        $dto = ptsCatalogBrandDto($row);
+        if($dto !== null) $brandDtos[] = $dto;
+    }
+    $subcategoryDtos = array();
+    foreach(isset($filterOptions['subcategories']) && is_array($filterOptions['subcategories']) ? $filterOptions['subcategories'] : array() as $row)
+    {
+        if(!is_array($row)) continue;
+        $dto = ptsCatalogSubcategoryDto($row);
+        if($dto !== null) $subcategoryDtos[] = $dto;
+    }
+    $selectedBrandIds = isset($selectedFilters['brandIds']) && is_array($selectedFilters['brandIds']) ? array_values(array_unique(array_map('intval', $selectedFilters['brandIds']))) : array();
+    $selectedPriceKeys = isset($selectedFilters['priceKeys']) && is_array($selectedFilters['priceKeys']) ? array_values(array_unique(array_map('strval', $selectedFilters['priceKeys']))) : array();
+    $selectedSubcategoryIds = isset($selectedFilters['subcategoryIds']) && is_array($selectedFilters['subcategoryIds']) ? array_values(array_unique(array_map('intval', $selectedFilters['subcategoryIds']))) : array();
     return array(
         'schemaVersion' => 1,
         'locale' => 'vi',
@@ -132,10 +218,21 @@ function ptsCatalogPayload(array $category, array $categories, array $rows, $pag
         'categories' => $categoryDtos,
         'products' => $products,
         'pagination' => array('page' => (int)$page, 'perPage' => (int)$perPage, 'total' => max(0, (int)$total)),
+        'filters' => array(
+            'brands' => $brandDtos,
+            'priceRanges' => ptsCatalogPriceRangeDto(),
+            'subcategories' => $subcategoryDtos
+        ),
+        'selected' => array(
+            'brandIds' => $selectedBrandIds,
+            'priceKeys' => $selectedPriceKeys,
+            'subcategoryIds' => $selectedSubcategoryIds,
+            'sort' => ptsCatalogSortKey(isset($selectedFilters['sort']) ? $selectedFilters['sort'] : '')
+        ),
         'parity' => array(
             'prices' => $pricesVisible ? array('included' => true) : array('included' => false, 'reason' => 'public_pricing_disabled'),
-            'filters' => array('included' => false, 'reason' => 'legacy_filter_parity_not_verified'),
-            'sort' => array('included' => false, 'reason' => 'legacy_sort_parity_not_verified')
+            'filters' => array('included' => true),
+            'sort' => array('included' => true)
         )
     );
 }

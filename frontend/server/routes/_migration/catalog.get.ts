@@ -12,10 +12,19 @@ function positiveQuery(value: unknown, fallback: number, maximum: number): numbe
   return Number.isSafeInteger(parsed) && parsed <= maximum ? parsed : null
 }
 
+const brandOrSubcategoryPattern = /^[1-9][0-9]*(?:,[1-9][0-9]*)*$/
+const pricePattern = /^[123](?:,[123])*$/
+const sortPattern = /^[a-z-]+$/
+
+function listQueryValue(value: unknown, pattern: RegExp): string | undefined {
+  if (typeof value !== 'string') return undefined
+  return pattern.test(value) ? value : undefined
+}
+
 export default defineEventHandler(async (event) => {
   requireMigrationGet(event)
   const query = getQuery(event)
-  const allowed = new Set(['category', 'page', 'per_page'])
+  const allowed = new Set(['category', 'page', 'per_page', 'brand', 'price', 'subcategory', 'sort'])
   if (Object.keys(query).some((key) => !allowed.has(key))) throw createError({ statusCode: 400, statusMessage: 'BAD_QUERY' })
 
   const category = oneQueryValue(query.category)
@@ -27,12 +36,25 @@ export default defineEventHandler(async (event) => {
   const perPage = positiveQuery(perPageInput, 20, 48)
   if (page === null || perPage === null) throw createError({ statusCode: 400, statusMessage: 'BAD_QUERY' })
 
+  const brand = listQueryValue(query.brand, brandOrSubcategoryPattern)
+  if (query.brand !== undefined && brand === undefined) throw createError({ statusCode: 400, statusMessage: 'BAD_QUERY' })
+  const price = listQueryValue(query.price, pricePattern)
+  if (query.price !== undefined && price === undefined) throw createError({ statusCode: 400, statusMessage: 'BAD_QUERY' })
+  const subcategory = listQueryValue(query.subcategory, brandOrSubcategoryPattern)
+  if (query.subcategory !== undefined && subcategory === undefined) throw createError({ statusCode: 400, statusMessage: 'BAD_QUERY' })
+  const sort = listQueryValue(query.sort, sortPattern)
+  if (query.sort !== undefined && sort === undefined) throw createError({ statusCode: 400, statusMessage: 'BAD_QUERY' })
+
   const payload = await fetchMigrationPayload(event, {
     endpoint: '/api/pts_v1_catalog.php',
     query: {
       category,
       page: pageInput === undefined ? undefined : String(page),
       per_page: perPageInput === undefined ? undefined : String(perPage),
+      brand,
+      price,
+      subcategory,
+      sort,
     },
     validate: isPublicCatalogPayload,
     invalidMessage: 'Invalid PHP catalog data contract',
