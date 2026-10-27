@@ -9,6 +9,7 @@ import {
   validateAllowlist,
   validateApproval,
   validateLoopbackOrigin,
+  validateProbeResults,
 } from './lib/nuxt-cutover.mjs'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
@@ -70,16 +71,16 @@ export async function main(argv = process.argv.slice(2)) {
     if (!args.phpOrigin || !args.nuxtOrigin) throw new Error('--probe requires --php-origin and --nuxt-origin')
     validateLoopbackOrigin(args.phpOrigin)
     validateLoopbackOrigin(args.nuxtOrigin)
-    const php = await probeOrigin(args.phpOrigin, ['/', '/gioi-thieu/'])
-    const nuxt = await probeOrigin(args.nuxtOrigin, ['/', '/migration-about-preview'])
+    const phpPaths = [...new Set(['/', manifest.pilot.publicPath])]
+    const nuxtPaths = manifest.pilot.readiness === 'blocked'
+      ? [...new Set(['/', manifest.pilot.nuxtPath, manifest.pilot.previewHealthPath])]
+      : [...new Set([manifest.pilot.nuxtPath, manifest.pilot.previewHealthPath])]
+    const php = await probeOrigin(args.phpOrigin, phpPaths)
+    const nuxt = await probeOrigin(args.nuxtOrigin, nuxtPaths)
     for (const [owner, results] of [['PHP', php], ['Nuxt', nuxt]]) {
       for (const result of results) console.log(`${owner} ${result.path} status=${result.status} noindex=${result.noindex}`)
     }
-    if (php.some(result => result.status !== 200) || nuxt.some(result => result.status !== 200)) {
-      throw new Error('Origin health probe expected HTTP 200 for every health path')
-    }
-    const preview = nuxt.find(result => result.path === '/migration-about-preview')
-    if (preview?.status === 200 && !preview.noindex) throw new Error('Nuxt preview is reachable without noindex')
+    validateProbeResults({ manifest, php, nuxt })
   }
 
   console.log(`BLOCKED: feature flag remains OFF; pilot ${manifest.pilot.id} is not production-ready.`)

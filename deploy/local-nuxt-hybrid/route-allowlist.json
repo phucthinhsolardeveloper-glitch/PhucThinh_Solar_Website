@@ -9,6 +9,7 @@
     "id": "about",
     "publicPath": "/gioi-thieu/",
     "nuxtPath": "/gioi-thieu/",
+    "previewHealthPath": "/migration-about-preview",
     "methods": ["GET", "HEAD"],
     "readiness": "blocked",
     "reason": "Nuxt currently exposes only /migration-about-preview with noindex; a public /gioi-thieu/ route and production Nuxt service do not exist yet."
