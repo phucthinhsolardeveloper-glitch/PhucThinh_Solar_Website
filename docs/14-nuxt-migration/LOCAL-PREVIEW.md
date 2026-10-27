@@ -47,9 +47,14 @@ cd /home/admin01/src/pts-nuxt-integration-20261027
 - Build output, images and log are untracked in frontend/.migration-artifacts/.
 
 ## Latest local checks
-- Checkpoint frontend hiện tại: `ae811bb` trên `feature/pts-nuxt-integration-20261027`.
-- `npm test` 113/113; typecheck exit 0, không còn warning vue-router/Volar;
+- Checkpoint frontend hiện tại: `ab6c3f4` trên `feature/pts-nuxt-integration-20261027`.
+- `npm test` 117/117; typecheck exit 0, không còn warning vue-router/Volar;
   production build PASS; SSR catalog preview HTTP 200.
+- `frontend/package-lock.json` là lockfile v3 được track; `npm ci --dry-run
+  --ignore-scripts --no-audit --no-fund` đã PASS trên Node 24.20.0/npm 11.19.0.
+- Repository hiện chưa có workflow CI (GitHub/GitLab/Jenkins) và chưa pin
+  runtime Node bằng `.nvmrc`/`.node-version`/`engines`; các gate trên vẫn phải
+  chạy thủ công/serial cho tới khi owner bổ sung pipeline và runtime policy.
 - Catalog preview đã có filter thật, sort, brand detail preview và panel danh mục
   + bộ lọc dùng chung; preview giữ `noindex`.
 - PHP 8.1/Docker contract và full browser visual manifest chưa chạy lại trong

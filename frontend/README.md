@@ -5,10 +5,10 @@ publicly yet. PHP/CMS, checkout, session and MariaDB are unchanged.
 
 ## Run locally (WSL)
 ```bash
-cd /home/admin01/src/pts-nuxt4-migration/frontend
+cd /home/admin01/src/pts-nuxt-integration-20261027/frontend
 npm ci
 npm run dev
-# http://127.0.0.1:3100/migration-preview
+# http://127.0.0.1:3100/migration-hub-preview
 ```
 
 ## Migration gates
