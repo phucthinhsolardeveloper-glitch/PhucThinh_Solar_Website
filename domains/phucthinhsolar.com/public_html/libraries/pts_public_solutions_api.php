@@ -44,6 +44,33 @@ function ptsPublicSolutionsHotline($hotline)
     );
 }
 
+
+function ptsPublicSolutionsEditorialToc($html)
+{
+    $html = is_scalar($html) ? (string)$html : '';
+    if($html === '') return array('html'=>'','toc'=>array('rendered'=>false,'reason'=>'no_editorial_content'));
+    $items = array();
+    $index = 0;
+    $rendered = preg_replace_callback('~<h([23])([^>]*)>(.*?)</h\1>~is', function($match) use (&$items, &$index) {
+        if($index >= 30) return $match[0];
+        $label = trim(preg_replace('/\s+/u', ' ', strip_tags(html_entity_decode($match[3], ENT_QUOTES | ENT_HTML5, 'UTF-8'))));
+        if($label === '') return $match[0];
+        $index++;
+        $id = 'solution-section-'.$index;
+        $level = (int)$match[1];
+        $attrs = preg_replace('~\s+id\s*=\s*(["\']).*?\1~i', '', $match[2]);
+        $items[] = array('id'=>$id,'label'=>$label,'level'=>$level);
+        return '<h'.$level.$attrs.' id="'.$id.'">'.$match[3].'</h'.$level.'>';
+    }, $html);
+    if(!is_string($rendered)) $rendered = $html;
+    return array(
+        'html'=>$rendered,
+        'toc'=>$items
+            ? array('rendered'=>true,'items'=>$items)
+            : array('rendered'=>false,'reason'=>'no_editorial_headings')
+    );
+}
+
 function ptsPublicSolutionsPayload(array $solutionRows, array $introRows, array $ctaRows, array $productRows, $hotline = '', array $fallbackImages = array(), $ctaFallbackImage = 'assets/images/site-visuals/catalog-street-lighting.jpg')
 {
     $ui = ptsPublicSolutionsUi();
@@ -76,6 +103,7 @@ function ptsPublicSolutionsPayload(array $solutionRows, array $introRows, array 
     $editorialHtml = $visibleIntroRows
         ? ptsPublicRichTextSanitize(isset($visibleIntroRows[0]['contentvi']) ? $visibleIntroRows[0]['contentvi'] : '')
         : '';
+    $editorial = ptsPublicSolutionsEditorialToc($editorialHtml);
     $intro = null;
     $title = $ui['title'];
     if(!$introRows || $visibleIntroRows)
@@ -159,14 +187,11 @@ function ptsPublicSolutionsPayload(array $solutionRows, array $introRows, array 
         'editorial' => array(
             'content' => array(
                 'format' => 'sanitized-html',
-                'html' => $editorialHtml,
+                'html' => $editorial['html'],
                 'sanitizedBy' => 'pts_public_richtext',
                 'sanitizerVersion' => 1
             ),
-            'toc' => array(
-                'rendered' => false,
-                'reason' => $editorialHtml === '' ? 'no_editorial_content' : 'toc_generation_not_implemented'
-            )
+            'toc' => $editorial['toc']
         )
     );
 }

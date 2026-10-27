@@ -11,7 +11,7 @@ const good = {
   cta: { title: 'Tư vấn', description: 'Mô tả', buttonLabel: 'Nhận tư vấn', image: '/upload/cta.jpg', links: { consult: { label: 'Nhận tư vấn', href: '#ptsContactModal' } }, hotline: null },
   editorial: {
     content: { format: 'sanitized-html', html: '<h2 id="chon-giai-phap">Nội dung tư vấn</h2><p>Đã qua <strong>sanitizer</strong>.</p>', sanitizedBy: 'pts_public_richtext', sanitizerVersion: 1 },
-    toc: { rendered: false, reason: 'toc_generation_not_implemented' },
+    toc: { rendered: true, items: [{ id: 'solution-section-1', label: 'Nội dung tư vấn', level: 2 }] },
   },
 }
 
@@ -23,7 +23,8 @@ test('rejects unsafe image paths and arbitrary links', () => {
 })
 test('accepts sanitized editorial content but rejects unsafe markup or fake TOC state', () => {
   assert.equal(isPublicSolutionsPayload({ ...good, editorial: { ...good.editorial, content: { ...good.editorial.content, html: '<p onclick="bad()">x</p>' } } }), false)
-  assert.equal(isPublicSolutionsPayload({ ...good, editorial: { ...good.editorial, toc: { rendered: true, reason: 'invented' } } }), false)
+  assert.equal(isPublicSolutionsPayload({ ...good, editorial: { ...good.editorial, toc: { rendered: true, items: [{ id: '../bad', label: 'x', level: 2 }] } } }), false)
+  assert.equal(isPublicSolutionsPayload({ ...good, editorial: { ...good.editorial, toc: { rendered: false, reason: 'toc_generation_not_implemented' } } }), false)
 })
 test('rejects too many equipment items', () => {
   assert.equal(isPublicSolutionsPayload({ ...good, equipment: Array(5).fill(good.equipment[0]) }), false)

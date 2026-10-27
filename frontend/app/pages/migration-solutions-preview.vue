@@ -42,14 +42,27 @@ const { data, error } = await useAsyncData<PublicSolutionsPayload>('migration-so
 
         <SolutionCards :cards="data.cards" :choices-label="data.labels.choices" :empty-label="data.labels.empty" :consult-label="data.labels.consult" />
 
-        <!--
-          Legacy /giai-phap/ lấy khối này từ solution-intro.contentvi và đặt
-          ngay sau danh sách card. HTML chỉ được render sau khi đi qua
-          pts_public_richtext.php + contract guard dùng chung. TOC legacy vẫn
-          chưa tự sinh; không dựng mục lục giả khi chưa có heading model.
-        -->
         <section v-if="data.editorial.content.html" class="pb-[54px]" aria-label="Nội dung tư vấn giải pháp">
-          <EditorialRichText :content="data.editorial.content" />
+          <div
+            class="grid gap-8"
+            :class="data.editorial.toc.rendered ? 'nav:grid-cols-[240px_minmax(0,1fr)]' : ''"
+          >
+            <nav
+              v-if="data.editorial.toc.rendered"
+              class="h-fit rounded-btn border border-gray-200 p-4 nav:sticky nav:top-4"
+              aria-label="Mục lục nội dung giải pháp"
+            >
+              <strong class="mb-3 block text-sm uppercase tracking-wide text-navy-800">Trong bài này</strong>
+              <ul class="m-0 list-none space-y-1 p-0">
+                <li v-for="item in data.editorial.toc.items" :key="item.id" :class="item.level === 3 ? 'pl-3' : ''">
+                  <a :href="'#' + item.id" class="block rounded-chip px-2 py-2 text-sm leading-snug text-slate-600 no-underline hover:bg-slate-50 hover:text-navy-800">
+                    {{ item.label }}
+                  </a>
+                </li>
+              </ul>
+            </nav>
+            <EditorialRichText :content="data.editorial.content" />
+          </div>
         </section>
 
         <SolutionsEquipment :equipment="data.equipment" :title="data.labels.equipment" :all-products-url="data.allProductsUrl" :all-products-label="data.labels.allProducts" />
