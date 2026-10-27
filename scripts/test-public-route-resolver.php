@@ -44,6 +44,7 @@ $routes = array(
 
 $routerSource = file_get_contents(LIBRARIES.'router.php');
 routeAssert(substr_count($routerSource, 'array("tbl" =>') === count($routes), 'Fixture route test khớp số định nghĩa trong router');
+routeAssert(strpos($routerSource, "'@^product/?$'") !== false, 'Alias gốc /product/ dùng regex AltoRouter và giữ redirect 301');
 routeAssert(publicRouteIdentifier('slugvi') === 'slugvi' && publicRouteIdentifier('slugvi desc') === '', 'Resolver chỉ nhận identifier SQL an toàn');
 routeAssert(publicRouteResolveSlug($d, 'khong-ton-tai-'.bin2hex(random_bytes(4)), 'slugvi', $routes) === array(), 'Slug không tồn tại không sinh route giả');
 
