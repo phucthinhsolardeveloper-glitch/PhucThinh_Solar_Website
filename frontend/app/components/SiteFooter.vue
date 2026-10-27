@@ -10,7 +10,7 @@ const hotline = computed(() => props.site.brand.hotline.trim())
 const technicalHotline = computed(() => props.site.brand.technicalHotline?.trim() ?? '')
 const footerLogo = computed(() => props.site.brand.logoFooter || props.site.brand.logo || '')
 const footer = computed(() => props.site.footer)
-const { active: isMigrationPreview, generic: footerHref } = useMigrationLinks()
+const { generic: footerHref, external: isExternalLink } = useMigrationLinks()
 
 function telHrefFor(value: string): string {
   return `tel:${value.replace(/[^+\d]/g, '')}`
@@ -120,7 +120,7 @@ const telHref = computed(() => telHrefFor(hotline.value))
           <ul>
             <li v-for="policy in footer.policies" :key="policy.href">
               <NuxtLink
-                :external="!isMigrationPreview"
+                :external="isExternalLink(footerHref(policy.href))"
                 class="block py-1 text-[13px] leading-[1.7] transition-colors hover:text-gold-400"
                 :to="footerHref(policy.href)"
               >
@@ -142,6 +142,21 @@ const telHref = computed(() => telHrefFor(hotline.value))
           >
             <img :src="footer.trustBadge.image" alt="Đã thông báo Bộ Công Thương" class="block h-auto w-full">
           </a>
+          <div v-if="footer?.socialLinks.length" class="mt-[18px]">
+            <h3 class="mb-2 text-[13px] font-extrabold text-white">Kết nối</h3>
+            <ul class="flex flex-wrap gap-x-4 gap-y-1">
+              <li v-for="social in footer.socialLinks" :key="social.href">
+                <a
+                  class="text-[13px] leading-[1.7] transition-colors hover:text-gold-400"
+                  :href="social.href"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {{ social.label }}
+                </a>
+              </li>
+            </ul>
+          </div>
         </nav>
 
         <div v-if="footer?.locations.length">

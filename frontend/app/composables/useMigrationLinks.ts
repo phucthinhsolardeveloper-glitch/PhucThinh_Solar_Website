@@ -41,6 +41,10 @@ export function useMigrationLinks() {
     return href
   }
 
+  function external(href: string): boolean {
+    return /^(?:https?:\/\/|mailto:|tel:)/i.test(href)
+  }
+
   function product(slug: string): string {
     return active.value && SLUG.test(slug) ? '/migration-product-preview?slug=' + encodeURIComponent(slug) : '/san-pham/' + slug
   }
@@ -54,5 +58,5 @@ export function useMigrationLinks() {
     return active.value && SLUG.test(slug) ? '/migration-project-detail-preview?slug=' + encodeURIComponent(slug) : '/' + slug + '/'
   }
 
-  return { active, generic, product, solution, news, project }
+  return { active, generic, external, product, solution, news, project }
 }
