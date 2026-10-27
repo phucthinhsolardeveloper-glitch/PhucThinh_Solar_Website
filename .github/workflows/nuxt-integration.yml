@@ -1,0 +1,60 @@
+name: Nuxt integration gates
+
+on:
+  push:
+    branches:
+      - feature/pts-nuxt-integration-20261027
+  pull_request:
+    paths:
+      - '.github/workflows/nuxt-integration.yml'
+      - '.nvmrc'
+      - 'frontend/**'
+      - 'scripts/nuxt-cutover-preflight.mjs'
+      - 'scripts/tests/nuxt-cutover.test.mjs'
+      - 'tools/visual-tests/**'
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Dependency audit
+        run: npm audit --omit=optional --audit-level=low
+
+      - name: Contract tests
+        run: npm test
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Production build
+        run: npm run build
+
+      - name: SSR smoke
+        run: npm run smoke
+
+      - name: Cutover static tests
+        working-directory: .
+        run: node --test scripts/tests/nuxt-cutover.test.mjs
+
+      - name: Visual and SEO harness tests
+        working-directory: tools/visual-tests
+        run: node --test tests/migration-compare.test.cjs tests/migration-seo-audit.test.cjs
