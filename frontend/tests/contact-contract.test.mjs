@@ -5,3 +5,7 @@ const good = { schemaVersion: 1, locale: 'vi', path: '/lien-he/', seo: { title: 
 test('accepts the read-only contact DTO', () => assert.equal(isPublicContactPayload(good), true))
 test('rejects unsafe media and map URLs', () => { assert.equal(isPublicContactPayload({ ...good, visual: { ...good.visual, image: '/upload/photo/../secret.jpg' } }), false); assert.equal(isPublicContactPayload({ ...good, locations: [{ ...good.locations[0], mapUrl: 'https://evil.example/maps' }] }), false) })
 test('allows empty CMS collections without inventing contact data', () => assert.equal(isPublicContactPayload({ ...good, visual: null, locations: [], contact: { company: '', hotline: '', email: '', address: '', workingHours: '' } }), true))
+test('accepts an optional technicalHotline when CMS provides it, rejects a malformed one', () => {
+  assert.equal(isPublicContactPayload({ ...good, contact: { ...good.contact, technicalHotline: '0945 536 899' } }), true)
+  assert.equal(isPublicContactPayload({ ...good, contact: { ...good.contact, technicalHotline: '\x00bad' } }), false)
+})

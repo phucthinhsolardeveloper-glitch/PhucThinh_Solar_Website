@@ -10,7 +10,7 @@ export interface PublicContactPayload {
   title: string
   intro: string
   visual: PublicContactVisual | null
-  contact: { company: string; hotline: string; email: string; address: string; workingHours: string }
+  contact: { company: string; hotline: string; email: string; address: string; workingHours: string; technicalHotline?: string }
   locations: PublicContactLocation[]
   labels: { locations: string; formCta: string; formNote: string }
 }
@@ -34,7 +34,7 @@ function isMapUrl(value: unknown): value is string {
 }
 
 export function isPublicContactPayload(value: unknown): value is PublicContactPayload {
-  if (!isRecord(value) || value.schemaVersion !== 1 || value.locale !== 'vi' || value.path !== '/lien-he/' || !isRecord(value.seo) || !isText(value.seo.title, true) || !isText(value.seo.description, true) || !isText(value.title) || !isText(value.intro, true) || !isRecord(value.contact) || !isText(value.contact.company, true) || !isText(value.contact.hotline, true) || !isText(value.contact.email, true) || !isText(value.contact.address, true) || !isText(value.contact.workingHours, true) || !Array.isArray(value.locations) || !isRecord(value.labels) || !isText(value.labels.locations) || !isText(value.labels.formCta) || !isText(value.labels.formNote)) return false
+  if (!isRecord(value) || value.schemaVersion !== 1 || value.locale !== 'vi' || value.path !== '/lien-he/' || !isRecord(value.seo) || !isText(value.seo.title, true) || !isText(value.seo.description, true) || !isText(value.title) || !isText(value.intro, true) || !isRecord(value.contact) || !isText(value.contact.company, true) || !isText(value.contact.hotline, true) || !isText(value.contact.email, true) || !isText(value.contact.address, true) || !isText(value.contact.workingHours, true) || (value.contact.technicalHotline !== undefined && !isText(value.contact.technicalHotline)) || !Array.isArray(value.locations) || !isRecord(value.labels) || !isText(value.labels.locations) || !isText(value.labels.formCta) || !isText(value.labels.formNote)) return false
   if (value.visual !== null && (!isRecord(value.visual) || !isText(value.visual.name) || !isText(value.visual.description, true) || !isPath(value.visual.href) || !isImage(value.visual.image))) return false
   return value.locations.every((row: unknown) => isRecord(row) && isPositiveId(row.id) && isText(row.name) && isText(row.address) && isMapUrl(row.mapUrl))
 }

@@ -80,7 +80,8 @@ try
         'contact' => array(
             'company' => is_array($setting ?? null) ? ($setting['namevi'] ?? '') : '',
             'hotline' => $options['hotline'] ?? '', 'email' => $options['email'] ?? '',
-            'address' => $options['address'] ?? '', 'workingHours' => $options['thoigianlamviec'] ?? ''
+            'address' => $options['address'] ?? '', 'workingHours' => $options['thoigianlamviec'] ?? '',
+            'technicalHotline' => $options['hotline_technical'] ?? ''
         ),
         'locations' => $locationDto
     )), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
