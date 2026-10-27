@@ -1,9 +1,9 @@
 # PTS Nuxt migration — next execution plan
 
 Kế hoạch gốc được lập tại `feature/pts-nuxt4-parity-qa-20261026`, branched from
-`feature/pts-nuxt4-migration` ở `b5865ac`. Current-state sync: HEAD
-`57c786f`, với checkpoint triển khai `3b9cade..57c786f` và navigation
-`35d0c5f`. Không merge/push/deploy production, không ghi DB trong đợt sync này.
+`feature/pts-nuxt4-migration` ở `b5865ac`. Current-state sync của lane này: HEAD
+`07a50ea`; implementation checkpoint gần nhất của preview là `ae811bb`. Không
+merge/push/deploy production, không ghi DB trong đợt sync này.
 
 ## Kết luận audit hiện tại
 
@@ -20,12 +20,11 @@ Kế hoạch gốc được lập tại `feature/pts-nuxt4-parity-qa-20261026`, 
   vẫn nằm cạnh `api/pts_v1_*.php` và `libraries/pts_public_*_api.php`, tránh tạo
   thêm projection song song.
 - Các gap trước cutover: production route/hybrid routing; catalog visual/browser
-  parity cuối (filter theo loại sản phẩm/thương hiệu/mức giá, sort và panel danh
-  mục đã nối thật ở `c00aa0e`, `ae811bb`, xem F02 trong ROUTE_PARITY_MATRIX.md);
-  public canonical/OG/sitemap/robots/
-  redirect parity ngoài PDP preview JSON-LD; brand/gallery/video/account
-  routes; final visual/browser QA và deployment gates. Không dùng preview 200
-  để claim production migration.
+  parity cuối. Filter theo loại sản phẩm/thương hiệu/mức giá, sort và panel danh
+  mục đã nối thật ở `c00aa0e`, `ae811bb`; brand detail đã có preview ở
+  `f0cf5ce`. Còn lại là public canonical/OG/sitemap/robots/redirect parity,
+  gallery/video/account routes, final visual/browser QA và deployment gates.
+  Không dùng preview 200 để claim production migration.
 
 ## QA nền tảng chuẩn
 
@@ -64,7 +63,7 @@ chỉ sửa file ownership tương ứng, chạy focused test rồi bàn giao SH
 
 | Thứ tự | Task | Owner file scope | Phụ thuộc | Definition of done |
 |---|---|---|---|---|
-| P0-A | Freeze route/resolver inventory | `docs/14-nuxt-migration/ROUTE_PARITY_MATRIX.md`, route manifest; chỉ đọc `libraries/router.php`, resolver, templates | Không | Cập nhật route/status/redirect evidence; mọi UNKNOWN có lệnh xác minh |
+| P0-A | Freeze route/resolver inventory | `docs/14-nuxt-migration/ROUTE_PARITY_MATRIX.md`, route manifest; chỉ đọc `libraries/router.php`, resolver, templates | Không | Cập nhật route/status/redirect evidence; mọi điểm chưa biết có lệnh xác minh |
 | P0-B | Local fixture/API integration | PHP 8.1 Docker, `api/pts_v1_*.php`, `libraries/pts_public_*_api.php`, PHP contract scripts của từng slice | P0-A | GET thật với DB fixture, positive/negative status, không DB write; không sửa public route |
 | P0-C | Platform QA/CI gate | `tools/visual-tests/scripts/migration-*`, `tools/visual-tests/tests/migration-*`, package scripts CI nếu cần | P0-A | Chạy manifest đủ 3 viewport; report ảnh/JSON/Markdown có status, console, media, overflow, SEO và classification |
 | P1-A | Shared site shell parity | `frontend/shared/contracts/public-site.ts`, `frontend/app/components/SiteHeader.vue`, `SiteFooter.vue`, shell CSS/tests | P0-B, P0-C | Logo/menu/footer grouping theo CMS thật; mobile keyboard/Escape/focus; visual diff không còn P0 |
@@ -90,8 +89,9 @@ chuyển checkpoint thay vì bịa fixture.
    chung của mọi preview.
 4. Tách sanitizer rich-text thành một gate độc lập trước khi có bất kỳ claim
    parity nội dung CKEditor nào.
-5. Chỉ sau khi P0 đạt mới giao catalog filter/sort/stock hoặc SEO crawl; không trộn
-   business migration vào công cụ QA.
+5. P0/P2 dùng manifest và crawler read-only; chỉ sau khi P0 đạt mới ký SEO
+   canonical/redirect hoặc giao hybrid route. Không trộn business migration vào
+   công cụ QA.
 
 ## Rollback / production state
 
