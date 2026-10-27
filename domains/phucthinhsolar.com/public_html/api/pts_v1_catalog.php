@@ -35,6 +35,7 @@ try
 
     require_once __DIR__.'/config.php';
     require_once LIBRARIES.'product_category_urls.php';
+    require_once LIBRARIES.'public_pricing.php';
     require_once LIBRARIES.'pts_public_catalog_api.php';
 
     $segments = $categoryPath === '' ? array() : explode('/', $categoryPath);
@@ -57,7 +58,7 @@ try
     $totalRow = $d->rawQueryOne("select count(*) as total from #_product p where {$where}", $params);
     $total = is_array($totalRow) && isset($totalRow['total']) ? (int)$totalRow['total'] : 0;
     $offset = ($page - 1) * $perPage;
-    $rows = $d->rawQuery("select p.id,p.namevi,p.slugvi,p.photo,p.photo2,p.status from #_product p where {$where} order by p.id desc limit ".(int)$offset.', '.(int)$perPage, $params);
+    $rows = $d->rawQuery("select p.id,p.namevi,p.slugvi,p.photo,p.photo2,p.status,p.regular_price,p.sale_price,p.cong_suat from #_product p where {$where} order by p.id desc limit ".(int)$offset.', '.(int)$perPage, $params);
     $rows = is_array($rows) ? $rows : array();
     foreach($rows as &$row)
     {
@@ -66,7 +67,7 @@ try
     }
     unset($row);
     $categories = $d->rawQuery("select pl.id,pl.namevi,pl.slugvi,pl.status from #_product_list pl where pl.type = ? and find_in_set('hienthi',pl.status) and exists (select 1 from #_product p where p.id_list = pl.id and p.type = ? and find_in_set('hienthi',p.status)) order by pl.numb,pl.id desc", array('san-pham', 'san-pham'));
-    echo json_encode(ptsCatalogPayload($category ?: array(), is_array($categories) ? $categories : array(), $rows, $page, $perPage, $total), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
+    echo json_encode(ptsCatalogPayload($category ?: array(), is_array($categories) ? $categories : array(), $rows, $page, $perPage, $total, publicProductPricesVisible()), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
 }
 catch(Throwable $e)
 {
