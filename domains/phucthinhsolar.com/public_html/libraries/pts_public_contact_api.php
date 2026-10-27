@@ -68,8 +68,8 @@ function ptsPublicContactPayload(array $input)
         'locations' => $input['locations'] ?? array(),
         'labels' => array(
             'locations' => 'Hệ thống chi nhánh',
-            'formCta' => 'Liên hệ qua form PHP',
-            'formNote' => 'Biểu mẫu hiện vẫn được xử lý an toàn trên trang PHP.'
+            'formCta' => 'Đăng ký nhận tư vấn',
+            'formNote' => 'Thông tin được gửi qua biểu mẫu bảo mật và lưu vào hệ thống để đội ngũ Phúc Thịnh Solar liên hệ lại.'
         )
     );
 }

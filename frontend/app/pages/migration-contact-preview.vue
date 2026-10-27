@@ -41,24 +41,13 @@ useSeoMeta({ title: 'Liên hệ — internal preview', robots: 'noindex, nofollo
             ("Để lại thông tin và nhu cầu, Phúc Thịnh Solar sẽ liên hệ..."),
             không phải một đoạn văn rời rạc như preview cũ đặt nó.
           -->
-          <section class="my-10 rounded-btn bg-slate-50 p-8 nav:p-12" aria-labelledby="contact-form-handoff-title">
-            <h2 id="contact-form-handoff-title" class="mb-3 text-2xl font-black tracking-tight">
-              {{ contact.labels.formCta }}
-            </h2>
-            <p v-if="contact.intro" class="mb-2 max-w-[60ch] leading-relaxed text-slate-500">{{ contact.intro }}</p>
-            <p class="mb-5 text-sm text-slate-500">{{ contact.labels.formNote }}</p>
-            <!--
-              Biểu mẫu thật (tên, SĐT, email, nhu cầu, lời nhắn) vẫn thuộc PHP:
-              có CSRF và ghi vào CSDL thật. Preview không tái tạo form để
-              tránh một bản sao gửi đi đâu không rõ — chỉ trỏ sang trang thật.
-            -->
-            <a
-              class="inline-flex items-center gap-2 rounded-chip bg-hdr-gold px-5 py-3 font-bold text-navy-950
-                     no-underline transition-colors hover:bg-hdr-gold-hover"
-              href="/lien-he/"
-            >
-              Mở trang PHP <span aria-hidden="true">→</span>
-            </a>
+          <section class="my-10 grid items-start gap-8 nav:grid-cols-[minmax(0,.8fr)_minmax(0,1.2fr)] nav:gap-12">
+            <div class="py-2">
+              <h2 class="mb-3 text-2xl font-black tracking-tight">{{ contact.labels.formCta }}</h2>
+              <p v-if="contact.intro" class="mb-2 max-w-[60ch] leading-relaxed text-slate-500">{{ contact.intro }}</p>
+              <p class="mb-0 text-sm text-slate-500">{{ contact.labels.formNote }}</p>
+            </div>
+            <ContactLeadForm />
           </section>
 
           <ContactLocations :locations="contact.locations" :title="contact.labels.locations" />

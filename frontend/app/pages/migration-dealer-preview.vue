@@ -86,19 +86,7 @@ useSeoMeta({ title: 'Đại lý — internal preview', robots: 'noindex, nofollo
             <aside id="dang-ky-dai-ly" class="rounded-btn bg-navy-950 p-6 text-white nav:p-8">
               <h2 class="mb-4 text-2xl font-black leading-tight">{{ dealer.form.title }}</h2>
               <p class="mb-5 leading-relaxed text-blue-100">{{ dealer.form.note }}</p>
-              <!--
-                Biểu mẫu thật (họ tên, SĐT, email, tỉnh/thành, tên doanh
-                nghiệp) có CSRF và ghi CSDL thật qua POST — vẫn thuộc PHP,
-                cùng cách xử lý đã áp dụng cho trang Liên hệ.
-              -->
-              <a
-                class="inline-flex items-center gap-2 rounded-chip bg-hdr-gold px-5 py-3 font-bold text-navy-950
-                       no-underline transition-colors hover:bg-hdr-gold-hover"
-                :href="dealer.form.action"
-              >
-                Đăng ký ngay <span aria-hidden="true">→</span>
-              </a>
-              <small class="mt-4 block text-xs text-blue-200">Biểu mẫu và xác thực vẫn do PHP xử lý.</small>
+              <DealerLeadForm />
             </aside>
           </section>
         </div>
