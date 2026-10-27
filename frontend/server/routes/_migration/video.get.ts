@@ -11,11 +11,13 @@ export default defineEventHandler(async (event) => {
   if (page !== undefined && (typeof page !== 'string' || !/^[1-9][0-9]*$/.test(page))) {
     throw createError({ statusCode: 400, statusMessage: 'Invalid video page' })
   }
-  return fetchMigrationPayload(event, {
+  const payload = await fetchMigrationPayload(event, {
     endpoint: '/api/pts_v1_video.php',
     query: { p: typeof page === 'string' ? page : undefined },
     validate: isPublicVideoPayload,
     invalidMessage: 'Invalid PHP video data contract',
     unavailableMessage: 'PHP video data source unavailable',
   })
+  setHeader(event, 'Cache-Control', 'private, no-store')
+  return payload
 })
