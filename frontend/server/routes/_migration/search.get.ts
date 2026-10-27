@@ -10,11 +10,13 @@ export default defineEventHandler(async (event) => {
   if (!keyword || keyword.length > 100 || /[\u0000-\u001F\u007F]/.test(keyword)) throw createError({ statusCode: 400, statusMessage: 'Invalid search keyword' })
   if (page && !/^[1-9][0-9]*$/.test(page) || perPage && !/^[1-9][0-9]*$/.test(perPage)) throw createError({ statusCode: 400, statusMessage: 'Invalid search pagination' })
 
-  return fetchMigrationPayload(event, {
+  const payload = await fetchMigrationPayload(event, {
     endpoint: '/api/pts_v1_search.php',
     query: { keyword, page, per_page: perPage },
     validate: isPublicSearchPayload,
     invalidMessage: 'Invalid PHP search data contract',
     unavailableMessage: 'PHP search data source unavailable',
   })
+  setHeader(event, 'Cache-Control', 'private, no-store')
+  return payload
 })
