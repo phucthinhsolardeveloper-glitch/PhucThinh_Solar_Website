@@ -1,43 +1,79 @@
 <script setup lang="ts">
 import type { PublicProductContent, PublicProductDetail, PublicProductDocument } from '#shared/contracts/public-product-detail'
 import type { PublicCatalogPricing } from '#shared/contracts/public-catalog'
+import type { PublicProductExtrasPayload } from '#shared/contracts/public-product-extras'
 import ProductPreviewGallery from './ProductPreviewGallery.vue'
 import ProductPreviewSpecs from './ProductPreviewSpecs.vue'
 import ProductPreviewContent from './ProductPreviewContent.vue'
 import ProductPreviewDocuments from './ProductPreviewDocuments.vue'
+import ProductPurchasePanel from './ProductPurchasePanel.vue'
+import ProductSupportExtras from './ProductSupportExtras.vue'
+import ProductReviews from './ProductReviews.vue'
+import ProductConsultationForm from './ProductConsultationForm.vue'
+import ProductTrustRelated from './ProductTrustRelated.vue'
 
-const props = defineProps<{ product: PublicProductDetail; pricing: PublicCatalogPricing; content: PublicProductContent; documents: PublicProductDocument[] }>()
+const props = defineProps<{
+  product: PublicProductDetail
+  pricing: PublicCatalogPricing
+  content: PublicProductContent
+  documents: PublicProductDocument[]
+  extras: PublicProductExtrasPayload | null
+}>()
 
-/*
- * Dinh dang tien khop PHP: class.Functions.php::formatMoney() ->
- * number_format($price,0,',','.') + 'd'. Giong CatalogProductGrid.vue.
- */
 function formatMoney(value: number): string {
-  return `${new Intl.NumberFormat('vi-VN').format(value)}đ`
+  return new Intl.NumberFormat('vi-VN').format(value) + 'đ'
 }
-
 const discountPercent = computed(() => {
   if (props.pricing.mode !== 'price' || !props.pricing.salePrice || !props.pricing.regularPrice) return 0
   if (props.pricing.regularPrice <= props.pricing.salePrice) return 0
   return Math.round(((props.pricing.regularPrice - props.pricing.salePrice) / props.pricing.regularPrice) * 100)
 })
+
+const navItems = computed(() => {
+  const items: Array<{ id: string; label: string }> = []
+  if (props.content.blocks.length || props.content.faqs.length) items.push({ id: 'tong-quan', label: 'Tổng quan' })
+  items.push({ id: 'thong-so-ky-thuat', label: 'Thông số' })
+  if (props.documents.length) items.push({ id: 'tai-lieu-san-pham', label: 'Tài liệu' })
+  if (props.extras?.videoEmbedUrl) items.push({ id: 'video-san-pham', label: 'Video' })
+  if (props.extras && (props.extras.warranty.summary || props.extras.warranty.override || props.extras.warranty.policies.length)) {
+    items.push({ id: 'chinh-sach-bao-hanh', label: 'Bảo hành' })
+  }
+  if (props.extras) {
+    items.push({ id: 'danh-gia-san-pham', label: 'Đánh giá' })
+    items.push({ id: 'pts-pdp-consultation', label: 'Tư vấn' })
+    if (props.extras.commitments.length) items.push({ id: 'ly-do-chon-phuc-thinh-solar', label: 'Cam kết' })
+    if (props.extras.related.length) items.push({ id: 'san-pham-lien-quan', label: 'Liên quan' })
+  }
+  return items
+})
+const activeSection = ref('')
+let observer: IntersectionObserver | null = null
+
+function setupObserver() {
+  observer?.disconnect()
+  if (!import.meta.client) return
+  const nodes = navItems.value
+    .map((item) => document.getElementById(item.id))
+    .filter((node): node is HTMLElement => Boolean(node))
+  if (!nodes.length) return
+  if (!activeSection.value) activeSection.value = nodes[0]?.id ?? ''
+  observer = new IntersectionObserver((entries) => {
+    const visible = entries
+      .filter((entry) => entry.isIntersecting)
+      .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)
+    const first = visible[0]?.target as HTMLElement | undefined
+    if (first?.id) activeSection.value = first.id
+  }, { rootMargin: '-120px 0px -60% 0px', threshold: [0, 0.01] })
+  nodes.forEach((node) => observer?.observe(node))
+}
+onMounted(() => nextTick(setupObserver))
+watch(navItems, () => nextTick(setupObserver), { deep: true })
+onBeforeUnmount(() => observer?.disconnect())
 </script>
 
 <template>
-  <!--
-    Khung trang chi tiết sản phẩm đo từ ảnh production 2026-10-26 (1920px):
-    breadcrumb bắt đầu tại x=76, cột phải tại x=983, nội dung kết thúc tại 1842
-    -> vùng nội dung rộng 1766, khoảng cách hai cột 43px.
-
-    Lưu ý: khung này RỘNG HƠN footer (footer là 154..1766 theo --pts-container
-    1680 + gutter 34). Hai vùng dùng container khác nhau trên site thật, nên
-    không gộp về một giá trị chung — gộp sẽ làm một trong hai lệch khỏi ảnh.
-
-    CSS preview cũ đặt gap clamp(32px,5vw,96px), ở 1920px ra 96px — hơn gấp đôi
-    số đo thật. Thay bằng 40px (gần 43px đo được, vẫn nằm trên lưới 8px).
-  -->
   <div class="mx-auto w-full max-w-[1766px] px-4 pb-16 pt-6 max-tb:pt-2">
-    <div class="grid grid-cols-1 items-start gap-10 pb-16 pt-8 max-tb:gap-8 max-tb:pb-10 max-tb:pt-6 nav:grid-cols-2">
+    <div class="grid grid-cols-1 items-start gap-10 pb-12 pt-8 max-tb:gap-8 max-tb:pb-8 max-tb:pt-6 nav:grid-cols-2">
       <ProductPreviewGallery :name="product.name" :media="product.media" />
 
       <div class="min-w-0">
@@ -48,14 +84,6 @@ const discountPercent = computed(() => {
         <p v-if="product.code" class="leading-relaxed text-slate-500">Mã sản phẩm: {{ product.code }}</p>
         <p v-if="product.summary" class="leading-relaxed text-slate-500">{{ product.summary }}</p>
 
-        <!--
-          Khối giá: tai dung cung logic/mau voi templates/product/product_detail_tpl.php
-          (publicProductRequiresQuote) va cung mau #d52525 do duoc tu
-          assets/css/product-detail-v2.css (load SAU theme-v2.css tren trang PDP
-          thuc, nen #d52525!important thang #dc2626!important cua theme-v2 —
-          khac voi CatalogProductGrid.vue dung #dc2626 vi trang danh muc khong
-          load product-detail-v2.css).
-        -->
         <div class="mt-6 border-t border-gray-200 pt-5">
           <p class="mb-2 text-xs font-bold uppercase tracking-wide text-slate-400">Giá bán</p>
           <div v-if="pricing.mode === 'quote'">
@@ -75,30 +103,45 @@ const discountPercent = computed(() => {
           </div>
         </div>
 
-        <!--
-          CÒN THIẾU so với ảnh production: chip thông số nổi bật, ô chọn số
-          lượng, nút "Mua ngay" + "Thêm giỏ hàng", bảo chứng, tab neo, video,
-          đánh giá, form tư vấn và sản phẩm liên quan. Khối mô tả
-          content_section + FAQ do Admin soạn đã được nối bằng DTO có kiểu,
-          không dùng raw HTML/v-html.
-        -->
-        <p class="mt-6 border-t border-gray-200 pt-4 font-semibold text-navy-800">
-          Đặt hàng vẫn thuộc luồng PHP legacy; preview chưa dựng nút mua.
-        </p>
+        <ProductPurchasePanel :product-id="product.id" :pricing="pricing" />
+
+        <div v-if="extras?.reviews.total" class="mt-5 flex items-center gap-3 text-sm">
+          <span class="font-bold text-gold-700">★ {{ extras.reviews.average.toFixed(1) }}/5</span>
+          <a href="#danh-gia-san-pham" class="text-slate-500 underline-offset-4 hover:underline">{{ extras.reviews.total }} nhận xét</a>
+        </div>
       </div>
     </div>
 
-    <ProductPreviewSpecs :specifications="product.specifications" />
+    <nav v-if="navItems.length" class="sticky top-0 z-20 -mx-4 mb-2 overflow-x-auto border-y border-gray-200 bg-white/95 px-4 backdrop-blur" aria-label="Mục nội dung sản phẩm">
+      <div class="flex min-w-max gap-1 py-2">
+        <a
+          v-for="item in navItems"
+          :key="item.id"
+          :href="'#' + item.id"
+          class="rounded-chip px-3 py-2 text-sm font-bold no-underline transition"
+          :class="activeSection === item.id ? 'bg-navy-800 text-white' : 'text-navy-800 hover:bg-slate-50'"
+        >{{ item.label }}</a>
+      </div>
+    </nav>
+
     <ProductPreviewContent :content="content" />
+    <ProductPreviewSpecs :specifications="product.specifications" />
     <ProductPreviewDocuments :documents="documents" />
 
-    <section class="py-8" aria-labelledby="product-preview-deferred-title">
-      <h2 id="product-preview-deferred-title" class="mb-5 text-[clamp(24px,3vw,34px)] font-black tracking-tight">
-        Các phần còn thuộc PHP legacy
-      </h2>
-      <p class="text-slate-500">
-        Đánh giá, giỏ hàng/đặt mua, structured data và sản phẩm liên quan vẫn chưa được delegate sang preview.
-      </p>
+    <template v-if="extras">
+      <ProductSupportExtras :extras="extras" />
+      <ProductReviews :product-id="product.id" :reviews="extras.reviews" :csrf-token="extras.csrfToken" />
+      <ProductConsultationForm
+        :product-id="product.id"
+        :product-name="product.name"
+        :profile-key="extras.profileKey"
+        :needs="extras.consultation.needs"
+      />
+      <ProductTrustRelated :extras="extras" />
+    </template>
+
+    <section v-else class="border-t border-gray-200 py-8" aria-live="polite">
+      <p class="mb-0 text-sm text-slate-500">Các dữ liệu bổ sung của PDP chưa tải được; phần sản phẩm cốt lõi vẫn hiển thị từ contract chính.</p>
     </section>
   </div>
 </template>
