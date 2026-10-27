@@ -62,11 +62,11 @@ function isProduct(value: unknown): value is PublicCatalogProduct {
   if (!isRecord(value)) return false
   const legacy = hasExactKeys(value, ['id', 'name', 'slug', 'url', 'media'])
   const extended = hasExactKeys(value, ['id', 'name', 'slug', 'url', 'media', 'powerWatts', 'pricing'])
-  return (legacy || extended) && isSafeId(value.id) && isSafeText(value.name) && isSlug(value.slug) && value.url === `/san-pham/${value.slug}/` && Array.isArray(value.media) && value.media.every((path) => typeof path === 'string' && /^\/upload\/product\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|gif|webp|avif)$/i.test(path)) && (legacy || (value.powerWatts === null || typeof value.powerWatts === 'number' && Number.isFinite(value.powerWatts) && value.powerWatts > 0) && isPricing(value.pricing))
+  return (legacy || extended) && isSafeId(value.id) && isSafeText(value.name) && isSlug(value.slug) && value.url === `/san-pham/${value.slug}` && Array.isArray(value.media) && value.media.every((path) => typeof path === 'string' && /^\/upload\/product\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|gif|webp|avif)$/i.test(path)) && (legacy || (value.powerWatts === null || typeof value.powerWatts === 'number' && Number.isFinite(value.powerWatts) && value.powerWatts > 0) && isPricing(value.pricing))
 }
 
 function isMoney(value: unknown): value is number | null { return value === null || typeof value === 'number' && Number.isSafeInteger(value) && value > 0 }
-function isPricing(value: unknown): value is PublicCatalogPricing {
+export function isPricing(value: unknown): value is PublicCatalogPricing {
   if (!isRecord(value) || !hasExactKeys(value, ['mode', 'currency', 'regularPrice', 'salePrice']) || value.currency !== 'VND') return false
   if (value.mode === 'quote') return value.regularPrice === null && value.salePrice === null
   return value.mode === 'price' && isMoney(value.regularPrice) && isMoney(value.salePrice) && (value.regularPrice !== null || value.salePrice !== null)

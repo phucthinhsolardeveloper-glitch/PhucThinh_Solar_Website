@@ -3,6 +3,15 @@
 Mục đích: hai agent chạy song song trên cùng repo mà không ghi đè nhau.
 Quy tắc nền: mỗi file có ĐÚNG MỘT chủ tại một thời điểm.
 
+> **Cập nhật 2026-10-27:** không còn agent Codex nào chạy song song trên các
+> worktree này; mọi worktree Codex đã được gộp vào
+> `feature/pts-nuxt-integration-20261027` và Claude đang giữ toàn bộ (frontend
+> + backend PHP DTO) một mình. Phần "Việc TRỐNG" dưới đây là hồ sơ lịch sử tại
+> thời điểm bàn giao — một số dòng (bug SEO, giá PDP) đã được đánh dấu ĐÃ SỬA
+> trực tiếp tại chỗ; các dòng còn lại (brand.logo, huy hiệu BCT, bộ lọc/sắp
+> xếp, hai số hotline, nội dung block sản phẩm...) **chưa chắc còn đúng** —
+> đọc code hiện tại trước khi tin theo bảng, đừng suy đoán từ bảng này.
+
 ## Claude đang giữ
 
 - **Worktree** `/home/admin01/src/pts-nuxt-ui-foundation`
@@ -91,7 +100,26 @@ chúng thì báo trước; Claude chỉ ĐỌC, không sửa.
 Ràng buộc: read-only với DB, giữ đúng filter published/hidden của PHP, có
 contract test, không mở route public mới.
 
-#### BUG SEO đã xác minh — sửa trước khi bất kỳ route PDP nào lên hybrid
+#### BUG SEO đã xác minh — ĐÃ SỬA 2026-10-27 (không còn Codex chạy, Claude tự xử lý luôn backend)
+
+Giữ nguyên mô tả gốc dưới đây làm hồ sơ; bug KHÔNG còn tồn tại trên nhánh này.
+Đã sửa đồng thời ở `ptsCatalogProductUrl()`, `ptsPdpCanonicalUrl()` +
+construction `canonical.url` trong `ptsPdpPayload()`, và
+`ptsProjectDetailProductDto()` (route thiết bị liên quan ở trang dự án dùng
+chung bug) — cả 3 nơi phát sinh URL sản phẩm, không chỉ PDP tự trỏ về mình.
+Cập nhật kèm theo ở `public-catalog.ts`, `public-product-detail.ts`,
+`public-project-detail.ts` và toàn bộ fixture test PHP/TS liên quan (một số
+fixture PHP hoá ra đã lỗi thời từ lần tích hợp sanitizer trước — `rendered`/
+`paragraphs` không còn tồn tại trong payload thật — phát hiện và sửa luôn khi
+đọc lại các file này). Đồng thời đã thêm `pricing` thật cho PDP (cùng gate
+`publicProductPricesVisible()`/`baogia` như catalog), qua
+`ptsPdpPricingDto()`; `product.content`/`parity.blocks` KHÔNG dùng sanitizer
+vì nội dung dài của sản phẩm là hệ block JSON riêng
+(`table_content_section`, `product_content_blocks.php`), không phải một cột
+CKEditor đơn như news/project/solution — lý do đổi tên thành
+`product_content_blocks_not_wired`, cần DTO riêng, chưa làm ở đây.
+
+#### Hồ sơ gốc của bug (trước khi sửa)
 
 `libraries/pts_public_product_detail_api.php:84` ép thêm dấu `/` vào cuối
 canonical:
@@ -120,7 +148,8 @@ www/non-www sau cutover 2026-09-17 — ghi chú trong file đó mô tả hậu q
 thôi sẽ làm contract test fail. Phải sửa cả hai cùng lúc — đây là lý do mục này
 cần một chủ duy nhất, và chủ đó nên là người đang giữ PHP DTO.
 
-Claude KHÔNG sửa mục này vì đã nhường PHP; chỉ phát hiện và bàn giao.
+~~Claude KHÔNG sửa mục này vì đã nhường PHP; chỉ phát hiện và bàn giao.~~ —
+hết hiệu lực 2026-10-27, xem phần ĐÃ SỬA ở trên.
 
 ### Ưu tiên 2: nhánh nội dung (nếu muốn làm frontend)
 

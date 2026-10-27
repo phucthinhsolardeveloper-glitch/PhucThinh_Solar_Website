@@ -7,7 +7,10 @@ $row = array('id'=>7,'namevi'=>'Giải pháp thật','descvi'=>'Tóm tắt <b>an
 $solutions = array($row, array('id'=>8,'namevi'=>'Ẩn','slugvi'=>'an','status'=>'solutionhub'));
 $products = array(array('id'=>3,'namevi'=>'Thiết bị thật','descvi'=>'Mô tả','slugvi'=>'thiet-bi','status'=>'hienthi,solutionhub','_pts_public_photo'=>''));
 $payload = ptsSolutionDetailPayload($row, array(array('photo'=>'/upload/news/gallery.jpg')), $solutions, $products);
-solutionDetailAssert($payload['solution']['paragraphs'] === array('Đoạn một.','Đoạn hai.'), 'CKEditor được chuyển thành paragraph text và loại executable HTML');
+solutionDetailAssert($payload['solution']['content']['format'] === 'sanitized-html' && $payload['solution']['content']['sanitizedBy'] === 'pts_public_richtext' && strpos($payload['solution']['content']['html'], '<script') === false && strpos($payload['solution']['content']['html'], 'alert(1)') === false, 'content da sanitize qua pts_public_richtext, loai bo script');
+solutionDetailAssert(strpos($payload['solution']['content']['html'], 'Đoạn một.') !== false && strpos($payload['solution']['content']['html'], 'Đoạn hai.') !== false, 'content giu lai van ban thuc giua cac doan');
+solutionDetailAssert($payload['solution']['extraContent']['format'] === 'sanitized-html' && strpos($payload['solution']['extraContent']['html'], 'Thông tin thêm.') !== false, 'extraContent sanitize tu content1vi');
+
 solutionDetailAssert($payload['solution']['gallery'] === array('/upload/news/gallery.jpg'), 'gallery giữ ảnh đã được allowlist');
 solutionDetailAssert(count($payload['navigation']['items']) === 1 && $payload['navigation']['items'][0]['active'] === true, 'navigation chỉ lấy solution published + solutionhub');
 solutionDetailAssert($payload['cta']['href'] === '/lien-he/#yeu-cau-tu-van', 'CTA trỏ về form legacy');

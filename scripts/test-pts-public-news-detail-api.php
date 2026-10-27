@@ -8,7 +8,8 @@ detailAssert(ptsNewsDetailImage('gallery.webp') === '/upload/news/gallery.webp',
 detailAssert(ptsNewsDetailImage('../secret.jpg') === '', 'media ảnh traversal bị loại');
 detailAssert(ptsNewsDetailVideo('javascript:alert(1)') === '', 'video javascript bị loại');
 $dto = ptsNewsDetailArticleDto(array('id'=>8,'namevi'=>'Bài <b>CMS</b>','slugvi'=>'bai-cms','status'=>'hienthi','date_created'=>strtotime('2026-10-26'),'contentvi'=>'<p>Nội dung</p>','descvi'=>'Mô tả','_pts_public_photo'=>'cover.jpg'), array(), array('fullname'=>'Tác giả'), array('gallery'=>array(),'videos'=>array()), array());
-detailAssert($dto['content']['format'] === 'plain-text' && strpos($dto['content']['value'], '<') === false, 'nội dung không lộ HTML');
+detailAssert($dto['content']['format'] === 'sanitized-html' && $dto['content']['sanitizedBy'] === 'pts_public_richtext' && strpos($dto['content']['html'], '<script') === false, 'noi dung da qua pts_public_richtext, khong lo script tho');
+
 detailAssert($dto['legacyViewMutation'] === false && $dto['canonical'] === '/bai-cms/', 'DTO detail read-only và canonical bare slug');
 detailAssert(ptsNewsDetailArticleDto(array('id'=>8,'type'=>'du-an','namevi'=>'Sai loại','slugvi'=>'sai-loai','status'=>'hienthi'), array(), array(), array('gallery'=>array(),'videos'=>array()), array()) === null, 'wrong type bị loại khỏi DTO');
 detailAssert(ptsNewsDetailArticleDto(array('id'=>8,'type'=>'tin-tuc','namevi'=>'Ẩn','slugvi'=>'an','status'=>'noibat'), array(), array(), array('gallery'=>array(),'videos'=>array()), array()) === null, 'bài ẩn bị loại khỏi DTO');

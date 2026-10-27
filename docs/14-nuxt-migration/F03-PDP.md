@@ -13,9 +13,9 @@
 
 | Hạng mục | Trạng thái | Lý do |
 |---|---|---|
-| Giá regular/sale, giảm giá | Chưa xuất | API chưa gọi cùng gate `public_pricing.php`; không suy diễn giá |
+| Giá regular/sale, giảm giá | **Đã xuất 2026-10-27** | `ptsPdpPricingDto()` gọi cùng gate `publicProductPricesVisible()`/status `baogia` như `pts_public_catalog_api.php::ptsCatalogPricingDto()`; nhân đó cũng sửa luôn bug canonical PDP ép dư dấu `/` cuối (`ptsPdpCanonicalUrl`, không khớp `publicProductEntityPath()`/router thật) |
 | Quote / mua ngay / giỏ hàng | Giữ PHP | Preview không tạo session, cart, POST hay checkout |
-| CKEditor/content blocks | Deferred | Chưa có sanitizer/allowlist an toàn cho HTML và ảnh trong block |
+| CKEditor/content blocks | Deferred — **khác cơ chế so với news/project/solution** | Nội dung dài của sản phẩm không nằm ở một cột CKEditor đơn mà là hệ block JSON riêng (`table_content_section`, đọc/ghi qua `product_content_blocks.php`, scope=`product`) — không thể tái dùng `pts_public_richtext.php` trực tiếp như 3 loại nội dung kia (đã xong sanitizer 2026-10-27), cần thiết kế DTO theo từng loại block trước. Reason string đổi thành `product_content_blocks_not_wired` để không bị hiểu nhầm là "chỉ còn thiếu sanitizer". |
 | Tài liệu sản phẩm | Chưa xuất | Cần gate path/file public riêng, tránh leak đường dẫn/private asset |
 | Reviews/comments | Giữ PHP | Mutation/session legacy chưa được headless hóa |
 | Related products | Chưa xuất | Thứ tự merchandising legacy chưa được kiểm chứng parity |

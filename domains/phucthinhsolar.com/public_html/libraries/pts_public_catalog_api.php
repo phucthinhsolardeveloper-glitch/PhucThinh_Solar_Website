@@ -35,7 +35,7 @@ function ptsCatalogCategoryUrl(array $slugs)
 function ptsCatalogProductUrl($slug)
 {
     $slug = ptsCatalogSlug($slug);
-    return $slug === '' ? '' : '/san-pham/'.$slug.'/';
+    return $slug === '' ? '' : '/san-pham/'.$slug;
 }
 
 function ptsCatalogPublicMedia($value)

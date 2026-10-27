@@ -29,13 +29,47 @@ function ptsPdpMediaUrl($value, $root = '', $uploadDirectory = 'upload/product/'
 function ptsPdpCanonicalUrl($slug)
 {
     $slug = ptsPdpSlug($slug);
-    return $slug === '' ? '' : '/san-pham/'.$slug.'/';
+    return $slug === '' ? '' : '/san-pham/'.$slug;
 }
 
 function ptsPdpProfileKey($value)
 {
     $value = is_scalar($value) ? trim((string)$value) : '';
     return preg_match('/^[a-z0-9_]+$/', $value) ? $value : 'general';
+}
+
+function ptsPdpPositiveNumber($value)
+{
+    if(!is_scalar($value) || !is_numeric($value)) return null;
+    $number = (float)$value;
+    return is_finite($number) && $number > 0 ? $number : null;
+}
+
+function ptsPdpMoney($value)
+{
+    $number = ptsPdpPositiveNumber($value);
+    return $number === null || $number > PHP_INT_MAX ? null : (int)round($number);
+}
+
+/*
+ * Cung cap pricing.mode qua publicProductRequiresQuote()-tuong duong (cung
+ * authority voi libraries/public_pricing.php va da dung cho catalog o
+ * pts_public_catalog_api.php::ptsCatalogPricingDto()): an gia khi cau hinh
+ * tat gia cong khai, khi status co 'baogia', hoac khi khong co regular_price
+ * lan sale_price.
+ */
+function ptsPdpPricingDto(array $row, $pricesVisible)
+{
+    $regular = ptsPdpMoney(isset($row['regular_price']) ? $row['regular_price'] : null);
+    $sale = ptsPdpMoney(isset($row['sale_price']) ? $row['sale_price'] : null);
+    $statuses = array_filter(array_map('trim', explode(',', isset($row['status']) ? (string)$row['status'] : '')));
+    $mode = $pricesVisible && !in_array('baogia', $statuses, true) && ($regular !== null || $sale !== null) ? 'price' : 'quote';
+    return array(
+        'mode' => $mode,
+        'currency' => 'VND',
+        'regularPrice' => $mode === 'price' ? $regular : null,
+        'salePrice' => $mode === 'price' ? $sale : null
+    );
 }
 
 function ptsPdpSpecDto(array $row)
@@ -58,7 +92,7 @@ function ptsPdpSpecDto(array $row)
     return $specs;
 }
 
-function ptsPdpPayload(array $row, array $media, array $specs, $canonical, array $canonicalSources)
+function ptsPdpPayload(array $row, array $media, array $specs, $canonical, array $canonicalSources, $pricesVisible = false)
 {
     $id = isset($row['id']) ? (int)$row['id'] : 0;
     $slug = ptsPdpSlug(isset($row['slugvi']) ? $row['slugvi'] : '');
@@ -79,15 +113,23 @@ function ptsPdpPayload(array $row, array $media, array $specs, $canonical, array
             'media' => array_values(array_unique(array_filter($media))),
             'specifications' => array_values($specs)
         ),
-        'pricing' => array('included' => false, 'reason' => 'public_pricing_authority_not_delegated'),
-        'content' => array('rendered' => false, 'reason' => 'ckeditor_content_deferred_until_sanitizer_gate'),
-        'canonical' => array('url' => $canonical !== '' ? '/'.trim($canonical, '/').'/' : ptsPdpCanonicalUrl($slug), 'sources' => $canonicalSources),
+        'pricing' => ptsPdpPricingDto($row, $pricesVisible),
+        /*
+         * KHAC voi news/project/solution detail: noi dung dai cua san pham
+         * KHONG nam o mot cot CKEditor don (contentvi) ma la he block JSON co
+         * cau truc rieng (table_content_section, doc/ghi qua
+         * libraries/product_content_blocks.php, scope='product'). Khong the
+         * tai dung pts_public_richtext.php cho truong hop nay - can thiet ke
+         * DTO rieng cho tung loai block truoc, nen con de deferred o day.
+         */
+        'content' => array('rendered' => false, 'reason' => 'product_content_blocks_not_wired'),
+        'canonical' => array('url' => $canonical !== '' ? '/'.trim($canonical, '/') : ptsPdpCanonicalUrl($slug), 'sources' => $canonicalSources),
         'parity' => array(
             'quote' => array('included' => false, 'reason' => 'legacy_quote_flow_stays_php'),
             'reviews' => array('included' => false, 'reason' => 'legacy_comment_mutation_stays_php'),
             'related' => array('included' => false, 'reason' => 'legacy_merchandising_order_not_verified'),
             'jsonLd' => array('included' => false, 'reason' => 'php_structured_data_authority_not_delegated'),
-            'blocks' => array('included' => false, 'reason' => 'ckeditor_content_deferred_until_sanitizer_gate')
+            'blocks' => array('included' => false, 'reason' => 'product_content_blocks_not_wired')
         )
     );
 }

@@ -59,7 +59,7 @@ function ptsProjectDetailProductDto(array $row, $root = '')
         'id' => $id,
         'name' => $name,
         'slug' => $slug,
-        'url' => '/san-pham/'.$slug.'/',
+        'url' => '/san-pham/'.$slug,
         'code' => ptsProjectDetailText(isset($row['code']) ? $row['code'] : ''),
         'image' => ptsProjectDetailMedia(isset($row['photo']) ? $row['photo'] : '', $root, 'upload/product/')
     );

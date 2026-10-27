@@ -1,9 +1,24 @@
 <script setup lang="ts">
 import type { PublicProductDetail } from '#shared/contracts/public-product-detail'
+import type { PublicCatalogPricing } from '#shared/contracts/public-catalog'
 import ProductPreviewGallery from './ProductPreviewGallery.vue'
 import ProductPreviewSpecs from './ProductPreviewSpecs.vue'
 
-defineProps<{ product: PublicProductDetail }>()
+const props = defineProps<{ product: PublicProductDetail; pricing: PublicCatalogPricing }>()
+
+/*
+ * Dinh dang tien khop PHP: class.Functions.php::formatMoney() ->
+ * number_format($price,0,',','.') + 'd'. Giong CatalogProductGrid.vue.
+ */
+function formatMoney(value: number): string {
+  return `${new Intl.NumberFormat('vi-VN').format(value)}đ`
+}
+
+const discountPercent = computed(() => {
+  if (props.pricing.mode !== 'price' || !props.pricing.salePrice || !props.pricing.regularPrice) return 0
+  if (props.pricing.regularPrice <= props.pricing.salePrice) return 0
+  return Math.round(((props.pricing.regularPrice - props.pricing.salePrice) / props.pricing.regularPrice) * 100)
+})
 </script>
 
 <template>
@@ -32,17 +47,43 @@ defineProps<{ product: PublicProductDetail }>()
         <p v-if="product.summary" class="leading-relaxed text-slate-500">{{ product.summary }}</p>
 
         <!--
+          Khối giá: tai dung cung logic/mau voi templates/product/product_detail_tpl.php
+          (publicProductRequiresQuote) va cung mau #d52525 do duoc tu
+          assets/css/product-detail-v2.css (load SAU theme-v2.css tren trang PDP
+          thuc, nen #d52525!important thang #dc2626!important cua theme-v2 —
+          khac voi CatalogProductGrid.vue dung #dc2626 vi trang danh muc khong
+          load product-detail-v2.css).
+        -->
+        <div class="mt-6 border-t border-gray-200 pt-5">
+          <p class="mb-2 text-xs font-bold uppercase tracking-wide text-slate-400">Giá bán</p>
+          <div v-if="pricing.mode === 'quote'">
+            <p class="m-0 text-[clamp(27px,2vw,36px)] font-extrabold leading-none text-[#d52525]">Liên hệ</p>
+            <p class="mt-1.5 text-[12.5px] leading-relaxed text-slate-500">Nhận báo giá theo số lượng và nhu cầu sử dụng</p>
+          </div>
+          <div v-else class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+            <span class="text-[clamp(27px,2vw,36px)] font-extrabold leading-none text-[#d52525]">
+              {{ formatMoney(pricing.salePrice ?? pricing.regularPrice ?? 0) }}
+            </span>
+            <span class="text-sm text-slate-500">/ bộ</span>
+            <template v-if="pricing.salePrice && pricing.regularPrice && pricing.regularPrice > pricing.salePrice">
+              <span class="text-sm text-slate-400 line-through">{{ formatMoney(pricing.regularPrice) }}</span>
+              <span v-if="discountPercent > 0" class="rounded-md bg-red-600 px-2 py-1 text-xs font-bold text-white">-{{ discountPercent }}%</span>
+            </template>
+            <p class="mt-1 basis-full text-[12.5px] leading-relaxed text-slate-500">Giá đã gồm VAT; chi phí vận chuyển và lắp đặt báo riêng theo khu vực.</p>
+          </div>
+        </div>
+
+        <!--
           CÒN THIẾU so với ảnh production — tất cả đều do DTO khai không cung cấp:
-          giá 2.648.100đ/tờ, 4 chip thông số nổi bật, ô chọn số lượng, nút
-          "Mua ngay" + "Thêm giỏ hàng", 3 chip bảo chứng, tab neo, video, FAQ,
-          đánh giá, form tư vấn và dải sản phẩm liên quan.
-          public-product-detail.ts: pricing.included = false,
+          4 chip thông số nổi bật, ô chọn số lượng, nút "Mua ngay" + "Thêm giỏ
+          hàng", 3 chip bảo chứng, tab neo, video, FAQ, đánh giá, form tư vấn và
+          dải sản phẩm liên quan. public-product-detail.ts:
           content.rendered = false, parity.{quote,reviews,related,jsonLd,blocks}
           đều included = false. Không dựng nút mua khi chưa có luồng giá thật:
           nút mua không mua được là lỗi tệ hơn không có nút.
         -->
-        <p class="mt-8 border-t border-gray-200 pt-4 font-semibold text-navy-800">
-          Giá và đặt hàng vẫn thuộc luồng PHP legacy; preview không tự hiển thị giá.
+        <p class="mt-6 border-t border-gray-200 pt-4 font-semibold text-navy-800">
+          Đặt hàng vẫn thuộc luồng PHP legacy; preview chưa dựng nút mua.
         </p>
       </div>
     </div>

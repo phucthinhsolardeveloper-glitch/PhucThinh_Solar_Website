@@ -4,7 +4,7 @@ require_once __DIR__.'/../domains/phucthinhsolar.com/public_html/libraries/pts_p
 function catalogAssert($condition, $message) { if(!$condition) throw new RuntimeException($message); echo "PASS: {$message}\n"; }
 
 $dto = ptsCatalogProductDto(array('id'=>1,'namevi'=>'<b>Đèn</b>','slugvi'=>'den-1','status'=>'hienthi','photo'=>'ok.jpg','regular_price'=>2648100,'sale_price'=>2490000,'cong_suat'=>650), true);
-catalogAssert($dto['url'] === '/san-pham/den-1/', 'canonical product URL');
+catalogAssert($dto['url'] === '/san-pham/den-1', 'canonical product URL has no trailing slash (matches legacy router)');
 catalogAssert($dto['powerWatts'] === 650.0, 'positive product power projected');
 catalogAssert($dto['pricing'] === array('mode'=>'price','currency'=>'VND','regularPrice'=>2648100,'salePrice'=>2490000), 'authorized public pricing projected');
 catalogAssert(ptsCatalogProductDto(array('id'=>5,'namevi'=>'Báo giá','slugvi'=>'bao-gia','status'=>'hienthi,baogia','regular_price'=>999000), true)['pricing']['mode'] === 'quote', 'per-product quote status suppresses price');

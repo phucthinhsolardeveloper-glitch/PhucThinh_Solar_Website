@@ -11,7 +11,8 @@ const slug = computed(() => typeof route.query.slug === 'string' ? route.query.s
 const { data: siteData } = await useFetch<unknown>('/_migration/site', { default: () => fallbackSite })
 const { data: productData, error, pending } = await useFetch<unknown>('/_migration/product-detail', { query: computed(() => ({ slug: slug.value })), default: () => null })
 const site = computed(() => isPublicSitePayload(siteData.value) ? siteData.value : fallbackSite)
-const product = computed<PublicProductDetailPayload['product'] | null>(() => isPublicProductDetailPayload(productData.value) ? productData.value.product : null)
+const payload = computed<PublicProductDetailPayload | null>(() => isPublicProductDetailPayload(productData.value) ? productData.value : null)
+const product = computed(() => payload.value?.product ?? null)
 useSeoMeta({ title: computed(() => product.value ? `${product.value.name} — preview` : 'Product preview'), robots: 'noindex, nofollow, noarchive' })
 </script>
 <template>
@@ -38,7 +39,7 @@ useSeoMeta({ title: computed(() => product.value ? `${product.value.name} — pr
         <p class="text-slate-500">Không thể tải sản phẩm CMS hoặc slug chưa hợp lệ. Preview không hiển thị dữ liệu giả.</p>
       </div>
 
-      <ProductPreviewPage v-else :product="product" />
+      <ProductPreviewPage v-else :product="product" :pricing="payload!.pricing" />
     </main>
 
     <SiteFooter :site="site" />

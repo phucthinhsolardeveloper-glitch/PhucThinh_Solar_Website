@@ -22,13 +22,23 @@ try {
     require_once LIBRARIES.'autoload.php';
     new AutoLoad();
     $d = new PDODb($config['database']);
+    /*
+     * publicProductPricesVisible() doc global $optsetting. Khong goi
+     * api/config.php (co startSecureSession() + khoi tao Cart) vi bootstrap
+     * nay chu dinh read-only; tu lay options tu #_setting bang truy van don,
+     * khong qua lop Cache (vi Cache can $d da co nhung object Cache khong
+     * duoc khoi tao trong bootstrap toi gian nay).
+     */
+    $settingRow = $d->rawQueryOne('select options from #_setting limit 1');
+    $optsetting = !empty($settingRow['options']) ? json_decode($settingRow['options'], true) : null;
     require_once LIBRARIES.'public_route_resolver.php';
     require_once LIBRARIES.'product_category_urls.php';
     require_once LIBRARIES.'product_pdp_profiles.php';
     require_once LIBRARIES.'product_specs.php';
+    require_once LIBRARIES.'public_pricing.php';
     require_once LIBRARIES.'pts_public_product_detail_api.php';
 
-    $fields = array('id','namevi','slugvi','code','descvi','photo','photo2','status','type','id_list','id_cat','id_item','id_sub','id_brand','pdp_profile','additional_specs');
+    $fields = array('id','namevi','slugvi','code','descvi','photo','photo2','status','type','id_list','id_cat','id_item','id_sub','id_brand','pdp_profile','additional_specs','regular_price','sale_price');
     $specFields = array('cong_suat','material','waterproof_rating','warranty','package_contents','light_source','lamp_dimensions','color_temperature','light_color','battery_capacity','panel_power','charging_time','lighting_time','led_chip','lighting_area','installation_height','panel_dimensions','carton_quantity','carton_dimensions','weight');
     $fields = array_values(array_unique(array_merge($fields, $specFields)));
     $row = $d->rawQueryOne('select '.implode(',', $fields).' from #_product where slugvi = ? and type = ? and find_in_set(\'hienthi\',status) limit 1', array($slug, 'san-pham'));
@@ -43,6 +53,6 @@ try {
     $gallery = $d->rawQuery('select photo from #_gallery where id_parent = ? and com = \'product\' and kind = \'man\' and val = ? and find_in_set(\'hienthi\',status) order by numb,id desc', array((int)$row['id'], 'san-pham'));
     foreach((array)$gallery as $item) { $url = ptsPdpMediaUrl(isset($item['photo']) ? $item['photo'] : '', ROOT, UPLOAD_PRODUCT_L); if($url !== '') $media[] = $url; }
     $canonical = publicProductEntityPath($d, 'product', (int)$row['id'], 'vi');
-    $payload = ptsPdpPayload($row, $media, ptsPdpSpecDto($row), $canonical, array('product' => 'publicProductEntityPath(product)', 'routeResolver' => 'public_route_resolver.php', 'categoryUrls' => 'product_category_urls.php'));
+    $payload = ptsPdpPayload($row, $media, ptsPdpSpecDto($row), $canonical, array('product' => 'publicProductEntityPath(product)', 'routeResolver' => 'public_route_resolver.php', 'categoryUrls' => 'product_category_urls.php'), publicProductPricesVisible());
     echo json_encode($payload, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR);
 } catch(Throwable $e) { error_log('pts_v1_product_detail: '.$e->getMessage()); http_response_code(500); echo '{"error":{"code":"INTERNAL_ERROR"}}'; }
