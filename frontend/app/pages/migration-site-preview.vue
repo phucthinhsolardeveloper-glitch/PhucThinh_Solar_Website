@@ -7,6 +7,7 @@ import SolutionsIntro from '~/components/solutions/SolutionsIntro.vue'
 import SolutionCards from '~/components/solutions/SolutionCards.vue'
 import SolutionsEquipment from '~/components/solutions/SolutionsEquipment.vue'
 import SolutionsCta from '~/components/solutions/SolutionsCta.vue'
+import EditorialRichText from '~/components/editorial/EditorialRichText.vue'
 
 const fallbackSite: PublicSitePayload = { schemaVersion: 1, brand: { name: 'Phúc Thịnh Solar', hotline: '' }, productCategories: [] }
 const { data: siteData, error: siteError } = await useFetch<unknown>('/_migration/site', { default: () => fallbackSite })
@@ -37,9 +38,9 @@ useSeoMeta({ title: 'Site preview — Phúc Thịnh Solar', robots: 'noindex, no
           <SolutionsIntro v-if="solutions.intro" :intro="solutions.intro" />
           <h1 v-else class="min-h-[45vh] py-12 text-[clamp(28px,4vw,42px)] font-black tracking-tight">{{ solutions.title }}</h1>
           <SolutionCards :cards="solutions.cards" :choices-label="solutions.labels.choices" :empty-label="solutions.labels.empty" :consult-label="solutions.labels.consult" />
-          <p v-if="!solutions.editorial.rendered" class="my-10 rounded-btn bg-slate-50 p-4 leading-relaxed text-slate-500">
-            Nội dung biên tập dài chưa được render: {{ solutions.editorial.reason }}.
-          </p>
+          <section v-if="solutions.editorial.content.html" class="pb-[54px]" aria-label="Nội dung tư vấn giải pháp">
+            <EditorialRichText :content="solutions.editorial.content" />
+          </section>
           <SolutionsEquipment :equipment="solutions.equipment" :title="solutions.labels.equipment" :all-products-url="solutions.allProductsUrl" :all-products-label="solutions.labels.allProducts" />
           <SolutionsCta v-if="solutions.cta" :cta="solutions.cta" />
         </div>

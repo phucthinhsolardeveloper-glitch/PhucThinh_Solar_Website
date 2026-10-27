@@ -6,6 +6,7 @@ import SolutionsIntro from '~/components/solutions/SolutionsIntro.vue'
 import SolutionCards from '~/components/solutions/SolutionCards.vue'
 import SolutionsEquipment from '~/components/solutions/SolutionsEquipment.vue'
 import SolutionsCta from '~/components/solutions/SolutionsCta.vue'
+import EditorialRichText from '~/components/editorial/EditorialRichText.vue'
 
 useSeoMeta({ title: 'Giải pháp — internal preview', robots: 'noindex, nofollow, noarchive' })
 
@@ -33,7 +34,6 @@ const { data, error } = await useAsyncData<PublicSolutionsPayload>('migration-so
       <div v-if="error || !data" class="min-h-[45vh] py-12">
         <h1 class="mb-4 text-[clamp(28px,4vw,42px)] font-black tracking-tight">Giải pháp — internal preview</h1>
         <p class="max-w-[62ch] leading-relaxed text-slate-500">Không thể tải dữ liệu PHP DTO trong môi trường hiện tại. Preview không hiển thị sản phẩm hoặc nội dung giả.</p>
-        <p class="max-w-[62ch] leading-relaxed text-slate-500">Editorial rich-text đang được trì hoãn tới khi có sanitizer/allowlist gate.</p>
       </div>
 
       <template v-else>
@@ -43,14 +43,14 @@ const { data, error } = await useAsyncData<PublicSolutionsPayload>('migration-so
         <SolutionCards :cards="data.cards" :choices-label="data.labels.choices" :empty-label="data.labels.empty" :consult-label="data.labels.consult" />
 
         <!--
-          content.rendered = false (parity gate): khối TOC + bài biên tập dài
-          trên ảnh production chính là nội dung CKEditor này, đang chờ
-          sanitizer. Giữ placeholder văn bản thuần, không tái tạo TOC/bài viết
-          giả — đúng cách các trang khác xử lý cùng loại gate.
+          Legacy /giai-phap/ lấy khối này từ solution-intro.contentvi và đặt
+          ngay sau danh sách card. HTML chỉ được render sau khi đi qua
+          pts_public_richtext.php + contract guard dùng chung. TOC legacy vẫn
+          chưa tự sinh; không dựng mục lục giả khi chưa có heading model.
         -->
-        <p v-if="!data.editorial.rendered" class="my-10 rounded-btn bg-slate-50 p-4 leading-relaxed text-slate-500">
-          Nội dung biên tập dài chưa được render: {{ data.editorial.reason }}.
-        </p>
+        <section v-if="data.editorial.content.html" class="pb-[54px]" aria-label="Nội dung tư vấn giải pháp">
+          <EditorialRichText :content="data.editorial.content" />
+        </section>
 
         <SolutionsEquipment :equipment="data.equipment" :title="data.labels.equipment" :all-products-url="data.allProductsUrl" :all-products-label="data.labels.allProducts" />
         <SolutionsCta v-if="data.cta" :cta="data.cta" />

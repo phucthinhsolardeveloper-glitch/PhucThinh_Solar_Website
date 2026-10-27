@@ -73,6 +73,9 @@ function ptsPublicSolutionsPayload(array $solutionRows, array $introRows, array 
 
     $visibleIntroRows = solutionHubSelect($introRows, '', 1);
     $visibleCtaRows = solutionHubSelect($ctaRows, '', 1);
+    $editorialHtml = $visibleIntroRows
+        ? ptsPublicRichTextSanitize(isset($visibleIntroRows[0]['contentvi']) ? $visibleIntroRows[0]['contentvi'] : '')
+        : '';
     $intro = null;
     $title = $ui['title'];
     if(!$introRows || $visibleIntroRows)
@@ -154,8 +157,16 @@ function ptsPublicSolutionsPayload(array $solutionRows, array $introRows, array 
         ),
         'cta' => $cta,
         'editorial' => array(
-            'rendered' => false,
-            'reason' => 'rich_text_deferred_until_sanitizer_gate'
+            'content' => array(
+                'format' => 'sanitized-html',
+                'html' => $editorialHtml,
+                'sanitizedBy' => 'pts_public_richtext',
+                'sanitizerVersion' => 1
+            ),
+            'toc' => array(
+                'rendered' => false,
+                'reason' => $editorialHtml === '' ? 'no_editorial_content' : 'toc_generation_not_implemented'
+            )
         )
     );
 }

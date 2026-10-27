@@ -21,8 +21,12 @@ các trường public sau:
 - `cta`: object hoặc `null` khi toàn bộ record `solution-cta` bị ẩn. Object gồm
   `title`, `description`, `buttonLabel`, `image`, link `consult` và `hotline`.
   `hotline` là `null` khi CMS không có hotline hợp lệ.
-- `editorial`: hiện có `rendered: false` và lý do defer. `contentvi/contenten`
-  không được đưa qua API vì chưa có sanitizer/allowlist gate cho rich text.
+- `editorial.content`: envelope rich-text đã qua `pts_public_richtext.php`, gồm
+  `format: "sanitized-html"`, `html`, `sanitizedBy` và `sanitizerVersion: 1`.
+  Nguồn đúng theo PHP legacy là `solution-intro.contentvi`; record intro bị ẩn
+  thì nội dung cũng rỗng, không hồi sinh fallback.
+- `editorial.toc`: hiện giữ `rendered: false`; legacy có mục lục sinh từ `h2`,
+  nhưng Nuxt chưa dựng heading model/TOC nên không bịa liên kết mục lục.
 
 Chuỗi `image` là đường dẫn root-relative trong namespace `/upload/` hoặc
 `/assets/`, đã được kiểm tra basename, extension và file tồn tại trong upload;

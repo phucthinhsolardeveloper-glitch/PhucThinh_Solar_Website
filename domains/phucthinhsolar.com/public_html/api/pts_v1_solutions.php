@@ -21,6 +21,7 @@ try
     require_once __DIR__.'/config.php';
     require_once LIBRARIES.'solution_hub.php';
     require_once LIBRARIES.'product_category_urls.php';
+    require_once LIBRARIES.'pts_public_richtext.php';
     require_once LIBRARIES.'pts_public_solutions_api.php';
 
     $loadRows = static function($sql, array $params) use ($cache) {

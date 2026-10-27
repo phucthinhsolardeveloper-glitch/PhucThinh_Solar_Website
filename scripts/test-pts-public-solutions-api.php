@@ -3,6 +3,7 @@ error_reporting(E_ALL);
 
 require_once __DIR__.'/../domains/phucthinhsolar.com/public_html/libraries/solution_hub.php';
 require_once __DIR__.'/../domains/phucthinhsolar.com/public_html/libraries/product_category_urls.php';
+require_once __DIR__.'/../domains/phucthinhsolar.com/public_html/libraries/pts_public_richtext.php';
 require_once __DIR__.'/../domains/phucthinhsolar.com/public_html/libraries/pts_public_solutions_api.php';
 
 function solutionsAssert($condition, $message)
@@ -48,7 +49,7 @@ $introRows = array(array(
     'namevi' => 'Giải pháp cho công trình',
     'title_indexvi' => 'Tư vấn đúng nhu cầu',
     'descvi' => '<p>Intro <strong>plain text</strong></p>',
-    'contentvi' => '<script>SHOULD_NOT_LEAK</script>',
+    'contentvi' => '<h2 id="chon-giai-phap">Nội dung tư vấn</h2><p>Đã qua <strong>sanitizer</strong>.</p><script>SHOULD_NOT_LEAK</script>',
     'photo' => 'intro.jpg',
     'status' => 'hienthi',
     '_pts_public_photo' => '/upload/news/intro.jpg'
@@ -90,9 +91,11 @@ solutionsAssert(count($result['equipment']) === 4, 'equipment giữ featured sel
 solutionsAssert($result['equipment'][0]['url'] === '/danh-muc-san-pham/tam-pin/', 'canonical equipment URL');
 solutionsAssert($result['cta']['image'] === '/upload/news/cta.jpg' && $result['cta']['hotline']['tel'] === '0901234567', 'CTA upload và hotline');
 solutionsAssert($result['labels']['choices'] === 'Khám phá các giải pháp' && $result['labels']['empty'] !== '', 'nhãn section public đầy đủ');
-solutionsAssert($result['editorial']['rendered'] === false, 'rich text editorial không được xuất khi chưa có sanitizer gate');
+solutionsAssert($result['editorial']['content']['format'] === 'sanitized-html' && $result['editorial']['content']['sanitizedBy'] === 'pts_public_richtext', 'editorial dùng envelope sanitizer dùng chung');
+solutionsAssert(strpos($result['editorial']['content']['html'], '<h2 id="chon-giai-phap">') !== false && strpos($result['editorial']['content']['html'], '<strong>sanitizer</strong>') !== false, 'editorial giữ markup allowlist từ solution-intro.contentvi');
+solutionsAssert(strpos($result['editorial']['content']['html'], 'SHOULD_NOT_LEAK') === false && $result['editorial']['toc']['rendered'] === false, 'editorial loại script và chỉ defer TOC');
 $encoded = json_encode($result, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-solutionsAssert(strpos($encoded, 'SHOULD_NOT_LEAK') === false && strpos($encoded, 'private_token') === false && strpos($encoded, 'contentvi') === false, 'DTO không lộ field private hoặc rich text');
+solutionsAssert(strpos($encoded, 'SHOULD_NOT_LEAK') === false && strpos($encoded, 'private_token') === false && strpos($encoded, 'contentvi') === false, 'DTO không lộ field private hoặc raw CMS field');
 
 $fallbackResult = ptsPublicSolutionsPayload(
     array(array('namevi' => 'Fallback', 'slugvi' => 'fallback', 'status' => 'hienthi,solutionhub')),
@@ -116,6 +119,7 @@ $hiddenResult = ptsPublicSolutionsPayload(
     array()
 );
 solutionsAssert($hiddenResult['intro'] === null && $hiddenResult['cta'] === null, 'record CMS bị ẩn không hồi sinh fallback');
+solutionsAssert($hiddenResult['editorial']['content']['html'] === '' && $hiddenResult['editorial']['toc']['reason'] === 'no_editorial_content', 'intro bị ẩn cũng không làm rich text hồi sinh');
 
 $endpoint = realpath(__DIR__.'/../domains/phucthinhsolar.com/public_html/api/pts_v1_solutions.php');
 $command = escapeshellarg(PHP_BINARY).' -r '.escapeshellarg('$_SERVER["REQUEST_METHOD"] = "POST"; require '.var_export($endpoint, true).';').' 2>&1';

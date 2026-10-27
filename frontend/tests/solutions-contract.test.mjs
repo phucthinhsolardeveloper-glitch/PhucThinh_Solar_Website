@@ -9,7 +9,10 @@ const good = {
   equipment: [{ name: 'Biến tần', description: '', url: '/danh-muc-san-pham/bien-tan/', image: '' }],
   allProductsUrl: '/san-pham/', labels: { choices: 'Khám phá', equipment: 'Thiết bị', allProducts: 'Tất cả', empty: 'Trống', consult: 'Tư vấn', phone: 'Gọi' },
   cta: { title: 'Tư vấn', description: 'Mô tả', buttonLabel: 'Nhận tư vấn', image: '/upload/cta.jpg', links: { consult: { label: 'Nhận tư vấn', href: '#ptsContactModal' } }, hotline: null },
-  editorial: { rendered: false, reason: 'rich_text_deferred_until_sanitizer_gate' },
+  editorial: {
+    content: { format: 'sanitized-html', html: '<h2 id="chon-giai-phap">Nội dung tư vấn</h2><p>Đã qua <strong>sanitizer</strong>.</p>', sanitizedBy: 'pts_public_richtext', sanitizerVersion: 1 },
+    toc: { rendered: false, reason: 'toc_generation_not_implemented' },
+  },
 }
 
 test('accepts the PHP solutions DTO', () => assert.equal(isPublicSolutionsPayload(good), true))
@@ -18,7 +21,10 @@ test('rejects unsafe image paths and arbitrary links', () => {
   assert.equal(isPublicSolutionsPayload({ ...good, cards: [{ ...good.cards[0], image: 'https://example.test/x' }] }), false)
   assert.equal(isPublicSolutionsPayload({ ...good, intro: { ...good.intro, links: { ...good.intro.links, explore: { label: 'x', href: 'https://example.test' } } } }), false)
 })
-test('rejects editorial content and too many equipment items', () => {
-  assert.equal(isPublicSolutionsPayload({ ...good, editorial: { rendered: true, reason: 'x' } }), false)
+test('accepts sanitized editorial content but rejects unsafe markup or fake TOC state', () => {
+  assert.equal(isPublicSolutionsPayload({ ...good, editorial: { ...good.editorial, content: { ...good.editorial.content, html: '<p onclick="bad()">x</p>' } } }), false)
+  assert.equal(isPublicSolutionsPayload({ ...good, editorial: { ...good.editorial, toc: { rendered: true, reason: 'invented' } } }), false)
+})
+test('rejects too many equipment items', () => {
   assert.equal(isPublicSolutionsPayload({ ...good, equipment: Array(5).fill(good.equipment[0]) }), false)
 })
