@@ -20,7 +20,8 @@
 - Frontend contract tests: **113/113 PASS**.
 - Cutover static tests: **8/8 PASS**; preflight vẫn báo `BLOCKED` đúng thiết kế vì feature flag OFF và chưa có production Nuxt service.
 - Visual/SEO fixture tests: **17/17 PASS**.
-- Nuxt typecheck: exit 0; còn cảnh báo không gây fail về `vue-router/volar/sfc-route-blocks`.
+- Nuxt typecheck: exit 0; `vue-router@5.4.0` đã xử lý cảnh báo `vue-router/volar/sfc-route-blocks`.
+- Dependency audit còn 2 transitive advisories (1 high, 1 low); chưa chạy `npm audit fix` tự động.
 - Nuxt production build: **PASS**.
 - SSR smoke: **PASS** — 200, SSR HTML, `noindex`, route không tồn tại trả 404.
 

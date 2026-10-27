@@ -40,7 +40,7 @@ tại, không suy diễn từ mock.
 - Checkpoint code/docs hiện tại: base `07a50ea`; preview implementation gần nhất
   `ae811bb`; local hub: `http://localhost:3100/migration-hub-preview`.
 - Validation đã ghi nhận ở checkpoint trước: 11 PHP file/library mới qua
-  `php -l`, `npm test` 109/109, typecheck exit 0 với warning vue-router/Volar
+  `php -l`, `npm test` 113/113, typecheck exit 0 không còn warning vue-router/Volar
   không fatal và production build PASS. PHP 8.1/Docker và full browser manifest
   không thuộc lane này.
 - Preview GUI hiện bao phủ home, catalog, PDP, search, cart, checkout, order

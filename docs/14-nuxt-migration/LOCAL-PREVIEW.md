@@ -48,7 +48,7 @@ cd /home/admin01/src/pts-nuxt-integration-20261027
 
 ## Latest local checks
 - Checkpoint frontend hiện tại: `ae811bb` trên `feature/pts-nuxt-integration-20261027`.
-- `npm test` 109/109; typecheck exit 0 với warning vue-router/Volar không fatal;
+- `npm test` 113/113; typecheck exit 0, không còn warning vue-router/Volar;
   production build PASS; SSR catalog preview HTTP 200.
 - Catalog preview đã có filter thật, sort, brand detail preview và panel danh mục
   + bộ lọc dùng chung; preview giữ `noindex`.
@@ -63,7 +63,7 @@ cd /home/admin01/src/pts-nuxt-integration-20261027
 - Các gate trước cutover còn lại: production route cutover/hybrid routing, SEO
   canonical/OG/sitemap/robots/redirect parity, catalog filter/sort/stock parity,
   public brand/gallery/video/account canonical parity và final visual/browser QA.
-- Existing optional Vue Router/Volar typechecker warning and npm dependency advisories require a separate pre-production security review.
+- Vue Router/Volar warning đã được xử lý bằng `vue-router@5.4.0`; còn 2 transitive npm advisories (1 high, 1 low) cần review riêng trước production.
 
 ## Rollback / isolation
 To stop **only** this preview, run ./scripts/nuxt-local-preview.sh stop. Do not stop the existing website PHP QA container or Zalo CRM. The old website keeps running from master regardless of the Nuxt preview state.
