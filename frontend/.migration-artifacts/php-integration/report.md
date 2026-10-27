@@ -1,12 +1,14 @@
 # PHP public API integration report
 
-- Status: **BLOCKED**
-- HTTP checks: PASS 0 / FAIL 0 / SKIP 0 (container was not reachable)
-- Slice scripts: not run (WSL has no PHP binary)
-- Compose parse: PASS (`docker compose config`)
-- Container: not started. WSL Docker socket is unavailable; Docker Desktop CLI returned `UtilBindVsockAnyPort: socket failed 1`.
-- Local config: unavailable. `libraries/config.php` is gitignored and absent; no credential or production config was copied.
+- Status: **PENDING_COORDINATOR_RERUN**
+- Base URL: `http://127.0.0.1:8088`
+- Required execution: PHP 8.1 isolated fixture container
+- Local WSL execution: unavailable because PHP is not installed and the sandbox cannot open the local HTTP socket
+- HTTP/slice counters: pending the coordinator rerun
+- DB snapshot: pending the coordinator rerun; the runner performs read-only snapshots and marks unavailable queries as SKIP
 
-The aggregate runner is ready at `scripts/test-pts-public-api-integration.php`. It inventories the 22 read-only `pts_v1_*` endpoints plus `cart_mutate`, `lead_form`, `review`, and `shipping_quote`; mutation checks stop at invalid body/CSRF branches and snapshot read-only DB tables before/after.
+The runner now reads the existing container web-root fixture config without copying or reporting its contents. It uses the real solutions envelope, a valid nonexistent slug (`khong-ton-tai-abcxyz`), preserves session cookies for negative CSRF requests, and executes pure slice scripts through a temporary path-compatible tree. Valid mutation writes and stateful form scripts remain excluded.
 
-No PHP contract bug was fixed because no PHP 8.1 fixture request completed. Production, DB, deployment, and route cutover state are unchanged. Rollback point: `07a50ea` / current worktree before this task.
+Coordinator evidence already confirms HTTP 419 for invalid CSRF requests and HTTP 404 for the valid nonexistent detail slug. Run the committed runner in `pts-php81-codex-api`, then replace this checkpoint with the generated PASS/FAIL report artifacts.
+
+Production, database, deployment, cleanup, and route-cutover state are unchanged. Rollback point: `4fe2979` / current worktree before follow-up.

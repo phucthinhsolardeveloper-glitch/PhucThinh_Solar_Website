@@ -14,14 +14,18 @@
 
 error_reporting(E_ALL);
 
-$root = dirname(__DIR__);
+$scriptDir = __DIR__;
+$root = dirname($scriptDir);
+$publicRoot = is_file($root.'/libraries/config.php')
+    ? $root
+    : $root.'/domains/phucthinhsolar.com/public_html';
 $base = rtrim((string)(getenv('PTS_BASE_URL') ?: 'http://127.0.0.1:80'), '/');
 $reportDir = getenv('PTS_REPORT_DIR') ?: ($root.'/frontend/.migration-artifacts/php-integration');
 $reportJson = $reportDir.'/report.json';
 $reportMarkdown = $reportDir.'/report.md';
 
 $report = array(
-    'schemaVersion' => 1,
+    'schemaVersion' => 2,
     'runner' => 'scripts/test-pts-public-api-integration.php',
     'baseUrl' => $base,
     'php' => PHP_VERSION,
@@ -32,8 +36,18 @@ $report = array(
     'notTestable' => array(),
     'failures' => array(),
     'database' => array('before' => array(), 'after' => array(), 'unchanged' => null),
-    'inventory' => array()
+    'inventory' => array(),
+    'contractBugsFixed' => array(
+        'solutions expectation uses title/intro/cards/equipment/allProductsUrl/labels/cta/editorial envelope',
+        'missing-entity checks use syntactically valid slug khong-ton-tai-abcxyz',
+        'container web-root config discovery and compatibility execution for pure slice scripts',
+        'HTTP session cookies preserved for invalid-CSRF negative checks',
+        'slice failure output is reduced to exit status so reports cannot contain config or secret content'
+    ),
+    'productionState' => 'unchanged; no production access, deploy, migration, or DB write',
+    'rollbackPoint' => '4fe2979 / current worktree before follow-up'
 );
+$sessionCookies = array();
 
 function ptsIntegrationLog($message) { echo $message, PHP_EOL; }
 
@@ -56,6 +70,8 @@ function ptsIntegrationBlocked($reason)
 
 function ptsIntegrationHttp($url, $method = 'GET', $body = null, $cookie = '')
 {
+    global $sessionCookies;
+    if($cookie === '' && $sessionCookies) $cookie = ptsIntegrationCookieHeader($sessionCookies);
     $headers = "Accept: application/json\r\nUser-Agent: PTS-PHP81-Contract-Runner/1\r\n";
     if($cookie !== '') $headers .= 'Cookie: '.$cookie."\r\n";
     $options = array('http'=>array(
@@ -74,13 +90,28 @@ function ptsIntegrationHttp($url, $method = 'GET', $body = null, $cookie = '')
     $headersOut = isset($http_response_header) && is_array($http_response_header) ? $http_response_header : array();
     $status = 0;
     $responseHeaders = array();
+    $setCookies = array();
     foreach($headersOut as $line)
     {
         if(preg_match('#^HTTP/\S+\s+(\d+)#i', $line, $match)) $status = (int)$match[1];
         $parts = explode(':', $line, 2);
-        if(count($parts) === 2) $responseHeaders[strtolower(trim($parts[0]))] = trim($parts[1]);
+        if(count($parts) === 2)
+        {
+            $headerName = strtolower(trim($parts[0]));
+            $headerValue = trim($parts[1]);
+            $responseHeaders[$headerName] = $headerValue;
+            if($headerName === 'set-cookie' && preg_match('/^([^=;]+)=([^;]*)/i', $headerValue, $cookieMatch))
+                $setCookies[$cookieMatch[1]] = $cookieMatch[2];
+        }
     }
-    return array('status'=>$status, 'headers'=>$responseHeaders, 'body'=>(string)$responseBody);
+    return array('status'=>$status, 'headers'=>$responseHeaders, 'cookies'=>$setCookies, 'body'=>(string)$responseBody);
+}
+
+function ptsIntegrationCookieHeader(array $cookies)
+{
+    $parts = array();
+    foreach($cookies as $name=>$value) $parts[] = $name.'='.$value;
+    return implode('; ', $parts);
 }
 
 function ptsIntegrationDecode($response)
@@ -97,8 +128,9 @@ function ptsIntegrationQueryUrl($base, $path, array $query = array())
 
 function ptsIntegrationRequest($name, $path, $method = 'GET', array $query = array(), $body = null, $cookie = '')
 {
-    global $base;
+    global $base, $sessionCookies;
     $response = ptsIntegrationHttp(ptsIntegrationQueryUrl($base, $path, $query), $method, $body, $cookie);
+    if(!empty($response['cookies'])) $sessionCookies = array_merge($sessionCookies, $response['cookies']);
     if($response['status'] === 0)
     {
         ptsIntegrationRecord('skip', $name, 'HTTP service unavailable at '.$base);
@@ -151,31 +183,87 @@ function ptsIntegrationDbOne($db, $sql, array $params = array())
 function ptsIntegrationSnapshot($db, array $tables)
 {
     $snapshot = array();
+    $successful = 0;
     foreach($tables as $table)
     {
         try
         {
             $row = $db->rawQueryOne("select count(*) as n, coalesce(sum(id),0) as id_sum, coalesce(min(id),0) as id_min, coalesce(max(id),0) as id_max from #_{$table}");
             $snapshot[$table] = array('count'=>(int)($row['n'] ?? 0), 'idSum'=>(string)($row['id_sum'] ?? '0'), 'idMin'=>(int)($row['id_min'] ?? 0), 'idMax'=>(int)($row['id_max'] ?? 0));
+            $successful++;
         }
         catch(Throwable $e) { $snapshot[$table] = array('unavailable'=>true); }
     }
+    if($successful === 0) return array('_unavailable'=>true);
     return $snapshot;
 }
 
 function ptsIntegrationSnapshotsEqual(array $before, array $after)
 {
-    foreach($before as $table=>$state) if(($after[$table] ?? null) !== $state) return false;
+    foreach($before as $table=>$state)
+    {
+        if($table === '_unavailable' || !isset($after[$table])) return null;
+        if(!empty($state['unavailable']) || !isset($after[$table]) || !empty($after[$table]['unavailable'])) return null;
+        if($after[$table] !== $state) return false;
+    }
     return true;
 }
 
-/* The file is intentionally not copied from deploy/vps/config/config.php. The
- * local fixture supplies its own gitignored config with local-only credentials. */
-$configPath = $root.'/domains/phucthinhsolar.com/public_html/libraries/config.php';
+function ptsIntegrationSliceScripts($sourceRoot)
+{
+    $sourceScripts = glob($sourceRoot.'/scripts/test-pts-public-*.php') ?: array();
+    $currentRunner = realpath(__FILE__);
+    $sourceScripts = array_values(array_filter($sourceScripts, function($path) use ($currentRunner) {
+        return realpath($path) !== $currentRunner;
+    }));
+    if(!$sourceScripts) return array('scripts'=>array(), 'cleanup'=>array(), 'reason'=>'no slice scripts were available in the runner source tree');
+
+    if(is_dir($sourceRoot.'/domains/phucthinhsolar.com/public_html'))
+        return array('scripts'=>$sourceScripts, 'cleanup'=>array());
+
+    /* Slice tests predate container execution and resolve ../domains/... from
+     * their own directory. Copy only the test files to a temporary compatibility
+     * tree and link its public_html to the existing container web-root; no
+     * application/config data is copied into the repository or report. */
+    global $publicRoot;
+    $compatRoot = sys_get_temp_dir().'/pts-public-api-slices-'.getmypid();
+    $compatScripts = $compatRoot.'/scripts';
+    $compatPublic = $compatRoot.'/domains/phucthinhsolar.com/public_html';
+    @mkdir($compatScripts, 0700, true);
+    @mkdir(dirname($compatPublic), 0700, true);
+    if(!is_dir($compatScripts) || !@symlink($publicRoot, $compatPublic))
+        return array('scripts'=>array(), 'cleanup'=>array('root'=>$compatRoot, 'files'=>array(), 'link'=>$compatPublic), 'reason'=>'temporary compatibility tree could not be prepared');
+
+    $scripts = array();
+    $copied = array();
+    foreach($sourceScripts as $source)
+    {
+        $target = $compatScripts.'/'.basename($source);
+        if(@copy($source, $target)) { $scripts[] = $target; $copied[] = $target; }
+    }
+    return array('scripts'=>$scripts, 'cleanup'=>array('root'=>$compatRoot, 'files'=>$copied, 'link'=>$compatPublic), 'reason'=>empty($scripts) ? 'slice scripts could not be copied to the temporary compatibility tree' : '');
+}
+
+function ptsIntegrationCleanupSliceScripts(array $cleanup)
+{
+    foreach(($cleanup['files'] ?? array()) as $file) @unlink($file);
+    if(!empty($cleanup['link']) && is_link($cleanup['link'])) @unlink($cleanup['link']);
+    if(!empty($cleanup['root']))
+    {
+        @rmdir($cleanup['root'].'/domains/phucthinhsolar.com');
+        @rmdir($cleanup['root'].'/domains');
+        @rmdir($cleanup['root'].'/scripts');
+        @rmdir($cleanup['root']);
+    }
+}
+
+/* Read the existing fixture config in-place. It is never copied, serialized, or
+ * included in the report; deploy/vps/config/config.php is never a fallback. */
+$configPath = $publicRoot.'/libraries/config.php';
 $db = null;
 if(!is_file($configPath))
 {
-    ptsIntegrationBlocked('Missing local-only libraries/config.php in this worktree; no credentials were synthesized or copied.');
+    ptsIntegrationBlocked('Fixture libraries/config.php not found at the selected web-root; no credentials were synthesized or copied.');
 }
 elseif(!class_exists('PDO'))
 {
@@ -186,7 +274,7 @@ else
     try
     {
         $_SERVER['SERVER_NAME'] = 'localhost';
-        if(!defined('LIBRARIES')) define('LIBRARIES', $root.'/domains/phucthinhsolar.com/public_html/libraries/');
+        if(!defined('LIBRARIES')) define('LIBRARIES', $publicRoot.'/libraries/');
         require_once $configPath;
         require_once LIBRARIES.'autoload.php';
         new AutoLoad();
@@ -236,7 +324,7 @@ $fixed = array(
     array('site','/api/pts_v1_site.php',array('schemaVersion','brand','navigation')),
     array('home','/api/pts_v1_home.php',array('schemaVersion','locale','path','categories','productGroups')),
     array('catalog','/api/pts_v1_catalog.php',array('schemaVersion','locale','products','pagination','filters','selected')),
-    array('solutions','/api/pts_v1_solutions.php',array('schemaVersion','locale','path','solutions')),
+    array('solutions','/api/pts_v1_solutions.php',array('schemaVersion','locale','path','title','intro','cards','equipment','allProductsUrl','labels','cta','editorial')),
     array('projects','/api/pts_v1_projects.php',array('schemaVersion','locale','path','projects','pagination')),
     array('news','/api/pts_v1_news.php',array('schemaVersion','locale','path','articles','pagination')),
     array('about','/api/pts_v1_about.php',array('schemaVersion','locale','path','story','cta')),
@@ -320,12 +408,12 @@ foreach($badQueries as $case)
     if($response['status'] !== 0) ptsIntegrationAssertHttp($name, $response, 400, array('error'));
 }
 $missingCases = array(
-    array('product missing','/api/pts_v1_product_detail.php',array('slug'=>'__pts_missing_product_fixture__')),
-    array('product extras missing','/api/pts_v1_product_extras.php',array('slug'=>'__pts_missing_product_fixture__')),
-    array('solution missing','/api/pts_v1_solution_detail.php',array('slug'=>'__pts_missing_solution_fixture__')),
-    array('project missing','/api/pts_v1_project_detail.php',array('slug'=>'__pts_missing_project_fixture__')),
-    array('news missing','/api/pts_v1_news_detail.php',array('slug'=>'__pts_missing_news_fixture__')),
-    array('policy missing','/api/pts_v1_policy_detail.php',array('slug'=>'__pts_missing_policy_fixture__'))
+    array('product missing','/api/pts_v1_product_detail.php',array('slug'=>'khong-ton-tai-abcxyz')),
+    array('product extras missing','/api/pts_v1_product_extras.php',array('slug'=>'khong-ton-tai-abcxyz')),
+    array('solution missing','/api/pts_v1_solution_detail.php',array('slug'=>'khong-ton-tai-abcxyz')),
+    array('project missing','/api/pts_v1_project_detail.php',array('slug'=>'khong-ton-tai-abcxyz')),
+    array('news missing','/api/pts_v1_news_detail.php',array('slug'=>'khong-ton-tai-abcxyz')),
+    array('policy missing','/api/pts_v1_policy_detail.php',array('slug'=>'khong-ton-tai-abcxyz'))
 );
 foreach($missingCases as $case)
 {
@@ -359,11 +447,17 @@ if($response['status'] !== 0) ptsIntegrationAssertHttp('order thanks bad query',
 
 /* Run all pure public API slice scripts. Stateful public form scripts are
  * intentionally excluded by the no-write contract and named in the report. */
-$sliceScripts = glob($root.'/scripts/test-pts-public-*.php') ?: array();
+$slicePlan = ptsIntegrationSliceScripts($root);
+$sliceScripts = $slicePlan['scripts'];
 sort($sliceScripts, SORT_STRING);
+if(!$sliceScripts)
+{
+    $report['sliceScripts']['skip']++;
+    $report['notTestable'][] = array('name'=>'public API slice scripts', 'reason'=>$slicePlan['reason'] ?? 'slice scripts unavailable');
+}
 foreach($sliceScripts as $script)
 {
-    $command = escapeshellarg(PHP_BINARY).' '.escapeshellarg($script).' 2>&1';
+    $command = escapeshellarg(PHP_BINARY).' '.escapeshellarg($script).' 2>/dev/null';
     $output = array(); $exitCode = 0;
     exec($command, $output, $exitCode);
     $name = basename($script);
@@ -371,20 +465,21 @@ foreach($sliceScripts as $script)
     else
     {
         $report['sliceScripts']['fail']++;
-        $tail = array_slice($output, -3);
-        $detail = trim(implode(' | ', $tail));
-        $report['failures'][] = array('name'=>'slice '.$name, 'detail'=>$detail === '' ? 'exit '.$exitCode : $detail);
-        ptsIntegrationLog('FAIL: '.$name.($detail !== '' ? ' — '.$detail : ''));
+        $detail = 'exit '.$exitCode;
+        $report['failures'][] = array('name'=>'slice '.$name, 'detail'=>$detail);
+        ptsIntegrationLog('FAIL: '.$name.' — '.$detail);
     }
 }
+ptsIntegrationCleanupSliceScripts($slicePlan['cleanup']);
 $report['sliceScripts']['excludedNoWrite'] = array('scripts/test-public-form-submissions.php','scripts/test-public-lead-and-review.php');
 
 if($db)
 {
     $report['database']['after'] = ptsIntegrationSnapshot($db, $tables);
     $report['database']['unchanged'] = ptsIntegrationSnapshotsEqual($report['database']['before'], $report['database']['after']);
-    if($report['database']['unchanged']) ptsIntegrationRecord('pass', 'database snapshot unchanged', 'read-only tables stable before/after');
-    else ptsIntegrationRecord('fail', 'database snapshot unchanged', 'one or more read-only table aggregates changed');
+    if($report['database']['unchanged'] === true) ptsIntegrationRecord('pass', 'database snapshot unchanged', 'read-only tables stable before/after');
+    elseif($report['database']['unchanged'] === false) ptsIntegrationRecord('fail', 'database snapshot unchanged', 'one or more read-only table aggregates changed');
+    else ptsIntegrationRecord('skip', 'database snapshot unchanged', 'one or more read-only snapshot queries were unavailable; no write was attempted');
 }
 else $report['database']['unchanged'] = null;
 
@@ -399,8 +494,10 @@ $markdown = array(
     '- Status: **'.$report['status'].'**',
     '- Base URL: `'.$base.'`',
     '- HTTP checks: PASS '.$report['checks']['pass'].' / FAIL '.$report['checks']['fail'].' / SKIP '.$report['checks']['skip'],
-    '- Slice scripts: PASS '.$report['sliceScripts']['pass'].' / FAIL '.$report['sliceScripts']['fail'].'',
+    '- Slice scripts: PASS '.$report['sliceScripts']['pass'].' / FAIL '.$report['sliceScripts']['fail'].' / SKIP '.$report['sliceScripts']['skip'],
     '- DB snapshot unchanged: `'.($report['database']['unchanged'] === null ? 'not available' : ($report['database']['unchanged'] ? 'true' : 'false')).'`',
+    '- Production state: unchanged; no production access, deploy, migration, or DB write.',
+    '- Rollback point: `4fe2979 / current worktree before follow-up`',
     '', '## Blockers / not testable', ''
 );
 foreach($report['blockedReasons'] as $reason) $markdown[] = '- '.$reason;

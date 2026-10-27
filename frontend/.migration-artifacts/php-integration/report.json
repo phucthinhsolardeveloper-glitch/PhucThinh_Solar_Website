@@ -1,28 +1,34 @@
 {
-  "schemaVersion": 1,
-  "status": "BLOCKED",
+  "schemaVersion": 2,
+  "status": "PENDING_COORDINATOR_RERUN",
   "runner": "scripts/test-pts-public-api-integration.php",
   "baseUrl": "http://127.0.0.1:8088",
-  "checks": {"pass": 0, "fail": 0, "skip": 0},
-  "sliceScripts": {"pass": 0, "fail": 0, "skip": 0},
-  "container": {
-    "compose": "docker compose config PASS",
-    "docker": "BLOCKED: WSL docker socket permission denied; Docker Desktop CLI returned UtilBindVsockAnyPort socket failed",
-    "localConfig": "BLOCKED: domains/phucthinhsolar.com/public_html/libraries/config.php is gitignored and absent"
+  "execution": {
+    "requiredRuntime": "PHP 8.1 isolated fixture container",
+    "localEnvironment": "not available: WSL PHP is absent and local HTTP socket access is restricted",
+    "nextAction": "run the committed runner inside pts-php81-codex-api and recopy report artifacts"
   },
+  "checks": {"pass": null, "fail": null, "skip": null},
+  "sliceScripts": {"pass": null, "fail": null, "skip": null},
+  "database": {"before": [], "after": [], "unchanged": null},
+  "evidenceFromCoordinator": [
+    "solutions returns schemaVersion, locale, path, title, intro, cards, equipment, allProductsUrl, labels, cta, editorial",
+    "valid nonexistent slug khong-ton-tai-abcxyz returns HTTP 404 for the six detail checks",
+    "invalid CSRF mutation requests return HTTP 419 in the isolated Apache fixture",
+    "the fixture database and /var/www/html/libraries/config.php are available inside the container"
+  ],
+  "contractBugsFixed": [
+    "solutions expectation uses the real response envelope",
+    "missing-entity checks use a syntactically valid nonexistent slug",
+    "container web-root config discovery reads the existing fixture config without copying it",
+    "pure slice scripts run through a temporary path-compatible tree and exclude the aggregate runner",
+    "HTTP session cookies are preserved for invalid-CSRF negative checks",
+    "slice failure output is reduced to exit status so reports cannot contain config or secret content"
+  ],
   "inventory": {
-    "readOnly": [
-      "pts_v1_site", "pts_v1_home", "pts_v1_catalog", "pts_v1_search", "pts_v1_solutions", "pts_v1_projects", "pts_v1_news", "pts_v1_about", "pts_v1_contact", "pts_v1_dealer", "pts_v1_cart", "pts_v1_checkout", "pts_v1_checkout_wards", "pts_v1_brand_detail", "pts_v1_product_detail", "pts_v1_product_extras", "pts_v1_solution_detail", "pts_v1_project_detail", "pts_v1_news_detail", "pts_v1_policy_detail", "pts_v1_order_thanks"
-    ],
+    "readOnly": ["pts_v1_site", "pts_v1_home", "pts_v1_catalog", "pts_v1_search", "pts_v1_solutions", "pts_v1_projects", "pts_v1_news", "pts_v1_about", "pts_v1_contact", "pts_v1_dealer", "pts_v1_cart", "pts_v1_checkout", "pts_v1_checkout_wards", "pts_v1_brand_detail", "pts_v1_product_detail", "pts_v1_product_extras", "pts_v1_solution_detail", "pts_v1_project_detail", "pts_v1_news_detail", "pts_v1_policy_detail", "pts_v1_order_thanks"],
     "mutationNegativeOnly": ["pts_v1_cart_mutate", "pts_v1_lead_form", "pts_v1_review", "shipping_quote"]
   },
-  "notTestable": [
-    "PHP 8.1 container could not be started from the current WSL/Docker state",
-    "127.0.0.1:8088 HTTP checks unavailable",
-    "local DB fixture counts/checksums unavailable",
-    "php -l and PHP slice scripts unavailable because WSL PHP is not installed"
-  ],
-  "contractBugsFixed": [],
-  "productionState": "unchanged; no production access, deploy, migration, or DB write",
-  "rollbackPoint": "07a50ea / current worktree before this task"
+  "productionState": "unchanged; no production access, deploy, migration, cleanup, or DB write",
+  "rollbackPoint": "4fe2979 / current worktree before follow-up"
 }
