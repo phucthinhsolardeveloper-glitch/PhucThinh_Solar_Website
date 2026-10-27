@@ -34,6 +34,7 @@ export function validateAllowlist(manifest) {
   if (!pilot || typeof pilot.id !== 'string') throw new Error('Pilot route is required')
   validatePath(pilot.publicPath, 'pilot.publicPath')
   validatePath(pilot.nuxtPath, 'pilot.nuxtPath')
+  validatePath(pilot.previewHealthPath, 'pilot.previewHealthPath')
   if (!Array.isArray(pilot.methods) || pilot.methods.length === 0 || pilot.methods.some(method => !SAFE_METHODS.has(method))) {
     throw new Error('Pilot methods must be GET/HEAD only')
   }
@@ -44,6 +45,9 @@ export function validateAllowlist(manifest) {
   const blockedPrefix = [...manifest.phpOwnedPrefixes, ...manifest.forbiddenNuxtPrefixes]
     .find(prefix => pilot.publicPath.startsWith(prefix) || pilot.nuxtPath.startsWith(prefix))
   if (blockedPrefix) throw new Error(`Pilot overlaps protected prefix ${blockedPrefix}`)
+  if (!manifest.forbiddenNuxtPrefixes.some(prefix => pilot.previewHealthPath.startsWith(prefix))) {
+    throw new Error('pilot.previewHealthPath must stay under a forbidden preview prefix')
+  }
   if (pilot.readiness !== 'blocked' && pilot.readiness !== 'ready') throw new Error('Pilot readiness must be blocked or ready')
   return manifest
 }
@@ -88,6 +92,46 @@ export function rollbackPlan() {
     '# 2. Verify pilot, alias, 404/410 and protected PHP routes; record timestamp and metrics.',
     '# 3. Do not restore DB/upload: route rollback does not mutate either.',
   ].join('\n')
+}
+
+function requiredProbeResult(results, routePath, owner) {
+  const result = results.find(item => item.path === routePath)
+  if (!result) throw new Error(`${owner} probe result missing for ${routePath}`)
+  return result
+}
+
+export function validateProbeResults({ manifest, php, nuxt }) {
+  for (const result of [...php, ...nuxt]) {
+    if (result.status >= 500) throw new Error(`Health probe received ${result.status} for ${result.path}`)
+  }
+
+  for (const routePath of ['/', manifest.pilot.publicPath]) {
+    const result = requiredProbeResult(php, routePath, 'PHP')
+    if (result.status !== 200) throw new Error(`PHP public health path ${routePath} expected 200, got ${result.status}`)
+  }
+
+  const preview = requiredProbeResult(nuxt, manifest.pilot.previewHealthPath, 'Nuxt')
+  if (preview.status !== 200) {
+    throw new Error(`Nuxt preview health path ${manifest.pilot.previewHealthPath} expected 200, got ${preview.status}`)
+  }
+  if (!preview.noindex) throw new Error('Nuxt preview is reachable without noindex')
+
+  if (manifest.pilot.readiness === 'blocked') {
+    for (const routePath of new Set(['/', manifest.pilot.nuxtPath])) {
+      const result = requiredProbeResult(nuxt, routePath, 'Nuxt')
+      if (result.status !== 404) {
+        throw new Error(`Blocked pilot expects Nuxt public path ${routePath} to remain unowned (404), got ${result.status}`)
+      }
+    }
+  } else {
+    const publicPilot = requiredProbeResult(nuxt, manifest.pilot.nuxtPath, 'Nuxt')
+    if (publicPilot.status !== 200) {
+      throw new Error(`Ready pilot path ${manifest.pilot.nuxtPath} expected 200, got ${publicPilot.status}`)
+    }
+    if (publicPilot.noindex) throw new Error('Ready Nuxt pilot route must not remain noindex')
+  }
+
+  return true
 }
 
 export async function probeOrigin(origin, paths, { timeoutMs = 5000, fetchImpl = fetch } = {}) {

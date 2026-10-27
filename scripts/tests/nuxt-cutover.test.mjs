@@ -6,13 +6,14 @@ import {
   validateAllowlist,
   validateApproval,
   validateLoopbackOrigin,
+  validateProbeResults,
 } from '../lib/nuxt-cutover.mjs'
 import { parseArgs } from '../nuxt-cutover-preflight.mjs'
 
 const manifest = {
   version: 1,
   featureFlag: { name: 'PTS_NUXT_HYBRID_ENABLED', default: '0' },
-  pilot: { id: 'about', publicPath: '/gioi-thieu/', nuxtPath: '/gioi-thieu/', methods: ['GET', 'HEAD'], readiness: 'blocked' },
+  pilot: { id: 'about', publicPath: '/gioi-thieu/', nuxtPath: '/gioi-thieu/', previewHealthPath: '/migration-about-preview', methods: ['GET', 'HEAD'], readiness: 'blocked' },
   phpOwnedPrefixes: ['/account/', '/administrator/', '/api/', '/gio-hang/'],
   forbiddenNuxtPrefixes: ['/migration-', '/_migration/'],
 }
@@ -67,4 +68,54 @@ test('health probe records status and noindex without following redirects', asyn
   assert.equal(results[0].status, 301)
   assert.equal(results[0].location, '/preview/')
   assert.equal(results[1].noindex, true)
+})
+
+
+test('blocked pilot accepts unowned Nuxt public routes while preview stays healthy and noindex', () => {
+  const php = [
+    { path: '/', status: 200, noindex: false },
+    { path: '/gioi-thieu/', status: 200, noindex: false },
+  ]
+  const nuxt = [
+    { path: '/', status: 404, noindex: false },
+    { path: '/gioi-thieu/', status: 404, noindex: false },
+    { path: '/migration-about-preview', status: 200, noindex: true },
+  ]
+  assert.equal(validateProbeResults({ manifest, php, nuxt }), true)
+})
+
+test('probe validation rejects missing noindex, 5xx, and accidentally exposed blocked public route', () => {
+  const php = [
+    { path: '/', status: 200, noindex: false },
+    { path: '/gioi-thieu/', status: 200, noindex: false },
+  ]
+  const healthyNuxt = [
+    { path: '/', status: 404, noindex: false },
+    { path: '/gioi-thieu/', status: 404, noindex: false },
+    { path: '/migration-about-preview', status: 200, noindex: true },
+  ]
+  const noNoindex = healthyNuxt.map(item => item.path === '/migration-about-preview' ? { ...item, noindex: false } : item)
+  assert.throws(() => validateProbeResults({ manifest, php, nuxt: noNoindex }), /without noindex/)
+
+  const serverError = healthyNuxt.map(item => item.path === '/' ? { ...item, status: 503 } : item)
+  assert.throws(() => validateProbeResults({ manifest, php, nuxt: serverError }), /503/)
+
+  const exposed = healthyNuxt.map(item => item.path === '/gioi-thieu/' ? { ...item, status: 200 } : item)
+  assert.throws(() => validateProbeResults({ manifest, php, nuxt: exposed }), /remain unowned/)
+})
+
+test('ready pilot requires the public Nuxt route to be 200 and indexable', () => {
+  const ready = structuredClone(manifest)
+  ready.pilot.readiness = 'ready'
+  const php = [
+    { path: '/', status: 200, noindex: false },
+    { path: '/gioi-thieu/', status: 200, noindex: false },
+  ]
+  const nuxt = [
+    { path: '/gioi-thieu/', status: 200, noindex: false },
+    { path: '/migration-about-preview', status: 200, noindex: true },
+  ]
+  assert.equal(validateProbeResults({ manifest: ready, php, nuxt }), true)
+  const publicNoindex = nuxt.map(item => item.path === '/gioi-thieu/' ? { ...item, noindex: true } : item)
+  assert.throws(() => validateProbeResults({ manifest: ready, php, nuxt: publicNoindex }), /must not remain noindex/)
 })
