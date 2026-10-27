@@ -7,7 +7,7 @@ const props = defineProps<{
   site: PublicSitePayload
 }>()
 
-const { active: isMigrationPreview, generic: shellHref } = useMigrationLinks()
+const { active: isMigrationPreview, generic: shellHref, external: isExternalLink } = useMigrationLinks()
 const { cart: migrationCart, refresh: refreshMigrationCart } = useMigrationCart()
 
 const brandName = computed(() => props.site.brand.name.trim() || 'Phúc Thịnh Solar')
@@ -19,12 +19,18 @@ const catalogOpen = ref(false)
 const catalogMode = ref<MenuMode>(null)
 const mobileOpen = ref(false)
 const mobileCatalogOpen = ref(false)
+const mobileNavOpen = ref<string | null>(null)
+const navDropdownOpen = ref<string | null>(null)
 const catalogTrigger = ref<HTMLButtonElement | null>(null)
 const mobileTrigger = ref<HTMLButtonElement | null>(null)
 const catalogPanel = ref<HTMLElement | null>(null)
 const mobilePanel = ref<HTMLElement | null>(null)
 const searchInput = ref<HTMLInputElement | null>(null)
 const mobileSearchInput = ref<HTMLInputElement | null>(null)
+const searchTrigger = ref<HTMLButtonElement | null>(null)
+const searchPanel = ref<HTMLElement | null>(null)
+const navDropdownTrigger = ref<HTMLElement | null>(null)
+let bodyOverflowBeforeLock: string | null = null
 
 const fallbackNav: PublicSiteLink[] = [
   { label: 'Giới thiệu', href: '/gioi-thieu/' },
@@ -34,14 +40,55 @@ const fallbackNav: PublicSiteLink[] = [
   { label: 'Hợp tác', href: '/dai-ly/' },
 ]
 const navItems = computed(() => (props.site.navigation?.length ? props.site.navigation : fallbackNav).filter((item) => item.label !== 'Danh mục sản phẩm'))
-const catalogGroups = computed(() => {
-  if (props.site.catalog) return Object.entries(props.site.catalog).map(([id, group]) => ({ id, ...group })).filter((group) => group.items.length)
-  if (props.site.productCategoryTree?.length) return [{ id: 'catalog', label: 'Danh mục sản phẩm', href: '/san-pham/', items: props.site.productCategoryTree.map((node) => ({ label: node.name, href: node.url, children: [] })) }]
-  if (props.site.productCategories.length) return [{ id: 'catalog', label: 'Danh mục sản phẩm', href: '/san-pham/', items: props.site.productCategories.map((category) => ({ label: category.name, href: category.url, children: [] })) }]
+
+type RenderedCatalogGroup = PublicCatalogGroup & { id: string }
+type FlatSiteLink = { link: PublicSiteLink; depth: number; key: string }
+
+function categoryNodeLink(node: PublicProductCategoryNode): PublicSiteLink {
+  return { label: node.name, href: node.url, children: node.children.map(categoryNodeLink) }
+}
+
+function categoryNodeItem(node: PublicProductCategoryNode) {
+  return { label: node.name, href: node.url, children: node.children.map(categoryNodeLink) }
+}
+
+function flattenLinks(links: PublicSiteLink[], depth = 0, prefix = ''): FlatSiteLink[] {
+  return links.flatMap((link, index) => {
+    const key = `${prefix}${index}-${link.href}`
+    return [{ link, depth, key }, ...flattenLinks(link.children ?? [], depth + 1, `${key}-`)]
+  })
+}
+
+function catalogGroupChildren(group: PublicCatalogGroup): PublicSiteLink[] {
+  return group.items.flatMap((item) => item.children)
+}
+
+const catalogGroups = computed<RenderedCatalogGroup[]>(() => {
+  const dtoGroups = props.site.catalog
+    ? Object.entries(props.site.catalog)
+      .map(([id, group]) => ({ id, ...group }))
+      .filter((group) => group.items.length)
+    : []
+  if (dtoGroups.length) return dtoGroups
+  if (props.site.productCategoryTree?.length) {
+    return [{
+      id: 'taxonomy',
+      label: 'Danh mục sản phẩm',
+      href: '/san-pham/',
+      items: props.site.productCategoryTree.map(categoryNodeItem),
+    }]
+  }
+  if (props.site.productCategories.length) {
+    return [{
+      id: 'categories',
+      label: 'Danh mục sản phẩm',
+      href: '/san-pham/',
+      items: props.site.productCategories.map((category) => ({ label: category.name, href: category.url, children: [] })),
+    }]
+  }
   return []
 })
-const hasCategories = computed(() => catalogGroups.value.length > 0)
-const mobileCategories = computed(() => props.site.productCategoryTree ?? [])
+const hasCategories = computed(() => catalogGroups.value.some((group) => group.items.length > 0))
 
 function focusFirst(container: HTMLElement | null) {
   if (!container) return
@@ -61,12 +108,23 @@ function focusFirst(container: HTMLElement | null) {
  */
 function syncBodyLock() {
   if (!import.meta.client) return
-  document.body.style.overflow = catalogOpen.value || mobileOpen.value ? 'hidden' : ''
+  const overlayOpen = searchOpen.value || catalogOpen.value || mobileOpen.value
+  if (overlayOpen) {
+    if (bodyOverflowBeforeLock === null) bodyOverflowBeforeLock = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return
+  }
+  if (bodyOverflowBeforeLock !== null) {
+    document.body.style.overflow = bodyOverflowBeforeLock
+    bodyOverflowBeforeLock = null
+  }
 }
 
 function openCatalog(mode: Exclude<MenuMode, null> = 'intent') {
   if (mode === 'hover' && import.meta.client && !window.matchMedia('(hover: hover)').matches) return
-  mobileOpen.value = false
+  closeSearch(false)
+  closeNavDropdown(false)
+  closeMobileMenu(false)
   catalogMode.value = mode
   catalogOpen.value = true
   syncBodyLock()
@@ -87,7 +145,9 @@ function toggleCatalog() {
 }
 
 function openMobileMenu() {
+  closeSearch(false)
   closeCatalog(false)
+  closeNavDropdown(false)
   mobileOpen.value = true
   syncBodyLock()
   nextTick(() => focusFirst(mobilePanel.value))
@@ -97,23 +157,57 @@ function closeMobileMenu(restoreFocus = true) {
   const shouldRestore = restoreFocus && mobileOpen.value
   mobileOpen.value = false
   mobileCatalogOpen.value = false
+  mobileNavOpen.value = null
   syncBodyLock()
   if (shouldRestore) nextTick(() => mobileTrigger.value?.focus())
 }
 
+function closeSearch(restoreFocus = true) {
+  const shouldRestore = restoreFocus && searchOpen.value
+  searchOpen.value = false
+  syncBodyLock()
+  if (shouldRestore) nextTick(() => searchTrigger.value?.focus())
+}
+
 function toggleSearch() {
-  searchOpen.value = !searchOpen.value
-  if (searchOpen.value) nextTick(() => searchInput.value?.focus())
+  if (searchOpen.value) {
+    closeSearch()
+    return
+  }
+  closeCatalog(false)
+  closeMobileMenu(false)
+  closeNavDropdown(false)
+  searchOpen.value = true
+  syncBodyLock()
+  nextTick(() => searchInput.value?.focus())
 }
 
 async function submitSearch() {
   const keyword = searchKeyword.value.trim()
   if (!keyword) return
-  if (isMigrationPreview.value) await navigateTo({ path: '/migration-search-preview', query: { keyword } })
-  else await navigateTo({ path: '/tim-kiem/', query: { keyword } })
+  await navigateTo({ path: shellHref('/tim-kiem/'), query: { keyword } })
 }
 
-function categoryChildren(node: PublicProductCategoryNode): PublicProductCategoryNode[] { return node.children }
+function openNavDropdown(item: PublicSiteLink, event: Event) {
+  if (!item.children?.length) return
+  const currentTarget = event.currentTarget
+  navDropdownTrigger.value = currentTarget instanceof HTMLElement ? currentTarget.querySelector('a') : null
+  navDropdownOpen.value = item.href
+}
+
+function closeNavDropdown(restoreFocus = false) {
+  const shouldRestore = restoreFocus && navDropdownOpen.value !== null
+  const trigger = navDropdownTrigger.value
+  navDropdownOpen.value = null
+  navDropdownTrigger.value = null
+  if (shouldRestore) nextTick(() => trigger?.focus())
+}
+
+function handleNavFocusout(event: FocusEvent) {
+  const currentTarget = event.currentTarget
+  const relatedTarget = event.relatedTarget
+  if (currentTarget instanceof HTMLElement && (!relatedTarget || !currentTarget.contains(relatedTarget as Node))) closeNavDropdown()
+}
 
 function trapFocus(event: KeyboardEvent, container: HTMLElement | null) {
   if (event.key !== 'Tab' || !container) return
@@ -132,12 +226,15 @@ function trapFocus(event: KeyboardEvent, container: HTMLElement | null) {
 
 function handleKeydown(event: KeyboardEvent) {
   if (event.key === 'Escape') {
-    if (mobileOpen.value) closeMobileMenu()
+    if (searchOpen.value) closeSearch()
+    else if (mobileOpen.value) closeMobileMenu()
     else if (catalogOpen.value) closeCatalog()
+    else if (navDropdownOpen.value) closeNavDropdown(true)
     return
   }
   if (mobileOpen.value) trapFocus(event, mobilePanel.value)
   else if (catalogOpen.value) trapFocus(event, catalogPanel.value)
+  else if (searchOpen.value) trapFocus(event, searchPanel.value)
 }
 
 function handleShellLeave() {
@@ -150,7 +247,7 @@ onMounted(() => {
 })
 onBeforeUnmount(() => {
   document.removeEventListener('keydown', handleKeydown)
-  document.body.style.overflow = ''
+  if (import.meta.client && bodyOverflowBeforeLock !== null) document.body.style.overflow = bodyOverflowBeforeLock
 })
 </script>
 
@@ -166,6 +263,7 @@ onBeforeUnmount(() => {
       header là thứ người dùng thấy ngay khi đi qua ranh giới route PHP/Nuxt.
     -->
     <header
+      :inert="mobileOpen ? true : undefined"
       class="relative z-[1000] border-b border-hdr-line bg-white/98 backdrop-blur-[10px]"
     >
       <div
@@ -195,9 +293,8 @@ onBeforeUnmount(() => {
           <!--
             Logo là ảnh do CMS cấp (brand.logo). Chỉ giới hạn kích thước, không
             ép tỉ lệ: file thật là wordmark ngang, ép aspect sẽ méo chữ.
-            CÒN THIẾU: DTO public hiện chưa trả brand.logo nên preview rơi về
-            chữ. Khi API navigation/brand bổ sung trường này thì ảnh hiện ngay,
-            không phải sửa component.
+            Nếu CMS chưa publish asset hợp lệ, chỉ dùng tên thương hiệu làm
+            fallback an toàn; không vẽ hoặc nhúng logo giả trong component.
           -->
           <img
             v-if="brandLogo"
@@ -235,9 +332,17 @@ onBeforeUnmount(() => {
                 <svg class="h-[7px] w-[7px]" viewBox="0 0 10 10" aria-hidden="true"><path d="M1 3l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" /></svg>
               </button>
             </li>
-            <li v-for="item in navItems" :key="item.href" class="flex items-center">
+            <li
+              v-for="(item, index) in navItems"
+              :key="item.href"
+              class="relative flex items-center"
+              @mouseenter="openNavDropdown(item, $event)"
+              @mouseleave="closeNavDropdown()"
+              @focusin="openNavDropdown(item, $event)"
+              @focusout="handleNavFocusout"
+            >
               <NuxtLink
-                :external="!isMigrationPreview"
+                :external="isExternalLink(shellHref(item.href))"
                 class="flex items-center whitespace-nowrap rounded-chip font-semibold leading-tight
                        text-hdr-text transition-colors hover:bg-hdr-surface hover:text-hdr-ink
                        min-h-[50px] px-3 text-[15.5px]
@@ -245,11 +350,32 @@ onBeforeUnmount(() => {
                        wd:min-h-[48px] wd:px-[7px] wd:text-[17.5px]
                        ul:min-h-[50px] ul:px-3 ul:text-[15.5px]"
                 :to="shellHref(item.href)"
+                :aria-expanded="item.children?.length ? navDropdownOpen === item.href : undefined"
+                :aria-controls="item.children?.length ? `ptsNavMenu-${index}` : undefined"
               >
                 {{ item.label }}
                 <!-- Mũi tên chỉ hiện ở mục thật sự có menu con, giống .has-child của PHP. -->
                 <svg v-if="item.children?.length" class="ml-[7px] mb-[4px] h-[7px] w-[7px] text-hdr-muted" viewBox="0 0 10 10" aria-hidden="true"><path d="M1 3l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" /></svg>
               </NuxtLink>
+              <div
+                v-if="item.children?.length && navDropdownOpen === item.href"
+                :id="`ptsNavMenu-${index}`"
+                class="absolute left-0 top-full z-20 min-w-[250px] border border-hdr-line bg-white p-2 shadow-[0_14px_28px_rgba(16,36,58,.12)]"
+                role="menu"
+                :aria-label="`${item.label} - menu con`"
+              >
+                <NuxtLink
+                  v-for="entry in flattenLinks(item.children)"
+                  :key="entry.key"
+                  :external="isExternalLink(shellHref(entry.link.href))"
+                  class="block py-2 text-sm text-hdr-ink no-underline hover:bg-hdr-surface hover:text-gold-700"
+                  :class="entry.depth ? 'pl-6' : 'px-3 font-semibold'"
+                  :to="shellHref(entry.link.href)"
+                  role="menuitem"
+                >
+                  {{ entry.link.label }}
+                </NuxtLink>
+              </div>
             </li>
           </ul>
         </nav>
@@ -265,13 +391,14 @@ onBeforeUnmount(() => {
           <div class="hidden max-w-[58px] flex-none items-center nav:flex" aria-label="Chọn ngôn ngữ" />
 
           <button
+            ref="searchTrigger"
             class="relative inline-flex h-11 w-11 items-center justify-center rounded-chip text-[19px]
                    text-hdr-ink transition-colors hover:bg-hdr-surface hover:text-hdr-gold-deep
                    max-ph:h-[38px] max-ph:w-[38px] nav:h-12 nav:w-12"
             type="button"
             :aria-expanded="searchOpen"
             aria-controls="ptsHeaderSearch"
-            aria-label="Mở tìm kiếm"
+            :aria-label="searchOpen ? 'Đóng tìm kiếm' : 'Mở tìm kiếm'"
             @click="toggleSearch"
           >
             <svg class="h-[19px] w-[19px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.5" /><path d="m16 16 4.5 4.5" /></svg>
@@ -295,11 +422,11 @@ onBeforeUnmount(() => {
           </a>
 
           <NuxtLink
-            :external="!isMigrationPreview"
+            :external="isExternalLink(shellHref('/gio-hang/'))"
             class="relative inline-flex h-11 w-11 items-center justify-center rounded-chip text-hdr-ink
                    transition-colors hover:bg-hdr-surface hover:text-hdr-gold-deep
                    max-ph:h-[38px] max-ph:w-[38px] nav:h-12 nav:w-12"
-            :to="isMigrationPreview ? '/migration-cart-preview' : '/gio-hang/'"
+            :to="shellHref('/gio-hang/')"
             :aria-label="isMigrationPreview && migrationCart ? `Giỏ hàng có ${migrationCart.count} sản phẩm` : 'Giỏ hàng'"
             title="Giỏ hàng"
           >
@@ -311,7 +438,7 @@ onBeforeUnmount(() => {
           </NuxtLink>
 
           <NuxtLink
-            :external="!isMigrationPreview"
+            :external="isExternalLink(shellHref('/lien-he/#yeu-cau-tu-van'))"
             class="ml-[3px] inline-flex items-center justify-center whitespace-nowrap rounded-chip border
                    border-hdr-gold bg-hdr-gold font-bold text-hdr-ink transition-colors
                    hover:border-hdr-gold-deep hover:bg-hdr-gold-deep hover:text-white
@@ -328,31 +455,46 @@ onBeforeUnmount(() => {
       <div
         v-if="searchOpen"
         id="ptsHeaderSearch"
+        ref="searchPanel"
         class="absolute inset-x-0 top-full z-[25] w-full border-t border-hdr-line-soft border-b-hdr-line
                bg-white px-4 pt-[18px] pb-4 shadow-[0_14px_28px_rgba(16,36,58,.1)] max-ph:py-[13px]"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="ptsHeaderSearchTitle"
       >
         <div class="mx-auto w-full max-w-[1680px]">
-          <form class="flex items-center gap-3" role="search" @submit.prevent="submitSearch">
-            <label class="sr-only" for="ptsHeaderSearchInput">Tìm kiếm sản phẩm hoặc giải pháp</label>
-            <input
-              id="ptsHeaderSearchInput"
-              ref="searchInput"
-              v-model="searchKeyword"
-              class="min-h-[46px] w-full max-w-[720px] rounded-chip border border-hdr-line px-4 text-[14.5px]
-                     text-hdr-ink outline-none placeholder:text-hdr-muted focus:border-hdr-gold"
-              type="search"
-              placeholder="Bạn cần tìm sản phẩm hoặc giải pháp nào?"
-              autocomplete="off"
-            >
+          <div class="flex items-center justify-between gap-3">
+            <h2 id="ptsHeaderSearchTitle" class="sr-only">Tìm kiếm</h2>
+            <form class="flex min-w-0 flex-1 items-center gap-3" role="search" @submit.prevent="submitSearch">
+              <label class="sr-only" for="ptsHeaderSearchInput">Tìm kiếm sản phẩm hoặc giải pháp</label>
+              <input
+                id="ptsHeaderSearchInput"
+                ref="searchInput"
+                v-model="searchKeyword"
+                class="min-h-[46px] w-full max-w-[720px] rounded-chip border border-hdr-line px-4 text-[14.5px]
+                       text-hdr-ink outline-none placeholder:text-hdr-muted focus:border-hdr-gold"
+                type="search"
+                placeholder="Bạn cần tìm sản phẩm hoặc giải pháp nào?"
+                autocomplete="off"
+              >
+              <button
+                class="inline-flex min-h-[46px] items-center justify-center rounded-chip bg-hdr-gold px-5
+                       font-bold text-hdr-ink transition-colors hover:bg-hdr-gold-deep hover:text-white"
+                type="submit"
+                aria-label="Tìm kiếm"
+              >
+                <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.5" /><path d="m16 16 4.5 4.5" /></svg>
+              </button>
+            </form>
             <button
-              class="inline-flex min-h-[46px] items-center justify-center rounded-chip bg-hdr-gold px-5
-                     font-bold text-hdr-ink transition-colors hover:bg-hdr-gold-deep hover:text-white"
-              type="submit"
-              aria-label="Tìm kiếm"
+              class="rounded-chip p-2.5 text-hdr-ink transition-colors hover:bg-hdr-surface hover:text-gold-700"
+              type="button"
+              aria-label="Đóng tìm kiếm"
+              @click="closeSearch()"
             >
-              <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.5" /><path d="m16 16 4.5 4.5" /></svg>
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>
             </button>
-          </form>
+          </div>
         </div>
       </div>
     </header>
@@ -367,10 +509,9 @@ onBeforeUnmount(() => {
       class="fixed inset-x-0 bottom-0 top-[148px] z-[100] overflow-auto bg-[rgb(8_18_34_/_58%)] wd:top-[132px]"
       aria-hidden="false"
     >
-      <button
-        class="fixed inset-x-0 bottom-0 top-[148px] h-full w-full cursor-default border-0 bg-transparent wd:top-[132px]"
-        type="button"
-        aria-label="Đóng danh mục sản phẩm"
+      <div
+        class="fixed inset-x-0 bottom-0 top-[148px] h-full cursor-default bg-transparent wd:top-[132px]"
+        aria-hidden="true"
         @click="closeCatalog()"
       />
       <section
@@ -395,7 +536,7 @@ onBeforeUnmount(() => {
             <p class="mt-1 text-[13px] text-slate-500 wd:text-sm">Dữ liệu danh mục đang được cung cấp từ API public.</p>
           </div>
           <NuxtLink
-            :external="!isMigrationPreview"
+            :external="isExternalLink(shellHref('/san-pham/'))"
             class="justify-self-start text-sm font-bold text-navy-800 no-underline hover:text-gold-700 wd:justify-self-auto"
             :to="shellHref('/san-pham/')"
             @click="closeCatalog(false)"
@@ -419,12 +560,12 @@ onBeforeUnmount(() => {
             class="min-w-0 wd:[&:not(:first-child)]:border-l wd:[&:not(:first-child)]:border-hdr-line wd:[&:not(:first-child)]:pl-6"
           >
             <h3 class="mb-2 text-[17px] leading-[1.3]">
-              <NuxtLink external class="text-gold-700 no-underline" :to="shellHref(group.href)" @click="closeCatalog(false)">{{ group.label }}</NuxtLink>
+              <NuxtLink :external="isExternalLink(shellHref(group.href))" class="text-gold-700 no-underline" :to="shellHref(group.href)" @click="closeCatalog(false)">{{ group.label }}</NuxtLink>
             </h3>
             <ul class="m-0 list-none p-0">
               <li v-for="item in group.items" :key="item.href + item.label" class="border-b border-[#edf0f3] last:border-b-0">
                 <NuxtLink
-                  :external="!isMigrationPreview"
+                  :external="isExternalLink(shellHref(item.href))"
                   class="flex min-h-12 items-center justify-between gap-3 py-1 text-[15px] leading-[1.4]
                          text-hdr-ink no-underline hover:text-gold-700"
                   :to="shellHref(item.href)"
@@ -437,7 +578,7 @@ onBeforeUnmount(() => {
                 <ul v-if="item.children.length" class="mb-2 ml-4 list-none border-l border-gray-200 pl-3">
                   <li v-for="child in item.children" :key="child.href + child.label">
                     <NuxtLink
-                      :external="!isMigrationPreview"
+                      :external="isExternalLink(shellHref(child.href))"
                       class="flex min-h-9 items-center text-sm text-hdr-ink no-underline hover:text-gold-700"
                       :to="shellHref(child.href)"
                       @click="closeCatalog(false)"
@@ -456,10 +597,9 @@ onBeforeUnmount(() => {
 
     <!-- Drawer điều hướng mobile, dưới mốc nav (1321px). -->
     <div v-if="mobileOpen" class="fixed inset-0 z-[100] overflow-auto bg-[rgb(8_18_34_/_58%)]">
-      <button
-        class="fixed inset-0 h-full w-full cursor-default border-0 bg-transparent"
-        type="button"
-        aria-label="Đóng danh mục điều hướng"
+      <div
+        class="fixed inset-0 h-full cursor-default bg-transparent"
+        aria-hidden="true"
         @click="closeMobileMenu()"
       />
       <aside
@@ -500,23 +640,49 @@ onBeforeUnmount(() => {
         </form>
 
         <nav aria-label="Điều hướng mobile">
-          <NuxtLink
-            :external="!isMigrationPreview"
-            v-for="item in navItems"
-            :key="item.href"
-            class="flex min-h-12 w-full items-center justify-between gap-4 border-b border-hdr-line py-2
-                   text-base font-semibold text-hdr-ink no-underline"
-            :to="shellHref(item.href)"
-            @click="closeMobileMenu(false)"
-          >
-            {{ item.label }}
-          </NuxtLink>
+          <template v-for="(item, index) in navItems" :key="item.href">
+            <div class="flex min-h-12 w-full items-center gap-2 border-b border-hdr-line">
+              <NuxtLink
+                :external="isExternalLink(shellHref(item.href))"
+                class="flex min-h-12 min-w-0 flex-1 items-center gap-4 py-2 text-base font-semibold text-hdr-ink no-underline"
+                :to="shellHref(item.href)"
+                @click="closeMobileMenu(false)"
+              >
+                {{ item.label }}
+              </NuxtLink>
+              <button
+                v-if="item.children?.length"
+                class="rounded-chip p-2.5 text-hdr-ink transition-colors hover:bg-hdr-surface hover:text-gold-700"
+                type="button"
+                :aria-expanded="mobileNavOpen === item.href"
+                :aria-controls="`ptsMobileNav-${index}`"
+                :aria-label="`${mobileNavOpen === item.href ? 'Thu gọn' : 'Mở'} menu ${item.label}`"
+                @click="mobileNavOpen = mobileNavOpen === item.href ? null : item.href"
+              >
+                <svg class="h-4 w-4 transition-transform duration-150" :class="{ 'rotate-180': mobileNavOpen === item.href }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" aria-hidden="true"><path d="m7 10 5 5 5-5" /></svg>
+              </button>
+            </div>
+            <div v-if="item.children?.length && mobileNavOpen === item.href" :id="`ptsMobileNav-${index}`" class="grid gap-0 border-b border-hdr-line py-1 pl-4" role="group" :aria-label="`${item.label} - menu con`">
+              <NuxtLink
+                v-for="entry in flattenLinks(item.children)"
+                :key="entry.key"
+                :external="isExternalLink(shellHref(entry.link.href))"
+                class="py-[9px] text-[15px] leading-[1.45] text-hdr-sub no-underline"
+                :class="entry.depth ? 'pl-3' : ''"
+                :to="shellHref(entry.link.href)"
+                @click="closeMobileMenu(false)"
+              >
+                {{ entry.link.label }}
+              </NuxtLink>
+            </div>
+          </template>
 
           <button
             class="flex min-h-12 w-full items-center justify-between gap-4 border-0 border-b border-hdr-line
                    bg-transparent py-2 text-left text-base font-semibold text-hdr-ink"
             type="button"
             :aria-expanded="mobileCatalogOpen"
+            aria-controls="ptsMobileCatalog"
             @click="mobileCatalogOpen = !mobileCatalogOpen"
           >
             <span>Danh mục sản phẩm</span>
@@ -535,54 +701,46 @@ onBeforeUnmount(() => {
             </svg>
           </button>
 
-          <div v-if="mobileCatalogOpen" class="grid gap-0 border-b border-hdr-line py-1 pl-4">
+          <div v-if="mobileCatalogOpen" id="ptsMobileCatalog" class="grid gap-0 border-b border-hdr-line py-1 pl-4" role="group" aria-label="Danh mục sản phẩm">
             <NuxtLink
-              :external="!isMigrationPreview"
+              :external="isExternalLink(shellHref('/san-pham/'))"
               class="py-[9px] text-[15px] leading-[1.45] text-hdr-sub no-underline"
               :to="shellHref('/san-pham/')"
               @click="closeMobileMenu(false)"
             >
               Xem tất cả sản phẩm
             </NuxtLink>
-            <template v-if="mobileCategories.length">
-              <template v-for="category in mobileCategories" :key="category.id">
+            <template v-if="hasCategories">
+              <template v-for="group in catalogGroups" :key="group.id">
+                <p class="mb-1 mt-3 text-[13px] font-bold uppercase tracking-wide text-gold-700 first:mt-1">{{ group.label }}</p>
                 <NuxtLink
-                  :external="!isMigrationPreview"
+                  v-for="item in group.items"
+                  :key="item.href + item.label"
+                  :external="isExternalLink(shellHref(item.href))"
                   class="py-[9px] text-[15px] leading-[1.45] text-hdr-sub no-underline"
-                  :to="shellHref(category.url)"
+                  :to="shellHref(item.href)"
                   @click="closeMobileMenu(false)"
                 >
-                  {{ category.name }}
+                  {{ item.label }}
                 </NuxtLink>
                 <NuxtLink
-                  :external="!isMigrationPreview"
-                  v-for="child in category.children"
-                  :key="child.id"
+                  v-for="child in catalogGroupChildren(group)"
+                  :key="child.href + child.label"
+                  :external="isExternalLink(shellHref(child.href))"
                   class="py-[9px] pl-3 text-[15px] leading-[1.45] text-hdr-sub no-underline"
-                  :to="shellHref(child.url)"
+                  :to="shellHref(child.href)"
                   @click="closeMobileMenu(false)"
                 >
-                  {{ child.name }}
+                  {{ child.label }}
                 </NuxtLink>
               </template>
             </template>
-            <NuxtLink
-              :external="!isMigrationPreview"
-              v-else
-              v-for="category in props.site.productCategories"
-              :key="category.id"
-              class="py-[9px] text-[15px] leading-[1.45] text-hdr-sub no-underline"
-              :to="shellHref(category.url)"
-              @click="closeMobileMenu(false)"
-            >
-              {{ category.name }}
-            </NuxtLink>
             <span v-if="!hasCategories" class="py-4 text-[15px] text-slate-500">Danh mục sản phẩm chưa có dữ liệu.</span>
           </div>
         </nav>
 
         <NuxtLink
-          :external="!isMigrationPreview"
+          :external="isExternalLink(shellHref('/lien-he/#yeu-cau-tu-van'))"
           class="mt-6 flex min-h-[50px] w-full items-center justify-center rounded-chip border border-hdr-gold
                  bg-hdr-gold px-[21px] text-sm font-bold text-hdr-ink no-underline transition-colors
                  hover:border-hdr-gold-deep hover:bg-hdr-gold-deep hover:text-white"
