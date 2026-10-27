@@ -7,8 +7,13 @@ const props = defineProps<{
 
 const brandName = computed(() => props.site.brand.name.trim() || 'Phúc Thịnh Solar')
 const hotline = computed(() => props.site.brand.hotline.trim())
+const technicalHotline = computed(() => props.site.brand.technicalHotline?.trim() ?? '')
 const footerLogo = computed(() => props.site.brand.logoFooter || props.site.brand.logo || '')
 const footer = computed(() => props.site.footer)
+
+function telHrefFor(value: string): string {
+  return `tel:${value.replace(/[^+\d]/g, '')}`
+}
 
 /**
  * `contactText` là một khối văn bản tự do từ CMS (địa chỉ, email, website, giờ
@@ -22,7 +27,7 @@ const contactLines = computed(() =>
     .filter(Boolean),
 )
 
-const telHref = computed(() => `tel:${hotline.value.replace(/[^+\d]/g, '')}`)
+const telHref = computed(() => telHrefFor(hotline.value))
 </script>
 
 <template>
@@ -70,14 +75,14 @@ const telHref = computed(() => `tel:${hotline.value.replace(/[^+\d]/g, '')}`)
         </div>
 
         <!--
-          Ảnh production có HAI ô: "Tư vấn bán hàng" và "Hỗ trợ kỹ thuật", mỗi ô
-          một số khác nhau. DTO public chỉ có đúng một trường `brand.hotline`.
-          Render một ô theo dữ liệu thật thay vì bịa số thứ hai — số điện thoại
-          sai là lỗi chạm thẳng vào khách hàng.
-          CÒN THIẾU: API cần trả danh sách đường dây (nhãn + số) để dựng đủ hai ô.
+          Ảnh production có HAI ô: "Tư vấn bán hàng" (brand.hotline) và "Hỗ trợ
+          kỹ thuật" (brand.technicalHotline, merge feature/pts-nuxt-php-dto-
+          20261026). Ô thứ hai chỉ hiện khi API thật sự trả số — không bịa khi
+          CMS chưa cấu hình đường dây kỹ thuật riêng.
         -->
-        <div v-if="hotline" class="mt-[18px] grid grid-cols-1 gap-[10px] ph:grid-cols-2">
+        <div v-if="hotline || technicalHotline" class="mt-[18px] grid grid-cols-1 gap-[10px] ph:grid-cols-2">
           <a
+            v-if="hotline"
             class="flex min-w-0 items-start gap-[10px] rounded-btn border border-[#bfdbfe]/20 border-l-[3px]
                    border-l-gold-400 bg-white/[.045] px-3 py-[11px] text-[15px] leading-[1.45]
                    transition-colors hover:bg-white/[.08]"
@@ -87,6 +92,19 @@ const telHref = computed(() => `tel:${hotline.value.replace(/[^+\d]/g, '')}`)
             <span class="flex min-w-0 flex-col gap-0.5">
               <small class="text-[12px] leading-[1.3] text-ftr-text">Tư vấn bán hàng</small>
               <strong class="whitespace-nowrap text-[16px] leading-[1.3] font-bold text-white">{{ hotline }}</strong>
+            </span>
+          </a>
+          <a
+            v-if="technicalHotline"
+            class="flex min-w-0 items-start gap-[10px] rounded-btn border border-[#bfdbfe]/20 border-l-[3px]
+                   border-l-gold-400 bg-white/[.045] px-3 py-[11px] text-[15px] leading-[1.45]
+                   transition-colors hover:bg-white/[.08]"
+            :href="telHrefFor(technicalHotline)"
+          >
+            <svg class="mt-[3px] h-[14px] w-[14px] flex-none text-gold-400" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a2 2 0 0 0-2 2v2.17a2 2 0 0 1-.59 1.42L7.59 9.41A2 2 0 0 0 7 10.83V13a2 2 0 0 0 2 2h.17a2 2 0 0 1 1.42.59l1.82 1.82a2 2 0 0 0 1.42.59H16a2 2 0 0 0 2-2v-2.17a2 2 0 0 1 .59-1.42L20 10.41" /></svg>
+            <span class="flex min-w-0 flex-col gap-0.5">
+              <small class="text-[12px] leading-[1.3] text-ftr-text">Hỗ trợ kỹ thuật</small>
+              <strong class="whitespace-nowrap text-[16px] leading-[1.3] font-bold text-white">{{ technicalHotline }}</strong>
             </span>
           </a>
         </div>
@@ -110,11 +128,19 @@ const telHref = computed(() => `tel:${hotline.value.replace(/[^+\d]/g, '')}`)
             </li>
           </ul>
           <!--
-            CÒN THIẾU: ảnh production có huy hiệu "Đã thông báo Bộ Công Thương"
-            (rộng 130px) ngay dưới danh sách này. DTO chưa có trường cho nó.
-            Không nhúng ảnh cứng: huy hiệu pháp lý phải do CMS quản lý vì nó gắn
-            với hồ sơ đăng ký thật của doanh nghiệp.
+            footer.trustBadge (merge feature/pts-nuxt-php-dto-20261026): huy
+            hiệu "Đã thông báo Bộ Công Thương", nguồn table_photo type=bct,
+            nên luôn là ảnh thật do CMS quản lý — không có fallback vẽ tay.
           -->
+          <a
+            v-if="footer?.trustBadge"
+            class="mt-[18px] block max-w-[130px]"
+            :href="footer.trustBadge.href"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img :src="footer.trustBadge.image" alt="Đã thông báo Bộ Công Thương" class="block h-auto w-full">
+          </a>
         </nav>
 
         <div v-if="footer?.locations.length">
