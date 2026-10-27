@@ -32,6 +32,15 @@ và liên kết về runbook đang có hiệu lực.
 
 ## Lịch sử rà soát
 
+### 2026-10-27 — chuẩn hóa workflow bằng evidence và handoff
+
+- Bổ sung discovery/ownership, acceptance negative path, verification ladder và
+  phân loại failure vào workflow website.
+- Chuẩn hóa bằng chứng điều phối agent `DISPATCHED/EXECUTED/VERIFIED` và format
+  handoff `DONE/VERIFIED/REMAINING/KNOWN ISSUES/RELEVANT FILES/NEXT`.
+- Tách build/regression khỏi browser, integration, security và UAT; không dùng
+  một lớp kiểm tra để thay cho lớp khác.
+
 ### 2026-10-04 — tối ưu tiếp public và Admin local
 
 - Bổ sung số đo bốn route public, nguyên nhân bundle thừa Jssor/Bootstrap 4.0,
