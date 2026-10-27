@@ -30,7 +30,11 @@ family sau:
   `chinh-sach-bao-hanh-bao-tri-va-ho-tro-ky-thuat`. Không dùng slug rút gọn hoặc
   tự đoán.
 - Gallery/video: route thật là `/thu-vien-anh/*` và `/video/*`; không dùng
-  `/album/*` làm tên route PHP. Chưa có Nuxt preview, giữ PHP-owned/excluded.
+  `/album/*` làm tên route PHP. Đã có Nuxt internal preview tại
+  `migration-gallery-preview`, `migration-gallery-detail-preview` và
+  `migration-video-preview`; các route đều noindex, PHP vẫn là public owner.
+  Full aspect-ratio/embed/privacy/copyright parity và canonical/cutover vẫn
+  phải kiểm chứng trước khi promote.
 - Commerce: `/gio-hang/` là GET page và POST checkout mutation; checkout không
   có public `/dat-hang/` riêng trong router. Thành công redirect về
   `/cam-on/?token=...`; crawler chỉ GET, không tạo order.

@@ -62,7 +62,7 @@ cd /home/admin01/src/pts-nuxt-integration-20261027
 - Images/QA output: frontend/.migration-artifacts/local-preview-qa/{mobile-390.png,desktop-1440.png,manifest.json}
 - Các gate trước cutover còn lại: production route cutover/hybrid routing, SEO
   canonical/OG/sitemap/robots/redirect parity, catalog filter/sort/stock parity,
-  public brand/gallery/video/account routes và final visual/browser QA.
+  public brand/gallery/video/account canonical parity và final visual/browser QA.
 - Existing optional Vue Router/Volar typechecker warning and npm dependency advisories require a separate pre-production security review.
 
 ## Rollback / isolation

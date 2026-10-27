@@ -22,8 +22,9 @@ merge/push/deploy production, không ghi DB trong đợt sync này.
 - Các gap trước cutover: production route/hybrid routing; catalog visual/browser
   parity cuối. Filter theo loại sản phẩm/thương hiệu/mức giá, sort và panel danh
   mục đã nối thật ở `c00aa0e`, `ae811bb`; brand detail đã có preview ở
-  `f0cf5ce`. Còn lại là public canonical/OG/sitemap/robots/redirect parity,
-  gallery/video/account routes, final visual/browser QA và deployment gates.
+  `f0cf5ce`; gallery/video internal previews đã được tích hợp ở checkpoint
+  2026-10-28. Còn lại là public canonical/OG/sitemap/robots/redirect parity,
+  full media/browser parity, account routes và deployment gates.
   Không dùng preview 200 để claim production migration.
 
 ## QA nền tảng chuẩn
