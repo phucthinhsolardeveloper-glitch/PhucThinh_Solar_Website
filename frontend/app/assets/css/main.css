@@ -199,3 +199,120 @@
     outline-offset: 3px;
   }
 }
+
+@layer components {
+  /*
+   * BUG THẬT phát hiện khi wire sanitizer: NewsDetailArticle.vue và
+   * SolutionDetailPage.vue đã dùng class `.cms-content` từ trước nhưng
+   * CHƯA TỪNG có định nghĩa nào trong main.css — class đó chỉ tồn tại trong
+   * bản storefront/ nháp ban đầu (đã xoá khi phát hiện migration thật đang
+   * chạy ở worktree khác). Vì Tailwind Preflight reset mọi margin về 0, thiếu
+   * class này nghĩa là các đoạn văn trong hai trang đó đang dính liền nhau,
+   * không có khoảng cách dòng — lỗi hiển thị thật, không chỉ thiếu class rỗng.
+   *
+   * Viết đủ cho cả plain-paragraph hiện tại (article.content.value tách theo
+   * \n) VÀ toàn bộ tập thẻ sanitizer PHP cho phép (pts_public_richtext.php:
+   * h2-h6, p, ul/ol/li, blockquote, pre/code, table, figure/figcaption, img,
+   * a) — để khi gắn EditorialRichText.vue (v-html trên HTML đã qua sanitizer)
+   * không phải viết thêm một bộ style thứ hai.
+   */
+  .cms-content {
+    color: var(--color-navy-800);
+    font-size: 1.0625rem;
+    line-height: 1.8;
+  }
+  .cms-content > :first-child { margin-top: 0; }
+  .cms-content > :last-child { margin-bottom: 0; }
+
+  .cms-content h2,
+  .cms-content h3,
+  .cms-content h4,
+  .cms-content h5,
+  .cms-content h6 {
+    color: var(--color-navy-800);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+    margin: 2rem 0 0.75rem;
+  }
+  .cms-content h2 { font-size: 1.5rem; }
+  .cms-content h3 { font-size: 1.25rem; }
+  .cms-content h4 { font-size: 1.125rem; }
+
+  .cms-content p,
+  .cms-content ul,
+  .cms-content ol,
+  .cms-content blockquote,
+  .cms-content pre,
+  .cms-content figure,
+  .cms-content table {
+    margin: 0 0 1.1rem;
+  }
+
+  .cms-content ul,
+  .cms-content ol {
+    padding-inline-start: 1.5rem;
+  }
+  .cms-content ul { list-style: disc; }
+  .cms-content ol { list-style: decimal; }
+  .cms-content li { margin-block: 0.3em; }
+
+  .cms-content a {
+    color: var(--color-gold-700);
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+  }
+
+  .cms-content img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--radius-chip);
+  }
+
+  .cms-content figcaption {
+    color: var(--color-slate-500, #64748b);
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+  }
+
+  .cms-content blockquote {
+    border-inline-start: 3px solid var(--color-gold-500);
+    padding-inline-start: 1rem;
+    color: var(--color-slate-600, #475569);
+  }
+
+  .cms-content pre {
+    overflow-x: auto;
+    padding: 1rem;
+    background: var(--color-slate-50, #f8fafc);
+    border-radius: var(--radius-chip);
+  }
+  .cms-content code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.9em;
+  }
+
+  /*
+   * Bảng thông số CKEditor thường rộng hơn khung chữ (xem PDP specs). Bọc
+   * trong chính nó bằng overflow-x thay vì để tràn ra ngoài và làm cả trang
+   * cuộn ngang.
+   */
+  .cms-content table {
+    display: block;
+    overflow-x: auto;
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .cms-content th,
+  .cms-content td {
+    padding: 0.6rem 0.9rem;
+    border: 1px solid var(--color-gray-200, #e5e7eb);
+    text-align: left;
+    vertical-align: top;
+  }
+  .cms-content th {
+    background: var(--color-slate-50, #f8fafc);
+    font-weight: 700;
+  }
+}
