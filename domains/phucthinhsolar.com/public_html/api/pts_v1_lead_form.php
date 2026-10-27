@@ -7,7 +7,10 @@ header('X-Content-Type-Options: nosniff');
 
 function ptsLeadJson($status, $payload)
 {
-    http_response_code($status);
+    if((int)$status === 419)
+        header('HTTP/1.1 419 Authentication Timeout', true);
+    else
+        http_response_code($status);
     echo json_encode($payload, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES);
     exit;
 }
