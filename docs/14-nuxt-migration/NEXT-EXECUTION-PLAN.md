@@ -32,7 +32,7 @@ merge/push/deploy production, không ghi DB trong đợt sync này.
 | Lớp | Lệnh / công cụ | Gate |
 |---|---|---|
 | DTO contract | `npm test --prefix frontend` | Validator và fallback không bịa dữ liệu |
-| Nitro/TypeScript | `npm run typecheck --prefix frontend` | Không lỗi TS; vue-router 5.4.0 đã khớp Nuxt 4.6.2, còn review 2 transitive npm advisories |
+| Nitro/TypeScript | `npm run typecheck --prefix frontend` | Không lỗi TS; vue-router 5.4.0 đã khớp Nuxt 4.6.2; `npm audit --omit=optional` hiện 0 vulnerability sau overrides |
 | Nuxt artifact | `npm run build --prefix frontend` | SSR build PASS, không bật public route |
 | PHP API | `php scripts/test-pts-public-*-api.php` trong PHP 8.1 Docker | GET/405/400/404, published filter, media safety |
 | HTTP | `curl`/Playwright tới `:8080`, `:8088`, `:3100` | Status, `Allow`, noindex, canonical ownership |

@@ -3,9 +3,10 @@
 ## Trạng thái
 
 - Nhánh tích hợp: `feature/pts-nuxt-integration-20261027`
-- Commit hiện tại: `ab6c3f4`
+- Checkpoint chức năng hiện tại: `75b276a` (dependency gate); tài liệu này được
+  cập nhật ngay sau checkpoint đó.
 - `master`, production, Docker/container và public routing không bị thay đổi.
-- Nhánh đang ahead remote 21 commit; chưa push.
+- Nhánh đang ahead remote 24 commit; chưa push.
 
 ## Đã hợp nhất
 
@@ -22,7 +23,9 @@
 - Cutover static tests: **8/8 PASS**; preflight vẫn báo `BLOCKED` đúng thiết kế vì feature flag OFF và chưa có production Nuxt service.
 - Visual/SEO fixture tests: **17/17 PASS**.
 - Nuxt typecheck: exit 0; `vue-router@5.4.0` đã xử lý cảnh báo `vue-router/volar/sfc-route-blocks`.
-- Dependency audit còn 2 transitive advisories (1 high, 1 low); chưa chạy `npm audit fix` tự động.
+- Dependency audit: **0 vulnerability** sau khi pin `node-forge@1.4.2` và ép
+  `fontless` dùng `esbuild@0.28.2` qua `frontend/package.json` overrides;
+  không chạy `npm audit fix` tự động.
 - Nuxt production build: **PASS**.
 - SSR smoke: **PASS** — 200, SSR HTML, `noindex`, route không tồn tại trả 404.
 - Reproducibility: `frontend/package-lock.json` lockfile v3 được track;

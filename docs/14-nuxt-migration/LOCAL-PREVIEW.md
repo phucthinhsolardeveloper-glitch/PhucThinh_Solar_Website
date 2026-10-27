@@ -47,7 +47,8 @@ cd /home/admin01/src/pts-nuxt-integration-20261027
 - Build output, images and log are untracked in frontend/.migration-artifacts/.
 
 ## Latest local checks
-- Checkpoint frontend hiện tại: `ab6c3f4` trên `feature/pts-nuxt-integration-20261027`.
+- Checkpoint frontend hiện tại: `75b276a` trên `feature/pts-nuxt-integration-20261027`;
+  nhánh đang ahead remote 24 commit và chưa push.
 - `npm test` 117/117; typecheck exit 0, không còn warning vue-router/Volar;
   production build PASS; SSR catalog preview HTTP 200.
 - `frontend/package-lock.json` là lockfile v3 được track; `npm ci --dry-run
@@ -68,7 +69,9 @@ cd /home/admin01/src/pts-nuxt-integration-20261027
 - Các gate trước cutover còn lại: production route cutover/hybrid routing, SEO
   canonical/OG/sitemap/robots/redirect parity, catalog filter/sort/stock parity,
   public brand/gallery/video/account canonical parity và final visual/browser QA.
-- Vue Router/Volar warning đã được xử lý bằng `vue-router@5.4.0`; còn 2 transitive npm advisories (1 high, 1 low) cần review riêng trước production.
+- Vue Router/Volar warning đã được xử lý bằng `vue-router@5.4.0`; dependency
+  audit hiện **0 vulnerability** sau khi pin `node-forge@1.4.2` và `esbuild@0.28.2`
+  cho nhánh `fontless` bằng overrides.
 
 ## Rollback / isolation
 To stop **only** this preview, run ./scripts/nuxt-local-preview.sh stop. Do not stop the existing website PHP QA container or Zalo CRM. The old website keeps running from master regardless of the Nuxt preview state.
