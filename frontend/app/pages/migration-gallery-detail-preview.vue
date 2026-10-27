@@ -7,6 +7,13 @@ const slug = computed(() => typeof route.query.slug === 'string' ? route.query.s
 const { data, error, pending } = await useFetch<unknown>('/_migration/gallery-detail', { query: computed(() => ({ slug: slug.value })) })
 const gallery = computed<PublicGalleryDetailPayload | null>(() => isPublicGalleryDetailPayload(data.value) ? data.value : null)
 const selectedIndex = ref<number | null>(null)
+const lightbox = computed(() => {
+  const detail = gallery.value
+  const index = selectedIndex.value
+  if (!detail || index === null) return null
+  const image = detail.images[index]
+  return image ? { detail, image } : null
+})
 
 function open(index: number) {
   if (!gallery.value?.images[index]) return
@@ -80,7 +87,7 @@ useSeoMeta({
 
     <Teleport to="body">
       <div
-        v-if="gallery && selectedIndex !== null"
+        v-if="lightbox"
         class="fixed inset-0 z-[100] grid place-items-center bg-black/90 p-4"
         role="dialog"
         aria-modal="true"
@@ -88,12 +95,12 @@ useSeoMeta({
         @click.self="close"
       >
         <button type="button" class="absolute right-4 top-4 grid h-11 w-11 place-items-center rounded-full bg-white/10 text-2xl text-white hover:bg-white/20" aria-label="Đóng" @click="close">×</button>
-        <button v-if="gallery.images.length > 1" type="button" class="absolute left-3 top-1/2 grid h-12 w-12 -translate-y-1/2 place-items-center rounded-full bg-white/10 text-3xl text-white hover:bg-white/20" aria-label="Ảnh trước" @click="move(-1)">‹</button>
+        <button v-if="lightbox.detail.images.length > 1" type="button" class="absolute left-3 top-1/2 grid h-12 w-12 -translate-y-1/2 place-items-center rounded-full bg-white/10 text-3xl text-white hover:bg-white/20" aria-label="Ảnh trước" @click="move(-1)">‹</button>
         <figure class="m-0 max-h-[90vh] max-w-[min(1100px,90vw)] text-center">
-          <img :src="gallery.images[selectedIndex].image" :alt="gallery.images[selectedIndex].caption || gallery.album.title" class="max-h-[82vh] max-w-full object-contain">
-          <figcaption v-if="gallery.images[selectedIndex].caption" class="mt-3 text-sm text-white/80">{{ gallery.images[selectedIndex].caption }}</figcaption>
+          <img :src="lightbox.image.image" :alt="lightbox.image.caption || lightbox.detail.album.title" class="max-h-[82vh] max-w-full object-contain">
+          <figcaption v-if="lightbox.image.caption" class="mt-3 text-sm text-white/80">{{ lightbox.image.caption }}</figcaption>
         </figure>
-        <button v-if="gallery.images.length > 1" type="button" class="absolute right-3 top-1/2 grid h-12 w-12 -translate-y-1/2 place-items-center rounded-full bg-white/10 text-3xl text-white hover:bg-white/20" aria-label="Ảnh sau" @click="move(1)">›</button>
+        <button v-if="lightbox.detail.images.length > 1" type="button" class="absolute right-3 top-1/2 grid h-12 w-12 -translate-y-1/2 place-items-center rounded-full bg-white/10 text-3xl text-white hover:bg-white/20" aria-label="Ảnh sau" @click="move(1)">›</button>
       </div>
     </Teleport>
   </div>
