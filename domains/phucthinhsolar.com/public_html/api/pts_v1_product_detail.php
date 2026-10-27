@@ -58,6 +58,8 @@ try {
        gồm mode own/both/hide/inherit và inherit_source. Chỉ đọc DB. */
     $resolvedSections = productResolveSections($d, $row, 'vi');
     $content = ptsPdpContentDto($resolvedSections, ROOT);
-    $payload = ptsPdpPayload($row, $media, ptsPdpSpecDto($row), $canonical, array('product' => 'publicProductEntityPath(product)', 'routeResolver' => 'public_route_resolver.php', 'categoryUrls' => 'product_category_urls.php'), publicProductPricesVisible(), $content);
+    $documentRows = $d->rawQuery("select document_type,titlevi as title,file_path from #_product_document where id_product=? and find_in_set('hienthi',status) and file_path<>'' order by numb,id", array((int)$row['id']));
+    $documents = ptsPdpDocumentsDto((array)$documentRows, ROOT);
+    $payload = ptsPdpPayload($row, $media, ptsPdpSpecDto($row), $canonical, array('product' => 'publicProductEntityPath(product)', 'routeResolver' => 'public_route_resolver.php', 'categoryUrls' => 'product_category_urls.php'), publicProductPricesVisible(), $content, $documents);
     echo json_encode($payload, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR);
 } catch(Throwable $e) { error_log('pts_v1_product_detail: '.$e->getMessage()); http_response_code(500); echo '{"error":{"code":"INTERNAL_ERROR"}}'; }

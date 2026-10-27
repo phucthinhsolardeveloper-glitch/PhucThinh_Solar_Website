@@ -39,7 +39,7 @@ useSeoMeta({ title: computed(() => product.value ? `${product.value.name} — pr
         <p class="text-slate-500">Không thể tải sản phẩm CMS hoặc slug chưa hợp lệ. Preview không hiển thị dữ liệu giả.</p>
       </div>
 
-      <ProductPreviewPage v-else :product="product" :pricing="payload!.pricing" :content="payload!.content" />
+      <ProductPreviewPage v-else :product="product" :pricing="payload!.pricing" :content="payload!.content" :documents="payload!.documents" />
     </main>
 
     <SiteFooter :site="site" />

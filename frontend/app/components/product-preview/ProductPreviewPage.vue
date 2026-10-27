@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import type { PublicProductContent, PublicProductDetail } from '#shared/contracts/public-product-detail'
+import type { PublicProductContent, PublicProductDetail, PublicProductDocument } from '#shared/contracts/public-product-detail'
 import type { PublicCatalogPricing } from '#shared/contracts/public-catalog'
 import ProductPreviewGallery from './ProductPreviewGallery.vue'
 import ProductPreviewSpecs from './ProductPreviewSpecs.vue'
 import ProductPreviewContent from './ProductPreviewContent.vue'
+import ProductPreviewDocuments from './ProductPreviewDocuments.vue'
 
-const props = defineProps<{ product: PublicProductDetail; pricing: PublicCatalogPricing; content: PublicProductContent }>()
+const props = defineProps<{ product: PublicProductDetail; pricing: PublicCatalogPricing; content: PublicProductContent; documents: PublicProductDocument[] }>()
 
 /*
  * Dinh dang tien khop PHP: class.Functions.php::formatMoney() ->
@@ -77,7 +78,7 @@ const discountPercent = computed(() => {
         <!--
           CÒN THIẾU so với ảnh production: chip thông số nổi bật, ô chọn số
           lượng, nút "Mua ngay" + "Thêm giỏ hàng", bảo chứng, tab neo, video,
-          tài liệu, đánh giá, form tư vấn và sản phẩm liên quan. Khối mô tả
+          đánh giá, form tư vấn và sản phẩm liên quan. Khối mô tả
           content_section + FAQ do Admin soạn đã được nối bằng DTO có kiểu,
           không dùng raw HTML/v-html.
         -->
@@ -89,13 +90,14 @@ const discountPercent = computed(() => {
 
     <ProductPreviewSpecs :specifications="product.specifications" />
     <ProductPreviewContent :content="content" />
+    <ProductPreviewDocuments :documents="documents" />
 
     <section class="py-8" aria-labelledby="product-preview-deferred-title">
       <h2 id="product-preview-deferred-title" class="mb-5 text-[clamp(24px,3vw,34px)] font-black tracking-tight">
         Các phần còn thuộc PHP legacy
       </h2>
       <p class="text-slate-500">
-        Tài liệu tải xuống, đánh giá, giỏ hàng/đặt mua, structured data và sản phẩm liên quan vẫn chưa được delegate sang preview.
+        Đánh giá, giỏ hàng/đặt mua, structured data và sản phẩm liên quan vẫn chưa được delegate sang preview.
       </p>
     </section>
   </div>

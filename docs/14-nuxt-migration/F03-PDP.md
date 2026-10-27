@@ -16,7 +16,7 @@
 | Giá regular/sale, giảm giá | **Đã xuất 2026-10-27** | `ptsPdpPricingDto()` gọi cùng gate `publicProductPricesVisible()`/status `baogia` như `pts_public_catalog_api.php::ptsCatalogPricingDto()`; nhân đó cũng sửa luôn bug canonical PDP ép dư dấu `/` cuối (`ptsPdpCanonicalUrl`, không khớp `publicProductEntityPath()`/router thật) |
 | Quote / mua ngay / giỏ hàng | Giữ PHP | Preview không tạo session, cart, POST hay checkout |
 | Content blocks + FAQ | **Đã xuất 2026-10-27** | API gọi đúng `productResolveSections()` nên giữ `own/both/hide/inherit` + nguồn kế thừa product/brand/cat/list. DTO chỉ cho `heading/text/list/image/media`; FAQ tách bằng chính `productSplitFaqBlocks()`. Text render bằng Vue interpolation, không `v-html`; ảnh chỉ nhận `/upload/product/` an toàn. `cards` bị loại vì PDP legacy không render block này (chỉ category landing dùng). |
-| Tài liệu sản phẩm | Chưa xuất | Cần gate path/file public riêng, tránh leak đường dẫn/private asset |
+| Tài liệu sản phẩm | **Đã xuất 2026-10-27** | API chỉ lấy record `hienthi`, loại tài liệu allowlist (`datasheet/manual/warranty/certificate/other`), chỉ chấp nhận HTTPS hoặc file public `upload/assets` với đuôi PDF/DOC/DOCX/XLS/XLSX. Nuxt dùng proxy local riêng `/_migration/product-document` với path/MIME/size gate; URL HTTPS đi trực tiếp. |
 | Reviews/comments | Giữ PHP | Mutation/session legacy chưa được headless hóa |
 | Related products | Chưa xuất | Thứ tự merchandising legacy chưa được kiểm chứng parity |
 | JSON-LD | Chưa xuất | PHP structured-data vẫn là authority; chưa delegate đầy đủ |
@@ -25,8 +25,9 @@
 ## Kiểm thử và giới hạn
 
 - `scripts/test-pts-public-product-detail-api.php`: test DTO, media traversal, private-field omission, content block/FAQ mapping, loại `cards`, 405 và invalid slug. PHP CLI/Docker hiện chưa khả dụng trên máy nên fixture này cần chạy lại khi runtime PHP mở.
-- `frontend/tests/product-detail-contract.test.mjs`: test schema, slug, media, pricing invariant, structured blocks, source inheritance và giới hạn FAQ.
+- `frontend/tests/product-detail-contract.test.mjs`: test schema, slug, media, pricing invariant, structured blocks, source inheritance, FAQ và tài liệu public.
+- `frontend/tests/product-document-proxy.test.mjs`: test whitelist path/extension/MIME, traversal, redirect, kích thước tối đa và preview flag của proxy tài liệu local.
 - Chưa chạy PHP với DB thật trong sandbox; coordinator cần chạy endpoint against PHP fixture/container để xác minh 200/404 và canonical/media thực tế.
-- Frontend full gate sau khi nối block: `npm test` 78/78 PASS, `nuxt typecheck` PASS (còn warning Volar/vue-router đã có từ trước), production `nuxt build` PASS. Chưa có browser parity với dữ liệu PDP thật vì PHP local/Docker đang không chạy.
+- Frontend full gate sau khi nối content + tài liệu: `npm test` 83/83 PASS, `nuxt typecheck` PASS (còn warning Volar/vue-router đã có từ trước), production `nuxt build` PASS (19,1s ở gate cuối). Chưa có browser parity với dữ liệu PDP thật vì PHP local/Docker đang không chạy.
 
 Rollback: xóa/revert các file mới của F03; không có production route, migration, DB write hay deploy nào đã thực hiện.

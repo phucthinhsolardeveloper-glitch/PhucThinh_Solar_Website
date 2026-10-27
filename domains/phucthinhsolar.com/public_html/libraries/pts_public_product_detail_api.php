@@ -118,6 +118,48 @@ function ptsPdpContentImageUrl($value, $root = '')
     return '/upload/product/'.$match[1];
 }
 
+function ptsPdpDocumentUrl($value, $root = '')
+{
+    if(!is_scalar($value)) return '';
+    $value = trim((string)$value);
+    if($value === '' || preg_match('/[\x00-\x1F\x7F]/', $value)) return '';
+
+    $path = (string)parse_url($value, PHP_URL_PATH);
+    $extension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+    if(!in_array($extension, array('pdf', 'doc', 'docx', 'xls', 'xlsx'), true)) return '';
+
+    if(filter_var($value, FILTER_VALIDATE_URL))
+    {
+        $parts = parse_url($value);
+        if(!is_array($parts) || strtolower(isset($parts['scheme']) ? $parts['scheme'] : '') !== 'https' || empty($parts['host']) || !empty($parts['user']) || !empty($parts['pass'])) return '';
+        return $value;
+    }
+
+    $local = ltrim($value, '/');
+    if(strpos($local, '..') !== false || !preg_match('#^(?:upload|assets)/[A-Za-z0-9._/-]+$#', $local)) return '';
+    if($root !== '' && !is_file(rtrim($root, '/\\').DIRECTORY_SEPARATOR.str_replace('/', DIRECTORY_SEPARATOR, $local))) return '';
+    return '/'.$local;
+}
+
+function ptsPdpDocumentsDto(array $rows, $root = '')
+{
+    $allowedTypes = array('datasheet', 'manual', 'warranty', 'certificate', 'other');
+    $documents = array();
+    $seen = array();
+    foreach($rows as $row)
+    {
+        if(!is_array($row)) continue;
+        $type = isset($row['document_type']) && in_array($row['document_type'], $allowedTypes, true) ? $row['document_type'] : '';
+        $title = ptsPdpText(isset($row['title']) ? $row['title'] : '');
+        $url = ptsPdpDocumentUrl(isset($row['file_path']) ? $row['file_path'] : '', $root);
+        if($type === '' || $title === '' || $url === '' || isset($seen[$url])) continue;
+        $seen[$url] = true;
+        $documents[] = array('type' => $type, 'title' => $title, 'url' => $url);
+        if(count($documents) >= 30) break;
+    }
+    return $documents;
+}
+
 function ptsPdpContentDto(array $sections, $root = '')
 {
     $allowedSources = array('', 'product', 'brand', 'cat', 'list', 'both', 'stack', 'hide', 'own');
@@ -189,7 +231,7 @@ function ptsPdpContentDto(array $sections, $root = '')
     return array('rendered' => true, 'source' => $source, 'blocks' => $blocks, 'faqs' => $faqs);
 }
 
-function ptsPdpPayload(array $row, array $media, array $specs, $canonical, array $canonicalSources, $pricesVisible = false, array $content = array())
+function ptsPdpPayload(array $row, array $media, array $specs, $canonical, array $canonicalSources, $pricesVisible = false, array $content = array(), array $documents = array())
 {
     $id = isset($row['id']) ? (int)$row['id'] : 0;
     $slug = ptsPdpSlug(isset($row['slugvi']) ? $row['slugvi'] : '');
@@ -217,6 +259,7 @@ function ptsPdpPayload(array $row, array $media, array $specs, $canonical, array
          * block mà PDP thật render và lọc ảnh về /upload/product/.
          */
         'content' => $content ? $content : ptsPdpContentDto(array()),
+        'documents' => array_values($documents),
         'canonical' => array('url' => $canonical !== '' ? '/'.trim($canonical, '/') : ptsPdpCanonicalUrl($slug), 'sources' => $canonicalSources),
         'parity' => array(
             'quote' => array('included' => false, 'reason' => 'legacy_quote_flow_stays_php'),

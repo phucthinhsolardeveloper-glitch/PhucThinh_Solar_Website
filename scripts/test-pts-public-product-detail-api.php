@@ -18,7 +18,14 @@ $sections = array(
     )
 );
 $content = ptsPdpContentDto($sections);
-$payload = ptsPdpPayload($row, array('/upload/product/real.webp','/upload/product/real.webp'), ptsPdpSpecDto($row), 'san-pham/den-that', array('product'=>'publicProductEntityPath(product)'), true, $content);
+$documents = ptsPdpDocumentsDto(array(
+    array('document_type'=>'datasheet','title'=>'Datasheet','file_path'=>'upload/product-documents/model.pdf'),
+    array('document_type'=>'manual','title'=>'Manual','file_path'=>'https://docs.example.com/model.docx'),
+    array('document_type'=>'manual','title'=>'Traversal','file_path'=>'upload/../secret.pdf'),
+    array('document_type'=>'other','title'=>'Executable','file_path'=>'upload/file.exe'),
+    array('document_type'=>'other','title'=>'HTTP','file_path'=>'http://docs.example.com/file.pdf')
+));
+$payload = ptsPdpPayload($row, array('/upload/product/real.webp','/upload/product/real.webp'), ptsPdpSpecDto($row), 'san-pham/den-that', array('product'=>'publicProductEntityPath(product)'), true, $content, $documents);
 pdpAssert($payload['product']['url'] === '/san-pham/den-that', 'canonical product URL has no trailing slash (matches publicProductEntityPath/legacy router)');
 pdpAssert($payload['canonical']['url'] === '/san-pham/den-that', 'canonical.url mirrors product.url, no forced trailing slash');
 pdpAssert($payload['product']['name'] === 'Đèn thật' && $payload['product']['summary'] === 'Mô tả thật', 'plain text product fields');
@@ -29,6 +36,8 @@ pdpAssert(count($payload['content']['blocks']) === 5 && $payload['content']['blo
 pdpAssert($payload['content']['blocks'][4]['image'] === '' && $payload['content']['blocks'][4]['side'] === 'right', 'unsafe media image is removed without dropping safe media text');
 pdpAssert(count($payload['content']['faqs']) === 1 && $payload['content']['faqs'][0]['question'] === 'Dùng ở đâu?', 'legacy inline FAQ syntax is split into typed FAQ');
 pdpAssert(strpos(json_encode($payload['content']), 'Không thuộc PDP') === false, 'category-only cards block is omitted from PDP DTO');
+pdpAssert(count($payload['documents']) === 2 && $payload['documents'][0]['url'] === '/upload/product-documents/model.pdf', 'only allowlisted local/HTTPS product documents are exposed');
+pdpAssert($payload['documents'][1]['url'] === 'https://docs.example.com/model.docx', 'HTTPS public product document is preserved');
 $quoteRow = $row; $quoteRow['status'] = 'hienthi,baogia';
 $quotePayload = ptsPdpPayload($quoteRow, array(), ptsPdpSpecDto($quoteRow), 'san-pham/den-that', array('product'=>'publicProductEntityPath(product)'), true, ptsPdpContentDto(array()));
 pdpAssert($quotePayload['pricing'] === array('mode'=>'quote','currency'=>'VND','regularPrice'=>null,'salePrice'=>null), 'baogia status forces quote mode even with pricesVisible=true');

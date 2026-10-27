@@ -19,6 +19,10 @@ const good = {
     ],
     faqs: [{ question: 'Dùng ở đâu?', answer: 'Theo nhu cầu thực tế.' }],
   },
+  documents: [
+    { type: 'datasheet', title: 'Thông số kỹ thuật', url: '/upload/product-documents/den-that.pdf' },
+    { type: 'manual', title: 'Hướng dẫn lắp đặt', url: 'https://docs.example.com/den-that.docx' },
+  ],
   canonical: { url: '/san-pham/den-that', sources: { product: 'publicProductEntityPath(product)' } },
   parity: { quote: { included: false, reason: 'legacy_quote_flow_stays_php' } },
 }
@@ -63,4 +67,13 @@ test('validates inherited content source and FAQ limits', () => {
   assert.equal(isPublicProductDetailPayload({ ...good, content: { ...good.content, source: 'brand' } }), true)
   assert.equal(isPublicProductDetailPayload({ ...good, content: { ...good.content, source: 'private' } }), false)
   assert.equal(isPublicProductDetailPayload({ ...good, content: { ...good.content, faqs: Array(31).fill(good.content.faqs[0]) } }), false)
+})
+
+test('accepts public product documents and rejects unsafe document paths', () => {
+  assert.equal(isPublicProductDetailPayload(good), true)
+  for (const url of ['/upload/../secret.pdf', '/upload/file.exe', 'http://docs.example.com/file.pdf', 'https://user:pass@docs.example.com/file.pdf']) {
+    assert.equal(isPublicProductDetailPayload({ ...good, documents: [{ type: 'manual', title: 'Tài liệu', url }] }), false, url)
+  }
+  assert.equal(isPublicProductDetailPayload({ ...good, documents: [{ type: 'private', title: 'Tài liệu', url: '/upload/file.pdf' }] }), false)
+  assert.equal(isPublicProductDetailPayload({ ...good, documents: Array(31).fill(good.documents[0]) }), false)
 })
