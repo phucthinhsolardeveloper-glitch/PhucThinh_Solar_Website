@@ -33,8 +33,9 @@
 - Reproducibility: `.nvmrc` pin Node 24.20.0 và
   `frontend/package-lock.json` lockfile v3 được track;
   `npm ci --dry-run --ignore-scripts --no-audit --no-fund` PASS trên Node
-  24.20.0/npm 11.19.0. Chưa có workflow CI hoặc runtime pin trong repository,
-  nên đây là gate thủ công cho tới khi owner bổ sung pipeline.
+  24.20.0/npm 11.19.0. Workflow `.github/workflows/nuxt-integration.yml`
+  đã được thêm để chạy các gate Nuxt trên push/PR; chưa chạy GitHub-hosted
+  runner trong phiên này.
 
 ## Chưa làm trong checkpoint này
 

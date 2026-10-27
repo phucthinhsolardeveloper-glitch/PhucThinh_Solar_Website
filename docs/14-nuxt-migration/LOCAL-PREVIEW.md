@@ -53,9 +53,10 @@ cd /home/admin01/src/pts-nuxt-integration-20261027
   production build PASS; SSR smoke base + hub/media routes PASS.
 - `frontend/package-lock.json` là lockfile v3 được track; `npm ci --dry-run
   --ignore-scripts --no-audit --no-fund` đã PASS trên Node 24.20.0/npm 11.19.0.
-- Repository hiện chưa có workflow CI (GitHub/GitLab/Jenkins); runtime Node đã
-  được pin bằng `.nvmrc` 24.20.0. Các gate vẫn phải chạy thủ công/serial cho
-  tới khi owner bổ sung pipeline.
+- Workflow GitHub Actions `.github/workflows/nuxt-integration.yml` đã khai báo
+  install, audit, contract test, typecheck, build, SSR smoke, cutover static và
+  visual/SEO harness; runtime Node được pin bằng `.nvmrc` 24.20.0. Runner thật
+  chưa được kích hoạt trong phiên này nên vẫn giữ bằng chứng local.
 - Catalog preview đã có filter thật, sort, brand detail preview và panel danh mục
   + bộ lọc dùng chung; preview giữ `noindex`.
 - PHP 8.1/Docker contract và full browser visual manifest chưa chạy lại trong
