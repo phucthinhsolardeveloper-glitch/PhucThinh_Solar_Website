@@ -29,8 +29,10 @@ family sau:
   `/ho-tro/{slug}/`; fixture local đã xác minh từ footer DTO là
   `chinh-sach-bao-hanh-bao-tri-va-ho-tro-ky-thuat`. Không dùng slug rút gọn hoặc
   tự đoán.
-- Gallery/video: route thật là `/thu-vien-anh/*` và `/video/*`; không dùng
-  `/album/*` làm tên route PHP. Đã có Nuxt internal preview tại
+- Gallery/video: listing thật là `/thu-vien-anh/` và `/video/`; gallery detail
+  dùng bare published slug `/{slug}/` được PHP resolver nhận diện theo
+  `type=thu-vien-anh`. Không dùng `/album/*` làm tên route PHP. Đã có Nuxt
+  internal preview tại
   `migration-gallery-preview`, `migration-gallery-detail-preview` và
   `migration-video-preview`; các route đều noindex, PHP vẫn là public owner.
   Full aspect-ratio/embed/privacy/copyright parity và canonical/cutover vẫn
