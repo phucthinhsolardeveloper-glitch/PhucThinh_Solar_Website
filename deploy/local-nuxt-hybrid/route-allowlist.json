@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "description": "Candidate Nuxt hybrid route allowlist. This file is local dry-run evidence and is not imported by production Caddy.",
+  "featureFlag": {
+    "name": "PTS_NUXT_HYBRID_ENABLED",
+    "default": "0"
+  },
+  "pilot": {
+    "id": "about",
+    "publicPath": "/gioi-thieu/",
+    "nuxtPath": "/gioi-thieu/",
+    "methods": ["GET", "HEAD"],
+    "readiness": "blocked",
+    "reason": "Nuxt currently exposes only /migration-about-preview with noindex; a public /gioi-thieu/ route and production Nuxt service do not exist yet."
+  },
+  "phpOwnedPrefixes": [
+    "/account/",
+    "/administrator/",
+    "/api/",
+    "/upload/",
+    "/thumbs/",
+    "/watermark/",
+    "/gio-hang/",
+    "/cam-on/"
+  ],
+  "forbiddenNuxtPrefixes": [
+    "/migration-",
+    "/_migration/"
+  ],
+  "phpOwnedCapabilities": [
+    "account",
+    "admin",
+    "checkout-transaction",
+    "payment",
+    "public-api",
+    "media-transform",
+    "redirect-resolver"
+  ]
+}
