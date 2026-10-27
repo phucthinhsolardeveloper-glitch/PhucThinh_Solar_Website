@@ -25,8 +25,20 @@ export function requireMigrationGet(event: MigrationEvent): void {
 }
 
 export function migrationPhpEndpoint(event: MigrationEvent, endpoint: string): string {
+  if (!endpoint.startsWith('/') || endpoint.startsWith('//') || endpoint.includes('\\')) {
+    throw createError({ statusCode: 500, statusMessage: 'Invalid PHP migration endpoint' })
+  }
   const config = useRuntimeConfig(event)
-  return `${String(config.phpOrigin).replace(/\/$/, '')}${endpoint}`
+  let origin: URL
+  try { origin = new URL(String(config.phpOrigin)) }
+  catch { throw createError({ statusCode: 500, statusMessage: 'Invalid PHP migration origin' }) }
+
+  const allowedHost = origin.hostname === '127.0.0.1' || origin.hostname === 'localhost'
+  const allowedPort = origin.port === '8080' || origin.port === '8088'
+  if (origin.protocol !== 'http:' || !allowedHost || !allowedPort || origin.username || origin.password || origin.pathname !== '/' || origin.search || origin.hash) {
+    throw createError({ statusCode: 500, statusMessage: 'Untrusted PHP migration origin' })
+  }
+  return origin.origin + endpoint
 }
 
 export async function fetchMigrationPayload<T>(event: MigrationEvent, options: MigrationFetchOptions<T>): Promise<T> {
