@@ -60,6 +60,6 @@ export default defineEventHandler(async (event) => {
     invalidMessage: 'Invalid PHP catalog data contract',
     unavailableMessage: 'PHP catalog data source unavailable',
   })
-  setHeader(event, 'Cache-Control', 'private, max-age=60, stale-while-revalidate=60')
+  setHeader(event, 'Cache-Control', 'private, no-store')
   return payload
 })

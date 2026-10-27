@@ -42,6 +42,6 @@ export default defineEventHandler(async (event) => {
     unavailableMessage: 'PHP brand detail data source unavailable',
     passThroughStatuses: [404],
   })
-  setHeader(event, 'Cache-Control', 'private, max-age=60, stale-while-revalidate=60')
+  setHeader(event, 'Cache-Control', 'private, no-store')
   return payload
 })
