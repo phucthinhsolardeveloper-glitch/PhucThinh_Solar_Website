@@ -19,9 +19,10 @@ Kế hoạch gốc được lập tại `feature/pts-nuxt4-parity-qa-20261026`, 
   trên. Các validator DTO vẫn nằm trong `frontend/shared/contracts/*`; PHP DTO
   vẫn nằm cạnh `api/pts_v1_*.php` và `libraries/pts_public_*_api.php`, tránh tạo
   thêm projection song song.
-- Các gap trước cutover: production route/hybrid routing; catalog stock parity
-  (filter theo loại sản phẩm/thương hiệu/mức giá và sort đã nối thật ở `c00aa0e`,
-  xem F02 trong ROUTE_PARITY_MATRIX.md); public canonical/OG/sitemap/robots/
+- Các gap trước cutover: production route/hybrid routing; catalog visual/browser
+  parity cuối (filter theo loại sản phẩm/thương hiệu/mức giá, sort và panel danh
+  mục đã nối thật ở `c00aa0e`, `ae811bb`, xem F02 trong ROUTE_PARITY_MATRIX.md);
+  public canonical/OG/sitemap/robots/
   redirect parity ngoài PDP preview JSON-LD; brand/gallery/video/account
   routes; final visual/browser QA và deployment gates. Không dùng preview 200
   để claim production migration.

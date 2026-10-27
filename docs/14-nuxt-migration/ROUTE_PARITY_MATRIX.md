@@ -10,7 +10,7 @@ theo code/contract hiện tại, không suy diễn từ mock.
 |---|---|---|---|---|---|---|
 | F00 `/`, shell | `sources/allpage.php`, `templates/layout/*` | `SiteHeader`, `SiteFooter`, `SiteBreadcrumb`; `migration-shell-preview`, `migration-site-preview` | DTO site/navigation read-only; fallback an toàn khi upstream lỗi | Điều hướng nội bộ trong preview đã trỏ về route Nuxt tương ứng; public shell, canonical và cutover vẫn PHP | Public PHP 200; preview noindex | Cao |
 | F01 `/` | `sources/index.php`, `templates/index/index_tpl.php` | `migration-home-preview`, `/_migration/home` | CMS thật qua `pts_v1_home`; form Nuxt gửi qua PHP adapter bảo vệ | Catalog/filter và SEO public chưa parity đầy đủ; chưa takeover public route | Public PHP SEO authority; preview noindex | Cao |
-| F02 `/san-pham/` | `sources/product.php`, `templates/product/product_tpl.php` | `migration-catalog-preview`, `/_migration/catalog` | Published product/category, bounded paging, media đã kiểm tra file; brand/mức giá/loại sản phẩm filter + 6 tùy chọn sắp xếp đã nối đúng `productPriceFilterSql()`/whitelist sort (commit `c00aa0e`) | "Tồn kho" từng bị liệt là gap nhưng đã rà lại `#_product` schema và toàn bộ `sources/product.php`/`product_tpl.php`/`product_detail_tpl.php`: KHÔNG có cột/khái niệm tồn kho công khai nào trên site PHP thật (chỉ có "quantity-pro-detail" là ô chọn SỐ LƯỢNG MUA, không phải mức tồn kho) — xoá khỏi gap, không bịa tính năng không tồn tại ở nguồn. Còn lại thật: tab vàng trùng lặp + gộp CatalogCategoryNav vào một panel BỘ LỌC như ảnh production chưa làm (xem ghi chú tại CatalogFilterSidebar.vue); quote/cart dùng backend PHP | Public PHP canonical/SEO; preview noindex | Cao |
+| F02 `/san-pham/` | `sources/product.php`, `templates/product/product_tpl.php` | `migration-catalog-preview`, `/_migration/catalog` | Published product/category, bounded paging, media đã kiểm tra file; brand/mức giá/loại sản phẩm filter + 6 tùy chọn sắp xếp đã nối đúng `productPriceFilterSql()`/whitelist sort (commit `c00aa0e`) | "Tồn kho" không phải dữ liệu công khai của PHP: đã rà `#_product` và các template liên quan, không bịa projection. Cây danh mục và filter đã gộp vào một panel `BỘ LỌC` (commit `ae811bb`); quote/cart vẫn dùng backend PHP. | Public PHP canonical/SEO; preview noindex | Cao |
 | F03 `/san-pham/{slug}/` | `sources/product.php`, `product_detail_tpl.php` | `migration-product-preview`, `/_migration/product-detail`, `/_migration/product-extras` | Published PDP, pricing/content/specs/media/documents/extras theo contract | Preview đã có gallery lightbox/zoom, quote/cart, FAQ, video, warranty/policy, related, reviews, consultation, anchors và Product/Breadcrumb/FAQ JSON-LD; public SEO/cutover chưa ký | Public PHP route; preview noindex | Rất cao |
 | F04 `/danh-muc-san-pham/*` | `libraries/router.php`, `product_category_urls.php` | `migration-catalog-preview?category=...` | Category chain có trong site/catalog DTO | Chưa có public Nuxt route riêng; alias, 301/404 và đầy đủ filter/breadcrumb vẫn cần gate | PHP canonical/redirect owner | Cao |
 | F05 `/tim-kiem/` | `sources/search.php` | `migration-search-preview`, `/_migration/search` | Nuxt render kết quả theo search semantics legacy qua adapter | Public route/SEO và đầy đủ parity kết quả chưa cutover | PHP owner; preview noindex | Cao |
@@ -65,8 +65,9 @@ theo code/contract hiện tại, không suy diễn từ mock.
   khi có quyết định và rollback gate được phê duyệt.
 - Hoàn tất SEO public canonical/OG/sitemap/robots/redirect parity; JSON-LD hiện
   mới có trên PDP preview.
-- Catalog filter (loại sản phẩm/thương hiệu/mức giá) và sort đã nối thật
-  (`c00aa0e`); "tồn kho" không phải gap thật (không có trên site PHP, xem F02).
+- Catalog filter (loại sản phẩm/thương hiệu/mức giá), sort và panel danh mục đã
+  nối thật (`c00aa0e`, `ae811bb`); "tồn kho" không phải gap thật (không có trên
+  site PHP, xem F02).
   Brand detail `/thuong-hieu/{slug}/` đã có preview (`f0cf5ce`); còn lại
   gallery/video và account vẫn ngoài Nuxt (account giữ nguyên bên PHP theo
   thiết kế, xem F18, không phải việc cần làm).

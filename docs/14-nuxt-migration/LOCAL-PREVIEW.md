@@ -47,10 +47,13 @@ cd /home/admin01/src/pts-nuxt-integration-20261027
 - Build output, images and log are untracked in frontend/.migration-artifacts/.
 
 ## Latest local checks
-- Checkpoint: `3b9cade..57c786f`, kèm `35d0c5f` cho navigation.
-- 11 PHP file/library mới qua `php -l`; `npm test` 98/98; typecheck exit 0
-  với warning vue-router/Volar không fatal; production build PASS; smoke PASS.
-- 13/13 route preview quan trọng HTTP 200; preview giữ `noindex`.
+- Checkpoint frontend hiện tại: `ae811bb` trên `feature/pts-nuxt-integration-20261027`.
+- `npm test` 109/109; typecheck exit 0 với warning vue-router/Volar không fatal;
+  production build PASS; SSR catalog preview HTTP 200.
+- Catalog preview đã có filter thật, sort, brand detail preview và panel danh mục
+  + bộ lọc dùng chung; preview giữ `noindex`.
+- PHP 8.1/Docker contract và full browser visual manifest chưa chạy lại trong
+  audit này vì Docker daemon của executor không khả dụng.
 - Contact/dealer/home form UI chạy trên Nuxt và gửi qua PHP adapter an toàn;
   cart/checkout/order-success dùng PHP session/calculation/transaction.
 - PDP preview đã có pricing/quote/cart, gallery lightbox/zoom, content/FAQ,
