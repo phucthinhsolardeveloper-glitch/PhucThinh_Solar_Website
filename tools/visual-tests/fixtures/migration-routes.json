@@ -17,7 +17,7 @@
     { "id": "about", "legacyPath": "/gioi-thieu/", "previewPath": "/migration-about-preview", "expectedCanonicalPath": "/gioi-thieu/" },
     { "id": "dealer", "legacyPath": "/dai-ly/", "previewPath": "/migration-dealer-preview", "expectedCanonicalPath": "/dai-ly/" },
     { "id": "contact", "legacyPath": "/lien-he/", "previewPath": "/migration-contact-preview", "expectedCanonicalPath": "/lien-he/" },
-    { "id": "policy-detail", "kind": "policy-detail", "legacyPath": "/ho-tro/bao-hanh/", "previewPath": "/migration-policy-preview?slug=bao-hanh", "expectedCanonicalPath": "/ho-tro/bao-hanh/", "note": "Slug is backed by the public-navigation contract fixture; replace only if the local CMS fixture uses another published policy slug." },
+    { "id": "policy-detail", "kind": "policy-detail", "legacyPath": "/ho-tro/chinh-sach-bao-hanh-bao-tri-va-ho-tro-ky-thuat/", "previewPath": "/migration-policy-preview?slug=chinh-sach-bao-hanh-bao-tri-va-ho-tro-ky-thuat", "expectedCanonicalPath": "/ho-tro/chinh-sach-bao-hanh-bao-tri-va-ho-tro-ky-thuat/", "note": "Published policy slug verified from the local CMS footer DTO on 2026-10-27." },
     { "id": "cart", "legacyPath": "/gio-hang/", "previewPath": "/migration-cart-preview", "expectedCanonicalPath": "/gio-hang/", "visual": false },
     { "id": "checkout-preview", "kind": "commerce-preview", "legacyPath": "/gio-hang/", "previewPath": "/migration-checkout-preview", "visual": false, "note": "Legacy checkout is a POST mutation on /gio-hang/; this row only audits the read-only page surface." },
     { "id": "order-success", "kind": "commerce-preview", "legacyPath": "/cam-on/", "previewPath": "/migration-order-success", "expectedCanonicalPath": "/cam-on/", "visual": false },

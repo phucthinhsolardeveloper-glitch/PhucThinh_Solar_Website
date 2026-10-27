@@ -26,8 +26,9 @@ family sau:
 - Corporate: `/gioi-thieu/`, alias `/ve-chung-toi/`; `/dai-ly/`, alias
   `/he-thong-dai-ly/` chuyển về `/lien-he/`; `/lien-he/`.
 - Support/policy: record `news.type = chinh-sach` được public link tại
-  `/ho-tro/{slug}/`; API/contract evidence dùng slug `bao-hanh`. Slug khác phải
-  lấy từ CMS local, không tự đoán.
+  `/ho-tro/{slug}/`; fixture local đã xác minh từ footer DTO là
+  `chinh-sach-bao-hanh-bao-tri-va-ho-tro-ky-thuat`. Không dùng slug rút gọn hoặc
+  tự đoán.
 - Gallery/video: route thật là `/thu-vien-anh/*` và `/video/*`; không dùng
   `/album/*` làm tên route PHP. Chưa có Nuxt preview, giữ PHP-owned/excluded.
 - Commerce: `/gio-hang/` là GET page và POST checkout mutation; checkout không
@@ -58,9 +59,10 @@ remote. Output:
 - `resources.php/nuxt`: visibility/status của `/robots.txt` và `/sitemap.xml`,
   gồm `Disallow`, `Allow`, `Sitemap` và danh sách `<loc>`.
 
-Nếu policy local không có `bao-hanh`, giữ kết quả 404/needs-verification và thay
-slug bằng một record `chinh-sach` đang `hienthi` trước lần crawl tích hợp. Không
-đổi manifest để che 404; không dùng HTTP 200 của preview để tuyên bố parity.
+Nếu fixture policy thay đổi, giữ kết quả 404/needs-verification và lấy lại slug
+từ `site.footer.policies` hoặc một record `chinh-sach` đang `hienthi` trước lần
+crawl tích hợp. Không đổi manifest để che 404; phải ghi evidence CMS và không
+dùng HTTP 200 của preview để tuyên bố parity.
 
 ## Gate decision
 

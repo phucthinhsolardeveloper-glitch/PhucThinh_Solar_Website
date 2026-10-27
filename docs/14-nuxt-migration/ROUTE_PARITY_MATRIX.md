@@ -60,6 +60,9 @@ tại, không suy diễn từ mock.
 - Các điểm phụ thuộc dữ liệu CMS có command kiểm chứng trong
   `SEO-CRAWL-GATES.md`; nếu slug fixture không tồn tại, report phải giữ nguyên
   404/needs-verification, không thay bằng dữ liệu bịa.
+- Policy fixture local đã được đối chiếu từ `site.footer.policies` ngày
+  2026-10-27; manifest dùng slug publish đầy đủ
+  `chinh-sach-bao-hanh-bao-tri-va-ho-tro-ky-thuat` thay cho slug rút gọn 404.
 
 ## Explicit pre-cutover gates
 
