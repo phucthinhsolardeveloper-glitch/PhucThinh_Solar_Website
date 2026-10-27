@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "status": "BLOCKED",
+  "runner": "scripts/test-pts-public-api-integration.php",
+  "baseUrl": "http://127.0.0.1:8088",
+  "checks": {"pass": 0, "fail": 0, "skip": 0},
+  "sliceScripts": {"pass": 0, "fail": 0, "skip": 0},
+  "container": {
+    "compose": "docker compose config PASS",
+    "docker": "BLOCKED: WSL docker socket permission denied; Docker Desktop CLI returned UtilBindVsockAnyPort socket failed",
+    "localConfig": "BLOCKED: domains/phucthinhsolar.com/public_html/libraries/config.php is gitignored and absent"
+  },
+  "inventory": {
+    "readOnly": [
+      "pts_v1_site", "pts_v1_home", "pts_v1_catalog", "pts_v1_search", "pts_v1_solutions", "pts_v1_projects", "pts_v1_news", "pts_v1_about", "pts_v1_contact", "pts_v1_dealer", "pts_v1_cart", "pts_v1_checkout", "pts_v1_checkout_wards", "pts_v1_brand_detail", "pts_v1_product_detail", "pts_v1_product_extras", "pts_v1_solution_detail", "pts_v1_project_detail", "pts_v1_news_detail", "pts_v1_policy_detail", "pts_v1_order_thanks"
+    ],
+    "mutationNegativeOnly": ["pts_v1_cart_mutate", "pts_v1_lead_form", "pts_v1_review", "shipping_quote"]
+  },
+  "notTestable": [
+    "PHP 8.1 container could not be started from the current WSL/Docker state",
+    "127.0.0.1:8088 HTTP checks unavailable",
+    "local DB fixture counts/checksums unavailable",
+    "php -l and PHP slice scripts unavailable because WSL PHP is not installed"
+  ],
+  "contractBugsFixed": [],
+  "productionState": "unchanged; no production access, deploy, migration, or DB write",
+  "rollbackPoint": "07a50ea / current worktree before this task"
+}
