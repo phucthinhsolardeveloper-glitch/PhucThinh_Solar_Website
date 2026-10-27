@@ -58,7 +58,7 @@ function isCategory(value: unknown): value is PublicCatalogCategory {
   return isRecord(value) && hasExactKeys(value, ['id', 'name', 'slug', 'url']) && isSafeId(value.id) && isSafeText(value.name) && isSlug(value.slug) && typeof value.url === 'string' && /^\/danh-muc-san-pham\/[a-z0-9]+(?:-[a-z0-9]+)*(?:\/[a-z0-9]+(?:-[a-z0-9]+)*){0,3}\/$/.test(value.url) && value.url.endsWith(`/${value.slug}/`)
 }
 
-function isProduct(value: unknown): value is PublicCatalogProduct {
+export function isPublicCatalogProduct(value: unknown): value is PublicCatalogProduct {
   if (!isRecord(value)) return false
   const legacy = hasExactKeys(value, ['id', 'name', 'slug', 'url', 'media'])
   const extended = hasExactKeys(value, ['id', 'name', 'slug', 'url', 'media', 'powerWatts', 'pricing'])
@@ -83,7 +83,7 @@ function isPriceParity(value: unknown): value is PublicCatalogPayload['parity'][
 export function isPublicCatalogPayload(value: unknown): value is PublicCatalogPayload {
   if (!isRecord(value) || !hasExactKeys(value, ['schemaVersion', 'locale', 'category', 'categories', 'products', 'pagination', 'parity']) || value.schemaVersion !== 1 || value.locale !== 'vi') return false
   if (!(Array.isArray(value.category) && value.category.length === 0 || isCategory(value.category))) return false
-  if (!Array.isArray(value.categories) || !value.categories.every(isCategory) || !Array.isArray(value.products) || !value.products.every(isProduct)) return false
+  if (!Array.isArray(value.categories) || !value.categories.every(isCategory) || !Array.isArray(value.products) || !value.products.every(isPublicCatalogProduct)) return false
   if (!isRecord(value.pagination) || !hasExactKeys(value.pagination, ['page', 'perPage', 'total']) || typeof value.pagination.page !== 'number' || !Number.isSafeInteger(value.pagination.page) || value.pagination.page < 1 || value.pagination.page > 10000 || typeof value.pagination.perPage !== 'number' || !Number.isSafeInteger(value.pagination.perPage) || value.pagination.perPage < 1 || value.pagination.perPage > 48 || typeof value.pagination.total !== 'number' || !Number.isSafeInteger(value.pagination.total) || value.pagination.total < 0) return false
   if (!isRecord(value.parity) || !hasExactKeys(value.parity, ['prices', 'filters', 'sort'])) return false
   return isPriceParity(value.parity.prices) && isParity(value.parity.filters, 'legacy_filter_parity_not_verified') && isParity(value.parity.sort, 'legacy_sort_parity_not_verified')
