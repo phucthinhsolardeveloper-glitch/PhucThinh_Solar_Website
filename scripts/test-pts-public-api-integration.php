@@ -45,7 +45,7 @@ $report = array(
         'slice failure output is reduced to exit status so reports cannot contain config or secret content'
     ),
     'productionState' => 'unchanged; no production access, deploy, migration, or DB write',
-    'rollbackPoint' => '4fe2979 / current worktree before follow-up'
+    'rollbackPoint' => '43893ad / worktree before sanitizer-contract follow-up'
 );
 $sessionCookies = array();
 
@@ -497,11 +497,15 @@ $markdown = array(
     '- Slice scripts: PASS '.$report['sliceScripts']['pass'].' / FAIL '.$report['sliceScripts']['fail'].' / SKIP '.$report['sliceScripts']['skip'],
     '- DB snapshot unchanged: `'.($report['database']['unchanged'] === null ? 'not available' : ($report['database']['unchanged'] ? 'true' : 'false')).'`',
     '- Production state: unchanged; no production access, deploy, migration, or DB write.',
-    '- Rollback point: `4fe2979 / current worktree before follow-up`',
+    '- Rollback point: `'.$report['rollbackPoint'].'`',
     '', '## Blockers / not testable', ''
 );
 foreach($report['blockedReasons'] as $reason) $markdown[] = '- '.$reason;
 foreach($report['notTestable'] as $item) $markdown[] = '- '.$item['name'].': '.$item['reason'];
+$markdown[] = '';
+$markdown[] = '## Failures';
+$markdown[] = '';
+foreach($report['failures'] as $item) $markdown[] = '- '.$item['name'].': '.$item['detail'];
 $markdown[] = '';
 $markdown[] = 'Mutation scripts with valid writes were excluded: `test-public-form-submissions.php`, `test-public-lead-and-review.php`.';
 file_put_contents($reportMarkdown, implode(PHP_EOL, $markdown).PHP_EOL, LOCK_EX);

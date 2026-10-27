@@ -1,34 +1,413 @@
 {
-  "schemaVersion": 2,
-  "status": "PENDING_COORDINATOR_RERUN",
-  "runner": "scripts/test-pts-public-api-integration.php",
-  "baseUrl": "http://127.0.0.1:8088",
-  "execution": {
-    "requiredRuntime": "PHP 8.1 isolated fixture container",
-    "localEnvironment": "not available: WSL PHP is absent and local HTTP socket access is restricted",
-    "nextAction": "run the committed runner inside pts-php81-codex-api and recopy report artifacts"
-  },
-  "checks": {"pass": null, "fail": null, "skip": null},
-  "sliceScripts": {"pass": null, "fail": null, "skip": null},
-  "database": {"before": [], "after": [], "unchanged": null},
-  "evidenceFromCoordinator": [
-    "solutions returns schemaVersion, locale, path, title, intro, cards, equipment, allProductsUrl, labels, cta, editorial",
-    "valid nonexistent slug khong-ton-tai-abcxyz returns HTTP 404 for the six detail checks",
-    "invalid CSRF mutation requests return HTTP 419 in the isolated Apache fixture",
-    "the fixture database and /var/www/html/libraries/config.php are available inside the container"
-  ],
-  "contractBugsFixed": [
-    "solutions expectation uses the real response envelope",
-    "missing-entity checks use a syntactically valid nonexistent slug",
-    "container web-root config discovery reads the existing fixture config without copying it",
-    "pure slice scripts run through a temporary path-compatible tree and exclude the aggregate runner",
-    "HTTP session cookies are preserved for invalid-CSRF negative checks",
-    "slice failure output is reduced to exit status so reports cannot contain config or secret content"
-  ],
-  "inventory": {
-    "readOnly": ["pts_v1_site", "pts_v1_home", "pts_v1_catalog", "pts_v1_search", "pts_v1_solutions", "pts_v1_projects", "pts_v1_news", "pts_v1_about", "pts_v1_contact", "pts_v1_dealer", "pts_v1_cart", "pts_v1_checkout", "pts_v1_checkout_wards", "pts_v1_brand_detail", "pts_v1_product_detail", "pts_v1_product_extras", "pts_v1_solution_detail", "pts_v1_project_detail", "pts_v1_news_detail", "pts_v1_policy_detail", "pts_v1_order_thanks"],
-    "mutationNegativeOnly": ["pts_v1_cart_mutate", "pts_v1_lead_form", "pts_v1_review", "shipping_quote"]
-  },
-  "productionState": "unchanged; no production access, deploy, migration, cleanup, or DB write",
-  "rollbackPoint": "4fe2979 / current worktree before follow-up"
+    "schemaVersion": 2,
+    "runner": "scripts/test-pts-public-api-integration.php",
+    "baseUrl": "http://127.0.0.1",
+    "php": "8.1.34",
+    "status": "PASS",
+    "checks": {
+        "pass": 58,
+        "fail": 0,
+        "skip": 7
+    },
+    "sliceScripts": {
+        "pass": 17,
+        "fail": 0,
+        "skip": 0,
+        "excludedNoWrite": [
+            "scripts/test-public-form-submissions.php",
+            "scripts/test-public-lead-and-review.php"
+        ]
+    },
+    "blockedReasons": [],
+    "notTestable": [
+        {
+            "name": "brand_detail",
+            "reason": "no published local fixture entity"
+        },
+        {
+            "name": "product_detail",
+            "reason": "no published local fixture entity"
+        },
+        {
+            "name": "product_extras",
+            "reason": "no published local fixture entity"
+        },
+        {
+            "name": "solution_detail",
+            "reason": "no published local fixture entity"
+        },
+        {
+            "name": "project_detail",
+            "reason": "no published local fixture entity"
+        },
+        {
+            "name": "news_detail",
+            "reason": "no published local fixture entity"
+        },
+        {
+            "name": "policy_detail",
+            "reason": "no published local fixture entity"
+        }
+    ],
+    "failures": [],
+    "database": {
+        "before": {
+            "product": {
+                "count": 399,
+                "idSum": "287748",
+                "idMin": 311,
+                "idMax": 3794
+            },
+            "product_list": {
+                "count": 9,
+                "idSum": "209",
+                "idMin": 19,
+                "idMax": 28
+            },
+            "product_cat": {
+                "count": 28,
+                "idSum": "988",
+                "idMin": 19,
+                "idMax": 50
+            },
+            "product_item": {
+                "count": 0,
+                "idSum": "0",
+                "idMin": 0,
+                "idMax": 0
+            },
+            "product_sub": {
+                "count": 0,
+                "idSum": "0",
+                "idMin": 0,
+                "idMax": 0
+            },
+            "product_brand": {
+                "count": 13,
+                "idSum": "825",
+                "idMin": 19,
+                "idMax": 169
+            },
+            "news": {
+                "count": 82,
+                "idSum": "13758",
+                "idMin": 9,
+                "idMax": 2161
+            },
+            "news_list": {
+                "count": 8,
+                "idSum": "52",
+                "idMin": 3,
+                "idMax": 10
+            },
+            "news_cat": {
+                "count": 0,
+                "idSum": "0",
+                "idMin": 0,
+                "idMax": 0
+            },
+            "news_item": {
+                "count": 0,
+                "idSum": "0",
+                "idMin": 0,
+                "idMax": 0
+            },
+            "news_sub": {
+                "count": 0,
+                "idSum": "0",
+                "idMin": 0,
+                "idMax": 0
+            },
+            "city": {
+                "count": 97,
+                "idSum": "4753",
+                "idMin": 1,
+                "idMax": 97
+            },
+            "ward": {
+                "count": 13920,
+                "idSum": "96890160",
+                "idMin": 1,
+                "idMax": 13920
+            },
+            "setting": {
+                "count": 1,
+                "idSum": "1",
+                "idMin": 1,
+                "idMax": 1
+            },
+            "static": {
+                "count": 8,
+                "idSum": "68",
+                "idMin": 3,
+                "idMax": 13
+            },
+            "photo": {
+                "count": 49,
+                "idSum": "4704",
+                "idMin": 3,
+                "idMax": 139
+            },
+            "gallery": {
+                "count": 499,
+                "idSum": "1071391",
+                "idMin": 672,
+                "idMax": 3499
+            },
+            "seo": {
+                "count": 733,
+                "idSum": "2484049",
+                "idMin": 210,
+                "idMax": 5281
+            },
+            "seopage": {
+                "count": 9,
+                "idSum": "52",
+                "idMin": 1,
+                "idMax": 10
+            },
+            "comment": {
+                "count": 0,
+                "idSum": "0",
+                "idMin": 0,
+                "idMax": 0
+            },
+            "comment_photo": {
+                "count": 0,
+                "idSum": "0",
+                "idMin": 0,
+                "idMax": 0
+            },
+            "order": {
+                "count": 0,
+                "idSum": "0",
+                "idMin": 0,
+                "idMax": 0
+            },
+            "order_detail": {
+                "count": 0,
+                "idSum": "0",
+                "idMin": 0,
+                "idMax": 0
+            },
+            "newsletter": {
+                "count": 0,
+                "idSum": "0",
+                "idMin": 0,
+                "idMax": 0
+            },
+            "contact": {
+                "count": 2,
+                "idSum": "1753",
+                "idMin": 876,
+                "idMax": 877
+            },
+            "user_limit": {
+                "count": 237,
+                "idSum": "428857",
+                "idMin": 1,
+                "idMax": 2931
+            }
+        },
+        "after": {
+            "product": {
+                "count": 399,
+                "idSum": "287748",
+                "idMin": 311,
+                "idMax": 3794
+            },
+            "product_list": {
+                "count": 9,
+                "idSum": "209",
+                "idMin": 19,
+                "idMax": 28
+            },
+            "product_cat": {
+                "count": 28,
+                "idSum": "988",
+                "idMin": 19,
+                "idMax": 50
+            },
+            "product_item": {
+                "count": 0,
+                "idSum": "0",
+                "idMin": 0,
+                "idMax": 0
+            },
+            "product_sub": {
+                "count": 0,
+                "idSum": "0",
+                "idMin": 0,
+                "idMax": 0
+            },
+            "product_brand": {
+                "count": 13,
+                "idSum": "825",
+                "idMin": 19,
+                "idMax": 169
+            },
+            "news": {
+                "count": 82,
+                "idSum": "13758",
+                "idMin": 9,
+                "idMax": 2161
+            },
+            "news_list": {
+                "count": 8,
+                "idSum": "52",
+                "idMin": 3,
+                "idMax": 10
+            },
+            "news_cat": {
+                "count": 0,
+                "idSum": "0",
+                "idMin": 0,
+                "idMax": 0
+            },
+            "news_item": {
+                "count": 0,
+                "idSum": "0",
+                "idMin": 0,
+                "idMax": 0
+            },
+            "news_sub": {
+                "count": 0,
+                "idSum": "0",
+                "idMin": 0,
+                "idMax": 0
+            },
+            "city": {
+                "count": 97,
+                "idSum": "4753",
+                "idMin": 1,
+                "idMax": 97
+            },
+            "ward": {
+                "count": 13920,
+                "idSum": "96890160",
+                "idMin": 1,
+                "idMax": 13920
+            },
+            "setting": {
+                "count": 1,
+                "idSum": "1",
+                "idMin": 1,
+                "idMax": 1
+            },
+            "static": {
+                "count": 8,
+                "idSum": "68",
+                "idMin": 3,
+                "idMax": 13
+            },
+            "photo": {
+                "count": 49,
+                "idSum": "4704",
+                "idMin": 3,
+                "idMax": 139
+            },
+            "gallery": {
+                "count": 499,
+                "idSum": "1071391",
+                "idMin": 672,
+                "idMax": 3499
+            },
+            "seo": {
+                "count": 733,
+                "idSum": "2484049",
+                "idMin": 210,
+                "idMax": 5281
+            },
+            "seopage": {
+                "count": 9,
+                "idSum": "52",
+                "idMin": 1,
+                "idMax": 10
+            },
+            "comment": {
+                "count": 0,
+                "idSum": "0",
+                "idMin": 0,
+                "idMax": 0
+            },
+            "comment_photo": {
+                "count": 0,
+                "idSum": "0",
+                "idMin": 0,
+                "idMax": 0
+            },
+            "order": {
+                "count": 0,
+                "idSum": "0",
+                "idMin": 0,
+                "idMax": 0
+            },
+            "order_detail": {
+                "count": 0,
+                "idSum": "0",
+                "idMin": 0,
+                "idMax": 0
+            },
+            "newsletter": {
+                "count": 0,
+                "idSum": "0",
+                "idMin": 0,
+                "idMax": 0
+            },
+            "contact": {
+                "count": 2,
+                "idSum": "1753",
+                "idMin": 876,
+                "idMax": 877
+            },
+            "user_limit": {
+                "count": 237,
+                "idSum": "428857",
+                "idMin": 1,
+                "idMax": 2931
+            }
+        },
+        "unchanged": true
+    },
+    "inventory": {
+        "readOnly": {
+            "site": "/api/pts_v1_site.php",
+            "home": "/api/pts_v1_home.php",
+            "catalog": "/api/pts_v1_catalog.php",
+            "search": "/api/pts_v1_search.php",
+            "solutions": "/api/pts_v1_solutions.php",
+            "projects": "/api/pts_v1_projects.php",
+            "news": "/api/pts_v1_news.php",
+            "about": "/api/pts_v1_about.php",
+            "contact": "/api/pts_v1_contact.php",
+            "dealer": "/api/pts_v1_dealer.php",
+            "cart": "/api/pts_v1_cart.php",
+            "checkout": "/api/pts_v1_checkout.php",
+            "checkout_wards": "/api/pts_v1_checkout_wards.php",
+            "brand_detail": "/api/pts_v1_brand_detail.php",
+            "product_detail": "/api/pts_v1_product_detail.php",
+            "product_extras": "/api/pts_v1_product_extras.php",
+            "solution_detail": "/api/pts_v1_solution_detail.php",
+            "project_detail": "/api/pts_v1_project_detail.php",
+            "news_detail": "/api/pts_v1_news_detail.php",
+            "policy_detail": "/api/pts_v1_policy_detail.php",
+            "order_thanks": "/api/pts_v1_order_thanks.php"
+        },
+        "mutationNegativeOnly": {
+            "cart_mutate": "/api/pts_v1_cart_mutate.php",
+            "lead_form": "/api/pts_v1_lead_form.php",
+            "review": "/api/pts_v1_review.php",
+            "shipping_quote": "/api/shipping_quote.php"
+        }
+    },
+    "contractBugsFixed": [
+        "solutions expectation uses title/intro/cards/equipment/allProductsUrl/labels/cta/editorial envelope",
+        "missing-entity checks use syntactically valid slug khong-ton-tai-abcxyz",
+        "container web-root config discovery and compatibility execution for pure slice scripts",
+        "HTTP session cookies preserved for invalid-CSRF negative checks",
+        "slice failure output is reduced to exit status so reports cannot contain config or secret content"
+    ],
+    "productionState": "unchanged; no production access, deploy, migration, or DB write",
+    "rollbackPoint": "43893ad / worktree before sanitizer-contract follow-up",
+    "finishedAt": "2026-10-27T09:10:38+00:00"
 }

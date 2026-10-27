@@ -72,6 +72,10 @@ $productRows = array(
     array('namevi' => 'Vượt giới hạn 4', 'slugvi' => 'extra', 'status' => 'hienthi,solutionhub')
 );
 
+$sanitizedFixtureHtml = ptsPublicRichTextSanitize($introRows[0]['contentvi']);
+solutionsAssert(strpos($sanitizedFixtureHtml, '<h2 id="chon-giai-phap">Nội dung tư vấn</h2>') !== false && strpos($sanitizedFixtureHtml, '<strong>sanitizer</strong>') !== false, 'sanitizer giữ safe heading id và strong markup');
+solutionsAssert(strpos($sanitizedFixtureHtml, 'SHOULD_NOT_LEAK') === false && strpos($sanitizedFixtureHtml, 'SHOULD_NOT_RUN') === false && strpos($sanitizedFixtureHtml, ' style=') === false && strpos($sanitizedFixtureHtml, ' class=') === false, 'sanitizer loại script text và thuộc tính ngoài allowlist');
+
 $result = ptsPublicSolutionsPayload(
     $solutionRows,
     $introRows,
