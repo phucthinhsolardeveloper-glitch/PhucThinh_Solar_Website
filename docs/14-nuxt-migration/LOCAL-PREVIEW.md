@@ -47,8 +47,8 @@ cd /home/admin01/src/pts-nuxt-integration-20261027
 - Build output, images and log are untracked in frontend/.migration-artifacts/.
 
 ## Latest local checks
-- Checkpoint frontend hiện tại: `5e97ab8` trên `feature/pts-nuxt-integration-20261027`;
-  nhánh đang ahead remote 26 commit và chưa push.
+- Checkpoint frontend hiện tại: `aee4538` trên `feature/pts-nuxt-integration-20261027`;
+  nhánh đang ahead remote 27 commit và chưa push.
 - `npm test` 117/117; typecheck exit 0, không còn warning vue-router/Volar;
   production build PASS; SSR smoke base + hub/media routes PASS.
 - `frontend/package-lock.json` là lockfile v3 được track; `npm ci --dry-run
