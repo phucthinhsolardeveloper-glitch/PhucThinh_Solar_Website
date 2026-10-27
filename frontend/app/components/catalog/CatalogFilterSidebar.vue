@@ -1,8 +1,12 @@
 <script setup lang="ts">
 import type { RouteLocationRaw } from 'vue-router'
 import type { PublicCatalogPayload } from '#shared/contracts/public-catalog'
+import type { PublicProductCategoryNode } from '#shared/contracts/public-site'
+import CatalogCategoryBranch from './CatalogCategoryBranch.vue'
 
 const props = defineProps<{
+  categories: PublicProductCategoryNode[]
+  selectedCategory: string
   filters: NonNullable<PublicCatalogPayload['filters']>
   selected: NonNullable<PublicCatalogPayload['selected']>
   filterLink: (overrides: { subcategory?: string; brand?: string; price?: string }) => RouteLocationRaw
@@ -18,21 +22,47 @@ function toggledKeys(list: string[], key: string): string {
 }
 
 const hasAnyOption = computed(() => props.filters.subcategories.length > 0 || props.filters.brands.length > 0 || props.filters.priceRanges.length > 0)
+const hasCategories = computed(() => props.categories.length > 0)
+const categoriesExpanded = ref(Boolean(props.selectedCategory))
 const hasActiveFilter = computed(() => props.selected.subcategoryIds.length > 0 || props.selected.brandIds.length > 0 || props.selected.priceKeys.length > 0)
+
+watch(() => props.selectedCategory, (selectedCategory) => {
+  if (selectedCategory) categoriesExpanded.value = true
+})
 </script>
 
 <template>
-  <!--
-    Đo trên ảnh production (/danh-muc-san-pham/tam-pin-nang-luong-mat-troi/,
-    1920px): nền panel #f2f5fa (khớp slate-100 #f1f5f9 trong sai số đo), tiêu
-    đề/khung checkbox #071b3e (khớp navy-950 #061537), chữ nhãn/brand/giá
-    #20344b (không khớp token thương hiệu nào có sẵn — dùng màu đo trực tiếp).
-    Trang catalog còn có thêm hai "tab" rộng Tất cả/Kẹp tấm pin nền vàng phía
-    trên lưới sản phẩm, trùng chức năng với mục "Loại sản phẩm" ở đây — CHƯA
-    dựng lại tab đó (trùng lặp chức năng, ưu tiên lọc hoạt động đúng trước).
-  -->
-  <aside v-if="hasAnyOption" class="rounded-chip bg-slate-100 p-5" aria-label="Bộ lọc sản phẩm">
+  <!-- Một panel duy nhất giữ danh mục, loại sản phẩm, thương hiệu và mức giá. -->
+  <aside v-if="hasAnyOption || hasCategories" class="rounded-chip bg-slate-100 p-5" aria-label="Bộ lọc sản phẩm">
     <h2 class="m-0 mb-4 text-xl font-black text-navy-950">BỘ LỌC</h2>
+
+    <section v-if="hasCategories" aria-labelledby="catalog-filter-category-title">
+      <h3 id="catalog-filter-category-title" class="m-0 mb-3 text-sm font-bold text-navy-950">Danh mục sản phẩm</h3>
+      <button
+        class="flex min-h-11 w-full items-center justify-between rounded-chip border border-gray-200 bg-white px-3 py-2 text-left font-extrabold text-navy-800 nav:hidden"
+        type="button"
+        :aria-expanded="categoriesExpanded"
+        aria-controls="catalog-filter-category-list"
+        @click="categoriesExpanded = !categoriesExpanded"
+      >
+        <span>{{ selectedCategory ? 'Danh mục đang chọn' : 'Chọn danh mục' }}</span>
+        <svg class="h-5 w-5 fill-none stroke-current stroke-2" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5" /></svg>
+      </button>
+      <ul
+        id="catalog-filter-category-list"
+        class="m-0 list-none p-0 pt-3 nav:block nav:pt-0"
+        :class="categoriesExpanded ? 'block' : 'hidden'"
+      >
+        <CatalogCategoryBranch
+          v-for="category in categories"
+          :key="category.id"
+          :node="category"
+          :selected="selectedCategory"
+        />
+      </ul>
+    </section>
+
+    <hr v-if="hasCategories && hasAnyOption" class="my-5 border-slate-200">
 
     <template v-if="filters.subcategories.length">
       <h3 class="m-0 mb-3 text-sm font-bold text-navy-950">Loại sản phẩm</h3>

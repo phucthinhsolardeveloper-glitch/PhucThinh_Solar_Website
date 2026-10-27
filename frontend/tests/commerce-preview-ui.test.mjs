@@ -13,6 +13,15 @@ test('catalog navigation exposes a responsive disclosure and current category', 
   assert.match(branch, /:aria-current="selected === node\.url \? 'page' : undefined"/)
 })
 
+test('catalog keeps category navigation and business filters in one panel', () => {
+  const catalog = read('pages/migration-catalog-preview.vue')
+  const sidebar = read('components/catalog/CatalogFilterSidebar.vue')
+  assert.doesNotMatch(catalog, /CatalogCategoryNav/)
+  assert.match(sidebar, /aria-label="Bộ lọc sản phẩm"/)
+  assert.match(sidebar, /aria-controls="catalog-filter-category-list"/)
+  assert.match(sidebar, /<CatalogCategoryBranch/)
+})
+
 test('commerce media failures render explicit fallbacks instead of blank frames', () => {
   const grid = read('components/catalog/CatalogProductGrid.vue')
   const gallery = read('components/product-preview/ProductPreviewGallery.vue')

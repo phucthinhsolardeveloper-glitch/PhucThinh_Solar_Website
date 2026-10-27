@@ -2,7 +2,6 @@
 import type { PublicCatalogPayload } from '#shared/contracts/public-catalog'
 import type { PublicSitePayload, PublicProductCategoryNode } from '#shared/contracts/public-site'
 import { isPublicSitePayload } from '#shared/contracts/public-site'
-import CatalogCategoryNav from '~/components/catalog/CatalogCategoryNav.vue'
 import CatalogFilterSidebar from '~/components/catalog/CatalogFilterSidebar.vue'
 import CatalogProductGrid from '~/components/catalog/CatalogProductGrid.vue'
 import SiteHeader from '~/components/SiteHeader.vue'
@@ -64,16 +63,17 @@ function findCategory(nodes: PublicProductCategoryNode[], chain: string): Public
 const selectedCategory = computed(() => findCategory(siteData.value?.productCategoryTree ?? [], category.value))
 
 /**
- * CatalogCategoryNav tự ẩn khi không có danh mục. Nếu lưới vẫn giữ nguyên hai
- * cột thì phần nội dung rơi vào đúng cột 192px của sidebar và trang co lại còn
- * một dải hẹp — phát hiện khi đo DOM, không thấy được qua ảnh chụp vì local
- * chưa có dữ liệu. Chuyển về một cột khi không có sidebar.
+ * Nếu lưới vẫn giữ nguyên hai cột khi không có danh mục/bộ lọc thì nội dung
+ * rơi vào cột sidebar và trang co lại thành một dải hẹp. Chỉ tạo cột trái khi
+ * panel có dữ liệu thực.
  */
 const hasFilters = computed(() => {
   const filters = catalogData.value?.filters
   return !!filters && (filters.subcategories.length > 0 || filters.brands.length > 0 || filters.priceRanges.length > 0)
 })
 const hasSidebar = computed(() => (siteData.value?.productCategoryTree?.length ?? 0) > 0 || hasFilters.value)
+const emptyFilters: NonNullable<PublicCatalogPayload['filters']> = { brands: [], priceRanges: [], subcategories: [] }
+const emptySelected: NonNullable<PublicCatalogPayload['selected']> = { brandIds: [], priceKeys: [], subcategoryIds: [], sort: 'default' }
 /*
  * Ẩn hai lựa chọn sắp xếp theo giá khi public_product_prices đang tắt - PHP
  * (ptsCatalogSortOrderBy) cũng im lặng bỏ qua yêu cầu sort theo giá ẩn,
@@ -129,9 +129,7 @@ useSeoMeta({ title: 'Danh mục sản phẩm — internal preview', robots: 'noi
       Khung trang đo từ ảnh production 1920px: container 1680px, gutter 34px ->
       vùng nội dung 154..1766 (rộng 1612). Lưới sản phẩm bắt đầu tại 447 và rộng
       1396, nên cột trái cộng khoảng cách bằng 216 -> cột trái 192px, gap 24px.
-      Cột trái ở bản này rộng 260px (CHƯA đo lại theo panel BỘ LỌC thật, xem
-      ghi chú tại CatalogFilterSidebar bên dưới) để đủ chỗ cho nhãn thương
-      hiệu/mức giá dài hơn so với danh mục đơn ở CatalogCategoryNav.
+      Cột trái ở bản này rộng 260px để đủ chỗ cho nhãn thương hiệu/mức giá dài.
     -->
     <main
       class="mx-auto grid w-full max-w-(--container-page) grid-cols-1 gap-6 px-(--spacing-gutter) pt-8 pb-16
@@ -139,21 +137,15 @@ useSeoMeta({ title: 'Danh mục sản phẩm — internal preview', robots: 'noi
       :class="hasSidebar ? 'nav:grid-cols-[260px_minmax(0,1fr)]' : ''"
     >
       <!--
-        CatalogCategoryNav (danh mục cấp 1) và CatalogFilterSidebar (loại sản
-        phẩm cấp 2 trong danh mục đang chọn/thương hiệu/giá) là hai khối tách
-        rời ở đây. Ảnh production gộp cả hai vào MỘT panel "BỘ LỌC" xám duy
-        nhất (mục đầu tiên đổi nội dung theo ngữ cảnh: danh mục cấp 1 ở trang
-        gốc, loại sản phẩm con khi đã chọn danh mục) kèm hai tab vàng lặp lại
-        danh mục cấp 1 phía trên lưới. Gộp lại cho đúng 100% là việc tách
-        riêng (đổi cấu trúc CatalogCategoryNav đang chạy tốt) — ở đây ưu tiên
-        làm cho lọc thương hiệu/giá/loại sản phẩm hoạt động đúng trước.
+      Danh mục và các bộ lọc nghiệp vụ dùng chung một panel để không lặp lại
+      cùng một lựa chọn ở sidebar và phía trên lưới sản phẩm.
       -->
       <div v-if="hasSidebar" class="flex flex-col gap-6">
-        <CatalogCategoryNav :categories="siteData?.productCategoryTree ?? []" :selected="selectedCategory?.url ?? ''" />
         <CatalogFilterSidebar
-          v-if="catalogData?.filters && catalogData?.selected"
-          :filters="catalogData.filters"
-          :selected="catalogData.selected"
+          :categories="siteData?.productCategoryTree ?? []"
+          :selected-category="selectedCategory?.url ?? ''"
+          :filters="catalogData?.filters ?? emptyFilters"
+          :selected="catalogData?.selected ?? emptySelected"
           :filter-link="filterLink"
         />
       </div>
@@ -169,7 +161,7 @@ useSeoMeta({ title: 'Danh mục sản phẩm — internal preview', robots: 'noi
         </h1>
 
         <p class="mb-7 leading-relaxed text-slate-500">
-          Preview nội bộ từ dữ liệu CMS. Giá công khai/giá báo đã nối theo authority PHP; lọc theo loại sản phẩm/thương hiệu/mức giá và sắp xếp đã nối với cùng truy vấn PHP. Tồn kho và merchandising sort theo nhóm đèn ưu tiên vẫn đang đối chiếu.
+          Preview nội bộ từ dữ liệu CMS. Giá công khai/giá báo đã nối theo authority PHP; lọc theo loại sản phẩm/thương hiệu/mức giá và sắp xếp đã nối với cùng truy vấn PHP. PHP không có projection tồn kho công khai; danh mục và bộ lọc được trình bày chung trong một panel.
         </p>
 
         <div v-if="catalogPending" class="py-16" role="status" aria-live="polite">
