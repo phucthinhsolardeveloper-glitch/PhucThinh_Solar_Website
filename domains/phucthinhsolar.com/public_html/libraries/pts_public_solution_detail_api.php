@@ -1,6 +1,8 @@
 <?php
 /** Pure, read-only DTO helpers for the Nuxt solution detail preview. */
 
+require_once __DIR__.'/pts_public_richtext.php';
+
 function ptsSolutionDetailPublished($status)
 {
     return is_scalar($status) && in_array('hienthi', array_filter(array_map('trim', explode(',', (string)$status))), true);
@@ -74,8 +76,14 @@ function ptsSolutionDetailPayload(array $row, array $gallery, array $solutionRow
     $media = array();
     foreach($gallery as $item) if(isset($item['photo']) && $item['photo'] !== '') $media[] = $item['photo'];
     $media = array_values(array_unique(array_filter($media)));
-    $body = ptsSolutionDetailParagraphs(isset($row['contentvi']) ? $row['contentvi'] : '');
-    $extra = ptsSolutionDetailParagraphs(isset($row['content1vi']) ? $row['content1vi'] : '');
+    /*
+     * Tích hợp sanitizer: contentvi/content1vi đi qua pts_public_richtext.php
+     * thay vì ptsSolutionDetailParagraphs() (vốn strip_tags về plain-text theo
+     * dòng). Giữ allowlist HTML thật — heading, list, ảnh trong bài không còn
+     * bị phẳng hoá về chuỗi text rời rạc.
+     */
+    $bodyHtml = ptsPublicRichTextSanitize(isset($row['contentvi']) ? $row['contentvi'] : '');
+    $extraHtml = ptsPublicRichTextSanitize(isset($row['content1vi']) ? $row['content1vi'] : '');
 
     $equipment = array();
     foreach(solutionHubSelect($productRows, 'solutionhub', 4) as $item)
@@ -101,15 +109,21 @@ function ptsSolutionDetailPayload(array $row, array $gallery, array $solutionRow
             'url' => ptsSolutionDetailCanonical($slug),
             'summary' => ptsSolutionDetailText(isset($row['descvi']) ? $row['descvi'] : ''),
             'image' => isset($row['_pts_public_photo1']) && $row['_pts_public_photo1'] !== '' ? $row['_pts_public_photo1'] : (isset($row['_pts_public_photo']) ? $row['_pts_public_photo'] : ''),
-            'paragraphs' => $body,
-            'extraParagraphs' => $extra,
+            'content' => array('format' => 'sanitized-html', 'html' => $bodyHtml, 'sanitizedBy' => 'pts_public_richtext', 'sanitizerVersion' => 1),
+            'extraContent' => array('format' => 'sanitized-html', 'html' => $extraHtml, 'sanitizedBy' => 'pts_public_richtext', 'sanitizerVersion' => 1),
             'gallery' => $media
         ),
         'navigation' => array('allUrl' => '/giai-phap/', 'items' => $navigation),
         'equipment' => $equipment,
         'cta' => array('label' => 'Nhận tư vấn giải pháp', 'href' => '/lien-he/#yeu-cau-tu-van'),
-        'editorial' => array('rendered' => false, 'reason' => 'ckeditor_rich_text_deferred_until_sanitizer_gate'),
-        'parity' => array('toc' => array('included' => false, 'reason' => 'rich_text_not_rendered'), 'html' => array('included' => false, 'reason' => 'ckeditor_rich_text_deferred_until_sanitizer_gate'))
+        /*
+         * editorial giờ CHỈ còn nói về mục lục (TOC) tự sinh từ heading — HTML
+         * thật đã có ở solution.content/extraContent phía trên. Xây TOC cần
+         * phân tích cấu trúc heading (id, cấp, thứ tự) thành điều hướng riêng,
+         * không chỉ sanitize phẳng, nên vẫn để dành cho một task khác.
+         */
+        'editorial' => array('rendered' => false, 'reason' => 'toc_generation_not_implemented'),
+        'parity' => array('toc' => array('included' => false, 'reason' => 'toc_generation_not_implemented'))
     );
 }
 

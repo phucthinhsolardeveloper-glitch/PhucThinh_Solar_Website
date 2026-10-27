@@ -42,7 +42,7 @@ useSeoMeta({ title: computed(() => payload.value ? `${payload.value.project.titl
         <p class="text-slate-500">Không thể tải dự án CMS hoặc slug chưa hợp lệ. Preview không hiển thị dữ liệu dự án giả.</p>
       </div>
 
-      <ProjectDetailPage v-else :project="payload.project" />
+      <ProjectDetailPage v-else :project="payload.project" :content="payload.content" />
     </main>
 
     <SiteFooter :site="site" />

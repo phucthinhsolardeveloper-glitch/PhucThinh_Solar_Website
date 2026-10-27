@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { PublicNewsDetailPayload } from '#shared/contracts/public-news-detail'
+import EditorialRichText from '~/components/editorial/EditorialRichText.vue'
 
 defineProps<{ article: PublicNewsDetailPayload['article'] }>()
 </script>
@@ -18,15 +19,12 @@ defineProps<{ article: PublicNewsDetailPayload['article'] }>()
     <p v-if="article.description" class="mb-4 text-lg leading-relaxed text-navy-800">{{ article.description }}</p>
 
     <!--
-      content.value là text thuần (tách bằng \n), KHÔNG phải HTML — không dùng
-      v-html, giữ đúng cách xử lý an toàn đã có từ trước khi sanitizer merge.
+      Tích hợp sanitizer: article.content giờ là envelope sanitized-html
+      (pts_public_richtext.php sanitize contentvi ở PHP), không còn plain-text
+      tách theo \n. EditorialRichText.vue chỉ v-html trên html đã qua sanitizer
+      allowlist + isPublicSanitizedRichText() xác nhận lại ở contract.
     -->
-    <div class="cms-content">
-      <p v-for="(paragraph, index) in article.content.value.split(/\n+/).filter(Boolean)" :key="index">{{ paragraph }}</p>
-      <p v-if="article.content.richTextDeferred" class="mt-8 text-sm text-slate-500">
-        Nội dung đang hiển thị dạng văn bản an toàn trong preview; giữ nguyên rich text sẽ được xử lý ở bước migration tiếp theo.
-      </p>
-    </div>
+    <EditorialRichText :content="article.content" />
 
     <div v-if="article.media.gallery.length" class="mt-8 grid grid-cols-1 gap-4 tb:grid-cols-2">
       <img v-for="media in article.media.gallery" :key="media.image" :src="media.image" :alt="media.alt || article.title" class="block h-auto w-full rounded-chip object-contain">

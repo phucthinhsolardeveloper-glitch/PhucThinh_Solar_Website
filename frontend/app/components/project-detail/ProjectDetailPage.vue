@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import type { PublicProjectDetail } from '#shared/contracts/public-project-detail'
+import type { PublicSanitizedRichText } from '#shared/contracts/editorial-rich-text'
 import ProjectDetailEquipment from './ProjectDetailEquipment.vue'
 import ProjectDetailGallery from './ProjectDetailGallery.vue'
+import EditorialRichText from '~/components/editorial/EditorialRichText.vue'
 
-defineProps<{ project: PublicProjectDetail }>()
+defineProps<{ project: PublicProjectDetail; content: PublicSanitizedRichText }>()
 </script>
 
 <template>
@@ -52,12 +54,11 @@ defineProps<{ project: PublicProjectDetail }>()
 
     <div class="mx-auto w-full max-w-[1766px] px-4 py-10 nav:px-8">
       <!--
-        content.rendered = false (parity gate). Ghi chú này thay cho khối HTML
-        CKEditor thật — giữ nguyên hành vi an toàn đã có, không v-html.
+        Tích hợp sanitizer: content giờ là envelope sanitized-html
+        (pts_public_richtext.php sanitize contentvi của bảng #_news ở PHP).
+        EditorialRichText.vue chỉ v-html trên html đã qua allowlist.
       -->
-      <p class="mb-10 rounded-btn bg-slate-50 p-4 leading-relaxed text-slate-500">
-        Nội dung biên tập chi tiết chưa được render trong preview vì đang chờ lớp kiểm duyệt HTML CKEditor.
-      </p>
+      <EditorialRichText class="mb-10" :content="content" />
 
       <ProjectDetailGallery :items="project.gallery" />
       <ProjectDetailEquipment :items="project.relatedEquipment" />

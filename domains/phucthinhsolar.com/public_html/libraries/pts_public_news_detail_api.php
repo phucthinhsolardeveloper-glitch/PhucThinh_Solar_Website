@@ -1,6 +1,8 @@
 <?php
 /** Pure read-only DTO helpers for the published news detail contract. */
 
+require_once __DIR__.'/pts_public_richtext.php';
+
 function ptsNewsDetailPublished($status)
 {
     if(!is_scalar($status)) return false;
@@ -75,7 +77,14 @@ function ptsNewsDetailArticleDto(array $row, array $category, array $author, arr
     $slug = ptsNewsDetailSlug(isset($row['slugvi']) ? $row['slugvi'] : '');
     if($id <= 0 || $title === '' || $slug === '') return null;
     $description = ptsNewsDetailText(isset($row['descvi']) ? $row['descvi'] : '');
-    $content = ptsNewsDetailText(isset($row['contentvi']) ? $row['contentvi'] : '');
+    /*
+     * Tích hợp sanitizer (RICHTEXT-CONTRACT.md): contentvi đi qua
+     * pts_public_richtext.php thay vì strip_tags() về plain-text. Sanitizer
+     * tự decode một lớp HTML-entity encoding của CMS và trả về allowlist HTML
+     * an toàn cho v-html ở Nuxt — không còn mất định dạng heading/list/ảnh
+     * như bản plain-text trước đây.
+     */
+    $contentHtml = ptsPublicRichTextSanitize(isset($row['contentvi']) ? $row['contentvi'] : '');
     return array(
         'schemaVersion' => 1,
         'locale' => 'vi',
@@ -87,7 +96,7 @@ function ptsNewsDetailArticleDto(array $row, array $category, array $author, arr
         'author' => array('name' => ptsNewsDetailAuthor(isset($author['fullname']) ? $author['fullname'] : '')),
         'description' => $description,
         'cover' => ptsNewsDetailImage(isset($row['_pts_public_photo']) ? $row['_pts_public_photo'] : ''),
-        'content' => array('format' => 'plain-text', 'value' => $content, 'richTextDeferred' => true),
+        'content' => array('format' => 'sanitized-html', 'html' => $contentHtml, 'sanitizedBy' => 'pts_public_richtext', 'sanitizerVersion' => 1),
         'category' => $category,
         'media' => $media,
         'seo' => array(

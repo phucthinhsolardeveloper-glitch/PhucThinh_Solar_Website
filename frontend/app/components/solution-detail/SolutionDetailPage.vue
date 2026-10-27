@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { PublicSolutionDetailPayload } from '../../../shared/contracts/public-solution-detail'
+import EditorialRichText from '~/components/editorial/EditorialRichText.vue'
 
 defineProps<{ data: PublicSolutionDetailPayload }>()
 </script>
@@ -51,14 +52,14 @@ defineProps<{ data: PublicSolutionDetailPayload }>()
         <img v-if="data.solution.image" :src="data.solution.image" :alt="data.solution.title" class="h-full min-h-[280px] w-full object-cover" width="1600" height="1000" fetchpriority="high">
       </header>
 
+      <!--
+        Tích hợp sanitizer: content/extraContent giờ là HTML thật qua
+        pts_public_richtext.php, không còn mảng paragraph tách theo dòng.
+      -->
       <div id="noi-dung-giai-phap" class="mx-auto max-w-[820px] px-4 py-12">
-        <div class="cms-content">
-          <p v-for="paragraph in data.solution.paragraphs" :key="paragraph">{{ paragraph }}</p>
-          <section v-if="data.solution.extraParagraphs.length" aria-label="Thông tin bổ sung">
-            <p v-for="paragraph in data.solution.extraParagraphs" :key="`extra-${paragraph}`">{{ paragraph }}</p>
-          </section>
-          <p v-if="!data.solution.paragraphs.length && !data.solution.extraParagraphs.length" class="text-slate-500">Nội dung chi tiết đang được cập nhật.</p>
-        </div>
+        <EditorialRichText :content="data.solution.content" />
+        <EditorialRichText class="mt-8" :content="data.solution.extraContent" />
+        <p v-if="!data.solution.content.html && !data.solution.extraContent.html" class="text-slate-500">Nội dung chi tiết đang được cập nhật.</p>
       </div>
 
       <section v-if="data.solution.gallery.length" class="px-4 pb-12" aria-labelledby="solution-gallery-title">
@@ -70,8 +71,9 @@ defineProps<{ data: PublicSolutionDetailPayload }>()
         </div>
       </section>
 
+      <!-- HTML thật đã hiện ở trên; chỉ còn mục lục (TOC) tự sinh từ heading là chưa làm. -->
       <p class="mx-4 mb-10 border-t border-gray-200 pt-5 text-sm text-slate-500">
-        Nội dung biên tập HTML và mục lục chưa được render: {{ data.editorial.reason }}.
+        Mục lục tự động theo tiêu đề chưa được dựng: {{ data.editorial.reason }}.
       </p>
     </article>
 

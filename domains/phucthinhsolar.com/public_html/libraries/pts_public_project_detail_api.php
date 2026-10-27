@@ -1,6 +1,8 @@
 <?php
 /** Pure allow-listed DTO helpers for the read-only Nuxt project detail preview. */
 
+require_once __DIR__.'/pts_public_richtext.php';
+
 function ptsProjectDetailPublished($status)
 {
     return is_scalar($status) && in_array('hienthi', array_filter(array_map('trim', explode(',', (string)$status))), true);
@@ -113,11 +115,15 @@ function ptsProjectDetailPayload(array $row, array $gallery, array $relatedEquip
             'gallery' => array_values(array_filter($gallery)),
             'relatedEquipment' => array_values(array_filter($relatedEquipment))
         ),
-        'content' => array('rendered' => false, 'reason' => 'ckeditor_content_deferred_until_sanitizer_gate'),
+        'content' => array(
+            'format' => 'sanitized-html',
+            'html' => ptsPublicRichTextSanitize(isset($row['contentvi']) ? $row['contentvi'] : ''),
+            'sanitizedBy' => 'pts_public_richtext',
+            'sanitizerVersion' => 1
+        ),
         'canonical' => array('url' => '/'.$slug.'/', 'sources' => $canonicalSources),
         'parity' => array(
             'viewCount' => array('included' => false, 'reason' => 'read_only_preview_does_not_increment_legacy_view_count'),
-            'richText' => array('included' => false, 'reason' => 'ckeditor_content_deferred_until_sanitizer_gate'),
             'contactSubmission' => array('included' => false, 'reason' => 'legacy_contact_flow_stays_php')
         )
     );
