@@ -15,18 +15,18 @@
 |---|---|---|
 | Giá regular/sale, giảm giá | **Đã xuất 2026-10-27** | `ptsPdpPricingDto()` gọi cùng gate `publicProductPricesVisible()`/status `baogia` như `pts_public_catalog_api.php::ptsCatalogPricingDto()`; nhân đó cũng sửa luôn bug canonical PDP ép dư dấu `/` cuối (`ptsPdpCanonicalUrl`, không khớp `publicProductEntityPath()`/router thật) |
 | Quote / mua ngay / giỏ hàng | Giữ PHP | Preview không tạo session, cart, POST hay checkout |
-| CKEditor/content blocks | Deferred — **khác cơ chế so với news/project/solution** | Nội dung dài của sản phẩm không nằm ở một cột CKEditor đơn mà là hệ block JSON riêng (`table_content_section`, đọc/ghi qua `product_content_blocks.php`, scope=`product`) — không thể tái dùng `pts_public_richtext.php` trực tiếp như 3 loại nội dung kia (đã xong sanitizer 2026-10-27), cần thiết kế DTO theo từng loại block trước. Reason string đổi thành `product_content_blocks_not_wired` để không bị hiểu nhầm là "chỉ còn thiếu sanitizer". |
+| Content blocks + FAQ | **Đã xuất 2026-10-27** | API gọi đúng `productResolveSections()` nên giữ `own/both/hide/inherit` + nguồn kế thừa product/brand/cat/list. DTO chỉ cho `heading/text/list/image/media`; FAQ tách bằng chính `productSplitFaqBlocks()`. Text render bằng Vue interpolation, không `v-html`; ảnh chỉ nhận `/upload/product/` an toàn. `cards` bị loại vì PDP legacy không render block này (chỉ category landing dùng). |
 | Tài liệu sản phẩm | Chưa xuất | Cần gate path/file public riêng, tránh leak đường dẫn/private asset |
 | Reviews/comments | Giữ PHP | Mutation/session legacy chưa được headless hóa |
 | Related products | Chưa xuất | Thứ tự merchandising legacy chưa được kiểm chứng parity |
 | JSON-LD | Chưa xuất | PHP structured-data vẫn là authority; chưa delegate đầy đủ |
-| Use-case/marketing blocks | Chưa xuất | Không dùng fallback marketing/speculative content trong DTO |
+| Use-case/marketing blocks tự sinh | Chưa xuất | Template PHP còn có `productAutoHighlights()`, use-case defaults và fallback FAQ theo profile; không hardcode/tái tạo speculative content trong DTO block. |
 
 ## Kiểm thử và giới hạn
 
-- `scripts/test-pts-public-product-detail-api.php`: test DTO, media traversal, private-field omission, 405 và invalid slug.
-- `frontend/tests/product-detail-contract.test.mjs`: test schema, slug, media và pricing invariant.
+- `scripts/test-pts-public-product-detail-api.php`: test DTO, media traversal, private-field omission, content block/FAQ mapping, loại `cards`, 405 và invalid slug. PHP CLI/Docker hiện chưa khả dụng trên máy nên fixture này cần chạy lại khi runtime PHP mở.
+- `frontend/tests/product-detail-contract.test.mjs`: test schema, slug, media, pricing invariant, structured blocks, source inheritance và giới hạn FAQ.
 - Chưa chạy PHP với DB thật trong sandbox; coordinator cần chạy endpoint against PHP fixture/container để xác minh 200/404 và canonical/media thực tế.
-- Chưa chạy browser/heavy build theo yêu cầu task; responsive CSS chỉ được static review.
+- Frontend full gate sau khi nối block: `npm test` 78/78 PASS, `nuxt typecheck` PASS (còn warning Volar/vue-router đã có từ trước), production `nuxt build` PASS. Chưa có browser parity với dữ liệu PDP thật vì PHP local/Docker đang không chạy.
 
 Rollback: xóa/revert các file mới của F03; không có production route, migration, DB write hay deploy nào đã thực hiện.

@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import type { PublicProductDetail } from '#shared/contracts/public-product-detail'
+import type { PublicProductContent, PublicProductDetail } from '#shared/contracts/public-product-detail'
 import type { PublicCatalogPricing } from '#shared/contracts/public-catalog'
 import ProductPreviewGallery from './ProductPreviewGallery.vue'
 import ProductPreviewSpecs from './ProductPreviewSpecs.vue'
+import ProductPreviewContent from './ProductPreviewContent.vue'
 
-const props = defineProps<{ product: PublicProductDetail; pricing: PublicCatalogPricing }>()
+const props = defineProps<{ product: PublicProductDetail; pricing: PublicCatalogPricing; content: PublicProductContent }>()
 
 /*
  * Dinh dang tien khop PHP: class.Functions.php::formatMoney() ->
@@ -74,13 +75,11 @@ const discountPercent = computed(() => {
         </div>
 
         <!--
-          CÒN THIẾU so với ảnh production — tất cả đều do DTO khai không cung cấp:
-          4 chip thông số nổi bật, ô chọn số lượng, nút "Mua ngay" + "Thêm giỏ
-          hàng", 3 chip bảo chứng, tab neo, video, FAQ, đánh giá, form tư vấn và
-          dải sản phẩm liên quan. public-product-detail.ts:
-          content.rendered = false, parity.{quote,reviews,related,jsonLd,blocks}
-          đều included = false. Không dựng nút mua khi chưa có luồng giá thật:
-          nút mua không mua được là lỗi tệ hơn không có nút.
+          CÒN THIẾU so với ảnh production: chip thông số nổi bật, ô chọn số
+          lượng, nút "Mua ngay" + "Thêm giỏ hàng", bảo chứng, tab neo, video,
+          tài liệu, đánh giá, form tư vấn và sản phẩm liên quan. Khối mô tả
+          content_section + FAQ do Admin soạn đã được nối bằng DTO có kiểu,
+          không dùng raw HTML/v-html.
         -->
         <p class="mt-6 border-t border-gray-200 pt-4 font-semibold text-navy-800">
           Đặt hàng vẫn thuộc luồng PHP legacy; preview chưa dựng nút mua.
@@ -89,13 +88,14 @@ const discountPercent = computed(() => {
     </div>
 
     <ProductPreviewSpecs :specifications="product.specifications" />
+    <ProductPreviewContent :content="content" />
 
     <section class="py-8" aria-labelledby="product-preview-deferred-title">
       <h2 id="product-preview-deferred-title" class="mb-5 text-[clamp(24px,3vw,34px)] font-black tracking-tight">
-        Nội dung chi tiết
+        Các phần còn thuộc PHP legacy
       </h2>
       <p class="text-slate-500">
-        Khối CKEditor, tài liệu, đánh giá và dữ liệu liên quan chưa được render trong preview vì chưa có sanitizer/parity gate.
+        Tài liệu tải xuống, đánh giá, giỏ hàng/đặt mua, structured data và sản phẩm liên quan vẫn chưa được delegate sang preview.
       </p>
     </section>
   </div>

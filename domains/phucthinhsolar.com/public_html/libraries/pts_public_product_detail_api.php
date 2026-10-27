@@ -92,7 +92,104 @@ function ptsPdpSpecDto(array $row)
     return $specs;
 }
 
-function ptsPdpPayload(array $row, array $media, array $specs, $canonical, array $canonicalSources, $pricesVisible = false)
+function ptsPdpContentText($value)
+{
+    if(!is_scalar($value)) return '';
+    $text = str_replace(array("\r\n", "\r"), "\n", (string)$value);
+    $text = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/u', '', $text);
+    return trim((string)$text);
+}
+
+function ptsPdpContentImageUrl($value, $root = '')
+{
+    if(!is_scalar($value)) return '';
+    $value = ltrim(trim((string)$value), '/');
+    if($value === '') return '';
+
+    if(basename($value) === $value)
+        return ptsPdpMediaUrl($value, $root, 'upload/product/');
+
+    if(!preg_match('#^upload/product/([A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|gif|webp|avif))$#i', $value, $match))
+        return '';
+
+    if($root !== '' && !is_file(rtrim($root, '/\\').DIRECTORY_SEPARATOR.'upload'.DIRECTORY_SEPARATOR.'product'.DIRECTORY_SEPARATOR.$match[1]))
+        return '';
+
+    return '/upload/product/'.$match[1];
+}
+
+function ptsPdpContentDto(array $sections, $root = '')
+{
+    $allowedSources = array('', 'product', 'brand', 'cat', 'list', 'both', 'stack', 'hide', 'own');
+    $source = isset($sections['source']) && in_array($sections['source'], $allowedSources, true) ? $sections['source'] : '';
+    $sourceBlocks = isset($sections['blocks']) && is_array($sections['blocks']) ? $sections['blocks'] : array();
+    $split = function_exists('productSplitFaqBlocks')
+        ? productSplitFaqBlocks($sourceBlocks)
+        : array('faq' => array(), 'rest' => $sourceBlocks);
+
+    $blocks = array();
+    foreach((array)$split['rest'] as $block)
+    {
+        if(!is_array($block) || empty($block['type'])) continue;
+        $type = (string)$block['type'];
+
+        if($type === 'heading')
+        {
+            $text = ptsPdpContentText(isset($block['text']) ? $block['text'] : '');
+            if($text !== '') $blocks[] = array('type' => 'heading', 'text' => $text);
+        }
+        elseif($type === 'text')
+        {
+            $text = ptsPdpContentText(isset($block['text']) ? $block['text'] : '');
+            if($text !== '') $blocks[] = array('type' => 'text', 'text' => $text);
+        }
+        elseif($type === 'list')
+        {
+            $items = array();
+            foreach((array)(isset($block['items']) ? $block['items'] : array()) as $item)
+            {
+                $item = ptsPdpContentText($item);
+                if($item !== '') $items[] = $item;
+                if(count($items) >= 50) break;
+            }
+            if($items) $blocks[] = array('type' => 'list', 'ordered' => !empty($block['ordered']), 'items' => $items);
+        }
+        elseif($type === 'image')
+        {
+            $image = ptsPdpContentImageUrl(isset($block['photo']) ? $block['photo'] : '', $root);
+            if($image === '') continue;
+            $blocks[] = array(
+                'type' => 'image',
+                'image' => $image,
+                'caption' => ptsPdpContentText(isset($block['caption']) ? $block['caption'] : '')
+            );
+        }
+        elseif($type === 'media')
+        {
+            $image = ptsPdpContentImageUrl(isset($block['photo']) ? $block['photo'] : '', $root);
+            $title = ptsPdpContentText(isset($block['title']) ? $block['title'] : '');
+            $text = ptsPdpContentText(isset($block['text']) ? $block['text'] : '');
+            if($image === '' && $title === '' && $text === '') continue;
+            $side = isset($block['side']) && in_array($block['side'], array('left', 'right', 'center'), true) ? $block['side'] : 'left';
+            $blocks[] = array('type' => 'media', 'image' => $image, 'title' => $title, 'text' => $text, 'side' => $side);
+        }
+        /* type=cards chỉ thuộc category landing; PDP legacy không render nó. */
+    }
+
+    $faqs = array();
+    foreach((array)$split['faq'] as $faq)
+    {
+        if(!is_array($faq)) continue;
+        $question = ptsPdpContentText(isset($faq['question']) ? $faq['question'] : '');
+        $answer = ptsPdpContentText(isset($faq['answer']) ? $faq['answer'] : '');
+        if($question !== '' && $answer !== '') $faqs[] = array('question' => $question, 'answer' => $answer);
+        if(count($faqs) >= 30) break;
+    }
+
+    return array('rendered' => true, 'source' => $source, 'blocks' => $blocks, 'faqs' => $faqs);
+}
+
+function ptsPdpPayload(array $row, array $media, array $specs, $canonical, array $canonicalSources, $pricesVisible = false, array $content = array())
 {
     $id = isset($row['id']) ? (int)$row['id'] : 0;
     $slug = ptsPdpSlug(isset($row['slugvi']) ? $row['slugvi'] : '');
@@ -115,21 +212,17 @@ function ptsPdpPayload(array $row, array $media, array $specs, $canonical, array
         ),
         'pricing' => ptsPdpPricingDto($row, $pricesVisible),
         /*
-         * KHAC voi news/project/solution detail: noi dung dai cua san pham
-         * KHONG nam o mot cot CKEditor don (contentvi) ma la he block JSON co
-         * cau truc rieng (table_content_section, doc/ghi qua
-         * libraries/product_content_blocks.php, scope='product'). Khong the
-         * tai dung pts_public_richtext.php cho truong hop nay - can thiet ke
-         * DTO rieng cho tung loai block truoc, nen con de deferred o day.
+         * Content PDP giữ nguyên mô hình block có cấu trúc của legacy, không
+         * chuyển thành raw HTML/v-html. ptsPdpContentDto() chỉ xuất các loại
+         * block mà PDP thật render và lọc ảnh về /upload/product/.
          */
-        'content' => array('rendered' => false, 'reason' => 'product_content_blocks_not_wired'),
+        'content' => $content ? $content : ptsPdpContentDto(array()),
         'canonical' => array('url' => $canonical !== '' ? '/'.trim($canonical, '/') : ptsPdpCanonicalUrl($slug), 'sources' => $canonicalSources),
         'parity' => array(
             'quote' => array('included' => false, 'reason' => 'legacy_quote_flow_stays_php'),
             'reviews' => array('included' => false, 'reason' => 'legacy_comment_mutation_stays_php'),
             'related' => array('included' => false, 'reason' => 'legacy_merchandising_order_not_verified'),
-            'jsonLd' => array('included' => false, 'reason' => 'php_structured_data_authority_not_delegated'),
-            'blocks' => array('included' => false, 'reason' => 'product_content_blocks_not_wired')
+            'jsonLd' => array('included' => false, 'reason' => 'php_structured_data_authority_not_delegated')
         )
     );
 }

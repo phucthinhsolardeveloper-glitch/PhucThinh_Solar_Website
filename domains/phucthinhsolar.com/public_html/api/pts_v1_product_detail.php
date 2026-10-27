@@ -35,6 +35,7 @@ try {
     require_once LIBRARIES.'product_category_urls.php';
     require_once LIBRARIES.'product_pdp_profiles.php';
     require_once LIBRARIES.'product_specs.php';
+    require_once LIBRARIES.'product_content_blocks.php';
     require_once LIBRARIES.'public_pricing.php';
     require_once LIBRARIES.'pts_public_product_detail_api.php';
 
@@ -53,6 +54,10 @@ try {
     $gallery = $d->rawQuery('select photo from #_gallery where id_parent = ? and com = \'product\' and kind = \'man\' and val = ? and find_in_set(\'hienthi\',status) order by numb,id desc', array((int)$row['id'], 'san-pham'));
     foreach((array)$gallery as $item) { $url = ptsPdpMediaUrl(isset($item['photo']) ? $item['photo'] : '', ROOT, UPLOAD_PRODUCT_L); if($url !== '') $media[] = $url; }
     $canonical = publicProductEntityPath($d, 'product', (int)$row['id'], 'vi');
-    $payload = ptsPdpPayload($row, $media, ptsPdpSpecDto($row), $canonical, array('product' => 'publicProductEntityPath(product)', 'routeResolver' => 'public_route_resolver.php', 'categoryUrls' => 'product_category_urls.php'), publicProductPricesVisible());
+    /* Dùng đúng resolver kế thừa của PDP legacy: product -> brand/cat/list,
+       gồm mode own/both/hide/inherit và inherit_source. Chỉ đọc DB. */
+    $resolvedSections = productResolveSections($d, $row, 'vi');
+    $content = ptsPdpContentDto($resolvedSections, ROOT);
+    $payload = ptsPdpPayload($row, $media, ptsPdpSpecDto($row), $canonical, array('product' => 'publicProductEntityPath(product)', 'routeResolver' => 'public_route_resolver.php', 'categoryUrls' => 'product_category_urls.php'), publicProductPricesVisible(), $content);
     echo json_encode($payload, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR);
 } catch(Throwable $e) { error_log('pts_v1_product_detail: '.$e->getMessage()); http_response_code(500); echo '{"error":{"code":"INTERNAL_ERROR"}}'; }

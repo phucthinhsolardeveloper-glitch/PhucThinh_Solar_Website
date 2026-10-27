@@ -113,11 +113,11 @@ fixture PHP hoá ra đã lỗi thời từ lần tích hợp sanitizer trước 
 `paragraphs` không còn tồn tại trong payload thật — phát hiện và sửa luôn khi
 đọc lại các file này). Đồng thời đã thêm `pricing` thật cho PDP (cùng gate
 `publicProductPricesVisible()`/`baogia` như catalog), qua
-`ptsPdpPricingDto()`; `product.content`/`parity.blocks` KHÔNG dùng sanitizer
-vì nội dung dài của sản phẩm là hệ block JSON riêng
-(`table_content_section`, `product_content_blocks.php`), không phải một cột
-CKEditor đơn như news/project/solution — lý do đổi tên thành
-`product_content_blocks_not_wired`, cần DTO riêng, chưa làm ở đây.
+`ptsPdpPricingDto()`. Cập nhật tiếp 2026-10-27: `product.content` đã được nối
+bằng DTO block có kiểu từ chính `productResolveSections()` của legacy; không
+đi qua sanitizer HTML vì nguồn là hệ JSON `#_content_section`/
+`product_content_blocks.php`. Nuxt chỉ render text bằng interpolation và
+allowlist ảnh `/upload/product/`; `cards` category-only không được đưa vào PDP.
 
 #### Hồ sơ gốc của bug (trước khi sửa)
 
