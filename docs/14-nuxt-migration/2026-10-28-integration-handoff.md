@@ -11,7 +11,7 @@
 
 - Các nhánh QA Nuxt về cutover, shell và visual.
 - API query validation cho policy/search (`f7d739b`).
-- Gallery/video read-only PHP API, DTO, Nitro adapters và preview pages (`43fd49e`, promoted as part of `92d6fd4`).
+- Gallery/video read-only PHP API, DTO, Nitro adapters và preview pages (`43fd49e`, cherry-picked as `4d14c20`, promoted as part of `92d6fd4`).
 - Cache policy private/no-store cho các media adapters.
 - Strict TypeScript narrowing cho gallery lightbox.
 
