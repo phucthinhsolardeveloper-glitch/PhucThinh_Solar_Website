@@ -3,10 +3,10 @@
 ## Trạng thái
 
 - Nhánh tích hợp: `feature/pts-nuxt-integration-20261027`
-- Checkpoint chức năng hiện tại: `75b276a` (dependency gate); tài liệu này được
-  cập nhật ngay sau checkpoint đó.
+- Checkpoint chức năng hiện tại: `75b276a` (dependency gate); smoke gate được
+  mở rộng ở `5e97ab8`.
 - `master`, production, Docker/container và public routing không bị thay đổi.
-- Nhánh đang ahead remote 24 commit; chưa push.
+- Nhánh đang ahead remote 26 commit; chưa push.
 
 ## Đã hợp nhất
 
@@ -27,8 +27,10 @@
   `fontless` dùng `esbuild@0.28.2` qua `frontend/package.json` overrides;
   không chạy `npm audit fix` tự động.
 - Nuxt production build: **PASS**.
-- SSR smoke: **PASS** — 200, SSR HTML, `noindex`, route không tồn tại trả 404.
-- Reproducibility: `frontend/package-lock.json` lockfile v3 được track;
+- SSR smoke: **PASS** — base + 4 hub/media routes 200/noindex, SSR HTML và route
+  không tồn tại trả 404.
+- Reproducibility: `.nvmrc` pin Node 24.20.0 và
+  `frontend/package-lock.json` lockfile v3 được track;
   `npm ci --dry-run --ignore-scripts --no-audit --no-fund` PASS trên Node
   24.20.0/npm 11.19.0. Chưa có workflow CI hoặc runtime pin trong repository,
   nên đây là gate thủ công cho tới khi owner bổ sung pipeline.
