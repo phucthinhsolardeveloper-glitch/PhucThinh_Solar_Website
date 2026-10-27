@@ -6,7 +6,8 @@
 - Checkpoint chức năng hiện tại: `75b276a` (dependency gate); smoke gate được
   mở rộng ở `5e97ab8`.
 - `master`, production, Docker/container và public routing không bị thay đổi.
-- Nhánh đang ahead remote 27 commit; chưa push.
+- Nhánh chưa push remote; số commit ahead được kiểm tra bằng
+  `git rev-list --left-right --count origin/feature/pts-nuxt-integration-20261027...HEAD`.
 
 ## Đã hợp nhất
 

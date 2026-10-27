@@ -48,7 +48,7 @@ cd /home/admin01/src/pts-nuxt-integration-20261027
 
 ## Latest local checks
 - Checkpoint frontend hiện tại: `aee4538` trên `feature/pts-nuxt-integration-20261027`;
-  nhánh đang ahead remote 27 commit và chưa push.
+  nhánh chưa push remote; kiểm tra số commit ahead bằng `git rev-list`.
 - `npm test` 117/117; typecheck exit 0, không còn warning vue-router/Volar;
   production build PASS; SSR smoke base + hub/media routes PASS.
 - `frontend/package-lock.json` là lockfile v3 được track; `npm ci --dry-run
