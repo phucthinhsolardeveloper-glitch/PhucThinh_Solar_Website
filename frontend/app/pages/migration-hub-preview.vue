@@ -98,9 +98,9 @@ useSeoMeta({ title: 'Trung tâm xem thử Nuxt — Phúc Thịnh Solar', robots:
 
         <aside class="mt-12 border-t border-gray-200 pt-8" aria-labelledby="migration-notice-title">
           <h2 id="migration-notice-title" class="mb-5 text-[clamp(24px,3vw,32px)] font-black">Lưu ý phạm vi</h2>
-          <p class="mb-3 text-slate-500 leading-relaxed">Đây là preview local có noindex. Một số liên kết public bên trong preview có thể 404 trên cổng :3100 cho tới khi hybrid routing được triển khai.</p>
+          <p class="mb-3 text-slate-500 leading-relaxed">Đây là preview local có noindex. Điều hướng chính, tìm kiếm, PDP, giỏ hàng và checkout đã được ánh xạ sang GUI Nuxt; PHP chỉ còn giữ các backend/session nghiệp vụ cần thiết qua fixed adapters.</p>
           <p class="text-slate-500 leading-relaxed">
-            Form liên hệ và đăng ký đại lý vẫn thuộc PHP. Mở trang PHP local riêng tại
+            Form Liên hệ/Đại lý và các link Chính sách/Hỗ trợ trong footer đã có GUI Nuxt; PHP chỉ còn giữ validation/session/mutation phía server. PHP local vẫn có thể dùng để đối chiếu tại
             <a class="font-bold text-navy-800" :href="phpHref('contact')">http://localhost:8088</a>.
           </p>
         </aside>

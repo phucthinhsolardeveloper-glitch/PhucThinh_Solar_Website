@@ -7,6 +7,9 @@ const props = defineProps<{
   site: PublicSitePayload
 }>()
 
+const { active: isMigrationPreview, generic: shellHref } = useMigrationLinks()
+const { cart: migrationCart, refresh: refreshMigrationCart } = useMigrationCart()
+
 const brandName = computed(() => props.site.brand.name.trim() || 'Phúc Thịnh Solar')
 const hotline = computed(() => props.site.brand.hotline.trim())
 const brandLogo = computed(() => props.site.brand.logo || '')
@@ -106,7 +109,8 @@ function toggleSearch() {
 async function submitSearch() {
   const keyword = searchKeyword.value.trim()
   if (!keyword) return
-  await navigateTo({ path: '/tim-kiem/', query: { keyword } })
+  if (isMigrationPreview.value) await navigateTo({ path: '/migration-search-preview', query: { keyword } })
+  else await navigateTo({ path: '/tim-kiem/', query: { keyword } })
 }
 
 function categoryChildren(node: PublicProductCategoryNode): PublicProductCategoryNode[] { return node.children }
@@ -140,7 +144,10 @@ function handleShellLeave() {
   if (catalogMode.value === 'hover') closeCatalog(false)
 }
 
-onMounted(() => document.addEventListener('keydown', handleKeydown))
+onMounted(() => {
+  document.addEventListener('keydown', handleKeydown)
+  if (isMigrationPreview.value) void refreshMigrationCart()
+})
 onBeforeUnmount(() => {
   document.removeEventListener('keydown', handleKeydown)
   document.body.style.overflow = ''
@@ -184,7 +191,7 @@ onBeforeUnmount(() => {
           <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
         </button>
 
-        <a class="mr-auto flex min-w-0 items-center nav:mr-0" href="/" :aria-label="`${brandName} - Trang chủ`">
+        <a class="mr-auto flex min-w-0 items-center nav:mr-0" :href="shellHref('/')" :aria-label="`${brandName} - Trang chủ`">
           <!--
             Logo là ảnh do CMS cấp (brand.logo). Chỉ giới hạn kích thước, không
             ép tỉ lệ: file thật là wordmark ngang, ép aspect sẽ méo chữ.
@@ -230,14 +237,14 @@ onBeforeUnmount(() => {
             </li>
             <li v-for="item in navItems" :key="item.href" class="flex items-center">
               <NuxtLink
-                external
+                :external="!isMigrationPreview"
                 class="flex items-center whitespace-nowrap rounded-chip font-semibold leading-tight
                        text-hdr-text transition-colors hover:bg-hdr-surface hover:text-hdr-ink
                        min-h-[50px] px-3 text-[15.5px]
                        nav:px-[5px] nav:text-[13.2px]
                        wd:min-h-[48px] wd:px-[7px] wd:text-[17.5px]
                        ul:min-h-[50px] ul:px-3 ul:text-[15.5px]"
-                :to="item.href"
+                :to="shellHref(item.href)"
               >
                 {{ item.label }}
                 <!-- Mũi tên chỉ hiện ở mục thật sự có menu con, giống .has-child của PHP. -->
@@ -288,31 +295,30 @@ onBeforeUnmount(() => {
           </a>
 
           <NuxtLink
-            external
+            :external="!isMigrationPreview"
             class="relative inline-flex h-11 w-11 items-center justify-center rounded-chip text-hdr-ink
                    transition-colors hover:bg-hdr-surface hover:text-hdr-gold-deep
                    max-ph:h-[38px] max-ph:w-[38px] nav:h-12 nav:w-12"
-            to="/gio-hang/"
-            aria-label="Giỏ hàng"
+            :to="isMigrationPreview ? '/migration-cart-preview' : '/gio-hang/'"
+            :aria-label="isMigrationPreview && migrationCart ? `Giỏ hàng có ${migrationCart.count} sản phẩm` : 'Giỏ hàng'"
             title="Giỏ hàng"
           >
-            <!--
-              Bản PHP có badge số lượng trên icon giỏ. DTO public hiện KHÔNG trả
-              số lượng giỏ hàng, và giỏ là state theo session do PHP giữ. Không
-              render badge "0" cứng: hiện số sai còn tệ hơn không hiện số.
-            -->
+            <span
+              v-if="isMigrationPreview && migrationCart?.count"
+              class="absolute right-0.5 top-0.5 grid min-h-4 min-w-4 place-items-center rounded-full bg-gold-500 px-1 text-[10px] font-black leading-4 text-navy-950"
+            >{{ migrationCart.count }}</span>
             <svg class="h-[23px] w-[23px]" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 4h2l1 12h11l1.6-8H7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" /><circle cx="9" cy="20" r="1.5" fill="currentColor" /><circle cx="16" cy="20" r="1.5" fill="currentColor" /></svg>
           </NuxtLink>
 
           <NuxtLink
-            external
+            :external="!isMigrationPreview"
             class="ml-[3px] inline-flex items-center justify-center whitespace-nowrap rounded-chip border
                    border-hdr-gold bg-hdr-gold font-bold text-hdr-ink transition-colors
                    hover:border-hdr-gold-deep hover:bg-hdr-gold-deep hover:text-white
                    min-h-[50px] px-[21px] text-[14.5px] max-ph:hidden
                    wd:min-h-[46px] wd:px-4 wd:text-[14px]
                    ul:min-h-[50px] ul:px-[21px] ul:text-[14.5px]"
-            to="/lien-he/#yeu-cau-tu-van"
+            :to="shellHref('/lien-he/#yeu-cau-tu-van')"
           >
             Nhận tư vấn
           </NuxtLink>
@@ -389,9 +395,9 @@ onBeforeUnmount(() => {
             <p class="mt-1 text-[13px] text-slate-500 wd:text-sm">Dữ liệu danh mục đang được cung cấp từ API public.</p>
           </div>
           <NuxtLink
-            external
+            :external="!isMigrationPreview"
             class="justify-self-start text-sm font-bold text-navy-800 no-underline hover:text-gold-700 wd:justify-self-auto"
-            to="/san-pham/"
+            :to="shellHref('/san-pham/')"
             @click="closeCatalog(false)"
           >
             Xem tất cả sản phẩm
@@ -413,15 +419,15 @@ onBeforeUnmount(() => {
             class="min-w-0 wd:[&:not(:first-child)]:border-l wd:[&:not(:first-child)]:border-hdr-line wd:[&:not(:first-child)]:pl-6"
           >
             <h3 class="mb-2 text-[17px] leading-[1.3]">
-              <NuxtLink external class="text-gold-700 no-underline" :to="group.href" @click="closeCatalog(false)">{{ group.label }}</NuxtLink>
+              <NuxtLink external class="text-gold-700 no-underline" :to="shellHref(group.href)" @click="closeCatalog(false)">{{ group.label }}</NuxtLink>
             </h3>
             <ul class="m-0 list-none p-0">
               <li v-for="item in group.items" :key="item.href + item.label" class="border-b border-[#edf0f3] last:border-b-0">
                 <NuxtLink
-                  external
+                  :external="!isMigrationPreview"
                   class="flex min-h-12 items-center justify-between gap-3 py-1 text-[15px] leading-[1.4]
                          text-hdr-ink no-underline hover:text-gold-700"
-                  :to="item.href"
+                  :to="shellHref(item.href)"
                   @click="closeCatalog(false)"
                 >
                   <span>{{ item.label }}</span>
@@ -431,9 +437,9 @@ onBeforeUnmount(() => {
                 <ul v-if="item.children.length" class="mb-2 ml-4 list-none border-l border-gray-200 pl-3">
                   <li v-for="child in item.children" :key="child.href + child.label">
                     <NuxtLink
-                      external
+                      :external="!isMigrationPreview"
                       class="flex min-h-9 items-center text-sm text-hdr-ink no-underline hover:text-gold-700"
-                      :to="child.href"
+                      :to="shellHref(child.href)"
                       @click="closeCatalog(false)"
                     >
                       {{ child.label }}
@@ -495,12 +501,12 @@ onBeforeUnmount(() => {
 
         <nav aria-label="Điều hướng mobile">
           <NuxtLink
-            external
+            :external="!isMigrationPreview"
             v-for="item in navItems"
             :key="item.href"
             class="flex min-h-12 w-full items-center justify-between gap-4 border-b border-hdr-line py-2
                    text-base font-semibold text-hdr-ink no-underline"
-            :to="item.href"
+            :to="shellHref(item.href)"
             @click="closeMobileMenu(false)"
           >
             {{ item.label }}
@@ -531,9 +537,9 @@ onBeforeUnmount(() => {
 
           <div v-if="mobileCatalogOpen" class="grid gap-0 border-b border-hdr-line py-1 pl-4">
             <NuxtLink
-              external
+              :external="!isMigrationPreview"
               class="py-[9px] text-[15px] leading-[1.45] text-hdr-sub no-underline"
-              to="/san-pham/"
+              :to="shellHref('/san-pham/')"
               @click="closeMobileMenu(false)"
             >
               Xem tất cả sản phẩm
@@ -541,19 +547,19 @@ onBeforeUnmount(() => {
             <template v-if="mobileCategories.length">
               <template v-for="category in mobileCategories" :key="category.id">
                 <NuxtLink
-                  external
+                  :external="!isMigrationPreview"
                   class="py-[9px] text-[15px] leading-[1.45] text-hdr-sub no-underline"
-                  :to="category.url"
+                  :to="shellHref(category.url)"
                   @click="closeMobileMenu(false)"
                 >
                   {{ category.name }}
                 </NuxtLink>
                 <NuxtLink
-                  external
+                  :external="!isMigrationPreview"
                   v-for="child in category.children"
                   :key="child.id"
                   class="py-[9px] pl-3 text-[15px] leading-[1.45] text-hdr-sub no-underline"
-                  :to="child.url"
+                  :to="shellHref(child.url)"
                   @click="closeMobileMenu(false)"
                 >
                   {{ child.name }}
@@ -561,12 +567,12 @@ onBeforeUnmount(() => {
               </template>
             </template>
             <NuxtLink
-              external
+              :external="!isMigrationPreview"
               v-else
               v-for="category in props.site.productCategories"
               :key="category.id"
               class="py-[9px] text-[15px] leading-[1.45] text-hdr-sub no-underline"
-              :to="category.url"
+              :to="shellHref(category.url)"
               @click="closeMobileMenu(false)"
             >
               {{ category.name }}
@@ -576,11 +582,11 @@ onBeforeUnmount(() => {
         </nav>
 
         <NuxtLink
-          external
+          :external="!isMigrationPreview"
           class="mt-6 flex min-h-[50px] w-full items-center justify-center rounded-chip border border-hdr-gold
                  bg-hdr-gold px-[21px] text-sm font-bold text-hdr-ink no-underline transition-colors
                  hover:border-hdr-gold-deep hover:bg-hdr-gold-deep hover:text-white"
-          to="/lien-he/#yeu-cau-tu-van"
+          :to="shellHref('/lien-he/#yeu-cau-tu-van')"
           @click="closeMobileMenu(false)"
         >
           Nhận tư vấn

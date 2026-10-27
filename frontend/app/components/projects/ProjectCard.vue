@@ -2,11 +2,12 @@
 import type { PublicProject } from '#shared/contracts/public-projects'
 
 defineProps<{ project: PublicProject; viewLabel: string }>()
+const links = useMigrationLinks()
 </script>
 
 <template>
   <article class="min-w-0">
-    <a :href="project.url" class="group block text-navy-800 no-underline">
+    <a :href="links.project(project.slug)" class="group block text-navy-800 no-underline">
       <div class="relative aspect-[4/3] overflow-hidden rounded-chip bg-[#edf1f5]" :class="{ 'grid place-items-center text-slate-500': !project.image }">
         <img v-if="project.image" :src="project.image" :alt="project.title" class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]" loading="lazy" decoding="async">
         <span v-else aria-hidden="true">—</span>

@@ -10,6 +10,7 @@ const hotline = computed(() => props.site.brand.hotline.trim())
 const technicalHotline = computed(() => props.site.brand.technicalHotline?.trim() ?? '')
 const footerLogo = computed(() => props.site.brand.logoFooter || props.site.brand.logo || '')
 const footer = computed(() => props.site.footer)
+const { active: isMigrationPreview, generic: footerHref } = useMigrationLinks()
 
 function telHrefFor(value: string): string {
   return `tel:${value.replace(/[^+\d]/g, '')}`
@@ -49,7 +50,7 @@ const telHref = computed(() => telHrefFor(hotline.value))
                 wd:grid-cols-[290px_minmax(280px,1fr)_minmax(460px,1.3fr)]">
       <!-- Cột 1: logo. Đây là bản emblem dọc, KHÁC wordmark ngang của header. -->
       <div>
-        <a class="block max-w-[280px]" href="/" :aria-label="`${brandName} - Trang chủ`">
+        <a class="block max-w-[280px]" :href="footerHref('/')" :aria-label="`${brandName} - Trang chủ`">
           <img
             v-if="footerLogo"
             :src="footerLogo"
@@ -119,9 +120,9 @@ const telHref = computed(() => telHrefFor(hotline.value))
           <ul>
             <li v-for="policy in footer.policies" :key="policy.href">
               <NuxtLink
-                external
+                :external="!isMigrationPreview"
                 class="block py-1 text-[13px] leading-[1.7] transition-colors hover:text-gold-400"
-                :to="policy.href"
+                :to="footerHref(policy.href)"
               >
                 {{ policy.label }}
               </NuxtLink>

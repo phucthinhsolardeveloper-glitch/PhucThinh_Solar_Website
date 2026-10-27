@@ -1,8 +1,8 @@
-<script setup lang="ts">import type { PublicHomePayload } from '#shared/contracts/public-home'; const props = defineProps<{ hero: PublicHomePayload['hero'] }>(); const active = ref(0); const current = computed(() => props.hero[active.value] || null); function move(step: number) { if (!props.hero.length) return; active.value = (active.value + step + props.hero.length) % props.hero.length }</script>
+<script setup lang="ts">import type { PublicHomePayload } from '#shared/contracts/public-home'; const props = defineProps<{ hero: PublicHomePayload['hero'] }>(); const active = ref(0); const current = computed(() => props.hero[active.value] || null); const links = useMigrationLinks(); function move(step: number) { if (!props.hero.length) return; active.value = (active.value + step + props.hero.length) % props.hero.length }</script>
 <template>
   <section v-if="current" class="relative isolate flex min-h-[clamp(570px,39vw,670px)] overflow-hidden rounded-b-[4px] bg-navy-950 text-navy-950 mb-[clamp(12px,1.2vw,24px)] max-md:min-h-[700px]" aria-labelledby="home-title">
     <div class="absolute inset-0 z-0 h-full w-full">
-      <a class="absolute inset-0 block" :href="current.href">
+      <a class="absolute inset-0 block" :href="links.generic(current.href)">
         <img class="absolute inset-0 h-full w-full object-cover max-md:object-[62%_center]" :src="current.image" :alt="current.name" fetchpriority="high" width="1600" height="720">
         <span class="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,.55),rgba(255,255,255,.27)_30%,rgba(255,255,255,.03)_55%,transparent_74%),linear-gradient(0deg,rgba(6,21,55,.16),rgba(6,21,55,.03)_58%,transparent)] max-md:bg-[linear-gradient(90deg,rgba(255,255,255,.57),rgba(255,255,255,.31)_42%,rgba(255,255,255,.03)_75%,transparent),linear-gradient(0deg,rgba(6,21,55,.18),rgba(6,21,55,.04)_62%,transparent)]" aria-hidden="true" />
       </a>

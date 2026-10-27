@@ -2,6 +2,7 @@
 import type { PublicSolutionsIntro } from '../../../shared/contracts/public-solutions'
 
 defineProps<{ intro: PublicSolutionsIntro }>()
+const links = useMigrationLinks()
 </script>
 
 <template>
@@ -27,10 +28,10 @@ defineProps<{ intro: PublicSolutionsIntro }>()
       <div>
         <p class="m-0 text-[17px] leading-relaxed text-slate-500">{{ intro.description }}</p>
         <div class="mt-[27px] flex flex-col items-stretch gap-[15px] ph:flex-row ph:items-center ph:gap-6">
-          <a class="inline-flex min-h-12 items-center justify-center gap-5 rounded-btn bg-hdr-gold px-[22px] font-extrabold text-navy-950 no-underline transition-colors hover:bg-hdr-gold-hover" :href="intro.links.consult.href">
+          <a class="inline-flex min-h-12 items-center justify-center gap-5 rounded-btn bg-hdr-gold px-[22px] font-extrabold text-navy-950 no-underline transition-colors hover:bg-hdr-gold-hover" :href="links.generic(intro.links.consult.href === '#ptsContactModal' ? '/lien-he/#yeu-cau-tu-van' : intro.links.consult.href)">
             {{ intro.links.consult.label }} <span aria-hidden="true">→</span>
           </a>
-          <a class="text-center font-extrabold text-navy-800 no-underline ph:text-left" :href="intro.links.explore.href">{{ intro.links.explore.label }}</a>
+          <a class="text-center font-extrabold text-navy-800 no-underline ph:text-left" :href="links.generic(intro.links.explore.href)">{{ intro.links.explore.label }}</a>
         </div>
       </div>
     </div>

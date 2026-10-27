@@ -2,6 +2,7 @@
 import type { PublicDealerPayload } from '#shared/contracts/public-dealer'
 
 defineProps<{ dealer: PublicDealerPayload }>()
+const links = useMigrationLinks()
 
 // Dùng lại thumbnail PHP có sẵn cho ảnh CMS lớn; không nâng giới hạn 8 MiB của media proxy.
 function cardImage(src: string): string {
@@ -50,9 +51,9 @@ function descriptionLines(text: string): string[] {
         v-for="product in dealer.overview.products"
         :key="product.title + product.image"
         class="min-w-0 text-inherit no-underline"
-        :href="product.href || undefined"
-        target="_blank"
-        rel="noopener noreferrer"
+        :href="product.href ? links.generic(product.href) : undefined"
+        :target="links.active ? undefined : '_blank'"
+        :rel="links.active ? undefined : 'noopener noreferrer'"
       >
         <img
           v-if="product.image"

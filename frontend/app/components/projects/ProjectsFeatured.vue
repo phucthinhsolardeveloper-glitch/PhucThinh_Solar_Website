@@ -2,6 +2,7 @@
 import type { PublicProject } from '#shared/contracts/public-projects'
 
 defineProps<{ project: PublicProject; label: string; viewLabel: string }>()
+const links = useMigrationLinks()
 
 /**
  * Ba gạch đầu dòng bảo chứng trong panel navy KHÔNG có trong DTO
@@ -56,7 +57,7 @@ const trustBullets = [
       <a
         class="inline-flex items-center gap-2 rounded-chip bg-hdr-gold px-5 py-3 font-bold text-navy-950 no-underline
                transition-colors hover:bg-hdr-gold-hover"
-        :href="project.url"
+        :href="links.project(project.slug)"
       >
         {{ viewLabel }} <span aria-hidden="true">→</span>
       </a>

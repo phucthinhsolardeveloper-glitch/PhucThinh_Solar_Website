@@ -2,6 +2,7 @@
 import type { PublicSolutionsCta } from '../../../shared/contracts/public-solutions'
 
 defineProps<{ cta: PublicSolutionsCta }>()
+const links = useMigrationLinks()
 </script>
 
 <template>
@@ -17,7 +18,7 @@ defineProps<{ cta: PublicSolutionsCta }>()
       <p class="m-0 text-base leading-relaxed text-blue-100">{{ cta.description }}</p>
     </div>
     <div class="flex flex-none flex-col items-stretch gap-[18px] nav:flex-row nav:items-center nav:gap-6">
-      <a class="inline-flex min-h-12 items-center justify-center gap-5 rounded-btn bg-hdr-gold px-[22px] font-extrabold text-navy-950 no-underline transition-colors hover:bg-hdr-gold-hover" :href="cta.links.consult.href">
+      <a class="inline-flex min-h-12 items-center justify-center gap-5 rounded-btn bg-hdr-gold px-[22px] font-extrabold text-navy-950 no-underline transition-colors hover:bg-hdr-gold-hover" :href="links.generic(cta.links.consult.href === '#ptsContactModal' ? '/lien-he/#yeu-cau-tu-van' : cta.links.consult.href)">
         {{ cta.buttonLabel }} <span aria-hidden="true">→</span>
       </a>
       <a v-if="cta.hotline" class="whitespace-nowrap text-center text-white no-underline nav:text-left" :href="`tel:${cta.hotline.tel}`">

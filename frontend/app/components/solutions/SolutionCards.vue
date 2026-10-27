@@ -2,6 +2,7 @@
 import type { PublicSolutionCard } from '../../../shared/contracts/public-solutions'
 
 defineProps<{ cards: PublicSolutionCard[]; choicesLabel: string; emptyLabel: string; consultLabel: string }>()
+const links = useMigrationLinks()
 </script>
 
 <template>
@@ -15,7 +16,7 @@ defineProps<{ cards: PublicSolutionCard[]; choicesLabel: string; emptyLabel: str
         v-for="card in cards"
         :key="card.slug"
         class="flex min-w-0 flex-none basis-[min(78vw,286px)] flex-col text-navy-800 no-underline nav:basis-auto"
-        :href="card.url"
+        :href="links.solution(card.slug)"
       >
         <div class="flex aspect-[8/5] items-center justify-center overflow-hidden rounded-chip bg-slate-50 text-2xl font-extrabold text-gold-500">
           <img v-if="card.image" :src="card.image" alt="" class="h-full w-full object-cover" width="600" height="375" loading="lazy" decoding="async">
@@ -33,6 +34,6 @@ defineProps<{ cards: PublicSolutionCard[]; choicesLabel: string; emptyLabel: str
         </div>
       </a>
     </div>
-    <a v-else class="font-extrabold text-navy-800 no-underline" href="#ptsContactModal">{{ consultLabel }} →</a>
+    <a v-else class="font-extrabold text-navy-800 no-underline" href="/migration-contact-preview#yeu-cau-tu-van">{{ consultLabel }} →</a>
   </section>
 </template>

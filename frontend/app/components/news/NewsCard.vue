@@ -13,6 +13,7 @@ withDefaults(defineProps<{
   readMoreLabel: string
   variant?: 'grid' | 'lead' | 'secondary'
 }>(), { variant: 'grid' })
+const links = useMigrationLinks()
 </script>
 
 <template>
@@ -25,7 +26,7 @@ withDefaults(defineProps<{
   <!-- Bỏ grid cha + subgrid: không cần, <a> tự grid trực tiếp là đủ và dễ đọc hơn. -->
   <article class="min-w-0">
     <a
-      :href="article.url"
+      :href="links.news(article.slug)"
       class="group flex h-full flex-col text-navy-800 no-underline"
       :class="variant === 'secondary' ? 'grid grid-cols-[minmax(0,38%)_minmax(0,1fr)] gap-4 max-ph:flex max-ph:flex-col' : ''"
     >

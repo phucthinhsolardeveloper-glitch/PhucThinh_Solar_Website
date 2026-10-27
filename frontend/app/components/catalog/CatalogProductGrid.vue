@@ -2,6 +2,7 @@
 import type { PublicCatalogProduct } from '#shared/contracts/public-catalog'
 
 defineProps<{ products: PublicCatalogProduct[] }>()
+const links = useMigrationLinks()
 const failedImages = ref<Set<number>>(new Set())
 
 function markImageFailed(productId: number) {
@@ -21,6 +22,10 @@ function formatMoney(value: number): string {
 /** PHP hiển thị công suất dạng "650W" — bỏ số 0 thừa, không phần thập phân khi là số nguyên. */
 function formatPower(watts: number): string {
   return `${Number.isInteger(watts) ? watts : watts.toFixed(1)}W`
+}
+
+function productHref(product: PublicCatalogProduct) {
+  return links.product(product.slug)
 }
 </script>
 
@@ -42,8 +47,8 @@ function formatPower(watts: number): string {
   >
     <article v-for="product in products" :key="product.id" class="min-w-0">
       <NuxtLink
-        external
-        :to="product.url"
+        :external="!links.active"
+        :to="productHref(product)"
         class="relative grid aspect-square place-items-center overflow-hidden rounded-chip bg-slate-50 no-underline"
       >
         <img
@@ -66,8 +71,8 @@ function formatPower(watts: number): string {
 
       <h3 class="mt-3 mb-1.5 text-[17px] leading-[1.4] max-ph:text-base">
         <NuxtLink
-          external
-          :to="product.url"
+          :external="!links.active"
+          :to="productHref(product)"
           class="text-inherit no-underline hover:underline hover:underline-offset-[3px] focus-visible:underline"
         >
           {{ product.name }}

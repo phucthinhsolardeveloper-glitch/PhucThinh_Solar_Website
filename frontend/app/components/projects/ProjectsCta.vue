@@ -2,6 +2,7 @@
 import type { PublicProjectsCta } from '#shared/contracts/public-projects'
 
 defineProps<{ cta: PublicProjectsCta; label: string }>()
+const links = useMigrationLinks()
 </script>
 
 <template>
@@ -10,7 +11,7 @@ defineProps<{ cta: PublicProjectsCta; label: string }>()
     <div>
       <h2 class="mt-0 mb-2 text-[clamp(22px,3vw,32px)] font-black leading-tight">{{ cta.title }}</h2>
       <p v-if="cta.description" class="mb-4 leading-relaxed text-blue-100">{{ cta.description }}</p>
-      <a class="mb-2 mr-[18px] mt-3 inline-block font-extrabold text-gold-400 no-underline" href="/lien-he/#yeu-cau-tu-van">{{ cta.buttonLabel || label }}</a>
+      <a class="mb-2 mr-[18px] mt-3 inline-block font-extrabold text-gold-400 no-underline" :href="links.generic('/lien-he/#yeu-cau-tu-van')">{{ cta.buttonLabel || label }}</a>
       <a v-if="cta.hotline?.tel" class="mb-2 mt-3 inline-block font-extrabold text-white no-underline" :href="`tel:${cta.hotline.tel}`">{{ cta.hotline.text }}</a>
     </div>
   </section>

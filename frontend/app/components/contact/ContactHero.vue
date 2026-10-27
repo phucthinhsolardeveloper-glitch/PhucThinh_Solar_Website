@@ -2,6 +2,7 @@
 import type { PublicContactPayload } from '#shared/contracts/public-contact'
 
 defineProps<{ contact: PublicContactPayload }>()
+const links = useMigrationLinks()
 </script>
 
 <template>
@@ -56,7 +57,7 @@ defineProps<{ contact: PublicContactPayload }>()
       <a
         class="mt-2 inline-flex items-center gap-2.5 self-start rounded-chip bg-hdr-gold px-4 py-3 font-bold
                text-navy-950 no-underline transition-colors hover:bg-hdr-gold-hover"
-        href="/lien-he/"
+        :href="links.generic('/lien-he/#yeu-cau-tu-van')"
       >
         {{ contact.labels.formCta }} <span aria-hidden="true">→</span>
       </a>

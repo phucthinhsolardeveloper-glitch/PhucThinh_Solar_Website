@@ -96,7 +96,7 @@ useSeoMeta({ title: 'Danh mục sản phẩm — internal preview', robots: 'noi
         </h1>
 
         <p class="mb-7 leading-relaxed text-slate-500">
-          Preview nội bộ từ dữ liệu CMS. Giá, bộ lọc, sắp xếp và tồn kho chưa được cung cấp trong Phase A.
+          Preview nội bộ từ dữ liệu CMS. Giá công khai/giá báo đã nối theo authority PHP; bộ lọc nâng cao, merchandising sort và tồn kho vẫn đang đối chiếu.
         </p>
 
         <div v-if="catalogPending" class="py-16" role="status" aria-live="polite">
