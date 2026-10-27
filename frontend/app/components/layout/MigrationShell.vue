@@ -28,24 +28,20 @@ useSeoMeta({
 </script>
 
 <template>
-  <div class="migration-shell">
+  <div class="flex min-h-screen flex-col bg-white">
     <SiteHeader v-if="shellOptions.header" :site="site" />
 
-    <div v-if="shellOptions.status && (pending || hasError)" class="migration-shell__status" role="status" aria-live="polite">
-      <div class="pts-container">
-        <p v-if="pending">Đang tải dữ liệu điều hướng…</p>
-        <p v-else>{{ errorMessage }}</p>
+    <div v-if="shellOptions.status && (pending || hasError)" class="border-b border-gray-200 bg-slate-50 text-slate-500" role="status" aria-live="polite">
+      <div class="mx-auto w-full max-w-[1766px] px-4">
+        <p v-if="pending" class="py-2.5 text-sm leading-relaxed">Đang tải dữ liệu điều hướng…</p>
+        <p v-else class="py-2.5 text-sm leading-relaxed">{{ errorMessage }}</p>
       </div>
     </div>
 
-    <div class="migration-shell__content">
+    <div class="min-w-0 flex-1">
       <slot />
     </div>
 
     <SiteFooter v-if="shellOptions.footer" :site="site" />
   </div>
 </template>
-
-<style>
-@import '~/assets/css/layout-migration.css';
-</style>

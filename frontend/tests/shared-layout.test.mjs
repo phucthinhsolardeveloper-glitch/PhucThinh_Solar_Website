@@ -9,7 +9,6 @@ const composable = read('composables/usePublicSite.ts')
 const shell = read('components/layout/MigrationShell.vue')
 const layout = read('layouts/migration.vue')
 const about = read('pages/migration-about-preview.vue')
-const css = read('assets/css/layout-migration.css')
 const previewPages = readdirSync(new URL('../app/pages/', import.meta.url))
   .filter((path) => path.startsWith('migration-') && path.endsWith('.vue'))
   .map((path) => ({ path, source: read(`pages/${path}`) }))
@@ -50,8 +49,15 @@ test('migration layout remains opt-in so independent preview pages keep their ow
   assert.deepEqual(migrationLayoutUsers, ['migration-about-preview.vue'])
 })
 
-test('shared shell CSS keeps content flexible without adding a decorative shell', () => {
-  assert.match(css, /min-height: 100vh/)
-  assert.match(css, /flex: 1 0 auto/)
-  assert.doesNotMatch(css, /box-shadow|border-radius/)
+/**
+ * layout-migration.css đã được chuyển sang Tailwind utility ngay trong
+ * MigrationShell.vue (CODEX/Claude, Tailwind v4 full migration). Ý định gốc
+ * của test này — shell chiếm đủ chiều cao viewport, vùng nội dung co giãn, và
+ * KHÔNG được tự thêm trang trí (shadow/bo góc) — vẫn phải đúng, chỉ đổi chỗ
+ * kiểm tra từ file CSS rời sang class Tailwind trên chính component.
+ */
+test('shared shell markup keeps content flexible without adding a decorative shell', () => {
+  assert.match(shell, /class="flex min-h-screen flex-col/)
+  assert.match(shell, /class="min-w-0 flex-1"/)
+  assert.doesNotMatch(shell, /shadow-|rounded-(?!none)/)
 })

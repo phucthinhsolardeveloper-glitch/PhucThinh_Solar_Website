@@ -1,12 +1,38 @@
 <script setup lang="ts">
 import type { PublicSolutionsIntro } from '../../../shared/contracts/public-solutions'
+
 defineProps<{ intro: PublicSolutionsIntro }>()
 </script>
+
 <template>
-  <section class="solutions-intro" aria-labelledby="solutions-title">
-    <div class="solutions-intro__grid">
-      <figure v-if="intro.image" class="solutions-intro__media"><img :src="intro.image" :alt="intro.title" width="1200" height="750" fetchpriority="high"></figure>
-      <div class="solutions-intro__copy"><p class="solutions-eyebrow">{{ intro.eyebrow }}</p><h1 id="solutions-title">{{ intro.title }}</h1><p class="solutions-intro__description">{{ intro.description }}</p><div class="solutions-actions"><a class="solutions-button" :href="intro.links.consult.href">{{ intro.links.consult.label }} <span aria-hidden="true">→</span></a><a class="solutions-text-link" :href="intro.links.explore.href">{{ intro.links.explore.label }}</a></div></div>
+  <!--
+    PHÁT HIỆN: ảnh production (/giai-phap/, 1920px) không có ảnh minh hoạ nào
+    trong khối intro — chỉ hai cột CHỮ: trái là tiêu đề, phải là mô tả + nút.
+    `intro.image` rỗng ở dữ liệu mẫu nên không quan sát được nó nằm ở đâu khi
+    có giá trị. Đặt ảnh (nếu có) thành dải full-width phía trên hai cột thay vì
+    ép nó làm cột thứ hai như bản cũ — ép vậy sẽ đẩy mô tả xuống dưới ảnh, sai
+    với bố cục hai cột chữ đã quan sát được.
+  -->
+  <section class="pb-[42px]" aria-labelledby="solutions-title">
+    <figure v-if="intro.image" class="m-0 mb-8 aspect-[21/9] overflow-hidden rounded-btn">
+      <img :src="intro.image" :alt="intro.title" class="h-full w-full object-cover" width="1200" height="514" fetchpriority="high">
+    </figure>
+
+    <div class="grid grid-cols-1 items-start gap-8 tb:grid-cols-2 tb:gap-12">
+      <div>
+        <p class="mb-3 text-xs font-extrabold uppercase tracking-[.09em] text-gold-700">{{ intro.eyebrow }}</p>
+        <h1 id="solutions-title" class="m-0 text-[clamp(28px,2.9vw,42px)] font-black leading-[1.22] tracking-tight text-navy-800">{{ intro.title }}</h1>
+      </div>
+
+      <div>
+        <p class="m-0 text-[17px] leading-relaxed text-slate-500">{{ intro.description }}</p>
+        <div class="mt-[27px] flex flex-col items-stretch gap-[15px] ph:flex-row ph:items-center ph:gap-6">
+          <a class="inline-flex min-h-12 items-center justify-center gap-5 rounded-btn bg-hdr-gold px-[22px] font-extrabold text-navy-950 no-underline transition-colors hover:bg-hdr-gold-hover" :href="intro.links.consult.href">
+            {{ intro.links.consult.label }} <span aria-hidden="true">→</span>
+          </a>
+          <a class="text-center font-extrabold text-navy-800 no-underline ph:text-left" :href="intro.links.explore.href">{{ intro.links.explore.label }}</a>
+        </div>
+      </div>
     </div>
   </section>
 </template>

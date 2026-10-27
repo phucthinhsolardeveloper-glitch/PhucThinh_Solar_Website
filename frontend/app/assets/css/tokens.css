@@ -1,23 +1,16 @@
-@import './shell.css';
-
 /*
- * Phase A: migrate PTS-approved design tokens, not its legacy CSS cascade.
- * These values come from docs/02-development/public-ui-ux-design-system.md.
- * Do not use this file to silently redesign legacy pages.
+ * shell.css đã xoá (chết hoàn toàn: 0 file .vue còn dùng bất kỳ class pts-*
+ * nào sau khi SiteHeader/SiteFooter/SiteBreadcrumb/MigrationShell chuyển hết
+ * sang Tailwind). Biến --pts-navy/--pts-gold/... cũng đã hết người dùng thật
+ * (migration-preview.vue, file cuối cùng còn tham chiếu, đã chuyển sang token
+ * Tailwind navy-800/gold-700 trong main.css) nên gỡ luôn, không giữ lại một
+ * bộ biến trùng lặp với @theme của main.css — hai nguồn giá trị thương hiệu
+ * song song là chính kiểu trôi dạt ADR 0007 đã phải dọn một lần.
+ *
+ * Phần dưới đây là RESET TOÀN CỤC thật sự (box-sizing, màu nền mặc định, outline
+ * focus-visible) — không phải token, nên giữ lại và trỏ sang token Tailwind.
  */
-:root {
-  --pts-navy: #0a2251;
-  --pts-navy-deep: #061537;
-  --pts-gold: #c9962e;
-  --pts-gold-light: #e0b654;
-  --pts-gold-dark: #9c7420;
-  --pts-muted: #64748b;
-  --pts-line: #e5e7eb;
-  --pts-surface: #f8fafc;
-  --pts-chip-bg: #eef2f7;
-  font-family: 'Be Vietnam Pro', 'Plus Jakarta Sans', Mulish, system-ui, sans-serif;
-}
 * { box-sizing: border-box; }
-html { color: var(--pts-navy); background: white; }
+html { color: var(--color-navy-800); background: white; }
 body { margin: 0; }
-:focus-visible { outline: 3px solid var(--pts-gold); outline-offset: 3px; }
+:focus-visible { outline: 3px solid var(--color-gold-500); outline-offset: 3px; }
