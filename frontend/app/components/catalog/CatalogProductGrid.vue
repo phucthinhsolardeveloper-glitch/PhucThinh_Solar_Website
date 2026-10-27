@@ -7,6 +7,21 @@ function hideBrokenImage(event: Event) {
   const image = event.currentTarget
   if (image instanceof HTMLImageElement) image.hidden = true
 }
+
+/**
+ * Định dạng tiền khớp đúng PHP: libraries/class/class.Functions.php::formatMoney()
+ * dùng number_format($price, 0, ',', '.') + hậu tố "đ" — dấu CHẤM phân cách
+ * nghìn, không có phần thập phân. 'vi-VN' của Intl cho đúng kết quả đó vì
+ * locale này dùng dấu chấm làm thousands separator.
+ */
+function formatMoney(value: number): string {
+  return `${new Intl.NumberFormat('vi-VN').format(value)}đ`
+}
+
+/** PHP hiển thị công suất dạng "650W" — bỏ số 0 thừa, không phần thập phân khi là số nguyên. */
+function formatPower(watts: number): string {
+  return `${Number.isInteger(watts) ? watts : watts.toFixed(1)}W`
+}
 </script>
 
 <template>
@@ -15,12 +30,11 @@ function hideBrokenImage(event: Event) {
     đúng 337px, mép trái 447/800/1153/1506 -> khoảng cách ngang 16px, tổng lưới
     1396px. Nút trong thẻ cao 40px.
 
-    CÒN THIẾU so với ảnh, KHÔNG dựng được từ DTO hiện tại: ảnh có công suất
-    (650W), giá (2.648.100đ), nút "Thêm giỏ hàng" và "Xem chi tiết".
-    public-catalog.ts khai thẳng `parity.prices.included = false`, và
-    PublicCatalogProduct chỉ mang {id, name, slug, url, media}. Không render giá
-    hay nút mua khi chưa có dữ liệu — giá sai ở trang danh mục là lỗi chạm thẳng
-    vào tiền của khách. Cần task mở rộng PHP DTO trước khi phần này khớp ảnh.
+    DTO đã mở rộng (merge feature/pts-nuxt-php-dto-20261026): powerWatts +
+    pricing giờ có thật, lấy từ publicProductPricesVisible() và status
+    'baogia' — cùng logic site PHP đang dùng ở PDP. Khi pricing.mode = 'quote'
+    (tắt hiển thị giá công khai, hoặc sản phẩm cố ý ẩn giá) thì hiện "Liên hệ
+    để nhận báo giá" như trước — không suy luận hay bịa giá.
   -->
   <div
     v-if="products.length"
@@ -30,7 +44,7 @@ function hideBrokenImage(event: Event) {
       <NuxtLink
         external
         :to="product.url"
-        class="grid aspect-square place-items-center overflow-hidden rounded-chip bg-slate-50 no-underline"
+        class="relative grid aspect-square place-items-center overflow-hidden rounded-chip bg-slate-50 no-underline"
       >
         <img
           v-if="product.media[0]"
@@ -41,6 +55,13 @@ function hideBrokenImage(event: Event) {
           @error="hideBrokenImage"
         >
         <span v-else class="p-4 text-center text-sm text-slate-500">Chưa có hình ảnh</span>
+
+        <span
+          v-if="product.powerWatts"
+          class="absolute left-2 top-2 rounded-chip bg-navy-800 px-2 py-1 text-xs font-bold text-white"
+        >
+          {{ formatPower(product.powerWatts) }}
+        </span>
       </NuxtLink>
 
       <h3 class="mt-3 mb-1.5 text-[17px] leading-[1.4] max-ph:text-base">
@@ -53,7 +74,16 @@ function hideBrokenImage(event: Event) {
         </NuxtLink>
       </h3>
 
-      <p class="m-0 text-sm text-slate-500">Liên hệ để nhận báo giá</p>
+      <p v-if="product.pricing?.mode === 'price'" class="m-0 flex items-baseline gap-2 text-base font-bold text-red-600">
+        <template v-if="product.pricing.salePrice && product.pricing.regularPrice && product.pricing.salePrice < product.pricing.regularPrice">
+          {{ formatMoney(product.pricing.salePrice) }}
+          <span class="text-xs font-normal text-slate-400 line-through">{{ formatMoney(product.pricing.regularPrice) }}</span>
+        </template>
+        <template v-else>
+          {{ formatMoney(product.pricing.salePrice ?? product.pricing.regularPrice ?? 0) }}
+        </template>
+      </p>
+      <p v-else class="m-0 text-sm text-slate-500">Liên hệ để nhận báo giá</p>
     </article>
   </div>
 
