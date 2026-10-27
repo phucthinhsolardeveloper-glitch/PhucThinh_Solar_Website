@@ -99,3 +99,9 @@ Rollback code của batch là revert các commit trên child branch hoặc bỏ 
 `/home/admin01/src/pts-nuxt4-parity-qa`; không có migration/schema/DB write,
 không đổi container production, không đổi DNS/Caddy public, không push và không
 deploy. Worktree gốc `/home/admin01/src/pts-nuxt4-migration` giữ nguyên.
+
+Dry-run production-readiness, hook Caddy tương lai, allowlist fail-closed,
+canary thresholds và gate matrix được chốt tại
+[`PRODUCTION-CUTOVER-DRY-RUN.md`](PRODUCTION-CUTOVER-DRY-RUN.md). Checkpoint này
+không thêm Nuxt service production, không nối runtime flag và không đổi public
+route ownership.

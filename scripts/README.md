@@ -19,6 +19,8 @@ hành chỉ để pipeline tiếp tục.
 | `package-hosting-release.sh` | Local | Tạo `backup/releases/*` | Đóng gói source/tools theo Git commit + checksum |
 | `backup-local.sh` | Local | Tạo `backup/local/*` | Trước import/migration/thay đổi dữ liệu local |
 | `test-backup-restore-local.sh` | Local | DB/thư mục tạm rồi tự xóa | Chứng minh backup local restore được |
+| `nuxt-cutover-preflight.mjs` | Local/READ-ONLY | Static gate; probe chỉ loopback khi có `--probe` | Nuxt hybrid dry-run, rollback plan |
+| `test-nuxt-cutover.sh` | Local/READ-ONLY | Node + shell guard, không Docker/browser | Xác minh flag OFF/allowlist/approval/noindex |
 
 Lệnh chuẩn:
 
