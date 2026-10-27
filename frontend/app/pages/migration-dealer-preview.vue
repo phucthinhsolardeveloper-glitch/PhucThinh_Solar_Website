@@ -22,6 +22,7 @@ const quickLinks = [
   { label: 'Sản phẩm phân phối', href: '#nang-luc-phan-phoi' },
   { label: 'Quyền lợi đại lý', href: '#ho-tro-dai-ly' },
 ]
+const links = useMigrationLinks()
 
 useSeoMeta({ title: 'Đại lý — internal preview', robots: 'noindex, nofollow, noarchive' })
 </script>
@@ -61,7 +62,7 @@ useSeoMeta({ title: 'Đại lý — internal preview', robots: 'noindex, nofollo
         <!-- Hàng neo nhảy mục, nền trắng, ngay dưới hero -->
         <nav class="border-b border-gray-200" aria-label="Điều hướng nhanh trong trang">
           <div class="mx-auto flex w-full max-w-[1766px] flex-wrap gap-6 px-4 py-4">
-            <a v-for="link in quickLinks" :key="link.href" class="flex items-center gap-2 font-bold text-navy-800 no-underline hover:text-gold-700" :href="link.href">
+            <a v-for="link in quickLinks" :key="link.href" class="flex items-center gap-2 font-bold text-navy-800 no-underline hover:text-gold-700" :href="links.generic(link.href)">
               {{ link.label }}
             </a>
           </div>

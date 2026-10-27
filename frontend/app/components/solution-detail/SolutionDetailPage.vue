@@ -3,6 +3,7 @@ import type { PublicSolutionDetailPayload } from '../../../shared/contracts/publ
 import EditorialRichText from '~/components/editorial/EditorialRichText.vue'
 
 defineProps<{ data: PublicSolutionDetailPayload }>()
+const links = useMigrationLinks()
 </script>
 
 <template>
@@ -16,7 +17,7 @@ defineProps<{ data: PublicSolutionDetailPayload }>()
     <nav class="flex gap-2 overflow-x-auto px-4 py-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" aria-label="Các giải pháp khác">
       <a
         class="flex-none whitespace-nowrap rounded-chip bg-slate-50 px-4 py-2.5 text-sm font-bold text-navy-800 no-underline hover:bg-gray-200"
-        :href="data.navigation.allUrl"
+        :href="links.generic(data.navigation.allUrl)"
       >
         Tất cả giải pháp
       </a>
@@ -25,7 +26,7 @@ defineProps<{ data: PublicSolutionDetailPayload }>()
         :key="item.slug"
         class="flex-none whitespace-nowrap rounded-chip px-4 py-2.5 text-sm font-bold no-underline"
         :class="item.active ? 'bg-navy-800 text-white' : 'bg-slate-50 text-navy-800 hover:bg-gray-200'"
-        :href="item.url"
+        :href="links.generic(item.url)"
       >
         {{ item.title }}
       </a>
@@ -43,7 +44,7 @@ defineProps<{ data: PublicSolutionDetailPayload }>()
           <h1 class="m-0 mb-4 text-[clamp(30px,4vw,44px)] font-black leading-[1.15]">{{ data.solution.title }}</h1>
           <p v-if="data.solution.summary" class="mb-5 text-lg leading-relaxed text-blue-100">{{ data.solution.summary }}</p>
           <div class="flex flex-col items-stretch gap-4 ph:flex-row ph:items-center">
-            <a class="inline-flex min-h-11 items-center justify-center gap-4 rounded-btn bg-hdr-gold px-5 font-extrabold text-navy-950 no-underline transition-colors hover:bg-hdr-gold-hover" :href="data.cta.href">
+            <a class="inline-flex min-h-11 items-center justify-center gap-4 rounded-btn bg-hdr-gold px-5 font-extrabold text-navy-950 no-underline transition-colors hover:bg-hdr-gold-hover" :href="links.generic(data.cta.href)">
               {{ data.cta.label }} <span aria-hidden="true">→</span>
             </a>
             <a class="text-center font-bold text-white no-underline ph:text-left" href="#noi-dung-giai-phap">Tìm hiểu phương án</a>
@@ -80,10 +81,10 @@ defineProps<{ data: PublicSolutionDetailPayload }>()
     <section v-if="data.equipment.length" class="mx-4 mb-12" aria-labelledby="solution-equipment-title">
       <header class="mb-5 flex flex-col items-start gap-3 tb:flex-row tb:items-end tb:justify-between">
         <h2 id="solution-equipment-title" class="m-0 text-[28px] font-black text-navy-800">Thiết bị liên quan</h2>
-        <a class="font-bold text-navy-800 no-underline" href="/san-pham/">Xem tất cả sản phẩm <span aria-hidden="true">→</span></a>
+        <a class="font-bold text-navy-800 no-underline" :href="links.generic('/san-pham/')">Xem tất cả sản phẩm <span aria-hidden="true">→</span></a>
       </header>
       <div class="grid grid-cols-1 gap-3.5 tb:grid-cols-4">
-        <a v-for="item in data.equipment" :key="item.url" class="flex items-center gap-3 border-t border-gray-200 py-3.5 text-navy-800 no-underline" :href="item.url">
+        <a v-for="item in data.equipment" :key="item.url" class="flex items-center gap-3 border-t border-gray-200 py-3.5 text-navy-800 no-underline" :href="links.generic(item.url)">
           <img v-if="item.image" :src="item.image" alt="" class="h-16 w-16 flex-none object-contain" width="80" height="80" loading="lazy">
           <span class="min-w-0">
             <strong class="block">{{ item.name }}</strong>
