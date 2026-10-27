@@ -14,7 +14,7 @@ theo code/contract hiện tại, không suy diễn từ mock.
 | F03 `/san-pham/{slug}/` | `sources/product.php`, `product_detail_tpl.php` | `migration-product-preview`, `/_migration/product-detail`, `/_migration/product-extras` | Published PDP, pricing/content/specs/media/documents/extras theo contract | Preview đã có gallery lightbox/zoom, quote/cart, FAQ, video, warranty/policy, related, reviews, consultation, anchors và Product/Breadcrumb/FAQ JSON-LD; public SEO/cutover chưa ký | Public PHP route; preview noindex | Rất cao |
 | F04 `/danh-muc-san-pham/*` | `libraries/router.php`, `product_category_urls.php` | `migration-catalog-preview?category=...` | Category chain có trong site/catalog DTO | Chưa có public Nuxt route riêng; alias, 301/404 và đầy đủ filter/breadcrumb vẫn cần gate | PHP canonical/redirect owner | Cao |
 | F05 `/tim-kiem/` | `sources/search.php` | `migration-search-preview`, `/_migration/search` | Nuxt render kết quả theo search semantics legacy qua adapter | Public route/SEO và đầy đủ parity kết quả chưa cutover | PHP owner; preview noindex | Cao |
-| F06 `/thuong-hieu/` | `sources/product.php` | Chưa có | UNKNOWN ngoài PHP hiện hành | Brand relation/paging chưa có contract | PHP owner | Trung bình |
+| F06 `/thuong-hieu/{slug}/` | `sources/product.php` (dùng chung template `product/product` với F02) | `migration-brand-detail-preview`, `/_migration/brand-detail` | Brand resolve theo slug, sản phẩm lọc `id_brand` tái dùng `ptsCatalogProductDto`/giá/sort, phân trang (commit `f0cf5ce`) | Đã xác minh KHÔNG có logo/mô tả/nội dung brand nào được render công khai (chỉ H1 = tên brand) nên không dựng thêm; brand root `/thuong-hieu/` (không slug) chưa rõ hành vi thật, chỉ mới làm trang chi tiết theo slug | PHP public SEO; preview noindex | Trung bình |
 | F07 `/giai-phap/` | `sources/solution_hub.php`, `sources/news.php` | `migration-solutions-preview`, `/_migration/solutions` | Published solutions, cards/equipment/CTA từ DTO; TOC sinh từ H2/H3 đã sanitize | Rich-content/SEO public và interaction parity cuối vẫn cần gate; không public takeover | PHP public SEO; preview noindex | Cao |
 | F08 `/giai-phap/{slug}/` | `sources/news.php`, `service_detail_tpl.php` | `migration-solution-detail-preview`, `/_migration/solution-detail` | Published solution, gallery/media allowlist, editorial preview | Public canonical/redirect/SEO và parity rich content vẫn deferred | PHP public canonical; preview noindex | Cao |
 | F09 `/du-an-da-thuc-hien/` | `sources/project_hub.php`, `templates/news/project_tpl.php` | `migration-projects-preview`, `/_migration/projects` | Published projects, featured semantics, media tồn tại | Gallery/proof/related/SEO và public cutover chưa ký | PHP public SEO; preview noindex | Cao |
@@ -66,6 +66,8 @@ theo code/contract hiện tại, không suy diễn từ mock.
 - Hoàn tất SEO public canonical/OG/sitemap/robots/redirect parity; JSON-LD hiện
   mới có trên PDP preview.
 - Catalog filter (loại sản phẩm/thương hiệu/mức giá) và sort đã nối thật
-  (`c00aa0e`); còn thiếu tồn kho (stock) parity và các route public brand,
-  gallery/video, account còn ngoài Nuxt.
+  (`c00aa0e`); "tồn kho" không phải gap thật (không có trên site PHP, xem F02).
+  Brand detail `/thuong-hieu/{slug}/` đã có preview (`f0cf5ce`); còn lại
+  gallery/video và account vẫn ngoài Nuxt (account giữ nguyên bên PHP theo
+  thiết kế, xem F18, không phải việc cần làm).
 - Hoàn tất visual/browser QA cuối và các production deployment gates.
