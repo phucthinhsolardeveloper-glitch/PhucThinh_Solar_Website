@@ -1,17 +1,24 @@
 <script setup lang="ts">
 import type { PublicContactLocation } from '#shared/contracts/public-contact'
 
-defineProps<{ locations: PublicContactLocation[]; title: string }>()
+const props = defineProps<{ locations: PublicContactLocation[]; title: string }>()
+const selectedId = ref<number | null>(null)
+const selected = computed(() =>
+  props.locations.find((location) => location.id === selectedId.value) ?? props.locations[0] ?? null,
+)
+
+watch(() => props.locations, (locations) => {
+  if (!locations.some((location) => location.id === selectedId.value)) {
+    selectedId.value = locations[0]?.id ?? null
+  }
+}, { immediate: true })
+
+function mapEmbedUrl(location: PublicContactLocation): string {
+  return 'https://www.google.com/maps?q=' + encodeURIComponent(location.address) + '&output=embed'
+}
 </script>
 
 <template>
-  <!--
-    PHÁT HIỆN KHI ĐỐI CHIẾU ẢNH: component gốc dựng 3 card (tên/địa chỉ/"Xem
-    bản đồ") dạng lưới 3 cột. Ảnh production (/lien-he/, 1920px) không có lưới
-    đó — cấu trúc thật là DANH SÁCH dọc bên trái (icon nhà + tên đậm, icon ghim
-    + địa chỉ, link "Xem bản đồ", chia bằng đường kẻ mảnh) cùng với BẢN ĐỒ
-    Google Maps nhúng chiếm toàn bộ cột phải. Dựng lại đúng cấu trúc đó.
-  -->
   <section class="py-12 nav:py-16" aria-labelledby="contact-locations-title">
     <h2 id="contact-locations-title" class="mb-6 text-[clamp(24px,3vw,36px)] font-black tracking-tight text-navy-800">
       {{ title }}
@@ -28,27 +35,41 @@ defineProps<{ locations: PublicContactLocation[]; title: string }>()
             <svg class="mt-0.5 h-3.5 w-3.5 flex-none text-gold-500" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5Z" /></svg>
             {{ location.address }}
           </p>
-          <a
-            v-if="location.mapUrl"
-            class="inline-flex items-center gap-1.5 text-sm font-bold text-navy-800 no-underline hover:text-gold-700"
-            :href="location.mapUrl"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Xem bản đồ <span aria-hidden="true">→</span>
-          </a>
+          <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
+            <button
+              type="button"
+              class="inline-flex items-center gap-1.5 border-0 bg-transparent p-0 text-sm font-bold text-navy-800 hover:text-gold-700"
+              :aria-pressed="selected?.id === location.id"
+              @click="selectedId = location.id"
+            >
+              Xem trên bản đồ <span aria-hidden="true">→</span>
+            </button>
+            <a
+              v-if="location.mapUrl"
+              :href="location.mapUrl"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-sm font-semibold text-slate-500 no-underline hover:text-gold-700"
+            >
+              Mở Google Maps ↗
+            </a>
+          </div>
         </li>
       </ul>
 
-      <!--
-        CÒN THIẾU: ảnh production nhúng Google Maps Embed thật (iframe JS API).
-        DTO chỉ có `mapUrl` — một link mở Google Maps ở tab mới, không phải
-        nguồn nhúng được. Nhúng bản đồ cần API key, quyết định CSP/consent và
-        chi phí riêng — không tự quyết ở bước chuyển CSS này. Thay bằng khung
-        giữ chỗ trung thực thay vì giả một bản đồ tĩnh trông như thật.
-      -->
-      <div class="flex min-h-[360px] items-center justify-center rounded-chip border border-dashed border-gray-300 bg-slate-50 p-8 text-center text-slate-500">
-        Bản đồ nhúng chưa khả dụng trong preview. Dùng "Xem bản đồ" ở từng chi nhánh.
+      <div v-if="selected" class="min-h-[360px] overflow-hidden rounded-chip border border-gray-200 bg-slate-50">
+        <iframe
+          :key="selected.id"
+          :src="mapEmbedUrl(selected)"
+          :title="'Bản đồ ' + selected.name"
+          class="h-[420px] w-full border-0"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          allowfullscreen
+        />
+      </div>
+      <div v-else class="flex min-h-[360px] items-center justify-center rounded-chip border border-dashed border-gray-300 bg-slate-50 p-8 text-center text-slate-500">
+        Hệ thống chi nhánh đang được cập nhật.
       </div>
     </div>
   </section>
