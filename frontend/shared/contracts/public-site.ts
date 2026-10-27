@@ -6,17 +6,18 @@ export interface PublicCatalogGroup { label: string; href: string; items: Public
 export interface PublicFooterPolicy { label: string; href: string }
 export interface PublicFooterLocation { name: string; address: string; mapUrl: string }
 export interface PublicSocialLink { label: string; href: string }
+export interface PublicTrustBadge { image: string; href: string }
 
 export interface PublicSitePayload {
   schemaVersion: 1
   navigationSchemaVersion?: 1
   locale?: string
-  brand: { name: string; hotline: string; logo?: string; logoFooter?: string }
+  brand: { name: string; hotline: string; technicalHotline?: string; logo?: string; logoFooter?: string }
   navigation?: PublicSiteLink[]
   catalog?: Record<string, PublicCatalogGroup>
   productCategories: PublicProductCategory[]
   productCategoryTree?: PublicProductCategoryNode[]
-  footer?: { companyName: string; contactText: string; policies: PublicFooterPolicy[]; locations: PublicFooterLocation[]; socialLinks: PublicSocialLink[] }
+  footer?: { companyName: string; contactText: string; policies: PublicFooterPolicy[]; locations: PublicFooterLocation[]; socialLinks: PublicSocialLink[]; trustBadge?: PublicTrustBadge }
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> { return value !== null && typeof value === 'object' && !Array.isArray(value) }
@@ -42,13 +43,15 @@ function isCatalogGroup(value: unknown): value is PublicCatalogGroup {
 }
 function isFooter(value: unknown): value is NonNullable<PublicSitePayload['footer']> {
   if (!isRecord(value) || !isText(value.companyName, true) || !isText(value.contactText, true) || !Array.isArray(value.policies) || !Array.isArray(value.locations) || !Array.isArray(value.socialLinks)) return false
-  return value.policies.every((row: unknown) => isRecord(row) && isText(row.label) && isSafeUrl(row.href)) && value.locations.every((row: unknown) => isRecord(row) && isText(row.name) && isText(row.address) && isSafeUrl(row.mapUrl, true)) && value.socialLinks.every((row: unknown) => isRecord(row) && isText(row.label) && isSafeUrl(row.href))
+  if (!value.policies.every((row: unknown) => isRecord(row) && isText(row.label) && isSafeUrl(row.href)) || !value.locations.every((row: unknown) => isRecord(row) && isText(row.name) && isText(row.address) && isSafeUrl(row.mapUrl, true)) || !value.socialLinks.every((row: unknown) => isRecord(row) && isText(row.label) && isSafeUrl(row.href))) return false
+  return value.trustBadge === undefined || isRecord(value.trustBadge) && isSafeUrl(value.trustBadge.image) && isSafeUrl(value.trustBadge.href)
 }
 
 export function isPublicSitePayload(value: unknown): value is PublicSitePayload {
   if (!isRecord(value) || value.schemaVersion !== 1 || !isRecord(value.brand) || !isText(value.brand.name, true) || !isText(value.brand.hotline, true)) return false
   if (value.brand.logo !== undefined && !isSafeUrl(value.brand.logo)) return false
   if (value.brand.logoFooter !== undefined && !isSafeUrl(value.brand.logoFooter)) return false
+  if (value.brand.technicalHotline !== undefined && !isText(value.brand.technicalHotline)) return false
   if (value.navigationSchemaVersion !== undefined && value.navigationSchemaVersion !== 1) return false
   if (value.locale !== undefined && !isText(value.locale)) return false
   if (!Array.isArray(value.productCategories) || !value.productCategories.every((row: unknown) => isRecord(row) && isId(row.id) && isText(row.name) && isText(row.slug) && isCategoryUrl(row.url))) return false
