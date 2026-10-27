@@ -41,3 +41,6 @@ domains/phucthinhsolar.com/public_html/maintenance.html
 # (ảnh nlmt/ đã copy xong vào home-hero-bg, chuyển ra D:\LinhTinh01 2026-09-12)
 artifacts/
 ĐÈN ORIANA/
+
+# Local Stitch captures and scratch assets (do not commit screenshots/HTML)
+.stitch/
