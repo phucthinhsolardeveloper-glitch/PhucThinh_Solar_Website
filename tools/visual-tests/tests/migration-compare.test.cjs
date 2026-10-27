@@ -1,6 +1,6 @@
 const test = require('node:test')
 const assert = require('node:assert/strict')
-const { parseArgs, parseViewport, validateOrigin, loadManifest, renderMarkdown, classifyDifference } = require('../scripts/migration-compare.cjs')
+const { parseArgs, parseViewport, validateOrigin, loadManifest, renderMarkdown, classifyDifference, previewLinkLeaks, viewportGate } = require('../scripts/migration-compare.cjs')
 
 test('accepts loopback origins and rejects remote origins by default', () => {
   assert.equal(validateOrigin('http://127.0.0.1:8080/'), 'http://127.0.0.1:8080')
@@ -62,4 +62,33 @@ test('promotes failed media requests to a runtime/media gap', () => {
 test('separates an aborted third-party map embed from a Nuxt UI error', () => {
   const base = { status: 200, navigationError: undefined, pageErrors: [], consoleMessages: [], failedRequests: [], horizontalOverflow: 0, fingerprints: { layout: 'same', text: 'a', media: 'a', links: 'a' }, title: 'A', h1: ['A'] }
   assert.equal(classifyDifference(base, { ...base, failedRequests: ['GET https://www.google.com/maps/embed?pb=fixture — net::ERR_ABORTED'] }, { status: 'compared', changedRatio: 0.2 }).kind, 'external-resource-blocked')
+})
+
+test('detects preview links that leak to public PHP paths', () => {
+  const settings = { legacyUrl: 'http://127.0.0.1:8088', previewUrl: 'http://127.0.0.1:3110' }
+  const preview = { hrefs: [
+    'http://127.0.0.1:3110/migration-home-preview',
+    'http://127.0.0.1:3110/_nuxt/app.js',
+    'http://127.0.0.1:3110/san-pham/',
+    'http://127.0.0.1:8088/giai-phap/',
+    'https://example.test/',
+  ] }
+  assert.deepEqual(previewLinkLeaks(preview, settings), [
+    'http://127.0.0.1:3110/san-pham/',
+    'http://127.0.0.1:8088/giai-phap/',
+  ])
+})
+
+test('requires runtime, media, responsive, heading, noindex and link gates', () => {
+  const settings = { legacyUrl: 'http://127.0.0.1:8088', previewUrl: 'http://127.0.0.1:3110' }
+  const base = {
+    status: 200, navigationError: undefined, pageErrors: [], consoleMessages: [], failedRequests: [],
+    brokenMedia: [], horizontalOverflow: 0, cumulativeLayoutShift: 0, hrefs: [], title: 'Page', h1: ['Page'], robots: '',
+  }
+  const passing = viewportGate(base, { ...base, robots: 'noindex, nofollow' }, settings)
+  assert.equal(passing.status, 'PASS')
+  const failing = viewportGate(base, { ...base, robots: 'index, follow', brokenMedia: [{ src: '/missing.webp' }] }, settings)
+  assert.equal(failing.status, 'FAIL')
+  assert.equal(failing.checks.media, false)
+  assert.equal(failing.checks.previewNoindex, false)
 })

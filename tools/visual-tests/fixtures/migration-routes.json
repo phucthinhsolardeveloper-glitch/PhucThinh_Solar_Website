@@ -1,12 +1,12 @@
 {
-  "description": "Local PHP 8080 to Nuxt 3100 route mapping for read-only status/SEO evidence. Preview paths are internal noindex pages; PHP remains public route owner.",
+  "description": "Local PHP-to-Nuxt route mapping for read-only visual/status/SEO evidence. Origins and ports are supplied by the runner; preview paths are internal noindex pages and PHP remains public route owner.",
   "routes": [
-    { "id": "home", "legacyPath": "/", "previewPath": "/migration-home-preview", "expectedCanonicalPath": "/" },
+    { "id": "home", "legacyPath": "/", "previewPath": "/migration-home-preview", "expectedCanonicalPath": "/", "shellAudit": true },
     { "id": "catalog", "legacyPath": "/san-pham/", "previewPath": "/migration-catalog-preview", "expectedCanonicalPath": "/san-pham/" },
-    { "id": "catalog-category", "legacyPath": "/danh-muc-san-pham/den-nlmt/", "previewPath": "/migration-catalog-preview?category=den-nlmt", "expectedCanonicalPath": "/danh-muc-san-pham/den-nlmt/" },
+    { "id": "catalog-category", "legacyPath": "/danh-muc-san-pham/den-nlmt/", "previewPath": "/migration-catalog-preview?category=den-nlmt", "expectedCanonicalPath": "/danh-muc-san-pham/den-nlmt/", "visual": false },
     { "id": "product-detail", "legacyPath": "/san-pham/den-ufo-nang-luong-mat-troi-oriana-ufo-1000-1000w", "previewPath": "/migration-product-preview?slug=den-ufo-nang-luong-mat-troi-oriana-ufo-1000-1000w", "expectedCanonicalPath": "/san-pham/den-ufo-nang-luong-mat-troi-oriana-ufo-1000-1000w" },
-    { "id": "search", "legacyPath": "/tim-kiem/?keyword=den", "previewPath": "/migration-search-preview?keyword=den" },
-    { "id": "brand-root", "kind": "brand-root", "legacyPath": "/thuong-hieu/", "previewPath": "/migration-catalog-preview", "note": "PHP router accepts the root and product.php falls through to the all-product listing; it is not a separate brand-list page." },
+    { "id": "search", "legacyPath": "/tim-kiem/?keyword=den", "previewPath": "/migration-search-preview?keyword=den", "visual": false },
+    { "id": "brand-root", "kind": "brand-root", "legacyPath": "/thuong-hieu/", "previewPath": "/migration-catalog-preview", "visual": false, "note": "PHP router accepts the root and product.php falls through to the all-product listing; it is not a separate brand-list page." },
     { "id": "brand-detail", "kind": "brand-detail", "legacyPath": "/thuong-hieu/longi/", "previewPath": "/migration-brand-detail-preview?slug=longi", "expectedCanonicalPath": "/thuong-hieu/longi/" },
     { "id": "solutions", "legacyPath": "/giai-phap/", "previewPath": "/migration-solutions-preview", "expectedCanonicalPath": "/giai-phap/" },
     { "id": "solution-detail", "legacyPath": "/giai-phap/dien-mat-troi-ho-gia-dinh/", "previewPath": "/migration-solution-detail-preview?slug=dien-mat-troi-ho-gia-dinh", "expectedCanonicalPath": "/giai-phap/dien-mat-troi-ho-gia-dinh/" },
@@ -18,13 +18,13 @@
     { "id": "dealer", "legacyPath": "/dai-ly/", "previewPath": "/migration-dealer-preview", "expectedCanonicalPath": "/dai-ly/" },
     { "id": "contact", "legacyPath": "/lien-he/", "previewPath": "/migration-contact-preview", "expectedCanonicalPath": "/lien-he/" },
     { "id": "policy-detail", "kind": "policy-detail", "legacyPath": "/ho-tro/bao-hanh/", "previewPath": "/migration-policy-preview?slug=bao-hanh", "expectedCanonicalPath": "/ho-tro/bao-hanh/", "note": "Slug is backed by the public-navigation contract fixture; replace only if the local CMS fixture uses another published policy slug." },
-    { "id": "cart", "legacyPath": "/gio-hang/", "previewPath": "/migration-cart-preview", "expectedCanonicalPath": "/gio-hang/" },
-    { "id": "checkout-preview", "kind": "commerce-preview", "legacyPath": "/gio-hang/", "previewPath": "/migration-checkout-preview", "note": "Legacy checkout is a POST mutation on /gio-hang/; this row only audits the read-only page surface." },
-    { "id": "order-success", "kind": "commerce-preview", "legacyPath": "/cam-on/", "previewPath": "/migration-order-success", "expectedCanonicalPath": "/cam-on/" },
-    { "id": "legacy-about-alias", "kind": "alias", "legacyPath": "/ve-chung-toi/", "previewPath": "/migration-about-preview", "expectedRedirectStatus": 301, "expectedCanonicalPath": "/gioi-thieu/" },
-    { "id": "legacy-dealer-alias", "kind": "alias", "legacyPath": "/he-thong-dai-ly/", "previewPath": "/migration-contact-preview", "expectedRedirectStatus": 301, "expectedCanonicalPath": "/lien-he/" },
-    { "id": "legacy-product-root-alias", "kind": "alias", "legacyPath": "/product/", "previewPath": "/migration-catalog-preview", "expectedRedirectStatus": 301, "expectedCanonicalPath": "/san-pham/" },
-    { "id": "legacy-product-detail-alias", "kind": "alias", "legacyPath": "/product/den-ufo-nang-luong-mat-troi-oriana-ufo-1000-1000w", "previewPath": "/migration-product-preview?slug=den-ufo-nang-luong-mat-troi-oriana-ufo-1000-1000w", "expectedRedirectStatus": 301, "expectedCanonicalPath": "/san-pham/den-ufo-nang-luong-mat-troi-oriana-ufo-1000-1000w" }
+    { "id": "cart", "legacyPath": "/gio-hang/", "previewPath": "/migration-cart-preview", "expectedCanonicalPath": "/gio-hang/", "visual": false },
+    { "id": "checkout-preview", "kind": "commerce-preview", "legacyPath": "/gio-hang/", "previewPath": "/migration-checkout-preview", "visual": false, "note": "Legacy checkout is a POST mutation on /gio-hang/; this row only audits the read-only page surface." },
+    { "id": "order-success", "kind": "commerce-preview", "legacyPath": "/cam-on/", "previewPath": "/migration-order-success", "expectedCanonicalPath": "/cam-on/", "visual": false },
+    { "id": "legacy-about-alias", "kind": "alias", "legacyPath": "/ve-chung-toi/", "previewPath": "/migration-about-preview", "expectedRedirectStatus": 301, "expectedCanonicalPath": "/gioi-thieu/", "visual": false },
+    { "id": "legacy-dealer-alias", "kind": "alias", "legacyPath": "/he-thong-dai-ly/", "previewPath": "/migration-contact-preview", "expectedRedirectStatus": 301, "expectedCanonicalPath": "/lien-he/", "visual": false },
+    { "id": "legacy-product-root-alias", "kind": "alias", "legacyPath": "/product/", "previewPath": "/migration-catalog-preview", "expectedRedirectStatus": 301, "expectedCanonicalPath": "/san-pham/", "visual": false },
+    { "id": "legacy-product-detail-alias", "kind": "alias", "legacyPath": "/product/den-ufo-nang-luong-mat-troi-oriana-ufo-1000-1000w", "previewPath": "/migration-product-preview?slug=den-ufo-nang-luong-mat-troi-oriana-ufo-1000-1000w", "expectedRedirectStatus": 301, "expectedCanonicalPath": "/san-pham/den-ufo-nang-luong-mat-troi-oriana-ufo-1000-1000w", "visual": false }
   ],
   "interactions": []
 }
