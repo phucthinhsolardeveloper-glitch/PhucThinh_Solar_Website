@@ -49,7 +49,7 @@ $introRows = array(array(
     'namevi' => 'Giải pháp cho công trình',
     'title_indexvi' => 'Tư vấn đúng nhu cầu',
     'descvi' => '<p>Intro <strong>plain text</strong></p>',
-    'contentvi' => '<h2 id="chon-giai-phap">Nội dung tư vấn</h2><p>Đã qua <strong>sanitizer</strong>.</p><script>SHOULD_NOT_LEAK</script>',
+    'contentvi' => '<h2 id="chon-giai-phap" class="legacy-heading" style="color:red" onclick="SHOULD_NOT_RUN()">Nội dung tư vấn</h2><p>Đã qua <strong>sanitizer</strong>.</p><script>SHOULD_NOT_LEAK</script>',
     'photo' => 'intro.jpg',
     'status' => 'hienthi',
     '_pts_public_photo' => '/upload/news/intro.jpg'
@@ -72,6 +72,10 @@ $productRows = array(
     array('namevi' => 'Vượt giới hạn 4', 'slugvi' => 'extra', 'status' => 'hienthi,solutionhub')
 );
 
+$sanitizedFixtureHtml = ptsPublicRichTextSanitize($introRows[0]['contentvi']);
+solutionsAssert(strpos($sanitizedFixtureHtml, '<h2 id="chon-giai-phap">Nội dung tư vấn</h2>') !== false && strpos($sanitizedFixtureHtml, '<strong>sanitizer</strong>') !== false, 'sanitizer giữ safe heading id và strong markup');
+solutionsAssert(strpos($sanitizedFixtureHtml, 'SHOULD_NOT_LEAK') === false && strpos($sanitizedFixtureHtml, 'SHOULD_NOT_RUN') === false && strpos($sanitizedFixtureHtml, ' style=') === false && strpos($sanitizedFixtureHtml, ' class=') === false, 'sanitizer loại script text và thuộc tính ngoài allowlist');
+
 $result = ptsPublicSolutionsPayload(
     $solutionRows,
     $introRows,
@@ -92,8 +96,11 @@ solutionsAssert($result['equipment'][0]['url'] === '/danh-muc-san-pham/tam-pin/'
 solutionsAssert($result['cta']['image'] === '/upload/news/cta.jpg' && $result['cta']['hotline']['tel'] === '0901234567', 'CTA upload và hotline');
 solutionsAssert($result['labels']['choices'] === 'Khám phá các giải pháp' && $result['labels']['empty'] !== '', 'nhãn section public đầy đủ');
 solutionsAssert($result['editorial']['content']['format'] === 'sanitized-html' && $result['editorial']['content']['sanitizedBy'] === 'pts_public_richtext', 'editorial dùng envelope sanitizer dùng chung');
-solutionsAssert(strpos($result['editorial']['content']['html'], '<h2 id="chon-giai-phap">') !== false && strpos($result['editorial']['content']['html'], '<strong>sanitizer</strong>') !== false, 'editorial giữ markup allowlist từ solution-intro.contentvi');
-solutionsAssert(strpos($result['editorial']['content']['html'], 'SHOULD_NOT_LEAK') === false && $result['editorial']['toc']['rendered'] === false, 'editorial loại script và chỉ defer TOC');
+$editorialHtml = $result['editorial']['content']['html'];
+$editorialToc = $result['editorial']['toc'];
+solutionsAssert(strpos($editorialHtml, '>Nội dung tư vấn</h2>') !== false && strpos($editorialHtml, '<strong>sanitizer</strong>') !== false, 'editorial giữ heading content và strong markup từ solution-intro.contentvi');
+solutionsAssert(strpos($editorialHtml, 'SHOULD_NOT_LEAK') === false && strpos($editorialHtml, 'SHOULD_NOT_RUN') === false && strpos($editorialHtml, '<script') === false && strpos($editorialHtml, ' onclick=') === false && strpos($editorialHtml, ' style=') === false && strpos($editorialHtml, ' class=') === false, 'editorial loại script text và thuộc tính ngoài allowlist');
+solutionsAssert($editorialToc['rendered'] === true && count($editorialToc['items']) === 1 && $editorialToc['items'][0]['label'] === 'Nội dung tư vấn' && $editorialToc['items'][0]['level'] === 2 && preg_match('/^solution-section-[1-9][0-9]*$/', $editorialToc['items'][0]['id']) === 1 && strpos($editorialHtml, 'id="'.$editorialToc['items'][0]['id'].'"') !== false, 'editorial sinh TOC và đồng bộ id heading an toàn');
 $encoded = json_encode($result, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 solutionsAssert(strpos($encoded, 'SHOULD_NOT_LEAK') === false && strpos($encoded, 'private_token') === false && strpos($encoded, 'contentvi') === false, 'DTO không lộ field private hoặc raw CMS field');
 

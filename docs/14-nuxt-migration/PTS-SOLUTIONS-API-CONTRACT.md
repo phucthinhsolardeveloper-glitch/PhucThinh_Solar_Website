@@ -25,8 +25,10 @@ các trường public sau:
   `format: "sanitized-html"`, `html`, `sanitizedBy` và `sanitizerVersion: 1`.
   Nguồn đúng theo PHP legacy là `solution-intro.contentvi`; record intro bị ẩn
   thì nội dung cũng rỗng, không hồi sinh fallback.
-- `editorial.toc`: hiện giữ `rendered: false`; legacy có mục lục sinh từ `h2`,
-  nhưng Nuxt chưa dựng heading model/TOC nên không bịa liên kết mục lục.
+- `editorial.toc`: sinh tối đa 30 mục từ `h2`/`h3` đã sanitize. Mỗi heading có
+  nội dung được gán ID ổn định theo thứ tự `solution-section-N`; ID biên tập từ
+  CMS được thay bằng ID này để link TOC và HTML luôn đồng bộ. Khi không có nội
+  dung hoặc heading hợp lệ, `rendered: false` kèm lý do tương ứng.
 
 Chuỗi `image` là đường dẫn root-relative trong namespace `/upload/` hoặc
 `/assets/`, đã được kiểm tra basename, extension và file tồn tại trong upload;

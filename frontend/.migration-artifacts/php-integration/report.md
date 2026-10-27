@@ -1,14 +1,24 @@
 # PHP public API integration report
 
-- Status: **PENDING_COORDINATOR_RERUN**
-- Base URL: `http://127.0.0.1:8088`
-- Required execution: PHP 8.1 isolated fixture container
-- Local WSL execution: unavailable because PHP is not installed and the sandbox cannot open the local HTTP socket
-- HTTP/slice counters: pending the coordinator rerun
-- DB snapshot: pending the coordinator rerun; the runner performs read-only snapshots and marks unavailable queries as SKIP
+- Status: **PASS**
+- Base URL: `http://127.0.0.1`
+- HTTP checks: PASS 58 / FAIL 0 / SKIP 7
+- Slice scripts: PASS 17 / FAIL 0 / SKIP 0
+- DB snapshot unchanged: `true`
+- Production state: unchanged; no production access, deploy, migration, or DB write.
+- Rollback point: `43893ad / worktree before sanitizer-contract follow-up`
 
-The runner now reads the existing container web-root fixture config without copying or reporting its contents. It uses the real solutions envelope, a valid nonexistent slug (`khong-ton-tai-abcxyz`), preserves session cookies for negative CSRF requests, and executes pure slice scripts through a temporary path-compatible tree. Valid mutation writes and stateful form scripts remain excluded.
+## Blockers / not testable
 
-Coordinator evidence already confirms HTTP 419 for invalid CSRF requests and HTTP 404 for the valid nonexistent detail slug. Run the committed runner in `pts-php81-codex-api`, then replace this checkpoint with the generated PASS/FAIL report artifacts.
+- brand_detail: no published local fixture entity
+- product_detail: no published local fixture entity
+- product_extras: no published local fixture entity
+- solution_detail: no published local fixture entity
+- project_detail: no published local fixture entity
+- news_detail: no published local fixture entity
+- policy_detail: no published local fixture entity
 
-Production, database, deployment, cleanup, and route-cutover state are unchanged. Rollback point: `4fe2979` / current worktree before follow-up.
+## Failures
+
+
+Mutation scripts with valid writes were excluded: `test-public-form-submissions.php`, `test-public-lead-and-review.php`.
