@@ -32,35 +32,15 @@ defineProps<{ contact: PublicContactPayload }>()
       -->
       <span
         v-if="contact.contact.hotline"
-        class="absolute bottom-4 left-4 flex flex-col gap-2 rounded-chip bg-white px-4 py-3 shadow-[0_10px_24px_rgba(6,21,55,.18)]"
+        class="absolute bottom-4 left-4 flex items-center gap-3 rounded-chip bg-white px-4 py-3 shadow-[0_10px_24px_rgba(6,21,55,.18)]"
       >
-        <span class="flex items-center gap-3">
-          <!-- Đo pixel: vòng tròn gold-500 #c9962e, icon navy-950 #061537 (không phải trắng). -->
-          <span class="flex h-9 w-9 flex-none items-center justify-center rounded-full bg-gold-500 text-navy-950">
-            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.5 3.5 9 3l2 5-2 1.7a14 14 0 0 0 5.3 5.3L16 13l5 2-.5 2.5c-.3 1.5-1.7 2.5-3.2 2.2C10.8 18.5 5.5 13.2 4.3 6.7 4 5.2 5 3.8 6.5 3.5Z" /></svg>
-          </span>
-          <span class="flex flex-col leading-tight">
-            <small class="text-[11px] font-bold uppercase tracking-wide text-slate-500">Hotline hỗ trợ</small>
-            <strong class="text-base font-bold text-navy-800">{{ contact.contact.hotline }}</strong>
-          </span>
+        <!-- Đo pixel: vòng tròn gold-500 #c9962e, icon navy-950 #061537 (không phải trắng). -->
+        <span class="flex h-9 w-9 flex-none items-center justify-center rounded-full bg-gold-500 text-navy-950">
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.5 3.5 9 3l2 5-2 1.7a14 14 0 0 0 5.3 5.3L16 13l5 2-.5 2.5c-.3 1.5-1.7 2.5-3.2 2.2C10.8 18.5 5.5 13.2 4.3 6.7 4 5.2 5 3.8 6.5 3.5Z" /></svg>
         </span>
-        <!--
-          Hàng thứ hai: technicalHotline cùng field CMS đã dùng ở SiteFooter.vue
-          (brand.technicalHotline, nguồn options.hotline_technical). Chỉ hiện
-          khi API thật sự trả số, giữ đúng nguyên tắc "không bịa" của badge
-          thứ nhất. Vị trí xếp dưới trong CÙNG badge chưa đo lại trên ảnh
-          production riêng cho trang /lien-he/ (chỉ có ảnh cũ với một số) —
-          đây là suy luận có cơ sở (tái dùng đúng field + layout đã xác minh ở
-          footer), không phải đo pixel trực tiếp như hàng đầu.
-        -->
-        <span v-if="contact.contact.technicalHotline" class="flex items-center gap-3 border-t border-gray-100 pt-2">
-          <span class="flex h-9 w-9 flex-none items-center justify-center rounded-full bg-gold-500 text-navy-950">
-            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a2 2 0 0 0-2 2v2.17a2 2 0 0 1-.59 1.42L7.59 9.41A2 2 0 0 0 7 10.83V13a2 2 0 0 0 2 2h.17a2 2 0 0 1 1.42.59l1.82 1.82a2 2 0 0 0 1.42.59H16a2 2 0 0 0 2-2v-2.17a2 2 0 0 1 .59-1.42L20 10.41" /></svg>
-          </span>
-          <span class="flex flex-col leading-tight">
-            <small class="text-[11px] font-bold uppercase tracking-wide text-slate-500">Hỗ trợ kỹ thuật</small>
-            <strong class="text-base font-bold text-navy-800">{{ contact.contact.technicalHotline }}</strong>
-          </span>
+        <span class="flex flex-col leading-tight">
+          <small class="text-[11px] font-bold uppercase tracking-wide text-slate-500">Hotline hỗ trợ</small>
+          <strong class="text-base font-bold text-navy-800">{{ contact.contact.hotline }}</strong>
         </span>
       </span>
     </div>

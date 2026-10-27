@@ -47,21 +47,6 @@ function ptsContactMapUrl($value)
 
 function ptsPublicContactPayload(array $input)
 {
-    $contact = array(
-        'company' => ptsContactText($input['contact']['company'] ?? ''),
-        'hotline' => ptsContactText($input['contact']['hotline'] ?? ''),
-        'email' => ptsContactText($input['contact']['email'] ?? ''),
-        'address' => ptsContactText($input['contact']['address'] ?? ''),
-        'workingHours' => ptsContactText($input['contact']['workingHours'] ?? '')
-    );
-    /*
-     * Cung field CMS da dung o pts_public_navigation_api.php (brand.technicalHotline,
-     * nguon options.hotline_technical, SiteFooter.vue render) - chi them key
-     * khi co gia tri thuc, khong bia so khi CMS chua cau hinh duong day ky
-     * thuat rieng (dung quy uoc da chung minh dung o nav DTO).
-     */
-    $technicalHotline = ptsContactText($input['contact']['technicalHotline'] ?? '');
-    if($technicalHotline !== '') $contact['technicalHotline'] = $technicalHotline;
     return array(
         'schemaVersion' => 1,
         'locale' => 'vi',
@@ -73,7 +58,13 @@ function ptsPublicContactPayload(array $input)
         'title' => ptsContactText($input['title'] ?? '') ?: 'Liên hệ Phúc Thịnh Solar',
         'intro' => ptsContactText($input['intro'] ?? ''),
         'visual' => $input['visual'] ?? null,
-        'contact' => $contact,
+        'contact' => array(
+            'company' => ptsContactText($input['contact']['company'] ?? ''),
+            'hotline' => ptsContactText($input['contact']['hotline'] ?? ''),
+            'email' => ptsContactText($input['contact']['email'] ?? ''),
+            'address' => ptsContactText($input['contact']['address'] ?? ''),
+            'workingHours' => ptsContactText($input['contact']['workingHours'] ?? '')
+        ),
         'locations' => $input['locations'] ?? array(),
         'labels' => array(
             'locations' => 'Hệ thống chi nhánh',
