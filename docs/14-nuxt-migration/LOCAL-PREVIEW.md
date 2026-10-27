@@ -70,6 +70,10 @@ cd /home/admin01/src/pts-nuxt-integration-20261027
 - Các gate trước cutover còn lại: production route cutover/hybrid routing, SEO
   canonical/OG/sitemap/robots/redirect parity, catalog filter/sort/stock parity,
   public brand/gallery/video/account canonical parity và final visual/browser QA.
+- P2-A audit read-only mới nhất nằm tại
+  `docs/14-nuxt-migration/SEO-PARITY-AUDIT-20261028.md`; không được dùng preview
+  noindex để kết luận SEO parity khi PHP legacy còn gap JSON-LD/OG và alias
+  `/product/` root cần owner xác nhận.
 - Vue Router/Volar warning đã được xử lý bằng `vue-router@5.4.0`; dependency
   audit hiện **0 vulnerability** sau khi pin `node-forge@1.4.2` và `esbuild@0.28.2`
   cho nhánh `fontless` bằng overrides.

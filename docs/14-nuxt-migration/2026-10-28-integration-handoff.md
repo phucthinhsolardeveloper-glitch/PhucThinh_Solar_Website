@@ -23,6 +23,10 @@
 - Frontend contract tests: **117/117 PASS**.
 - Cutover static tests: **8/8 PASS**; preflight vẫn báo `BLOCKED` đúng thiết kế vì feature flag OFF và chưa có production Nuxt service.
 - Visual/SEO fixture tests: **17/17 PASS**.
+- P2-A SEO read-only audit đã ghi nhận tại
+  `docs/14-nuxt-migration/SEO-PARITY-AUDIT-20261028.md`: canonical/noindex
+  preview PASS 26/26, nhưng `/product/` root alias, JSON-LD parity và một số OG
+  fields phía PHP legacy còn FAIL/NEEDS VERIFICATION; chưa sửa public owner.
 - Nuxt typecheck: exit 0; `vue-router@5.4.0` đã xử lý cảnh báo `vue-router/volar/sfc-route-blocks`.
 - Dependency audit: **0 vulnerability** sau khi pin `node-forge@1.4.2` và ép
   `fontless` dùng `esbuild@0.28.2` qua `frontend/package.json` overrides;
@@ -41,6 +45,7 @@
 
 - Không chạy PHP 8.1/container integration test cho API gallery/video.
 - Không chạy full browser PHP-vs-Nuxt parity trên hai origin thật.
+- Không ký SEO pre-cutover gate cho tới khi owner chốt các gap trong P2-A audit.
 - Không bật feature flag, Caddy route, production service hoặc deploy.
 - Không push remote.
 
