@@ -18,6 +18,12 @@
     "vue": "^3.5.0",
     "vue-router": "^5.4.0"
   },
+  "overrides": {
+    "node-forge": "1.4.2",
+    "fontless": {
+      "esbuild": "0.28.2"
+    }
+  },
   "devDependencies": {
     "@iconify-json/lucide": "^1.2.147",
     "tailwindcss": "^4.3.3",
