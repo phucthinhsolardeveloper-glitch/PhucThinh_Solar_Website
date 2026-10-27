@@ -44,26 +44,7 @@ if(isset($nhQuery) && $nhQuery !== '') $robotsContent = 'noindex,follow'; ?>
 <meta name="author" content="<?=$setting['name'.$lang]?>" />
 <meta name="copyright" content="<?=$setting['name'.$lang]." - [".$optsetting['email']."]"?>" />
 
-<!-- Facebook -->
-<?php $publicBrandName = 'Phúc Thịnh Solar'; ?>
-<meta property="og:type" content="<?=$seo->get('type')?>" />
-<meta property="og:site_name" content="<?=$publicBrandName?>" />
-<meta property="og:title" content="<?=$seo->get('title')?>" />
-<meta property="og:description" content="<?=$seo->get('description')?>" />
-<meta property="og:url" content="<?=$seo->get('url')?>" />
-<meta property="og:image" content="<?=$seo->get('photo')?>" />
-<meta property="og:image:alt" content="<?=$seo->get('title')?>" />
-<meta property="og:image:type" content="<?=$seo->get('photo:type')?>" />
-<meta property="og:image:width" content="<?=$seo->get('photo:width')?>" />
-<meta property="og:image:height" content="<?=$seo->get('photo:height')?>" />
-
-<!-- Twitter -->
-<meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="<?=$seo->get('title')?>" />
-<meta name="twitter:description" content="<?=$seo->get('description')?>" />
-<meta name="twitter:image" content="<?=$seo->get('photo')?>" />
-
-<!-- Canonical -->
+<!-- Canonical (tính trước OG để og:url luôn có fallback hợp lệ) -->
 <?php
 	/* Ưu tiên canonical suy ra từ entity đã resolve; nếu route không map tới
 	   entity đã biết thì giữ nguyên hành vi cũ (theo URL đang truy cập). */
@@ -76,6 +57,46 @@ if(isset($nhQuery) && $nhQuery !== '') $robotsContent = 'noindex,follow'; ?>
 	if($canonicalHref === '') $canonicalHref = $func->getCurrentPageURL_CANO();
 ?>
 <link rel="canonical" href="<?=htmlspecialchars($canonicalHref, ENT_QUOTES, 'UTF-8')?>" />
+
+<!-- Facebook -->
+<?php
+	$publicBrandName = 'Phúc Thịnh Solar';
+	/* Fallback OG khi trang (search, cart...) chưa gọi $seo->set() cho
+	   description/url/photo - không bịa nội dung riêng của trang, chỉ dùng
+	   tên site tĩnh, canonical đã tính và logo chung (cùng ảnh dùng cho
+	   Organization JSON-LD ở strucdata.php) để tránh OG rỗng. */
+	$ogDescription = $seo->get('description');
+	if($ogDescription === '') $ogDescription = isset($setting['name'.$lang]) ? $setting['name'.$lang] : $publicBrandName;
+	$ogUrl = $seo->get('url');
+	if($ogUrl === '') $ogUrl = $canonicalHref;
+	$ogImage = $seo->get('photo');
+	$ogImageType = $seo->get('photo:type');
+	$ogImageWidth = $seo->get('photo:width');
+	$ogImageHeight = $seo->get('photo:height');
+	if($ogImage === '' && !empty($logo['photo']))
+	{
+		$ogImage = $configBase.UPLOAD_PHOTO_L.$logo['photo'];
+		$ogImageType = '';
+		$ogImageWidth = '';
+		$ogImageHeight = '';
+	}
+?>
+<meta property="og:type" content="<?=$seo->get('type')?>" />
+<meta property="og:site_name" content="<?=$publicBrandName?>" />
+<meta property="og:title" content="<?=$seo->get('title')?>" />
+<meta property="og:description" content="<?=$ogDescription?>" />
+<meta property="og:url" content="<?=$ogUrl?>" />
+<meta property="og:image" content="<?=$ogImage?>" />
+<meta property="og:image:alt" content="<?=$seo->get('title')?>" />
+<meta property="og:image:type" content="<?=$ogImageType?>" />
+<meta property="og:image:width" content="<?=$ogImageWidth?>" />
+<meta property="og:image:height" content="<?=$ogImageHeight?>" />
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="<?=$seo->get('title')?>" />
+<meta name="twitter:description" content="<?=$ogDescription?>" />
+<meta name="twitter:image" content="<?=$ogImage?>" />
 
 <!-- Chống đổi màu trên IOS -->
 <meta name="format-detection" content="telephone=no">
