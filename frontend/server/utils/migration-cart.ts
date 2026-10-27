@@ -15,14 +15,21 @@ function safePhpSessionCookie(value: string): string | null {
   return `PHPSESSID=${match[1]}; Path=/; HttpOnly; SameSite=Lax`
 }
 
+function incomingPhpSessionCookie(value: string): string | null {
+  const match = /(?:^|;\s*)PHPSESSID=([A-Za-z0-9,-]{16,128})(?:;|$)/.exec(value)
+  return match ? `PHPSESSID=${match[1]}` : null
+}
+
 export async function fetchPhpSessionResponse(
   event: H3Event,
   endpoint: string,
   init: RequestInit = {},
 ): Promise<Response> {
   const headers = new Headers(init.headers)
+  headers.delete('cookie')
   const cookie = getRequestHeader(event, 'cookie')
-  if (cookie) headers.set('cookie', cookie)
+  const sessionCookie = cookie ? incomingPhpSessionCookie(cookie) : null
+  if (sessionCookie) headers.set('cookie', sessionCookie)
   headers.set('accept', 'application/json')
 
   const response = await fetch(migrationPhpEndpoint(event, endpoint), {
