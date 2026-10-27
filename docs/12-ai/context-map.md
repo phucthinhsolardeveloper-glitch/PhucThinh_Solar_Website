@@ -13,6 +13,7 @@ Database / schema   -> 03-data/database.md -> migrations/
 Sửa bug             -> 11-workflows/bug-fixing-playbook.md
 Làm tính năng       -> 11-workflows/feature-delivery-playbook.md
 Test / cổng deploy  -> 02-development/testing.md -> scripts/predeploy-local.sh, tools/visual-tests
+Branch/worktree    -> 02-development/git-worktree-workflow.md -> git status/worktree/branch ancestry
 Tự vận hành end-to-end-> 06-operations/owner-system-handbook.md
 Deploy production   -> 06-operations/deploy-production-owner.md (AUTO/SAFE/FAST, VPS)
 Dựng VPS / chuyển   -> 06-operations/vps-cloudfly-runbook.md

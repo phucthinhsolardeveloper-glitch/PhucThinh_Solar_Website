@@ -6,6 +6,18 @@
 
 ## Owner và system of record
 
+## Branch/worktree và file ownership
+
+```text
+BRANCH:
+WORKTREE:
+BASE SHA:
+OWNER:
+FILE SCOPE:
+INTEGRATION TARGET:
+WIP/CONFLICT CHECK:
+```
+
 ## Hành vi hiện tại đã xác minh
 
 ## Acceptance criteria
@@ -31,6 +43,10 @@ DONE:
 VERIFIED:
 REMAINING:
 KNOWN ISSUES:
+BRANCH/WORKTREE:
+BASE/TARGET/ANCESTRY:
 RELEVANT FILES:
+TESTS/ARTIFACTS:
+ROLLBACK:
 NEXT:
 ```

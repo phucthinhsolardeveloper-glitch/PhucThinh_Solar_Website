@@ -8,6 +8,11 @@
 - Dùng prepared SQL, preserve routes, tránh secret/PII và duplicate ownership.
 - Sau edit, kiểm tra diff, phân loại failure và cập nhật canonical docs.
 
+Worktree/branch phải theo
+[git-worktree-workflow.md](../02-development/git-worktree-workflow.md): kiểm
+`status`/`worktree list` trước khi làm, ghi owner/file scope/base SHA, bảo vệ WIP
+và chỉ báo integrated sau khi có ancestry evidence.
+
 ## Điều phối agent và bằng chứng
 
 Khi task có điều phối Codex/Claude/agent khác, ghi ba mốc riêng:
@@ -27,7 +32,11 @@ DONE:
 VERIFIED:
 REMAINING:
 KNOWN ISSUES:
+BRANCH/WORKTREE:
+BASE/TARGET/ANCESTRY:
 RELEVANT FILES:
+TESTS/ARTIFACTS:
+ROLLBACK:
 NEXT:
 ```
 

@@ -18,6 +18,11 @@ INSPECT → UNDERSTAND → PLAN → IMPLEMENT → TEST → DEBUG → VERIFY → 
 5. Tách `FACT`, `INFERENCE`, `UNKNOWN` và `NEEDS VERIFICATION`; không biến
    comment cũ, mockup hoặc báo cáo agent thành bằng chứng runtime.
 
+Quy tắc branch/worktree chi tiết nằm trong
+[git-worktree-workflow.md](../02-development/git-worktree-workflow.md). Không
+checkout/reset/xóa worktree có WIP của owner khác; integration phải có commit
+ancestry/diff/test evidence.
+
 ## 2. Plan trước khi implement
 
 Ghi rõ trong task hoặc handoff:
