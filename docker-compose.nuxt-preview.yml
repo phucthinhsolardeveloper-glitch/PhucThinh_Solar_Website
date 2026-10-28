@@ -22,7 +22,11 @@ services:
       # Use the existing local development config, never a production config.
       - local-uploads:/var/www/html/upload:ro
     tmpfs:
-      - /var/www/html/caches:mode=1777
+      # class.CssMinify.php/class.JsMinify.php resolve the cache dir as
+      # ROOT.'assets/'.'caches/' (see libraries/class/class.CssMinify.php:9),
+      # not a root-level caches/ dir - mount the real path or head.php's
+      # CSS/JS bundling dies with "Failed to create folders...".
+      - /var/www/html/assets/caches:mode=1777
       - /var/www/html/logs:mode=1777
       - /var/www/html/thumbs:mode=1777
     networks: [existing-pts-local]
