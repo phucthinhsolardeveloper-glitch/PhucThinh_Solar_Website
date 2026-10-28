@@ -22,6 +22,22 @@ Script build lại Docker PHP 8.1, lint PHP/JS, chạy security/RBAC/session/Exc
 
 Baseline đề xuất: syntax check; HTTP smoke; form success/failure/duplicate; auth/permission; category -> product -> cart -> checkout -> confirmation; responsive; SEO; backup/rollback rehearsal trên staging.
 
+## Verification evidence và phân loại
+
+Build hoặc unit test xanh không thay thế integration, security, browser hay UAT.
+Checkpoint phải ghi rõ lớp đã chạy và lớp chưa chạy:
+
+1. syntax/lint + focused contract;
+2. PHP đúng version/container + API status/negative path;
+3. regression/typecheck/production build;
+4. browser smoke, screenshot/responsive, console, media, overflow và SEO;
+5. commerce flow và permission/session/CSRF;
+6. UAT có người vận hành, chỉ khi thay đổi cần business/provider acceptance.
+
+Mỗi failure dùng một nhãn: `PRE_EXISTING`, `REGRESSION`, `ENVIRONMENT`,
+`REAL_BUG` hoặc `UNKNOWN`. Báo kèm command, exit code, artifact và known issue;
+không dùng kết quả build để claim business correctness.
+
 Nhóm giao diện commerce/mobile chạy riêng bằng:
 
 ```bash

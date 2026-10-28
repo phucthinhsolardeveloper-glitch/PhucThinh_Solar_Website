@@ -1,9 +1,45 @@
 # Agent workflow
 
-- Bắt đầu bằng read-only discovery; tách fact khỏi inference.
-- Ghi `UNKNOWN`/`NEEDS VERIFICATION` thay vì đoán.
-- Không refactor trong discovery; không sửa live.
-- Trước edit, nêu file/behavior/data/test/rollback.
-- Dùng prepared SQL, preserve routes, tránh secret/PII.
-- Sau edit, kiểm tra diff và cập nhật canonical docs.
-- Báo cáo tiếng Việt, ngắn và có evidence.
+- Bắt đầu bằng read-only discovery; tách fact khỏi inference và xác định
+  worktree/owner trước khi sửa.
+- Ghi `UNKNOWN`/`NEEDS VERIFICATION` thay vì đoán; không refactor trong
+  discovery và không sửa live.
+- Trước edit, nêu file/behavior/data/acceptance/negative path/test/rollback.
+- Dùng prepared SQL, preserve routes, tránh secret/PII và duplicate ownership.
+- Sau edit, kiểm tra diff, phân loại failure và cập nhật canonical docs.
+
+Worktree/branch phải theo
+[git-worktree-workflow.md](../02-development/git-worktree-workflow.md): kiểm
+`status`/`worktree list` trước khi làm, ghi owner/file scope/base SHA, bảo vệ WIP
+và chỉ báo integrated sau khi có ancestry evidence.
+
+## Điều phối agent và bằng chứng
+
+Khi task có điều phối Codex/Claude/agent khác, ghi ba mốc riêng:
+
+- `DISPATCHED`: đã có lệnh/phiên khởi chạy;
+- `EXECUTED`: có log/đầu ra xác nhận agent thực sự làm việc;
+- `VERIFIED`: đã kiểm exit code, diff, test và ancestry/integration nếu có.
+
+Không gọi lại agent khi chưa kiểm PID/session/log. Không báo `DONE` chỉ từ
+message thành công của agent; coordinator phải tự kiểm chứng. Nếu task không
+yêu cầu điều phối, không tự tạo bằng chứng giả cho các mốc này.
+
+## Format handoff bắt buộc
+
+```text
+DONE:
+VERIFIED:
+REMAINING:
+KNOWN ISSUES:
+BRANCH/WORKTREE:
+BASE/TARGET/ANCESTRY:
+RELEVANT FILES:
+TESTS/ARTIFACTS:
+ROLLBACK:
+NEXT:
+```
+
+Báo cáo tiếng Việt, ngắn, có command/exit code/artifact quan trọng và production
+state. Tách rõ điều đã làm, điều chưa chạy vì môi trường/quyền và điều cần chủ
+project quyết định.
