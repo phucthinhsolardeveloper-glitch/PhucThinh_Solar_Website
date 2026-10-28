@@ -59,9 +59,12 @@ function onKeydown(event: KeyboardEvent) {
   else if (event.key === 'ArrowRight') move(1)
   else if (event.key === 'Tab') trapFocus(event, lightboxPanel.value)
 }
-watch(selectedIndex, (value) => {
+watch(selectedIndex, (value, oldValue) => {
   if (import.meta.client) document.body.style.overflow = value === null ? '' : 'hidden'
-  if (value !== null) nextTick(() => focusFirst(lightboxPanel.value))
+  // Only steal focus on the closed -> open transition; ArrowLeft/ArrowRight
+  // also change selectedIndex to move between images and must not re-trap
+  // focus on every navigation, or keyboard users get yanked back each time.
+  if (value !== null && oldValue === null) nextTick(() => focusFirst(lightboxPanel.value))
 })
 onMounted(() => document.addEventListener('keydown', onKeydown))
 onBeforeUnmount(() => {

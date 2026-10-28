@@ -44,7 +44,7 @@ export function useMigrationLinks() {
     if (galleryMatch) return gallery(galleryMatch[1]!)
 
     const brandMatch = path.match(/^\/thuong-hieu\/([a-z0-9]+(?:-[a-z0-9]+)*)\/$/)
-    if (brandMatch) return brand(brandMatch[1]!)
+    if (brandMatch) return brand(brandMatch[1]!, { page: url.searchParams.get('page') ?? undefined, sort: url.searchParams.get('sort') ?? undefined })
 
     return href
   }
@@ -68,8 +68,12 @@ export function useMigrationLinks() {
   function gallery(slug: string): string {
     return active.value && SLUG.test(slug) ? '/migration-gallery-detail-preview?slug=' + encodeURIComponent(slug) : '/thu-vien-anh/' + slug + '/'
   }
-  function brand(slug: string): string {
-    return active.value && SLUG.test(slug) ? '/migration-brand-detail-preview?slug=' + encodeURIComponent(slug) : '/thuong-hieu/' + slug + '/'
+  function brand(slug: string, query?: { page?: string, sort?: string }): string {
+    if (!active.value || !SLUG.test(slug)) return '/thuong-hieu/' + slug + '/'
+    const params = new URLSearchParams({ slug })
+    if (query?.page) params.set('page', query.page)
+    if (query?.sort) params.set('sort', query.sort)
+    return '/migration-brand-detail-preview?' + params.toString()
   }
 
   return { active, generic, external, product, solution, news, project, gallery, brand }
