@@ -21,6 +21,7 @@ const NEGATIVE_ROUTE_FAMILIES = new Set(['catalog', 'pdp', 'news', 'project', 's
 const EXPECTED_NEGATIVE_STATUSES = new Set([404, 410])
 const MAX_SITEMAPS = 1000
 const MAX_SITEMAP_URLS = 50000
+const MAX_HREF_TARGETS = 5000
 
 function usage() {
   return `Usage: node scripts/migration-seo-audit.cjs <php-origin> <nuxt-origin> [options]
@@ -233,16 +234,24 @@ function parseJsonLd(html) {
   return { blocks: blocks.length, types: [...types].sort(), errors }
 }
 
+function documentBase(html, finalUrl) {
+  const pageUrl = new URL(finalUrl)
+  const declared = attribute(tags(html, 'base')[0] || '', 'href')
+  if (!declared) return pageUrl
+  try { return new URL(declared, pageUrl) } catch { return pageUrl }
+}
+
 function parseHrefs(html, finalUrl) {
-  const base = new URL(finalUrl)
+  const pageOrigin = new URL(finalUrl).origin
+  const resolutionBase = documentBase(html, finalUrl)
   const links = []
   for (const tag of tags(html, 'a')) {
     const raw = attribute(tag, 'href')
     if (!raw) continue
     try {
-      const absolute = new URL(raw, base)
+      const absolute = new URL(raw, resolutionBase)
       absolute.hash = ''
-      links.push({ raw, absolute: absolute.toString(), path: `${absolute.pathname}${absolute.search}`, internal: absolute.origin === base.origin })
+      links.push({ raw, absolute: absolute.toString(), path: `${absolute.pathname}${absolute.search}`, internal: absolute.origin === pageOrigin })
     } catch { links.push({ raw, absolute: '', path: '', internal: false, invalid: true }) }
   }
   const unique = new Map()
@@ -251,13 +260,15 @@ function parseHrefs(html, finalUrl) {
 }
 
 function parseDocument(html, finalUrl) {
+  const resolutionBase = documentBase(html, finalUrl)
   const canonicalRaw = linkValue(html, 'canonical')
   let canonical = ''
-  try { canonical = canonicalRaw ? new URL(canonicalRaw, finalUrl).toString() : '' } catch { canonical = canonicalRaw }
+  try { canonical = canonicalRaw ? new URL(canonicalRaw, resolutionBase).toString() : '' } catch { canonical = canonicalRaw }
   return {
     title: elementTexts(html, 'title')[0] || '',
     h1: elementTexts(html, 'h1'),
     canonical,
+    documentBase: resolutionBase.toString(),
     robots: metaValue(html, 'name', 'robots'),
     og: {
       type: metaValue(html, 'property', 'og:type'),
@@ -300,9 +311,28 @@ async function get(url, settings) {
         return { status: response.status, finalUrl: current, redirectChain, error: String(error.message || error).slice(0, 500) }
       }
       redirectChain.push({ status: response.status, from: current, location, to: next })
+      if (settings.readOnlyHrefAudit) {
+        const nextTarget = new URL(next)
+        const unsafeRedirectReason = hrefTargetSafetyReason(nextTarget.pathname + nextTarget.search)
+        if (unsafeRedirectReason) {
+          await response.body?.cancel().catch(() => {})
+          return { status: response.status, finalUrl: current, redirectChain, unsafeRedirectReason }
+        }
+      }
       if (hop === settings.maxRedirects) return { status: response.status, finalUrl: current, redirectChain, error: 'maximum redirect count exceeded' }
+      if (settings.readBody === false) await response.body?.cancel().catch(() => {})
       current = next
       continue
+    }
+    if (settings.readBody === false) {
+      await response.body?.cancel().catch(() => {})
+      return {
+        status: response.status,
+        finalUrl: current,
+        redirectChain,
+        headers: { contentType: response.headers.get('content-type') || '', robots: response.headers.get('x-robots-tag') || '' },
+        body: '',
+      }
     }
     const body = await response.text().catch(() => '')
     return {
@@ -390,6 +420,77 @@ function hrefMapping(legacyPage, previewPage) {
     onlyLegacy: legacy.filter(item => !preview.includes(item)),
     onlyPreview: preview.filter(item => !legacy.includes(item)),
     decision: 'manual-review-only',
+  }
+}
+
+function hrefTargetSafetyReason(routePath) {
+  try { validateRoutePath(routePath, 'internal href') } catch (error) {
+    return /credential-like query parameter/.test(String(error.message)) ? 'credential-like query parameter' : 'invalid internal path'
+  }
+  const target = new URL(routePath, 'http://127.0.0.1')
+  if (/^\/(?:api|administrator)(?:\/|$)/i.test(target.pathname)) return 'protected or API route'
+  if (/(?:^|\/)(?:logout|signout|delete|remove|clear|mutate|submit|callback)(?:\/|$)/i.test(target.pathname)) return 'potential mutation endpoint'
+  const mutationToken = /(?:^|[-_])(?:add|remove|delete|clear|logout|signout|submit|checkout|payment|order|cart|buy|mutate|callback)(?:[-_]|$)/i
+  for (const [key, value] of target.searchParams) {
+    if (mutationToken.test(key)) return 'potential mutation query parameter'
+    if (/^(?:action|do|op|operation|command|cmd|task|mode)$/i.test(key) && /^(?:add|create|update|edit|delete|remove|clear|logout|signout|submit|checkout|payment|order|cart|buy|mutate)$/i.test(value)) {
+      return 'potential mutation action'
+    }
+  }
+  return ''
+}
+
+async function auditHrefTargets(routes, legacyOrigin, previewOrigin, settings) {
+  const paths = { legacy: new Set(), preview: new Set() }
+  for (const route of routes) {
+    for (const href of route.hrefMapping.onlyLegacy) paths.legacy.add(href)
+    for (const href of route.hrefMapping.onlyPreview) paths.preview.add(href)
+  }
+  const entries = [
+    ...[...paths.legacy].map(routePath => ({ side: 'legacy', origin: legacyOrigin, routePath })),
+    ...[...paths.preview].map(routePath => ({ side: 'preview', origin: previewOrigin, routePath })),
+  ]
+  const limitErrors = entries.length > MAX_HREF_TARGETS ? [`Unique href target count exceeded ${MAX_HREF_TARGETS}`] : []
+  const results = await mapConcurrent(entries.slice(0, MAX_HREF_TARGETS), 8, async item => {
+    const unsafeReason = hrefTargetSafetyReason(item.routePath)
+    if (unsafeReason) return { side: item.side, href: item.routePath, status: null, finalUrl: '', redirectChain: [], skipped: true, reason: unsafeReason, pass: false }
+    let requestedUrl
+    try { requestedUrl = joinOrigin(item.origin, item.routePath) } catch {
+      return { side: item.side, href: item.routePath, status: null, finalUrl: '', redirectChain: [], skipped: true, reason: 'invalid target', pass: false }
+    }
+    const crawl = await get(requestedUrl, { ...settings, readBody: false, readOnlyHrefAudit: true })
+    if (crawl.unsafeRedirectReason) {
+      return { side: item.side, href: item.routePath, requestedUrl, status: crawl.status, finalUrl: crawl.finalUrl, redirectChain: crawl.redirectChain, skipped: true, reason: `unsafe redirect target: ${crawl.unsafeRedirectReason}`, pass: false }
+    }
+    return {
+      side: item.side,
+      href: item.routePath,
+      requestedUrl,
+      status: crawl.status,
+      finalUrl: crawl.finalUrl,
+      redirectChain: crawl.redirectChain,
+      error: crawl.error || null,
+      skipped: false,
+      pass: crawl.status === 200,
+    }
+  })
+  const skippedTargets = results.filter(item => item.skipped)
+  const failedTargets = results.filter(item => !item.skipped && !item.pass)
+  const statusCounts = {}
+  for (const item of results) {
+    const key = item.skipped ? 'SKIPPED' : item.status === null ? 'ERR' : String(item.status)
+    statusCounts[key] = (statusCounts[key] || 0) + 1
+  }
+  return {
+    status: failedTargets.length ? 'FAIL' : skippedTargets.length || limitErrors.length ? 'NEEDS VERIFICATION' : 'PASS',
+    targetCount: entries.length,
+    checkedCount: results.length - skippedTargets.length,
+    skippedCount: skippedTargets.length,
+    failedCount: failedTargets.length,
+    statusCounts,
+    limitErrors,
+    failedTargets,
+    skippedTargets,
   }
 }
 
@@ -601,12 +702,17 @@ function renderMarkdown(report) {
     lines.push('', '| Failed loc | HTTP | Final URL | Error |', '| --- | ---: | --- | --- |')
     for (const item of [...report.sitemapAudit.failedSitemaps, ...report.sitemapAudit.failedUrls]) lines.push(`| ${item.loc} | ${item.status ?? 'ERR'} | ${item.finalUrl || '—'} | ${(item.error || (item.canonicalUrlPass ? '' : 'status/final URL mismatch')).replaceAll('|', '\\|')} |`)
   } else lines.push('- Failed URL list: none.')
-  lines.push('', '## Internal href differences — manual review only', '', `- Capture gate: **${report.gates.hrefMapping.status}** across ${report.gates.hrefMapping.capturedRouteCount}/${report.gates.hrefMapping.routeCount} routes. Path-set differences do not fail the crawl automatically. Review the listed URLs for actual 404s.`, '', '| Route | onlyLegacy | onlyPreview |', '| --- | --- | --- |')
+  lines.push('', '## Internal href differences — manual review only', '', `- Capture gate: **${report.gates.hrefMapping.status}** across ${report.gates.hrefMapping.capturedRouteCount}/${report.gates.hrefMapping.routeCount} routes. Path-set differences do not fail the crawl automatically.`, `- Read-only GET reachability: **${report.gates.hrefTargetReachability.status}**; checked ${report.hrefTargetAudit.checkedCount}/${report.hrefTargetAudit.targetCount}; failed ${report.hrefTargetAudit.failedCount}; skipped ${report.hrefTargetAudit.skippedCount}.`, '', '| Route | onlyLegacy | onlyPreview |', '| --- | --- | --- |')
   const hrefRows = report.gates.hrefMapping.routesWithDifferences
   if (hrefRows.length) {
     for (const item of hrefRows) lines.push(`| ${item.id} | ${item.onlyLegacy.map(value => `\`${value}\``).join('<br>') || '—'} | ${item.onlyPreview.map(value => `\`${value}\``).join('<br>') || '—'} |`)
   } else lines.push('| — | — | — |')
-  lines.push('', '## Gate summary', '', '| Gate | Result | Evidence |', '| --- | --- | --- |', `| Negative hidden routes | ${report.gates.negativeFixtures.status} | ${report.negativeFixtures.passCount}/${report.negativeFixtures.fixtureCount} checked; unresolved DB fixture types ${report.negativeFixtures.needsVerificationCount}. |`, `| Sitemap loc crawl | ${report.gates.sitemapLocCrawl.status} | ${report.sitemapAudit.pageUrlCount} page locs; ${report.sitemapAudit.failedUrls.length} failed; ${report.sitemapAudit.failedSitemaps.length} sitemap files failed. |`, `| Href mapping | ${report.gates.hrefMapping.status} | ${hrefRows.length} route(s) have path differences; manual review, not an automatic failure. |`)
+  const hrefReviews = [...report.hrefTargetAudit.failedTargets, ...report.hrefTargetAudit.skippedTargets]
+  if (hrefReviews.length) {
+    lines.push('', '| Href requiring review | Side | HTTP | Final URL | Reason |', '| --- | --- | ---: | --- | --- |')
+    for (const item of hrefReviews) lines.push(`| \`${item.href}\` | ${item.side} | ${item.status ?? '—'} | ${item.finalUrl || '—'} | ${(item.reason || item.error || 'non-200 response').replaceAll('|', '\\|')} |`)
+  } else lines.push('- Href reachability review list: none; every checked href ended at HTTP 200.')
+  lines.push('', '## Gate summary', '', '| Gate | Result | Evidence |', '| --- | --- | --- |', `| Negative hidden routes | ${report.gates.negativeFixtures.status} | ${report.negativeFixtures.passCount}/${report.negativeFixtures.fixtureCount} checked; unresolved DB fixture types ${report.negativeFixtures.needsVerificationCount}. |`, `| Sitemap loc crawl | ${report.gates.sitemapLocCrawl.status} | ${report.sitemapAudit.pageUrlCount} page locs; ${report.sitemapAudit.failedUrls.length} failed; ${report.sitemapAudit.failedSitemaps.length} sitemap files failed. |`, `| Href mapping | ${report.gates.hrefMapping.status} | ${hrefRows.length} route(s) have path differences; manual review, not an automatic failure. |`, `| Href target reachability | ${report.gates.hrefTargetReachability.status} | ${report.hrefTargetAudit.checkedCount}/${report.hrefTargetAudit.targetCount} checked; ${report.hrefTargetAudit.failedCount} non-200; ${report.hrefTargetAudit.skippedCount} skipped as unsafe. |`)
   lines.push('', '## Remaining gates', '', '- 301/302/307/308 aliases: verify every intended alias has the expected destination and no loop.', '- Canonical/OG/robots: PHP remains public metadata owner; Nuxt preview must stay noindex until cutover approval.', '- JSON-LD: compare types and entity URLs to canonical; structured data must not be accepted from status 200 alone.', '- Account, Admin, media transforms and public APIs remain PHP-owned/excluded gates unless separately approved.')
   return `${lines.join('\n')}\n`
 }
@@ -615,7 +721,7 @@ async function run(args) {
   const manifest = validateManifest(JSON.parse(await fs.readFile(args.manifest, 'utf8')))
   await fs.mkdir(args.output, { recursive: true })
   const settings = { allowRemote: args.allowRemote, timeoutMs: args.timeoutMs, maxRedirects: args.maxRedirects }
-  const report = { generatedAt: new Date().toISOString(), phpOrigin: args.phpOrigin, nuxtOrigin: args.nuxtOrigin, allowRemote: args.allowRemote, manifest: args.manifest, routes: [], negativeFixtures: { results: [] }, sitemapAudit: null, gates: {}, resources: { php: {}, nuxt: {} } }
+  const report = { generatedAt: new Date().toISOString(), phpOrigin: args.phpOrigin, nuxtOrigin: args.nuxtOrigin, allowRemote: args.allowRemote, manifest: args.manifest, routes: [], negativeFixtures: { results: [] }, sitemapAudit: null, hrefTargetAudit: null, gates: {}, resources: { php: {}, nuxt: {} } }
   const rawResources = {}
   for (const [side, origin] of [['php', args.phpOrigin], ['nuxt', args.nuxtOrigin]]) {
     const robots = await get(joinOrigin(origin, '/robots.txt'), settings)
@@ -646,14 +752,17 @@ async function run(args) {
   }
   report.negativeFixtures = await auditNegativeFixtures(manifest.negativeFixtures, args.phpOrigin, settings)
   report.sitemapAudit = await auditSitemap(joinOrigin(args.phpOrigin, '/sitemap.xml'), rawResources.php.sitemap, settings)
+  report.hrefTargetAudit = await auditHrefTargets(report.routes, args.phpOrigin, args.nuxtOrigin, settings)
   report.gates = {
     negativeFixtures: { status: report.negativeFixtures.status },
     sitemapLocCrawl: { status: report.sitemapAudit.status },
     hrefMapping: summarizeHrefGate(report.routes),
+    hrefTargetReachability: { status: report.hrefTargetAudit.status },
   }
   for (const result of report.negativeFixtures.results) console.log(`negative:${result.id}=${result.status}${result.observedStatus ? ` php=${result.observedStatus}` : ''}`)
   console.log(`sitemap-loc-crawl=${report.sitemapAudit.status} pages=${report.sitemapAudit.pageUrlCount} failed=${report.sitemapAudit.failedUrls.length} sitemap-files=${report.sitemapAudit.sitemapCount}`)
   console.log(`href-mapping=${report.gates.hrefMapping.status} routes-with-differences=${report.gates.hrefMapping.routesWithDifferences.length} (manual review)`)
+  console.log(`href-target-reachability=${report.gates.hrefTargetReachability.status} checked=${report.hrefTargetAudit.checkedCount}/${report.hrefTargetAudit.targetCount} failed=${report.hrefTargetAudit.failedCount} skipped=${report.hrefTargetAudit.skippedCount}`)
   await fs.writeFile(path.join(args.output, 'report.json'), `${JSON.stringify(report, null, 2)}\n`)
   await fs.writeFile(path.join(args.output, 'summary.md'), renderMarkdown(report))
   return report
@@ -683,6 +792,8 @@ module.exports = {
   parseRobots,
   parseSitemap,
   hrefMapping,
+  hrefTargetSafetyReason,
+  auditHrefTargets,
   evaluateNegativeFixture,
   auditSitemap,
   noindexValue,

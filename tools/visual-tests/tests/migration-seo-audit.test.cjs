@@ -9,6 +9,8 @@ const {
   parseRobots,
   parseSitemap,
   hrefMapping,
+  hrefTargetSafetyReason,
+  auditHrefTargets,
   evaluateNegativeFixture,
   auditSitemap,
   noindexValue,
@@ -77,6 +79,20 @@ test('extracts title, headings, canonical, robots, OG, JSON-LD and internal href
   assert.deepEqual(page.hrefs.filter(item => item.internal).map(item => item.path), ['/san-pham/'])
 })
 
+test('resolves relative hrefs and canonical against the declared document base', () => {
+  const html = `<html><head><base href="http://127.0.0.1:8080/"><link rel="canonical" href="san-pham/"></head><body><a href="danh-muc-san-pham/den-nlmt/">Danh mục</a></body></html>`
+  const page = parseDocument(html, 'http://127.0.0.1:8080/san-pham/')
+  assert.equal(page.documentBase, 'http://127.0.0.1:8080/')
+  assert.equal(page.canonical, 'http://127.0.0.1:8080/san-pham/')
+  assert.deepEqual(page.hrefs.filter(item => item.internal).map(item => item.path), ['/danh-muc-san-pham/den-nlmt/'])
+})
+
+test('does not mark a relative href as internal when the declared document base is external', () => {
+  const html = `<html><head><base href="https://external.test/"></head><body><a href="page/">External base</a><a href="http://127.0.0.1:8080/san-pham/">Local absolute</a></body></html>`
+  const page = parseDocument(html, 'http://127.0.0.1:8080/san-pham/')
+  assert.deepEqual(page.hrefs.filter(item => item.internal).map(item => item.path), ['/san-pham/'])
+})
+
 test('parses robots and sitemap visibility without fetching listed URLs', () => {
   const robots = parseRobots('User-agent: *\nDisallow: /administrator/\nAllow: /\nSitemap: http://127.0.0.1:8080/sitemap.xml\n')
   assert.deepEqual(robots.disallow, ['/administrator/'])
@@ -111,6 +127,38 @@ test('href path differences are captured for manual review, not classified as au
   assert.deepEqual(mapping.onlyLegacy, ['/san-pham/'])
   assert.deepEqual(mapping.onlyPreview, ['/migration-catalog-preview'])
   assert.equal(mapping.decision, 'manual-review-only')
+})
+
+test('href reachability uses read-only GET and skips sensitive or mutation-like paths', async t => {
+  const requested = []
+  const server = http.createServer((request, response) => {
+    requested.push(request.url)
+    if (request.url === '/redirect') { response.writeHead(301, { location: '/ok' }); response.end() }
+    else if (request.url === '/redirect-logout') { response.writeHead(302, { location: '/logout' }); response.end() }
+    else if (request.url === '/redirect-mutation-query') { response.writeHead(302, { location: '/?action=add' }); response.end() }
+    else if (request.url === '/gone') { response.writeHead(404); response.end() }
+    else { response.writeHead(200, { 'content-type': 'text/html' }); response.end('<html>ok</html>') }
+  })
+  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve))
+  t.after(() => new Promise(resolve => server.close(resolve)))
+
+  const origin = `http://127.0.0.1:${server.address().port}`
+  const audit = await auditHrefTargets([
+    { hrefMapping: { onlyLegacy: ['/ok', '/redirect', '/gone', '/logout', '/api/internal', '/?token=secret', '/?action=add', '/?add-to-cart=42', '/redirect-logout', '/redirect-mutation-query'], onlyPreview: ['/ok'] } },
+  ], origin, origin, { allowRemote: false, timeoutMs: 2000, maxRedirects: 5 })
+  assert.equal(audit.targetCount, 11)
+  assert.equal(audit.checkedCount, 4)
+  assert.equal(audit.skippedCount, 7)
+  assert.equal(audit.failedCount, 1)
+  assert.equal(audit.failedTargets[0].href, '/gone')
+  assert.equal(audit.status, 'FAIL')
+  assert.deepEqual(requested.sort(), ['/gone', '/ok', '/ok', '/ok', '/redirect', '/redirect-logout', '/redirect-mutation-query'])
+  assert.equal(hrefTargetSafetyReason('/api/private'), 'protected or API route')
+  assert.equal(hrefTargetSafetyReason('/?token=secret'), 'credential-like query parameter')
+  assert.equal(hrefTargetSafetyReason('/?action=add'), 'potential mutation action')
+  assert.equal(hrefTargetSafetyReason('/?add-to-cart=42'), 'potential mutation query parameter')
+  assert.equal(audit.skippedTargets.find(item => item.href === '/redirect-logout').reason, 'unsafe redirect target: potential mutation endpoint')
+  assert.equal(audit.skippedTargets.find(item => item.href === '/redirect-mutation-query').reason, 'unsafe redirect target: potential mutation action')
 })
 
 test('sitemap crawler GETs every loc and fails URLs that redirect away from the declared loc', async t => {

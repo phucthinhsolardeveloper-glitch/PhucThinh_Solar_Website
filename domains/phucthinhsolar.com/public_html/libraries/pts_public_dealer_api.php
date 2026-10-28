@@ -1,5 +1,6 @@
 <?php
 /** Pure DTO helpers for the read-only Nuxt dealer preview. */
+require_once __DIR__.'/pts_public_richtext.php';
 
 function ptsDealerPublished($status)
 {
@@ -12,6 +13,16 @@ function ptsDealerText($value)
     $value = html_entity_decode((string)$value, ENT_QUOTES, 'UTF-8');
     $value = preg_replace('~<(?:br\s*/?|/p|/li)>~i', ' ', $value);
     return trim(preg_replace('/\s+/u', ' ', strip_tags($value)));
+}
+
+function ptsDealerRichText($value)
+{
+    return array(
+        'format' => 'sanitized-html',
+        'html' => ptsPublicRichTextSanitize($value),
+        'sanitizedBy' => 'pts_public_richtext',
+        'sanitizerVersion' => 1
+    );
 }
 
 function ptsDealerMedia($value, $upload, $root)
@@ -64,7 +75,13 @@ function ptsDealerPayload(array $staticRows, array $photoRows, array $heroRows, 
         'schemaVersion' => 1, 'locale' => 'vi', 'path' => '/dai-ly/',
         'title' => ptsDealerText($static['dai-ly-1']['namevi'] ?? '') ?: 'Đại lý Phúc Thịnh Solar',
         'hero' => $hero,
-        'overview' => array('title' => ptsDealerText($static['dai-ly-2']['namevi'] ?? ''), 'description' => ptsDealerText($static['dai-ly-1']['descvi'] ?? ''), 'products' => $products),
+        'intro' => ptsDealerRichText($static['dai-ly-1']['descvi'] ?? ''),
+        'overview' => array(
+            'title' => ptsDealerText($static['dai-ly-2']['namevi'] ?? ''),
+            'description' => ptsDealerText($static['dai-ly-2']['descvi'] ?? ''),
+            'descriptionContent' => ptsDealerRichText($static['dai-ly-2']['descvi'] ?? ''),
+            'products' => $products
+        ),
         'support' => array('title' => ptsDealerText($static['dai-ly-3']['namevi'] ?? ''), 'description' => ptsDealerText($static['dai-ly-3']['descvi'] ?? ''), 'items' => $support),
         'testimonials' => $testimonials, 'stats' => $stats,
         'form' => array('action' => '/dai-ly/#dang-ky-dai-ly', 'method' => 'POST', 'title' => 'Đăng ký làm đối tác phân phối', 'note' => 'Để lại thông tin, Phúc Thịnh Solar sẽ liên hệ tư vấn chính sách đại lý phù hợp.'),

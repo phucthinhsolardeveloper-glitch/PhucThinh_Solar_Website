@@ -11,7 +11,7 @@ try {
     $hero = $load('select namevi,photo,status from #_photo where type=? order by numb,id desc', array('dealer-hero'));
     $support = $load('select namevi,descvi,photo,status from #_news where type=? order by numb,id desc limit 0,4', array('cam-ket-dai-ly'));
     $testimonials = $load('select namevi,descvi,contentvi,photo,status from #_news where type=? order by numb,id desc limit 0,3', array('phan-hoi-dai-ly'));
-    $stats = $load('select namevi,solieu,status from #_news where type=? order by numb,id desc limit 0,3', array('so-lieu-thong-ke-dai-ly'));
+    $stats = $load("select namevi,solieu,status from #_news where type=? and find_in_set('hienthi',status) order by numb,id desc limit 0,3", array('so-lieu-thong-ke-dai-ly'));
     if(function_exists('closeSessionWrite')) closeSessionWrite();
     echo json_encode(ptsDealerPayload($static,$photos,$hero,$support,$testimonials,$stats,ROOT,isset($optsetting['hotline']) ? $optsetting['hotline'] : ''), JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR);
 } catch(Throwable $e) { error_log('pts_v1_dealer: '.$e->getMessage()); http_response_code(500); echo '{"error":{"code":"INTERNAL_ERROR"}}'; }
