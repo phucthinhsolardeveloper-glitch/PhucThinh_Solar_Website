@@ -58,6 +58,7 @@ function ptsPublicHomePayload(array $input)
             'hero' => count($input['hero']),
             'categories' => count($input['categories']),
             'campaigns' => count($input['campaigns']),
+            'campaignsConfigured' => !empty($input['campaignsConfigured']) ? 1 : 0,
             'solutions' => count($input['solutions']),
             'process' => count($input['process']),
             'productGroups' => count($input['productGroups'])

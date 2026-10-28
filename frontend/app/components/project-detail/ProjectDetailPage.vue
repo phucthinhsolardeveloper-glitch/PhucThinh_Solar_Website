@@ -22,29 +22,29 @@ const hotlineHref = computed(() => `tel:${props.project.cta?.hotline.replace(/[^
   -->
   <article>
     <header class="bg-slate-50 px-4 py-10 nav:px-8 nav:py-12">
-      <div class="mx-auto grid w-full max-w-[1766px] grid-cols-1 gap-8 nav:grid-cols-[0.85fr_1.15fr]">
+      <div class="mx-auto grid w-full max-w-[1766px] grid-cols-1 gap-8" :class="{ 'nav:grid-cols-[0.85fr_1.15fr]': project.summary }">
         <div class="min-w-0">
           <p class="mb-3 font-bold text-gold-700">Dự án</p>
           <h1 class="m-0 mb-5 text-[clamp(34px,5vw,56px)] font-black leading-[1.05] tracking-tight text-navy-950">{{ project.title }}</h1>
 
-          <div class="flex flex-wrap gap-3">
-            <span v-if="project.category" class="inline-flex items-center gap-1.5 rounded-full bg-white px-4 py-2.5 text-sm">
-              <span class="text-xs font-bold uppercase tracking-wide text-slate-400">Danh mục</span>
-              <strong class="font-bold text-navy-800">{{ project.category.name }}</strong>
-            </span>
-            <span v-if="project.client" class="inline-flex items-center gap-1.5 rounded-full bg-white px-4 py-2.5 text-sm">
-              <span class="text-xs font-bold uppercase tracking-wide text-slate-400">Khách hàng</span>
-              <strong class="font-bold text-navy-800">{{ project.client }}</strong>
-            </span>
-            <span v-if="project.address" class="inline-flex items-center gap-1.5 rounded-full bg-white px-4 py-2.5 text-sm">
-              <span class="text-xs font-bold uppercase tracking-wide text-slate-400">Địa chỉ</span>
-              <strong class="font-bold text-navy-800">{{ project.address }}</strong>
-            </span>
-            <span v-if="project.startDate || project.endDate" class="inline-flex items-center gap-1.5 rounded-full bg-white px-4 py-2.5 text-sm">
-              <span class="text-xs font-bold uppercase tracking-wide text-slate-400">Thời gian thực hiện</span>
-              <strong class="font-bold text-navy-800">{{ project.startDate || 'Đang cập nhật' }}<template v-if="project.endDate"> – {{ project.endDate }}</template></strong>
-            </span>
-          </div>
+          <dl class="mt-6 flex flex-wrap gap-x-7 gap-y-3 text-sm">
+            <div v-if="project.category" class="flex max-w-full flex-wrap items-baseline gap-x-2">
+              <dt class="text-xs font-bold uppercase tracking-wide text-slate-500">Danh mục</dt>
+              <dd class="m-0 break-words font-bold text-navy-800">{{ project.category.name }}</dd>
+            </div>
+            <div v-if="project.client" class="flex max-w-full flex-wrap items-baseline gap-x-2">
+              <dt class="text-xs font-bold uppercase tracking-wide text-slate-500">Khách hàng</dt>
+              <dd class="m-0 break-words font-bold text-navy-800">{{ project.client }}</dd>
+            </div>
+            <div v-if="project.address" class="flex max-w-full flex-wrap items-baseline gap-x-2">
+              <dt class="text-xs font-bold uppercase tracking-wide text-slate-500">Địa chỉ</dt>
+              <dd class="m-0 break-words font-bold text-navy-800">{{ project.address }}</dd>
+            </div>
+            <div v-if="project.startDate || project.endDate" class="flex max-w-full flex-wrap items-baseline gap-x-2">
+              <dt class="text-xs font-bold uppercase tracking-wide text-slate-500">Thời gian thực hiện</dt>
+              <dd class="m-0 break-words font-bold text-navy-800">{{ project.startDate || 'Đang cập nhật' }}<template v-if="project.endDate"> – {{ project.endDate }}</template></dd>
+            </div>
+          </dl>
         </div>
 
         <div v-if="project.summary" class="border-l-[3px] border-gold-500 bg-white py-1 pl-5">

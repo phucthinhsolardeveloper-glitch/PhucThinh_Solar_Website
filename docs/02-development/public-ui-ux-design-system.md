@@ -190,22 +190,16 @@ Kiểm tra tối thiểu tại `320, 360, 390, 414, 768, 1024, 1366, 1440, 1600,
 1920, 2560px`. 1920 và 2560 đại diện PC Full HD và iMac/2K; không kết luận
 responsive ổn chỉ từ laptop 1366px.
 
-### 4.4 Hero trang chủ — ĐÃ DUYỆT
+### 4.4 Trang chủ product-first — ĐÃ DUYỆT
 
-- Hero full-width dùng một lớp nội dung HTML độc lập trên ảnh nền; vị trí dọc của
-  kicker, H1, mô tả và CTA phải thay đổi theo chiều rộng/chiều cao viewport, không
-  căn bằng một giá trị `top` hoặc `translateY` cố định cho mọi màn hình.
-- Khi hero tăng chiều cao ở desktop lớn, khối nội dung phải được nâng dần theo
-  breakpoint hoặc `clamp()` có giới hạn. Mục tiêu là giữ nội dung ở vùng trên-trung
-  của hero, tránh bị rơi xuống chính giữa hoặc sát đáy khi xem trên màn 1920/2560px.
-- H1 phải ngắt theo cụm nghĩa. Với tiêu đề “Thiết bị và giải pháp năng lượng mặt
-  trời”, giữ nguyên hai cụm “Thiết bị và giải pháp” và “năng lượng mặt trời”; không
-  chèn `<br>` cứng theo một viewport và không để cụm từ bị bẻ giữa từ trên mobile.
-- Mobile có rule cỡ chữ và khoảng đặt hero riêng; phải kiểm tra tối thiểu ở 360,
-  390 và 430px để hai cụm tiêu đề không tràn ngang, không bị tách thành “giải /
-  pháp” hoặc “mặt / trời”.
-- Mọi thay đổi vị trí hero phải kiểm tra đồng thời desktop laptop, desktop lớn và
-  mobile; không kết luận đạt chỉ vì một screenshot ở một độ rộng.
+- Trang chủ hiện không render Hero hoặc slider. Nội dung đầu trang dẫn thẳng tới
+  danh mục/sản phẩm; không chừa một vùng banner rỗng để giữ khoảng cách.
+- Danh mục nằm trên một hàng ngang, cuộn khi thiếu chỗ. H1 mô tả khu vực sản phẩm
+  chính; section tiếp theo chỉ giữ nội dung hỗ trợ khám phá hoặc chuyển đổi.
+- Giới thiệu công ty, quy trình, dự án và nội dung giải pháp dài nằm ở trang
+  chuyên biệt; trang chủ không lặp lại các phần này thành nhiều khối kể chuyện.
+- Mọi banner/campaign nếu được chủ project yêu cầu lại phải lấy từ Admin, có
+  công tắc Hiển thị và fallback an toàn; không tự khôi phục Hero/slider cũ.
 
 ## 5. Hợp đồng component dùng chung
 
@@ -361,11 +355,12 @@ fallback trung tính đúng loại; không dùng một placeholder cho mọi ng�
 
 ### Trang chủ
 
-- Product-first nhưng Hero V4 đã được duyệt theo ADR 0006 và được render khi có
-  cấu hình; không tự bật lại Hero legacy/slide.php.
-- Danh mục một hàng ngang và cuộn khi thiếu chỗ.
-- Phần lớn diện tích dành cho danh mục/sản phẩm. Giới thiệu dài, quy trình, dự
-  án và giải pháp dài đi về landing chuyên biệt.
+- Product-first, không render Hero/slider. Nội dung đầu trang hiển thị danh mục
+  hoặc sản phẩm phù hợp.
+- Danh mục một hàng ngang và cuộn khi thiếu chỗ; sản phẩm/danh mục chiếm phần
+  lớn nội dung trang.
+- Giới thiệu công ty, quy trình, dự án và nội dung giải pháp dài đi về landing
+  chuyên biệt. Không dựng lại các khối này thành một mạch kể chuyện ở trang chủ.
 
 ### Danh mục và chi tiết sản phẩm
 

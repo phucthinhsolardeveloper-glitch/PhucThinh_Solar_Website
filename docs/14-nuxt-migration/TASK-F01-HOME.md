@@ -27,7 +27,7 @@ Resource: do NOT npm ci or run browser concurrently with other Codex. Node --tes
 - Homepage PHP contact POST, CSRF, reCAPTCHA and success/error states remain PHP-owned and are intentionally not ported in this read-only pilot.
 - The source contains additional about-point and richer CMS fields; this DTO intentionally exposes only the fields used by the preview. Product prices, discounts, stock and order actions are not exposed.
 - Exact PHP image transforms/watermark behavior, SEO image metadata/JSON-LD and responsive screenshot parity still require coordinator-side PHP/Docker/browser QA.
-- CMS hide-vs-never-configured semantics are preserved for hero/campaign rows; approved homepage fallback copy/assets are used only when the corresponding type has never been configured. Solutions/process/about fallbacks remain the source-approved bounded fallback projection.
+- CMS hide-vs-never-configured semantics are preserved for hero/campaign rows; `summary.campaignsConfigured` tells Nuxt when an empty campaign list means the configured entries were hidden, so approved fallback copy/assets appear only when that type has never been configured. Solutions/process/about fallbacks remain the source-approved bounded fallback projection.
 
 ### QA / operational state
 

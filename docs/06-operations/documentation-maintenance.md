@@ -32,6 +32,14 @@ và liên kết về runbook đang có hiệu lực.
 
 ## Lịch sử rà soát
 
+### 2026-10-28 — khôi phục bố cục trang chủ product-first cho Nuxt
+
+- Đối chiếu operating contract với Nuxt homepage preview; ghi nhận ADR 0006 đã
+  lệch yêu cầu hiện hành về Hero và các khối nội dung dài.
+- Cập nhật UI/UX system, đánh dấu ADR 0006 superseded ở phần bố cục trang chủ và
+  thêm ADR 0008. Nuxt preview mở đầu bằng danh mục/sản phẩm; không thay public
+  route flag, PHP production hoặc dữ liệu CMS.
+
 ### 2026-10-27 — chuẩn hóa workflow bằng evidence và handoff
 
 - Bổ sung discovery/ownership, acceptance negative path, verification ladder và
