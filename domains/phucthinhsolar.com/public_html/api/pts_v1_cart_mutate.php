@@ -51,8 +51,12 @@ elseif($action === 'update')
     $quantity = isset($body['quantity']) && is_scalar($body['quantity']) ? (int)$body['quantity'] : 0;
     $code = isset($body['code']) && is_scalar($body['code']) ? trim((string)$body['code']) : '';
     if($id <= 0 || $quantity < 1 || $quantity > 999 || !preg_match('/^[a-f0-9]{32}$/', $code)) ptsCartMutateJson(400, array('error'=>array('code'=>'BAD_ITEM')));
+    if(!isset($_SESSION['cart']) || !is_array($_SESSION['cart'])) $_SESSION['cart'] = array();
     $found = false;
-    foreach((array)(isset($_SESSION['cart']) ? $_SESSION['cart'] : array()) as &$item)
+    /* Must iterate $_SESSION['cart'] directly (not a (array)/ternary copy) so
+       &$item is a real reference into the session array - otherwise the
+       mutation is silently lost even though this handler reports ok:true. */
+    foreach($_SESSION['cart'] as &$item)
     {
         if(isset($item['code']) && hash_equals((string)$item['code'], $code))
         {
