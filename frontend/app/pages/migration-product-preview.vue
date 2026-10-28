@@ -3,7 +3,8 @@ import ProductPreviewPage from '~/components/product-preview/ProductPreviewPage.
 
 const route = useRoute()
 const slug = computed(() => typeof route.query.slug === 'string' ? route.query.slug : '')
-const { site, payload, extras, product, error, pending } = await useProductPreviewData(slug)
+const { site, payload, extras, product, error, pending, ready } = useProductPreviewData(slug)
+await ready
 useSeoMeta({ title: computed(() => product.value ? `${product.value.name} — preview` : 'Product preview'), robots: 'noindex, nofollow, noarchive' })
 </script>
 <template>

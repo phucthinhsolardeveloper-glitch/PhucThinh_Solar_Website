@@ -12,10 +12,22 @@ const fallbackSite: PublicSitePayload = { schemaVersion: 1, brand: { name: 'Phú
  * để dùng chung đúng một logic fetch + JSON-LD cho cả preview noindex và
  * route public thật - không nhân bản.
  */
-export async function useProductPreviewData(slug: Ref<string>) {
-  const { data: siteData } = await useFetch<unknown>('/_migration/site', { default: () => fallbackSite })
-  const { data: productData, error, pending } = await useFetch<unknown>('/_migration/product-detail', { query: computed(() => ({ slug: slug.value })), default: () => null })
-  const { data: extrasData } = await useFetch<unknown>('/_migration/product-extras', { query: computed(() => ({ slug: slug.value })), default: () => null })
+// Not `async`: callers must `await result.ready` themselves from their own
+// <script setup> top level. If this function is declared `async` and the
+// page does `await useProductPreviewData(slug)`, every composable call
+// inside it (useFetch, useRequestURL, useHead, ...) crashes SSR with an
+// opaque NUXT_E1001 - the compiler's withAsyncContext transform only
+// preserves the active Nuxt/component instance across a *literal* top-level
+// `await` in the SFC, not across a call into a separately exported async
+// function. Keeping this function synchronous and awaiting its `ready`
+// promise directly in the page sidesteps that entirely.
+export function useProductPreviewData(slug: Ref<string>) {
+  const siteFetch = useFetch<unknown>('/_migration/site', { default: () => fallbackSite })
+  const productFetch = useFetch<unknown>('/_migration/product-detail', { query: computed(() => ({ slug: slug.value })), default: () => null })
+  const extrasFetch = useFetch<unknown>('/_migration/product-extras', { query: computed(() => ({ slug: slug.value })), default: () => null })
+  const { data: siteData } = siteFetch
+  const { data: productData, error, pending } = productFetch
+  const { data: extrasData } = extrasFetch
   const site = computed(() => isPublicSitePayload(siteData.value) ? siteData.value : fallbackSite)
   const payload = computed<PublicProductDetailPayload | null>(() => isPublicProductDetailPayload(productData.value) ? productData.value : null)
   const extras = computed<PublicProductExtrasPayload | null>(() => isPublicProductExtrasPayload(extrasData.value) ? extrasData.value : null)
@@ -85,5 +97,7 @@ export async function useProductPreviewData(slug: Ref<string>) {
     }))),
   })
 
-  return { site, payload, extras, product, error, pending }
+  const ready = Promise.all([siteFetch, productFetch, extrasFetch]).then(() => undefined)
+
+  return { site, payload, extras, product, error, pending, ready }
 }

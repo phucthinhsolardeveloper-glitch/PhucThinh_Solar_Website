@@ -12,7 +12,8 @@ const config = useRuntimeConfig()
 const indexable = computed(() => isRuntimeFlagEnabled(config.public.productDetailPublicRouteIndexable))
 const route = useRoute()
 const slug = computed(() => typeof route.params.slug === 'string' ? route.params.slug : '')
-const { site, payload, extras, product, error, pending } = await useProductPreviewData(slug)
+const { site, payload, extras, product, error, pending, ready } = useProductPreviewData(slug)
+await ready
 
 useSeoMeta({
   title: computed(() => product.value?.name || 'Sản phẩm — Phúc Thịnh Solar'),
