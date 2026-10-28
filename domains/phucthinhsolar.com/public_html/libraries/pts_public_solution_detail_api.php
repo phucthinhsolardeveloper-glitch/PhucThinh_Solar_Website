@@ -42,7 +42,7 @@ function ptsSolutionDetailMediaUrl($value, $root = '', $uploadDirectory = 'uploa
     $value = is_scalar($value) ? ltrim(trim((string)$value), '/') : '';
     if($value === '' || basename($value) !== $value || !preg_match('/^[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|gif|webp|avif)$/i', $value)) return '';
     if($root !== '' && !is_file(rtrim($root, '/\\').DIRECTORY_SEPARATOR.trim($uploadDirectory, '/\\').DIRECTORY_SEPARATOR.$value)) return '';
-    return '/upload/news/'.$value;
+    return '/'.trim($uploadDirectory, '/').'/'.$value;
 }
 
 function ptsSolutionDetailCanonical($slug)
