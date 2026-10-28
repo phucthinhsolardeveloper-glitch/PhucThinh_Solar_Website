@@ -66,6 +66,14 @@ export default defineNuxtConfig({
   runtimeConfig: {
     // Override through NUXT_PHP_ORIGIN; never expose this in public runtimeConfig.
     phpOrigin: 'http://127.0.0.1:8080',
+    // Comma-separated exact host[:port] entries. Never use a wildcard: this
+    // allowlist protects the server-side PHP bridge from SSRF.
+    phpOriginAllowlist: '127.0.0.1:8080,127.0.0.1:8088,localhost:8080,localhost:8088',
     previewMediaProxy: false,
+    public: {
+      aboutPublicRouteEnabled: false,
+      aboutPublicRouteIndexable: false,
+      phpPublicOrigin: 'http://127.0.0.1:8080',
+    },
   },
 })

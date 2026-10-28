@@ -2,6 +2,11 @@ import type { H3Event } from 'h3'
 
 type MigrationEvent = H3Event
 
+type OriginAllowlistEntry = {
+  hostname: string
+  port: string | null
+}
+
 type MigrationFetchOptions<T> = {
   endpoint: string
   query?: Record<string, string | undefined>
@@ -15,6 +20,33 @@ function statusFromError(error: unknown): number | undefined {
   const candidate = error as { statusCode?: unknown; response?: { status?: unknown } }
   if (typeof candidate.statusCode === 'number') return candidate.statusCode
   return typeof candidate.response?.status === 'number' ? candidate.response.status : undefined
+}
+
+function defaultPort(protocol: string): string {
+  return protocol === 'https:' ? '443' : '80'
+}
+
+function parseOriginAllowlist(raw: unknown): OriginAllowlistEntry[] {
+  const values = Array.isArray(raw) ? raw : typeof raw === 'string' ? raw.split(',') : []
+  return values.flatMap((value) => {
+    if (typeof value !== 'string' || !value.trim()) return []
+    const candidate = value.trim()
+    if (candidate.includes('://') || candidate.includes('/') || candidate.includes('?') || candidate.includes('#') || candidate.includes('*')) return []
+    try {
+      const parsed = new URL(`http://${candidate}`)
+      if (parsed.username || parsed.password || parsed.pathname !== '/' || parsed.search || parsed.hash) return []
+      return [{ hostname: parsed.hostname.toLowerCase(), port: parsed.port || null }]
+    } catch {
+      return []
+    }
+  })
+}
+
+export function isAllowedPhpOrigin(origin: URL, rawAllowlist: unknown): boolean {
+  if (!['http:', 'https:'].includes(origin.protocol) || origin.username || origin.password || origin.pathname !== '/' || origin.search || origin.hash) return false
+  const originPort = origin.port || defaultPort(origin.protocol)
+  return parseOriginAllowlist(rawAllowlist).some((entry) => entry.hostname === origin.hostname.toLowerCase()
+    && (entry.port === null ? originPort === defaultPort(origin.protocol) : entry.port === originPort))
 }
 
 export function requireMigrationGet(event: MigrationEvent): void {
@@ -33,9 +65,7 @@ export function migrationPhpEndpoint(event: MigrationEvent, endpoint: string): s
   try { origin = new URL(String(config.phpOrigin)) }
   catch { throw createError({ statusCode: 500, statusMessage: 'Invalid PHP migration origin' }) }
 
-  const allowedHost = origin.hostname === '127.0.0.1' || origin.hostname === 'localhost'
-  const allowedPort = origin.port === '8080' || origin.port === '8088'
-  if (origin.protocol !== 'http:' || !allowedHost || !allowedPort || origin.username || origin.password || origin.pathname !== '/' || origin.search || origin.hash) {
+  if (!isAllowedPhpOrigin(origin, config.phpOriginAllowlist)) {
     throw createError({ statusCode: 500, statusMessage: 'Untrusted PHP migration origin' })
   }
   return origin.origin + endpoint
