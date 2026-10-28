@@ -64,6 +64,12 @@ test('separates an aborted third-party map embed from a Nuxt UI error', () => {
   assert.equal(classifyDifference(base, { ...base, failedRequests: ['GET https://www.google.com/maps/embed?pb=fixture — net::ERR_ABORTED'] }, { status: 'compared', changedRatio: 0.2 }).kind, 'external-resource-blocked')
 })
 
+test('PHP reference failures do not classify a healthy Nuxt preview as a runtime error', () => {
+  const base = { status: 200, navigationError: undefined, pageErrors: [], consoleMessages: [], failedRequests: [], horizontalOverflow: 0, cumulativeLayoutShift: 0, fingerprints: { layout: 'same', text: 'a', media: 'a', links: 'a' }, title: 'A', h1: ['A'] }
+  const legacy = { ...base, pageErrors: ['legacy page error'], consoleMessages: ['legacy console error'], failedRequests: ['GET /legacy-missing.webp'], brokenMedia: [{ src: '/legacy-missing.webp' }], horizontalOverflow: 12, cumulativeLayoutShift: 0.24 }
+  assert.equal(classifyDifference(legacy, base, { status: 'compared', changedRatio: 0 }).kind, 'stable-or-rendering-noise')
+})
+
 test('detects preview links that leak to public PHP paths', () => {
   const settings = { legacyUrl: 'http://127.0.0.1:8088', previewUrl: 'http://127.0.0.1:3110' }
   const preview = { hrefs: [

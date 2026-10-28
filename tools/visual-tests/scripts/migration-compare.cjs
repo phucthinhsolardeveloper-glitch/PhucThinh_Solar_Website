@@ -315,12 +315,13 @@ async function auditPreviewShell(browser, route, viewport, settings) {
 }
 
 function classifyDifference(legacy, preview, diff) {
-  const failedRequests = [...(legacy.failedRequests || []), ...(preview.failedRequests || [])]
-  const externalEmbedOnly = failedRequests.length > 0 && failedRequests.every(item => /https?:\/\/(?:www\.)?google\.com\/maps\/embed/i.test(item))
-  const hardRuntimeGaps = [legacy.navigationError, preview.navigationError, legacy.status === null, preview.status === null, legacy.status >= 400, preview.status >= 400, legacy.pageErrors?.length > 0, preview.pageErrors?.length > 0, legacy.consoleMessages?.length > 0, preview.consoleMessages?.length > 0, legacy.horizontalOverflow > 1, preview.horizontalOverflow > 1].some(Boolean)
-  if (hardRuntimeGaps) return { kind: 'runtime-or-route-error', confidence: 'high', reason: 'HTTP, browser console/pageerror hoặc responsive gate không đạt' }
-  if (externalEmbedOnly) return { kind: 'external-resource-blocked', confidence: 'high', reason: 'Third-party Google Maps embed bị browser/network abort; không phải lỗi Nuxt UI' }
-  if (failedRequests.length > 0) return { kind: 'runtime-or-route-error', confidence: 'high', reason: 'Có request media/resource bị lỗi' }
+  const previewFailedRequests = preview.failedRequests || []
+  const previewActionableRequests = previewFailedRequests.filter(item => !/https?:\/\/(?:www\.)?google\.com\/maps\/embed/i.test(item))
+  const previewExternalEmbedOnly = previewFailedRequests.length > 0 && previewActionableRequests.length === 0
+  const hardPreviewGaps = [preview.navigationError, preview.status === null, preview.status >= 400, preview.pageErrors?.length > 0, preview.consoleMessages?.length > 0, preview.horizontalOverflow > 1, (preview.cumulativeLayoutShift ?? 0) > 0.1].some(Boolean)
+  if (hardPreviewGaps) return { kind: 'runtime-or-route-error', confidence: 'high', reason: 'Nuxt HTTP, browser console/pageerror hoặc responsive gate không đạt' }
+  if (previewExternalEmbedOnly) return { kind: 'external-resource-blocked', confidence: 'high', reason: 'Third-party Google Maps embed bị browser/network abort; không phải lỗi Nuxt UI' }
+  if (previewActionableRequests.length > 0) return { kind: 'runtime-or-route-error', confidence: 'high', reason: 'Nuxt có request media/resource bị lỗi' }
   if (diff.status !== 'compared') return { kind: 'unknown', confidence: 'low', reason: diff.reason || 'Không đủ ảnh để phân loại' }
   const dataSignals = []
   if (legacy.fingerprints?.text !== preview.fingerprints?.text) dataSignals.push('text/content')
