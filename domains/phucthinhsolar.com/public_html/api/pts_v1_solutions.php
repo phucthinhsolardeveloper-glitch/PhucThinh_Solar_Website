@@ -46,9 +46,18 @@ try
     );
 
     // Match source/template image approval: basename, extension and file existence.
+    // solutionHubImage() checks is_file($upload.$filename) with no ROOT prefix,
+    // which only works when the include's cwd is the document root (true for
+    // sources/solution_hub.php, reached via index.php). This script lives in
+    // api/, so that relative is_file() check silently failed for every real
+    // uploaded photo (fallback site-visuals images still worked only because
+    // the caller below checks is_file(ROOT.$path) itself). Verify against ROOT
+    // here instead of touching the shared legacy function.
     $publicImage = static function($filename, $upload) {
-        $approved = solutionHubImage($filename, $upload);
-        return $approved === '' ? '' : '/'.ltrim($approved, '/');
+        if(!$filename || basename($filename) !== $filename) return '';
+        if(!preg_match('/\.(?:png|jpe?g|gif|webp)$/i', $filename)) return '';
+        if(!is_file(ROOT.$upload.$filename)) return '';
+        return '/'.ltrim($upload.$filename, '/');
     };
     $attachNewsImages = static function(array $rows) use ($publicImage) {
         foreach($rows as &$row)
