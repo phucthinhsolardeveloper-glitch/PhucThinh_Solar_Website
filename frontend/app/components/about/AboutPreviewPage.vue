@@ -50,13 +50,15 @@ const links = useMigrationLinks()
         <div class="grid grid-cols-2 items-center gap-[clamp(28px,5.4vw,86px)] max-[800px]:grid-cols-1">
           <figure v-if="about.people.image" class="m-0 aspect-[10/7] overflow-hidden bg-navy-50 max-[800px]:max-h-[26rem]"><img class="block h-full w-full object-cover" :src="about.people.image" :alt="about.people.title" width="780" height="620" loading="lazy"></figure>
           <div>
-            <p class="mb-3 text-[.8rem] font-extrabold uppercase tracking-[.14em] text-gold-500">{{ about.people.eyebrow }}</p>
             <h2 id="about-people-title" class="m-0 text-[clamp(29px,2.6vw,38px)] font-bold leading-[1.22]">{{ about.people.title }}</h2>
             <p v-if="about.people.intro" class="mt-[1.1rem] text-[1.06rem] leading-[1.68] text-[#52627c]">{{ about.people.intro }}</p>
             <p v-if="about.people.body" class="mt-[1.1rem] border-t border-[#dce4ef] pt-4 leading-[1.68] text-[#52627c]">{{ about.people.body }}</p>
           </div>
         </div>
-        <div v-if="about.people.principles.length" class="mt-[3.25rem] grid grid-cols-3 border-t border-[#dce4ef] pt-7 max-[800px]:grid-cols-1 max-[800px]:gap-0">
+        <!-- Khớp PHP thật (templates/about/about_tpl.php:95): eyebrow chỉ là
+             aria-label trên khối "principles", không render thành text nhìn
+             thấy được - PHP không hiện "Con người là nền tảng" dưới dạng chữ. -->
+        <div v-if="about.people.principles.length" :aria-label="about.people.eyebrow" class="mt-[3.25rem] grid grid-cols-3 border-t border-[#dce4ef] pt-7 max-[800px]:grid-cols-1 max-[800px]:gap-0">
           <article v-for="(item, index) in about.people.principles" :key="`${item.title}-${index}`" class="grid grid-cols-[3.5rem_minmax(0,1fr)] gap-4 px-7 first:pl-0 max-[800px]:border-t max-[800px]:border-[#dce4ef] max-[800px]:py-5 max-[800px]:first:border-t-0">
             <img v-if="item.image" class="h-[3.25rem] w-[3.25rem] object-contain" :src="item.image" alt="" width="56" height="56" loading="lazy">
             <span v-else class="flex h-[3.25rem] w-[3.25rem] items-center justify-center rounded-full border border-gold-500/70 text-xs font-extrabold text-gold-500" aria-hidden="true">{{ String(index + 1).padStart(2, '0') }}</span>
