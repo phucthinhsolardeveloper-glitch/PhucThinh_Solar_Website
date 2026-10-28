@@ -46,6 +46,7 @@ export default defineNuxtConfig({
     head: {
       htmlAttrs: { lang: 'vi' },
       meta: [{ name: 'theme-color', content: '#0a2251' }],
+      link: [{ rel: 'icon', type: 'image/png', href: '/assets/images/favicon-pts-mobile.png?v=20261008', sizes: '512x512' }],
     },
   },
 

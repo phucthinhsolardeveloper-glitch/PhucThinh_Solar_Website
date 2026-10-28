@@ -80,7 +80,28 @@ const links = useMigrationLinks()
     </section>
 
     <section v-if="about.certificates.items.length" id="about-certificates" class="py-16 max-[800px]:py-12" aria-labelledby="about-certificates-title">
-      <div class="mx-auto w-[min(calc(100%-32px),2200px)]"><h2 id="about-certificates-title" class="m-0 text-[clamp(29px,2.6vw,38px)] font-bold leading-[1.22]">{{ about.certificates.title }}</h2><p class="mt-3 max-w-[48rem] leading-[1.68] text-[#52627c]">{{ about.certificates.intro }}</p><div class="mt-8 grid grid-cols-3 gap-5 max-[800px]:grid-cols-1"><article v-for="item in about.certificates.items" :key="item.id" class="grid min-w-0 grid-cols-[minmax(6.5rem,42%)_minmax(0,1fr)] items-center gap-4 border-t border-[#dce4ef] pt-4 max-[800px]:pt-5"><a class="block bg-[#f4f7fb]" :href="item.href" :aria-label="`Mở ${item.name}`"><img class="block h-[13.75rem] w-full object-contain" :src="item.image" :alt="item.name" width="260" height="360" loading="lazy"></a><div><span class="text-xs font-extrabold uppercase tracking-[.1em] text-gold-500">{{ about.labels.certLabel }}</span><h3 class="mt-[.45rem] break-words text-[1.1rem] font-bold leading-[1.22]">{{ item.name }}</h3><p v-if="item.description" class="my-[.45rem] text-[.9rem] leading-[1.68] text-[#52627c]">{{ item.description }}</p><a class="font-bold text-navy-800 no-underline" :href="item.href">{{ about.labels.certDetail }} →</a></div></article></div></div>
+      <div class="mx-auto w-[min(calc(100%-32px),2200px)]">
+        <h2 id="about-certificates-title" class="m-0 text-[clamp(29px,2.6vw,38px)] font-bold leading-[1.22]">{{ about.certificates.title }}</h2>
+        <p class="mt-3 max-w-[48rem] leading-[1.68] text-[#52627c]">{{ about.certificates.intro }}</p>
+        <div class="mt-8 grid grid-cols-3 gap-5 max-[800px]:grid-cols-1">
+          <article
+            v-for="item in about.certificates.items"
+            :key="item.id"
+            class="min-w-0 border-t border-[#dce4ef] pt-4 max-[800px]:pt-5"
+            :class="item.image ? 'grid grid-cols-[minmax(6.5rem,42%)_minmax(0,1fr)] items-center gap-4' : ''"
+          >
+            <a v-if="item.image" class="block bg-[#f4f7fb]" :href="item.href" :aria-label="`Mở ${item.name}`">
+              <img class="block h-[13.75rem] w-full object-contain" :src="item.image" :alt="item.name" width="260" height="360" loading="lazy">
+            </a>
+            <div>
+              <span class="text-xs font-extrabold uppercase tracking-[.1em] text-gold-500">{{ about.labels.certLabel }}</span>
+              <h3 class="mt-[.45rem] break-words text-[1.1rem] font-bold leading-[1.22]">{{ item.name }}</h3>
+              <p v-if="item.description" class="my-[.45rem] text-[.9rem] leading-[1.68] text-[#52627c]">{{ item.description }}</p>
+              <a class="font-bold text-navy-800 no-underline" :href="item.href">{{ about.labels.certDetail }} →</a>
+            </div>
+          </article>
+        </div>
+      </div>
     </section>
 
     <section class="pb-16 max-[800px]:px-0 max-[800px]:pb-12" aria-labelledby="about-cta-title"><div class="mx-auto w-[min(calc(100%-32px),2200px)]"><div class="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-6 bg-navy-800 px-8 py-7 max-[800px]:grid-cols-1 max-[800px]:px-6"><div class="grid grid-cols-[3.5rem_minmax(0,1fr)] items-center gap-4"><span class="flex h-[3.25rem] w-[3.25rem] items-center justify-center rounded-full border border-gold-300 text-xs font-extrabold text-gold-300" aria-hidden="true">PTS</span><div><h2 id="about-cta-title" class="text-[1.4rem] font-bold text-white">{{ about.cta.title }}</h2><p class="m-0 mt-[.3rem] text-[#d1daea]">{{ about.cta.description }}</p></div></div><div class="flex items-center gap-3 max-[800px]:grid"><a v-if="about.cta.hotline" class="inline-flex min-h-11 items-center bg-gold-500 px-4 py-3 font-extrabold text-navy-800 no-underline max-[800px]:justify-center" :href="`tel:${about.cta.hotline.tel}`">{{ about.cta.hotline.text }}</a><a v-if="about.cta.href" class="inline-flex min-h-11 items-center bg-gold-500 px-4 py-3 font-extrabold text-navy-800 no-underline max-[800px]:justify-center" :href="links.generic(about.cta.href)">{{ about.cta.buttonLabel }} →</a><span v-else class="inline-flex min-h-11 items-center border border-white/30 px-4 py-3 text-[#d1daea] max-[800px]:justify-center">{{ about.cta.buttonLabel }}</span></div></div></div></section>

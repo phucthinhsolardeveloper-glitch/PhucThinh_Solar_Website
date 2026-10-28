@@ -41,8 +41,8 @@ useSeoMeta({ title: 'Liên hệ — internal preview', robots: 'noindex, nofollo
             ("Để lại thông tin và nhu cầu, Phúc Thịnh Solar sẽ liên hệ..."),
             không phải một đoạn văn rời rạc như preview cũ đặt nó.
           -->
-          <section class="my-10 grid items-start gap-8 nav:grid-cols-[minmax(0,.8fr)_minmax(0,1.2fr)] nav:gap-12">
-            <div class="py-2">
+          <section class="my-10 grid min-w-0 items-start gap-8 nav:grid-cols-[minmax(0,.8fr)_minmax(0,1.2fr)] nav:gap-12">
+            <div class="min-w-0 py-2">
               <h2 class="mb-3 text-2xl font-black tracking-tight">{{ contact.labels.formCta }}</h2>
               <p v-if="contact.intro" class="mb-2 max-w-[60ch] leading-relaxed text-slate-500">{{ contact.intro }}</p>
               <p class="mb-0 text-sm text-slate-500">{{ contact.labels.formNote }}</p>

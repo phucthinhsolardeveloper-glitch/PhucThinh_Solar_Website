@@ -28,22 +28,22 @@ async function send() {
 </script>
 
 <template>
-  <form id="yeu-cau-tu-van" class="rounded-btn bg-slate-50 p-6 nav:p-8" @submit.prevent="send">
+  <form id="yeu-cau-tu-van" class="min-w-0 rounded-btn bg-slate-50 p-6 nav:p-8" @submit.prevent="send">
     <h2 class="mb-2 text-2xl font-black tracking-tight">Đăng ký nhận tư vấn</h2>
     <p class="mb-6 max-w-[62ch] leading-relaxed text-slate-500">Để lại thông tin và nhu cầu, Phúc Thịnh Solar sẽ liên hệ để tư vấn giải pháp phù hợp.</p>
 
     <div class="grid gap-4 tb:grid-cols-2">
-      <label class="grid gap-1.5 text-sm font-bold">Họ và tên <span class="text-red-600">*</span>
-        <input v-model.trim="form.fullname" required maxlength="100" autocomplete="name" placeholder="Nguyễn Văn A" class="h-11 rounded-chip border border-gray-300 bg-white px-3 font-normal outline-none focus:border-gold-600">
+      <label class="grid min-w-0 gap-1.5 text-sm font-bold">Họ và tên <span class="text-red-600">*</span>
+        <input v-model.trim="form.fullname" required maxlength="100" autocomplete="name" placeholder="Nguyễn Văn A" class="h-11 w-full min-w-0 rounded-chip border border-gray-300 bg-white px-3 font-normal outline-none focus:border-gold-600">
       </label>
-      <label class="grid gap-1.5 text-sm font-bold">Số điện thoại <span class="text-red-600">*</span>
-        <input v-model.trim="form.phone" required maxlength="20" autocomplete="tel" inputmode="tel" placeholder="090xxxxxxx" class="h-11 rounded-chip border border-gray-300 bg-white px-3 font-normal outline-none focus:border-gold-600">
+      <label class="grid min-w-0 gap-1.5 text-sm font-bold">Số điện thoại <span class="text-red-600">*</span>
+        <input v-model.trim="form.phone" required maxlength="20" autocomplete="tel" inputmode="tel" placeholder="090xxxxxxx" class="h-11 w-full min-w-0 rounded-chip border border-gray-300 bg-white px-3 font-normal outline-none focus:border-gold-600">
       </label>
-      <label class="grid gap-1.5 text-sm font-bold">Email <span class="font-normal text-slate-400">(không bắt buộc)</span>
-        <input v-model.trim="form.email" type="email" maxlength="150" autocomplete="email" placeholder="abc@gmail.com" class="h-11 rounded-chip border border-gray-300 bg-white px-3 font-normal outline-none focus:border-gold-600">
+      <label class="grid min-w-0 gap-1.5 text-sm font-bold">Email <span class="font-normal text-slate-400">(không bắt buộc)</span>
+        <input v-model.trim="form.email" type="email" maxlength="150" autocomplete="email" placeholder="abc@gmail.com" class="h-11 w-full min-w-0 rounded-chip border border-gray-300 bg-white px-3 font-normal outline-none focus:border-gold-600">
       </label>
-      <label class="grid gap-1.5 text-sm font-bold">Anh/chị quan tâm đến
-        <select v-model="form.subject" class="h-11 rounded-chip border border-gray-300 bg-white px-3 font-normal outline-none focus:border-gold-600">
+      <label class="grid min-w-0 gap-1.5 text-sm font-bold">Anh/chị quan tâm đến
+        <select v-model="form.subject" class="h-11 w-full min-w-0 rounded-chip border border-gray-300 bg-white px-3 font-normal outline-none focus:border-gold-600">
           <option value="">-- Chọn nhu cầu --</option>
           <option>Đèn năng lượng mặt trời</option>
           <option>Điện mặt trời</option>
@@ -52,8 +52,8 @@ async function send() {
           <option>Khác</option>
         </select>
       </label>
-      <label class="grid gap-1.5 text-sm font-bold tb:col-span-2">Nhu cầu cần tư vấn <span class="text-red-600">*</span>
-        <textarea v-model.trim="form.content" required maxlength="5000" rows="5" placeholder="Ví dụ: nhu cầu chiếu sáng sân vườn, điện mặt trời cho gia đình..." class="rounded-chip border border-gray-300 bg-white px-3 py-2 font-normal outline-none focus:border-gold-600" />
+      <label class="grid min-w-0 gap-1.5 text-sm font-bold tb:col-span-2">Nhu cầu cần tư vấn <span class="text-red-600">*</span>
+        <textarea v-model.trim="form.content" required maxlength="5000" rows="5" placeholder="Ví dụ: nhu cầu chiếu sáng sân vườn, điện mặt trời cho gia đình..." class="w-full min-w-0 rounded-chip border border-gray-300 bg-white px-3 py-2 font-normal outline-none focus:border-gold-600" />
       </label>
     </div>
 

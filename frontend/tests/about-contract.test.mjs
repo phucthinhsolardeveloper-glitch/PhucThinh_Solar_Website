@@ -1,5 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
+import { readFile } from 'node:fs/promises'
 import { isPublicAboutPayload } from '../shared/contracts/public-about.ts'
 
 const text = { title: 'CMS title', description: 'CMS description', image: '' }
@@ -27,4 +28,11 @@ test('rejects invented routes, unsafe media and non-year timeline values', () =>
 
 test('accepts escaped plain text because the adapter never renders CMS HTML', () => {
   assert.equal(isPublicAboutPayload({ ...good, story: { ...good.story, intro: '<b>escaped by PHP adapter</b>' } }), true)
+})
+
+test('does not render an empty certificate image frame when CMS media is absent', async () => {
+  const source = await readFile(new URL('../app/components/about/AboutPreviewPage.vue', import.meta.url), 'utf8')
+  const certificates = source.split('id="about-certificates"')[1]?.split('</section>')[0] ?? ''
+  assert.match(certificates, /<a v-if="item\.image"/)
+  assert.match(certificates, /:src="item\.image"/)
 })
