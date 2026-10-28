@@ -5,6 +5,8 @@ import {
   SOLUTIONS_PUBLIC_PATH,
   CATALOG_PUBLIC_PATH,
   SEARCH_PUBLIC_PATH,
+  CART_PUBLIC_PATH,
+  ORDER_SUCCESS_PUBLIC_PATH,
   brandDetailPublicPath,
   isRuntimeFlagEnabled,
   phpPublicRouteUrl,
@@ -54,4 +56,17 @@ test('brand detail slug builds the trailing-slash path and rejects unsafe slugs'
 test('an unknown dynamic path still fails closed', () => {
   assert.throws(() => phpPublicRouteUrl('https://php.internal', '/san-pham/ok/extra'), /Unsupported public route fallback/)
   assert.throws(() => phpPublicRouteUrl('https://php.internal', '/thuong-hieu/ok'), /Unsupported public route fallback/)
+})
+
+test('cart static fallback resolves exactly', () => {
+  assert.equal(phpPublicRouteUrl('http://127.0.0.1:8080', CART_PUBLIC_PATH), 'http://127.0.0.1:8080/gio-hang/')
+})
+
+test('order-success fallback forwards a non-empty token query and omits an empty one', () => {
+  assert.equal(
+    phpPublicRouteUrl('http://127.0.0.1:8080', ORDER_SUCCESS_PUBLIC_PATH, { token: 'abc123' }),
+    'http://127.0.0.1:8080/cam-on/?token=abc123',
+  )
+  assert.equal(phpPublicRouteUrl('http://127.0.0.1:8080', ORDER_SUCCESS_PUBLIC_PATH, { token: '' }), 'http://127.0.0.1:8080/cam-on/')
+  assert.equal(phpPublicRouteUrl('http://127.0.0.1:8080', ORDER_SUCCESS_PUBLIC_PATH), 'http://127.0.0.1:8080/cam-on/')
 })
