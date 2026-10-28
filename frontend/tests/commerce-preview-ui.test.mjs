@@ -14,7 +14,7 @@ test('catalog navigation exposes a responsive disclosure and current category', 
 })
 
 test('catalog keeps category navigation and business filters in one panel', () => {
-  const catalog = read('pages/migration-catalog-preview.vue')
+  const catalog = read('components/catalog/CatalogPage.vue')
   const sidebar = read('components/catalog/CatalogFilterSidebar.vue')
   assert.doesNotMatch(catalog, /CatalogCategoryNav/)
   assert.match(sidebar, /aria-label="Bộ lọc sản phẩm"/)
@@ -32,7 +32,7 @@ test('commerce media failures render explicit fallbacks instead of blank frames'
 })
 
 test('catalog pagination stays bounded for large CMS result sets', () => {
-  const catalog = read('pages/migration-catalog-preview.vue')
+  const catalog = read('components/catalog/CatalogPage.vue')
   assert.match(catalog, /const paginationItems = computed/)
   assert.match(catalog, /if \(total <= 7\)/)
   assert.match(catalog, /catalog-pagination__ellipsis/)

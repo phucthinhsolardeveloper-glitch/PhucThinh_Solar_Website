@@ -1,6 +1,15 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { ABOUT_PUBLIC_PATH, SOLUTIONS_PUBLIC_PATH, isRuntimeFlagEnabled, phpPublicRouteUrl } from '../shared/public-route-gate.ts'
+import {
+  ABOUT_PUBLIC_PATH,
+  SOLUTIONS_PUBLIC_PATH,
+  CATALOG_PUBLIC_PATH,
+  SEARCH_PUBLIC_PATH,
+  brandDetailPublicPath,
+  isRuntimeFlagEnabled,
+  phpPublicRouteUrl,
+  productDetailPublicPath,
+} from '../shared/public-route-gate.ts'
 
 test('public About route stays disabled unless the explicit runtime flag is enabled', () => {
   assert.equal(isRuntimeFlagEnabled(false), false)
@@ -21,4 +30,28 @@ test('public route fallback rejects unsafe origins and paths', () => {
   assert.throws(() => phpPublicRouteUrl('https://user:pass@php.internal', ABOUT_PUBLIC_PATH), /Untrusted PHP public origin/)
   assert.throws(() => phpPublicRouteUrl('https://php.internal/path', ABOUT_PUBLIC_PATH), /Untrusted PHP public origin/)
   assert.throws(() => phpPublicRouteUrl('https://php.internal', '/admin/'), /Unsupported public route fallback/)
+})
+
+test('catalog and search static fallbacks resolve exactly', () => {
+  assert.equal(phpPublicRouteUrl('http://127.0.0.1:8080', CATALOG_PUBLIC_PATH), 'http://127.0.0.1:8080/san-pham/')
+  assert.equal(phpPublicRouteUrl('http://127.0.0.1:8080', SEARCH_PUBLIC_PATH), 'http://127.0.0.1:8080/tim-kiem/')
+})
+
+test('product detail slug builds the canonical no-trailing-slash path and rejects unsafe slugs', () => {
+  assert.equal(productDetailPublicPath('den-ufo-1000w'), '/san-pham/den-ufo-1000w')
+  assert.equal(phpPublicRouteUrl('http://127.0.0.1:8080', productDetailPublicPath('den-ufo-1000w')), 'http://127.0.0.1:8080/san-pham/den-ufo-1000w')
+  assert.throws(() => productDetailPublicPath('../../etc/passwd'), /Invalid product slug/)
+  assert.throws(() => productDetailPublicPath(''), /Invalid product slug/)
+  assert.throws(() => productDetailPublicPath('<script>'), /Invalid product slug/)
+})
+
+test('brand detail slug builds the trailing-slash path and rejects unsafe slugs', () => {
+  assert.equal(brandDetailPublicPath('longi'), '/thuong-hieu/longi/')
+  assert.equal(phpPublicRouteUrl('http://127.0.0.1:8080', brandDetailPublicPath('longi')), 'http://127.0.0.1:8080/thuong-hieu/longi/')
+  assert.throws(() => brandDetailPublicPath('../etc'), /Invalid brand slug/)
+})
+
+test('an unknown dynamic path still fails closed', () => {
+  assert.throws(() => phpPublicRouteUrl('https://php.internal', '/san-pham/ok/extra'), /Unsupported public route fallback/)
+  assert.throws(() => phpPublicRouteUrl('https://php.internal', '/thuong-hieu/ok'), /Unsupported public route fallback/)
 })
