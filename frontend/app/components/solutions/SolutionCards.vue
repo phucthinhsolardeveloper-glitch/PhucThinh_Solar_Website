@@ -6,9 +6,17 @@ const links = useMigrationLinks()
 </script>
 
 <template>
-  <section id="cac-giai-phap" class="pb-[54px]" aria-labelledby="solutions-choices-title">
-    <h2 id="solutions-choices-title" class="m-0 mb-[22px] text-[28px] leading-[1.25] font-black text-navy-800">
-      {{ cards.length ? choicesLabel : emptyLabel }}
+  <!--
+    PHP (templates/news/service_list_tpl.php) chỉ dùng $solutionUi['choices']
+    làm aria-label trên <section>, không render heading chữ nào phía trên
+    lưới card khi có dữ liệu — mỗi card tự có <h2> riêng là tiêu đề của nó.
+    Chỉ hiện text này như tiêu đề thật khi danh sách rỗng (PHP lúc đó không
+    có section này để so, nên giữ emptyLabel hiển thị cho preview không trống
+    trơn).
+  -->
+  <section id="cac-giai-phap" class="pb-[54px]" :aria-label="cards.length ? choicesLabel : undefined" :aria-labelledby="cards.length ? undefined : 'solutions-choices-title'">
+    <h2 v-if="!cards.length" id="solutions-choices-title" class="m-0 mb-[22px] text-[28px] leading-[1.25] font-black text-navy-800">
+      {{ emptyLabel }}
     </h2>
 
     <div v-if="cards.length" class="flex gap-4 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden nav:grid nav:grid-cols-5 nav:gap-5 nav:overflow-visible">

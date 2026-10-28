@@ -10,14 +10,25 @@ import CatalogProductGrid from '~/components/catalog/CatalogProductGrid.vue'
  * public thật - không nhân bản. Nhận `slug` qua prop vì 2 trang lấy slug từ
  * 2 nguồn khác nhau (preview: ?slug=, public: /thuong-hieu/{slug}/ param).
  *
- * KHÔNG có ảnh production cho /thuong-hieu/{slug}/ để đo. Đã đọc kỹ
- * templates/product/product_tpl.php và product_detail_tpl.php (grep
- * "productBrand[") trước khi dựng trang này: trang brand thật dùng CHUNG
- * template "product/product" với catalog, không có logo/mô tả/nội dung
- * thương hiệu nào được render công khai - chỉ đổi H1/breadcrumb thành tên
- * thương hiệu rồi liệt kê đúng lưới sản phẩm đã lọc theo id_brand. Vì vậy
- * trang này tái dùng thẳng CatalogProductGrid.vue (đã đo pixel) thay vì
- * dựng thêm UI riêng chưa có bằng chứng.
+ * Verify thật trên PHP local (curl http://127.0.0.1:8080/thuong-hieu/longi/,
+ * 2026-10-28) sau khi Lane 1 visual audit báo lệch: trang dùng CHUNG template
+ * "product/product" với catalog, và KHÔNG đổi H1 theo brand - H1 thật vẫn là
+ * "Sản phẩm năng lượng mặt trời" (class catalog-heading), breadcrumb chỉ 2
+ * cấp "Trang chủ / {Tên thương hiệu}" (không có "Sản phẩm" ở giữa), có dải
+ * benefit tĩnh 4 mục (class .filter_product, text "Tư vấn lựa chọn / Hỗ trợ
+ * kỹ thuật / Chính sách rõ ràng / Giao hàng toàn quốc" - giống hệt text tĩnh
+ * đã dùng ở CatalogPage.vue) và khối CTA cuối trang .pts-catalog-support với
+ * text fallback mặc định "Cần hỗ trợ chọn sản phẩm phù hợp?" (PHP:
+ * sources/product.php - không đổi theo brand khi Admin chưa tự soạn ảnh
+ * loại "catalog-campaign" cho brand, nên không coi là dữ liệu bịa khi hardcode
+ * tĩnh ở đây).
+ *
+ * Sidebar bộ lọc (.lv-filter) CŨNG có trên PHP thật nhưng /_migration/
+ * brand-detail hiện không trả `filters`/`selected.brandIds` như
+ * /_migration/catalog - thêm sidebar lọc thật cần sửa API PHP
+ * (pts_v1_brand_detail.php) + contract, nằm ngoài phạm vi lượt sửa UI này
+ * (tránh đụng Catalog/PDP lane đang làm song song). Ghi NEEDS VERIFICATION,
+ * không tự thêm sidebar giả không có dữ liệu thật đứng sau.
  */
 const props = defineProps<{ slug: string }>()
 
@@ -58,7 +69,7 @@ useSeoMeta({ title: computed(() => data.value ? `${data.value.brand.name} — Ph
 
     <main>
       <div class="mx-auto w-full max-w-(--container-page) px-(--spacing-gutter)">
-        <SiteBreadcrumb :items="[{ label: 'Sản phẩm', to: migrationHref('/san-pham/') }, ...(data ? [{ label: data.brand.name }] : [])]" />
+        <SiteBreadcrumb :items="[...(data ? [{ label: data.brand.name }] : [])]" />
       </div>
 
       <div v-if="pending" class="mx-auto min-h-[45vh] w-full max-w-(--container-page) px-(--spacing-gutter) py-12" role="status" aria-live="polite">
@@ -71,7 +82,18 @@ useSeoMeta({ title: computed(() => data.value ? `${data.value.brand.name} — Ph
       </div>
 
       <div v-else class="mx-auto w-full max-w-(--container-page) px-(--spacing-gutter) pt-8 pb-16 max-ph:pt-6 max-ph:pb-12">
-        <h1 class="mb-7 text-[clamp(28px,4vw,48px)] font-black leading-[1.15] tracking-tight">{{ data.brand.name }}</h1>
+        <!-- H1 khớp PHP thật: trang brand KHÔNG đổi heading theo tên thương
+             hiệu, giữ nguyên tiêu đề catalog chung (xem comment đầu file). -->
+        <h1 class="mb-7 text-[clamp(28px,4vw,48px)] font-black leading-[1.15] tracking-tight">Sản phẩm năng lượng mặt trời</h1>
+
+        <div class="mb-7 grid grid-cols-2 gap-4 border-b border-gray-200 pb-5 tb:grid-cols-4" aria-label="Lợi ích khi chọn sản phẩm">
+          <div class="flex items-start gap-3"><span class="text-gold-700" aria-hidden="true">✦</span><span><strong class="block text-sm text-navy-950">Tư vấn lựa chọn</strong><small class="text-slate-500">Đúng nhu cầu, hiệu quả</small></span></div>
+          <div class="flex items-start gap-3"><span class="text-gold-700" aria-hidden="true">⚙</span><span><strong class="block text-sm text-navy-950">Hỗ trợ kỹ thuật</strong><small class="text-slate-500">Trong suốt quá trình sử dụng</small></span></div>
+          <div class="flex items-start gap-3"><span class="text-gold-700" aria-hidden="true">✓</span><span><strong class="block text-sm text-navy-950">Chính sách rõ ràng</strong><small class="text-slate-500">Minh bạch, dễ hiểu</small></span></div>
+          <div class="flex items-start gap-3"><span class="text-gold-700" aria-hidden="true">↗</span><span><strong class="block text-sm text-navy-950">Giao hàng toàn quốc</strong><small class="text-slate-500">Nhanh chóng, an toàn</small></span></div>
+        </div>
+
+        <h2 class="mb-5 text-lg font-black text-navy-800">{{ data.brand.name }}</h2>
 
         <CatalogProductGrid :products="data.products" />
 
@@ -114,6 +136,14 @@ useSeoMeta({ title: computed(() => data.value ? `${data.value.brand.name} — Ph
             Sau
           </NuxtLink>
         </nav>
+
+        <section class="relative isolate mt-10 grid grid-cols-1 items-center gap-6 overflow-hidden bg-navy-950 px-6 py-8 text-white tb:grid-cols-[minmax(0,1fr)_auto] nav:px-10 nav:py-9" aria-labelledby="brand-support-title">
+          <div>
+            <h2 id="brand-support-title" class="mb-2 text-2xl font-black">Cần hỗ trợ chọn sản phẩm phù hợp?</h2>
+            <p class="mb-0 max-w-[720px] leading-relaxed text-blue-100">Chia sẻ nhu cầu để đội ngũ Phúc Thịnh Solar tư vấn cấu hình và báo giá phù hợp.</p>
+          </div>
+          <NuxtLink :to="migrationHref('/lien-he/')" class="inline-flex min-h-11 items-center justify-center bg-gold-500 px-5 font-extrabold text-navy-950 no-underline">Nhận tư vấn →</NuxtLink>
+        </section>
       </div>
     </main>
 

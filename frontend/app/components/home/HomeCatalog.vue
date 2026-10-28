@@ -16,9 +16,11 @@
           <span class="relative z-10 mt-auto border-t border-white/45 bg-navy-950/70 px-[18px] py-4"><strong class="block text-[18px] leading-[1.4]">{{ category.name }}</strong><small class="mt-1 block text-sm leading-[1.6] text-[#e8eef6]">{{ summary(category) }}</small><span class="mt-[5px] block text-[13.5px] font-bold">{{ action(category) }} →</span></span>
         </a>
       </div>
-      <div v-if="productGroups.length" class="mt-12 space-y-8">
-        <article v-for="group in productGroups" :key="group.categoryId"><h3 class="mb-3 text-xl font-bold text-navy-950"><a class="no-underline" :href="links.generic(group.categoryUrl)">{{ group.categoryName }}</a></h3><div class="flex gap-5 overflow-x-auto [scrollbar-width:none]"><a v-for="product in group.products" :key="product.id" class="block min-w-[180px] text-navy-950 no-underline" :href="links.product(product.slug)"><img class="aspect-square w-full object-contain" :src="product.image" :alt="product.name" width="220" height="220" loading="lazy"><span class="mt-2 block font-bold leading-[1.4]">{{ product.name }}</span></a></div></article>
-      </div>
+      <!-- PHP index_tpl.php has no inline per-category product listing on the
+           homepage (only the 4 category tiles above); productGroups stays in
+           the DTO/contract for potential later use but is not rendered here,
+           to match PHP home layout. -->
+
     </div>
   </section>
 </template>

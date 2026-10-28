@@ -16,6 +16,11 @@ const root = path.resolve(__dirname, '../../..')
 const DEFAULT_OUTPUT = path.join(root, 'frontend/.migration-artifacts/seo-audit')
 const DEFAULT_MANIFEST = path.join(root, 'tools/visual-tests/fixtures/migration-routes.json')
 const CREDENTIAL_QUERY = /^(?:(?:token|secret|password|passwd|auth|credential|session|cookie|key)(?:[_-][a-z0-9]+)*|(?:access|api|private|csrf)[_-](?:token|key|secret|password))$/i
+const NEGATIVE_FIXTURE_STATES = new Set(['verified-hidden', 'NEEDS VERIFICATION'])
+const NEGATIVE_ROUTE_FAMILIES = new Set(['catalog', 'pdp', 'news', 'project', 'solution'])
+const EXPECTED_NEGATIVE_STATUSES = new Set([404, 410])
+const MAX_SITEMAPS = 1000
+const MAX_SITEMAP_URLS = 50000
 
 function usage() {
   return `Usage: node scripts/migration-seo-audit.cjs <php-origin> <nuxt-origin> [options]
@@ -131,7 +136,33 @@ function validateManifest(raw) {
       previewIndexing,
     }
   })
-  return { ...manifest, routes }
+  const negativeFixtures = (manifest.negativeFixtures || []).map((fixture, index) => {
+    if (!fixture || typeof fixture !== 'object' || !fixture.id || !fixture.family) throw new Error(`Negative fixture ${index + 1} needs id and family`)
+    const id = String(fixture.id)
+    if (!/^[a-z0-9][a-z0-9-]*$/.test(id)) throw new Error(`Invalid negative fixture id: ${id}`)
+    if (ids.has(id)) throw new Error(`Duplicate manifest id: ${id}`)
+    ids.add(id)
+    if (!NEGATIVE_ROUTE_FAMILIES.has(fixture.family)) throw new Error(`Invalid negative fixture family for ${id}`)
+    if (!NEGATIVE_FIXTURE_STATES.has(fixture.verification)) throw new Error(`Invalid verification state for negative fixture ${id}`)
+    if (fixture.expectedStatuses !== undefined && !Array.isArray(fixture.expectedStatuses)) throw new Error(`Invalid expectedStatuses for negative fixture ${id}`)
+    const expectedStatuses = fixture.expectedStatuses === undefined ? [404, 410] : fixture.expectedStatuses.map(Number)
+    if (expectedStatuses.length === 0 || expectedStatuses.some(status => !EXPECTED_NEGATIVE_STATUSES.has(status))) {
+      throw new Error(`Invalid expectedStatuses for negative fixture ${id}`)
+    }
+    if (fixture.verification === 'verified-hidden') {
+      if (typeof fixture.slug !== 'string' || !fixture.slug || typeof fixture.legacyPath !== 'string') throw new Error(`Verified hidden fixture ${id} needs a DB-backed slug and legacyPath`)
+      if (!fixture.databaseEvidence || typeof fixture.databaseEvidence !== 'object') throw new Error(`Verified hidden fixture ${id} needs databaseEvidence`)
+    } else if (fixture.slug || fixture.legacyPath) {
+      throw new Error(`Unverified fixture ${id} must not contain an invented slug or route path`)
+    }
+    return {
+      ...fixture,
+      id,
+      expectedStatuses,
+      legacyPath: fixture.legacyPath === undefined || fixture.legacyPath === null ? null : validateRoutePath(fixture.legacyPath, `${id}.legacyPath`),
+    }
+  })
+  return { ...manifest, routes, negativeFixtures }
 }
 
 function joinOrigin(origin, routePath) {
@@ -296,8 +327,8 @@ function parseRobots(body) {
 }
 
 function parseSitemap(body) {
-  const locs = [...String(body || '').matchAll(/<loc>([\s\S]*?)<\/loc>/gi)].map(match => decodeEntities(stripMarkup(match[1])))
-  return { kind: /<sitemapindex\b/i.test(body) ? 'index' : 'urlset', locs, count: locs.length }
+  const locs = [...String(body || '').matchAll(/<(?:[\w.-]+:)?loc\b[^>]*>([\s\S]*?)<\/(?:[\w.-]+:)?loc\s*>/gi)].map(match => decodeEntities(stripMarkup(match[1])))
+  return { kind: /<(?:[\w.-]+:)?sitemapindex\b/i.test(body) ? 'index' : 'urlset', locs, count: locs.length }
 }
 
 function summarizeResource(result, kind) {
@@ -358,6 +389,172 @@ function hrefMapping(legacyPage, previewPage) {
     previewInternalPaths: preview,
     onlyLegacy: legacy.filter(item => !preview.includes(item)),
     onlyPreview: preview.filter(item => !legacy.includes(item)),
+    decision: 'manual-review-only',
+  }
+}
+
+function evaluateNegativeFixture(fixture, crawl) {
+  if (fixture.verification !== 'verified-hidden') return { status: 'NEEDS VERIFICATION', reason: fixture.reason || 'No DB-backed hidden record is available; no synthetic URL was created.' }
+  const page = crawl.page
+  const statusPass = fixture.expectedStatuses.includes(crawl.status) && crawl.redirectChain.length === 0
+  const canonicalAbsent = !page?.canonical
+  return {
+    status: statusPass && canonicalAbsent ? 'PASS' : 'FAIL',
+    observedStatus: crawl.status,
+    finalUrl: crawl.finalUrl,
+    redirectChain: crawl.redirectChain,
+    canonical: page?.canonical || '',
+    checks: { expectedStatus: statusPass, noCanonical: canonicalAbsent },
+    error: crawl.error,
+  }
+}
+
+async function mapConcurrent(items, concurrency, task) {
+  const results = new Array(items.length)
+  let next = 0
+  const workers = Array.from({ length: Math.min(concurrency, items.length) }, async () => {
+    while (true) {
+      const index = next++
+      if (index >= items.length) return
+      results[index] = await task(items[index], index)
+    }
+  })
+  await Promise.all(workers)
+  return results
+}
+
+async function auditSitemap(rootRequestedUrl, rootResult, settings) {
+  const sitemapUrls = new Set([new URL(rootRequestedUrl).toString()])
+  const queue = [{ url: new URL(rootRequestedUrl).toString(), result: rootResult, parent: null }]
+  const sitemapResults = []
+  const pageUrlMap = new Map()
+  const limitErrors = []
+
+  while (queue.length) {
+    const item = queue.shift()
+    const result = item.result || await get(item.url, settings)
+    const record = {
+      loc: item.url,
+      parent: item.parent,
+      status: result.status,
+      finalUrl: result.finalUrl,
+      redirectChain: result.redirectChain,
+      error: result.error || null,
+      kind: null,
+      locCount: 0,
+      canonicalUrlPass: result.status === 200 && result.finalUrl === item.url,
+    }
+    if (result.status === 200 && result.body) {
+      const parsed = parseSitemap(result.body)
+      record.kind = parsed.kind
+      record.locCount = parsed.count
+      if (parsed.kind === 'index') {
+        for (const loc of parsed.locs) {
+          let child
+          try { child = validateTarget(loc, settings.allowRemote).toString() } catch (error) {
+            sitemapResults.push({ loc, parent: item.url, status: null, finalUrl: '', redirectChain: [], error: String(error.message || error), kind: 'blocked-sitemap', locCount: 0, canonicalUrlPass: false })
+            continue
+          }
+          if (sitemapUrls.has(child)) continue
+          if (sitemapUrls.size >= MAX_SITEMAPS) {
+            limitErrors.push(`Sitemap count exceeded ${MAX_SITEMAPS}`)
+            break
+          }
+          sitemapUrls.add(child)
+          queue.push({ url: child, result: null, parent: item.url })
+        }
+      } else {
+        for (const loc of parsed.locs) {
+          if (!pageUrlMap.has(loc)) pageUrlMap.set(loc, { loc, sourceSitemap: item.url })
+          if (pageUrlMap.size > MAX_SITEMAP_URLS) {
+            limitErrors.push(`Sitemap URL count exceeded ${MAX_SITEMAP_URLS}`)
+            break
+          }
+        }
+      }
+    }
+    sitemapResults.push(record)
+  }
+
+  const pageResults = await mapConcurrent([...pageUrlMap.values()], 8, async item => {
+    let declaredUrl
+    try { declaredUrl = validateTarget(item.loc, settings.allowRemote).toString() } catch (error) {
+      return { ...item, requestedUrl: '', status: null, finalUrl: '', redirectChain: [], error: String(error.message || error), canonicalUrlPass: false, pass: false }
+    }
+    const result = await get(declaredUrl, settings)
+    const canonicalUrlPass = result.status === 200 && result.finalUrl === declaredUrl
+    return {
+      ...item,
+      requestedUrl: declaredUrl,
+      status: result.status,
+      finalUrl: result.finalUrl,
+      redirectChain: result.redirectChain,
+      error: result.error || null,
+      canonicalUrlPass,
+      pass: canonicalUrlPass,
+    }
+  })
+  const failedSitemaps = sitemapResults.filter(item => !item.canonicalUrlPass)
+  const failedUrls = pageResults.filter(item => !item.pass)
+  const status = failedSitemaps.length || failedUrls.length || limitErrors.length ? 'FAIL' : sitemapResults.length ? 'PASS' : 'FAIL'
+  return {
+    status,
+    rootUrl: rootRequestedUrl,
+    sitemapCount: sitemapResults.length,
+    pageUrlCount: pageResults.length,
+    sitemapResults,
+    pageResults,
+    failedSitemaps,
+    failedUrls,
+    limitErrors,
+  }
+}
+
+async function auditNegativeFixtures(fixtures, origin, settings) {
+  const results = []
+  for (const fixture of fixtures) {
+    if (fixture.verification !== 'verified-hidden') {
+      results.push({ id: fixture.id, family: fixture.family, verification: fixture.verification, databaseEvidence: fixture.databaseEvidence || null, ...evaluateNegativeFixture(fixture, null) })
+      continue
+    }
+    const crawl = await crawlSide(origin, fixture.legacyPath, settings)
+    results.push({
+      id: fixture.id,
+      family: fixture.family,
+      verification: fixture.verification,
+      slug: fixture.slug,
+      legacyPath: fixture.legacyPath,
+      expectedStatuses: fixture.expectedStatuses,
+      databaseEvidence: fixture.databaseEvidence,
+      ...evaluateNegativeFixture(fixture, crawl),
+    })
+  }
+  const failures = results.filter(item => item.status === 'FAIL').length
+  const needsVerification = results.filter(item => item.status === 'NEEDS VERIFICATION').length
+  return {
+    status: failures ? 'FAIL' : needsVerification ? 'NEEDS VERIFICATION' : results.length ? 'PASS' : 'NEEDS VERIFICATION',
+    fixtureCount: results.length,
+    passCount: results.filter(item => item.status === 'PASS').length,
+    failCount: failures,
+    needsVerificationCount: needsVerification,
+    results,
+  }
+}
+
+function summarizeHrefGate(routes) {
+  const incomplete = routes.filter(route => !route.legacy.page || !route.preview.page)
+  const routesWithDifferences = routes.filter(route => route.hrefMapping.onlyLegacy.length || route.hrefMapping.onlyPreview.length)
+  return {
+    status: incomplete.length ? 'NEEDS VERIFICATION' : 'PASS',
+    decision: 'manual-review-only',
+    routeCount: routes.length,
+    capturedRouteCount: routes.length - incomplete.length,
+    routesWithDifferences: routesWithDifferences.map(route => ({
+      id: route.id,
+      onlyLegacy: route.hrefMapping.onlyLegacy,
+      onlyPreview: route.hrefMapping.onlyPreview,
+    })),
+    note: 'Different internal href sets are listed for human review and do not fail the crawl automatically.',
   }
 }
 
@@ -393,7 +590,24 @@ function renderMarkdown(report) {
     ]
     lines.push(`| ${route.id} | ${route.legacy.status ?? 'ERR'} | ${route.preview.status ?? 'ERR'} | ${route.legacy.redirectChain.length}/${route.preview.redirectChain.length} | ${flags.join('; ')} |`)
   }
-  lines.push('', '## Remaining gates', '', '- 301/302/307/308 aliases: verify every intended alias has the expected destination and no loop.', '- 404/410: verify missing, hidden and retired routes do not become soft-200 pages.', '- Canonical/OG/robots: PHP remains public metadata owner; Nuxt preview must stay noindex until cutover approval.', '- Sitemap/robots: sitemap URLs must be canonical and reachable; robots must expose the intended sitemap without staging leakage.', '- JSON-LD: compare types and entity URLs to canonical; structured data must not be accepted from status 200 alone.', '- Account, Admin, media transforms and public APIs remain PHP-owned/excluded gates unless separately approved.')
+  lines.push('', '## Negative route fixtures', '', `- Gate: **${report.gates.negativeFixtures.status}** (${report.negativeFixtures.passCount} PASS; ${report.negativeFixtures.failCount} FAIL; ${report.negativeFixtures.needsVerificationCount} NEEDS VERIFICATION).`, '', '| Fixture | Family | Verification | PHP status | Canonical | Result / DB evidence |', '| --- | --- | --- | ---: | --- | --- |')
+  for (const item of report.negativeFixtures.results) {
+    const evidence = item.databaseEvidence ? `${item.databaseEvidence.table} / ${item.databaseEvidence.type}; ${item.databaseEvidence.status ?? item.databaseEvidence.reason ?? ''}` : (item.reason || '—')
+    lines.push(`| ${item.id} | ${item.family} | ${item.verification} | ${item.observedStatus ?? '—'} | ${item.canonical || '—'} | ${item.status}; ${evidence} |`)
+  }
+  lines.push('', '## Sitemap loc crawl (PHP public sitemap)', '', `- Gate: **${report.gates.sitemapLocCrawl.status}**; crawled ${report.sitemapAudit.pageUrlCount} unique URL loc(s) across ${report.sitemapAudit.sitemapCount} sitemap file(s).`, `- Failed sitemap locs: ${report.sitemapAudit.failedSitemaps.length}; failed page locs: ${report.sitemapAudit.failedUrls.length}.`)
+  if (report.sitemapAudit.limitErrors.length) lines.push(`- Crawl limits: ${report.sitemapAudit.limitErrors.join('; ')}.`)
+  if (report.sitemapAudit.failedSitemaps.length || report.sitemapAudit.failedUrls.length) {
+    lines.push('', '| Failed loc | HTTP | Final URL | Error |', '| --- | ---: | --- | --- |')
+    for (const item of [...report.sitemapAudit.failedSitemaps, ...report.sitemapAudit.failedUrls]) lines.push(`| ${item.loc} | ${item.status ?? 'ERR'} | ${item.finalUrl || '—'} | ${(item.error || (item.canonicalUrlPass ? '' : 'status/final URL mismatch')).replaceAll('|', '\\|')} |`)
+  } else lines.push('- Failed URL list: none.')
+  lines.push('', '## Internal href differences — manual review only', '', `- Capture gate: **${report.gates.hrefMapping.status}** across ${report.gates.hrefMapping.capturedRouteCount}/${report.gates.hrefMapping.routeCount} routes. Path-set differences do not fail the crawl automatically. Review the listed URLs for actual 404s.`, '', '| Route | onlyLegacy | onlyPreview |', '| --- | --- | --- |')
+  const hrefRows = report.gates.hrefMapping.routesWithDifferences
+  if (hrefRows.length) {
+    for (const item of hrefRows) lines.push(`| ${item.id} | ${item.onlyLegacy.map(value => `\`${value}\``).join('<br>') || '—'} | ${item.onlyPreview.map(value => `\`${value}\``).join('<br>') || '—'} |`)
+  } else lines.push('| — | — | — |')
+  lines.push('', '## Gate summary', '', '| Gate | Result | Evidence |', '| --- | --- | --- |', `| Negative hidden routes | ${report.gates.negativeFixtures.status} | ${report.negativeFixtures.passCount}/${report.negativeFixtures.fixtureCount} checked; unresolved DB fixture types ${report.negativeFixtures.needsVerificationCount}. |`, `| Sitemap loc crawl | ${report.gates.sitemapLocCrawl.status} | ${report.sitemapAudit.pageUrlCount} page locs; ${report.sitemapAudit.failedUrls.length} failed; ${report.sitemapAudit.failedSitemaps.length} sitemap files failed. |`, `| Href mapping | ${report.gates.hrefMapping.status} | ${hrefRows.length} route(s) have path differences; manual review, not an automatic failure. |`)
+  lines.push('', '## Remaining gates', '', '- 301/302/307/308 aliases: verify every intended alias has the expected destination and no loop.', '- Canonical/OG/robots: PHP remains public metadata owner; Nuxt preview must stay noindex until cutover approval.', '- JSON-LD: compare types and entity URLs to canonical; structured data must not be accepted from status 200 alone.', '- Account, Admin, media transforms and public APIs remain PHP-owned/excluded gates unless separately approved.')
   return `${lines.join('\n')}\n`
 }
 
@@ -401,10 +615,12 @@ async function run(args) {
   const manifest = validateManifest(JSON.parse(await fs.readFile(args.manifest, 'utf8')))
   await fs.mkdir(args.output, { recursive: true })
   const settings = { allowRemote: args.allowRemote, timeoutMs: args.timeoutMs, maxRedirects: args.maxRedirects }
-  const report = { generatedAt: new Date().toISOString(), phpOrigin: args.phpOrigin, nuxtOrigin: args.nuxtOrigin, allowRemote: args.allowRemote, manifest: args.manifest, routes: [], resources: { php: {}, nuxt: {} } }
+  const report = { generatedAt: new Date().toISOString(), phpOrigin: args.phpOrigin, nuxtOrigin: args.nuxtOrigin, allowRemote: args.allowRemote, manifest: args.manifest, routes: [], negativeFixtures: { results: [] }, sitemapAudit: null, gates: {}, resources: { php: {}, nuxt: {} } }
+  const rawResources = {}
   for (const [side, origin] of [['php', args.phpOrigin], ['nuxt', args.nuxtOrigin]]) {
     const robots = await get(joinOrigin(origin, '/robots.txt'), settings)
     const sitemap = await get(joinOrigin(origin, '/sitemap.xml'), settings)
+    rawResources[side] = { robots, sitemap }
     report.resources[side] = { robots: summarizeResource(robots, 'robots'), sitemap: summarizeResource(sitemap, 'sitemap') }
   }
   for (const route of manifest.routes) {
@@ -428,6 +644,16 @@ async function run(args) {
     })
     console.log(`${route.id}: php=${legacy.status ?? 'ERR'} nuxt=${preview.status ?? 'ERR'} redirects=${legacy.redirectChain.length}/${preview.redirectChain.length}`)
   }
+  report.negativeFixtures = await auditNegativeFixtures(manifest.negativeFixtures, args.phpOrigin, settings)
+  report.sitemapAudit = await auditSitemap(joinOrigin(args.phpOrigin, '/sitemap.xml'), rawResources.php.sitemap, settings)
+  report.gates = {
+    negativeFixtures: { status: report.negativeFixtures.status },
+    sitemapLocCrawl: { status: report.sitemapAudit.status },
+    hrefMapping: summarizeHrefGate(report.routes),
+  }
+  for (const result of report.negativeFixtures.results) console.log(`negative:${result.id}=${result.status}${result.observedStatus ? ` php=${result.observedStatus}` : ''}`)
+  console.log(`sitemap-loc-crawl=${report.sitemapAudit.status} pages=${report.sitemapAudit.pageUrlCount} failed=${report.sitemapAudit.failedUrls.length} sitemap-files=${report.sitemapAudit.sitemapCount}`)
+  console.log(`href-mapping=${report.gates.hrefMapping.status} routes-with-differences=${report.gates.hrefMapping.routesWithDifferences.length} (manual review)`)
   await fs.writeFile(path.join(args.output, 'report.json'), `${JSON.stringify(report, null, 2)}\n`)
   await fs.writeFile(path.join(args.output, 'summary.md'), renderMarkdown(report))
   return report
@@ -438,7 +664,8 @@ if (require.main === module) {
     try {
       const args = parseArgs(process.argv.slice(2))
       if (args.help) { console.log(usage()); return }
-      await run(args)
+      const report = await run(args)
+      if ([report.gates.negativeFixtures.status, report.gates.sitemapLocCrawl.status].some(status => status !== 'PASS')) process.exitCode = 1
     } catch (error) {
       console.error(`migration-seo-audit: ${error.message || error}`)
       process.exitCode = 1
@@ -455,6 +682,9 @@ module.exports = {
   parseDocument,
   parseRobots,
   parseSitemap,
+  hrefMapping,
+  evaluateNegativeFixture,
+  auditSitemap,
   noindexValue,
   renderMarkdown,
 }

@@ -21,7 +21,12 @@ const links = useMigrationLinks()
 
     <div class="grid grid-cols-1 items-start gap-8 tb:grid-cols-2 tb:gap-12">
       <div>
-        <p class="mb-3 text-xs font-extrabold uppercase tracking-[.09em] text-gold-700">{{ intro.eyebrow }}</p>
+        <!--
+          PHP (sources/solution_hub.php) tính $solutionHeroEyebrow nhưng
+          templates/news/service_list_tpl.php không bao giờ in nó ra - đây là
+          field chết ở PHP. Không render để khớp bố cục thật, dù API vẫn trả
+          giá trị (giữ nguyên contract, chỉ ẩn ở UI).
+        -->
         <h1 id="solutions-title" class="m-0 text-[clamp(28px,2.9vw,42px)] font-black leading-[1.22] tracking-tight text-navy-800">{{ intro.title }}</h1>
       </div>
 

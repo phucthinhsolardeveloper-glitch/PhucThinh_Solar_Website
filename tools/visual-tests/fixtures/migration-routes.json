@@ -28,5 +28,44 @@
     { "id": "legacy-product-root-alias", "kind": "alias", "legacyPath": "/product/", "previewPath": "/migration-catalog-preview", "expectedRedirectStatus": 301, "expectedCanonicalPath": "/san-pham/", "visual": false },
     { "id": "legacy-product-detail-alias", "kind": "alias", "legacyPath": "/product/den-ufo-nang-luong-mat-troi-oriana-ufo-1000-1000w", "previewPath": "/migration-product-preview?slug=den-ufo-nang-luong-mat-troi-oriana-ufo-1000-1000w", "expectedRedirectStatus": 301, "expectedCanonicalPath": "/san-pham/den-ufo-nang-luong-mat-troi-oriana-ufo-1000-1000w", "visual": false }
   ],
+  "negativeFixtures": [
+    {
+      "id": "negative-catalog-hidden-taxonomy",
+      "family": "catalog",
+      "verification": "NEEDS VERIFICATION",
+      "reason": "Local DB has no hidden san-pham taxonomy row, so no route slug was added.",
+      "databaseEvidence": { "source": "pts-mariadb-local; read-only SELECT", "table": "product_list,product_cat,product_item,product_sub", "type": "san-pham", "hiddenCount": 0 }
+    },
+    {
+      "id": "negative-pdp-hidden-product",
+      "family": "pdp",
+      "verification": "verified-hidden",
+      "slug": "tru-den-co-dien-oriana-gl-0612-h2500",
+      "legacyPath": "/san-pham/tru-den-co-dien-oriana-gl-0612-h2500",
+      "expectedStatuses": [404, 410],
+      "databaseEvidence": { "source": "pts-mariadb-local; read-only SELECT", "table": "product", "type": "san-pham", "status": "", "hidden": true }
+    },
+    {
+      "id": "negative-news-hidden-article",
+      "family": "news",
+      "verification": "NEEDS VERIFICATION",
+      "reason": "Local DB has no hidden tin-tuc article row, so no route slug was added.",
+      "databaseEvidence": { "source": "pts-mariadb-local; read-only SELECT", "table": "news", "type": "tin-tuc", "total": 12, "visible": 12, "hiddenCount": 0 }
+    },
+    {
+      "id": "negative-project-hidden-record",
+      "family": "project",
+      "verification": "NEEDS VERIFICATION",
+      "reason": "Local DB has no hidden du-an article row, so no route slug was added.",
+      "databaseEvidence": { "source": "pts-mariadb-local; read-only SELECT", "table": "news", "type": "du-an", "total": 4, "visible": 4, "hiddenCount": 0 }
+    },
+    {
+      "id": "negative-solution-hidden-record",
+      "family": "solution",
+      "verification": "NEEDS VERIFICATION",
+      "reason": "Local DB has no hidden giai-phap article row, so no route slug was added.",
+      "databaseEvidence": { "source": "pts-mariadb-local; read-only SELECT", "table": "news", "type": "giai-phap", "total": 5, "visible": 5, "hiddenCount": 0 }
+    }
+  ],
   "interactions": []
 }

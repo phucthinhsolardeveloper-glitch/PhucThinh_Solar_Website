@@ -9,6 +9,34 @@ function markImageFailed(productId: number) {
   failedImages.value = new Set(failedImages.value).add(productId)
 }
 
+// Per-card add-to-cart state, kept local to this grid (not the shared
+// useMigrationCart `loading`/`error` state, which is a single global flag -
+// reusing it here would make every card show "Đang thêm…" at once).
+const { mutate } = useMigrationCart()
+const addingIds = ref<Set<number>>(new Set())
+const addedIds = ref<Set<number>>(new Set())
+const cartErrors = ref<Map<number, string>>(new Map())
+
+async function addToCart(product: PublicCatalogProduct) {
+  addingIds.value = new Set(addingIds.value).add(product.id)
+  const nextErrors = new Map(cartErrors.value)
+  nextErrors.delete(product.id)
+  cartErrors.value = nextErrors
+  try {
+    await mutate({ action: 'add', productId: product.id, quantity: 1 })
+    addedIds.value = new Set(addedIds.value).add(product.id)
+  } catch (reason) {
+    const message = reason instanceof Error ? reason.message : 'Không thể thêm vào giỏ hàng.'
+    const errors = new Map(cartErrors.value)
+    errors.set(product.id, message)
+    cartErrors.value = errors
+  } finally {
+    const next = new Set(addingIds.value)
+    next.delete(product.id)
+    addingIds.value = next
+  }
+}
+
 /**
  * Định dạng tiền khớp đúng PHP: libraries/class/class.Functions.php::formatMoney()
  * dùng number_format($price, 0, ',', '.') + hậu tố "đ" — dấu CHẤM phân cách
@@ -89,6 +117,27 @@ function productHref(product: PublicCatalogProduct) {
         </template>
       </p>
       <p v-else class="m-0 text-sm text-slate-500">Liên hệ để nhận báo giá</p>
+
+      <div class="mt-3 grid gap-2">
+        <button
+          v-if="product.pricing?.mode === 'price'"
+          type="button"
+          class="min-h-10 rounded-chip bg-gold-500 px-3 text-sm font-extrabold text-navy-950 transition hover:bg-gold-600 disabled:cursor-wait disabled:opacity-60"
+          :disabled="addingIds.has(product.id)"
+          @click="addToCart(product)"
+        >
+          {{ addingIds.has(product.id) ? 'Đang thêm…' : 'Thêm giỏ hàng' }}
+        </button>
+        <NuxtLink
+          :external="!links.active"
+          :to="productHref(product)"
+          class="inline-grid min-h-10 place-items-center rounded-chip border border-navy-800 px-3 text-sm font-bold text-navy-800 no-underline transition hover:bg-slate-50"
+        >
+          Xem chi tiết
+        </NuxtLink>
+        <p v-if="addedIds.has(product.id) && !cartErrors.has(product.id)" class="m-0 text-xs font-semibold text-emerald-700" role="status">Đã thêm vào giỏ hàng.</p>
+        <p v-if="cartErrors.has(product.id)" class="m-0 text-xs font-semibold text-red-700" role="alert">{{ cartErrors.get(product.id) }}</p>
+      </div>
     </article>
   </div>
 
