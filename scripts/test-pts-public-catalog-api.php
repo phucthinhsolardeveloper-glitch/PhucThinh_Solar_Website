@@ -20,6 +20,7 @@ catalogAssert(strpos(json_encode($payload), 'SHOULD_NOT_LEAK') === false, 'priva
 catalogAssert($payload['parity']['filters'] === array('included'=>true) && $payload['parity']['sort'] === array('included'=>true), 'filter/sort parity nay da that, khong con legacy_*_parity_not_verified');
 catalogAssert($payload['filters'] === array('brands'=>array(),'priceRanges'=>$payload['filters']['priceRanges'],'subcategories'=>array()) && count($payload['filters']['priceRanges']) === 3, 'filters bao gom 3 bac gia tu product_price_filter.php khi khong truyen brand/subcategory');
 catalogAssert($payload['selected'] === array('brandIds'=>array(),'priceKeys'=>array(),'subcategoryIds'=>array(),'sort'=>'default'), 'selected mac dinh rong khi khong co filter nao duoc chon');
+catalogAssert($payload['categoryHero'] === null && $payload['categoryContent'] === array('title'=>'','applications'=>array(),'faq'=>array()) && $payload['support'] === null, 'extra catalog content defaults to empty instead of fabricated CMS fields');
 
 catalogAssert(ptsCatalogBrandDto(array('id'=>5,'namevi'=>'<b>LONGI</b>')) === array('id'=>5,'name'=>'LONGI'), 'brand DTO strip HTML va giu id that');
 catalogAssert(ptsCatalogBrandDto(array('id'=>0,'namevi'=>'x')) === null, 'brand DTO loai id khong hop le');

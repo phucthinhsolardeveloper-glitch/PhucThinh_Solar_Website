@@ -77,12 +77,11 @@ function ptsProjectsCtaDto(array $rows, $hotline = '')
         if(!is_array($row) || !ptsProjectsPublished(isset($row['status']) ? $row['status'] : '')) continue;
         $title = ptsProjectsPlainText(isset($row['namevi']) ? $row['namevi'] : '');
         $description = ptsProjectsPlainText(isset($row['descvi']) ? $row['descvi'] : '');
-        if($title === '' && $description === '') continue;
         $hotlineText = is_scalar($hotline) ? trim((string)$hotline) : '';
         return array(
-            'title' => $title,
-            'description' => $description,
-            'buttonLabel' => ptsProjectsPlainText(isset($row['content1vi']) ? $row['content1vi'] : ''),
+            'title' => $title !== '' ? $title : 'Bạn có công trình cần tư vấn?',
+            'description' => $description !== '' ? $description : 'Đội ngũ Phúc Thịnh Solar sẵn sàng hỗ trợ, tư vấn giải pháp điện mặt trời phù hợp nhất cho nhu cầu của bạn.',
+            'buttonLabel' => ptsProjectsPlainText(isset($row['content1vi']) && trim((string)$row['content1vi']) !== '' ? $row['content1vi'] : 'Nhận tư vấn miễn phí'),
             'image' => ptsProjectsMedia(isset($row['_pts_public_photo']) ? $row['_pts_public_photo'] : ''),
             'hotline' => $hotlineText === '' ? null : array(
                 'label' => 'Gọi ngay hotline',

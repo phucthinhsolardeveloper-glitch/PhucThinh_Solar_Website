@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { PublicNewsDetailPayload } from '#shared/contracts/public-news-detail'
 import EditorialRichText from '~/components/editorial/EditorialRichText.vue'
+import EditorialShare from '~/components/editorial/EditorialShare.vue'
 
 defineProps<{ article: PublicNewsDetailPayload['article'] }>()
 </script>
@@ -25,6 +26,8 @@ defineProps<{ article: PublicNewsDetailPayload['article'] }>()
       allowlist + isPublicSanitizedRichText() xác nhận lại ở contract.
     -->
     <EditorialRichText :content="article.content" />
+
+    <EditorialShare :title="article.title" :canonical-path="article.canonical" />
 
     <div v-if="article.media.gallery.length" class="mt-8 grid grid-cols-1 gap-4 tb:grid-cols-2">
       <img v-for="media in article.media.gallery" :key="media.image" :src="media.image" :alt="media.alt || article.title" class="block h-auto w-full rounded-chip object-contain">

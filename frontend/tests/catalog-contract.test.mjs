@@ -48,6 +48,9 @@ test('accepts a resolved category object with its canonical full path', () => {
 
 const extended = {
   ...good,
+  categoryHero: null,
+  categoryContent: { title: '', applications: [], faq: [] },
+  support: null,
   filters: {
     brands: [{ id: 5, name: 'LONGI' }, { id: 6, name: 'ASTRONERGY' }],
     priceRanges: [{ key: '1', label: 'Dưới 1.000.000đ' }, { key: '2', label: '1.000.000đ - 3.000.000đ' }, { key: '3', label: 'Trên 3.000.000đ' }],

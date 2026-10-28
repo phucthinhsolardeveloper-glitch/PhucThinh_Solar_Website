@@ -4,6 +4,32 @@ import EditorialRichText from '~/components/editorial/EditorialRichText.vue'
 
 defineProps<{ data: PublicSolutionDetailPayload }>()
 const links = useMigrationLinks()
+const tocItems = ref<{ id: string; title: string; level: 2 | 3 }[]>([])
+
+function headingId(title: string, index: number): string {
+  const slug = title
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '')
+  return `solution-section-${slug || 'heading'}-${index + 1}`
+}
+
+onMounted(() => {
+  const article = document.querySelector<HTMLElement>('#solution-content .cms-content')
+  if (!article) return
+
+  tocItems.value = Array.from(article.querySelectorAll<HTMLElement>('h2, h3'))
+    .map((heading, index) => {
+      const title = heading.textContent?.trim() ?? ''
+      if (!title) return null
+      const id = heading.id || headingId(title, index)
+      heading.id = id
+      return { id, title, level: heading.tagName === 'H3' ? 3 as const : 2 as const }
+    })
+    .filter((item): item is { id: string; title: string; level: 2 | 3 } => item !== null)
+})
 </script>
 
 <template>
@@ -57,10 +83,27 @@ const links = useMigrationLinks()
         Tích hợp sanitizer: content/extraContent giờ là HTML thật qua
         pts_public_richtext.php, không còn mảng paragraph tách theo dòng.
       -->
-      <div id="noi-dung-giai-phap" class="mx-auto max-w-[820px] px-4 py-12">
-        <EditorialRichText :content="data.solution.content" />
-        <EditorialRichText class="mt-8" :content="data.solution.extraContent" />
-        <p v-if="!data.solution.content.html && !data.solution.extraContent.html" class="text-slate-500">Nội dung chi tiết đang được cập nhật.</p>
+      <div id="noi-dung-giai-phap" class="mx-auto grid w-full max-w-[1440px] grid-cols-1 gap-8 px-4 py-12 min-[768px]:grid-cols-[minmax(220px,280px)_minmax(0,1fr)] min-[768px]:gap-[clamp(32px,4vw,76px)]">
+        <aside
+          v-if="tocItems.length"
+          class="hidden self-start rounded-[3px] bg-navy-800 p-6 min-[768px]:sticky min-[768px]:top-[124px] min-[768px]:block min-[768px]:max-h-[calc(100vh-150px)] min-[768px]:overflow-y-auto"
+          aria-label="Mục lục nội dung"
+        >
+          <h2 class="mb-3.5 text-sm font-extrabold text-[#efc45b]">Nội dung chính</h2>
+          <ol class="m-0 list-none space-y-2 p-0">
+            <li v-for="item in tocItems" :key="item.id" :class="item.level === 3 ? 'ml-3' : ''">
+              <a class="block border-l-2 border-transparent py-1 pl-3 text-[13px] font-semibold leading-[1.45] text-[#c9d5e6] no-underline transition-colors hover:border-gold-400 hover:text-white" :href="`#${item.id}`">
+                {{ item.title }}
+              </a>
+            </li>
+          </ol>
+        </aside>
+
+        <article id="solution-content" class="min-w-0">
+          <EditorialRichText :content="data.solution.content" />
+          <EditorialRichText class="mt-8" :content="data.solution.extraContent" />
+          <p v-if="!data.solution.content.html && !data.solution.extraContent.html" class="text-slate-500">Nội dung chi tiết đang được cập nhật.</p>
+        </article>
       </div>
 
       <section v-if="data.solution.gallery.length" class="px-4 pb-12" aria-labelledby="solution-gallery-title">
@@ -72,10 +115,6 @@ const links = useMigrationLinks()
         </div>
       </section>
 
-      <!-- HTML thật đã hiện ở trên; chỉ còn mục lục (TOC) tự sinh từ heading là chưa làm. -->
-      <p class="mx-4 mb-10 border-t border-gray-200 pt-5 text-sm text-slate-500">
-        Mục lục tự động theo tiêu đề chưa được dựng: {{ data.editorial.reason }}.
-      </p>
     </article>
 
     <section v-if="data.equipment.length" class="mx-4 mb-12" aria-labelledby="solution-equipment-title">

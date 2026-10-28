@@ -47,6 +47,64 @@ function ptsCatalogPublicMedia($value)
     return '/upload/product/'.$value;
 }
 
+function ptsCatalogVisualMedia($value, $prefix, $root = '')
+{
+    if(!is_scalar($value)) return '';
+    $value = ltrim(trim((string)$value), '/');
+    if($value === '' || basename($value) !== $value || !preg_match('/^[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|gif|webp|avif)$/i', $value)) return '';
+    if($root !== '' && !is_file(rtrim($root, '/\\').DIRECTORY_SEPARATOR.trim($prefix, '/\\').DIRECTORY_SEPARATOR.$value)) return '';
+    return '/'.trim($prefix, '/').'/'.$value;
+}
+
+function ptsCatalogHref($value)
+{
+    if(!is_scalar($value)) return '';
+    $value = trim((string)$value);
+    if($value === '' || preg_match('/[\x00-\x20<>"\'`]/', $value) || strpos($value, '..') !== false || preg_match('/^(?:javascript|data|vbscript):/i', $value) || strpos($value, '//') === 0) return '';
+    return strpos($value, '/') === 0 ? $value : '/'.$value;
+}
+
+function ptsCatalogPageExtrasDto(array $extras)
+{
+    $hero = null;
+    if(!empty($extras['hero']) && is_array($extras['hero'])) {
+        $image = ptsCatalogVisualMedia($extras['hero']['photo'] ?? '', $extras['hero']['upload'] ?? 'upload/photo/', $extras['root'] ?? '');
+        if($image === '') $image = ptsCatalogVisualMedia($extras['hero']['photo'] ?? '', 'assets/images/site-visuals/', $extras['root'] ?? '');
+        if($image === '') $image = ptsCatalogVisualMedia($extras['hero']['photo'] ?? '', 'upload/product/', $extras['root'] ?? '');
+        if($image !== '') $hero = array('image' => $image, 'alt' => ptsCatalogPlainText($extras['hero']['alt'] ?? ''));
+    }
+    $applications = array();
+    $applicationTitle = '';
+    foreach(isset($extras['cards']) && is_array($extras['cards']) ? $extras['cards'] : array() as $block) {
+        if($applicationTitle === '') $applicationTitle = ptsCatalogPlainText($block['title'] ?? '');
+        foreach(isset($block['items']) && is_array($block['items']) ? $block['items'] : array() as $item) {
+            if(!is_array($item)) continue;
+            $title = ptsCatalogPlainText($item['title'] ?? '');
+            if($title === '') continue;
+            $photo = (string)($item['photo'] ?? '');
+            $image = ptsCatalogVisualMedia($photo, 'upload/product/', $extras['root'] ?? '');
+            if($image === '') $image = ptsCatalogVisualMedia($photo, 'assets/images/site-visuals/', $extras['root'] ?? '');
+            $applications[] = array('title' => $title, 'description' => ptsCatalogPlainText($item['desc'] ?? ''), 'image' => $image, 'href' => ptsCatalogHref($item['link'] ?? ''));
+        }
+    }
+    $faq = array();
+    foreach(isset($extras['faq']) && is_array($extras['faq']) ? $extras['faq'] : array() as $item) {
+        if(!is_array($item)) continue;
+        $question = ptsCatalogPlainText($item['question'] ?? '');
+        $answer = ptsCatalogPlainText($item['answer'] ?? '');
+        if($question !== '' && $answer !== '') $faq[] = array('question' => $question, 'answer' => $answer);
+    }
+    $support = null;
+    if(!empty($extras['support']) && is_array($extras['support'])) {
+        $photo = (string)($extras['support']['photo'] ?? '');
+        $image = ptsCatalogVisualMedia($photo, 'upload/photo/', $extras['root'] ?? '');
+        if($image === '') $image = ptsCatalogVisualMedia($photo, 'assets/images/site-visuals/', $extras['root'] ?? '');
+        $title = ptsCatalogPlainText($extras['support']['name'] ?? '');
+        if($title !== '') $support = array('title' => $title, 'description' => ptsCatalogPlainText($extras['support']['desc'] ?? ''), 'image' => $image, 'href' => ptsCatalogHref($extras['support']['link'] ?? 'lien-he/'));
+    }
+    return array('categoryHero' => $hero, 'categoryContent' => array('title' => $applicationTitle, 'applications' => $applications, 'faq' => $faq), 'support' => $support);
+}
+
 function ptsCatalogPositiveNumber($value)
 {
     if(!is_scalar($value) || !is_numeric($value)) return null;
@@ -178,7 +236,7 @@ function ptsCatalogSortOrderBy($key, $pricesVisible)
     }
 }
 
-function ptsCatalogPayload(array $category, array $categories, array $rows, $page, $perPage, $total, $pricesVisible = false, array $filterOptions = array(), array $selectedFilters = array())
+function ptsCatalogPayload(array $category, array $categories, array $rows, $page, $perPage, $total, $pricesVisible = false, array $filterOptions = array(), array $selectedFilters = array(), array $extras = array())
 {
     $products = array();
     foreach($rows as $row)
@@ -211,7 +269,7 @@ function ptsCatalogPayload(array $category, array $categories, array $rows, $pag
     $selectedBrandIds = isset($selectedFilters['brandIds']) && is_array($selectedFilters['brandIds']) ? array_values(array_unique(array_map('intval', $selectedFilters['brandIds']))) : array();
     $selectedPriceKeys = isset($selectedFilters['priceKeys']) && is_array($selectedFilters['priceKeys']) ? array_values(array_unique(array_map('strval', $selectedFilters['priceKeys']))) : array();
     $selectedSubcategoryIds = isset($selectedFilters['subcategoryIds']) && is_array($selectedFilters['subcategoryIds']) ? array_values(array_unique(array_map('intval', $selectedFilters['subcategoryIds']))) : array();
-    return array(
+    return array_merge(array(
         'schemaVersion' => 1,
         'locale' => 'vi',
         'category' => $category,
@@ -234,5 +292,5 @@ function ptsCatalogPayload(array $category, array $categories, array $rows, $pag
             'filters' => array('included' => true),
             'sort' => array('included' => true)
         )
-    );
+    ), ptsCatalogPageExtrasDto($extras));
 }

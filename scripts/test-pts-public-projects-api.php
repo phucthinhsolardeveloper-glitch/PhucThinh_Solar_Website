@@ -22,6 +22,8 @@ projectsAssert($payload['projects'][0]['description'] === 'Mô tả CMS' && $pay
 projectsAssert($payload['cta']['image'] === '/upload/news/cta.jpg' && $payload['cta']['hotline']['tel'] === '090123', 'CTA và hotline lấy từ CMS/config');
 $hidden = ptsProjectsPayload($categories, array(), array(), array(array('namevi'=>'Bị ẩn', 'status'=>'')), 1, 12, 0, null, '');
 projectsAssert($hidden['cta'] === null, 'CTA bị ẩn không hồi sinh fallback');
+$defaultCta = ptsProjectsPayload($categories, array(), array(), array(), 1, 12, 0, null, '090 123')['cta'];
+projectsAssert($defaultCta['title'] === 'Bạn có công trình cần tư vấn?' && $defaultCta['buttonLabel'] === 'Nhận tư vấn miễn phí', 'CTA dùng đúng nội dung fallback PHP khi chưa từng cấu hình');
 $encoded = json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 projectsAssert(strpos($encoded, 'hidden.jpg') === false && strpos($encoded, '<b>') === false, 'DTO không lộ record ẩn hoặc HTML');
 

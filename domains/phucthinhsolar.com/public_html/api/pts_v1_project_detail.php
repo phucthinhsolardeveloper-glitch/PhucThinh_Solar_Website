@@ -22,6 +22,7 @@ try {
     new AutoLoad();
     $d = new PDODb($config['database']);
     require_once LIBRARIES.'pts_public_project_detail_api.php';
+    require_once LIBRARIES.'solution_hub.php';
     $row = $d->rawQueryOne('select id,id_list,namevi,slugvi,descvi,contentvi,photo,address,tenkhachhang,project_start_date,project_end_date,status,type from #_news where slugvi = ? and type = ? and find_in_set(\'hienthi\',status) limit 1', array($slug, 'du-an'));
     if(empty($row)) ptsProjectDetailError(404, 'PROJECT_NOT_FOUND');
     $category = $d->rawQueryOne('select id,namevi,slugvi,status from #_news_list where id = ? and type = ? and find_in_set(\'hienthi\',status) limit 1', array((int)$row['id_list'], 'du-an'));
@@ -35,5 +36,25 @@ try {
     $related = array();
     $relatedRows = $d->rawQuery('select p.id,p.namevi,p.slugvi,p.photo,p.code,p.status from #_product_project pp inner join #_product p on p.id = pp.id_product where pp.id_project = ? and find_in_set(\'hienthi\',pp.status) and p.type = ? and find_in_set(\'hienthi\',p.status) order by pp.numb,pp.id', array((int)$row['id'], 'san-pham'));
     foreach((array)$relatedRows as $relatedRow) { $dto = ptsProjectDetailProductDto($relatedRow, ROOT); if($dto !== null) $related[] = $dto; }
-    echo json_encode(ptsProjectDetailPayload($row, $gallery, $related, array('project' => 'legacy /'.$slug.'/', 'gallery' => 'news.php detail branch', 'relatedEquipment' => 'product_projects.php')), JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR);
+    $relatedProjectRows = $d->rawQuery('select id,namevi,slugvi,photo,address,status from #_news where id<>? and id_list=? and type=? and find_in_set(\'hienthi\',status) order by numb,id desc limit 0,3', array((int)$row['id'], (int)$row['id_list'], 'du-an'));
+    $relatedProjects = array();
+    foreach((array)$relatedProjectRows as $relatedProjectRow) { $dto = ptsProjectDetailRelatedProjectDto($relatedProjectRow, ROOT); if($dto !== null) $relatedProjects[] = $dto; }
+    $ctaRows = $d->rawQuery('select namevi,title_indexvi,descvi,content1vi,photo,status from #_news where type=? order by numb,id desc', array('project-cta'));
+    $ctaVisible = solutionHubSelect($ctaRows, '', 1);
+    $cta = null;
+    if(!$ctaRows || $ctaVisible)
+    {
+        $ctaRow = $ctaVisible ? $ctaVisible[0] : array();
+        $ctaImage = ptsProjectDetailMedia(isset($ctaRow['photo']) ? $ctaRow['photo'] : '', ROOT, 'upload/news/');
+        if($ctaImage === '' && is_file(ROOT.'upload/news/anh-quan-gl-4-9449.jpg')) $ctaImage = '/upload/news/anh-quan-gl-4-9449.jpg';
+        $cta = array(
+            'eyebrow' => solutionHubField($ctaRow, 'title_index', 'vi') ?: 'Đồng hành cùng năng lượng sạch',
+            'title' => solutionHubField($ctaRow, 'name', 'vi') ?: 'Bạn có công trình cần tư vấn?',
+            'description' => solutionHubField($ctaRow, 'desc', 'vi') ?: 'Đội ngũ Phúc Thịnh Solar sẵn sàng hỗ trợ, tư vấn giải pháp điện mặt trời phù hợp nhất cho nhu cầu của bạn.',
+            'buttonLabel' => solutionHubField($ctaRow, 'content1', 'vi') ?: 'Nhận tư vấn miễn phí',
+            'image' => $ctaImage,
+            'hotline' => isset($optsetting['hotline']) && is_scalar($optsetting['hotline']) ? trim((string)$optsetting['hotline']) : ''
+        );
+    }
+    echo json_encode(ptsProjectDetailPayload($row, $gallery, $related, array('project' => 'legacy /'.$slug.'/', 'gallery' => 'news.php detail branch', 'relatedEquipment' => 'product_projects.php', 'relatedProjects' => 'news.php same category', 'cta' => 'project_hub.php project-cta slot'), $relatedProjects, $cta), JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR);
 } catch(Throwable $e) { error_log('pts_v1_project_detail: '.$e->getMessage()); http_response_code(500); echo '{"error":{"code":"INTERNAL_ERROR"}}'; }

@@ -81,7 +81,19 @@ function ptsProjectDetailGalleryDto(array $row, $root = '')
     return null;
 }
 
-function ptsProjectDetailPayload(array $row, array $gallery, array $relatedEquipment, $canonicalSources = array())
+function ptsProjectDetailRelatedProjectDto(array $row, $root = '')
+{
+    if(!ptsProjectDetailPublished(isset($row['status']) ? $row['status'] : '')) return null;
+    $id = isset($row['id']) ? (int)$row['id'] : 0;
+    $slug = ptsProjectDetailSlug(isset($row['slugvi']) ? $row['slugvi'] : '');
+    $title = ptsProjectDetailText(isset($row['namevi']) ? $row['namevi'] : '');
+    if($id <= 0 || $slug === '' || $title === '') return null;
+    return array('id' => $id, 'title' => $title, 'slug' => $slug, 'url' => '/'.$slug.'/',
+        'address' => ptsProjectDetailText(isset($row['address']) ? $row['address'] : ''),
+        'image' => ptsProjectDetailMedia(isset($row['photo']) ? $row['photo'] : '', $root, 'upload/news/'));
+}
+
+function ptsProjectDetailPayload(array $row, array $gallery, array $relatedEquipment, $canonicalSources = array(), array $relatedProjects = array(), $cta = null)
 {
     if(!ptsProjectDetailPublished(isset($row['status']) ? $row['status'] : '')) return null;
     $id = isset($row['id']) ? (int)$row['id'] : 0;
@@ -113,7 +125,9 @@ function ptsProjectDetailPayload(array $row, array $gallery, array $relatedEquip
             'startDate' => ptsProjectDetailDate(isset($row['project_start_date']) ? $row['project_start_date'] : ''),
             'endDate' => ptsProjectDetailDate(isset($row['project_end_date']) ? $row['project_end_date'] : ''),
             'gallery' => array_values(array_filter($gallery)),
-            'relatedEquipment' => array_values(array_filter($relatedEquipment))
+            'relatedEquipment' => array_values(array_filter($relatedEquipment)),
+            'relatedProjects' => array_values(array_filter($relatedProjects)),
+            'cta' => $cta
         ),
         'content' => array(
             'format' => 'sanitized-html',

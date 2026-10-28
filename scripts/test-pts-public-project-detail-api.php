@@ -10,6 +10,8 @@ projectDetailAssert($payload['project']['url'] === '/cong-trinh-that/' && $paylo
 projectDetailAssert($payload['project']['client'] === 'Khách CMS' && $payload['project']['startDate'] === '2026-01-02', 'field chi tiết chỉ lấy từ CMS');
 projectDetailAssert($payload['content']['format'] === 'sanitized-html' && $payload['content']['sanitizedBy'] === 'pts_public_richtext' && strpos($payload['content']['html'], '<script') === false && strpos(json_encode($payload), '<script') === false, 'content da qua pts_public_richtext, khong lo script tho');
 projectDetailAssert($payload['project']['relatedEquipment'][0]['url'] === '/san-pham/thiet-bi-cms', 'related equipment giữ canonical product URL');
+projectDetailAssert($payload['project']['relatedProjects'] === array() && $payload['project']['cta'] === null, 'related projects / CTA không tự dựng khi chưa chiếu dữ liệu');
+projectDetailAssert(ptsProjectDetailRelatedProjectDto(array('id'=>13,'namevi'=>'Dự án cùng nhóm','slugvi'=>'du-an-cung-nhom','status'=>'hienthi'))['url'] === '/du-an-cung-nhom/', 'dự án liên quan giữ URL canonical và text sạch');
 projectDetailAssert(ptsProjectDetailProductDto(array('id'=>11,'namevi'=>'Biến tần thật','slugvi'=>'bien-tan-that','status'=>'hienthi'))['url'] === '/san-pham/bien-tan-that', 'ptsProjectDetailProductDto() tu xay url cung khong co dau / cuoi');
 projectDetailAssert(ptsProjectDetailSlug('../secret') === '' && ptsProjectDetailSlug('Good Slug') === '', 'chặn traversal và slug sai');
 $hidden = $row; $hidden['status'] = ''; projectDetailAssert(ptsProjectDetailPayload($hidden, array(), array()) === null, 'record ẩn không được hồi sinh');

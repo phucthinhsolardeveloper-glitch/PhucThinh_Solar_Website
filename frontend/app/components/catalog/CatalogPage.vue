@@ -68,6 +68,16 @@ function findCategory(nodes: PublicProductCategoryNode[], chain: string): Public
 }
 
 const selectedCategory = computed(() => findCategory(siteData.value?.productCategoryTree ?? [], category.value))
+const activeCategoryRoot = computed(() => {
+  const tree = siteData.value?.productCategoryTree ?? []
+  if (!selectedCategory.value) return null
+  return tree.find((node) => node.url === selectedCategory.value?.url)
+    ?? tree.find((node) => node.children.some((child) => child.url === selectedCategory.value?.url))
+})
+const categoryNavItems = computed(() => selectedCategory.value
+  ? activeCategoryRoot.value?.children ?? []
+  : (siteData.value?.productCategoryTree ?? []).filter((node) => node.slug !== 'den-san-vuon'))
+const categoryAllHref = computed(() => activeCategoryRoot.value?.url ?? '/san-pham/')
 
 /**
  * Nếu lưới vẫn giữ nguyên hai cột khi không có danh mục/bộ lọc thì nội dung
@@ -100,7 +110,21 @@ const sortOptions = computed(() => {
   if (catalogData.value?.parity.prices.included) return base
   return base.filter((option) => option.value !== 'price' && option.value !== 'price-desc')
 })
-const heading = computed(() => catalogData.value?.category && !Array.isArray(catalogData.value.category) ? catalogData.value.category.name : 'Danh mục sản phẩm')
+const heading = computed(() => catalogData.value?.category && !Array.isArray(catalogData.value.category) ? catalogData.value.category.name : 'Sản phẩm năng lượng mặt trời')
+const bannerDescription = computed(() => {
+  const path = category.value
+  if (!path) return 'Giải pháp năng lượng phù hợp cho gia đình, doanh nghiệp và công trình'
+  if (path.includes('den-duong')) return 'Chiếu sáng ổn định cho đường phố, lối đi và khu vực công cộng'
+  if (path.includes('den-pha')) return 'Chiếu sáng mạnh mẽ cho sân bãi, nhà xưởng và công trình'
+  if (path.includes('den-san-vuon')) return 'Tạo điểm nhấn ánh sáng cho sân vườn, lối đi và khuôn viên'
+  if (path.includes('den-op-tran')) return 'Chiếu sáng tiện nghi cho hiên nhà, hành lang và không gian sinh hoạt'
+  if (path.includes('den-')) return 'Lựa chọn chiếu sáng phù hợp cho đường phố, sân nhà và khuôn viên'
+  if (path.includes('tam-pin')) return 'Tạo nguồn điện sạch, ổn định cho gia đình và công trình'
+  if (path.includes('pin-luu-tru')) return 'Lưu trữ năng lượng an toàn, chủ động cho mọi nhu cầu sử dụng'
+  if (path.includes('quat-')) return 'Giải pháp làm mát tiết kiệm điện cho gia đình và không gian mở'
+  if (path.includes('bien-tan')) return 'Chuyển đổi điện năng hiệu quả, vận hành ổn định và bền bỉ'
+  return 'Giải pháp năng lượng phù hợp cho gia đình, doanh nghiệp và công trình'
+})
 const totalPages = computed(() => catalogData.value ? Math.max(1, Math.ceil(catalogData.value.pagination.total / catalogData.value.pagination.perPage)) : 1)
 const currentPage = computed(() => catalogData.value?.pagination.page ?? 1)
 const paginationItems = computed(() => {
@@ -141,6 +165,29 @@ function pageLink(nextPage: number) {
              max-ph:pt-6 max-ph:pb-12"
       :class="hasSidebar ? 'nav:grid-cols-[260px_minmax(0,1fr)]' : ''"
     >
+      <section class="col-span-full overflow-hidden bg-navy-950 text-white" aria-labelledby="catalog-heading">
+        <div class="relative isolate flex min-h-[clamp(260px,24vw,410px)] items-end overflow-hidden px-6 py-8 nav:px-10 nav:py-10">
+          <img v-if="catalogData?.categoryHero?.image" :src="catalogData.categoryHero.image" :alt="catalogData.categoryHero.alt" class="absolute inset-0 -z-20 h-full w-full object-cover" fetchpriority="high">
+          <span class="absolute inset-0 -z-10 bg-gradient-to-r from-navy-950/90 via-navy-950/65 to-navy-950/15" aria-hidden="true" />
+          <div class="max-w-[760px]">
+            <h1 id="catalog-heading" class="mb-3 text-[clamp(30px,4.2vw,52px)] font-black leading-[1.12] tracking-tight text-white">{{ heading }}</h1>
+            <p class="m-0 max-w-[62ch] leading-relaxed text-blue-100">{{ bannerDescription }}</p>
+          </div>
+        </div>
+      </section>
+
+      <div class="col-span-full grid grid-cols-2 gap-4 border-b border-gray-200 py-5 tb:grid-cols-4" aria-label="Lợi ích khi chọn sản phẩm">
+        <div class="flex items-start gap-3"><span class="text-gold-700" aria-hidden="true">✦</span><span><strong class="block text-sm text-navy-950">Tư vấn lựa chọn</strong><small class="text-slate-500">Đúng nhu cầu, hiệu quả</small></span></div>
+        <div class="flex items-start gap-3"><span class="text-gold-700" aria-hidden="true">⚙</span><span><strong class="block text-sm text-navy-950">Hỗ trợ kỹ thuật</strong><small class="text-slate-500">Trong suốt quá trình sử dụng</small></span></div>
+        <div class="flex items-start gap-3"><span class="text-gold-700" aria-hidden="true">✓</span><span><strong class="block text-sm text-navy-950">Chính sách rõ ràng</strong><small class="text-slate-500">Minh bạch, dễ hiểu</small></span></div>
+        <div class="flex items-start gap-3"><span class="text-gold-700" aria-hidden="true">↗</span><span><strong class="block text-sm text-navy-950">Giao hàng toàn quốc</strong><small class="text-slate-500">Nhanh chóng, an toàn</small></span></div>
+      </div>
+
+      <nav v-if="categoryNavItems.length" class="col-span-full flex gap-3 overflow-x-auto border-b border-gray-200 py-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" aria-label="Danh mục sản phẩm">
+        <NuxtLink :to="categoryAllHref" class="flex-none px-3 py-2 font-bold text-navy-800 no-underline hover:text-gold-700" :aria-current="!selectedCategory || selectedCategory.url === categoryAllHref ? 'page' : undefined">Tất cả</NuxtLink>
+        <NuxtLink v-for="item in categoryNavItems" :key="item.url" :to="item.url" class="flex-none px-3 py-2 font-bold text-navy-800 no-underline hover:text-gold-700" :aria-current="item.url === selectedCategory?.url ? 'page' : undefined">{{ item.name }}</NuxtLink>
+      </nav>
+
       <!--
       Danh mục và các bộ lọc nghiệp vụ dùng chung một panel để không lặp lại
       cùng một lựa chọn ở sidebar và phía trên lưới sản phẩm.
@@ -155,19 +202,14 @@ function pageLink(nextPage: number) {
         />
       </div>
 
-      <section aria-labelledby="catalog-preview-title">
+      <section aria-labelledby="catalog-list-title">
         <p class="mb-5 text-slate-500">
           <NuxtLink class="text-inherit" :to="selfPath">Danh mục sản phẩm</NuxtLink>
           <span v-if="selectedCategory"> / {{ selectedCategory.name }}</span>
         </p>
 
-        <h1 id="catalog-preview-title" class="mb-3 text-[clamp(28px,4vw,48px)] font-black leading-[1.15] tracking-tight">
-          {{ heading }}
-        </h1>
-
-        <p class="mb-7 leading-relaxed text-slate-500">
-          Preview nội bộ từ dữ liệu CMS. Giá công khai/giá báo đã nối theo authority PHP; lọc theo loại sản phẩm/thương hiệu/mức giá và sắp xếp đã nối với cùng truy vấn PHP. PHP không có projection tồn kho công khai; danh mục và bộ lọc được trình bày chung trong một panel.
-        </p>
+        <h2 id="catalog-list-title" class="mb-3 text-2xl font-black leading-tight tracking-tight">Sản phẩm trong danh mục</h2>
+        <p class="mb-7 leading-relaxed text-slate-500">Lọc theo danh mục, thương hiệu và mức giá để tìm thiết bị phù hợp.</p>
 
         <div v-if="catalogPending" class="py-16" role="status" aria-live="polite">
           <p class="text-slate-500">Đang tải sản phẩm…</p>
@@ -247,6 +289,34 @@ function pageLink(nextPage: number) {
             </NuxtLink>
           </nav>
         </template>
+      </section>
+
+      <section v-if="catalogData?.categoryContent.applications.length" class="col-span-full py-10" aria-labelledby="catalog-applications-title">
+        <h2 id="catalog-applications-title" class="mb-7 text-2xl font-black text-navy-950">{{ catalogData.categoryContent.title || 'Ứng dụng phù hợp' }}</h2>
+        <div class="grid grid-cols-1 gap-7 tb:grid-cols-2 nav:grid-cols-3">
+          <a v-for="item in catalogData.categoryContent.applications" :key="item.title" :href="item.href || undefined" class="min-w-0 text-navy-800 no-underline">
+            <img v-if="item.image" :src="item.image" :alt="item.title" class="aspect-[8/5] w-full object-cover" loading="lazy" decoding="async">
+            <h3 class="mb-2 mt-4 text-lg font-extrabold text-navy-950">{{ item.title }}</h3>
+            <p v-if="item.description" class="m-0 leading-relaxed text-slate-600">{{ item.description }}</p>
+          </a>
+        </div>
+      </section>
+
+      <section v-if="catalogData?.categoryContent.faq.length" class="col-span-full py-8" aria-labelledby="catalog-faq-title">
+        <h2 id="catalog-faq-title" class="mb-5 text-2xl font-black text-navy-950">Câu hỏi thường gặp</h2>
+        <details v-for="item in catalogData.categoryContent.faq" :key="item.question" class="border-b border-gray-200 py-4">
+          <summary class="cursor-pointer font-bold text-navy-950">{{ item.question }}</summary>
+          <p class="mb-0 mt-3 leading-relaxed text-slate-600">{{ item.answer }}</p>
+        </details>
+      </section>
+
+      <section v-if="catalogData?.support" class="relative isolate col-span-full mt-5 grid grid-cols-1 items-center gap-6 overflow-hidden bg-navy-950 px-6 py-8 text-white tb:grid-cols-[minmax(0,1fr)_auto] nav:px-10 nav:py-9" aria-labelledby="catalog-support-title">
+        <img v-if="catalogData.support.image" :src="catalogData.support.image" alt="" class="absolute inset-0 -z-10 h-full w-full object-cover opacity-20" loading="lazy" decoding="async">
+        <div>
+          <h2 id="catalog-support-title" class="mb-2 text-2xl font-black">{{ catalogData.support.title }}</h2>
+          <p class="mb-0 max-w-[720px] leading-relaxed text-blue-100">{{ catalogData.support.description }}</p>
+        </div>
+        <NuxtLink :to="catalogData.support.href || '/lien-he/'" class="inline-flex min-h-11 items-center justify-center bg-gold-500 px-5 font-extrabold text-navy-950 no-underline">Nhận tư vấn →</NuxtLink>
       </section>
     </main>
 

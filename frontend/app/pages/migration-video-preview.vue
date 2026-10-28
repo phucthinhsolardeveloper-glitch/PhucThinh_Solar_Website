@@ -98,9 +98,8 @@ useSeoMeta({
             <h2 class="m-0 p-4 text-lg font-black leading-snug text-navy-800">{{ item.title }}</h2>
           </button>
         </div>
-        <div v-else class="rounded-btn border border-dashed border-gray-300 bg-slate-50 px-6 py-14 text-center">
-          <h2 class="mb-2 text-xl font-black">Video đang được cập nhật</h2>
-          <p class="mb-0 text-slate-500">Khi CMS có video YouTube được bật hiển thị, nội dung sẽ xuất hiện tự động tại đây.</p>
+        <div v-else class="rounded-btn border border-amber-300 bg-amber-50 px-4 py-3 text-amber-900" role="status">
+          <strong>Không tìm thấy kết quả</strong>
         </div>
 
         <nav v-if="totalPages > 1" class="mt-10 flex items-center justify-center gap-3" aria-label="Phân trang video">

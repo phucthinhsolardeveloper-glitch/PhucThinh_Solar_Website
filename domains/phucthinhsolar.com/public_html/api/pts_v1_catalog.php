@@ -47,6 +47,7 @@ try
     require_once LIBRARIES.'product_category_urls.php';
     require_once LIBRARIES.'public_pricing.php';
     require_once LIBRARIES.'product_price_filter.php';
+    require_once LIBRARIES.'product_content_blocks.php';
     require_once LIBRARIES.'pts_public_catalog_api.php';
 
     $segments = $categoryPath === '' ? array() : explode('/', $categoryPath);
@@ -63,7 +64,9 @@ try
         $baseWhere .= ' and p.'.$fields[$last].' = ?';
         $baseParams[] = (int)$resolved[$last];
         $tables = array('idl' => 'product_list', 'idc' => 'product_cat', 'idi' => 'product_item', 'ids' => 'product_sub');
-        $row = $d->rawQueryOne("select id,namevi,slugvi,status from #_{$tables[$last]} where id = ? and type = ? and find_in_set('hienthi',status) limit 1", array((int)$resolved[$last], 'san-pham'));
+        $categoryExtraColumns = $last === 'idc' ? ',id_list' : '';
+        $row = $d->rawQueryOne("select id,namevi,slugvi,status,photo{$categoryExtraColumns} from #_{$tables[$last]} where id = ? and type = ? and find_in_set('hienthi',status) limit 1", array((int)$resolved[$last], 'san-pham'));
+        $selectedCategoryRow = is_array($row) ? $row : array();
         $category = ptsCatalogCategoryDto(is_array($row) ? $row : array(), $segments);
         if($category === null) ptsCatalogError(400, 'BAD_QUERY');
         /*
@@ -133,12 +136,59 @@ try
     $subcategoryOptionRows = array();
     if($resolvedListId > 0) $subcategoryOptionRows = $d->rawQuery("select id,namevi,slugvi,status from #_product_cat where id_list = ? and type = ? and find_in_set('hienthi',status) order by numb,id desc", array($resolvedListId, 'san-pham'));
 
+    $extras = array('root' => ROOT);
+    $currentPath = $categoryPath === '' ? 'san-pham' : 'danh-muc-san-pham/'.$categoryPath;
+    $heroRows = $cache->get("select namevi,link,photo,status from #_photo where type=? order by numb,id desc", array('product-category-hero'), 'result', 7200);
+    foreach((array)$heroRows as $heroRow) {
+        if(trim(parse_url((string)($heroRow['link'] ?? ''), PHP_URL_PATH), '/') !== $currentPath) continue;
+        if(ptsCatalogPublished($heroRow['status'] ?? '') && !empty($heroRow['photo'])) $extras['hero'] = array('photo' => $heroRow['photo'], 'upload' => 'upload/photo/', 'alt' => $heroRow['namevi'] ?? '');
+        break;
+    }
+    /* Keep the one category-specific fallback enabled in sources/product.php
+       available to the read-only DTO when no Admin hero record is configured. */
+    if(empty($extras['hero']) && $currentPath === 'danh-muc-san-pham/den-nlmt/den-pha-nang-luong-mat-troi' && is_file(ROOT.'assets/images/site-visuals/catalog-solar-flood-lighting-20261008.png')) {
+        $extras['hero'] = array('photo' => 'catalog-solar-flood-lighting-20261008.png', 'upload' => 'assets/images/site-visuals/', 'alt' => 'Đèn pha năng lượng mặt trời cho sân bãi và công trình');
+    }
+    if(empty($extras['hero']) && !empty($selectedCategoryRow['photo'])) $extras['hero'] = array('photo' => $selectedCategoryRow['photo'], 'upload' => 'upload/product/', 'alt' => $selectedCategoryRow['namevi'] ?? '');
+    if(empty($extras['hero']) && $categoryPath === '' && is_file(ROOT.'assets/images/site-visuals/catalog-products-hero-20261007-v2.png')) $extras['hero'] = array('photo' => 'catalog-products-hero-20261007-v2.png', 'upload' => 'assets/images/site-visuals/', 'alt' => 'Danh mục thiết bị năng lượng mặt trời Phúc Thịnh Solar');
+
+    $sectionScope = '';
+    $sectionId = 0;
+    if(isset($resolved['idl'])) { $sectionScope = 'list'; $sectionId = (int)$resolved['idl']; }
+    elseif(isset($resolved['idc'])) { $sectionScope = 'cat'; $sectionId = (int)$resolved['idc']; }
+    $blocks = $sectionScope !== '' ? productCategorySectionBlocks($d, $sectionScope, $sectionId, 'vi') : array();
+    $split = productSplitFaqBlocks($blocks);
+    $cardSplit = productSplitCardsBlocks($split['rest']);
+    $extras['faq'] = $split['faq'];
+    $extras['cards'] = $cardSplit['cards'];
+    if($sectionScope === 'cat' && (empty($extras['faq']) || empty($extras['cards'])) && !empty($selectedCategoryRow['id_list'])) {
+        $parentBlocks = productCategorySectionBlocks($d, 'list', (int)$selectedCategoryRow['id_list'], 'vi');
+        $parentFaq = productSplitFaqBlocks($parentBlocks);
+        $parentCards = productSplitCardsBlocks($parentFaq['rest']);
+        if(empty($extras['faq'])) $extras['faq'] = $parentFaq['faq'];
+        if(empty($extras['cards'])) $extras['cards'] = $parentCards['cards'];
+    }
+    if($sectionScope === 'list' && !empty($selectedCategoryRow['slugvi']) && $selectedCategoryRow['slugvi'] === 'den-nlmt' && (empty($extras['faq']) || empty($extras['cards']))) {
+        $fallback = productLightingFallbackBlocks();
+        if(empty($extras['faq'])) $extras['faq'] = $fallback['faq'];
+        if(empty($extras['cards'])) $extras['cards'] = $fallback['cards'];
+    }
+
+    $supportRows = $cache->get("select namevi,descvi,photo,link,status from #_photo where type=? order by numb,id desc", array('catalog-campaign'), 'result', 7200);
+    foreach((array)$supportRows as $supportRow) {
+        if(empty($supportRow['photo']) || !ptsCatalogPublished($supportRow['status'] ?? '')) continue;
+        $extras['support'] = array('name' => $supportRow['namevi'] ?? '', 'desc' => $supportRow['descvi'] ?? '', 'photo' => $supportRow['photo'], 'link' => $supportRow['link'] ?? 'lien-he/');
+        break;
+    }
+    if(!$supportRows) $extras['support'] = array('name' => 'Cần hỗ trợ chọn sản phẩm phù hợp?', 'desc' => 'Chia sẻ nhu cầu để đội ngũ Phúc Thịnh Solar tư vấn cấu hình và báo giá phù hợp.', 'photo' => 'catalog-equipment-system.jpg', 'link' => 'lien-he/');
+
     echo json_encode(ptsCatalogPayload(
         $category ?: array(),
         is_array($categories) ? $categories : array(),
         $rows, $page, $perPage, $total, publicProductPricesVisible(),
         array('brands' => is_array($brandOptionRows) ? $brandOptionRows : array(), 'subcategories' => is_array($subcategoryOptionRows) ? $subcategoryOptionRows : array()),
-        array('brandIds' => $brandIds, 'priceKeys' => $priceParam !== '' ? explode(',', $priceParam) : array(), 'subcategoryIds' => $subcategoryIds, 'sort' => $sortKey)
+        array('brandIds' => $brandIds, 'priceKeys' => $priceParam !== '' ? explode(',', $priceParam) : array(), 'subcategoryIds' => $subcategoryIds, 'sort' => $sortKey),
+        $extras
     ), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
 }
 catch(Throwable $e)
