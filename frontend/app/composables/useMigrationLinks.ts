@@ -23,6 +23,8 @@ export function useMigrationLinks() {
       '/san-pham/': '/migration-catalog-preview',
       '/gio-hang/': '/migration-cart-preview',
       '/tim-kiem/': '/migration-search-preview',
+      '/thu-vien-anh/': '/migration-gallery-preview',
+      '/video/': '/migration-video-preview',
     }
     if (staticMap[path]) return staticMap[path] + hash
 
@@ -37,6 +39,12 @@ export function useMigrationLinks() {
 
     const policy = path.match(/^\/ho-tro\/([a-z0-9]+(?:-[a-z0-9]+)*)\/$/)
     if (policy) return '/migration-policy-preview?slug=' + encodeURIComponent(policy[1]!)
+
+    const galleryMatch = path.match(/^\/thu-vien-anh\/([a-z0-9]+(?:-[a-z0-9]+)*)\/?$/)
+    if (galleryMatch) return gallery(galleryMatch[1]!)
+
+    const brandMatch = path.match(/^\/thuong-hieu\/([a-z0-9]+(?:-[a-z0-9]+)*)\/$/)
+    if (brandMatch) return brand(brandMatch[1]!)
 
     return href
   }
@@ -57,6 +65,12 @@ export function useMigrationLinks() {
   function project(slug: string): string {
     return active.value && SLUG.test(slug) ? '/migration-project-detail-preview?slug=' + encodeURIComponent(slug) : '/' + slug + '/'
   }
+  function gallery(slug: string): string {
+    return active.value && SLUG.test(slug) ? '/migration-gallery-detail-preview?slug=' + encodeURIComponent(slug) : '/thu-vien-anh/' + slug + '/'
+  }
+  function brand(slug: string): string {
+    return active.value && SLUG.test(slug) ? '/migration-brand-detail-preview?slug=' + encodeURIComponent(slug) : '/thuong-hieu/' + slug + '/'
+  }
 
-  return { active, generic, external, product, solution, news, project }
+  return { active, generic, external, product, solution, news, project, gallery, brand }
 }

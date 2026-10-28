@@ -15,11 +15,38 @@ const lightbox = computed(() => {
   return image ? { detail, image } : null
 })
 
-function open(index: number) {
+const lightboxPanel = ref<HTMLElement | null>(null)
+const lastTrigger = ref<HTMLElement | null>(null)
+
+function focusFirst(container: HTMLElement | null) {
+  if (!container) return
+  const first = container.querySelector<HTMLElement>('a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])')
+  first?.focus()
+}
+function trapFocus(event: KeyboardEvent, container: HTMLElement | null) {
+  if (!container) return
+  const focusable = [...container.querySelectorAll<HTMLElement>('a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])')]
+  if (!focusable.length) return
+  const first = focusable[0]!
+  const last = focusable[focusable.length - 1]!
+  if (event.shiftKey && document.activeElement === first) {
+    event.preventDefault()
+    last.focus()
+  } else if (!event.shiftKey && document.activeElement === last) {
+    event.preventDefault()
+    first.focus()
+  }
+}
+
+function open(index: number, trigger?: HTMLElement) {
   if (!gallery.value?.images[index]) return
+  lastTrigger.value = trigger ?? (document.activeElement as HTMLElement | null)
   selectedIndex.value = index
 }
-function close() { selectedIndex.value = null }
+function close() {
+  selectedIndex.value = null
+  if (import.meta.client) nextTick(() => lastTrigger.value?.focus())
+}
 function move(delta: number) {
   const count = gallery.value?.images.length ?? 0
   if (!count || selectedIndex.value === null) return
@@ -30,9 +57,11 @@ function onKeydown(event: KeyboardEvent) {
   if (event.key === 'Escape') close()
   else if (event.key === 'ArrowLeft') move(-1)
   else if (event.key === 'ArrowRight') move(1)
+  else if (event.key === 'Tab') trapFocus(event, lightboxPanel.value)
 }
 watch(selectedIndex, (value) => {
   if (import.meta.client) document.body.style.overflow = value === null ? '' : 'hidden'
+  if (value !== null) nextTick(() => focusFirst(lightboxPanel.value))
 })
 onMounted(() => document.addEventListener('keydown', onKeydown))
 onBeforeUnmount(() => {
@@ -72,7 +101,7 @@ useSeoMeta({
             type="button"
             class="group relative overflow-hidden rounded-chip border border-gray-200 bg-slate-50 text-left"
             :aria-label="'Mở ảnh ' + (index + 1) + ' trong album ' + gallery.album.title"
-            @click="open(index)"
+            @click="open(index, $event.currentTarget as HTMLElement)"
           >
             <img :src="image.image" :alt="image.caption || gallery.album.title" class="aspect-[4/3] h-full w-full object-cover transition duration-300 group-hover:scale-[1.025]" loading="lazy">
             <span v-if="image.caption" class="absolute inset-x-0 bottom-0 bg-navy-950/75 px-3 py-2 text-xs font-semibold text-white">{{ image.caption }}</span>
@@ -88,6 +117,7 @@ useSeoMeta({
     <Teleport to="body">
       <div
         v-if="lightbox"
+        ref="lightboxPanel"
         class="fixed inset-0 z-[100] grid place-items-center bg-black/90 p-4"
         role="dialog"
         aria-modal="true"

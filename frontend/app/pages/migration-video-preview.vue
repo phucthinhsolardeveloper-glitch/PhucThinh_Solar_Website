@@ -13,11 +13,45 @@ const totalPages = computed(() => payload.value ? Math.max(1, Math.ceil(payload.
 function pageTo(value: number) {
   return { path: '/migration-video-preview', query: value > 1 ? { p: String(value) } : {} }
 }
-function open(item: PublicVideoItem) { selected.value = item }
-function close() { selected.value = null }
-function onKeydown(event: KeyboardEvent) { if (selected.value && event.key === 'Escape') close() }
+const lightboxPanel = ref<HTMLElement | null>(null)
+const lastTrigger = ref<HTMLElement | null>(null)
+
+function focusFirst(container: HTMLElement | null) {
+  if (!container) return
+  const first = container.querySelector<HTMLElement>('a[href], button:not([disabled]), input:not([disabled]), iframe, [tabindex]:not([tabindex="-1"])')
+  first?.focus()
+}
+function trapFocus(event: KeyboardEvent, container: HTMLElement | null) {
+  if (!container) return
+  const focusable = [...container.querySelectorAll<HTMLElement>('a[href], button:not([disabled]), input:not([disabled]), iframe, [tabindex]:not([tabindex="-1"])')]
+  if (!focusable.length) return
+  const first = focusable[0]!
+  const last = focusable[focusable.length - 1]!
+  if (event.shiftKey && document.activeElement === first) {
+    event.preventDefault()
+    last.focus()
+  } else if (!event.shiftKey && document.activeElement === last) {
+    event.preventDefault()
+    first.focus()
+  }
+}
+
+function open(item: PublicVideoItem, trigger?: HTMLElement) {
+  lastTrigger.value = trigger ?? (document.activeElement as HTMLElement | null)
+  selected.value = item
+}
+function close() {
+  selected.value = null
+  if (import.meta.client) nextTick(() => lastTrigger.value?.focus())
+}
+function onKeydown(event: KeyboardEvent) {
+  if (!selected.value) return
+  if (event.key === 'Escape') close()
+  else if (event.key === 'Tab') trapFocus(event, lightboxPanel.value)
+}
 watch(selected, (value) => {
   if (import.meta.client) document.body.style.overflow = value ? 'hidden' : ''
+  if (value) nextTick(() => focusFirst(lightboxPanel.value))
 })
 onMounted(() => document.addEventListener('keydown', onKeydown))
 onBeforeUnmount(() => {
@@ -55,7 +89,7 @@ useSeoMeta({
             type="button"
             class="group overflow-hidden rounded-chip border border-gray-200 bg-white text-left"
             :aria-label="'Phát video ' + item.title"
-            @click="open(item)"
+            @click="open(item, $event.currentTarget as HTMLElement)"
           >
             <div class="relative aspect-video overflow-hidden bg-slate-100">
               <img :src="item.thumbnail" :alt="item.title" class="h-full w-full object-cover transition duration-300 group-hover:scale-[1.025]" loading="lazy">
@@ -81,6 +115,7 @@ useSeoMeta({
     <Teleport to="body">
       <div
         v-if="selected"
+        ref="lightboxPanel"
         class="fixed inset-0 z-[100] grid place-items-center bg-black/90 p-4"
         role="dialog"
         aria-modal="true"
