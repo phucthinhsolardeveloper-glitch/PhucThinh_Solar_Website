@@ -1,5 +1,6 @@
 const test = require('node:test')
 const assert = require('node:assert/strict')
+const migrationRoutes = require('../fixtures/migration-routes.json')
 const { parseArgs, parseViewport, validateOrigin, loadManifest, renderMarkdown, classifyDifference, previewLinkLeaks, viewportGate } = require('../scripts/migration-compare.cjs')
 
 test('accepts loopback origins and rejects remote origins by default', () => {
@@ -29,6 +30,12 @@ test('validates explicit route mapping and duplicate ids', () => {
   const manifest = loadManifest({ routes: [{ id: 'solutions', legacyPath: '/giai-phap/', previewPath: '/migration-preview' }] })
   assert.equal(manifest.routes[0].previewPath, '/migration-preview')
   assert.throws(() => loadManifest({ routes: [{ id: 'x', legacyPath: '/', previewPath: '/' }, { id: 'x', legacyPath: '/', previewPath: '/' }] }), /Duplicate route id/)
+})
+
+test('visual comparison covers every route in the migration manifest', () => {
+  const manifest = loadManifest(migrationRoutes)
+  assert.equal(manifest.routes.length, 26)
+  assert.deepEqual(manifest.routes.filter(route => route.visual === false).map(route => route.id), [])
 })
 
 test('keeps absolute route targets behind the same remote safety switch', () => {
