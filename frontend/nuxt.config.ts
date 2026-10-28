@@ -73,6 +73,8 @@ export default defineNuxtConfig({
     public: {
       aboutPublicRouteEnabled: false,
       aboutPublicRouteIndexable: false,
+      solutionsPublicRouteEnabled: false,
+      solutionsPublicRouteIndexable: false,
       phpPublicOrigin: 'http://127.0.0.1:8080',
     },
   },
