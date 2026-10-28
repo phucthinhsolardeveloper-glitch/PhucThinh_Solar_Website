@@ -74,6 +74,9 @@ cd /home/admin01/src/pts-nuxt-integration-20261027
   `docs/14-nuxt-migration/SEO-PARITY-AUDIT-20261028.md`; không được dùng preview
   noindex để kết luận SEO parity khi PHP legacy còn gap JSON-LD/OG và alias
   `/product/` root cần owner xác nhận.
+- FE/BE audit minor của Claude đã hợp nhất tại
+  `docs/14-nuxt-migration/FE-BE-GAP-AUDIT-20261028.md`; không có lỗi nghiêm trọng
+  mới trong catalog, PDP hoặc lead-form adapter.
 - Vue Router/Volar warning đã được xử lý bằng `vue-router@5.4.0`; dependency
   audit hiện **0 vulnerability** sau khi pin `node-forge@1.4.2` và `esbuild@0.28.2`
   cho nhánh `fontless` bằng overrides.

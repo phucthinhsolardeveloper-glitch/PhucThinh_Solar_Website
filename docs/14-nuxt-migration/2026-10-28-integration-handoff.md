@@ -27,6 +27,9 @@
   `docs/14-nuxt-migration/SEO-PARITY-AUDIT-20261028.md`: canonical/noindex
   preview PASS 26/26, nhưng `/product/` root alias, JSON-LD parity và một số OG
   fields phía PHP legacy còn FAIL/NEEDS VERIFICATION; chưa sửa public owner.
+- FE/BE gap audit của Claude đã hợp nhất tại
+  `docs/14-nuxt-migration/FE-BE-GAP-AUDIT-20261028.md`; không có blocker mới,
+  chỉ ghi nhận origin-debug 502 và thứ tự `NULL` khi sort giá.
 - Nuxt typecheck: exit 0; `vue-router@5.4.0` đã xử lý cảnh báo `vue-router/volar/sfc-route-blocks`.
 - Dependency audit: **0 vulnerability** sau khi pin `node-forge@1.4.2` và ép
   `fontless` dùng `esbuild@0.28.2` qua `frontend/package.json` overrides;
