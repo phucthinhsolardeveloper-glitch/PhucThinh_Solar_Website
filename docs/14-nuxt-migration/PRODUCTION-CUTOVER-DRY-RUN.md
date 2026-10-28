@@ -39,21 +39,29 @@ public route Nuxt và service production tồn tại. Đây là chủ ý fail-cl
 ## Allowlist, denylist và ranh giới nghiệp vụ
 
 Pilot được đề xuất là `GET|HEAD /gioi-thieu/`: trang nội dung ít rủi ro, không
-session, không mutation. Hiện Nuxt chỉ có `/migration-about-preview` với
-`noindex`, còn public `/gioi-thieu/` bên Nuxt chưa tồn tại, nên pilot chưa được
-phép bật. Không rewrite public path sang preview: làm vậy sẽ vô tình public hóa
-route `noindex` và thay canonical ownership.
+session, không mutation. Public Nuxt route `/gioi-thieu/` đã có trong source
+(`frontend/app/pages/gioi-thieu.vue`) và được bảo vệ bởi runtime feature flag;
+preview `/migration-about-preview` vẫn là route nội bộ `noindex`. Route có trong
+source không đồng nghĩa route đã được đưa vào production: production Nuxt
+service/origin và Caddy matcher/allowlist chưa được triển khai, nên pilot vẫn
+chưa được phép bật. Không rewrite public path sang preview.
 
 Các prefix sau luôn do PHP xử lý: `/account/`, `/administrator/`, `/api/`,
-`/upload/`, `/thumbs/`, `/watermark/`, `/gio-hang/`, `/cam-on/`. Mọi POST và
-mutation cũng về PHP bất kể path. Account/Admin, session/cart calculation,
-checkout transaction, payment callback, order creation và media transform ở
-PHP theo thiết kế.
+`/upload/`, `/thumbs/`, `/watermark/`. `/gio-hang/` và `/cam-on/` đã có public
+Nuxt route trong source (commit `a740593` trên nhánh Batch B), nhưng cả hai
+flag đều mặc định OFF và Caddy chưa chuyển traffic; khi OFF, middleware trả
+người dùng về PHP, giữ query `token` của `/cam-on/`. Mọi POST/mutation vẫn phải
+về PHP. Account/Admin, session/cart calculation, checkout transaction, payment
+callback, order creation và media transform ở PHP theo thiết kế.
 
-Public GUI checkout có thể chuyển sang Nuxt trong một phase riêng, nhưng Nuxt
-chỉ render và gọi adapter allowlist; PHP vẫn kiểm session/quyền/CSRF, validate
-giỏ hàng/địa chỉ, tính tiền/phí vận chuyển, tạo đơn, thanh toán và idempotency.
-Không suy ra backend đã migrate chỉ vì GUI Nuxt trả 200.
+Public GUI cart và order-success đã có route/component flag-gated trong source
+(`a740593`); route checkout preview vẫn là `/migration-checkout-preview` và
+không có URL PHP canonical riêng tương đương `/dat-hang/`. Chưa tạo public
+checkout route mới vì đó sẽ là quyết định URL/sản phẩm, không phải route parity.
+Nếu chuyển GUI sang Nuxt ở phase sau, Nuxt chỉ render và gọi adapter allowlist;
+PHP vẫn kiểm session/quyền/CSRF, validate giỏ hàng/địa chỉ, tính tiền/phí vận
+chuyển, tạo đơn, thanh toán và idempotency. Không suy ra backend đã migrate chỉ
+vì GUI Nuxt trả 200.
 
 Hai prefix `/migration-*` và `/_migration/*` bị cấm trong mapping public. Preflight
 kiểm tra pilot không trùng denylist và không chứa preview path.
@@ -119,7 +127,7 @@ không coi soft-200 là đạt.
 | Backup | DB + upload checksum; CloudFly snapshot state được đối chiếu | Owner xác nhận freshness/RPO | Chưa chạy, ngoài scope |
 | Rollback rehearsal | Flag OFF đưa pilot về PHP; config/image previous xác định; thời gian đo được | Operator staging | Chưa có runtime flag |
 | PHP health | `/` và pilot 200; alias/negative đúng status | QA | Local probe có sẵn |
-| Nuxt health | service healthy; public pilot 200 không noindex; preview vẫn noindex | QA | Bị chặn: public route/service thiếu |
+| Nuxt health | service healthy; public pilot 200 không noindex; preview vẫn noindex | QA | Bị chặn: production Nuxt service/origin chưa được triển khai; source route đã có |
 | Proxy allowlist | exact GET/HEAD pilot; denylist và POST về PHP | Reviewer | Manifest local PASS, runtime chưa có |
 | Feature flag OFF | default `0`; OFF config không có Nuxt matcher | Reviewer | PASS local fixture |
 | Owner approval | approval gắn commit + route + UTC timestamp | Project owner | Chưa cấp |
@@ -159,8 +167,8 @@ hay apply Caddy.
 
 - Duyệt kiến trúc Nuxt production (image, resource limit, health, logging,
   network, origin auth nếu cần) và implementation flag fail-closed.
-- Tạo public Nuxt route không noindex với canonical/OG/status parity; không dùng
-  preview làm public route.
+- Hoàn tất SEO/canonical/OG/status parity cho route pilot; source route đã có,
+  nhưng chưa có service/origin production và chưa được expose qua Caddy.
 - Xác nhận backup/snapshot và diễn tập rollback trên staging.
 - Cấp approval gắn đúng commit/route, chọn canary window và trực monitoring.
 - Thực hiện mọi thay đổi production/deploy/restart ở task riêng. Không có bước
