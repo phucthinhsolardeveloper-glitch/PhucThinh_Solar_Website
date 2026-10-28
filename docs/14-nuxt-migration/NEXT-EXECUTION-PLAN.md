@@ -1,9 +1,23 @@
 # PTS Nuxt migration — next execution plan
 
 Kế hoạch gốc được lập tại `feature/pts-nuxt4-parity-qa-20261026`, branched from
-`feature/pts-nuxt4-migration` ở `b5865ac`. Current-state sync của lane này: HEAD
-`07a50ea`; implementation checkpoint gần nhất của preview là `ae811bb`. Không
-merge/push/deploy production, không ghi DB trong đợt sync này.
+`feature/pts-nuxt4-migration` ở `b5865ac`. Các SHA cũ trong phần kế hoạch bên
+dưới là mốc lịch sử, không phải HEAD hiện tại.
+
+## Current checkpoint — 2026-10-28
+
+- Nguồn tích hợp: worktree `/home/admin01/src/pts-nuxt-integration-20261027`,
+  branch `feature/pts-nuxt-integration-20261027`, code checkpoint `8d84696`.
+- Dealer API/UI đã tách intro CMS khỏi overview, lọc thống kê `hienthi`, sửa
+  layout theo CSS PHP; build/typecheck/frontend tests đều PASS. Href crawler đã
+  chặn thêm mutation query và redirect tới endpoint mutation; SEO unit tests
+  PASS.
+- PHP-vs-Nuxt visual compare và SEO crawl mới nhất chưa có kết luận: port PHP
+  preview `127.0.0.1:8088` từ chối kết nối; Docker Desktop Linux engine pipe
+  không hoạt động. Report R18 được giữ ngoài repo để chẩn đoán, không dùng làm
+  evidence parity. Sau khi local PHP preview được owner khởi động lại, chạy lại
+  ba viewport và full manifest trước khi đóng dealer/SEO gates.
+- Production, DB, Caddy, push/merge và ports `3101`/`8090` không bị thay đổi.
 
 ## Kết luận audit hiện tại
 

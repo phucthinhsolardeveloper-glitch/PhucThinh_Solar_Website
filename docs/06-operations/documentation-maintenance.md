@@ -32,6 +32,17 @@ và liên kết về runbook đang có hiệu lực.
 
 ## Lịch sử rà soát
 
+### 2026-10-28 — cập nhật checkpoint tích hợp Nuxt và dealer preview
+
+- Đánh dấu handoff Batch B và route matrix cũ là snapshot lịch sử; cập nhật
+  nguồn trạng thái hiện tại tại `docs/14-nuxt-migration/NEXT-EXECUTION-PLAN.md`.
+- Ghi rõ dealer DTO lấy intro/overview từ hai field CMS riêng, rich text qua
+  sanitizer, và chỉ lấy thống kê đang hiển thị.
+- Ghi lần crawl R18 bị loại vì PHP preview offline; tránh coi `ERR`/502 là gate
+  PHP/Nuxt và nhắc chạy lại sau khi nguồn local được phục hồi.
+- Mở rộng quy tắc `hrefTargetAudit`: bỏ qua mutation query và dừng trước redirect
+  tới mutation target; tests local phủ hai trường hợp.
+
 ### 2026-10-28 — khôi phục bố cục trang chủ product-first cho Nuxt
 
 - Đối chiếu operating contract với Nuxt homepage preview; ghi nhận ADR 0006 đã

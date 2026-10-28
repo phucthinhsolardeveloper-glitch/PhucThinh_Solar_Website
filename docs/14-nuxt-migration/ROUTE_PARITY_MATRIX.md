@@ -1,4 +1,8 @@
-# Ma trận parity PHP → Nuxt (checkpoint 2026-10-27, base `07a50ea`)
+# Ma trận parity PHP → Nuxt (inventory checkpoint 2026-10-27, base `07a50ea`)
+
+> Inventory snapshot lịch sử. Current implementation checkpoint nằm trong
+> [`NEXT-EXECUTION-PLAN.md`](NEXT-EXECUTION-PLAN.md); hàng F12 được cập nhật
+> theo contract hiện tại nhưng visual gate vẫn chờ PHP preview hoạt động.
 
 Đây là inventory theo code tại HEAD `07a50ea`; implementation checkpoint gần nhất
 của preview là `ae811bb`. Các commit liên quan đã được đối chiếu gồm `c00aa0e`
@@ -23,7 +27,7 @@ tại, không suy diễn từ mock.
 | F10 `/tin-tuc/` | `sources/news_hub.php`, `news_tpl.php` | `migration-news-preview`, `/_migration/news` | Published news, category/search/pagination/featured contract | Public canonical/SEO và full interaction parity chưa ký | PHP public SEO; preview noindex | Cao |
 | F10D `/{slug}/` bài viết | `sources/news.php`, `news_detail_tpl.php` | `migration-news-detail-preview`, `/_migration/news-detail` | Published `type=tin-tuc`, related, preview detail | Rich content, gallery/video, canonical/JSON-LD public parity deferred | PHP resolver/canonical owner; preview noindex | Cao |
 | F11 `/gioi-thieu/` | `sources/about.php`, `about/about_tpl.php` | `migration-about-preview`, `/_migration/about` | Published named CMS sections, safe media/text | Timeline/CTA/form/SEO field parity cần xác minh | PHP public SEO; preview noindex | Trung bình |
-| F12 `/dai-ly/` | `sources/daily.php`, `daily/daily_tpl.php` | `migration-dealer-preview`, `/_migration/dealer` | Published dealer sections/hero/fallback; form render Nuxt | Submit qua PHP adapter giữ CSRF, validation, rate-limit, reCAPTCHA khi cấu hình và DB/email; public route vẫn PHP | PHP public SEO; preview noindex | Cao |
+| F12 `/dai-ly/` | `sources/daily.php`, `daily/daily_tpl.php` | `migration-dealer-preview`, `/_migration/dealer` | DTO tách intro `dai-ly-1.descvi`, overview `dai-ly-2`, sản phẩm và stats published; rich text đi qua sanitizer | Bố cục 2 cột/hero/nav/form đã đối chiếu CSS nguồn trong code; so ảnh cuối và dữ liệu trình duyệt chờ PHP preview `:8088`; submit vẫn qua PHP adapter giữ CSRF, validation, rate-limit, reCAPTCHA khi cấu hình và DB/email | PHP public SEO; preview noindex | Cao |
 | F13 `/lien-he/` | `sources/contact.php`, `contact/contact_tpl.php` | `migration-contact-preview`, `/_migration/contact` | Public setting/location/visual; map embed Google Maps sinh từ CMS address | Form render Nuxt, submit qua PHP adapter giữ CSRF/rate-limit/reCAPTCHA khi cấu hình/DB-email; `mapUrl` CMS vẫn là external link | PHP public SEO; preview noindex | Cao |
 | F14 `/ho-tro/*`, alias | `libraries/router.php`, `sources/news.php` | `migration-policy-preview?slug=...`, `/_migration/policy-detail` | Policy/support detail đã có preview từ CMS | 301/404/410, alias và public canonical/SEO vẫn do PHP resolver | PHP redirect/canonical owner | Cao |
 | F15 `/thu-vien-anh/`, `/video/`, gallery detail `/{slug}/` (`type=thu-vien-anh`) | `libraries/router.php`, `sources/product.php`, `sources/video.php` | `migration-gallery-preview`, `migration-gallery-detail-preview`, `migration-video-preview`; `/_migration/gallery*`, `/_migration/video` | Read-only PHP DTO/API, safe media allowlist, album lightbox và YouTube preview; preview routes noindex | Public canonical/redirect, full aspect-ratio/embed/privacy/copyright parity và cutover vẫn chưa ký; không invent gallery detail slug hoặc gọi nhầm `/album/*` là route PHP | PHP owner; Nuxt preview only | Cao |

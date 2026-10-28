@@ -130,3 +130,20 @@ nhận `/product/` root có nên alias hay bỏ khỏi gate, (2) bổ sung JSON-
 PHP public routes hoặc chốt kế hoạch chỉ bổ sung ở Nuxt sau cutover, (3) bổ
 sung og:image/description/url còn thiếu, (4) chạy lại audit với manifest có
 thêm negative fixture và crawl sitemap đầy đủ.
+
+## Follow-up R18 — attempt invalid vì PHP preview offline
+
+- Lệnh audit mới dùng PHP origin `http://127.0.0.1:8088` và Nuxt preview
+  `http://127.0.0.1:3100`, cùng manifest 26 route.
+- PHP từ chối kết nối trên toàn bộ route. Nuxt HTML trả 200 nhưng adapter phụ
+  thuộc PHP cũng trả 502; negative PDP và sitemap vì vậy không có nguồn để đánh
+  giá. Visual compare ba viewport ghi `navigation error` ở PHP reference.
+- Không diễn giải các dòng `FAIL` trong artifact này là lỗi dữ liệu PHP hay
+  parity Nuxt. Toàn bộ lần R18 bị loại khỏi kết quả gate; giữ báo cáo cục bộ tại
+  `/tmp/pts-nuxt-seo-final-20261028-r18` và
+  `/tmp/pts-dealer-compare-r18` để truy nguyên.
+- WSL không có Docker Linux engine kết nối được (Docker Desktop named pipe không
+  tồn tại), nên lần này không khởi động/rebuild container. Không ghi DB, không
+  đổi production route/Caddy và không thay container khác.
+- Chạy lại R18 sau khi PHP preview local được khôi phục; tiếp tục dùng report R17
+  làm mốc lịch sử, không xóa kết quả cũ.

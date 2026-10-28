@@ -1,5 +1,10 @@
 # Nuxt integration checkpoint — 2026-10-28
 
+> Historical handoff snapshot for `stage4-batch-b-cart-checkout-20261028` at
+> `a740593`. Current integration status is recorded in
+> [`NEXT-EXECUTION-PLAN.md`](NEXT-EXECUTION-PLAN.md); do not use the branch and
+> test counts below as current state.
+
 ## Trạng thái
 
 - Nhánh tích hợp hiện tại: `stage4-batch-b-cart-checkout-20261028`
