@@ -78,6 +78,9 @@ export async function fetchMigrationPayload<T>(event: MigrationEvent, options: M
       method: 'GET',
       query: options.query,
       timeout: 5000,
+      // Never let a PHP response redirect this server-side bridge to an
+      // origin outside the exact allowlist checked above.
+      redirect: 'manual',
     })
   } catch (error) {
     const status = statusFromError(error)
