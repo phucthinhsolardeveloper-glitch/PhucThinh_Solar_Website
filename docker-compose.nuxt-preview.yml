@@ -1,0 +1,41 @@
+# Local-only PHP API source from Nuxt migration worktree.
+# Shares the existing LOCAL fixture database and uploaded media, never production.
+# Run: docker compose -f docker-compose.nuxt-preview.yml up -d
+services:
+  web-preview:
+    image: web_pts_php-web:latest
+    container_name: pts-php-nuxt-preview
+    restart: "no"
+    environment:
+      APP_ENV: local
+      DB_HOST: db
+      DB_PORT: "3306"
+      DB_NAME: phucthinhs_local
+      DB_USER: pts_local
+      DB_PASSWORD: pts_local_only
+      TZ: Asia/Ho_Chi_Minh
+    ports:
+      - "127.0.0.1:8088:80"
+    volumes:
+      - ./domains/phucthinhsolar.com/public_html:/var/www/html:ro
+      # Local gitignored libraries/config.php must be present in this worktree.
+      # Use the existing local development config, never a production config.
+      - local-uploads:/var/www/html/upload:ro
+    tmpfs:
+      # Both paths are real cache dirs used by different classes:
+      # class.CssMinify.php/class.JsMinify.php use ROOT.'assets/caches/'
+      # (class.CssMinify.php:9); class.Cache.php uses a root-level 'caches/'.
+      # Missing either one dies with "Failed to create folders...".
+      - /var/www/html/caches:mode=1777
+      - /var/www/html/assets/caches:mode=1777
+      - /var/www/html/logs:mode=1777
+      - /var/www/html/thumbs:mode=1777
+    networks: [existing-pts-local]
+networks:
+  existing-pts-local:
+    external: true
+    name: web_pts_php_default
+volumes:
+  local-uploads:
+    external: true
+    name: web_pts_php_pts_web_upload

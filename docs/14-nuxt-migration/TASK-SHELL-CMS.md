@@ -1,0 +1,12 @@
+# Nuxt Shell CMS Parity, 26/10/2026
+Worktree pts-nuxt-shell-cms-20261026, base feature/pts-nuxt4-migration@5190099. Faithful PHP -> Nuxt UI migration ONLY, not redesign.
+Read AGENTS.md, docs/02-development/public-ui-ux-design-system.md, docs/14-nuxt-migration/NAV-DTO.md and COORDINATION_20261026.md, templates/layout/header.php, menu.php, footer.php, source files used by PHP menu, and existing Nuxt SiteHeader.vue/SiteFooter.vue/SiteBreadcrumb.vue, frontend/shared/contracts/public-site.ts, frontend/app/assets/css/shell.css. PHP endpoint api/pts_v1_site.php has public nav DTO with schemaVersion 1 and additive navigationSchemaVersion 1.
+
+Tasks:
+- Extend frontend/shared/contracts/public-site.ts to type/validate optional CMS brand.logo/logoFooter, navigation tree, catalog groups, productCategoryTree, footer policies/locations/social. Preserve old v1 payload and safely reject unsafe URLs/invalid extras.
+- Replace SiteHeader custom slug-based groupDefinitions with CMS catalog groups/links. Render actual approved source-backed logo, safe fallback name, menu hierarchy, mobile drawer and category navigation preserving keyboard/Escape/focus behavior. Keep correct original PHP URLs; do not accidentally make Nuxt claim unported public pages. No invented menu.
+- SiteFooter render published CMS logo/policies/locations/social/contact when provided, no fabricated legal claims, no raw v-html.
+- Internal /migration-shell-preview tests behavior with API and safe fallback, no public route changes. Avoid unnecessary component/CSS redesign.
+- Add tests for type validator, optional absent state/unsafe URLs, and run npm ci (only if needed), npm test, typecheck, build. Do not claim pixel parity without visual comparison. Work within ~8 GB WSL; no Docker/browser concurrently.
+
+Allowed edits ONLY frontend/shared/contracts/public-site.ts, frontend/app/components/SiteHeader.vue SiteFooter.vue SiteBreadcrumb.vue, frontend/app/assets/css/shell.css, frontend/app/pages/migration-shell-preview.vue, frontend/tests/site-*.test.mjs and docs/14-nuxt-migration/TASK-SHELL-CMS.md. Do not edit PHP/API, solutions preview, app.vue, Caddy/Docker, master or prod. Commit if passing; no push/deploy/merge. Report in Vietnamese with commit/tests and gaps.

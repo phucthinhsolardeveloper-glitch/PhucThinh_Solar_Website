@@ -1,0 +1,43 @@
+services:
+  db-lightbox:
+    image: mariadb:10.11
+    container_name: pts-mariadb-lightbox-qa
+    restart: "no"
+    environment:
+      MARIADB_ROOT_PASSWORD: lightbox_root_only
+      MARIADB_DATABASE: phucthinhs_local
+      MARIADB_USER: pts_local
+      MARIADB_PASSWORD: pts_local_only
+    volumes:
+      - lightbox-db-data:/var/lib/mysql
+    networks: [lightbox-qa-net]
+  web-lightbox:
+    image: web_pts_php-web:latest
+    container_name: pts-php81-lightbox-qa
+    restart: "no"
+    depends_on: [db-lightbox]
+    environment:
+      APP_ENV: local
+      DB_HOST: db-lightbox
+      DB_PORT: "3306"
+      DB_NAME: phucthinhs_local
+      DB_USER: pts_local
+      DB_PASSWORD: pts_local_only
+      TZ: Asia/Ho_Chi_Minh
+    ports:
+      - "127.0.0.1:8095:80"
+    volumes:
+      - ./domains/phucthinhsolar.com/public_html:/var/www/html:ro
+      - ./_upload-fixture:/var/www/html/upload
+    tmpfs:
+      - /var/www/html/caches:mode=1777
+      - /var/www/html/assets/caches:mode=1777
+      - /var/www/html/logs:mode=1777
+      - /var/www/html/thumbs:mode=1777
+    networks: [lightbox-qa-net]
+networks:
+  lightbox-qa-net:
+    name: pts-lightbox-qa-net
+volumes:
+  lightbox-db-data:
+    name: pts-lightbox-qa-db-data

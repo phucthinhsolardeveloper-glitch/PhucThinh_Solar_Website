@@ -1,0 +1,45 @@
+# Test-only override: adds a throwaway PHP upstream on the rehearsal network
+# so `docker-compose.nuxt-service.yml` has something real to proxy to while
+# verifying the image/healthcheck. Not part of the deployable service - never
+# ship this file's php-upstream service anywhere real; production PHP is
+# reached via its own existing container, referenced by hostname in
+# NUXT_PHP_ORIGIN_ALLOWLIST at deploy time, not recreated here.
+#
+# Run:  docker compose -f docker-compose.nuxt-service.yml -f docker-compose.nuxt-service.test.yml up -d --build
+# Stop: docker compose -f docker-compose.nuxt-service.yml -f docker-compose.nuxt-service.test.yml down
+services:
+  php-upstream:
+    image: web_pts_php-web:latest
+    container_name: pts-php81-nuxt-service-rehearsal
+    restart: "no"
+    environment:
+      APP_ENV: local
+      DB_HOST: db
+      DB_PORT: "3306"
+      DB_NAME: phucthinhs_local
+      DB_USER: pts_local
+      DB_PASSWORD: pts_local_only
+      TZ: Asia/Ho_Chi_Minh
+    volumes:
+      - ./domains/phucthinhsolar.com/public_html:/var/www/html:ro
+      - local-uploads:/var/www/html/upload:ro
+    tmpfs:
+      - /var/www/html/caches:mode=1777
+      - /var/www/html/assets/caches:mode=1777
+      - /var/www/html/logs:mode=1777
+      - /var/www/html/thumbs:mode=1777
+    networks: [nuxt-service-rehearsal, existing-pts-local]
+  nuxt-service:
+    depends_on: [php-upstream]
+    environment:
+      NUXT_PHP_ORIGIN: http://php-upstream:80
+      NUXT_PHP_ORIGIN_ALLOWLIST: php-upstream:80
+      NUXT_PUBLIC_PHP_PUBLIC_ORIGIN: http://php-upstream:80
+networks:
+  existing-pts-local:
+    external: true
+    name: web_pts_php_default
+volumes:
+  local-uploads:
+    external: true
+    name: web_pts_php_pts_web_upload

@@ -1,0 +1,77 @@
+<script setup lang="ts">
+import type { PublicNewsArticle } from '#shared/contracts/public-news'
+
+/**
+ * `variant` thay cho cơ chế cũ (component cha gắn class `news-card--lead` /
+ * `news-card--secondary` lên gốc). Tailwind cần biết biến thể NGAY TRONG
+ * component để đổi bố cục (ngang/dọc), không chỉ đổi màu — class rơi từ cha
+ * xuống không đủ để bật layout khác nhau.
+ */
+withDefaults(defineProps<{
+  article: PublicNewsArticle
+  readLabel: string
+  readMoreLabel: string
+  variant?: 'grid' | 'lead' | 'secondary'
+}>(), { variant: 'grid' })
+const links = useMigrationLinks()
+</script>
+
+<template>
+  <!--
+    Bố cục đo từ ảnh production (/tin-tuc/, 1920px):
+    - lead (ô lớn bên trái, chiếm 2 hàng): ảnh 16:9, heading 24px
+    - secondary (2 ô bên phải): media chiếm 38% bề ngang, nằm ngang với phần chữ
+    - grid (lưới 3 cột bên dưới): dọc như lead, heading 20px
+  -->
+  <!-- Bỏ grid cha + subgrid: không cần, <a> tự grid trực tiếp là đủ và dễ đọc hơn. -->
+  <article class="min-w-0">
+    <a
+      :href="links.news(article.slug)"
+      class="group flex h-full flex-col text-navy-800 no-underline"
+      :class="variant === 'secondary' ? 'grid grid-cols-[minmax(0,38%)_minmax(0,1fr)] gap-4 max-ph:flex max-ph:flex-col' : ''"
+    >
+      <div
+        class="relative overflow-hidden rounded-chip bg-slate-50"
+        :class="variant === 'secondary' ? 'aspect-video h-full min-h-[150px] max-ph:aspect-video max-ph:h-auto max-ph:min-h-0' : 'aspect-video'"
+      >
+        <img
+          v-if="article.image"
+          :src="article.image"
+          :alt="article.title"
+          class="block h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+          loading="lazy"
+          decoding="async"
+        >
+        <span v-else class="grid h-full place-items-center text-[42px] text-gold-700" aria-hidden="true">✦</span>
+        <span
+          v-if="article.category"
+          class="absolute left-3 top-3 rounded-chip bg-navy-800 px-2.5 py-1.5 text-[11px] font-bold text-white"
+        >
+          {{ article.category.name }}
+        </span>
+      </div>
+
+      <div class="flex-1 py-[15px] pb-5" :class="variant === 'secondary' ? 'pt-2' : ''">
+        <p v-if="article.date || article.readingMinutes" class="mb-2 flex flex-wrap gap-3.5 text-xs text-slate-500">
+          <time v-if="article.date" :datetime="article.date">{{ article.date.split('-').reverse().join('/') }}</time>
+          <span v-if="article.readingMinutes">{{ article.readingMinutes }} {{ readLabel }}</span>
+        </p>
+        <h2
+          class="mb-2 line-clamp-2 leading-[1.35] text-navy-800"
+          :class="variant === 'lead' ? 'text-2xl' : 'text-xl'"
+        >
+          {{ article.title }}
+        </h2>
+        <p v-if="article.description" class="m-0 line-clamp-3 pr-0 leading-relaxed text-slate-500 nav:pr-[46px]">
+          {{ article.description }}
+        </p>
+        <span
+          class="inline-block text-[13px] font-bold text-gold-700"
+          :class="variant === 'secondary' ? 'mt-2.5' : 'mt-[13px]'"
+        >
+          {{ readMoreLabel }} <span aria-hidden="true">→</span>
+        </span>
+      </div>
+    </a>
+  </article>
+</template>

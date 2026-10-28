@@ -1,0 +1,129 @@
+<?php
+/** Pure read-only DTO helpers for the published news detail contract. */
+
+require_once __DIR__.'/pts_public_richtext.php';
+
+function ptsNewsDetailPublished($status)
+{
+    if(!is_scalar($status)) return false;
+    return in_array('hienthi', array_filter(array_map('trim', explode(',', (string)$status))), true);
+}
+
+function ptsNewsDetailText($value)
+{
+    if(!is_scalar($value)) return '';
+    $value = html_entity_decode((string)$value, ENT_QUOTES, 'UTF-8');
+    $value = preg_replace('~<(?:br\s*/?|/p|/li|/h[1-6])>~i', "\n", $value);
+    return trim(preg_replace('/[ \t\r\f\v]+/u', ' ', strip_tags($value)));
+}
+
+function ptsNewsDetailSlug($value)
+{
+    if(!is_scalar($value)) return '';
+    $value = trim((string)$value, " /\t\n\r\0\x0B");
+    return preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', $value) ? $value : '';
+}
+
+function ptsNewsDetailImage($value)
+{
+    if(!is_scalar($value)) return '';
+    $value = ltrim(trim((string)$value), '/');
+    if($value === '' || basename($value) !== $value) return '';
+    if(!preg_match('/^[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|gif|webp|avif)$/i', $value)) return '';
+    return '/upload/news/'.$value;
+}
+
+function ptsNewsDetailVideo($value)
+{
+    if(!is_scalar($value)) return '';
+    $url = trim((string)$value);
+    if($url === '' || preg_match('/[\\x00-\\x1F<>"]/', $url) || strpos($url, chr(92)) !== false) return '';
+    $parts = parse_url($url);
+    if(!is_array($parts) || strtolower($parts['scheme'] ?? '') !== 'https'
+        || isset($parts['user']) || isset($parts['pass']) || isset($parts['port'])) return '';
+    $host = strtolower($parts['host'] ?? '');
+    if(!in_array($host, array('youtube.com', 'www.youtube.com', 'youtu.be', 'vimeo.com', 'www.vimeo.com'), true)) return '';
+    return $url;
+}
+
+function ptsNewsDetailAuthor($value)
+{
+    $name = ptsNewsDetailText($value);
+    return $name === '' ? 'Phúc Thịnh Solar' : $name;
+}
+
+function ptsNewsDetailMediaDto(array $photoRows, array $videoRows)
+{
+    $gallery = array();
+    foreach($photoRows as $row) {
+        if(!is_array($row)) continue;
+        $image = ptsNewsDetailImage(isset($row['photo']) ? $row['photo'] : '');
+        if($image !== '') $gallery[] = array('image' => $image, 'alt' => ptsNewsDetailText(isset($row['namevi']) ? $row['namevi'] : ''));
+    }
+    $videos = array();
+    foreach($videoRows as $row) {
+        if(!is_array($row)) continue;
+        $url = ptsNewsDetailVideo(isset($row['link_video']) ? $row['link_video'] : '');
+        if($url !== '') $videos[] = array('url' => $url, 'title' => ptsNewsDetailText(isset($row['namevi']) ? $row['namevi'] : ''));
+    }
+    return array('gallery' => $gallery, 'videos' => $videos);
+}
+
+function ptsNewsDetailArticleDto(array $row, array $category, array $author, array $media, array $seo)
+{
+    if(($row['type'] ?? 'tin-tuc') !== 'tin-tuc' || !ptsNewsDetailPublished(isset($row['status']) ? $row['status'] : '')) return null;
+    $id = isset($row['id']) ? (int)$row['id'] : 0;
+    $title = ptsNewsDetailText(isset($row['namevi']) ? $row['namevi'] : '');
+    $slug = ptsNewsDetailSlug(isset($row['slugvi']) ? $row['slugvi'] : '');
+    if($id <= 0 || $title === '' || $slug === '') return null;
+    $description = ptsNewsDetailText(isset($row['descvi']) ? $row['descvi'] : '');
+    /*
+     * Tích hợp sanitizer (RICHTEXT-CONTRACT.md): contentvi đi qua
+     * pts_public_richtext.php thay vì strip_tags() về plain-text. Sanitizer
+     * tự decode một lớp HTML-entity encoding của CMS và trả về allowlist HTML
+     * an toàn cho v-html ở Nuxt — không còn mất định dạng heading/list/ảnh
+     * như bản plain-text trước đây.
+     */
+    $contentHtml = ptsPublicRichTextSanitize(isset($row['contentvi']) ? $row['contentvi'] : '');
+    return array(
+        'schemaVersion' => 1,
+        'locale' => 'vi',
+        'id' => $id,
+        'title' => $title,
+        'slug' => $slug,
+        'canonical' => '/'.$slug.'/',
+        'date' => !empty($row['date_created']) ? date('Y-m-d', (int)$row['date_created']) : '',
+        'author' => array('name' => ptsNewsDetailAuthor(isset($author['fullname']) ? $author['fullname'] : '')),
+        'description' => $description,
+        'cover' => ptsNewsDetailImage(isset($row['_pts_public_photo']) ? $row['_pts_public_photo'] : ''),
+        'content' => array('format' => 'sanitized-html', 'html' => $contentHtml, 'sanitizedBy' => 'pts_public_richtext', 'sanitizerVersion' => 1),
+        'category' => $category,
+        'media' => $media,
+        'seo' => array(
+            'title' => ptsNewsDetailText(isset($seo['titlevi']) ? $seo['titlevi'] : '') ?: $title,
+            'description' => ptsNewsDetailText(isset($seo['descriptionvi']) ? $seo['descriptionvi'] : '') ?: $description,
+            'keywords' => ptsNewsDetailText(isset($seo['keywordsvi']) ? $seo['keywordsvi'] : ''),
+            'canonical' => '/'.$slug.'/'
+        ),
+        'readOnly' => true,
+        'legacyViewMutation' => false
+    );
+}
+
+function ptsNewsDetailRelatedDto(array $rows)
+{
+    $result = array();
+    foreach($rows as $row) {
+        if(!is_array($row) || !ptsNewsDetailPublished(isset($row['status']) ? $row['status'] : '')) continue;
+        $slug = ptsNewsDetailSlug(isset($row['slugvi']) ? $row['slugvi'] : '');
+        $title = ptsNewsDetailText(isset($row['namevi']) ? $row['namevi'] : '');
+        if((int)($row['id'] ?? 0) <= 0 || $slug === '' || $title === '') continue;
+        $result[] = array(
+            'id' => (int)$row['id'], 'title' => $title, 'slug' => $slug,
+            'canonical' => '/'.$slug.'/', 'date' => !empty($row['date_created']) ? date('Y-m-d', (int)$row['date_created']) : '',
+            'description' => ptsNewsDetailText(isset($row['descvi']) ? $row['descvi'] : ''),
+            'image' => ptsNewsDetailImage(isset($row['_pts_public_photo']) ? $row['_pts_public_photo'] : '')
+        );
+    }
+    return $result;
+}
