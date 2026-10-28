@@ -72,7 +72,7 @@ const hotlineHref = computed(() => `tel:${props.project.cta?.hotline.replace(/[^
         </header>
         <div class="grid grid-cols-1 gap-7 tb:grid-cols-2 nav:grid-cols-3">
           <a v-for="item in project.relatedProjects" :key="item.id" :href="links.project(item.slug)" class="group min-w-0 text-navy-800 no-underline">
-            <img v-if="item.image" :src="item.image" :alt="item.title" class="aspect-[8/5] w-full object-cover" loading="lazy" decoding="async">
+            <img v-if="item.image" :src="item.image" :alt="item.title" class="aspect-[4/3] w-full object-cover" loading="lazy" decoding="async">
             <div class="pt-4">
               <h3 class="m-0 text-xl font-extrabold leading-snug text-navy-950 group-hover:text-gold-700">{{ item.title }}</h3>
               <p v-if="item.address" class="mb-0 mt-2 text-sm text-slate-500">{{ item.address }}</p>

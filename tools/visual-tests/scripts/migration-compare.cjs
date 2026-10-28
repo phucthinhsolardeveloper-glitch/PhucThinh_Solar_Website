@@ -133,9 +133,13 @@ async function capturePage(browser, url, viewport, settings, fileStem, output) {
     } catch {}
   })
   const consoleMessages = []
+  const consoleWarnings = []
   const pageErrors = []
   const failedRequests = []
-  page.on('console', message => { if (message.type() === 'error' || message.type() === 'warning') consoleMessages.push(`${message.type()}: ${message.text()}`.slice(0, 500)) })
+  page.on('console', message => {
+    if (message.type() === 'error') consoleMessages.push(message.text().slice(0, 500))
+    if (message.type() === 'warning') consoleWarnings.push(message.text().slice(0, 500))
+  })
   page.on('pageerror', error => pageErrors.push(String(error.message || error).slice(0, 500)))
   page.on('requestfailed', request => failedRequests.push(`${request.method()} ${request.url()} — ${request.failure()?.errorText || 'failed'}`.slice(0, 500)))
   const started = Date.now()
@@ -233,7 +237,7 @@ async function capturePage(browser, url, viewport, settings, fileStem, output) {
   }
   const result = {
     url, status: response?.status() ?? null, ok: Boolean(response?.ok()), navigationError,
-    durationMs: Date.now() - started, ...metadata, consoleMessages, pageErrors, failedRequests,
+    durationMs: Date.now() - started, ...metadata, consoleMessages, consoleWarnings, pageErrors, failedRequests,
     screenshot: screenshotBase64 ? path.basename(screenshotPath) : null,
     headerScreenshot: headerBase64 ? path.basename(headerPath) : null,
     screenshotBase64, headerBase64,
@@ -260,7 +264,6 @@ function viewportGate(legacy, preview, settings) {
   const referenceActionableRequests = (legacy.failedRequests || []).filter(item => !/https?:\/\/(?:www\.)?google\.com\/maps\/embed/i.test(item))
   const previewNoindex = /(?:^|[\s,])noindex(?:$|[\s,])/i.test(preview.robots || '')
   const checks = {
-    legacyHttp: legacy.status !== null && legacy.status < 400 && !legacy.navigationError,
     previewHttp: preview.status !== null && preview.status < 400 && !preview.navigationError,
     browserRuntime: !(preview.pageErrors?.length || preview.consoleMessages?.length),
     media: !(preview.brokenMedia?.length || previewActionableRequests.length),
@@ -277,6 +280,9 @@ function viewportGate(legacy, preview, settings) {
     actionableFailedRequests: previewActionableRequests,
     referenceDiagnostics: {
       runtimeErrors: (legacy.pageErrors?.length || 0) + (legacy.consoleMessages?.length || 0),
+      consoleWarnings: legacy.consoleWarnings?.length || 0,
+      status: legacy.status ?? null,
+      navigationError: legacy.navigationError || null,
       brokenMedia: legacy.brokenMedia?.length || 0,
       actionableFailedRequests: referenceActionableRequests.length,
       horizontalOverflow: legacy.horizontalOverflow ?? null,
@@ -318,8 +324,8 @@ function classifyDifference(legacy, preview, diff) {
   const previewFailedRequests = preview.failedRequests || []
   const previewActionableRequests = previewFailedRequests.filter(item => !/https?:\/\/(?:www\.)?google\.com\/maps\/embed/i.test(item))
   const previewExternalEmbedOnly = previewFailedRequests.length > 0 && previewActionableRequests.length === 0
-  const hardPreviewGaps = [preview.navigationError, preview.status === null, preview.status >= 400, preview.pageErrors?.length > 0, preview.consoleMessages?.length > 0, preview.horizontalOverflow > 1, (preview.cumulativeLayoutShift ?? 0) > 0.1].some(Boolean)
-  if (hardPreviewGaps) return { kind: 'runtime-or-route-error', confidence: 'high', reason: 'Nuxt HTTP, browser console/pageerror hoặc responsive gate không đạt' }
+  const hardPreviewGaps = [preview.navigationError, preview.status === null, preview.status >= 400, preview.pageErrors?.length > 0, preview.consoleMessages?.length > 0, preview.brokenMedia?.length > 0, preview.horizontalOverflow > 1, (preview.cumulativeLayoutShift ?? 0) > 0.1].some(Boolean)
+  if (hardPreviewGaps) return { kind: 'runtime-or-route-error', confidence: 'high', reason: 'Nuxt HTTP, browser runtime, media hoặc responsive gate không đạt' }
   if (previewExternalEmbedOnly) return { kind: 'external-resource-blocked', confidence: 'high', reason: 'Third-party Google Maps embed bị browser/network abort; không phải lỗi Nuxt UI' }
   if (previewActionableRequests.length > 0) return { kind: 'runtime-or-route-error', confidence: 'high', reason: 'Nuxt có request media/resource bị lỗi' }
   if (diff.status !== 'compared') return { kind: 'unknown', confidence: 'low', reason: diff.reason || 'Không đủ ảnh để phân loại' }
@@ -433,6 +439,7 @@ function renderMarkdown(report) {
       viewport.legacy.status === null && 'route unavailable',
       viewport.legacy.status >= 400 && `HTTP ${viewport.legacy.status}`,
       referenceRuntimeErrors > 0 && `runtime errors ${referenceRuntimeErrors}`,
+      (viewport.gate?.referenceDiagnostics?.consoleWarnings ?? viewport.legacy.consoleWarnings?.length ?? 0) > 0 && `console warnings ${viewport.gate?.referenceDiagnostics?.consoleWarnings ?? viewport.legacy.consoleWarnings.length}`,
       referenceFailedRequests > 0 && `failed requests ${referenceFailedRequests}`,
       referenceBrokenMedia > 0 && `broken media ${referenceBrokenMedia}`,
       referenceOverflow > 1 && `overflow ${referenceOverflow}px`,

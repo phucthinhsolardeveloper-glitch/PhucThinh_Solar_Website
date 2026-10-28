@@ -57,6 +57,7 @@ test('classifies same-geometry content changes separately from layout changes', 
 test('promotes failed media requests to a runtime/media gap', () => {
   const base = { status: 200, navigationError: undefined, pageErrors: [], consoleMessages: [], failedRequests: [], horizontalOverflow: 0, fingerprints: { layout: 'same', text: 'a', media: 'a', links: 'a' }, title: 'A', h1: ['A'] }
   assert.equal(classifyDifference(base, { ...base, failedRequests: ['GET /missing.webp'] }, { status: 'compared', changedRatio: 0.2 }).kind, 'runtime-or-route-error')
+  assert.equal(classifyDifference(base, { ...base, brokenMedia: [{ src: '/broken-dom-image.webp' }] }, { status: 'compared', changedRatio: 0.2 }).kind, 'runtime-or-route-error')
 })
 
 test('separates an aborted third-party map embed from a Nuxt UI error', () => {
@@ -106,7 +107,7 @@ test('renders PHP reference diagnostics separately from Nuxt acceptance gaps', (
     horizontalOverflow: 0, cumulativeLayoutShift: 0, hrefs: [], title: 'Page', h1: ['Page'], robots: 'noindex',
   }
   const legacy = {
-    status: 200, navigationError: undefined, pageErrors: [], consoleMessages: ['legacy console warning'], failedRequests: ['GET /legacy-broken.webp'],
+    status: 200, navigationError: undefined, pageErrors: [], consoleMessages: [], consoleWarnings: ['legacy console warning'], failedRequests: ['GET /legacy-broken.webp'],
     brokenMedia: [{ src: '/legacy-broken.webp' }], horizontalOverflow: 12, cumulativeLayoutShift: 0.24,
   }
   const gate = viewportGate(legacy, preview, settings)
@@ -117,7 +118,7 @@ test('renders PHP reference diagnostics separately from Nuxt acceptance gaps', (
     interactions: [],
   })
   assert.match(markdown, /\| Route \| Viewport \| Gate \| Preview HTTP \| Classification \| Changed pixels \| Nuxt gaps \| PHP reference issues \|/)
-  assert.match(markdown, /\| page \| 390x844 \| PASS \| 200 \| unknown \| — \| — \| runtime errors 1; failed requests 1; broken media 1; overflow 12px; CLS 0\.240 \|/)
+  assert.match(markdown, /\| page \| 390x844 \| PASS \| 200 \| unknown \| — \| — \| console warnings 1; failed requests 1; broken media 1; overflow 12px; CLS 0\.240 \|/)
 })
 
 test('PHP reference failures do not fail an otherwise healthy Nuxt preview', () => {
@@ -137,11 +138,41 @@ test('PHP reference failures do not fail an otherwise healthy Nuxt preview', () 
   assert.equal(result.checks.responsiveStability, true)
   assert.deepEqual(result.referenceDiagnostics, {
     runtimeErrors: 0,
+    consoleWarnings: 0,
+    status: 200,
+    navigationError: null,
     brokenMedia: 1,
     actionableFailedRequests: 1,
     horizontalOverflow: 12,
     cumulativeLayoutShift: 0.24,
   })
+})
+
+test('PHP HTTP and navigation failures remain reference diagnostics, not Nuxt gate failures', () => {
+  const settings = { legacyUrl: 'http://127.0.0.1:8088', previewUrl: 'http://127.0.0.1:3110' }
+  const preview = {
+    status: 200, navigationError: undefined, pageErrors: [], consoleMessages: [], consoleWarnings: [], failedRequests: [],
+    brokenMedia: [], horizontalOverflow: 0, cumulativeLayoutShift: 0, hrefs: [], title: 'Page', h1: ['Page'], robots: 'noindex',
+  }
+  const legacy = { status: 404, navigationError: 'net::ERR_CONNECTION_RESET', pageErrors: [], consoleMessages: [], consoleWarnings: [], failedRequests: [], brokenMedia: [], horizontalOverflow: 0, cumulativeLayoutShift: 0 }
+  const result = viewportGate(legacy, preview, settings)
+  assert.equal(result.status, 'PASS')
+  assert.equal(result.checks.previewHttp, true)
+  assert.deepEqual(result.referenceDiagnostics, {
+    runtimeErrors: 0, consoleWarnings: 0, status: 404, navigationError: 'net::ERR_CONNECTION_RESET',
+    brokenMedia: 0, actionableFailedRequests: 0, horizontalOverflow: 0, cumulativeLayoutShift: 0,
+  })
+})
+
+test('console warnings are diagnostic and do not fail the Nuxt runtime gate', () => {
+  const settings = { legacyUrl: 'http://127.0.0.1:8088', previewUrl: 'http://127.0.0.1:3110' }
+  const base = {
+    status: 200, navigationError: undefined, pageErrors: [], consoleMessages: [], consoleWarnings: [], failedRequests: [],
+    brokenMedia: [], horizontalOverflow: 0, cumulativeLayoutShift: 0, hrefs: [], title: 'Page', h1: ['Page'], robots: 'noindex',
+  }
+  const result = viewportGate({ ...base, consoleWarnings: ['legacy warning'] }, { ...base, consoleWarnings: ['preview warning'] }, settings)
+  assert.equal(result.status, 'PASS')
+  assert.equal(result.referenceDiagnostics.consoleWarnings, 1)
 })
 
 test('Nuxt preview media, overflow and CLS still fail their own gates', () => {
