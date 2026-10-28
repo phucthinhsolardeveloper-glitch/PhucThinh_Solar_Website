@@ -14,6 +14,7 @@ import SiteFooter from '~/components/SiteFooter.vue'
  * này tự khớp đúng URL của bất kỳ trang nào render nó.
  */
 const route = useRoute()
+const links = useMigrationLinks()
 const selfPath = computed(() => route.path)
 const category = computed(() => typeof route.query.category === 'string' ? route.query.category : '')
 const page = computed(() => typeof route.query.page === 'string' ? route.query.page : '')
@@ -77,7 +78,7 @@ const activeCategoryRoot = computed(() => {
 const categoryNavItems = computed(() => selectedCategory.value
   ? activeCategoryRoot.value?.children ?? []
   : (siteData.value?.productCategoryTree ?? []).filter((node) => node.slug !== 'den-san-vuon'))
-const categoryAllHref = computed(() => activeCategoryRoot.value?.url ?? '/san-pham/')
+const categoryAllHref = computed(() => links.generic(activeCategoryRoot.value?.url ?? '/san-pham/'))
 
 /**
  * Nếu lưới vẫn giữ nguyên hai cột khi không có danh mục/bộ lọc thì nội dung
@@ -184,8 +185,8 @@ function pageLink(nextPage: number) {
       </div>
 
       <nav v-if="categoryNavItems.length" class="col-span-full flex gap-3 overflow-x-auto border-b border-gray-200 py-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" aria-label="Danh mục sản phẩm">
-        <NuxtLink :to="categoryAllHref" class="flex-none px-3 py-2 font-bold text-navy-800 no-underline hover:text-gold-700" :aria-current="!selectedCategory || selectedCategory.url === categoryAllHref ? 'page' : undefined">Tất cả</NuxtLink>
-        <NuxtLink v-for="item in categoryNavItems" :key="item.url" :to="item.url" class="flex-none px-3 py-2 font-bold text-navy-800 no-underline hover:text-gold-700" :aria-current="item.url === selectedCategory?.url ? 'page' : undefined">{{ item.name }}</NuxtLink>
+        <NuxtLink :to="categoryAllHref" class="flex-none px-3 py-2 font-bold text-navy-800 no-underline hover:text-gold-700" :aria-current="!selectedCategory || selectedCategory.url === activeCategoryRoot?.url ? 'page' : undefined">Tất cả</NuxtLink>
+        <NuxtLink v-for="item in categoryNavItems" :key="item.url" :to="links.generic(item.url)" class="flex-none px-3 py-2 font-bold text-navy-800 no-underline hover:text-gold-700" :aria-current="item.url === selectedCategory?.url ? 'page' : undefined">{{ item.name }}</NuxtLink>
       </nav>
 
       <!--
@@ -294,7 +295,7 @@ function pageLink(nextPage: number) {
       <section v-if="catalogData?.categoryContent.applications.length" class="col-span-full py-10" aria-labelledby="catalog-applications-title">
         <h2 id="catalog-applications-title" class="mb-7 text-2xl font-black text-navy-950">{{ catalogData.categoryContent.title || 'Ứng dụng phù hợp' }}</h2>
         <div class="grid grid-cols-1 gap-7 tb:grid-cols-2 nav:grid-cols-3">
-          <a v-for="item in catalogData.categoryContent.applications" :key="item.title" :href="item.href || undefined" class="min-w-0 text-navy-800 no-underline">
+          <a v-for="item in catalogData.categoryContent.applications" :key="item.title" :href="item.href ? links.generic(item.href) : undefined" class="min-w-0 text-navy-800 no-underline">
             <img v-if="item.image" :src="item.image" :alt="item.title" class="aspect-[8/5] w-full object-cover" loading="lazy" decoding="async">
             <h3 class="mb-2 mt-4 text-lg font-extrabold text-navy-950">{{ item.title }}</h3>
             <p v-if="item.description" class="m-0 leading-relaxed text-slate-600">{{ item.description }}</p>
@@ -316,7 +317,7 @@ function pageLink(nextPage: number) {
           <h2 id="catalog-support-title" class="mb-2 text-2xl font-black">{{ catalogData.support.title }}</h2>
           <p class="mb-0 max-w-[720px] leading-relaxed text-blue-100">{{ catalogData.support.description }}</p>
         </div>
-        <NuxtLink :to="catalogData.support.href || '/lien-he/'" class="inline-flex min-h-11 items-center justify-center bg-gold-500 px-5 font-extrabold text-navy-950 no-underline">Nhận tư vấn →</NuxtLink>
+        <NuxtLink :to="links.generic(catalogData.support.href || '/lien-he/')" class="inline-flex min-h-11 items-center justify-center bg-gold-500 px-5 font-extrabold text-navy-950 no-underline">Nhận tư vấn →</NuxtLink>
       </section>
     </main>
 

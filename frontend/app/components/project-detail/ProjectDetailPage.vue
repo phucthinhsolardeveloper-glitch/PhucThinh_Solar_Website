@@ -68,10 +68,10 @@ const hotlineHref = computed(() => `tel:${props.project.cta?.hotline.replace(/[^
       <section v-if="project.relatedProjects.length" class="mt-16" aria-labelledby="related-projects-title">
         <header class="mb-7 flex flex-wrap items-end justify-between gap-4">
           <h2 id="related-projects-title" class="m-0 text-3xl font-black text-navy-950">Dự án khác</h2>
-          <a class="font-bold text-navy-800 no-underline" href="/du-an-da-thuc-hien/">Xem tất cả dự án →</a>
+          <a class="font-bold text-navy-800 no-underline" :href="links.generic('/du-an-da-thuc-hien/')">Xem tất cả dự án →</a>
         </header>
         <div class="grid grid-cols-1 gap-7 tb:grid-cols-2 nav:grid-cols-3">
-          <a v-for="item in project.relatedProjects" :key="item.id" :href="links.generic(item.url)" class="group min-w-0 text-navy-800 no-underline">
+          <a v-for="item in project.relatedProjects" :key="item.id" :href="links.project(item.slug)" class="group min-w-0 text-navy-800 no-underline">
             <img v-if="item.image" :src="item.image" :alt="item.title" class="aspect-[8/5] w-full object-cover" loading="lazy" decoding="async">
             <div class="pt-4">
               <h3 class="m-0 text-xl font-extrabold leading-snug text-navy-950 group-hover:text-gold-700">{{ item.title }}</h3>

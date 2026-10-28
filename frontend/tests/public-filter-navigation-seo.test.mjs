@@ -20,6 +20,21 @@ test('project category links remain inside preview and are public-ready', () => 
   assert.match(source, /category=\$\{encodeURIComponent\(category\.slug\)\}/)
 })
 
+test('catalog links stay in Nuxt preview while category pages are being migrated', () => {
+  const source = read('../app/components/catalog/CatalogPage.vue')
+  assert.match(source, /const links = useMigrationLinks\(\)/)
+  assert.match(source, /links\.generic\(activeCategoryRoot\.value\?\.url \?\? '\/san-pham\/'\)/)
+  assert.match(source, /:to="links\.generic\(item\.url\)"/)
+  assert.match(source, /item\.href \? links\.generic\(item\.href\) : undefined/)
+  assert.match(source, /:to="links\.generic\(catalogData\.support\.href \|\| '\/lien-he\/'\)"/)
+})
+
+test('related project links use the Nuxt detail preview route', () => {
+  const source = read('../app/components/project-detail/ProjectDetailPage.vue')
+  assert.match(source, /:href="links\.generic\('\/du-an-da-thuc-hien\/'\)"/)
+  assert.match(source, /:href="links\.project\(item\.slug\)"/)
+})
+
 test('cart and order confirmation cannot be indexed even when public routes are enabled', () => {
   for (const file of ['../app/pages/gio-hang/index.vue', '../app/pages/cam-on/index.vue']) {
     const source = read(file)
