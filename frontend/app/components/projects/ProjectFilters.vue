@@ -2,6 +2,9 @@
 import type { PublicProjectCategory } from '#shared/contracts/public-projects'
 
 defineProps<{ categories: PublicProjectCategory[]; selected: PublicProjectCategory | null; allLabel: string; filtersLabel: string }>()
+// Keep category filtering inside Nuxt preview until the public Projects route exists.
+const { active: isMigrationPreview } = useMigrationLinks()
+const filtersPath = computed(() => isMigrationPreview.value ? '/migration-projects-preview/' : '/du-an-da-thuc-hien/')
 </script>
 
 <template>
@@ -14,7 +17,7 @@ defineProps<{ categories: PublicProjectCategory[]; selected: PublicProjectCatego
     <a
       class="flex min-h-[42px] flex-none items-center gap-[7px] whitespace-nowrap rounded-chip px-[13px] no-underline"
       :class="!selected ? 'bg-navy-800 text-white' : 'border border-gray-200 text-navy-800 hover:border-gold-700'"
-      href="/migration-projects-preview/"
+      :href="filtersPath"
     >
       {{ allLabel }}
     </a>
@@ -23,7 +26,7 @@ defineProps<{ categories: PublicProjectCategory[]; selected: PublicProjectCatego
       :key="category.id"
       class="flex min-h-[42px] flex-none items-center gap-[7px] whitespace-nowrap rounded-chip px-[13px] no-underline"
       :class="selected?.id === category.id ? 'bg-navy-800 text-white' : 'border border-gray-200 text-navy-800 hover:border-gold-700'"
-      :href="`/migration-projects-preview/?category=${encodeURIComponent(category.slug)}`"
+      :href="`${filtersPath}?category=${encodeURIComponent(category.slug)}`"
     >
       <img v-if="category.image" :src="category.image" alt="" class="h-6 w-6 object-contain" width="24" height="24">
       {{ category.name }}
