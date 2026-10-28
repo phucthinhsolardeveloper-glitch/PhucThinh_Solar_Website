@@ -256,16 +256,16 @@ function previewLinkLeaks(preview, settings) {
 }
 
 function viewportGate(legacy, preview, settings) {
-  const failedRequests = [...(legacy.failedRequests || []), ...(preview.failedRequests || [])]
-  const actionableRequests = failedRequests.filter(item => !/https?:\/\/(?:www\.)?google\.com\/maps\/embed/i.test(item))
+  const previewActionableRequests = (preview.failedRequests || []).filter(item => !/https?:\/\/(?:www\.)?google\.com\/maps\/embed/i.test(item))
+  const referenceActionableRequests = (legacy.failedRequests || []).filter(item => !/https?:\/\/(?:www\.)?google\.com\/maps\/embed/i.test(item))
   const previewNoindex = /(?:^|[\s,])noindex(?:$|[\s,])/i.test(preview.robots || '')
   const checks = {
     legacyHttp: legacy.status !== null && legacy.status < 400 && !legacy.navigationError,
     previewHttp: preview.status !== null && preview.status < 400 && !preview.navigationError,
-    browserRuntime: !(legacy.pageErrors?.length || preview.pageErrors?.length || legacy.consoleMessages?.length || preview.consoleMessages?.length),
-    media: !(legacy.brokenMedia?.length || preview.brokenMedia?.length || actionableRequests.length),
-    horizontalOverflow: legacy.horizontalOverflow <= 1 && preview.horizontalOverflow <= 1,
-    responsiveStability: (legacy.cumulativeLayoutShift ?? 0) <= 0.1 && (preview.cumulativeLayoutShift ?? 0) <= 0.1,
+    browserRuntime: !(preview.pageErrors?.length || preview.consoleMessages?.length),
+    media: !(preview.brokenMedia?.length || previewActionableRequests.length),
+    horizontalOverflow: preview.horizontalOverflow <= 1,
+    responsiveStability: (preview.cumulativeLayoutShift ?? 0) <= 0.1,
     previewHeading: preview.h1?.length === 1,
     previewTitle: Boolean(preview.title),
     previewNoindex,
@@ -274,7 +274,14 @@ function viewportGate(legacy, preview, settings) {
   return {
     status: Object.values(checks).every(Boolean) ? 'PASS' : 'FAIL',
     checks,
-    actionableFailedRequests: actionableRequests,
+    actionableFailedRequests: previewActionableRequests,
+    referenceDiagnostics: {
+      runtimeErrors: (legacy.pageErrors?.length || 0) + (legacy.consoleMessages?.length || 0),
+      brokenMedia: legacy.brokenMedia?.length || 0,
+      actionableFailedRequests: referenceActionableRequests.length,
+      horizontalOverflow: legacy.horizontalOverflow ?? null,
+      cumulativeLayoutShift: legacy.cumulativeLayoutShift ?? null,
+    },
     previewLinkLeaks: previewLinkLeaks(preview, settings),
   }
 }
@@ -388,10 +395,49 @@ function stripBuffers(value) {
 }
 
 function renderMarkdown(report) {
-  const lines = ['# Migration visual comparison', '', `- Generated: ${report.generatedAt}`, `- Legacy: \`${report.legacyUrl}\``, `- Preview: \`${report.previewUrl}\``, `- Browser: ${report.browser}; reduced motion: ${report.reducedMotion}`, `- Viewports: ${report.viewports.map(item => `${item.width}x${item.height}`).join(', ')}`, '', 'This is read-only evidence, not an approved baseline and not a pixel-perfect gate.', 'Classification is heuristic: `dynamic-data-difference` means the DOM geometry matched while content/media/links changed; it is not an approval.', '', '## Route results', '', '| Route | Viewport | Gate | Preview HTTP | Classification | Changed pixels | Gaps |', '| --- | --- | ---: | ---: | --- | ---: | --- |']
+  const lines = [
+    '# Migration visual comparison', '',
+    `- Generated: ${report.generatedAt}`,
+    `- Legacy: \`${report.legacyUrl}\``,
+    `- Preview: \`${report.previewUrl}\``,
+    `- Browser: ${report.browser}; reduced motion: ${report.reducedMotion}`,
+    `- Viewports: ${report.viewports.map(item => `${item.width}x${item.height}`).join(', ')}`,
+    '',
+    'This is read-only evidence, not an approved baseline and not a pixel-perfect gate. Preview health gates evaluate the Nuxt page; PHP reference issues are reported separately so pre-existing failures do not mark a healthy preview as failed.',
+    'Classification is heuristic: `dynamic-data-difference` means the DOM geometry matched while content/media/links changed; it is not an approval.',
+    '', '## Route results', '',
+    '| Route | Viewport | Gate | Preview HTTP | Classification | Changed pixels | Nuxt gaps | PHP reference issues |',
+    '| --- | --- | ---: | ---: | --- | ---: | --- | --- |',
+  ]
   for (const route of report.routes) for (const viewport of route.viewports) {
-    const gap = [viewport.legacy.navigationError && 'legacy navigation error', viewport.preview.navigationError && 'preview navigation error', viewport.legacy.status >= 400 && `legacy HTTP ${viewport.legacy.status}`, viewport.preview.status >= 400 && `preview HTTP ${viewport.preview.status}`, viewport.preview.status === null && 'preview route unavailable', viewport.legacy.pageErrors?.length > 0 && 'legacy pageerror', viewport.preview.pageErrors?.length > 0 && 'preview pageerror', viewport.legacy.consoleMessages?.length > 0 && 'legacy console', viewport.preview.consoleMessages?.length > 0 && 'preview console', viewport.gate?.actionableFailedRequests?.length > 0 && 'failed request', viewport.legacy.brokenMedia?.length > 0 && 'legacy broken media', viewport.preview.brokenMedia?.length > 0 && 'preview broken media', viewport.legacy.horizontalOverflow > 1 && 'legacy overflow', viewport.preview.horizontalOverflow > 1 && 'preview overflow', viewport.gate?.previewLinkLeaks?.length > 0 && 'preview link leakage'].filter(Boolean).join('; ') || '—'
-    lines.push(`| ${route.id} | ${viewport.width}x${viewport.height} | ${viewport.gate?.status || 'FAIL'} | ${viewport.preview.status ?? 'ERR'} | ${viewport.classification?.kind || 'unknown'} | ${viewport.diff.changedRatio === undefined ? '—' : `${(viewport.diff.changedRatio * 100).toFixed(2)}%`} | ${gap} |`)
+    const gap = [
+      viewport.preview.navigationError && 'preview navigation error',
+      viewport.preview.status === null && 'preview route unavailable',
+      viewport.preview.status >= 400 && `preview HTTP ${viewport.preview.status}`,
+      viewport.preview.pageErrors?.length > 0 && 'preview pageerror',
+      viewport.preview.consoleMessages?.length > 0 && 'preview console',
+      viewport.gate?.actionableFailedRequests?.length > 0 && 'preview failed request',
+      viewport.preview.brokenMedia?.length > 0 && `preview broken media (${viewport.preview.brokenMedia.length})`,
+      viewport.preview.horizontalOverflow > 1 && 'preview overflow',
+      (viewport.preview.cumulativeLayoutShift ?? 0) > 0.1 && `preview CLS ${viewport.preview.cumulativeLayoutShift.toFixed(3)}`,
+      viewport.gate?.previewLinkLeaks?.length > 0 && 'preview link leakage',
+    ].filter(Boolean).join('; ') || '—'
+    const referenceRuntimeErrors = viewport.gate?.referenceDiagnostics?.runtimeErrors ?? ((viewport.legacy.pageErrors?.length || 0) + (viewport.legacy.consoleMessages?.length || 0))
+    const referenceBrokenMedia = viewport.gate?.referenceDiagnostics?.brokenMedia ?? viewport.legacy.brokenMedia?.length ?? 0
+    const referenceFailedRequests = viewport.gate?.referenceDiagnostics?.actionableFailedRequests ?? viewport.legacy.failedRequests?.length ?? 0
+    const referenceOverflow = viewport.gate?.referenceDiagnostics?.horizontalOverflow ?? viewport.legacy.horizontalOverflow
+    const referenceCls = viewport.gate?.referenceDiagnostics?.cumulativeLayoutShift ?? viewport.legacy.cumulativeLayoutShift ?? 0
+    const reference = [
+      viewport.legacy.navigationError && 'navigation error',
+      viewport.legacy.status === null && 'route unavailable',
+      viewport.legacy.status >= 400 && `HTTP ${viewport.legacy.status}`,
+      referenceRuntimeErrors > 0 && `runtime errors ${referenceRuntimeErrors}`,
+      referenceFailedRequests > 0 && `failed requests ${referenceFailedRequests}`,
+      referenceBrokenMedia > 0 && `broken media ${referenceBrokenMedia}`,
+      referenceOverflow > 1 && `overflow ${referenceOverflow}px`,
+      referenceCls > 0.1 && `CLS ${referenceCls.toFixed(3)}`,
+    ].filter(Boolean).join('; ') || '—'
+    lines.push(`| ${route.id} | ${viewport.width}x${viewport.height} | ${viewport.gate?.status || 'FAIL'} | ${viewport.preview.status ?? 'ERR'} | ${viewport.classification?.kind || 'unknown'} | ${viewport.diff.changedRatio === undefined ? '—' : `${(viewport.diff.changedRatio * 100).toFixed(2)}%`} | ${gap} | ${reference} |`)
   }
   lines.push('', '## Shell keyboard evidence', '', '| Route | Viewport | Status |', '| --- | --- | --- |')
   for (const item of report.shellAudits || []) lines.push(`| ${item.route} | ${item.viewport.width}x${item.viewport.height} | ${item.status} |`)
