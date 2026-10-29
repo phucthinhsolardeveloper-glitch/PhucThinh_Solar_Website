@@ -22,8 +22,6 @@ services:
     depends_on:
       web:
         condition: service_healthy
-      nuxt:
-        condition: service_healthy
     mem_limit: 512m
     pids_limit: 200
     logging: &bounded-logging
@@ -126,32 +124,6 @@ services:
       timeout: 8s
       retries: 6
       start_period: 15s
-    logging: *bounded-logging
-
-  nuxt:
-    image: ${PTS_NUXT_IMAGE:?PTS_NUXT_IMAGE is required}
-    restart: unless-stopped
-    environment:
-      NODE_ENV: production
-      NITRO_HOST: 0.0.0.0
-      NITRO_PORT: "3000"
-      NUXT_PHP_ORIGIN: http://web:80
-      NUXT_PHP_ORIGIN_ALLOWLIST: web:80
-      NUXT_PREVIEW_MEDIA_PROXY: "false"
-      TZ: ${TZ:-Asia/Ho_Chi_Minh}
-    networks:
-      - edge
-    depends_on:
-      web:
-        condition: service_healthy
-    mem_limit: 1536m
-    pids_limit: 200
-    healthcheck:
-      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/').then(r=>{if(r.status!==200)throw new Error(r.status)}).catch(()=>process.exit(1))"]
-      interval: 10s
-      timeout: 8s
-      retries: 6
-      start_period: 30s
     logging: *bounded-logging
 
   db:
