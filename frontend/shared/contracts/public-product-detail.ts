@@ -58,7 +58,7 @@ function text(value: unknown, allowEmpty = false): value is string { return type
 function seoText(value: unknown, allowEmpty = false): value is string { return text(value, allowEmpty) && !/[<>]/.test(value) }
 function id(value: unknown): value is number { return typeof value === 'number' && Number.isSafeInteger(value) && value > 0 }
 function image(value: unknown): value is string { return text(value) && value.startsWith('/upload/product/') && !value.includes('..') && !/[<>"'`\s]/.test(value) }
-function spec(value: unknown): value is PublicProductSpecification { return record(value) && text(value.key, true) && text(value.label) && text(value.value) }
+function spec(value: unknown): value is PublicProductSpecification { return record(value) && text(value.key, true) && text(value.label) && text(value.value, true) }
 const metricIcons: PublicProductMetricIcon[] = ['battery', 'height', 'shield', 'sun', 'bolt']
 const metricIconDirectories: PublicProductMetricIconDirectory[] = ['pdp', 'pdp-extra', 'pdp-lighting']
 function decisionMetric(value: unknown): value is PublicProductDecisionMetric {
@@ -84,6 +84,10 @@ function blockText(value: unknown, allowEmpty = false): value is string {
 }
 function contentImage(value: unknown, allowEmpty = false): value is string {
   return value === '' ? allowEmpty : image(value)
+}
+function applicationImage(value: unknown): value is string {
+  return image(value)
+    || typeof value === 'string' && /^\/assets\/images\/site-visuals\/pdp-usecase-v2\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|webp)$/i.test(value)
 }
 function contentBlock(value: unknown): value is PublicProductContentBlock {
   if (!record(value) || typeof value.type !== 'string') return false
@@ -111,7 +115,7 @@ function applications(value: unknown): value is PublicProductApplications | null
     && Array.isArray(value.items) && value.items.length > 0 && value.items.length <= 3
     && value.items.every((item) => record(item)
       && Object.keys(item).sort().join(',') === ['image', 'text', 'title'].sort().join(',')
-      && text(item.title) && text(item.text, true) && contentImage(item.image, true))
+      && text(item.title) && text(item.text, true) && (item.image === '' || applicationImage(item.image)))
 }
 function buyingGuide(value: unknown): value is PublicProductBuyingGuide {
   return record(value)

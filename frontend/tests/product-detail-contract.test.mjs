@@ -58,6 +58,28 @@ const good = {
 }
 
 test('validates product detail DTO', () => assert.equal(isPublicProductDetailPayload(good), true))
+test('accepts blank specification values so the UI can show the PHP placeholder row', () => {
+  assert.equal(isPublicProductDetailPayload({
+    ...good,
+    product: { ...good.product, specifications: [{ ...good.product.specifications[0], value: '' }] },
+  }), true)
+})
+test('accepts only the fixed allow-listed PDP fallback images for application cards', () => {
+  assert.equal(isPublicProductDetailPayload({
+    ...good,
+    applications: { ...good.applications, items: [{ ...good.applications.items[0], image: '/assets/images/site-visuals/pdp-usecase-v2/lighting-home.webp' }] },
+  }), true)
+  for (const image of [
+    '/assets/images/site-visuals/private/lighting-home.webp',
+    '/assets/images/site-visuals/pdp-usecase-v2/../secret.webp',
+    'https://evil.example/lighting-home.webp',
+  ]) {
+    assert.equal(isPublicProductDetailPayload({
+      ...good,
+      applications: { ...good.applications, items: [{ ...good.applications.items[0], image }] },
+    }), false, image)
+  }
+})
 test('requires sanitized Admin SEO fields and a product-matching canonical path', () => {
   assert.equal(isPublicProductDetailPayload({ ...good, seo: { ...good.seo, description: '<script>x</script>' } }), false)
   assert.equal(isPublicProductDetailPayload({ ...good, seo: undefined }), false)
