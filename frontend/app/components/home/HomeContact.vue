@@ -7,9 +7,26 @@ const phoneHref = computed(() => publicPhoneHref(props.contact.hotline))
 const emailHref = computed(() => publicEmailHref(props.contact.email))
 const { ensureSecurity, submit } = useLeadForm()
 const form = reactive({ fullname: '', phone: '', address: '', subject: '', content: '' })
+const leadIntent = useState<string>('public-home-lead-intent', () => '')
 const submitting = ref(false)
 const success = ref('')
 const error = ref('')
+
+watch(leadIntent, (requested) => {
+  if (!requested) return
+  const options = [
+    'Đèn năng lượng mặt trời',
+    'Điện mặt trời gia đình',
+    'Điện mặt trời doanh nghiệp',
+    'Tấm pin và biến tần',
+    'Pin lưu trữ',
+    'Hợp tác đại lý',
+    'Khác',
+  ]
+  const needle = requested.trim().toLocaleLowerCase()
+  form.subject = options.find((option) => option === requested || needle.includes(option.toLocaleLowerCase())) || ''
+  leadIntent.value = ''
+})
 
 onMounted(() => void ensureSecurity().catch(() => {}))
 
@@ -46,7 +63,7 @@ async function send() {
     class="bg-hdr-surface py-[clamp(64px,6vw,92px)] pb-[clamp(88px,7vw,108px)]"
     aria-labelledby="home-contact-title"
   >
-    <div class="mx-auto w-[min(calc(100%-32px),2200px)]">
+    <div class="mx-auto w-[min(calc(100%-clamp(40px,5vw,96px)),1560px)] max-[860px]:w-[min(calc(100%-48px),1440px)] max-[640px]:w-[calc(100%-40px)] max-[360px]:w-[calc(100%-32px)] min-[1600px]:w-[min(calc(100%-clamp(96px,8vw,220px)),2200px)]">
       <header class="mb-10 max-w-[760px]">
         <h2 id="home-contact-title" class="m-0 text-[clamp(31px,2.2vw,42px)] font-bold leading-[1.2] tracking-[-.025em] text-navy-950">
           Bạn đang cần giải pháp nào?
@@ -56,7 +73,7 @@ async function send() {
         </p>
       </header>
 
-      <div class="grid grid-cols-[minmax(310px,.72fr)_minmax(0,1.28fr)] overflow-hidden rounded-[4px] bg-white max-md:grid-cols-1">
+      <div class="grid grid-cols-[minmax(310px,.72fr)_minmax(0,1.28fr)] overflow-hidden rounded-[4px] bg-white max-[860px]:grid-cols-1">
         <div class="bg-navy-950 p-[clamp(30px,3.2vw,48px)] text-[#d4dee8]">
           <h3 class="m-0 text-2xl font-bold text-white">Thông tin liên hệ</h3>
           <p class="mt-3 leading-[1.65] text-[#d4dee8]">Đội ngũ Phúc Thịnh Solar phản hồi trong giờ làm việc.</p>

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { PublicSearchPayload } from '#shared/contracts/public-search'
 import CatalogProductGrid from '~/components/catalog/CatalogProductGrid.vue'
+import CatalogMasthead from '~/components/catalog/CatalogMasthead.vue'
 import SearchFilterOptions from '~/components/catalog/SearchFilterOptions.vue'
 import { isRuntimeFlagEnabled } from '#shared/public-route-gate'
 
@@ -17,11 +18,13 @@ const keyword = computed(() => typeof route.query.keyword === 'string' ? route.q
 const page = computed(() => typeof route.query.page === 'string' ? route.query.page : '')
 const brand = computed(() => typeof route.query.brand === 'string' ? route.query.brand.trim() : '')
 const price = computed(() => typeof route.query.price === 'string' ? route.query.price.trim() : '')
+const sort = computed(() => typeof route.query.sort === 'string' ? route.query.sort : '')
 const searchQuery = computed(() => ({
   keyword: keyword.value,
   ...(page.value ? { page: page.value } : {}),
   ...(brand.value ? { brand: brand.value } : {}),
   ...(price.value ? { price: price.value } : {}),
+  ...(sort.value ? { sort: sort.value } : {}),
 }))
 
 const { data, error, pending } = await useAsyncData<PublicSearchPayload>(
@@ -42,6 +45,16 @@ const currentPage = computed(() => data.value?.pagination.page ?? 1)
 const filters = computed(() => data.value?.filters)
 const selectedBrandIds = computed(() => data.value?.selected?.brandIds ?? parsePositiveIds(brand.value))
 const selectedPriceKeys = computed(() => data.value?.selected?.priceKeys ?? parsePriceKeys(price.value))
+const selectedSort = computed(() => data.value?.selected?.sort ?? (sort.value || 'default'))
+const sortOptions = [
+  { value: 'default', label: 'Mặc định' },
+  { value: 'abc', label: 'Tên A → Z' },
+  { value: 'abc-desc', label: 'Tên Z → A' },
+  { value: 'new', label: 'Mới nhất' },
+  { value: 'new-desc', label: 'Cũ nhất' },
+  { value: 'price', label: 'Giá tăng dần' },
+  { value: 'price-desc', label: 'Giá giảm dần' },
+]
 const hasFilters = computed(() => Boolean(filters.value && (filters.value.brands.length || filters.value.priceRanges.length)))
 const mobileFiltersOpen = ref(false)
 
@@ -59,7 +72,13 @@ function filterHref(selection: { brandIds: number[]; priceKeys: string[] }) {
   const query: Record<string, string> = { keyword: keyword.value }
   if (selection.brandIds.length) query.brand = selection.brandIds.join(',')
   if (selection.priceKeys.length) query.price = selection.priceKeys.join(',')
+  if (sort.value) query.sort = sort.value
   return { path: selfPath.value, query }
+}
+
+function onSortChange(event: Event) {
+  const value = (event.target as HTMLSelectElement).value
+  navigateTo({ path: selfPath.value, query: { keyword: keyword.value, ...(brand.value ? { brand: brand.value } : {}), ...(price.value ? { price: price.value } : {}), ...(value !== 'default' ? { sort: value } : {}) } })
 }
 
 function pageHref(value: number) {
@@ -70,6 +89,7 @@ function pageHref(value: number) {
       page: String(value),
       ...(brand.value ? { brand: brand.value } : {}),
       ...(price.value ? { price: price.value } : {}),
+      ...(sort.value ? { sort: sort.value } : {}),
     },
   }
 }
@@ -89,15 +109,19 @@ usePublicSocialMeta({
 <template>
   <div class="min-h-screen bg-white text-navy-800">
     <SiteHeader :site="site" />
-    <main class="mx-auto w-full max-w-(--container-page) px-(--spacing-gutter) py-10 max-ph:py-7">
+    <main class="mx-auto w-full max-w-(--container-page) px-(--spacing-gutter) pb-16">
       <SiteBreadcrumb :items="[{ label: 'Tìm kiếm' }]" />
-      <h1 class="mb-2 text-[clamp(30px,5vw,48px)] font-black tracking-tight">Kết quả tìm kiếm</h1>
-      <p v-if="keyword" class="mb-8 text-slate-500">Từ khóa: <strong class="text-navy-800">{{ keyword }}</strong><span v-if="data"> · {{ data.pagination.total }} kết quả</span></p>
+      <CatalogMasthead
+        heading="Sản phẩm năng lượng mặt trời"
+        description="Giải pháp năng lượng phù hợp cho gia đình, doanh nghiệp và công trình"
+        :hero="null"
+      />
 
-      <div v-if="!keyword" class="rounded-btn border border-gray-200 p-6 text-slate-500">Nhập từ khóa trong ô tìm kiếm ở header.</div>
-      <div v-else-if="pending" class="py-16 text-slate-500" role="status">Đang tìm sản phẩm…</div>
-      <div v-else-if="error" class="rounded-btn border border-red-200 bg-red-50 p-6 text-red-800" role="alert">Không thể tải kết quả tìm kiếm từ CMS local.</div>
-      <div v-else-if="data" :class="hasFilters ? 'grid gap-8 nav:grid-cols-[260px_minmax(0,1fr)]' : ''">
+      <div class="pt-6">
+        <div v-if="!keyword" class="rounded-btn border border-gray-200 p-6 text-slate-500">Nhập từ khóa trong ô tìm kiếm ở header.</div>
+        <div v-else-if="pending" class="py-16 text-slate-500" role="status">Đang tìm sản phẩm…</div>
+        <div v-else-if="error" class="rounded-btn border border-red-200 bg-red-50 p-6 text-red-800" role="alert">Không thể tải kết quả tìm kiếm từ CMS local.</div>
+        <div v-else-if="data" :class="hasFilters ? 'grid gap-8 nav:grid-cols-[260px_minmax(0,1fr)]' : ''">
         <aside v-if="hasFilters && filters" class="hidden nav:block">
           <SearchFilterOptions
             :filters="filters"
@@ -108,6 +132,15 @@ usePublicSocialMeta({
         </aside>
 
         <section class="min-w-0" aria-label="Kết quả tìm kiếm">
+          <div class="mb-5 flex flex-wrap items-center justify-between gap-4">
+            <h2 class="m-0 text-[22px] font-extrabold text-navy-950">Danh sách sản phẩm</h2>
+            <label class="flex items-center gap-2 text-sm text-slate-600">
+              Sắp xếp
+              <select :value="selectedSort" class="h-10 border border-gray-300 bg-white px-3 text-navy-800" @change="onSortChange">
+                <option v-for="option in sortOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
+              </select>
+            </label>
+          </div>
           <button
             v-if="hasFilters && filters"
             class="mb-5 inline-flex min-h-11 items-center gap-2 rounded-chip border border-gray-200 px-4 font-bold nav:hidden"
@@ -140,6 +173,7 @@ usePublicSocialMeta({
             <NuxtLink v-if="currentPage < totalPages" :to="pageHref(currentPage + 1)" class="rounded-chip border border-gray-200 px-4 py-2 font-bold no-underline">Sau</NuxtLink>
           </nav>
         </section>
+      </div>
       </div>
     </main>
     <SiteFooter :site="site" />

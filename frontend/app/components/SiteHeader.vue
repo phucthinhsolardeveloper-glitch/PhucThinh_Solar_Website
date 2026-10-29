@@ -1,5 +1,11 @@
 <script setup lang="ts">
 import type { PublicCatalogGroup, PublicProductCategoryNode, PublicSiteLink, PublicSitePayload } from '#shared/contracts/public-site'
+import {
+  catalogGroupMeta,
+  catalogItemIcon,
+  catalogMenuSearchText,
+  sortCatalogGroups,
+} from '#shared/catalog-menu-presentation'
 import { isRuntimeFlagEnabled } from '#shared/public-route-gate'
 
 type MenuMode = 'hover' | 'intent' | null
@@ -31,6 +37,8 @@ const searchOpen = ref(false)
 const searchKeyword = ref('')
 const catalogOpen = ref(false)
 const catalogMode = ref<MenuMode>(null)
+const catalogKeyword = ref('')
+const catalogSearchInput = ref<HTMLInputElement | null>(null)
 const mobileOpen = ref(false)
 const mobileCatalogOpen = ref(false)
 const mobileNavOpen = ref<string | null>(null)
@@ -89,7 +97,7 @@ const catalogGroups = computed<RenderedCatalogGroup[]>(() => {
       .map(([id, group]) => ({ id, ...group }))
       .filter((group) => group.items.length)
     : []
-  if (dtoGroups.length) return dtoGroups
+  if (dtoGroups.length) return sortCatalogGroups(dtoGroups)
   if (props.site.productCategoryTree?.length) {
     return [{
       id: 'taxonomy',
@@ -109,6 +117,34 @@ const catalogGroups = computed<RenderedCatalogGroup[]>(() => {
   return []
 })
 const hasCategories = computed(() => catalogGroups.value.some((group) => group.items.length > 0))
+
+type RenderedCatalogItem = PublicCatalogGroup['items'][number] & { searchText: string; icon: ReturnType<typeof catalogItemIcon> }
+type RenderedCatalogColumn = RenderedCatalogGroup & {
+  meta: ReturnType<typeof catalogGroupMeta>
+  groupHref: string
+  visibleItems: RenderedCatalogItem[]
+}
+
+const catalogColumns = computed<RenderedCatalogColumn[]>(() => {
+  const query = catalogKeyword.value.trim().toLocaleLowerCase()
+  return catalogGroups.value.map((group) => {
+    const meta = catalogGroupMeta(group.id)
+    const items = group.items.map((item) => ({
+      ...item,
+      searchText: catalogMenuSearchText(item.label, item.children),
+      icon: catalogItemIcon(item.label),
+    }))
+    const visibleItems = query
+      ? items.filter((item) => `${item.label} ${item.searchText}`.toLocaleLowerCase().includes(query))
+      : items
+    return {
+      ...group,
+      meta,
+      groupHref: meta.href || group.href || '/san-pham/',
+      visibleItems,
+    }
+  }).filter((group) => group.visibleItems.length > 0)
+})
 
 function focusFirst(container: HTMLElement | null) {
   if (!container) return
@@ -148,15 +184,28 @@ function openCatalog(mode: Exclude<MenuMode, null> = 'intent') {
   catalogMode.value = mode
   catalogOpen.value = true
   syncBodyLock()
-  if (mode === 'intent') nextTick(() => focusFirst(catalogPanel.value))
+  if (mode === 'intent') {
+    nextTick(() => {
+      if (catalogSearchInput.value) catalogSearchInput.value.focus()
+      else focusFirst(catalogPanel.value)
+    })
+  }
 }
 
 function closeCatalog(restoreFocus = true) {
   const shouldRestore = restoreFocus && catalogOpen.value
   catalogOpen.value = false
   catalogMode.value = null
+  catalogKeyword.value = ''
   syncBodyLock()
   if (shouldRestore) nextTick(() => catalogTrigger.value?.focus())
+}
+
+async function submitCatalogSearch() {
+  const keyword = catalogKeyword.value.trim()
+  if (!keyword) return
+  closeCatalog(false)
+  await navigateTo({ path: shellHref('/tim-kiem/'), query: { keyword } })
 }
 
 function toggleCatalog() {
@@ -520,99 +569,204 @@ onBeforeUnmount(() => {
     </header>
 
     <!--
-      Overlay mega-menu. header-v3.css: inset-block-start 148px (<1501px) /
-      132px (>=1501px) — đúng bằng chiều cao header thật ở từng dải, để lớp phủ
-      không đè lên chính header đang mở nó.
+      Mega-menu catalog — đo theo header-v3.css + screenshot production 2026-10-28:
+      title "Khám phá sản phẩm", search trong heading, 3 cột icon, help card, footer 2 CTA.
+      inset-top 148px (<1501px) / 132px (>=1501px) khớp chiều cao header.
     -->
     <div
       v-if="catalogOpen"
-      class="fixed inset-x-0 bottom-0 top-[148px] z-[100] overflow-auto bg-[rgb(8_18_34_/_58%)] wd:top-[132px]"
+      class="fixed inset-x-0 bottom-0 top-[148px] z-[100] overflow-hidden bg-[rgb(8_18_34_/_58%)] wd:top-[132px]"
       aria-hidden="false"
     >
-      <div
-        class="fixed inset-x-0 bottom-0 top-[148px] h-full cursor-default bg-transparent wd:top-[132px]"
-        aria-hidden="true"
+      <button
+        class="fixed inset-0 h-full w-full cursor-default border-0 bg-transparent"
+        type="button"
+        aria-label="Đóng danh mục sản phẩm"
         @click="closeCatalog()"
       />
       <section
         id="ptsCatalogMenu"
         ref="catalogPanel"
-        class="relative z-[1] mx-auto my-3 max-h-[calc(100vh-156px)] w-[calc(100vw-24px)] overflow-auto rounded-btn
-               border border-hdr-line bg-white px-[18px] pt-5 shadow-[0_18px_48px_rgb(6_21_55_/_20%)]
-               wd:w-[min(1200px,calc(100vw-64px))] wd:px-8 wd:pt-[30px]"
+        class="relative z-[1] mx-auto my-3 max-h-[calc(100vh-var(--pts-catalog-top,148px)-24px)] w-[calc(100vw-24px)]
+               overflow-auto rounded-[12px] border border-[#e5e7eb] bg-white px-[18px] pt-5 text-navy-800
+               shadow-[0_18px_48px_rgba(6,21,55,.2)]
+               wd:my-3 wd:w-[min(1200px,calc(100vw-64px))] wd:px-8 wd:pt-8"
         role="dialog"
         aria-modal="true"
         aria-labelledby="ptsCatalogTitle"
         @mouseenter="catalogMode = 'hover'"
       >
         <div
-          class="grid grid-cols-[minmax(0,1fr)_44px] items-center gap-2.5 pb-[18px]
-                 wd:grid-cols-[minmax(0,1fr)_auto_44px] wd:gap-5"
+          class="grid grid-cols-[minmax(0,1fr)_40px] items-center gap-[13px] pb-[17px]
+                 wd:grid-cols-[minmax(0,1fr)_400px_32px] wd:gap-6 wd:pb-4"
         >
-          <div class="col-span-2 row-start-2 wd:col-span-1 wd:row-start-1">
-            <h2 id="ptsCatalogTitle" class="m-0 text-[21px] leading-[1.25] text-navy-800 wd:text-[25px]">
-              Danh mục sản phẩm
+          <div class="min-w-0">
+            <h2 id="ptsCatalogTitle" class="m-0 text-[21px] font-bold leading-[1.25] text-navy-800 wd:text-[26px]">
+              Khám phá sản phẩm
             </h2>
-            <p class="mt-1 text-[13px] text-slate-500 wd:text-sm">Dữ liệu danh mục đang được cung cấp từ API public.</p>
+            <p class="mt-1 text-[13px] leading-normal text-slate-500 wd:mt-1 wd:text-base wd:leading-normal">
+              Chọn thiết bị phù hợp với nhu cầu của bạn
+            </p>
           </div>
-          <NuxtLink
-            :external="isExternalLink(shellHref('/san-pham/'))"
-            class="inline-flex min-h-11 items-center justify-self-start text-sm font-bold text-navy-800 no-underline hover:text-gold-700 wd:justify-self-auto"
-            :to="shellHref('/san-pham/')"
-            @click="closeCatalog(false)"
+          <form
+            class="col-span-2 row-start-2 flex h-11 min-w-0 items-center gap-3 rounded-chip border border-[#d6dce4]
+                   bg-white px-3.5 text-navy-800 focus-within:border-gold-700 focus-within:shadow-[0_0_0_2px_rgba(201,150,46,.16)]
+                   wd:col-span-1 wd:row-start-1 wd:h-12"
+            role="search"
+            @submit.prevent="submitCatalogSearch"
           >
-            Xem tất cả sản phẩm
-          </NuxtLink>
+            <label class="sr-only" for="ptsCatalogKeyword">Tìm sản phẩm, mã sản phẩm</label>
+            <svg class="h-[18px] w-[18px] flex-none text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.5" /><path d="m16 16 4.5 4.5" /></svg>
+            <input
+              id="ptsCatalogKeyword"
+              ref="catalogSearchInput"
+              v-model="catalogKeyword"
+              class="h-full w-full min-w-0 border-0 bg-transparent text-[15px] font-medium text-navy-800 outline-none
+                     placeholder:text-slate-500 wd:text-base"
+              type="search"
+              placeholder="Tìm sản phẩm, mã sản phẩm..."
+              autocomplete="off"
+            >
+          </form>
           <button
-            class="inline-flex min-h-11 min-w-11 items-center justify-self-end rounded-chip text-hdr-ink transition-colors hover:bg-hdr-surface hover:text-gold-700"
+            class="inline-flex h-10 w-8 items-center justify-self-end rounded-[3px] text-navy-800 transition-colors
+                   hover:bg-hdr-surface wd:justify-self-auto"
             type="button"
             aria-label="Đóng danh mục sản phẩm"
             @click="closeCatalog()"
           >
-            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>
+            <svg class="mx-auto h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>
           </button>
         </div>
 
-        <div v-if="hasCategories" class="grid grid-cols-1 gap-[22px] pb-[26px] pt-1 wd:grid-cols-3 wd:gap-6">
+        <div
+          v-if="hasCategories && catalogColumns.length"
+          class="grid grid-cols-1 gap-[22px] py-1 pb-6 wd:grid-cols-3 wd:gap-6"
+        >
           <section
-            v-for="group in catalogGroups"
+            v-for="(group, groupIndex) in catalogColumns"
             :key="group.id"
-            class="min-w-0 wd:[&:not(:first-child)]:border-l wd:[&:not(:first-child)]:border-hdr-line wd:[&:not(:first-child)]:pl-6"
+            :aria-labelledby="`ptsCatalogGroup-${group.id}`"
+            class="relative min-w-0 wd:[&:not(:first-child)]:before:absolute wd:[&:not(:first-child)]:before:inset-y-0
+                   wd:[&:not(:first-child)]:before:left-[-12px] wd:[&:not(:first-child)]:before:border-l
+                   wd:[&:not(:first-child)]:before:border-[#e5e7eb] wd:[&:not(:first-child)]:before:content-['']"
+            :class="groupIndex === catalogColumns.length - 1 ? 'catalog-group-last' : ''"
           >
-            <h3 class="mb-2 text-[17px] leading-[1.3]">
-              <NuxtLink :external="isExternalLink(shellHref(group.href))" class="inline-flex min-h-11 items-center text-gold-700 no-underline" :to="shellHref(group.href)" @click="closeCatalog(false)">{{ group.label }}</NuxtLink>
+            <h3 :id="`ptsCatalogGroup-${group.id}`" class="mb-1 min-h-[58px]">
+              <NuxtLink
+                :external="isExternalLink(shellHref(group.groupHref))"
+                class="flex min-h-[58px] w-full items-center gap-3 text-[18px] font-bold uppercase leading-[1.25]
+                       text-gold-700 no-underline hover:text-navy-800"
+                :to="shellHref(group.groupHref)"
+                @click="closeCatalog(false)"
+              >
+                <span class="flex h-11 w-[clamp(48px,4.2vw,62px)] flex-none items-center justify-center text-gold-700">
+                  <CatalogMenuIcon class="h-[37px] w-[37px]" :name="group.meta.icon" />
+                </span>
+                <span class="min-w-0">
+                  {{ group.label }}
+                  <small v-if="group.meta.subtitle" class="mt-[3px] block text-[13px] font-normal normal-case leading-[1.35] text-slate-500">
+                    {{ group.meta.subtitle }}
+                  </small>
+                </span>
+              </NuxtLink>
             </h3>
             <ul class="m-0 list-none p-0">
-              <li v-for="item in group.items" :key="item.href + item.label" class="border-b border-[#edf0f3] last:border-b-0">
+              <li
+                v-for="item in group.visibleItems"
+                :key="item.href + item.label"
+                class="group/item relative border-b border-[#edf0f3] last:border-b-0 hover:z-[2] focus-within:z-[2]"
+                :data-search="item.searchText"
+              >
                 <NuxtLink
                   :external="isExternalLink(shellHref(item.href))"
-                  class="flex min-h-12 items-center justify-between gap-3 py-1 text-[15px] leading-[1.4]
-                         text-hdr-ink no-underline hover:text-gold-700"
+                  class="flex min-h-12 items-center gap-3 py-1 text-base font-medium leading-6 text-[#10243a]
+                         no-underline hover:bg-[#fff3d8] hover:text-navy-800 hover:shadow-[inset_3px_0_#b58223]
+                         focus-visible:bg-[#fff3d8] focus-visible:shadow-[inset_3px_0_#b58223]
+                         group-focus-within/item:bg-[#fff3d8] group-focus-within/item:shadow-[inset_3px_0_#b58223]"
                   :to="shellHref(item.href)"
                   @click="closeCatalog(false)"
                 >
-                  <span>{{ item.label }}</span>
-                  <svg class="h-[18px] w-[18px] flex-none text-hdr-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" aria-hidden="true"><path d="m9 5 7 7-7 7" /></svg>
+                  <span class="flex h-7 w-7 flex-none items-center justify-center text-navy-800">
+                    <CatalogMenuIcon class="h-[22px] w-[22px]" :name="item.icon" />
+                  </span>
+                  <span class="min-w-0 flex-1">{{ item.label }}</span>
+                  <svg
+                    v-if="item.children.length"
+                    class="mr-1 h-3.5 w-3.5 flex-none text-slate-500"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  ><path d="m9 5 7 7-7 7" /></svg>
                 </NuxtLink>
-                <!-- border-gray-200 = #e5e7eb = --pts-line, như CatalogCategoryBranch. -->
-                <ul v-if="item.children.length" class="mb-2 ml-4 list-none border-l border-gray-200 pl-3">
-                  <li v-for="entry in flattenLinks(item.children)" :key="entry.key">
+                <ul
+                  v-if="item.children.length"
+                  class="absolute top-0 z-[3] hidden max-h-80 w-[260px] list-none overflow-y-auto rounded-chip
+                         border border-[#e5e7eb] bg-white p-1.5 shadow-[0_12px_30px_rgba(6,21,55,.16)]
+                         group-hover/item:block group-focus-within/item:block left-full
+                         [.catalog-group-last_&]:right-full [.catalog-group-last_&]:left-auto"
+                  :aria-label="`Danh mục con: ${item.label}`"
+                >
+                  <li v-for="child in item.children" :key="child.href + child.label">
                     <NuxtLink
-                      :external="isExternalLink(shellHref(entry.link.href))"
-                      class="flex min-h-11 items-center py-1 text-sm text-hdr-ink no-underline hover:text-gold-700"
-                      :style="entry.depth ? { paddingInlineStart: `${entry.depth * 12}px` } : undefined"
-                      :to="shellHref(entry.link.href)"
+                      :external="isExternalLink(shellHref(child.href))"
+                      class="block px-3 py-[11px] text-[13px] leading-[1.4] text-[#10243a] no-underline
+                             hover:bg-[#fff3d8] hover:text-navy-800"
+                      :to="shellHref(child.href)"
                       @click="closeCatalog(false)"
                     >
-                      {{ entry.link.label }}
+                      {{ child.label }}
                     </NuxtLink>
                   </li>
                 </ul>
               </li>
             </ul>
+            <NuxtLink
+              v-if="group.id === 'devices'"
+              :external="isExternalLink(shellHref('/lien-he/#yeu-cau-tu-van'))"
+              class="mt-7 flex min-h-[112px] items-center gap-4 rounded-chip bg-[#fff4dc] px-[18px] py-4
+                     text-[#392a12] no-underline hover:bg-[#ffecc5] hover:text-navy-800"
+              :to="shellHref('/lien-he/#yeu-cau-tu-van')"
+              @click="closeCatalog(false)"
+            >
+              <CatalogMenuIcon class="h-11 w-11 flex-none text-gold-700" name="headset" />
+              <span>
+                <strong class="block text-[17px] font-bold">Cần hỗ trợ lựa chọn?</strong>
+                <small class="mt-[5px] block text-[15px]">Nhận tư vấn →</small>
+              </span>
+            </NuxtLink>
           </section>
         </div>
+        <p v-else-if="hasCategories" class="m-0 py-4 text-[15px] text-slate-500">Không tìm thấy danh mục phù hợp.</p>
         <p v-else class="m-0 py-4 text-[15px] text-slate-500">Danh mục sản phẩm chưa có dữ liệu.</p>
+
+        <div
+          class="flex min-h-16 flex-col items-start justify-center gap-[9px] border-t border-[#e5e7eb] py-[13px]
+                 wd:flex-row wd:items-center wd:justify-between wd:gap-[18px] wd:py-0"
+        >
+          <NuxtLink
+            :external="isExternalLink(shellHref('/san-pham/'))"
+            class="inline-flex items-center gap-[9px] text-base font-bold text-navy-800 no-underline hover:text-gold-700"
+            :to="shellHref('/san-pham/')"
+            @click="closeCatalog(false)"
+          >
+            Xem tất cả sản phẩm
+            <span class="text-gold-700" aria-hidden="true">→</span>
+          </NuxtLink>
+          <NuxtLink
+            :external="isExternalLink(shellHref('/lien-he/#yeu-cau-tu-van'))"
+            class="inline-flex items-center gap-[9px] text-[15px] font-semibold text-navy-800 no-underline hover:text-gold-700"
+            :to="shellHref('/lien-he/#yeu-cau-tu-van')"
+            @click="closeCatalog(false)"
+          >
+            Tư vấn chọn sản phẩm
+            <span class="text-gold-700" aria-hidden="true">→</span>
+          </NuxtLink>
+        </div>
       </section>
     </div>
 

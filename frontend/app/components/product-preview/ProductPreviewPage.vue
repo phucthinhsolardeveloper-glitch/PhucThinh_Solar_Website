@@ -36,21 +36,15 @@ const discountPercent = computed(() => {
 
 const navItems = computed(() => {
   const items: Array<{ id: string; label: string }> = []
-  if (props.content.blocks.length || props.content.faqs.length) items.push({ id: 'tong-quan', label: 'Tổng quan' })
+  if (props.content.blocks.length) items.push({ id: 'tong-quan', label: 'Tổng quan' })
   if (props.applications?.items.length) items.push({ id: 'ung-dung-san-pham', label: 'Ứng dụng' })
   if (props.buyingGuides?.length) items.push({ id: 'huong-dan-lua-chon', label: 'Lựa chọn' })
-  items.push({ id: 'thong-so-ky-thuat', label: 'Thông số' })
-  if (props.documents.length) items.push({ id: 'tai-lieu-san-pham', label: 'Tài liệu' })
-  if (props.extras?.videoEmbedUrl) items.push({ id: 'video-san-pham', label: 'Video' })
+  items.push({ id: 'thong-so-ky-thuat', label: 'Thông số kỹ thuật' })
   if (props.extras && (props.extras.warranty.summary || props.extras.warranty.override || props.extras.warranty.policies.length)) {
-    items.push({ id: 'chinh-sach-bao-hanh', label: 'Bảo hành' })
+    items.push({ id: 'chinh-sach-bao-hanh', label: 'Chính sách bảo hành' })
   }
-  if (props.extras) {
-    items.push({ id: 'danh-gia-san-pham', label: 'Đánh giá' })
-    items.push({ id: 'pts-pdp-consultation', label: 'Tư vấn' })
-    if (props.extras.commitments.length) items.push({ id: 'ly-do-chon-phuc-thinh-solar', label: 'Cam kết' })
-    if (props.extras.related.length) items.push({ id: 'san-pham-lien-quan', label: 'Liên quan' })
-  }
+  if (props.content.faqs.length) items.push({ id: 'cau-hoi-thuong-gap', label: 'Câu hỏi thường gặp' })
+  items.push({ id: 'pts-pdp-consultation', label: 'Yêu cầu tư vấn' })
   return items
 })
 const activeSection = ref('')
@@ -84,7 +78,7 @@ onBeforeUnmount(() => observer?.disconnect())
       <ProductPreviewGallery :name="product.name" :media="product.media" />
 
       <div class="min-w-0">
-        <h1 class="mb-3 text-[clamp(30px,4vw,54px)] font-black leading-[1.1] tracking-tight max-tb:text-[32px]">
+        <h1 class="mb-3 text-[clamp(28px,1.9vw,35px)] font-black leading-[1.1] tracking-tight max-tb:text-[32px]">
           {{ product.name }}
         </h1>
 
@@ -144,6 +138,22 @@ onBeforeUnmount(() => observer?.disconnect())
 
     <template v-if="extras">
       <ProductSupportExtras :extras="extras" />
+    </template>
+
+    <section v-if="content.faqs.length" id="cau-hoi-thuong-gap" class="scroll-mt-24 border-t border-gray-200 py-10" aria-labelledby="product-faq-title">
+      <h2 id="product-faq-title" class="mb-5 text-[clamp(24px,3vw,34px)] font-black text-navy-800">Câu hỏi thường gặp</h2>
+      <div class="divide-y divide-gray-200 border-y border-gray-200">
+        <details v-for="(faq, index) in content.faqs" :key="index" class="group py-4">
+          <summary class="flex cursor-pointer list-none items-center justify-between gap-4 font-bold text-navy-800">
+            {{ faq.question }}
+            <span class="text-xl text-gold-700 transition-transform group-open:rotate-45" aria-hidden="true">+</span>
+          </summary>
+          <p class="mb-0 mt-3 whitespace-pre-line pr-8 leading-7 text-slate-600">{{ faq.answer }}</p>
+        </details>
+      </div>
+    </section>
+
+    <template v-if="extras">
       <ProductReviews :product-id="product.id" :reviews="extras.reviews" :csrf-token="extras.csrfToken" />
       <ProductConsultationForm
         :product-id="product.id"

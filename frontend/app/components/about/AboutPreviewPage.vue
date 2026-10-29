@@ -122,7 +122,13 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
     <section v-if="about.trust.items.length" class="bg-[#f4f7fb] py-16 max-[800px]:py-12" aria-labelledby="about-trust-title">
       <div class="mx-auto grid w-[min(calc(100%-32px),2200px)] grid-cols-[minmax(0,.7fr)_minmax(0,1.3fr)] items-start gap-16 max-[800px]:grid-cols-1 max-[800px]:gap-7">
         <h2 id="about-trust-title" class="m-0 text-[clamp(29px,2.6vw,38px)] font-bold leading-[1.22]">{{ about.trust.title }}</h2>
-        <div class="border-t border-[#dce4ef]"><article v-for="(item, index) in about.trust.items" :key="`${item.title}-${index}`" class="grid grid-cols-[4rem_minmax(0,1fr)] items-start gap-5 border-b border-[#dce4ef] py-5"><img v-if="item.image" class="h-[3.25rem] w-[3.25rem] object-contain" :src="item.image" alt="" width="64" height="64" loading="lazy"><span v-else class="flex h-[3.25rem] w-[3.25rem] items-center justify-center rounded-full border border-gold-500/70 text-xs font-extrabold text-gold-500" aria-hidden="true">{{ String(index + 1).padStart(2, '0') }}</span><div><h3 class="text-[1.1rem] font-bold leading-[1.22]">{{ item.title }}</h3><p class="m-0 mt-[.4rem] leading-[1.68] text-[#52627c]">{{ item.description }}</p></div></article></div>
+        <div class="grid grid-cols-2 gap-x-[34px] max-[800px]:grid-cols-1">
+          <article v-for="(item, index) in about.trust.items" :key="`${item.title}-${index}`" class="grid grid-cols-[4.25rem_minmax(0,1fr)] items-start gap-[22px] py-[18px]">
+            <img v-if="item.image" class="h-16 w-16 object-contain" :src="item.image" alt="" width="64" height="64" loading="lazy">
+            <span v-else class="flex h-16 w-16 items-center justify-center rounded-full border border-gold-500/70 text-xs font-extrabold text-gold-500" aria-hidden="true">{{ String(index + 1).padStart(2, '0') }}</span>
+            <div><h3 class="text-[1.1rem] font-bold leading-[1.22]">{{ item.title }}</h3><p class="m-0 mt-[.4rem] leading-[1.68] text-[#52627c]">{{ item.description }}</p></div>
+          </article>
+        </div>
       </div>
     </section>
 

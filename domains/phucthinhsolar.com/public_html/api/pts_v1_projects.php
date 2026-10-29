@@ -72,16 +72,19 @@ try
     foreach($rows as &$row) $row['_pts_public_photo'] = isset($row['photo']) && is_file(ROOT.UPLOAD_NEWS_L.$row['photo']) ? $row['photo'] : '';
     unset($row);
     if($featuredRow) $featuredRow['_pts_public_photo'] = isset($featuredRow['photo']) && is_file(ROOT.UPLOAD_NEWS_L.$featuredRow['photo']) ? $featuredRow['photo'] : '';
-    $ctaRows = $loadRows('select namevi,descvi,content1vi,photo,status from #_news where type=? order by numb,id desc', array('project-cta'));
+    $ctaRows = $loadRows('select title_indexvi,namevi,descvi,content1vi,photo,status from #_news where type=? order by numb,id desc', array('project-cta'));
     foreach($ctaRows as &$row) $row['_pts_public_photo'] = isset($row['photo']) && is_file(ROOT.UPLOAD_NEWS_L.$row['photo']) ? $row['photo'] : (is_file(ROOT.UPLOAD_NEWS_L.'anh-quan-gl-4-9449.jpg') ? 'anh-quan-gl-4-9449.jpg' : '');
     unset($row);
     if(!$ctaRows) $ctaRows[] = array('namevi' => 'Bạn có công trình cần tư vấn?', 'descvi' => 'Đội ngũ Phúc Thịnh Solar sẵn sàng hỗ trợ, tư vấn giải pháp điện mặt trời phù hợp nhất cho nhu cầu của bạn.', 'content1vi' => 'Nhận tư vấn miễn phí', 'status' => 'hienthi', '_pts_public_photo' => is_file(ROOT.UPLOAD_NEWS_L.'anh-quan-gl-4-9449.jpg') ? 'anh-quan-gl-4-9449.jpg' : '');
+    $trustRows = $loadRows("select namevi,photo,status from #_news where type=? and find_in_set('hienthi',status) order by numb,id desc limit 0,3", array('project-trust'));
+    foreach($trustRows as &$row) $row['_pts_public_photo'] = isset($row['photo']) && is_file(ROOT.UPLOAD_NEWS_L.$row['photo']) ? $row['photo'] : '';
+    unset($row);
     $introRows = $loadRows('select namevi,descvi,status from #_news where type=? order by numb,id desc', array('project-intro'));
     $benefitRows = $loadRows("select namevi,photo,status from #_news where type=? and find_in_set('hienthi',status) order by numb,id desc limit 0,3", array('project-benefit'));
     foreach($benefitRows as &$row) $row['_pts_public_photo'] = !empty($row['photo']) && is_file(ROOT.UPLOAD_NEWS_L.$row['photo']) ? $row['photo'] : '';
     unset($row);
     if(function_exists('closeSessionWrite')) closeSessionWrite();
-    echo json_encode(ptsProjectsPayload($categoryRows, $rows, $featuredRow, $ctaRows, $page, $perPage, $total, $selectedCategory ? ptsProjectsCategoryDto($selectedCategory) : null, is_array($optsetting) && isset($optsetting['hotline']) ? $optsetting['hotline'] : '', $introRows, $benefitRows), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
+    echo json_encode(ptsProjectsPayload($categoryRows, $rows, $featuredRow, $ctaRows, $page, $perPage, $total, $selectedCategory ? ptsProjectsCategoryDto($selectedCategory) : null, is_array($optsetting) && isset($optsetting['hotline']) ? $optsetting['hotline'] : '', $introRows, $benefitRows, $trustRows), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
 }
 catch(Throwable $e)
 {

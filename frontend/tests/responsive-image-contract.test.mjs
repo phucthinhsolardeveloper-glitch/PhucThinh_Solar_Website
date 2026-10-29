@@ -8,8 +8,9 @@ const read = (path) => readFileSync(resolve(frontendRoot, path), 'utf8')
 
 test('catalog media reserves intrinsic space and chooses responsive product sizes', () => {
   const catalog = read('app/components/catalog/CatalogPage.vue')
+  const masthead = read('app/components/catalog/CatalogMasthead.vue')
   const products = read('app/components/catalog/CatalogProductGrid.vue')
-  assert.match(catalog, /categoryHero\.image[\s\S]*width="1600"[\s\S]*height="500"[\s\S]*sizes="100vw"/)
+  assert.match(masthead, /hero\?\.image[\s\S]*width="1800"[\s\S]*height="600"[\s\S]*sizes="100vw"/)
   assert.match(catalog, /categoryContent\.applications[\s\S]*width="760"[\s\S]*height="475"[\s\S]*sizes=/)
   assert.match(catalog, /support\.image[\s\S]*width="1600"[\s\S]*height="500"[\s\S]*sizes="100vw"/)
   assert.match(products, /width="640"[\s\S]*height="640"[\s\S]*sizes=/)

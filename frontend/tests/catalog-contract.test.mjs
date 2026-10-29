@@ -73,6 +73,12 @@ test('category hero fallback matches PHP source for den-nlmt and respects a conf
   assert.match(catalogApi, /!\$heroConfigured && isset\(\$heroFallbacks\[\$currentPath\]\)/)
 })
 
+test('catalog DTO default product order uses the same highlighted category ranking as PHP catalog', () => {
+  const phpSource = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/sources/product.php', import.meta.url), 'utf8')
+  assert.match(phpSource, /publicProductDefaultOrder\('',\s*publicProductBossCategoryOrder\('',\s*\$type\)\)/)
+  assert.match(catalogApi, /publicProductDefaultOrder\('p',\s*publicProductBossCategoryOrder\('p'\)\)/)
+})
+
 const extended = {
   ...good,
   categoryHero: null,

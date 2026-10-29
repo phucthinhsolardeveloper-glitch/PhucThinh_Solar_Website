@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import type { PublicCatalogPayload } from '#shared/contracts/public-catalog'
 import type { PublicSitePayload, PublicProductCategoryNode } from '#shared/contracts/public-site'
+import type { CatalogMenuIconName } from '#shared/catalog-menu-presentation'
 import { isPublicSitePayload } from '#shared/contracts/public-site'
 import CatalogFilterSidebar from '~/components/catalog/CatalogFilterSidebar.vue'
 import CatalogProductGrid from '~/components/catalog/CatalogProductGrid.vue'
+import CatalogMasthead from '~/components/catalog/CatalogMasthead.vue'
+import CatalogMenuIcon from '~/components/CatalogMenuIcon.vue'
+import SiteBreadcrumb from '~/components/SiteBreadcrumb.vue'
 import SiteHeader from '~/components/SiteHeader.vue'
 import SiteFooter from '~/components/SiteFooter.vue'
 import { isRuntimeFlagEnabled, productCategorySegmentsFromPublicPath } from '#shared/public-route-gate'
@@ -29,9 +33,6 @@ const subcategory = computed(() => typeof route.query.subcategory === 'string' ?
 const sort = computed(() => typeof route.query.sort === 'string' ? route.query.sort : '')
 const keyword = computed(() => typeof route.query.keyword === 'string' ? route.query.keyword : '')
 const need = computed(() => typeof route.query.need === 'string' ? route.query.need : '')
-const searchKeyword = ref(keyword.value)
-const searchError = ref('')
-watch(keyword, (value) => { searchKeyword.value = value })
 const query = computed(() => ({
   ...(category.value ? { category: category.value } : {}),
   ...(page.value ? { page: page.value } : {}),
@@ -58,15 +59,6 @@ function filterLink(overrides: { subcategory?: string; brand?: string; price?: s
 function onSortChange(event: Event) {
   const value = (event.target as HTMLSelectElement).value
   navigateTo(filterLink({ sort: value === 'default' ? '' : value }))
-}
-function onKeywordSearch() {
-  const value = searchKeyword.value.trim()
-  if ([...value].length > 100) {
-    searchError.value = 'Từ khóa tìm kiếm tối đa 100 ký tự.'
-    return
-  }
-  searchError.value = ''
-  navigateTo(filterLink({ keyword: value }))
 }
 const { data: siteData, error: siteError } = await useAsyncData<PublicSitePayload>('migration-catalog-site', async () => {
   const payload = await $fetch<unknown>('/_migration/site')
@@ -109,6 +101,24 @@ const categoryNavItems = computed(() => selectedCategory.value
   ? activeCategoryRoot.value?.children ?? []
   : (siteData.value?.productCategoryTree ?? []).filter((node) => node.slug !== 'den-san-vuon'))
 const categoryAllHref = computed(() => links.generic(activeCategoryRoot.value?.url ?? '/san-pham/'))
+const sidebarCategories = computed(() => selectedCategory.value
+  ? []
+  : (siteData.value?.productCategoryTree ?? []).map((node) => ({ ...node, children: [] })))
+const subcategoryTitle = computed(() => activeCategoryRoot.value?.slug === 'den-nlmt' ? 'Loại đèn' : 'Loại sản phẩm')
+function categoryIcon(slug: string): CatalogMenuIconName {
+  if (slug.includes('den-pha')) return 'flood'
+  if (slug.includes('den-duong')) return 'street'
+  if (slug.includes('den-san-vuon')) return 'garden'
+  if (slug.includes('den-ufo')) return 'ufo'
+  if (slug.includes('den-op-tran')) return 'ceiling'
+  if (slug.includes('den')) return 'light'
+  if (slug.includes('tam-pin')) return 'panel'
+  if (slug.includes('bien-tan') || slug.includes('inverter')) return 'inverter'
+  if (slug.includes('pin-luu-tru')) return 'battery'
+  if (slug.includes('bom')) return 'pump'
+  if (slug.includes('quat')) return 'fan'
+  return 'cog'
+}
 
 /**
  * Nếu lưới vẫn giữ nguyên hai cột khi không có danh mục/bộ lọc thì nội dung
@@ -142,6 +152,12 @@ const sortOptions = computed(() => {
   return base.filter((option) => option.value !== 'price' && option.value !== 'price-desc')
 })
 const heading = computed(() => catalogData.value?.category && !Array.isArray(catalogData.value.category) ? catalogData.value.category.name : 'Sản phẩm năng lượng mặt trời')
+const catalogBreadcrumbItems = computed(() => {
+  const root = route.path.startsWith('/thuong-hieu/')
+    ? { label: 'Thương hiệu', href: '/thuong-hieu/' }
+    : { label: 'Sản phẩm', href: '/san-pham/' }
+  return category.value ? [root, { label: heading.value }] : [root]
+})
 const metadataTitle = computed(() => catalogData.value?.seo.title || [heading.value, 'Phúc Thịnh Solar'].join(' — '))
 const metadataDescription = computed(() => catalogData.value?.seo.description || 'Khám phá thiết bị chiếu sáng, tấm pin, biến tần và giải pháp năng lượng mặt trời tại Phúc Thịnh Solar.')
 const metadataKeywords = computed(() => catalogData.value?.seo.keywords ?? '')
@@ -188,13 +204,18 @@ const totalPages = computed(() => catalogData.value ? Math.max(1, Math.ceil(cata
 const currentPage = computed(() => catalogData.value?.pagination.page ?? 1)
 const paginationItems = computed(() => {
   const total = totalPages.value
-  if (total <= 7) return Array.from({ length: total }, (_, index) => ({ key: `page-${index + 1}`, page: index + 1 }))
+  if (total <= 10) return Array.from({ length: total }, (_, index) => ({ key: `page-${index + 1}`, page: index + 1 }))
 
   const current = Math.min(Math.max(currentPage.value, 1), total)
-  const candidates = new Set([1, total, current - 1, current, current + 1])
-  if (current <= 4) [2, 3, 4, 5].forEach((pageNumber) => candidates.add(pageNumber))
-  if (current >= total - 3) [total - 4, total - 3, total - 2, total - 1].forEach((pageNumber) => candidates.add(pageNumber))
-  const pages = [...candidates].filter((pageNumber) => pageNumber >= 1 && pageNumber <= total).sort((a, b) => a - b)
+  let candidates: number[]
+  if (current < 5) {
+    candidates = [1, 2, 3, 4, 5, 6, 7, total - 1, total]
+  } else if (total - 4 > current && current > 4) {
+    candidates = [1, 2, current - 2, current - 1, current, current + 1, current + 2, total - 1, total]
+  } else {
+    candidates = [1, 2, total - 6, total - 5, total - 4, total - 3, total - 2, total - 1, total]
+  }
+  const pages = [...new Set(candidates)].filter((pageNumber) => pageNumber >= 1 && pageNumber <= total).sort((a, b) => a - b)
   const items: Array<{ key: string; page: number | null }> = []
   pages.forEach((pageNumber, index) => {
     const previous = pages[index - 1]
@@ -220,31 +241,37 @@ function pageLink(nextPage: number) {
       Cột trái ở bản này rộng 260px để đủ chỗ cho nhãn thương hiệu/mức giá dài.
     -->
     <main
-      class="mx-auto grid w-full max-w-(--container-page) grid-cols-1 gap-6 px-(--spacing-gutter) pt-8 pb-16
+      class="mx-auto grid w-full max-w-(--container-page) grid-cols-1 gap-6 px-(--spacing-gutter) pt-0 pb-16
              max-ph:pt-6 max-ph:pb-12"
       :class="hasSidebar ? 'nav:grid-cols-[260px_minmax(0,1fr)]' : ''"
     >
-      <section class="col-span-full overflow-hidden bg-navy-950 text-white" aria-labelledby="catalog-heading">
-        <div class="relative isolate flex min-h-[clamp(260px,24vw,410px)] items-end overflow-hidden px-6 py-8 nav:px-10 nav:py-10">
-          <img v-if="catalogData?.categoryHero?.image" :src="catalogData.categoryHero.image" :alt="catalogData.categoryHero.alt" width="1600" height="500" sizes="100vw" class="absolute inset-0 -z-20 h-full w-full object-cover" fetchpriority="high">
-          <span class="absolute inset-0 -z-10 bg-gradient-to-r from-navy-950/90 via-navy-950/65 to-navy-950/15" aria-hidden="true" />
-          <div class="max-w-[760px]">
-            <h1 id="catalog-heading" class="mb-3 text-[clamp(30px,4.2vw,52px)] font-black leading-[1.12] tracking-tight text-white">{{ heading }}</h1>
-            <p class="m-0 max-w-[62ch] leading-relaxed text-blue-100">{{ bannerDescription }}</p>
-          </div>
-        </div>
-      </section>
-
-      <div class="col-span-full grid grid-cols-2 gap-4 border-b border-gray-200 py-5 tb:grid-cols-4" aria-label="Lợi ích khi chọn sản phẩm">
-        <div class="flex items-start gap-3"><span class="text-gold-700" aria-hidden="true">✦</span><span><strong class="block text-sm text-navy-950">Tư vấn lựa chọn</strong><small class="text-slate-500">Đúng nhu cầu, hiệu quả</small></span></div>
-        <div class="flex items-start gap-3"><span class="text-gold-700" aria-hidden="true">⚙</span><span><strong class="block text-sm text-navy-950">Hỗ trợ kỹ thuật</strong><small class="text-slate-500">Trong suốt quá trình sử dụng</small></span></div>
-        <div class="flex items-start gap-3"><span class="text-gold-700" aria-hidden="true">✓</span><span><strong class="block text-sm text-navy-950">Chính sách rõ ràng</strong><small class="text-slate-500">Minh bạch, dễ hiểu</small></span></div>
-        <div class="flex items-start gap-3"><span class="text-gold-700" aria-hidden="true">↗</span><span><strong class="block text-sm text-navy-950">Giao hàng toàn quốc</strong><small class="text-slate-500">Nhanh chóng, an toàn</small></span></div>
+      <div class="col-span-full py-1">
+        <SiteBreadcrumb :items="catalogBreadcrumbItems" />
       </div>
 
-      <nav v-if="categoryNavItems.length" class="col-span-full flex gap-3 overflow-x-auto border-b border-gray-200 py-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" aria-label="Danh mục sản phẩm">
-        <NuxtLink :to="categoryAllHref" class="flex-none px-3 py-2 font-bold text-navy-800 no-underline hover:text-gold-700" :aria-current="!selectedCategory || selectedCategory.url === activeCategoryRoot?.url ? 'page' : undefined">Tất cả</NuxtLink>
-        <NuxtLink v-for="item in categoryNavItems" :key="item.url" :to="links.generic(item.url)" class="flex-none px-3 py-2 font-bold text-navy-800 no-underline hover:text-gold-700" :aria-current="item.url === selectedCategory?.url ? 'page' : undefined">{{ item.name }}</NuxtLink>
+      <CatalogMasthead :heading="heading" :description="bannerDescription" :hero="catalogData?.categoryHero ?? null" />
+
+      <nav v-if="categoryNavItems.length" class="col-span-full mt-0 flex gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" aria-label="Danh mục sản phẩm">
+        <NuxtLink
+          :to="categoryAllHref"
+          class="inline-flex min-h-[58px] min-w-[126px] flex-1 items-center justify-center gap-2 border px-3 py-2 text-center text-[13px] font-bold no-underline transition-colors"
+          :class="!selectedCategory || selectedCategory.url === activeCategoryRoot?.url ? 'border-gold-600 bg-gold-600 text-white' : 'border-gray-200 bg-white text-navy-800 hover:border-gold-600'"
+          :aria-current="!selectedCategory || selectedCategory.url === activeCategoryRoot?.url ? 'page' : undefined"
+        >
+          <CatalogMenuIcon class="h-5 w-5 flex-none" name="light" />
+          <span>Tất cả</span>
+        </NuxtLink>
+        <NuxtLink
+          v-for="item in categoryNavItems"
+          :key="item.url"
+          :to="links.generic(item.url)"
+          class="inline-flex min-h-[58px] min-w-[126px] flex-1 items-center justify-center gap-2 border px-3 py-2 text-center text-[13px] font-bold no-underline transition-colors"
+          :class="item.url === selectedCategory?.url ? 'border-gold-600 bg-gold-600 text-white' : 'border-gray-200 bg-white text-navy-800 hover:border-gold-600'"
+          :aria-current="item.url === selectedCategory?.url ? 'page' : undefined"
+        >
+          <CatalogMenuIcon class="h-5 w-5 flex-none" :name="categoryIcon(item.slug)" />
+          <span>{{ item.name }}</span>
+        </NuxtLink>
       </nav>
 
       <!--
@@ -253,24 +280,17 @@ function pageLink(nextPage: number) {
       -->
       <div v-if="hasSidebar" class="flex flex-col gap-6">
         <CatalogFilterSidebar
-          :categories="siteData?.productCategoryTree ?? []"
+          :categories="sidebarCategories"
           :selected-category="selectedCategory?.url ?? ''"
           :filters="catalogData?.filters ?? emptyFilters"
           :selected="catalogData?.selected ?? emptySelected"
           :keyword="keyword"
+          :subcategory-title="subcategoryTitle"
           :filter-link="filterLink"
         />
       </div>
 
-      <section aria-labelledby="catalog-list-title">
-        <p class="mb-5 text-slate-500">
-          <NuxtLink class="text-inherit" :to="selfPath">Danh mục sản phẩm</NuxtLink>
-          <span v-if="selectedCategory"> / {{ selectedCategory.name }}</span>
-        </p>
-
-        <h2 id="catalog-list-title" class="mb-3 text-2xl font-black leading-tight tracking-tight">Sản phẩm trong danh mục</h2>
-        <p class="mb-7 leading-relaxed text-slate-500">Lọc theo danh mục, thương hiệu và mức giá để tìm thiết bị phù hợp.</p>
-
+      <section aria-label="Danh sách sản phẩm">
         <div v-if="catalogPending" class="py-16" role="status" aria-live="polite">
           <p class="text-slate-500">Đang tải sản phẩm…</p>
         </div>
@@ -287,9 +307,9 @@ function pageLink(nextPage: number) {
             tiếp (đổi query 'sort'), không phải form - khớp cách pageLink/
             filterLink còn lại của trang đều là NuxtLink đổi URL.
           -->
-          <div v-if="catalogData.selected" class="mb-5 flex flex-wrap items-center justify-between gap-3">
+          <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
             <h2 class="m-0 text-lg font-black text-navy-800">Danh sách sản phẩm</h2>
-            <label class="flex items-center gap-2 text-sm text-slate-500">
+            <label v-if="catalogData.selected" class="flex items-center gap-2 text-sm text-slate-500">
               Sắp xếp
               <select
                 class="h-11 rounded-chip border border-gray-300 bg-white px-3 font-normal text-navy-800"
@@ -301,46 +321,29 @@ function pageLink(nextPage: number) {
             </label>
           </div>
 
-          <form class="mb-6 grid gap-2 sm:max-w-xl sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end" role="search" @submit.prevent="onKeywordSearch">
-            <label for="catalog-product-keyword" class="grid gap-1.5 text-sm font-bold text-navy-800">
-              Tìm tên hoặc mã sản phẩm
-              <input
-                id="catalog-product-keyword"
-                v-model="searchKeyword"
-                type="search"
-                maxlength="100"
-                autocomplete="off"
-                placeholder="Ví dụ: JDE-6500, JD-V300…"
-                class="h-11 min-w-0 rounded-chip border border-gray-300 bg-white px-3 text-base font-normal outline-none focus:border-gold-600"
-                @input="searchError = ''"
-              >
-            </label>
-            <button type="submit" class="h-11 rounded-chip bg-gold-500 px-5 font-bold text-navy-950 transition hover:bg-gold-600">Tìm</button>
-            <p v-if="searchError" class="m-0 text-sm text-red-700 sm:col-span-2" role="alert">{{ searchError }}</p>
-          </form>
-
           <CatalogProductGrid :products="catalogData.products" />
 
-          <!--
-            Ảnh production dùng nhãn "1 2 Next Last"; giữ "Trước/Sau" của bản
-            preview vì đó là nội dung chứ không phải kiểu dáng — đổi nhãn là đổi
-            trải nghiệm, cần duyệt riêng. Ô tối thiểu 44x44 giữ nguyên: đây là
-            ngưỡng vùng chạm trên mobile, không phải lựa chọn thẩm mỹ.
-          -->
           <nav v-if="totalPages > 1" class="mt-10 flex flex-wrap gap-2" aria-label="Phân trang sản phẩm">
+            <NuxtLink
+              v-if="currentPage > 1"
+              class="inline-grid min-h-11 min-w-11 place-items-center rounded-chip border border-gray-200 px-3 py-2 text-navy-800 no-underline transition-colors hover:border-navy-800"
+              :to="pageLink(1)"
+            >
+              First
+            </NuxtLink>
             <NuxtLink
               v-if="currentPage > 1"
               class="inline-grid min-h-11 min-w-11 place-items-center rounded-chip border border-gray-200 px-3 py-2 text-navy-800 no-underline transition-colors hover:border-navy-800"
               :to="pageLink(currentPage - 1)"
             >
-              Trước
+              Prev
             </NuxtLink>
             <template v-for="item in paginationItems" :key="item.key">
               <span
                 v-if="item.page === null"
                 class="catalog-pagination__ellipsis inline-grid min-h-11 min-w-11 place-items-center px-2 py-2 text-slate-500"
                 aria-hidden="true"
-              >…</span>
+              >...</span>
               <span
                 v-else-if="item.page === currentPage"
                 class="inline-grid min-h-11 min-w-11 place-items-center rounded-chip border border-navy-800 bg-navy-800 px-3 py-2 text-white"
@@ -363,7 +366,14 @@ function pageLink(nextPage: number) {
               class="inline-grid min-h-11 min-w-11 place-items-center rounded-chip border border-gray-200 px-3 py-2 text-navy-800 no-underline transition-colors hover:border-navy-800"
               :to="pageLink(currentPage + 1)"
             >
-              Sau
+              Next
+            </NuxtLink>
+            <NuxtLink
+              v-if="currentPage < totalPages"
+              class="inline-grid min-h-11 min-w-11 place-items-center rounded-chip border border-gray-200 px-3 py-2 text-navy-800 no-underline transition-colors hover:border-navy-800"
+              :to="pageLink(totalPages)"
+            >
+              Last
             </NuxtLink>
           </nav>
         </template>

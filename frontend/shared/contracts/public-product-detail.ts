@@ -34,6 +34,7 @@ export interface PublicProductContent {
   source: PublicProductContentSource
   blocks: PublicProductContentBlock[]
   faqs: PublicProductFaq[]
+  highlights?: string[]
 }
 export interface PublicProductApplicationItem { title: string; text: string; image: string }
 export interface PublicProductApplications { title: string; items: PublicProductApplicationItem[] }
@@ -98,7 +99,8 @@ function contentBlock(value: unknown): value is PublicProductContentBlock {
 function content(value: unknown): value is PublicProductContent {
   if (!record(value) || value.rendered !== true || !['', 'product', 'brand', 'cat', 'list', 'both', 'stack', 'hide', 'own'].includes(value.source as string)) return false
   if (!Array.isArray(value.blocks) || value.blocks.length > 100 || !value.blocks.every(contentBlock)) return false
-  return Array.isArray(value.faqs) && value.faqs.length <= 30
+  return (value.highlights === undefined || (Array.isArray(value.highlights) && value.highlights.length <= 7 && value.highlights.every((item) => blockText(item))))
+    && Array.isArray(value.faqs) && value.faqs.length <= 30
     && value.faqs.every((faq) => record(faq) && blockText(faq.question) && blockText(faq.answer))
 }
 function applications(value: unknown): value is PublicProductApplications | null {

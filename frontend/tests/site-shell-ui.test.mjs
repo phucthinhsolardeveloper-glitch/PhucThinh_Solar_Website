@@ -45,6 +45,36 @@ test('header overlays expose keyboard state, focus trap and scroll restoration h
   assert.match(header, /navDropdownOpen\.value\) closeNavDropdown\(true\)/)
 })
 
+test('desktop catalog mega-menu mirrors PHP production structure', () => {
+  assert.match(header, /Khám phá sản phẩm/)
+  assert.match(header, /Chọn thiết bị phù hợp với nhu cầu của bạn/)
+  assert.match(header, /id="ptsCatalogKeyword"/)
+  assert.match(header, /Tìm sản phẩm, mã sản phẩm\.\.\./)
+  assert.match(header, /Cần hỗ trợ lựa chọn\?/)
+  assert.match(header, /Tư vấn chọn sản phẩm/)
+  assert.match(header, /Xem tất cả sản phẩm/)
+  assert.match(header, /catalog-menu-presentation/)
+  assert.match(header, /CatalogMenuIcon/)
+  assert.doesNotMatch(header, /Dữ liệu danh mục đang được cung cấp từ API public/)
+})
+
+test('catalog benefit rail uses consistent stroke icons instead of platform-dependent glyphs', () => {
+  const masthead = read('components/catalog/CatalogMasthead.vue')
+  assert.equal((masthead.match(/<CatalogMenuIcon/g) || []).length, 4)
+  assert.doesNotMatch(masthead, /aria-hidden="true">[✦⚙✓↗]</)
+})
+
+test('news and project CTA bands retain the PHP wide-banner hierarchy on desktop and mobile', () => {
+  const newsCta = read('components/news/NewsCta.vue')
+  const projectsCta = read('components/projects/ProjectsCta.vue')
+  assert.match(newsCta, /grid-cols-\[44px_minmax\(0,1fr\)\][\s\S]*nav:grid-cols-\[52px_minmax\(0,1fr\)_auto\]/)
+  assert.match(newsCta, /absolute inset-0 -z-20 h-full w-full object-cover/)
+  assert.match(newsCta, /phoneLabel[\s\S]*cta\.hotline\.text[\s\S]*cta\.buttonLabel/)
+  assert.match(projectsCta, /absolute inset-0 -z-20 h-full w-full object-cover/)
+  assert.match(projectsCta, /cta\.eyebrow[\s\S]*cta\.title[\s\S]*cta\.description[\s\S]*trustItems/)
+  assert.match(projectsCta, /cta\.hotline\.label[\s\S]*cta\.buttonLabel/)
+})
+
 test('footer and breadcrumb route CMS links through the migration resolver', () => {
   assert.match(footer, /footer\.policies/)
   assert.match(footer, /footer\.locations/)

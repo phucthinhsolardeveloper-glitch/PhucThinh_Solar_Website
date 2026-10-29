@@ -98,10 +98,9 @@ Trước mọi thay đổi giao diện public, đọc
 cho token, component, media, responsive, accessibility và Definition of Done;
 các gạch đầu dòng dưới đây là bản tóm tắt bắt buộc, không phải một hệ riêng.
 
-- Trang chủ là showroom bán hàng: sản phẩm và danh mục chiếm phần lớn nội dung; giới thiệu công ty, giải pháp dài, quy trình và dự án để ở trang chuyên biệt.
-- Mỗi section dùng một tiêu đề chính rõ ràng. Không thêm eyebrow, gạch chân, nhãn nhỏ hoặc họa tiết chỉ để trang trí nếu chúng chiếm không gian mà không bổ sung thông tin hay hành động.
-- Danh mục sản phẩm trang chủ nằm trên một hàng ngang và cuộn ngang khi thiếu chỗ; không tự xuống thành nhiều hàng làm kéo dài trang. Ẩn thanh scrollbar thị giác, nhưng phải giữ kéo chuột/trackpad và vuốt cảm ứng hoạt động.
-- Trang chủ product-first hiện không render Hero; không tự bật lại banner/slider Hero nếu chưa có yêu cầu mới từ chủ project.
+- Giao diện Nuxt (Vue 3 + Tailwind CSS + Nuxt UI) phải đảm bảo Full Visual Parity, tái hiện đầy đủ và đồng nhất với giao diện thực tế của website production (PHP render) theo đúng bộ ảnh tham khảo thực tế.
+- Trang chủ hiển thị đầy đủ Hero banner slider (ảnh, slide indicators, điều hướng, nút xem sản phẩm/tư vấn) và đầy đủ các section nghiệp vụ: Danh mục sản phẩm, Sản phẩm theo nhóm, Chiếu sáng/ứng dụng, Giải pháp theo từng nhu cầu (tabs), Quy trình 5 bước, Đăng ký đại lý, Về chúng tôi, và Form tư vấn liên hệ.
+- Các trang con (Sản phẩm, Chi tiết sản phẩm PDP, Giải pháp, Dự án, Tin tức, Giới thiệu, Đại lý, Liên hệ) phải tuân thủ bố cục, banner, tabs, bộ lọc và khối nội dung tương ứng như bản production PHP.
 - Header không có mục Trang chủ; logo là đường dẫn về trang chủ. Nhãn public của `/ve-chung-toi/` là “Giới thiệu”, không đổi URL.
 - Điều hướng chính desktop giữ nút Danh mục sản phẩm và đúng 5 nhóm: Giới thiệu, Giải pháp, Dự án, Kiến thức, Hợp tác. Không đưa Tin tức, Đại lý hoặc Liên hệ trở lại thành mục top-level; chúng là nội dung con của Kiến thức/Hợp tác/Giới thiệu. Giữ các URL public cũ hoạt động để bảo toàn SEO và link đã chia sẻ.
 - Hạn chế bo góc lớn. Card, khung ảnh, ô tìm kiếm và CTA dạng chữ chỉ bo nhẹ khoảng 2–5px; chỉ dùng hình tròn/pill cho icon hoặc trạng thái có lý do chức năng.

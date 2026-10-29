@@ -60,6 +60,7 @@ try {
     $resolvedSections = productResolveSections($d, $row, 'vi');
     $applications = ptsPdpApplicationsDto($resolvedSections, $row, $list ?: array(), ROOT);
     $content = ptsPdpContentDto($resolvedSections, ROOT, !empty($applications));
+    $content['highlights'] = productAutoHighlights($row, 'vi', isset($row['type']) ? $row['type'] : 'san-pham', $row['resolved_profile']);
     $buyingGuides = ptsPdpBuyingGuidesDto($row, $list ?: array());
     $documentRows = $d->rawQuery("select document_type,titlevi as title,file_path from #_product_document where id_product=? and find_in_set('hienthi',status) and file_path<>'' order by numb,id", array((int)$row['id']));
     $documents = ptsPdpDocumentsDto((array)$documentRows, ROOT);

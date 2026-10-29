@@ -16,18 +16,26 @@ test('catalog navigation exposes a responsive disclosure and current category', 
 test('catalog keeps category navigation and business filters in one panel', () => {
   const catalog = read('components/catalog/CatalogPage.vue')
   const sidebar = read('components/catalog/CatalogFilterSidebar.vue')
+  const icon = read('components/CatalogMenuIcon.vue')
   assert.doesNotMatch(catalog, /CatalogCategoryNav/)
   assert.match(sidebar, /aria-label="Bộ lọc sản phẩm"/)
   assert.match(sidebar, /aria-controls="catalog-filter-category-list"/)
   assert.match(sidebar, /<CatalogCategoryBranch/)
+  assert.match(catalog, /node\) => \(\{ \.\.\.node, children: \[\] \}\)/)
+  assert.match(catalog, /const sidebarCategories = computed\(\(\) => selectedCategory\.value\s*\? \[\]/)
+  assert.match(catalog, /:subcategory-title="subcategoryTitle"/)
+  assert.match(sidebar, /subcategoryTitle \|\| 'Loại sản phẩm'/)
+  assert.match(icon, /class="block"/)
+  assert.doesNotMatch(icon, /h-full w-full/)
 })
 
-test('catalog exposes category-scoped name/code search and the PHP lighting need filter', () => {
+test('catalog matches PHP list-search visibility and keeps the lighting need filter', () => {
   const catalog = read('components/catalog/CatalogPage.vue')
   const sidebar = read('components/catalog/CatalogFilterSidebar.vue')
-  assert.match(catalog, /role="search"/)
-  assert.match(catalog, /Tìm tên hoặc mã sản phẩm/)
-  assert.match(catalog, /filterLink\(\{ keyword: value \}\)/)
+  const phpCatalogCss = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/assets/css/product-category-v3.css', import.meta.url), 'utf8')
+  assert.match(phpCatalogCss, /\.product-category-page \.pts-lighting-category-v2 \.lv-search,[\s\S]*?\.lv-active-filters\{display:none!important;\}/)
+  assert.doesNotMatch(catalog, /role="search"|Tìm tên hoặc mã sản phẩm|onKeywordSearch/)
+  assert.match(catalog, /keyword\.value \? \{ keyword: keyword\.value \} : \{\}/)
   assert.match(catalog, /filters\.needs\?\.length/)
   assert.match(sidebar, /Nhu cầu sử dụng/)
   assert.match(sidebar, /filterLink\(\{ need:/)
@@ -51,6 +59,32 @@ test('PDP renders allow-listed decision metrics and package contents; brand can 
   assert.match(brand, /function onSortChange/)
 })
 
+test('PDP keeps the source section order, PHP navigation labels, and FAQ placement', () => {
+  const productPage = read('components/product-preview/ProductPreviewPage.vue')
+  const productContent = read('components/product-preview/ProductPreviewContent.vue')
+  const source = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/templates/product/product_detail_tpl.php', import.meta.url), 'utf8')
+  const pageOrder = [
+    productPage.indexOf('<ProductPreviewContent'),
+    productPage.indexOf('<ProductPreviewApplications'),
+    productPage.indexOf('<ProductPreviewBuyingGuide'),
+    productPage.indexOf('<ProductPreviewSpecs'),
+    productPage.indexOf('<ProductSupportExtras'),
+    productPage.indexOf('id="cau-hoi-thuong-gap"'),
+    productPage.indexOf('<ProductReviews'),
+    productPage.indexOf('<ProductConsultationForm'),
+    productPage.indexOf('<ProductTrustRelated'),
+  ]
+  assert.ok(pageOrder.every((position) => position >= 0))
+  assert.deepEqual(pageOrder, [...pageOrder].sort((a, b) => a - b))
+  assert.match(productPage, /label: 'Thông số kỹ thuật'/)
+  assert.match(productPage, /label: 'Chính sách bảo hành'/)
+  assert.match(productPage, /label: 'Câu hỏi thường gặp'/)
+  assert.match(productPage, /label: 'Yêu cầu tư vấn'/)
+  assert.match(productContent, /Mô tả sản phẩm/)
+  assert.doesNotMatch(productContent, /content\.faqs|Câu hỏi thường gặp/)
+  assert.ok(source.indexOf('id="cau-hoi-thuong-gap"') < source.indexOf('pts-pdp-reviews'))
+})
+
 test('brand sidebar uses real category and brand links and filters prices within the brand', () => {
   const brand = read('components/catalog/BrandDetailPage.vue')
   const adapter = read('../server/routes/_migration/brand-detail.get.ts')
@@ -66,9 +100,11 @@ test('brand sidebar uses real category and brand links and filters prices within
 test('search and catalog root keep their PHP-backed route and category hero data', () => {
   const search = read('components/catalog/SearchResultsPage.vue')
   const catalog = read('components/catalog/CatalogPage.vue')
+  const masthead = read('components/catalog/CatalogMasthead.vue')
   assert.match(search, /\$fetch\('\/_migration\/search'/)
   assert.match(search, /keyword: keyword\.value/)
-  assert.match(catalog, /catalogData\?\.categoryHero\?\.image/)
+  assert.match(catalog, /:hero="catalogData\?\.categoryHero \?\? null"/)
+  assert.match(masthead, /hero\?\.image/)
   assert.match(catalog, /productCategoryTree/)
   assert.match(catalog, /Sản phẩm năng lượng mặt trời/)
 })
@@ -85,7 +121,11 @@ test('commerce media failures render explicit fallbacks instead of blank frames'
 test('catalog pagination stays bounded for large CMS result sets', () => {
   const catalog = read('components/catalog/CatalogPage.vue')
   assert.match(catalog, /const paginationItems = computed/)
-  assert.match(catalog, /if \(total <= 7\)/)
+  assert.match(catalog, /if \(total <= 10\)/)
   assert.match(catalog, /catalog-pagination__ellipsis/)
   assert.doesNotMatch(catalog, /v-for="number in totalPages"/)
+  assert.match(catalog, />\s*First\s*<\/NuxtLink>/)
+  assert.match(catalog, />\s*Prev\s*<\/NuxtLink>/)
+  assert.match(catalog, />\s*Next\s*<\/NuxtLink>/)
+  assert.match(catalog, />\s*Last\s*<\/NuxtLink>/)
 })

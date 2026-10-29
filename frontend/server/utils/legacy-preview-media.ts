@@ -21,7 +21,7 @@ export interface LegacyMediaValidation {
 }
 
 function isEnabled(value: LegacyMediaConfig['previewMediaProxy']): boolean {
-  return value === true || value === 1 || value === '1'
+  return value === true || value === 1 || value === '1' || value === 'true'
 }
 
 export function validateLegacyMediaPath(pathname: string): LegacyMediaValidation | null {

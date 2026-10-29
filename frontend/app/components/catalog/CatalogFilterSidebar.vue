@@ -10,6 +10,7 @@ const props = defineProps<{
   filters: NonNullable<PublicCatalogPayload['filters']>
   selected: NonNullable<PublicCatalogPayload['selected']>
   keyword: string
+  subcategoryTitle?: string
   filterLink: (overrides: { subcategory?: string; brand?: string; price?: string; need?: string; keyword?: string }) => RouteLocationRaw
 }>()
 
@@ -62,7 +63,7 @@ const hasActiveFilter = computed(() => props.keyword !== '' || props.selected.su
     <hr v-if="hasCategories && hasAnyOption" class="my-5 border-slate-200">
 
     <template v-if="filters.subcategories.length">
-      <h3 class="m-0 mb-3 text-sm font-bold text-navy-950">Loại sản phẩm</h3>
+      <h3 class="m-0 mb-3 text-sm font-bold text-navy-950">{{ subcategoryTitle || 'Loại sản phẩm' }}</h3>
       <ul class="m-0 mb-4 list-none p-0">
         <li class="mb-2.5">
           <NuxtLink

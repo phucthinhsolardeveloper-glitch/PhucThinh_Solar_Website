@@ -33,6 +33,7 @@ const good = {
   content: {
     rendered: true,
     source: 'product',
+    highlights: ['Công suất 30W', 'Nguồn sáng LED 3000lm'],
     blocks: [
       { type: 'heading', text: 'Mô tả sản phẩm' },
       { type: 'text', text: 'Nội dung\nđược giữ theo block.' },
@@ -117,10 +118,22 @@ test('accepts structured PDP blocks and rejects unsafe or category-only block sh
   }), false)
 })
 
+test('PDP mirrors PHP highlights and collapsed long description', () => {
+  const api = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/api/pts_v1_product_detail.php', import.meta.url), 'utf8')
+  const phpTemplate = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/templates/product/product_detail_tpl.php', import.meta.url), 'utf8')
+  const content = readFileSync(new URL('../app/components/product-preview/ProductPreviewContent.vue', import.meta.url), 'utf8')
+  assert.match(api, /\$content\['highlights'\]\s*=\s*productAutoHighlights\(/)
+  assert.match(phpTemplate, /pts-pdp-highlights/)
+  assert.match(phpTemplate, /<details class="pts-pdp-more-description"><summary>Xem mô tả chi tiết/)
+  assert.match(content, /content\.highlights\?\.length[\s\S]*Điểm nổi bật/)
+  assert.match(content, /<details v-if="content\.blocks\.length"[\s\S]*Xem mô tả chi tiết/)
+})
+
 test('validates inherited content source and FAQ limits', () => {
   assert.equal(isPublicProductDetailPayload({ ...good, content: { ...good.content, source: 'brand' } }), true)
   assert.equal(isPublicProductDetailPayload({ ...good, content: { ...good.content, source: 'private' } }), false)
   assert.equal(isPublicProductDetailPayload({ ...good, content: { ...good.content, faqs: Array(31).fill(good.content.faqs[0]) } }), false)
+  assert.equal(isPublicProductDetailPayload({ ...good, content: { ...good.content, highlights: Array(8).fill('Thông số thật') } }), false)
 })
 
 test('validates CMS-backed application cards and buying guides', () => {

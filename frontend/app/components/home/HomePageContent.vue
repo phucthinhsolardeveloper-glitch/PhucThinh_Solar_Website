@@ -4,10 +4,11 @@ import { isPublicHomePayload } from '#shared/contracts/public-home'
 import type { PublicSitePayload } from '#shared/contracts/public-site'
 import { isPublicSitePayload } from '#shared/contracts/public-site'
 import { isRuntimeFlagEnabled } from '#shared/public-route-gate'
+import HomeHero from '~/components/home/HomeHero.vue'
 import HomeCatalog from '~/components/home/HomeCatalog.vue'
 import HomeCampaigns from '~/components/home/HomeCampaigns.vue'
+import HomeEditorial from '~/components/home/HomeEditorial.vue'
 import HomeContact from '~/components/home/HomeContact.vue'
-import HomeProductGroups from '~/components/home/HomeProductGroups.vue'
 
 const props = withDefaults(defineProps<{ preview?: boolean }>(), { preview: false })
 const config = useRuntimeConfig()
@@ -47,12 +48,10 @@ usePublicSocialMeta({
         <p class="mt-4 max-w-[68ch] leading-[1.7] text-slate-500">Không thể tải dữ liệu trang chủ hiện tại. Không hiển thị nội dung giả.</p>
       </div>
       <template v-else>
-        <h1 v-if="!home.categories.length" id="home-catalog-title" class="mx-auto w-[min(calc(100%-32px),2200px)] pt-12 text-[clamp(31px,2.2vw,42px)] font-bold leading-[1.2] tracking-[-.025em] text-navy-950 md:pt-[clamp(64px,6vw,92px)]">
-          Sản phẩm năng lượng mặt trời
-        </h1>
-        <HomeCatalog :categories="home.categories" />
-        <HomeProductGroups :groups="home.productGroups" />
+        <HomeHero :hero="home.hero" />
+        <HomeCatalog :categories="home.categories" :campaigns="home.campaigns" />
         <HomeCampaigns :campaigns="home.campaigns" :campaigns-configured="(home.summary.campaignsConfigured ?? 0) > 0" />
+        <HomeEditorial :data="home" />
         <HomeContact :contact="home.contact" />
       </template>
     </main>

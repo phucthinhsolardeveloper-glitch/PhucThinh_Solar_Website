@@ -9,7 +9,7 @@ const isMigrationPreview = links.active
 
 <template>
   <section v-if="groups.length" class="py-12 md:py-[clamp(64px,6vw,92px)]" aria-label="Sản phẩm theo danh mục">
-    <div class="mx-auto w-[min(calc(100%-32px),2200px)] max-[359px]:w-[calc(100%-24px)]">
+    <div class="mx-auto w-[min(calc(100%-clamp(40px,5vw,96px)),1560px)] max-[860px]:w-[min(calc(100%-48px),1440px)] max-[640px]:w-[calc(100%-40px)] max-[360px]:w-[calc(100%-32px)] min-[1600px]:w-[min(calc(100%-clamp(96px,8vw,220px)),2200px)]">
       <section v-for="group in groups" :key="group.categoryId" class="mb-12 last:mb-0">
         <header class="mb-6 flex flex-wrap items-end justify-between gap-4">
           <h2 class="m-0 text-[clamp(24px,2vw,34px)] font-bold leading-[1.2] text-navy-950">

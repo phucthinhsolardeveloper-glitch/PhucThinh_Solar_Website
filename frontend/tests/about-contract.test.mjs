@@ -30,6 +30,19 @@ test('accepts escaped plain text because the adapter never renders CMS HTML', ()
   assert.equal(isPublicAboutPayload({ ...good, story: { ...good.story, intro: '<b>escaped by PHP adapter</b>' } }), true)
 })
 
+test('About trust features use the PHP two-column desktop grid', async () => {
+  const [source, phpTemplate, phpCss] = await Promise.all([
+    readFile(new URL('../app/components/about/AboutPreviewPage.vue', import.meta.url), 'utf8'),
+    readFile(new URL('../../domains/phucthinhsolar.com/public_html/templates/about/about_tpl.php', import.meta.url), 'utf8'),
+    readFile(new URL('../../domains/phucthinhsolar.com/public_html/assets/css/about-v2.css', import.meta.url), 'utf8'),
+  ])
+  const section = source.split('id="about-trust-title"')[1]?.split('</section>')[0] ?? ''
+  assert.match(phpTemplate, /class="pts-about-trust-grid"/)
+  assert.match(phpCss, /\.pts-about-trust-grid\{display:grid;grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/)
+  assert.match(section, /grid grid-cols-2[^\"]*max-\[800px\]:grid-cols-1/)
+  assert.doesNotMatch(section, /border-t border-\[#dce4ef\]|border-b border-\[#dce4ef\]/)
+})
+
 test('does not render an empty certificate image frame when CMS media is absent', async () => {
   const source = await readFile(new URL('../app/components/about/AboutPreviewPage.vue', import.meta.url), 'utf8')
   const certificates = source.split('id="about-certificates"')[1]?.split('</section>')[0] ?? ''

@@ -1,5 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
+import { readFileSync } from 'node:fs'
 import { isPublicProjectsPayload } from '../shared/contracts/public-projects.ts'
 
 const category = { id: 7, name: 'Cá nhân', description: 'Dự án cá nhân', slug: 'du-an-ca-nhan', url: '/danh-muc-du-an/du-an-ca-nhan/', canonicalPath: '/du-an-ca-nhan', image: '' }
@@ -10,13 +11,25 @@ const good = {
   featuredBenefits: [{ label: 'Tư vấn', image: '' }, { label: 'Thi công', image: '' }],
   categories: [category], featured: { ...project, featured: true }, projects: [project],
   pagination: { page: 1, perPage: 12, total: 2 },
-  cta: { title: 'Liên hệ', description: 'Tư vấn', buttonLabel: 'Liên hệ ngay', image: '', hotline: null },
+  cta: { eyebrow: 'Đồng hành', title: 'Liên hệ', description: 'Tư vấn', buttonLabel: 'Liên hệ ngay', image: '', trust: [{ label: 'Tư vấn', image: '', icon: 'headset' }], hotline: null },
   labels: { all: 'Tất cả', filters: 'Lọc dự án', featured: 'Dự án nổi bật', view: 'Xem dự án', empty: 'Trống', cta: 'Liên hệ' },
 }
+const projectsApi = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/api/pts_v1_projects.php', import.meta.url), 'utf8')
+const projectsProjection = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/libraries/pts_public_projects_api.php', import.meta.url), 'utf8')
 
 test('accepts the projects DTO and nullable CMS CTA', () => {
   assert.equal(isPublicProjectsPayload(good), true)
   assert.equal(isPublicProjectsPayload({ ...good, featured: null, cta: null, projects: [] }), true)
+  const { eyebrow, trust, ...legacyCta } = good.cta
+  assert.equal(isPublicProjectsPayload({ ...good, cta: legacyCta }), true)
+})
+
+test('projects CTA keeps the PHP eyebrow and trust row in the public DTO', () => {
+  assert.match(projectsApi, /title_indexvi,namevi,descvi,content1vi,photo,status/)
+  assert.match(projectsApi, /project-trust/)
+  assert.match(projectsProjection, /'eyebrow' => ptsProjectsPlainText/)
+  assert.match(projectsProjection, /'trust' => ptsProjectsTrustDto\(\$trustRows\)/)
+  assert.equal(isPublicProjectsPayload({ ...good, cta: { ...good.cta, trust: [{ label: 'x', image: '', icon: 'script' }] } }), false)
 })
 
 test('rejects invented or unsafe public paths', () => {

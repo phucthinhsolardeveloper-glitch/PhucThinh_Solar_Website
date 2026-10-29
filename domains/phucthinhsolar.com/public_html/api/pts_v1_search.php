@@ -22,7 +22,7 @@ function ptsSearchError($status, $code)
 
 try
 {
-    $allowed = array('keyword','page','per_page','brand','price');
+    $allowed = array('keyword','page','per_page','brand','price','sort');
     foreach(array_keys($_GET) as $key) if(!in_array($key, $allowed, true)) ptsSearchError(400, 'BAD_QUERY');
 
     $rawKeyword = isset($_GET['keyword']) && is_scalar($_GET['keyword']) ? trim((string)$_GET['keyword']) : '';
@@ -34,11 +34,12 @@ try
     if($page > 10000 || $perPage > 48) ptsSearchError(400, 'BAD_QUERY');
     if(isset($_GET['brand']) && (!is_string($_GET['brand']) || !preg_match('/^[1-9][0-9]*(?:,[1-9][0-9]*)*$/', $_GET['brand']))) ptsSearchError(400, 'BAD_QUERY');
     if(isset($_GET['price']) && (!is_string($_GET['price']) || !preg_match('/^[123](?:,[123])*$/', $_GET['price']))) ptsSearchError(400, 'BAD_QUERY');
-
+    if(isset($_GET['sort']) && (!is_string($_GET['sort']) || !in_array($_GET['sort'], array('default','abc','abc-desc','price','price-desc','new','new-desc'), true))) ptsSearchError(400, 'BAD_QUERY');
     require_once __DIR__.'/config.php';
     require_once LIBRARIES.'public_pricing.php';
     require_once LIBRARIES.'product_price_filter.php';
     require_once LIBRARIES.'pts_public_catalog_api.php';
+    $sortKey = ptsCatalogSortKey($_GET['sort'] ?? 'default');
 
     $normalized = $func->changeTitle(htmlspecialchars($rawKeyword, ENT_QUOTES, 'UTF-8'));
     if($normalized === '') ptsSearchError(400, 'BAD_QUERY');
@@ -107,8 +108,10 @@ try
     $totalRow = $d->rawQueryOne("select count(*) total from #_product p where $where", $params);
     $total = is_array($totalRow) && isset($totalRow['total']) ? (int)$totalRow['total'] : 0;
     $offset = ($page - 1) * $perPage;
+    $sortOrder = ptsCatalogSortOrderBy($sortKey, publicProductPricesVisible());
+    $orderSql = $sortOrder !== null ? ' order by '.$sortOrder : publicProductDefaultOrder('p');
     $rows = $d->rawQuery(
-        "select p.id,p.namevi,p.slugvi,p.photo,p.photo2,p.status,p.regular_price,p.sale_price,p.cong_suat from #_product p where $where".publicProductDefaultOrder('p')." limit ".(int)$offset.", ".(int)$perPage,
+        "select p.id,p.namevi,p.slugvi,p.photo,p.photo2,p.status,p.regular_price,p.sale_price,p.cong_suat from #_product p where $where".$orderSql." limit ".(int)$offset.", ".(int)$perPage,
         $params
     );
     $products = array();
@@ -139,7 +142,7 @@ try
         'products'=>$products,
         'pagination'=>array('page'=>$page,'perPage'=>$perPage,'total'=>$total),
         'filters'=>array('brands'=>$brands,'priceRanges'=>$priceRanges),
-        'selected'=>array('brandIds'=>$brandIds,'priceKeys'=>$priceKeys)
+        'selected'=>array('brandIds'=>$brandIds,'priceKeys'=>$priceKeys,'sort'=>$sortKey)
     ), JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR);
 }
 catch(Throwable $e)

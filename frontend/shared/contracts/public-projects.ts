@@ -4,7 +4,8 @@ export interface PublicProjectCategory { id: number; name: string; description: 
 export interface PublicProject { id: number; title: string; slug: string; url: string; description: string; address: string; image: string; category: PublicProjectCategory | null; featured: boolean }
 export interface PublicProjectIntro { visible: boolean; title: string; description: string }
 export interface PublicProjectBenefit { label: string; image: string }
-export interface PublicProjectsCta { title: string; description: string; buttonLabel: string; image: string; hotline: { label: string; text: string; tel: string } | null }
+export interface PublicProjectsCtaTrust { label: string; image: string; icon: 'headset' | 'cogs' | 'shield' }
+export interface PublicProjectsCta { eyebrow?: string; title: string; description: string; buttonLabel: string; image: string; trust?: PublicProjectsCtaTrust[]; hotline: { label: string; text: string; tel: string } | null }
 export interface PublicProjectsPayload {
   schemaVersion: 1; locale: 'vi'; path: '/du-an-da-thuc-hien/'; title: string
   intro: PublicProjectIntro; featuredBenefits: PublicProjectBenefit[]
@@ -26,7 +27,7 @@ export function isPublicProjectsPayload(value: unknown): value is PublicProjects
   if (value.featured !== null && !isProject(value.featured)) return false
   if (!Array.isArray(value.projects) || !value.projects.every(isProject)) return false
   if (!isPagination(value.pagination)) return false
-  if (value.cta !== null && (!isRecord(value.cta) || !isText(value.cta.title, true) || !isText(value.cta.description, true) || !isText(value.cta.buttonLabel, true) || !isImage(value.cta.image) || (value.cta.hotline !== null && (!isRecord(value.cta.hotline) || !isText(value.cta.hotline.label, true) || !isText(value.cta.hotline.text, true) || !isText(value.cta.hotline.tel, true))))) return false
+  if (value.cta !== null && (!isRecord(value.cta) || (value.cta.eyebrow !== undefined && !isText(value.cta.eyebrow, true)) || !isText(value.cta.title, true) || !isText(value.cta.description, true) || !isText(value.cta.buttonLabel, true) || !isImage(value.cta.image) || (value.cta.trust !== undefined && (!Array.isArray(value.cta.trust) || value.cta.trust.length > 3 || !value.cta.trust.every((item) => isRecord(item) && isText(item.label) && isImage(item.image) && ['headset', 'cogs', 'shield'].includes(String(item.icon))))) || (value.cta.hotline !== null && (!isRecord(value.cta.hotline) || !isText(value.cta.hotline.label, true) || !isText(value.cta.hotline.text, true) || !isText(value.cta.hotline.tel, true))))) return false
   if (!isRecord(value.labels)) return false
   const labels = value.labels
   return ['all', 'filters', 'featured', 'view', 'empty', 'cta'].every((key) => isText(labels[key], true))

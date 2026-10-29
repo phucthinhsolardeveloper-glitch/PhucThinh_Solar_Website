@@ -190,16 +190,11 @@ Kiểm tra tối thiểu tại `320, 360, 390, 414, 768, 1024, 1366, 1440, 1600,
 1920, 2560px`. 1920 và 2560 đại diện PC Full HD và iMac/2K; không kết luận
 responsive ổn chỉ từ laptop 1366px.
 
-### 4.4 Trang chủ product-first — ĐÃ DUYỆT
+### 4.4 Trang chủ Full Visual Parity — ĐÃ DUYỆT THEO CHỈ ĐẠO TRỰC TIẾP (ADR 0009)
 
-- Trang chủ hiện không render Hero hoặc slider. Nội dung đầu trang dẫn thẳng tới
-  danh mục/sản phẩm; không chừa một vùng banner rỗng để giữ khoảng cách.
-- Danh mục nằm trên một hàng ngang, cuộn khi thiếu chỗ. H1 mô tả khu vực sản phẩm
-  chính; section tiếp theo chỉ giữ nội dung hỗ trợ khám phá hoặc chuyển đổi.
-- Giới thiệu công ty, quy trình, dự án và nội dung giải pháp dài nằm ở trang
-  chuyên biệt; trang chủ không lặp lại các phần này thành nhiều khối kể chuyện.
-- Mọi banner/campaign nếu được chủ project yêu cầu lại phải lấy từ Admin, có
-  công tắc Hiển thị và fallback an toàn; không tự khôi phục Hero/slider cũ.
+- Trang chủ hiển thị đầy đủ Hero banner slider theo chuẩn giao diện PHP production (ảnh banner nhóm thiết bị nổi bật, slide controls, chỉ số slide, tiêu đề, kicker và nút xem sản phẩm/tư vấn lắp đặt).
+- Trang chủ hiển thị đầy đủ các section nghiệp vụ: Danh mục sản phẩm, Sản phẩm theo nhóm, Chiếu sáng/ứng dụng, Giải pháp theo từng nhu cầu (tabs), Quy trình 5 bước, Đăng ký đại lý, Về chúng tôi, và Form tư vấn liên hệ.
+- Mọi dữ liệu hình ảnh/nội dung lấy từ API backend PHP DTO hoặc fallback an toàn theo đúng thiết kế gốc.
 
 ## 5. Hợp đồng component dùng chung
 
@@ -355,12 +350,7 @@ fallback trung tính đúng loại; không dùng một placeholder cho mọi ng�
 
 ### Trang chủ
 
-- Product-first, không render Hero/slider. Nội dung đầu trang hiển thị danh mục
-  hoặc sản phẩm phù hợp.
-- Danh mục một hàng ngang và cuộn khi thiếu chỗ; sản phẩm/danh mục chiếm phần
-  lớn nội dung trang.
-- Giới thiệu công ty, quy trình, dự án và nội dung giải pháp dài đi về landing
-  chuyên biệt. Không dựng lại các khối này thành một mạch kể chuyện ở trang chủ.
+- Full Visual Parity theo chuẩn PHP Production (ADR 0009). Hiển thị đầy đủ Hero banner slider và các section: Danh mục, Sản phẩm theo nhóm, Chiếu sáng/ứng dụng, Giải pháp (tabs), Quy trình 5 bước, Đăng ký đại lý, Về chúng tôi, Form tư vấn liên hệ.
 
 ### Danh mục và chi tiết sản phẩm
 

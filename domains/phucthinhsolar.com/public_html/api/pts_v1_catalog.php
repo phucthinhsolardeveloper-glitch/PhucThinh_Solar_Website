@@ -13,6 +13,8 @@ header('Content-Type: application/json; charset=UTF-8');
 header('X-Content-Type-Options: nosniff');
 header('Cache-Control: private, no-store');
 
+require_once __DIR__.'/../libraries/product_sort.php';
+
 function ptsCatalogError($status, $code)
 {
     http_response_code($status);
@@ -136,7 +138,8 @@ try
     $total = is_array($totalRow) && isset($totalRow['total']) ? (int)$totalRow['total'] : 0;
     $offset = ($page - 1) * $perPage;
     $orderBy = ptsCatalogSortOrderBy($sortKey, publicProductPricesVisible());
-    $orderBySql = $orderBy !== null ? $orderBy : 'p.id desc';
+    $defaultOrder = publicProductDefaultOrder('p', publicProductBossCategoryOrder('p'));
+    $orderBySql = $orderBy !== null ? $orderBy : preg_replace('/^\s*order\s+by\s+/i', '', $defaultOrder);
     $rows = $d->rawQuery("select p.id,p.namevi,p.slugvi,p.photo,p.photo2,p.status,p.regular_price,p.sale_price,p.cong_suat from #_product p where {$where} order by {$orderBySql} limit ".(int)$offset.', '.(int)$perPage, $params);
     $rows = is_array($rows) ? $rows : array();
     foreach($rows as &$row)

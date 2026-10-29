@@ -72,7 +72,34 @@ function ptsProjectsProjectDto(array $row, array $categories, $featured = false)
     );
 }
 
-function ptsProjectsCtaDto(array $rows, $hotline = '')
+function ptsProjectsTrustDto(array $rows)
+{
+    $items = array();
+    $icons = array('headset', 'cogs', 'shield');
+    foreach($rows as $index => $row)
+    {
+        if(!is_array($row) || !ptsProjectsPublished(isset($row['status']) ? $row['status'] : '')) continue;
+        $label = ptsProjectsPlainText(isset($row['namevi']) ? $row['namevi'] : '');
+        if($label === '') continue;
+        $items[] = array(
+            'label' => $label,
+            'image' => ptsProjectsMedia(isset($row['_pts_public_photo']) ? $row['_pts_public_photo'] : ''),
+            'icon' => $icons[min((int)$index, 2)]
+        );
+        if(count($items) >= 3) break;
+    }
+    if(!$items)
+    {
+        $items = array(
+            array('label' => 'Tư vấn tận tâm', 'image' => '', 'icon' => 'headset'),
+            array('label' => 'Giải pháp tối ưu', 'image' => '', 'icon' => 'cogs'),
+            array('label' => 'Đồng hành lâu dài', 'image' => '', 'icon' => 'shield')
+        );
+    }
+    return $items;
+}
+
+function ptsProjectsCtaDto(array $rows, $hotline = '', array $trustRows = array())
 {
     foreach($rows as $row)
     {
@@ -81,10 +108,12 @@ function ptsProjectsCtaDto(array $rows, $hotline = '')
         $description = ptsProjectsPlainText(isset($row['descvi']) ? $row['descvi'] : '');
         $hotlineText = is_scalar($hotline) ? trim((string)$hotline) : '';
         return array(
+            'eyebrow' => ptsProjectsPlainText(isset($row['title_indexvi']) ? $row['title_indexvi'] : '') ?: 'Đồng hành cùng năng lượng sạch',
             'title' => $title !== '' ? $title : 'Bạn có công trình cần tư vấn?',
             'description' => $description !== '' ? $description : 'Đội ngũ Phúc Thịnh Solar sẵn sàng hỗ trợ, tư vấn giải pháp điện mặt trời phù hợp nhất cho nhu cầu của bạn.',
             'buttonLabel' => ptsProjectsPlainText(isset($row['content1vi']) && trim((string)$row['content1vi']) !== '' ? $row['content1vi'] : 'Nhận tư vấn miễn phí'),
             'image' => ptsProjectsMedia(isset($row['_pts_public_photo']) ? $row['_pts_public_photo'] : ''),
+            'trust' => ptsProjectsTrustDto($trustRows),
             'hotline' => $hotlineText === '' ? null : array(
                 'label' => 'Gọi ngay hotline',
                 'text' => $hotlineText,
@@ -136,7 +165,7 @@ function ptsProjectsFeaturedBenefitsDto(array $rows)
     return $items;
 }
 
-function ptsProjectsPayload(array $categories, array $rows, array $featuredRow, array $ctaRows, $page, $perPage, $total, $category = null, $hotline = '', array $introRows = array(), array $benefitRows = array())
+function ptsProjectsPayload(array $categories, array $rows, array $featuredRow, array $ctaRows, $page, $perPage, $total, $category = null, $hotline = '', array $introRows = array(), array $benefitRows = array(), array $trustRows = array())
 {
     $categoryMap = array();
     $categoryDtos = array();
@@ -172,7 +201,7 @@ function ptsProjectsPayload(array $categories, array $rows, array $featuredRow, 
         'projects' => $projects,
         'featuredBenefits' => ptsProjectsFeaturedBenefitsDto($benefitRows),
         'pagination' => array('page' => (int)$page, 'perPage' => (int)$perPage, 'total' => max(0, (int)$total)),
-        'cta' => ptsProjectsCtaDto($ctaRows, $hotline),
+        'cta' => ptsProjectsCtaDto($ctaRows, $hotline, $trustRows),
         'labels' => array(
             'all' => 'Tất cả',
             'filters' => 'Lọc dự án',

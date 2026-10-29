@@ -1,4 +1,4 @@
-import { isPublicCatalogProduct, type PublicCatalogProduct } from './public-catalog.ts'
+import { isPublicCatalogProduct, type PublicCatalogProduct, type PublicCatalogSortKey } from './public-catalog.ts'
 
 export interface PublicSearchPayload {
   schemaVersion: 1
@@ -13,6 +13,7 @@ export interface PublicSearchPayload {
   selected?: {
     brandIds: number[]
     priceKeys: string[]
+    sort: PublicCatalogSortKey
   }
 }
 
@@ -50,4 +51,6 @@ export function isPublicSearchPayload(value: unknown): value is PublicSearchPayl
     && selected.brandIds.every((id) => positiveInt(id, 1, Number.MAX_SAFE_INTEGER))
     && Array.isArray(selected.priceKeys)
     && selected.priceKeys.every((key) => typeof key === 'string' && /^[123]$/.test(key))
+    && typeof selected.sort === 'string'
+    && ['default', 'abc', 'abc-desc', 'price', 'price-desc', 'new', 'new-desc'].includes(selected.sort)
 }
