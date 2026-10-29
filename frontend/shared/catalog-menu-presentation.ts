@@ -57,6 +57,24 @@ export function catalogItemIcon(label: string): CatalogMenuIconName {
   return ITEM_ICONS[label] ?? 'cog'
 }
 
+export function resolveEquipmentIcon(label: string, url = ''): CatalogMenuIconName {
+  const direct = ITEM_ICONS[label]
+  if (direct) return direct
+  const haystack = `${label} ${url}`.toLowerCase()
+  if (haystack.includes('inverter') || haystack.includes('bien-tan') || haystack.includes('biến tần')) return 'inverter'
+  if (haystack.includes('pin-luu-tru') || haystack.includes('lưu trữ') || haystack.includes('battery')) return 'battery'
+  if (haystack.includes('tam-pin') || haystack.includes('tấm pin') || haystack.includes('panel')) return 'panel'
+  if (haystack.includes('den-duong') || haystack.includes('đèn đường')) return 'street'
+  if (haystack.includes('den-pha') || haystack.includes('đèn pha')) return 'flood'
+  if (haystack.includes('san-vuon') || haystack.includes('sân vườn')) return 'garden'
+  if (haystack.includes('ufo')) return 'ufo'
+  if (haystack.includes('op-tran') || haystack.includes('ốp trần')) return 'ceiling'
+  if (haystack.includes('den-') || haystack.includes('đèn')) return 'light'
+  if (haystack.includes('quat') || haystack.includes('quạt')) return 'fan'
+  if (haystack.includes('bom') || haystack.includes('bơm')) return 'pump'
+  return 'cog'
+}
+
 export function catalogMenuSearchText(label: string, children: Array<{ label: string }>): string {
   return [label, ...children.map((child) => child.label)].join(' ')
 }

@@ -8,22 +8,24 @@ const links = useMigrationLinks()
 <template>
   <section
     id="ptsContactModal"
-    class="relative isolate mt-7 flex flex-col items-stretch gap-6 overflow-hidden rounded-btn bg-navy-800 px-[22px] py-[26px] text-white
-           nav:flex-row nav:items-center nav:justify-between nav:gap-8 nav:px-9 nav:py-8"
+    class="relative isolate mt-6 flex min-h-[200px] flex-col items-stretch justify-between gap-6 overflow-hidden rounded-btn border border-navy-700/60 bg-navy-900 px-6 py-7 text-white shadow-md
+           nav:flex-row nav:items-center nav:gap-10 nav:px-10 nav:py-9"
     aria-labelledby="solutions-contact-title"
   >
-    <img v-if="cta.image" class="absolute inset-0 -z-10 h-full w-full object-cover opacity-[.12]" :src="cta.image" alt="" width="1600" height="500" loading="lazy">
-    <div class="max-w-[610px]">
-      <h2 id="solutions-contact-title" class="m-0 mb-2.5 text-2xl font-black text-white">{{ cta.title }}</h2>
-      <p class="m-0 text-base leading-relaxed text-blue-100">{{ cta.description }}</p>
+    <img v-if="cta.image" class="absolute inset-0 -z-20 h-full w-full object-cover opacity-30" :src="cta.image" alt="" width="1600" height="500" loading="lazy">
+    <div class="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-r from-navy-950/95 via-navy-900/90 to-navy-800/70" aria-hidden="true" />
+    <div class="max-w-[660px]">
+      <h2 id="solutions-contact-title" class="m-0 mb-2.5 text-[clamp(22px,2.2vw,28px)] font-black leading-[1.25] tracking-tight text-white">{{ cta.title }}</h2>
+      <p class="m-0 text-[15px] leading-relaxed text-blue-100/95 tb:text-base">{{ cta.description }}</p>
     </div>
-    <div class="flex flex-none flex-col items-stretch gap-[18px] nav:flex-row nav:items-center nav:gap-6">
-      <a class="inline-flex min-h-12 items-center justify-center gap-5 rounded-btn bg-hdr-gold px-[22px] font-extrabold text-navy-950 no-underline transition-colors hover:bg-hdr-gold-hover" :href="links.generic(cta.links.consult.href === '#ptsContactModal' ? '/lien-he/#yeu-cau-tu-van' : cta.links.consult.href)">
-        {{ cta.buttonLabel }} <span aria-hidden="true">→</span>
+    <div class="flex flex-none flex-col items-stretch gap-4 ph:flex-row ph:items-center ph:gap-6">
+      <a class="inline-flex min-h-12 items-center justify-center gap-3.5 rounded-btn bg-hdr-gold px-6 text-sm font-extrabold tracking-wide text-navy-950 no-underline shadow-sm transition-colors hover:bg-hdr-gold-hover" :href="links.generic(cta.links.consult.href === '#ptsContactModal' ? '/lien-he/#yeu-cau-tu-van' : cta.links.consult.href)">
+        <span>{{ cta.buttonLabel }}</span>
+        <span aria-hidden="true">→</span>
       </a>
-      <a v-if="cta.hotline" class="whitespace-nowrap text-center text-white no-underline nav:text-left" :href="`tel:${cta.hotline.tel}`">
-        <small class="mb-1.5 block text-xs text-blue-200">{{ cta.hotline.label }}</small>
-        <strong class="block text-xl">{{ cta.hotline.text }}</strong>
+      <a v-if="cta.hotline" class="whitespace-nowrap rounded-btn border border-white/15 bg-white/[.04] px-4 py-2 text-center text-white no-underline transition-colors hover:border-gold-400/70 hover:bg-white/[.08] ph:text-left" :href="`tel:${cta.hotline.tel}`">
+        <small class="mb-0.5 block text-[11px] font-semibold uppercase tracking-wider text-gold-300">{{ cta.hotline.label }}</small>
+        <strong class="block text-lg font-extrabold tracking-wide text-white">{{ cta.hotline.text }}</strong>
       </a>
     </div>
   </section>

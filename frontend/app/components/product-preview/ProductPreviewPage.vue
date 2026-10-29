@@ -73,8 +73,8 @@ onBeforeUnmount(() => observer?.disconnect())
 </script>
 
 <template>
-  <div class="mx-auto w-full max-w-[1766px] px-4 pb-16 pt-6 max-tb:pt-2">
-    <div class="grid grid-cols-1 items-start gap-10 pb-12 pt-8 max-tb:gap-8 max-tb:pb-8 max-tb:pt-6 nav:grid-cols-2">
+  <div class="pts-container pb-16 pt-6 max-tb:pt-3">
+    <div class="grid grid-cols-1 items-start gap-10 pb-12 pt-6 max-tb:gap-8 max-tb:pb-8 max-tb:pt-4 nav:grid-cols-2">
       <ProductPreviewGallery :name="product.name" :media="product.media" />
 
       <div class="min-w-0">
@@ -118,14 +118,14 @@ onBeforeUnmount(() => observer?.disconnect())
       </div>
     </div>
 
-    <nav v-if="navItems.length" class="sticky top-0 z-20 -mx-4 mb-2 overflow-x-auto border-y border-gray-200 bg-white/95 px-4 backdrop-blur" aria-label="Mục nội dung sản phẩm">
-      <div class="flex min-w-max gap-1 py-2">
+    <nav v-if="navItems.length" class="sticky top-[66px] z-20 mb-2 overflow-x-auto border-y border-slate-200 bg-white/95 backdrop-blur nav:top-[78px]" aria-label="Mục nội dung sản phẩm">
+      <div class="flex min-w-max gap-1.5 py-2">
         <a
           v-for="item in navItems"
           :key="item.id"
           :href="'#' + item.id"
-          class="rounded-chip px-3 py-2 text-sm font-bold no-underline transition"
-          :class="activeSection === item.id ? 'bg-navy-800 text-white' : 'text-navy-800 hover:bg-slate-50'"
+          class="inline-flex min-h-10 items-center rounded-chip px-3.5 py-1.5 text-[13px] font-bold no-underline transition-colors"
+          :class="activeSection === item.id ? 'bg-navy-800 text-gold-300 shadow-xs' : 'text-navy-800 hover:bg-slate-100'"
         >{{ item.label }}</a>
       </div>
     </nav>

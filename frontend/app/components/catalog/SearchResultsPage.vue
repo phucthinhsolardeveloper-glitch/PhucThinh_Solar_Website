@@ -109,14 +109,17 @@ usePublicSocialMeta({
 <template>
   <div class="min-h-screen bg-white text-navy-800">
     <SiteHeader :site="site" />
-    <main class="mx-auto w-full max-w-(--container-page) px-(--spacing-gutter) pb-16">
-      <SiteBreadcrumb :items="[{ label: 'Tìm kiếm' }]" />
-      <CatalogMasthead
-        heading="Sản phẩm năng lượng mặt trời"
-        description="Giải pháp năng lượng phù hợp cho gia đình, doanh nghiệp và công trình"
-        :hero="null"
-      />
-
+    <div class="border-b border-slate-200/70 bg-slate-50/80">
+      <div class="pts-container">
+        <SiteBreadcrumb :items="[{ label: 'Tìm kiếm' }]" />
+      </div>
+    </div>
+    <CatalogMasthead
+      heading="Sản phẩm năng lượng mặt trời"
+      description="Giải pháp năng lượng phù hợp cho gia đình, doanh nghiệp và công trình"
+      :hero="null"
+    />
+    <main class="pts-container pb-16">
       <div class="pt-6">
         <div v-if="!keyword" class="rounded-btn border border-gray-200 p-6 text-slate-500">Nhập từ khóa trong ô tìm kiếm ở header.</div>
         <div v-else-if="pending" class="py-16 text-slate-500" role="status">Đang tìm sản phẩm…</div>

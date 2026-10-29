@@ -67,11 +67,14 @@ usePublicSocialMeta({
   <div class="text-navy-800">
     <SiteHeader :site="site" />
 
-    <main class="pb-16">
-      <div class="mx-auto w-full max-w-[1766px] px-4">
+    <div class="border-b border-slate-200/70 bg-slate-50/80">
+      <div class="pts-container">
         <SiteBreadcrumb :items="[{ label: news?.category?.name || 'Kiến thức' }]" />
+      </div>
+    </div>
 
-        <div v-if="error || !news" class="min-h-[45vh] py-12" role="status">
+    <main class="pts-container pb-16">
+      <div v-if="error || !news" class="min-h-[45vh] py-12" role="status">
           <h1 class="mb-3 text-3xl font-black tracking-tight">{{ isPublicRoute ? 'Kiến thức' : 'Kiến thức — internal preview' }}</h1>
           <p class="text-slate-500">Không thể tải dữ liệu CMS trong môi trường hiện tại. {{ isPublicRoute ? 'Nội dung sẽ hiển thị khi CMS khả dụng.' : 'Preview không hiển thị bài viết giả.' }}</p>
         </div>
@@ -132,7 +135,6 @@ usePublicSocialMeta({
 
           <NewsCta v-if="news.cta" :cta="news.cta" :phone-label="news.labels.ctaPhone" />
         </template>
-      </div>
     </main>
 
     <SiteFooter :site="site" />

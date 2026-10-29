@@ -54,16 +54,18 @@ usePublicSocialMeta({
     <SiteHeader :site="site" />
 
     <main>
-      <div class="mx-auto w-full max-w-[1766px] px-4">
-        <SiteBreadcrumb :items="[{ label: 'Giải pháp', to: links.generic(SOLUTIONS_PUBLIC_PATH) }, ...(data ? [{ label: data.solution.title }] : [])]" />
+      <div class="border-b border-slate-200/70 bg-slate-50/80">
+        <div class="pts-container">
+          <SiteBreadcrumb :items="[{ label: 'Giải pháp', to: links.generic(SOLUTIONS_PUBLIC_PATH) }, ...(data ? [{ label: data.solution.title }] : [])]" />
+        </div>
       </div>
 
-      <div v-if="error || !data" class="mx-auto min-h-[45vh] w-full max-w-[1766px] px-4 py-12">
+      <div v-if="error || !data" class="pts-container min-h-[45vh] py-12">
         <h1 class="mb-3 text-3xl font-black tracking-tight">{{ isPublicRoute ? 'Không tìm thấy giải pháp' : 'Giải pháp — internal preview' }}</h1>
         <p class="text-slate-500">Không thể tải dữ liệu CMS trong môi trường hiện tại. {{ isPublicRoute ? 'Vui lòng kiểm tra lại liên kết.' : 'Preview không hiển thị nội dung giả.' }}</p>
       </div>
 
-      <SolutionDetailPage v-else :data="data" />
+      <SolutionDetailPage v-else :data="data" :hotline="site.brand.hotline" />
     </main>
 
     <SiteFooter :site="site" />

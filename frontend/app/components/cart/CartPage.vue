@@ -51,9 +51,12 @@ const payload = computed<PublicCartPayload | null>(() => cart.value)
 <template>
   <div class="min-h-screen bg-white text-navy-800">
     <SiteHeader :site="site" />
-    <main class="mx-auto w-full max-w-[1320px] px-4 py-10 max-ph:py-7">
-      <SiteBreadcrumb :items="[{ label: 'Giỏ hàng' }]" />
-
+    <div class="border-b border-slate-200/80 bg-slate-50/80">
+      <div class="pts-container">
+        <SiteBreadcrumb :items="[{ label: 'Giỏ hàng' }]" />
+      </div>
+    </div>
+    <main class="pts-container py-8 max-ph:py-6">
       <div class="mb-8 flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 class="m-0 text-[clamp(30px,5vw,48px)] font-black tracking-tight">Giỏ hàng của bạn</h1>
@@ -114,7 +117,7 @@ const payload = computed<PublicCartPayload | null>(() => cart.value)
             </article>
           </section>
 
-          <aside class="h-fit rounded-btn border border-gray-200 p-5 nav:sticky nav:top-5">
+          <aside class="h-fit rounded-btn border border-slate-200/90 bg-white p-5 shadow-sm nav:sticky nav:top-24">
             <h2 class="mb-5 text-xl font-black">Tóm tắt đơn hàng</h2>
             <div class="flex items-center justify-between border-b border-gray-200 pb-4">
               <span class="text-slate-500">{{ payload.quantityCount }} sản phẩm</span>

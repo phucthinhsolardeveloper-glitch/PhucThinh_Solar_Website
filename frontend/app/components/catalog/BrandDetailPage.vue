@@ -128,30 +128,32 @@ usePublicSocialMeta({
   <div class="text-navy-800">
     <SiteHeader :site="site" />
 
-    <main>
-      <div class="mx-auto w-full max-w-(--container-page) px-(--spacing-gutter)">
+    <div class="border-b border-slate-200/70 bg-slate-50/80">
+      <div class="pts-container">
         <SiteBreadcrumb :items="[...(data ? [{ label: data.brand.name }] : [])]" />
       </div>
+    </div>
 
-      <div v-if="pending" class="mx-auto min-h-[45vh] w-full max-w-(--container-page) px-(--spacing-gutter) py-12" role="status" aria-live="polite">
+    <main>
+      <div v-if="pending" class="pts-container min-h-[45vh] py-12" role="status" aria-live="polite">
         <p class="text-slate-500">Đang tải sản phẩm…</p>
       </div>
 
-      <div v-else-if="error || !data" class="mx-auto min-h-[45vh] w-full max-w-(--container-page) px-(--spacing-gutter) py-12" role="status">
+      <div v-else-if="error || !data" class="pts-container min-h-[45vh] py-12" role="status">
         <h1 class="mb-3 text-3xl font-black tracking-tight">Thương hiệu</h1>
         <p class="text-slate-500">Không tìm thấy thương hiệu hoặc dữ liệu PHP local chưa khả dụng. Preview không hiển thị dữ liệu giả.</p>
       </div>
 
-      <div v-else class="mx-auto w-full max-w-(--container-page) px-(--spacing-gutter) pt-8 pb-16 max-ph:pt-6 max-ph:pb-12">
+      <div v-else class="pts-container pt-8 pb-16 max-ph:pt-6 max-ph:pb-12">
         <!-- H1 khớp PHP thật: trang brand KHÔNG đổi heading theo tên thương
              hiệu, giữ nguyên tiêu đề catalog chung (xem comment đầu file). -->
-        <h1 class="mb-7 text-[clamp(28px,4vw,48px)] font-black leading-[1.15] tracking-tight">Sản phẩm năng lượng mặt trời</h1>
+        <h1 class="mb-7 text-[clamp(28px,3.6vw,44px)] font-black leading-[1.15] tracking-tight">Sản phẩm năng lượng mặt trời</h1>
 
-        <div class="mb-7 grid grid-cols-2 gap-4 border-b border-gray-200 pb-5 tb:grid-cols-4" aria-label="Lợi ích khi chọn sản phẩm">
-          <div class="flex items-start gap-3"><span class="text-gold-700" aria-hidden="true">✦</span><span><strong class="block text-sm text-navy-950">Tư vấn lựa chọn</strong><small class="text-slate-500">Đúng nhu cầu, hiệu quả</small></span></div>
-          <div class="flex items-start gap-3"><span class="text-gold-700" aria-hidden="true">⚙</span><span><strong class="block text-sm text-navy-950">Hỗ trợ kỹ thuật</strong><small class="text-slate-500">Trong suốt quá trình sử dụng</small></span></div>
-          <div class="flex items-start gap-3"><span class="text-gold-700" aria-hidden="true">✓</span><span><strong class="block text-sm text-navy-950">Chính sách rõ ràng</strong><small class="text-slate-500">Minh bạch, dễ hiểu</small></span></div>
-          <div class="flex items-start gap-3"><span class="text-gold-700" aria-hidden="true">↗</span><span><strong class="block text-sm text-navy-950">Giao hàng toàn quốc</strong><small class="text-slate-500">Nhanh chóng, an toàn</small></span></div>
+        <div class="mb-7 grid grid-cols-2 gap-4 border-b border-slate-200/80 pb-5 tb:grid-cols-4" aria-label="Lợi ích khi chọn sản phẩm">
+          <div class="flex items-center gap-2.5"><span class="grid h-9 w-9 flex-none place-items-center rounded-chip bg-navy-800/[.05] text-gold-700"><CatalogMenuIcon class="h-5 w-5" name="light" /></span><span><strong class="block text-[13.5px] text-navy-950">Tư vấn lựa chọn</strong><small class="text-xs text-slate-500">Đúng nhu cầu, hiệu quả</small></span></div>
+          <div class="flex items-center gap-2.5"><span class="grid h-9 w-9 flex-none place-items-center rounded-chip bg-navy-800/[.05] text-gold-700"><CatalogMenuIcon class="h-5 w-5" name="cog" /></span><span><strong class="block text-[13.5px] text-navy-950">Hỗ trợ kỹ thuật</strong><small class="text-xs text-slate-500">Trong suốt quá trình sử dụng</small></span></div>
+          <div class="flex items-center gap-2.5"><span class="grid h-9 w-9 flex-none place-items-center rounded-chip bg-navy-800/[.05] text-gold-700"><CatalogMenuIcon class="h-5 w-5" name="shield" /></span><span><strong class="block text-[13.5px] text-navy-950">Chính sách rõ ràng</strong><small class="text-xs text-slate-500">Minh bạch, dễ hiểu</small></span></div>
+          <div class="flex items-center gap-2.5"><span class="grid h-9 w-9 flex-none place-items-center rounded-chip bg-navy-800/[.05] text-gold-700"><CatalogMenuIcon class="h-5 w-5" name="truck" /></span><span><strong class="block text-[13.5px] text-navy-950">Giao hàng toàn quốc</strong><small class="text-xs text-slate-500">Nhanh chóng, an toàn</small></span></div>
         </div>
 
         <div class="grid grid-cols-1 items-start gap-8 nav:grid-cols-[240px_minmax(0,1fr)]">
@@ -266,12 +268,12 @@ usePublicSocialMeta({
           </section>
         </div>
 
-        <section class="relative isolate mt-10 grid grid-cols-1 items-center gap-6 overflow-hidden bg-navy-950 px-6 py-8 text-white tb:grid-cols-[minmax(0,1fr)_auto] nav:px-10 nav:py-9" aria-labelledby="brand-support-title">
+        <section class="relative isolate mt-10 grid grid-cols-1 items-center gap-6 overflow-hidden rounded-btn border border-navy-700/60 bg-gradient-to-r from-navy-950 via-navy-900 to-navy-800 px-6 py-8 text-white shadow-md tb:grid-cols-[minmax(0,1fr)_auto] nav:px-10 nav:py-9" aria-labelledby="brand-support-title">
           <div>
-            <h2 id="brand-support-title" class="mb-2 text-2xl font-black">Cần hỗ trợ chọn sản phẩm phù hợp?</h2>
-            <p class="mb-0 max-w-[720px] leading-relaxed text-blue-100">Chia sẻ nhu cầu để đội ngũ Phúc Thịnh Solar tư vấn cấu hình và báo giá phù hợp.</p>
+            <h2 id="brand-support-title" class="mb-2 text-2xl font-black text-white">Cần hỗ trợ chọn sản phẩm phù hợp?</h2>
+            <p class="mb-0 max-w-[720px] leading-relaxed text-blue-100/95">Chia sẻ nhu cầu để đội ngũ Phúc Thịnh Solar tư vấn cấu hình và báo giá phù hợp.</p>
           </div>
-          <NuxtLink :to="migrationHref('/lien-he/')" class="inline-flex min-h-11 items-center justify-center bg-gold-500 px-5 font-extrabold text-navy-950 no-underline">Nhận tư vấn →</NuxtLink>
+          <NuxtLink :to="migrationHref('/lien-he/')" class="inline-flex min-h-11 items-center justify-center rounded-btn bg-hdr-gold px-6 text-sm font-extrabold text-navy-950 no-underline shadow-sm transition-colors hover:bg-hdr-gold-hover">Nhận tư vấn →</NuxtLink>
         </section>
       </div>
     </main>

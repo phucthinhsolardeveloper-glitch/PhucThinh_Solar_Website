@@ -170,6 +170,16 @@
  */
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
   /*
    * Duy nhất một chỗ đặt font chữ toàn site. Trước đây nằm trong tokens.css
    * dưới dạng `:root{font-family:...}` — dọn shell.css xong, tokens.css chỉ
@@ -178,6 +188,7 @@
    */
   body {
     font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
   }
 
   /* Focus vàng dày 3px là cam kết tiếp cận đã có trong tokens.css. Nhắc lại ở
@@ -189,6 +200,35 @@
 }
 
 @layer components {
+  /*
+   * Khung container thống nhất toàn site:
+   * - <=359px : gutter 12px (không tràn 320px)
+   * - 360-820 : gutter 16px
+   * - 821-1320: gutter 24px
+   * - >=1321  : gutter chuẩn --spacing-gutter (34px) trên khung --container-page (1680px)
+   * Đảm bảo Header, Breadcrumb, Hero, Nội dung và Footer thẳng cùng một trục dọc.
+   */
+  .pts-container {
+    margin-inline: auto;
+    width: 100%;
+    max-width: var(--container-page);
+    padding-inline: 1rem;
+  }
+  @media (max-width: 359px) {
+    .pts-container {
+      padding-inline: 0.75rem;
+    }
+  }
+  @media (min-width: 821px) {
+    .pts-container {
+      padding-inline: 1.5rem;
+    }
+  }
+  @media (min-width: 1321px) {
+    .pts-container {
+      padding-inline: var(--spacing-gutter);
+    }
+  }
   /*
    * BUG THẬT phát hiện khi wire sanitizer: NewsDetailArticle.vue và
    * SolutionDetailPage.vue đã dùng class `.cms-content` từ trước nhưng
@@ -222,6 +262,7 @@
     letter-spacing: -0.02em;
     line-height: 1.25;
     margin: 2rem 0 0.75rem;
+    scroll-margin-top: 6.75rem;
   }
   .cms-content h2 { font-size: 1.5rem; }
   .cms-content h3 { font-size: 1.25rem; }
@@ -308,7 +349,86 @@
     vertical-align: top;
   }
   .cms-content th {
-    background: var(--color-slate-50, #f8fafc);
+    background: var(--color-navy-50);
+    color: var(--color-navy-800);
     font-weight: 700;
+  }
+
+  /*
+   * Trình bày biên tập kỹ thuật nâng cấp (.cms-content--editorial):
+   * Áp dụng cho bài Giải pháp, Kiến thức, Dự án và Chính sách từ HTML CKEditor
+   * đã qua sanitizer — nâng cấp phân cấp thị giác (thanh nhấn gold cho H2,
+   * hộp danh sách kỹ thuật, thanh sơ đồ nguyên lý nền navy cho p > code,
+   * hộp lưu ý blockquote nền kem-gold) mà vẫn giữ nguyên 100% dữ liệu CMS gốc.
+   */
+  .cms-content--editorial {
+    font-size: 1rem;
+    line-height: 1.78;
+    color: #334155;
+  }
+
+  .cms-content--editorial h2 {
+    border-inline-start: 4px solid var(--color-gold-500);
+    padding-inline-start: 0.95rem;
+    margin: 2.5rem 0 1rem;
+    font-size: clamp(1.25rem, 1.8vw, 1.5rem);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: -0.015em;
+    color: var(--color-navy-950);
+  }
+  .cms-content--editorial > h2:first-child {
+    margin-top: 0;
+  }
+
+  .cms-content--editorial h3 {
+    margin: 1.6rem 0 0.75rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--color-navy-100);
+    font-size: 1.0625rem;
+    font-weight: 800;
+    color: var(--color-navy-800);
+  }
+
+  .cms-content--editorial ul,
+  .cms-content--editorial ol {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: var(--radius-btn);
+    padding: 0.95rem 1.25rem 0.95rem 2.25rem;
+    margin: 0.75rem 0 1.35rem;
+  }
+
+  .cms-content--editorial li {
+    margin-block: 0.38em;
+    color: #334155;
+  }
+
+  .cms-content--editorial li::marker {
+    color: var(--color-gold-500);
+    font-weight: 700;
+  }
+
+  .cms-content--editorial p > code:only-child {
+    display: block;
+    overflow-x: auto;
+    margin: 0.75rem 0;
+    padding: 0.9rem 1.15rem;
+    border-radius: var(--radius-btn);
+    border: 1px solid var(--color-navy-800);
+    background: var(--color-navy-950);
+    color: var(--color-gold-300);
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.6;
+  }
+
+  .cms-content--editorial blockquote {
+    border-inline-start: 4px solid var(--color-gold-500);
+    background: var(--color-gold-50);
+    border-radius: 0 var(--radius-btn) var(--radius-btn) 0;
+    padding: 0.95rem 1.15rem;
+    color: var(--color-navy-800);
+    font-weight: 500;
   }
 }

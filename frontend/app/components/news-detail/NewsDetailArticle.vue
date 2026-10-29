@@ -29,11 +29,16 @@ function formatDate(value: string): string {
     <img v-if="article.cover && article.showCover" :src="article.cover" :alt="article.title" class="my-6 block aspect-video w-full rounded-chip object-cover">
     <p v-if="article.description" class="mb-4 text-lg leading-relaxed text-navy-800">{{ article.description }}</p>
 
-    <nav v-if="article.content.html && editorial.toc.length" class="mb-6" aria-label="Mục lục bài viết">
-      <h2 class="mb-3 text-base font-extrabold text-navy-800">Nội dung bài viết</h2>
-      <ol class="m-0 list-none space-y-2 p-0">
+    <nav v-if="article.content.html && editorial.toc.length" class="mb-6 rounded-btn border border-slate-200/90 border-l-4 border-l-gold-500 bg-slate-50/70 p-5 shadow-xs" aria-label="Mục lục bài viết">
+      <h2 class="mb-3 flex items-center gap-2 text-sm font-extrabold uppercase tracking-wider text-navy-950">
+        <svg class="h-4 w-4 text-gold-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
+        </svg>
+        <span>Nội dung bài viết</span>
+      </h2>
+      <ol class="m-0 list-none space-y-1 p-0">
         <li v-for="item in editorial.toc" :key="item.id" :class="item.level === 3 ? 'pl-4' : ''">
-          <a class="inline-flex min-h-11 min-w-11 items-center px-2 font-semibold text-gold-700 underline-offset-2 hover:underline" :href="`#${item.id}`">{{ item.label }}</a>
+          <a class="inline-flex min-h-11 min-w-11 items-center px-2 text-sm font-semibold text-navy-800 underline-offset-2 hover:text-gold-700 hover:underline" :href="`#${item.id}`">{{ item.label }}</a>
         </li>
       </ol>
     </nav>

@@ -58,8 +58,8 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
 
 <template>
   <div class="overflow-hidden text-navy-800">
-    <section id="ve-phuc-thinh" class="mx-auto w-[min(calc(100%-32px),2200px)] pb-[54px]" aria-labelledby="about-story-title">
-      <div class="grid min-h-[470px] grid-cols-[minmax(410px,.88fr)_minmax(0,1.12fr)] gap-0 bg-[linear-gradient(135deg,#061735,#10366a)] max-[800px]:min-h-0 max-[800px]:grid-cols-1">
+    <section id="ve-phuc-thinh" class="pts-container pt-4 pb-[54px]" aria-labelledby="about-story-title">
+      <div class="grid min-h-[470px] grid-cols-[minmax(410px,.88fr)_minmax(0,1.12fr)] gap-0 overflow-hidden rounded-btn border border-navy-800/15 bg-[linear-gradient(135deg,#061735,#10366a)] shadow-md max-[800px]:min-h-0 max-[800px]:grid-cols-1">
         <div class="flex flex-col justify-center p-[clamp(38px,4vw,64px)] max-[800px]:block max-[800px]:px-6 max-[800px]:pb-[38px] max-[800px]:pt-[34px] max-[600px]:px-5 max-[600px]:pb-[34px] max-[600px]:pt-[30px]">
           <h1 id="about-story-title" class="m-0 max-w-[620px] text-[clamp(36px,3.6vw,54px)] font-black leading-[1.12] tracking-[-.035em] text-white max-[800px]:text-[34px] max-[600px]:text-[31px]">{{ about.story.title }}</h1>
           <p v-if="about.story.intro" class="mt-[17px] max-w-[690px] text-[17px] leading-[1.72] text-[#e1ebf8] max-[800px]:text-base">{{ about.story.intro }}</p>
@@ -70,7 +70,7 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
     </section>
 
     <nav class="bg-white" aria-label="Đi nhanh trong trang Giới thiệu">
-      <div class="mx-auto flex w-[min(calc(100%-32px),2200px)] gap-[30px] overflow-x-auto pb-5 [scrollbar-width:none] max-[800px]:gap-[22px] max-[800px]:pb-[15px]">
+      <div class="pts-container flex gap-[24px] overflow-x-auto border-b border-slate-200/80 pb-4 pt-1 [scrollbar-width:none] max-[800px]:gap-[18px]">
         <a class="inline-flex min-h-11 min-w-11 flex-none items-center justify-center border-b-2 border-transparent px-2 text-[13px] font-extrabold text-navy-800 no-underline hover:border-gold-500 hover:text-gold-500 focus-visible:border-gold-500 focus-visible:text-gold-500" href="#ve-phuc-thinh">{{ about.labels.story }}</a>
         <a v-if="about.history.items.length" class="inline-flex min-h-11 min-w-11 flex-none items-center justify-center border-b-2 border-transparent px-2 text-[13px] font-extrabold text-navy-800 no-underline hover:border-gold-500 hover:text-gold-500 focus-visible:border-gold-500 focus-visible:text-gold-500" href="#lich-su-phat-trien">{{ about.labels.history }}</a>
         <a class="inline-flex min-h-11 min-w-11 flex-none items-center justify-center border-b-2 border-transparent px-2 text-[13px] font-extrabold text-navy-800 no-underline hover:border-gold-500 hover:text-gold-500 focus-visible:border-gold-500 focus-visible:text-gold-500" href="#con-nguoi">{{ about.labels.people }}</a>
@@ -80,7 +80,7 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
     </nav>
 
     <section v-if="about.history.items.length" id="lich-su-phat-trien" class="bg-slate-50 py-16 max-[800px]:py-12" aria-labelledby="about-history-title">
-      <div class="mx-auto grid w-[min(calc(100%-32px),2200px)] grid-cols-2 items-stretch gap-[clamp(30px,5.4vw,86px)] max-[800px]:grid-cols-1">
+      <div class="pts-container grid grid-cols-2 items-stretch gap-[clamp(30px,5.4vw,86px)] max-[800px]:grid-cols-1">
         <div>
           <h2 id="about-history-title" class="m-0 text-[clamp(29px,2.6vw,38px)] font-bold leading-[1.22]">{{ about.history.title }}</h2>
           <ol class="mt-7 grid list-none gap-5 p-0" :aria-label="about.labels.timeline">
@@ -92,14 +92,14 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
             </li>
           </ol>
         </div>
-        <figure v-if="about.history.image" class="m-0 min-h-[390px] overflow-hidden bg-navy-50 max-[800px]:max-h-[26rem]"><img class="block h-full w-full object-cover" :src="about.history.image" :alt="about.history.title" width="780" height="600" loading="lazy"></figure>
+        <figure v-if="about.history.image" class="m-0 min-h-[390px] overflow-hidden rounded-btn bg-navy-50 max-[800px]:max-h-[26rem]"><img class="block h-full w-full object-cover" :src="about.history.image" :alt="about.history.title" width="780" height="600" loading="lazy"></figure>
       </div>
     </section>
 
     <section id="con-nguoi" class="bg-white py-16 max-[800px]:py-12" aria-labelledby="about-people-title">
-      <div class="mx-auto w-[min(calc(100%-32px),2200px)]">
+      <div class="pts-container">
         <div class="grid grid-cols-2 items-center gap-[clamp(28px,5.4vw,86px)] max-[800px]:grid-cols-1">
-          <figure v-if="about.people.image" class="m-0 aspect-[10/7] overflow-hidden bg-navy-50 max-[800px]:max-h-[26rem]"><img class="block h-full w-full object-cover" :src="about.people.image" :alt="about.people.title" width="780" height="620" loading="lazy"></figure>
+          <figure v-if="about.people.image" class="m-0 aspect-[10/7] overflow-hidden rounded-btn bg-navy-50 max-[800px]:max-h-[26rem]"><img class="block h-full w-full object-cover" :src="about.people.image" :alt="about.people.title" width="780" height="620" loading="lazy"></figure>
           <div>
             <h2 id="about-people-title" class="m-0 text-[clamp(29px,2.6vw,38px)] font-bold leading-[1.22]">{{ about.people.title }}</h2>
             <p v-if="about.people.intro" class="mt-[1.1rem] text-[1.06rem] leading-[1.68] text-[#52627c]">{{ about.people.intro }}</p>
@@ -120,7 +120,7 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
     </section>
 
     <section v-if="about.trust.items.length" class="bg-[#f4f7fb] py-16 max-[800px]:py-12" aria-labelledby="about-trust-title">
-      <div class="mx-auto grid w-[min(calc(100%-32px),2200px)] grid-cols-[minmax(0,.7fr)_minmax(0,1.3fr)] items-start gap-16 max-[800px]:grid-cols-1 max-[800px]:gap-7">
+      <div class="pts-container grid grid-cols-[minmax(0,.7fr)_minmax(0,1.3fr)] items-start gap-16 max-[800px]:grid-cols-1 max-[800px]:gap-7">
         <h2 id="about-trust-title" class="m-0 text-[clamp(29px,2.6vw,38px)] font-bold leading-[1.22]">{{ about.trust.title }}</h2>
         <div class="grid grid-cols-2 gap-x-[34px] max-[800px]:grid-cols-1">
           <article v-for="(item, index) in about.trust.items" :key="`${item.title}-${index}`" class="grid grid-cols-[4.25rem_minmax(0,1fr)] items-start gap-[22px] py-[18px]">
@@ -133,11 +133,11 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
     </section>
 
     <section v-if="about.compass.items.length" id="tam-nhin-su-menh" class="bg-navy-800 py-16 max-[800px]:py-12" aria-labelledby="about-compass-title">
-      <div class="mx-auto w-[min(calc(100%-32px),2200px)]"><h2 id="about-compass-title" class="m-0 text-[clamp(29px,2.6vw,38px)] font-bold leading-[1.22] text-white">{{ about.compass.title }}</h2><div class="mt-9 grid grid-cols-3 border-t border-white/20 max-[800px]:grid-cols-1"><article v-for="(item, index) in about.compass.items" :key="`${item.title}-${index}`" class="px-8 pt-7 first:pl-0 max-[800px]:grid max-[800px]:grid-cols-[3.5rem_minmax(0,1fr)] max-[800px]:gap-4 max-[800px]:border-t max-[800px]:border-white/20 max-[800px]:px-0 max-[800px]:py-5 max-[800px]:first:border-t-0"><img v-if="item.image" class="h-12 w-12 object-contain" :src="item.image" alt="" width="56" height="56" loading="lazy"><span v-else class="flex h-[3.25rem] w-[3.25rem] items-center justify-center rounded-full border border-gold-300/70 text-xs font-extrabold text-gold-300" aria-hidden="true">{{ String(index + 1).padStart(2, '0') }}</span><div><h3 class="text-[1.1rem] font-bold leading-[1.22] text-white">{{ item.title }}</h3><p v-if="item.description" class="m-0 mt-[.4rem] leading-[1.68] text-[#d1daea]">{{ item.description }}</p></div></article></div></div>
+      <div class="pts-container"><h2 id="about-compass-title" class="m-0 text-[clamp(29px,2.6vw,38px)] font-bold leading-[1.22] text-white">{{ about.compass.title }}</h2><div class="mt-9 grid grid-cols-3 border-t border-white/20 max-[800px]:grid-cols-1"><article v-for="(item, index) in about.compass.items" :key="`${item.title}-${index}`" class="px-8 pt-7 first:pl-0 max-[800px]:grid max-[800px]:grid-cols-[3.5rem_minmax(0,1fr)] max-[800px]:gap-4 max-[800px]:border-t max-[800px]:border-white/20 max-[800px]:px-0 max-[800px]:py-5 max-[800px]:first:border-t-0"><img v-if="item.image" class="h-12 w-12 object-contain" :src="item.image" alt="" width="56" height="56" loading="lazy"><span v-else class="flex h-[3.25rem] w-[3.25rem] items-center justify-center rounded-full border border-gold-300/70 text-xs font-extrabold text-gold-300" aria-hidden="true">{{ String(index + 1).padStart(2, '0') }}</span><div><h3 class="text-[1.1rem] font-bold leading-[1.22] text-white">{{ item.title }}</h3><p v-if="item.description" class="m-0 mt-[.4rem] leading-[1.68] text-[#d1daea]">{{ item.description }}</p></div></article></div></div>
     </section>
 
     <section v-if="about.certificates.items.length" id="about-certificates" class="py-16 max-[800px]:py-12" aria-labelledby="about-certificates-title">
-      <div class="mx-auto w-[min(calc(100%-32px),2200px)]">
+      <div class="pts-container">
         <header class="grid grid-cols-1 items-end gap-5 min-[801px]:grid-cols-[minmax(0,1fr)_auto]">
           <div>
             <h2 id="about-certificates-title" class="m-0 text-[clamp(29px,2.6vw,38px)] font-bold leading-[1.22]">{{ about.certificates.title }}</h2>
@@ -219,6 +219,6 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
       </div>
     </dialog>
 
-    <section class="pb-16 max-[800px]:px-0 max-[800px]:pb-12" aria-labelledby="about-cta-title"><div class="mx-auto w-[min(calc(100%-32px),2200px)]"><div class="relative isolate grid grid-cols-[minmax(0,1fr)_auto] items-center gap-6 overflow-hidden bg-navy-800 px-8 py-7 max-[800px]:grid-cols-1 max-[800px]:px-6"><div v-if="about.cta.image" class="absolute inset-0 z-0" aria-hidden="true"><img class="h-full w-full object-cover" :src="about.cta.image" alt="" loading="lazy"><span class="absolute inset-0 bg-[linear-gradient(90deg,rgba(6,27,70,.97),rgba(6,27,70,.82))]"></span></div><div class="relative z-10 grid grid-cols-[3.5rem_minmax(0,1fr)] items-center gap-4"><span class="flex h-[3.25rem] w-[3.25rem] items-center justify-center rounded-full border border-gold-300 text-xs font-extrabold text-gold-300" aria-hidden="true">PTS</span><div><h2 id="about-cta-title" class="text-[1.4rem] font-bold text-white">{{ about.cta.title }}</h2><p class="m-0 mt-[.3rem] text-[#d1daea]">{{ about.cta.description }}</p></div></div><div class="relative z-10 flex items-center gap-3 max-[800px]:grid"><a v-if="about.cta.hotline" class="inline-flex min-h-11 items-center bg-gold-500 px-4 py-3 font-extrabold text-navy-800 no-underline max-[800px]:justify-center" :href="`tel:${about.cta.hotline.tel}`">{{ about.cta.hotline.text }}</a><a v-if="about.cta.zaloUrl" class="inline-flex min-h-11 items-center bg-white px-4 py-3 font-extrabold text-[#0877c9] no-underline max-[800px]:justify-center" :href="about.cta.zaloUrl" target="_blank" rel="noopener noreferrer">Zalo</a><a class="inline-flex min-h-11 items-center bg-gold-500 px-4 py-3 font-extrabold text-navy-800 no-underline max-[800px]:justify-center" :href="links.generic(about.cta.href || '/lien-he/#yeu-cau-tu-van')">{{ about.cta.buttonLabel }} →</a></div></div></div></section>
+    <section class="pb-16 max-[800px]:px-0 max-[800px]:pb-12" aria-labelledby="about-cta-title"><div class="pts-container"><div class="relative isolate grid grid-cols-[minmax(0,1fr)_auto] items-center gap-6 overflow-hidden rounded-btn border border-navy-700/60 bg-navy-800 px-8 py-7 shadow-md max-[800px]:grid-cols-1 max-[800px]:px-6"><div v-if="about.cta.image" class="absolute inset-0 z-0" aria-hidden="true"><img class="h-full w-full object-cover" :src="about.cta.image" alt="" loading="lazy"><span class="absolute inset-0 bg-[linear-gradient(90deg,rgba(6,27,70,.97),rgba(6,27,70,.82))]"></span></div><div class="relative z-10 grid grid-cols-[3.5rem_minmax(0,1fr)] items-center gap-4"><span class="flex h-[3.25rem] w-[3.25rem] items-center justify-center rounded-full border border-gold-300 text-xs font-extrabold text-gold-300" aria-hidden="true">PTS</span><div><h2 id="about-cta-title" class="text-[1.4rem] font-bold text-white">{{ about.cta.title }}</h2><p class="m-0 mt-[.3rem] text-[#d1daea]">{{ about.cta.description }}</p></div></div><div class="relative z-10 flex items-center gap-3 max-[800px]:grid"><a v-if="about.cta.hotline" class="inline-flex min-h-11 items-center rounded-btn bg-hdr-gold px-4 py-3 font-extrabold text-navy-950 no-underline shadow-xs transition-colors hover:bg-hdr-gold-hover max-[800px]:justify-center" :href="`tel:${about.cta.hotline.tel}`">{{ about.cta.hotline.text }}</a><a v-if="about.cta.zaloUrl" class="inline-flex min-h-11 items-center rounded-btn border border-white/20 bg-white px-4 py-3 font-extrabold text-[#0877c9] no-underline max-[800px]:justify-center" :href="about.cta.zaloUrl" target="_blank" rel="noopener noreferrer">Zalo</a><a class="inline-flex min-h-11 items-center rounded-btn bg-hdr-gold px-4 py-3 font-extrabold text-navy-950 no-underline shadow-xs transition-colors hover:bg-hdr-gold-hover max-[800px]:justify-center" :href="links.generic(about.cta.href || '/lien-he/#yeu-cau-tu-van')">{{ about.cta.buttonLabel }} →</a></div></div></div></section>
   </div>
 </template>

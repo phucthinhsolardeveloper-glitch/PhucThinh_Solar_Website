@@ -234,28 +234,28 @@ function pageLink(nextPage: number) {
   <div class="text-navy-800">
     <SiteHeader v-if="siteData" :site="siteData" />
 
-    <!--
-      Khung trang đo từ ảnh production 1920px: container 1680px, gutter 34px ->
-      vùng nội dung 154..1766 (rộng 1612). Lưới sản phẩm bắt đầu tại 447 và rộng
-      1396, nên cột trái cộng khoảng cách bằng 216 -> cột trái 192px, gap 24px.
-      Cột trái ở bản này rộng 260px để đủ chỗ cho nhãn thương hiệu/mức giá dài.
-    -->
-    <main
-      class="mx-auto grid w-full max-w-(--container-page) grid-cols-1 gap-6 px-(--spacing-gutter) pt-0 pb-16
-             max-ph:pt-6 max-ph:pb-12"
-      :class="hasSidebar ? 'nav:grid-cols-[260px_minmax(0,1fr)]' : ''"
-    >
-      <div class="col-span-full py-1">
+    <div class="border-b border-slate-200/70 bg-slate-50/80">
+      <div class="pts-container">
         <SiteBreadcrumb :items="catalogBreadcrumbItems" />
       </div>
+    </div>
 
-      <CatalogMasthead :heading="heading" :description="bannerDescription" :hero="catalogData?.categoryHero ?? null" />
+    <CatalogMasthead :heading="heading" :description="bannerDescription" :hero="catalogData?.categoryHero ?? null" />
 
-      <nav v-if="categoryNavItems.length" class="col-span-full mt-0 flex gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" aria-label="Danh mục sản phẩm">
+    <!--
+      Khung trang dùng chung .pts-container (max-w 1680px, gutter đáp ứng theo
+      breakpoint) thẳng mép dọc với Header/Breadcrumb/Footer và không tràn ngang
+      trên màn hình 320px.
+    -->
+    <main
+      class="pts-container grid grid-cols-1 gap-6 pt-6 pb-16 max-ph:pb-12"
+      :class="hasSidebar ? 'nav:grid-cols-[260px_minmax(0,1fr)]' : ''"
+    >
+      <nav v-if="categoryNavItems.length" class="col-span-full mt-0 flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" aria-label="Danh mục sản phẩm">
         <NuxtLink
           :to="categoryAllHref"
-          class="inline-flex min-h-[58px] min-w-[126px] flex-1 items-center justify-center gap-2 border px-3 py-2 text-center text-[13px] font-bold no-underline transition-colors"
-          :class="!selectedCategory || selectedCategory.url === activeCategoryRoot?.url ? 'border-gold-600 bg-gold-600 text-white' : 'border-gray-200 bg-white text-navy-800 hover:border-gold-600'"
+          class="inline-flex min-h-[54px] min-w-[126px] flex-1 items-center justify-center gap-2 rounded-chip border px-3 py-2 text-center text-[13px] font-bold no-underline transition-colors"
+          :class="!selectedCategory || selectedCategory.url === activeCategoryRoot?.url ? 'border-navy-800 bg-navy-800 text-gold-300 shadow-xs' : 'border-slate-200 bg-white text-navy-800 hover:border-gold-600 hover:text-gold-700'"
           :aria-current="!selectedCategory || selectedCategory.url === activeCategoryRoot?.url ? 'page' : undefined"
         >
           <CatalogMenuIcon class="h-5 w-5 flex-none" name="light" />
@@ -265,8 +265,8 @@ function pageLink(nextPage: number) {
           v-for="item in categoryNavItems"
           :key="item.url"
           :to="links.generic(item.url)"
-          class="inline-flex min-h-[58px] min-w-[126px] flex-1 items-center justify-center gap-2 border px-3 py-2 text-center text-[13px] font-bold no-underline transition-colors"
-          :class="item.url === selectedCategory?.url ? 'border-gold-600 bg-gold-600 text-white' : 'border-gray-200 bg-white text-navy-800 hover:border-gold-600'"
+          class="inline-flex min-h-[54px] min-w-[126px] flex-1 items-center justify-center gap-2 rounded-chip border px-3 py-2 text-center text-[13px] font-bold no-underline transition-colors"
+          :class="item.url === selectedCategory?.url ? 'border-navy-800 bg-navy-800 text-gold-300 shadow-xs' : 'border-slate-200 bg-white text-navy-800 hover:border-gold-600 hover:text-gold-700'"
           :aria-current="item.url === selectedCategory?.url ? 'page' : undefined"
         >
           <CatalogMenuIcon class="h-5 w-5 flex-none" :name="categoryIcon(item.slug)" />
@@ -398,13 +398,14 @@ function pageLink(nextPage: number) {
         </details>
       </section>
 
-      <section v-if="catalogData?.support" class="relative isolate col-span-full mt-5 grid grid-cols-1 items-center gap-6 overflow-hidden bg-navy-950 px-6 py-8 text-white tb:grid-cols-[minmax(0,1fr)_auto] nav:px-10 nav:py-9" aria-labelledby="catalog-support-title">
-        <img v-if="catalogData.support.image" :src="catalogData.support.image" alt="" width="1600" height="500" sizes="100vw" class="absolute inset-0 -z-10 h-full w-full object-cover opacity-20" loading="lazy" decoding="async">
+      <section v-if="catalogData?.support" class="relative isolate col-span-full mt-5 grid grid-cols-1 items-center gap-6 overflow-hidden rounded-btn border border-navy-700/60 bg-navy-950 px-6 py-8 text-white shadow-md tb:grid-cols-[minmax(0,1fr)_auto] nav:px-10 nav:py-9" aria-labelledby="catalog-support-title">
+        <img v-if="catalogData.support.image" :src="catalogData.support.image" alt="" width="1600" height="500" sizes="100vw" class="absolute inset-0 -z-20 h-full w-full object-cover opacity-30" loading="lazy" decoding="async">
+        <div class="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-r from-navy-950/95 via-navy-900/90 to-navy-800/70" aria-hidden="true" />
         <div>
-          <h2 id="catalog-support-title" class="mb-2 text-2xl font-black">{{ catalogData.support.title }}</h2>
-          <p class="mb-0 max-w-[720px] leading-relaxed text-blue-100">{{ catalogData.support.description }}</p>
+          <h2 id="catalog-support-title" class="mb-2 text-2xl font-black text-white">{{ catalogData.support.title }}</h2>
+          <p class="mb-0 max-w-[720px] leading-relaxed text-blue-100/95">{{ catalogData.support.description }}</p>
         </div>
-        <NuxtLink :to="links.generic(catalogData.support.href || '/lien-he/')" class="inline-flex min-h-11 items-center justify-center bg-gold-500 px-5 font-extrabold text-navy-950 no-underline">Nhận tư vấn →</NuxtLink>
+        <NuxtLink :to="links.generic(catalogData.support.href || '/lien-he/')" class="inline-flex min-h-11 items-center justify-center rounded-btn bg-hdr-gold px-6 text-sm font-extrabold text-navy-950 no-underline shadow-sm transition-colors hover:bg-hdr-gold-hover">Nhận tư vấn →</NuxtLink>
       </section>
     </main>
 

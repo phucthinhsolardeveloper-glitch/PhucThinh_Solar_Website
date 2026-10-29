@@ -71,50 +71,51 @@ usePublicSocialMeta({
 <template>
   <div class="text-navy-800">
     <SiteHeader :site="site" />
-    <main class="pb-16">
-      <div class="mx-auto w-full max-w-[1766px] px-4">
+    <div class="border-b border-slate-200/70 bg-slate-50/80">
+      <div class="pts-container">
         <SiteBreadcrumb :items="[{ label: 'Kiến thức', to: '/tin-tuc/' }, { label: category?.name || 'Danh mục bài viết' }]" />
-
-        <section v-if="error || !news || !category" class="min-h-[45vh] py-12" :role="responseStatus === 404 ? 'status' : 'alert'">
-          <h1 class="mb-3 text-3xl font-black tracking-tight">{{ responseStatus === 404 ? 'Không tìm thấy danh mục bài viết' : 'Tạm thời không thể tải danh mục bài viết' }}</h1>
-          <p class="text-slate-500">{{ responseStatus === 404 ? 'Danh mục này hiện không tồn tại hoặc đã ẩn.' : 'Nguồn nội dung hiện không khả dụng.' }}</p>
-        </section>
-
-        <template v-else>
-          <header class="pt-6 pb-7">
-            <h1 class="mb-2.5 text-[clamp(30px,4vw,44px)] font-black leading-[1.15] tracking-tight text-navy-800">{{ category.name }}</h1>
-            <p v-if="category.description" class="m-0 leading-relaxed text-slate-500">{{ category.description }}</p>
-          </header>
-
-          <div class="mb-6 flex flex-col items-start justify-between gap-3.5 nav:flex-row nav:items-center">
-            <NewsFilters :categories="news.categories" :selected="category" :all-label="news.labels.all" :filters-label="news.labels.results" />
-            <form class="flex h-11 w-full flex-none items-center rounded-chip border border-gray-200 bg-white nav:w-[250px]" method="get" :action="route.path" role="search">
-              <label class="sr-only" for="news-category-search">{{ news.labels.search }}</label>
-              <input id="news-category-search" name="q" type="search" class="w-full min-w-0 border-0 px-3 text-base text-navy-800 outline-none focus-visible:ring-2 focus-visible:ring-gold-500" :value="typeof route.query.q === 'string' ? route.query.q : ''" :placeholder="news.labels.search" maxlength="120">
-              <button type="submit" class="h-11 w-11 flex-none border-0 bg-transparent text-navy-800" :aria-label="news.labels.search">⌕</button>
-            </form>
-          </div>
-
-          <section v-if="news.articles.length" class="grid grid-cols-1 gap-x-5 gap-y-6 tb:grid-cols-2 nav:grid-cols-3" :aria-label="news.labels.results">
-            <NewsCard v-for="article in news.articles" :key="article.id" :article="article" :read-label="news.labels.read" :read-more-label="news.labels.readMore" />
-          </section>
-          <div v-else class="min-h-[260px] py-[52px] text-center text-slate-500" role="status">
-            <h2 class="mb-3 text-navy-800">{{ news.labels.empty }}</h2>
-          </div>
-
-          <nav v-if="news.pagination.total > news.pagination.perPage" class="mt-7 flex flex-wrap justify-center gap-2" :aria-label="news.labels.pages">
-            <a v-if="news.pagination.page > 1" class="grid min-h-11 min-w-11 place-items-center rounded-chip border border-gray-200 text-navy-800 no-underline" rel="prev" :href="pageUrl(news.pagination.page - 1)">‹</a>
-            <template v-for="(page, index) in pageNumbers" :key="`${page}-${index}`">
-              <span v-if="page === '…'" class="grid h-[38px] min-w-[38px] place-items-center text-navy-800">…</span>
-              <span v-else-if="page === news.pagination.page" class="grid min-h-11 min-w-11 place-items-center rounded-chip border border-gold-500 bg-gold-400 text-navy-800" aria-current="page">{{ page }}</span>
-              <a v-else class="grid min-h-11 min-w-11 place-items-center rounded-chip border border-gray-200 text-navy-800 no-underline" :href="pageUrl(page)" :aria-label="`Trang ${page}`">{{ page }}</a>
-            </template>
-            <a v-if="news.pagination.page < Math.ceil(news.pagination.total / news.pagination.perPage)" class="grid min-h-11 min-w-11 place-items-center rounded-chip border border-gray-200 text-navy-800 no-underline" rel="next" :href="pageUrl(news.pagination.page + 1)">›</a>
-          </nav>
-
-          <NewsCta v-if="news.cta" :cta="news.cta" :phone-label="news.labels.ctaPhone" />
-        </template>
       </div>
+    </div>
+    <main class="pts-container pb-16">
+      <section v-if="error || !news || !category" class="min-h-[45vh] py-12" :role="responseStatus === 404 ? 'status' : 'alert'">
+        <h1 class="mb-3 text-3xl font-black tracking-tight">{{ responseStatus === 404 ? 'Không tìm thấy danh mục bài viết' : 'Tạm thời không thể tải danh mục bài viết' }}</h1>
+        <p class="text-slate-500">{{ responseStatus === 404 ? 'Danh mục này hiện không tồn tại hoặc đã ẩn.' : 'Nguồn nội dung hiện không khả dụng.' }}</p>
+      </section>
+
+      <template v-else>
+        <header class="pt-6 pb-7">
+          <h1 class="mb-2.5 text-[clamp(30px,4vw,44px)] font-black leading-[1.15] tracking-tight text-navy-800">{{ category.name }}</h1>
+          <p v-if="category.description" class="m-0 leading-relaxed text-slate-500">{{ category.description }}</p>
+        </header>
+
+        <div class="mb-6 flex flex-col items-start justify-between gap-3.5 nav:flex-row nav:items-center">
+          <NewsFilters :categories="news.categories" :selected="category" :all-label="news.labels.all" :filters-label="news.labels.results" />
+          <form class="flex h-11 w-full flex-none items-center rounded-chip border border-gray-200 bg-white nav:w-[250px]" method="get" :action="route.path" role="search">
+            <label class="sr-only" for="news-category-search">{{ news.labels.search }}</label>
+            <input id="news-category-search" name="q" type="search" class="w-full min-w-0 border-0 px-3 text-base text-navy-800 outline-none focus-visible:ring-2 focus-visible:ring-gold-500" :value="typeof route.query.q === 'string' ? route.query.q : ''" :placeholder="news.labels.search" maxlength="120">
+            <button type="submit" class="h-11 w-11 flex-none border-0 bg-transparent text-navy-800" :aria-label="news.labels.search">⌕</button>
+          </form>
+        </div>
+
+        <section v-if="news.articles.length" class="grid grid-cols-1 gap-x-5 gap-y-6 tb:grid-cols-2 nav:grid-cols-3" :aria-label="news.labels.results">
+          <NewsCard v-for="article in news.articles" :key="article.id" :article="article" :read-label="news.labels.read" :read-more-label="news.labels.readMore" />
+        </section>
+        <div v-else class="min-h-[260px] py-[52px] text-center text-slate-500" role="status">
+          <h2 class="mb-3 text-navy-800">{{ news.labels.empty }}</h2>
+        </div>
+
+        <nav v-if="news.pagination.total > news.pagination.perPage" class="mt-7 flex flex-wrap justify-center gap-2" :aria-label="news.labels.pages">
+          <a v-if="news.pagination.page > 1" class="grid min-h-11 min-w-11 place-items-center rounded-chip border border-gray-200 text-navy-800 no-underline" rel="prev" :href="pageUrl(news.pagination.page - 1)">‹</a>
+          <template v-for="(page, index) in pageNumbers" :key="`${page}-${index}`">
+            <span v-if="page === '…'" class="grid h-[38px] min-w-[38px] place-items-center text-navy-800">…</span>
+            <span v-else-if="page === news.pagination.page" class="grid min-h-11 min-w-11 place-items-center rounded-chip border border-gold-500 bg-gold-400 text-navy-800" aria-current="page">{{ page }}</span>
+            <a v-else class="grid min-h-11 min-w-11 place-items-center rounded-chip border border-gray-200 text-navy-800 no-underline" :href="pageUrl(page)" :aria-label="`Trang ${page}`">{{ page }}</a>
+          </template>
+          <a v-if="news.pagination.page < Math.ceil(news.pagination.total / news.pagination.perPage)" class="grid min-h-11 min-w-11 place-items-center rounded-chip border border-gray-200 text-navy-800 no-underline" rel="next" :href="pageUrl(news.pagination.page + 1)">›</a>
+        </nav>
+
+        <NewsCta v-if="news.cta" :cta="news.cta" :phone-label="news.labels.ctaPhone" />
+      </template>
     </main>
     <SiteFooter :site="site" />
   </div>

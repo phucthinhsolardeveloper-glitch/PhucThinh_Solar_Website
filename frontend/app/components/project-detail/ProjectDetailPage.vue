@@ -23,7 +23,7 @@ const hotlineHref = computed(() => `tel:${props.project.cta?.hotline.replace(/[^
   -->
   <article>
     <header class="py-10 nav:py-12">
-      <div class="mx-auto grid w-full max-w-[1766px] grid-cols-1 gap-8 px-4" :class="{ 'nav:grid-cols-[0.85fr_1.15fr]': project.summary }">
+      <div class="pts-container grid w-full grid-cols-1 gap-8" :class="{ 'nav:grid-cols-[0.85fr_1.15fr]': project.summary }">
         <div class="min-w-0">
           <h1 class="m-0 mb-5 text-[clamp(34px,5vw,56px)] font-black leading-[1.05] tracking-tight text-navy-950">{{ project.title }}</h1>
 
@@ -47,14 +47,14 @@ const hotlineHref = computed(() => `tel:${props.project.cta?.hotline.replace(/[^
           </dl>
         </div>
 
-        <section v-if="project.summary" aria-labelledby="project-summary-title">
+        <section v-if="project.summary" aria-labelledby="project-summary-title" class="rounded-btn border border-slate-200/90 border-l-4 border-l-gold-500 bg-slate-50/70 p-6 shadow-xs">
           <h2 id="project-summary-title" class="mb-2 text-xl font-bold text-navy-800">Tổng quan công trình</h2>
           <p class="m-0 leading-relaxed text-navy-800">{{ project.summary }}</p>
         </section>
       </div>
     </header>
 
-    <div class="mx-auto w-full max-w-[1766px] px-4 py-10">
+    <div class="pts-container py-10">
       <!--
         Tích hợp sanitizer: content giờ là envelope sanitized-html
         (pts_public_richtext.php sanitize contentvi của bảng #_news ở PHP).
@@ -82,11 +82,11 @@ const hotlineHref = computed(() => `tel:${props.project.cta?.hotline.replace(/[^
         </div>
       </section>
 
-      <section v-if="project.cta" class="relative isolate mt-16 grid grid-cols-1 items-center gap-7 overflow-hidden bg-navy-950 p-7 text-white nav:grid-cols-[minmax(0,.8fr)_minmax(0,1.2fr)] nav:p-10" aria-labelledby="project-detail-cta-title">
-        <img v-if="project.cta.image" :src="project.cta.image" alt="" class="absolute inset-0 -z-10 h-full w-full object-cover opacity-15" loading="lazy" decoding="async">
+      <section v-if="project.cta" class="relative isolate mt-16 grid grid-cols-1 items-center gap-7 overflow-hidden rounded-btn border border-navy-700/60 bg-gradient-to-r from-navy-950 via-navy-900 to-navy-800 p-7 text-white shadow-md nav:grid-cols-[minmax(0,.8fr)_minmax(0,1.2fr)] nav:p-10" aria-labelledby="project-detail-cta-title">
+        <img v-if="project.cta.image" :src="project.cta.image" alt="" class="absolute inset-0 -z-10 h-full w-full object-cover opacity-20" loading="lazy" decoding="async">
         <div class="relative">
           <h2 id="project-detail-cta-title" class="mb-2 text-[clamp(22px,3vw,32px)] font-black leading-tight">{{ project.cta.title }}</h2>
-          <p v-if="project.cta.description" class="mb-4 leading-relaxed text-blue-100">{{ project.cta.description }}</p>
+          <p v-if="project.cta.description" class="mb-4 leading-relaxed text-blue-100/95">{{ project.cta.description }}</p>
           <ul v-if="project.cta.trust.length" class="mt-5 flex list-none flex-wrap gap-x-5 gap-y-3 p-0 text-sm text-blue-100">
             <li v-for="item in project.cta.trust" :key="item.label" class="flex items-center gap-2">
               <img v-if="item.icon" :src="item.icon" alt="" class="h-[18px] w-[18px] object-contain" loading="lazy">
@@ -95,9 +95,9 @@ const hotlineHref = computed(() => `tel:${props.project.cta?.hotline.replace(/[^
             </li>
           </ul>
         </div>
-        <div class="relative flex flex-wrap items-center gap-5 nav:justify-end">
-          <a v-if="project.cta.hotline" class="font-extrabold text-white no-underline" :href="hotlineHref">{{ project.cta.hotline }}</a>
-          <a class="inline-flex min-h-12 items-center rounded-btn bg-gold-500 px-5 font-extrabold text-navy-950 no-underline" :href="links.generic('/lien-he/#yeu-cau-tu-van')">{{ project.cta.buttonLabel }} →</a>
+        <div class="relative flex flex-wrap items-center gap-4 nav:justify-end">
+          <a v-if="project.cta.hotline" class="rounded-btn border border-white/20 bg-white/[.04] px-4 py-2 font-extrabold text-white no-underline transition-colors hover:border-gold-400 hover:bg-white/10" :href="hotlineHref">{{ project.cta.hotline }}</a>
+          <a class="inline-flex min-h-12 items-center rounded-btn bg-hdr-gold px-6 text-sm font-extrabold text-navy-950 no-underline shadow-sm transition-colors hover:bg-hdr-gold-hover" :href="links.generic('/lien-he/#yeu-cau-tu-van')">{{ project.cta.buttonLabel }} →</a>
         </div>
       </section>
     </div>

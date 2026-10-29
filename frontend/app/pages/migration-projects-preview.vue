@@ -74,11 +74,14 @@ usePublicSocialMeta({
   <div class="text-navy-800">
     <SiteHeader :site="site" />
 
-    <main class="pb-20 pt-[18px]">
-      <div class="mx-auto w-full max-w-[1766px] px-4">
+    <div class="border-b border-slate-200/70 bg-slate-50/80">
+      <div class="pts-container">
         <SiteBreadcrumb :items="[{ label: 'Dự án' }]" />
+      </div>
+    </div>
 
-        <div v-if="error || !projects" class="min-h-[30vh] py-6" role="status">
+    <main class="pts-container pb-20 pt-4">
+      <div v-if="error || !projects" class="min-h-[30vh] py-6" role="status">
           <h1 class="mb-3 text-3xl font-black tracking-tight">{{ isPublicRoute ? 'Dự án' : 'Dự án — internal preview' }}</h1>
           <p class="text-slate-500">Không thể tải dữ liệu CMS trong môi trường hiện tại. {{ isPublicRoute ? 'Nội dung sẽ hiển thị khi CMS khả dụng.' : 'Preview không hiển thị dữ liệu dự án giả.' }}</p>
         </div>
@@ -132,7 +135,6 @@ usePublicSocialMeta({
 
           <ProjectsCta v-if="projects.cta" :cta="projects.cta" :label="projects.labels.cta" />
         </template>
-      </div>
     </main>
 
     <SiteFooter :site="site" />

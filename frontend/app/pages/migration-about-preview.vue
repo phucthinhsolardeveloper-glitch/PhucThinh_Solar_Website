@@ -13,14 +13,16 @@ useSeoMeta({ title: 'Giới thiệu — internal preview' })
 
 <template>
   <main>
-    <div class="mx-auto w-[min(calc(100%-32px),2200px)]">
-      <SiteBreadcrumb :items="[{ label: 'Giới thiệu' }]" />
+    <div class="border-b border-slate-200/80 bg-slate-50/80">
+      <div class="pts-container">
+        <SiteBreadcrumb :items="[{ label: 'Giới thiệu' }]" />
+      </div>
     </div>
-    <div v-if="pending" class="mx-auto min-h-[40vh] w-[min(calc(100%-32px),2200px)] py-16 text-center" role="status" aria-live="polite">
+    <div v-if="pending" class="pts-container min-h-[40vh] py-16 text-center" role="status" aria-live="polite">
       <h1 class="text-3xl font-bold text-navy-800">Giới thiệu — internal preview</h1>
       <p class="mt-3 leading-[1.68] text-[#52627c]">Đang tải dữ liệu CMS…</p>
     </div>
-    <div v-else-if="error || !about" class="mx-auto min-h-[40vh] w-[min(calc(100%-32px),2200px)] py-16 text-center" role="status">
+    <div v-else-if="error || !about" class="pts-container min-h-[40vh] py-16 text-center" role="status">
       <h1 class="text-3xl font-bold text-navy-800">Giới thiệu — internal preview</h1>
       <p class="mt-3 leading-[1.68] text-[#52627c]">Không thể tải dữ liệu CMS trong môi trường hiện tại. Preview không hiển thị dữ liệu giới thiệu giả.</p>
     </div>

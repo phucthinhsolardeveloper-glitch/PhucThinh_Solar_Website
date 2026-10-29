@@ -39,9 +39,13 @@ usePublicSocialMeta({
     <SiteHeader :site="site" />
 
     <main>
-      <div class="mx-auto w-full max-w-[1766px] px-4">
-        <SiteBreadcrumb :items="[{ label: 'Liên hệ' }]" />
+      <div class="border-b border-slate-200/80 bg-slate-50/80">
+        <div class="pts-container">
+          <SiteBreadcrumb :items="[{ label: 'Liên hệ' }]" />
+        </div>
+      </div>
 
+      <div class="pts-container">
         <div v-if="error || !contact" class="min-h-[45vh] py-12" role="status">
           <h1 class="mb-3 text-3xl font-black tracking-tight">{{ pageTitle }}</h1>
           <p class="text-slate-500">Không thể tải dữ liệu CMS trong môi trường hiện tại. Không hiển thị dữ liệu liên hệ giả.</p>

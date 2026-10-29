@@ -56,9 +56,13 @@ usePublicSocialMeta({
   <div v-else class="text-navy-800">
     <SiteHeader :site="site" />
 
-    <main class="mx-auto w-full max-w-[1766px] px-4 py-8 nav:py-12">
-      <SiteBreadcrumb :items="[{ label: 'Giải pháp' }]" />
+    <div class="border-b border-slate-200/70 bg-slate-50/80">
+      <div class="pts-container">
+        <SiteBreadcrumb :items="[{ label: 'Giải pháp' }]" />
+      </div>
+    </div>
 
+    <main class="pts-container py-7 nav:py-11">
       <div v-if="error || !data" class="min-h-[45vh] py-12">
         <h1 class="mb-4 text-[clamp(28px,4vw,42px)] font-black tracking-tight">Giải pháp</h1>
         <p class="max-w-[62ch] leading-relaxed text-slate-500">Không thể tải dữ liệu PHP DTO trong môi trường hiện tại.</p>
@@ -72,15 +76,15 @@ usePublicSocialMeta({
 
         <section v-if="data.editorial.content.html" class="pb-[54px]" aria-label="Nội dung tư vấn giải pháp">
           <div
-            class="grid gap-8"
-            :class="data.editorial.toc.rendered ? 'nav:grid-cols-[240px_minmax(0,1fr)]' : ''"
+            class="grid gap-8 nav:gap-12"
+            :class="data.editorial.toc.rendered ? 'nav:grid-cols-[270px_minmax(0,1fr)]' : ''"
           >
             <nav
               v-if="data.editorial.toc.rendered"
-              class="h-fit max-h-[220px] overflow-y-auto overscroll-contain rounded-[3px] bg-navy-800 p-6 min-[901px]:sticky min-[901px]:top-[124px] min-[901px]:max-h-[calc(100vh-150px)]"
+              class="h-fit max-h-[220px] overflow-y-auto overscroll-contain rounded-[3px] bg-navy-800 p-5 shadow-sm min-[901px]:sticky min-[901px]:top-24 min-[901px]:max-h-[calc(100vh-116px)]"
               aria-label="Mục lục nội dung giải pháp"
             >
-              <strong class="mb-3 block text-sm font-extrabold text-[#efc45b]">Trong trang này</strong>
+              <strong class="mb-3 block border-b border-white/12 pb-2.5 text-[13px] font-extrabold uppercase tracking-wider text-gold-300">Trong trang này</strong>
               <ul class="m-0 list-none space-y-1 p-0">
                 <li v-for="item in data.editorial.toc.items" :key="item.id" :class="item.level === 3 ? 'pl-3' : ''">
                   <a :href="'#' + item.id" class="flex min-h-11 items-center border-l-2 border-transparent py-1 pl-3 text-[13px] font-semibold leading-[1.45] text-[#c9d5e6] no-underline transition-colors hover:border-gold-400 hover:text-white">

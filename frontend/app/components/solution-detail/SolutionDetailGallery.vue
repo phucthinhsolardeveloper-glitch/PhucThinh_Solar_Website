@@ -62,18 +62,18 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <section v-if="images.length" class="mx-auto w-full max-w-[1766px] px-4 pb-12" aria-labelledby="solution-gallery-title">
-    <h2 id="solution-gallery-title" class="mb-5 text-[28px] font-black text-navy-800">Hình ảnh giải pháp</h2>
+  <section v-if="images.length" class="pts-container pb-10" aria-labelledby="solution-gallery-title">
+    <h2 id="solution-gallery-title" class="mb-5 text-[clamp(22px,2.2vw,28px)] font-black tracking-tight text-navy-800">Hình ảnh giải pháp</h2>
     <div class="grid grid-cols-1 gap-4 min-[521px]:grid-cols-2">
       <button
         v-for="(image, index) in images"
         :key="image"
         type="button"
-        class="group block w-full border-0 bg-transparent p-0 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-500"
+        class="group block w-full overflow-hidden rounded-btn border border-slate-200/80 bg-transparent p-0 text-left transition-all hover:border-gold-500 hover:shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-500"
         :aria-label="`Mở ảnh ${index + 1} trong thư viện ${title}`"
         @click="open(index, $event.currentTarget as HTMLElement)"
       >
-        <img :src="image" :alt="title" class="block aspect-[8/5] w-full rounded-btn object-cover" width="960" height="600" loading="lazy" decoding="async">
+        <img :src="image" :alt="title" class="block aspect-[8/5] w-full object-cover transition-transform duration-300 group-hover:scale-[1.015]" width="960" height="600" loading="lazy" decoding="async">
       </button>
     </div>
   </section>

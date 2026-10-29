@@ -53,11 +53,13 @@ usePublicSocialMeta({
     <SiteHeader :site="site" />
 
     <main>
-      <div class="mx-auto w-[calc(100%-clamp(40px,5vw,96px))] max-w-[1560px]">
-        <SiteBreadcrumb :items="[{ label: 'Đại lý' }]" />
+      <div class="border-b border-slate-200/80 bg-slate-50/80">
+        <div class="pts-container">
+          <SiteBreadcrumb :items="[{ label: 'Đại lý' }]" />
+        </div>
       </div>
 
-      <div v-if="error || !dealer" class="mx-auto min-h-[45vh] w-full max-w-[1766px] px-4 py-12" role="status">
+      <div v-if="error || !dealer" class="pts-container min-h-[45vh] py-12" role="status">
         <h1 class="mb-3 text-3xl font-black tracking-tight">{{ pageTitle }}</h1>
         <p class="text-slate-500">Không thể tải dữ liệu CMS hiện tại. Không hiển thị nội dung đại lý giả.</p>
       </div>
@@ -71,7 +73,7 @@ usePublicSocialMeta({
             class="absolute inset-0 bg-[linear-gradient(90deg,rgba(4,17,46,0.86)_0%,rgba(4,17,46,0.68)_38%,rgba(4,17,46,0.18)_72%,rgba(4,17,46,0.02)_100%)] max-[767px]:bg-[linear-gradient(90deg,rgba(4,17,46,0.94),rgba(4,17,46,0.62))]"
             aria-hidden="true"
           />
-          <div class="relative z-[1] mx-auto w-[calc(100%-clamp(40px,5vw,96px))] max-w-[1560px]">
+          <div class="relative z-[1] pts-container">
             <h1 class="max-w-[680px] py-8 text-[clamp(34px,3.4vw,52px)] font-black leading-[1.13] text-white min-[1800px]:max-w-[760px] min-[1800px]:text-[48px]">
               {{ dealer.title }}
             </h1>
@@ -79,8 +81,8 @@ usePublicSocialMeta({
         </section>
 
         <!-- Hàng neo nhảy mục, nền trắng, ngay dưới hero -->
-        <nav class="border-b border-gray-200" aria-label="Điều hướng nhanh trong trang">
-          <div class="mx-auto flex min-h-[58px] w-[calc(100%-clamp(40px,5vw,96px))] max-w-[1560px] flex-nowrap gap-0 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden min-[768px]:min-h-[66px]">
+        <nav class="border-b border-gray-200 bg-white" aria-label="Điều hướng nhanh trong trang">
+          <div class="pts-container flex min-h-[58px] flex-nowrap gap-0 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden min-[768px]:min-h-[66px]">
             <a v-for="link in quickLinks" :key="link.href" class="flex shrink-0 items-center gap-2 border-r border-gray-200 py-4 pl-4 pr-5 font-bold text-navy-800 no-underline transition-colors hover:bg-slate-50 hover:text-gold-700 first:pl-0 min-[992px]:px-[clamp(22px,3vw,42px)] first:min-[992px]:pl-0" :href="links.generic(link.href)">
               <svg v-if="link.icon === 'edit'" class="h-[26px] w-[26px] flex-none text-gold-600" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L8 18l-4 1 1-4Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
               <svg v-else-if="link.icon === 'solar'" class="h-[26px] w-[26px] flex-none text-gold-600" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m3 10 18 0-2 9H5l-2-9Zm3-5h12l3 5H3l3-5ZM8 10l1 9m6-9-1 9M2 22h20" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" /></svg>
@@ -90,7 +92,7 @@ usePublicSocialMeta({
           </div>
         </nav>
 
-        <div class="mx-auto w-[calc(100%-clamp(40px,5vw,96px))] max-w-[1560px]">
+        <div class="pts-container">
           <section
             id="nang-luc-phan-phoi"
             class="grid grid-cols-1 items-start gap-8 pb-12 pt-6 min-[992px]:grid-cols-[minmax(0,1fr)_minmax(360px,520px)] min-[992px]:gap-[clamp(44px,5vw,84px)] min-[992px]:pt-[clamp(24px,2.5vw,36px)] min-[1800px]:grid-cols-[minmax(0,1fr)_minmax(360px,560px)] nav:pb-16"
@@ -102,7 +104,7 @@ usePublicSocialMeta({
 
             <aside
               id="dang-ky-dai-ly"
-              class="order-first w-full max-w-[560px] rounded-[4px] border border-white/10 bg-[linear-gradient(145deg,var(--color-navy-950),#123c72)] p-[22px_18px] text-white shadow-[0_14px_34px_rgba(6,23,53,0.14)] min-[640px]:max-w-none min-[992px]:order-none min-[992px]:sticky min-[992px]:top-6 min-[992px]:ml-auto min-[992px]:max-w-[520px] min-[992px]:p-8 min-[1800px]:max-w-[560px]"
+              class="order-first w-full max-w-[560px] rounded-[4px] border border-white/10 bg-[linear-gradient(145deg,var(--color-navy-950),#123c72)] p-[22px_18px] text-white shadow-[0_14px_34px_rgba(6,23,53,0.14)] min-[640px]:max-w-none min-[992px]:order-none min-[992px]:sticky min-[992px]:top-24 min-[992px]:ml-auto min-[992px]:max-w-[520px] min-[992px]:p-8 min-[1800px]:max-w-[560px]"
             >
               <h2 class="mb-4 text-2xl font-black leading-tight">{{ dealer.form.title }}</h2>
               <p class="mb-5 leading-relaxed text-blue-100">{{ dealer.form.note }}</p>

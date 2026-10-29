@@ -33,11 +33,15 @@ function cardImage(src: string): string {
     <a
       :href="links.news(article.slug)"
       class="group flex h-full flex-col text-navy-800 no-underline"
-      :class="variant === 'secondary' ? 'grid grid-cols-[minmax(0,38%)_minmax(0,1fr)] gap-4 max-ph:flex max-ph:flex-col' : ''"
+      :class="variant === 'secondary'
+        ? 'grid grid-cols-[minmax(0,38%)_minmax(0,1fr)] gap-4 max-ph:flex max-ph:flex-col'
+        : (variant === 'grid' ? 'overflow-hidden rounded-btn border border-slate-200/90 bg-white transition-all hover:border-gold-500 hover:shadow-sm' : '')"
     >
       <div
-        class="relative overflow-hidden rounded-chip bg-slate-50"
-        :class="variant === 'secondary' ? 'aspect-video h-full min-h-[150px] max-ph:aspect-video max-ph:h-auto max-ph:min-h-0' : 'aspect-video'"
+        class="relative overflow-hidden bg-slate-50"
+        :class="variant === 'secondary'
+          ? 'aspect-video h-full min-h-[150px] rounded-chip max-ph:aspect-video max-ph:h-auto max-ph:min-h-0'
+          : (variant === 'grid' ? 'aspect-video' : 'aspect-video rounded-chip')"
       >
         <img
           v-if="article.image"
@@ -59,7 +63,7 @@ function cardImage(src: string): string {
         </span>
       </div>
 
-      <div class="flex-1 py-[15px] pb-5" :class="variant === 'secondary' ? 'pt-2' : ''">
+      <div class="flex-1 py-[15px] pb-5" :class="variant === 'secondary' ? 'pt-2' : (variant === 'grid' ? 'p-4' : '')">
         <p v-if="article.date || article.readingMinutes" class="mb-2 flex flex-wrap gap-3.5 text-xs text-slate-500">
           <time v-if="article.date" :datetime="article.date">{{ article.date.split('-').reverse().join('/') }}</time>
           <span v-if="article.readingMinutes">{{ article.readingMinutes }} {{ readLabel }}</span>

@@ -72,19 +72,19 @@ function productHref(product: PublicCatalogProduct) {
   -->
   <div
     v-if="products.length"
-    class="grid grid-cols-2 gap-x-4 gap-y-8 max-ph:gap-x-3 max-ph:gap-y-7 tb:grid-cols-3 nav:grid-cols-4"
+    class="grid grid-cols-2 gap-4 max-ph:gap-3 tb:grid-cols-3 nav:grid-cols-4"
   >
-    <article v-for="product in products" :key="product.id" class="min-w-0">
+    <article v-for="product in products" :key="product.id" class="group flex min-w-0 flex-col rounded-btn border border-slate-200/90 bg-white p-3.5 transition-all hover:border-gold-500 hover:shadow-sm max-ph:p-2.5">
       <NuxtLink
         :external="!isMigrationPreview"
         :to="productHref(product)"
-        class="relative grid aspect-square place-items-center overflow-hidden rounded-chip bg-slate-50 no-underline"
+        class="relative grid aspect-square place-items-center overflow-hidden rounded-chip bg-slate-50/80 p-2 no-underline"
       >
         <img
           v-if="product.media[0] && !failedImages.has(product.id)"
           :src="product.media[0]"
           :alt="product.name"
-          class="h-full w-full object-contain"
+          class="h-full w-full object-contain transition-transform duration-300 group-hover:scale-[1.03]"
           loading="lazy"
           width="640"
           height="640"
@@ -95,23 +95,23 @@ function productHref(product: PublicCatalogProduct) {
 
         <span
           v-if="product.powerWatts"
-          class="absolute left-2 top-2 rounded-chip bg-navy-800 px-2 py-1 text-xs font-bold text-white"
+          class="absolute left-2 top-2 rounded-chip bg-navy-800 px-2 py-0.5 text-[11px] font-extrabold text-gold-300 shadow-xs"
         >
           {{ formatPower(product.powerWatts) }}
         </span>
       </NuxtLink>
 
-      <h3 class="mt-3 mb-1.5 text-[17px] leading-[1.4] max-ph:text-base">
+      <h3 class="mt-3 mb-1.5 line-clamp-2 text-[15.5px] font-bold leading-[1.4] text-navy-800 max-ph:text-sm">
         <NuxtLink
           :external="!isMigrationPreview"
           :to="productHref(product)"
-          class="text-inherit no-underline hover:underline hover:underline-offset-[3px] focus-visible:underline"
+          class="text-inherit no-underline transition-colors group-hover:text-gold-700 focus-visible:underline"
         >
           {{ product.name }}
         </NuxtLink>
       </h3>
 
-      <p v-if="product.pricing?.mode === 'price'" class="m-0 flex items-baseline gap-2 text-base font-bold text-red-600">
+      <p v-if="product.pricing?.mode === 'price'" class="m-0 flex flex-wrap items-baseline gap-2 text-base font-extrabold text-red-600">
         <template v-if="product.pricing.salePrice && product.pricing.regularPrice && product.pricing.salePrice < product.pricing.regularPrice">
           {{ formatMoney(product.pricing.salePrice) }}
           <span class="text-xs font-normal text-slate-400 line-through">{{ formatMoney(product.pricing.regularPrice) }}</span>
@@ -120,13 +120,13 @@ function productHref(product: PublicCatalogProduct) {
           {{ formatMoney(product.pricing.salePrice ?? product.pricing.regularPrice ?? 0) }}
         </template>
       </p>
-      <p v-else class="m-0 text-sm text-slate-500">Liên hệ để nhận báo giá</p>
+      <p v-else class="m-0 text-[13px] font-medium text-slate-500">Liên hệ để nhận báo giá</p>
 
-      <div class="mt-3 grid gap-2">
+      <div class="mt-auto grid gap-2 pt-3">
         <button
           v-if="product.pricing?.mode === 'price'"
           type="button"
-          class="min-h-10 rounded-chip bg-gold-500 px-3 text-sm font-extrabold text-navy-950 transition hover:bg-gold-600 disabled:cursor-wait disabled:opacity-60"
+          class="min-h-10 rounded-chip bg-hdr-gold px-3 text-[13px] font-extrabold text-navy-950 transition-colors hover:bg-hdr-gold-hover disabled:cursor-wait disabled:opacity-60"
           :disabled="addingIds.has(product.id)"
           @click="addToCart(product)"
         >
@@ -135,7 +135,7 @@ function productHref(product: PublicCatalogProduct) {
         <NuxtLink
           :external="!isMigrationPreview"
           :to="productHref(product)"
-          class="inline-grid min-h-10 place-items-center rounded-chip border border-navy-800 px-3 text-sm font-bold text-navy-800 no-underline transition hover:bg-slate-50"
+          class="inline-grid min-h-10 place-items-center rounded-chip border border-navy-800/80 px-3 text-[13px] font-bold text-navy-800 no-underline transition-colors hover:border-navy-800 hover:bg-navy-800 hover:text-white"
         >
           Xem chi tiết
         </NuxtLink>

@@ -45,9 +45,12 @@ usePublicSocialMeta({
 <template>
   <div class="text-navy-800">
     <SiteHeader :site="site" />
-    <main class="mx-auto w-full max-w-[1766px] px-4 pb-12">
-      <SiteBreadcrumb :items="[{ label: 'Giải pháp', to: '/giai-phap/' }, { label: category?.name || 'Danh mục giải pháp' }]" />
-
+    <div class="border-b border-slate-200/70 bg-slate-50/80">
+      <div class="pts-container">
+        <SiteBreadcrumb :items="[{ label: 'Giải pháp', to: '/giai-phap/' }, { label: category?.name || 'Danh mục giải pháp' }]" />
+      </div>
+    </div>
+    <main class="pts-container pb-12">
       <section v-if="error || !solutions || !category" class="min-h-[40vh] py-10" :role="responseStatus === 404 ? 'status' : 'alert'">
         <h1 class="mb-3 text-3xl font-black tracking-tight">{{ responseStatus === 404 ? 'Không tìm thấy danh mục giải pháp' : 'Tạm thời không thể tải danh mục giải pháp' }}</h1>
         <p class="text-slate-600">{{ responseStatus === 404 ? 'Danh mục này hiện không tồn tại hoặc đã ẩn.' : 'Nguồn nội dung hiện không khả dụng.' }}</p>
@@ -55,16 +58,16 @@ usePublicSocialMeta({
 
       <template v-else>
         <header class="my-7 max-w-[980px]">
-          <h1 class="mb-3 text-[clamp(32px,5vw,56px)] font-black leading-tight tracking-tight text-navy-950">{{ category.name }}</h1>
-          <p class="m-0 text-lg leading-relaxed text-slate-600">{{ category.description }}</p>
+          <h1 class="mb-3 text-[clamp(30px,4.2vw,48px)] font-black leading-tight tracking-tight text-navy-950">{{ category.name }}</h1>
+          <p class="m-0 text-base leading-relaxed text-slate-600 tb:text-lg">{{ category.description }}</p>
         </header>
 
-        <nav v-if="category.navigation.length" class="mb-7 flex gap-2 overflow-x-auto py-0.5 [scrollbar-width:none] [&amp;::-webkit-scrollbar]:hidden" aria-label="Danh mục giải pháp">
+        <nav v-if="category.navigation.length" class="mb-7 flex gap-2.5 overflow-x-auto py-1 [scrollbar-width:none] [&amp;::-webkit-scrollbar]:hidden" aria-label="Danh mục giải pháp">
           <NuxtLink
             v-for="item in category.navigation"
             :key="item.id"
-            class="flex min-h-11 flex-none items-center whitespace-nowrap rounded-chip px-[13px] no-underline"
-            :class="item.active ? 'bg-navy-800 text-white' : 'border border-gray-200 text-navy-800 hover:border-gold-700'"
+            class="flex min-h-11 flex-none items-center whitespace-nowrap rounded-chip border px-4 text-[13px] font-bold no-underline transition-colors"
+            :class="item.active ? 'border-navy-800 bg-navy-800 text-gold-300 shadow-xs' : 'border-slate-200 bg-white text-navy-800 hover:border-gold-500 hover:text-gold-700'"
             :to="links.generic(item.url)"
             :aria-current="item.active ? 'page' : undefined"
           >{{ item.name }}</NuxtLink>

@@ -40,23 +40,19 @@ const links = useMigrationLinks()
     <SiteHeader :site="site" />
 
     <main>
-      <!--
-        Breadcrumb trên ảnh production có thêm cấp danh mục ("Dự án đã thực
-        hiện > Cá nhân > ..."), nằm trên nền trắng, TÁCH khỏi dải xám full-bleed
-        của ProjectDetailPage (đo pixel xác nhận dải xám kéo hết x=0..1920,
-        không chung khối với breadcrumb).
-      -->
-      <div class="mx-auto w-full max-w-[1766px] px-4">
-        <SiteBreadcrumb
-          :items="[
-            { label: 'Dự án đã thực hiện', to: links.generic('/du-an-da-thuc-hien/') },
-            ...(payload?.project.category ? [{ label: payload.project.category.name }] : []),
-            ...(payload ? [{ label: payload.project.title }] : []),
-          ]"
-        />
+      <div class="border-b border-slate-200/70 bg-slate-50/80">
+        <div class="pts-container">
+          <SiteBreadcrumb
+            :items="[
+              { label: 'Dự án đã thực hiện', to: links.generic('/du-an-da-thuc-hien/') },
+              ...(payload?.project.category ? [{ label: payload.project.category.name }] : []),
+              ...(payload ? [{ label: payload.project.title }] : []),
+            ]"
+          />
+        </div>
       </div>
 
-      <div v-if="error || !payload" class="mx-auto min-h-[45vh] w-full max-w-[1766px] px-4 py-12" role="status">
+      <div v-if="error || !payload" class="pts-container min-h-[45vh] py-12" role="status">
         <h1 class="mb-3 text-3xl font-black tracking-tight">{{ isBarePublicRoute && responseStatus === 404 ? 'Không tìm thấy dự án' : (isBarePublicRoute ? 'Không thể tải dự án' : 'Project detail preview') }}</h1>
         <p class="text-slate-500">{{ isBarePublicRoute ? 'Nội dung dự án hiện không khả dụng.' : 'Không thể tải dự án CMS hoặc slug chưa hợp lệ. Preview không hiển thị dữ liệu dự án giả.' }}</p>
       </div>

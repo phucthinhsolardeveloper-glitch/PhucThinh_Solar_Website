@@ -47,16 +47,18 @@ usePublicSocialMeta({
     <SiteHeader :site="site" />
 
     <main>
-      <div class="mx-auto w-full max-w-[1766px] px-4">
-        <SiteBreadcrumb :items="breadcrumbItems" />
+      <div class="border-b border-slate-200/70 bg-slate-50/80">
+        <div class="pts-container">
+          <SiteBreadcrumb :items="breadcrumbItems" />
+        </div>
       </div>
 
-      <div v-if="pending" class="mx-auto min-h-[45vh] w-full max-w-[1766px] px-4 pt-12 pb-20" role="status" aria-live="polite">
+      <div v-if="pending" class="pts-container min-h-[45vh] pt-12 pb-20" role="status" aria-live="polite">
         <h1 class="mb-3 text-3xl font-black tracking-tight">Đang tải sản phẩm…</h1>
         <p class="text-slate-500">Đang lấy dữ liệu sản phẩm từ CMS.</p>
       </div>
 
-      <div v-else-if="error || !product" class="mx-auto min-h-[45vh] w-full max-w-[1766px] px-4 pt-12 pb-20" role="status">
+      <div v-else-if="error || !product" class="pts-container min-h-[45vh] pt-12 pb-20" role="status">
         <h1 class="mb-3 text-3xl font-black tracking-tight">Sản phẩm</h1>
         <p class="text-slate-500">Không thể tải sản phẩm hoặc slug chưa hợp lệ.</p>
       </div>

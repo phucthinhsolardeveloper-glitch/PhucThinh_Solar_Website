@@ -69,7 +69,7 @@ usePublicSocialMeta({
         </header>
         <section v-if="data.content.html" class="max-w-[1080px]" aria-label="Nội dung chính sách">
           <div class="grid gap-8" :class="editorial.toc.length ? 'nav:grid-cols-[220px_minmax(0,1fr)]' : ''">
-            <nav v-if="editorial.toc.length" class="h-fit rounded-btn border border-gray-200 p-4 nav:sticky nav:top-4" aria-label="Mục lục nội dung chính sách">
+            <nav v-if="editorial.toc.length" class="h-fit rounded-btn border border-slate-200/90 bg-slate-50/50 p-4 nav:sticky nav:top-24" aria-label="Mục lục nội dung chính sách">
               <strong class="mb-3 block text-sm text-navy-800">Nội dung bài viết</strong>
               <ul class="m-0 list-none space-y-1 p-0">
                 <li v-for="item in editorial.toc" :key="item.id" :class="item.level === 3 ? 'pl-3' : ''">
