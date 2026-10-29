@@ -49,9 +49,19 @@ Không có binary Lighthouse trong project; chỉ có Playwright Chromium. Vì v
 
 Accessibility hit target và H1 đã đạt ở các viewport đã đo. SEO chưa đạt đầy đủ vì catalog canonical thiếu. Media console 404 vẫn còn. Release gate vẫn **NO-GO** cho đến khi catalog canonical, media edge và CWV được xác minh.
 
-## Follow-up sau remediation
+## Rerun trên HEAD `8fbacd0` — fresh build
 
-- Đã thêm canonical SSR cho `frontend/app/pages/san-pham/index.vue` và assertion trong `tests/public-functional-surface.test.mjs`.
-- Build mới được khởi động bằng Nitro tại `127.0.0.1:3135`; `GET /san-pham/` trả HTTP **200**, H1 `Sản phẩm năng lượng mặt trời`, và SSR chứa canonical `/san-pham/`.
-- Kết quả này xác nhận lỗi canonical đã được sửa ở artifact build. Console `Preview media not found` khi chạy direct Nitro không có PHP/media mount vẫn còn là giới hạn môi trường; smoke qua Caddy với upload fixture thật đã PASS ở evidence riêng.
+Đã chạy lại `npm run build` (Nitro build complete, exit 0) và khởi động artifact mới tại `127.0.0.1:3135`. Playwright Chromium chạy lại 390×900 và 1440×900 cho `/`, `/san-pham/`, `/tin-tuc/`.
+
+### Kết quả rerun
+
+- `/san-pham/` hiện có canonical ở cả hai viewport: `http://127.0.0.1:3135/san-pham/`.
+- `/`, `/san-pham/`, `/tin-tuc/`: HTTP 200; title/H1 đúng; `robots=index, follow`.
+- Home mobile menu/search/cart: 44×44; desktop search/cart: 48×48; không hồi quy H1 accessible name.
+- `migration-about-preview` và `migration-home-preview`: meta robots + `X-Robots-Tag: noindex, nofollow, noarchive`.
+- Console media lỗi vẫn tồn tại trên fresh build: Home 8–9 lỗi, catalog 13/19 lỗi, news 14/15 lỗi tùy viewport; tất cả là `Preview media not found`.
+- Không ghi nhận console error ngoài nhóm media 404.
+
+Canonical catalog đã **PASS** sau fix `8fbacd0`. Media mapping/edge và CWV vẫn **BLOCKED/NO-GO**.
+
 
