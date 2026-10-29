@@ -52,5 +52,7 @@ test('home SEO keeps a non-empty description when CMS metadata is blank', () => 
 test('catalog and news image surfaces declare intrinsic dimensions for stable layout', () => {
   assert.match(read('app/components/catalog/CatalogProductGrid.vue'), /width="640"[\s\S]*height="640"[\s\S]*sizes=/)
   assert.match(read('app/components/catalog/CatalogPage.vue'), /categoryHero\.image[\s\S]*width="1600"[\s\S]*height="500"/)
-  assert.match(read('app/components/news/NewsCard.vue'), /width="760"[\s\S]*height="428"[\s\S]*sizes=/)
+  const newsCard = read('app/components/news/NewsCard.vue')
+  assert.match(newsCard, /width="760"[\s\S]*height="428"[\s\S]*sizes=/)
+  assert.match(newsCard, /thumbs\/760x428x1\$\{src\}/)
 })
