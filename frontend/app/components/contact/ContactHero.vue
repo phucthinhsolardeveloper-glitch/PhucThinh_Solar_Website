@@ -1,8 +1,11 @@
 <script setup lang="ts">
+import { publicEmailHref, publicPhoneHref } from '#shared/contact-links'
 import type { PublicContactPayload } from '#shared/contracts/public-contact'
 
-defineProps<{ contact: PublicContactPayload }>()
+const props = defineProps<{ contact: PublicContactPayload }>()
 const links = useMigrationLinks()
+const emailHref = computed(() => publicEmailHref(props.contact.contact.email))
+const phoneHref = computed(() => publicPhoneHref(props.contact.contact.hotline))
 </script>
 
 <template>
@@ -16,12 +19,12 @@ const links = useMigrationLinks()
     var(--contact-blue)); --contact-blue:#123c72 ~ navy-700 #123a7a, lệch 2
     đơn vị hex — cùng một token, không phải màu khác).
   -->
-  <section class="grid grid-cols-1 items-center gap-8 py-8 nav:grid-cols-[1.3fr_0.7fr] nav:gap-[clamp(24px,5vw,80px)] nav:py-16" aria-labelledby="contact-preview-title">
+  <section class="-mx-4 grid grid-cols-1 items-start gap-0 py-0 nav:mx-0 nav:grid-cols-[1.3fr_0.7fr] nav:gap-[clamp(24px,5vw,80px)] nav:py-16" aria-labelledby="contact-preview-title">
     <div v-if="contact.visual" class="relative min-w-0">
       <img
         :src="contact.visual.image"
         :alt="contact.visual.name"
-        class="block aspect-[8/5] w-full rounded-chip object-cover"
+        class="block aspect-[8/5] w-full object-cover nav:rounded-chip"
         width="1400"
         height="875"
       >
@@ -46,20 +49,32 @@ const links = useMigrationLinks()
       </span>
     </div>
 
-    <div class="flex min-w-0 flex-col rounded-chip bg-[linear-gradient(145deg,var(--color-navy-950),var(--color-navy-700))] p-8 text-white nav:p-12">
-      <h1 id="contact-preview-title" class="m-0 mb-5 text-[clamp(32px,4vw,56px)] font-black leading-[1.1]">
+    <div class="flex min-w-0 flex-col bg-[linear-gradient(145deg,var(--color-navy-950),var(--color-navy-700))] p-5 text-white nav:rounded-chip nav:p-10">
+      <h1 id="contact-preview-title" class="m-0 mb-5 text-[clamp(32px,3vw,44px)] font-black leading-[1.1]">
         {{ contact.visual?.name || contact.title }}
       </h1>
       <p v-if="contact.visual?.description" class="m-0 mb-4 text-lg leading-relaxed text-blue-100">
         {{ contact.visual.description }}
       </p>
       <p v-if="contact.contact.company" class="m-0 mb-4 font-bold text-blue-100">{{ contact.contact.company }}</p>
+      <ul class="mb-5 mt-0 grid list-none gap-2 p-0 text-sm leading-relaxed text-blue-100">
+        <li v-if="contact.contact.hotline">
+          <a v-if="phoneHref" class="text-inherit underline-offset-2 hover:underline" :href="phoneHref">Hotline: <strong>{{ contact.contact.hotline }}</strong></a>
+          <span v-else>Hotline: <strong>{{ contact.contact.hotline }}</strong></span>
+        </li>
+        <li v-if="contact.contact.email">
+          <a v-if="emailHref" class="text-inherit underline-offset-2 hover:underline" :href="emailHref">Email: <strong>{{ contact.contact.email }}</strong></a>
+          <span v-else>Email: <strong>{{ contact.contact.email }}</strong></span>
+        </li>
+        <li v-if="contact.contact.workingHours">Thời gian làm việc: <strong>{{ contact.contact.workingHours }}</strong></li>
+      </ul>
       <a
+        v-if="contact.visual?.href"
         class="mt-2 inline-flex items-center gap-2.5 self-start rounded-chip bg-hdr-gold px-4 py-3 font-bold
                text-navy-950 no-underline transition-colors hover:bg-hdr-gold-hover"
-        :href="links.generic('/lien-he/#yeu-cau-tu-van')"
+        :href="links.generic(contact.visual.href)"
       >
-        {{ contact.labels.formCta }} <span aria-hidden="true">→</span>
+        Gửi yêu cầu tư vấn <span aria-hidden="true">→</span>
       </a>
     </div>
   </section>

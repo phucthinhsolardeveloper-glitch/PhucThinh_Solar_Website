@@ -12,6 +12,7 @@ export default defineEventHandler(async (event) => {
     validate: isPublicProductDetailPayload,
     invalidMessage: 'Invalid PHP product detail data contract',
     unavailableMessage: 'PHP product detail data source unavailable',
+    passThroughStatuses: [404],
   })
   setHeader(event, 'Cache-Control', 'private, no-store')
   return payload

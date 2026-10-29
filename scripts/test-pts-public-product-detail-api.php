@@ -26,6 +26,11 @@ $documents = ptsPdpDocumentsDto(array(
     array('document_type'=>'other','title'=>'HTTP','file_path'=>'http://docs.example.com/file.pdf')
 ));
 $payload = ptsPdpPayload($row, array('/upload/product/real.webp','/upload/product/real.webp'), ptsPdpSpecDto($row), 'san-pham/den-that', array('product'=>'publicProductEntityPath(product)'), true, $content, $documents);
+pdpAssert($payload['seo'] === array('title'=>'Đèn thật | Phúc Thịnh Solar','description'=>'','keywords'=>''), 'PDP SEO fallback uses product name and legacy brand suffix');
+$seoPayload = ptsPdpPayload($row, array(), ptsPdpSpecDto($row), 'san-pham/den-that', array(), true, array(), array(), array(), array('titlevi'=>'<b>Đèn thật | Phúc Thịnh Solar</b>','descriptionvi'=>'<p>Mô tả SEO thật</p>','keywordsvi'=>'đèn, năng lượng mặt trời'));
+pdpAssert($seoPayload['seo'] === array('title'=>'Đèn thật | Phúc Thịnh Solar','description'=>'Mô tả SEO thật','keywords'=>'đèn, năng lượng mặt trời'), 'PDP Admin SEO is sanitized and allow-listed');
+$brandedSeoPayload = ptsPdpPayload($row, array(), ptsPdpSpecDto($row), 'san-pham/den-that', array(), true, array(), array(), array(), array('titlevi'=>'Đèn chuyên dụng | Phúc Thịnh So'));
+pdpAssert($brandedSeoPayload['seo']['title'] === 'Đèn chuyên dụng | Phúc Thịnh So', 'PDP title keeps legacy partial brand marker without duplicating suffix');
 pdpAssert($payload['product']['url'] === '/san-pham/den-that', 'canonical product URL has no trailing slash (matches publicProductEntityPath/legacy router)');
 pdpAssert($payload['canonical']['url'] === '/san-pham/den-that', 'canonical.url mirrors product.url, no forced trailing slash');
 pdpAssert($payload['product']['name'] === 'Đèn thật' && $payload['product']['summary'] === 'Mô tả thật', 'plain text product fields');
@@ -38,6 +43,24 @@ pdpAssert(count($payload['content']['faqs']) === 1 && $payload['content']['faqs'
 pdpAssert(strpos(json_encode($payload['content']), 'Không thuộc PDP') === false, 'category-only cards block is omitted from PDP DTO');
 pdpAssert(count($payload['documents']) === 2 && $payload['documents'][0]['url'] === '/upload/product-documents/model.pdf', 'only allowlisted local/HTTPS product documents are exposed');
 pdpAssert($payload['documents'][1]['url'] === 'https://docs.example.com/model.docx', 'HTTPS public product document is preserved');
+$applicationSections = array('source'=>'product','blocks'=>array(
+    array('type'=>'heading','text'=>'Tổng quan sản phẩm'),
+    array('type'=>'text','text'=>'Mô tả CMS'),
+    array('type'=>'heading','text'=>'Ứng dụng phù hợp'),
+    array('type'=>'list','ordered'=>false,'items'=>array('Sân vườn, lối đi hoặc khu vực cảnh quan.','Nhà ở, biệt thự và công trình phù hợp.')),
+    array('type'=>'heading','text'=>'Lưu ý khi lựa chọn'),
+    array('type'=>'list','ordered'=>false,'items'=>array('Kiểm tra model và điều kiện lắp đặt.'))
+));
+$applicationRow = array_merge($row, array('resolved_profile'=>'lighting','light_source'=>'LED','warranty'=>'24'));
+$applications = ptsPdpApplicationsDto($applicationSections, $applicationRow);
+$applicationContent = ptsPdpContentDto($applicationSections, '', !empty($applications));
+$buyingGuides = ptsPdpBuyingGuidesDto($applicationRow);
+pdpAssert($applications['title'] === 'Phù hợp với nhu cầu của bạn' && count($applications['items']) === 2, 'CMS application list is exposed as PDP application cards');
+pdpAssert($applications['items'][0]['title'] === 'Sân vườn' && $applications['items'][0]['image'] === '', 'application card uses CMS text and does not invent an image');
+pdpAssert(strpos(json_encode($applicationContent), 'Ứng dụng phù hợp') === false && strpos(json_encode($applicationContent), 'Lưu ý khi lựa chọn') !== false, 'application section is removed from description without dropping later content');
+pdpAssert(count($buyingGuides) === 2 && $buyingGuides[0] === array('key'=>'light_source','label'=>'Nguồn sáng','value'=>'LED'), 'buying guide contains only real non-metric profile values');
+$applicationMedia = ptsPdpApplicationsDto(array('blocks'=>array(array('type'=>'heading','text'=>'Ứng dụng'),array('type'=>'media','photo'=>'../private.jpg','title'=>'Cảnh quan','text'=>'Mô tả'))), $applicationRow);
+pdpAssert($applicationMedia['items'][0]['image'] === '', 'unsafe CMS application image is dropped');
 $quoteRow = $row; $quoteRow['status'] = 'hienthi,baogia';
 $quotePayload = ptsPdpPayload($quoteRow, array(), ptsPdpSpecDto($quoteRow), 'san-pham/den-that', array('product'=>'publicProductEntityPath(product)'), true, ptsPdpContentDto(array()));
 pdpAssert($quotePayload['pricing'] === array('mode'=>'quote','currency'=>'VND','regularPrice'=>null,'salePrice'=>null), 'baogia status forces quote mode even with pricesVisible=true');

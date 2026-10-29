@@ -9,7 +9,8 @@ const props = defineProps<{
   selectedCategory: string
   filters: NonNullable<PublicCatalogPayload['filters']>
   selected: NonNullable<PublicCatalogPayload['selected']>
-  filterLink: (overrides: { subcategory?: string; brand?: string; price?: string }) => RouteLocationRaw
+  keyword: string
+  filterLink: (overrides: { subcategory?: string; brand?: string; price?: string; need?: string; keyword?: string }) => RouteLocationRaw
 }>()
 
 function toggledIds(list: number[], id: number): string {
@@ -21,14 +22,10 @@ function toggledKeys(list: string[], key: string): string {
   return next.join(',')
 }
 
-const hasAnyOption = computed(() => props.filters.subcategories.length > 0 || props.filters.brands.length > 0 || props.filters.priceRanges.length > 0)
+const hasAnyOption = computed(() => props.filters.subcategories.length > 0 || props.filters.brands.length > 0 || props.filters.priceRanges.length > 0 || (props.filters.needs?.length ?? 0) > 0)
 const hasCategories = computed(() => props.categories.length > 0)
-const categoriesExpanded = ref(Boolean(props.selectedCategory))
-const hasActiveFilter = computed(() => props.selected.subcategoryIds.length > 0 || props.selected.brandIds.length > 0 || props.selected.priceKeys.length > 0)
-
-watch(() => props.selectedCategory, (selectedCategory) => {
-  if (selectedCategory) categoriesExpanded.value = true
-})
+const categoriesExpanded = ref(false)
+const hasActiveFilter = computed(() => props.keyword !== '' || props.selected.subcategoryIds.length > 0 || props.selected.brandIds.length > 0 || props.selected.priceKeys.length > 0 || (props.selected.needKeys?.length ?? 0) > 0)
 </script>
 
 <template>
@@ -45,7 +42,7 @@ watch(() => props.selectedCategory, (selectedCategory) => {
         aria-controls="catalog-filter-category-list"
         @click="categoriesExpanded = !categoriesExpanded"
       >
-        <span>{{ selectedCategory ? 'Danh mục đang chọn' : 'Chọn danh mục' }}</span>
+        <span>{{ categoriesExpanded ? 'Ẩn danh mục' : (selectedCategory ? 'Mở danh sách danh mục' : 'Chọn danh mục') }}</span>
         <svg class="h-5 w-5 fill-none stroke-current stroke-2" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5" /></svg>
       </button>
       <ul
@@ -89,6 +86,29 @@ watch(() => props.selectedCategory, (selectedCategory) => {
               <svg v-if="selected.subcategoryIds.includes(item.id)" class="h-3 w-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7" /></svg>
             </span>
             {{ item.name }}
+          </NuxtLink>
+        </li>
+      </ul>
+      <hr class="mb-4 border-slate-200">
+    </template>
+
+    <template v-if="filters.needs?.length">
+      <h3 class="m-0 mb-3 text-sm font-bold text-navy-950">Nhu cầu sử dụng</h3>
+      <ul class="m-0 mb-4 list-none p-0">
+        <li v-for="item in filters.needs" :key="item.key" class="mb-2.5">
+          <NuxtLink
+            class="flex items-center gap-2.5 text-[#20344b] no-underline hover:text-navy-950"
+            :to="filterLink({ need: toggledKeys(selected.needKeys ?? [], item.key) })"
+            :aria-current="(selected.needKeys ?? []).includes(item.key) ? 'true' : undefined"
+          >
+            <span
+              class="grid h-[18px] w-[18px] flex-none place-items-center rounded-[3px] border-[1.5px] border-navy-950"
+              :class="(selected.needKeys ?? []).includes(item.key) ? 'bg-navy-950' : 'bg-white'"
+              aria-hidden="true"
+            >
+              <svg v-if="(selected.needKeys ?? []).includes(item.key)" class="h-3 w-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7" /></svg>
+            </span>
+            {{ item.label }}
           </NuxtLink>
         </li>
       </ul>
@@ -141,7 +161,7 @@ watch(() => props.selectedCategory, (selectedCategory) => {
     <NuxtLink
       v-if="hasActiveFilter"
       class="flex items-center gap-1.5 text-sm text-[#20344b] underline underline-offset-2 hover:text-navy-950"
-      :to="filterLink({ subcategory: '', brand: '', price: '' })"
+      :to="filterLink({ subcategory: '', brand: '', price: '', need: '', keyword: '' })"
     >
       <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5" /></svg>
       Xóa bộ lọc

@@ -44,6 +44,13 @@ function ptsPublicSolutionsHotline($hotline)
     );
 }
 
+function ptsPublicSolutionsSlug($value)
+{
+    if(!is_scalar($value)) return '';
+    $value = trim((string)$value, " /\t\n\r\0\x0B");
+    return preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', $value) ? $value : '';
+}
+
 
 function ptsPublicSolutionsEditorialToc($html)
 {
@@ -68,6 +75,63 @@ function ptsPublicSolutionsEditorialToc($html)
         'toc'=>$items
             ? array('rendered'=>true,'items'=>$items)
             : array('rendered'=>false,'reason'=>'no_editorial_headings')
+    );
+}
+
+function ptsPublicSolutionCategoryDto(array $group, array $groups, array $solutionRows)
+{
+    $id = isset($group['id']) ? (int)$group['id'] : 0;
+    $slug = ptsPublicSolutionsSlug(isset($group['slugvi']) ? $group['slugvi'] : '');
+    $name = solutionHubText(isset($group['namevi']) ? $group['namevi'] : '');
+    if($id <= 0 || $slug === '' || $name === '') return null;
+
+    $cards = array();
+    foreach(solutionHubSelect($solutionRows) as $row)
+    {
+        if(!is_array($row) || (int)(isset($row['id_list']) ? $row['id_list'] : 0) !== $id) continue;
+        $itemSlug = ptsPublicSolutionsSlug(solutionHubField($row, 'slug', 'vi'));
+        if($itemSlug === '') continue;
+        $cards[] = array(
+            'title' => solutionHubField($row, 'name', 'vi'),
+            'description' => solutionHubField($row, 'desc', 'vi'),
+            'slug' => $itemSlug,
+            'url' => '/giai-phap/'.$itemSlug.'/',
+            'image' => ptsPublicSolutionsPath(isset($row['_pts_public_photo']) ? $row['_pts_public_photo'] : ''),
+            'actionLabel' => 'Xem giải pháp'
+        );
+    }
+    if(!$cards) return null;
+
+    $navigation = array();
+    $featuredRows = solutionHubSelect($solutionRows, 'solutionhub');
+    foreach($groups as $navGroup)
+    {
+        if(!is_array($navGroup)) continue;
+        $navSlug = ptsPublicSolutionsSlug(isset($navGroup['slugvi']) ? $navGroup['slugvi'] : '');
+        $navId = isset($navGroup['id']) ? (int)$navGroup['id'] : 0;
+        $navName = solutionHubText(isset($navGroup['namevi']) ? $navGroup['namevi'] : '');
+        if($navId <= 0 || $navSlug === '' || $navName === '') continue;
+        $url = '/danh-muc-giai-phap/'.$navSlug.'/';
+        foreach($featuredRows as $featuredRow)
+        {
+            if(!is_array($featuredRow) || (int)(isset($featuredRow['id_list']) ? $featuredRow['id_list'] : 0) !== $navId) continue;
+            $representativeSlug = ptsPublicSolutionsSlug(solutionHubField($featuredRow, 'slug', 'vi'));
+            if($representativeSlug !== '') $url = '/giai-phap/'.$representativeSlug.'/';
+            break;
+        }
+        $navigation[] = array('id'=>$navId, 'name'=>$navName, 'slug'=>$navSlug, 'url'=>$url, 'active'=>$navId === $id);
+    }
+
+    $description = solutionHubText(isset($group['descvi']) ? $group['descvi'] : '');
+    if($description === '') $description = 'Khám phá các giải pháp phù hợp với nhu cầu thực tế và quy mô công trình của bạn.';
+    return array(
+        'id' => $id,
+        'name' => $name,
+        'description' => $description,
+        'slug' => $slug,
+        'canonicalPath' => '/'.$slug,
+        'cards' => $cards,
+        'navigation' => $navigation
     );
 }
 
@@ -171,6 +235,7 @@ function ptsPublicSolutionsPayload(array $solutionRows, array $introRows, array 
         'locale' => 'vi',
         'path' => '/giai-phap/',
         'title' => $title,
+        'category' => null,
         'intro' => $intro,
         'cards' => $cards,
         'equipment' => $equipment,

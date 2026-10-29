@@ -9,7 +9,9 @@ test('news category links use preview paths in migration and canonical paths oth
   assert.match(source, /useMigrationLinks\(\)/)
   assert.match(source, /isMigrationPreview\.value \? '\/migration-news-preview\/' : '\/tin-tuc\/'/)
   assert.match(source, /:href="`\$\{filtersPath\}\$\{queryString\}`"/)
-  assert.match(source, /category=\$\{encodeURIComponent\(category\.slug\)\}/)
+  assert.match(source, /return `\$\{category\.canonicalPath\}\$\{queryString\.value\}`/)
+  assert.match(source, /params\.set\('category', category\.slug\)/)
+  assert.match(source, /return `\$\{filtersPath\.value\}\?\$\{params\.toString\(\)\}`/)
 })
 
 test('project category links remain inside preview and are public-ready', () => {

@@ -16,18 +16,6 @@ function telHrefFor(value: string): string {
   return `tel:${value.replace(/[^+\d]/g, '')}`
 }
 
-/**
- * `contactText` là một khối văn bản tự do từ CMS (địa chỉ, email, website, giờ
- * làm việc nằm chung). Bản PHP render nó thành nhiều thẻ <p> rời.
- * Tách theo dòng để giữ đúng nhịp đọc đó thay vì đổ ra một đoạn dính liền.
- */
-const contactLines = computed(() =>
-  (footer.value?.contactText ?? '')
-    .split(/\r?\n/)
-    .map((line) => line.trim())
-    .filter(Boolean),
-)
-
 const telHref = computed(() => telHrefFor(hotline.value))
 </script>
 
@@ -43,7 +31,7 @@ const telHref = computed(() => telHrefFor(hotline.value))
       cột 3 tự chia  1fr 1fr, gap 22px
   -->
   <footer class="bg-navy-950 pb-7 text-ftr-text">
-    <div class="mx-auto grid w-full max-w-(--container-page) gap-[30px] px-(--spacing-gutter) pt-12
+    <div class="mx-auto grid w-full max-w-(--container-page) gap-[30px] px-4 max-[359px]:px-3 tb:px-(--spacing-gutter) pt-12
                 grid-cols-1
                 tb:grid-cols-[180px_minmax(280px,1fr)]
                 nav:grid-cols-[180px_minmax(280px,1fr)_minmax(460px,1.3fr)]
@@ -64,16 +52,10 @@ const telHref = computed(() => telHrefFor(hotline.value))
       <!-- Cột 2: thông tin pháp lý và hai đường dây nóng. -->
       <div>
         <h2 class="mb-[15px] border-b border-white/12 pb-[10px] text-[16px] font-extrabold uppercase tracking-[.02em] text-gold-400">
-          Thông tin doanh nghiệp
+          {{ footer?.companyName || 'Thông tin doanh nghiệp' }}
         </h2>
 
-        <p v-if="footer?.companyName" class="text-[17px] font-black leading-[1.48] text-white">
-          {{ footer.companyName }}
-        </p>
-
-        <div v-if="contactLines.length" class="mt-4 text-[16px] leading-[1.78]">
-          <p v-for="line in contactLines" :key="line" class="mb-2 last:mb-0">{{ line }}</p>
-        </div>
+        <EditorialRichText v-if="footer?.contactText?.html" :content="footer.contactText" class="cms-content-on-dark mt-4 text-[15px] leading-[1.65]" />
 
         <!--
           Ảnh production có HAI ô: "Tư vấn bán hàng" (brand.hotline) và "Hỗ trợ
@@ -121,7 +103,7 @@ const telHref = computed(() => telHrefFor(hotline.value))
             <li v-for="policy in footer.policies" :key="policy.href">
               <NuxtLink
                 :external="isExternalLink(footerHref(policy.href))"
-                class="block py-1 text-[13px] leading-[1.7] transition-colors hover:text-gold-400"
+                class="flex min-h-11 items-center py-1 text-[15px] leading-[1.7] transition-colors hover:text-gold-400 min-[1600px]:text-[17px]"
                 :to="footerHref(policy.href)"
               >
                 {{ policy.label }}
@@ -135,7 +117,7 @@ const telHref = computed(() => telHrefFor(hotline.value))
           -->
           <a
             v-if="footer?.trustBadge"
-            class="mt-[18px] block max-w-[130px]"
+            class="mt-[18px] inline-flex min-h-11 items-center max-w-[130px]"
             :href="footer.trustBadge.href"
             target="_blank"
             rel="noopener noreferrer"
@@ -147,7 +129,7 @@ const telHref = computed(() => telHrefFor(hotline.value))
             <ul class="flex flex-wrap gap-x-4 gap-y-1">
               <li v-for="social in footer.socialLinks" :key="social.href">
                 <a
-                  class="text-[13px] leading-[1.7] transition-colors hover:text-gold-400"
+                  class="inline-flex min-h-11 items-center text-[15px] leading-[1.7] transition-colors hover:text-gold-400"
                   :href="social.href"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -194,7 +176,7 @@ const telHref = computed(() => telHrefFor(hotline.value))
       đường kẻ mảnh để không bị đọc nhầm là một cột nữa.
     -->
     <div class="mt-10 border-t border-white/10 pt-5">
-      <div class="mx-auto w-full max-w-(--container-page) px-(--spacing-gutter) text-[13px]">
+      <div class="mx-auto w-full max-w-(--container-page) px-4 max-[359px]:px-3 tb:px-(--spacing-gutter) text-[13px]">
         © {{ new Date().getFullYear() }} {{ brandName }}
       </div>
     </div>

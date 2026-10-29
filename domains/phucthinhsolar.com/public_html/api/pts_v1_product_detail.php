@@ -44,6 +44,7 @@ try {
     $fields = array_values(array_unique(array_merge($fields, $specFields)));
     $row = $d->rawQueryOne('select '.implode(',', $fields).' from #_product where slugvi = ? and type = ? and find_in_set(\'hienthi\',status) limit 1', array($slug, 'san-pham'));
     if(empty($row)) ptsPdpError(404, 'PRODUCT_NOT_FOUND');
+    $seoRow = $d->rawQueryOne('select titlevi,descriptionvi,keywordsvi from #_seo where id_parent = ? and com = ? and act = ? and type = ? limit 1', array((int)$row['id'], 'product', 'man', $row['type']));
     $list = $d->rawQueryOne('select id,slugvi,pdp_profile from #_product_list where id = ? and type = ? and find_in_set(\'hienthi\',status) limit 1', array((int)$row['id_list'], 'san-pham'));
     $row['list_slugvi'] = isset($list['slugvi']) ? $list['slugvi'] : '';
     $row['list_pdp_profile'] = isset($list['pdp_profile']) ? $list['pdp_profile'] : '';
@@ -57,9 +58,12 @@ try {
     /* Dùng đúng resolver kế thừa của PDP legacy: product -> brand/cat/list,
        gồm mode own/both/hide/inherit và inherit_source. Chỉ đọc DB. */
     $resolvedSections = productResolveSections($d, $row, 'vi');
-    $content = ptsPdpContentDto($resolvedSections, ROOT);
+    $applications = ptsPdpApplicationsDto($resolvedSections, $row, $list ?: array(), ROOT);
+    $content = ptsPdpContentDto($resolvedSections, ROOT, !empty($applications));
+    $buyingGuides = ptsPdpBuyingGuidesDto($row, $list ?: array());
     $documentRows = $d->rawQuery("select document_type,titlevi as title,file_path from #_product_document where id_product=? and find_in_set('hienthi',status) and file_path<>'' order by numb,id", array((int)$row['id']));
     $documents = ptsPdpDocumentsDto((array)$documentRows, ROOT);
-    $payload = ptsPdpPayload($row, $media, ptsPdpSpecDto($row), $canonical, array('product' => 'publicProductEntityPath(product)', 'routeResolver' => 'public_route_resolver.php', 'categoryUrls' => 'product_category_urls.php'), publicProductPricesVisible(), $content, $documents);
+    $breadcrumbs = ptsPdpBreadcrumbDto($d, $row);
+    $payload = ptsPdpPayload($row, $media, ptsPdpSpecDto($row), $canonical, array('product' => 'publicProductEntityPath(product)', 'routeResolver' => 'public_route_resolver.php', 'categoryUrls' => 'product_category_urls.php'), publicProductPricesVisible(), $content, $documents, $breadcrumbs, is_array($seoRow) ? $seoRow : array(), $applications, $buyingGuides);
     echo json_encode($payload, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR);
 } catch(Throwable $e) { error_log('pts_v1_product_detail: '.$e->getMessage()); http_response_code(500); echo '{"error":{"code":"INTERNAL_ERROR"}}'; }

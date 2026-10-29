@@ -6,17 +6,17 @@ const links = useMigrationLinks()
 </script>
 
 <template>
-  <section v-if="equipment.length" class="rounded-btn bg-slate-50 px-[26px] py-[27px]" aria-labelledby="solutions-equipment-title">
+  <section v-if="equipment.length" class="py-8" aria-labelledby="solutions-equipment-title">
     <header class="mb-[22px] flex flex-col items-start gap-4 tb:flex-row tb:items-end tb:justify-between tb:gap-6">
       <h2 id="solutions-equipment-title" class="m-0 text-[28px] font-black leading-[1.25] text-navy-800">{{ title }}</h2>
-      <a class="font-extrabold text-navy-800 no-underline" :href="links.generic(allProductsUrl)">{{ allProductsLabel }} <span aria-hidden="true">→</span></a>
+      <a class="inline-flex min-h-11 items-center font-extrabold text-navy-800 no-underline" :href="links.generic(allProductsUrl)">{{ allProductsLabel }} <span aria-hidden="true">→</span></a>
     </header>
 
-    <div class="grid grid-cols-1 gap-2.5 tb:grid-cols-2 nav:grid-cols-4">
+    <div class="grid grid-cols-1 gap-x-6 gap-y-3 tb:grid-cols-2 nav:grid-cols-4">
       <a
         v-for="item in equipment"
         :key="item.url"
-        class="flex min-w-0 items-center gap-3 border border-gray-200 bg-white px-[13px] py-4 text-navy-800 no-underline"
+        class="group flex min-w-0 items-center gap-3 py-3 text-navy-800 no-underline hover:text-gold-700"
         :href="links.generic(item.url)"
       >
         <img v-if="item.image" :src="item.image" alt="" class="h-[72px] w-16 flex-none object-contain" width="80" height="80" loading="lazy" decoding="async">

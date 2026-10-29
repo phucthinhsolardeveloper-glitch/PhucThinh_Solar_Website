@@ -16,6 +16,23 @@ header('Content-Type: application/json; charset=UTF-8');
 header('X-Content-Type-Options: nosniff');
 header('Cache-Control: private, no-store');
 
+foreach(array_keys($_GET) as $queryKey)
+{
+    if($queryKey !== 'category')
+    {
+        http_response_code(400);
+        echo '{"error":{"code":"BAD_QUERY"}}';
+        exit;
+    }
+}
+if(isset($_GET['category']) && (!is_string($_GET['category']) || !preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', $_GET['category'])))
+{
+    http_response_code(400);
+    echo '{"error":{"code":"BAD_QUERY"}}';
+    exit;
+}
+$categorySlug = isset($_GET['category']) ? $_GET['category'] : '';
+
 try
 {
     require_once __DIR__.'/config.php';
@@ -43,6 +60,10 @@ try
     $productRows = $loadRows(
         'select id,namevi,nameen,descvi,descen,photo,slugvi,slugen,status from #_product_list where type=? order by numb,id desc',
         array('san-pham')
+    );
+    $categoryRows = $loadRows(
+        "select nl.id,nl.namevi,nl.descvi,nl.slugvi,nl.photo,nl.status from #_news_list nl where nl.type=? and find_in_set('hienthi',nl.status) and exists(select 1 from #_news n where n.id_list=nl.id and n.type=? and find_in_set('hienthi',n.status) and n.slugvi<>'') order by nl.numb,nl.id desc",
+        array('giai-phap', 'giai-phap')
     );
 
     // Match source/template image approval: basename, extension and file existence.
@@ -100,6 +121,26 @@ try
         isset($options['hotline']) ? $options['hotline'] : '',
         $fallbackImages
     );
+    if($categorySlug !== '')
+    {
+        $selectedCategory = null;
+        foreach($categoryRows as $categoryRow)
+        {
+            if(is_array($categoryRow) && isset($categoryRow['slugvi']) && $categoryRow['slugvi'] === $categorySlug)
+            {
+                $selectedCategory = $categoryRow;
+                break;
+            }
+        }
+        $categoryDto = $selectedCategory ? ptsPublicSolutionCategoryDto($selectedCategory, $categoryRows, $solutionRows) : null;
+        if($categoryDto === null)
+        {
+            http_response_code(404);
+            echo '{"error":{"code":"CATEGORY_NOT_FOUND"}}';
+            exit;
+        }
+        $data['category'] = $categoryDto;
+    }
     echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
 }
 catch(Throwable $e)

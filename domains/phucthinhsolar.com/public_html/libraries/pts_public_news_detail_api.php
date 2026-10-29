@@ -2,6 +2,7 @@
 /** Pure read-only DTO helpers for the published news detail contract. */
 
 require_once __DIR__.'/pts_public_richtext.php';
+require_once __DIR__.'/news_detail_media.php';
 
 function ptsNewsDetailPublished($status)
 {
@@ -52,6 +53,45 @@ function ptsNewsDetailAuthor($value)
     return $name === '' ? 'Phúc Thịnh Solar' : $name;
 }
 
+function ptsNewsDetailDate($value)
+{
+    $timestamp = is_numeric($value) ? (int)$value : 0;
+    return $timestamp > 0 ? date('Y-m-d', $timestamp) : '';
+}
+
+function ptsNewsDetailCtaDto(array $rows, $hotline = '')
+{
+    $configured = (bool)$rows;
+    $cta = array();
+    foreach($rows as $row)
+    {
+        if(!is_array($row) || !ptsNewsDetailPublished(isset($row['status']) ? $row['status'] : '')) continue;
+        $cta = $row;
+        break;
+    }
+
+    // An explicit Admin hide suppresses the section; a missing record uses the
+    // same safe fallback copy as the legacy news hub.
+    if($configured && !$cta) return null;
+
+    $title = ptsNewsDetailText(isset($cta['namevi']) ? $cta['namevi'] : '') ?: 'Đội ngũ Phúc Thịnh Solar luôn sẵn sàng hỗ trợ';
+    $description = ptsNewsDetailText(isset($cta['descvi']) ? $cta['descvi'] : '') ?: 'Liên hệ ngay để được tư vấn và cập nhật những thông tin mới nhất.';
+    $buttonLabel = ptsNewsDetailText(isset($cta['content1vi']) ? $cta['content1vi'] : '') ?: 'Nhận tư vấn ngay';
+    $phone = is_scalar($hotline) ? trim((string)$hotline) : '';
+    $tel = preg_replace('/[^0-9+]/', '', $phone);
+    $phoneDto = $phone !== '' && $tel !== ''
+        ? array('label' => 'Gọi ngay hotline', 'text' => ptsNewsDetailText($phone), 'tel' => $tel)
+        : null;
+
+    return array(
+        'title' => $title,
+        'description' => $description,
+        'buttonLabel' => $buttonLabel,
+        'image' => ptsNewsDetailImage(isset($cta['_pts_public_photo']) ? $cta['_pts_public_photo'] : ''),
+        'hotline' => $phoneDto
+    );
+}
+
 function ptsNewsDetailMediaDto(array $photoRows, array $videoRows)
 {
     $gallery = array();
@@ -78,13 +118,18 @@ function ptsNewsDetailArticleDto(array $row, array $category, array $author, arr
     if($id <= 0 || $title === '' || $slug === '') return null;
     $description = ptsNewsDetailText(isset($row['descvi']) ? $row['descvi'] : '');
     /*
-     * Tích hợp sanitizer (RICHTEXT-CONTRACT.md): contentvi đi qua
+     * Tích hợp sanitizer (RICHTEXT-CONTRACT.md): contentvi và content1vi đi qua
      * pts_public_richtext.php thay vì strip_tags() về plain-text. Sanitizer
      * tự decode một lớp HTML-entity encoding của CMS và trả về allowlist HTML
      * an toàn cho v-html ở Nuxt — không còn mất định dạng heading/list/ảnh
      * như bản plain-text trước đây.
      */
     $contentHtml = ptsPublicRichTextSanitize(isset($row['contentvi']) ? $row['contentvi'] : '');
+    $quoteHtml = ptsPublicRichTextSanitize(isset($row['content1vi']) ? $row['content1vi'] : '');
+    $datePublished = ptsNewsDetailDate(isset($row['date_created']) ? $row['date_created'] : 0);
+    $dateModified = ptsNewsDetailDate(isset($row['date_updated']) && (int)$row['date_updated'] > 0 ? $row['date_updated'] : (isset($row['date_created']) ? $row['date_created'] : 0));
+    $coverFilename = isset($row['photo']) ? $row['photo'] : '';
+    $cover = ptsNewsDetailImage(isset($row['_pts_public_photo']) ? $row['_pts_public_photo'] : '');
     return array(
         'schemaVersion' => 1,
         'locale' => 'vi',
@@ -92,11 +137,15 @@ function ptsNewsDetailArticleDto(array $row, array $category, array $author, arr
         'title' => $title,
         'slug' => $slug,
         'canonical' => '/'.$slug.'/',
-        'date' => !empty($row['date_created']) ? date('Y-m-d', (int)$row['date_created']) : '',
+        'date' => $datePublished,
+        'datePublished' => $datePublished,
+        'dateModified' => $dateModified,
         'author' => array('name' => ptsNewsDetailAuthor(isset($author['fullname']) ? $author['fullname'] : '')),
         'description' => $description,
-        'cover' => ptsNewsDetailImage(isset($row['_pts_public_photo']) ? $row['_pts_public_photo'] : ''),
+        'cover' => $cover,
+        'showCover' => $cover !== '' && !newsDetailContentRepeatsCover(isset($row['contentvi']) ? $row['contentvi'] : '', $coverFilename),
         'content' => array('format' => 'sanitized-html', 'html' => $contentHtml, 'sanitizedBy' => 'pts_public_richtext', 'sanitizerVersion' => 1),
+        'quote' => $quoteHtml !== '' ? array('format' => 'sanitized-html', 'html' => $quoteHtml, 'sanitizedBy' => 'pts_public_richtext', 'sanitizerVersion' => 1) : null,
         'category' => $category,
         'media' => $media,
         'seo' => array(

@@ -24,7 +24,7 @@ function listQueryValue(value: unknown, pattern: RegExp): string | undefined {
 export default defineEventHandler(async (event) => {
   requireMigrationGet(event)
   const query = getQuery(event)
-  const allowed = new Set(['category', 'page', 'per_page', 'brand', 'price', 'subcategory', 'sort'])
+  const allowed = new Set(['category', 'page', 'per_page', 'brand', 'price', 'subcategory', 'sort', 'keyword', 'need'])
   if (Object.keys(query).some((key) => !allowed.has(key))) throw createError({ statusCode: 400, statusMessage: 'BAD_QUERY' })
 
   const category = oneQueryValue(query.category)
@@ -44,6 +44,10 @@ export default defineEventHandler(async (event) => {
   if (query.subcategory !== undefined && subcategory === undefined) throw createError({ statusCode: 400, statusMessage: 'BAD_QUERY' })
   const sort = listQueryValue(query.sort, sortPattern)
   if (query.sort !== undefined && sort === undefined) throw createError({ statusCode: 400, statusMessage: 'BAD_QUERY' })
+  const keyword = oneQueryValue(query.keyword)
+  if (query.keyword !== undefined && (keyword === undefined || [...keyword].length > 100 || keyword.trim() === '')) throw createError({ statusCode: 400, statusMessage: 'BAD_QUERY' })
+  const need = listQueryValue(query.need, /^(?:du-an-cong-trinh|chieu-sang-gia-dinh|san-vuon-canh-quan)(?:,(?:du-an-cong-trinh|chieu-sang-gia-dinh|san-vuon-canh-quan))*$/)
+  if (query.need !== undefined && need === undefined) throw createError({ statusCode: 400, statusMessage: 'BAD_QUERY' })
 
   const payload = await fetchMigrationPayload(event, {
     endpoint: '/api/pts_v1_catalog.php',
@@ -55,10 +59,13 @@ export default defineEventHandler(async (event) => {
       price,
       subcategory,
       sort,
+      keyword,
+      is_need: need,
     },
     validate: isPublicCatalogPayload,
     invalidMessage: 'Invalid PHP catalog data contract',
     unavailableMessage: 'PHP catalog data source unavailable',
+    passThroughStatuses: [404],
   })
   setHeader(event, 'Cache-Control', 'private, no-store')
   return payload

@@ -12,10 +12,6 @@ watch(() => props.locations, (locations) => {
     selectedId.value = locations[0]?.id ?? null
   }
 }, { immediate: true })
-
-function mapEmbedUrl(location: PublicContactLocation): string {
-  return 'https://www.google.com/maps?q=' + encodeURIComponent(location.address) + '&output=embed'
-}
 </script>
 
 <template>
@@ -57,16 +53,19 @@ function mapEmbedUrl(location: PublicContactLocation): string {
         </li>
       </ul>
 
-      <div v-if="selected" class="min-h-[360px] overflow-hidden rounded-chip border border-gray-200 bg-slate-50">
+      <div v-if="selected?.mapUrl" class="min-h-[360px] overflow-hidden rounded-chip border border-gray-200 bg-slate-50">
         <iframe
           :key="selected.id"
-          :src="mapEmbedUrl(selected)"
+          :src="selected.mapUrl"
           :title="'Bản đồ ' + selected.name"
           class="h-[420px] w-full border-0"
           loading="lazy"
           referrerpolicy="no-referrer-when-downgrade"
           allowfullscreen
         />
+      </div>
+      <div v-else-if="selected" class="flex min-h-[360px] items-center justify-center rounded-chip border border-gray-200 bg-slate-50 p-8 text-center text-slate-500">
+        Bản đồ cho địa điểm này chưa được cấu hình.
       </div>
       <div v-else class="flex min-h-[360px] items-center justify-center rounded-chip border border-dashed border-gray-300 bg-slate-50 p-8 text-center text-slate-500">
         Hệ thống chi nhánh đang được cập nhật.

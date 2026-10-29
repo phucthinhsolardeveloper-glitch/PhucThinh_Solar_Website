@@ -6,6 +6,15 @@ const queryString = computed(() => props.query ? `?q=${encodeURIComponent(props.
 // Preview filters must stay in Nuxt even before the canonical public News route is enabled.
 const { active: isMigrationPreview } = useMigrationLinks()
 const filtersPath = computed(() => isMigrationPreview.value ? '/migration-news-preview/' : '/tin-tuc/')
+
+function categoryHref(category: PublicNewsCategory): string {
+  if (!isMigrationPreview.value) return `${category.canonicalPath}${queryString.value}`
+
+  const params = new URLSearchParams()
+  if (props.query) params.set('q', props.query)
+  params.set('category', category.slug)
+  return `${filtersPath.value}?${params.toString()}`
+}
 </script>
 
 <template>
@@ -16,7 +25,7 @@ const filtersPath = computed(() => isMigrationPreview.value ? '/migration-news-p
   -->
   <nav class="flex w-full max-w-full min-w-0 gap-[7px] overflow-x-auto px-0.5 pb-2 pt-1" :aria-label="filtersLabel">
     <a
-      class="flex min-h-[42px] flex-none items-center gap-2 whitespace-nowrap rounded-chip px-[15px] text-[13px] font-bold no-underline"
+      class="flex min-h-11 flex-none items-center gap-2 whitespace-nowrap rounded-chip px-[15px] text-[13px] font-bold no-underline"
       :class="!selected ? 'bg-navy-800 text-white' : 'bg-slate-50 text-navy-800 hover:bg-gray-200'"
       :href="`${filtersPath}${queryString}`"
     >
@@ -25,9 +34,9 @@ const filtersPath = computed(() => isMigrationPreview.value ? '/migration-news-p
     <a
       v-for="category in categories"
       :key="category.id"
-      class="flex min-h-[42px] flex-none items-center gap-2 whitespace-nowrap rounded-chip px-[15px] text-[13px] font-bold no-underline"
+      class="flex min-h-11 flex-none items-center gap-2 whitespace-nowrap rounded-chip px-[15px] text-[13px] font-bold no-underline"
       :class="selected?.id === category.id ? 'bg-navy-800 text-white' : 'bg-slate-50 text-navy-800 hover:bg-gray-200'"
-      :href="`${filtersPath}?${query ? `q=${encodeURIComponent(query)}&` : ''}category=${encodeURIComponent(category.slug)}`"
+      :href="categoryHref(category)"
     >
       <img v-if="category.image" :src="category.image" alt="" class="h-[22px] w-[22px] object-contain" width="22" height="22">
       {{ category.name }}

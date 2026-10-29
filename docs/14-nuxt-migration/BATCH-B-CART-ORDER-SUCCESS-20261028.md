@@ -1,5 +1,12 @@
 # Batch B: route public Cart, Order success — Checkout bị bỏ qua (NEEDS VERIFICATION)
 
+> **Cập nhật hiện trạng 2026-10-28:** phần checkout bên dưới là ghi chép lịch
+> sử. Đợt UI acceptance audit đã bỏ nút đi tới checkout từ giỏ; trang
+> `migration-checkout-preview` chỉ đọc và `POST /_migration/checkout` trả 410,
+> không forward `thanhtoan=1` sang PHP. Xem
+> [`UI-ACCEPTANCE-AUDIT-20261028.md`](UI-ACCEPTANCE-AUDIT-20261028.md). Không
+> bật checkout public hay tạo đơn trong preview.
+
 ## Đã làm
 
 - `/gio-hang/` — route public flag-gated (`cartPublicRouteEnabled`, mặc định
@@ -29,13 +36,13 @@ bước này sẽ là 1 URL **không có tương đương PHP thật**, không p
 mà là quyết định sản phẩm mới. Theo đúng chỉ dẫn "không bịa path PHP",
 KHÔNG tạo route public cho checkout trong batch này.
 
-**NEEDS VERIFICATION / cần quyết định sản phẩm trước khi làm:** khi
-`/gio-hang/` được bật thật, luồng "Tiếp tục thanh toán" trong `CartPage.vue`
-vẫn trỏ `/migration-checkout-preview` (preview nội bộ, noindex) — đến lúc
-cutover thật cần quyết định: (a) giữ checkout là 1 state/modal trong chính
-trang `/gio-hang/` giống PHP gốc, hay (b) chốt 1 URL Nuxt-only mới (chấp
-nhận lệch 1:1 với PHP, có rủi ro SEO/analytics khác hành vi cũ). Không tự
-quyết trong batch này.
+**Trạng thái hiện tại:** `CartPage.vue` không còn nút chuyển sang checkout.
+Khi giỏ có thể checkout, preview chỉ hiển thị thông báo read-only; mở trực tiếp
+`/migration-checkout-preview` chỉ thấy bản tóm tắt giỏ hàng. `POST
+/_migration/checkout` trả 410 và không forward đơn tới PHP. Vì vậy bật riêng
+route public `/gio-hang/` không mở checkout Nuxt. Nếu sau này chủ dự án muốn
+chuyển checkout sang Nuxt, cần quyết định luồng UI/URL và hoàn tất riêng các
+gate transaction, session, payment và rollback trước khi mở mutation.
 
 ## Kết quả test
 

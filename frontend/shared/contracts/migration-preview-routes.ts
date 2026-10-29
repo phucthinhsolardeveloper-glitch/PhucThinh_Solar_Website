@@ -31,7 +31,7 @@ export const MIGRATION_PREVIEW_ROUTES: readonly MigrationPreviewRoute[] = [
   { key: 'product', title: 'Chi tiết sản phẩm', description: 'PDP Nuxt dùng dữ liệu thật, giá, content, tài liệu và cart session.', previewPath: '/migration-product-preview', phpPath: '/san-pham/', status: 'preview' },
   { key: 'search', title: 'Tìm kiếm', description: 'Tìm sản phẩm bằng rule search legacy nhưng render kết quả bằng Nuxt.', previewPath: '/migration-search-preview', phpPath: '/tim-kiem/', status: 'preview' },
   { key: 'cart', title: 'Giỏ hàng', description: 'GUI giỏ hàng Nuxt dùng session và calculation PHP qua JSON adapter.', previewPath: '/migration-cart-preview', phpPath: '/gio-hang/', status: 'preview' },
-  { key: 'checkout', title: 'Thanh toán', description: 'GUI checkout Nuxt; order mutation vẫn chạy transaction PHP đã kiểm chứng.', previewPath: '/migration-checkout-preview', phpPath: '/gio-hang/', status: 'preview' },
+  { key: 'checkout', title: 'Thanh toán', description: 'Preview chỉ xem tóm tắt giỏ hàng; không thu thập thông tin hay gửi đơn. POST checkout bị khóa (410); giao dịch thật vẫn do PHP tại /gio-hang/ xử lý.', previewPath: '/migration-checkout-preview', phpPath: '/gio-hang/', status: 'preview' },
   { key: 'solutions', title: 'Giải pháp', description: 'Bản xem thử landing Giải pháp từ CMS.', previewPath: '/migration-solutions-preview', phpPath: '/giai-phap/', status: 'preview' },
   { key: 'projects', title: 'Dự án', description: 'Bản xem thử danh sách dự án đã thực hiện.', previewPath: '/migration-projects-preview', phpPath: '/du-an-da-thuc-hien/', status: 'preview' },
   { key: 'news', title: 'Kiến thức', description: 'Bản xem thử hub bài viết và bộ lọc.', previewPath: '/migration-news-preview', phpPath: '/tin-tuc/', status: 'preview' },

@@ -4,6 +4,8 @@
  * same published queries used by sources/allpage.php; this file only shapes
  * and sanitizes the DTO.
  */
+require_once __DIR__.'/pts_public_richtext.php';
+
 function ptsPublicNavScalar($value)
 {
     return is_scalar($value) ? trim((string)$value) : '';
@@ -250,7 +252,18 @@ function ptsPublicSiteNavigationPayload(array $input)
     $brand = array('name'=>$brandName,'hotline'=>ptsPublicNavText(isset($options['hotline'])?$options['hotline']:''),'logo'=>isset($asset['logo'])?$asset['logo']:'','logoFooter'=>isset($asset['logoFooter'])?$asset['logoFooter']:'');
     $technicalHotline = ptsPublicNavText(isset($options['hotline_technical']) ? $options['hotline_technical'] : '');
     if($technicalHotline !== '') $brand['technicalHotline'] = $technicalHotline;
-    $footerDto = array('companyName'=>ptsPublicNavName($footer),'contactText'=>ptsPublicNavText(isset($footer['contentvi'])?$footer['contentvi']:''),'policies'=>$footerLinks,'locations'=>$locations,'socialLinks'=>$social);
+    $footerContent = ptsPublicRichTextSanitize(isset($footer['contentvi']) ? $footer['contentvi'] : '');
+    $footerContent = preg_replace('/MST:\s*5901151081\b.*?(?:<br\s*\/?>|$)/iu', '', $footerContent, 1);
+    // The dedicated contact cards render the two public hotlines below the
+    // CMS address block; omit duplicate tel anchors from the rich-text body.
+    $footerContent = preg_replace('~<a\b(?=[^>]*\bhref="tel:)[^>]*>.*?</a>~is', '', $footerContent);
+    $footerDto = array(
+        'companyName' => ptsPublicNavName($footer),
+        'contactText' => array('format'=>'sanitized-html','html'=>$footerContent,'sanitizedBy'=>'pts_public_richtext','sanitizerVersion'=>1),
+        'policies' => $footerLinks,
+        'locations' => $locations,
+        'socialLinks' => $social
+    );
     $trustBadge = isset($asset['trustBadge']) && is_array($asset['trustBadge']) ? $asset['trustBadge'] : array();
     $trustBadgeImage = isset($trustBadge['image']) ? ptsPublicNavUrl($trustBadge['image']) : '';
     $trustBadgeHref = isset($trustBadge['href']) ? ptsPublicNavUrl($trustBadge['href']) : '';

@@ -47,7 +47,12 @@ function ptsDealerItem(array $row, $root, $upload)
     if(!ptsDealerPublished($row['status'] ?? '')) return null;
     $title = ptsDealerText($row['namevi'] ?? '');
     if($title === '') return null;
-    return array('title' => $title, 'description' => ptsDealerText($row['descvi'] ?? ''), 'image' => ptsDealerMedia($row['photo'] ?? '', $upload, $root));
+    return array(
+        'title' => $title,
+        'description' => ptsDealerText($row['descvi'] ?? ''),
+        'descriptionContent' => ptsDealerRichText($row['descvi'] ?? ''),
+        'image' => ptsDealerMedia($row['photo'] ?? '', $upload, $root)
+    );
 }
 
 function ptsDealerPayload(array $staticRows, array $photoRows, array $heroRows, array $supportRows, array $testimonialRows, array $statRows, $root, $hotline = '')
@@ -82,7 +87,12 @@ function ptsDealerPayload(array $staticRows, array $photoRows, array $heroRows, 
             'descriptionContent' => ptsDealerRichText($static['dai-ly-2']['descvi'] ?? ''),
             'products' => $products
         ),
-        'support' => array('title' => ptsDealerText($static['dai-ly-3']['namevi'] ?? ''), 'description' => ptsDealerText($static['dai-ly-3']['descvi'] ?? ''), 'items' => $support),
+        'support' => array(
+            'title' => ptsDealerText($static['dai-ly-3']['namevi'] ?? ''),
+            'description' => ptsDealerText($static['dai-ly-3']['descvi'] ?? ''),
+            'descriptionContent' => ptsDealerRichText($static['dai-ly-3']['descvi'] ?? ''),
+            'items' => $support
+        ),
         'testimonials' => $testimonials, 'stats' => $stats,
         'form' => array('action' => '/dai-ly/#dang-ky-dai-ly', 'method' => 'POST', 'title' => 'Đăng ký làm đối tác phân phối', 'note' => 'Để lại thông tin, Phúc Thịnh Solar sẽ liên hệ tư vấn chính sách đại lý phù hợp.'),
         'hotline' => $hotline === '' ? null : array('text' => $hotline, 'tel' => preg_replace('/[^0-9+]/', '', $hotline)),

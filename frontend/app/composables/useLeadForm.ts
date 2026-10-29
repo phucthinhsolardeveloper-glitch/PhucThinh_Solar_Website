@@ -55,6 +55,11 @@ export function useLeadForm() {
     }
   }
 
+  async function refreshSecurity() {
+    security.value = null
+    return ensureSecurity()
+  }
+
   async function submit(kind: LeadKind, data: Record<string, string | number>) {
     const meta = await ensureSecurity()
     const action = kind === 'contact' ? 'contact' : kind === 'product' ? 'Newsletter' : 'Newsletter2'
@@ -67,5 +72,5 @@ export function useLeadForm() {
     return payload
   }
 
-  return { security, loadingSecurity, ensureSecurity, submit }
+  return { security, loadingSecurity, ensureSecurity, refreshSecurity, submit }
 }

@@ -61,8 +61,11 @@ cd /home/admin01/src/pts-nuxt-integration-20261027
   + bộ lọc dùng chung; preview giữ `noindex`.
 - PHP 8.1/Docker contract và full browser visual manifest chưa chạy lại trong
   audit này vì Docker daemon của executor không khả dụng.
-- Contact/dealer/home form UI chạy trên Nuxt và gửi qua PHP adapter an toàn;
-  cart/checkout/order-success dùng PHP session/calculation/transaction.
+- Contact/dealer/home form UI chạy trên Nuxt và gửi qua PHP adapter an toàn.
+  Cart đọc session và mutation giỏ hàng dùng PHP adapter; checkout preview chỉ
+  đọc tóm tắt giỏ hàng, không nhận thông tin đặt hàng, còn `POST
+  /_migration/checkout` trả 410 và không tạo đơn. Giao dịch thật tiếp tục qua
+  PHP `/gio-hang/`; order-success chỉ đọc kết quả theo token đã có.
 - PDP preview đã có pricing/quote/cart, gallery lightbox/zoom, content/FAQ,
   documents, video, warranty/policy, related, reviews/consultation và
   Product/Breadcrumb/FAQ JSON-LD.

@@ -1,5 +1,11 @@
 # Cart/checkout mutation verification (isolated DB) — 2026-10-28
 
+> **Ghi chú hiện trạng:** đây là bằng chứng lịch sử cho backend PHP checkout
+> và adapter Nuxt tại checkpoint lúc kiểm thử. Sau đó checkout preview đã
+> chuyển sang chỉ đọc: `POST /_migration/checkout` trả 410 và không forward
+> tới PHP. Kết quả tạo đơn trong fixture bên dưới không có nghĩa là checkout
+> Nuxt hiện cho phép gửi đơn.
+
 Phạm vi: verify thật (ghi DB) luồng cart add/update/delete và checkout tạo
 order, qua đúng endpoint PHP mà adapter Nuxt (`frontend/server/routes/_migration/cart.*.ts`,
 `checkout.*.ts`) forward tới — **không chạy qua Nuxt container thật** (do giới

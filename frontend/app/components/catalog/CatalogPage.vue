@@ -6,6 +6,8 @@ import CatalogFilterSidebar from '~/components/catalog/CatalogFilterSidebar.vue'
 import CatalogProductGrid from '~/components/catalog/CatalogProductGrid.vue'
 import SiteHeader from '~/components/SiteHeader.vue'
 import SiteFooter from '~/components/SiteFooter.vue'
+import { isRuntimeFlagEnabled, productCategorySegmentsFromPublicPath } from '#shared/public-route-gate'
+import { publicSeoRobots } from '#shared/public-seo'
 
 /*
  * Tách từ migration-catalog-preview.vue (xem đó + pages/san-pham/index.vue)
@@ -13,16 +15,23 @@ import SiteFooter from '~/components/SiteFooter.vue'
  * không nhân bản. Link nội bộ dùng route.path (không hardcode) nên component
  * này tự khớp đúng URL của bất kỳ trang nào render nó.
  */
+const props = defineProps<{ categoryPath?: string }>()
 const route = useRoute()
+const config = useRuntimeConfig()
 const links = useMigrationLinks()
 const selfPath = computed(() => route.path)
-const category = computed(() => typeof route.query.category === 'string' ? route.query.category : '')
+const category = computed(() => props.categoryPath ?? (productCategorySegmentsFromPublicPath(route.path).join('/') || (typeof route.query.category === 'string' ? route.query.category : '')))
 const page = computed(() => typeof route.query.page === 'string' ? route.query.page : '')
 const perPage = computed(() => typeof route.query.per_page === 'string' ? route.query.per_page : '')
 const brand = computed(() => typeof route.query.brand === 'string' ? route.query.brand : '')
 const price = computed(() => typeof route.query.price === 'string' ? route.query.price : '')
 const subcategory = computed(() => typeof route.query.subcategory === 'string' ? route.query.subcategory : '')
 const sort = computed(() => typeof route.query.sort === 'string' ? route.query.sort : '')
+const keyword = computed(() => typeof route.query.keyword === 'string' ? route.query.keyword : '')
+const need = computed(() => typeof route.query.need === 'string' ? route.query.need : '')
+const searchKeyword = ref(keyword.value)
+const searchError = ref('')
+watch(keyword, (value) => { searchKeyword.value = value })
 const query = computed(() => ({
   ...(category.value ? { category: category.value } : {}),
   ...(page.value ? { page: page.value } : {}),
@@ -31,6 +40,8 @@ const query = computed(() => ({
   ...(price.value ? { price: price.value } : {}),
   ...(subcategory.value ? { subcategory: subcategory.value } : {}),
   ...(sort.value ? { sort: sort.value } : {}),
+  ...(keyword.value ? { keyword: keyword.value } : {}),
+  ...(need.value ? { need: need.value } : {}),
 }))
 
 /*
@@ -38,7 +49,7 @@ const query = computed(() => ({
  * (pageLink giu nguyen cac query khac), tranh "trang 3 nhung loc ra 0 ket
  * qua" khi khach doi bo loc o trang sau.
  */
-function filterLink(overrides: { subcategory?: string; brand?: string; price?: string; sort?: string }) {
+function filterLink(overrides: { subcategory?: string; brand?: string; price?: string; sort?: string; need?: string; keyword?: string }) {
   const next: Record<string, string> = { ...query.value, ...overrides }
   for (const key of Object.keys(next)) if (next[key] === '') delete next[key]
   delete next.page
@@ -48,7 +59,16 @@ function onSortChange(event: Event) {
   const value = (event.target as HTMLSelectElement).value
   navigateTo(filterLink({ sort: value === 'default' ? '' : value }))
 }
-const { data: siteData } = await useAsyncData<PublicSitePayload>('migration-catalog-site', async () => {
+function onKeywordSearch() {
+  const value = searchKeyword.value.trim()
+  if ([...value].length > 100) {
+    searchError.value = 'Từ khóa tìm kiếm tối đa 100 ký tự.'
+    return
+  }
+  searchError.value = ''
+  navigateTo(filterLink({ keyword: value }))
+}
+const { data: siteData, error: siteError } = await useAsyncData<PublicSitePayload>('migration-catalog-site', async () => {
   const payload = await $fetch<unknown>('/_migration/site')
   if (!isPublicSitePayload(payload)) throw createError({ statusCode: 502, statusMessage: 'Invalid PHP site data contract' })
   return payload
@@ -69,6 +89,16 @@ function findCategory(nodes: PublicProductCategoryNode[], chain: string): Public
 }
 
 const selectedCategory = computed(() => findCategory(siteData.value?.productCategoryTree ?? [], category.value))
+if (import.meta.server && !links.active.value && props.categoryPath && siteData.value && !selectedCategory.value) {
+  setResponseStatus(404, 'Not Found')
+}
+const isPublicCatalogPath = computed(() => route.path === '/san-pham/' || route.path === '/thuong-hieu/' || route.path.startsWith('/danh-muc-san-pham/'))
+const publicEnabled = computed(() => isPublicCatalogPath.value && isRuntimeFlagEnabled(config.public.catalogPublicRouteEnabled))
+const catalogErrorStatus = (catalogError.value as { statusCode?: unknown } | null)?.statusCode
+if (import.meta.server && publicEnabled.value && (siteError.value || catalogError.value || !catalogData.value)) {
+  const status = catalogErrorStatus === 404 ? 404 : 502
+  setResponseStatus(status, status === 404 ? 'Not Found' : 'Bad Gateway')
+}
 const activeCategoryRoot = computed(() => {
   const tree = siteData.value?.productCategoryTree ?? []
   if (!selectedCategory.value) return null
@@ -87,11 +117,11 @@ const categoryAllHref = computed(() => links.generic(activeCategoryRoot.value?.u
  */
 const hasFilters = computed(() => {
   const filters = catalogData.value?.filters
-  return !!filters && (filters.subcategories.length > 0 || filters.brands.length > 0 || filters.priceRanges.length > 0)
+  return !!filters && (filters.subcategories.length > 0 || filters.brands.length > 0 || filters.priceRanges.length > 0 || (filters.needs?.length ?? 0) > 0)
 })
 const hasSidebar = computed(() => (siteData.value?.productCategoryTree?.length ?? 0) > 0 || hasFilters.value)
-const emptyFilters: NonNullable<PublicCatalogPayload['filters']> = { brands: [], priceRanges: [], subcategories: [] }
-const emptySelected: NonNullable<PublicCatalogPayload['selected']> = { brandIds: [], priceKeys: [], subcategoryIds: [], sort: 'default' }
+const emptyFilters: NonNullable<PublicCatalogPayload['filters']> = { brands: [], priceRanges: [], subcategories: [], needs: [] }
+const emptySelected: NonNullable<PublicCatalogPayload['selected']> = { brandIds: [], priceKeys: [], subcategoryIds: [], sort: 'default', needKeys: [] }
 /*
  * Ẩn hai lựa chọn sắp xếp theo giá khi public_product_prices đang tắt - PHP
  * (ptsCatalogSortOrderBy) cũng im lặng bỏ qua yêu cầu sort theo giá ẩn,
@@ -112,6 +142,34 @@ const sortOptions = computed(() => {
   return base.filter((option) => option.value !== 'price' && option.value !== 'price-desc')
 })
 const heading = computed(() => catalogData.value?.category && !Array.isArray(catalogData.value.category) ? catalogData.value.category.name : 'Sản phẩm năng lượng mặt trời')
+const metadataTitle = computed(() => catalogData.value?.seo.title || [heading.value, 'Phúc Thịnh Solar'].join(' — '))
+const metadataDescription = computed(() => catalogData.value?.seo.description ?? '')
+const metadataKeywords = computed(() => catalogData.value?.seo.keywords ?? '')
+const metadataCanonicalPath = computed(() => route.path === '/thuong-hieu/' ? route.path : (catalogData.value?.canonical.url || route.path))
+const catalogFilterKeys = new Set(['category', 'page', 'per_page', 'brand', 'price', 'subcategory', 'sort', 'keyword', 'need'])
+const hasQueryFilters = computed(() => Object.keys(route.query).some((key) => catalogFilterKeys.has(key)))
+const catalogIndexable = computed(() => {
+  const enabled = route.path.startsWith('/danh-muc-san-pham/')
+    ? isRuntimeFlagEnabled(config.public.catalogCategoryPublicRouteIndexable)
+    : isRuntimeFlagEnabled(config.public.catalogPublicRouteIndexable)
+  return publicEnabled.value && enabled && !!catalogData.value && !catalogError.value && !siteError.value
+    && !hasQueryFilters.value && (!props.categoryPath || !!selectedCategory.value)
+})
+useSeoMeta({
+  title: metadataTitle,
+  description: metadataDescription,
+  robots: computed(() => publicSeoRobots(catalogIndexable.value, !!catalogData.value && !catalogError.value && !siteError.value, hasQueryFilters.value)),
+})
+useHead({
+  meta: computed(() => metadataKeywords.value ? [{ name: 'keywords', content: metadataKeywords.value }] : []),
+})
+usePublicSocialMeta({
+  enabled: computed(() => publicEnabled.value && !!catalogData.value && !catalogError.value && !siteError.value),
+  title: metadataTitle,
+  description: metadataDescription,
+  canonicalPath: metadataCanonicalPath,
+  image: computed(() => undefined),
+})
 const bannerDescription = computed(() => {
   const path = category.value
   if (!path) return 'Giải pháp năng lượng phù hợp cho gia đình, doanh nghiệp và công trình'
@@ -199,6 +257,7 @@ function pageLink(nextPage: number) {
           :selected-category="selectedCategory?.url ?? ''"
           :filters="catalogData?.filters ?? emptyFilters"
           :selected="catalogData?.selected ?? emptySelected"
+          :keyword="keyword"
           :filter-link="filterLink"
         />
       </div>
@@ -241,6 +300,24 @@ function pageLink(nextPage: number) {
               </select>
             </label>
           </div>
+
+          <form class="mb-6 grid gap-2 sm:max-w-xl sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end" role="search" @submit.prevent="onKeywordSearch">
+            <label for="catalog-product-keyword" class="grid gap-1.5 text-sm font-bold text-navy-800">
+              Tìm tên hoặc mã sản phẩm
+              <input
+                id="catalog-product-keyword"
+                v-model="searchKeyword"
+                type="search"
+                maxlength="100"
+                autocomplete="off"
+                placeholder="Ví dụ: JDE-6500, JD-V300…"
+                class="h-11 min-w-0 rounded-chip border border-gray-300 bg-white px-3 text-base font-normal outline-none focus:border-gold-600"
+                @input="searchError = ''"
+              >
+            </label>
+            <button type="submit" class="h-11 rounded-chip bg-gold-500 px-5 font-bold text-navy-950 transition hover:bg-gold-600">Tìm</button>
+            <p v-if="searchError" class="m-0 text-sm text-red-700 sm:col-span-2" role="alert">{{ searchError }}</p>
+          </form>
 
           <CatalogProductGrid :products="catalogData.products" />
 

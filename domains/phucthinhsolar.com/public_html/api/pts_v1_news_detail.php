@@ -24,7 +24,7 @@ header('Cache-Control: private, no-store');
 try {
     require_once __DIR__.'/config.php';
     require_once LIBRARIES.'pts_public_news_detail_api.php';
-    $row = $d->rawQueryOne("select id,id_list,id_user,namevi,slugvi,photo,descvi,contentvi,date_created,status,type from #_news where slugvi=? and type=? and find_in_set('hienthi',status) limit 1", array($slug, 'tin-tuc'));
+    $row = $d->rawQueryOne("select id,id_list,id_user,namevi,slugvi,photo,descvi,contentvi,content1vi,date_created,date_updated,status,type from #_news where slugvi=? and type=? and find_in_set('hienthi',status) limit 1", array($slug, 'tin-tuc'));
     if(empty($row)) ptsNewsDetailError(404, 'ARTICLE_NOT_FOUND');
     $row['_pts_public_photo'] = !empty($row['photo']) && is_file(ROOT.UPLOAD_NEWS_L.$row['photo']) ? $row['photo'] : '';
 
@@ -41,10 +41,16 @@ try {
     $videos = $d->rawQuery("select namevi,link_video from #_gallery where id_parent=? and com=? and type=? and kind=? and val=? and find_in_set('hienthi',status) order by numb,id desc", array((int)$row['id'], 'news', 'tin-tuc', 'man', 'video'));
     $relatedRows = $d->rawQuery("select id,namevi,slugvi,photo,descvi,date_created,status from #_news where id<>? and id_list=? and type=? and find_in_set('hienthi',status) and slugvi<>'' order by numb,id desc limit 12", array((int)$row['id'], (int)$row['id_list'], 'tin-tuc'));
     foreach($relatedRows as &$relatedRow) $relatedRow['_pts_public_photo'] = !empty($relatedRow['photo']) && is_file(ROOT.UPLOAD_NEWS_L.$relatedRow['photo']) ? $relatedRow['photo'] : ''; unset($relatedRow);
+    $ctaRows = $d->rawQuery('select namevi,descvi,content1vi,photo,status from #_news where type=? order by numb,id desc', array('news-cta'));
+    foreach($ctaRows as &$ctaRow) $ctaRow['_pts_public_photo'] = !empty($ctaRow['photo']) && is_file(ROOT.UPLOAD_NEWS_L.$ctaRow['photo']) ? $ctaRow['photo'] : ''; unset($ctaRow);
     $seo = $d->rawQueryOne("select titlevi,descriptionvi,keywordsvi from #_seo where id_parent=? and com=? and act=? and type=? limit 1", array((int)$row['id'], 'news', 'man', 'tin-tuc')) ?: array();
     $article = ptsNewsDetailArticleDto($row, $category, $author, ptsNewsDetailMediaDto($photos, $videos), $seo);
     if($article === null) ptsNewsDetailError(404, 'ARTICLE_NOT_FOUND');
-    echo json_encode(array('article'=>$article, 'related'=>ptsNewsDetailRelatedDto($relatedRows)), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
+    echo json_encode(array(
+        'article'=>$article,
+        'related'=>ptsNewsDetailRelatedDto($relatedRows),
+        'cta'=>ptsNewsDetailCtaDto($ctaRows, isset($optsetting['hotline']) ? $optsetting['hotline'] : '')
+    ), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
 } catch(Throwable $e) {
     error_log('pts_v1_news_detail: '.$e->getMessage());
     http_response_code(500);

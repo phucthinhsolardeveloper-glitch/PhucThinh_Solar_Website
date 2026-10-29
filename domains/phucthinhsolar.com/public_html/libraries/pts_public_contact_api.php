@@ -35,14 +35,25 @@ function ptsContactMapUrl($value)
 {
     $value = ptsContactScalar($value);
     if($value === '') return '';
-    if(preg_match('~<iframe\b[^>]*\bsrc=["\']([^"\']+)["\'][^>]*>~i', $value, $match)) $value = html_entity_decode($match[1], ENT_QUOTES, 'UTF-8');
-    if(!preg_match('~^https://([^/]+)(/[^\s]*)?$~i', $value, $match)) return '';
-    $host = strtolower(rtrim($match[1], '.'));
+    // The legacy template decodes this CMS field before emitting the iframe;
+    // normalize the same HTML-escaped representation before extracting only
+    // its src. The returned DTO never contains markup.
+    $value = html_entity_decode($value, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    if(preg_match('~<iframe\b[^>]*\bsrc\s*=\s*(["\'])([^"\']+)\1[^>]*>~i', $value, $match)) {
+        $value = html_entity_decode(trim($match[2]), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    }
+    if(preg_match('/[\x00-\x20\x7f<>]/', $value)) return '';
+    $parts = parse_url($value);
+    if(!is_array($parts) || strtolower($parts['scheme'] ?? '') !== 'https' || isset($parts['user']) || isset($parts['pass']) || isset($parts['port'])) return '';
+    $host = strtolower(rtrim($parts['host'] ?? '', '.'));
     $allowed = array('www.google.com', 'google.com', 'maps.google.com', 'www.google.com.vn', 'google.com.vn');
     if(!in_array($host, $allowed, true)) return '';
-    $path = isset($match[2]) ? $match[2] : '/';
+    $path = $parts['path'] ?? '/';
     if(stripos($path, '/maps') !== 0) return '';
-    return 'https://'.$host.$path;
+    $url = 'https://'.$host.$path;
+    if(isset($parts['query'])) $url .= '?'.$parts['query'];
+    if(isset($parts['fragment'])) $url .= '#'.$parts['fragment'];
+    return $url;
 }
 
 function ptsPublicContactPayload(array $input)

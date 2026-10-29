@@ -1,0 +1,164 @@
+import assert from 'node:assert/strict'
+import { readFileSync } from 'node:fs'
+import { test } from 'node:test'
+import { projectVideoEmbedUrl } from '../shared/project-gallery.ts'
+
+const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8')
+
+test('project video embed accepts known providers and rejects unsafe or unsupported hosts', () => {
+  assert.equal(projectVideoEmbedUrl('https://www.youtube.com/watch?v=dQw4w9WgXcQ'), 'https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ')
+  assert.equal(projectVideoEmbedUrl('https://youtu.be/dQw4w9WgXcQ'), 'https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ')
+  assert.equal(projectVideoEmbedUrl('https://vimeo.com/12345678'), 'https://player.vimeo.com/video/12345678')
+  assert.equal(projectVideoEmbedUrl('https://evil.test/watch?v=dQw4w9WgXcQ'), '')
+  assert.equal(projectVideoEmbedUrl('http://www.youtube.com/watch?v=dQw4w9WgXcQ'), '')
+  assert.equal(projectVideoEmbedUrl('https://www.youtube.com:8443/watch?v=dQw4w9WgXcQ'), '')
+})
+
+test('project detail gallery uses an accessible in-page media dialog', () => {
+  const gallery = read('../app/components/project-detail/ProjectDetailGallery.vue')
+  assert.match(gallery, /role="dialog"\s+aria-modal="true"/)
+  assert.match(gallery, /event\.key === 'Escape'/)
+  assert.match(gallery, /trapFocus\(event, lightboxPanel\.value\)/)
+  assert.match(gallery, /:src="selectedEmbedUrl"/)
+  assert.match(gallery, /@click="open\(item,/)
+})
+
+test('news detail follows PHP article and content reading widths without a side column', () => {
+  const page = read('../app/pages/migration-news-detail-preview.vue')
+  const article = read('../app/components/news-detail/NewsDetailArticle.vue')
+  assert.match(page, /<NewsDetailArticle[^>]+\/>\s*<NewsDetailRelated/)
+  assert.doesNotMatch(page, /tb:grid-cols-\[minmax\(0,2fr\)_minmax\(240px,1fr\)\]/)
+  assert.match(page, /<main class="mx-auto w-full max-w-\[1200px\]/)
+  assert.match(article, /<article class="mx-auto w-full max-w-\[1080px\]">/)
+})
+
+test('gallery and video pages rely on CMS titles without static marketing eyebrow copy', () => {
+  const gallery = read('../app/pages/migration-gallery-preview.vue')
+  const album = read('../app/pages/migration-gallery-detail-preview.vue')
+  const video = read('../app/pages/migration-video-preview.vue')
+  const visibleMarkup = [gallery, album, video].map((page) => page.split('<template>')[1] || '').join('\n')
+  assert.doesNotMatch(visibleMarkup, /Hình ảnh thực tế|Video thực tế|Album ảnh|được quản lý trực tiếp từ CMS|được xuất từ nguồn CMS/)
+})
+
+test('policy TOC uses the shared anchor-preserving builder', () => {
+  const page = read('../app/pages/migration-policy-preview.vue')
+  assert.match(page, /buildEditorialToc\(data\.value\?\.content/)
+  assert.doesNotMatch(page, /policy-section-/)
+})
+
+test('solution detail TOC remains available on mobile and stacks at the PHP 900px breakpoint', () => {
+  const page = read('../app/components/solution-detail/SolutionDetailPage.vue')
+  assert.match(page, /min-\[901px\]:grid-cols-/)
+  assert.match(page, /max-h-\[220px\].*overflow-y-auto/)
+  assert.doesNotMatch(page, /class="hidden[^\"]*Mục lục nội dung/)
+})
+
+test('solution detail gallery opens an accessible lightbox with keyboard navigation', () => {
+  const page = read('../app/components/solution-detail/SolutionDetailPage.vue')
+  const gallery = read('../app/components/solution-detail/SolutionDetailGallery.vue')
+  const source = read('../../domains/phucthinhsolar.com/public_html/templates/news/service_detail_tpl.php')
+  assert.match(page, /<SolutionDetailGallery :images="data\.solution\.gallery"/)
+  assert.match(source, /data-fancybox="solution-gallery"/)
+  assert.match(gallery, /role="dialog"\s+aria-modal="true"/)
+  assert.match(gallery, /event\.key === 'Escape'/)
+  assert.match(gallery, /event\.key === 'ArrowLeft'/)
+  assert.match(gallery, /event\.key === 'ArrowRight'/)
+  assert.match(gallery, /lastTrigger\.value\?\.focus\(\)/)
+  assert.match(gallery, /aspect-\[8\/5\]/)
+  assert.match(gallery, /object-contain/)
+})
+
+test('policy article widths follow PHP reading measure and related media uses the approved 16:9 ratio', () => {
+  const page = read('../app/pages/migration-policy-preview.vue')
+  assert.match(page, /<main class="mx-auto w-full max-w-\[1766px\]/)
+  assert.match(page, /<article v-else class="mx-auto max-w-\[1080px\]">/)
+  assert.match(page, /max-w-\[960px\]/)
+  assert.match(page, /aspect-video w-full object-cover/)
+  assert.doesNotMatch(page, /aspect-\[3\/2\]/)
+})
+
+test('editorial cover and related images use the documented news aspect ratio and crop behavior', () => {
+  const article = read('../app/components/news-detail/NewsDetailArticle.vue')
+  const related = read('../app/components/news-detail/NewsDetailRelated.vue')
+  assert.match(article, /aspect-video w-full rounded-chip object-cover/)
+  assert.match(related, /aspect-video w-full object-cover/)
+  assert.doesNotMatch(related, /aspect-\[3\/2\]/)
+})
+
+test('gallery keeps the PHP album thumb ratio while removing decorative card surfaces', () => {
+  const gallery = read('../app/pages/migration-gallery-preview.vue')
+  const phpAlbum = read('../../domains/phucthinhsolar.com/public_html/templates/album/album_tpl.php')
+  assert.match(phpAlbum, /sizes'\s*=>\s*'480x360x1'/)
+  assert.match(gallery, /aspect-\[4\/3\]/)
+  assert.doesNotMatch(gallery, /border border-gray-200 bg-white/)
+  const video = read('../app/pages/migration-video-preview.vue')
+  assert.doesNotMatch(video, /group overflow-hidden rounded-chip border border-gray-200 bg-white/)
+})
+
+test('news and project touch targets meet 44px and editorial images keep their route ratios', () => {
+  const newsFilters = read('../app/components/news/NewsFilters.vue')
+  const newsPage = read('../app/pages/migration-news-preview.vue')
+  const projectFilters = read('../app/components/projects/ProjectFilters.vue')
+  const projectCard = read('../app/components/projects/ProjectCard.vue')
+  assert.match(newsFilters, /min-h-11/)
+  assert.match(projectFilters, /min-h-11/)
+  assert.match(newsPage, /min-h-11 min-w-11/)
+  assert.match(projectCard, /aspect-\[4\/3\]/)
+  assert.doesNotMatch(projectCard, /border-b border-gray-200/)
+})
+
+test('solution imagery stays 8:5, empty CTA follows shared links, and equipment uses flat surfaces', () => {
+  const intro = read('../app/components/solutions/SolutionsIntro.vue')
+  const cards = read('../app/components/solutions/SolutionCards.vue')
+  const equipment = read('../app/components/solutions/SolutionsEquipment.vue')
+  const detail = read('../app/components/solution-detail/SolutionDetailPage.vue')
+  const gallery = read('../app/components/solution-detail/SolutionDetailGallery.vue')
+  assert.match(intro, /aspect-\[8\/5\]/)
+  assert.match(intro, /width="1200" height="750"/)
+  assert.match(intro, /v-if="intro\.image"[\s\S]*?grid-cols-1 items-center gap-8 tb:grid-cols-2/)
+  assert.match(intro, /v-else class="grid grid-cols-1 items-start gap-8 tb:grid-cols-\[minmax\(0,1\.05fr\)_minmax\(0,\.95fr\)\]/)
+  assert.match(cards, /aspect-\[8\/5\]/)
+  assert.match(cards, /links\.generic\('\/lien-he\/#yeu-cau-tu-van'\)/)
+  assert.match(detail, /aspect-\[8\/5\]/)
+  assert.match(detail, /:class="data\.solution\.image \? 'nav:grid-cols-2' : 'nav:grid-cols-1'"/)
+  assert.match(detail, /nav:row-span-2 nav:mb-0 nav:max-w-\[600px\]/)
+  assert.match(gallery, /aspect-\[8\/5\]/)
+  assert.doesNotMatch(equipment, /bg-slate-50|border border-gray-200|rounded-btn/)
+})
+
+test('editorial text controls meet the 44px hit-area rule and project tabs support arrow-key navigation', () => {
+  const news = read('../app/pages/migration-news-preview.vue')
+  const policy = read('../app/pages/migration-policy-preview.vue')
+  const solutionsHub = read('../app/pages/giai-phap.vue')
+  const phpSolutionHub = read('../../domains/phucthinhsolar.com/public_html/templates/news/service_list_tpl.php')
+  const phpSolutionStyles = read('../../domains/phucthinhsolar.com/public_html/assets/css/solution-hub.css')
+  const solutionDetail = read('../app/components/solution-detail/SolutionDetailPage.vue')
+  const solutionIntro = read('../app/components/solutions/SolutionsIntro.vue')
+  const equipment = read('../app/components/solutions/SolutionsEquipment.vue')
+  const projectGallery = read('../app/components/project-detail/ProjectDetailGallery.vue')
+
+  assert.match(news, /h-11 w-11 flex-none border-0/)
+  assert.equal((news.match(/inline-flex min-h-11 items-center[^\n]*news\.labels\.reset/g) || []).length, 2)
+  assert.match(policy, /flex min-h-11 items-center px-2 py-2/)
+  assert.match(solutionsHub, /flex min-h-11 items-center border-l-2/)
+  assert.match(solutionsHub, /rounded-\[3px\] bg-navy-800/)
+  assert.match(solutionsHub, /Trong trang này/)
+  assert.match(phpSolutionHub, /aria-label="Mục lục trang Giải pháp"/)
+  assert.match(phpSolutionStyles, /\.pts-sh-editorial-grid>\.pts-sd-toc\{max-height:calc\(100vh - 150px\);[^}]*background:var\(--sh-navy\)!important/)
+  assert.match(solutionDetail, /flex min-h-11 items-center border-l-2/)
+  assert.match(solutionIntro, /inline-flex min-h-11 items-center[^\n]*intro\.links\.explore/)
+  assert.match(equipment, /inline-flex min-h-11 items-center[^\n]*allProductsLabel/)
+  assert.match(projectGallery, /:tabindex="activeTab === 'image' \? 0 : -1"/)
+  assert.match(projectGallery, /event\.key === 'ArrowRight'.*event\.key === 'ArrowDown'/)
+  assert.match(projectGallery, /nextTick\(\(\) => .*\.focus\(\)\)/)
+  assert.doesNotMatch(news, /rounded-full/)
+})
+
+test('project detail uses one content gutter and avoids eyebrow/decorative CTA text', () => {
+  const projectDetail = read('../app/components/project-detail/ProjectDetailPage.vue')
+  const featured = read('../app/components/projects/ProjectsFeatured.vue')
+  assert.match(projectDetail, /<header class="py-10 nav:py-12">/)
+  assert.doesNotMatch(projectDetail, /project\.cta\.eyebrow|class="mb-3 font-bold text-gold-700"/)
+  assert.doesNotMatch(featured, /aria-hidden="true">01</)
+  assert.doesNotMatch(featured, /grid grid-cols-1 bg-slate-50/)
+})

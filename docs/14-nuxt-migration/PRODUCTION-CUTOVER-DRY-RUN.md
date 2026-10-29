@@ -56,12 +56,13 @@ callback, order creation và media transform ở PHP theo thiết kế.
 
 Public GUI cart và order-success đã có route/component flag-gated trong source
 (`a740593`); route checkout preview vẫn là `/migration-checkout-preview` và
-không có URL PHP canonical riêng tương đương `/dat-hang/`. Chưa tạo public
-checkout route mới vì đó sẽ là quyết định URL/sản phẩm, không phải route parity.
-Nếu chuyển GUI sang Nuxt ở phase sau, Nuxt chỉ render và gọi adapter allowlist;
-PHP vẫn kiểm session/quyền/CSRF, validate giỏ hàng/địa chỉ, tính tiền/phí vận
-chuyển, tạo đơn, thanh toán và idempotency. Không suy ra backend đã migrate chỉ
-vì GUI Nuxt trả 200.
+không có URL PHP canonical riêng tương đương `/dat-hang/`. Preview hiện chỉ đọc
+giỏ hàng; `POST /_migration/checkout` trả 410 và không forward tạo đơn. Chưa tạo
+public checkout route mới vì đó sẽ là quyết định URL/sản phẩm, không phải route
+parity. Nếu chuyển GUI sang Nuxt ở phase sau, Nuxt chỉ render và gọi adapter
+allowlist đã được triển khai/kiểm thử riêng; PHP vẫn kiểm session/quyền/CSRF,
+validate giỏ hàng/địa chỉ, tính tiền/phí vận chuyển, tạo đơn, thanh toán và
+idempotency. Không suy ra backend đã migrate chỉ vì GUI Nuxt trả 200.
 
 Hai prefix `/migration-*` và `/_migration/*` bị cấm trong mapping public. Preflight
 kiểm tra pilot không trùng denylist và không chứa preview path.

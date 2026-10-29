@@ -45,13 +45,38 @@ function ptsSolutionDetailMediaUrl($value, $root = '', $uploadDirectory = 'uploa
     return '/'.trim($uploadDirectory, '/').'/'.$value;
 }
 
+function ptsSolutionDetailCampaignCta(array $rows, $hotline = '')
+{
+    $visible = solutionHubSelect($rows, '', 1);
+    if($rows && !$visible) return null;
+
+    $row = $visible ? $visible[0] : array();
+    $buttonLabel = solutionHubField($row, 'title_index', 'vi') ?: 'Nhận tư vấn';
+    $image = isset($row['_pts_public_photo']) && is_string($row['_pts_public_photo'])
+        && preg_match('~^/upload/news/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|gif|webp|avif)$~i', $row['_pts_public_photo'])
+        ? $row['_pts_public_photo']
+        : '/assets/images/site-visuals/catalog-street-lighting.jpg';
+    $hotline = is_scalar($hotline) ? trim((string)$hotline) : '';
+    $hotlineTel = preg_replace('/[^0-9]/', '', $hotline);
+    if($hotlineTel !== '' && strpos($hotline, '+') === 0) $hotlineTel = '+'.$hotlineTel;
+
+    return array(
+        'title' => solutionHubField($row, 'name', 'vi') ?: 'Chưa biết giải pháp nào phù hợp?',
+        'description' => solutionHubField($row, 'desc', 'vi') ?: 'Chia sẻ nhu cầu của bạn. Đội ngũ Phúc Thịnh Solar sẽ hỗ trợ lựa chọn giải pháp phù hợp.',
+        'buttonLabel' => $buttonLabel,
+        'image' => $image,
+        'links' => array('consult' => array('label' => $buttonLabel, 'href' => '#ptsContactModal')),
+        'hotline' => $hotlineTel !== '' ? array('label' => 'Gọi ngay hotline', 'text' => $hotline, 'tel' => $hotlineTel) : null
+    );
+}
+
 function ptsSolutionDetailCanonical($slug)
 {
     $slug = ptsSolutionDetailSlug($slug);
     return $slug === '' ? '' : '/giai-phap/'.$slug.'/';
 }
 
-function ptsSolutionDetailPayload(array $row, array $gallery, array $solutionRows, array $productRows)
+function ptsSolutionDetailPayload(array $row, array $gallery, array $solutionRows, array $productRows, array $ctaRows = array(), $hotline = '')
 {
     $id = isset($row['id']) ? (int)$row['id'] : 0;
     $slug = ptsSolutionDetailSlug(isset($row['slugvi']) ? $row['slugvi'] : '');
@@ -116,6 +141,7 @@ function ptsSolutionDetailPayload(array $row, array $gallery, array $solutionRow
         'navigation' => array('allUrl' => '/giai-phap/', 'items' => $navigation),
         'equipment' => $equipment,
         'cta' => array('label' => 'Nhận tư vấn giải pháp', 'href' => '/lien-he/#yeu-cau-tu-van'),
+        'campaignCta' => ptsSolutionDetailCampaignCta($ctaRows, $hotline),
         /*
          * editorial giờ CHỈ còn nói về mục lục (TOC) tự sinh từ heading — HTML
          * thật đã có ở solution.content/extraContent phía trên. Xây TOC cần

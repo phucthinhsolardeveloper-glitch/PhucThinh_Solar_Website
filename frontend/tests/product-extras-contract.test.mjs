@@ -1,5 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
+import { readFileSync } from 'node:fs'
 import { isPublicProductExtrasPayload } from '../shared/contracts/public-product-extras.ts'
 
 const good = {
@@ -27,4 +28,9 @@ test('rejects unsafe video, policy, media and inconsistent review totals', () =>
   assert.equal(isPublicProductExtrasPayload({ ...good, warranty: { ...good.warranty, policies: [{ label: 'x', href: 'https://evil.test/' }] } }), false)
   assert.equal(isPublicProductExtrasPayload({ ...good, reviews: { ...good.reviews, total: 2 } }), false)
   assert.equal(isPublicProductExtrasPayload({ ...good, commitments: [{ name: 'x', image: '/private/x.jpg' }] }), false)
+})
+
+test('review dates use a deterministic Vietnam timezone for SSR and browser hydration', () => {
+  const reviews = readFileSync(new URL('../app/components/product-preview/ProductReviews.vue', import.meta.url), 'utf8')
+  assert.match(reviews, /dateStyle: 'medium', timeZone: 'Asia\/Ho_Chi_Minh'/)
 })

@@ -20,6 +20,23 @@ function ptsCatalogPlainText($value)
     return trim(preg_replace('/\s+/u', ' ', strip_tags(htmlspecialchars_decode((string)$value, ENT_QUOTES))));
 }
 
+function ptsCatalogSeoText($value)
+{
+    $text = ptsCatalogPlainText($value);
+    return trim(preg_replace('/[\x00-\x1F\x7F]+/', ' ', $text));
+}
+
+function ptsCatalogSeoDto($fallbackTitle, array $seoRow = array())
+{
+    $title = !empty($seoRow['titlevi']) ? ptsCatalogSeoText($seoRow['titlevi']) : ptsCatalogSeoText($fallbackTitle);
+    if($title !== '' && stripos($title, 'phúc thịnh s') === false) $title .= ' | Phúc Thịnh Solar';
+    return array(
+        'title' => $title,
+        'description' => !empty($seoRow['descriptionvi']) ? ptsCatalogSeoText($seoRow['descriptionvi']) : '',
+        'keywords' => !empty($seoRow['keywordsvi']) ? ptsCatalogSeoText($seoRow['keywordsvi']) : ''
+    );
+}
+
 function ptsCatalogCategoryUrl(array $slugs)
 {
     $clean = array();
@@ -102,7 +119,15 @@ function ptsCatalogPageExtrasDto(array $extras)
         $title = ptsCatalogPlainText($extras['support']['name'] ?? '');
         if($title !== '') $support = array('title' => $title, 'description' => ptsCatalogPlainText($extras['support']['desc'] ?? ''), 'image' => $image, 'href' => ptsCatalogHref($extras['support']['link'] ?? 'lien-he/'));
     }
-    return array('categoryHero' => $hero, 'categoryContent' => array('title' => $applicationTitle, 'applications' => $applications, 'faq' => $faq), 'support' => $support);
+    $canonical = isset($extras['canonicalPath']) && is_string($extras['canonicalPath']) ? $extras['canonicalPath'] : '/san-pham/';
+    if(!preg_match('#^/(?:san-pham/|danh-muc-san-pham/(?:[a-z0-9]+(?:-[a-z0-9]+)*/){1,4})$#', $canonical)) $canonical = '/san-pham/';
+    return array(
+        'categoryHero' => $hero,
+        'categoryContent' => array('title' => $applicationTitle, 'applications' => $applications, 'faq' => $faq),
+        'support' => $support,
+        'seo' => ptsCatalogSeoDto($extras['seoFallbackTitle'] ?? 'Sản phẩm', isset($extras['seoRow']) && is_array($extras['seoRow']) ? $extras['seoRow'] : array()),
+        'canonical' => array('url' => $canonical)
+    );
 }
 
 function ptsCatalogPositiveNumber($value)
@@ -141,11 +166,15 @@ function ptsCatalogProductDto(array $row, $pricesVisible = false)
     $url = ptsCatalogProductUrl($slug);
     if($id <= 0 || $name === '' || $url === '') return null;
     $media = array();
-    foreach(array('photo', 'photo2') as $field)
+    $path = ptsCatalogPublicMedia(isset($row['_pts_public_photo']) ? $row['_pts_public_photo'] : (isset($row['photo']) ? $row['photo'] : ''));
+    if($path !== '') $media[] = $path;
+    foreach(isset($row['_pts_public_gallery']) && is_array($row['_pts_public_gallery']) ? $row['_pts_public_gallery'] : array() as $filename)
     {
-        $path = ptsCatalogPublicMedia(isset($row['_pts_public_'.$field]) ? $row['_pts_public_'.$field] : (isset($row[$field]) ? $row[$field] : ''));
+        $path = ptsCatalogPublicMedia($filename);
         if($path !== '' && !in_array($path, $media, true)) $media[] = $path;
     }
+    $path = ptsCatalogPublicMedia(isset($row['_pts_public_photo2']) ? $row['_pts_public_photo2'] : (isset($row['photo2']) ? $row['photo2'] : ''));
+    if($path !== '' && !in_array($path, $media, true)) $media[] = $path;
     return array(
         'id' => $id,
         'name' => $name,
@@ -183,6 +212,16 @@ function ptsCatalogSubcategoryDto(array $row)
     $slug = ptsCatalogSlug(isset($row['slugvi']) ? $row['slugvi'] : '');
     if($id <= 0 || $name === '' || $slug === '') return null;
     return array('id' => $id, 'name' => $name, 'slug' => $slug);
+}
+
+function ptsCatalogNeedFilterOptions($enabled)
+{
+    if(!$enabled) return array();
+    return array(
+        array('key' => 'du-an-cong-trinh', 'label' => 'Dự án & công trình'),
+        array('key' => 'chieu-sang-gia-dinh', 'label' => 'Chiếu sáng gia đình'),
+        array('key' => 'san-vuon-canh-quan', 'label' => 'Sân vườn & cảnh quan')
+    );
 }
 
 /*
@@ -269,6 +308,7 @@ function ptsCatalogPayload(array $category, array $categories, array $rows, $pag
     $selectedBrandIds = isset($selectedFilters['brandIds']) && is_array($selectedFilters['brandIds']) ? array_values(array_unique(array_map('intval', $selectedFilters['brandIds']))) : array();
     $selectedPriceKeys = isset($selectedFilters['priceKeys']) && is_array($selectedFilters['priceKeys']) ? array_values(array_unique(array_map('strval', $selectedFilters['priceKeys']))) : array();
     $selectedSubcategoryIds = isset($selectedFilters['subcategoryIds']) && is_array($selectedFilters['subcategoryIds']) ? array_values(array_unique(array_map('intval', $selectedFilters['subcategoryIds']))) : array();
+    $selectedNeedKeys = isset($selectedFilters['needKeys']) && is_array($selectedFilters['needKeys']) ? array_values(array_unique(array_map('strval', $selectedFilters['needKeys']))) : array();
     return array_merge(array(
         'schemaVersion' => 1,
         'locale' => 'vi',
@@ -279,13 +319,15 @@ function ptsCatalogPayload(array $category, array $categories, array $rows, $pag
         'filters' => array(
             'brands' => $brandDtos,
             'priceRanges' => ptsCatalogPriceRangeDto(),
-            'subcategories' => $subcategoryDtos
+            'subcategories' => $subcategoryDtos,
+            'needs' => ptsCatalogNeedFilterOptions(!empty($filterOptions['needsEnabled']))
         ),
         'selected' => array(
             'brandIds' => $selectedBrandIds,
             'priceKeys' => $selectedPriceKeys,
             'subcategoryIds' => $selectedSubcategoryIds,
-            'sort' => ptsCatalogSortKey(isset($selectedFilters['sort']) ? $selectedFilters['sort'] : '')
+            'sort' => ptsCatalogSortKey(isset($selectedFilters['sort']) ? $selectedFilters['sort'] : ''),
+            'needKeys' => $selectedNeedKeys
         ),
         'parity' => array(
             'prices' => $pricesVisible ? array('included' => true) : array('included' => false, 'reason' => 'public_pricing_disabled'),

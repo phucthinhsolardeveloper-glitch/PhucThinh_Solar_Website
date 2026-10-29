@@ -57,6 +57,14 @@ function ptsAboutSafeLink($value)
     return $value;
 }
 
+function ptsAboutZaloUrl($phone)
+{
+    if(!is_scalar($phone)) return null;
+    $phone = preg_replace('/[^0-9]/', '', trim((string)$phone));
+    if($phone === '' || strlen($phone) > 20) return null;
+    return 'https://zalo.me/'.$phone;
+}
+
 function ptsAboutLabels()
 {
     return array(
@@ -90,12 +98,12 @@ function ptsAboutLabels()
     );
 }
 
-function ptsAboutPayload(array $sections, array $labels, $hotline = '')
+function ptsAboutPayload(array $sections, array $labels, $hotline = '', $zalo = '')
 {
     $hotline = is_scalar($hotline) ? trim((string)$hotline) : '';
     $hotlineDto = $hotline === '' ? null : array('label' => 'Gọi ngay hotline', 'text' => $hotline, 'tel' => preg_replace('/[^0-9+]/', '', $hotline));
     return array(
-        'schemaVersion' => 1,
+        'schemaVersion' => 2,
         'locale' => 'vi',
         'path' => '/gioi-thieu/',
         'title' => 'Giới thiệu Phúc Thịnh Solar',
@@ -111,7 +119,8 @@ function ptsAboutPayload(array $sections, array $labels, $hotline = '')
             'image' => $sections['cta']['image'],
             'href' => $sections['cta']['href'],
             'buttonLabel' => $labels['contactPrimary'],
-            'hotline' => $hotlineDto
+            'hotline' => $hotlineDto,
+            'zaloUrl' => ptsAboutZaloUrl($zalo)
         ),
         'labels' => array(
             'story' => 'Về Phúc Thịnh Solar',

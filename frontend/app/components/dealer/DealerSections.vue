@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { PublicDealerPayload } from '#shared/contracts/public-dealer'
+import EditorialRichText from '~/components/editorial/EditorialRichText.vue'
 
 defineProps<{ dealer: PublicDealerPayload }>()
 const links = useMigrationLinks()
@@ -19,20 +20,26 @@ function cardImage(src: string): string {
     có 4 thẻ một hàng ở 1920px). CSS preview cũ cố định 3 cột — với 4 phần tử
     sẽ đẩy thẻ thứ 4 xuống dòng riêng, lệch khỏi ảnh. Dùng 4 cột ở desktop.
   -->
-  <section v-if="dealer.support.title || dealer.support.items.length" id="ho-tro-dai-ly" class="bg-navy-950 py-12 text-white nav:py-16">
+  <section v-if="dealer.support.title || dealer.support.descriptionContent.html || dealer.support.description || dealer.support.items.length" id="ho-tro-dai-ly" class="bg-navy-950 py-12 text-white nav:py-16">
     <div class="mx-auto w-[calc(100%-clamp(40px,5vw,96px))] max-w-[1560px]">
-      <h2 v-if="dealer.support.title" class="mb-3 max-w-[32ch] text-[clamp(24px,2.6vw,34px)] font-black leading-tight">
-        {{ dealer.support.title || dealer.labels.support }}
-      </h2>
-      <p v-if="dealer.support.description" class="mb-8 max-w-[62ch] leading-relaxed text-blue-100">
-        {{ dealer.support.description }}
-      </p>
+      <div class="grid gap-0 min-[992px]:grid-cols-[minmax(300px,.8fr)_minmax(420px,1.2fr)] min-[992px]:gap-[clamp(44px,6vw,96px)]">
+        <h2 v-if="dealer.support.title" class="mb-3 max-w-[32ch] text-[clamp(24px,2.6vw,34px)] font-black leading-tight min-[992px]:mb-0 min-[992px]:max-w-[600px] min-[992px]:text-[clamp(30px,2.55vw,42px)] min-[992px]:leading-[1.16]">
+          {{ dealer.support.title || dealer.labels.support }}
+        </h2>
+        <EditorialRichText v-if="dealer.support.descriptionContent.html" :content="dealer.support.descriptionContent" class="cms-content-on-dark mb-8 max-w-[62ch] min-[992px]:mb-0 min-[992px]:mt-0.5 min-[992px]:max-w-[760px] min-[992px]:text-[17px] min-[992px]:leading-[1.78]" />
+        <p v-else-if="dealer.support.description" class="mb-8 max-w-[62ch] leading-relaxed text-blue-100 min-[992px]:mb-0 min-[992px]:mt-0.5 min-[992px]:max-w-[760px] min-[992px]:text-[17px] min-[992px]:leading-[1.78]">
+          {{ dealer.support.description }}
+        </p>
+      </div>
 
-      <div class="grid grid-cols-1 gap-5 ph:grid-cols-2 nav:grid-cols-4">
+      <div class="mt-0 grid grid-cols-1 gap-5 ph:grid-cols-2 nav:grid-cols-4 min-[992px]:mt-[38px]">
         <article v-for="item in dealer.support.items" :key="item.title" class="rounded-btn border border-white/10 bg-white/5 p-5">
-          <img v-if="item.image" :src="cardImage(item.image)" :alt="item.title" class="mb-4 h-11 w-11 rounded-chip object-cover" loading="lazy">
+          <span v-if="item.image" class="mb-4 flex h-12 w-12 items-center justify-center rounded-chip bg-gold-300 p-2">
+            <img :src="cardImage(item.image)" :alt="item.title" class="h-full w-full object-contain" loading="lazy">
+          </span>
           <h3 class="mb-2 font-bold text-white">{{ item.title }}</h3>
-          <p class="m-0 text-sm leading-relaxed text-blue-100">{{ item.description }}</p>
+          <EditorialRichText v-if="item.descriptionContent.html" :content="item.descriptionContent" class="cms-content-on-dark text-sm leading-relaxed" />
+          <p v-else class="m-0 text-sm leading-relaxed text-blue-100">{{ item.description }}</p>
         </article>
       </div>
     </div>

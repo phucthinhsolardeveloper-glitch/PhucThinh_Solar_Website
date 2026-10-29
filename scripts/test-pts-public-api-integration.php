@@ -430,6 +430,38 @@ if($hiddenProductSlug !== '')
 else ptsIntegrationRecord('skip', 'hidden product excluded', 'no hidden product fixture with a valid slug');
 
 /* Mutation endpoints: only malformed/invalid-CSRF branches, never a valid write. */
+$cartMutationSourcePath = $publicRoot.'/api/pts_v1_cart_mutate.php';
+$cartMutationSource = is_file($cartMutationSourcePath) ? file_get_contents($cartMutationSourcePath) : false;
+$productLookupPosition = is_string($cartMutationSource) ? strpos($cartMutationSource, '$product = $cart->getProductInfo($id);') : false;
+$publishedGuardPosition = is_string($cartMutationSource) ? strpos($cartMutationSource, '!== \'san-pham\' || !in_array(\'hienthi\', $productStatuses, true)') : false;
+$addToCartPosition = is_string($cartMutationSource) ? strpos($cartMutationSource, '$cart->addToCart($quantity, $id, $color, $size);') : false;
+if($productLookupPosition !== false && $publishedGuardPosition !== false && $addToCartPosition !== false && $productLookupPosition < $publishedGuardPosition && $publishedGuardPosition < $addToCartPosition)
+    ptsIntegrationRecord('pass', 'cart add rejects hidden or wrong-type products before session mutation', 'published san-pham guard precedes addToCart; no valid mutation submitted');
+else
+    ptsIntegrationRecord('fail', 'cart add rejects hidden or wrong-type products before session mutation', 'required product type/status guard is missing or runs after addToCart');
+$actionValidationPosition = is_string($cartMutationSource) ? strpos($cartMutationSource, 'if(!in_array($action, array(\'add\',\'update\',\'delete\'), true))') : false;
+$pricingGatePosition = is_string($cartMutationSource) ? strpos($cartMutationSource, "if(!publicProductPricesVisible() && \$action !== 'delete')") : false;
+$pricingGateAllowsDelete = is_string($cartMutationSource) && strpos($cartMutationSource, "if(!publicProductPricesVisible() && \$action !== 'delete')") !== false;
+$addActionPosition = is_string($cartMutationSource) ? strpos($cartMutationSource, 'if($action === \'add\')') : false;
+$hasUpdateAndDeletePaths = is_string($cartMutationSource)
+    && strpos($cartMutationSource, 'elseif($action === \'update\')') !== false
+    && strpos($cartMutationSource, '$cart->removeProduct($code);') !== false;
+$sessionCartClearPosition = is_string($cartMutationSource) ? strpos($cartMutationSource, 'unset($_SESSION[\'cart\'])') : false;
+if($pricingGateAllowsDelete && $actionValidationPosition !== false && $pricingGatePosition !== false && $addActionPosition !== false
+    && $actionValidationPosition < $pricingGatePosition && $pricingGatePosition < $addActionPosition
+    && $hasUpdateAndDeletePaths && $sessionCartClearPosition === false)
+    ptsIntegrationRecord('pass', 'quote-only mode blocks add/update but allows cart deletion', 'source guard exempts delete while preserving quote-only refusal and session contents; no valid mutation submitted');
+else
+    ptsIntegrationRecord('fail', 'quote-only mode blocks add/update but allows cart deletion', 'quote-only action guard must reject add/update, exempt delete, and avoid clearing session state');
+$legacyCartSourcePath = $publicRoot.'/api/cart.php';
+$legacyCartSource = is_file($legacyCartSourcePath) ? file_get_contents($legacyCartSourcePath) : false;
+$legacyPricingGatePosition = is_string($legacyCartSource) ? strpos($legacyCartSource, 'if(!publicProductPricesVisible())') : false;
+$legacyDeletePosition = is_string($legacyCartSource) ? strpos($legacyCartSource, 'else if($cmd == \'delete-cart\'') : false;
+if($legacyPricingGatePosition !== false && $legacyDeletePosition !== false && $legacyPricingGatePosition < $legacyDeletePosition)
+    ptsIntegrationRecord('pass', 'legacy PHP cart behavior remains unchanged', 'legacy route keeps its pre-existing quote-only gate; scoped deletion policy applies to the new migration adapter');
+else
+    ptsIntegrationRecord('fail', 'legacy PHP cart behavior remains unchanged', 'legacy quote-only gate or delete-cart branch moved unexpectedly');
+
 list($response,$decoded) = ptsIntegrationRequest('cart mutate GET rejected', $mutationInventory['cart_mutate'], 'GET');
 if($response['status'] !== 0) ptsIntegrationAssertMethod('cart mutate GET rejected', $response, 405, 'POST');
 list($response,$decoded) = ptsIntegrationRequest('cart mutate invalid CSRF', $mutationInventory['cart_mutate'], 'POST', array(), array('action'=>'add','csrfToken'=>'invalid'));

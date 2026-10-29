@@ -25,6 +25,7 @@ try {
     require_once LIBRARIES.'solution_hub.php';
     $row = $d->rawQueryOne('select id,id_list,namevi,slugvi,descvi,contentvi,photo,address,tenkhachhang,project_start_date,project_end_date,status,type from #_news where slugvi = ? and type = ? and find_in_set(\'hienthi\',status) limit 1', array($slug, 'du-an'));
     if(empty($row)) ptsProjectDetailError(404, 'PROJECT_NOT_FOUND');
+    $seoRow = $d->rawQueryOne('select titlevi,descriptionvi,keywordsvi from #_seo where id_parent = ? and com = ? and act = ? and type = ? limit 0,1', array((int)$row['id'], 'news', 'man', 'du-an'));
     $category = $d->rawQueryOne('select id,namevi,slugvi,status from #_news_list where id = ? and type = ? and find_in_set(\'hienthi\',status) limit 1', array((int)$row['id_list'], 'du-an'));
     $row['category_id'] = isset($category['id']) ? (int)$category['id'] : 0;
     $row['category_name'] = isset($category['namevi']) ? $category['namevi'] : '';
@@ -40,6 +41,7 @@ try {
     $relatedProjects = array();
     foreach((array)$relatedProjectRows as $relatedProjectRow) { $dto = ptsProjectDetailRelatedProjectDto($relatedProjectRow, ROOT); if($dto !== null) $relatedProjects[] = $dto; }
     $ctaRows = $d->rawQuery('select namevi,title_indexvi,descvi,content1vi,photo,status from #_news where type=? order by numb,id desc', array('project-cta'));
+    $trustRows = $d->rawQuery('select namevi,photo,status from #_news where type=? and find_in_set(\'hienthi\',status) order by numb,id desc limit 0,3', array('project-trust'));
     $ctaVisible = solutionHubSelect($ctaRows, '', 1);
     $cta = null;
     if(!$ctaRows || $ctaVisible)
@@ -53,8 +55,9 @@ try {
             'description' => solutionHubField($ctaRow, 'desc', 'vi') ?: 'Đội ngũ Phúc Thịnh Solar sẵn sàng hỗ trợ, tư vấn giải pháp điện mặt trời phù hợp nhất cho nhu cầu của bạn.',
             'buttonLabel' => solutionHubField($ctaRow, 'content1', 'vi') ?: 'Nhận tư vấn miễn phí',
             'image' => $ctaImage,
-            'hotline' => isset($optsetting['hotline']) && is_scalar($optsetting['hotline']) ? trim((string)$optsetting['hotline']) : ''
+            'hotline' => isset($optsetting['hotline']) && is_scalar($optsetting['hotline']) ? trim((string)$optsetting['hotline']) : '',
+            'trust' => ptsProjectDetailTrustDto((array)$trustRows, ROOT)
         );
     }
-    echo json_encode(ptsProjectDetailPayload($row, $gallery, $related, array('project' => 'legacy /'.$slug.'/', 'gallery' => 'news.php detail branch', 'relatedEquipment' => 'product_projects.php', 'relatedProjects' => 'news.php same category', 'cta' => 'project_hub.php project-cta slot'), $relatedProjects, $cta), JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR);
+    echo json_encode(ptsProjectDetailPayload($row, $gallery, $related, array('project' => 'legacy /'.$slug.'/', 'gallery' => 'news.php detail branch', 'relatedEquipment' => 'product_projects.php', 'relatedProjects' => 'news.php same category', 'cta' => 'project_hub.php project-cta slot'), $relatedProjects, $cta, is_array($seoRow) ? $seoRow : array()), JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR);
 } catch(Throwable $e) { error_log('pts_v1_project_detail: '.$e->getMessage()); http_response_code(500); echo '{"error":{"code":"INTERNAL_ERROR"}}'; }

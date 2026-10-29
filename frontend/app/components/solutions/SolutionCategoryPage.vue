@@ -1,0 +1,79 @@
+<script setup lang="ts">
+import type { PublicSolutionsPayload } from '#shared/contracts/public-solutions'
+import { isPublicSolutionsPayload } from '#shared/contracts/public-solutions'
+import type { PublicSitePayload } from '#shared/contracts/public-site'
+import { isPublicSitePayload } from '#shared/contracts/public-site'
+import { editorialPublicResponseStatus, editorialPublicRouteRobots } from '#shared/editorial-public-route'
+import { isRuntimeFlagEnabled } from '#shared/public-route-gate'
+import SolutionCards from '~/components/solutions/SolutionCards.vue'
+import SolutionsCta from '~/components/solutions/SolutionsCta.vue'
+
+const route = useRoute()
+const config = useRuntimeConfig()
+const links = useMigrationLinks()
+const slug = computed(() => typeof route.params.slug === 'string' ? route.params.slug : typeof route.query.slug === 'string' ? route.query.slug : '')
+const routeEnabled = computed(() => isRuntimeFlagEnabled(config.public.solutionsPublicRouteEnabled))
+const { data: siteData } = await useFetch<unknown>('/_migration/site', {
+  default: (): PublicSitePayload => ({ schemaVersion: 1, brand: { name: 'Phúc Thịnh Solar', hotline: '' }, productCategories: [] }),
+})
+const { data, error } = await useAsyncData<unknown>(
+  () => `public-solution-category-${slug.value}`,
+  () => $fetch('/_migration/solutions', { query: { category: slug.value } }),
+  { watch: [slug] },
+)
+const site = computed(() => isPublicSitePayload(siteData.value) ? siteData.value : { schemaVersion: 1 as const, brand: { name: 'Phúc Thịnh Solar', hotline: '' }, productCategories: [] })
+const solutions = computed<PublicSolutionsPayload | null>(() => isPublicSolutionsPayload(data.value) ? data.value : null)
+const category = computed(() => solutions.value?.category?.slug === slug.value ? solutions.value.category : null)
+const errorStatus = (error.value as { statusCode?: unknown } | null)?.statusCode
+const responseStatus = editorialPublicResponseStatus(routeEnabled.value, errorStatus, !category.value)
+if (import.meta.server && responseStatus) setResponseStatus(responseStatus, responseStatus === 404 ? 'Not Found' : 'Bad Gateway')
+const hasFilters = computed(() => Object.keys(route.query).length > 0)
+
+useSeoMeta({
+  title: computed(() => category.value?.name || 'Giải pháp'),
+  description: computed(() => category.value?.description || ''),
+  robots: computed(() => editorialPublicRouteRobots(routeEnabled.value, config.public.solutionsPublicRouteIndexable, !!category.value && !error.value, hasFilters.value)),
+})
+usePublicSocialMeta({
+  enabled: computed(() => routeEnabled.value && !!category.value && !error.value),
+  title: computed(() => category.value?.name || 'Giải pháp'),
+  description: computed(() => category.value?.description || ''),
+  canonicalPath: computed(() => category.value?.canonicalPath || `/${slug.value}`),
+})
+</script>
+
+<template>
+  <div class="text-navy-800">
+    <SiteHeader :site="site" />
+    <main class="mx-auto w-full max-w-[1766px] px-4 pb-12">
+      <SiteBreadcrumb :items="[{ label: 'Giải pháp', to: '/giai-phap/' }, { label: category?.name || 'Danh mục giải pháp' }]" />
+
+      <section v-if="error || !solutions || !category" class="min-h-[40vh] py-10" :role="responseStatus === 404 ? 'status' : 'alert'">
+        <h1 class="mb-3 text-3xl font-black tracking-tight">{{ responseStatus === 404 ? 'Không tìm thấy danh mục giải pháp' : 'Tạm thời không thể tải danh mục giải pháp' }}</h1>
+        <p class="text-slate-600">{{ responseStatus === 404 ? 'Danh mục này hiện không tồn tại hoặc đã ẩn.' : 'Nguồn nội dung hiện không khả dụng.' }}</p>
+      </section>
+
+      <template v-else>
+        <header class="my-7 max-w-[980px]">
+          <h1 class="mb-3 text-[clamp(32px,5vw,56px)] font-black leading-tight tracking-tight text-navy-950">{{ category.name }}</h1>
+          <p class="m-0 text-lg leading-relaxed text-slate-600">{{ category.description }}</p>
+        </header>
+
+        <nav v-if="category.navigation.length" class="mb-7 flex gap-2 overflow-x-auto py-0.5 [scrollbar-width:none] [&amp;::-webkit-scrollbar]:hidden" aria-label="Danh mục giải pháp">
+          <NuxtLink
+            v-for="item in category.navigation"
+            :key="item.id"
+            class="flex min-h-11 flex-none items-center whitespace-nowrap rounded-chip px-[13px] no-underline"
+            :class="item.active ? 'bg-navy-800 text-white' : 'border border-gray-200 text-navy-800 hover:border-gold-700'"
+            :to="links.generic(item.url)"
+            :aria-current="item.active ? 'page' : undefined"
+          >{{ item.name }}</NuxtLink>
+        </nav>
+
+        <SolutionCards :cards="category.cards" :choices-label="solutions.labels.choices" :empty-label="solutions.labels.empty" :consult-label="solutions.labels.consult" />
+        <SolutionsCta v-if="solutions.cta" :cta="solutions.cta" />
+      </template>
+    </main>
+    <SiteFooter :site="site" />
+  </div>
+</template>

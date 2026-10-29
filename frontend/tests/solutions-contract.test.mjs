@@ -3,7 +3,7 @@ import assert from 'node:assert/strict'
 import { isPublicSolutionsPayload } from '../shared/contracts/public-solutions.ts'
 
 const good = {
-  schemaVersion: 1, locale: 'vi', path: '/giai-phap/', title: 'Chọn đúng giải pháp cho nhu cầu của bạn',
+  schemaVersion: 1, locale: 'vi', path: '/giai-phap/', title: 'Chọn đúng giải pháp cho nhu cầu của bạn', category: null,
   intro: { eyebrow: 'Giải pháp theo nhu cầu', title: 'Giải pháp', description: 'Mô tả', image: '', links: { consult: { label: 'Nhận tư vấn', href: '#ptsContactModal' }, explore: { label: 'Khám phá', href: '/giai-phap/#cac-giai-phap' } } },
   cards: [{ title: 'Điện mặt trời', description: '', slug: 'dien-mat-troi', url: '/giai-phap/dien-mat-troi/', image: '/assets/images/solution.jpg', actionLabel: 'Xem giải pháp' }],
   equipment: [{ name: 'Biến tần', description: '', url: '/danh-muc-san-pham/bien-tan/', image: '' }],
@@ -15,7 +15,17 @@ const good = {
   },
 }
 
+const solutionCategory = {
+  id: 3, name: 'Hộ gia đình', description: 'Giải pháp cho gia đình', slug: 'ho-gia-dinh', canonicalPath: '/ho-gia-dinh',
+  cards: [{ title: 'Điện mặt trời gia đình', description: '', slug: 'dien-mat-troi-ho-gia-dinh', url: '/giai-phap/dien-mat-troi-ho-gia-dinh/', image: '', actionLabel: 'Xem giải pháp' }],
+  navigation: [{ id: 3, name: 'Hộ gia đình', slug: 'ho-gia-dinh', url: '/giai-phap/dien-mat-troi-ho-gia-dinh/', active: true }],
+}
+
 test('accepts the PHP solutions DTO', () => assert.equal(isPublicSolutionsPayload(good), true))
+test('accepts category DTO with bare canonical and rejects mismatched canonical', () => {
+  assert.equal(isPublicSolutionsPayload({ ...good, category: solutionCategory }), true)
+  assert.equal(isPublicSolutionsPayload({ ...good, category: { ...solutionCategory, canonicalPath: '/ho-gia-dinh/' } }), false)
+})
 test('accepts hidden intro and CTA as null', () => assert.equal(isPublicSolutionsPayload({ ...good, intro: null, cta: null }), true))
 test('rejects unsafe image paths and arbitrary links', () => {
   assert.equal(isPublicSolutionsPayload({ ...good, cards: [{ ...good.cards[0], image: 'https://example.test/x' }] }), false)

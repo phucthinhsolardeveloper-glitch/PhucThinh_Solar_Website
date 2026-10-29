@@ -1,4 +1,4 @@
-export interface PublicNewsCategory { id: number; name: string; description: string; slug: string; url: string; image: string }
+export interface PublicNewsCategory { id: number; name: string; description: string; slug: string; url: string; canonicalPath: string; image: string }
 export interface PublicNewsArticle { id: number; title: string; slug: string; url: string; description: string; date: string; image: string; readingMinutes: number; category: PublicNewsCategory | null; featured: boolean }
 export interface PublicNewsIntro { title: string; description: string }
 export interface PublicNewsCta { title: string; description: string; buttonLabel: string; image: string; hotline: { label: string; text: string; tel: string } | null }
@@ -14,7 +14,7 @@ function isText(value: unknown, allowEmpty = false): value is string { return ty
 function isSlug(value: unknown): value is string { return typeof value === 'string' && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value) }
 function isImage(value: unknown): value is string { return typeof value === 'string' && (value === '' || /^\/upload\/news\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|gif|webp|avif)$/i.test(value)) }
 function isId(value: unknown): value is number { return typeof value === 'number' && Number.isSafeInteger(value) && value > 0 }
-function isCategory(value: unknown): value is PublicNewsCategory { return isRecord(value) && isId(value.id) && isText(value.name) && isText(value.description, true) && isSlug(value.slug) && value.url === `/${value.slug}/` && isImage(value.image) }
+function isCategory(value: unknown): value is PublicNewsCategory { return isRecord(value) && isId(value.id) && isText(value.name) && isText(value.description, true) && isSlug(value.slug) && value.url === `/${value.slug}/` && value.canonicalPath === `/${value.slug}` && isImage(value.image) }
 function isArticle(value: unknown): value is PublicNewsArticle {
   return isRecord(value) && isId(value.id) && isText(value.title) && isSlug(value.slug) && value.url === `/${value.slug}/` && isText(value.description, true) && (value.date === '' || typeof value.date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value.date)) && isImage(value.image) && typeof value.readingMinutes === 'number' && Number.isSafeInteger(value.readingMinutes) && value.readingMinutes >= 0 && typeof value.featured === 'boolean' && (value.category === null || isCategory(value.category))
 }

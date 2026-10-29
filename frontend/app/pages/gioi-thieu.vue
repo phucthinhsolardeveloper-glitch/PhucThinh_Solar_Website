@@ -13,12 +13,27 @@ const config = useRuntimeConfig()
 const { site, hasError: siteHasError, errorMessage: siteErrorMessage } = await usePublicSite()
 const { data, error, pending } = await useAsyncData<unknown>('public-about', () => $fetch('/_migration/about'), { default: () => null })
 const about = computed(() => isPublicAboutPayload(data.value) ? data.value : null)
-const indexable = computed(() => isRuntimeFlagEnabled(config.public.aboutPublicRouteIndexable))
+const publicEnabled = computed(() => isRuntimeFlagEnabled(config.public.aboutPublicRouteEnabled))
+const indexable = computed(() => publicEnabled.value
+  && isRuntimeFlagEnabled(config.public.aboutPublicRouteIndexable)
+  && !!about.value && !siteHasError.value && !error.value)
+const apiStatus = (error.value as { statusCode?: unknown } | null)?.statusCode
+if (import.meta.server && publicEnabled.value && (siteHasError.value || error.value || !about.value)) {
+  const status = apiStatus === 404 ? 404 : 502
+  setResponseStatus(status, status === 404 ? 'Not Found' : 'Bad Gateway')
+}
 
 useSeoMeta({
   title: computed(() => about.value?.title || 'Giới thiệu — Phúc Thịnh Solar'),
   description: computed(() => about.value?.story.intro || ''),
   robots: computed(() => indexable.value ? 'index, follow' : 'noindex, nofollow, noarchive'),
+})
+usePublicSocialMeta({
+  enabled: computed(() => publicEnabled.value && !!about.value && !siteHasError.value && !error.value),
+  title: computed(() => about.value?.title || 'Giới thiệu — Phúc Thịnh Solar'),
+  description: computed(() => about.value?.story.intro || ''),
+  canonicalPath: '/gioi-thieu/',
+  image: computed(() => about.value?.story.image || undefined),
 })
 </script>
 

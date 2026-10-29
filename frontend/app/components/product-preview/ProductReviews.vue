@@ -15,7 +15,7 @@ function percent(star: number): number {
 }
 function dateText(timestamp: number): string {
   if (!timestamp) return ''
-  return new Intl.DateTimeFormat('vi-VN', { dateStyle: 'medium' }).format(new Date(timestamp * 1000))
+  return new Intl.DateTimeFormat('vi-VN', { dateStyle: 'medium', timeZone: 'Asia/Ho_Chi_Minh' }).format(new Date(timestamp * 1000))
 }
 async function sendReview() {
   success.value = ''

@@ -12,7 +12,7 @@ useSeoMeta({ title: 'Giới thiệu — internal preview' })
 </script>
 
 <template>
-  <div>
+  <main>
     <div class="mx-auto w-[min(calc(100%-32px),2200px)]">
       <SiteBreadcrumb :items="[{ label: 'Giới thiệu' }]" />
     </div>
@@ -25,5 +25,5 @@ useSeoMeta({ title: 'Giới thiệu — internal preview' })
       <p class="mt-3 leading-[1.68] text-[#52627c]">Không thể tải dữ liệu CMS trong môi trường hiện tại. Preview không hiển thị dữ liệu giới thiệu giả.</p>
     </div>
     <AboutPreviewPage v-else :about="about" />
-  </div>
+  </main>
 </template>

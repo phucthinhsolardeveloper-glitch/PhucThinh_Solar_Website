@@ -23,3 +23,12 @@ test('PHP fallback is explicit localhost only', () => {
   assert.throws(() => resolvePreviewLink('home', 'unknown'))
 })
 
+test('checkout registry clearly describes the preview as read-only with order submission disabled', () => {
+  const checkout = MIGRATION_PREVIEW_ROUTES.find(({ key }) => key === 'checkout')
+  assert.ok(checkout)
+  assert.match(checkout.description, /chỉ xem tóm tắt giỏ hàng/)
+  assert.match(checkout.description, /không thu thập thông tin hay gửi đơn/)
+  assert.match(checkout.description, /POST checkout bị khóa \(410\)/)
+  assert.doesNotMatch(checkout.description, /order mutation vẫn chạy transaction/i)
+})
+

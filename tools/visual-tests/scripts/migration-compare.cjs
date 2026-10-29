@@ -27,7 +27,9 @@ Options:
   --output <dir>          Artifact directory (default: frontend/.migration-artifacts/migration-comparison)
   --viewport <WxH>        Repeatable viewport, e.g. 390x844 or 1440x900
   --browser <name>        chromium (default), firefox, or webkit
+  --full-page             Capture the full page for section-by-section visual review
   --reduced-motion <x>    reduce (default) or no-preference
+  --public-routes         Treat same-origin canonical Nuxt routes as expected links
   --allow-remote          Explicitly allow non-loopback URLs (never use production by default)
   --help                  Show this help
 
@@ -47,6 +49,8 @@ function parseArgs(argv) {
     const value = argv[index]
     if (value === '--help' || value === '-h') return { help: true }
     if (value === '--allow-remote') { args.allowRemote = true; continue }
+    if (value === '--public-routes') { args.publicRoutes = true; continue }
+    if (value === '--full-page') { args.fullPage = true; continue }
     if (['--manifest', '--output', '--viewport', '--browser', '--reduced-motion'].includes(value)) {
       const next = argv[++index]
       if (!next) throw new Error(`${value} requires a value`)
@@ -226,9 +230,21 @@ async function capturePage(browser, url, viewport, settings, fileStem, output) {
   const headerPath = path.join(output, `${fileStem}-header.png`)
   let screenshotBase64 = null
   let headerBase64 = null
+  let screenshotCaptured = false
   if (!navigationError) {
-    await page.screenshot({ path: screenshotPath, fullPage: false, animations: 'disabled', timeout: 20000 })
-    screenshotBase64 = (await fs.readFile(screenshotPath)).toString('base64')
+    if (settings.fullPage) {
+      await page.evaluate(() => {
+        for (const image of document.images) image.loading = 'eager'
+      })
+      await page.evaluate(async () => {
+        await Promise.all([...document.images].map(image => image.decode().catch(() => undefined)))
+      })
+    }
+    await page.screenshot({ path: screenshotPath, fullPage: Boolean(settings.fullPage), animations: 'disabled', timeout: 30000 })
+    screenshotCaptured = true
+    // Full-page captures are review artifacts. Avoid loading multi-megapixel
+    // images into the report and canvas diff; reviewers inspect the PNG files.
+    if (!settings.fullPage) screenshotBase64 = (await fs.readFile(screenshotPath)).toString('base64')
     const header = page.locator('header, [role="banner"]').first()
     if (await header.count() && await header.isVisible().catch(() => false)) {
       await header.screenshot({ path: headerPath, animations: 'disabled', timeout: 10000 }).catch(() => {})
@@ -238,7 +254,7 @@ async function capturePage(browser, url, viewport, settings, fileStem, output) {
   const result = {
     url, status: response?.status() ?? null, ok: Boolean(response?.ok()), navigationError,
     durationMs: Date.now() - started, ...metadata, consoleMessages, consoleWarnings, pageErrors, failedRequests,
-    screenshot: screenshotBase64 ? path.basename(screenshotPath) : null,
+    screenshot: screenshotCaptured ? path.basename(screenshotPath) : null,
     headerScreenshot: headerBase64 ? path.basename(headerPath) : null,
     screenshotBase64, headerBase64,
   }
@@ -250,11 +266,13 @@ function previewLinkLeaks(preview, settings) {
   const previewOrigin = new URL(settings.previewUrl).origin
   const legacyOrigin = new URL(settings.legacyUrl).origin
   const allowedPreviewPath = pathname => /^\/(?:migration(?:-|\/)|_migration(?:\/|$)|_nuxt(?:\/|$)|assets(?:\/|$)|thumbs(?:\/|$)|upload(?:\/|$))/.test(pathname)
+  const previewOnlyPath = pathname => /^\/(?:migration(?:-|\/)|_migration(?:\/|$))/.test(pathname)
   return (preview.hrefs || []).filter((href) => {
     let target
     try { target = new URL(href) } catch { return false }
     if (!['http:', 'https:'].includes(target.protocol)) return false
     if (target.origin === legacyOrigin) return true
+    if (settings.publicRoutes && target.origin === previewOrigin) return previewOnlyPath(target.pathname)
     return target.origin === previewOrigin && !allowedPreviewPath(target.pathname)
   })
 }
@@ -470,8 +488,12 @@ async function run(args) {
         const prefix = `${safeFilePart(route.id)}-${viewport.width}x${viewport.height}`
         const legacy = await capturePage(browser, joinUrl(args.legacyUrl, route.legacyPath, args.allowRemote), viewport, args, `${prefix}-legacy`, args.output)
         const preview = await capturePage(browser, joinUrl(args.previewUrl, route.previewPath, args.allowRemote), viewport, args, `${prefix}-preview`, args.output)
-        const diff = await compareScreenshots(browser, legacy.screenshotBase64, preview.screenshotBase64, path.join(args.output, `${prefix}-diff.png`))
-        const classification = classifyDifference(legacy, preview, diff)
+        const diff = args.fullPage
+          ? { status: 'not-compared', reason: 'full-page-captured-for-manual-section-review' }
+          : await compareScreenshots(browser, legacy.screenshotBase64, preview.screenshotBase64, path.join(args.output, `${prefix}-diff.png`))
+        const classification = args.fullPage
+          ? { kind: 'manual-review-capture', confidence: 'none', reason: 'Full-page PNGs require section-by-section visual review; no pixel classification was run.' }
+          : classifyDifference(legacy, preview, diff)
         const gate = viewportGate(legacy, preview, args)
         routeReport.viewports.push({ ...viewport, legacy, preview, diff, classification, gate })
         console.log(`${route.id} ${viewport.width}x${viewport.height}: legacy=${legacy.status ?? 'ERR'} preview=${preview.status ?? 'ERR'} diff=${diff.status} class=${classification.kind}`)

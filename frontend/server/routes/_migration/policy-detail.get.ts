@@ -13,6 +13,7 @@ export default defineEventHandler(async (event) => {
     validate: isPublicPolicyDetail,
     invalidMessage: 'Invalid PHP policy data contract',
     unavailableMessage: 'PHP policy data source unavailable',
+    passThroughStatuses: [404],
   })
   setHeader(event, 'Cache-Control', 'private, no-store')
   return payload

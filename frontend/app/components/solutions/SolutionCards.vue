@@ -19,18 +19,18 @@ const links = useMigrationLinks()
       {{ emptyLabel }}
     </h2>
 
-    <div v-if="cards.length" class="flex gap-4 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden nav:grid nav:grid-cols-5 nav:gap-5 nav:overflow-visible">
+    <div v-if="cards.length" class="flex gap-4 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden nav:grid nav:gap-5 nav:overflow-visible" :class="cards.length === 1 ? 'nav:grid-cols-1' : 'nav:grid-cols-5'">
       <a
         v-for="card in cards"
         :key="card.slug"
         class="flex min-w-0 flex-none basis-[min(78vw,286px)] flex-col text-navy-800 no-underline nav:basis-auto"
+        :class="cards.length === 1 ? 'nav:w-full nav:flex-row nav:gap-6' : ''"
         :href="links.solution(card.slug)"
       >
-        <div class="flex aspect-[8/5] items-center justify-center overflow-hidden rounded-chip bg-slate-50 text-2xl font-extrabold text-gold-500">
-          <img v-if="card.image" :src="card.image" alt="" class="h-full w-full object-cover" width="600" height="375" loading="lazy" decoding="async">
-          <span v-else aria-hidden="true">—</span>
+        <div v-if="card.image" class="flex aspect-[8/5] items-center justify-center overflow-hidden rounded-chip" :class="cards.length === 1 ? 'nav:w-1/2 nav:max-w-[560px] nav:flex-none' : ''">
+          <img :src="card.image" alt="" class="h-full w-full object-cover" width="600" height="375" loading="lazy" decoding="async">
         </div>
-        <div class="flex flex-1 flex-col items-start pt-[17px]">
+        <div class="flex flex-1 flex-col items-start pt-[17px]" :class="cards.length === 1 ? 'nav:justify-center nav:pt-0' : ''">
           <h3 class="m-0 mb-2.5 min-h-[47px] text-lg leading-[1.3]">{{ card.title }}</h3>
           <p v-if="card.description" class="m-0 mb-3 line-clamp-3 min-h-[69px] text-sm leading-[1.62] text-slate-500">{{ card.description }}</p>
           <span class="mt-auto flex w-full items-center justify-between gap-2.5 text-[13px] font-extrabold">
@@ -42,6 +42,6 @@ const links = useMigrationLinks()
         </div>
       </a>
     </div>
-    <a v-else class="font-extrabold text-navy-800 no-underline" href="/migration-contact-preview#yeu-cau-tu-van">{{ consultLabel }} →</a>
+    <a v-else class="inline-flex min-h-11 items-center font-extrabold text-navy-800 no-underline" :href="links.generic('/lien-he/#yeu-cau-tu-van')">{{ consultLabel }} →</a>
   </section>
 </template>
