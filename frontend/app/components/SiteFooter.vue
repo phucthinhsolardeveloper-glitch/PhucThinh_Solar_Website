@@ -55,6 +55,8 @@ const telHref = computed(() => telHrefFor(hotline.value))
             v-if="footerLogo"
             :src="footerLogo"
             :alt="brandName"
+            width="280"
+            height="229"
             class="block h-auto w-full max-w-[180px] wd:max-w-[280px]"
           >
           <span v-else class="text-lg font-black text-white">{{ brandName }}</span>
@@ -140,7 +142,7 @@ const telHref = computed(() => telHrefFor(hotline.value))
             target="_blank"
             rel="noopener noreferrer"
           >
-            <img :src="footer.trustBadge.image" alt="Đã thông báo Bộ Công Thương" class="block h-auto w-full">
+            <img :src="footer.trustBadge.image" alt="Đã thông báo Bộ Công Thương" width="200" height="76" class="block h-auto w-full">
           </a>
           <div v-if="footer?.socialLinks.length" class="mt-[18px]">
             <h3 class="mb-2 text-[13px] font-extrabold text-white">Kết nối</h3>

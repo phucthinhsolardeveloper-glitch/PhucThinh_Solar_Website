@@ -300,6 +300,8 @@ onBeforeUnmount(() => {
             v-if="brandLogo"
             :src="brandLogo"
             :alt="brandName"
+            width="248"
+            height="35"
             class="block h-auto w-auto object-contain max-w-[248px] max-h-[68px]
                    max-ph:max-w-[198px] max-ph:max-h-[55px]
                    tb:max-w-[228px] tb:max-h-[63px]

@@ -55,4 +55,7 @@ test('catalog and news image surfaces declare intrinsic dimensions for stable la
   const newsCard = read('app/components/news/NewsCard.vue')
   assert.match(newsCard, /width="760"[\s\S]*height="428"[\s\S]*sizes=/)
   assert.match(newsCard, /thumbs\/760x428x1\$\{src\}/)
+  assert.match(read('app/components/SiteHeader.vue'), /:alt="brandName"[\s\S]*width="248"[\s\S]*height="35"/)
+  assert.match(read('app/components/SiteFooter.vue'), /footerLogo[\s\S]*width="280"[\s\S]*height="229"/)
+  assert.match(read('app/components/SiteFooter.vue'), /trustBadge\.image[\s\S]*width="200"[\s\S]*height="76"/)
 })
