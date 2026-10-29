@@ -15,10 +15,10 @@ npx --yes lighthouse <url> --chrome-flags="--headless=new --no-sandbox --disable
 | Route | Performance | Accessibility | SEO | FCP | LCP | CLS | TBT |
 |---|---:|---:|---:|---:|---:|---:|---:|
 | `/` | 0.58–0.65 | 0.97 | 0.92 → **1.00 after meta fallback fix** | 2.4s | 16.2–17.8s | 0.006 | 291–512ms |
-| `/san-pham/` | 0.87–0.89 | **1.00** | **1.00** | 2.4s | 2.4s | 0 | 258–336ms |
-| `/tin-tuc/` | 0.69 | 0.96 | 1.00 | 2.3s | 15.7s | ~0 | 193ms |
+| `/san-pham/` | 0.87–0.92 | **1.00** | **1.00** | 2.4s | 2.4s | 0 | 177–336ms |
+| `/tin-tuc/` | 0.47–0.69 | 0.96 | 1.00 | 2.3s | 15.7–17.7s | ~0 | 193–1,310ms |
 
-The home rerun after the SEO fix reports `meta-description: 1`, accessibility `0.97`, SEO `1.00`; the catalog rerun reports `meta-description: 1`, canonical `1`, accessibility `1.00`, SEO `1.00`. Performance remains variable because the audit downloads large below-fold imagery and the local PHP media proxy differs from production edge.
+The home rerun after the SEO fix reports `meta-description: 1`, accessibility `0.97`, SEO `1.00`; the catalog rerun reports `meta-description: 1`, canonical `1`, accessibility `1.00`, SEO `1.00`. Catalog image dimensions and news-card thumbnails were tightened in commits `20d41f4` and `74ed17f`; catalog performance improved to `0.92`. News performance remains variable because the audit still downloads large logo/media payloads and the local PHP proxy differs from production edge.
 
 ## Remaining performance work
 
