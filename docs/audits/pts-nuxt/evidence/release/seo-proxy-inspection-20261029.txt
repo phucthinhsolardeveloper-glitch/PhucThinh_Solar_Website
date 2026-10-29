@@ -1,0 +1,403 @@
+## git
+aea5bc0
+ M deploy/vps/Caddyfile
+ M deploy/vps/README.md
+ M deploy/vps/docker-compose.yml
+ M deploy/vps/scripts/deploy-release.sh
+ M deploy/vps/scripts/rollback-release.sh
+ M deploy/vps/stack.env.example
+ M frontend/Dockerfile
+ M frontend/app/assets/css/main.css
+ M frontend/app/components/SiteFooter.vue
+ M frontend/app/components/cart/CartPage.vue
+ M frontend/app/components/catalog/CatalogCategoryBranch.vue
+ M frontend/app/components/catalog/CatalogPage.vue
+ M frontend/app/components/contact/ContactHero.vue
+ M frontend/app/components/contact/ContactLeadForm.vue
+ M frontend/app/components/contact/ContactLocations.vue
+ M frontend/app/components/dealer/DealerLeadForm.vue
+ M frontend/app/components/dealer/DealerSections.vue
+ M frontend/app/components/home/HomeCampaigns.vue
+ M frontend/app/components/home/HomeContact.vue
+ M frontend/app/components/news/NewsFilters.vue
+## nuxt config SEO
+frontend/nuxt.config.ts:52:  routeRules: {
+frontend/nuxt.config.ts:54:      headers: { 'X-Robots-Tag': 'noindex, nofollow, noarchive' },
+frontend/nuxt.config.ts:57:      headers: { 'X-Robots-Tag': 'noindex, nofollow, noarchive' },
+frontend/nuxt.config.ts:62:      headers: { 'X-Robots-Tag': 'noindex, nofollow, noarchive' },
+frontend/app/components/layout/MigrationShell.vue:26:  robots: 'noindex, nofollow, noarchive',
+frontend/app/components/news-detail/NewsDetailArticle.vue:30:    <EditorialShare :title="article.title" :canonical-path="article.canonical" />
+frontend/app/composables/useProductPreviewData.ts:12: * để dùng chung đúng một logic fetch + JSON-LD cho cả preview noindex và
+frontend/app/composables/useProductPreviewData.ts:43:    const canonicalUrl = `${siteOrigin}${p.url}`
+frontend/app/composables/useProductPreviewData.ts:49:      url: canonicalUrl,
+frontend/app/composables/useProductPreviewData.ts:57:        url: canonicalUrl,
+frontend/app/composables/useProductPreviewData.ts:76:        { '@type': 'ListItem', position: 3, name: p.name, item: canonicalUrl },
+frontend/app/pages/migration-solutions-preview.vue:11:useSeoMeta({ title: 'Giải pháp — internal preview', robots: 'noindex, nofollow, noarchive' })
+frontend/app/pages/cam-on/index.vue:14:  robots: computed(() => indexable.value ? 'index, follow' : 'noindex, nofollow, noarchive'),
+frontend/app/pages/product/[slug].vue:15:useSeoMeta({ title: 'Không tìm thấy sản phẩm — Phúc Thịnh Solar', robots: 'noindex, nofollow, noarchive' })
+frontend/app/pages/migration-preview.vue:4:  robots: 'noindex, nofollow',
+frontend/app/pages/migration-news-preview.vue:35:useSeoMeta({ title: () => `${news.value?.title || 'Kiến thức'} — internal preview`, description: () => news.value?.description || '', robots: 'noindex, nofollow, noarchive' })
+frontend/app/pages/migration-order-success.vue:4:useSeoMeta({ title: 'Đặt hàng thành công — Nuxt preview', robots: 'noindex, nofollow, noarchive' })
+frontend/app/components/catalog/CatalogPage.vue:12: * để dùng chung đúng một logic cho cả preview noindex và route public thật -
+frontend/app/pages/index.vue:18:  robots: 'index, follow',
+frontend/app/pages/index.vue:21:useHead({ link: [{ rel: 'canonical', href: computed(() => new URL('/', requestUrl.origin).href) }] })
+frontend/app/pages/migration-catalog-preview.vue:4:useSeoMeta({ title: 'Danh mục sản phẩm — internal preview', robots: 'noindex, nofollow, noarchive' })
+frontend/app/pages/du-an-da-thuc-hien/index.vue:40:  robots: computed(() => projects.value && !error.value ? 'index, follow' : 'noindex, nofollow, noarchive'),
+frontend/app/pages/du-an-da-thuc-hien/index.vue:42:useHead(() => ({ link: [{ rel: 'canonical', href: new URL('/du-an-da-thuc-hien/', requestUrl.origin).toString() }] }))
+frontend/app/components/catalog/SearchResultsPage.vue:7: * để dùng chung đúng một logic cho cả preview noindex và route public thật -
+frontend/app/pages/gio-hang/index.vue:14:  robots: computed(() => indexable.value ? 'index, follow' : 'noindex, nofollow, noarchive'),
+frontend/app/components/catalog/BrandDetailPage.vue:9: * [slug].vue) để dùng chung đúng một logic cho cả preview noindex và route
+frontend/app/pages/migration-video-preview.vue:65:  robots: 'noindex, nofollow, noarchive',
+frontend/app/pages/thuong-hieu/[slug].vue:16:useSeoMeta({ robots: computed(() => indexable.value ? 'index, follow' : 'noindex, nofollow, noarchive') })
+frontend/app/pages/migration-news-detail-preview.vue:15:useSeoMeta({ title: () => payload.value?.article.seo.title || 'Kiến thức — internal preview', description: () => payload.value?.article.seo.description || '', robots: 'noindex, nofollow, noarchive' })
+frontend/app/pages/migration-cart-preview.vue:4:useSeoMeta({ title: 'Giỏ hàng — Nuxt preview', robots: 'noindex, nofollow, noarchive' })
+frontend/app/pages/tin-tuc/index.vue:45:  robots: computed(() => news.value && !error.value ? 'index, follow' : 'noindex, nofollow, noarchive'),
+frontend/app/pages/tin-tuc/index.vue:47:useHead(() => ({ link: [{ rel: 'canonical', href: new URL('/tin-tuc/', requestUrl.origin).toString() }] }))
+frontend/app/pages/migration-projects-preview.vue:19:useSeoMeta({ title: 'Dự án — internal preview', robots: 'noindex, nofollow, noarchive' })
+frontend/app/pages/migration-project-detail-preview.vue:16:useSeoMeta({ title: computed(() => payload.value ? `${payload.value.project.title} — preview` : 'Project detail preview'), robots: 'noindex, nofollow, noarchive' })
+frontend/app/pages/migration-checkout-preview.vue:121:useSeoMeta({ title: 'Thanh toán — Nuxt preview', robots: 'noindex, nofollow, noarchive' })
+frontend/app/pages/danh-muc-san-pham/[...slug].vue:22:  robots: computed(() => indexable.value ? 'index, follow' : 'noindex, nofollow, noarchive'),
+frontend/app/pages/danh-muc-san-pham/[...slug].vue:25:  link: [{ rel: 'canonical', href: computed(() => new URL(categoryPath.value, requestUrl.origin).toString()) }],
+frontend/app/pages/migration-brand-detail-preview.vue:6:useSeoMeta({ robots: 'noindex, nofollow, noarchive' })
+frontend/app/pages/giai-phap/[slug].vue:25:  robots: computed(() => data.value && !error.value ? 'index, follow' : 'noindex, nofollow, noarchive'),
+frontend/app/pages/giai-phap/[slug].vue:28:  link: data.value ? [{ rel: 'canonical', href: new URL(data.value.path, requestUrl.origin).toString() }] : [],
+frontend/app/pages/migration-site-preview.vue:18:useSeoMeta({ title: 'Site preview — Phúc Thịnh Solar', robots: 'noindex, nofollow, noarchive' })
+frontend/app/pages/tim-kiem/index.vue:12:useSeoMeta({ robots: computed(() => indexable.value ? 'index, follow' : 'noindex, nofollow, noarchive') })
+frontend/app/pages/account/[action].vue:45:useSeoMeta({ title: computed(() => `${title.value} — Phúc Thịnh Solar`), robots: 'noindex, nofollow, noarchive' })
+frontend/app/pages/account/[action].vue:46:useHead(() => ({ link: [{ rel: 'canonical', href: new URL(path.value + '/', requestUrl.origin).toString() }] }))
+frontend/app/pages/[slug].vue:28:if (resolution.value && resolution.value.entity !== 'not-found' && resolution.value.canonical !== route.path) {
+frontend/app/pages/[slug].vue:29:  await navigateTo(resolution.value.canonical, { redirectCode: 301 })
+frontend/app/pages/[slug].vue:89:  robots: computed(() => resolution.value?.entity && resolution.value.entity !== 'not-found' && !routeError.value && !pageError.value ? 'index, follow' : 'noindex, nofollow, noarchive'),
+frontend/app/pages/[slug].vue:93:    ? [{ rel: 'canonical', href: new URL(resolution.value.canonical, requestUrl.origin).toString() }]
+frontend/app/pages/thu-vien-anh/index.vue:19:  robots: computed(() => gallery.value && !error.value ? 'index, follow' : 'noindex, nofollow, noarchive'),
+frontend/app/pages/thu-vien-anh/index.vue:23:  link: [{ rel: 'canonical', href: computed(() => new URL(gallery.value?.seo.canonical || '/thu-vien-anh/', requestUrl.origin).href) }],
+frontend/app/pages/migration-policy-preview.vue:57:  robots: 'noindex, nofollow, noarchive',
+frontend/app/pages/migration-policy-preview.vue:89:          <EditorialShare :title="data.title" :canonical-path="data.canonical" />
+frontend/app/pages/migration-home-preview.vue:1:<script setup lang="ts">import type { PublicSitePayload } from '#shared/contracts/public-site'; import { isPublicSitePayload } from '#shared/contracts/public-site'; import type { PublicHomePayload } from '#shared/contracts/public-home'; import { isPublicHomePayload } from '#shared/contracts/public-home'; import HomeHero from '~/components/home/HomeHero.vue'; import HomeCatalog from '~/components/home/HomeCatalog.vue'; import HomeCampaigns from '~/components/home/HomeCampaigns.vue'; import HomeEditorial from '~/components/home/HomeEditorial.vue'; import HomeContact from '~/components/home/HomeContact.vue'; const fallbackSite: PublicSitePayload = { schemaVersion: 1, brand: { name: 'Phúc Thịnh Solar', hotline: '' }, productCategories: [] }; const { data: siteData } = await useFetch<unknown>('/_migration/site', { default: () => fallbackSite }); const { data: homeData, error } = await useFetch<unknown>('/_migration/home'); const site = computed(() => isPublicSitePayload(siteData.value) ? siteData.value : fallbackSite); const home = computed(() => isPublicHomePayload(homeData.value) ? homeData.value : null); useSeoMeta({ title: () => home.value?.seo.title || 'Phúc Thịnh Solar — homepage preview', description: () => home.value?.seo.description || '', robots: 'noindex, nofollow, noarchive' })</script>
+frontend/app/pages/migration-product-preview.vue:8:useSeoMeta({ title: computed(() => product.value ? `${product.value.name} — preview` : 'Product preview'), robots: 'noindex, nofollow, noarchive' })
+frontend/app/pages/migration-hub-preview.vue:28:useSeoMeta({ title: 'Trung tâm xem thử Nuxt — Phúc Thịnh Solar', robots: 'noindex, nofollow, noarchive' })
+frontend/app/pages/migration-hub-preview.vue:33:    Công cụ điều hướng nội bộ cho chính đợt chuyển đổi (noindex, không phải
+frontend/app/pages/migration-hub-preview.vue:101:          <p class="mb-3 text-slate-500 leading-relaxed">Đây là preview local có noindex. Điều hướng chính, tìm kiếm, PDP, giỏ hàng và checkout đã được ánh xạ sang GUI Nuxt; PHP chỉ còn giữ các backend/session nghiệp vụ cần thiết qua fixed adapters.</p>
+frontend/app/pages/migration-search-preview.vue:4:useSeoMeta({ robots: 'noindex, nofollow, noarchive' })
+frontend/app/pages/giai-phap.vue:27:  robots: computed(() => indexable.value && !!data.value && !error.value ? 'index, follow' : 'noindex, nofollow, noarchive'),
+frontend/app/pages/gioi-thieu.vue:19:  robots: computed(() => indexable.value && !!about.value && !error.value && !siteHasError.value ? 'index, follow' : 'noindex, nofollow, noarchive'),
+frontend/app/pages/migration-ui-lab-preview.vue:10: * Trang này noindex qua routeRules trong nuxt.config.ts.
+frontend/app/pages/migration-ui-lab-preview.vue:41:  meta: [{ name: 'robots', content: 'noindex, nofollow, noarchive' }],
+frontend/app/pages/migration-gallery-detail-preview.vue:78:  robots: 'noindex, nofollow, noarchive',
+frontend/app/pages/migration-contact-preview.vue:13:useSeoMeta({ title: 'Liên hệ — internal preview', robots: 'noindex, nofollow, noarchive' })
+frontend/app/pages/dai-ly/index.vue:28:useSeoMeta({ title: computed(() => dealer.value?.title || 'Đại lý — Phúc Thịnh Solar'), robots: computed(() => dealer.value && !error.value ? 'index, follow' : 'noindex, nofollow, noarchive') })
+frontend/app/pages/dai-ly/index.vue:30:useHead({ link: [{ rel: 'canonical', href: computed(() => new URL('/dai-ly/', requestUrl.origin).href) }] })
+frontend/app/pages/migration-solution-detail-preview.vue:7:useSeoMeta({ title: 'Giải pháp — internal preview', robots: 'noindex, nofollow, noarchive' })
+frontend/app/pages/migration-gallery-preview.vue:19:  robots: 'noindex, nofollow, noarchive',
+frontend/app/pages/thanh-toan.vue:121:useSeoMeta({ title: 'Thanh toán — Phúc Thịnh Solar', robots: 'noindex, nofollow, noarchive' })
+frontend/app/pages/lien-he/index.vue:16:  robots: computed(() => contact.value && !error.value ? 'index, follow' : 'noindex, nofollow, noarchive'),
+frontend/app/pages/lien-he/index.vue:19:useHead({ link: [{ rel: 'canonical', href: computed(() => new URL('/lien-he/', requestUrl.origin).href) }] })
+frontend/app/pages/video/index.vue:65:  robots: computed(() => payload.value && !error.value ? 'index, follow' : 'noindex, nofollow, noarchive'),
+frontend/app/pages/video/index.vue:69:  link: [{ rel: 'canonical', href: computed(() => new URL(payload.value?.seo.canonical || '/video/', requestUrl.origin).href) }],
+frontend/app/pages/migration-shell-preview.vue:20:  robots: 'noindex, nofollow, noarchive',
+frontend/app/pages/ho-tro/[slug].vue:60:  robots: computed(() => data.value && !error.value ? 'index, follow' : 'noindex, nofollow, noarchive'),
+frontend/app/pages/ho-tro/[slug].vue:63:  link: data.value ? [{ rel: 'canonical', href: new URL(data.value.seo.canonical, requestUrl.origin).toString() }] : [],
+frontend/app/pages/ho-tro/[slug].vue:95:          <EditorialShare :title="data.title" :canonical-path="data.canonical" />
+frontend/app/pages/san-pham/[slug].vue:21:  robots: computed(() => indexable.value && !!product.value && !error.value ? 'index, follow' : 'noindex, nofollow, noarchive'),
+frontend/app/pages/san-pham/index.vue:14:  robots: computed(() => indexable.value ? 'index, follow' : 'noindex, nofollow, noarchive'),
+frontend/app/components/editorial/EditorialShare.vue:2:const props = defineProps<{ title: string; canonicalPath: string }>()
+frontend/app/components/editorial/EditorialShare.vue:5:const pageUrl = computed(() => new URL(props.canonicalPath, requestUrl.origin).toString())
+frontend/app/pages/migration-dealer-preview.vue:28:useSeoMeta({ title: 'Đại lý — internal preview', robots: 'noindex, nofollow, noarchive' })
+## redirects
+deploy/vps/Caddyfile:31:	# Gộp www về non-www bằng 301.
+frontend/server/utils/migration-cart.ts:58:    redirect: 'manual',
+frontend/server/utils/legacy-preview-media.ts:68:    response = await fetcher(upstream, { method: 'GET', redirect: 'manual' })
+frontend/server/utils/legacy-preview-document.ts:70:    response = await fetcher(upstream, { method: 'GET', redirect: 'manual' })
+frontend/app/pages/account/[action].vue:35:if (account.value?.authenticated && ['login', 'register', 'forgot', 'activate'].includes(action.value)) await navigateTo('/', { redirectCode: 302 })
+frontend/app/pages/account/[action].vue:36:if (!account.value?.authenticated && current.value.memberOnly) await navigateTo('/account/dang-nhap', { redirectCode: 302 })
+frontend/app/pages/account/index.vue:2:await navigateTo('/account/dang-nhap', { redirectCode: 302 })
+frontend/app/pages/he-thong-dai-ly.vue:2:await navigateTo('/lien-he/', { redirectCode: 301 })
+frontend/app/pages/product/[slug].vue:11:if (isPublicProductDetailPayload(data.value)) await navigateTo(`${data.value.product.url}/`, { redirectCode: 301 })
+frontend/app/pages/product/index.vue:2:await navigateTo('/san-pham/', { redirectCode: 301 })
+frontend/app/pages/du-an/index.vue:3:await navigateTo({ path: '/du-an-da-thuc-hien/', query: route.query }, { redirectCode: 301 })
+frontend/app/pages/[slug].vue:29:  await navigateTo(resolution.value.canonical, { redirectCode: 301 })
+frontend/app/pages/ve-chung-toi.vue:2:await navigateTo('/gioi-thieu/', { redirectCode: 301 })
+frontend/server/routes/account/[action].post.ts:77:  if (!payload || typeof payload !== 'object' || typeof (payload as { redirect?: unknown }).redirect !== 'string') {
+frontend/server/routes/account/[action].post.ts:80:  const destination = safeReturnPath((payload as { redirect: string }).redirect, action, id)
+frontend/server/routes/account/[action].post.ts:81:  if (!destination) throw createError({ statusCode: 502, statusMessage: 'Account action returned an invalid redirect' })
+frontend/server/routes/account/[action].post.ts:84:  return sendRedirect(event, destination, 303)
+frontend/server/routes/_migration/checkout.post.ts:80:    throw createError({ statusCode: 502, statusMessage: 'Checkout did not return a redirect' })
+frontend/server/routes/_migration/checkout.post.ts:83:  let redirect: URL
+frontend/server/routes/_migration/checkout.post.ts:84:  try { redirect = new URL(location, migrationPhpEndpoint(event, '/gio-hang/')) }
+frontend/server/routes/_migration/checkout.post.ts:85:  catch { throw createError({ statusCode: 502, statusMessage: 'Invalid checkout redirect' }) }
+frontend/server/routes/_migration/checkout.post.ts:87:  const thanks = redirect.pathname.match(/^\/cam-on\/?$/)
+frontend/server/routes/_migration/checkout.post.ts:88:  const token = redirect.searchParams.get('token')
+frontend/server/routes/_migration/checkout.post.ts:92:  if (redirect.protocol === 'https:' && paymentHosts.has(redirect.hostname) && redirect.username === '' && redirect.password === '') {
+frontend/server/routes/_migration/checkout.post.ts:93:    return { ok: true, kind: 'external', url: redirect.toString() }
+frontend/server/routes/_migration/checkout.post.ts:96:  if (/^\/lien-he\/?$/.test(redirect.pathname)) {
+frontend/server/routes/_migration/checkout.post.ts:99:  if (/^\/gio-hang\/?$/.test(redirect.pathname)) {
+frontend/server/routes/_migration/checkout.post.ts:103:  throw createError({ statusCode: 502, statusMessage: 'Unsupported checkout redirect' })
+frontend/app/pages/chinh-sach/[slug].vue:5:await navigateTo(`/ho-tro/${slug.value}/`, { redirectCode: 301 })
+## caddy
+{
+	email {$ACME_EMAIL:admin@phucthinhsolar.com}
+	servers {
+		protocols h1 h2 h3
+	}
+}
+
+{$SITE_DOMAIN}{$SITE_ALIASES} {
+	encode zstd gzip
+
+	log {
+		output stdout
+		format json
+	}
+
+	# Chặn Google index bản thử.
+	#
+	# Matcher gắn cứng vào hostname staging, nên SAU CUTOVER nó không bao giờ
+	# khớp nữa và tự vô hiệu — không có rủi ro quên tháo rồi de-index website
+	# thật. Đừng đổi thành wildcard hay biến môi trường vì sẽ mất tính chất đó.
+	#
+	# Dùng header X-Robots-Tag thay vì chỉ sửa robots.txt: robots.txt chỉ ngăn
+	# thu thập, còn URL đã biết vẫn có thể lên kết quả tìm kiếm. Header này
+	# chặn ở mức từng phản hồi nên phủ mọi trang.
+	@staging host staging.phucthinhsolar.com
+	@staging_robots {
+		host staging.phucthinhsolar.com
+		path /robots.txt
+	}
+
+	# Gộp www về non-www bằng 301.
+	#
+	# Đo sau cutover 2026-09-17: www và non-www đều trả 200, và canonical do app
+	# sinh theo HTTP_HOST nên mỗi bên tự trỏ canonical về chính nó -> toàn site
+	# có hai URL trùng nội dung, chia đôi giá trị liên kết. Redirect ở tầng proxy
+	# xử lý gọn hơn sửa canonical, vì nó gộp cả link equity về một URL.
+	#
+	# Hostname để cứng có chủ ý: host matcher của Caddy chỉ cho wildcard ở nhãn
+	# ngoài cùng (*.domain), không có dạng www.* nên không viết tổng quát được.
+	@www host www.phucthinhsolar.com
+
+	route {
+		redir @www https://phucthinhsolar.com{uri} permanent
+
+		header @staging X-Robots-Tag "noindex, nofollow, noarchive"
+		respond @staging_robots 200 {
+			body "User-agent: *
+Disallow: /
+"
+		}
+
+		# PHP remains the business/data backend. Public documents and pages render
+		# in Nuxt; only explicit API, Admin, media and session-action paths reach PHP.
+		@php_backend path /api/* /administrator /administrator/* /upload/* /thumbs/* /watermark/* /wp-content/uploads/* /robots.txt /sitemap.xml
+		@php_session_action {
+			method GET
+			path /account/dang-xuat /account/dang-xuat/ /ngon-ngu/vi /ngon-ngu/vi/ /ngon-ngu/en /ngon-ngu/en/
+		}
+		@php_legacy_media path_regexp legacy_media ^/assets/(?:images/site-visuals/.+\.(?:avif|gif|jpe?g|png|svg|webp)|.+\.(?:pdf|docx?|xlsx?))$
+
+		handle @php_backend {
+			reverse_proxy web:80 {
+				health_uri /robots.txt
+				health_interval 30s
+				health_timeout 5s
+			}
+		}
+
+		handle @php_session_action {
+			reverse_proxy web:80
+		}
+
+		handle @php_legacy_media {
+			reverse_proxy web:80
+		}
+
+		# No PHP template, legacy CSS, or legacy JavaScript fallback for public URLs.
+		handle {
+			reverse_proxy nuxt:3000 {
+				health_uri /
+				health_interval 10s
+				health_timeout 5s
+			}
+		}
+	}
+}
+## compose
+name: ${COMPOSE_PROJECT_NAME:-phucthinhsolar}
+
+services:
+  proxy:
+    image: ${CADDY_IMAGE:?CADDY_IMAGE is required}
+    restart: unless-stopped
+    environment:
+      SITE_DOMAIN: ${SITE_DOMAIN:?SITE_DOMAIN is required}
+      SITE_ALIASES: ${SITE_ALIASES:-}
+      ACME_EMAIL: ${ACME_EMAIL:?ACME_EMAIL is required}
+      TZ: ${TZ:-Asia/Ho_Chi_Minh}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - edge
+    depends_on:
+      web:
+        condition: service_healthy
+      nuxt:
+        condition: service_healthy
+    mem_limit: 512m
+    pids_limit: 200
+    logging: &bounded-logging
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  web:
+    image: ${PTS_WEB_IMAGE:?PTS_WEB_IMAGE is required}
+    restart: unless-stopped
+    environment:
+      APP_ENV: production
+      PTS_SITE_DOMAIN: ${SITE_DOMAIN:?SITE_DOMAIN is required}
+      DB_HOST: db
+      DB_PORT: "3306"
+      DB_NAME: ${DB_NAME:?DB_NAME is required}
+      DB_USER: ${DB_USER:?DB_USER is required}
+      PTS_DB_PASSWORD_FILE: /run/secrets/db_password
+      PTS_APP_SECRET_FILE: /run/secrets/app_secret
+      PTS_APP_SALT_FILE: /run/secrets/app_salt
+      PTS_MAIL_CONFIG_FILE: /run/secrets/pts_mail_config
+      CKFINDER_LICENSE_NAME_FILE: /run/secrets/ckfinder_license_name
+      CKFINDER_LICENSE_KEY_FILE: /run/secrets/ckfinder_license_key
+      # config/config.php đọc 3 biến này nhưng trước 2026-09-17 stack không hề
+      # truyền chúng, nên reCAPTCHA luôn active=false. Hậu quả không phải "tắt
+      # captcha" mà là FAIL-OPEN: checkRecaptcha() trả ['test'=>true] và điều
+      # kiện submit `... || $testCaptcha == true` cho qua mọi lượt gửi form.
+      RECAPTCHA_ACTIVE: ${RECAPTCHA_ACTIVE:-0}
+      RECAPTCHA_SITE_KEY: ${RECAPTCHA_SITE_KEY:-}
+      RECAPTCHA_SECRET_FILE: /run/secrets/recaptcha_secret
+      VNPAY_ACTIVE: ${VNPAY_ACTIVE:-0}
+      VNPAY_TMN_CODE: ${VNPAY_TMN_CODE:-}
+      VNPAY_HASH_SECRET: ${VNPAY_HASH_SECRET:-}
+      VNPAY_ENDPOINT: ${VNPAY_ENDPOINT:-https://sandbox.vnpayment.vn/paymentv2/vpcpay.html}
+      VNPAY_RETURN_URL: ${VNPAY_RETURN_URL:-}
+      VNPAY_IPN_URL: ${VNPAY_IPN_URL:-}
+      GHN_ACTIVE: ${GHN_ACTIVE:-0}
+      GHN_TOKEN: ${GHN_TOKEN:-}
+      GHN_SHOP_ID: ${GHN_SHOP_ID:-}
+      GHN_ENDPOINT: ${GHN_ENDPOINT:-https://online-gateway.ghn.vn/shiip/public-api}
+      GHTK_ACTIVE: ${GHTK_ACTIVE:-0}
+      GHTK_API_TOKEN: ${GHTK_API_TOKEN:-}
+      GHTK_PARTNER_CODE: ${GHTK_PARTNER_CODE:-}
+      GHTK_ENDPOINT: ${GHTK_ENDPOINT:-https://services.giaohangtietkiem.vn}
+      VIETTELPOST_ACTIVE: ${VIETTELPOST_ACTIVE:-0}
+      VIETTELPOST_USERNAME: ${VIETTELPOST_USERNAME:-}
+      VIETTELPOST_PASSWORD: ${VIETTELPOST_PASSWORD:-}
+      VIETTELPOST_PARTNER_ID: ${VIETTELPOST_PARTNER_ID:-}
+      VIETTELPOST_ENDPOINT: ${VIETTELPOST_ENDPOINT:-https://partner.viettelpost.vn}
+      NHATTIN_ACTIVE: ${NHATTIN_ACTIVE:-0}
+      NHATTIN_USERNAME: ${NHATTIN_USERNAME:-}
+      NHATTIN_PASSWORD: ${NHATTIN_PASSWORD:-}
+      NHATTIN_PARTNER_ID: ${NHATTIN_PARTNER_ID:-}
+      NHATTIN_ENDPOINT: ${NHATTIN_ENDPOINT:-https://api.ntlogistics.vn}
+      SHIPPING_ORIGIN_NAME: ${SHIPPING_ORIGIN_NAME:-}
+      SHIPPING_ORIGIN_PHONE: ${SHIPPING_ORIGIN_PHONE:-}
+      SHIPPING_ORIGIN_ADDRESS: ${SHIPPING_ORIGIN_ADDRESS:-}
+      SHIPPING_ORIGIN_CITY_CODE: ${SHIPPING_ORIGIN_CITY_CODE:-}
+      SHIPPING_ORIGIN_WARD_CODE: ${SHIPPING_ORIGIN_WARD_CODE:-}
+      SHIPPING_DEFAULT_WEIGHT_GRAMS: ${SHIPPING_DEFAULT_WEIGHT_GRAMS:-1000}
+      SHIPPING_DEFAULT_LENGTH_CM: ${SHIPPING_DEFAULT_LENGTH_CM:-10}
+      SHIPPING_DEFAULT_WIDTH_CM: ${SHIPPING_DEFAULT_WIDTH_CM:-10}
+      SHIPPING_DEFAULT_HEIGHT_CM: ${SHIPPING_DEFAULT_HEIGHT_CM:-10}
+      TZ: ${TZ:-Asia/Ho_Chi_Minh}
+    secrets:
+      - db_password
+      - app_secret
+      - app_salt
+      - pts_mail_config
+      - ckfinder_license_name
+      - ckfinder_license_key
+      - recaptcha_secret
+    volumes:
+      - ./config/config.php:/var/www/html/libraries/config.php:ro
+      - ./shared/upload:/var/www/html/upload
+      - ./shared/thumbs:/var/www/html/thumbs
+      - ./shared/caches:/var/www/html/caches
+      - ./shared/assets-caches:/var/www/html/assets/caches
+      - ./shared/logs:/var/www/html/logs
+      - ./shared/watermark:/var/www/html/watermark
+    networks:
+      - edge
+      - data
+    depends_on:
+      db:
+        condition: service_healthy
+    mem_limit: 3g
+    pids_limit: 300
+    # Phải gọi một trang PHP thật và đòi đúng HTTP 200. Bản cũ gọi robots.txt
+    # (file tĩnh) nên container vẫn báo healthy trong khi 100% trang PHP trả
+    # 500 vì không đọc được secret — deploy-release.sh do đó cũng không tự
+    # rollback. ignore_errors=true để đọc được status của cả phản hồi lỗi.
+    healthcheck:
+      test: ["CMD-SHELL", "php -r '$$c=stream_context_create([\"http\"=>[\"method\"=>\"GET\",\"timeout\"=>4,\"ignore_errors\"=>true]]); $$b=@file_get_contents(\"http://127.0.0.1/\",false,$$c); exit(($$b!==false && isset($$http_response_header[0]) && strpos($$http_response_header[0],\" 200 \")!==false) ? 0 : 1);'"]
+      # Mốc thời gian phải khớp vòng chờ trong deploy-release.sh (xem chú thích
+      # ở đó): probe đầu tiên phải xảy ra sớm hơn hạn chờ của script, nếu không
+      # mọi deploy tốt cũng bị rollback oan vì trạng thái còn là "starting".
+      interval: 10s
+      timeout: 8s
+      retries: 6
+      start_period: 15s
+    logging: *bounded-logging
+
+  nuxt:
+    image: ${PTS_NUXT_IMAGE:?PTS_NUXT_IMAGE is required}
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      NITRO_HOST: 0.0.0.0
+      NITRO_PORT: "3000"
+      NUXT_PHP_ORIGIN: http://web:80
+      NUXT_PHP_ORIGIN_ALLOWLIST: web:80
+      NUXT_PREVIEW_MEDIA_PROXY: "false"
+      TZ: ${TZ:-Asia/Ho_Chi_Minh}
+    networks:
+      - edge
+    depends_on:
+      web:
+        condition: service_healthy
+    mem_limit: 1536m
+    pids_limit: 200
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/').then(r=>{if(r.status!==200)throw new Error(r.status)}).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 8s
+      retries: 6
+      start_period: 30s
+    logging: *bounded-logging
+
+  db:
+    image: ${MARIADB_IMAGE:?MARIADB_IMAGE is required}
+    restart: unless-stopped
+    environment:
+      MARIADB_DATABASE: ${DB_NAME:?DB_NAME is required}
+      MARIADB_USER: ${DB_USER:?DB_USER is required}
+      MARIADB_PASSWORD_FILE: /run/secrets/db_password
+      MARIADB_ROOT_PASSWORD_FILE: /run/secrets/db_root_password
+      TZ: ${TZ:-Asia/Ho_Chi_Minh}
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --skip-name-resolve
+      - --innodb-buffer-pool-size=1G
+      - --key-buffer-size=256M
+      - --max-connections=100
+    secrets:
+      - db_password
+      - db_root_password
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - data
+    healthcheck:

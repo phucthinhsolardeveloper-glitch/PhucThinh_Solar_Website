@@ -130,6 +130,62 @@ function ptsCatalogPageExtrasDto(array $extras)
     );
 }
 
+/**
+ * Mirrors the published static hero allowlist in sources/product.php. Keeping
+ * the paths fixed prevents CMS route data from becoming an arbitrary asset URL.
+ */
+function ptsCatalogCategoryHeroFallback($path, $root = '')
+{
+    $fallbacks = array(
+        'san-pham' => array('catalog-products-hero-20261007-v2.png', 'Danh mục thiết bị năng lượng mặt trời Phúc Thịnh Solar'),
+        'danh-muc-san-pham/den-nlmt' => array('catalog-lighting-overview-20261008.png', 'Tổng quan giải pháp chiếu sáng năng lượng mặt trời'),
+        'danh-muc-san-pham/den-nlmt/den-duong' => array('catalog-solar-street-lighting-20261008.png', 'Đèn đường năng lượng mặt trời cho đường phố và lối đi'),
+        'danh-muc-san-pham/den-nlmt/den-pha-nang-luong-mat-troi' => array('catalog-solar-flood-lighting-20261008.png', 'Đèn pha năng lượng mặt trời cho sân bãi và công trình'),
+        'danh-muc-san-pham/den-nlmt/den-pha' => array('catalog-solar-flood-lighting-20261008.png', 'Đèn pha năng lượng mặt trời cho sân bãi và công trình'),
+        'danh-muc-san-pham/den-nlmt/den-san-vuon' => array('catalog-solar-garden-lighting-20261008-v2.png', 'Đèn sân vườn năng lượng mặt trời cho nhà ở và khuôn viên'),
+        'danh-muc-san-pham/den-nlmt/den-ufo' => array('catalog-solar-ufo-highbay-20261008-v2.png', 'Đèn UFO năng lượng mặt trời cho nhà xưởng và không gian cao'),
+        'danh-muc-san-pham/den-nlmt/den-op-tran' => array('catalog-solar-ceiling-lighting-20261008.png', 'Đèn ốp trần năng lượng mặt trời cho hiên nhà và hành lang'),
+        'danh-muc-san-pham/tru-den/tru-den-duong' => array('catalog-solar-street-poles-20261008.png', 'Trụ đèn đường cho hệ thống chiếu sáng ngoài trời'),
+        'danh-muc-san-pham/tru-den/tru-den-trang-tri' => array('catalog-decorative-lamp-posts-20261008.png', 'Trụ đèn trang trí cho sân vườn và khuôn viên'),
+        'danh-muc-san-pham/tru-den/can-den-gia-do' => array('catalog-street-light-arms-20261008.png', 'Cần đèn và giá đỡ cho hệ thống chiếu sáng'),
+        'danh-muc-san-pham/tru-den/mong-de-tru' => array('catalog-street-pole-foundations-20261008.png', 'Móng và đế trụ cho công trình chiếu sáng'),
+        'danh-muc-san-pham/tam-pin-nang-luong-mat-troi/kep-tam-pin' => array('catalog-utility-solar-mounting-20261008.png', 'Kẹp tấm pin và phụ kiện cố định cho trang trại điện mặt trời'),
+        'danh-muc-san-pham/bien-tan-inverter/hoa-luoi' => array('catalog-grid-tie-solar-20261008.png', 'Biến tần hòa lưới cho nhà máy điện mặt trời quy mô lớn'),
+        'danh-muc-san-pham/bien-tan-inverter/hybrid-luu-tru' => array('catalog-hybrid-inverter-storage-20261008.png', 'Biến tần hybrid kết hợp điện mặt trời và hệ thống lưu trữ'),
+        'danh-muc-san-pham/pin-luu-tru/pin-battery' => array('catalog-lithium-battery-modules-20261008.png', 'Module pin lithium cho hệ thống lưu trữ năng lượng'),
+        'danh-muc-san-pham/pin-luu-tru/he-thong-ess' => array('catalog-ess-container-site-20261008.png', 'Hệ thống ESS container cho dự án lưu trữ năng lượng'),
+        'danh-muc-san-pham/pin-luu-tru/bms-rack-phu-kien' => array('catalog-bms-rack-20261008.png', 'BMS, rack và phụ kiện quản lý hệ thống pin lưu trữ'),
+        'danh-muc-san-pham/bien-tan-bom/bien-tan-bom-nlmt' => array('catalog-solar-pump-inverter-20261008.png', 'Biến tần bơm năng lượng mặt trời cho hệ thống tưới và cấp nước quy mô lớn'),
+        'danh-muc-san-pham/bien-tan-bom/may-bom-nlmt' => array('catalog-solar-water-pump-20261008.png', 'Máy bơm năng lượng mặt trời cho nông nghiệp và công trình'),
+        'danh-muc-san-pham/thiet-bi-dien-nang-luong-mat-troi/bo-dieu-khien-sac-mppt' => array('catalog-mppt-controller-20261008-v2.png', 'Bộ điều khiển sạc MPPT cho hệ thống điện mặt trời'),
+        'danh-muc-san-pham/thiet-bi-dien-nang-luong-mat-troi/bo-dieu-khien-sac-pwm' => array('catalog-pwm-controller-20261008.png', 'Bộ điều khiển sạc PWM cho hệ thống điện mặt trời'),
+        'danh-muc-san-pham/thiet-bi-dien-nang-luong-mat-troi/cap-day-dien' => array('catalog-solar-cables-wiring-20261008.png', 'Cáp và dây điện chuyên dụng cho hệ thống năng lượng mặt trời'),
+        'danh-muc-san-pham/thiet-bi-dien-nang-luong-mat-troi/giam-sat-do-luong' => array('catalog-solar-monitoring-20261008.png', 'Thiết bị giám sát và đo lường hệ thống điện mặt trời'),
+        'danh-muc-san-pham/thiet-bi-dien-nang-luong-mat-troi/phu-kien-den-nlmt' => array('catalog-solar-lighting-accessories-20261008.png', 'Phụ kiện lắp đặt đèn năng lượng mặt trời'),
+        'danh-muc-san-pham/thiet-bi-dien-nang-luong-mat-troi/tiep-dia-ong-bao-ve' => array('catalog-solar-protection-grounding-20261008.png', 'Tiếp địa và ống bảo vệ cho hệ thống điện mặt trời'),
+        'danh-muc-san-pham/thiet-bi-dien-nang-luong-mat-troi/vat-tu-phu-tro' => array('catalog-solar-electrical-accessories-v2.jpg', 'Vật tư phụ trợ cho thi công và lắp đặt điện mặt trời'),
+        /* Legacy category paths remain supported by the PHP router. */
+        'danh-muc-san-pham/den-duong' => array('catalog-solar-street-lighting-20261008.png', 'Đèn đường năng lượng mặt trời cho đường phố và lối đi'),
+        'danh-muc-san-pham/den-pha-nang-luong-mat-troi' => array('catalog-solar-flood-lighting-20261008.png', 'Đèn pha năng lượng mặt trời cho sân bãi và công trình'),
+        'danh-muc-san-pham/den-pha' => array('catalog-solar-flood-lighting-20261008.png', 'Đèn pha năng lượng mặt trời cho sân bãi và công trình'),
+        'danh-muc-san-pham/den-san-vuon' => array('catalog-solar-garden-lighting-20261008-v2.png', 'Đèn sân vườn năng lượng mặt trời cho nhà ở và khuôn viên'),
+        'danh-muc-san-pham/den-ufo' => array('catalog-solar-ufo-highbay-20261008-v2.png', 'Đèn UFO năng lượng mặt trời cho nhà xưởng và không gian cao'),
+        'danh-muc-san-pham/den-op-tran' => array('catalog-solar-ceiling-lighting-20261008.png', 'Đèn ốp trần năng lượng mặt trời cho hiên nhà và hành lang'),
+        'danh-muc-san-pham/bien-tan-inverter' => array('catalog-inverter-overview-20261008.png', 'Hệ thống biến tần điện mặt trời cho công trình và nhà máy'),
+        'danh-muc-san-pham/tam-pin-nang-luong-mat-troi' => array('catalog-utility-solar-farm-20261008.png', 'Trang trại tấm pin năng lượng mặt trời quy mô lớn'),
+        'danh-muc-san-pham/tru-den' => array('catalog-lamp-posts-v2.jpg', 'Trụ đèn cổ điển và phụ kiện lắp đặt ngoài trời'),
+        'danh-muc-san-pham/den-san-vuon' => array('catalog-ai-garden-lighting.webp', 'Không gian sân vườn sử dụng đèn năng lượng mặt trời'),
+        'danh-muc-san-pham/quat-nang-luong-mat-troi' => array('catalog-solar-fan-20261008-v2.png', 'Quạt đứng sử dụng năng lượng mặt trời cho không gian gia đình'),
+        'danh-muc-san-pham/bien-tan-bom' => array('catalog-solar-pumping-overview-20261008.png', 'Hệ thống bơm nước năng lượng mặt trời cho nông nghiệp và công trình'),
+        'danh-muc-san-pham/thiet-bi-dien-nang-luong-mat-troi' => array('catalog-solar-bos-accessories-20261008.png', 'Dây dẫn, đầu nối và thiết bị bảo vệ cho hệ thống điện mặt trời'),
+        'danh-muc-san-pham/he-thong-khung-nhom' => array('catalog-utility-solar-mounting-20261008.png', 'Hệ khung và phụ kiện lắp đặt tấm pin cho dự án quy mô lớn'),
+        'danh-muc-san-pham/pin-luu-tru' => array('catalog-utility-bess-20261008.png', 'Hệ thống pin lưu trữ năng lượng cho gia đình và doanh nghiệp'),
+    );
+    if(!isset($fallbacks[$path])) return null;
+    $image = ptsCatalogVisualMedia($fallbacks[$path][0], 'assets/images/site-visuals/', $root);
+    return $image === '' ? null : array('photo' => $fallbacks[$path][0], 'upload' => 'assets/images/site-visuals/', 'alt' => ptsCatalogPlainText($fallbacks[$path][1]));
+}
+
 function ptsCatalogPositiveNumber($value)
 {
     if(!is_scalar($value) || !is_numeric($value)) return null;

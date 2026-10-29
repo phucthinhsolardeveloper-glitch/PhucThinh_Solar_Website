@@ -1,0 +1,45 @@
+## caddy QA smoke
+/ 200 text/html;charset=utf-8 http://127.0.0.1:8091/
+/san-pham/ 200 text/html;charset=utf-8 http://127.0.0.1:8091/san-pham/
+/tin-tuc/ 200 text/html;charset=utf-8 http://127.0.0.1:8091/tin-tuc/
+/du-an-da-thuc-hien/ 200 text/html;charset=utf-8 http://127.0.0.1:8091/du-an-da-thuc-hien/
+/_nuxt/entry.js 404 application/json http://127.0.0.1:8091/_nuxt/entry.js
+/api/pts_v1_site.php 200 application/json; charset=UTF-8 http://127.0.0.1:8091/api/pts_v1_site.php
+/upload/does-not-exist.jpg 404 text/html; charset=UTF-8 http://127.0.0.1:8091/upload/does-not-exist.jpg
+/product/ 200 text/html;charset=utf-8 http://127.0.0.1:8091/san-pham/
+/du-an/ 404 text/html;charset=utf-8 http://127.0.0.1:8091/du-an/
+## headers public
+HTTP/1.1 200 OK
+Content-Type: text/html;charset=utf-8
+Date: Thu, 29 Oct 2026 01:33:57 GMT
+Via: 1.1 Caddy
+X-Powered-By: Nuxt
+
+## caddy log
+{"level":"info","ts":1793237636.0499945,"msg":"maxprocs: Leaving GOMAXPROCS=12: CPU quota undefined"}
+{"level":"info","ts":1793237636.050075,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":7412568883,"previous":9223372036854775807}
+{"level":"info","ts":1793237636.050082,"msg":"using config from file","file":"/etc/caddy/Caddyfile"}
+{"level":"info","ts":1793237636.050085,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1793237636.0679536,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1793237636.0682836,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0x21243f419d80"}
+{"level":"warn","ts":1793237636.0688286,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":8091"}
+{"level":"warn","ts":1793237636.0688527,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":8091"}
+{"level":"info","ts":1793237636.0688567,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1793237636.0704734,"msg":"autosaved config (load with --resume flag)","file":"/config/caddy/autosave.json"}
+{"level":"info","ts":1793237636.0705,"msg":"serving initial configuration"}
+{"level":"info","ts":1793237636.0772321,"logger":"tls","msg":"cleaning storage unit","storage":"FileStorage:/data/caddy"}
+{"level":"info","ts":1793237636.083349,"logger":"tls","msg":"finished cleaning storage units"}
+## real assets
+/_nuxt/2akasSHQ.js 200 text/javascript; charset=utf-8
+/_nuxt/AFDg6Syr.js 200 text/javascript; charset=utf-8
+/_nuxt/AauSaQW9.js 200 text/javascript; charset=utf-8
+/_nuxt/B1AW3wjd.js 200 text/javascript; charset=utf-8
+/_nuxt/B2az57m3.js 200 text/javascript; charset=utf-8
+/_nuxt/B3ea3Do5.js 200 text/javascript; charset=utf-8
+/_nuxt/B7aUr2K8.js 200 text/javascript; charset=utf-8
+/_nuxt/B9pCaZr2.js 200 text/javascript; charset=utf-8
+## redirects
+/product/ HTTP/1.1 301 Moved Permanently
+/du-an/ HTTP/1.1 404 Not Found
+/ve-chung-toi/ HTTP/1.1 301 Moved Permanently
+/chinh-sach/chinh-sach-bao-mat/ HTTP/1.1 404 Not Found

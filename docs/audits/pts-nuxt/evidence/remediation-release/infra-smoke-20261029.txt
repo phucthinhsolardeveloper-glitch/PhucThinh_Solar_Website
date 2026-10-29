@@ -1,0 +1,33 @@
+## caddy local validate
+{"level":"info","ts":1793237620.13083,"msg":"using config from file","file":"/etc/caddy/Caddyfile"}
+{"level":"info","ts":1793237620.1332588,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1793237620.1338298,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0x11fd504d0980"}
+Valid configuration
+{"level":"info","ts":1793237620.1342187,"logger":"http","msg":"servers shutting down with eternal grace period"}
+{"level":"info","ts":1793237620.1342895,"logger":"tls.cache.maintenance","msg":"stopped background certificate maintenance","cache":"0x11fd504d0980"}
+caddy_local_validate_exit=0
+
+## production compose config without secrets/env (expected blocked)
+error while interpolating services.db.environment.MARIADB_DATABASE: required variable DB_NAME is missing a value: DB_NAME is required
+error while interpolating services.db.environment.MARIADB_USER: required variable DB_USER is missing a value: DB_USER is required
+error while interpolating services.db.image: required variable MARIADB_IMAGE is missing a value: MARIADB_IMAGE is required
+error while interpolating services.nuxt.image: required variable PTS_NUXT_IMAGE is missing a value: PTS_NUXT_IMAGE is required
+error while interpolating services.proxy.environment.ACME_EMAIL: required variable ACME_EMAIL is missing a value: ACME_EMAIL is required
+error while interpolating services.proxy.environment.SITE_DOMAIN: required variable SITE_DOMAIN is missing a value: SITE_DOMAIN is required
+error while interpolating services.proxy.image: required variable CADDY_IMAGE is missing a value: CADDY_IMAGE is required
+error while interpolating services.web.environment.DB_NAME: required variable DB_NAME is missing a value: DB_NAME is required
+error while interpolating services.web.environment.DB_USER: required variable DB_USER is missing a value: DB_USER is required
+error while interpolating services.web.environment.PTS_SITE_DOMAIN: required variable SITE_DOMAIN is missing a value: SITE_DOMAIN is required
+error while interpolating services.web.image: required variable PTS_WEB_IMAGE is missing a value: PTS_WEB_IMAGE is required
+compose_config_without_env_exit=1
+
+## running containers
+pts-php-nuxt-preview	Up 30 minutes	127.0.0.1:8088->80/tcp
+zalo-crm-app	Up 30 minutes (healthy)	127.0.0.1:3080->3000/tcp
+pts-php81-local	Up 30 minutes	0.0.0.0:8080->80/tcp, [::]:8080->80/tcp
+pts-mariadb-local	Up 30 minutes (healthy)	3306/tcp
+zalo-crm-db	Up 30 minutes (healthy)	127.0.0.1:5543->5432/tcp
+zalo-crm-clamav	Up 30 minutes (healthy)	3310/tcp, 7357/tcp
+zalo-crm-backup	Up 30 minutes (healthy)	5432/tcp
+zalo-crm-redis	Up 30 minutes (healthy)	127.0.0.1:6379->6379/tcp
+zalo-crm-minio	Up 30 minutes (healthy)	0.0.0.0:9000->9000/tcp, [::]:9000->9000/tcp, 127.0.0.1:9001->9001/tcp

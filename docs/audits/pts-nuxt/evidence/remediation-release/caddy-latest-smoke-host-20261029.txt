@@ -1,0 +1,14 @@
+## latest Caddy host-network smoke
+/ 000 
+/san-pham/ 000 
+/du-an-da-thuc-hien/ 000 
+/du-an/ 000 
+/product/ 000 
+/ve-chung-toi/ 000 
+/duoc-gi-khi-hop-tac-cung-phuc-thinh-solar/ 000 
+/du-an-dien-nlmt-ho-anh-quan/ 000 
+## dynamic titles
+## noindex
+/migration-about-preview 
+/migration-home-preview 
+/migration-video-preview 

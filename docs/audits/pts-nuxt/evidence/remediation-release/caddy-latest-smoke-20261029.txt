@@ -1,0 +1,26 @@
+## latest Caddy QA route smoke
+/ 502 
+/san-pham/ 502 
+/du-an-da-thuc-hien/ 502 
+/du-an/ 502 
+/product/ 502 
+/ve-chung-toi/ 502 
+/duoc-gi-khi-hop-tac-cung-phuc-thinh-solar/ 502 
+/du-an-dien-nlmt-ho-anh-quan/ 502 
+## dynamic content titles
+## preview noindex
+/migration-about-preview HTTP/1.1 502 Bad Gateway
+/migration-home-preview HTTP/1.1 502 Bad Gateway
+/migration-video-preview HTTP/1.1 502 Bad Gateway
+
+## Direct latest Nuxt (fresh build, port 3113, PHP 8080)
+- /, /san-pham/: 200
+- /du-an/, /product/, /ve-chung-toi/: 301 expected Location
+- migration-about/home/video-preview: 200 + X-Robots-Tag noindex
+- resolver via PHP 8080: upstream 404; Nuxt preserves 404 (not false 502).
+
+## Direct latest Nuxt with PHP preview 8088 (port 3114)
+- PHP 8088 legacy DTO 200 kind/canonicalPath.
+- Nuxt bridge normalizes entity/canonical for news/project.
+- Dynamic news/project SSR 200 with real titles.
+- Caddy host-network attempt blocked by Docker runtime host-network isolation; no production conclusion.

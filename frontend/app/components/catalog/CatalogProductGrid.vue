@@ -86,6 +86,9 @@ function productHref(product: PublicCatalogProduct) {
           :alt="product.name"
           class="h-full w-full object-contain"
           loading="lazy"
+          width="640"
+          height="640"
+          sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
           @error="markImageFailed(product.id)"
         >
         <span v-else class="p-4 text-center text-sm text-slate-500">Chưa có hình ảnh</span>

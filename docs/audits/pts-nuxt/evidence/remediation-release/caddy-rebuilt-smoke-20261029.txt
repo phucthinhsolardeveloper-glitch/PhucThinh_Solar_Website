@@ -1,0 +1,31 @@
+QA Caddy edge smoke (local only):
+
+- Caddy temporary QA port: 8099, validated with `caddy validate` exit 0.
+- Nuxt rebuilt artifact: current worktree, Nitro on 0.0.0.0:3121.
+- PHP QA resolver/backend: local port 8098, branch `50c1183`; local upload/thumbs volumes mounted.
+
+GET results:
+
+/                         200 Nuxt HTML
+/san-pham/                200 Nuxt HTML
+/tin-tuc/                 200 Nuxt HTML
+/du-an-da-thuc-hien/      200 Nuxt HTML
+/product/                 301 -> /san-pham/
+/du-an/                   301 -> /du-an-da-thuc-hien/
+/ve-chung-toi/            301 -> /gioi-thieu/
+/api/pts_v1_site.php      200 JSON via PHP
+/duoc-gi-khi-hop-tac-cung-phuc-thinh-solar/ 200 SSR news
+/du-an-dien-nlmt-ho-anh-quan/              200 SSR project
+
+Real media through Caddy:
+
+/upload/photo/logo-phucthinh-solar-wordmark-2026.png → 200 image/png (267454 bytes)
+/upload/photo/logosalenoti-e1668792804409-6107.png   → 200 image/png (2767 bytes)
+
+Preview headers:
+
+/migration-about-preview → X-Robots-Tag: noindex, nofollow, noarchive
+/migration-home-preview  → X-Robots-Tag: noindex, nofollow, noarchive
+/migration-video-preview → X-Robots-Tag: noindex, nofollow, noarchive
+
+No production DNS, DB or deploy operation was performed.

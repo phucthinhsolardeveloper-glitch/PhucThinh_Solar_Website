@@ -26,6 +26,11 @@ catalogAssert($payload['parity']['filters'] === array('included'=>true) && $payl
 catalogAssert($payload['filters'] === array('brands'=>array(),'priceRanges'=>$payload['filters']['priceRanges'],'subcategories'=>array(),'needs'=>array()) && count($payload['filters']['priceRanges']) === 3, 'filters bao gom 3 bac gia va needs rong khi khong truyen brand/subcategory');
 catalogAssert($payload['selected'] === array('brandIds'=>array(),'priceKeys'=>array(),'subcategoryIds'=>array(),'sort'=>'default','needKeys'=>array()), 'selected mac dinh rong khi khong co filter nao duoc chon');
 catalogAssert($payload['categoryHero'] === null && $payload['categoryContent'] === array('title'=>'','applications'=>array(),'faq'=>array()) && $payload['support'] === null, 'extra catalog content defaults to empty instead of fabricated CMS fields');
+$publicHtmlRoot = realpath(__DIR__.'/../domains/phucthinhsolar.com/public_html');
+$lightingHero = ptsCatalogCategoryHeroFallback('danh-muc-san-pham/den-nlmt', $publicHtmlRoot);
+catalogAssert($lightingHero === array('photo'=>'catalog-lighting-overview-20261008.png','upload'=>'assets/images/site-visuals/','alt'=>'Tổng quan giải pháp chiếu sáng năng lượng mặt trời'), 'catalog hero fallback matches the published PHP render contract');
+catalogAssert(ptsCatalogCategoryHeroFallback('danh-muc-san-pham/den-nlmt/den-ufo', $publicHtmlRoot) !== null, 'nested category PHP hero fallback is available');
+catalogAssert(ptsCatalogCategoryHeroFallback('danh-muc-san-pham/not-published', $publicHtmlRoot) === null, 'unknown category receives no fabricated hero image');
 
 catalogAssert(ptsCatalogBrandDto(array('id'=>5,'namevi'=>'<b>LONGI</b>')) === array('id'=>5,'name'=>'LONGI'), 'brand DTO strip HTML va giu id that');
 catalogAssert(ptsCatalogBrandDto(array('id'=>0,'namevi'=>'x')) === null, 'brand DTO loai id khong hop le');

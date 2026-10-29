@@ -1,7 +1,7 @@
 # Runbook VPS CloudFly — dựng mới, deploy, chuyển nhà và rollback
 
-Ngày chuẩn hóa: 2026-09-17. Baseline: Ubuntu 24.04, Docker Compose, Caddy,
-Apache/PHP 8.1 và MariaDB 10.11. Nguồn triển khai nằm ở `deploy/vps/`.
+Ngày chuẩn hóa: 2026-10-28. Baseline: Ubuntu 24.04, Docker Compose, Caddy,
+Nuxt SSR public frontend, Apache/PHP 8.1 backend và MariaDB 10.11. Nguồn triển khai nằm ở `deploy/vps/`.
 
 Ghi chú: các đoạn mô tả PHP 7.4 bên dưới là lịch sử của đợt dựng VPS ban đầu;
 runtime hiện hành của local và production là PHP 8.1.34. Mọi deploy mới phải
@@ -9,9 +9,10 @@ dùng image PHP 8.1.
 
 ## 1. Kiến trúc xác nhận từ mã nguồn
 
-Ứng dụng là monolith PHP server-rendered, dùng `.htaccess`, Apache rewrite,
-MariaDB và filesystem. Không có queue/Redis/object storage bắt buộc. Dữ liệu
-cần giữ độc lập với code gồm:
+Public HTML được Nuxt SSR phục vụ; PHP giữ API, Admin, session, media và nghiệp
+vụ hiện hữu, dùng `.htaccess`, Apache rewrite, MariaDB và filesystem. Không có
+queue/Redis/object storage bắt buộc. Không cấu hình PHP HTML fallback cho public
+GET. Dữ liệu cần giữ độc lập với code gồm:
 
 - MariaDB: sản phẩm, nội dung, tài khoản, đơn/form và cấu hình Admin.
 - `upload/`: ảnh/file gốc do Admin quản lý, không tái tạo được nếu mất.
@@ -24,12 +25,14 @@ Release không chứa `libraries/config.php`, `upload`, cache hoặc log. Config
 
 ## 2. Phiên bản và nợ kỹ thuật
 
-- Production hiện chạy PHP 8.1; image runtime phải được kiểm tra checksum và
-  lưu cùng rollback release khi deploy. Không quay lại PHP 7.4.
+- PHP production chạy PHP 8.1; PHP và Nuxt immutable images phải được kiểm tra
+  checksum, healthcheck và lưu cùng rollback release khi deploy. Không quay lại
+  PHP 7.4.
 - Dùng MariaDB 10.11 LTS thay MariaDB 10.4 đã EOL. Chuyển bằng logical dump vào
   DB rỗng; không gắn trực tiếp data directory 10.4 vào container 10.11.
-- Caddy quản lý certificate/gia hạn HTTPS. Apache tiếp tục xử lý `.htaccess`
-  ở mạng Docker nội bộ.
+- Caddy quản lý certificate/gia hạn HTTPS và proxy public GET tới Nuxt; API,
+  Admin, session, media và các exception nghiệp vụ đi tới Apache/PHP trên mạng
+  Docker nội bộ.
 
 ## 3. Tài nguyên và mức dịch vụ
 
@@ -141,8 +144,9 @@ sudo /srv/phucthinhsolar/scripts/deploy-release.sh /path/to/release-directory
 sudo /srv/phucthinhsolar/scripts/verify-stack.sh
 ```
 
-Deploy xác minh checksum, build image theo commit, đợi healthcheck và tự quay
-lại image trước nếu web không healthy. Nó không tự chạy migration/đổi DNS.
+Deploy xác minh checksum, build PHP và Nuxt images theo cùng commit, chờ cả hai
+healthcheck và tự quay lại image/config trước nếu một service không healthy. Nó
+không tự chạy migration/đổi DNS.
 
 Copy preflight từ release tools vào web container và chạy chỉ đọc:
 
@@ -213,7 +217,7 @@ Nếu lỗi code và DB chưa đổi:
 sudo /srv/phucthinhsolar/scripts/rollback-release.sh
 ```
 
-Rollback image không động DB/upload. Nếu lỗi migration, dừng ghi và đánh giá;
+Rollback PHP/Nuxt images và runtime config không động DB/upload. Nếu lỗi migration, dừng ghi và đánh giá;
 chỉ restore DB từ backup pre-migration khi chủ project xác nhận vì sẽ mất dữ
 liệu phát sinh sau backup. Nếu lỗi sau cutover, có thể trả bản ghi A về host cũ
 còn nguyên dữ liệu; không để hai host cùng nhận đơn/form.

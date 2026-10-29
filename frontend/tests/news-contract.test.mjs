@@ -17,3 +17,10 @@ test('rejects wrong legacy page size and malformed visibility DTO', () => {
   assert.equal(isPublicNewsPayload({ ...good, featured: [{ ...article, featured: false }] }), true)
   assert.equal(isPublicNewsPayload({ ...good, articles: [{ ...article, readingMinutes: -1 }] }), false)
 })
+
+test('accepts resolved multi-level category metadata only when its leaf slug matches', () => {
+  const selected = { ...category, slug: 'ung-dung', url: '/ung-dung/', type: 'tin-tuc', level: 'item', path: 'kien-thuc/dien-mat-troi/ung-dung' }
+  assert.equal(isPublicNewsPayload({ ...good, category: selected }), true)
+  assert.equal(isPublicNewsPayload({ ...good, category: { ...selected, path: 'kien-thuc/dien-mat-troi/khac' } }), false)
+  assert.equal(isPublicNewsPayload({ ...good, category: { ...selected, type: 'du-an' } }), false)
+})

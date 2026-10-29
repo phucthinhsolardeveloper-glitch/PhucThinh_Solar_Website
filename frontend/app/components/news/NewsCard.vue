@@ -14,6 +14,11 @@ withDefaults(defineProps<{
   variant?: 'grid' | 'lead' | 'secondary'
 }>(), { variant: 'grid' })
 const links = useMigrationLinks()
+function cardImage(src: string): string {
+  return /^\/upload\/news\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|gif|webp|avif)$/i.test(src)
+    ? `/thumbs/640x360x1${src}`
+    : src
+}
 </script>
 
 <template>
@@ -36,11 +41,14 @@ const links = useMigrationLinks()
       >
         <img
           v-if="article.image"
-          :src="article.image"
+          :src="cardImage(article.image)"
           :alt="article.title"
           class="block h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
           loading="lazy"
           decoding="async"
+          width="640"
+          height="360"
+          sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
         >
         <span v-else class="grid h-full place-items-center text-[42px] text-gold-700" aria-hidden="true">✦</span>
         <span

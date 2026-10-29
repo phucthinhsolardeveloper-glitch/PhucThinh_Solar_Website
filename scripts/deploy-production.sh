@@ -98,6 +98,12 @@ upstream_commit="$(git rev-parse "$upstream")"
 [ "$commit" = "$upstream_commit" ] || fail "HEAD chưa khớp $upstream; pull/push xong rồi deploy."
 current_image="$(remote "cat $stack_root/state/current-image")"
 printf '%s' "$current_image" | grep -Eq '^phucthinhsolar-web:[0-9a-f]{12}$' || fail "không nhận diện được current-image trên VPS: $current_image"
+current_nuxt_image="$(remote "cat $stack_root/state/current-nuxt-image 2>/dev/null || true")"
+if [ -n "$current_nuxt_image" ]; then
+    printf '%s' "$current_nuxt_image" | grep -Eq '^phucthinhsolar-nuxt:[0-9a-f]{12}$' || fail "không nhận diện được current-nuxt-image trên VPS: $current_nuxt_image"
+    current_nuxt_short="${current_nuxt_image#phucthinhsolar-nuxt:}"
+    [ "$current_nuxt_short" = "${current_image#phucthinhsolar-web:}" ] || fail "PHP/Nuxt đang lệch release: $current_image / $current_nuxt_image"
+fi
 deployed_short="${current_image#phucthinhsolar-web:}"
 deployed_commit="$(git rev-parse --verify "${deployed_short}^{commit}" 2>/dev/null || true)"
 baseline_note="Git commit"
@@ -125,7 +131,7 @@ if [ -z "$deployed_commit" ]; then
 fi
 git merge-base --is-ancestor "$deployed_commit" "$commit" || fail "commit production không phải ancestor của HEAD; dừng để kiểm tra nhánh."
 changed_paths="$(git diff --name-only "$deployed_commit" "$commit")"
-printf '%s\n' "$changed_paths" | grep -q '^domains/phucthinhsolar.com/public_html/' || fail "commit không đổi source website; không cần deploy production."
+printf '%s\n' "$changed_paths" | grep -Eq '^(domains/phucthinhsolar\.com/public_html/|frontend/|deploy/vps/)' || fail "commit không đổi source/runtime website; không cần deploy production."
 git diff --check "$deployed_commit" "$commit"
 bash -n scripts/package-hosting-release.sh scripts/predeploy-local.sh scripts/deploy-production.sh
 
@@ -178,8 +184,8 @@ release_id="${commit:0:12}"
 remote_release="$stack_root/incoming/$release_name"
 
 step "Kiểm tra VPS trước deploy"
-echo "Production hiện tại: $current_image ($deployed_commit; baseline $baseline_note)"
-remote "cd $stack_root && docker compose ps && df -h $stack_root && cat state/current-image"
+echo "Production hiện tại: PHP=$current_image Nuxt=${current_nuxt_image:-chưa có} ($deployed_commit; baseline $baseline_note)"
+remote "cd $stack_root && docker compose ps && df -h $stack_root && printf 'PHP=' && cat state/current-image && printf 'Nuxt=' && (cat state/current-nuxt-image 2>/dev/null || echo 'chưa có')"
 deploy_started_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 
 if [ "$mode" = "safe" ]; then
@@ -220,12 +226,13 @@ step "Playwright production: mobile commerce, ngôn ngữ và typography"
 (cd tools/visual-tests && PTS_VISUAL_BASE_URL="$site_url" npx playwright test \
     tests/mobile-commerce-experience.spec.js tests/typography-system.spec.js --workers=1)
 
-step "Quét lỗi mới trong log và xác nhận image active"
-remote "cd $stack_root && web_bad=\$(docker compose logs --since=$deploy_started_at web 2>&1 | grep -Eci 'PHP (Fatal|Warning)|Uncaught|AH[0-9]+:error|HTTP/[0-9.]+ 5[0-9][0-9]' || true); proxy_bad=\$(docker compose logs --since=$deploy_started_at proxy 2>&1 | grep -Eci 'level=(error|fatal)|status.:5[0-9][0-9]' || true); echo ERROR_SCAN_web=\$web_bad ERROR_SCAN_proxy=\$proxy_bad; test \$web_bad -eq 0; test \$proxy_bad -eq 0; test \"\$(cat state/current-image)\" = \"phucthinhsolar-web:$release_id\""
+step "Quét lỗi mới trong log và xác nhận image/health PHP + Nuxt"
+remote "cd $stack_root && web_bad=\$(docker compose logs --since=$deploy_started_at web 2>&1 | grep -Eci 'PHP (Fatal|Warning)|Uncaught|AH[0-9]+:error|HTTP/[0-9.]+ 5[0-9][0-9]' || true); nuxt_bad=\$(docker compose logs --since=$deploy_started_at nuxt 2>&1 | grep -Eci 'ERROR|FATAL|Unhandled|HTTP/[0-9.]+ 5[0-9][0-9]' || true); proxy_bad=\$(docker compose logs --since=$deploy_started_at proxy 2>&1 | grep -Eci 'level=(error|fatal)|status.:5[0-9][0-9]' || true); web_container=\$(docker compose ps -q web); nuxt_container=\$(docker compose ps -q nuxt); web_status=\$(docker inspect --format '{{if .State.Health}}{{.State.Health.Status}}{{else}}{{.State.Status}}{{end}}' \$web_container); nuxt_status=\$(docker inspect --format '{{if .State.Health}}{{.State.Health.Status}}{{else}}{{.State.Status}}{{end}}' \$nuxt_container); echo ERROR_SCAN_web=\$web_bad ERROR_SCAN_nuxt=\$nuxt_bad ERROR_SCAN_proxy=\$proxy_bad PHP_HEALTH=\$web_status NUXT_HEALTH=\$nuxt_status; test \$web_bad -eq 0; test \$nuxt_bad -eq 0; test \$proxy_bad -eq 0; test \"\$web_status\" = healthy; test \"\$nuxt_status\" = healthy; test \"\$(cat state/current-image)\" = \"phucthinhsolar-web:$release_id\"; test \"\$(cat state/current-nuxt-image)\" = \"phucthinhsolar-nuxt:$release_id\""
 
 trap - ERR
 printf '\nPASS: deploy %s hoàn tất.\n' "$mode"
 echo "Commit: $commit"
-echo "Image: phucthinhsolar-web:$release_id"
+echo "PHP image: phucthinhsolar-web:$release_id"
+echo "Nuxt image: phucthinhsolar-nuxt:$release_id"
 echo "Release: $remote_release"
 echo "Rollback code: ssh -i $ssh_key $deploy_host $stack_root/scripts/rollback-release.sh"

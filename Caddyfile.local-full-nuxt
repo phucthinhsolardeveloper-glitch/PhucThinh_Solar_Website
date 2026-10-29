@@ -1,0 +1,43 @@
+# Local full-frontend rehearsal only. Public HTML routes have no PHP fallback:
+# every non-backend request is handled by Nuxt. PHP remains the fixed data,
+# session, media and business backend.
+#
+# Run Nuxt on 127.0.0.1:3102 and Caddy on 127.0.0.1:8091.
+
+:8091 {
+	@php_backend path /api/* /administrator /administrator/* /upload/* /thumbs/* /watermark/* /wp-content/uploads/* /robots.txt /sitemap.xml
+	@php_legacy_media path_regexp legacy_media ^/assets/(?:images/site-visuals/.+\.(?:avif|gif|jpe?g|png|svg|webp)|.+\.(?:pdf|docx?|xlsx?))$
+	@php_form_post {
+		method POST
+		path /gio-hang /gio-hang/*
+	}
+	@php_logout {
+		method GET
+		path /account/dang-xuat /account/dang-xuat/
+	}
+	@php_language_action path /ngon-ngu /ngon-ngu/
+
+	handle @php_backend {
+		reverse_proxy host.docker.internal:8080
+	}
+
+	handle @php_legacy_media {
+		reverse_proxy host.docker.internal:8080
+	}
+
+	handle @php_form_post {
+		reverse_proxy host.docker.internal:8080
+	}
+
+	handle @php_logout {
+		reverse_proxy host.docker.internal:8080
+	}
+
+	handle @php_language_action {
+		reverse_proxy host.docker.internal:8080
+	}
+
+	handle {
+		reverse_proxy host.docker.internal:3102
+	}
+}

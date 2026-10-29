@@ -133,6 +133,8 @@
 
 		    if(!empty($_POST['info-user']))
 		    {
+				if(!formCsrfValid(isset($_POST['form_csrf']) ? $_POST['form_csrf'] : ''))
+					$func->transfer("Phiên cập nhật thông tin không hợp lệ. Vui lòng tải lại trang.", $configBase."account/thong-tin", false);
 		    	$message = '';
 				$response = array();
 		    	$old_password = (!empty($_POST['old-password'])) ? $_POST['old-password'] : '';
@@ -287,6 +289,8 @@
 
 		if(!empty($_POST['activation-user']))
 		{
+			if(!formCsrfValid(isset($_POST['form_csrf']) ? $_POST['form_csrf'] : ''))
+				$func->transfer("Phiên kích hoạt không hợp lệ. Vui lòng tải lại trang.", $configBase."account/kich-hoat?id=".(int)$id, false);
 			/* Data */
 			$message = '';
 			$response = array();
@@ -362,6 +366,9 @@
 	function loginMember()
 	{
 		global $d, $func, $flash, $loginMember, $configBase;
+
+		if(!formCsrfValid(isset($_POST['form_csrf']) ? $_POST['form_csrf'] : ''))
+			$func->transfer("Phiên đăng nhập không hợp lệ. Vui lòng tải lại trang.", $configBase."account/dang-nhap", false);
 
 		/* Data */
 		$username = (!empty($_POST['username'])) ? htmlspecialchars($_POST['username']) : '';
@@ -445,6 +452,9 @@
 	function signupMember()
 	{
 		global $d, $func, $flash, $configBase;
+
+		if(!formCsrfValid(isset($_POST['form_csrf']) ? $_POST['form_csrf'] : ''))
+			$func->transfer("Phiên đăng ký không hợp lệ. Vui lòng tải lại trang.", $configBase."account/dang-ky", false);
 
 		/* Data */
 		$message = '';
@@ -821,106 +831,47 @@
 
 		global $d,$item,$lists ,$loginMember, $configBase;
 
-		$sql = "select * from #_order where id=?";
+		$sql = "select * from #_order where id=? and id_user=? limit 1";
 
-		$item = $d->rawQueryOne($sql,array($_GET['id']));
+		$item = $d->rawQueryOne($sql,array((int)($_GET['id'] ?? 0), (int)($_SESSION['signin']['id'] ?? 0)));
 
 
 
 		$sql_order = "select * from #_order_details where id_order=?";
 
-		$lists = $d->rawQuery($sql_order,array($_GET['id']));
+		$lists = !empty($item['id']) ? $d->rawQuery($sql_order,array((int)$item['id'])) : array();
 
 	}
 
 	function return_order(){
+		global $d, $func, $configBase;
 
-		global $d,$result,$func,$configBase;
+		if(($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST' || !formCsrfValid(isset($_POST['form_csrf']) ? $_POST['form_csrf'] : ''))
+			$func->transfer("Phiên gửi yêu cầu đổi trả không hợp lệ. Vui lòng tải lại trang.", $configBase.'account/danh-sach-don-hang', false);
 
-		$sql = "select * from #_order where id=?";
+		$userId = (int)($_SESSION['signin']['id'] ?? 0);
+		$orderId = isset($_GET['id']) && ctype_digit((string)$_GET['id']) ? (int)$_GET['id'] : 0;
+		if($userId <= 0 || $orderId <= 0) $func->transfer("Đơn hàng không tồn tại.", $configBase.'account/danh-sach-don-hang', false);
 
-		$item = $d->rawQueryOne($sql,array($_GET['id']));
+		$item = $d->rawQueryOne("select id,total_price,sale_off from #_order where id=? and id_user=? limit 1", array($orderId, $userId));
+		if(empty($item['id'])) $func->transfer("Đơn hàng không tồn tại.", $configBase.'account/danh-sach-don-hang', false);
 
+		$itemReturn = $d->rawQueryOne("select id from #_order_returns where id_order=? and id_user=? order by id desc limit 1", array($orderId, $userId));
+		if(!empty($itemReturn['id'])) $func->transfer(_don_hang_da_duoc_tra, $configBase.'account/danh-sach-don-hang');
 
-
-		if($item){
-
-			$order_n = date('dmY').'TH';
-
-			$order_new = $d->rawQueryOne("select id,code from #_order_returns where code like '$order_n%'  order by id desc limit 0,1");
-
-
-
-			if(empty($order_new['id'])){ $order_rand = 1001; }else{ $order_rand =  substr($order_new['code'],10)+1; }
-
-			$order_code = date('dmY').'TH'.$order_rand;
-
-
-
-			$item_th = $d->rawQueryOne("SELECT * from #_order_returns where id_order=? order by id desc",array($_GET['id']));
-
-			if(empty($item_th)){
-
-				$data['id_order'] = (int)htmlspecialchars($_GET['id']);
-
-				$data['code'] = $order_code;
-
-				$data['total_price'] = $item['total_price'];
-
-				$data['sale_off'] = $item['sale_off'];
-
-				$data['status'] = 'datra';
-
-				$data['id_user'] = $_SESSION['signin']['id'];
-
-				$id_insert = $d->insert('order_returns', $data);
-
-				if ($id_insert) {
-
-					$result['status'] = 200;
-
-					$result['message'] = _da_tra_hang_thanh_cong;
-
-				}else{
-
-					$result['status'] = 202;
-
-					$result['message'] = _da_tra_hang_that_bai;
-
-				}
-
-			}else{
-
-				die('x');
-
-				$data['id_user'] = $_SESSION['signin']['id'];
-
-				$data['updatedAt'] = $d->now();
-
-				$data['edit_count'] = $d->inc(1);
-
-				$d->where('id', $item_th['id']);
-
-				if ($d->update('order_returns', $data)) {
-
-					$result['status'] = 200;
-
-					$result['message'] = _don_hang_da_duoc_tra;
-
-				}else{
-
-					print_r($d->getLastError());
-
-					
-
-				}
-
-			}
-
-			$func->transfer($result['message'],$config_base.'account/danh-sach-don-hang');
-
-		}
-
+		$prefix = date('dmY').'TH';
+		$latest = $d->rawQueryOne("select code from #_order_returns where code like ? order by id desc limit 1", array($prefix.'%'));
+		$next = !empty($latest['code']) ? (int)substr((string)$latest['code'], 10) + 1 : 1001;
+		$data = array(
+			'id_order' => $orderId,
+			'code' => $prefix.$next,
+			'total_price' => $item['total_price'],
+			'sale_off' => $item['sale_off'],
+			'status' => 'datra',
+			'id_user' => $userId
+		);
+		if($d->insert('order_returns', $data)) $func->transfer(_da_tra_hang_thanh_cong, $configBase.'account/danh-sach-don-hang');
+		$func->transfer(_da_tra_hang_that_bai, $configBase.'account/danh-sach-don-hang', false);
 	}
 
 	function order_return_list(){

@@ -2,11 +2,9 @@
 import { isPublicAboutPayload } from '#shared/contracts/public-about'
 import { isRuntimeFlagEnabled } from '#shared/public-route-gate'
 import AboutPreviewPage from '~/components/about/AboutPreviewPage.vue'
-import aboutPublicRoute from '~/middleware/about-public-route'
 
 definePageMeta({
   layout: false,
-  middleware: aboutPublicRoute,
 })
 
 const config = useRuntimeConfig()
@@ -26,7 +24,7 @@ if (import.meta.server && publicEnabled.value && (siteHasError.value || error.va
 useSeoMeta({
   title: computed(() => about.value?.title || 'Giới thiệu — Phúc Thịnh Solar'),
   description: computed(() => about.value?.story.intro || ''),
-  robots: computed(() => indexable.value ? 'index, follow' : 'noindex, nofollow, noarchive'),
+  robots: computed(() => indexable.value && !!about.value && !error.value && !siteHasError.value ? 'index, follow' : 'noindex, nofollow, noarchive'),
 })
 usePublicSocialMeta({
   enabled: computed(() => publicEnabled.value && !!about.value && !siteHasError.value && !error.value),
