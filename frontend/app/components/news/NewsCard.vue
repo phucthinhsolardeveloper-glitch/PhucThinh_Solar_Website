@@ -41,6 +41,9 @@ const links = useMigrationLinks()
           class="block h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
           loading="lazy"
           decoding="async"
+          width="760"
+          height="428"
+          sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
         >
         <span v-else class="grid h-full place-items-center text-[42px] text-gold-700" aria-hidden="true">✦</span>
         <span
