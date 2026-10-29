@@ -1,0 +1,19 @@
+QA SSR checkpoint (local only, no production):
+
+- PHP QA endpoint: `http://127.0.0.1:8098`, branch `codex/qa-route-resolver` @ `50c1183`.
+- Nuxt rebuilt from current worktree; Nitro QA port `3120` with `NITRO_PHP_ORIGIN=http://127.0.0.1:8098` and allowlist.
+- Shared local upload/thumbs volumes were mounted read-only for media parity; no production volume was touched.
+
+Results:
+
+- `/_migration/site` → 200; site contract accepted.
+- `/_migration/resolve-public-slug?slug=duoc-gi-khi-hop-tac-cung-phuc-thinh-solar` → 200 news DTO.
+- `/_migration/resolve-public-slug?slug=du-an-dien-nlmt-ho-anh-quan` → 200 project DTO.
+- `/duoc-gi-khi-hop-tac-cung-phuc-thinh-solar/` → 200; H1 `ĐƯỢC GÌ KHI HỢP TÁC CÙNG PHÚC THỊNH SOLAR`.
+- `/du-an-dien-nlmt-ho-anh-quan/` → 200; H1 `Dự án điện NLMT hộ anh Quân`.
+- `/_migration/product-detail?slug=not-found-slug` → 404 (PHP status preserved).
+- `/product/` → 301 `/san-pham/`.
+- `/du-an/` → 301 `/du-an-da-thuc-hien/`.
+- `/ve-chung-toi/` → 301 `/gioi-thieu/`.
+
+An earlier independent run reported project 502 when the QA PHP container lacked the shared media volume; after mounting the real local upload/thumbs volumes, the same rebuilt Nuxt artifact returned 200. This is evidence of environment/media dependency, not a production fix.

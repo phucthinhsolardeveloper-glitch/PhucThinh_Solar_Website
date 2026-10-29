@@ -1,0 +1,21 @@
+QA runtime checkpoint (no production):
+
+- PHP worktree: /home/admin01/src/Web_PTS_PHP-remediation-qa
+- branch/commit: codex/qa-route-resolver @ 50c1183
+- temporary container: pts-php-remediation-qa, port 8098, local MariaDB only
+- PHP 8.1 syntax lint: PASS for endpoint and library
+- helper contract test: PASS
+
+HTTP smoke:
+
+GET /api/pts_v1_public_route_resolve.php?slug=duoc-gi-khi-hop-tac-cung-phuc-thinh-solar
+→ 200 application/json
+{"schemaVersion":1,"entity":"news","slug":"duoc-gi-khi-hop-tac-cung-phuc-thinh-solar","canonical":"/duoc-gi-khi-hop-tac-cung-phuc-thinh-solar/"}
+
+GET /api/pts_v1_public_route_resolve.php?slug=du-an-dien-nlmt-ho-anh-quan
+→ 200 application/json
+{"schemaVersion":1,"entity":"project","slug":"du-an-dien-nlmt-ho-anh-quan","canonical":"/du-an-dien-nlmt-ho-anh-quan/"}
+
+GET with invalid slug `__bad__` → 400 `BAD_SLUG`.
+
+The temporary QA container was local-only; production PHP master, DNS and DB were not changed.
