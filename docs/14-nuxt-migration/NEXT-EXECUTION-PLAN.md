@@ -14,6 +14,10 @@
 - Negative GET smoke trên container xác nhận PDP hidden fixture và các slug không tồn
   tại cho catalog/news/solution/project đều trả **404, không canonical**; bốn hidden
   fixture theo DB vẫn giữ `NEEDS VERIFICATION` vì local DB không có bản ghi ẩn tương ứng.
+- Full visual compare mới nhất giữa PHP `:8080` và Nuxt preview `:3112` đạt **99/99**
+  route × viewport; không có lỗi preview request/media/runtime/overflow. Một số CLS
+  được ghi nhận chỉ nằm ở PHP reference và không làm Nuxt gate fail. Evidence:
+  `frontend/.migration-artifacts/migration-comparison-20261029-final6/`.
 - File `.env` local hiện bật một nhóm route preview để xem trực tiếp (About,
   Solutions, Catalog, PDP, Brand, Search, Cart, Order Success); các route còn lại
   vẫn fallback PHP. Đây là override local, không phải cấu hình production.
