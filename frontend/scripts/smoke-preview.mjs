@@ -6,7 +6,13 @@ const port = '3139'
 const base = `http://127.0.0.1:${port}`
 const child = spawn(process.execPath, ['.output/server/index.mjs'], {
   cwd: new URL('../', import.meta.url).pathname,
-  env: { ...process.env, NITRO_PORT: port, NITRO_HOST: '127.0.0.1' },
+  env: {
+    ...process.env,
+    NITRO_PORT: port,
+    NITRO_HOST: '127.0.0.1',
+    NITRO_PHP_ORIGIN: process.env.NITRO_PHP_ORIGIN || 'http://127.0.0.1:8088',
+    NITRO_PREVIEW_MEDIA_PROXY: process.env.NITRO_PREVIEW_MEDIA_PROXY || '1',
+  },
   stdio: 'ignore',
 })
 try {
