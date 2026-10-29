@@ -1,11 +1,18 @@
 <script setup lang="ts">
 import { isPublicGalleryDetailPayload, type PublicGalleryDetailPayload } from '#shared/contracts/public-gallery'
+import { editorialPublicResponseStatus, editorialPublicRouteRobots } from '#shared/editorial-public-route'
 
 const { site } = await usePublicSite()
 const route = useRoute()
-const slug = computed(() => typeof route.query.slug === 'string' ? route.query.slug : '')
+const config = useRuntimeConfig()
+const links = useMigrationLinks()
+const isBarePublicRoute = computed(() => typeof route.params.slug === 'string' && route.path === `/${route.params.slug}/`)
+const slug = computed(() => typeof route.params.slug === 'string' ? route.params.slug : (typeof route.query.slug === 'string' ? route.query.slug : ''))
 const { data, error, pending } = await useFetch<unknown>('/_migration/gallery-detail', { query: computed(() => ({ slug: slug.value })) })
 const gallery = computed<PublicGalleryDetailPayload | null>(() => isPublicGalleryDetailPayload(data.value) ? data.value : null)
+const errorStatus = (error.value as { statusCode?: unknown } | null)?.statusCode
+const responseStatus = editorialPublicResponseStatus(isBarePublicRoute.value && config.public.galleryDetailPublicRouteEnabled, errorStatus, !gallery.value)
+if (import.meta.server && responseStatus) setResponseStatus(responseStatus, responseStatus === 404 ? 'Not Found' : 'Bad Gateway')
 const selectedIndex = ref<number | null>(null)
 const lightbox = computed(() => {
   const detail = gallery.value
@@ -73,9 +80,16 @@ onBeforeUnmount(() => {
 })
 
 useSeoMeta({
-  title: computed(() => gallery.value?.seo.title || 'Album ảnh — Nuxt preview'),
+  title: computed(() => gallery.value?.seo.title || (isBarePublicRoute.value ? 'Thư viện ảnh' : 'Album ảnh — Nuxt preview')),
   description: computed(() => gallery.value?.seo.description || ''),
-  robots: 'noindex, nofollow, noarchive',
+  robots: computed(() => editorialPublicRouteRobots(isBarePublicRoute.value && config.public.galleryDetailPublicRouteEnabled, config.public.galleryDetailPublicRouteIndexable, !!gallery.value && !error.value)),
+})
+usePublicSocialMeta({
+  enabled: computed(() => isBarePublicRoute.value && config.public.galleryDetailPublicRouteEnabled && !!gallery.value && !error.value),
+  title: computed(() => gallery.value?.seo.title || 'Thư viện ảnh'),
+  description: computed(() => gallery.value?.seo.description || ''),
+  canonicalPath: computed(() => route.path),
+  image: computed(() => gallery.value?.images[0]?.image),
 })
 </script>
 
@@ -83,16 +97,15 @@ useSeoMeta({
   <div class="min-h-screen bg-white text-navy-800">
     <SiteHeader :site="site" />
     <main class="mx-auto w-full max-w-[1320px] px-4 py-10 nav:py-14">
-      <SiteBreadcrumb :items="[{ label: 'Thư viện ảnh', to: '/migration-gallery-preview' }, ...(gallery ? [{ label: gallery.album.title }] : [])]" />
+      <SiteBreadcrumb :items="[{ label: 'Thư viện ảnh', to: links.generic('/thu-vien-anh/') }, ...(gallery ? [{ label: gallery.album.title }] : [])]" />
       <div v-if="pending" class="py-16 text-slate-500" role="status">Đang tải album…</div>
       <div v-else-if="error || !gallery" class="rounded-btn border border-amber-200 bg-amber-50 p-8 text-amber-900">
-        <h1 class="mb-2 text-2xl font-black">Không tìm thấy album</h1>
-        <p class="mb-4">Album có thể chưa được bật hiển thị hoặc slug không còn tồn tại.</p>
-        <NuxtLink to="/migration-gallery-preview" class="font-bold underline">Quay lại thư viện ảnh</NuxtLink>
+        <h1 class="mb-2 text-2xl font-black">{{ isBarePublicRoute && responseStatus === 404 ? 'Không tìm thấy album' : 'Không thể tải album' }}</h1>
+        <p class="mb-4">{{ isBarePublicRoute ? 'Nội dung album hiện không khả dụng.' : 'Album có thể chưa được bật hiển thị hoặc slug không còn tồn tại.' }}</p>
+        <NuxtLink :to="links.generic('/thu-vien-anh/')" class="font-bold underline">Quay lại thư viện ảnh</NuxtLink>
       </div>
       <article v-else>
         <header class="mb-8 max-w-[820px]">
-          <p class="mb-2 text-xs font-extrabold uppercase tracking-[.14em] text-gold-700">Album ảnh</p>
           <h1 class="mb-3 text-[clamp(32px,5vw,52px)] font-black leading-tight tracking-tight">{{ gallery.album.title }}</h1>
           <p v-if="gallery.album.description" class="mb-0 text-lg leading-relaxed text-slate-500">{{ gallery.album.description }}</p>
         </header>
@@ -111,7 +124,7 @@ useSeoMeta({
           </button>
         </div>
         <div v-else class="rounded-btn border border-dashed border-gray-300 bg-slate-50 px-6 py-14 text-center text-slate-500">
-          Album này chưa có ảnh được bật hiển thị.
+          Không tìm thấy kết quả
         </div>
       </article>
     </main>

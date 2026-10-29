@@ -15,6 +15,7 @@ function solutionsAssert($condition, $message)
 $solutionRows = array(
     array(
         'id' => 1,
+        'id_list' => 5,
         'namevi' => 'Điện mặt trời <b>hộ gia đình</b>',
         'title_indexvi' => 'Giải pháp điện mặt trời',
         'descvi' => '<p>Mô tả <em>an toàn</em></p>',
@@ -84,7 +85,15 @@ $result = ptsPublicSolutionsPayload(
     '090 123-4567',
     array('dien-mat-troi-ho-gia-dinh' => '/assets/images/site-visuals/fallback.jpg')
 );
+$categoryDto = ptsPublicSolutionCategoryDto(
+    array('id'=>5, 'namevi'=>'Hộ gia đình', 'descvi'=>'Mô tả nhóm', 'slugvi'=>'ho-gia-dinh', 'status'=>'hienthi'),
+    array(array('id'=>5, 'namevi'=>'Hộ gia đình', 'slugvi'=>'ho-gia-dinh', 'status'=>'hienthi')),
+    $solutionRows
+);
 solutionsAssert($result['schemaVersion'] === 1 && $result['locale'] === 'vi', 'schema và locale vi');
+solutionsAssert($result['category'] === null, 'solutions hub không tự nhận là category');
+solutionsAssert($categoryDto['canonicalPath'] === '/ho-gia-dinh' && $categoryDto['cards'][0]['title'] === 'Điện mặt trời hộ gia đình', 'solution category dùng canonical bare path và tên bài như template PHP');
+solutionsAssert($categoryDto['navigation'][0]['url'] === '/giai-phap/dien-mat-troi-ho-gia-dinh/' && $categoryDto['navigation'][0]['active'] === true, 'solution category nav giữ representative detail link PHP');
 solutionsAssert(count($result['cards']) === 1, 'featured selection chỉ trả card được chọn và có slug');
 solutionsAssert($result['cards'][0]['url'] === '/giai-phap/dien-mat-troi-ho-gia-dinh/', 'canonical solution URL');
 solutionsAssert($result['cards'][0]['title'] === 'Giải pháp điện mặt trời', 'ưu tiên title_indexvi');

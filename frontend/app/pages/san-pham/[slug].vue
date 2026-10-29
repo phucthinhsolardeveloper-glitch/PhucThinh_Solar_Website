@@ -14,11 +14,32 @@ const route = useRoute()
 const slug = computed(() => typeof route.params.slug === 'string' ? route.params.slug : '')
 const { site, payload, extras, product, error, pending, ready } = useProductPreviewData(slug)
 await ready
+const productErrorStatus = (error.value as { statusCode?: unknown } | null)?.statusCode
+if (import.meta.server && productErrorStatus === 404) setResponseStatus(404, 'Not Found')
+else if (import.meta.server && (error.value || !product.value)) setResponseStatus(502, 'Bad Gateway')
+const productTitle = computed(() => payload.value?.seo.title || product.value?.name || 'Sản phẩm — Phúc Thịnh Solar')
+const productDescription = computed(() => payload.value?.seo.description ?? '')
+const productKeywords = computed(() => payload.value?.seo.keywords ?? '')
+const breadcrumbItems = computed(() => [
+  ...(payload.value?.breadcrumbs ?? [{ label: 'Sản phẩm', url: '/san-pham/' }]).map((item) => ({ label: item.label, to: item.url })),
+  ...(product.value ? [{ label: product.value.name }] : []),
+])
 
 useSeoMeta({
-  title: computed(() => product.value?.name || 'Sản phẩm — Phúc Thịnh Solar'),
-  description: computed(() => product.value?.summary || ''),
-  robots: computed(() => indexable.value ? 'index, follow' : 'noindex, nofollow, noarchive'),
+  title: productTitle,
+  description: productDescription,
+  robots: computed(() => indexable.value && !!product.value && !error.value ? 'index, follow' : 'noindex, nofollow, noarchive'),
+})
+useHead({
+  meta: computed(() => productKeywords.value ? [{ name: 'keywords', content: productKeywords.value }] : []),
+})
+usePublicSocialMeta({
+  enabled: computed(() => !!product.value && !error.value),
+  title: productTitle,
+  description: productDescription,
+  canonicalPath: computed(() => payload.value?.canonical.url || route.path),
+  image: computed(() => product.value?.media?.[0]),
+  type: 'product',
 })
 </script>
 <template>
@@ -27,7 +48,7 @@ useSeoMeta({
 
     <main>
       <div class="mx-auto w-full max-w-[1766px] px-4">
-        <SiteBreadcrumb :items="[{ label: 'Sản phẩm', to: '/san-pham/' }, ...(product ? [{ label: product.name }] : [])]" />
+        <SiteBreadcrumb :items="breadcrumbItems" />
       </div>
 
       <div v-if="pending" class="mx-auto min-h-[45vh] w-full max-w-[1766px] px-4 pt-12 pb-20" role="status" aria-live="polite">
@@ -40,7 +61,7 @@ useSeoMeta({
         <p class="text-slate-500">Không thể tải sản phẩm hoặc slug chưa hợp lệ.</p>
       </div>
 
-      <ProductPreviewPage v-else :product="product" :pricing="payload!.pricing" :content="payload!.content" :documents="payload!.documents" :extras="extras" />
+      <ProductPreviewPage v-else :product="product" :pricing="payload!.pricing" :content="payload!.content" :applications="payload!.applications" :buying-guides="payload!.buyingGuides" :documents="payload!.documents" :extras="extras" />
     </main>
 
     <SiteFooter :site="site" />

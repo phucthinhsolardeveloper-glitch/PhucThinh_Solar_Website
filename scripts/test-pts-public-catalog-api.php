@@ -14,12 +14,17 @@ catalogAssert(ptsCatalogProductDto(array('id'=>3,'namevi'=>'Sai','slugvi'=>'bad 
 $dto = ptsCatalogProductDto(array('id'=>4,'namevi'=>'Sản phẩm','slugvi'=>'san-pham','status'=>'hienthi','_pts_public_photo'=>'ok.webp','_pts_public_photo2'=>'../private.jpg','secret'=>'SHOULD_NOT_LEAK','sale_price'=>10));
 catalogAssert($dto['media'] === array('/upload/product/ok.webp'), 'validated media only');
 $payload = ptsCatalogPayload(array(), array(array('id'=>9,'namevi'=>'Danh mục','slugvi'=>'den','status'=>'hienthi')), array(array('id'=>4,'namevi'=>'Sản phẩm','slugvi'=>'san-pham','status'=>'hienthi')), 2, 48, 100, true);
+catalogAssert($payload['seo'] === array('title'=>'Sản phẩm | Phúc Thịnh Solar','description'=>'','keywords'=>'') && $payload['canonical'] === array('url'=>'/san-pham/'), 'root catalog SEO defaults and canonical path are allow-listed');
+$seoPayload = ptsCatalogPayload(array('id'=>9,'namevi'=>'<b>Đèn</b>','slugvi'=>'den','status'=>'hienthi'), array(), array(), 1, 20, 0, true, array(), array(), array('seoFallbackTitle'=>'Đèn','seoRow'=>array('titlevi'=>'<b>Đèn pha | Phúc Thịnh Solar</b>','descriptionvi'=>'<p>Chiếu sáng an toàn</p>','keywordsvi'=>'đèn pha, năng lượng'),'canonicalPath'=>'/danh-muc-san-pham/den/'));
+catalogAssert($seoPayload['seo'] === array('title'=>'Đèn pha | Phúc Thịnh Solar','description'=>'Chiếu sáng an toàn','keywords'=>'đèn pha, năng lượng') && $seoPayload['canonical'] === array('url'=>'/danh-muc-san-pham/den/'), 'category Admin SEO and canonical are sanitized');
+$invalidCanonicalPayload = ptsCatalogPayload(array(), array(), array(), 1, 20, 0, true, array(), array(), array('canonicalPath'=>'https://evil.example/'));
+catalogAssert($invalidCanonicalPayload['canonical'] === array('url'=>'/san-pham/'), 'catalog canonical rejects external paths');
 catalogAssert($payload['pagination']['page'] === 2 && $payload['pagination']['perPage'] === 48, 'pagination bounds fixture');
 catalogAssert($payload['parity']['prices']['included'] === true && !isset($payload['products'][0]['sale_price']), 'price authority exposed without leaking database fields');
 catalogAssert(strpos(json_encode($payload), 'SHOULD_NOT_LEAK') === false, 'private field omission');
 catalogAssert($payload['parity']['filters'] === array('included'=>true) && $payload['parity']['sort'] === array('included'=>true), 'filter/sort parity nay da that, khong con legacy_*_parity_not_verified');
-catalogAssert($payload['filters'] === array('brands'=>array(),'priceRanges'=>$payload['filters']['priceRanges'],'subcategories'=>array()) && count($payload['filters']['priceRanges']) === 3, 'filters bao gom 3 bac gia tu product_price_filter.php khi khong truyen brand/subcategory');
-catalogAssert($payload['selected'] === array('brandIds'=>array(),'priceKeys'=>array(),'subcategoryIds'=>array(),'sort'=>'default'), 'selected mac dinh rong khi khong co filter nao duoc chon');
+catalogAssert($payload['filters'] === array('brands'=>array(),'priceRanges'=>$payload['filters']['priceRanges'],'subcategories'=>array(),'needs'=>array()) && count($payload['filters']['priceRanges']) === 3, 'filters bao gom 3 bac gia va needs rong khi khong truyen brand/subcategory');
+catalogAssert($payload['selected'] === array('brandIds'=>array(),'priceKeys'=>array(),'subcategoryIds'=>array(),'sort'=>'default','needKeys'=>array()), 'selected mac dinh rong khi khong co filter nao duoc chon');
 catalogAssert($payload['categoryHero'] === null && $payload['categoryContent'] === array('title'=>'','applications'=>array(),'faq'=>array()) && $payload['support'] === null, 'extra catalog content defaults to empty instead of fabricated CMS fields');
 
 catalogAssert(ptsCatalogBrandDto(array('id'=>5,'namevi'=>'<b>LONGI</b>')) === array('id'=>5,'name'=>'LONGI'), 'brand DTO strip HTML va giu id that');

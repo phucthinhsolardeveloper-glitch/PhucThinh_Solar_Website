@@ -1,17 +1,75 @@
 # PTS Nuxt migration — next execution plan
 
+## Checkpoint hiện tại — 2026-10-29
+
+- Nguồn tích hợp vẫn là `feature/pts-nuxt-integration-20261027` tại `d17f828`;
+  thay đổi hiện tại còn WIP chưa commit. Không stage/commit phần việc của các lane
+  dùng chung.
+- Manifest đã mở rộng lên 33 route. First-fold browser gate đạt 99/99 lượt
+  (33 route × 390/768/1440); full-page capture có 33 route desktop. Sau đó sửa
+  H1 project category để khớp PHP (`Dự án Cá nhân`/`Dự án Doanh nghiệp`) và
+  chụp lại hai route ở 3 viewport: 6/6 HTTP 200, không lỗi media/overflow/runtime.
+  Ma trận và bằng chứng nằm trong
+  [`UI-ACCEPTANCE-AUDIT-20261028.md`](UI-ACCEPTANCE-AUDIT-20261028.md).
+- `npm test` **311/311 PASS**, `npm run typecheck` **PASS**, build snapshot mới
+  **PASS** (25s), `git diff --check` **PASS**. Build còn warning bundler
+  `INEFFECTIVE_DYNAMIC_IMPORT`/`PLUGIN_TIMINGS`, không fatal.
+- Public canonical compare: 31 route × 3 viewport = 93/93 HTTP 200 hai phía.
+  Flags OFF: 32 legacy path duy nhất fallback về PHP. Tất cả preview Nuxt vẫn
+  noindex; flag chỉ bật trong process test riêng và các process đó đã dừng.
+- SEO GET audit: sitemap `PASS` (457 `<loc>`, 0 fail/redirect); href mapping
+  `PASS` (33/33 route, 380/380 target HTTP 200; khác path chỉ để review tay).
+  Hidden-slug gate `NEEDS VERIFICATION`: 1/5 PASS; bốn họ không có record ẩn
+  phù hợp trong DB local nên không tạo slug giả. `tin-tuyen-dung` là category
+  rỗng có thật, tách sang `manualReviewRoutes`; PHP trả 200/index, Nuxt fallback
+  về PHP cho tới khi chốt chính sách category rỗng.
+- Đã sửa thêm một parity lỗi: H1/tile project category trước đó bỏ chữ “Dự án”.
+  Regression test cùng test phân loại manual-review route được cập nhật.
+- Dealer stats và PDP data projection đã được xác minh ở checkpoint 2026-10-29
+  bên dưới. Còn mở: policy category rỗng và safe fixture cho order-success;
+  commerce checkout vẫn là preview read-only. PHP trả `/cam-on/` 200/noindex
+  với lời cảm ơn chung khi không token, còn Nuxt flag ON trả 404/noindex; không
+  tạo đơn để thử.
+- Local PHP/API và MariaDB container đang chạy. `:8090` không listen và không có
+  Nuxt/Caddy cutover container hiện tại; không rebuild/đổi container, Caddy,
+  DB, production hay feature flags. Public cutover chưa hoàn tất.
+- PDP/Dealer đã được review trực tiếp trên preview cô lập sau source delta.
+  Việc tiếp theo là chốt policy category rỗng, order-success fixture và href
+  khác path; sau đó nghiệm thu trên service preview mà owner dùng để xem. Không
+  bật public/indexability flags cho tới khi các gate đó đóng.
+
 Kế hoạch gốc được lập tại `feature/pts-nuxt4-parity-qa-20261026`, branched from
-`feature/pts-nuxt4-migration` ở `b5865ac`. Current-state sync của lane này: HEAD
-`07a50ea`; implementation checkpoint gần nhất của preview là `ae811bb`. Không
-merge/push/deploy production, không ghi DB trong đợt sync này.
+`feature/pts-nuxt4-migration` ở `b5865ac`. Các SHA cũ trong phần kế hoạch bên
+dưới là mốc lịch sử, không phải HEAD hiện tại.
+
+## Historical checkpoint — 2026-10-28
+
+- Nguồn tích hợp: worktree `/home/admin01/src/pts-nuxt-integration-20261027`,
+  branch `feature/pts-nuxt-integration-20261027`, HEAD `8133b8b`; UI acceptance
+  audit đang ở working tree, chưa commit.
+- Code audit đã đóng các P1 có source proof cho catalog/PDP/brand, home/contact,
+  about/dealer, editorial CTA, project media/related content và checkout preview.
+  Chi tiết route theo route tại
+  [`UI-ACCEPTANCE-AUDIT-20261028.md`](UI-ACCEPTANCE-AUDIT-20261028.md).
+- Sau diff hiện tại: `npm test` 179/179 PASS, `npm run typecheck` PASS,
+  `npm run build` PASS trong 27.6s, `git diff --check` PASS. Build có warning
+  `INEFFECTIVE_DYNAMIC_IMPORT`/`PLUGIN_TIMINGS`, exit 0.
+- Visual/runtime gate vẫn BLOCKED: Nuxt `127.0.0.1:3100/` trả 404,
+  `/_migration/site` trả 502; PHP preview/API `8080`/`8088` không listen; không
+  có PHP CLI. Không dùng Lane 1 screenshots (build trước) làm sign-off cho diff
+  này. Preflight giữ feature flags OFF và pilot About chưa sẵn sàng.
+- Production, DB, Caddy, container, feature flags và ports `3101`/`8090` không
+  bị thay đổi. Không chạy cleanup/backup, không commit/push/merge/deploy.
 
 ## Kết luận audit hiện tại
 
 - PHP vẫn là owner của public resolver, canonical/redirect, pricing authority,
   session/cart calculation, order/payment, account, admin và media transform.
   Nuxt hiện có các preview noindex cho home, catalog, PDP, search, cart,
-  checkout, order success, editorial/corporate pages, policy/support detail và
-  các detail route; form/review/order mutations đi qua adapter PHP allowlist.
+  read-only checkout state, order success, editorial/corporate pages,
+  policy/support detail và các detail route. Cart, lead, review và shipping
+  adapters vẫn có PHP integration; checkout preview POST trả 410, không tạo
+  order và không forward sang PHP.
 - Các adapter Nitro dùng chung trách nhiệm ghép `runtimeConfig.phpOrigin` với
   endpoint allowlist, timeout và contract guard; rule query/slug, CSRF/session
   forwarding và cache header vẫn thuộc từng module theo nghiệp vụ.
@@ -26,6 +84,34 @@ merge/push/deploy production, không ghi DB trong đợt sync này.
   2026-10-28. Còn lại là public canonical/OG/sitemap/robots/redirect parity,
   full media/browser parity, account routes và deployment gates.
   Không dùng preview 200 để claim production migration.
+
+## Checkpoint source audit — 2026-10-29
+
+- PDP media/content projection đã được kiểm lại trên 372 URL sitemap: toàn bộ
+  GET API trả 200; ứng dụng CMS được tách thành section riêng, hướng dẫn lựa
+  chọn chỉ dùng thông số có giá trị. Không đưa ảnh/copy profile fallback của
+  template PHP vào Nuxt khi Admin chưa quản lý media/nội dung tương ứng.
+- Dealer stats đã đối chiếu lại với PHP `:8080`, PHP migration `:8088` và
+  template: `5 / 50 / 5000`; DTO/UI không hardcode số. Rich text của support
+  được xuất qua sanitizer và render giữ cấu trúc đoạn/list.
+- Frontend suite sau sửa: `311/311` PASS. Typecheck/build chạy ở bản sao cô lập;
+  kết quả và giới hạn visual được ghi tại
+  [`UI-ACCEPTANCE-AUDIT-20261028.md`](UI-ACCEPTANCE-AUDIT-20261028.md).
+- Local preview phải dùng `scripts/nuxt-preview-launch.py` để upstream vào
+  PHP migration `:8088`; PHP legacy `:8080` không có cùng DTO schema. Nuxt
+  source mặc định vẫn là `:8080`, vì vậy deploy/preview không qua launcher phải
+  cung cấp `NUXT_PHP_ORIGIN` đúng môi trường.
+- Đã chụp hai route PDP/Dealer ở ba viewport trên Nuxt SSR cô lập `:3116` sau
+  source delta: 6/6 preview health gates PASS; đã review thủ công full-page
+  desktop và ảnh responsive mobile/tablet. Nuxt không có broken media, overflow,
+  runtime error, failed request hoặc preview-link leak. PHP reference ghi nhận
+  10 PDP và 15 Dealer broken-media requests, được phân loại là lỗi phía PHP,
+  không tính thành lỗi Nuxt. Đây là review của hai route, không phải sign-off
+  toàn bộ 33 route hay pixel-diff tự động; bằng chứng ở audit delta bên cạnh.
+- Còn chờ: xác nhận valid order-success session an toàn; bốn nhóm
+  negative-slug chưa có hidden row trong DB; rà href khác path bằng review thủ
+  công; staging/hybrid routing và full 33-route visual review sau source delta.
+  Public flags, production, database và container Nuxt chưa đổi.
 
 ## QA nền tảng chuẩn
 

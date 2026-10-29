@@ -163,23 +163,12 @@
   --ui-radius: 4px;
 }
 
-/* ----------------------------------------------------------------------------
-   CHUNG SỐNG TẠM THỜI VỚI CSS PREVIEW CŨ — có chủ ý, có hạn dùng
-
-   nuxt.config.ts nạp main.css TRƯỚC tokens.css. Thứ tự này không phải ngẫu
-   nhiên: Preflight của Tailwind reset margin/border/font của thẻ gốc, và 16
-   route preview hiện có đang dựa vào shell.css + *-preview.css. Nạp Tailwind
-   sau sẽ reset nền dưới chân chúng và làm hỏng các route đang chạy, trong khi
-   CODEX 1 có yêu cầu rõ là "old preview routes still load".
-
-   Nạp trước nghĩa là: CSS preview cũ vẫn thắng ở chỗ hai bên trùng nhau, còn
-   utility Tailwind và component Nuxt UI vẫn hoạt động bình thường ở mọi chỗ
-   khác (chúng dùng class/layer riêng, không chạm selector .pts-*).
-
-   Đây là trạng thái bắc cầu. CODEX 2-4 chuyển từng trang sang Tailwind rồi gỡ
-   bỏ *-preview.css tương ứng; khi file preview cuối cùng biến mất thì xoá luôn
-   khối ghi chú này và đảo lại thứ tự nạp nếu cần.
-   ---------------------------------------------------------------------------- */
+/*
+ * Tailwind v4 utilities và component Nuxt UI là lớp style chính của ứng dụng.
+ * `tokens.css` được nạp sau file này để các reset global không-layer của nó
+ * thắng Preflight tại html/body/focus. Không còn stylesheet shell hoặc preview
+ * riêng; giữ thứ tự này ổn định để không làm đổi cascade toàn site.
+ */
 
 @layer base {
   /*
@@ -195,7 +184,7 @@
   /* Focus vàng dày 3px là cam kết tiếp cận đã có trong tokens.css. Nhắc lại ở
      layer base để các control Nuxt UI cũng nhận, không chỉ thẻ HTML trần. */
   :focus-visible {
-    outline: 3px solid var(--color-gold-500);
+    outline: 3px solid var(--color-gold-700);
     outline-offset: 3px;
   }
 }
@@ -262,6 +251,14 @@
     text-decoration: underline;
     text-underline-offset: 0.15em;
   }
+
+  .cms-content-on-dark { color: var(--color-blue-100); }
+  .cms-content-on-dark h2,
+  .cms-content-on-dark h3,
+  .cms-content-on-dark h4,
+  .cms-content-on-dark h5,
+  .cms-content-on-dark h6 { color: white; }
+  .cms-content-on-dark a { color: var(--color-gold-300); }
 
   .cms-content img {
     display: block;

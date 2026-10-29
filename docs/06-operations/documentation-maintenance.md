@@ -32,6 +32,69 @@ và liên kết về runbook đang có hiệu lực.
 
 ## Lịch sử rà soát
 
+### 2026-10-29 — UI acceptance, route fallback và nested-route audit
+
+- Bổ sung kết quả theo từng route/section và phân biệt code gate với visual gate
+  tại `docs/14-nuxt-migration/UI-ACCEPTANCE-AUDIT-20261028.md`.
+- Ghi nhận ba route regressions được phát hiện khi GET build cô lập: nested
+  solution detail bị parent hub che; trailing slash category bị catch-all param
+  làm rơi về catalog root; bare-slug route gọi classifier dù mọi public detail
+  flag OFF. Source đã sửa và smoke lại.
+- Cập nhật fallback query/filter PHP, quantity 1–999, empty-state spacing,
+  mobile typography và hit areas theo design system.
+- Bổ sung audit source lần hai: Projects pagination, query-preserving fallback
+  cho News/Projects/Gallery/Video, SSR TOC solution, catalog 404, guard sản phẩm
+  ẩn khi thêm cart và giữ session khi quote-only. Frontend suite hiện 274/274,
+  typecheck/build PASS; PHP/DB/TLS visual runtime vẫn chưa sẵn sàng.
+- Không thể ký visual parity: PHP/API `8080/8088` không listen; không có ảnh mới
+  để review. Feature flags giữ OFF; không đổi production, container, DB hoặc
+  Caddy. Chi tiết checkpoint nằm trong `NEXT-EXECUTION-PLAN.md`.
+
+### 2026-10-29 — xử lý audit form, media, canonical và bridge security
+
+- Đóng thêm lỗi source-backed ở Contact/Dealer retry, ảnh CTA About, path media
+  equipment solution và redirect handling của PHP bridge; cập nhật regression
+  tests tương ứng.
+- Sửa PHP canonical brand/policy theo public route manifest; thêm test mock chỉ
+  đọc. PHP CLI chưa có nên lint/test PHP vẫn chờ runtime phù hợp.
+- Rebuild frontend source: 278/278 tests, typecheck và build PASS; smoke 26/26
+  public fallback route PASS trên build server cô lập, process đã dừng.
+- Ghi rõ production `/product/` 404 và canonical brand/policy lệch integration;
+  không thay production. Visual review vẫn chờ PHP/API local dù Chromium đã có.
+  Feature flags OFF, không sửa DB/container/Caddy/volume, không push/deploy.
+  Chi tiết bằng chứng trong `UI-ACCEPTANCE-AUDIT-20261028.md`.
+
+### 2026-10-28 — UI acceptance audit và checkout preview an toàn
+
+- Ghi bảng trạng thái source cho toàn bộ 26 route trong manifest tại
+  `docs/14-nuxt-migration/UI-ACCEPTANCE-AUDIT-20261028.md`; phân biệt code fix,
+  visual pending và dữ liệu cần xác minh trực tiếp.
+- Cập nhật checkpoint tích hợp: frontend tests/typecheck/build xanh, nhưng PHP
+  preview/API offline nên không có visual sign-off mới; feature flags giữ OFF.
+- Ghi rõ checkout preview chỉ đọc, POST bị khóa HTTP 410 và không thể tạo đơn;
+  đánh dấu nội dung checkout cũ trong handoff Batch B là lịch sử.
+- Các giá trị Dealer/About/Policy và HTTP alias redirects vẫn cần kiểm tra khi
+  local PHP/CMS hoạt động; không suy đoán dữ liệu.
+
+### 2026-10-28 — cập nhật checkpoint tích hợp Nuxt và dealer preview
+
+- Đánh dấu handoff Batch B và route matrix cũ là snapshot lịch sử; cập nhật
+  nguồn trạng thái hiện tại tại `docs/14-nuxt-migration/NEXT-EXECUTION-PLAN.md`.
+- Ghi rõ dealer DTO lấy intro/overview từ hai field CMS riêng, rich text qua
+  sanitizer, và chỉ lấy thống kê đang hiển thị.
+- Ghi lần crawl R18 bị loại vì PHP preview offline; tránh coi `ERR`/502 là gate
+  PHP/Nuxt và nhắc chạy lại sau khi nguồn local được phục hồi.
+- Mở rộng quy tắc `hrefTargetAudit`: bỏ qua mutation query và dừng trước redirect
+  tới mutation target; tests local phủ hai trường hợp.
+
+### 2026-10-28 — khôi phục bố cục trang chủ product-first cho Nuxt
+
+- Đối chiếu operating contract với Nuxt homepage preview; ghi nhận ADR 0006 đã
+  lệch yêu cầu hiện hành về Hero và các khối nội dung dài.
+- Cập nhật UI/UX system, đánh dấu ADR 0006 superseded ở phần bố cục trang chủ và
+  thêm ADR 0008. Nuxt preview mở đầu bằng danh mục/sản phẩm; không thay public
+  route flag, PHP production hoặc dữ liệu CMS.
+
 ### 2026-10-27 — chuẩn hóa workflow bằng evidence và handoff
 
 - Bổ sung discovery/ownership, acceptance negative path, verification ladder và

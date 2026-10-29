@@ -22,6 +22,7 @@ export type PublicCatalogPricing =
 export interface PublicCatalogBrand { id: number; name: string }
 export interface PublicCatalogPriceRange { key: '1' | '2' | '3'; label: string }
 export interface PublicCatalogSubcategory { id: number; name: string; slug: string }
+export interface PublicCatalogNeed { key: 'du-an-cong-trinh' | 'chieu-sang-gia-dinh' | 'san-vuon-canh-quan'; label: string }
 export interface PublicCatalogHero { image: string; alt: string }
 export interface PublicCatalogFaq { question: string; answer: string }
 export interface PublicCatalogApplication { title: string; description: string; image: string; href: string }
@@ -31,6 +32,8 @@ export type PublicCatalogSortKey = 'default' | 'abc' | 'abc-desc' | 'price' | 'p
 export interface PublicCatalogPayload {
   schemaVersion: 1
   locale: 'vi'
+  seo: { title: string; description: string; keywords: string }
+  canonical: { url: string }
   category: [] | PublicCatalogCategory
   categories: PublicCatalogCategory[]
   products: PublicCatalogProduct[]
@@ -39,12 +42,14 @@ export interface PublicCatalogPayload {
     brands: PublicCatalogBrand[]
     priceRanges: PublicCatalogPriceRange[]
     subcategories: PublicCatalogSubcategory[]
+    needs?: PublicCatalogNeed[]
   }
   selected?: {
     brandIds: number[]
     priceKeys: string[]
     subcategoryIds: number[]
     sort: PublicCatalogSortKey
+    needKeys?: PublicCatalogNeed['key'][]
   }
   categoryHero: PublicCatalogHero | null
   categoryContent: { title: string; applications: PublicCatalogApplication[]; faq: PublicCatalogFaq[] }
@@ -125,6 +130,12 @@ function isSubcategory(value: unknown): value is PublicCatalogSubcategory {
   return isRecord(value) && hasExactKeys(value, ['id', 'name', 'slug']) && isSafeId(value.id) && isSafeText(value.name) && isSlug(value.slug)
 }
 
+const catalogNeedKeys: PublicCatalogNeed['key'][] = ['du-an-cong-trinh', 'chieu-sang-gia-dinh', 'san-vuon-canh-quan']
+function isNeed(value: unknown): value is PublicCatalogNeed {
+  return isRecord(value) && hasExactKeys(value, ['key', 'label'])
+    && typeof value.key === 'string' && (catalogNeedKeys as string[]).includes(value.key) && isSafeText(value.label)
+}
+
 const catalogSortKeys: PublicCatalogSortKey[] = ['default', 'abc', 'abc-desc', 'price', 'price-desc', 'new', 'new-desc']
 function isSortKey(value: unknown): value is PublicCatalogSortKey {
   return typeof value === 'string' && (catalogSortKeys as string[]).includes(value)
@@ -139,23 +150,33 @@ function isPriceKeyArray(value: unknown): value is string[] {
 }
 
 function isCatalogFilters(value: unknown): value is NonNullable<PublicCatalogPayload['filters']> {
-  return isRecord(value) && hasExactKeys(value, ['brands', 'priceRanges', 'subcategories'])
+  if (!isRecord(value)) return false
+  const hasNeeds = Object.prototype.hasOwnProperty.call(value, 'needs')
+  return (hasExactKeys(value, ['brands', 'priceRanges', 'subcategories']) || hasNeeds && hasExactKeys(value, ['brands', 'priceRanges', 'subcategories', 'needs']))
     && Array.isArray(value.brands) && value.brands.every(isBrand)
     && Array.isArray(value.priceRanges) && value.priceRanges.every(isPriceRange)
     && Array.isArray(value.subcategories) && value.subcategories.every(isSubcategory)
+    && (!hasNeeds || Array.isArray(value.needs) && value.needs.every(isNeed))
 }
 
 function isCatalogSelected(value: unknown): value is NonNullable<PublicCatalogPayload['selected']> {
-  return isRecord(value) && hasExactKeys(value, ['brandIds', 'priceKeys', 'subcategoryIds', 'sort'])
+  if (!isRecord(value)) return false
+  const hasNeedKeys = Object.prototype.hasOwnProperty.call(value, 'needKeys')
+  return (hasExactKeys(value, ['brandIds', 'priceKeys', 'subcategoryIds', 'sort']) || hasNeedKeys && hasExactKeys(value, ['brandIds', 'priceKeys', 'subcategoryIds', 'sort', 'needKeys']))
     && isIdArray(value.brandIds) && isPriceKeyArray(value.priceKeys) && isIdArray(value.subcategoryIds) && isSortKey(value.sort)
+    && (!hasNeedKeys || Array.isArray(value.needKeys) && value.needKeys.every((key) => typeof key === 'string' && (catalogNeedKeys as string[]).includes(key)))
 }
 
 export function isPublicCatalogPayload(value: unknown): value is PublicCatalogPayload {
   if (!isRecord(value)) return false
-  const legacy = hasExactKeys(value, ['schemaVersion', 'locale', 'category', 'categories', 'products', 'pagination', 'parity'])
-  const extended = hasExactKeys(value, ['schemaVersion', 'locale', 'category', 'categories', 'products', 'pagination', 'filters', 'selected', 'parity', 'categoryHero', 'categoryContent', 'support'])
+  const baseKeys = ['schemaVersion', 'locale', 'seo', 'canonical', 'category', 'categories', 'products', 'pagination', 'parity']
+  const legacy = hasExactKeys(value, baseKeys)
+  const extended = hasExactKeys(value, [...baseKeys, 'filters', 'selected', 'categoryHero', 'categoryContent', 'support'])
   if (!(legacy || extended) || value.schemaVersion !== 1 || value.locale !== 'vi') return false
   if (!(Array.isArray(value.category) && value.category.length === 0 || isCategory(value.category))) return false
+  if (!isRecord(value.seo) || !hasExactKeys(value.seo, ['title', 'description', 'keywords']) || !isSafeText(value.seo.title) || !isSafeText(value.seo.description, true) || !isSafeText(value.seo.keywords, true) || /[<>]/.test(value.seo.title) || /[<>]/.test(value.seo.description) || /[<>]/.test(value.seo.keywords)) return false
+  const expectedCanonical = Array.isArray(value.category) ? '/san-pham/' : value.category.url
+  if (!isRecord(value.canonical) || !hasExactKeys(value.canonical, ['url']) || value.canonical.url !== expectedCanonical) return false
   if (!Array.isArray(value.categories) || !value.categories.every(isCategory) || !Array.isArray(value.products) || !value.products.every(isPublicCatalogProduct)) return false
   if (!isRecord(value.pagination) || !hasExactKeys(value.pagination, ['page', 'perPage', 'total']) || typeof value.pagination.page !== 'number' || !Number.isSafeInteger(value.pagination.page) || value.pagination.page < 1 || value.pagination.page > 10000 || typeof value.pagination.perPage !== 'number' || !Number.isSafeInteger(value.pagination.perPage) || value.pagination.perPage < 1 || value.pagination.perPage > 48 || typeof value.pagination.total !== 'number' || !Number.isSafeInteger(value.pagination.total) || value.pagination.total < 0) return false
   if (extended && (!isCatalogFilters(value.filters) || !isCatalogSelected(value.selected))) return false

@@ -3,20 +3,71 @@ import type { PublicProjectsPayload } from '#shared/contracts/public-projects'
 import { isPublicProjectsPayload } from '#shared/contracts/public-projects'
 import type { PublicSitePayload } from '#shared/contracts/public-site'
 import { isPublicSitePayload } from '#shared/contracts/public-site'
+import { isRuntimeFlagEnabled, PROJECTS_PUBLIC_PATH } from '#shared/public-route-gate'
+import { editorialPublicHubResponseStatus, editorialPublicRouteRobots } from '#shared/editorial-public-route'
 import ProjectCard from '~/components/projects/ProjectCard.vue'
 import ProjectFilters from '~/components/projects/ProjectFilters.vue'
 import ProjectsFeatured from '~/components/projects/ProjectsFeatured.vue'
 import ProjectsCta from '~/components/projects/ProjectsCta.vue'
 
 const route = useRoute()
+const config = useRuntimeConfig()
+const isPublicRoute = computed(() => route.path === PROJECTS_PUBLIC_PATH)
+const publicProjectsEnabled = computed(() => isPublicRoute.value && isRuntimeFlagEnabled(config.public.projectsPublicRouteEnabled))
 const fallbackSite: PublicSitePayload = { schemaVersion: 1, brand: { name: 'Phúc Thịnh Solar', hotline: '' }, productCategories: [] }
 const { data: siteData } = await useFetch<unknown>('/_migration/site', { default: () => fallbackSite })
-const category = typeof route.query.category === 'string' ? route.query.category : undefined
-const { data, error } = await useAsyncData<unknown>(`migration-projects-${category || 'all'}`, () => $fetch('/_migration/projects', { query: category ? { category } : undefined }))
+const category = computed(() => typeof route.query.category === 'string' ? route.query.category : undefined)
+// PHP uses `p` on the public URL; the read-only DTO endpoint names it `page`.
+const page = computed(() => {
+  const value = route.query.p
+  if (typeof value !== 'string' || !/^[1-9][0-9]*$/.test(value)) return 1
+  const parsed = Number(value)
+  return Number.isSafeInteger(parsed) && parsed <= 10000 ? parsed : 1
+})
+const requestQuery = computed(() => ({
+  ...(category.value ? { category: category.value } : {}),
+  page: String(page.value),
+}))
+const { data, error } = await useAsyncData<unknown>(
+  () => `migration-projects-${JSON.stringify(requestQuery.value)}`,
+  () => $fetch('/_migration/projects', { query: requestQuery.value }),
+  { watch: [requestQuery] },
+)
 const site = computed(() => isPublicSitePayload(siteData.value) ? siteData.value : fallbackSite)
 const projects = computed(() => isPublicProjectsPayload(data.value) ? data.value : null)
+const currentPage = computed(() => projects.value?.pagination.page ?? page.value)
+const totalPages = computed(() => projects.value ? Math.max(1, Math.ceil(projects.value.pagination.total / projects.value.pagination.perPage)) : 1)
+const paginationItems = usePaginationItems(currentPage, totalPages)
+const errorStatus = (error.value as { statusCode?: unknown } | null)?.statusCode
+const responseStatus = editorialPublicHubResponseStatus(publicProjectsEnabled.value, errorStatus, projects.value === null)
+if (import.meta.server && responseStatus) setResponseStatus(responseStatus, responseStatus === 404 ? 'Not Found' : 'Bad Gateway')
 
-useSeoMeta({ title: 'Dự án — internal preview', robots: 'noindex, nofollow, noarchive' })
+function pageLink(nextPage: number) {
+  return {
+    path: isPublicRoute.value ? PROJECTS_PUBLIC_PATH : '/migration-projects-preview',
+    query: {
+      ...(category.value ? { category: category.value } : {}),
+      ...(nextPage > 1 ? { p: String(nextPage) } : {}),
+    },
+  }
+}
+
+useSeoMeta({
+  title: () => isPublicRoute.value ? (projects.value?.title || 'Dự án') : 'Dự án — internal preview',
+  robots: computed(() => editorialPublicRouteRobots(
+    isPublicRoute.value && config.public.projectsPublicRouteEnabled,
+    config.public.projectsPublicRouteIndexable,
+    !!projects.value && !error.value,
+    ['category', 'p', 'page'].some((key) => key in route.query),
+  )),
+})
+usePublicSocialMeta({
+  enabled: computed(() => isPublicRoute.value && config.public.projectsPublicRouteEnabled && !!projects.value && !error.value),
+  title: computed(() => projects.value?.title || 'Dự án'),
+  description: computed(() => projects.value?.intro.description || ''),
+  canonicalPath: '/du-an-da-thuc-hien/',
+  image: computed(() => projects.value?.featured?.image || undefined),
+})
 </script>
 
 <template>
@@ -28,28 +79,56 @@ useSeoMeta({ title: 'Dự án — internal preview', robots: 'noindex, nofollow,
         <SiteBreadcrumb :items="[{ label: 'Dự án' }]" />
 
         <div v-if="error || !projects" class="min-h-[30vh] py-6" role="status">
-          <h1 class="mb-3 text-3xl font-black tracking-tight">Dự án — internal preview</h1>
-          <p class="text-slate-500">Không thể tải dữ liệu CMS trong môi trường hiện tại. Preview không hiển thị dữ liệu dự án giả.</p>
+          <h1 class="mb-3 text-3xl font-black tracking-tight">{{ isPublicRoute ? 'Dự án' : 'Dự án — internal preview' }}</h1>
+          <p class="text-slate-500">Không thể tải dữ liệu CMS trong môi trường hiện tại. {{ isPublicRoute ? 'Nội dung sẽ hiển thị khi CMS khả dụng.' : 'Preview không hiển thị dữ liệu dự án giả.' }}</p>
         </div>
 
         <template v-else>
-          <h1 class="my-7 text-[clamp(32px,5vw,56px)] font-black leading-tight tracking-tight text-navy-950">{{ projects.title }}</h1>
-          <!--
-            CÒN THIẾU: ảnh production có một đoạn mô tả ngay dưới H1 ("Phúc
-            Thịnh Solar tự hào đồng hành..."). PublicProjectsPayload không có
-            trường description ở cấp payload (chỉ có ở từng project) — không
-            bịa, để trống chờ DTO bổ sung.
-          -->
+          <header v-if="projects.intro.visible" class="my-7 max-w-[980px]">
+            <h1 class="mb-3 text-[clamp(32px,5vw,56px)] font-black leading-tight tracking-tight text-navy-950">{{ projects.intro.title }}</h1>
+            <p v-if="projects.intro.description" class="m-0 text-lg leading-relaxed text-slate-600">{{ projects.intro.description }}</p>
+          </header>
+          <h1 v-else class="sr-only">{{ projects.title }}</h1>
 
           <ProjectFilters :categories="projects.categories" :selected="projects.category" :all-label="projects.labels.all" :filters-label="projects.labels.filters" />
 
-          <ProjectsFeatured v-if="projects.featured" :project="projects.featured" :label="projects.labels.featured" :view-label="projects.labels.view" />
+          <ProjectsFeatured v-if="projects.featured" :project="projects.featured" :benefits="projects.featuredBenefits" :label="projects.labels.featured" :view-label="projects.labels.view" />
 
           <section class="grid grid-cols-1 gap-x-6 gap-y-8 tb:grid-cols-2 nav:grid-cols-3" :aria-label="projects.title">
             <ProjectCard v-for="project in projects.projects" :key="project.id" :project="project" :view-label="projects.labels.view" />
           </section>
 
-          <p v-if="!projects.featured && !projects.projects.length" class="min-h-[30vh] py-6 text-slate-500">{{ projects.labels.empty }}</p>
+          <nav v-if="totalPages > 1" class="mt-10 flex flex-wrap gap-2" aria-label="Phân trang dự án">
+            <NuxtLink
+              v-if="currentPage > 1"
+              class="inline-grid min-h-11 min-w-11 place-items-center rounded-chip border border-gray-200 px-3 py-2 text-navy-800 no-underline transition-colors hover:border-navy-800"
+              :to="pageLink(currentPage - 1)"
+              aria-label="Trang trước"
+            >Trước</NuxtLink>
+            <template v-for="item in paginationItems" :key="item.key">
+              <span v-if="item.page === null" class="inline-grid min-h-11 min-w-11 place-items-center px-2 py-2 text-slate-500" aria-hidden="true">…</span>
+              <span
+                v-else-if="item.page === currentPage"
+                class="inline-grid min-h-11 min-w-11 place-items-center rounded-chip border border-navy-800 bg-navy-800 px-3 py-2 text-white"
+                aria-current="page"
+                :aria-label="`Trang ${item.page}`"
+              >{{ item.page }}</span>
+              <NuxtLink
+                v-else
+                class="inline-grid min-h-11 min-w-11 place-items-center rounded-chip border border-gray-200 px-3 py-2 text-navy-800 no-underline transition-colors hover:border-navy-800"
+                :to="pageLink(item.page)"
+                :aria-label="`Trang ${item.page}`"
+              >{{ item.page }}</NuxtLink>
+            </template>
+            <NuxtLink
+              v-if="currentPage < totalPages"
+              class="inline-grid min-h-11 min-w-11 place-items-center rounded-chip border border-gray-200 px-3 py-2 text-navy-800 no-underline transition-colors hover:border-navy-800"
+              :to="pageLink(currentPage + 1)"
+              aria-label="Trang tiếp theo"
+            >Sau</NuxtLink>
+          </nav>
+
+          <p v-if="!projects.featured && !projects.projects.length" class="py-6 text-slate-500">{{ projects.labels.empty }}</p>
 
           <ProjectsCta v-if="projects.cta" :cta="projects.cta" :label="projects.labels.cta" />
         </template>

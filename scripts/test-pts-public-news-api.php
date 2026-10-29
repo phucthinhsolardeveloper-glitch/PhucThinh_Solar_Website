@@ -15,6 +15,7 @@ newsAssert(count($featured) === 1 && $featured[0]['id'] === 9, 'featured chỉ l
 $categoryDto = ptsNewsCategoryDto($category);
 $payload = ptsNewsPayload(array($category), array($rows[0]), $featured, array(), false, array(), false, 1, 2, '', null, '', true);
 newsAssert($payload['pagination']['perPage'] === 6 && $payload['articles'][0]['description'] === 'Mô tả CMS', 'giữ page size 6 và plain text excerpt');
+newsAssert($categoryDto['canonicalPath'] === '/kien-thuc-dien-mat-troi', 'category DTO giữ canonical bare path như PHP');
 newsAssert($payload['articles'][0]['readingMinutes'] === 2 && $payload['articles'][0]['url'] === '/bai-viet-cms/', 'reading time và canonical bare slug');
 newsAssert(strpos(json_encode($payload, JSON_UNESCAPED_UNICODE), '<b>') === false && strpos(json_encode($payload, JSON_UNESCAPED_UNICODE), 'hidden.jpg') === false, 'DTO không lộ HTML hoặc bài ẩn');
 $hiddenIntro = ptsNewsPayload(array($category), array(), array(), array(), true, array(), true, 1, 0, '', null, '', false);

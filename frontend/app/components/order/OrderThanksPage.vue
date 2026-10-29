@@ -1,11 +1,44 @@
 <script setup lang="ts">
 import { isPublicOrderThanksPayload, type PublicOrderThanksPayload } from '#shared/contracts/public-checkout'
+import { ORDER_SUCCESS_PUBLIC_PATH, isRuntimeFlagEnabled } from '#shared/public-route-gate'
 
 const { site } = await usePublicSite()
 const route = useRoute()
+const config = useRuntimeConfig()
+const links = useMigrationLinks()
 const token = computed(() => typeof route.query.token === 'string' ? route.query.token : '')
-const { data, error, pending } = await useFetch<unknown>('/_migration/order-thanks', { query: computed(() => ({ token: token.value })), default: () => null })
+const hasValidToken = computed(() => /^[a-f0-9]{48}$/.test(token.value))
+const { data, error, pending } = await useAsyncData<unknown>(
+  () => `order-thanks-${token.value}`,
+  () => hasValidToken.value ? $fetch('/_migration/order-thanks', { query: { token: token.value } }) : Promise.resolve(null),
+  { default: () => null },
+)
 const payload = computed<PublicOrderThanksPayload | null>(() => isPublicOrderThanksPayload(data.value) ? data.value : null)
+const isPublicRoute = route.path === ORDER_SUCCESS_PUBLIC_PATH && isRuntimeFlagEnabled(config.public.orderSuccessPublicRouteEnabled)
+const errorStatus = (error.value as { statusCode?: unknown } | null)?.statusCode
+const isOrderNotFound = computed(() => errorStatus === 404 || !hasValidToken.value)
+if (import.meta.server && isPublicRoute) {
+  if (isOrderNotFound.value) setResponseStatus(404, 'Not Found')
+  else if (errorStatus || !payload.value) setResponseStatus(502, 'Bad Gateway')
+}
+
+const trackedConversions = new Set<string>()
+function trackOrderConversion() {
+  const current = payload.value
+  const currentToken = token.value
+  if (!import.meta.client || !current?.conversionPending || !/^[a-f0-9]{48}$/.test(currentToken) || trackedConversions.has(currentToken)) return
+  const browserWindow = window as Window & { dataLayer?: Array<Record<string, unknown>> }
+  const dataLayer = browserWindow.dataLayer ??= []
+  dataLayer.push({
+    event: 'order_success',
+    order_code: current.order.code,
+    order_value: current.order.totalPrice,
+    currency: 'VND',
+  })
+  trackedConversions.add(currentToken)
+}
+onMounted(trackOrderConversion)
+watch([payload, token], trackOrderConversion)
 
 function formatMoney(value: number): string {
   return new Intl.NumberFormat('vi-VN').format(value) + 'đ'
@@ -18,9 +51,9 @@ function formatMoney(value: number): string {
     <main class="mx-auto w-full max-w-[900px] px-4 py-16 text-center max-ph:py-10">
       <div v-if="pending" class="text-slate-500" role="status">Đang xác nhận đơn hàng…</div>
       <div v-else-if="error || !payload" class="rounded-btn border border-amber-200 bg-amber-50 p-8 text-left text-amber-900">
-        <h1 class="mb-2 text-2xl font-black">Không tìm thấy phiên xác nhận đơn hàng</h1>
-        <p class="mb-4">Liên kết có thể đã hết hạn hoặc không thuộc phiên trình duyệt hiện tại.</p>
-        <NuxtLink to="/migration-home-preview" class="font-bold underline">Về trang chủ</NuxtLink>
+        <h1 class="mb-2 text-2xl font-black">{{ isOrderNotFound ? 'Không tìm thấy phiên xác nhận đơn hàng' : 'Tạm thời không thể xác nhận đơn hàng' }}</h1>
+        <p class="mb-4">{{ isOrderNotFound ? 'Liên kết có thể đã hết hạn hoặc không thuộc phiên trình duyệt hiện tại.' : 'Hệ thống đang gặp sự cố khi tải thông tin đơn hàng. Vui lòng thử lại sau.' }}</p>
+        <NuxtLink :to="links.generic('/')" class="font-bold underline">Về trang chủ</NuxtLink>
       </div>
       <div v-else class="rounded-btn border border-emerald-200 bg-emerald-50/40 px-6 py-12">
         <div class="mx-auto mb-5 grid h-16 w-16 place-items-center rounded-full bg-emerald-600 text-3xl font-black text-white" aria-hidden="true">✓</div>
@@ -32,8 +65,8 @@ function formatMoney(value: number): string {
           <strong class="mt-1 block text-2xl text-red-600">{{ formatMoney(payload.order.totalPrice) }}</strong>
         </div>
         <div class="mt-8 flex flex-wrap justify-center gap-3">
-          <NuxtLink to="/migration-home-preview" class="inline-flex min-h-11 items-center rounded-chip bg-gold-500 px-6 font-extrabold text-navy-950 no-underline">Về trang chủ</NuxtLink>
-          <NuxtLink to="/migration-catalog-preview" class="inline-flex min-h-11 items-center rounded-chip border border-navy-800 px-6 font-bold text-navy-800 no-underline">Xem thêm sản phẩm</NuxtLink>
+          <NuxtLink :to="links.generic('/')" class="inline-flex min-h-11 items-center rounded-chip bg-gold-500 px-6 font-extrabold text-navy-950 no-underline">Về trang chủ</NuxtLink>
+          <NuxtLink :to="links.generic('/san-pham/')" class="inline-flex min-h-11 items-center rounded-chip border border-navy-800 px-6 font-bold text-navy-800 no-underline">Xem thêm sản phẩm</NuxtLink>
         </div>
       </div>
     </main>

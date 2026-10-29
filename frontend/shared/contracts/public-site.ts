@@ -1,3 +1,5 @@
+import { isPublicSanitizedRichText, type PublicSanitizedRichText } from './editorial-rich-text.ts'
+
 export interface PublicProductCategory { id: number; name: string; slug: string; url: string }
 export interface PublicSiteLink { label: string; href: string; children?: PublicSiteLink[] }
 export interface PublicProductCategoryNode { id: number; name: string; slug: string; url: string; children: PublicProductCategoryNode[] }
@@ -17,7 +19,7 @@ export interface PublicSitePayload {
   catalog?: Record<string, PublicCatalogGroup>
   productCategories: PublicProductCategory[]
   productCategoryTree?: PublicProductCategoryNode[]
-  footer?: { companyName: string; contactText: string; policies: PublicFooterPolicy[]; locations: PublicFooterLocation[]; socialLinks: PublicSocialLink[]; trustBadge?: PublicTrustBadge }
+  footer?: { companyName: string; contactText: PublicSanitizedRichText; policies: PublicFooterPolicy[]; locations: PublicFooterLocation[]; socialLinks: PublicSocialLink[]; trustBadge?: PublicTrustBadge }
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> { return value !== null && typeof value === 'object' && !Array.isArray(value) }
@@ -42,7 +44,7 @@ function isCatalogGroup(value: unknown): value is PublicCatalogGroup {
   return value.items.every((item: unknown) => isRecord(item) && isText(item.label) && isSafeUrl(item.href) && Array.isArray(item.children) && item.children.every((child: unknown) => isLink(child)))
 }
 function isFooter(value: unknown): value is NonNullable<PublicSitePayload['footer']> {
-  if (!isRecord(value) || !isText(value.companyName, true) || !isText(value.contactText, true) || !Array.isArray(value.policies) || !Array.isArray(value.locations) || !Array.isArray(value.socialLinks)) return false
+  if (!isRecord(value) || !isText(value.companyName, true) || !isPublicSanitizedRichText(value.contactText) || !Array.isArray(value.policies) || !Array.isArray(value.locations) || !Array.isArray(value.socialLinks)) return false
   if (!value.policies.every((row: unknown) => isRecord(row) && isText(row.label) && isSafeUrl(row.href)) || !value.locations.every((row: unknown) => isRecord(row) && isText(row.name) && isText(row.address) && isSafeUrl(row.mapUrl, true)) || !value.socialLinks.every((row: unknown) => isRecord(row) && isText(row.label) && isSafeUrl(row.href))) return false
   return value.trustBadge === undefined || isRecord(value.trustBadge) && isSafeUrl(value.trustBadge.image) && isSafeUrl(value.trustBadge.href)
 }

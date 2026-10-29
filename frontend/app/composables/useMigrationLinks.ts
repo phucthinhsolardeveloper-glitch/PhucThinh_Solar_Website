@@ -66,7 +66,7 @@ export function useMigrationLinks() {
     return active.value && SLUG.test(slug) ? '/migration-project-detail-preview?slug=' + encodeURIComponent(slug) : '/' + slug + '/'
   }
   function gallery(slug: string): string {
-    return active.value && SLUG.test(slug) ? '/migration-gallery-detail-preview?slug=' + encodeURIComponent(slug) : '/thu-vien-anh/' + slug + '/'
+    return active.value && SLUG.test(slug) ? '/migration-gallery-detail-preview?slug=' + encodeURIComponent(slug) : '/' + slug + '/'
   }
   function brand(slug: string, query?: { page?: string, sort?: string }): string {
     if (!active.value || !SLUG.test(slug)) return '/thuong-hieu/' + slug + '/'

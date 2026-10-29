@@ -41,8 +41,10 @@ function ptsProjectsCategoryDto(array $row)
     return array(
         'id' => $id,
         'name' => $name,
+        'description' => ptsProjectsPlainText(isset($row['descvi']) ? $row['descvi'] : ''),
         'slug' => $slug,
         'url' => '/danh-muc-du-an/'.$slug.'/',
+        'canonicalPath' => '/'.$slug,
         'image' => ptsProjectsMedia(isset($row['_pts_public_photo']) ? $row['_pts_public_photo'] : '')
     );
 }
@@ -93,7 +95,48 @@ function ptsProjectsCtaDto(array $rows, $hotline = '')
     return null;
 }
 
-function ptsProjectsPayload(array $categories, array $rows, array $featuredRow, array $ctaRows, $page, $perPage, $total, $category = null, $hotline = '')
+function ptsProjectsIntroDto(array $rows, $category = null)
+{
+    $intro = array();
+    foreach($rows as $row)
+    {
+        if(is_array($row) && ptsProjectsPublished(isset($row['status']) ? $row['status'] : '')) { $intro = $row; break; }
+    }
+    $showIntro = $category !== null || !$rows || $intro !== array();
+    $defaultTitle = 'Dự án đã thực hiện';
+    $defaultDescription = 'Phúc Thịnh Solar tự hào đồng hành cùng khách hàng kiến tạo những công trình năng lượng sạch, bền vững cho tương lai.';
+    $categoryName = is_array($category) ? ptsProjectsPlainText(isset($category['name']) ? $category['name'] : '') : '';
+    $title = $categoryName !== '' ? $categoryName : (ptsProjectsPlainText(isset($intro['namevi']) ? $intro['namevi'] : '') ?: $defaultTitle);
+    $introDescription = ptsProjectsPlainText(isset($intro['descvi']) ? $intro['descvi'] : '');
+    $categoryDescription = is_array($category) ? ptsProjectsPlainText(isset($category['description']) ? $category['description'] : '') : '';
+    $description = $categoryDescription !== '' ? $categoryDescription : ($introDescription !== '' ? $introDescription : $defaultDescription);
+    return array('visible' => (bool)$showIntro, 'title' => $title, 'description' => $description);
+}
+
+function ptsProjectsFeaturedBenefitsDto(array $rows)
+{
+    $items = array();
+    foreach($rows as $row)
+    {
+        if(!is_array($row) || !ptsProjectsPublished(isset($row['status']) ? $row['status'] : '')) continue;
+        $label = ptsProjectsPlainText(isset($row['namevi']) ? $row['namevi'] : '');
+        if($label === '') continue;
+        $image = !empty($row['_pts_public_photo']) ? ptsProjectsMedia($row['_pts_public_photo']) : '';
+        $items[] = array('label' => $label, 'image' => $image);
+        if(count($items) >= 3) break;
+    }
+    if(!$items)
+    {
+        $items = array(
+            array('label' => 'Khảo sát và tư vấn thiết kế miễn phí', 'image' => ''),
+            array('label' => 'Thiết bị chính hãng, thi công đúng kỹ thuật', 'image' => ''),
+            array('label' => 'Bảo hành rõ ràng, hỗ trợ vận hành lâu dài', 'image' => '')
+        );
+    }
+    return $items;
+}
+
+function ptsProjectsPayload(array $categories, array $rows, array $featuredRow, array $ctaRows, $page, $perPage, $total, $category = null, $hotline = '', array $introRows = array(), array $benefitRows = array())
 {
     $categoryMap = array();
     $categoryDtos = array();
@@ -122,10 +165,12 @@ function ptsProjectsPayload(array $categories, array $rows, array $featuredRow, 
         'locale' => 'vi',
         'path' => '/du-an-da-thuc-hien/',
         'title' => $category ? 'Dự án '.($category['name'] ?? '') : 'Dự án đã thực hiện',
+        'intro' => ptsProjectsIntroDto($introRows, $category),
         'category' => $category,
         'categories' => $categoryDtos,
         'featured' => $featured,
         'projects' => $projects,
+        'featuredBenefits' => ptsProjectsFeaturedBenefitsDto($benefitRows),
         'pagination' => array('page' => (int)$page, 'perPage' => (int)$perPage, 'total' => max(0, (int)$total)),
         'cta' => ptsProjectsCtaDto($ctaRows, $hotline),
         'labels' => array(

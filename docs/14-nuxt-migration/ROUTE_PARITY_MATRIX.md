@@ -1,4 +1,8 @@
-# Ma trận parity PHP → Nuxt (checkpoint 2026-10-27, base `07a50ea`)
+# Ma trận parity PHP → Nuxt (inventory checkpoint 2026-10-27, base `07a50ea`)
+
+> Inventory snapshot lịch sử. Current implementation checkpoint nằm trong
+> [`NEXT-EXECUTION-PLAN.md`](NEXT-EXECUTION-PLAN.md); hàng F12 được cập nhật
+> theo contract hiện tại nhưng visual gate vẫn chờ PHP preview hoạt động.
 
 Đây là inventory theo code tại HEAD `07a50ea`; implementation checkpoint gần nhất
 của preview là `ae811bb`. Các commit liên quan đã được đối chiếu gồm `c00aa0e`
@@ -6,6 +10,44 @@ cho filter/sort và `f0cf5ce` cho brand detail. “Preview” chỉ là route Nu
 bộ có `noindex`; route public, canonical, redirect và production cutover vẫn
 thuộc PHP cho tới khi có gate riêng. Dữ liệu được ghi theo code/contract hiện
 tại, không suy diễn từ mock.
+
+## Current code supplement — 2026-10-29
+
+Các dòng F00–F22 dưới đây giữ nguyên tính lịch sử của inventory 2026-10-27.
+Working tree tích hợp hiện đã bổ sung public Nuxt wrappers/middleware cho các
+route nội dung và commerce trong manifest, canonical/OG/status helpers, category
+hierarchy, brand root và các alias product; tất cả cờ public vẫn mặc định OFF.
+Khi OFF, Nuxt chuyển hướng về PHP, còn account/Admin/API/media transformation
+tiếp tục thuộc PHP. Đây là trạng thái source/build, không phải quyết định
+cutover.
+
+Build SSR cô lập ngày 2026-10-29 kiểm tra 26 route manifest khi cờ OFF; các
+route có fallback đúng, gồm category path có slash và bare-slug details. Khi
+bật cờ tạm ở process riêng, category và solution hub/detail trả 502/noindex khi
+PHP API không listen, không render soft-200. `npm test` 263/263, typecheck và
+build đều PASS. PHP/API ports 8080/8088 hiện đóng, nên live CMS/DB/SEO resolver,
+media thật và visual review PHP↔Nuxt vẫn `BLOCKED`; không dùng smoke test này để
+đổi status “PHP owner” hoặc tuyên bố public parity.
+
+### Latest integration audit — 2026-10-29
+
+- Integration HEAD `d17f828` contains all committed Lane UI and Batch B work;
+  route wrapper/source smoke on the current build passed **26/26** with all
+  public flags OFF. This confirms the PHP fallback first hop, not the final PHP
+  response or visual parity.
+- PHP canonical source now maps brand `idb` to `/thuong-hieu/{slug}/` and
+  support/policy details to `/ho-tro/{slug}/`, matching the migration manifest.
+  The regression script is present but still needs PHP CLI execution.
+- GET audit found production `/product/` returning 404 while integration source
+  has a 301 alias, and production brand/policy canonical values disagree with
+  the route contract. These are deployment/source drift findings; production
+  was not modified.
+- Contact/Dealer retry, About CTA media, solution equipment media path and PHP
+  bridge redirect handling have source fixes/tests. Full frontend suite is
+  278/278; typecheck/build PASS. PHP/CMS/API ports remain offline, so browser
+  visual review, PHP contracts and complete redirect/canonical crawl remain open.
+- Public feature flags remain OFF. Account/Admin/API/media transforms and
+  commerce authority remain PHP-owned; no production cutover was made.
 
 | ID / route PHP | PHP owner | Nuxt hiện tại | Trạng thái dữ liệu | Chức năng còn thiếu / khác biệt | SEO / status | Rủi ro |
 |---|---|---|---|---|---|---|
@@ -23,7 +65,7 @@ tại, không suy diễn từ mock.
 | F10 `/tin-tuc/` | `sources/news_hub.php`, `news_tpl.php` | `migration-news-preview`, `/_migration/news` | Published news, category/search/pagination/featured contract | Public canonical/SEO và full interaction parity chưa ký | PHP public SEO; preview noindex | Cao |
 | F10D `/{slug}/` bài viết | `sources/news.php`, `news_detail_tpl.php` | `migration-news-detail-preview`, `/_migration/news-detail` | Published `type=tin-tuc`, related, preview detail | Rich content, gallery/video, canonical/JSON-LD public parity deferred | PHP resolver/canonical owner; preview noindex | Cao |
 | F11 `/gioi-thieu/` | `sources/about.php`, `about/about_tpl.php` | `migration-about-preview`, `/_migration/about` | Published named CMS sections, safe media/text | Timeline/CTA/form/SEO field parity cần xác minh | PHP public SEO; preview noindex | Trung bình |
-| F12 `/dai-ly/` | `sources/daily.php`, `daily/daily_tpl.php` | `migration-dealer-preview`, `/_migration/dealer` | Published dealer sections/hero/fallback; form render Nuxt | Submit qua PHP adapter giữ CSRF, validation, rate-limit, reCAPTCHA khi cấu hình và DB/email; public route vẫn PHP | PHP public SEO; preview noindex | Cao |
+| F12 `/dai-ly/` | `sources/daily.php`, `daily/daily_tpl.php` | `migration-dealer-preview`, `/_migration/dealer` | DTO tách intro `dai-ly-1.descvi`, overview `dai-ly-2`, sản phẩm và stats published; rich text đi qua sanitizer | Bố cục 2 cột/hero/nav/form đã đối chiếu CSS nguồn trong code; so ảnh cuối và dữ liệu trình duyệt chờ PHP preview `:8088`; submit vẫn qua PHP adapter giữ CSRF, validation, rate-limit, reCAPTCHA khi cấu hình và DB/email | PHP public SEO; preview noindex | Cao |
 | F13 `/lien-he/` | `sources/contact.php`, `contact/contact_tpl.php` | `migration-contact-preview`, `/_migration/contact` | Public setting/location/visual; map embed Google Maps sinh từ CMS address | Form render Nuxt, submit qua PHP adapter giữ CSRF/rate-limit/reCAPTCHA khi cấu hình/DB-email; `mapUrl` CMS vẫn là external link | PHP public SEO; preview noindex | Cao |
 | F14 `/ho-tro/*`, alias | `libraries/router.php`, `sources/news.php` | `migration-policy-preview?slug=...`, `/_migration/policy-detail` | Policy/support detail đã có preview từ CMS | 301/404/410, alias và public canonical/SEO vẫn do PHP resolver | PHP redirect/canonical owner | Cao |
 | F15 `/thu-vien-anh/`, `/video/`, gallery detail `/{slug}/` (`type=thu-vien-anh`) | `libraries/router.php`, `sources/product.php`, `sources/video.php` | `migration-gallery-preview`, `migration-gallery-detail-preview`, `migration-video-preview`; `/_migration/gallery*`, `/_migration/video` | Read-only PHP DTO/API, safe media allowlist, album lightbox và YouTube preview; preview routes noindex | Public canonical/redirect, full aspect-ratio/embed/privacy/copyright parity và cutover vẫn chưa ký; không invent gallery detail slug hoặc gọi nhầm `/album/*` là route PHP | PHP owner; Nuxt preview only | Cao |
@@ -31,7 +73,7 @@ tại, không suy diễn từ mock.
 | F17 `/gio-hang/` POST checkout, `/cam-on/` GET thanks | `sources/order.php`, `sources/thankyou.php`, `router.php` | `migration-checkout-preview`, `migration-order-success`, các `/_migration/*` adapter | PHP không có public `/dat-hang/`: checkout mutation gửi POST tại `/gio-hang/` rồi redirect `cam-on/?token=...`; Nuxt chỉ preview GUI/read-only audit | CSRF, idempotency, shipping/payment callback và conversion vẫn giữ PHP; crawler không POST và không tạo đơn | PHP owner; preview noindex | Rất cao |
 | F18 `/account/*` | `sources/user.php`, `templates/account/*` | Không migrate | PHP session/auth/order history | Không forward auth/cookie sang Nitro; password/account giữ PHP | PHP owner | Rất cao |
 | F19 `/administrator/*` | `administrator/sources/*`, `administrator/templates/*` | Không migrate | CMS thật, không dùng trong QA parity | Không login Admin bằng harness; upload/CMS giữ PHP | PHP owner | Rất cao |
-| F20 `/api/*` | `api/*.php` | Nitro adapters nội bộ cho GET và các mutation preview đã allowlist | v1 DTO và adapter cho search, cart/checkout/order-thanks, lead form, review, policy, product extras | PHP endpoint/session/security vẫn là authority; không arbitrary proxy và chưa thay thế public API | PHP API owner; Nitro preview adapter private | Rất cao |
+| F20 `/api/*` | `api/*.php` | Nitro adapters nội bộ cho GET và các mutation preview đã allowlist | v1 DTO và adapter cho search, cart, lead form, review, policy, product extras; checkout preview chỉ GET tóm tắt, POST Nitro trả 410 và không forward tạo đơn | PHP endpoint/session/security vẫn là authority; không arbitrary proxy và chưa thay thế public API | PHP API owner; Nitro preview adapter private | Rất cao |
 | F21 `/upload/*`, `/thumbs/*`, `/watermark/*` | `router.php`, `public_watermark.php` | Không migrate; preview media bridge có allowlist | Media local thật nếu path/extension/file hợp lệ | Transform/cache/signature/redirect parity chưa ký | PHP media owner | Cao |
 | F22 sitemap/robots/alias/JSON-LD | `head.php`, `strucdata.php`, `sitemap.php`, `robots.txt`, resolver | PDP preview có Product/Breadcrumb/FAQ JSON-LD | PHP vẫn là metadata authority; JSON-LD preview không thay public canonical/OG/sitemap/robots/redirect | Crawler read-only ghi status/final URL/redirect chain/title/H1/canonical/robots/OG/JSON-LD/href và `/robots.txt` + `/sitemap.xml`; chưa cutover | PHP owner; preview noindex | Rất cao |
 
@@ -82,8 +124,9 @@ Crawler command và scope chi tiết nằm tại `SEO-CRAWL-GATES.md`.
 
 - Chốt production route cutover/hybrid routing; giữ canonical public PHP cho tới
   khi có quyết định và rollback gate được phê duyệt.
-- Hoàn tất SEO public canonical/OG/sitemap/robots/redirect parity; JSON-LD hiện
-  mới có trên PDP preview.
+- Source Nuxt đã có canonical/OG/status cho các public route có flag, nhưng cần
+  crawl PHP thật để ký sitemap/robots/redirect/404/JSON-LD parity; Nuxt chưa là
+  metadata owner và JSON-LD hiện mới có trên PDP preview.
 - Catalog filter (loại sản phẩm/thương hiệu/mức giá), sort và panel danh mục đã
   nối thật (`c00aa0e`, `ae811bb`); "tồn kho" không phải gap thật (không có trên
   site PHP, xem F02).
@@ -92,4 +135,5 @@ Crawler command và scope chi tiết nằm tại `SEO-CRAWL-GATES.md`.
   thiết kế, xem F18, không phải việc cần làm). `/administrator/*`, `/account/*`,
   `/upload/*`, `/thumbs/*`, `/watermark/*` và `/api/*` là PHP-owned/excluded
   gates, không đưa vào crawler preview manifest.
-- Hoàn tất visual/browser QA cuối và các production deployment gates.
+- Hoàn tất visual/browser QA cuối trên 26 route ở 3 viewport khi PHP/API local
+  hoạt động, rồi mới xét các production deployment gates.

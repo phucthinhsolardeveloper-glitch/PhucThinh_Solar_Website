@@ -1,0 +1,31 @@
+import assert from 'node:assert/strict'
+import { readFileSync } from 'node:fs'
+import { test } from 'node:test'
+
+const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8')
+
+test('projects pagination follows PHP `p` URLs and maps them to the DTO `page` query', () => {
+  const php = read('../../domains/phucthinhsolar.com/public_html/sources/project_hub.php')
+  const api = read('../../domains/phucthinhsolar.com/public_html/api/pts_v1_projects.php')
+  const page = read('../app/pages/migration-projects-preview.vue')
+
+  assert.match(php, /\$_GET\['p'\]/)
+  assert.match(api, /\$_GET\['page'\]/)
+  assert.match(page, /const value = route\.query\.p/)
+  assert.match(page, /page: String\(page\.value\)/)
+  assert.match(page, /_migration\/projects', \{ query: requestQuery\.value \}/)
+})
+
+test('projects pagination keeps the selected category, route family, and noindex query behavior', () => {
+  const page = read('../app/pages/migration-projects-preview.vue')
+
+  assert.match(page, /path: isPublicRoute\.value \? PROJECTS_PUBLIC_PATH : '\/migration-projects-preview'/)
+  assert.match(page, /category: category\.value/)
+  assert.match(page, /p: String\(nextPage\)/)
+  assert.match(page, /'category', 'p', 'page'/)
+  assert.match(page, /aria-label="Phân trang dự án"/)
+  assert.match(page, /aria-label="Trang trước"/)
+  assert.match(page, /aria-current="page"/)
+  assert.match(page, /aria-label="Trang tiếp theo"/)
+  assert.match(page, /:to="pageLink\(item\.page\)"/)
+})

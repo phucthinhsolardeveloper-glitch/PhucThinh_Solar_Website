@@ -14,7 +14,7 @@ import { isPublicContactPayload } from '../shared/contracts/public-contact.ts'
 import { isPublicProjectsPayload } from '../shared/contracts/public-projects.ts'
 
 const aboutSample = {
-  schemaVersion: 1,
+  schemaVersion: 2,
   locale: 'vi',
   path: '/gioi-thieu/',
   title: 'Giới thiệu Phúc Thịnh Solar',
@@ -23,18 +23,20 @@ const aboutSample = {
   people: { eyebrow: 'Con người là nền tảng', title: 'Nhân sự Phúc Thịnh Solar', intro: 'Nội dung CMS', body: '', image: '/upload/photo/team.png', principles: [] },
   trust: { title: 'Vì sao', items: [{ title: '', description: 'Cam kết CMS', image: '/upload/news/trust.png' }] },
   compass: { title: 'Tầm nhìn', items: [] },
-  certificates: { title: 'Chứng nhận & năng lực', intro: 'Nội dung CMS', items: [{ id: 101, name: 'HUAWEI', description: '', image: '/upload/photo/cert.jpg', href: '/upload/photo/cert.jpg' }] },
-  cta: { title: 'Cần tư vấn?', description: 'Nội dung CMS', image: '', href: null, buttonLabel: 'Nhận tư vấn', hotline: null },
+  certificates: { title: 'Chứng nhận & năng lực', intro: 'Nội dung CMS', items: [{ id: 101, name: 'HUAWEI', description: '', image: '/upload/photo/cert.jpg', href: '/upload/photo/cert.jpg', featured: true }] },
+  cta: { title: 'Cần tư vấn?', description: 'Nội dung CMS', image: '', href: null, buttonLabel: 'Nhận tư vấn', hotline: null, zaloUrl: null },
   labels: { story: 'Về Phúc Thịnh Solar', history: 'Lịch sử', people: 'Con người', compass: 'Tầm nhìn', certificates: 'Chứng nhận', timeline: 'Các mốc', certLabel: 'Chứng nhận', certAll: 'Xem tất cả', certDetail: 'Chi tiết' },
 }
 
-const category = { id: 6, name: 'Cá nhân', slug: 'du-an-ca-nhan', url: '/danh-muc-du-an/du-an-ca-nhan/', image: '/upload/news/solar-house.png' }
+const category = { id: 6, name: 'Cá nhân', description: '', slug: 'du-an-ca-nhan', url: '/danh-muc-du-an/du-an-ca-nhan/', canonicalPath: '/du-an-ca-nhan', image: '/upload/news/solar-house.png' }
 const project = { id: 75, title: 'Dự án điện NLMT hộ anh Quân', slug: 'du-an-dien-nlmt-ho-anh-quan', url: '/du-an-dien-nlmt-ho-anh-quan/', description: '', address: 'Gia Lai', image: '/upload/news/project.png', category, featured: false }
 const projectsSample = {
   schemaVersion: 1,
   locale: 'vi',
   path: '/du-an-da-thuc-hien/',
   title: 'Dự án đã thực hiện',
+  intro: { visible: true, title: 'Dự án đã thực hiện', description: 'Nội dung CMS' },
+  featuredBenefits: [{ label: 'Tư vấn', image: '' }],
   category: null,
   categories: [category],
   featured: { ...project, featured: true },

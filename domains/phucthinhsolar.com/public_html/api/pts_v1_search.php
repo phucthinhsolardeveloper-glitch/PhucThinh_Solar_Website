@@ -22,7 +22,7 @@ function ptsSearchError($status, $code)
 
 try
 {
-    $allowed = array('keyword','page','per_page');
+    $allowed = array('keyword','page','per_page','brand','price');
     foreach(array_keys($_GET) as $key) if(!in_array($key, $allowed, true)) ptsSearchError(400, 'BAD_QUERY');
 
     $rawKeyword = isset($_GET['keyword']) && is_scalar($_GET['keyword']) ? trim((string)$_GET['keyword']) : '';
@@ -32,8 +32,12 @@ try
     $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
     $perPage = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 20;
     if($page > 10000 || $perPage > 48) ptsSearchError(400, 'BAD_QUERY');
+    if(isset($_GET['brand']) && (!is_string($_GET['brand']) || !preg_match('/^[1-9][0-9]*(?:,[1-9][0-9]*)*$/', $_GET['brand']))) ptsSearchError(400, 'BAD_QUERY');
+    if(isset($_GET['price']) && (!is_string($_GET['price']) || !preg_match('/^[123](?:,[123])*$/', $_GET['price']))) ptsSearchError(400, 'BAD_QUERY');
 
     require_once __DIR__.'/config.php';
+    require_once LIBRARIES.'public_pricing.php';
+    require_once LIBRARIES.'product_price_filter.php';
     require_once LIBRARIES.'pts_public_catalog_api.php';
 
     $normalized = $func->changeTitle(htmlspecialchars($rawKeyword, ENT_QUOTES, 'UTF-8'));
@@ -85,6 +89,21 @@ try
     }
 
     $where = "p.type = ? and (".implode(' or ', $clauses).") and find_in_set('hienthi',p.status)";
+    $baseWhere = $where;
+    $baseParams = $params;
+    $brandIds = isset($_GET['brand']) ? array_values(array_unique(array_map('intval', explode(',', $_GET['brand'])))) : array();
+    $priceKeys = isset($_GET['price']) && publicProductPricesVisible() ? array_values(array_unique(explode(',', $_GET['price']))) : array();
+    if($brandIds)
+    {
+        $where .= ' and p.id_brand in ('.implode(',', array_fill(0, count($brandIds), '?')).')';
+        $params = array_merge($params, $brandIds);
+    }
+    if($priceKeys)
+    {
+        list($priceWhere, $priceParams) = productPriceFilterSql(implode(',', $priceKeys));
+        $where .= $priceWhere;
+        $params = array_merge($params, $priceParams);
+    }
     $totalRow = $d->rawQueryOne("select count(*) total from #_product p where $where", $params);
     $total = is_array($totalRow) && isset($totalRow['total']) ? (int)$totalRow['total'] : 0;
     $offset = ($page - 1) * $perPage;
@@ -101,12 +120,26 @@ try
         if($dto !== null) $products[] = $dto;
     }
 
+    /* Match the legacy search sidebar: all currently published product brands,
+       plus price bands only while public pricing is enabled. */
+    $brandRows = $cache->get("select id,namevi from #_product_brand where type = ? and find_in_set('hienthi',status) order by numb,id desc", array('san-pham'), 'result', 7200);
+    $brands = array();
+    foreach((array)$brandRows as $brandRow)
+    {
+        if(!is_array($brandRow)) continue;
+        $brandDto = ptsCatalogBrandDto($brandRow);
+        if($brandDto !== null) $brands[] = $brandDto;
+    }
+    $priceRanges = publicProductPricesVisible() ? ptsCatalogPriceRangeDto() : array();
+
     echo json_encode(array(
         'schemaVersion'=>1,
         'locale'=>'vi',
         'keyword'=>ptsCatalogPlainText($rawKeyword),
         'products'=>$products,
-        'pagination'=>array('page'=>$page,'perPage'=>$perPage,'total'=>$total)
+        'pagination'=>array('page'=>$page,'perPage'=>$perPage,'total'=>$total),
+        'filters'=>array('brands'=>$brands,'priceRanges'=>$priceRanges),
+        'selected'=>array('brandIds'=>$brandIds,'priceKeys'=>$priceKeys)
     ), JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR);
 }
 catch(Throwable $e)

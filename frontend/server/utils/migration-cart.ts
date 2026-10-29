@@ -1,4 +1,4 @@
-import type { H3Event } from 'h3'
+import { getRequestProtocol, type H3Event } from 'h3'
 
 function upstreamSetCookies(headers: Headers): string[] {
   const extended = headers as Headers & { getSetCookie?: () => string[] }
@@ -8,11 +8,11 @@ function upstreamSetCookies(headers: Headers): string[] {
   return single ? [single] : []
 }
 
-function safePhpSessionCookie(value: string): string | null {
+export function safePhpSessionCookie(value: string, secure = false): string | null {
   const first = value.split(';', 1)[0]?.trim() ?? ''
   const match = /^PHPSESSID=([A-Za-z0-9,-]{16,128})$/.exec(first)
   if (!match) return null
-  return `PHPSESSID=${match[1]}; Path=/; HttpOnly; SameSite=Lax`
+  return `PHPSESSID=${match[1]}; Path=/; HttpOnly; SameSite=Lax${secure ? '; Secure' : ''}`
 }
 
 function incomingPhpSessionCookie(value: string): string | null {
@@ -39,7 +39,9 @@ export async function fetchPhpSessionResponse(
   })
 
   for (const cookieValue of upstreamSetCookies(response.headers)) {
-    const safeCookie = safePhpSessionCookie(cookieValue)
+    // Trust the incoming TLS protocol as reported by the socket/reverse proxy,
+    // not the PHP bridge's internal HTTP connection.
+    const safeCookie = safePhpSessionCookie(cookieValue, getRequestProtocol(event) === 'https')
     if (safeCookie) appendResponseHeader(event, 'set-cookie', safeCookie)
   }
   setHeader(event, 'Cache-Control', 'private, no-store')

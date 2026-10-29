@@ -6,7 +6,7 @@ const links = useMigrationLinks()
 </script>
 
 <template>
-  <section class="mt-16 grid grid-cols-1 items-center gap-7 rounded-chip bg-navy-950 p-7 text-white nav:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
+  <section class="mt-16 grid grid-cols-1 items-center gap-7 rounded-chip bg-navy-950 p-7 text-white" :class="cta.image ? 'nav:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]' : ''">
     <img v-if="cta.image" :src="cta.image" alt="" class="aspect-[16/5] w-full rounded-chip object-cover nav:aspect-auto nav:h-full" loading="lazy" decoding="async">
     <div>
       <h2 class="mt-0 mb-2 text-[clamp(22px,3vw,32px)] font-black leading-tight">{{ cta.title }}</h2>

@@ -10,16 +10,9 @@ export default defineNuxtConfig({
   modules: ['@nuxt/ui'],
 
   /*
-   * Thứ tự nạp là có chủ ý: main.css TRƯỚC tokens.css.
-   *
-   * Preflight của Tailwind reset margin/border/font ở thẻ gốc. 16 route preview
-   * hiện có đang dựa vào shell.css + *-preview.css, nên nếu nạp Tailwind SAU,
-   * reset sẽ kéo nền dưới chân chúng và làm hỏng các route đang chạy — trong
-   * khi yêu cầu của bước này là các preview cũ vẫn phải load được.
-   *
-   * Nạp trước thì CSS preview cũ vẫn thắng ở chỗ trùng, còn utility Tailwind và
-   * component Nuxt UI vẫn hoạt động vì chúng dùng layer/class riêng.
-   * Trạng thái bắc cầu; CODEX 2-4 gỡ dần *-preview.css khi chuyển xong từng trang.
+   * main.css nạp Tailwind v4, theme và style CMS. tokens.css nạp sau để reset
+   * global nhỏ, không nằm trong layer, áp dụng sau Preflight của Tailwind.
+   * Không còn shell.css hoặc stylesheet riêng cho migration preview.
    */
   css: ['~/assets/css/main.css', '~/assets/css/tokens.css'],
 
@@ -46,6 +39,7 @@ export default defineNuxtConfig({
     head: {
       htmlAttrs: { lang: 'vi' },
       meta: [{ name: 'theme-color', content: '#0a2251' }],
+      link: [{ rel: 'icon', type: 'image/png', href: '/assets/images/favicon-pts-mobile.png?v=20261008', sizes: '512x512' }],
     },
   },
 
@@ -71,18 +65,46 @@ export default defineNuxtConfig({
     phpOriginAllowlist: '127.0.0.1:8080,127.0.0.1:8088,localhost:8080,localhost:8088',
     previewMediaProxy: false,
     public: {
+      // Source of truth: config.php arrayDomainSSL and the production sitemap.
+      // The shared SEO helper still validates this exact origin before output.
+      canonicalSiteOrigin: 'https://phucthinhsolar.com',
+      homePublicRouteEnabled: false,
+      homePublicRouteIndexable: false,
       aboutPublicRouteEnabled: false,
       aboutPublicRouteIndexable: false,
       solutionsPublicRouteEnabled: false,
       solutionsPublicRouteIndexable: false,
+      solutionDetailPublicRouteEnabled: false,
+      solutionDetailPublicRouteIndexable: false,
       catalogPublicRouteEnabled: false,
       catalogPublicRouteIndexable: false,
+      catalogCategoryPublicRouteIndexable: false,
       productDetailPublicRouteEnabled: false,
       productDetailPublicRouteIndexable: false,
       brandDetailPublicRouteEnabled: false,
       brandDetailPublicRouteIndexable: false,
       searchPublicRouteEnabled: false,
       searchPublicRouteIndexable: false,
+      newsPublicRouteEnabled: false,
+      newsPublicRouteIndexable: false,
+      newsDetailPublicRouteEnabled: false,
+      newsDetailPublicRouteIndexable: false,
+      projectsPublicRouteEnabled: false,
+      projectsPublicRouteIndexable: false,
+      projectDetailPublicRouteEnabled: false,
+      projectDetailPublicRouteIndexable: false,
+      contactPublicRouteEnabled: false,
+      contactPublicRouteIndexable: false,
+      dealerPublicRouteEnabled: false,
+      dealerPublicRouteIndexable: false,
+      galleryPublicRouteEnabled: false,
+      galleryPublicRouteIndexable: false,
+      galleryDetailPublicRouteEnabled: false,
+      galleryDetailPublicRouteIndexable: false,
+      videoPublicRouteEnabled: false,
+      videoPublicRouteIndexable: false,
+      policyDetailPublicRouteEnabled: false,
+      policyDetailPublicRouteIndexable: false,
       cartPublicRouteEnabled: false,
       cartPublicRouteIndexable: false,
       orderSuccessPublicRouteEnabled: false,

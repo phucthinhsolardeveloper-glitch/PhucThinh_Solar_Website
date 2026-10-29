@@ -2,13 +2,14 @@
 import type { PublicSolutionsPayload } from '#shared/contracts/public-solutions'
 import type { PublicSitePayload } from '#shared/contracts/public-site'
 import { isPublicSitePayload } from '#shared/contracts/public-site'
-import { isRuntimeFlagEnabled } from '#shared/public-route-gate'
+import { SOLUTIONS_PUBLIC_PATH, isRuntimeFlagEnabled } from '#shared/public-route-gate'
 import SolutionsIntro from '~/components/solutions/SolutionsIntro.vue'
 import SolutionCards from '~/components/solutions/SolutionCards.vue'
 import SolutionsEquipment from '~/components/solutions/SolutionsEquipment.vue'
 import SolutionsCta from '~/components/solutions/SolutionsCta.vue'
 import EditorialRichText from '~/components/editorial/EditorialRichText.vue'
 import solutionsPublicRoute from '~/middleware/solutions-public-route'
+import { editorialPublicHubResponseStatus } from '#shared/editorial-public-route'
 
 definePageMeta({
   layout: false,
@@ -16,22 +17,43 @@ definePageMeta({
 })
 
 const config = useRuntimeConfig()
-const indexable = computed(() => isRuntimeFlagEnabled(config.public.solutionsPublicRouteIndexable))
+const route = useRoute()
+const isHubRoute = computed(() => route.path === SOLUTIONS_PUBLIC_PATH || route.path === SOLUTIONS_PUBLIC_PATH.slice(0, -1))
+const indexable = computed(() => isRuntimeFlagEnabled(config.public.solutionsPublicRouteEnabled)
+  && isHubRoute.value && isRuntimeFlagEnabled(config.public.solutionsPublicRouteIndexable) && !!data.value && !error.value)
 
 const fallbackSite: PublicSitePayload = { schemaVersion: 1, brand: { name: 'Phúc Thịnh Solar', hotline: '' }, productCategories: [] }
 const { data: siteData } = await useFetch<unknown>('/_migration/site', { default: () => fallbackSite })
 const site = computed(() => isPublicSitePayload(siteData.value) ? siteData.value : fallbackSite)
 
-const { data, error } = await useAsyncData<PublicSolutionsPayload>('public-solutions', () => $fetch('/_migration/solutions'))
+const { data, error } = await useAsyncData<PublicSolutionsPayload | null>(
+  'public-solutions',
+  () => isHubRoute.value ? $fetch('/_migration/solutions') : Promise.resolve(null),
+  { watch: [isHubRoute] },
+)
+const responseStatus = editorialPublicHubResponseStatus(
+  isHubRoute.value && config.public.solutionsPublicRouteEnabled,
+  (error.value as { statusCode?: unknown } | null)?.statusCode,
+  !data.value,
+)
+if (import.meta.server && responseStatus) setResponseStatus(responseStatus, responseStatus === 404 ? 'Not Found' : 'Bad Gateway')
 
 useSeoMeta({
+  title: computed(() => isHubRoute.value ? (data.value?.title || 'Giải pháp — Phúc Thịnh Solar') : undefined),
+  robots: computed(() => isHubRoute.value ? (indexable.value && !Object.keys(route.query).length ? 'index, follow' : 'noindex, nofollow, noarchive') : undefined),
+})
+usePublicSocialMeta({
+  enabled: computed(() => isHubRoute.value && isRuntimeFlagEnabled(config.public.solutionsPublicRouteEnabled) && !!data.value && !error.value),
   title: computed(() => data.value?.title || 'Giải pháp — Phúc Thịnh Solar'),
-  robots: computed(() => indexable.value ? 'index, follow' : 'noindex, nofollow, noarchive'),
+  description: computed(() => data.value?.intro?.description || ''),
+  canonicalPath: '/giai-phap/',
 })
 </script>
 
 <template>
-  <div class="text-navy-800">
+  <NuxtPage v-if="!isHubRoute" />
+
+  <div v-else class="text-navy-800">
     <SiteHeader :site="site" />
 
     <main class="mx-auto w-full max-w-[1766px] px-4 py-8 nav:py-12">
@@ -44,7 +66,7 @@ useSeoMeta({
 
       <template v-else>
         <SolutionsIntro v-if="data.intro" :intro="data.intro" />
-        <h1 v-else class="min-h-[45vh] py-12 text-[clamp(28px,4vw,42px)] font-black tracking-tight">{{ data.title }}</h1>
+        <h1 v-else class="mb-8 text-[clamp(28px,4vw,42px)] font-black tracking-tight">{{ data.title }}</h1>
 
         <SolutionCards :cards="data.cards" :choices-label="data.labels.choices" :empty-label="data.labels.empty" :consult-label="data.labels.consult" />
 
@@ -55,13 +77,13 @@ useSeoMeta({
           >
             <nav
               v-if="data.editorial.toc.rendered"
-              class="h-fit rounded-btn border border-gray-200 p-4 nav:sticky nav:top-4"
+              class="h-fit max-h-[220px] overflow-y-auto overscroll-contain rounded-[3px] bg-navy-800 p-6 min-[901px]:sticky min-[901px]:top-[124px] min-[901px]:max-h-[calc(100vh-150px)]"
               aria-label="Mục lục nội dung giải pháp"
             >
-              <strong class="mb-3 block text-sm uppercase tracking-wide text-navy-800">Trong bài này</strong>
+              <strong class="mb-3 block text-sm font-extrabold text-[#efc45b]">Trong trang này</strong>
               <ul class="m-0 list-none space-y-1 p-0">
                 <li v-for="item in data.editorial.toc.items" :key="item.id" :class="item.level === 3 ? 'pl-3' : ''">
-                  <a :href="'#' + item.id" class="block rounded-chip px-2 py-2 text-sm leading-snug text-slate-600 no-underline hover:bg-slate-50 hover:text-navy-800">
+                  <a :href="'#' + item.id" class="flex min-h-11 items-center border-l-2 border-transparent py-1 pl-3 text-[13px] font-semibold leading-[1.45] text-[#c9d5e6] no-underline transition-colors hover:border-gold-400 hover:text-white">
                     {{ item.label }}
                   </a>
                 </li>

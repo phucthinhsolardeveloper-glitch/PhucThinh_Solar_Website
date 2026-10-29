@@ -2,6 +2,8 @@
 import type { PublicBrandDetailPayload } from '#shared/contracts/public-brand-detail'
 import type { PublicSitePayload } from '#shared/contracts/public-site'
 import { isPublicSitePayload } from '#shared/contracts/public-site'
+import { isRuntimeFlagEnabled } from '#shared/public-route-gate'
+import { publicSeoRobots } from '#shared/public-seo'
 import CatalogProductGrid from '~/components/catalog/CatalogProductGrid.vue'
 
 /*
@@ -23,24 +25,25 @@ import CatalogProductGrid from '~/components/catalog/CatalogProductGrid.vue'
  * loại "catalog-campaign" cho brand, nên không coi là dữ liệu bịa khi hardcode
  * tĩnh ở đây).
  *
- * Sidebar bộ lọc (.lv-filter) CŨNG có trên PHP thật nhưng /_migration/
- * brand-detail hiện không trả `filters`/`selected.brandIds` như
- * /_migration/catalog - thêm sidebar lọc thật cần sửa API PHP
- * (pts_v1_brand_detail.php) + contract, nằm ngoài phạm vi lượt sửa UI này
- * (tránh đụng Catalog/PDP lane đang làm song song). Ghi NEEDS VERIFICATION,
- * không tự thêm sidebar giả không có dữ liệu thật đứng sau.
+ * Sidebar filter dùng taxonomy và brand rows thật từ các read-only DTO; mức
+ * giá chỉ xuất hiện khi public pricing đang bật và được áp dụng trong brand
+ * hiện tại ở pts_v1_brand_detail.php.
  */
 const props = defineProps<{ slug: string }>()
 
 const route = useRoute()
 const selfPath = computed(() => route.path)
-const { generic: migrationHref } = useMigrationLinks()
+const { active: isMigrationPreview, generic: migrationHref } = useMigrationLinks()
+const config = useRuntimeConfig()
+const publicEnabled = computed(() => !isMigrationPreview.value && isRuntimeFlagEnabled(config.public.brandDetailPublicRouteEnabled))
 const page = computed(() => typeof route.query.page === 'string' ? route.query.page : '')
 const sort = computed(() => typeof route.query.sort === 'string' ? route.query.sort : '')
+const price = computed(() => typeof route.query.price === 'string' ? route.query.price : '')
 const query = computed(() => ({
   slug: props.slug,
   ...(page.value ? { page: page.value } : {}),
   ...(sort.value ? { sort: sort.value } : {}),
+  ...(price.value ? { price: price.value } : {}),
 }))
 
 const fallbackSite: PublicSitePayload = { schemaVersion: 1, brand: { name: 'Phúc Thịnh Solar', hotline: '' }, productCategories: [] }
@@ -53,14 +56,72 @@ const { data, error, pending } = await useAsyncData<PublicBrandDetailPayload>(
   { watch: [query] },
 )
 
+const brandErrorStatus = (error.value as { statusCode?: unknown } | null)?.statusCode
+if (import.meta.server && publicEnabled.value && (error.value || !data.value)) {
+  const status = brandErrorStatus === 404 ? 404 : 502
+  setResponseStatus(status, status === 404 ? 'Not Found' : 'Bad Gateway')
+}
+
 const totalPages = computed(() => data.value ? Math.max(1, Math.ceil(data.value.pagination.total / data.value.pagination.perPage)) : 1)
 const currentPage = computed(() => data.value?.pagination.page ?? 1)
 const paginationItems = usePaginationItems(currentPage, totalPages)
+const mobileFiltersExpanded = ref(false)
+const sortOptions = computed(() => {
+  const options = [
+    { value: 'default', label: 'Mặc định' },
+    { value: 'abc', label: 'Tên A-Z' },
+    { value: 'abc-desc', label: 'Tên Z-A' },
+    { value: 'price', label: 'Giá tăng dần' },
+    { value: 'price-desc', label: 'Giá giảm dần' },
+    { value: 'new', label: 'Mới nhất' },
+    { value: 'new-desc', label: 'Cũ nhất' },
+  ]
+  return data.value?.parity.prices.included ? options : options.filter((option) => option.value !== 'price' && option.value !== 'price-desc')
+})
+function sortLink(value: string) {
+  const next = { ...route.query }
+  delete next.page
+  if (value === 'default') delete next.sort
+  else next.sort = value
+  return { path: selfPath.value, query: next }
+}
+function onSortChange(event: Event) {
+  navigateTo(sortLink((event.target as HTMLSelectElement).value))
+}
+function priceLink(key: string) {
+  const selected = new Set(data.value?.selected.priceKeys ?? [])
+  if (selected.has(key as '1' | '2' | '3')) selected.delete(key as '1' | '2' | '3')
+  else selected.add(key as '1' | '2' | '3')
+  const next = { ...route.query }
+  delete next.page
+  if (selected.size) next.price = [...selected].sort().join(',')
+  else delete next.price
+  return { path: selfPath.value, query: next }
+}
+function resetFilterLink() {
+  const next = { ...route.query }
+  delete next.page
+  delete next.price
+  return { path: selfPath.value, query: next }
+}
 function pageLink(nextPage: number) {
   return { path: selfPath.value, query: { ...route.query, page: String(nextPage) } }
 }
 
-useSeoMeta({ title: computed(() => data.value ? `${data.value.brand.name} — Phúc Thịnh Solar` : 'Thương hiệu — Phúc Thịnh Solar') })
+const brandIndexable = computed(() => publicEnabled.value
+  && isRuntimeFlagEnabled(config.public.brandDetailPublicRouteIndexable)
+  && !!data.value && !error.value && !['page', 'sort', 'price'].some((key) => key in route.query))
+const brandTitle = computed(() => data.value ? `${data.value.brand.name} — Phúc Thịnh Solar` : 'Thương hiệu — Phúc Thịnh Solar')
+useSeoMeta({
+  title: brandTitle,
+  robots: computed(() => publicSeoRobots(brandIndexable.value, !!data.value && !error.value, ['page', 'sort', 'price'].some((key) => key in route.query))),
+})
+usePublicSocialMeta({
+  enabled: computed(() => publicEnabled.value && !!data.value && !error.value),
+  title: brandTitle,
+  description: 'Khám phá sản phẩm chính hãng tại Phúc Thịnh Solar.',
+  canonicalPath: computed(() => route.path),
+})
 </script>
 
 <template>
@@ -93,11 +154,77 @@ useSeoMeta({ title: computed(() => data.value ? `${data.value.brand.name} — Ph
           <div class="flex items-start gap-3"><span class="text-gold-700" aria-hidden="true">↗</span><span><strong class="block text-sm text-navy-950">Giao hàng toàn quốc</strong><small class="text-slate-500">Nhanh chóng, an toàn</small></span></div>
         </div>
 
-        <h2 class="mb-5 text-lg font-black text-navy-800">{{ data.brand.name }}</h2>
+        <div class="grid grid-cols-1 items-start gap-8 nav:grid-cols-[240px_minmax(0,1fr)]">
+          <button
+            v-if="site.productCategories.length || data.filters?.brands.length || data.filters?.priceRanges.length"
+            class="flex min-h-11 items-center justify-between border-y border-gray-200 py-3 text-left font-bold text-navy-950 nav:hidden"
+            type="button"
+            :aria-expanded="mobileFiltersExpanded"
+            aria-controls="brand-filter-sidebar"
+            @click="mobileFiltersExpanded = !mobileFiltersExpanded"
+          >
+            Bộ lọc sản phẩm
+            <span aria-hidden="true">{{ mobileFiltersExpanded ? '−' : '+' }}</span>
+          </button>
+          <aside v-if="site.productCategories.length || data.filters?.brands.length || data.filters?.priceRanges.length" id="brand-filter-sidebar" class="space-y-7" :class="mobileFiltersExpanded ? 'block' : 'hidden nav:block'" aria-label="Bộ lọc sản phẩm">
+            <section v-if="site.productCategories.length" aria-labelledby="brand-category-filter-title">
+              <h2 id="brand-category-filter-title" class="mb-3 text-sm font-bold text-navy-950">Danh mục sản phẩm</h2>
+              <ul class="m-0 list-none space-y-2 p-0">
+                <li v-for="category in site.productCategories" :key="category.id">
+                  <NuxtLink :to="migrationHref(category.url)" class="text-sm text-[#20344b] no-underline hover:text-navy-950">{{ category.name }}</NuxtLink>
+                </li>
+              </ul>
+            </section>
 
-        <CatalogProductGrid :products="data.products" />
+            <section v-if="data.filters?.brands.length" aria-labelledby="brand-list-filter-title">
+              <h2 id="brand-list-filter-title" class="mb-3 text-sm font-bold text-navy-950">Thương hiệu</h2>
+              <ul class="m-0 list-none space-y-2 p-0">
+                <li v-for="brandOption in data.filters.brands" :key="brandOption.id">
+                  <NuxtLink
+                    :to="migrationHref(brandOption.url)"
+                    class="text-sm no-underline hover:text-navy-950"
+                    :class="brandOption.id === data.brand.id ? 'font-bold text-navy-950' : 'text-[#20344b]'"
+                    :aria-current="brandOption.id === data.brand.id ? 'page' : undefined"
+                  >{{ brandOption.name }}</NuxtLink>
+                </li>
+              </ul>
+            </section>
 
-        <nav v-if="totalPages > 1" class="mt-10 flex flex-wrap gap-2" aria-label="Phân trang sản phẩm">
+            <section v-if="data.filters?.priceRanges.length" aria-labelledby="brand-price-filter-title">
+              <h2 id="brand-price-filter-title" class="mb-3 text-sm font-bold text-navy-950">Mức giá</h2>
+              <ul class="m-0 list-none space-y-2 p-0">
+                <li v-for="range in data.filters.priceRanges" :key="range.key">
+                  <NuxtLink :to="priceLink(range.key)" class="flex items-center gap-2.5 text-sm text-[#20344b] no-underline hover:text-navy-950">
+                    <span class="grid h-[18px] w-[18px] flex-none place-items-center rounded-[3px] border-[1.5px] border-navy-950" :class="(data.selected.priceKeys ?? []).includes(range.key) ? 'bg-navy-950' : 'bg-white'" aria-hidden="true">
+                      <svg v-if="(data.selected.priceKeys ?? []).includes(range.key)" class="h-3 w-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7" /></svg>
+                    </span>
+                    {{ range.label }}
+                  </NuxtLink>
+                </li>
+              </ul>
+            </section>
+
+            <NuxtLink v-if="(data.selected.priceKeys ?? []).length" :to="resetFilterLink()" class="text-sm text-[#20344b] underline underline-offset-2 hover:text-navy-950">Xóa bộ lọc</NuxtLink>
+          </aside>
+
+          <section class="min-w-0" aria-label="Sản phẩm thương hiệu">
+            <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
+              <h2 class="m-0 text-lg font-black text-navy-800">{{ data.brand.name }}</h2>
+              <label class="flex items-center gap-2 text-sm text-slate-500">
+                Sắp xếp
+                <select
+                  class="h-11 rounded-chip border border-gray-300 bg-white px-3 font-normal text-navy-800"
+                  :value="data.selected.sort"
+                  @change="onSortChange"
+                >
+                  <option v-for="option in sortOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
+                </select>
+              </label>
+            </div>
+
+            <CatalogProductGrid :products="data.products" />
+
+            <nav v-if="totalPages > 1" class="mt-10 flex flex-wrap gap-2" aria-label="Phân trang sản phẩm">
           <NuxtLink
             v-if="currentPage > 1"
             class="inline-grid min-h-11 min-w-11 place-items-center rounded-chip border border-gray-200 px-3 py-2 text-navy-800 no-underline transition-colors hover:border-navy-800"
@@ -135,7 +262,9 @@ useSeoMeta({ title: computed(() => data.value ? `${data.value.brand.name} — Ph
           >
             Sau
           </NuxtLink>
-        </nav>
+            </nav>
+          </section>
+        </div>
 
         <section class="relative isolate mt-10 grid grid-cols-1 items-center gap-6 overflow-hidden bg-navy-950 px-6 py-8 text-white tb:grid-cols-[minmax(0,1fr)_auto] nav:px-10 nav:py-9" aria-labelledby="brand-support-title">
           <div>

@@ -93,7 +93,43 @@ function ptsProjectDetailRelatedProjectDto(array $row, $root = '')
         'image' => ptsProjectDetailMedia(isset($row['photo']) ? $row['photo'] : '', $root, 'upload/news/'));
 }
 
-function ptsProjectDetailPayload(array $row, array $gallery, array $relatedEquipment, $canonicalSources = array(), array $relatedProjects = array(), $cta = null)
+function ptsProjectDetailTrustDto(array $rows, $root = '')
+{
+    $items = array();
+    foreach($rows as $row)
+    {
+        if(!is_array($row) || !ptsProjectDetailPublished(isset($row['status']) ? $row['status'] : '')) continue;
+        $label = ptsProjectDetailText(isset($row['namevi']) ? $row['namevi'] : '');
+        if($label === '') continue;
+        $items[] = array(
+            'label' => $label,
+            'icon' => ptsProjectDetailMedia(isset($row['photo']) ? $row['photo'] : '', $root, 'upload/news/'),
+            'faIcon' => 'fa-check'
+        );
+        if(count($items) >= 3) break;
+    }
+    if($items) return $items;
+
+    // These are the approved fallbacks already used by sources/project_hub.php.
+    return array(
+        array('label' => 'Tư vấn tận tâm', 'icon' => '', 'faIcon' => 'fa-headset'),
+        array('label' => 'Giải pháp tối ưu', 'icon' => '', 'faIcon' => 'fa-cogs'),
+        array('label' => 'Đồng hành lâu dài', 'icon' => '', 'faIcon' => 'fa-shield-alt')
+    );
+}
+
+function ptsProjectDetailSeoDto($projectTitle, array $seoRow = array())
+{
+    $title = !empty($seoRow['titlevi']) ? ptsProjectDetailText($seoRow['titlevi']) : ptsProjectDetailText($projectTitle);
+    if($title !== '' && stripos($title, 'phúc thịnh s') === false) $title .= ' | Phúc Thịnh Solar';
+    return array(
+        'title' => $title,
+        'description' => !empty($seoRow['descriptionvi']) ? ptsProjectDetailText($seoRow['descriptionvi']) : '',
+        'keywords' => !empty($seoRow['keywordsvi']) ? ptsProjectDetailText($seoRow['keywordsvi']) : ''
+    );
+}
+
+function ptsProjectDetailPayload(array $row, array $gallery, array $relatedEquipment, $canonicalSources = array(), array $relatedProjects = array(), $cta = null, array $seoRow = array())
 {
     if(!ptsProjectDetailPublished(isset($row['status']) ? $row['status'] : '')) return null;
     $id = isset($row['id']) ? (int)$row['id'] : 0;
@@ -135,6 +171,7 @@ function ptsProjectDetailPayload(array $row, array $gallery, array $relatedEquip
             'sanitizedBy' => 'pts_public_richtext',
             'sanitizerVersion' => 1
         ),
+        'seo' => ptsProjectDetailSeoDto($title, $seoRow),
         'canonical' => array('url' => '/'.$slug.'/', 'sources' => $canonicalSources),
         'parity' => array(
             'viewCount' => array('included' => false, 'reason' => 'read_only_preview_does_not_increment_legacy_view_count'),

@@ -22,7 +22,7 @@ function ptsCatalogError($status, $code)
 
 try
 {
-    $allowed = array('category', 'page', 'per_page', 'brand', 'price', 'subcategory', 'sort');
+    $allowed = array('category', 'page', 'per_page', 'brand', 'price', 'subcategory', 'sort', 'keyword', 'is_need');
     foreach(array_keys($_GET) as $key) if(!in_array($key, $allowed, true)) ptsCatalogError(400, 'BAD_QUERY');
     foreach($allowed as $key) if(array_key_exists($key, $_GET) && (!is_string($_GET[$key]) || trim($_GET[$key]) === '')) ptsCatalogError(400, 'BAD_QUERY');
     $categoryPath = isset($_GET['category']) && is_scalar($_GET['category']) ? trim((string)$_GET['category'], '/') : '';
@@ -42,6 +42,10 @@ try
     if(isset($_GET['subcategory']) && !preg_match('/^[1-9][0-9]*(?:,[1-9][0-9]*)*$/', $_GET['subcategory'])) ptsCatalogError(400, 'BAD_QUERY');
     if(isset($_GET['price']) && !preg_match('/^[123](?:,[123])*$/', $_GET['price'])) ptsCatalogError(400, 'BAD_QUERY');
     if(isset($_GET['sort']) && !preg_match('/^[a-z-]+$/', $_GET['sort'])) ptsCatalogError(400, 'BAD_QUERY');
+    if(isset($_GET['keyword']) && (function_exists('mb_strlen') ? mb_strlen(trim($_GET['keyword']), 'UTF-8') : strlen(trim($_GET['keyword']))) > 100) ptsCatalogError(400, 'BAD_QUERY');
+    $needKeyPattern = '(?:du-an-cong-trinh|chieu-sang-gia-dinh|san-vuon-canh-quan)';
+    if(isset($_GET['is_need']) && !preg_match('/^'.$needKeyPattern.'(?:,'.$needKeyPattern.')*$/', $_GET['is_need'])) ptsCatalogError(400, 'BAD_QUERY');
+    if(isset($_GET['is_need']) && count(array_unique(explode(',', $_GET['is_need']))) !== count(explode(',', $_GET['is_need']))) ptsCatalogError(400, 'BAD_QUERY');
 
     require_once __DIR__.'/config.php';
     require_once LIBRARIES.'product_category_urls.php';
@@ -52,10 +56,11 @@ try
 
     $segments = $categoryPath === '' ? array() : explode('/', $categoryPath);
     $resolved = $segments ? publicResolveProductCategoryPath($d, $segments, 'vi') : array();
-    if($segments && empty($resolved)) ptsCatalogError(400, 'BAD_QUERY');
+    if($segments && empty($resolved)) ptsCatalogError(404, 'CATEGORY_NOT_FOUND');
     $baseWhere = "p.type = ? and find_in_set('hienthi', p.status)";
     $baseParams = array('san-pham');
     $category = array();
+    $selectedCategoryRow = array();
     $resolvedListId = 0;
     if($resolved)
     {
@@ -68,7 +73,7 @@ try
         $row = $d->rawQueryOne("select id,namevi,slugvi,status,photo{$categoryExtraColumns} from #_{$tables[$last]} where id = ? and type = ? and find_in_set('hienthi',status) limit 1", array((int)$resolved[$last], 'san-pham'));
         $selectedCategoryRow = is_array($row) ? $row : array();
         $category = ptsCatalogCategoryDto(is_array($row) ? $row : array(), $segments);
-        if($category === null) ptsCatalogError(400, 'BAD_QUERY');
+        if($category === null) ptsCatalogError(404, 'CATEGORY_NOT_FOUND');
         /*
          * "Loai san pham" (subcategory pill/checkbox) chi co y nghia khi dang
          * dung o dung mot danh muc cap 1 (product_list) - khop nhanh is_cat
@@ -86,6 +91,9 @@ try
     if($resolvedListId > 0 && isset($_GET['subcategory']) && $_GET['subcategory'] !== '') $subcategoryIds = array_values(array_unique(array_map('intval', explode(',', $_GET['subcategory']))));
     $priceParam = isset($_GET['price']) && publicProductPricesVisible() ? (string)$_GET['price'] : '';
     $sortKey = ptsCatalogSortKey(isset($_GET['sort']) ? $_GET['sort'] : '');
+    $needKeys = isset($_GET['is_need']) ? array_values(array_unique(explode(',', $_GET['is_need']))) : array();
+    $keywordRaw = isset($_GET['keyword']) ? trim($_GET['keyword']) : '';
+    $keyword = $keywordRaw !== '' ? $func->changeTitle($keywordRaw) : '';
 
     $where = $baseWhere;
     $params = $baseParams;
@@ -110,6 +118,18 @@ try
         list($priceWhere, $priceParams) = productPriceFilterSql($priceParam);
         $where .= $priceWhere;
         $params = array_merge($params, $priceParams);
+    }
+    if($needKeys)
+    {
+        list($needWhere, $needParams) = productNeedFilterSql(implode(',', $needKeys));
+        $where .= $needWhere;
+        $params = array_merge($params, $needParams);
+    }
+    if($keyword !== '')
+    {
+        $where .= ' and (p.namevi like ? or p.code like ? or p.slugvi like ? or p.slugen like ?)';
+        $keywordLike = '%'.$keyword.'%';
+        $params = array_merge($params, array($keywordLike, $keywordLike, $keywordLike, $keywordLike));
     }
 
     $totalRow = $d->rawQueryOne("select count(*) as total from #_product p where {$where}", $params);
@@ -137,17 +157,43 @@ try
     if($resolvedListId > 0) $subcategoryOptionRows = $d->rawQuery("select id,namevi,slugvi,status from #_product_cat where id_list = ? and type = ? and find_in_set('hienthi',status) order by numb,id desc", array($resolvedListId, 'san-pham'));
 
     $extras = array('root' => ROOT);
+    $extras['canonicalPath'] = !empty($category['url']) ? $category['url'] : '/san-pham/';
+    $extras['seoFallbackTitle'] = !empty($selectedCategoryRow['namevi']) ? $selectedCategoryRow['namevi'] : 'Sản phẩm';
+    if($resolved)
+    {
+        /* Match sources/product.php SEO actions for the resolved entity depth. */
+        $seoActions = array('idl' => 'man_list', 'idc' => 'man_cat', 'idi' => 'man_item', 'ids' => 'man_sub');
+        $seoDepth = array_key_last($resolved);
+        $seoAction = isset($seoActions[$seoDepth]) ? $seoActions[$seoDepth] : '';
+        if($seoAction !== '' && !empty($selectedCategoryRow['id'])) {
+            $seoRow = $d->rawQueryOne('select titlevi,descriptionvi,keywordsvi from #_seo where id_parent = ? and com = ? and act = ? and type = ? limit 1', array((int)$selectedCategoryRow['id'], 'product', $seoAction, 'san-pham'));
+            $extras['seoRow'] = is_array($seoRow) ? $seoRow : array();
+        }
+    }
+    else
+    {
+        /* Root catalog metadata is managed on #_seopage for type san-pham. */
+        $seoRow = $d->rawQueryOne('select titlevi,descriptionvi,keywordsvi from #_seopage where type = ? limit 1', array('san-pham'));
+        $extras['seoRow'] = is_array($seoRow) ? $seoRow : array();
+    }
     $currentPath = $categoryPath === '' ? 'san-pham' : 'danh-muc-san-pham/'.$categoryPath;
     $heroRows = $cache->get("select namevi,link,photo,status from #_photo where type=? order by numb,id desc", array('product-category-hero'), 'result', 7200);
+    $heroConfigured = false;
     foreach((array)$heroRows as $heroRow) {
         if(trim(parse_url((string)($heroRow['link'] ?? ''), PHP_URL_PATH), '/') !== $currentPath) continue;
+        $heroConfigured = true;
         if(ptsCatalogPublished($heroRow['status'] ?? '') && !empty($heroRow['photo'])) $extras['hero'] = array('photo' => $heroRow['photo'], 'upload' => 'upload/photo/', 'alt' => $heroRow['namevi'] ?? '');
         break;
     }
-    /* Keep the one category-specific fallback enabled in sources/product.php
-       available to the read-only DTO when no Admin hero record is configured. */
-    if(empty($extras['hero']) && $currentPath === 'danh-muc-san-pham/den-nlmt/den-pha-nang-luong-mat-troi' && is_file(ROOT.'assets/images/site-visuals/catalog-solar-flood-lighting-20261008.png')) {
-        $extras['hero'] = array('photo' => 'catalog-solar-flood-lighting-20261008.png', 'upload' => 'assets/images/site-visuals/', 'alt' => 'Đèn pha năng lượng mặt trời cho sân bãi và công trình');
+    /* Keep the source-confirmed lighting fallbacks available when Admin has
+       not configured a hero; a hidden Admin record must continue to disable it. */
+    $heroFallbacks = array(
+        'danh-muc-san-pham/den-nlmt' => array('catalog-lighting-overview-20261008.png', 'Tổng quan giải pháp chiếu sáng năng lượng mặt trời'),
+        'danh-muc-san-pham/den-nlmt/den-pha-nang-luong-mat-troi' => array('catalog-solar-flood-lighting-20261008.png', 'Đèn pha năng lượng mặt trời cho sân bãi và công trình')
+    );
+    if(empty($extras['hero']) && !$heroConfigured && isset($heroFallbacks[$currentPath]) && is_file(ROOT.'assets/images/site-visuals/'.$heroFallbacks[$currentPath][0])) {
+        $heroFallback = $heroFallbacks[$currentPath];
+        $extras['hero'] = array('photo' => $heroFallback[0], 'upload' => 'assets/images/site-visuals/', 'alt' => $heroFallback[1]);
     }
     if(empty($extras['hero']) && !empty($selectedCategoryRow['photo'])) $extras['hero'] = array('photo' => $selectedCategoryRow['photo'], 'upload' => 'upload/product/', 'alt' => $selectedCategoryRow['namevi'] ?? '');
     if(empty($extras['hero']) && $categoryPath === '' && is_file(ROOT.'assets/images/site-visuals/catalog-products-hero-20261007-v2.png')) $extras['hero'] = array('photo' => 'catalog-products-hero-20261007-v2.png', 'upload' => 'assets/images/site-visuals/', 'alt' => 'Danh mục thiết bị năng lượng mặt trời Phúc Thịnh Solar');
@@ -186,8 +232,12 @@ try
         $category ?: array(),
         is_array($categories) ? $categories : array(),
         $rows, $page, $perPage, $total, publicProductPricesVisible(),
-        array('brands' => is_array($brandOptionRows) ? $brandOptionRows : array(), 'subcategories' => is_array($subcategoryOptionRows) ? $subcategoryOptionRows : array()),
-        array('brandIds' => $brandIds, 'priceKeys' => $priceParam !== '' ? explode(',', $priceParam) : array(), 'subcategoryIds' => $subcategoryIds, 'sort' => $sortKey),
+        array(
+            'brands' => is_array($brandOptionRows) ? $brandOptionRows : array(),
+            'subcategories' => is_array($subcategoryOptionRows) ? $subcategoryOptionRows : array(),
+            'needsEnabled' => strpos($categoryPath, 'den-') !== false || strpos($categoryPath, 'tru-den') !== false
+        ),
+        array('brandIds' => $brandIds, 'priceKeys' => $priceParam !== '' ? explode(',', $priceParam) : array(), 'subcategoryIds' => $subcategoryIds, 'sort' => $sortKey, 'needKeys' => $needKeys),
         $extras
     ), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
 }

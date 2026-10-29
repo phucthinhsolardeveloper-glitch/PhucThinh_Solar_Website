@@ -19,6 +19,7 @@ $payload = ptsProjectsPayload($categories, array($rows[0]), $rows[1], $cta, 1, 1
 projectsAssert($payload['schemaVersion'] === 1 && $payload['locale'] === 'vi', 'schema và locale vi');
 projectsAssert($payload['featured']['slug'] === 'du-an-noi-bat' && $payload['projects'][0]['title'] === 'Công trình thực tế', 'featured và project dùng đúng CMS rows');
 projectsAssert($payload['projects'][0]['description'] === 'Mô tả CMS' && $payload['projects'][0]['url'] === '/cong-trinh-thuc-te/', 'plain text và canonical URL');
+projectsAssert($payload['category']['canonicalPath'] === '/du-an-ho-gia-dinh' && $payload['intro']['title'] === 'Hộ gia đình', 'category DTO giữ bare PHP canonical và đúng tiêu đề category');
 projectsAssert($payload['cta']['image'] === '/upload/news/cta.jpg' && $payload['cta']['hotline']['tel'] === '090123', 'CTA và hotline lấy từ CMS/config');
 $hidden = ptsProjectsPayload($categories, array(), array(), array(array('namevi'=>'Bị ẩn', 'status'=>'')), 1, 12, 0, null, '');
 projectsAssert($hidden['cta'] === null, 'CTA bị ẩn không hồi sinh fallback');

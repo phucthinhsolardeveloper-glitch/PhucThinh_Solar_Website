@@ -28,9 +28,9 @@ if(!formCsrfValid($csrf)) ptsCartMutateJson(419, array('error'=>array('code'=>'I
 $action = isset($body['action']) && is_scalar($body['action']) ? (string)$body['action'] : '';
 if(!in_array($action, array('add','update','delete'), true)) ptsCartMutateJson(400, array('error'=>array('code'=>'BAD_ACTION')));
 
-if(!publicProductPricesVisible())
+if(!publicProductPricesVisible() && $action !== 'delete')
 {
-    unset($_SESSION['cart']);
+    // Quote-only mode blocks adding/changing products but still lets customers clear their cart.
     ptsCartMutateJson(409, array('error'=>array('code'=>'QUOTE_ONLY','message'=>'Sản phẩm hiện nhận báo giá trực tiếp.')));
 }
 
@@ -42,7 +42,11 @@ if($action === 'add')
     $size = isset($body['size']) && is_scalar($body['size']) ? (int)$body['size'] : 0;
     if($id <= 0 || $quantity < 1 || $quantity > 999 || $color < 0 || $size < 0) ptsCartMutateJson(400, array('error'=>array('code'=>'BAD_ITEM')));
     $product = $cart->getProductInfo($id);
-    if(empty($product) || publicProductRequiresQuote($product)) ptsCartMutateJson(409, array('error'=>array('code'=>'QUOTE_ONLY','message'=>'Sản phẩm này nhận báo giá trực tiếp.')));
+    if(empty($product)) ptsCartMutateJson(404, array('error'=>array('code'=>'PRODUCT_NOT_FOUND')));
+    $productStatuses = array_filter(array_map('trim', explode(',', isset($product['status']) ? (string)$product['status'] : '')));
+    if((isset($product['type']) ? (string)$product['type'] : '') !== 'san-pham' || !in_array('hienthi', $productStatuses, true))
+        ptsCartMutateJson(404, array('error'=>array('code'=>'PRODUCT_NOT_FOUND')));
+    if(publicProductRequiresQuote($product)) ptsCartMutateJson(409, array('error'=>array('code'=>'QUOTE_ONLY','message'=>'Sản phẩm này nhận báo giá trực tiếp.')));
     $cart->addToCart($quantity, $id, $color, $size);
 }
 elseif($action === 'update')

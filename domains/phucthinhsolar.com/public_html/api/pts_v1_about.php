@@ -91,9 +91,29 @@ try
     }
     $compass = array(); foreach(array_slice($compassRows, 0, 3) as $row) $compass[] = array('title' => ptsAboutPlainText($row['title_indexvi'] ?? $row['namevi'] ?? ''), 'description' => ptsAboutPlainText($row['descvi'] ?? '') ?: ptsAboutSentences($row['contentvi'] ?? '', 1), 'image' => ptsAboutImage($row['photo'] ?? '', ROOT, UPLOAD_NEWS_L, 'upload/news/'));
 
-    $featured = array_values(array_filter($certificates, static function($row) { return !empty($row['status']) && in_array('noibat', explode(',', $row['status']), true); }));
-    $certRows = array_slice($featured ?: $certificates, 0, 3); $certIds = array_map('intval', array_column($certRows, 'id'));
-    $certs = array(); foreach($certRows as $row) { $image = ptsAboutImage($row['photo'] ?? '', ROOT, UPLOAD_PHOTO_L, 'upload/photo/'); if($image !== '') $certs[] = array('id' => (int)$row['id'], 'name' => ptsAboutPlainText($row['namevi'] ?? ''), 'description' => ptsAboutPlainText($row['descvi'] ?? ''), 'image' => $image, 'href' => $image); }
+    $featuredCertificates = array_values(array_filter($certificates, static function($row) {
+        return is_array($row) && in_array('noibat', array_filter(array_map('trim', explode(',', (string)($row['status'] ?? '')))), true);
+    }));
+    $certificateCards = array_slice($featuredCertificates ?: $certificates, 0, 3);
+    $certificateCardIds = array_column($certificateCards, 'id');
+    $allCertificates = array_merge($certificateCards, array_values(array_filter($certificates, static function($row) use ($certificateCardIds) {
+        return is_array($row) && !in_array($row['id'] ?? null, $certificateCardIds, true);
+    })));
+    $certs = array();
+    foreach($allCertificates as $row)
+    {
+        if(!is_array($row) || (int)($row['id'] ?? 0) <= 0) continue;
+        $image = ptsAboutImage($row['photo'] ?? '', ROOT, UPLOAD_PHOTO_L, 'upload/photo/');
+        $status = array_filter(array_map('trim', explode(',', (string)($row['status'] ?? ''))));
+        $certs[] = array(
+            'id' => (int)$row['id'],
+            'name' => ptsAboutPlainText($row['namevi'] ?? ''),
+            'description' => ptsAboutPlainText($row['descvi'] ?? ''),
+            'image' => $image,
+            'href' => $image !== '' ? $image : null,
+            'featured' => in_array('noibat', $status, true)
+        );
+    }
     $cta = $ctaRows ? reset($ctaRows) : array();
     $sections = array(
         'story' => array('eyebrow' => $labels['storyEyebrow'], 'title' => $labels['storyTitle'], 'intro' => $storyIntro, 'body' => $storyBody, 'image' => ptsAboutImage($story['photo'] ?? '', ROOT, UPLOAD_NEWS_L, 'upload/news/')),
@@ -105,7 +125,10 @@ try
         'cta' => array('title' => ptsAboutPlainText($cta['namevi'] ?? '') ?: $labels['contactTitle'], 'description' => ptsAboutPlainText($cta['descvi'] ?? '') ?: $labels['contactIntro'], 'image' => ptsAboutImage($cta['photo'] ?? '', ROOT, UPLOAD_PHOTO_L, 'upload/photo/'), 'href' => ptsAboutSafeLink($cta['link'] ?? '') ?: null)
     );
     if(function_exists('closeSessionWrite')) closeSessionWrite();
-    echo json_encode(ptsAboutPayload($sections, $labels, is_array($optsetting) && isset($optsetting['hotline']) ? $optsetting['hotline'] : ''), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
+    $hotline = is_array($optsetting) && isset($optsetting['hotline']) ? $optsetting['hotline'] : '';
+    $zaloValue = is_array($optsetting) && isset($optsetting['zalo']) && is_scalar($optsetting['zalo']) ? $optsetting['zalo'] : '';
+    $zalo = $func->parsePhone($zaloValue);
+    echo json_encode(ptsAboutPayload($sections, $labels, $hotline, $zalo), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
 }
 catch(Throwable $e)
 {

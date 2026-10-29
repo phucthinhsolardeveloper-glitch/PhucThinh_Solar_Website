@@ -75,9 +75,17 @@ remote. Output:
   NEEDS VERIFICATION đến khi có record phù hợp.
 - `hrefMapping`: tập internal path `onlyLegacy` / `onlyPreview` cho từng route.
   Các khác biệt được liệt kê là manual review, không làm fail crawl tự động.
+- `hrefTargetAudit`: GET các URL khác biệt trên đúng origin nguồn, theo redirect
+  loopback và ghi status/final URL; báo riêng URL lỗi hoặc cần review. Crawler bỏ
+  qua URL có query giống credential hoặc dấu hiệu mutation (ví dụ `action=add`,
+  `add-to-cart`, `checkout`), `/api/*`, `/administrator/*` và đường dẫn mang dấu
+  hiệu mutation như logout/delete/remove/submit/callback. Trước khi theo redirect,
+  crawler áp dụng lại cùng bộ lọc cho path/query đích; redirect đến URL mutation
+  được ghi `SKIPPED`, không gửi request tới đích. Không gửi cookie, không POST và
+  không coi path khác nhau là tự động fail.
   Script trả exit code 1 nếu gate bắt buộc là sitemap crawl hoặc negative fixture
-  có trạng thái FAIL/NEEDS VERIFICATION; các href path khác nhau không ảnh hưởng
-  exit code.
+  có trạng thái FAIL/NEEDS VERIFICATION; href mapping và reachability được đưa
+  vào báo cáo review, không ảnh hưởng exit code.
 
 Nếu fixture policy thay đổi, giữ kết quả 404/needs-verification và lấy lại slug
 từ `site.footer.policies` hoặc một record `chinh-sach` đang `hienthi` trước lần
@@ -102,8 +110,9 @@ Chỉ ký pre-cutover khi tất cả route/alias/negative fixture đã có evide
 4. JSON-LD có type/entity URL hợp với canonical và dữ liệu thật; không pass vì
    route trả 200. Kiểm tra đặc biệt Product/Breadcrumb/FAQ/Article/Organization.
 5. Href mapping ghi tập `onlyLegacy` / `onlyPreview` cho từng route. Chênh path
-   được liệt kê để review thủ công, không tự động fail; người review xác minh
-   đường dẫn thực tế và 404.
+   được liệt kê để review thủ công, không tự động fail; `hrefTargetAudit` GET
+   các path an toàn trên origin nguồn và liệt kê status/final URL khác 200. URL
+   bị bỏ qua do có dấu hiệu nhạy cảm/mutation cần review riêng, không tự thử GET.
 
 Account/Admin/media/API và mọi POST checkout vẫn là gate PHP riêng, không được
 đánh dấu đã migrate từ kết quả crawler này.

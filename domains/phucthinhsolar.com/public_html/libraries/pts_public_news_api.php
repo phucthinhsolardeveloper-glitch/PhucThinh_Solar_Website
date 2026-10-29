@@ -50,6 +50,7 @@ function ptsNewsCategoryDto(array $row)
         'description' => ptsNewsPlainText(isset($row['descvi']) ? $row['descvi'] : ''),
         'slug' => $slug,
         'url' => '/'.$slug.'/',
+        'canonicalPath' => '/'.$slug,
         'image' => ptsNewsMedia(isset($row['_pts_public_photo']) ? $row['_pts_public_photo'] : '')
     );
 }

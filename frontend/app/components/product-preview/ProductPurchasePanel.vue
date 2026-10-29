@@ -1,16 +1,24 @@
 <script setup lang="ts">
 import type { PublicCatalogPricing } from '#shared/contracts/public-catalog'
+import { normalizeCommerceQuantity } from '#shared/commerce-quantity'
+import QuantityStepper from '~/components/commerce/QuantityStepper.vue'
 
-const props = defineProps<{ productId: number; pricing: PublicCatalogPricing }>()
+const props = defineProps<{ productId: number; pricing: PublicCatalogPricing; consultationAvailable: boolean }>()
 const quantity = ref(1)
 const added = ref(false)
 const { loading, error, mutate } = useMigrationCart()
+const links = useMigrationLinks()
 
 async function add(goToCart = false) {
   added.value = false
-  await mutate({ action: 'add', productId: props.productId, quantity: quantity.value })
+  quantity.value = normalizeCommerceQuantity(quantity.value)
+  try {
+    await mutate({ action: 'add', productId: props.productId, quantity: quantity.value })
+  } catch {
+    return
+  }
   added.value = true
-  if (goToCart) await navigateTo('/migration-cart-preview')
+  if (goToCart) await navigateTo(links.generic('/gio-hang/'))
 }
 </script>
 
@@ -18,18 +26,7 @@ async function add(goToCart = false) {
   <section class="mt-6 border-t border-gray-200 pt-5" aria-label="Mua sản phẩm">
     <template v-if="pricing.mode === 'price'">
       <div class="flex flex-wrap items-end gap-3">
-        <label class="grid gap-1.5 text-sm font-bold text-navy-800">
-          Số lượng
-          <input
-            v-model.number="quantity"
-            type="number"
-            min="1"
-            max="999"
-            step="1"
-            inputmode="numeric"
-            class="h-11 w-24 rounded-chip border border-gray-300 px-3 text-base outline-none focus:border-gold-600"
-          >
-        </label>
+        <QuantityStepper v-model="quantity" label="Số lượng" :disabled="loading" />
         <button
           type="button"
           class="min-h-11 rounded-chip border border-navy-800 bg-white px-5 font-bold text-navy-800 transition hover:bg-slate-50 disabled:cursor-wait disabled:opacity-60"
@@ -51,11 +48,14 @@ async function add(goToCart = false) {
       <p v-if="error" class="mb-0 mt-3 text-sm font-semibold text-red-700" role="alert">{{ error }}</p>
     </template>
     <a
-      v-else
+      v-else-if="consultationAvailable"
       href="#pts-pdp-consultation"
       class="inline-flex min-h-11 items-center rounded-chip bg-gold-500 px-6 font-extrabold text-navy-950 no-underline hover:bg-gold-600"
     >
       Liên hệ nhận báo giá
     </a>
+    <p v-else class="mb-0 text-sm text-slate-500" role="status">
+      Thông tin tư vấn sản phẩm hiện chưa tải được.
+    </p>
   </section>
 </template>

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { isRuntimeFlagEnabled } from '#shared/public-route-gate'
 import OrderThanksPage from '~/components/order/OrderThanksPage.vue'
 import orderSuccessPublicRoute from '~/middleware/order-success-public-route'
 
@@ -8,12 +7,10 @@ definePageMeta({
   middleware: orderSuccessPublicRoute,
 })
 
-const config = useRuntimeConfig()
-const indexable = computed(() => isRuntimeFlagEnabled(config.public.orderSuccessPublicRouteIndexable))
-
+// A token-bound order confirmation must never be searchable or indexable.
 useSeoMeta({
   title: 'Đặt hàng thành công — Phúc Thịnh Solar',
-  robots: computed(() => indexable.value ? 'index, follow' : 'noindex, nofollow, noarchive'),
+  robots: 'noindex, nofollow, noarchive',
 })
 </script>
 

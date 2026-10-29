@@ -1,6 +1,10 @@
-import { isPublicCatalogProduct, type PublicCatalogProduct } from './public-catalog.ts'
+import { isPublicCatalogProduct, type PublicCatalogProduct, type PublicCatalogSortKey } from './public-catalog.ts'
 
 export interface PublicBrandDetailBrand { id: number; name: string; slug: string; url: string }
+export interface PublicBrandDetailFilters {
+  brands: PublicBrandDetailBrand[]
+  priceRanges: Array<{ key: '1' | '2' | '3'; label: string }>
+}
 export interface PublicBrandDetailPayload {
   schemaVersion: 1
   locale: 'vi'
@@ -8,7 +12,8 @@ export interface PublicBrandDetailPayload {
   brand: PublicBrandDetailBrand
   products: PublicCatalogProduct[]
   pagination: { page: number; perPage: number; total: number }
-  selected: { sort: string }
+  filters?: PublicBrandDetailFilters
+  selected: { sort: PublicCatalogSortKey; priceKeys?: Array<'1' | '2' | '3'> }
   parity: {
     prices: { included: true } | { included: false; reason: string }
     seoOverrides: { included: false; reason: string }
@@ -38,21 +43,37 @@ function isBrand(value: unknown): value is PublicBrandDetailBrand {
     && typeof value.url === 'string' && value.url === `/thuong-hieu/${value.slug}/`
 }
 
+function isBrandFilters(value: unknown): value is PublicBrandDetailFilters {
+  return isRecord(value) && hasExactKeys(value, ['brands', 'priceRanges'])
+    && Array.isArray(value.brands) && value.brands.every(isBrand)
+    && Array.isArray(value.priceRanges) && value.priceRanges.every((range) => isRecord(range)
+      && hasExactKeys(range, ['key', 'label']) && ['1', '2', '3'].includes(range.key as string) && isSafeText(range.label))
+}
+
 function isPriceParity(value: unknown): value is PublicBrandDetailPayload['parity']['prices'] {
   return isRecord(value) && (hasExactKeys(value, ['included']) && value.included === true
     || hasExactKeys(value, ['included', 'reason']) && value.included === false && value.reason === 'public_pricing_disabled')
 }
 
 export function isPublicBrandDetailPayload(value: unknown): value is PublicBrandDetailPayload {
-  if (!isRecord(value) || !hasExactKeys(value, ['schemaVersion', 'locale', 'path', 'brand', 'products', 'pagination', 'selected', 'parity'])) return false
+  if (!isRecord(value)) return false
+  const hasFilters = Object.prototype.hasOwnProperty.call(value, 'filters')
+  if (!(hasFilters
+    ? hasExactKeys(value, ['schemaVersion', 'locale', 'path', 'brand', 'products', 'pagination', 'filters', 'selected', 'parity'])
+    : hasExactKeys(value, ['schemaVersion', 'locale', 'path', 'brand', 'products', 'pagination', 'selected', 'parity']))) return false
   if (value.schemaVersion !== 1 || value.locale !== 'vi') return false
   if (!isBrand(value.brand) || value.path !== value.brand.url) return false
   if (!Array.isArray(value.products) || !value.products.every(isPublicCatalogProduct)) return false
+  if (hasFilters && !isBrandFilters(value.filters)) return false
   if (!isRecord(value.pagination) || !hasExactKeys(value.pagination, ['page', 'perPage', 'total'])
     || typeof value.pagination.page !== 'number' || !Number.isSafeInteger(value.pagination.page) || value.pagination.page < 1 || value.pagination.page > 10000
     || typeof value.pagination.perPage !== 'number' || !Number.isSafeInteger(value.pagination.perPage) || value.pagination.perPage < 1 || value.pagination.perPage > 48
     || typeof value.pagination.total !== 'number' || !Number.isSafeInteger(value.pagination.total) || value.pagination.total < 0) return false
-  if (!isRecord(value.selected) || !hasExactKeys(value.selected, ['sort']) || typeof value.selected.sort !== 'string') return false
+  if (!isRecord(value.selected) || typeof value.selected.sort !== 'string' || !['default', 'abc', 'abc-desc', 'price', 'price-desc', 'new', 'new-desc'].includes(value.selected.sort)) return false
+  const hasPriceKeys = Object.prototype.hasOwnProperty.call(value.selected, 'priceKeys')
+  if (!(hasPriceKeys
+    ? hasExactKeys(value.selected, ['sort', 'priceKeys']) && Array.isArray(value.selected.priceKeys) && value.selected.priceKeys.every((key) => ['1', '2', '3'].includes(key as string))
+    : hasExactKeys(value.selected, ['sort']))) return false
   if (!isRecord(value.parity) || !hasExactKeys(value.parity, ['prices', 'seoOverrides'])) return false
   if (!isPriceParity(value.parity.prices)) return false
   const seoOverrides = value.parity.seoOverrides

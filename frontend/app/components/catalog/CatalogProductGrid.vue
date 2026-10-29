@@ -3,6 +3,7 @@ import type { PublicCatalogProduct } from '#shared/contracts/public-catalog'
 
 defineProps<{ products: PublicCatalogProduct[] }>()
 const links = useMigrationLinks()
+const isMigrationPreview = links.active
 const failedImages = ref<Set<number>>(new Set())
 
 function markImageFailed(productId: number) {
@@ -75,7 +76,7 @@ function productHref(product: PublicCatalogProduct) {
   >
     <article v-for="product in products" :key="product.id" class="min-w-0">
       <NuxtLink
-        :external="!links.active"
+        :external="!isMigrationPreview"
         :to="productHref(product)"
         class="relative grid aspect-square place-items-center overflow-hidden rounded-chip bg-slate-50 no-underline"
       >
@@ -99,7 +100,7 @@ function productHref(product: PublicCatalogProduct) {
 
       <h3 class="mt-3 mb-1.5 text-[17px] leading-[1.4] max-ph:text-base">
         <NuxtLink
-          :external="!links.active"
+          :external="!isMigrationPreview"
           :to="productHref(product)"
           class="text-inherit no-underline hover:underline hover:underline-offset-[3px] focus-visible:underline"
         >
@@ -129,7 +130,7 @@ function productHref(product: PublicCatalogProduct) {
           {{ addingIds.has(product.id) ? 'Đang thêm…' : 'Thêm giỏ hàng' }}
         </button>
         <NuxtLink
-          :external="!links.active"
+          :external="!isMigrationPreview"
           :to="productHref(product)"
           class="inline-grid min-h-10 place-items-center rounded-chip border border-navy-800 px-3 text-sm font-bold text-navy-800 no-underline transition hover:bg-slate-50"
         >

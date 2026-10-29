@@ -13,10 +13,12 @@ sách entry này. Registry không thay đổi public routing.
 
 Hub gọi các adapter GET cần cho catalog/news/projects/solutions và tạo sample
 link bằng slug CMS thật khi có. News, project và solution detail hiện đã có
-preview tương ứng. Các page preview cart, checkout, order success, search,
-policy/support, contact/dealer/home forms và review/consultation mutation đi
-qua các adapter PHP đã allowlist; PHP vẫn giữ session, CSRF, rate-limit,
-reCAPTCHA khi cấu hình, DB/email và order transaction authority.
+preview tương ứng. Cart preview đọc session và các mutation giỏ hàng được
+allowlist; các form contact/dealer/home và review/consultation gửi mutation qua
+adapter PHP. Checkout preview chỉ hiển thị tóm tắt giỏ hàng; không có form gửi
+đơn, còn `POST /_migration/checkout` trả 410 mà không gọi PHP. PHP vẫn giữ
+session, CSRF, rate-limit, reCAPTCHA khi cấu hình, DB/email và quyền tạo đơn
+thật.
 
 `preview-links.mjs` chỉ cho phép path preview đã đăng ký và PHP fallback ở
 localhost. Điều hướng nội bộ giữa các trang preview đã được giữ trong Nuxt; hub

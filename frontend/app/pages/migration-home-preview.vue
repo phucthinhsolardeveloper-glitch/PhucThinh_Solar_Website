@@ -1,2 +1,9 @@
-<script setup lang="ts">import type { PublicSitePayload } from '#shared/contracts/public-site'; import { isPublicSitePayload } from '#shared/contracts/public-site'; import type { PublicHomePayload } from '#shared/contracts/public-home'; import { isPublicHomePayload } from '#shared/contracts/public-home'; import HomeHero from '~/components/home/HomeHero.vue'; import HomeCatalog from '~/components/home/HomeCatalog.vue'; import HomeCampaigns from '~/components/home/HomeCampaigns.vue'; import HomeEditorial from '~/components/home/HomeEditorial.vue'; import HomeContact from '~/components/home/HomeContact.vue'; const fallbackSite: PublicSitePayload = { schemaVersion: 1, brand: { name: 'Phúc Thịnh Solar', hotline: '' }, productCategories: [] }; const { data: siteData } = await useFetch<unknown>('/_migration/site', { default: () => fallbackSite }); const { data: homeData, error } = await useFetch<unknown>('/_migration/home'); const site = computed(() => isPublicSitePayload(siteData.value) ? siteData.value : fallbackSite); const home = computed(() => isPublicHomePayload(homeData.value) ? homeData.value : null); useSeoMeta({ title: () => home.value?.seo.title || 'Phúc Thịnh Solar — homepage preview', description: () => home.value?.seo.description || '', robots: 'noindex, nofollow, noarchive' })</script>
-<template><div><SiteHeader :site="site" /><main><div v-if="error || !home" class="mx-auto min-h-[55vh] w-[min(calc(100%-32px),2200px)] py-[72px]" role="status"><h1 class="text-[clamp(28px,4vw,48px)] font-bold text-navy-950">Phúc Thịnh Solar — homepage preview</h1><p class="mt-4 max-w-[68ch] leading-[1.7] text-slate-500">Không thể tải DTO homepage từ PHP local. Preview không hiển thị nội dung giả.</p></div><template v-else><HomeHero :hero="home.hero" /><HomeCatalog :categories="home.categories" :product-groups="home.productGroups" /><HomeCampaigns :campaigns="home.campaigns" /><HomeEditorial :data="home" /><HomeContact :contact="home.contact" /></template></main><SiteFooter :site="site" /></div></template>
+<script setup lang="ts">
+import HomePageContent from '~/components/home/HomePageContent.vue'
+
+definePageMeta({ layout: false })
+</script>
+
+<template>
+  <HomePageContent preview />
+</template>

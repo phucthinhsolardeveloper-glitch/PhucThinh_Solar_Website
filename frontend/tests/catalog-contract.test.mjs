@@ -1,10 +1,13 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
+import { readFileSync } from 'node:fs'
 import { isCatalogSlugChain, isPublicCatalogPayload } from '../shared/contracts/public-catalog.ts'
 
 const good = {
   schemaVersion: 1,
   locale: 'vi',
+  seo: { title: 'Sản phẩm — Phúc Thịnh Solar', description: '', keywords: '' },
+  canonical: { url: '/san-pham/' },
   category: [],
   categories: [{ id: 10, name: 'Điện mặt trời', slug: 'dien-mat-troi', url: '/danh-muc-san-pham/dien-mat-troi/' }],
   products: [{ id: 20, name: 'Sản phẩm thật từ CMS', slug: 'san-pham-that', url: '/san-pham/san-pham-that', media: ['/upload/product/photo.webp'], powerWatts: 650, pricing: { mode: 'price', currency: 'VND', regularPrice: 2648100, salePrice: null } }],
@@ -15,6 +18,7 @@ const good = {
     sort: { included: false, reason: 'legacy_sort_parity_not_verified' },
   },
 }
+const catalogApi = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/api/pts_v1_catalog.php', import.meta.url), 'utf8')
 
 test('accepts the exact Phase A catalog DTO', () => assert.equal(isPublicCatalogPayload(good), true))
 test('keeps the original v1 catalog payload valid during staggered integration', () => {
@@ -43,7 +47,30 @@ test('accepts category chain only at the supported 0..4 slug boundaries', () => 
   assert.equal(isCatalogSlugChain('a//b'), false)
 })
 test('accepts a resolved category object with its canonical full path', () => {
-  assert.equal(isPublicCatalogPayload({ ...good, category: { id: 11, name: 'Đèn', slug: 'den', url: '/danh-muc-san-pham/dien-mat-troi/den/' } }), true)
+  const category = { id: 11, name: 'Đèn', slug: 'den', url: '/danh-muc-san-pham/dien-mat-troi/den/' }
+  assert.equal(isPublicCatalogPayload({ ...good, category, canonical: { url: category.url } }), true)
+})
+
+test('requires safe SEO metadata and canonical route from the PHP catalog DTO', () => {
+  assert.equal(isPublicCatalogPayload({ ...good, seo: { ...good.seo, title: '<script>bad</script>' } }), false)
+  assert.equal(isPublicCatalogPayload({ ...good, canonical: { url: 'https://evil.example/' } }), false)
+  assert.equal(isPublicCatalogPayload({ ...good, seo: undefined }), false)
+})
+
+test('catalog SSR metadata comes from the PHP SEO DTO while preserving the robots gate', () => {
+  const page = readFileSync(new URL('../app/components/catalog/CatalogPage.vue', import.meta.url), 'utf8')
+  assert.match(page, /title: metadataTitle/)
+  assert.match(page, /description: metadataDescription/)
+  assert.ok(page.includes("name: 'keywords', content: metadataKeywords.value"))
+  assert.match(page, /canonicalPath: metadataCanonicalPath/)
+  assert.ok(page.includes('robots: computed(() => publicSeoRobots(catalogIndexable.value'))
+})
+
+test('category hero fallback matches PHP source for den-nlmt and respects a configured Admin hide toggle', () => {
+  assert.match(catalogApi, /\$heroConfigured = false;/)
+  assert.match(catalogApi, /\$heroConfigured = true;/)
+  assert.match(catalogApi, /'danh-muc-san-pham\/den-nlmt' => array\('catalog-lighting-overview-20261008\.png', 'Tổng quan giải pháp chiếu sáng năng lượng mặt trời'\)/)
+  assert.match(catalogApi, /!\$heroConfigured && isset\(\$heroFallbacks\[\$currentPath\]\)/)
 })
 
 const extended = {
@@ -62,6 +89,24 @@ const extended = {
 
 test('accepts the extended shape with real brand/price/subcategory filters and sort', () => {
   assert.equal(isPublicCatalogPayload(extended), true)
+})
+test('accepts the new allow-listed lighting need options while preserving the previous v1 shape', () => {
+  const withNeeds = {
+    ...extended,
+    filters: {
+      ...extended.filters,
+      needs: [
+        { key: 'du-an-cong-trinh', label: 'Dự án & công trình' },
+        { key: 'chieu-sang-gia-dinh', label: 'Chiếu sáng gia đình' },
+        { key: 'san-vuon-canh-quan', label: 'Sân vườn & cảnh quan' },
+      ],
+    },
+    selected: { ...extended.selected, needKeys: ['du-an-cong-trinh'] },
+  }
+  assert.equal(isPublicCatalogPayload(withNeeds), true)
+  assert.equal(isPublicCatalogPayload(extended), true)
+  assert.equal(isPublicCatalogPayload({ ...withNeeds, selected: { ...withNeeds.selected, needKeys: ['unverified'] } }), false)
+  assert.equal(isPublicCatalogPayload({ ...withNeeds, filters: { ...withNeeds.filters, needs: [{ key: 'unverified', label: 'Tự nghĩ ra' }] } }), false)
 })
 test('rejects a sort key or price key outside the real backend whitelist', () => {
   assert.equal(isPublicCatalogPayload({ ...extended, selected: { ...extended.selected, sort: 'relevance' } }), false)

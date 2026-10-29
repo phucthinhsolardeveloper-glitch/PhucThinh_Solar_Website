@@ -1,11 +1,14 @@
 <script setup lang="ts">
-import type { PublicProductContent, PublicProductDetail, PublicProductDocument } from '#shared/contracts/public-product-detail'
+import type { PublicProductApplications, PublicProductBuyingGuide, PublicProductContent, PublicProductDetail, PublicProductDocument } from '#shared/contracts/public-product-detail'
 import type { PublicCatalogPricing } from '#shared/contracts/public-catalog'
 import type { PublicProductExtrasPayload } from '#shared/contracts/public-product-extras'
 import ProductPreviewGallery from './ProductPreviewGallery.vue'
 import ProductPreviewSpecs from './ProductPreviewSpecs.vue'
 import ProductPreviewContent from './ProductPreviewContent.vue'
 import ProductPreviewDocuments from './ProductPreviewDocuments.vue'
+import ProductPreviewDecisionMetrics from './ProductPreviewDecisionMetrics.vue'
+import ProductPreviewApplications from './ProductPreviewApplications.vue'
+import ProductPreviewBuyingGuide from './ProductPreviewBuyingGuide.vue'
 import ProductPurchasePanel from './ProductPurchasePanel.vue'
 import ProductSupportExtras from './ProductSupportExtras.vue'
 import ProductReviews from './ProductReviews.vue'
@@ -16,6 +19,8 @@ const props = defineProps<{
   product: PublicProductDetail
   pricing: PublicCatalogPricing
   content: PublicProductContent
+  applications?: PublicProductApplications | null
+  buyingGuides?: PublicProductBuyingGuide[]
   documents: PublicProductDocument[]
   extras: PublicProductExtrasPayload | null
 }>()
@@ -32,6 +37,8 @@ const discountPercent = computed(() => {
 const navItems = computed(() => {
   const items: Array<{ id: string; label: string }> = []
   if (props.content.blocks.length || props.content.faqs.length) items.push({ id: 'tong-quan', label: 'Tổng quan' })
+  if (props.applications?.items.length) items.push({ id: 'ung-dung-san-pham', label: 'Ứng dụng' })
+  if (props.buyingGuides?.length) items.push({ id: 'huong-dan-lua-chon', label: 'Lựa chọn' })
   items.push({ id: 'thong-so-ky-thuat', label: 'Thông số' })
   if (props.documents.length) items.push({ id: 'tai-lieu-san-pham', label: 'Tài liệu' })
   if (props.extras?.videoEmbedUrl) items.push({ id: 'video-san-pham', label: 'Video' })
@@ -84,6 +91,11 @@ onBeforeUnmount(() => observer?.disconnect())
         <p v-if="product.code" class="leading-relaxed text-slate-500">Mã sản phẩm: {{ product.code }}</p>
         <p v-if="product.summary" class="leading-relaxed text-slate-500">{{ product.summary }}</p>
 
+        <ProductPreviewDecisionMetrics :metrics="product.decisionMetrics ?? []" />
+        <p v-if="product.packageContents" class="mt-4 text-sm leading-6 text-slate-600">
+          <strong class="text-navy-800">Bộ sản phẩm gồm:</strong> {{ product.packageContents }}
+        </p>
+
         <div class="mt-6 border-t border-gray-200 pt-5">
           <p class="mb-2 text-xs font-bold uppercase tracking-wide text-slate-400">Giá bán</p>
           <div v-if="pricing.mode === 'quote'">
@@ -103,7 +115,7 @@ onBeforeUnmount(() => observer?.disconnect())
           </div>
         </div>
 
-        <ProductPurchasePanel :product-id="product.id" :pricing="pricing" />
+        <ProductPurchasePanel :product-id="product.id" :pricing="pricing" :consultation-available="Boolean(extras)" />
 
         <div v-if="extras?.reviews.total" class="mt-5 flex items-center gap-3 text-sm">
           <span class="font-bold text-gold-700">★ {{ extras.reviews.average.toFixed(1) }}/5</span>
@@ -125,6 +137,8 @@ onBeforeUnmount(() => observer?.disconnect())
     </nav>
 
     <ProductPreviewContent :content="content" />
+    <ProductPreviewApplications v-if="applications?.items.length" :applications="applications" />
+    <ProductPreviewBuyingGuide v-if="buyingGuides?.length" :guides="buyingGuides" />
     <ProductPreviewSpecs :specifications="product.specifications" />
     <ProductPreviewDocuments :documents="documents" />
 

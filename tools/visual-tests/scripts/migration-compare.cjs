@@ -27,7 +27,9 @@ Options:
   --output <dir>          Artifact directory (default: frontend/.migration-artifacts/migration-comparison)
   --viewport <WxH>        Repeatable viewport, e.g. 390x844 or 1440x900
   --browser <name>        chromium (default), firefox, or webkit
+  --full-page             Capture the full page for section-by-section visual review
   --reduced-motion <x>    reduce (default) or no-preference
+  --public-routes         Treat same-origin canonical Nuxt routes as expected links
   --allow-remote          Explicitly allow non-loopback URLs (never use production by default)
   --help                  Show this help
 
@@ -47,6 +49,8 @@ function parseArgs(argv) {
     const value = argv[index]
     if (value === '--help' || value === '-h') return { help: true }
     if (value === '--allow-remote') { args.allowRemote = true; continue }
+    if (value === '--public-routes') { args.publicRoutes = true; continue }
+    if (value === '--full-page') { args.fullPage = true; continue }
     if (['--manifest', '--output', '--viewport', '--browser', '--reduced-motion'].includes(value)) {
       const next = argv[++index]
       if (!next) throw new Error(`${value} requires a value`)
@@ -133,9 +137,13 @@ async function capturePage(browser, url, viewport, settings, fileStem, output) {
     } catch {}
   })
   const consoleMessages = []
+  const consoleWarnings = []
   const pageErrors = []
   const failedRequests = []
-  page.on('console', message => { if (message.type() === 'error' || message.type() === 'warning') consoleMessages.push(`${message.type()}: ${message.text()}`.slice(0, 500)) })
+  page.on('console', message => {
+    if (message.type() === 'error') consoleMessages.push(message.text().slice(0, 500))
+    if (message.type() === 'warning') consoleWarnings.push(message.text().slice(0, 500))
+  })
   page.on('pageerror', error => pageErrors.push(String(error.message || error).slice(0, 500)))
   page.on('requestfailed', request => failedRequests.push(`${request.method()} ${request.url()} — ${request.failure()?.errorText || 'failed'}`.slice(0, 500)))
   const started = Date.now()
@@ -222,9 +230,21 @@ async function capturePage(browser, url, viewport, settings, fileStem, output) {
   const headerPath = path.join(output, `${fileStem}-header.png`)
   let screenshotBase64 = null
   let headerBase64 = null
+  let screenshotCaptured = false
   if (!navigationError) {
-    await page.screenshot({ path: screenshotPath, fullPage: false, animations: 'disabled', timeout: 20000 })
-    screenshotBase64 = (await fs.readFile(screenshotPath)).toString('base64')
+    if (settings.fullPage) {
+      await page.evaluate(() => {
+        for (const image of document.images) image.loading = 'eager'
+      })
+      await page.evaluate(async () => {
+        await Promise.all([...document.images].map(image => image.decode().catch(() => undefined)))
+      })
+    }
+    await page.screenshot({ path: screenshotPath, fullPage: Boolean(settings.fullPage), animations: 'disabled', timeout: 30000 })
+    screenshotCaptured = true
+    // Full-page captures are review artifacts. Avoid loading multi-megapixel
+    // images into the report and canvas diff; reviewers inspect the PNG files.
+    if (!settings.fullPage) screenshotBase64 = (await fs.readFile(screenshotPath)).toString('base64')
     const header = page.locator('header, [role="banner"]').first()
     if (await header.count() && await header.isVisible().catch(() => false)) {
       await header.screenshot({ path: headerPath, animations: 'disabled', timeout: 10000 }).catch(() => {})
@@ -233,8 +253,8 @@ async function capturePage(browser, url, viewport, settings, fileStem, output) {
   }
   const result = {
     url, status: response?.status() ?? null, ok: Boolean(response?.ok()), navigationError,
-    durationMs: Date.now() - started, ...metadata, consoleMessages, pageErrors, failedRequests,
-    screenshot: screenshotBase64 ? path.basename(screenshotPath) : null,
+    durationMs: Date.now() - started, ...metadata, consoleMessages, consoleWarnings, pageErrors, failedRequests,
+    screenshot: screenshotCaptured ? path.basename(screenshotPath) : null,
     headerScreenshot: headerBase64 ? path.basename(headerPath) : null,
     screenshotBase64, headerBase64,
   }
@@ -246,26 +266,27 @@ function previewLinkLeaks(preview, settings) {
   const previewOrigin = new URL(settings.previewUrl).origin
   const legacyOrigin = new URL(settings.legacyUrl).origin
   const allowedPreviewPath = pathname => /^\/(?:migration(?:-|\/)|_migration(?:\/|$)|_nuxt(?:\/|$)|assets(?:\/|$)|thumbs(?:\/|$)|upload(?:\/|$))/.test(pathname)
+  const previewOnlyPath = pathname => /^\/(?:migration(?:-|\/)|_migration(?:\/|$))/.test(pathname)
   return (preview.hrefs || []).filter((href) => {
     let target
     try { target = new URL(href) } catch { return false }
     if (!['http:', 'https:'].includes(target.protocol)) return false
     if (target.origin === legacyOrigin) return true
+    if (settings.publicRoutes && target.origin === previewOrigin) return previewOnlyPath(target.pathname)
     return target.origin === previewOrigin && !allowedPreviewPath(target.pathname)
   })
 }
 
 function viewportGate(legacy, preview, settings) {
-  const failedRequests = [...(legacy.failedRequests || []), ...(preview.failedRequests || [])]
-  const actionableRequests = failedRequests.filter(item => !/https?:\/\/(?:www\.)?google\.com\/maps\/embed/i.test(item))
+  const previewActionableRequests = (preview.failedRequests || []).filter(item => !/https?:\/\/(?:www\.)?google\.com\/maps\/embed/i.test(item))
+  const referenceActionableRequests = (legacy.failedRequests || []).filter(item => !/https?:\/\/(?:www\.)?google\.com\/maps\/embed/i.test(item))
   const previewNoindex = /(?:^|[\s,])noindex(?:$|[\s,])/i.test(preview.robots || '')
   const checks = {
-    legacyHttp: legacy.status !== null && legacy.status < 400 && !legacy.navigationError,
     previewHttp: preview.status !== null && preview.status < 400 && !preview.navigationError,
-    browserRuntime: !(legacy.pageErrors?.length || preview.pageErrors?.length || legacy.consoleMessages?.length || preview.consoleMessages?.length),
-    media: !(legacy.brokenMedia?.length || preview.brokenMedia?.length || actionableRequests.length),
-    horizontalOverflow: legacy.horizontalOverflow <= 1 && preview.horizontalOverflow <= 1,
-    responsiveStability: (legacy.cumulativeLayoutShift ?? 0) <= 0.1 && (preview.cumulativeLayoutShift ?? 0) <= 0.1,
+    browserRuntime: !(preview.pageErrors?.length || preview.consoleMessages?.length),
+    media: !(preview.brokenMedia?.length || previewActionableRequests.length),
+    horizontalOverflow: preview.horizontalOverflow <= 1,
+    responsiveStability: (preview.cumulativeLayoutShift ?? 0) <= 0.1,
     previewHeading: preview.h1?.length === 1,
     previewTitle: Boolean(preview.title),
     previewNoindex,
@@ -274,7 +295,17 @@ function viewportGate(legacy, preview, settings) {
   return {
     status: Object.values(checks).every(Boolean) ? 'PASS' : 'FAIL',
     checks,
-    actionableFailedRequests: actionableRequests,
+    actionableFailedRequests: previewActionableRequests,
+    referenceDiagnostics: {
+      runtimeErrors: (legacy.pageErrors?.length || 0) + (legacy.consoleMessages?.length || 0),
+      consoleWarnings: legacy.consoleWarnings?.length || 0,
+      status: legacy.status ?? null,
+      navigationError: legacy.navigationError || null,
+      brokenMedia: legacy.brokenMedia?.length || 0,
+      actionableFailedRequests: referenceActionableRequests.length,
+      horizontalOverflow: legacy.horizontalOverflow ?? null,
+      cumulativeLayoutShift: legacy.cumulativeLayoutShift ?? null,
+    },
     previewLinkLeaks: previewLinkLeaks(preview, settings),
   }
 }
@@ -308,12 +339,13 @@ async function auditPreviewShell(browser, route, viewport, settings) {
 }
 
 function classifyDifference(legacy, preview, diff) {
-  const failedRequests = [...(legacy.failedRequests || []), ...(preview.failedRequests || [])]
-  const externalEmbedOnly = failedRequests.length > 0 && failedRequests.every(item => /https?:\/\/(?:www\.)?google\.com\/maps\/embed/i.test(item))
-  const hardRuntimeGaps = [legacy.navigationError, preview.navigationError, legacy.status === null, preview.status === null, legacy.status >= 400, preview.status >= 400, legacy.pageErrors?.length > 0, preview.pageErrors?.length > 0, legacy.consoleMessages?.length > 0, preview.consoleMessages?.length > 0, legacy.horizontalOverflow > 1, preview.horizontalOverflow > 1].some(Boolean)
-  if (hardRuntimeGaps) return { kind: 'runtime-or-route-error', confidence: 'high', reason: 'HTTP, browser console/pageerror hoặc responsive gate không đạt' }
-  if (externalEmbedOnly) return { kind: 'external-resource-blocked', confidence: 'high', reason: 'Third-party Google Maps embed bị browser/network abort; không phải lỗi Nuxt UI' }
-  if (failedRequests.length > 0) return { kind: 'runtime-or-route-error', confidence: 'high', reason: 'Có request media/resource bị lỗi' }
+  const previewFailedRequests = preview.failedRequests || []
+  const previewActionableRequests = previewFailedRequests.filter(item => !/https?:\/\/(?:www\.)?google\.com\/maps\/embed/i.test(item))
+  const previewExternalEmbedOnly = previewFailedRequests.length > 0 && previewActionableRequests.length === 0
+  const hardPreviewGaps = [preview.navigationError, preview.status === null, preview.status >= 400, preview.pageErrors?.length > 0, preview.consoleMessages?.length > 0, preview.brokenMedia?.length > 0, preview.horizontalOverflow > 1, (preview.cumulativeLayoutShift ?? 0) > 0.1].some(Boolean)
+  if (hardPreviewGaps) return { kind: 'runtime-or-route-error', confidence: 'high', reason: 'Nuxt HTTP, browser runtime, media hoặc responsive gate không đạt' }
+  if (previewExternalEmbedOnly) return { kind: 'external-resource-blocked', confidence: 'high', reason: 'Third-party Google Maps embed bị browser/network abort; không phải lỗi Nuxt UI' }
+  if (previewActionableRequests.length > 0) return { kind: 'runtime-or-route-error', confidence: 'high', reason: 'Nuxt có request media/resource bị lỗi' }
   if (diff.status !== 'compared') return { kind: 'unknown', confidence: 'low', reason: diff.reason || 'Không đủ ảnh để phân loại' }
   const dataSignals = []
   if (legacy.fingerprints?.text !== preview.fingerprints?.text) dataSignals.push('text/content')
@@ -388,10 +420,50 @@ function stripBuffers(value) {
 }
 
 function renderMarkdown(report) {
-  const lines = ['# Migration visual comparison', '', `- Generated: ${report.generatedAt}`, `- Legacy: \`${report.legacyUrl}\``, `- Preview: \`${report.previewUrl}\``, `- Browser: ${report.browser}; reduced motion: ${report.reducedMotion}`, `- Viewports: ${report.viewports.map(item => `${item.width}x${item.height}`).join(', ')}`, '', 'This is read-only evidence, not an approved baseline and not a pixel-perfect gate.', 'Classification is heuristic: `dynamic-data-difference` means the DOM geometry matched while content/media/links changed; it is not an approval.', '', '## Route results', '', '| Route | Viewport | Gate | Preview HTTP | Classification | Changed pixels | Gaps |', '| --- | --- | ---: | ---: | --- | ---: | --- |']
+  const lines = [
+    '# Migration visual comparison', '',
+    `- Generated: ${report.generatedAt}`,
+    `- Legacy: \`${report.legacyUrl}\``,
+    `- Preview: \`${report.previewUrl}\``,
+    `- Browser: ${report.browser}; reduced motion: ${report.reducedMotion}`,
+    `- Viewports: ${report.viewports.map(item => `${item.width}x${item.height}`).join(', ')}`,
+    '',
+    'This is read-only evidence, not an approved baseline and not a pixel-perfect gate. Preview health gates evaluate the Nuxt page; PHP reference issues are reported separately so pre-existing failures do not mark a healthy preview as failed.',
+    'Classification is heuristic: `dynamic-data-difference` means the DOM geometry matched while content/media/links changed; it is not an approval.',
+    '', '## Route results', '',
+    '| Route | Viewport | Gate | Preview HTTP | Classification | Changed pixels | Nuxt gaps | PHP reference issues |',
+    '| --- | --- | ---: | ---: | --- | ---: | --- | --- |',
+  ]
   for (const route of report.routes) for (const viewport of route.viewports) {
-    const gap = [viewport.legacy.navigationError && 'legacy navigation error', viewport.preview.navigationError && 'preview navigation error', viewport.legacy.status >= 400 && `legacy HTTP ${viewport.legacy.status}`, viewport.preview.status >= 400 && `preview HTTP ${viewport.preview.status}`, viewport.preview.status === null && 'preview route unavailable', viewport.legacy.pageErrors?.length > 0 && 'legacy pageerror', viewport.preview.pageErrors?.length > 0 && 'preview pageerror', viewport.legacy.consoleMessages?.length > 0 && 'legacy console', viewport.preview.consoleMessages?.length > 0 && 'preview console', viewport.gate?.actionableFailedRequests?.length > 0 && 'failed request', viewport.legacy.brokenMedia?.length > 0 && 'legacy broken media', viewport.preview.brokenMedia?.length > 0 && 'preview broken media', viewport.legacy.horizontalOverflow > 1 && 'legacy overflow', viewport.preview.horizontalOverflow > 1 && 'preview overflow', viewport.gate?.previewLinkLeaks?.length > 0 && 'preview link leakage'].filter(Boolean).join('; ') || '—'
-    lines.push(`| ${route.id} | ${viewport.width}x${viewport.height} | ${viewport.gate?.status || 'FAIL'} | ${viewport.preview.status ?? 'ERR'} | ${viewport.classification?.kind || 'unknown'} | ${viewport.diff.changedRatio === undefined ? '—' : `${(viewport.diff.changedRatio * 100).toFixed(2)}%`} | ${gap} |`)
+    const gap = [
+      viewport.preview.navigationError && 'preview navigation error',
+      viewport.preview.status === null && 'preview route unavailable',
+      viewport.preview.status >= 400 && `preview HTTP ${viewport.preview.status}`,
+      viewport.preview.pageErrors?.length > 0 && 'preview pageerror',
+      viewport.preview.consoleMessages?.length > 0 && 'preview console',
+      viewport.gate?.actionableFailedRequests?.length > 0 && 'preview failed request',
+      viewport.preview.brokenMedia?.length > 0 && `preview broken media (${viewport.preview.brokenMedia.length})`,
+      viewport.preview.horizontalOverflow > 1 && 'preview overflow',
+      (viewport.preview.cumulativeLayoutShift ?? 0) > 0.1 && `preview CLS ${viewport.preview.cumulativeLayoutShift.toFixed(3)}`,
+      viewport.gate?.previewLinkLeaks?.length > 0 && 'preview link leakage',
+    ].filter(Boolean).join('; ') || '—'
+    const referenceRuntimeErrors = viewport.gate?.referenceDiagnostics?.runtimeErrors ?? ((viewport.legacy.pageErrors?.length || 0) + (viewport.legacy.consoleMessages?.length || 0))
+    const referenceBrokenMedia = viewport.gate?.referenceDiagnostics?.brokenMedia ?? viewport.legacy.brokenMedia?.length ?? 0
+    const referenceFailedRequests = viewport.gate?.referenceDiagnostics?.actionableFailedRequests ?? viewport.legacy.failedRequests?.length ?? 0
+    const referenceOverflow = viewport.gate?.referenceDiagnostics?.horizontalOverflow ?? viewport.legacy.horizontalOverflow
+    const referenceCls = viewport.gate?.referenceDiagnostics?.cumulativeLayoutShift ?? viewport.legacy.cumulativeLayoutShift ?? 0
+    const reference = [
+      viewport.legacy.navigationError && 'navigation error',
+      viewport.legacy.status === null && 'route unavailable',
+      viewport.legacy.status >= 400 && `HTTP ${viewport.legacy.status}`,
+      referenceRuntimeErrors > 0 && `runtime errors ${referenceRuntimeErrors}`,
+      (viewport.gate?.referenceDiagnostics?.consoleWarnings ?? viewport.legacy.consoleWarnings?.length ?? 0) > 0 && `console warnings ${viewport.gate?.referenceDiagnostics?.consoleWarnings ?? viewport.legacy.consoleWarnings.length}`,
+      referenceFailedRequests > 0 && `failed requests ${referenceFailedRequests}`,
+      referenceBrokenMedia > 0 && `broken media ${referenceBrokenMedia}`,
+      referenceOverflow > 1 && `overflow ${referenceOverflow}px`,
+      referenceCls > 0.1 && `CLS ${referenceCls.toFixed(3)}`,
+    ].filter(Boolean).join('; ') || '—'
+    lines.push(`| ${route.id} | ${viewport.width}x${viewport.height} | ${viewport.gate?.status || 'FAIL'} | ${viewport.preview.status ?? 'ERR'} | ${viewport.classification?.kind || 'unknown'} | ${viewport.diff.changedRatio === undefined ? '—' : `${(viewport.diff.changedRatio * 100).toFixed(2)}%`} | ${gap} | ${reference} |`)
   }
   lines.push('', '## Shell keyboard evidence', '', '| Route | Viewport | Status |', '| --- | --- | --- |')
   for (const item of report.shellAudits || []) lines.push(`| ${item.route} | ${item.viewport.width}x${item.viewport.height} | ${item.status} |`)
@@ -416,8 +488,12 @@ async function run(args) {
         const prefix = `${safeFilePart(route.id)}-${viewport.width}x${viewport.height}`
         const legacy = await capturePage(browser, joinUrl(args.legacyUrl, route.legacyPath, args.allowRemote), viewport, args, `${prefix}-legacy`, args.output)
         const preview = await capturePage(browser, joinUrl(args.previewUrl, route.previewPath, args.allowRemote), viewport, args, `${prefix}-preview`, args.output)
-        const diff = await compareScreenshots(browser, legacy.screenshotBase64, preview.screenshotBase64, path.join(args.output, `${prefix}-diff.png`))
-        const classification = classifyDifference(legacy, preview, diff)
+        const diff = args.fullPage
+          ? { status: 'not-compared', reason: 'full-page-captured-for-manual-section-review' }
+          : await compareScreenshots(browser, legacy.screenshotBase64, preview.screenshotBase64, path.join(args.output, `${prefix}-diff.png`))
+        const classification = args.fullPage
+          ? { kind: 'manual-review-capture', confidence: 'none', reason: 'Full-page PNGs require section-by-section visual review; no pixel classification was run.' }
+          : classifyDifference(legacy, preview, diff)
         const gate = viewportGate(legacy, preview, args)
         routeReport.viewports.push({ ...viewport, legacy, preview, diff, classification, gate })
         console.log(`${route.id} ${viewport.width}x${viewport.height}: legacy=${legacy.status ?? 'ERR'} preview=${preview.status ?? 'ERR'} diff=${diff.status} class=${classification.kind}`)

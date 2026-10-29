@@ -1,17 +1,28 @@
 <script setup lang="ts">
 import { isPublicVideoPayload, type PublicVideoItem, type PublicVideoPayload } from '#shared/contracts/public-video'
+import { VIDEO_PUBLIC_PATH } from '#shared/public-route-gate'
+import { editorialPublicHubResponseStatus, editorialPublicRouteRobots } from '#shared/editorial-public-route'
 
 const { site } = await usePublicSite()
 const route = useRoute()
+const config = useRuntimeConfig()
+const isPublicRoute = computed(() => route.path === VIDEO_PUBLIC_PATH)
 const page = computed(() => typeof route.query.p === 'string' && /^[1-9][0-9]*$/.test(route.query.p) ? Number(route.query.p) : 1)
 const query = computed(() => page.value > 1 ? { p: String(page.value) } : {})
 const { data, error, pending } = await useFetch<unknown>('/_migration/video', { query })
 const payload = computed<PublicVideoPayload | null>(() => isPublicVideoPayload(data.value) ? data.value : null)
 const selected = ref<PublicVideoItem | null>(null)
 const totalPages = computed(() => payload.value ? Math.max(1, Math.ceil(payload.value.pagination.total / payload.value.pagination.perPage)) : 1)
+const errorStatus = (error.value as { statusCode?: unknown } | null)?.statusCode
+const responseStatus = editorialPublicHubResponseStatus(
+  isPublicRoute.value && config.public.videoPublicRouteEnabled,
+  errorStatus,
+  payload.value === null,
+)
+if (import.meta.server && responseStatus) setResponseStatus(responseStatus, responseStatus === 404 ? 'Not Found' : 'Bad Gateway')
 
 function pageTo(value: number) {
-  return { path: '/migration-video-preview', query: value > 1 ? { p: String(value) } : {} }
+  return { path: isPublicRoute.value ? VIDEO_PUBLIC_PATH : '/migration-video-preview', query: value > 1 ? { p: String(value) } : {} }
 }
 const lightboxPanel = ref<HTMLElement | null>(null)
 const lastTrigger = ref<HTMLElement | null>(null)
@@ -60,9 +71,16 @@ onBeforeUnmount(() => {
 })
 
 useSeoMeta({
-  title: computed(() => payload.value?.seo.title || 'Video — Nuxt preview'),
+  title: computed(() => payload.value?.seo.title || (isPublicRoute.value ? 'Video' : 'Video — Nuxt preview')),
   description: computed(() => payload.value?.seo.description || ''),
-  robots: 'noindex, nofollow, noarchive',
+  robots: computed(() => editorialPublicRouteRobots(isPublicRoute.value && config.public.videoPublicRouteEnabled, config.public.videoPublicRouteIndexable, !!payload.value && !error.value, 'p' in route.query)),
+})
+usePublicSocialMeta({
+  enabled: computed(() => isPublicRoute.value && config.public.videoPublicRouteEnabled && !!payload.value && !error.value),
+  title: computed(() => payload.value?.seo.title || 'Video'),
+  description: computed(() => payload.value?.seo.description || ''),
+  canonicalPath: VIDEO_PUBLIC_PATH,
+  image: computed(() => payload.value?.videos[0]?.thumbnail),
 })
 </script>
 
@@ -71,10 +89,8 @@ useSeoMeta({
     <SiteHeader :site="site" />
     <main class="mx-auto w-full max-w-[1320px] px-4 py-10 nav:py-14">
       <SiteBreadcrumb :items="[{ label: 'Video' }]" />
-      <header class="mb-8 max-w-[820px]">
-        <p class="mb-2 text-xs font-extrabold uppercase tracking-[.14em] text-gold-700">Video thực tế</p>
-        <h1 class="mb-3 text-[clamp(32px,5vw,52px)] font-black tracking-tight">{{ payload?.title || 'Video' }}</h1>
-        <p class="mb-0 text-lg leading-relaxed text-slate-500">Video sản phẩm, công trình và hoạt động được xuất từ nguồn CMS đã xác thực YouTube.</p>
+      <header class="mb-8">
+        <h1 class="text-[clamp(32px,5vw,52px)] font-black tracking-tight">{{ payload?.title || 'Video' }}</h1>
       </header>
 
       <div v-if="pending" class="py-16 text-slate-500" role="status">Đang tải video…</div>
@@ -87,7 +103,7 @@ useSeoMeta({
             v-for="item in payload.videos"
             :key="item.id"
             type="button"
-            class="group overflow-hidden rounded-chip border border-gray-200 bg-white text-left"
+            class="group block min-w-0 border-0 bg-transparent p-0 text-left"
             :aria-label="'Phát video ' + item.title"
             @click="open(item, $event.currentTarget as HTMLElement)"
           >
@@ -95,7 +111,7 @@ useSeoMeta({
               <img :src="item.thumbnail" :alt="item.title" class="h-full w-full object-cover transition duration-300 group-hover:scale-[1.025]" loading="lazy">
               <span class="absolute left-1/2 top-1/2 grid h-14 w-14 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-navy-950/85 text-2xl text-white shadow-lg" aria-hidden="true">▶</span>
             </div>
-            <h2 class="m-0 p-4 text-lg font-black leading-snug text-navy-800">{{ item.title }}</h2>
+            <h2 class="m-0 pt-3 text-lg font-black leading-snug text-navy-800 group-hover:text-gold-700">{{ item.title }}</h2>
           </button>
         </div>
         <div v-else class="rounded-btn border border-amber-300 bg-amber-50 px-4 py-3 text-amber-900" role="status">
@@ -103,9 +119,9 @@ useSeoMeta({
         </div>
 
         <nav v-if="totalPages > 1" class="mt-10 flex items-center justify-center gap-3" aria-label="Phân trang video">
-          <NuxtLink v-if="page > 1" :to="pageTo(page - 1)" class="rounded-chip border border-gray-200 px-4 py-2 font-bold no-underline">Trước</NuxtLink>
+          <NuxtLink v-if="page > 1" :to="pageTo(page - 1)" class="inline-flex min-h-11 items-center rounded-chip border border-gray-200 px-4 font-bold no-underline">Trước</NuxtLink>
           <span class="text-sm text-slate-500">Trang {{ page }} / {{ totalPages }}</span>
-          <NuxtLink v-if="page < totalPages" :to="pageTo(page + 1)" class="rounded-chip border border-gray-200 px-4 py-2 font-bold no-underline">Sau</NuxtLink>
+          <NuxtLink v-if="page < totalPages" :to="pageTo(page + 1)" class="inline-flex min-h-11 items-center rounded-chip border border-gray-200 px-4 font-bold no-underline">Sau</NuxtLink>
         </nav>
       </template>
     </main>

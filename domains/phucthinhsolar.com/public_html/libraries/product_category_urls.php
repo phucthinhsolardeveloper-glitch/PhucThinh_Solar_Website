@@ -39,6 +39,10 @@ function publicProductEntityPath($d, $table, $id, $lang = 'vi')
         $row = $d->rawQueryOne("select $slug from #_product where id = ? and type = ? limit 1", array((int)$id,'san-pham'));
         return !empty($row[$slug]) ? 'san-pham/'.$row[$slug] : '';
     }
+    if($table === 'product_brand') {
+        $row = $d->rawQueryOne("select $slug from #_product_brand where id = ? and type = ? limit 1", array((int)$id,'san-pham'));
+        return !empty($row[$slug]) ? 'thuong-hieu/'.$row[$slug].'/' : '';
+    }
     if($table === 'product_list') {
         $row = $d->rawQueryOne("select $slug from #_product_list where id = ? and type = ? limit 1", array((int)$id,'san-pham'));
         return !empty($row) ? publicProductCategoryPath($row,'list',$lang) : '';
@@ -79,7 +83,7 @@ function publicCanonicalEntityPath($d, $com, array $params, $lang = 'vi')
 {
     $slug = 'slug'.($lang === 'en' ? 'en' : 'vi');
 
-    $productRoutes = array('id' => 'product', 'ids' => 'product_sub', 'idi' => 'product_item', 'idc' => 'product_cat', 'idl' => 'product_list');
+    $productRoutes = array('id' => 'product', 'ids' => 'product_sub', 'idi' => 'product_item', 'idc' => 'product_cat', 'idl' => 'product_list', 'idb' => 'product_brand');
     if($com === 'san-pham')
     {
         foreach($productRoutes as $key => $table)
@@ -97,6 +101,10 @@ function publicCanonicalEntityPath($d, $com, array $params, $lang = 'vi')
     $newsComs = array('tin-tuc', 'giai-phap', 'du-an', 'du-an-da-thuc-hien', 'chinh-sach');
     if(in_array($com, $newsComs, true))
     {
+        if($com === 'chinh-sach' && !empty($params['id']))
+        {
+            return publicProductEntityPath($d, 'news_chinh_sach', $params['id'], $lang);
+        }
         $newsRoutes = array('id' => 'news', 'ids' => 'news_sub', 'idi' => 'news_item', 'idc' => 'news_cat', 'idl' => 'news_list');
         foreach($newsRoutes as $key => $table)
         {
