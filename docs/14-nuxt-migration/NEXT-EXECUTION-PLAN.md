@@ -11,6 +11,9 @@
 - Container smoke các route public trả 200 hoặc fallback redirect hợp lệ; log 2 phút
   gần nhất không có `error`, `fatal` hay `unhandled`. `npm test` **364/364 PASS** và
   `npm run typecheck` **PASS** trên đúng HEAD master.
+- Negative GET smoke trên container xác nhận PDP hidden fixture và các slug không tồn
+  tại cho catalog/news/solution/project đều trả **404, không canonical**; bốn hidden
+  fixture theo DB vẫn giữ `NEEDS VERIFICATION` vì local DB không có bản ghi ẩn tương ứng.
 - File `.env` local hiện bật một nhóm route preview để xem trực tiếp (About,
   Solutions, Catalog, PDP, Brand, Search, Cart, Order Success); các route còn lại
   vẫn fallback PHP. Đây là override local, không phải cấu hình production.
