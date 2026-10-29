@@ -1,5 +1,20 @@
 # PTS Nuxt migration — next execution plan
 
+## Verification checkpoint — local container rebuild — 2026-10-29 21:27 +07:00
+
+- `master` đã fast-forward từ `e7c68e4` lên `eb2732d`; WIP trước đó được giữ nguyên
+  trong `stash@{0}` (`checkpoint master WIP before Nuxt integration eb2732d`), không
+  xóa dữ liệu hay stage lại ngoài ý muốn.
+- Rebuild local-only `docker-compose.nuxt-service.yml` hoàn tất từ HEAD mới; container
+  `pts-nuxt-service-rehearsal` chạy healthy tại `127.0.0.1:3101`. Không đổi Caddy,
+  DNS, production container, DB volume hoặc public flag mặc định.
+- Container smoke các route public trả 200 hoặc fallback redirect hợp lệ; log 2 phút
+  gần nhất không có `error`, `fatal` hay `unhandled`. `npm test` **364/364 PASS** và
+  `npm run typecheck` **PASS** trên đúng HEAD master.
+- File `.env` local hiện bật một nhóm route preview để xem trực tiếp (About,
+  Solutions, Catalog, PDP, Brand, Search, Cart, Order Success); các route còn lại
+  vẫn fallback PHP. Đây là override local, không phải cấu hình production.
+
 ## Verification checkpoint — 2026-10-29 21:17 +07:00
 
 - Worktree `feature/ui-layout-upgrade-20261029` đã build từ source hiện tại; chưa
