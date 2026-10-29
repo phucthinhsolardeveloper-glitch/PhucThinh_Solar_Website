@@ -5,5 +5,6 @@ Final QA quality checkpoint after commits 5ccc73d, 6ad9ad5, b59bb35, 10f3ee3, 8f
 - `npm run build`: PASS, Nuxt 4.6.2/Nitro node-server, 7.45 MB total / 1.93 MB gzip.
 - Build warnings: two ineffective dynamic-import notices for product/brand middleware and plugin timing; no build failure.
 - `git diff --check`: PASS.
+- `node scripts/smoke-preview.mjs`: PASS (4 preview/media routes 200/noindex, unknown route 404) with QA defaults `NITRO_PHP_ORIGIN=127.0.0.1:8088` and `NITRO_PREVIEW_MEDIA_PROXY=1`.
 
 Production was not deployed. Existing dirty files outside the remediation commits belong to prior migration WIP and were not reset or staged.
