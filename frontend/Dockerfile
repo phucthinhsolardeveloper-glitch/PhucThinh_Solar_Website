@@ -17,6 +17,14 @@ RUN addgroup -S nuxt && adduser -S nuxt -G nuxt
 COPY --from=build --chown=nuxt:nuxt /app/.output ./.output
 USER nuxt
 EXPOSE 3000
-HEALTHCHECK --interval=10s --timeout=3s --start-period=10s --retries=3 \
-  CMD node -e "fetch('http://127.0.0.1:3000/').then(r=>{if(r.status!==200)throw new Error(r.status)}).catch(()=>process.exit(1))"
+#
+# Probes /_migration/site, not /: the public "/" route 307-redirects to PHP
+# whenever homePublicRouteEnabled is false (the safe default), which would
+# make the container always report unhealthy before any route is cut over.
+# /_migration/site is the internal data bridge - it is never flag-gated and
+# still exercises real PHP connectivity. Uses wget (already in node:alpine)
+# instead of spawning a fresh `node` process per probe: that cold start alone
+# took >3s in testing and caused spurious unhealthy flaps under load.
+HEALTHCHECK --interval=10s --timeout=5s --start-period=10s --retries=3 \
+  CMD wget -q -O /dev/null http://127.0.0.1:3000/_migration/site || exit 1
 CMD ["node", ".output/server/index.mjs"]
