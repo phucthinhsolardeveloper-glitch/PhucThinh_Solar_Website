@@ -28,7 +28,7 @@ Media/SEO/Caddy QA ── integration smoke ────────────
 |---|---|---|---|---|---|
 | REM-P1-001 | P1 | A | PHP QA worktree | DONE-QA | Commit `50c1183`; PHP 8.1 lint/helper + live QA resolver news/project/not-found/invalid slug PASS. Nested category/product/news/project/solution/policy/gallery validation: **8/8 DTO PASS**. Production master unchanged. |
 | REM-P1-002 | P1 | B | REM-P1-001 contract definition | DONE-QA | Commit `5ccc73d`; legacy DTO normalization, resolver status handling, product 400/404 pass-through; final suite 140/140 and typecheck PASS. |
-| REM-P1-003 | P1 | F/G | REM-P1-001 + 002 | DONE-QA | Rebuilt Nitro + Caddy 8099: public/dynamic routes 200, aliases 301, no PHP HTML fallback observed. Production edge still unverified. |
+| REM-P1-003 | P1 | F/G | REM-P1-001 + 002 | DONE-QA / EDGE-PARTIAL | Rebuilt Nitro + valid local Caddy 8099 smoke: public/dynamic routes 200, aliases 301, no PHP HTML fallback observed. A later host-network Caddy attempt was blocked by Docker isolation (not treated as a product 502); production edge still unverified. |
 | REM-P2-001 | P2 | B | none | DONE-QA | Product unknown slug returns 404 in rebuilt Nitro; negative test included. |
 | REM-P2-002 | P2 | D | none | DONE-QA | Commit `b59bb35`; Home container/H1, mobile controls 44px, Lucide benefit icons; typecheck and Caddy smoke PASS. |
 | REM-P2-003 | P2 | E | none | DONE-QA | Commit `6ad9ad5`; 27 preview route rules plus inventory test; targeted tests PASS and Caddy headers verified. |
