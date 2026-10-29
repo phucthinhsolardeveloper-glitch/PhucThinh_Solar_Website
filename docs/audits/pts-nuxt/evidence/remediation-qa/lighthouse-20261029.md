@@ -20,6 +20,10 @@ npx --yes lighthouse <url> --chrome-flags="--headless=new --no-sandbox --disable
 
 The home rerun after the SEO fix reports `meta-description: 1`, accessibility `0.97`, SEO `1.00`; the catalog rerun reports `meta-description: 1`, canonical `1`, accessibility `1.00`, SEO `1.00`. Catalog image dimensions and news-card thumbnails were tightened in commits `20d41f4` and `74ed17f`; catalog performance improved to `0.92`. News performance remains variable because the audit still downloads large logo/media payloads and the local PHP proxy differs from production edge.
 
+## Logo layout follow-up
+
+Commit `9650ee3` declares intrinsic dimensions for the CMS header wordmark, footer emblem and trust badge. Fresh Lighthouse runs on home/news now report `unsized-images: 1.00` and SEO `1.00`. Remaining performance loss is image delivery/payload size and variable local LCP, not layout reservation.
+
 ## Remaining performance work
 
 - Add responsive image variants/`srcset` or edge resizing for large editorial images; Lighthouse identified multi-megabyte PNG/JPEG payloads.
