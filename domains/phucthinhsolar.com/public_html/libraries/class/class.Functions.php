@@ -1272,40 +1272,12 @@
 			{
 				$flash->set('toast', json_encode(array('status' => $numb ? 'success' : 'error', 'text' => (string)$msg), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
 			}
-			if($this->isAccountJsonPost())
-			{
-				$this->sendAccountJson(array('ok'=>(bool)$numb, 'redirect'=>(string)$page), $numb ? 200 : 422);
-			}
 			$this->redirect($page);
-		}
-
-		private function isAccountJsonPost()
-		{
-			$path = parse_url(isset($_SERVER['REQUEST_URI']) ? (string)$_SERVER['REQUEST_URI'] : '', PHP_URL_PATH);
-			$accept = isset($_SERVER['HTTP_ACCEPT']) ? (string)$_SERVER['HTTP_ACCEPT'] : '';
-			return strtoupper(isset($_SERVER['REQUEST_METHOD']) ? (string)$_SERVER['REQUEST_METHOD'] : '') === 'POST'
-				&& is_string($path) && preg_match('#^/account(?:/|$)#', $path)
-				&& stripos($accept, 'application/json') !== false;
-		}
-
-		private function sendAccountJson($payload, $status=200)
-		{
-			http_response_code((int)$status);
-			header('Content-Type: application/json; charset=UTF-8');
-			header('Cache-Control: private, no-store');
-			header('X-Content-Type-Options: nosniff');
-			echo json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-			exit();
 		}
 
 		/* Redirect */
 		public function redirect($url='', $response=null)
 		{
-			if($this->isAccountJsonPost())
-			{
-				$hasValidationErrors = isset($_SESSION['flash']['message']) && is_string($_SESSION['flash']['message']) && $_SESSION['flash']['message'] !== '';
-				$this->sendAccountJson(array('ok'=>!$hasValidationErrors, 'redirect'=>(string)$url), $hasValidationErrors ? 422 : 200);
-			}
 			/* PHP 8.1 deprecate truyền null cho tham số $response_code (int) của
 			   header() dù đó là giá trị mặc định cũ - gọi thiếu/đủ tham số tùy
 			   theo có mã response hay không thay vì truyền null trực tiếp. */

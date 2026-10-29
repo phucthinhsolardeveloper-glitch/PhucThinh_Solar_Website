@@ -11,7 +11,10 @@ const technicalHotline = computed(() => props.site.brand.technicalHotline?.trim(
 const footerLogo = computed(() => props.site.brand.logoFooter || props.site.brand.logo || '')
 const CMS_UPLOAD_PHOTO = /^\/upload\/photo\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|gif|webp|avif)$/i
 // Chỉ resize ảnh CMS thật (/upload/photo/...); path khác (ví dụ static asset) giữ nguyên.
-const footerLogoSrc = computed(() => CMS_UPLOAD_PHOTO.test(footerLogo.value) ? `/thumbs/280x229x1${footerLogo.value}` : footerLogo.value)
+const footerLogoSrc = computed(() => {
+  const src = footerLogo.value
+  return CMS_UPLOAD_PHOTO.test(src) ? `/thumbs/280x229x1${src}` : src
+})
 function trustBadgeSrc(src: string): string {
   return CMS_UPLOAD_PHOTO.test(src) ? `/thumbs/200x76x1${src}` : src
 }

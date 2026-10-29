@@ -226,7 +226,7 @@ function pageLink(nextPage: number) {
     >
       <section class="col-span-full overflow-hidden bg-navy-950 text-white" aria-labelledby="catalog-heading">
         <div class="relative isolate flex min-h-[clamp(260px,24vw,410px)] items-end overflow-hidden px-6 py-8 nav:px-10 nav:py-10">
-          <img v-if="catalogData?.categoryHero?.image" :src="catalogData.categoryHero.image" :alt="catalogData.categoryHero.alt" width="1600" height="500" class="absolute inset-0 -z-20 h-full w-full object-cover" fetchpriority="high">
+          <img v-if="catalogData?.categoryHero?.image" :src="catalogData.categoryHero.image" :alt="catalogData.categoryHero.alt" width="1600" height="500" sizes="100vw" class="absolute inset-0 -z-20 h-full w-full object-cover" fetchpriority="high">
           <span class="absolute inset-0 -z-10 bg-gradient-to-r from-navy-950/90 via-navy-950/65 to-navy-950/15" aria-hidden="true" />
           <div class="max-w-[760px]">
             <h1 id="catalog-heading" class="mb-3 text-[clamp(30px,4.2vw,52px)] font-black leading-[1.12] tracking-tight text-white">{{ heading }}</h1>
@@ -373,7 +373,7 @@ function pageLink(nextPage: number) {
         <h2 id="catalog-applications-title" class="mb-7 text-2xl font-black text-navy-950">{{ catalogData.categoryContent.title || 'Ứng dụng phù hợp' }}</h2>
         <div class="grid grid-cols-1 gap-7 tb:grid-cols-2 nav:grid-cols-3">
           <a v-for="item in catalogData.categoryContent.applications" :key="item.title" :href="item.href ? links.generic(item.href) : undefined" class="min-w-0 text-navy-800 no-underline">
-            <img v-if="item.image" :src="item.image" :alt="item.title" class="aspect-[8/5] w-full object-cover" loading="lazy" decoding="async">
+            <img v-if="item.image" :src="item.image" :alt="item.title" width="760" height="475" sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw" class="aspect-[8/5] w-full object-cover" loading="lazy" decoding="async">
             <h3 class="mb-2 mt-4 text-lg font-extrabold text-navy-950">{{ item.title }}</h3>
             <p v-if="item.description" class="m-0 leading-relaxed text-slate-600">{{ item.description }}</p>
           </a>
@@ -389,7 +389,7 @@ function pageLink(nextPage: number) {
       </section>
 
       <section v-if="catalogData?.support" class="relative isolate col-span-full mt-5 grid grid-cols-1 items-center gap-6 overflow-hidden bg-navy-950 px-6 py-8 text-white tb:grid-cols-[minmax(0,1fr)_auto] nav:px-10 nav:py-9" aria-labelledby="catalog-support-title">
-        <img v-if="catalogData.support.image" :src="catalogData.support.image" alt="" class="absolute inset-0 -z-10 h-full w-full object-cover opacity-20" loading="lazy" decoding="async">
+        <img v-if="catalogData.support.image" :src="catalogData.support.image" alt="" width="1600" height="500" sizes="100vw" class="absolute inset-0 -z-10 h-full w-full object-cover opacity-20" loading="lazy" decoding="async">
         <div>
           <h2 id="catalog-support-title" class="mb-2 text-2xl font-black">{{ catalogData.support.title }}</h2>
           <p class="mb-0 max-w-[720px] leading-relaxed text-blue-100">{{ catalogData.support.description }}</p>

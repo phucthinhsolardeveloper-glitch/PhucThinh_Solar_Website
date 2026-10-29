@@ -23,6 +23,10 @@ const cartCountAvailable = computed(() => isMigrationPreview.value || [
 const brandName = computed(() => props.site.brand.name.trim() || 'Phúc Thịnh Solar')
 const hotline = computed(() => props.site.brand.hotline.trim())
 const brandLogo = computed(() => props.site.brand.logo || '')
+const brandLogoSrc = computed(() => {
+  const src = brandLogo.value
+  return /^\/upload\/photo\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|gif|webp|avif)$/i.test(src) ? `/thumbs/248x35x1${src}` : src
+})
 const searchOpen = ref(false)
 const searchKeyword = ref('')
 const catalogOpen = ref(false)
@@ -315,7 +319,7 @@ onBeforeUnmount(() => {
           -->
           <img
             v-if="brandLogo"
-            :src="brandLogo"
+            :src="brandLogoSrc"
             :alt="brandName"
             width="248"
             height="35"
