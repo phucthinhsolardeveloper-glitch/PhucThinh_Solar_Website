@@ -16,7 +16,7 @@ withDefaults(defineProps<{
 const links = useMigrationLinks()
 function cardImage(src: string): string {
   return /^\/upload\/news\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|gif|webp|avif)$/i.test(src)
-    ? `/thumbs/760x428x1${src}`
+    ? `/thumbs/640x360x1${src}`
     : src
 }
 </script>
@@ -46,8 +46,8 @@ function cardImage(src: string): string {
           class="block h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
           loading="lazy"
           decoding="async"
-          width="760"
-          height="428"
+          width="640"
+          height="360"
           sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
         >
         <span v-else class="grid h-full place-items-center text-[42px] text-gold-700" aria-hidden="true">✦</span>
