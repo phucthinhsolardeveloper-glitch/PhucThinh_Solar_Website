@@ -10,11 +10,13 @@ definePageMeta({
 
 const config = useRuntimeConfig()
 const indexable = computed(() => isRuntimeFlagEnabled(config.public.catalogPublicRouteIndexable))
+const requestUrl = useRequestURL()
 
 useSeoMeta({
   title: 'Sản phẩm — Phúc Thịnh Solar',
   robots: computed(() => indexable.value ? 'index, follow' : 'noindex, nofollow, noarchive'),
 })
+useHead(() => ({ link: [{ rel: 'canonical', href: new URL('/san-pham/', requestUrl.origin).toString() }] }))
 </script>
 
 <template>

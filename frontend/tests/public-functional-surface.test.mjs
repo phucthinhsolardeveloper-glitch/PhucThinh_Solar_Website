@@ -36,3 +36,9 @@ test('contact form keeps native required validation for the public lead flow', (
   assert.match(form, /required/)
   assert.match(form, /@submit\.prevent/)
 })
+
+test('catalog listing exposes a stable canonical URL for SEO', () => {
+  const catalog = read('app/pages/san-pham/index.vue')
+  assert.match(catalog, /new URL\('\/san-pham\/', requestUrl\.origin\)/)
+  assert.match(catalog, /rel: 'canonical'/)
+})
