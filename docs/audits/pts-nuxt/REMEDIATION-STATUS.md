@@ -36,7 +36,7 @@ Media/SEO/Caddy QA ── integration smoke ────────────
 | REM-P2-005 | P2 | F | QA media mounts | DONE-QA | Caddy 8099 real `/upload/photo/*.png` assets 200; `/assets`/thumbs/watermark full production mounts remain unverified. |
 | REM-P2-006 | P2 | G | A/B/C/F | DONE-QA / FOLLOW-UP | Independent QA: 140/140 final tests, typecheck, resolver/product-404 PASS; fresh rebuilt Caddy smoke PASS. |
 | REM-P2-007 | P2 | G | REM-P2-006 | DONE-QA | Catalog `/san-pham/` canonical was missing in SSR; added `useHead` canonical and source assertion. Fresh Nitro artifact SSR now returns HTTP 200 with canonical `/san-pham/` (evidence `performance-a11y-20261029.md`). |
-| REM-P3-001 | P3 | E | none | TODO | Route manifest/check becomes automated |
+| REM-P3-001 | P3 | E | none | DONE-QA | `frontend/tests/preview-noindex.test.mjs` scans all `migration-*.vue` routes and verifies every route has an explicit `X-Robots-Tag: noindex` rule; test PASS. |
 | REM-P3-002 | P3 | F | QA edge | BLOCKED | Lighthouse/CWV baseline not run; requires stable QA edge/browser profile. |
 
 ## Execution policy
@@ -51,6 +51,6 @@ Media/SEO/Caddy QA ── integration smoke ────────────
 - P0: 0 mở.
 - P1: 0 còn mở trên QA; production cutover gate vẫn **BLOCKED** cho tới khi review/deploy riêng.
 - P2: 0 code blocker còn mở trên QA; gallery/video populated-fixture proof và full media mount là PARTIAL. Catalog canonical đã được sửa và xác minh trên artifact SSR mới.
-- P3: 2 còn mở (route manifest automation, CWV/Lighthouse).
+- P3: 1 còn mở (CWV/Lighthouse); route/noindex automation đã DONE-QA.
 - Production: **chưa deploy**.
 
