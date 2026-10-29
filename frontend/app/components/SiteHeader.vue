@@ -317,6 +317,8 @@ onBeforeUnmount(() => {
             v-if="brandLogo"
             :src="brandLogo"
             :alt="brandName"
+            width="248"
+            height="35"
             class="block h-auto w-auto object-contain max-w-[min(248px,100%)] max-h-[68px]
                    max-ph:max-w-[min(198px,100%)] max-ph:max-h-[55px]
                    tb:max-w-[min(228px,100%)] tb:max-h-[63px]

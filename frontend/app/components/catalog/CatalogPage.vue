@@ -143,7 +143,7 @@ const sortOptions = computed(() => {
 })
 const heading = computed(() => catalogData.value?.category && !Array.isArray(catalogData.value.category) ? catalogData.value.category.name : 'Sản phẩm năng lượng mặt trời')
 const metadataTitle = computed(() => catalogData.value?.seo.title || [heading.value, 'Phúc Thịnh Solar'].join(' — '))
-const metadataDescription = computed(() => catalogData.value?.seo.description ?? '')
+const metadataDescription = computed(() => catalogData.value?.seo.description || 'Khám phá thiết bị chiếu sáng, tấm pin, biến tần và giải pháp năng lượng mặt trời tại Phúc Thịnh Solar.')
 const metadataKeywords = computed(() => catalogData.value?.seo.keywords ?? '')
 const metadataCanonicalPath = computed(() => route.path === '/thuong-hieu/' ? route.path : (catalogData.value?.canonical.url || route.path))
 const catalogFilterKeys = new Set(['category', 'page', 'per_page', 'brand', 'price', 'subcategory', 'sort', 'keyword', 'need'])
@@ -226,7 +226,7 @@ function pageLink(nextPage: number) {
     >
       <section class="col-span-full overflow-hidden bg-navy-950 text-white" aria-labelledby="catalog-heading">
         <div class="relative isolate flex min-h-[clamp(260px,24vw,410px)] items-end overflow-hidden px-6 py-8 nav:px-10 nav:py-10">
-          <img v-if="catalogData?.categoryHero?.image" :src="catalogData.categoryHero.image" :alt="catalogData.categoryHero.alt" class="absolute inset-0 -z-20 h-full w-full object-cover" fetchpriority="high">
+          <img v-if="catalogData?.categoryHero?.image" :src="catalogData.categoryHero.image" :alt="catalogData.categoryHero.alt" width="1600" height="500" class="absolute inset-0 -z-20 h-full w-full object-cover" fetchpriority="high">
           <span class="absolute inset-0 -z-10 bg-gradient-to-r from-navy-950/90 via-navy-950/65 to-navy-950/15" aria-hidden="true" />
           <div class="max-w-[760px]">
             <h1 id="catalog-heading" class="mb-3 text-[clamp(30px,4.2vw,52px)] font-black leading-[1.12] tracking-tight text-white">{{ heading }}</h1>

@@ -43,16 +43,95 @@ export default defineNuxtConfig({
     },
   },
 
+  /*
+   * Mọi trang `migration-*` là preview nội bộ, không bao giờ được index - mỗi
+   * component vẫn tự set `useSeoMeta({ robots: 'noindex...' })` cho crawler
+   * chạy JS, nhưng header tĩnh này còn áp dụng cho crawler không chạy JS/Vue.
+   * Liệt kê rõ từng path (không dùng wildcard) để không vô tình khớp một
+   * public route tương lai có tiền tố trùng tên.
+   */
   routeRules: {
     '/migration-preview': {
+      headers: { 'X-Robots-Tag': 'noindex, nofollow, noarchive' },
+    },
+    '/migration-about-preview': {
+      headers: { 'X-Robots-Tag': 'noindex, nofollow, noarchive' },
+    },
+    '/migration-brand-detail-preview': {
+      headers: { 'X-Robots-Tag': 'noindex, nofollow, noarchive' },
+    },
+    '/migration-cart-preview': {
+      headers: { 'X-Robots-Tag': 'noindex, nofollow, noarchive' },
+    },
+    '/migration-catalog-preview': {
+      headers: { 'X-Robots-Tag': 'noindex, nofollow, noarchive' },
+    },
+    '/migration-checkout-preview': {
+      headers: { 'X-Robots-Tag': 'noindex, nofollow, noarchive' },
+    },
+    '/migration-contact-preview': {
+      headers: { 'X-Robots-Tag': 'noindex, nofollow, noarchive' },
+    },
+    '/migration-dealer-preview': {
+      headers: { 'X-Robots-Tag': 'noindex, nofollow, noarchive' },
+    },
+    '/migration-gallery-detail-preview': {
+      headers: { 'X-Robots-Tag': 'noindex, nofollow, noarchive' },
+    },
+    '/migration-gallery-preview': {
+      headers: { 'X-Robots-Tag': 'noindex, nofollow, noarchive' },
+    },
+    '/migration-home-preview': {
+      headers: { 'X-Robots-Tag': 'noindex, nofollow, noarchive' },
+    },
+    '/migration-hub-preview': {
+      headers: { 'X-Robots-Tag': 'noindex, nofollow, noarchive' },
+    },
+    '/migration-news-detail-preview': {
+      headers: { 'X-Robots-Tag': 'noindex, nofollow, noarchive' },
+    },
+    '/migration-news-preview': {
+      headers: { 'X-Robots-Tag': 'noindex, nofollow, noarchive' },
+    },
+    '/migration-order-success': {
+      headers: { 'X-Robots-Tag': 'noindex, nofollow, noarchive' },
+    },
+    '/migration-policy-preview': {
+      headers: { 'X-Robots-Tag': 'noindex, nofollow, noarchive' },
+    },
+    '/migration-product-preview': {
+      headers: { 'X-Robots-Tag': 'noindex, nofollow, noarchive' },
+    },
+    '/migration-project-detail-preview': {
+      headers: { 'X-Robots-Tag': 'noindex, nofollow, noarchive' },
+    },
+    '/migration-projects-preview': {
+      headers: { 'X-Robots-Tag': 'noindex, nofollow, noarchive' },
+    },
+    '/migration-search-preview': {
+      headers: { 'X-Robots-Tag': 'noindex, nofollow, noarchive' },
+    },
+    '/migration-shell-preview': {
       headers: { 'X-Robots-Tag': 'noindex, nofollow, noarchive' },
     },
     '/migration-site-preview': {
       headers: { 'X-Robots-Tag': 'noindex, nofollow, noarchive' },
     },
+    '/migration-solution-category-preview': {
+      headers: { 'X-Robots-Tag': 'noindex, nofollow, noarchive' },
+    },
+    '/migration-solution-detail-preview': {
+      headers: { 'X-Robots-Tag': 'noindex, nofollow, noarchive' },
+    },
+    '/migration-solutions-preview': {
+      headers: { 'X-Robots-Tag': 'noindex, nofollow, noarchive' },
+    },
     // Phòng thí nghiệm component của CODEX 1. Không bao giờ được index: đây là
     // trang kiểm thử control, không phải nội dung site.
     '/migration-ui-lab-preview': {
+      headers: { 'X-Robots-Tag': 'noindex, nofollow, noarchive' },
+    },
+    '/migration-video-preview': {
       headers: { 'X-Robots-Tag': 'noindex, nofollow, noarchive' },
     },
   },

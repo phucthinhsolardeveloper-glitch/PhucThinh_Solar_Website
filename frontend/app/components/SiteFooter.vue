@@ -9,6 +9,12 @@ const brandName = computed(() => props.site.brand.name.trim() || 'Phúc Thịnh 
 const hotline = computed(() => props.site.brand.hotline.trim())
 const technicalHotline = computed(() => props.site.brand.technicalHotline?.trim() ?? '')
 const footerLogo = computed(() => props.site.brand.logoFooter || props.site.brand.logo || '')
+const CMS_UPLOAD_PHOTO = /^\/upload\/photo\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|gif|webp|avif)$/i
+// Chỉ resize ảnh CMS thật (/upload/photo/...); path khác (ví dụ static asset) giữ nguyên.
+const footerLogoSrc = computed(() => CMS_UPLOAD_PHOTO.test(footerLogo.value) ? `/thumbs/280x229x1${footerLogo.value}` : footerLogo.value)
+function trustBadgeSrc(src: string): string {
+  return CMS_UPLOAD_PHOTO.test(src) ? `/thumbs/200x76x1${src}` : src
+}
 const footer = computed(() => props.site.footer)
 const { generic: footerHref, external: isExternalLink } = useMigrationLinks()
 
@@ -41,8 +47,10 @@ const telHref = computed(() => telHrefFor(hotline.value))
         <a class="block max-w-[280px]" :href="footerHref('/')" :aria-label="`${brandName} - Trang chủ`">
           <img
             v-if="footerLogo"
-            :src="footerLogo"
+            :src="footerLogoSrc"
             :alt="brandName"
+            width="280"
+            height="229"
             class="block h-auto w-full max-w-[180px] wd:max-w-[280px]"
           >
           <span v-else class="text-lg font-black text-white">{{ brandName }}</span>
@@ -122,7 +130,7 @@ const telHref = computed(() => telHrefFor(hotline.value))
             target="_blank"
             rel="noopener noreferrer"
           >
-            <img :src="footer.trustBadge.image" alt="Đã thông báo Bộ Công Thương" class="block h-auto w-full">
+            <img :src="trustBadgeSrc(footer.trustBadge.image)" alt="Đã thông báo Bộ Công Thương" width="200" height="76" class="block h-auto w-full">
           </a>
           <div v-if="footer?.socialLinks.length" class="mt-[18px]">
             <h3 class="mb-2 text-[13px] font-extrabold text-white">Kết nối</h3>
