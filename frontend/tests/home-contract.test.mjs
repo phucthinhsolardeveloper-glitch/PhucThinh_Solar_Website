@@ -3,6 +3,7 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { isPublicHomePayload } from '../shared/contracts/public-home.ts'
 const homePreview = readFileSync(new URL('../app/components/home/HomePageContent.vue', import.meta.url), 'utf8')
+const homeHero = readFileSync(new URL('../app/components/home/HomeHero.vue', import.meta.url), 'utf8')
 const homeCatalog = readFileSync(new URL('../app/components/home/HomeCatalog.vue', import.meta.url), 'utf8')
 const homeCampaigns = readFileSync(new URL('../app/components/home/HomeCampaigns.vue', import.meta.url), 'utf8')
 const homeEditorial = readFileSync(new URL('../app/components/home/HomeEditorial.vue', import.meta.url), 'utf8')
@@ -36,6 +37,9 @@ test('homepage preview follows the PHP section order without inserting product g
   assert.match(homeEditorial, /v-for="\(point, index\) in aboutPoints"/)
   assert.match(homeEditorial, /Sản phẩm chính hãng/)
   assert.match(homePreview, /campaigns-configured="\(home\.summary\.campaignsConfigured \?\? 0\) > 0"/)
+  assert.match(homeHero, /heroImageUnavailable/)
+  assert.match(homeHero, /@error="markImageFailed"/)
+  assert.match(homeHero, /heroImageUnavailable \? 'bg-slate-50' : 'bg-navy-950'/)
   assert.match(homeCampaigns, /props\.campaignsConfigured \? \[\] : phpFallback/)
   assert.match(homePhpSource, /\$splistnb/)
 })

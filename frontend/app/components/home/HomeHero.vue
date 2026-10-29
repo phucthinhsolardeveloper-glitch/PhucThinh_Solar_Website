@@ -4,6 +4,11 @@ import type { PublicHomePayload } from '#shared/contracts/public-home'
 const props = defineProps<{ hero: PublicHomePayload['hero'] }>()
 const active = ref(0)
 const current = computed(() => props.hero[active.value] || null)
+const failedImages = ref(new Set<string>())
+const heroImageUnavailable = computed(() => {
+  const image = current.value?.image?.trim() ?? ''
+  return !image || failedImages.value.has(image)
+})
 const links = useMigrationLinks()
 let autoplayTimer: number | undefined
 let touchStartX: number | null = null
@@ -28,6 +33,12 @@ function startAutoplay() {
 function move(step: number) {
   showSlide(active.value + step)
   startAutoplay()
+}
+
+function markImageFailed() {
+  const image = current.value?.image?.trim()
+  if (!image) return
+  failedImages.value = new Set(failedImages.value).add(image)
 }
 
 function onTouchStart(event: TouchEvent) {
@@ -65,11 +76,11 @@ onBeforeUnmount(() => {
 })
 </script>
 <template>
-  <section v-if="current" class="relative isolate flex min-h-[clamp(570px,39vw,670px)] overflow-hidden rounded-b-[4px] bg-navy-950 text-navy-950 mb-[clamp(12px,1.2vw,24px)] max-[640px]:min-h-[700px]" aria-labelledby="home-title" @touchstart.passive="onTouchStart" @touchend.passive="onTouchEnd">
+  <section v-if="current" class="relative isolate flex min-h-[clamp(570px,39vw,670px)] overflow-hidden rounded-b-[4px] text-navy-950 mb-[clamp(12px,1.2vw,24px)] max-[640px]:min-h-[700px]" :class="heroImageUnavailable ? 'bg-slate-50' : 'bg-navy-950'" aria-labelledby="home-title" @touchstart.passive="onTouchStart" @touchend.passive="onTouchEnd">
     <div class="absolute inset-0 z-0 h-full w-full">
       <a class="absolute inset-0 block" :href="links.generic(current.href)">
-        <img class="absolute inset-0 h-full w-full object-cover max-[640px]:object-[62%_center]" :src="current.image" :alt="current.name" fetchpriority="high" width="1600" height="720">
-        <span class="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,.55),rgba(255,255,255,.27)_30%,rgba(255,255,255,.03)_55%,transparent_74%),linear-gradient(0deg,rgba(6,21,55,.16),rgba(6,21,55,.03)_58%,transparent)] max-[640px]:bg-[linear-gradient(90deg,rgba(255,255,255,.57),rgba(255,255,255,.31)_42%,rgba(255,255,255,.03)_75%,transparent),linear-gradient(0deg,rgba(6,21,55,.18),rgba(6,21,55,.04)_62%,transparent)]" aria-hidden="true" />
+        <img class="absolute inset-0 h-full w-full object-cover max-[640px]:object-[62%_center]" :src="current.image" :alt="current.name" fetchpriority="high" width="1600" height="720" @error="markImageFailed">
+        <span v-if="!heroImageUnavailable" class="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,.55),rgba(255,255,255,.27)_30%,rgba(255,255,255,.03)_55%,transparent_74%),linear-gradient(0deg,rgba(6,21,55,.16),rgba(6,21,55,.03)_58%,transparent)] max-[640px]:bg-[linear-gradient(90deg,rgba(255,255,255,.57),rgba(255,255,255,.31)_42%,rgba(255,255,255,.03)_75%,transparent),linear-gradient(0deg,rgba(6,21,55,.18),rgba(6,21,55,.04)_62%,transparent)]" aria-hidden="true" />
       </a>
     </div>
     <div class="relative z-[4] mx-auto flex min-h-[inherit] w-[min(calc(100%-clamp(40px,5vw,96px)),1560px)] max-[860px]:w-[min(calc(100%-48px),1440px)] max-[640px]:w-[calc(100%-40px)] max-[360px]:w-[calc(100%-32px)] min-[1600px]:w-[min(calc(100%-clamp(96px,8vw,220px)),2200px)] max-w-none flex-col items-start justify-center px-0 pb-[92px] pt-16 text-left [transform:translateY(calc(-70px-clamp(0px,calc(25vw-400px),240px)))] min-[1800px]:[transform:translateY(calc(-10px-clamp(0px,calc(25vw-400px),240px)))] max-[640px]:min-h-[700px] max-[640px]:items-center max-[640px]:justify-start max-[640px]:pb-[150px] max-[640px]:pt-[58px] max-[640px]:text-center max-[640px]:[transform:translateY(-14px)]">
