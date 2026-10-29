@@ -64,4 +64,22 @@ Accessibility hit target và H1 đã đạt ở các viewport đã đo. SEO chư
 
 Canonical catalog đã **PASS** sau fix `8fbacd0`. Media mapping/edge và CWV vẫn **BLOCKED/NO-GO**.
 
+## Media proxy follow-up với QA runtime đúng cấu hình
+
+Lần rerun direct Nitro trước đó dùng mặc định `previewMediaProxy=false`, nên không thể dùng để kết luận media mapping sai. Đã chạy lại fresh Nitro với:
+
+```text
+NITRO_PHP_ORIGIN=http://127.0.0.1:8088
+NITRO_PREVIEW_MEDIA_PROXY=1
+```
+
+Playwright ở 390px và 1440px trên `/san-pham/` đều trả HTTP 200, canonical đúng và **0 media response lỗi**. Các fixture thật qua proxy cũng trả 200:
+
+- `/assets/images/site-visuals/catalog-products-hero-20261007-v2.png` → `image/png`
+- `/assets/images/site-visuals/catalog-equipment-system.jpg` → `image/jpeg`
+- `/upload/photo/logo-phucthinh-solar-wordmark-2026.png` → `image/png`
+- `/thumbs/480x300x1/upload/news/du-an-anh-quan-enhanced-20261002.png` → `image/png`
+
+Kết luận: lỗi media browser trước đó là **thiếu biến cấu hình QA**, không phải sai mapping Nuxt. Runbook/smoke phải luôn bật `NITRO_PREVIEW_MEDIA_PROXY=1`; production vẫn nên để Caddy phục vụ media PHP trực tiếp. Watermark/full media inventory chưa được đóng.
+
 

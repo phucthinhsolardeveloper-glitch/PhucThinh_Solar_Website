@@ -33,7 +33,7 @@ Media/SEO/Caddy QA ── integration smoke ────────────
 | REM-P2-002 | P2 | D | none | DONE-QA | Commit `b59bb35`; Home container/H1, mobile controls 44px, Lucide benefit icons; typecheck and Caddy smoke PASS. |
 | REM-P2-003 | P2 | E | none | DONE-QA | Commit `6ad9ad5`; 27 preview route rules plus inventory test; targeted tests PASS and Caddy headers verified. |
 | REM-P2-004 | P2 | C | resolver + fixtures | DONE-SOURCE / PARTIAL-RUNTIME | Commit `10f3ee3`; targeted surface assertions PASS. Gallery/video modal still lacks populated CMS fixture for browser click proof. |
-| REM-P2-005 | P2 | F | QA media mounts | DONE-QA | Caddy 8099 real `/upload/photo/*.png` assets 200; `/assets`/thumbs/watermark full production mounts remain unverified. |
+| REM-P2-005 | P2 | F | QA media mounts | DONE-QA / INVENTORY-PARTIAL | Với `NITRO_PREVIEW_MEDIA_PROXY=1`, Playwright 390/1440 trên `/san-pham/` có 0 media lỗi; `/assets`, `/upload`, `/thumbs` fixture thật trả 200. Watermark và full production media inventory vẫn chưa đóng. |
 | REM-P2-006 | P2 | G | A/B/C/F | DONE-QA / FOLLOW-UP | Independent QA: 140/140 final tests, typecheck, resolver/product-404 PASS; fresh rebuilt Caddy smoke PASS. |
 | REM-P2-007 | P2 | G | REM-P2-006 | DONE-QA | Catalog `/san-pham/` canonical was missing in SSR; added `useHead` canonical and source assertion. Fresh Nitro artifact SSR now returns HTTP 200 with canonical `/san-pham/` (evidence `performance-a11y-20261029.md`). |
 | REM-P3-001 | P3 | E | none | DONE-QA | `frontend/tests/preview-noindex.test.mjs` scans all `migration-*.vue` routes and verifies every route has an explicit `X-Robots-Tag: noindex` rule; test PASS. |
@@ -50,7 +50,7 @@ Media/SEO/Caddy QA ── integration smoke ────────────
 
 - P0: 0 mở.
 - P1: 0 còn mở trên QA; production cutover gate vẫn **BLOCKED** cho tới khi review/deploy riêng.
-- P2: 0 code blocker còn mở trên QA; gallery/video populated-fixture proof và full media mount là PARTIAL. Catalog canonical đã được sửa và xác minh trên artifact SSR mới.
+- P2: 0 code blocker còn mở trên QA; gallery/video populated-fixture proof và watermark/full media inventory là PARTIAL. Media browser 404 đã được truy nguyên về cấu hình QA thiếu `NITRO_PREVIEW_MEDIA_PROXY=1` và đã xác minh lại 0 lỗi với cấu hình đúng.
 - P3: 1 còn mở (CWV/Lighthouse); route/noindex automation đã DONE-QA.
 - Production: **chưa deploy**.
 
