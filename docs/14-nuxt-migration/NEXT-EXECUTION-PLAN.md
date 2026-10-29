@@ -1,5 +1,15 @@
 # PTS Nuxt migration — next execution plan
 
+## UI contrast follow-up — 2026-10-29 21:47 +07:00
+
+- Đã sửa `HomeHero.vue` tại `59d791a`: ảnh hero trống/lỗi giờ chuyển section sang
+  nền `slate-50`, ẩn overlay gradient và giữ chữ navy đọc được; ảnh tải bình thường
+  không thay đổi giao diện production.
+- Các chữ xanh nhạt trên nền navy ở footer/dealer/CTA được đối chiếu computed style
+  và design token, đạt tương phản; giữ nguyên vì là màu link/nội dung phụ đã duyệt.
+- `npm run build` PASS và container `pts-nuxt-service-rehearsal` đã rebuild healthy
+  tại `127.0.0.1:3101`; smoke route không có 5xx hoặc lỗi runtime.
+
 ## Verification checkpoint — local container rebuild — 2026-10-29 21:27 +07:00
 
 - `master` đã fast-forward từ `e7c68e4` lên `eb2732d`; WIP trước đó được giữ nguyên
