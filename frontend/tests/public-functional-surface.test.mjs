@@ -41,4 +41,10 @@ test('catalog listing exposes a stable canonical URL for SEO', () => {
   const catalog = read('app/pages/san-pham/index.vue')
   assert.match(catalog, /new URL\('\/san-pham\/', requestUrl\.origin\)/)
   assert.match(catalog, /rel: 'canonical'/)
+  assert.match(catalog, /description: 'Khám phá thiết bị chiếu sáng/)
+})
+
+test('home SEO keeps a non-empty description when CMS metadata is blank', () => {
+  const home = read('app/pages/index.vue')
+  assert.match(home, /description: \(\) => home\.value\?\.seo\.description \|\| '[^']+'/)
 })

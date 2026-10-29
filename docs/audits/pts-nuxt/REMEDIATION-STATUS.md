@@ -36,8 +36,9 @@ Media/SEO/Caddy QA ── integration smoke ────────────
 | REM-P2-005 | P2 | F | QA media mounts | DONE-QA / INVENTORY-PARTIAL | Với `NITRO_PREVIEW_MEDIA_PROXY=1`, Playwright 390/1440 trên `/san-pham/` có 0 media lỗi; `/assets`, `/upload`, `/thumbs` fixture thật trả 200. Watermark và full production media inventory vẫn chưa đóng. |
 | REM-P2-006 | P2 | G | A/B/C/F | DONE-QA / FOLLOW-UP | Independent QA: 140/140 final tests, typecheck, resolver/product-404 PASS; fresh rebuilt Caddy smoke PASS. |
 | REM-P2-007 | P2 | G | REM-P2-006 | DONE-QA | Catalog `/san-pham/` canonical was missing in SSR; added `useHead` canonical and source assertion. Fresh Nitro artifact SSR now returns HTTP 200 with canonical `/san-pham/` (evidence `performance-a11y-20261029.md`). |
+| REM-P2-008 | P2 | D/F | Lighthouse baseline | PARTIAL / OPEN | Home/catalog SEO metadata fallback now passes Lighthouse; baseline still flags large image payloads, unsized images and slow LCP on home/news. Add responsive image variants or edge resizing, then rerun on production-like Caddy. |
 | REM-P3-001 | P3 | E | none | DONE-QA | `frontend/tests/preview-noindex.test.mjs` scans all `migration-*.vue` routes and verifies every route has an explicit `X-Robots-Tag: noindex` rule; test PASS. |
-| REM-P3-002 | P3 | F | QA edge | BLOCKED | Lighthouse/CWV baseline not run; requires stable QA edge/browser profile. |
+| REM-P3-002 | P3 | F | QA edge | DONE-QA / EDGE-PARTIAL | Lighthouse baseline đã chạy trên fresh Nitro với media proxy QA; scores/metrics lưu tại `lighthouse-20261029.md`. Production-like Caddy rerun và performance budget vẫn cần hoàn tất. |
 
 ## Execution policy
 
@@ -50,7 +51,7 @@ Media/SEO/Caddy QA ── integration smoke ────────────
 
 - P0: 0 mở.
 - P1: 0 còn mở trên QA; production cutover gate vẫn **BLOCKED** cho tới khi review/deploy riêng.
-- P2: 0 code blocker còn mở trên QA; gallery/video populated-fixture proof và watermark/full media inventory là PARTIAL. Media browser 404 đã được truy nguyên về cấu hình QA thiếu `NITRO_PREVIEW_MEDIA_PROXY=1` và đã xác minh lại 0 lỗi với cấu hình đúng.
-- P3: 1 còn mở (CWV/Lighthouse); route/noindex automation đã DONE-QA.
+- P2: 1 issue tối ưu hóa còn mở (ảnh/LCP); gallery/video populated-fixture proof và watermark/full media inventory là PARTIAL. Media browser 404 đã được truy nguyên về cấu hình QA thiếu `NITRO_PREVIEW_MEDIA_PROXY=1` và đã xác minh lại 0 lỗi với cấu hình đúng.
+- P3: 0 issue kiểm thử nền còn mở; production-like performance budget vẫn phụ thuộc REM-P2-008.
 - Production: **chưa deploy**.
 
