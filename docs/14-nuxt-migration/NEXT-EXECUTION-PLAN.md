@@ -11,6 +11,11 @@
   Non-canonical slash variants trả 301 về path chuẩn.
 - Public flags OFF: cùng manifest đạt **33/33 PASS**, mọi route kết thúc ở PHP
   loopback `:8080`; không follow redirect ra ngoài local.
+- SEO GET-only rerun đạt sitemap **457/457 URL, 0 fail/redirect**, href target
+  **361/361 HTTP 200**, và PDP hidden fixture **404/no canonical**. Gate tổng
+  vẫn `NEEDS VERIFICATION` vì DB local không có hidden record cho catalog/news/
+  project/solution; audit cố ý exit 1 theo policy, không bịa slug. Evidence:
+  `frontend/.migration-artifacts/seo-audit-final-20261029-rerun/`.
 - Visual compare PHP `:8080` ↔ Nuxt `:3112` đạt **99/99 preview health gates**
   (33 route × 3 viewport) ở
   `frontend/.migration-artifacts/migration-comparison-20261029-final5/`; full-page
