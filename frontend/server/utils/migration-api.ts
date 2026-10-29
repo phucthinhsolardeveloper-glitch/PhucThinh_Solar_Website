@@ -84,7 +84,15 @@ export async function fetchMigrationPayload<T>(event: MigrationEvent, options: M
     })
   } catch (error) {
     const status = statusFromError(error)
-    if (status !== undefined && options.passThroughStatuses?.includes(status)) throw error
+    if (status !== undefined && options.passThroughStatuses?.includes(status)) {
+      // Re-create instead of re-throwing the raw ofetch FetchError: an
+      // expected pass-through status (eg. a resolver 404 for an unknown
+      // slug) is a normal outcome, not a crash, but Nitro's request logger
+      // treats any error object that wasn't built via createError() as
+      // "[unhandled]" and prints the internal PHP fetch URL/stack with it -
+      // noisy for every mistyped URL and a minor internal-endpoint leak.
+      throw createError({ statusCode: status, statusMessage: options.unavailableMessage, fatal: false })
+    }
     throw createError({ statusCode: 502, statusMessage: options.unavailableMessage })
   }
   if (!options.validate(payload)) {
