@@ -9,6 +9,17 @@ const brandName = computed(() => props.site.brand.name.trim() || 'Phúc Thịnh 
 const hotline = computed(() => props.site.brand.hotline.trim())
 const technicalHotline = computed(() => props.site.brand.technicalHotline?.trim() ?? '')
 const footerLogo = computed(() => props.site.brand.logoFooter || props.site.brand.logo || '')
+const footerLogoSrc = computed(() => {
+  const src = footerLogo.value
+  return /^\/upload\/photo\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|gif|webp|avif)$/i.test(src)
+    ? `/thumbs/280x229x1${src}`
+    : src
+})
+function trustBadgeSrc(src: string): string {
+  return /^\/upload\/photo\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|gif|webp|avif)$/i.test(src)
+    ? `/thumbs/200x76x1${src}`
+    : src
+}
 const footer = computed(() => props.site.footer)
 const { generic: footerHref, external: isExternalLink } = useMigrationLinks()
 
@@ -53,7 +64,7 @@ const telHref = computed(() => telHrefFor(hotline.value))
         <a class="block max-w-[280px]" :href="footerHref('/')" :aria-label="`${brandName} - Trang chủ`">
           <img
             v-if="footerLogo"
-            :src="footerLogo"
+            :src="footerLogoSrc"
             :alt="brandName"
             width="280"
             height="229"
