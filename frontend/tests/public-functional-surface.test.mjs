@@ -1,0 +1,38 @@
+import { test } from 'node:test'
+import assert from 'node:assert/strict'
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
+
+const root = resolve(new URL('..', import.meta.url).pathname)
+const read = (file) => readFileSync(resolve(root, file), 'utf8')
+
+test('public gallery and video keep the real empty-state copy and interactive entry points', () => {
+  const gallery = read('app/pages/thu-vien-anh/index.vue')
+  const galleryDetail = read('app/pages/[slug].vue')
+  const video = read('app/pages/video/index.vue')
+  const videoPreview = read('app/pages/migration-video-preview.vue')
+  assert.match(gallery, /Không tìm thấy kết quả/)
+  assert.match(video, /Không tìm thấy kết quả/)
+  assert.match(galleryDetail, /openGalleryImage/)
+  assert.match(video, /@click="open\(/)
+  assert.match(videoPreview, /@click="open\(/)
+})
+
+test('public listing/detail surfaces retain the PHP-equivalent CTA and related-content hooks', () => {
+  const projects = read('app/pages/du-an-da-thuc-hien/index.vue')
+  const news = read('app/pages/tin-tuc/index.vue')
+  const slug = read('app/pages/[slug].vue')
+  assert.match(projects, /ProjectsCta/)
+  assert.match(news, /NewsCta/)
+  assert.match(slug, /NewsDetailRelated/)
+  assert.match(slug, /NewsDetailArticle/)
+  assert.match(read('app/components/news-detail/NewsDetailArticle.vue'), /EditorialShare/)
+  assert.match(slug, /ProjectsCta/)
+  assert.match(slug, /ProjectDetailPage/)
+})
+
+test('contact form keeps native required validation for the public lead flow', () => {
+  const form = read('app/components/contact/ContactLeadForm.vue')
+  assert.match(form, /required/)
+  assert.match(form, /@submit\.prevent/)
+})
