@@ -22,7 +22,7 @@ The home rerun after the SEO fix reports `meta-description: 1`, accessibility `0
 
 ## Logo layout follow-up
 
-Commit `9650ee3` declares intrinsic dimensions for the CMS header wordmark, footer emblem and trust badge. Fresh Lighthouse runs on home/news now report `unsized-images: 1.00` and SEO `1.00`. Remaining performance loss is image delivery/payload size and variable local LCP, not layout reservation.
+Commit `9650ee3` declares intrinsic dimensions for the CMS header wordmark, footer emblem and trust badge. Commit `575401a` serves these logos through right-sized PHP thumbnail endpoints; commit `65f5a24` reduces NewsCard thumbnails from 760×428 to 640×360. Fresh Lighthouse runs on home/news now report `unsized-images: 1.00` and SEO `1.00`; a fresh news run measured LCP ~10.6s. Remaining performance loss is image delivery/payload size and variable local LCP, not layout reservation.
 
 ## Remaining performance work
 
