@@ -30,7 +30,10 @@ const { data, error, pending } = await useAsyncData<PublicSearchPayload>(
   { watch: [searchQuery] },
 )
 const publicSearchEnabled = computed(() => route.path === '/tim-kiem/' && isRuntimeFlagEnabled(config.public.searchPublicRouteEnabled))
-if (import.meta.server && publicSearchEnabled.value && (error.value || !data.value)) {
+// PHP's search.php only runs a query when ?keyword is present; a bare visit
+// renders its "enter a keyword" prompt at 200. Mirror that: only a keyword
+// that actually failed against the CMS is a backend error (502).
+if (import.meta.server && publicSearchEnabled.value && keyword.value && (error.value || !data.value)) {
   setResponseStatus(502, 'Bad Gateway')
 }
 
