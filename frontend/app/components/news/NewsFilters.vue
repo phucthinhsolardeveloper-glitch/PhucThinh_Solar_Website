@@ -15,7 +15,7 @@ const queryString = computed(() => props.query ? `?q=${encodeURIComponent(props.
     <a
       class="flex min-h-[42px] flex-none items-center gap-2 whitespace-nowrap rounded-chip px-[15px] text-[13px] font-bold no-underline"
       :class="!selected ? 'bg-navy-800 text-white' : 'bg-slate-50 text-navy-800 hover:bg-gray-200'"
-      :href="`/migration-news-preview/${queryString}`"
+      :href="`/tin-tuc/${queryString}`"
     >
       {{ allLabel }}
     </a>
@@ -24,7 +24,7 @@ const queryString = computed(() => props.query ? `?q=${encodeURIComponent(props.
       :key="category.id"
       class="flex min-h-[42px] flex-none items-center gap-2 whitespace-nowrap rounded-chip px-[15px] text-[13px] font-bold no-underline"
       :class="selected?.id === category.id ? 'bg-navy-800 text-white' : 'bg-slate-50 text-navy-800 hover:bg-gray-200'"
-      :href="`/migration-news-preview/?${query ? `q=${encodeURIComponent(query)}&` : ''}category=${encodeURIComponent(category.slug)}`"
+      :href="`/tin-tuc/?${query ? `q=${encodeURIComponent(query)}&` : ''}category=${encodeURIComponent(category.slug)}`"
     >
       <img v-if="category.image" :src="category.image" alt="" class="h-[22px] w-[22px] object-contain" width="22" height="22">
       {{ category.name }}

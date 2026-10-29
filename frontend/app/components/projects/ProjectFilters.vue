@@ -14,7 +14,7 @@ defineProps<{ categories: PublicProjectCategory[]; selected: PublicProjectCatego
     <a
       class="flex min-h-[42px] flex-none items-center gap-[7px] whitespace-nowrap rounded-chip px-[13px] no-underline"
       :class="!selected ? 'bg-navy-800 text-white' : 'border border-gray-200 text-navy-800 hover:border-gold-700'"
-      href="/migration-projects-preview/"
+      href="/du-an-da-thuc-hien/"
     >
       {{ allLabel }}
     </a>
@@ -23,7 +23,7 @@ defineProps<{ categories: PublicProjectCategory[]; selected: PublicProjectCatego
       :key="category.id"
       class="flex min-h-[42px] flex-none items-center gap-[7px] whitespace-nowrap rounded-chip px-[13px] no-underline"
       :class="selected?.id === category.id ? 'bg-navy-800 text-white' : 'border border-gray-200 text-navy-800 hover:border-gold-700'"
-      :href="`/migration-projects-preview/?category=${encodeURIComponent(category.slug)}`"
+      :href="`/du-an-da-thuc-hien/?category=${encodeURIComponent(category.slug)}`"
     >
       <img v-if="category.image" :src="category.image" alt="" class="h-6 w-6 object-contain" width="24" height="24">
       {{ category.name }}

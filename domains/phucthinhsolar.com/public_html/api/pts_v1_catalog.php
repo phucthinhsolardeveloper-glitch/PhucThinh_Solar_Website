@@ -139,18 +139,15 @@ try
     $extras = array('root' => ROOT);
     $currentPath = $categoryPath === '' ? 'san-pham' : 'danh-muc-san-pham/'.$categoryPath;
     $heroRows = $cache->get("select namevi,link,photo,status from #_photo where type=? order by numb,id desc", array('product-category-hero'), 'result', 7200);
+    $heroConfigured = false;
     foreach((array)$heroRows as $heroRow) {
         if(trim(parse_url((string)($heroRow['link'] ?? ''), PHP_URL_PATH), '/') !== $currentPath) continue;
+        $heroConfigured = true;
         if(ptsCatalogPublished($heroRow['status'] ?? '') && !empty($heroRow['photo'])) $extras['hero'] = array('photo' => $heroRow['photo'], 'upload' => 'upload/photo/', 'alt' => $heroRow['namevi'] ?? '');
         break;
     }
-    /* Keep the one category-specific fallback enabled in sources/product.php
-       available to the read-only DTO when no Admin hero record is configured. */
-    if(empty($extras['hero']) && $currentPath === 'danh-muc-san-pham/den-nlmt/den-pha-nang-luong-mat-troi' && is_file(ROOT.'assets/images/site-visuals/catalog-solar-flood-lighting-20261008.png')) {
-        $extras['hero'] = array('photo' => 'catalog-solar-flood-lighting-20261008.png', 'upload' => 'assets/images/site-visuals/', 'alt' => 'Đèn pha năng lượng mặt trời cho sân bãi và công trình');
-    }
+    if(empty($extras['hero']) && !$heroConfigured) $extras['hero'] = ptsCatalogCategoryHeroFallback($currentPath, ROOT);
     if(empty($extras['hero']) && !empty($selectedCategoryRow['photo'])) $extras['hero'] = array('photo' => $selectedCategoryRow['photo'], 'upload' => 'upload/product/', 'alt' => $selectedCategoryRow['namevi'] ?? '');
-    if(empty($extras['hero']) && $categoryPath === '' && is_file(ROOT.'assets/images/site-visuals/catalog-products-hero-20261007-v2.png')) $extras['hero'] = array('photo' => 'catalog-products-hero-20261007-v2.png', 'upload' => 'assets/images/site-visuals/', 'alt' => 'Danh mục thiết bị năng lượng mặt trời Phúc Thịnh Solar');
 
     $sectionScope = '';
     $sectionId = 0;

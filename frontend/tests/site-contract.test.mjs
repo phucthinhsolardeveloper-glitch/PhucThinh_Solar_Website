@@ -33,7 +33,9 @@ test('accepts the published navigation and footer projection', () => {
     catalog: { lighting: { label: 'Chiếu sáng', href: '/danh-muc-san-pham/den-nlmt/', items: [{ label: 'Đèn đường', href: '/danh-muc-san-pham/den-duong/', children: [] }] } },
     productCategoryTree: [{ id: 4, name: 'Đèn', slug: 'den', url: '/danh-muc-san-pham/den/', children: [] }],
     footer: {
-      companyName: 'Phúc Thịnh Solar', contactText: 'Thông tin liên hệ',
+      companyName: 'Thông tin doanh nghiệp', contactText: 'Trụ sở: Gia Lai',
+      legalName: 'CÔNG TY TNHH CÔNG NGHỆ - THƯƠNG MẠI VÀ DỊCH VỤ PHÚC THỊNH SOLAR',
+      contactLines: ['Trụ sở: Gia Lai'],
       policies: [{ label: 'Chính sách', href: '/ho-tro/chinh-sach/' }],
       locations: [{ name: 'Trụ sở', address: 'Gia Lai', mapUrl: 'https://maps.example.test/' }],
       socialLinks: [{ label: 'Facebook', href: 'https://facebook.com/example' }],
@@ -52,4 +54,5 @@ test('rejects unsafe URLs in optional CMS fields', () => {
 test('rejects malformed optional structures instead of partially rendering them', () => {
   assert.equal(isPublicSitePayload({ ...good, navigationSchemaVersion: 2 }), false)
   assert.equal(isPublicSitePayload({ ...good, catalog: { lighting: { label: 'Chiếu sáng', href: '', items: [{ label: 'X', href: '/x/', children: 'bad' }] } } }), false)
+  assert.equal(isPublicSitePayload({ ...good, footer: { companyName: '', contactText: '', contactLines: 'Trụ sở', policies: [], locations: [], socialLinks: [] } }), false)
 })

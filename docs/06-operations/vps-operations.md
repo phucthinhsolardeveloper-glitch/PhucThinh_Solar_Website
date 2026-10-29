@@ -1,9 +1,13 @@
 # Vận hành VPS hằng ngày và xử lý sự cố
 
-Cập nhật: 2026-09-29. Dùng cho VPS **đã dựng xong**. Lần dựng đầu và chuyển nhà
+Cập nhật: 2026-10-28. Dùng cho VPS **đã dựng xong**. Lần dựng đầu và chuyển nhà
 xem [vps-cloudfly-runbook.md](vps-cloudfly-runbook.md).
 Luồng end-to-end dành cho chủ website xem
 [owner-system-handbook.md](owner-system-handbook.md).
+
+Các thay đổi Nuxt/Caddy trong source là candidate cho public cutover; tài liệu
+này không khẳng định cutover đã chạy trên VPS. Trước khi báo trạng thái
+production, xác nhận `docker compose ps`, image tags và HTTP qua `verify-stack.sh`.
 
 ---
 
@@ -37,9 +41,9 @@ email; xem [cutover-dns-va-host-cu.md](cutover-dns-va-host-cu.md).
 
 ```text
 /srv/phucthinhsolar
-├── docker-compose.yml     3 service: proxy (Caddy) → web (Apache/PHP 8.1) → db (MariaDB 10.11)
+├── docker-compose.yml     proxy (Caddy) → nuxt (public SSR) + web (Apache/PHP 8.1 backend) → db (MariaDB 10.11)
 ├── Caddyfile              TLS + reverse proxy
-├── .env                   domain, email ACME, DB name/user, PTS_WEB_IMAGE   [0600]
+├── .env                   domain, email ACME, DB name/user, PTS_WEB_IMAGE, PTS_NUXT_IMAGE   [0600]
 ├── secrets/               [thư mục 0700 root] — xem §6
 ├── config/config.php      mount read-only vào /var/www/html/libraries/config.php
 ├── app/                   Dockerfile + php-production.ini + apache-security.conf
@@ -47,7 +51,7 @@ email; xem [cutover-dns-va-host-cu.md](cutover-dns-va-host-cu.md).
 │                          rollback-release, verify-stack, backup, restore-check,
 │                          restore-initial, export-runtime-images
 ├── systemd/               2 service + 2 timer backup
-├── releases/<commit>/     release đã giải nén: public_html + migrations + scripts + docs
+├── releases/<commit>/     release đã giải nén: public_html + frontend Nuxt + migrations + scripts + docs
 ├── incoming/              gói release/migration đang chờ kiểm checksum và triển khai
 ├── shared/                DỮ LIỆU SỐNG, mount vào container
 │   ├── upload/            dữ liệu upload production  ← KHÔNG TÁI TẠO ĐƯỢC
@@ -70,17 +74,21 @@ thứ khác dựng lại từ Git + image.
 Tất cả chạy trong `/srv/phucthinhsolar`.
 
 ```bash
-# Trạng thái 3 container
+# Trạng thái các container
 docker compose ps
 
-# Log web 100 dòng cuối (đây là chỗ xem lỗi PHP)
+# Public HTML/SSR render ở Nuxt; PHP là backend cho API/Admin/session/media.
+# Không dùng PHP template/CSS/JS làm fallback cho public GET.
+# Đọc log PHP và Nuxt khi public route/API lỗi:
 docker compose logs --tail=100 web
+docker compose logs --tail=100 nuxt
+docker compose logs --tail=100 proxy
 
 # Log DB
 docker compose logs --tail=100 db
 
-# Khởi động lại chỉ web (không mất DB, không mất upload)
-docker compose up -d --force-recreate web
+# Khởi động lại ứng dụng PHP + Nuxt (không mất DB, không mất upload)
+docker compose up -d --force-recreate web nuxt
 
 # HAI LOẠI THAY ĐỔI, HAI LỆNH KHÁC NHAU — nhầm là mất thời gian hoặc báo cáo sai.
 #
@@ -94,19 +102,20 @@ docker compose restart proxy
 #    nên `restart` giữ nguyên giá trị cũ. Ngày 2026-09-17 tôi đã restart proxy
 #    sau khi đổi SITE_DOMAIN và Caddy vẫn chỉ nhận hostname staging — website
 #    thật tiếp tục chết thêm mấy phút.
-docker compose up -d --force-recreate web proxy
+docker compose up -d --force-recreate web nuxt proxy
 #
 # Luôn kiểm lại bằng admin API của Caddy, đừng tin lệnh đã chạy xong:
 docker exec "$(docker compose ps -q proxy)" wget -qO- http://127.0.0.1:2019/config/ | head -c 400
 
-# Kiểm tra tổng thể: container, digest image, PHP runtime, HTTPS
+# Kiểm tra tổng thể: container, PHP/Nuxt image, runtime, HTTPS
 ./scripts/verify-stack.sh
 
 # Xóa cache trang (sau khi deploy file PHP/template)
 rm -f shared/caches/cache_*
 
-# Vào shell container web
+# Vào shell container PHP hoặc Nuxt
 docker exec -it "$(docker compose ps -q web)" bash
+docker exec -it "$(docker compose ps -q nuxt)" sh
 
 # Gọi một URL từ trong container (bỏ qua Caddy/TLS — dùng khi DNS chưa trỏ)
 docker exec "$(docker compose ps -q web)" curl -sS -o /dev/null -w '%{http_code}\n' http://127.0.0.1/
@@ -145,9 +154,11 @@ docker cp releases/<commit>/migrations/000_preflight_production.php "$web":/tmp/
 docker exec "$web" php /tmp/000_preflight_production.php
 ```
 
-`deploy-release.sh` tự xác minh checksum, build image theo commit, chờ
-healthcheck và **tự quay lại image trước** nếu web không healthy. Nó **không**
-tự chạy migration và **không** đổi DNS.
+`deploy-release.sh` tự xác minh checksum, build immutable image PHP và Nuxt theo
+cùng commit, chuyển Caddy/Compose, chờ cả hai healthcheck và **tự quay lại
+image/config trước** nếu một trong hai không healthy. Mỗi release lưu image
+current/previous cho cả hai runtime. Nó **không** tự chạy migration và **không**
+đổi DNS. Public GET không được fallback sang PHP HTML.
 
 Rollback code (không động DB/upload): `./scripts/rollback-release.sh`.
 

@@ -14,11 +14,12 @@ if ! git diff --quiet || ! git diff --cached --quiet; then
 fi
 
 untracked_release_files="$(git ls-files --others --exclude-standard -- \
-    "$webroot_tree" migrations scripts deploy/vps \
+    "$webroot_tree" frontend migrations scripts deploy/vps \
     docs/06-operations/deploy-production-owner.md \
     docs/06-operations/owner-system-handbook.md \
     docs/06-operations/vps-cloudfly-runbook.md \
-    docs/13-handoffs/2026-09-06-runbook-deploy-directadmin.md)"
+    docs/13-handoffs/2026-09-06-runbook-deploy-directadmin.md \
+    docs/14-nuxt-migration/PRODUCTION-CUTOVER-DRY-RUN.md)"
 if [ -n "$untracked_release_files" ]; then
     echo "FAIL: Source release còn file chưa được Git theo dõi; git archive sẽ bỏ sót:" >&2
     echo "$untracked_release_files" >&2
@@ -32,6 +33,7 @@ release_time="$(date -u +%Y%m%dT%H%M%SZ)"
 release_dir="$release_root/${release_time}-${release_short}"
 archive_name="public_html-${release_short}.tar.gz"
 tools_archive_name="deployment-tools-${release_short}.tar.gz"
+frontend_archive_name="frontend-source-${release_short}.tar.gz"
 
 mkdir -p "$release_dir"
 
@@ -48,9 +50,27 @@ git archive --format=tar.gz \
     docs/06-operations/deploy-production-owner.md \
     docs/06-operations/owner-system-handbook.md \
     docs/06-operations/vps-cloudfly-runbook.md \
-    docs/13-handoffs/2026-09-06-runbook-deploy-directadmin.md
+    docs/13-handoffs/2026-09-06-runbook-deploy-directadmin.md \
+    docs/14-nuxt-migration/PRODUCTION-CUTOVER-DRY-RUN.md
+
+git archive --format=tar.gz --prefix=frontend/ \
+    --output="$release_dir/$frontend_archive_name" \
+    "$release_commit:frontend"
 
 tar -tzf "$release_dir/$tools_archive_name" > "$release_dir/DEPLOYMENT-TOOLS-FILES.txt"
+tar -tzf "$release_dir/$frontend_archive_name" > "$release_dir/FRONTEND-FILES.txt"
+
+for forbidden in \
+    '^frontend/(node_modules|\.nuxt|\.output)/' \
+    '(^|/)\.env($|\.)' \
+    '\.(sql|pem|key|log|zip|7z|bak)$'; do
+    forbidden_hits="$(grep -Ei "$forbidden" "$release_dir/FRONTEND-FILES.txt" || true)"
+    if [ -n "$forbidden_hits" ]; then
+        printf '%s\n' "$forbidden_hits"
+        echo "FAIL: frontend archive chứa đường dẫn bị cấm: $forbidden" >&2
+        exit 1
+    fi
+done
 
 allowed_tracked_media='^public_html/upload(/news)?/?$|^public_html/upload/news/du-an-(anh-quan|hoa-thanh-an|thu-hien|thu-hong)-enhanced-20261002\.png$'
 for forbidden in \
@@ -75,6 +95,7 @@ parent_commit=$release_parent
 source_tree=$webroot_tree
 archive=$archive_name
 deployment_tools_archive=$tools_archive_name
+frontend_archive=$frontend_archive_name
 configuration=preserve hosting libraries/config.php
 runtime_data=preserve hosting upload, thumbs, watermark, caches and logs
 legacy_assets=assets/wp-content/uploads included for WordPress media fallback
@@ -84,7 +105,7 @@ EOF
 
 (
     cd "$release_dir"
-    sha256sum "$archive_name" "$tools_archive_name" FILES.txt DEPLOYMENT-TOOLS-FILES.txt RELEASE.txt > SHA256SUMS
+    sha256sum "$archive_name" "$tools_archive_name" "$frontend_archive_name" FILES.txt DEPLOYMENT-TOOLS-FILES.txt FRONTEND-FILES.txt RELEASE.txt > SHA256SUMS
     sha256sum -c SHA256SUMS
 )
 
@@ -92,3 +113,4 @@ echo "PASS: Release được tạo tại $release_dir"
 echo "Commit: $release_commit"
 echo "Archive: $release_dir/$archive_name"
 echo "Deployment tools: $release_dir/$tools_archive_name"
+echo "Nuxt source: $release_dir/$frontend_archive_name"

@@ -42,6 +42,6 @@ const links = useMigrationLinks()
         </div>
       </a>
     </div>
-    <a v-else class="font-extrabold text-navy-800 no-underline" href="/migration-contact-preview#yeu-cau-tu-van">{{ consultLabel }} →</a>
+    <a v-else class="font-extrabold text-navy-800 no-underline" href="/lien-he/#yeu-cau-tu-van">{{ consultLabel }} →</a>
   </section>
 </template>

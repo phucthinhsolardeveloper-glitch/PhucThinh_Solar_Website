@@ -37,14 +37,14 @@ function ptsNewsMedia($value)
     return '/upload/news/'.$value;
 }
 
-function ptsNewsCategoryDto(array $row)
+function ptsNewsCategoryDto(array $row, array $metadata = array())
 {
     if(!ptsNewsPublished(isset($row['status']) ? $row['status'] : '')) return null;
     $id = isset($row['id']) ? (int)$row['id'] : 0;
     $name = ptsNewsPlainText(isset($row['namevi']) ? $row['namevi'] : '');
     $slug = ptsNewsSlug(isset($row['slugvi']) ? $row['slugvi'] : '');
     if($id <= 0 || $name === '' || $slug === '') return null;
-    return array(
+    $dto = array(
         'id' => $id,
         'name' => $name,
         'description' => ptsNewsPlainText(isset($row['descvi']) ? $row['descvi'] : ''),
@@ -52,6 +52,41 @@ function ptsNewsCategoryDto(array $row)
         'url' => '/'.$slug.'/',
         'image' => ptsNewsMedia(isset($row['_pts_public_photo']) ? $row['_pts_public_photo'] : '')
     );
+    foreach(array('type','level','path') as $key) if(isset($metadata[$key])) $dto[$key] = $metadata[$key];
+    return $dto;
+}
+
+function ptsNewsResolveCategoryHierarchy($d, $categoryType, array $segments)
+{
+    $specs = array(
+        'list'=>array('article_field'=>'id_list','depth'=>1),
+        'cat'=>array('article_field'=>'id_cat','depth'=>2),
+        'item'=>array('article_field'=>'id_item','depth'=>3),
+        'sub'=>array('article_field'=>'id_sub','depth'=>4)
+    );
+    if(!isset($specs[$categoryType]) || count($segments) !== $specs[$categoryType]['depth']) return null;
+    foreach($segments as $segment) if(!is_string($segment) || !preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', $segment)) return null;
+
+    $tables = array('news_list','news_cat','news_item','news_sub');
+    $parentFields = array('news_cat'=>'id_list','news_item'=>'id_cat','news_sub'=>'id_item');
+    $row = null;
+    $parentId = 0;
+    foreach($segments as $index=>$segment)
+    {
+        $table = $tables[$index];
+        if($index === 0) $row = $d->rawQueryOne("select id,namevi,descvi,slugvi,photo,status from #_{$table} where slugvi=? and type=? and find_in_set('hienthi',status) limit 1", array($segment,'tin-tuc'));
+        else
+        {
+            $parentField = $parentFields[$table];
+            $row = $d->rawQueryOne("select id,namevi,descvi,slugvi,photo,status from #_{$table} where slugvi=? and {$parentField}=? and type=? and find_in_set('hienthi',status) limit 1", array($segment,$parentId,'tin-tuc'));
+        }
+        if(empty($row) || (int)($row['id'] ?? 0) <= 0 || !ptsNewsPublished($row['status'] ?? '') || ptsNewsSlug($row['slugvi'] ?? '') !== $segment) return null;
+        $parentId = (int)$row['id'];
+    }
+    $row['_pts_public_photo'] = isset($row['photo']) ? $row['photo'] : '';
+    $metadata = array('type'=>'tin-tuc','level'=>$categoryType,'path'=>implode('/', $segments));
+    $row['_pts_public_category_metadata'] = $metadata;
+    return array('row'=>$row,'article_field'=>$specs[$categoryType]['article_field'],'metadata'=>$metadata);
 }
 
 function ptsNewsReadingMinutes($content)
@@ -75,7 +110,10 @@ function ptsNewsArticleDto(array $row, array $categories = array(), $featured = 
     if(mb_strlen($description, 'UTF-8') > 180) $description = mb_substr($description, 0, 177, 'UTF-8').'…';
     $category = null;
     $categoryId = isset($row['id_list']) ? (int)$row['id_list'] : 0;
-    if($categoryId > 0 && isset($categories[$categoryId])) $category = $categories[$categoryId];
+    if($categoryId > 0 && isset($categories[$categoryId])) {
+        $category = $categories[$categoryId];
+        if(isset($row['_pts_public_category_metadata']) && is_array($row['_pts_public_category_metadata'])) $category = array_merge($category, $row['_pts_public_category_metadata']);
+    }
     $date = !empty($row['date_created']) ? date('Y-m-d', (int)$row['date_created']) : '';
     return array(
         'id' => $id,
@@ -124,6 +162,8 @@ function ptsNewsCtaDto(array $rows, $hotline = '')
 
 function ptsNewsPayload(array $categories, array $rows, array $featuredRows, array $intro, $introConfigured, array $ctaRows, $ctaConfigured, $page, $total, $query, $category, $hotline, $heroEnabled)
 {
+    $categoryMetadata = is_array($category) && isset($category['_pts_public_category_metadata']) && is_array($category['_pts_public_category_metadata']) ? $category['_pts_public_category_metadata'] : array();
+    if($category) $category = ptsNewsCategoryDto($category, $categoryMetadata);
     $categoryMap = array();
     $categoryDtos = array();
     foreach($categories as $row) {

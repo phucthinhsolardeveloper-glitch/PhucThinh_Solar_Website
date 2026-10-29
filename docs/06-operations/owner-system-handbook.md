@@ -69,7 +69,8 @@ Internet
   └── DNS phucthinhsolar.com
        └── VPS 222.255.182.182
             └── Caddy :80/:443
-                 └── Apache/PHP 8.1 container
+                 ├── Nuxt SSR container (public HTML)
+                 └── Apache/PHP 8.1 container (API/Admin/session/media)
                       └── MariaDB 10.11 (mạng Docker private)
 
 Dữ liệu production sống ngoài image
@@ -90,9 +91,9 @@ không tái tạo được; luôn backup trước thao tác có thể ghi chúng
 | Kiểm tra trước deploy | `scripts/predeploy-local.sh` + Playwright | Test local có fixture rồi tự dọn |
 | Backup local | `scripts/backup-local.sh` | Chỉ tạo file trong `backup/local` |
 | Thử restore local | `scripts/test-backup-restore-local.sh` | Tạo DB tạm rồi tự xóa |
-| Deploy thường | `scripts/deploy-production.sh --safe` | Đổi image; không tự migration |
-| Deploy frontend nhanh | `scripts/deploy-production.sh --fast` | Đổi image; backup DB-only |
-| Rollback code | VPS `scripts/rollback-release.sh` | Đổi image; không đụng DB/upload |
+| Deploy thường | `scripts/deploy-production.sh --safe` | Đổi PHP + Nuxt image; không tự migration |
+| Deploy frontend nhanh | `scripts/deploy-production.sh --fast` | Đổi PHP + Nuxt image; backup DB-only |
+| Rollback code | VPS `scripts/rollback-release.sh` | Khôi phục PHP + Nuxt image và runtime config; không đụng DB/upload |
 | Backup production | VPS `scripts/backup.sh` | Tạo backup; DB bị khóa ghi ngắn lúc dump |
 | Thử restore production backup | VPS `scripts/restore-check.sh` | Chỉ container DB tạm |
 | Restore sang VPS mới | VPS `scripts/restore-initial.sh` | Có; chỉ chấp nhận DB/upload rỗng |
@@ -218,8 +219,8 @@ deploy yêu cầu working tree sạch và `HEAD` khớp upstream.
 ./scripts/deploy-production.sh --auto --confirm-production
 ```
 
-Script tự làm: so Git với image active → test theo mode → package/checksum →
-kiểm VPS → backup → upload → build image → healthcheck → clear cache → schema
+Script tự làm: so Git với PHP image active → test theo mode → package/checksum →
+kiểm VPS → backup → upload → build PHP + Nuxt image → healthcheck cả hai → clear cache → schema
 preflight chỉ đọc → HTTP/Playwright production → log scan.
 
 Chi tiết output và rollback: [Deploy production cho chủ website](deploy-production-owner.md).
@@ -264,16 +265,19 @@ docker compose ps
 ./scripts/verify-stack.sh
 cat state/current-image
 cat state/previous-image
+cat state/current-nuxt-image
+cat state/previous-nuxt-image
 df -h /
 docker system df
 ```
 
-Kỳ vọng: `web` và `db` healthy, proxy running, HTTPS PASS, disk trống trên 30%.
+Kỳ vọng: `web`, `nuxt` và `db` healthy, proxy running, HTTPS PASS, disk trống trên 30%.
 
 ### 6.2 Đọc log mà không lộ dữ liệu quá mức
 
 ```bash
 docker compose logs --since=30m --tail=200 web
+docker compose logs --since=30m --tail=200 nuxt
 docker compose logs --since=30m --tail=100 proxy
 docker compose logs --since=30m --tail=100 db
 ```
@@ -551,8 +555,9 @@ sha256sum -c SHA256SUMS
 /srv/phucthinhsolar/scripts/verify-stack.sh
 ```
 
-`deploy-release.sh` tự rollback nếu image mới không healthy. Nó không tự chạy
-migration hoặc đổi DNS.
+`deploy-release.sh` tự rollback PHP/Nuxt images cùng runtime config nếu một
+image mới không healthy. Nó không tự chạy migration hoặc đổi DNS. Public HTML
+được Nuxt SSR phục vụ; PHP template/CSS/JS không phải fallback cho public GET.
 
 ### 7.9 Backup timer, runtime image và cutover
 
@@ -653,6 +658,7 @@ backup và phê duyệt; không lưu command chứa password vào tài liệu/hi
 cd /srv/phucthinhsolar
 docker compose ps
 docker compose logs --tail=100 web
+docker compose logs --tail=100 nuxt
 ./scripts/rollback-release.sh
 ./scripts/verify-stack.sh
 ```
@@ -666,6 +672,7 @@ Kiểm image active và clear cache sinh lại được:
 
 ```bash
 cat state/current-image
+cat state/current-nuxt-image
 find shared/caches -maxdepth 1 -type f -name 'cache_*' -delete
 find shared/assets-caches -maxdepth 1 -type f -delete
 ./scripts/verify-stack.sh

@@ -49,16 +49,38 @@ Disallow: /
 "
 		}
 
-		# health_uri để /robots.txt là CỐ Ý, khác với healthcheck của container
-		# web (xem chú thích trong docker-compose.yml). Đây là phép thử "Apache
-		# còn trả lời không" để Caddy quyết định có route hay không; nếu siết
-		# thành GET / đòi 200 thì khi PHP lỗi Caddy sẽ trả 502 và che mất thông
-		# báo lỗi thật, khó chẩn đoán hơn. Cổng gác deploy/rollback là
-		# healthcheck của container, không phải chỗ này.
-		reverse_proxy web:80 {
-			health_uri /robots.txt
-			health_interval 30s
-			health_timeout 5s
+		# PHP remains the business/data backend. Public documents and pages render
+		# in Nuxt; only explicit API, Admin, media and session-action paths reach PHP.
+		@php_backend path /api/* /administrator /administrator/* /upload/* /thumbs/* /watermark/* /wp-content/uploads/* /robots.txt /sitemap.xml
+		@php_session_action {
+			method GET
+			path /account/dang-xuat /account/dang-xuat/ /ngon-ngu/vi /ngon-ngu/vi/ /ngon-ngu/en /ngon-ngu/en/
+		}
+		@php_legacy_media path_regexp legacy_media ^/assets/(?:images/site-visuals/.+\.(?:avif|gif|jpe?g|png|svg|webp)|.+\.(?:pdf|docx?|xlsx?))$
+
+		handle @php_backend {
+			reverse_proxy web:80 {
+				health_uri /robots.txt
+				health_interval 30s
+				health_timeout 5s
+			}
+		}
+
+		handle @php_session_action {
+			reverse_proxy web:80
+		}
+
+		handle @php_legacy_media {
+			reverse_proxy web:80
+		}
+
+		# No PHP template, legacy CSS, or legacy JavaScript fallback for public URLs.
+		handle {
+			reverse_proxy nuxt:3000 {
+				health_uri /
+				health_interval 10s
+				health_timeout 5s
+			}
 		}
 	}
 }

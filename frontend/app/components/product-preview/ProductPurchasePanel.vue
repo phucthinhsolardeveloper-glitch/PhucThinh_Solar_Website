@@ -10,7 +10,7 @@ async function add(goToCart = false) {
   added.value = false
   await mutate({ action: 'add', productId: props.productId, quantity: quantity.value })
   added.value = true
-  if (goToCart) await navigateTo('/migration-cart-preview')
+  if (goToCart) await navigateTo('/gio-hang/')
 }
 </script>
 

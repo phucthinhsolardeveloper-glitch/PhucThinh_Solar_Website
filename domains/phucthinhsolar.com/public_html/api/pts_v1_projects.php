@@ -22,11 +22,21 @@ function ptsProjectsError($status, $code)
 
 try
 {
-    $allowed = array('category', 'page', 'per_page');
+    $allowed = array('category', 'category_type', 'category_path', 'page', 'per_page');
     foreach(array_keys($_GET) as $key) if(!in_array($key, $allowed, true)) ptsProjectsError(400, 'BAD_QUERY');
     foreach($allowed as $key) if(array_key_exists($key, $_GET) && (!is_string($_GET[$key]) || trim($_GET[$key]) === '')) ptsProjectsError(400, 'BAD_QUERY');
     $categorySlug = isset($_GET['category']) ? trim((string)$_GET['category'], '/') : '';
     if($categorySlug !== '' && !preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', $categorySlug)) ptsProjectsError(400, 'BAD_QUERY');
+    $categoryType = isset($_GET['category_type']) ? (string)$_GET['category_type'] : '';
+    $categoryPath = isset($_GET['category_path']) ? trim((string)$_GET['category_path'], '/') : '';
+    $categorySegments = $categoryPath === '' ? array() : explode('/', $categoryPath);
+    if($categoryType !== '' || $categoryPath !== '')
+    {
+        if($categorySlug !== '' || !in_array($categoryType, array('list','cat','item','sub'), true) || !$categorySegments || count($categorySegments) > 4) ptsProjectsError(400, 'BAD_QUERY');
+        $depths = array('list'=>1,'cat'=>2,'item'=>3,'sub'=>4);
+        if(count($categorySegments) !== $depths[$categoryType]) ptsProjectsError(400, 'BAD_QUERY');
+        foreach($categorySegments as $segment) if(!preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', $segment)) ptsProjectsError(400, 'BAD_QUERY');
+    }
     if(isset($_GET['page']) && !preg_match('/^[1-9][0-9]*$/', $_GET['page'])) ptsProjectsError(400, 'BAD_QUERY');
     if(isset($_GET['per_page']) && !preg_match('/^[1-9][0-9]*$/', $_GET['per_page'])) ptsProjectsError(400, 'BAD_QUERY');
     $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
@@ -42,17 +52,24 @@ try
     $categoryRows = $loadRows("select id,namevi,descvi,photo,slugvi,status from #_news_list where type=? and find_in_set('hienthi',status) order by numb,id desc", array('du-an'));
     $categories = array();
     $selectedCategory = null;
+    $categoryResolution = null;
     foreach($categoryRows as $row)
     {
         if(!is_array($row)) continue;
         $categories[] = $row;
         if($categorySlug !== '' && (string)($row['slugvi'] ?? '') === $categorySlug) $selectedCategory = $row;
     }
+    if($categoryType !== '')
+    {
+        $categoryResolution = ptsProjectsResolveCategoryHierarchy($d, $categoryType, $categorySegments);
+        if($categoryResolution === null) ptsProjectsError(404, 'CATEGORY_NOT_FOUND');
+        $selectedCategory = $categoryResolution['row'];
+    }
     if($categorySlug !== '' && $selectedCategory === null) ptsProjectsError(404, 'CATEGORY_NOT_FOUND');
 
     $where = "type=? and find_in_set('hienthi',status)";
     $params = array('du-an');
-    if($selectedCategory !== null) { $where .= ' and id_list=?'; $params[] = (int)$selectedCategory['id']; }
+    if($selectedCategory !== null) { $where .= ' and '.($categoryResolution !== null ? $categoryResolution['article_field'] : 'id_list').'=?'; $params[] = (int)$selectedCategory['id']; }
     $totalRow = $d->rawQueryOne("select count(*) as total from #_news where {$where}", $params);
     $total = is_array($totalRow) && isset($totalRow['total']) ? (int)$totalRow['total'] : 0;
     $offset = ($page - 1) * $perPage;
@@ -76,8 +93,11 @@ try
     foreach($ctaRows as &$row) $row['_pts_public_photo'] = isset($row['photo']) && is_file(ROOT.UPLOAD_NEWS_L.$row['photo']) ? $row['photo'] : (is_file(ROOT.UPLOAD_NEWS_L.'anh-quan-gl-4-9449.jpg') ? 'anh-quan-gl-4-9449.jpg' : '');
     unset($row);
     if(!$ctaRows) $ctaRows[] = array('namevi' => 'Bạn có công trình cần tư vấn?', 'descvi' => 'Đội ngũ Phúc Thịnh Solar sẵn sàng hỗ trợ, tư vấn giải pháp điện mặt trời phù hợp nhất cho nhu cầu của bạn.', 'content1vi' => 'Nhận tư vấn miễn phí', 'status' => 'hienthi', '_pts_public_photo' => is_file(ROOT.UPLOAD_NEWS_L.'anh-quan-gl-4-9449.jpg') ? 'anh-quan-gl-4-9449.jpg' : '');
+    // Include hidden intro rows so an explicit Admin hide suppresses the fallback,
+    // matching the public project hub source.
+    $introRows = $loadRows('select namevi,title_indexvi,descvi,status from #_news where type=? order by numb,id desc', array('project-intro'));
     if(function_exists('closeSessionWrite')) closeSessionWrite();
-    echo json_encode(ptsProjectsPayload($categoryRows, $rows, $featuredRow, $ctaRows, $page, $perPage, $total, $selectedCategory ? ptsProjectsCategoryDto($selectedCategory) : null, is_array($optsetting) && isset($optsetting['hotline']) ? $optsetting['hotline'] : ''), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
+    echo json_encode(ptsProjectsPayload($categoryRows, $rows, $featuredRow, $ctaRows, $page, $perPage, $total, $selectedCategory ? ptsProjectsCategoryDto($selectedCategory) : null, is_array($optsetting) && isset($optsetting['hotline']) ? $optsetting['hotline'] : '', $introRows, $categoryResolution ? $categoryResolution['metadata'] : array()), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
 }
 catch(Throwable $e)
 {

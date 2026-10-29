@@ -17,7 +17,7 @@ export interface PublicSitePayload {
   catalog?: Record<string, PublicCatalogGroup>
   productCategories: PublicProductCategory[]
   productCategoryTree?: PublicProductCategoryNode[]
-  footer?: { companyName: string; contactText: string; policies: PublicFooterPolicy[]; locations: PublicFooterLocation[]; socialLinks: PublicSocialLink[]; trustBadge?: PublicTrustBadge }
+  footer?: { companyName: string; contactText: string; legalName?: string; contactLines?: string[]; policies: PublicFooterPolicy[]; locations: PublicFooterLocation[]; socialLinks: PublicSocialLink[]; trustBadge?: PublicTrustBadge }
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> { return value !== null && typeof value === 'object' && !Array.isArray(value) }
@@ -43,6 +43,8 @@ function isCatalogGroup(value: unknown): value is PublicCatalogGroup {
 }
 function isFooter(value: unknown): value is NonNullable<PublicSitePayload['footer']> {
   if (!isRecord(value) || !isText(value.companyName, true) || !isText(value.contactText, true) || !Array.isArray(value.policies) || !Array.isArray(value.locations) || !Array.isArray(value.socialLinks)) return false
+  if (value.legalName !== undefined && !isText(value.legalName, true)) return false
+  if (value.contactLines !== undefined && (!Array.isArray(value.contactLines) || !value.contactLines.every((line: unknown) => isText(line)))) return false
   if (!value.policies.every((row: unknown) => isRecord(row) && isText(row.label) && isSafeUrl(row.href)) || !value.locations.every((row: unknown) => isRecord(row) && isText(row.name) && isText(row.address) && isSafeUrl(row.mapUrl, true)) || !value.socialLinks.every((row: unknown) => isRecord(row) && isText(row.label) && isSafeUrl(row.href))) return false
   return value.trustBadge === undefined || isRecord(value.trustBadge) && isSafeUrl(value.trustBadge.image) && isSafeUrl(value.trustBadge.href)
 }

@@ -1,0 +1,86 @@
+# Backend/runtime evidence — 2026-10-29 Asia/Bangkok
+
+Scope: read-only requests against local PHP containers and Nuxt SSR. No credentials,
+request bodies containing PII, cookies, database dumps, or raw CMS content are stored.
+
+## Runtime state
+
+- Nuxt worktree: codex/full-nuxt-public-ui-20261028, HEAD aea5bc0.
+- PHP root/master: HEAD 5f616c4.
+- PHP 8080 container: available, HTTP 200 on read-only public APIs.
+- PHP 8088 preview container: available, HTTP 200 on read-only public APIs.
+- Nuxt SSR was available on ports 3110/3111 (PHP origin 8080) and 3112 (PHP origin 8088).
+
+## Read-only API status
+
+| API | PHP 8080 | PHP 8088 |
+|---|---:|---:|
+| pts_v1_site.php | 200 | 200 |
+| pts_v1_home.php | 200 | 200 |
+| pts_v1_catalog.php | 200 | 200 |
+| pts_v1_news.php | 200 | 200 |
+| pts_v1_projects.php | 200 | 200 |
+| pts_v1_solutions.php | 200 | 200 |
+| pts_v1_dealer.php | 200 | 200 |
+| pts_v1_contact.php | 200 | 200 |
+| pts_v1_about.php | 200 | 200 |
+| pts_v1_gallery.php | 200 | 200 |
+| pts_v1_video.php | 200 | 200 |
+
+POST negative checks:
+
+- pts_v1_lead_form.php with {} → 400 BAD_KIND.
+- pts_v1_cart_mutate.php with {} → 419 INVALID_SESSION.
+- pts_v1_review.php with {} → 419 invalid review session.
+- No Access-Control-Allow-Origin header was returned for an untrusted Origin.
+- GET API responses include X-Content-Type-Options: nosniff and no-store cache headers.
+
+## Nuxt bridge status
+
+The following read-only bridges returned 200 on port 3110: site, home, catalog,
+news, projects, solutions, dealer, contact, about, gallery, video, and search.
+Valid first records from PHP were accepted by their corresponding detail bridges:
+news-detail, project-detail, solution-detail, and product-detail returned 200.
+
+The gallery and video datasets were empty in the current CMS fixture; their API
+responses returned 200 with total: 0 and the frontend empty-state copy was verified
+in source as Không tìm thấy kết quả.
+
+## Confirmed failures
+
+1. PHP 8080 does not expose /api/pts_v1_public_route_resolve.php (HTTP 404 HTML).
+   PHP 8088 does expose it and returns JSON. With Nuxt configured to PHP 8080,
+   /_migration/resolve-public-slug?slug=duoc-gi-khi-hop-tac-cung-phuc-thinh-solar
+   returns 502 Public route resolver unavailable.
+2. PHP 8088 resolver returns canonicalPath, while Nuxt contract
+   frontend/shared/contracts/public-route-resolution.ts requires canonical.
+   With Nuxt configured to PHP 8088, the same bridge returns 502
+   Invalid public route resolution contract. News/project legacy slug SSR routes
+   consequently rendered 502 in the runtime smoke.
+3. /_migration/product-detail?slug=unknown-slug returns 502 although PHP returns
+   404 PRODUCT_NOT_FOUND; product-detail.get.ts does not pass through 404.
+4. Direct Nuxt origin requests to /upload/* and /assets/* returned 404 preview
+   media in Playwright. This is expected only when Caddy/media proxy is present;
+   a full cutover smoke must run through the Caddy route that forwards legacy media
+   to PHP. Direct Nitro must not be used as the public production origin.
+
+## SSR route smoke
+
+With PHP origin 8080, list routes returned 200, but bare news/project routes
+returned 502 because the resolver endpoint is absent. With PHP origin 8088,
+the same routes still returned 502 because the preview DTO used canonicalPath
+while the Nuxt validator requires canonical. Static product and solution routes
+returned 200. The browser console also logged only expected preview-media 404s
+when running direct Nitro without Caddy.
+
+## Data projection divergence
+
+Top-level keys differ between PHP 8080 and PHP 8088:
+
+- home 8080 has summary fields hero,categories,campaigns,solutions,process,productGroups; 8088 additionally has campaignsConfigured.
+- projects 8080 lacks intro and featuredBenefits; 8088 includes both.
+- dealer 8080 lacks intro; 8088 includes it.
+
+Counts and dealer stats were not hardcoded in this audit. Both origins currently
+returned dealer stats 5, 50, 5000. The previous 5/41/4.012 screenshot cannot
+be reconciled without identifying the production DB/content snapshot.

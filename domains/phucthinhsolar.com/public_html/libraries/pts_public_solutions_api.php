@@ -44,6 +44,53 @@ function ptsPublicSolutionsHotline($hotline)
     );
 }
 
+function ptsPublicSolutionsResolveCategory($d, $categoryType, array $segments)
+{
+    $specs = array('list'=>array('depth'=>1,'field'=>'id_list'),'cat'=>array('depth'=>2,'field'=>'id_cat'),'item'=>array('depth'=>3,'field'=>'id_item'),'sub'=>array('depth'=>4,'field'=>'id_sub'));
+    if(!isset($specs[$categoryType]) || count($segments) !== $specs[$categoryType]['depth']) return null;
+    $tables = array('news_list','news_cat','news_item','news_sub');
+    $parents = array('news_cat'=>'id_list','news_item'=>'id_cat','news_sub'=>'id_item');
+    $parentId = 0;
+    $row = null;
+    foreach($segments as $index=>$segment)
+    {
+        if(!is_string($segment) || !preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', $segment)) return null;
+        $table = $tables[$index];
+        if($index === 0) $row = $d->rawQueryOne("select id,namevi,descvi,slugvi,photo,status from #_{$table} where slugvi=? and type=? and find_in_set('hienthi',status) limit 1", array($segment,'giai-phap'));
+        else
+        {
+            $parentField = $parents[$table];
+            $row = $d->rawQueryOne("select id,namevi,descvi,slugvi,photo,status from #_{$table} where slugvi=? and {$parentField}=? and type=? and find_in_set('hienthi',status) limit 1", array($segment,$parentId,'giai-phap'));
+        }
+        if(empty($row) || (int)($row['id'] ?? 0) <= 0 || !solutionHubHasStatus($row, 'hienthi') || (string)($row['slugvi'] ?? '') !== $segment) return null;
+        $parentId = (int)$row['id'];
+    }
+    $row['_pts_public_photo'] = !empty($row['photo']) && defined('ROOT') && defined('UPLOAD_NEWS_L') && is_file(ROOT.UPLOAD_NEWS_L.$row['photo']) ? '/'.ltrim(UPLOAD_NEWS_L.$row['photo'], '/') : '';
+    return array('row'=>$row,'id'=>(int)$row['id'],'article_field'=>$specs[$categoryType]['field'],'metadata'=>array('type'=>'giai-phap','level'=>$categoryType,'path'=>implode('/', $segments)));
+}
+
+function ptsPublicSolutionsCategoryPayload(array $category, array $solutionRows, array $basePayload, $page = 1, $total = 0)
+{
+    $row = $category['row'];
+    $cards = array();
+    foreach(solutionHubSelect($solutionRows) as $solution)
+    {
+        if(!is_array($solution) || (int)($solution[$category['article_field']] ?? 0) !== (int)$category['id']) continue;
+        $slug = solutionHubField($solution, 'slug', 'vi');
+        if($slug === '') continue;
+        $image = ptsPublicSolutionsPath(isset($solution['_pts_public_photo']) ? $solution['_pts_public_photo'] : '');
+        $cards[] = array('title'=>solutionHubNavName($solution, 'vi'),'description'=>solutionHubField($solution,'desc','vi'),'slug'=>$slug,'url'=>'/giai-phap/'.$slug.'/','image'=>$image,'actionLabel'=>'Xem giải pháp');
+    }
+    $name = trim(strip_tags(html_entity_decode((string)($row['namevi'] ?? ''), ENT_QUOTES, 'UTF-8')));
+    $description = trim(strip_tags(html_entity_decode((string)($row['descvi'] ?? ''), ENT_QUOTES, 'UTF-8')));
+    return array(
+        'schemaVersion'=>1,'entity'=>'solution-category','slug'=>(string)$row['slugvi'],'canonical'=>'/'.(string)$row['slugvi'].'/',
+        'category'=>array_merge(array('id'=>(int)$row['id'],'slug'=>(string)$row['slugvi'],'name'=>$name,'description'=>$description,'image'=>ptsPublicSolutionsPath($row['_pts_public_photo'] ?? '')),$category['metadata']),
+        'title'=>$name,'description'=>$description !== '' ? $description : 'Khám phá các giải pháp phù hợp với nhu cầu thực tế và quy mô công trình của bạn.',
+        'cards'=>$cards,'pagination'=>array('page'=>(int)$page,'perPage'=>12,'total'=>max(0,(int)$total)),'cta'=>$basePayload['cta'] ?? null,'labels'=>array('choices'=>'Khám phá các giải pháp','choice'=>'Xem giải pháp','empty'=>'Các giải pháp đang được cập nhật. Hãy liên hệ để được tư vấn theo nhu cầu.','consult'=>'Nhận tư vấn')
+    );
+}
+
 
 function ptsPublicSolutionsEditorialToc($html)
 {

@@ -4,6 +4,7 @@ import { isPublicDealerPayload } from '#shared/contracts/public-dealer'
 import type { PublicSitePayload } from '#shared/contracts/public-site'
 import { isPublicSitePayload } from '#shared/contracts/public-site'
 import DealerSections from '~/components/dealer/DealerSections.vue'
+import DealerOverview from '~/components/dealer/DealerOverview.vue'
 
 const fallbackSite: PublicSitePayload = { schemaVersion: 1, brand: { name: 'Phúc Thịnh Solar', hotline: '' }, productCategories: [] }
 const { data: siteData } = await useFetch<unknown>('/_migration/site', { default: () => fallbackSite })
@@ -69,31 +70,18 @@ useSeoMeta({ title: 'Đại lý — internal preview', robots: 'noindex, nofollo
         </nav>
 
         <div class="mx-auto w-full max-w-[1766px] px-4">
-          <!--
-            PHÁT HIỆN KHI ĐỐI CHIẾU ẢNH: bản trước render `overview.title` và
-            `overview.description` ở ĐÂY (cột trái) RỒI LẶP LẠI lần nữa trong
-            DealerSections cho section sản phẩm — cùng một dữ liệu xuất hiện
-            hai lần. Ảnh production cho thấy cột trái này là một đoạn giới
-            thiệu KHÔNG CÓ TIÊU ĐỀ, khác hẳn nội dung "AN TÂM VỀ CHẤT LƯỢNG..."
-            xuất hiện riêng phía dưới cùng danh sách sản phẩm.
-            CÒN THIẾU: DTO không có trường nào cho đoạn giới thiệu không tiêu
-            đề này. Bỏ trống thay vì lặp lại overview — lặp dữ liệu sai vị trí
-            còn gây hiểu nhầm hơn là để trống có ghi chú.
-          -->
-          <section class="grid grid-cols-1 items-start gap-8 py-10 nav:grid-cols-[1fr_27rem] nav:gap-12 nav:py-16">
-            <div />
+          <div class="grid grid-cols-1 items-start gap-8 py-10 min-[992px]:grid-cols-[minmax(0,1fr)_minmax(360px,520px)] min-[992px]:gap-[clamp(44px,5vw,84px)] min-[992px]:py-12">
+            <DealerOverview :dealer="dealer" class="max-[991px]:order-2" />
 
-            <aside id="dang-ky-dai-ly" class="rounded-btn bg-navy-950 p-6 text-white nav:p-8">
+            <aside id="dang-ky-dai-ly" class="rounded-btn bg-[linear-gradient(145deg,var(--color-navy-950),var(--color-navy-700))] p-6 text-white min-[992px]:sticky min-[992px]:top-6 min-[992px]:p-8">
               <h2 class="mb-4 text-2xl font-black leading-tight">{{ dealer.form.title }}</h2>
               <p class="mb-5 leading-relaxed text-blue-100">{{ dealer.form.note }}</p>
               <DealerLeadForm />
             </aside>
-          </section>
+          </div>
         </div>
 
-        <div class="mx-auto w-full max-w-[1766px] px-4">
-          <DealerSections :dealer="dealer" />
-        </div>
+        <DealerSections :dealer="dealer" />
       </template>
     </main>
 

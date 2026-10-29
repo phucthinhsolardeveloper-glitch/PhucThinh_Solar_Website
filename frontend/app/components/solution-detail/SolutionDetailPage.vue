@@ -83,9 +83,13 @@ onMounted(() => {
         Tích hợp sanitizer: content/extraContent giờ là HTML thật qua
         pts_public_richtext.php, không còn mảng paragraph tách theo dòng.
       -->
-      <div id="noi-dung-giai-phap" class="mx-auto grid w-full max-w-[1440px] grid-cols-1 gap-8 px-4 py-12 min-[768px]:grid-cols-[minmax(220px,280px)_minmax(0,1fr)] min-[768px]:gap-[clamp(32px,4vw,76px)]">
+      <div
+        id="noi-dung-giai-phap"
+        class="mx-auto grid w-full max-w-[1766px] grid-cols-1 gap-8 px-4 py-12"
+        :class="data.solution.content.html && tocItems.length ? 'min-[768px]:grid-cols-[minmax(240px,300px)_minmax(0,1fr)] min-[768px]:gap-[clamp(76px,4.2vw,96px)]' : ''"
+      >
         <aside
-          v-if="tocItems.length"
+          v-if="data.solution.content.html && tocItems.length"
           class="hidden self-start rounded-[3px] bg-navy-800 p-6 min-[768px]:sticky min-[768px]:top-[124px] min-[768px]:block min-[768px]:max-h-[calc(100vh-150px)] min-[768px]:overflow-y-auto"
           aria-label="Mục lục nội dung"
         >
@@ -99,7 +103,7 @@ onMounted(() => {
           </ol>
         </aside>
 
-        <article id="solution-content" class="min-w-0">
+        <article id="solution-content" class="min-w-0 min-[768px]:px-[clamp(30px,3vw,52px)] min-[768px]:py-[46px] [&_h2]:scroll-mt-[124px] [&_h3]:scroll-mt-[124px]">
           <EditorialRichText :content="data.solution.content" />
           <EditorialRichText class="mt-8" :content="data.solution.extraContent" />
           <p v-if="!data.solution.content.html && !data.solution.extraContent.html" class="text-slate-500">Nội dung chi tiết đang được cập nhật.</p>

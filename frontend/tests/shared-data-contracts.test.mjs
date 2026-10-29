@@ -28,13 +28,14 @@ const aboutSample = {
   labels: { story: 'Về Phúc Thịnh Solar', history: 'Lịch sử', people: 'Con người', compass: 'Tầm nhìn', certificates: 'Chứng nhận', timeline: 'Các mốc', certLabel: 'Chứng nhận', certAll: 'Xem tất cả', certDetail: 'Chi tiết' },
 }
 
-const category = { id: 6, name: 'Cá nhân', slug: 'du-an-ca-nhan', url: '/danh-muc-du-an/du-an-ca-nhan/', image: '/upload/news/solar-house.png' }
+const category = { id: 6, name: 'Cá nhân', slug: 'du-an-ca-nhan', description: '', url: '/danh-muc-du-an/du-an-ca-nhan/', image: '/upload/news/solar-house.png' }
 const project = { id: 75, title: 'Dự án điện NLMT hộ anh Quân', slug: 'du-an-dien-nlmt-ho-anh-quan', url: '/du-an-dien-nlmt-ho-anh-quan/', description: '', address: 'Gia Lai', image: '/upload/news/project.png', category, featured: false }
 const projectsSample = {
   schemaVersion: 1,
   locale: 'vi',
   path: '/du-an-da-thuc-hien/',
   title: 'Dự án đã thực hiện',
+  intro: { visible: true, eyebrow: 'Công trình thực tế', title: 'Dự án đã thực hiện', description: 'Giới thiệu CMS' },
   category: null,
   categories: [category],
   featured: { ...project, featured: true },

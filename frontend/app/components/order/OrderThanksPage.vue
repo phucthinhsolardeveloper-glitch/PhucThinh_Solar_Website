@@ -20,7 +20,7 @@ function formatMoney(value: number): string {
       <div v-else-if="error || !payload" class="rounded-btn border border-amber-200 bg-amber-50 p-8 text-left text-amber-900">
         <h1 class="mb-2 text-2xl font-black">Không tìm thấy phiên xác nhận đơn hàng</h1>
         <p class="mb-4">Liên kết có thể đã hết hạn hoặc không thuộc phiên trình duyệt hiện tại.</p>
-        <NuxtLink to="/migration-home-preview" class="font-bold underline">Về trang chủ</NuxtLink>
+        <NuxtLink to="/" class="font-bold underline">Về trang chủ</NuxtLink>
       </div>
       <div v-else class="rounded-btn border border-emerald-200 bg-emerald-50/40 px-6 py-12">
         <div class="mx-auto mb-5 grid h-16 w-16 place-items-center rounded-full bg-emerald-600 text-3xl font-black text-white" aria-hidden="true">✓</div>
@@ -32,8 +32,8 @@ function formatMoney(value: number): string {
           <strong class="mt-1 block text-2xl text-red-600">{{ formatMoney(payload.order.totalPrice) }}</strong>
         </div>
         <div class="mt-8 flex flex-wrap justify-center gap-3">
-          <NuxtLink to="/migration-home-preview" class="inline-flex min-h-11 items-center rounded-chip bg-gold-500 px-6 font-extrabold text-navy-950 no-underline">Về trang chủ</NuxtLink>
-          <NuxtLink to="/migration-catalog-preview" class="inline-flex min-h-11 items-center rounded-chip border border-navy-800 px-6 font-bold text-navy-800 no-underline">Xem thêm sản phẩm</NuxtLink>
+          <NuxtLink to="/" class="inline-flex min-h-11 items-center rounded-chip bg-gold-500 px-6 font-extrabold text-navy-950 no-underline">Về trang chủ</NuxtLink>
+          <NuxtLink to="/san-pham/" class="inline-flex min-h-11 items-center rounded-chip border border-navy-800 px-6 font-bold text-navy-800 no-underline">Xem thêm sản phẩm</NuxtLink>
         </div>
       </div>
     </main>

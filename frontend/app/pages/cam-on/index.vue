@@ -1,11 +1,9 @@
 <script setup lang="ts">
 import { isRuntimeFlagEnabled } from '#shared/public-route-gate'
 import OrderThanksPage from '~/components/order/OrderThanksPage.vue'
-import orderSuccessPublicRoute from '~/middleware/order-success-public-route'
 
 definePageMeta({
   layout: false,
-  middleware: orderSuccessPublicRoute,
 })
 
 const config = useRuntimeConfig()

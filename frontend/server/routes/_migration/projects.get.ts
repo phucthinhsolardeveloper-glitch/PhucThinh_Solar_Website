@@ -4,7 +4,7 @@ import { fetchMigrationPayload, requireMigrationGet } from '../../utils/migratio
 export default defineEventHandler(async (event) => {
   requireMigrationGet(event)
   const query = getQuery(event)
-  const allowed = new Set(['category', 'page', 'per_page'])
+  const allowed = new Set(['category', 'category_type', 'category_path', 'page', 'per_page'])
   if (Object.keys(query).some((key) => !allowed.has(key))) throw createError({ statusCode: 400, statusMessage: 'Bad Query' })
   const params = new URLSearchParams()
   for (const key of allowed) {

@@ -42,9 +42,37 @@ function ptsProjectsCategoryDto(array $row)
         'id' => $id,
         'name' => $name,
         'slug' => $slug,
+        'description' => ptsProjectsPlainText(isset($row['descvi']) ? $row['descvi'] : ''),
         'url' => '/danh-muc-du-an/'.$slug.'/',
         'image' => ptsProjectsMedia(isset($row['_pts_public_photo']) ? $row['_pts_public_photo'] : '')
     );
+}
+
+function ptsProjectsResolveCategoryHierarchy($d, $categoryType, array $segments)
+{
+    $specs = array('list'=>array('field'=>'id_list','depth'=>1),'cat'=>array('field'=>'id_cat','depth'=>2),'item'=>array('field'=>'id_item','depth'=>3),'sub'=>array('field'=>'id_sub','depth'=>4));
+    if(!isset($specs[$categoryType]) || count($segments) !== $specs[$categoryType]['depth']) return null;
+    foreach($segments as $segment) if(!is_string($segment) || ptsProjectsSlug($segment) !== $segment) return null;
+    $tables = array('news_list','news_cat','news_item','news_sub');
+    $parents = array('news_cat'=>'id_list','news_item'=>'id_cat','news_sub'=>'id_item');
+    $parentId = 0;
+    $row = null;
+    foreach($segments as $index=>$segment)
+    {
+        $table = $tables[$index];
+        if($index === 0) $row = $d->rawQueryOne("select id,namevi,descvi,slugvi,photo,status from #_{$table} where slugvi=? and type=? and find_in_set('hienthi',status) limit 1", array($segment,'du-an'));
+        else
+        {
+            $parentField = $parents[$table];
+            $row = $d->rawQueryOne("select id,namevi,descvi,slugvi,photo,status from #_{$table} where slugvi=? and {$parentField}=? and type=? and find_in_set('hienthi',status) limit 1", array($segment,$parentId,'du-an'));
+        }
+        if(empty($row) || (int)($row['id'] ?? 0) <= 0 || !ptsProjectsPublished($row['status'] ?? '') || ptsProjectsSlug($row['slugvi'] ?? '') !== $segment) return null;
+        $parentId = (int)$row['id'];
+    }
+    $row['_pts_public_photo'] = isset($row['photo']) ? $row['photo'] : '';
+    $metadata = array('type'=>'du-an','level'=>$categoryType,'path'=>implode('/', $segments));
+    $row['_pts_public_category_metadata'] = $metadata;
+    return array('row'=>$row,'article_field'=>$specs[$categoryType]['field'],'metadata'=>$metadata);
 }
 
 function ptsProjectsProjectDto(array $row, array $categories, $featured = false)
@@ -93,7 +121,7 @@ function ptsProjectsCtaDto(array $rows, $hotline = '')
     return null;
 }
 
-function ptsProjectsPayload(array $categories, array $rows, array $featuredRow, array $ctaRows, $page, $perPage, $total, $category = null, $hotline = '')
+function ptsProjectsPayload(array $categories, array $rows, array $featuredRow, array $ctaRows, $page, $perPage, $total, $category = null, $hotline = '', array $introRows = array(), array $categoryMetadata = array())
 {
     $categoryMap = array();
     $categoryDtos = array();
@@ -117,11 +145,33 @@ function ptsProjectsPayload(array $categories, array $rows, array $featuredRow, 
     {
         $featured = ptsProjectsProjectDto($featuredRow, $categoryMap, true);
     }
+    $introVisibleRows = array_values(array_filter($introRows, static function($row) { return is_array($row) && ptsProjectsPublished(isset($row['status']) ? $row['status'] : ''); }));
+    // Match project_hub.php: no configured row enables the fallback intro;
+    // an explicitly configured but hidden row suppresses it on the root page.
+    $introVisible = $category !== null || !$introRows || (bool)$introVisibleRows;
+    $introRow = $introVisibleRows ? reset($introVisibleRows) : array();
+    $introTitle = ptsProjectsPlainText(isset($introRow['namevi']) ? $introRow['namevi'] : '');
+    $introDescription = ptsProjectsPlainText(isset($introRow['descvi']) ? $introRow['descvi'] : '');
+    if($category !== null)
+    {
+        $introTitle = 'Dự án '.ptsProjectsPlainText(isset($category['name']) ? $category['name'] : '');
+        $categoryDescription = ptsProjectsPlainText(isset($category['description']) ? $category['description'] : '');
+        if($categoryDescription !== '') $introDescription = $categoryDescription;
+    }
+    if($introTitle === '') $introTitle = 'Dự án đã thực hiện';
+    if($introDescription === '') $introDescription = 'Phúc Thịnh Solar tự hào đồng hành cùng khách hàng kiến tạo những công trình năng lượng sạch, bền vững cho tương lai.';
+    if($category && $categoryMetadata) $category = array_merge($category, $categoryMetadata);
     return array(
         'schemaVersion' => 1,
         'locale' => 'vi',
         'path' => '/du-an-da-thuc-hien/',
         'title' => $category ? 'Dự án '.($category['name'] ?? '') : 'Dự án đã thực hiện',
+        'intro' => array(
+            'visible' => $introVisible,
+            'eyebrow' => ptsProjectsPlainText(isset($introRow['title_indexvi']) ? $introRow['title_indexvi'] : ''),
+            'title' => $introTitle,
+            'description' => $introDescription
+        ),
         'category' => $category,
         'categories' => $categoryDtos,
         'featured' => $featured,

@@ -18,7 +18,7 @@ await ready
 useSeoMeta({
   title: computed(() => product.value?.name || 'Sản phẩm — Phúc Thịnh Solar'),
   description: computed(() => product.value?.summary || ''),
-  robots: computed(() => indexable.value ? 'index, follow' : 'noindex, nofollow, noarchive'),
+  robots: computed(() => indexable.value && !!product.value && !error.value ? 'index, follow' : 'noindex, nofollow, noarchive'),
 })
 </script>
 <template>

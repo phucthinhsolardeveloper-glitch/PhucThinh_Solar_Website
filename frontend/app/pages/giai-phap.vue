@@ -8,11 +8,9 @@ import SolutionCards from '~/components/solutions/SolutionCards.vue'
 import SolutionsEquipment from '~/components/solutions/SolutionsEquipment.vue'
 import SolutionsCta from '~/components/solutions/SolutionsCta.vue'
 import EditorialRichText from '~/components/editorial/EditorialRichText.vue'
-import solutionsPublicRoute from '~/middleware/solutions-public-route'
 
 definePageMeta({
   layout: false,
-  middleware: solutionsPublicRoute,
 })
 
 const config = useRuntimeConfig()
@@ -26,7 +24,7 @@ const { data, error } = await useAsyncData<PublicSolutionsPayload>('public-solut
 
 useSeoMeta({
   title: computed(() => data.value?.title || 'Giải pháp — Phúc Thịnh Solar'),
-  robots: computed(() => indexable.value ? 'index, follow' : 'noindex, nofollow, noarchive'),
+  robots: computed(() => indexable.value && !!data.value && !error.value ? 'index, follow' : 'noindex, nofollow, noarchive'),
 })
 </script>
 

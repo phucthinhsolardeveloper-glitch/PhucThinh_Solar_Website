@@ -19,14 +19,26 @@ function ptsNewsError($status, $code) {
 }
 
 try {
-    $allowed = array('q', 'p', 'category');
+    $allowed = array('q', 'p', 'category', 'category_type', 'category_path');
     foreach(array_keys($_GET) as $key) if(!in_array($key, $allowed, true)) ptsNewsError(400, 'BAD_QUERY');
     foreach($allowed as $key) if(array_key_exists($key, $_GET) && (!is_string($_GET[$key]) || (in_array($key, array('p', 'category'), true) && trim($_GET[$key]) === ''))) ptsNewsError(400, 'BAD_QUERY');
     $query = isset($_GET['q']) ? mb_substr(trim($_GET['q']), 0, 120, 'UTF-8') : '';
     $page = isset($_GET['p']) ? (int)$_GET['p'] : 1;
     $categorySlug = isset($_GET['category']) ? trim((string)$_GET['category'], '/') : '';
+    $categoryType = isset($_GET['category_type']) ? (string)$_GET['category_type'] : ($categorySlug !== '' ? 'list' : '');
+    $categorySegments = array();
+    if(isset($_GET['category_path'])) {
+        if(!isset($_GET['category_type']) || !is_string($_GET['category_path'])) ptsNewsError(400, 'BAD_QUERY');
+        $categorySegments = explode('/', trim($_GET['category_path'], '/'));
+        if(in_array('', $categorySegments, true) || count($categorySegments) > 4) ptsNewsError(400, 'BAD_QUERY');
+        if($categorySlug !== '' && end($categorySegments) !== $categorySlug) ptsNewsError(400, 'BAD_QUERY');
+        $categorySlug = (string)end($categorySegments);
+    } elseif($categorySlug !== '') $categorySegments = array($categorySlug);
+    if($categoryType !== '' && !in_array($categoryType, array('list','cat','item','sub'), true)) ptsNewsError(400, 'BAD_QUERY');
+    if($categoryType !== '' && $categorySlug === '') ptsNewsError(400, 'BAD_QUERY');
     if(isset($_GET['p']) && !preg_match('/^[1-9][0-9]*$/', $_GET['p'])) ptsNewsError(400, 'BAD_QUERY');
     if($page > 1000000 || ($categorySlug !== '' && !preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', $categorySlug))) ptsNewsError(400, 'BAD_QUERY');
+    foreach($categorySegments as $segment) if(!preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', $segment)) ptsNewsError(400, 'BAD_QUERY');
 
     require_once __DIR__.'/config.php';
     require_once LIBRARIES.'pts_public_news_api.php';
@@ -42,7 +54,12 @@ try {
         $categories[] = $row;
         if($categorySlug !== '' && (string)($row['slugvi'] ?? '') === $categorySlug) $selectedCategory = $row;
     }
-    if($categorySlug !== '' && $selectedCategory === null) ptsNewsError(404, 'CATEGORY_NOT_FOUND');
+    $categoryResolution = null;
+    if($categorySlug !== '') {
+        $categoryResolution = ptsNewsResolveCategoryHierarchy($d, $categoryType, $categorySegments);
+        if($categoryResolution === null) ptsNewsError(404, 'CATEGORY_NOT_FOUND');
+        $selectedCategory = $categoryResolution['row'];
+    }
 
     $fields = 'id,id_list,namevi,slugvi,photo,descvi,contentvi,date_created,status';
     $where = "type=? and find_in_set('hienthi',status) and slugvi<>''";
@@ -58,7 +75,7 @@ try {
         $featuredRows = $loadRows('select '.$fields.' from #_news where '.$heroWhere.' order by numb,date_created desc,id desc limit 3', $params);
         if($featuredRows) { $where .= ' and id not in ('.implode(',', array_fill(0, count($featuredRows), '?')).')'; foreach($featuredRows as $row) $params[] = (int)$row['id']; }
     }
-    if($selectedCategory) { $where .= ' and id_list=?'; $params[] = (int)$selectedCategory['id']; }
+    if($selectedCategory) { $where .= ' and '.$categoryResolution['article_field'].'=?'; $params[] = (int)$selectedCategory['id']; }
     if($query !== '') {
         $pattern = '%'.strtr($query, array('!' => '!!', '%' => '!%', '_' => '!_')).'%';
         $where .= " and (namevi like ? escape '!' or descvi like ? escape '!' or contentvi like ? escape '!')";
@@ -73,7 +90,7 @@ try {
     $ctaRows = $loadRows('select namevi,descvi,content1vi,photo,status from #_news where type=? order by numb,id desc', array('news-cta'));
     foreach($ctaRows as &$row) $row['_pts_public_photo'] = isset($row['photo']) && is_file(ROOT.UPLOAD_NEWS_L.$row['photo']) ? $row['photo'] : ''; unset($row);
     if(function_exists('closeSessionWrite')) closeSessionWrite();
-    echo json_encode(ptsNewsPayload($categories, $rows, $featuredRows, $intro, $introConfigured, $ctaRows, (bool)$ctaRows, $page, $total, $query, $selectedCategory ? ptsNewsCategoryDto($selectedCategory) : null, is_array($optsetting) && isset($optsetting['hotline']) ? $optsetting['hotline'] : '', $heroEnabled), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
+    echo json_encode(ptsNewsPayload($categories, $rows, $featuredRows, $intro, $introConfigured, $ctaRows, (bool)$ctaRows, $page, $total, $query, $selectedCategory, is_array($optsetting) && isset($optsetting['hotline']) ? $optsetting['hotline'] : '', $heroEnabled), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
 } catch(Throwable $e) {
     error_log('pts_v1_news: '.$e->getMessage());
     http_response_code(500);

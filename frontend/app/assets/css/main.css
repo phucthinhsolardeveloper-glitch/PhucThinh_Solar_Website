@@ -8,9 +8,8 @@
    Bảng màu KHÔNG được bịa. Nguồn của từng giá trị được đánh dấu ngay tại chỗ:
 
      [DUYỆT]  = token đã duyệt, lấy nguyên văn từ
-                frontend/app/assets/css/tokens.css và
-                domains/phucthinhsolar.com/public_html/assets/css/design-tokens.css
-                (cùng giá trị ở cả hai nơi — đã đối chiếu 2026-10-26).
+                domains/phucthinhsolar.com/public_html/assets/css/design-tokens.css.
+                tokens.css chỉ giữ reset toàn cục; bảng màu Tailwind v4 ở đây.
      [SUY RA] = bậc trung gian Tailwind bắt buộc phải có cho một thang 50-950,
                 nội suy giữa hai bậc [DUYỆT] liền kề. Chỉ dùng cho nền/viền/tint,
                 KHÔNG dùng cho logo, nút chính hay trạng thái đang chọn.

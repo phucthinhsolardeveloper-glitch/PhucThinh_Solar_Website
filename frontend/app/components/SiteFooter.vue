@@ -27,16 +27,9 @@ function telHrefFor(value: string): string {
   return `tel:${value.replace(/[^+\d]/g, '')}`
 }
 
-/**
- * `contactText` là một khối văn bản tự do từ CMS (địa chỉ, email, website, giờ
- * làm việc nằm chung). Bản PHP render nó thành nhiều thẻ <p> rời.
- * Tách theo dòng để giữ đúng nhịp đọc đó thay vì đổ ra một đoạn dính liền.
- */
+/* DTO mới giữ từng dòng CMS; fallback cho payload cũ trong lúc cutover. */
 const contactLines = computed(() =>
-  (footer.value?.contactText ?? '')
-    .split(/\r?\n/)
-    .map((line) => line.trim())
-    .filter(Boolean),
+  footer.value?.contactLines ?? (footer.value?.contactText ?? '').split(/\r?\n/).map((line) => line.trim()).filter(Boolean),
 )
 
 const telHref = computed(() => telHrefFor(hotline.value))
@@ -77,11 +70,11 @@ const telHref = computed(() => telHrefFor(hotline.value))
       <!-- Cột 2: thông tin pháp lý và hai đường dây nóng. -->
       <div>
         <h2 class="mb-[15px] border-b border-white/12 pb-[10px] text-[16px] font-extrabold uppercase tracking-[.02em] text-gold-400">
-          Thông tin doanh nghiệp
+          {{ footer?.companyName || 'Thông tin doanh nghiệp' }}
         </h2>
 
-        <p v-if="footer?.companyName" class="text-[17px] font-black leading-[1.48] text-white">
-          {{ footer.companyName }}
+        <p v-if="footer?.legalName" class="text-[17px] font-black leading-[1.48] text-white">
+          {{ footer.legalName }}
         </p>
 
         <div v-if="contactLines.length" class="mt-4 text-[16px] leading-[1.78]">
@@ -153,7 +146,7 @@ const telHref = computed(() => telHrefFor(hotline.value))
             target="_blank"
             rel="noopener noreferrer"
           >
-            <img :src="footer.trustBadge.image" alt="Đã thông báo Bộ Công Thương" width="200" height="76" class="block h-auto w-full">
+            <img :src="trustBadgeSrc(footer.trustBadge.image)" alt="Đã thông báo Bộ Công Thương" width="200" height="76" class="block h-auto w-full">
           </a>
           <div v-if="footer?.socialLinks.length" class="mt-[18px]">
             <h3 class="mb-2 text-[13px] font-extrabold text-white">Kết nối</h3>

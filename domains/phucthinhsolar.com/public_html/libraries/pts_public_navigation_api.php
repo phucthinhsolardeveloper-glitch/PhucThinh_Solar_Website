@@ -19,6 +19,24 @@ function ptsPublicNavText($value)
     return trim(preg_replace('/[\x00-\x1F\x7F]+/u', ' ', strip_tags($value)));
 }
 
+function ptsPublicNavFooterContact($value)
+{
+    $html = html_entity_decode(ptsPublicNavScalar($value), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    $html = preg_replace('/MST:\s*5901151081\b.*?(?:<br\s*\/?>|$)/iu', '', $html, 1);
+    $legalName = '';
+    if(preg_match('~<strong\b[^>]*>(.*?)</strong>~is', $html, $match)) {
+        $legalName = ptsPublicNavText($match[1]);
+        $html = preg_replace('~<strong\b[^>]*>.*?</strong>~is', '', $html, 1);
+    }
+    $html = preg_replace('~<\s*(?:br\b[^>]*|/?(?:p|div|li)\b[^>]*)>~i', "\n", $html);
+    $lines = array();
+    foreach(preg_split('/\r?\n/', strip_tags($html)) as $line) {
+        $line = ptsPublicNavText($line);
+        if($line !== '' && !preg_match('/^MST\s*:/iu', $line)) $lines[] = $line;
+    }
+    return array('legalName'=>$legalName, 'lines'=>$lines);
+}
+
 function ptsPublicNavUrl($value, $fallback = '')
 {
     $value = ptsPublicNavScalar($value);
@@ -250,7 +268,8 @@ function ptsPublicSiteNavigationPayload(array $input)
     $brand = array('name'=>$brandName,'hotline'=>ptsPublicNavText(isset($options['hotline'])?$options['hotline']:''),'logo'=>isset($asset['logo'])?$asset['logo']:'','logoFooter'=>isset($asset['logoFooter'])?$asset['logoFooter']:'');
     $technicalHotline = ptsPublicNavText(isset($options['hotline_technical']) ? $options['hotline_technical'] : '');
     if($technicalHotline !== '') $brand['technicalHotline'] = $technicalHotline;
-    $footerDto = array('companyName'=>ptsPublicNavName($footer),'contactText'=>ptsPublicNavText(isset($footer['contentvi'])?$footer['contentvi']:''),'policies'=>$footerLinks,'locations'=>$locations,'socialLinks'=>$social);
+    $footerContact = ptsPublicNavFooterContact(isset($footer['contentvi'])?$footer['contentvi']:'');
+    $footerDto = array('companyName'=>ptsPublicNavName($footer),'contactText'=>implode(' ', $footerContact['lines']),'legalName'=>$footerContact['legalName'],'contactLines'=>$footerContact['lines'],'policies'=>$footerLinks,'locations'=>$locations,'socialLinks'=>$social);
     $trustBadge = isset($asset['trustBadge']) && is_array($asset['trustBadge']) ? $asset['trustBadge'] : array();
     $trustBadgeImage = isset($trustBadge['image']) ? ptsPublicNavUrl($trustBadge['image']) : '';
     $trustBadgeHref = isset($trustBadge['href']) ? ptsPublicNavUrl($trustBadge['href']) : '';

@@ -80,7 +80,7 @@ git pull --rebase
 
 Không đóng terminal cho tới dòng `PASS: deploy ... hoàn tất`. Website chỉ đổi
 image sau khi image mới build xong; healthcheck không đạt thì
-`deploy-release.sh` tự quay về image trước.
+`deploy-release.sh` tự quay PHP/Nuxt images và runtime config về trạng thái trước.
 
 ## Khi nào được coi là thành công
 
@@ -89,7 +89,7 @@ Cuối output phải có đủ:
 ```text
 PASS: stack, runtime và HTTPS public đang hoạt động.
 READY: toàn bộ schema migration đã đủ, không chạy lại file SQL.
-ERROR_SCAN_web=0 ERROR_SCAN_proxy=0
+ERROR_SCAN_web=0 ERROR_SCAN_nuxt=0 ERROR_SCAN_proxy=0
 PASS: deploy safe hoàn tất.
 ```
 
@@ -115,20 +115,20 @@ ssh -i /home/admin01/.ssh/id_ed25519 root@222.255.182.182 \
   '/srv/phucthinhsolar/scripts/verify-stack.sh'
 ```
 
-Rollback này chỉ đổi image code, không đụng database hoặc upload. Không restore
+Rollback này đổi cả PHP/Nuxt image và runtime config, không đụng database hoặc upload. Không restore
 database theo quán tính; chỉ restore khi xác định có mutation DB sai và đã chọn
 đúng backup đã verify.
 
 ## Nếu script dừng giữa chừng
 
 - Dừng trước dòng `Build, chuyển image`: production cũ chưa đổi.
-- `deploy-release.sh` báo image mới không healthy: script VPS tự quay về image
-  trước.
+- `deploy-release.sh` báo PHP hoặc Nuxt image mới không healthy: script VPS tự
+  quay cả stack/runtime config về trạng thái trước.
 - Dừng sau khi image đã active: output in sẵn lệnh rollback; chạy hai lệnh ở
   mục trên nếu website thực sự lỗi.
 - SSH timeout nhưng website vẫn mở: đăng nhập VPS, chạy
-  `cat /srv/phucthinhsolar/state/current-image` và `verify-stack.sh` trước khi
-  quyết định rollback.
+  kiểm tra `state/current-image`, `state/current-nuxt-image` và
+  `verify-stack.sh` trước khi quyết định rollback.
 - Không tự chạy file migration SQL/PHP chỉ vì preflight liệt kê tên migration.
 
 ## Quy trình thủ công khi wrapper bị hỏng

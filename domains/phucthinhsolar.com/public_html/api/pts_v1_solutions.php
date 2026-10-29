@@ -18,6 +18,17 @@ header('Cache-Control: private, no-store');
 
 try
 {
+    $allowedQuery = array('category_type','category_path','page');
+    foreach(array_keys($_GET) as $key) if(!in_array($key, $allowedQuery, true)) { http_response_code(400); echo '{"error":{"code":"BAD_QUERY"}}'; exit; }
+    $categoryType = isset($_GET['category_type']) && is_string($_GET['category_type']) ? $_GET['category_type'] : '';
+    $categoryPath = isset($_GET['category_path']) && is_string($_GET['category_path']) ? trim($_GET['category_path'], '/') : '';
+    $categorySegments = $categoryPath === '' ? array() : explode('/', $categoryPath);
+    $page = isset($_GET['page']) && is_string($_GET['page']) && preg_match('/^[1-9][0-9]*$/', $_GET['page']) ? (int)$_GET['page'] : 1;
+    if(isset($_GET['page']) && (!is_string($_GET['page']) || !preg_match('/^[1-9][0-9]*$/', $_GET['page']) || $page > 10000)) { http_response_code(400); echo '{"error":{"code":"BAD_QUERY"}}'; exit; }
+    if((isset($_GET['category_type']) || isset($_GET['category_path'])) && ($categoryType === '' || !in_array($categoryType, array('list','cat','item','sub'), true) || !$categorySegments || count($categorySegments) > 4)) { http_response_code(400); echo '{"error":{"code":"BAD_QUERY"}}'; exit; }
+    if($categoryType !== '' && count($categorySegments) !== array('list'=>1,'cat'=>2,'item'=>3,'sub'=>4)[$categoryType]) { http_response_code(400); echo '{"error":{"code":"BAD_QUERY"}}'; exit; }
+    foreach($categorySegments as $segment) if(!preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', $segment)) { http_response_code(400); echo '{"error":{"code":"BAD_QUERY"}}'; exit; }
+
     require_once __DIR__.'/config.php';
     require_once LIBRARIES.'solution_hub.php';
     require_once LIBRARIES.'product_category_urls.php';
@@ -100,6 +111,15 @@ try
         isset($options['hotline']) ? $options['hotline'] : '',
         $fallbackImages
     );
+    if($categoryType !== '')
+    {
+        $category = ptsPublicSolutionsResolveCategory($d, $categoryType, $categorySegments);
+        if($category === null) { http_response_code(404); echo '{"error":{"code":"CATEGORY_NOT_FOUND"}}'; exit; }
+        $matchingRows = array_values(array_filter(solutionHubSelect($solutionRows), static function($row) use ($category) { return (int)($row[$category['article_field']] ?? 0) === (int)$category['id']; }));
+        $total = count($matchingRows);
+        $pageRows = array_slice($matchingRows, ($page - 1) * 12, 12);
+        $data = ptsPublicSolutionsCategoryPayload($category, $pageRows, $data, $page, $total);
+    }
     echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
 }
 catch(Throwable $e)

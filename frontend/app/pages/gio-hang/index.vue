@@ -1,11 +1,9 @@
 <script setup lang="ts">
 import { isRuntimeFlagEnabled } from '#shared/public-route-gate'
 import CartPage from '~/components/cart/CartPage.vue'
-import cartPublicRoute from '~/middleware/cart-public-route'
 
 definePageMeta({
   layout: false,
-  middleware: cartPublicRoute,
 })
 
 const config = useRuntimeConfig()

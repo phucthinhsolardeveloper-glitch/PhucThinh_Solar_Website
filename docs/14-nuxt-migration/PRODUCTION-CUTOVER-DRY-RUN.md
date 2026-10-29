@@ -1,175 +1,84 @@
-# Nuxt production cutover dry-run
+# Nuxt full-public cutover candidate
 
-Checkpoint: 2026-10-27. Tài liệu và công cụ trong đợt này chỉ phục vụ local
-preflight. Không file nào được nối vào production Compose/Caddy; không deploy,
-SSH, DNS, restart hay đổi quyền sở hữu route.
+Checkpoint: 2026-10-28. Owner directive supersedes the 2026-10-27 staged-pilot
+proposal: canonical public pages must render through Nuxt, with no PHP HTML/CSS/JS
+fallback. This commit contains a review candidate only. No production SSH, DNS,
+container restart, database mutation, or deployment has occurred.
 
-## Kết luận audit và hook tương lai
+## Candidate topology
 
-Production hiện là `Caddy proxy -> web (Apache/PHP 8.1) -> MariaDB`. File
-`deploy/vps/docker-compose.yml` không có Nuxt service/origin. Trong
-`deploy/vps/Caddyfile`, khối `route` xử lý lần lượt redirect `www`, header/robots
-staging, rồi toàn bộ request vào `reverse_proxy web:80`. Deploy đổi duy nhất
-`PTS_WEB_IMAGE`; rollback release cũng chỉ đổi image PHP và recreate `web proxy`.
-
-Vì chưa có lifecycle, healthcheck, image pin, network và rollback state cho Nuxt,
-không tạo runtime switch production ở checkpoint này. Hook an toàn trong tương
-lai là **bên trong khối `route`, sau `redir @www` và hai rule staging, ngay trước
-`reverse_proxy web:80`**. Tại đó một matcher hẹp mới có thể chọn Nuxt; PHP vẫn là
-fallback cuối. Hook chỉ được thêm khi:
-
-1. Nuxt service production có image immutable, healthcheck và cùng network
-   `edge`; không dùng địa chỉ public hay host network.
-2. Matcher lấy từ allowlist đã review, chỉ `GET|HEAD` và exact path; không dùng
-   wildcard public.
-3. Flag `PTS_NUXT_HYBRID_ENABLED` được triển khai thật, mặc định `0`; trạng thái
-   OFF sinh cấu hình không có matcher Nuxt và được test chứng minh request vẫn
-   đến `web:80`.
-4. Caddy được `validate` trước reload/restart; current/previous config và image
-   được ghi làm rollback point.
-5. Owner phê duyệt theo đúng commit và route. File
-   `owner-approval.example.json` cố ý để `approved=false`, không phải approval.
-
-`deploy/local-nuxt-hybrid/Caddyfile.off` là fixture cú pháp local, bind
-`127.0.0.1:8090` và chỉ proxy về PHP local `127.0.0.1:8080`. Nó không được mount
-trong Compose. Manifest `route-allowlist.json` giữ flag OFF và pilot ở trạng thái
-`blocked`; công cụ sẽ từ chối sinh cutover plan dù có approval, cho tới khi cả
-public route Nuxt và service production tồn tại. Đây là chủ ý fail-closed.
-
-## Allowlist, denylist và ranh giới nghiệp vụ
-
-Pilot được đề xuất là `GET|HEAD /gioi-thieu/`: trang nội dung ít rủi ro, không
-session, không mutation. Public Nuxt route `/gioi-thieu/` đã có trong source
-(`frontend/app/pages/gioi-thieu.vue`) và được bảo vệ bởi runtime feature flag;
-preview `/migration-about-preview` vẫn là route nội bộ `noindex`. Route có trong
-source không đồng nghĩa route đã được đưa vào production: production Nuxt
-service/origin và Caddy matcher/allowlist chưa được triển khai, nên pilot vẫn
-chưa được phép bật. Không rewrite public path sang preview.
-
-Các prefix sau luôn do PHP xử lý: `/account/`, `/administrator/`, `/api/`,
-`/upload/`, `/thumbs/`, `/watermark/`. `/gio-hang/` và `/cam-on/` đã có public
-Nuxt route trong source (commit `a740593` trên nhánh Batch B), nhưng cả hai
-flag đều mặc định OFF và Caddy chưa chuyển traffic; khi OFF, middleware trả
-người dùng về PHP, giữ query `token` của `/cam-on/`. Mọi POST/mutation vẫn phải
-về PHP. Account/Admin, session/cart calculation, checkout transaction, payment
-callback, order creation và media transform ở PHP theo thiết kế.
-
-Public GUI cart và order-success đã có route/component flag-gated trong source
-(`a740593`); route checkout preview vẫn là `/migration-checkout-preview` và
-không có URL PHP canonical riêng tương đương `/dat-hang/`. Chưa tạo public
-checkout route mới vì đó sẽ là quyết định URL/sản phẩm, không phải route parity.
-Nếu chuyển GUI sang Nuxt ở phase sau, Nuxt chỉ render và gọi adapter allowlist;
-PHP vẫn kiểm session/quyền/CSRF, validate giỏ hàng/địa chỉ, tính tiền/phí vận
-chuyển, tạo đơn, thanh toán và idempotency. Không suy ra backend đã migrate chỉ
-vì GUI Nuxt trả 200.
-
-Hai prefix `/migration-*` và `/_migration/*` bị cấm trong mapping public. Preflight
-kiểm tra pilot không trùng denylist và không chứa preview path.
-
-## Health và canary pilot
-
-Health probe chỉ nhận loopback origin, không credential/query/path trong origin,
-dùng GET, không theo redirect và không gửi cookie. Mặc định script chỉ static
-preflight; thêm `--probe` mới gọi hai origin local. Preview trả 200 thì bắt buộc
-có `noindex`.
-
-Trình tự pilot sau khi tất cả gate được owner ký:
-
-1. Chụp baseline PHP ít nhất 30 phút: request count, p50/p95 latency, 4xx/5xx,
-   upstream timeout, canonical/robots và traffic vào form/API.
-2. Rehearse OFF và rollback trên staging/local với cùng manifest; xác nhận exact
-   path về PHP khi OFF và protected prefixes luôn về PHP.
-3. Bật pilot exact path `/gioi-thieu/` cho 5% request trong 15 phút; không mở
-   route thứ hai. Nếu proxy chưa có cơ chế split deterministic đã test, dùng
-   window 100% riêng cho đúng một route thay vì tự chế cookie/session canary.
-4. Nếu xanh, tăng 25% trong 30 phút, 50% trong 60 phút, rồi 100% pilot trong 24
-   giờ. Mỗi nấc cần owner acknowledgement và lưu evidence.
-5. Crawl lại canonical/robots/OG/H1/href, alias `/ve-chung-toi/`, missing slug và
-   protected routes sau mỗi nấc.
-
-Success metrics: availability pilot >= 99.9%; zero 5xx trong sample dưới 1.000
-request, sau đó 5xx rate <= 0.1%; p95 không chậm hơn baseline quá 20% và không
-vượt 1.5 giây; zero redirect loop; canonical đúng `/gioi-thieu/`; không
-`noindex`; zero request POST/account/admin/API/checkout vào Nuxt; zero
-pageerror/hydration error và zero broken critical media trong smoke sample.
-
-Rollback ngay khi có một trong các điều kiện: bất kỳ protected/mutation request
-đến Nuxt; preview/noindex bị public; redirect loop/canonical sai; 2 lỗi 5xx liên
-tiếp hoặc 5xx > 0.5% trong cửa sổ 5 phút; availability < 99.5% trong 5 phút;
-p95 > 2 lần baseline hoặc > 2 giây trong 5 phút; Nuxt unhealthy hai probe liên
-tiếp; chức năng/nav/media P0 hỏng. Sau rollback, xác nhận flag OFF, PHP 200,
-alias 301, negative status, protected ownership và metrics trở về baseline.
-
-## 301, 404, 410 và alias ownership
-
-- Caddy hiện chỉ sở hữu 301 host `www` sang non-www.
-- PHP `libraries/router.php` sở hữu alias cố định
-  `/ve-chung-toi/ -> /gioi-thieu/`,
-  `/he-thong-dai-ly/ -> /lien-he/`, `/product/ -> /san-pham/` và product detail
-  legacy; đồng thời xử lý redirect động từ bảng `url_redirect`, hierarchy danh
-  mục và canonical giải pháp.
-- `sources/product.php` sở hữu một số canonical category redirect.
-- Router/resolver PHP trả 404 thật cho route không match, slug product legacy
-  không tồn tại, hierarchy/solution không hợp lệ và source không hợp lệ.
-- Không tìm thấy registry/nhánh 410 hiện hành. Vì vậy không được biến missing
-  route thành 410 theo suy đoán. Retired content chỉ được trả 410 sau khi owner
-  duyệt danh sách rõ ràng và có test; còn lại giữ 404 PHP.
-
-Trong pilot, proxy không sở hữu alias/entity redirect. Alias và negative route
-tiếp tục đi PHP; chỉ canonical exact path có thể vào Nuxt. Trước cutover phải
-chạy `migration-seo-audit.cjs` để giữ bằng chứng redirect chain/status/final URL,
-không coi soft-200 là đạt.
-
-## Production gate matrix
-
-| Gate | PASS evidence | Owner/manual | Trạng thái |
-|---|---|---|---|
-| Backup | DB + upload checksum; CloudFly snapshot state được đối chiếu | Owner xác nhận freshness/RPO | Chưa chạy, ngoài scope |
-| Rollback rehearsal | Flag OFF đưa pilot về PHP; config/image previous xác định; thời gian đo được | Operator staging | Chưa có runtime flag |
-| PHP health | `/` và pilot 200; alias/negative đúng status | QA | Local probe có sẵn |
-| Nuxt health | service healthy; public pilot 200 không noindex; preview vẫn noindex | QA | Bị chặn: production Nuxt service/origin chưa được triển khai; source route đã có |
-| Proxy allowlist | exact GET/HEAD pilot; denylist và POST về PHP | Reviewer | Manifest local PASS, runtime chưa có |
-| Feature flag OFF | default `0`; OFF config không có Nuxt matcher | Reviewer | PASS local fixture |
-| Owner approval | approval gắn commit + route + UTC timestamp | Project owner | Chưa cấp |
-| Monitoring | dashboard/log query cho upstream/status/latency và alert thresholds | Operator | Chưa cấu hình |
-| Cutover | Caddy validate, canary stages và SEO smoke đều PASS | Owner + operator | Không được phép trong task này |
-| Rollback verification | PHP ownership/status/SEO và metrics baseline phục hồi | QA + operator | Checklist/command chỉ được generate |
-
-Không gate nào được đánh dấu PASS từ production trong đợt này; không có request
-production nào được thực hiện.
-
-## Lệnh local an toàn
-
-```bash
-# Static validation, mặc định read-only/OFF
-node scripts/nuxt-cutover-preflight.mjs
-
-# Unit + shell guard tests; không Docker/browser/network
-./scripts/test-nuxt-cutover.sh
-
-# Chỉ khi hai origin local đã chạy; remote origin bị từ chối
-node scripts/nuxt-cutover-preflight.mjs --probe \
-  --php-origin http://127.0.0.1:8080 \
-  --nuxt-origin http://127.0.0.1:3100
-
-# In rollback command/checklist; không chạy các command được in
-node scripts/nuxt-cutover-preflight.mjs --rollback-plan
-
-# Nếu có binary Caddy local, validate fixture mà không apply
-caddy validate --config deploy/local-nuxt-hybrid/Caddyfile.off --adapter caddyfile
+```text
+Internet -> Caddy -> Nuxt SSR -> PHP backend -> MariaDB
+                   └────────── PHP Admin/API/media actions
 ```
 
-`--cutover-plan` yêu cầu approval file và full commit SHA, sau đó vẫn block vì
-pilot hiện là `blocked`. Script không có code SSH, deploy, restart, DNS, ghi DB
-hay apply Caddy.
+`deploy/vps/Caddyfile` sends all public requests to `nuxt:3000` after handling
+explicit backend exceptions. There is no PHP fallback for public GET/HEAD pages
+or legacy `/assets/css/*` and `/assets/js/*`. Nuxt SSR is configured with the
+internal PHP origin `http://web:80`, allowlisted exactly as `web:80`.
 
-## Việc còn owner/manual
+`deploy/vps/docker-compose.yml` defines the immutable Nuxt image as a service on
+the private `edge` network. Caddy waits for both PHP and Nuxt healthchecks. Nuxt
+health checks the canonical home route, which also exercises the configured PHP
+backend. The release package now includes checksummed PHP, Nuxt source, and
+runtime/deployment tools. `deploy-release.sh` builds both images, installs the
+matching Caddy/Compose files, validates both configs, recreates the services,
+and waits for both healthchecks. It records previous PHP/Nuxt image values and
+previous Caddy/Compose files for rollback. `rollback-release.sh` restores that
+whole previous release and checks health before reporting success.
 
-- Duyệt kiến trúc Nuxt production (image, resource limit, health, logging,
-  network, origin auth nếu cần) và implementation flag fail-closed.
-- Hoàn tất SEO/canonical/OG/status parity cho route pilot; source route đã có,
-  nhưng chưa có service/origin production và chưa được expose qua Caddy.
-- Xác nhận backup/snapshot và diễn tập rollback trên staging.
-- Cấp approval gắn đúng commit/route, chọn canary window và trực monitoring.
-- Thực hiện mọi thay đổi production/deploy/restart ở task riêng. Không có bước
-  nào trong tài liệu này tự cấp quyền cutover.
+## PHP exception routes
+
+Only these requests remain PHP-owned at the public proxy:
+
+- `/api/*` for read DTOs, cart/account/checkout mutations, reviews, shipping,
+  and VNPay callbacks.
+- `/administrator` and `/administrator/*` for the PHP Admin and its relative
+  Admin assets.
+- `/upload/*`, `/thumbs/*`, `/watermark/*`, and `/wp-content/uploads/*` for CMS
+  media, image transforms, and retained WordPress media.
+- `/assets/images/site-visuals/*` image files and supported PDF/DOC/XLS(X)
+  documents under `/assets/`; public PHP CSS and JavaScript are excluded.
+- `/robots.txt` and `/sitemap.xml`.
+- GET `/account/dang-xuat[/]` and `/ngon-ngu/{vi|en}[/]` as session actions.
+
+All account document routes, cart, checkout, catalog, project/news/policy pages,
+solutions, dealer, gallery, video, and aliases fall through to Nuxt. Account and
+commerce POSTs must reach Nuxt Nitro adapters; the adapters call the PHP business
+backend without returning PHP templates. A PHP mutation endpoint that emits a
+legacy page is not acceptable for the final cutover.
+
+## Validation and release gate
+
+Local full-Nuxt rehearsal is separate from production Compose and does not change
+production state. Before a production release, reviewers/operators must verify:
+
+1. The release bundle checksum includes the PHP archive, frontend source archive,
+   deployment tools, and `RELEASE.txt` for one commit.
+2. `docker compose config --quiet` and Caddy `validate` pass with the release
+   environment before services are recreated.
+3. PHP and Nuxt healthchecks are healthy; canonical pages, aliases, 404s,
+   `/robots.txt`, `/sitemap.xml`, API, Admin, media and payment callback behavior
+   are smoke-checked through Caddy.
+4. Browser verification shows public HTML and `/_nuxt/*` assets come from Nuxt;
+   `/assets/css/*` and `/assets/js/*` are not served by PHP.
+5. The rollback candidate retains the prior PHP image, Nuxt image (if any),
+   Caddyfile, and Compose file. No DB or upload rollback is included because
+   this release does not migrate those stores.
+
+The owner authorized the implementation candidate, not a live production deploy.
+Deployment, SSH, DNS, service restart, and production validation remain a
+separate reviewed operation. Current production state is unchanged until that
+reviewed operation is explicitly performed.
+
+## Route and SEO ownership
+
+Caddy serves canonical public routes through Nuxt. Nuxt implements the public
+aliases (including `/product/`, `/ve-chung-toi/`, and `/he-thong-dai-ly/`) and
+entity/category resolution from PHP data APIs. APIs, Admin, and backend actions
+remain PHP-owned. Missing public routes must return a real Nuxt 404; a soft-200 or
+PHP template fallback fails review. Existing public slugs remain unchanged.
+
+The previous single-route pilot, `PTS_NUXT_HYBRID_ENABLED` flag, and PHP public
+HTML fallback described in the 2026-10-27 proposal are retired by this owner
+directive. Do not re-enable them in a later release.

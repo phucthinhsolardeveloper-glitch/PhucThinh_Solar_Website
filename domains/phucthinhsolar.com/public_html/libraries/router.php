@@ -52,10 +52,10 @@
 	$router->map('GET', 'danh-muc-san-pham/[a:list]/[a:cat]/?', 'productHierarchy', 'product-hierarchy-2');
     $router->map('GET|POST', '[a:com]', 'allpage', 'show');
 	$router->map('GET|POST', '[a:com]/', 'allpage', 'show1');
+    $router->map('GET|POST', 'account/[a:action]', 'account', 'account');
 	$router->map('GET|POST', '[a:sub]/[a:com]/', 'allpage', 'show2');
 	$router->map('GET|POST', '[a:sub]/[a:com]', 'allpage', 'show3');
     $router->map('GET|POST', '[a:com]/[a:lang]/', 'allpagelang', 'lang');
-    $router->map('GET|POST', '[a:com]/[a:action]', 'account', 'account');
     $router->map('GET', THUMBS.'/[i:w]x[i:h]x[i:z]/[**:src]', function($w,$h,$z,$src){
     	global $func;
     	$func->createThumb($w, $h, $z, $src, null, THUMBS);

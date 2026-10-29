@@ -6,22 +6,13 @@ const links = useMigrationLinks()
 </script>
 
 <template>
-  <!--
-    Tỉ lệ 1.3fr/0.7fr đo khớp ảnh production (/lien-he/, 1920px): panel navy
-    bắt đầu tại x=1210 trong vùng nội dung 76..1842 (rộng 1766), tức ảnh rộng
-    1134 / panel rộng 632 ~= 1.79, khớp đúng 1.3:0.7 = 1.857 trong sai số đo.
-
-    Panel phải KHÔNG phải navy đặc mà là gradient 145deg từ navy-950 tới
-    navy-700 (contact-v3.css: linear-gradient(145deg,var(--contact-navy),
-    var(--contact-blue)); --contact-blue:#123c72 ~ navy-700 #123a7a, lệch 2
-    đơn vị hex — cùng một token, không phải màu khác).
-  -->
-  <section class="grid grid-cols-1 items-center gap-8 py-8 nav:grid-cols-[1.3fr_0.7fr] nav:gap-[clamp(24px,5vw,80px)] nav:py-16" aria-labelledby="contact-preview-title">
-    <div v-if="contact.visual" class="relative min-w-0">
+  <!-- Ảnh và panel cùng chiều cao, liền mép như dải hero trong contact-v3.css. -->
+  <section class="mt-4 mb-10 grid grid-cols-1 overflow-hidden rounded-btn bg-navy-950 max-[767px]:-mx-4 max-[767px]:-mt-2 max-[767px]:rounded-none min-[1101px]:grid-cols-[minmax(0,1.28fr)_minmax(390px,.72fr)]" aria-labelledby="contact-preview-title">
+    <div v-if="contact.visual" class="relative min-w-0 aspect-[8/5] min-[1101px]:aspect-auto min-[1101px]:min-h-[460px]">
       <img
         :src="contact.visual.image"
         :alt="contact.visual.name"
-        class="block aspect-[8/5] w-full rounded-chip object-cover"
+        class="absolute inset-0 block h-full w-full object-cover"
         width="1400"
         height="875"
       >
@@ -33,7 +24,7 @@ const links = useMigrationLinks()
       -->
       <span
         v-if="contact.contact.hotline"
-        class="absolute bottom-4 left-4 flex items-center gap-3 rounded-chip bg-white px-4 py-3 shadow-[0_10px_24px_rgba(6,21,55,.18)]"
+        class="absolute bottom-4 left-4 flex items-center gap-3 rounded-chip bg-white px-4 py-3 shadow-[0_10px_24px_rgba(6,21,55,.18)] min-[1101px]:bottom-6 min-[1101px]:left-6"
       >
         <!-- Đo pixel: vòng tròn gold-500 #c9962e, icon navy-950 #061537 (không phải trắng). -->
         <span class="flex h-9 w-9 flex-none items-center justify-center rounded-full bg-gold-500 text-navy-950">
@@ -46,20 +37,26 @@ const links = useMigrationLinks()
       </span>
     </div>
 
-    <div class="flex min-w-0 flex-col rounded-chip bg-[linear-gradient(145deg,var(--color-navy-950),var(--color-navy-700))] p-8 text-white nav:p-12">
-      <h1 id="contact-preview-title" class="m-0 mb-5 text-[clamp(32px,4vw,56px)] font-black leading-[1.1]">
+    <div class="flex min-w-0 flex-col justify-center bg-[linear-gradient(145deg,var(--color-navy-950),var(--color-navy-700))] px-4 py-8 text-white min-[768px]:px-8 min-[1101px]:p-[clamp(38px,4vw,70px)]">
+      <h1 id="contact-preview-title" class="m-0 mb-5 text-[30px] font-black leading-[1.12] tracking-[-.035em] min-[768px]:text-[clamp(32px,3vw,50px)]">
         {{ contact.visual?.name || contact.title }}
       </h1>
-      <p v-if="contact.visual?.description" class="m-0 mb-4 text-lg leading-relaxed text-blue-100">
+      <p v-if="contact.visual?.description" class="m-0 mb-5 text-base leading-[1.72] text-blue-100">
         {{ contact.visual.description }}
       </p>
-      <p v-if="contact.contact.company" class="m-0 mb-4 font-bold text-blue-100">{{ contact.contact.company }}</p>
+      <p v-if="contact.contact.company" class="m-0 mb-5 text-[15px] leading-[1.65] text-white">{{ contact.contact.company }}</p>
+      <div class="mb-6 grid gap-2.5 text-sm leading-normal text-blue-100">
+        <a v-if="contact.contact.hotline" class="text-inherit no-underline" :href="`tel:${contact.contact.hotline.replace(/[^+\d]/g, '')}`">Hotline: <strong class="text-gold-300">{{ contact.contact.hotline }}</strong></a>
+        <a v-if="contact.contact.email" class="text-inherit no-underline" :href="`mailto:${contact.contact.email}`">Email: <strong class="text-gold-300">{{ contact.contact.email }}</strong></a>
+        <span v-if="contact.contact.workingHours">Thời gian làm việc: <strong class="text-gold-300">{{ contact.contact.workingHours }}</strong></span>
+      </div>
       <a
+        v-if="contact.visual?.href"
         class="mt-2 inline-flex items-center gap-2.5 self-start rounded-chip bg-hdr-gold px-4 py-3 font-bold
                text-navy-950 no-underline transition-colors hover:bg-hdr-gold-hover"
-        :href="links.generic('/lien-he/#yeu-cau-tu-van')"
+        :href="links.generic(contact.visual.href)"
       >
-        {{ contact.labels.formCta }} <span aria-hidden="true">→</span>
+        Gửi yêu cầu tư vấn <span aria-hidden="true">↓</span>
       </a>
     </div>
   </section>

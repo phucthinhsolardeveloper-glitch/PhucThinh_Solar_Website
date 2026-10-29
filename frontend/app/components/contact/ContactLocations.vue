@@ -57,7 +57,7 @@ function mapEmbedUrl(location: PublicContactLocation): string {
         </li>
       </ul>
 
-      <div v-if="selected" class="min-h-[360px] overflow-hidden rounded-chip border border-gray-200 bg-slate-50">
+      <div v-if="selected" class="min-h-[360px] overflow-hidden rounded-chip border border-gray-200 bg-slate-50 max-[767px]:-mx-4 max-[767px]:rounded-none">
         <iframe
           :key="selected.id"
           :src="mapEmbedUrl(selected)"
@@ -68,7 +68,7 @@ function mapEmbedUrl(location: PublicContactLocation): string {
           allowfullscreen
         />
       </div>
-      <div v-else class="flex min-h-[360px] items-center justify-center rounded-chip border border-dashed border-gray-300 bg-slate-50 p-8 text-center text-slate-500">
+      <div v-else class="flex min-h-[360px] items-center justify-center rounded-chip border border-dashed border-gray-300 bg-slate-50 p-8 text-center text-slate-500 max-[767px]:-mx-4 max-[767px]:rounded-none">
         Hệ thống chi nhánh đang được cập nhật.
       </div>
     </div>
