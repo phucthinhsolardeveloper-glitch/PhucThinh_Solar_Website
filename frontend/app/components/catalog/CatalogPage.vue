@@ -15,7 +15,14 @@ import SiteFooter from '~/components/SiteFooter.vue'
  */
 const route = useRoute()
 const selfPath = computed(() => route.path)
-const category = computed(() => typeof route.query.category === 'string' ? route.query.category : '')
+const category = computed(() => {
+  if (route.path.startsWith('/danh-muc-san-pham/')) {
+    const slug = route.params.slug
+    const parts = Array.isArray(slug) ? slug : typeof slug === 'string' ? slug.split('/') : []
+    return parts.filter((part) => part.length > 0).join('/')
+  }
+  return typeof route.query.category === 'string' ? route.query.category : ''
+})
 const page = computed(() => typeof route.query.page === 'string' ? route.query.page : '')
 const perPage = computed(() => typeof route.query.per_page === 'string' ? route.query.per_page : '')
 const brand = computed(() => typeof route.query.brand === 'string' ? route.query.brand : '')
@@ -161,26 +168,38 @@ function pageLink(nextPage: number) {
       Cột trái ở bản này rộng 260px để đủ chỗ cho nhãn thương hiệu/mức giá dài.
     -->
     <main
-      class="mx-auto grid w-full max-w-(--container-page) grid-cols-1 gap-6 px-(--spacing-gutter) pt-8 pb-16
-             max-ph:pt-6 max-ph:pb-12"
+      class="mx-auto grid w-full max-w-(--container-page) grid-cols-1 gap-6 px-(--spacing-gutter) pt-0 pb-16
+             max-ph:pb-12"
       :class="hasSidebar ? 'nav:grid-cols-[260px_minmax(0,1fr)]' : ''"
     >
-      <section class="col-span-full overflow-hidden bg-navy-950 text-white" aria-labelledby="catalog-heading">
-        <div class="relative isolate flex min-h-[clamp(260px,24vw,410px)] items-end overflow-hidden px-6 py-8 nav:px-10 nav:py-10">
+      <nav class="col-span-full flex min-h-[34px] items-center gap-2 py-1 text-[12.5px] leading-[18px] text-slate-500" aria-label="Breadcrumb">
+        <NuxtLink to="/" class="text-inherit no-underline hover:text-gold-700">Trang chủ</NuxtLink>
+        <span aria-hidden="true">›</span>
+        <NuxtLink to="/san-pham/" class="text-inherit no-underline hover:text-gold-700">Sản phẩm</NuxtLink>
+        <template v-if="selectedCategory">
+          <span aria-hidden="true">›</span>
+          <span aria-current="page" class="font-bold text-navy-800">{{ selectedCategory.name }}</span>
+        </template>
+      </nav>
+
+      <section class="relative left-1/2 col-span-full -mt-6 w-screen max-w-none -translate-x-1/2 overflow-hidden bg-navy-950 text-white" aria-labelledby="catalog-heading">
+        <div class="relative isolate flex h-[250px] items-center overflow-hidden max-[767px]:h-[205px]">
           <img v-if="catalogData?.categoryHero?.image" :src="catalogData.categoryHero.image" :alt="catalogData.categoryHero.alt" class="absolute inset-0 -z-20 h-full w-full object-cover" fetchpriority="high">
           <span class="absolute inset-0 -z-10 bg-gradient-to-r from-navy-950/90 via-navy-950/65 to-navy-950/15" aria-hidden="true" />
-          <div class="max-w-[760px]">
-            <h1 id="catalog-heading" class="mb-3 text-[clamp(30px,4.2vw,52px)] font-black leading-[1.12] tracking-tight text-white">{{ heading }}</h1>
-            <p class="m-0 max-w-[62ch] leading-relaxed text-blue-100">{{ bannerDescription }}</p>
+          <div class="mx-auto w-[calc(100%-48px)] max-w-[1200px] max-[767px]:w-[calc(100%-32px)]">
+            <div class="max-w-[620px]">
+              <h1 id="catalog-heading" class="mb-2 text-[clamp(30px,2.1vw,40px)] font-extrabold uppercase leading-[1.08] text-[#e5b743] max-[767px]:text-[28px]">{{ heading }}</h1>
+              <p class="m-0 max-w-[62ch] text-[14px] leading-[1.45] text-white max-[767px]:text-[13px]">{{ bannerDescription }}</p>
+            </div>
           </div>
         </div>
       </section>
 
       <div class="col-span-full grid grid-cols-2 gap-4 border-b border-gray-200 py-5 tb:grid-cols-4" aria-label="Lợi ích khi chọn sản phẩm">
-        <div class="flex items-start gap-3"><span class="text-gold-700" aria-hidden="true">✦</span><span><strong class="block text-sm text-navy-950">Tư vấn lựa chọn</strong><small class="text-slate-500">Đúng nhu cầu, hiệu quả</small></span></div>
-        <div class="flex items-start gap-3"><span class="text-gold-700" aria-hidden="true">⚙</span><span><strong class="block text-sm text-navy-950">Hỗ trợ kỹ thuật</strong><small class="text-slate-500">Trong suốt quá trình sử dụng</small></span></div>
-        <div class="flex items-start gap-3"><span class="text-gold-700" aria-hidden="true">✓</span><span><strong class="block text-sm text-navy-950">Chính sách rõ ràng</strong><small class="text-slate-500">Minh bạch, dễ hiểu</small></span></div>
-        <div class="flex items-start gap-3"><span class="text-gold-700" aria-hidden="true">↗</span><span><strong class="block text-sm text-navy-950">Giao hàng toàn quốc</strong><small class="text-slate-500">Nhanh chóng, an toàn</small></span></div>
+        <div class="flex items-start gap-3"><UIcon name="i-lucide-sparkles" class="mt-0.5 h-5 w-5 shrink-0 text-gold-700" aria-hidden="true" /><span><strong class="block text-sm text-navy-950">Tư vấn lựa chọn</strong><small class="text-slate-500">Đúng nhu cầu, hiệu quả</small></span></div>
+        <div class="flex items-start gap-3"><UIcon name="i-lucide-settings-2" class="mt-0.5 h-5 w-5 shrink-0 text-gold-700" aria-hidden="true" /><span><strong class="block text-sm text-navy-950">Hỗ trợ kỹ thuật</strong><small class="text-slate-500">Trong suốt quá trình sử dụng</small></span></div>
+        <div class="flex items-start gap-3"><UIcon name="i-lucide-badge-check" class="mt-0.5 h-5 w-5 shrink-0 text-gold-700" aria-hidden="true" /><span><strong class="block text-sm text-navy-950">Chính sách rõ ràng</strong><small class="text-slate-500">Minh bạch, dễ hiểu</small></span></div>
+        <div class="flex items-start gap-3"><UIcon name="i-lucide-truck" class="mt-0.5 h-5 w-5 shrink-0 text-gold-700" aria-hidden="true" /><span><strong class="block text-sm text-navy-950">Giao hàng toàn quốc</strong><small class="text-slate-500">Nhanh chóng, an toàn</small></span></div>
       </div>
 
       <nav v-if="categoryNavItems.length" class="col-span-full flex gap-3 overflow-x-auto border-b border-gray-200 py-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" aria-label="Danh mục sản phẩm">

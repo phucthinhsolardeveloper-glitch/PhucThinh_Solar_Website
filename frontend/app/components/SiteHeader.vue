@@ -277,9 +277,9 @@ onBeforeUnmount(() => {
         <!-- Hamburger: chỉ dưới mốc nav (1321px), đúng như .btn-mmenu của PHP. -->
         <button
           ref="mobileTrigger"
-          class="order-first flex h-10 w-10 flex-none items-center justify-center rounded-chip border
+          class="order-first flex h-11 w-11 flex-none items-center justify-center rounded-chip border
                  border-[#d8dee6] bg-white text-hdr-ink transition-colors hover:bg-hdr-surface
-                 max-ph:h-[38px] max-ph:w-[38px] nav:hidden"
+                 max-ph:h-11 max-ph:w-11 nav:hidden"
           type="button"
           :aria-expanded="mobileOpen"
           aria-controls="ptsMobileMenu"
@@ -394,7 +394,7 @@ onBeforeUnmount(() => {
             ref="searchTrigger"
             class="relative inline-flex h-11 w-11 items-center justify-center rounded-chip text-[19px]
                    text-hdr-ink transition-colors hover:bg-hdr-surface hover:text-hdr-gold-deep
-                   max-ph:h-[38px] max-ph:w-[38px] nav:h-12 nav:w-12"
+                   max-ph:h-11 max-ph:w-11 nav:h-12 nav:w-12"
             type="button"
             :aria-expanded="searchOpen"
             aria-controls="ptsHeaderSearch"
@@ -425,7 +425,7 @@ onBeforeUnmount(() => {
             :external="isExternalLink(shellHref('/gio-hang/'))"
             class="relative inline-flex h-11 w-11 items-center justify-center rounded-chip text-hdr-ink
                    transition-colors hover:bg-hdr-surface hover:text-hdr-gold-deep
-                   max-ph:h-[38px] max-ph:w-[38px] nav:h-12 nav:w-12"
+                   max-ph:h-11 max-ph:w-11 nav:h-12 nav:w-12"
             :to="shellHref('/gio-hang/')"
             :aria-label="isMigrationPreview && migrationCart ? `Giỏ hàng có ${migrationCart.count} sản phẩm` : 'Giỏ hàng'"
             title="Giỏ hàng"

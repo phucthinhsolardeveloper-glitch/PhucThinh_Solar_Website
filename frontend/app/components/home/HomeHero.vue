@@ -7,11 +7,11 @@
         <span class="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,.55),rgba(255,255,255,.27)_30%,rgba(255,255,255,.03)_55%,transparent_74%),linear-gradient(0deg,rgba(6,21,55,.16),rgba(6,21,55,.03)_58%,transparent)] max-md:bg-[linear-gradient(90deg,rgba(255,255,255,.57),rgba(255,255,255,.31)_42%,rgba(255,255,255,.03)_75%,transparent),linear-gradient(0deg,rgba(6,21,55,.18),rgba(6,21,55,.04)_62%,transparent)]" aria-hidden="true" />
       </a>
     </div>
-    <div class="relative z-[4] mx-auto flex min-h-[inherit] w-[min(calc(100%-32px),2200px)] max-w-none flex-col items-start justify-center px-0 pb-[92px] pt-16 text-left [transform:translateY(calc(-50px-clamp(0px,calc(25vw-400px),240px)))] max-md:min-h-[700px] max-md:items-center max-md:justify-start max-md:pb-[150px] max-md:pt-[58px] max-md:text-center max-md:[transform:translateY(-14px)]">
+    <div class="relative z-[4] mx-auto flex min-h-[inherit] w-[calc(100%-68px)] max-w-none flex-col items-start justify-center px-0 pb-[92px] pt-16 text-left [transform:translateY(calc(-50px-clamp(0px,calc(25vw-400px),240px)))] max-[767px]:w-[calc(100%-32px)] max-md:min-h-[700px] max-md:items-center max-md:justify-start max-md:pb-[150px] max-md:pt-[58px] max-md:text-center max-md:[transform:translateY(-14px)] min-[1600px]:w-[min(calc(100vw-clamp(96px,8vw,220px)),2200px)]">
       <p class="mb-[17px] w-full max-w-[820px] whitespace-nowrap text-center text-[clamp(22px,1.7vw,30px)] font-extrabold uppercase tracking-[.02em] text-navy-950 [text-shadow:0_1px_9px_rgba(255,255,255,.52)] max-md:text-[11px]">Phân phối thiết bị · Tư vấn · Thi công lắp đặt</p>
-      <h1 id="home-title" class="m-0 w-full max-w-[820px] text-center text-[clamp(50px,3vw,59px)] font-extrabold uppercase leading-[1.1] tracking-[-.025em] text-navy-950 [text-shadow:0_2px_10px_rgba(255,255,255,.58)] max-md:text-[25px]">
-        <span class="block whitespace-nowrap">Thiết bị và giải pháp</span>
-        <span class="block whitespace-nowrap text-[.78em]">năng lượng mặt trời</span>
+      <h1 id="home-title" aria-label="Thiết bị và giải pháp năng lượng mặt trời" class="m-0 w-full max-w-[820px] text-center text-[clamp(50px,3vw,59px)] font-extrabold uppercase leading-[1.1] tracking-[-.025em] text-navy-950 [text-shadow:0_2px_10px_rgba(255,255,255,.58)] max-md:text-[25px]">
+        <span class="block">Thiết bị và giải pháp</span>
+        <span class="block text-[.78em]">năng lượng mặt trời</span>
       </h1>
       <p class="mx-0 mb-[30px] mt-[22px] w-full max-w-[820px] text-center text-[clamp(17px,1.1vw,19px)] font-normal leading-[1.65] text-navy-950 [text-shadow:0_1px_9px_rgba(255,255,255,.52)] max-md:text-base">Phúc Thịnh Solar cung cấp thiết bị chiếu sáng, điện mặt trời và lưu trữ năng lượng; tư vấn phương án phù hợp cho gia đình, doanh nghiệp và công trình.</p>
       <div class="flex w-full max-w-[820px] flex-wrap justify-center gap-[14px]">
