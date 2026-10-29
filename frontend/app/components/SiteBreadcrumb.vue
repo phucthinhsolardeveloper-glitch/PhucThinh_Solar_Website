@@ -13,7 +13,7 @@ const homeTo = computed(() => migrationHref('/'))
 </script>
 
 <template>
-  <nav class="flex min-h-10 flex-wrap items-center gap-2 py-2.5 text-[13px] leading-[1.45] text-slate-500" aria-label="Breadcrumb">
+  <nav class="flex min-h-[33px] flex-wrap items-center gap-2 py-[5px] text-[13px] leading-[1.45] text-slate-500 max-[769px]:min-h-[31px] max-[769px]:py-1" aria-label="Breadcrumb">
     <NuxtLink
       :external="isExternalLink(homeTo)"
       class="inline-flex items-center gap-1.5 text-slate-600 no-underline transition-colors hover:text-gold-700"

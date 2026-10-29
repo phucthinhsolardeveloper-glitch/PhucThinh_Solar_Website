@@ -170,6 +170,7 @@ function ptsNewsDetailRelatedDto(array $rows)
         $result[] = array(
             'id' => (int)$row['id'], 'title' => $title, 'slug' => $slug,
             'canonical' => '/'.$slug.'/', 'date' => !empty($row['date_created']) ? date('Y-m-d', (int)$row['date_created']) : '',
+            'author' => ptsNewsDetailAuthor(isset($row['_pts_public_author']) ? $row['_pts_public_author'] : ''),
             'description' => ptsNewsDetailText(isset($row['descvi']) ? $row['descvi'] : ''),
             'image' => ptsNewsDetailImage(isset($row['_pts_public_photo']) ? $row['_pts_public_photo'] : '')
         );

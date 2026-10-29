@@ -6,7 +6,9 @@ export default defineEventHandler(async (event) => {
     setHeader(event, 'Allow', 'GET')
     throw createError({ statusCode: 405, statusMessage: 'Method Not Allowed' })
   }
-  const city = getQuery(event).city
+  const query = getQuery(event)
+  if (Object.keys(query).some((key) => key !== 'city')) throw createError({ statusCode: 400, statusMessage: 'Invalid city query' })
+  const city = query.city
   if (typeof city !== 'string' || !/^[1-9][0-9]*$/.test(city)) throw createError({ statusCode: 400, statusMessage: 'Invalid city' })
   let response: Response
   try { response = await fetchPhpSessionResponse(event, '/api/pts_v1_checkout_wards.php?city=' + encodeURIComponent(city), { method: 'GET' }) }

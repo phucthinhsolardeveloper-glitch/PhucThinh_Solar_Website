@@ -4,7 +4,9 @@ import { fetchMigrationPayload, requireMigrationGet } from '../../utils/migratio
 /** Fixed GET-only adapter for the PHP read-only PDP API. */
 export default defineEventHandler(async (event) => {
   requireMigrationGet(event)
-  const slug = getQuery(event).slug
+  const query = getQuery(event)
+  if (Object.keys(query).some((key) => key !== 'slug')) throw createError({ statusCode: 400, statusMessage: 'Invalid product detail query' })
+  const slug = query.slug
   if (typeof slug !== 'string' || !isProductSlug(slug)) throw createError({ statusCode: 400, statusMessage: 'Invalid product slug' })
   const payload = await fetchMigrationPayload(event, {
     endpoint: '/api/pts_v1_product_detail.php',

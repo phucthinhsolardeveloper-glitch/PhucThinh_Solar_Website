@@ -44,7 +44,13 @@ async function sendReview() {
 </script>
 
 <template>
-  <section id="danh-gia-san-pham" class="scroll-mt-24 border-t border-gray-200 py-10" aria-labelledby="product-reviews-title">
+  <section class="scroll-mt-24 border-t border-gray-200 py-8" aria-labelledby="product-reviews-title">
+    <details id="danh-gia-san-pham" class="border-y border-gray-200">
+      <summary class="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 py-4 font-black text-navy-800">
+        <span>Đánh giá sản phẩm <small class="ml-1 font-semibold text-slate-500">({{ reviews.total }} nhận xét)</small></span>
+        <span class="text-2xl font-normal text-gold-700" aria-hidden="true">+</span>
+      </summary>
+      <div class="pb-6 pt-2">
     <div class="mb-6 flex flex-wrap items-end justify-between gap-4">
       <div>
         <h2 id="product-reviews-title" class="mb-2 text-[clamp(24px,3vw,34px)] font-black tracking-tight">Đánh giá sản phẩm</h2>
@@ -129,5 +135,7 @@ async function sendReview() {
         {{ submitting ? 'Đang gửi…' : 'Gửi nhận xét' }}
       </button>
     </form>
+      </div>
+    </details>
   </section>
 </template>

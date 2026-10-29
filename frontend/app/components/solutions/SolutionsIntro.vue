@@ -6,42 +6,32 @@ const links = useMigrationLinks()
 </script>
 
 <template>
-  <section class="pb-[42px]" aria-labelledby="solutions-title">
-    <div v-if="intro.image" class="grid grid-cols-1 items-center gap-8 tb:grid-cols-2 tb:gap-10 rounded-btn border border-navy-800/15 bg-gradient-to-br from-navy-950 via-navy-800 to-navy-900 p-6 text-white shadow-md tb:p-10">
-      <figure class="m-0 aspect-[8/5] overflow-hidden rounded-chip border border-white/10">
+  <section aria-labelledby="solutions-title">
+    <div v-if="intro.image" class="grid grid-cols-1 items-center gap-6 min-[801px]:grid-cols-2 min-[801px]:gap-12 max-[1100px]:min-[801px]:gap-[30px]">
+      <figure class="order-2 m-0 aspect-[8/5] overflow-hidden rounded-[3px] min-[801px]:order-1">
         <img :src="intro.image" :alt="intro.title" class="h-full w-full object-cover" width="1200" height="750" fetchpriority="high">
       </figure>
-      <div class="min-w-0">
-        <h1 id="solutions-title" class="m-0 mb-5 text-[clamp(28px,2.9vw,42px)] font-black leading-[1.2] tracking-tight text-white">{{ intro.title }}</h1>
-        <p class="m-0 text-base leading-[1.72] text-blue-100/95">{{ intro.description }}</p>
-        <div class="mt-6 flex flex-col items-stretch gap-3.5 border-t border-white/15 pt-5 ph:flex-row ph:items-center ph:gap-4">
-          <a class="inline-flex min-h-12 items-center justify-center gap-4 rounded-btn bg-hdr-gold px-6 text-sm font-extrabold text-navy-950 no-underline shadow-sm transition-colors hover:bg-hdr-gold-hover" :href="links.generic(intro.links.consult.href === '#ptsContactModal' ? '/lien-he/#yeu-cau-tu-van' : intro.links.consult.href)">
+      <div class="order-1 min-w-0 min-[801px]:order-2">
+        <h1 id="solutions-title" class="m-0 mb-[18px] text-[clamp(34px,3.2vw,48px)] font-black leading-[1.18] tracking-[-0.035em] text-[#071b46] [text-wrap:balance] max-[800px]:text-[32px] max-[800px]:leading-[40.12px] max-[520px]:text-[clamp(32px,8.5vw,39px)] max-[520px]:leading-[1.18]">{{ intro.title }}</h1>
+        <p class="m-0 text-[18px] leading-[1.7] text-[#52627a] max-[520px]:text-[17px] max-[520px]:leading-[1.8]">{{ intro.description }}</p>
+        <div class="mt-[27px] flex items-center gap-6 max-[520px]:flex-col max-[520px]:items-stretch max-[520px]:gap-0">
+          <a class="inline-flex min-h-12 items-center justify-center gap-5 rounded-[7px] bg-[linear-gradient(120deg,#e6bd56,#cb922b)] px-[22px] py-[13px] text-[15px] leading-[1.75] font-extrabold text-navy-950 no-underline transition-colors hover:bg-[#efca72] max-[520px]:leading-[1.66]" :href="links.generic(intro.links.consult.href === '#ptsContactModal' ? '/lien-he/#yeu-cau-tu-van' : intro.links.consult.href)">
             {{ intro.links.consult.label }} <span aria-hidden="true">→</span>
           </a>
-          <a class="inline-flex min-h-11 items-center justify-center rounded-btn border border-white/30 bg-white/[.04] px-5 text-center text-sm font-extrabold text-white no-underline transition-colors hover:border-gold-400 hover:bg-white/10 ph:justify-start ph:text-left" :href="links.generic(intro.links.explore.href)">{{ intro.links.explore.label }}</a>
+          <a class="inline-flex min-h-11 items-center text-[15px] font-extrabold text-navy-800 no-underline hover:text-gold-700" :href="links.generic(intro.links.explore.href)">{{ intro.links.explore.label }}</a>
         </div>
       </div>
     </div>
 
-    <div v-else class="grid grid-cols-1 items-start gap-8 tb:grid-cols-[minmax(0,1.05fr)_minmax(0,.95fr)] tb:gap-12 rounded-btn border border-navy-800/15 bg-gradient-to-br from-navy-950 via-navy-800 to-navy-900 p-7 text-white shadow-md tb:p-10">
-      <div>
-        <!--
-          PHP (sources/solution_hub.php) tính $solutionHeroEyebrow nhưng
-          templates/news/service_list_tpl.php không bao giờ in nó ra - đây là
-          field chết ở PHP. Không render để khớp bố cục thật, dù API vẫn trả
-          giá trị (giữ nguyên contract, chỉ ẩn ở UI).
-        -->
-        <h1 id="solutions-title" class="m-0 text-[clamp(28px,2.9vw,42px)] font-black leading-[1.2] tracking-tight text-white">{{ intro.title }}</h1>
-      </div>
-
-      <div class="min-w-0">
-        <p class="m-0 text-base leading-[1.72] text-blue-100/95">{{ intro.description }}</p>
-        <div class="mt-6 flex flex-col items-stretch gap-3.5 border-t border-white/15 pt-5 ph:flex-row ph:items-center ph:gap-4">
-          <a class="inline-flex min-h-12 items-center justify-center gap-4 rounded-btn bg-hdr-gold px-6 text-sm font-extrabold text-navy-950 no-underline shadow-sm transition-colors hover:bg-hdr-gold-hover" :href="links.generic(intro.links.consult.href === '#ptsContactModal' ? '/lien-he/#yeu-cau-tu-van' : intro.links.consult.href)">
-            {{ intro.links.consult.label }} <span aria-hidden="true">→</span>
-          </a>
-          <a class="inline-flex min-h-11 items-center justify-center rounded-btn border border-white/30 bg-white/[.04] px-5 text-center text-sm font-extrabold text-white no-underline transition-colors hover:border-gold-400 hover:bg-white/10 ph:justify-start ph:text-left" :href="links.generic(intro.links.explore.href)">{{ intro.links.explore.label }}</a>
-        </div>
+    <div v-else class="grid grid-cols-1 items-start gap-0 min-[801px]:grid-cols-[minmax(0,1.05fr)_minmax(0,.95fr)] min-[801px]:gap-x-[72px] min-[801px]:gap-y-0">
+      <!-- The PHP hub uses this same title as its only visible H1. -->
+      <h1 id="solutions-title" class="m-0 mb-[18px] max-w-[600px] text-[clamp(34px,3.2vw,48px)] font-black leading-[1.18] tracking-[-0.035em] text-[#071b46] [text-wrap:balance] max-[800px]:max-w-none max-[800px]:text-[32px] max-[800px]:leading-[40.12px] max-[520px]:text-[clamp(32px,8.5vw,39px)] max-[520px]:leading-[1.18] min-[801px]:row-span-2 min-[801px]:mb-0">{{ intro.title }}</h1>
+      <p class="m-0 text-[18px] leading-[1.7] text-[#52627a] max-[520px]:text-[17px] max-[520px]:leading-[1.8] min-[801px]:col-start-2 min-[801px]:row-start-1">{{ intro.description }}</p>
+      <div class="mt-[27px] flex items-center gap-6 max-[520px]:flex-col max-[520px]:items-stretch max-[520px]:gap-0 min-[801px]:col-start-2 min-[801px]:row-start-2">
+        <a class="inline-flex min-h-12 items-center justify-center gap-5 rounded-[7px] bg-[linear-gradient(120deg,#e6bd56,#cb922b)] px-[22px] py-[13px] text-[15px] leading-[1.75] font-extrabold text-navy-950 no-underline transition-colors hover:bg-[#efca72] max-[520px]:leading-[1.66]" :href="links.generic(intro.links.consult.href === '#ptsContactModal' ? '/lien-he/#yeu-cau-tu-van' : intro.links.consult.href)">
+          {{ intro.links.consult.label }} <span aria-hidden="true">→</span>
+        </a>
+        <a class="inline-flex min-h-11 items-center text-[15px] font-extrabold text-navy-800 no-underline hover:text-gold-700" :href="links.generic(intro.links.explore.href)">{{ intro.links.explore.label }}</a>
       </div>
     </div>
   </section>

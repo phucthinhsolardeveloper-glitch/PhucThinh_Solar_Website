@@ -104,7 +104,7 @@ test('PDP cart and document links use public assets on public routes and preview
   assert.match(documents, /!links\.active\.value\) return document\.url/)
   assert.match(documents, /_migration\/product-document\?path=/)
   assert.match(page, /:consultation-available="Boolean\(extras\)"/)
-  assert.match(purchase, /v-else-if="consultationAvailable"[\s\S]*href="#pts-pdp-consultation"/)
+  assert.match(purchase, /v-if="pricing\.mode === 'quote' && consultationAvailable"[\s\S]*href="#pts-pdp-consultation"/)
 })
 
 test('shared catalog and shell links resolve CMS internal URLs and keep exactly the approved five top-level groups', () => {

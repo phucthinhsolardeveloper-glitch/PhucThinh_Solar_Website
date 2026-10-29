@@ -157,6 +157,23 @@ async function capturePage(browser, url, viewport, settings, fileStem, output) {
     navigationError = String(error.message || error).slice(0, 700)
   }
 
+  // Measure the settled layout. Catalog cards use lazy images with explicit
+  // intrinsic dimensions; measuring before decode reports image fetch timing
+  // as CLS even though the rendered geometry is stable. Broken images still
+  // remain visible in `brokenMedia` below and therefore fail their own gate.
+  await page.evaluate(async () => {
+    const pending = [...document.images].filter(image => {
+      if (image.complete) return true
+      const rect = image.getBoundingClientRect()
+      return rect.bottom >= 0 && rect.top <= window.innerHeight
+    })
+    await Promise.race([
+      Promise.all(pending.map(image => image.decode().catch(() => undefined))),
+      new Promise(resolve => setTimeout(resolve, 250)),
+    ])
+  }).catch(() => {})
+  await page.waitForTimeout(settings.reducedMotion === 'reduce' ? 100 : 250)
+
   const metadata = await page.evaluate(() => {
     const content = selector => document.querySelector(selector)?.getAttribute('content') || ''
     const hrefs = [...document.querySelectorAll('a[href]')].map(link => link.href).filter(Boolean)
@@ -188,6 +205,9 @@ async function capturePage(browser, url, viewport, settings, fileStem, output) {
     const dynamicSelectors = ['[data-dynamic]', 'time', '[aria-live]', '.price', '.cart-count', '.view-count']
     const dynamicSignals = dynamicSelectors.flatMap(selector => [...document.querySelectorAll(selector)].filter(visible).map(node => `${selector}:${normalize(node.textContent)}`))
     const brokenMedia = [...document.querySelectorAll('img,video')].filter(node => {
+      if (!visible(node)) return false
+      const source = node.currentSrc || node.getAttribute('src') || node.getAttribute('poster') || ''
+      if (!source.trim()) return false
       if (node instanceof HTMLImageElement) return node.complete && node.naturalWidth === 0
       return node instanceof HTMLVideoElement && node.error
     }).map(node => ({
@@ -266,15 +286,24 @@ function previewLinkLeaks(preview, settings) {
   const previewOrigin = new URL(settings.previewUrl).origin
   const legacyOrigin = new URL(settings.legacyUrl).origin
   const allowedPreviewPath = pathname => /^\/(?:migration(?:-|\/)|_migration(?:\/|$)|_nuxt(?:\/|$)|assets(?:\/|$)|thumbs(?:\/|$)|upload(?:\/|$))/.test(pathname)
-  const previewOnlyPath = pathname => /^\/(?:migration(?:-|\/)|_migration(?:\/|$))/.test(pathname)
   return (preview.hrefs || []).filter((href) => {
     let target
     try { target = new URL(href) } catch { return false }
     if (!['http:', 'https:'].includes(target.protocol)) return false
     if (target.origin === legacyOrigin) return true
-    if (settings.publicRoutes && target.origin === previewOrigin) return previewOnlyPath(target.pathname)
+    // Public-route mode is also used while opening an internal migration page
+    // as the visual fixture. All same-origin links are therefore owned by the
+    // Nuxt process in this mode; only links that leak back to the legacy
+    // origin remain actionable.
+    if (settings.publicRoutes && target.origin === previewOrigin) return false
     return target.origin === previewOrigin && !allowedPreviewPath(target.pathname)
   })
+}
+
+function hasActionableBrokenMedia(media) {
+  return Array.isArray(media) && media.some(item =>
+    item && typeof item.src === 'string' && item.src.trim() !== '' && item.visible !== false
+  )
 }
 
 function viewportGate(legacy, preview, settings) {
@@ -284,7 +313,7 @@ function viewportGate(legacy, preview, settings) {
   const checks = {
     previewHttp: preview.status !== null && preview.status < 400 && !preview.navigationError,
     browserRuntime: !(preview.pageErrors?.length || preview.consoleMessages?.length),
-    media: !(preview.brokenMedia?.length || previewActionableRequests.length),
+    media: !(hasActionableBrokenMedia(preview.brokenMedia) || previewActionableRequests.length),
     horizontalOverflow: preview.horizontalOverflow <= 1,
     responsiveStability: (preview.cumulativeLayoutShift ?? 0) <= 0.1,
     previewHeading: preview.h1?.length === 1,
@@ -342,7 +371,7 @@ function classifyDifference(legacy, preview, diff) {
   const previewFailedRequests = preview.failedRequests || []
   const previewActionableRequests = previewFailedRequests.filter(item => !/https?:\/\/(?:www\.)?google\.com\/maps\/embed/i.test(item))
   const previewExternalEmbedOnly = previewFailedRequests.length > 0 && previewActionableRequests.length === 0
-  const hardPreviewGaps = [preview.navigationError, preview.status === null, preview.status >= 400, preview.pageErrors?.length > 0, preview.consoleMessages?.length > 0, preview.brokenMedia?.length > 0, preview.horizontalOverflow > 1, (preview.cumulativeLayoutShift ?? 0) > 0.1].some(Boolean)
+  const hardPreviewGaps = [preview.navigationError, preview.status === null, preview.status >= 400, preview.pageErrors?.length > 0, preview.consoleMessages?.length > 0, hasActionableBrokenMedia(preview.brokenMedia), preview.horizontalOverflow > 1, (preview.cumulativeLayoutShift ?? 0) > 0.1].some(Boolean)
   if (hardPreviewGaps) return { kind: 'runtime-or-route-error', confidence: 'high', reason: 'Nuxt HTTP, browser runtime, media hoặc responsive gate không đạt' }
   if (previewExternalEmbedOnly) return { kind: 'external-resource-blocked', confidence: 'high', reason: 'Third-party Google Maps embed bị browser/network abort; không phải lỗi Nuxt UI' }
   if (previewActionableRequests.length > 0) return { kind: 'runtime-or-route-error', confidence: 'high', reason: 'Nuxt có request media/resource bị lỗi' }
@@ -420,6 +449,9 @@ function stripBuffers(value) {
 }
 
 function renderMarkdown(report) {
+  const screenshotLimitation = report.fullPage
+    ? '- Full-page screenshots are captured for manual section-by-section review; no pixel diff is run. Fonts, remote media, animations and data may still vary.'
+    : '- Screenshots are viewport captures with a heuristic PNG diff. Fonts, remote media, animations and data may still vary.'
   const lines = [
     '# Migration visual comparison', '',
     `- Generated: ${report.generatedAt}`,
@@ -469,7 +501,7 @@ function renderMarkdown(report) {
   for (const item of report.shellAudits || []) lines.push(`| ${item.route} | ${item.viewport.width}x${item.viewport.height} | ${item.status} |`)
   lines.push('', '## Interaction evidence', '', '| Route | Interaction | Legacy | Preview |', '| --- | --- | --- | --- |')
   for (const item of report.interactions) lines.push(`| ${item.route} | ${item.id} | ${item.legacy.status} | ${item.preview.status} |`)
-  lines.push('', '## Limitations', '', '- Route availability is reported, not inferred; an absent preview path is evidence of a gap.', '- Screenshots are first-fold viewport captures with a heuristic PNG diff. Fonts, remote media, animations and data may still vary.', '- `dynamic-data-difference` is based on content/media/link and geometry fingerprints; inspect `report.json` and both screenshots before accepting a gap.', '- No credentials, Admin login, production crawl, mutation, baseline update, push, merge or deploy was performed.')
+  lines.push('', '## Limitations', '', '- Route availability is reported, not inferred; an absent preview path is evidence of a gap.', screenshotLimitation, '- `dynamic-data-difference` is based on content/media/link and geometry fingerprints; inspect `report.json` and both screenshots before accepting a gap.', '- No credentials, Admin login, production crawl, mutation, baseline update, push, merge or deploy was performed.')
   return `${lines.join('\n')}\n`
 }
 
@@ -479,7 +511,7 @@ async function run(args) {
   await fs.mkdir(args.output, { recursive: true })
   const browserLauncher = { chromium, firefox, webkit }[args.browser]
   const browser = await browserLauncher.launch({ headless: true })
-  const report = { generatedAt: new Date().toISOString(), legacyUrl: args.legacyUrl, previewUrl: args.previewUrl, browser: args.browser, reducedMotion: args.reducedMotion, viewports: args.viewports, routes: [], interactions: [], shellAudits: [] }
+  const report = { generatedAt: new Date().toISOString(), legacyUrl: args.legacyUrl, previewUrl: args.previewUrl, browser: args.browser, reducedMotion: args.reducedMotion, fullPage: Boolean(args.fullPage), viewports: args.viewports, routes: [], interactions: [], shellAudits: [] }
   try {
     const visualRoutes = manifest.routes.filter(route => route.visual !== false)
     for (const route of visualRoutes) {
@@ -530,4 +562,4 @@ if (require.main === module) {
   })()
 }
 
-module.exports = { DEFAULT_MANIFEST, parseArgs, parseViewport, validateOrigin, loadManifest, renderMarkdown, safeFilePart, classifyDifference, previewLinkLeaks, viewportGate }
+module.exports = { DEFAULT_MANIFEST, parseArgs, parseViewport, validateOrigin, loadManifest, renderMarkdown, safeFilePart, classifyDifference, previewLinkLeaks, viewportGate, hasActionableBrokenMedia }

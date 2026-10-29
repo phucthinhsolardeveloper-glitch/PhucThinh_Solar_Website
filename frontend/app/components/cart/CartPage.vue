@@ -12,6 +12,14 @@ if (isPublicCartPayload(initialCart.value)) cart.value = initialCart.value
 else if (!isMigrationPreview.value && import.meta.server) setResponseStatus(502, 'Bad Gateway')
 if (!isMigrationPreview.value && import.meta.server && initialCartError.value) setResponseStatus(502, 'Bad Gateway')
 
+usePublicSocialMeta({
+  enabled: computed(() => !isMigrationPreview.value),
+  title: 'Giỏ hàng — Phúc Thịnh Solar',
+  description: computed(() => site.value.brand.name || 'Phúc Thịnh Solar'),
+  canonicalPath: '/gio-hang/',
+  image: computed(() => site.value.brand.logo),
+})
+
 const quantityDraft = reactive<Record<string, number>>({})
 
 watchEffect(() => {

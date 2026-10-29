@@ -4,6 +4,9 @@ import { legacyMediaPageQuery } from '#shared/public-route-query'
 
 export default defineNuxtRouteMiddleware((to) => {
   const config = useRuntimeConfig()
-  if (editorialPublicRouteMode(config.public.galleryPublicRouteEnabled, config.public.galleryPublicRouteIndexable).renderNuxt) return
+  if (editorialPublicRouteMode(config.public.galleryPublicRouteEnabled, config.public.galleryPublicRouteIndexable).renderNuxt) {
+    if (to.path !== GALLERY_PUBLIC_PATH) return navigateTo({ path: GALLERY_PUBLIC_PATH, query: to.query }, { redirectCode: 301 })
+    return
+  }
   return navigateTo(phpPublicRouteUrl(config.public.phpPublicOrigin, GALLERY_PUBLIC_PATH, legacyMediaPageQuery(to.query)), { external: true, redirectCode: 307 })
 })

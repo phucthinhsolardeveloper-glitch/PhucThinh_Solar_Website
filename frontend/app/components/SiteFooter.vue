@@ -35,8 +35,8 @@ const telHref = computed(() => telHrefFor(hotline.value))
       class="mx-auto grid w-full max-w-(--container-page) gap-8 px-4 max-[359px]:px-3 tb:px-(--spacing-gutter) pt-12
              grid-cols-1
              tb:grid-cols-2
-             nav:grid-cols-[200px_minmax(260px,1fr)_minmax(230px,0.85fr)_minmax(340px,1.25fr)]
-             wd:grid-cols-[240px_minmax(280px,1fr)_minmax(240px,0.85fr)_minmax(420px,1.35fr)]"
+             nav:grid-cols-[290px_minmax(280px,1fr)_minmax(460px,1.3fr)]
+             wd:grid-cols-[290px_minmax(280px,1fr)_minmax(460px,1.3fr)]"
     >
       <!-- Cột 1: Biểu trưng thương hiệu -->
       <div class="space-y-3">
@@ -47,27 +47,18 @@ const telHref = computed(() => telHrefFor(hotline.value))
             :alt="brandName"
             width="280"
             height="229"
-            class="block h-auto w-full max-w-[168px] wd:max-w-[228px]"
+            class="block h-auto w-full max-w-[180px] nav:max-w-[200px] wd:max-w-[280px]"
           >
           <span v-else class="text-lg font-black text-white">{{ brandName }}</span>
         </a>
-        <div v-if="footer?.trustBadge" class="pt-1">
-          <a
-            class="inline-flex min-h-11 max-w-[138px] items-center"
-            :href="footer.trustBadge.href"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <img :src="trustBadgeSrc(footer.trustBadge.image)" alt="Đã thông báo Bộ Công Thương" width="200" height="76" class="block h-auto w-full">
-          </a>
-        </div>
       </div>
 
       <!-- Cột 2: Pháp nhân doanh nghiệp và 2 đường dây nóng -->
       <div>
-        <h2 class="mb-4 border-b border-white/12 pb-2.5 text-[15px] font-extrabold uppercase tracking-[.02em] text-gold-400">
+        <h2 class="mb-4 text-[15px] font-extrabold uppercase tracking-[.02em] text-gold-400">
           {{ footer?.companyName || 'Thông tin doanh nghiệp' }}
         </h2>
+        <span aria-hidden="true" class="-mt-2 mb-4 block h-0.5 w-9 bg-gold-500" />
 
         <EditorialRichText v-if="footer?.contactText?.html" :content="footer.contactText" class="cms-content-on-dark mt-3 text-[14.5px] leading-[1.68]" />
 
@@ -101,34 +92,47 @@ const telHref = computed(() => telHrefFor(hotline.value))
         </div>
       </div>
 
-      <!-- Cột 3: Chính sách & Hỗ trợ khách hàng -->
-      <nav v-if="footer?.policies.length" aria-label="Chính sách và hỗ trợ khách hàng">
-        <h2 class="mb-4 border-b border-white/12 pb-2.5 text-[14px] font-extrabold uppercase tracking-wider text-white">
-          Chính sách &amp; Hỗ trợ khách hàng
-        </h2>
-        <ul class="m-0 list-none space-y-0.5 p-0">
-          <li v-for="policy in footer.policies" :key="policy.href">
-            <NuxtLink
-              :external="isExternalLink(footerHref(policy.href))"
-              class="flex min-h-11 items-center py-1 text-[15px] leading-[1.6] no-underline transition-colors hover:text-gold-400"
-              :to="footerHref(policy.href)"
+      <div class="grid min-w-0 grid-cols-1 gap-8 ph:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] tb:col-span-2 nav:col-span-1">
+        <!-- Chính sách nằm cùng cột nội dung liên hệ như footer PHP. -->
+        <nav v-if="footer?.policies.length || footer?.trustBadge" aria-label="Chính sách và hỗ trợ khách hàng">
+          <h2 class="mb-4 text-[14px] font-extrabold uppercase tracking-wider text-white">
+            Chính sách &amp; Hỗ trợ khách hàng
+          </h2>
+          <span aria-hidden="true" class="-mt-2 mb-4 block h-0.5 w-9 bg-gold-500" />
+          <ul class="m-0 list-none space-y-0.5 p-0">
+            <li v-for="policy in footer ? footer.policies : []" :key="policy.href">
+              <NuxtLink
+                :external="isExternalLink(footerHref(policy.href))"
+                class="flex min-h-11 items-center py-1 text-[15px] leading-[1.6] no-underline transition-colors hover:text-gold-400"
+                :to="footerHref(policy.href)"
+              >
+                {{ policy.label }}
+              </NuxtLink>
+            </li>
+          </ul>
+          <div v-if="footer?.trustBadge" class="pt-2">
+            <a
+              class="inline-flex min-h-11 max-w-[130px] items-center"
+              :href="footer.trustBadge.href"
+              target="_blank"
+              rel="noopener noreferrer"
             >
-              {{ policy.label }}
-            </NuxtLink>
-          </li>
-        </ul>
-      </nav>
+              <img :src="trustBadgeSrc(footer.trustBadge.image)" alt="Đã thông báo Bộ Công Thương" width="200" height="76" class="block h-auto w-full">
+            </a>
+          </div>
+        </nav>
 
-      <!-- Cột 4: Lưới thẻ Hệ thống kho & điểm giao dịch -->
-      <div v-if="footer?.locations.length">
-        <h2 class="mb-4 border-b border-white/12 pb-2.5 text-[14px] font-extrabold uppercase tracking-wider text-white">
-          Hệ thống kho &amp; điểm giao dịch
-        </h2>
-        <div class="grid grid-cols-1 gap-3 ph:grid-cols-2">
+        <!-- Địa điểm hiển thị thành danh sách phẳng, như .content_cn của PHP. -->
+        <div v-if="footer?.locations.length">
+          <h2 class="mb-4 text-[14px] font-extrabold uppercase tracking-wider text-white">
+            Hệ thống kho &amp; điểm giao dịch
+          </h2>
+          <span aria-hidden="true" class="-mt-2 mb-4 block h-0.5 w-9 bg-gold-500" />
+          <div class="space-y-3">
           <address
             v-for="location in footer.locations"
             :key="location.name + location.address"
-            class="m-0 rounded-btn border border-white/10 bg-white/[.04] p-3.5 not-italic transition-colors hover:border-gold-400/45 hover:bg-white/[.07]"
+            class="m-0 not-italic"
           >
             <component
               :is="location.mapUrl ? 'a' : 'div'"
@@ -145,7 +149,8 @@ const telHref = computed(() => telHrefFor(hotline.value))
                 {{ location.address }}
               </span>
             </component>
-          </address>
+            </address>
+          </div>
         </div>
       </div>
     </div>

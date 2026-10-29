@@ -1,7 +1,7 @@
 import { isPublicSanitizedRichText, type PublicSanitizedRichText } from './editorial-rich-text.ts'
 
 export interface PublicNewsDetailMedia { gallery: { image: string; alt: string }[]; videos: { url: string; title: string }[] }
-export interface PublicNewsDetailRelated { id: number; title: string; slug: string; canonical: string; date: string; description: string; image: string }
+export interface PublicNewsDetailRelated { id: number; title: string; slug: string; canonical: string; date: string; author: string; description: string; image: string }
 export interface PublicNewsDetailCta { title: string; description: string; buttonLabel: string; image: string; hotline: { label: string; text: string; tel: string } | null }
 export interface PublicNewsDetailPayload {
   article: { schemaVersion: 1; locale: 'vi'; id: number; title: string; slug: string; canonical: string; date: string; datePublished: string; dateModified: string; author: { name: string }; description: string; cover: string; showCover: boolean; content: PublicSanitizedRichText; quote?: PublicSanitizedRichText | null; category: { id: number; name: string; slug: string; url: string } | Record<string, never>; media: PublicNewsDetailMedia; seo: { title: string; description: string; keywords: string; canonical: string }; readOnly: true; legacyViewMutation: false }
@@ -32,6 +32,6 @@ export function isPublicNewsDetailPayload(value: unknown): value is PublicNewsDe
   const cta = (value as any).cta
   if (cta !== null && (!cta || typeof cta !== 'object' || Array.isArray(cta) || !text(cta.title) || !text(cta.description, true) || !text(cta.buttonLabel, true) || !image(cta.image) || !(cta.hotline === null || cta.hotline && typeof cta.hotline === 'object' && !Array.isArray(cta.hotline) && text(cta.hotline.label) && text(cta.hotline.text) && text(cta.hotline.tel, true)))) return false
   if (!Array.isArray((value as any).related)) return false
-  return (value as any).related.every((r: any) => Number.isSafeInteger(r?.id) && r.id > 0 && text(r.title) && isNewsDetailSlug(r.slug) && r.canonical === `/${r.slug}/` && text(r.date, true) && text(r.description, true) && image(r.image))
+  return (value as any).related.every((r: any) => Number.isSafeInteger(r?.id) && r.id > 0 && text(r.title) && isNewsDetailSlug(r.slug) && r.canonical === `/${r.slug}/` && text(r.date, true) && text(r.author) && text(r.description, true) && image(r.image))
 }
 function image(v: unknown): v is string { return typeof v === 'string' && (v === '' || imageRe.test(v)) }

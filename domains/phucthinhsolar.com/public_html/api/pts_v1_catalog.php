@@ -140,7 +140,7 @@ try
     $orderBy = ptsCatalogSortOrderBy($sortKey, publicProductPricesVisible());
     $defaultOrder = publicProductDefaultOrder('p', publicProductBossCategoryOrder('p'));
     $orderBySql = $orderBy !== null ? $orderBy : preg_replace('/^\s*order\s+by\s+/i', '', $defaultOrder);
-    $rows = $d->rawQuery("select p.id,p.namevi,p.slugvi,p.photo,p.photo2,p.status,p.regular_price,p.sale_price,p.cong_suat from #_product p where {$where} order by {$orderBySql} limit ".(int)$offset.', '.(int)$perPage, $params);
+    $rows = $d->rawQuery("select p.id,p.namevi,p.slugvi,p.photo,p.photo2,p.status,p.regular_price,p.sale_price,p.cong_suat,p.waterproof_rating,p.lighting_time from #_product p where {$where} order by {$orderBySql} limit ".(int)$offset.', '.(int)$perPage, $params);
     $rows = is_array($rows) ? $rows : array();
     foreach($rows as &$row)
     {

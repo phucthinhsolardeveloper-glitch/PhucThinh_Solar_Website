@@ -6,7 +6,9 @@ export default defineEventHandler(async (event) => {
     setHeader(event, 'Allow', 'GET')
     throw createError({ statusCode: 405, statusMessage: 'Method Not Allowed' })
   }
-  const slug = getQuery(event).slug
+  const query = getQuery(event)
+  if (Object.keys(query).some((key) => key !== 'slug')) throw createError({ statusCode: 400, statusMessage: 'Invalid product extras query' })
+  const slug = query.slug
   if (typeof slug !== 'string' || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
     throw createError({ statusCode: 400, statusMessage: 'Invalid product slug' })
   }

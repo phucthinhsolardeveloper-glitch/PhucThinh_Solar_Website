@@ -63,7 +63,7 @@ usePublicSocialMeta({
         <p class="text-slate-500">Không thể tải sản phẩm hoặc slug chưa hợp lệ.</p>
       </div>
 
-      <ProductPreviewPage v-else :product="product" :pricing="payload!.pricing" :content="payload!.content" :applications="payload!.applications" :buying-guides="payload!.buyingGuides" :documents="payload!.documents" :extras="extras" />
+      <ProductPreviewPage v-else :product="product" :breadcrumbs="payload!.breadcrumbs ?? []" :pricing="payload!.pricing" :content="payload!.content" :applications="payload!.applications" :buying-guides="payload!.buyingGuides" :documents="payload!.documents" :extras="extras" />
     </main>
 
     <SiteFooter :site="site" />

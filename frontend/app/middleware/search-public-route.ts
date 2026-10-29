@@ -3,7 +3,10 @@ import { legacySearchFilterQuery } from '#shared/public-route-query'
 
 export default defineNuxtRouteMiddleware((to) => {
   const config = useRuntimeConfig()
-  if (isRuntimeFlagEnabled(config.public.searchPublicRouteEnabled)) return
+  if (isRuntimeFlagEnabled(config.public.searchPublicRouteEnabled)) {
+    if (to.path !== SEARCH_PUBLIC_PATH) return navigateTo({ path: SEARCH_PUBLIC_PATH, query: to.query }, { redirectCode: 301 })
+    return
+  }
   return navigateTo(phpPublicRouteUrl(config.public.phpPublicOrigin, SEARCH_PUBLIC_PATH, legacySearchFilterQuery(to.query)), {
     external: true,
     redirectCode: 307,

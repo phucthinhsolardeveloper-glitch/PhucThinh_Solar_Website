@@ -10,6 +10,7 @@ const breadcrumb = read('components/SiteBreadcrumb.vue')
 const links = read('composables/useMigrationLinks.ts')
 const mainCss = read('assets/css/main.css')
 const tokensCss = read('assets/css/tokens.css')
+const app = read('app.vue')
 
 test('shared shell renders CMS assets and explicit navigation/taxonomy only', () => {
   const navigation = header.match(/const fallbackNav:[\s\S]*?= \[([\s\S]*?)\]/)?.[1] || ''
@@ -27,6 +28,29 @@ test('shared shell renders CMS assets and explicit navigation/taxonomy only', ()
   assert.match(header, /if \(cartCountAvailable\.value\) void refreshMigrationCart\(\)/)
   assert.match(header, /v-if="cartCountAvailable && migrationCart\?\.count"/)
   assert.doesNotMatch(header, /https?:\/\/[^'"`]+logo/i)
+})
+
+test('shared header keeps PHP production single-row composition without a duplicate utility strip', () => {
+  const phpHeader = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/templates/layout/header.php', import.meta.url), 'utf8')
+  assert.match(phpHeader, /<div class="header-bottom pts-header-primary">/)
+  assert.match(header, /class="sticky top-0 z-\[1000\]"/)
+  assert.doesNotMatch(header, /Tầng 1: Thanh tiện ích/)
+  assert.doesNotMatch(header, /Yêu cầu khảo sát/)
+  assert.match(header, /Nhận tư vấn/)
+  assert.match(phpHeader, /class="hdr-call"/)
+  assert.match(header, /v-if="hotline"[\s\S]*telHrefFor\(hotline\)/)
+  assert.match(header, /min-\[2300px\]:flex min-\[2300px\]:flex-col/)
+  assert.match(header, /shellHref\('\/gio-hang\/'\)/)
+  assert.match(header, /class="gtranslate_wrapper[^\"]*min-\[1321px\]:flex"/)
+  assert.match(header, /<nav class="hidden min-w-0 nav:flex-1 nav:block"/)
+  assert.match(header, /nav:w-\[270px\][\s\S]*min-\[1501px\]:w-\[clamp\(360px,22vw,460px\)\]/)
+  assert.match(header, /min-\[1321px\]:max-\[1346px\]:w-\[244px\]/)
+  assert.match(header, /<ul class="flex items-center justify-center gap-1 nav:gap-0"/)
+  assert.match(header, /whitespace-nowrap border-b-2 px-2\.5[^\"]*nav:px-2 wd:px-3/)
+  assert.doesNotMatch(header, /ptsInlineSearchInput|quickCategories|wd:hidden/)
+  assert.match(app, /cdn\.gtranslate\.net\/widgets\/latest\/popup\.js/)
+  assert.match(app, /'zh-CN', 'ko', 'ja'/)
+  assert.doesNotMatch(mainCss, /\.gtranslate_wrapper\s*\{[^}]*display\s*:/)
 })
 
 test('header overlays expose keyboard state, focus trap and scroll restoration hooks', () => {

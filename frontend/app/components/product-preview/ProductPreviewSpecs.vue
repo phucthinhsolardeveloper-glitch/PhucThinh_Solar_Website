@@ -12,26 +12,25 @@ defineProps<{ specifications: PublicProductSpecification[] }>()
 
     <p v-if="!specifications.length" class="text-slate-500">CMS chưa cung cấp thông số được allowlist.</p>
 
-    <!--
-      Bảng hai cột: nhãn 36% / giá trị phần còn lại, như bản PHP. Ảnh production
-      tô nền xen kẽ theo hàng; giữ nền xen kẽ vì với bảng 19 dòng thông số thì
-      đó là thứ giúp mắt bám đúng hàng khi đọc ngang.
-      Bọc overflow-x-auto: một số giá trị (kích thước tấm pin, điện áp hệ thống)
-      dài và không ngắt được, cuộn trong bảng tốt hơn là đẩy cả trang trôi ngang.
-    -->
-    <div v-else class="overflow-x-auto">
-      <table class="w-full border-collapse">
+    <div v-else class="overflow-x-auto border border-[#dce3ea]">
+      <table class="w-full table-fixed border-collapse">
+        <thead>
+          <tr class="bg-[#edf1f5] text-navy-800">
+            <th scope="col" class="w-1/2 px-[18px] py-3 text-left text-[13px] font-bold max-ph:px-3">Hạng mục</th>
+            <th scope="col" class="w-1/2 px-[18px] py-3 text-left text-[13px] font-bold max-ph:px-3">Thông tin theo model</th>
+          </tr>
+        </thead>
         <tbody>
           <tr
             v-for="(item, index) in specifications"
             :key="`${item.key}-${item.label}`"
-            :class="index % 2 === 1 ? 'bg-slate-50' : ''"
+            :class="index % 2 === 1 ? 'bg-[#fafbfc]' : 'bg-white'"
           >
-            <th scope="row" class="w-[36%] border border-gray-200 px-4 py-3.5 text-left align-top font-bold max-ph:px-3 max-ph:py-3">
+            <th scope="row" class="w-1/2 px-[18px] py-3 text-left align-top text-slate-700 font-semibold max-ph:w-[38%] max-ph:px-3 max-ph:py-[11px]">
               {{ item.label }}
             </th>
-            <td class="border border-gray-200 px-4 py-3.5 text-left align-top max-ph:px-3 max-ph:py-3">
-              {{ item.value }}
+            <td class="w-1/2 px-[18px] py-3 text-left align-top text-navy-800 font-bold max-ph:w-[62%] max-ph:px-3 max-ph:py-[11px]">
+              {{ item.value || 'Đang cập nhật' }}
             </td>
           </tr>
         </tbody>

@@ -1,6 +1,43 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
 
+.gtranslate_wrapper {
+  position: relative;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 45px;
+}
+
+.gtranslate_wrapper .gt_switcher-popup img + span {
+  display: none;
+}
+
+.gt_black_overlay {
+  display: none !important;
+}
+
+.gtranslate_wrapper .gt_white_content {
+  position: absolute !important;
+  top: 35px !important;
+  right: 0;
+  left: auto !important;
+  width: max-content;
+  height: auto;
+  margin: 0 !important;
+  padding: 0 10px;
+  border-radius: 3px;
+  background: #fff;
+  box-shadow: 0 8px 18px rgb(10 34 81 / 14%) !important;
+}
+
+.gtranslate_wrapper .gt_white_content a {
+  display: block;
+  padding: 10px 0 !important;
+  border-bottom: 1px solid #e7e7e7;
+  white-space: nowrap;
+}
+
 /* ============================================================================
    PTS — nền tảng theme Tailwind v4 + Nuxt UI v4
    CODEX 1, theo docs/14-nuxt-migration/TAILWIND_NUXT_UI_FULL_MIGRATION_20261026.md
@@ -299,6 +336,11 @@
   .cms-content-on-dark h5,
   .cms-content-on-dark h6 { color: white; }
   .cms-content-on-dark a { color: var(--color-gold-300); }
+  /* Editorial base typography is more specific later in this layer; restore
+     the dark-surface contract when the shared rich-text component is in footer. */
+  .cms-content--editorial.cms-content-on-dark { color: var(--color-blue-100); }
+  .cms-content--editorial.cms-content-on-dark strong { color: #fff; }
+  .cms-content--editorial.cms-content-on-dark a { color: var(--color-gold-300); }
 
   .cms-content img {
     display: block;

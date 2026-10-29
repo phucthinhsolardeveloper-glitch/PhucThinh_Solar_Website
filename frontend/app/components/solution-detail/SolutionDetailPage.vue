@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { PublicSolutionDetailPayload } from '../../../shared/contracts/public-solution-detail'
 import { buildEditorialTocForFragments } from '#shared/editorial-toc'
-import { resolveEquipmentIcon } from '#shared/catalog-menu-presentation'
 import EditorialRichText from '~/components/editorial/EditorialRichText.vue'
 import SolutionDetailGallery from './SolutionDetailGallery.vue'
 import SolutionsCta from '~/components/solutions/SolutionsCta.vue'
@@ -142,8 +141,8 @@ const quickHotlineText = computed(() => props.data.campaignCta?.hotline?.text ||
         </aside>
 
         <article id="solution-content" class="min-w-0">
-          <EditorialRichText :content="solutionContent" />
-          <EditorialRichText class="mt-8" :content="solutionExtraContent" />
+          <EditorialRichText :content="solutionContent" variant="solution" />
+          <EditorialRichText class="mt-8" :content="solutionExtraContent" variant="solution" />
           <p v-if="!data.solution.content.html && !data.solution.extraContent.html" class="text-slate-500">Nội dung chi tiết đang được cập nhật.</p>
         </article>
       </div>
@@ -153,37 +152,26 @@ const quickHotlineText = computed(() => props.data.campaignCta?.hotline?.text ||
     </article>
 
     <section v-if="data.equipment.length" class="pts-container py-6 nav:py-8" aria-labelledby="solution-equipment-title">
-      <header class="mb-5 flex flex-col items-start gap-2.5 border-t border-slate-200/80 pt-7 tb:flex-row tb:items-end tb:justify-between">
-        <h2 id="solution-equipment-title" class="m-0 text-[clamp(22px,2.2vw,28px)] font-black tracking-tight text-navy-800">Thiết bị liên quan</h2>
+      <header class="mb-5 flex flex-col items-start gap-4 min-[801px]:flex-row min-[801px]:items-end min-[801px]:justify-between">
+        <h2 id="solution-equipment-title" class="m-0 text-[clamp(22px,2.2vw,28px)] font-black tracking-tight text-navy-800">Thiết bị cho một hệ thống hoàn chỉnh</h2>
         <a class="inline-flex min-h-11 items-center gap-1.5 text-sm font-extrabold text-gold-700 no-underline transition-colors hover:text-navy-800" :href="links.generic('/san-pham/')">
           <span>Xem tất cả sản phẩm</span>
           <span aria-hidden="true">→</span>
         </a>
       </header>
-      <div class="grid grid-cols-1 gap-4 ph:grid-cols-2 tb:grid-cols-4">
+      <div class="grid grid-cols-1 gap-2 min-[521px]:grid-cols-2 min-[1101px]:grid-cols-4">
         <a
           v-for="item in data.equipment"
           :key="item.url"
-          class="group flex flex-col justify-between rounded-chip border border-slate-200/90 bg-white p-4 text-navy-800 no-underline transition-all hover:border-gold-500 hover:shadow-sm"
+          class="group flex min-w-0 items-center gap-3 px-3.5 py-2.5 text-navy-800 no-underline"
           :href="links.generic(item.url)"
         >
-          <div>
-            <div v-if="item.image" class="mb-3.5 flex aspect-square w-full items-center justify-center overflow-hidden rounded-chip bg-navy-800/[.03] p-4">
-              <img :src="item.image" alt="" class="h-full w-full object-contain transition-transform duration-300 group-hover:scale-[1.03]" width="160" height="160" loading="lazy">
-            </div>
-            <div v-else class="mb-3.5 flex items-center justify-between">
-              <span class="grid h-11 w-11 place-items-center rounded-chip bg-navy-800/[.05] text-gold-700 transition-colors group-hover:bg-navy-800 group-hover:text-gold-300">
-                <CatalogMenuIcon class="h-5 w-5" :name="resolveEquipmentIcon(item.name, item.url)" />
-              </span>
-              <span class="text-base text-slate-400 transition-transform group-hover:translate-x-0.5 group-hover:text-gold-700" aria-hidden="true">→</span>
-            </div>
+          <img v-if="item.image" :src="item.image" alt="" class="h-[54px] w-[54px] shrink-0 object-contain min-[521px]:h-[72px] min-[521px]:w-16" width="80" height="80" loading="lazy">
+          <span class="min-w-0 flex-1">
             <strong class="block text-[15px] font-extrabold leading-snug text-navy-800 transition-colors group-hover:text-gold-700">{{ item.name }}</strong>
-            <small v-if="item.description" class="mt-1.5 block text-[13px] leading-[1.58] text-slate-500">{{ item.description }}</small>
-          </div>
-          <span v-if="item.image" class="mt-3 inline-flex items-center gap-1 text-xs font-extrabold text-gold-700">
-            <span>Xem danh mục</span>
-            <span aria-hidden="true">→</span>
+            <small v-if="item.description" class="mt-1 block text-[13px] leading-[1.5] text-slate-500">{{ item.description }}</small>
           </span>
+          <span class="ml-auto shrink-0 text-[22px] text-navy-800 transition-transform group-hover:translate-x-0.5 group-hover:text-gold-700" aria-hidden="true">→</span>
         </a>
       </div>
     </section>

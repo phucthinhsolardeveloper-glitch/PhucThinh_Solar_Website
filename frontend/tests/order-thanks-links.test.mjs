@@ -7,8 +7,8 @@ const links = readFileSync(new URL('../app/composables/useMigrationLinks.ts', im
 
 test('order confirmation destinations resolve to public routes or preview routes by current route', () => {
   assert.match(component, /const links = useMigrationLinks\(\)/)
-  assert.equal((component.match(/links\.generic\('\/'\)/g) ?? []).length, 2)
-  assert.match(component, /links\.generic\('\/san-pham\/'\)/)
+  assert.equal((component.match(/links\.generic\('\/'\)/g) ?? []).length, 0)
+  assert.equal((component.match(/links\.generic\('\/san-pham\/'\)/g) ?? []).length, 2)
   assert.doesNotMatch(component, /to="\/migration-(?:home|catalog)-preview"/)
   assert.match(links, /const active = computed\(\(\) => route\.path\.startsWith\('\/migration-'\)\)/)
   assert.match(links, /'\/': '\/migration-home-preview'/)

@@ -69,6 +69,18 @@ export async function fetchLegacyPreviewMedia(
   } catch {
     return null
   }
+  if (response.status === 404 && validated.pathname.startsWith('/thumbs/')) {
+    const match = /^\/thumbs\/\d{1,5}x\d{1,5}x\d+(\/upload\/.+)$/.exec(validated.pathname)
+    const fallbackPath = match?.[1]
+    const original = fallbackPath ? validateLegacyMediaPath(fallbackPath) : null
+    if (original) {
+      try {
+        response = await fetcher(new URL(original.pathname, origin), { method: 'GET', redirect: 'manual' })
+      } catch {
+        return null
+      }
+    }
+  }
   if (!response.ok || response.status >= 300 && response.status < 400) return null
 
   const declaredLength = Number(response.headers.get('content-length') ?? '')

@@ -10,7 +10,7 @@ const good = {
   canonical: { url: '/san-pham/' },
   category: [],
   categories: [{ id: 10, name: 'Điện mặt trời', slug: 'dien-mat-troi', url: '/danh-muc-san-pham/dien-mat-troi/' }],
-  products: [{ id: 20, name: 'Sản phẩm thật từ CMS', slug: 'san-pham-that', url: '/san-pham/san-pham-that', media: ['/upload/product/photo.webp'], powerWatts: 650, pricing: { mode: 'price', currency: 'VND', regularPrice: 2648100, salePrice: null } }],
+  products: [{ id: 20, name: 'Sản phẩm thật từ CMS', slug: 'san-pham-that', url: '/san-pham/san-pham-that', media: ['/upload/product/photo.webp'], powerWatts: 650, quickSpecs: ['650W', 'IP65', '10-15 giờ'], pricing: { mode: 'price', currency: 'VND', regularPrice: 2648100, salePrice: null } }],
   pagination: { page: 1, perPage: 20, total: 1 },
   parity: {
     prices: { included: true },
@@ -22,7 +22,7 @@ const catalogApi = readFileSync(new URL('../../domains/phucthinhsolar.com/public
 
 test('accepts the exact Phase A catalog DTO', () => assert.equal(isPublicCatalogPayload(good), true))
 test('keeps the original v1 catalog payload valid during staggered integration', () => {
-  const { powerWatts, pricing, ...legacyProduct } = good.products[0]
+  const { powerWatts, quickSpecs, pricing, ...legacyProduct } = good.products[0]
   const legacy = { ...good, products: [legacyProduct], parity: { ...good.parity, prices: { included: false, reason: 'public_pricing_authority_not_delegated' } } }
   assert.equal(isPublicCatalogPayload(legacy), true)
 })
@@ -37,6 +37,13 @@ test('accepts quote-only products without inventing a price', () => {
   const quote = { ...good.products[0], powerWatts: null, pricing: { mode: 'quote', currency: 'VND', regularPrice: null, salePrice: null } }
   assert.equal(isPublicCatalogPayload({ ...good, products: [quote] }), true)
   assert.equal(isPublicCatalogPayload({ ...good, products: [{ ...quote, pricing: { ...quote.pricing, regularPrice: 1 } }] }), false)
+})
+test('catalog card specs are safe, bounded and projected from PHP product fields', () => {
+  assert.equal(isPublicCatalogPayload(good), true)
+  assert.equal(isPublicCatalogPayload({ ...good, products: [{ ...good.products[0], quickSpecs: ['650W', '<script>'] }] }), false)
+  assert.equal(isPublicCatalogPayload({ ...good, products: [{ ...good.products[0], quickSpecs: ['x'.repeat(101)] }] }), false)
+  assert.match(catalogApi, /p\.cong_suat,p\.waterproof_rating,p\.lighting_time/)
+  assert.match(readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/libraries/pts_public_catalog_api.php', import.meta.url), 'utf8'), /'quickSpecs' => ptsCatalogQuickSpecsDto\(\$row\)/)
 })
 test('accepts category chain only at the supported 0..4 slug boundaries', () => {
   assert.equal(isCatalogSlugChain(''), true)

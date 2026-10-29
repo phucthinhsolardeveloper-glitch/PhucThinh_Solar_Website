@@ -23,6 +23,8 @@ const props = defineProps<{ categoryPath?: string }>()
 const route = useRoute()
 const config = useRuntimeConfig()
 const links = useMigrationLinks()
+const filterDialog = ref<HTMLDialogElement | null>(null)
+const filterDrawerOpen = ref(false)
 const selfPath = computed(() => route.path)
 const category = computed(() => props.categoryPath ?? (productCategorySegmentsFromPublicPath(route.path).join('/') || (typeof route.query.category === 'string' ? route.query.category : '')))
 const page = computed(() => typeof route.query.page === 'string' ? route.query.page : '')
@@ -59,6 +61,22 @@ function filterLink(overrides: { subcategory?: string; brand?: string; price?: s
 function onSortChange(event: Event) {
   const value = (event.target as HTMLSelectElement).value
   navigateTo(filterLink({ sort: value === 'default' ? '' : value }))
+}
+function openFilterDrawer() {
+  const dialog = filterDialog.value
+  if (!dialog || dialog.open) return
+  dialog.showModal()
+  filterDrawerOpen.value = true
+}
+function closeFilterDrawer() {
+  if (filterDialog.value?.open) filterDialog.value.close()
+  filterDrawerOpen.value = false
+}
+function closeFilterDrawerAfterNavigation(event: MouseEvent) {
+  if (event.target instanceof Element && event.target.closest('a[href]')) closeFilterDrawer()
+}
+function syncFilterDrawerState() {
+  filterDrawerOpen.value = filterDialog.value?.open ?? false
 }
 const { data: siteData, error: siteError } = await useAsyncData<PublicSitePayload>('migration-catalog-site', async () => {
   const payload = await $fetch<unknown>('/_migration/site')
@@ -97,9 +115,24 @@ const activeCategoryRoot = computed(() => {
   return tree.find((node) => node.url === selectedCategory.value?.url)
     ?? tree.find((node) => node.children.some((child) => child.url === selectedCategory.value?.url))
 })
-const categoryNavItems = computed(() => selectedCategory.value
-  ? activeCategoryRoot.value?.children ?? []
-  : (siteData.value?.productCategoryTree ?? []).filter((node) => node.slug !== 'den-san-vuon'))
+const lightingRailOrder: Record<string, number> = {
+  'den-pha-nang-luong-mat-troi': 10,
+  'den-pha': 10,
+  'den-duong-nang-luong-mat-troi': 20,
+  'den-duong': 20,
+  'den-san-vuon': 30,
+  'den-ufo': 40,
+  'den-op-tran': 50,
+}
+const categoryNavItems = computed(() => {
+  const items = selectedCategory.value
+    ? activeCategoryRoot.value?.children ?? []
+    : (siteData.value?.productCategoryTree ?? []).filter((node) => node.slug !== 'den-san-vuon')
+
+  // The PHP catalog applies this explicit lighting rail order after the Admin taxonomy query.
+  if (activeCategoryRoot.value?.slug !== 'den-nlmt') return items
+  return [...items].sort((a, b) => (lightingRailOrder[a.slug] ?? 1000) - (lightingRailOrder[b.slug] ?? 1000))
+})
 const categoryAllHref = computed(() => links.generic(activeCategoryRoot.value?.url ?? '/san-pham/'))
 const sidebarCategories = computed(() => selectedCategory.value
   ? []
@@ -118,6 +151,9 @@ function categoryIcon(slug: string): CatalogMenuIconName {
   if (slug.includes('bom')) return 'pump'
   if (slug.includes('quat')) return 'fan'
   return 'cog'
+}
+function categoryNavLabel(category: PublicProductCategoryNode): string {
+  return category.slug === 'den-san-vuon' ? 'Đèn Sân Vườn' : category.name
 }
 
 /**
@@ -248,14 +284,14 @@ function pageLink(nextPage: number) {
       trên màn hình 320px.
     -->
     <main
-      class="pts-container grid grid-cols-1 gap-6 pt-6 pb-16 max-ph:pb-12"
-      :class="hasSidebar ? 'nav:grid-cols-[260px_minmax(0,1fr)]' : ''"
+      class="pts-container grid grid-cols-1 gap-x-[30px] gap-y-6 pt-6 pb-16 max-[1199px]:gap-x-6 max-[769px]:gap-y-4 max-[769px]:pt-5 max-ph:pb-12"
+      :class="hasSidebar ? 'min-[1002px]:grid-cols-[240px_minmax(0,1fr)] min-[1200px]:grid-cols-[280px_minmax(0,1fr)]' : ''"
     >
-      <nav v-if="categoryNavItems.length" class="col-span-full mt-0 flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" aria-label="Danh mục sản phẩm">
+      <nav v-if="categoryNavItems.length" class="col-span-full mt-0 flex gap-[10px] overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden max-[769px]:gap-[7px]" aria-label="Danh mục sản phẩm">
         <NuxtLink
           :to="categoryAllHref"
-          class="inline-flex min-h-[54px] min-w-[126px] flex-1 items-center justify-center gap-2 rounded-chip border px-3 py-2 text-center text-[13px] font-bold no-underline transition-colors"
-          :class="!selectedCategory || selectedCategory.url === activeCategoryRoot?.url ? 'border-navy-800 bg-navy-800 text-gold-300 shadow-xs' : 'border-slate-200 bg-white text-navy-800 hover:border-gold-600 hover:text-gold-700'"
+          class="inline-flex min-h-[58px] min-w-[126px] flex-1 items-center justify-center gap-2 rounded-chip border px-3 py-2 text-center text-[13px] font-bold no-underline transition-colors max-[769px]:min-h-[50px] max-[769px]:min-w-[145px] max-[769px]:flex-none"
+          :class="!selectedCategory || selectedCategory.url === activeCategoryRoot?.url ? 'border-[#c99a32] bg-[#c99a32] text-white' : 'border-slate-200 bg-white text-navy-800 hover:border-gold-600 hover:text-gold-700'"
           :aria-current="!selectedCategory || selectedCategory.url === activeCategoryRoot?.url ? 'page' : undefined"
         >
           <CatalogMenuIcon class="h-5 w-5 flex-none" name="light" />
@@ -265,12 +301,12 @@ function pageLink(nextPage: number) {
           v-for="item in categoryNavItems"
           :key="item.url"
           :to="links.generic(item.url)"
-          class="inline-flex min-h-[54px] min-w-[126px] flex-1 items-center justify-center gap-2 rounded-chip border px-3 py-2 text-center text-[13px] font-bold no-underline transition-colors"
-          :class="item.url === selectedCategory?.url ? 'border-navy-800 bg-navy-800 text-gold-300 shadow-xs' : 'border-slate-200 bg-white text-navy-800 hover:border-gold-600 hover:text-gold-700'"
+          class="inline-flex min-h-[58px] min-w-[126px] flex-1 items-center justify-center gap-2 rounded-chip border px-3 py-2 text-center text-[13px] font-bold no-underline transition-colors max-[769px]:min-h-[50px] max-[769px]:min-w-[145px] max-[769px]:flex-none"
+          :class="item.url === selectedCategory?.url ? 'border-[#c99a32] bg-[#c99a32] text-white' : 'border-slate-200 bg-white text-navy-800 hover:border-gold-600 hover:text-gold-700'"
           :aria-current="item.url === selectedCategory?.url ? 'page' : undefined"
         >
           <CatalogMenuIcon class="h-5 w-5 flex-none" :name="categoryIcon(item.slug)" />
-          <span>{{ item.name }}</span>
+          <span>{{ categoryNavLabel(item) }}</span>
         </NuxtLink>
       </nav>
 
@@ -278,8 +314,9 @@ function pageLink(nextPage: number) {
       Danh mục và các bộ lọc nghiệp vụ dùng chung một panel để không lặp lại
       cùng một lựa chọn ở sidebar và phía trên lưới sản phẩm.
       -->
-      <div v-if="hasSidebar" class="flex flex-col gap-6">
+      <div v-if="hasSidebar" class="hidden flex-col gap-6 min-[1002px]:flex">
         <CatalogFilterSidebar
+          id-prefix="catalog-filter-sidebar"
           :categories="sidebarCategories"
           :selected-category="selectedCategory?.url ?? ''"
           :filters="catalogData?.filters ?? emptyFilters"
@@ -307,18 +344,32 @@ function pageLink(nextPage: number) {
             tiếp (đổi query 'sort'), không phải form - khớp cách pageLink/
             filterLink còn lại của trang đều là NuxtLink đổi URL.
           -->
-          <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
+          <div class="mb-5 flex flex-wrap items-center justify-between gap-3 max-[769px]:items-start max-[769px]:justify-start">
             <h2 class="m-0 text-lg font-black text-navy-800">Danh sách sản phẩm</h2>
-            <label v-if="catalogData.selected" class="flex items-center gap-2 text-sm text-slate-500">
-              Sắp xếp
-              <select
-                class="h-11 rounded-chip border border-gray-300 bg-white px-3 font-normal text-navy-800"
-                :value="catalogData.selected.sort"
-                @change="onSortChange"
+            <div class="flex items-center gap-2 max-[769px]:w-full max-[769px]:flex-col max-[769px]:items-start">
+              <button
+                v-if="hasSidebar"
+                class="inline-flex min-h-10 items-center gap-2 rounded-btn border border-slate-300 bg-white px-3 text-sm font-bold text-navy-800 transition-colors hover:border-navy-800 min-[1002px]:hidden"
+                type="button"
+                aria-haspopup="dialog"
+                aria-controls="catalog-filter-drawer"
+                :aria-expanded="filterDrawerOpen"
+                @click="openFilterDrawer"
               >
-                <option v-for="option in sortOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
-              </select>
-            </label>
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M7 12h10m-7 6h4" /><circle cx="8" cy="6" r="1.5" fill="currentColor" stroke="none" /><circle cx="15" cy="12" r="1.5" fill="currentColor" stroke="none" /></svg>
+                Bộ lọc
+              </button>
+              <label v-if="catalogData.selected" class="flex items-center gap-2 text-sm text-slate-500 max-[769px]:w-full max-[769px]:justify-end">
+                <span class="hidden tb:inline">Sắp xếp</span>
+                <select
+                  class="h-10 w-[150px] rounded-btn border border-gray-300 bg-white px-3 font-normal text-navy-800"
+                  :value="catalogData.selected.sort"
+                  @change="onSortChange"
+                >
+                  <option v-for="option in sortOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
+                </select>
+              </label>
+            </div>
           </div>
 
           <CatalogProductGrid :products="catalogData.products" />
@@ -408,6 +459,46 @@ function pageLink(nextPage: number) {
         <NuxtLink :to="links.generic(catalogData.support.href || '/lien-he/')" class="inline-flex min-h-11 items-center justify-center rounded-btn bg-hdr-gold px-6 text-sm font-extrabold text-navy-950 no-underline shadow-sm transition-colors hover:bg-hdr-gold-hover">Nhận tư vấn →</NuxtLink>
       </section>
     </main>
+
+    <dialog
+      v-if="hasSidebar"
+      id="catalog-filter-drawer"
+      ref="filterDialog"
+      class="fixed inset-y-0 left-0 m-0 h-dvh max-h-none w-[min(340px,92vw)] max-w-none overflow-hidden border-0 bg-white p-0 text-navy-800 shadow-2xl backdrop:bg-slate-950/60"
+      aria-label="Bộ lọc sản phẩm"
+      aria-modal="true"
+      @close="syncFilterDrawerState"
+      @click="closeFilterDrawerAfterNavigation"
+    >
+      <div class="flex h-full min-h-0 flex-col">
+        <div class="sticky top-0 z-10 flex min-h-[62px] flex-none items-center justify-between border-b border-slate-200 bg-white px-4">
+          <h2 class="m-0 text-base font-black text-navy-800">Bộ lọc sản phẩm</h2>
+          <button
+            class="inline-grid h-11 w-11 place-items-center rounded-btn border border-slate-200 bg-white text-navy-800 transition-colors hover:bg-slate-100"
+            type="button"
+            aria-label="Đóng bộ lọc"
+            autofocus
+            @click="closeFilterDrawer"
+          >
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>
+          </button>
+        </div>
+        <div class="min-h-0 flex-1 overflow-y-auto">
+          <CatalogFilterSidebar
+            id-prefix="catalog-filter-drawer"
+            :categories="sidebarCategories"
+            :selected-category="selectedCategory?.url ?? ''"
+            :filters="catalogData?.filters ?? emptyFilters"
+            :selected="catalogData?.selected ?? emptySelected"
+            :keyword="keyword"
+            :subcategory-title="subcategoryTitle"
+            :filter-link="filterLink"
+            hide-title
+            drawer
+          />
+        </div>
+      </div>
+    </dialog>
 
     <SiteFooter v-if="siteData" :site="siteData" />
   </div>

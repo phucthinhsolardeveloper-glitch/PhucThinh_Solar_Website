@@ -12,6 +12,7 @@ export interface PublicCatalogProduct {
   url: string
   media: string[]
   powerWatts?: number | null
+  quickSpecs?: string[]
   pricing?: PublicCatalogPricing
 }
 
@@ -100,7 +101,12 @@ export function isPublicCatalogProduct(value: unknown): value is PublicCatalogPr
   if (!isRecord(value)) return false
   const legacy = hasExactKeys(value, ['id', 'name', 'slug', 'url', 'media'])
   const extended = hasExactKeys(value, ['id', 'name', 'slug', 'url', 'media', 'powerWatts', 'pricing'])
-  return (legacy || extended) && isSafeId(value.id) && isSafeText(value.name) && isSlug(value.slug) && value.url === `/san-pham/${value.slug}` && Array.isArray(value.media) && value.media.every((path) => typeof path === 'string' && /^\/upload\/product\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|gif|webp|avif)$/i.test(path)) && (legacy || (value.powerWatts === null || typeof value.powerWatts === 'number' && Number.isFinite(value.powerWatts) && value.powerWatts > 0) && isPricing(value.pricing))
+  const extendedWithSpecs = hasExactKeys(value, ['id', 'name', 'slug', 'url', 'media', 'powerWatts', 'quickSpecs', 'pricing'])
+  const baseIsValid = (legacy || extended || extendedWithSpecs) && isSafeId(value.id) && isSafeText(value.name) && isSlug(value.slug) && value.url === `/san-pham/${value.slug}` && Array.isArray(value.media) && value.media.every((path) => typeof path === 'string' && /^\/upload\/product\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|gif|webp|avif)$/i.test(path))
+  if (!baseIsValid || legacy) return baseIsValid
+  const pricingIsValid = (value.powerWatts === null || typeof value.powerWatts === 'number' && Number.isFinite(value.powerWatts) && value.powerWatts > 0) && isPricing(value.pricing)
+  if (!pricingIsValid) return false
+  return !extendedWithSpecs || Array.isArray(value.quickSpecs) && value.quickSpecs.length <= 3 && value.quickSpecs.every((spec) => isSafeText(spec) && spec.length <= 100 && !/[<>]/.test(spec))
 }
 
 function isMoney(value: unknown): value is number | null { return value === null || typeof value === 'number' && Number.isSafeInteger(value) && value > 0 }

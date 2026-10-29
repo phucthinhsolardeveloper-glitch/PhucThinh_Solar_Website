@@ -17,6 +17,7 @@ export interface PublicProductDetail {
   profile: string; media: string[]; specifications: PublicProductSpecification[]
   packageContents?: string
   decisionMetrics?: PublicProductDecisionMetric[]
+  brand?: string
 }
 export interface PublicProductBreadcrumb { label: string; url: string }
 export type PublicProductContentSource = '' | 'product' | 'brand' | 'cat' | 'list' | 'both' | 'stack' | 'hide' | 'own'
@@ -152,5 +153,6 @@ export function isPublicProductDetailPayload(value: unknown): value is PublicPro
   if (!Array.isArray(product.media) || !product.media.every(image) || !Array.isArray(product.specifications) || !product.specifications.every(spec)) return false
   if ('packageContents' in product && !text(product.packageContents, true)) return false
   if ('decisionMetrics' in product && (!Array.isArray(product.decisionMetrics) || product.decisionMetrics.length > 4 || !product.decisionMetrics.every(decisionMetric))) return false
+  if ('brand' in product && !text(product.brand, true)) return false
   return Object.values(value.parity).every((row) => record(row) && row.included === false && text(row.reason))
 }

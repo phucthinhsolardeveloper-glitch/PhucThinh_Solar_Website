@@ -1,3 +1,26 @@
+<script setup lang="ts">
+useHead({
+  script: [
+    {
+      key: 'pts-gtranslate-settings',
+      innerHTML: `window.gtranslateSettings = ${JSON.stringify({
+        default_language: 'vi',
+        detect_browser_language: true,
+        native_language_names: true,
+        languages: ['vi', 'en', 'zh-CN', 'ko', 'ja'],
+        wrapper_selector: '.gtranslate_wrapper',
+        flag_size: 24,
+      })};`,
+    },
+    {
+      key: 'pts-gtranslate-popup',
+      src: 'https://cdn.gtranslate.net/widgets/latest/popup.js',
+      defer: true,
+    },
+  ],
+})
+</script>
+
 <template>
   <!--
     UApp là provider bắt buộc của Nuxt UI v4: nó gắn teleport target cho overlay

@@ -1,7 +1,7 @@
 const test = require('node:test')
 const assert = require('node:assert/strict')
 const migrationRoutes = require('../fixtures/migration-routes.json')
-const { parseArgs, parseViewport, validateOrigin, loadManifest, renderMarkdown, classifyDifference, previewLinkLeaks, viewportGate } = require('../scripts/migration-compare.cjs')
+const { parseArgs, parseViewport, validateOrigin, loadManifest, renderMarkdown, classifyDifference, previewLinkLeaks, viewportGate, hasActionableBrokenMedia } = require('../scripts/migration-compare.cjs')
 
 test('accepts loopback origins and rejects remote origins by default', () => {
   assert.equal(validateOrigin('http://127.0.0.1:8080/'), 'http://127.0.0.1:8080')
@@ -34,7 +34,7 @@ test('validates explicit route mapping and duplicate ids', () => {
 
 test('visual comparison covers every route in the migration manifest', () => {
   const manifest = loadManifest(migrationRoutes)
-  assert.equal(manifest.routes.length, 26)
+  assert.equal(manifest.routes.length, 33)
   assert.deepEqual(manifest.routes.filter(route => route.visual === false).map(route => route.id), [])
 })
 
@@ -53,6 +53,14 @@ test('renders missing preview and heuristic diff limitations into markdown', () 
   assert.match(markdown, /not a pixel-perfect gate/)
 })
 
+test('reports that full-page captures are manual review images without an automatic pixel diff', () => {
+  const markdown = renderMarkdown({
+    generatedAt: '2026-10-29T00:00:00.000Z', legacyUrl: 'http://127.0.0.1:8080', previewUrl: 'http://127.0.0.1:3110', browser: 'chromium', reducedMotion: 'reduce', fullPage: true, viewports: [], routes: [], interactions: [],
+  })
+  assert.match(markdown, /Full-page screenshots are captured for manual section-by-section review; no pixel diff is run/)
+  assert.doesNotMatch(markdown, /first-fold viewport/)
+})
+
 test('classifies same-geometry content changes separately from layout changes', () => {
   const base = { status: 200, navigationError: undefined, pageErrors: [], consoleMessages: [], horizontalOverflow: 0, fingerprints: { layout: 'same', text: 'a', media: 'a', links: 'a' }, title: 'A', h1: ['A'] }
   const content = { ...base, fingerprints: { ...base.fingerprints, text: 'b' } }
@@ -65,6 +73,14 @@ test('promotes failed media requests to a runtime/media gap', () => {
   const base = { status: 200, navigationError: undefined, pageErrors: [], consoleMessages: [], failedRequests: [], horizontalOverflow: 0, fingerprints: { layout: 'same', text: 'a', media: 'a', links: 'a' }, title: 'A', h1: ['A'] }
   assert.equal(classifyDifference(base, { ...base, failedRequests: ['GET /missing.webp'] }, { status: 'compared', changedRatio: 0.2 }).kind, 'runtime-or-route-error')
   assert.equal(classifyDifference(base, { ...base, brokenMedia: [{ src: '/broken-dom-image.webp' }] }, { status: 'compared', changedRatio: 0.2 }).kind, 'runtime-or-route-error')
+})
+
+test('ignores hidden or empty-source media as broken-media failures', () => {
+  const base = { status: 200, navigationError: undefined, pageErrors: [], consoleMessages: [], failedRequests: [], horizontalOverflow: 0, fingerprints: { layout: 'same', text: 'a', media: 'a', links: 'a' }, title: 'A', h1: ['A'] }
+  const inactiveWidgetMedia = [{ src: '', alt: 'vi' }, { src: '/hidden-flag.svg', visible: false }]
+  assert.equal(hasActionableBrokenMedia(inactiveWidgetMedia), false)
+  assert.equal(classifyDifference(base, { ...base, brokenMedia: inactiveWidgetMedia }, { status: 'compared', changedRatio: 0 }).kind, 'stable-or-rendering-noise')
+  assert.equal(hasActionableBrokenMedia([{ src: '/visible-broken.webp', visible: true }]), true)
 })
 
 test('separates an aborted third-party map embed from a Nuxt UI error', () => {
@@ -91,6 +107,16 @@ test('detects preview links that leak to public PHP paths', () => {
     'http://127.0.0.1:3110/san-pham/',
     'http://127.0.0.1:8088/giai-phap/',
   ])
+})
+
+test('public-route mode allows same-origin preview and canonical Nuxt links', () => {
+  const settings = { legacyUrl: 'http://127.0.0.1:8088', previewUrl: 'http://127.0.0.1:3110', publicRoutes: true }
+  const preview = { hrefs: [
+    'http://127.0.0.1:3110/migration-home-preview',
+    'http://127.0.0.1:3110/san-pham/',
+    'http://127.0.0.1:8088/giai-phap/',
+  ] }
+  assert.deepEqual(previewLinkLeaks(preview, settings), ['http://127.0.0.1:8088/giai-phap/'])
 })
 
 test('requires runtime, media, responsive, heading, noindex and link gates', () => {

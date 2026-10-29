@@ -193,6 +193,21 @@ function ptsCatalogPositiveNumber($value)
     return is_finite($number) && $number > 0 ? $number : null;
 }
 
+function ptsCatalogQuickSpecsDto(array $row)
+{
+    $specs = array();
+    $power = ptsCatalogPositiveNumber(isset($row['cong_suat']) ? $row['cong_suat'] : null);
+    if($power !== null) $specs[] = (string)(int)round($power).'W';
+
+    foreach(array('waterproof_rating', 'lighting_time') as $field)
+    {
+        $value = ptsCatalogPlainText(isset($row[$field]) ? $row[$field] : '');
+        if($value === '' || preg_match('/^(?:không công bố|không áp dụng|không có thông tin|chưa cập nhật|đang cập nhật|chưa xác minh|chưa tìm được|n\/a|na|-)(?:\s|$)/iu', $value)) continue;
+        $specs[] = $value;
+    }
+    return array_slice($specs, 0, 3);
+}
+
 function ptsCatalogMoney($value)
 {
     $number = ptsCatalogPositiveNumber($value);
@@ -238,6 +253,7 @@ function ptsCatalogProductDto(array $row, $pricesVisible = false)
         'url' => $url,
         'media' => $media,
         'powerWatts' => ptsCatalogPositiveNumber(isset($row['cong_suat']) ? $row['cong_suat'] : null),
+        'quickSpecs' => ptsCatalogQuickSpecsDto($row),
         'pricing' => ptsCatalogPricingDto($row, $pricesVisible)
     );
 }

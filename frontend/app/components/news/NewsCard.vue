@@ -35,7 +35,7 @@ function cardImage(src: string): string {
       class="group flex h-full flex-col text-navy-800 no-underline"
       :class="variant === 'secondary'
         ? 'grid grid-cols-[minmax(0,38%)_minmax(0,1fr)] gap-4 max-ph:flex max-ph:flex-col'
-        : (variant === 'grid' ? 'overflow-hidden rounded-btn border border-slate-200/90 bg-white transition-all hover:border-gold-500 hover:shadow-sm' : '')"
+        : ''"
     >
       <div
         class="relative overflow-hidden bg-slate-50"

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { PublicCatalogProduct } from '#shared/contracts/public-catalog'
 
-defineProps<{ products: PublicCatalogProduct[] }>()
+const props = withDefaults(defineProps<{ products: PublicCatalogProduct[]; layout?: 'grid' | 'rail' }>(), { layout: 'grid' })
 const links = useMigrationLinks()
 const isMigrationPreview = links.active
 const failedImages = ref<Set<number>>(new Set())
@@ -53,6 +53,11 @@ function formatPower(watts: number): string {
   return `${Number.isInteger(watts) ? watts : watts.toFixed(1)}W`
 }
 
+function quickSpecText(product: PublicCatalogProduct): string {
+  if (product.quickSpecs?.length) return product.quickSpecs.join(' · ')
+  return product.powerWatts ? formatPower(product.powerWatts) : ''
+}
+
 function productHref(product: PublicCatalogProduct) {
   return links.product(product.slug)
 }
@@ -72,13 +77,18 @@ function productHref(product: PublicCatalogProduct) {
   -->
   <div
     v-if="products.length"
-    class="grid grid-cols-2 gap-4 max-ph:gap-3 tb:grid-cols-3 nav:grid-cols-4"
+    :class="props.layout === 'rail' ? 'catalog-product-grid-rail' : 'grid grid-cols-2 gap-4 max-ph:gap-3 tb:grid-cols-3 nav:grid-cols-4'"
   >
-    <article v-for="product in products" :key="product.id" class="group flex min-w-0 flex-col rounded-btn border border-slate-200/90 bg-white p-3.5 transition-all hover:border-gold-500 hover:shadow-sm max-ph:p-2.5">
+    <article
+      v-for="product in products"
+      :key="product.id"
+      class="group flex min-w-0 flex-col"
+      :class="props.layout === 'rail' ? 'snap-start' : ''"
+    >
       <NuxtLink
         :external="!isMigrationPreview"
         :to="productHref(product)"
-        class="relative grid aspect-square place-items-center overflow-hidden rounded-chip bg-slate-50/80 p-2 no-underline"
+        class="relative grid aspect-square place-items-center overflow-hidden rounded-chip bg-slate-50/80 no-underline"
       >
         <img
           v-if="product.media[0] && !failedImages.has(product.id)"
@@ -93,15 +103,9 @@ function productHref(product: PublicCatalogProduct) {
         >
         <span v-else class="p-4 text-center text-sm text-slate-500">Chưa có hình ảnh</span>
 
-        <span
-          v-if="product.powerWatts"
-          class="absolute left-2 top-2 rounded-chip bg-navy-800 px-2 py-0.5 text-[11px] font-extrabold text-gold-300 shadow-xs"
-        >
-          {{ formatPower(product.powerWatts) }}
-        </span>
       </NuxtLink>
 
-      <h3 class="mt-3 mb-1.5 line-clamp-2 text-[15.5px] font-bold leading-[1.4] text-navy-800 max-ph:text-sm">
+      <h3 class="mt-3 mb-1.5 min-h-[42px] line-clamp-2 text-[15px] font-bold leading-[1.4] text-navy-800 max-ph:text-sm">
         <NuxtLink
           :external="!isMigrationPreview"
           :to="productHref(product)"
@@ -110,6 +114,7 @@ function productHref(product: PublicCatalogProduct) {
           {{ product.name }}
         </NuxtLink>
       </h3>
+      <p class="mb-1 min-h-5 text-xs leading-5 text-slate-500">{{ quickSpecText(product) }}</p>
 
       <p v-if="product.pricing?.mode === 'price'" class="m-0 flex flex-wrap items-baseline gap-2 text-base font-extrabold text-red-600">
         <template v-if="product.pricing.salePrice && product.pricing.regularPrice && product.pricing.salePrice < product.pricing.regularPrice">
@@ -147,3 +152,29 @@ function productHref(product: PublicCatalogProduct) {
 
   <p v-else class="py-8 text-slate-500" role="status">Chưa có sản phẩm trong danh mục này.</p>
 </template>
+
+<style scoped>
+.catalog-product-grid-rail {
+  display: grid;
+  grid-auto-columns: calc((100% - 16px) / 2);
+  grid-auto-flow: column;
+  grid-template-rows: minmax(0, 1fr);
+  gap: 16px;
+  overflow-x: auto;
+  padding-bottom: 12px;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: thin;
+}
+
+@media (min-width: 821px) {
+  .catalog-product-grid-rail {
+    grid-auto-columns: calc((100% - 32px) / 3);
+  }
+}
+
+@media (min-width: 1321px) {
+  .catalog-product-grid-rail {
+    grid-auto-columns: calc((100% - 48px) / 4);
+  }
+}
+</style>

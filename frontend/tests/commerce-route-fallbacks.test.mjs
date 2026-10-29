@@ -50,7 +50,7 @@ test('PDP and cart use the shared accessible quantity stepper and commit cart ch
   assert.match(stepper, /min="1"[\s\S]*max="999"/)
   assert.match(stepper, /change: \[value: number\]/)
   assert.match(purchase, /normalizeCommerceQuantity\(quantity\.value\)/)
-  assert.match(purchase, /<QuantityStepper v-model="quantity"/)
+  assert.match(purchase, /<QuantityStepper v-if="pricing\.mode === 'price'" v-model="quantity"[^>]*inline-label/)
   assert.match(cart, /<QuantityStepper/)
   assert.match(cart, /@change="updateItem/)
 })

@@ -85,15 +85,14 @@ async function send() {
 
 <template>
   <section id="pts-pdp-consultation" class="scroll-mt-24 border-t border-gray-200 py-10" aria-labelledby="product-consultation-title">
-    <div class="grid min-w-0 overflow-hidden rounded-btn border border-gray-200 nav:grid-cols-[.8fr_1.2fr]">
-      <div class="min-w-0 bg-navy-950 p-6 text-white nav:p-8">
-        <p class="mb-2 text-xs font-extrabold uppercase tracking-[.12em] text-gold-400">Tư vấn theo sản phẩm</p>
-        <h2 id="product-consultation-title" class="mb-4 text-[clamp(24px,3vw,34px)] font-black tracking-tight">Nhận tư vấn cho sản phẩm này</h2>
-        <p class="leading-7 text-blue-100">Đội ngũ Phúc Thịnh Solar sẽ tư vấn giải pháp phù hợp với nhu cầu thực tế của anh/chị.</p>
-        <strong class="mt-5 block rounded-chip border border-white/15 bg-white/5 p-4">{{ productName }}</strong>
+    <div class="grid min-w-0 gap-8 bg-slate-50 p-6 lg:grid-cols-[minmax(280px,.85fr)_minmax(0,1.35fr)] lg:gap-12 lg:p-8">
+      <div class="min-w-0">
+        <h2 id="product-consultation-title" class="mb-3 text-[clamp(24px,3vw,34px)] font-black tracking-tight text-navy-800">Nhận tư vấn cho sản phẩm này</h2>
+        <p class="leading-7 text-slate-600">Đội ngũ Phúc Thịnh Solar sẽ tư vấn giải pháp phù hợp với nhu cầu thực tế của bạn.</p>
+        <strong class="block text-sm text-gold-700">Sản phẩm đang chọn: <span class="text-navy-800">{{ productName }}</span></strong>
       </div>
 
-      <form class="min-w-0 p-6 nav:p-8" @submit.prevent="send">
+      <form class="min-w-0" @submit.prevent="send">
         <div class="grid gap-4 tb:grid-cols-2">
           <label class="grid gap-1.5 text-sm font-bold">Họ và tên <span class="text-red-600">*</span>
             <input v-model.trim="form.fullname" required maxlength="100" autocomplete="name" class="h-11 w-full min-w-0 rounded-chip border border-gray-300 px-3 font-normal">
@@ -103,12 +102,6 @@ async function send() {
           </label>
           <label class="grid gap-1.5 text-sm font-bold">Email
             <input v-model.trim="form.email" type="email" maxlength="150" autocomplete="email" class="h-11 w-full min-w-0 rounded-chip border border-gray-300 px-3 font-normal">
-          </label>
-          <label class="grid gap-1.5 text-sm font-bold">Bạn là
-            <select v-model="form.loaihinh" class="h-11 w-full min-w-0 rounded-chip border border-gray-300 bg-white px-3 font-normal">
-              <option>Người dùng cá nhân</option>
-              <option>Đại lý/Nhà phân phối, bán lẻ/Nhà thầu…</option>
-            </select>
           </label>
           <label class="grid gap-1.5 text-sm font-bold">Tỉnh/Thành phố
             <select v-model.number="form.city" class="h-11 w-full min-w-0 rounded-chip border border-gray-300 bg-white px-3 font-normal">
@@ -122,6 +115,17 @@ async function send() {
               <option v-for="ward in wards" :key="ward.id" :value="ward.id">{{ ward.name }}</option>
             </select>
           </label>
+          <fieldset class="m-0 grid gap-3 border-0 p-0 tb:col-span-2 tb:grid-cols-2">
+            <legend class="mb-1 w-full text-sm font-bold">Bạn là...</legend>
+            <label class="flex min-h-10 items-center gap-2 text-sm font-normal">
+              <input v-model="form.loaihinh" type="radio" value="Người dùng cá nhân" class="h-4 w-4 accent-gold-600">
+              Người dùng cá nhân
+            </label>
+            <label class="flex min-h-10 items-center gap-2 text-sm font-normal">
+              <input v-model="form.loaihinh" type="radio" value="Đại lý/Nhà phân phối, bán lẻ/Nhà thầu…" class="h-4 w-4 accent-gold-600">
+              Đại lý/Nhà phân phối, bán lẻ/Nhà thầu…
+            </label>
+          </fieldset>
           <label class="grid gap-1.5 text-sm font-bold">Nhu cầu cần tư vấn
             <select v-model="form.needCode" class="h-11 w-full min-w-0 rounded-chip border border-gray-300 bg-white px-3 font-normal">
               <option value="">Chọn nhu cầu</option>
@@ -132,15 +136,17 @@ async function send() {
             <input v-model.trim="form.quantity" maxlength="255" placeholder="Ví dụ: 2 bộ" class="h-11 w-full min-w-0 rounded-chip border border-gray-300 px-3 font-normal">
           </label>
           <label class="grid gap-1.5 text-sm font-bold tb:col-span-2">Thông tin cần tư vấn thêm
-            <textarea v-model.trim="form.details" maxlength="1000" rows="4" placeholder="Mô tả vị trí lắp đặt, tải sử dụng hoặc yêu cầu của anh/chị" class="w-full min-w-0 rounded-chip border border-gray-300 px-3 py-2 font-normal" />
+          <textarea v-model.trim="form.details" maxlength="1000" rows="4" placeholder="Mô tả vị trí lắp đặt, tải sử dụng hoặc yêu cầu của bạn" class="w-full min-w-0 rounded-chip border border-gray-300 px-3 py-2 font-normal" />
           </label>
         </div>
 
         <p v-if="success" class="mt-4 rounded-chip bg-emerald-50 p-3 text-sm font-semibold text-emerald-800" role="status">{{ success }}</p>
         <p v-if="error" class="mt-4 rounded-chip bg-red-50 p-3 text-sm font-semibold text-red-800" role="alert">{{ error }}</p>
-        <button type="submit" :disabled="submitting" class="mt-5 min-h-11 rounded-chip bg-gold-500 px-6 font-extrabold text-navy-950 disabled:cursor-wait disabled:opacity-60">
-          {{ submitting ? 'Đang gửi…' : 'Gửi yêu cầu tư vấn' }}
-        </button>
+        <div class="mt-5 flex justify-center">
+          <button type="submit" :disabled="submitting" class="min-h-11 rounded-chip bg-gold-500 px-6 font-extrabold text-navy-950 disabled:cursor-wait disabled:opacity-60">
+            {{ submitting ? 'Đang gửi…' : 'Gửi yêu cầu tư vấn' }}
+          </button>
+        </div>
       </form>
     </div>
   </section>

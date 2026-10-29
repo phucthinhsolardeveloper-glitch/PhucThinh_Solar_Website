@@ -21,13 +21,14 @@ test('news cards use allowlisted PHP thumbnails and match the rendered 16:9 fram
   assert.match(news, /\^\\\/upload\\\/news\\\//)
   assert.match(news, /thumbs\/640x360x1\$\{src\}/)
   assert.match(news, /width="640"[\s\S]*height="360"[\s\S]*sizes=/)
+  assert.doesNotMatch(news, /rounded-btn border border-slate-200\/90 bg-white/)
 })
 
 test('CMS logos and trust badge declare rendered dimensions', () => {
   const header = read('app/components/SiteHeader.vue')
   const footer = read('app/components/SiteFooter.vue')
-  assert.match(header, /thumbs\/248x35x1\$\{src\}/)
-  assert.match(header, /width="248"[\s\S]*height="35"/)
+  assert.match(header, /thumbs\/520x112x3\$\{src\}/)
+  assert.match(header, /width="520"[\s\S]*height="73"/)
   assert.match(footer, /thumbs\/280x229x1\$\{src\}/)
   assert.match(footer, /thumbs\/200x76x1\$\{src\}/)
   assert.match(footer, /width="280"[\s\S]*height="229"/)

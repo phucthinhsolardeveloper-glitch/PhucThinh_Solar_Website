@@ -1,20 +1,30 @@
-# F02/F04 — Nuxt catalog preview
+# F02/F04 — Nuxt catalog
 
-Đã tạo preview nội bộ `/migration-catalog-preview` dùng header/footer và cây danh mục từ `/_migration/site`, còn danh sách sản phẩm lấy qua Nitro adapter `/_migration/catalog` từ PHP `pts_v1_catalog.php`. Query upstream chỉ được phép `category`, `page`, `per_page`; không forward URL tùy ý, cookie hay header phiên.
+The internal `/migration-catalog-preview` and flag-off public catalog wrappers
+reuse the same Nuxt catalog page. The page reads category/site navigation and
+products through Nitro adapters from PHP `pts_v1_catalog.php`. Public routes
+remain controlled by their explicit feature flags and fall back to PHP while
+disabled.
 
-## Phạm vi parity đã làm
+## Current parity
 
-- Validator strict cho DTO Phase A: category path 1–4 slug, sản phẩm/media public, phân trang và các cờ parity.
-- Danh mục dùng canonical full slug chain từ `site.productCategoryTree`; điều hướng preview giữ route preview.
-- Sản phẩm link rõ ràng về PHP legacy path; ảnh dùng media path thật, ảnh lỗi được ẩn an toàn.
-- Không hiển thị giá. Trạng thái giá hiển thị rõ là liên hệ nhận báo giá, không suy diễn dữ liệu.
-- Preview có `noindex`; không claim đã migrate `/san-pham/` hoặc nested public routes.
+- Category navigation uses the validated one-to-four-level PHP hierarchy and
+  preserves canonical legacy paths.
+- The read-only catalog DTO supplies published products, real media, power and
+  quick specification text (`W`, chống nước, thời gian chiếu sáng), pricing or
+  quote mode, pagination, available filters, selected filters, and supported
+  sort state.
+- PHP remains the authority for product visibility, price visibility,
+  category/filter resolution, merchandising order, and canonical URLs.
+- The Nuxt validator accepts the legacy v1 product shape while deployments are
+  staggered and validates the extended quick-spec fields.
+- The filter rail appears from 1002px upward; at 1001px and below the catalog
+  keeps the product list in a single column and opens the same filters from a
+  modal drawer. The drawer closes on Escape or after a filter link is selected,
+  and returns focus to its trigger when closed.
+- Preview routes stay `noindex`; public indexability is controlled separately
+  from the route-enabled flags.
 
-## Blockers còn lại
-
-- `filters`: chưa có parity contract cho nhu cầu/công suất/giá/brand/search.
-- `price`: chưa delegate qua `public_pricing.php`; chưa có giá/chiết khấu/tồn kho.
-- `sort`: Phase A chỉ ổn định theo API, chưa chứng minh thứ tự merchandising của PHP.
-- `quote`: chưa có luồng quote/form hoặc session business state.
-- `route URLs`: route public `/san-pham/`, `/danh-muc-san-pham/.../` và canonical/redirect vẫn do PHP sở hữu.
-- Không thể curl local PHP từ sandbox hiện tại; coordinator cần chạy smoke/build/browser QA ngoài sandbox.
+See [CATALOG-CONTRACT.md](CATALOG-CONTRACT.md) for the current query and DTO
+contract. The API change is additive and GET-only; it does not move Admin,
+pricing, cart, checkout, or product ownership to Nuxt.

@@ -4,6 +4,9 @@ import { legacyNewsFilterQuery } from '#shared/public-route-query'
 
 export default defineNuxtRouteMiddleware((to) => {
   const config = useRuntimeConfig()
-  if (editorialPublicRouteMode(config.public.newsPublicRouteEnabled, config.public.newsPublicRouteIndexable).renderNuxt) return
+  if (editorialPublicRouteMode(config.public.newsPublicRouteEnabled, config.public.newsPublicRouteIndexable).renderNuxt) {
+    if (to.path !== NEWS_PUBLIC_PATH) return navigateTo({ path: NEWS_PUBLIC_PATH, query: to.query }, { redirectCode: 301 })
+    return
+  }
   return navigateTo(phpPublicRouteUrl(config.public.phpPublicOrigin, NEWS_PUBLIC_PATH, legacyNewsFilterQuery(to.query)), { external: true, redirectCode: 307 })
 })

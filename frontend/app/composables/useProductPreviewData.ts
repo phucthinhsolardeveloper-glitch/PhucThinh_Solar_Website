@@ -4,6 +4,7 @@ import type { PublicProductExtrasPayload } from '#shared/contracts/public-produc
 import { isPublicProductExtrasPayload } from '#shared/contracts/public-product-extras'
 import type { PublicSitePayload } from '#shared/contracts/public-site'
 import { isPublicSitePayload } from '#shared/contracts/public-site'
+import { canonicalPublicOrigin, canonicalPublicUrl } from '#shared/public-seo'
 
 const fallbackSite: PublicSitePayload = { schemaVersion: 1, brand: { name: 'Phúc Thịnh Solar', hotline: '' }, productCategories: [] }
 
@@ -35,12 +36,13 @@ export function useProductPreviewData(slug: Ref<string>) {
 
   // Noindex preview page: structured data here is never surfaced to search results,
   // but staying schema-accurate now avoids re-deriving it at public cutover time.
-  const requestUrl = useRequestURL()
+  const runtimeConfig = useRuntimeConfig()
   const jsonLd = computed(() => {
     const p = product.value
-    if (!p) return []
-    const siteOrigin = `${requestUrl.protocol}//${requestUrl.host}`
-    const canonicalUrl = `${siteOrigin}${p.url}`
+    const siteOrigin = canonicalPublicOrigin(runtimeConfig.public.canonicalSiteOrigin)
+    if (!p || !siteOrigin) return []
+    const canonicalUrl = canonicalPublicUrl(siteOrigin, p.url)
+    if (!canonicalUrl) return []
     const pricing = payload.value?.pricing
     const productNode: Record<string, unknown> = {
       '@context': 'https://schema.org',
@@ -50,7 +52,10 @@ export function useProductPreviewData(slug: Ref<string>) {
     }
     if (p.code) productNode.sku = p.code
     if (p.summary) productNode.description = p.summary
-    if (p.media.length) productNode.image = p.media.map((path) => `${siteOrigin}${path}`)
+    if (p.media.length) {
+      const images = p.media.map((path) => canonicalPublicUrl(siteOrigin, path)).filter((url): url is string => Boolean(url))
+      if (images.length) productNode.image = images
+    }
     if (pricing?.mode === 'price' && (pricing.salePrice ?? pricing.regularPrice)) {
       productNode.offers = {
         '@type': 'Offer',
@@ -71,8 +76,8 @@ export function useProductPreviewData(slug: Ref<string>) {
       '@context': 'https://schema.org',
       '@type': 'BreadcrumbList',
       itemListElement: [
-        { '@type': 'ListItem', position: 1, name: 'Trang chủ', item: siteOrigin },
-        { '@type': 'ListItem', position: 2, name: 'Sản phẩm', item: `${siteOrigin}/san-pham/` },
+        { '@type': 'ListItem', position: 1, name: 'Trang chủ', item: canonicalPublicUrl(siteOrigin, '/') },
+        { '@type': 'ListItem', position: 2, name: 'Sản phẩm', item: canonicalPublicUrl(siteOrigin, '/san-pham/') },
         { '@type': 'ListItem', position: 3, name: p.name, item: canonicalUrl },
       ],
     }]

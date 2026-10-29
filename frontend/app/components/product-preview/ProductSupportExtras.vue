@@ -1,19 +1,24 @@
 <script setup lang="ts">
 import type { PublicProductExtrasPayload } from '#shared/contracts/public-product-extras'
+import type { PublicProductDocument } from '#shared/contracts/public-product-detail'
 
-defineProps<{ extras: PublicProductExtrasPayload }>()
+defineProps<{ extras: PublicProductExtrasPayload | null; documents: PublicProductDocument[] }>()
 const links = useMigrationLinks()
+
+function documentHref(document: PublicProductDocument): string {
+  if (document.url.startsWith('https://') || !links.active.value) return document.url
+  return `/_migration/product-document?path=${encodeURIComponent(document.url)}`
+}
 </script>
 
 <template>
   <section
-    v-if="extras.videoEmbedUrl || extras.warranty.summary || extras.warranty.override || extras.warranty.policies.length"
-    class="border-t border-gray-200 py-10"
-    aria-label="Video và bảo hành sản phẩm"
+    class="grid gap-8 border-t border-gray-200 py-10 nav:grid-cols-[1.25fr_0.75fr] nav:gap-9"
+    aria-label="Video, tài liệu và bảo hành sản phẩm"
   >
-    <div v-if="extras.videoEmbedUrl" id="video-san-pham" class="scroll-mt-24">
+    <div id="video-san-pham" class="min-w-0 scroll-mt-24">
       <h2 class="mb-5 text-[clamp(24px,3vw,34px)] font-black tracking-tight">Video sản phẩm &amp; lắp đặt</h2>
-      <div class="aspect-video overflow-hidden rounded-btn bg-black">
+      <div v-if="extras?.videoEmbedUrl" class="aspect-video overflow-hidden rounded-chip bg-black">
         <iframe
           :src="extras.videoEmbedUrl"
           title="Video thực tế sản phẩm"
@@ -24,20 +29,42 @@ const links = useMigrationLinks()
           referrerpolicy="strict-origin-when-cross-origin"
         />
       </div>
+      <div v-else class="grid aspect-video place-items-center bg-slate-50 text-center text-slate-500" aria-label="Video đang được cập nhật">
+        <div>
+          <span class="mb-3 inline-grid h-10 w-10 place-items-center rounded-full bg-white text-sm text-gold-700 shadow-sm" aria-hidden="true">▶</span>
+          <p class="m-0 text-sm">Video đang được cập nhật</p>
+        </div>
+      </div>
+    </div>
+
+    <div v-if="documents.length" id="tai-lieu-san-pham" class="min-w-0 scroll-mt-24">
+      <h2 class="mb-5 text-[clamp(24px,3vw,34px)] font-black tracking-tight">Tài liệu sản phẩm</h2>
+      <div class="grid gap-2">
+        <a
+          v-for="document in documents"
+          :key="`${document.type}:${document.url}`"
+          :href="documentHref(document)"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="flex min-h-12 items-center justify-between gap-3 border-b border-gray-200 py-3 text-sm font-bold text-navy-800 no-underline hover:text-gold-700"
+        >
+          <span class="min-w-0 truncate">{{ document.title }}</span>
+          <span class="shrink-0 text-xs font-semibold text-slate-500" aria-hidden="true">Tải xuống ↗</span>
+        </a>
+      </div>
     </div>
 
     <div
-      v-if="extras.warranty.summary || extras.warranty.override || extras.warranty.policies.length"
+      v-if="extras && (extras.warranty.summary || extras.warranty.override || extras.warranty.policies.length)"
       id="chinh-sach-bao-hanh"
-      class="scroll-mt-24"
-      :class="extras.videoEmbedUrl ? 'mt-12 border-t border-gray-200 pt-10' : ''"
+      class="min-w-0 scroll-mt-24"
     >
       <h2 class="mb-5 text-[clamp(24px,3vw,34px)] font-black tracking-tight">Chính sách bảo hành</h2>
-      <div v-if="extras.warranty.summary" class="mb-5 rounded-btn bg-slate-50 p-5">
+      <div v-if="extras.warranty.summary" class="mb-5">
         <strong class="block text-lg text-navy-800">Bảo hành {{ extras.warranty.summary }}</strong>
         <span class="mt-1 block text-sm text-slate-500">Thời hạn theo thông tin công bố của sản phẩm.</span>
       </div>
-      <div v-if="extras.warranty.override" class="rounded-btn border border-gray-200 p-5">
+      <div v-if="extras.warranty.override">
         <h3 class="mb-2 text-lg font-black">Chính sách riêng của sản phẩm</h3>
         <p class="mb-0 whitespace-pre-line leading-7 text-slate-600">{{ extras.warranty.override }}</p>
       </div>
@@ -48,7 +75,7 @@ const links = useMigrationLinks()
             v-for="policy in extras.warranty.policies"
             :key="policy.href"
             :to="links.generic(policy.href)"
-            class="flex min-h-12 items-center justify-between rounded-chip border border-gray-200 px-4 py-3 font-bold text-navy-800 no-underline transition hover:border-gold-500 hover:bg-slate-50"
+          class="flex min-h-12 items-center justify-between gap-3 border-b border-gray-200 py-3 font-bold text-navy-800 no-underline transition-colors hover:text-gold-700"
           >
             <span>{{ policy.label }}</span><span aria-hidden="true">→</span>
           </NuxtLink>

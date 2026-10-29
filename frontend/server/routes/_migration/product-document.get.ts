@@ -3,7 +3,9 @@ import { requireMigrationGet } from '../../utils/migration-api'
 
 export default defineEventHandler(async (event) => {
   requireMigrationGet(event)
-  const path = getQuery(event).path
+  const query = getQuery(event)
+  if (Object.keys(query).some((key) => key !== 'path')) throw createError({ statusCode: 400, statusMessage: 'Invalid document query' })
+  const path = query.path
   if (typeof path !== 'string') throw createError({ statusCode: 400, statusMessage: 'Invalid document path' })
 
   const config = useRuntimeConfig(event)

@@ -6,7 +6,7 @@ const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8')
 
 test('nullable solutions intro fallback does not reserve a viewport-sized blank area', () => {
   const page = read('../app/pages/giai-phap.vue')
-  assert.match(page, /<h1 v-else class="mb-8 text-\[clamp\(28px,4vw,42px\)\] font-black tracking-tight">/)
+  assert.match(page, /<h1 v-else class="sr-only">\{\{ data\.title \}\}<\/h1>/)
   assert.doesNotMatch(page, /<h1 v-else class="[^\"]*min-h-\[45vh\]/)
 })
 

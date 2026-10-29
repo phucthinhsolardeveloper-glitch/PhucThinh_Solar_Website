@@ -48,6 +48,8 @@ try {
     $list = $d->rawQueryOne('select id,slugvi,pdp_profile from #_product_list where id = ? and type = ? and find_in_set(\'hienthi\',status) limit 1', array((int)$row['id_list'], 'san-pham'));
     $row['list_slugvi'] = isset($list['slugvi']) ? $list['slugvi'] : '';
     $row['list_pdp_profile'] = isset($list['pdp_profile']) ? $list['pdp_profile'] : '';
+    $brand = !empty($row['id_brand']) ? $d->rawQueryOne('select namevi from #_product_brand where id = ? and type = ? and find_in_set(\'hienthi\',status) limit 1', array((int)$row['id_brand'], 'san-pham')) : array();
+    $row['brand_name'] = isset($brand['namevi']) ? $brand['namevi'] : '';
     $row['resolved_profile'] = productPdpResolveProfile($row, $list ?: array());
 
     $media = array();

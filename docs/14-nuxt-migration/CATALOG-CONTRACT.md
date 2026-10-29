@@ -1,31 +1,31 @@
-# Catalog API contract — Phase A
+# Catalog API contract
 
-Endpoint: `GET /api/pts_v1_catalog.php`
+Endpoint: `GET /api/pts_v1_catalog.php`.
 
-Query chỉ gồm `category` (slug phân cấp tối đa 4 đoạn), `page` (mặc định 1) và
-`per_page` (mặc định 20, tối đa 48). Query khác, slug không hợp lệ, page lớn
-hơn 10000 hoặc `per_page` lớn hơn 48 trả `400 BAD_QUERY`; method khác GET trả
-`405 METHOD_NOT_ALLOWED`. Lỗi runtime không trả raw database error.
+Allowed query keys are `category`, `page`, `per_page`, `brand`, `price`,
+`subcategory`, `sort`, `keyword` and `is_need`. Category paths accept one to four
+validated slug segments; `page` is bounded to 10000 and `per_page` to 48. Brand,
+subcategory, price, sort and need filters use allowlisted values. Unknown keys or
+malformed values return `400 BAD_QUERY`; unknown category paths return `404`;
+non-GET methods return `405 METHOD_NOT_ALLOWED`. SQL filter values are bound as
+parameters. Runtime errors do not expose database details.
 
-Response có `schemaVersion: 1`, `locale: "vi"`, `category`, `categories`,
-`products`, `pagination` và `parity`. Category dùng `id`, `name`, `slug`, `url`;
-product dùng `id`, `name`, `slug`, `url`, `media`. URL chuẩn lần lượt là
-`/danh-muc-san-pham/{slug...}/` và `/san-pham/{slug}/`. Chỉ bản ghi `san-pham`
-có status `hienthi`, tên/slug hợp lệ mới được xuất. Media chỉ nhận filename ảnh
-đã tồn tại trong upload product; field private, HTML và giá không được xuất.
+The schema-version-1 response contains SEO/canonical data, the selected
+category, category navigation, products, pagination, filter options, selected
+filters, parity flags, and optional Admin-managed category content/support.
+Product URLs keep the PHP path `/san-pham/{slug}` and category URLs use
+`/danh-muc-san-pham/{slug...}/`. Only published products with valid names and
+slugs are included. Product media must resolve to an existing allowed upload.
 
-`pagination` gồm `page`, `perPage`, `total`. `parity.prices`, `parity.filters`
-và `parity.sort` đều ghi rõ chưa được delegate. Giá không được suy diễn; mọi
-quyết định giá vẫn thuộc `libraries/public_pricing.php`. API không tạo checkout,
-cookie hoặc session business state và không thay đổi endpoint legacy.
+Product cards receive `powerWatts`, plain-text `quickSpecs`, and `pricing` from
+the PHP projection. `quickSpecs` is built only from the existing `cong_suat`,
+`waterproof_rating` and `lighting_time` columns; missing/placeholder values are
+omitted. Price and quote mode remain decided by
+`libraries/public_pricing.php`; Nuxt must not infer a price. When public prices
+are disabled, the response uses quote mode and marks `parity.prices` as disabled.
+Filters and sort report their current parity state in the response.
 
-## Parity gaps / TODO
-
-- Chưa expose giá vì chưa có gate kiểm chứng đầy đủ với `public_pricing.php`.
-- Chưa expose filter nhu cầu/công suất/giá, brand, search hoặc sort vì chưa có
-  chứng cứ parity an toàn cho Nuxt.
-- Thứ tự Phase A là `id desc` ổn định, không tuyên bố parity với
-  `product_sort.php`/thứ tự merchandising hiện tại.
-- Category response hiện công bố category cấp list ở `categories`; category
-  được chọn được resolve chính xác theo path 1–4 cấp.
-- Chưa tạo Nuxt page, chưa đổi router, template, pricing, cart hay deployment.
+The Nuxt validator accepts the original product DTO during staggered PHP/Nuxt
+rollouts and validates the extended `quickSpecs` values as bounded plain text.
+The endpoint remains read-only: it does not create checkout, cookie or cart
+business state, and it does not replace the legacy product routes.

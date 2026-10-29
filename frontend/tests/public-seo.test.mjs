@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { test } from 'node:test'
-import { canonicalPublicOrigin, canonicalPublicUrl, isPublicSeoIndexable, publicSeoRobots, publicSocialImageUrl } from '../shared/public-seo.ts'
+import { canonicalPublicOrigin, canonicalPublicUrl, isPublicSeoIndexable, publicSeoRobots, publicSiteStructuredData, publicSocialImageUrl } from '../shared/public-seo.ts'
 import { editorialPublicResponseStatus, editorialPublicRouteRobots } from '../shared/editorial-public-route.ts'
 
 const frontendRoot = new URL('../', import.meta.url)
@@ -32,6 +32,41 @@ test('social image uses an approved site URL and defaults only to the shipped fa
   assert.equal(publicSocialImageUrl('https://phucthinhsolar.com', '/upload/news/story.jpg'), 'https://phucthinhsolar.com/upload/news/story.jpg')
   assert.equal(publicSocialImageUrl('https://phucthinhsolar.com', ''), 'https://phucthinhsolar.com/assets/images/favicon-pts-mobile.png')
   assert.equal(publicSocialImageUrl('https://phucthinhsolar.com', 'https://evil.example/image.jpg'), null)
+})
+
+test('Organization and homepage WebSite JSON-LD use only the canonical host and public CMS fields', () => {
+  const site = {
+    schemaVersion: 1,
+    brand: { name: 'Phúc Thịnh Solar', hotline: '0944 555 567', logo: '/upload/photo/logo.webp' },
+    productCategories: [],
+    footer: {
+      companyName: '',
+      contactText: { format: 'sanitized-html', html: '', sanitizedBy: 'pts_public_richtext', sanitizerVersion: 1 },
+      policies: [],
+      locations: [{ name: 'Trụ sở chính', address: 'Gia Lai', mapUrl: '' }],
+      socialLinks: [{ label: 'Facebook', href: 'https://facebook.com/pts' }, { label: 'Google', href: 'https://google.com' }],
+    },
+  }
+  const about = JSON.parse(publicSiteStructuredData('https://phucthinhsolar.com', '/gioi-thieu/', site))
+  assert.equal(about['@type'], 'Organization')
+  assert.equal(about['@id'], 'https://phucthinhsolar.com/#organization')
+  assert.equal(about.logo.url, 'https://phucthinhsolar.com/upload/photo/logo.webp')
+  assert.equal(about.telephone, '0944 555 567')
+  assert.deepEqual(about.sameAs, ['https://facebook.com/pts'])
+  assert.equal(about.address.streetAddress, 'Gia Lai')
+  assert.equal('email' in about, false)
+
+  const homeJson = publicSiteStructuredData('https://phucthinhsolar.com', '/', site)
+  const home = JSON.parse(homeJson)
+  assert.deepEqual(home['@graph'].map((node) => node['@type']), ['Organization', 'WebSite'])
+  assert.equal(home['@graph'][1].publisher['@id'], 'https://phucthinhsolar.com/#organization')
+  assert.equal(publicSiteStructuredData('https://evil.example', '/', site), null)
+  const dangerousCmsText = publicSiteStructuredData('https://phucthinhsolar.com', '/gioi-thieu/', {
+    ...site,
+    brand: { ...site.brand, hotline: '<script>alert(1)</script>' },
+  })
+  assert.doesNotMatch(dangerousCmsText, /<script>/)
+  assert.match(dangerousCmsText, /\\u003cscript>/)
 })
 
 test('filtered and empty public route states cannot be indexable', () => {
@@ -99,4 +134,10 @@ test('Nuxt uses the source-verified canonical host and the reusable metadata com
   assert.match(composable, /ogUrl:/)
   assert.match(composable, /ogImage:/)
   assert.match(composable, /twitterCard:/)
+})
+
+test('shared public shell renders the canonical Organization schema from the PHP site DTO', () => {
+  const header = read('app/components/SiteHeader.vue')
+  assert.match(header, /publicSiteStructuredData\(config\.public\.canonicalSiteOrigin, route\.path, props\.site\)/)
+  assert.match(header, /key: 'pts-public-organization-schema'/)
 })

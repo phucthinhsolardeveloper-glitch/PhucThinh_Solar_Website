@@ -60,7 +60,7 @@ onBeforeUnmount(() => {
     <button
       v-if="selectedMediaAvailable"
       type="button"
-      class="grid aspect-square w-full cursor-zoom-in place-items-center overflow-hidden rounded-chip bg-slate-50"
+      class="grid aspect-square w-full cursor-zoom-in place-items-center overflow-hidden rounded-chip bg-white"
       :aria-label="'Phóng to ảnh ' + name"
       @click="openLightbox"
     >

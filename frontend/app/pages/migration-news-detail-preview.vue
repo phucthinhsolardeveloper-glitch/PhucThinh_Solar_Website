@@ -4,7 +4,7 @@ import type { PublicSitePayload } from '#shared/contracts/public-site'
 import { isPublicSitePayload } from '#shared/contracts/public-site'
 import { editorialPublicResponseStatus, editorialPublicRouteRobots } from '#shared/editorial-public-route'
 import NewsCta from '~/components/news/NewsCta.vue'
-import { canonicalPublicUrl } from '#shared/public-seo'
+import { canonicalPublicOrigin, canonicalPublicUrl } from '#shared/public-seo'
 
 const route = useRoute()
 const config = useRuntimeConfig()
@@ -36,7 +36,9 @@ usePublicSocialMeta({
 const articleJsonLd = computed(() => {
   const article = payload.value?.article
   if (!article) return null
-  const url = canonicalPublicUrl(config.public.canonicalSiteOrigin, article.canonical)
+  const siteOrigin = canonicalPublicOrigin(config.public.canonicalSiteOrigin)
+  if (!siteOrigin) return null
+  const url = canonicalPublicUrl(siteOrigin, article.canonical)
   if (!url) return null
   const image = article.cover ? canonicalPublicUrl(config.public.canonicalSiteOrigin, article.cover) : null
   const node: Record<string, unknown> = {
@@ -46,7 +48,7 @@ const articleJsonLd = computed(() => {
     headline: article.title,
     url,
     author: { '@type': 'Person', name: article.author.name },
-    publisher: { '@type': 'Organization', name: 'Phúc Thịnh Solar' },
+    publisher: { '@type': 'Organization', '@id': `${siteOrigin}/#organization`, name: 'Phúc Thịnh Solar' },
   }
   if (image) node.image = [image]
   if (article.datePublished) node.datePublished = article.datePublished

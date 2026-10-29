@@ -5,7 +5,10 @@ export default defineNuxtRouteMiddleware((to) => {
   if (to.path !== SOLUTIONS_PUBLIC_PATH && to.path !== SOLUTIONS_PUBLIC_PATH.slice(0, -1)) return
 
   const config = useRuntimeConfig()
-  if (isRuntimeFlagEnabled(config.public.solutionsPublicRouteEnabled)) return
+  if (isRuntimeFlagEnabled(config.public.solutionsPublicRouteEnabled)) {
+    if (to.path !== SOLUTIONS_PUBLIC_PATH) return navigateTo(SOLUTIONS_PUBLIC_PATH, { redirectCode: 301 })
+    return
+  }
   return navigateTo(phpPublicRouteUrl(config.public.phpPublicOrigin, SOLUTIONS_PUBLIC_PATH), {
     external: true,
     redirectCode: 307,

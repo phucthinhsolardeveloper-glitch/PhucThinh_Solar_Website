@@ -16,10 +16,17 @@ const { data, error, pending } = await useAsyncData<unknown>(
 const payload = computed<PublicOrderThanksPayload | null>(() => isPublicOrderThanksPayload(data.value) ? data.value : null)
 const isPublicRoute = route.path === ORDER_SUCCESS_PUBLIC_PATH && isRuntimeFlagEnabled(config.public.orderSuccessPublicRouteEnabled)
 const errorStatus = (error.value as { statusCode?: unknown } | null)?.statusCode
-const isOrderNotFound = computed(() => errorStatus === 404 || !hasValidToken.value)
+usePublicSocialMeta({
+  enabled: isPublicRoute,
+  title: 'Đặt hàng thành công — Phúc Thịnh Solar',
+  description: computed(() => site.value.brand.name || 'Phúc Thịnh Solar'),
+  canonicalPath: ORDER_SUCCESS_PUBLIC_PATH,
+  image: computed(() => site.value.brand.logo),
+})
 if (import.meta.server && isPublicRoute) {
-  if (isOrderNotFound.value) setResponseStatus(404, 'Not Found')
-  else if (errorStatus || !payload.value) setResponseStatus(502, 'Bad Gateway')
+  // PHP renders a generic thank-you page without an order session. A 404 from
+  // the read-only detail API also means “no session details”, not no page.
+  if (errorStatus && errorStatus !== 404) setResponseStatus(502, 'Bad Gateway')
 }
 
 const trackedConversions = new Set<string>()
@@ -40,34 +47,30 @@ function trackOrderConversion() {
 onMounted(trackOrderConversion)
 watch([payload, token], trackOrderConversion)
 
-function formatMoney(value: number): string {
-  return new Intl.NumberFormat('vi-VN').format(value) + 'đ'
-}
 </script>
 
 <template>
   <div class="min-h-screen bg-white text-navy-800">
     <SiteHeader :site="site" />
-    <main class="mx-auto w-full max-w-[900px] px-4 py-16 text-center max-ph:py-10">
+    <div class="pts-container">
+      <SiteBreadcrumb :items="[{ label: 'Đặt hàng thành công' }]" />
+    </div>
+    <main class="mx-auto w-full px-[15px] py-[60px] text-center">
       <div v-if="pending" class="text-slate-500" role="status">Đang xác nhận đơn hàng…</div>
-      <div v-else-if="error || !payload" class="rounded-btn border border-amber-200 bg-amber-50 p-8 text-left text-amber-900">
-        <h1 class="mb-2 text-2xl font-black">{{ isOrderNotFound ? 'Không tìm thấy phiên xác nhận đơn hàng' : 'Tạm thời không thể xác nhận đơn hàng' }}</h1>
-        <p class="mb-4">{{ isOrderNotFound ? 'Liên kết có thể đã hết hạn hoặc không thuộc phiên trình duyệt hiện tại.' : 'Hệ thống đang gặp sự cố khi tải thông tin đơn hàng. Vui lòng thử lại sau.' }}</p>
-        <NuxtLink :to="links.generic('/')" class="font-bold underline">Về trang chủ</NuxtLink>
+      <div v-else-if="error && errorStatus !== 404" class="mx-auto max-w-[760px]">
+        <h1 class="mb-3 text-2xl font-black text-navy-800">Tạm thời không thể xác nhận đơn hàng</h1>
+        <p class="mb-5 text-slate-600">Hệ thống đang gặp sự cố khi tải thông tin đơn hàng. Vui lòng thử lại sau.</p>
+        <NuxtLink :to="links.generic('/san-pham/')" class="inline-flex min-h-11 items-center rounded-btn bg-gold-500 px-6 font-extrabold text-navy-950 no-underline">Tiếp tục mua sắm</NuxtLink>
       </div>
-      <div v-else class="rounded-btn border border-emerald-200 bg-emerald-50/40 px-6 py-12">
-        <div class="mx-auto mb-5 grid h-16 w-16 place-items-center rounded-full bg-emerald-600 text-3xl font-black text-white" aria-hidden="true">✓</div>
-        <p class="mb-2 text-sm font-extrabold uppercase tracking-[.14em] text-emerald-700">Đặt hàng thành công</p>
-        <h1 class="mb-4 text-[clamp(30px,5vw,46px)] font-black tracking-tight">Cảm ơn {{ payload.order.customerName }}</h1>
-        <p class="mx-auto max-w-[620px] leading-relaxed text-slate-600">Phúc Thịnh Solar đã nhận đơn hàng <strong class="text-navy-800">{{ payload.order.code }}</strong>. Đội ngũ sẽ liên hệ theo thông tin anh/chị đã cung cấp.</p>
-        <div class="mx-auto mt-6 max-w-[420px] rounded-chip border border-emerald-200 bg-white p-4">
-          <span class="block text-sm text-slate-500">Tổng giá trị đơn</span>
-          <strong class="mt-1 block text-2xl text-red-600">{{ formatMoney(payload.order.totalPrice) }}</strong>
-        </div>
-        <div class="mt-8 flex flex-wrap justify-center gap-3">
-          <NuxtLink :to="links.generic('/')" class="inline-flex min-h-11 items-center rounded-chip bg-gold-500 px-6 font-extrabold text-navy-950 no-underline">Về trang chủ</NuxtLink>
-          <NuxtLink :to="links.generic('/san-pham/')" class="inline-flex min-h-11 items-center rounded-chip border border-navy-800 px-6 font-bold text-navy-800 no-underline">Xem thêm sản phẩm</NuxtLink>
-        </div>
+      <div v-else class="mx-auto max-w-[900px]">
+        <svg class="mx-auto mb-4 h-16 w-16 text-[#5cb85c]" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+          <circle cx="32" cy="32" r="30" fill="currentColor" />
+          <path d="m17 32 10 10 21-22" stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="6" />
+        </svg>
+        <h1 class="mb-4 mt-5 text-[clamp(28px,4vw,38px)] font-black tracking-tight text-navy-800">Đặt hàng thành công!</h1>
+        <p class="mx-auto max-w-[700px] text-base leading-relaxed text-slate-700">Cảm ơn {{ payload?.order.customerName || 'bạn' }} đã đặt hàng. Chúng tôi sẽ liên hệ xác nhận đơn hàng trong thời gian sớm nhất.</p>
+        <p v-if="payload" class="mt-3 text-base text-slate-700">Mã đơn hàng: <strong class="text-navy-800">{{ payload.order.code }}</strong></p>
+        <NuxtLink :to="links.generic('/san-pham/')" class="mt-5 inline-flex min-h-11 items-center rounded-btn bg-gold-500 px-6 font-extrabold text-navy-950 no-underline">Tiếp tục mua sắm</NuxtLink>
       </div>
     </main>
     <SiteFooter :site="site" />

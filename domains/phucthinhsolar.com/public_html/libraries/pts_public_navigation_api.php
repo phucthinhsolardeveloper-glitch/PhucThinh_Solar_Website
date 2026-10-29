@@ -250,6 +250,8 @@ function ptsPublicSiteNavigationPayload(array $input)
     $social = array(); foreach(array('fanpage'=>'Facebook','youtube'=>'YouTube') as $key=>$label) { $link=ptsPublicNavUrl(isset($options[$key])?$options[$key]:''); if($link !== '') $social[] = array('label'=>$label,'href'=>$link); }
     $asset = isset($input['asset']) && is_array($input['asset']) ? $input['asset'] : array();
     $brand = array('name'=>$brandName,'hotline'=>ptsPublicNavText(isset($options['hotline'])?$options['hotline']:''),'logo'=>isset($asset['logo'])?$asset['logo']:'','logoFooter'=>isset($asset['logoFooter'])?$asset['logoFooter']:'');
+    $zaloDigits = preg_replace('/[^0-9]/', '', ptsPublicNavScalar(isset($options['zalo']) ? $options['zalo'] : ''));
+    if(strlen($zaloDigits) >= 8 && strlen($zaloDigits) <= 15) $brand['zaloHref'] = 'https://zalo.me/'.$zaloDigits;
     $technicalHotline = ptsPublicNavText(isset($options['hotline_technical']) ? $options['hotline_technical'] : '');
     if($technicalHotline !== '') $brand['technicalHotline'] = $technicalHotline;
     $footerContent = ptsPublicRichTextSanitize(isset($footer['contentvi']) ? $footer['contentvi'] : '');

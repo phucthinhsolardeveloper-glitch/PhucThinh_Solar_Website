@@ -5,6 +5,10 @@ const route = useRoute()
 const slug = computed(() => typeof route.query.slug === 'string' ? route.query.slug : '')
 const { site, payload, extras, product, error, pending, ready } = useProductPreviewData(slug)
 await ready
+const breadcrumbItems = computed(() => [
+  ...(payload.value?.breadcrumbs ?? [{ label: 'Sản phẩm', url: '/san-pham/' }]).map((item) => ({ label: item.label, to: item.url })),
+  ...(product.value ? [{ label: product.value.name }] : []),
+])
 useSeoMeta({ title: computed(() => product.value ? `${product.value.name} — preview` : 'Product preview'), robots: 'noindex, nofollow, noarchive' })
 </script>
 <template>
@@ -19,7 +23,7 @@ useSeoMeta({ title: computed(() => product.value ? `${product.value.name} — pr
     <main>
       <div class="border-b border-slate-200/70 bg-slate-50/80">
         <div class="pts-container">
-          <SiteBreadcrumb :items="[{ label: 'Sản phẩm preview' }, ...(product ? [{ label: product.name }] : [])]" />
+          <SiteBreadcrumb :items="breadcrumbItems" />
         </div>
       </div>
 
@@ -33,7 +37,7 @@ useSeoMeta({ title: computed(() => product.value ? `${product.value.name} — pr
         <p class="text-slate-500">Không thể tải sản phẩm CMS hoặc slug chưa hợp lệ. Preview không hiển thị dữ liệu giả.</p>
       </div>
 
-      <ProductPreviewPage v-else :product="product" :pricing="payload!.pricing" :content="payload!.content" :applications="payload!.applications" :buying-guides="payload!.buyingGuides" :documents="payload!.documents" :extras="extras" />
+      <ProductPreviewPage v-else :product="product" :breadcrumbs="payload!.breadcrumbs ?? []" :pricing="payload!.pricing" :content="payload!.content" :applications="payload!.applications" :buying-guides="payload!.buyingGuides" :documents="payload!.documents" :extras="extras" />
     </main>
 
     <SiteFooter :site="site" />

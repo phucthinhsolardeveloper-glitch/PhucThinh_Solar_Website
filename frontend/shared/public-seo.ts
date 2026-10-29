@@ -1,3 +1,5 @@
+import type { PublicSitePayload } from './contracts/public-site.ts'
+
 export const PUBLIC_SEO_SITE_NAME = 'Phúc Thịnh Solar'
 export const PUBLIC_SEO_FALLBACK_IMAGE = '/assets/images/favicon-pts-mobile.png'
 
@@ -39,6 +41,83 @@ export function publicSocialImageUrl(originValue: unknown, imageValue: unknown):
   if (isSafePublicPath(imageValue)) return `${origin}${imageValue}`
   const url = canonicalPublicUrl(origin, imageValue)
   return url
+}
+
+function publicAssetUrl(origin: string, value: string | undefined): string | null {
+  if (!value) return null
+  if (value.startsWith('/')) return canonicalPublicUrl(origin, value)
+  try {
+    const url = new URL(value)
+    if (url.origin !== origin || url.username || url.password || url.search || url.hash) return null
+    return canonicalPublicUrl(origin, url.pathname)
+  } catch {
+    return null
+  }
+}
+
+function publicSocialUrls(site: PublicSitePayload): string[] {
+  const ignored = new Set([
+    'http://google.com', 'http://www.google.com',
+    'https://google.com', 'https://www.google.com',
+  ])
+  const urls = new Set<string>()
+  for (const item of site.footer?.socialLinks ?? []) {
+    try {
+      const url = new URL(item.href)
+      if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password || ignored.has(url.href.replace(/\/$/, ''))) continue
+      urls.add(url.href)
+    } catch {
+      // Relative links are navigation, not Organization.sameAs identities.
+    }
+  }
+  return [...urls]
+}
+
+/** Build the PHP-backed Organization graph without inventing missing CMS fields. */
+export function publicSiteStructuredData(originValue: unknown, pathname: unknown, site: PublicSitePayload): string | null {
+  const origin = canonicalPublicOrigin(originValue)
+  if (!origin) return null
+
+  const organizationId = `${origin}/#organization`
+  const organization: Record<string, unknown> = {
+    '@type': 'Organization',
+    '@id': organizationId,
+    name: PUBLIC_SEO_SITE_NAME,
+    alternateName: 'PHUCTHINH SOLAR',
+    url: origin,
+  }
+  const logo = publicAssetUrl(origin, site.brand.logo)
+  if (logo) organization.logo = { '@type': 'ImageObject', url: logo }
+  if (site.brand.hotline.trim()) organization.telephone = site.brand.hotline.trim()
+
+  const headOffice = site.footer?.locations.find((location) => /^trụ sở/i.test(location.name.trim()) && location.address.trim())
+  if (headOffice) {
+    organization.address = {
+      '@type': 'PostalAddress',
+      streetAddress: headOffice.address.trim(),
+      addressCountry: 'VN',
+    }
+  }
+
+  const sameAs = publicSocialUrls(site)
+  if (sameAs.length) organization.sameAs = sameAs
+
+  const schema: Record<string, unknown> = { '@context': 'https://schema.org' }
+  if (pathname === '/') {
+    schema['@graph'] = [organization, {
+      '@type': 'WebSite',
+      '@id': `${origin}/#website`,
+      url: origin,
+      name: PUBLIC_SEO_SITE_NAME,
+      alternateName: 'PHUCTHINH SOLAR',
+      publisher: { '@id': organizationId },
+      inLanguage: 'vi-VN',
+    }]
+  } else {
+    Object.assign(schema, organization)
+  }
+
+  return JSON.stringify(schema).replace(/</g, '\\u003c')
 }
 
 export function isPublicSeoIndexable(indexable: unknown, hasContent: unknown, hasFilters: unknown = false): boolean {

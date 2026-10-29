@@ -6,7 +6,9 @@ export default defineEventHandler(async (event) => {
     setHeader(event, 'Allow', 'GET')
     throw createError({ statusCode: 405, statusMessage: 'Method Not Allowed' })
   }
-  const token = getQuery(event).token
+  const query = getQuery(event)
+  if (Object.keys(query).some((key) => key !== 'token')) throw createError({ statusCode: 400, statusMessage: 'Invalid order query' })
+  const token = query.token
   if (typeof token !== 'string' || !/^[a-f0-9]{48}$/.test(token)) throw createError({ statusCode: 400, statusMessage: 'Invalid order token' })
   let response: Response
   try { response = await fetchPhpSessionResponse(event, '/api/pts_v1_order_thanks.php?token=' + encodeURIComponent(token), { method: 'GET' }) }

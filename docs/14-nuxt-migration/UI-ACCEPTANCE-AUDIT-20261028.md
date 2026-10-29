@@ -311,3 +311,41 @@ Ký hiệu: `OK` = section đủ và hiển thị; `DIFF` = khác PHP nhưng có
 | PHP origin cho local Nuxt | `PASS WHEN USING PREVIEW LAUNCHER`; nếu chạy thủ công phải đặt origin `:8088`. | `:8080` là PHP legacy, hiện thiếu `intro`/rich support DTO; `scripts/nuxt-preview-launch.py` đặt `NUXT_PHP_ORIGIN=http://127.0.0.1:8088`, đúng với `LOCAL-PREVIEW.md`. Không đổi default hoặc service đang chạy của agent khác. |
 | Kiểm chứng code và giao diện sau delta | Frontend `311/311` tests PASS; typecheck/build PASS trong bản sao cô lập; PHP lint và GET DTO helper PASS. Hai route PDP/Dealer được chụp ở 390×844, 768×900, 1440×900; 6/6 preview health gates PASS; đã review thủ công ảnh desktop full-page và responsive. | Ảnh ở `frontend/.migration-artifacts/delta-ui-review-20261029/`; `diff=not-compared` nên không claim pixel parity tự động. PHP reference có 10 PDP/15 Dealer broken-media requests; Nuxt không có broken media hoặc runtime/overflow/request failures. Chưa rebuild/restart container Nuxt. |
 | Production / public flags | Không thay đổi; các route/indexability flags giữ OFF. | Không gửi form/checkout POST, không ghi DB, không sửa hay restart container. |
+
+## Re-audit delta — worktree `feature/ui-layout-upgrade-20261029` — 2026-10-29
+
+Worktree hiện ở `c729ca7` với thay đổi UI/API chưa commit. Phần dưới đây là
+bằng chứng của đúng build trong worktree này; nó không thay thế runtime hoặc
+production sign-off của nhánh integration.
+
+| Gate | Kết quả | Bằng chứng |
+|---|---|---|
+| Browser route health | `PASS` — 33 route × 3 viewport = 99/99; HTTP 200, một H1, không lỗi runtime, media, failed request, tràn ngang hoặc preview-link leak. Full-page capture đã lưu; đây là health gate, không phải kết luận pixel-perfect. | `frontend/.migration-artifacts/final-ui-parity-20261029/report.json` và `summary.md`; PHP `:8080`, Nuxt `:3110`, media proxy bật. |
+| Public routes, flags OFF | `PASS` — 33/33 URL kết thúc tại PHP `:8080`, status 200; bốn alias theo đúng canonical đích. Query token của `/cam-on/` được giữ khi fallback. | GET với redirect follow trên process `:3110`; không gửi mutation. |
+| Public routes, flags ON tạm thời | `PASS` — 33/33 URL render qua Nuxt; title/H1 có, canonical khớp fixture, robots đúng; search/cart/order-success giữ noindex; bốn alias kết thúc tại canonical Nuxt. Flags chỉ được set cho process cô lập `:3159`, không ghi cấu hình. | HTTP GET tới production path trên `.output/server/index.mjs`; không deploy, không bật flag mặc định. |
+| `/cam-on/` không token | `PASS` — PHP và Nuxt flag ON đều trả 200/noindex với lời cảm ơn chung; Nuxt không gọi endpoint order-thanks nếu thiếu token, không hiển thị mã đơn và không fire conversion. Có breadcrumb như PHP. | [PHP 1440px](</home/admin01/src/pts-ui-layout-upgrade-20261029/frontend/.migration-artifacts/order-success-parity-20261029/order-success-1440x1000-legacy.png>) · [Nuxt 1440px](</home/admin01/src/pts-ui-layout-upgrade-20261029/frontend/.migration-artifacts/order-success-parity-20261029/order-success-1440x1000-preview.png>) · [đối chiếu 3 viewport](</home/admin01/src/pts-ui-layout-upgrade-20261029/frontend/.migration-artifacts/order-success-parity-20261029/summary.md>). |
+| Sitemap `<loc>` | `PASS` — 457 URL trong một sitemap; mọi status 200 và final URL trùng `<loc>`, không redirect. | `frontend/.migration-artifacts/seo-audit-final-20261029/report.json`. |
+| Href mapping/reachability | `PASS` — 33/33 route được so set; 361/361 target HTTP 200. `onlyLegacy`/`onlyPreview` vẫn là khác biệt cần review thủ công, không tự động fail. | `frontend/.migration-artifacts/seo-audit-final-20261029/summary.md`. |
+| Hidden/negative fixtures | `NEEDS VERIFICATION` — PDP ẩn thật trả 404, không canonical; catalog/news/project/solution không có hidden row phù hợp trong DB local nên không bịa slug (4 fixture chưa xác minh). | Cùng SEO report; giữ nguyên bằng chứng DB và trạng thái `NEEDS VERIFICATION`. |
+| Frontend verification | `PASS` — 360/360 test, typecheck, build và smoke SSR; order-success được chụp riêng 3/3 viewport sau lần sửa cuối. | `npm test`, `npm run typecheck`, `npm run build`, `npm run smoke`; artifact ở `order-success-parity-20261029/`. |
+| Giới hạn còn lại | Session token thật, mã đơn và conversion không được thử vì không tạo đơn. Full-page ảnh của mọi route đã được chụp nhưng chưa ký review bằng mắt từng section. OG/JSON-LD cho từng public route chưa được xác nhận trong lượt flags-on này. | Không có PHP POST, không ghi DB, không thay container/feature flag production. Worktree còn WIP; chưa commit/gộp/deploy. |
+
+## Visual follow-up — news detail related rail — 2026-10-29
+
+| Hạng mục | Kết quả | Bằng chứng |
+|---|---|---|
+| Tin liên quan | `FIXED IN WORKTREE` — dải hiển thị 4 bài desktop, 2 tablet, 1 mobile; nút trước/tiếp cuộn được; ngày dùng đủ năm và có tên tác giả như template PHP. | `NewsDetailRelated.vue`; PHP query `pts_v1_news_detail.php` lấy tên tác giả công khai qua `#_user`, DTO kiểm tra author. |
+| Visual/runtime | `PASS` — PHP và Nuxt trả 200 ở 390×844, 768×900, 1440×1000. Review bằng mắt xác nhận 4 bài hiển thị mỗi lượt desktop; tương tác mũi tên đổi scrollLeft; 0 lỗi runtime/request, 0 overflow ngang. | `frontend/.migration-artifacts/news-detail-related-fix-20261029/`; report phân loại 5 ảnh `src=""` do widget dịch GTranslate chèn (alt là mã locale), không phải ảnh bài viết. |
+| Kiểm thử | `PASS` — 362 frontend test, typecheck, build; test riêng rail 9/9; PHP API GET read-only trả author trong DTO. PHP CLI không có trong WSL nên không chạy được `php -l`. | Kết quả `npm test`, `npm run typecheck`, `npm run build`; GET `:8088/api/pts_v1_news_detail.php` không làm thay đổi dữ liệu. |
+| Vận hành | Không thay production, Docker/container hoặc cờ public; preview Nuxt `:3110` chạy build mới, `:3157` được giữ nguyên. | Process và port được kiểm tra sau khi restart riêng Nuxt preview `:3110`. |
+
+## Final verification — `feature/ui-layout-upgrade-20261029` — 2026-10-29 21:17 +07:00
+
+| Gate | Kết quả | Bằng chứng |
+|---|---|---|
+| Nuxt route health with public flags ON | `PASS` — 33/33 manifest routes trả HTTP 200, đúng H1/canonical/noindex; hidden PDP fixture trả 404, không canonical. | `frontend/.migration-artifacts/nuxt-route-gates-20261029-final/report.json` |
+| Public flag OFF fallback | `PASS` — 33/33 route kết thúc ở PHP loopback `:8080`; redirect chain được kiểm tra thủ công với `redirect: manual`. | `frontend/.migration-artifacts/nuxt-route-gates-20261029-final/flag-off.json` |
+| Slash canonical redirects | `PASS` — root/hub thiếu slash trả 301 thêm slash; PDP có slash cuối trả 301 về slug không slash. | GET smoke trên Nuxt `:3112`, chỉ route flags ON |
+| PHP ↔ Nuxt visual health | `PASS` — 99/99 lượt (33 route × 390/768/1440) HTTP 200, không lỗi runtime, media, request, overflow, CLS hoặc preview-link leak; shell keyboard/focus 3/3 PASS. Full-page PNG dùng cho review section-by-section. | `frontend/.migration-artifacts/migration-comparison-20261029-final5/report.json` và `summary.md` |
+| Adapter/query safety | `PASS` — product/project/document/extras/order/checkout-wards adapters chỉ nhận query PHP hỗ trợ, validate slug và bounds. | `frontend/server/routes/_migration/*.get.ts`; 364 frontend tests và typecheck PASS |
+| Remaining gates | `NEEDS VERIFICATION` — bốn nhóm hidden fixture không có record phù hợp trong DB local; order-success token/conversion không thử vì không tạo đơn; sitemap/robots authority và staging/cutover vẫn do PHP/approval gate. | Không bịa fixture, không POST, không đổi production/container/feature flags mặc định. |

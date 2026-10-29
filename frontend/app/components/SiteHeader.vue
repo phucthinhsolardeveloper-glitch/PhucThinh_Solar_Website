@@ -7,6 +7,7 @@ import {
   sortCatalogGroups,
 } from '#shared/catalog-menu-presentation'
 import { isRuntimeFlagEnabled } from '#shared/public-route-gate'
+import { publicSiteStructuredData } from '#shared/public-seo'
 
 type MenuMode = 'hover' | 'intent' | null
 
@@ -18,6 +19,14 @@ const route = useRoute()
 const { active: isMigrationPreview, generic: shellHref, external: isExternalLink } = useMigrationLinks()
 const { cart: migrationCart, refresh: refreshMigrationCart } = useMigrationCart()
 const config = useRuntimeConfig()
+const siteStructuredData = computed(() => publicSiteStructuredData(config.public.canonicalSiteOrigin, route.path, props.site))
+useHead({
+  script: computed(() => siteStructuredData.value ? [{
+    key: 'pts-public-organization-schema',
+    type: 'application/ld+json',
+    innerHTML: siteStructuredData.value,
+  }] : []),
+})
 const cartCountAvailable = computed(() => isMigrationPreview.value || [
   config.public.homePublicRouteEnabled,
   config.public.catalogPublicRouteEnabled,
@@ -29,13 +38,11 @@ const cartCountAvailable = computed(() => isMigrationPreview.value || [
 
 const brandName = computed(() => props.site.brand.name.trim() || 'Phúc Thịnh Solar')
 const hotline = computed(() => props.site.brand.hotline.trim())
-const technicalHotline = computed(() => props.site.brand.technicalHotline?.trim() ?? '')
 const brandLogo = computed(() => props.site.brand.logo || '')
 const brandLogoSrc = computed(() => {
   const src = brandLogo.value
-  return /^\/upload\/photo\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|gif|webp|avif)$/i.test(src) ? `/thumbs/248x35x1${src}` : src
+  return /^\/upload\/photo\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|gif|webp|avif)$/i.test(src) ? `/thumbs/520x112x3${src}` : src
 })
-const quickCategories = computed(() => props.site.productCategories.slice(0, 4))
 
 const searchOpen = ref(false)
 const searchKeyword = ref('')
@@ -331,62 +338,19 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <!-- Tầng 1: Thanh tiện ích đầu trang (cuộn tự nhiên để thanh điều hướng sticky bên dưới gọn gàng) -->
-  <div v-if="hotline || technicalHotline || cartCountAvailable" class="border-b border-hdr-line bg-slate-50 text-xs text-slate-600">
-    <div class="mx-auto flex min-h-9 w-full max-w-[1680px] flex-wrap items-center justify-between gap-x-6 gap-y-1 px-4 py-1 max-[359px]:px-3 tb:px-6 nav:px-(--spacing-gutter)">
-      <div class="flex flex-wrap items-center gap-x-5 gap-y-1">
-        <a
-          v-if="hotline"
-          class="inline-flex items-center gap-1.5 text-slate-600 no-underline transition-colors hover:text-gold-700"
-          :href="telHrefFor(hotline)"
-        >
-          <svg class="h-3.5 w-3.5 flex-none text-gold-600" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.5 3.5 9 3l2 5-2 1.7a14 14 0 0 0 5.3 5.3L16 13l5 2-.5 2.5c-.3 1.5-1.7 2.5-3.2 2.2C10.8 18.5 5.5 13.2 4.3 6.7 4 5.2 5 3.8 6.5 3.5Z" /></svg>
-          <span>Tư vấn bán hàng: <strong class="font-bold text-navy-800">{{ hotline }}</strong></span>
-        </a>
-        <template v-if="hotline && technicalHotline">
-          <span class="hidden text-slate-300 tb:inline" aria-hidden="true">|</span>
-        </template>
-        <a
-          v-if="technicalHotline"
-          class="hidden items-center gap-1.5 text-slate-600 no-underline transition-colors hover:text-gold-700 tb:inline-flex"
-          :href="telHrefFor(technicalHotline)"
-        >
-          <svg class="h-3.5 w-3.5 flex-none text-gold-600" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a2 2 0 0 0-2 2v2.17a2 2 0 0 1-.59 1.42L7.59 9.41A2 2 0 0 0 7 10.83V13a2 2 0 0 0 2 2h.17a2 2 0 0 1 1.42.59l1.82 1.82a2 2 0 0 0 1.42.59H16a2 2 0 0 0 2-2v-2.17a2 2 0 0 1 .59-1.42L20 10.41" /></svg>
-          <span>Hỗ trợ kỹ thuật: <strong class="font-bold text-navy-800">{{ technicalHotline }}</strong></span>
-        </a>
-      </div>
-
-      <div class="hidden items-center gap-5 ph:flex">
-        <NuxtLink
-          :external="isExternalLink(shellHref('/gio-hang/'))"
-          class="inline-flex items-center gap-1.5 text-slate-700 no-underline transition-colors hover:text-gold-700"
-          :to="shellHref('/gio-hang/')"
-        >
-          <svg class="h-3.5 w-3.5 flex-none text-navy-800" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 4h2l1 12h11l1.6-8H7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /><circle cx="9" cy="20" r="1.5" fill="currentColor" /><circle cx="16" cy="20" r="1.5" fill="currentColor" /></svg>
-          <span>Giỏ hàng<template v-if="cartCountAvailable && migrationCart">: <b class="font-bold text-gold-700">{{ migrationCart.count }}</b> sản phẩm</template></span>
-        </NuxtLink>
-        <NuxtLink
-          :external="isExternalLink(shellHref('/lien-he/#yeu-cau-tu-van'))"
-          class="rounded-chip bg-navy-800 px-3 py-1 text-xs font-bold tracking-wide text-gold-400 no-underline transition-colors hover:bg-navy-950 hover:text-gold-300"
-          :to="shellHref('/lien-he/#yeu-cau-tu-van')"
-        >
-          Yêu cầu khảo sát
-        </NuxtLink>
-      </div>
-    </div>
-  </div>
-
-  <!-- Tầng 2: Thanh điều hướng chính sticky gọn gàng + tìm kiếm nhanh + mega-menu -->
+  <!-- The PHP header keeps navigation, phone, search, cart and CTA on one row. -->
   <div class="sticky top-0 z-[1000]" @mouseleave="handleShellLeave">
     <header
       :inert="mobileOpen ? true : undefined"
       class="relative z-[1000] border-b border-hdr-line bg-white/96 shadow-[0_1px_4px_rgba(10,34,81,0.06)] backdrop-blur-md"
     >
       <div
-        class="mx-auto flex min-h-[66px] w-full max-w-[1680px] items-center justify-between gap-3 px-4 py-2 max-[359px]:px-3
-               max-ph:min-h-[60px] max-ph:gap-2 max-ph:py-1.5
+        class="mx-auto flex min-h-16 w-full max-w-[1680px] items-center justify-between gap-3 px-4 py-2 max-[359px]:px-3
+               min-[561px]:min-h-[94px] min-[821px]:min-h-[102px] min-[1321px]:min-h-[132px]
+               min-[1501px]:min-h-[clamp(148px,8vw,164px)] min-[1501px]:py-2 min-[2300px]:min-h-[174px]
+               max-ph:gap-2 max-ph:py-1.5
                tb:px-6
-               nav:min-h-[78px] nav:gap-5 nav:px-(--spacing-gutter) nav:py-3"
+               nav:gap-5 nav:px-(--spacing-gutter) nav:py-3"
       >
         <!-- Hamburger: dưới mốc nav (1321px), vùng chạm >= 44x44px -->
         <button
@@ -405,60 +369,28 @@ onBeforeUnmount(() => {
         </button>
 
         <!-- Thương hiệu -->
-        <a class="mr-auto flex min-w-0 flex-1 items-center nav:mr-0 nav:flex-none" :href="shellHref('/')" :aria-label="`${brandName} - Trang chủ`">
+        <a class="mr-auto flex min-w-0 flex-1 items-center nav:mr-0 nav:w-[270px] nav:flex-none min-[1321px]:max-[1346px]:w-[244px] min-[1501px]:w-[clamp(360px,22vw,460px)]" :href="shellHref('/')" :aria-label="`${brandName} - Trang chủ`">
           <img
             v-if="brandLogo"
             :src="brandLogoSrc"
             :alt="brandName"
-            width="248"
-            height="35"
-            class="block h-auto w-auto object-contain max-w-[min(228px,100%)] max-h-[48px]
-                   max-ph:max-w-[min(198px,100%)] max-ph:max-h-[42px]
-                   tb:max-w-[min(238px,100%)] tb:max-h-[50px]
-                   nav:max-w-[min(248px,100%)] nav:max-h-[54px]
-                   wd:max-w-[min(268px,100%)] wd:max-h-[58px]"
+            width="520"
+            height="73"
+            class="block h-auto w-auto object-contain max-w-[min(198px,100%)] max-h-[55px]
+                   min-[561px]:max-w-[min(228px,100%)] min-[561px]:max-h-[63px]
+                   min-[821px]:max-w-[min(248px,100%)] min-[821px]:max-h-[68px]
+                   min-[1321px]:max-w-[min(270px,100%)] min-[1321px]:max-h-[72px]
+                   min-[1501px]:max-w-[min(clamp(360px,22vw,460px),100%)] min-[1501px]:max-h-[108px]
+                   min-[2300px]:max-w-[460px] min-[2300px]:max-h-[130px]
+                   max-[380px]:max-w-[min(180px,100%)] max-[380px]:max-h-[50px]
+                   max-[340px]:max-w-[min(110px,100%)] max-[340px]:max-h-[36px]"
           >
           <span v-else class="truncate text-xl font-black tracking-tight text-hdr-ink">{{ brandName }}</span>
         </a>
 
-        <!-- Ô tìm kiếm trực tuyến + lối tắt danh mục thực tế trên màn hình rộng (>=1501px) -->
-        <div class="mx-2 hidden min-w-0 max-w-[390px] flex-1 flex-col wd:flex ul:max-w-[480px]">
-          <form class="relative flex w-full items-center" role="search" @submit.prevent="submitSearch">
-            <label class="sr-only" for="ptsInlineSearchInput">Tìm kiếm giải pháp hoặc sản phẩm</label>
-            <input
-              id="ptsInlineSearchInput"
-              v-model="searchKeyword"
-              class="h-10 w-full rounded-btn border border-hdr-line bg-slate-50/90 pl-3.5 pr-10 text-[13px] font-medium text-hdr-ink outline-none transition-colors placeholder:text-hdr-muted focus:border-hdr-gold focus:bg-white"
-              type="search"
-              placeholder="Tìm kiếm giải pháp hoặc sản phẩm..."
-              autocomplete="off"
-            >
-            <button
-              type="submit"
-              aria-label="Tìm kiếm"
-              class="absolute right-1 top-1/2 inline-flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-chip text-slate-500 transition-colors hover:text-gold-700"
-            >
-              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.5" /><path d="m16 16 4.5 4.5" /></svg>
-            </button>
-          </form>
-          <div v-if="quickCategories.length" class="mt-1 flex items-center gap-1.5 overflow-hidden pl-1 text-[11px] text-slate-500">
-            <span class="flex-none text-slate-400">Tìm nhanh:</span>
-            <template v-for="(cat, idx) in quickCategories" :key="cat.id">
-              <span v-if="idx > 0" class="flex-none text-slate-300" aria-hidden="true">•</span>
-              <NuxtLink
-                :external="isExternalLink(shellHref(cat.url))"
-                class="truncate text-slate-500 no-underline transition-colors hover:text-gold-700"
-                :to="shellHref(cat.url)"
-              >
-                {{ cat.name.replace(/\s*năng lượng mặt trời/i, ' NLMT') }}
-              </NuxtLink>
-            </template>
-          </div>
-        </div>
-
         <!-- Điều hướng chính desktop (Danh mục sản phẩm + đúng 5 nhóm IA chuẩn) -->
-        <nav class="hidden min-w-0 nav:block" aria-label="Điều hướng chính">
-          <ul class="flex items-center justify-center gap-1">
+        <nav class="hidden min-w-0 nav:flex-1 nav:block" aria-label="Điều hướng chính">
+          <ul class="flex items-center justify-center gap-1 nav:gap-0">
             <li class="mr-1.5 flex flex-none items-center" @mouseenter="openCatalog('hover')">
               <button
                 ref="catalogTrigger"
@@ -485,7 +417,7 @@ onBeforeUnmount(() => {
             >
               <NuxtLink
                 :external="isExternalLink(shellHref(item.href))"
-                class="flex min-h-11 items-center whitespace-nowrap border-b-2 px-2.5 text-[14px] leading-tight no-underline transition-colors wd:px-3 wd:text-[14.5px]"
+                class="flex min-h-11 items-center whitespace-nowrap border-b-2 px-2.5 text-[14px] leading-tight no-underline transition-colors nav:px-2 wd:px-3 wd:text-[14.5px]"
                 :class="isActiveNavItem(item)
                   ? 'border-gold-500 font-bold text-navy-800'
                   : 'border-transparent font-semibold text-hdr-text hover:bg-hdr-surface hover:text-navy-800'"
@@ -520,10 +452,14 @@ onBeforeUnmount(() => {
 
         <!-- Cụm thao tác bên phải -->
         <div class="flex min-w-0 items-center justify-end gap-1.5 max-ph:gap-1">
+          <!-- GTranslate adds this marker class synchronously while it mounts. Keep
+               it in SSR markup too so hydration does not report a class mismatch. -->
+          <div class="gtranslate_wrapper gt_container-unisv1 hidden h-11 w-[45px] flex-none items-center justify-center min-[1321px]:flex" aria-label="Chọn ngôn ngữ" />
+
           <button
             ref="searchTrigger"
             class="relative inline-flex h-11 w-11 items-center justify-center rounded-chip text-hdr-ink
-                   transition-colors hover:bg-hdr-surface hover:text-hdr-gold-deep wd:hidden"
+                   transition-colors hover:bg-hdr-surface hover:text-hdr-gold-deep"
             type="button"
             :aria-expanded="searchOpen"
             aria-controls="ptsHeaderSearch"
@@ -532,6 +468,22 @@ onBeforeUnmount(() => {
           >
             <svg class="h-[19px] w-[19px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.5" /><path d="m16 16 4.5 4.5" /></svg>
           </button>
+
+          <a
+            v-if="hotline"
+            class="hidden min-h-11 items-center justify-center gap-2 rounded-chip px-1 text-hdr-ink no-underline transition-colors hover:bg-hdr-surface hover:text-hdr-gold-deep min-[821px]:inline-flex"
+            :href="telHrefFor(hotline)"
+            :aria-label="`Gọi tư vấn: ${hotline}`"
+            :title="hotline"
+          >
+            <span class="grid h-9 w-9 flex-none place-items-center rounded-full bg-hdr-surface text-hdr-gold-deep" aria-hidden="true">
+              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.79 19.79 0 0 1 11.19 18a19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.09 3.18 2 2 0 0 1 4.08 1h3a2 2 0 0 1 2 1.72c.12.96.36 1.9.7 2.8a2 2 0 0 1-.45 2.11L8.06 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.84.58 2.8.7A2 2 0 0 1 22 16.92Z" /></svg>
+            </span>
+            <span class="hidden min-[2300px]:flex min-[2300px]:flex-col min-[2300px]:gap-0.5 min-[2300px]:whitespace-nowrap">
+              <small class="text-[11px] leading-none text-hdr-muted">Tư vấn</small>
+              <b class="text-sm leading-tight">{{ hotline }}</b>
+            </span>
+          </a>
 
           <NuxtLink
             :external="isExternalLink(shellHref('/gio-hang/'))"

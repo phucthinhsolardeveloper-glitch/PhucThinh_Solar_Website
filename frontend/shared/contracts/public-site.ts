@@ -14,7 +14,7 @@ export interface PublicSitePayload {
   schemaVersion: 1
   navigationSchemaVersion?: 1
   locale?: string
-  brand: { name: string; hotline: string; technicalHotline?: string; logo?: string; logoFooter?: string }
+  brand: { name: string; hotline: string; technicalHotline?: string; logo?: string; logoFooter?: string; zaloHref?: string }
   navigation?: PublicSiteLink[]
   catalog?: Record<string, PublicCatalogGroup>
   productCategories: PublicProductCategory[]
@@ -54,6 +54,7 @@ export function isPublicSitePayload(value: unknown): value is PublicSitePayload 
   if (value.brand.logo !== undefined && !isSafeUrl(value.brand.logo)) return false
   if (value.brand.logoFooter !== undefined && !isSafeUrl(value.brand.logoFooter)) return false
   if (value.brand.technicalHotline !== undefined && !isText(value.brand.technicalHotline)) return false
+  if (value.brand.zaloHref !== undefined && (typeof value.brand.zaloHref !== 'string' || !/^https:\/\/zalo\.me\/\d{8,15}$/.test(value.brand.zaloHref))) return false
   if (value.navigationSchemaVersion !== undefined && value.navigationSchemaVersion !== 1) return false
   if (value.locale !== undefined && !isText(value.locale)) return false
   if (!Array.isArray(value.productCategories) || !value.productCategories.every((row: unknown) => isRecord(row) && isId(row.id) && isText(row.name) && isText(row.slug) && isCategoryUrl(row.url))) return false

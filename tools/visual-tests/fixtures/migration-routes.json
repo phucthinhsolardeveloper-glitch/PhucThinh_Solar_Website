@@ -62,7 +62,7 @@
       "slug": "tru-den-co-dien-oriana-gl-0612-h2500",
       "legacyPath": "/san-pham/tru-den-co-dien-oriana-gl-0612-h2500",
       "expectedStatuses": [404, 410],
-      "databaseEvidence": { "source": "pts-mariadb-local; read-only SELECT", "table": "product", "type": "san-pham", "status": "", "hidden": true }
+      "databaseEvidence": { "source": "pts-mariadb-local; read-only SELECT", "checkedAt": "2026-10-29", "table": "product", "type": "san-pham", "status": "", "hidden": true, "hiddenCount": 27 }
     },
     {
       "id": "negative-news-hidden-article",

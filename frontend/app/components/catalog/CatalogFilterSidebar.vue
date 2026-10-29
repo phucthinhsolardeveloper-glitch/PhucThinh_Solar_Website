@@ -4,7 +4,7 @@ import type { PublicCatalogPayload } from '#shared/contracts/public-catalog'
 import type { PublicProductCategoryNode } from '#shared/contracts/public-site'
 import CatalogCategoryBranch from './CatalogCategoryBranch.vue'
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   categories: PublicProductCategoryNode[]
   selectedCategory: string
   filters: NonNullable<PublicCatalogPayload['filters']>
@@ -12,7 +12,14 @@ const props = defineProps<{
   keyword: string
   subcategoryTitle?: string
   filterLink: (overrides: { subcategory?: string; brand?: string; price?: string; need?: string; keyword?: string }) => RouteLocationRaw
-}>()
+  idPrefix?: string
+  hideTitle?: boolean
+  drawer?: boolean
+}>(), {
+  idPrefix: 'catalog-filter',
+  hideTitle: false,
+  drawer: false,
+})
 
 function toggledIds(list: number[], id: number): string {
   const next = list.includes(id) ? list.filter((item) => item !== id) : [...list, id]
@@ -27,27 +34,29 @@ const hasAnyOption = computed(() => props.filters.subcategories.length > 0 || pr
 const hasCategories = computed(() => props.categories.length > 0)
 const categoriesExpanded = ref(false)
 const hasActiveFilter = computed(() => props.keyword !== '' || props.selected.subcategoryIds.length > 0 || props.selected.brandIds.length > 0 || props.selected.priceKeys.length > 0 || (props.selected.needKeys?.length ?? 0) > 0)
+const categoryTitleId = computed(() => `${props.idPrefix}-category-title`)
+const categoryListId = computed(() => `${props.idPrefix}-category-list`)
 </script>
 
 <template>
   <!-- Một panel duy nhất giữ danh mục, loại sản phẩm, thương hiệu và mức giá. -->
-  <aside v-if="hasAnyOption || hasCategories" class="rounded-chip bg-slate-100 p-5" aria-label="Bộ lọc sản phẩm">
-    <h2 class="m-0 mb-4 text-xl font-black text-navy-950">BỘ LỌC</h2>
+  <aside v-if="hasAnyOption || hasCategories" class="p-5" :class="drawer ? 'rounded-none bg-white' : 'rounded-chip bg-slate-100'" aria-label="Bộ lọc sản phẩm">
+    <h2 v-if="!hideTitle" class="m-0 mb-4 text-xl font-black text-navy-950">BỘ LỌC</h2>
 
-    <section v-if="hasCategories" aria-labelledby="catalog-filter-category-title">
-      <h3 id="catalog-filter-category-title" class="m-0 mb-3 text-sm font-bold text-navy-950">Danh mục sản phẩm</h3>
+    <section v-if="hasCategories" :aria-labelledby="categoryTitleId">
+      <h3 :id="categoryTitleId" class="m-0 mb-3 text-sm font-bold text-navy-950">Danh mục sản phẩm</h3>
       <button
         class="flex min-h-11 w-full items-center justify-between rounded-chip border border-gray-200 bg-white px-3 py-2 text-left font-extrabold text-navy-800 nav:hidden"
         type="button"
         :aria-expanded="categoriesExpanded"
-        aria-controls="catalog-filter-category-list"
+        :aria-controls="categoryListId"
         @click="categoriesExpanded = !categoriesExpanded"
       >
         <span>{{ categoriesExpanded ? 'Ẩn danh mục' : (selectedCategory ? 'Mở danh sách danh mục' : 'Chọn danh mục') }}</span>
         <svg class="h-5 w-5 fill-none stroke-current stroke-2" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5" /></svg>
       </button>
       <ul
-        id="catalog-filter-category-list"
+        :id="categoryListId"
         class="m-0 list-none p-0 pt-3 nav:block nav:pt-0"
         :class="categoriesExpanded ? 'block' : 'hidden'"
       >

@@ -26,6 +26,12 @@ test('keeps the old v1 payload valid when CMS extensions are absent', () => {
   assert.equal(isPublicSitePayload(good), true)
 })
 
+test('accepts only the PHP-projected public Zalo contact URL', () => {
+  assert.equal(isPublicSitePayload({ ...good, brand: { ...good.brand, zaloHref: 'https://zalo.me/0944555957' } }), true)
+  assert.equal(isPublicSitePayload({ ...good, brand: { ...good.brand, zaloHref: 'https://evil.example/0944555957' } }), false)
+  assert.equal(isPublicSitePayload({ ...good, brand: { ...good.brand, zaloHref: 'https://zalo.me/not-a-number' } }), false)
+})
+
 test('accepts the published navigation and footer projection', () => {
   assert.equal(isPublicSitePayload({
     ...good,

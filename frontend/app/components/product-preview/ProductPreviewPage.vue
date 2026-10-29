@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import type { PublicProductApplications, PublicProductBuyingGuide, PublicProductContent, PublicProductDetail, PublicProductDocument } from '#shared/contracts/public-product-detail'
+import type { PublicProductApplications, PublicProductBreadcrumb, PublicProductBuyingGuide, PublicProductContent, PublicProductDetail, PublicProductDocument } from '#shared/contracts/public-product-detail'
 import type { PublicCatalogPricing } from '#shared/contracts/public-catalog'
 import type { PublicProductExtrasPayload } from '#shared/contracts/public-product-extras'
 import ProductPreviewGallery from './ProductPreviewGallery.vue'
 import ProductPreviewSpecs from './ProductPreviewSpecs.vue'
 import ProductPreviewContent from './ProductPreviewContent.vue'
-import ProductPreviewDocuments from './ProductPreviewDocuments.vue'
 import ProductPreviewDecisionMetrics from './ProductPreviewDecisionMetrics.vue'
 import ProductPreviewApplications from './ProductPreviewApplications.vue'
 import ProductPreviewBuyingGuide from './ProductPreviewBuyingGuide.vue'
@@ -17,6 +16,7 @@ import ProductTrustRelated from './ProductTrustRelated.vue'
 
 const props = defineProps<{
   product: PublicProductDetail
+  breadcrumbs?: PublicProductBreadcrumb[]
   pricing: PublicCatalogPricing
   content: PublicProductContent
   applications?: PublicProductApplications | null
@@ -33,6 +33,7 @@ const discountPercent = computed(() => {
   if (props.pricing.regularPrice <= props.pricing.salePrice) return 0
   return Math.round(((props.pricing.regularPrice - props.pricing.salePrice) / props.pricing.regularPrice) * 100)
 })
+const productCategories = computed(() => (props.breadcrumbs ?? []).filter((item) => item.url !== '/san-pham/').slice(0, 2))
 
 const navItems = computed(() => {
   const items: Array<{ id: string; label: string }> = []
@@ -90,8 +91,8 @@ onBeforeUnmount(() => observer?.disconnect())
           <strong class="text-navy-800">Bộ sản phẩm gồm:</strong> {{ product.packageContents }}
         </p>
 
-        <div class="mt-6 border-t border-gray-200 pt-5">
-          <p class="mb-2 text-xs font-bold uppercase tracking-wide text-slate-400">Giá bán</p>
+        <div class="mt-6 border-y border-gray-200 py-4">
+          <p class="mb-1 text-xs font-bold uppercase tracking-wide text-slate-500">Giá bán</p>
           <div v-if="pricing.mode === 'quote'">
             <p class="m-0 text-[clamp(27px,2vw,36px)] font-extrabold leading-none text-[#d52525]">Liên hệ</p>
             <p class="mt-1.5 text-[12.5px] leading-relaxed text-slate-500">Nhận báo giá theo số lượng và nhu cầu sử dụng</p>
@@ -109,7 +110,20 @@ onBeforeUnmount(() => observer?.disconnect())
           </div>
         </div>
 
-        <ProductPurchasePanel :product-id="product.id" :pricing="pricing" :consultation-available="Boolean(extras)" />
+        <ProductPurchasePanel :product-id="product.id" :pricing="pricing" :consultation-available="Boolean(extras)">
+          <template #product-info>
+            <div v-if="productCategories.length || product.brand" class="mt-[18px] grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-6">
+              <div v-if="productCategories.length" class="min-w-0 text-[12.5px] leading-[1.5] text-slate-500">
+                <span class="mb-0.5 block font-semibold">Danh mục:</span>
+                <span class="font-bold text-navy-800">{{ productCategories.map((item) => item.label).join(', ') }}</span>
+              </div>
+              <div v-if="product.brand" class="min-w-0 text-[12.5px] leading-[1.5] text-slate-500">
+                <span class="mb-0.5 block font-semibold">Thương hiệu:</span>
+                <span class="font-bold text-navy-800">{{ product.brand }}</span>
+              </div>
+            </div>
+          </template>
+        </ProductPurchasePanel>
 
         <div v-if="extras?.reviews.total" class="mt-5 flex items-center gap-3 text-sm">
           <span class="font-bold text-gold-700">★ {{ extras.reviews.average.toFixed(1) }}/5</span>
@@ -134,11 +148,7 @@ onBeforeUnmount(() => observer?.disconnect())
     <ProductPreviewApplications v-if="applications?.items.length" :applications="applications" />
     <ProductPreviewBuyingGuide v-if="buyingGuides?.length" :guides="buyingGuides" />
     <ProductPreviewSpecs :specifications="product.specifications" />
-    <ProductPreviewDocuments :documents="documents" />
-
-    <template v-if="extras">
-      <ProductSupportExtras :extras="extras" />
-    </template>
+    <ProductSupportExtras :extras="extras" :documents="documents" />
 
     <section v-if="content.faqs.length" id="cau-hoi-thuong-gap" class="scroll-mt-24 border-t border-gray-200 py-10" aria-labelledby="product-faq-title">
       <h2 id="product-faq-title" class="mb-5 text-[clamp(24px,3vw,34px)] font-black text-navy-800">Câu hỏi thường gặp</h2>

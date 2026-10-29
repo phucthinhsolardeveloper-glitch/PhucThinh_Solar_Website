@@ -5,9 +5,11 @@ const props = withDefaults(defineProps<{
   modelValue: number
   label?: string
   disabled?: boolean
+  inlineLabel?: boolean
 }>(), {
   label: 'Số lượng',
   disabled: false,
+  inlineLabel: false,
 })
 
 const emit = defineEmits<{
@@ -32,8 +34,10 @@ function onChange(event: Event) {
 </script>
 
 <template>
-  <div class="grid gap-1.5">
-    <span class="text-sm font-bold text-navy-800">{{ label }}</span>
+  <div :class="inlineLabel ? 'flex items-center gap-3' : 'grid gap-1.5'">
+    <span v-if="label" :class="inlineLabel ? 'text-xs font-bold uppercase tracking-wide text-slate-500' : 'text-sm font-bold text-navy-800'">
+      {{ inlineLabel ? `${label}:` : label }}
+    </span>
     <div role="group" :aria-label="label" class="inline-flex w-fit items-stretch overflow-hidden rounded-chip border border-gray-300">
       <button
         type="button"

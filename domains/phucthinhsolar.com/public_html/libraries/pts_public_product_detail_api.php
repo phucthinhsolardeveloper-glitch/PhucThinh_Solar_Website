@@ -74,20 +74,88 @@ function ptsPdpPricingDto(array $row, $pricesVisible)
 
 function ptsPdpSpecDto(array $row)
 {
-    if(!function_exists('productStructuredSpecs')) return array();
+    if(!function_exists('productStructuredSpecs') || !function_exists('productPdpSpecValue')) return array();
     $profile = function_exists('productPdpResolveProfile') ? productPdpResolveProfile($row, array('pdp_profile' => isset($row['list_pdp_profile']) ? $row['list_pdp_profile'] : '', 'slugvi' => isset($row['list_slugvi']) ? $row['list_slugvi'] : '')) : 'general';
     $result = productStructuredSpecs($row, 'vi', $profile);
+    $structuredSpecs = isset($result['specs']) && is_array($result['specs']) ? $result['specs'] : array();
+    $lookup = function($needles) use ($structuredSpecs) {
+        foreach((array)$needles as $needle) {
+            $needle = mb_strtolower(trim((string)$needle), 'UTF-8');
+            foreach($structuredSpecs as $spec) {
+                $label = mb_strtolower(trim(isset($spec['label']) ? (string)$spec['label'] : ''), 'UTF-8');
+                if($needle !== '' && ($label === $needle || mb_strpos($label, $needle) !== false))
+                    return trim(htmlspecialchars_decode(isset($spec['value']) ? (string)$spec['value'] : '', ENT_QUOTES));
+            }
+        }
+        return '';
+    };
+
     $specs = array();
-    // Phase A: expose only profile-declared public fields. Free-form additional_specs
-    // can contain editorial/private keys; those require a separate moderation gate.
     $profileFields = function_exists('productPdpProfile') ? productPdpProfile($profile) : array();
-    $allowedSpecKeys = array_keys(isset($profileFields['fields']) && is_array($profileFields['fields']) ? $profileFields['fields'] : array());
-    foreach((array)$result['specs'] as $spec) {
-        $key = isset($spec['key']) && preg_match('/^[a-z0-9_]+$/', (string)$spec['key']) ? (string)$spec['key'] : '';
-        if($key === '' || !in_array($key, $allowedSpecKeys, true)) continue;
-        $label = ptsPdpText(isset($spec['label']) ? $spec['label'] : '');
-        $value = ptsPdpText(isset($spec['value']) ? $spec['value'] : '');
-        if($label !== '' && $value !== '') $specs[] = array('key' => $key, 'label' => $label, 'value' => $value);
+    $fields = isset($profileFields['fields']) && is_array($profileFields['fields']) ? $profileFields['fields'] : array();
+    if($profile === 'lighting') {
+        $lightingDimensions = trim(productPdpSpecValue($row, 'lamp_dimensions').(productPdpSpecValue($row, 'waterproof_rating') !== '' ? ' - '.productPdpSpecValue($row, 'waterproof_rating') : ''), ' -');
+        $rows = array(
+            array('cong_suat', 'Công suất LED thực', productPdpSpecValue($row, 'cong_suat')),
+            array('quang_thong', 'Quang thông', $lookup(array('quang thông', 'lumen'))),
+            array('battery_capacity', 'Dung lượng pin lưu trữ', productPdpSpecValue($row, 'battery_capacity')),
+            array('panel_power', 'Công suất tấm pin', productPdpSpecValue($row, 'panel_power')),
+            array('light_color', 'Màu ánh sáng', productPdpSpecValue($row, 'light_color')),
+            array('housing_color', 'Màu sắc thân đèn', $lookup('màu sắc')),
+            array('operating_mode', 'Chế độ hoạt động', $lookup('chế độ')),
+            array('lamp_dimensions', 'Kích thước & cấp bảo vệ', $lightingDimensions),
+            array('installation_height', 'Chiều cao lắp đặt', productPdpSpecValue($row, 'installation_height')),
+            array('impact_rating', 'Chuẩn chống va đập', $lookup('chống va đập')),
+            array('installation_spacing', 'Khoảng cách lắp đặt khuyến nghị', $lookup('khoảng cách lắp đặt')),
+            array('lighting_time', 'Thời gian chiếu sáng', productPdpSpecValue($row, 'lighting_time')),
+            array('charging_time', 'Thời gian sạc', productPdpSpecValue($row, 'charging_time')),
+            array('lighting_area', 'Diện tích chiếu sáng', productPdpSpecValue($row, 'lighting_area')),
+            array('warranty', 'Thời hạn bảo hành', productPdpSpecValue($row, 'warranty'))
+        );
+    } else {
+        $rows = array();
+        foreach($fields as $key => $label) $rows[] = array($key, $label, productPdpSpecValue($row, $key));
+    }
+
+    $optionalMissingFields = array('light_color', 'lighting_area', 'housing_color', 'operating_mode', 'impact_rating', 'installation_spacing', 'package_contents');
+    $usedLabels = array();
+    foreach($rows as $spec) {
+        $key = preg_match('/^[a-z0-9_]+$/', (string)$spec[0]) ? (string)$spec[0] : 'spec_'.count($specs);
+        $label = ptsPdpText($spec[1]);
+        $value = ptsPdpText($spec[2]);
+        $usedLabels[] = mb_strtolower(trim($label), 'UTF-8');
+        if($label !== '' && ($value !== '' || !in_array($key, $optionalMissingFields, true)))
+            $specs[] = array('key' => $key, 'label' => $label, 'value' => $value);
+    }
+
+    // Match the PHP PDP's public additional rows while filtering editorial and
+    // investigation notes that are stored beside customer-facing specifications.
+    $denylist = array('model', 'ghi chú', 'thông tin', 'mã/model nguồn', 'model nguồn', 'tên/phiên bản bảng giá', 'chứng nhận', 'kiểm nghiệm', 'tiêu chuẩn', 'hiệu suất châu âu', 'hiệu suất theo datasheet');
+    $internalPatterns = array(
+        '/\\bghi chú\\b/u', '/\\bsuy luận\\b/u', '/\\bxác minh\\b/u', '/\\bđối chiếu\\b/u',
+        '/\\brevision\\b/u', '/\\bbatch\\d*/u', '/\\bfamily\\b/u', '/\\bcatalog(?:ue)?\\b/u',
+        '/\\btrích nguồn\\b/u', '/\\bnguồn tham khảo\\b/u', '/\\bnguồn exact\\b/u', '/\\btham khảo\\b/u', '/\\bcăn cứ\\b/u',
+        '/\\bnguồn (?:đúng|xác nhận|hiện tại|phổ biến|độc lập|hãng)\\b/u',
+        '/\\btrạng thái nguồn\\b/u', '/\\bmức xác minh\\b/u', '/\\bkhuyến nghị\\b/u', '/\\bgiữ cấu hình\\b/u',
+        '/\\blưu ý\\b/u', '/\\btrạng thái\\b/u', '/\\bxử lý\\b/u', '/\\bphân loại\\b/u'
+    );
+    if($profile === 'lighting') { $usedLabels[] = 'lumen'; $usedLabels[] = 'độ cao lắp đặt'; }
+    if(function_exists('productPdpAdditionalSpecs')) foreach(productPdpAdditionalSpecs($row) as $extra) {
+        $label = ptsPdpText(isset($extra['label']) ? $extra['label'] : '');
+        $value = ptsPdpText(isset($extra['value']) ? $extra['value'] : '');
+        $lower = mb_strtolower($label, 'UTF-8');
+        if($label === '' || $value === '' || in_array($lower, $denylist, true)) continue;
+        $internal = false;
+        foreach($internalPatterns as $pattern) if(preg_match($pattern, $lower)) { $internal = true; break; }
+        if($lower !== 'nguồn sáng' && preg_match('/\\b(?:nguồn|source)\\b/u', $lower)) $internal = true;
+        if(preg_match('/https?:\\/\\//i', $value) || preg_match('/\\b(?:không công bố|chưa xác minh|chưa tìm được|không tự suy|chưa có nguồn|theo nguồn|theo revision|theo family|catalog(?:ue)?)\\b/iu', $value)) $internal = true;
+        if($internal) continue;
+        $duplicate = false;
+        foreach($usedLabels as $used) if($used === $lower || mb_strpos($used, $lower) !== false || mb_strpos($lower, $used) !== false) { $duplicate = true; break; }
+        if($duplicate) continue;
+        $key = isset($extra['key']) && preg_match('/^[a-z0-9_]+$/', (string)$extra['key']) ? (string)$extra['key'] : 'extra_'.count($specs);
+        $specs[] = array('key' => $key, 'label' => $label, 'value' => $value);
+        $usedLabels[] = $lower;
     }
     return $specs;
 }
@@ -264,6 +332,18 @@ function ptsPdpContentImageUrl($value, $root = '')
     return '/upload/product/'.$match[1];
 }
 
+function ptsPdpApplicationImageUrl($value, $root = '')
+{
+    if(!is_scalar($value)) return '';
+    $value = ltrim(trim((string)$value), '/');
+    if(preg_match('#^assets/images/site-visuals/pdp-usecase-v2/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|webp)$#i', $value))
+    {
+        if($root !== '' && !is_file(rtrim($root, '/\\').DIRECTORY_SEPARATOR.str_replace('/', DIRECTORY_SEPARATOR, $value))) return '';
+        return '/'.$value;
+    }
+    return ptsPdpContentImageUrl($value, $root);
+}
+
 function ptsPdpDocumentUrl($value, $root = '')
 {
     if(!is_scalar($value)) return '';
@@ -322,13 +402,11 @@ function ptsPdpApplicationTitle(array $row, array $list = array())
     return ptsPdpText(isset($profile['application_title']) ? $profile['application_title'] : '');
 }
 
-/**
- * Extract application cards and images only when the CMS content block carries
- * them. Do not substitute profile-level stock defaults: public UI guidance
- * requires application imagery to be managed for the specific product.
- */
+/** Extract application cards and the same allow-listed image fallbacks as PHP PDP. */
 function ptsPdpApplicationsDto(array $sections, array $row, array $list = array(), $root = '')
 {
+    $profileKey = function_exists('productPdpResolveProfile') ? productPdpResolveProfile($row, $list) : 'general';
+    $variant = function_exists('productPdpUseCaseVariant') ? productPdpUseCaseVariant($row, $list, $profileKey) : '';
     $sourceBlocks = isset($sections['blocks']) && is_array($sections['blocks']) ? $sections['blocks'] : array();
     $collect = false;
     $items = array();
@@ -347,7 +425,7 @@ function ptsPdpApplicationsDto(array $sections, array $row, array $list = array(
 
         if($type === 'media')
         {
-            $image = ptsPdpContentImageUrl(isset($block['photo']) ? $block['photo'] : '', $root);
+            $image = ptsPdpApplicationImageUrl(isset($block['photo']) ? $block['photo'] : '', $root);
             $title = ptsPdpText(isset($block['title']) ? strip_tags((string)$block['title']) : '');
             $text = ptsPdpText(isset($block['text']) ? strip_tags((string)$block['text']) : '');
             if($image !== '' || $title !== '' || $text !== '')
@@ -371,7 +449,44 @@ function ptsPdpApplicationsDto(array $sections, array $row, array $list = array(
         if(count($items) >= 3) break;
     }
 
+    if(!$items && $profileKey !== 'general' && function_exists('productPdpUseCaseDefaults'))
+        $items = productPdpUseCaseDefaults($profileKey, $variant);
     if(!$items) return null;
+
+    $defaults = function_exists('productPdpUseCaseDefaults') ? productPdpUseCaseDefaults($profileKey, $variant) : array();
+    $seenImages = array();
+    foreach($items as $index => &$item)
+    {
+        $title = isset($item['title']) ? (string)$item['title'] : '';
+        $image = isset($item['image']) ? (string)$item['image'] : '';
+        if($image === '' && $profileKey !== 'general' && function_exists('productPdpUseCasePhoto'))
+            $image = productPdpUseCasePhoto($profileKey, $title, $index, $variant);
+
+        $imageKey = strtolower(trim($image));
+        if($profileKey !== 'general' && $imageKey !== '' && isset($seenImages[$imageKey]) && function_exists('productPdpUseCasePhoto'))
+        {
+            $candidates = array(productPdpUseCasePhoto($profileKey, $title, $index, $variant));
+            if($defaults)
+            {
+                $candidates[] = $defaults[$index % count($defaults)]['photo'];
+                $candidates[] = $defaults[($index + 1) % count($defaults)]['photo'];
+            }
+            foreach($candidates as $candidate)
+            {
+                $candidateKey = strtolower(trim((string)$candidate));
+                if($candidateKey !== '' && !isset($seenImages[$candidateKey]))
+                {
+                    $image = $candidate;
+                    $imageKey = $candidateKey;
+                    break;
+                }
+            }
+        }
+        $item['image'] = ptsPdpApplicationImageUrl($image, $root);
+        if($imageKey !== '' && $item['image'] !== '') $seenImages[$imageKey] = true;
+    }
+    unset($item);
+
     return array('title' => ptsPdpApplicationTitle($row, $list), 'items' => array_slice($items, 0, 3));
 }
 
@@ -492,6 +607,7 @@ function ptsPdpPayload(array $row, array $media, array $specs, $canonical, array
             'url' => ptsPdpCanonicalUrl($slug),
             'code' => ptsPdpText(isset($row['code']) ? $row['code'] : ''),
             'summary' => ptsPdpText(isset($row['descvi']) ? $row['descvi'] : ''),
+            'brand' => ptsPdpText(isset($row['brand_name']) ? $row['brand_name'] : ''),
             'profile' => ptsPdpProfileKey(isset($row['resolved_profile']) ? $row['resolved_profile'] : ''),
             'media' => array_values(array_unique(array_filter($media))),
             'specifications' => array_values($specs),

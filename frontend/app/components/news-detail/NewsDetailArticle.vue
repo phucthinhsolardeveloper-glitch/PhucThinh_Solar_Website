@@ -27,7 +27,6 @@ function formatDate(value: string): string {
     <h1 class="mb-4 text-[clamp(28px,3.6vw,42px)] font-black leading-tight text-navy-800">{{ article.title }}</h1>
     <p class="mb-4 text-slate-500"><time v-if="article.date" :datetime="article.date">{{ formatDate(article.date) }}</time><span v-if="article.date" aria-hidden="true"> · </span>{{ article.author.name }}</p>
     <img v-if="article.cover && article.showCover" :src="article.cover" :alt="article.title" class="my-6 block aspect-video w-full rounded-chip object-cover">
-    <p v-if="article.description" class="mb-4 text-lg leading-relaxed text-navy-800">{{ article.description }}</p>
 
     <nav v-if="article.content.html && editorial.toc.length" class="mb-6 rounded-btn border border-slate-200/90 border-l-4 border-l-gold-500 bg-slate-50/70 p-5 shadow-xs" aria-label="Mục lục bài viết">
       <h2 class="mb-3 flex items-center gap-2 text-sm font-extrabold uppercase tracking-wider text-navy-950">

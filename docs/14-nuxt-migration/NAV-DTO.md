@@ -11,7 +11,7 @@ Ví dụ schema tối giản (giá trị chỉ minh họa kiểu dữ liệu, kh
   "schemaVersion": 1,
   "navigationSchemaVersion": 1,
   "locale": "vi",
-  "brand": {"name": "string", "hotline": "string", "logo": "/upload/photo/logo.webp", "logoFooter": "/upload/photo/logo-footer.webp"},
+  "brand": {"name": "string", "hotline": "string", "logo": "/upload/photo/logo.webp", "logoFooter": "/upload/photo/logo-footer.webp", "zaloHref": "https://zalo.me/0912345678"},
   "navigation": [{"label": "string", "href": "/path/", "children": [{"label": "string", "href": "/path/"}]}],
   "catalog": {"lighting": {"label": "string", "href": "/danh-muc-san-pham/.../", "items": []}, "solar": {"label": "string", "href": "/danh-muc-san-pham/.../", "items": []}, "devices": {"label": "string", "href": "/danh-muc-san-pham/.../", "items": []}},
   "productCategories": [{"id": 1, "name": "string", "slug": "string", "url": "/danh-muc-san-pham/.../"}],
@@ -25,7 +25,9 @@ Ví dụ schema tối giản (giá trị chỉ minh họa kiểu dữ liệu, kh
 Logo chỉ được trả khi filename hợp lệ và file thực tế tồn tại trong thư mục
 `UPLOAD_PHOTO_L`. URL ngoài chỉ nhận `http(s)`, còn nội dung footer được chuyển
 thành text an toàn; policy, bản đồ và social chỉ xuất hiện khi source public có
-giá trị tương ứng.
+giá trị tương ứng. `brand.zaloHref` là trường tùy chọn, chỉ được dựng từ các chữ
+số trong cấu hình Zalo công khai và chỉ trả về khi số có 8–15 chữ số; raw options
+không được đưa vào DTO.
 
 ## Canonical product category paths
 

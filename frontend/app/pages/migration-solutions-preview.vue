@@ -34,7 +34,7 @@ const { data, error } = await useAsyncData<PublicSolutionsPayload>('migration-so
       </div>
     </div>
 
-    <main class="pts-container py-7 nav:py-11">
+    <main class="pts-container pt-[10px] pb-6 min-[801px]:pt-4 max-[800px]:pb-4 min-[561px]:px-5 min-[821px]:px-6 min-[1321px]:px-[34px]">
       <div v-if="error || !data" class="min-h-[45vh] py-12">
         <h1 class="mb-4 text-[clamp(28px,4vw,42px)] font-black tracking-tight">Giải pháp — internal preview</h1>
         <p class="max-w-[62ch] leading-relaxed text-slate-500">Không thể tải dữ liệu PHP DTO trong môi trường hiện tại. Preview không hiển thị sản phẩm hoặc nội dung giả.</p>
@@ -42,7 +42,7 @@ const { data, error } = await useAsyncData<PublicSolutionsPayload>('migration-so
 
       <template v-else>
         <SolutionsIntro v-if="data.intro" :intro="data.intro" />
-        <h1 v-else class="min-h-[45vh] py-12 text-[clamp(28px,4vw,42px)] font-black tracking-tight">{{ data.title }}</h1>
+        <h1 v-else class="sr-only">{{ data.title }}</h1>
 
         <SolutionCards :cards="data.cards" :choices-label="data.labels.choices" :empty-label="data.labels.empty" :consult-label="data.labels.consult" />
 
@@ -65,7 +65,7 @@ const { data, error } = await useAsyncData<PublicSolutionsPayload>('migration-so
                 </li>
               </ul>
             </nav>
-            <EditorialRichText :content="data.editorial.content" />
+            <EditorialRichText :content="data.editorial.content" variant="solution" />
           </div>
         </section>
 
