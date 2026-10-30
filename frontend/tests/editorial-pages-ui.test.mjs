@@ -21,6 +21,7 @@ test('project detail gallery uses an accessible in-page media dialog', () => {
   assert.match(gallery, /trapFocus\(event, lightboxPanel\.value\)/)
   assert.match(gallery, /:src="selectedEmbedUrl"/)
   assert.match(gallery, /@click="open\(item,/)
+  assert.match(gallery, /Không tìm thấy kết quả/)
 })
 
 test('news detail follows PHP article and content reading widths without a side column', () => {
@@ -192,4 +193,16 @@ test('project detail preserves PHP section order, project media ratio, and missi
   assert.match(projectDetail, /item\.image \|\| '\/assets\/images\/noimage\.png'/)
   assert.match(projectDetail, /aspect-\[4\/3\]/)
   assert.ok(placeholder.length > 0)
+})
+
+test('project detail CTA keeps its CMS image visible behind readable foreground content', () => {
+  const projectDetail = read('../app/components/project-detail/ProjectDetailPage.vue')
+  assert.match(projectDetail, /project\.cta\.image[\s\S]*class="absolute inset-0 z-0 h-full w-full object-cover opacity-50"/)
+  assert.match(projectDetail, /class="relative z-10(?: max-w-\[590px\])?"/)
+  assert.match(projectDetail, /class="relative z-10 flex w-full max-w-\[330px\] flex-col items-stretch gap-\[10px\] nav:w-auto nav:min-w-\[270px\] nav:justify-self-end"/)
+  assert.match(projectDetail, /Liên hệ ngay/)
+  assert.match(projectDetail, /bg-hdr-gold px-\[22px\] py-3 text-sm font-extrabold text-navy-950/)
+  assert.match(projectDetail, /relative isolate mt-16 grid[^"]*bg-gradient-to-r from-navy-950 via-navy-900 to-navy-800/)
+  assert.doesNotMatch(projectDetail, /project-detail-cta-overlay/)
+  assert.doesNotMatch(projectDetail, /project-detail-cta relative[^"]*\bborder\b|project-detail-cta relative[^"]*\bshadow-/)
 })
