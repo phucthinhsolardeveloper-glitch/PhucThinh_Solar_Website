@@ -61,6 +61,14 @@ function quickSpecText(product: PublicCatalogProduct): string {
 function productHref(product: PublicCatalogProduct) {
   return links.product(product.slug)
 }
+
+function discountPercent(product: PublicCatalogProduct): number | null {
+  const pricing = product.pricing
+  if (pricing?.mode === 'price' && pricing.regularPrice && pricing.salePrice && pricing.salePrice < pricing.regularPrice) {
+    return Math.round(((pricing.regularPrice - pricing.salePrice) / pricing.regularPrice) * 100)
+  }
+  return null
+}
 </script>
 
 <template>
@@ -90,6 +98,12 @@ function productHref(product: PublicCatalogProduct) {
         :to="productHref(product)"
         class="relative grid aspect-square place-items-center overflow-hidden rounded-chip bg-slate-50/80 no-underline"
       >
+        <span
+          v-if="discountPercent(product)"
+          class="absolute top-2.5 left-2.5 z-10 rounded-chip bg-red-600 px-2 py-0.5 text-xs font-black tracking-tight text-white shadow-xs"
+        >
+          -{{ discountPercent(product) }}%
+        </span>
         <img
           v-if="product.media[0] && !failedImages.has(product.id)"
           :src="product.media[0]"
