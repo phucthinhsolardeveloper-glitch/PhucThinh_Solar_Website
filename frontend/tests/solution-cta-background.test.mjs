@@ -53,7 +53,7 @@ test('solution CTA copy and hotline follow PHP desktop/mobile typography and pla
 
   assert.match(component, /max-w-\[630px\]/)
   assert.match(component, /text-\[24px\] font-extrabold leading-\[1\.3\][\s\S]*max-\[520px\]:text-\[23px\]/)
-  assert.match(component, /text-base leading-\[1\.65\]/)
+  assert.match(component, /text-base leading-\[1\.65\] text-blue-100\/95 max-\[520px\]:tracking-\[-0\.01em\]/)
   assert.match(component, /<a\s+v-if="cta\.hotline"[\s\S]*text-center[\s\S]*min-\[901px\]:text-left/)
   assert.match(component, /<small class="mb-\[5px\] block text-xs text-blue-100">/)
   assert.match(component, /<strong class="text-xl font-extrabold text-white">/)

@@ -24,7 +24,7 @@ const backgroundImage = computed(() => {
     <img v-if="backgroundImage" class="absolute inset-0 -z-10 h-full w-full object-cover opacity-50" :src="backgroundImage" alt="" width="1600" height="500" sizes="100vw" loading="lazy" decoding="async">
     <div class="max-w-[630px]">
       <h2 id="solutions-contact-title" class="m-0 mb-[9px] text-[24px] font-extrabold leading-[1.3] tracking-tight text-white max-[520px]:text-[23px]">{{ cta.title }}</h2>
-      <p class="m-0 text-base leading-[1.65] text-blue-100/95">{{ cta.description }}</p>
+      <p class="m-0 text-base leading-[1.65] text-blue-100/95 max-[520px]:tracking-[-0.01em]">{{ cta.description }}</p>
     </div>
     <div class="flex w-full shrink-0 flex-col items-stretch gap-[18px] min-[901px]:w-auto min-[901px]:flex-row min-[901px]:items-center min-[901px]:gap-6">
       <UButton
