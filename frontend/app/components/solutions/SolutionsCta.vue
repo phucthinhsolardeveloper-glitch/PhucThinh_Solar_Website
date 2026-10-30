@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import type { PublicSolutionsCta } from '../../../shared/contracts/public-solutions'
+import { useStorefrontModal } from '~/composables/useStorefrontModal'
 
 defineProps<{ cta: PublicSolutionsCta }>()
 const links = useMigrationLinks()
+const { openConsultation } = useStorefrontModal()
 </script>
 
 <template>
@@ -19,7 +21,11 @@ const links = useMigrationLinks()
       <p class="m-0 text-[15px] leading-relaxed text-blue-100/95 tb:text-base">{{ cta.description }}</p>
     </div>
     <div class="flex flex-none flex-col items-stretch gap-4 ph:flex-row ph:items-center ph:gap-6">
-      <a class="inline-flex min-h-12 items-center justify-center gap-3.5 rounded-btn bg-hdr-gold px-6 text-sm font-extrabold tracking-wide text-navy-950 no-underline shadow-sm transition-colors hover:bg-hdr-gold-hover" :href="links.generic(cta.links.consult.href === '#ptsContactModal' ? '/lien-he/#yeu-cau-tu-van' : cta.links.consult.href)">
+      <a
+        class="inline-flex min-h-12 items-center justify-center gap-3.5 rounded-btn bg-hdr-gold px-6 text-sm font-extrabold tracking-wide text-navy-950 no-underline shadow-sm transition-colors hover:bg-hdr-gold-hover cursor-pointer"
+        :href="links.generic(cta.links.consult.href === '#ptsContactModal' ? '/lien-he/#yeu-cau-tu-van' : cta.links.consult.href)"
+        @click.prevent="openConsultation()"
+      >
         <span>{{ cta.buttonLabel }}</span>
         <span aria-hidden="true">→</span>
       </a>

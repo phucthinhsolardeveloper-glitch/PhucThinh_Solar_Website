@@ -9,6 +9,11 @@ export default defineNuxtConfig({
   // @tailwindcss/vite — làm vậy sẽ chạy hai pipeline CSS cạnh tranh nhau.
   modules: ['@nuxt/ui'],
 
+  colorMode: {
+    preference: 'light',
+    fallback: 'light',
+  },
+
   /*
    * main.css nạp Tailwind v4, theme và style CMS. tokens.css nạp sau để reset
    * global nhỏ, không nằm trong layer, áp dụng sau Preflight của Tailwind.

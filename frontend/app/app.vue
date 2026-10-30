@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import StorefrontConsultationModal from '~/components/modal/StorefrontConsultationModal.vue'
+import StorefrontDealerModal from '~/components/modal/StorefrontDealerModal.vue'
+
 useHead({
   script: [
     {
@@ -36,5 +39,7 @@ useHead({
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
+    <StorefrontConsultationModal />
+    <StorefrontDealerModal />
   </UApp>
 </template>

@@ -18,6 +18,7 @@ const props = defineProps<{
 const route = useRoute()
 const { active: isMigrationPreview, generic: shellHref, external: isExternalLink } = useMigrationLinks()
 const { cart: migrationCart, refresh: refreshMigrationCart } = useMigrationCart()
+const { openConsultation } = useStorefrontModal()
 const config = useRuntimeConfig()
 const siteStructuredData = computed(() => publicSiteStructuredData(config.public.canonicalSiteOrigin, route.path, props.site))
 useHead({
@@ -346,11 +347,10 @@ onBeforeUnmount(() => {
     >
       <div
         class="mx-auto flex min-h-16 w-full max-w-[1680px] items-center justify-between gap-3 px-4 py-2 max-[359px]:px-3
-               min-[561px]:min-h-[94px] min-[821px]:min-h-[102px] min-[1321px]:min-h-[132px]
-               min-[1501px]:min-h-[clamp(148px,8vw,164px)] min-[1501px]:py-2 min-[2300px]:min-h-[174px]
+               min-[821px]:min-h-[68px] min-[1321px]:min-h-[72px] min-[1501px]:min-h-[76px]
                max-ph:gap-2 max-ph:py-1.5
                tb:px-6
-               nav:gap-5 nav:px-(--spacing-gutter) nav:py-3"
+               nav:gap-4 nav:px-(--spacing-gutter) nav:py-2.5 wd:gap-5"
       >
         <!-- Hamburger: dưới mốc nav (1321px), vùng chạm >= 44x44px -->
         <button
@@ -376,14 +376,14 @@ onBeforeUnmount(() => {
             :alt="brandName"
             width="520"
             height="73"
-            class="block h-auto w-auto object-contain max-w-[min(198px,100%)] max-h-[55px]
-                   min-[561px]:max-w-[min(228px,100%)] min-[561px]:max-h-[63px]
-                   min-[821px]:max-w-[min(248px,100%)] min-[821px]:max-h-[68px]
-                   min-[1321px]:max-w-[min(270px,100%)] min-[1321px]:max-h-[72px]
-                   min-[1501px]:max-w-[min(clamp(360px,22vw,460px),100%)] min-[1501px]:max-h-[108px]
-                   min-[2300px]:max-w-[460px] min-[2300px]:max-h-[130px]
-                   max-[380px]:max-w-[min(180px,100%)] max-[380px]:max-h-[50px]
-                   max-[340px]:max-w-[min(110px,100%)] max-[340px]:max-h-[36px]"
+            class="block h-auto w-auto object-contain max-w-[min(198px,100%)] max-h-[46px]
+                   min-[561px]:max-w-[min(228px,100%)] min-[561px]:max-h-[48px]
+                   min-[821px]:max-w-[min(248px,100%)] min-[821px]:max-h-[50px]
+                   min-[1321px]:max-w-[min(270px,100%)] min-[1321px]:max-h-[52px]
+                   min-[1501px]:max-w-[min(clamp(320px,20vw,380px),100%)] min-[1501px]:max-h-[54px]
+                   min-[2300px]:max-w-[400px] min-[2300px]:max-h-[56px]
+                   max-[380px]:max-w-[min(180px,100%)] max-[380px]:max-h-[42px]
+                   max-[340px]:max-w-[min(110px,100%)] max-[340px]:max-h-[34px]"
           >
           <span v-else class="truncate text-xl font-black tracking-tight text-hdr-ink">{{ brandName }}</span>
         </a>
@@ -471,7 +471,7 @@ onBeforeUnmount(() => {
 
           <a
             v-if="hotline"
-            class="hidden min-h-11 items-center justify-center gap-2 rounded-chip px-1 text-hdr-ink no-underline transition-colors hover:bg-hdr-surface hover:text-hdr-gold-deep min-[821px]:inline-flex"
+            class="hidden min-h-11 items-center justify-center gap-2 rounded-chip px-2 text-hdr-ink no-underline transition-colors hover:bg-hdr-surface hover:text-hdr-gold-deep min-[821px]:inline-flex"
             :href="telHrefFor(hotline)"
             :aria-label="`Gọi tư vấn: ${hotline}`"
             :title="hotline"
@@ -479,9 +479,9 @@ onBeforeUnmount(() => {
             <span class="grid h-9 w-9 flex-none place-items-center rounded-full bg-hdr-surface text-hdr-gold-deep" aria-hidden="true">
               <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.79 19.79 0 0 1 11.19 18a19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.09 3.18 2 2 0 0 1 4.08 1h3a2 2 0 0 1 2 1.72c.12.96.36 1.9.7 2.8a2 2 0 0 1-.45 2.11L8.06 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.84.58 2.8.7A2 2 0 0 1 22 16.92Z" /></svg>
             </span>
-            <span class="hidden min-[2300px]:flex min-[2300px]:flex-col min-[2300px]:gap-0.5 min-[2300px]:whitespace-nowrap">
+            <span class="hidden min-[821px]:flex min-[821px]:flex-col min-[821px]:gap-0.5 min-[821px]:whitespace-nowrap text-left">
               <small class="text-[11px] leading-none text-hdr-muted">Tư vấn</small>
-              <b class="text-sm leading-tight">{{ hotline }}</b>
+              <b class="text-sm leading-tight text-hdr-ink">{{ hotline }}</b>
             </span>
           </a>
 
@@ -500,15 +500,15 @@ onBeforeUnmount(() => {
             <svg class="h-[22px] w-[22px]" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 4h2l1 12h11l1.6-8H7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" /><circle cx="9" cy="20" r="1.5" fill="currentColor" /><circle cx="16" cy="20" r="1.5" fill="currentColor" /></svg>
           </NuxtLink>
 
-          <NuxtLink
-            :external="isExternalLink(shellHref('/lien-he/#yeu-cau-tu-van'))"
+          <button
+            type="button"
             class="ml-1 inline-flex min-h-11 items-center justify-center whitespace-nowrap rounded-btn border
                    border-hdr-gold bg-hdr-gold px-4 text-[13.5px] font-bold text-hdr-ink no-underline transition-colors
-                   hover:border-hdr-gold-deep hover:bg-hdr-gold-deep hover:text-white max-ph:hidden"
-            :to="shellHref('/lien-he/#yeu-cau-tu-van')"
+                   hover:border-hdr-gold-deep hover:bg-hdr-gold-deep hover:text-white max-ph:hidden cursor-pointer"
+            @click="openConsultation()"
           >
             Nhận tư vấn
-          </NuxtLink>
+          </button>
         </div>
       </div>
 
@@ -712,20 +712,19 @@ onBeforeUnmount(() => {
                   </ul>
                 </li>
               </ul>
-              <NuxtLink
+              <button
                 v-if="group.id === 'devices'"
-                :external="isExternalLink(shellHref('/lien-he/#yeu-cau-tu-van'))"
-                class="mt-6 flex min-h-[96px] items-center gap-4 rounded-btn border border-gold-300/60 bg-gold-50 px-[18px] py-4
-                       text-[#392a12] no-underline transition-colors hover:bg-[#ffecc5] hover:text-navy-800"
-                :to="shellHref('/lien-he/#yeu-cau-tu-van')"
-                @click="closeCatalog(false)"
+                type="button"
+                class="mt-6 flex min-h-[96px] w-full items-center gap-4 rounded-btn border border-gold-300/60 bg-gold-50 px-[18px] py-4 text-left
+                       text-[#392a12] no-underline transition-colors hover:bg-[#ffecc5] hover:text-navy-800 cursor-pointer"
+                @click="openConsultation('Thiết bị (inverter, tấm pin, pin lưu trữ...)'); closeCatalog(false)"
               >
                 <CatalogMenuIcon class="h-10 w-10 flex-none text-gold-700" name="headset" />
                 <span>
                   <strong class="block text-[16px] font-bold">Cần hỗ trợ lựa chọn?</strong>
                   <small class="mt-1 block text-[14px] font-semibold text-gold-800">Nhận tư vấn →</small>
                 </span>
-              </NuxtLink>
+              </button>
             </section>
           </div>
           <p v-else-if="hasCategories" class="m-0 py-4 text-[15px] text-slate-500">Không tìm thấy danh mục phù hợp.</p>
@@ -895,16 +894,15 @@ onBeforeUnmount(() => {
           </div>
         </nav>
 
-        <NuxtLink
-          :external="isExternalLink(shellHref('/lien-he/#yeu-cau-tu-van'))"
+        <button
+          type="button"
           class="mt-6 flex min-h-[50px] w-full items-center justify-center rounded-btn border border-hdr-gold
                  bg-hdr-gold px-[21px] text-sm font-bold text-hdr-ink no-underline transition-colors
-                 hover:border-hdr-gold-deep hover:bg-hdr-gold-deep hover:text-white"
-          :to="shellHref('/lien-he/#yeu-cau-tu-van')"
-          @click="closeMobileMenu(false)"
+                 hover:border-hdr-gold-deep hover:bg-hdr-gold-deep hover:text-white cursor-pointer"
+          @click="openConsultation(); closeMobileMenu(false)"
         >
           Nhận tư vấn
-        </NuxtLink>
+        </button>
       </aside>
     </div>
   </div>

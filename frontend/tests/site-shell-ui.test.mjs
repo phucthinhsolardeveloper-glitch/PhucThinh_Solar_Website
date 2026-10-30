@@ -39,7 +39,7 @@ test('shared header keeps PHP production single-row composition without a duplic
   assert.match(header, /Nhận tư vấn/)
   assert.match(phpHeader, /class="hdr-call"/)
   assert.match(header, /v-if="hotline"[\s\S]*telHrefFor\(hotline\)/)
-  assert.match(header, /min-\[2300px\]:flex min-\[2300px\]:flex-col/)
+  assert.match(header, /min-\[821px\]:flex min-\[821px\]:flex-col/)
   assert.match(header, /shellHref\('\/gio-hang\/'\)/)
   assert.match(header, /class="gtranslate_wrapper[^\"]*min-\[1321px\]:flex"/)
   assert.match(header, /<nav class="hidden min-w-0 nav:flex-1 nav:block"/)

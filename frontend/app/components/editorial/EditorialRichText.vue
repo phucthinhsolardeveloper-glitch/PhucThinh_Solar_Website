@@ -47,6 +47,7 @@ defineProps<{
   line-height: 1.28;
   text-transform: none;
   text-wrap: balance;
+  scroll-margin-top: 100px;
 }
 
 .cms-content--editorial-solution > h2:first-child { margin-top: 0; }
@@ -60,6 +61,7 @@ defineProps<{
   font-weight: 800;
   line-height: 1.4;
   text-transform: none;
+  scroll-margin-top: 100px;
 }
 
 .cms-content--editorial-solution p { margin: 0 0 18px; }

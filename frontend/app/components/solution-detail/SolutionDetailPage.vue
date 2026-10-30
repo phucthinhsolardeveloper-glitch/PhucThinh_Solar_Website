@@ -33,6 +33,14 @@ const quickHotlineTel = computed(() => {
   return digits
 })
 const quickHotlineText = computed(() => props.data.campaignCta?.hotline?.text || (props.hotline ?? '').trim())
+
+const tocContainerRef = ref<HTMLElement | null>(null)
+const { activeHeadingId, scrollToHeading } = useTocScrollspy({
+  contentSelector: '#solution-content',
+  headingSelector: 'h2[id], h3[id]',
+  tocContainerRef,
+  headerOffset: 100,
+})
 </script>
 
 <template>
@@ -93,6 +101,7 @@ const quickHotlineText = computed(() => props.data.campaignCta?.hotline?.text ||
       <div id="noi-dung-giai-phap" class="pts-container grid grid-cols-1 gap-8 py-8 min-[901px]:grid-cols-[minmax(250px,300px)_minmax(0,1fr)] min-[901px]:gap-[clamp(32px,3.6vw,64px)] nav:py-11">
         <aside
           v-if="tocItems.length"
+          ref="tocContainerRef"
           class="self-start rounded-btn border border-navy-700/70 bg-gradient-to-b from-navy-800 to-navy-950 p-5 shadow-sm min-[901px]:sticky min-[901px]:top-24 min-[901px]:max-h-[calc(100vh-116px)] min-[901px]:overflow-y-auto"
           aria-label="Mục lục nội dung"
         >
@@ -105,9 +114,17 @@ const quickHotlineText = computed(() => props.data.campaignCta?.hotline?.text ||
           <ol class="m-0 max-h-[220px] list-none space-y-1 overflow-y-auto p-0 overscroll-contain min-[901px]:max-h-none min-[901px]:overflow-visible">
             <li v-for="item in tocItems" :key="item.id" :class="item.level === 3 ? 'ml-3.5' : ''">
               <a
-                class="flex min-h-11 items-center border-l-2 border-transparent py-1.5 pl-3 pr-2 text-[13px] leading-[1.45] text-[#c9d5e6] no-underline transition-colors hover:border-gold-400 hover:text-white"
-                :class="item.level === 2 ? 'font-bold' : 'font-medium'"
+                :data-toc-id="item.id"
+                class="flex min-h-11 items-center border-l-2 py-1.5 pl-3 pr-2 text-[13px] leading-[1.45] no-underline transition-all duration-200"
+                :class="[
+                  item.level === 2 ? 'font-bold' : 'font-medium',
+                  activeHeadingId === item.id
+                    ? 'border-[#e4a849] bg-white/10 text-white font-extrabold rounded-r'
+                    : 'border-transparent text-[#c9d5e6] hover:border-gold-400 hover:text-white hover:bg-white/5',
+                ]"
                 :href="`#${item.id}`"
+                :aria-current="activeHeadingId === item.id ? 'true' : undefined"
+                @click.prevent="scrollToHeading(item.id)"
               >
                 <span v-if="item.order" class="mr-2 flex-none text-xs font-extrabold text-gold-400">{{ item.order }}.</span>
                 <span v-else class="mr-2 flex-none text-gold-400" aria-hidden="true">•</span>
