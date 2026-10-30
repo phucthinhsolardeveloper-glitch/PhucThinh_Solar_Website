@@ -43,8 +43,8 @@ test('shared header keeps PHP production single-row composition without a duplic
   assert.match(header, /v-if="hotline"[\s\S]*telHrefFor\(hotline\)/)
   assert.match(header, /min-\[821px\]:flex min-\[821px\]:flex-col/)
   assert.match(header, /shellHref\('\/gio-hang\/'\)/)
-  assert.match(header, /class="gtranslate_wrapper[^\"]*min-\[1321px\]:flex"/)
-  assert.match(header, /<nav class="hidden min-w-0 nav:flex-1 nav:block"/)
+  assert.match(header, /class="gtranslate_wrapper[^\"]*min-\[1501px\]:flex"/)
+  assert.match(header, /<nav class="hidden min-w-0 min-\[1501px\]:flex-1 min-\[1501px\]:block"/)
   assert.match(header, /nav:w-\[270px\][\s\S]*min-\[1501px\]:w-\[clamp\(360px,22vw,460px\)\]/)
   assert.match(header, /min-\[1321px\]:max-\[1346px\]:w-\[244px\]/)
   assert.match(header, /<ul class="flex items-center justify-center gap-1 nav:gap-0"/)
@@ -77,6 +77,47 @@ test('header overlays expose keyboard state, focus trap and scroll restoration h
   ]) assert.match(header, pattern)
   assert.match(header, /searchOpen\.value\) closeSearch\(\)/)
   assert.match(header, /navDropdownOpen\.value\) closeNavDropdown\(true\)/)
+})
+
+test('header dialogs isolate the page background and restore prior inert states on close', () => {
+  assert.match(header, /const inertBeforeModal = new Map<HTMLElement, boolean>\(\)/)
+  assert.match(header, /function syncModalBackground\(\)[\s\S]*document\.body\.contains\(overlay\)[\s\S]*sibling\.inert = true/)
+  assert.match(header, /function restoreModalBackground\(\)[\s\S]*element\.inert = wasInert[\s\S]*inertBeforeModal\.clear\(\)/)
+  assert.match(header, /ref="searchOverlay"/)
+  assert.match(header, /ref="catalogOverlay"/)
+  assert.match(header, /ref="mobileOverlay"/)
+  assert.doesNotMatch(header, /:inert="mobileOpen/)
+})
+
+test('desktop nav parent links stay navigable and submenu disclosure is an independent touch target', () => {
+  assert.match(header, /<NuxtLink[\s\S]*:to="shellHref\(item\.href\)"[\s\S]*\{\{ item\.label \}\}[\s\S]*<\/NuxtLink>\s*<button[\s\S]*v-if="item\.children\?\.length"/)
+  assert.match(header, /:aria-expanded="navDropdownOpen === item\.href"/)
+  assert.match(header, /:aria-controls="navDropdownOpen === item\.href \? `ptsNavMenu-\$\{index\}` : undefined"/)
+  assert.match(header, /:aria-label="`\$\{navDropdownOpen === item\.href \? 'Đóng' : 'Mở'\} menu con \$\{item\.label\}`"/)
+  assert.match(header, /@click="toggleNavDropdown\(item, \$event\)"/)
+  assert.match(header, /function handleNavMouseleave\(\)[\s\S]*navDropdownMode\.value === 'hover'/)
+  assert.match(header, /function toggleNavDropdown\(item: PublicSiteLink, event: MouseEvent\)[\s\S]*navDropdownMode\.value === 'hover' \|\| navDropdownTrigger\.value !== trigger/)
+  assert.match(header, /function openNavDropdown\(item: PublicSiteLink, event: Event\)[\s\S]*navDropdownOpen\.value === item\.href && navDropdownTrigger\.value[\s\S]*event\.type === 'focusin'\) navDropdownMode\.value = 'intent'[\s\S]*return[\s\S]*navDropdownTrigger\.value = currentTarget/)
+  assert.match(header, /function closeNavDropdown\(restoreFocus = false\)[\s\S]*const trigger = navDropdownTrigger\.value[\s\S]*if \(shouldRestore\) nextTick\(\(\) => trigger\?\.focus\(\)\)/)
+})
+
+test('header drawer and desktop nav are mutually exclusive from 1321px through 1500px', () => {
+  const hamburgerClass = header.match(/ref="mobileTrigger"\s+class="([^"]+)"/)?.[1] || ''
+  const desktopNavClass = header.match(/<nav class="([^"]+)" aria-label="Điều hướng chính"/)?.[1] || ''
+  assert.match(hamburgerClass, /min-\[1501px\]:hidden/)
+  assert.doesNotMatch(hamburgerClass, /\bnav:hidden\b/)
+  assert.match(desktopNavClass, /hidden/)
+  assert.match(desktopNavClass, /min-\[1501px\]:block/)
+  assert.doesNotMatch(desktopNavClass, /nav:block/)
+  assert.match(header, /<!-- Drawer điều hướng mobile\/tablet, used through 1500px -->/)
+})
+
+test('desktop submenu disclosure controls keep 44px hit targets when desktop nav is visible', () => {
+  const disclosureClass = header.match(/v-if="item\.children\?\.length"\s+class="([^"]+)"/)?.[1] || ''
+  assert.match(disclosureClass, /min-w-11/)
+  assert.match(disclosureClass, /flex-none/)
+  assert.match(header, /<nav class="hidden min-w-0 min-\[1501px\]:flex-1 min-\[1501px\]:block"/)
+  assert.match(header, /<ul class="flex items-center justify-center gap-1 nav:gap-0"/)
 })
 
 test('desktop catalog mega-menu mirrors PHP production structure', () => {

@@ -231,6 +231,9 @@ responsive ổn chỉ từ laptop 1366px.
   mobile. Tìm kiếm dùng route tìm sản phẩm hiện có; chân panel có lối tư vấn,
   không lặp bộ chọn ngôn ngữ của header.
 - Mobile menu có nút đóng/mở dễ hiểu, focus được và không che logo.
+- Ở dải 1321–1500px, tiếp tục dùng nút hamburger và drawer để dành đủ chiều
+  rộng cho logo cùng nhóm thao tác; chỉ bật điều hướng ngang năm nhóm từ 1501px.
+  Hai chế độ phải loại trừ lẫn nhau tại breakpoint.
 - Mobile drawer có ô tìm sản phẩm gửi tới cùng chức năng tìm kiếm hiện có;
   nhóm danh mục sản phẩm mở inline dạng accordion khi người dùng bấm, không tự
   bung nhóm con khi vào menu. Danh mục nhiều cấp dùng URL và dữ liệu Admin hiện hữu; không ẩn nhóm
