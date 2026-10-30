@@ -61,6 +61,18 @@ test('related-news rail keeps the PHP author query, four-card desktop page, and 
   assert.match(related, /year: 'numeric'/)
 })
 
+test('related-news cards use the approved flat article surface and readable copy sizes', () => {
+  const related = readFileSync(new URL('../app/components/news-detail/NewsDetailRelated.vue', import.meta.url), 'utf8')
+  const cardLink = related.match(/<a\s+class="([^"]+)"\s+:href="links\.news\(item\.slug\)"/)
+  assert.ok(cardLink, 'related article remains a linked card')
+  assert.doesNotMatch(cardLink[1], /rounded-xl|border|bg-white|shadow|hover:-translate/)
+  assert.doesNotMatch(related, /Khám phá thêm|group-hover:scale-105/)
+  assert.match(related, /<h3 class="[^\"]*text-base/)
+  assert.match(related, /item\.description" class="[^\"]*text-base/)
+  assert.match(related, /focus-visible:outline-2[\s\S]*:href="links\.news\(item\.slug\)"/)
+  assert.match(related, /size-11[\s\S]*aria-label="Tin trước"[\s\S]*size-11[\s\S]*aria-label="Tin tiếp theo"/)
+})
+
 test('related news renders the same image, date, author, title, and description fields as PHP', async () => {
   const { readFileSync } = await import('node:fs')
   const phpTemplate = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/templates/news/news_detail_tpl.php', import.meta.url), 'utf8')
