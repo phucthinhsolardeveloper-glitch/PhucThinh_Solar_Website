@@ -51,6 +51,15 @@ test('homepage hero safely uses positional fallback when a slide name is absent'
     ['street-light', '/upload/photo/hero.jpg'],
   ])
 })
+test('homepage carousel keeps timed motion out of keyboard, pointer, touch, and reduced-motion interactions', () => {
+  assert.match(homeHero, /window\.matchMedia\('\(prefers-reduced-motion: reduce\)'\)/)
+  assert.match(homeHero, /!reducedMotion\.value && !pointerInside && !focusInside && touchStartX === null/)
+  assert.match(homeHero, /motion-reduce:transition-none/)
+  assert.match(homeHero, /@focusin="onFocusIn"/)
+  assert.match(homeHero, /@focusout="onFocusOut"/)
+  assert.match(homeHero, /:inert="index !== active"/)
+  assert.match(homeHero, /:tabindex="index === active \? 0 : -1"/)
+})
 test('accepts CMS-backed homepage about points while preserving compatibility with older DTOs', () => {
   const withPoints = { ...good, about: { ...good.about, points: [{ label: 'Sản phẩm chính hãng', description: 'Thông tin rõ ràng.', image: '/upload/news/home-point.webp' }] } }
   assert.equal(isPublicHomePayload(withPoints), true)
