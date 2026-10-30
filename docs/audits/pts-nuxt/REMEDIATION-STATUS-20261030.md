@@ -4,8 +4,8 @@
 
 - Repository/worktree: `/home/admin01/src/Web_PTS_PHP`
 - Branch: `master`
-- Checkpoint HEAD after final integration: `8c7d013a5deb1b1ddf11c67b9cd23fcea7e392f3`
-- Local branch: 42 commits ahead of `origin/master`; nothing pushed or deployed.
+- Tested code HEAD after final integration: `8c7d013a5deb1b1ddf11c67b9cd23fcea7e392f3`
+- At that tested point, local `master` was 42 commits ahead of `origin/master`; the report-only commit followed. Nothing was pushed or deployed.
 - Pre-integration local HEAD: `010c6a1cc4d4fc879b2127181a8b833daa9ccaf0`.
 - Production PHP, database, DNS, and containers were not changed.
 
