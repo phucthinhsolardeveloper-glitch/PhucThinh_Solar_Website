@@ -1,4 +1,5 @@
 import { isPublicHomePayload } from '../../../shared/contracts/public-home'
+import { normalizePublicHomeHero } from '../../../shared/contracts/home-hero'
 import { fetchMigrationPayload, requireMigrationGet } from '../../utils/migration-api'
 
 export default defineEventHandler(async (event) => {
@@ -10,5 +11,6 @@ export default defineEventHandler(async (event) => {
     unavailableMessage: 'PHP home data source unavailable',
   })
   setHeader(event, 'Cache-Control', 'private, no-store')
-  return payload
+  const hero = normalizePublicHomeHero(payload.hero)
+  return { ...payload, hero, summary: { ...payload.summary, hero: hero.length } }
 })
