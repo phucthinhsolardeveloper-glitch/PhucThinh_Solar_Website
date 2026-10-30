@@ -11,7 +11,7 @@ const slug = computed(() => typeof route.params.slug === 'string' ? route.params
 const { data, error, pending } = await useFetch<unknown>('/_migration/gallery-detail', { query: computed(() => ({ slug: slug.value })) })
 const gallery = computed<PublicGalleryDetailPayload | null>(() => isPublicGalleryDetailPayload(data.value) ? data.value : null)
 const errorStatus = (error.value as { statusCode?: unknown } | null)?.statusCode
-const responseStatus = editorialPublicResponseStatus(isBarePublicRoute.value && config.public.galleryDetailPublicRouteEnabled, errorStatus, !gallery.value)
+const responseStatus = editorialPublicResponseStatus(isBarePublicRoute.value, errorStatus, !gallery.value)
 if (import.meta.server && responseStatus) setResponseStatus(responseStatus, responseStatus === 404 ? 'Not Found' : 'Bad Gateway')
 const selectedIndex = ref<number | null>(null)
 const lightbox = computed(() => {
@@ -82,10 +82,10 @@ onBeforeUnmount(() => {
 useSeoMeta({
   title: computed(() => gallery.value?.seo.title || (isBarePublicRoute.value ? 'Thư viện ảnh' : 'Album ảnh — Nuxt preview')),
   description: computed(() => gallery.value?.seo.description || ''),
-  robots: computed(() => editorialPublicRouteRobots(isBarePublicRoute.value && config.public.galleryDetailPublicRouteEnabled, config.public.galleryDetailPublicRouteIndexable, !!gallery.value && !error.value)),
+  robots: computed(() => editorialPublicRouteRobots(isBarePublicRoute.value, config.public.galleryDetailPublicRouteIndexable, !!gallery.value && !error.value)),
 })
 usePublicSocialMeta({
-  enabled: computed(() => isBarePublicRoute.value && config.public.galleryDetailPublicRouteEnabled && !!gallery.value && !error.value),
+  enabled: computed(() => isBarePublicRoute.value && !!gallery.value && !error.value),
   title: computed(() => gallery.value?.seo.title || 'Thư viện ảnh'),
   description: computed(() => gallery.value?.seo.description || ''),
   canonicalPath: computed(() => route.path),

@@ -15,7 +15,7 @@ const selected = ref<PublicVideoItem | null>(null)
 const totalPages = computed(() => payload.value ? Math.max(1, Math.ceil(payload.value.pagination.total / payload.value.pagination.perPage)) : 1)
 const errorStatus = (error.value as { statusCode?: unknown } | null)?.statusCode
 const responseStatus = editorialPublicHubResponseStatus(
-  isPublicRoute.value && config.public.videoPublicRouteEnabled,
+  isPublicRoute.value,
   errorStatus,
   payload.value === null,
 )
@@ -73,10 +73,10 @@ onBeforeUnmount(() => {
 useSeoMeta({
   title: computed(() => payload.value?.seo.title || (isPublicRoute.value ? 'Video' : 'Video — Nuxt preview')),
   description: computed(() => payload.value?.seo.description || ''),
-  robots: computed(() => editorialPublicRouteRobots(isPublicRoute.value && config.public.videoPublicRouteEnabled, config.public.videoPublicRouteIndexable, !!payload.value && !error.value, 'p' in route.query)),
+  robots: computed(() => editorialPublicRouteRobots(isPublicRoute.value, config.public.videoPublicRouteIndexable, !!payload.value && !error.value, 'p' in route.query)),
 })
 usePublicSocialMeta({
-  enabled: computed(() => isPublicRoute.value && config.public.videoPublicRouteEnabled && !!payload.value && !error.value),
+  enabled: computed(() => isPublicRoute.value && !!payload.value && !error.value),
   title: computed(() => payload.value?.seo.title || 'Video'),
   description: computed(() => payload.value?.seo.description || ''),
   canonicalPath: VIDEO_PUBLIC_PATH,

@@ -27,28 +27,24 @@ test('public resolver dispositions preserve legacy-only fallback and canonical r
   })
 })
 
-test('news, project, and gallery render only when their detail flags are enabled', () => {
-  for (const [kind, flag] of [['news', 'newsDetailPublicRouteEnabled'], ['project', 'projectDetailPublicRouteEnabled'], ['gallery', 'galleryDetailPublicRouteEnabled']]) {
+test('news, project, and gallery resolver results always render through Nuxt', () => {
+  for (const kind of ['news', 'project', 'gallery']) {
     const slug = `${kind}-item`
     const result = { schemaVersion: 1, slug, kind, canonicalPath: `/${slug}/` }
-    assert.deepEqual(publicBareSlugDisposition(result, { [flag]: false }), { mode: 'legacy', path: `/${slug}/` })
-    assert.deepEqual(publicBareSlugDisposition(result, { [flag]: true }), { mode: 'render', kind })
+    assert.deepEqual(publicBareSlugDisposition(result), { mode: 'render', kind })
   }
 })
 
-test('project-list categories render only when the projects public flag is enabled', () => {
+test('project-list categories always render through Nuxt', () => {
   const result = { schemaVersion: 1, slug: 'du-an-ca-nhan', kind: 'project-category', canonicalPath: '/du-an-ca-nhan' }
-  assert.deepEqual(publicBareSlugDisposition(result, { projectsPublicRouteEnabled: false }), { mode: 'legacy', path: '/du-an-ca-nhan/' })
-  assert.deepEqual(publicBareSlugDisposition(result, { projectsPublicRouteEnabled: true }), { mode: 'render', kind: 'project-category' })
+  assert.deepEqual(publicBareSlugDisposition(result), { mode: 'render', kind: 'project-category' })
 })
 
-test('editorial categories render only behind their existing public hub flags', () => {
+test('editorial categories always render through Nuxt', () => {
   const news = { schemaVersion: 1, slug: 'tin-moi-nhat', kind: 'news-category', canonicalPath: '/tin-moi-nhat' }
   const solution = { schemaVersion: 1, slug: 'ho-gia-dinh', kind: 'solution-category', canonicalPath: '/ho-gia-dinh' }
-  assert.deepEqual(publicBareSlugDisposition(news, { newsPublicRouteEnabled: false }), { mode: 'legacy', path: '/tin-moi-nhat/' })
-  assert.deepEqual(publicBareSlugDisposition(news, { newsPublicRouteEnabled: true }), { mode: 'render', kind: 'news-category' })
-  assert.deepEqual(publicBareSlugDisposition(solution, { solutionsPublicRouteEnabled: false }), { mode: 'legacy', path: '/ho-gia-dinh/' })
-  assert.deepEqual(publicBareSlugDisposition(solution, { solutionsPublicRouteEnabled: true }), { mode: 'render', kind: 'solution-category' })
+  assert.deepEqual(publicBareSlugDisposition(news), { mode: 'render', kind: 'news-category' })
+  assert.deepEqual(publicBareSlugDisposition(solution), { mode: 'render', kind: 'solution-category' })
 })
 
 test('bare route validates path before resolving and maps confirmed legacy aliases first', () => {
@@ -57,15 +53,11 @@ test('bare route validates path before resolving and maps confirmed legacy alias
   assert.match(page, /'he-thong-dai-ly': '\/lien-he\/'/)
   assert.match(page, /product: '\/san-pham\/'/)
   assert.ok(page.indexOf('const aliasTarget') < page.indexOf('useAsyncData'))
-  assert.match(page, /const detailRoutesEnabled = isRuntimeFlagEnabled\(config\.public\.newsDetailPublicRouteEnabled\)/)
-  assert.match(page, /isRuntimeFlagEnabled\(config\.public\.projectsPublicRouteEnabled\)/)
-  assert.match(page, /isRuntimeFlagEnabled\(config\.public\.newsPublicRouteEnabled\)/)
-  assert.match(page, /isRuntimeFlagEnabled\(config\.public\.solutionsPublicRouteEnabled\)/)
-  assert.match(page, /\(\) => aliasTarget \|\| !pathIsSafe \|\| !pathCanResolve \|\| !detailRoutesEnabled/)
+  assert.doesNotMatch(page, /PublicRouteEnabled|detailRoutesEnabled/)
+  assert.match(page, /\(\) => aliasTarget \|\| !pathIsSafe \|\| !pathCanResolve/)
   assert.match(page, /const pathIsCanonical = pathIsSafe && route\.path === canonicalBarePath/)
   assert.match(page, /navigateTo\(canonicalBarePath, \{ redirectCode: 301 \}\)/)
-  assert.match(page, /else if \(!detailRoutesEnabled && typeof canonicalBarePath === 'string'\)/)
-  assert.match(page, /phpPublicRouteUrl\(config\.public\.phpPublicOrigin, canonicalBarePath\)/)
+  assert.doesNotMatch(page, /canonicalBarePath\), \{ external: true/)
   assert.match(page, /editorialPublicResponseStatus\(true, resolutionStatus, true\)/)
   assert.match(page, /if \(!activeDetail\.value\) useSeoMeta\(\{ robots: 'noindex, nofollow, noarchive' \}\)/)
   assert.match(page, /bareSlugPublicPath\(slug\)/)
@@ -87,16 +79,16 @@ test('public gallery links use bare canonical slugs while preview keeps its edit
   assert.match(links, /: '\/' \+ slug \+ '\/'/)
 })
 
-test('detail views consume a bare route slug and expose public indexability flags', () => {
+test('detail views consume a bare route slug and use separate SEO indexability settings', () => {
   const pages = [
-    ['../app/pages/migration-news-detail-preview.vue', 'newsDetailPublicRouteEnabled', 'newsDetailPublicRouteIndexable'],
-    ['../app/pages/migration-project-detail-preview.vue', 'projectDetailPublicRouteEnabled', 'projectDetailPublicRouteIndexable'],
-    ['../app/pages/migration-gallery-detail-preview.vue', 'galleryDetailPublicRouteEnabled', 'galleryDetailPublicRouteIndexable'],
+    ['../app/pages/migration-news-detail-preview.vue', 'newsDetailPublicRouteIndexable'],
+    ['../app/pages/migration-project-detail-preview.vue', 'projectDetailPublicRouteIndexable'],
+    ['../app/pages/migration-gallery-detail-preview.vue', 'galleryDetailPublicRouteIndexable'],
   ]
-  for (const [path, enabled, indexable] of pages) {
+  for (const [path, indexable] of pages) {
     const page = read(path)
     assert.match(page, /route\.params\.slug/)
-    assert.match(page, new RegExp(`config\\.public\\.${enabled}`))
+    assert.doesNotMatch(page, /PublicRouteEnabled/)
     assert.match(page, new RegExp(`config\\.public\\.${indexable}`))
     assert.match(page, /setResponseStatus\(responseStatus/)
   }

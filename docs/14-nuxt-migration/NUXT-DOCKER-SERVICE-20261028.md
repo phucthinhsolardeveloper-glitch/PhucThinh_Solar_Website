@@ -6,6 +6,21 @@ thể, network riêng, và cấu hình PHP upstream qua allowlist thay vì hardc
 Đây chỉ là bản rehearsal cho staging/local — KHÔNG đổi Caddy/DNS/production,
 KHÔNG bật route public thật cho người dùng ngoài.
 
+## Current checkpoint — 2026-10-30
+
+- Các cờ sở hữu route Nuxt `*PublicRouteEnabled` đã được gỡ khỏi Nuxt config,
+  Compose, middleware và wrapper. Mọi route đã có template Nuxt chạy trực tiếp;
+  SEO indexability và công tắc hiển thị section trong CMS vẫn độc lập.
+- Local rehearsal được build lại từ working tree hiện tại và healthy ở
+  `127.0.0.1:3101`. GET smoke manifest: 33/33 entry không lỗi (29 HTTP 200 và
+  4 alias HTTP 301 tới canonical Nuxt path). Frontend test 396/396, typecheck
+  và build PASS.
+- Working tree còn WIP chưa commit. Image trước rebuild được giữ ở tag
+  `web_pts_php-nuxt-service:rollback-before-icon-interaction-audit-20261030`.
+  Không đổi Caddy, DNS, production, DB/volume hoặc gửi request mutation.
+- Các lệnh, flag defaults và route results ở những checkpoint dưới đây là lịch
+  sử lịch sử; dùng checkpoint này làm trạng thái hiện tại.
+
 ## File
 
 - `frontend/Dockerfile` — multi-stage: `node:24.20.0-alpine` (pin đúng

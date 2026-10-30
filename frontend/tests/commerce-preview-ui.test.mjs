@@ -186,6 +186,15 @@ test('PDP gallery uses the PHP white image surface and purchase actions preserve
   assert.ok(source.indexOf('title="Mua ngay"') < source.indexOf('title="Thêm vào giỏ hàng"'))
 })
 
+test('PDP image lightbox traps keyboard focus and restores it to its trigger', () => {
+  const gallery = read('components/product-preview/ProductPreviewGallery.vue')
+  assert.match(gallery, /const lightboxPanel = ref/)
+  assert.match(gallery, /lastTrigger\.value = event\.currentTarget/)
+  assert.match(gallery, /else if \(event\.key === 'Tab'\) trapFocus\(event\)/)
+  assert.match(gallery, /lastTrigger\.value\?\.focus\(\)/)
+  assert.match(gallery, /bodyOverflowBeforeLock/)
+})
+
 test('catalog pagination stays bounded for large CMS result sets', () => {
   const catalog = read('components/catalog/CatalogPage.vue')
   assert.match(catalog, /const paginationItems = computed/)

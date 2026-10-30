@@ -146,29 +146,9 @@ html.dark .cms-content:not(.cms-content-on-dark) a {
   scrollbar-color: rgba(148, 163, 184, 0.4) transparent;
 }
 
-/* Keep page and anchor motion smooth while respecting reduced-motion preferences. */
+/* Keep anchor motion smooth while respecting reduced-motion preferences. */
 html {
   scroll-behavior: smooth;
-}
-
-.page-enter-active,
-.page-leave-active,
-.layout-enter-active,
-.layout-leave-active {
-  transition: opacity 0.18s cubic-bezier(0.16, 1, 0.3, 1), transform 0.18s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: opacity, transform;
-}
-
-.page-enter-from,
-.layout-enter-from {
-  opacity: 0;
-  transform: translateY(5px);
-}
-
-.page-leave-to,
-.layout-leave-to {
-  opacity: 0;
-  transform: translateY(-3px);
 }
 
 [id] {
@@ -180,11 +160,77 @@ html {
     scroll-behavior: auto;
   }
 
-  .page-enter-active,
-  .page-leave-active,
-  .layout-enter-active,
-  .layout-leave-active {
-    transition: none !important;
-    will-change: auto;
-  }
+}
+
+/*
+ * Dark mode changes the neutral section surfaces together with their ink.
+ * Scope this to main so the intentionally light PHP-matched header remains
+ * white; white controls and image mats also stay white for legibility.
+ */
+html.dark main .bg-hdr-surface,
+html.dark main .bg-slate-50,
+html.dark main .bg-slate-50\/80,
+html.dark main .bg-slate-100 {
+  background-color: #081a3f !important;
+}
+
+/* The legacy overrides above preserve dark ink on light neutral surfaces.
+   In main those same surfaces are now dark, so restore readable light ink. */
+html.dark main :is(.bg-hdr-surface, .bg-slate-50, .bg-slate-50\/80, .bg-slate-100)
+  :is(.text-navy-950, .text-navy-900, .text-navy-800, .text-navy-700, .text-slate-700, .text-slate-600, .text-slate-500),
+html.dark main :is(.bg-hdr-surface, .bg-slate-50, .bg-slate-50\/80, .bg-slate-100).text-navy-950,
+html.dark main :is(.bg-hdr-surface, .bg-slate-50, .bg-slate-50\/80, .bg-slate-100).text-navy-900,
+html.dark main :is(.bg-hdr-surface, .bg-slate-50, .bg-slate-50\/80, .bg-slate-100).text-navy-800,
+html.dark main :is(.bg-hdr-surface, .bg-slate-50, .bg-slate-50\/80, .bg-slate-100).text-navy-700,
+html.dark main :is(.bg-hdr-surface, .bg-slate-50, .bg-slate-50\/80, .bg-slate-100).text-slate-700,
+html.dark main :is(.bg-hdr-surface, .bg-slate-50, .bg-slate-50\/80, .bg-slate-100).text-slate-600,
+html.dark main :is(.bg-hdr-surface, .bg-slate-50, .bg-slate-50\/80, .bg-slate-100).text-slate-500 {
+  color: #e2e8f0 !important;
+}
+
+html.dark main .bg-white {
+  color: #0a2251;
+}
+
+/* The Home hero keeps a bright photo and white wash in both themes. */
+html.dark main .home-hero-copy--image .text-navy-950 {
+  color: #0a2251 !important;
+}
+
+html.dark main .bg-white .text-gold-800,
+html.dark main .bg-white .text-gold-700,
+html.dark main .bg-white .text-gold-600 {
+  color: #9c7420 !important;
+}
+
+html.dark main .bg-white .text-red-800,
+html.dark main .bg-white .text-red-700,
+html.dark main .bg-white .text-red-600 {
+  color: #b91c1c !important;
+}
+
+/* White-backed forms sit inside dark sections, so keep labels and entered
+   values dark enough to read against their white control surfaces. */
+html.dark main .bg-white form :is(
+  label.text-navy-950,
+  label.text-navy-900,
+  label.text-navy-800,
+  label.text-navy-700,
+  button.text-navy-950,
+  input,
+  select,
+  textarea
+) {
+  color: #0a2251 !important;
+}
+
+html.dark main .bg-white form small.text-slate-500 {
+  color: #52627c !important;
+}
+
+/* PDP specification rows use fixed pale backgrounds; preserve those surfaces
+   and keep their content in dark ink in dark mode. */
+html.dark main table tr[class~="bg-[#edf1f5]"] :is(th, td),
+html.dark main table tr[class~="bg-[#fafbfc]"] :is(th, td) {
+  color: #0a2251 !important;
 }

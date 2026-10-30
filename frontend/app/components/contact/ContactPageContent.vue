@@ -3,12 +3,11 @@ import type { PublicContactPayload } from '#shared/contracts/public-contact'
 import { isPublicContactPayload } from '#shared/contracts/public-contact'
 import type { PublicSitePayload } from '#shared/contracts/public-site'
 import { isPublicSitePayload } from '#shared/contracts/public-site'
-import { isRuntimeFlagEnabled } from '#shared/public-route-gate'
 
 const fallbackSite: PublicSitePayload = { schemaVersion: 1, brand: { name: 'Phúc Thịnh Solar', hotline: '' }, productCategories: [] }
 const props = withDefaults(defineProps<{ preview?: boolean }>(), { preview: false })
 const config = useRuntimeConfig()
-const indexable = computed(() => !props.preview && isRuntimeFlagEnabled(config.public.contactPublicRouteIndexable)
+const indexable = computed(() => !props.preview && config.public.contactPublicRouteIndexable === true
   && !!contact.value && !siteError.value && !error.value)
 const { data: siteData, error: siteError } = await useFetch<unknown>('/_migration/site', { default: () => fallbackSite })
 const { data, error } = await useFetch<unknown>('/_migration/contact')
@@ -28,7 +27,7 @@ useSeoMeta({
 })
 useHead({ meta: computed(() => pageKeywords.value ? [{ name: 'keywords', content: pageKeywords.value }] : []) })
 usePublicSocialMeta({
-  enabled: computed(() => !props.preview && isRuntimeFlagEnabled(config.public.contactPublicRouteEnabled) && !!contact.value && !error.value && !siteError.value),
+  enabled: computed(() => !props.preview && !!contact.value && !error.value && !siteError.value),
   title: pageTitle,
   description: computed(() => contact.value?.seo.description || ''),
   canonicalPath: '/lien-he/',

@@ -46,10 +46,10 @@ function formatDate(value: string): string {
 useSeoMeta({
   title: computed(() => data.value?.seo.title || (isPublicRoute.value ? 'Chính sách hỗ trợ' : 'Chính sách hỗ trợ — Nuxt preview')),
   description: computed(() => data.value?.seo.description || ''),
-  robots: computed(() => editorialPublicRouteRobots(isPublicRoute.value && config.public.policyDetailPublicRouteEnabled, config.public.policyDetailPublicRouteIndexable, !!data.value && !error.value)),
+  robots: computed(() => editorialPublicRouteRobots(isPublicRoute.value, config.public.policyDetailPublicRouteIndexable, !!data.value && !error.value)),
 })
 usePublicSocialMeta({
-  enabled: computed(() => isPublicRoute.value && config.public.policyDetailPublicRouteEnabled && !!data.value && !error.value),
+  enabled: computed(() => isPublicRoute.value && !!data.value && !error.value),
   title: computed(() => data.value?.seo.title || 'Chính sách hỗ trợ'),
   description: computed(() => data.value?.seo.description || ''),
   canonicalPath: computed(() => route.path),

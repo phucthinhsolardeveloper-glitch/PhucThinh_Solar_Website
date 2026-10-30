@@ -5,6 +5,9 @@ const failedMedia = ref<Set<string>>(new Set())
 const lightboxOpen = ref(false)
 const isZoomed = ref(false)
 const zoomOrigin = ref('50% 50%')
+const lightboxPanel = ref<HTMLElement | null>(null)
+const lastTrigger = ref<HTMLElement | null>(null)
+let bodyOverflowBeforeLock: string | null = null
 
 watch(() => props.media, () => {
   selectedIndex.value = 0
@@ -27,8 +30,30 @@ function markMediaFailed(image: string) {
   if (nextIndex >= 0) selectedIndex.value = nextIndex
   else lightboxOpen.value = false
 }
-function openLightbox() {
-  if (selectedMediaAvailable.value) lightboxOpen.value = true
+function focusFirst(container: HTMLElement | null) {
+  container?.querySelector<HTMLElement>('button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])')?.focus()
+}
+
+function trapFocus(event: KeyboardEvent) {
+  const container = lightboxPanel.value
+  if (!container) return
+  const focusable = [...container.querySelectorAll<HTMLElement>('button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])')]
+  if (!focusable.length) return
+  const first = focusable[0]!
+  const last = focusable[focusable.length - 1]!
+  if (event.shiftKey && document.activeElement === first) {
+    event.preventDefault()
+    last.focus()
+  } else if (!event.shiftKey && document.activeElement === last) {
+    event.preventDefault()
+    first.focus()
+  }
+}
+
+function openLightbox(event: MouseEvent) {
+  if (!selectedMediaAvailable.value) return
+  lastTrigger.value = event.currentTarget instanceof HTMLElement ? event.currentTarget : null
+  lightboxOpen.value = true
 }
 function closeLightbox() {
   lightboxOpen.value = false
@@ -42,9 +67,12 @@ function moveLightbox(direction: -1 | 1) {
 }
 function handleKey(event: KeyboardEvent) {
   if (!lightboxOpen.value) return
-  if (event.key === 'Escape') closeLightbox()
-  if (event.key === 'ArrowLeft') moveLightbox(-1)
-  if (event.key === 'ArrowRight') moveLightbox(1)
+  if (event.key === 'Escape') {
+    event.preventDefault()
+    closeLightbox()
+  } else if (event.key === 'ArrowLeft') moveLightbox(-1)
+  else if (event.key === 'ArrowRight') moveLightbox(1)
+  else if (event.key === 'Tab') trapFocus(event)
 }
 
 function handleMouseMove(event: MouseEvent) {
@@ -71,14 +99,22 @@ function nextImage(event?: Event) {
   moveLightbox(1)
 }
 
-watch(lightboxOpen, (open) => {
+watch(lightboxOpen, (open, wasOpen) => {
   if (!import.meta.client) return
-  document.body.style.overflow = open ? 'hidden' : ''
+  if (open) {
+    if (bodyOverflowBeforeLock === null) bodyOverflowBeforeLock = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    nextTick(() => focusFirst(lightboxPanel.value))
+  } else {
+    if (bodyOverflowBeforeLock !== null) document.body.style.overflow = bodyOverflowBeforeLock
+    bodyOverflowBeforeLock = null
+    if (wasOpen) nextTick(() => lastTrigger.value?.focus())
+  }
 })
 onMounted(() => document.addEventListener('keydown', handleKey))
 onBeforeUnmount(() => {
   document.removeEventListener('keydown', handleKey)
-  document.body.style.overflow = ''
+  if (import.meta.client && bodyOverflowBeforeLock !== null) document.body.style.overflow = bodyOverflowBeforeLock
 })
 </script>
 
@@ -95,7 +131,7 @@ onBeforeUnmount(() => {
         type="button"
         class="flex h-full w-full cursor-zoom-in items-center justify-center overflow-hidden bg-white p-4"
         :aria-label="'Phóng to ảnh ' + name"
-        @click="openLightbox"
+        @click="openLightbox($event)"
       >
         <img
           :key="selectedMedia"
@@ -174,6 +210,7 @@ onBeforeUnmount(() => {
     <Teleport to="body">
       <div
         v-if="lightboxOpen && selectedMediaAvailable"
+        ref="lightboxPanel"
         class="fixed inset-0 z-[200] flex items-center justify-center bg-navy-950/90 backdrop-blur-md p-4 transition-opacity duration-200"
         role="dialog"
         aria-modal="true"

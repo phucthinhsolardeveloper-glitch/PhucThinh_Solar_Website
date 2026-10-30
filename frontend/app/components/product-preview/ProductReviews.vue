@@ -218,7 +218,7 @@ async function sendReview() {
     <div class="grid gap-6 rounded-btn bg-slate-50 p-5 tb:grid-cols-[220px_minmax(0,1fr)]">
       <div class="text-center tb:border-r tb:border-gray-200 tb:pr-6">
         <strong class="block text-4xl">{{ currentReviews.average.toFixed(1) }}/5</strong>
-        <span class="mt-2 block text-xl tracking-[.12em] text-gold-700" :aria-label="currentReviews.average + ' trên 5 sao'">{{ stars(Math.round(currentReviews.average)) }}</span>
+        <span role="img" class="mt-2 block text-xl tracking-[.12em] text-gold-700" :aria-label="currentReviews.average + ' trên 5 sao'"><span aria-hidden="true">{{ stars(Math.round(currentReviews.average)) }}</span></span>
       </div>
       <div class="space-y-2">
         <div v-for="star in [5,4,3,2,1]" :key="star" class="grid grid-cols-[48px_minmax(0,1fr)_48px] items-center gap-3 text-sm">
@@ -238,7 +238,7 @@ async function sendReview() {
           <span v-if="review.verified" class="rounded-full bg-emerald-50 px-2 py-1 text-xs font-bold text-emerald-700">Đã mua hàng</span>
           <time v-if="review.date" class="text-xs text-slate-400">{{ dateText(review.date) }}</time>
         </div>
-        <div class="mt-2 text-gold-700" :aria-label="review.star + ' trên 5 sao'">{{ stars(review.star) }}</div>
+        <div role="img" class="mt-2 text-gold-700" :aria-label="review.star + ' trên 5 sao'"><span aria-hidden="true">{{ stars(review.star) }}</span></div>
         <strong v-if="review.title" class="mt-2 block">{{ review.title }}</strong>
         <p class="mb-0 mt-2 whitespace-pre-line leading-7 text-slate-600">{{ review.content }}</p>
         <div v-if="review.photos.length" class="mt-4 flex flex-wrap gap-2">

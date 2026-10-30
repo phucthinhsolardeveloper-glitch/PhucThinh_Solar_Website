@@ -58,6 +58,7 @@ test('solution detail reads the legacy news SEO key and applies Admin metadata w
 })
 test('solution hub parent renders nested public detail page and scopes hub status and metadata to the hub path', () => {
   assert.match(solutionHubPage, /<NuxtPage v-if="!isHubRoute" \/>/)
-  assert.match(solutionHubPage, /isHubRoute\.value && config\.public\.solutionsPublicRouteEnabled/)
-  assert.match(solutionHubPage, /isHubRoute\.value && isRuntimeFlagEnabled\(config\.public\.solutionsPublicRouteEnabled\)/)
+  assert.match(solutionHubPage, /isHubRoute\.value && config\.public\.solutionsPublicRouteIndexable === true/)
+  assert.match(solutionHubPage, /editorialPublicHubResponseStatus\(\s*isHubRoute\.value/)
+  assert.doesNotMatch(solutionHubPage, /PublicRouteEnabled|isRuntimeFlagEnabled/)
 })

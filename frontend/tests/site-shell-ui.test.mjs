@@ -25,7 +25,8 @@ test('shared shell renders CMS assets and explicit navigation/taxonomy only', ()
   assert.doesNotMatch(header, /groupDefinitions|slug.*(?:lighting|solar|devices)/i)
   assert.match(header, /useMigrationCart\(\)/)
   assert.match(header, /refreshMigrationCart\(\)/)
-  assert.match(header, /cartCountAvailable[\s\S]*config\.public\.homePublicRouteEnabled[\s\S]*config\.public\.catalogPublicRouteEnabled[\s\S]*config\.public\.productDetailPublicRouteEnabled/)
+  assert.match(header, /const cartCountAvailable = computed\(\(\) => true\)/)
+  assert.doesNotMatch(header, /PublicRouteEnabled/)
   assert.match(header, /if \(cartCountAvailable\.value\) void refreshMigrationCart\(\)/)
   assert.match(header, /v-if="cartCountAvailable && migrationCart\?\.count"/)
   assert.doesNotMatch(header, /https?:\/\/[^'"`]+logo/i)
@@ -89,6 +90,10 @@ test('desktop catalog mega-menu mirrors PHP production structure', () => {
   assert.match(header, /catalog-menu-presentation/)
   assert.match(header, /CatalogMenuIcon/)
   assert.doesNotMatch(header, /Dữ liệu danh mục đang được cung cấp từ API public/)
+})
+
+test('clicking a hover-open catalog menu pins it instead of immediately closing it', () => {
+  assert.match(header, /function toggleCatalog\(\)[\s\S]*if \(!catalogOpen\.value\)[\s\S]*openCatalog\('intent'\)[\s\S]*if \(catalogMode\.value === 'hover'\)[\s\S]*catalogMode\.value = 'intent'[\s\S]*catalogSearchInput\.value\?\.focus\(\)/)
 })
 
 test('catalog benefit rail uses consistent stroke icons instead of platform-dependent glyphs', () => {

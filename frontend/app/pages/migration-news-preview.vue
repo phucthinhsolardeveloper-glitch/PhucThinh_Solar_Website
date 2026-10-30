@@ -15,7 +15,7 @@ const config = useRuntimeConfig()
 const isPublicRoute = computed(() => route.path === NEWS_PUBLIC_PATH)
 const publicPath = computed(() => isPublicRoute.value ? NEWS_PUBLIC_PATH : '/migration-news-preview/')
 const robots = computed(() => editorialPublicRouteRobots(
-  isPublicRoute.value && config.public.newsPublicRouteEnabled,
+  isPublicRoute.value,
   config.public.newsPublicRouteIndexable,
   !!news.value && !error.value,
   Object.keys(requestQuery.value).length > 0,
@@ -32,7 +32,7 @@ const site = computed(() => isPublicSitePayload(siteData.value) ? siteData.value
 const news = computed(() => isPublicNewsPayload(data.value) ? data.value : null)
 const errorStatus = (error.value as { statusCode?: unknown } | null)?.statusCode
 const responseStatus = editorialPublicHubResponseStatus(
-  isPublicRoute.value && config.public.newsPublicRouteEnabled,
+  isPublicRoute.value,
   errorStatus,
   news.value === null,
 )
@@ -62,7 +62,7 @@ useSeoMeta({
 })
 useHead({ meta: computed(() => pageKeywords.value ? [{ name: 'keywords', content: pageKeywords.value }] : []) })
 usePublicSocialMeta({
-  enabled: computed(() => isPublicRoute.value && config.public.newsPublicRouteEnabled && !!news.value && !error.value),
+  enabled: computed(() => isPublicRoute.value && !!news.value && !error.value),
   title: pageTitle,
   description: pageDescription,
   canonicalPath: NEWS_PUBLIC_PATH,

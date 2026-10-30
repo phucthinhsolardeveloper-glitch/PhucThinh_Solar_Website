@@ -185,15 +185,15 @@ function selectSolution(value: string | number) {
         </p>
         <ul class="m-0 grid list-none gap-3 p-0">
           <li class="flex items-start gap-[11px] text-[clamp(16px,1vw,18px)] leading-[1.55]">
-            <svg class="mt-[5px] h-[11px] w-[11px] flex-none text-hdr-gold" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m2.5 8.5 3.4 3.4 7.6-7.8" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" /></svg>
+            <svg class="mt-1 h-4 w-4 flex-none text-hdr-gold" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m2.5 8.5 3.4 3.4 7.6-7.8" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" /></svg>
             Danh mục sản phẩm phù hợp nhu cầu thị trường.
           </li>
           <li class="flex items-start gap-[11px] text-[clamp(16px,1vw,18px)] leading-[1.55]">
-            <svg class="mt-[5px] h-[11px] w-[11px] flex-none text-hdr-gold" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m2.5 8.5 3.4 3.4 7.6-7.8" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" /></svg>
+            <svg class="mt-1 h-4 w-4 flex-none text-hdr-gold" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m2.5 8.5 3.4 3.4 7.6-7.8" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" /></svg>
             Hệ thống kho tại TP.HCM, Đà Nẵng và Gia Lai.
           </li>
           <li class="flex items-start gap-[11px] text-[clamp(16px,1vw,18px)] leading-[1.55]">
-            <svg class="mt-[5px] h-[11px] w-[11px] flex-none text-hdr-gold" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m2.5 8.5 3.4 3.4 7.6-7.8" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" /></svg>
+            <svg class="mt-1 h-4 w-4 flex-none text-hdr-gold" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m2.5 8.5 3.4 3.4 7.6-7.8" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" /></svg>
             Hỗ trợ tư vấn sản phẩm, kỹ thuật và bảo hành theo chính sách.
           </li>
         </ul>
@@ -226,10 +226,10 @@ function selectSolution(value: string | number) {
         <li v-for="(point, index) in aboutPoints" :key="point.label" class="relative min-w-0 pl-8 text-navy-950">
           <img v-if="point.image" class="absolute left-0 top-0 h-[22px] w-[22px] rounded-full object-cover" :src="point.image" alt="" width="48" height="48" loading="lazy">
           <span v-else class="absolute left-0 top-0 flex h-[22px] w-[22px] items-center justify-center rounded-full bg-[rgba(198,154,69,.17)] text-[#8a6526]" aria-hidden="true">
-            <svg v-if="index === 0" class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6" /><path d="m8 13-1 9 5-3 5 3-1-9" /><path d="m10 8 1.3 1.3L14 6.5" /></svg>
-            <svg v-else-if="index === 1" class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a5 5 0 0 0-6.4 6.4L3 18l3 3 5.3-5.3a5 5 0 0 0 6.4-6.4L14 13l-3-3z" /><path d="m15 3 6 6" /></svg>
-            <svg v-else-if="index === 2" class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 20 5v6c0 5-3.4 9-8 11-4.6-2-8-6-8-11V5z" /><path d="m8.5 12 2.2 2.2 4.8-5" /></svg>
-            <svg v-else class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10 9-7 9 7" /><path d="M5 9v12h14V9M9 21v-7h6v7M8 11h2m4 0h2" /></svg>
+            <svg v-if="index === 0" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6" /><path d="m8 13-1 9 5-3 5 3-1-9" /><path d="m10 8 1.3 1.3L14 6.5" /></svg>
+            <svg v-else-if="index === 1" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a5 5 0 0 0-6.4 6.4L3 18l3 3 5.3-5.3a5 5 0 0 0 6.4-6.4L14 13l-3-3z" /><path d="m15 3 6 6" /></svg>
+            <svg v-else-if="index === 2" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 20 5v6c0 5-3.4 9-8 11-4.6-2-8-6-8-11V5z" /><path d="m8.5 12 2.2 2.2 4.8-5" /></svg>
+            <svg v-else class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10 9-7 9 7" /><path d="M5 9v12h14V9M9 21v-7h6v7M8 11h2m4 0h2" /></svg>
           </span>
           <strong class="block text-[clamp(15px,1vw,17px)] font-extrabold leading-[1.35]">{{ point.label }}</strong>
           <small v-if="point.description" class="mt-[7px] block text-[clamp(14px,.92vw,16px)] leading-[1.55] text-slate-600">{{ point.description }}</small>

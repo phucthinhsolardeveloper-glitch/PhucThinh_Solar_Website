@@ -95,7 +95,10 @@ const hotlineHref = computed(() => `tel:${props.project.cta?.hotline.replace(/[^
           <ul v-if="project.cta.trust.length" class="mt-5 flex list-none flex-wrap gap-x-5 gap-y-3 p-0 text-sm text-blue-100">
             <li v-for="item in project.cta.trust" :key="item.label" class="flex items-center gap-2">
               <img v-if="item.icon" :src="item.icon" alt="" class="h-[18px] w-[18px] object-contain" loading="lazy">
-              <i v-else class="fas text-gold-400" :class="item.faIcon" aria-hidden="true" />
+              <UIcon v-else-if="item.faIcon === 'fa-check'" name="i-lucide-check" class="h-[18px] w-[18px] flex-none text-gold-400" aria-hidden="true" />
+              <UIcon v-else-if="item.faIcon === 'fa-headset'" name="i-lucide-headset" class="h-[18px] w-[18px] flex-none text-gold-400" aria-hidden="true" />
+              <UIcon v-else-if="item.faIcon === 'fa-cogs'" name="i-lucide-settings" class="h-[18px] w-[18px] flex-none text-gold-400" aria-hidden="true" />
+              <UIcon v-else name="i-lucide-shield-check" class="h-[18px] w-[18px] flex-none text-gold-400" aria-hidden="true" />
               <span>{{ item.label }}</span>
             </li>
           </ul>

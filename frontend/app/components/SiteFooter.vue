@@ -70,7 +70,7 @@ const telHref = computed(() => telHrefFor(hotline.value))
                    transition-colors hover:bg-white/[.09]"
             :href="telHref"
           >
-            <svg class="mt-0.5 h-3.5 w-3.5 flex-none text-gold-400" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.5 3.5 9 3l2 5-2 1.7a14 14 0 0 0 5.3 5.3L16 13l5 2-.5 2.5c-.3 1.5-1.7 2.5-3.2 2.2C10.8 18.5 5.5 13.2 4.3 6.7 4 5.2 5 3.8 6.5 3.5Z" /></svg>
+            <svg class="mt-0.5 h-4 w-4 flex-none text-gold-400" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.5 3.5 9 3l2 5-2 1.7a14 14 0 0 0 5.3 5.3L16 13l5 2-.5 2.5c-.3 1.5-1.7 2.5-3.2 2.2C10.8 18.5 5.5 13.2 4.3 6.7 4 5.2 5 3.8 6.5 3.5Z" /></svg>
             <span class="flex min-w-0 flex-col gap-0.5">
               <small class="text-[11.5px] leading-[1.3] text-ftr-text">Tư vấn bán hàng</small>
               <strong class="whitespace-nowrap text-[15px] font-bold leading-[1.3] text-white">{{ hotline }}</strong>
@@ -83,7 +83,7 @@ const telHref = computed(() => telHrefFor(hotline.value))
                    transition-colors hover:bg-white/[.09]"
             :href="telHrefFor(technicalHotline)"
           >
-            <svg class="mt-0.5 h-3.5 w-3.5 flex-none text-gold-400" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a2 2 0 0 0-2 2v2.17a2 2 0 0 1-.59 1.42L7.59 9.41A2 2 0 0 0 7 10.83V13a2 2 0 0 0 2 2h.17a2 2 0 0 1 1.42.59l1.82 1.82a2 2 0 0 0 1.42.59H16a2 2 0 0 0 2-2v-2.17a2 2 0 0 1 .59-1.42L20 10.41" /></svg>
+            <svg class="mt-0.5 h-4 w-4 flex-none text-gold-400" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a2 2 0 0 0-2 2v2.17a2 2 0 0 1-.59 1.42L7.59 9.41A2 2 0 0 0 7 10.83V13a2 2 0 0 0 2 2h.17a2 2 0 0 1 1.42.59l1.82 1.82a2 2 0 0 0 1.42.59H16a2 2 0 0 0 2-2v-2.17a2 2 0 0 1 .59-1.42L20 10.41" /></svg>
             <span class="flex min-w-0 flex-col gap-0.5">
               <small class="text-[11.5px] leading-[1.3] text-ftr-text">Hỗ trợ kỹ thuật</small>
               <strong class="whitespace-nowrap text-[15px] font-bold leading-[1.3] text-white">{{ technicalHotline }}</strong>
@@ -141,11 +141,11 @@ const telHref = computed(() => telHrefFor(hotline.value))
               :class="location.mapUrl ? 'hover:text-gold-400' : ''"
             >
               <span class="flex items-center gap-2 text-[14.5px] font-bold leading-[1.4] text-white">
-                <svg class="h-3.5 w-3.5 flex-none text-gold-400" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3 3 10h2v9h5v-5h4v5h5v-9h2Z" /></svg>
+                <svg class="h-4 w-4 flex-none text-gold-400" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3 3 10h2v9h5v-5h4v5h5v-9h2Z" /></svg>
                 {{ location.name }}
               </span>
               <span class="mt-1.5 flex items-start gap-1.5 text-[13px] leading-[1.55] text-ftr-text">
-                <svg class="mt-1 h-3 w-3 flex-none text-gold-400/80" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5Z" /></svg>
+                <svg class="mt-1 h-4 w-4 flex-none text-gold-400/80" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5Z" /></svg>
                 {{ location.address }}
               </span>
             </component>

@@ -3,14 +3,13 @@ import type { PublicDealerPayload } from '#shared/contracts/public-dealer'
 import { isPublicDealerPayload } from '#shared/contracts/public-dealer'
 import type { PublicSitePayload } from '#shared/contracts/public-site'
 import { isPublicSitePayload } from '#shared/contracts/public-site'
-import { isRuntimeFlagEnabled } from '#shared/public-route-gate'
 import DealerOverview from '~/components/dealer/DealerOverview.vue'
 import DealerSections from '~/components/dealer/DealerSections.vue'
 import EditorialRichText from '~/components/editorial/EditorialRichText.vue'
 
 const props = withDefaults(defineProps<{ preview?: boolean }>(), { preview: false })
 const config = useRuntimeConfig()
-const indexable = computed(() => !props.preview && isRuntimeFlagEnabled(config.public.dealerPublicRouteIndexable)
+const indexable = computed(() => !props.preview && config.public.dealerPublicRouteIndexable === true
   && !!dealer.value && !siteError.value && !error.value)
 const fallbackSite: PublicSitePayload = { schemaVersion: 1, brand: { name: 'Phúc Thịnh Solar', hotline: '' }, productCategories: [] }
 const { data: siteData, error: siteError } = await useFetch<unknown>('/_migration/site', { default: () => fallbackSite })
@@ -45,7 +44,7 @@ useSeoMeta({
 })
 useHead({ meta: computed(() => pageKeywords.value ? [{ name: 'keywords', content: pageKeywords.value }] : []) })
 usePublicSocialMeta({
-  enabled: computed(() => !props.preview && isRuntimeFlagEnabled(config.public.dealerPublicRouteEnabled) && !!dealer.value && !error.value && !siteError.value),
+  enabled: computed(() => !props.preview && !!dealer.value && !error.value && !siteError.value),
   title: pageTitle,
   description: pageDescription,
   canonicalPath: '/dai-ly/',

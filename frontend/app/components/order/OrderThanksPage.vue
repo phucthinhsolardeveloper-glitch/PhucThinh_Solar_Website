@@ -1,20 +1,21 @@
 <script setup lang="ts">
 import { isPublicOrderThanksPayload, type PublicOrderThanksPayload } from '#shared/contracts/public-checkout'
-import { ORDER_SUCCESS_PUBLIC_PATH, isRuntimeFlagEnabled } from '#shared/public-route-gate'
+import { ORDER_SUCCESS_PUBLIC_PATH } from '#shared/public-route-gate'
 
 const { site } = await usePublicSite()
 const route = useRoute()
-const config = useRuntimeConfig()
 const links = useMigrationLinks()
+const requestFetch = useRequestFetch()
 const token = computed(() => typeof route.query.token === 'string' ? route.query.token : '')
 const hasValidToken = computed(() => /^[a-f0-9]{48}$/.test(token.value))
+if (import.meta.server && hasValidToken.value) useResponseHeader('Cache-Control').value = 'private, no-store'
 const { data, error, pending } = await useAsyncData<unknown>(
   () => `order-thanks-${token.value}`,
-  () => hasValidToken.value ? $fetch('/_migration/order-thanks', { query: { token: token.value } }) : Promise.resolve(null),
+  () => hasValidToken.value ? requestFetch('/_migration/order-thanks', { query: { token: token.value } }) : Promise.resolve(null),
   { default: () => null },
 )
 const payload = computed<PublicOrderThanksPayload | null>(() => isPublicOrderThanksPayload(data.value) ? data.value : null)
-const isPublicRoute = route.path === ORDER_SUCCESS_PUBLIC_PATH && isRuntimeFlagEnabled(config.public.orderSuccessPublicRouteEnabled)
+const isPublicRoute = route.path === ORDER_SUCCESS_PUBLIC_PATH
 const errorStatus = (error.value as { statusCode?: unknown } | null)?.statusCode
 usePublicSocialMeta({
   enabled: isPublicRoute,

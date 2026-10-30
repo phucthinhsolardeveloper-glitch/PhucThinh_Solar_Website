@@ -15,7 +15,7 @@ const slug = computed(() => typeof route.params.slug === 'string' ? route.params
 const { data, error } = await useAsyncData('migration-news-detail', () => $fetch('/_migration/news-detail', { query: { slug: slug.value } }), { watch: [slug] })
 const payload = computed(() => isPublicNewsDetailPayload(data.value) ? data.value : null)
 const errorStatus = (error.value as { statusCode?: unknown } | null)?.statusCode
-const responseStatus = editorialPublicResponseStatus(isBarePublicRoute.value && config.public.newsDetailPublicRouteEnabled, errorStatus, !payload.value)
+const responseStatus = editorialPublicResponseStatus(isBarePublicRoute.value, errorStatus, !payload.value)
 if (import.meta.server && responseStatus) setResponseStatus(responseStatus, responseStatus === 404 ? 'Not Found' : 'Bad Gateway')
 const site = computed(() => isPublicSitePayload(siteData.value) ? siteData.value : fallbackSite)
 const links = useMigrationLinks()
@@ -24,11 +24,11 @@ const pageKeywords = computed(() => isBarePublicRoute.value ? payload.value?.art
 useSeoMeta({
   title: () => payload.value?.article.seo.title || (isBarePublicRoute.value ? 'Kiến thức' : 'Kiến thức — internal preview'),
   description: () => payload.value?.article.seo.description || '',
-  robots: computed(() => editorialPublicRouteRobots(isBarePublicRoute.value && config.public.newsDetailPublicRouteEnabled, config.public.newsDetailPublicRouteIndexable, !!payload.value && !error.value)),
+  robots: computed(() => editorialPublicRouteRobots(isBarePublicRoute.value, config.public.newsDetailPublicRouteIndexable, !!payload.value && !error.value)),
 })
 useHead({ meta: computed(() => pageKeywords.value ? [{ name: 'keywords', content: pageKeywords.value }] : []) })
 usePublicSocialMeta({
-  enabled: computed(() => isBarePublicRoute.value && config.public.newsDetailPublicRouteEnabled && !!payload.value && !error.value),
+  enabled: computed(() => isBarePublicRoute.value && !!payload.value && !error.value),
   title: computed(() => payload.value?.article.seo.title || 'Kiến thức'),
   description: computed(() => payload.value?.article.seo.description || ''),
   canonicalPath: computed(() => payload.value?.article.canonical || route.path),

@@ -1,12 +1,5 @@
-import { NEWS_PUBLIC_PATH, phpPublicRouteUrl } from '#shared/public-route-gate'
-import { editorialPublicRouteMode } from '#shared/editorial-public-route'
-import { legacyNewsFilterQuery } from '#shared/public-route-query'
+import { NEWS_PUBLIC_PATH } from '#shared/public-route-gate'
 
 export default defineNuxtRouteMiddleware((to) => {
-  const config = useRuntimeConfig()
-  if (editorialPublicRouteMode(config.public.newsPublicRouteEnabled, config.public.newsPublicRouteIndexable).renderNuxt) {
-    if (to.path !== NEWS_PUBLIC_PATH) return navigateTo({ path: NEWS_PUBLIC_PATH, query: to.query }, { redirectCode: 301 })
-    return
-  }
-  return navigateTo(phpPublicRouteUrl(config.public.phpPublicOrigin, NEWS_PUBLIC_PATH, legacyNewsFilterQuery(to.query)), { external: true, redirectCode: 307 })
+  if (to.path !== NEWS_PUBLIC_PATH) return navigateTo({ path: NEWS_PUBLIC_PATH, query: to.query }, { redirectCode: 301 })
 })

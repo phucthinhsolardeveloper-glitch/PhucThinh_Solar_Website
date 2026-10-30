@@ -13,7 +13,8 @@ function formatDate(value: string): string {
 function scrollRelated(direction: -1 | 1): void {
   const element = track.value
   if (!element) return
-  element.scrollBy({ left: direction * element.clientWidth, behavior: 'smooth' })
+  const reducedMotion = import.meta.client && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  element.scrollBy({ left: direction * element.clientWidth, behavior: reducedMotion ? 'auto' : 'smooth' })
 }
 </script>
 
@@ -27,7 +28,7 @@ function scrollRelated(direction: -1 | 1): void {
       <div v-if="items.length > 1" role="group" class="flex shrink-0 gap-2" aria-label="Điều hướng tin liên quan">
         <button
           type="button"
-          class="grid size-9 place-items-center rounded-full border border-slate-200/90 bg-white text-navy-800 shadow-xs transition-colors hover:bg-slate-100 hover:text-gold-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-600"
+          class="grid size-11 place-items-center rounded-full border border-slate-200/90 bg-white text-navy-800 shadow-xs transition-colors hover:bg-slate-100 hover:text-gold-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-600"
           aria-label="Tin trước"
           @click="scrollRelated(-1)"
         >
@@ -37,7 +38,7 @@ function scrollRelated(direction: -1 | 1): void {
         </button>
         <button
           type="button"
-          class="grid size-9 place-items-center rounded-full border border-slate-200/90 bg-white text-navy-800 shadow-xs transition-colors hover:bg-slate-100 hover:text-gold-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-600"
+          class="grid size-11 place-items-center rounded-full border border-slate-200/90 bg-white text-navy-800 shadow-xs transition-colors hover:bg-slate-100 hover:text-gold-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-600"
           aria-label="Tin tiếp theo"
           @click="scrollRelated(1)"
         >
@@ -47,7 +48,7 @@ function scrollRelated(direction: -1 | 1): void {
         </button>
       </div>
     </div>
-    <ul ref="track" class="related-track m-0 flex list-none snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth p-0 py-2">
+    <ul ref="track" class="related-track m-0 flex list-none snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth motion-reduce:scroll-auto p-0 py-2">
       <li v-for="item in items" :key="item.id" class="min-w-0 w-full shrink-0 snap-start tb:w-[calc((100%_-_1.5rem)/2)] nav:w-[calc((100%_-_4.5rem)/4)]">
         <a
           class="group flex h-full flex-col overflow-hidden rounded-xl border border-slate-200/90 bg-white text-navy-800 no-underline shadow-xs transition-all duration-300 hover:-translate-y-1.5 hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-600"

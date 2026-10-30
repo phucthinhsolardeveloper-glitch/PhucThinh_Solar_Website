@@ -15,7 +15,7 @@ const gallery = computed<PublicGalleryPayload | null>(() => isPublicGalleryPaylo
 const totalPages = computed(() => gallery.value ? Math.max(1, Math.ceil(gallery.value.pagination.total / gallery.value.pagination.perPage)) : 1)
 const errorStatus = (error.value as { statusCode?: unknown } | null)?.statusCode
 const responseStatus = editorialPublicHubResponseStatus(
-  isPublicRoute.value && config.public.galleryPublicRouteEnabled,
+  isPublicRoute.value,
   errorStatus,
   gallery.value === null,
 )
@@ -28,10 +28,10 @@ function pageTo(value: number) {
 useSeoMeta({
   title: computed(() => gallery.value?.seo.title || (isPublicRoute.value ? 'Thư viện ảnh' : 'Thư viện ảnh — Nuxt preview')),
   description: computed(() => gallery.value?.seo.description || ''),
-  robots: computed(() => editorialPublicRouteRobots(isPublicRoute.value && config.public.galleryPublicRouteEnabled, config.public.galleryPublicRouteIndexable, !!gallery.value && !error.value, 'p' in route.query)),
+  robots: computed(() => editorialPublicRouteRobots(isPublicRoute.value, config.public.galleryPublicRouteIndexable, !!gallery.value && !error.value, 'p' in route.query)),
 })
 usePublicSocialMeta({
-  enabled: computed(() => isPublicRoute.value && config.public.galleryPublicRouteEnabled && !!gallery.value && !error.value),
+  enabled: computed(() => isPublicRoute.value && !!gallery.value && !error.value),
   title: computed(() => gallery.value?.seo.title || 'Thư viện ảnh'),
   description: computed(() => gallery.value?.seo.description || ''),
   canonicalPath: GALLERY_PUBLIC_PATH,

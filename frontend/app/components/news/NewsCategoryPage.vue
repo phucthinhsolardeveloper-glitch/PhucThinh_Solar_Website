@@ -4,7 +4,6 @@ import { isPublicNewsPayload } from '#shared/contracts/public-news'
 import type { PublicSitePayload } from '#shared/contracts/public-site'
 import { isPublicSitePayload } from '#shared/contracts/public-site'
 import { editorialPublicResponseStatus, editorialPublicRouteRobots } from '#shared/editorial-public-route'
-import { isRuntimeFlagEnabled } from '#shared/public-route-gate'
 import NewsCard from '~/components/news/NewsCard.vue'
 import NewsCta from '~/components/news/NewsCta.vue'
 import NewsFilters from '~/components/news/NewsFilters.vue'
@@ -12,7 +11,6 @@ import NewsFilters from '~/components/news/NewsFilters.vue'
 const route = useRoute()
 const config = useRuntimeConfig()
 const slug = computed(() => typeof route.params.slug === 'string' ? route.params.slug : '')
-const routeEnabled = computed(() => isRuntimeFlagEnabled(config.public.newsPublicRouteEnabled))
 const fallbackSite: PublicSitePayload = { schemaVersion: 1, brand: { name: 'Phúc Thịnh Solar', hotline: '' }, productCategories: [] }
 const { data: siteData } = await useFetch<unknown>('/_migration/site', { default: () => fallbackSite })
 const { data, error } = await useAsyncData<unknown>(
@@ -31,7 +29,7 @@ const news = computed<PublicNewsPayload | null>(() => {
 })
 const category = computed(() => news.value?.category || null)
 const errorStatus = (error.value as { statusCode?: unknown } | null)?.statusCode
-const responseStatus = editorialPublicResponseStatus(routeEnabled.value, errorStatus, !news.value)
+const responseStatus = editorialPublicResponseStatus(true, errorStatus, !news.value)
 if (import.meta.server && responseStatus) setResponseStatus(responseStatus, responseStatus === 404 ? 'Not Found' : 'Bad Gateway')
 const hasFilters = computed(() => Object.keys(route.query).length > 0)
 const pageUrl = (page: number) => {
@@ -60,11 +58,11 @@ const pageKeywords = computed(() => category.value?.seo?.keywords || '')
 useSeoMeta({
   title: pageTitle,
   description: pageDescription,
-  robots: computed(() => editorialPublicRouteRobots(routeEnabled.value, config.public.newsPublicRouteIndexable, !!news.value && !error.value, hasFilters.value)),
+  robots: computed(() => editorialPublicRouteRobots(true, config.public.newsPublicRouteIndexable, !!news.value && !error.value, hasFilters.value)),
 })
 useHead({ meta: computed(() => pageKeywords.value ? [{ name: 'keywords', content: pageKeywords.value }] : []) })
 usePublicSocialMeta({
-  enabled: computed(() => routeEnabled.value && !!news.value && !error.value),
+  enabled: computed(() => !!news.value && !error.value),
   title: pageTitle,
   description: pageDescription,
   canonicalPath: computed(() => category.value?.canonicalPath || `/${slug.value}`),

@@ -12,7 +12,6 @@ const routes = [
     previewPage: 'app/pages/migration-home-preview.vue',
     content: 'app/components/home/HomePageContent.vue',
     middleware: 'app/middleware/home-public-route.ts',
-    flag: 'homePublicRouteEnabled',
     indexableFlag: 'homePublicRouteIndexable',
     path: 'HOME_PUBLIC_PATH',
     component: 'HomePageContent',
@@ -23,7 +22,6 @@ const routes = [
     previewPage: 'app/pages/migration-contact-preview.vue',
     content: 'app/components/contact/ContactPageContent.vue',
     middleware: 'app/middleware/contact-public-route.ts',
-    flag: 'contactPublicRouteEnabled',
     indexableFlag: 'contactPublicRouteIndexable',
     path: 'CONTACT_PUBLIC_PATH',
     component: 'ContactPageContent',
@@ -34,7 +32,6 @@ const routes = [
     previewPage: 'app/pages/migration-dealer-preview.vue',
     content: 'app/components/dealer/DealerPageContent.vue',
     middleware: 'app/middleware/dealer-public-route.ts',
-    flag: 'dealerPublicRouteEnabled',
     indexableFlag: 'dealerPublicRouteIndexable',
     path: 'DEALER_PUBLIC_PATH',
     component: 'DealerPageContent',
@@ -53,20 +50,18 @@ test('public Home, Contact, and Dealer routes reuse their preview content and at
     assert.match(previewPage, new RegExp(`<${route.component}\\s+preview\\s*/>`), `${route.name} preview content`)
     assert.match(content, /defineProps<\{\s*preview\?: boolean\s*\}>\(\)/, `${route.name} shared preview prop`)
     assert.match(content, new RegExp(`config\\.public\\.${route.indexableFlag}`), `${route.name} indexability flag`)
-    assert.match(content, /!props\.preview\s*&&\s*isRuntimeFlagEnabled/, `${route.name} preview must remain noindex`)
+    assert.match(content, /!props\.preview\s*&&\s*config\.public\./, `${route.name} preview must remain noindex`)
 
-    assert.match(middleware, new RegExp(`config\\.public\\.${route.flag}`), `${route.name} enabled flag`)
-    assert.match(middleware, new RegExp(`phpPublicRouteUrl\\(config\\.public\\.phpPublicOrigin,\\s*${route.path}\\)`), `${route.name} PHP fallback path`)
-    assert.match(middleware, /external:\s*true/)
-    assert.match(middleware, /redirectCode:\s*307/)
+    assert.doesNotMatch(middleware, /PublicRouteEnabled|phpPublicRouteUrl/)
+    assert.match(middleware, new RegExp(`\\b${route.path}\\b`), `${route.name} canonical route`)
   }
 })
 
-test('new public corporate route flags and indexability flags default off', () => {
+test('public corporate routes have no enable flag and indexable pages default on', () => {
   const config = read('nuxt.config.ts')
   for (const route of routes) {
-    assert.match(config, new RegExp(`${route.flag}:\\s*false`))
-    assert.match(config, new RegExp(`${route.indexableFlag}:\\s*false`))
+    assert.doesNotMatch(config, new RegExp(`${route.name}PublicRouteEnabled`))
+    assert.match(config, new RegExp(`${route.indexableFlag}:\\s*true`))
   }
 })
 

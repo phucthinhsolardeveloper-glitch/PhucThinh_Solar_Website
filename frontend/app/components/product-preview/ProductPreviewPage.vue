@@ -144,7 +144,7 @@ onBeforeUnmount(() => observer?.disconnect())
           v-for="item in navItems"
           :key="item.id"
           :href="'#' + item.id"
-          class="inline-flex min-h-10 items-center rounded-chip px-3.5 py-1.5 text-[13px] font-bold no-underline transition-all duration-150 active:scale-95 cursor-pointer"
+          class="inline-flex min-h-11 items-center rounded-chip px-3.5 py-1.5 text-[13px] font-bold no-underline transition-all duration-150 active:scale-95 cursor-pointer"
           :class="activeSection === item.id ? 'bg-navy-800 text-gold-300 shadow-xs' : 'text-navy-800 hover:bg-slate-100 hover:text-gold-700'"
         >{{ item.label }}</a>
       </div>

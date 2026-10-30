@@ -3,14 +3,11 @@ import QuantityStepper from '~/components/commerce/QuantityStepper.vue'
 import { isPublicCartPayload, type PublicCartPayload } from '#shared/contracts/public-cart'
 import { isPublicCheckoutNoticePayload, type PublicCheckoutNoticePayload, type PublicCheckoutNoticeForm } from '#shared/contracts/public-checkout'
 import { normalizeCommerceQuantity } from '#shared/commerce-quantity'
-import { isRuntimeFlagEnabled } from '#shared/public-route-gate'
 
 const { site } = await usePublicSite()
 const { cart, loading, error, refresh, mutate } = useMigrationCart()
 const links = useMigrationLinks()
 const isMigrationPreview = links.active
-const runtimeConfig = useRuntimeConfig()
-const checkoutRouteEnabled = computed(() => isRuntimeFlagEnabled(runtimeConfig.public.checkoutPublicRouteEnabled))
 const checkoutNotice = ref<PublicCheckoutNoticePayload | null>(null)
 const checkoutDraft = useState<PublicCheckoutNoticeForm | null>('pts-checkout-form-draft', () => null)
 const { data: initialCart, error: initialCartError } = await useFetch<unknown>('/_migration/cart', { key: 'migration-cart-page', default: () => null })
@@ -171,16 +168,13 @@ function openCheckout() {
               Checkout đang ở chế độ preview chỉ đọc; trang này không nhận thông tin giao hàng và không tạo đơn hàng.
             </p>
             <NuxtLink
-              v-else-if="checkoutRouteEnabled"
+              v-else
               to="/thanh-toan/"
               @click="openCheckout"
               class="mt-4 flex min-h-12 w-full items-center justify-center rounded-chip bg-gold-500 px-5 text-center font-extrabold text-navy-950 no-underline hover:bg-gold-600"
             >
               Tiến hành thanh toán
             </NuxtLink>
-            <p v-else class="mt-4 rounded-chip bg-slate-50 p-3 text-sm leading-relaxed text-slate-600" role="status">
-              Thanh toán trực tuyến chưa được mở trên trang này. <NuxtLink :to="links.generic('/lien-he/#yeu-cau-tu-van')" class="font-bold text-navy-800 underline">Liên hệ tư vấn</NuxtLink>
-            </p>
           </aside>
         </div>
       </template>

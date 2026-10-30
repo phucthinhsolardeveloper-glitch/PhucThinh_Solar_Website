@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { isPublicCartPayload, type PublicCartPayload } from '#shared/contracts/public-cart'
 import { isPublicCheckoutPayload, isPublicCheckoutWardsPayload, type PublicCheckoutPayload, type PublicCheckoutOption, type PublicCheckoutNoticeForm } from '#shared/contracts/public-checkout'
-import { CART_CHECKOUT_POST_PATH, phpPublicRouteUrl } from '#shared/public-route-gate'
+import { CART_CHECKOUT_POST_PATH } from '#shared/public-route-gate'
 import checkoutPublicRoute from '~/middleware/checkout-public-route'
 
 definePageMeta({
@@ -10,8 +10,7 @@ definePageMeta({
 })
 
 const { site } = await usePublicSite()
-const runtimeConfig = useRuntimeConfig()
-const checkoutPostAction = phpPublicRouteUrl(runtimeConfig.public.phpPublicOrigin, CART_CHECKOUT_POST_PATH)
+const checkoutPostAction = CART_CHECKOUT_POST_PATH
 const { data: cartData } = await useFetch<unknown>('/_migration/cart', { key: 'migration-checkout-cart', default: () => null })
 const { data: checkoutData, error: checkoutLoadError } = await useFetch<unknown>('/_migration/checkout', { key: 'migration-checkout-meta', default: () => null })
 const cart = computed<PublicCartPayload | null>(() => isPublicCartPayload(cartData.value) ? cartData.value : null)

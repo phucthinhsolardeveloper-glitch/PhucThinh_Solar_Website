@@ -2,7 +2,7 @@
 import type { PublicSolutionsPayload } from '#shared/contracts/public-solutions'
 import type { PublicSitePayload } from '#shared/contracts/public-site'
 import { isPublicSitePayload } from '#shared/contracts/public-site'
-import { SOLUTIONS_PUBLIC_PATH, isRuntimeFlagEnabled } from '#shared/public-route-gate'
+import { SOLUTIONS_PUBLIC_PATH } from '#shared/public-route-gate'
 import SolutionsIntro from '~/components/solutions/SolutionsIntro.vue'
 import SolutionCards from '~/components/solutions/SolutionCards.vue'
 import SolutionsEquipment from '~/components/solutions/SolutionsEquipment.vue'
@@ -19,8 +19,7 @@ definePageMeta({
 const config = useRuntimeConfig()
 const route = useRoute()
 const isHubRoute = computed(() => route.path === SOLUTIONS_PUBLIC_PATH || route.path === SOLUTIONS_PUBLIC_PATH.slice(0, -1))
-const indexable = computed(() => isRuntimeFlagEnabled(config.public.solutionsPublicRouteEnabled)
-  && isHubRoute.value && isRuntimeFlagEnabled(config.public.solutionsPublicRouteIndexable) && !!data.value && !error.value)
+const indexable = computed(() => isHubRoute.value && config.public.solutionsPublicRouteIndexable === true && !!data.value && !error.value)
 
 const fallbackSite: PublicSitePayload = { schemaVersion: 1, brand: { name: 'Phúc Thịnh Solar', hotline: '' }, productCategories: [] }
 const { data: siteData } = await useFetch<unknown>('/_migration/site', { default: () => fallbackSite })
@@ -32,7 +31,7 @@ const { data, error } = await useAsyncData<PublicSolutionsPayload | null>(
   { watch: [isHubRoute] },
 )
 const responseStatus = editorialPublicHubResponseStatus(
-  isHubRoute.value && config.public.solutionsPublicRouteEnabled,
+  isHubRoute.value,
   (error.value as { statusCode?: unknown } | null)?.statusCode,
   !data.value,
 )
@@ -49,7 +48,7 @@ useSeoMeta({
 })
 useHead({ meta: computed(() => isHubRoute.value && pageKeywords.value ? [{ name: 'keywords', content: pageKeywords.value }] : []) })
 usePublicSocialMeta({
-  enabled: computed(() => isHubRoute.value && isRuntimeFlagEnabled(config.public.solutionsPublicRouteEnabled) && !!data.value && !error.value),
+  enabled: computed(() => isHubRoute.value && !!data.value && !error.value),
   title: pageTitle,
   description: pageDescription,
   canonicalPath: '/giai-phap/',

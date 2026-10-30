@@ -1,36 +1,20 @@
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { test } from 'node:test'
-import { legacyCatalogFilterQuery } from '../shared/public-route-gate.ts'
-import { legacySearchFilterQuery } from '../shared/public-route-query.ts'
 import { normalizeCommerceQuantity } from '../shared/commerce-quantity.ts'
 
 const frontendRoot = new URL('../', import.meta.url)
 const read = (path) => readFileSync(new URL(path, frontendRoot), 'utf8')
 
-test('flag-off catalog fallback maps only validated filters to the legacy query names', () => {
-  assert.deepEqual(legacyCatalogFilterQuery({ page: '4', brand: '2,5', price: '1,3', sort: 'abc-desc' }), {
-    p: '4', is_brand: '2,5', is_price: '1,3', is_orderby: 'abc-desc',
-  })
-  assert.deepEqual(legacyCatalogFilterQuery({ page: '0', brand: '2,', price: '9', sort: 'anything' }), {})
-  assert.match(read('app/middleware/catalog-public-route.ts'), /legacyCatalogFilterQuery\(to\.query\)/)
-})
-
-test('flag-off brand fallback forwards only supported page, price and sort state', () => {
-  const middleware = read('app/middleware/brand-detail-public-route.ts')
-  assert.match(middleware, /page:\s*to\.query\.page/)
-  assert.match(middleware, /price:\s*to\.query\.price/)
-  assert.match(middleware, /sort:\s*to\.query\.sort/)
-  assert.match(middleware, /legacyCatalogFilterQuery\(/)
-})
-
-test('flag-off search fallback preserves safe keyword/page and drops unsafe values', () => {
-  assert.deepEqual(legacySearchFilterQuery({ keyword: 'đèn sân vườn', page: '3', sort: 'ignored' }), {
-    keyword: 'đèn sân vườn', p: '3',
-  })
-  assert.deepEqual(legacySearchFilterQuery({ keyword: 'x'.repeat(101), page: '-2' }), {})
-  assert.deepEqual(legacySearchFilterQuery({ keyword: 'unsafe\nquery', page: ['2'] }), {})
-  assert.match(read('app/middleware/search-public-route.ts'), /legacySearchFilterQuery\(to\.query\)/)
+test('catalog, brand, and search route ownership is permanent and preserves query state', () => {
+  const middleware = [
+    read('app/middleware/catalog-public-route.ts'),
+    read('app/middleware/brand-detail-public-route.ts'),
+    read('app/middleware/search-public-route.ts'),
+  ].join('\n')
+  assert.doesNotMatch(middleware, /PublicRouteEnabled|phpPublicRouteUrl|redirectCode: 307/)
+  assert.match(middleware, /path: targetPath, query: to\.query/)
+  assert.match(middleware, /path: SEARCH_PUBLIC_PATH, query: to\.query/)
 })
 
 test('commerce quantity normalization enforces integer range 1–999', () => {

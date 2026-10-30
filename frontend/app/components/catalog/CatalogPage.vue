@@ -10,8 +10,8 @@ import CatalogMenuIcon from '~/components/CatalogMenuIcon.vue'
 import SiteBreadcrumb from '~/components/SiteBreadcrumb.vue'
 import SiteHeader from '~/components/SiteHeader.vue'
 import SiteFooter from '~/components/SiteFooter.vue'
-import { isRuntimeFlagEnabled, productCategorySegmentsFromPublicPath } from '#shared/public-route-gate'
-import { publicSeoRobots } from '#shared/public-seo'
+import { productCategorySegmentsFromPublicPath } from '#shared/public-route-gate'
+import { isPublicSeoIndexable, publicSeoRobots } from '#shared/public-seo'
 
 /*
  * Tách từ migration-catalog-preview.vue (xem đó + pages/san-pham/index.vue)
@@ -103,7 +103,7 @@ if (import.meta.server && !links.active.value && props.categoryPath && siteData.
   setResponseStatus(404, 'Not Found')
 }
 const isPublicCatalogPath = computed(() => route.path === '/san-pham/' || route.path === '/thuong-hieu/' || route.path.startsWith('/danh-muc-san-pham/'))
-const publicEnabled = computed(() => isPublicCatalogPath.value && isRuntimeFlagEnabled(config.public.catalogPublicRouteEnabled))
+const publicEnabled = computed(() => isPublicCatalogPath.value)
 const catalogErrorStatus = (catalogError.value as { statusCode?: unknown } | null)?.statusCode
 if (import.meta.server && publicEnabled.value && (siteError.value || catalogError.value || !catalogData.value)) {
   const status = catalogErrorStatus === 404 ? 404 : 502
@@ -202,8 +202,8 @@ const catalogFilterKeys = new Set(['category', 'page', 'per_page', 'brand', 'pri
 const hasQueryFilters = computed(() => Object.keys(route.query).some((key) => catalogFilterKeys.has(key)))
 const catalogIndexable = computed(() => {
   const enabled = route.path.startsWith('/danh-muc-san-pham/')
-    ? isRuntimeFlagEnabled(config.public.catalogCategoryPublicRouteIndexable)
-    : isRuntimeFlagEnabled(config.public.catalogPublicRouteIndexable)
+    ? isPublicSeoIndexable(config.public.catalogCategoryPublicRouteIndexable, true)
+    : isPublicSeoIndexable(config.public.catalogPublicRouteIndexable, true)
   return publicEnabled.value && enabled && !!catalogData.value && !catalogError.value && !siteError.value
     && !hasQueryFilters.value && (!props.categoryPath || !!selectedCategory.value)
 })

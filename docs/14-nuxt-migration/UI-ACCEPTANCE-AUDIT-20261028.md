@@ -349,3 +349,28 @@ production sign-off của nhánh integration.
 | PHP ↔ Nuxt visual health | `PASS` — 99/99 lượt (33 route × 390/768/1440) HTTP 200, không lỗi runtime, media, request, overflow, CLS hoặc preview-link leak; shell keyboard/focus 3/3 PASS. Full-page PNG dùng cho review section-by-section. | `frontend/.migration-artifacts/migration-comparison-20261029-final5/report.json` và `summary.md` |
 | Adapter/query safety | `PASS` — product/project/document/extras/order/checkout-wards adapters chỉ nhận query PHP hỗ trợ, validate slug và bounds. | `frontend/server/routes/_migration/*.get.ts`; 364 frontend tests và typecheck PASS |
 | Remaining gates | `NEEDS VERIFICATION` — bốn nhóm hidden fixture không có record phù hợp trong DB local; order-success token/conversion không thử vì không tạo đơn; sitemap/robots authority và staging/cutover vẫn do PHP/approval gate. | Không bịa fixture, không POST, không đổi production/container/feature flags mặc định. |
+
+## Local Admin → PHP API → Nuxt CRUD round-trip — 2026-10-30
+
+| Gate | Kết quả | Bằng chứng / giới hạn |
+|---|---|---|
+| Product create/update/delete | `PASS` — Admin lưu mới, sửa tên và xóa; PHP search API cùng Nuxt adapter lần lượt thấy nội dung mới, nội dung đã sửa và không còn sản phẩm sau xóa. | `scripts/test-admin-crud-lifecycle.php`; test làm ấm API trước khi CRUD. Nuxt service `:3101`, PHP local `:8080`. |
+| News content + SEO create/update/delete | `PASS` — title bài viết và SEO title đi từ Admin qua PHP API, Nuxt news list/detail; cache list được làm ấm trước khi tạo. Sau xóa, list không còn bài và detail trả 404. | Test tìm bằng nonce fixture để tránh kết quả bị trang đầu loại do bài featured/phân trang. |
+| Cleanup | `PASS` — script tự xóa fixture product/news, SEO liên quan và user kiểm thử ở shutdown; lần chạy kết thúc `40/40 PASS`. | Chỉ dùng DB/container local `pts-mariadb-local`; không gửi email/form/checkout, không đổi Caddy, public flags hoặc production. |
+| Phạm vi chưa bao phủ | Chưa phải chứng nhận mọi module Admin: ảnh/photo, taxonomy, metadata SEO, banner/settings và lead/review cần các round-trip riêng. | Không khẳng định các thao tác CRUD ngoài product/news đã được thử bằng POST trong đợt này. |
+
+## Forced dark-mode contrast spot-check — 2026-10-30
+
+| Vùng | Kết quả | Bằng chứng / giới hạn |
+|---|---|---|
+| Home form | `PASS TARGETED` — label/input `15.44:1`, nút gửi `5.96:1`, ghi chú `6.18:1`. | Ép class `dark` bằng Playwright; [ảnh focus form](/tmp/pts-dark-final-home-focus.png). |
+| PDP specification table | `PASS TARGETED` — header `13.60:1`, alternate row `14.90:1`, row trắng `15.44:1`. | [Ảnh focus bảng](/tmp/pts-dark-final-pdp-focus.png). |
+| Theme availability | Theme sáng vẫn mặc định; công tắc tối tiếp tục ẩn. | Chỉ kiểm hai vùng/route có lỗi tương phản tái hiện được; chưa kiểm mọi route và mọi trạng thái nên không mở công tắc. |
+
+## Home carousel and reduced-motion follow-up — 2026-10-30
+
+| Hạng mục | Kết quả | Bằng chứng / giới hạn |
+|---|---|---|
+| Hero carousel | `FIXED` — bỏ tự chuyển slide vì hero có nội dung/CTA cần đọc; giữ nút trước/sau, swipe cảm ứng và thông báo vị trí slide cho screen reader. | `frontend/app/components/home/HomeHero.vue`; tuân theo mục 5.8 của `public-ui-ux-design-system.md`. |
+| Reduced motion | `FIXED` — khi hệ điều hành yêu cầu giảm chuyển động, tắt smooth scroll và rút ngắn animation/transition toàn cục. | `frontend/app/assets/css/main.css`; kiểm tra thêm trong smoke sau build. |
+| Motion library | Không thêm `motion-v`; animation CSS hiện tại đơn giản và không cần gesture/layout transition phức tạp. | Khuyến nghị giữ bundle gọn; chỉ xem xét thư viện nếu có nhu cầu tương tác cụ thể. |

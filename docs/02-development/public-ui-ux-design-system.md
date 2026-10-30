@@ -1,6 +1,6 @@
 # Hệ thống UI/UX public — nguồn chuẩn duy nhất
 
-Cập nhật: 2026-09-24. Phạm vi: toàn bộ website public Phúc Thịnh Solar trên
+Cập nhật: 2026-10-30. Phạm vi: toàn bộ website public Phúc Thịnh Solar trên
 desktop, iMac/2K, tablet và mobile.
 
 Tài liệu này trả lời câu hỏi **giao diện phải như thế nào**. Cách đặt CSS vào
@@ -257,8 +257,18 @@ responsive ổn chỉ từ laptop 1366px.
 
 ### 5.4 Icon — MỤC TIÊU
 
-- Dùng một nguồn đang có là Font Awesome trong cùng một cụm; không trộn emoji,
-  PNG và nhiều nét icon cạnh nhau.
+- Icon giao diện phổ thông ưu tiên `UIcon` của Nuxt UI với bộ Lucide cục bộ đã
+  cài qua `@iconify-json/lucide`; không tải icon từ CDN khi chạy production.
+- Inline SVG tự thiết kế được giữ cho icon đặc thù nhận diện, danh mục hoặc
+  minh họa riêng của Phúc Thịnh Solar khi icon thư viện không khớp. Gom mapping
+  dùng lại vào component/registry; giữ stroke và khung kích thước nhất quán
+  trong cùng cụm.
+- Ảnh icon do Admin quản lý được giữ khi là dữ liệu nghiệp vụ/thiết kế; render
+  bằng `object-fit: contain` và khung kích thước ổn định. Không thay ảnh CMS
+  bằng icon phỏng đoán.
+- Không dùng Font Awesome còn thiếu CSS/font, emoji hoặc nhiều nét icon không
+  liên quan trong cùng một cụm. Unicode chỉ dùng cho ký hiệu văn bản đơn giản,
+  không thay icon-only control.
 - Kích thước chuẩn: 16px trong text/control, 20px cho action, 24px cho điểm nhấn.
   Icon trang trí dùng `aria-hidden="true"`; icon truyền nghĩa phải có nhãn.
 - Hình tròn chỉ bọc icon action/trạng thái, không bọc mọi icon danh sách.

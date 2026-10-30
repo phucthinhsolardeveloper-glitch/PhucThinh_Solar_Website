@@ -6,7 +6,6 @@ import {
   catalogMenuSearchText,
   sortCatalogGroups,
 } from '#shared/catalog-menu-presentation'
-import { isRuntimeFlagEnabled } from '#shared/public-route-gate'
 import { publicSiteStructuredData } from '#shared/public-seo'
 
 type MenuMode = 'hover' | 'intent' | null
@@ -28,14 +27,7 @@ useHead({
     innerHTML: siteStructuredData.value,
   }] : []),
 })
-const cartCountAvailable = computed(() => isMigrationPreview.value || [
-  config.public.homePublicRouteEnabled,
-  config.public.catalogPublicRouteEnabled,
-  config.public.productDetailPublicRouteEnabled,
-  config.public.brandDetailPublicRouteEnabled,
-  config.public.searchPublicRouteEnabled,
-  config.public.cartPublicRouteEnabled,
-].some(isRuntimeFlagEnabled))
+const cartCountAvailable = computed(() => true)
 
 const brandName = computed(() => props.site.brand.name.trim() || 'Phúc Thịnh Solar')
 const hotline = computed(() => props.site.brand.hotline.trim())
@@ -221,8 +213,16 @@ async function submitCatalogSearch() {
 }
 
 function toggleCatalog() {
-  if (catalogOpen.value) closeCatalog()
-  else openCatalog('intent')
+  if (!catalogOpen.value) {
+    openCatalog('intent')
+    return
+  }
+  if (catalogMode.value === 'hover') {
+    catalogMode.value = 'intent'
+    nextTick(() => catalogSearchInput.value?.focus())
+    return
+  }
+  closeCatalog()
 }
 
 function openMobileMenu() {
@@ -805,7 +805,7 @@ onBeforeUnmount(() => {
     </header>
 
     <!-- Drawer điều hướng mobile, dưới mốc nav (1321px) -->
-    <div v-if="mobileOpen" class="fixed inset-0 z-[1100] overflow-auto bg-[rgb(8_18_34_/_58%)]">
+    <div v-if="mobileOpen" class="fixed inset-0 z-[1100] overflow-hidden bg-[rgb(8_18_34_/_58%)]">
       <div
         class="fixed inset-0 h-full cursor-default bg-transparent"
         aria-hidden="true"
@@ -814,7 +814,7 @@ onBeforeUnmount(() => {
       <aside
         id="ptsMobileMenu"
         ref="mobilePanel"
-        class="relative z-[1] min-h-full w-[min(420px,calc(100vw-24px))] overflow-y-auto bg-white p-4
+        class="relative z-[1] h-dvh max-h-dvh w-[min(420px,calc(100vw-24px))] overflow-y-auto overscroll-y-contain bg-white p-4
                shadow-[16px_0_36px_rgb(6_21_55_/_20%)] ph:w-[min(420px,calc(100vw-32px))] ph:p-6"
         role="dialog"
         aria-modal="true"

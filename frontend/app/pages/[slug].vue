@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { isPublicRouteResolveResult, isPublicRouteResolveSlug } from '#shared/contracts/public-route-resolve'
-import { bareSlugPublicPath, isRuntimeFlagEnabled, phpPublicRouteUrl } from '#shared/public-route-gate'
+import { bareSlugPublicPath, phpPublicRouteUrl } from '#shared/public-route-gate'
 import { editorialPublicResponseStatus } from '#shared/editorial-public-route'
 import { publicBareSlugDisposition } from '#shared/public-bare-slug-route'
 import type { PublicSitePayload } from '#shared/contracts/public-site'
@@ -35,15 +35,9 @@ const pathIsSafe = typeof canonicalBarePath === 'string'
 const pathIsCanonical = pathIsSafe && route.path === canonicalBarePath
 const barePathWithoutSlash = pathIsSafe ? `/${slug}` : false
 const pathCanResolve = pathIsCanonical || (typeof barePathWithoutSlash === 'string' && route.path === barePathWithoutSlash)
-const detailRoutesEnabled = isRuntimeFlagEnabled(config.public.newsDetailPublicRouteEnabled)
-  || isRuntimeFlagEnabled(config.public.newsPublicRouteEnabled)
-  || isRuntimeFlagEnabled(config.public.solutionsPublicRouteEnabled)
-  || isRuntimeFlagEnabled(config.public.projectDetailPublicRouteEnabled)
-  || isRuntimeFlagEnabled(config.public.projectsPublicRouteEnabled)
-  || isRuntimeFlagEnabled(config.public.galleryDetailPublicRouteEnabled)
 const { data: resolutionData, error: resolutionError } = await useAsyncData<unknown>(
   `public-route-resolve-${slug}`,
-  () => aliasTarget || !pathIsSafe || !pathCanResolve || !detailRoutesEnabled
+  () => aliasTarget || !pathIsSafe || !pathCanResolve
     ? Promise.resolve(null)
     : $fetch('/_migration/public-route-resolve', { query: { slug } }),
 )
@@ -61,14 +55,6 @@ if (aliasTarget) {
 } else if (!pathIsSafe) {
   pageState.value = 'not-found'
   setHttpStatus(404)
-} else if (!detailRoutesEnabled && typeof canonicalBarePath === 'string') {
-  if (!pathIsCanonical) {
-    pageState.value = 'redirecting'
-    await navigateTo(canonicalBarePath, { redirectCode: 301 })
-  } else {
-    pageState.value = 'redirecting'
-    await navigateTo(phpPublicRouteUrl(config.public.phpPublicOrigin, canonicalBarePath), { external: true, redirectCode: 307 })
-  }
 } else if (!pathCanResolve && typeof canonicalBarePath === 'string') {
   pageState.value = 'redirecting'
   await navigateTo(canonicalBarePath, { redirectCode: 301 })
@@ -80,14 +66,7 @@ if (aliasTarget) {
   pageState.value = 'unavailable'
   setHttpStatus(502)
 } else {
-  const disposition = publicBareSlugDisposition(resolutionData.value, {
-    newsDetailPublicRouteEnabled: config.public.newsDetailPublicRouteEnabled,
-    newsPublicRouteEnabled: config.public.newsPublicRouteEnabled,
-    solutionsPublicRouteEnabled: config.public.solutionsPublicRouteEnabled,
-    projectDetailPublicRouteEnabled: config.public.projectDetailPublicRouteEnabled,
-    projectsPublicRouteEnabled: config.public.projectsPublicRouteEnabled,
-    galleryDetailPublicRouteEnabled: config.public.galleryDetailPublicRouteEnabled,
-  })
+  const disposition = publicBareSlugDisposition(resolutionData.value)
   if (disposition.mode === 'legacy') {
     pageState.value = 'redirecting'
     await navigateTo(phpPublicRouteUrl(config.public.phpPublicOrigin, disposition.path), { external: true, redirectCode: 307 })
