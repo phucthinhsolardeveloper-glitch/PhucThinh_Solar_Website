@@ -7,6 +7,7 @@ const props = defineProps<{
 }>()
 
 const showBackToTop = ref(false)
+const footerInView = ref(false)
 const hotline = computed(() => props.site.brand.hotline.trim())
 const phoneHref = computed(() => publicPhoneHref(hotline.value))
 const zaloHref = computed(() => {
@@ -16,6 +17,7 @@ const zaloHref = computed(() => {
 })
 
 const hasContactChannels = computed(() => Boolean(zaloHref.value || phoneHref.value))
+let footerObserver: IntersectionObserver | undefined
 
 function updateBackToTopVisibility() {
   showBackToTop.value = window.scrollY > 300
@@ -29,16 +31,27 @@ function scrollToTop() {
 onMounted(() => {
   updateBackToTopVisibility()
   window.addEventListener('scroll', updateBackToTopVisibility, { passive: true })
+
+  const footer = document.querySelector('footer')
+  if (footer && 'IntersectionObserver' in window) {
+    const footerBounds = footer.getBoundingClientRect()
+    footerInView.value = footerBounds.top < window.innerHeight && footerBounds.bottom > 0
+    footerObserver = new IntersectionObserver(([entry]) => {
+      footerInView.value = entry?.isIntersecting ?? false
+    })
+    footerObserver.observe(footer)
+  }
 })
 
 onUnmounted(() => {
   window.removeEventListener('scroll', updateBackToTopVisibility)
+  footerObserver?.disconnect()
 })
 </script>
 
 <template>
   <aside
-    v-if="showBackToTop || hasContactChannels"
+    v-if="(showBackToTop || hasContactChannels) && !footerInView"
     class="fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] right-4 z-[900] flex flex-col items-center gap-3 print:hidden tb:bottom-6 tb:right-6 transform-gpu"
     aria-label="Liên hệ nhanh"
   >
