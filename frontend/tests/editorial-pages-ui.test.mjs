@@ -24,13 +24,17 @@ test('project detail gallery uses an accessible in-page media dialog', () => {
   assert.match(gallery, /Không tìm thấy kết quả/)
 })
 
-test('news detail follows PHP article and content reading widths without a side column', () => {
+test('news detail presents the article in a responsive 8:4 editorial layout', () => {
   const page = read('../app/pages/migration-news-detail-preview.vue')
   const article = read('../app/components/news-detail/NewsDetailArticle.vue')
   assert.match(page, /<NewsDetailArticle[^>]+\/>\s*<NewsDetailRelated/)
-  assert.doesNotMatch(page, /tb:grid-cols-\[minmax\(0,2fr\)_minmax\(240px,1fr\)\]/)
   assert.match(page, /<main class="pts-container py-8 nav:py-16">/)
-  assert.match(article, /<article class="mx-auto w-full max-w-\[1280px\]">/)
+  assert.match(article, /nav:grid-cols-\[minmax\(0,2fr\)_minmax\(240px,1fr\)\]/)
+  assert.match(article, /nav:sticky nav:top-28/)
+  assert.match(article, /<UBadge v-if="categoryName"/)
+  assert.match(article, /<UIcon name="i-lucide-list"/)
+  assert.match(article, /<EditorialRichText :content="editorial\.content" \/>/)
+  assert.equal((article.match(/<EditorialRichText :content="editorial\.content" \/>/g) || []).length, 1)
 })
 
 test('gallery and video pages rely on CMS titles without static marketing eyebrow copy', () => {
@@ -84,7 +88,7 @@ test('policy article widths follow PHP reading measure and related media uses th
 test('editorial cover and related images use the documented news aspect ratio and crop behavior', () => {
   const article = read('../app/components/news-detail/NewsDetailArticle.vue')
   const related = read('../app/components/news-detail/NewsDetailRelated.vue')
-  assert.match(article, /aspect-video w-full rounded-chip object-cover/)
+  assert.match(article, /aspect-video w-full object-cover nav:mb-10/)
   assert.match(related, /aspect-video w-full object-cover/)
   assert.doesNotMatch(related, /aspect-\[3\/2\]/)
 })

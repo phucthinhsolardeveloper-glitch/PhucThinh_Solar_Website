@@ -14,6 +14,11 @@ const { activeHeadingId, scrollToHeading } = useTocScrollspy({
   headerOffset: 100,
 })
 
+const categoryName = computed(() => {
+  const category = props.article.category
+  return 'name' in category && category.name.trim() ? category.name : ''
+})
+
 function formatDate(value: string): string {
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value)
   if (!match) return value
@@ -24,58 +29,85 @@ function formatDate(value: string): string {
 </script>
 
 <template>
-  <!--
-    Không có ảnh production riêng cho trang chi tiết tin tức trong bộ 13 ảnh
-    đã chụp — dựng theo cấu trúc CSS gốc (news-detail-preview.css) và nhất
-    quán với PDP/dự án/giải pháp chi tiết đã đo (container 1766px, heading
-    navy-800, .cms-content cho nội dung dài).
-  -->
   <article class="mx-auto w-full max-w-[1280px]">
-    <h1 class="mb-4 text-[clamp(28px,3.6vw,42px)] font-black leading-tight text-navy-800">{{ article.title }}</h1>
-    <p class="mb-4 text-slate-500"><time v-if="article.date" :datetime="article.date">{{ formatDate(article.date) }}</time><span v-if="article.date" aria-hidden="true"> · </span>{{ article.author.name }}</p>
-    <img v-if="article.cover && article.showCover" :src="article.cover" :alt="article.title" class="my-6 block aspect-video w-full rounded-chip object-cover">
+    <header class="mb-7 nav:mb-9">
+      <UBadge v-if="categoryName" color="primary" variant="soft" class="mb-4 rounded-[3px] px-2.5 py-1 text-xs font-semibold">
+        {{ categoryName }}
+      </UBadge>
+      <h1 class="max-w-[1000px] text-[clamp(30px,4vw,52px)] font-bold leading-[1.12] tracking-[-0.035em] text-navy-800">
+        {{ article.title }}
+      </h1>
+      <div class="mt-5 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-slate-500">
+        <time v-if="article.date" :datetime="article.date">{{ formatDate(article.date) }}</time>
+        <span v-if="article.date" aria-hidden="true" class="text-slate-300">·</span>
+        <span>{{ article.author.name }}</span>
+      </div>
+    </header>
 
-    <nav v-if="article.content.html && editorial.toc.length" ref="tocContainerRef" class="mb-6 rounded-btn border border-slate-200/90 border-l-4 border-l-gold-500 bg-slate-50/70 p-5 shadow-xs transition-colors" aria-label="Mục lục bài viết">
-      <h2 class="mb-3 flex items-center gap-2 text-sm font-extrabold uppercase tracking-wider text-navy-950">
-        <svg class="h-4 w-4 text-gold-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
-        </svg>
-        <span>Nội dung bài viết</span>
-      </h2>
-      <ol class="m-0 list-none space-y-1 p-0">
-        <li v-for="item in editorial.toc" :key="item.id" :class="item.level === 3 ? 'pl-4' : ''">
-          <a
-            :data-toc-id="item.id"
-            class="inline-flex min-h-11 min-w-11 items-center px-2 text-sm font-semibold underline-offset-2 hover:text-gold-700 hover:underline"
-            :class="activeHeadingId === item.id ? 'font-extrabold text-gold-700' : 'text-navy-800'"
-            :aria-current="activeHeadingId === item.id ? 'true' : undefined"
-            :href="`#${item.id}`"
-            @click.prevent="scrollToHeading(item.id)"
-          ><span v-if="activeHeadingId === item.id" class="mr-1.5 inline-block h-1.5 w-1.5 flex-none rounded-full bg-gold-500" aria-hidden="true" />{{ item.label }}</a>
-        </li>
-      </ol>
-    </nav>
+    <img
+      v-if="article.cover && article.showCover"
+      :src="article.cover"
+      :alt="article.title"
+      class="mb-8 block aspect-video w-full object-cover nav:mb-10"
+    >
 
-    <!-- Sanitized rich text gets only legacy-compatible heading IDs added for TOC anchors. -->
-    <div v-if="article.content.html" id="news-article-content"><EditorialRichText :content="editorial.content" /></div>
-    <p v-else class="my-8 text-slate-600" role="status">Nội dung đang cập nhật</p>
+    <div class="grid grid-cols-1 gap-8 nav:grid-cols-[minmax(0,2fr)_minmax(240px,1fr)] nav:gap-12">
+      <div class="order-2 min-w-0 nav:order-1">
+        <!-- Sanitized rich text is rendered once; heading IDs support the TOC anchors. -->
+        <div v-if="article.content.html" id="news-article-content">
+          <EditorialRichText :content="editorial.content" />
+        </div>
+        <p v-else class="my-8 text-slate-600" role="status">Nội dung đang cập nhật</p>
 
-    <div v-if="editorial.content.html && article.quote?.html" class="my-8">
-      <blockquote class="m-0 border-l-[3px] border-gold-500 pl-4 text-slate-600">
-        <EditorialRichText :content="article.quote" />
-      </blockquote>
+        <div v-if="editorial.content.html && article.quote?.html" class="my-8">
+          <blockquote class="m-0 border-l-[3px] border-gold-500 pl-4 text-slate-600">
+            <EditorialRichText :content="article.quote" />
+          </blockquote>
+        </div>
+
+        <div v-if="article.media.gallery.length" class="mt-8 grid grid-cols-1 gap-4 tb:grid-cols-2">
+          <img v-for="media in article.media.gallery" :key="media.image" :src="media.image" :alt="media.alt || article.title" class="block h-auto w-full object-contain">
+        </div>
+
+        <ul v-if="article.media.videos.length" class="m-0 mt-6 list-none space-y-2 p-0">
+          <li v-for="video in article.media.videos" :key="video.url">
+            <a class="inline-flex min-h-11 items-center gap-2 font-semibold text-gold-700 underline-offset-2 hover:underline" :href="video.url" target="_blank" rel="noopener noreferrer">
+              <UIcon name="i-lucide-play" class="size-4" aria-hidden="true" />
+              {{ video.title || 'Xem video' }}
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <aside class="order-1 min-w-0 nav:order-2">
+        <nav
+          v-if="article.content.html && editorial.toc.length"
+          ref="tocContainerRef"
+          class="nav:sticky nav:top-28"
+          aria-label="Mục lục bài viết"
+        >
+          <h2 class="mb-3 flex items-center gap-2 text-sm font-bold text-navy-800">
+            <UIcon name="i-lucide-list" class="size-4 text-gold-600" aria-hidden="true" />
+            <span>Nội dung bài viết</span>
+          </h2>
+          <ol class="m-0 list-none space-y-1 border-l border-slate-200 p-0">
+            <li v-for="item in editorial.toc" :key="item.id" :class="item.level === 3 ? 'pl-4' : ''">
+              <a
+                :data-toc-id="item.id"
+                class="flex min-h-11 items-center border-l-2 px-3 text-sm leading-5 transition-colors"
+                :class="activeHeadingId === item.id ? 'border-gold-500 font-semibold text-navy-800' : 'border-transparent text-slate-600 hover:text-navy-800'"
+                :aria-current="activeHeadingId === item.id ? 'true' : undefined"
+                :href="`#${item.id}`"
+                @click.prevent="scrollToHeading(item.id)"
+              >{{ item.label }}</a>
+            </li>
+          </ol>
+          <div v-if="article.content.html" class="mt-5 border-t border-slate-200 pt-4">
+            <EditorialShare :title="article.title" :canonical-path="article.canonical" />
+          </div>
+        </nav>
+        <EditorialShare v-else-if="article.content.html" :title="article.title" :canonical-path="article.canonical" />
+      </aside>
     </div>
-
-    <EditorialShare v-if="article.content.html" :title="article.title" :canonical-path="article.canonical" />
-
-    <div v-if="article.media.gallery.length" class="mt-8 grid grid-cols-1 gap-4 tb:grid-cols-2">
-      <img v-for="media in article.media.gallery" :key="media.image" :src="media.image" :alt="media.alt || article.title" class="block h-auto w-full rounded-chip object-contain">
-    </div>
-
-    <ul v-if="article.media.videos.length" class="m-0 mt-6 list-none p-0">
-      <li v-for="video in article.media.videos" :key="video.url">
-        <a class="font-semibold text-gold-700" :href="video.url" target="_blank" rel="noopener noreferrer">{{ video.title || 'Xem video' }}</a>
-      </li>
-    </ul>
   </article>
 </template>
