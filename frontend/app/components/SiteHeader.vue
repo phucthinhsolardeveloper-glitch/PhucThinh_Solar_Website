@@ -498,11 +498,11 @@ onBeforeUnmount(() => {
                tb:px-6
                nav:gap-4 nav:px-(--spacing-gutter) wd:gap-5"
       >
-        <!-- Hamburger: dưới mốc nav (1321px), vùng chạm >= 44x44px -->
+        <!-- Keep the drawer through 1500px so the five-group nav cannot crowd the header. -->
         <button
           ref="mobileTrigger"
           class="order-first relative flex h-11 w-11 flex-none items-center justify-center rounded-chip border
-                 border-[#d8dee6] bg-white text-hdr-ink transition-colors hover:bg-hdr-surface nav:hidden"
+                 border-[#d8dee6] bg-white text-hdr-ink transition-colors hover:bg-hdr-surface min-[1501px]:hidden"
           type="button"
           :aria-expanded="mobileOpen"
           aria-controls="ptsMobileMenu"
@@ -536,7 +536,7 @@ onBeforeUnmount(() => {
         </a>
 
         <!-- Điều hướng chính desktop (Danh mục sản phẩm + đúng 5 nhóm IA chuẩn) -->
-        <nav class="hidden min-w-0 nav:flex-1 nav:block" aria-label="Điều hướng chính">
+        <nav class="hidden min-w-0 min-[1501px]:flex-1 min-[1501px]:block" aria-label="Điều hướng chính">
           <ul class="flex items-center justify-center gap-1 nav:gap-0">
             <li class="mr-1.5 flex flex-none items-center" @mouseenter="openCatalog('hover')">
               <button
@@ -609,7 +609,7 @@ onBeforeUnmount(() => {
         <div class="flex min-w-0 items-center justify-end gap-1.5 max-ph:gap-1">
           <!-- GTranslate adds this marker class synchronously while it mounts. Keep
                it in SSR markup too so hydration does not report a class mismatch. -->
-          <div class="gtranslate_wrapper gt_container-unisv1 hidden h-11 w-[45px] flex-none items-center justify-center min-[1321px]:flex" aria-label="Chọn ngôn ngữ" />
+          <div class="gtranslate_wrapper gt_container-unisv1 hidden h-11 w-[45px] flex-none items-center justify-center min-[1501px]:flex" aria-label="Chọn ngôn ngữ" />
 
           <button
             ref="searchTrigger"
@@ -925,7 +925,7 @@ onBeforeUnmount(() => {
       </div>
     </header>
 
-    <!-- Drawer điều hướng mobile, dưới mốc nav (1321px) -->
+    <!-- Drawer điều hướng mobile/tablet, used through 1500px -->
     <div v-if="mobileOpen" ref="mobileOverlay" class="fixed inset-0 z-[1100] overflow-hidden bg-[rgb(8_18_34_/_58%)]">
       <div
         class="fixed inset-0 h-full cursor-default bg-transparent"

@@ -178,8 +178,8 @@
 
      ph  561px  : trên điện thoại nhỏ
      tb  821px  : trên tablet dọc
-     nav 1321px : từ đây mới hiện thanh điều hướng desktop (dưới mốc là hamburger)
-     wd  1501px : bộ điều hướng compact cho dải 1501-2299
+     nav 1321px : chuyển container/gutter desktop; header vẫn dùng hamburger tới 1500px
+     wd  1501px : hiện nav ngang; bộ điều hướng compact cho dải 1501-2299
      ul  2300px : màn rất rộng, logo và cột trái nới ra */
   --breakpoint-ph: 561px;
   --breakpoint-tb: 821px;
