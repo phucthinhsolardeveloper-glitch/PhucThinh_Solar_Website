@@ -61,6 +61,31 @@ test('related-news rail keeps the PHP author query, four-card desktop page, and 
   assert.match(related, /year: 'numeric'/)
 })
 
+test('related news renders the same image, date, author, title, and description fields as PHP', async () => {
+  const { readFileSync } = await import('node:fs')
+  const phpTemplate = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/templates/news/news_detail_tpl.php', import.meta.url), 'utf8')
+  const related = readFileSync(new URL('../app/components/news-detail/NewsDetailRelated.vue', import.meta.url), 'utf8')
+  assert.match(phpTemplate, /id="CRsingle_blog_related"/)
+  assert.match(phpTemplate, /getImage\(\['class' => 'lazy w-100','size-error' => '300x200x1'/)
+  assert.match(phpTemplate, /date\('d\/m\/Y', \$v\['date_created'\]\)/)
+  assert.match(phpTemplate, /newsAuthorName\(\$d, isset\(\$v\['id_user'\]\)/)
+  assert.match(phpTemplate, /<h3><\?=\$v\['name'\.\$lang\]\?><\/h3>/)
+  assert.match(phpTemplate, /<div class="des"><\?=\$v\['desc'\.\$lang\]\?><\/div>/)
+  for (const field of ['item.image', 'item.date', 'item.author', 'item.title', 'item.description']) assert.ok(related.includes(field), `Nuxt related card renders ${field}`)
+})
+
+test('news detail share offers each social destination present in the PHP template', async () => {
+  const { readFileSync } = await import('node:fs')
+  const phpTemplate = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/templates/news/news_detail_tpl.php', import.meta.url), 'utf8')
+  const share = readFileSync(new URL('../app/components/editorial/EditorialShare.vue', import.meta.url), 'utf8')
+  for (const platform of ['twitter', 'facebook', 'linkedin', 'email', 'pinterest']) {
+    assert.match(phpTemplate, new RegExp(`data-sharer="${platform}"`))
+    assert.match(share, new RegExp(`type: '${platform === 'twitter' ? 'x' : platform}'`))
+  }
+  assert.match(share, /pinterest\.com\/pin\/create\/button\//)
+  assert.match(share, /canonicalPath/)
+})
+
 test('news detail page renders CTA after related articles and uses PHP canonical/date values in JSON-LD', async () => {
   const { readFileSync } = await import('node:fs')
   const page = readFileSync(new URL('../app/pages/migration-news-detail-preview.vue', import.meta.url), 'utf8')
