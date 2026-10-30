@@ -14,10 +14,10 @@ const CMS_UPLOAD_PHOTO = /^\/upload\/photo\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g
 
 const footerLogoSrc = computed(() => {
   const src = footerLogo.value
-  return CMS_UPLOAD_PHOTO.test(src) ? `/thumbs/280x229x1${src}` : src
+  return CMS_UPLOAD_PHOTO.test(src) ? `/thumbs/368x144x3${src}` : src
 })
 function trustBadgeSrc(src: string): string {
-  return CMS_UPLOAD_PHOTO.test(src) ? `/thumbs/200x76x1${src}` : src
+  return CMS_UPLOAD_PHOTO.test(src) ? `/thumbs/400x152x3${src}` : src
 }
 const footer = computed(() => props.site.footer)
 const { generic: footerHref, external: isExternalLink } = useMigrationLinks()
@@ -45,9 +45,9 @@ const telHref = computed(() => telHrefFor(hotline.value))
             v-if="footerLogo"
             :src="footerLogoSrc"
             :alt="brandName"
-            width="280"
-            height="229"
-            class="block h-auto w-full max-w-[180px] nav:max-w-[200px] wd:max-w-[280px]"
+            width="368"
+            height="144"
+            class="block h-auto w-full max-w-[180px] object-contain nav:max-w-[200px] wd:max-w-[280px]"
           >
           <span v-else class="text-lg font-black text-white">{{ brandName }}</span>
         </a>
@@ -117,7 +117,7 @@ const telHref = computed(() => telHrefFor(hotline.value))
               target="_blank"
               rel="noopener noreferrer"
             >
-              <img :src="trustBadgeSrc(footer.trustBadge.image)" alt="Đã thông báo Bộ Công Thương" width="200" height="76" class="block h-auto w-full">
+              <img :src="trustBadgeSrc(footer.trustBadge.image)" alt="Đã thông báo Bộ Công Thương" width="400" height="152" class="block h-auto w-full object-contain">
             </a>
           </div>
         </nav>
