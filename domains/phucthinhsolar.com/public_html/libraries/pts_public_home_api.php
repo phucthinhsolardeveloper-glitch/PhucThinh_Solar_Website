@@ -44,7 +44,12 @@ function ptsPublicHomePayload(array $input)
         'schemaVersion' => 1,
         'locale' => 'vi',
         'path' => '/',
-        'seo' => array('title' => ptsHomeText($input['seo']['title'] ?? ''), 'description' => ptsHomeText($input['seo']['description'] ?? '')),
+        'seo' => array(
+            'title' => ptsHomeText($input['seo']['title'] ?? ''),
+            'description' => ptsHomeText($input['seo']['description'] ?? ''),
+            'keywords' => ptsHomeText($input['seo']['keywords'] ?? ''),
+            'image' => ptsHomeText($input['seo']['image'] ?? '')
+        ),
         'hero' => $input['hero'],
         'categories' => $input['categories'],
         'campaigns' => $input['campaigns'],

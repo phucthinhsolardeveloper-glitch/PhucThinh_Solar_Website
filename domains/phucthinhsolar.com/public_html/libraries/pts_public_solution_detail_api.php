@@ -76,7 +76,7 @@ function ptsSolutionDetailCanonical($slug)
     return $slug === '' ? '' : '/giai-phap/'.$slug.'/';
 }
 
-function ptsSolutionDetailPayload(array $row, array $gallery, array $solutionRows, array $productRows, array $ctaRows = array(), $hotline = '')
+function ptsSolutionDetailPayload(array $row, array $gallery, array $solutionRows, array $productRows, array $ctaRows = array(), $hotline = '', array $seo = array())
 {
     $id = isset($row['id']) ? (int)$row['id'] : 0;
     $slug = ptsSolutionDetailSlug(isset($row['slugvi']) ? $row['slugvi'] : '');
@@ -127,6 +127,12 @@ function ptsSolutionDetailPayload(array $row, array $gallery, array $solutionRow
         'schemaVersion' => 1,
         'locale' => 'vi',
         'path' => ptsSolutionDetailCanonical($slug),
+        'seo' => array(
+            'title' => isset($seo['title']) ? $seo['title'] : '',
+            'description' => isset($seo['description']) ? $seo['description'] : '',
+            'keywords' => isset($seo['keywords']) ? $seo['keywords'] : '',
+            'image' => isset($seo['image']) ? $seo['image'] : ''
+        ),
         'solution' => array(
             'id' => $id,
             'title' => $title,

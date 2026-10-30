@@ -1,4 +1,5 @@
 export type PublicPagination = { page: number; perPage: number; total: number }
+export type PublicSeoMetadata = { title: string; description: string; keywords?: string; image?: string }
 
 const unsafeTextCharacters = /[\p{Cc}\p{Cf}\p{Zl}\p{Zp}]/u
 const relativeUrlCharacters = /^[A-Za-z0-9][A-Za-z0-9/_?&=.#%~-]*$/
@@ -64,6 +65,14 @@ export function isPublicImage(
   const filename = value.slice(prefix.length)
   const extensionPattern = extensions.join('|')
   return new RegExp(`^[A-Za-z0-9][A-Za-z0-9._-]*\\.(?:${extensionPattern})$`, 'i').test(filename)
+}
+
+export function isPublicSeoMetadata(value: unknown, imagePrefixes: readonly string[]): value is PublicSeoMetadata {
+  return isRecord(value)
+    && isText(value.title, true)
+    && isText(value.description, true)
+    && (value.keywords === undefined || isText(value.keywords, true))
+    && (value.image === undefined || isPublicImage(value.image, imagePrefixes))
 }
 
 export function isPagination(value: unknown): value is PublicPagination {

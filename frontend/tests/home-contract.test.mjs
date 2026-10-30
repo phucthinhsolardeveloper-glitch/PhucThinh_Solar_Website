@@ -10,12 +10,17 @@ const homeEditorial = readFileSync(new URL('../app/components/home/HomeEditorial
 const homeContact = readFileSync(new URL('../app/components/home/HomeContact.vue', import.meta.url), 'utf8')
 const homePhpSource = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/sources/index.php', import.meta.url), 'utf8')
 const homePhpApi = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/api/pts_v1_home.php', import.meta.url), 'utf8')
-const good = { schemaVersion: 1, locale: 'vi', path: '/', seo: { title: '', description: '' }, hero: [{ key: 'x', name: 'Hero', description: '', image: '/assets/images/site-visuals/a.webp', href: '/san-pham/' }], categories: [{ id: 1, name: 'Đèn', slug: 'den', url: '/danh-muc-san-pham/den/', major: true, image: '' }], campaigns: [{ name: 'Campaign', description: '', image: '/assets/images/site-visuals/a.webp', href: '/san-pham/' }], solutions: [{ label: 'Gia đình', name: 'Solar', description: 'Mô tả', image: '/assets/images/site-visuals/a.webp', href: '/giai-phap/' }], process: [{ number: '01', name: 'Tư vấn', description: 'Mô tả' }], dealer: { title: 'Đại lý', description: 'Mô tả', href: '/dai-ly/' }, about: { title: 'About', description: 'Mô tả', href: '/gioi-thieu/', action: 'Xem' }, contact: { hotline: '', email: '', address: '', workingHours: '' }, productGroups: [{ categoryId: 1, categoryName: 'Đèn', categoryUrl: '/danh-muc-san-pham/den/', products: [{ id: 2, name: 'Sản phẩm', slug: 'san-pham', href: '/san-pham/san-pham/', image: '/upload/product/a.webp' }] }], summary: { hero: 1, categories: 1, campaigns: 1, solutions: 1, process: 1, productGroups: 1 } }
+const good = { schemaVersion: 1, locale: 'vi', path: '/', seo: { title: '', description: '' }, hero: [{ key: 'x', name: 'Hero', description: '', image: '/assets/images/site-visuals/a.webp', href: '/san-pham/' }], categories: [{ id: 1, name: 'Đèn', slug: 'den', url: '/danh-muc-san-pham/den/', major: true, image: '' }], campaigns: [{ name: 'Campaign', description: '', image: '/assets/images/site-visuals/a.webp', href: '/san-pham/' }], solutions: [{ label: 'Gia đình', name: 'Solar', description: 'Mô tả', image: '/assets/images/site-visuals/a.webp', href: '/giai-phap/' }], process: [{ number: '01', name: 'Tư vấn', description: 'Mô tả' }], dealer: { title: 'Đại lý', description: 'Mô tả', href: '/dai-ly/' }, about: { configured: false, visible: false, title: 'About', description: 'Mô tả', href: '/gioi-thieu/', action: 'Xem' }, contact: { hotline: '', email: '', address: '', workingHours: '' }, productGroups: [{ categoryId: 1, categoryName: 'Đèn', categoryUrl: '/danh-muc-san-pham/den/', products: [{ id: 2, name: 'Sản phẩm', slug: 'san-pham', href: '/san-pham/san-pham/', image: '/upload/product/a.webp' }] }], summary: { hero: 1, categories: 1, campaigns: 1, solutions: 1, process: 1, productGroups: 1 } }
 test('accepts the homepage PHP DTO without price fields', () => assert.equal(isPublicHomePayload(good), true))
 test('accepts CMS-backed homepage about points while preserving compatibility with older DTOs', () => {
   const withPoints = { ...good, about: { ...good.about, points: [{ label: 'Sản phẩm chính hãng', description: 'Thông tin rõ ràng.', image: '/upload/news/home-point.webp' }] } }
   assert.equal(isPublicHomePayload(withPoints), true)
   assert.equal(isPublicHomePayload({ ...withPoints, about: { ...withPoints.about, points: [{ ...withPoints.about.points[0], image: 'https://outside.test/icon.svg' }] } }), false)
+})
+test('homepage about visibility follows the configured and visible CMS state', () => {
+  assert.equal(isPublicHomePayload({ ...good, about: { ...good.about, configured: true, visible: false } }), true)
+  assert.equal(isPublicHomePayload({ ...good, about: { ...good.about, configured: false, visible: true } }), false)
+  assert.match(homeEditorial, /v-if="!data\.about\.configured \|\| data\.about\.visible"/)
 })
 test('homepage preview follows the PHP section order without inserting product grids', () => {
   assert.match(homePreview, /HomeHero|<HomeHero\b/)
@@ -34,6 +39,7 @@ test('homepage preview follows the PHP section order without inserting product g
   assert.match(homeCatalog, /categoryRail/)
   assert.match(homeCatalog, /category-panels-user-2026\.jpg/)
   assert.match(homeCatalog, /props\.campaigns\[0\]/)
+  assert.match(homeCatalog, /category\?\.image \|\|/)
   assert.match(homeEditorial, /v-for="\(point, index\) in aboutPoints"/)
   assert.match(homeEditorial, /Sản phẩm chính hãng/)
   assert.match(homePreview, /campaigns-configured="\(home\.summary\.campaignsConfigured \?\? 0\) > 0"/)
@@ -71,5 +77,20 @@ test('homepage read-only API follows the PHP major-category order and exposes CM
   assert.match(homePhpApi, /majorCategories/)
   assert.match(homePhpApi, /home-about-point/)
   assert.match(homePhpApi, /'points'=>\$aboutPoints/)
+  assert.match(homePhpApi, /'configured'=>\$aboutConfigured,'visible'=>\$aboutVisible/)
+  assert.match(homePhpApi, /'needles'=>array\('gia đình','gia dinh','hộ gia đình','ho gia dinh'\)/)
+  assert.doesNotMatch(homePhpApi, /\$row = \$solutionRows\[\$i\]/)
   assert.match(homePhpSource, /Hệ thống kho ba khu vực/)
+})
+test('homepage Admin SEO fields use the legacy setting row and logo for OG image', () => {
+  const withAdminSeo = { ...good, seo: { title: 'Admin title', description: 'Admin description', keywords: 'solar', image: '/upload/photo/logo.webp' } }
+  assert.equal(isPublicHomePayload(withAdminSeo), true)
+  assert.equal(isPublicHomePayload({ ...withAdminSeo, seo: { ...withAdminSeo.seo, image: '/upload/photo/logo.avif' } }), true)
+  assert.equal(isPublicHomePayload({ ...withAdminSeo, seo: { ...withAdminSeo.seo, image: '/upload/photo/../secret.jpg' } }), false)
+  assert.match(homePhpApi, /#_seo where com=\? and act=\? and type=\? limit 1', array\('setting','update','setting'\)/)
+  assert.match(homePhpApi, /#_photo where type=\? and act=\? limit 0,1', array\('logo','photo_static'\)/)
+  assert.match(homePhpApi, /ptsPublicSeoDto/)
+  assert.match(homePreview, /home\.value\?\.seo\.title \|\| fallbackTitle\.value/)
+  assert.match(homePreview, /home\.value\?\.seo\.image \|\| undefined/)
+  assert.ok(homePreview.includes("name: 'keywords', content: pageKeywords.value"))
 })

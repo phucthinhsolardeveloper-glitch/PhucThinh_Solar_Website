@@ -35,17 +35,25 @@ if (import.meta.server && responseStatus) setResponseStatus(responseStatus, resp
 const fallbackSite: PublicSitePayload = { schemaVersion: 1, brand: { name: 'Phúc Thịnh Solar', hotline: '' }, productCategories: [] }
 const { data: siteData } = await useFetch<unknown>('/_migration/site', { default: () => fallbackSite })
 const site = computed(() => isPublicSitePayload(siteData.value) ? siteData.value : fallbackSite)
+const pageTitle = computed(() => isPublicRoute.value
+  ? data.value?.seo?.title || data.value?.solution.title || 'Giải pháp'
+  : 'Giải pháp — internal preview')
+const pageDescription = computed(() => isPublicRoute.value
+  ? data.value?.seo?.description || data.value?.solution.summary || ''
+  : data.value?.solution.summary || '')
+const pageKeywords = computed(() => isPublicRoute.value ? data.value?.seo?.keywords || undefined : undefined)
 useSeoMeta({
-  title: computed(() => isPublicRoute.value ? (data.value?.solution.title || 'Giải pháp') : 'Giải pháp — internal preview'),
-  description: computed(() => data.value?.solution.summary || ''),
+  title: pageTitle,
+  description: pageDescription,
   robots: computed(() => editorialPublicRouteRobots(isPublicRoute.value && config.public.solutionDetailPublicRouteEnabled, config.public.solutionDetailPublicRouteIndexable, !!data.value && !error.value)),
 })
+useHead({ meta: computed(() => pageKeywords.value ? [{ name: 'keywords', content: pageKeywords.value }] : []) })
 usePublicSocialMeta({
   enabled: computed(() => isPublicRoute.value && config.public.solutionDetailPublicRouteEnabled && !!data.value && !error.value),
-  title: computed(() => data.value?.solution.title || 'Giải pháp'),
-  description: computed(() => data.value?.solution.summary || ''),
+  title: pageTitle,
+  description: pageDescription,
   canonicalPath: computed(() => route.path),
-  image: computed(() => data.value?.solution.image),
+  image: computed(() => data.value?.seo?.image || data.value?.solution.image || undefined),
 })
 </script>
 

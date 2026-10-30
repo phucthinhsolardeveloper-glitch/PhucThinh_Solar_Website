@@ -80,7 +80,7 @@ usePublicSocialMeta({
   title: computed(() => payload.value?.seo.title || 'Video'),
   description: computed(() => payload.value?.seo.description || ''),
   canonicalPath: VIDEO_PUBLIC_PATH,
-  image: computed(() => payload.value?.videos[0]?.thumbnail),
+  image: computed(() => payload.value?.seo.image || payload.value?.videos[0]?.thumbnail),
 })
 </script>
 

@@ -1,9 +1,11 @@
-export interface PublicNewsCategory { id: number; name: string; description: string; slug: string; url: string; canonicalPath: string; image: string; type?: 'tin-tuc'; level?: 'list' | 'cat' | 'item' | 'sub'; path?: string }
+import { isPublicSeoMetadata, type PublicSeoMetadata } from './core.ts'
+
+export interface PublicNewsCategory { id: number; name: string; description: string; slug: string; url: string; canonicalPath: string; image: string; seo?: PublicSeoMetadata; type?: 'tin-tuc'; level?: 'list' | 'cat' | 'item' | 'sub'; path?: string }
 export interface PublicNewsArticle { id: number; title: string; slug: string; url: string; description: string; date: string; image: string; readingMinutes: number; category: PublicNewsCategory | null; featured: boolean }
 export interface PublicNewsIntro { title: string; description: string }
 export interface PublicNewsCta { title: string; description: string; buttonLabel: string; image: string; hotline: { label: string; text: string; tel: string } | null }
 export interface PublicNewsPayload {
-  schemaVersion: 1; locale: 'vi'; path: '/tin-tuc/'; title: string; description: string
+  schemaVersion: 1; locale: 'vi'; path: '/tin-tuc/'; title: string; description: string; seo?: PublicSeoMetadata
   category: PublicNewsCategory | null; categories: PublicNewsCategory[]; featured: PublicNewsArticle[]; articles: PublicNewsArticle[]
   pagination: { page: number; perPage: 6; total: number }; intro: PublicNewsIntro | null; cta: PublicNewsCta | null
   labels: { all: string; search: string; featured: string; results: string; empty: string; reset: string; read: string; pages: string; readMore: string; ctaPhone: string }
@@ -16,6 +18,7 @@ function isImage(value: unknown): value is string { return typeof value === 'str
 function isId(value: unknown): value is number { return typeof value === 'number' && Number.isSafeInteger(value) && value > 0 }
 function isCategory(value: unknown): value is PublicNewsCategory {
   if (!isRecord(value) || !isId(value.id) || !isText(value.name) || !isText(value.description, true) || !isSlug(value.slug) || value.url !== `/${value.slug}/` || value.canonicalPath !== `/${value.slug}` || !isImage(value.image)) return false
+  if (value.seo !== undefined && !isPublicSeoMetadata(value.seo, ['/upload/news/'])) return false
   const hasHierarchy = value.type !== undefined || value.level !== undefined || value.path !== undefined
   if (!hasHierarchy) return true
   if (value.type !== 'tin-tuc' || !['list', 'cat', 'item', 'sub'].includes(String(value.level)) || typeof value.path !== 'string') return false
@@ -32,6 +35,7 @@ function isCta(value: unknown): value is PublicNewsCta {
 
 export function isPublicNewsPayload(value: unknown): value is PublicNewsPayload {
   if(!isRecord(value) || value.schemaVersion !== 1 || value.locale !== 'vi' || value.path !== '/tin-tuc/' || !isText(value.title) || !isText(value.description, true)) return false
+  if(value.seo !== undefined && !isPublicSeoMetadata(value.seo, ['/upload/seopage/'])) return false
   if(value.category !== null && !isCategory(value.category)) return false
   if(!Array.isArray(value.categories) || !value.categories.every(isCategory) || !Array.isArray(value.featured) || !value.featured.every(isArticle) || !Array.isArray(value.articles) || !value.articles.every(isArticle)) return false
   if(!isRecord(value.pagination) || value.pagination.page !== Math.floor(value.pagination.page as number) || typeof value.pagination.page !== 'number' || value.pagination.page < 1 || value.pagination.perPage !== 6 || typeof value.pagination.total !== 'number' || !Number.isSafeInteger(value.pagination.total) || value.pagination.total < 0) return false

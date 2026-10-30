@@ -1,11 +1,17 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
+import { readFileSync } from 'node:fs'
 import { isNewsDetailSlug, isPublicNewsDetailPayload } from '../shared/contracts/public-news-detail.ts'
 
 const article = { schemaVersion: 1, locale: 'vi', id: 8, title: 'Bài viết CMS', slug: 'bai-viet-cms', canonical: '/bai-viet-cms/', date: '2026-10-26', datePublished: '2026-10-26', dateModified: '2026-10-27', author: { name: 'Phúc Thịnh Solar' }, description: 'Mô tả', cover: '/upload/news/article.webp', showCover: true, content: { format: 'sanitized-html', html: '<p>Nội dung</p>', sanitizedBy: 'pts_public_richtext', sanitizerVersion: 1 }, category: {}, media: { gallery: [{ image: '/upload/news/gallery.jpg', alt: '' }], videos: [{ url: 'https://www.youtube.com/watch?v=abc', title: '' }] }, seo: { title: 'Bài viết CMS', description: 'Mô tả', keywords: '', canonical: '/bai-viet-cms/' }, readOnly: true, legacyViewMutation: false }
 const cta = { title: 'Cần tư vấn?', description: 'Liên hệ để được hỗ trợ.', buttonLabel: 'Nhận tư vấn', image: '', hotline: { label: 'Gọi ngay hotline', text: '0901 234 567', tel: '0901234567' } }
 const good = { article, cta, related: [{ id: 9, title: 'Tin khác', slug: 'tin-khac', canonical: '/tin-khac/', date: '', author: 'Phúc Thịnh Solar', description: '', image: '' }] }
 test('accepts safe read-only detail DTO', () => assert.equal(isPublicNewsDetailPayload(good), true))
+test('emits Admin SEO keywords on the public bare-slug page', () => {
+  const page = readFileSync(new URL('../app/pages/migration-news-detail-preview.vue', import.meta.url), 'utf8')
+  assert.match(page, /payload\.value\?\.article\.seo\.keywords/)
+  assert.match(page, /useHead\(\{ meta: computed\(\(\) => pageKeywords\.value \? \[\{ name: 'keywords', content: pageKeywords\.value \}\] : \[\]\) \}\)/)
+})
 test('accepts only sanitized optional legacy quote content', () => {
   const quote = { format: 'sanitized-html', html: '<p>Thông tin bổ sung</p>', sanitizedBy: 'pts_public_richtext', sanitizerVersion: 1 }
   assert.equal(isPublicNewsDetailPayload({ ...good, article: { ...article, quote } }), true)

@@ -35,16 +35,21 @@ const quickLinks = computed(() => {
 })
 const links = useMigrationLinks()
 
-const pageTitle = computed(() => props.preview ? 'Đại lý — internal preview' : dealer.value?.title || 'Đại lý — Phúc Thịnh Solar')
+const pageTitle = computed(() => props.preview ? 'Đại lý — internal preview' : dealer.value?.seo?.title || dealer.value?.title || 'Đại lý — Phúc Thịnh Solar')
+const pageDescription = computed(() => props.preview ? '' : dealer.value?.seo?.description || '')
+const pageKeywords = computed(() => props.preview ? undefined : dealer.value?.seo?.keywords || undefined)
 useSeoMeta({
   title: pageTitle,
+  description: pageDescription,
   robots: () => indexable.value ? 'index, follow' : 'noindex, nofollow, noarchive',
 })
+useHead({ meta: computed(() => pageKeywords.value ? [{ name: 'keywords', content: pageKeywords.value }] : []) })
 usePublicSocialMeta({
   enabled: computed(() => !props.preview && isRuntimeFlagEnabled(config.public.dealerPublicRouteEnabled) && !!dealer.value && !error.value && !siteError.value),
   title: pageTitle,
+  description: pageDescription,
   canonicalPath: '/dai-ly/',
-  image: computed(() => dealer.value?.hero?.image || undefined),
+  image: computed(() => dealer.value?.seo?.image || dealer.value?.hero?.image || undefined),
 })
 </script>
 

@@ -39,6 +39,7 @@ try
     require_once LIBRARIES.'solution_hub.php';
     require_once LIBRARIES.'product_category_urls.php';
     require_once LIBRARIES.'pts_public_richtext.php';
+    require_once LIBRARIES.'pts_public_seo_api.php';
     require_once LIBRARIES.'pts_public_solutions_api.php';
 
     $loadRows = static function($sql, array $params) use ($cache) {
@@ -65,6 +66,9 @@ try
         "select nl.id,nl.namevi,nl.descvi,nl.slugvi,nl.photo,nl.status from #_news_list nl where nl.type=? and find_in_set('hienthi',nl.status) and exists(select 1 from #_news n where n.id_list=nl.id and n.type=? and find_in_set('hienthi',n.status) and n.slugvi<>'') order by nl.numb,nl.id desc",
         array('giai-phap', 'giai-phap')
     );
+    // Match the active legacy /giai-phap/ SEO lookup in sources/news.php.
+    $seoRow = $d->rawQueryOne('select titlevi,descriptionvi,keywordsvi,photo from #_seopage where type = ? limit 1', array('giai-phap'));
+    $seo = ptsPublicSeoDto(is_array($seoRow) ? $seoRow : array(), ROOT, UPLOAD_SEOPAGE_L);
 
     // Match source/template image approval: basename, extension and file existence.
     // solutionHubImage() checks is_file($upload.$filename) with no ROOT prefix,
@@ -119,7 +123,9 @@ try
         $ctaRows,
         $productRows,
         isset($options['hotline']) ? $options['hotline'] : '',
-        $fallbackImages
+        $fallbackImages,
+        'assets/images/site-visuals/catalog-street-lighting.jpg',
+        $seo
     );
     if($categorySlug !== '')
     {
@@ -132,7 +138,20 @@ try
                 break;
             }
         }
-        $categoryDto = $selectedCategory ? ptsPublicSolutionCategoryDto($selectedCategory, $categoryRows, $solutionRows) : null;
+        $categoryDto = null;
+        if($selectedCategory)
+        {
+            // The legacy taxonomy SEO row is keyed by news/man_list/giai-phap;
+            // its OG image remains the validated taxonomy photo from #_news_list.
+            $categorySeoRow = $d->rawQueryOne('select titlevi,descriptionvi,keywordsvi from #_seo where id_parent = ? and com = ? and act = ? and type = ? limit 1', array((int)$selectedCategory['id'], 'news', 'man_list', 'giai-phap'));
+            $categorySeo = ptsPublicSeoDto(
+                is_array($categorySeoRow) ? $categorySeoRow : array(),
+                ROOT,
+                UPLOAD_NEWS_L,
+                $publicImage(isset($selectedCategory['photo']) ? $selectedCategory['photo'] : '', UPLOAD_NEWS_L)
+            );
+            $categoryDto = ptsPublicSolutionCategoryDto($selectedCategory, $categoryRows, $solutionRows, $categorySeo);
+        }
         if($categoryDto === null)
         {
             http_response_code(404);

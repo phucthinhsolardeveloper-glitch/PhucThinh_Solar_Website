@@ -202,7 +202,7 @@ function onTabKeydown(event: KeyboardEvent, index: number) {
     </div>
   </section>
 
-  <section class="py-[clamp(64px,6vw,92px)] pb-[clamp(44px,4vw,64px)]" aria-labelledby="home-about-title">
+  <section v-if="!data.about.configured || data.about.visible" class="py-[clamp(64px,6vw,92px)] pb-[clamp(44px,4vw,64px)]" aria-labelledby="home-about-title">
     <div class="mx-auto grid w-[min(calc(100%-clamp(40px,5vw,96px)),1560px)] max-[860px]:w-[min(calc(100%-48px),1440px)] max-[640px]:w-[calc(100%-40px)] max-[360px]:w-[calc(100%-32px)] min-[1600px]:w-[min(calc(100%-clamp(96px,8vw,220px)),2200px)] grid-cols-[minmax(0,1.15fr)_minmax(360px,.85fr)] items-start gap-[clamp(46px,6vw,96px)] max-[860px]:grid-cols-1">
       <div>
         <h2 id="home-about-title" class="m-0 text-[clamp(30px,2.3vw,42px)] font-bold leading-[1.2] text-navy-950">

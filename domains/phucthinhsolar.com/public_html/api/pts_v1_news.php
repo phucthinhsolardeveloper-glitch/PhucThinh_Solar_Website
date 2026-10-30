@@ -42,6 +42,7 @@ try {
 
     require_once __DIR__.'/config.php';
     require_once LIBRARIES.'pts_public_news_api.php';
+    require_once LIBRARIES.'pts_public_seo_api.php';
     $loadRows = static function($sql, array $params) use ($cache) {
         $rows = $cache->get($sql, $params, 'result', 7200);
         return is_array($rows) ? $rows : array();
@@ -59,7 +60,14 @@ try {
         $categoryResolution = ptsNewsResolveCategoryHierarchy($d, $categoryType, $categorySegments);
         if($categoryResolution === null) ptsNewsError(404, 'CATEGORY_NOT_FOUND');
         $selectedCategory = $categoryResolution['row'];
+        $seoActions = array('list' => 'man_list', 'cat' => 'man_cat', 'item' => 'man_item', 'sub' => 'man_sub');
+        $seoRow = $d->rawQueryOne('select titlevi,descriptionvi,keywordsvi from #_seo where id_parent = ? and com = ? and act = ? and type = ? limit 1', array((int)$selectedCategory['id'], 'news', $seoActions[$categoryType], 'tin-tuc'));
+        $categoryMetadata = is_array($selectedCategory['_pts_public_category_metadata'] ?? null) ? $selectedCategory['_pts_public_category_metadata'] : array();
+        $categoryMetadata['seo'] = ptsPublicSeoDto(is_array($seoRow) ? $seoRow : array(), ROOT, UPLOAD_NEWS_L, $selectedCategory['photo'] ?? '');
+        $selectedCategory['_pts_public_category_metadata'] = $categoryMetadata;
     }
+    $seoRow = $d->rawQueryOne('select titlevi,descriptionvi,keywordsvi,photo from #_seopage where type=? limit 0,1', array('tin-tuc'));
+    $seo = ptsPublicSeoDto(is_array($seoRow) ? $seoRow : array(), ROOT, UPLOAD_SEOPAGE_L);
 
     $fields = 'id,id_list,namevi,slugvi,photo,descvi,contentvi,date_created,status';
     $where = "type=? and find_in_set('hienthi',status) and slugvi<>''";
@@ -90,7 +98,7 @@ try {
     $ctaRows = $loadRows('select namevi,descvi,content1vi,photo,status from #_news where type=? order by numb,id desc', array('news-cta'));
     foreach($ctaRows as &$row) $row['_pts_public_photo'] = isset($row['photo']) && is_file(ROOT.UPLOAD_NEWS_L.$row['photo']) ? $row['photo'] : ''; unset($row);
     if(function_exists('closeSessionWrite')) closeSessionWrite();
-    echo json_encode(ptsNewsPayload($categories, $rows, $featuredRows, $intro, $introConfigured, $ctaRows, (bool)$ctaRows, $page, $total, $query, $selectedCategory, is_array($optsetting) && isset($optsetting['hotline']) ? $optsetting['hotline'] : '', $heroEnabled), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
+    echo json_encode(ptsNewsPayload($categories, $rows, $featuredRows, $intro, $introConfigured, $ctaRows, (bool)$ctaRows, $page, $total, $query, $selectedCategory, is_array($optsetting) && isset($optsetting['hotline']) ? $optsetting['hotline'] : '', $heroEnabled, $seo), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
 } catch(Throwable $e) {
     error_log('pts_v1_news: '.$e->getMessage());
     http_response_code(500);

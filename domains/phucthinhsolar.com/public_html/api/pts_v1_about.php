@@ -17,9 +17,14 @@ try
 {
     require_once __DIR__.'/config.php';
     require_once LIBRARIES.'pts_public_about_api.php';
+    require_once LIBRARIES.'pts_public_seo_api.php';
     $loadRows = static function($sql, array $params) use ($cache) {
         $rows = $cache->get($sql, $params, 'result', 7200);
         return is_array($rows) ? $rows : array();
+    };
+    $loadOne = static function($sql, array $params) use ($cache) {
+        $row = $cache->get($sql, $params, 'fetch', 7200);
+        return is_array($row) ? $row : array();
     };
     $news = static function($type, $limit = '') use ($loadRows) {
         $sql = "select namevi,title_indexvi,descvi,contentvi,solieu,id,photo,status from #_news where type=? and find_in_set('hienthi',status) order by numb,id desc";
@@ -32,6 +37,8 @@ try
     $teamRows = $news('about-team', 1);
     $principleRows = $news('about-principle', 3);
     $certificates = $loadRows("select id,namevi,descvi,link,photo,status from #_photo where type=? and find_in_set('hienthi',status) order by numb,id desc", array('chungnhan'));
+    $seoRow = $loadOne('select titlevi,descriptionvi,keywordsvi,photo from #_seopage where type=? limit 0,1', array('gioi-thieu'));
+    $seo = ptsPublicSeoDto($seoRow, ROOT, UPLOAD_SEOPAGE_L);
     $ctaRows = $loadRows("select namevi,descvi,link,photo,status from #_photo where type=? and find_in_set('hienthi',status) order by numb,id desc limit 0,1", array('about-cta'));
     $advRows = $loadRows("select namevi,descvi,link,photo from #_photo where type=? order by numb,id desc", array('adv'));
     $labels = ptsAboutLabels();
@@ -128,7 +135,7 @@ try
     $hotline = is_array($optsetting) && isset($optsetting['hotline']) ? $optsetting['hotline'] : '';
     $zaloValue = is_array($optsetting) && isset($optsetting['zalo']) && is_scalar($optsetting['zalo']) ? $optsetting['zalo'] : '';
     $zalo = $func->parsePhone($zaloValue);
-    echo json_encode(ptsAboutPayload($sections, $labels, $hotline, $zalo), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
+    echo json_encode(ptsAboutPayload($sections, $labels, $hotline, $zalo, $seo), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
 }
 catch(Throwable $e)
 {

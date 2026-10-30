@@ -157,7 +157,8 @@
     /* Giới thiệu ngắn (About teaser) trang chủ - thêm Admin 2026-09-14 (trước
        đó hardcode). Ảnh/nhãn/tiêu đề/mô tả/chữ nút lấy record home-about hiển
        thị đầu tiên; bốn ô lợi ích lấy tối đa 4 record home-about-point.
-       Không có record nào (hoặc tắt hết) thì dùng nội dung mặc định đã duyệt. */
+       Không có record nào thì dùng nội dung mặc định; nếu có record nhưng tắt
+       hết thì ẩn khối theo công tắc Hiển thị. */
     $homeAboutAllRows = $cache->get("select name$lang, title_index$lang, desc$lang, content1$lang, photo, status from #_news where type = ? order by numb,id desc", array('home-about'), 'result', 7200);
     $homeAboutPointAllRows = $cache->get("select name$lang, desc$lang, photo, status from #_news where type = ? order by numb,id desc", array('home-about-point'), 'result', 7200);
     $homeAboutRows = array();

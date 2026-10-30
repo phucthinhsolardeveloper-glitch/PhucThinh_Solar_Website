@@ -17,7 +17,10 @@ function ptsCartMoney($value)
 {
     if(!is_scalar($value) || !is_numeric($value)) return null;
     $number = (float)$value;
-    if(!is_finite($number) || $number < 0 || $number > PHP_INT_MAX) return null;
+    // Match the catalog DTO: zero is the database's empty-price sentinel, not
+    // a public price. Keeping it as 0 makes the stricter Nuxt cart contract
+    // reject otherwise valid cart items.
+    if(!is_finite($number) || $number <= 0 || $number > PHP_INT_MAX) return null;
     return (int)round($number);
 }
 

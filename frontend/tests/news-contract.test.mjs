@@ -1,5 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
+import { readFileSync } from 'node:fs'
 import { isPublicNewsPayload } from '../shared/contracts/public-news.ts'
 
 const category = { id: 4, name: 'Kiến thức điện mặt trời', description: 'Mô tả nhóm', slug: 'kien-thuc-dien-mat-troi', url: '/kien-thuc-dien-mat-troi/', canonicalPath: '/kien-thuc-dien-mat-troi', image: '' }
@@ -23,4 +24,21 @@ test('accepts resolved multi-level category metadata only when its leaf slug mat
   assert.equal(isPublicNewsPayload({ ...good, category: selected }), true)
   assert.equal(isPublicNewsPayload({ ...good, category: { ...selected, path: 'kien-thuc/dien-mat-troi/khac' } }), false)
   assert.equal(isPublicNewsPayload({ ...good, category: { ...selected, type: 'du-an' } }), false)
+})
+
+test('news Admin SEO uses #_seopage at the hub and depth-specific #_seo at taxonomy routes', () => {
+  const api = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/api/pts_v1_news.php', import.meta.url), 'utf8')
+  const page = readFileSync(new URL('../app/pages/migration-news-preview.vue', import.meta.url), 'utf8')
+  const categoryPage = readFileSync(new URL('../app/components/news/NewsCategoryPage.vue', import.meta.url), 'utf8')
+  assert.match(api, /#_seo where id_parent = \? and com = \? and act = \? and type = \? limit 1', array\(\(int\)\$selectedCategory\['id'\], 'news', \$seoActions\[\$categoryType\], 'tin-tuc'\)/)
+  assert.match(api, /'list' => 'man_list'.*'cat' => 'man_cat'.*'item' => 'man_item'.*'sub' => 'man_sub'/s)
+  assert.match(api, /#_seopage where type=\? limit 0,1', array\('tin-tuc'\)/)
+  assert.match(api, /select titlevi,descriptionvi,keywordsvi,photo from #_seopage/)
+  assert.match(page, /news\.value\?\.seo\?\.title \|\| news\.value\?\.title/)
+  assert.match(page, /news\.value\?\.seo\?\.image \|\| news\.value\?\.featured\[0\]\?\.image/)
+  assert.match(categoryPage, /category\.value\?\.seo\?\.title \|\| category\.value\?\.name/)
+  assert.match(categoryPage, /category\.value\?\.seo\?\.image \|\| category\.value\?\.image/)
+  assert.equal(isPublicNewsPayload({ ...good, seo: { title: 'Admin title', description: 'Admin description', keywords: 'solar', image: '/upload/seopage/news.webp' } }), true)
+  assert.equal(isPublicNewsPayload({ ...good, seo: { title: '', description: '', image: '/upload/news/category.webp' } }), false)
+  assert.equal(isPublicNewsPayload({ ...good, category: { ...category, seo: { title: 'Category title', description: '', image: '/upload/news/category.webp' } } }), true)
 })

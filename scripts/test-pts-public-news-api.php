@@ -17,6 +17,11 @@ $payload = ptsNewsPayload(array($category), array($rows[0]), $featured, array(),
 newsAssert($payload['pagination']['perPage'] === 6 && $payload['articles'][0]['description'] === 'Mô tả CMS', 'giữ page size 6 và plain text excerpt');
 newsAssert($categoryDto['canonicalPath'] === '/kien-thuc-dien-mat-troi', 'category DTO giữ canonical bare path như PHP');
 newsAssert($payload['articles'][0]['readingMinutes'] === 2 && $payload['articles'][0]['url'] === '/bai-viet-cms/', 'reading time và canonical bare slug');
+newsAssert($payload['seo'] === array('title'=>'','description'=>'','keywords'=>'','image'=>''), 'SEO hub mặc định rỗng khi chưa có metadata Admin');
+$categoryWithSeo = ptsNewsCategoryDto($category, array('type'=>'tin-tuc','level'=>'list','path'=>'kien-thuc-dien-mat-troi','seo'=>array('title'=>'SEO category','description'=>'Mô tả SEO','keywords'=>'tin tức','image'=>'/upload/news/category.webp')));
+newsAssert($categoryWithSeo['seo']['image'] === '/upload/news/category.webp' && $categoryWithSeo['seo']['title'] === 'SEO category', 'SEO category được giữ trong metadata phân cấp');
+$seoPayload = ptsNewsPayload(array($category), array(), array(), array(), false, array(), false, 1, 0, '', null, '', true, array('title'=>'SEO hub','description'=>'Mô tả SEO','keywords'=>'tin tức','image'=>'/upload/seopage/news.webp'));
+newsAssert($seoPayload['seo'] === array('title'=>'SEO hub','description'=>'Mô tả SEO','keywords'=>'tin tức','image'=>'/upload/seopage/news.webp'), 'SEO hub được trả thành DTO riêng');
 newsAssert(strpos(json_encode($payload, JSON_UNESCAPED_UNICODE), '<b>') === false && strpos(json_encode($payload, JSON_UNESCAPED_UNICODE), 'hidden.jpg') === false, 'DTO không lộ HTML hoặc bài ẩn');
 $hiddenIntro = ptsNewsPayload(array($category), array(), array(), array(), true, array(), true, 1, 0, '', null, '', false);
 newsAssert($hiddenIntro['intro'] === null && $hiddenIntro['cta'] === null, 'CMS đã cấu hình nhưng ẩn không hồi sinh fallback');

@@ -28,6 +28,7 @@ try
 
     require_once __DIR__.'/config.php';
     require_once LIBRARIES.'pts_public_media_library_api.php';
+    require_once LIBRARIES.'pts_public_seo_api.php';
 
     $rows = $d->rawQuery(
         "select id,namevi,link_video,status from #_photo where type=? and act<>? and find_in_set('hienthi',status) order by numb,id desc",
@@ -43,13 +44,14 @@ try
     $total = count($safe);
     $videos = array_slice($safe, ($page - 1) * $perPage, $perPage);
 
-    $seo = $d->rawQueryOne("select titlevi,descriptionvi,keywordsvi from #_seopage where type=? limit 1", array('video')) ?: array();
+    $seo = $d->rawQueryOne("select titlevi,descriptionvi,keywordsvi,photo from #_seopage where type=? limit 1", array('video')) ?: array();
+    $seoImage = ptsPublicSeoImage($seo['photo'] ?? '', ROOT, UPLOAD_SEOPAGE_L);
     echo json_encode(array(
         'schemaVersion'=>1,
         'locale'=>'vi',
         'path'=>'/video/',
         'title'=>'Video',
-        'seo'=>ptsMediaSeoDto($seo, 'Video', 'Video', '/video/'),
+        'seo'=>ptsMediaSeoDto($seo, 'Video', 'Video', '/video/', $seoImage),
         'videos'=>$videos,
         'pagination'=>array('page'=>$page,'perPage'=>$perPage,'total'=>$total)
     ), JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR);

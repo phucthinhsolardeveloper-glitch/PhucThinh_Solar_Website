@@ -55,6 +55,7 @@ try
     require_once LIBRARIES.'product_price_filter.php';
     require_once LIBRARIES.'product_content_blocks.php';
     require_once LIBRARIES.'pts_public_catalog_api.php';
+    require_once LIBRARIES.'pts_public_seo_api.php';
 
     $segments = $categoryPath === '' ? array() : explode('/', $categoryPath);
     $resolved = $segments ? publicResolveProductCategoryPath($d, $segments, 'vi') : array();
@@ -171,13 +172,15 @@ try
         if($seoAction !== '' && !empty($selectedCategoryRow['id'])) {
             $seoRow = $d->rawQueryOne('select titlevi,descriptionvi,keywordsvi from #_seo where id_parent = ? and com = ? and act = ? and type = ? limit 1', array((int)$selectedCategoryRow['id'], 'product', $seoAction, 'san-pham'));
             $extras['seoRow'] = is_array($seoRow) ? $seoRow : array();
+            $extras['seoImage'] = ptsPublicSeoImage($selectedCategoryRow['photo'] ?? '', ROOT, UPLOAD_PRODUCT_L);
         }
     }
     else
     {
         /* Root catalog metadata is managed on #_seopage for type san-pham. */
-        $seoRow = $d->rawQueryOne('select titlevi,descriptionvi,keywordsvi from #_seopage where type = ? limit 1', array('san-pham'));
+        $seoRow = $d->rawQueryOne('select titlevi,descriptionvi,keywordsvi,photo from #_seopage where type = ? limit 1', array('san-pham'));
         $extras['seoRow'] = is_array($seoRow) ? $seoRow : array();
+        $extras['seoImage'] = ptsPublicSeoImage($seoRow['photo'] ?? '', ROOT, UPLOAD_SEOPAGE_L);
     }
     $currentPath = $categoryPath === '' ? 'san-pham' : 'danh-muc-san-pham/'.$categoryPath;
     $heroRows = $cache->get("select namevi,link,photo,status from #_photo where type=? order by numb,id desc", array('product-category-hero'), 'result', 7200);

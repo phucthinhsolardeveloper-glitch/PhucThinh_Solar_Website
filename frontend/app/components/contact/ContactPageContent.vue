@@ -15,6 +15,7 @@ const { data, error } = await useFetch<unknown>('/_migration/contact')
 const site = computed(() => isPublicSitePayload(siteData.value) ? siteData.value : fallbackSite)
 const contact = computed(() => isPublicContactPayload(data.value) ? data.value : null)
 const pageTitle = computed(() => props.preview ? 'Liên hệ — internal preview' : contact.value?.seo.title || 'Liên hệ — Phúc Thịnh Solar')
+const pageKeywords = computed(() => props.preview ? '' : contact.value?.seo.keywords || '')
 
 if (import.meta.server && !props.preview && (siteError.value || !isPublicSitePayload(siteData.value) || error.value || !contact.value)) {
   setResponseStatus(502, 'Bad Gateway')
@@ -25,12 +26,13 @@ useSeoMeta({
   description: () => contact.value?.seo.description || '',
   robots: () => indexable.value ? 'index, follow' : 'noindex, nofollow, noarchive',
 })
+useHead({ meta: computed(() => pageKeywords.value ? [{ name: 'keywords', content: pageKeywords.value }] : []) })
 usePublicSocialMeta({
   enabled: computed(() => !props.preview && isRuntimeFlagEnabled(config.public.contactPublicRouteEnabled) && !!contact.value && !error.value && !siteError.value),
   title: pageTitle,
   description: computed(() => contact.value?.seo.description || ''),
   canonicalPath: '/lien-he/',
-  image: computed(() => contact.value?.visual?.image || undefined),
+  image: computed(() => contact.value?.seo.image || contact.value?.visual?.image || undefined),
 })
 </script>
 

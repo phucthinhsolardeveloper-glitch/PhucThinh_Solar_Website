@@ -38,6 +38,9 @@ const projects = computed(() => isPublicProjectsPayload(data.value) ? data.value
 const currentPage = computed(() => projects.value?.pagination.page ?? page.value)
 const totalPages = computed(() => projects.value ? Math.max(1, Math.ceil(projects.value.pagination.total / projects.value.pagination.perPage)) : 1)
 const paginationItems = usePaginationItems(currentPage, totalPages)
+const pageTitle = computed(() => projects.value?.seo?.title || projects.value?.title || 'Dự án')
+const pageDescription = computed(() => projects.value?.seo?.description || projects.value?.intro.description || '')
+const pageKeywords = computed(() => projects.value?.seo?.keywords || '')
 const errorStatus = (error.value as { statusCode?: unknown } | null)?.statusCode
 const responseStatus = editorialPublicHubResponseStatus(publicProjectsEnabled.value, errorStatus, projects.value === null)
 if (import.meta.server && responseStatus) setResponseStatus(responseStatus, responseStatus === 404 ? 'Not Found' : 'Bad Gateway')
@@ -53,7 +56,8 @@ function pageLink(nextPage: number) {
 }
 
 useSeoMeta({
-  title: () => isPublicRoute.value ? (projects.value?.title || 'Dự án') : 'Dự án — internal preview',
+  title: () => isPublicRoute.value ? pageTitle.value : 'Dự án — internal preview',
+  description: () => pageDescription.value,
   robots: computed(() => editorialPublicRouteRobots(
     isPublicRoute.value && config.public.projectsPublicRouteEnabled,
     config.public.projectsPublicRouteIndexable,
@@ -61,12 +65,13 @@ useSeoMeta({
     ['category', 'p', 'page'].some((key) => key in route.query),
   )),
 })
+useHead({ meta: computed(() => pageKeywords.value ? [{ name: 'keywords', content: pageKeywords.value }] : []) })
 usePublicSocialMeta({
   enabled: computed(() => isPublicRoute.value && config.public.projectsPublicRouteEnabled && !!projects.value && !error.value),
-  title: computed(() => projects.value?.title || 'Dự án'),
-  description: computed(() => projects.value?.intro.description || ''),
+  title: pageTitle,
+  description: pageDescription,
   canonicalPath: '/du-an-da-thuc-hien/',
-  image: computed(() => projects.value?.featured?.image || undefined),
+  image: computed(() => projects.value?.seo?.image || projects.value?.featured?.image || undefined),
 })
 </script>
 

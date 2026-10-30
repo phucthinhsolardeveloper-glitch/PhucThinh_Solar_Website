@@ -339,7 +339,7 @@ onBeforeUnmount(() => {
 
 <template>
   <!-- The PHP header keeps navigation, phone, search, cart and CTA on one row. -->
-  <div class="sticky top-0 z-[1000]" @mouseleave="handleShellLeave">
+  <div class="pts-site-header sticky top-0 z-[1000]" @mouseleave="handleShellLeave">
     <header
       :inert="mobileOpen ? true : undefined"
       class="relative z-[1000] border-b border-hdr-line bg-white/96 shadow-[0_1px_4px_rgba(10,34,81,0.06)] backdrop-blur-md"

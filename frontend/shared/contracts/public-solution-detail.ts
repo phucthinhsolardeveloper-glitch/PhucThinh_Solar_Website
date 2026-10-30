@@ -1,4 +1,5 @@
 import { isPublicSanitizedRichText, type PublicSanitizedRichText } from './editorial-rich-text.ts'
+import { isPublicSeoMetadata, type PublicSeoMetadata } from './core.ts'
 
 export interface PublicSolutionDetail { id: number; title: string; slug: string; url: string; summary: string; image: string; content: PublicSanitizedRichText; extraContent: PublicSanitizedRichText; gallery: string[] }
 export interface PublicSolutionDetailNav { title: string; slug: string; url: string; image: string; active: boolean }
@@ -8,7 +9,7 @@ export interface PublicSolutionDetailCampaignCta {
   hotline: { label: string; text: string; tel: string } | null
 }
 export interface PublicSolutionDetailPayload {
-  schemaVersion: 1; locale: 'vi'; path: string; solution: PublicSolutionDetail
+  schemaVersion: 1; locale: 'vi'; path: string; seo?: PublicSeoMetadata; solution: PublicSolutionDetail
   navigation: { allUrl: '/giai-phap/'; items: PublicSolutionDetailNav[] }
   equipment: { name: string; description: string; url: string; image: string }[]
   cta: { label: string; href: '/lien-he/#yeu-cau-tu-van' }
@@ -40,6 +41,7 @@ function campaignCta(value: unknown): value is PublicSolutionDetailCampaignCta {
 export function isSolutionSlug(value: unknown): value is string { return slug(value) }
 export function isPublicSolutionDetailPayload(value: unknown): value is PublicSolutionDetailPayload {
   if (!record(value) || value.schemaVersion !== 1 || value.locale !== 'vi' || !text(value.path) || !solutionUrl(value.path, value.solution && record(value.solution) ? value.solution.slug as string : undefined) || !record(value.solution)) return false
+  if (value.seo !== undefined && !isPublicSeoMetadata(value.seo, ['/upload/news/'])) return false
   const solution = value.solution
   if (typeof solution.id !== 'number' || !Number.isSafeInteger(solution.id) || solution.id < 1 || !text(solution.title) || !slug(solution.slug) || !solutionUrl(solution.url, solution.slug) || !text(solution.summary, true) || !image(solution.image) || !isPublicSanitizedRichText(solution.content) || !isPublicSanitizedRichText(solution.extraContent) || !Array.isArray(solution.gallery) || !solution.gallery.every(image)) return false
   if (!record(value.navigation) || value.navigation.allUrl !== '/giai-phap/' || !Array.isArray(value.navigation.items) || !value.navigation.items.every((item) => record(item) && text(item.title) && slug(item.slug) && solutionUrl(item.url, item.slug) && image(item.image) && typeof item.active === 'boolean')) return false

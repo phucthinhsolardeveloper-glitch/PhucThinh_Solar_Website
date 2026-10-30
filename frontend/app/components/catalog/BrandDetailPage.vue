@@ -111,16 +111,23 @@ function pageLink(nextPage: number) {
 const brandIndexable = computed(() => publicEnabled.value
   && isRuntimeFlagEnabled(config.public.brandDetailPublicRouteIndexable)
   && !!data.value && !error.value && !['page', 'sort', 'price'].some((key) => key in route.query))
-const brandTitle = computed(() => data.value ? `${data.value.brand.name} — Phúc Thịnh Solar` : 'Thương hiệu — Phúc Thịnh Solar')
+const brandTitle = computed(() => data.value?.seo?.title || (data.value ? `${data.value.brand.name} | Phúc Thịnh Solar` : 'Thương hiệu — Phúc Thịnh Solar'))
+const brandDescription = computed(() => data.value?.seo?.description || '')
+const brandSocialDescription = computed(() => brandDescription.value || site.value.brand.name || 'Phúc Thịnh Solar')
+const brandKeywords = computed(() => data.value?.seo?.keywords || '')
+const brandSocialImage = computed(() => data.value?.seo?.image || site.value.brand.logo || undefined)
 useSeoMeta({
   title: brandTitle,
+  description: brandDescription,
   robots: computed(() => publicSeoRobots(brandIndexable.value, !!data.value && !error.value, ['page', 'sort', 'price'].some((key) => key in route.query))),
 })
+useHead({ meta: computed(() => brandKeywords.value ? [{ name: 'keywords', content: brandKeywords.value }] : []) })
 usePublicSocialMeta({
   enabled: computed(() => publicEnabled.value && !!data.value && !error.value),
   title: brandTitle,
-  description: 'Khám phá sản phẩm chính hãng tại Phúc Thịnh Solar.',
+  description: brandSocialDescription,
   canonicalPath: computed(() => route.path),
+  image: brandSocialImage,
 })
 </script>
 

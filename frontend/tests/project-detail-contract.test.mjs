@@ -14,6 +14,8 @@ test('project detail SEO metadata comes from PHP projection and exposes an HTML 
   assert.match(dto, /'seo' => ptsProjectDetailSeoDto\(\$title, \$seoRow\)/)
   assert.match(page, /description:\s*computed\(\(\) => payload\.value\?\.seo\.description \?\? ''\)/)
   assert.match(page, /title: computed\(\(\) => payload\.value \? \(isBarePublicRoute\.value \? payload\.value\.seo\.title/)
+  assert.match(page, /payload\.value\?\.seo\.keywords/)
+  assert.match(page, /name: 'keywords', content: pageKeywords\.value/)
   assert.equal(isPublicProjectDetailPayload({ ...good, seo: { ...good.seo, description: '' } }), true)
   assert.equal(isPublicProjectDetailPayload({ ...good, seo: { ...good.seo, title: '' } }), false)
 })

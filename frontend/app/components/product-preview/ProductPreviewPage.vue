@@ -164,7 +164,7 @@ onBeforeUnmount(() => observer?.disconnect())
     </section>
 
     <template v-if="extras">
-      <ProductReviews :product-id="product.id" :reviews="extras.reviews" :csrf-token="extras.csrfToken" />
+      <ProductReviews :product-id="product.id" :slug="product.slug" :reviews="extras.reviews" :csrf-token="extras.csrfToken" />
       <ProductConsultationForm
         :product-id="product.id"
         :product-name="product.name"

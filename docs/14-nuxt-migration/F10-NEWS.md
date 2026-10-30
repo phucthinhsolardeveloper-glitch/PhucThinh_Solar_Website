@@ -14,6 +14,7 @@
 - Search trim tối đa 120 ký tự và escape `!`, `%`, `_` trong LIKE.
 - Intro/CTA CMS đã cấu hình nhưng hidden trả `null`; khi chưa có record, DTO dùng fallback giống PHP. Không đưa rich HTML vào DTO.
 - URL bài và category dùng bare slug do PHP resolver hiện hành sở hữu; không thêm public Nuxt route.
+- SEO Admin được trả riêng khỏi copy/ảnh nội dung: hub đọc `#_seopage` theo `type=tin-tuc` với title/description/keywords/photo; category đọc `#_seo` theo `id_parent`, `com=news`, `type=tin-tuc` và action tương ứng độ sâu (`man_list`, `man_cat`, `man_item`, `man_sub`). OG category image dùng ảnh taxonomy đã kiểm tra; hub ưu tiên ảnh seopage. Nuxt dùng Admin metadata trước fallback hiện tại, giữ canonical/robots hiện hành và ảnh bài viết không đổi.
 
 ## Read-only/security boundary
 

@@ -40,6 +40,9 @@ const categoryTitle = computed(() => {
   return /^Dự án(?:\s|$)/i.test(title) ? title : `Dự án ${title}`
 })
 const categoryDescription = computed(() => projects.value?.intro.description || projects.value?.category?.description || '')
+const pageTitle = computed(() => projects.value?.category?.seo?.title || categoryTitle.value)
+const pageDescription = computed(() => projects.value?.category?.seo?.description || categoryDescription.value)
+const pageKeywords = computed(() => projects.value?.category?.seo?.keywords || '')
 
 function pageLink(nextPage: number) {
   return {
@@ -49,8 +52,8 @@ function pageLink(nextPage: number) {
 }
 
 useSeoMeta({
-  title: computed(() => categoryTitle.value),
-  description: categoryDescription,
+  title: pageTitle,
+  description: pageDescription,
   robots: computed(() => editorialPublicRouteRobots(
     categoryRouteEnabled.value,
     config.public.projectsPublicRouteIndexable,
@@ -58,12 +61,13 @@ useSeoMeta({
     'p' in route.query,
   )),
 })
+useHead({ meta: computed(() => pageKeywords.value ? [{ name: 'keywords', content: pageKeywords.value }] : []) })
 usePublicSocialMeta({
   enabled: computed(() => categoryRouteEnabled.value && !!projects.value && !error.value),
-  title: categoryTitle,
-  description: categoryDescription,
+  title: pageTitle,
+  description: pageDescription,
   canonicalPath,
-  image: computed(() => projects.value?.category?.image || undefined),
+  image: computed(() => projects.value?.category?.seo?.image || projects.value?.category?.image || undefined),
 })
 </script>
 

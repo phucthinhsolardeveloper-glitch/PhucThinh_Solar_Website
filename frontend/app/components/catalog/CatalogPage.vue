@@ -220,7 +220,7 @@ usePublicSocialMeta({
   title: metadataTitle,
   description: metadataDescription,
   canonicalPath: metadataCanonicalPath,
-  image: computed(() => undefined),
+  image: computed(() => catalogData.value?.seo.image || catalogData.value?.categoryHero?.image || undefined),
 })
 const bannerDescription = computed(() => {
   const path = category.value

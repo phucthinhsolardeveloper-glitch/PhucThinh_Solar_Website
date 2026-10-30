@@ -14,9 +14,11 @@ test('cart navigation follows the current public or preview route', () => {
   assert.match(cart, /const links = useMigrationLinks\(\)/)
   assert.match(cart, /links\.generic\('\/san-pham\/'\)/)
   assert.match(cart, /links\.product\(item\.slug\)/)
-  assert.match(cart, /v-if="payload\.canCheckout && isMigrationPreview"[\s\S]*role="status"[\s\S]*không tạo đơn hàng/)
+  assert.match(cart, /v-if="!payload\.canCheckout"[\s\S]*cần báo giá/)
+  assert.match(cart, /v-else-if="isMigrationPreview"[\s\S]*role="status"[\s\S]*không tạo đơn hàng/)
+  assert.match(cart, /v-else-if="checkoutRouteEnabled"[\s\S]*to="\/thanh-toan\/"/)
   assert.doesNotMatch(cart, /migration-checkout-preview|Tiếp tục thanh toán/)
-  assert.match(cart, /v-else-if="payload\.canCheckout"[\s\S]*links\.generic\('\/lien-he\/#yeu-cau-tu-van'\)/)
+  assert.match(cart, /v-else class="mt-4[\s\S]*links\.generic\('\/lien-he\/#yeu-cau-tu-van'\)/)
   assert.doesNotMatch(cart, /Commerce preview|Cart session đã chạy|để thử luồng giỏ hàng Nuxt/)
 })
 

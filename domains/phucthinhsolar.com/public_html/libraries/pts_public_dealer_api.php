@@ -55,7 +55,7 @@ function ptsDealerItem(array $row, $root, $upload)
     );
 }
 
-function ptsDealerPayload(array $staticRows, array $photoRows, array $heroRows, array $supportRows, array $testimonialRows, array $statRows, $root, $hotline = '')
+function ptsDealerPayload(array $staticRows, array $photoRows, array $heroRows, array $supportRows, array $testimonialRows, array $statRows, $root, $hotline = '', array $seo = array())
 {
     $static = array();
     foreach($staticRows as $row) if(is_array($row) && ptsDealerPublished($row['status'] ?? '')) $static[$row['type'] ?? ''] = $row;
@@ -79,6 +79,12 @@ function ptsDealerPayload(array $staticRows, array $photoRows, array $heroRows, 
     return array(
         'schemaVersion' => 1, 'locale' => 'vi', 'path' => '/dai-ly/',
         'title' => ptsDealerText($static['dai-ly-1']['namevi'] ?? '') ?: 'Đại lý Phúc Thịnh Solar',
+        'seo' => array(
+            'title' => ptsDealerText($seo['title'] ?? ''),
+            'description' => ptsDealerText($seo['description'] ?? ''),
+            'keywords' => ptsDealerText($seo['keywords'] ?? ''),
+            'image' => is_scalar($seo['image'] ?? null) ? trim((string)$seo['image']) : ''
+        ),
         'hero' => $hero,
         'intro' => ptsDealerRichText($static['dai-ly-1']['descvi'] ?? ''),
         'overview' => array(

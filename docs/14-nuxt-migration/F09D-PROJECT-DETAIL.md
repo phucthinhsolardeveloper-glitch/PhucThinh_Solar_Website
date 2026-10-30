@@ -24,6 +24,12 @@ the legacy canonical project path `/<slug>/`, and shows a visible empty state
 when the API or CMS record is unavailable. It does not take over the public
 project route or submit customer/contact data.
 
+The detail projection reads `#_seo` by `id_parent=<news.id>`, `com=news`,
+`act=man`, `type=du-an`. When the bare-slug route is enabled, Nuxt emits Admin
+title/description and a keywords meta tag when keywords are populated; canonical
+and OG image continue to use the project URL and cover. The public route flag
+defaults off, so PHP remains the route owner.
+
 Coordinator-owned QA remains PHP 8.1 Docker/API integration, Nuxt build and
 browser responsive verification. The lightweight PHP helper contract and Node
 contract tests are local checks only.

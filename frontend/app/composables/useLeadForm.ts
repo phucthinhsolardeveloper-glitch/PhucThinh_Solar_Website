@@ -64,10 +64,24 @@ export function useLeadForm() {
     const meta = await ensureSecurity()
     const action = kind === 'contact' ? 'contact' : kind === 'product' ? 'Newsletter' : 'Newsletter2'
     const token = await recaptchaToken(meta, action)
-    const payload = await $fetch<unknown>('/_migration/lead-form', {
-      method: 'POST',
-      body: { kind, csrfToken: meta.csrfToken, recaptchaToken: token, data },
-    })
+    let payload: unknown
+    try {
+      // Keep this rate-limited mutation on the browser-to-Caddy path so Apache
+      // can restore the real client IP from X-Forwarded-For; a Nitro proxy hop
+      // would make every visitor share the Nuxt container's rate-limit key.
+      payload = await $fetch<unknown>('/api/pts_v1_lead_form.php', {
+        method: 'POST',
+        credentials: 'same-origin',
+        body: { kind, csrfToken: meta.csrfToken, recaptchaToken: token, data },
+      })
+    } catch (reason) {
+      const responseData = (reason as { data?: unknown } | null)?.data
+      const message = responseData && typeof responseData === 'object'
+        ? (responseData as { error?: { message?: unknown } }).error?.message
+        : undefined
+      if (typeof message === 'string' && message.trim()) throw new Error(message)
+      throw reason
+    }
     if (!isPublicLeadFormResult(payload)) throw new Error('Invalid lead form result contract')
     return payload
   }

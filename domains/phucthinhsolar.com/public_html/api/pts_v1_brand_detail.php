@@ -40,10 +40,13 @@ try
     require_once LIBRARIES.'public_pricing.php';
     require_once LIBRARIES.'product_price_filter.php';
     require_once LIBRARIES.'pts_public_catalog_api.php';
+    require_once LIBRARIES.'pts_public_seo_api.php';
     require_once LIBRARIES.'pts_public_brand_detail_api.php';
 
-    $row = $d->rawQueryOne("select id,namevi,slugvi,status from #_product_brand where slugvi = ? and type = ? and find_in_set('hienthi',status) limit 1", array($slug, 'san-pham'));
+    $row = $d->rawQueryOne("select id,namevi,slugvi,status,photo from #_product_brand where slugvi = ? and type = ? and find_in_set('hienthi',status) limit 1", array($slug, 'san-pham'));
     if(empty($row)) ptsBrandDetailError(404, 'BRAND_NOT_FOUND');
+    $seoRow = $d->rawQueryOne('select titlevi,descriptionvi,keywordsvi from #_seo where id_parent = ? and com = ? and act = ? and type = ? limit 1', array((int)$row['id'], 'product', 'man_brand', 'san-pham'));
+    $brandImage = ptsPublicSeoImage($row['photo'] ?? '', ROOT, UPLOAD_PRODUCT_L);
 
     $sortKey = ptsCatalogSortKey(isset($_GET['sort']) ? $_GET['sort'] : '');
     $orderBy = ptsCatalogSortOrderBy($sortKey, publicProductPricesVisible());
@@ -101,7 +104,7 @@ try
         'brands' => is_array($brandOptions) ? $brandOptions : array(),
         'priceRanges' => publicProductPricesVisible() ? ptsCatalogPriceRangeDto() : array()
     );
-    $payload = ptsBrandDetailPayload($row, $rows, $page, $perPage, $total, publicProductPricesVisible(), $sortKey, $filterOptions, array('priceKeys' => $priceKeys));
+    $payload = ptsBrandDetailPayload($row, $rows, $page, $perPage, $total, publicProductPricesVisible(), $sortKey, $filterOptions, array('priceKeys' => $priceKeys), is_array($seoRow) ? $seoRow : array(), $brandImage);
     if($payload === null) ptsBrandDetailError(404, 'BRAND_NOT_FOUND');
     echo json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
 }

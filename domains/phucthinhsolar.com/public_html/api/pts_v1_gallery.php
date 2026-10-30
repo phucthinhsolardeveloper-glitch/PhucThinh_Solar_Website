@@ -28,6 +28,7 @@ try
 
     require_once __DIR__.'/config.php';
     require_once LIBRARIES.'pts_public_media_library_api.php';
+    require_once LIBRARIES.'pts_public_seo_api.php';
 
     $perPage = 20;
     $offset = ($page - 1) * $perPage;
@@ -46,13 +47,14 @@ try
         if($dto !== null) $albums[] = $dto;
     }
 
-    $seo = $d->rawQueryOne("select titlevi,descriptionvi,keywordsvi from #_seopage where type=? limit 1", array('thu-vien-anh')) ?: array();
+    $seo = $d->rawQueryOne("select titlevi,descriptionvi,keywordsvi,photo from #_seopage where type=? limit 1", array('thu-vien-anh')) ?: array();
+    $seoImage = ptsPublicSeoImage($seo['photo'] ?? '', ROOT, UPLOAD_SEOPAGE_L);
     echo json_encode(array(
         'schemaVersion'=>1,
         'locale'=>'vi',
         'path'=>'/thu-vien-anh/',
         'title'=>'Thư viện ảnh',
-        'seo'=>ptsMediaSeoDto($seo, 'Thư viện ảnh', 'Thư viện ảnh', '/thu-vien-anh/'),
+        'seo'=>ptsMediaSeoDto($seo, 'Thư viện ảnh', 'Thư viện ảnh', '/thu-vien-anh/', $seoImage),
         'albums'=>$albums,
         'pagination'=>array('page'=>$page,'perPage'=>$perPage,'total'=>$total)
     ), JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR);

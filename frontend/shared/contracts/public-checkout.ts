@@ -16,6 +16,23 @@ export interface PublicCheckoutWardsPayload {
   cityId: number
   wards: PublicCheckoutOption[]
 }
+export interface PublicCheckoutNoticeForm {
+  fullname?: string
+  phone?: string
+  email?: string
+  city?: string
+  ward?: string
+  address?: string
+  requirements?: string
+  payments?: string
+}
+export interface PublicCheckoutNoticePayload {
+  schemaVersion: 1
+  locale: 'vi'
+  messages: string[]
+  toast: { status: 'error' | 'success'; text: string } | null
+  form: PublicCheckoutNoticeForm | null
+}
 export interface PublicOrderThanksPayload {
   schemaVersion: 1
   locale: 'vi'
@@ -42,6 +59,23 @@ export function isPublicCheckoutPayload(value: unknown): value is PublicCheckout
 export function isPublicCheckoutWardsPayload(value: unknown): value is PublicCheckoutWardsPayload {
   return record(value) && value.schemaVersion === 1 && value.locale === 'vi' && id(value.cityId)
     && Array.isArray(value.wards) && value.wards.every(option)
+}
+export function isPublicCheckoutNoticePayload(value: unknown): value is PublicCheckoutNoticePayload {
+  if (!record(value) || value.schemaVersion !== 1 || value.locale !== 'vi'
+    || !Array.isArray(value.messages) || value.messages.length > 8
+    || !value.messages.every((message) => text(message) && message.length <= 240)) return false
+  if (value.toast !== null && (!record(value.toast) || !['error', 'success'].includes(String(value.toast.status))
+    || !text(value.toast.text) || value.toast.text.length > 500)) return false
+  if (value.form === null) return true
+  if (!record(value.form)) return false
+  const form = value.form
+  const limits: Record<string, number> = {
+    fullname: 150, phone: 30, email: 190, city: 12, ward: 12,
+    address: 255, requirements: 1000, payments: 12,
+  }
+  return Object.entries(form).every(([key, item]) => Object.hasOwn(limits, key)
+    && text(item) && item.length <= limits[key]!)
+    && ['city', 'ward', 'payments'].every((key) => form[key] === undefined || /^-?\d{1,12}$/.test(form[key] as string))
 }
 export function isPublicOrderThanksPayload(value: unknown): value is PublicOrderThanksPayload {
   if (!record(value) || value.schemaVersion !== 1 || value.locale !== 'vi' || !record(value.order) || typeof value.conversionPending !== 'boolean') return false

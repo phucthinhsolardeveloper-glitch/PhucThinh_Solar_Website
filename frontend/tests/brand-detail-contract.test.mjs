@@ -5,16 +5,18 @@ import { isBrandSlug, isPublicBrandDetailPayload } from '../shared/contracts/pub
 
 const brandApi = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/api/pts_v1_brand_detail.php', import.meta.url), 'utf8')
 const catalogDto = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/libraries/pts_public_catalog_api.php', import.meta.url), 'utf8')
+const brandPage = readFileSync(new URL('../app/components/catalog/BrandDetailPage.vue', import.meta.url), 'utf8')
 
 const good = {
   schemaVersion: 1,
   locale: 'vi',
   path: '/thuong-hieu/longi/',
   brand: { id: 3, name: 'LONGi', slug: 'longi', url: '/thuong-hieu/longi/' },
+  seo: { title: 'LONGi chính hãng | Phúc Thịnh Solar', description: 'Tấm pin LONGi & giải pháp thật.', keywords: 'LONGi, năng lượng mặt trời', image: '/upload/product/brand.webp' },
   products: [{ id: 20, name: 'Tấm pin LONGi 650WP', slug: 'tam-pin-longi-650wp', url: '/san-pham/tam-pin-longi-650wp', media: ['/upload/product/photo.webp'], powerWatts: 650, pricing: { mode: 'price', currency: 'VND', regularPrice: 2648100, salePrice: null } }],
   pagination: { page: 1, perPage: 20, total: 1 },
   selected: { sort: 'default' },
-  parity: { prices: { included: true }, seoOverrides: { included: false, reason: 'legacy_seo_override_table_not_delegated' } },
+  parity: { prices: { included: true }, seoOverrides: { included: true } },
 }
 
 test('accepts the real brand detail DTO', () => assert.equal(isPublicBrandDetailPayload(good), true))
@@ -22,6 +24,15 @@ test('validates exact slug and rejects a URL that does not match the slug', () =
   assert.equal(isBrandSlug('longi'), true)
   assert.equal(isBrandSlug('LONGi'), false)
   assert.equal(isPublicBrandDetailPayload({ ...good, brand: { ...good.brand, url: '/thuong-hieu/other/' } }), false)
+})
+test('validates brand SEO fields and restricts Admin brand photos to safe product media', () => {
+  assert.equal(isPublicBrandDetailPayload(good), true)
+  assert.equal(isPublicBrandDetailPayload({ ...good, seo: { ...good.seo, image: '/upload/news/brand.webp' } }), false)
+  assert.equal(isPublicBrandDetailPayload({ ...good, seo: { ...good.seo, image: '/upload/product/../private.php' } }), false)
+  assert.equal(isPublicBrandDetailPayload({ ...good, seo: { ...good.seo, description: '<script>bad</script>' } }), false)
+  const legacy = { ...good, seo: undefined, parity: { prices: { included: true }, seoOverrides: { included: false, reason: 'legacy_seo_override_table_not_delegated' } } }
+  delete legacy.seo
+  assert.equal(isPublicBrandDetailPayload(legacy), true)
 })
 test('accepts only the catalog sort keys already supported by the brand PHP API', () => {
   assert.equal(isPublicBrandDetailPayload({ ...good, selected: { sort: 'abc' } }), true)
@@ -63,4 +74,17 @@ test('brand GET includes only published, existing Admin gallery media using para
   assert.match(brandApi, /array_merge\(\$productIds, array\('product', 'man', 'san-pham'\)\)/)
   assert.match(brandApi, /ptsCatalogPublicMedia\(\$filename\) === '' \|\| !is_file\(ROOT\.UPLOAD_PRODUCT_L\.\$filename\)/)
   assert.match(catalogDto, /_pts_public_gallery/)
+})
+
+test('brand GET maps Admin SEO and brand photo through parameterized queries; page uses metadata with PHP-compatible fallbacks', () => {
+  assert.match(brandApi, /select id,namevi,slugvi,status,photo from #_product_brand where slugvi = \? and type = \? and find_in_set\('hienthi',status\)/)
+  assert.match(brandApi, /select titlevi,descriptionvi,keywordsvi from #_seo where id_parent = \? and com = \? and act = \? and type = \? limit 1/)
+  assert.match(brandApi, /array\(\(int\)\$row\['id'\], 'product', 'man_brand', 'san-pham'\)/)
+  assert.match(brandApi, /ptsPublicSeoImage\(\$row\['photo'\] \?\? '', ROOT, UPLOAD_PRODUCT_L\)/)
+  assert.match(brandPage, /data\.value\?\.seo\?\.title \|\| \(data\.value \? \`\$\{data\.value\.brand\.name\} \| Phúc Thịnh Solar\`/)
+  assert.match(brandPage, /brandSocialDescription = computed\(\(\) => brandDescription\.value \|\| site\.value\.brand\.name/)
+  assert.match(brandPage, /description: brandSocialDescription/)
+  assert.match(brandPage, /name: 'keywords', content: brandKeywords/)
+  assert.match(brandPage, /data\.value\?\.seo\?\.image \|\| site\.value\.brand\.logo/)
+  assert.match(brandPage, /publicSeoRobots\(brandIndexable\.value/)
 })

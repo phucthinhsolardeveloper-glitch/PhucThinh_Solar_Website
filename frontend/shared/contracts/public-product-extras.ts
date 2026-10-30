@@ -12,6 +12,10 @@ export interface PublicProductReviewReply {
   isAdmin: boolean
   date: number
 }
+export interface PublicProductReviewVideo {
+  url: string
+  poster: string
+}
 export interface PublicProductReview {
   id: number
   title: string
@@ -21,13 +25,25 @@ export interface PublicProductReview {
   verified: boolean
   date: number
   photos: string[]
+  video: PublicProductReviewVideo | null
   replies: PublicProductReviewReply[]
+  repliesTotal: number
 }
 export interface PublicProductReviews {
   total: number
   average: number
   counts: Record<'1' | '2' | '3' | '4' | '5', number>
+  requireOrderCode: boolean
+  offset: number
+  hasMore: boolean
   items: PublicProductReview[]
+}
+export interface PublicProductReviewReplyPage {
+  parentId: number
+  offset: number
+  total: number
+  hasMore: boolean
+  items: PublicProductReviewReply[]
 }
 export interface PublicProductNeed { code: string; label: string }
 export interface PublicProductCommitment { name: string; image: string }
@@ -41,6 +57,7 @@ export interface PublicProductExtrasPayload {
   warranty: PublicProductWarranty
   related: PublicCatalogProduct[]
   reviews: PublicProductReviews
+  replyPage?: PublicProductReviewReplyPage
   consultation: { needs: PublicProductNeed[] }
   commitments: PublicProductCommitment[]
 }
@@ -56,6 +73,11 @@ function count(value: unknown, max = Number.MAX_SAFE_INTEGER): value is number {
 function photo(value: unknown, allowEmpty = false): value is string {
   return value === '' ? allowEmpty : typeof value === 'string' && /^\/upload\/photo\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|gif|webp|avif)$/i.test(value)
 }
+function reviewVideo(value: unknown): value is PublicProductReviewVideo | null {
+  return value === null || record(value) && typeof value.url === 'string'
+    && /^\/upload\/video\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:mp4|mkv)$/i.test(value.url)
+    && photo(value.poster, true)
+}
 function policy(value: unknown): value is PublicProductPolicyLink {
   return record(value) && text(value.label) && typeof value.href === 'string'
     && /^\/ho-tro\/[a-z0-9]+(?:-[a-z0-9]+)*\/$/.test(value.href)
@@ -69,16 +91,23 @@ function review(value: unknown): value is PublicProductReview {
     && typeof value.star === 'number' && Number.isSafeInteger(value.star) && value.star >= 1 && value.star <= 5
     && typeof value.verified === 'boolean' && count(value.date)
     && Array.isArray(value.photos) && value.photos.length <= 3 && value.photos.every((item) => photo(item))
+    && reviewVideo(value.video)
     && Array.isArray(value.replies) && value.replies.length <= 5 && value.replies.every(reply)
+    && count(value.repliesTotal) && value.repliesTotal >= value.replies.length
 }
 function reviews(value: unknown): value is PublicProductReviews {
   if (!record(value) || !count(value.total) || typeof value.average !== 'number' || !Number.isFinite(value.average)
     || value.average < 0 || value.average > 5 || !record(value.counts) || !Array.isArray(value.items)
-    || value.items.length > 10 || !value.items.every(review)) return false
+    || value.items.length > 10 || !value.items.every(review) || typeof value.requireOrderCode !== 'boolean'
+    || !count(value.offset) || typeof value.hasMore !== 'boolean') return false
   const counts = value.counts
   const keys = ['1', '2', '3', '4', '5'] as const
   if (!keys.every((key) => count(counts[key]))) return false
   return keys.reduce((sum, key) => sum + Number(counts[key]), 0) === value.total
+}
+function replyPage(value: unknown): value is PublicProductReviewReplyPage {
+  return record(value) && id(value.parentId) && count(value.offset) && count(value.total)
+    && typeof value.hasMore === 'boolean' && Array.isArray(value.items) && value.items.length <= 5 && value.items.every(reply)
 }
 function need(value: unknown): value is PublicProductNeed {
   return record(value) && typeof value.code === 'string' && /^[a-z0-9_-]{1,64}$/.test(value.code) && text(value.label)
@@ -100,6 +129,7 @@ export function isPublicProductExtrasPayload(value: unknown): value is PublicPro
     || !warranty(value.warranty)
     || !Array.isArray(value.related) || value.related.length > 8 || !value.related.every(isPublicCatalogProduct)
     || !reviews(value.reviews)
+    || value.replyPage !== undefined && !replyPage(value.replyPage)
     || !record(value.consultation) || !Array.isArray(value.consultation.needs) || value.consultation.needs.length > 50 || !value.consultation.needs.every(need)
     || !Array.isArray(value.commitments) || value.commitments.length > 8 || !value.commitments.every(commitment)) return false
   return true

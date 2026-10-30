@@ -1,10 +1,11 @@
-import { isPositiveId, isPublicImage, isPublicUrl, isRecord, isText as isCoreText } from './core.ts'
+import { isPositiveId, isPublicImage, isPublicSeoMetadata, isPublicUrl, isRecord, isText as isCoreText, type PublicSeoMetadata } from './core.ts'
 
 export interface PublicAboutImageItem { image: string }
 export interface PublicAboutTextItem extends PublicAboutImageItem { title: string; description: string }
 export interface PublicAboutTimelineItem { year: string; title: string; description: string }
 export interface PublicAboutPayload {
   schemaVersion: 2; locale: 'vi'; path: '/gioi-thieu/'; title: string
+  seo?: PublicSeoMetadata
   story: { eyebrow: string; title: string; intro: string; body: string; image: string }
   history: { title: string; image: string; items: PublicAboutTimelineItem[] }
   people: { eyebrow: string; title: string; intro: string; body: string; image: string; principles: PublicAboutTextItem[] }
@@ -35,6 +36,7 @@ function isZaloUrl(value: unknown): value is string {
 
 export function isPublicAboutPayload(value: unknown): value is PublicAboutPayload {
   if (!isRecord(value) || value.schemaVersion !== 2 || value.locale !== 'vi' || value.path !== '/gioi-thieu/' || !isText(value.title, false)) return false
+  if (value.seo !== undefined && !isPublicSeoMetadata(value.seo, ['/upload/seopage/'])) return false
   const story = value.story; if (!isRecord(story) || !['eyebrow', 'title', 'intro', 'body'].every((key) => isText(story[key])) || !isImage(story.image)) return false
   const history = value.history; if (!isRecord(history) || !isText(history.title) || !isImage(history.image) || !Array.isArray(history.items) || !history.items.every(isTimelineItem)) return false
   const people = value.people; if (!isRecord(people) || !['eyebrow', 'title', 'intro', 'body'].every((key) => isText(people[key])) || !isImage(people.image) || !Array.isArray(people.principles) || !people.principles.every(isTextItem)) return false

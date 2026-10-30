@@ -35,7 +35,7 @@ usePublicSocialMeta({
   title: computed(() => gallery.value?.seo.title || 'Thư viện ảnh'),
   description: computed(() => gallery.value?.seo.description || ''),
   canonicalPath: GALLERY_PUBLIC_PATH,
-  image: computed(() => gallery.value?.albums.find((album) => album.image)?.image),
+  image: computed(() => gallery.value?.seo.image || gallery.value?.albums.find((album) => album.image)?.image),
 })
 </script>
 

@@ -26,14 +26,17 @@ function ptsCatalogSeoText($value)
     return trim(preg_replace('/[\x00-\x1F\x7F]+/', ' ', $text));
 }
 
-function ptsCatalogSeoDto($fallbackTitle, array $seoRow = array())
+function ptsCatalogSeoDto($fallbackTitle, array $seoRow = array(), $image = '')
 {
     $title = !empty($seoRow['titlevi']) ? ptsCatalogSeoText($seoRow['titlevi']) : ptsCatalogSeoText($fallbackTitle);
     if($title !== '' && stripos($title, 'phúc thịnh s') === false) $title .= ' | Phúc Thịnh Solar';
+    $image = is_scalar($image) ? trim((string)$image) : '';
+    if($image !== '' && !preg_match('#^/upload/(?:product|seopage)/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|gif|webp|avif)$#i', $image)) $image = '';
     return array(
         'title' => $title,
         'description' => !empty($seoRow['descriptionvi']) ? ptsCatalogSeoText($seoRow['descriptionvi']) : '',
-        'keywords' => !empty($seoRow['keywordsvi']) ? ptsCatalogSeoText($seoRow['keywordsvi']) : ''
+        'keywords' => !empty($seoRow['keywordsvi']) ? ptsCatalogSeoText($seoRow['keywordsvi']) : '',
+        'image' => $image
     );
 }
 
@@ -125,7 +128,7 @@ function ptsCatalogPageExtrasDto(array $extras)
         'categoryHero' => $hero,
         'categoryContent' => array('title' => $applicationTitle, 'applications' => $applications, 'faq' => $faq),
         'support' => $support,
-        'seo' => ptsCatalogSeoDto($extras['seoFallbackTitle'] ?? 'Sản phẩm', isset($extras['seoRow']) && is_array($extras['seoRow']) ? $extras['seoRow'] : array()),
+        'seo' => ptsCatalogSeoDto($extras['seoFallbackTitle'] ?? 'Sản phẩm', isset($extras['seoRow']) && is_array($extras['seoRow']) ? $extras['seoRow'] : array(), $extras['seoImage'] ?? ''),
         'canonical' => array('url' => $canonical)
     );
 }

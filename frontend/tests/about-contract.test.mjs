@@ -20,6 +20,13 @@ test('accepts the read-only About DTO with nullable CMS sections', () => {
   assert.equal(isPublicAboutPayload({ ...good, story: { ...good.story, image: '' }, certificates: { ...good.certificates, items: [] } }), true)
 })
 
+test('accepts optional Admin SEO fields and rejects unsafe SEO media', () => {
+  const seo = { title: 'SEO title', description: 'SEO description', keywords: 'solar', image: '/upload/seopage/about.jpg' }
+  assert.equal(isPublicAboutPayload({ ...good, seo }), true)
+  assert.equal(isPublicAboutPayload({ ...good, seo: { ...seo, image: '/upload/seopage/../private.jpg' } }), false)
+  assert.equal(isPublicAboutPayload(good), true)
+})
+
 test('rejects invented routes, unsafe media and non-year timeline values', () => {
   assert.equal(isPublicAboutPayload({ ...good, path: '/gioi-thieu/demo/' }), false)
   assert.equal(isPublicAboutPayload({ ...good, story: { ...good.story, image: '/upload/news/../../secret.jpg' } }), false)
@@ -74,7 +81,16 @@ test('About PHP projection carries CMS Zalo and does not truncate published cert
   assert.match(api, /foreach\(\$allCertificates as \$row\)/)
   assert.match(api, /\$certificateCards\s*=\s*array_slice\(\$featuredCertificates\s*\?:\s*\$certificates,\s*0,\s*3\)/)
   assert.match(api, /\$func->parsePhone\(\$zaloValue\)/)
+  assert.match(api, /#_seopage where type=\? limit 0,1', array\('gioi-thieu'\)/)
+  assert.match(helper, /'seo'\s*=>\s*array\(/)
   assert.match(helper, /'schemaVersion'\s*=>\s*2/)
+})
+
+test('About page prefers Admin SEO and uses its image for social metadata', async () => {
+  const source = await readFile(new URL('../app/pages/gioi-thieu.vue', import.meta.url), 'utf8')
+  assert.match(source, /about\.value\?\.seo\?\.title\s*\|\|\s*about\.value\?\.title/)
+  assert.match(source, /about\.value\?\.seo\?\.description\s*\|\|\s*about\.value\?\.story\.intro/)
+  assert.match(source, /about\.value\?\.seo\?\.image\s*\|\|\s*about\.value\?\.story\.image/)
 })
 
 test('About page provides a keyboard-accessible full certificate gallery', async () => {

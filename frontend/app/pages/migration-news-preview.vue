@@ -50,16 +50,23 @@ const pageNumbers = computed(() => {
   for (let page = 1; page <= total; page++) if (page === 1 || page === total || Math.abs(page - current) <= 2) { if (result.length && typeof result[result.length - 1] === 'number' && page > (result[result.length - 1] as number) + 1) result.push('…'); result.push(page) }
   return result
 })
+const pageTitle = computed(() => isPublicRoute.value
+  ? news.value?.seo?.title || news.value?.title || 'Kiến thức'
+  : `${news.value?.title || 'Kiến thức'} — internal preview`)
+const pageDescription = computed(() => news.value?.seo?.description || news.value?.description || '')
+const pageKeywords = computed(() => isPublicRoute.value ? news.value?.seo?.keywords || '' : '')
 useSeoMeta({
-  title: () => isPublicRoute.value ? (news.value?.title || 'Kiến thức') : `${news.value?.title || 'Kiến thức'} — internal preview`,
-  description: () => news.value?.description || '',
+  title: pageTitle,
+  description: pageDescription,
   robots,
 })
+useHead({ meta: computed(() => pageKeywords.value ? [{ name: 'keywords', content: pageKeywords.value }] : []) })
 usePublicSocialMeta({
   enabled: computed(() => isPublicRoute.value && config.public.newsPublicRouteEnabled && !!news.value && !error.value),
-  title: computed(() => news.value?.title || 'Kiến thức'),
-  description: computed(() => news.value?.description || ''),
+  title: pageTitle,
+  description: pageDescription,
   canonicalPath: NEWS_PUBLIC_PATH,
+  image: computed(() => news.value?.seo?.image || news.value?.featured[0]?.image || undefined),
 })
 </script>
 

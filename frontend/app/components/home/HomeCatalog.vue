@@ -66,7 +66,7 @@ const categories = computed<HomeCategorySlot[]>(() => slots.map((slot) => {
   return {
     ...slot,
     category,
-    image: slot.key === 'lighting' ? props.campaigns[0]?.image || slot.image : slot.image,
+    image: category?.image || (slot.key === 'lighting' ? props.campaigns[0]?.image || slot.image : slot.image),
   }
 }))
 

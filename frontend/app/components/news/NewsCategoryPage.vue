@@ -53,18 +53,22 @@ const pageNumbers = computed(() => {
   }
   return result
 })
+const pageTitle = computed(() => category.value?.seo?.title || category.value?.name || 'Kiến thức')
+const pageDescription = computed(() => category.value?.seo?.description || category.value?.description || '')
+const pageKeywords = computed(() => category.value?.seo?.keywords || '')
 
 useSeoMeta({
-  title: computed(() => category.value?.name || 'Kiến thức'),
-  description: computed(() => category.value?.description || ''),
+  title: pageTitle,
+  description: pageDescription,
   robots: computed(() => editorialPublicRouteRobots(routeEnabled.value, config.public.newsPublicRouteIndexable, !!news.value && !error.value, hasFilters.value)),
 })
+useHead({ meta: computed(() => pageKeywords.value ? [{ name: 'keywords', content: pageKeywords.value }] : []) })
 usePublicSocialMeta({
   enabled: computed(() => routeEnabled.value && !!news.value && !error.value),
-  title: computed(() => category.value?.name || 'Kiến thức'),
-  description: computed(() => category.value?.description || ''),
+  title: pageTitle,
+  description: pageDescription,
   canonicalPath: computed(() => category.value?.canonicalPath || `/${slug.value}`),
-  image: computed(() => category.value?.image || undefined),
+  image: computed(() => category.value?.seo?.image || category.value?.image || undefined),
 })
 </script>
 

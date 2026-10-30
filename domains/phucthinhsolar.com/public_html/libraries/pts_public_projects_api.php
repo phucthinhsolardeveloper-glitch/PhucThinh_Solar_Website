@@ -31,14 +31,14 @@ function ptsProjectsMedia($value)
     return '/upload/news/'.$value;
 }
 
-function ptsProjectsCategoryDto(array $row)
+function ptsProjectsCategoryDto(array $row, array $seo = array())
 {
     if(!ptsProjectsPublished(isset($row['status']) ? $row['status'] : '')) return null;
     $id = isset($row['id']) ? (int)$row['id'] : 0;
     $name = ptsProjectsPlainText(isset($row['namevi']) ? $row['namevi'] : '');
     $slug = ptsProjectsSlug(isset($row['slugvi']) ? $row['slugvi'] : '');
     if($id <= 0 || $name === '' || $slug === '') return null;
-    return array(
+    $dto = array(
         'id' => $id,
         'name' => $name,
         'description' => ptsProjectsPlainText(isset($row['descvi']) ? $row['descvi'] : ''),
@@ -47,6 +47,13 @@ function ptsProjectsCategoryDto(array $row)
         'canonicalPath' => '/'.$slug,
         'image' => ptsProjectsMedia(isset($row['_pts_public_photo']) ? $row['_pts_public_photo'] : '')
     );
+    if($seo) $dto['seo'] = array(
+        'title' => ptsProjectsPlainText($seo['title'] ?? ''),
+        'description' => ptsProjectsPlainText($seo['description'] ?? ''),
+        'keywords' => ptsProjectsPlainText($seo['keywords'] ?? ''),
+        'image' => is_scalar($seo['image'] ?? null) ? trim((string)$seo['image']) : ''
+    );
+    return $dto;
 }
 
 function ptsProjectsProjectDto(array $row, array $categories, $featured = false)
@@ -165,7 +172,7 @@ function ptsProjectsFeaturedBenefitsDto(array $rows)
     return $items;
 }
 
-function ptsProjectsPayload(array $categories, array $rows, array $featuredRow, array $ctaRows, $page, $perPage, $total, $category = null, $hotline = '', array $introRows = array(), array $benefitRows = array(), array $trustRows = array())
+function ptsProjectsPayload(array $categories, array $rows, array $featuredRow, array $ctaRows, $page, $perPage, $total, $category = null, $hotline = '', array $introRows = array(), array $benefitRows = array(), array $trustRows = array(), array $seo = array())
 {
     $categoryMap = array();
     $categoryDtos = array();
@@ -194,6 +201,12 @@ function ptsProjectsPayload(array $categories, array $rows, array $featuredRow, 
         'locale' => 'vi',
         'path' => '/du-an-da-thuc-hien/',
         'title' => $category ? 'Dự án '.($category['name'] ?? '') : 'Dự án đã thực hiện',
+        'seo' => array(
+            'title' => ptsProjectsPlainText($seo['title'] ?? ''),
+            'description' => ptsProjectsPlainText($seo['description'] ?? ''),
+            'keywords' => ptsProjectsPlainText($seo['keywords'] ?? ''),
+            'image' => is_scalar($seo['image'] ?? null) ? trim((string)$seo['image']) : ''
+        ),
         'intro' => ptsProjectsIntroDto($introRows, $category),
         'category' => $category,
         'categories' => $categoryDtos,

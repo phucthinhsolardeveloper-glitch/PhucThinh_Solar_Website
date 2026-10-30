@@ -1,13 +1,16 @@
 import { isPublicSanitizedRichText, type PublicSanitizedRichText } from './editorial-rich-text.ts'
+import { isPublicImage } from './core.ts'
 
 export interface PublicSolutionsLink { label: string; href: string }
+export interface PublicSolutionSeo { title: string; description: string; keywords: string; image: string }
 export interface PublicSolutionsIntro { eyebrow: string; title: string; description: string; image: string; links: { consult: PublicSolutionsLink; explore: PublicSolutionsLink } }
 export interface PublicSolutionCard { title: string; description: string; slug: string; url: string; image: string; actionLabel: string }
-export interface PublicSolutionCategory { id: number; name: string; description: string; slug: string; canonicalPath: string; cards: PublicSolutionCard[]; navigation: Array<{ id: number; name: string; slug: string; url: string; active: boolean }> }
+export interface PublicSolutionCategory { id: number; name: string; description: string; slug: string; canonicalPath: string; seo?: PublicSolutionSeo; cards: PublicSolutionCard[]; navigation: Array<{ id: number; name: string; slug: string; url: string; active: boolean }> }
 export interface PublicSolutionEquipment { name: string; description: string; url: string; image: string }
 export interface PublicSolutionsCta { title: string; description: string; buttonLabel: string; image: string; links: { consult: PublicSolutionsLink }; hotline: { label: string; text: string; tel: string } | null }
 export interface PublicSolutionsPayload {
   schemaVersion: 1; locale: 'vi'; path: '/giai-phap/'; title: string; intro: PublicSolutionsIntro | null
+  seo?: PublicSolutionSeo
   category: PublicSolutionCategory | null; cards: PublicSolutionCard[]; equipment: PublicSolutionEquipment[]; allProductsUrl: string
   labels: { choices: string; equipment: string; allProducts: string; empty: string; consult: string; phone: string }
   cta: PublicSolutionsCta | null
@@ -23,6 +26,11 @@ export interface PublicSolutionCategoryPayload {
 function isRecord(value: unknown): value is Record<string, unknown> { return value !== null && typeof value === 'object' && !Array.isArray(value) }
 function isString(value: unknown): value is string { return typeof value === 'string' }
 function isImagePath(value: unknown): value is string { return isString(value) && (value === '' || /^\/(?:upload|assets)\//.test(value)) }
+function isSolutionSeo(value: unknown): value is PublicSolutionSeo {
+  const seoText = (field: unknown) => isString(field) && !/[<>\x00-\x1f\x7f]/.test(field)
+  return isRecord(value) && seoText(value.title) && seoText(value.description) && seoText(value.keywords)
+    && isPublicImage(value.image, ['/upload/seopage/', '/upload/news/', '/assets/images/site-visuals/'])
+}
 function isPublicPath(value: unknown): value is string { return isString(value) && /^\/(?:giai-phap(?:\/[^/?#]+)?|san-pham|danh-muc-san-pham\/[^/?#]+)\/?(?:#[^?]*)?$/.test(value) }
 function isLink(value: unknown): value is PublicSolutionsLink { return isRecord(value) && isString(value.label) && isString(value.href) && (value.href === '#ptsContactModal' || isPublicPath(value.href)) }
 function isToc(value: unknown): value is PublicSolutionsPayload['editorial']['toc'] {
@@ -44,6 +52,7 @@ function isSolutionCategory(value: unknown): value is PublicSolutionCategory {
     && isString(value.name) && value.name !== '' && isString(value.description)
     && isString(value.slug) && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value.slug)
     && value.canonicalPath === `/${value.slug}`
+    && (value.seo === undefined || isSolutionSeo(value.seo))
     && Array.isArray(value.cards) && value.cards.length > 0 && value.cards.every(isSolutionCard)
     && Array.isArray(value.navigation) && value.navigation.every((row) => isRecord(row)
       && typeof row.id === 'number' && Number.isSafeInteger(row.id) && row.id > 0
@@ -55,6 +64,7 @@ function isSolutionCategory(value: unknown): value is PublicSolutionCategory {
 export function isPublicSolutionsPayload(value: unknown): value is PublicSolutionsPayload {
   if (!isRecord(value) || value.schemaVersion !== 1 || value.locale !== 'vi' || value.path !== '/giai-phap/') return false
   if (!isString(value.title) || !isPublicPath(value.allProductsUrl)) return false
+  if (value.seo !== undefined && !isSolutionSeo(value.seo)) return false
   if (value.category !== null && !isSolutionCategory(value.category)) return false
   const labels = value.labels
   if (!isRecord(labels) || !['choices', 'equipment', 'allProducts', 'empty', 'consult', 'phone'].every((key) => isString(labels[key]))) return false

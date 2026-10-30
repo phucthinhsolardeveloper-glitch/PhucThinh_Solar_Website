@@ -6,6 +6,7 @@ if(!$publicRoot) {
 }
 if(!$publicRoot) { fwrite(STDERR, "FAIL: public root not found\n"); exit(1); }
 require_once rtrim($publicRoot, '/').'/libraries/pts_public_media_library_api.php';
+require_once rtrim($publicRoot, '/').'/libraries/pts_public_seo_api.php';
 
 function ptsAssert($condition, $message)
 {
@@ -20,6 +21,25 @@ ptsAssert(ptsMediaSlug('../album') === '', 'slug traversal rejected');
 ptsAssert(ptsMediaProductImage('anh.webp') === '/upload/product/anh.webp', 'safe product media accepted');
 ptsAssert(ptsMediaProductImage('../anh.webp') === '', 'media traversal rejected');
 ptsAssert(ptsMediaProductImage('anh.svg') === '', 'unsupported image extension rejected');
+
+$seoFixtureRoot = sys_get_temp_dir().'/pts-media-seo-'.bin2hex(random_bytes(8));
+$seoFixtureDirectory = $seoFixtureRoot.'/upload/seopage';
+if(!mkdir($seoFixtureDirectory, 0777, true) || file_put_contents($seoFixtureDirectory.'/admin-og.webp', 'fixture') === false)
+{
+    fwrite(STDERR, "FAIL: could not create temporary SEO media fixture\n");
+    exit(1);
+}
+register_shutdown_function(static function() use ($seoFixtureRoot, $seoFixtureDirectory) {
+    @unlink($seoFixtureDirectory.'/admin-og.webp');
+    @rmdir($seoFixtureDirectory);
+    @rmdir($seoFixtureRoot.'/upload');
+    @rmdir($seoFixtureRoot);
+});
+$adminSeoImage = ptsPublicSeoImage('admin-og.webp', $seoFixtureRoot, 'upload/seopage');
+ptsAssert($adminSeoImage === '/upload/seopage/admin-og.webp', 'Admin SEO image resolves only to existing safe seopage media');
+ptsAssert(ptsPublicSeoImage('../admin-og.webp', $seoFixtureRoot, 'upload/seopage') === '', 'SEO image traversal is rejected');
+$mediaSeoDto = ptsMediaSeoDto(array('titlevi'=>'Media SEO', 'descriptionvi'=>'Metadata', 'keywordsvi'=>'ảnh'), 'Fallback', 'Fallback', '/video/', $adminSeoImage);
+ptsAssert($mediaSeoDto['image'] === '/upload/seopage/admin-og.webp', 'media SEO DTO carries the validated Admin image');
 
 $youtubeCases = array(
     'https://youtu.be/dQw4w9WgXcQ',

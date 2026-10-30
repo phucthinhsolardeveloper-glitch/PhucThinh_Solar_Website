@@ -9,6 +9,15 @@ export default defineNuxtConfig({
   // @tailwindcss/vite — làm vậy sẽ chạy hai pipeline CSS cạnh tranh nhau.
   modules: ['@nuxt/ui'],
 
+  colorMode: {
+    preference: 'light',
+    fallback: 'light',
+    storage: 'localStorage',
+    // Use a fresh key while dark mode is hidden so prior test preferences cannot
+    // force users into the unfinished theme.
+    storageKey: 'pts-color-mode-light-only',
+  },
+
   /*
    * main.css nạp Tailwind v4, theme và style CMS. tokens.css nạp sau để reset
    * global nhỏ, không nằm trong layer, áp dụng sau Preflight của Tailwind.
@@ -193,6 +202,7 @@ export default defineNuxtConfig({
       policyDetailPublicRouteIndexable: false,
       cartPublicRouteEnabled: false,
       cartPublicRouteIndexable: false,
+      checkoutPublicRouteEnabled: false,
       orderSuccessPublicRouteEnabled: false,
       orderSuccessPublicRouteIndexable: false,
       phpPublicOrigin: 'http://127.0.0.1:8080',

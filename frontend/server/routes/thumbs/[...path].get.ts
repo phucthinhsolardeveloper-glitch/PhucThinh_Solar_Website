@@ -5,6 +5,6 @@ export default defineEventHandler(async (event) => {
   const media = await fetchLegacyPreviewMedia(`/thumbs/${getRouterParam(event, 'path') ?? ''}`, config)
   if (!media) throw createError({ statusCode: 404, statusMessage: 'Preview media not found' })
   setHeader(event, 'Content-Type', media.contentType)
-  setHeader(event, 'Cache-Control', 'private, max-age=300')
+  setHeader(event, 'Cache-Control', 'private, no-cache, must-revalidate')
   return new Uint8Array(media.body)
 })

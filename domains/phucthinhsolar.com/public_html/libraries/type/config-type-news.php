@@ -600,7 +600,7 @@
        trong templates/index/index_tpl.php. */
     $nametype = "home-about";
     $config['news'][$nametype]['title_main'] = "Trang chủ - Giới thiệu ngắn";
-    $config['news'][$nametype]['admin_note'] = "Khối \"Giới thiệu ngắn\" ngay dưới danh mục sản phẩm ở trang chủ: nhãn nhỏ, tiêu đề, mô tả, ảnh và chữ trên nút (nút luôn trỏ /gioi-thieu/). Lấy đúng 1 record đang Hiển thị có thứ tự (STT) nhỏ nhất; chưa tạo record nào, hoặc đã tạo nhưng tắt hết Hiển thị, thì dùng nội dung mặc định có sẵn trong code.";
+    $config['news'][$nametype]['admin_note'] = "Khối \"Giới thiệu ngắn\" ngay dưới danh mục sản phẩm ở trang chủ. Lấy đúng 1 record đang Hiển thị có thứ tự (STT) nhỏ nhất; chưa tạo record nào thì dùng nội dung mặc định có sẵn trong code. Nếu đã tạo record nhưng tắt hết Hiển thị, khối sẽ được ẩn.";
     $config['news'][$nametype]['check'] = array("hienthi" => "Hiển thị");
     $config['news'][$nametype]['view'] = false;
     $config['news'][$nametype]['slug'] = false;

@@ -23,6 +23,7 @@ try
 {
     require_once __DIR__.'/config.php';
     require_once LIBRARIES.'pts_public_contact_api.php';
+    require_once LIBRARIES.'pts_public_seo_api.php';
     $loadRows = static function($sql, array $params) use ($cache) {
         $rows = $cache->get($sql, $params, 'result', 7200);
         return is_array($rows) ? $rows : array();
@@ -32,7 +33,8 @@ try
         return is_array($row) ? $row : array();
     };
 
-    $seo = $loadOne('select titlevi,descriptionvi from #_seopage where type=? limit 0,1', array('lien-he'));
+    $seoRow = $loadOne('select titlevi,descriptionvi,keywordsvi,photo from #_seopage where type=? limit 0,1', array('lien-he'));
+    $seo = ptsPublicSeoDto($seoRow, ROOT, UPLOAD_SEOPAGE_L);
     $static = $loadOne('select contentvi from #_static where type=? limit 0,1', array('lienhe'));
     $locations = $loadRows("select namevi,address,id,map_iframe from #_news where type=? and find_in_set('hienthi',status) order by case when namevi like 'Trụ sở%' then 0 when namevi like 'Kho Gia Lai%' then 1 else 2 end,numb,id desc", array('he-thong-cua-hang'));
     $visualRows = $loadRows('select namevi,descvi,link,photo,status from #_photo where type=? order by numb,id desc', array('contact-visual'));
@@ -73,7 +75,7 @@ try
     }
     if(function_exists('closeSessionWrite')) closeSessionWrite();
     echo json_encode(ptsPublicContactPayload(array(
-        'seo' => array('title' => $seo['titlevi'] ?? '', 'description' => $seo['descriptionvi'] ?? ''),
+        'seo' => $seo,
         'title' => 'Liên hệ Phúc Thịnh Solar',
         'intro' => $static['contentvi'] ?? '',
         'visual' => $visual,

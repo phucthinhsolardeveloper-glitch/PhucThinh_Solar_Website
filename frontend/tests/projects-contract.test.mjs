@@ -32,6 +32,21 @@ test('projects CTA keeps the PHP eyebrow and trust row in the public DTO', () =>
   assert.equal(isPublicProjectsPayload({ ...good, cta: { ...good.cta, trust: [{ label: 'x', image: '', icon: 'script' }] } }), false)
 })
 
+test('projects SEO follows the active Admin keys and overrides only metadata with safe images', () => {
+  const page = readFileSync(new URL('../app/pages/migration-projects-preview.vue', import.meta.url), 'utf8')
+  const categoryPage = readFileSync(new URL('../app/components/projects/ProjectCategoryPage.vue', import.meta.url), 'utf8')
+  assert.match(projectsApi, /#_seo where id_parent = \? and com = \? and act = \? and type = \? limit 1', array\(\(int\)\$selectedCategory\['id'\], 'news', 'man_list', 'du-an'\)/)
+  assert.match(projectsApi, /#_seopage where type = \? limit 1', array\('du-an'\)/)
+  assert.match(projectsApi, /select titlevi,descriptionvi,keywordsvi,photo from #_seopage/)
+  assert.match(projectsApi, /ptsPublicSeoDto\(is_array\(\$seoRow\).*UPLOAD_NEWS_L, \$selectedCategory\['photo'\]/)
+  assert.match(projectsProjection, /'seo' => array\(/)
+  assert.match(page, /projects\.value\?\.seo\?\.title \|\| projects\.value\?\.title/)
+  assert.match(page, /projects\.value\?\.seo\?\.image \|\| projects\.value\?\.featured\?\.image/)
+  assert.match(categoryPage, /category\?\.seo\?\.title \|\| categoryTitle\.value/)
+  assert.match(categoryPage, /category\?\.seo\?\.image \|\| projects\.value\?\.category\?\.image/)
+  assert.match(categoryPage, /name: 'keywords'/)
+})
+
 test('rejects invented or unsafe public paths', () => {
   assert.equal(isPublicProjectsPayload({ ...good, projects: [{ ...project, url: 'https://example.test/project' }] }), false)
   assert.equal(isPublicProjectsPayload({ ...good, featured: { ...good.featured, image: '/upload/news/../../secret.jpg' } }), false)

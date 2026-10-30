@@ -32,6 +32,19 @@ và liên kết về runbook đang có hiệu lực.
 
 ## Lịch sử rà soát
 
+### 2026-10-29 — Nuxt checkout handoff giữ PHP làm order owner
+
+- Ghi trạng thái hiện tại trong `docs/14-nuxt-migration/NEXT-EXECUTION-PLAN.md`
+  và route supplement: Nuxt checkout form gated riêng, gửi native POST trực tiếp
+  tới PHP `phpPublicOrigin` tại `/gio-hang` (không có slash cuối) để relative
+  redirect `gio-hang/` và `cam-on/` resolve từ root; Nitro POST checkout tiếp
+  tục 410 và PHP giữ toàn bộ transaction/security/payment.
+- Caddy local-full-nuxt có POST matcher cho `/gio-hang`; checkout flag mặc định
+  OFF. Không đổi local runtime, production route, DB hoặc tạo đơn.
+- PHP validation flash được đọc một lần qua endpoint riêng chỉ gọi từ Nuxt
+  CartPage; form draft được giữ trong Nuxt memory state và xóa sau hydration.
+  SiteHeader không gọi endpoint này nên không thể tiêu thụ flash trước CartPage.
+
 ### 2026-10-29 — UI acceptance, route fallback và nested-route audit
 
 - Bổ sung kết quả theo từng route/section và phân biệt code gate với visual gate

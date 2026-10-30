@@ -1,9 +1,10 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
+import { readFileSync } from 'node:fs'
 import { isPublicSolutionsPayload, isPublicSolutionCategoryPayload } from '../shared/contracts/public-solutions.ts'
 
 const good = {
-  schemaVersion: 1, locale: 'vi', path: '/giai-phap/', title: 'Chọn đúng giải pháp cho nhu cầu của bạn', category: null,
+  schemaVersion: 1, locale: 'vi', path: '/giai-phap/', title: 'Chọn đúng giải pháp cho nhu cầu của bạn', seo: { title: 'SEO title', description: 'SEO description', keywords: 'solar', image: '/upload/seopage/solutions.jpg' }, category: null,
   intro: { eyebrow: 'Giải pháp theo nhu cầu', title: 'Giải pháp', description: 'Mô tả', image: '', links: { consult: { label: 'Nhận tư vấn', href: '#ptsContactModal' }, explore: { label: 'Khám phá', href: '/giai-phap/#cac-giai-phap' } } },
   cards: [{ title: 'Điện mặt trời', description: '', slug: 'dien-mat-troi', url: '/giai-phap/dien-mat-troi/', image: '/assets/images/solution.jpg', actionLabel: 'Xem giải pháp' }],
   equipment: [{ name: 'Biến tần', description: '', url: '/danh-muc-san-pham/bien-tan/', image: '' }],
@@ -16,12 +17,17 @@ const good = {
 }
 
 const solutionCategory = {
-  id: 3, name: 'Hộ gia đình', description: 'Giải pháp cho gia đình', slug: 'ho-gia-dinh', canonicalPath: '/ho-gia-dinh',
+  id: 3, name: 'Hộ gia đình', description: 'Giải pháp cho gia đình', slug: 'ho-gia-dinh', canonicalPath: '/ho-gia-dinh', seo: { title: 'SEO taxonomy', description: 'Mô tả SEO', keywords: 'hộ gia đình', image: '/upload/news/category.jpg' },
   cards: [{ title: 'Điện mặt trời gia đình', description: '', slug: 'dien-mat-troi-ho-gia-dinh', url: '/giai-phap/dien-mat-troi-ho-gia-dinh/', image: '', actionLabel: 'Xem giải pháp' }],
   navigation: [{ id: 3, name: 'Hộ gia đình', slug: 'ho-gia-dinh', url: '/giai-phap/dien-mat-troi-ho-gia-dinh/', active: true }],
 }
 
 test('accepts the PHP solutions DTO', () => assert.equal(isPublicSolutionsPayload(good), true))
+test('validates Admin SEO fields and rejects unsafe metadata images or markup', () => {
+  assert.equal(isPublicSolutionsPayload({ ...good, seo: { ...good.seo, image: '/upload/seopage/../private.jpg' } }), false)
+  assert.equal(isPublicSolutionsPayload({ ...good, seo: { ...good.seo, title: '<b>SEO</b>' } }), false)
+  assert.equal(isPublicSolutionsPayload({ ...good, category: { ...solutionCategory, seo: { ...solutionCategory.seo, image: '/upload/news/../private.jpg' } } }), false)
+})
 test('accepts category DTO with bare canonical and rejects mismatched canonical', () => {
   assert.equal(isPublicSolutionsPayload({ ...good, category: solutionCategory }), true)
   assert.equal(isPublicSolutionsPayload({ ...good, category: { ...solutionCategory, canonicalPath: '/ho-gia-dinh/' } }), false)
@@ -45,4 +51,22 @@ test('validates solution taxonomy DTOs on bare-slug canonical URLs', () => {
   assert.equal(isPublicSolutionCategoryPayload(category), true)
   assert.equal(isPublicSolutionCategoryPayload({ ...category, category: { ...category.category, path: 'giai-phap/khong-khop' } }), false)
   assert.equal(isPublicSolutionCategoryPayload({ ...category, canonical: '/giai-phap/dien-mat-troi/' }), false)
+})
+
+test('maps solution hub and taxonomy Admin metadata through PHP DTOs to Nuxt head', () => {
+  const api = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/api/pts_v1_solutions.php', import.meta.url), 'utf8')
+  const dto = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/libraries/pts_public_solutions_api.php', import.meta.url), 'utf8')
+  const hubPage = readFileSync(new URL('../app/pages/giai-phap.vue', import.meta.url), 'utf8')
+  const categoryPage = readFileSync(new URL('../app/components/solutions/SolutionCategoryPage.vue', import.meta.url), 'utf8')
+  assert.match(api, /select titlevi,descriptionvi,keywordsvi,photo from #_seopage where type = \? limit 1/)
+  assert.match(api, /array\('giai-phap'\)/)
+  assert.match(api, /#_seo where id_parent = \? and com = \? and act = \? and type = \? limit 1/)
+  assert.match(api, /'news', 'man_list', 'giai-phap'/)
+  assert.match(dto, /'seo' => ptsPublicSolutionsSeoDto\(\$seo\)/)
+  assert.match(hubPage, /data\.value\?\.seo\?\.title/)
+  assert.match(hubPage, /name: 'keywords', content: pageKeywords\.value/)
+  assert.match(hubPage, /image: pageImage/)
+  assert.match(categoryPage, /category\.value\?\.seo\?\.title/)
+  assert.match(categoryPage, /name: 'keywords', content: pageKeywords\.value/)
+  assert.match(categoryPage, /image: pageImage/)
 })

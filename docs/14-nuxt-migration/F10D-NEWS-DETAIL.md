@@ -6,4 +6,11 @@ Nội dung CKEditor chỉ trả về plain text đã bỏ tag/HTML entity trong 
 
 Preview nội bộ `/migration-news-detail-preview?slug=...` dùng SiteHeader/Footer, noindex, dữ liệu CMS thật và link về canonical PHP. Đây chưa phải public Nuxt route và chưa có SEO parity claim.
 
+DTO vẫn chiếu riêng `#_seo` theo `id_parent=<news.id>`, `com=news`,
+`act=man`, `type=tin-tuc`; Nuxt bare-slug route khi được mở phát `title`,
+`description`, `keywords`, canonical/OG và Article metadata từ projection. Ảnh
+OG tiếp tục dùng cover bài viết; keywords được bỏ qua khi Admin để trống. Cờ
+`newsDetailPublicRouteEnabled` mặc định tắt, nên thay đổi này không chuyển quyền
+route khỏi PHP.
+
 Coordinator cần chạy PHP lint/contract và HTTP DB fixture trong Docker local. Node test nhẹ: `node --test frontend/tests/news-detail-contract.test.mjs` hoặc `npm test` tại frontend; không chạy build/browser/Docker trong worktree này.

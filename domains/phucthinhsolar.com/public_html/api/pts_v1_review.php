@@ -19,37 +19,42 @@ if(($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST')
     header('Allow: POST');
     ptsReviewJson(405,array('errors'=>array('Phương thức request không hợp lệ.')));
 }
-$body=json_decode(file_get_contents('php://input'),true);
+$contentType=strtolower(isset($_SERVER['CONTENT_TYPE']) ? (string)$_SERVER['CONTENT_TYPE'] : '');
+$isMultipart=strpos($contentType,'multipart/form-data')===0;
+$body=$isMultipart ? $_POST : json_decode(file_get_contents('php://input'),true);
 if(!is_array($body)) ptsReviewJson(400,array('errors'=>array('Dữ liệu không hợp lệ.')));
-$csrf=isset($body['csrfToken']) && is_scalar($body['csrfToken']) ? (string)$body['csrfToken'] : '';
+$csrfValue=isset($body['csrfToken']) ? $body['csrfToken'] : (isset($body['form_csrf']) ? $body['form_csrf'] : '');
+$csrf=is_scalar($csrfValue) ? (string)$csrfValue : '';
 if(!formCsrfValid($csrf)) ptsReviewJson(419,array('errors'=>array('Phiên gửi nhận xét không hợp lệ.')));
 $publicIp=formClientIp($_SERVER,isset($config['login']['trusted-proxies'])?$config['login']['trusted-proxies']:array());
 if(!formPersistentRateLimit($d,'review',$publicIp,5,600)) ptsReviewJson(429,array('errors'=>array('Bạn thao tác quá nhanh. Vui lòng thử lại sau.')));
 
-$productId=isset($body['productId']) && is_scalar($body['productId']) ? (int)$body['productId'] : 0;
+$reviewInput=$isMultipart && isset($body['dataReview']) && is_array($body['dataReview']) ? $body['dataReview'] : $body;
+$productIdValue=isset($reviewInput['productId']) ? $reviewInput['productId'] : (isset($reviewInput['id_variant']) ? $reviewInput['id_variant'] : 0);
+$productId=is_scalar($productIdValue) ? (int)$productIdValue : 0;
 $product=$productId>0 ? $d->rawQueryOne("select id from #_product where id=? and type=? and find_in_set('hienthi',status) limit 1",array($productId,'san-pham')) : array();
 if(empty($product['id'])) ptsReviewJson(404,array('errors'=>array('Sản phẩm không tồn tại.')));
 
-$text=function($key,$max) use ($body) {
-    if(!isset($body[$key]) || !is_scalar($body[$key])) return '';
-    $value=trim((string)$body[$key]);
+$text=function($key,$max) use ($reviewInput) {
+    if(!isset($reviewInput[$key]) || !is_scalar($reviewInput[$key])) return '';
+    $value=trim((string)$reviewInput[$key]);
     return function_exists('mb_substr') ? mb_substr($value,0,$max,'UTF-8') : substr($value,0,$max);
 };
-$star=isset($body['star']) && is_scalar($body['star']) ? (int)$body['star'] : 0;
+$star=isset($reviewInput['star']) && is_scalar($reviewInput['star']) ? (int)$reviewInput['star'] : 0;
 if($star<1 || $star>5) ptsReviewJson(422,array('errors'=>array('Chưa chọn đánh giá sao.')));
 
-$_POST=array(
-    'dataReview'=>array(
-        'id_variant'=>$productId,
-        'type'=>'san-pham',
-        'star'=>$star,
-        'title'=>$text('title',180),
-        'content'=>$text('content',5000),
-        'fullname'=>$text('fullname',100),
-        'phone'=>$text('phone',20),
-        'email'=>$text('email',150),
-        'order_code'=>$text('orderCode',40)
-    )
+$_POST=$isMultipart ? $_POST : array('form_csrf'=>$csrf);
+$_POST['form_csrf']=$csrf;
+$_POST['dataReview']=array(
+    'id_variant'=>$productId,
+    'type'=>'san-pham',
+    'star'=>$star,
+    'title'=>$text('title',180),
+    'content'=>$text('content',5000),
+    'fullname'=>$text('fullname',100),
+    'phone'=>$text('phone',20),
+    'email'=>$text('email',150),
+    'order_code'=>$text('orderCode',40)
 );
 $comment=new Comments($d,$func);
 $result=$comment->add();

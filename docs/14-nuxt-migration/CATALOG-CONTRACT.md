@@ -17,6 +17,15 @@ Product URLs keep the PHP path `/san-pham/{slug}` and category URLs use
 `/danh-muc-san-pham/{slug...}/`. Only published products with valid names and
 slugs are included. Product media must resolve to an existing allowed upload.
 
+Admin SEO mapping is additive: catalog root reads `#_seopage` with
+`type=san-pham` (`titlevi`, `descriptionvi`, `keywordsvi`, `photo`); taxonomy
+reads `#_seo` by selected entity `id_parent`, `com=product`, the matching
+`man_list`/`man_cat`/`man_item`/`man_sub` action, and `type=san-pham`. Taxonomy
+Open Graph image uses that entity's validated `photo`; root uses the validated
+seopage photo. Nuxt applies Admin title, description, keywords and OG image
+before the existing page/category fallback. Hero and product content images
+keep their separate DTO fields.
+
 Product cards receive `powerWatts`, plain-text `quickSpecs`, and `pricing` from
 the PHP projection. `quickSpecs` is built only from the existing `cong_suat`,
 `waterproof_rating` and `lighting_time` columns; missing/placeholder values are

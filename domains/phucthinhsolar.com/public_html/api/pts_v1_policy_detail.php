@@ -26,7 +26,7 @@ try
     require_once LIBRARIES.'pts_public_news_detail_api.php';
 
     $row = $d->rawQueryOne(
-        "select id,id_list,id_user,namevi,slugvi,descvi,contentvi,date_created,status from #_news where slugvi=? and type=? and find_in_set('hienthi',status) limit 1",
+        "select id,id_list,id_user,namevi,slugvi,photo,descvi,contentvi,date_created,status from #_news where slugvi=? and type=? and find_in_set('hienthi',status) limit 1",
         array($slug, 'chinh-sach')
     );
     if(empty($row))
@@ -35,6 +35,7 @@ try
         echo '{"error":{"code":"POLICY_NOT_FOUND"}}';
         exit;
     }
+    $row['_pts_public_photo'] = !empty($row['photo']) && is_file(ROOT.UPLOAD_NEWS_L.$row['photo']) ? $row['photo'] : '';
     $title = trim(preg_replace('/\s+/u', ' ', strip_tags(html_entity_decode((string)$row['namevi'], ENT_QUOTES, 'UTF-8'))));
     if($title === '')
     {
@@ -65,6 +66,7 @@ try
         'slug'=>$slug,
         'canonical'=>'/ho-tro/'.$slug.'/',
         'description'=>$description,
+        'cover'=>ptsNewsDetailImage(isset($row['_pts_public_photo']) ? $row['_pts_public_photo'] : ''),
         'date'=>!empty($row['date_created']) ? date('Y-m-d',(int)$row['date_created']) : '',
         'author'=>array('name'=>ptsNewsDetailAuthor($author['fullname'] ?? '')),
         'content'=>array('format'=>'sanitized-html','html'=>$content,'sanitizedBy'=>'pts_public_richtext','sanitizerVersion'=>1),

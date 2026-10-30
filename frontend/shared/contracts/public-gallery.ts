@@ -3,6 +3,7 @@ export interface PublicGallerySeo {
   description: string
   keywords: string
   canonical: string
+  image?: string
 }
 
 export interface PublicGalleryAlbum {
@@ -40,6 +41,7 @@ export interface PublicGalleryDetailPayload {
 
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 const IMAGE = /^\/upload\/product\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|gif|webp|avif)$/i
+const SEO_IMAGE = /^\/upload\/seopage\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|gif|webp|avif)$/i
 
 function record(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === 'object' && !Array.isArray(value)
@@ -53,8 +55,12 @@ function integer(value: unknown, min = 0): value is number {
 function image(value: unknown): value is string {
   return value === '' || typeof value === 'string' && IMAGE.test(value)
 }
+function seoImage(value: unknown): value is string {
+  return value === '' || typeof value === 'string' && SEO_IMAGE.test(value)
+}
 function seo(value: unknown, canonical: string): value is PublicGallerySeo {
   return record(value) && text(value.title) && text(value.description, true) && text(value.keywords, true) && value.canonical === canonical
+    && (!('image' in value) || seoImage(value.image))
 }
 export function isPublicGalleryAlbum(value: unknown): value is PublicGalleryAlbum {
   if (!record(value) || !integer(value.id, 1) || !text(value.title) || typeof value.slug !== 'string' || !SLUG.test(value.slug)) return false

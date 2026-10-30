@@ -14,9 +14,13 @@ catalogAssert(ptsCatalogProductDto(array('id'=>3,'namevi'=>'Sai','slugvi'=>'bad 
 $dto = ptsCatalogProductDto(array('id'=>4,'namevi'=>'Sản phẩm','slugvi'=>'san-pham','status'=>'hienthi','_pts_public_photo'=>'ok.webp','_pts_public_photo2'=>'../private.jpg','secret'=>'SHOULD_NOT_LEAK','sale_price'=>10));
 catalogAssert($dto['media'] === array('/upload/product/ok.webp'), 'validated media only');
 $payload = ptsCatalogPayload(array(), array(array('id'=>9,'namevi'=>'Danh mục','slugvi'=>'den','status'=>'hienthi')), array(array('id'=>4,'namevi'=>'Sản phẩm','slugvi'=>'san-pham','status'=>'hienthi')), 2, 48, 100, true);
-catalogAssert($payload['seo'] === array('title'=>'Sản phẩm | Phúc Thịnh Solar','description'=>'','keywords'=>'') && $payload['canonical'] === array('url'=>'/san-pham/'), 'root catalog SEO defaults and canonical path are allow-listed');
+catalogAssert($payload['seo'] === array('title'=>'Sản phẩm | Phúc Thịnh Solar','description'=>'','keywords'=>'','image'=>'') && $payload['canonical'] === array('url'=>'/san-pham/'), 'root catalog SEO defaults and canonical path are allow-listed');
 $seoPayload = ptsCatalogPayload(array('id'=>9,'namevi'=>'<b>Đèn</b>','slugvi'=>'den','status'=>'hienthi'), array(), array(), 1, 20, 0, true, array(), array(), array('seoFallbackTitle'=>'Đèn','seoRow'=>array('titlevi'=>'<b>Đèn pha | Phúc Thịnh Solar</b>','descriptionvi'=>'<p>Chiếu sáng an toàn</p>','keywordsvi'=>'đèn pha, năng lượng'),'canonicalPath'=>'/danh-muc-san-pham/den/'));
-catalogAssert($seoPayload['seo'] === array('title'=>'Đèn pha | Phúc Thịnh Solar','description'=>'Chiếu sáng an toàn','keywords'=>'đèn pha, năng lượng') && $seoPayload['canonical'] === array('url'=>'/danh-muc-san-pham/den/'), 'category Admin SEO and canonical are sanitized');
+catalogAssert($seoPayload['seo'] === array('title'=>'Đèn pha | Phúc Thịnh Solar','description'=>'Chiếu sáng an toàn','keywords'=>'đèn pha, năng lượng','image'=>'') && $seoPayload['canonical'] === array('url'=>'/danh-muc-san-pham/den/'), 'category Admin SEO and canonical are sanitized');
+$ogPayload = ptsCatalogPayload(array('id'=>9,'namevi'=>'Đèn','slugvi'=>'den','status'=>'hienthi'), array(), array(), 1, 20, 0, true, array(), array(), array('seoRow'=>array(), 'seoImage'=>'/upload/product/category.webp'));
+catalogAssert($ogPayload['seo']['image'] === '/upload/product/category.webp', 'category SEO image comes from a sanitized taxonomy image');
+$unsafeOgPayload = ptsCatalogPayload(array(), array(), array(), 1, 20, 0, true, array(), array(), array('seoImage'=>'/upload/product/../private.jpg'));
+catalogAssert($unsafeOgPayload['seo']['image'] === '', 'unsafe SEO image is omitted');
 $invalidCanonicalPayload = ptsCatalogPayload(array(), array(), array(), 1, 20, 0, true, array(), array(), array('canonicalPath'=>'https://evil.example/'));
 catalogAssert($invalidCanonicalPayload['canonical'] === array('url'=>'/san-pham/'), 'catalog canonical rejects external paths');
 catalogAssert($payload['pagination']['page'] === 2 && $payload['pagination']['perPage'] === 48, 'pagination bounds fixture');

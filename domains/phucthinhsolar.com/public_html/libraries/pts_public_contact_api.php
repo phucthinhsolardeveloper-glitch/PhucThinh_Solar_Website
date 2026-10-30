@@ -64,7 +64,9 @@ function ptsPublicContactPayload(array $input)
         'path' => '/lien-he/',
         'seo' => array(
             'title' => ptsContactText($input['seo']['title'] ?? ''),
-            'description' => ptsContactText($input['seo']['description'] ?? '')
+            'description' => ptsContactText($input['seo']['description'] ?? ''),
+            'keywords' => ptsContactText($input['seo']['keywords'] ?? ''),
+            'image' => is_scalar($input['seo']['image'] ?? null) ? trim((string)$input['seo']['image']) : ''
         ),
         'title' => ptsContactText($input['title'] ?? '') ?: 'Liên hệ Phúc Thịnh Solar',
         'intro' => ptsContactText($input['intro'] ?? ''),

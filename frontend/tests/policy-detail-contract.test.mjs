@@ -1,5 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
+import { readFileSync } from 'node:fs'
 import { isPublicPolicyDetail } from '../shared/contracts/public-policy-detail.ts'
 
 const good = {
@@ -10,6 +11,7 @@ const good = {
   slug: 'chinh-sach-bao-hanh',
   canonical: '/ho-tro/chinh-sach-bao-hanh/',
   description: '',
+  cover: '/upload/news/policy-cover.webp',
   date: '2026-10-01',
   author: { name: 'Phúc Thịnh Solar' },
   content: { format: 'sanitized-html', html: '<p>Nội dung an toàn</p>', sanitizedBy: 'pts_public_richtext', sanitizerVersion: 1 },
@@ -24,4 +26,12 @@ test('rejects wrong canonical and executable rich text', () => {
 test('requires safe author and related policy entries', () => {
   assert.equal(isPublicPolicyDetail({ ...good, author: { name: '' } }), false)
   assert.equal(isPublicPolicyDetail({ ...good, related: [{ ...good.related[0], image: '/upload/news/../../private.jpg' }] }), false)
+})
+test('uses only the current policy cover for social metadata and validates its media path', () => {
+  assert.equal(isPublicPolicyDetail({ ...good, cover: '' }), true)
+  assert.equal(isPublicPolicyDetail({ ...good, cover: '/upload/news/../../private.jpg' }), false)
+  assert.equal(isPublicPolicyDetail({ ...good, cover: '/upload/news/policy.svg' }), false)
+  const page = readFileSync(new URL('../app/pages/migration-policy-preview.vue', import.meta.url), 'utf8')
+  assert.match(page, /image:\s*computed\(\(\)\s*=>\s*data\.value\?\.cover\s*\|\|\s*undefined\)/)
+  assert.doesNotMatch(page, /image:\s*computed\(\(\)\s*=>\s*data\.value\?\.related/)
 })

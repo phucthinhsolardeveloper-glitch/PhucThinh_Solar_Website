@@ -53,7 +53,7 @@ function ptsNewsCategoryDto(array $row, array $metadata = array())
         'canonicalPath' => '/'.$slug,
         'image' => ptsNewsMedia(isset($row['_pts_public_photo']) ? $row['_pts_public_photo'] : '')
     );
-    foreach(array('type','level','path') as $key) if(isset($metadata[$key])) $dto[$key] = $metadata[$key];
+    foreach(array('type','level','path','seo') as $key) if(isset($metadata[$key])) $dto[$key] = $metadata[$key];
     return $dto;
 }
 
@@ -161,7 +161,7 @@ function ptsNewsCtaDto(array $rows, $hotline = '')
     return null;
 }
 
-function ptsNewsPayload(array $categories, array $rows, array $featuredRows, array $intro, $introConfigured, array $ctaRows, $ctaConfigured, $page, $total, $query, $category, $hotline, $heroEnabled)
+function ptsNewsPayload(array $categories, array $rows, array $featuredRows, array $intro, $introConfigured, array $ctaRows, $ctaConfigured, $page, $total, $query, $category, $hotline, $heroEnabled, array $seo = array())
 {
     $categoryMetadata = is_array($category) && isset($category['_pts_public_category_metadata']) && is_array($category['_pts_public_category_metadata']) ? $category['_pts_public_category_metadata'] : array();
     if($category) $category = ptsNewsCategoryDto($category, $categoryMetadata);
@@ -203,6 +203,12 @@ function ptsNewsPayload(array $categories, array $rows, array $featuredRows, arr
         'path' => '/tin-tuc/',
         'title' => $category ? $category['name'] : ($introTitle !== '' ? $introTitle : 'Kiến thức'),
         'description' => $category ? ($category['description'] ?? '') : ($introDescription !== '' ? $introDescription : 'Kiến thức năng lượng mặt trời, thông tin sản phẩm và câu chuyện từ Phúc Thịnh Solar.'),
+        'seo' => array(
+            'title' => ptsNewsPlainText($seo['title'] ?? ''),
+            'description' => ptsNewsPlainText($seo['description'] ?? ''),
+            'keywords' => ptsNewsPlainText($seo['keywords'] ?? ''),
+            'image' => is_scalar($seo['image'] ?? null) ? trim((string)$seo['image']) : ''
+        ),
         'category' => $category,
         'categories' => $categoryDtos,
         'featured' => $heroEnabled && !$category && $query === '' ? $featured : array(),

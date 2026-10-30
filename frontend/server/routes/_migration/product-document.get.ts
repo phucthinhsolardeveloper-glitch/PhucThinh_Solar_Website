@@ -14,6 +14,6 @@ export default defineEventHandler(async (event) => {
 
   setHeader(event, 'Content-Type', document.contentType)
   setHeader(event, 'Content-Disposition', `attachment; filename="${document.filename.replace(/["\\]/g, '_')}"`)
-  setHeader(event, 'Cache-Control', 'private, max-age=300')
+  setHeader(event, 'Cache-Control', 'private, no-store')
   return new Uint8Array(document.body)
 })

@@ -8,6 +8,7 @@ export interface PublicPolicyDetail {
   slug: string
   canonical: string
   description: string
+  cover: string
   date: string
   author: { name: string }
   content: PublicSanitizedRichText
@@ -24,7 +25,8 @@ export function isPublicPolicyDetail(value: unknown): value is PublicPolicyDetai
     || typeof value.id !== 'number' || !Number.isSafeInteger(value.id) || value.id <= 0
     || !text(value.title) || typeof value.slug !== 'string' || !SLUG.test(value.slug)
     || value.canonical !== `/ho-tro/${value.slug}/`
-    || !text(value.description, true) || !text(value.date, true) || !record(value.author) || !text(value.author.name)
+    || !text(value.description, true) || typeof value.cover !== 'string' || (value.cover !== '' && !NEWS_IMAGE.test(value.cover))
+    || !text(value.date, true) || !record(value.author) || !text(value.author.name)
     || !isPublicSanitizedRichText(value.content) || !Array.isArray(value.related)
     || !record(value.seo) || !text(value.seo.title) || !text(value.seo.description, true) || !text(value.seo.keywords, true)
     || value.seo.canonical !== value.canonical) return false

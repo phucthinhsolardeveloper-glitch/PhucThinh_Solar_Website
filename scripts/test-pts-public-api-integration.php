@@ -313,7 +313,7 @@ if($db)
         'solution'=>array("select slugvi from #_news where type=? and find_in_set('hienthi',status) and slugvi<>'' order by id desc limit 1", array('giai-phap')),
         'project'=>array("select slugvi from #_news where type=? and find_in_set('hienthi',status) and slugvi<>'' order by id desc limit 1", array('du-an')),
         'news'=>array("select slugvi from #_news where type=? and find_in_set('hienthi',status) and slugvi<>'' order by id desc limit 1", array('tin-tuc')),
-        'policy'=>array("select slugvi from #_news where type=? and find_in_set('hienthi',status) and slugvi<>'' order by id desc limit 1", array('chinh-sach')),
+        'policy'=>array("select slugvi,photo from #_news where type=? and find_in_set('hienthi',status) and slugvi<>'' order by id desc limit 1", array('chinh-sach')),
         'city'=>array("select id from #_city where find_in_set('hienthi',status) order by id asc limit 1", array())
     );
     foreach($queries as $key=>$query) $fixtures[$key] = ptsIntegrationDbOne($db, $query[0], $query[1]);
@@ -349,7 +349,7 @@ $dynamic = array(
     array('solution_detail','/api/pts_v1_solution_detail.php','solution','slug',array('schemaVersion','solution','content')),
     array('project_detail','/api/pts_v1_project_detail.php','project','slug',array('schemaVersion','project','content')),
     array('news_detail','/api/pts_v1_news_detail.php','news','slug',array('article','related')),
-    array('policy_detail','/api/pts_v1_policy_detail.php','policy','slug',array('schemaVersion','title','content','seo'))
+    array('policy_detail','/api/pts_v1_policy_detail.php','policy','slug',array('schemaVersion','title','cover','content','seo'))
 );
 foreach($dynamic as $case)
 {
@@ -358,6 +358,16 @@ foreach($dynamic as $case)
     if($value === '') { ptsIntegrationRecord('skip', $name, 'no published local fixture entity'); continue; }
     list($response,$decoded) = ptsIntegrationRequest($name, $path, 'GET', array($param=>$value));
     if($response['status'] !== 0) ptsIntegrationAssertHttp($name, $response, 200, $keys);
+    if($name === 'policy_detail' && $response['status'] === 200 && is_array($decoded))
+    {
+        $photo = isset($fixtures['policy']['photo']) && is_scalar($fixtures['policy']['photo']) ? (string)$fixtures['policy']['photo'] : '';
+        $safePhoto = basename($photo) === $photo && preg_match('/^[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|gif|webp|avif)$/i', $photo);
+        $expectedCover = $safePhoto && is_file($publicRoot.'/upload/news/'.$photo) ? '/upload/news/'.$photo : '';
+        if(($decoded['cover'] ?? null) === $expectedCover)
+            ptsIntegrationRecord('pass', 'policy cover maps from its own CMS photo', 'GET response cover matches the current policy record; related article images are not used');
+        else
+            ptsIntegrationRecord('fail', 'policy cover maps from its own CMS photo', 'GET response cover does not match the current policy record');
+    }
 }
 
 /* Search and two-level location data use real fixture values. */

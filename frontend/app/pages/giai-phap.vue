@@ -38,15 +38,22 @@ const responseStatus = editorialPublicHubResponseStatus(
 )
 if (import.meta.server && responseStatus) setResponseStatus(responseStatus, responseStatus === 404 ? 'Not Found' : 'Bad Gateway')
 
+const pageTitle = computed(() => data.value?.seo?.title || data.value?.title || 'Giải pháp — Phúc Thịnh Solar')
+const pageDescription = computed(() => data.value?.seo?.description || data.value?.intro?.description || '')
+const pageKeywords = computed(() => data.value?.seo?.keywords || '')
+const pageImage = computed(() => data.value?.seo?.image || data.value?.intro?.image || undefined)
 useSeoMeta({
-  title: computed(() => isHubRoute.value ? (data.value?.title || 'Giải pháp — Phúc Thịnh Solar') : undefined),
+  title: computed(() => isHubRoute.value ? pageTitle.value : undefined),
+  description: computed(() => isHubRoute.value ? pageDescription.value : undefined),
   robots: computed(() => isHubRoute.value ? (indexable.value && !Object.keys(route.query).length ? 'index, follow' : 'noindex, nofollow, noarchive') : undefined),
 })
+useHead({ meta: computed(() => isHubRoute.value && pageKeywords.value ? [{ name: 'keywords', content: pageKeywords.value }] : []) })
 usePublicSocialMeta({
   enabled: computed(() => isHubRoute.value && isRuntimeFlagEnabled(config.public.solutionsPublicRouteEnabled) && !!data.value && !error.value),
-  title: computed(() => data.value?.title || 'Giải pháp — Phúc Thịnh Solar'),
-  description: computed(() => data.value?.intro?.description || ''),
+  title: pageTitle,
+  description: pageDescription,
   canonicalPath: '/giai-phap/',
+  image: pageImage,
 })
 </script>
 

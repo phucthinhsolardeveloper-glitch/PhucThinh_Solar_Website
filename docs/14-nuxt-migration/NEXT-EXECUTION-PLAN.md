@@ -1,5 +1,36 @@
 # PTS Nuxt migration — next execution plan
 
+## Commerce checkout handoff — 2026-10-29
+
+- Nuxt `/thanh-toan/` is now behind the independent
+  `checkoutPublicRouteEnabled` flag (Nuxt config and compose default `false`).
+  Flag OFF redirects to PHP `/gio-hang/`, where the legacy checkout remains
+  available. The flag is not enabled in production.
+- With the flag ON, the browser submits a native URL-encoded POST directly to
+  the configured PHP public origin at `/gio-hang` (without a trailing slash),
+  using PHP's `thanhtoan`, `form_csrf`,
+  `checkout_token`, and `dataOrder[...]` fields. `Caddyfile.local-full-nuxt`
+  already forwards POST `/gio-hang` to local PHP when the configured public
+  origin is the Caddy listener. Nitro's
+  `POST /_migration/checkout` intentionally remains HTTP 410 and never writes
+  orders. PHP still owns session, CSRF, idempotency, validation, authoritative
+  price/shipping, order transaction, email, payment and success redirect.
+- PHP redirects from `sources/order.php` use relative locations such as
+  `gio-hang/` and `cam-on/?token=...`. Posting to `/gio-hang` without the final
+  slash makes the browser resolve these at the site root; `/gio-hang/` would
+  incorrectly nest them under `/gio-hang/`. Local direct Nuxt access on
+  `:3101` can hand off to PHP `:8080` through `phpPublicOrigin`; browser and PHP
+  origins must use the same hostname so the PHP session cookie is sent. The
+  Caddy matcher supports the hybrid front-door path when configured as origin.
+- PHP validation failures store session flash and redirect back to `/gio-hang`.
+  When Nuxt cart is enabled, CartPage reads the one-time notice through the
+  separate `/_migration/checkout-notice` GET adapter and carries allowlisted
+  form fields in memory-only Nuxt state to checkout; SiteHeader does not consume
+  it. Successful legacy redirects to `/cam-on/?token=...` (or VNPay); its
+  existing order-success flag decides whether Nuxt or PHP serves the return.
+- Verification here is structural and GET-only; no checkout POST, order, DB
+  mutation, production deployment or route-flag change was performed.
+
 ## UI contrast follow-up — 2026-10-29 21:47 +07:00
 
 - Đã sửa `HomeHero.vue` tại `59d791a`: ảnh hero trống/lỗi giờ chuyển section sang

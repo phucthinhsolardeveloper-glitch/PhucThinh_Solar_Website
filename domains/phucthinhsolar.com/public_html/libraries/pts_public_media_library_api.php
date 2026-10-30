@@ -36,19 +36,21 @@ function ptsMediaProductImage($value)
     return $file === '' ? '' : '/upload/product/'.$file;
 }
 
-function ptsMediaSeoDto(array $row, $fallbackTitle, $fallbackDescription, $canonical)
+function ptsMediaSeoDto(array $row, $fallbackTitle, $fallbackDescription, $canonical, $image = null)
 {
     $title = ptsMediaPlainText(isset($row['titlevi']) ? $row['titlevi'] : '');
     $description = ptsMediaPlainText(isset($row['descriptionvi']) ? $row['descriptionvi'] : '');
     $keywords = ptsMediaPlainText(isset($row['keywordsvi']) ? $row['keywordsvi'] : '');
     if($title === '') $title = ptsMediaPlainText($fallbackTitle);
     if($description === '') $description = ptsMediaPlainText($fallbackDescription);
-    return array(
+    $seo = array(
         'title' => $title,
         'description' => $description,
         'keywords' => $keywords,
         'canonical' => $canonical
     );
+    if($image !== null) $seo['image'] = is_scalar($image) ? (string)$image : '';
+    return $seo;
 }
 
 function ptsGalleryAlbumDto(array $row)

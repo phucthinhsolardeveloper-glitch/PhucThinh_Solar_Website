@@ -18,8 +18,12 @@ try {
     require_once LIBRARIES.'solution_hub.php';
     require_once LIBRARIES.'product_category_urls.php';
     require_once LIBRARIES.'pts_public_solution_detail_api.php';
+    require_once LIBRARIES.'pts_public_seo_api.php';
     $row = $d->rawQueryOne('select id,namevi,nameen,descvi,descen,contentvi,contenten,content1vi,content1en,photo,photo1,slugvi,slugen,status from #_news where slugvi = ? and type = ? and find_in_set(\'hienthi\',status) limit 1', array($slug, 'giai-phap'));
     if(empty($row)) ptsSolutionDetailError(404, 'SOLUTION_NOT_FOUND');
+    /* News detail SEO is stored with com=news, act=man and the record type. */
+    $seoRow = $d->rawQueryOne('select titlevi,descriptionvi,keywordsvi from #_seo where id_parent = ? and com = ? and act = ? and type = ? limit 1', array((int)$row['id'], 'news', 'man', 'giai-phap'));
+    $seo = ptsPublicSeoDto(is_array($seoRow) ? $seoRow : array(), ROOT, UPLOAD_NEWS_L, $row['photo'] ?? '');
     $load = static function($sql, array $params) use ($d) { $rows = $d->rawQuery($sql, $params); return is_array($rows) ? $rows : array(); };
     $solutionRows = $load('select id,namevi,nameen,title_indexvi,title_indexen,descvi,descen,photo,photo1,slugvi,slugen,status from #_news where type=? order by numb,id desc', array('giai-phap'));
     $productRows = $load('select id,namevi,nameen,descvi,descen,photo,slugvi,slugen,status from #_product_list where type=? order by numb,id desc', array('san-pham'));
@@ -41,5 +45,5 @@ try {
         && isset($sourceFallbackImages[$slug]) && is_file(ROOT.$sourceFallbackImages[$slug]))
         $row['_pts_public_photo'] = '/'.$sourceFallbackImages[$slug];
     $hotline = isset($optsetting['hotline']) && is_scalar($optsetting['hotline']) ? trim((string)$optsetting['hotline']) : '';
-    echo json_encode(ptsSolutionDetailPayload($row, $safeGallery, $solutionRows, $productRows, $ctaRows, $hotline), JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR);
+    echo json_encode(ptsSolutionDetailPayload($row, $safeGallery, $solutionRows, $productRows, $ctaRows, $hotline, $seo), JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR);
 } catch(Throwable $e) { error_log('pts_v1_solution_detail: '.$e->getMessage()); http_response_code(500); echo '{"error":{"code":"INTERNAL_ERROR"}}'; }

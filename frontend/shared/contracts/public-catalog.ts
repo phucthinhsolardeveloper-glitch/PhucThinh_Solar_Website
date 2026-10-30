@@ -33,7 +33,7 @@ export type PublicCatalogSortKey = 'default' | 'abc' | 'abc-desc' | 'price' | 'p
 export interface PublicCatalogPayload {
   schemaVersion: 1
   locale: 'vi'
-  seo: { title: string; description: string; keywords: string }
+  seo: { title: string; description: string; keywords: string; image?: string }
   canonical: { url: string }
   category: [] | PublicCatalogCategory
   categories: PublicCatalogCategory[]
@@ -84,7 +84,7 @@ function isSlug(value: unknown): value is string {
 }
 
 function isPublicCatalogVisual(value: unknown): value is string {
-  return typeof value === 'string' && (value === '' || /^\/(?:upload\/(?:photo|product)|assets\/images\/site-visuals)\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|gif|webp|avif)$/i.test(value))
+  return typeof value === 'string' && (value === '' || /^\/(?:upload\/(?:photo|product|seopage)|assets\/images\/site-visuals)\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|gif|webp|avif)$/i.test(value))
 }
 
 function isCategoryContent(value: unknown): value is PublicCatalogPayload['categoryContent'] {
@@ -180,7 +180,7 @@ export function isPublicCatalogPayload(value: unknown): value is PublicCatalogPa
   const extended = hasExactKeys(value, [...baseKeys, 'filters', 'selected', 'categoryHero', 'categoryContent', 'support'])
   if (!(legacy || extended) || value.schemaVersion !== 1 || value.locale !== 'vi') return false
   if (!(Array.isArray(value.category) && value.category.length === 0 || isCategory(value.category))) return false
-  if (!isRecord(value.seo) || !hasExactKeys(value.seo, ['title', 'description', 'keywords']) || !isSafeText(value.seo.title) || !isSafeText(value.seo.description, true) || !isSafeText(value.seo.keywords, true) || /[<>]/.test(value.seo.title) || /[<>]/.test(value.seo.description) || /[<>]/.test(value.seo.keywords)) return false
+  if (!isRecord(value.seo) || !(hasExactKeys(value.seo, ['title', 'description', 'keywords']) || hasExactKeys(value.seo, ['title', 'description', 'keywords', 'image'])) || !isSafeText(value.seo.title) || !isSafeText(value.seo.description, true) || !isSafeText(value.seo.keywords, true) || /[<>]/.test(value.seo.title) || /[<>]/.test(value.seo.description) || /[<>]/.test(value.seo.keywords) || value.seo.image !== undefined && !isPublicCatalogVisual(value.seo.image)) return false
   const expectedCanonical = Array.isArray(value.category) ? '/san-pham/' : value.category.url
   if (!isRecord(value.canonical) || !hasExactKeys(value.canonical, ['url']) || value.canonical.url !== expectedCanonical) return false
   if (!Array.isArray(value.categories) || !value.categories.every(isCategory) || !Array.isArray(value.products) || !value.products.every(isPublicCatalogProduct)) return false

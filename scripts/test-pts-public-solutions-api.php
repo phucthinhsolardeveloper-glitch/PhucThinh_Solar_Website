@@ -83,15 +83,20 @@ $result = ptsPublicSolutionsPayload(
     $ctaRows,
     $productRows,
     '090 123-4567',
-    array('dien-mat-troi-ho-gia-dinh' => '/assets/images/site-visuals/fallback.jpg')
+    array('dien-mat-troi-ho-gia-dinh' => '/assets/images/site-visuals/fallback.jpg'),
+    'assets/images/site-visuals/catalog-street-lighting.jpg',
+    array('title'=>'<b>SEO landing</b>', 'description'=>'<p>Mô tả SEO</p>', 'keywords'=>'điện mặt trời, giải pháp', 'image'=>'/upload/seopage/solutions.jpg')
 );
 $categoryDto = ptsPublicSolutionCategoryDto(
     array('id'=>5, 'namevi'=>'Hộ gia đình', 'descvi'=>'Mô tả nhóm', 'slugvi'=>'ho-gia-dinh', 'status'=>'hienthi'),
     array(array('id'=>5, 'namevi'=>'Hộ gia đình', 'slugvi'=>'ho-gia-dinh', 'status'=>'hienthi')),
-    $solutionRows
+    $solutionRows,
+    array('title'=>'<b>SEO taxonomy</b>', 'description'=>'Mô tả danh mục', 'keywords'=>'hộ gia đình', 'image'=>'/upload/news/category.jpg')
 );
 solutionsAssert($result['schemaVersion'] === 1 && $result['locale'] === 'vi', 'schema và locale vi');
+solutionsAssert($result['seo'] === array('title'=>'SEO landing', 'description'=>'Mô tả SEO', 'keywords'=>'điện mặt trời, giải pháp', 'image'=>'/upload/seopage/solutions.jpg'), 'SEO Admin hub được hạ text an toàn và giữ ảnh đã kiểm tra');
 solutionsAssert($result['category'] === null, 'solutions hub không tự nhận là category');
+solutionsAssert($categoryDto['seo'] === array('title'=>'SEO taxonomy', 'description'=>'Mô tả danh mục', 'keywords'=>'hộ gia đình', 'image'=>'/upload/news/category.jpg'), 'SEO taxonomy được chiếu riêng khỏi ảnh/nội dung card');
 solutionsAssert($categoryDto['canonicalPath'] === '/ho-gia-dinh' && $categoryDto['cards'][0]['title'] === 'Điện mặt trời hộ gia đình', 'solution category dùng canonical bare path và tên bài như template PHP');
 solutionsAssert($categoryDto['navigation'][0]['url'] === '/giai-phap/dien-mat-troi-ho-gia-dinh/' && $categoryDto['navigation'][0]['active'] === true, 'solution category nav giữ representative detail link PHP');
 solutionsAssert(count($result['cards']) === 1, 'featured selection chỉ trả card được chọn và có slug');
@@ -122,6 +127,7 @@ $fallbackResult = ptsPublicSolutionsPayload(
     array('fallback' => '/assets/fallback.jpg')
 );
 solutionsAssert($fallbackResult['intro']['title'] === 'Chọn đúng giải pháp cho nhu cầu của bạn', 'intro fallback khi CMS chưa có record');
+solutionsAssert($fallbackResult['seo'] === array('title'=>'', 'description'=>'', 'keywords'=>'', 'image'=>''), 'SEO rỗng có fallback metadata an toàn ở Nuxt');
 solutionsAssert($fallbackResult['cards'][0]['image'] === '/assets/fallback.jpg', 'card dùng fallback ảnh đã được duyệt');
 solutionsAssert($fallbackResult['cta']['image'] === '/assets/images/site-visuals/catalog-street-lighting.jpg', 'CTA fallback giữ đúng source');
 solutionsAssert($fallbackResult['cta']['hotline'] === null, 'hotline rỗng không tạo CTA hotline');

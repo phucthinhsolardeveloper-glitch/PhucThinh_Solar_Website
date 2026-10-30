@@ -26,16 +26,19 @@ if (import.meta.server && !props.preview && (siteError.value || !isPublicSitePay
 }
 
 const fallbackDescription = 'Phúc Thịnh Solar — thiết bị và giải pháp năng lượng mặt trời cho gia đình, doanh nghiệp và dự án.'
+const pageKeywords = computed(() => home.value?.seo.keywords || '')
 useSeoMeta({
   title: () => home.value?.seo.title || fallbackTitle.value,
   description: () => home.value?.seo.description || fallbackDescription,
   robots: () => indexable.value ? 'index, follow' : 'noindex, nofollow, noarchive',
 })
+useHead({ meta: computed(() => pageKeywords.value ? [{ name: 'keywords', content: pageKeywords.value }] : []) })
 usePublicSocialMeta({
   enabled: computed(() => !props.preview && isRuntimeFlagEnabled(config.public.homePublicRouteEnabled) && !!home.value && !siteError.value && !error.value),
   title: computed(() => home.value?.seo.title || fallbackTitle.value),
   description: computed(() => home.value?.seo.description || fallbackDescription),
   canonicalPath: '/',
+  image: computed(() => home.value?.seo.image || undefined),
 })
 </script>
 

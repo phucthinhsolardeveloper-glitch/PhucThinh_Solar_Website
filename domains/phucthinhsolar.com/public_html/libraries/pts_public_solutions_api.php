@@ -33,6 +33,22 @@ function ptsPublicSolutionsPath($path)
     return '/'.ltrim($path, '/');
 }
 
+function ptsPublicSolutionsSeoDto(array $seo)
+{
+    $text = static function($value) {
+        if(!is_scalar($value)) return '';
+        $value = solutionHubText($value);
+        $value = preg_replace('/[\x00-\x1F\x7F]+/u', ' ', $value);
+        return trim(is_string($value) ? preg_replace('/\s+/u', ' ', $value) : '');
+    };
+    return array(
+        'title' => $text($seo['title'] ?? ''),
+        'description' => $text($seo['description'] ?? ''),
+        'keywords' => $text($seo['keywords'] ?? ''),
+        'image' => ptsPublicSolutionsPath($seo['image'] ?? '')
+    );
+}
+
 function ptsPublicSolutionsHotline($hotline)
 {
     if(!is_scalar($hotline)) return array('label' => '', 'text' => '', 'tel' => '');
@@ -78,7 +94,7 @@ function ptsPublicSolutionsEditorialToc($html)
     );
 }
 
-function ptsPublicSolutionCategoryDto(array $group, array $groups, array $solutionRows)
+function ptsPublicSolutionCategoryDto(array $group, array $groups, array $solutionRows, array $seo = array())
 {
     $id = isset($group['id']) ? (int)$group['id'] : 0;
     $slug = ptsPublicSolutionsSlug(isset($group['slugvi']) ? $group['slugvi'] : '');
@@ -128,6 +144,7 @@ function ptsPublicSolutionCategoryDto(array $group, array $groups, array $soluti
         'id' => $id,
         'name' => $name,
         'description' => $description,
+        'seo' => ptsPublicSolutionsSeoDto($seo),
         'slug' => $slug,
         'canonicalPath' => '/'.$slug,
         'cards' => $cards,
@@ -135,7 +152,7 @@ function ptsPublicSolutionCategoryDto(array $group, array $groups, array $soluti
     );
 }
 
-function ptsPublicSolutionsPayload(array $solutionRows, array $introRows, array $ctaRows, array $productRows, $hotline = '', array $fallbackImages = array(), $ctaFallbackImage = 'assets/images/site-visuals/catalog-street-lighting.jpg')
+function ptsPublicSolutionsPayload(array $solutionRows, array $introRows, array $ctaRows, array $productRows, $hotline = '', array $fallbackImages = array(), $ctaFallbackImage = 'assets/images/site-visuals/catalog-street-lighting.jpg', array $seo = array())
 {
     $ui = ptsPublicSolutionsUi();
     $lang = 'vi';
@@ -235,6 +252,7 @@ function ptsPublicSolutionsPayload(array $solutionRows, array $introRows, array 
         'locale' => 'vi',
         'path' => '/giai-phap/',
         'title' => $title,
+        'seo' => ptsPublicSolutionsSeoDto($seo),
         'category' => null,
         'intro' => $intro,
         'cards' => $cards,

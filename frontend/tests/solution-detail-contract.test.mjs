@@ -16,8 +16,15 @@ const good = {
 }
 const solutionPage = readFileSync(new URL('../app/components/solution-detail/SolutionDetailPage.vue', import.meta.url), 'utf8')
 const solutionHubPage = readFileSync(new URL('../app/pages/giai-phap.vue', import.meta.url), 'utf8')
+const solutionDetailRoute = readFileSync(new URL('../app/pages/migration-solution-detail-preview.vue', import.meta.url), 'utf8')
 
 test('accepts safe solution detail DTO', () => assert.equal(isPublicSolutionDetailPayload(good), true))
+test('accepts optional Admin SEO fields and rejects unsafe SEO media', () => {
+  const seo = { title: 'SEO title', description: 'SEO description', keywords: 'solar', image: '/upload/news/og.jpg' }
+  assert.equal(isPublicSolutionDetailPayload({ ...good, seo }), true)
+  assert.equal(isPublicSolutionDetailPayload({ ...good, seo: { ...seo, image: '/upload/news/../private.jpg' } }), false)
+  assert.equal(isPublicSolutionDetailPayload(good), true)
+})
 test('rejects executable or external media', () => assert.equal(isPublicSolutionDetailPayload({ ...good, solution: { ...good.solution, content: { ...sanitized, html: '<script>bad</script>' } } }), false))
 test('rejects non-legacy CTA and invalid navigation URL', () => {
   assert.equal(isPublicSolutionDetailPayload({ ...good, cta: { ...good.cta, href: 'https://example.test' } }), false)
@@ -35,6 +42,13 @@ test('rejects wrong sanitizer metadata on either content field', () => {
 test('solution detail renders its Admin controlled campaign CTA after related equipment', () => {
   assert.match(solutionPage, /<SolutionsCta v-if="data\.campaignCta" :cta="data\.campaignCta" \/>/)
   assert.match(readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/api/pts_v1_solution_detail.php', import.meta.url), 'utf8'), /type=\? order by numb,id desc', array\('solution-cta'\)/)
+})
+test('solution detail reads the legacy news SEO key and applies Admin metadata with content fallbacks', () => {
+  const api = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/api/pts_v1_solution_detail.php', import.meta.url), 'utf8')
+  assert.match(api, /id_parent = \? and com = \? and act = \? and type = \? limit 1', array\(\(int\)\$row\['id'\], 'news', 'man', 'giai-phap'\)/)
+  assert.match(solutionDetailRoute, /data\.value\?\.seo\?\.title\s*\|\|\s*data\.value\?\.solution\.title/)
+  assert.match(solutionDetailRoute, /data\.value\?\.seo\?\.description\s*\|\|\s*data\.value\?\.solution\.summary/)
+  assert.match(solutionDetailRoute, /data\.value\?\.seo\?\.image\s*\|\|\s*data\.value\?\.solution\.image/)
 })
 test('solution hub parent renders nested public detail page and scopes hub status and metadata to the hub path', () => {
   assert.match(solutionHubPage, /<NuxtPage v-if="!isHubRoute" \/>/)

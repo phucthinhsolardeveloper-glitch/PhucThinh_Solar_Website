@@ -1,5 +1,123 @@
 /* Minimal global reset; brand tokens and component styles live in main.css. */
 * { box-sizing: border-box; }
-html { color: var(--color-navy-800); background: white; }
-body { margin: 0; }
+html { color-scheme: light; color: var(--color-navy-800); background: white; }
+html.dark { color-scheme: dark; color: #e2e8f0; background: #061537; }
+body { margin: 0; background: white; }
+html.dark body { background: #061537; color: #e2e8f0; }
 :focus-visible { outline: 3px solid var(--color-gold-700); outline-offset: 3px; }
+
+/* Nuxt UI follows the system color mode. Keep the PHP storefront's explicit
+   utility colors readable when that mode is dark, while retaining white
+   surfaces for forms, product imagery and controls. */
+html.dark .text-navy-950,
+html.dark .text-navy-900,
+html.dark .text-navy-800,
+html.dark .text-navy-700,
+html.dark .text-\[\#20344b\],
+html.dark .text-\[\#071b46\] {
+  color: #e2e8f0 !important;
+}
+
+html.dark .text-slate-700,
+html.dark .text-slate-600,
+html.dark .text-slate-500,
+html.dark .text-\[\#52627a\],
+html.dark .text-\[\#52627c\] {
+  color: #cbd5e1 !important;
+}
+
+html.dark .text-gold-800,
+html.dark .text-gold-700,
+html.dark .text-gold-600 {
+  color: #f2c969 !important;
+}
+
+html.dark .text-red-800,
+html.dark .text-red-700,
+html.dark .text-red-600 {
+  color: #fca5a5 !important;
+}
+
+/* Light, intentional control/image surfaces keep their original dark ink. */
+html.dark .bg-white.text-navy-950,
+html.dark .bg-white.text-navy-900,
+html.dark .bg-white.text-navy-800,
+html.dark .bg-white.text-navy-700,
+html.dark .bg-slate-50.text-navy-950,
+html.dark .bg-slate-50.text-navy-900,
+html.dark .bg-slate-50.text-navy-800,
+html.dark .bg-slate-50.text-navy-700,
+html.dark .bg-slate-50\/80.text-navy-950,
+html.dark .bg-slate-50\/80.text-navy-900,
+html.dark .bg-slate-50\/80.text-navy-800,
+html.dark .bg-slate-50\/80.text-navy-700,
+html.dark .bg-white .text-navy-950,
+html.dark .bg-white .text-navy-900,
+html.dark .bg-white .text-navy-800,
+html.dark .bg-white .text-navy-700,
+html.dark .bg-slate-50 .text-navy-950,
+html.dark .bg-slate-50 .text-navy-900,
+html.dark .bg-slate-50 .text-navy-800,
+html.dark .bg-slate-50 .text-navy-700,
+html.dark .bg-slate-50\/80 .text-navy-950,
+html.dark .bg-slate-50\/80 .text-navy-900,
+html.dark .bg-slate-50\/80 .text-navy-800,
+html.dark .bg-slate-50\/80 .text-navy-700,
+html.dark .bg-slate-100 .text-navy-950,
+html.dark .bg-slate-100 .text-navy-900,
+html.dark .bg-slate-100 .text-navy-800,
+html.dark .bg-slate-100 .text-navy-700,
+html.dark .bg-white .text-slate-700,
+html.dark .bg-white .text-slate-600,
+html.dark .bg-white .text-slate-500,
+html.dark .bg-slate-50 .text-slate-700,
+html.dark .bg-slate-50 .text-slate-600,
+html.dark .bg-slate-50 .text-slate-500,
+html.dark .bg-slate-50\/80 .text-slate-700,
+html.dark .bg-slate-50\/80 .text-slate-600,
+html.dark .bg-slate-50\/80 .text-slate-500,
+html.dark .bg-slate-100 .text-slate-700,
+html.dark .bg-slate-100 .text-slate-600,
+html.dark .bg-slate-100 .text-slate-500,
+html.dark .pts-site-header .text-navy-950,
+html.dark .pts-site-header .text-navy-900,
+html.dark .pts-site-header .text-navy-800,
+html.dark .pts-site-header .text-navy-700,
+html.dark input.text-navy-950,
+html.dark input.text-navy-900,
+html.dark input.text-navy-800,
+html.dark select.text-navy-950,
+html.dark select.text-navy-900,
+html.dark select.text-navy-800,
+html.dark textarea.text-navy-950,
+html.dark textarea.text-navy-900,
+html.dark textarea.text-navy-800 {
+  color: #0a2251 !important;
+}
+
+html.dark .bg-gold-400.text-navy-950,
+html.dark .bg-gold-500.text-navy-950,
+html.dark .bg-gold-600.text-navy-950,
+html.dark .bg-hdr-gold.text-navy-950 {
+  color: #061537 !important;
+}
+
+html.dark .solutions-intro-primary {
+  color: #061537 !important;
+}
+
+html.dark .cms-content:not(.cms-content-on-dark) {
+  color: #e2e8f0;
+}
+
+html.dark .cms-content:not(.cms-content-on-dark) h2,
+html.dark .cms-content:not(.cms-content-on-dark) h3,
+html.dark .cms-content:not(.cms-content-on-dark) h4,
+html.dark .cms-content:not(.cms-content-on-dark) h5,
+html.dark .cms-content:not(.cms-content-on-dark) h6 {
+  color: #f1f5f9;
+}
+
+html.dark .cms-content:not(.cms-content-on-dark) a {
+  color: #f2c969;
+}

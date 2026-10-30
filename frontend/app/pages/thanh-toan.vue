@@ -1,8 +1,17 @@
 <script setup lang="ts">
 import { isPublicCartPayload, type PublicCartPayload } from '#shared/contracts/public-cart'
-import { isPublicCheckoutPayload, isPublicCheckoutWardsPayload, type PublicCheckoutPayload, type PublicCheckoutOption } from '#shared/contracts/public-checkout'
+import { isPublicCheckoutPayload, isPublicCheckoutWardsPayload, type PublicCheckoutPayload, type PublicCheckoutOption, type PublicCheckoutNoticeForm } from '#shared/contracts/public-checkout'
+import { CART_CHECKOUT_POST_PATH, phpPublicRouteUrl } from '#shared/public-route-gate'
+import checkoutPublicRoute from '~/middleware/checkout-public-route'
+
+definePageMeta({
+  layout: false,
+  middleware: checkoutPublicRoute,
+})
 
 const { site } = await usePublicSite()
+const runtimeConfig = useRuntimeConfig()
+const checkoutPostAction = phpPublicRouteUrl(runtimeConfig.public.phpPublicOrigin, CART_CHECKOUT_POST_PATH)
 const { data: cartData } = await useFetch<unknown>('/_migration/cart', { key: 'migration-checkout-cart', default: () => null })
 const { data: checkoutData, error: checkoutLoadError } = await useFetch<unknown>('/_migration/checkout', { key: 'migration-checkout-meta', default: () => null })
 const cart = computed<PublicCartPayload | null>(() => isPublicCartPayload(cartData.value) ? cartData.value : null)
@@ -21,9 +30,8 @@ const form = reactive({
 const wards = ref<PublicCheckoutOption[]>([])
 const shippingAmount = ref<number | null>(null)
 const shippingPending = ref(false)
-const submitting = ref(false)
-const submitError = ref('')
-const fieldError = ref('')
+const restoringDraft = ref(false)
+const checkoutDraft = useState<PublicCheckoutNoticeForm | null>('pts-checkout-form-draft', () => null)
 
 function formatMoney(value: number | null): string {
   return value === null ? 'Chờ xác nhận' : new Intl.NumberFormat('vi-VN').format(value) + 'đ'
@@ -43,6 +51,27 @@ async function loadWards() {
   }
 }
 
+onMounted(async () => {
+  const draft = checkoutDraft.value
+  if (!draft) return
+  checkoutDraft.value = null
+  restoringDraft.value = true
+  form.fullname = draft.fullname ?? ''
+  form.phone = draft.phone ?? ''
+  form.email = draft.email ?? ''
+  form.address = draft.address ?? ''
+  form.requirements = draft.requirements ?? ''
+  form.payment = draft.payments ? Number(draft.payments) : 0
+  const city = draft.city ? Number(draft.city) : 0
+  if (Number.isSafeInteger(city) && city > 0) {
+    form.city = city
+    await loadWards()
+    const ward = draft.ward ? Number(draft.ward) : 0
+    if (Number.isSafeInteger(ward) && wards.value.some((option) => option.id === ward)) form.ward = ward
+  }
+  restoringDraft.value = false
+})
+
 async function quoteShipping() {
   shippingAmount.value = null
   shippingPending.value = false
@@ -56,67 +85,13 @@ async function quoteShipping() {
   }
 }
 
-watch(() => form.city, () => void loadWards())
+watch(() => form.city, () => { if (!restoringDraft.value) void loadWards() })
 watch(() => form.ward, () => void quoteShipping())
 
 const orderTotal = computed(() => {
   if (!cart.value || cart.value.subtotal === null) return null
   return cart.value.subtotal + (shippingAmount.value ?? 0)
 })
-
-function validateClient(): boolean {
-  fieldError.value = ''
-  if (!form.fullname.trim() || !form.phone.trim() || !form.email.trim() || !form.city || !form.ward || !form.address.trim() || !form.payment) {
-    fieldError.value = 'Vui lòng điền đầy đủ thông tin giao hàng và hình thức thanh toán.'
-    return false
-  }
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
-    fieldError.value = 'Email chưa đúng định dạng.'
-    return false
-  }
-  return true
-}
-
-async function submitOrder() {
-  if (!validateClient() || !checkout.value || !cart.value?.canCheckout) return
-  submitting.value = true
-  submitError.value = ''
-  try {
-    const result: any = await $fetch('/_migration/checkout', {
-      method: 'POST',
-      body: {
-        csrfToken: checkout.value.csrfToken,
-        checkoutToken: checkout.value.checkoutToken,
-        fullname: form.fullname,
-        phone: form.phone,
-        email: form.email,
-        city: form.city,
-        ward: form.ward,
-        address: form.address,
-        requirements: form.requirements,
-        payment: form.payment,
-      },
-    })
-    if (result?.kind === 'success' && typeof result.token === 'string') {
-      await navigateTo({ path: '/cam-on/', query: { token: result.token } })
-      return
-    }
-    if (result?.kind === 'external' && typeof result.url === 'string') {
-      await navigateTo(result.url, { external: true })
-      return
-    }
-    submitError.value = 'Phản hồi thanh toán không hợp lệ.'
-  } catch (reason: any) {
-    const status = reason?.statusCode ?? reason?.response?.status
-    submitError.value = status === 409
-      ? 'Giỏ hàng vừa thay đổi sang chế độ báo giá. Vui lòng quay lại giỏ hàng.'
-      : status === 422
-        ? 'Thông tin đơn hàng chưa hợp lệ. Vui lòng kiểm tra lại các trường.'
-        : 'Không thể gửi đơn hàng. Giỏ hàng của bạn vẫn được giữ nguyên.'
-  } finally {
-    submitting.value = false
-  }
-}
 
 useSeoMeta({ title: 'Thanh toán — Phúc Thịnh Solar', robots: 'noindex, nofollow, noarchive' })
 </script>
@@ -137,37 +112,39 @@ useSeoMeta({ title: 'Thanh toán — Phúc Thịnh Solar', robots: 'noindex, nof
         <NuxtLink to="/gio-hang/" class="font-bold underline">Quay lại giỏ hàng</NuxtLink>
       </div>
 
-      <form v-else class="grid gap-8 nav:grid-cols-[minmax(0,1fr)_380px]" @submit.prevent="submitOrder">
+      <form v-else method="post" :action="checkoutPostAction" class="grid gap-8 nav:grid-cols-[minmax(0,1fr)_380px]">
+        <input type="hidden" name="form_csrf" :value="checkout.csrfToken">
+        <input type="hidden" name="checkout_token" :value="checkout.checkoutToken">
         <section class="space-y-6">
           <div class="rounded-btn border border-gray-200 p-5">
             <h2 class="mb-5 text-xl font-black">Thông tin giao hàng</h2>
             <div class="grid gap-4 tb:grid-cols-2">
               <label class="grid gap-1.5 text-sm font-bold">Họ và tên
-                <input v-model.trim="form.fullname" autocomplete="name" maxlength="150" required class="h-11 rounded-chip border border-gray-300 px-3 font-normal outline-none focus:border-gold-600">
+                <input v-model.trim="form.fullname" name="dataOrder[fullname]" autocomplete="name" maxlength="150" required class="h-11 rounded-chip border border-gray-300 px-3 font-normal outline-none focus:border-gold-600">
               </label>
               <label class="grid gap-1.5 text-sm font-bold">Số điện thoại
-                <input v-model.trim="form.phone" autocomplete="tel" inputmode="tel" maxlength="30" required class="h-11 rounded-chip border border-gray-300 px-3 font-normal outline-none focus:border-gold-600">
+                <input v-model.trim="form.phone" name="dataOrder[phone]" autocomplete="tel" inputmode="tel" maxlength="30" required class="h-11 rounded-chip border border-gray-300 px-3 font-normal outline-none focus:border-gold-600">
               </label>
               <label class="grid gap-1.5 text-sm font-bold tb:col-span-2">Email
-                <input v-model.trim="form.email" type="email" autocomplete="email" maxlength="190" required class="h-11 rounded-chip border border-gray-300 px-3 font-normal outline-none focus:border-gold-600">
+                <input v-model.trim="form.email" type="email" name="dataOrder[email]" autocomplete="email" maxlength="190" required class="h-11 rounded-chip border border-gray-300 px-3 font-normal outline-none focus:border-gold-600">
               </label>
               <label class="grid gap-1.5 text-sm font-bold">Tỉnh/Thành phố
-                <select v-model.number="form.city" required class="h-11 rounded-chip border border-gray-300 bg-white px-3 font-normal outline-none focus:border-gold-600">
+                <select v-model.number="form.city" name="dataOrder[city]" required class="h-11 rounded-chip border border-gray-300 bg-white px-3 font-normal outline-none focus:border-gold-600">
                   <option :value="0">Chọn tỉnh/thành</option>
                   <option v-for="city in checkout.cities" :key="city.id" :value="city.id">{{ city.name }}</option>
                 </select>
               </label>
               <label class="grid gap-1.5 text-sm font-bold">Phường/Xã
-                <select v-model.number="form.ward" :disabled="!form.city" required class="h-11 rounded-chip border border-gray-300 bg-white px-3 font-normal outline-none focus:border-gold-600 disabled:bg-slate-50">
+                <select v-model.number="form.ward" name="dataOrder[ward]" :disabled="!form.city" required class="h-11 rounded-chip border border-gray-300 bg-white px-3 font-normal outline-none focus:border-gold-600 disabled:bg-slate-50">
                   <option :value="0">Chọn phường/xã</option>
                   <option v-for="ward in wards" :key="ward.id" :value="ward.id">{{ ward.name }}</option>
                 </select>
               </label>
               <label class="grid gap-1.5 text-sm font-bold tb:col-span-2">Địa chỉ chi tiết
-                <input v-model.trim="form.address" autocomplete="street-address" maxlength="255" required class="h-11 rounded-chip border border-gray-300 px-3 font-normal outline-none focus:border-gold-600">
+                <input v-model.trim="form.address" name="dataOrder[address]" autocomplete="street-address" maxlength="255" required class="h-11 rounded-chip border border-gray-300 px-3 font-normal outline-none focus:border-gold-600">
               </label>
               <label class="grid gap-1.5 text-sm font-bold tb:col-span-2">Yêu cầu khác
-                <textarea v-model.trim="form.requirements" maxlength="1000" rows="4" class="rounded-chip border border-gray-300 px-3 py-2 font-normal outline-none focus:border-gold-600" />
+                <textarea v-model.trim="form.requirements" name="dataOrder[requirements]" maxlength="1000" rows="4" class="rounded-chip border border-gray-300 px-3 py-2 font-normal outline-none focus:border-gold-600" />
               </label>
             </div>
           </div>
@@ -176,7 +153,7 @@ useSeoMeta({ title: 'Thanh toán — Phúc Thịnh Solar', robots: 'noindex, nof
             <h2 class="mb-5 text-xl font-black">Hình thức thanh toán</h2>
             <div class="space-y-3">
               <label v-for="payment in checkout.payments" :key="payment.id" class="flex cursor-pointer items-start gap-3 rounded-chip border border-gray-200 p-4 has-[:checked]:border-gold-600 has-[:checked]:bg-amber-50/40">
-                <input v-model.number="form.payment" type="radio" name="payment" :value="payment.id" required class="mt-1">
+                <input v-model.number="form.payment" type="radio" name="dataOrder[payments]" :value="payment.id" required class="mt-1">
                 <span>
                   <strong class="block">{{ payment.name }}</strong>
                   <small v-if="payment.description" class="mt-1 block whitespace-pre-line leading-relaxed text-slate-500">{{ payment.description }}</small>
@@ -203,10 +180,8 @@ useSeoMeta({ title: 'Thanh toán — Phúc Thịnh Solar', robots: 'noindex, nof
             <div class="flex justify-between border-t border-gray-200 pt-3 text-lg"><strong>Tổng dự kiến</strong><strong class="text-red-600">{{ formatMoney(orderTotal) }}</strong></div>
           </div>
 
-          <p v-if="fieldError" class="mt-4 rounded-chip bg-amber-50 p-3 text-sm text-amber-900" role="alert">{{ fieldError }}</p>
-          <p v-if="submitError" class="mt-4 rounded-chip bg-red-50 p-3 text-sm text-red-800" role="alert">{{ submitError }}</p>
-          <button type="submit" :disabled="submitting" class="mt-5 min-h-12 w-full rounded-chip bg-gold-500 px-5 font-extrabold text-navy-950 hover:bg-gold-600 disabled:cursor-wait disabled:opacity-60">
-            {{ submitting ? 'Đang tạo đơn…' : 'Đặt hàng' }}
+          <button type="submit" name="thanhtoan" value="1" class="mt-5 min-h-12 w-full rounded-chip bg-gold-500 px-5 font-extrabold text-navy-950 hover:bg-gold-600">
+            Đặt hàng
           </button>
         </aside>
       </form>

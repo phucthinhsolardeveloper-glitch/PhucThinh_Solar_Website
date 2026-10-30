@@ -23,17 +23,21 @@ if (import.meta.server && publicEnabled.value && (siteHasError.value || error.va
   setResponseStatus(status, status === 404 ? 'Not Found' : 'Bad Gateway')
 }
 
+const pageTitle = computed(() => about.value?.seo?.title || about.value?.title || 'Giới thiệu — Phúc Thịnh Solar')
+const pageDescription = computed(() => about.value?.seo?.description || about.value?.story.intro || '')
+const pageKeywords = computed(() => about.value?.seo?.keywords || undefined)
 useSeoMeta({
-  title: computed(() => about.value?.title || 'Giới thiệu — Phúc Thịnh Solar'),
-  description: computed(() => about.value?.story.intro || ''),
+  title: pageTitle,
+  description: pageDescription,
   robots: computed(() => indexable.value ? 'index, follow' : 'noindex, nofollow, noarchive'),
 })
+useHead({ meta: computed(() => pageKeywords.value ? [{ name: 'keywords', content: pageKeywords.value }] : []) })
 usePublicSocialMeta({
   enabled: computed(() => publicEnabled.value && !!about.value && !siteHasError.value && !error.value),
-  title: computed(() => about.value?.title || 'Giới thiệu — Phúc Thịnh Solar'),
-  description: computed(() => about.value?.story.intro || ''),
+  title: pageTitle,
+  description: pageDescription,
   canonicalPath: '/gioi-thieu/',
-  image: computed(() => about.value?.story.image || undefined),
+  image: computed(() => about.value?.seo?.image || about.value?.story.image || undefined),
 })
 </script>
 

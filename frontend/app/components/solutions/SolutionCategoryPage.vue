@@ -28,17 +28,23 @@ const errorStatus = (error.value as { statusCode?: unknown } | null)?.statusCode
 const responseStatus = editorialPublicResponseStatus(routeEnabled.value, errorStatus, !category.value)
 if (import.meta.server && responseStatus) setResponseStatus(responseStatus, responseStatus === 404 ? 'Not Found' : 'Bad Gateway')
 const hasFilters = computed(() => Object.keys(route.query).length > 0)
+const pageTitle = computed(() => category.value?.seo?.title || category.value?.name || 'Giải pháp')
+const pageDescription = computed(() => category.value?.seo?.description || category.value?.description || '')
+const pageKeywords = computed(() => category.value?.seo?.keywords || '')
+const pageImage = computed(() => category.value?.seo?.image || undefined)
 
 useSeoMeta({
-  title: computed(() => category.value?.name || 'Giải pháp'),
-  description: computed(() => category.value?.description || ''),
+  title: pageTitle,
+  description: pageDescription,
   robots: computed(() => editorialPublicRouteRobots(routeEnabled.value, config.public.solutionsPublicRouteIndexable, !!category.value && !error.value, hasFilters.value)),
 })
+useHead({ meta: computed(() => pageKeywords.value ? [{ name: 'keywords', content: pageKeywords.value }] : []) })
 usePublicSocialMeta({
   enabled: computed(() => routeEnabled.value && !!category.value && !error.value),
-  title: computed(() => category.value?.name || 'Giải pháp'),
-  description: computed(() => category.value?.description || ''),
+  title: pageTitle,
+  description: pageDescription,
   canonicalPath: computed(() => category.value?.canonicalPath || `/${slug.value}`),
+  image: pageImage,
 })
 </script>
 

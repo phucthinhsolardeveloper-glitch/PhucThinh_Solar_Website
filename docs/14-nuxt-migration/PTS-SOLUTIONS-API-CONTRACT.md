@@ -8,6 +8,16 @@ không thay đổi route public PHP và không thực hiện mutation.
 Response JSON có `schemaVersion: 1`, `locale: "vi"`, `path: "/giai-phap/"` và
 các trường public sau:
 
+- `seo`: `title`, `description`, `keywords`, `image`. Landing đọc metadata từ
+  `#_seopage` theo `type=giai-phap`, khớp `$type=$com` trong legacy router.
+  `image` là ảnh `photo` hợp lệ của record seopage; khi rỗng Nuxt dùng ảnh intro
+  hiện có làm fallback OG, không thay ảnh nội dung.
+- Khi query `?category=<slug>` chọn danh mục giải pháp, object `category` có
+  thêm `seo` cùng bốn trường trên. Title/description/keywords đọc từ `#_seo`
+  theo `id_parent=<news_list.id>`, `com=news`, `act=man_list`,
+  `type=giai-phap`; OG image là ảnh taxonomy `#_news_list.photo` đã kiểm tra
+  file, giống nguồn legacy. Nuxt fallback title/description về tên/mô tả danh
+  mục và chỉ phát keywords meta khi Admin có giá trị.
 - `title`: tiêu đề fallback của landing hoặc tiêu đề `solution-intro` đang hiển thị.
 - `intro`: object hoặc `null` khi toàn bộ record `solution-intro` bị ẩn. Object gồm
   `eyebrow`, `title`, `description`, `image` và các link `consult`/`explore`.

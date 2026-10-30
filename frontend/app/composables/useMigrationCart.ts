@@ -1,5 +1,6 @@
 import type { PublicCartPayload } from '#shared/contracts/public-cart'
 import { isPublicCartPayload } from '#shared/contracts/public-cart'
+import { migrationCartErrorMessage } from './migrationCartError'
 
 export type MigrationCartMutation =
   | { action: 'add'; productId: number; quantity: number; color?: number; size?: number }
@@ -35,9 +36,8 @@ export function useMigrationCart() {
       if (!current) current = await refresh()
       if (!current) throw new Error('Không thể khởi tạo phiên giỏ hàng.')
       await $fetch('/_migration/cart', { method: 'POST', body: { ...body, csrfToken: current.csrfToken } })
-    } catch (reason: any) {
-      const message = reason?.data?.error || reason?.data?.statusMessage || reason?.statusMessage || reason?.message
-      error.value = typeof message === 'string' && message ? message : 'Không thể cập nhật giỏ hàng.'
+    } catch (reason) {
+      error.value = migrationCartErrorMessage(reason)
       throw reason
     } finally {
       loading.value = false

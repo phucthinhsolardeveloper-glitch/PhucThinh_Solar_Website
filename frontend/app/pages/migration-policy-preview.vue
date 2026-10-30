@@ -46,7 +46,7 @@ usePublicSocialMeta({
   title: computed(() => data.value?.seo.title || 'Chính sách hỗ trợ'),
   description: computed(() => data.value?.seo.description || ''),
   canonicalPath: computed(() => route.path),
-  image: computed(() => data.value?.related.find((item) => item.image)?.image),
+  image: computed(() => data.value?.cover || undefined),
   type: 'article',
 })
 </script>

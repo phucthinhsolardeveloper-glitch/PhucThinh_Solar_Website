@@ -11,6 +11,7 @@ const links = read('composables/useMigrationLinks.ts')
 const mainCss = read('assets/css/main.css')
 const tokensCss = read('assets/css/tokens.css')
 const app = read('app.vue')
+const nuxtConfig = readFileSync(new URL('../nuxt.config.ts', import.meta.url), 'utf8')
 
 test('shared shell renders CMS assets and explicit navigation/taxonomy only', () => {
   const navigation = header.match(/const fallbackNav:[\s\S]*?= \[([\s\S]*?)\]/)?.[1] || ''
@@ -33,7 +34,7 @@ test('shared shell renders CMS assets and explicit navigation/taxonomy only', ()
 test('shared header keeps PHP production single-row composition without a duplicate utility strip', () => {
   const phpHeader = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/templates/layout/header.php', import.meta.url), 'utf8')
   assert.match(phpHeader, /<div class="header-bottom pts-header-primary">/)
-  assert.match(header, /class="sticky top-0 z-\[1000\]"/)
+  assert.match(header, /class="pts-site-header sticky top-0 z-\[1000\]"/)
   assert.doesNotMatch(header, /Tầng 1: Thanh tiện ích/)
   assert.doesNotMatch(header, /Yêu cầu khảo sát/)
   assert.match(header, /Nhận tư vấn/)
@@ -51,6 +52,14 @@ test('shared header keeps PHP production single-row composition without a duplic
   assert.match(app, /cdn\.gtranslate\.net\/widgets\/latest\/popup\.js/)
   assert.match(app, /'zh-CN', 'ko', 'ja'/)
   assert.doesNotMatch(mainCss, /\.gtranslate_wrapper\s*\{[^}]*display\s*:/)
+})
+
+test('storefront stays in light mode while the unfinished theme toggle is withheld', () => {
+  assert.match(nuxtConfig, /colorMode:\s*\{[\s\S]*preference:\s*'light'[\s\S]*fallback:\s*'light'[\s\S]*storage:\s*'localStorage'/)
+  assert.match(nuxtConfig, /storageKey:\s*'pts-color-mode-light-only'/)
+  assert.doesNotMatch(header, /useColorMode|Bật giao diện tối|Bật giao diện sáng|toggleColorMode/)
+  assert.match(tokensCss, /html\.dark \.text-navy-950[\s\S]*color: #e2e8f0/)
+  assert.match(tokensCss, /html\.dark \.bg-white \.text-navy-800[\s\S]*color: #0a2251/)
 })
 
 test('header overlays expose keyboard state, focus trap and scroll restoration hooks', () => {

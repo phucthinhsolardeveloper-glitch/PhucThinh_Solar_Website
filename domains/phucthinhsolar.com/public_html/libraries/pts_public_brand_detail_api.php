@@ -3,14 +3,9 @@
  * Pure, read-only DTO helpers for the Nuxt brand detail preview
  * (/thuong-hieu/{slug}/).
  *
- * QUAN TRONG - xac minh truoc khi viet: ban dau file nay co them logo/summary/
- * content (sanitize qua pts_public_richtext.php), dua tren viec admin CO the
- * nhap mo ta/noi dung cho brand. Doc lai templates/product/product_tpl.php va
- * product_detail_tpl.php (grep "productBrand[") cho thay KHONG co template
- * cong khai nao render logo/desc/content cua #_product_brand - trang
- * /thuong-hieu/{slug}/ dung chung template "product/product" voi catalog,
- * chi set H1/breadcrumb = ten brand roi liet ke san pham loc theo id_brand.
- * Giu dung nhu vay, khong dung lai data chua tung hien thi that.
+ * Brand public page shares the catalog template. It renders the brand name,
+ * breadcrumb and filtered products; Admin SEO fields and brand photo are used
+ * only for document/social metadata, not as visible page content.
  */
 
 function ptsBrandDetailPublished($status)
@@ -42,12 +37,15 @@ function ptsBrandDetailCanonical($slug)
     return $slug === '' ? '' : '/thuong-hieu/'.$slug.'/';
 }
 
-function ptsBrandDetailPayload(array $row, array $productRows, $page, $perPage, $total, $pricesVisible = false, $sortKey = 'default', array $filterOptions = array(), array $selectedFilters = array())
+function ptsBrandDetailPayload(array $row, array $productRows, $page, $perPage, $total, $pricesVisible = false, $sortKey = 'default', array $filterOptions = array(), array $selectedFilters = array(), array $seoRow = array(), $brandImage = '')
 {
     $id = isset($row['id']) ? (int)$row['id'] : 0;
     $slug = ptsBrandDetailSlug(isset($row['slugvi']) ? $row['slugvi'] : '');
     $name = ptsBrandDetailText(isset($row['namevi']) ? $row['namevi'] : '');
     if($id <= 0 || !ptsBrandDetailPublished(isset($row['status']) ? $row['status'] : '') || $slug === '' || $name === '') return null;
+    $seo = function_exists('ptsCatalogSeoDto')
+        ? ptsCatalogSeoDto($name, $seoRow, $brandImage)
+        : array('title' => $name, 'description' => '', 'keywords' => '', 'image' => '');
 
     $products = array();
     if(function_exists('ptsCatalogProductDto'))
@@ -100,6 +98,7 @@ function ptsBrandDetailPayload(array $row, array $productRows, $page, $perPage, 
             'slug' => $slug,
             'url' => ptsBrandDetailCanonical($slug)
         ),
+        'seo' => $seo,
         'products' => $products,
         'pagination' => array('page' => (int)$page, 'perPage' => (int)$perPage, 'total' => max(0, (int)$total)),
         'filters' => array('brands' => $brandOptions, 'priceRanges' => $priceRanges),
@@ -108,7 +107,7 @@ function ptsBrandDetailPayload(array $row, array $productRows, $page, $perPage, 
         'selected' => array('sort' => function_exists('ptsCatalogSortKey') ? ptsCatalogSortKey($sortKey) : 'default', 'priceKeys' => $priceKeys),
         'parity' => array(
             'prices' => $pricesVisible ? array('included' => true) : array('included' => false, 'reason' => 'public_pricing_disabled'),
-            'seoOverrides' => array('included' => false, 'reason' => 'legacy_seo_override_table_not_delegated')
+            'seoOverrides' => array('included' => true)
         )
     );
 }

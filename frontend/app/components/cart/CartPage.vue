@@ -1,12 +1,18 @@
 <script setup lang="ts">
 import QuantityStepper from '~/components/commerce/QuantityStepper.vue'
 import { isPublicCartPayload, type PublicCartPayload } from '#shared/contracts/public-cart'
+import { isPublicCheckoutNoticePayload, type PublicCheckoutNoticePayload, type PublicCheckoutNoticeForm } from '#shared/contracts/public-checkout'
 import { normalizeCommerceQuantity } from '#shared/commerce-quantity'
+import { isRuntimeFlagEnabled } from '#shared/public-route-gate'
 
 const { site } = await usePublicSite()
 const { cart, loading, error, refresh, mutate } = useMigrationCart()
 const links = useMigrationLinks()
 const isMigrationPreview = links.active
+const runtimeConfig = useRuntimeConfig()
+const checkoutRouteEnabled = computed(() => isRuntimeFlagEnabled(runtimeConfig.public.checkoutPublicRouteEnabled))
+const checkoutNotice = ref<PublicCheckoutNoticePayload | null>(null)
+const checkoutDraft = useState<PublicCheckoutNoticeForm | null>('pts-checkout-form-draft', () => null)
 const { data: initialCart, error: initialCartError } = await useFetch<unknown>('/_migration/cart', { key: 'migration-cart-page', default: () => null })
 if (isPublicCartPayload(initialCart.value)) cart.value = initialCart.value
 else if (!isMigrationPreview.value && import.meta.server) setResponseStatus(502, 'Bad Gateway')
@@ -54,6 +60,19 @@ async function removeItem(code: string) {
 }
 
 const payload = computed<PublicCartPayload | null>(() => cart.value)
+
+onMounted(async () => {
+  try {
+    const notice = await $fetch<unknown>('/_migration/checkout-notice')
+    if (isPublicCheckoutNoticePayload(notice)) checkoutNotice.value = notice
+  } catch {
+    // Checkout flash is optional; cart/session rendering remains independent.
+  }
+})
+
+function openCheckout() {
+  checkoutDraft.value = checkoutNotice.value?.form ?? null
+}
 </script>
 
 <template>
@@ -81,6 +100,16 @@ const payload = computed<PublicCartPayload | null>(() => cart.value)
 
       <template v-else>
         <p v-if="error" class="mb-6 rounded-btn border border-red-200 bg-red-50 p-4 text-red-800" role="alert">{{ error }}</p>
+        <div
+          v-if="checkoutNotice && (checkoutNotice.messages.length || checkoutNotice.toast)"
+          class="mb-6 rounded-btn border border-red-200 bg-red-50 p-4 text-red-800"
+          :role="checkoutNotice.messages.length || checkoutNotice.toast?.status === 'error' ? 'alert' : 'status'"
+        >
+          <p v-if="checkoutNotice.toast" class="mb-1">{{ checkoutNotice.toast.text }}</p>
+          <ul v-if="checkoutNotice.messages.length" class="mb-0 list-disc pl-5">
+            <li v-for="(message, index) in checkoutNotice.messages" :key="index">{{ message }}</li>
+          </ul>
+        </div>
         <div v-if="!payload.items.length" class="rounded-btn border border-gray-200 px-6 py-14 text-center">
           <h2 class="mb-2 text-2xl font-black">Giỏ hàng đang trống</h2>
           <p class="mb-6 text-slate-500">Chọn sản phẩm có giá công khai để thêm vào giỏ hàng.</p>
@@ -138,19 +167,20 @@ const payload = computed<PublicCartPayload | null>(() => cart.value)
             <p v-if="!payload.canCheckout" class="rounded-chip bg-amber-50 p-3 text-sm leading-relaxed text-amber-800">
               Giỏ có sản phẩm cần báo giá; hãy liên hệ tư vấn trước khi đặt hàng.
             </p>
-            <p v-if="payload.canCheckout && isMigrationPreview" class="mt-4 rounded-chip bg-slate-50 p-3 text-sm leading-relaxed text-slate-600" role="status">
+            <p v-else-if="isMigrationPreview" class="mt-4 rounded-chip bg-slate-50 p-3 text-sm leading-relaxed text-slate-600" role="status">
               Checkout đang ở chế độ preview chỉ đọc; trang này không nhận thông tin giao hàng và không tạo đơn hàng.
             </p>
-            <p v-else-if="payload.canCheckout" class="mt-4 rounded-chip bg-slate-50 p-3 text-sm leading-relaxed text-slate-600" role="status">
-              Thanh toán trực tuyến chưa được mở trên trang này. <NuxtLink :to="links.generic('/lien-he/#yeu-cau-tu-van')" class="font-bold text-navy-800 underline">Liên hệ tư vấn</NuxtLink>
-            </p>
             <NuxtLink
-              v-else
-              :to="links.generic('/lien-he/#yeu-cau-tu-van')"
+              v-else-if="checkoutRouteEnabled"
+              to="/thanh-toan/"
+              @click="openCheckout"
               class="mt-4 flex min-h-12 w-full items-center justify-center rounded-chip bg-gold-500 px-5 text-center font-extrabold text-navy-950 no-underline hover:bg-gold-600"
             >
-              Liên hệ tư vấn
+              Tiến hành thanh toán
             </NuxtLink>
+            <p v-else class="mt-4 rounded-chip bg-slate-50 p-3 text-sm leading-relaxed text-slate-600" role="status">
+              Thanh toán trực tuyến chưa được mở trên trang này. <NuxtLink :to="links.generic('/lien-he/#yeu-cau-tu-van')" class="font-bold text-navy-800 underline">Liên hệ tư vấn</NuxtLink>
+            </p>
           </aside>
         </div>
       </template>

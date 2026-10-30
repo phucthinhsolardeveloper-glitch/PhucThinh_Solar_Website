@@ -98,7 +98,7 @@ function ptsAboutLabels()
     );
 }
 
-function ptsAboutPayload(array $sections, array $labels, $hotline = '', $zalo = '')
+function ptsAboutPayload(array $sections, array $labels, $hotline = '', $zalo = '', array $seo = array())
 {
     $hotline = is_scalar($hotline) ? trim((string)$hotline) : '';
     $hotlineDto = $hotline === '' ? null : array('label' => 'Gọi ngay hotline', 'text' => $hotline, 'tel' => preg_replace('/[^0-9+]/', '', $hotline));
@@ -107,6 +107,12 @@ function ptsAboutPayload(array $sections, array $labels, $hotline = '', $zalo = 
         'locale' => 'vi',
         'path' => '/gioi-thieu/',
         'title' => 'Giới thiệu Phúc Thịnh Solar',
+        'seo' => array(
+            'title' => ptsAboutPlainText($seo['title'] ?? ''),
+            'description' => ptsAboutPlainText($seo['description'] ?? ''),
+            'keywords' => ptsAboutPlainText($seo['keywords'] ?? ''),
+            'image' => is_scalar($seo['image'] ?? null) ? trim((string)$seo['image']) : ''
+        ),
         'story' => $sections['story'],
         'history' => $sections['history'],
         'people' => $sections['people'],

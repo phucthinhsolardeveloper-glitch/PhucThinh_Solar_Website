@@ -84,6 +84,12 @@ Không tạo biến thể navy/gold mới trong CSS trang. Không dùng gradient
 vàng cho mọi bề mặt khiến CTA mất thứ bậc. Chữ thường phải đạt WCAG AA: tối
 thiểu 4.5:1; chữ lớn tối thiểu 3:1; focus/control cũng tối thiểu 3:1.
 
+- Public storefront mặc định dùng giao diện sáng, không phụ thuộc cài đặt theme
+  của hệ điều hành. Công tắc dark mode chỉ được hiển thị sau khi toàn bộ route,
+  trạng thái và nội dung CMS đã đạt kiểm tra tương phản AA ở theme tối. Tới lúc đó
+  giữ công tắc ẩn và không nạp lại lựa chọn tối cũ từ trình duyệt. Dark mode hoàn
+  chỉnh vẫn phải giữ nền sáng có chủ đích cho ô nhập liệu và vùng ảnh sản phẩm.
+
 ### 3.2 Typography — ĐANG ÁP DỤNG/MỤC TIÊU
 
 - Font public: `Be Vietnam Pro`, fallback `Plus Jakarta Sans`, `Mulish`, font hệ

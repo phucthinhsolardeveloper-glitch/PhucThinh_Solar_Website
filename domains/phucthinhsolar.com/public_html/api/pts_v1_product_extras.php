@@ -37,15 +37,45 @@ function ptsPdpExtrasPhoto($value)
     if($value === '' || !preg_match('/^[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|gif|webp|avif)$/i',$value)) return '';
     return is_file(ROOT.UPLOAD_PHOTO_L.$value) ? '/'.trim(UPLOAD_PHOTO_L,'/\\').'/'.$value : '';
 }
+function ptsPdpExtrasReviewVideo($row, $config)
+{
+    if(!is_array($row)) return null;
+    $filename = isset($row['video']) && is_scalar($row['video']) ? basename(trim((string)$row['video'])) : '';
+    $allowed = isset($config['website']['video']['extension']) && is_array($config['website']['video']['extension'])
+        ? array_map('strtolower', $config['website']['video']['extension']) : array();
+    $extension = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+    $directory = defined('UPLOAD_VIDEO_L') ? UPLOAD_VIDEO_L : 'upload/video/';
+    if($filename === '' || !preg_match('/^[A-Za-z0-9][A-Za-z0-9._-]*$/', $filename)
+        || !in_array($extension, $allowed, true) || !is_file(ROOT.$directory.$filename)) return null;
+    $poster = ptsPdpExtrasPhoto(isset($row['photo']) ? $row['photo'] : '');
+    return array('url'=>'/'.trim($directory,'/\\').'/'.$filename, 'poster'=>$poster);
+}
 
 if(($_SERVER['REQUEST_METHOD'] ?? '') !== 'GET')
 {
     header('Allow: GET');
     ptsPdpExtrasError(405,'METHOD_NOT_ALLOWED');
 }
-if(count($_GET)!==1 || !isset($_GET['slug']) || !is_string($_GET['slug'])) ptsPdpExtrasError(400,'BAD_QUERY');
+if(!isset($_GET['slug']) || !is_string($_GET['slug'])
+    || array_diff(array_keys($_GET), array('slug','reviewOffset','replyParent','replyOffset'))) ptsPdpExtrasError(400,'BAD_QUERY');
 $slug=trim($_GET['slug'],'/');
 if(!preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/',$slug)) ptsPdpExtrasError(400,'BAD_QUERY');
+$reviewOffset=0;
+if(isset($_GET['reviewOffset']))
+{
+    if(!is_string($_GET['reviewOffset']) || !preg_match('/^(?:0|[1-9][0-9]{0,5})$/',$_GET['reviewOffset'])) ptsPdpExtrasError(400,'BAD_QUERY');
+    $reviewOffset=(int)$_GET['reviewOffset'];
+}
+$replyParent=0;
+$replyOffset=0;
+if(isset($_GET['replyParent']) || isset($_GET['replyOffset']))
+{
+    if(!isset($_GET['replyParent'],$_GET['replyOffset']) || !is_string($_GET['replyParent']) || !preg_match('/^[1-9][0-9]{0,9}$/',$_GET['replyParent'])
+        || !is_string($_GET['replyOffset']) || !preg_match('/^(?:0|[1-9][0-9]{0,5})$/',$_GET['replyOffset'])) ptsPdpExtrasError(400,'BAD_QUERY');
+    $replyParent=(int)$_GET['replyParent'];
+    $replyOffset=(int)$_GET['replyOffset'];
+    if(isset($_GET['reviewOffset'])) ptsPdpExtrasError(400,'BAD_QUERY');
+}
 
 try
 {
@@ -92,7 +122,7 @@ try
     {
         $star=(int)$starRow['star']; if($star>=1 && $star<=5) $starCounts[$star]=(int)$starRow['num'];
     }
-    $reviewRows=$d->rawQuery("select id,title,content,fullname,star,status,date_posted from #_comment where id_parent=0 and id_variant=? and type=? and find_in_set('hienthi',status) order by date_posted desc limit 10",array((int)$row['id'],'san-pham'));
+    $reviewRows=$d->rawQuery("select id,title,content,fullname,star,status,date_posted from #_comment where id_parent=0 and id_variant=? and type=? and find_in_set('hienthi',status) order by date_posted desc limit ".$reviewOffset.",10",array((int)$row['id'],'san-pham'));
     $reviews=array();
     foreach((array)$reviewRows as $reviewRow)
     {
@@ -102,7 +132,9 @@ try
             $url=ptsPdpExtrasPhoto($photo['photo'] ?? ''); if($url!=='') $photos[]=$url;
         }
         $replies=array();
-        foreach((array)$d->rawQuery("select fullname,content,poster,date_posted from #_comment where id_parent=? and id_variant=? and type=? and find_in_set('hienthi',status) order by date_posted asc limit 5",array((int)$reviewRow['id'],(int)$row['id'],'san-pham')) as $reply)
+        $replyTotalRow=$d->rawQueryOne("select count(id) total from #_comment where id_parent=? and id_variant=? and type=? and find_in_set('hienthi',status)",array((int)$reviewRow['id'],(int)$row['id'],'san-pham'));
+        $replyTotal=(int)($replyTotalRow['total'] ?? 0);
+        foreach((array)$d->rawQuery("select fullname,content,poster,date_posted from #_comment where id_parent=? and id_variant=? and type=? and find_in_set('hienthi',status) order by date_posted desc limit 5",array((int)$reviewRow['id'],(int)$row['id'],'san-pham')) as $reply)
         {
             $name=ptsPdpExtrasText($reply['fullname'] ?? '');
             $content=ptsPdpExtrasText($reply['content'] ?? '');
@@ -117,8 +149,28 @@ try
             'verified'=>strpos(','.($reviewRow['status'] ?? '').',',',verified-purchase,')!==false,
             'date'=>(int)($reviewRow['date_posted'] ?? 0),
             'photos'=>$photos,
-            'replies'=>$replies
+            'video'=>ptsPdpExtrasReviewVideo($d->rawQueryOne("select photo,video from #_comment_video where id_parent=? limit 1",array((int)$reviewRow['id'])), $config),
+            'replies'=>$replies,
+            'repliesTotal'=>$replyTotal
         );
+    }
+
+    $replyPage=null;
+    if($replyParent>0)
+    {
+        $parent=$d->rawQueryOne("select id from #_comment where id=? and id_parent=0 and id_variant=? and type=? and find_in_set('hienthi',status) limit 1",array($replyParent,(int)$row['id'],'san-pham'));
+        if(empty($parent)) ptsPdpExtrasError(404,'REVIEW_NOT_FOUND');
+        $replyTotalRow=$d->rawQueryOne("select count(id) total from #_comment where id_parent=? and id_variant=? and type=? and find_in_set('hienthi',status)",array($replyParent,(int)$row['id'],'san-pham'));
+        $replyTotal=(int)($replyTotalRow['total'] ?? 0);
+        $replyRows=$d->rawQuery("select fullname,content,poster,date_posted from #_comment where id_parent=? and id_variant=? and type=? and find_in_set('hienthi',status) order by date_posted desc limit ".$replyOffset.",5",array($replyParent,(int)$row['id'],'san-pham'));
+        $replyItems=array();
+        foreach((array)$replyRows as $reply)
+        {
+            $name=ptsPdpExtrasText($reply['fullname'] ?? '');
+            $content=ptsPdpExtrasText($reply['content'] ?? '');
+            if($content!=='') $replyItems[]=array('name'=>$name,'content'=>$content,'isAdmin'=>($reply['poster'] ?? '')==='admin','date'=>(int)($reply['date_posted'] ?? 0));
+        }
+        $replyPage=array('parentId'=>$replyParent,'offset'=>$replyOffset,'total'=>$replyTotal,'hasMore'=>$replyOffset+count($replyItems)<$replyTotal,'items'=>$replyItems);
     }
 
     $commitments=array();
@@ -133,7 +185,7 @@ try
     foreach((array)($profile['needs'] ?? array()) as $code=>$label)
         if(preg_match('/^[a-z0-9_-]{1,64}$/',(string)$code) && ptsPdpExtrasText($label)!=='') $needs[]=array('code'=>(string)$code,'label'=>ptsPdpExtrasText($label));
 
-    echo json_encode(array(
+    $payload=array(
         'schemaVersion'=>1,
         'locale'=>'vi',
         'productId'=>(int)$row['id'],
@@ -146,11 +198,16 @@ try
             'total'=>$reviewTotal,
             'average'=>$reviewTotal>0 ? round(((float)($reviewTotalRow['total_star'] ?? 0))/$reviewTotal,1) : 0,
             'counts'=>$starCounts,
+            'requireOrderCode'=>isset($optsetting['review_require_order_code']) && (string)$optsetting['review_require_order_code']==='1',
+            'offset'=>$reviewOffset,
+            'hasMore'=>$reviewOffset+count($reviews)<$reviewTotal,
             'items'=>$reviews
         ),
         'consultation'=>array('needs'=>$needs),
         'commitments'=>$commitments
-    ),JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR);
+    );
+    if($replyPage!==null) $payload['replyPage']=$replyPage;
+    echo json_encode($payload,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR);
 }
 catch(Throwable $e)
 {

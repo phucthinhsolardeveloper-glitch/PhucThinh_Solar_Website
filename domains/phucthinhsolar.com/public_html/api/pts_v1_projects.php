@@ -35,6 +35,7 @@ try
 
     require_once __DIR__.'/config.php';
     require_once LIBRARIES.'pts_public_projects_api.php';
+    require_once LIBRARIES.'pts_public_seo_api.php';
     $loadRows = static function($sql, array $params) use ($cache) {
         $rows = $cache->get($sql, $params, 'result', 7200);
         return is_array($rows) ? $rows : array();
@@ -49,6 +50,16 @@ try
         if($categorySlug !== '' && (string)($row['slugvi'] ?? '') === $categorySlug) $selectedCategory = $row;
     }
     if($categorySlug !== '' && $selectedCategory === null) ptsProjectsError(404, 'CATEGORY_NOT_FOUND');
+    $categorySeo = array();
+    if($selectedCategory !== null)
+    {
+        /* Match the legacy project category lookup: #_seo news/man_list/du-an. */
+        $seoRow = $d->rawQueryOne('select titlevi,descriptionvi,keywordsvi from #_seo where id_parent = ? and com = ? and act = ? and type = ? limit 1', array((int)$selectedCategory['id'], 'news', 'man_list', 'du-an'));
+        $categorySeo = ptsPublicSeoDto(is_array($seoRow) ? $seoRow : array(), ROOT, UPLOAD_NEWS_L, $selectedCategory['photo'] ?? '');
+    }
+    /* Root project metadata is managed in #_seopage for type du-an. */
+    $seoRow = $d->rawQueryOne('select titlevi,descriptionvi,keywordsvi,photo from #_seopage where type = ? limit 1', array('du-an'));
+    $seo = ptsPublicSeoDto(is_array($seoRow) ? $seoRow : array(), ROOT, UPLOAD_SEOPAGE_L);
 
     $where = "type=? and find_in_set('hienthi',status)";
     $params = array('du-an');
@@ -84,7 +95,7 @@ try
     foreach($benefitRows as &$row) $row['_pts_public_photo'] = !empty($row['photo']) && is_file(ROOT.UPLOAD_NEWS_L.$row['photo']) ? $row['photo'] : '';
     unset($row);
     if(function_exists('closeSessionWrite')) closeSessionWrite();
-    echo json_encode(ptsProjectsPayload($categoryRows, $rows, $featuredRow, $ctaRows, $page, $perPage, $total, $selectedCategory ? ptsProjectsCategoryDto($selectedCategory) : null, is_array($optsetting) && isset($optsetting['hotline']) ? $optsetting['hotline'] : '', $introRows, $benefitRows, $trustRows), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
+    echo json_encode(ptsProjectsPayload($categoryRows, $rows, $featuredRow, $ctaRows, $page, $perPage, $total, $selectedCategory ? ptsProjectsCategoryDto($selectedCategory, $categorySeo) : null, is_array($optsetting) && isset($optsetting['hotline']) ? $optsetting['hotline'] : '', $introRows, $benefitRows, $trustRows, $seo), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
 }
 catch(Throwable $e)
 {
