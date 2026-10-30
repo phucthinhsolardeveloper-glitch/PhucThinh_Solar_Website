@@ -132,14 +132,14 @@ onBeforeUnmount(() => observer?.disconnect())
       </div>
     </div>
 
-    <nav v-if="navItems.length" class="sticky top-[66px] z-20 mb-2 overflow-x-auto border-y border-slate-200 bg-white/95 backdrop-blur nav:top-[78px]" aria-label="Mục nội dung sản phẩm">
+    <nav v-if="navItems.length" class="sticky top-[66px] z-20 mb-2 overflow-x-auto border-y border-slate-200 bg-white/95 backdrop-blur-md nav:top-[78px] transition-all" aria-label="Mục nội dung sản phẩm">
       <div class="flex min-w-max gap-1.5 py-2">
         <a
           v-for="item in navItems"
           :key="item.id"
           :href="'#' + item.id"
-          class="inline-flex min-h-10 items-center rounded-chip px-3.5 py-1.5 text-[13px] font-bold no-underline transition-colors"
-          :class="activeSection === item.id ? 'bg-navy-800 text-gold-300 shadow-xs' : 'text-navy-800 hover:bg-slate-100'"
+          class="inline-flex min-h-10 items-center rounded-chip px-3.5 py-1.5 text-[13px] font-bold no-underline transition-all duration-150 active:scale-95 cursor-pointer"
+          :class="activeSection === item.id ? 'bg-navy-800 text-gold-300 shadow-xs' : 'text-navy-800 hover:bg-slate-100 hover:text-gold-700'"
         >{{ item.label }}</a>
       </div>
     </nav>
@@ -154,11 +154,11 @@ onBeforeUnmount(() => observer?.disconnect())
       <h2 id="product-faq-title" class="mb-5 text-[clamp(24px,3vw,34px)] font-black text-navy-800">Câu hỏi thường gặp</h2>
       <div class="divide-y divide-gray-200 border-y border-gray-200">
         <details v-for="(faq, index) in content.faqs" :key="index" class="group py-4">
-          <summary class="flex cursor-pointer list-none items-center justify-between gap-4 font-bold text-navy-800">
+          <summary class="flex cursor-pointer list-none items-center justify-between gap-4 font-bold text-navy-800 transition-colors duration-150 hover:text-gold-700 select-none py-0.5">
             {{ faq.question }}
-            <span class="text-xl text-gold-700 transition-transform group-open:rotate-45" aria-hidden="true">+</span>
+            <span class="text-2xl text-gold-600 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] group-open:rotate-45" aria-hidden="true">+</span>
           </summary>
-          <p class="mb-0 mt-3 whitespace-pre-line pr-8 leading-7 text-slate-600">{{ faq.answer }}</p>
+          <p class="mb-0 mt-3 whitespace-pre-line pr-8 text-[15px] leading-relaxed text-slate-600">{{ faq.answer }}</p>
         </details>
       </div>
     </section>

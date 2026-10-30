@@ -67,10 +67,25 @@ onBeforeUnmount(() => {
 <template>
   <section v-if="current" class="relative isolate flex min-h-[clamp(570px,39vw,670px)] overflow-hidden rounded-b-[4px] bg-navy-950 text-navy-950 mb-[clamp(12px,1.2vw,24px)] max-[640px]:min-h-[700px]" aria-labelledby="home-title" @touchstart.passive="onTouchStart" @touchend.passive="onTouchEnd">
     <div class="absolute inset-0 z-0 h-full w-full">
-      <a class="absolute inset-0 block" :href="links.generic(current.href)">
-        <img class="absolute inset-0 h-full w-full object-cover max-[640px]:object-[62%_center]" :src="current.image" :alt="current.name" fetchpriority="high" width="1600" height="720">
-        <span class="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,.55),rgba(255,255,255,.27)_30%,rgba(255,255,255,.03)_55%,transparent_74%),linear-gradient(0deg,rgba(6,21,55,.16),rgba(6,21,55,.03)_58%,transparent)] max-[640px]:bg-[linear-gradient(90deg,rgba(255,255,255,.57),rgba(255,255,255,.31)_42%,rgba(255,255,255,.03)_75%,transparent),linear-gradient(0deg,rgba(6,21,55,.18),rgba(6,21,55,.04)_62%,transparent)]" aria-hidden="true" />
-      </a>
+      <div
+        v-for="(slide, index) in hero"
+        :key="slide.image"
+        class="absolute inset-0 transition-opacity duration-700 ease-in-out will-change-[opacity]"
+        :class="index === active ? 'opacity-100 z-[1] pointer-events-auto' : 'opacity-0 z-0 pointer-events-none'"
+      >
+        <a class="absolute inset-0 block" :href="links.generic(slide.href)">
+          <img
+            class="absolute inset-0 h-full w-full object-cover max-[640px]:object-[62%_center]"
+            :src="slide.image"
+            :alt="slide.name"
+            :fetchpriority="index === 0 ? 'high' : 'low'"
+            width="1600"
+            height="720"
+          >
+          <span class="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,.55),rgba(255,255,255,.27)_30%,rgba(255,255,255,.03)_55%,transparent_74%),linear-gradient(0deg,rgba(6,21,55,.16),rgba(6,21,55,.03)_58%,transparent)] max-[640px]:bg-[linear-gradient(90deg,rgba(255,255,255,.57),rgba(255,255,255,.31)_42%,rgba(255,255,255,.03)_75%,transparent),linear-gradient(0deg,rgba(6,21,55,.18),rgba(6,21,55,.04)_62%,transparent)]" aria-hidden="true" />
+        </a>
+      </div>
+      <a v-if="current" :href="links.generic(current.href)" class="hidden" aria-hidden="true" />
     </div>
     <div class="relative z-[4] mx-auto flex min-h-[inherit] w-[min(calc(100%-clamp(40px,5vw,96px)),1560px)] max-[860px]:w-[min(calc(100%-48px),1440px)] max-[640px]:w-[calc(100%-40px)] max-[360px]:w-[calc(100%-32px)] min-[1600px]:w-[min(calc(100%-clamp(96px,8vw,220px)),2200px)] max-w-none flex-col items-start justify-center px-0 pb-[92px] pt-16 text-left [transform:translateY(calc(-70px-clamp(0px,calc(25vw-400px),240px)))] min-[1800px]:[transform:translateY(calc(-10px-clamp(0px,calc(25vw-400px),240px)))] max-[640px]:min-h-[700px] max-[640px]:items-center max-[640px]:justify-start max-[640px]:pb-[150px] max-[640px]:pt-[58px] max-[640px]:text-center max-[640px]:[transform:translateY(-14px)]">
       <p class="mb-[17px] w-full max-w-[820px] whitespace-nowrap text-center text-[clamp(22px,1.7vw,30px)] font-extrabold uppercase tracking-[.02em] text-navy-950 [text-shadow:0_1px_9px_rgba(255,255,255,.52)] max-[640px]:text-[11px]">Phân phối thiết bị · Tư vấn · Thi công lắp đặt</p>
@@ -80,16 +95,16 @@ onBeforeUnmount(() => {
       </h1>
       <p class="mx-0 mb-[30px] mt-[22px] w-full max-w-[820px] text-center text-[clamp(17px,1.1vw,19px)] font-normal leading-[1.65] text-navy-950 [text-shadow:0_1px_9px_rgba(255,255,255,.52)] max-[640px]:text-base">Phúc Thịnh Solar cung cấp thiết bị chiếu sáng, điện mặt trời và lưu trữ năng lượng; tư vấn phương án phù hợp cho gia đình, doanh nghiệp và công trình.</p>
       <div class="flex w-full max-w-[820px] flex-wrap justify-center gap-[14px]">
-        <a class="inline-flex min-h-[50px] items-center justify-center rounded-[4px] border border-hdr-gold bg-hdr-gold px-[25px] font-extrabold leading-[1.2] text-navy-950 no-underline max-[640px]:min-h-[50px] max-[640px]:px-[18px] max-[640px]:text-sm" href="#danh-muc-thiet-bi">Xem sản phẩm</a>
-        <a class="inline-flex min-h-[50px] items-center justify-center rounded-[4px] border border-navy-950 bg-white/55 px-[25px] font-extrabold leading-[1.2] text-navy-950 no-underline max-[640px]:min-h-[50px] max-[640px]:px-[18px] max-[640px]:text-sm" href="#yeu-cau-tu-van">Tư vấn lắp đặt</a>
+        <a class="inline-flex min-h-[50px] items-center justify-center rounded-[4px] border border-hdr-gold bg-hdr-gold px-[25px] font-extrabold leading-[1.2] text-navy-950 no-underline shadow-xs transition-all duration-150 hover:bg-hdr-gold-hover hover:shadow-md active:scale-[0.98] cursor-pointer max-[640px]:min-h-[50px] max-[640px]:px-[18px] max-[640px]:text-sm" href="#danh-muc-thiet-bi">Xem sản phẩm</a>
+        <a class="inline-flex min-h-[50px] items-center justify-center rounded-[4px] border border-navy-950 bg-white/70 px-[25px] font-extrabold leading-[1.2] text-navy-950 no-underline backdrop-blur-xs shadow-xs transition-all duration-150 hover:bg-white hover:shadow-md active:scale-[0.98] cursor-pointer max-[640px]:min-h-[50px] max-[640px]:px-[18px] max-[640px]:text-sm" href="#yeu-cau-tu-van">Tư vấn lắp đặt</a>
       </div>
     </div>
-    <div v-if="hero.length > 1" class="absolute bottom-[38px] right-[max(24px,calc((100vw-1560px)/2))] z-[6] flex items-center gap-[3px] rounded-[6px] border border-white/20 bg-navy-950/20 p-[5px] text-white backdrop-blur-[8px] max-[640px]:bottom-[22px] max-[640px]:right-5">
-      <button class="flex h-9 w-[38px] items-center justify-center rounded-[4px] border border-transparent bg-transparent text-white" type="button" aria-label="Banner trước" @click="move(-1)">←</button>
+    <div v-if="hero.length > 1" class="absolute bottom-[38px] right-[max(24px,calc((100vw-1560px)/2))] z-[6] flex items-center gap-[3px] rounded-[6px] border border-white/20 bg-navy-950/30 p-[5px] text-white backdrop-blur-[8px] max-[640px]:bottom-[22px] max-[640px]:right-5">
+      <button class="flex h-9 w-[38px] items-center justify-center rounded-[4px] border border-transparent bg-transparent text-white transition-all duration-150 hover:bg-white/15 active:scale-90 cursor-pointer" type="button" aria-label="Banner trước" @click="move(-1)">←</button>
       <span class="flex h-9 min-w-[66px] items-center justify-center border-x border-white/10 px-2 text-xs text-white/70"><b class="mr-[3px] text-[15px] text-white">{{ String(active + 1).padStart(2, '0') }}</b> / {{ String(hero.length).padStart(2, '0') }}</span>
-      <button class="flex h-9 w-[38px] items-center justify-center rounded-[4px] border border-transparent bg-transparent text-white" type="button" aria-label="Banner tiếp theo" @click="move(1)">→</button>
+      <button class="flex h-9 w-[38px] items-center justify-center rounded-[4px] border border-transparent bg-transparent text-white transition-all duration-150 hover:bg-white/15 active:scale-90 cursor-pointer" type="button" aria-label="Banner tiếp theo" @click="move(1)">→</button>
     </div>
-    <p class="absolute bottom-[102px] right-[max(24px,calc((100vw-1560px)/2))] z-[2] m-0 flex max-w-[min(500px,calc(100vw-48px))] flex-col gap-1 border-b border-white/20 bg-white/5 px-[18px] pb-[13px] pt-[14px] text-right text-navy-950 [text-shadow:0_2px_9px_rgba(255,255,255,.7)] max-[640px]:bottom-[83px] max-[640px]:right-5 max-[640px]:max-w-[calc(100vw-40px)] max-[640px]:px-[14px] max-[640px]:py-[11px]">
+    <p class="absolute bottom-[102px] right-[max(24px,calc((100vw-1560px)/2))] z-[2] m-0 flex max-w-[min(500px,calc(100vw-48px))] flex-col gap-1 border-b border-white/20 bg-white/5 px-[18px] pb-[13px] pt-[14px] text-right text-navy-950 [text-shadow:0_2px_9px_rgba(255,255,255,.7)] transition-opacity duration-500 max-[640px]:bottom-[83px] max-[640px]:right-5 max-[640px]:max-w-[calc(100vw-40px)] max-[640px]:px-[14px] max-[640px]:py-[11px]">
       <strong class="text-[clamp(22px,1.7vw,30px)] leading-[1.18] max-[640px]:text-[clamp(16px,4.8vw,21px)] max-[640px]:whitespace-nowrap">{{ current.name }}</strong>
       <span class="text-sm leading-[1.55] text-navy-950 max-[640px]:hidden">{{ current.description }}</span>
     </p>

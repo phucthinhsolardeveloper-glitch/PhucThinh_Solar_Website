@@ -28,3 +28,42 @@ body { margin: 0; }
   scrollbar-color: rgba(148, 163, 184, 0.4) transparent;
 }
 
+/* Global Apple-style Smooth Scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Apple Fluid Page & Layout Transitions */
+.page-enter-active,
+.page-leave-active,
+.layout-enter-active,
+.layout-leave-active {
+  transition: opacity 0.18s cubic-bezier(0.16, 1, 0.3, 1), transform 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.page-enter-from,
+.layout-enter-from {
+  opacity: 0;
+  transform: translateY(5px);
+}
+
+.page-leave-to,
+.layout-leave-to {
+  opacity: 0;
+  transform: translateY(-3px);
+}
+
+/* Accessibility: Tôn trọng tùy chọn giảm chuyển động của hệ điều hành */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .page-enter-active,
+  .page-leave-active,
+  .layout-enter-active,
+  .layout-leave-active {
+    transition: none !important;
+  }
+}
+

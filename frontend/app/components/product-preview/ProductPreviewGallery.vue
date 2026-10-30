@@ -60,11 +60,11 @@ onBeforeUnmount(() => {
     <button
       v-if="selectedMediaAvailable"
       type="button"
-      class="grid aspect-square w-full cursor-zoom-in place-items-center overflow-hidden rounded-chip bg-white"
+      class="grid aspect-square w-full cursor-zoom-in place-items-center overflow-hidden rounded-chip bg-white shadow-xs transition-shadow duration-300 hover:shadow-md"
       :aria-label="'Phóng to ảnh ' + name"
       @click="openLightbox"
     >
-      <img :src="selectedMedia" :alt="name" class="h-full w-full object-contain" width="720" height="720" @error="markMediaFailed(selectedMedia)">
+      <img :src="selectedMedia" :alt="name" class="h-full w-full object-contain transition-transform duration-300 ease-out hover:scale-[1.02]" width="720" height="720" @error="markMediaFailed(selectedMedia)">
     </button>
     <p v-else class="text-slate-500">CMS chưa có ảnh sản phẩm hợp lệ.</p>
 
@@ -74,8 +74,8 @@ onBeforeUnmount(() => {
         v-show="!failedMedia.has(image)"
         :key="image"
         type="button"
-        class="aspect-square flex-none basis-[72px] overflow-hidden rounded-chip border bg-white"
-        :class="selectedIndex === index ? 'border-navy-800' : 'border-gray-200'"
+        class="aspect-square flex-none basis-[72px] overflow-hidden rounded-chip border bg-white cursor-pointer transition-all duration-200 hover:opacity-90 active:scale-95"
+        :class="selectedIndex === index ? 'border-navy-800 ring-2 ring-gold-500/40 shadow-xs' : 'border-gray-200 hover:border-slate-300'"
         :aria-label="'Xem ảnh ' + (index + 1) + ' của ' + media.length"
         :aria-pressed="selectedIndex === index"
         @click="selectMedia(index)"
@@ -87,16 +87,16 @@ onBeforeUnmount(() => {
     <Teleport to="body">
       <div
         v-if="lightboxOpen && selectedMediaAvailable"
-        class="fixed inset-0 z-[200] flex items-center justify-center bg-black/90 p-4"
+        class="fixed inset-0 z-[200] flex items-center justify-center bg-navy-950/85 backdrop-blur-md p-4 transition-opacity duration-200"
         role="dialog"
         aria-modal="true"
         :aria-label="'Ảnh phóng to ' + name"
         @click.self="closeLightbox"
       >
-        <button type="button" class="absolute right-4 top-4 grid h-11 w-11 place-items-center rounded-full bg-white/10 text-2xl text-white hover:bg-white/20" aria-label="Đóng ảnh phóng to" @click="closeLightbox">×</button>
-        <button v-if="availableIndexes.length > 1" type="button" class="absolute left-4 grid h-11 w-11 place-items-center rounded-full bg-white/10 text-2xl text-white hover:bg-white/20" aria-label="Ảnh trước" @click="moveLightbox(-1)">‹</button>
-        <img :src="selectedMedia" :alt="name + ' — ảnh phóng to'" class="max-h-[90vh] max-w-[90vw] object-contain" @error="markMediaFailed(selectedMedia)">
-        <button v-if="availableIndexes.length > 1" type="button" class="absolute right-4 grid h-11 w-11 place-items-center rounded-full bg-white/10 text-2xl text-white hover:bg-white/20" aria-label="Ảnh tiếp theo" @click="moveLightbox(1)">›</button>
+        <button type="button" class="absolute right-4 top-4 grid h-11 w-11 place-items-center rounded-full bg-white/10 text-2xl text-white transition-colors hover:bg-white/20 active:scale-95 cursor-pointer" aria-label="Đóng ảnh phóng to" @click="closeLightbox">×</button>
+        <button v-if="availableIndexes.length > 1" type="button" class="absolute left-4 grid h-11 w-11 place-items-center rounded-full bg-white/10 text-2xl text-white transition-colors hover:bg-white/20 active:scale-95 cursor-pointer" aria-label="Ảnh trước" @click="moveLightbox(-1)">‹</button>
+        <img :src="selectedMedia" :alt="name + ' — ảnh phóng to'" class="max-h-[90vh] max-w-[90vw] object-contain drop-shadow-2xl" @error="markMediaFailed(selectedMedia)">
+        <button v-if="availableIndexes.length > 1" type="button" class="absolute right-4 grid h-11 w-11 place-items-center rounded-full bg-white/10 text-2xl text-white transition-colors hover:bg-white/20 active:scale-95 cursor-pointer" aria-label="Ảnh tiếp theo" @click="moveLightbox(1)">›</button>
       </div>
     </Teleport>
   </div>
