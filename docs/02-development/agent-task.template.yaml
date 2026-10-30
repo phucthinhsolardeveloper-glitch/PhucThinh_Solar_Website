@@ -1,0 +1,37 @@
+# Copy into the task tracker or issue body. Do not store secrets/PII.
+id: "TASK-EXAMPLE"
+project: "PTS-or-ZCRM"
+goal: "Mô tả thay đổi và kết quả người dùng nhận được"
+priority: normal
+risk: low # low | medium | high | critical
+owner_agent: "codex-or-claude"
+coordinator: "human-or-named-owner"
+repo_path: "/home/admin01/src/PROJECT"
+worktree_path: "/home/admin01/orca/workspaces/PROJECT/TASK"
+branch: "feature/task-name"
+base_branch: "master-or-main"
+base_sha: "REPLACE_WITH_VERIFIED_SHA"
+write_scope:
+  - "src/module/**"
+read_only_dependencies:
+  - "docs/architecture/**"
+forbidden_scope:
+  - "deploy/**"
+  - ".env*"
+  - "database-production"
+acceptance:
+  - "Hành vi được mô tả rõ và được kiểm tra thực tế"
+  - "Không sửa file ngoài phạm vi đã chốt"
+test_plan:
+  - "Focused tests liên quan, không full suite cho mỗi lần chỉnh UI"
+preview: "local-dev-server-and-port-if-needed"
+can_merge_main: false
+can_deploy_production: false
+requires_human_approval_for:
+  - "migration/schema"
+  - "secrets/infra/production"
+  - "external sends or real calls"
+handoff:
+  commit_sha: null
+  tests_result: null
+  review_status: pending
