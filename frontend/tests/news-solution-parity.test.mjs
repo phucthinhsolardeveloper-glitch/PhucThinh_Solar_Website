@@ -4,12 +4,13 @@ import { test } from 'node:test'
 
 const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8')
 
-test('news detail keeps its summary for metadata and renders the PHP article body only once', () => {
+test('news detail keeps its summary for metadata and renders sanitized editorial content once', () => {
   const article = read('../app/components/news-detail/NewsDetailArticle.vue')
   const phpTemplate = read('../../domains/phucthinhsolar.com/public_html/templates/news/news_detail_tpl.php')
 
   assert.doesNotMatch(article, /article\.description/)
-  assert.match(article, /<div v-if="article\.content\.html" id="news-article-content"><EditorialRichText :content="editorial\.content" \/><\/div>/)
+  assert.match(article, /<div v-if="article\.content\.html" id="news-article-content">\s*<EditorialRichText :content="editorial\.content" variant="news" \/>\s*<\/div>/)
+  assert.match(article, /<EditorialRichText :content="article\.quote" variant="news" \/>/)
   assert.equal((article.match(/<EditorialRichText/g) || []).length, 2)
   assert.match(phpTemplate, /class="content-main w-clear" id="toc-content"><\?=\$newsDetailContent\?>/)
   assert.doesNotMatch(phpTemplate, /\$rowDetail\['desc/)
