@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { MotionConfig } from 'motion-v'
+import StorefrontConsultationModal from '~/components/modal/StorefrontConsultationModal.vue'
+import StorefrontDealerModal from '~/components/modal/StorefrontDealerModal.vue'
 
 useHead({
   script: [
@@ -39,6 +41,8 @@ useHead({
       <NuxtLayout>
         <NuxtPage />
       </NuxtLayout>
+      <StorefrontConsultationModal />
+      <StorefrontDealerModal />
     </UApp>
   </MotionConfig>
 </template>

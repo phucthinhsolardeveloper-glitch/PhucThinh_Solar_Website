@@ -24,7 +24,8 @@ test('projects empty state takes only the space its message needs', () => {
 
 test('news TOC links meet the minimum touch target in both dimensions', () => {
   const article = read('../app/components/news-detail/NewsDetailArticle.vue')
-  assert.match(article, /<a class="inline-flex min-h-11 min-w-11 items-center px-2[^\"]*" :href="`#\$\{item\.id\}`">/)
+  assert.match(article, /class="inline-flex min-h-11 min-w-11 items-center px-2[^\"]*"/)
+  assert.match(article, /:href="`#\$\{item\.id\}`"[\s\S]*?@click\.prevent="scrollToHeading\(item\.id\)"/)
 })
 
 test('About quick links meet the touch target and intro copy stays at least 16px on mobile', () => {

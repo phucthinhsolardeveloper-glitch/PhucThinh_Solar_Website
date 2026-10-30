@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import type { PublicSolutionsCta } from '../../../shared/contracts/public-solutions'
+import { useStorefrontModal } from '~/composables/useStorefrontModal'
 
 defineProps<{ cta: PublicSolutionsCta }>()
 const links = useMigrationLinks()
+const { openConsultation } = useStorefrontModal()
 </script>
 
 <template>
@@ -24,6 +26,7 @@ const links = useMigrationLinks()
         color="primary"
         size="lg"
         class="min-h-12 justify-center gap-3.5 rounded-[4px] bg-hdr-gold px-6 text-sm font-extrabold tracking-wide text-navy-950 no-underline hover:bg-hdr-gold-hover"
+        @click.prevent="openConsultation()"
       >
         <span>{{ cta.buttonLabel }}</span>
         <span aria-hidden="true">→</span>

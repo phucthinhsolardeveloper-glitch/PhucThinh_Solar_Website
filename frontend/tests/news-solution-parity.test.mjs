@@ -9,7 +9,8 @@ test('news detail keeps its summary for metadata and renders the PHP article bod
   const phpTemplate = read('../../domains/phucthinhsolar.com/public_html/templates/news/news_detail_tpl.php')
 
   assert.doesNotMatch(article, /article\.description/)
-  assert.match(article, /<EditorialRichText v-if="article\.content\.html"/)
+  assert.match(article, /<div v-if="article\.content\.html" id="news-article-content"><EditorialRichText :content="editorial\.content" \/><\/div>/)
+  assert.equal((article.match(/<EditorialRichText/g) || []).length, 2)
   assert.match(phpTemplate, /class="content-main w-clear" id="toc-content"><\?=\$newsDetailContent\?>/)
   assert.doesNotMatch(phpTemplate, /\$rowDetail\['desc/)
 })
