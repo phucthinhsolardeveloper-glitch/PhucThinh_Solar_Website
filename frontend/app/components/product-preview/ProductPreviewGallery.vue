@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import { AnimatePresence, motion, useReducedMotion } from 'motion-v'
+
 const props = defineProps<{ name: string; media: string[] }>()
+const reducedMotion = useReducedMotion()
 const selectedIndex = ref(0)
 const failedMedia = ref<Set<string>>(new Set())
 const lightboxOpen = ref(false)
@@ -30,6 +33,11 @@ function markMediaFailed(image: string) {
   if (nextIndex >= 0) selectedIndex.value = nextIndex
   else lightboxOpen.value = false
 }
+function markDisplayedMediaFailed(event: Event) {
+  const source = (event.currentTarget as HTMLImageElement).src
+  const image = props.media.find((candidate) => new URL(candidate, document.baseURI).href === source)
+  if (image) markMediaFailed(image)
+}
 function focusFirst(container: HTMLElement | null) {
   container?.querySelector<HTMLElement>('button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])')?.focus()
 }
@@ -57,6 +65,12 @@ function openLightbox(event: MouseEvent) {
 }
 function closeLightbox() {
   lightboxOpen.value = false
+}
+function finishLightboxClose() {
+  if (lightboxOpen.value) return
+  if (bodyOverflowBeforeLock !== null) document.body.style.overflow = bodyOverflowBeforeLock
+  bodyOverflowBeforeLock = null
+  lastTrigger.value?.focus()
 }
 function moveLightbox(direction: -1 | 1) {
   const indexes = availableIndexes.value
@@ -99,16 +113,12 @@ function nextImage(event?: Event) {
   moveLightbox(1)
 }
 
-watch(lightboxOpen, (open, wasOpen) => {
+watch(lightboxOpen, (open) => {
   if (!import.meta.client) return
   if (open) {
     if (bodyOverflowBeforeLock === null) bodyOverflowBeforeLock = document.body.style.overflow
     document.body.style.overflow = 'hidden'
     nextTick(() => focusFirst(lightboxPanel.value))
-  } else {
-    if (bodyOverflowBeforeLock !== null) document.body.style.overflow = bodyOverflowBeforeLock
-    bodyOverflowBeforeLock = null
-    if (wasOpen) nextTick(() => lastTrigger.value?.focus())
   }
 })
 onMounted(() => document.addEventListener('keydown', handleKey))
@@ -129,30 +139,30 @@ onBeforeUnmount(() => {
     >
       <button
         type="button"
-        class="flex h-full w-full items-center justify-center overflow-hidden bg-white p-4"
+        class="relative flex h-full w-full items-center justify-center overflow-hidden bg-white"
         :class="isZoomed ? 'cursor-crosshair' : 'cursor-zoom-in'"
         :aria-label="'Phóng to ảnh ' + name"
         @click="openLightbox($event)"
       >
-        <Transition name="pdp-fade" mode="out-in">
+        <Transition name="pdp-fade">
           <img
             :key="selectedMedia"
             :src="selectedMedia"
             :alt="name"
-            class="h-full w-full object-contain will-change-transform transition-transform duration-200 ease-out"
+            class="pdp-zoom-image absolute inset-0 h-full w-full object-contain p-4 transition-transform duration-200 ease-out"
             :style="{
               transform: isZoomed ? 'scale(2.2)' : 'scale(1)',
               transformOrigin: zoomOrigin,
             }"
             width="720"
             height="720"
-            @error="markMediaFailed(selectedMedia)"
+            @error="markDisplayedMediaFailed"
           >
         </Transition>
       </button>
 
       <!-- Hiệu ứng viền phản quang quang học khi zoom -->
-      <div
+        <div
         v-if="isZoomed"
         class="pointer-events-none absolute inset-0 z-10 border border-gold-500/25 shadow-[inset_0_0_28px_rgba(201,150,46,0.12)] transition-opacity duration-200"
         aria-hidden="true"
@@ -218,50 +228,63 @@ onBeforeUnmount(() => {
 
     <!-- Modal Lightbox xem toàn màn hình kiểu kính mờ Apple -->
     <Teleport to="body">
-      <div
-        v-if="lightboxOpen && selectedMediaAvailable"
-        ref="lightboxPanel"
-        class="fixed inset-0 z-[200] flex items-center justify-center bg-navy-950/90 backdrop-blur-md p-4 transition-opacity duration-200"
-        role="dialog"
-        aria-modal="true"
-        :aria-label="'Ảnh phóng to ' + name"
-        @click.self="closeLightbox"
-      >
-        <button
-          type="button"
-          class="absolute right-4 top-4 flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white transition-all hover:bg-white/20 active:scale-95 cursor-pointer"
-          aria-label="Đóng ảnh phóng to"
-          @click="closeLightbox"
+      <Transition name="pdp-lightbox" @after-leave="finishLightboxClose">
+        <div
+          v-if="lightboxOpen && selectedMediaAvailable"
+          ref="lightboxPanel"
+          class="fixed inset-0 z-[200] flex items-center justify-center bg-navy-950/90 backdrop-blur-md p-4"
+          role="dialog"
+          aria-modal="true"
+          :aria-label="'Ảnh phóng to ' + name"
+          @click.self="closeLightbox"
         >
-          <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
-        </button>
+          <button
+            type="button"
+            class="absolute right-4 top-4 flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white transition-all hover:bg-white/20 active:scale-95 cursor-pointer"
+            aria-label="Đóng ảnh phóng to"
+            @click="closeLightbox"
+          >
+            <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          </button>
 
-        <button
-          v-if="availableIndexes.length > 1"
-          type="button"
-          class="absolute left-4 top-1/2 -translate-y-1/2 flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white transition-all hover:bg-white/25 active:scale-95 cursor-pointer backdrop-blur-xs"
-          aria-label="Ảnh trước"
-          @click="moveLightbox(-1)"
-        >
-          <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
-        </button>
+          <button
+            v-if="availableIndexes.length > 1"
+            type="button"
+            class="absolute left-4 top-1/2 -translate-y-1/2 flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white transition-all hover:bg-white/25 active:scale-95 cursor-pointer backdrop-blur-xs"
+            aria-label="Ảnh trước"
+            @click="moveLightbox(-1)"
+          >
+            <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
 
-        <img :src="selectedMedia" :alt="name + ' — ảnh phóng to'" class="max-h-[85vh] max-w-[88vw] object-contain drop-shadow-2xl rounded-chip" @error="markMediaFailed(selectedMedia)">
+          <AnimatePresence :initial="false">
+            <motion.div
+              :key="selectedMedia"
+              :initial="reducedMotion ? false : { opacity: 0, scale: 0.985 }"
+              :animate="{ opacity: 1, scale: 1 }"
+              :exit="{ opacity: 0, scale: 0.985 }"
+              :transition="{ duration: reducedMotion ? 0 : 0.16, ease: 'easeOut' }"
+              class="pointer-events-none absolute inset-0 flex items-center justify-center p-4"
+            >
+              <img :src="selectedMedia" :alt="name + ' — ảnh phóng to'" class="pointer-events-auto max-h-[85vh] max-w-[88vw] object-contain drop-shadow-2xl rounded-chip" @error="markDisplayedMediaFailed">
+            </motion.div>
+          </AnimatePresence>
 
-        <button
-          v-if="availableIndexes.length > 1"
-          type="button"
-          class="absolute right-4 top-1/2 -translate-y-1/2 flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white transition-all hover:bg-white/25 active:scale-95 cursor-pointer backdrop-blur-xs"
-          aria-label="Ảnh tiếp theo"
-          @click="moveLightbox(1)"
-        >
-          <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
-        </button>
+          <button
+            v-if="availableIndexes.length > 1"
+            type="button"
+            class="absolute right-4 top-1/2 -translate-y-1/2 flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white transition-all hover:bg-white/25 active:scale-95 cursor-pointer backdrop-blur-xs"
+            aria-label="Ảnh tiếp theo"
+            @click="moveLightbox(1)"
+          >
+            <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+          </button>
 
-        <div class="absolute bottom-5 left-1/2 -translate-x-1/2 rounded-full bg-white/10 px-4 py-1.5 text-xs font-bold text-white backdrop-blur-xs">
-          {{ selectedIndex + 1 }} / {{ availableIndexes.length }}
+          <div class="absolute bottom-5 left-1/2 -translate-x-1/2 rounded-full bg-white/10 px-4 py-1.5 text-xs font-bold text-white backdrop-blur-xs">
+            {{ selectedIndex + 1 }} / {{ availableIndexes.length }}
+          </div>
         </div>
-      </div>
+      </Transition>
     </Teleport>
   </div>
 </template>
@@ -269,14 +292,29 @@ onBeforeUnmount(() => {
 <style scoped>
 .pdp-fade-enter-active,
 .pdp-fade-leave-active {
-  transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1), transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: opacity 0.16s ease-out;
 }
 .pdp-fade-enter-from {
   opacity: 0;
-  transform: scale(0.97);
 }
 .pdp-fade-leave-to {
   opacity: 0;
-  transform: scale(1.02);
+}
+.pdp-lightbox-enter-active,
+.pdp-lightbox-leave-active {
+  transition: opacity 0.16s ease-out;
+}
+.pdp-lightbox-enter-from,
+.pdp-lightbox-leave-to {
+  opacity: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .pdp-fade-enter-active,
+  .pdp-fade-leave-active,
+  .pdp-lightbox-enter-active,
+  .pdp-lightbox-leave-active,
+  .pdp-zoom-image {
+    transition-duration: 0ms;
+  }
 }
 </style>

@@ -173,7 +173,7 @@ test('commerce media failures render explicit fallbacks instead of blank frames'
   assert.ok(detailsButton)
   assert.match(detailsButton, /max-ph:hidden/)
   assert.match(grid, /<NuxtLink[\s\S]*:to="productHref\(product\)"[\s\S]*\{\{ product\.name \}\}/)
-  assert.match(gallery, /markMediaFailed\(selectedMedia\)/)
+  assert.match(gallery, /@error="markDisplayedMediaFailed"/)
   assert.match(gallery, /CMS chưa có ảnh sản phẩm hợp lệ/)
 })
 
@@ -191,8 +191,14 @@ test('PDP image lightbox traps keyboard focus and restores it to its trigger', (
   assert.match(gallery, /const lightboxPanel = ref/)
   assert.match(gallery, /lastTrigger\.value = event\.currentTarget/)
   assert.match(gallery, /else if \(event\.key === 'Tab'\) trapFocus\(event\)/)
+  assert.match(gallery, /@after-leave="finishLightboxClose"/)
   assert.match(gallery, /lastTrigger\.value\?\.focus\(\)/)
   assert.match(gallery, /bodyOverflowBeforeLock/)
+  assert.match(gallery, /<AnimatePresence :initial="false">/)
+  assert.match(gallery, /props\.media\.find\(\(candidate\) => new URL\(candidate, document\.baseURI\)\.href === source\)/)
+  assert.match(gallery, /:transition="\{ duration: reducedMotion \? 0 : 0\.16/)
+  assert.match(gallery, /@media \(prefers-reduced-motion: reduce\)/)
+  assert.match(gallery, /\.pdp-zoom-image \{\s*transition-duration: 0ms/)
 })
 
 test('catalog pagination stays bounded for large CMS result sets', () => {
