@@ -1,9 +1,22 @@
 import { spawn } from 'node:child_process'
 import { strict as assert } from 'node:assert'
 import { createServer } from 'node:http'
+import { createServer as createTcpServer } from 'node:net'
 import { setTimeout as sleep } from 'node:timers/promises'
 
-const port = '3139'
+async function availablePort() {
+  const server = createTcpServer()
+  await new Promise((resolve, reject) => {
+    server.once('error', reject)
+    server.listen(0, '127.0.0.1', resolve)
+  })
+  const address = server.address()
+  if (!address || typeof address === 'string') throw new Error('Could not reserve a local TCP port')
+  await new Promise((resolve, reject) => server.close((error) => error ? reject(error) : resolve()))
+  return String(address.port)
+}
+
+const port = await availablePort()
 const base = `http://127.0.0.1:${port}`
 const mockPhp = process.env.NITRO_SMOKE_MOCK_PHP === '1' ? createServer((_request, response) => {
   // Unknown public slugs are a PHP-classified 404. CI uses this narrow stub
@@ -12,13 +25,18 @@ const mockPhp = process.env.NITRO_SMOKE_MOCK_PHP === '1' ? createServer((_reques
   response.end(JSON.stringify({ error: 'not_found' }))
 }) : null
 let phpOrigin = process.env.NITRO_PHP_ORIGIN || 'http://127.0.0.1:8088'
-let phpAllowlist = process.env.NUXT_PHP_ORIGIN_ALLOWLIST
+let phpAllowlist = process.env.NITRO_PHP_ORIGIN_ALLOWLIST || process.env.NUXT_PHP_ORIGIN_ALLOWLIST
 if (mockPhp) {
-  // Match the checked-in runtime default and allowlist. CI runners have no
-  // PHP service, so bind this fixture only when the explicit CI flag is set.
-  await new Promise((resolve) => mockPhp.listen(8080, '127.0.0.1', resolve))
-  phpOrigin = 'http://127.0.0.1:8080'
-  phpAllowlist = '127.0.0.1:8080'
+  // CI has no PHP service. Bind a local fixture on an ephemeral port and
+  // classify unknown public slugs as the PHP resolver's 404 response.
+  await new Promise((resolve, reject) => {
+    mockPhp.once('error', reject)
+    mockPhp.listen(0, '127.0.0.1', resolve)
+  })
+  const address = mockPhp.address()
+  if (!address || typeof address === 'string') throw new Error('Mock PHP server did not bind to a TCP port')
+  phpOrigin = `http://127.0.0.1:${address.port}`
+  phpAllowlist = `127.0.0.1:${address.port}`
 }
 const child = spawn(process.execPath, ['.output/server/index.mjs'], {
   cwd: new URL('../', import.meta.url).pathname,
@@ -28,7 +46,10 @@ const child = spawn(process.execPath, ['.output/server/index.mjs'], {
     NITRO_HOST: '127.0.0.1',
     NITRO_PHP_ORIGIN: phpOrigin,
     NUXT_PHP_ORIGIN: phpOrigin,
-    ...(phpAllowlist ? { NUXT_PHP_ORIGIN_ALLOWLIST: phpAllowlist } : {}),
+    ...(phpAllowlist ? {
+      NITRO_PHP_ORIGIN_ALLOWLIST: phpAllowlist,
+      NUXT_PHP_ORIGIN_ALLOWLIST: phpAllowlist,
+    } : {}),
     NITRO_PREVIEW_MEDIA_PROXY: process.env.NITRO_PREVIEW_MEDIA_PROXY || '1',
     NUXT_PREVIEW_MEDIA_PROXY: process.env.NUXT_PREVIEW_MEDIA_PROXY || '1',
   },
