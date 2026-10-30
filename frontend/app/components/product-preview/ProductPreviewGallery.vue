@@ -129,24 +129,34 @@ onBeforeUnmount(() => {
     >
       <button
         type="button"
-        class="flex h-full w-full cursor-zoom-in items-center justify-center overflow-hidden bg-white p-4"
+        class="flex h-full w-full items-center justify-center overflow-hidden bg-white p-4"
+        :class="isZoomed ? 'cursor-crosshair' : 'cursor-zoom-in'"
         :aria-label="'Phóng to ảnh ' + name"
         @click="openLightbox($event)"
       >
-        <img
-          :key="selectedMedia"
-          :src="selectedMedia"
-          :alt="name"
-          class="h-full w-full object-contain will-change-transform transition-transform duration-200 ease-out"
-          :style="{
-            transform: isZoomed ? 'scale(2.2)' : 'scale(1)',
-            transformOrigin: zoomOrigin,
-          }"
-          width="720"
-          height="720"
-          @error="markMediaFailed(selectedMedia)"
-        >
+        <Transition name="pdp-fade" mode="out-in">
+          <img
+            :key="selectedMedia"
+            :src="selectedMedia"
+            :alt="name"
+            class="h-full w-full object-contain will-change-transform transition-transform duration-200 ease-out"
+            :style="{
+              transform: isZoomed ? 'scale(2.2)' : 'scale(1)',
+              transformOrigin: zoomOrigin,
+            }"
+            width="720"
+            height="720"
+            @error="markMediaFailed(selectedMedia)"
+          >
+        </Transition>
       </button>
+
+      <!-- Hiệu ứng viền phản quang quang học khi zoom -->
+      <div
+        v-if="isZoomed"
+        class="pointer-events-none absolute inset-0 z-10 border border-gold-500/25 shadow-[inset_0_0_28px_rgba(201,150,46,0.12)] transition-opacity duration-200"
+        aria-hidden="true"
+      />
 
       <!-- Nút chuyển ảnh Trước (<) -->
       <button
@@ -255,3 +265,18 @@ onBeforeUnmount(() => {
     </Teleport>
   </div>
 </template>
+
+<style scoped>
+.pdp-fade-enter-active,
+.pdp-fade-leave-active {
+  transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1), transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.pdp-fade-enter-from {
+  opacity: 0;
+  transform: scale(0.97);
+}
+.pdp-fade-leave-to {
+  opacity: 0;
+  transform: scale(1.02);
+}
+</style>

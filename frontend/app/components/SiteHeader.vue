@@ -331,6 +331,7 @@ function telHrefFor(value: string): string {
 const { isHeaderHidden, isScrolled } = useSiteHeader()
 let lastScrollY = 0
 let scrollTicking = false
+let accumulatedDelta = 0
 
 function handleWindowScroll() {
   if (!import.meta.client || scrollTicking) return
@@ -343,14 +344,20 @@ function handleWindowScroll() {
     if (anyOverlayOpen || currentScrollY <= 80) {
       isHeaderHidden.value = false
       lastScrollY = currentScrollY
+      accumulatedDelta = 0
       scrollTicking = false
       return
     }
 
     const deltaY = currentScrollY - lastScrollY
-    if (deltaY > 10 && currentScrollY > 100) {
+    if ((deltaY > 0 && accumulatedDelta < 0) || (deltaY < 0 && accumulatedDelta > 0)) {
+      accumulatedDelta = 0
+    }
+    accumulatedDelta += deltaY
+
+    if (accumulatedDelta > 24 && currentScrollY > 120) {
       isHeaderHidden.value = true
-    } else if (deltaY < -6) {
+    } else if (accumulatedDelta < -20) {
       isHeaderHidden.value = false
     }
 
@@ -558,6 +565,14 @@ onBeforeUnmount(() => {
           </button>
         </div>
       </div>
+
+      <!-- Backdrop mờ cho hộp thoại tìm kiếm: click ra ngoài để đóng nhanh -->
+      <div
+        v-if="searchOpen"
+        class="fixed inset-0 top-[88px] nav:top-[104px] z-[24] bg-navy-950/40 backdrop-blur-xs transition-opacity duration-200 cursor-pointer"
+        aria-hidden="true"
+        @click="closeSearch()"
+      />
 
       <!-- Hộp thoại tìm kiếm thả xuống cho màn hình <1501px -->
       <div
