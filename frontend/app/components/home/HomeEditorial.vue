@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { PublicHomeAboutPoint, PublicHomePayload } from '#shared/contracts/public-home'
-import { motion } from 'motion-v'
+import { motion, useReducedMotion } from 'motion-v'
 
 const props = defineProps<{ data: PublicHomePayload }>()
 const solutionChips = [
@@ -19,6 +19,7 @@ type SolutionTab = {
 }
 
 const selected = ref<string | number>(0)
+const reducedMotion = useReducedMotion()
 const solutionTabs = computed<SolutionTab[]>(() => props.data.solutions.map((solution, index) => ({
   label: solution.label,
   value: index,
@@ -81,6 +82,7 @@ function requestConsultation(subject: string) {
 }
 
 function selectSolution(value: string | number) {
+  if (value === selected.value) return
   solutionPanelInteracted.value = true
   selected.value = value
 }
@@ -122,9 +124,9 @@ function selectSolution(value: string | number) {
           <template #solution="{ item }">
             <motion.article
               v-if="item.solution"
-              :initial="solutionPanelInteracted ? { opacity: 0, y: 8 } : false"
-              :animate="{ opacity: 1, y: 0 }"
-              :transition="{ duration: 0.18, ease: 'easeOut' }"
+              :initial="solutionPanelInteracted && !reducedMotion ? { opacity: 0.72 } : false"
+              :animate="{ opacity: 1 }"
+              :transition="{ duration: 0.16, ease: 'easeOut' }"
               class="grid grid-cols-[minmax(0,.9fr)_minmax(0,1.1fr)] items-center gap-[clamp(28px,3vw,48px)] max-md:grid-cols-1"
             >
               <div>
