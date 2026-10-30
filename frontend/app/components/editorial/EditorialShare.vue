@@ -90,8 +90,10 @@ const shareLinks = computed(() => {
           <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
         </svg>
 
-        <!-- Zalo badge -->
-        <span v-else-if="item.type === 'zalo'" class="select-none text-[11px] font-black tracking-tight" aria-hidden="true">Zalo</span>
+        <!-- Zalo icon -->
+        <svg v-else-if="item.type === 'zalo'" class="size-5 fill-current" viewBox="0 0 48 48" aria-hidden="true">
+          <path d="M24 4C12.95 4 4 12.95 4 24c0 4.14 1.26 7.99 3.42 11.19L4.5 43.5l8.61-2.82C16.14 42.6 19.93 44 24 44c11.05 0 20-8.95 20-20S35.05 4 24 4zm-7.5 15h15c.83 0 1.5.67 1.5 1.5 0 .5-.25.96-.66 1.24L21.4 30h11.1c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-15c-.83 0-1.5-.67-1.5-1.5 0-.5.25-.96.66-1.24L27.6 23H16.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5z" />
+        </svg>
 
         <!-- X (Twitter) icon -->
         <svg v-else-if="item.type === 'x'" class="size-3.5 fill-current" viewBox="0 0 24 24" aria-hidden="true">

@@ -178,21 +178,18 @@ const { activeHeadingId, scrollToHeading } = useTocScrollspy({
           <span aria-hidden="true">→</span>
         </a>
       </header>
-      <div class="grid grid-cols-1 gap-4 min-[521px]:grid-cols-2 min-[1101px]:grid-cols-4">
+      <div class="grid grid-cols-1 gap-2 min-[521px]:grid-cols-2 min-[1101px]:grid-cols-4">
         <a
           v-for="item in data.equipment"
           :key="item.url"
-          class="group flex min-w-0 items-center gap-3.5 rounded-chip border border-slate-200/90 bg-white p-4 text-navy-800 no-underline shadow-xs transition-all duration-300 hover:-translate-y-0.5 hover:border-gold-500 hover:shadow-md"
+          class="flex min-w-0 items-center gap-3 px-3.5 py-2.5 text-navy-800 no-underline transition-colors hover:text-gold-700"
           :href="links.generic(item.url)"
         >
-          <div v-if="item.image" class="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-chip bg-slate-50 p-1.5">
-            <img :src="item.image" alt="" class="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105" width="80" height="80" loading="lazy">
-          </div>
-          <span class="min-w-0 flex-1">
-            <strong class="block text-[15px] font-extrabold leading-snug text-navy-800 transition-colors group-hover:text-gold-700">{{ item.name }}</strong>
-            <small v-if="item.description" class="mt-1 block line-clamp-2 text-[13px] leading-[1.5] text-slate-500">{{ item.description }}</small>
+          <img v-if="item.image" :src="item.image" alt="" class="h-12 w-12 flex-none object-contain transition-transform duration-300 hover:scale-105" width="48" height="48" loading="lazy">
+          <span class="min-w-0">
+            <strong class="block text-sm font-bold leading-tight">{{ item.name }}</strong>
+            <small v-if="item.description" class="mt-0.5 block truncate text-xs text-slate-500">{{ item.description }}</small>
           </span>
-          <span class="ml-auto shrink-0 text-lg text-slate-400 transition-transform duration-300 group-hover:translate-x-1 group-hover:text-gold-700" aria-hidden="true">→</span>
         </a>
       </div>
     </section>

@@ -72,11 +72,16 @@ const hotlineHref = computed(() => `tel:${props.project.cta?.hotline.replace(/[^
         </header>
         <div class="grid grid-cols-1 gap-7 tb:grid-cols-2 nav:grid-cols-3">
           <a v-for="item in project.relatedProjects" :key="item.id" :href="links.project(item.slug)" class="group min-w-0 text-navy-800 no-underline">
-            <img v-if="item.image" :src="item.image" :alt="item.title" class="aspect-[4/3] w-full object-cover" loading="lazy" decoding="async">
+            <div class="overflow-hidden rounded-chip bg-slate-100">
+              <img v-if="item.image" :src="item.image" :alt="item.title" class="aspect-[4/3] w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105" loading="lazy" decoding="async">
+            </div>
             <div class="pt-4">
-              <h3 class="m-0 text-xl font-extrabold leading-snug text-navy-950 group-hover:text-gold-700">{{ item.title }}</h3>
-              <p v-if="item.address" class="mb-0 mt-2 text-sm text-slate-500">{{ item.address }}</p>
-              <span class="mt-3 inline-block font-bold text-navy-800">Xem dự án →</span>
+              <h3 class="m-0 text-xl font-extrabold leading-snug text-navy-950 transition-colors duration-200 group-hover:text-gold-700">{{ item.title }}</h3>
+              <p v-if="item.address" class="mb-0 mt-2 flex items-center gap-1.5 text-sm text-slate-500">
+                <svg class="size-3.5 shrink-0 text-gold-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                <span>{{ item.address }}</span>
+              </p>
+              <span class="mt-3 inline-flex items-center gap-1 font-bold text-navy-800 transition-transform duration-200 group-hover:translate-x-1 group-hover:text-gold-700">Xem dự án →</span>
             </div>
           </a>
         </div>

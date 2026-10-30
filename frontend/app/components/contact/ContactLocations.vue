@@ -21,13 +21,21 @@ watch(() => props.locations, (locations) => {
     </h2>
 
     <div class="grid grid-cols-1 gap-8 nav:grid-cols-[340px_minmax(0,1fr)]">
-      <ul class="m-0 list-none p-0">
-        <li v-for="location in locations" :key="location.id" class="border-b border-gray-200 py-5 first:pt-0 last:border-b-0">
+      <ul class="m-0 list-none space-y-3 p-0">
+        <li
+          v-for="location in locations"
+          :key="location.id"
+          class="cursor-pointer rounded-chip border p-4 transition-all duration-200"
+          :class="selected?.id === location.id
+            ? 'border-gold-500/80 border-l-4 border-l-gold-500 bg-gold-50/40 shadow-xs'
+            : 'border-slate-200/90 bg-white hover:border-slate-300 hover:bg-slate-50/60'"
+          @click="selectedId = location.id"
+        >
           <p class="m-0 mb-1.5 flex items-center gap-2 font-bold text-navy-800">
             <svg class="h-4 w-4 flex-none text-gold-500" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3 3 10h2v9h5v-5h4v5h5v-9h2Z" /></svg>
             {{ location.name }}
           </p>
-          <p class="m-0 mb-2.5 flex items-start gap-2 text-slate-500">
+          <p class="m-0 mb-2.5 flex items-start gap-2 text-sm text-slate-500">
             <svg class="mt-0.5 h-3.5 w-3.5 flex-none text-gold-500" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5Z" /></svg>
             {{ location.address }}
           </p>
@@ -36,9 +44,13 @@ watch(() => props.locations, (locations) => {
               type="button"
               class="inline-flex items-center gap-1.5 border-0 bg-transparent p-0 text-sm font-bold text-navy-800 hover:text-gold-700"
               :aria-pressed="selected?.id === location.id"
-              @click="selectedId = location.id"
+              @click.stop="selectedId = location.id"
             >
-              Xem trên bản đồ <span aria-hidden="true">→</span>
+              <span v-if="selected?.id === location.id" class="inline-flex items-center gap-1 text-gold-700">
+                <span class="size-1.5 rounded-full bg-gold-500" />
+                Đang hiển thị bản đồ
+              </span>
+              <span v-else>Xem trên bản đồ →</span>
             </button>
             <a
               v-if="location.mapUrl"
@@ -46,6 +58,7 @@ watch(() => props.locations, (locations) => {
               target="_blank"
               rel="noopener noreferrer"
               class="text-sm font-semibold text-slate-500 no-underline hover:text-gold-700"
+              @click.stop
             >
               Mở Google Maps ↗
             </a>

@@ -61,6 +61,14 @@ function quickSpecText(product: PublicCatalogProduct): string {
 function productHref(product: PublicCatalogProduct) {
   return links.product(product.slug)
 }
+
+function discountPercent(product: PublicCatalogProduct): number | null {
+  const pricing = product.pricing
+  if (pricing?.mode === 'price' && pricing.regularPrice && pricing.salePrice && pricing.salePrice < pricing.regularPrice) {
+    return Math.round(((pricing.regularPrice - pricing.salePrice) / pricing.regularPrice) * 100)
+  }
+  return null
+}
 </script>
 
 <template>
@@ -90,6 +98,12 @@ function productHref(product: PublicCatalogProduct) {
         :to="productHref(product)"
         class="relative grid aspect-square place-items-center overflow-hidden rounded-chip bg-slate-50/80 no-underline"
       >
+        <span
+          v-if="discountPercent(product)"
+          class="absolute top-2.5 left-2.5 z-10 rounded-chip bg-red-600 px-2 py-0.5 text-xs font-black tracking-tight text-white shadow-xs"
+        >
+          -{{ discountPercent(product) }}%
+        </span>
         <img
           v-if="product.media[0] && !failedImages.has(product.id)"
           :src="product.media[0]"
@@ -131,7 +145,7 @@ function productHref(product: PublicCatalogProduct) {
         <button
           v-if="product.pricing?.mode === 'price'"
           type="button"
-          class="min-h-10 rounded-chip bg-hdr-gold px-3 text-[13px] font-extrabold text-navy-950 transition-colors hover:bg-hdr-gold-hover disabled:cursor-wait disabled:opacity-60"
+          class="min-h-10 rounded-chip bg-hdr-gold px-3 text-[13px] font-extrabold text-navy-950 shadow-xs transition-all duration-150 hover:bg-hdr-gold-hover active:scale-[0.98] disabled:cursor-wait disabled:opacity-60"
           :disabled="addingIds.has(product.id)"
           @click="addToCart(product)"
         >
@@ -140,7 +154,7 @@ function productHref(product: PublicCatalogProduct) {
         <NuxtLink
           :external="!isMigrationPreview"
           :to="productHref(product)"
-          class="inline-grid min-h-10 place-items-center rounded-chip border border-navy-800/80 px-3 text-[13px] font-bold text-navy-800 no-underline transition-colors hover:border-navy-800 hover:bg-navy-800 hover:text-white"
+          class="inline-grid min-h-10 place-items-center rounded-chip border border-navy-800/80 px-3 text-[13px] font-bold text-navy-800 no-underline shadow-xs transition-all duration-150 hover:border-navy-800 hover:bg-navy-800 hover:text-white active:scale-[0.98]"
         >
           Xem chi tiết
         </NuxtLink>
