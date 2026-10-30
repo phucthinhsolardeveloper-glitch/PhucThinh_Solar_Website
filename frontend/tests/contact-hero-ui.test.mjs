@@ -14,20 +14,21 @@ test('contact hero exposes the CMS hotline, email, and business hours', () => {
 })
 
 test('contact hero does not construct a mailto URL from an invalid CMS email', () => {
-  assert.match(hero, /v-if="emailHref"[\s\S]*?v-else>Email:/)
-  assert.match(hero, /v-if="phoneHref"[\s\S]*?v-else>/)
+  assert.match(hero, /v-if="emailHref"[\s\S]*?v-else class="min-w-0 break-words">Email:/)
+  assert.match(hero, /v-if="phoneHref"[\s\S]*?v-else>Hotline:/)
 })
 
 test('contact hero aligns its CMS image and text band at mobile and desktop breakpoints', () => {
-  assert.match(hero, /-mx-4 grid grid-cols-1 items-start gap-0 py-0 nav:mx-0/)
-  assert.match(hero, /aspect-\[8\/5\] w-full object-cover nav:rounded-chip/)
-  assert.match(hero, /p-5 text-white nav:rounded-chip nav:p-10/)
+  assert.match(hero, /lg:grid-cols-\[minmax\(0,1\.15fr\)_minmax\(360px,\.85fr\)\]/)
+  assert.match(hero, /aspect-\[8\/5\] w-full object-cover lg:absolute/)
+  assert.match(hero, /px-5 py-8 text-white tb:px-8 lg:min-h-\[460px\] lg:px-10/)
 })
 
-test('contact hero desktop heading avoids an orphan last word without changing the PHP column split', () => {
-  assert.match(hero, /<h1 id="contact-preview-title" class="[^\"]*text-\[clamp\(32px,3vw,44px\)\][^\"]*">/)
-  assert.match(hero, /nav:grid-cols-\[1\.3fr_0\.7fr\]/)
-  assert.match(hero, /nav:p-10/)
+test('contact page has one CMS-backed H1 and a distinct hero heading', async () => {
+  const page = await readFile(new URL('../app/components/contact/ContactPageContent.vue', import.meta.url), 'utf8')
+  assert.match(page, /<h1[^>]*>\{\{ contact\.title \}\}<\/h1>/)
+  assert.match(hero, /<h2 id="contact-hero-title"/)
+  assert.doesNotMatch(hero, /<h1\b/)
 })
 
 test('contact hero uses the CMS CTA URL and matches PHP label and visibility', async () => {

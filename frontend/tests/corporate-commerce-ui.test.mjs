@@ -29,11 +29,11 @@ test('cart mutation failures remain visible and are handled by the UI event hand
   assert.match(cart, /:disabled="loading"/)
 })
 
-test('contact page renders one PHP-matched form heading and description', () => {
+test('contact page keeps one CMS-backed title and the working lead form', () => {
   assert.doesNotMatch(contactPage, /contact\.intro|contact\.labels\.formCta|contact\.labels\.formNote/)
   assert.match(contactPage, /<ContactLeadForm \/>/)
   assert.equal((contactForm.match(/<h2\b/g) ?? []).length, 1)
-  assert.match(contactForm, /nav:grid-cols-\[minmax\(245px,315px\)_minmax\(0,1fr\)\]/)
+  assert.match(contactForm, /lg:grid-cols-\[minmax\(230px,\.75fr\)_minmax\(0,1\.25fr\)\]/)
 })
 
 test('dealer lead form matches PHP field arrangement and examples', () => {

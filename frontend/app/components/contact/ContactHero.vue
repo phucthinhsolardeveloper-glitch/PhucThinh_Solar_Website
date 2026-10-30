@@ -9,73 +9,58 @@ const phoneHref = computed(() => publicPhoneHref(props.contact.contact.hotline))
 </script>
 
 <template>
-  <!--
-    Tỉ lệ 1.3fr/0.7fr đo khớp ảnh production (/lien-he/, 1920px): panel navy
-    bắt đầu tại x=1210 trong vùng nội dung 76..1842 (rộng 1766), tức ảnh rộng
-    1134 / panel rộng 632 ~= 1.79, khớp đúng 1.3:0.7 = 1.857 trong sai số đo.
-
-    Panel phải KHÔNG phải navy đặc mà là gradient 145deg từ navy-950 tới
-    navy-700 (contact-v3.css: linear-gradient(145deg,var(--contact-navy),
-    var(--contact-blue)); --contact-blue:#123c72 ~ navy-700 #123a7a, lệch 2
-    đơn vị hex — cùng một token, không phải màu khác).
-  -->
-  <section class="-mx-4 grid grid-cols-1 items-start gap-0 py-0 nav:mx-0 nav:grid-cols-[1.3fr_0.7fr] nav:gap-[clamp(24px,5vw,80px)] nav:py-16" aria-labelledby="contact-preview-title">
-    <div v-if="contact.visual" class="relative min-w-0">
+  <section class="grid min-w-0 overflow-hidden rounded-chip bg-navy-950 lg:grid-cols-[minmax(0,1.15fr)_minmax(360px,.85fr)]" aria-labelledby="contact-hero-title">
+    <div v-if="contact.visual" class="relative min-w-0 overflow-hidden bg-navy-900">
       <img
         :src="contact.visual.image"
-        :alt="contact.visual.name"
-        class="block aspect-[8/5] w-full object-cover nav:rounded-chip"
+        alt=""
+        class="block aspect-[8/5] w-full object-cover lg:absolute lg:inset-0 lg:h-full lg:aspect-auto"
         width="1400"
         height="875"
+        fetchpriority="high"
       >
-      <!--
-        Badge hotline nổi góc dưới trái của ẢNH (không phải góc panel navy).
-        Đo trên ảnh: nền trắng, icon tròn gold, không phải nền navy-deep như
-        CSS preview cũ mô tả — đối chiếu lại contact-v3.css xác nhận đây đúng
-        là thiết kế hiện hành, preview cũ lấy nhầm từ bản trước đó.
-      -->
-      <span
-        v-if="contact.contact.hotline"
-        class="absolute bottom-4 left-4 flex items-center gap-3 rounded-chip bg-white px-4 py-3 shadow-[0_10px_24px_rgba(6,21,55,.18)]"
-      >
-        <!-- Đo pixel: vòng tròn gold-500 #c9962e, icon navy-950 #061537 (không phải trắng). -->
-        <span class="flex h-9 w-9 flex-none items-center justify-center rounded-full bg-gold-500 text-navy-950">
-          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.5 3.5 9 3l2 5-2 1.7a14 14 0 0 0 5.3 5.3L16 13l5 2-.5 2.5c-.3 1.5-1.7 2.5-3.2 2.2C10.8 18.5 5.5 13.2 4.3 6.7 4 5.2 5 3.8 6.5 3.5Z" /></svg>
-        </span>
-        <span class="flex flex-col leading-tight">
-          <small class="text-[11px] font-bold uppercase tracking-wide text-slate-500">Hotline hỗ trợ</small>
-          <strong class="text-base font-bold text-navy-800">{{ contact.contact.hotline }}</strong>
-        </span>
-      </span>
+      <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-navy-950/55 via-transparent to-transparent" />
+      <a v-if="phoneHref" :href="phoneHref" class="absolute bottom-4 left-4 flex min-h-14 items-center gap-3 rounded-chip bg-white px-4 py-2.5 text-navy-800 shadow-lg no-underline hover:text-gold-700 lg:bottom-6 lg:left-6">
+        <span class="flex size-10 flex-none items-center justify-center rounded-full bg-gold-500 text-navy-950"><UIcon name="i-lucide-phone" class="size-5" aria-hidden="true" /></span>
+        <span class="flex flex-col leading-tight"><small class="text-xs font-semibold text-slate-500">Hotline tư vấn</small><strong class="mt-1 text-base">{{ contact.contact.hotline }}</strong></span>
+      </a>
     </div>
 
-    <div class="flex min-w-0 flex-col bg-[linear-gradient(145deg,var(--color-navy-950),var(--color-navy-700))] p-5 text-white nav:rounded-chip nav:p-10">
-      <h1 id="contact-preview-title" class="m-0 mb-5 text-[clamp(32px,3vw,44px)] font-black leading-[1.1]">
-        {{ contact.visual?.name || contact.title }}
-      </h1>
-      <p v-if="contact.visual?.description" class="m-0 mb-4 text-lg leading-relaxed text-blue-100">
-        {{ contact.visual.description }}
-      </p>
-      <p v-if="contact.contact.company" class="m-0 mb-4 font-bold text-blue-100">{{ contact.contact.company }}</p>
-      <ul class="mb-5 mt-0 grid list-none gap-2 p-0 text-sm leading-relaxed text-blue-100">
-        <li v-if="contact.contact.hotline">
-          <a v-if="phoneHref" class="text-inherit underline-offset-2 hover:underline" :href="phoneHref">Hotline: <strong>{{ contact.contact.hotline }}</strong></a>
-          <span v-else>Hotline: <strong>{{ contact.contact.hotline }}</strong></span>
-        </li>
-        <li v-if="contact.contact.email">
-          <a v-if="emailHref" class="text-inherit underline-offset-2 hover:underline" :href="emailHref">Email: <strong>{{ contact.contact.email }}</strong></a>
-          <span v-else>Email: <strong>{{ contact.contact.email }}</strong></span>
-        </li>
-        <li v-if="contact.contact.workingHours">Thời gian làm việc: <strong>{{ contact.contact.workingHours }}</strong></li>
-      </ul>
-      <a
+    <div class="flex min-w-0 flex-col justify-center px-5 py-8 text-white tb:px-8 lg:min-h-[460px] lg:px-10 lg:py-12">
+      <h2 id="contact-hero-title" class="m-0 max-w-xl text-[clamp(26px,2.8vw,40px)] font-bold leading-tight tracking-tight">
+        {{ contact.visual?.name || 'Tư vấn giải pháp cùng Phúc Thịnh Solar' }}
+      </h2>
+      <p v-if="contact.visual?.description" class="mb-0 mt-4 max-w-xl text-base leading-7 text-blue-100">{{ contact.visual.description }}</p>
+
+      <div v-if="contact.contact.company || contact.contact.hotline || contact.contact.email || contact.contact.workingHours" class="mt-7 border-t border-white/20 pt-6">
+        <p v-if="contact.contact.company" class="m-0 text-sm font-semibold leading-6 text-white">{{ contact.contact.company }}</p>
+        <ul class="mb-0 mt-4 grid list-none gap-3 p-0 text-sm leading-6 text-blue-100">
+          <li v-if="contact.contact.hotline" class="flex items-start gap-3">
+            <UIcon name="i-lucide-phone" class="mt-0.5 size-4 flex-none text-gold-400" aria-hidden="true" />
+            <a v-if="phoneHref" class="text-inherit underline-offset-2 hover:underline" :href="phoneHref">Hotline: <strong class="text-white">{{ contact.contact.hotline }}</strong></a>
+            <span v-else>Hotline: <strong class="text-white">{{ contact.contact.hotline }}</strong></span>
+          </li>
+          <li v-if="contact.contact.email" class="flex min-w-0 items-start gap-3">
+            <UIcon name="i-lucide-mail" class="mt-0.5 size-4 flex-none text-gold-400" aria-hidden="true" />
+            <a v-if="emailHref" class="min-w-0 break-words text-inherit underline-offset-2 hover:underline" :href="emailHref">Email: <strong class="text-white">{{ contact.contact.email }}</strong></a>
+            <span v-else class="min-w-0 break-words">Email: <strong class="text-white">{{ contact.contact.email }}</strong></span>
+          </li>
+          <li v-if="contact.contact.workingHours" class="flex items-start gap-3">
+            <UIcon name="i-lucide-clock-3" class="mt-0.5 size-4 flex-none text-gold-400" aria-hidden="true" />
+            <span>Thời gian làm việc: <strong class="text-white">{{ contact.contact.workingHours }}</strong></span>
+          </li>
+        </ul>
+      </div>
+
+      <UButton
         v-if="contact.visual?.href"
-        class="mt-2 inline-flex items-center gap-2.5 self-start rounded-chip bg-hdr-gold px-4 py-3 font-bold
-               text-navy-950 no-underline transition-colors hover:bg-hdr-gold-hover"
+        color="primary"
+        size="lg"
+        class="mt-8 inline-flex min-h-12 items-center justify-center gap-2 self-start rounded-chip bg-gold-500 px-5 py-3 font-bold text-navy-950 no-underline transition-colors hover:bg-gold-400"
         :href="links.generic(contact.visual.href)"
       >
-        Gửi yêu cầu tư vấn <span aria-hidden="true">→</span>
-      </a>
+        Gửi yêu cầu tư vấn <UIcon name="i-lucide-arrow-down" class="size-4" aria-hidden="true" />
+      </UButton>
     </div>
   </section>
 </template>
