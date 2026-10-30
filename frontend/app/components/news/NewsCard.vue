@@ -41,7 +41,7 @@ function cardImage(src: string): string {
         class="relative overflow-hidden bg-slate-50"
         :class="variant === 'secondary'
           ? 'aspect-video h-full min-h-[150px] rounded-chip max-ph:aspect-video max-ph:h-auto max-ph:min-h-0'
-          : (variant === 'grid' ? 'aspect-video' : 'aspect-video rounded-chip')"
+          : 'aspect-video rounded-chip'"
       >
         <img
           v-if="article.image"
@@ -69,7 +69,7 @@ function cardImage(src: string): string {
           <span v-if="article.readingMinutes">{{ article.readingMinutes }} {{ readLabel }}</span>
         </p>
         <h2
-          class="mb-2 line-clamp-2 leading-[1.35] text-navy-800"
+          class="mb-2 line-clamp-2 leading-[1.35] text-navy-800 transition-colors group-hover:text-gold-700 group-focus-visible:text-gold-700"
           :class="variant === 'lead' ? 'text-2xl' : 'text-xl'"
         >
           {{ article.title }}

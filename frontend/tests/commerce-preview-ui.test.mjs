@@ -169,6 +169,10 @@ test('commerce media failures render explicit fallbacks instead of blank frames'
   const gallery = read('components/product-preview/ProductPreviewGallery.vue')
   assert.match(grid, /markImageFailed\(product\.id\)/)
   assert.match(grid, /Chưa có hình ảnh/)
+  const detailsButton = grid.match(/<UButton[\s\S]*?Xem chi tiết[\s\S]*?<\/UButton>/)?.[0]
+  assert.ok(detailsButton)
+  assert.match(detailsButton, /max-ph:hidden/)
+  assert.match(grid, /<NuxtLink[\s\S]*:to="productHref\(product\)"[\s\S]*\{\{ product\.name \}\}/)
   assert.match(gallery, /markMediaFailed\(selectedMedia\)/)
   assert.match(gallery, /CMS chưa có ảnh sản phẩm hợp lệ/)
 })

@@ -127,23 +127,29 @@ function productHref(product: PublicCatalogProduct) {
       </p>
       <p v-else class="m-0 text-[13px] font-medium text-slate-500">Liên hệ để nhận báo giá</p>
 
-      <div class="mt-auto grid gap-2 pt-3">
-        <button
+      <div class="mt-auto grid gap-2 pt-3 max-ph:gap-0">
+        <UButton
           v-if="product.pricing?.mode === 'price'"
           type="button"
-          class="min-h-10 rounded-chip bg-hdr-gold px-3 text-[13px] font-extrabold text-navy-950 transition-colors hover:bg-hdr-gold-hover disabled:cursor-wait disabled:opacity-60"
+          color="primary"
+          size="md"
+          :loading="addingIds.has(product.id)"
+          class="min-h-11 w-full justify-center rounded-[4px] bg-hdr-gold px-3 text-[13px] font-extrabold text-navy-950 hover:bg-hdr-gold-hover"
           :disabled="addingIds.has(product.id)"
           @click="addToCart(product)"
         >
           {{ addingIds.has(product.id) ? 'Đang thêm…' : 'Thêm giỏ hàng' }}
-        </button>
-        <NuxtLink
+        </UButton>
+        <UButton
           :external="!isMigrationPreview"
           :to="productHref(product)"
-          class="inline-grid min-h-10 place-items-center rounded-chip border border-navy-800/80 px-3 text-[13px] font-bold text-navy-800 no-underline transition-colors hover:border-navy-800 hover:bg-navy-800 hover:text-white"
+          color="secondary"
+          variant="outline"
+          size="md"
+          class="min-h-11 w-full justify-center rounded-[4px] border border-navy-800/80 px-3 text-[13px] font-bold text-navy-800 no-underline hover:border-navy-800 hover:bg-navy-800 hover:text-white max-ph:hidden"
         >
           Xem chi tiết
-        </NuxtLink>
+        </UButton>
         <p v-if="addedIds.has(product.id) && !cartErrors.has(product.id)" class="m-0 text-xs font-semibold text-emerald-700" role="status">Đã thêm vào giỏ hàng.</p>
         <p v-if="cartErrors.has(product.id)" class="m-0 text-xs font-semibold text-red-700" role="alert">{{ cartErrors.get(product.id) }}</p>
       </div>

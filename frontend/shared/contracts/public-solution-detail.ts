@@ -1,7 +1,7 @@
 import { isPublicSanitizedRichText, type PublicSanitizedRichText } from './editorial-rich-text.ts'
 import { isPublicSeoMetadata, type PublicSeoMetadata } from './core.ts'
 
-export interface PublicSolutionDetail { id: number; title: string; slug: string; url: string; summary: string; image: string; content: PublicSanitizedRichText; extraContent: PublicSanitizedRichText; gallery: string[] }
+export interface PublicSolutionDetail { id: number; title: string; slug: string; url: string; category: string; summary: string; image: string; content: PublicSanitizedRichText; extraContent: PublicSanitizedRichText; gallery: string[] }
 export interface PublicSolutionDetailNav { title: string; slug: string; url: string; image: string; active: boolean }
 export interface PublicSolutionDetailCampaignCta {
   title: string; description: string; buttonLabel: string; image: string
@@ -43,7 +43,7 @@ export function isPublicSolutionDetailPayload(value: unknown): value is PublicSo
   if (!record(value) || value.schemaVersion !== 1 || value.locale !== 'vi' || !text(value.path) || !solutionUrl(value.path, value.solution && record(value.solution) ? value.solution.slug as string : undefined) || !record(value.solution)) return false
   if (value.seo !== undefined && !isPublicSeoMetadata(value.seo, ['/upload/news/'])) return false
   const solution = value.solution
-  if (typeof solution.id !== 'number' || !Number.isSafeInteger(solution.id) || solution.id < 1 || !text(solution.title) || !slug(solution.slug) || !solutionUrl(solution.url, solution.slug) || !text(solution.summary, true) || !image(solution.image) || !isPublicSanitizedRichText(solution.content) || !isPublicSanitizedRichText(solution.extraContent) || !Array.isArray(solution.gallery) || !solution.gallery.every(image)) return false
+  if (typeof solution.id !== 'number' || !Number.isSafeInteger(solution.id) || solution.id < 1 || !text(solution.title) || !slug(solution.slug) || !solutionUrl(solution.url, solution.slug) || !text(solution.category, true) || !text(solution.summary, true) || !image(solution.image) || !isPublicSanitizedRichText(solution.content) || !isPublicSanitizedRichText(solution.extraContent) || !Array.isArray(solution.gallery) || !solution.gallery.every(image)) return false
   if (!record(value.navigation) || value.navigation.allUrl !== '/giai-phap/' || !Array.isArray(value.navigation.items) || !value.navigation.items.every((item) => record(item) && text(item.title) && slug(item.slug) && solutionUrl(item.url, item.slug) && image(item.image) && typeof item.active === 'boolean')) return false
   if (!Array.isArray(value.equipment) || value.equipment.length > 4 || !value.equipment.every((item) => record(item) && text(item.name) && text(item.description, true) && publicUrl(item.url) && image(item.image))) return false
   if (!record(value.cta) || value.cta.label !== 'Nhận tư vấn giải pháp' || value.cta.href !== '/lien-he/#yeu-cau-tu-van') return false

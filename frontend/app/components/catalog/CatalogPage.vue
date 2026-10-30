@@ -347,9 +347,12 @@ function pageLink(nextPage: number) {
           <div class="mb-5 flex flex-wrap items-center justify-between gap-3 max-[769px]:items-start max-[769px]:justify-start">
             <h2 class="m-0 text-lg font-black text-navy-800">Danh sách sản phẩm</h2>
             <div class="flex items-center gap-2 max-[769px]:w-full max-[769px]:flex-col max-[769px]:items-start">
-              <button
+              <UButton
                 v-if="hasSidebar"
-                class="inline-flex min-h-10 items-center gap-2 rounded-btn border border-slate-300 bg-white px-3 text-sm font-bold text-navy-800 transition-colors hover:border-navy-800 min-[1002px]:hidden"
+                color="secondary"
+                variant="outline"
+                size="md"
+                class="min-h-11 gap-2 rounded-[4px] border border-slate-300 bg-white px-3 text-sm font-bold text-navy-800 hover:border-navy-800 min-[1002px]:hidden"
                 type="button"
                 aria-haspopup="dialog"
                 aria-controls="catalog-filter-drawer"
@@ -358,7 +361,7 @@ function pageLink(nextPage: number) {
               >
                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M7 12h10m-7 6h4" /><circle cx="8" cy="6" r="1.5" fill="currentColor" stroke="none" /><circle cx="15" cy="12" r="1.5" fill="currentColor" stroke="none" /></svg>
                 Bộ lọc
-              </button>
+              </UButton>
               <label v-if="catalogData.selected" class="flex items-center gap-2 text-sm text-slate-500 max-[769px]:w-full max-[769px]:justify-end">
                 <span class="hidden tb:inline">Sắp xếp</span>
                 <select

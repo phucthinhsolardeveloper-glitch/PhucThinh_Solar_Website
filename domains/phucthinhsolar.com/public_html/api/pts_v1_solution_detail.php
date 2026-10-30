@@ -19,8 +19,10 @@ try {
     require_once LIBRARIES.'product_category_urls.php';
     require_once LIBRARIES.'pts_public_solution_detail_api.php';
     require_once LIBRARIES.'pts_public_seo_api.php';
-    $row = $d->rawQueryOne('select id,namevi,nameen,descvi,descen,contentvi,contenten,content1vi,content1en,photo,photo1,slugvi,slugen,status from #_news where slugvi = ? and type = ? and find_in_set(\'hienthi\',status) limit 1', array($slug, 'giai-phap'));
+    $row = $d->rawQueryOne('select id,id_list,namevi,nameen,descvi,descen,contentvi,contenten,content1vi,content1en,photo,photo1,slugvi,slugen,status from #_news where slugvi = ? and type = ? and find_in_set(\'hienthi\',status) limit 1', array($slug, 'giai-phap'));
     if(empty($row)) ptsSolutionDetailError(404, 'SOLUTION_NOT_FOUND');
+    $solutionCategory = !empty($row['id_list']) ? $d->rawQueryOne("select namevi from #_news_list where id = ? and type = ? and find_in_set('hienthi',status) limit 1", array((int)$row['id_list'], 'giai-phap')) : array();
+    $categoryTitle = !empty($solutionCategory['namevi']) ? ptsSolutionDetailText($solutionCategory['namevi']) : '';
     /* News detail SEO is stored with com=news, act=man and the record type. */
     $seoRow = $d->rawQueryOne('select titlevi,descriptionvi,keywordsvi from #_seo where id_parent = ? and com = ? and act = ? and type = ? limit 1', array((int)$row['id'], 'news', 'man', 'giai-phap'));
     $seo = ptsPublicSeoDto(is_array($seoRow) ? $seoRow : array(), ROOT, UPLOAD_NEWS_L, $row['photo'] ?? '');
@@ -45,5 +47,5 @@ try {
         && isset($sourceFallbackImages[$slug]) && is_file(ROOT.$sourceFallbackImages[$slug]))
         $row['_pts_public_photo'] = '/'.$sourceFallbackImages[$slug];
     $hotline = isset($optsetting['hotline']) && is_scalar($optsetting['hotline']) ? trim((string)$optsetting['hotline']) : '';
-    echo json_encode(ptsSolutionDetailPayload($row, $safeGallery, $solutionRows, $productRows, $ctaRows, $hotline, $seo), JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR);
+    echo json_encode(ptsSolutionDetailPayload($row, $safeGallery, $solutionRows, $productRows, $ctaRows, $hotline, $seo, $categoryTitle), JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR);
 } catch(Throwable $e) { error_log('pts_v1_solution_detail: '.$e->getMessage()); http_response_code(500); echo '{"error":{"code":"INTERNAL_ERROR"}}'; }

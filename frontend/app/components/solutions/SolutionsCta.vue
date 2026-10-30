@@ -19,14 +19,28 @@ const links = useMigrationLinks()
       <p class="m-0 text-[15px] leading-relaxed text-blue-100/95 tb:text-base">{{ cta.description }}</p>
     </div>
     <div class="flex flex-none flex-col items-stretch gap-4 ph:flex-row ph:items-center ph:gap-6">
-      <a class="inline-flex min-h-12 items-center justify-center gap-3.5 rounded-btn bg-hdr-gold px-6 text-sm font-extrabold tracking-wide text-navy-950 no-underline shadow-sm transition-colors hover:bg-hdr-gold-hover" :href="links.generic(cta.links.consult.href === '#ptsContactModal' ? '/lien-he/#yeu-cau-tu-van' : cta.links.consult.href)">
+      <UButton
+        :href="links.generic(cta.links.consult.href === '#ptsContactModal' ? '/lien-he/#yeu-cau-tu-van' : cta.links.consult.href)"
+        color="primary"
+        size="lg"
+        class="min-h-12 justify-center gap-3.5 rounded-[4px] bg-hdr-gold px-6 text-sm font-extrabold tracking-wide text-navy-950 no-underline hover:bg-hdr-gold-hover"
+      >
         <span>{{ cta.buttonLabel }}</span>
         <span aria-hidden="true">→</span>
-      </a>
-      <a v-if="cta.hotline" class="whitespace-nowrap rounded-btn border border-white/15 bg-white/[.04] px-4 py-2 text-center text-white no-underline transition-colors hover:border-gold-400/70 hover:bg-white/[.08] ph:text-left" :href="`tel:${cta.hotline.tel}`">
-        <small class="mb-0.5 block text-[11px] font-semibold uppercase tracking-wider text-gold-300">{{ cta.hotline.label }}</small>
-        <strong class="block text-lg font-extrabold tracking-wide text-white">{{ cta.hotline.text }}</strong>
-      </a>
+      </UButton>
+      <UButton
+        v-if="cta.hotline"
+        :href="`tel:${cta.hotline.tel}`"
+        color="neutral"
+        variant="outline"
+        size="lg"
+        class="min-h-12 justify-start rounded-[4px] border-white/15 bg-white/[.04] px-4 py-2 text-white hover:border-gold-400/70 hover:bg-white/[.08] hover:text-white ph:text-left"
+      >
+        <span class="flex flex-col items-start whitespace-nowrap">
+          <small class="text-[11px] font-semibold uppercase tracking-wider text-gold-300">{{ cta.hotline.label }}</small>
+          <strong class="text-lg font-extrabold tracking-wide text-white">{{ cta.hotline.text }}</strong>
+        </span>
+      </UButton>
     </div>
   </section>
 </template>

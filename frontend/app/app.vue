@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { MotionConfig } from 'motion-v'
+
 useHead({
   script: [
     {
@@ -32,9 +34,11 @@ useHead({
     (CODEX 2 trở đi), còn provider phải phủ toàn bộ app kể cả route không dùng
     layout nào.
   -->
-  <UApp>
-    <NuxtLayout>
-      <NuxtPage />
-    </NuxtLayout>
-  </UApp>
+  <MotionConfig reducedMotion="user">
+    <UApp>
+      <NuxtLayout>
+        <NuxtPage />
+      </NuxtLayout>
+    </UApp>
+  </MotionConfig>
 </template>

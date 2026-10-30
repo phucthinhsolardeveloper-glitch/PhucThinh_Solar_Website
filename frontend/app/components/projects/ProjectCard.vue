@@ -19,18 +19,14 @@ const links = useMigrationLinks()
       </div>
 
       <div class="flex flex-1 flex-col pt-4 pb-1">
-        <h2 class="m-0 text-base font-extrabold leading-snug text-navy-800 transition-colors group-hover:text-gold-700 tb:text-lg">{{ project.title }}</h2>
-        <div v-if="project.address || project.category" class="my-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-500">
-          <span v-if="project.address" class="inline-flex items-center gap-1.5">
+        <h2 class="m-0 text-base font-extrabold leading-snug text-navy-800 transition-colors group-hover:text-gold-700 group-focus-visible:text-gold-700 tb:text-lg">{{ project.title }}</h2>
+        <div v-if="project.address" class="my-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-500">
+          <span class="inline-flex items-center gap-1.5">
             <svg class="h-3 w-3 flex-none text-gold-600" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5Z" /></svg>
             {{ project.address }}
           </span>
-          <span v-if="project.category" class="inline-flex items-center gap-1.5">
-            <svg class="h-3 w-3 flex-none text-gold-600" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m13 2-9 12h7l-1 8 10-13h-7l1-7Z" /></svg>
-            {{ project.category.name }}
-          </span>
         </div>
-        <p v-if="project.description" class="mb-0 mt-1 line-clamp-2 text-sm leading-relaxed text-slate-500">
+        <p v-if="project.description" class="mb-0 mt-1 line-clamp-2 text-base leading-relaxed text-slate-500">
           {{ project.description }}
         </p>
         <span class="mt-4 inline-flex items-center gap-1 text-[13px] font-extrabold text-gold-700">
