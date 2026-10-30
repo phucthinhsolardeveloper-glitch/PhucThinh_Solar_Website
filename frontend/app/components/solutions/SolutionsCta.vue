@@ -2,25 +2,31 @@
 import type { PublicSolutionsCta } from '../../../shared/contracts/public-solutions'
 import { useStorefrontModal } from '~/composables/useStorefrontModal'
 
-defineProps<{ cta: PublicSolutionsCta }>()
+const props = defineProps<{ cta: PublicSolutionsCta }>()
 const links = useMigrationLinks()
 const { openConsultation } = useStorefrontModal()
+const backgroundImage = computed(() => {
+  const src = props.cta.image
+  if (/^\/upload\/news\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|gif|webp|avif)$/i.test(src)) {
+    return `/thumbs/1600x500x1${src}`
+  }
+  return /^\/assets\/images\/site-visuals\/catalog-street-lighting\.jpg$/i.test(src) ? src : ''
+})
 </script>
 
 <template>
   <section
     id="ptsContactModal"
-    class="relative isolate mt-6 flex min-h-[200px] flex-col items-stretch justify-between gap-6 overflow-hidden rounded-btn border border-navy-700/60 bg-navy-900 px-6 py-7 text-white shadow-md
-           nav:flex-row nav:items-center nav:gap-10 nav:px-10 nav:py-9"
+    class="relative isolate mt-[18px] flex flex-col items-stretch justify-between gap-5 overflow-hidden rounded-[3px] bg-navy-800 px-[22px] py-[26px] text-white tb:mt-[22px] min-[901px]:flex-row min-[901px]:items-center min-[901px]:gap-8 min-[901px]:px-9 min-[901px]:py-8"
     aria-labelledby="solutions-contact-title"
   >
-    <img v-if="cta.image" class="absolute inset-0 -z-20 h-full w-full object-cover opacity-30" :src="cta.image" alt="" width="1600" height="500" loading="lazy">
-    <div class="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-r from-navy-950/95 via-navy-900/90 to-navy-800/70" aria-hidden="true" />
+    <span class="pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgba(10,34,81,.96)_0,rgba(10,34,81,.86)_100%)] min-[901px]:bg-[linear-gradient(90deg,rgba(10,34,81,.97)_0,rgba(10,34,81,.9)_38%,rgba(10,34,81,.55)_68%,rgba(10,34,81,.3)_100%)]" aria-hidden="true" />
+    <img v-if="backgroundImage" class="absolute inset-0 -z-10 h-full w-full object-cover opacity-50" :src="backgroundImage" alt="" width="1600" height="500" sizes="100vw" loading="lazy" decoding="async">
     <div class="max-w-[660px]">
       <h2 id="solutions-contact-title" class="m-0 mb-2.5 text-[clamp(22px,2.2vw,28px)] font-black leading-[1.25] tracking-tight text-white">{{ cta.title }}</h2>
       <p class="m-0 text-[15px] leading-relaxed text-blue-100/95 tb:text-base">{{ cta.description }}</p>
     </div>
-    <div class="flex flex-none flex-col items-stretch gap-4 ph:flex-row ph:items-center ph:gap-6">
+    <div class="flex w-full flex-col items-stretch gap-[18px] min-[901px]:w-auto min-[901px]:flex-row min-[901px]:items-center min-[901px]:gap-6">
       <UButton
         :href="links.generic(cta.links.consult.href === '#ptsContactModal' ? '/lien-he/#yeu-cau-tu-van' : cta.links.consult.href)"
         color="primary"
