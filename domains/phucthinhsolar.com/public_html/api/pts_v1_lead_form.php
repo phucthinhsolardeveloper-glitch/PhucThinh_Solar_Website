@@ -183,22 +183,42 @@ $data = array(
     'fullname'=>ptsLeadValue($dataInput,'fullname',100),
     'phone'=>ptsLeadValue($dataInput,'phone',20),
     'email'=>ptsLeadValue($dataInput,'email',150),
+    'city_id'=>(int)ptsLeadValue($dataInput,'city_id',12),
     'address'=>ptsLeadValue($dataInput,'address',180),
     'company'=>ptsLeadValue($dataInput,'company',180),
 );
+$city = array();
+if($data['city_id'] > 0)
+{
+    $city = (array)$d->rawQueryOne(
+        "select id,name from #_city where id=? and find_in_set('hienthi',status) limit 1",
+        array($data['city_id'])
+    );
+}
+elseif($data['address'] !== '')
+{
+    // Older first-party forms may still send the label; resolve it against the
+    // same active city list exposed by the GET metadata endpoint.
+    $city = (array)$d->rawQueryOne(
+        "select id,name from #_city where name=? and find_in_set('hienthi',status) limit 1",
+        array($data['address'])
+    );
+}
 $errors = array();
 if($data['fullname'] === '') $errors[] = 'Vui lòng nhập họ và tên';
 if($data['phone'] === '' || !$func->isPhone($data['phone'])) $errors[] = 'Số điện thoại không hợp lệ';
 if($data['email'] === '' || !$func->isEmail($data['email'])) $errors[] = 'Email không hợp lệ';
-if($data['address'] === '' || $data['address'] === 'Tỉnh thành') $errors[] = 'Vui lòng chọn tỉnh/thành phố';
+if(!$city || !isset($city['name']) || !is_scalar($city['name'])) $errors[] = 'Vui lòng chọn tỉnh/thành phố hợp lệ';
 if($data['company'] === '') $errors[] = 'Vui lòng nhập tên doanh nghiệp/cửa hàng';
 if($errors) ptsLeadJson(422, array('error'=>array('code'=>'VALIDATION_FAILED','message'=>implode('. ',$errors).'.')));
+
+$cityName = trim(strip_tags((string)$city['name']));
 
 $insert = array(
     'fullname'=>htmlspecialchars($data['fullname']),
     'phone'=>htmlspecialchars($data['phone']),
     'email'=>htmlspecialchars($data['email']),
-    'address'=>htmlspecialchars($data['address']),
+    'address'=>htmlspecialchars($cityName),
     'company'=>htmlspecialchars($data['company']),
     'date_created'=>time(),
     'type'=>'dangkynhantin2',
@@ -207,7 +227,7 @@ if(!$d->insert('newsletter',$insert)) ptsLeadJson(500, array('error'=>array('cod
 try {
     $emailer->sendAdminNotification(
         'Đăng ký đại lý mới từ '.$setting['name'.$lang],
-        array('Họ tên'=>$data['fullname'],'Điện thoại'=>$data['phone'],'Email'=>$data['email'],'Tỉnh/Thành phố'=>$data['address'],'Doanh nghiệp/Cửa hàng'=>$data['company']),
+        array('Họ tên'=>$data['fullname'],'Điện thoại'=>$data['phone'],'Email'=>$data['email'],'Tỉnh/Thành phố'=>$cityName,'Doanh nghiệp/Cửa hàng'=>$data['company']),
         $data['email'], $data['fullname'], 'dealer_admin'
     );
 } catch(Throwable $e) {}

@@ -45,11 +45,11 @@ const pageKeywords = computed(() => isPublicRoute.value ? data.value?.seo?.keywo
 useSeoMeta({
   title: pageTitle,
   description: pageDescription,
-  robots: computed(() => editorialPublicRouteRobots(isPublicRoute.value && config.public.solutionDetailPublicRouteEnabled, config.public.solutionDetailPublicRouteIndexable, !!data.value && !error.value)),
+  robots: computed(() => editorialPublicRouteRobots(isPublicRoute.value, config.public.solutionDetailPublicRouteIndexable, !!data.value && !error.value)),
 })
 useHead({ meta: computed(() => pageKeywords.value ? [{ name: 'keywords', content: pageKeywords.value }] : []) })
 usePublicSocialMeta({
-  enabled: computed(() => isPublicRoute.value && config.public.solutionDetailPublicRouteEnabled && !!data.value && !error.value),
+  enabled: computed(() => isPublicRoute.value && !!data.value && !error.value),
   title: pageTitle,
   description: pageDescription,
   canonicalPath: computed(() => route.path),

@@ -26,7 +26,7 @@ test('solution detail orders the hero before its switcher and only links to exis
   const switcherIndex = page.indexOf('aria-label="Các giải pháp khác"')
 
   assert.ok(heroIndex >= 0 && switcherIndex > heroIndex)
-  assert.match(page, /<a v-if="data\.solution\.content\.html"[^>]*href="#noi-dung-giai-phap">Tìm hiểu phương án<\/a>/)
+  assert.match(page, /<UButton v-if="data\.solution\.content\.html"[^>]*href="#noi-dung-giai-phap"[^>]*>Tìm hiểu phương án<\/UButton>/)
 })
 
 test('project dates match legacy d/m/Y output and reject invalid calendar dates', () => {

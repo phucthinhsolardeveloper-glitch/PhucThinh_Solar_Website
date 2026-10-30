@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import { MotionConfig } from 'motion-v'
+import StorefrontConsultationModal from '~/components/modal/StorefrontConsultationModal.vue'
+import StorefrontDealerModal from '~/components/modal/StorefrontDealerModal.vue'
+
 useHead({
   script: [
     {
@@ -32,9 +36,13 @@ useHead({
     (CODEX 2 trở đi), còn provider phải phủ toàn bộ app kể cả route không dùng
     layout nào.
   -->
-  <UApp>
-    <NuxtLayout>
-      <NuxtPage />
-    </NuxtLayout>
-  </UApp>
+  <MotionConfig reducedMotion="user">
+    <UApp>
+      <NuxtLayout>
+        <NuxtPage />
+      </NuxtLayout>
+      <StorefrontConsultationModal />
+      <StorefrontDealerModal />
+    </UApp>
+  </MotionConfig>
 </template>

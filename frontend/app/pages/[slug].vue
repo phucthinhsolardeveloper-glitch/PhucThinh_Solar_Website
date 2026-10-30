@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { isPublicRouteResolveResult, isPublicRouteResolveSlug } from '#shared/contracts/public-route-resolve'
-import { bareSlugPublicPath, isRuntimeFlagEnabled, phpPublicRouteUrl } from '#shared/public-route-gate'
+import { bareSlugPublicPath, phpPublicRouteUrl } from '#shared/public-route-gate'
 import { editorialPublicResponseStatus } from '#shared/editorial-public-route'
 import { publicBareSlugDisposition } from '#shared/public-bare-slug-route'
 import type { PublicSitePayload } from '#shared/contracts/public-site'
@@ -35,15 +35,9 @@ const pathIsSafe = typeof canonicalBarePath === 'string'
 const pathIsCanonical = pathIsSafe && route.path === canonicalBarePath
 const barePathWithoutSlash = pathIsSafe ? `/${slug}` : false
 const pathCanResolve = pathIsCanonical || (typeof barePathWithoutSlash === 'string' && route.path === barePathWithoutSlash)
-const detailRoutesEnabled = isRuntimeFlagEnabled(config.public.newsDetailPublicRouteEnabled)
-  || isRuntimeFlagEnabled(config.public.newsPublicRouteEnabled)
-  || isRuntimeFlagEnabled(config.public.solutionsPublicRouteEnabled)
-  || isRuntimeFlagEnabled(config.public.projectDetailPublicRouteEnabled)
-  || isRuntimeFlagEnabled(config.public.projectsPublicRouteEnabled)
-  || isRuntimeFlagEnabled(config.public.galleryDetailPublicRouteEnabled)
 const { data: resolutionData, error: resolutionError } = await useAsyncData<unknown>(
   `public-route-resolve-${slug}`,
-  () => aliasTarget || !pathIsSafe || !pathCanResolve || !detailRoutesEnabled
+  () => aliasTarget || !pathIsSafe || !pathCanResolve
     ? Promise.resolve(null)
     : $fetch('/_migration/public-route-resolve', { query: { slug } }),
 )
@@ -61,14 +55,6 @@ if (aliasTarget) {
 } else if (!pathIsSafe) {
   pageState.value = 'not-found'
   setHttpStatus(404)
-} else if (!detailRoutesEnabled && typeof canonicalBarePath === 'string') {
-  if (!pathIsCanonical) {
-    pageState.value = 'redirecting'
-    await navigateTo(canonicalBarePath, { redirectCode: 301 })
-  } else {
-    pageState.value = 'redirecting'
-    await navigateTo(phpPublicRouteUrl(config.public.phpPublicOrigin, canonicalBarePath), { external: true, redirectCode: 307 })
-  }
 } else if (!pathCanResolve && typeof canonicalBarePath === 'string') {
   pageState.value = 'redirecting'
   await navigateTo(canonicalBarePath, { redirectCode: 301 })
@@ -80,14 +66,7 @@ if (aliasTarget) {
   pageState.value = 'unavailable'
   setHttpStatus(502)
 } else {
-  const disposition = publicBareSlugDisposition(resolutionData.value, {
-    newsDetailPublicRouteEnabled: config.public.newsDetailPublicRouteEnabled,
-    newsPublicRouteEnabled: config.public.newsPublicRouteEnabled,
-    solutionsPublicRouteEnabled: config.public.solutionsPublicRouteEnabled,
-    projectDetailPublicRouteEnabled: config.public.projectDetailPublicRouteEnabled,
-    projectsPublicRouteEnabled: config.public.projectsPublicRouteEnabled,
-    galleryDetailPublicRouteEnabled: config.public.galleryDetailPublicRouteEnabled,
-  })
+  const disposition = publicBareSlugDisposition(resolutionData.value)
   if (disposition.mode === 'legacy') {
     pageState.value = 'redirecting'
     await navigateTo(phpPublicRouteUrl(config.public.phpPublicOrigin, disposition.path), { external: true, redirectCode: 307 })
@@ -120,7 +99,7 @@ const detailPage = computed(() => {
   <component :is="detailPage" v-if="detailPage" />
   <div v-else class="min-h-screen bg-white text-navy-800">
     <SiteHeader :site="site" />
-    <main class="mx-auto min-h-[45vh] w-full max-w-[1320px] px-4 py-16" :aria-busy="pageState === 'redirecting'">
+    <main class="pts-container min-h-[45vh] py-16" :aria-busy="pageState === 'redirecting'">
       <div v-if="pageState === 'unavailable'" role="alert">
         <h1 class="mb-3 text-3xl font-black">Tạm thời không thể tải trang</h1>
         <p class="text-slate-600">Nguồn nội dung hiện không khả dụng.</p>

@@ -106,7 +106,10 @@ export function isPublicCatalogProduct(value: unknown): value is PublicCatalogPr
   if (!baseIsValid || legacy) return baseIsValid
   const pricingIsValid = (value.powerWatts === null || typeof value.powerWatts === 'number' && Number.isFinite(value.powerWatts) && value.powerWatts > 0) && isPricing(value.pricing)
   if (!pricingIsValid) return false
-  return !extendedWithSpecs || Array.isArray(value.quickSpecs) && value.quickSpecs.length <= 3 && value.quickSpecs.every((spec) => isSafeText(spec) && spec.length <= 100 && !/[<>]/.test(spec))
+  // CMS technical fields can legitimately contain comparison signs (for example
+  // "> 12 tiếng"). Vue renders these with text interpolation, so allow the
+  // symbols while still rejecting tag-shaped markup in the public DTO.
+  return !extendedWithSpecs || Array.isArray(value.quickSpecs) && value.quickSpecs.length <= 3 && value.quickSpecs.every((spec) => isSafeText(spec) && spec.length <= 100 && !/<\s*\/?\s*[a-z][^>]*>/i.test(spec))
 }
 
 function isMoney(value: unknown): value is number | null { return value === null || typeof value === 'number' && Number.isSafeInteger(value) && value > 0 }

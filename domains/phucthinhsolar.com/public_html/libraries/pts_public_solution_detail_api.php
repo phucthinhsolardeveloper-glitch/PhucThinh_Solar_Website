@@ -76,7 +76,7 @@ function ptsSolutionDetailCanonical($slug)
     return $slug === '' ? '' : '/giai-phap/'.$slug.'/';
 }
 
-function ptsSolutionDetailPayload(array $row, array $gallery, array $solutionRows, array $productRows, array $ctaRows = array(), $hotline = '', array $seo = array())
+function ptsSolutionDetailPayload(array $row, array $gallery, array $solutionRows, array $productRows, array $ctaRows = array(), $hotline = '', array $seo = array(), $categoryTitle = '')
 {
     $id = isset($row['id']) ? (int)$row['id'] : 0;
     $slug = ptsSolutionDetailSlug(isset($row['slugvi']) ? $row['slugvi'] : '');
@@ -138,6 +138,7 @@ function ptsSolutionDetailPayload(array $row, array $gallery, array $solutionRow
             'title' => $title,
             'slug' => $slug,
             'url' => ptsSolutionDetailCanonical($slug),
+            'category' => ptsSolutionDetailText($categoryTitle),
             'summary' => ptsSolutionDetailText(isset($row['descvi']) ? $row['descvi'] : ''),
             'image' => isset($row['_pts_public_photo1']) && $row['_pts_public_photo1'] !== '' ? $row['_pts_public_photo1'] : (isset($row['_pts_public_photo']) ? $row['_pts_public_photo'] : ''),
             'content' => array('format' => 'sanitized-html', 'html' => $bodyHtml, 'sanitizedBy' => 'pts_public_richtext', 'sanitizerVersion' => 1),

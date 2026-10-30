@@ -32,6 +32,24 @@ và liên kết về runbook đang có hiệu lực.
 
 ## Lịch sử rà soát
 
+### 2026-10-30 — Nuxt public routes và audit icon/tương tác
+
+- Cập nhật chuẩn icon trong `docs/02-development/public-ui-ux-design-system.md`:
+  `UIcon` + Lucide cục bộ cho icon phổ thông; giữ inline SVG thiết kế riêng và
+  icon ảnh do Admin/CMS quản lý. Không dùng Font Awesome khi frontend không nạp
+  đúng asset của thư viện.
+- Ghi audit inventory icon, feature toggles và tương tác tại
+  `docs/14-nuxt-migration/ICON-INTERACTION-UI-AUDIT-20261030.md`. P1 fallback
+  Font Awesome đã được thay bằng Nuxt UI; các gap header/modal nền và viewport
+  320px còn mở, tách riêng để không làm lệch phần header đang được giữ nguyên.
+- Các cờ sở hữu route Nuxt đã bị loại khỏi source/config; cờ hiển thị section
+  trong CMS và SEO indexability vẫn là hai trách nhiệm độc lập. Nuxt được build
+  và cập nhật vào container local rehearsal `127.0.0.1:3101`; smoke GET 33/33,
+  trong đó 4 alias redirect canonical. Không đổi production, Caddy hay dữ liệu.
+- `npm test` 396/396, typecheck và build PASS. WIP vẫn ở working tree, chưa
+  commit/push/merge; rollback image được giữ bằng tag
+  `rollback-before-icon-interaction-audit-20261030`.
+
 ### 2026-10-29 — Nuxt checkout handoff giữ PHP làm order owner
 
 - Ghi trạng thái hiện tại trong `docs/14-nuxt-migration/NEXT-EXECUTION-PLAN.md`

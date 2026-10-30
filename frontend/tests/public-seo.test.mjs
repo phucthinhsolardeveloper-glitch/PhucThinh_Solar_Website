@@ -79,7 +79,7 @@ test('filtered and empty public route states cannot be indexable', () => {
   assert.equal(publicSeoRobots(true, false), 'noindex, nofollow, noarchive')
 })
 
-test('legacy product alias reuses flag-aware PDP redirect and does not duplicate page content', () => {
+test('legacy product aliases resolve to Nuxt canonical routes and do not duplicate page content', () => {
   const alias = read('app/pages/product/[slug].vue')
   const rootAlias = read('app/pages/product/index.vue')
   const aliasMiddleware = read('app/middleware/product-legacy-alias-public-route.ts')
@@ -87,8 +87,9 @@ test('legacy product alias reuses flag-aware PDP redirect and does not duplicate
   assert.match(alias, /middleware:\s*productLegacyAliasPublicRoute/)
   assert.match(rootAlias, /middleware:\s*productRootAliasPublicRoute/)
   assert.match(aliasMiddleware, /_migration\/public-route-resolve/)
-  assert.match(aliasMiddleware, /legacyProductDetailPublicPath\(slug\)/)
-  assert.match(rootMiddleware, /LEGACY_CATALOG_PUBLIC_PATH/)
+  assert.doesNotMatch(aliasMiddleware, /PublicRouteEnabled|legacyProductDetailPublicPath|phpPublicRouteUrl/)
+  assert.match(aliasMiddleware, /_migration\/public-route-resolve/)
+  assert.match(rootMiddleware, /navigateTo\(CATALOG_PUBLIC_PATH, \{ redirectCode: 301 \}\)/)
 })
 
 test('each renderable public content route wires the canonical and social metadata helper', () => {

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { isPublicAboutPayload } from '#shared/contracts/public-about'
-import { isRuntimeFlagEnabled } from '#shared/public-route-gate'
+import { isPublicSeoIndexable } from '#shared/public-seo'
 import AboutPreviewPage from '~/components/about/AboutPreviewPage.vue'
 import aboutPublicRoute from '~/middleware/about-public-route'
 
@@ -13,12 +13,10 @@ const config = useRuntimeConfig()
 const { site, hasError: siteHasError, errorMessage: siteErrorMessage } = await usePublicSite()
 const { data, error, pending } = await useAsyncData<unknown>('public-about', () => $fetch('/_migration/about'), { default: () => null })
 const about = computed(() => isPublicAboutPayload(data.value) ? data.value : null)
-const publicEnabled = computed(() => isRuntimeFlagEnabled(config.public.aboutPublicRouteEnabled))
-const indexable = computed(() => publicEnabled.value
-  && isRuntimeFlagEnabled(config.public.aboutPublicRouteIndexable)
+const indexable = computed(() => isPublicSeoIndexable(config.public.aboutPublicRouteIndexable, !siteHasError.value && !!about.value && !error.value)
   && !!about.value && !siteHasError.value && !error.value)
 const apiStatus = (error.value as { statusCode?: unknown } | null)?.statusCode
-if (import.meta.server && publicEnabled.value && (siteHasError.value || error.value || !about.value)) {
+if (import.meta.server && (siteHasError.value || error.value || !about.value)) {
   const status = apiStatus === 404 ? 404 : 502
   setResponseStatus(status, status === 404 ? 'Not Found' : 'Bad Gateway')
 }
@@ -33,7 +31,7 @@ useSeoMeta({
 })
 useHead({ meta: computed(() => pageKeywords.value ? [{ name: 'keywords', content: pageKeywords.value }] : []) })
 usePublicSocialMeta({
-  enabled: computed(() => publicEnabled.value && !!about.value && !siteHasError.value && !error.value),
+  enabled: computed(() => !!about.value && !siteHasError.value && !error.value),
   title: pageTitle,
   description: pageDescription,
   canonicalPath: '/gioi-thieu/',

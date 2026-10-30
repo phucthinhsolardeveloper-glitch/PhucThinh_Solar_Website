@@ -11,7 +11,7 @@ const slug = computed(() => typeof route.params.slug === 'string' ? route.params
 const { data, error, pending } = await useFetch<unknown>('/_migration/gallery-detail', { query: computed(() => ({ slug: slug.value })) })
 const gallery = computed<PublicGalleryDetailPayload | null>(() => isPublicGalleryDetailPayload(data.value) ? data.value : null)
 const errorStatus = (error.value as { statusCode?: unknown } | null)?.statusCode
-const responseStatus = editorialPublicResponseStatus(isBarePublicRoute.value && config.public.galleryDetailPublicRouteEnabled, errorStatus, !gallery.value)
+const responseStatus = editorialPublicResponseStatus(isBarePublicRoute.value, errorStatus, !gallery.value)
 if (import.meta.server && responseStatus) setResponseStatus(responseStatus, responseStatus === 404 ? 'Not Found' : 'Bad Gateway')
 const selectedIndex = ref<number | null>(null)
 const lightbox = computed(() => {
@@ -82,10 +82,10 @@ onBeforeUnmount(() => {
 useSeoMeta({
   title: computed(() => gallery.value?.seo.title || (isBarePublicRoute.value ? 'Thư viện ảnh' : 'Album ảnh — Nuxt preview')),
   description: computed(() => gallery.value?.seo.description || ''),
-  robots: computed(() => editorialPublicRouteRobots(isBarePublicRoute.value && config.public.galleryDetailPublicRouteEnabled, config.public.galleryDetailPublicRouteIndexable, !!gallery.value && !error.value)),
+  robots: computed(() => editorialPublicRouteRobots(isBarePublicRoute.value, config.public.galleryDetailPublicRouteIndexable, !!gallery.value && !error.value)),
 })
 usePublicSocialMeta({
-  enabled: computed(() => isBarePublicRoute.value && config.public.galleryDetailPublicRouteEnabled && !!gallery.value && !error.value),
+  enabled: computed(() => isBarePublicRoute.value && !!gallery.value && !error.value),
   title: computed(() => gallery.value?.seo.title || 'Thư viện ảnh'),
   description: computed(() => gallery.value?.seo.description || ''),
   canonicalPath: computed(() => route.path),
@@ -96,7 +96,7 @@ usePublicSocialMeta({
 <template>
   <div class="min-h-screen bg-white text-navy-800">
     <SiteHeader :site="site" />
-    <main class="mx-auto w-full max-w-[1320px] px-4 py-10 nav:py-14">
+    <main class="pts-container py-10 nav:py-14">
       <SiteBreadcrumb :items="[{ label: 'Thư viện ảnh', to: links.generic('/thu-vien-anh/') }, ...(gallery ? [{ label: gallery.album.title }] : [])]" />
       <div v-if="pending" class="py-16 text-slate-500" role="status">Đang tải album…</div>
       <div v-else-if="error || !gallery" class="rounded-btn border border-amber-200 bg-amber-50 p-8 text-amber-900">

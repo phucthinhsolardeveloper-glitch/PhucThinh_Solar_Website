@@ -55,6 +55,9 @@ test('related-news rail keeps the PHP author query, four-card desktop page, and 
   assert.match(related, /nav:w-\[calc\(\(100%_-_4\.5rem\)\/4\)\]/)
   assert.match(related, /tb:w-\[calc\(\(100%_-_1\.5rem\)\/2\)\]/)
   assert.match(related, /scrollBy\(\{ left: direction \* element\.clientWidth/)
+  assert.match(related, /size-11[\s\S]*size-11/)
+  assert.match(related, /prefers-reduced-motion: reduce/)
+  assert.match(related, /motion-reduce:scroll-auto/)
   assert.match(related, /year: 'numeric'/)
 })
 

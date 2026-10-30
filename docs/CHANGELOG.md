@@ -1,5 +1,15 @@
 # Documentation changelog
 
+## 2026-10-30
+
+- Tích hợp nâng cấp giao diện Nuxt từ checkpoint `feature/ui-layout-upgrade-20261029`:
+  hero cross-fade, hiệu ứng tương tác, gallery/lightbox PDP, TOC bám nội dung,
+  modal tư vấn/đại lý, badge giảm giá, chọn chi nhánh và metadata bài viết.
+- Giữ các trạng thái loading/mutation giỏ hàng, fallback ảnh, kích thước nút chạm
+  trên mobile và scrollspy hiện hành; nội dung cam kết PDP dùng lại câu chữ PHP.
+- Xác minh cây đã gộp: `npm test` 409/409, `npm run typecheck` PASS,
+  `npm run build` PASS. Chỉ cập nhật local rehearsal; không thay đổi production.
+
 ## 2026-09-22
 
 - Chuẩn hóa catalogue còn 9 danh mục cấp 1; ẩn `Hệ khung & phụ kiện tấm pin`,

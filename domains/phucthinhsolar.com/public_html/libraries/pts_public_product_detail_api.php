@@ -482,8 +482,16 @@ function ptsPdpApplicationsDto(array $sections, array $row, array $list = array(
                 }
             }
         }
-        $item['image'] = ptsPdpApplicationImageUrl($image, $root);
-        if($imageKey !== '' && $item['image'] !== '') $seenImages[$imageKey] = true;
+        $itemText = isset($item['text']) ? $item['text'] : '';
+        $normalizedImage = ptsPdpApplicationImageUrl($image, $root);
+        /* Profile defaults use `photo` internally; keep that implementation
+           detail out of the public DTO, whose stable media field is `image`. */
+        $item = array(
+            'title' => ptsPdpText($title),
+            'text' => ptsPdpText($itemText),
+            'image' => $normalizedImage
+        );
+        if($imageKey !== '' && $normalizedImage !== '') $seenImages[$imageKey] = true;
     }
     unset($item);
 

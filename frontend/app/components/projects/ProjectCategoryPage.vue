@@ -3,7 +3,7 @@ import type { PublicSitePayload } from '#shared/contracts/public-site'
 import { isPublicSitePayload } from '#shared/contracts/public-site'
 import type { PublicProjectsPayload } from '#shared/contracts/public-projects'
 import { isPublicProjectsPayload } from '#shared/contracts/public-projects'
-import { isRuntimeFlagEnabled, PROJECTS_PUBLIC_PATH } from '#shared/public-route-gate'
+import { PROJECTS_PUBLIC_PATH } from '#shared/public-route-gate'
 import { editorialPublicResponseStatus, editorialPublicRouteRobots } from '#shared/editorial-public-route'
 import { projectCategoryCanonicalPath, projectCategoryPage } from '#shared/project-category-route'
 import ProjectCard from '~/components/projects/ProjectCard.vue'
@@ -14,7 +14,6 @@ const config = useRuntimeConfig()
 const slug = computed(() => typeof route.params.slug === 'string' ? route.params.slug : '')
 const canonicalPath = computed(() => projects.value?.category?.canonicalPath || projectCategoryCanonicalPath(slug.value))
 const page = computed(() => projectCategoryPage(route.query.p))
-const categoryRouteEnabled = computed(() => isRuntimeFlagEnabled(config.public.projectsPublicRouteEnabled))
 const fallbackSite: PublicSitePayload = { schemaVersion: 1, brand: { name: 'Phúc Thịnh Solar', hotline: '' }, productCategories: [] }
 const { data: siteData } = await useFetch<unknown>('/_migration/site', { default: () => fallbackSite })
 const { data, error } = await useAsyncData<unknown>(
@@ -28,7 +27,7 @@ const projects = computed<PublicProjectsPayload | null>(() => {
   return payload?.category?.slug === slug.value ? payload : null
 })
 const errorStatus = (error.value as { statusCode?: unknown } | null)?.statusCode
-const responseStatus = editorialPublicResponseStatus(categoryRouteEnabled.value, errorStatus, !projects.value)
+const responseStatus = editorialPublicResponseStatus(true, errorStatus, !projects.value)
 if (import.meta.server && responseStatus) setResponseStatus(responseStatus, responseStatus === 404 ? 'Not Found' : 'Bad Gateway')
 
 const currentPage = computed(() => projects.value?.pagination.page ?? page.value)
@@ -55,7 +54,7 @@ useSeoMeta({
   title: pageTitle,
   description: pageDescription,
   robots: computed(() => editorialPublicRouteRobots(
-    categoryRouteEnabled.value,
+    true,
     config.public.projectsPublicRouteIndexable,
     !!projects.value && !error.value,
     'p' in route.query,
@@ -63,7 +62,7 @@ useSeoMeta({
 })
 useHead({ meta: computed(() => pageKeywords.value ? [{ name: 'keywords', content: pageKeywords.value }] : []) })
 usePublicSocialMeta({
-  enabled: computed(() => categoryRouteEnabled.value && !!projects.value && !error.value),
+  enabled: computed(() => !!projects.value && !error.value),
   title: pageTitle,
   description: pageDescription,
   canonicalPath,

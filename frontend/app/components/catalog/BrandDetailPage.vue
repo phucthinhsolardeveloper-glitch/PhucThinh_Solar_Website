@@ -2,8 +2,7 @@
 import type { PublicBrandDetailPayload } from '#shared/contracts/public-brand-detail'
 import type { PublicSitePayload } from '#shared/contracts/public-site'
 import { isPublicSitePayload } from '#shared/contracts/public-site'
-import { isRuntimeFlagEnabled } from '#shared/public-route-gate'
-import { publicSeoRobots } from '#shared/public-seo'
+import { isPublicSeoIndexable, publicSeoRobots } from '#shared/public-seo'
 import CatalogProductGrid from '~/components/catalog/CatalogProductGrid.vue'
 
 /*
@@ -35,7 +34,7 @@ const route = useRoute()
 const selfPath = computed(() => route.path)
 const { active: isMigrationPreview, generic: migrationHref } = useMigrationLinks()
 const config = useRuntimeConfig()
-const publicEnabled = computed(() => !isMigrationPreview.value && isRuntimeFlagEnabled(config.public.brandDetailPublicRouteEnabled))
+const publicEnabled = computed(() => !isMigrationPreview.value)
 const page = computed(() => typeof route.query.page === 'string' ? route.query.page : '')
 const sort = computed(() => typeof route.query.sort === 'string' ? route.query.sort : '')
 const price = computed(() => typeof route.query.price === 'string' ? route.query.price : '')
@@ -109,7 +108,7 @@ function pageLink(nextPage: number) {
 }
 
 const brandIndexable = computed(() => publicEnabled.value
-  && isRuntimeFlagEnabled(config.public.brandDetailPublicRouteIndexable)
+  && isPublicSeoIndexable(config.public.brandDetailPublicRouteIndexable, true)
   && !!data.value && !error.value && !['page', 'sort', 'price'].some((key) => key in route.query))
 const brandTitle = computed(() => data.value?.seo?.title || (data.value ? `${data.value.brand.name} | Phúc Thịnh Solar` : 'Thương hiệu — Phúc Thịnh Solar'))
 const brandDescription = computed(() => data.value?.seo?.description || '')

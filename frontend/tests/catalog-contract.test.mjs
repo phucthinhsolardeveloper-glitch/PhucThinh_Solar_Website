@@ -41,7 +41,9 @@ test('accepts quote-only products without inventing a price', () => {
 test('catalog card specs are safe, bounded and projected from PHP product fields', () => {
   assert.equal(isPublicCatalogPayload(good), true)
   assert.equal(isPublicCatalogPayload({ ...good, products: [{ ...good.products[0], quickSpecs: ['650W', '<script>'] }] }), false)
+  assert.equal(isPublicCatalogPayload({ ...good, products: [{ ...good.products[0], quickSpecs: ['200W', 'IP65', '> 12 tiếng, chiếu sáng 3 ngày mưa'] }] }), true)
   assert.equal(isPublicCatalogPayload({ ...good, products: [{ ...good.products[0], quickSpecs: ['x'.repeat(101)] }] }), false)
+  assert.match(readFileSync(new URL('../app/components/catalog/CatalogProductGrid.vue', import.meta.url), 'utf8'), /\{\{ quickSpecText\(product\) \}\}/)
   assert.match(catalogApi, /p\.cong_suat,p\.waterproof_rating,p\.lighting_time/)
   assert.match(readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/libraries/pts_public_catalog_api.php', import.meta.url), 'utf8'), /'quickSpecs' => ptsCatalogQuickSpecsDto\(\$row\)/)
 })

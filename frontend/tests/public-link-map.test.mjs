@@ -145,7 +145,7 @@ test('shared catalog and shell links resolve CMS internal URLs and keep exactly 
   assert.match(homeProductGroups, /links\.product\(product\.slug\)/)
   assert.match(homeCampaigns, /links\.generic\(campaign\.href\)/)
   assert.match(homeHero, /links\.generic\(current\.href\)/)
-  assert.match(homeEditorial, /links\.generic\(solution\.href\)/)
+  assert.match(homeEditorial, /links\.generic\(item\.solution\.href\)/)
   assert.match(homeEditorial, /href="#yeu-cau-tu-van" @click="requestConsultation\('Hợp tác đại lý'\)"/)
   assert.match(homeEditorial, /links\.generic\(data\.about\.href\)/)
   assert.match(homeCatalog, /id="danh-muc-thiet-bi"/)

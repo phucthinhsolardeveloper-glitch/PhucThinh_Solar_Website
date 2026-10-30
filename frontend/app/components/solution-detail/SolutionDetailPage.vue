@@ -6,6 +6,7 @@ import SolutionDetailGallery from './SolutionDetailGallery.vue'
 import SolutionsCta from '~/components/solutions/SolutionsCta.vue'
 
 const props = defineProps<{ data: PublicSolutionDetailPayload; hotline?: string }>()
+const { isHeaderHidden } = useSiteHeader()
 const links = useMigrationLinks()
 const editorial = computed(() => buildEditorialTocForFragments(
   [props.data.solution.content, props.data.solution.extraContent] as const,
@@ -33,6 +34,14 @@ const quickHotlineTel = computed(() => {
   return digits
 })
 const quickHotlineText = computed(() => props.data.campaignCta?.hotline?.text || (props.hotline ?? '').trim())
+
+const tocContainerRef = ref<HTMLElement | null>(null)
+const { activeHeadingId, scrollToHeading } = useTocScrollspy({
+  contentSelector: '#solution-content',
+  headingSelector: 'h2[id], h3[id]',
+  tocContainerRef,
+  headerOffset: 100,
+})
 </script>
 
 <template>
@@ -48,15 +57,18 @@ const quickHotlineText = computed(() => props.data.campaignCta?.hotline?.text ||
         <header class="mx-auto grid w-full grid-cols-1 overflow-hidden rounded-btn border border-navy-800/15 shadow-md" :class="data.solution.image ? 'nav:grid-cols-2' : 'nav:grid-cols-1'">
           <div class="flex flex-col justify-between bg-gradient-to-br from-navy-950 via-navy-800 to-navy-900 p-7 text-white tb:p-10 nav:p-12" :class="data.solution.image ? '' : 'nav:grid nav:grid-cols-[minmax(0,1.05fr)_minmax(0,.95fr)] nav:items-center nav:gap-[72px]'">
             <div :class="data.solution.image ? '' : 'contents'">
+              <p v-if="data.solution.category" class="mb-3 inline-flex min-h-8 w-fit items-center rounded-full bg-gold-300/15 px-3 py-1 text-xs font-extrabold tracking-wide text-gold-200 nav:row-start-1 nav:mb-4">
+                {{ data.solution.category }}
+              </p>
               <h1 class="m-0 mb-4 text-[clamp(28px,3.2vw,42px)] font-black leading-[1.16] tracking-tight text-white" :class="data.solution.image ? '' : 'nav:row-span-2 nav:mb-0 nav:max-w-[600px]'">{{ data.solution.title }}</h1>
               <p v-if="data.solution.summary" class="mb-6 text-[15px] leading-[1.72] text-blue-100/95 tb:text-base" :class="data.solution.image ? '' : 'nav:col-start-2 nav:row-start-1 nav:mb-0'">{{ data.solution.summary }}</p>
             </div>
             <div class="flex flex-col items-stretch gap-3.5 border-t border-white/15 pt-5 ph:flex-row ph:flex-wrap ph:items-center" :class="data.solution.image ? '' : 'nav:col-start-2 nav:row-start-2'">
-              <a class="inline-flex min-h-11 items-center justify-center gap-3 rounded-btn bg-hdr-gold px-6 text-sm font-extrabold tracking-wide text-navy-950 no-underline shadow-sm transition-colors hover:bg-hdr-gold-hover" :href="links.generic(data.cta.href)">
+              <UButton :href="links.generic(data.cta.href)" color="primary" size="lg" class="min-h-11 justify-center gap-3 rounded-[4px] bg-hdr-gold px-6 text-sm font-extrabold tracking-wide text-navy-950 no-underline hover:bg-hdr-gold-hover">
                 <span>{{ data.cta.label }}</span>
                 <span aria-hidden="true">→</span>
-              </a>
-              <a v-if="data.solution.content.html" class="inline-flex min-h-11 items-center justify-center rounded-btn border border-white/30 bg-white/[.04] px-5 text-center text-sm font-bold text-white no-underline transition-colors hover:border-gold-400 hover:bg-white/10 ph:justify-start ph:text-left" href="#noi-dung-giai-phap">Tìm hiểu phương án</a>
+              </UButton>
+              <UButton v-if="data.solution.content.html" href="#noi-dung-giai-phap" color="neutral" variant="outline" size="lg" class="min-h-11 justify-center rounded-[4px] border-white/30 bg-white/[.04] px-5 text-center text-sm font-bold text-white no-underline hover:border-gold-400 hover:bg-white/10 hover:text-white ph:justify-start ph:text-left">Tìm hiểu phương án</UButton>
             </div>
           </div>
           <figure v-if="data.solution.image" class="relative m-0 aspect-[8/5] min-w-0 overflow-hidden bg-navy-950 nav:aspect-auto nav:min-h-[360px]">
@@ -93,7 +105,9 @@ const quickHotlineText = computed(() => props.data.campaignCta?.hotline?.text ||
       <div id="noi-dung-giai-phap" class="pts-container grid grid-cols-1 gap-8 py-8 min-[901px]:grid-cols-[minmax(250px,300px)_minmax(0,1fr)] min-[901px]:gap-[clamp(32px,3.6vw,64px)] nav:py-11">
         <aside
           v-if="tocItems.length"
-          class="self-start rounded-btn border border-navy-700/70 bg-gradient-to-b from-navy-800 to-navy-950 p-5 shadow-sm min-[901px]:sticky min-[901px]:top-24 min-[901px]:max-h-[calc(100vh-116px)] min-[901px]:overflow-y-auto"
+          ref="tocContainerRef"
+          class="self-start rounded-btn border border-navy-700/70 bg-gradient-to-b from-navy-800 to-navy-950 p-5 shadow-sm min-[901px]:sticky min-[901px]:max-h-[calc(100vh-116px)] min-[901px]:overflow-y-auto transition-[top] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
+          :class="isHeaderHidden ? 'min-[901px]:top-6' : 'min-[901px]:top-[104px] min-[1501px]:top-[124px] min-[1800px]:top-[140px]'"
           aria-label="Mục lục nội dung"
         >
           <h2 class="m-0 mb-3 flex items-center gap-2 border-b border-white/12 pb-3 text-[13px] font-extrabold uppercase tracking-wider text-gold-300">
@@ -105,9 +119,17 @@ const quickHotlineText = computed(() => props.data.campaignCta?.hotline?.text ||
           <ol class="m-0 max-h-[220px] list-none space-y-1 overflow-y-auto p-0 overscroll-contain min-[901px]:max-h-none min-[901px]:overflow-visible">
             <li v-for="item in tocItems" :key="item.id" :class="item.level === 3 ? 'ml-3.5' : ''">
               <a
-                class="flex min-h-11 items-center border-l-2 border-transparent py-1.5 pl-3 pr-2 text-[13px] leading-[1.45] text-[#c9d5e6] no-underline transition-colors hover:border-gold-400 hover:text-white"
-                :class="item.level === 2 ? 'font-bold' : 'font-medium'"
+                :data-toc-id="item.id"
+                class="flex min-h-11 items-center border-l-2 py-1.5 pl-3 pr-2 text-[13px] leading-[1.45] no-underline transition-all duration-200"
+                :class="[
+                  item.level === 2 ? 'font-bold' : 'font-medium',
+                  activeHeadingId === item.id
+                    ? 'border-[#e4a849] bg-white/10 text-white font-extrabold rounded-r'
+                    : 'border-transparent text-[#c9d5e6] hover:border-gold-400 hover:text-white hover:bg-white/5',
+                ]"
                 :href="`#${item.id}`"
+                :aria-current="activeHeadingId === item.id ? 'true' : undefined"
+                @click.prevent="scrollToHeading(item.id)"
               >
                 <span v-if="item.order" class="mr-2 flex-none text-xs font-extrabold text-gold-400">{{ item.order }}.</span>
                 <span v-else class="mr-2 flex-none text-gold-400" aria-hidden="true">•</span>
@@ -119,24 +141,28 @@ const quickHotlineText = computed(() => props.data.campaignCta?.hotline?.text ||
           <div class="mt-5 rounded-chip border border-white/12 bg-white/[.04] p-3.5 text-xs">
             <p class="m-0 mb-1.5 font-extrabold text-white">{{ data.cta.label }}</p>
             <p v-if="data.campaignCta?.description" class="m-0 mb-3 line-clamp-2 leading-relaxed text-blue-100/80">{{ data.campaignCta.description }}</p>
-            <a
+            <UButton
               v-if="quickHotlineTel"
-              class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-chip bg-hdr-gold px-3 py-2 text-center text-xs font-extrabold text-navy-950 no-underline transition-colors hover:bg-hdr-gold-hover"
+              color="primary"
+              size="sm"
+              class="min-h-11 w-full justify-center gap-2 rounded-[4px] bg-hdr-gold px-3 py-2 text-center text-xs font-extrabold text-navy-950 no-underline hover:bg-hdr-gold-hover"
               :href="`tel:${quickHotlineTel}`"
             >
               <svg class="h-3.5 w-3.5 flex-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92Z" />
               </svg>
               <span>{{ quickHotlineText }}</span>
-            </a>
-            <a
+            </UButton>
+            <UButton
               v-else
-              class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-chip bg-hdr-gold px-3 py-2 text-center text-xs font-extrabold text-navy-950 no-underline transition-colors hover:bg-hdr-gold-hover"
+              color="primary"
+              size="sm"
+              class="min-h-11 w-full justify-center gap-2 rounded-[4px] bg-hdr-gold px-3 py-2 text-center text-xs font-extrabold text-navy-950 no-underline hover:bg-hdr-gold-hover"
               :href="links.generic(data.cta.href)"
             >
               <span>{{ data.cta.label }}</span>
               <span aria-hidden="true">→</span>
-            </a>
+            </UButton>
           </div>
         </aside>
 
@@ -154,24 +180,23 @@ const quickHotlineText = computed(() => props.data.campaignCta?.hotline?.text ||
     <section v-if="data.equipment.length" class="pts-container py-6 nav:py-8" aria-labelledby="solution-equipment-title">
       <header class="mb-5 flex flex-col items-start gap-4 min-[801px]:flex-row min-[801px]:items-end min-[801px]:justify-between">
         <h2 id="solution-equipment-title" class="m-0 text-[clamp(22px,2.2vw,28px)] font-black tracking-tight text-navy-800">Thiết bị cho một hệ thống hoàn chỉnh</h2>
-        <a class="inline-flex min-h-11 items-center gap-1.5 text-sm font-extrabold text-gold-700 no-underline transition-colors hover:text-navy-800" :href="links.generic('/san-pham/')">
+        <UButton :href="links.generic('/san-pham/')" color="primary" variant="link" size="md" class="min-h-11 justify-start gap-1.5 rounded-none px-0 text-sm font-extrabold text-gold-700 no-underline hover:text-navy-800">
           <span>Xem tất cả sản phẩm</span>
           <span aria-hidden="true">→</span>
-        </a>
+        </UButton>
       </header>
       <div class="grid grid-cols-1 gap-2 min-[521px]:grid-cols-2 min-[1101px]:grid-cols-4">
         <a
           v-for="item in data.equipment"
           :key="item.url"
-          class="group flex min-w-0 items-center gap-3 px-3.5 py-2.5 text-navy-800 no-underline"
+          class="flex min-w-0 items-center gap-3 px-3.5 py-2.5 text-navy-800 no-underline transition-colors hover:text-gold-700"
           :href="links.generic(item.url)"
         >
-          <img v-if="item.image" :src="item.image" alt="" class="h-[54px] w-[54px] shrink-0 object-contain min-[521px]:h-[72px] min-[521px]:w-16" width="80" height="80" loading="lazy">
-          <span class="min-w-0 flex-1">
-            <strong class="block text-[15px] font-extrabold leading-snug text-navy-800 transition-colors group-hover:text-gold-700">{{ item.name }}</strong>
-            <small v-if="item.description" class="mt-1 block text-[13px] leading-[1.5] text-slate-500">{{ item.description }}</small>
+          <img v-if="item.image" :src="item.image" alt="" class="h-12 w-12 flex-none object-contain transition-transform duration-300 hover:scale-105" width="48" height="48" loading="lazy">
+          <span class="min-w-0">
+            <strong class="block text-sm font-bold leading-tight">{{ item.name }}</strong>
+            <small v-if="item.description" class="mt-0.5 block truncate text-xs text-slate-500">{{ item.description }}</small>
           </span>
-          <span class="ml-auto shrink-0 text-[22px] text-navy-800 transition-transform group-hover:translate-x-0.5 group-hover:text-gold-700" aria-hidden="true">→</span>
         </a>
       </div>
     </section>

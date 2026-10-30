@@ -79,6 +79,7 @@ const categoryListId = computed(() => `${props.idPrefix}-category-list`)
             class="no-underline"
             :class="selected.subcategoryIds.length === 0 ? 'font-bold text-navy-950' : 'text-[#20344b] hover:text-navy-950'"
             :to="filterLink({ subcategory: '' })"
+            :aria-current="selected.subcategoryIds.length === 0 ? 'true' : undefined"
           >
             Tất cả
           </NuxtLink>
@@ -87,6 +88,7 @@ const categoryListId = computed(() => `${props.idPrefix}-category-list`)
           <NuxtLink
             class="flex items-center gap-2.5 text-[#20344b] no-underline hover:text-navy-950"
             :to="filterLink({ subcategory: toggledIds(selected.subcategoryIds, item.id) })"
+            :aria-current="selected.subcategoryIds.includes(item.id) ? 'true' : undefined"
           >
             <span
               class="grid h-[18px] w-[18px] flex-none place-items-center rounded-[3px] border-[1.5px] border-navy-950"
@@ -132,6 +134,7 @@ const categoryListId = computed(() => `${props.idPrefix}-category-list`)
           <NuxtLink
             class="flex items-center gap-2.5 text-[#20344b] no-underline hover:text-navy-950"
             :to="filterLink({ brand: toggledIds(selected.brandIds, brand.id) })"
+            :aria-current="selected.brandIds.includes(brand.id) ? 'true' : undefined"
           >
             <span
               class="grid h-[18px] w-[18px] flex-none place-items-center rounded-[3px] border-[1.5px] border-navy-950"
@@ -154,6 +157,7 @@ const categoryListId = computed(() => `${props.idPrefix}-category-list`)
           <NuxtLink
             class="flex items-center gap-2.5 text-[#20344b] no-underline hover:text-navy-950"
             :to="filterLink({ price: toggledKeys(selected.priceKeys, range.key) })"
+            :aria-current="selected.priceKeys.includes(range.key) ? 'true' : undefined"
           >
             <span
               class="grid h-[18px] w-[18px] flex-none place-items-center rounded-[3px] border-[1.5px] border-navy-950"

@@ -1,5 +1,22 @@
 # PTS Nuxt migration — next execution plan
 
+## Current checkpoint — 2026-10-30
+
+- Nuxt public route ownership no longer uses per-route `*PublicRouteEnabled`
+  gates. Implemented route wrappers render directly; CMS visibility toggles and
+  the separate SEO indexability setting remain in effect. The 2026-10-29
+  checkout notes below document the prior gated rollout and are historical.
+- Current local source is `master` at `31aefea` with uncommitted working-tree
+  changes. `npm test` 396/396, `npm run typecheck`, `npm run build`, and
+  `git diff --check` pass.
+- Local Nuxt rehearsal was rebuilt and is healthy at `127.0.0.1:3101`; all 33
+  manifest GETs return 200 or the expected 301 canonical alias redirect. The
+  old image remains tagged for rollback. Production/Caddy/DNS/DB are untouched.
+- Icon and interaction audit findings are tracked in
+  [`ICON-INTERACTION-UI-AUDIT-20261030.md`](ICON-INTERACTION-UI-AUDIT-20261030.md).
+  Full visual screenshot review, header touch submenu behavior, search modal
+  background semantics, and 320px floating-action overlap remain open.
+
 ## Commerce checkout handoff — 2026-10-29
 
 - Nuxt `/thanh-toan/` is now behind the independent

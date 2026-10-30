@@ -169,6 +169,10 @@ test('commerce media failures render explicit fallbacks instead of blank frames'
   const gallery = read('components/product-preview/ProductPreviewGallery.vue')
   assert.match(grid, /markImageFailed\(product\.id\)/)
   assert.match(grid, /Chưa có hình ảnh/)
+  const detailsButton = grid.match(/<UButton[\s\S]*?Xem chi tiết[\s\S]*?<\/UButton>/)?.[0]
+  assert.ok(detailsButton)
+  assert.match(detailsButton, /max-ph:hidden/)
+  assert.match(grid, /<NuxtLink[\s\S]*:to="productHref\(product\)"[\s\S]*\{\{ product\.name \}\}/)
   assert.match(gallery, /markMediaFailed\(selectedMedia\)/)
   assert.match(gallery, /CMS chưa có ảnh sản phẩm hợp lệ/)
 })
@@ -180,6 +184,15 @@ test('PDP gallery uses the PHP white image surface and purchase actions preserve
   assert.match(gallery, /place-items-center[^\n]*bg-white/)
   assert.ok(purchase.indexOf('Mua ngay') < purchase.indexOf('Thêm vào giỏ'))
   assert.ok(source.indexOf('title="Mua ngay"') < source.indexOf('title="Thêm vào giỏ hàng"'))
+})
+
+test('PDP image lightbox traps keyboard focus and restores it to its trigger', () => {
+  const gallery = read('components/product-preview/ProductPreviewGallery.vue')
+  assert.match(gallery, /const lightboxPanel = ref/)
+  assert.match(gallery, /lastTrigger\.value = event\.currentTarget/)
+  assert.match(gallery, /else if \(event\.key === 'Tab'\) trapFocus\(event\)/)
+  assert.match(gallery, /lastTrigger\.value\?\.focus\(\)/)
+  assert.match(gallery, /bodyOverflowBeforeLock/)
 })
 
 test('catalog pagination stays bounded for large CMS result sets', () => {

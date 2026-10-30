@@ -4,7 +4,6 @@ import { isPublicSolutionsPayload } from '#shared/contracts/public-solutions'
 import type { PublicSitePayload } from '#shared/contracts/public-site'
 import { isPublicSitePayload } from '#shared/contracts/public-site'
 import { editorialPublicResponseStatus, editorialPublicRouteRobots } from '#shared/editorial-public-route'
-import { isRuntimeFlagEnabled } from '#shared/public-route-gate'
 import SolutionCards from '~/components/solutions/SolutionCards.vue'
 import SolutionsCta from '~/components/solutions/SolutionsCta.vue'
 
@@ -12,7 +11,6 @@ const route = useRoute()
 const config = useRuntimeConfig()
 const links = useMigrationLinks()
 const slug = computed(() => typeof route.params.slug === 'string' ? route.params.slug : typeof route.query.slug === 'string' ? route.query.slug : '')
-const routeEnabled = computed(() => isRuntimeFlagEnabled(config.public.solutionsPublicRouteEnabled))
 const { data: siteData } = await useFetch<unknown>('/_migration/site', {
   default: (): PublicSitePayload => ({ schemaVersion: 1, brand: { name: 'Phúc Thịnh Solar', hotline: '' }, productCategories: [] }),
 })
@@ -25,7 +23,7 @@ const site = computed(() => isPublicSitePayload(siteData.value) ? siteData.value
 const solutions = computed<PublicSolutionsPayload | null>(() => isPublicSolutionsPayload(data.value) ? data.value : null)
 const category = computed(() => solutions.value?.category?.slug === slug.value ? solutions.value.category : null)
 const errorStatus = (error.value as { statusCode?: unknown } | null)?.statusCode
-const responseStatus = editorialPublicResponseStatus(routeEnabled.value, errorStatus, !category.value)
+const responseStatus = editorialPublicResponseStatus(true, errorStatus, !category.value)
 if (import.meta.server && responseStatus) setResponseStatus(responseStatus, responseStatus === 404 ? 'Not Found' : 'Bad Gateway')
 const hasFilters = computed(() => Object.keys(route.query).length > 0)
 const pageTitle = computed(() => category.value?.seo?.title || category.value?.name || 'Giải pháp')
@@ -36,11 +34,11 @@ const pageImage = computed(() => category.value?.seo?.image || undefined)
 useSeoMeta({
   title: pageTitle,
   description: pageDescription,
-  robots: computed(() => editorialPublicRouteRobots(routeEnabled.value, config.public.solutionsPublicRouteIndexable, !!category.value && !error.value, hasFilters.value)),
+  robots: computed(() => editorialPublicRouteRobots(true, config.public.solutionsPublicRouteIndexable, !!category.value && !error.value, hasFilters.value)),
 })
 useHead({ meta: computed(() => pageKeywords.value ? [{ name: 'keywords', content: pageKeywords.value }] : []) })
 usePublicSocialMeta({
-  enabled: computed(() => routeEnabled.value && !!category.value && !error.value),
+  enabled: computed(() => !!category.value && !error.value),
   title: pageTitle,
   description: pageDescription,
   canonicalPath: computed(() => category.value?.canonicalPath || `/${slug.value}`),

@@ -14,3 +14,11 @@ test('long catalog tree stays collapsed by default on mobile but remains open at
   assert.match(sidebar, /aria-expanded="categoriesExpanded"/)
   assert.match(sidebar, /Mở danh sách danh mục/)
 })
+
+test('catalog query filters expose their active state to assistive technology', () => {
+  const sidebar = read('../app/components/catalog/CatalogFilterSidebar.vue')
+  assert.match(sidebar, /selected\.subcategoryIds\.includes\(item\.id\) \? 'true' : undefined/)
+  assert.match(sidebar, /selected\.brandIds\.includes\(brand\.id\) \? 'true' : undefined/)
+  assert.match(sidebar, /selected\.priceKeys\.includes\(range\.key\) \? 'true' : undefined/)
+  assert.match(sidebar, /\(selected\.needKeys \?\? \[\]\)\.includes\(item\.key\) \? 'true' : undefined/)
+})

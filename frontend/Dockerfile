@@ -18,11 +18,8 @@ COPY --from=build --chown=nuxt:nuxt /app/.output ./.output
 USER nuxt
 EXPOSE 3000
 #
-# Probes /_migration/site, not /: the public "/" route 307-redirects to PHP
-# whenever homePublicRouteEnabled is false (the safe default), which would
-# make the container always report unhealthy before any route is cut over.
-# /_migration/site is the internal data bridge - it is never flag-gated and
-# still exercises real PHP connectivity. Uses wget (already in node:alpine)
+# Probe /_migration/site rather than relying on page content: it is the
+# internal data bridge and exercises real PHP connectivity. Uses wget (already in node:alpine)
 # instead of spawning a fresh `node` process per probe: that cold start alone
 # took >3s in testing and caused spurious unhealthy flaps under load.
 HEALTHCHECK --interval=10s --timeout=5s --start-period=10s --retries=3 \

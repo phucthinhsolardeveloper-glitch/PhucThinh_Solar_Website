@@ -6,23 +6,19 @@ import {
   editorialDetailPublicPath,
   editorialPublicHubResponseStatus,
   editorialPublicResponseStatus,
-  editorialPublicRouteMode,
   editorialPublicRouteRobots,
   isSafeEditorialSlug,
-  phpEditorialDetailUrl,
 } from '../shared/editorial-public-route.ts'
 
 const root = new URL('../', import.meta.url)
 const read = (path) => readFileSync(new URL(path, root), 'utf8')
 
-test('flag-off editorial route policy is noindex; enabled routes follow the explicit indexable flag', () => {
-  assert.deepEqual(editorialPublicRouteMode(false, true), { renderNuxt: false, robots: 'noindex, nofollow, noarchive' })
-  assert.deepEqual(editorialPublicRouteMode(true, false), { renderNuxt: true, robots: 'noindex, nofollow, noarchive' })
-  assert.deepEqual(editorialPublicRouteMode('1', 'true'), { renderNuxt: true, robots: 'index, follow' })
+test('editorial public routes always render in Nuxt; SEO indexability remains separate', () => {
   assert.equal(editorialPublicRouteRobots(false, false), 'noindex, nofollow, noarchive')
   assert.equal(editorialPublicRouteRobots(undefined, true), 'noindex, nofollow, noarchive')
   assert.equal(editorialPublicRouteRobots(true, false), 'noindex, nofollow, noarchive')
-  assert.equal(editorialPublicRouteRobots('1', 'true'), 'index, follow')
+  assert.equal(editorialPublicRouteRobots(true, 'true'), 'index, follow')
+  assert.equal(editorialPublicRouteRobots(true, true), 'index, follow')
 })
 
 test('public editorial detail preserves upstream 404 and 502 while preview responses stay unchanged', () => {
@@ -39,10 +35,10 @@ test('public editorial detail preserves upstream 404 and 502 while preview respo
 test('public editorial hubs preserve not-found and set 502 for unavailable or invalid data', () => {
   assert.equal(editorialPublicHubResponseStatus(true, 404, true), 404)
   assert.equal(editorialPublicHubResponseStatus(true, 502, false), 502)
-  assert.equal(editorialPublicHubResponseStatus('1', undefined, true), 502)
+  assert.equal(editorialPublicHubResponseStatus(true, undefined, true), 502)
   assert.equal(editorialPublicHubResponseStatus(true, undefined, false), undefined)
   assert.equal(editorialPublicHubResponseStatus(false, 502, true), undefined)
-  assert.equal(editorialPublicHubResponseStatus('0', undefined, true), undefined)
+  assert.equal(editorialPublicHubResponseStatus(false, undefined, true), undefined)
   for (const path of [
     'app/pages/migration-news-preview.vue',
     'app/pages/migration-projects-preview.vue',
@@ -67,55 +63,39 @@ test('editorial detail slugs build only safe solution and policy paths', () => {
   assert.throws(() => editorialDetailPublicPath('/unknown/', 'slug'))
 })
 
-test('flag-off dynamic editorial fallback validates the PHP origin and uses the canonical slug path', () => {
-  assert.equal(
-    phpEditorialDetailUrl('http://127.0.0.1:8080', '/giai-phap/', 'dien-mat-troi'),
-    'http://127.0.0.1:8080/giai-phap/dien-mat-troi/',
-  )
-  assert.equal(
-    phpEditorialDetailUrl('https://php.internal', POLICY_PUBLIC_ROOT, 'bao-hanh'),
-    'https://php.internal/ho-tro/bao-hanh/',
-  )
-  assert.throws(() => phpEditorialDetailUrl('javascript:alert(1)', '/giai-phap/', 'dien-mat-troi'))
-  assert.throws(() => phpEditorialDetailUrl('https://php.internal/path', POLICY_PUBLIC_ROOT, 'bao-hanh'))
-})
-
-test('static editorial wrappers reuse preview pages and fail over to PHP while their flags are off', () => {
+test('static editorial wrappers reuse preview pages without runtime route flags or PHP fallback', () => {
   const routes = [
-    ['tin-tuc/index.vue', 'migration-news-preview.vue', 'news-public-route', 'newsPublicRoute', 'newsPublicRouteEnabled', 'NEWS_PUBLIC_PATH'],
-    ['du-an-da-thuc-hien/index.vue', 'migration-projects-preview.vue', 'projects-public-route', 'projectsPublicRoute', 'projectsPublicRouteEnabled', 'PROJECTS_PUBLIC_PATH'],
-    ['thu-vien-anh/index.vue', 'migration-gallery-preview.vue', 'gallery-public-route', 'galleryPublicRoute', 'galleryPublicRouteEnabled', 'GALLERY_PUBLIC_PATH'],
-    ['video/index.vue', 'migration-video-preview.vue', 'video-public-route', 'videoPublicRoute', 'videoPublicRouteEnabled', 'VIDEO_PUBLIC_PATH'],
+    ['tin-tuc/index.vue', 'migration-news-preview.vue', 'news-public-route', 'newsPublicRoute', 'NEWS_PUBLIC_PATH'],
+    ['du-an-da-thuc-hien/index.vue', 'migration-projects-preview.vue', 'projects-public-route', 'projectsPublicRoute', 'PROJECTS_PUBLIC_PATH'],
+    ['thu-vien-anh/index.vue', 'migration-gallery-preview.vue', 'gallery-public-route', 'galleryPublicRoute', 'GALLERY_PUBLIC_PATH'],
+    ['video/index.vue', 'migration-video-preview.vue', 'video-public-route', 'videoPublicRoute', 'VIDEO_PUBLIC_PATH'],
   ]
-  for (const [pagePath, previewPage, middlewareName, middlewareSymbol, flag, pathConstant] of routes) {
+  for (const [pagePath, previewPage, middlewareName, middlewareSymbol, pathConstant] of routes) {
     const page = read(`app/pages/${pagePath}`)
     const middleware = read(`app/middleware/${middlewareName}.ts`)
     assert.match(page, new RegExp(previewPage.replaceAll('.', '\\.')))
     assert.match(page, new RegExp(`middleware: ${middlewareSymbol}`))
-    assert.match(middleware, new RegExp(`config\\.public\\.${flag}`))
+    assert.doesNotMatch(middleware, /PublicRouteEnabled|phpPublicRouteUrl/)
     assert.match(middleware, new RegExp(`\\b${pathConstant}\\b`))
-    assert.match(middleware, new RegExp(`editorialPublicRouteMode\\(config\\.public\\.${flag}`))
-    assert.match(middleware, /phpPublicRouteUrl/)
-    assert.match(middleware, /redirectCode: 307/)
+    assert.match(middleware, /redirectCode: 301/)
   }
 })
 
-test('dynamic editorial wrappers validate route slugs and preserve default-off PHP fallback', () => {
+test('dynamic editorial wrappers validate route slugs and remain Nuxt-owned', () => {
   const routes = [
-    ['giai-phap/[slug].vue', 'migration-solution-detail-preview.vue', 'solution-detail-public-route', 'solutionDetailPublicRouteEnabled'],
-    ['ho-tro/[slug].vue', 'migration-policy-preview.vue', 'policy-detail-public-route', 'policyDetailPublicRouteEnabled'],
+    ['giai-phap/[slug].vue', 'migration-solution-detail-preview.vue', 'solution-detail-public-route'],
+    ['ho-tro/[slug].vue', 'migration-policy-preview.vue', 'policy-detail-public-route'],
   ]
-  for (const [pagePath, previewPage, middlewareName, flag] of routes) {
+  for (const [pagePath, previewPage, middlewareName] of routes) {
     const page = read(`app/pages/${pagePath}`)
     const middleware = read(`app/middleware/${middlewareName}.ts`)
     assert.match(page, new RegExp(previewPage.replaceAll('.', '\\.')))
     assert.match(page, /definePageMeta\(\{ layout: false, middleware:/)
-    assert.match(middleware, new RegExp(`config\\.public\\.${flag}`))
-    assert.match(middleware, new RegExp(`editorialPublicRouteMode\\(config\\.public\\.${flag}`))
+    assert.doesNotMatch(middleware, /PublicRouteEnabled|phpEditorialDetailUrl/)
     assert.match(middleware, /to\.params\.slug/)
     assert.match(middleware, /isSafeEditorialSlug\(slug\)/)
-    assert.match(middleware, /phpEditorialDetailUrl/)
-    assert.match(middleware, /redirectCode: 307/)
+    assert.match(middleware, /editorialDetailPublicPath/)
+    assert.match(middleware, /redirectCode: 301/)
   }
 
   for (const middlewarePath of ['app/middleware/solution-detail-public-route.ts', 'app/middleware/policy-detail-public-route.ts']) {
@@ -128,20 +108,21 @@ test('dynamic editorial wrappers validate route slugs and preserve default-off P
   assert.match(solutionsHubMiddleware, /to\.path !== SOLUTIONS_PUBLIC_PATH[\s\S]*return/)
 })
 
-test('enabled public wrappers apply each route indexable flag and preview URLs remain noindex', () => {
+test('public wrappers use separate SEO indexability settings; preview URLs remain noindex', () => {
   const pages = [
-    ['migration-news-preview.vue', 'newsPublicRouteEnabled', 'newsPublicRouteIndexable'],
-    ['migration-projects-preview.vue', 'projectsPublicRouteEnabled', 'projectsPublicRouteIndexable'],
-    ['migration-gallery-preview.vue', 'galleryPublicRouteEnabled', 'galleryPublicRouteIndexable'],
-    ['migration-video-preview.vue', 'videoPublicRouteEnabled', 'videoPublicRouteIndexable'],
-    ['migration-solution-detail-preview.vue', 'solutionDetailPublicRouteEnabled', 'solutionDetailPublicRouteIndexable'],
-    ['migration-policy-preview.vue', 'policyDetailPublicRouteEnabled', 'policyDetailPublicRouteIndexable'],
+    ['migration-news-preview.vue', 'newsPublicRouteIndexable'],
+    ['migration-projects-preview.vue', 'projectsPublicRouteIndexable'],
+    ['migration-gallery-preview.vue', 'galleryPublicRouteIndexable'],
+    ['migration-video-preview.vue', 'videoPublicRouteIndexable'],
+    ['migration-solution-detail-preview.vue', 'solutionDetailPublicRouteIndexable'],
+    ['migration-policy-preview.vue', 'policyDetailPublicRouteIndexable'],
   ]
-  for (const [path, enabledFlag, indexableFlag] of pages) {
+  for (const [path, indexableFlag] of pages) {
     const source = read(`app/pages/${path}`)
-    assert.match(source, new RegExp(`config\\.public\\.${enabledFlag}`))
+    assert.doesNotMatch(source, /PublicRouteEnabled/)
     assert.match(source, new RegExp(`config\\.public\\.${indexableFlag}`))
     assert.match(source, /editorialPublicRouteRobots/)
+    assert.match(source, /isPublicRoute\.value|isBarePublicRoute\.value/)
   }
   assert.match(read('app/pages/migration-solution-detail-preview.vue'), /isSafeEditorialSlug\(slug\.value\)/)
   assert.match(read('app/pages/migration-policy-preview.vue'), /isSafeEditorialSlug\(slug\.value\)/)

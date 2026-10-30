@@ -15,8 +15,8 @@ const isMigrationPreview = links.active
           <h2 class="m-0 text-[clamp(24px,2vw,34px)] font-bold leading-[1.2] text-navy-950">
             {{ group.categoryName }}
           </h2>
-          <a class="inline-flex min-h-11 items-center gap-2 font-bold text-navy-800 no-underline hover:text-gold-700" :href="links.generic(group.categoryUrl)">
-            Xem danh mục <span aria-hidden="true">→</span>
+          <a class="inline-flex min-h-11 items-center gap-2 font-bold text-navy-800 no-underline transition-all duration-150 hover:text-gold-700 hover:translate-x-0.5" :href="links.generic(group.categoryUrl)">
+            Xem danh mục <span aria-hidden="true" class="transition-transform duration-150 group-hover:translate-x-1">→</span>
           </a>
         </header>
 
@@ -25,17 +25,19 @@ const isMigrationPreview = links.active
             <NuxtLink
               :external="!isMigrationPreview"
               :to="links.product(product.slug)"
-              class="group block min-w-0 text-navy-950 no-underline"
+              class="group block min-w-0 text-navy-950 no-underline transition-transform duration-150 active:scale-[0.98]"
             >
-              <img
-                :src="product.image"
-                :alt="product.name"
-                class="block aspect-square w-full object-contain"
-                width="640"
-                height="640"
-                loading="lazy"
-              >
-              <span class="mt-3 block text-[17px] leading-[1.4] group-hover:underline group-hover:underline-offset-[3px] max-ph:text-base">
+              <div class="overflow-hidden rounded-[4px] bg-white transition-all duration-300 group-hover:shadow-[0_8px_20px_rgba(10,34,81,0.08)]">
+                <img
+                  :src="product.image"
+                  :alt="product.name"
+                  class="block aspect-square w-full object-contain transition-transform duration-300 ease-out group-hover:scale-105"
+                  width="640"
+                  height="640"
+                  loading="lazy"
+                >
+              </div>
+              <span class="mt-3 block text-[17px] font-semibold leading-[1.4] transition-colors duration-200 group-hover:text-gold-700 group-hover:underline group-hover:underline-offset-[3px] max-ph:text-base">
                 {{ product.name }}
               </span>
             </NuxtLink>

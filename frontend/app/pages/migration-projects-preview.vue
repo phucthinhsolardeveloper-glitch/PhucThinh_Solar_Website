@@ -3,7 +3,7 @@ import type { PublicProjectsPayload } from '#shared/contracts/public-projects'
 import { isPublicProjectsPayload } from '#shared/contracts/public-projects'
 import type { PublicSitePayload } from '#shared/contracts/public-site'
 import { isPublicSitePayload } from '#shared/contracts/public-site'
-import { isRuntimeFlagEnabled, PROJECTS_PUBLIC_PATH } from '#shared/public-route-gate'
+import { PROJECTS_PUBLIC_PATH } from '#shared/public-route-gate'
 import { editorialPublicHubResponseStatus, editorialPublicRouteRobots } from '#shared/editorial-public-route'
 import ProjectCard from '~/components/projects/ProjectCard.vue'
 import ProjectFilters from '~/components/projects/ProjectFilters.vue'
@@ -13,7 +13,7 @@ import ProjectsCta from '~/components/projects/ProjectsCta.vue'
 const route = useRoute()
 const config = useRuntimeConfig()
 const isPublicRoute = computed(() => route.path === PROJECTS_PUBLIC_PATH)
-const publicProjectsEnabled = computed(() => isPublicRoute.value && isRuntimeFlagEnabled(config.public.projectsPublicRouteEnabled))
+const publicProjectsEnabled = computed(() => isPublicRoute.value)
 const fallbackSite: PublicSitePayload = { schemaVersion: 1, brand: { name: 'Phúc Thịnh Solar', hotline: '' }, productCategories: [] }
 const { data: siteData } = await useFetch<unknown>('/_migration/site', { default: () => fallbackSite })
 const category = computed(() => typeof route.query.category === 'string' ? route.query.category : undefined)
@@ -59,7 +59,7 @@ useSeoMeta({
   title: () => isPublicRoute.value ? pageTitle.value : 'Dự án — internal preview',
   description: () => pageDescription.value,
   robots: computed(() => editorialPublicRouteRobots(
-    isPublicRoute.value && config.public.projectsPublicRouteEnabled,
+    isPublicRoute.value,
     config.public.projectsPublicRouteIndexable,
     !!projects.value && !error.value,
     ['category', 'p', 'page'].some((key) => key in route.query),
@@ -67,7 +67,7 @@ useSeoMeta({
 })
 useHead({ meta: computed(() => pageKeywords.value ? [{ name: 'keywords', content: pageKeywords.value }] : []) })
 usePublicSocialMeta({
-  enabled: computed(() => isPublicRoute.value && config.public.projectsPublicRouteEnabled && !!projects.value && !error.value),
+  enabled: computed(() => isPublicRoute.value && !!projects.value && !error.value),
   title: pageTitle,
   description: pageDescription,
   canonicalPath: '/du-an-da-thuc-hien/',

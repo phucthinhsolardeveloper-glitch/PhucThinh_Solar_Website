@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { isRuntimeFlagEnabled } from '#shared/public-route-gate'
+import { isPublicSeoIndexable } from '#shared/public-seo'
 import ProductPreviewPage from '~/components/product-preview/ProductPreviewPage.vue'
 import productDetailPublicRoute from '~/middleware/product-detail-public-route'
 
@@ -9,7 +9,7 @@ definePageMeta({
 })
 
 const config = useRuntimeConfig()
-const indexable = computed(() => isRuntimeFlagEnabled(config.public.productDetailPublicRouteIndexable))
+const indexable = computed(() => isPublicSeoIndexable(config.public.productDetailPublicRouteIndexable, true))
 const route = useRoute()
 const slug = computed(() => typeof route.params.slug === 'string' ? route.params.slug : '')
 const { site, payload, extras, product, error, pending, ready } = useProductPreviewData(slug)

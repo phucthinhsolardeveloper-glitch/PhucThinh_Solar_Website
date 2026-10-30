@@ -32,7 +32,8 @@ test('migration checkout POST endpoint refuses to forward order mutations to PHP
 test('active Nuxt checkout hands the browser form directly to the PHP cart route', () => {
   assert.match(activeCheckoutPage, /middleware:\s*checkoutPublicRoute/)
   assert.match(activeCheckoutPage, /<form v-else method="post" :action="checkoutPostAction"/)
-  assert.match(activeCheckoutPage, /phpPublicRouteUrl\(runtimeConfig\.public\.phpPublicOrigin, CART_CHECKOUT_POST_PATH\)/)
+  assert.match(activeCheckoutPage, /const checkoutPostAction = CART_CHECKOUT_POST_PATH/)
+  assert.doesNotMatch(activeCheckoutPage, /phpPublicRouteUrl|phpPublicOrigin/)
   assert.match(publicRouteGate, /CART_CHECKOUT_POST_PATH = '\/gio-hang'/)
   assert.doesNotMatch(publicRouteGate, /CART_CHECKOUT_POST_PATH = '\/gio-hang\//)
   for (const name of [
@@ -51,13 +52,11 @@ test('active Nuxt checkout hands the browser form directly to the PHP cart route
   assert.doesNotMatch(activeCheckoutPage, /fetch\(['"]\/_migration\/checkout['"].*method:\s*['"]POST|submitOrder/)
 })
 
-test('Nuxt checkout stays gated by a default-off flag and disabled mode returns to PHP cart', () => {
-  assert.match(nuxtConfig, /checkoutPublicRouteEnabled:\s*false/)
-  assert.match(compose, /NUXT_PUBLIC_CHECKOUT_PUBLIC_ROUTE_ENABLED: \$\{NUXT_PUBLIC_CHECKOUT_PUBLIC_ROUTE_ENABLED:-false\}/)
-  assert.match(checkoutMiddleware, /config\.public\.checkoutPublicRouteEnabled/)
-  assert.match(checkoutMiddleware, /phpPublicRouteUrl\(config\.public\.phpPublicOrigin, CART_PUBLIC_PATH\)/)
-  assert.match(cartPage, /checkoutRouteEnabled/)
-  assert.match(cartPage, /v-else-if="checkoutRouteEnabled"[\s\S]*to="\/thanh-toan\/"/)
+test('Nuxt checkout and cart are always available without route feature flags', () => {
+  assert.doesNotMatch(nuxtConfig, /checkoutPublicRouteEnabled/)
+  assert.doesNotMatch(compose, /NUXT_PUBLIC_CHECKOUT_PUBLIC_ROUTE_ENABLED/)
+  assert.doesNotMatch(checkoutMiddleware, /PublicRouteEnabled|phpPublicRouteUrl/)
+  assert.match(cartPage, /v-else\s+to="\/thanh-toan\/"/)
   assert.match(cartPage, /!payload\.canCheckout/)
 })
 

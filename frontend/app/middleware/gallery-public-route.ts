@@ -1,12 +1,5 @@
-import { GALLERY_PUBLIC_PATH, phpPublicRouteUrl } from '#shared/public-route-gate'
-import { editorialPublicRouteMode } from '#shared/editorial-public-route'
-import { legacyMediaPageQuery } from '#shared/public-route-query'
+import { GALLERY_PUBLIC_PATH } from '#shared/public-route-gate'
 
 export default defineNuxtRouteMiddleware((to) => {
-  const config = useRuntimeConfig()
-  if (editorialPublicRouteMode(config.public.galleryPublicRouteEnabled, config.public.galleryPublicRouteIndexable).renderNuxt) {
-    if (to.path !== GALLERY_PUBLIC_PATH) return navigateTo({ path: GALLERY_PUBLIC_PATH, query: to.query }, { redirectCode: 301 })
-    return
-  }
-  return navigateTo(phpPublicRouteUrl(config.public.phpPublicOrigin, GALLERY_PUBLIC_PATH, legacyMediaPageQuery(to.query)), { external: true, redirectCode: 307 })
+  if (to.path !== GALLERY_PUBLIC_PATH) return navigateTo({ path: GALLERY_PUBLIC_PATH, query: to.query }, { redirectCode: 301 })
 })

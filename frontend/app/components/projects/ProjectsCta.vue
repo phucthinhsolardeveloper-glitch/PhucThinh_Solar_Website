@@ -3,6 +3,7 @@ import type { PublicProjectsCta } from '#shared/contracts/public-projects'
 
 const props = defineProps<{ cta: PublicProjectsCta; label: string }>()
 const links = useMigrationLinks()
+const { openConsultation } = useStorefrontModal()
 const trustItems = computed(() => props.cta.trust?.length ? props.cta.trust : [
   { label: 'Tư vấn tận tâm', image: '', icon: 'headset' as const },
   { label: 'Giải pháp tối ưu', image: '', icon: 'cogs' as const },
@@ -34,7 +35,11 @@ const trustItems = computed(() => props.cta.trust?.length ? props.cta.trust : [
           <small class="text-xs text-blue-100">{{ cta.hotline.label }}</small>
           <strong class="text-lg font-black">{{ cta.hotline.text }}</strong>
         </a>
-        <a class="inline-flex min-h-12 items-center justify-center bg-gold-500 px-5 font-extrabold text-navy-950 no-underline hover:bg-gold-400" :href="links.generic('/lien-he/#yeu-cau-tu-van')">{{ cta.buttonLabel || label }} <span class="ml-2" aria-hidden="true">→</span></a>
+        <a
+          class="inline-flex min-h-12 items-center justify-center rounded-[4px] bg-gold-500 px-5 font-extrabold text-navy-950 no-underline transition-all duration-150 hover:bg-gold-400 active:scale-[0.98] cursor-pointer shadow-xs"
+          :href="links.generic('/lien-he/#yeu-cau-tu-van')"
+          @click.prevent="openConsultation('Dự án: ' + cta.title)"
+        >{{ cta.buttonLabel || label }} <span class="ml-2" aria-hidden="true">→</span></a>
       </div>
     </div>
   </section>

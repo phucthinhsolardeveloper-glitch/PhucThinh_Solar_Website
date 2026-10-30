@@ -3,7 +3,6 @@ import type { PublicHomePayload } from '#shared/contracts/public-home'
 import { isPublicHomePayload } from '#shared/contracts/public-home'
 import type { PublicSitePayload } from '#shared/contracts/public-site'
 import { isPublicSitePayload } from '#shared/contracts/public-site'
-import { isRuntimeFlagEnabled } from '#shared/public-route-gate'
 import HomeHero from '~/components/home/HomeHero.vue'
 import HomeCatalog from '~/components/home/HomeCatalog.vue'
 import HomeCampaigns from '~/components/home/HomeCampaigns.vue'
@@ -12,7 +11,7 @@ import HomeContact from '~/components/home/HomeContact.vue'
 
 const props = withDefaults(defineProps<{ preview?: boolean }>(), { preview: false })
 const config = useRuntimeConfig()
-const indexable = computed(() => !props.preview && isRuntimeFlagEnabled(config.public.homePublicRouteIndexable)
+const indexable = computed(() => !props.preview && config.public.homePublicRouteIndexable === true
   && !!home.value && !siteError.value && !error.value)
 const fallbackSite: PublicSitePayload = { schemaVersion: 1, brand: { name: 'Phúc Thịnh Solar', hotline: '' }, productCategories: [] }
 const { data: siteData, error: siteError } = await useFetch<unknown>('/_migration/site', { default: () => fallbackSite })
@@ -34,7 +33,7 @@ useSeoMeta({
 })
 useHead({ meta: computed(() => pageKeywords.value ? [{ name: 'keywords', content: pageKeywords.value }] : []) })
 usePublicSocialMeta({
-  enabled: computed(() => !props.preview && isRuntimeFlagEnabled(config.public.homePublicRouteEnabled) && !!home.value && !siteError.value && !error.value),
+  enabled: computed(() => !props.preview && !!home.value && !siteError.value && !error.value),
   title: computed(() => home.value?.seo.title || fallbackTitle.value),
   description: computed(() => home.value?.seo.description || fallbackDescription),
   canonicalPath: '/',

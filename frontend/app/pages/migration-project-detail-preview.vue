@@ -15,7 +15,7 @@ const { data: siteData } = await useFetch<unknown>('/_migration/site', { default
 const { data, error } = await useFetch<unknown>('/_migration/project-detail', { query: computed(() => ({ slug: slug.value })), default: () => null })
 const payload = computed<PublicProjectDetailPayload | null>(() => isPublicProjectDetailPayload(data.value) ? data.value : null)
 const errorStatus = (error.value as { statusCode?: unknown } | null)?.statusCode
-const responseStatus = editorialPublicResponseStatus(isBarePublicRoute.value && config.public.projectDetailPublicRouteEnabled, errorStatus, !payload.value)
+const responseStatus = editorialPublicResponseStatus(isBarePublicRoute.value, errorStatus, !payload.value)
 if (import.meta.server && responseStatus) setResponseStatus(responseStatus, responseStatus === 404 ? 'Not Found' : 'Bad Gateway')
 const site = computed(() => isPublicSitePayload(siteData.value) ? siteData.value : fallbackSite)
 const pageKeywords = computed(() => isBarePublicRoute.value ? payload.value?.seo.keywords || '' : '')
@@ -23,11 +23,11 @@ const pageKeywords = computed(() => isBarePublicRoute.value ? payload.value?.seo
 useSeoMeta({
   title: computed(() => payload.value ? (isBarePublicRoute.value ? payload.value.seo.title : `${payload.value.seo.title} — preview`) : (isBarePublicRoute.value ? 'Dự án' : 'Project detail preview')),
   description: computed(() => payload.value?.seo.description ?? ''),
-  robots: computed(() => editorialPublicRouteRobots(isBarePublicRoute.value && config.public.projectDetailPublicRouteEnabled, config.public.projectDetailPublicRouteIndexable, !!payload.value && !error.value)),
+  robots: computed(() => editorialPublicRouteRobots(isBarePublicRoute.value, config.public.projectDetailPublicRouteIndexable, !!payload.value && !error.value)),
 })
 useHead({ meta: computed(() => pageKeywords.value ? [{ name: 'keywords', content: pageKeywords.value }] : []) })
 usePublicSocialMeta({
-  enabled: computed(() => isBarePublicRoute.value && config.public.projectDetailPublicRouteEnabled && !!payload.value && !error.value),
+  enabled: computed(() => isBarePublicRoute.value && !!payload.value && !error.value),
   title: computed(() => payload.value?.seo.title || payload.value?.project.title || 'Dự án'),
   description: computed(() => payload.value?.seo.description || ''),
   canonicalPath: computed(() => payload.value?.project.url || route.path),

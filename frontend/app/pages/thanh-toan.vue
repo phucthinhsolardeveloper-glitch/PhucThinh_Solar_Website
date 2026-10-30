@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { isPublicCartPayload, type PublicCartPayload } from '#shared/contracts/public-cart'
 import { isPublicCheckoutPayload, isPublicCheckoutWardsPayload, type PublicCheckoutPayload, type PublicCheckoutOption, type PublicCheckoutNoticeForm } from '#shared/contracts/public-checkout'
-import { CART_CHECKOUT_POST_PATH, phpPublicRouteUrl } from '#shared/public-route-gate'
+import { CART_CHECKOUT_POST_PATH } from '#shared/public-route-gate'
 import checkoutPublicRoute from '~/middleware/checkout-public-route'
 
 definePageMeta({
@@ -10,8 +10,7 @@ definePageMeta({
 })
 
 const { site } = await usePublicSite()
-const runtimeConfig = useRuntimeConfig()
-const checkoutPostAction = phpPublicRouteUrl(runtimeConfig.public.phpPublicOrigin, CART_CHECKOUT_POST_PATH)
+const checkoutPostAction = CART_CHECKOUT_POST_PATH
 const { data: cartData } = await useFetch<unknown>('/_migration/cart', { key: 'migration-checkout-cart', default: () => null })
 const { data: checkoutData, error: checkoutLoadError } = await useFetch<unknown>('/_migration/checkout', { key: 'migration-checkout-meta', default: () => null })
 const cart = computed<PublicCartPayload | null>(() => isPublicCartPayload(cartData.value) ? cartData.value : null)
@@ -99,7 +98,7 @@ useSeoMeta({ title: 'Thanh toán — Phúc Thịnh Solar', robots: 'noindex, nof
 <template>
   <div class="min-h-screen bg-white text-navy-800">
     <SiteHeader :site="site" />
-    <main class="mx-auto w-full max-w-[1320px] px-4 py-10 max-ph:py-7">
+    <main class="pts-container py-10 max-ph:py-7">
       <SiteBreadcrumb :items="[{ label: 'Giỏ hàng', to: '/gio-hang/' }, { label: 'Thanh toán' }]" />
       <h1 class="mb-8 text-[clamp(30px,5vw,48px)] font-black tracking-tight">Thông tin thanh toán</h1>
 

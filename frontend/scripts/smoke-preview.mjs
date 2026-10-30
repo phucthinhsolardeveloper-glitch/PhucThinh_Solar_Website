@@ -1,17 +1,36 @@
 import { spawn } from 'node:child_process'
 import { strict as assert } from 'node:assert'
+import { createServer } from 'node:http'
 import { setTimeout as sleep } from 'node:timers/promises'
 
 const port = '3139'
 const base = `http://127.0.0.1:${port}`
+const mockPhp = process.env.NITRO_SMOKE_MOCK_PHP === '1' ? createServer((_request, response) => {
+  // Unknown public slugs are a PHP-classified 404. CI uses this narrow stub
+  // because the SSR smoke runner has no PHP service; all paths are unpublished.
+  response.writeHead(404, { 'content-type': 'application/json' })
+  response.end(JSON.stringify({ error: 'not_found' }))
+}) : null
+let phpOrigin = process.env.NITRO_PHP_ORIGIN || 'http://127.0.0.1:8088'
+let phpAllowlist = process.env.NUXT_PHP_ORIGIN_ALLOWLIST
+if (mockPhp) {
+  // Match the checked-in runtime default and allowlist. CI runners have no
+  // PHP service, so bind this fixture only when the explicit CI flag is set.
+  await new Promise((resolve) => mockPhp.listen(8080, '127.0.0.1', resolve))
+  phpOrigin = 'http://127.0.0.1:8080'
+  phpAllowlist = '127.0.0.1:8080'
+}
 const child = spawn(process.execPath, ['.output/server/index.mjs'], {
   cwd: new URL('../', import.meta.url).pathname,
   env: {
     ...process.env,
     NITRO_PORT: port,
     NITRO_HOST: '127.0.0.1',
-    NITRO_PHP_ORIGIN: process.env.NITRO_PHP_ORIGIN || 'http://127.0.0.1:8088',
+    NITRO_PHP_ORIGIN: phpOrigin,
+    NUXT_PHP_ORIGIN: phpOrigin,
+    ...(phpAllowlist ? { NUXT_PHP_ORIGIN_ALLOWLIST: phpAllowlist } : {}),
     NITRO_PREVIEW_MEDIA_PROXY: process.env.NITRO_PREVIEW_MEDIA_PROXY || '1',
+    NUXT_PREVIEW_MEDIA_PROXY: process.env.NUXT_PREVIEW_MEDIA_PROXY || '1',
   },
   stdio: 'ignore',
 })
@@ -48,4 +67,5 @@ try {
   console.log(`PASS: Nuxt SSR preview (base + ${routeChecks.length} hub/media routes 200/noindex, unknown route 404)`)
 } finally {
   child.kill('SIGTERM')
+  mockPhp?.close()
 }

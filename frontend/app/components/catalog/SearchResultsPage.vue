@@ -3,7 +3,6 @@ import type { PublicSearchPayload } from '#shared/contracts/public-search'
 import CatalogProductGrid from '~/components/catalog/CatalogProductGrid.vue'
 import CatalogMasthead from '~/components/catalog/CatalogMasthead.vue'
 import SearchFilterOptions from '~/components/catalog/SearchFilterOptions.vue'
-import { isRuntimeFlagEnabled } from '#shared/public-route-gate'
 
 /*
  * Tách từ migration-search-preview.vue (xem đó + pages/tim-kiem/index.vue)
@@ -12,7 +11,6 @@ import { isRuntimeFlagEnabled } from '#shared/public-route-gate'
  */
 const { site } = await usePublicSite()
 const route = useRoute()
-const config = useRuntimeConfig()
 const selfPath = computed(() => route.path)
 const keyword = computed(() => typeof route.query.keyword === 'string' ? route.query.keyword.trim() : '')
 const page = computed(() => typeof route.query.page === 'string' ? route.query.page : '')
@@ -32,7 +30,7 @@ const { data, error, pending } = await useAsyncData<PublicSearchPayload>(
   () => $fetch('/_migration/search', { query: searchQuery.value }),
   { watch: [searchQuery] },
 )
-const publicSearchEnabled = computed(() => route.path === '/tim-kiem/' && isRuntimeFlagEnabled(config.public.searchPublicRouteEnabled))
+const publicSearchEnabled = computed(() => route.path === '/tim-kiem/')
 // PHP's search.php only runs a query when ?keyword is present; a bare visit
 // renders its "enter a keyword" prompt at 200. Mirror that: only a keyword
 // that actually failed against the CMS is a backend error (502).

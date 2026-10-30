@@ -15,28 +15,28 @@ import {
   CART_PUBLIC_PATH,
   CART_CHECKOUT_POST_PATH,
   ORDER_SUCCESS_PUBLIC_PATH,
-  LEGACY_CATALOG_PUBLIC_PATH,
   brandDetailPublicPath,
   bareSlugPublicPath,
   isProductCategoryHierarchy,
-  isRuntimeFlagEnabled,
-  legacyCatalogFilterQuery,
   phpPublicRouteUrl,
   productCategoryPublicPath,
   productDetailPublicPath,
-  legacyProductDetailPublicPath,
   VIDEO_PUBLIC_PATH,
 } from '../shared/public-route-gate.ts'
 
-test('public About route stays disabled unless the explicit runtime flag is enabled', () => {
-  assert.equal(isRuntimeFlagEnabled(false), false)
-  assert.equal(isRuntimeFlagEnabled(undefined), false)
-  assert.equal(isRuntimeFlagEnabled('0'), false)
-  assert.equal(isRuntimeFlagEnabled('true'), true)
-  assert.equal(isRuntimeFlagEnabled(1), false)
+test('all migrated routes are permanently Nuxt-owned without runtime enable flags', async () => {
+  const { readFileSync } = await import('node:fs')
+  const config = readFileSync(new URL('../nuxt.config.ts', import.meta.url), 'utf8')
+  const compose = readFileSync(new URL('../../docker-compose.nuxt-service.yml', import.meta.url), 'utf8')
+  const middleware = ['home', 'about', 'catalog', 'product-detail', 'solutions', 'contact', 'dealer', 'news', 'projects', 'gallery', 'video', 'cart', 'checkout', 'order-success']
+    .map((name) => readFileSync(new URL(`../app/middleware/${name}-public-route.ts`, import.meta.url), 'utf8'))
+    .join('\n')
+  assert.doesNotMatch(config, /PublicRouteEnabled/)
+  assert.doesNotMatch(compose, /NUXT_PUBLIC_.*_PUBLIC_ROUTE_ENABLED/)
+  assert.doesNotMatch(middleware, /PublicRouteEnabled|isRuntimeFlagEnabled|phpPublicRouteUrl/)
 })
 
-test('flag-off fallback targets the configured PHP route exactly', () => {
+test('explicit legacy fallback targets the configured PHP route exactly', () => {
   assert.equal(phpPublicRouteUrl('http://127.0.0.1:8080', ABOUT_PUBLIC_PATH), 'http://127.0.0.1:8080/gioi-thieu/')
   assert.equal(phpPublicRouteUrl('https://php.internal', ABOUT_PUBLIC_PATH), 'https://php.internal/gioi-thieu/')
   assert.equal(phpPublicRouteUrl('http://127.0.0.1:8080', SOLUTIONS_PUBLIC_PATH), 'http://127.0.0.1:8080/giai-phap/')
@@ -56,12 +56,9 @@ test('catalog and search static fallbacks resolve exactly', () => {
   assert.equal(phpPublicRouteUrl('http://127.0.0.1:8080', SEARCH_PUBLIC_PATH), 'http://127.0.0.1:8080/tim-kiem/')
 })
 
-test('legacy product root alias is an explicit flag-off PHP fallback path', () => {
-  assert.equal(LEGACY_CATALOG_PUBLIC_PATH, '/product/')
-  assert.equal(phpPublicRouteUrl('http://127.0.0.1:8080', LEGACY_CATALOG_PUBLIC_PATH), 'http://127.0.0.1:8080/product/')
-  assert.equal(legacyProductDetailPublicPath('published-product'), '/product/published-product')
-  assert.equal(phpPublicRouteUrl('http://127.0.0.1:8080', legacyProductDetailPublicPath('published-product')), 'http://127.0.0.1:8080/product/published-product')
-  assert.throws(() => legacyProductDetailPublicPath('../private'), /Invalid legacy product slug/)
+test('legacy product alias is not an external fallback target', () => {
+  assert.throws(() => phpPublicRouteUrl('http://127.0.0.1:8080', '/product/'), /Unsupported public route fallback/)
+  assert.throws(() => phpPublicRouteUrl('http://127.0.0.1:8080', '/product/published-product'), /Unsupported public route fallback/)
 })
 
 test('all additional static PHP public paths are explicit and accepted', () => {
@@ -93,18 +90,6 @@ test('product category path validates one to four hierarchical slugs and keeps t
   assert.throws(() => productCategoryPublicPath(['one', 'two', 'three', 'four', 'five']), /Invalid product category path/)
   assert.throws(() => phpPublicRouteUrl('http://127.0.0.1:8080', '/danh-muc-san-pham/a//b/'), /Unsupported public route fallback/)
   assert.throws(() => phpPublicRouteUrl('http://127.0.0.1:8080', '/danh-muc-san-pham/a'), /Unsupported public route fallback/)
-})
-
-test('category fallback maps valid Nuxt filter/sort/page state to legacy PHP query names', () => {
-  assert.deepEqual(legacyCatalogFilterQuery({
-    page: '3', brand: '4,8', price: '1,3', subcategory: '10,12', sort: 'abc-desc',
-    keyword: 'đèn đường', need: 'du-an-cong-trinh,san-vuon-canh-quan', category: 'ignored',
-  }), {
-    p: '3', is_brand: '4,8', is_price: '1,3', is_cat: '10,12', is_orderby: 'abc-desc',
-    keyword: 'đèn đường', is_need: 'du-an-cong-trinh,san-vuon-canh-quan',
-  })
-  assert.deepEqual(legacyCatalogFilterQuery({ page: '0', brand: '1,', price: '4', sort: 'random', keyword: 'x'.repeat(101), need: 'made-up' }), {})
-  assert.deepEqual(legacyCatalogFilterQuery({ page: ['2'], brand: '5' }), { is_brand: '5' })
 })
 
 test('product detail slug builds the canonical no-trailing-slash path and rejects unsafe slugs', () => {

@@ -1,12 +1,8 @@
 <script setup lang="ts">
 import type { PublicHomeAboutPoint, PublicHomePayload } from '#shared/contracts/public-home'
+import { motion } from 'motion-v'
 
 const props = defineProps<{ data: PublicHomePayload }>()
-const selected = ref(0)
-const solution = computed(() => props.data.solutions[selected.value])
-const links = useMigrationLinks()
-const leadIntent = useState<string>('public-home-lead-intent', () => '')
-
 const solutionChips = [
   ['Điện mặt trời mái nhà', 'Biến tần (Inverter)', 'Tấm pin điện mặt trời'],
   ['Điện mặt trời mái nhà', 'Biến tần (Inverter)', 'Pin lưu trữ'],
@@ -14,7 +10,26 @@ const solutionChips = [
   ['Bơm nước năng lượng mặt trời', 'Tấm pin điện mặt trời'],
 ]
 
-const activeSolutionChips = computed(() => solutionChips[selected.value] || [])
+type SolutionTab = {
+  label: string
+  value: number
+  slot: 'solution'
+  solution: PublicHomePayload['solutions'][number]
+  chips: string[]
+}
+
+const selected = ref<string | number>(0)
+const solutionTabs = computed<SolutionTab[]>(() => props.data.solutions.map((solution, index) => ({
+  label: solution.label,
+  value: index,
+  slot: 'solution',
+  solution,
+  chips: solutionChips[index] || [],
+})))
+const solutionPanelInteracted = ref(false)
+const links = useMigrationLinks()
+const leadIntent = useState<string>('public-home-lead-intent', () => '')
+const { openDealer } = useStorefrontModal()
 
 const fallbackAboutPoints: PublicHomeAboutPoint[] = [
   { label: 'Sản phẩm chính hãng', description: 'Thông tin thương hiệu, thông số kỹ thuật và chính sách bảo hành rõ ràng.', image: '' },
@@ -25,9 +40,9 @@ const fallbackAboutPoints: PublicHomeAboutPoint[] = [
 
 const aboutPoints = computed(() => (props.data.about.points?.length ? props.data.about.points : fallbackAboutPoints).filter((point) => point.label))
 
-function chipHref(chip: string) {
+function chipHref(chip: string, currentSolution: PublicHomePayload['solutions'][number]) {
   const label = chip.trim().toLocaleLowerCase()
-  if (label.includes('mái nhà') || label.includes('mai nha')) return solution.value?.href || '/giai-phap/'
+  if (label.includes('mái nhà') || label.includes('mai nha')) return currentSolution.href || '/giai-phap/'
 
   const needles = label.includes('biến tần') || label.includes('inverter')
     ? ['bien-tan-inverter', 'inverter']
@@ -42,7 +57,7 @@ function chipHref(chip: string) {
             : []
 
   return props.data.categories.find((category) => needles.some((needle) => category.slug.toLocaleLowerCase().includes(needle)))?.url
-    || solution.value?.href
+    || currentSolution.href
     || '/giai-phap/'
 }
 
@@ -50,17 +65,9 @@ function requestConsultation(subject: string) {
   leadIntent.value = subject
 }
 
-function onTabKeydown(event: KeyboardEvent, index: number) {
-  let nextIndex = index
-  if (event.key === 'ArrowRight') nextIndex = (index + 1) % props.data.solutions.length
-  else if (event.key === 'ArrowLeft') nextIndex = (index - 1 + props.data.solutions.length) % props.data.solutions.length
-  else if (event.key === 'Home') nextIndex = 0
-  else if (event.key === 'End') nextIndex = props.data.solutions.length - 1
-  else return
-
-  event.preventDefault()
-  selected.value = nextIndex
-  document.getElementById(`home-solution-tab-${nextIndex}`)?.focus()
+function selectSolution(value: string | number) {
+  solutionPanelInteracted.value = true
+  selected.value = value
 }
 </script>
 
@@ -81,65 +88,65 @@ function onTabKeydown(event: KeyboardEvent, index: number) {
         </p>
       </header>
 
-      <div class="mb-9 flex gap-7 overflow-x-auto border-b border-hdr-line [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" role="tablist" aria-label="Giải pháp theo nhu cầu">
-        <button
-          v-for="(item, index) in data.solutions"
-          :id="`home-solution-tab-${index}`"
-          :key="item.label"
-          class="relative min-h-[50px] flex-none border-b-[3px] px-0 text-base font-bold whitespace-nowrap"
-          :class="selected === index ? 'border-hdr-gold text-navy-950' : 'border-transparent text-slate-500'"
-          type="button"
-          role="tab"
-          :aria-selected="selected === index"
-          :aria-controls="`home-solution-panel-${index}`"
-          :tabindex="selected === index ? 0 : -1"
-          @click="selected = index"
-          @keydown="onTabKeydown($event, index)"
+      <div role="group" aria-label="Giải pháp theo nhu cầu">
+        <UTabs
+          :model-value="selected"
+          :items="solutionTabs"
+          color="primary"
+          variant="link"
+          size="xl"
+          :ui="{
+            root: 'w-full',
+            list: 'mb-9 flex gap-7 overflow-x-auto border-hdr-line px-1.5 py-1.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
+            indicator: '-bottom-px h-[3px] rounded-none bg-hdr-gold',
+            trigger: 'min-h-[50px] flex-none justify-start rounded-none px-0 font-bold whitespace-nowrap data-[state=active]:text-navy-950 data-[state=inactive]:text-slate-500',
+            content: 'rounded-none outline-offset-4',
+          }"
+          @update:model-value="selectSolution"
         >
-          {{ item.label }}
-        </button>
-      </div>
-
-      <article
-        v-if="solution"
-        :id="`home-solution-panel-${selected}`"
-        class="grid grid-cols-[minmax(0,.9fr)_minmax(0,1.1fr)] items-center gap-[clamp(28px,3vw,48px)] max-md:grid-cols-1"
-        role="tabpanel"
-        :aria-labelledby="`home-solution-tab-${selected}`"
-        tabindex="0"
-      >
-        <div>
-          <h3 class="m-0 text-[clamp(29px,2.3vw,42px)] font-bold leading-[1.25] text-navy-950">
-            {{ solution.name }}
-          </h3>
-          <p class="my-4 mb-6 max-w-[650px] text-[clamp(18px,1.18vw,20px)] leading-[1.68] text-slate-600">
-            {{ solution.description }}
-          </p>
-          <div v-if="activeSolutionChips.length" class="-mt-2 mb-7 flex flex-wrap gap-2" aria-label="Thiết bị liên quan">
-            <a
-              v-for="chip in activeSolutionChips"
-              :key="chip"
-              class="inline-flex min-h-[38px] items-center rounded-[3px] bg-hdr-surface px-3 py-[7px] text-[14.5px] font-semibold text-navy-950 no-underline transition-colors hover:bg-navy-950 hover:text-white"
-              :href="links.generic(chipHref(chip))"
+          <template #solution="{ item }">
+            <motion.article
+              v-if="item.solution"
+              :initial="solutionPanelInteracted ? { opacity: 0, y: 8 } : false"
+              :animate="{ opacity: 1, y: 0 }"
+              :transition="{ duration: 0.18, ease: 'easeOut' }"
+              class="grid grid-cols-[minmax(0,.9fr)_minmax(0,1.1fr)] items-center gap-[clamp(28px,3vw,48px)] max-md:grid-cols-1"
             >
-              {{ chip }}
-            </a>
-          </div>
-          <div class="flex flex-wrap items-center gap-[14px]">
-            <a class="inline-flex min-h-[50px] items-center rounded-[4px] border border-hdr-gold bg-hdr-gold px-[25px] font-bold text-navy-950 no-underline" :href="links.generic(solution.href)">
-              Xem giải pháp
-            </a>
-            <a class="inline-flex items-center gap-2 font-bold text-navy-950 no-underline" href="#yeu-cau-tu-van" @click="requestConsultation(solution.name)">
-              Nhận tư vấn <span aria-hidden="true">→</span>
-            </a>
-          </div>
-        </div>
+              <div>
+                <h3 class="m-0 text-[clamp(29px,2.3vw,42px)] font-bold leading-[1.25] text-navy-950">
+                  {{ item.solution.name }}
+                </h3>
+                <p class="my-4 mb-6 max-w-[650px] text-[clamp(18px,1.18vw,20px)] leading-[1.68] text-slate-600">
+                  {{ item.solution.description }}
+                </p>
+                <div v-if="item.chips.length" class="-mt-2 mb-7 flex flex-wrap gap-2" aria-label="Thiết bị liên quan">
+                  <a
+                    v-for="chip in item.chips"
+                    :key="chip"
+                    class="inline-flex min-h-[38px] items-center rounded-[3px] bg-hdr-surface px-3 py-[7px] text-[14.5px] font-semibold text-navy-950 no-underline transition-colors hover:bg-navy-950 hover:text-white"
+                    :href="links.generic(chipHref(chip, item.solution))"
+                  >
+                    {{ chip }}
+                  </a>
+                </div>
+                <div class="flex flex-wrap items-center gap-[14px]">
+                  <UButton :href="links.generic(item.solution.href)" color="primary" size="xl" class="min-h-[50px] rounded-[4px] border border-hdr-gold bg-hdr-gold px-[25px] font-bold text-navy-950 no-underline hover:bg-hdr-gold-hover">
+                    Xem giải pháp
+                  </UButton>
+                  <UButton href="#yeu-cau-tu-van" color="secondary" variant="link" class="min-h-11 rounded-none px-2 font-bold text-navy-950 no-underline hover:text-gold-700" @click="requestConsultation(item.solution.name)">
+                    Nhận tư vấn <span aria-hidden="true">→</span>
+                  </UButton>
+                </div>
+              </div>
 
-        <div class="relative flex aspect-[8/5] items-end overflow-hidden bg-navy-950 text-white">
-          <img class="absolute inset-0 h-full w-full object-cover" :src="solution.image" :alt="solution.name" width="1200" height="750" loading="lazy">
-          <span class="relative z-10 w-full bg-gradient-to-t from-[#071a2e]/85 to-transparent p-[18px] pt-24 text-sm font-bold">{{ solution.label }}</span>
-        </div>
-      </article>
+              <div class="relative flex aspect-[8/5] items-end overflow-hidden bg-navy-950 text-white">
+                <img class="absolute inset-0 h-full w-full object-cover" :src="item.solution.image" :alt="item.solution.name" width="1200" height="750" loading="lazy">
+                <span class="relative z-10 w-full bg-gradient-to-t from-[#071a2e]/85 to-transparent p-[18px] pt-24 text-sm font-bold">{{ item.solution.label }}</span>
+              </div>
+            </motion.article>
+          </template>
+        </UTabs>
+      </div>
     </div>
   </section>
 
@@ -178,23 +185,23 @@ function onTabKeydown(event: KeyboardEvent, index: number) {
         </p>
         <ul class="m-0 grid list-none gap-3 p-0">
           <li class="flex items-start gap-[11px] text-[clamp(16px,1vw,18px)] leading-[1.55]">
-            <svg class="mt-[5px] h-[11px] w-[11px] flex-none text-hdr-gold" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m2.5 8.5 3.4 3.4 7.6-7.8" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" /></svg>
+            <svg class="mt-1 h-4 w-4 flex-none text-hdr-gold" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m2.5 8.5 3.4 3.4 7.6-7.8" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" /></svg>
             Danh mục sản phẩm phù hợp nhu cầu thị trường.
           </li>
           <li class="flex items-start gap-[11px] text-[clamp(16px,1vw,18px)] leading-[1.55]">
-            <svg class="mt-[5px] h-[11px] w-[11px] flex-none text-hdr-gold" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m2.5 8.5 3.4 3.4 7.6-7.8" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" /></svg>
+            <svg class="mt-1 h-4 w-4 flex-none text-hdr-gold" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m2.5 8.5 3.4 3.4 7.6-7.8" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" /></svg>
             Hệ thống kho tại TP.HCM, Đà Nẵng và Gia Lai.
           </li>
           <li class="flex items-start gap-[11px] text-[clamp(16px,1vw,18px)] leading-[1.55]">
-            <svg class="mt-[5px] h-[11px] w-[11px] flex-none text-hdr-gold" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m2.5 8.5 3.4 3.4 7.6-7.8" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" /></svg>
+            <svg class="mt-1 h-4 w-4 flex-none text-hdr-gold" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m2.5 8.5 3.4 3.4 7.6-7.8" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" /></svg>
             Hỗ trợ tư vấn sản phẩm, kỹ thuật và bảo hành theo chính sách.
           </li>
         </ul>
       </div>
       <div class="flex gap-2 max-[860px]:max-w-[360px] max-[860px]:flex-col">
-        <a class="inline-flex min-h-[50px] flex-1 items-center justify-center rounded-[4px] border border-hdr-gold bg-hdr-gold px-5 font-bold text-navy-950 no-underline" href="#yeu-cau-tu-van" @click="requestConsultation('Hợp tác đại lý')">
+        <button type="button" class="inline-flex min-h-[50px] flex-1 cursor-pointer items-center justify-center rounded-[4px] border border-hdr-gold bg-hdr-gold px-5 font-bold text-navy-950 no-underline" @click="openDealer()">
           Đăng ký làm đại lý
-        </a>
+        </button>
         <a class="inline-flex min-h-[50px] flex-1 items-center justify-center rounded-[4px] border border-white/55 px-5 font-bold text-white no-underline" href="#yeu-cau-tu-van" @click="requestConsultation('Hợp tác đại lý')">
           Tư vấn chính sách đại lý
         </a>
@@ -219,10 +226,10 @@ function onTabKeydown(event: KeyboardEvent, index: number) {
         <li v-for="(point, index) in aboutPoints" :key="point.label" class="relative min-w-0 pl-8 text-navy-950">
           <img v-if="point.image" class="absolute left-0 top-0 h-[22px] w-[22px] rounded-full object-cover" :src="point.image" alt="" width="48" height="48" loading="lazy">
           <span v-else class="absolute left-0 top-0 flex h-[22px] w-[22px] items-center justify-center rounded-full bg-[rgba(198,154,69,.17)] text-[#8a6526]" aria-hidden="true">
-            <svg v-if="index === 0" class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6" /><path d="m8 13-1 9 5-3 5 3-1-9" /><path d="m10 8 1.3 1.3L14 6.5" /></svg>
-            <svg v-else-if="index === 1" class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a5 5 0 0 0-6.4 6.4L3 18l3 3 5.3-5.3a5 5 0 0 0 6.4-6.4L14 13l-3-3z" /><path d="m15 3 6 6" /></svg>
-            <svg v-else-if="index === 2" class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 20 5v6c0 5-3.4 9-8 11-4.6-2-8-6-8-11V5z" /><path d="m8.5 12 2.2 2.2 4.8-5" /></svg>
-            <svg v-else class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10 9-7 9 7" /><path d="M5 9v12h14V9M9 21v-7h6v7M8 11h2m4 0h2" /></svg>
+            <svg v-if="index === 0" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6" /><path d="m8 13-1 9 5-3 5 3-1-9" /><path d="m10 8 1.3 1.3L14 6.5" /></svg>
+            <svg v-else-if="index === 1" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a5 5 0 0 0-6.4 6.4L3 18l3 3 5.3-5.3a5 5 0 0 0 6.4-6.4L14 13l-3-3z" /><path d="m15 3 6 6" /></svg>
+            <svg v-else-if="index === 2" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 20 5v6c0 5-3.4 9-8 11-4.6-2-8-6-8-11V5z" /><path d="m8.5 12 2.2 2.2 4.8-5" /></svg>
+            <svg v-else class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10 9-7 9 7" /><path d="M5 9v12h14V9M9 21v-7h6v7M8 11h2m4 0h2" /></svg>
           </span>
           <strong class="block text-[clamp(15px,1vw,17px)] font-extrabold leading-[1.35]">{{ point.label }}</strong>
           <small v-if="point.description" class="mt-[7px] block text-[clamp(14px,.92vw,16px)] leading-[1.55] text-slate-600">{{ point.description }}</small>

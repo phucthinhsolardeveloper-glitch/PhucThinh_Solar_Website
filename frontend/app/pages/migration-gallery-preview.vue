@@ -15,7 +15,7 @@ const gallery = computed<PublicGalleryPayload | null>(() => isPublicGalleryPaylo
 const totalPages = computed(() => gallery.value ? Math.max(1, Math.ceil(gallery.value.pagination.total / gallery.value.pagination.perPage)) : 1)
 const errorStatus = (error.value as { statusCode?: unknown } | null)?.statusCode
 const responseStatus = editorialPublicHubResponseStatus(
-  isPublicRoute.value && config.public.galleryPublicRouteEnabled,
+  isPublicRoute.value,
   errorStatus,
   gallery.value === null,
 )
@@ -28,10 +28,10 @@ function pageTo(value: number) {
 useSeoMeta({
   title: computed(() => gallery.value?.seo.title || (isPublicRoute.value ? 'Thư viện ảnh' : 'Thư viện ảnh — Nuxt preview')),
   description: computed(() => gallery.value?.seo.description || ''),
-  robots: computed(() => editorialPublicRouteRobots(isPublicRoute.value && config.public.galleryPublicRouteEnabled, config.public.galleryPublicRouteIndexable, !!gallery.value && !error.value, 'p' in route.query)),
+  robots: computed(() => editorialPublicRouteRobots(isPublicRoute.value, config.public.galleryPublicRouteIndexable, !!gallery.value && !error.value, 'p' in route.query)),
 })
 usePublicSocialMeta({
-  enabled: computed(() => isPublicRoute.value && config.public.galleryPublicRouteEnabled && !!gallery.value && !error.value),
+  enabled: computed(() => isPublicRoute.value && !!gallery.value && !error.value),
   title: computed(() => gallery.value?.seo.title || 'Thư viện ảnh'),
   description: computed(() => gallery.value?.seo.description || ''),
   canonicalPath: GALLERY_PUBLIC_PATH,
@@ -42,7 +42,7 @@ usePublicSocialMeta({
 <template>
   <div class="min-h-screen bg-white text-navy-800">
     <SiteHeader :site="site" />
-    <main class="mx-auto w-full max-w-[1320px] px-4 py-10 nav:py-14">
+    <main class="pts-container py-10 nav:py-14">
       <SiteBreadcrumb :items="[{ label: 'Thư viện ảnh' }]" />
       <header class="mb-8">
         <h1 class="text-[clamp(32px,5vw,52px)] font-black tracking-tight">{{ gallery?.title || 'Thư viện ảnh' }}</h1>

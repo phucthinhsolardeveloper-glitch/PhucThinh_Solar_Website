@@ -30,6 +30,13 @@ if (import.meta.server && responseStatus) setResponseStatus(responseStatus, resp
 const links = useMigrationLinks()
 const emptyRichText = { format: 'sanitized-html' as const, html: '', sanitizedBy: 'pts_public_richtext' as const, sanitizerVersion: 1 as const }
 const editorial = computed(() => buildEditorialToc(data.value?.content ?? emptyRichText))
+const tocContainerRef = ref<HTMLElement | null>(null)
+const { activeHeadingId, scrollToHeading } = useTocScrollspy({
+  contentSelector: '#policy-article-content',
+  headingSelector: 'h2[id], h3[id]',
+  tocContainerRef,
+  headerOffset: 100,
+})
 
 function formatDate(value: string): string {
   const date = new Date(`${value}T00:00:00Z`)
@@ -39,10 +46,10 @@ function formatDate(value: string): string {
 useSeoMeta({
   title: computed(() => data.value?.seo.title || (isPublicRoute.value ? 'Chính sách hỗ trợ' : 'Chính sách hỗ trợ — Nuxt preview')),
   description: computed(() => data.value?.seo.description || ''),
-  robots: computed(() => editorialPublicRouteRobots(isPublicRoute.value && config.public.policyDetailPublicRouteEnabled, config.public.policyDetailPublicRouteIndexable, !!data.value && !error.value)),
+  robots: computed(() => editorialPublicRouteRobots(isPublicRoute.value, config.public.policyDetailPublicRouteIndexable, !!data.value && !error.value)),
 })
 usePublicSocialMeta({
-  enabled: computed(() => isPublicRoute.value && config.public.policyDetailPublicRouteEnabled && !!data.value && !error.value),
+  enabled: computed(() => isPublicRoute.value && !!data.value && !error.value),
   title: computed(() => data.value?.seo.title || 'Chính sách hỗ trợ'),
   description: computed(() => data.value?.seo.description || ''),
   canonicalPath: computed(() => route.path),
@@ -69,16 +76,23 @@ usePublicSocialMeta({
         </header>
         <section v-if="data.content.html" class="max-w-[1080px]" aria-label="Nội dung chính sách">
           <div class="grid gap-8" :class="editorial.toc.length ? 'nav:grid-cols-[220px_minmax(0,1fr)]' : ''">
-            <nav v-if="editorial.toc.length" class="h-fit rounded-btn border border-slate-200/90 bg-slate-50/50 p-4 nav:sticky nav:top-24" aria-label="Mục lục nội dung chính sách">
+            <nav v-if="editorial.toc.length" ref="tocContainerRef" class="h-fit rounded-btn border border-slate-200/90 bg-slate-50/50 p-4 nav:sticky nav:top-24" aria-label="Mục lục nội dung chính sách">
               <strong class="mb-3 block text-sm text-navy-800">Nội dung bài viết</strong>
               <ul class="m-0 list-none space-y-1 p-0">
                 <li v-for="item in editorial.toc" :key="item.id" :class="item.level === 3 ? 'pl-3' : ''">
-                  <a class="flex min-h-11 items-center px-2 py-2 text-sm leading-snug text-slate-600 no-underline hover:text-gold-700" :href="`#${item.id}`">{{ item.label }}</a>
+                  <a
+                    :data-toc-id="item.id"
+                    class="flex min-h-11 items-center px-2 py-2 text-sm leading-snug no-underline hover:text-gold-700"
+                    :class="activeHeadingId === item.id ? 'font-extrabold text-gold-700' : 'text-slate-600'"
+                    :aria-current="activeHeadingId === item.id ? 'true' : undefined"
+                    :href="`#${item.id}`"
+                    @click.prevent="scrollToHeading(item.id)"
+                  >{{ item.label }}</a>
                 </li>
               </ul>
             </nav>
             <div class="w-full max-w-[960px]">
-              <EditorialRichText :content="editorial.content" />
+              <div id="policy-article-content"><EditorialRichText :content="editorial.content" /></div>
               <EditorialShare :title="data.title" :canonical-path="data.canonical" />
             </div>
           </div>

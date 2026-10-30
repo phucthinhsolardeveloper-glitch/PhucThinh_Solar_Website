@@ -18,7 +18,7 @@ test('public category returns 404 only when validated taxonomy lacks the request
 test('public brand detail preserves API 404 while preview and upstream errors keep their status', () => {
   const page = read('components/catalog/BrandDetailPage.vue')
   assert.match(page, /const \{ active: isMigrationPreview, generic: migrationHref \} = useMigrationLinks\(\)/)
-  assert.match(page, /const publicEnabled = computed\(\(\) => !isMigrationPreview\.value && isRuntimeFlagEnabled\(config\.public\.brandDetailPublicRouteEnabled\)\)/)
+  assert.match(page, /const publicEnabled = computed\(\(\) => !isMigrationPreview\.value\)/)
   assert.match(page, /const brandErrorStatus = \(error\.value as \{ statusCode\?: unknown \} \| null\)\?\.statusCode/)
   assert.match(page, /if \(import\.meta\.server && publicEnabled\.value && \(error\.value \|\| !data\.value\)\) \{\s*const status = brandErrorStatus === 404 \? 404 : 502\s*setResponseStatus\(status, status === 404 \? 'Not Found' : 'Bad Gateway'\)/)
 })

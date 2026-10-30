@@ -121,7 +121,8 @@ export function publicSiteStructuredData(originValue: unknown, pathname: unknown
 }
 
 export function isPublicSeoIndexable(indexable: unknown, hasContent: unknown, hasFilters: unknown = false): boolean {
-  return indexable === true && hasContent === true && hasFilters !== true
+  const preference = indexable === true || indexable === '1' || indexable === 'true'
+  return preference && hasContent === true && hasFilters !== true
 }
 
 export function publicSeoRobots(indexable: unknown, hasContent: unknown, hasFilters: unknown = false): string {

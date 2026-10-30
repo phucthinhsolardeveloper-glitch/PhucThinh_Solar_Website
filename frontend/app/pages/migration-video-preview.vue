@@ -15,7 +15,7 @@ const selected = ref<PublicVideoItem | null>(null)
 const totalPages = computed(() => payload.value ? Math.max(1, Math.ceil(payload.value.pagination.total / payload.value.pagination.perPage)) : 1)
 const errorStatus = (error.value as { statusCode?: unknown } | null)?.statusCode
 const responseStatus = editorialPublicHubResponseStatus(
-  isPublicRoute.value && config.public.videoPublicRouteEnabled,
+  isPublicRoute.value,
   errorStatus,
   payload.value === null,
 )
@@ -73,10 +73,10 @@ onBeforeUnmount(() => {
 useSeoMeta({
   title: computed(() => payload.value?.seo.title || (isPublicRoute.value ? 'Video' : 'Video — Nuxt preview')),
   description: computed(() => payload.value?.seo.description || ''),
-  robots: computed(() => editorialPublicRouteRobots(isPublicRoute.value && config.public.videoPublicRouteEnabled, config.public.videoPublicRouteIndexable, !!payload.value && !error.value, 'p' in route.query)),
+  robots: computed(() => editorialPublicRouteRobots(isPublicRoute.value, config.public.videoPublicRouteIndexable, !!payload.value && !error.value, 'p' in route.query)),
 })
 usePublicSocialMeta({
-  enabled: computed(() => isPublicRoute.value && config.public.videoPublicRouteEnabled && !!payload.value && !error.value),
+  enabled: computed(() => isPublicRoute.value && !!payload.value && !error.value),
   title: computed(() => payload.value?.seo.title || 'Video'),
   description: computed(() => payload.value?.seo.description || ''),
   canonicalPath: VIDEO_PUBLIC_PATH,
@@ -87,7 +87,7 @@ usePublicSocialMeta({
 <template>
   <div class="min-h-screen bg-white text-navy-800">
     <SiteHeader :site="site" />
-    <main class="mx-auto w-full max-w-[1320px] px-4 py-10 nav:py-14">
+    <main class="pts-container py-10 nav:py-14">
       <SiteBreadcrumb :items="[{ label: 'Video' }]" />
       <header class="mb-8">
         <h1 class="text-[clamp(32px,5vw,52px)] font-black tracking-tight">{{ payload?.title || 'Video' }}</h1>
