@@ -28,19 +28,21 @@ function cardImage(src: string): string {
       <a
         v-for="product in dealer.overview.products"
         :key="product.title + product.image"
-        class="min-w-0 text-inherit no-underline"
+        class="group min-w-0 text-inherit no-underline"
         :href="product.href ? links.generic(product.href) : undefined"
         :target="links.active ? undefined : '_blank'"
         :rel="links.active ? undefined : 'noopener noreferrer'"
       >
-        <img
-          v-if="product.image"
-          :src="cardImage(product.image)"
-          :alt="product.title"
-          class="mb-3 block aspect-[8/5] w-full rounded-chip object-cover"
-          loading="lazy"
-        >
-        <span class="font-semibold text-navy-800">{{ product.title }}</span>
+        <div class="mb-3 overflow-hidden rounded-chip bg-slate-100">
+          <img
+            v-if="product.image"
+            :src="cardImage(product.image)"
+            :alt="product.title"
+            class="block aspect-[8/5] w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+            loading="lazy"
+          >
+        </div>
+        <span class="font-bold text-navy-800 transition-colors group-hover:text-gold-700">{{ product.title }}</span>
       </a>
     </div>
   </section>

@@ -100,19 +100,19 @@ async function send() {
           <div class="grid gap-x-4 tb:grid-cols-2">
             <label class="mb-[17px] block text-[14.5px] font-semibold text-navy-950">
               Họ và tên <span>*</span>
-              <input v-model.trim="form.fullname" class="mt-2 block w-full rounded-[3px] border-[1.5px] border-[#cfd6de] px-[13px] py-[11px] font-inherit" type="text" maxlength="100" autocomplete="name" required>
+              <input v-model.trim="form.fullname" class="mt-2 block w-full rounded-[3px] border-[1.5px] border-[#cfd6de] px-[13px] py-[11px] font-inherit outline-none focus:border-gold-500 focus:ring-2 focus:ring-gold-500/25 transition-all" type="text" maxlength="100" autocomplete="name" required>
             </label>
             <label class="mb-[17px] block text-[14.5px] font-semibold text-navy-950">
               Số điện thoại <span>*</span>
-              <input v-model.trim="form.phone" class="mt-2 block w-full rounded-[3px] border-[1.5px] border-[#cfd6de] px-[13px] py-[11px] font-inherit" type="tel" maxlength="20" autocomplete="tel" inputmode="tel" required>
+              <input v-model.trim="form.phone" class="mt-2 block w-full rounded-[3px] border-[1.5px] border-[#cfd6de] px-[13px] py-[11px] font-inherit outline-none focus:border-gold-500 focus:ring-2 focus:ring-gold-500/25 transition-all" type="tel" maxlength="20" autocomplete="tel" inputmode="tel" required>
             </label>
             <label class="mb-[17px] block text-[14.5px] font-semibold text-navy-950">
               Tỉnh/Thành phố
-              <input v-model.trim="form.address" class="mt-2 block w-full rounded-[3px] border-[1.5px] border-[#cfd6de] px-[13px] py-[11px] font-inherit" type="text" maxlength="255" autocomplete="address-level1" placeholder="Ví dụ: Gia Lai">
+              <input v-model.trim="form.address" class="mt-2 block w-full rounded-[3px] border-[1.5px] border-[#cfd6de] px-[13px] py-[11px] font-inherit outline-none focus:border-gold-500 focus:ring-2 focus:ring-gold-500/25 transition-all" type="text" maxlength="255" autocomplete="address-level1" placeholder="Ví dụ: Gia Lai">
             </label>
             <label class="mb-[17px] block text-[14.5px] font-semibold text-navy-950">
               Anh/chị quan tâm đến
-              <select v-model="form.subject" class="mt-2 block min-h-[46px] w-full rounded-[3px] border-[1.5px] border-[#cfd6de] bg-white px-[13px] py-[11px] font-inherit">
+              <select v-model="form.subject" class="mt-2 block min-h-[46px] w-full rounded-[3px] border-[1.5px] border-[#cfd6de] bg-white px-[13px] py-[11px] font-inherit outline-none focus:border-gold-500 focus:ring-2 focus:ring-gold-500/25 transition-all">
                 <option value="">-- Chọn nhu cầu --</option>
                 <option value="Đèn năng lượng mặt trời">Đèn năng lượng mặt trời</option>
                 <option value="Điện mặt trời gia đình">Điện mặt trời gia đình</option>
@@ -126,11 +126,11 @@ async function send() {
           </div>
           <label class="mb-[17px] block text-[14.5px] font-semibold text-navy-950">
             Nội dung cần trao đổi <span>*</span>
-            <textarea v-model.trim="form.content" class="mt-2 block w-full resize-y rounded-[3px] border-[1.5px] border-[#cfd6de] px-[13px] py-[11px] font-inherit" rows="4" maxlength="5000" required placeholder="Mô tả ngắn nhu cầu của bạn" />
+            <textarea v-model.trim="form.content" class="mt-2 block w-full resize-y rounded-[3px] border-[1.5px] border-[#cfd6de] px-[13px] py-[11px] font-inherit outline-none focus:border-gold-500 focus:ring-2 focus:ring-gold-500/25 transition-all" rows="4" maxlength="5000" required placeholder="Mô tả ngắn nhu cầu của bạn" />
           </label>
           <p v-if="success" class="mb-3 rounded-[3px] bg-emerald-50 p-3 text-sm font-semibold text-emerald-800" role="status">{{ success }}</p>
           <p v-if="error" class="mb-3 rounded-[3px] bg-red-50 p-3 text-sm font-semibold text-red-800" role="alert">{{ error }}</p>
-          <button :disabled="submitting" class="inline-flex min-h-[50px] items-center justify-center rounded-[4px] border border-hdr-gold bg-hdr-gold px-[25px] font-bold text-navy-950 disabled:cursor-wait disabled:opacity-60" type="submit">
+          <button :disabled="submitting" class="inline-flex min-h-[50px] items-center justify-center rounded-[4px] border border-hdr-gold bg-hdr-gold px-[25px] font-bold text-navy-950 shadow-xs transition-all hover:bg-hdr-gold-hover hover:shadow-md active:scale-[0.98] disabled:cursor-wait disabled:opacity-60 cursor-pointer" type="submit">
             {{ submitting ? 'Đang gửi…' : 'Gửi yêu cầu tư vấn' }}
           </button>
           <small class="mt-3 block text-slate-500">Thông tin chỉ được sử dụng để liên hệ tư vấn; biểu mẫu được bảo vệ bằng CSRF, reCAPTCHA và giới hạn tần suất.</small>

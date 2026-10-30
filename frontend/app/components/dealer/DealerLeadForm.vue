@@ -44,22 +44,22 @@ async function send() {
 <template>
   <form class="grid grid-cols-1 gap-x-3.5 gap-y-4 min-[640px]:grid-cols-2" @submit.prevent="send">
     <label class="grid gap-1.5 text-sm font-bold text-white">Họ và tên
-      <input v-model.trim="form.fullname" required maxlength="100" autocomplete="name" placeholder="Nguyễn Văn A" class="h-12 rounded-chip border border-white/20 bg-white px-3 font-normal text-navy-900 outline-none focus:border-gold-500">
+      <input v-model.trim="form.fullname" required maxlength="100" autocomplete="name" placeholder="Nguyễn Văn A" class="h-12 rounded-chip border border-white/20 bg-white px-3 font-normal text-navy-900 outline-none focus:border-gold-500 focus:ring-2 focus:ring-gold-500/30 transition-all">
     </label>
     <label class="grid gap-1.5 text-sm font-bold text-white">Số điện thoại
-      <input v-model.trim="form.phone" required maxlength="20" autocomplete="tel" inputmode="tel" placeholder="09xx xxx xxx" class="h-12 rounded-chip border border-white/20 bg-white px-3 font-normal text-navy-900 outline-none focus:border-gold-500">
+      <input v-model.trim="form.phone" required maxlength="20" autocomplete="tel" inputmode="tel" placeholder="09xx xxx xxx" class="h-12 rounded-chip border border-white/20 bg-white px-3 font-normal text-navy-900 outline-none focus:border-gold-500 focus:ring-2 focus:ring-gold-500/30 transition-all">
     </label>
     <label class="grid gap-1.5 text-sm font-bold text-white">Email
-      <input v-model.trim="form.email" required type="email" maxlength="150" autocomplete="email" placeholder="email@doanhnghiep.vn" class="h-12 rounded-chip border border-white/20 bg-white px-3 font-normal text-navy-900 outline-none focus:border-gold-500">
+      <input v-model.trim="form.email" required type="email" maxlength="150" autocomplete="email" placeholder="email@doanhnghiep.vn" class="h-12 rounded-chip border border-white/20 bg-white px-3 font-normal text-navy-900 outline-none focus:border-gold-500 focus:ring-2 focus:ring-gold-500/30 transition-all">
     </label>
     <label class="grid gap-1.5 text-sm font-bold text-white">Tỉnh/Thành phố
-      <select v-model="form.address" required class="h-12 rounded-chip border border-white/20 bg-white px-3 font-normal text-navy-900 outline-none focus:border-gold-500">
+      <select v-model="form.address" required class="h-12 rounded-chip border border-white/20 bg-white px-3 font-normal text-navy-900 outline-none focus:border-gold-500 focus:ring-2 focus:ring-gold-500/30 transition-all">
         <option value="">{{ securityLoading ? 'Đang tải tỉnh/thành…' : 'Chọn tỉnh/thành' }}</option>
         <option v-for="city in security?.cities ?? []" :key="city.id" :value="city.name">{{ city.name }}</option>
       </select>
     </label>
     <label class="grid gap-1.5 text-sm font-bold text-white min-[640px]:col-span-2">Doanh nghiệp hoặc cửa hàng
-      <input v-model.trim="form.company" required maxlength="180" autocomplete="organization" placeholder="Tên đơn vị của bạn" class="h-12 rounded-chip border border-white/20 bg-white px-3 font-normal text-navy-900 outline-none focus:border-gold-500">
+      <input v-model.trim="form.company" required maxlength="180" autocomplete="organization" placeholder="Tên đơn vị của bạn" class="h-12 rounded-chip border border-white/20 bg-white px-3 font-normal text-navy-900 outline-none focus:border-gold-500 focus:ring-2 focus:ring-gold-500/30 transition-all">
     </label>
 
     <p v-if="success" class="rounded-chip bg-emerald-50 p-3 text-sm font-semibold text-emerald-800 min-[640px]:col-span-2" role="status">{{ success }}</p>
@@ -67,7 +67,7 @@ async function send() {
       <p class="mb-2">{{ error }}</p>
       <button v-if="!securityLoading" type="button" class="font-bold underline" @click="loadSecurity(true)">Thử tải lại</button>
     </div>
-    <button type="submit" :disabled="submitting || securityLoading || !security?.cities.length" class="min-h-[50px] w-full rounded-chip bg-gold-500 px-5 font-extrabold text-navy-950 hover:bg-gold-600 disabled:cursor-not-allowed disabled:opacity-60 min-[640px]:col-span-2">
+    <button type="submit" :disabled="submitting || securityLoading || !security?.cities.length" class="min-h-[50px] w-full rounded-chip bg-gold-500 px-5 font-extrabold text-navy-950 shadow-xs transition-all hover:bg-gold-600 hover:shadow-md active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 min-[640px]:col-span-2 cursor-pointer">
       {{ submitting ? 'Đang gửi…' : 'Đăng ký ngay' }}
     </button>
     <small class="block text-xs leading-relaxed text-blue-200 min-[640px]:col-span-2">CSRF, reCAPTCHA v3 và rate-limit vẫn được PHP xác minh trước khi lưu yêu cầu.</small>
