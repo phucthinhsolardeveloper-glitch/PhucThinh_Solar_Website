@@ -23,7 +23,7 @@ function formatDate(value: string): string {
     quán với PDP/dự án/giải pháp chi tiết đã đo (container 1766px, heading
     navy-800, .cms-content cho nội dung dài).
   -->
-  <article class="mx-auto w-full max-w-[1080px]">
+  <article class="mx-auto w-full max-w-[1280px]">
     <h1 class="mb-4 text-[clamp(28px,3.6vw,42px)] font-black leading-tight text-navy-800">{{ article.title }}</h1>
     <p class="mb-4 text-slate-500"><time v-if="article.date" :datetime="article.date">{{ formatDate(article.date) }}</time><span v-if="article.date" aria-hidden="true"> · </span>{{ article.author.name }}</p>
     <img v-if="article.cover && article.showCover" :src="article.cover" :alt="article.title" class="my-6 block aspect-video w-full rounded-chip object-cover">

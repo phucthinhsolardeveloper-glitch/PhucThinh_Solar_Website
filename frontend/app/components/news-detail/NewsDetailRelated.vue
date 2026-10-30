@@ -22,21 +22,56 @@ function scrollRelated(direction: -1 | 1): void {
     <div class="mb-5 flex items-center justify-between gap-4">
       <h2 id="related-news-title" class="m-0 text-2xl font-black text-navy-800">Tin liên quan</h2>
       <div v-if="items.length > 1" role="group" class="flex shrink-0 gap-2" aria-label="Điều hướng tin liên quan">
-        <button type="button" class="grid size-9 place-items-center rounded-full text-navy-800 hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-600" aria-label="Tin trước" @click="scrollRelated(-1)">‹</button>
-        <button type="button" class="grid size-9 place-items-center rounded-full text-navy-800 hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-600" aria-label="Tin tiếp theo" @click="scrollRelated(1)">›</button>
+        <button
+          type="button"
+          class="grid size-9 place-items-center rounded-full border border-slate-200/90 bg-white text-navy-800 shadow-xs transition-colors hover:bg-slate-100 hover:text-gold-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-600"
+          aria-label="Tin trước"
+          @click="scrollRelated(-1)"
+        >
+          <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+        </button>
+        <button
+          type="button"
+          class="grid size-9 place-items-center rounded-full border border-slate-200/90 bg-white text-navy-800 shadow-xs transition-colors hover:bg-slate-100 hover:text-gold-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-600"
+          aria-label="Tin tiếp theo"
+          @click="scrollRelated(1)"
+        >
+          <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="9 18 15 12 9 6" />
+          </svg>
+        </button>
       </div>
     </div>
-    <ul ref="track" class="related-track m-0 flex list-none snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth p-0">
+    <ul ref="track" class="related-track m-0 flex list-none snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth p-0 py-2">
       <li v-for="item in items" :key="item.id" class="min-w-0 w-full shrink-0 snap-start tb:w-[calc((100%_-_1.5rem)/2)] nav:w-[calc((100%_-_4.5rem)/4)]">
-        <a class="group block h-full text-navy-800 no-underline" :href="links.news(item.slug)">
-          <img v-if="item.image" :src="item.image" :alt="item.title" class="mb-3 block aspect-video w-full object-cover" loading="lazy" decoding="async" width="640" height="360" sizes="(min-width: 1100px) 25vw, (min-width: 768px) 50vw, 100vw">
-          <div v-else class="mb-3 aspect-video bg-navy-50" aria-hidden="true" />
-          <p v-if="item.date || item.author" class="mb-2 flex flex-wrap items-center gap-3 text-xs text-slate-500">
-            <time v-if="item.date" :datetime="item.date">{{ formatDate(item.date) }}</time>
-            <span v-if="item.author">{{ item.author }}</span>
-          </p>
-          <h3 class="mb-2 line-clamp-2 text-[15px] font-bold leading-snug group-hover:text-gold-700">{{ item.title }}</h3>
-          <p v-if="item.description" class="mb-0 line-clamp-2 text-sm leading-relaxed text-slate-600">{{ item.description }}</p>
+        <a
+          class="group flex h-full flex-col overflow-hidden rounded-xl border border-slate-200/90 bg-white text-navy-800 no-underline shadow-xs transition-all duration-300 hover:-translate-y-1.5 hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-600"
+          :href="links.news(item.slug)"
+        >
+          <div class="overflow-hidden bg-slate-50">
+            <img
+              v-if="item.image"
+              :src="item.image"
+              :alt="item.title"
+              class="block aspect-video w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+              loading="lazy"
+              decoding="async"
+              width="640"
+              height="360"
+              sizes="(min-width: 1100px) 25vw, (min-width: 768px) 50vw, 100vw"
+            >
+            <div v-else class="aspect-video w-full bg-navy-50" aria-hidden="true" />
+          </div>
+          <div class="flex flex-1 flex-col p-4">
+            <p v-if="item.date || item.author" class="mb-2 flex flex-wrap items-center gap-3 text-xs text-slate-500">
+              <time v-if="item.date" :datetime="item.date">{{ formatDate(item.date) }}</time>
+              <span v-if="item.author">{{ item.author }}</span>
+            </p>
+            <h3 class="mb-2 line-clamp-2 text-[15px] font-bold leading-snug transition-colors group-hover:text-gold-700">{{ item.title }}</h3>
+            <p v-if="item.description" class="mb-0 line-clamp-2 text-sm leading-relaxed text-slate-600">{{ item.description }}</p>
+          </div>
         </a>
       </li>
     </ul>

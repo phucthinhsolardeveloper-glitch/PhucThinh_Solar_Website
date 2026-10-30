@@ -42,7 +42,7 @@ usePublicSocialMeta({
 <template>
   <div class="min-h-screen bg-white text-navy-800">
     <SiteHeader :site="site" />
-    <main class="mx-auto w-full max-w-[1320px] px-4 py-10 nav:py-14">
+    <main class="pts-container py-10 nav:py-14">
       <SiteBreadcrumb :items="[{ label: 'Thư viện ảnh' }]" />
       <header class="mb-8">
         <h1 class="text-[clamp(32px,5vw,52px)] font-black tracking-tight">{{ gallery?.title || 'Thư viện ảnh' }}</h1>

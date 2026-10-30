@@ -32,7 +32,7 @@ function cardImage(src: string): string {
   <article class="min-w-0">
     <a
       :href="links.news(article.slug)"
-      class="group flex h-full flex-col text-navy-800 no-underline"
+      class="group flex h-full flex-col text-navy-800 no-underline transition-all duration-300 hover:-translate-y-1"
       :class="variant === 'secondary'
         ? 'grid grid-cols-[minmax(0,38%)_minmax(0,1fr)] gap-4 max-ph:flex max-ph:flex-col'
         : ''"
@@ -41,13 +41,13 @@ function cardImage(src: string): string {
         class="relative overflow-hidden bg-slate-50"
         :class="variant === 'secondary'
           ? 'aspect-video h-full min-h-[150px] rounded-chip max-ph:aspect-video max-ph:h-auto max-ph:min-h-0'
-          : (variant === 'grid' ? 'aspect-video' : 'aspect-video rounded-chip')"
+          : (variant === 'grid' ? 'aspect-video rounded-chip' : 'aspect-video rounded-chip')"
       >
         <img
           v-if="article.image"
           :src="cardImage(article.image)"
           :alt="article.title"
-          class="block h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+          class="block h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
           loading="lazy"
           decoding="async"
           width="640"
@@ -69,7 +69,7 @@ function cardImage(src: string): string {
           <span v-if="article.readingMinutes">{{ article.readingMinutes }} {{ readLabel }}</span>
         </p>
         <h2
-          class="mb-2 line-clamp-2 leading-[1.35] text-navy-800"
+          class="mb-2 line-clamp-2 leading-[1.35] text-navy-800 transition-colors group-hover:text-gold-700"
           :class="variant === 'lead' ? 'text-2xl' : 'text-xl'"
         >
           {{ article.title }}
@@ -78,10 +78,11 @@ function cardImage(src: string): string {
           {{ article.description }}
         </p>
         <span
-          class="inline-block text-[13px] font-bold text-gold-700"
+          class="inline-flex items-center gap-1.5 text-[13px] font-bold text-gold-700"
           :class="variant === 'secondary' ? 'mt-2.5' : 'mt-[13px]'"
         >
-          {{ readMoreLabel }} <span aria-hidden="true">→</span>
+          <span>{{ readMoreLabel }}</span>
+          <span class="inline-block transition-transform duration-300 group-hover:translate-x-1.5" aria-hidden="true">→</span>
         </span>
       </div>
     </a>
