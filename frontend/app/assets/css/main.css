@@ -199,6 +199,13 @@
   --ui-radius: 4px;
 }
 
+/* Match the approved shared page width on large displays (1600px+). */
+@media (min-width: 1600px) {
+  :root {
+    --container-page: min(calc(100vw - clamp(96px, 8vw, 220px)), 2200px);
+  }
+}
+
 /*
  * Tailwind v4 utilities và component Nuxt UI là lớp style chính của ứng dụng.
  * `tokens.css` được nạp sau file này để các reset global không-layer của nó
@@ -277,7 +284,7 @@
    * - <=359px : gutter 12px (không tràn 320px)
    * - 360-820 : gutter 16px
    * - 821-1320: gutter 24px
-   * - >=1321  : gutter chuẩn --spacing-gutter (34px) trên khung --container-page (1680px)
+   * - >=1321  : gutter chuẩn --spacing-gutter (34px); từ 1600px container mở theo công thức design-system
    * Đảm bảo Header, Breadcrumb, Hero, Nội dung và Footer thẳng cùng một trục dọc.
    */
   .pts-container {
