@@ -34,6 +34,7 @@ const discountPercent = computed(() => {
   return Math.round(((props.pricing.regularPrice - props.pricing.salePrice) / props.pricing.regularPrice) * 100)
 })
 const productCategories = computed(() => (props.breadcrumbs ?? []).filter((item) => item.url !== '/san-pham/').slice(0, 2))
+const { isHeaderHidden } = useSiteHeader()
 
 const navItems = computed(() => {
   const items: Array<{ id: string; label: string }> = []
@@ -132,7 +133,12 @@ onBeforeUnmount(() => observer?.disconnect())
       </div>
     </div>
 
-    <nav v-if="navItems.length" class="sticky top-[66px] z-20 mb-2 overflow-x-auto border-y border-slate-200 bg-white/95 backdrop-blur-md nav:top-[78px] transition-all" aria-label="Mục nội dung sản phẩm">
+    <nav
+      v-if="navItems.length"
+      class="sticky z-20 mb-2 overflow-x-auto border-y border-slate-200 bg-white/95 backdrop-blur-md transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
+      :class="isHeaderHidden ? 'top-0 shadow-sm' : 'top-16 min-[821px]:top-[88px] min-[1321px]:top-[104px] min-[1501px]:top-[120px] min-[1800px]:top-[136px]'"
+      aria-label="Mục nội dung sản phẩm"
+    >
       <div class="flex min-w-max gap-1.5 py-2">
         <a
           v-for="item in navItems"

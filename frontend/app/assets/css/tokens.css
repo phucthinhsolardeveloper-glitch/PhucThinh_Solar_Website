@@ -67,3 +67,9 @@ html {
   }
 }
 
+/* Bù trừ chiều cao header sticky cho anchor jump toàn site (giải quyết triệt để lỗi nhảy anchor bị che tiêu đề) */
+[id] {
+  scroll-margin-top: clamp(88px, 8vw, 136px);
+}
+
+

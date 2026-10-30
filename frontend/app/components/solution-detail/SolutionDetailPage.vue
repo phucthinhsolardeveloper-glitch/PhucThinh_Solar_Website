@@ -6,6 +6,7 @@ import SolutionDetailGallery from './SolutionDetailGallery.vue'
 import SolutionsCta from '~/components/solutions/SolutionsCta.vue'
 
 const props = defineProps<{ data: PublicSolutionDetailPayload; hotline?: string }>()
+const { isHeaderHidden } = useSiteHeader()
 const links = useMigrationLinks()
 const editorial = computed(() => buildEditorialTocForFragments(
   [props.data.solution.content, props.data.solution.extraContent] as const,
@@ -102,7 +103,8 @@ const { activeHeadingId, scrollToHeading } = useTocScrollspy({
         <aside
           v-if="tocItems.length"
           ref="tocContainerRef"
-          class="self-start rounded-btn border border-navy-700/70 bg-gradient-to-b from-navy-800 to-navy-950 p-5 shadow-sm min-[901px]:sticky min-[901px]:top-24 min-[901px]:max-h-[calc(100vh-116px)] min-[901px]:overflow-y-auto"
+          class="self-start rounded-btn border border-navy-700/70 bg-gradient-to-b from-navy-800 to-navy-950 p-5 shadow-sm min-[901px]:sticky min-[901px]:max-h-[calc(100vh-116px)] min-[901px]:overflow-y-auto transition-[top] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
+          :class="isHeaderHidden ? 'min-[901px]:top-6' : 'min-[901px]:top-[104px] min-[1501px]:top-[124px] min-[1800px]:top-[140px]'"
           aria-label="Mục lục nội dung"
         >
           <h2 class="m-0 mb-3 flex items-center gap-2 border-b border-white/12 pb-3 text-[13px] font-extrabold uppercase tracking-wider text-gold-300">
