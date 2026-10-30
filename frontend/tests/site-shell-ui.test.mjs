@@ -149,9 +149,9 @@ test('news and project CTA bands retain the PHP wide-banner hierarchy on desktop
   assert.match(newsCta, /grid-cols-\[44px_minmax\(0,1fr\)\][\s\S]*nav:grid-cols-\[52px_minmax\(0,1fr\)_auto\]/)
   assert.match(newsCta, /absolute inset-0 -z-10 h-full w-full object-cover opacity-50/)
   assert.match(newsCta, /phoneLabel[\s\S]*cta\.hotline\.text[\s\S]*cta\.buttonLabel/)
-  assert.match(projectsCta, /absolute inset-0 -z-20 h-full w-full object-cover/)
+  assert.match(projectsCta, /absolute inset-0 z-10 h-full w-full object-cover opacity-50/)
   assert.match(projectsCta, /cta\.eyebrow[\s\S]*cta\.title[\s\S]*cta\.description[\s\S]*trustItems/)
-  assert.match(projectsCta, /cta\.hotline\.label[\s\S]*cta\.buttonLabel/)
+  assert.match(projectsCta, /cta\.hotline\?\.tel[\s\S]*cta\.hotline\.text[\s\S]*cta\.buttonLabel/)
 })
 
 test('footer and breadcrumb route CMS links through the migration resolver', () => {
