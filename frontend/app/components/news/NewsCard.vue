@@ -64,9 +64,15 @@ function cardImage(src: string): string {
       </div>
 
       <div class="flex-1 py-[15px] pb-5" :class="variant === 'secondary' ? 'pt-2' : (variant === 'grid' ? 'p-4' : '')">
-        <p v-if="article.date || article.readingMinutes" class="mb-2 flex flex-wrap gap-3.5 text-xs text-slate-500">
-          <time v-if="article.date" :datetime="article.date">{{ article.date.split('-').reverse().join('/') }}</time>
-          <span v-if="article.readingMinutes">{{ article.readingMinutes }} {{ readLabel }}</span>
+        <p v-if="article.date || article.readingMinutes" class="mb-2 flex flex-wrap items-center gap-3.5 text-xs text-slate-500">
+          <time v-if="article.date" :datetime="article.date" class="inline-flex items-center gap-1.5">
+            <svg class="h-3.5 w-3.5 text-gold-600 flex-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+            <span>{{ article.date.split('-').reverse().join('/') }}</span>
+          </time>
+          <span v-if="article.readingMinutes" class="inline-flex items-center gap-1.5">
+            <svg class="h-3.5 w-3.5 text-gold-600 flex-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span>{{ article.readingMinutes }} {{ readLabel }}</span>
+          </span>
         </p>
         <h2
           class="mb-2 line-clamp-2 leading-[1.35] text-navy-800 transition-colors group-hover:text-gold-700"

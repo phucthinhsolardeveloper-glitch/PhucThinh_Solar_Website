@@ -19,8 +19,11 @@ function scrollRelated(direction: -1 | 1): void {
 
 <template>
   <aside v-if="items.length" class="pt-8" aria-labelledby="related-news-title">
-    <div class="mb-5 flex items-center justify-between gap-4">
-      <h2 id="related-news-title" class="m-0 text-2xl font-black text-navy-800">Tin liên quan</h2>
+    <div class="mb-5 flex items-end justify-between gap-4">
+      <div>
+        <span class="mb-1 block text-xs font-black uppercase tracking-wider text-gold-600">Khám phá thêm</span>
+        <h2 id="related-news-title" class="m-0 text-2xl font-black text-navy-800">Tin liên quan</h2>
+      </div>
       <div v-if="items.length > 1" role="group" class="flex shrink-0 gap-2" aria-label="Điều hướng tin liên quan">
         <button
           type="button"
