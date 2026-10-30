@@ -74,3 +74,12 @@ These refs remain local and unmerged; no cleanup was done to their branch histor
 ## Release assessment
 
 **NO-GO for replacing the production PHP frontend at this checkpoint.** Local tests, typecheck, build, and mock-backed SSR smoke pass, but real CMS/API data, several required screenshot comparisons, and production-like Caddy/Compose/rollback checks remain unverified. No production state changed. `origin/master` is the rollback base; the pre-integration local checkpoint is `010c6a1`.
+
+## Follow-up checkpoint — local integration and UI motion
+
+- Current local `master`: `13d7454a314dde80d3c336fd996342b2564beed2`, clean, 61 commits ahead of `origin/master`. Nothing was pushed or deployed.
+- All merged feature worktrees and their local refs from these UI passes were removed. Only the master worktree remains. `nuxt-progress-codex` is retained as separate optional workflow tooling; it is not product code.
+- Additional local changes: policy related carousel (`8b248fd`), hide floating contact while footer is visible (`6bf6c68`), project detail empty-state/CTA (`261a431`), Home hero PHP breakpoints (`0c7f192`), flat catalog support CTAs (`9b26c43`), Home solution-tab motion (`cb71e5a`), Home hero reduced-motion/keyboard handling (`92fd92b`), and PDP gallery/lightbox motion (`efafd0a`).
+- Latest focused checks on current UI code: homepage contract **15/15 PASS**, PDP media/lightbox checks **2/2 PASS**, Nuxt typecheck **PASS**. Home editorial contract ran **14/14 PASS** on its feature branch. Production build and mock-backed preview smoke passed at `59ec761`, before the last three motion changes; they were not rerun on this checkpoint.
+- No screenshots were taken during this follow-up. Source and focused test evidence support the changes; live visual parity was not re-verified.
+- Production API/CMS, Caddy/Compose, commerce, and rollback gates remain unverified. This checkpoint does not change the existing **NO-GO for production cutover** assessment. PHP, database, DNS, containers, and backups were not modified.
