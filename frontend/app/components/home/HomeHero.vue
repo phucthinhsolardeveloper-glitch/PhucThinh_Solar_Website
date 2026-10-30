@@ -13,6 +13,19 @@ const links = useMigrationLinks()
 let autoplayTimer: number | undefined
 let touchStartX: number | null = null
 
+const phpResizableHeroImage = /^\/(?:upload\/photo|assets\/images\/site-visuals)\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png)$/i
+
+function heroImageCandidate(src: string, width: 960 | 1600): string {
+  if (!phpResizableHeroImage.test(src)) return src
+  const height = Math.round(width * 720 / 1600)
+  return `/thumbs/${width}x${height}x1${src}`
+}
+
+function heroImageSrcSet(src: string): string | undefined {
+  if (!phpResizableHeroImage.test(src)) return undefined
+  return `${heroImageCandidate(src, 960)} 960w, ${heroImageCandidate(src, 1600)} 1600w`
+}
+
 function showSlide(index: number) {
   if (!props.hero.length) return
   active.value = (index + props.hero.length) % props.hero.length
@@ -98,9 +111,13 @@ onBeforeUnmount(() => {
           <img
             v-if="slide.image && !failedImages.has(slide.image.trim())"
             class="absolute inset-0 h-full w-full object-cover max-[640px]:object-[62%_center]"
-            :src="slide.image"
+            :src="heroImageCandidate(slide.image, 1600)"
+            :srcset="heroImageSrcSet(slide.image)"
+            sizes="100vw"
             :alt="slide.name"
             :fetchpriority="index === 0 ? 'high' : 'low'"
+            :loading="index === 0 ? 'eager' : 'lazy'"
+            decoding="async"
             width="1600"
             height="720"
             @error="markImageFailed"

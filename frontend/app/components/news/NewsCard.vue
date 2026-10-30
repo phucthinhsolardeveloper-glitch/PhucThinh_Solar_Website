@@ -14,10 +14,15 @@ withDefaults(defineProps<{
   variant?: 'grid' | 'lead' | 'secondary'
 }>(), { variant: 'grid' })
 const links = useMigrationLinks()
-function cardImage(src: string): string {
-  return /^\/upload\/news\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|gif|webp|avif)$/i.test(src)
-    ? `/thumbs/640x360x1${src}`
-    : src
+const phpResizableNewsImage = /^\/upload\/news\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png)$/i
+
+function cardImage(src: string, width: 600 | 900, height: 338 | 506): string {
+  return phpResizableNewsImage.test(src) ? `/thumbs/${width}x${height}x1${src}` : src
+}
+
+function cardImageSrcSet(src: string): string | undefined {
+  if (!phpResizableNewsImage.test(src)) return undefined
+  return `${cardImage(src, 600, 338)} 600w, ${cardImage(src, 900, 506)} 900w`
 }
 </script>
 
@@ -45,14 +50,16 @@ function cardImage(src: string): string {
       >
         <img
           v-if="article.image"
-          :src="cardImage(article.image)"
+          :src="cardImage(article.image, variant === 'lead' ? 900 : 600, variant === 'lead' ? 506 : 338)"
+          :srcset="cardImageSrcSet(article.image)"
+          :sizes="variant === 'lead' ? '(min-width: 1024px) 50vw, 100vw' : variant === 'secondary' ? '(min-width: 1024px) 19vw, 100vw' : '(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw'"
           :alt="article.title"
           class="block h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-          loading="lazy"
+          :loading="variant === 'lead' ? 'eager' : 'lazy'"
+          :fetchpriority="variant === 'lead' ? 'high' : 'low'"
           decoding="async"
-          width="640"
-          height="360"
-          sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+          :width="variant === 'lead' ? 900 : 600"
+          :height="variant === 'lead' ? 506 : 338"
         >
         <span v-else class="grid h-full place-items-center text-[42px] text-gold-700" aria-hidden="true">✦</span>
         <span

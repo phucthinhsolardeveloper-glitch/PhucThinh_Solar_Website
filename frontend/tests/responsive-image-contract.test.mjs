@@ -19,9 +19,27 @@ test('catalog media reserves intrinsic space and chooses responsive product size
 test('news cards use allowlisted PHP thumbnails and match the rendered 16:9 frame', () => {
   const news = read('app/components/news/NewsCard.vue')
   assert.match(news, /\^\\\/upload\\\/news\\\//)
-  assert.match(news, /thumbs\/640x360x1\$\{src\}/)
-  assert.match(news, /width="640"[\s\S]*height="360"[\s\S]*sizes=/)
+  assert.match(news, /thumbs\/\$\{width\}x\$\{height\}x1\$\{src\}/)
+  assert.match(news, /cardImage\(src, 600, 338\).*600w,.*cardImage\(src, 900, 506\).*900w/s)
+  assert.match(news, /variant === 'lead' \? 900 : 600/)
+  assert.match(news, /variant === 'lead' \? 'eager' : 'lazy'/)
+  assert.match(news, /variant === 'lead' \? 'high' : 'low'/)
   assert.doesNotMatch(news, /rounded-btn border border-slate-200\/90 bg-white/)
+})
+
+test('homepage media uses the same PHP thumbnail contracts and prioritizes the first hero', () => {
+  const hero = read('app/components/home/HomeHero.vue')
+  const editorial = read('app/components/home/HomeEditorial.vue')
+  const phpHome = read('../domains/phucthinhsolar.com/public_html/templates/index/index_tpl.php')
+  assert.match(phpHome, /sizes' => '1600x720x1'/)
+  assert.match(hero, /thumbs\/\$\{width\}x\$\{height\}x1\$\{src\}/)
+  assert.match(hero, /heroImageCandidate\(src, 960\).*960w,.*heroImageCandidate\(src, 1600\).*1600w/s)
+  assert.match(hero, /:fetchpriority="index === 0 \? 'high' : 'low'"/)
+  assert.match(hero, /:loading="index === 0 \? 'eager' : 'lazy'"/)
+  assert.match(phpHome, /sizes' => '1200x750x1'/)
+  assert.match(editorial, /thumbs\/\$\{width\}x\$\{height\}x1\$\{src\}/)
+  assert.match(editorial, /editorialImageCandidate\(src, 760, 475\).*760w,.*editorialImageCandidate\(src, 1200, 750\).*1200w/s)
+  assert.match(editorial, /thumbs\/48x48x1\$\{src\}/)
 })
 
 test('CMS logos and trust badge declare rendered dimensions', () => {

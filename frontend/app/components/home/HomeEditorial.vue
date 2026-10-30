@@ -30,6 +30,21 @@ const solutionPanelInteracted = ref(false)
 const links = useMigrationLinks()
 const leadIntent = useState<string>('public-home-lead-intent', () => '')
 const { openDealer } = useStorefrontModal()
+const phpResizableEditorialImage = /^\/(?:upload\/news|assets\/images\/site-visuals)\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png)$/i
+
+function editorialImageCandidate(src: string, width: 760 | 1200, height: 475 | 750): string {
+  if (!phpResizableEditorialImage.test(src)) return src
+  return `/thumbs/${width}x${height}x1${src}`
+}
+
+function editorialImageSrcSet(src: string): string | undefined {
+  if (!phpResizableEditorialImage.test(src)) return undefined
+  return `${editorialImageCandidate(src, 760, 475)} 760w, ${editorialImageCandidate(src, 1200, 750)} 1200w`
+}
+
+function aboutPointImage(src: string): string {
+  return phpResizableEditorialImage.test(src) ? `/thumbs/48x48x1${src}` : src
+}
 
 const fallbackAboutPoints: PublicHomeAboutPoint[] = [
   { label: 'Sản phẩm chính hãng', description: 'Thông tin thương hiệu, thông số kỹ thuật và chính sách bảo hành rõ ràng.', image: '' },
@@ -140,7 +155,7 @@ function selectSolution(value: string | number) {
               </div>
 
               <div class="relative flex aspect-[8/5] items-end overflow-hidden bg-navy-950 text-white">
-                <img class="absolute inset-0 h-full w-full object-cover" :src="item.solution.image" :alt="item.solution.name" width="1200" height="750" loading="lazy">
+                <img class="absolute inset-0 h-full w-full object-cover" :src="editorialImageCandidate(item.solution.image, 1200, 750)" :srcset="editorialImageSrcSet(item.solution.image)" sizes="(min-width: 1024px) 45vw, 100vw" :alt="item.solution.name" width="1200" height="750" loading="lazy" decoding="async">
                 <span class="relative z-10 w-full bg-gradient-to-t from-[#071a2e]/85 to-transparent p-[18px] pt-24 text-sm font-bold">{{ item.solution.label }}</span>
               </div>
             </motion.article>
@@ -224,7 +239,7 @@ function selectSolution(value: string | number) {
       </div>
       <ul class="m-0 grid list-none grid-cols-2 gap-x-[34px] gap-y-7 p-0 pt-[5px] max-[860px]:grid-cols-1">
         <li v-for="(point, index) in aboutPoints" :key="point.label" class="relative min-w-0 pl-8 text-navy-950">
-          <img v-if="point.image" class="absolute left-0 top-0 h-[22px] w-[22px] rounded-full object-cover" :src="point.image" alt="" width="48" height="48" loading="lazy">
+          <img v-if="point.image" class="absolute left-0 top-0 h-[22px] w-[22px] rounded-full object-cover" :src="aboutPointImage(point.image)" alt="" width="48" height="48" loading="lazy" decoding="async">
           <span v-else class="absolute left-0 top-0 flex h-[22px] w-[22px] items-center justify-center rounded-full bg-[rgba(198,154,69,.17)] text-[#8a6526]" aria-hidden="true">
             <svg v-if="index === 0" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6" /><path d="m8 13-1 9 5-3 5 3-1-9" /><path d="m10 8 1.3 1.3L14 6.5" /></svg>
             <svg v-else-if="index === 1" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a5 5 0 0 0-6.4 6.4L3 18l3 3 5.3-5.3a5 5 0 0 0 6.4-6.4L14 13l-3-3z" /><path d="m15 3 6 6" /></svg>
