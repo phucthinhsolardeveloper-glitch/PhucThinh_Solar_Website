@@ -4,6 +4,8 @@
 
 - Consultation and dealer dialogs share a global Nuxt UI modal controller and
   use the PHP lead form security metadata and same-origin PHP mutation route.
+- The homepage `Đăng ký làm đại lý` action opens the dealer dialog; the separate
+  `Tư vấn chính sách đại lý` action keeps its existing contact-form path.
 - Dealer registration submits the selected CMS city ID. PHP validates that ID
   against an active city record and stores its canonical name. Older callers
   sending a city label remain supported only when it resolves to an active CMS
@@ -25,10 +27,10 @@
   passed on the integration candidate.
 - PHP syntax check passed for `api/pts_v1_lead_form.php`.
 - No lead form POST was sent: that operation writes a lead and consumes the
-  PHP rate limit. Forms require the same-origin Caddy front door to route
-  `/api/pts_v1_lead_form.php` to PHP. Opening the standalone Nuxt container on
-  `:3101` does not provide that POST route; a successful GET/shell smoke test
-  does not prove form submission.
+  PHP rate limit. The standalone Nuxt service on `:3101` does not route
+  `/api/pts_v1_lead_form.php`; the local full-site front door on `:8091` routes
+  that path to PHP and other pages to the Nuxt service. That Caddy container is
+  a separate local rehearsal process, not part of `docker-compose.nuxt-service.yml`.
 - Gemini's summary said the scrollspy uses `IntersectionObserver`; the actual
   implementation uses scroll events and `requestAnimationFrame`.
 - Browser geometry was checked at mobile 320px and desktop/tablet breakpoints;

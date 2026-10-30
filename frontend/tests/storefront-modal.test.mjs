@@ -83,3 +83,10 @@ test('SiteHeader and SolutionsCta trigger openConsultation on consultation actio
   assert.match(solutionsCta, /useStorefrontModal\(\)/)
   assert.match(solutionsCta, /openConsultation/)
 })
+
+test('home dealer registration opens the dedicated dealer modal while policy CTA keeps the lead form path', () => {
+  const homeEditorial = read('components/home/HomeEditorial.vue')
+  assert.match(homeEditorial, /const \{ openDealer \} = useStorefrontModal\(\)/)
+  assert.match(homeEditorial, /<button[^>]*@click="openDealer\(\)"[^>]*>[\s\S]*?Đăng ký làm đại lý[\s\S]*?<\/button>/)
+  assert.match(homeEditorial, /href="#yeu-cau-tu-van" @click="requestConsultation\('Hợp tác đại lý'\)">\s*Tư vấn chính sách đại lý/)
+})

@@ -29,6 +29,7 @@ const solutionTabs = computed<SolutionTab[]>(() => props.data.solutions.map((sol
 const solutionPanelInteracted = ref(false)
 const links = useMigrationLinks()
 const leadIntent = useState<string>('public-home-lead-intent', () => '')
+const { openDealer } = useStorefrontModal()
 
 const fallbackAboutPoints: PublicHomeAboutPoint[] = [
   { label: 'Sản phẩm chính hãng', description: 'Thông tin thương hiệu, thông số kỹ thuật và chính sách bảo hành rõ ràng.', image: '' },
@@ -198,9 +199,9 @@ function selectSolution(value: string | number) {
         </ul>
       </div>
       <div class="flex gap-2 max-[860px]:max-w-[360px] max-[860px]:flex-col">
-        <a class="inline-flex min-h-[50px] flex-1 items-center justify-center rounded-[4px] border border-hdr-gold bg-hdr-gold px-5 font-bold text-navy-950 no-underline" href="#yeu-cau-tu-van" @click="requestConsultation('Hợp tác đại lý')">
+        <button type="button" class="inline-flex min-h-[50px] flex-1 cursor-pointer items-center justify-center rounded-[4px] border border-hdr-gold bg-hdr-gold px-5 font-bold text-navy-950 no-underline" @click="openDealer()">
           Đăng ký làm đại lý
-        </a>
+        </button>
         <a class="inline-flex min-h-[50px] flex-1 items-center justify-center rounded-[4px] border border-white/55 px-5 font-bold text-white no-underline" href="#yeu-cau-tu-van" @click="requestConsultation('Hợp tác đại lý')">
           Tư vấn chính sách đại lý
         </a>
