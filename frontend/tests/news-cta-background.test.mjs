@@ -35,6 +35,7 @@ test('news CTA responsive layout follows PHP icon, action, and heading breakpoin
   assert.match(nuxtCta, /min-\[541px\]:border-l[\s\S]*min-\[1101px\]:flex-row/)
   assert.match(nuxtCta, /text-\[22px\][\s\S]*max-\[800px\]:text-\[20px\]/)
   assert.match(nuxtCta, /font-\[850\][\s\S]*tracking-\[-\.025em\]/)
+  assert.match(nuxtCta, /max-\[800px\]:tracking-\[-1\.05px\]/)
   assert.match(nuxtCta, /max-\[767px\]:-mx-4 max-\[767px\]:px-4 max-\[359px\]:-mx-3 max-\[359px\]:px-3/)
   assert.match(nuxtCta, /leading-\[1\.66\][\s\S]*text-\[23px\] font-bold/)
 })
