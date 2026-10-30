@@ -47,16 +47,21 @@ const mobileOpen = ref(false)
 const mobileCatalogOpen = ref(false)
 const mobileNavOpen = ref<string | null>(null)
 const navDropdownOpen = ref<string | null>(null)
+const navDropdownMode = ref<MenuMode>(null)
 const catalogTrigger = ref<HTMLButtonElement | null>(null)
 const mobileTrigger = ref<HTMLButtonElement | null>(null)
 const catalogPanel = ref<HTMLElement | null>(null)
+const catalogOverlay = ref<HTMLElement | null>(null)
 const mobilePanel = ref<HTMLElement | null>(null)
+const mobileOverlay = ref<HTMLElement | null>(null)
 const searchInput = ref<HTMLInputElement | null>(null)
 const mobileSearchInput = ref<HTMLInputElement | null>(null)
 const searchTrigger = ref<HTMLButtonElement | null>(null)
 const searchPanel = ref<HTMLElement | null>(null)
+const searchOverlay = ref<HTMLElement | null>(null)
 const navDropdownTrigger = ref<HTMLElement | null>(null)
 let bodyOverflowBeforeLock: string | null = null
+const inertBeforeModal = new Map<HTMLElement, boolean>()
 
 const fallbackNav: PublicSiteLink[] = [
   { label: 'Giới thiệu', href: '/gioi-thieu/' },
@@ -180,6 +185,46 @@ function syncBodyLock() {
   }
 }
 
+function restoreModalBackground() {
+  for (const [element, wasInert] of inertBeforeModal) element.inert = wasInert
+  inertBeforeModal.clear()
+}
+
+function syncModalBackground() {
+  if (!import.meta.client) return
+  const overlay = mobileOpen.value
+    ? mobileOverlay.value
+    : searchOpen.value
+      ? searchOverlay.value
+      : catalogOpen.value
+        ? catalogOverlay.value
+        : null
+
+  if (!overlay || !document.body.contains(overlay)) {
+    restoreModalBackground()
+    return
+  }
+
+  restoreModalBackground()
+  let branch: HTMLElement = overlay
+  let parent = branch.parentElement
+  while (parent) {
+    for (const sibling of [...parent.children]) {
+      if (sibling !== branch && sibling instanceof HTMLElement) {
+        inertBeforeModal.set(sibling, sibling.inert)
+        sibling.inert = true
+      }
+    }
+    if (parent === document.body) break
+    branch = parent
+    parent = parent.parentElement
+  }
+}
+
+function scheduleModalBackgroundSync() {
+  nextTick(syncModalBackground)
+}
+
 function openCatalog(mode: Exclude<MenuMode, null> = 'intent') {
   if (mode === 'hover' && import.meta.client && !window.matchMedia('(hover: hover)').matches) return
   closeSearch(false)
@@ -188,6 +233,7 @@ function openCatalog(mode: Exclude<MenuMode, null> = 'intent') {
   catalogMode.value = mode
   catalogOpen.value = true
   syncBodyLock()
+  scheduleModalBackgroundSync()
   if (mode === 'intent') {
     nextTick(() => {
       if (catalogSearchInput.value) catalogSearchInput.value.focus()
@@ -202,6 +248,7 @@ function closeCatalog(restoreFocus = true) {
   catalogMode.value = null
   catalogKeyword.value = ''
   syncBodyLock()
+  syncModalBackground()
   if (shouldRestore) nextTick(() => catalogTrigger.value?.focus())
 }
 
@@ -231,7 +278,10 @@ function openMobileMenu() {
   closeNavDropdown(false)
   mobileOpen.value = true
   syncBodyLock()
-  nextTick(() => focusFirst(mobilePanel.value))
+  nextTick(() => {
+    syncModalBackground()
+    focusFirst(mobilePanel.value)
+  })
 }
 
 function closeMobileMenu(restoreFocus = true) {
@@ -240,6 +290,7 @@ function closeMobileMenu(restoreFocus = true) {
   mobileCatalogOpen.value = false
   mobileNavOpen.value = null
   syncBodyLock()
+  syncModalBackground()
   if (shouldRestore) nextTick(() => mobileTrigger.value?.focus())
 }
 
@@ -247,6 +298,7 @@ function closeSearch(restoreFocus = true) {
   const shouldRestore = restoreFocus && searchOpen.value
   searchOpen.value = false
   syncBodyLock()
+  syncModalBackground()
   if (shouldRestore) nextTick(() => searchTrigger.value?.focus())
 }
 
@@ -260,7 +312,10 @@ function toggleSearch() {
   closeNavDropdown(false)
   searchOpen.value = true
   syncBodyLock()
-  nextTick(() => searchInput.value?.focus())
+  nextTick(() => {
+    syncModalBackground()
+    searchInput.value?.focus()
+  })
 }
 
 async function submitSearch() {
@@ -273,15 +328,38 @@ async function submitSearch() {
 
 function openNavDropdown(item: PublicSiteLink, event: Event) {
   if (!item.children?.length) return
+  if (event.type === 'mouseenter' && import.meta.client && !window.matchMedia('(hover: hover) and (pointer: fine)').matches) return
   const currentTarget = event.currentTarget
-  navDropdownTrigger.value = currentTarget instanceof HTMLElement ? currentTarget.querySelector('a') : null
+  navDropdownTrigger.value = currentTarget instanceof HTMLElement
+    ? (currentTarget.contains(document.activeElement) && document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : currentTarget.querySelector('a'))
+    : null
   navDropdownOpen.value = item.href
+  navDropdownMode.value = event.type === 'mouseenter' ? 'hover' : 'intent'
+}
+
+function toggleNavDropdown(item: PublicSiteLink, event: MouseEvent) {
+  const trigger = event.currentTarget instanceof HTMLElement ? event.currentTarget : null
+  if (navDropdownOpen.value !== item.href) {
+    navDropdownOpen.value = item.href
+    navDropdownMode.value = 'intent'
+    navDropdownTrigger.value = trigger
+    return
+  }
+  if (navDropdownMode.value === 'hover' || navDropdownTrigger.value !== trigger) {
+    navDropdownMode.value = 'intent'
+    navDropdownTrigger.value = trigger
+    return
+  }
+  closeNavDropdown(true)
 }
 
 function closeNavDropdown(restoreFocus = false) {
   const shouldRestore = restoreFocus && navDropdownOpen.value !== null
   const trigger = navDropdownTrigger.value
   navDropdownOpen.value = null
+  navDropdownMode.value = null
   navDropdownTrigger.value = null
   if (shouldRestore) nextTick(() => trigger?.focus())
 }
@@ -290,6 +368,15 @@ function handleNavFocusout(event: FocusEvent) {
   const currentTarget = event.currentTarget
   const relatedTarget = event.relatedTarget
   if (currentTarget instanceof HTMLElement && (!relatedTarget || !currentTarget.contains(relatedTarget as Node))) closeNavDropdown()
+}
+
+function handleNavMouseleave() {
+  if (navDropdownMode.value === 'hover') closeNavDropdown()
+}
+
+function handleNavFocusin(item: PublicSiteLink, event: FocusEvent) {
+  if (event.target instanceof HTMLButtonElement) return
+  openNavDropdown(item, event)
 }
 
 function trapFocus(event: KeyboardEvent, container: HTMLElement | null) {
@@ -379,6 +466,7 @@ onBeforeUnmount(() => {
   document.removeEventListener('keydown', handleKeydown)
   window.removeEventListener('scroll', handleWindowScroll)
   if (import.meta.client && bodyOverflowBeforeLock !== null) document.body.style.overflow = bodyOverflowBeforeLock
+  restoreModalBackground()
 })
 </script>
 
@@ -391,7 +479,6 @@ onBeforeUnmount(() => {
     @focusin="handleHeaderFocusin"
   >
     <header
-      :inert="mobileOpen ? true : undefined"
       class="relative z-[1000] border-b border-hdr-line bg-white/96 backdrop-blur-md transition-shadow duration-300"
       :class="isScrolled ? 'shadow-[0_4px_20px_rgba(10,34,81,0.08)]' : 'shadow-[0_1px_4px_rgba(10,34,81,0.06)]'"
     >
@@ -465,8 +552,8 @@ onBeforeUnmount(() => {
               :key="item.href"
               class="relative flex items-center"
               @mouseenter="openNavDropdown(item, $event)"
-              @mouseleave="closeNavDropdown()"
-              @focusin="openNavDropdown(item, $event)"
+              @mouseleave="handleNavMouseleave"
+              @focusin="handleNavFocusin(item, $event)"
               @focusout="handleNavFocusout"
             >
               <NuxtLink
@@ -476,12 +563,20 @@ onBeforeUnmount(() => {
                   ? 'border-gold-500 font-extrabold text-navy-800'
                   : 'border-transparent font-bold text-hdr-text hover:bg-hdr-surface hover:text-navy-800'"
                 :to="shellHref(item.href)"
-                :aria-expanded="item.children?.length ? navDropdownOpen === item.href : undefined"
-                :aria-controls="item.children?.length ? `ptsNavMenu-${index}` : undefined"
               >
                 {{ item.label }}
-                <svg v-if="item.children?.length" class="ml-1.5 h-[7px] w-[7px] text-hdr-muted" viewBox="0 0 10 10" aria-hidden="true"><path d="M1 3l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" /></svg>
               </NuxtLink>
+              <button
+                v-if="item.children?.length"
+                class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-chip text-hdr-muted transition-colors hover:bg-hdr-surface hover:text-hdr-ink"
+                type="button"
+                :aria-expanded="navDropdownOpen === item.href"
+                :aria-controls="navDropdownOpen === item.href ? `ptsNavMenu-${index}` : undefined"
+                :aria-label="`${navDropdownOpen === item.href ? 'Đóng' : 'Mở'} menu con ${item.label}`"
+                @click="toggleNavDropdown(item, $event)"
+              >
+                <svg class="h-3 w-3 transition-transform" :class="navDropdownOpen === item.href ? 'rotate-180' : ''" viewBox="0 0 10 10" aria-hidden="true"><path d="M1 3l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" /></svg>
+              </button>
               <div
                 v-if="item.children?.length && navDropdownOpen === item.href"
                 :id="`ptsNavMenu-${index}`"
@@ -569,22 +664,25 @@ onBeforeUnmount(() => {
       <!-- Backdrop mờ cho hộp thoại tìm kiếm: click ra ngoài để đóng nhanh -->
       <div
         v-if="searchOpen"
-        class="fixed inset-0 top-[88px] nav:top-[104px] z-[24] bg-navy-950/40 backdrop-blur-xs transition-opacity duration-200 cursor-pointer"
-        aria-hidden="true"
-        @click="closeSearch()"
-      />
-
-      <!-- Hộp thoại tìm kiếm thả xuống cho màn hình <1501px -->
-      <div
-        v-if="searchOpen"
-        id="ptsHeaderSearch"
-        ref="searchPanel"
-        class="absolute inset-x-0 top-full z-[25] w-full border-t border-hdr-line-soft border-b border-b-hdr-line
-               bg-white px-4 pt-4 pb-4 shadow-[0_14px_28px_rgba(16,36,58,.1)] max-[359px]:px-3 max-ph:py-3"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="ptsHeaderSearchTitle"
+        ref="searchOverlay"
+        class="contents"
       >
+        <div
+          class="fixed inset-0 top-[88px] nav:top-[104px] z-[24] bg-navy-950/40 backdrop-blur-xs transition-opacity duration-200 cursor-pointer"
+          aria-hidden="true"
+          @click="closeSearch()"
+        />
+
+        <!-- Hộp thoại tìm kiếm thả xuống cho màn hình <1501px -->
+        <div
+          id="ptsHeaderSearch"
+          ref="searchPanel"
+          class="absolute inset-x-0 top-full z-[25] w-full border-t border-hdr-line-soft border-b border-b-hdr-line
+                 bg-white px-4 pt-4 pb-4 shadow-[0_14px_28px_rgba(16,36,58,.1)] max-[359px]:px-3 max-ph:py-3"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="ptsHeaderSearchTitle"
+        >
         <div class="mx-auto w-full max-w-[1680px]">
           <div class="flex items-center justify-between gap-3">
             <h2 id="ptsHeaderSearchTitle" class="sr-only">Tìm kiếm</h2>
@@ -619,11 +717,13 @@ onBeforeUnmount(() => {
             </button>
           </div>
         </div>
+        </div>
       </div>
 
       <!-- Mega-menu Danh mục sản phẩm: neo sát ngay dưới thanh header sticky -->
       <div
         v-if="catalogOpen"
+        ref="catalogOverlay"
         class="absolute inset-x-0 top-full z-[100] h-[calc(100dvh-100%)] min-h-[calc(100vh-80px)] overflow-hidden bg-[rgb(8_18_34_/_58%)]"
         aria-hidden="false"
       >
@@ -820,7 +920,7 @@ onBeforeUnmount(() => {
     </header>
 
     <!-- Drawer điều hướng mobile, dưới mốc nav (1321px) -->
-    <div v-if="mobileOpen" class="fixed inset-0 z-[1100] overflow-hidden bg-[rgb(8_18_34_/_58%)]">
+    <div v-if="mobileOpen" ref="mobileOverlay" class="fixed inset-0 z-[1100] overflow-hidden bg-[rgb(8_18_34_/_58%)]">
       <div
         class="fixed inset-0 h-full cursor-default bg-transparent"
         aria-hidden="true"

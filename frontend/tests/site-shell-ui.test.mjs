@@ -79,6 +79,26 @@ test('header overlays expose keyboard state, focus trap and scroll restoration h
   assert.match(header, /navDropdownOpen\.value\) closeNavDropdown\(true\)/)
 })
 
+test('header dialogs isolate the page background and restore prior inert states on close', () => {
+  assert.match(header, /const inertBeforeModal = new Map<HTMLElement, boolean>\(\)/)
+  assert.match(header, /function syncModalBackground\(\)[\s\S]*document\.body\.contains\(overlay\)[\s\S]*sibling\.inert = true/)
+  assert.match(header, /function restoreModalBackground\(\)[\s\S]*element\.inert = wasInert[\s\S]*inertBeforeModal\.clear\(\)/)
+  assert.match(header, /ref="searchOverlay"/)
+  assert.match(header, /ref="catalogOverlay"/)
+  assert.match(header, /ref="mobileOverlay"/)
+  assert.doesNotMatch(header, /:inert="mobileOpen/)
+})
+
+test('desktop nav parent links stay navigable and submenu disclosure is an independent touch target', () => {
+  assert.match(header, /<NuxtLink[\s\S]*:to="shellHref\(item\.href\)"[\s\S]*\{\{ item\.label \}\}[\s\S]*<\/NuxtLink>\s*<button[\s\S]*v-if="item\.children\?\.length"/)
+  assert.match(header, /:aria-expanded="navDropdownOpen === item\.href"/)
+  assert.match(header, /:aria-controls="navDropdownOpen === item\.href \? `ptsNavMenu-\$\{index\}` : undefined"/)
+  assert.match(header, /:aria-label="`\$\{navDropdownOpen === item\.href \? 'Đóng' : 'Mở'\} menu con \$\{item\.label\}`"/)
+  assert.match(header, /@click="toggleNavDropdown\(item, \$event\)"/)
+  assert.match(header, /function handleNavMouseleave\(\)[\s\S]*navDropdownMode\.value === 'hover'/)
+  assert.match(header, /function toggleNavDropdown\(item: PublicSiteLink, event: MouseEvent\)[\s\S]*navDropdownMode\.value === 'hover' \|\| navDropdownTrigger\.value !== trigger/)
+})
+
 test('desktop catalog mega-menu mirrors PHP production structure', () => {
   assert.match(header, /Khám phá sản phẩm/)
   assert.match(header, /Chọn thiết bị phù hợp với nhu cầu của bạn/)
