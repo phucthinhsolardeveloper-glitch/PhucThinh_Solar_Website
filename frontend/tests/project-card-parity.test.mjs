@@ -10,7 +10,8 @@ test('project cards use a flat surface and retain PHP project metadata', () => {
   const phpCss = read('../../domains/phucthinhsolar.com/public_html/assets/css/project-hub.css')
 
   assert.match(card, /aspect-\[4\/3\]/)
-  assert.doesNotMatch(card, /border border-slate|bg-white|hover:shadow/)
+  assert.doesNotMatch(card, /border border-slate|bg-white/)
+  assert.match(card, /hover:-translate-y-1\.5 hover:shadow-md/)
   assert.match(card, /project\.address/)
   assert.match(card, /project\.category\.name/)
   assert.match(php, /\$projectAddress/)

@@ -7,9 +7,19 @@ const links = useMigrationLinks()
 
 <template>
   <article class="min-w-0">
-    <a :href="links.project(project.slug)" class="group flex h-full flex-col overflow-hidden text-navy-800 no-underline">
+    <a
+      :href="links.project(project.slug)"
+      class="group flex h-full flex-col overflow-hidden text-navy-800 no-underline transition-all duration-300 hover:-translate-y-1.5 hover:shadow-md"
+    >
       <div class="relative aspect-[4/3] overflow-hidden rounded-btn bg-[#edf1f5]" :class="{ 'grid place-items-center text-slate-500': !project.image }">
-        <img v-if="project.image" :src="project.image" :alt="project.title" class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]" loading="lazy" decoding="async">
+        <img
+          v-if="project.image"
+          :src="project.image"
+          :alt="project.title"
+          class="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+          loading="lazy"
+          decoding="async"
+        >
         <span v-else aria-hidden="true">—</span>
         <span v-if="project.category" class="absolute left-3 top-3 flex items-center gap-1.5 rounded-btn bg-navy-800/90 px-2.5 py-1 text-[11px] font-bold text-white">
           <img v-if="project.category.image" :src="project.category.image" alt="" class="h-3.5 w-3.5 object-contain brightness-0 invert">
@@ -29,9 +39,9 @@ const links = useMigrationLinks()
         <p v-if="project.description" class="mb-0 mt-1 line-clamp-2 text-base leading-relaxed text-slate-500">
           {{ project.description }}
         </p>
-        <span class="mt-4 inline-flex items-center gap-1 text-[13px] font-extrabold text-gold-700">
+        <span class="mt-4 inline-flex items-center gap-1.5 text-[13px] font-extrabold text-gold-700">
           <span>{{ viewLabel }}</span>
-          <span aria-hidden="true">→</span>
+          <span class="inline-block transition-transform duration-300 group-hover:translate-x-1.5" aria-hidden="true">→</span>
         </span>
       </div>
     </a>

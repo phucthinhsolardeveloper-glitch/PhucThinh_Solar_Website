@@ -120,7 +120,7 @@ const detailPage = computed(() => {
   <component :is="detailPage" v-if="detailPage" />
   <div v-else class="min-h-screen bg-white text-navy-800">
     <SiteHeader :site="site" />
-    <main class="mx-auto min-h-[45vh] w-full max-w-[1320px] px-4 py-16" :aria-busy="pageState === 'redirecting'">
+    <main class="pts-container min-h-[45vh] py-16" :aria-busy="pageState === 'redirecting'">
       <div v-if="pageState === 'unavailable'" role="alert">
         <h1 class="mb-3 text-3xl font-black">Tạm thời không thể tải trang</h1>
         <p class="text-slate-600">Nguồn nội dung hiện không khả dụng.</p>

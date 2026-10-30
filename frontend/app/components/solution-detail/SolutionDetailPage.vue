@@ -6,6 +6,7 @@ import SolutionDetailGallery from './SolutionDetailGallery.vue'
 import SolutionsCta from '~/components/solutions/SolutionsCta.vue'
 
 const props = defineProps<{ data: PublicSolutionDetailPayload; hotline?: string }>()
+const { isHeaderHidden } = useSiteHeader()
 const links = useMigrationLinks()
 const editorial = computed(() => buildEditorialTocForFragments(
   [props.data.solution.content, props.data.solution.extraContent] as const,
@@ -105,7 +106,8 @@ const { activeHeadingId, scrollToHeading } = useTocScrollspy({
         <aside
           v-if="tocItems.length"
           ref="tocContainerRef"
-          class="self-start rounded-btn border border-navy-700/70 bg-gradient-to-b from-navy-800 to-navy-950 p-5 shadow-sm min-[901px]:sticky min-[901px]:top-24 min-[901px]:max-h-[calc(100vh-116px)] min-[901px]:overflow-y-auto"
+          class="self-start rounded-btn border border-navy-700/70 bg-gradient-to-b from-navy-800 to-navy-950 p-5 shadow-sm min-[901px]:sticky min-[901px]:max-h-[calc(100vh-116px)] min-[901px]:overflow-y-auto transition-[top] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
+          :class="isHeaderHidden ? 'min-[901px]:top-6' : 'min-[901px]:top-[104px] min-[1501px]:top-[124px] min-[1800px]:top-[140px]'"
           aria-label="Mục lục nội dung"
         >
           <h2 class="m-0 mb-3 flex items-center gap-2 border-b border-white/12 pb-3 text-[13px] font-extrabold uppercase tracking-wider text-gold-300">
@@ -187,15 +189,14 @@ const { activeHeadingId, scrollToHeading } = useTocScrollspy({
         <a
           v-for="item in data.equipment"
           :key="item.url"
-          class="group flex min-w-0 items-center gap-3 px-3.5 py-2.5 text-navy-800 no-underline"
+          class="flex min-w-0 items-center gap-3 px-3.5 py-2.5 text-navy-800 no-underline transition-colors hover:text-gold-700"
           :href="links.generic(item.url)"
         >
-          <img v-if="item.image" :src="item.image" alt="" class="h-[54px] w-[54px] shrink-0 object-contain min-[521px]:h-[72px] min-[521px]:w-16" width="80" height="80" loading="lazy">
-          <span class="min-w-0 flex-1">
-            <strong class="block text-[15px] font-extrabold leading-snug text-navy-800 transition-colors group-hover:text-gold-700">{{ item.name }}</strong>
-            <small v-if="item.description" class="mt-1 block text-[13px] leading-[1.5] text-slate-500">{{ item.description }}</small>
+          <img v-if="item.image" :src="item.image" alt="" class="h-12 w-12 flex-none object-contain transition-transform duration-300 hover:scale-105" width="48" height="48" loading="lazy">
+          <span class="min-w-0">
+            <strong class="block text-sm font-bold leading-tight">{{ item.name }}</strong>
+            <small v-if="item.description" class="mt-0.5 block truncate text-xs text-slate-500">{{ item.description }}</small>
           </span>
-          <span class="ml-auto shrink-0 text-[22px] text-navy-800 transition-transform group-hover:translate-x-0.5 group-hover:text-gold-700" aria-hidden="true">→</span>
         </a>
       </div>
     </section>

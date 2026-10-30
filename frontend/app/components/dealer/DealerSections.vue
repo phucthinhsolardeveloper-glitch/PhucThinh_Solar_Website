@@ -49,14 +49,20 @@ function cardImage(src: string): string {
     <div class="mx-auto w-[calc(100%-clamp(40px,5vw,96px))] max-w-[1560px]">
       <h2 class="mb-8 text-[clamp(24px,2.6vw,34px)] font-black tracking-tight text-navy-800">{{ dealer.labels.testimonials }}</h2>
       <div class="grid grid-cols-1 gap-8 nav:grid-cols-3">
-        <article v-for="item in dealer.testimonials" :key="item.title" class="min-w-0">
-          <p class="mb-4 leading-relaxed text-slate-600">“{{ item.quote || item.description }}”</p>
-          <div class="flex items-center gap-3">
+        <article v-for="item in dealer.testimonials" :key="item.title" class="relative flex min-w-0 flex-col justify-between rounded-btn border border-slate-200/90 bg-white p-6 shadow-xs transition-shadow duration-300 hover:shadow-md">
+          <div class="relative">
+            <span class="select-none font-serif text-4xl font-black leading-none text-gold-400/50" aria-hidden="true">“</span>
+            <p class="mb-4 mt-1 leading-relaxed text-slate-700">“{{ item.quote || item.description }}”</p>
+          </div>
+          <div class="flex items-center gap-3 border-t border-slate-100 pt-4">
             <!-- Render the CMS portrait when it exists; the DTO allows an empty image. -->
-            <img v-if="item.image" :src="cardImage(item.image)" :alt="item.title" class="h-12 w-12 flex-none rounded-full object-cover" loading="lazy">
+            <img v-if="item.image" :src="cardImage(item.image)" :alt="item.title" class="h-12 w-12 flex-none rounded-full object-cover shadow-xs" loading="lazy">
+            <div v-else class="flex h-12 w-12 flex-none items-center justify-center rounded-full bg-gold-50 font-bold text-gold-700 shadow-xs">
+              {{ item.title.slice(0, 1) }}
+            </div>
             <div>
-              <strong class="block text-navy-800">{{ item.title }}</strong>
-              <small v-if="item.description" class="block text-sm text-slate-500">{{ item.description }}</small>
+              <strong class="block font-bold text-navy-950">{{ item.title }}</strong>
+              <small v-if="item.description" class="block text-xs text-slate-500">{{ item.description }}</small>
             </div>
           </div>
         </article>

@@ -71,12 +71,12 @@ useHead({
     <SiteHeader :site="site" />
 
     <div class="border-b border-slate-200/80 bg-slate-50/80">
-      <div class="mx-auto w-full max-w-[1200px] px-4">
+      <div class="pts-container">
         <SiteBreadcrumb :items="[{ label: 'Kiến thức', to: links.generic('/tin-tuc/') }, ...(payload?.article.category && 'name' in payload.article.category ? [{ label: payload.article.category.name }] : []), ...(payload ? [{ label: payload.article.title }] : [])]" />
       </div>
     </div>
 
-    <main class="mx-auto w-full max-w-[1200px] px-4 py-8 nav:py-16">
+    <main class="pts-container py-8 nav:py-16">
 
       <div v-if="error || !payload" class="min-h-[45vh] py-16">
         <h1 class="mb-3 text-3xl font-black tracking-tight">{{ isBarePublicRoute && responseStatus === 404 ? 'Không tìm thấy bài viết' : (isBarePublicRoute ? 'Không thể tải bài viết' : 'Preview bài viết') }}</h1>

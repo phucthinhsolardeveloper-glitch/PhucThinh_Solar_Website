@@ -30,12 +30,12 @@ function formatDate(value: string): string {
     quán với PDP/dự án/giải pháp chi tiết đã đo (container 1766px, heading
     navy-800, .cms-content cho nội dung dài).
   -->
-  <article class="mx-auto w-full max-w-[1080px]">
+  <article class="mx-auto w-full max-w-[1280px]">
     <h1 class="mb-4 text-[clamp(28px,3.6vw,42px)] font-black leading-tight text-navy-800">{{ article.title }}</h1>
     <p class="mb-4 text-slate-500"><time v-if="article.date" :datetime="article.date">{{ formatDate(article.date) }}</time><span v-if="article.date" aria-hidden="true"> · </span>{{ article.author.name }}</p>
     <img v-if="article.cover && article.showCover" :src="article.cover" :alt="article.title" class="my-6 block aspect-video w-full rounded-chip object-cover">
 
-    <nav v-if="article.content.html && editorial.toc.length" ref="tocContainerRef" class="mb-6 rounded-btn border border-slate-200/90 border-l-4 border-l-gold-500 bg-slate-50/70 p-5 shadow-xs" aria-label="Mục lục bài viết">
+    <nav v-if="article.content.html && editorial.toc.length" ref="tocContainerRef" class="mb-6 rounded-btn border border-slate-200/90 border-l-4 border-l-gold-500 bg-slate-50/70 p-5 shadow-xs transition-colors" aria-label="Mục lục bài viết">
       <h2 class="mb-3 flex items-center gap-2 text-sm font-extrabold uppercase tracking-wider text-navy-950">
         <svg class="h-4 w-4 text-gold-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
@@ -51,7 +51,7 @@ function formatDate(value: string): string {
             :aria-current="activeHeadingId === item.id ? 'true' : undefined"
             :href="`#${item.id}`"
             @click.prevent="scrollToHeading(item.id)"
-          >{{ item.label }}</a>
+          ><span v-if="activeHeadingId === item.id" class="mr-1.5 inline-block h-1.5 w-1.5 flex-none rounded-full bg-gold-500" aria-hidden="true" />{{ item.label }}</a>
         </li>
       </ol>
     </nav>

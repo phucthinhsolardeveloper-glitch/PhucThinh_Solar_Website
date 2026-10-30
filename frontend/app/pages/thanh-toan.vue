@@ -99,7 +99,7 @@ useSeoMeta({ title: 'Thanh toán — Phúc Thịnh Solar', robots: 'noindex, nof
 <template>
   <div class="min-h-screen bg-white text-navy-800">
     <SiteHeader :site="site" />
-    <main class="mx-auto w-full max-w-[1320px] px-4 py-10 max-ph:py-7">
+    <main class="pts-container py-10 max-ph:py-7">
       <SiteBreadcrumb :items="[{ label: 'Giỏ hàng', to: '/gio-hang/' }, { label: 'Thanh toán' }]" />
       <h1 class="mb-8 text-[clamp(30px,5vw,48px)] font-black tracking-tight">Thông tin thanh toán</h1>
 

@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import type { PublicNewsCta } from '#shared/contracts/public-news'
 
-defineProps<{ cta: PublicNewsCta; phoneLabel: string }>()
+const props = defineProps<{ cta: PublicNewsCta; phoneLabel: string }>()
 const links = useMigrationLinks()
+const { openConsultation } = useStorefrontModal()
 </script>
 
 <template>
@@ -22,7 +23,11 @@ const links = useMigrationLinks()
           <small class="text-xs text-blue-100">{{ phoneLabel }}</small>
           <strong class="text-lg font-black">{{ cta.hotline.text }}</strong>
         </a>
-        <a class="inline-flex min-h-11 items-center justify-center bg-gold-500 px-4 font-bold text-navy-950 no-underline hover:bg-gold-400" :href="links.generic('/lien-he/#yeu-cau-tu-van')">
+        <a
+          class="inline-flex min-h-11 items-center justify-center rounded-[4px] bg-gold-500 px-5 font-bold text-navy-950 no-underline transition-all duration-150 hover:bg-gold-400 active:scale-[0.98] cursor-pointer shadow-xs"
+          :href="links.generic('/lien-he/#yeu-cau-tu-van')"
+          @click.prevent="openConsultation('Kiến thức: ' + cta.title)"
+        >
           {{ cta.buttonLabel || 'Nhận tư vấn ngay' }} <span class="ml-2" aria-hidden="true">→</span>
         </a>
       </div>

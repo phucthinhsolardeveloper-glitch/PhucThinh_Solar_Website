@@ -45,6 +45,8 @@ export default defineNuxtConfig({
   typescript: { strict: true },
 
   app: {
+    pageTransition: { name: 'page', mode: 'out-in' },
+    layoutTransition: { name: 'layout', mode: 'out-in' },
     head: {
       htmlAttrs: { lang: 'vi' },
       meta: [{ name: 'theme-color', content: '#0a2251' }],

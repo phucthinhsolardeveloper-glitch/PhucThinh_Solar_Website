@@ -328,29 +328,75 @@ function telHrefFor(value: string): string {
   return `tel:${value.replace(/[^+\d]/g, '')}`
 }
 
+const { isHeaderHidden, isScrolled } = useSiteHeader()
+let lastScrollY = 0
+let scrollTicking = false
+
+function handleWindowScroll() {
+  if (!import.meta.client || scrollTicking) return
+  scrollTicking = true
+  requestAnimationFrame(() => {
+    const currentScrollY = Math.max(window.scrollY, 0)
+    isScrolled.value = currentScrollY > 10
+
+    const anyOverlayOpen = searchOpen.value || catalogOpen.value || mobileOpen.value || navDropdownOpen.value !== null
+    if (anyOverlayOpen || currentScrollY <= 80) {
+      isHeaderHidden.value = false
+      lastScrollY = currentScrollY
+      scrollTicking = false
+      return
+    }
+
+    const deltaY = currentScrollY - lastScrollY
+    if (deltaY > 10 && currentScrollY > 100) {
+      isHeaderHidden.value = true
+    } else if (deltaY < -6) {
+      isHeaderHidden.value = false
+    }
+
+    lastScrollY = currentScrollY
+    scrollTicking = false
+  })
+}
+
+function handleHeaderFocusin() {
+  isHeaderHidden.value = false
+}
+
 onMounted(() => {
   document.addEventListener('keydown', handleKeydown)
+  window.addEventListener('scroll', handleWindowScroll, { passive: true })
   if (cartCountAvailable.value) void refreshMigrationCart()
 })
 onBeforeUnmount(() => {
   document.removeEventListener('keydown', handleKeydown)
+  window.removeEventListener('scroll', handleWindowScroll)
   if (import.meta.client && bodyOverflowBeforeLock !== null) document.body.style.overflow = bodyOverflowBeforeLock
 })
 </script>
 
 <template>
   <!-- The PHP header keeps navigation, phone, search, cart and CTA on one row. -->
-  <div class="pts-site-header sticky top-0 z-[1000]" @mouseleave="handleShellLeave">
+  <div
+    class="pts-site-header sticky top-0 z-[1000]"
+    :class="['transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform transform-gpu', isHeaderHidden ? '-translate-y-full' : 'translate-y-0']"
+    @mouseleave="handleShellLeave"
+    @focusin="handleHeaderFocusin"
+  >
     <header
       :inert="mobileOpen ? true : undefined"
-      class="relative z-[1000] border-b border-hdr-line bg-white/96 shadow-[0_1px_4px_rgba(10,34,81,0.06)] backdrop-blur-md"
+      class="relative z-[1000] border-b border-hdr-line bg-white/96 backdrop-blur-md transition-shadow duration-300"
+      :class="isScrolled ? 'shadow-[0_4px_20px_rgba(10,34,81,0.08)]' : 'shadow-[0_1px_4px_rgba(10,34,81,0.06)]'"
     >
       <div
         class="mx-auto flex min-h-16 w-full max-w-[1680px] items-center justify-between gap-3 px-4 py-2 max-[359px]:px-3
-               min-[821px]:min-h-[68px] min-[1321px]:min-h-[72px] min-[1501px]:min-h-[76px]
+               min-[821px]:min-h-[88px] min-[821px]:py-3
+               min-[1321px]:min-h-[104px] min-[1321px]:py-3.5
+               min-[1501px]:min-h-[120px] min-[1501px]:py-4
+               min-[1800px]:min-h-[136px] min-[1800px]:py-4.5
                max-ph:gap-2 max-ph:py-1.5
                tb:px-6
-               nav:gap-4 nav:px-(--spacing-gutter) nav:py-2.5 wd:gap-5"
+               nav:gap-4 nav:px-(--spacing-gutter) wd:gap-5"
       >
         <!-- Hamburger: dưới mốc nav (1321px), vùng chạm >= 44x44px -->
         <button
@@ -377,11 +423,12 @@ onBeforeUnmount(() => {
             width="520"
             height="73"
             class="block h-auto w-auto object-contain max-w-[min(198px,100%)] max-h-[46px]
-                   min-[561px]:max-w-[min(228px,100%)] min-[561px]:max-h-[48px]
-                   min-[821px]:max-w-[min(248px,100%)] min-[821px]:max-h-[50px]
-                   min-[1321px]:max-w-[min(270px,100%)] min-[1321px]:max-h-[52px]
-                   min-[1501px]:max-w-[min(clamp(320px,20vw,380px),100%)] min-[1501px]:max-h-[54px]
-                   min-[2300px]:max-w-[400px] min-[2300px]:max-h-[56px]
+                   min-[561px]:max-w-[min(235px,100%)] min-[561px]:max-h-[52px]
+                   min-[821px]:max-w-[min(265px,100%)] min-[821px]:max-h-[66px]
+                   min-[1321px]:max-w-[min(300px,100%)] min-[1321px]:max-h-[80px]
+                   min-[1501px]:max-w-[min(clamp(320px,20vw,420px),100%)] min-[1501px]:max-h-[96px]
+                   min-[1800px]:max-h-[108px]
+                   min-[2300px]:max-w-[460px] min-[2300px]:max-h-[120px]
                    max-[380px]:max-w-[min(180px,100%)] max-[380px]:max-h-[42px]
                    max-[340px]:max-w-[min(110px,100%)] max-[340px]:max-h-[34px]"
           >
@@ -394,14 +441,14 @@ onBeforeUnmount(() => {
             <li class="mr-1.5 flex flex-none items-center" @mouseenter="openCatalog('hover')">
               <button
                 ref="catalogTrigger"
-                class="flex min-h-11 items-center gap-2 whitespace-nowrap rounded-btn bg-hdr-gold px-3.5 text-[13.5px] font-bold
-                       text-hdr-ink transition-colors hover:bg-hdr-gold-hover hover:text-white wd:px-4 wd:text-[14px]"
+                class="flex min-h-11 min-[1501px]:min-h-[48px] items-center gap-2 whitespace-nowrap rounded-btn bg-hdr-gold px-3.5 min-[1501px]:px-4 text-[14px] min-[1501px]:text-[15px] font-bold
+                       text-hdr-ink shadow-xs transition-all hover:bg-hdr-gold-hover hover:text-white hover:shadow-sm active:scale-[0.98] cursor-pointer wd:px-4 wd:text-[14.5px]"
                 type="button"
                 :aria-expanded="catalogOpen"
                 aria-controls="ptsCatalogMenu"
                 @click="toggleCatalog"
               >
-                <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" /></svg>
+                <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" /></svg>
                 <span>Danh mục sản phẩm</span>
                 <svg class="h-[7px] w-[7px]" viewBox="0 0 10 10" aria-hidden="true"><path d="M1 3l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" /></svg>
               </button>
@@ -417,10 +464,10 @@ onBeforeUnmount(() => {
             >
               <NuxtLink
                 :external="isExternalLink(shellHref(item.href))"
-                class="flex min-h-11 items-center whitespace-nowrap border-b-2 px-2.5 text-[14px] leading-tight no-underline transition-colors nav:px-2 wd:px-3 wd:text-[14.5px]"
+                class="flex min-h-11 min-[1501px]:min-h-[48px] items-center whitespace-nowrap border-b-2 px-2.5 text-[14.5px] min-[1501px]:text-[15.5px] leading-tight no-underline transition-colors nav:px-2 wd:px-3 wd:text-[15px]"
                 :class="isActiveNavItem(item)
-                  ? 'border-gold-500 font-bold text-navy-800'
-                  : 'border-transparent font-semibold text-hdr-text hover:bg-hdr-surface hover:text-navy-800'"
+                  ? 'border-gold-500 font-extrabold text-navy-800'
+                  : 'border-transparent font-bold text-hdr-text hover:bg-hdr-surface hover:text-navy-800'"
                 :to="shellHref(item.href)"
                 :aria-expanded="item.children?.length ? navDropdownOpen === item.href : undefined"
                 :aria-controls="item.children?.length ? `ptsNavMenu-${index}` : undefined"
@@ -476,12 +523,12 @@ onBeforeUnmount(() => {
             :aria-label="`Gọi tư vấn: ${hotline}`"
             :title="hotline"
           >
-            <span class="grid h-9 w-9 flex-none place-items-center rounded-full bg-hdr-surface text-hdr-gold-deep" aria-hidden="true">
+            <span class="grid h-9 w-9 min-[1501px]:h-10 min-[1501px]:w-10 flex-none place-items-center rounded-full bg-hdr-surface text-hdr-gold-deep" aria-hidden="true">
               <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.79 19.79 0 0 1 11.19 18a19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.09 3.18 2 2 0 0 1 4.08 1h3a2 2 0 0 1 2 1.72c.12.96.36 1.9.7 2.8a2 2 0 0 1-.45 2.11L8.06 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.84.58 2.8.7A2 2 0 0 1 22 16.92Z" /></svg>
             </span>
             <span class="hidden min-[821px]:flex min-[821px]:flex-col min-[821px]:gap-0.5 min-[821px]:whitespace-nowrap text-left">
-              <small class="text-[11px] leading-none text-hdr-muted">Tư vấn</small>
-              <b class="text-sm leading-tight text-hdr-ink">{{ hotline }}</b>
+              <small class="text-[11px] leading-none text-hdr-muted font-semibold uppercase tracking-wider">Tư vấn</small>
+              <b class="text-sm min-[1501px]:text-[15px] leading-tight text-hdr-ink font-black">{{ hotline }}</b>
             </span>
           </a>
 
@@ -502,9 +549,9 @@ onBeforeUnmount(() => {
 
           <button
             type="button"
-            class="ml-1 inline-flex min-h-11 items-center justify-center whitespace-nowrap rounded-btn border
-                   border-hdr-gold bg-hdr-gold px-4 text-[13.5px] font-bold text-hdr-ink no-underline transition-colors
-                   hover:border-hdr-gold-deep hover:bg-hdr-gold-deep hover:text-white max-ph:hidden cursor-pointer"
+            class="ml-1 inline-flex min-h-11 min-[1501px]:min-h-[48px] items-center justify-center whitespace-nowrap rounded-btn border
+                   border-hdr-gold bg-hdr-gold px-4 min-[1501px]:px-5 text-[14px] min-[1501px]:text-[15px] font-extrabold text-hdr-ink no-underline transition-all
+                   hover:border-hdr-gold-deep hover:bg-hdr-gold-deep hover:text-white hover:shadow-xs active:scale-[0.98] max-ph:hidden cursor-pointer"
             @click="openConsultation()"
           >
             Nhận tư vấn

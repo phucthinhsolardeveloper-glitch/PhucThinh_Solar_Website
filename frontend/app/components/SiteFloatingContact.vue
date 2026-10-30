@@ -39,7 +39,7 @@ onUnmounted(() => {
 <template>
   <aside
     v-if="showBackToTop || hasContactChannels"
-    class="fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] right-4 z-[900] flex flex-col items-center gap-3 print:hidden tb:bottom-6 tb:right-6"
+    class="fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] right-4 z-[900] flex flex-col items-center gap-3 print:hidden tb:bottom-6 tb:right-6 transform-gpu"
     aria-label="Liên hệ nhanh"
   >
     <!-- Nút 3: Lên đầu trang (cuộn > 300px) -->

@@ -69,11 +69,13 @@ onBeforeUnmount(() => {
         v-for="(image, index) in images"
         :key="image"
         type="button"
-        class="group block w-full overflow-hidden rounded-btn border border-slate-200/80 bg-transparent p-0 text-left transition-all hover:border-gold-500 hover:shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-500"
+        class="group block w-full overflow-hidden rounded-btn border border-slate-200/80 bg-white p-0 text-left transition-all hover:border-gold-500 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-500 cursor-pointer"
         :aria-label="`Mở ảnh ${index + 1} trong thư viện ${title}`"
         @click="open(index, $event.currentTarget as HTMLElement)"
       >
-        <img :src="image" :alt="title" class="block aspect-[8/5] w-full object-cover transition-transform duration-300 group-hover:scale-[1.015]" width="960" height="600" loading="lazy" decoding="async">
+        <div class="overflow-hidden bg-slate-100">
+          <img :src="image" :alt="title" class="block aspect-[8/5] w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105" width="960" height="600" loading="lazy" decoding="async">
+        </div>
       </button>
     </div>
   </section>
@@ -82,16 +84,46 @@ onBeforeUnmount(() => {
     <div
       v-if="selectedImage"
       ref="dialog"
-      class="fixed inset-0 z-[100] grid place-items-center bg-black/90 p-4"
+      class="fixed inset-0 z-[100] grid place-items-center bg-navy-950/90 backdrop-blur-md p-4 transition-opacity duration-200"
       role="dialog"
       aria-modal="true"
       :aria-label="`Ảnh ${Number(selectedIndex) + 1} trong thư viện ${title}`"
       @click.self="close"
     >
-      <button type="button" class="absolute right-4 top-4 grid h-11 w-11 place-items-center rounded-full bg-white/10 text-2xl text-white hover:bg-white/20" aria-label="Đóng ảnh" @click="close">×</button>
-      <button v-if="images.length > 1" type="button" class="absolute left-3 top-1/2 grid h-12 w-12 -translate-y-1/2 place-items-center rounded-full bg-white/10 text-3xl text-white hover:bg-white/20" aria-label="Ảnh trước" @click="move(-1)">‹</button>
-      <img :src="selectedImage" :alt="title" class="max-h-[84vh] max-w-[min(1200px,90vw)] object-contain">
-      <button v-if="images.length > 1" type="button" class="absolute right-3 top-1/2 grid h-12 w-12 -translate-y-1/2 place-items-center rounded-full bg-white/10 text-3xl text-white hover:bg-white/20" aria-label="Ảnh sau" @click="move(1)">›</button>
+      <button
+        type="button"
+        class="absolute right-4 top-4 flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white transition-all hover:bg-white/20 active:scale-95 cursor-pointer"
+        aria-label="Đóng ảnh"
+        @click="close"
+      >
+        <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+
+      <button
+        v-if="images.length > 1"
+        type="button"
+        class="absolute left-4 top-1/2 -translate-y-1/2 flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white transition-all hover:bg-white/25 active:scale-95 cursor-pointer backdrop-blur-xs"
+        aria-label="Ảnh trước"
+        @click="move(-1)"
+      >
+        <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+
+      <img :src="selectedImage" :alt="title" class="max-h-[84vh] max-w-[min(1200px,90vw)] object-contain drop-shadow-2xl rounded-chip">
+
+      <button
+        v-if="images.length > 1"
+        type="button"
+        class="absolute right-4 top-1/2 -translate-y-1/2 flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white transition-all hover:bg-white/25 active:scale-95 cursor-pointer backdrop-blur-xs"
+        aria-label="Ảnh sau"
+        @click="move(1)"
+      >
+        <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+      </button>
+
+      <div class="absolute bottom-5 left-1/2 -translate-x-1/2 rounded-full bg-white/10 px-4 py-1.5 text-xs font-bold text-white backdrop-blur-xs">
+        {{ Number(selectedIndex) + 1 }} / {{ images.length }}
+      </div>
     </div>
   </Teleport>
 </template>

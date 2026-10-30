@@ -28,8 +28,8 @@ test('news detail follows PHP article and content reading widths without a side 
   const article = read('../app/components/news-detail/NewsDetailArticle.vue')
   assert.match(page, /<NewsDetailArticle[^>]+\/>\s*<NewsDetailRelated/)
   assert.doesNotMatch(page, /tb:grid-cols-\[minmax\(0,2fr\)_minmax\(240px,1fr\)\]/)
-  assert.match(page, /<main class="mx-auto w-full max-w-\[1200px\]/)
-  assert.match(article, /<article class="mx-auto w-full max-w-\[1080px\]">/)
+  assert.match(page, /<main class="pts-container py-8 nav:py-16">/)
+  assert.match(article, /<article class="mx-auto w-full max-w-\[1280px\]">/)
 })
 
 test('gallery and video pages rely on CMS titles without static marketing eyebrow copy', () => {

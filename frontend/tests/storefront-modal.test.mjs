@@ -74,14 +74,23 @@ test('app.vue mounts both storefront modals inside UApp provider', () => {
   assert.ok(uappIndex >= 0 && dealerIndex > uappIndex && dealerIndex < closeUappIndex)
 })
 
-test('SiteHeader and SolutionsCta trigger openConsultation on consultation actions', () => {
+test('SiteHeader, SolutionsCta, NewsCta, ProjectsCta and ProductPurchasePanel trigger storefront modals', () => {
   const header = read('components/SiteHeader.vue')
   const solutionsCta = read('components/solutions/SolutionsCta.vue')
+  const newsCta = read('components/news/NewsCta.vue')
+  const projectsCta = read('components/projects/ProjectsCta.vue')
+  const purchasePanel = read('components/product-preview/ProductPurchasePanel.vue')
 
   assert.match(header, /useStorefrontModal\(\)/)
   assert.match(header, /openConsultation/)
   assert.match(solutionsCta, /useStorefrontModal\(\)/)
   assert.match(solutionsCta, /openConsultation/)
+  assert.match(newsCta, /useStorefrontModal\(\)/)
+  assert.match(newsCta, /openConsultation/)
+  assert.match(projectsCta, /useStorefrontModal\(\)/)
+  assert.match(projectsCta, /openConsultation/)
+  assert.match(purchasePanel, /useStorefrontModal\(\)/)
+  assert.match(purchasePanel, /openDealer\(\)/)
 })
 
 test('home dealer registration opens the dedicated dealer modal while policy CTA keeps the lead form path', () => {
