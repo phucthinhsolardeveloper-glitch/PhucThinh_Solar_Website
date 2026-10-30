@@ -61,6 +61,12 @@ const shareLinks = computed(() => {
       className: 'bg-[#0a66c2] text-white hover:bg-[#084e96]',
     },
     {
+      type: 'pinterest',
+      label: 'Pinterest',
+      href: `https://pinterest.com/pin/create/button/?url=${url}&description=${title}`,
+      className: 'bg-[#bd081c] text-white hover:bg-[#a00618]',
+    },
+    {
       type: 'email',
       label: 'Email',
       href: `mailto:?subject=${title}&body=${url}`,
@@ -103,6 +109,11 @@ const shareLinks = computed(() => {
         <!-- LinkedIn icon -->
         <svg v-else-if="item.type === 'linkedin'" class="size-4 fill-current" viewBox="0 0 24 24" aria-hidden="true">
           <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 8.76a1.4 1.4 0 1 0 0-2.8 1.4 1.4 0 0 0 0 2.8m1.4 9.74V10.13H5.06v8.37h2.8z" />
+        </svg>
+
+        <!-- Pinterest icon -->
+        <svg v-else-if="item.type === 'pinterest'" class="size-4.5 fill-current" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12.04 2C6.58 2 3.9 5.92 3.9 10.11c0 3.27 1.83 6.12 4.58 7.2-.02-.61-.01-1.35.15-2.02.17-.71 1.13-4.78 1.13-4.78s-.28-.56-.28-1.39c0-1.3.75-2.27 1.68-2.27.79 0 1.17.59 1.17 1.3 0 .79-.5 1.97-.76 3.06-.22.91.46 1.65 1.36 1.65 1.63 0 2.89-1.72 2.89-4.2 0-2.2-1.58-3.74-3.83-3.74-2.61 0-4.15 1.96-4.15 3.99 0 .79.3 1.63.68 2.09.07.09.08.17.06.26l-.25 1.02c-.04.16-.13.2-.3.12-1.11-.52-1.8-2.14-1.8-3.44 0-2.8 2.03-5.38 5.86-5.38 3.08 0 5.48 2.2 5.48 5.14 0 3.07-1.94 5.54-4.63 5.54-.9 0-1.74-.47-2.03-1.02l-.56 2.13c-.2.78-.74 1.75-1.1 2.34.83.26 1.71.4 2.63.4 5.46 0 9.38-3.92 9.38-9.38C21.42 5.92 17.5 2 12.04 2z" />
         </svg>
 
         <!-- Mail icon -->
