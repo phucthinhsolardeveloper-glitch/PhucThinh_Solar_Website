@@ -6,6 +6,21 @@ import { buildEditorialToc } from '#shared/editorial-toc'
 
 const props = defineProps<{ article: PublicNewsDetailPayload['article'] }>()
 const editorial = computed(() => buildEditorialToc(props.article.content))
+const { activeHeadingId, scrollToHeading } = useTocScrollspy({
+  contentSelector: 'article',
+  headingSelector: 'h2[id], h3[id]',
+  headerOffset: 90,
+})
+
+function handleTocClick(event: MouseEvent) {
+  const target = (event.target as HTMLElement | null)?.closest('a')
+  if (!target) return
+  const href = target.getAttribute('href')
+  if (href?.startsWith('#')) {
+    event.preventDefault()
+    scrollToHeading(href.slice(1))
+  }
+}
 
 function formatDate(value: string): string {
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value)
@@ -28,16 +43,19 @@ function formatDate(value: string): string {
     <p class="mb-4 text-slate-500"><time v-if="article.date" :datetime="article.date">{{ formatDate(article.date) }}</time><span v-if="article.date" aria-hidden="true"> · </span>{{ article.author.name }}</p>
     <img v-if="article.cover && article.showCover" :src="article.cover" :alt="article.title" class="my-6 block aspect-video w-full rounded-chip object-cover">
 
-    <nav v-if="article.content.html && editorial.toc.length" class="mb-6 rounded-btn border border-slate-200/90 border-l-4 border-l-gold-500 bg-slate-50/70 p-5 shadow-xs" aria-label="Mục lục bài viết">
+    <nav v-if="article.content.html && editorial.toc.length" class="mb-6 rounded-btn border border-slate-200/90 border-l-4 border-l-gold-500 bg-slate-50/70 p-5 shadow-xs transition-all" aria-label="Mục lục bài viết">
       <h2 class="mb-3 flex items-center gap-2 text-sm font-extrabold uppercase tracking-wider text-navy-950">
         <svg class="h-4 w-4 text-gold-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
         </svg>
         <span>Nội dung bài viết</span>
       </h2>
-      <ol class="m-0 list-none space-y-1 p-0">
+      <ol class="m-0 list-none space-y-1 p-0" @click="handleTocClick">
         <li v-for="item in editorial.toc" :key="item.id" :class="item.level === 3 ? 'pl-4' : ''">
-          <a class="inline-flex min-h-11 min-w-11 items-center px-2 text-sm font-semibold text-navy-800 underline-offset-2 hover:text-gold-700 hover:underline" :href="`#${item.id}`">{{ item.label }}</a>
+          <a class="inline-flex min-h-11 min-w-11 items-center px-2 text-sm font-semibold underline-offset-2 hover:text-gold-700 hover:underline" :href="`#${item.id}`">
+            <span v-if="activeHeadingId === item.id" class="mr-1.5 inline-block h-1.5 w-1.5 flex-none rounded-full bg-gold-500" aria-hidden="true" />
+            <span :class="activeHeadingId === item.id ? 'font-bold text-gold-600 underline' : 'text-navy-800'">{{ item.label }}</span>
+          </a>
         </li>
       </ol>
     </nav>

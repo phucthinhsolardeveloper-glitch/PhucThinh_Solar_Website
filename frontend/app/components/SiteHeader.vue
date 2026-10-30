@@ -328,22 +328,66 @@ function telHrefFor(value: string): string {
   return `tel:${value.replace(/[^+\d]/g, '')}`
 }
 
+const isHeaderHidden = ref(false)
+const isScrolled = ref(false)
+let lastScrollY = 0
+let scrollTicking = false
+
+function handleWindowScroll() {
+  if (!import.meta.client || scrollTicking) return
+  scrollTicking = true
+  requestAnimationFrame(() => {
+    const currentScrollY = Math.max(window.scrollY, 0)
+    isScrolled.value = currentScrollY > 10
+
+    const anyOverlayOpen = searchOpen.value || catalogOpen.value || mobileOpen.value || navDropdownOpen.value !== null
+    if (anyOverlayOpen || currentScrollY <= 80) {
+      isHeaderHidden.value = false
+      lastScrollY = currentScrollY
+      scrollTicking = false
+      return
+    }
+
+    const deltaY = currentScrollY - lastScrollY
+    if (deltaY > 10 && currentScrollY > 100) {
+      isHeaderHidden.value = true
+    } else if (deltaY < -6) {
+      isHeaderHidden.value = false
+    }
+
+    lastScrollY = currentScrollY
+    scrollTicking = false
+  })
+}
+
+function handleHeaderFocusin() {
+  isHeaderHidden.value = false
+}
+
 onMounted(() => {
   document.addEventListener('keydown', handleKeydown)
+  window.addEventListener('scroll', handleWindowScroll, { passive: true })
   if (cartCountAvailable.value) void refreshMigrationCart()
 })
 onBeforeUnmount(() => {
   document.removeEventListener('keydown', handleKeydown)
+  window.removeEventListener('scroll', handleWindowScroll)
   if (import.meta.client && bodyOverflowBeforeLock !== null) document.body.style.overflow = bodyOverflowBeforeLock
 })
 </script>
 
 <template>
   <!-- The PHP header keeps navigation, phone, search, cart and CTA on one row. -->
-  <div class="sticky top-0 z-[1000]" @mouseleave="handleShellLeave">
+  <div
+    class="sticky top-0 z-[1000]"
+    :class="['transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform', isHeaderHidden ? '-translate-y-full' : 'translate-y-0']"
+    @mouseleave="handleShellLeave"
+    @focusin="handleHeaderFocusin"
+  >
     <header
       :inert="mobileOpen ? true : undefined"
-      class="relative z-[1000] border-b border-hdr-line bg-white/96 shadow-[0_1px_4px_rgba(10,34,81,0.06)] backdrop-blur-md"
+      class="relative z-[1000] border-b border-hdr-line bg-white/96 backdrop-blur-md transition-shadow duration-300"
+      :class="isScrolled ? 'shadow-[0_4px_20px_rgba(10,34,81,0.08)]' : 'shadow-[0_1px_4px_rgba(10,34,81,0.06)]'"
     >
       <div
         class="mx-auto flex min-h-16 w-full max-w-[1680px] items-center justify-between gap-3 px-4 py-2 max-[359px]:px-3
