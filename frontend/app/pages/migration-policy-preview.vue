@@ -31,12 +31,30 @@ const links = useMigrationLinks()
 const emptyRichText = { format: 'sanitized-html' as const, html: '', sanitizedBy: 'pts_public_richtext' as const, sanitizerVersion: 1 as const }
 const editorial = computed(() => buildEditorialToc(data.value?.content ?? emptyRichText))
 const tocContainerRef = ref<HTMLElement | null>(null)
+const relatedTrackRef = ref<HTMLElement | null>(null)
+const canScrollRelatedBack = ref(false)
+const canScrollRelatedForward = ref(true)
 const { activeHeadingId, scrollToHeading } = useTocScrollspy({
   contentSelector: '#policy-article-content',
   headingSelector: 'h2[id], h3[id]',
   tocContainerRef,
   headerOffset: 100,
 })
+
+function syncRelatedControls(): void {
+  const track = relatedTrackRef.value
+  if (!track) return
+  canScrollRelatedBack.value = track.scrollLeft > 2
+  canScrollRelatedForward.value = track.scrollLeft + track.clientWidth < track.scrollWidth - 2
+}
+
+function scrollRelated(direction: -1 | 1): void {
+  const track = relatedTrackRef.value
+  if (!track) return
+  track.scrollBy({ left: direction * track.clientWidth, behavior: 'smooth' })
+}
+
+onMounted(syncRelatedControls)
 
 function formatMetadataDate(value: string): string {
   const date = new Date(`${value}T00:00:00Z`)
@@ -106,9 +124,19 @@ usePublicSocialMeta({
       </article>
 
       <section v-if="data && data.related.length" class="mx-auto mt-12 w-full" aria-labelledby="policy-related-title">
-          <h2 id="policy-related-title" class="mb-5 text-2xl font-black text-navy-800">Tin liên quan</h2>
-          <ul class="m-0 grid list-none grid-cols-1 gap-6 p-0 tb:grid-cols-2 nav:grid-cols-3">
-            <li v-for="item in data.related" :key="item.id" class="min-w-0">
+          <div class="mb-5 flex items-center justify-between gap-4">
+            <h2 id="policy-related-title" class="m-0 text-2xl font-black text-navy-800">Tin liên quan</h2>
+            <div class="flex shrink-0 gap-3" role="group" aria-label="Điều hướng tin liên quan">
+              <button type="button" class="policy-related-arrow" aria-label="Tin trước" :disabled="!canScrollRelatedBack" @click="scrollRelated(-1)">
+                <span aria-hidden="true">‹</span>
+              </button>
+              <button type="button" class="policy-related-arrow" aria-label="Tin tiếp theo" :disabled="!canScrollRelatedForward" @click="scrollRelated(1)">
+                <span aria-hidden="true">›</span>
+              </button>
+            </div>
+          </div>
+          <ul ref="relatedTrackRef" tabindex="0" class="policy-related-track m-0 flex snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth p-0" aria-label="Các chính sách liên quan" @scroll.passive="syncRelatedControls">
+            <li v-for="item in data.related" :key="item.id" class="policy-related-card min-w-0 snap-start">
               <a class="group block h-full text-navy-800 no-underline" :href="links.generic(`/ho-tro/${item.slug}/`)">
                 <img v-if="item.image" :src="item.image" :alt="item.title" class="mb-3 block aspect-video w-full object-cover" loading="lazy" decoding="async">
                 <div v-else class="mb-3 aspect-video bg-navy-50" aria-hidden="true" />
@@ -123,3 +151,27 @@ usePublicSocialMeta({
     <SiteFooter :site="site" />
   </div>
 </template>
+
+<style>
+.policy-related-track { scrollbar-width: none; }
+.policy-related-track::-webkit-scrollbar { display: none; }
+.policy-related-card { flex: 0 0 100%; }
+.policy-related-arrow {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border: 1px solid #e2e8f0;
+  border-radius: 9999px;
+  color: #1e3a5f;
+  background: #fff;
+  font-size: 26px;
+  line-height: 1;
+}
+.policy-related-arrow:disabled { color: #94a3b8; cursor: not-allowed; opacity: .5; }
+.policy-related-arrow:not(:disabled):hover { border-color: #c9962e; color: #9a6a00; }
+@media (min-width: 455px) { .policy-related-card { flex-basis: calc(50% - 12px); } }
+@media (min-width: 768px) { .policy-related-card { flex-basis: calc(33.333333% - 16px); } }
+@media (min-width: 1024px) { .policy-related-card { flex-basis: calc(25% - 18px); } }
+@media (prefers-reduced-motion: reduce) { .policy-related-track { scroll-behavior: auto; } }
+</style>
