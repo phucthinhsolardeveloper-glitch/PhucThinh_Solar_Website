@@ -16,7 +16,7 @@ const { openConsultation } = useStorefrontModal()
       </span>
       <div class="min-w-0">
         <h2 class="mb-[9px] text-[22px] font-[850] leading-[1.3] tracking-[-.025em] max-[800px]:text-[20px] max-[800px]:tracking-[-1.05px]">{{ cta.title }}</h2>
-        <p v-if="cta.description" class="m-0 leading-[1.6] text-blue-100">{{ cta.description }}</p>
+        <p v-if="cta.description" class="m-0 leading-[1.6] text-blue-100 max-[800px]:tracking-[-0.2px]">{{ cta.description }}</p>
       </div>
       <div class="flex w-full flex-col items-stretch gap-2.5 border-t border-white/20 pt-[17px] min-[541px]:w-auto min-[541px]:items-center min-[541px]:border-t-0 min-[541px]:border-l min-[541px]:pt-0 min-[541px]:pl-6 min-[1101px]:flex-row min-[1101px]:gap-5 min-[1101px]:justify-end">
         <a v-if="cta.hotline?.tel" class="flex flex-col whitespace-nowrap text-white no-underline leading-[1.66] max-[540px]:text-center" :href="`tel:${cta.hotline.tel}`">
