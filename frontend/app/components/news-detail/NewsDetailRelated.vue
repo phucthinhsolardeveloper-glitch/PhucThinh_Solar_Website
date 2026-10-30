@@ -20,15 +20,12 @@ function scrollRelated(direction: -1 | 1): void {
 
 <template>
   <aside v-if="items.length" class="pt-8" aria-labelledby="related-news-title">
-    <div class="mb-5 flex items-end justify-between gap-4">
-      <div>
-        <span class="mb-1 block text-xs font-black uppercase tracking-wider text-gold-600">Khám phá thêm</span>
-        <h2 id="related-news-title" class="m-0 text-2xl font-black text-navy-800">Tin liên quan</h2>
-      </div>
+    <div class="mb-5 flex items-center justify-between gap-4">
+      <h2 id="related-news-title" class="m-0 text-2xl font-black text-navy-800">Tin liên quan</h2>
       <div v-if="items.length > 1" role="group" class="flex shrink-0 gap-2" aria-label="Điều hướng tin liên quan">
         <button
           type="button"
-          class="grid size-11 place-items-center rounded-full border border-slate-200/90 bg-white text-navy-800 shadow-xs transition-colors hover:bg-slate-100 hover:text-gold-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-600"
+          class="grid size-11 place-items-center rounded-full border border-slate-300 bg-transparent text-navy-800 transition-colors hover:border-gold-500 hover:text-gold-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-600"
           aria-label="Tin trước"
           @click="scrollRelated(-1)"
         >
@@ -38,7 +35,7 @@ function scrollRelated(direction: -1 | 1): void {
         </button>
         <button
           type="button"
-          class="grid size-11 place-items-center rounded-full border border-slate-200/90 bg-white text-navy-800 shadow-xs transition-colors hover:bg-slate-100 hover:text-gold-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-600"
+          class="grid size-11 place-items-center rounded-full border border-slate-300 bg-transparent text-navy-800 transition-colors hover:border-gold-500 hover:text-gold-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-600"
           aria-label="Tin tiếp theo"
           @click="scrollRelated(1)"
         >
@@ -51,15 +48,15 @@ function scrollRelated(direction: -1 | 1): void {
     <ul ref="track" class="related-track m-0 flex list-none snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth motion-reduce:scroll-auto p-0 py-2">
       <li v-for="item in items" :key="item.id" class="min-w-0 w-full shrink-0 snap-start tb:w-[calc((100%_-_1.5rem)/2)] nav:w-[calc((100%_-_4.5rem)/4)]">
         <a
-          class="group flex h-full flex-col overflow-hidden rounded-xl border border-slate-200/90 bg-white text-navy-800 no-underline shadow-xs transition-all duration-300 hover:-translate-y-1.5 hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-600"
+          class="group flex h-full min-w-0 flex-col text-navy-800 no-underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-600"
           :href="links.news(item.slug)"
         >
-          <div class="overflow-hidden bg-slate-50">
+          <div>
             <img
               v-if="item.image"
               :src="item.image"
               :alt="item.title"
-              class="block aspect-video w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+              class="block aspect-video w-full object-cover"
               loading="lazy"
               decoding="async"
               width="640"
@@ -68,13 +65,13 @@ function scrollRelated(direction: -1 | 1): void {
             >
             <div v-else class="aspect-video w-full bg-navy-50" aria-hidden="true" />
           </div>
-          <div class="flex flex-1 flex-col p-4">
+          <div class="flex flex-1 flex-col py-4">
             <p v-if="item.date || item.author" class="mb-2 flex flex-wrap items-center gap-3 text-xs text-slate-500">
               <time v-if="item.date" :datetime="item.date">{{ formatDate(item.date) }}</time>
               <span v-if="item.author">{{ item.author }}</span>
             </p>
-            <h3 class="mb-2 line-clamp-2 text-[15px] font-bold leading-snug transition-colors group-hover:text-gold-700">{{ item.title }}</h3>
-            <p v-if="item.description" class="mb-0 line-clamp-2 text-sm leading-relaxed text-slate-600">{{ item.description }}</p>
+            <h3 class="mb-2 line-clamp-2 text-base font-bold leading-snug transition-colors group-hover:text-gold-700">{{ item.title }}</h3>
+            <p v-if="item.description" class="mb-0 line-clamp-2 text-base leading-relaxed text-slate-600">{{ item.description }}</p>
           </div>
         </a>
       </li>
