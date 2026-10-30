@@ -13,7 +13,7 @@ export function normalizePublicHomeHero(rows: PublicHomeSlide[]): PublicHomeSlid
     let selected = rows[index]
 
     for (const candidate of rows) {
-      const name = candidate.name.trim().toLocaleLowerCase('vi')
+      const name = candidate.name?.trim().toLocaleLowerCase('vi') ?? ''
       if (slot.needles.some((needle) => name.includes(needle))) selected = candidate
     }
 

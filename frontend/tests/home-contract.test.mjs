@@ -45,6 +45,12 @@ test('homepage hero keeps PHP positional fallback and repeats a semantically mat
     ['panel', '/upload/photo/panel.jpg'],
   ])
 })
+test('homepage hero safely uses positional fallback when a slide name is absent', () => {
+  const normalized = normalizePublicHomeHero([{ key: 'legacy', image: '/upload/photo/hero.jpg', href: '/' }])
+  assert.deepEqual(normalized.map(({ key, image }) => [key, image]), [
+    ['street-light', '/upload/photo/hero.jpg'],
+  ])
+})
 test('accepts CMS-backed homepage about points while preserving compatibility with older DTOs', () => {
   const withPoints = { ...good, about: { ...good.about, points: [{ label: 'Sản phẩm chính hãng', description: 'Thông tin rõ ràng.', image: '/upload/news/home-point.webp' }] } }
   assert.equal(isPublicHomePayload(withPoints), true)
