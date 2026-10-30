@@ -6,10 +6,10 @@ const component = readFileSync(new URL('../app/components/contact/ContactLocatio
 const contractTests = readFileSync(new URL('./contact-contract.test.mjs', import.meta.url), 'utf8')
 
 test('contact map embeds the validated CMS URL and does not send plain addresses as search queries', () => {
-  assert.match(component, /v-if="selected\?\.mapUrl"[\s\S]*<iframe[\s\S]*:src="selected\.mapUrl"/)
+  assert.match(component, /<iframe\s+v-if="selected\?\.mapUrl"[\s\S]*:src="selected\.mapUrl"/)
   assert.doesNotMatch(component, /mapEmbedUrl|maps\?q=|encodeURIComponent\(location\.address\)/)
   assert.match(component, /referrerpolicy="no-referrer-when-downgrade"/)
-  assert.match(component, /v-if="location\.mapUrl"[\s\S]*target="_blank"[\s\S]*rel="noopener noreferrer"/)
+  assert.match(component, /v-if="selected\.mapUrl"[\s\S]*target="_blank"[\s\S]*rel="noopener noreferrer"/)
 })
 
 test('contact map URLs continue to be validated against the Google Maps allowlist', () => {

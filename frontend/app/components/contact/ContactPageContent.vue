@@ -40,10 +40,8 @@ usePublicSocialMeta({
     <SiteHeader :site="site" />
 
     <main>
-      <div class="border-b border-slate-200/80 bg-slate-50/80">
-        <div class="pts-container">
-          <SiteBreadcrumb :items="[{ label: 'Liên hệ' }]" />
-        </div>
+      <div class="pts-container">
+        <SiteBreadcrumb :items="[{ label: 'Liên hệ' }]" />
       </div>
 
       <div class="pts-container">
@@ -53,9 +51,12 @@ usePublicSocialMeta({
         </div>
 
         <template v-else>
+          <div class="pb-7 pt-2 nav:pb-9">
+            <h1 class="m-0 text-[clamp(30px,3vw,44px)] font-bold leading-tight tracking-tight text-navy-800">{{ contact.title }}</h1>
+          </div>
           <ContactHero :contact="contact" />
 
-          <section class="my-10">
+          <section class="py-12 nav:py-16">
             <ContactLeadForm />
           </section>
 
