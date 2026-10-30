@@ -102,12 +102,12 @@ const { activeHeadingId, scrollToHeading } = useTocScrollspy({
         Tích hợp sanitizer: content/extraContent giờ là HTML thật qua
         pts_public_richtext.php, không còn mảng paragraph tách theo dòng.
       -->
-      <div id="noi-dung-giai-phap" class="pts-container grid grid-cols-1 gap-8 py-8 min-[901px]:grid-cols-[minmax(250px,300px)_minmax(0,1fr)] min-[901px]:gap-[clamp(32px,3.6vw,64px)] nav:py-11">
+      <div id="noi-dung-giai-phap" class="pts-container grid grid-cols-1 gap-8 py-8 min-[768px]:grid-cols-[minmax(220px,260px)_minmax(0,1fr)] min-[768px]:gap-6 min-[901px]:grid-cols-[minmax(250px,300px)_minmax(0,1fr)] min-[901px]:gap-[clamp(32px,3.6vw,64px)] nav:py-11">
         <aside
           v-if="tocItems.length"
           ref="tocContainerRef"
-          class="self-start rounded-btn border border-navy-700/70 bg-gradient-to-b from-navy-800 to-navy-950 p-5 shadow-sm min-[901px]:sticky min-[901px]:max-h-[calc(100vh-116px)] min-[901px]:overflow-y-auto transition-[top] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
-          :class="isHeaderHidden ? 'min-[901px]:top-6' : 'min-[901px]:top-[104px] min-[1501px]:top-[124px] min-[1800px]:top-[140px]'"
+          class="self-start rounded-btn border border-navy-700/70 bg-gradient-to-b from-navy-800 to-navy-950 p-5 shadow-sm min-[768px]:sticky min-[768px]:max-h-[calc(100vh-116px)] min-[768px]:overflow-y-auto transition-[top] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
+          :class="isHeaderHidden ? 'min-[768px]:top-6' : 'min-[768px]:top-[104px] min-[1501px]:top-[124px] min-[1800px]:top-[140px]'"
           aria-label="Mục lục nội dung"
         >
           <h2 class="m-0 mb-3 flex items-center gap-2 border-b border-white/12 pb-3 text-[13px] font-extrabold uppercase tracking-wider text-gold-300">
@@ -116,7 +116,7 @@ const { activeHeadingId, scrollToHeading } = useTocScrollspy({
             </svg>
             <span>Nội dung chính</span>
           </h2>
-          <ol class="m-0 max-h-[220px] list-none space-y-1 overflow-y-auto p-0 overscroll-contain min-[901px]:max-h-none min-[901px]:overflow-visible">
+          <ol class="m-0 max-h-[220px] list-none space-y-1 overflow-y-auto p-0 overscroll-contain min-[768px]:max-h-none min-[768px]:overflow-visible">
             <li v-for="item in tocItems" :key="item.id" :class="item.level === 3 ? 'ml-3.5' : ''">
               <a
                 :data-toc-id="item.id"
