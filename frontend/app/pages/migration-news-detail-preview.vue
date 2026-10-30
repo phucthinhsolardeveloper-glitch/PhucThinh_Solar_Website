@@ -70,7 +70,7 @@ useHead({
   <div class="text-navy-800">
     <SiteHeader :site="site" />
 
-    <div class="border-b border-slate-200/80 bg-slate-50/80">
+    <div class="bg-slate-50/80">
       <div class="pts-container">
         <SiteBreadcrumb :items="[{ label: 'Kiến thức', to: links.generic('/tin-tuc/') }, ...(payload?.article.category && 'name' in payload.article.category ? [{ label: payload.article.category.name }] : []), ...(payload ? [{ label: payload.article.title }] : [])]" />
       </div>
