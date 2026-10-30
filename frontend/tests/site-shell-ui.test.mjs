@@ -147,7 +147,7 @@ test('news and project CTA bands retain the PHP wide-banner hierarchy on desktop
   const newsCta = read('components/news/NewsCta.vue')
   const projectsCta = read('components/projects/ProjectsCta.vue')
   assert.match(newsCta, /grid-cols-\[44px_minmax\(0,1fr\)\][\s\S]*nav:grid-cols-\[52px_minmax\(0,1fr\)_auto\]/)
-  assert.match(newsCta, /absolute inset-0 -z-20 h-full w-full object-cover/)
+  assert.match(newsCta, /absolute inset-0 -z-10 h-full w-full object-cover opacity-50/)
   assert.match(newsCta, /phoneLabel[\s\S]*cta\.hotline\.text[\s\S]*cta\.buttonLabel/)
   assert.match(projectsCta, /absolute inset-0 -z-20 h-full w-full object-cover/)
   assert.match(projectsCta, /cta\.eyebrow[\s\S]*cta\.title[\s\S]*cta\.description[\s\S]*trustItems/)

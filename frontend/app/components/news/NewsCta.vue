@@ -8,9 +8,9 @@ const { openConsultation } = useStorefrontModal()
 
 <template>
   <section class="mt-8">
-    <div class="relative isolate grid grid-cols-[44px_minmax(0,1fr)] items-center gap-x-4 gap-y-5 overflow-hidden bg-navy-950 px-5 py-5 text-white nav:grid-cols-[52px_minmax(0,1fr)_auto] nav:gap-x-5 nav:px-7 nav:py-6">
-      <img v-if="cta.image" :src="cta.image" alt="" class="absolute inset-0 -z-20 h-full w-full object-cover" loading="lazy" decoding="async">
-      <span class="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(6,21,55,.9),rgba(10,34,81,.78))]" aria-hidden="true" />
+    <div class="relative isolate grid grid-cols-[44px_minmax(0,1fr)] items-center gap-x-4 gap-y-5 overflow-hidden bg-navy-800 px-5 py-5 text-white nav:grid-cols-[52px_minmax(0,1fr)_auto] nav:gap-x-5 nav:px-7 nav:py-6">
+      <span class="pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgba(10,34,81,.96)_0,rgba(10,34,81,.86)_100%)] min-[901px]:bg-[linear-gradient(90deg,rgba(10,34,81,.97)_0,rgba(10,34,81,.9)_38%,rgba(10,34,81,.55)_68%,rgba(10,34,81,.3)_100%)]" aria-hidden="true" />
+      <img v-if="cta.image" :src="cta.image" alt="" class="absolute inset-0 -z-10 h-full w-full object-cover opacity-50" loading="lazy" decoding="async">
       <span class="row-span-2 flex h-11 w-11 items-center justify-center bg-white/10 text-gold-400 nav:row-span-1 nav:h-[52px] nav:w-[52px]" aria-hidden="true">
         <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 10v4a2 2 0 0 0 2 2h2l3 3V5l-3 3H7a2 2 0 0 0-2 2Z" /><path d="M16 9a5 5 0 0 1 0 6m2-9a9 9 0 0 1 0 12" /></svg>
       </span>
