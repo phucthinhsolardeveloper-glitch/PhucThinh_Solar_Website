@@ -38,9 +38,14 @@ const { activeHeadingId, scrollToHeading } = useTocScrollspy({
   headerOffset: 100,
 })
 
-function formatDate(value: string): string {
+function formatMetadataDate(value: string): string {
   const date = new Date(`${value}T00:00:00Z`)
-  return Number.isNaN(date.valueOf()) ? value : new Intl.DateTimeFormat('vi-VN', { dateStyle: 'long', timeZone: 'UTC' }).format(date)
+  return Number.isNaN(date.valueOf()) ? value : new Intl.DateTimeFormat('en-US', { month: 'short', day: '2-digit', year: 'numeric', timeZone: 'UTC' }).format(date)
+}
+
+function formatRelatedDate(value: string): string {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value)
+  return match ? `${match[3]}/${match[2]}/${match[1]}` : value
 }
 
 useSeoMeta({
@@ -72,7 +77,7 @@ usePublicSocialMeta({
         <header class="mb-8 max-w-[1080px]">
           <h1 class="mb-3 text-[clamp(30px,5vw,48px)] font-black leading-tight tracking-tight">{{ data.title }}</h1>
           <p v-if="data.description" class="mb-3 max-w-[760px] text-lg leading-relaxed text-slate-500">{{ data.description }}</p>
-          <p class="mb-0 text-sm text-slate-500">{{ formatDate(data.date) }} <span aria-hidden="true">·</span> {{ data.author.name }}</p>
+          <p class="mb-0 text-sm text-slate-500">{{ formatMetadataDate(data.date) }} <span aria-hidden="true">·</span> {{ data.author.name }}</p>
         </header>
         <section v-if="data.content.html" class="max-w-[1080px]" aria-label="Nội dung chính sách">
           <div class="grid gap-8" :class="editorial.toc.length ? 'nav:grid-cols-[220px_minmax(0,1fr)]' : ''">
@@ -107,7 +112,7 @@ usePublicSocialMeta({
               <a class="group block h-full text-navy-800 no-underline" :href="links.generic(`/ho-tro/${item.slug}/`)">
                 <img v-if="item.image" :src="item.image" :alt="item.title" class="mb-3 block aspect-video w-full object-cover" loading="lazy" decoding="async">
                 <div v-else class="mb-3 aspect-video bg-navy-50" aria-hidden="true" />
-                <p v-if="item.date" class="mb-2 text-sm text-slate-500">{{ formatDate(item.date) }}</p>
+                <p v-if="item.date" class="mb-2 text-sm text-slate-500">{{ formatRelatedDate(item.date) }}</p>
                 <h3 class="mb-2 text-lg font-bold leading-snug group-hover:text-gold-700">{{ item.title }}</h3>
                 <p v-if="item.description" class="mb-0 line-clamp-3 leading-relaxed text-slate-600">{{ item.description }}</p>
               </a>
