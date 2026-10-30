@@ -97,6 +97,19 @@ test('desktop nav parent links stay navigable and submenu disclosure is an indep
   assert.match(header, /@click="toggleNavDropdown\(item, \$event\)"/)
   assert.match(header, /function handleNavMouseleave\(\)[\s\S]*navDropdownMode\.value === 'hover'/)
   assert.match(header, /function toggleNavDropdown\(item: PublicSiteLink, event: MouseEvent\)[\s\S]*navDropdownMode\.value === 'hover' \|\| navDropdownTrigger\.value !== trigger/)
+  assert.match(header, /function openNavDropdown\(item: PublicSiteLink, event: Event\)[\s\S]*navDropdownOpen\.value === item\.href && navDropdownTrigger\.value[\s\S]*event\.type === 'focusin'\) navDropdownMode\.value = 'intent'[\s\S]*return[\s\S]*navDropdownTrigger\.value = currentTarget/)
+  assert.match(header, /function closeNavDropdown\(restoreFocus = false\)[\s\S]*const trigger = navDropdownTrigger\.value[\s\S]*if \(shouldRestore\) nextTick\(\(\) => trigger\?\.focus\(\)\)/)
+})
+
+test('desktop submenu disclosure controls preserve a 220px tap-target budget across the five navigation groups', () => {
+  const disclosureClass = header.match(/v-if="item\.children\?\.length"\s+class="([^"]+)"/)?.[1] || ''
+  const groupCount = 5
+  const minTapTargetWidth = 44
+  assert.match(disclosureClass, /min-w-11/)
+  assert.match(disclosureClass, /flex-none/)
+  assert.equal(groupCount * minTapTargetWidth, 220)
+  assert.match(header, /<nav class="hidden min-w-0 nav:flex-1 nav:block"/)
+  assert.match(header, /<ul class="flex items-center justify-center gap-1 nav:gap-0"/)
 })
 
 test('desktop catalog mega-menu mirrors PHP production structure', () => {

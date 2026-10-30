@@ -329,6 +329,12 @@ async function submitSearch() {
 function openNavDropdown(item: PublicSiteLink, event: Event) {
   if (!item.children?.length) return
   if (event.type === 'mouseenter' && import.meta.client && !window.matchMedia('(hover: hover) and (pointer: fine)').matches) return
+  if (navDropdownOpen.value === item.href && navDropdownTrigger.value) {
+    // Keep the disclosure's original focus target while focus moves into the
+    // submenu. Its links are removed when Escape closes the dropdown.
+    if (event.type === 'focusin') navDropdownMode.value = 'intent'
+    return
+  }
   const currentTarget = event.currentTarget
   navDropdownTrigger.value = currentTarget instanceof HTMLElement
     ? (currentTarget.contains(document.activeElement) && document.activeElement instanceof HTMLElement
@@ -568,7 +574,7 @@ onBeforeUnmount(() => {
               </NuxtLink>
               <button
                 v-if="item.children?.length"
-                class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-chip text-hdr-muted transition-colors hover:bg-hdr-surface hover:text-hdr-ink"
+                class="inline-flex min-h-11 min-w-11 flex-none items-center justify-center rounded-chip text-hdr-muted transition-colors hover:bg-hdr-surface hover:text-hdr-ink"
                 type="button"
                 :aria-expanded="navDropdownOpen === item.href"
                 :aria-controls="navDropdownOpen === item.href ? `ptsNavMenu-${index}` : undefined"
