@@ -10,8 +10,12 @@ const heroImageUnavailable = computed(() => {
   return !image || failedImages.value.has(image)
 })
 const links = useMigrationLinks()
+const reducedMotion = ref(false)
 let autoplayTimer: number | undefined
 let touchStartX: number | null = null
+let pointerInside = false
+let focusInside = false
+let motionPreference: MediaQueryList | undefined
 
 const phpResizableHeroImage = /^\/(?:upload\/photo|assets\/images\/site-visuals)\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png)$/i
 
@@ -45,9 +49,37 @@ function stopAutoplay() {
 
 function startAutoplay() {
   stopAutoplay()
-  if (props.hero.length > 1 && !document.hidden) {
+  if (props.hero.length > 1 && !document.hidden && !reducedMotion.value && !pointerInside && !focusInside && touchStartX === null) {
     autoplayTimer = window.setInterval(() => showSlide(active.value + 1), 4200)
   }
+}
+
+function onPointerEnter(event: PointerEvent) {
+  if (event.pointerType === 'touch') return
+  pointerInside = true
+  stopAutoplay()
+}
+
+function onPointerLeave(event: PointerEvent) {
+  if (event.pointerType === 'touch') return
+  pointerInside = false
+  startAutoplay()
+}
+
+function onFocusIn() {
+  focusInside = true
+  stopAutoplay()
+}
+
+function onFocusOut(event: FocusEvent) {
+  if ((event.currentTarget as HTMLElement).contains(event.relatedTarget as Node | null)) return
+  focusInside = false
+  startAutoplay()
+}
+
+function onMotionPreferenceChange(event: MediaQueryListEvent) {
+  reducedMotion.value = event.matches
+  startAutoplay()
 }
 
 function move(step: number) {
@@ -80,12 +112,16 @@ watch(() => props.hero, () => {
 })
 
 onMounted(() => {
+  motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)')
+  reducedMotion.value = motionPreference.matches
+  motionPreference.addEventListener('change', onMotionPreferenceChange)
   document.addEventListener('visibilitychange', onVisibilityChange)
   startAutoplay()
 })
 
 onBeforeUnmount(() => {
   stopAutoplay()
+  motionPreference?.removeEventListener('change', onMotionPreferenceChange)
   document.removeEventListener('visibilitychange', onVisibilityChange)
 })
 </script>
@@ -97,17 +133,23 @@ onBeforeUnmount(() => {
     aria-labelledby="home-title"
     role="region"
     aria-roledescription="carousel"
+    @pointerenter="onPointerEnter"
+    @pointerleave="onPointerLeave"
+    @focusin="onFocusIn"
+    @focusout="onFocusOut"
     @touchstart.passive="onTouchStart"
     @touchend.passive="onTouchEnd"
   >
     <div class="absolute inset-0 z-0 h-full w-full">
       <div
         v-for="(slide, index) in hero"
-        :key="slide.image"
-        class="absolute inset-0 transition-opacity duration-700 ease-in-out will-change-[opacity]"
+        :key="`${slide.key}-${index}`"
+        class="absolute inset-0 transition-opacity duration-700 ease-in-out motion-reduce:transition-none"
         :class="index === active ? 'opacity-100 z-[1] pointer-events-auto' : 'opacity-0 z-0 pointer-events-none'"
+        :aria-hidden="index !== active"
+        :inert="index !== active"
       >
-        <a class="absolute inset-0 block" :href="links.generic(slide.href)">
+        <a class="absolute inset-0 block focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-white" :href="links.generic(slide.href)" :tabindex="index === active ? 0 : -1">
           <img
             v-if="slide.image && !failedImages.has(slide.image.trim())"
             class="absolute inset-0 h-full w-full object-cover max-[640px]:object-[62%_center]"
@@ -144,9 +186,9 @@ onBeforeUnmount(() => {
       </div>
     </div>
     <div v-if="hero.length > 1" class="absolute bottom-[38px] right-[max(24px,calc((100vw-1560px)/2))] z-[6] flex items-center gap-[4px] rounded-[6px] border border-white/20 bg-navy-950/40 p-[5px] text-white backdrop-blur-[12px] shadow-lg max-[640px]:bottom-[22px] max-[640px]:right-5">
-      <button class="flex h-9 w-[38px] items-center justify-center rounded-[4px] border border-transparent bg-transparent text-white transition-all duration-150 hover:bg-white/20 active:scale-90 cursor-pointer" type="button" aria-label="Banner trước" @click="move(-1)">←</button>
-      <span class="flex h-9 min-w-[66px] items-center justify-center border-x border-white/15 px-2 text-xs text-white/80"><b class="mr-[3px] text-[15px] font-bold text-white">{{ String(active + 1).padStart(2, '0') }}</b> / {{ String(hero.length).padStart(2, '0') }}</span>
-      <button class="flex h-9 w-[38px] items-center justify-center rounded-[4px] border border-transparent bg-transparent text-white transition-all duration-150 hover:bg-white/20 active:scale-90 cursor-pointer" type="button" aria-label="Banner tiếp theo" @click="move(1)">→</button>
+      <button class="flex size-11 items-center justify-center rounded-[4px] border border-transparent bg-transparent text-white transition-all duration-150 motion-reduce:transition-none hover:bg-white/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white active:scale-90 motion-reduce:active:scale-100 cursor-pointer" type="button" aria-label="Banner trước" @click="move(-1)">←</button>
+      <span class="flex h-11 min-w-[66px] items-center justify-center border-x border-white/15 px-2 text-xs text-white/80"><b class="mr-[3px] text-[15px] font-bold text-white">{{ String(active + 1).padStart(2, '0') }}</b> / {{ String(hero.length).padStart(2, '0') }}</span>
+      <button class="flex size-11 items-center justify-center rounded-[4px] border border-transparent bg-transparent text-white transition-all duration-150 motion-reduce:transition-none hover:bg-white/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white active:scale-90 motion-reduce:active:scale-100 cursor-pointer" type="button" aria-label="Banner tiếp theo" @click="move(1)">→</button>
     </div>
     <p class="absolute bottom-[102px] right-[max(24px,calc((100vw-1560px)/2))] z-[2] m-0 flex max-w-[min(500px,calc(100vw-48px))] flex-col gap-1 border-b border-white/20 bg-white/10 backdrop-blur-xs px-[18px] pb-[13px] pt-[14px] text-right text-navy-950 [text-shadow:0_2px_9px_rgba(255,255,255,.7)] transition-opacity duration-500 max-[640px]:bottom-[83px] max-[640px]:right-5 max-[640px]:max-w-[calc(100vw-40px)] max-[640px]:px-[14px] max-[640px]:py-[11px]">
       <strong class="text-[clamp(22px,1.7vw,30px)] font-bold leading-[1.18] max-[640px]:text-[clamp(16px,4.8vw,21px)] max-[640px]:whitespace-nowrap">{{ current.name }}</strong>
