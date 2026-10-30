@@ -40,3 +40,22 @@ test('solution CTA reproduces the effective PHP navy background, photo opacity, 
   assert.match(component, /min-\[901px\]:bg-\[linear-gradient\(90deg,rgba\(10,34,81,\.97\)_0,rgba\(10,34,81,\.9\)_38%,rgba\(10,34,81,\.55\)_68%,rgba\(10,34,81,\.3\)_100%\)\]/)
   assert.match(component, /rounded-\[3px\]/)
 })
+
+test('solution CTA copy and hotline follow PHP desktop/mobile typography and plain-link layout', () => {
+  const hubCss = readPhp('assets/css/solution-hub.css')
+  const component = readFrontend('app/components/solutions/SolutionsCta.vue')
+
+  assert.match(hubCss, /\.pts-sh-contact-copy\{max-width:610px;\}/)
+  assert.match(hubCss, /\.pts-sh-contact-copy h2\{[^}]*font-size:24px!important;line-height:1\.3!important;font-weight:800!important/)
+  assert.match(hubCss, /\.pts-sh-contact-copy p\{[^}]*font-size:16px!important;line-height:1\.65!important/)
+  assert.match(hubCss, /@media\(max-width:520px\)[\s\S]*?\.pts-sh-contact-copy h2\{font-size:23px!important;\}/)
+  assert.match(hubCss, /\.pts-sh-contact-hotline|\.pts-sh-hotline small\{display:block;color:#cbd6e7;font-size:12px;margin-bottom:5px;\}/)
+
+  assert.match(component, /max-w-\[630px\]/)
+  assert.match(component, /text-\[24px\] font-extrabold leading-\[1\.3\][\s\S]*max-\[520px\]:text-\[23px\]/)
+  assert.match(component, /text-base leading-\[1\.65\]/)
+  assert.match(component, /<a\s+v-if="cta\.hotline"[\s\S]*text-center[\s\S]*min-\[901px\]:text-left/)
+  assert.match(component, /<small class="mb-\[5px\] block text-xs text-blue-100">/)
+  assert.match(component, /<strong class="text-xl font-extrabold text-white">/)
+  assert.doesNotMatch(component, /variant="outline"|cta\.hotline\.label.*uppercase/)
+})
