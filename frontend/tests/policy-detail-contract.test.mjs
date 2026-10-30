@@ -35,3 +35,11 @@ test('uses only the current policy cover for social metadata and validates its m
   assert.match(page, /image:\s*computed\(\(\)\s*=>\s*data\.value\?\.cover\s*\|\|\s*undefined\)/)
   assert.doesNotMatch(page, /image:\s*computed\(\(\)\s*=>\s*data\.value\?\.related/)
 })
+
+test('policy metadata and related dates match the corresponding PHP formats', () => {
+  const page = readFileSync(new URL('../app/pages/migration-policy-preview.vue', import.meta.url), 'utf8')
+  assert.match(page, /function formatMetadataDate[\s\S]*new Intl\.DateTimeFormat\('en-US', \{ month: 'short', day: '2-digit', year: 'numeric', timeZone: 'UTC' \}\)/)
+  assert.match(page, /function formatRelatedDate[\s\S]*\$\{match\[3\]\}\/\$\{match\[2\]\}\/\$\{match\[1\]\}/)
+  assert.match(page, /formatMetadataDate\(data\.date\)/)
+  assert.match(page, /formatRelatedDate\(item\.date\)/)
+})
