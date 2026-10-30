@@ -141,7 +141,7 @@ defineProps<{
 .cms-content--editorial-solution th { color: #071b46; font-weight: 800; }
 
 .cms-content--editorial-news {
-  color: #303744;
+  color: var(--color-navy-800);
   font-size: 17px;
   line-height: 1.8;
   overflow-wrap: anywhere;
@@ -154,7 +154,7 @@ defineProps<{
 .cms-content--editorial-news h6 {
   padding: 0;
   border: 0;
-  color: #172033;
+  color: var(--color-navy-950);
   font-weight: 700;
   letter-spacing: -0.025em;
   line-height: 1.3;
@@ -193,17 +193,17 @@ defineProps<{
 }
 
 .cms-content--editorial-news li { margin: 0.4em 0; color: inherit; }
-.cms-content--editorial-news li::marker { color: #697586; }
+.cms-content--editorial-news li::marker { color: var(--color-slate-600); }
 
 .cms-content--editorial-news a {
-  color: #1759a6;
+  color: var(--color-gold-700);
   text-decoration: underline;
-  text-decoration-color: rgb(23 89 166 / 35%);
+  text-decoration-color: color-mix(in srgb, var(--color-gold-700) 35%, transparent);
   text-underline-offset: 0.18em;
 }
 
 .cms-content--editorial-news a:hover { text-decoration-color: currentColor; }
-.cms-content--editorial-news a:focus-visible { outline: 2px solid #1759a6; outline-offset: 3px; }
+.cms-content--editorial-news a:focus-visible { outline: 2px solid var(--color-gold-700); outline-offset: 3px; }
 
 .cms-content--editorial-news img {
   display: block;
@@ -215,16 +215,16 @@ defineProps<{
 }
 
 .cms-content--editorial-news figure { margin: 1.8em 0; }
-.cms-content--editorial-news figcaption { margin-top: 0.65em; color: #667085; font-size: 14px; line-height: 1.55; }
+.cms-content--editorial-news figcaption { margin-top: 0.65em; color: var(--color-slate-600); font-size: 14px; line-height: 1.55; }
 
 .cms-content--editorial-news blockquote {
   margin: 1.6em 0;
   padding: 0.15em 0 0.15em 1.1em;
   border: 0;
-  border-left: 3px solid #cbd5e1;
+  border-left: 3px solid var(--color-slate-300);
   border-radius: 0;
   background: transparent;
-  color: #475467;
+  color: var(--color-slate-600);
   font-size: 1.05em;
   font-weight: 500;
 }
@@ -243,13 +243,13 @@ defineProps<{
   min-width: 8rem;
   padding: 0.7em 0.8em;
   border: 0;
-  border-bottom: 1px solid #e4e7ec;
+  border-bottom: 1px solid var(--color-slate-300);
   background: transparent;
   text-align: left;
   vertical-align: top;
 }
 
-.cms-content--editorial-news th { color: #172033; font-weight: 650; }
+.cms-content--editorial-news th { color: var(--color-navy-950); font-weight: 650; }
 
 @media (max-width: 520px) {
   .cms-content--editorial-news { font-size: 16px; line-height: 1.75; }
