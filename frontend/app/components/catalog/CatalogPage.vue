@@ -452,14 +452,14 @@ function pageLink(nextPage: number) {
         </details>
       </section>
 
-      <section v-if="catalogData?.support" class="relative isolate col-span-full mt-5 grid grid-cols-1 items-center gap-6 overflow-hidden rounded-btn border border-navy-700/60 bg-navy-950 px-6 py-8 text-white shadow-md tb:grid-cols-[minmax(0,1fr)_auto] nav:px-10 nav:py-9" aria-labelledby="catalog-support-title">
+      <section v-if="catalogData?.support" class="relative isolate col-span-full mt-5 grid grid-cols-1 items-center gap-6 overflow-hidden bg-navy-950 px-6 py-8 text-white tb:grid-cols-[minmax(0,1fr)_auto] nav:px-10 nav:py-9" aria-labelledby="catalog-support-title">
         <img v-if="catalogData.support.image" :src="catalogData.support.image" alt="" width="1600" height="500" sizes="100vw" class="absolute inset-0 -z-20 h-full w-full object-cover opacity-30" loading="lazy" decoding="async">
         <div class="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-r from-navy-950/95 via-navy-900/90 to-navy-800/70" aria-hidden="true" />
         <div>
           <h2 id="catalog-support-title" class="mb-2 text-2xl font-black text-white">{{ catalogData.support.title }}</h2>
           <p class="mb-0 max-w-[720px] leading-relaxed text-blue-100/95">{{ catalogData.support.description }}</p>
         </div>
-        <NuxtLink :to="links.generic(catalogData.support.href || '/lien-he/')" class="inline-flex min-h-11 items-center justify-center rounded-btn bg-hdr-gold px-6 text-sm font-extrabold text-navy-950 no-underline shadow-sm transition-colors hover:bg-hdr-gold-hover">Nhận tư vấn →</NuxtLink>
+        <NuxtLink :to="links.generic(catalogData.support.href || '/lien-he/')" class="inline-flex min-h-11 items-center justify-center rounded-btn bg-hdr-gold px-6 text-sm font-extrabold text-navy-950 no-underline transition-colors hover:bg-hdr-gold-hover">Nhận tư vấn →</NuxtLink>
       </section>
     </main>
 

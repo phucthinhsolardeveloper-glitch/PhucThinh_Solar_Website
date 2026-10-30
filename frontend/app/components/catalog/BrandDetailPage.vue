@@ -274,12 +274,12 @@ usePublicSocialMeta({
           </section>
         </div>
 
-        <section class="relative isolate mt-10 grid grid-cols-1 items-center gap-6 overflow-hidden rounded-btn border border-navy-700/60 bg-gradient-to-r from-navy-950 via-navy-900 to-navy-800 px-6 py-8 text-white shadow-md tb:grid-cols-[minmax(0,1fr)_auto] nav:px-10 nav:py-9" aria-labelledby="brand-support-title">
+        <section class="relative isolate mt-10 grid grid-cols-1 items-center gap-6 overflow-hidden bg-navy-950 px-6 py-8 text-white tb:grid-cols-[minmax(0,1fr)_auto] nav:px-10 nav:py-9" aria-labelledby="brand-support-title">
           <div>
             <h2 id="brand-support-title" class="mb-2 text-2xl font-black text-white">Cần hỗ trợ chọn sản phẩm phù hợp?</h2>
             <p class="mb-0 max-w-[720px] leading-relaxed text-blue-100/95">Chia sẻ nhu cầu để đội ngũ Phúc Thịnh Solar tư vấn cấu hình và báo giá phù hợp.</p>
           </div>
-          <NuxtLink :to="migrationHref('/lien-he/')" class="inline-flex min-h-11 items-center justify-center rounded-btn bg-hdr-gold px-6 text-sm font-extrabold text-navy-950 no-underline shadow-sm transition-colors hover:bg-hdr-gold-hover">Nhận tư vấn →</NuxtLink>
+          <NuxtLink :to="migrationHref('/lien-he/')" class="inline-flex min-h-11 items-center justify-center rounded-btn bg-hdr-gold px-6 text-sm font-extrabold text-navy-950 no-underline transition-colors hover:bg-hdr-gold-hover">Nhận tư vấn →</NuxtLink>
         </section>
       </div>
     </main>
