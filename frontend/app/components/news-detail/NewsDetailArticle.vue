@@ -48,6 +48,9 @@ function formatDate(value: string): string {
       v-if="article.cover && article.showCover"
       :src="article.cover"
       :alt="article.title"
+      width="1000"
+      height="560"
+      sizes="(min-width: 1024px) 66vw, 100vw"
       class="mb-8 block aspect-video w-full object-cover nav:mb-10"
     >
 
@@ -55,13 +58,13 @@ function formatDate(value: string): string {
       <div class="order-2 min-w-0 nav:order-1">
         <!-- Sanitized rich text is rendered once; heading IDs support the TOC anchors. -->
         <div v-if="article.content.html" id="news-article-content">
-          <EditorialRichText :content="editorial.content" />
+          <EditorialRichText :content="editorial.content" variant="news" />
         </div>
         <p v-else class="my-8 text-slate-600" role="status">Nội dung đang cập nhật</p>
 
         <div v-if="editorial.content.html && article.quote?.html" class="my-8">
           <blockquote class="m-0 border-l-[3px] border-gold-500 pl-4 text-slate-600">
-            <EditorialRichText :content="article.quote" />
+            <EditorialRichText :content="article.quote" variant="news" />
           </blockquote>
         </div>
 
@@ -77,6 +80,8 @@ function formatDate(value: string): string {
             </a>
           </li>
         </ul>
+
+        <EditorialShare v-if="article.content.html" class="mt-8" :title="article.title" :canonical-path="article.canonical" />
       </div>
 
       <aside class="order-1 min-w-0 nav:order-2">
@@ -102,11 +107,7 @@ function formatDate(value: string): string {
               >{{ item.label }}</a>
             </li>
           </ol>
-          <div v-if="article.content.html" class="mt-5 border-t border-slate-200 pt-4">
-            <EditorialShare :title="article.title" :canonical-path="article.canonical" />
-          </div>
         </nav>
-        <EditorialShare v-else-if="article.content.html" :title="article.title" :canonical-path="article.canonical" />
       </aside>
     </div>
   </article>

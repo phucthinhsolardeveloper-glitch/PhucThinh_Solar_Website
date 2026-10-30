@@ -33,8 +33,10 @@ test('news detail presents the article in a responsive 8:4 editorial layout', ()
   assert.match(article, /nav:sticky nav:top-28/)
   assert.match(article, /<UBadge v-if="categoryName"/)
   assert.match(article, /<UIcon name="i-lucide-list"/)
-  assert.match(article, /<EditorialRichText :content="editorial\.content" \/>/)
-  assert.equal((article.match(/<EditorialRichText :content="editorial\.content" \/>/g) || []).length, 1)
+  assert.match(article, /<EditorialRichText :content="editorial\.content" variant="news" \/>/)
+  assert.match(article, /<EditorialRichText :content="article\.quote" variant="news" \/>/)
+  assert.equal((article.match(/<EditorialShare /g) || []).length, 1)
+  assert.match(article, /sizes="\(min-width: 1024px\) 66vw, 100vw"/)
 })
 
 test('gallery and video pages rely on CMS titles without static marketing eyebrow copy', () => {
@@ -88,7 +90,7 @@ test('policy article widths follow PHP reading measure and related media uses th
 test('editorial cover and related images use the documented news aspect ratio and crop behavior', () => {
   const article = read('../app/components/news-detail/NewsDetailArticle.vue')
   const related = read('../app/components/news-detail/NewsDetailRelated.vue')
-  assert.match(article, /aspect-video w-full object-cover nav:mb-10/)
+  assert.match(article, /width="1000"\s+height="560"\s+sizes="\(min-width: 1024px\) 66vw, 100vw"\s+class="mb-8 block aspect-video w-full object-cover nav:mb-10"/)
   assert.match(related, /aspect-video w-full object-cover/)
   assert.doesNotMatch(related, /aspect-\[3\/2\]/)
 })
