@@ -159,7 +159,7 @@ const telHref = computed(() => telHrefFor(hotline.value))
     <div class="mt-10 border-t border-white/10 pt-5">
       <div class="mx-auto flex w-full max-w-(--container-page) flex-col items-start justify-between gap-3 px-4 max-[359px]:px-3 tb:flex-row tb:items-center tb:px-(--spacing-gutter) text-[13px]">
         <p class="m-0 text-ftr-text/80">© {{ new Date().getFullYear() }} {{ brandName }}. Tất cả quyền được bảo lưu.</p>
-        <ul v-if="footer?.socialLinks.length" class="m-0 flex list-none flex-wrap items-center gap-x-5 gap-y-1 p-0" aria-label="Kết nối mạng xã hội">
+        <ul v-if="footer?.socialLinks.length" class="m-0 flex list-none flex-wrap items-center gap-x-5 gap-y-1 p-0 tb:pr-14" aria-label="Kết nối mạng xã hội">
           <li v-for="social in footer.socialLinks" :key="social.href">
             <a
               class="inline-flex min-h-11 items-center text-[15px] font-semibold leading-[1.7] text-ftr-text no-underline transition-colors hover:text-gold-400"

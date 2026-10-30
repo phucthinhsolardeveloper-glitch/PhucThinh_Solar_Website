@@ -31,9 +31,9 @@
   does not prove form submission.
 - Gemini's summary said the scrollspy uses `IntersectionObserver`; the actual
   implementation uses scroll events and `requestAnimationFrame`.
-- Browser-level measurement of floating-widget overlap at 320px and header
-  overflow at 821px/1321px remains unverified; the source-contract tests do not
-  measure rendered geometry.
+- Browser geometry was checked at mobile 320px and desktop/tablet breakpoints;
+  social links reserve space for the floating contact controls. The header and
+  document had no horizontal overflow at the tested widths.
 
 The integration retains the existing PHP backend as the authority for lead
 validation, CSRF, reCAPTCHA, rate limiting, persistence and email delivery.
