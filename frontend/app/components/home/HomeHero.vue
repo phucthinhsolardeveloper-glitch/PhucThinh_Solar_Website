@@ -92,7 +92,7 @@ onBeforeUnmount(() => {
 <template>
   <section
     v-if="current"
-    class="relative isolate flex min-h-[clamp(680px,calc(100vh-120px),920px)] min-[1800px]:min-h-[max(720px,calc(100vh-140px))] max-[640px]:min-h-[720px] overflow-hidden rounded-b-[4px] text-navy-950 mb-[clamp(12px,1.2vw,24px)]"
+    class="relative isolate flex min-h-[clamp(570px,39vw,670px)] min-[1800px]:min-h-[max(670px,calc(100vh-174px-clamp(12px,1.2vw,24px)))] min-[1800px]:max-[2299px]:min-h-[max(670px,calc(100vh-clamp(148px,8vw,164px)-clamp(12px,1.2vw,24px)))] max-[640px]:min-h-[700px] overflow-hidden rounded-b-[4px] text-navy-950 mb-[clamp(12px,1.2vw,24px)]"
     :class="heroImageUnavailable ? 'bg-slate-50' : 'bg-navy-950'"
     aria-labelledby="home-title"
     role="region"
@@ -127,8 +127,8 @@ onBeforeUnmount(() => {
       </div>
       <a v-if="current" :href="links.generic(current.href)" class="hidden" aria-hidden="true" />
     </div>
-    <div class="relative z-[4] mx-auto flex min-h-[inherit] w-[min(calc(100%-clamp(40px,5vw,96px)),1560px)] max-[860px]:w-[min(calc(100%-48px),1440px)] max-[640px]:w-[calc(100%-40px)] max-[360px]:w-[calc(100%-32px)] min-[1600px]:w-[min(calc(100%-clamp(96px,8vw,220px)),2200px)] max-w-none flex-col items-center justify-center px-0 py-16 text-center max-[640px]:min-h-[720px] max-[640px]:items-center max-[640px]:justify-start max-[640px]:pb-[150px] max-[640px]:pt-[58px] max-[640px]:[transform:translateY(-14px)]">
-      <p class="mb-[17px] w-full max-w-[850px] whitespace-nowrap text-center text-[clamp(14px,1.2vw,18px)] min-[1501px]:text-[clamp(16px,1.2vw,20px)] font-black uppercase tracking-[.08em] text-navy-950 [text-shadow:0_1px_9px_rgba(255,255,255,.52)] max-[640px]:text-[12px] max-[640px]:tracking-[.04em]">Phân phối thiết bị · Tư vấn · Thi công lắp đặt</p>
+    <div class="relative z-[4] mx-auto flex min-h-[inherit] w-[min(calc(100%-clamp(40px,5vw,96px)),1560px)] max-[860px]:w-[min(calc(100%-48px),1440px)] max-[640px]:w-[calc(100%-40px)] max-[360px]:w-[calc(100%-32px)] min-[1600px]:w-[min(calc(100%-clamp(96px,8vw,220px)),2200px)] max-w-[820px] flex-col items-start justify-center px-0 py-16 text-center [transform:translateY(calc(-70px_-_clamp(0px,calc(25vw_-_400px),240px)))] min-[1800px]:[transform:translateY(calc(-10px_-_clamp(0px,calc(25vw_-_400px),240px)))] max-[640px]:min-h-[700px] max-[640px]:items-center max-[640px]:justify-start max-[640px]:pb-[150px] max-[640px]:pt-[58px] max-[640px]:[transform:translateY(-14px)]">
+      <p class="mb-[17px] w-full max-w-[850px] whitespace-nowrap text-center text-[clamp(22px,1.7vw,30px)] min-[1501px]:text-[clamp(22px,1.7vw,30px)] font-black uppercase tracking-[.02em] text-navy-950 [text-shadow:0_1px_9px_rgba(255,255,255,.52)] max-[640px]:text-[12px] max-[640px]:tracking-[.04em]">Phân phối thiết bị · Tư vấn · Thi công lắp đặt</p>
       <h1 id="home-title" aria-label="Thiết bị và giải pháp năng lượng mặt trời" class="m-0 w-full max-w-[920px] text-center text-[clamp(46px,3.8vw,66px)] min-[1800px]:text-[72px] font-black uppercase leading-[1.08] tracking-[-.03em] text-navy-950 [text-shadow:0_2px_12px_rgba(255,255,255,.62)] max-[640px]:text-[clamp(28px,7.5vw,36px)]">
         <span class="block">Thiết bị và giải pháp</span>
         <span class="block text-[.82em]">năng lượng mặt trời</span>
