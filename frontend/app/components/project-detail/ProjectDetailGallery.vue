@@ -143,7 +143,7 @@ onBeforeUnmount(() => {
           </button>
         </figure>
       </div>
-      <p v-else class="leading-relaxed text-slate-500">Chưa có media được công bố cho dự án này.</p>
+      <p v-else class="leading-relaxed text-slate-500">Không tìm thấy kết quả</p>
     </div>
   </section>
 
