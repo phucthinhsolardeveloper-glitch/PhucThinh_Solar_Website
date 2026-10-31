@@ -8,11 +8,13 @@ services:
       SITE_DOMAIN: ${SITE_DOMAIN:?SITE_DOMAIN is required}
       SITE_ALIASES: ${SITE_ALIASES:-}
       ACME_EMAIL: ${ACME_EMAIL:?ACME_EMAIL is required}
+      CADDY_GLOBAL_OPTIONS: ${CADDY_GLOBAL_OPTIONS:-}
+      PTS_NUXT_HYBRID_ENABLED: ${PTS_NUXT_HYBRID_ENABLED:-0}
       TZ: ${TZ:-Asia/Ho_Chi_Minh}
     ports:
-      - "80:80"
-      - "443:443"
-      - "443:443/udp"
+      - "${PTS_HTTP_PORT:-80}:80"
+      - "${PTS_HTTPS_PORT:-443}:443"
+      - "${PTS_HTTPS_PORT:-443}:443/udp"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
@@ -22,6 +24,8 @@ services:
     depends_on:
       web:
         condition: service_healthy
+      nuxt:
+        condition: service_healthy
     mem_limit: 512m
     pids_limit: 200
     logging: &bounded-logging
@@ -29,6 +33,34 @@ services:
       options:
         max-size: "10m"
         max-file: "5"
+
+  nuxt:
+    image: ${PTS_NUXT_IMAGE:?PTS_NUXT_IMAGE is required}
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      NITRO_HOST: 0.0.0.0
+      NITRO_PORT: "3000"
+      NUXT_PHP_ORIGIN: http://web:80
+      NUXT_PHP_ORIGIN_ALLOWLIST: web:80,127.0.0.1:8080,localhost:8080
+      NUXT_PREVIEW_MEDIA_PROXY: "false"
+      NUXT_PUBLIC_CANONICAL_SITE_ORIGIN: https://phucthinhsolar.com
+      NUXT_PUBLIC_PHP_PUBLIC_ORIGIN: https://${SITE_DOMAIN:?SITE_DOMAIN is required}
+      TZ: ${TZ:-Asia/Ho_Chi_Minh}
+    networks:
+      - edge
+    depends_on:
+      web:
+        condition: service_healthy
+    mem_limit: 1g
+    pids_limit: 200
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:3000/_migration/site"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 15s
+    logging: *bounded-logging
 
   web:
     image: ${PTS_WEB_IMAGE:?PTS_WEB_IMAGE is required}

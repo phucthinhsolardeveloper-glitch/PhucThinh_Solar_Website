@@ -31,8 +31,10 @@ export async function fetchPhpSessionResponse(
   const sessionCookie = cookie ? incomingPhpSessionCookie(cookie) : null
   if (sessionCookie) headers.set('cookie', sessionCookie)
   headers.set('accept', 'application/json')
+  const phpOrigin = new URL(migrationPhpEndpoint(event, endpoint))
+  headers.set('host', phpOrigin.host)
 
-  const response = await fetch(migrationPhpEndpoint(event, endpoint), {
+  const response = await fetch(phpOrigin.toString(), {
     ...init,
     headers,
     redirect: 'manual',

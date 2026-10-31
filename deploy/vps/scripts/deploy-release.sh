@@ -6,7 +6,7 @@ release_bundle="${1:-}"
 
 usage() {
     echo "Usage: sudo $0 /path/to/release-directory" >&2
-    echo "Release directory phải chứa SHA256SUMS, RELEASE.txt và public_html-*.tar.gz." >&2
+    echo "Release directory phải chứa SHA256SUMS, RELEASE.txt, public_html-*.tar.gz và frontend-source-*.tar.gz." >&2
 }
 
 [ "$(id -u)" -eq 0 ] || { echo "FAIL: chạy bằng root hoặc sudo." >&2; exit 1; }
@@ -24,6 +24,8 @@ done
 archive="$(find "$release_bundle" -maxdepth 1 -type f -name 'public_html-*.tar.gz' -printf '%f\n' | sort | head -1)"
 [ -n "$archive" ] || { echo "FAIL: thiếu archive public_html." >&2; exit 1; }
 tools_archive="$(find "$release_bundle" -maxdepth 1 -type f -name 'deployment-tools-*.tar.gz' -printf '%f\n' | sort | head -1)"
+frontend_archive="$(find "$release_bundle" -maxdepth 1 -type f -name 'frontend-source-*.tar.gz' -printf '%f\n' | sort | head -1)"
+[ -n "$frontend_archive" ] || { echo "FAIL: thiếu archive frontend-source." >&2; exit 1; }
 
 commit="$(sed -n 's/^commit=//p' "$release_bundle/RELEASE.txt" | head -1)"
 if ! printf '%s' "$commit" | grep -Eq '^[0-9a-f]{40}$'; then
@@ -43,14 +45,18 @@ fi
 if [ -n "$tools_archive" ] && [ ! -d "$release_dir/migrations" ]; then
     tar -xzf "$release_bundle/$tools_archive" -C "$release_dir"
 fi
+if [ ! -d "$release_dir/frontend" ]; then
+    tar -xzf "$release_bundle/$frontend_archive" -C "$release_dir"
+fi
 
-if find "$release_dir/public_html" -type l -print -quit | grep -q .; then
+if find "$release_dir/public_html" "$release_dir/frontend" -type l -print -quit | grep -q .; then
     echo "FAIL: release chứa symlink; dừng để kiểm tra thủ công." >&2
     exit 1
 fi
 
-install -d -m 0755 "$build_dir/public_html" "$build_dir/app"
+install -d -m 0755 "$build_dir/public_html" "$build_dir/app" "$build_dir/frontend"
 rsync -a "$release_dir/public_html/" "$build_dir/public_html/"
+rsync -a "$release_dir/frontend/" "$build_dir/frontend/"
 # The runtime definition is part of the checksummed release. Falling back to
 # the stack copy keeps older releases deployable, but a new release must not
 # silently inherit an old PHP base image from the VPS.
@@ -64,56 +70,104 @@ if ! grep -Eq '^FROM[[:space:]]+php:8\.1-apache([[:space:]]|$)' "$build_dir/app/
     echo "FAIL: release runtime không phải PHP 8.1; dừng trước khi build/activate." >&2
     exit 1
 fi
+if [ ! -f "$build_dir/frontend/Dockerfile" ]; then
+    echo "FAIL: thiếu frontend/Dockerfile trong release." >&2
+    exit 1
+fi
 
 new_image="phucthinhsolar-web:$release_id"
+new_nuxt_image="phucthinhsolar-nuxt:$release_id"
+for base_image in php:8.1-apache node:24.20.0-alpine; do
+    if ! docker image inspect "$base_image" >/dev/null 2>&1; then
+        docker pull "$base_image"
+    fi
+done
 docker build --pull=false --label "com.phucthinhsolar.commit=$commit" -f "$build_dir/app/Dockerfile" -t "$new_image" "$build_dir"
+docker build --pull=false --label "com.phucthinhsolar.commit=$commit" -f "$build_dir/frontend/Dockerfile" -t "$new_nuxt_image" "$build_dir/frontend"
+
+if [ -d "$release_dir/deploy/vps" ]; then
+    install -m 0644 "$release_dir/deploy/vps/docker-compose.yml" "$stack_root/docker-compose.yml"
+    install -m 0644 "$release_dir/deploy/vps/Caddyfile" "$stack_root/Caddyfile"
+    install -m 0644 "$release_dir/deploy/vps/config/config.php" "$stack_root/config/config.php"
+    rsync -a --delete "$release_dir/deploy/vps/app/" "$stack_root/app/"
+    rsync -a --delete "$release_dir/deploy/vps/scripts/" "$stack_root/scripts/"
+fi
 
 env_file="$stack_root/.env"
 old_image="$(sed -n 's/^PTS_WEB_IMAGE=//p' "$env_file" | tail -1)"
 [ -n "$old_image" ] || old_image="phucthinhsolar-web:bootstrap"
+old_nuxt_image="$(sed -n 's/^PTS_NUXT_IMAGE=//p' "$env_file" | tail -1)"
+[ -n "$old_nuxt_image" ] || old_nuxt_image="$(cat "$stack_root/state/current-nuxt-image" 2>/dev/null || true)"
 env_next="$stack_root/state/env.next"
-awk -v image="$new_image" '
-    BEGIN { replaced=0 }
-    /^PTS_WEB_IMAGE=/ { print "PTS_WEB_IMAGE=" image; replaced=1; next }
+awk -v image="$new_image" -v nuxt_image="$new_nuxt_image" '
+    BEGIN { replaced_web=0; replaced_nuxt=0; has_hybrid=0 }
+    /^PTS_WEB_IMAGE=/ { print "PTS_WEB_IMAGE=" image; replaced_web=1; next }
+    /^PTS_NUXT_IMAGE=/ { print "PTS_NUXT_IMAGE=" nuxt_image; replaced_nuxt=1; next }
+    /^PTS_NUXT_HYBRID_ENABLED=/ { print; has_hybrid=1; next }
     { print }
-    END { if(!replaced) print "PTS_WEB_IMAGE=" image }
+    END {
+        if(!replaced_web) print "PTS_WEB_IMAGE=" image
+        if(!replaced_nuxt) print "PTS_NUXT_IMAGE=" nuxt_image
+        if(!has_hybrid) print "PTS_NUXT_HYBRID_ENABLED=0"
+    }
 ' "$env_file" > "$env_next"
 chmod 0600 "$env_next"
 mv "$env_next" "$env_file"
 
+restore_previous_env() {
+    awk -v image="$old_image" -v nuxt_image="${old_nuxt_image:-$new_nuxt_image}" '
+        BEGIN { replaced_web=0; replaced_nuxt=0 }
+        /^PTS_WEB_IMAGE=/ { print "PTS_WEB_IMAGE=" image; replaced_web=1; next }
+        /^PTS_NUXT_IMAGE=/ { print "PTS_NUXT_IMAGE=" nuxt_image; replaced_nuxt=1; next }
+        { print }
+        END {
+            if(!replaced_web) print "PTS_WEB_IMAGE=" image
+            if(!replaced_nuxt) print "PTS_NUXT_IMAGE=" nuxt_image
+        }
+    ' "$env_file" > "$env_next"
+    chmod 0600 "$env_next"
+    mv "$env_next" "$env_file"
+}
+
 cd "$stack_root"
 if ! docker compose config --quiet; then
     echo "FAIL: compose config không hợp lệ; hoàn tác image active." >&2
-    sed -i "s#^PTS_WEB_IMAGE=.*#PTS_WEB_IMAGE=$old_image#" "$env_file"
+    restore_previous_env
     exit 1
 fi
 
 docker compose up -d db
-docker compose up -d web proxy
+docker compose up -d web nuxt proxy
 
 healthy=0
 web_container="$(docker compose ps -q web)"
-# 120s. Healthcheck web có start_period 15s + interval 10s (xem compose), nên
+nuxt_container="$(docker compose ps -q nuxt)"
+# 120s. Healthcheck web/nuxt có start_period 15s + interval 10s (xem compose), nên
 # probe đầu tiên rơi vào ~15-25s và vòng này còn dư biên. Không hạ xuống dưới
 # start_period + 2*interval, nếu không deploy tốt sẽ bị rollback oan.
 for attempt in $(seq 1 60); do
-    status="$(docker inspect --format '{{if .State.Health}}{{.State.Health.Status}}{{else}}{{.State.Status}}{{end}}' "$web_container" 2>/dev/null || true)"
-    if [ "$status" = "healthy" ]; then healthy=1; break; fi
+    web_status="$(docker inspect --format '{{if .State.Health}}{{.State.Health.Status}}{{else}}{{.State.Status}}{{end}}' "$web_container" 2>/dev/null || true)"
+    nuxt_status="$(docker inspect --format '{{if .State.Health}}{{.State.Health.Status}}{{else}}{{.State.Status}}{{end}}' "$nuxt_container" 2>/dev/null || true)"
+    if [ "$web_status" = "healthy" ] && [ "$nuxt_status" = "healthy" ]; then healthy=1; break; fi
     sleep 2
 done
 
 if [ "$healthy" -ne 1 ]; then
-    echo "FAIL: web mới không healthy; tự động quay lại $old_image." >&2
-    sed -i "s#^PTS_WEB_IMAGE=.*#PTS_WEB_IMAGE=$old_image#" "$env_file"
+    echo "FAIL: web/nuxt mới không healthy (web=${web_status:-unknown}, nuxt=${nuxt_status:-unknown}); tự động quay lại $old_image." >&2
+    restore_previous_env
     if docker image inspect "$old_image" >/dev/null 2>&1; then
-        docker compose up -d web proxy || true
+        docker compose up -d web nuxt proxy || true
     else
         echo "WARN: image trước không tồn tại cục bộ; cần phục hồi thủ công." >&2
     fi
     exit 1
 fi
 
-printf '%s\t%s\t%s\n' "$(date -u +%FT%TZ)" "$new_image" "$old_image" >> "$stack_root/state/deploy-history.tsv"
+printf '%s\t%s\t%s\t%s\t%s\n' "$(date -u +%FT%TZ)" "$new_image" "$old_image" "$new_nuxt_image" "${old_nuxt_image:-none}" >> "$stack_root/state/deploy-history.tsv"
 printf '%s\n' "$new_image" > "$stack_root/state/current-image"
 printf '%s\n' "$old_image" > "$stack_root/state/previous-image"
-echo "PASS: đã kích hoạt $new_image. Chưa tự động chạy migration hoặc đổi DNS."
+printf '%s\n' "$new_nuxt_image" > "$stack_root/state/current-nuxt-image"
+if [ -n "$old_nuxt_image" ]; then
+    printf '%s\n' "$old_nuxt_image" > "$stack_root/state/previous-nuxt-image"
+fi
+echo "PASS: đã kích hoạt $new_image và $new_nuxt_image. Chưa tự động chạy migration hoặc đổi DNS."

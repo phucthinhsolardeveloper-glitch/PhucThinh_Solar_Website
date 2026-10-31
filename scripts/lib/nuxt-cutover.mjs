@@ -62,8 +62,8 @@ export function auditRepository({ root, manifest }) {
   const checks = [
     ['feature flag defaults OFF', manifest.featureFlag.default === '0'],
     ['production Caddy still sends traffic to PHP web:80', /reverse_proxy\s+web:80/.test(caddy)],
-    ['production Caddy has no Nuxt upstream', !/reverse_proxy\s+nuxt(?::|\s)/i.test(caddy)],
-    ['production Compose has no Nuxt service', !/^\s{2}nuxt:\s*$/m.test(compose)],
+    ['production Caddy gates Nuxt upstream behind PTS_NUXT_HYBRID_ENABLED', !/reverse_proxy\s+nuxt(?::|\s)/i.test(caddy) || /expression\s+`\{env\.PTS_NUXT_HYBRID_ENABLED\}\s*==\s*"1"`[\s\S]*?reverse_proxy\s+nuxt:3000/.test(caddy)],
+    ['production Compose Nuxt service uses internal edge network only', !/^\s{2}nuxt:\s*$/m.test(compose) || (!/^\s{2}nuxt:[\s\S]*?^\s{4}ports:/m.test(compose) && /NUXT_PHP_ORIGIN:\s*http:\/\/web:80/.test(compose))],
     ['local OFF fixture binds loopback only', /http:\/\/127\.0\.0\.1:8090/.test(off)],
     ['local OFF fixture sends traffic to PHP only', /reverse_proxy\s+127\.0\.0\.1:8080/.test(off) && !/3100/.test(off)],
     ['pilot is not ready to enable', manifest.pilot.readiness === 'blocked'],

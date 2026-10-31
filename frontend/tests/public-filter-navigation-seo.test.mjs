@@ -32,7 +32,10 @@ test('interactive filters keep the page mounted and avoid global route-scroll an
   const scrollLock = read('../app/composables/useDocumentScrollLock.ts')
 
   assert.match(styles, /html\s*\{\s*scroll-behavior:\s*auto;/)
-  assert.match(catalog, /useAsyncData<PublicCatalogPayload>\(\s*'migration-catalog'/)
+  // Reactive key: Nuxt carries the previous key's data into the new entry, so
+  // the grid stays mounted while route/query changes refetch.
+  assert.match(catalog, /const catalogDataKey = computed\(\(\) => `migration-catalog:\$\{route\.path\}:\$\{JSON\.stringify\(query\.value\)\}`\)/)
+  assert.match(catalog, /useAsyncData<PublicCatalogPayload>\(\s*catalogDataKey,/)
   assert.match(catalog, /v-if="catalogPending && !catalogData"/)
   assert.match(catalog, /:aria-busy="catalogPending"/)
   assert.match(search, /useAsyncData<PublicSearchPayload>\(\s*'migration-search'/)

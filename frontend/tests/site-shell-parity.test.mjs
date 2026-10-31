@@ -9,7 +9,7 @@ test('Nuxt footer follows PHP column ownership and keeps location rows flat', ()
   const php = read('../../domains/phucthinhsolar.com/public_html/templates/layout/footer.php')
 
   assert.match(footer, /nav:grid-cols-\[290px_minmax\(280px,1fr\)_minmax\(460px,1\.3fr\)\]/)
-  assert.match(footer, /grid-cols-1 gap-8 min-\[768px\]:grid-cols-\[minmax\(0,5fr\)_minmax\(0,7fr\)\]/)
+  assert.match(footer, /grid-cols-1 gap-8 min-\[768px\]:grid-cols-\[minmax\(350px,1fr\)_minmax\(0,1fr\)\] min-\[768px\]:gap-12/)
   assert.match(footer, /class="m-0 not-italic"/)
   assert.match(footer, /<ul v-if="footer\?\.socialLinks\.length" class="m-0 flex list-none flex-wrap items-center gap-x-5 gap-y-1 p-0 tb:pr-14"/)
   assert.match(footer, /socialKind\(social\.label, social\.href\) === 'facebook'/)
