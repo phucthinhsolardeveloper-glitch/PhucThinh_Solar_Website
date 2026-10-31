@@ -53,7 +53,8 @@ test('homepage hero safely uses positional fallback when a slide name is absent'
 })
 test('homepage carousel keeps timed motion out of keyboard, pointer, touch, and reduced-motion interactions', () => {
   assert.match(homeHero, /window\.matchMedia\('\(prefers-reduced-motion: reduce\)'\)/)
-  assert.match(homeHero, /!reducedMotion\.value && !pointerInside && !focusInside && touchStartX === null/)
+  assert.match(homeHero, /if \(props\.hero\.length > 1 && !document\.hidden && !pointerInside && !focusInside && touchStartX === null\)/)
+  assert.match(homeHero, /duration-700 ease-in-out motion-reduce:transition-none/)
   assert.match(homeHero, /motion-reduce:transition-none/)
   assert.match(homeHero, /@focusin="onFocusIn"/)
   assert.match(homeHero, /@focusout="onFocusOut"/)
