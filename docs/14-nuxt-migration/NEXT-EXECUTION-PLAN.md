@@ -71,6 +71,15 @@
   a numeric textarea prop. Focused route/catalog/brand/search/editorial tests
   pass 57/57. The route probes and both target-set results are recorded in
   `PUBLIC-URL-SEO-AUDIT-20261031.md`.
+- A second review found the 36 catalog/search/brand PHP pagination links using
+  `p` were silently ignored by Nuxt components that only read `page`. These
+  flows now normalize legacy `p` to the API's `page`; news-category already
+  handled `p`. Runtime samples for catalog, category, brand root and search
+  confirm `p=2` returns the same first products as `page=2`, differs from page
+  1, and stays noindex. Focused checks pass 18/18 and typecheck passes.
+- Query results were compared only against the active local Nuxt API. Exact
+  page-content parity against PHP remains unverified while the PHP HTML
+  renderer is disabled.
 - No production action was taken. PHP remains the public owner; visual signoff,
   SEO/href classification, missing hidden-record fixtures, and release/Caddy
   rehearsal remain open.

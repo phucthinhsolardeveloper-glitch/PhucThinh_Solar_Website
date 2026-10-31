@@ -201,3 +201,25 @@ brand/product link is present in the current PHP content, or that old and new
 filter query strings return identical result sets. The original PHP HTML
 snapshot is dated and the local PHP HTML renderer remains disabled, so exact
 same-data link-set and filter parity remain open.
+
+## Follow-up — PHP `p` pagination compatibility
+
+The retained PHP-only href matrix contained **37** `p` query links: product
+catalog/root-category pagination, search pagination, brand-root pagination,
+and one editorial category. `NewsCategoryPage` already consumes `p`; catalog,
+search and brand listing pages previously read only `page`, so the 36 commerce
+and search URLs silently loaded page 1 despite returning HTTP 200.
+
+The shared `publicPageQueryValue()` now accepts a positive numeric `page` first
+and falls back to legacy `p`. Catalog/search/brand API requests use the
+normalized page value; pagination links emit `page`, filter changes clear the
+old page value, and both `p` and `page` query URLs remain noindex. Runtime GETs
+confirmed `/san-pham/`, `/danh-muc-san-pham/den-nlmt/`, `/thuong-hieu/`, and
+`/tim-kiem/?keyword=den`: each `p=2` result matches its `page=2` result and
+differs from `p=1`. All responses are HTTP 200 with `noindex, nofollow,
+noarchive`.
+
+Focused pagination/catalog/brand/search checks pass **18/18**, and Nuxt
+typecheck passes. The exact same-data PHP query result comparison remains open
+because the PHP HTML renderer is disabled; this verifies compatibility with
+the active local Nuxt API data only.

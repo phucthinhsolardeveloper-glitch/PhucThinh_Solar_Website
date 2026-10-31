@@ -4,6 +4,7 @@ import CatalogProductGrid from '~/components/catalog/CatalogProductGrid.vue'
 import CatalogMasthead from '~/components/catalog/CatalogMasthead.vue'
 import SearchFilterOptions from '~/components/catalog/SearchFilterOptions.vue'
 import { publicSeoDescription } from '#shared/public-seo'
+import { publicPageQueryValue } from '#shared/public-pagination'
 
 /*
  * Tách từ migration-search-preview.vue (xem đó + pages/tim-kiem/index.vue)
@@ -14,7 +15,7 @@ const { site } = await usePublicSite()
 const route = useRoute()
 const selfPath = computed(() => route.path)
 const keyword = computed(() => typeof route.query.keyword === 'string' ? route.query.keyword.trim() : '')
-const page = computed(() => typeof route.query.page === 'string' ? route.query.page : '')
+const page = computed(() => publicPageQueryValue(route.query.page, route.query.p))
 const brand = computed(() => typeof route.query.brand === 'string' ? route.query.brand.trim() : '')
 const price = computed(() => typeof route.query.price === 'string' ? route.query.price.trim() : '')
 const sort = computed(() => typeof route.query.sort === 'string' ? route.query.sort : '')

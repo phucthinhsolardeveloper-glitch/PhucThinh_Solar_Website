@@ -12,6 +12,7 @@ import SiteHeader from '~/components/SiteHeader.vue'
 import SiteFooter from '~/components/SiteFooter.vue'
 import { productCategorySegmentsFromPublicPath } from '#shared/public-route-gate'
 import { isPublicSeoIndexable, publicSeoRobots } from '#shared/public-seo'
+import { publicPageQueryValue } from '#shared/public-pagination'
 
 /*
  * Tách từ migration-catalog-preview.vue (xem đó + pages/san-pham/index.vue)
@@ -27,7 +28,7 @@ const filterDrawerOpen = ref(false)
 const categoryNavRef = ref<HTMLElement | null>(null)
 const selfPath = computed(() => route.path)
 const category = computed(() => props.categoryPath ?? (productCategorySegmentsFromPublicPath(route.path).join('/') || (typeof route.query.category === 'string' ? route.query.category : '')))
-const page = computed(() => typeof route.query.page === 'string' ? route.query.page : '')
+const page = computed(() => publicPageQueryValue(route.query.page, route.query.p))
 const perPage = computed(() => typeof route.query.per_page === 'string' ? route.query.per_page : '')
 const brand = computed(() => typeof route.query.brand === 'string' ? route.query.brand : '')
 const price = computed(() => typeof route.query.price === 'string' ? route.query.price : '')
@@ -208,7 +209,7 @@ const metadataTitle = computed(() => catalogData.value?.seo.title || [heading.va
 const metadataDescription = computed(() => catalogData.value?.seo.description || 'Khám phá thiết bị chiếu sáng, tấm pin, biến tần và giải pháp năng lượng mặt trời tại Phúc Thịnh Solar.')
 const metadataKeywords = computed(() => catalogData.value?.seo.keywords ?? '')
 const metadataCanonicalPath = computed(() => route.path === '/thuong-hieu/' ? route.path : (catalogData.value?.canonical.url || route.path))
-const catalogFilterKeys = new Set(['category', 'page', 'per_page', 'brand', 'price', 'subcategory', 'sort', 'keyword', 'need'])
+const catalogFilterKeys = new Set(['category', 'page', 'p', 'per_page', 'brand', 'price', 'subcategory', 'sort', 'keyword', 'need'])
 const hasQueryFilters = computed(() => Object.keys(route.query).some((key) => catalogFilterKeys.has(key)))
 const catalogIndexable = computed(() => {
   const enabled = route.path.startsWith('/danh-muc-san-pham/')

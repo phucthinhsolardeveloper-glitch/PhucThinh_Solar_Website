@@ -1,8 +1,10 @@
 <script setup lang="ts">
+import type { LocationQueryRaw } from 'vue-router'
 import type { PublicBrandDetailPayload } from '#shared/contracts/public-brand-detail'
 import type { PublicSitePayload } from '#shared/contracts/public-site'
 import { isPublicSitePayload } from '#shared/contracts/public-site'
 import { isPublicSeoIndexable, publicSeoRobots } from '#shared/public-seo'
+import { publicPageQueryValue } from '#shared/public-pagination'
 import CatalogProductGrid from '~/components/catalog/CatalogProductGrid.vue'
 
 /*
@@ -35,7 +37,7 @@ const selfPath = computed(() => route.path)
 const { active: isMigrationPreview, generic: migrationHref } = useMigrationLinks()
 const config = useRuntimeConfig()
 const publicEnabled = computed(() => !isMigrationPreview.value)
-const page = computed(() => typeof route.query.page === 'string' ? route.query.page : '')
+const page = computed(() => publicPageQueryValue(route.query.page, route.query.p))
 const sort = computed(() => typeof route.query.sort === 'string' ? route.query.sort : '')
 const price = computed(() => typeof route.query.price === 'string' ? route.query.price : '')
 const query = computed(() => ({
@@ -80,6 +82,7 @@ const sortOptions = computed(() => {
 function sortLink(value: string) {
   const next = { ...route.query }
   delete next.page
+  delete next.p
   if (value === 'default') delete next.sort
   else next.sort = value
   return { path: selfPath.value, query: next }
@@ -93,6 +96,7 @@ function priceLink(key: string) {
   else selected.add(key as '1' | '2' | '3')
   const next = { ...route.query }
   delete next.page
+  delete next.p
   if (selected.size) next.price = [...selected].sort().join(',')
   else delete next.price
   return { path: selfPath.value, query: next }
@@ -100,16 +104,19 @@ function priceLink(key: string) {
 function resetFilterLink() {
   const next = { ...route.query }
   delete next.page
+  delete next.p
   delete next.price
   return { path: selfPath.value, query: next }
 }
 function pageLink(nextPage: number) {
-  return { path: selfPath.value, query: { ...route.query, page: String(nextPage) } }
+  const next: LocationQueryRaw = { ...route.query, page: String(nextPage) }
+  delete next.p
+  return { path: selfPath.value, query: next }
 }
 
 const brandIndexable = computed(() => publicEnabled.value
   && isPublicSeoIndexable(config.public.brandDetailPublicRouteIndexable, true)
-  && !!data.value && !error.value && !['page', 'sort', 'price'].some((key) => key in route.query))
+  && !!data.value && !error.value && !['page', 'p', 'sort', 'price'].some((key) => key in route.query))
 const brandTitle = computed(() => data.value?.seo?.title || (data.value ? `${data.value.brand.name} | Phúc Thịnh Solar` : 'Thương hiệu — Phúc Thịnh Solar'))
 const brandDescription = computed(() => data.value?.seo?.description || '')
 const brandSocialDescription = computed(() => brandDescription.value || site.value.brand.name || 'Phúc Thịnh Solar')
@@ -118,7 +125,7 @@ const brandSocialImage = computed(() => data.value?.seo?.image || site.value.bra
 useSeoMeta({
   title: brandTitle,
   description: brandDescription,
-  robots: computed(() => publicSeoRobots(brandIndexable.value, !!data.value && !error.value, ['page', 'sort', 'price'].some((key) => key in route.query))),
+  robots: computed(() => publicSeoRobots(brandIndexable.value, !!data.value && !error.value, ['page', 'p', 'sort', 'price'].some((key) => key in route.query))),
 })
 useHead({ meta: computed(() => brandKeywords.value ? [{ name: 'keywords', content: brandKeywords.value }] : []) })
 usePublicSocialMeta({

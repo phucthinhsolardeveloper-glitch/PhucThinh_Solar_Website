@@ -178,3 +178,18 @@ database data/volume, deploy, public route switch, push or backup was changed.
 - Changes in this follow-up are limited to Nuxt alias handling, the textarea
   numeric prop, and evidence docs. No database, container, production route,
   deployment, or backup was changed.
+
+## Follow-up — legacy pagination review
+
+- The retained PHP href set includes 37 `p` query links. News category already
+  consumed `p`; the catalog, search and brand listing components did not. The
+  shared public pagination helper now accepts `page` or the legacy `p` alias
+  for the API request. Generated pagination uses `page`; filter changes clear
+  both page keys. Pagination query variants remain noindex.
+- Runtime GETs for catalog, product category, brand root and search show page 2
+  content is the same for `p=2` and `page=2`, differs from page 1, and returns
+  HTTP 200/noindex. Focused pagination/catalog/brand/search checks pass 18/18;
+  Nuxt typecheck passes.
+- This compares against the active local Nuxt API only. PHP same-data result
+  parity remains unverified. No PHP code, DB, production route or deployment
+  was changed.
