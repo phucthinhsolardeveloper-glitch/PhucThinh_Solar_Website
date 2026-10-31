@@ -200,7 +200,7 @@ const catalogColumns = computed<RenderedCatalogColumn[]>(() => {
     const items = group.items.map((item) => ({
       ...item,
       searchText: catalogMenuSearchText(item.label, item.children),
-      icon: catalogItemIcon(item.label),
+      icon: catalogItemIcon(item.label, item.href),
     }))
     const visibleItems = query
       ? items.filter((item) => `${item.label} ${item.searchText}`.toLocaleLowerCase().includes(query))
@@ -558,7 +558,7 @@ onBeforeUnmount(() => {
         <!-- Keep the drawer until the header has enough room for every desktop control. -->
         <button
           ref="mobileTrigger"
-          class="order-first relative flex h-11 w-11 flex-none items-center justify-center rounded-chip border
+          class="pts-mobile-nav-trigger order-first relative flex h-11 w-11 flex-none items-center justify-center rounded-chip border
                  border-[#d8dee6] bg-white text-hdr-ink transition-colors hover:bg-hdr-surface min-[1681px]:hidden"
           type="button"
           :aria-expanded="mobileOpen"
@@ -593,7 +593,7 @@ onBeforeUnmount(() => {
         </a>
 
         <!-- Điều hướng chính desktop (Danh mục sản phẩm + đúng 5 nhóm IA chuẩn) -->
-        <nav class="hidden min-w-0 min-[1681px]:flex-1 min-[1681px]:block" aria-label="Điều hướng chính">
+        <nav class="pts-desktop-nav hidden min-w-0 min-[1681px]:flex-1 min-[1681px]:block" aria-label="Điều hướng chính">
           <ul class="flex items-center justify-center gap-1 nav:gap-0 min-[1681px]:gap-3">
             <li class="mr-1.5 flex flex-none items-center" @mouseenter="openCatalog('hover')" @mouseleave="scheduleCatalogClose">
               <NuxtLink custom :to="shellHref('/san-pham/')" v-slot="{ href, navigate }">

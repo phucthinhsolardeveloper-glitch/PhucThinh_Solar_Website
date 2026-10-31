@@ -36,7 +36,7 @@ MariaDB local và PHP API/media bridge trên cổng 8088:
 
 ```bash
 docker compose -f docker-compose.local.yml up -d db
-docker compose -f docker-compose.nuxt-preview.yml up -d web-preview
+docker compose -f docker-compose.nuxt-preview.yml up -d api-bridge
 ```
 
 Sau đó mở terminal riêng cho Nuxt:

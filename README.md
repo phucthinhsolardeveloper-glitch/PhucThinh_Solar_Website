@@ -60,15 +60,17 @@ Nuxt/Vite chạy với HMR tại **http://localhost:3100/**; ví dụ trang liê
 http://localhost:3100/lien-he/. Terminal `npm run dev` cũng in URL `Local` khi
 server sẵn sàng. Sửa Vue, TypeScript hoặc CSS sẽ cập nhật trên trình duyệt mà
 không cần `npm run build` hay rebuild Docker. Frontend lấy dữ liệu từ PHP API/
-media bridge local tại `http://127.0.0.1:8088`; bridge dùng MariaDB local và
-không phục vụ giao diện PHP. Các cờ `*_PUBLIC_ROUTE_ENABLED` mở URL Nuxt để xem,
+media bridge local tại `http://127.0.0.1:8088`; bridge dùng MariaDB local,
+chỉ mở `/api/*` và `/upload/*`, còn các trang PHP bị chặn khi truy cập trực tiếp.
+Không dùng `:8088` để xem website; preview duy nhất là Nuxt tại `:3100`. Các cờ
+`*_PUBLIC_ROUTE_ENABLED` mở URL Nuxt để xem,
 còn `*_PUBLIC_ROUTE_INDEXABLE=false` giữ toàn bộ bản xem thử ở trạng thái
 `noindex`. Thay đổi `.env` cần khởi động lại `npm run dev`; thay Vue/CSS thì HMR
 tự cập nhật.
 
 `npm run build` dành cho kiểm tra bản production. Script
-`scripts/nuxt-local-preview.sh restart` tạo SSR snapshot riêng và chạy PHP
-preview ở cổng 8088; đây không phải luồng code hàng ngày có HMR.
+`scripts/nuxt-local-preview.sh restart` tạo SSR snapshot riêng và khởi động API
+bridge tại cổng 8088; đây không phải luồng code hàng ngày có HMR.
 
 Theo dõi lỗi:
 

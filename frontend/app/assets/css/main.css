@@ -38,6 +38,12 @@
   white-space: nowrap;
 }
 
+/* Touch-first wide screens need the same discoverable nav as compact layouts. */
+@media (min-width: 1681px) and (hover: none) {
+  .pts-site-header .pts-desktop-nav { display: none; }
+  .pts-site-header .pts-mobile-nav-trigger { display: flex; }
+}
+
 /* ============================================================================
    PTS — nền tảng theme Tailwind v4 + Nuxt UI v4
    CODEX 1, theo docs/14-nuxt-migration/TAILWIND_NUXT_UI_FULL_MIGRATION_20261026.md

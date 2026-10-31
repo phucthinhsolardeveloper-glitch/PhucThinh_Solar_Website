@@ -1,10 +1,10 @@
-# Local-only PHP API source from Nuxt migration worktree.
+# Local-only PHP API/media bridge for Nuxt; legacy page routes are denied.
 # Shares the existing LOCAL fixture database and uploaded media, never production.
 # Run: docker compose -f docker-compose.nuxt-preview.yml up -d
 services:
-  web-preview:
+  api-bridge:
     image: web_pts_php-web:latest
-    container_name: pts-php-nuxt-preview
+    container_name: pts-nuxt-api-bridge
     restart: "no"
     environment:
       APP_ENV: local
@@ -18,6 +18,7 @@ services:
       - "127.0.0.1:8088:80"
     volumes:
       - ./domains/phucthinhsolar.com/public_html:/var/www/html:ro
+      - ./docker/nuxt-preview-api-only.conf:/etc/apache2/conf-enabled/nuxt-preview-api-only.conf:ro
       # Local gitignored libraries/config.php must be present in this worktree.
       # Use the existing local development config, never a production config.
       - local-uploads:/var/www/html/upload:ro

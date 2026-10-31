@@ -15,6 +15,7 @@ test('catalog presentation mirrors PHP mega-menu group order and lighting subtit
   assert.equal(catalogGroupMeta('lighting').icon, 'light')
   assert.equal(catalogItemIcon('Đèn pha năng lượng mặt trời'), 'flood')
   assert.equal(catalogItemIcon('Biến tần / Inverter'), 'inverter')
+  assert.equal(catalogItemIcon('Đèn UFO nhập khẩu', '/danh-muc-san-pham/den-nlmt/den-ufo/'), 'ufo')
   assert.equal(catalogMenuSearchText('Pin lưu trữ', [{ label: 'Lithium' }]), 'Pin lưu trữ Lithium')
   assert.deepEqual(
     sortCatalogGroups([{ id: 'devices' }, { id: 'lighting' }, { id: 'solar' }]).map((group) => group.id),

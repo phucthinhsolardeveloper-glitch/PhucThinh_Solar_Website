@@ -54,18 +54,18 @@ start_preview() {
   stop_nuxt
 
   python3 "$ROOT/scripts/nuxt-preview-launch.py"
-  echo "PHP migration API: http://localhost:8088/api/pts_v1_site.php"
+  echo "Nuxt PHP API bridge: http://localhost:8088/api/pts_v1_site.php"
 }
 
 case "${1:-status}" in
   start|restart) start_preview ;;
   stop)
     stop_nuxt
-    docker compose -f "$COMPOSE" stop web-preview
-    echo "Stopped local preview only"
+    docker compose -f "$COMPOSE" stop api-bridge
+    echo "Stopped local Nuxt snapshot and API bridge; npm run dev stays up but needs the bridge for live data"
     ;;
   status)
-    docker compose -f "$COMPOSE" ps web-preview
+    docker compose -f "$COMPOSE" ps api-bridge
     if curl -fsS --max-time 2 -o /dev/null http://127.0.0.1:3100/migration-site-preview; then
       echo "Nuxt preview UP: http://localhost:3100/migration-site-preview"
     else

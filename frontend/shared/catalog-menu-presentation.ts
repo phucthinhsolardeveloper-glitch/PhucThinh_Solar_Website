@@ -53,10 +53,6 @@ export function catalogGroupMeta(groupId: string) {
   return GROUP_META[groupId] ?? { icon: 'cog' as const, subtitle: '' }
 }
 
-export function catalogItemIcon(label: string): CatalogMenuIconName {
-  return ITEM_ICONS[label] ?? 'cog'
-}
-
 export function resolveEquipmentIcon(label: string, url = ''): CatalogMenuIconName {
   const direct = ITEM_ICONS[label]
   if (direct) return direct
@@ -73,6 +69,10 @@ export function resolveEquipmentIcon(label: string, url = ''): CatalogMenuIconNa
   if (haystack.includes('quat') || haystack.includes('quạt')) return 'fan'
   if (haystack.includes('bom') || haystack.includes('bơm')) return 'pump'
   return 'cog'
+}
+
+export function catalogItemIcon(label: string, url = ''): CatalogMenuIconName {
+  return resolveEquipmentIcon(label, url)
 }
 
 export function catalogMenuSearchText(label: string, children: Array<{ label: string }>): string {

@@ -44,7 +44,7 @@ test('shared header keeps PHP production single-row composition without a duplic
   assert.match(header, /min-\[821px\]:flex min-\[821px\]:flex-col/)
   assert.match(header, /shellHref\('\/gio-hang\/'\)/)
   assert.match(header, /class="gtranslate_wrapper[^\"]*min-\[1681px\]:flex"/)
-  assert.match(header, /<nav class="hidden min-w-0 min-\[1681px\]:flex-1 min-\[1681px\]:block"/)
+  assert.match(header, /<nav class="pts-desktop-nav hidden min-w-0 min-\[1681px\]:flex-1 min-\[1681px\]:block"/)
   assert.match(header, /nav:w-\[270px\][\s\S]*min-\[1681px\]:w-\[clamp\(360px,22vw,460px\)\]/)
   assert.match(header, /min-\[1321px\]:max-\[1346px\]:w-\[244px\]/)
   assert.match(header, /<ul class="flex items-center justify-center gap-1 nav:gap-0 min-\[1681px\]:gap-3"/)
@@ -99,7 +99,7 @@ test('header dialogs isolate the page background and restore prior inert states 
 })
 
 test('desktop nav labels are direct navy links without adjacent chevron buttons', () => {
-  const desktopNav = header.match(/<nav class="hidden min-w-0 min-\[1681px\]:flex-1 min-\[1681px\]:block" aria-label="Điều hướng chính">([\s\S]*?)<\/nav>\s*<!-- Cụm thao tác bên phải -->/)?.[1] || ''
+  const desktopNav = header.match(/<nav class="pts-desktop-nav hidden min-w-0 min-\[1681px\]:flex-1 min-\[1681px\]:block" aria-label="Điều hướng chính">([\s\S]*?)<\/nav>\s*<!-- Cụm thao tác bên phải -->/)?.[1] || ''
   assert.ok(desktopNav)
   assert.match(header, /class="relative flex min-h-11 min-\[1681px\]:min-h-\[48px\][\s\S]*font-semibold[\s\S]*text-hdr-ink/)
   assert.match(header, /:to="shellHref\(item\.href\)"/)
@@ -124,10 +124,16 @@ test('header drawer and desktop nav are mutually exclusive from 1321px through 1
   assert.match(header, /<!-- Drawer điều hướng mobile\/tablet, used through 1680px -->/)
 })
 
+test('wide touch-first screens use the mobile drawer instead of hover-only desktop submenus', () => {
+  assert.match(header, /class="pts-mobile-nav-trigger[^\"]*min-\[1681px\]:hidden/)
+  assert.match(header, /class="pts-desktop-nav hidden min-w-0 min-\[1681px\]:flex-1 min-\[1681px\]:block"/)
+  assert.match(mainCss, /@media \(min-width:\s*1681px\) and \(hover:\s*none\)[\s\S]*\.pts-desktop-nav\s*\{\s*display:\s*none\s*;\s*\}[\s\S]*\.pts-mobile-nav-trigger\s*\{\s*display:\s*flex\s*;\s*\}/)
+})
+
 test('desktop dropdown remains associated with its parent link and fits the wide navigation row', () => {
   assert.match(header, /:id="`ptsNavMenu-\$\{index\}`"/)
   assert.match(header, /:aria-label="`\$\{item\.label\} - menu con`"/)
-  assert.match(header, /<nav class="hidden min-w-0 min-\[1681px\]:flex-1 min-\[1681px\]:block"/)
+  assert.match(header, /<nav class="pts-desktop-nav hidden min-w-0 min-\[1681px\]:flex-1 min-\[1681px\]:block"/)
   assert.match(header, /<ul class="flex items-center justify-center gap-1 nav:gap-0 min-\[1681px\]:gap-3"/)
 })
 

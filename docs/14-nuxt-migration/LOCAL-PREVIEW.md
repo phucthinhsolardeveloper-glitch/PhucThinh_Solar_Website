@@ -3,11 +3,13 @@
 ## Runtime status observed — 2026-10-31
 
 Nuxt HMR is the active frontend at `http://localhost:3100`. The PHP-rendered
-website on `:8080` is stopped. MariaDB and the read-only PHP API/media bridge
-on `:8088` remain because Nuxt currently uses them for live local data. Open
-`:3100` for the website; do not use `:8088` as a frontend preview. The stale
-Nuxt snapshot and Caddy rehearsal containers were removed; their images and all
-Docker volumes were kept. The interrupted capture and cleanup checkpoint are in
+website on `:8080` is stopped and its stopped container was removed. The
+read-only PHP API/media bridge is named `pts-nuxt-api-bridge` on `:8088`; it
+allows `/api/*` and `/upload/*` while denying direct legacy page routes. Open
+`:3100` for the website; do not use `:8088` as a frontend preview. MariaDB,
+images and Docker volumes remain intact. The stale Nuxt snapshot and Caddy
+rehearsal containers were removed earlier; their images and all Docker volumes
+were kept. The interrupted capture and cleanup checkpoint are in
 [`BRANCH-INTEGRATION-AND-LOCAL-QA-20261031.md`](BRANCH-INTEGRATION-AND-LOCAL-QA-20261031.md).
 
 ## Daily frontend development (HMR)
@@ -17,7 +19,7 @@ legacy PHP website renderer:
 
 ```bash
 docker compose -f docker-compose.local.yml up -d db
-docker compose -f docker-compose.nuxt-preview.yml up -d web-preview
+docker compose -f docker-compose.nuxt-preview.yml up -d api-bridge
 ```
 
 Then run Nuxt in a separate terminal:
@@ -35,8 +37,9 @@ Mở **http://localhost:3100/** (trang liên hệ: `/lien-he/`). Khi Nuxt sẵn 
 terminal cũng in URL `Local`. Vite HMR cập nhật Vue/TypeScript/CSS ngay khi lưu
 file; đây là luồng mặc định để code và xem giao diện, không cần build.
 
-PHP API được gọi từ Nuxt qua `127.0.0.1:8088`. Nếu dữ liệu/API không tải được,
-kiểm tra `pts-php-nuxt-preview` và MariaDB; nếu giao diện không cập nhật, xem
+PHP API được gọi từ Nuxt qua `127.0.0.1:8088`. Container này chỉ cho phép
+`/api/*` và `/upload/*`; truy cập trực tiếp các trang PHP bị chặn. Nếu dữ liệu/API
+không tải được, kiểm tra `pts-nuxt-api-bridge` và MariaDB; nếu giao diện không cập nhật, xem
 terminal Nuxt để biết watcher/HMR có báo lỗi hay không. Ảnh CMS và asset PHP
 được proxy trong dev qua allowlist đường dẫn ảnh; production vẫn tắt proxy theo
 mặc định.
@@ -49,7 +52,7 @@ local phải là `false`; chúng độc lập với cờ hiển thị route và 
 vẫn dùng HMR.
 
 `npm run build` và `scripts/nuxt-local-preview.sh restart` chỉ dành cho snapshot
-SSR để kiểm tra bản đã build. Script snapshot dùng PHP preview cổng 8088 và cùng
+SSR để kiểm tra bản đã build. Script snapshot dùng API bridge cổng 8088 và cùng
 cổng Nuxt 3100, nên dừng tiến trình `npm run dev` bằng Ctrl+C trước khi chạy
 script. Khi quay lại code, khởi động lại `npm run dev` và dùng link trên.
 
@@ -95,7 +98,7 @@ cd /home/admin01/src/Web_PTS_PHP
 ```
 
 - The script uses **existing local** MariaDB and local uploads from the website's Docker Compose network; no production credentials or data are used.
-- The read-only PHP API/media bridge on `127.0.0.1:8088` stays active for Nuxt data. It can serve legacy PHP paths too, but is not the frontend to review. Its source and media mounts are read-only.
+- The read-only PHP API/media bridge container `pts-nuxt-api-bridge` on `127.0.0.1:8088` stays active for Nuxt data. Apache allows only `/api/*` and `/upload/*`; direct legacy PHP pages are denied. Its source and media mounts are read-only.
 - The ignored local PHP configuration is copied from the existing **local** PHP development repo into this worktree when missing; never add it to Git.
 - SSR Nuxt preview runs on 127.0.0.1:3100 with private upstream NUXT_PHP_ORIGIN=http://127.0.0.1:8088.
 - Static preview media proxy is disabled by default, enabled by the local script only, and restricted to allowlisted image file paths/types (no PHP/JS/html execution).
