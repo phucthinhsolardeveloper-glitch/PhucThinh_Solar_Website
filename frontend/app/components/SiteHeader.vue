@@ -1034,7 +1034,7 @@ onBeforeUnmount(() => {
         <nav class="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-y-contain" aria-label="Điều hướng mobile">
           <button
             class="flex min-h-10 w-full items-center justify-between gap-4 border-0 border-b border-hdr-line
-                   bg-transparent py-2 text-left text-sm font-extrabold text-hdr-ink"
+                   bg-transparent py-2 text-left text-[16px] font-semibold text-hdr-ink"
             type="button"
             :aria-expanded="mobileCatalogOpen"
             aria-controls="ptsMobileCatalog"
