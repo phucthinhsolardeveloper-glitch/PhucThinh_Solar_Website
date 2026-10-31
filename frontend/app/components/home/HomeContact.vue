@@ -7,6 +7,21 @@ const phoneHref = computed(() => publicPhoneHref(props.contact.hotline))
 const emailHref = computed(() => publicEmailHref(props.contact.email))
 const { ensureSecurity, submit } = useLeadForm()
 const form = reactive({ fullname: '', phone: '', address: '', subject: '', content: '' })
+const subjectOptions = [
+  'Đèn năng lượng mặt trời',
+  'Điện mặt trời gia đình',
+  'Điện mặt trời doanh nghiệp',
+  'Tấm pin và biến tần',
+  'Pin lưu trữ',
+  'Hợp tác đại lý',
+  'Khác',
+].map((label) => ({ label, value: label }))
+const inputUi = {
+  base: 'h-12 w-full rounded-[3px] border border-slate-300 bg-white px-3.5 text-base font-normal text-navy-950 placeholder:text-slate-400 focus-visible:border-gold-600 focus-visible:ring-2 focus-visible:ring-gold-500/25',
+}
+const textareaUi = {
+  base: 'min-h-[136px] w-full rounded-[3px] border border-slate-300 bg-white px-3.5 py-3 text-base font-normal text-navy-950 placeholder:text-slate-400 focus-visible:border-gold-600 focus-visible:ring-2 focus-visible:ring-gold-500/25',
+}
 const leadIntent = useState<string>('public-home-lead-intent', () => '')
 const submitting = ref(false)
 const success = ref('')
@@ -14,15 +29,7 @@ const error = ref('')
 
 watch(leadIntent, (requested) => {
   if (!requested) return
-  const options = [
-    'Đèn năng lượng mặt trời',
-    'Điện mặt trời gia đình',
-    'Điện mặt trời doanh nghiệp',
-    'Tấm pin và biến tần',
-    'Pin lưu trữ',
-    'Hợp tác đại lý',
-    'Khác',
-  ]
+  const options = subjectOptions.map((option) => option.value)
   const needle = requested.trim().toLocaleLowerCase()
   form.subject = options.find((option) => option === requested || needle.includes(option.toLocaleLowerCase())) || ''
   leadIntent.value = ''
@@ -98,41 +105,27 @@ async function send() {
 
         <form class="p-[clamp(30px,3.2vw,48px)]" @submit.prevent="send">
           <div class="grid gap-x-4 tb:grid-cols-2">
-            <label class="mb-[17px] block text-[14.5px] font-semibold text-navy-950">
-              Họ và tên <span>*</span>
-              <input v-model.trim="form.fullname" class="mt-2 block w-full rounded-[3px] border-[1.5px] border-[#cfd6de] px-[13px] py-[11px] font-inherit outline-none focus:border-gold-500 focus:ring-2 focus:ring-gold-500/25 transition-all" type="text" maxlength="100" autocomplete="name" required>
-            </label>
-            <label class="mb-[17px] block text-[14.5px] font-semibold text-navy-950">
-              Số điện thoại <span>*</span>
-              <input v-model.trim="form.phone" class="mt-2 block w-full rounded-[3px] border-[1.5px] border-[#cfd6de] px-[13px] py-[11px] font-inherit outline-none focus:border-gold-500 focus:ring-2 focus:ring-gold-500/25 transition-all" type="tel" maxlength="20" autocomplete="tel" inputmode="tel" required>
-            </label>
-            <label class="mb-[17px] block text-[14.5px] font-semibold text-navy-950">
-              Tỉnh/Thành phố
-              <input v-model.trim="form.address" class="mt-2 block w-full rounded-[3px] border-[1.5px] border-[#cfd6de] px-[13px] py-[11px] font-inherit outline-none focus:border-gold-500 focus:ring-2 focus:ring-gold-500/25 transition-all" type="text" maxlength="255" autocomplete="address-level1" placeholder="Ví dụ: Gia Lai">
-            </label>
-            <label class="mb-[17px] block text-[14.5px] font-semibold text-navy-950">
-              Anh/chị quan tâm đến
-              <select v-model="form.subject" class="mt-2 block min-h-[46px] w-full rounded-[3px] border-[1.5px] border-[#cfd6de] bg-white px-[13px] py-[11px] font-inherit outline-none focus:border-gold-500 focus:ring-2 focus:ring-gold-500/25 transition-all">
-                <option value="">-- Chọn nhu cầu --</option>
-                <option value="Đèn năng lượng mặt trời">Đèn năng lượng mặt trời</option>
-                <option value="Điện mặt trời gia đình">Điện mặt trời gia đình</option>
-                <option value="Điện mặt trời doanh nghiệp">Điện mặt trời doanh nghiệp</option>
-                <option value="Tấm pin và biến tần">Tấm pin và biến tần</option>
-                <option value="Pin lưu trữ">Pin lưu trữ</option>
-                <option value="Hợp tác đại lý">Hợp tác đại lý</option>
-                <option value="Khác">Khác</option>
-              </select>
-            </label>
+            <UFormField label="Họ và tên" name="fullname" required class="mb-[17px] grid min-w-0 content-start gap-2" :ui="{ label: 'text-[14.5px] font-semibold text-navy-950' }">
+              <UInput v-model.trim="form.fullname" name="fullname" type="text" maxlength="100" autocomplete="name" required variant="none" class="w-full" :ui="inputUi" />
+            </UFormField>
+            <UFormField label="Số điện thoại" name="phone" required class="mb-[17px] grid min-w-0 content-start gap-2" :ui="{ label: 'text-[14.5px] font-semibold text-navy-950' }">
+              <UInput v-model.trim="form.phone" name="phone" type="tel" maxlength="20" autocomplete="tel" inputmode="tel" required variant="none" class="w-full" :ui="inputUi" />
+            </UFormField>
+            <UFormField label="Tỉnh/Thành phố" name="address" class="mb-[17px] grid min-w-0 content-start gap-2" :ui="{ label: 'text-[14.5px] font-semibold text-navy-950' }">
+              <UInput v-model.trim="form.address" name="address" type="text" maxlength="255" autocomplete="address-level1" placeholder="Ví dụ: Gia Lai" variant="none" class="w-full" :ui="inputUi" />
+            </UFormField>
+            <UFormField label="Anh/chị quan tâm đến" name="subject" class="mb-[17px] grid min-w-0 content-start gap-2" :ui="{ label: 'text-[14.5px] font-semibold text-navy-950' }">
+              <USelect v-model="form.subject" name="subject" :items="subjectOptions" placeholder="-- Chọn nhu cầu --" color="neutral" variant="none" class="w-full" :ui="inputUi" />
+            </UFormField>
           </div>
-          <label class="mb-[17px] block text-[14.5px] font-semibold text-navy-950">
-            Nội dung cần trao đổi <span>*</span>
-            <textarea v-model.trim="form.content" class="mt-2 block w-full resize-y rounded-[3px] border-[1.5px] border-[#cfd6de] px-[13px] py-[11px] font-inherit outline-none focus:border-gold-500 focus:ring-2 focus:ring-gold-500/25 transition-all" rows="4" maxlength="5000" required placeholder="Mô tả ngắn nhu cầu của bạn" />
-          </label>
+          <UFormField label="Nội dung cần trao đổi" name="content" required class="mb-[17px] grid min-w-0 content-start gap-2" :ui="{ label: 'text-[14.5px] font-semibold text-navy-950' }">
+            <UTextarea v-model.trim="form.content" name="content" rows="4" maxlength="5000" required placeholder="Mô tả ngắn nhu cầu của bạn" variant="none" class="w-full" :ui="textareaUi" />
+          </UFormField>
           <p v-if="success" class="mb-3 rounded-[3px] bg-emerald-50 p-3 text-sm font-semibold text-emerald-800" role="status">{{ success }}</p>
           <p v-if="error" class="mb-3 rounded-[3px] bg-red-50 p-3 text-sm font-semibold text-red-800" role="alert">{{ error }}</p>
-          <button :disabled="submitting" class="inline-flex min-h-[50px] items-center justify-center rounded-[4px] border border-hdr-gold bg-hdr-gold px-[25px] font-bold text-navy-950 shadow-xs transition-all hover:bg-hdr-gold-hover hover:shadow-md active:scale-[0.98] disabled:cursor-wait disabled:opacity-60 cursor-pointer" type="submit">
+          <UButton :loading="submitting" :disabled="submitting" class="min-h-[50px] items-center justify-center rounded-[4px] bg-hdr-gold px-[25px] font-bold text-navy-950 shadow-xs transition-all hover:bg-hdr-gold-hover hover:shadow-md active:scale-[0.98] disabled:cursor-wait disabled:opacity-60" type="submit">
             {{ submitting ? 'Đang gửi…' : 'Gửi yêu cầu tư vấn' }}
-          </button>
+          </UButton>
         </form>
       </div>
     </div>
