@@ -58,8 +58,7 @@ function filterLink(overrides: { subcategory?: string; brand?: string; price?: s
   delete next.page
   return { path: selfPath.value, query: next }
 }
-function onSortChange(event: Event) {
-  const value = (event.target as HTMLSelectElement).value
+function onSortChange(value: string) {
   navigateTo(filterLink({ sort: value === 'default' ? '' : value }))
 }
 function openFilterDrawer() {
@@ -376,16 +375,19 @@ function pageLink(nextPage: number) {
                 <UIcon name="i-lucide-sliders-horizontal" class="size-4" aria-hidden="true" />
                 Bộ lọc
               </UButton>
-              <label v-if="catalogData.selected" class="flex min-w-0 items-center gap-2 text-sm text-slate-500 max-[769px]:w-full">
+              <div v-if="catalogData.selected" class="flex min-w-0 items-center gap-2 text-sm text-slate-500 max-[769px]:w-full">
                 <span class="hidden tb:inline">Sắp xếp</span>
-                <select
-                  class="h-11 w-[150px] min-w-0 rounded-btn border border-gray-300 bg-white px-3 font-normal text-navy-800 max-[769px]:w-full"
-                  :value="catalogData.selected.sort"
-                  @change="onSortChange"
-                >
-                  <option v-for="option in sortOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
-                </select>
-              </label>
+                <USelect
+                  :model-value="catalogData.selected.sort"
+                  :items="sortOptions"
+                  aria-label="Sắp xếp sản phẩm"
+                  color="neutral"
+                  variant="none"
+                  class="w-full min-w-0 min-[770px]:w-[150px]"
+                  :ui="{ base: 'h-11 w-full min-w-0 rounded-[4px] border border-slate-300 bg-white px-3 text-sm font-normal text-navy-800 focus-visible:border-gold-600 focus-visible:ring-2 focus-visible:ring-gold-500/25' }"
+                  @update:model-value="onSortChange"
+                />
+              </div>
             </div>
           </div>
 
