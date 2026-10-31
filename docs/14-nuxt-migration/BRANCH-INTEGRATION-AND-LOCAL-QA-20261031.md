@@ -140,3 +140,26 @@ leaving local routes available to inspect. The documented dev command loads
 that root `.env` before starting Nuxt; its API/media dependency remains the
 read-only bridge on `:8088`. `:8080` remains stopped. No production service,
 database data/volume, deploy, public route switch, push or backup was changed.
+
+## Follow-up verification — current checkout
+
+- Current `master` is `1acad02` and is 94 commits ahead of `origin/master`;
+  `origin/feature/pts-nuxt-integration-20261027` is an ancestor. The current
+  branch/worktree inventory contains only `master` and one worktree; the
+  working tree was clean at inventory time. No remaining Nuxt integration
+  branch is present in the local or fetched remote branch inventory.
+- Runtime noindex probe covered every one of the 27 `migration-*.vue` page
+  files at `127.0.0.1:3100`; all 27 responses included
+  `X-Robots-Tag: noindex, nofollow, noarchive`. The focused
+  `node --test tests/preview-noindex.test.mjs` check also passes (1/1).
+- The current PHP source and local `:8088` API bridge both resolve a known
+  published article slug using the active DTO (`kind` + `canonicalPath`); the
+  Nuxt `/_migration/public-route-resolve` adapter returns the same result with
+  HTTP 200. This closes the earlier source/preview DTO mismatch for this
+  fixture only; it does not verify every entity family or PHP `:8080`/production.
+- The probe verifies preview indexing protection only. It does not establish
+  route data/render health for pages that require a slug or category query.
+  PHP HTML preview at `:8088` remains unavailable (root responds 403); the
+  API/media bridge is not a PHP page-rendering origin.
+- No source, database, container, production route, deployment, or backup was
+  changed during this follow-up.

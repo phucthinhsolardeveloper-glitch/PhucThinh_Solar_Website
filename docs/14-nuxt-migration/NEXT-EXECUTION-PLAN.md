@@ -43,6 +43,25 @@
 | P0-B PHP/API integration | PASS with fixture gaps | 69 HTTP + 22 slice PASS, 0 FAIL, 0 SKIP; DB snapshot unchanged. Four hidden-record fixture families remain unavailable. |
 | P0-C browser QA | INCOMPLETE | Owner chose direct visual inspection. Capture logged 34 routes × 3 viewports as HTTP 200 but ended before final report; no visual parity claim. |
 | P2-A SEO/canonical crawl | Partial PASS | Public URL status/canonical/title/redirect/noindex checks pass 34/34; sitemap 457/457 and href reachability 362/362. OG/JSON-LD/href-path differences and hidden DB rows remain open. |
+| Preview indexing | PASS | Runtime probe returns `X-Robots-Tag: noindex, nofollow, noarchive` for all 27 `migration-*.vue` pages; focused test passes 1/1. This verifies indexing protection, not route data/render health. |
+
+## Follow-up checkpoint — current checkout, 2026-10-31
+
+- At the start of this follow-up, `master@1acad02` was 94 commits ahead of
+  `origin/master`; the Nuxt feature branch is an ancestor, and the branch/
+  worktree inventory contained only `master` and one worktree. No additional
+  integration branch remained in the local or fetched remote inventory.
+- All 27 internal migration page paths returned the required noindex response
+  header from local Nuxt `:3100`; `node --test tests/preview-noindex.test.mjs`
+  passed 1/1. This closes the preview indexing protection check, but not the
+  broader SEO parity or release gates above.
+- Current PHP source and local API bridge `:8088` resolved a known published
+  news slug; Nuxt `/_migration/public-route-resolve` returned the matching
+  `kind`/`canonicalPath` DTO with HTTP 200. This confirms one current preview
+  fixture, not full resolver entity coverage or PHP `:8080`/production parity.
+- No production action was taken. PHP remains the public owner; visual signoff,
+  SEO/href classification, missing hidden-record fixtures, and release/Caddy
+  rehearsal remain open.
 
 Historical checkpoint notes below describe earlier worktrees and service states;
 use the dated checkpoint above for the current local integration state.
