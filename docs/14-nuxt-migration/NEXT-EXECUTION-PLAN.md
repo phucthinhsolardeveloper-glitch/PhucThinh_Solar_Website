@@ -59,6 +59,14 @@
   news slug; Nuxt `/_migration/public-route-resolve` returned the matching
   `kind`/`canonicalPath` DTO with HTTP 200. This confirms one current preview
   fixture, not full resolver entity coverage or PHP `:8080`/production parity.
+- The retained href matrix contained two broken PHP solution-category aliases.
+  Nuxt now returns 301 to the resolver-provided `/doanh-nghiep` and
+  `/ho-gia-dinh` pages; unknown aliases remain 404. All 129 distinct PHP-only
+  href targets now return HTTP 200 after redirects on local Nuxt. The
+  Nuxt-only set and full path-set parity are still unclassified.
+- The alias contract tests pass 5/5 and Nuxt typecheck passes after correcting
+  a numeric textarea prop. The exact route probe and 129-target check are
+  recorded in `PUBLIC-URL-SEO-AUDIT-20261031.md`.
 - No production action was taken. PHP remains the public owner; visual signoff,
   SEO/href classification, missing hidden-record fixtures, and release/Caddy
   rehearsal remain open.

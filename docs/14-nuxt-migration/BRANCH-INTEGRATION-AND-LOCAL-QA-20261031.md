@@ -157,9 +157,19 @@ database data/volume, deploy, public route switch, push or backup was changed.
   Nuxt `/_migration/public-route-resolve` adapter returns the same result with
   HTTP 200. This closes the earlier source/preview DTO mismatch for this
   fixture only; it does not verify every entity family or PHP `:8080`/production.
+- The retained public href matrix exposed two broken solution-category aliases.
+  Nuxt now redirects `/danh-muc-giai-phap/:slug/` to the resolver-confirmed
+  canonical path; both known aliases return 301 and an unknown slug returns
+  404. All 129 distinct legacy-only href targets from that matrix now return
+  HTTP 200 after redirects on local Nuxt. The separate Nuxt-only href set and
+  full PHP-vs-Nuxt path parity remain open.
+- Focused resolver/alias tests pass **5/5** and Nuxt typecheck passes. The
+  typecheck initially exposed `rows="4"` on a Nuxt UI textarea; changing it to
+  numeric `:rows="4"` cleared the error.
 - The probe verifies preview indexing protection only. It does not establish
   route data/render health for pages that require a slug or category query.
   PHP HTML preview at `:8088` remains unavailable (root responds 403); the
   API/media bridge is not a PHP page-rendering origin.
-- No source, database, container, production route, deployment, or backup was
-  changed during this follow-up.
+- Changes in this follow-up are limited to Nuxt alias handling, the textarea
+  numeric prop, and evidence docs. No database, container, production route,
+  deployment, or backup was changed.

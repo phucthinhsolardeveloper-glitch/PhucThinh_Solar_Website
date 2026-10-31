@@ -162,3 +162,25 @@ HTTP 200 and the public logo as `og:image`. No production or PHP HTML page
 renderer was used. The retained 34-route image and JSON-LD counts above are
 still historical snapshots; this targeted verification does not establish a
 fresh full-route parity result.
+
+## Follow-up — legacy solution-category links
+
+The retained public-path href matrix contained two PHP-only destinations that
+returned 404 on local Nuxt: `/danh-muc-giai-phap/doanh-nghiep/` and
+`/danh-muc-giai-phap/ho-gia-dinh/`. The read-only route resolver identifies
+both slugs as published `solution-category` entities whose Nuxt canonical
+paths are `/doanh-nghiep` and `/ho-gia-dinh`.
+
+Nuxt now handles `/danh-muc-giai-phap/:slug/` as a legacy alias. It redirects
+with 301 only when the PHP resolver confirms `solution-category`, preserves
+the query string, and returns 404 for an unknown slug. Runtime verification
+confirmed both aliases return 301 to the resolver-provided canonical paths;
+the unknown-slug path returns 404. Rechecking the **129 distinct PHP-only
+href targets** from the retained 34-route matrix against local Nuxt returned
+**129/129 HTTP 200 after redirects**. The targeted resolver/alias checks pass
+**5/5**, and Nuxt typecheck passes.
+
+This proves those retained PHP-only targets resolve on the current local Nuxt
+preview. It does not establish exact href parity: the matrix also has Nuxt-only
+paths and was captured before this fix. A fresh PHP-vs-Nuxt HTML comparison
+remains unavailable because the local PHP HTML renderer is disabled.

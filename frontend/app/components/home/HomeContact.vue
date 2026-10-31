@@ -119,7 +119,7 @@ async function send() {
             </UFormField>
           </div>
           <UFormField label="Nội dung cần trao đổi" name="content" required class="mb-[17px] grid min-w-0 content-start gap-2" :ui="{ label: 'text-[14.5px] font-semibold text-navy-950' }">
-            <UTextarea v-model.trim="form.content" name="content" rows="4" maxlength="5000" required placeholder="Mô tả ngắn nhu cầu của bạn" variant="none" class="w-full" :ui="textareaUi" />
+            <UTextarea v-model.trim="form.content" name="content" :rows="4" maxlength="5000" required placeholder="Mô tả ngắn nhu cầu của bạn" variant="none" class="w-full" :ui="textareaUi" />
           </UFormField>
           <p v-if="success" class="mb-3 rounded-[3px] bg-emerald-50 p-3 text-sm font-semibold text-emerald-800" role="status">{{ success }}</p>
           <p v-if="error" class="mb-3 rounded-[3px] bg-red-50 p-3 text-sm font-semibold text-red-800" role="alert">{{ error }}</p>
