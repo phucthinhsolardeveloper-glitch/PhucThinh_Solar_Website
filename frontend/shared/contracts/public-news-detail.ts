@@ -26,7 +26,7 @@ export function isPublicNewsDetailPayload(value: unknown): value is PublicNewsDe
   // content đi qua envelope sanitized-html (RICHTEXT-CONTRACT.md): hàng rào
   // isPublicSanitizedRichText() là lớp phòng vệ thứ hai ở Nuxt, không thay
   // thế sanitizer PHP — chỉ chặn payload giả mạo format/metadata.
-  if (!isPublicSanitizedRichText(a.content) || !a.media || !Array.isArray(a.media.gallery) || !Array.isArray(a.media.videos) || !a.seo || a.seo.canonical !== a.canonical || !text(a.seo.title) || !text(a.seo.description, true) || !text(a.seo.keywords, true) || a.readOnly !== true || a.legacyViewMutation !== false) return false
+  if (!isPublicSanitizedRichText(a.content) || !a.media || !Array.isArray(a.media.gallery) || !Array.isArray(a.media.videos) || !a.seo || a.seo.canonical !== `/${a.slug}` || !text(a.seo.title) || !text(a.seo.description, true) || !text(a.seo.keywords, true) || a.readOnly !== true || a.legacyViewMutation !== false) return false
   if (a.quote !== undefined && a.quote !== null && !isPublicSanitizedRichText(a.quote)) return false
   if (a.media.gallery.some((m: any) => !image(m?.image) || !text(m?.alt, true)) || a.media.videos.some((m: any) => !/^https:\/\/(?:www\.)?(?:youtube\.com|youtu\.be|vimeo\.com)(?:\/|$)/i.test(m?.url || '') || !text(m?.title, true))) return false
   const cta = (value as any).cta

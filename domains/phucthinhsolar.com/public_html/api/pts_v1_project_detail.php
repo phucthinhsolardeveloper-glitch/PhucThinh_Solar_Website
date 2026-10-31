@@ -59,5 +59,5 @@ try {
             'trust' => ptsProjectDetailTrustDto((array)$trustRows, ROOT)
         );
     }
-    echo json_encode(ptsProjectDetailPayload($row, $gallery, $related, array('project' => 'legacy /'.$slug.'/', 'gallery' => 'news.php detail branch', 'relatedEquipment' => 'product_projects.php', 'relatedProjects' => 'news.php same category', 'cta' => 'project_hub.php project-cta slot'), $relatedProjects, $cta, is_array($seoRow) ? $seoRow : array()), JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR);
+    echo json_encode(ptsProjectDetailPayload($row, $gallery, $related, array('project' => 'legacy canonical entity path /'.$slug, 'gallery' => 'news.php detail branch', 'relatedEquipment' => 'product_projects.php', 'relatedProjects' => 'news.php same category', 'cta' => 'project_hub.php project-cta slot'), $relatedProjects, $cta, is_array($seoRow) ? $seoRow : array()), JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR);
 } catch(Throwable $e) { error_log('pts_v1_project_detail: '.$e->getMessage()); http_response_code(500); echo '{"error":{"code":"INTERNAL_ERROR"}}'; }

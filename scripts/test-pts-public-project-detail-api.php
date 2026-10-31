@@ -7,6 +7,7 @@ $gallery = array(array('type'=>'image','src'=>'/upload/news/gallery.jpg','captio
 $related = array(array('id'=>9,'name'=>'Thiết bị CMS','slug'=>'thiet-bi-cms','url'=>'/san-pham/thiet-bi-cms','code'=>'PT-9','image'=>'/upload/product/device.jpg'));
 $payload = ptsProjectDetailPayload($row, $gallery, $related, array('project'=>'legacy /cong-trinh-that/'));
 projectDetailAssert($payload['project']['url'] === '/cong-trinh-that/' && $payload['project']['title'] === 'Công trình thật', 'plain text và canonical URL');
+projectDetailAssert($payload['canonical']['url'] === '/cong-trinh-that', 'SEO canonical matches PHP bare-slug canonical while page links retain slash');
 projectDetailAssert($payload['project']['client'] === 'Khách CMS' && $payload['project']['startDate'] === '2026-01-02', 'field chi tiết chỉ lấy từ CMS');
 projectDetailAssert($payload['seo']['title'] === 'Công trình thật | Phúc Thịnh Solar' && $payload['seo']['description'] === '' && $payload['seo']['keywords'] === '', 'SEO fallback khớp title legacy và không tự bịa description');
 $adminSeo = ptsProjectDetailPayload($row, array(), array(), array(), array(), null, array('titlevi'=>'SEO do Admin nhập', 'descriptionvi'=>'<p>Mô tả SEO CMS</p>', 'keywordsvi'=>'solar, CMS'));

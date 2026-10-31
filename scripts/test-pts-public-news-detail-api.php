@@ -11,7 +11,10 @@ detailAssert(ptsNewsDetailVideo('javascript:alert(1)') === '', 'video javascript
 $dto = ptsNewsDetailArticleDto(array('id'=>8,'namevi'=>'Bài <b>CMS</b>','slugvi'=>'bai-cms','status'=>'hienthi','date_created'=>strtotime('2026-10-26'),'contentvi'=>'<p>Nội dung</p>','descvi'=>'Mô tả','_pts_public_photo'=>'cover.jpg'), array(), array('fullname'=>'Tác giả'), array('gallery'=>array(),'videos'=>array()), array());
 detailAssert($dto['content']['format'] === 'sanitized-html' && $dto['content']['sanitizedBy'] === 'pts_public_richtext' && strpos($dto['content']['html'], '<script') === false, 'noi dung da qua pts_public_richtext, khong lo script tho');
 
-detailAssert($dto['legacyViewMutation'] === false && $dto['canonical'] === '/bai-cms/', 'DTO detail read-only và canonical bare slug');
+detailAssert($dto['legacyViewMutation'] === false && $dto['canonical'] === '/bai-cms/' && $dto['seo']['canonical'] === '/bai-cms', 'DTO keeps public link path and exposes PHP bare-slug SEO canonical');
+detailAssert($dto['seo']['title'] === 'Bài CMS | Phúc Thịnh Solar', 'SEO title includes the PHP brand suffix');
+$brandedTitleDto = ptsNewsDetailArticleDto(array('id'=>11,'namevi'=>'Bài có thương hiệu','slugvi'=>'bai-co-thuong-hieu','status'=>'hienthi','date_created'=>strtotime('2026-10-26')), array(), array(), array('gallery'=>array(),'videos'=>array()), array('titlevi'=>'Bài có thương hiệu | Phúc Thịnh Solar'));
+detailAssert($brandedTitleDto['seo']['title'] === 'Bài có thương hiệu | Phúc Thịnh Solar', 'SEO title does not duplicate an existing brand suffix');
 detailAssert($dto['datePublished'] === '2026-10-26' && $dto['dateModified'] === '2026-10-26' && $dto['showCover'] === true, 'schema date fields use published record data and expose its cover');
 $updatedDto = ptsNewsDetailArticleDto(array('id'=>10,'namevi'=>'Bài đã cập nhật','slugvi'=>'bai-da-cap-nhat','status'=>'hienthi','date_created'=>strtotime('2026-10-26'),'date_updated'=>strtotime('2026-10-27'),'contentvi'=>'Nội dung'), array(), array(), array('gallery'=>array(),'videos'=>array()), array());
 detailAssert($updatedDto['datePublished'] === '2026-10-26' && $updatedDto['dateModified'] === '2026-10-27', 'dateModified follows the PHP date_updated field');

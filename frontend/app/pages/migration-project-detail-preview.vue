@@ -8,7 +8,10 @@ import ProjectDetailPage from '~/components/project-detail/ProjectDetailPage.vue
 
 const route = useRoute()
 const config = useRuntimeConfig()
-const isBarePublicRoute = computed(() => typeof route.params.slug === 'string' && route.path === `/${route.params.slug}/`)
+const isBarePublicRoute = computed(() => typeof route.params.slug === 'string' && [
+  `/${route.params.slug}`,
+  `/${route.params.slug}/`,
+].includes(route.path))
 const slug = computed(() => typeof route.params.slug === 'string' ? route.params.slug : (typeof route.query.slug === 'string' ? route.query.slug : ''))
 const fallbackSite: PublicSitePayload = { schemaVersion: 1, brand: { name: 'Phúc Thịnh Solar', hotline: '' }, productCategories: [] }
 const { data: siteData } = await useFetch<unknown>('/_migration/site', { default: () => fallbackSite })
@@ -30,7 +33,7 @@ usePublicSocialMeta({
   enabled: computed(() => isBarePublicRoute.value && !!payload.value && !error.value),
   title: computed(() => payload.value?.seo.title || payload.value?.project.title || 'Dự án'),
   description: computed(() => payload.value?.seo.description || ''),
-  canonicalPath: computed(() => payload.value?.project.url || route.path),
+  canonicalPath: computed(() => payload.value?.canonical.url || route.path),
   image: computed(() => payload.value?.project.coverImage),
   type: 'article',
 })

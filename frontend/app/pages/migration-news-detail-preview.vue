@@ -8,7 +8,10 @@ import { canonicalPublicOrigin, canonicalPublicUrl } from '#shared/public-seo'
 
 const route = useRoute()
 const config = useRuntimeConfig()
-const isBarePublicRoute = computed(() => typeof route.params.slug === 'string' && route.path === `/${route.params.slug}/`)
+const isBarePublicRoute = computed(() => typeof route.params.slug === 'string' && [
+  `/${route.params.slug}`,
+  `/${route.params.slug}/`,
+].includes(route.path))
 const fallbackSite: PublicSitePayload = { schemaVersion: 1, brand: { name: 'Phúc Thịnh Solar', hotline: '' }, productCategories: [] }
 const { data: siteData } = await useFetch<unknown>('/_migration/site', { default: () => fallbackSite })
 const slug = computed(() => typeof route.params.slug === 'string' ? route.params.slug : (typeof route.query.slug === 'string' ? route.query.slug : ''))
@@ -31,7 +34,7 @@ usePublicSocialMeta({
   enabled: computed(() => isBarePublicRoute.value && !!payload.value && !error.value),
   title: computed(() => payload.value?.article.seo.title || 'Kiến thức'),
   description: computed(() => payload.value?.article.seo.description || ''),
-  canonicalPath: computed(() => payload.value?.article.canonical || route.path),
+  canonicalPath: computed(() => payload.value?.article.seo.canonical || route.path),
   image: computed(() => payload.value?.article.cover),
   type: 'article',
 })
@@ -40,7 +43,7 @@ const articleJsonLd = computed(() => {
   if (!article) return null
   const siteOrigin = canonicalPublicOrigin(config.public.canonicalSiteOrigin)
   if (!siteOrigin) return null
-  const url = canonicalPublicUrl(siteOrigin, article.canonical)
+  const url = canonicalPublicUrl(siteOrigin, article.seo.canonical)
   if (!url) return null
   const image = article.cover ? canonicalPublicUrl(config.public.canonicalSiteOrigin, article.cover) : null
   const node: Record<string, unknown> = {

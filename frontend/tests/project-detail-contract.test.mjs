@@ -3,8 +3,12 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { isProjectSlug, isPublicProjectDetailPayload } from '../shared/contracts/public-project-detail.ts'
 const projectDetailPage = readFileSync(new URL('../app/components/project-detail/ProjectDetailPage.vue', import.meta.url), 'utf8')
-const good = { schemaVersion: 1, locale: 'vi', project: { id: 7, title: 'Dự án thật', slug: 'du-an-that', url: '/du-an-that/', summary: '', coverImage: '/upload/news/cover.jpg', category: { id: 3, name: 'Hộ gia đình', slug: 'ho-gia-dinh', url: '/danh-muc-du-an/ho-gia-dinh/' }, client: 'CMS', address: '', startDate: '', endDate: '', gallery: [{ type: 'image', src: '/upload/news/gallery.webp', caption: 'Ảnh thật' }], relatedEquipment: [{ id: 9, name: 'Thiết bị thật', slug: 'thiet-bi-that', url: '/san-pham/thiet-bi-that', code: '', image: '/upload/product/device.jpg' }], relatedProjects: [], cta: null }, content: { format: 'sanitized-html', html: '<p>Nội dung</p>', sanitizedBy: 'pts_public_richtext', sanitizerVersion: 1 }, seo: { title: 'Dự án thật | Phúc Thịnh Solar', description: 'Mô tả SEO từ Admin', keywords: 'dự án, điện mặt trời' }, canonical: { url: '/du-an-that/', sources: { project: 'legacy /du-an-that/' } }, parity: { viewCount: { included: false, reason: 'read_only_preview_does_not_increment_legacy_view_count' } } }
+const good = { schemaVersion: 1, locale: 'vi', project: { id: 7, title: 'Dự án thật', slug: 'du-an-that', url: '/du-an-that/', summary: '', coverImage: '/upload/news/cover.jpg', category: { id: 3, name: 'Hộ gia đình', slug: 'ho-gia-dinh', url: '/danh-muc-du-an/ho-gia-dinh/' }, client: 'CMS', address: '', startDate: '', endDate: '', gallery: [{ type: 'image', src: '/upload/news/gallery.webp', caption: 'Ảnh thật' }], relatedEquipment: [{ id: 9, name: 'Thiết bị thật', slug: 'thiet-bi-that', url: '/san-pham/thiet-bi-that', code: '', image: '/upload/product/device.jpg' }], relatedProjects: [], cta: null }, content: { format: 'sanitized-html', html: '<p>Nội dung</p>', sanitizedBy: 'pts_public_richtext', sanitizerVersion: 1 }, seo: { title: 'Dự án thật | Phúc Thịnh Solar', description: 'Mô tả SEO từ Admin', keywords: 'dự án, điện mặt trời' }, canonical: { url: '/du-an-that', sources: { project: 'legacy canonical entity path /du-an-that' } }, parity: { viewCount: { included: false, reason: 'read_only_preview_does_not_increment_legacy_view_count' } } }
 test('validates real project detail contract', () => assert.equal(isPublicProjectDetailPayload(good), true))
+test('requires PHP bare-slug canonical metadata while retaining the slash route for links', () => {
+  assert.equal(isPublicProjectDetailPayload({ ...good, canonical: { ...good.canonical, url: '/du-an-that/' } }), false)
+  assert.equal(good.project.url, '/du-an-that/')
+})
 test('project detail SEO metadata comes from PHP projection and exposes an HTML description meta', () => {
   const endpoint = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/api/pts_v1_project_detail.php', import.meta.url), 'utf8')
   const dto = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/libraries/pts_public_project_detail_api.php', import.meta.url), 'utf8')
@@ -15,6 +19,7 @@ test('project detail SEO metadata comes from PHP projection and exposes an HTML 
   assert.match(page, /description:\s*computed\(\(\) => payload\.value\?\.seo\.description \?\? ''\)/)
   assert.match(page, /title: computed\(\(\) => payload\.value \? \(isBarePublicRoute\.value \? payload\.value\.seo\.title/)
   assert.match(page, /payload\.value\?\.seo\.keywords/)
+  assert.match(page, /canonicalPath: computed\(\(\) => payload\.value\?\.canonical\.url/)
   assert.match(page, /name: 'keywords', content: pageKeywords\.value/)
   assert.equal(isPublicProjectDetailPayload({ ...good, seo: { ...good.seo, description: '' } }), true)
   assert.equal(isPublicProjectDetailPayload({ ...good, seo: { ...good.seo, title: '' } }), false)

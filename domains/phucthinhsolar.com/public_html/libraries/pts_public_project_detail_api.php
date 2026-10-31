@@ -172,7 +172,7 @@ function ptsProjectDetailPayload(array $row, array $gallery, array $relatedEquip
             'sanitizerVersion' => 1
         ),
         'seo' => ptsProjectDetailSeoDto($title, $seoRow),
-        'canonical' => array('url' => '/'.$slug.'/', 'sources' => $canonicalSources),
+        'canonical' => array('url' => '/'.$slug, 'sources' => $canonicalSources),
         'parity' => array(
             'viewCount' => array('included' => false, 'reason' => 'read_only_preview_does_not_increment_legacy_view_count'),
             'contactSubmission' => array('included' => false, 'reason' => 'legacy_contact_flow_stays_php')

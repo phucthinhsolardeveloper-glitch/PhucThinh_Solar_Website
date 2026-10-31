@@ -81,7 +81,7 @@ function formatDate(value: string): string {
           </li>
         </ul>
 
-        <EditorialShare v-if="article.content.html" class="mt-8" :title="article.title" :canonical-path="article.canonical" />
+        <EditorialShare v-if="article.content.html" class="mt-8" :title="article.title" :canonical-path="article.seo.canonical" />
       </div>
 
       <aside class="order-1 min-w-0 nav:order-2">

@@ -114,4 +114,22 @@ service or data was touched.
    migration route matrix. Keep PHP public ownership and Nuxt noindex until the
    remaining gates have evidence and a separate cutover decision.
 
+## SEO metadata follow-up
+
+Read-only HTML comparison on the actual Nuxt public routes found that PHP uses
+bare-slug canonical URLs for project and news detail pages, while Nuxt had used
+the trailing-slash link URL. News detail titles also lacked the brand suffix
+that PHP adds. The DTOs now keep navigable article/project links unchanged and
+expose the PHP canonical separately; news SEO titles mirror PHP's brand suffix.
+Both slash and bare-slug forms resolve in Nuxt and emit the same bare-slug
+canonical. Local Nuxt and PHP bridge checks returned HTTP 200 and matching title
+text plus canonical paths for both records (normalize away the local host on
+the PHP preview canonical).
+
+Focused frontend contract checks passed 21/21; full frontend tests passed
+447/447; Nuxt typecheck and production build passed. The two PHP API contract
+scripts passed in PHP 8.1 with read-only mounts and networking disabled. No
+database writes were made. This closes only the two observed metadata cases;
+it does not replace the remaining route-wide SEO review or owner visual review.
+
 No deploy, production request, DB write, cleanup, or backup change was made.

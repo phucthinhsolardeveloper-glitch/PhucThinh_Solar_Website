@@ -116,6 +116,8 @@ function ptsNewsDetailArticleDto(array $row, array $category, array $author, arr
     $title = ptsNewsDetailText(isset($row['namevi']) ? $row['namevi'] : '');
     $slug = ptsNewsDetailSlug(isset($row['slugvi']) ? $row['slugvi'] : '');
     if($id <= 0 || $title === '' || $slug === '') return null;
+    $seoTitle = ptsNewsDetailText(isset($seo['titlevi']) ? $seo['titlevi'] : '') ?: $title;
+    if(stripos($seoTitle, 'phúc thịnh s') === false) $seoTitle .= ' | Phúc Thịnh Solar';
     $description = ptsNewsDetailText(isset($row['descvi']) ? $row['descvi'] : '');
     /*
      * Tích hợp sanitizer (RICHTEXT-CONTRACT.md): contentvi và content1vi đi qua
@@ -149,10 +151,10 @@ function ptsNewsDetailArticleDto(array $row, array $category, array $author, arr
         'category' => $category,
         'media' => $media,
         'seo' => array(
-            'title' => ptsNewsDetailText(isset($seo['titlevi']) ? $seo['titlevi'] : '') ?: $title,
+            'title' => $seoTitle,
             'description' => ptsNewsDetailText(isset($seo['descriptionvi']) ? $seo['descriptionvi'] : '') ?: $description,
             'keywords' => ptsNewsDetailText(isset($seo['keywordsvi']) ? $seo['keywordsvi'] : ''),
-            'canonical' => '/'.$slug.'/'
+            'canonical' => '/'.$slug
         ),
         'readOnly' => true,
         'legacyViewMutation' => false
