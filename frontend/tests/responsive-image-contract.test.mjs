@@ -18,6 +18,9 @@ test('catalog media reserves intrinsic space and chooses responsive product size
   assert.match(sharedCta, /public-cta-banner__image" :src="imageSource" alt="" loading="lazy" decoding="async" @error="handleImageError"/)
   assert.match(sharedCta, /\.public-cta-banner__image \{ object-fit: cover; \}/)
   assert.match(products, /width="640"[\s\S]*height="640"[\s\S]*sizes=/)
+  assert.match(products, /thumbs\/640x640x1\$\{original\}/)
+  assert.match(products, /productIndex < 4 \? 'eager' : 'lazy'/)
+  assert.match(products, /productIndex < 4 \? 'high' : 'auto'/)
 })
 
 test('news cards use allowlisted PHP thumbnails and match the rendered 16:9 frame', () => {

@@ -6,12 +6,19 @@ const links = useMigrationLinks()
 const isMigrationPreview = links.active
 const railRef = ref<HTMLElement | null>(null)
 const failedImages = ref<Set<number>>(new Set())
+const failedThumbnailImages = ref<Set<number>>(new Set())
 const oversizedProductImages: Record<string, string> = {
   '/upload/product/t-bat-tsys-d53-2-4295.png': '/assets/images/site-visuals/media-fallbacks/brand-tbat-tsys-d53.webp',
 }
 
 function productImage(src: string): string {
   return oversizedProductImages[src] || src
+}
+
+function productImageSrc(product: PublicCatalogProduct): string {
+  const original = productImage(product.media[0] || '')
+  if (!original.startsWith('/upload/product/') || failedThumbnailImages.value.has(product.id)) return original
+  return `/thumbs/640x640x1${original}`
 }
 
 function scrollRail(direction: -1 | 1) {
@@ -22,7 +29,17 @@ function scrollRail(direction: -1 | 1) {
 }
 
 function markImageFailed(productId: number) {
-  failedImages.value = new Set(failedImages.value).add(productId)
+  const next = new Set(failedImages.value)
+  next.add(productId)
+  failedImages.value = next
+}
+
+function markImageError(product: PublicCatalogProduct) {
+  if (!failedThumbnailImages.value.has(product.id) && product.media[0]?.startsWith('/upload/product/')) {
+    failedThumbnailImages.value = new Set(failedThumbnailImages.value).add(product.id)
+    return
+  }
+  markImageFailed(product.id)
 }
 
 // Per-card add-to-cart state, kept local to this grid (not the shared
@@ -130,8 +147,8 @@ function discountPercent(product: PublicCatalogProduct): number | null {
       :aria-label="props.layout === 'rail' ? 'Danh sách sản phẩm liên quan, có thể cuộn ngang' : undefined"
       :class="props.layout === 'rail' ? 'catalog-product-grid-rail' : 'grid grid-cols-2 gap-4 max-ph:gap-3 tb:grid-cols-3 nav:grid-cols-4'"
     >
-    <article
-      v-for="product in products"
+      <article
+      v-for="(product, productIndex) in products"
       :key="product.id"
       class="group flex min-w-0 flex-col"
       :class="props.layout === 'rail' ? 'snap-start' : ''"
@@ -149,14 +166,16 @@ function discountPercent(product: PublicCatalogProduct): number | null {
         </span>
         <img
           v-if="product.media[0] && !failedImages.has(product.id)"
-          :src="productImage(product.media[0])"
+          :src="productImageSrc(product)"
           :alt="product.name"
           class="h-full w-full object-contain transition-transform duration-300 group-hover:scale-[1.03] motion-reduce:transform-none motion-reduce:transition-none"
-          loading="lazy"
+          :loading="productIndex < 4 ? 'eager' : 'lazy'"
+          :fetchpriority="productIndex < 4 ? 'high' : 'auto'"
+          decoding="async"
           width="640"
           height="640"
           sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
-          @error="markImageFailed(product.id)"
+          @error="markImageError(product)"
         >
         <span v-else class="p-4 text-center text-sm text-slate-500">Chưa có hình ảnh</span>
 
