@@ -117,7 +117,7 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
       </div>
     </section>
 
-    <nav class="sticky z-30 border-b border-slate-200 bg-white/95 backdrop-blur-md transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]" :class="isHeaderHidden ? 'top-0 shadow-sm' : 'top-16 min-[821px]:top-[88px] min-[1321px]:top-[104px] min-[1501px]:top-[120px] min-[1800px]:top-[136px]'" aria-label="Đi nhanh trong trang Giới thiệu">
+    <nav class="sticky z-30 border-b border-slate-200 bg-white/95 backdrop-blur-md transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]" :class="isHeaderHidden ? 'top-0 shadow-sm' : 'top-[65px] min-[821px]:top-[88px] min-[1321px]:top-[104px] min-[1501px]:top-[120px] min-[1800px]:top-[136px]'" aria-label="Đi nhanh trong trang Giới thiệu">
       <div ref="aboutNavRef" class="pts-container flex gap-6 overflow-x-auto py-1 [scrollbar-width:none] max-[800px]:gap-[18px] [&::-webkit-scrollbar]:hidden" aria-label="Mục nội dung Giới thiệu">
         <a
           v-for="item in aboutSectionNavItems"

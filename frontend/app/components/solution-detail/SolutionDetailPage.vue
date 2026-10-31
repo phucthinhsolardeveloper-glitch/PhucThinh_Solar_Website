@@ -81,7 +81,7 @@ const { activeHeadingId, scrollToHeading } = useTocScrollspy({
       </div>
 
       <div class="pts-container py-2">
-        <nav ref="solutionRailRef" class="flex w-full gap-2.5 overflow-x-auto py-1.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" aria-label="Các giải pháp khác">
+        <nav ref="solutionRailRef" class="sticky top-[65px] z-20 flex w-full gap-2.5 overflow-x-auto border-y border-slate-200 bg-white/95 py-1.5 backdrop-blur-md [scrollbar-width:none] [&::-webkit-scrollbar]:hidden min-[768px]:static min-[768px]:border-0 min-[768px]:bg-transparent min-[768px]:backdrop-blur-none" aria-label="Các giải pháp khác">
           <a
             class="public-filter-chip inline-flex min-h-11 flex-none items-center whitespace-nowrap px-4 text-[13px] font-bold no-underline"
             :href="links.generic(data.navigation.allUrl)"

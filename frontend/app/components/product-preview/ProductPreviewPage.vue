@@ -75,7 +75,7 @@ onBeforeUnmount(() => observer?.disconnect())
 </script>
 
 <template>
-  <div class="pts-container pb-16 pt-6 max-tb:pt-3">
+  <div class="product-preview-page pts-container pb-16 pt-6 max-tb:pt-3">
     <div class="grid grid-cols-1 items-start gap-10 pb-12 pt-6 max-tb:gap-8 max-tb:pb-8 max-tb:pt-4 nav:grid-cols-2">
       <ProductPreviewGallery :name="product.name" :media="product.media" />
 
@@ -136,7 +136,7 @@ onBeforeUnmount(() => observer?.disconnect())
     <nav
       v-if="navItems.length"
       class="sticky z-20 mb-2 overflow-x-auto overscroll-x-contain border-y border-slate-200 bg-white/95 backdrop-blur-md [scrollbar-width:none] [&::-webkit-scrollbar]:hidden transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
-      :class="isHeaderHidden ? 'top-0 shadow-sm' : 'top-16 min-[821px]:top-[88px] min-[1321px]:top-[104px] min-[1501px]:top-[120px] min-[1800px]:top-[136px]'"
+      :class="isHeaderHidden ? 'top-0 shadow-sm' : 'top-[65px] min-[821px]:top-[88px] min-[1321px]:top-[104px] min-[1501px]:top-[120px] min-[1800px]:top-[136px]'"
       aria-label="Mục nội dung sản phẩm"
     >
       <div class="flex min-w-max gap-1.5 py-2">

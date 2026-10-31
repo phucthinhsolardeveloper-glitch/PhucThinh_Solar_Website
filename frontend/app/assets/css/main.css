@@ -1,6 +1,12 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
 
+@media (max-width: 820px) {
+  .product-preview-page [id] {
+    scroll-margin-top: 121px;
+  }
+}
+
 .gtranslate_wrapper {
   position: relative;
   flex: none;
