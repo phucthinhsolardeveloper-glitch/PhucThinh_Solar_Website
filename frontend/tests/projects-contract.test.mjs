@@ -42,7 +42,7 @@ test('projects SEO follows the active Admin keys and overrides only metadata wit
   assert.match(projectsProjection, /'seo' => array\(/)
   assert.match(page, /projects\.value\?\.seo\?\.title \|\| projects\.value\?\.title/)
   assert.match(page, /projects\.value\?\.seo\?\.image \|\| projects\.value\?\.featured\?\.image/)
-  assert.match(categoryPage, /category\?\.seo\?\.title \|\| categoryTitle\.value/)
+  assert.match(categoryPage, /publicSeoTitle\([\s\S]*category\?\.seo\?\.title \|\| projects\.value\?\.category\?\.name/)
   assert.match(categoryPage, /category\?\.seo\?\.image \|\| projects\.value\?\.category\?\.image/)
   assert.match(categoryPage, /name: 'keywords'/)
 })

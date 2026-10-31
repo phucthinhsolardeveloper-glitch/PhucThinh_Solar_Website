@@ -6,6 +6,7 @@ import { isPublicSitePayload } from '#shared/contracts/public-site'
 import DealerOverview from '~/components/dealer/DealerOverview.vue'
 import DealerSections from '~/components/dealer/DealerSections.vue'
 import EditorialRichText from '~/components/editorial/EditorialRichText.vue'
+import { publicSeoTitle } from '#shared/public-seo'
 
 const props = withDefaults(defineProps<{ preview?: boolean }>(), { preview: false })
 const config = useRuntimeConfig()
@@ -34,7 +35,9 @@ const quickLinks = computed(() => {
 })
 const links = useMigrationLinks()
 
-const pageTitle = computed(() => props.preview ? 'Đại lý — internal preview' : dealer.value?.seo?.title || dealer.value?.title || 'Đại lý — Phúc Thịnh Solar')
+const pageTitle = computed(() => props.preview
+  ? 'Đại lý — internal preview'
+  : publicSeoTitle(dealer.value?.seo?.title || dealer.value?.title, 'Đại lý'))
 const pageDescription = computed(() => props.preview ? '' : dealer.value?.seo?.description || '')
 const pageKeywords = computed(() => props.preview ? undefined : dealer.value?.seo?.keywords || undefined)
 useSeoMeta({

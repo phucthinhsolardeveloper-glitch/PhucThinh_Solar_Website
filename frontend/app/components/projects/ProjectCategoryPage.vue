@@ -5,6 +5,7 @@ import type { PublicProjectsPayload } from '#shared/contracts/public-projects'
 import { isPublicProjectsPayload } from '#shared/contracts/public-projects'
 import { PROJECTS_PUBLIC_PATH } from '#shared/public-route-gate'
 import { editorialPublicResponseStatus, editorialPublicRouteRobots } from '#shared/editorial-public-route'
+import { publicSeoTitle } from '#shared/public-seo'
 import { projectCategoryCanonicalPath, projectCategoryPage } from '#shared/project-category-route'
 import ProjectCard from '~/components/projects/ProjectCard.vue'
 import ProjectsCta from '~/components/projects/ProjectsCta.vue'
@@ -40,7 +41,10 @@ const categoryTitle = computed(() => {
   return /^Dự án(?:\s|$)/i.test(title) ? title : `Dự án ${title}`
 })
 const categoryDescription = computed(() => projects.value?.intro.description || projects.value?.category?.description || '')
-const pageTitle = computed(() => projects.value?.category?.seo?.title || categoryTitle.value)
+const pageTitle = computed(() => publicSeoTitle(
+  projects.value?.category?.seo?.title || projects.value?.category?.name || projects.value?.intro.title,
+  'Danh mục dự án',
+))
 const pageDescription = computed(() => projects.value?.category?.seo?.description || categoryDescription.value)
 const pageKeywords = computed(() => projects.value?.category?.seo?.keywords || '')
 

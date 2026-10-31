@@ -19,7 +19,7 @@ const isPublicRoute = route.path === ORDER_SUCCESS_PUBLIC_PATH
 const errorStatus = (error.value as { statusCode?: unknown } | null)?.statusCode
 usePublicSocialMeta({
   enabled: isPublicRoute,
-  title: 'Đặt hàng thành công — Phúc Thịnh Solar',
+  title: 'Đặt hàng thành công | Phúc Thịnh Solar',
   description: computed(() => site.value.brand.name || 'Phúc Thịnh Solar'),
   canonicalPath: ORDER_SUCCESS_PUBLIC_PATH,
   image: computed(() => site.value.brand.logo),

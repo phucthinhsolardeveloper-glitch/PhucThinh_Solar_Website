@@ -48,7 +48,10 @@ docker compose -f docker-compose.local.yml up -d web
 Mở terminal riêng trong checkout này:
 
 ```bash
-cd frontend
+cd /home/admin01/src/Web_PTS_PHP/frontend
+set -a
+. ../.env                 # cấu hình Nuxt local bị Git ignore; trỏ API sang :8088
+set +a
 npm ci                 # chỉ lần đầu hoặc khi lockfile thay đổi
 npm run dev
 ```
@@ -56,8 +59,12 @@ npm run dev
 Nuxt/Vite chạy với HMR tại **http://localhost:3100/**; ví dụ trang liên hệ là
 http://localhost:3100/lien-he/. Terminal `npm run dev` cũng in URL `Local` khi
 server sẵn sàng. Sửa Vue, TypeScript hoặc CSS sẽ cập nhật trên trình duyệt mà
-không cần `npm run build` hay rebuild Docker. Frontend lấy API local từ PHP tại
-`http://127.0.0.1:8080` mặc định, vì vậy cần bật service `web` ở trên.
+không cần `npm run build` hay rebuild Docker. Frontend lấy dữ liệu từ PHP API/
+media bridge local tại `http://127.0.0.1:8088`; bridge dùng MariaDB local và
+không phục vụ giao diện PHP. Các cờ `*_PUBLIC_ROUTE_ENABLED` mở URL Nuxt để xem,
+còn `*_PUBLIC_ROUTE_INDEXABLE=false` giữ toàn bộ bản xem thử ở trạng thái
+`noindex`. Thay đổi `.env` cần khởi động lại `npm run dev`; thay Vue/CSS thì HMR
+tự cập nhật.
 
 `npm run build` dành cho kiểm tra bản production. Script
 `scripts/nuxt-local-preview.sh restart` tạo SSR snapshot riêng và chạy PHP

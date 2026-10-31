@@ -9,7 +9,7 @@ definePageMeta({
 
 // A token-bound order confirmation must never be searchable or indexable.
 useSeoMeta({
-  title: 'Đặt hàng thành công — Phúc Thịnh Solar',
+  title: 'Đặt hàng thành công | Phúc Thịnh Solar',
   robots: 'noindex, nofollow, noarchive',
 })
 </script>

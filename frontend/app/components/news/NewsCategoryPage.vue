@@ -4,6 +4,7 @@ import { isPublicNewsPayload } from '#shared/contracts/public-news'
 import type { PublicSitePayload } from '#shared/contracts/public-site'
 import { isPublicSitePayload } from '#shared/contracts/public-site'
 import { editorialPublicResponseStatus, editorialPublicRouteRobots } from '#shared/editorial-public-route'
+import { publicSeoTitle } from '#shared/public-seo'
 import NewsCard from '~/components/news/NewsCard.vue'
 import NewsCta from '~/components/news/NewsCta.vue'
 import NewsFilters from '~/components/news/NewsFilters.vue'
@@ -52,7 +53,7 @@ const pageNumbers = computed(() => {
   }
   return result
 })
-const pageTitle = computed(() => category.value?.seo?.title || category.value?.name || 'Kiến thức')
+const pageTitle = computed(() => publicSeoTitle(category.value?.seo?.title || category.value?.name, 'Kiến thức'))
 const pageDescription = computed(() => category.value?.seo?.description || category.value?.description || '')
 const pageKeywords = computed(() => category.value?.seo?.keywords || '')
 

@@ -5,6 +5,15 @@ export const PUBLIC_SEO_FALLBACK_IMAGE = '/assets/images/favicon-pts-mobile.png'
 
 const CANONICAL_HOST = 'phucthinhsolar.com'
 
+/** Mirror class.Seo::set(): append the brand once to PHP-owned page titles. */
+export function publicSeoTitle(value: unknown, fallback = PUBLIC_SEO_SITE_NAME): string {
+  const title = typeof value === 'string' ? value.trim() : ''
+  const resolved = title || fallback
+  return resolved.toLocaleLowerCase('vi').includes('phúc thịnh s')
+    ? resolved
+    : `${resolved} | ${PUBLIC_SEO_SITE_NAME}`
+}
+
 function isSafePublicPath(path: unknown): path is string {
   if (typeof path !== 'string' || !/^\/[A-Za-z0-9/_.-]*$/.test(path) || path.startsWith('//')) return false
   if (path.includes('//') || path.split('/').some((segment) => segment === '.' || segment === '..')) return false

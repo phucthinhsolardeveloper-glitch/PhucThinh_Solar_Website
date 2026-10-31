@@ -93,12 +93,12 @@ function pageHref(value: number) {
 }
 
 useSeoMeta({
-  title: computed(() => keyword.value ? 'Tìm kiếm: ' + keyword.value + ' — Phúc Thịnh Solar' : 'Tìm kiếm — Phúc Thịnh Solar'),
+  title: 'Tìm kiếm | Phúc Thịnh Solar',
   robots: 'noindex, nofollow, noarchive',
 })
 usePublicSocialMeta({
   enabled: computed(() => publicSearchEnabled.value && !!data.value && !error.value),
-  title: computed(() => keyword.value ? 'Tìm kiếm: ' + keyword.value + ' — Phúc Thịnh Solar' : 'Tìm kiếm — Phúc Thịnh Solar'),
+  title: 'Tìm kiếm | Phúc Thịnh Solar',
   description: 'Tìm sản phẩm tại Phúc Thịnh Solar.',
   canonicalPath: '/tim-kiem/',
 })

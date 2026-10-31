@@ -5,6 +5,7 @@ import type { PublicSitePayload } from '#shared/contracts/public-site'
 import { isPublicSitePayload } from '#shared/contracts/public-site'
 import DealerSections from '~/components/dealer/DealerSections.vue'
 import DealerOverview from '~/components/dealer/DealerOverview.vue'
+import { publicSeoTitle } from '#shared/public-seo'
 
 const fallbackSite: PublicSitePayload = { schemaVersion: 1, brand: { name: 'Phúc Thịnh Solar', hotline: '' }, productCategories: [] }
 const { data: siteData } = await useFetch<unknown>('/_migration/site', { default: () => fallbackSite })
@@ -25,7 +26,7 @@ const quickLinks = [
 ]
 const links = useMigrationLinks()
 
-useSeoMeta({ title: computed(() => dealer.value?.title || 'Đại lý — Phúc Thịnh Solar'), robots: computed(() => dealer.value && !error.value ? 'index, follow' : 'noindex, nofollow, noarchive') })
+useSeoMeta({ title: computed(() => publicSeoTitle(dealer.value?.seo?.title || dealer.value?.title, 'Đại lý')), robots: computed(() => dealer.value && !error.value ? 'index, follow' : 'noindex, nofollow, noarchive') })
 const requestUrl = useRequestURL()
 useHead({ link: [{ rel: 'canonical', href: computed(() => new URL('/dai-ly/', requestUrl.origin).href) }] })
 </script>

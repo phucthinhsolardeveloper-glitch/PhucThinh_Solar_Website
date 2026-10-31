@@ -17,7 +17,7 @@ if (!isMigrationPreview.value && import.meta.server && initialCartError.value) s
 
 usePublicSocialMeta({
   enabled: computed(() => !isMigrationPreview.value),
-  title: 'Giỏ hàng — Phúc Thịnh Solar',
+  title: 'Giỏ hàng | Phúc Thịnh Solar',
   description: computed(() => site.value.brand.name || 'Phúc Thịnh Solar'),
   canonicalPath: '/gio-hang/',
   image: computed(() => site.value.brand.logo),

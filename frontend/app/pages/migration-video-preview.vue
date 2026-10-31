@@ -2,6 +2,7 @@
 import { isPublicVideoPayload, type PublicVideoItem, type PublicVideoPayload } from '#shared/contracts/public-video'
 import { VIDEO_PUBLIC_PATH } from '#shared/public-route-gate'
 import { editorialPublicHubResponseStatus, editorialPublicRouteRobots } from '#shared/editorial-public-route'
+import { publicSeoTitle } from '#shared/public-seo'
 
 const { site } = await usePublicSite()
 const route = useRoute()
@@ -70,14 +71,18 @@ onBeforeUnmount(() => {
   document.body.style.overflow = ''
 })
 
+const pageTitle = computed(() => isPublicRoute.value
+  ? publicSeoTitle(payload.value?.seo.title, 'Video')
+  : payload.value?.seo.title || 'Video — Nuxt preview')
+
 useSeoMeta({
-  title: computed(() => payload.value?.seo.title || (isPublicRoute.value ? 'Video' : 'Video — Nuxt preview')),
+  title: pageTitle,
   description: computed(() => payload.value?.seo.description || ''),
   robots: computed(() => editorialPublicRouteRobots(isPublicRoute.value, config.public.videoPublicRouteIndexable, !!payload.value && !error.value, 'p' in route.query)),
 })
 usePublicSocialMeta({
   enabled: computed(() => isPublicRoute.value && !!payload.value && !error.value),
-  title: computed(() => payload.value?.seo.title || 'Video'),
+  title: pageTitle,
   description: computed(() => payload.value?.seo.description || ''),
   canonicalPath: VIDEO_PUBLIC_PATH,
   image: computed(() => payload.value?.seo.image || payload.value?.videos[0]?.thumbnail),

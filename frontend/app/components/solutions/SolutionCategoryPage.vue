@@ -4,6 +4,7 @@ import { isPublicSolutionsPayload } from '#shared/contracts/public-solutions'
 import type { PublicSitePayload } from '#shared/contracts/public-site'
 import { isPublicSitePayload } from '#shared/contracts/public-site'
 import { editorialPublicResponseStatus, editorialPublicRouteRobots } from '#shared/editorial-public-route'
+import { publicSeoTitle } from '#shared/public-seo'
 import SolutionCards from '~/components/solutions/SolutionCards.vue'
 import SolutionsCta from '~/components/solutions/SolutionsCta.vue'
 
@@ -26,7 +27,7 @@ const errorStatus = (error.value as { statusCode?: unknown } | null)?.statusCode
 const responseStatus = editorialPublicResponseStatus(true, errorStatus, !category.value)
 if (import.meta.server && responseStatus) setResponseStatus(responseStatus, responseStatus === 404 ? 'Not Found' : 'Bad Gateway')
 const hasFilters = computed(() => Object.keys(route.query).length > 0)
-const pageTitle = computed(() => category.value?.seo?.title || category.value?.name || 'Giải pháp')
+const pageTitle = computed(() => publicSeoTitle(category.value?.seo?.title || category.value?.name, 'Giải pháp'))
 const pageDescription = computed(() => category.value?.seo?.description || category.value?.description || '')
 const pageKeywords = computed(() => category.value?.seo?.keywords || '')
 const pageImage = computed(() => category.value?.seo?.image || undefined)

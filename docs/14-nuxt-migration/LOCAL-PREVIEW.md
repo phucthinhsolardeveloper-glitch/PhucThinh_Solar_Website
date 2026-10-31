@@ -24,6 +24,9 @@ Then run Nuxt in a separate terminal:
 
 ```bash
 cd /home/admin01/src/Web_PTS_PHP/frontend
+set -a
+. ../.env                 # cấu hình local bị Git ignore, gồm API/media bridge :8088
+set +a
 npm ci                 # lần đầu hoặc sau khi package-lock.json thay đổi
 npm run dev
 ```
@@ -37,6 +40,13 @@ kiểm tra `pts-php-nuxt-preview` và MariaDB; nếu giao diện không cập nh
 terminal Nuxt để biết watcher/HMR có báo lỗi hay không. Ảnh CMS và asset PHP
 được proxy trong dev qua allowlist đường dẫn ảnh; production vẫn tắt proxy theo
 mặc định.
+
+Các cờ `NUXT_PUBLIC_*_PUBLIC_ROUTE_ENABLED` chỉ mở URL public trong preview để
+owner xem giao diện. Mọi cờ `NUXT_PUBLIC_*_PUBLIC_ROUTE_INDEXABLE` trong `.env`
+local phải là `false`; chúng độc lập với cờ hiển thị route và giữ meta robots ở
+`noindex` trong lúc PHP vẫn là public canonical owner. Nuxt đọc `.env` khi khởi
+động, vì vậy thay đổi file này cần restart tiến trình; sửa Vue/TypeScript/CSS
+vẫn dùng HMR.
 
 `npm run build` và `scripts/nuxt-local-preview.sh restart` chỉ dành cho snapshot
 SSR để kiểm tra bản đã build. Script snapshot dùng PHP preview cổng 8088 và cùng

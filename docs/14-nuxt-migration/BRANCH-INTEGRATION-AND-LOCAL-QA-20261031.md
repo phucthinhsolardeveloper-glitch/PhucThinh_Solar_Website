@@ -2,21 +2,24 @@
 
 ## Repository state
 
-- Integrated code is on local `master` at `f9a453e` (merge of the preserved UI
-  branch backup). Local branch inventory contains only `master`; the worktree
-  inventory contains only `/home/admin01/src/Web_PTS_PHP`.
-- `master` is 75 commits ahead of `origin/master`. This is local integration
-  state; no push or production action was performed.
+- Integrated code is on local `master`; the UI/migration work is committed in
+  `d7cd955` and the detail canonical/title correction in `9cd3b65`. This
+  checkpoint adds one more local SEO/title/environment correction commit; after
+  it, `master` is 78 commits ahead of `origin/master`. No push was performed.
+- After `git fetch origin --prune`, local inventory contains only `master` and
+  one worktree at `/home/admin01/src/Web_PTS_PHP`. The remote
+  `feature/pts-nuxt-integration-20261027` is an ancestor of `master`; the remote
+  PHP router-fix branch was deleted and its commits are already ancestors.
 - `nuxt-progress-codex` was not merged wholesale because its changes weakened
   this repository's execution contract and installed an automatic Stop hook.
   Its safe read-only coverage audit was integrated selectively. The rejected
   history remains recoverable at tag
   `archive/nuxt-progress-codex-20261031`.
 - The initial inventory found 91 unstaged working-tree paths, including public
-  UI work from the active review, tests, docs, and newly added migration pages.
-  They were preserved and not staged as part of branch consolidation. This
-  checkpoint adds documentation and API-test changes; the working tree remains
-  unclean even though there is one active branch and one worktree.
+  UI work, tests and migration pages. They were reviewed and committed as
+  `d7cd955`; follow-up detail SEO and current public-route audit fixes are in
+  later local commits. No WIP from another live worktree was staged. The
+  worktree is clean after the current checkpoint commit.
 - Integration rollback point: `f9a453e`; the archived branch tag above preserves
   the omitted work independently.
 
@@ -70,10 +73,13 @@ node tools/visual-tests/scripts/migration-seo-audit.cjs \
 - Hidden negative fixtures: the hidden product returned 404 without canonical;
   four entity families remain `NEEDS VERIFICATION` because matching hidden rows
   are absent from the local DB.
-- The report is not a SEO cutover approval: metadata/JSON-LD differences and
-  preview noindex remain open. Full output is in the ignored artifact directory
-  above. An earlier crawl against `:8080` is invalid evidence because that local
-  service has an empty/mis-mounted web root and returned 403/404.
+- This crawler uses the manifest's internal `previewPath` values. It proves
+  preview noindex, but is not evidence of metadata parity on the public URL
+  paths. Full output is in the ignored artifact directory above. An earlier
+  crawl against `:8080` is invalid evidence because that local service has an
+  empty/mis-mounted web root and returned 403/404. The corrected direct public
+  path comparison is recorded in
+  [`PUBLIC-URL-SEO-AUDIT-20261031.md`](PUBLIC-URL-SEO-AUDIT-20261031.md).
 
 ## Browser capture and development runtime cleanup
 
@@ -114,22 +120,16 @@ service or data was touched.
    migration route matrix. Keep PHP public ownership and Nuxt noindex until the
    remaining gates have evidence and a separate cutover decision.
 
-## SEO metadata follow-up
+## Current verification and production state
 
-Read-only HTML comparison on the actual Nuxt public routes found that PHP uses
-bare-slug canonical URLs for project and news detail pages, while Nuxt had used
-the trailing-slash link URL. News detail titles also lacked the brand suffix
-that PHP adds. The DTOs now keep navigable article/project links unchanged and
-expose the PHP canonical separately; news SEO titles mirror PHP's brand suffix.
-Both slash and bare-slug forms resolve in Nuxt and emit the same bare-slug
-canonical. Local Nuxt and PHP bridge checks returned HTTP 200 and matching title
-text plus canonical paths for both records (normalize away the local host on
-the PHP preview canonical).
+Current frontend evidence: `npm test` **449/449 PASS**, `npm run typecheck`,
+`npm run build`, and `NITRO_SMOKE_MOCK_PHP=1 npm run smoke` pass. The direct
+public-path GET audit passes status/canonical/noindex/title/redirect checks for
+34/34 routes. Detailed OG, JSON-LD, and href findings plus remaining gates are
+in [`PUBLIC-URL-SEO-AUDIT-20261031.md`](PUBLIC-URL-SEO-AUDIT-20261031.md).
 
-Focused frontend contract checks passed 21/21; full frontend tests passed
-447/447; Nuxt typecheck and production build passed. The two PHP API contract
-scripts passed in PHP 8.1 with read-only mounts and networking disabled. No
-database writes were made. This closes only the two observed metadata cases;
-it does not replace the remaining route-wide SEO review or owner visual review.
-
-No deploy, production request, DB write, cleanup, or backup change was made.
+The local ignored `.env` keeps every public-route indexability flag false while
+leaving local routes available to inspect. The documented dev command loads
+that root `.env` before starting Nuxt; its API/media dependency remains the
+read-only bridge on `:8088`. `:8080` remains stopped. No production service,
+database data/volume, deploy, public route switch, push or backup was changed.

@@ -4,6 +4,7 @@ import EditorialRichText from '~/components/editorial/EditorialRichText.vue'
 import EditorialShare from '~/components/editorial/EditorialShare.vue'
 import { buildEditorialToc } from '#shared/editorial-toc'
 import { POLICY_PUBLIC_ROOT, editorialPublicResponseStatus, editorialPublicRouteRobots, isSafeEditorialSlug } from '#shared/editorial-public-route'
+import { publicSeoTitle } from '#shared/public-seo'
 
 const { site } = await usePublicSite()
 const route = useRoute()
@@ -66,14 +67,18 @@ function formatRelatedDate(value: string): string {
   return match ? `${match[3]}/${match[2]}/${match[1]}` : value
 }
 
+const pageTitle = computed(() => isPublicRoute.value
+  ? publicSeoTitle(data.value?.seo.title || data.value?.title, 'Chính sách hỗ trợ')
+  : data.value?.seo.title || 'Chính sách hỗ trợ — Nuxt preview')
+
 useSeoMeta({
-  title: computed(() => data.value?.seo.title || (isPublicRoute.value ? 'Chính sách hỗ trợ' : 'Chính sách hỗ trợ — Nuxt preview')),
+  title: pageTitle,
   description: computed(() => data.value?.seo.description || ''),
   robots: computed(() => editorialPublicRouteRobots(isPublicRoute.value, config.public.policyDetailPublicRouteIndexable, !!data.value && !error.value)),
 })
 usePublicSocialMeta({
   enabled: computed(() => isPublicRoute.value && !!data.value && !error.value),
-  title: computed(() => data.value?.seo.title || 'Chính sách hỗ trợ'),
+  title: pageTitle,
   description: computed(() => data.value?.seo.description || ''),
   canonicalPath: computed(() => route.path),
   image: computed(() => data.value?.cover || undefined),

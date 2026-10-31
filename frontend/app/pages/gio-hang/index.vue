@@ -9,7 +9,7 @@ definePageMeta({
 
 // Cart contents depend on the PHP session and must never be indexed.
 useSeoMeta({
-  title: 'Giỏ hàng — Phúc Thịnh Solar',
+  title: 'Giỏ hàng | Phúc Thịnh Solar',
   robots: 'noindex, nofollow, noarchive',
 })
 </script>

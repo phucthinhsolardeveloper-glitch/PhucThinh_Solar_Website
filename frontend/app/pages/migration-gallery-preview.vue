@@ -2,6 +2,7 @@
 import { isPublicGalleryPayload, type PublicGalleryPayload } from '#shared/contracts/public-gallery'
 import { GALLERY_PUBLIC_PATH } from '#shared/public-route-gate'
 import { editorialPublicHubResponseStatus, editorialPublicRouteRobots } from '#shared/editorial-public-route'
+import { publicSeoTitle } from '#shared/public-seo'
 
 const { site } = await usePublicSite()
 const route = useRoute()
@@ -25,14 +26,18 @@ function pageTo(value: number) {
   return { path: isPublicRoute.value ? GALLERY_PUBLIC_PATH : '/migration-gallery-preview', query: value > 1 ? { p: String(value) } : {} }
 }
 
+const pageTitle = computed(() => isPublicRoute.value
+  ? publicSeoTitle(gallery.value?.seo.title, 'Thư viện ảnh')
+  : gallery.value?.seo.title || 'Thư viện ảnh — Nuxt preview')
+
 useSeoMeta({
-  title: computed(() => gallery.value?.seo.title || (isPublicRoute.value ? 'Thư viện ảnh' : 'Thư viện ảnh — Nuxt preview')),
+  title: pageTitle,
   description: computed(() => gallery.value?.seo.description || ''),
   robots: computed(() => editorialPublicRouteRobots(isPublicRoute.value, config.public.galleryPublicRouteIndexable, !!gallery.value && !error.value, 'p' in route.query)),
 })
 usePublicSocialMeta({
   enabled: computed(() => isPublicRoute.value && !!gallery.value && !error.value),
-  title: computed(() => gallery.value?.seo.title || 'Thư viện ảnh'),
+  title: pageTitle,
   description: computed(() => gallery.value?.seo.description || ''),
   canonicalPath: GALLERY_PUBLIC_PATH,
   image: computed(() => gallery.value?.seo.image || gallery.value?.albums.find((album) => album.image)?.image),

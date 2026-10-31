@@ -39,7 +39,7 @@ test('project category route is Nuxt-owned, uses category API, and preserves CMS
   assert.match(page, /`Dự án \$\{title\}`/)
   assert.match(page, /const canonicalPath = computed\(\(\) => projects\.value\?\.category\?\.canonicalPath/)
   assert.match(page, /canonicalPath,/)
-  assert.match(page, /projects\.value\?\.category\?\.seo\?\.title \|\| categoryTitle\.value/)
+  assert.match(page, /publicSeoTitle\([\s\S]*projects\.value\?\.category\?\.seo\?\.title \|\| projects\.value\?\.category\?\.name/)
   assert.match(page, /projects\.value\?\.category\?\.seo\?\.description \|\| categoryDescription\.value/)
   assert.match(page, /category\?\.seo\?\.image \|\| projects\.value\?\.category\?\.image/)
   assert.match(page, /editorialPublicResponseStatus\(true, errorStatus, !projects\.value\)/)

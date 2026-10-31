@@ -127,3 +127,19 @@ test('public wrappers use separate SEO indexability settings; preview URLs remai
   assert.match(read('app/pages/migration-solution-detail-preview.vue'), /isSafeEditorialSlug\(slug\.value\)/)
   assert.match(read('app/pages/migration-policy-preview.vue'), /isSafeEditorialSlug\(slug\.value\)/)
 })
+
+test('public category, dealer, gallery, video and policy titles mirror PHP brand suffix rules', () => {
+  for (const path of [
+    'app/components/news/NewsCategoryPage.vue',
+    'app/components/projects/ProjectCategoryPage.vue',
+    'app/components/solutions/SolutionCategoryPage.vue',
+    'app/components/dealer/DealerPageContent.vue',
+    'app/pages/dai-ly/index.vue',
+    'app/pages/migration-gallery-preview.vue',
+    'app/pages/migration-video-preview.vue',
+    'app/pages/migration-policy-preview.vue',
+  ]) assert.match(read(path), /publicSeoTitle\(/, `${path} should apply PHP brand suffixes to public SEO titles`)
+  assert.match(read('app/pages/migration-gallery-preview.vue'), /isPublicRoute\.value[\s\S]*publicSeoTitle/)
+  assert.match(read('app/pages/migration-video-preview.vue'), /isPublicRoute\.value[\s\S]*publicSeoTitle/)
+  assert.match(read('app/pages/migration-policy-preview.vue'), /isPublicRoute\.value[\s\S]*publicSeoTitle/)
+})
