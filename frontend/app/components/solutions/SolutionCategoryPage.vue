@@ -35,6 +35,8 @@ const pageDescription = computed(() => category.value?.seo?.description || categ
 const socialDescription = computed(() => publicSeoDescription(category.value?.seo?.description, site.value.brand.name))
 const pageKeywords = computed(() => category.value?.seo?.keywords || '')
 const pageImage = computed(() => category.value?.seo?.image || undefined)
+const solutionRailRef = ref<HTMLElement | null>(null)
+useActiveHorizontalRail(solutionRailRef)
 
 useSeoMeta({
   title: pageTitle,
@@ -71,7 +73,7 @@ usePublicSocialMeta({
           <p class="m-0 text-base leading-relaxed text-slate-600 tb:text-lg">{{ category.description }}</p>
         </header>
 
-        <nav v-if="category.navigation.length" class="mb-7 flex gap-2.5 overflow-x-auto py-1 [scrollbar-width:none] [&amp;::-webkit-scrollbar]:hidden" aria-label="Danh mục giải pháp">
+        <nav v-if="category.navigation.length" ref="solutionRailRef" class="mb-7 flex gap-2.5 overflow-x-auto py-1 [scrollbar-width:none] [&amp;::-webkit-scrollbar]:hidden" aria-label="Danh mục giải pháp">
           <NuxtLink
             v-for="item in category.navigation"
             :key="item.id"

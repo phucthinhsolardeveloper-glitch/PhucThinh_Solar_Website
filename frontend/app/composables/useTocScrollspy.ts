@@ -11,7 +11,7 @@ export interface UseTocScrollspyOptions {
  * TOC Scrollspy:
  * - Theo dõi các heading (h2, h3) trong content.
  * - Cập nhật activeHeadingId theo vị trí cuộn.
- * - Hỗ trợ scrollIntoView cho active item trong TOC list.
+ * - Giữ active item trong viewport của chính TOC, không kéo document về đầu trang trên mobile.
  * - Hỗ trợ smooth scrolling có tính header offset (100px).
  */
 export function useTocScrollspy(options: UseTocScrollspyOptions = {}) {
@@ -101,6 +101,30 @@ export function useTocScrollspy(options: UseTocScrollspyOptions = {}) {
     return window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
   }
 
+  function keepActiveItemVisible(activeEl: HTMLElement, root: HTMLElement | null | undefined) {
+    if (!root) return
+
+    let scrollContainer: HTMLElement | null = activeEl.parentElement
+    while (scrollContainer && scrollContainer !== root) {
+      const style = window.getComputedStyle(scrollContainer)
+      const canScrollY = /(auto|scroll|overlay)/.test(style.overflowY)
+      if (canScrollY && scrollContainer.scrollHeight > scrollContainer.clientHeight) break
+      scrollContainer = scrollContainer.parentElement
+    }
+
+    if (!scrollContainer || scrollContainer === root && !/(auto|scroll|overlay)/.test(window.getComputedStyle(scrollContainer).overflowY)) return
+
+    const itemRect = activeEl.getBoundingClientRect()
+    const containerRect = scrollContainer.getBoundingClientRect()
+    const topGap = 8
+    const bottomGap = 8
+    if (itemRect.top < containerRect.top + topGap) {
+      scrollContainer.scrollTop -= containerRect.top + topGap - itemRect.top
+    } else if (itemRect.bottom > containerRect.bottom - bottomGap) {
+      scrollContainer.scrollTop += itemRect.bottom - (containerRect.bottom - bottomGap)
+    }
+  }
+
   function scrollToHeading(id: string) {
     if (typeof window === 'undefined' || typeof document === 'undefined') return
     const target = document.getElementById(id)
@@ -145,9 +169,7 @@ export function useTocScrollspy(options: UseTocScrollspyOptions = {}) {
         ? container.querySelector<HTMLElement>(`[data-toc-id="${newId}"]`)
         : document.querySelector<HTMLElement>(`[data-toc-id="${newId}"]`)
 
-      if (activeEl && typeof activeEl.scrollIntoView === 'function') {
-        activeEl.scrollIntoView({ block: 'nearest', behavior: scrollBehavior() })
-      }
+      if (activeEl) keepActiveItemVisible(activeEl, options.tocContainerRef?.value)
     })
   })
 

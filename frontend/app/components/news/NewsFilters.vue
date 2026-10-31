@@ -6,6 +6,8 @@ const queryString = computed(() => props.query ? `?q=${encodeURIComponent(props.
 // Preview filters must stay in Nuxt even before the canonical public News route is enabled.
 const { active: isMigrationPreview } = useMigrationLinks()
 const filtersPath = computed(() => isMigrationPreview.value ? '/migration-news-preview/' : '/tin-tuc/')
+const railRef = ref<HTMLElement | null>(null)
+useActiveHorizontalRail(railRef)
 
 function categoryHref(category: PublicNewsCategory): string {
   if (!isMigrationPreview.value) return `${category.canonicalPath}${queryString.value}`
@@ -18,7 +20,7 @@ function categoryHref(category: PublicNewsCategory): string {
 </script>
 
 <template>
-  <nav class="flex w-full max-w-full min-w-0 gap-[7px] overflow-x-auto overscroll-x-contain px-0.5 pb-2 pt-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" :aria-label="filtersLabel">
+  <nav class="flex w-full max-w-full min-w-0 gap-[7px] overflow-x-auto overscroll-x-contain px-0.5 pb-2 pt-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" ref="railRef" :aria-label="filtersLabel">
     <NuxtLink
       class="public-filter-chip flex min-h-11 flex-none items-center gap-2 whitespace-nowrap px-[15px] text-[15px] font-bold no-underline"
       :class="!selected ? 'bg-navy-800 text-white' : 'text-navy-800'"

@@ -8,6 +8,8 @@ test('TOC scrolling honors reduced motion, transfers keyboard focus, and resumes
   const source = read('../app/composables/useTocScrollspy.ts')
   assert.match(source, /matchMedia\('\(prefers-reduced-motion: reduce\)'\)/)
   assert.match(source, /target\.focus\(\{ preventScroll: true \}\)/)
+  assert.match(source, /scrollContainer\.scrollTop/)
+  assert.doesNotMatch(source, /activeEl\.scrollIntoView/)
   assert.match(source, /window\.addEventListener\('keydown', onKeyboardScroll\)/)
   assert.match(source, /window\.removeEventListener\('keydown', onKeyboardScroll\)/)
   assert.doesNotMatch(source, /behavior:\s*'smooth'/)
@@ -22,4 +24,21 @@ test('News and policy TOCs expose active state and use the shared scrollspy', ()
     assert.match(source, /aria-current="activeHeadingId === item\.id \? 'true' : undefined"/)
     assert.match(source, /@click\.prevent="scrollToHeading\(item\.id\)"/)
   }
+})
+
+test('page wheel enhancement accelerates mouse-wheel pages without hijacking inner scroll regions', () => {
+  const source = read('../app/composables/usePageScrollExperience.ts')
+  assert.match(source, /addEventListener\('wheel', onWheel, \{ passive: false \}\)/)
+  assert.match(source, /event\.preventDefault\(\)/)
+  assert.match(source, /window\.scrollBy\(\{ top: delta \* 1\.35/)
+  assert.match(source, /hasScrollableParent\(event\.target, event\.deltaY\)/)
+  assert.match(source, /prefers-reduced-motion: reduce/)
+})
+
+test('active horizontal rails keep the selected public filter visible', () => {
+  const source = read('../app/composables/useActiveHorizontalRail.ts')
+  assert.match(source, /querySelector<HTMLElement>\('\[aria-current="page"\]'\)/)
+  assert.match(source, /rail\.scrollTo\(\{ left: targetLeft/)
+  assert.match(source, /MutationObserver/)
+  assert.match(source, /window\.removeEventListener\('resize', scheduleAlignment\)/)
 })
