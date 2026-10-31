@@ -9,14 +9,14 @@ const links = useMigrationLinks()
   <article class="min-w-0">
     <a
       :href="links.project(project.slug)"
-      class="group flex h-full flex-col overflow-hidden text-navy-800 no-underline transition-all duration-300 hover:-translate-y-1.5 hover:shadow-md"
+      class="group flex h-full flex-col overflow-hidden text-navy-800 no-underline"
     >
       <div class="relative aspect-[4/3] overflow-hidden rounded-btn bg-[#edf1f5]" :class="{ 'grid place-items-center text-slate-500': !project.image }">
         <img
           v-if="project.image"
           :src="project.image"
           :alt="project.title"
-          class="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+          class="h-full w-full object-cover"
           loading="lazy"
           decoding="async"
         >

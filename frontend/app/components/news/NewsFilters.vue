@@ -23,9 +23,9 @@ function categoryHref(category: PublicNewsCategory): string {
     CSS preview cũ mô tả — đo pixel trên ảnh production xác nhận chip "Tất cả"
     đang chọn màu navy-800, các chip còn lại nền slate-50 + chữ navy.
   -->
-  <nav class="flex w-full max-w-full min-w-0 gap-[7px] overflow-x-auto px-0.5 pb-2 pt-1" :aria-label="filtersLabel">
+  <nav class="flex w-full max-w-full min-w-0 gap-[7px] overflow-x-auto overscroll-x-contain px-0.5 pb-2 pt-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" :aria-label="filtersLabel">
     <a
-      class="flex min-h-11 flex-none items-center gap-2 whitespace-nowrap rounded-chip px-[15px] text-[13px] font-bold no-underline"
+      class="flex min-h-11 flex-none items-center gap-2 whitespace-nowrap rounded-chip px-[15px] text-[15px] font-bold no-underline"
       :class="!selected ? 'bg-navy-800 text-white' : 'bg-slate-50 text-navy-800 hover:bg-gray-200'"
       :href="`${filtersPath}${queryString}`"
     >
@@ -34,7 +34,7 @@ function categoryHref(category: PublicNewsCategory): string {
     <a
       v-for="category in categories"
       :key="category.id"
-      class="flex min-h-11 flex-none items-center gap-2 whitespace-nowrap rounded-chip px-[15px] text-[13px] font-bold no-underline"
+      class="flex min-h-11 flex-none items-center gap-2 whitespace-nowrap rounded-chip px-[15px] text-[15px] font-bold no-underline"
       :class="selected?.id === category.id ? 'bg-navy-800 text-white' : 'bg-slate-50 text-navy-800 hover:bg-gray-200'"
       :href="categoryHref(category)"
     >

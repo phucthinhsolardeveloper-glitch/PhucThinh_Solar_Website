@@ -4,7 +4,15 @@ import type { PublicCatalogProduct } from '#shared/contracts/public-catalog'
 const props = withDefaults(defineProps<{ products: PublicCatalogProduct[]; layout?: 'grid' | 'rail' }>(), { layout: 'grid' })
 const links = useMigrationLinks()
 const isMigrationPreview = links.active
+const railRef = ref<HTMLElement | null>(null)
 const failedImages = ref<Set<number>>(new Set())
+
+function scrollRail(direction: -1 | 1) {
+  const rail = railRef.value
+  if (!rail) return
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  rail.scrollBy({ left: direction * Math.max(rail.clientWidth * 0.82, 240), behavior: reducedMotion ? 'auto' : 'smooth' })
+}
 
 function markImageFailed(productId: number) {
   failedImages.value = new Set(failedImages.value).add(productId)
@@ -83,10 +91,37 @@ function discountPercent(product: PublicCatalogProduct): number | null {
     (tắt hiển thị giá công khai, hoặc sản phẩm cố ý ẩn giá) thì hiện "Liên hệ
     để nhận báo giá" như trước — không suy luận hay bịa giá.
   -->
-  <div
-    v-if="products.length"
-    :class="props.layout === 'rail' ? 'catalog-product-grid-rail' : 'grid grid-cols-2 gap-4 max-ph:gap-3 tb:grid-cols-3 nav:grid-cols-4'"
-  >
+  <div v-if="products.length" class="relative min-w-0">
+    <div v-if="props.layout === 'rail' && products.length > 2" class="mb-3 flex justify-end gap-2" role="group" aria-label="Điều hướng sản phẩm liên quan">
+      <UButton
+        type="button"
+        color="neutral"
+        variant="outline"
+        size="lg"
+        square
+        icon="i-lucide-chevron-left"
+        aria-label="Sản phẩm trước"
+        class="size-11 justify-center rounded-[3px] border-slate-300 bg-white text-navy-800 transition-colors hover:border-gold-500 hover:text-gold-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-600"
+        @click="scrollRail(-1)"
+      />
+      <UButton
+        type="button"
+        color="neutral"
+        variant="outline"
+        size="lg"
+        square
+        icon="i-lucide-chevron-right"
+        aria-label="Sản phẩm tiếp theo"
+        class="size-11 justify-center rounded-[3px] border-slate-300 bg-white text-navy-800 transition-colors hover:border-gold-500 hover:text-gold-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-600"
+        @click="scrollRail(1)"
+      />
+    </div>
+    <div
+      ref="railRef"
+      tabindex="0"
+      :aria-label="props.layout === 'rail' ? 'Danh sách sản phẩm liên quan, có thể cuộn ngang' : undefined"
+      :class="props.layout === 'rail' ? 'catalog-product-grid-rail' : 'grid grid-cols-2 gap-4 max-ph:gap-3 tb:grid-cols-3 nav:grid-cols-4'"
+    >
     <article
       v-for="product in products"
       :key="product.id"
@@ -108,7 +143,7 @@ function discountPercent(product: PublicCatalogProduct): number | null {
           v-if="product.media[0] && !failedImages.has(product.id)"
           :src="product.media[0]"
           :alt="product.name"
-          class="h-full w-full object-contain transition-transform duration-300 group-hover:scale-[1.03]"
+          class="h-full w-full object-contain transition-transform duration-300 group-hover:scale-[1.03] motion-reduce:transform-none motion-reduce:transition-none"
           loading="lazy"
           width="640"
           height="640"
@@ -168,6 +203,7 @@ function discountPercent(product: PublicCatalogProduct): number | null {
         <p v-if="cartErrors.has(product.id)" class="m-0 text-xs font-semibold text-red-700" role="alert">{{ cartErrors.get(product.id) }}</p>
       </div>
     </article>
+    </div>
   </div>
 
   <p v-else class="py-8 text-slate-500" role="status">Chưa có sản phẩm trong danh mục này.</p>
@@ -183,7 +219,12 @@ function discountPercent(product: PublicCatalogProduct): number | null {
   overflow-x: auto;
   padding-bottom: 12px;
   scroll-snap-type: x mandatory;
-  scrollbar-width: thin;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.catalog-product-grid-rail::-webkit-scrollbar {
+  display: none;
 }
 
 @media (min-width: 821px) {

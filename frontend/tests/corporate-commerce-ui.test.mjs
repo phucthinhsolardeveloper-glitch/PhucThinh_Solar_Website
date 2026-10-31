@@ -42,5 +42,5 @@ test('dealer lead form matches PHP field arrangement and examples', () => {
     assert.ok(dealerForm.includes(`placeholder="${placeholder}"`))
   }
   assert.match(dealerForm, /Doanh nghiệp hoặc cửa hàng[\s\S]*min-\[640px\]:col-span-2/)
-  assert.match(dealerForm, /Đăng ký ngay[\s\S]*min-\[640px\]:col-span-2/)
+  assert.match(dealerForm, /min-\[640px\]:col-span-2[\s\S]*Đăng ký ngay/)
 })

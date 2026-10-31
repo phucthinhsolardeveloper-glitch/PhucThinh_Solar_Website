@@ -11,7 +11,7 @@ test('project cards use a flat surface and retain PHP project metadata', () => {
 
   assert.match(card, /aspect-\[4\/3\]/)
   assert.doesNotMatch(card, /border border-slate|bg-white/)
-  assert.match(card, /hover:-translate-y-1\.5 hover:shadow-md/)
+  assert.doesNotMatch(card, /hover:-translate-y|hover:shadow/)
   assert.match(card, /project\.address/)
   assert.match(card, /project\.category\.name/)
   assert.match(php, /\$projectAddress/)

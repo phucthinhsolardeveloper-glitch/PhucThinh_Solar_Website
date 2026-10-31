@@ -168,10 +168,10 @@ usePublicSocialMeta({
           <CatalogProductGrid :products="data.products" />
           <p v-if="!data.products.length" class="rounded-btn border border-gray-200 p-8 text-center text-slate-500">Không tìm thấy sản phẩm phù hợp.</p>
 
-          <nav v-if="totalPages > 1" class="mt-10 flex items-center gap-2" aria-label="Phân trang tìm kiếm">
-            <NuxtLink v-if="currentPage > 1" :to="pageHref(currentPage - 1)" class="rounded-chip border border-gray-200 px-4 py-2 font-bold no-underline">Trước</NuxtLink>
+          <nav v-if="totalPages > 1" class="mt-10 flex flex-wrap items-center justify-center gap-2" aria-label="Phân trang tìm kiếm">
+            <SitePaginationButton v-if="currentPage > 1" :to="pageHref(currentPage - 1)">Trước</SitePaginationButton>
             <span class="px-2 text-sm text-slate-500">Trang {{ currentPage }} / {{ totalPages }}</span>
-            <NuxtLink v-if="currentPage < totalPages" :to="pageHref(currentPage + 1)" class="rounded-chip border border-gray-200 px-4 py-2 font-bold no-underline">Sau</NuxtLink>
+            <SitePaginationButton v-if="currentPage < totalPages" :to="pageHref(currentPage + 1)">Sau</SitePaginationButton>
           </nav>
         </section>
       </div>

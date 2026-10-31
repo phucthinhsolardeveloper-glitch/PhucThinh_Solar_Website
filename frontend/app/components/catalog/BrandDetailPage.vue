@@ -232,44 +232,40 @@ usePublicSocialMeta({
 
             <CatalogProductGrid :products="data.products" />
 
-            <nav v-if="totalPages > 1" class="mt-10 flex flex-wrap gap-2" aria-label="Phân trang sản phẩm">
-          <NuxtLink
+            <nav v-if="totalPages > 1" class="mt-10 flex flex-wrap justify-center gap-2" aria-label="Phân trang sản phẩm">
+          <SitePaginationButton
             v-if="currentPage > 1"
-            class="inline-grid min-h-11 min-w-11 place-items-center rounded-chip border border-gray-200 px-3 py-2 text-navy-800 no-underline transition-colors hover:border-navy-800"
             :to="pageLink(currentPage - 1)"
           >
             Trước
-          </NuxtLink>
+          </SitePaginationButton>
           <template v-for="item in paginationItems" :key="item.key">
             <span
               v-if="item.page === null"
-              class="inline-grid min-h-11 min-w-11 place-items-center px-2 py-2 text-slate-500"
+              class="text-gold-700"
               aria-hidden="true"
             >…</span>
-            <span
+            <SitePaginationButton
               v-else-if="item.page === currentPage"
-              class="inline-grid min-h-11 min-w-11 place-items-center rounded-chip border border-navy-800 bg-navy-800 px-3 py-2 text-white"
-              aria-current="page"
+              active
               :aria-label="`Trang ${item.page}`"
             >
               {{ item.page }}
-            </span>
-            <NuxtLink
+            </SitePaginationButton>
+            <SitePaginationButton
               v-else
-              class="inline-grid min-h-11 min-w-11 place-items-center rounded-chip border border-gray-200 px-3 py-2 text-navy-800 no-underline transition-colors hover:border-navy-800"
               :to="pageLink(item.page)"
               :aria-label="`Trang ${item.page}`"
             >
               {{ item.page }}
-            </NuxtLink>
+            </SitePaginationButton>
           </template>
-          <NuxtLink
+          <SitePaginationButton
             v-if="currentPage < totalPages"
-            class="inline-grid min-h-11 min-w-11 place-items-center rounded-chip border border-gray-200 px-3 py-2 text-navy-800 no-underline transition-colors hover:border-navy-800"
             :to="pageLink(currentPage + 1)"
           >
             Sau
-          </NuxtLink>
+          </SitePaginationButton>
             </nav>
           </section>
         </div>

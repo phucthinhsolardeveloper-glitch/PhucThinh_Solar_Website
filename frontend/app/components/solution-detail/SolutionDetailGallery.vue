@@ -74,7 +74,7 @@ onBeforeUnmount(() => {
         @click="open(index, $event.currentTarget as HTMLElement)"
       >
         <div class="overflow-hidden bg-slate-100">
-          <img :src="image" :alt="title" class="block aspect-[8/5] w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105" width="960" height="600" loading="lazy" decoding="async">
+          <img :src="image" :alt="title" class="block aspect-[8/5] w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105 motion-reduce:transform-none motion-reduce:transition-none" width="960" height="600" loading="lazy" decoding="async">
         </div>
       </button>
     </div>

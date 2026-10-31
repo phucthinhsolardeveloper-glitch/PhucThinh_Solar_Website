@@ -81,10 +81,15 @@ test('catalog SSR metadata comes from the PHP SEO DTO while preserving the robot
 })
 
 test('category hero fallback matches PHP source for den-nlmt and respects a configured Admin hide toggle', () => {
+  const catalogLibrary = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/libraries/pts_public_catalog_api.php', import.meta.url), 'utf8')
+  const phpSource = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/sources/product.php', import.meta.url), 'utf8')
   assert.match(catalogApi, /\$heroConfigured = false;/)
   assert.match(catalogApi, /\$heroConfigured = true;/)
-  assert.match(catalogApi, /'danh-muc-san-pham\/den-nlmt' => array\('catalog-lighting-overview-20261008\.png', 'Tổng quan giải pháp chiếu sáng năng lượng mặt trời'\)/)
-  assert.match(catalogApi, /!\$heroConfigured && isset\(\$heroFallbacks\[\$currentPath\]\)/)
+  assert.match(catalogApi, /!\$heroConfigured\)\s*\{\s*\$extras\['hero'\] = ptsCatalogCategoryHeroFallback\(\$currentPath, ROOT\);/)
+  for (const path of ['danh-muc-san-pham/den-nlmt', 'danh-muc-san-pham/den-nlmt/den-ufo']) {
+    assert.ok(catalogLibrary.includes(`'${path}' => array(`), `Missing shared fallback for ${path}`)
+    assert.ok(phpSource.includes(`'${path}' => array(`), `Missing PHP template fallback for ${path}`)
+  }
 })
 
 test('catalog DTO default product order uses the same highlighted category ranking as PHP catalog', () => {

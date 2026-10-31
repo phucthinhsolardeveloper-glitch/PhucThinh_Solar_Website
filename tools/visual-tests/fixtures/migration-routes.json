@@ -18,6 +18,7 @@
     { "id": "news-category-latest", "kind": "news-category", "legacyPath": "/tin-moi-nhat", "previewPath": "/migration-news-preview?category=tin-moi-nhat", "expectedCanonicalPath": "/tin-moi-nhat", "note": "Published tin-tuc news_list row and PHP H1/canonical verified via local CMS and GET; API exposes articles." },
     { "id": "news-category-media", "kind": "news-category", "legacyPath": "/tin-truyen-thong", "previewPath": "/migration-news-preview?category=tin-truyen-thong", "expectedCanonicalPath": "/tin-truyen-thong", "note": "Published tin-tuc news_list row and PHP H1/canonical verified via local CMS and GET; API exposes articles." },
     { "id": "news-category-product-knowledge", "kind": "news-category", "legacyPath": "/kien-thuc-san-pham", "previewPath": "/migration-news-preview?category=kien-thuc-san-pham", "expectedCanonicalPath": "/kien-thuc-san-pham", "note": "Published tin-tuc news_list row and PHP H1/canonical verified via local CMS and GET; API exposes articles." },
+    { "id": "news-category-recruitment", "kind": "news-category", "legacyPath": "/tin-tuyen-dung", "previewPath": "/migration-news-preview?category=tin-tuyen-dung", "expectedCanonicalPath": "/tin-tuyen-dung", "note": "Visible local CMS category and PHP route verified; currently has zero visible slugged articles. Nuxt renders the API-backed empty state and keeps it noindex until content exists." },
     { "id": "solution-category-business", "kind": "solution-category", "legacyPath": "/doanh-nghiep", "previewPath": "/migration-solution-category-preview?slug=doanh-nghiep", "expectedCanonicalPath": "/doanh-nghiep", "note": "Published giai-phap news_list row, visible solution article and PHP H1/canonical verified via local CMS and GET." },
     { "id": "solution-category-household", "kind": "solution-category", "legacyPath": "/ho-gia-dinh", "previewPath": "/migration-solution-category-preview?slug=ho-gia-dinh", "expectedCanonicalPath": "/ho-gia-dinh", "note": "Published giai-phap news_list row, visible solution article and PHP H1/canonical verified via local CMS and GET." },
     { "id": "news-detail", "legacyPath": "/8-ly-do-ban-nen-su-dung-den-nang-luong-mat-troi-ngay-bay-gio/", "previewPath": "/migration-news-detail-preview?slug=8-ly-do-ban-nen-su-dung-den-nang-luong-mat-troi-ngay-bay-gio" },
@@ -35,18 +36,7 @@
     { "id": "legacy-product-root-alias", "kind": "alias", "legacyPath": "/product/", "previewPath": "/migration-catalog-preview", "expectedRedirectStatus": 301, "expectedCanonicalPath": "/san-pham/" },
     { "id": "legacy-product-detail-alias", "kind": "alias", "legacyPath": "/product/den-ufo-nang-luong-mat-troi-oriana-ufo-1000-1000w", "previewPath": "/migration-product-preview?slug=den-ufo-nang-luong-mat-troi-oriana-ufo-1000-1000w", "expectedRedirectStatus": 301, "expectedCanonicalPath": "/san-pham/den-ufo-nang-luong-mat-troi-oriana-ufo-1000-1000w" }
   ],
-  "manualReviewRoutes": [
-    {
-      "id": "unmapped-news-category-empty",
-      "family": "news-category",
-      "verification": "NEEDS VERIFICATION",
-      "slug": "tin-tuyen-dung",
-      "legacyPath": "/tin-tuyen-dung",
-      "observedLegacyStatus": 200,
-      "reason": "This is a real visible news category, not a hidden or nonexistent article slug. PHP returns an empty category page; the read-only news DTO excludes it because there are zero visible slugged articles. Confirm empty-category content and indexability policy before exposing it through Nuxt.",
-      "databaseEvidence": { "source": "pts-mariadb-local; read-only SELECT", "table": "news_list,news", "type": "tin-tuc", "categoryStatus": "hienthi", "visibleSluggedArticleCount": 0 }
-    }
-  ],
+  "manualReviewRoutes": [],
   "negativeFixtures": [
     {
       "id": "negative-catalog-hidden-taxonomy",

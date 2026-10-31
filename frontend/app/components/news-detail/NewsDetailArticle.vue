@@ -99,7 +99,7 @@ function formatDate(value: string): string {
             <li v-for="item in editorial.toc" :key="item.id" :class="item.level === 3 ? 'pl-4' : ''">
               <a
                 :data-toc-id="item.id"
-                class="flex min-h-11 items-center border-l-2 px-3 text-sm leading-5 transition-colors"
+                class="flex min-h-11 min-w-11 items-center border-l-2 px-3 text-sm leading-5 transition-colors"
                 :class="activeHeadingId === item.id ? 'border-gold-500 font-semibold text-navy-800' : 'border-transparent text-slate-600 hover:text-navy-800'"
                 :aria-current="activeHeadingId === item.id ? 'true' : undefined"
                 :href="`#${item.id}`"

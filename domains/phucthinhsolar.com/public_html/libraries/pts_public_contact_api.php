@@ -49,7 +49,7 @@ function ptsContactMapUrl($value)
     $allowed = array('www.google.com', 'google.com', 'maps.google.com', 'www.google.com.vn', 'google.com.vn');
     if(!in_array($host, $allowed, true)) return '';
     $path = $parts['path'] ?? '/';
-    if(stripos($path, '/maps') !== 0) return '';
+    if(!preg_match('~^/maps(?:/|$)~i', $path)) return '';
     $url = 'https://'.$host.$path;
     if(isset($parts['query'])) $url .= '?'.$parts['query'];
     if(isset($parts['fragment'])) $url .= '#'.$parts['fragment'];

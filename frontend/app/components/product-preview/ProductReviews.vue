@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import type { PublicProductExtrasPayload, PublicProductReview } from '#shared/contracts/public-product-extras'
 import { isPublicProductExtrasPayload } from '#shared/contracts/public-product-extras'
+import { AnimatePresence, motion, useReducedMotion } from 'motion-v'
 
 const props = defineProps<{ productId: number; slug: string; reviews: PublicProductExtrasPayload['reviews']; csrfToken: string }>()
 const runtimeConfig = useRuntimeConfig()
+const reducedMotion = useReducedMotion()
 const writing = ref(false)
 const submitting = ref(false)
 const success = ref('')
@@ -20,6 +22,13 @@ const loadingMoreReviews = ref(false)
 const reviewPageError = ref('')
 const loadingReplyIds = ref<Set<number>>(new Set())
 const replyErrors = ref<Record<number, string>>({})
+const starOptions = [5, 4, 3, 2, 1].map((value) => ({ label: `${value} sao`, value }))
+const reviewInputUi = {
+  base: 'h-[52px] w-full rounded-btn border border-slate-300 bg-white px-3.5 text-base font-normal text-navy-950 placeholder:text-slate-400 focus-visible:border-gold-600 focus-visible:ring-2 focus-visible:ring-gold-500/25',
+}
+const reviewTextareaUi = {
+  base: 'min-h-[160px] w-full rounded-btn border border-slate-300 bg-white px-3.5 py-3 text-base font-normal text-navy-950 placeholder:text-slate-400 focus-visible:border-gold-600 focus-visible:ring-2 focus-visible:ring-gold-500/25',
+}
 
 watch(() => props.reviews, (reviews) => {
   currentReviews.value = { ...reviews, items: [...reviews.items] }
@@ -207,12 +216,13 @@ async function sendReview() {
       <div class="pb-6 pt-2">
     <div class="mb-6 flex flex-wrap items-end justify-between gap-4">
       <div>
-        <h2 id="product-reviews-title" class="mb-2 text-[clamp(24px,3vw,34px)] font-black tracking-tight">Đánh giá sản phẩm</h2>
+        <h2 id="product-reviews-title" class="mb-2 text-[clamp(24px,3vw,34px)] font-black tracking-tight text-navy-950">Khách hàng đánh giá</h2>
         <p class="mb-0 text-slate-500">{{ currentReviews.total }} nhận xét đã được duyệt</p>
       </div>
-      <button type="button" class="min-h-11 rounded-chip bg-gold-500 px-5 font-extrabold text-navy-950" @click="writing = !writing">
+      <UButton type="button" color="primary" size="lg" class="min-h-12 rounded-btn bg-gold-500 px-5 font-bold text-navy-950" @click="writing = !writing">
+        <UIcon :name="writing ? 'i-lucide-x' : 'i-lucide-pencil-line'" class="size-4" aria-hidden="true" />
         {{ writing ? 'Đóng biểu mẫu' : 'Viết nhận xét' }}
-      </button>
+      </UButton>
     </div>
 
     <div class="grid gap-6 rounded-btn bg-slate-50 p-5 tb:grid-cols-[220px_minmax(0,1fr)]">
@@ -273,55 +283,82 @@ async function sendReview() {
       </button>
     </div>
 
-    <form v-if="writing" class="mt-8 rounded-btn border border-gray-200 p-5 nav:p-7" @submit.prevent="sendReview">
-      <h3 class="mb-5 text-xl font-black">Gửi nhận xét của bạn</h3>
-      <div class="grid gap-4 tb:grid-cols-2">
-        <label class="grid gap-1.5 text-sm font-bold">Đánh giá sao
-          <select v-model.number="form.star" required class="h-11 rounded-chip border border-gray-300 bg-white px-3 font-normal">
-            <option v-for="star in [5,4,3,2,1]" :key="star" :value="star">{{ star }} sao</option>
-          </select>
-        </label>
-        <label class="grid gap-1.5 text-sm font-bold">Tiêu đề nhận xét
-          <input v-model.trim="form.title" required maxlength="180" class="h-11 rounded-chip border border-gray-300 px-3 font-normal">
-        </label>
-        <label class="grid gap-1.5 text-sm font-bold tb:col-span-2">Nội dung
-          <textarea v-model.trim="form.content" required maxlength="5000" rows="5" class="rounded-chip border border-gray-300 px-3 py-2 font-normal" />
-        </label>
-        <label class="grid gap-1.5 text-sm font-bold">Họ tên
-          <input v-model.trim="form.fullname" required maxlength="100" autocomplete="name" class="h-11 rounded-chip border border-gray-300 px-3 font-normal">
-        </label>
-        <label class="grid gap-1.5 text-sm font-bold">Số điện thoại
-          <input v-model.trim="form.phone" required maxlength="20" autocomplete="tel" inputmode="tel" class="h-11 rounded-chip border border-gray-300 px-3 font-normal">
-        </label>
-        <label class="grid gap-1.5 text-sm font-bold">Email <span v-if="!currentReviews.requireOrderCode" class="font-normal text-slate-400">(nếu có)</span>
-          <input v-model.trim="form.email" type="email" :required="currentReviews.requireOrderCode" maxlength="150" autocomplete="email" class="h-11 rounded-chip border border-gray-300 px-3 font-normal">
-        </label>
-        <label class="grid gap-1.5 text-sm font-bold">Mã đơn hàng <span v-if="!currentReviews.requireOrderCode" class="font-normal text-slate-400">(nếu có)</span>
-          <input v-model.trim="form.orderCode" :required="currentReviews.requireOrderCode" maxlength="40" class="h-11 rounded-chip border border-gray-300 px-3 font-normal">
-          <small class="font-normal text-slate-500">{{ currentReviews.requireOrderCode ? 'Mã đơn nằm trên trang cảm ơn hoặc email xác nhận đặt hàng.' : 'Nhập đúng mã đơn và thông tin liên hệ để nhận nhãn “Đã mua hàng”.' }}</small>
-        </label>
-        <div class="grid gap-4 rounded-chip bg-slate-50 p-4 tb:col-span-2">
-          <label class="grid gap-1.5 text-sm font-bold">Hình ảnh (tối đa 3 ảnh JPG/PNG, 30 MB mỗi ảnh)
-            <input ref="photoInput" type="file" accept="image/jpeg,image/png,.jpg,.jpeg,.png" multiple class="block text-sm font-normal" @change="selectPhotos">
-            <small v-if="photoFiles.length" class="font-normal text-slate-500">{{ photoFiles.map((file) => file.name).join(', ') }}</small>
-          </label>
-          <label class="grid gap-1.5 text-sm font-bold">Video (MP4/MKV, tối đa 100 MB)
-            <input ref="videoInput" type="file" accept="video/mp4,video/x-matroska,.mp4,.mkv" class="block text-sm font-normal" @change="selectVideo">
-            <small v-if="videoFile" class="font-normal text-slate-500">{{ videoFile.name }}</small>
-          </label>
-          <label class="grid gap-1.5 text-sm font-bold">Ảnh đại diện video (JPG/PNG)
-            <input ref="posterInput" type="file" accept="image/jpeg,image/png,.jpg,.jpeg,.png" class="block text-sm font-normal" @change="selectPoster">
-            <small v-if="videoPoster" class="font-normal text-slate-500">{{ videoPoster.name }}</small>
-          </label>
-        </div>
-      </div>
-      <p class="mb-0 mt-3 text-xs text-slate-500">Đánh giá được đưa vào hàng chờ duyệt. Mã đơn khớp thông tin mua hàng sẽ được gắn nhãn “Đã mua hàng”.</p>
-      <p v-if="success" class="mt-4 rounded-chip bg-emerald-50 p-3 text-sm font-semibold text-emerald-800" role="status">{{ success }}</p>
-      <p v-if="error" class="mt-4 rounded-chip bg-red-50 p-3 text-sm font-semibold text-red-800" role="alert">{{ error }}</p>
-      <button type="submit" :disabled="submitting" class="mt-5 min-h-11 rounded-chip bg-gold-500 px-5 font-extrabold text-navy-950 disabled:opacity-60">
-        {{ submitting ? 'Đang gửi…' : 'Gửi nhận xét' }}
-      </button>
-    </form>
+    <AnimatePresence>
+      <motion.div
+        v-if="writing"
+        key="product-review-form"
+        :initial="reducedMotion ? false : { opacity: 0, y: 12 }"
+        :animate="{ opacity: 1, y: 0 }"
+        :exit="{ opacity: 0, y: 8 }"
+        :transition="{ duration: reducedMotion ? 0 : 0.2, ease: 'easeOut' }"
+        class="mt-8"
+      >
+        <form class="grid gap-6 rounded-btn bg-slate-50 px-5 py-6 tb:px-7 tb:py-8" @submit.prevent="sendReview">
+          <div class="flex flex-wrap items-start justify-between gap-4">
+            <div class="flex min-w-0 items-start gap-4">
+              <span class="grid size-12 flex-none place-items-center rounded-btn bg-gold-500 text-navy-950">
+                <UIcon name="i-lucide-star" class="size-6" aria-hidden="true" />
+              </span>
+              <div class="min-w-0">
+                <h3 class="m-0 text-xl font-extrabold leading-tight text-navy-950">Chia sẻ trải nghiệm của bạn</h3>
+                <p class="mb-0 mt-1 text-sm leading-6 text-slate-600">Nhận xét giúp khách hàng khác chọn đúng sản phẩm.</p>
+              </div>
+            </div>
+            <UButton type="button" color="neutral" variant="outline" size="sm" class="min-h-10 rounded-btn border-slate-300 px-3 text-navy-800" @click="writing = false">
+              Đóng
+            </UButton>
+          </div>
+
+          <div class="grid min-w-0 gap-x-5 gap-y-5 tb:grid-cols-2">
+            <UFormField label="Đánh giá sao" name="star" required class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-sm font-semibold text-navy-800' }">
+              <USelect v-model="form.star" name="star" required :items="starOptions" color="neutral" variant="none" class="w-full" :ui="{ base: 'h-[52px] w-full rounded-btn border border-slate-300 bg-white px-3.5 text-base text-navy-950 focus-visible:border-gold-600 focus-visible:ring-2 focus-visible:ring-gold-500/25' }" />
+            </UFormField>
+            <UFormField label="Tiêu đề nhận xét" name="title" required class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-sm font-semibold text-navy-800' }">
+              <UInput v-model.trim="form.title" name="title" required maxlength="180" variant="none" class="w-full" :ui="reviewInputUi" />
+            </UFormField>
+            <UFormField label="Nội dung nhận xét" name="content" required class="grid min-w-0 content-start gap-2 tb:col-span-2" :ui="{ label: 'text-sm font-semibold text-navy-800' }">
+              <UTextarea v-model.trim="form.content" name="content" required maxlength="5000" :rows="5" variant="none" class="w-full" :ui="reviewTextareaUi" />
+            </UFormField>
+            <UFormField label="Họ tên" name="fullname" required class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-sm font-semibold text-navy-800' }">
+              <UInput v-model.trim="form.fullname" name="fullname" required maxlength="100" autocomplete="name" variant="none" class="w-full" :ui="reviewInputUi" />
+            </UFormField>
+            <UFormField label="Số điện thoại" name="phone" required class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-sm font-semibold text-navy-800' }">
+              <UInput v-model.trim="form.phone" name="phone" type="tel" required maxlength="20" autocomplete="tel" inputmode="tel" variant="none" class="w-full" :ui="reviewInputUi" />
+            </UFormField>
+            <UFormField label="Email" :hint="currentReviews.requireOrderCode ? 'Cần để đối chiếu đơn hàng' : 'Không bắt buộc'" name="email" :required="currentReviews.requireOrderCode" class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-sm font-semibold text-navy-800', hint: 'text-xs font-normal text-slate-500' }">
+              <UInput v-model.trim="form.email" name="email" type="email" :required="currentReviews.requireOrderCode" maxlength="150" autocomplete="email" variant="none" class="w-full" :ui="reviewInputUi" />
+            </UFormField>
+            <UFormField label="Mã đơn hàng" :hint="currentReviews.requireOrderCode ? 'Mã đơn nằm trên trang cảm ơn hoặc email xác nhận.' : 'Không bắt buộc; mã khớp thông tin mua hàng sẽ nhận nhãn Đã mua hàng.'" name="orderCode" :required="currentReviews.requireOrderCode" class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-sm font-semibold text-navy-800', hint: 'text-xs leading-5 font-normal text-slate-500' }">
+              <UInput v-model.trim="form.orderCode" name="orderCode" :required="currentReviews.requireOrderCode" maxlength="40" variant="none" class="w-full" :ui="reviewInputUi" />
+            </UFormField>
+          </div>
+
+          <section class="grid gap-4 rounded-btn bg-white p-4 tb:grid-cols-3 tb:p-5" aria-labelledby="review-media-title">
+            <h4 id="review-media-title" class="m-0 text-base font-bold text-navy-900 tb:col-span-3">Ảnh và video (không bắt buộc)</h4>
+            <UFormField label="Hình ảnh" hint="Tối đa 3 ảnh JPG/PNG, 30 MB mỗi ảnh" class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-sm font-semibold text-navy-800', hint: 'text-xs leading-5 font-normal text-slate-500' }">
+              <input ref="photoInput" type="file" accept="image/jpeg,image/png,.jpg,.jpeg,.png" multiple class="block min-h-[52px] w-full min-w-0 rounded-btn border border-dashed border-slate-300 bg-slate-50 px-3 py-3 text-sm file:mr-3 file:rounded-btn file:border-0 file:bg-white file:px-3 file:py-1.5 file:font-semibold file:text-navy-800" @change="selectPhotos">
+              <small v-if="photoFiles.length" class="block break-all text-xs font-normal leading-5 text-slate-600">{{ photoFiles.map((file) => file.name).join(', ') }}</small>
+            </UFormField>
+            <UFormField label="Video" hint="MP4/MKV, tối đa 100 MB" class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-sm font-semibold text-navy-800', hint: 'text-xs leading-5 font-normal text-slate-500' }">
+              <input ref="videoInput" type="file" accept="video/mp4,video/x-matroska,.mp4,.mkv" class="block min-h-[52px] w-full min-w-0 rounded-btn border border-dashed border-slate-300 bg-slate-50 px-3 py-3 text-sm file:mr-3 file:rounded-btn file:border-0 file:bg-white file:px-3 file:py-1.5 file:font-semibold file:text-navy-800" @change="selectVideo">
+              <small v-if="videoFile" class="block break-all text-xs font-normal leading-5 text-slate-600">{{ videoFile.name }}</small>
+            </UFormField>
+            <UFormField label="Ảnh đại diện video" hint="JPG/PNG, tối đa 30 MB" class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-sm font-semibold text-navy-800', hint: 'text-xs leading-5 font-normal text-slate-500' }">
+              <input ref="posterInput" type="file" accept="image/jpeg,image/png,.jpg,.jpeg,.png" class="block min-h-[52px] w-full min-w-0 rounded-btn border border-dashed border-slate-300 bg-slate-50 px-3 py-3 text-sm file:mr-3 file:rounded-btn file:border-0 file:bg-white file:px-3 file:py-1.5 file:font-semibold file:text-navy-800" @change="selectPoster">
+              <small v-if="videoPoster" class="block break-all text-xs font-normal leading-5 text-slate-600">{{ videoPoster.name }}</small>
+            </UFormField>
+          </section>
+
+          <p class="m-0 text-sm leading-6 text-slate-600">Đánh giá được đưa vào hàng chờ duyệt. Mã đơn khớp thông tin mua hàng sẽ được gắn nhãn “Đã mua hàng”.</p>
+          <p v-if="success" class="rounded-btn bg-emerald-50 p-4 text-sm font-semibold text-emerald-800" role="status">{{ success }}</p>
+          <p v-if="error" class="rounded-btn bg-red-50 p-4 text-sm font-semibold text-red-800" role="alert">{{ error }}</p>
+          <UButton type="submit" color="primary" size="xl" :loading="submitting" :disabled="submitting" class="min-h-14 w-full justify-center rounded-btn bg-gold-500 px-6 text-base font-extrabold text-navy-950 tb:w-auto tb:min-w-[220px]">
+            {{ submitting ? 'Đang gửi nhận xét…' : 'Gửi nhận xét' }}
+            <UIcon v-if="!submitting" name="i-lucide-send" class="size-5" aria-hidden="true" />
+          </UButton>
+        </form>
+      </motion.div>
+    </AnimatePresence>
       </div>
     </details>
   </section>

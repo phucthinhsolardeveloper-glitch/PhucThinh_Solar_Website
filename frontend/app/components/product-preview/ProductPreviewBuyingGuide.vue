@@ -5,7 +5,7 @@ defineProps<{ guides: PublicProductBuyingGuide[] }>()
 </script>
 
 <template>
-  <section id="huong-dan-lua-chon" class="scroll-mt-24 py-10" aria-labelledby="product-buying-guide-title">
+  <section id="huong-dan-lua-chon" class="scroll-mt-24 py-12 tb:py-16" aria-labelledby="product-buying-guide-title">
     <h2 id="product-buying-guide-title" class="mb-7 text-[clamp(24px,3vw,34px)] font-black tracking-tight text-navy-800">
       Thông tin cần biết trước khi lựa chọn
     </h2>

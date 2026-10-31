@@ -59,6 +59,8 @@ test('homepage carousel keeps timed motion out of keyboard, pointer, touch, and 
   assert.match(homeHero, /@focusout="onFocusOut"/)
   assert.match(homeHero, /:inert="index !== active"/)
   assert.match(homeHero, /:tabindex="index === active \? 0 : -1"/)
+  assert.match(homeHero, /aria-label="Banner trước"[\s\S]*<svg[\s\S]*aria-label="Banner tiếp theo"[\s\S]*<svg/)
+  assert.match(homeHero, /max-\[640px\]:leading-snug line-clamp-2/)
 })
 test('accepts CMS-backed homepage about points while preserving compatibility with older DTOs', () => {
   const withPoints = { ...good, about: { ...good.about, points: [{ label: 'Sản phẩm chính hãng', description: 'Thông tin rõ ràng.', image: '/upload/news/home-point.webp' }] } }

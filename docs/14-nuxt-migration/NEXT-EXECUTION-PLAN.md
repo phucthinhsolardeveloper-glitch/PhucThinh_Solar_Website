@@ -1,5 +1,46 @@
 # PTS Nuxt migration — next execution plan
 
+## Current integration checkpoint — 2026-10-31
+
+- Branch consolidation is recorded in
+  [`BRANCH-INTEGRATION-AND-LOCAL-QA-20261031.md`](BRANCH-INTEGRATION-AND-LOCAL-QA-20261031.md):
+  one local branch (`master`), one worktree, local `master` 75 commits ahead of
+  `origin/master`; the shared working tree contains unstaged WIP that remains
+  intentionally preserved.
+- PHP read-only API integration is **PASS**: 61 HTTP checks and 22 contract
+  slices pass, 0 fail, 7 entity checks skip for missing published local fixtures;
+  the 26-table snapshot is unchanged. See the ignored artifact report noted in
+  the checkpoint document.
+- SEO crawl covered 34 routes, 457 sitemap URLs, and 362 internal href targets;
+  crawl/status evidence passes, but hidden-record verification and metadata
+  review remain open. PHP owns public canonicals; Nuxt stays noindex preview.
+- Nuxt UI verification after the latest UI work: `npm test` **445/445 PASS**,
+  `npm run typecheck`, `npm run build`, and `NITRO_SMOKE_MOCK_PHP=1 npm run
+  smoke` PASS. Build warnings remain `INEFFECTIVE_DYNAMIC_IMPORT` and
+  `PLUGIN_TIMINGS`.
+- The owner requested stopping the full 34-route × 3-viewport browser run to
+  inspect the Nuxt site directly. All logged route/viewport pairs returned 200,
+  but the harness ended before writing its final report; screenshots are
+  optional manual review material, not a parity approval.
+- Development runtime cleanup: Nuxt HMR on `:3100`, PHP API/media bridge on
+  `:8088`, and MariaDB remain active. Legacy PHP site on `:8080` is stopped.
+  Stale Nuxt snapshot/Caddy containers were removed; images and volumes remain.
+- No production service, database data/volume, deploy, or route flag was touched.
+  Local-only container cleanup is documented in the branch integration
+  checkpoint; source and rollback images were retained.
+
+## Updated gate status — 2026-10-31
+
+| Gate | Status | Evidence / remaining condition |
+|---|---|---|
+| P0-A route/page inventory | Implemented locally | 34 manifest entries map to Nuxt pages; public resolver/status evidence is documented in the SEO crawl artifact. |
+| P0-B PHP/API integration | PASS with fixture gaps | 61 HTTP + 22 slice PASS, 0 FAIL, 7 SKIP; DB snapshot unchanged. |
+| P0-C browser QA | INCOMPLETE | Owner chose direct visual inspection. Capture logged 34 routes × 3 viewports as HTTP 200 but ended before final report; no visual parity claim. |
+| P2-A SEO/canonical crawl | Partial PASS | Sitemap 457/457 and href targets 362/362; hidden rows, manual href/JSON-LD/OG review remain open. |
+
+Historical checkpoint notes below describe earlier worktrees and service states;
+use the dated checkpoint above for the current local integration state.
+
 ## Historical checkpoint — 2026-10-30
 
 - Nuxt public route ownership no longer uses per-route `*PublicRouteEnabled`

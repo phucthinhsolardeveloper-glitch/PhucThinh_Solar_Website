@@ -84,7 +84,7 @@ async function send() {
 </script>
 
 <template>
-  <section id="pts-pdp-consultation" class="scroll-mt-24 border-t border-gray-200 py-10" aria-labelledby="product-consultation-title">
+  <section id="pts-pdp-consultation" class="scroll-mt-24 border-t border-gray-200 py-12 tb:py-16" aria-labelledby="product-consultation-title">
     <div class="grid min-w-0 gap-8 bg-slate-50 p-6 lg:grid-cols-[minmax(280px,.85fr)_minmax(0,1.35fr)] lg:gap-12 lg:p-8">
       <div class="min-w-0">
         <h2 id="product-consultation-title" class="mb-3 text-[clamp(24px,3vw,34px)] font-black tracking-tight text-navy-800">Nhận tư vấn cho sản phẩm này</h2>

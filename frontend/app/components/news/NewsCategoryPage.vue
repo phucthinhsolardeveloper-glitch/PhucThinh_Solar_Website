@@ -8,9 +8,10 @@ import NewsCard from '~/components/news/NewsCard.vue'
 import NewsCta from '~/components/news/NewsCta.vue'
 import NewsFilters from '~/components/news/NewsFilters.vue'
 
+const props = defineProps<{ slugOverride?: string }>()
 const route = useRoute()
 const config = useRuntimeConfig()
-const slug = computed(() => typeof route.params.slug === 'string' ? route.params.slug : '')
+const slug = computed(() => props.slugOverride || (typeof route.params.slug === 'string' ? route.params.slug : ''))
 const fallbackSite: PublicSitePayload = { schemaVersion: 1, brand: { name: 'Phúc Thịnh Solar', hotline: '' }, productCategories: [] }
 const { data: siteData } = await useFetch<unknown>('/_migration/site', { default: () => fallbackSite })
 const { data, error } = await useAsyncData<unknown>(
@@ -58,7 +59,7 @@ const pageKeywords = computed(() => category.value?.seo?.keywords || '')
 useSeoMeta({
   title: pageTitle,
   description: pageDescription,
-  robots: computed(() => editorialPublicRouteRobots(true, config.public.newsPublicRouteIndexable, !!news.value && !error.value, hasFilters.value)),
+  robots: computed(() => editorialPublicRouteRobots(true, config.public.newsPublicRouteIndexable, !!news.value && news.value.pagination.total > 0 && !error.value, hasFilters.value)),
 })
 useHead({ meta: computed(() => pageKeywords.value ? [{ name: 'keywords', content: pageKeywords.value }] : []) })
 usePublicSocialMeta({
@@ -107,13 +108,13 @@ usePublicSocialMeta({
         </div>
 
         <nav v-if="news.pagination.total > news.pagination.perPage" class="mt-7 flex flex-wrap justify-center gap-2" :aria-label="news.labels.pages">
-          <a v-if="news.pagination.page > 1" class="grid min-h-11 min-w-11 place-items-center rounded-chip border border-gray-200 text-navy-800 no-underline" rel="prev" :href="pageUrl(news.pagination.page - 1)">‹</a>
+          <SitePaginationButton v-if="news.pagination.page > 1" :href="pageUrl(news.pagination.page - 1)" rel="prev" aria-label="Trang trước">‹</SitePaginationButton>
           <template v-for="(page, index) in pageNumbers" :key="`${page}-${index}`">
-            <span v-if="page === '…'" class="grid h-[38px] min-w-[38px] place-items-center text-navy-800">…</span>
-            <span v-else-if="page === news.pagination.page" class="grid min-h-11 min-w-11 place-items-center rounded-chip border border-gold-500 bg-gold-400 text-navy-800" aria-current="page">{{ page }}</span>
-            <a v-else class="grid min-h-11 min-w-11 place-items-center rounded-chip border border-gray-200 text-navy-800 no-underline" :href="pageUrl(page)" :aria-label="`Trang ${page}`">{{ page }}</a>
+            <span v-if="page === '…'" class="text-gold-700">…</span>
+            <SitePaginationButton v-else-if="page === news.pagination.page" active>{{ page }}</SitePaginationButton>
+            <SitePaginationButton v-else :href="pageUrl(page)" :aria-label="`Trang ${page}`">{{ page }}</SitePaginationButton>
           </template>
-          <a v-if="news.pagination.page < Math.ceil(news.pagination.total / news.pagination.perPage)" class="grid min-h-11 min-w-11 place-items-center rounded-chip border border-gray-200 text-navy-800 no-underline" rel="next" :href="pageUrl(news.pagination.page + 1)">›</a>
+          <SitePaginationButton v-if="news.pagination.page < Math.ceil(news.pagination.total / news.pagination.perPage)" :href="pageUrl(news.pagination.page + 1)" rel="next" aria-label="Trang sau">›</SitePaginationButton>
         </nav>
 
         <NewsCta v-if="news.cta" :cta="news.cta" :phone-label="news.labels.ctaPhone" />

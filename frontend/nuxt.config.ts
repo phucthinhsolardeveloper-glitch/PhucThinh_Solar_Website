@@ -158,7 +158,14 @@ export default defineNuxtConfig({
     // Comma-separated exact host[:port] entries. Never use a wildcard: this
     // allowlist protects the server-side PHP bridge from SSRF.
     phpOriginAllowlist: '127.0.0.1:8080,127.0.0.1:8088,localhost:8080,localhost:8088',
-    previewMediaProxy: false,
+    // In dev, proxy allow-listed legacy image paths so CMS media and PHP-owned
+    // assets render on the Nuxt origin. Production stays off unless explicitly
+    // enabled for the isolated local SSR snapshot launcher.
+    previewMediaProxy: process.env.NUXT_PREVIEW_MEDIA_PROXY === 'true'
+      ? true
+      : process.env.NUXT_PREVIEW_MEDIA_PROXY === 'false'
+        ? false
+        : process.env.NODE_ENV !== 'production',
     public: {
       // Source of truth: config.php arrayDomainSSL and the production sitemap.
       // The shared SEO helper still validates this exact origin before output.

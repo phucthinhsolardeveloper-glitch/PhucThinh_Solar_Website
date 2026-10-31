@@ -191,15 +191,10 @@ try
         if(ptsCatalogPublished($heroRow['status'] ?? '') && !empty($heroRow['photo'])) $extras['hero'] = array('photo' => $heroRow['photo'], 'upload' => 'upload/photo/', 'alt' => $heroRow['namevi'] ?? '');
         break;
     }
-    /* Keep the source-confirmed lighting fallbacks available when Admin has
-       not configured a hero; a hidden Admin record must continue to disable it. */
-    $heroFallbacks = array(
-        'danh-muc-san-pham/den-nlmt' => array('catalog-lighting-overview-20261008.png', 'Tổng quan giải pháp chiếu sáng năng lượng mặt trời'),
-        'danh-muc-san-pham/den-nlmt/den-pha-nang-luong-mat-troi' => array('catalog-solar-flood-lighting-20261008.png', 'Đèn pha năng lượng mặt trời cho sân bãi và công trình')
-    );
-    if(empty($extras['hero']) && !$heroConfigured && isset($heroFallbacks[$currentPath]) && is_file(ROOT.'assets/images/site-visuals/'.$heroFallbacks[$currentPath][0])) {
-        $heroFallback = $heroFallbacks[$currentPath];
-        $extras['hero'] = array('photo' => $heroFallback[0], 'upload' => 'assets/images/site-visuals/', 'alt' => $heroFallback[1]);
+    /* Use the same curated fallback allowlist as the PHP catalog template.
+       A configured but hidden Admin record must continue to disable fallback. */
+    if(empty($extras['hero']) && !$heroConfigured) {
+        $extras['hero'] = ptsCatalogCategoryHeroFallback($currentPath, ROOT);
     }
     if(empty($extras['hero']) && !empty($selectedCategoryRow['photo'])) $extras['hero'] = array('photo' => $selectedCategoryRow['photo'], 'upload' => 'upload/product/', 'alt' => $selectedCategoryRow['namevi'] ?? '');
     if(empty($extras['hero']) && $categoryPath === '' && is_file(ROOT.'assets/images/site-visuals/catalog-products-hero-20261007-v2.png')) $extras['hero'] = array('photo' => 'catalog-products-hero-20261007-v2.png', 'upload' => 'assets/images/site-visuals/', 'alt' => 'Danh mục thiết bị năng lượng mặt trời Phúc Thịnh Solar');

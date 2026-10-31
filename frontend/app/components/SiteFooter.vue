@@ -14,10 +14,16 @@ const CMS_UPLOAD_PHOTO = /^\/upload\/photo\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g
 
 const footerLogoSrc = computed(() => {
   const src = footerLogo.value
-  return CMS_UPLOAD_PHOTO.test(src) ? `/thumbs/368x144x3${src}` : src
+  return CMS_UPLOAD_PHOTO.test(src) ? `/thumbs/520x426x3${src}` : src
 })
 function trustBadgeSrc(src: string): string {
   return CMS_UPLOAD_PHOTO.test(src) ? `/thumbs/400x152x3${src}` : src
+}
+function socialKind(label: string, href: string): 'facebook' | 'youtube' | 'other' {
+  const value = `${label} ${href}`.toLocaleLowerCase('en')
+  if (value.includes('facebook') || value.includes('fb.com')) return 'facebook'
+  if (value.includes('youtube') || value.includes('youtu.be')) return 'youtube'
+  return 'other'
 }
 const footer = computed(() => props.site.footer)
 const { generic: footerHref, external: isExternalLink } = useMigrationLinks()
@@ -39,17 +45,26 @@ const telHref = computed(() => telHrefFor(hotline.value))
              wd:grid-cols-[290px_minmax(280px,1fr)_minmax(460px,1.3fr)]"
     >
       <!-- Cột 1: Biểu trưng thương hiệu -->
-      <div class="space-y-3">
-        <a class="inline-block max-w-[240px]" :href="footerHref('/')" :aria-label="`${brandName} - Trang chủ`">
+      <div class="flex flex-col items-center gap-4 tb:items-start">
+        <a class="block w-full max-w-[240px]" :href="footerHref('/')" :aria-label="`${brandName} - Trang chủ`">
           <img
             v-if="footerLogo"
             :src="footerLogoSrc"
             :alt="brandName"
-            width="368"
-            height="144"
-            class="block h-auto w-full max-w-[180px] object-contain nav:max-w-[200px] wd:max-w-[280px]"
+            width="520"
+            height="426"
+            class="block h-auto w-full object-contain tb:max-w-[248px] wd:max-w-[280px]"
           >
           <span v-else class="text-lg font-black text-white">{{ brandName }}</span>
+        </a>
+        <a
+          v-if="footer?.trustBadge"
+          class="inline-flex min-h-11 max-w-[136px] items-center"
+          :href="footer.trustBadge.href"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <img :src="trustBadgeSrc(footer.trustBadge.image)" alt="Đã thông báo Bộ Công Thương" width="400" height="152" class="block h-auto w-full object-contain">
         </a>
       </div>
 
@@ -92,9 +107,9 @@ const telHref = computed(() => telHrefFor(hotline.value))
         </div>
       </div>
 
-      <div class="grid min-w-0 grid-cols-1 gap-8 ph:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] tb:col-span-2 nav:col-span-1">
+      <div class="grid min-w-0 grid-cols-1 gap-8 min-[768px]:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] tb:col-span-2 nav:col-span-1">
         <!-- Chính sách nằm cùng cột nội dung liên hệ như footer PHP. -->
-        <nav v-if="footer?.policies.length || footer?.trustBadge" aria-label="Chính sách và hỗ trợ khách hàng">
+        <nav v-if="footer?.policies.length" aria-label="Chính sách và hỗ trợ khách hàng">
           <h2 class="mb-4 text-[14px] font-extrabold uppercase tracking-wider text-white">
             Chính sách &amp; Hỗ trợ khách hàng
           </h2>
@@ -110,16 +125,6 @@ const telHref = computed(() => telHrefFor(hotline.value))
               </NuxtLink>
             </li>
           </ul>
-          <div v-if="footer?.trustBadge" class="pt-2">
-            <a
-              class="inline-flex min-h-11 max-w-[130px] items-center"
-              :href="footer.trustBadge.href"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <img :src="trustBadgeSrc(footer.trustBadge.image)" alt="Đã thông báo Bộ Công Thương" width="400" height="152" class="block h-auto w-full object-contain">
-            </a>
-          </div>
         </nav>
 
         <!-- Địa điểm hiển thị thành danh sách phẳng, như .content_cn của PHP. -->
@@ -158,8 +163,8 @@ const telHref = computed(() => telHrefFor(hotline.value))
     <!-- Thanh bản quyền & Kết nối mạng xã hội -->
     <div class="mt-10 border-t border-white/10 pt-5">
       <div class="mx-auto flex w-full max-w-(--container-page) flex-col items-start justify-between gap-3 px-4 max-[359px]:px-3 tb:flex-row tb:items-center tb:px-(--spacing-gutter) text-[13px]">
-        <p class="m-0 text-ftr-text/80">© {{ new Date().getFullYear() }} {{ brandName }}. Tất cả quyền được bảo lưu.</p>
-        <ul v-if="footer?.socialLinks.length" class="m-0 flex list-none flex-wrap items-center gap-x-5 gap-y-1 p-0 tb:pr-14" aria-label="Kết nối mạng xã hội">
+        <p class="m-0 text-ftr-text/80">© {{ new Date().getFullYear() }} {{ brandName }}.</p>
+        <ul v-if="footer?.socialLinks.length" class="m-0 hidden list-none flex-wrap items-center gap-x-5 gap-y-1 p-0 tb:flex tb:pr-14" aria-label="Kết nối mạng xã hội">
           <li v-for="social in footer.socialLinks" :key="social.href">
             <a
               class="inline-flex min-h-11 items-center text-[15px] font-semibold leading-[1.7] text-ftr-text no-underline transition-colors hover:text-gold-400"
@@ -167,7 +172,13 @@ const telHref = computed(() => telHrefFor(hotline.value))
               target="_blank"
               rel="noopener noreferrer"
             >
-              {{ social.label }}
+              <svg v-if="socialKind(social.label, social.href) === 'facebook'" class="size-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073c0 6.019 4.388 11.022 10.125 11.927v-8.432H7.078v-3.495h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.97h-1.513c-1.49 0-1.956.931-1.956 1.886v2.268h3.328l-.532 3.495h-2.796V24C19.612 23.095 24 18.092 24 12.073Z" />
+              </svg>
+              <svg v-else-if="socialKind(social.label, social.href) === 'youtube'" class="size-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M23.5 6.2a3.02 3.02 0 0 0-2.12-2.14C19.51 3.55 12 3.55 12 3.55s-7.51 0-9.38.51A3.02 3.02 0 0 0 .5 6.2 31.4 31.4 0 0 0 0 12a31.4 31.4 0 0 0 .5 5.8 3.02 3.02 0 0 0 2.12 2.14c1.87.51 9.38.51 9.38.51s7.51 0 9.38-.51a3.02 3.02 0 0 0 2.12-2.14A31.4 31.4 0 0 0 24 12a31.4 31.4 0 0 0-.5-5.8ZM9.55 15.62V8.38L15.82 12l-6.27 3.62Z" />
+              </svg>
+              <UIcon v-else name="i-lucide-share-2" class="size-5" aria-hidden="true" />
             </a>
           </li>
         </ul>

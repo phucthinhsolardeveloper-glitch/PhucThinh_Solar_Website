@@ -1,6 +1,6 @@
 # Hệ thống UI/UX public — nguồn chuẩn duy nhất
 
-Cập nhật: 2026-10-30. Phạm vi: toàn bộ website public Phúc Thịnh Solar trên
+Cập nhật: 2026-10-31. Phạm vi: toàn bộ website public Phúc Thịnh Solar trên
 desktop, iMac/2K, tablet và mobile.
 
 Tài liệu này trả lời câu hỏi **giao diện phải như thế nào**. Cách đặt CSS vào
@@ -29,6 +29,26 @@ ADR 0006 thay thế phần thứ tự/nội dung trang chủ của ADR 0001. Cá
 chung trong ADR 0001 về product-first, mật độ và hạn chế trang trí vẫn còn hiệu
 lực. Ngoại lệ mới phải được chủ project duyệt và ghi ADR; không tạo ngoại lệ
 bằng một selector `!important` cục bộ.
+
+### 1.1 Nền tảng component và motion — ĐÃ DUYỆT
+
+- Nuxt UI là lớp component mặc định cho giao diện Nuxt: button, input, select,
+  textarea, form field, modal, dropdown, tabs, toast và trạng thái tải/lỗi.
+  Dùng API, semantics và accessibility của component trước; chỉ thêm Tailwind
+  CSS hoặc CSS riêng khi cần khớp token và bố cục Phúc Thịnh Solar.
+- Không dựng lại component Nuxt UI bằng HTML thô chỉ để tránh cấu hình style.
+  HTML native vẫn phù hợp với phần tử chuyên dụng không có bản tương đương,
+  như file input, nội dung biên tập hoặc cấu trúc semantic đơn giản.
+- Motion-v là chuẩn cho chuyển động giao diện có chủ đích. Chỉ dùng để làm rõ
+  mở/đóng, chuyển trạng thái hoặc quan hệ giữa các phần tử; không thêm animation
+  trang trí, không làm thao tác chậm, không dịch layout ngoài ý muốn. Dùng
+  `MotionConfig` toàn app và tôn trọng `prefers-reduced-motion`.
+- Component mới/được nâng cấp áp dụng Nuxt UI + Motion trước, sau đó tùy biến
+  bằng utility Tailwind theo token. CSS dùng chung chỉ nhận primitive và ngoại
+  lệ có lý do, tránh biến từng trang thành một design system riêng.
+- Khi cải tiến legacy, hội tụ theo từng component/flow và giữ API, validation,
+  CSRF, trạng thái lỗi/thành công hiện có; không cần chuyển HTML thuần hàng loạt
+  nếu chưa thuộc phạm vi trải nghiệm đang sửa.
 
 ## 2. Định hướng trải nghiệm
 
@@ -71,8 +91,8 @@ Nguồn code: `assets/css/design-tokens.css`.
 | Thương hiệu chính | `--pts-navy` | `#0a2251` | tiêu đề, trạng thái chọn, nền thương hiệu |
 | Navy đậm | `--pts-navy-deep` | `#061537` | nền đậm, chữ trên nền sáng khi cần |
 | Navy sáng | `--pts-navy-light` | `#123a7a` | biến thể nền có chủ đích |
-| Hành động chính | `--pts-gold` | `#c9962e` | CTA chính, điểm nhấn hữu ích |
-| Gold hover | `--pts-gold-light` | `#e0b654` | hover/focus CTA vàng |
+| Hành động chính | `--pts-gold-gradient` | `#e0b654 → #c9962e` | CTA và trạng thái chọn có nền vàng |
+| Gold hover | `--pts-gold-light` | `#e0b654` | đầu sáng của gradient vàng |
 | Gold chữ đậm | `--pts-gold-dark` | `#9c7420` | text-link trên nền sáng nếu đạt contrast |
 | Chữ phụ | `--pts-muted` | `#64748b` | mô tả, metadata |
 | Đường có nghĩa | `--pts-line` | `#e5e7eb` | input, table, focus/selection boundary |
@@ -80,9 +100,17 @@ Nguồn code: `assets/css/design-tokens.css`.
 | Chip thường | `--pts-chip-bg` | `#eef2f7` | filter/tab chưa chọn |
 | Chip hover | `--pts-chip-bg-hover` | `#dfe6ef` | hover filter/tab |
 
-Không tạo biến thể navy/gold mới trong CSS trang. Không dùng gradient, kem hoặc
-vàng cho mọi bề mặt khiến CTA mất thứ bậc. Chữ thường phải đạt WCAG AA: tối
-thiểu 4.5:1; chữ lớn tối thiểu 3:1; focus/control cũng tối thiểu 3:1.
+Header-v3 giữ token màu riêng để khớp PHP, nhưng mọi nút/nền tương tác dùng màu
+vàng (kể cả nút header) hiển thị cùng gradient thương hiệu; token header vẫn
+được giữ cho viền, chữ và các chi tiết không phải nền CTA.
+
+Không tạo biến thể navy/gold mới trong CSS trang. Mọi bề mặt fill vàng đậm,
+gồm CTA, lựa chọn đang bật, badge và nền icon, dùng gradient chung từ
+`--color-gold-400` sang `--color-gold-500`, chữ/icon navy đậm và radius 4px cho
+control; không đổi gradient thành màu phẳng ở hover/active. Nền kem/vàng nhạt
+trang trí, ảnh, logo, viền, chữ và icon vàng tĩnh vẫn dùng token semantic phù
+hợp, không ép thành gradient. Chữ thường phải đạt WCAG AA: tối thiểu 4.5:1; chữ
+lớn tối thiểu 3:1; focus/control cũng tối thiểu 3:1.
 
 - Public storefront mặc định dùng giao diện sáng, không phụ thuộc cài đặt theme
   của hệ điều hành. Công tắc dark mode chỉ được hiển thị sau khi toàn bộ route,
@@ -219,6 +247,9 @@ responsive ổn chỉ từ laptop 1366px.
   mobile nếu không có nhu cầu sử dụng tương đương đã được duyệt.
 - Dropdown có thể có shadow/radius nhẹ vì là bề mặt nổi. Menu cha vẫn có đường
   vào landing bằng click/keyboard, không hover-only.
+- Nhãn điều hướng desktop dùng chữ navy đậm và không có nút mũi tên riêng cạnh
+  nhãn. Menu con mở khi rê chuột hoặc khi focus bằng bàn phím; bấm nhãn cha vẫn
+  đi tới landing tương ứng.
 - Nút `Danh mục sản phẩm` trên desktop mở mega-menu overlay khi rê chuột (thiết
   bị có hover) hoặc click/keyboard; menu không tự mở theo hover trên cảm ứng.
   Overlay có thể đóng bằng nút đóng, click vùng nền hoặc Escape; focus được đưa
@@ -231,9 +262,10 @@ responsive ổn chỉ từ laptop 1366px.
   mobile. Tìm kiếm dùng route tìm sản phẩm hiện có; chân panel có lối tư vấn,
   không lặp bộ chọn ngôn ngữ của header.
 - Mobile menu có nút đóng/mở dễ hiểu, focus được và không che logo.
-- Ở dải 1321–1500px, tiếp tục dùng nút hamburger và drawer để dành đủ chiều
-  rộng cho logo cùng nhóm thao tác; chỉ bật điều hướng ngang năm nhóm từ 1501px.
-  Hai chế độ phải loại trừ lẫn nhau tại breakpoint.
+- Ở dải 1321–1680px, tiếp tục dùng nút hamburger và drawer để dành đủ chiều
+  rộng cho logo cùng nhóm thao tác; chỉ bật điều hướng ngang năm nhóm từ 1681px.
+  Header màn rất rộng được phép nới theo container trang. Hai chế độ phải loại
+  trừ lẫn nhau tại breakpoint, không để menu tràn vào logo hoặc nhóm thao tác.
 - Mobile drawer có ô tìm sản phẩm gửi tới cùng chức năng tìm kiếm hiện có;
   nhóm danh mục sản phẩm mở inline dạng accordion khi người dùng bấm, không tự
   bung nhóm con khi vào menu. Danh mục nhiều cấp dùng URL và dữ liệu Admin hiện hữu; không ẩn nhóm
@@ -250,8 +282,9 @@ responsive ổn chỉ từ laptop 1366px.
 
 ### 5.3 Button, link và icon button
 
-- Primary: nền gold phẳng, chữ navy; secondary: nền trong suốt/trắng, border
-  navy; text-link: chữ + icon hướng, không bọc thành pill tùy ý.
+- Primary: nền gradient gold chung, chữ/icon navy; secondary: nền trong
+  suốt/trắng, border navy; text-link: chữ + icon hướng, không bọc thành pill
+  tùy ý.
 - Cùng vai trò phải cùng màu, radius, chiều cao và hover trên mọi trang.
 - Trạng thái bắt buộc: default, hover, `:focus-visible`, active/selected,
   disabled và loading. Disabled không chỉ đổi màu mà phải ngăn thao tác.

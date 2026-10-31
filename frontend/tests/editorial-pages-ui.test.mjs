@@ -112,7 +112,7 @@ test('news and project touch targets meet 44px and editorial images keep their r
   const projectCard = read('../app/components/projects/ProjectCard.vue')
   assert.match(newsFilters, /min-h-11/)
   assert.match(projectFilters, /min-h-11/)
-  assert.match(newsPage, /min-h-11 min-w-11/)
+  assert.match(newsPage, /h-11 w-11/)
   assert.match(projectCard, /aspect-\[4\/3\]/)
   assert.doesNotMatch(projectCard, /border-b border-gray-200/)
 })

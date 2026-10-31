@@ -215,12 +215,14 @@ function selectSolution(value: string | number) {
           </li>
         </ul>
       </div>
-      <div class="flex gap-2 max-[860px]:max-w-[360px] max-[860px]:flex-col">
-        <button type="button" class="inline-flex min-h-[50px] flex-1 cursor-pointer items-center justify-center rounded-[4px] border border-hdr-gold bg-hdr-gold px-5 font-bold text-navy-950 no-underline" @click="openDealer()">
+      <div class="grid w-full grid-cols-1 gap-3 min-[861px]:grid-cols-2 min-[861px]:gap-2 max-[860px]:max-w-[480px]">
+        <UButton type="button" color="primary" size="xl" class="min-h-14 w-full justify-center rounded-btn bg-hdr-gold px-5 text-base font-bold text-navy-950 no-underline" @click="openDealer()">
           Đăng ký làm đại lý
-        </button>
-        <a class="inline-flex min-h-[50px] flex-1 items-center justify-center rounded-[4px] border border-white/55 px-5 font-bold text-white no-underline" href="#yeu-cau-tu-van" @click="requestConsultation('Hợp tác đại lý')">
-          Tư vấn chính sách đại lý
+          <UIcon name="i-lucide-arrow-right" class="size-5" aria-hidden="true" />
+        </UButton>
+        <a class="inline-flex min-h-14 w-full items-center justify-center gap-2 rounded-btn px-5 text-base font-bold text-white no-underline transition-colors hover:text-gold-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-400" href="#yeu-cau-tu-van" @click="requestConsultation('Hợp tác đại lý')">
+          Tư vấn đại lý
+          <UIcon name="i-lucide-arrow-right" class="size-5 text-gold-400" aria-hidden="true" />
         </a>
       </div>
     </div>

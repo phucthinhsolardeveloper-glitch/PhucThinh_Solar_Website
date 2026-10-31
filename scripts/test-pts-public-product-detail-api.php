@@ -5,7 +5,7 @@ require_once __DIR__.'/../domains/phucthinhsolar.com/public_html/libraries/produ
 require_once __DIR__.'/../domains/phucthinhsolar.com/public_html/libraries/product_content_blocks.php';
 require_once __DIR__.'/../domains/phucthinhsolar.com/public_html/libraries/pts_public_product_detail_api.php';
 function pdpAssert($condition, $message) { if(!$condition) throw new RuntimeException($message); echo "PASS: {$message}\n"; }
-$row = array('id'=>7,'namevi'=>'<b>Đèn thật</b>','slugvi'=>'den-that','status'=>'hienthi','code'=>'PT-7','descvi'=>'<p>Mô tả thật</p>','pdp_profile'=>'lighting','cong_suat'=>30,'regular_price'=>350000,'sale_price'=>299000,'additional_specs'=>json_encode(array(array('key'=>'quang_thong','label'=>'Quang thông','value'=>'3.000 lm'),array('key'=>'secret','label'=>'Secret','value'=>'x')), JSON_UNESCAPED_UNICODE));
+$row = array('id'=>7,'namevi'=>'<b>Đèn thật</b>','slugvi'=>'den-that','status'=>'hienthi','code'=>'PT-7','descvi'=>'<p>Mô tả thật</p>','pdp_profile'=>'lighting','cong_suat'=>30,'regular_price'=>350000,'sale_price'=>299000,'additional_specs'=>json_encode(array(array('key'=>'quang_thong','label'=>'Quang thông','value'=>'3.000 lm'),array('key'=>'wire_length','label'=>'Chiều dài dây','value'=>'5 m')), JSON_UNESCAPED_UNICODE));
 $sections = array(
     'source' => 'product',
     'blocks' => array(
@@ -56,17 +56,17 @@ $applications = ptsPdpApplicationsDto($applicationSections, $applicationRow);
 $applicationContent = ptsPdpContentDto($applicationSections, '', !empty($applications));
 $buyingGuides = ptsPdpBuyingGuidesDto($applicationRow);
 pdpAssert($applications['title'] === 'Phù hợp với nhu cầu của bạn' && count($applications['items']) === 2, 'CMS application list is exposed as PDP application cards');
-pdpAssert($applications['items'][0]['title'] === 'Sân vườn' && $applications['items'][0]['image'] === '', 'application card uses CMS text and does not invent an image');
-pdpAssert(strpos(json_encode($applicationContent), 'Ứng dụng phù hợp') === false && strpos(json_encode($applicationContent), 'Lưu ý khi lựa chọn') !== false, 'application section is removed from description without dropping later content');
+pdpAssert($applications['items'][0]['title'] === 'Sân vườn' && $applications['items'][0]['image'] === '/assets/images/site-visuals/pdp-usecase-v2/lighting-flood-yard.webp', 'application card keeps CMS text and uses the approved profile illustration');
+pdpAssert(strpos(json_encode($applicationContent, JSON_UNESCAPED_UNICODE), 'Ứng dụng phù hợp') === false && strpos(json_encode($applicationContent, JSON_UNESCAPED_UNICODE), 'Lưu ý khi lựa chọn') !== false, 'application section is removed from description without dropping later content');
 pdpAssert(count($buyingGuides) === 2 && $buyingGuides[0] === array('key'=>'light_source','label'=>'Nguồn sáng','value'=>'LED'), 'buying guide contains only real non-metric profile values');
 $applicationMedia = ptsPdpApplicationsDto(array('blocks'=>array(array('type'=>'heading','text'=>'Ứng dụng'),array('type'=>'media','photo'=>'../private.jpg','title'=>'Cảnh quan','text'=>'Mô tả'))), $applicationRow);
-pdpAssert($applicationMedia['items'][0]['image'] === '', 'unsafe CMS application image is dropped');
+pdpAssert($applicationMedia['items'][0]['image'] === '/assets/images/site-visuals/pdp-usecase-v2/lighting-flood-yard.webp', 'unsafe CMS application image is replaced by the approved profile illustration');
 $quoteRow = $row; $quoteRow['status'] = 'hienthi,baogia';
 $quotePayload = ptsPdpPayload($quoteRow, array(), ptsPdpSpecDto($quoteRow), 'san-pham/den-that', array('product'=>'publicProductEntityPath(product)'), true, ptsPdpContentDto(array()));
 pdpAssert($quotePayload['pricing'] === array('mode'=>'quote','currency'=>'VND','regularPrice'=>null,'salePrice'=>null), 'baogia status forces quote mode even with pricesVisible=true');
 $hiddenPayload = ptsPdpPayload($row, array(), ptsPdpSpecDto($row), 'san-pham/den-that', array('product'=>'publicProductEntityPath(product)'), false, ptsPdpContentDto(array()));
 pdpAssert($hiddenPayload['pricing']['mode'] === 'quote', 'pricesVisible=false forces quote mode regardless of status');
-pdpAssert(strpos(json_encode($payload), 'secret') === false, 'unlisted additional field omitted');
+pdpAssert(strpos(json_encode($payload, JSON_UNESCAPED_UNICODE), 'wire_length') !== false && strpos(json_encode($payload, JSON_UNESCAPED_UNICODE), 'Chiều dài dây') !== false, 'custom Admin product specs are exposed as structured PDP data');
 pdpAssert(ptsPdpMediaUrl('../private.jpg', __DIR__) === '', 'unsafe media path rejected');
 $endpoint = realpath(__DIR__.'/../domains/phucthinhsolar.com/public_html/api/pts_v1_product_detail.php');
 $out = shell_exec(escapeshellarg(PHP_BINARY).' -r '.escapeshellarg('$_SERVER["REQUEST_METHOD"]="POST"; require '.var_export($endpoint, true).';').' 2>&1');

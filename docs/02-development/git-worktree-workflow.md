@@ -21,9 +21,10 @@ Xác định bằng evidence:
 - WIP/untracked/ignored state của mọi worktree liên quan;
 - integration target thật từ docs/remote/branch map, không đoán theo tên.
 
-Trong project này, `master` là baseline website PHP; nhánh Nuxt tích hợp chỉ là
-target khi task ghi rõ migration/Nuxt. Không tự coi một branch tiến độ hoặc một
-checkout cũ là branch chính.
+Trong checkout hiện tại, `master` là nhánh tích hợp của mã PHP và frontend Nuxt
+đã được chấp nhận. Production vẫn chạy PHP cho tới khi có task cutover/deploy
+riêng. Không lấy một nhánh tiến độ hoặc checkout cũ làm baseline thay cho
+`master`; xác minh target theo task và trạng thái remote hiện tại.
 
 ## 2. Ownership và isolation
 
@@ -75,6 +76,10 @@ Chỉ dọn branch/worktree sau khi:
 Worktree host-managed hoặc chứa WIP không thuộc agent hiện tại thì để nguyên.
 Không xóa upload, cache, DB volume, backup, secrets hoặc state reference trong
 quá trình cleanup.
+
+Sau khi merge đã được xác minh, có thể xóa nhánh task local bằng `git branch -d`
+khi branch đã là ancestor của target và không còn worktree dùng nó. Giữ các
+nhánh `backup/*`; việc dọn local không xóa nhánh trên remote.
 
 ## 6. Handoff tối thiểu
 

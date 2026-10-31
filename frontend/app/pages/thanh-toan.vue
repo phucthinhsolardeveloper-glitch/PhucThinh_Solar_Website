@@ -27,26 +27,63 @@ const form = reactive({
   payment: 0,
 })
 const wards = ref<PublicCheckoutOption[]>([])
+const wardsLoading = ref(false)
+const wardsError = ref('')
 const shippingAmount = ref<number | null>(null)
 const shippingPending = ref(false)
+const shippingLoading = ref(false)
+const shippingError = ref('')
 const restoringDraft = ref(false)
 const checkoutDraft = useState<PublicCheckoutNoticeForm | null>('pts-checkout-form-draft', () => null)
+let wardsRequestId = 0
+let shippingRequestId = 0
+let wardsController: AbortController | null = null
+let shippingController: AbortController | null = null
 
 function formatMoney(value: number | null): string {
   return value === null ? 'Chờ xác nhận' : new Intl.NumberFormat('vi-VN').format(value) + 'đ'
 }
 
 async function loadWards() {
+  const requestId = ++wardsRequestId
+  wardsController?.abort()
+  wardsController = null
+  shippingRequestId++
+  shippingController?.abort()
+  shippingController = null
   wards.value = []
   form.ward = 0
   shippingAmount.value = null
   shippingPending.value = false
-  if (!form.city) return
+  shippingLoading.value = false
+  shippingError.value = ''
+  wardsError.value = ''
+  const city = form.city
+  if (!city) {
+    wardsLoading.value = false
+    return
+  }
+
+  const controller = new AbortController()
+  wardsController = controller
+  wardsLoading.value = true
   try {
-    const payload = await $fetch<unknown>('/_migration/checkout-wards', { query: { city: String(form.city) } })
+    const payload = await $fetch<unknown>('/_migration/checkout-wards', {
+      query: { city: String(city) },
+      signal: controller.signal,
+    })
+    if (requestId !== wardsRequestId || form.city !== city) return
     if (isPublicCheckoutWardsPayload(payload)) wards.value = payload.wards
+    else wardsError.value = 'Không thể đọc danh sách phường/xã. Vui lòng thử lại.'
   } catch {
-    wards.value = []
+    if (requestId === wardsRequestId && form.city === city) {
+      wardsError.value = 'Không thể tải danh sách phường/xã. Vui lòng thử lại.'
+    }
+  } finally {
+    if (requestId === wardsRequestId) {
+      wardsLoading.value = false
+      wardsController = null
+    }
   }
 }
 
@@ -72,20 +109,51 @@ onMounted(async () => {
 })
 
 async function quoteShipping() {
+  const requestId = ++shippingRequestId
+  shippingController?.abort()
+  shippingController = null
   shippingAmount.value = null
   shippingPending.value = false
-  if (!form.city || !form.ward || !checkout.value?.shippingEnabled) return
+  shippingLoading.value = false
+  shippingError.value = ''
+  const city = form.city
+  const ward = form.ward
+  if (!city || !ward || !checkout.value?.shippingEnabled) return
+
+  const controller = new AbortController()
+  shippingController = controller
+  shippingLoading.value = true
   try {
-    const payload: any = await $fetch('/_migration/shipping-quote', { method: 'POST', body: { city: form.city, ward: form.ward } })
+    const payload: any = await $fetch('/_migration/shipping-quote', {
+      method: 'POST',
+      body: { city, ward },
+      signal: controller.signal,
+    })
+    if (requestId !== shippingRequestId || form.city !== city || form.ward !== ward) return
     if (payload?.ok && payload?.priced && typeof payload?.selected?.amount === 'number') shippingAmount.value = Math.max(0, Math.round(payload.selected.amount))
     else shippingPending.value = true
   } catch {
-    shippingPending.value = true
+    if (requestId === shippingRequestId && form.city === city && form.ward === ward) {
+      shippingPending.value = true
+      shippingError.value = 'Chưa thể tính phí vận chuyển. Phí sẽ được xác nhận sau.'
+    }
+  } finally {
+    if (requestId === shippingRequestId) {
+      shippingLoading.value = false
+      shippingController = null
+    }
   }
 }
 
 watch(() => form.city, () => { if (!restoringDraft.value) void loadWards() })
 watch(() => form.ward, () => void quoteShipping())
+
+onBeforeUnmount(() => {
+  wardsRequestId++
+  shippingRequestId++
+  wardsController?.abort()
+  shippingController?.abort()
+})
 
 const orderTotal = computed(() => {
   if (!cart.value || cart.value.subtotal === null) return null
@@ -133,12 +201,18 @@ useSeoMeta({ title: 'Thanh toán — Phúc Thịnh Solar', robots: 'noindex, nof
                   <option v-for="city in checkout.cities" :key="city.id" :value="city.id">{{ city.name }}</option>
                 </select>
               </label>
-              <label class="grid gap-1.5 text-sm font-bold">Phường/Xã
-                <select v-model.number="form.ward" name="dataOrder[ward]" :disabled="!form.city" required class="h-11 rounded-chip border border-gray-300 bg-white px-3 font-normal outline-none focus:border-gold-600 disabled:bg-slate-50">
+              <div class="grid content-start gap-1.5 text-sm font-bold">
+                <label for="checkout-ward">Phường/Xã</label>
+                <select id="checkout-ward" v-model.number="form.ward" name="dataOrder[ward]" :disabled="!form.city || wardsLoading || Boolean(wardsError)" required class="h-11 rounded-chip border border-gray-300 bg-white px-3 font-normal outline-none focus:border-gold-600 disabled:bg-slate-50">
                   <option :value="0">Chọn phường/xã</option>
                   <option v-for="ward in wards" :key="ward.id" :value="ward.id">{{ ward.name }}</option>
                 </select>
-              </label>
+                <span v-if="wardsLoading" class="font-normal text-slate-500" role="status">Đang tải danh sách phường/xã…</span>
+                <span v-else-if="wardsError" class="font-normal text-red-700" role="alert">
+                  {{ wardsError }}
+                  <button type="button" class="font-bold underline" @click="void loadWards()">Tải lại</button>
+                </span>
+              </div>
               <label class="grid gap-1.5 text-sm font-bold tb:col-span-2">Địa chỉ chi tiết
                 <input v-model.trim="form.address" name="dataOrder[address]" autocomplete="street-address" maxlength="255" required class="h-11 rounded-chip border border-gray-300 px-3 font-normal outline-none focus:border-gold-600">
               </label>
@@ -174,8 +248,9 @@ useSeoMeta({ title: 'Thanh toán — Phúc Thịnh Solar', robots: 'noindex, nof
             <div class="flex justify-between"><span class="text-slate-500">Tạm tính</span><strong>{{ formatMoney(cart.subtotal) }}</strong></div>
             <div v-if="checkout.shippingEnabled" class="flex justify-between gap-4">
               <span class="text-slate-500">Vận chuyển</span>
-              <strong class="text-right">{{ shippingPending ? 'Sẽ xác nhận sau' : formatMoney(shippingAmount) }}</strong>
+              <strong class="text-right">{{ shippingLoading ? 'Đang tính…' : shippingPending ? 'Sẽ xác nhận sau' : formatMoney(shippingAmount) }}</strong>
             </div>
+            <p v-if="shippingError" class="m-0 text-sm text-amber-800" role="status">{{ shippingError }}</p>
             <div class="flex justify-between border-t border-gray-200 pt-3 text-lg"><strong>Tổng dự kiến</strong><strong class="text-red-600">{{ formatMoney(orderTotal) }}</strong></div>
           </div>
 

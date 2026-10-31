@@ -31,7 +31,7 @@ const isMigrationPreview = links.active
                 <img
                   :src="product.image"
                   :alt="product.name"
-                  class="block aspect-square w-full object-contain transition-transform duration-300 ease-out group-hover:scale-105"
+                  class="block aspect-square w-full object-contain transition-transform duration-300 ease-out group-hover:scale-105 motion-reduce:transform-none motion-reduce:transition-none"
                   width="640"
                   height="640"
                   loading="lazy"

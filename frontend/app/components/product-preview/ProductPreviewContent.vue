@@ -5,7 +5,7 @@ defineProps<{ content: PublicProductContent }>()
 </script>
 
 <template>
-  <section v-if="content.blocks.length || content.highlights?.length" id="tong-quan" class="scroll-mt-24 border-t border-gray-200 py-10" aria-labelledby="product-content-title">
+  <section v-if="content.blocks.length || content.highlights?.length" id="tong-quan" class="scroll-mt-24 border-t border-gray-200 py-12 tb:py-16" aria-labelledby="product-content-title">
     <h2 id="product-content-title" class="mb-7 text-[clamp(24px,3vw,34px)] font-black tracking-tight text-navy-800">
       Mô tả sản phẩm
     </h2>

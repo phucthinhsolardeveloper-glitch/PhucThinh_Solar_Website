@@ -1,6 +1,13 @@
 <script setup lang="ts">
 const { security, loadingSecurity, ensureSecurity, refreshSecurity, submit } = useLeadForm()
 const form = reactive({ fullname: '', phone: '', email: '', subject: '', content: '' })
+const subjectOptions = [
+  'Đèn năng lượng mặt trời',
+  'Điện mặt trời',
+  'Thiết bị (inverter, tấm pin, pin lưu trữ...)',
+  'Hợp tác đại lý',
+  'Khác',
+]
 const submitting = ref(false)
 const success = ref('')
 const error = ref('')
@@ -12,7 +19,7 @@ async function loadSecurity(refresh = false) {
     if (refresh) await refreshSecurity()
     else await ensureSecurity()
   } catch {
-    securityError.value = 'Không thể tải phiên bảo mật. Vui lòng thử tải lại trước khi gửi yêu cầu.'
+    securityError.value = 'Không thể chuẩn bị biểu mẫu. Vui lòng thử tải lại.'
   }
 }
 
@@ -50,28 +57,21 @@ async function send() {
     </div>
 
     <div class="grid min-w-0 gap-5 tb:grid-cols-2">
-      <label class="grid min-w-0 content-start gap-2 text-sm font-semibold text-navy-800"><span>Họ và tên <span class="text-red-600">*</span></span>
-        <input v-model.trim="form.fullname" required maxlength="100" autocomplete="name" placeholder="Nguyễn Văn A" class="h-12 w-full min-w-0 rounded-chip border border-slate-300 bg-white px-3 text-base font-normal text-navy-800 outline-none focus:border-gold-600">
-      </label>
-      <label class="grid min-w-0 content-start gap-2 text-sm font-semibold text-navy-800"><span>Số điện thoại <span class="text-red-600">*</span></span>
-        <input v-model.trim="form.phone" type="tel" required maxlength="20" autocomplete="tel" inputmode="tel" placeholder="090xxxxxxx" class="h-12 w-full min-w-0 rounded-chip border border-slate-300 bg-white px-3 text-base font-normal text-navy-800 outline-none focus:border-gold-600">
-      </label>
-      <label class="grid min-w-0 content-start gap-2 text-sm font-semibold text-navy-800"><span>Email <span class="font-normal text-slate-500">(không bắt buộc)</span></span>
-        <input v-model.trim="form.email" type="email" maxlength="150" autocomplete="email" placeholder="abc@gmail.com" class="h-12 w-full min-w-0 rounded-chip border border-slate-300 bg-white px-3 text-base font-normal text-navy-800 outline-none focus:border-gold-600">
-      </label>
-      <label class="grid min-w-0 content-start gap-2 text-sm font-semibold text-navy-800"><span>Nhu cầu quan tâm <span class="font-normal text-slate-500">(không bắt buộc)</span></span>
-        <select v-model="form.subject" class="h-12 w-full min-w-0 rounded-chip border border-slate-300 bg-white px-3 text-base font-normal text-navy-800 outline-none focus:border-gold-600">
-          <option value="">-- Chọn nhu cầu --</option>
-          <option>Đèn năng lượng mặt trời</option>
-          <option>Điện mặt trời</option>
-          <option>Thiết bị (inverter, tấm pin, pin lưu trữ...)</option>
-          <option>Hợp tác đại lý</option>
-          <option>Khác</option>
-        </select>
-      </label>
-      <label class="grid min-w-0 content-start gap-2 text-sm font-semibold text-navy-800 tb:col-span-2"><span>Chi tiết nhu cầu tư vấn <span class="text-red-600">*</span></span>
-        <textarea v-model.trim="form.content" required maxlength="5000" rows="5" placeholder="Ví dụ: cần tư vấn điện mặt trời cho gia đình, mức sử dụng điện hàng tháng..." class="min-h-[156px] w-full min-w-0 rounded-chip border border-slate-300 bg-white px-3 py-3 text-base font-normal text-navy-800 outline-none focus:border-gold-600" />
-      </label>
+      <UFormField label="Họ và tên" name="fullname" required class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-sm font-semibold text-navy-800' }">
+        <UInput v-model.trim="form.fullname" name="fullname" required maxlength="100" autocomplete="name" placeholder="Nguyễn Văn A" variant="none" class="w-full" :ui="{ base: 'h-12 w-full min-w-0 rounded-chip border border-slate-300 bg-white px-3 text-base font-normal text-navy-800 placeholder:text-slate-400 focus-visible:border-gold-600 focus-visible:ring-2 focus-visible:ring-gold-500/30' }" />
+      </UFormField>
+      <UFormField label="Số điện thoại" name="phone" required class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-sm font-semibold text-navy-800' }">
+        <UInput v-model.trim="form.phone" name="phone" type="tel" required maxlength="20" autocomplete="tel" inputmode="tel" placeholder="090xxxxxxx" variant="none" class="w-full" :ui="{ base: 'h-12 w-full min-w-0 rounded-chip border border-slate-300 bg-white px-3 text-base font-normal text-navy-800 placeholder:text-slate-400 focus-visible:border-gold-600 focus-visible:ring-2 focus-visible:ring-gold-500/30' }" />
+      </UFormField>
+      <UFormField label="Email" hint="Không bắt buộc" name="email" class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-sm font-semibold text-navy-800', hint: 'text-xs font-normal text-slate-500' }">
+        <UInput v-model.trim="form.email" name="email" type="email" maxlength="150" autocomplete="email" placeholder="abc@gmail.com" variant="none" class="w-full" :ui="{ base: 'h-12 w-full min-w-0 rounded-chip border border-slate-300 bg-white px-3 text-base font-normal text-navy-800 placeholder:text-slate-400 focus-visible:border-gold-600 focus-visible:ring-2 focus-visible:ring-gold-500/30' }" />
+      </UFormField>
+      <UFormField label="Nhu cầu quan tâm" hint="Không bắt buộc" name="subject" class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-sm font-semibold text-navy-800', hint: 'text-xs font-normal text-slate-500' }">
+        <USelect v-model="form.subject" name="subject" aria-label="Nhu cầu quan tâm" :items="subjectOptions" placeholder="-- Chọn nhu cầu --" color="neutral" variant="none" class="w-full" :ui="{ base: 'h-12 w-full min-w-0 rounded-chip border border-slate-300 bg-white px-3 text-base font-normal text-navy-800 focus-visible:border-gold-600 focus-visible:ring-2 focus-visible:ring-gold-500/30', placeholder: 'text-slate-400' }" />
+      </UFormField>
+      <UFormField label="Chi tiết nhu cầu tư vấn" name="content" required class="grid min-w-0 content-start gap-2 tb:col-span-2" :ui="{ label: 'text-sm font-semibold text-navy-800' }">
+        <UTextarea v-model.trim="form.content" name="content" required maxlength="5000" :rows="5" placeholder="Ví dụ: cần tư vấn điện mặt trời cho gia đình, mức sử dụng điện hàng tháng..." variant="none" class="w-full" :ui="{ base: 'min-h-[156px] w-full min-w-0 rounded-chip border border-slate-300 bg-white px-3 py-3 text-base font-normal text-navy-800 placeholder:text-slate-400 focus-visible:border-gold-600 focus-visible:ring-2 focus-visible:ring-gold-500/30' }" />
+      </UFormField>
 
       <p v-if="success" class="rounded-chip bg-emerald-50 p-3 text-sm font-semibold text-emerald-800 tb:col-span-2" role="status">{{ success }}</p>
       <p v-if="error" class="rounded-chip bg-red-50 p-3 text-sm font-semibold text-red-800 tb:col-span-2" role="alert">{{ error }}</p>
@@ -79,12 +79,11 @@ async function send() {
         <p class="mb-2">{{ securityError }}</p>
         <button v-if="!loadingSecurity" type="button" class="font-bold underline" @click="loadSecurity(true)">Thử tải lại</button>
       </div>
-      <p v-else-if="loadingSecurity" class="text-sm text-slate-500 tb:col-span-2" role="status">Đang tải phiên bảo mật…</p>
+      <p v-else-if="loadingSecurity" class="text-sm text-slate-500 tb:col-span-2" role="status">Đang chuẩn bị biểu mẫu…</p>
       <UButton type="submit" color="primary" size="xl" :loading="submitting" :disabled="submitting || loadingSecurity || !security" class="inline-flex min-h-[52px] w-full items-center justify-center gap-2 rounded-chip bg-gold-500 px-6 font-bold text-navy-950 transition-colors hover:bg-gold-400 disabled:cursor-wait disabled:opacity-60 tb:col-span-2">
         {{ submitting ? 'Đang gửi…' : 'Gửi yêu cầu tư vấn' }}
         <UIcon v-if="!submitting" name="i-lucide-arrow-right" class="size-5" aria-hidden="true" />
       </UButton>
-      <p class="m-0 text-center text-sm leading-relaxed text-slate-500 tb:col-span-2">Thông tin của bạn được dùng để phản hồi yêu cầu tư vấn.</p>
     </div>
   </form>
 </template>

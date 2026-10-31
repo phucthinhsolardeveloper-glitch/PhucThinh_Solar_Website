@@ -28,14 +28,14 @@ const links = useMigrationLinks()
         :href="links.solution(card.slug)"
       >
         <div v-if="card.image" class="flex aspect-[8/5] items-center justify-center overflow-hidden rounded-[3px] bg-[#f3f6fa]" :class="cards.length === 1 ? 'min-[1101px]:w-1/2 min-[1101px]:max-w-[560px] min-[1101px]:flex-none' : ''">
-          <img :src="card.image" alt="" class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" width="600" height="375" loading="lazy" decoding="async">
+        <img :src="card.image" alt="" class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03] motion-reduce:transform-none motion-reduce:transition-none" width="600" height="375" loading="lazy" decoding="async">
         </div>
         <div class="flex flex-1 flex-col items-start pt-[17px]" :class="cards.length === 1 ? 'min-[1101px]:justify-center min-[1101px]:pt-0' : ''">
           <h3 class="m-0 mb-[10px] min-h-[47px] text-[18px] font-extrabold leading-[1.3] tracking-[-0.015em] text-navy-950 max-[520px]:min-h-0">{{ card.title }}</h3>
           <p v-if="card.description" class="m-0 mb-3 line-clamp-3 min-h-[69px] text-sm leading-[1.62] text-slate-600 max-[520px]:min-h-0 max-[520px]:mb-[14px] max-[520px]:leading-[1.8]">{{ card.description }}</p>
           <span class="mt-auto flex w-full items-center justify-between gap-2.5 text-[13px] font-extrabold text-navy-950">
             {{ card.actionLabel }}
-            <span class="grid h-9 w-9 flex-none place-items-center rounded-full bg-[linear-gradient(135deg,#e5bd54,#b77b25)] text-white max-[520px]:h-[30px] max-[520px]:w-[30px]" aria-hidden="true">
+              <span class="grid h-9 w-9 flex-none place-items-center rounded-full bg-gold-500 text-navy-950 max-[520px]:h-[30px] max-[520px]:w-[30px]" aria-hidden="true">
               <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
             </span>
           </span>

@@ -40,7 +40,7 @@ const trustItems = computed(() => props.cta.trust?.length ? props.cta.trust : [
       </div>
       <div class="relative z-20 flex w-full max-w-[330px] flex-col gap-2.5 min-[901px]:min-w-[270px] min-[901px]:max-w-none">
         <a v-if="cta.hotline?.tel" class="flex items-center justify-center gap-3.5 text-white no-underline" :href="`tel:${cta.hotline.tel}`">
-          <span class="grid h-12 w-12 shrink-0 place-items-center rounded-[3px] bg-gold-500 text-white" aria-hidden="true">
+          <span class="grid h-12 w-12 shrink-0 place-items-center rounded-[3px] bg-gold-500 text-navy-950" aria-hidden="true">
             <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.33.56 3.57.56.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.61 21 3 13.39 3 4c0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.24.19 2.45.56 3.57a1 1 0 0 1-.25 1.02l-2.19 2.2Z" /></svg>
           </span>
           <span>

@@ -13,7 +13,7 @@ function documentHref(document: PublicProductDocument): string {
 
 <template>
   <section
-    class="grid gap-8 border-t border-gray-200 py-10 nav:grid-cols-[1.25fr_0.75fr] nav:gap-9"
+    class="grid gap-8 border-t border-gray-200 py-12 tb:py-16 nav:grid-cols-[1.25fr_0.75fr] nav:gap-9"
     aria-label="Video, tài liệu và bảo hành sản phẩm"
   >
     <div id="video-san-pham" class="min-w-0 scroll-mt-24">

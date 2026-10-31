@@ -43,12 +43,12 @@ test('shared header keeps PHP production single-row composition without a duplic
   assert.match(header, /v-if="hotline"[\s\S]*telHrefFor\(hotline\)/)
   assert.match(header, /min-\[821px\]:flex min-\[821px\]:flex-col/)
   assert.match(header, /shellHref\('\/gio-hang\/'\)/)
-  assert.match(header, /class="gtranslate_wrapper[^\"]*min-\[1501px\]:flex"/)
-  assert.match(header, /<nav class="hidden min-w-0 min-\[1501px\]:flex-1 min-\[1501px\]:block"/)
-  assert.match(header, /nav:w-\[270px\][\s\S]*min-\[1501px\]:w-\[clamp\(360px,22vw,460px\)\]/)
+  assert.match(header, /class="gtranslate_wrapper[^\"]*min-\[1681px\]:flex"/)
+  assert.match(header, /<nav class="hidden min-w-0 min-\[1681px\]:flex-1 min-\[1681px\]:block"/)
+  assert.match(header, /nav:w-\[270px\][\s\S]*min-\[1681px\]:w-\[clamp\(360px,22vw,460px\)\]/)
   assert.match(header, /min-\[1321px\]:max-\[1346px\]:w-\[244px\]/)
-  assert.match(header, /<ul class="flex items-center justify-center gap-1 nav:gap-0"/)
-  assert.match(header, /whitespace-nowrap border-b-2 px-2\.5[^\"]*nav:px-2 wd:px-3/)
+  assert.match(header, /<ul class="flex items-center justify-center gap-1 nav:gap-0 min-\[1681px\]:gap-3"/)
+  assert.match(header, /whitespace-nowrap px-3[^\"]*nav:px-2 min-\[1681px\]:px-2\.5/)
   assert.doesNotMatch(header, /ptsInlineSearchInput|quickCategories|wd:hidden/)
   assert.match(app, /cdn\.gtranslate\.net\/widgets\/latest\/popup\.js/)
   assert.match(app, /'zh-CN', 'ko', 'ja'/)
@@ -59,8 +59,8 @@ test('storefront stays in light mode while the unfinished theme toggle is withhe
   assert.match(nuxtConfig, /colorMode:\s*\{[\s\S]*preference:\s*'light'[\s\S]*fallback:\s*'light'[\s\S]*storage:\s*'localStorage'/)
   assert.match(nuxtConfig, /storageKey:\s*'pts-color-mode-light-only'/)
   assert.doesNotMatch(header, /useColorMode|Bật giao diện tối|Bật giao diện sáng|toggleColorMode/)
-  assert.match(tokensCss, /html\.dark \.text-navy-950[\s\S]*color: #e2e8f0/)
-  assert.match(tokensCss, /html\.dark \.bg-white \.text-navy-800[\s\S]*color: #0a2251/)
+  assert.doesNotMatch(mainCss, /html\.dark/)
+  assert.doesNotMatch(tokensCss, /html\.dark/)
 })
 
 test('header overlays expose keyboard state, focus trap and scroll restoration hooks', () => {
@@ -79,6 +79,15 @@ test('header overlays expose keyboard state, focus trap and scroll restoration h
   assert.match(header, /navDropdownOpen\.value\) closeNavDropdown\(true\)/)
 })
 
+test('header hides on downward scroll and reveals on upward scroll while menu text stays readable', () => {
+  assert.match(header, /if \(accumulatedDelta > 12 && currentScrollY > 80\)\s*\{\s*isHeaderHidden\.value = true/)
+  assert.match(header, /else if \(accumulatedDelta < -12\)\s*\{\s*isHeaderHidden\.value = false/)
+  assert.match(header, /transition-transform duration-300/)
+  assert.match(header, /block min-h-11 rounded-chip px-3 py-3 text-\[15px\] font-medium leading-6/)
+  assert.match(header, /flex min-h-12 min-w-0 flex-1 items-center gap-4 py-2 text-\[16px\] font-semibold/)
+  assert.match(header, /flex min-h-11 items-center py-2 text-\[15px\] leading-6/)
+})
+
 test('header dialogs isolate the page background and restore prior inert states on close', () => {
   assert.match(header, /const inertBeforeModal = new Map<HTMLElement, boolean>\(\)/)
   assert.match(header, /function syncModalBackground\(\)[\s\S]*document\.body\.contains\(overlay\)[\s\S]*sibling\.inert = true/)
@@ -89,35 +98,37 @@ test('header dialogs isolate the page background and restore prior inert states 
   assert.doesNotMatch(header, /:inert="mobileOpen/)
 })
 
-test('desktop nav parent links stay navigable and submenu disclosure is an independent touch target', () => {
-  assert.match(header, /<NuxtLink[\s\S]*:to="shellHref\(item\.href\)"[\s\S]*\{\{ item\.label \}\}[\s\S]*<\/NuxtLink>\s*<button[\s\S]*v-if="item\.children\?\.length"/)
-  assert.match(header, /:aria-expanded="navDropdownOpen === item\.href"/)
-  assert.match(header, /:aria-controls="navDropdownOpen === item\.href \? `ptsNavMenu-\$\{index\}` : undefined"/)
-  assert.match(header, /:aria-label="`\$\{navDropdownOpen === item\.href \? 'Đóng' : 'Mở'\} menu con \$\{item\.label\}`"/)
-  assert.match(header, /@click="toggleNavDropdown\(item, \$event\)"/)
+test('desktop nav labels are direct navy links without adjacent chevron buttons', () => {
+  const desktopNav = header.match(/<nav class="hidden min-w-0 min-\[1681px\]:flex-1 min-\[1681px\]:block" aria-label="Điều hướng chính">([\s\S]*?)<\/nav>\s*<!-- Cụm thao tác bên phải -->/)?.[1] || ''
+  assert.ok(desktopNav)
+  assert.match(header, /class="relative flex min-h-11 min-\[1681px\]:min-h-\[48px\][\s\S]*font-semibold[\s\S]*text-hdr-ink/)
+  assert.match(header, /:to="shellHref\(item\.href\)"/)
+  assert.doesNotMatch(header, /toggleNavDropdown|Mở menu con|Đóng menu con/)
+  assert.doesNotMatch(desktopNav, /<\/NuxtLink>\s*<button/)
+  assert.doesNotMatch(desktopNav, /v-if="item\.children\?\.length"\s+class=/)
+  assert.match(header, /@mouseenter="openNavDropdown\(item, \$event\)"/)
+  assert.match(header, /@focusin="handleNavFocusin\(item, \$event\)"/)
   assert.match(header, /function handleNavMouseleave\(\)[\s\S]*navDropdownMode\.value === 'hover'/)
-  assert.match(header, /function toggleNavDropdown\(item: PublicSiteLink, event: MouseEvent\)[\s\S]*navDropdownMode\.value === 'hover' \|\| navDropdownTrigger\.value !== trigger/)
   assert.match(header, /function openNavDropdown\(item: PublicSiteLink, event: Event\)[\s\S]*navDropdownOpen\.value === item\.href && navDropdownTrigger\.value[\s\S]*event\.type === 'focusin'\) navDropdownMode\.value = 'intent'[\s\S]*return[\s\S]*navDropdownTrigger\.value = currentTarget/)
   assert.match(header, /function closeNavDropdown\(restoreFocus = false\)[\s\S]*const trigger = navDropdownTrigger\.value[\s\S]*if \(shouldRestore\) nextTick\(\(\) => trigger\?\.focus\(\)\)/)
 })
 
-test('header drawer and desktop nav are mutually exclusive from 1321px through 1500px', () => {
+test('header drawer and desktop nav are mutually exclusive from 1321px through 1680px', () => {
   const hamburgerClass = header.match(/ref="mobileTrigger"\s+class="([^"]+)"/)?.[1] || ''
   const desktopNavClass = header.match(/<nav class="([^"]+)" aria-label="Điều hướng chính"/)?.[1] || ''
-  assert.match(hamburgerClass, /min-\[1501px\]:hidden/)
+  assert.match(hamburgerClass, /min-\[1681px\]:hidden/)
   assert.doesNotMatch(hamburgerClass, /\bnav:hidden\b/)
   assert.match(desktopNavClass, /hidden/)
-  assert.match(desktopNavClass, /min-\[1501px\]:block/)
+  assert.match(desktopNavClass, /min-\[1681px\]:block/)
   assert.doesNotMatch(desktopNavClass, /nav:block/)
-  assert.match(header, /<!-- Drawer điều hướng mobile\/tablet, used through 1500px -->/)
+  assert.match(header, /<!-- Drawer điều hướng mobile\/tablet, used through 1680px -->/)
 })
 
-test('desktop submenu disclosure controls keep 44px hit targets when desktop nav is visible', () => {
-  const disclosureClass = header.match(/v-if="item\.children\?\.length"\s+class="([^"]+)"/)?.[1] || ''
-  assert.match(disclosureClass, /min-w-11/)
-  assert.match(disclosureClass, /flex-none/)
-  assert.match(header, /<nav class="hidden min-w-0 min-\[1501px\]:flex-1 min-\[1501px\]:block"/)
-  assert.match(header, /<ul class="flex items-center justify-center gap-1 nav:gap-0"/)
+test('desktop dropdown remains associated with its parent link and fits the wide navigation row', () => {
+  assert.match(header, /:id="`ptsNavMenu-\$\{index\}`"/)
+  assert.match(header, /:aria-label="`\$\{item\.label\} - menu con`"/)
+  assert.match(header, /<nav class="hidden min-w-0 min-\[1681px\]:flex-1 min-\[1681px\]:block"/)
+  assert.match(header, /<ul class="flex items-center justify-center gap-1 nav:gap-0 min-\[1681px\]:gap-3"/)
 })
 
 test('desktop catalog mega-menu mirrors PHP production structure', () => {
@@ -161,6 +172,9 @@ test('footer and breadcrumb route CMS links through the migration resolver', () 
   assert.match(footer, /footer\.trustBadge/)
   assert.match(footer, /footerHref\(policy\.href\)/)
   assert.match(breadcrumb, /migrationHref\(item\.to\)/)
+  assert.match(breadcrumb, /const compactItems = computed\(\(\) => props\.items\.length > 2 \? props\.items\.slice\(-2\) : props\.items\)/)
+  assert.match(breadcrumb, /max-w-\[34vw\] truncate/)
+  assert.match(breadcrumb, /Các mục trước/)
   assert.match(links, /function external\(href: string\)/)
 })
 
@@ -173,10 +187,7 @@ test('shared shell keeps controls reachable at 44px and preserves the 320px layo
   assert.match(header, /mobileOpen \? 'opacity-0'/)
   assert.match(header, /min-h-11 min-w-11/)
   assert.doesNotMatch(header, /role="menuitem"|role="menu"/)
-  assert.match(header, /function catalogGroupLinks\(group: RenderedCatalogGroup\): FlatSiteLink\[\]/)
-  assert.match(header, /const items: PublicSiteLink\[\] = group\.items\.map\(\(item\) => \(\{ \.\.\.item \}\)\)/)
-  assert.match(header, /return flattenLinks\(items, 0, `catalog-\$\{group\.id\}-`\)/)
-  assert.match(header, /v-for="entry in catalogGroupLinks\(group\)"/)
+  assert.match(header, /v-for="\(group, groupIndex\) in catalogColumns"/)
 
   assert.match(footer, /px-4 max-\[359px\]:px-3 tb:px-\(--spacing-gutter\)/)
   assert.match(footer, /flex min-h-11 items-center py-1 text-\[15px\]/)
@@ -207,4 +218,17 @@ test('footer renders its CMS heading once and uses the validated rich-text compo
   assert.match(footer, /<EditorialRichText v-if="footer\?\.contactText\?\.html" :content="footer\.contactText" class="cms-content-on-dark/)
   assert.doesNotMatch(footer, /<p v-if="footer\?\.companyName/)
   assert.doesNotMatch(footer, /contactLines/)
+})
+
+
+test('mobile drawer uses the real category tree with accessible collapsed branches and pinned consultation CTA', () => {
+  assert.match(header, /function flattenProductCategories\([\s\S]*nodes: PublicProductCategoryNode\[\]/)
+  assert.match(header, /const tree = props\.site\.productCategoryTree\?\.length[\s\S]*props\.site\.productCategories\.map/)
+  assert.match(header, /props\.site\.productCategories\.map\(\(category\) => \(\{ \.\.\.category, children: \[\] \}\)\)/)
+  assert.match(header, /v-for="entry in mobileCategoryEntries"[\s\S]*v-show="mobileCategoryVisible\(entry\)"/)
+  assert.match(header, /:aria-expanded="Boolean\(mobileCategoryExpanded\[entry\.key\]\)"/)
+  assert.match(header, /@click="toggleMobileCategory\(entry\)"/)
+  assert.match(header, /class="relative z-\[1\] flex h-dvh max-h-dvh[\s\S]*overflow-hidden/)
+  assert.match(header, /<nav class="flex min-h-0 flex-1 flex-col overflow-y-auto/)
+  assert.match(header, /class="mt-3 flex min-h-\[50px\] w-full flex-none/)
 })

@@ -5,7 +5,7 @@ defineProps<{ specifications: PublicProductSpecification[] }>()
 </script>
 
 <template>
-  <section id="thong-so-ky-thuat" class="scroll-mt-24 py-8" aria-labelledby="product-preview-specs-title">
+  <section id="thong-so-ky-thuat" class="scroll-mt-24 py-12 tb:py-16" aria-labelledby="product-preview-specs-title">
     <h2 id="product-preview-specs-title" class="mb-5 text-[clamp(24px,3vw,34px)] font-black tracking-tight">
       Thông số kỹ thuật
     </h2>

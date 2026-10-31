@@ -114,8 +114,9 @@
   --color-gold-900: #654b18;  /* [SUY RA] */
   --color-gold-950: #3b2a0c;  /* [SUY RA] */
 
-  /* --- Palette RIÊNG của header/footer đang chạy thật ----------------------
-     XUNG ĐỘT ĐÃ XÁC MINH, CHƯA GIẢI QUYẾT — đọc trước khi "sửa cho đúng token".
+  /* --- Palette riêng của header, được giữ làm ngoại lệ semantic ------------
+     ĐÃ CHỐT THEO PARITY: header-v3 của PHP đang dùng bộ màu riêng này; Nuxt
+     giữ cùng giá trị để không đổi nhận diện khi chuyển giữa hai frontend.
 
      assets/css/header-v3.css khai một bộ màu riêng, KHÔNG dùng --pts-gold /
      --pts-navy. Đo pixel trên ảnh chụp production 2026-10-26 xác nhận chính bộ
@@ -134,9 +135,8 @@
      theo nó để header Nuxt trùng khít header PHP trong lúc hai hệ chạy song
      song — nếu không, người dùng sẽ thấy màu nhảy khi đi qua ranh giới route.
 
-     CHỜ CHỦ PROJECT QUYẾT: gộp về --pts-gold #c9962e (một nguồn màu duy nhất,
-     nhưng đổi diện mạo header đang chạy), hay nâng #c69a45 thành token chính
-     thức. Trước khi có quyết định, KHÔNG tự ý đổi các giá trị dưới đây. */
+     Không dùng các giá trị này cho CTA/nội dung chung. Chỉ hợp nhất vào palette
+     PTS khi có quyết định đổi màu header production tương ứng. */
   --color-hdr-gold: #c69a45;
   --color-hdr-gold-hover: #b68732;
   --color-hdr-gold-deep: #8a6526;
@@ -178,9 +178,10 @@
 
      ph  561px  : trên điện thoại nhỏ
      tb  821px  : trên tablet dọc
-     nav 1321px : chuyển container/gutter desktop; header vẫn dùng hamburger tới 1500px
-     wd  1501px : hiện nav ngang; bộ điều hướng compact cho dải 1501-2299
-     ul  2300px : màn rất rộng, logo và cột trái nới ra */
+     nav 1321px : chuyển container/gutter desktop; header giữ hamburger khi còn chật
+     wd  1501px : bộ điều hướng compact cho dải 1501-2299
+     header 1681px: bật nav ngang theo hợp đồng; dưới đó dùng drawer
+     ul  2300px : màn rất rộng, logo và container header nới ra */
   --breakpoint-ph: 561px;
   --breakpoint-tb: 821px;
   --breakpoint-nav: 1321px;
@@ -197,6 +198,7 @@
 :root {
   /* Nuxt UI v4 suy ra bán kính của mọi component từ biến này. */
   --ui-radius: 4px;
+  --pts-gold-gradient: linear-gradient(110deg, var(--color-gold-400) 0%, var(--color-gold-500) 100%);
 }
 
 /* Match the approved shared page width on large displays (1600px+). */
@@ -233,6 +235,7 @@
       transition-delay: 0ms !important;
       transition-duration: 0.01ms !important;
     }
+
   }
 
   /* Apple-style sleek scrollbars (macOS / iOS style) */
@@ -267,7 +270,16 @@
    */
   body {
     font-family: var(--font-sans);
+    font-size: 17px;
     -webkit-font-smoothing: antialiased;
+  }
+
+  @media (min-width: 821px) {
+    body { font-size: 18px; }
+  }
+
+  @media (min-width: 1600px) {
+    body { font-size: 20px; }
   }
 
   /* Focus vàng dày 3px là cam kết tiếp cận đã có trong tokens.css. Nhắc lại ở
@@ -279,6 +291,28 @@
 }
 
 @layer components {
+  .bg-primary,
+  .bg-gold-400,
+  .bg-gold-500,
+  .bg-gold-600,
+  .bg-hdr-gold,
+  .bg-hdr-gold-hover,
+  .bg-hdr-gold-deep {
+    background-image: var(--pts-gold-gradient);
+    color: var(--color-navy-950);
+  }
+
+  :is(button, a, [role="button"]).bg-primary,
+  span[aria-current="page"].bg-primary,
+  :is(button, a, [role="button"]).bg-gold-400,
+  :is(button, a, [role="button"]).bg-gold-500,
+  :is(button, a, [role="button"]).bg-gold-600,
+  :is(button, a, [role="button"]).bg-hdr-gold,
+  :is(button, a, [role="button"]).bg-hdr-gold-hover,
+  :is(button, a, [role="button"]).bg-hdr-gold-deep {
+    border-color: transparent;
+  }
+
   /*
    * Khung container thống nhất toàn site:
    * - <=359px : gutter 12px (không tràn 320px)
@@ -516,5 +550,30 @@
     padding: 0.95rem 1.15rem;
     color: var(--color-navy-800);
     font-weight: 500;
+  }
+}
+
+/* Keep navy CTA text above Tailwind's text-white hover utilities. */
+@layer utilities {
+  .bg-primary,
+  .bg-gold-400,
+  .bg-gold-500,
+  .bg-gold-600,
+  .bg-hdr-gold,
+  .bg-hdr-gold-hover,
+  .bg-hdr-gold-deep {
+    color: var(--color-navy-950);
+  }
+
+  :is(button, a, [role="button"]).bg-primary,
+  span[aria-current="page"].bg-primary,
+  :is(button, a, [role="button"]).bg-gold-400,
+  :is(button, a, [role="button"]).bg-gold-500,
+  :is(button, a, [role="button"]).bg-gold-600,
+  :is(button, a, [role="button"]).bg-hdr-gold,
+  :is(button, a, [role="button"]).bg-hdr-gold-hover,
+  :is(button, a, [role="button"]).bg-hdr-gold-deep {
+    color: var(--color-navy-950);
+    border-color: transparent;
   }
 }

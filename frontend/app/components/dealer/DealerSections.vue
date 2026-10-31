@@ -47,9 +47,13 @@ function cardImage(src: string): string {
 
   <section v-if="dealer.testimonials.length" class="py-12 nav:py-16">
     <div class="mx-auto w-[calc(100%-clamp(40px,5vw,96px))] max-w-[1560px]">
-      <h2 class="mb-8 text-[clamp(24px,2.6vw,34px)] font-black tracking-tight text-navy-800">{{ dealer.labels.testimonials }}</h2>
-      <div class="grid grid-cols-1 gap-8 nav:grid-cols-3">
-        <article v-for="item in dealer.testimonials" :key="item.title" class="relative flex min-w-0 flex-col justify-between rounded-btn border border-slate-200/90 bg-white p-6 shadow-xs transition-shadow duration-300 hover:shadow-md">
+      <h2 id="dealer-testimonials-heading" class="mb-8 text-[clamp(30px,2.8vw,44px)] font-black leading-[1.2] tracking-tight text-navy-800">{{ dealer.labels.testimonials }}</h2>
+      <div
+        class="-mr-5 flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain pb-3 pr-5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold-500 min-[768px]:mr-0 min-[768px]:grid min-[768px]:grid-cols-2 min-[768px]:gap-8 min-[768px]:overflow-visible min-[768px]:snap-none min-[768px]:pb-0 min-[768px]:pr-0 min-[992px]:grid-cols-3"
+        tabindex="0"
+        :aria-label="dealer.labels.testimonials"
+      >
+        <article v-for="item in dealer.testimonials" :key="item.title" class="relative flex w-[min(86vw,340px)] flex-none snap-start flex-col justify-between gap-5 rounded-[3px] bg-slate-50 p-[28px_26px] min-[768px]:w-auto">
           <div class="relative">
             <span class="select-none font-serif text-4xl font-black leading-none text-gold-400/50" aria-hidden="true">“</span>
             <p class="mb-4 mt-1 leading-relaxed text-slate-700">“{{ item.quote || item.description }}”</p>

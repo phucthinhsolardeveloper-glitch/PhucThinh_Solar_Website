@@ -135,7 +135,7 @@ onBeforeUnmount(() => observer?.disconnect())
 
     <nav
       v-if="navItems.length"
-      class="sticky z-20 mb-2 overflow-x-auto border-y border-slate-200 bg-white/95 backdrop-blur-md transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
+      class="sticky z-20 mb-2 overflow-x-auto overscroll-x-contain border-y border-slate-200 bg-white/95 backdrop-blur-md [scrollbar-width:none] [&::-webkit-scrollbar]:hidden transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
       :class="isHeaderHidden ? 'top-0 shadow-sm' : 'top-16 min-[821px]:top-[88px] min-[1321px]:top-[104px] min-[1501px]:top-[120px] min-[1800px]:top-[136px]'"
       aria-label="Mục nội dung sản phẩm"
     >
@@ -156,7 +156,7 @@ onBeforeUnmount(() => observer?.disconnect())
     <ProductPreviewSpecs :specifications="product.specifications" />
     <ProductSupportExtras :extras="extras" :documents="documents" />
 
-    <section v-if="content.faqs.length" id="cau-hoi-thuong-gap" class="scroll-mt-24 border-t border-gray-200 py-10" aria-labelledby="product-faq-title">
+    <section v-if="content.faqs.length" id="cau-hoi-thuong-gap" class="scroll-mt-24 border-t border-gray-200 py-12 tb:py-16" aria-labelledby="product-faq-title">
       <h2 id="product-faq-title" class="mb-5 text-[clamp(24px,3vw,34px)] font-black text-navy-800">Câu hỏi thường gặp</h2>
       <div class="divide-y divide-gray-200 border-y border-gray-200">
         <details v-for="(faq, index) in content.faqs" :key="index" class="group py-4">

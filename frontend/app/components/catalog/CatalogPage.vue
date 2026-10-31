@@ -23,8 +23,8 @@ const props = defineProps<{ categoryPath?: string }>()
 const route = useRoute()
 const config = useRuntimeConfig()
 const links = useMigrationLinks()
-const filterDialog = ref<HTMLDialogElement | null>(null)
 const filterDrawerOpen = ref(false)
+const categoryNavRef = ref<HTMLElement | null>(null)
 const selfPath = computed(() => route.path)
 const category = computed(() => props.categoryPath ?? (productCategorySegmentsFromPublicPath(route.path).join('/') || (typeof route.query.category === 'string' ? route.query.category : '')))
 const page = computed(() => typeof route.query.page === 'string' ? route.query.page : '')
@@ -63,20 +63,13 @@ function onSortChange(event: Event) {
   navigateTo(filterLink({ sort: value === 'default' ? '' : value }))
 }
 function openFilterDrawer() {
-  const dialog = filterDialog.value
-  if (!dialog || dialog.open) return
-  dialog.showModal()
   filterDrawerOpen.value = true
 }
 function closeFilterDrawer() {
-  if (filterDialog.value?.open) filterDialog.value.close()
   filterDrawerOpen.value = false
 }
 function closeFilterDrawerAfterNavigation(event: MouseEvent) {
   if (event.target instanceof Element && event.target.closest('a[href]')) closeFilterDrawer()
-}
-function syncFilterDrawerState() {
-  filterDrawerOpen.value = filterDialog.value?.open ?? false
 }
 const { data: siteData, error: siteError } = await useAsyncData<PublicSitePayload>('migration-catalog-site', async () => {
   const payload = await $fetch<unknown>('/_migration/site')
@@ -155,6 +148,24 @@ function categoryIcon(slug: string): CatalogMenuIconName {
 function categoryNavLabel(category: PublicProductCategoryNode): string {
   return category.slug === 'den-san-vuon' ? 'Đèn Sân Vườn' : category.name
 }
+
+function revealActiveCategory() {
+  const nav = categoryNavRef.value
+  const activeItem = nav?.querySelector<HTMLElement>('[aria-current="page"]')
+  if (!nav || !activeItem || typeof window === 'undefined') return
+
+  const navRect = nav.getBoundingClientRect()
+  const itemRect = activeItem.getBoundingClientRect()
+  const left = nav.scrollLeft + itemRect.left - navRect.left - (nav.clientWidth - itemRect.width) / 2
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  nav.scrollTo({ left: Math.max(0, left), behavior: reducedMotion ? 'auto' : 'smooth' })
+}
+
+onMounted(() => revealActiveCategory())
+watch(() => selectedCategory.value?.url, async () => {
+  await nextTick()
+  requestAnimationFrame(revealActiveCategory)
+}, { flush: 'post' })
 
 /**
  * Nếu lưới vẫn giữ nguyên hai cột khi không có danh mục/bộ lọc thì nội dung
@@ -287,26 +298,26 @@ function pageLink(nextPage: number) {
       class="pts-container grid grid-cols-1 gap-x-[30px] gap-y-6 pt-6 pb-16 max-[1199px]:gap-x-6 max-[769px]:gap-y-4 max-[769px]:pt-5 max-ph:pb-12"
       :class="hasSidebar ? 'min-[1002px]:grid-cols-[240px_minmax(0,1fr)] min-[1200px]:grid-cols-[280px_minmax(0,1fr)]' : ''"
     >
-      <nav v-if="categoryNavItems.length" class="col-span-full mt-0 flex gap-[10px] overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden max-[769px]:gap-[7px]" aria-label="Danh mục sản phẩm">
+      <nav v-if="categoryNavItems.length" ref="categoryNavRef" class="col-span-full mt-0 flex gap-[10px] overflow-x-auto scroll-smooth overscroll-x-contain pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden max-[769px]:gap-[7px]" aria-label="Danh mục sản phẩm">
         <NuxtLink
           :to="categoryAllHref"
-          class="inline-flex min-h-[58px] min-w-[126px] flex-1 items-center justify-center gap-2 rounded-chip border px-3 py-2 text-center text-[13px] font-bold no-underline transition-colors max-[769px]:min-h-[50px] max-[769px]:min-w-[145px] max-[769px]:flex-none"
-          :class="!selectedCategory || selectedCategory.url === activeCategoryRoot?.url ? 'border-[#c99a32] bg-[#c99a32] text-white' : 'border-slate-200 bg-white text-navy-800 hover:border-gold-600 hover:text-gold-700'"
+          class="inline-flex min-h-[58px] min-w-[126px] flex-1 items-center justify-center gap-2 rounded-chip border px-3 py-2 text-center text-[13px] font-bold no-underline transition-colors max-[769px]:h-[50px] max-[769px]:min-h-0 max-[769px]:w-[145px] max-[769px]:min-w-0 max-[769px]:flex-none max-[769px]:overflow-hidden"
+          :class="!selectedCategory || selectedCategory.url === activeCategoryRoot?.url ? 'border-transparent bg-gold-500 text-navy-950' : 'border-slate-200 bg-white text-navy-800 hover:border-gold-600 hover:text-gold-700'"
           :aria-current="!selectedCategory || selectedCategory.url === activeCategoryRoot?.url ? 'page' : undefined"
         >
           <CatalogMenuIcon class="h-5 w-5 flex-none" name="light" />
-          <span>Tất cả</span>
+          <span class="min-w-0 whitespace-normal [overflow-wrap:anywhere] max-[769px]:line-clamp-2">Tất cả</span>
         </NuxtLink>
         <NuxtLink
           v-for="item in categoryNavItems"
           :key="item.url"
           :to="links.generic(item.url)"
-          class="inline-flex min-h-[58px] min-w-[126px] flex-1 items-center justify-center gap-2 rounded-chip border px-3 py-2 text-center text-[13px] font-bold no-underline transition-colors max-[769px]:min-h-[50px] max-[769px]:min-w-[145px] max-[769px]:flex-none"
-          :class="item.url === selectedCategory?.url ? 'border-[#c99a32] bg-[#c99a32] text-white' : 'border-slate-200 bg-white text-navy-800 hover:border-gold-600 hover:text-gold-700'"
+          class="inline-flex min-h-[58px] min-w-[126px] flex-1 items-center justify-center gap-2 rounded-chip border px-3 py-2 text-center text-[13px] font-bold no-underline transition-colors max-[769px]:h-[50px] max-[769px]:min-h-0 max-[769px]:w-[145px] max-[769px]:min-w-0 max-[769px]:flex-none max-[769px]:overflow-hidden"
+          :class="item.url === selectedCategory?.url ? 'border-transparent bg-gold-500 text-navy-950' : 'border-slate-200 bg-white text-navy-800 hover:border-gold-600 hover:text-gold-700'"
           :aria-current="item.url === selectedCategory?.url ? 'page' : undefined"
         >
           <CatalogMenuIcon class="h-5 w-5 flex-none" :name="categoryIcon(item.slug)" />
-          <span>{{ categoryNavLabel(item) }}</span>
+          <span class="min-w-0 whitespace-normal [overflow-wrap:anywhere] max-[769px]:line-clamp-2">{{ categoryNavLabel(item) }}</span>
         </NuxtLink>
       </nav>
 
@@ -346,26 +357,29 @@ function pageLink(nextPage: number) {
           -->
           <div class="mb-5 flex flex-wrap items-center justify-between gap-3 max-[769px]:items-start max-[769px]:justify-start">
             <h2 class="m-0 text-lg font-black text-navy-800">Danh sách sản phẩm</h2>
-            <div class="flex items-center gap-2 max-[769px]:w-full max-[769px]:flex-col max-[769px]:items-start">
+            <div
+              class="flex items-center gap-2 max-[769px]:grid max-[769px]:w-full"
+              :class="hasSidebar ? 'max-[769px]:grid-cols-2' : 'max-[769px]:grid-cols-1'"
+            >
               <UButton
                 v-if="hasSidebar"
                 color="secondary"
                 variant="outline"
                 size="md"
-                class="min-h-11 gap-2 rounded-[4px] border border-slate-300 bg-white px-3 text-sm font-bold text-navy-800 hover:border-navy-800 min-[1002px]:hidden"
+                class="min-h-11 w-full gap-2 rounded-[4px] border border-slate-300 bg-white px-3 text-sm font-bold text-navy-800 hover:border-navy-800 min-[1002px]:hidden"
                 type="button"
                 aria-haspopup="dialog"
                 aria-controls="catalog-filter-drawer"
                 :aria-expanded="filterDrawerOpen"
                 @click="openFilterDrawer"
               >
-                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M7 12h10m-7 6h4" /><circle cx="8" cy="6" r="1.5" fill="currentColor" stroke="none" /><circle cx="15" cy="12" r="1.5" fill="currentColor" stroke="none" /></svg>
+                <UIcon name="i-lucide-sliders-horizontal" class="size-4" aria-hidden="true" />
                 Bộ lọc
               </UButton>
-              <label v-if="catalogData.selected" class="flex items-center gap-2 text-sm text-slate-500 max-[769px]:w-full max-[769px]:justify-end">
+              <label v-if="catalogData.selected" class="flex min-w-0 items-center gap-2 text-sm text-slate-500 max-[769px]:w-full">
                 <span class="hidden tb:inline">Sắp xếp</span>
                 <select
-                  class="h-10 w-[150px] rounded-btn border border-gray-300 bg-white px-3 font-normal text-navy-800"
+                  class="h-11 w-[150px] min-w-0 rounded-btn border border-gray-300 bg-white px-3 font-normal text-navy-800 max-[769px]:w-full"
                   :value="catalogData.selected.sort"
                   @change="onSortChange"
                 >
@@ -377,69 +391,63 @@ function pageLink(nextPage: number) {
 
           <CatalogProductGrid :products="catalogData.products" />
 
-          <nav v-if="totalPages > 1" class="mt-10 flex flex-wrap gap-2" aria-label="Phân trang sản phẩm">
-            <NuxtLink
+          <nav v-if="totalPages > 1" class="mt-10 flex flex-wrap justify-center gap-2" aria-label="Phân trang sản phẩm">
+            <SitePaginationButton
               v-if="currentPage > 1"
-              class="inline-grid min-h-11 min-w-11 place-items-center rounded-chip border border-gray-200 px-3 py-2 text-navy-800 no-underline transition-colors hover:border-navy-800"
               :to="pageLink(1)"
             >
-              First
-            </NuxtLink>
-            <NuxtLink
+              Đầu
+            </SitePaginationButton>
+            <SitePaginationButton
               v-if="currentPage > 1"
-              class="inline-grid min-h-11 min-w-11 place-items-center rounded-chip border border-gray-200 px-3 py-2 text-navy-800 no-underline transition-colors hover:border-navy-800"
               :to="pageLink(currentPage - 1)"
             >
-              Prev
-            </NuxtLink>
+              Trước
+            </SitePaginationButton>
             <template v-for="item in paginationItems" :key="item.key">
               <span
                 v-if="item.page === null"
-                class="catalog-pagination__ellipsis inline-grid min-h-11 min-w-11 place-items-center px-2 py-2 text-slate-500"
+                class="catalog-pagination__ellipsis text-gold-700"
                 aria-hidden="true"
               >...</span>
-              <span
+              <SitePaginationButton
                 v-else-if="item.page === currentPage"
-                class="inline-grid min-h-11 min-w-11 place-items-center rounded-chip border border-navy-800 bg-navy-800 px-3 py-2 text-white"
-                aria-current="page"
+                active
                 :aria-label="`Trang ${item.page}`"
               >
                 {{ item.page }}
-              </span>
-              <NuxtLink
+              </SitePaginationButton>
+              <SitePaginationButton
                 v-else
-                class="inline-grid min-h-11 min-w-11 place-items-center rounded-chip border border-gray-200 px-3 py-2 text-navy-800 no-underline transition-colors hover:border-navy-800"
                 :to="pageLink(item.page)"
                 :aria-label="`Trang ${item.page}`"
               >
                 {{ item.page }}
-              </NuxtLink>
+              </SitePaginationButton>
             </template>
-            <NuxtLink
+            <SitePaginationButton
               v-if="currentPage < totalPages"
-              class="inline-grid min-h-11 min-w-11 place-items-center rounded-chip border border-gray-200 px-3 py-2 text-navy-800 no-underline transition-colors hover:border-navy-800"
               :to="pageLink(currentPage + 1)"
             >
-              Next
-            </NuxtLink>
-            <NuxtLink
+              Sau
+            </SitePaginationButton>
+            <SitePaginationButton
               v-if="currentPage < totalPages"
-              class="inline-grid min-h-11 min-w-11 place-items-center rounded-chip border border-gray-200 px-3 py-2 text-navy-800 no-underline transition-colors hover:border-navy-800"
               :to="pageLink(totalPages)"
             >
-              Last
-            </NuxtLink>
+              Cuối
+            </SitePaginationButton>
           </nav>
         </template>
       </section>
 
-      <section v-if="catalogData?.categoryContent.applications.length" class="col-span-full py-10" aria-labelledby="catalog-applications-title">
-        <h2 id="catalog-applications-title" class="mb-7 text-2xl font-black text-navy-950">{{ catalogData.categoryContent.title || 'Ứng dụng phù hợp' }}</h2>
-        <div class="grid grid-cols-1 gap-7 tb:grid-cols-2 nav:grid-cols-3">
-          <a v-for="item in catalogData.categoryContent.applications" :key="item.title" :href="item.href ? links.generic(item.href) : undefined" class="min-w-0 text-navy-800 no-underline">
-            <img v-if="item.image" :src="item.image" :alt="item.title" width="760" height="475" sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw" class="aspect-[8/5] w-full object-cover" loading="lazy" decoding="async">
-            <h3 class="mb-2 mt-4 text-lg font-extrabold text-navy-950">{{ item.title }}</h3>
-            <p v-if="item.description" class="m-0 leading-relaxed text-slate-600">{{ item.description }}</p>
+      <section v-if="catalogData?.categoryContent.applications.length" class="col-span-full mt-[18px]" aria-labelledby="catalog-applications-title">
+        <h2 id="catalog-applications-title" class="mb-6 text-center text-[22px] font-black leading-[1.25] text-navy-950">{{ catalogData.categoryContent.title || 'Ứng dụng phù hợp' }}</h2>
+        <div class="grid auto-cols-[min(82vw,320px)] grid-flow-col gap-4 overflow-x-auto pr-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden max-[767px]:snap-x max-[767px]:snap-proximity min-[768px]:grid-flow-row min-[768px]:grid-cols-2 min-[768px]:gap-7 min-[768px]:overflow-visible min-[768px]:pr-0 min-[1200px]:grid-cols-3">
+          <a v-for="item in catalogData.categoryContent.applications" :key="item.title" :href="item.href ? links.generic(item.href) : undefined" class="min-w-0 text-navy-800 no-underline max-[767px]:snap-start">
+            <img v-if="item.image" :src="item.image" :alt="item.title" width="760" height="475" sizes="(min-width: 1200px) 33vw, (min-width: 768px) 50vw, 82vw" class="aspect-[8/5] w-full object-cover" loading="lazy" decoding="async">
+            <h3 class="mb-0 mt-3 text-lg font-extrabold text-navy-950">{{ item.title }}</h3>
+            <p v-if="item.description" class="mb-0 mt-1 text-base leading-relaxed text-slate-600">{{ item.description }}</p>
           </a>
         </div>
       </section>
@@ -463,45 +471,51 @@ function pageLink(nextPage: number) {
       </section>
     </main>
 
-    <dialog
+    <UDrawer
       v-if="hasSidebar"
-      id="catalog-filter-drawer"
-      ref="filterDialog"
-      class="fixed inset-y-0 left-0 m-0 h-dvh max-h-none w-[min(340px,92vw)] max-w-none overflow-hidden border-0 bg-white p-0 text-navy-800 shadow-2xl backdrop:bg-slate-950/60"
-      aria-label="Bộ lọc sản phẩm"
-      aria-modal="true"
-      @close="syncFilterDrawerState"
-      @click="closeFilterDrawerAfterNavigation"
+      v-model:open="filterDrawerOpen"
+      direction="left"
+      title="Bộ lọc sản phẩm"
+      description="Chọn danh mục và các tiêu chí để lọc sản phẩm."
+      :handle="false"
+      :close="false"
+      :ui="{
+        overlay: 'bg-slate-950/60',
+        content: '!h-dvh !max-h-none !w-[min(340px,92vw)] !max-w-none !rounded-none overflow-hidden border-0 bg-white p-0 text-navy-800 shadow-2xl ring-0',
+      }"
     >
-      <div class="flex h-full min-h-0 flex-col">
-        <div class="sticky top-0 z-10 flex min-h-[62px] flex-none items-center justify-between border-b border-slate-200 bg-white px-4">
-          <h2 class="m-0 text-base font-black text-navy-800">Bộ lọc sản phẩm</h2>
-          <button
-            class="inline-grid h-11 w-11 place-items-center rounded-btn border border-slate-200 bg-white text-navy-800 transition-colors hover:bg-slate-100"
-            type="button"
-            aria-label="Đóng bộ lọc"
-            autofocus
-            @click="closeFilterDrawer"
-          >
-            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>
-          </button>
+      <template #content>
+        <div id="catalog-filter-drawer" class="flex h-full min-h-0 flex-col" @click="closeFilterDrawerAfterNavigation">
+          <div class="sticky top-0 z-10 flex min-h-[62px] flex-none items-center justify-between border-b border-slate-200 bg-white px-4">
+            <h2 class="m-0 text-base font-black text-navy-800">Bộ lọc sản phẩm</h2>
+            <UButton
+              type="button"
+              color="neutral"
+              variant="ghost"
+              class="inline-grid h-11 w-11 place-items-center rounded-btn border border-slate-200 bg-white p-0 text-navy-800 hover:bg-slate-100"
+              aria-label="Đóng bộ lọc"
+              @click="closeFilterDrawer"
+            >
+              <UIcon name="i-lucide-x" class="size-5" aria-hidden="true" />
+            </UButton>
+          </div>
+          <div class="min-h-0 flex-1 overflow-y-auto">
+            <CatalogFilterSidebar
+              id-prefix="catalog-filter-drawer"
+              :categories="sidebarCategories"
+              :selected-category="selectedCategory?.url ?? ''"
+              :filters="catalogData?.filters ?? emptyFilters"
+              :selected="catalogData?.selected ?? emptySelected"
+              :keyword="keyword"
+              :subcategory-title="subcategoryTitle"
+              :filter-link="filterLink"
+              hide-title
+              drawer
+            />
+          </div>
         </div>
-        <div class="min-h-0 flex-1 overflow-y-auto">
-          <CatalogFilterSidebar
-            id-prefix="catalog-filter-drawer"
-            :categories="sidebarCategories"
-            :selected-category="selectedCategory?.url ?? ''"
-            :filters="catalogData?.filters ?? emptyFilters"
-            :selected="catalogData?.selected ?? emptySelected"
-            :keyword="keyword"
-            :subcategory-title="subcategoryTitle"
-            :filter-link="filterLink"
-            hide-title
-            drawer
-          />
-        </div>
-      </div>
-    </dialog>
+      </template>
+    </UDrawer>
 
     <SiteFooter v-if="siteData" :site="siteData" />
   </div>

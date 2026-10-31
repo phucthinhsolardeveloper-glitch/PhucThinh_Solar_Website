@@ -4,6 +4,10 @@ import type { PublicAboutPayload } from '#shared/contracts/public-about'
 const props = defineProps<{ about: PublicAboutPayload }>()
 const links = useMigrationLinks()
 const { openConsultation } = useStorefrontModal()
+const { isHeaderHidden } = useSiteHeader()
+const aboutNavRef = ref<HTMLElement | null>(null)
+const activeAboutSection = ref('ve-phuc-thinh')
+let aboutSectionObserver: IntersectionObserver | null = null
 const galleryCertificates = computed(() => props.about.certificates.items)
 const visibleCertificates = computed(() => {
   const featured = props.about.certificates.items.filter((item) => item.featured)
@@ -15,6 +19,49 @@ const certificateTrigger = ref<HTMLElement | null>(null)
 const certificateGalleryOpen = ref(false)
 const activeCertificateIndex = ref(0)
 const activeCertificate = computed(() => galleryCertificates.value[activeCertificateIndex.value] ?? null)
+const aboutSectionNavItems = computed(() => [
+  { id: 've-phuc-thinh', label: props.about.labels.story },
+  ...(props.about.history.items.length ? [{ id: 'lich-su-phat-trien', label: props.about.labels.history }] : []),
+  { id: 'con-nguoi', label: props.about.labels.people },
+  ...(props.about.compass.items.length ? [{ id: 'tam-nhin-su-menh', label: props.about.labels.compass }] : []),
+  ...(props.about.certificates.items.length ? [{ id: 'about-certificates', label: props.about.labels.certificates }] : []),
+])
+
+function setupAboutSectionObserver() {
+  aboutSectionObserver?.disconnect()
+  if (!import.meta.client) return
+  const sections = aboutSectionNavItems.value
+    .map((item) => document.getElementById(item.id))
+    .filter((section): section is HTMLElement => Boolean(section))
+  if (!sections.length) return
+  aboutSectionObserver = new IntersectionObserver((entries) => {
+    const current = entries
+      .filter((entry) => entry.isIntersecting)
+      .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0]?.target as HTMLElement | undefined
+    if (current?.id) activeAboutSection.value = current.id
+  }, { rootMargin: '-150px 0px -58% 0px', threshold: [0, 0.01] })
+  sections.forEach((section) => aboutSectionObserver?.observe(section))
+}
+
+function navigateAboutSection(id: string) {
+  const target = document.getElementById(id)
+  if (!target) return
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  activeAboutSection.value = id
+  window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}#${id}`)
+  target.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'start' })
+  requestAnimationFrame(() => {
+    aboutNavRef.value?.querySelector<HTMLAnchorElement>(`a[data-about-section="${id}"]`)?.scrollIntoView({
+      behavior: reducedMotion ? 'auto' : 'smooth',
+      block: 'nearest',
+      inline: 'center',
+    })
+  })
+}
+
+onMounted(() => nextTick(setupAboutSectionObserver))
+watch(aboutSectionNavItems, () => nextTick(setupAboutSectionObserver), { deep: true })
+onBeforeUnmount(() => aboutSectionObserver?.disconnect())
 
 async function openCertificate(item: PublicAboutPayload['certificates']['items'][number], event: MouseEvent) {
   const index = galleryCertificates.value.findIndex((candidate) => candidate.id === item.id)
@@ -59,7 +106,7 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
 
 <template>
   <div class="overflow-hidden text-navy-800">
-    <section id="ve-phuc-thinh" class="pts-container pt-4 pb-[54px]" aria-labelledby="about-story-title">
+    <section id="ve-phuc-thinh" class="scroll-mt-[160px] pts-container pt-4 pb-[54px] max-[800px]:scroll-mt-[116px] min-[1800px]:scroll-mt-[184px]" aria-labelledby="about-story-title">
       <div class="grid min-h-[470px] grid-cols-[minmax(410px,.88fr)_minmax(0,1.12fr)] gap-0 overflow-hidden rounded-btn border border-navy-800/15 bg-[linear-gradient(135deg,#061735,#10366a)] shadow-md max-[800px]:min-h-0 max-[800px]:grid-cols-1">
         <div class="flex flex-col justify-center p-[clamp(38px,4vw,64px)] max-[800px]:block max-[800px]:px-6 max-[800px]:pb-[38px] max-[800px]:pt-[34px] max-[600px]:px-5 max-[600px]:pb-[34px] max-[600px]:pt-[30px]">
           <h1 id="about-story-title" class="m-0 max-w-[620px] text-[clamp(36px,3.6vw,54px)] font-black leading-[1.12] tracking-[-.035em] text-white max-[800px]:text-[34px] max-[600px]:text-[31px]">{{ about.story.title }}</h1>
@@ -70,17 +117,22 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
       </div>
     </section>
 
-    <nav class="bg-white" aria-label="Đi nhanh trong trang Giới thiệu">
-      <div class="pts-container flex gap-[24px] overflow-x-auto border-b border-slate-200/80 pb-4 pt-1 [scrollbar-width:none] max-[800px]:gap-[18px]">
-        <a class="inline-flex min-h-11 min-w-11 flex-none items-center justify-center border-b-2 border-transparent px-2 text-[13px] font-extrabold text-navy-800 no-underline hover:border-gold-500 hover:text-gold-500 focus-visible:border-gold-500 focus-visible:text-gold-500" href="#ve-phuc-thinh">{{ about.labels.story }}</a>
-        <a v-if="about.history.items.length" class="inline-flex min-h-11 min-w-11 flex-none items-center justify-center border-b-2 border-transparent px-2 text-[13px] font-extrabold text-navy-800 no-underline hover:border-gold-500 hover:text-gold-500 focus-visible:border-gold-500 focus-visible:text-gold-500" href="#lich-su-phat-trien">{{ about.labels.history }}</a>
-        <a class="inline-flex min-h-11 min-w-11 flex-none items-center justify-center border-b-2 border-transparent px-2 text-[13px] font-extrabold text-navy-800 no-underline hover:border-gold-500 hover:text-gold-500 focus-visible:border-gold-500 focus-visible:text-gold-500" href="#con-nguoi">{{ about.labels.people }}</a>
-        <a v-if="about.compass.items.length" class="inline-flex min-h-11 min-w-11 flex-none items-center justify-center border-b-2 border-transparent px-2 text-[13px] font-extrabold text-navy-800 no-underline hover:border-gold-500 hover:text-gold-500 focus-visible:border-gold-500 focus-visible:text-gold-500" href="#tam-nhin-su-menh">{{ about.labels.compass }}</a>
-        <a v-if="about.certificates.items.length" class="inline-flex min-h-11 min-w-11 flex-none items-center justify-center border-b-2 border-transparent px-2 text-[13px] font-extrabold text-navy-800 no-underline hover:border-gold-500 hover:text-gold-500 focus-visible:border-gold-500 focus-visible:text-gold-500" href="#about-certificates">{{ about.labels.certificates }}</a>
+    <nav class="sticky z-30 border-b border-slate-200 bg-white/95 backdrop-blur-md transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]" :class="isHeaderHidden ? 'top-0 shadow-sm' : 'top-16 min-[821px]:top-[88px] min-[1321px]:top-[104px] min-[1501px]:top-[120px] min-[1800px]:top-[136px]'" aria-label="Đi nhanh trong trang Giới thiệu">
+      <div ref="aboutNavRef" class="pts-container flex gap-6 overflow-x-auto py-1 [scrollbar-width:none] max-[800px]:gap-[18px] [&::-webkit-scrollbar]:hidden" aria-label="Mục nội dung Giới thiệu">
+        <a
+          v-for="item in aboutSectionNavItems"
+          :key="item.id"
+          :data-about-section="item.id"
+          class="inline-flex min-h-11 min-w-11 flex-none items-center justify-center border-b-2 px-2 text-[15px] font-extrabold no-underline transition-colors hover:border-gold-500 hover:text-gold-600 focus-visible:border-gold-500 focus-visible:text-gold-600"
+          :class="activeAboutSection === item.id ? 'border-gold-500 text-gold-600' : 'border-transparent text-navy-800'"
+          :href="`#${item.id}`"
+          :aria-current="activeAboutSection === item.id ? 'location' : undefined"
+          @click.prevent="navigateAboutSection(item.id)"
+        >{{ item.label }}</a>
       </div>
     </nav>
 
-    <section v-if="about.history.items.length" id="lich-su-phat-trien" class="bg-slate-50 py-16 max-[800px]:py-12" aria-labelledby="about-history-title">
+    <section v-if="about.history.items.length" id="lich-su-phat-trien" class="scroll-mt-[160px] bg-slate-50 py-16 max-[800px]:scroll-mt-[116px] max-[800px]:py-12 min-[1800px]:scroll-mt-[184px]" aria-labelledby="about-history-title">
       <div class="pts-container grid grid-cols-2 items-stretch gap-[clamp(30px,5.4vw,86px)] max-[800px]:grid-cols-1">
         <div>
           <h2 id="about-history-title" class="m-0 text-[clamp(29px,2.6vw,38px)] font-bold leading-[1.22]">{{ about.history.title }}</h2>
@@ -97,7 +149,7 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
       </div>
     </section>
 
-    <section id="con-nguoi" class="bg-white py-16 max-[800px]:py-12" aria-labelledby="about-people-title">
+    <section id="con-nguoi" class="scroll-mt-[160px] bg-white py-16 max-[800px]:scroll-mt-[116px] max-[800px]:py-12 min-[1800px]:scroll-mt-[184px]" aria-labelledby="about-people-title">
       <div class="pts-container">
         <div class="grid grid-cols-2 items-center gap-[clamp(28px,5.4vw,86px)] max-[800px]:grid-cols-1">
           <figure v-if="about.people.image" class="m-0 aspect-[10/7] overflow-hidden rounded-btn bg-navy-50 max-[800px]:max-h-[26rem]"><img class="block h-full w-full object-cover" :src="about.people.image" :alt="about.people.title" width="780" height="620" loading="lazy"></figure>
@@ -133,11 +185,11 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
       </div>
     </section>
 
-    <section v-if="about.compass.items.length" id="tam-nhin-su-menh" class="bg-navy-800 py-16 max-[800px]:py-12" aria-labelledby="about-compass-title">
+    <section v-if="about.compass.items.length" id="tam-nhin-su-menh" class="scroll-mt-[160px] bg-navy-800 py-16 max-[800px]:scroll-mt-[116px] max-[800px]:py-12 min-[1800px]:scroll-mt-[184px]" aria-labelledby="about-compass-title">
       <div class="pts-container"><h2 id="about-compass-title" class="m-0 text-[clamp(29px,2.6vw,38px)] font-bold leading-[1.22] text-white">{{ about.compass.title }}</h2><div class="mt-9 grid grid-cols-3 border-t border-white/20 max-[800px]:grid-cols-1"><article v-for="(item, index) in about.compass.items" :key="`${item.title}-${index}`" class="px-8 pt-7 first:pl-0 max-[800px]:grid max-[800px]:grid-cols-[3.5rem_minmax(0,1fr)] max-[800px]:gap-4 max-[800px]:border-t max-[800px]:border-white/20 max-[800px]:px-0 max-[800px]:py-5 max-[800px]:first:border-t-0"><img v-if="item.image" class="h-12 w-12 object-contain" :src="item.image" alt="" width="56" height="56" loading="lazy"><span v-else class="flex h-[3.25rem] w-[3.25rem] items-center justify-center rounded-full border border-gold-300/70 text-xs font-extrabold text-gold-300" aria-hidden="true">{{ String(index + 1).padStart(2, '0') }}</span><div><h3 class="text-[1.1rem] font-bold leading-[1.22] text-white">{{ item.title }}</h3><p v-if="item.description" class="m-0 mt-[.4rem] leading-[1.68] text-[#d1daea]">{{ item.description }}</p></div></article></div></div>
     </section>
 
-    <section v-if="about.certificates.items.length" id="about-certificates" class="py-16 max-[800px]:py-12" aria-labelledby="about-certificates-title">
+    <section v-if="about.certificates.items.length" id="about-certificates" class="scroll-mt-[160px] py-16 max-[800px]:scroll-mt-[116px] max-[800px]:py-12 min-[1800px]:scroll-mt-[184px]" aria-labelledby="about-certificates-title">
       <div class="pts-container">
         <header class="grid grid-cols-1 items-end gap-5 min-[801px]:grid-cols-[minmax(0,1fr)_auto]">
           <div>

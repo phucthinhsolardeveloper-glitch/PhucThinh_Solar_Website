@@ -118,10 +118,10 @@ usePublicSocialMeta({
           <strong>Không tìm thấy kết quả</strong>
         </div>
 
-        <nav v-if="totalPages > 1" class="mt-10 flex items-center justify-center gap-3" aria-label="Phân trang video">
-          <NuxtLink v-if="page > 1" :to="pageTo(page - 1)" class="inline-flex min-h-11 items-center rounded-chip border border-gray-200 px-4 font-bold no-underline">Trước</NuxtLink>
+        <nav v-if="totalPages > 1" class="mt-10 flex flex-wrap items-center justify-center gap-2" aria-label="Phân trang video">
+          <SitePaginationButton v-if="page > 1" :to="pageTo(page - 1)">Trước</SitePaginationButton>
           <span class="text-sm text-slate-500">Trang {{ page }} / {{ totalPages }}</span>
-          <NuxtLink v-if="page < totalPages" :to="pageTo(page + 1)" class="inline-flex min-h-11 items-center rounded-chip border border-gray-200 px-4 font-bold no-underline">Sau</NuxtLink>
+          <SitePaginationButton v-if="page < totalPages" :to="pageTo(page + 1)">Sau</SitePaginationButton>
         </nav>
       </template>
     </main>

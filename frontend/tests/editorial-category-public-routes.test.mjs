@@ -31,18 +31,17 @@ test('solution category page uses the read-only filtered GET DTO as an always-on
   assert.match(api, /ptsPublicSolutionCategoryDto/)
 })
 
-test('editorial bare-slug routes render only the API-confirmed fixture categories and keep empty news group pending', () => {
+test('editorial bare-slug routes include the verified empty recruitment category as an API-backed noindex page', () => {
   const manifest = JSON.parse(read('../../tools/visual-tests/fixtures/migration-routes.json'))
   const routes = manifest.routes.filter((route) => route.kind === 'news-category' || route.kind === 'solution-category')
   assert.deepEqual(routes.map((route) => route.legacyPath), [
-    '/tin-moi-nhat', '/tin-truyen-thong', '/kien-thuc-san-pham', '/doanh-nghiep', '/ho-gia-dinh',
+    '/tin-moi-nhat', '/tin-truyen-thong', '/kien-thuc-san-pham', '/tin-tuyen-dung', '/doanh-nghiep', '/ho-gia-dinh',
   ])
   assert.ok(routes.every((route) => route.expectedCanonicalPath === route.legacyPath))
-  const empty = manifest.manualReviewRoutes.find((fixture) => fixture.slug === 'tin-tuyen-dung')
-  assert.equal(empty.verification, 'NEEDS VERIFICATION')
-  assert.equal(empty.family, 'news-category')
-  assert.equal(empty.observedLegacyStatus, 200)
+  assert.equal(manifest.manualReviewRoutes.some((fixture) => fixture.slug === 'tin-tuyen-dung'), false)
   assert.equal(manifest.negativeFixtures.some((fixture) => fixture.slug === 'tin-tuyen-dung'), false)
+  const page = read('../app/pages/tin-tuyen-dung.vue')
+  assert.match(page, /NewsCategoryPage slug-override="tin-tuyen-dung"/)
 })
 
 test('public category routes have no enable/disable flag and SEO indexability is separate', () => {

@@ -133,7 +133,6 @@ async function send() {
           <button :disabled="submitting" class="inline-flex min-h-[50px] items-center justify-center rounded-[4px] border border-hdr-gold bg-hdr-gold px-[25px] font-bold text-navy-950 shadow-xs transition-all hover:bg-hdr-gold-hover hover:shadow-md active:scale-[0.98] disabled:cursor-wait disabled:opacity-60 cursor-pointer" type="submit">
             {{ submitting ? 'Đang gửi…' : 'Gửi yêu cầu tư vấn' }}
           </button>
-          <small class="mt-3 block text-slate-500">Thông tin chỉ được sử dụng để liên hệ tư vấn; biểu mẫu được bảo vệ bằng CSRF, reCAPTCHA và giới hạn tần suất.</small>
         </form>
       </div>
     </div>

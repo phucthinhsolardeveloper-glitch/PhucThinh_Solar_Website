@@ -19,6 +19,16 @@ const securityLoading = ref(false)
 const success = ref('')
 const error = ref('')
 const securityError = ref('')
+const cityOptions = computed(() => (security.value?.cities ?? []).map((city) => ({ label: city.name, value: String(city.id) })))
+const inputUi = {
+  base: 'h-14 w-full rounded-btn border border-slate-300 bg-white px-4 text-base font-normal text-navy-950 placeholder:text-slate-400 focus-visible:border-gold-600 focus-visible:ring-2 focus-visible:ring-gold-500/25',
+}
+const selectUi = {
+  base: 'h-14 w-full rounded-btn border border-slate-300 bg-white px-4 text-base font-normal text-navy-950 focus-visible:border-gold-600 focus-visible:ring-2 focus-visible:ring-gold-500/25',
+}
+const textareaUi = {
+  base: 'min-h-[144px] w-full rounded-btn border border-slate-300 bg-white px-4 py-3 text-base font-normal text-navy-950 placeholder:text-slate-400 focus-visible:border-gold-600 focus-visible:ring-2 focus-visible:ring-gold-500/25',
+}
 
 async function loadSecurity(refresh = false) {
   securityLoading.value = true
@@ -29,7 +39,7 @@ async function loadSecurity(refresh = false) {
       securityError.value = 'Chưa thể tải danh sách tỉnh/thành phố. Vui lòng bấm thử lại.'
     }
   } catch {
-    securityError.value = 'Không thể tải phiên bảo mật. Vui lòng bấm thử lại.'
+      securityError.value = 'Không thể chuẩn bị biểu mẫu. Vui lòng thử tải lại.'
   } finally {
     securityLoading.value = false
   }
@@ -98,11 +108,11 @@ async function send() {
     :description="'Hợp tác phát triển năng lượng xanh cùng Phúc Thịnh Solar với chính sách ưu đãi.'"
     :ui="{
       overlay: 'bg-navy-950/70 backdrop-blur-md',
-      content: 'w-[calc(100vw-2rem)] max-w-lg rounded-[6px] border border-slate-200 bg-white shadow-2xl divide-y-0 text-navy-950',
-      header: 'px-6 pt-6 pb-2 border-b-0 relative',
-      title: 'text-[20px] font-black tracking-tight text-navy-900',
-      description: 'text-sm text-slate-500 mt-1 leading-relaxed',
-      body: 'px-6 pt-2 pb-6',
+      content: 'w-[min(880px,calc(100vw-32px))] max-w-none max-h-[calc(100dvh-24px)] overflow-y-auto rounded-btn border border-slate-200 bg-white shadow-2xl divide-y-0 text-navy-950',
+      header: 'px-6 pt-7 pb-3 border-b-0 relative sm:px-10 sm:pt-10',
+      title: 'text-[clamp(24px,3vw,32px)] font-black tracking-tight text-navy-950',
+      description: 'mt-2 max-w-3xl text-[16px] leading-7 text-slate-600',
+      body: 'px-6 pt-3 pb-7 sm:px-10 sm:pb-10',
       close: 'text-slate-400 hover:text-slate-700 top-5 right-5',
     }"
   >
@@ -120,7 +130,7 @@ async function send() {
         <div class="pt-2">
           <button
             type="button"
-            class="min-h-[42px] w-full rounded-[4px] bg-[#c58a2d] px-5 text-sm font-bold text-white transition-colors hover:bg-[#b07824]"
+            class="min-h-[42px] w-full rounded-btn bg-gold-500 px-5 text-sm font-bold text-navy-950 transition-colors hover:bg-gold-400"
             @click="closeDealer"
           >
             Đóng cửa sổ
@@ -128,120 +138,45 @@ async function send() {
         </div>
       </div>
 
-      <form v-else class="space-y-4" @submit.prevent="send">
-        <div class="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
-          <label class="grid gap-1 text-xs font-bold uppercase tracking-wider text-navy-900">
-            <span>Họ và tên <span class="text-red-600">*</span></span>
-            <input
-              v-model.trim="form.fullname"
-              required
-              maxlength="100"
-              autocomplete="name"
-              placeholder="Nguyễn Văn A"
-              class="h-10 w-full rounded-[4px] border border-slate-300 bg-white px-3 font-normal text-sm text-navy-950 outline-none transition-colors placeholder:text-slate-400 focus:border-[#c58a2d] focus:ring-1 focus:ring-[#c58a2d]"
-            >
-          </label>
-
-          <label class="grid gap-1 text-xs font-bold uppercase tracking-wider text-navy-900">
-            <span>Số điện thoại <span class="text-red-600">*</span></span>
-            <input
-              v-model.trim="form.phone"
-              required
-              maxlength="20"
-              autocomplete="tel"
-              inputmode="tel"
-              placeholder="09xx xxx xxx"
-              class="h-10 w-full rounded-[4px] border border-slate-300 bg-white px-3 font-normal text-sm text-navy-950 outline-none transition-colors placeholder:text-slate-400 focus:border-[#c58a2d] focus:ring-1 focus:ring-[#c58a2d]"
-            >
-          </label>
+      <form v-else class="grid gap-7" @submit.prevent="send">
+        <div class="grid min-w-0 gap-x-6 gap-y-5 sm:grid-cols-2">
+          <UFormField label="Họ và tên" name="fullname" required class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-[15px] font-bold text-navy-800' }">
+            <UInput v-model.trim="form.fullname" name="fullname" required maxlength="100" autocomplete="name" placeholder="Nguyễn Văn A" variant="none" class="w-full" :ui="inputUi" />
+          </UFormField>
+          <UFormField label="Số điện thoại" name="phone" required class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-[15px] font-bold text-navy-800' }">
+            <UInput v-model.trim="form.phone" name="phone" type="tel" required maxlength="20" autocomplete="tel" inputmode="tel" placeholder="09xx xxx xxx" variant="none" class="w-full" :ui="inputUi" />
+          </UFormField>
+          <UFormField label="Email" name="email" required class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-[15px] font-bold text-navy-800' }">
+            <UInput v-model.trim="form.email" name="email" type="email" required maxlength="150" autocomplete="email" placeholder="email@doanhnghiep.vn" variant="none" class="w-full" :ui="inputUi" />
+          </UFormField>
+          <UFormField label="Tỉnh/Thành phố" name="cityId" required class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-[15px] font-bold text-navy-800' }">
+            <USelect v-model="form.cityId" name="cityId" required :disabled="securityLoading || !cityOptions.length" :items="cityOptions" :placeholder="securityLoading ? 'Đang tải tỉnh/thành…' : '-- Chọn tỉnh/thành --'" color="neutral" variant="none" class="w-full" :ui="selectUi" />
+          </UFormField>
         </div>
 
-        <div class="grid grid-cols-1 gap-3.5 sm:grid-cols-2">
-          <label class="grid gap-1 text-xs font-bold uppercase tracking-wider text-navy-900">
-            <span>Email <span class="text-red-600">*</span></span>
-            <input
-              v-model.trim="form.email"
-              required
-              type="email"
-              maxlength="150"
-              autocomplete="email"
-              placeholder="email@doanhnghiep.vn"
-              class="h-10 w-full rounded-[4px] border border-slate-300 bg-white px-3 font-normal text-sm text-navy-950 outline-none transition-colors placeholder:text-slate-400 focus:border-[#c58a2d] focus:ring-1 focus:ring-[#c58a2d]"
-            >
-          </label>
+        <UFormField label="Khu vực kinh doanh / Tên cửa hàng" name="company" required class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-[15px] font-bold text-navy-800' }">
+          <UInput v-model.trim="form.company" name="company" required maxlength="180" autocomplete="organization" placeholder="Tên doanh nghiệp, cửa hàng hoặc khu vực dự kiến kinh doanh" variant="none" class="w-full" :ui="inputUi" />
+        </UFormField>
 
-          <label class="grid gap-1 text-xs font-bold uppercase tracking-wider text-navy-900">
-            <span>Tỉnh/Thành phố <span class="text-red-600">*</span></span>
-            <select
-              v-model="form.cityId"
-              required
-              :disabled="securityLoading || !security?.cities.length"
-              class="h-10 w-full rounded-[4px] border border-slate-300 bg-white px-3 font-normal text-sm text-navy-950 outline-none transition-colors focus:border-[#c58a2d] focus:ring-1 focus:ring-[#c58a2d]"
-            >
-              <option value="">{{ securityLoading ? 'Đang tải tỉnh/thành…' : '-- Chọn tỉnh/thành --' }}</option>
-              <option v-for="city in security?.cities ?? []" :key="city.id" :value="String(city.id)">
-                {{ city.name }}
-              </option>
-            </select>
-          </label>
-        </div>
-
-        <label class="grid gap-1 text-xs font-bold uppercase tracking-wider text-navy-900">
-          <span>Khu vực kinh doanh / Tên cửa hàng <span class="text-red-600">*</span></span>
-          <input
-            v-model.trim="form.company"
-            required
-            maxlength="180"
-            autocomplete="organization"
-            placeholder="Tên doanh nghiệp, cửa hàng hoặc khu vực dự kiến kinh doanh"
-            class="h-10 w-full rounded-[4px] border border-slate-300 bg-white px-3 font-normal text-sm text-navy-950 outline-none transition-colors placeholder:text-slate-400 focus:border-[#c58a2d] focus:ring-1 focus:ring-[#c58a2d]"
-          >
-        </label>
-
-        <label class="grid gap-1 text-xs font-bold uppercase tracking-wider text-navy-900">
-          <span>Ghi chú thêm <span class="font-normal lowercase text-slate-400">(không bắt buộc)</span></span>
-          <textarea
-            v-model.trim="form.notes"
-            rows="3"
-            maxlength="1000"
-            placeholder="Năng lực hiện tại, sản phẩm chính quan tâm (đèn mặt trời, điện mặt trời, inverter...)"
-            class="w-full rounded-[4px] border border-slate-300 bg-white p-3 font-normal text-sm text-navy-950 outline-none transition-colors placeholder:text-slate-400 focus:border-[#c58a2d] focus:ring-1 focus:ring-[#c58a2d]"
-          />
-        </label>
+        <UFormField label="Ghi chú thêm" hint="Không bắt buộc" name="notes" class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-[15px] font-bold text-navy-800', hint: 'text-sm font-normal text-slate-500' }">
+          <UTextarea v-model.trim="form.notes" name="notes" :rows="4" maxlength="1000" placeholder="Năng lực hiện tại, sản phẩm chính quan tâm (đèn mặt trời, điện mặt trời, inverter...)" variant="none" class="w-full" :ui="textareaUi" />
+        </UFormField>
 
         <p v-if="error" class="rounded-[4px] bg-red-50 p-2.5 text-xs font-semibold text-red-700" role="alert">
           {{ error }}
         </p>
 
-        <div v-if="securityError" class="rounded-[4px] bg-red-50 p-2.5 text-xs font-semibold text-red-700" role="alert">
+        <div v-if="securityError" class="rounded-[4px] bg-red-50 p-3 text-sm font-semibold text-red-700" role="alert">
           <span>{{ securityError }}</span>
           <button v-if="!securityLoading" type="button" class="ml-2 font-bold underline" @click="loadSecurity(true)">
             Thử tải lại
           </button>
         </div>
 
-        <div class="pt-1">
-          <button
-            type="submit"
-            :disabled="submitting || securityLoading || !security?.cities.length"
-            class="inline-flex min-h-[44px] w-full items-center justify-center gap-2 rounded-[4px] bg-[#c58a2d] px-6 text-sm font-extrabold text-white transition-colors hover:bg-[#b07824] disabled:cursor-wait disabled:opacity-60"
-          >
-            <svg
-              v-if="submitting"
-              class="h-4 w-4 animate-spin text-white"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-            </svg>
-            <span>{{ submitting ? 'Đang gửi đăng ký…' : 'Đăng ký ngay' }}</span>
-          </button>
-        </div>
-
-        <p class="text-center text-[11px] text-slate-400">
-          Chính sách đại lý & chiết khấu độc quyền sẽ được gửi tới thông tin liên hệ của bạn.
-        </p>
+        <UButton type="submit" color="primary" size="xl" :loading="submitting" :disabled="submitting || securityLoading || !cityOptions.length" class="min-h-14 w-full justify-center rounded-btn bg-gold-500 px-6 text-base font-extrabold text-navy-950">
+          {{ submitting ? 'Đang gửi đăng ký…' : 'Đăng ký ngay' }}
+          <UIcon v-if="!submitting" name="i-lucide-arrow-right" class="size-5" aria-hidden="true" />
+        </UButton>
       </form>
     </template>
   </UModal>

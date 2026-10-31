@@ -12,19 +12,13 @@ const hotlineHref = computed(() => `tel:${props.project.cta?.hotline.replace(/[^
 </script>
 
 <template>
-  <!--
-    Bố cục đo từ ảnh production (/du-an-dien-nlmt-ho-anh-quan/, 1920px) khác
-    hẳn CSS preview cũ: không phải 2 cột copy+ảnh bìa + dải facts 4 cột viền
-    trên/dưới. Thật ra là một dải nền xám (bg-slate-50) chứa: trái = nhãn "DỰ
-    ÁN" + H1 + hàng pill thông tin (Danh mục/Khách hàng/Địa chỉ, dạng viên
-    thuốc nền trắng bo tròn hết cỡ); phải = khối "TỔNG QUAN CÔNG TRÌNH" viền
-    trái vàng — cùng mô-típ khối giá đã dùng ở trang chi tiết sản phẩm.
-    KHÔNG CÓ ảnh bìa lớn cố định — ảnh nằm trong lưới gallery bên dưới.
-  -->
+  <!-- Giữ cùng cấu trúc PHP: tiêu đề và metadata ở trái, contentvi ở phải,
+       rồi đến gallery; descvi không quyết định bố cục hoặc thay contentvi. -->
   <article>
     <header class="py-10 nav:py-12">
-      <div class="pts-container grid w-full grid-cols-1 gap-8" :class="{ 'nav:grid-cols-[0.85fr_1.15fr]': project.summary }">
+      <div class="pts-container grid w-full grid-cols-1 items-start gap-8 nav:grid-cols-[0.86fr_1.14fr] nav:gap-12">
         <div class="min-w-0">
+          <p class="mb-2 text-xs font-extrabold uppercase tracking-[0.16em] text-gold-700">Dự án</p>
           <h1 class="m-0 mb-5 text-[clamp(34px,5vw,56px)] font-black leading-[1.05] tracking-tight text-navy-950">{{ project.title }}</h1>
 
           <dl class="mt-6 flex flex-wrap gap-x-7 gap-y-3 text-sm">
@@ -47,21 +41,14 @@ const hotlineHref = computed(() => `tel:${props.project.cta?.hotline.replace(/[^
           </dl>
         </div>
 
-        <section v-if="project.summary" aria-labelledby="project-summary-title" class="rounded-btn border border-slate-200/90 border-l-4 border-l-gold-500 bg-slate-50/70 p-6 shadow-xs">
-          <h2 id="project-summary-title" class="mb-2 text-xl font-bold text-navy-800">Tổng quan công trình</h2>
-          <p class="m-0 leading-relaxed text-navy-800">{{ project.summary }}</p>
+        <section aria-labelledby="project-summary-title" class="min-w-0 border-l-[3px] border-gold-500 py-1 pl-6">
+          <h2 id="project-summary-title" class="mb-4 text-xs font-black uppercase tracking-[0.13em] text-gold-700">Tổng quan công trình</h2>
+          <EditorialRichText :content="content" />
         </section>
       </div>
     </header>
 
-    <div class="pts-container py-10">
-      <!--
-        Tích hợp sanitizer: content giờ là envelope sanitized-html
-        (pts_public_richtext.php sanitize contentvi của bảng #_news ở PHP).
-        EditorialRichText.vue chỉ v-html trên html đã qua allowlist.
-      -->
-      <EditorialRichText class="mb-10" :content="content" />
-
+    <div class="pts-container pb-10">
       <ProjectDetailGallery :items="project.gallery" />
       <ProjectDetailEquipment :items="project.relatedEquipment" />
 
@@ -73,7 +60,7 @@ const hotlineHref = computed(() => `tel:${props.project.cta?.hotline.replace(/[^
         <div class="grid grid-cols-1 gap-7 tb:grid-cols-2 nav:grid-cols-3">
           <a v-for="item in project.relatedProjects" :key="item.id" :href="links.project(item.slug)" class="group min-w-0 text-navy-800 no-underline">
             <div class="overflow-hidden rounded-chip bg-slate-100">
-              <img :src="item.image || '/assets/images/noimage.png'" :alt="item.title" class="aspect-[4/3] w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105" loading="lazy" decoding="async">
+              <img :src="item.image || '/assets/images/noimage.png'" :alt="item.title" class="aspect-[4/3] w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105 motion-reduce:transform-none motion-reduce:transition-none" loading="lazy" decoding="async">
             </div>
             <div class="pt-4">
               <h3 class="m-0 text-xl font-extrabold leading-snug text-navy-950 transition-colors duration-200 group-hover:text-gold-700">{{ item.title }}</h3>
@@ -105,7 +92,7 @@ const hotlineHref = computed(() => `tel:${props.project.cta?.hotline.replace(/[^
         </div>
         <div class="relative z-10 flex w-full max-w-[330px] flex-col items-stretch gap-[10px] nav:w-auto nav:min-w-[270px] nav:justify-self-end">
           <a v-if="project.cta.hotline" class="flex min-h-12 items-center justify-center gap-3 text-white no-underline" :href="hotlineHref">
-            <span class="grid size-12 shrink-0 place-items-center rounded-btn bg-hdr-gold text-white" aria-hidden="true"><UIcon name="i-lucide-phone" class="size-5" /></span>
+            <span class="grid size-12 shrink-0 place-items-center rounded-btn bg-hdr-gold text-navy-950" aria-hidden="true"><UIcon name="i-lucide-phone" class="size-5" /></span>
             <span class="min-w-0"><span class="block text-[11px] uppercase text-blue-100">Liên hệ ngay</span><strong class="block text-[22px] leading-tight">{{ project.cta.hotline }}</strong></span>
           </a>
           <a class="inline-flex min-h-12 items-center justify-center gap-3 rounded-btn bg-hdr-gold px-[22px] py-3 text-sm font-extrabold text-navy-950 no-underline transition-colors hover:bg-hdr-gold-hover" :href="links.generic('/lien-he/#yeu-cau-tu-van')">{{ project.cta.buttonLabel }} <span aria-hidden="true">→</span></a>

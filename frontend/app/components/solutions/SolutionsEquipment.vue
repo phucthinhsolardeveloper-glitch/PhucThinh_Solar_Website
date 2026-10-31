@@ -17,12 +17,12 @@ const links = useMigrationLinks()
       <a
         v-for="item in equipment"
         :key="item.url"
-        class="group flex min-w-0 flex-col justify-between rounded-chip border border-slate-200/90 bg-white p-4 text-navy-800 no-underline transition-all hover:border-gold-500 hover:shadow-sm"
+        class="group flex min-w-0 flex-col justify-between p-4 text-navy-800 no-underline"
         :href="links.generic(item.url)"
       >
         <div>
           <div v-if="item.image" class="mb-3.5 flex aspect-square w-full items-center justify-center overflow-hidden rounded-chip bg-navy-800/[.03] p-4">
-            <img :src="item.image" alt="" class="h-full w-full object-contain transition-transform duration-300 group-hover:scale-[1.03]" width="160" height="160" loading="lazy" decoding="async">
+            <img :src="item.image" alt="" class="h-full w-full object-contain" width="160" height="160" loading="lazy" decoding="async">
           </div>
           <div v-else class="mb-3.5 flex items-center justify-between">
             <span class="grid h-11 w-11 place-items-center rounded-chip bg-navy-800/[.05] text-gold-700 transition-colors group-hover:bg-navy-800 group-hover:text-gold-300">

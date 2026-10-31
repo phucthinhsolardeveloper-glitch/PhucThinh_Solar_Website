@@ -33,6 +33,28 @@ test('dealer navigation omits links to empty overview/support sections', async (
   assert.match(page, /dealer\.value\.overview\.descriptionContent\.html[\s\S]*dealer\.value\.overview\.products\.length/)
   assert.match(page, /dealer\.value\.support\.title \|\| dealer\.value\.support\.descriptionContent\.html \|\| dealer\.value\.support\.description \|\| dealer\.value\.support\.items\.length/)
   assert.match(sections, /v-if="dealer\.support\.title \|\| dealer\.support\.descriptionContent\.html \|\| dealer\.support\.description \|\| dealer\.support\.items\.length"/)
+  assert.match(page, /max-\[767px\]:grid max-\[767px\]:grid-cols-3/)
+  assert.match(page, /max-\[767px\]:min-h-\[70px\][\s\S]*max-\[767px\]:text-center/)
+})
+
+test('dealer distribution products become an arrow-controlled touch rail on mobile', async () => {
+  const overview = await read('app/components/dealer/DealerOverview.vue')
+  assert.match(overview, /Sản phẩm tiếp theo/)
+  assert.match(overview, /Sản phẩm trước/)
+  assert.match(overview, /scrollProducts\(direction: -1 \| 1\)/)
+  assert.match(overview, /dealer-products-track[^\n]*snap-x snap-mandatory/)
+  assert.match(overview, /scrollbar-width: none/)
+  assert.match(overview, /min-\[768px\]:grid-cols-2[\s\S]*min-\[992px\]:grid-cols-3/)
+})
+
+test('about section navigation sticks below the header and tracks smooth section jumps', async () => {
+  const about = await read('app/components/about/AboutPreviewPage.vue')
+  assert.match(about, /sticky z-30[\s\S]*isHeaderHidden \? 'top-0 shadow-sm'/)
+  assert.match(about, /new IntersectionObserver\([\s\S]*activeAboutSection\.value = current\.id/)
+  assert.match(about, /target\.scrollIntoView\(\{ behavior: reducedMotion \? 'auto' : 'smooth'/)
+  assert.match(about, /aboutNavRef\.value\?\.querySelector<HTMLAnchorElement>/)
+  assert.match(about, /aria-current="activeAboutSection === item\.id \? 'location' : undefined"/)
+  assert.match(about, /scroll-mt-\[160px\].*max-\[800px\]:scroll-mt-\[116px\]/)
 })
 
 test('dealer support CMS icons preserve the PHP gold surface and contain fit', async () => {
@@ -52,11 +74,11 @@ test('dealer form shows recovery when session security or the city list is unava
     read('app/components/dealer/DealerLeadForm.vue'),
     read('app/composables/useLeadForm.ts'),
   ])
-  assert.match(form, /Không thể tải phiên bảo mật và danh sách tỉnh\/thành phố/)
-  assert.match(form, /Chưa có danh sách tỉnh\/thành phố/)
+  assert.match(form, /Không thể chuẩn bị biểu mẫu và danh sách tỉnh\/thành phố/)
+  assert.match(form, /Chưa tải được danh sách tỉnh\/thành phố/)
   assert.match(form, /role="alert"/)
   assert.match(form, /@click="loadSecurity\(true\)"/)
-  assert.match(form, /submitting \|\| securityLoading \|\| !security\?\.cities\.length/)
+  assert.match(form, /:disabled="submitting \|\| securityLoading \|\| !cityOptions\.length"/)
   assert.match(form, /refresh \? await refreshSecurity\(\) : await ensureSecurity\(\)/)
   assert.match(leadForm, /async function refreshSecurity\(\)[\s\S]*security\.value = null[\s\S]*return ensureSecurity\(\)/)
 })
@@ -64,7 +86,7 @@ test('dealer form shows recovery when session security or the city list is unava
 test('contact form exposes security-load failure and a usable retry before enabling submit', async () => {
   const form = await read('app/components/contact/ContactLeadForm.vue')
   assert.match(form, /const securityError = ref\(''\)/)
-  assert.match(form, /if \(refresh\) await refreshSecurity\(\)[\s\S]*securityError\.value = 'Không thể tải phiên bảo mật/)
+  assert.match(form, /if \(refresh\) await refreshSecurity\(\)[\s\S]*securityError\.value = 'Không thể chuẩn bị biểu mẫu/)
   assert.match(form, /v-if="securityError"[\s\S]*role="alert"[\s\S]*@click="loadSecurity\(true\)"/)
   assert.match(form, /:disabled="submitting \|\| loadingSecurity \|\| !security"/)
   assert.match(form, /if \(loadingSecurity\.value \|\| !security\.value\)/)

@@ -9,46 +9,13 @@ function projectsAssert($condition, $message)
     echo 'PASS: ', $message, "\n";
 }
 
-class PtsProjectCategoryFakeDb
-{
-    public $rows = array(
-        'news_list'=>array(array('id'=>1,'namevi'=>'Công trình','descvi'=>'','slugvi'=>'cong-trinh','status'=>'hienthi')),
-        'news_cat'=>array(array('id'=>2,'id_list'=>1,'namevi'=>'Điện mặt trời','descvi'=>'','slugvi'=>'dien-mat-troi','status'=>'hienthi')),
-        'news_item'=>array(array('id'=>3,'id_cat'=>2,'namevi'=>'Nhà xưởng','descvi'=>'','slugvi'=>'nha-xuong','status'=>'hienthi')),
-        'news_sub'=>array(array('id'=>4,'id_item'=>3,'namevi'=>'Mái lớn','descvi'=>'','slugvi'=>'mai-lon','status'=>'hienthi'))
-    );
-    public function rawQueryOne($sql, array $params)
-    {
-        foreach($this->rows as $table=>$rows)
-        {
-            if(strpos($sql, '#_'.$table) === false) continue;
-            foreach($rows as $row)
-            {
-                if(($row['slugvi'] ?? '') !== ($params[0] ?? '')) continue;
-                $parentField = array('news_cat'=>'id_list','news_item'=>'id_cat','news_sub'=>'id_item')[$table] ?? '';
-                if($parentField !== '' && (int)($row[$parentField] ?? 0) !== (int)($params[1] ?? -1)) continue;
-                return $row;
-            }
-        }
-        return array();
-    }
-}
-
-$categoryDb = new PtsProjectCategoryFakeDb();
-foreach(array(
-    array('list', array('cong-trinh')),
-    array('cat', array('cong-trinh','dien-mat-troi')),
-    array('item', array('cong-trinh','dien-mat-troi','nha-xuong')),
-    array('sub', array('cong-trinh','dien-mat-troi','nha-xuong','mai-lon'))
-) as $case)
-{
-    $resolved = ptsProjectsResolveCategoryHierarchy($categoryDb, $case[0], $case[1]);
-    projectsAssert(is_array($resolved) && $resolved['metadata']['level'] === $case[0] && $resolved['metadata']['path'] === implode('/', $case[1]), 'dự án resolve phân cấp '.$case[0].' theo cha chính xác');
-}
-projectsAssert(ptsProjectsResolveCategoryHierarchy($categoryDb, 'item', array('sai-cha','dien-mat-troi','nha-xuong')) === null, 'từ chối category project sai cha');
-projectsAssert(ptsProjectsResolveCategoryHierarchy($categoryDb, 'sub', array('cong-trinh','dien-mat-troi','nha-xuong','an-toan')) === null, 'từ chối category project không tồn tại');
-$categoryDb->rows['news_cat'][0]['status'] = '';
-projectsAssert(ptsProjectsResolveCategoryHierarchy($categoryDb, 'cat', array('cong-trinh','dien-mat-troi')) === null, 'từ chối category project chưa công bố');
+$category = array('id'=>1,'namevi'=>'Điện mặt trời <b>thực tế</b>','descvi'=>'<p>Mô tả danh mục</p>','slugvi'=>'dien-mat-troi','status'=>'hienthi','_pts_public_photo'=>'category.webp');
+$categoryDto = ptsProjectsCategoryDto($category, array('title'=>'Dự án thật','description'=>'SEO mô tả','keywords'=>'công trình','image'=>'/upload/news/category.webp'));
+projectsAssert($categoryDto['id'] === 1 && $categoryDto['name'] === 'Điện mặt trời thực tế' && $categoryDto['description'] === 'Mô tả danh mục', 'category DTO chuẩn hóa nội dung CMS');
+projectsAssert($categoryDto['url'] === '/danh-muc-du-an/dien-mat-troi/' && $categoryDto['canonicalPath'] === '/dien-mat-troi', 'category DTO giữ URL public và canonical hiện hành');
+projectsAssert($categoryDto['image'] === '/upload/news/category.webp' && $categoryDto['seo']['title'] === 'Dự án thật', 'category DTO đưa ảnh và SEO allowlisted vào payload');
+projectsAssert(ptsProjectsCategoryDto(array_merge($category, array('status'=>''))) === null, 'category project chưa công bố bị loại');
+projectsAssert(ptsProjectsCategoryDto(array_merge($category, array('slugvi'=>'invalid slug'))) === null, 'category project có slug không hợp lệ bị loại');
 
 $categories = array(array('id'=>7, 'namevi'=>'Hộ gia đình', 'descvi'=>'Công trình cho gia đình', 'slugvi'=>'du-an-ho-gia-dinh', 'status'=>'hienthi', '_pts_public_photo'=>''));
 $rows = array(
@@ -63,9 +30,9 @@ projectsAssert($payload['featured']['slug'] === 'du-an-noi-bat' && $payload['pro
 projectsAssert($payload['projects'][0]['description'] === 'Mô tả CMS' && $payload['projects'][0]['url'] === '/cong-trinh-thuc-te/', 'plain text và canonical URL');
 projectsAssert($payload['category']['canonicalPath'] === '/du-an-ho-gia-dinh' && $payload['intro']['title'] === 'Hộ gia đình', 'category DTO giữ bare PHP canonical và đúng tiêu đề category');
 projectsAssert($payload['cta']['image'] === '/upload/news/cta.jpg' && $payload['cta']['hotline']['tel'] === '090123', 'CTA và hotline lấy từ CMS/config');
-projectsAssert($payload['intro']['visible'] === true && $payload['intro']['title'] === 'Dự án Hộ gia đình' && $payload['intro']['description'] === 'Công trình cho gia đình', 'intro danh mục dùng tiêu đề/mô tả CMS đúng category');
+projectsAssert($payload['intro']['visible'] === true && $payload['intro']['title'] === 'Hộ gia đình' && $payload['intro']['description'] === 'Công trình cho gia đình', 'intro danh mục dùng tiêu đề/mô tả CMS đúng category');
 $customIntro = ptsProjectsPayload($categories, array(), array(), $cta, 1, 12, 0, null, '', array(array('namevi'=>'Công trình nổi bật', 'title_indexvi'=>'Dự án thực tế', 'descvi'=>'Giới thiệu đã cấu hình', 'status'=>'hienthi')));
-projectsAssert($customIntro['intro']['visible'] === true && $customIntro['intro']['title'] === 'Công trình nổi bật' && $customIntro['intro']['eyebrow'] === 'Dự án thực tế', 'intro lấy record CMS đang hiển thị');
+projectsAssert($customIntro['intro']['visible'] === true && $customIntro['intro']['title'] === 'Công trình nổi bật' && $customIntro['intro']['description'] === 'Giới thiệu đã cấu hình', 'intro lấy record CMS đang hiển thị');
 $hiddenIntro = ptsProjectsPayload($categories, array(), array(), $cta, 1, 12, 0, null, '', array(array('namevi'=>'Đang ẩn', 'status'=>'')));
 projectsAssert($hiddenIntro['intro']['visible'] === false && $hiddenIntro['intro']['title'] === 'Dự án đã thực hiện', 'intro cấu hình nhưng ẩn không hồi sinh fallback');
 $fallbackIntro = ptsProjectsPayload($categories, array(), array(), $cta, 1, 12, 0, null, '');
@@ -73,7 +40,7 @@ projectsAssert($fallbackIntro['intro']['visible'] === true && $fallbackIntro['in
 $hidden = ptsProjectsPayload($categories, array(), array(), array(array('namevi'=>'Bị ẩn', 'status'=>'')), 1, 12, 0, null, '');
 projectsAssert($hidden['cta'] === null, 'CTA bị ẩn không hồi sinh fallback');
 $defaultCta = ptsProjectsPayload($categories, array(), array(), array(), 1, 12, 0, null, '090 123')['cta'];
-projectsAssert($defaultCta['title'] === 'Bạn có công trình cần tư vấn?' && $defaultCta['buttonLabel'] === 'Nhận tư vấn miễn phí', 'CTA dùng đúng nội dung fallback PHP khi chưa từng cấu hình');
+projectsAssert($defaultCta === null, 'CTA ẩn hoặc chưa cấu hình không tự xuất hiện trong payload');
 $encoded = json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 projectsAssert(strpos($encoded, 'hidden.jpg') === false && strpos($encoded, '<b>') === false, 'DTO không lộ record ẩn hoặc HTML');
 

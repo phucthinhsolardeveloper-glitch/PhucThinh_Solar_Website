@@ -19,7 +19,7 @@ function documentHref(document: PublicProductDocument): string {
 </script>
 
 <template>
-  <section v-if="documents.length" id="tai-lieu-san-pham" class="scroll-mt-24 border-t border-gray-200 py-10" aria-labelledby="product-documents-title">
+  <section v-if="documents.length" id="tai-lieu-san-pham" class="scroll-mt-24 border-t border-gray-200 py-12 tb:py-16" aria-labelledby="product-documents-title">
     <h2 id="product-documents-title" class="mb-6 text-[clamp(24px,3vw,34px)] font-black tracking-tight text-navy-800">
       Tài liệu sản phẩm
     </h2>

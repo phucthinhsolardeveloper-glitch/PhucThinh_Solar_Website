@@ -29,6 +29,36 @@ Từ 2026-09-01, service `web` bind-mount `domains/phucthinhsolar.com/public_htm
 - Nếu cần làm mới cache trang: `docker compose -f docker-compose.local.yml exec web rm -f /var/www/html/caches/cache_*`.
 - Dùng file manager admin để upload vào `assets/` trên local sẽ vướng quyền (host `assets/` thuộc user host, container chạy `www-data`); chưa xử lý trong phạm vi này.
 
+## Frontend Nuxt (HMR)
+
+Luồng Nuxt hằng ngày không cần bật website PHP legacy trên cổng 8080. Cần
+MariaDB local và PHP API/media bridge trên cổng 8088:
+
+```bash
+docker compose -f docker-compose.local.yml up -d db
+docker compose -f docker-compose.nuxt-preview.yml up -d web-preview
+```
+
+Sau đó mở terminal riêng cho Nuxt:
+
+```bash
+cd frontend
+npm ci                 # lần đầu hoặc khi package-lock.json thay đổi
+npm run dev
+```
+
+Mở **http://localhost:3100/**; trang liên hệ là
+http://localhost:3100/lien-he/. Nuxt/Vite tự theo dõi file và cập nhật Vue,
+TypeScript, CSS khi sửa. Không build Nuxt hoặc rebuild container trong vòng lặp
+code frontend. SSR gọi PHP APIs và lấy media qua bridge `127.0.0.1:8088` để
+hiện cùng origin Nuxt. `npm run dev` in URL Local ra terminal khi server khởi động.
+Không cần bật service `web` trên `:8080` trừ khi đang kiểm tra riêng PHP legacy;
+Nuxt là giao diện cần mở để xem.
+
+`npm run build` chỉ dùng để xác nhận production build. Lệnh
+`scripts/nuxt-local-preview.sh restart` tạo snapshot SSR riêng ở cổng 3100;
+dừng `npm run dev` trước khi dùng snapshot vì cả hai chiếm cùng cổng.
+
 ## Thiết lập thủ công (không Docker)
 
 Chưa chạy thành công trong môi trường khảo sát: PHP CLI không tồn tại và không có DB local (`ENVIRONMENT_FAILURE`). Quy trình cần xác minh:

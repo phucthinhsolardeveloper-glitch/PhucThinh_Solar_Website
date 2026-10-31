@@ -8,6 +8,7 @@ const props = defineProps<{
 
 const showBackToTop = ref(false)
 const footerInView = ref(false)
+const formInView = ref(false)
 const hotline = computed(() => props.site.brand.hotline.trim())
 const phoneHref = computed(() => publicPhoneHref(hotline.value))
 const zaloHref = computed(() => {
@@ -18,6 +19,8 @@ const zaloHref = computed(() => {
 
 const hasContactChannels = computed(() => Boolean(zaloHref.value || phoneHref.value))
 let footerObserver: IntersectionObserver | undefined
+let formObserver: IntersectionObserver | undefined
+const visibleForms = new Set<Element>()
 
 function updateBackToTopVisibility() {
   showBackToTop.value = window.scrollY > 300
@@ -41,17 +44,31 @@ onMounted(() => {
     })
     footerObserver.observe(footer)
   }
+
+  const forms = document.querySelectorAll('main form')
+  if (forms.length && 'IntersectionObserver' in window) {
+    formObserver = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) visibleForms.add(entry.target)
+        else visibleForms.delete(entry.target)
+      }
+      formInView.value = visibleForms.size > 0
+    }, { threshold: 0.01 })
+    forms.forEach((form) => formObserver?.observe(form))
+  }
 })
 
 onUnmounted(() => {
   window.removeEventListener('scroll', updateBackToTopVisibility)
   footerObserver?.disconnect()
+  formObserver?.disconnect()
+  visibleForms.clear()
 })
 </script>
 
 <template>
   <aside
-    v-if="(showBackToTop || hasContactChannels) && !footerInView"
+    v-if="(showBackToTop || hasContactChannels) && !footerInView && !formInView"
     class="fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] right-4 z-[900] flex flex-col items-center gap-3 print:hidden tb:bottom-6 tb:right-6 transform-gpu"
     aria-label="Liên hệ nhanh"
   >
@@ -96,7 +113,7 @@ onUnmounted(() => {
       </a>
     </div>
 
-    <!-- Nút 2: Hotline (tròn, #c58a2d, hiệu ứng ping wave nhẹ, gọi ngay 1 chạm) -->
+    <!-- Nút hotline dùng cùng nền gold gradient và giữ hiệu ứng pulse nhẹ. -->
     <div v-if="phoneHref" class="group relative flex items-center">
       <span
         class="pointer-events-none absolute right-[calc(100%+10px)] hidden whitespace-nowrap rounded-md bg-navy-950/85 px-2.5 py-1 text-xs font-medium text-white shadow-md backdrop-blur-md transition-all duration-200 group-hover:block group-focus-within:block"
@@ -108,11 +125,11 @@ onUnmounted(() => {
         :href="phoneHref"
         :title="`Gọi hotline ${hotline}`"
         :aria-label="`Gọi hotline ${hotline}`"
-        class="relative flex h-12 w-12 items-center justify-center rounded-full bg-[#c58a2d] text-navy-950 shadow-[0_4px_16px_rgba(197,138,45,0.4)] transition-all duration-200 motion-reduce:transition-none motion-reduce:transform-none hover:scale-105 hover:bg-[#b07824] hover:shadow-[0_6px_20px_rgba(197,138,45,0.55)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#c58a2d] focus-visible:ring-offset-2 active:scale-95"
+        class="relative flex h-12 w-12 items-center justify-center rounded-full bg-gold-500 text-navy-950 shadow-[0_4px_16px_rgba(197,138,45,0.4)] transition-all duration-200 motion-reduce:transition-none motion-reduce:transform-none hover:scale-105 hover:bg-gold-400 hover:shadow-[0_6px_20px_rgba(197,138,45,0.55)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 focus-visible:ring-offset-2 active:scale-95"
       >
         <!-- Ping ring effect -->
-        <span class="pointer-events-none absolute -inset-1 animate-ping rounded-full bg-[#c58a2d]/40 opacity-60 motion-reduce:animate-none" aria-hidden="true" />
-        <span class="pointer-events-none absolute -inset-0.5 animate-pulse rounded-full bg-[#c58a2d]/30 motion-reduce:animate-none" aria-hidden="true" />
+        <span class="pointer-events-none absolute -inset-1 animate-ping rounded-full bg-gold-500/40 opacity-60 motion-reduce:animate-none" aria-hidden="true" />
+        <span class="pointer-events-none absolute -inset-0.5 animate-pulse rounded-full bg-gold-500/30 motion-reduce:animate-none" aria-hidden="true" />
 
         <svg class="relative z-10 h-5 w-5 text-white" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
           <path d="M6.5 3.5 9 3l2 5-2 1.7a14 14 0 0 0 5.3 5.3L16 13l5 2-.5 2.5c-.3 1.5-1.7 2.5-3.2 2.2C10.8 18.5 5.5 13.2 4.3 6.7 4 5.2 5 3.8 6.5 3.5Z" />

@@ -25,7 +25,7 @@ test('projects pagination keeps the selected category, route family, and noindex
   assert.match(page, /'category', 'p', 'page'/)
   assert.match(page, /aria-label="Phân trang dự án"/)
   assert.match(page, /aria-label="Trang trước"/)
-  assert.match(page, /aria-current="page"/)
+  assert.match(page, /SitePaginationButton[\s\S]*?active[\s\S]*?aria-label="`Trang \$\{item\.page\}`"/)
   assert.match(page, /aria-label="Trang tiếp theo"/)
   assert.match(page, /:to="pageLink\(item\.page\)"/)
 })

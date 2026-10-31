@@ -70,7 +70,7 @@ const shareLinks = computed(() => {
       type: 'email',
       label: 'Email',
       href: `mailto:?subject=${title}&body=${url}`,
-      className: 'bg-[#c58a2d] text-white hover:bg-[#b37a24]',
+      className: 'bg-gold-500 text-navy-950 hover:bg-gold-400',
     },
   ]
 })
@@ -83,7 +83,7 @@ const shareLinks = computed(() => {
       <a
         v-for="item in shareLinks"
         :key="item.label"
-        class="inline-flex size-10 items-center justify-center rounded-full shadow-xs transition-all duration-200 hover:scale-106 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-600 active:scale-95"
+        class="inline-flex size-10 items-center justify-center rounded-full shadow-xs transition-all duration-200 hover:scale-106 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-600 active:scale-95 motion-reduce:transform-none motion-reduce:transition-none"
         :class="item.className"
         :href="item.href"
         :aria-label="`Chia sẻ lên ${item.label}`"
@@ -127,7 +127,7 @@ const shareLinks = computed(() => {
       <div class="relative inline-flex items-center">
         <button
           type="button"
-          class="inline-flex size-10 items-center justify-center rounded-full border border-slate-200/90 bg-white text-navy-800 shadow-xs transition-all duration-200 hover:scale-106 hover:border-slate-300 hover:bg-slate-50 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-600 active:scale-95"
+        class="inline-flex size-10 items-center justify-center rounded-full border border-slate-200/90 bg-white text-navy-800 shadow-xs transition-all duration-200 hover:scale-106 hover:border-slate-300 hover:bg-slate-50 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-600 active:scale-95 motion-reduce:transform-none motion-reduce:transition-none"
           :aria-label="copied ? 'Đã sao chép liên kết' : 'Sao chép liên kết'"
           :title="copied ? 'Đã sao chép liên kết' : 'Sao chép liên kết'"
           @click="handleCopy"

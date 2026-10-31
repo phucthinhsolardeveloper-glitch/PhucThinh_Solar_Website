@@ -26,7 +26,7 @@ HTTP -> public_html/.htaccess -> index.php -> libraries/router.php
 Yêu cầu Docker Desktop/Docker Engine và Docker Compose.
 
 ```bash
-docker compose -f docker-compose.local.yml up -d --build
+docker compose -f docker-compose.local.yml up -d
 docker compose -f docker-compose.local.yml ps
 ```
 
@@ -36,12 +36,32 @@ docker compose -f docker-compose.local.yml ps
 - Database container: `pts-mariadb-local`
 - Database local: `phucthinhs_local`
 
-Source được copy vào image, không bind mount. Sau khi sửa PHP/JS/CSS phải rebuild web:
+Source PHP được bind-mount từ `domains/phucthinhsolar.com/public_html` vào web container. Sửa PHP/JS/CSS của website PHP sẽ được Apache phục vụ ngay; không cần rebuild image. Chỉ build lại khi đổi Dockerfile, PHP runtime hoặc cấu hình build của image:
 
 ```bash
 docker compose -f docker-compose.local.yml build web
 docker compose -f docker-compose.local.yml up -d web
 ```
+
+## Chạy frontend Nuxt khi phát triển
+
+Mở terminal riêng trong checkout này:
+
+```bash
+cd frontend
+npm ci                 # chỉ lần đầu hoặc khi lockfile thay đổi
+npm run dev
+```
+
+Nuxt/Vite chạy với HMR tại **http://localhost:3100/**; ví dụ trang liên hệ là
+http://localhost:3100/lien-he/. Terminal `npm run dev` cũng in URL `Local` khi
+server sẵn sàng. Sửa Vue, TypeScript hoặc CSS sẽ cập nhật trên trình duyệt mà
+không cần `npm run build` hay rebuild Docker. Frontend lấy API local từ PHP tại
+`http://127.0.0.1:8080` mặc định, vì vậy cần bật service `web` ở trên.
+
+`npm run build` dành cho kiểm tra bản production. Script
+`scripts/nuxt-local-preview.sh restart` tạo SSR snapshot riêng và chạy PHP
+preview ở cổng 8088; đây không phải luồng code hàng ngày có HMR.
 
 Theo dõi lỗi:
 

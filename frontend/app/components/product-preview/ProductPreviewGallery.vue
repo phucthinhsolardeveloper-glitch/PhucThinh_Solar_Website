@@ -5,23 +5,37 @@ const props = defineProps<{ name: string; media: string[] }>()
 const reducedMotion = useReducedMotion()
 const selectedIndex = ref(0)
 const failedMedia = ref<Set<string>>(new Set())
+const retryVersion = ref(0)
 const lightboxOpen = ref(false)
 const isZoomed = ref(false)
 const zoomOrigin = ref('50% 50%')
 const lightboxPanel = ref<HTMLElement | null>(null)
 const lastTrigger = ref<HTMLElement | null>(null)
+const displayedImage = ref<HTMLImageElement | null>(null)
 let bodyOverflowBeforeLock: string | null = null
 
 watch(() => props.media, () => {
-  selectedIndex.value = 0
+  selectedIndex.value = props.media.findIndex((image) => Boolean(image.trim()))
+  if (selectedIndex.value < 0) selectedIndex.value = 0
   failedMedia.value = new Set()
+  retryVersion.value = 0
   lightboxOpen.value = false
   isZoomed.value = false
 })
 
-const selectedMedia = computed(() => props.media[selectedIndex.value] ?? props.media[0] ?? '')
-const selectedMediaAvailable = computed(() => Boolean(selectedMedia.value) && !failedMedia.value.has(selectedMedia.value))
-const availableIndexes = computed(() => props.media.map((_, index) => index).filter((index) => !failedMedia.value.has(props.media[index] ?? '')))
+const configuredIndexes = computed(() => props.media.map((image, index) => Boolean(image.trim()) ? index : -1).filter((index) => index >= 0))
+const selectedMedia = computed(() => props.media[selectedIndex.value] || props.media[configuredIndexes.value[0] ?? 0] || '')
+const selectedMediaAvailable = computed(() => Boolean(selectedMedia.value.trim()) && !failedMedia.value.has(selectedMedia.value))
+const availableIndexes = computed(() => configuredIndexes.value.filter((index) => !failedMedia.value.has(props.media[index] ?? '')))
+const displayedMediaNumber = computed(() => availableIndexes.value.indexOf(selectedIndex.value) + 1)
+
+function retryMedia() {
+  failedMedia.value = new Set()
+  selectedIndex.value = configuredIndexes.value[0] ?? 0
+  retryVersion.value += 1
+  isZoomed.value = false
+  lightboxOpen.value = false
+}
 
 function selectMedia(index: number) {
   selectedIndex.value = index
@@ -33,10 +47,24 @@ function markMediaFailed(image: string) {
   if (nextIndex >= 0) selectedIndex.value = nextIndex
   else lightboxOpen.value = false
 }
-function markDisplayedMediaFailed(event: Event) {
-  const source = (event.currentTarget as HTMLImageElement).src
-  const image = props.media.find((candidate) => new URL(candidate, document.baseURI).href === source)
+function markDisplayedMediaFailed(element: HTMLImageElement | null) {
+  if (!element || !import.meta.client) return
+  const source = element.currentSrc || element.src
+  const image = props.media.find((candidate) => {
+    try {
+      return new URL(candidate, document.baseURI).href === source
+    } catch {
+      return false
+    }
+  })
   if (image) markMediaFailed(image)
+}
+function handleDisplayedMediaError(event: Event) {
+  markDisplayedMediaFailed(event.currentTarget as HTMLImageElement)
+}
+function reconcileDisplayedImage() {
+  const image = displayedImage.value
+  if (image?.complete && image.naturalWidth === 0) markDisplayedMediaFailed(image)
 }
 function focusFirst(container: HTMLElement | null) {
   container?.querySelector<HTMLElement>('button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])')?.focus()
@@ -122,6 +150,14 @@ watch(lightboxOpen, (open) => {
   }
 })
 onMounted(() => document.addEventListener('keydown', handleKey))
+watch([selectedMedia, retryVersion], async () => {
+  await nextTick()
+  reconcileDisplayedImage()
+}, { flush: 'post' })
+onMounted(async () => {
+  await nextTick()
+  reconcileDisplayedImage()
+})
 onBeforeUnmount(() => {
   document.removeEventListener('keydown', handleKey)
   if (import.meta.client && bodyOverflowBeforeLock !== null) document.body.style.overflow = bodyOverflowBeforeLock
@@ -133,7 +169,7 @@ onBeforeUnmount(() => {
     <!-- Khung hiển thị ảnh sản phẩm chính với tính năng Zoom rê chuột & phím chuyển ảnh -->
     <div
       v-if="selectedMediaAvailable"
-      class="group relative grid aspect-square w-full place-items-center overflow-hidden rounded-chip border border-slate-200/80 bg-white shadow-xs transition-shadow duration-300 hover:shadow-md"
+      class="group relative grid aspect-square w-full place-items-center overflow-hidden rounded-chip bg-white"
       @mousemove="handleMouseMove"
       @mouseleave="handleMouseLeave"
     >
@@ -146,17 +182,18 @@ onBeforeUnmount(() => {
       >
         <Transition name="pdp-fade">
           <img
-            :key="selectedMedia"
+            ref="displayedImage"
+            :key="`${selectedMedia}-${retryVersion}`"
             :src="selectedMedia"
             :alt="name"
-            class="pdp-zoom-image absolute inset-0 h-full w-full object-contain p-4 transition-transform duration-200 ease-out"
+            class="pdp-zoom-image absolute inset-0 h-full w-full object-contain p-0 transition-transform duration-200 ease-out"
             :style="{
               transform: isZoomed ? 'scale(2.2)' : 'scale(1)',
               transformOrigin: zoomOrigin,
             }"
             width="720"
             height="720"
-            @error="markDisplayedMediaFailed"
+            @error="handleDisplayedMediaError"
           >
         </Transition>
       </button>
@@ -203,17 +240,23 @@ onBeforeUnmount(() => {
 
       <!-- Số thứ tự ảnh -->
       <div v-if="availableIndexes.length > 1" class="pointer-events-none absolute bottom-3 right-3 z-10 rounded-full bg-navy-950/70 px-2.5 py-1 text-xs font-bold text-white backdrop-blur-xs">
-        {{ selectedIndex + 1 }} / {{ availableIndexes.length }}
+        {{ displayedMediaNumber }} / {{ availableIndexes.length }}
       </div>
     </div>
-    <p v-else class="text-slate-500">CMS chưa có ảnh sản phẩm hợp lệ.</p>
+    <div v-else class="flex aspect-square w-full flex-col items-center justify-center gap-3 px-6 text-center" role="status" aria-live="polite">
+      <p v-if="configuredIndexes.length === 0" class="m-0 text-base text-slate-600">Sản phẩm chưa có hình ảnh trong dữ liệu.</p>
+      <template v-else>
+        <p class="m-0 text-base text-slate-600">Không tải được hình ảnh sản phẩm. Vui lòng kiểm tra kết nối rồi thử lại.</p>
+        <UButton type="button" size="sm" variant="outline" @click="retryMedia">Thử tải lại ảnh</UButton>
+      </template>
+    </div>
 
     <!-- Dải thumbnail nhỏ có chuyển ảnh mượt -->
     <div v-if="media.length > 1" class="flex gap-2 overflow-x-auto pt-3 scroll-smooth [scrollbar-width:none]" aria-label="Thư viện ảnh sản phẩm">
       <button
         v-for="(image, index) in media"
         v-show="!failedMedia.has(image)"
-        :key="image"
+        :key="`${image}-${retryVersion}`"
         type="button"
         class="aspect-square flex-none basis-[72px] overflow-hidden rounded-chip border bg-white cursor-pointer transition-all duration-200 hover:opacity-100 active:scale-95"
         :class="selectedIndex === index ? 'border-navy-800 ring-2 ring-gold-500/50 shadow-xs scale-[1.02]' : 'border-gray-200 hover:border-slate-300 opacity-70'"
@@ -259,14 +302,14 @@ onBeforeUnmount(() => {
 
           <AnimatePresence :initial="false">
             <motion.div
-              :key="selectedMedia"
+              :key="`${selectedMedia}-${retryVersion}`"
               :initial="reducedMotion ? false : { opacity: 0, scale: 0.985 }"
               :animate="{ opacity: 1, scale: 1 }"
               :exit="{ opacity: 0, scale: 0.985 }"
               :transition="{ duration: reducedMotion ? 0 : 0.16, ease: 'easeOut' }"
               class="pointer-events-none absolute inset-0 flex items-center justify-center p-4"
             >
-              <img :src="selectedMedia" :alt="name + ' — ảnh phóng to'" class="pointer-events-auto max-h-[85vh] max-w-[88vw] object-contain drop-shadow-2xl rounded-chip" @error="markDisplayedMediaFailed">
+              <img :src="selectedMedia" :alt="name + ' — ảnh phóng to'" class="pointer-events-auto max-h-[85vh] max-w-[88vw] object-contain drop-shadow-2xl rounded-chip" @error="handleDisplayedMediaError">
             </motion.div>
           </AnimatePresence>
 
@@ -281,7 +324,7 @@ onBeforeUnmount(() => {
           </button>
 
           <div class="absolute bottom-5 left-1/2 -translate-x-1/2 rounded-full bg-white/10 px-4 py-1.5 text-xs font-bold text-white backdrop-blur-xs">
-            {{ selectedIndex + 1 }} / {{ availableIndexes.length }}
+            {{ displayedMediaNumber }} / {{ availableIndexes.length }}
           </div>
         </div>
       </Transition>

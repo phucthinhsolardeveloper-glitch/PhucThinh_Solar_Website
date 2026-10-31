@@ -11,6 +11,7 @@ import ProjectsCta from '~/components/projects/ProjectsCta.vue'
 
 const route = useRoute()
 const config = useRuntimeConfig()
+const { openConsultation } = useStorefrontModal()
 const slug = computed(() => typeof route.params.slug === 'string' ? route.params.slug : '')
 const canonicalPath = computed(() => projects.value?.category?.canonicalPath || projectCategoryCanonicalPath(slug.value))
 const page = computed(() => projectCategoryPage(route.query.p))
@@ -111,26 +112,30 @@ usePublicSocialMeta({
         <section class="grid grid-cols-1 gap-x-6 gap-y-8 tb:grid-cols-2 nav:grid-cols-3" :aria-label="categoryTitle">
           <ProjectCard v-for="project in projects.projects" :key="project.id" :project="project" :view-label="projects.labels.view" />
         </section>
-        <p v-if="!projects.projects.length" class="py-6 text-slate-500">{{ projects.labels.empty }}</p>
+        <div v-if="!projects.projects.length" class="flex min-h-[230px] flex-col items-center justify-center px-5 py-9 text-center text-slate-600" role="status">
+          <UIcon name="i-lucide-images" class="mb-3 size-8 text-gold-600" aria-hidden="true" />
+          <p class="mb-3 text-base">{{ projects.labels.empty }}</p>
+          <button type="button" class="font-extrabold text-navy-800 underline decoration-navy-300 underline-offset-4 transition-colors hover:text-gold-700" @click="openConsultation(`Dự án ${categoryTitle}`)">
+            {{ projects.labels.cta }} →
+          </button>
+        </div>
 
-        <nav v-if="totalPages > 1" class="mt-10 flex flex-wrap gap-2" aria-label="Phân trang dự án">
-          <NuxtLink
+        <nav v-if="totalPages > 1" class="mt-10 flex flex-wrap justify-center gap-2" aria-label="Phân trang dự án">
+          <SitePaginationButton
             v-if="currentPage > 1"
-            class="inline-grid min-h-11 min-w-11 place-items-center rounded-chip border border-gray-200 px-3 py-2 text-navy-800 no-underline transition-colors hover:border-navy-800"
             :to="pageLink(currentPage - 1)"
             aria-label="Trang trước"
-          >Trước</NuxtLink>
+          >Trước</SitePaginationButton>
           <template v-for="item in paginationItems" :key="item.key">
-            <span v-if="item.page === null" class="inline-grid min-h-11 min-w-11 place-items-center px-2 py-2 text-slate-500" aria-hidden="true">…</span>
-            <span v-else-if="item.page === currentPage" class="inline-grid min-h-11 min-w-11 place-items-center rounded-chip border border-navy-800 bg-navy-800 px-3 py-2 text-white" aria-current="page">{{ item.page }}</span>
-            <NuxtLink v-else class="inline-grid min-h-11 min-w-11 place-items-center rounded-chip border border-gray-200 px-3 py-2 text-navy-800 no-underline transition-colors hover:border-navy-800" :to="pageLink(item.page)" :aria-label="`Trang ${item.page}`">{{ item.page }}</NuxtLink>
+            <span v-if="item.page === null" class="text-gold-700" aria-hidden="true">…</span>
+            <SitePaginationButton v-else-if="item.page === currentPage" active>{{ item.page }}</SitePaginationButton>
+            <SitePaginationButton v-else :to="pageLink(item.page)" :aria-label="`Trang ${item.page}`">{{ item.page }}</SitePaginationButton>
           </template>
-          <NuxtLink
+          <SitePaginationButton
             v-if="currentPage < totalPages"
-            class="inline-grid min-h-11 min-w-11 place-items-center rounded-chip border border-gray-200 px-3 py-2 text-navy-800 no-underline transition-colors hover:border-navy-800"
             :to="pageLink(currentPage + 1)"
             aria-label="Trang tiếp theo"
-          >Sau</NuxtLink>
+          >Sau</SitePaginationButton>
         </nav>
 
         <ProjectsCta v-if="projects.cta" :cta="projects.cta" :label="projects.labels.cta" />

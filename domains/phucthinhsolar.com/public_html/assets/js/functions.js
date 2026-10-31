@@ -584,9 +584,26 @@ function loadWard(id=0)
 }
 
 /* Checkout uses the current two-level address model: city -> ward/commune. */
+var checkoutWardRequestVersion = 0;
+var checkoutShipRequestVersion = 0;
+var checkoutWardRequest = null;
+var checkoutShipRequest = null;
+
 function loadWardByCity(id=0)
 {
-    $.ajax({
+    var citySelect = $(".select-city-cart").first();
+    var wardSelect = $(".select-ward-cart").first();
+    var cityId = String(id || '');
+    var requestVersion = ++checkoutWardRequestVersion;
+
+    /* A city change immediately invalidates the previous ward and ship quote. */
+    ++checkoutShipRequestVersion;
+    if(checkoutShipRequest && checkoutShipRequest.abort) checkoutShipRequest.abort();
+    checkoutShipRequest = null;
+    wardSelect.html('<option value="">'+LANG['ward']+'</option>');
+    if(checkoutWardRequest && checkoutWardRequest.abort) checkoutWardRequest.abort();
+
+    checkoutWardRequest = $.ajax({
         type: 'post',
         url: 'api/ward-city.php',
         data: {
@@ -596,11 +613,13 @@ function loadWardByCity(id=0)
             holdonOpen();
         },
         success: function(result){
-            $(".select-ward-cart").html(result);
+            if(requestVersion !== checkoutWardRequestVersion || String(citySelect.val() || '') !== cityId) return;
+            wardSelect.html(result);
             holdonClose();
         },
-        error: function(){
-            $(".select-ward-cart").html('<option value="">'+LANG['ward']+'</option>');
+        error: function(xhr, status){
+            if(status === 'abort' || requestVersion !== checkoutWardRequestVersion || String(citySelect.val() || '') !== cityId) return;
+            wardSelect.html('<option value="">'+LANG['ward']+'</option>');
             holdonClose();
         }
     });
@@ -608,11 +627,19 @@ function loadWardByCity(id=0)
 
 function loadShip(id=0)
 {
+    var formCart = $(".form-cart");
+    var citySelect = formCart.find(".select-city-cart").first();
+    var wardSelect = formCart.find(".select-ward-cart").first();
+    var cityId = String(citySelect.val() || '');
+    var wardId = String(id || '');
+    var requestVersion = ++checkoutShipRequestVersion;
+
+    if(checkoutShipRequest && checkoutShipRequest.abort) checkoutShipRequest.abort();
+    checkoutShipRequest = null;
+
     if(SHIP_CART)
     {
-        var formCart = $(".form-cart");
-
-        $.ajax({
+        checkoutShipRequest = $.ajax({
             type: "POST",
             url: "api/cart.php",
             dataType: 'json',
@@ -624,11 +651,17 @@ function loadShip(id=0)
                 holdonOpen();
             },
             success: function(result){
+                if(requestVersion !== checkoutShipRequestVersion || String(citySelect.val() || '') !== cityId || String(wardSelect.val() || '') !== wardId) return;
                 if(result)
                 {
                     formCart.find('.load-price-ship').html(result.shipText || 'Sẽ xác nhận sau');
                     formCart.find('.load-price-total').html(result.totalText);
                 }   
+                holdonClose();
+            },
+            error: function(xhr, status){
+                if(status === 'abort' || requestVersion !== checkoutShipRequestVersion || String(citySelect.val() || '') !== cityId || String(wardSelect.val() || '') !== wardId) return;
+                formCart.find('.load-price-ship').html('Sẽ xác nhận sau');
                 holdonClose();
             }
         }); 

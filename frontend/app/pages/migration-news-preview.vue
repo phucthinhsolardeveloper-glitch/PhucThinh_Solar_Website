@@ -124,20 +124,19 @@ usePublicSocialMeta({
           </div>
 
           <nav v-if="news.pagination.total > news.pagination.perPage" class="mt-7 flex flex-wrap justify-center gap-2" :aria-label="news.labels.pages">
-            <a v-if="news.pagination.page > 1" class="grid min-h-11 min-w-11 place-items-center rounded-chip border border-gray-200 text-navy-800 no-underline hover:border-gold-500 hover:bg-gold-400" rel="prev" :href="pageUrl(news.pagination.page - 1)">‹</a>
+            <SitePaginationButton v-if="news.pagination.page > 1" :href="pageUrl(news.pagination.page - 1)" rel="prev" aria-label="Trang trước">‹</SitePaginationButton>
             <template v-for="(page, index) in pageNumbers" :key="`${page}-${index}`">
-              <span v-if="page === '…'" class="grid h-[38px] min-w-[38px] place-items-center text-navy-800">…</span>
-              <a
+              <span v-if="page === '…'" class="text-gold-700">…</span>
+              <SitePaginationButton
                 v-else
-                class="grid min-h-11 min-w-11 place-items-center rounded-chip border text-navy-800 no-underline"
-                :class="page === news.pagination.page ? 'border-gold-500 bg-gold-400' : 'border-gray-200 hover:border-gold-500 hover:bg-gold-400'"
-                :aria-current="page === news.pagination.page ? 'page' : undefined"
+                :active="page === news.pagination.page"
                 :href="pageUrl(page)"
+                :aria-label="`Trang ${page}`"
               >
                 {{ page }}
-              </a>
+              </SitePaginationButton>
             </template>
-            <a v-if="news.pagination.page < Math.ceil(news.pagination.total / news.pagination.perPage)" class="grid min-h-11 min-w-11 place-items-center rounded-chip border border-gray-200 text-navy-800 no-underline hover:border-gold-500 hover:bg-gold-400" rel="next" :href="pageUrl(news.pagination.page + 1)">›</a>
+            <SitePaginationButton v-if="news.pagination.page < Math.ceil(news.pagination.total / news.pagination.perPage)" :href="pageUrl(news.pagination.page + 1)" rel="next" aria-label="Trang sau">›</SitePaginationButton>
           </nav>
 
           <NewsCta v-if="news.cta" :cta="news.cta" :phone-label="news.labels.ctaPhone" />

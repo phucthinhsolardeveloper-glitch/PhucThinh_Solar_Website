@@ -16,12 +16,16 @@ useHead({
         flag_size: 24,
       })};`,
     },
-    {
-      key: 'pts-gtranslate-popup',
-      src: 'https://cdn.gtranslate.net/widgets/latest/popup.js',
-      defer: true,
-    },
   ],
+})
+
+onMounted(() => {
+  if (document.querySelector('script[data-pts-gtranslate]')) return
+  const script = document.createElement('script')
+  script.dataset.ptsGtranslate = 'true'
+  script.src = 'https://cdn.gtranslate.net/widgets/latest/popup.js'
+  script.defer = true
+  document.head.append(script)
 })
 </script>
 

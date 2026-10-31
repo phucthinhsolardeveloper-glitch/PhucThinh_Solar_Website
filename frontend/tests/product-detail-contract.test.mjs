@@ -183,3 +183,14 @@ test('accepts public product documents and rejects unsafe document paths', () =>
   assert.equal(isPublicProductDetailPayload({ ...good, documents: [{ type: 'private', title: 'Tài liệu', url: '/upload/file.pdf' }] }), false)
   assert.equal(isPublicProductDetailPayload({ ...good, documents: Array(31).fill(good.documents[0]) }), false)
 })
+
+test('related PDP products use Nuxt UI arrow controls and hide the horizontal scrollbar', () => {
+  const grid = readFileSync(new URL('../app/components/catalog/CatalogProductGrid.vue', import.meta.url), 'utf8')
+  const page = readFileSync(new URL('../app/components/product-preview/ProductPreviewPage.vue', import.meta.url), 'utf8')
+  assert.match(grid, /layout === 'rail' && products\.length > 2[\s\S]*<UButton[\s\S]*aria-label="Sản phẩm trước"[\s\S]*<UButton[\s\S]*aria-label="Sản phẩm tiếp theo"/)
+  assert.match(grid, /scrollBy\(\{ left: direction \* Math\.max\(rail\.clientWidth \* 0\.82, 240\), behavior: reducedMotion \? 'auto' : 'smooth' \}\)/)
+  assert.match(grid, /scrollbar-width: none;/)
+  assert.match(grid, /\.catalog-product-grid-rail::\-webkit-scrollbar\s*\{\s*display: none;/)
+  assert.match(grid, /tabindex="0"[\s\S]*Danh sách sản phẩm liên quan, có thể cuộn ngang/)
+  assert.match(page, /class="sticky[^"]*overflow-x-auto[^"]*\[scrollbar-width:none\] \[\&::\-webkit-scrollbar\]:hidden/)
+})

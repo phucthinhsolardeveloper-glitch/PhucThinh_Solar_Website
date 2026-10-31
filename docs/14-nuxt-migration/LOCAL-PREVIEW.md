@@ -1,4 +1,49 @@
-# Phúc Thịnh Solar — local Nuxt preview (2026-10-27)
+# Phúc Thịnh Solar — local Nuxt development and preview
+
+## Runtime status observed — 2026-10-31
+
+Nuxt HMR is the active frontend at `http://localhost:3100`. The PHP-rendered
+website on `:8080` is stopped. MariaDB and the read-only PHP API/media bridge
+on `:8088` remain because Nuxt currently uses them for live local data. Open
+`:3100` for the website; do not use `:8088` as a frontend preview. The stale
+Nuxt snapshot and Caddy rehearsal containers were removed; their images and all
+Docker volumes were kept. The interrupted capture and cleanup checkpoint are in
+[`BRANCH-INTEGRATION-AND-LOCAL-QA-20261031.md`](BRANCH-INTEGRATION-AND-LOCAL-QA-20261031.md).
+
+## Daily frontend development (HMR)
+
+Nuxt daily development needs the local DB and PHP API/media bridge, not the
+legacy PHP website renderer:
+
+```bash
+docker compose -f docker-compose.local.yml up -d db
+docker compose -f docker-compose.nuxt-preview.yml up -d web-preview
+```
+
+Then run Nuxt in a separate terminal:
+
+```bash
+cd /home/admin01/src/Web_PTS_PHP/frontend
+npm ci                 # lần đầu hoặc sau khi package-lock.json thay đổi
+npm run dev
+```
+
+Mở **http://localhost:3100/** (trang liên hệ: `/lien-he/`). Khi Nuxt sẵn sàng,
+terminal cũng in URL `Local`. Vite HMR cập nhật Vue/TypeScript/CSS ngay khi lưu
+file; đây là luồng mặc định để code và xem giao diện, không cần build.
+
+PHP API được gọi từ Nuxt qua `127.0.0.1:8088`. Nếu dữ liệu/API không tải được,
+kiểm tra `pts-php-nuxt-preview` và MariaDB; nếu giao diện không cập nhật, xem
+terminal Nuxt để biết watcher/HMR có báo lỗi hay không. Ảnh CMS và asset PHP
+được proxy trong dev qua allowlist đường dẫn ảnh; production vẫn tắt proxy theo
+mặc định.
+
+`npm run build` và `scripts/nuxt-local-preview.sh restart` chỉ dành cho snapshot
+SSR để kiểm tra bản đã build. Script snapshot dùng PHP preview cổng 8088 và cùng
+cổng Nuxt 3100, nên dừng tiến trình `npm run dev` bằng Ctrl+C trước khi chạy
+script. Khi quay lại code, khởi động lại `npm run dev` và dùng link trên.
+
+## Migration preview routes
 
 ## Open on Windows
 - Unified header + real CMS Solutions + footer: http://localhost:3100/migration-site-preview
@@ -21,8 +66,9 @@
 - Contact preview (Nuxt UI, PHP-secured form adapter): http://localhost:3100/migration-contact-preview
 - Dealer preview (Nuxt UI, PHP-secured form adapter): http://localhost:3100/migration-dealer-preview
 - Central migration preview hub: http://localhost:3100/migration-hub-preview
-- Local PHP reference (original master): http://localhost:8080/giai-phap/
-- Local PHP migration code/API: http://localhost:8088/giai-phap/
+- Nuxt frontend: http://localhost:3100/
+- Legacy PHP renderer (`:8080`, stopped): not part of the daily Nuxt workflow
+- PHP API/media bridge (`:8088`, local-only): backend dependency, not the frontend to review
 
 Nuxt is intentionally in **preview mode only**. Internal links from the preview
 are routed to corresponding Nuxt preview pages where available, but canonical
@@ -30,23 +76,27 @@ public URLs, PHP resolver/redirects, account, Admin, media and production
 commerce ownership are not cut over. Preview routes have noindex. Do not route
 production traffic to Nuxt.
 
-## Start, stop and rebuild (WSL Ubuntu)
+## Optional built snapshot controls (WSL Ubuntu)
 ```bash
-cd /home/admin01/src/pts-nuxt-integration-20261027
+cd /home/admin01/src/Web_PTS_PHP
 ./scripts/nuxt-local-preview.sh status
 ./scripts/nuxt-local-preview.sh restart
 ./scripts/nuxt-local-preview.sh stop
 ```
 
 - The script uses **existing local** MariaDB and local uploads from the website's Docker Compose network; no production credentials or data are used.
-- The local PHP preview container is isolated on 127.0.0.1:8088; current PHP QA remains on 8080. Its code is mounted read-only from this migration worktree. Media is mounted read-only and caches/logs use temporary writable filesystems.
+- The read-only PHP API/media bridge on `127.0.0.1:8088` stays active for Nuxt data. It can serve legacy PHP paths too, but is not the frontend to review. Its source and media mounts are read-only.
 - The ignored local PHP configuration is copied from the existing **local** PHP development repo into this worktree when missing; never add it to Git.
 - SSR Nuxt preview runs on 127.0.0.1:3100 with private upstream NUXT_PHP_ORIGIN=http://127.0.0.1:8088.
 - Static preview media proxy is disabled by default, enabled by the local script only, and restricted to allowlisted image file paths/types (no PHP/JS/html execution).
 - No production server, Git master, or existing Zalo CRM containers are modified by the script.
 - Build output, images and log are untracked in frontend/.migration-artifacts/.
 
-## Latest local checks
+## Archived checkpoint details (2026-10-27)
+
+The following branch, test, and audit notes describe the migration checkout at
+that date; they are historical evidence and do not describe the current `master`
+HEAD or the daily HMR workflow above.
 - Checkpoint frontend hiện tại: `aee4538` trên `feature/pts-nuxt-integration-20261027`;
   nhánh chưa push remote; kiểm tra số commit ahead bằng `git rev-list`.
 - `npm test` 117/117; typecheck exit 0, không còn warning vue-router/Volar;
@@ -85,4 +135,9 @@ cd /home/admin01/src/pts-nuxt-integration-20261027
   cho nhánh `fontless` bằng overrides.
 
 ## Rollback / isolation
-To stop **only** this preview, run ./scripts/nuxt-local-preview.sh stop. Do not stop the existing website PHP QA container or Zalo CRM. The old website keeps running from master regardless of the Nuxt preview state.
+Daily Nuxt HMR requires the `:8088` API/media bridge and local MariaDB. The
+legacy PHP website on `:8080` can remain stopped. To return to the legacy PHP
+website for a separate task, start only its `web` service with
+`docker compose -f docker-compose.local.yml up -d web`; it does not need to be
+running while developing Nuxt. The optional `scripts/nuxt-local-preview.sh`
+snapshot flow shares port `:3100`; stop `npm run dev` before using it.

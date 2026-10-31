@@ -39,7 +39,7 @@ export default defineAppConfig({
 
     button: {
       defaultVariants: {
-        // Hệ phẳng của ADR 0007: không gradient, không shadow nặng.
+        // Shared CSS applies the brand gold gradient to filled primary actions.
         variant: 'solid',
       },
     },

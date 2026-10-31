@@ -92,7 +92,7 @@ const links = useMigrationLinks()
         :href="links.generic(featured.category?.url || featured.href)"
       >
         <img
-          class="absolute inset-0 z-0 h-full w-full object-cover object-[center_58%] transition-transform duration-300 group-hover:scale-[1.025]"
+          class="absolute inset-0 z-0 h-full w-full object-cover object-[center_58%] transition-transform duration-300 group-hover:scale-[1.025] motion-reduce:transform-none motion-reduce:transition-none"
           :src="featured.image"
           :alt="featured.category?.name || featured.name"
           width="1440"
@@ -126,7 +126,7 @@ const links = useMigrationLinks()
           :href="links.generic(slot.category?.url || slot.href)"
         >
           <img
-            class="absolute inset-0 z-0 h-full w-full object-cover object-center transition-transform duration-300 group-hover:scale-[1.025]"
+            class="absolute inset-0 z-0 h-full w-full object-cover object-center transition-transform duration-300 group-hover:scale-[1.025] motion-reduce:transform-none motion-reduce:transition-none"
             :src="slot.image"
             :alt="slot.category?.name || slot.name"
             width="640"

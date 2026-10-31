@@ -37,7 +37,7 @@ function cardImageSrcSet(src: string): string | undefined {
   <article class="min-w-0">
     <a
       :href="links.news(article.slug)"
-      class="group flex h-full flex-col text-navy-800 no-underline transition-all duration-300 hover:-translate-y-1"
+      class="group flex h-full flex-col text-navy-800 no-underline"
       :class="variant === 'secondary'
         ? 'grid grid-cols-[minmax(0,38%)_minmax(0,1fr)] gap-4 max-ph:flex max-ph:flex-col'
         : ''"
@@ -54,7 +54,7 @@ function cardImageSrcSet(src: string): string | undefined {
           :srcset="cardImageSrcSet(article.image)"
           :sizes="variant === 'lead' ? '(min-width: 1024px) 50vw, 100vw' : variant === 'secondary' ? '(min-width: 1024px) 19vw, 100vw' : '(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw'"
           :alt="article.title"
-          class="block h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+          class="block h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-[1.025] motion-reduce:transition-none motion-reduce:transform-none"
           :loading="variant === 'lead' ? 'eager' : 'lazy'"
           :fetchpriority="variant === 'lead' ? 'high' : 'low'"
           decoding="async"

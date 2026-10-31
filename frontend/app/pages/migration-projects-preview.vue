@@ -106,34 +106,30 @@ usePublicSocialMeta({
             <ProjectCard v-for="project in projects.projects" :key="project.id" :project="project" :view-label="projects.labels.view" />
           </section>
 
-          <nav v-if="totalPages > 1" class="mt-10 flex flex-wrap gap-2" aria-label="Phân trang dự án">
-            <NuxtLink
+          <nav v-if="totalPages > 1" class="mt-10 flex flex-wrap justify-center gap-2" aria-label="Phân trang dự án">
+            <SitePaginationButton
               v-if="currentPage > 1"
-              class="inline-grid min-h-11 min-w-11 place-items-center rounded-chip border border-gray-200 px-3 py-2 text-navy-800 no-underline transition-colors hover:border-navy-800"
               :to="pageLink(currentPage - 1)"
               aria-label="Trang trước"
-            >Trước</NuxtLink>
+            >Trước</SitePaginationButton>
             <template v-for="item in paginationItems" :key="item.key">
-              <span v-if="item.page === null" class="inline-grid min-h-11 min-w-11 place-items-center px-2 py-2 text-slate-500" aria-hidden="true">…</span>
-              <span
+              <span v-if="item.page === null" class="text-gold-700" aria-hidden="true">…</span>
+              <SitePaginationButton
                 v-else-if="item.page === currentPage"
-                class="inline-grid min-h-11 min-w-11 place-items-center rounded-chip border border-navy-800 bg-navy-800 px-3 py-2 text-white"
-                aria-current="page"
+                active
                 :aria-label="`Trang ${item.page}`"
-              >{{ item.page }}</span>
-              <NuxtLink
+              >{{ item.page }}</SitePaginationButton>
+              <SitePaginationButton
                 v-else
-                class="inline-grid min-h-11 min-w-11 place-items-center rounded-chip border border-gray-200 px-3 py-2 text-navy-800 no-underline transition-colors hover:border-navy-800"
                 :to="pageLink(item.page)"
                 :aria-label="`Trang ${item.page}`"
-              >{{ item.page }}</NuxtLink>
+              >{{ item.page }}</SitePaginationButton>
             </template>
-            <NuxtLink
+            <SitePaginationButton
               v-if="currentPage < totalPages"
-              class="inline-grid min-h-11 min-w-11 place-items-center rounded-chip border border-gray-200 px-3 py-2 text-navy-800 no-underline transition-colors hover:border-navy-800"
               :to="pageLink(currentPage + 1)"
               aria-label="Trang tiếp theo"
-            >Sau</NuxtLink>
+            >Sau</SitePaginationButton>
           </nav>
 
           <p v-if="!projects.featured && !projects.projects.length" class="py-6 text-slate-500">{{ projects.labels.empty }}</p>
