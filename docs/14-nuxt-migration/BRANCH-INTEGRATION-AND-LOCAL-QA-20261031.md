@@ -161,11 +161,16 @@ database data/volume, deploy, public route switch, push or backup was changed.
   Nuxt now redirects `/danh-muc-giai-phap/:slug/` to the resolver-confirmed
   canonical path; both known aliases return 301 and an unknown slug returns
   404. All 129 distinct legacy-only href targets from that matrix now return
-  HTTP 200 after redirects on local Nuxt. The separate Nuxt-only href set and
-  full PHP-vs-Nuxt path parity remain open.
+  HTTP 200 after redirects on local Nuxt. The 98 distinct Nuxt-only targets
+  also return HTTP 200 after redirects. They include brand paths/filters,
+  catalog/search filters and pagination, PDP links, editorial routes, and the
+  dealer slash alias. Full same-data PHP-vs-Nuxt path and filter parity remain
+  open because the legacy HTML snapshot is historical and the local PHP page
+  renderer is disabled.
 - Focused resolver/alias tests pass **5/5** and Nuxt typecheck passes. The
   typecheck initially exposed `rows="4"` on a Nuxt UI textarea; changing it to
-  numeric `:rows="4"` cleared the error.
+  numeric `:rows="4"` cleared the error. The focused route/catalog/brand/
+  search/editorial set passes **57/57**.
 - The probe verifies preview indexing protection only. It does not establish
   route data/render health for pages that require a slug or category query.
   PHP HTML preview at `:8088` remains unavailable (root responds 403); the

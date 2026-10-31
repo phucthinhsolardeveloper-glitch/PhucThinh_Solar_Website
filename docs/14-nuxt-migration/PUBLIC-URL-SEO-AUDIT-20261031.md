@@ -184,3 +184,20 @@ This proves those retained PHP-only targets resolve on the current local Nuxt
 preview. It does not establish exact href parity: the matrix also has Nuxt-only
 paths and was captured before this fix. A fresh PHP-vs-Nuxt HTML comparison
 remains unavailable because the local PHP HTML renderer is disabled.
+
+## Follow-up — current Nuxt reachability for both href difference sets
+
+The retained matrix contains **129 distinct PHP-only** href targets and **98
+distinct Nuxt-only** targets. After the solution-category alias fix, all 129
+PHP-only paths return HTTP 200 after redirects when requested on local Nuxt.
+All 98 Nuxt-only paths also return HTTP 200 after redirects. The latter set
+groups into brand paths/filters, catalog/search filter and pagination queries,
+four PDP paths, editorial bare-slug/category paths, and `/dai-ly/`.
+
+Focused route, DTO, alias, brand, catalog, search and editorial tests pass
+**57/57**. These results prove there are no unreachable destinations in either
+retained difference set on current Nuxt. They do not prove that every extra
+brand/product link is present in the current PHP content, or that old and new
+filter query strings return identical result sets. The original PHP HTML
+snapshot is dated and the local PHP HTML renderer remains disabled, so exact
+same-data link-set and filter parity remain open.

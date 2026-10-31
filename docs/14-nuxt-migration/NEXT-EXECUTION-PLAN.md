@@ -62,11 +62,15 @@
 - The retained href matrix contained two broken PHP solution-category aliases.
   Nuxt now returns 301 to the resolver-provided `/doanh-nghiep` and
   `/ho-gia-dinh` pages; unknown aliases remain 404. All 129 distinct PHP-only
-  href targets now return HTTP 200 after redirects on local Nuxt. The
-  Nuxt-only set and full path-set parity are still unclassified.
+  href targets and 98 Nuxt-only href targets now return HTTP 200 after
+  redirects on local Nuxt. The Nuxt-only set includes brand routes/filters,
+  catalog/search query states, PDP paths, editorial bare slugs, and the dealer
+  slash alias. Exact same-data href/filter parity remains unverified because
+  the PHP HTML capture is historical and the local PHP renderer is disabled.
 - The alias contract tests pass 5/5 and Nuxt typecheck passes after correcting
-  a numeric textarea prop. The exact route probe and 129-target check are
-  recorded in `PUBLIC-URL-SEO-AUDIT-20261031.md`.
+  a numeric textarea prop. Focused route/catalog/brand/search/editorial tests
+  pass 57/57. The route probes and both target-set results are recorded in
+  `PUBLIC-URL-SEO-AUDIT-20261031.md`.
 - No production action was taken. PHP remains the public owner; visual signoff,
   SEO/href classification, missing hidden-record fixtures, and release/Caddy
   rehearsal remain open.
