@@ -20,6 +20,28 @@ const form = reactive({
   quantity: '',
   details: '',
 })
+const cityOptions = computed(() => [
+  { label: 'Chọn tỉnh/thành', value: 0 },
+  ...(security.value?.cities ?? []).map((city) => ({ label: city.name, value: city.id })),
+])
+const wardOptions = computed(() => [
+  { label: loadingWards.value ? 'Đang tải…' : 'Chọn phường/xã', value: 0 },
+  ...wards.value.map((ward) => ({ label: ward.name, value: ward.id })),
+])
+const needOptions = computed(() => props.needs.map((need) => ({ label: need.label, value: need.code })))
+const customerTypeOptions = [
+  { label: 'Người dùng cá nhân', value: 'Người dùng cá nhân' },
+  { label: 'Đại lý/Nhà phân phối, bán lẻ/Nhà thầu…', value: 'Đại lý/Nhà phân phối, bán lẻ/Nhà thầu…' },
+]
+const inputUi = {
+  base: 'h-11 w-full min-w-0 rounded-[4px] border border-slate-300 bg-white px-3 text-base font-normal text-navy-950 placeholder:text-slate-400 focus-visible:border-gold-600 focus-visible:ring-2 focus-visible:ring-gold-500/25',
+}
+const selectUi = {
+  base: 'h-11 w-full min-w-0 rounded-[4px] border border-slate-300 bg-white px-3 text-base font-normal text-navy-950 focus-visible:border-gold-600 focus-visible:ring-2 focus-visible:ring-gold-500/25',
+}
+const textareaUi = {
+  base: 'min-h-[112px] w-full min-w-0 rounded-[4px] border border-slate-300 bg-white px-3 py-2 text-base font-normal text-navy-950 placeholder:text-slate-400 focus-visible:border-gold-600 focus-visible:ring-2 focus-visible:ring-gold-500/25',
+}
 const wards = ref<Array<{ id: number; name: string }>>([])
 const loadingWards = ref(false)
 const submitting = ref(false)
@@ -94,58 +116,48 @@ async function send() {
 
       <form class="min-w-0" @submit.prevent="send">
         <div class="grid gap-4 tb:grid-cols-2">
-          <label class="grid gap-1.5 text-sm font-bold">Họ và tên <span class="text-red-600">*</span>
-            <input v-model.trim="form.fullname" required maxlength="100" autocomplete="name" class="h-11 w-full min-w-0 rounded-chip border border-gray-300 px-3 font-normal">
-          </label>
-          <label class="grid gap-1.5 text-sm font-bold">Số điện thoại <span class="text-red-600">*</span>
-            <input v-model.trim="form.phone" required maxlength="20" autocomplete="tel" inputmode="tel" class="h-11 w-full min-w-0 rounded-chip border border-gray-300 px-3 font-normal">
-          </label>
-          <label class="grid gap-1.5 text-sm font-bold">Email
-            <input v-model.trim="form.email" type="email" maxlength="150" autocomplete="email" class="h-11 w-full min-w-0 rounded-chip border border-gray-300 px-3 font-normal">
-          </label>
-          <label class="grid gap-1.5 text-sm font-bold">Tỉnh/Thành phố
-            <select v-model.number="form.city" class="h-11 w-full min-w-0 rounded-chip border border-gray-300 bg-white px-3 font-normal">
-              <option :value="0">Chọn tỉnh/thành</option>
-              <option v-for="city in security?.cities ?? []" :key="city.id" :value="city.id">{{ city.name }}</option>
-            </select>
-          </label>
-          <label class="grid gap-1.5 text-sm font-bold">Phường/Xã
-            <select v-model.number="form.ward" :disabled="!form.city || loadingWards" class="h-11 w-full min-w-0 rounded-chip border border-gray-300 bg-white px-3 font-normal disabled:bg-slate-50">
-              <option :value="0">{{ loadingWards ? 'Đang tải…' : 'Chọn phường/xã' }}</option>
-              <option v-for="ward in wards" :key="ward.id" :value="ward.id">{{ ward.name }}</option>
-            </select>
-          </label>
-          <fieldset class="m-0 grid gap-3 border-0 p-0 tb:col-span-2 tb:grid-cols-2">
-            <legend class="mb-1 w-full text-sm font-bold">Bạn là...</legend>
-            <label class="flex min-h-10 items-center gap-2 text-sm font-normal">
-              <input v-model="form.loaihinh" type="radio" value="Người dùng cá nhân" class="h-4 w-4 accent-gold-600">
-              Người dùng cá nhân
-            </label>
-            <label class="flex min-h-10 items-center gap-2 text-sm font-normal">
-              <input v-model="form.loaihinh" type="radio" value="Đại lý/Nhà phân phối, bán lẻ/Nhà thầu…" class="h-4 w-4 accent-gold-600">
-              Đại lý/Nhà phân phối, bán lẻ/Nhà thầu…
-            </label>
-          </fieldset>
-          <label class="grid gap-1.5 text-sm font-bold">Nhu cầu cần tư vấn
-            <select v-model="form.needCode" class="h-11 w-full min-w-0 rounded-chip border border-gray-300 bg-white px-3 font-normal">
-              <option value="">Chọn nhu cầu</option>
-              <option v-for="need in needs" :key="need.code" :value="need.code">{{ need.label }}</option>
-            </select>
-          </label>
-          <label class="grid gap-1.5 text-sm font-bold">Số lượng dự kiến
-            <input v-model.trim="form.quantity" maxlength="255" placeholder="Ví dụ: 2 bộ" class="h-11 w-full min-w-0 rounded-chip border border-gray-300 px-3 font-normal">
-          </label>
-          <label class="grid gap-1.5 text-sm font-bold tb:col-span-2">Thông tin cần tư vấn thêm
-          <textarea v-model.trim="form.details" maxlength="1000" rows="4" placeholder="Mô tả vị trí lắp đặt, tải sử dụng hoặc yêu cầu của bạn" class="w-full min-w-0 rounded-chip border border-gray-300 px-3 py-2 font-normal" />
-          </label>
+          <UFormField label="Họ và tên" name="fullname" required class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-sm font-semibold text-navy-900' }">
+            <UInput v-model.trim="form.fullname" name="fullname" required maxlength="100" autocomplete="name" variant="none" class="w-full" :ui="inputUi" />
+          </UFormField>
+          <UFormField label="Số điện thoại" name="phone" required class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-sm font-semibold text-navy-900' }">
+            <UInput v-model.trim="form.phone" name="phone" type="tel" required maxlength="20" autocomplete="tel" inputmode="tel" variant="none" class="w-full" :ui="inputUi" />
+          </UFormField>
+          <UFormField label="Email" name="email" class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-sm font-semibold text-navy-900' }">
+            <UInput v-model.trim="form.email" name="email" type="email" maxlength="150" autocomplete="email" variant="none" class="w-full" :ui="inputUi" />
+          </UFormField>
+          <UFormField label="Tỉnh/Thành phố" name="city" class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-sm font-semibold text-navy-900' }">
+            <USelect v-model.number="form.city" name="city" :items="cityOptions" color="neutral" variant="none" class="w-full" :ui="selectUi" />
+          </UFormField>
+          <UFormField label="Phường/Xã" name="ward" class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-sm font-semibold text-navy-900' }">
+            <USelect v-model.number="form.ward" name="ward" :items="wardOptions" :disabled="!form.city || loadingWards" color="neutral" variant="none" class="w-full" :ui="selectUi" />
+          </UFormField>
+          <URadioGroup
+            v-model="form.loaihinh"
+            name="loaihinh"
+            legend="Bạn là..."
+            :items="customerTypeOptions"
+            orientation="vertical"
+            color="primary"
+            class="tb:col-span-2"
+            :ui="{ legend: 'mb-1 w-full text-sm font-semibold text-navy-900', root: 'grid gap-1.5', item: 'flex min-h-10 items-center gap-2', label: 'text-sm font-normal text-navy-800' }"
+          />
+          <UFormField label="Nhu cầu cần tư vấn" name="needCode" class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-sm font-semibold text-navy-900' }">
+            <USelect v-model="form.needCode" name="needCode" :items="needOptions" placeholder="Chọn nhu cầu" color="neutral" variant="none" class="w-full" :ui="selectUi" />
+          </UFormField>
+          <UFormField label="Số lượng dự kiến" name="quantity" class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-sm font-semibold text-navy-900' }">
+            <UInput v-model.trim="form.quantity" name="quantity" maxlength="255" placeholder="Ví dụ: 2 bộ" variant="none" class="w-full" :ui="inputUi" />
+          </UFormField>
+          <UFormField label="Thông tin cần tư vấn thêm" name="details" class="grid min-w-0 content-start gap-2 tb:col-span-2" :ui="{ label: 'text-sm font-semibold text-navy-900' }">
+            <UTextarea v-model.trim="form.details" name="details" maxlength="1000" :rows="4" placeholder="Mô tả vị trí lắp đặt, tải sử dụng hoặc yêu cầu của bạn" variant="none" class="w-full" :ui="textareaUi" />
+          </UFormField>
         </div>
 
         <p v-if="success" class="mt-4 rounded-chip bg-emerald-50 p-3 text-sm font-semibold text-emerald-800" role="status">{{ success }}</p>
         <p v-if="error" class="mt-4 rounded-chip bg-red-50 p-3 text-sm font-semibold text-red-800" role="alert">{{ error }}</p>
         <div class="mt-5 flex justify-center">
-          <button type="submit" :disabled="submitting" class="min-h-11 rounded-chip bg-gold-500 px-6 font-extrabold text-navy-950 disabled:cursor-wait disabled:opacity-60">
+          <UButton type="submit" :loading="submitting" :disabled="submitting" class="min-h-11 rounded-[4px] bg-gold-500 px-6 font-extrabold text-navy-950 disabled:cursor-wait disabled:opacity-60">
             {{ submitting ? 'Đang gửi…' : 'Gửi yêu cầu tư vấn' }}
-          </button>
+          </UButton>
         </div>
       </form>
     </div>
