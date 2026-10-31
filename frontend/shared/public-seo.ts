@@ -5,6 +5,14 @@ export const PUBLIC_SEO_FALLBACK_IMAGE = '/assets/images/favicon-pts-mobile.png'
 
 const CANONICAL_HOST = 'phucthinhsolar.com'
 
+/** Mirror the PHP head's empty-OG-description fallback from the site setting. */
+export function publicSeoDescription(value: unknown, fallback = PUBLIC_SEO_SITE_NAME): string {
+  const description = typeof value === 'string' ? value.trim() : ''
+  if (description) return description
+  const siteDescription = typeof fallback === 'string' ? fallback.trim() : ''
+  return siteDescription || PUBLIC_SEO_SITE_NAME
+}
+
 /** Mirror class.Seo::set(): append the brand once to PHP-owned page titles. */
 export function publicSeoTitle(value: unknown, fallback = PUBLIC_SEO_SITE_NAME): string {
   const title = typeof value === 'string' ? value.trim() : ''

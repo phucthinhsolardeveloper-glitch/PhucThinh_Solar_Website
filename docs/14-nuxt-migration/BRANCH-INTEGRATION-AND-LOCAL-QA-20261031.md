@@ -99,8 +99,9 @@ Nuxt return 502; it was immediately restored from
 `docker-compose.nuxt-preview.yml`, and Nuxt root plus `/_migration/site` then
 returned 200. Keep this read-only, loopback-bound PHP bridge while developing
 Nuxt; do not open it as the frontend. The separate legacy PHP website container
-`pts-php81-local` on `:8080` was stopped (not removed) to avoid confusing it
-with the Nuxt frontend. MariaDB remains healthy. The old stopped Nuxt snapshot
+`pts-php81-local` on `:8080` was stopped and removed to avoid confusing it
+with the Nuxt frontend. The PHP source remains in the repository and can be
+started for a separate PHP task. MariaDB remains healthy. The old stopped Nuxt snapshot
 and Caddy rehearsal containers were removed; images, named volumes, database,
 uploads, and source were retained. Restart the legacy PHP website only for a
 separate PHP task with `docker compose -f docker-compose.local.yml up -d web`.

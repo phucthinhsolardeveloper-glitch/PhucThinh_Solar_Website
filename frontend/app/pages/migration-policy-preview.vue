@@ -4,7 +4,7 @@ import EditorialRichText from '~/components/editorial/EditorialRichText.vue'
 import EditorialShare from '~/components/editorial/EditorialShare.vue'
 import { buildEditorialToc } from '#shared/editorial-toc'
 import { POLICY_PUBLIC_ROOT, editorialPublicResponseStatus, editorialPublicRouteRobots, isSafeEditorialSlug } from '#shared/editorial-public-route'
-import { publicSeoTitle } from '#shared/public-seo'
+import { publicSeoDescription, publicSeoTitle } from '#shared/public-seo'
 
 const { site } = await usePublicSite()
 const route = useRoute()
@@ -70,6 +70,7 @@ function formatRelatedDate(value: string): string {
 const pageTitle = computed(() => isPublicRoute.value
   ? publicSeoTitle(data.value?.seo.title || data.value?.title, 'Chính sách hỗ trợ')
   : data.value?.seo.title || 'Chính sách hỗ trợ — Nuxt preview')
+const socialDescription = computed(() => publicSeoDescription(data.value?.seo.description, site.value.brand.name))
 
 useSeoMeta({
   title: pageTitle,
@@ -79,7 +80,7 @@ useSeoMeta({
 usePublicSocialMeta({
   enabled: computed(() => isPublicRoute.value && !!data.value && !error.value),
   title: pageTitle,
-  description: computed(() => data.value?.seo.description || ''),
+  description: socialDescription,
   canonicalPath: computed(() => route.path),
   image: computed(() => data.value?.cover || undefined),
   type: 'article',

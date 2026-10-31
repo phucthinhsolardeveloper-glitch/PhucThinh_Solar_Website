@@ -3,6 +3,7 @@ import type { PublicSearchPayload } from '#shared/contracts/public-search'
 import CatalogProductGrid from '~/components/catalog/CatalogProductGrid.vue'
 import CatalogMasthead from '~/components/catalog/CatalogMasthead.vue'
 import SearchFilterOptions from '~/components/catalog/SearchFilterOptions.vue'
+import { publicSeoDescription } from '#shared/public-seo'
 
 /*
  * Tách từ migration-search-preview.vue (xem đó + pages/tim-kiem/index.vue)
@@ -99,7 +100,7 @@ useSeoMeta({
 usePublicSocialMeta({
   enabled: computed(() => publicSearchEnabled.value && !!data.value && !error.value),
   title: 'Tìm kiếm | Phúc Thịnh Solar',
-  description: 'Tìm sản phẩm tại Phúc Thịnh Solar.',
+  description: computed(() => publicSeoDescription('', site.value.brand.name)),
   canonicalPath: '/tim-kiem/',
 })
 </script>

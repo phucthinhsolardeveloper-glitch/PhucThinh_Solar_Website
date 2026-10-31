@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { test } from 'node:test'
-import { canonicalPublicOrigin, canonicalPublicUrl, isPublicSeoIndexable, publicSeoRobots, publicSeoTitle, publicSiteStructuredData, publicSocialImageUrl } from '../shared/public-seo.ts'
+import { canonicalPublicOrigin, canonicalPublicUrl, isPublicSeoIndexable, publicSeoDescription, publicSeoRobots, publicSeoTitle, publicSiteStructuredData, publicSocialImageUrl } from '../shared/public-seo.ts'
 import { editorialPublicResponseStatus, editorialPublicRouteRobots } from '../shared/editorial-public-route.ts'
 
 const frontendRoot = new URL('../', import.meta.url)
@@ -40,6 +40,13 @@ test('public page titles add the PHP brand suffix once, including truncated lega
   assert.equal(publicSeoTitle('Tin mới nhất | Phúc Thịnh Solar'), 'Tin mới nhất | Phúc Thịnh Solar')
   assert.equal(publicSeoTitle('Tin mới nhất | Phúc Thịnh So'), 'Tin mới nhất | Phúc Thịnh So')
   assert.equal(publicSeoTitle('', 'Video'), 'Video | Phúc Thịnh Solar')
+})
+
+test('empty social descriptions use the PHP site-setting fallback instead of only the brand label', () => {
+  assert.equal(publicSeoDescription('  Mô tả CMS  ', 'Tên doanh nghiệp'), 'Mô tả CMS')
+  assert.equal(publicSeoDescription('', ' Tên doanh nghiệp '), 'Tên doanh nghiệp')
+  assert.equal(publicSeoDescription('', ''), 'Phúc Thịnh Solar')
+  assert.equal(publicSeoDescription(null, undefined), 'Phúc Thịnh Solar')
 })
 
 test('Organization and homepage WebSite JSON-LD use only the canonical host and public CMS fields', () => {

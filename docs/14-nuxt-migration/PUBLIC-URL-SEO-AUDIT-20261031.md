@@ -26,7 +26,7 @@ noindex of those URLs, but do not establish metadata parity on the public paths.
 | Page titles match PHP | 34/34 | Includes the PHP brand suffix convention. |
 | Alias redirect chains match | 34/34 | Four legacy aliases retain their 301 behavior. |
 | Open Graph title matches | 34/34 | Title normalization is shared with the page title. |
-| Open Graph description matches | 21/34 | Remaining differences need Admin/API fallback review. |
+| Open Graph description matches | 27/34 after the follow-up below | The initial 21/34 comparison is retained in the ignored route artifact; six empty-description fallbacks now match PHP's site-setting behavior. |
 | Open Graph image path matches | 7/34 | Many Nuxt pages use current Admin hero media while PHP falls back to a logo; classify each before changing. |
 | Open Graph type matches | 4/34 | PHP emits a legacy `object` value on many listing pages; do not copy it without deciding the valid public contract. |
 | JSON-LD type sets match | 2/34 | PHP remains the public structured-data authority until the per-family entity fields are reviewed. |
@@ -89,3 +89,24 @@ URL crawl and sitemap/href reachability details.
    repeated unless requested.
 5. PHP remains the production public owner. No push, deployment, DNS/Caddy
    switch, route ownership change or cutover decision is included here.
+
+## Follow-up — empty Open Graph descriptions — 2026-10-31
+
+PHP's shared head uses the public site setting (`$setting['namevi']`) when a
+route has no configured SEO description. The public site DTO exposes that same
+value as `brand.name`. Nuxt had instead emitted custom search copy or only the
+brand label on search, news category, and support-policy routes. The shared
+`publicSeoDescription()` helper and those three route owners now use the CMS
+SEO description first and the site setting as the empty-value fallback.
+
+Verification: the complete Node suite passes **451/451**, Nuxt typecheck and
+production build pass, and direct GETs to all four news category routes, search,
+and the policy detail return HTTP 200 with `og:description` equal to
+`pts_v1_site.php`'s `brand.name`. This six-route check uses the previous
+PHP-vs-Nuxt audit for the PHP side and the current PHP API value for its source
+setting. A full two-renderer rerun is intentionally unavailable while the PHP
+HTML preview is disabled (direct page requests through the API bridge return
+403). Remaining OG-description differences are the category/solution/project
+custom descriptions versus PHP's generic fallback, plus trailing whitespace
+in legacy contact/dealer metadata; review those separately rather than
+discarding more specific CMS text.
