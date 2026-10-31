@@ -666,7 +666,9 @@ onBeforeUnmount(() => {
         <div class="flex min-w-0 items-center justify-end gap-1.5 max-ph:gap-1">
           <!-- GTranslate adds this marker class synchronously while it mounts. Keep
                it in SSR markup too so hydration does not report a class mismatch. -->
-          <div class="gtranslate_wrapper gt_container-unisv1 hidden h-11 w-[45px] flex-none items-center justify-center min-[1681px]:flex" aria-label="Chọn ngôn ngữ" />
+          <div class="hidden h-11 w-[45px] flex-none items-center justify-center min-[1681px]:flex" role="group" aria-label="Chọn ngôn ngữ">
+            <div class="gtranslate_wrapper gt_container-unisv1 hidden h-11 w-[45px] flex-none items-center justify-center min-[1681px]:flex" />
+          </div>
 
           <button
             ref="searchTrigger"
@@ -678,7 +680,7 @@ onBeforeUnmount(() => {
             :aria-label="searchOpen ? 'Đóng tìm kiếm' : 'Mở tìm kiếm'"
             @click="toggleSearch"
           >
-            <UIcon name="i-lucide-search" class="size-[19px]" aria-hidden="true" />
+            <UIcon name="i-lucide-search" class="size-[21px]" aria-hidden="true" />
           </button>
 
           <a
@@ -689,7 +691,7 @@ onBeforeUnmount(() => {
             :title="hotline"
           >
             <span class="grid h-9 w-9 min-[1681px]:h-10 min-[1681px]:w-10 flex-none place-items-center rounded-full bg-hdr-surface text-hdr-gold-deep" aria-hidden="true">
-              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.79 19.79 0 0 1 11.19 18a19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.09 3.18 2 2 0 0 1 4.08 1h3a2 2 0 0 1 2 1.72c.12.96.36 1.9.7 2.8a2 2 0 0 1-.45 2.11L8.06 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.84.58 2.8.7A2 2 0 0 1 22 16.92Z" /></svg>
+              <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.79 19.79 0 0 1 11.19 18a19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.09 3.18 2 2 0 0 1 4.08 1h3a2 2 0 0 1 2 1.72c.12.96.36 1.9.7 2.8a2 2 0 0 1-.45 2.11L8.06 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.84.58 2.8.7A2 2 0 0 1 22 16.92Z" /></svg>
             </span>
             <span class="hidden min-[821px]:flex min-[821px]:flex-col min-[821px]:gap-0.5 min-[821px]:whitespace-nowrap text-left">
               <small class="text-[11px] leading-none text-hdr-muted font-semibold uppercase tracking-wider">Tư vấn</small>
@@ -709,7 +711,7 @@ onBeforeUnmount(() => {
               v-if="cartCountAvailable && migrationCart?.count"
               class="absolute right-0.5 top-0.5 grid min-h-4 min-w-4 place-items-center rounded-full bg-gold-500 px-1 text-[10px] font-black leading-4 text-navy-950"
             >{{ migrationCart.count }}</span>
-            <svg class="h-[22px] w-[22px]" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 4h2l1 12h11l1.6-8H7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" /><circle cx="9" cy="20" r="1.5" fill="currentColor" /><circle cx="16" cy="20" r="1.5" fill="currentColor" /></svg>
+            <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 4h2l1 12h11l1.6-8H7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" /><circle cx="9" cy="20" r="1.5" fill="currentColor" /><circle cx="16" cy="20" r="1.5" fill="currentColor" /></svg>
           </NuxtLink>
 
           <button

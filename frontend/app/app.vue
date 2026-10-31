@@ -13,7 +13,7 @@ useHead({
         native_language_names: true,
         languages: ['vi', 'en', 'zh-CN', 'ko', 'ja'],
         wrapper_selector: '.gtranslate_wrapper',
-        flag_size: 24,
+        flag_size: 26,
       })};`,
     },
   ],
