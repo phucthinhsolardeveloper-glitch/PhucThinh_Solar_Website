@@ -46,14 +46,14 @@ const telHref = computed(() => telHrefFor(hotline.value))
     >
       <!-- Cột 1: Biểu trưng thương hiệu -->
       <div class="flex flex-col items-center gap-4 tb:items-start">
-        <a class="block w-full max-w-[240px]" :href="footerHref('/')" :aria-label="`${brandName} - Trang chủ`">
+        <a class="block w-full max-w-[300px]" :href="footerHref('/')" :aria-label="`${brandName} - Trang chủ`">
           <img
             v-if="footerLogo"
             :src="footerLogoSrc"
             :alt="brandName"
             width="520"
             height="426"
-            class="block h-auto w-full object-contain tb:max-w-[248px] wd:max-w-[280px]"
+            class="block h-auto w-full object-contain tb:max-w-[280px] wd:max-w-[300px]"
           >
           <span v-else class="text-lg font-black text-white">{{ brandName }}</span>
         </a>
@@ -164,11 +164,13 @@ const telHref = computed(() => telHrefFor(hotline.value))
     <div class="mt-10 border-t border-white/10 pt-5">
       <div class="mx-auto flex w-full max-w-(--container-page) flex-col items-start justify-between gap-3 px-4 max-[359px]:px-3 tb:flex-row tb:items-center tb:px-(--spacing-gutter) text-[13px]">
         <p class="m-0 text-ftr-text/80">© {{ new Date().getFullYear() }} {{ brandName }}.</p>
-        <ul v-if="footer?.socialLinks.length" class="m-0 hidden list-none flex-wrap items-center gap-x-5 gap-y-1 p-0 tb:flex tb:pr-14" aria-label="Kết nối mạng xã hội">
+        <ul v-if="footer?.socialLinks.length" class="m-0 flex list-none flex-wrap items-center gap-x-5 gap-y-1 p-0 tb:pr-14" aria-label="Kết nối mạng xã hội">
           <li v-for="social in footer.socialLinks" :key="social.href">
             <a
               class="inline-flex min-h-11 items-center text-[15px] font-semibold leading-[1.7] text-ftr-text no-underline transition-colors hover:text-gold-400"
               :href="social.href"
+              :aria-label="social.label || 'Mạng xã hội'"
+              :title="social.label || 'Mạng xã hội'"
               target="_blank"
               rel="noopener noreferrer"
             >
