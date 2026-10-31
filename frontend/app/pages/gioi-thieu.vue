@@ -35,7 +35,7 @@ usePublicSocialMeta({
   title: pageTitle,
   description: pageDescription,
   canonicalPath: '/gioi-thieu/',
-  image: computed(() => about.value?.seo?.image || about.value?.story.image || undefined),
+  image: computed(() => about.value?.seo?.image || undefined),
 })
 </script>
 

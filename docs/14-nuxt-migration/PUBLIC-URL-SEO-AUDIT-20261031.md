@@ -78,9 +78,10 @@ URL crawl and sitemap/href reachability details.
 1. Review the 34-route href differences and group them by intentional Nuxt URL
    mapping, missing destination, and query/filter behavior. Keep PHP URLs
    available for external links and SEO.
-2. Resolve OG description/image/type and JSON-LD differences from authoritative
-   Admin/PHP behavior. Do not treat `HTTP 200` or a noindex preview as SEO
-   cutover approval.
+2. Reconcile remaining OG description/image/type and JSON-LD differences from
+   authoritative Admin/PHP behavior. The source-aligned fallback fixes below
+   are targeted; retained full-route counts remain stale. Do not treat `HTTP
+   200` or a noindex preview as SEO cutover approval.
 3. Four hidden-record families still lack matching local DB fixtures. The seven
    earlier public-detail skips were caused by stale runner field/envelope
    mappings and were cleared in the read-only follow-up (69 HTTP PASS, 0 FAIL,
@@ -142,3 +143,22 @@ validated publication date and description. It emits only for a successful
 public route response; internal preview paths remain excluded. The targeted
 policy contract and typecheck passed after the source change. The retained 29/34
 type-set comparison above predates this change and has not been rerun.
+
+## Follow-up — source-aligned social images and organization fields — 2026-10-31
+
+PHP `about.php`, `contact.php`, `daily.php` (dealer) and `video.php` set the
+social image only from the Admin SEO-page photo; the shared head falls back to
+the public site logo when that field is empty. Nuxt now passes only those SEO
+photos on the four corresponding pages, allowing the shared logo fallback to
+apply instead of substituting story, contact-visual, dealer-hero or video
+thumbnail content. The shared Organization JSON-LD now includes `legalName`
+from the public site setting and `addressRegion: Gia Lai`, matching
+`strucdata.php`. Email remains omitted because the public site DTO does not
+expose it.
+
+Verification: `node --test tests/public-seo.test.mjs` passed **14/14**. Nuxt
+SSR GETs for `/gioi-thieu/`, `/lien-he/`, `/dai-ly/` and `/video/` returned
+HTTP 200 and the public logo as `og:image`. No production or PHP HTML page
+renderer was used. The retained 34-route image and JSON-LD counts above are
+still historical snapshots; this targeted verification does not establish a
+fresh full-route parity result.

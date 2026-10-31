@@ -68,7 +68,7 @@ test('breadcrumb JSON-LD mirrors the rendered route labels and rejects unsafe de
 test('Organization and homepage WebSite JSON-LD use only the canonical host and public CMS fields', () => {
   const site = {
     schemaVersion: 1,
-    brand: { name: 'Phúc Thịnh Solar', hotline: '0944 555 567', logo: '/upload/photo/logo.webp' },
+    brand: { name: 'CÔNG TY TNHH CÔNG NGHỆ - THƯƠNG MẠI VÀ DỊCH VỤ PHÚC THỊNH SOLAR', hotline: '0944 555 567', logo: '/upload/photo/logo.webp' },
     productCategories: [],
     footer: {
       companyName: '',
@@ -81,10 +81,12 @@ test('Organization and homepage WebSite JSON-LD use only the canonical host and 
   const about = JSON.parse(publicSiteStructuredData('https://phucthinhsolar.com', '/gioi-thieu/', site))
   assert.equal(about['@type'], 'Organization')
   assert.equal(about['@id'], 'https://phucthinhsolar.com/#organization')
+  assert.equal(about.legalName, 'CÔNG TY TNHH CÔNG NGHỆ - THƯƠNG MẠI VÀ DỊCH VỤ PHÚC THỊNH SOLAR')
   assert.equal(about.logo.url, 'https://phucthinhsolar.com/upload/photo/logo.webp')
   assert.equal(about.telephone, '0944 555 567')
   assert.deepEqual(about.sameAs, ['https://facebook.com/pts'])
   assert.equal(about.address.streetAddress, 'Gia Lai')
+  assert.equal(about.address.addressRegion, 'Gia Lai')
   assert.equal('email' in about, false)
 
   const homeJson = publicSiteStructuredData('https://phucthinhsolar.com', '/', site)
@@ -145,6 +147,13 @@ test('each renderable public content route wires the canonical and social metada
     'app/pages/migration-policy-preview.vue',
   ]
   for (const path of owners) assert.match(read(path), /usePublicSocialMeta\(/, `${path} needs public metadata`)
+})
+
+test('SEO image fallbacks use the Admin SEO photo before the shared logo fallback', () => {
+  assert.match(read('app/pages/gioi-thieu.vue'), /image: computed\(\(\) => about\.value\?\.seo\?\.image \|\| undefined\)/)
+  assert.match(read('app/components/contact/ContactPageContent.vue'), /image: computed\(\(\) => contact\.value\?\.seo\.image \|\| undefined\)/)
+  assert.match(read('app/components/dealer/DealerPageContent.vue'), /image: computed\(\(\) => dealer\.value\?\.seo\?\.image \|\| undefined\)/)
+  assert.match(read('app/pages/migration-video-preview.vue'), /image: computed\(\(\) => payload\.value\?\.seo\.image \|\| undefined\)/)
 })
 
 test('public editorial metadata hides filtered, empty, and failed pages from indexing', () => {

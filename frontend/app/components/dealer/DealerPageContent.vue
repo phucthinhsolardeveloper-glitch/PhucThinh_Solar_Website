@@ -51,7 +51,7 @@ usePublicSocialMeta({
   title: pageTitle,
   description: pageDescription,
   canonicalPath: '/dai-ly/',
-  image: computed(() => dealer.value?.seo?.image || dealer.value?.hero?.image || undefined),
+  image: computed(() => dealer.value?.seo?.image || undefined),
 })
 </script>
 

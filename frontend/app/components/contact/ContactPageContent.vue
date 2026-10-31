@@ -31,7 +31,7 @@ usePublicSocialMeta({
   title: pageTitle,
   description: computed(() => contact.value?.seo.description || ''),
   canonicalPath: '/lien-he/',
-  image: computed(() => contact.value?.seo.image || contact.value?.visual?.image || undefined),
+  image: computed(() => contact.value?.seo.image || undefined),
 })
 </script>
 

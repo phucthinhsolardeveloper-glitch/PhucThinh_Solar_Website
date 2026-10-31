@@ -132,6 +132,7 @@ export function publicSiteStructuredData(originValue: unknown, pathname: unknown
     '@type': 'Organization',
     '@id': organizationId,
     name: PUBLIC_SEO_SITE_NAME,
+    legalName: site.brand.name.trim() || PUBLIC_SEO_SITE_NAME,
     alternateName: 'PHUCTHINH SOLAR',
     url: origin,
   }
@@ -144,6 +145,7 @@ export function publicSiteStructuredData(originValue: unknown, pathname: unknown
     organization.address = {
       '@type': 'PostalAddress',
       streetAddress: headOffice.address.trim(),
+      addressRegion: 'Gia Lai',
       addressCountry: 'VN',
     }
   }
