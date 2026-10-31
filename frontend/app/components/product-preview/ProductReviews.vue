@@ -98,6 +98,25 @@ function selectPoster(event: Event) {
   videoPoster.value = file
 }
 
+function openPhotoPicker() { photoInput.value?.click() }
+function openVideoPicker() { videoInput.value?.click() }
+function openPosterPicker() { posterInput.value?.click() }
+
+function clearPhotos() {
+  photoFiles.value = []
+  if (photoInput.value) photoInput.value.value = ''
+}
+
+function clearVideo() {
+  videoFile.value = null
+  if (videoInput.value) videoInput.value.value = ''
+}
+
+function clearPoster() {
+  videoPoster.value = null
+  if (posterInput.value) posterInput.value.value = ''
+}
+
 function errorMessage(reason: any): string {
   const errors = reason?.data?.errors
   if (Array.isArray(errors) && errors.every((message: unknown) => typeof message === 'string')) return errors.join(' ')
@@ -333,19 +352,44 @@ async function sendReview() {
             </UFormField>
           </div>
 
-          <section class="grid gap-4 rounded-btn bg-white p-4 tb:grid-cols-3 tb:p-5" aria-labelledby="review-media-title">
-            <h4 id="review-media-title" class="m-0 text-base font-bold text-navy-900 tb:col-span-3">Ảnh và video (không bắt buộc)</h4>
+          <section class="grid min-w-0 gap-x-5 gap-y-5 border-t border-slate-200 pt-5 sm:grid-cols-2 xl:grid-cols-3" aria-labelledby="review-media-title">
+            <h4 id="review-media-title" class="m-0 text-base font-bold text-navy-900 sm:col-span-2 xl:col-span-3">Ảnh và video <span class="font-normal text-slate-500">(không bắt buộc)</span></h4>
             <UFormField label="Hình ảnh" hint="Tối đa 3 ảnh JPG/PNG, 30 MB mỗi ảnh" class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-sm font-semibold text-navy-800', hint: 'text-xs leading-5 font-normal text-slate-500' }">
-              <input ref="photoInput" type="file" accept="image/jpeg,image/png,.jpg,.jpeg,.png" multiple class="block min-h-[52px] w-full min-w-0 rounded-btn border border-dashed border-slate-300 bg-slate-50 px-3 py-3 text-sm file:mr-3 file:rounded-btn file:border-0 file:bg-white file:px-3 file:py-1.5 file:font-semibold file:text-navy-800" @change="selectPhotos">
-              <small v-if="photoFiles.length" class="block break-all text-xs font-normal leading-5 text-slate-600">{{ photoFiles.map((file) => file.name).join(', ') }}</small>
+              <input ref="photoInput" type="file" accept="image/jpeg,image/png,.jpg,.jpeg,.png" multiple tabindex="-1" aria-hidden="true" class="sr-only" @change="selectPhotos">
+              <div class="flex min-w-0 flex-wrap items-center gap-2">
+                <UButton type="button" color="neutral" variant="outline" size="md" class="min-h-11 rounded-btn border-slate-300 px-3 font-semibold text-navy-800" @click="openPhotoPicker">
+                  <UIcon name="i-lucide-image-plus" class="size-4" aria-hidden="true" /> Chọn ảnh
+                </UButton>
+                <span class="min-w-0 flex-1 text-sm text-slate-500" aria-live="polite">{{ photoFiles.length ? `Đã chọn ${photoFiles.length} ảnh` : 'Chưa chọn tệp' }}</span>
+                <UButton v-if="photoFiles.length" type="button" color="neutral" variant="ghost" size="sm" class="min-h-10 rounded-btn px-2 text-navy-700" aria-label="Bỏ ảnh đã chọn" @click="clearPhotos">
+                  <UIcon name="i-lucide-x" class="size-4" aria-hidden="true" /> Xóa
+                </UButton>
+              </div>
+              <p v-if="photoFiles.length" class="m-0 break-all text-xs leading-5 text-slate-600">{{ photoFiles.map((file) => file.name).join(', ') }}</p>
             </UFormField>
             <UFormField label="Video" hint="MP4/MKV, tối đa 100 MB" class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-sm font-semibold text-navy-800', hint: 'text-xs leading-5 font-normal text-slate-500' }">
-              <input ref="videoInput" type="file" accept="video/mp4,video/x-matroska,.mp4,.mkv" class="block min-h-[52px] w-full min-w-0 rounded-btn border border-dashed border-slate-300 bg-slate-50 px-3 py-3 text-sm file:mr-3 file:rounded-btn file:border-0 file:bg-white file:px-3 file:py-1.5 file:font-semibold file:text-navy-800" @change="selectVideo">
-              <small v-if="videoFile" class="block break-all text-xs font-normal leading-5 text-slate-600">{{ videoFile.name }}</small>
+              <input ref="videoInput" type="file" accept="video/mp4,video/x-matroska,.mp4,.mkv" tabindex="-1" aria-hidden="true" class="sr-only" @change="selectVideo">
+              <div class="flex min-w-0 flex-wrap items-center gap-2">
+                <UButton type="button" color="neutral" variant="outline" size="md" class="min-h-11 rounded-btn border-slate-300 px-3 font-semibold text-navy-800" @click="openVideoPicker">
+                  <UIcon name="i-lucide-video" class="size-4" aria-hidden="true" /> Chọn video
+                </UButton>
+                <span class="min-w-0 flex-1 truncate text-sm text-slate-500" :title="videoFile?.name || undefined" aria-live="polite">{{ videoFile?.name || 'Chưa chọn tệp' }}</span>
+                <UButton v-if="videoFile" type="button" color="neutral" variant="ghost" size="sm" class="min-h-10 rounded-btn px-2 text-navy-700" aria-label="Bỏ video đã chọn" @click="clearVideo">
+                  <UIcon name="i-lucide-x" class="size-4" aria-hidden="true" /> Xóa
+                </UButton>
+              </div>
             </UFormField>
             <UFormField label="Ảnh đại diện video" hint="JPG/PNG, tối đa 30 MB" class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-sm font-semibold text-navy-800', hint: 'text-xs leading-5 font-normal text-slate-500' }">
-              <input ref="posterInput" type="file" accept="image/jpeg,image/png,.jpg,.jpeg,.png" class="block min-h-[52px] w-full min-w-0 rounded-btn border border-dashed border-slate-300 bg-slate-50 px-3 py-3 text-sm file:mr-3 file:rounded-btn file:border-0 file:bg-white file:px-3 file:py-1.5 file:font-semibold file:text-navy-800" @change="selectPoster">
-              <small v-if="videoPoster" class="block break-all text-xs font-normal leading-5 text-slate-600">{{ videoPoster.name }}</small>
+              <input ref="posterInput" type="file" accept="image/jpeg,image/png,.jpg,.jpeg,.png" tabindex="-1" aria-hidden="true" class="sr-only" @change="selectPoster">
+              <div class="flex min-w-0 flex-wrap items-center gap-2">
+                <UButton type="button" color="neutral" variant="outline" size="md" class="min-h-11 rounded-btn border-slate-300 px-3 font-semibold text-navy-800" @click="openPosterPicker">
+                  <UIcon name="i-lucide-image" class="size-4" aria-hidden="true" /> Chọn ảnh bìa
+                </UButton>
+                <span class="min-w-0 flex-1 truncate text-sm text-slate-500" :title="videoPoster?.name || undefined" aria-live="polite">{{ videoPoster?.name || 'Chưa chọn tệp' }}</span>
+                <UButton v-if="videoPoster" type="button" color="neutral" variant="ghost" size="sm" class="min-h-10 rounded-btn px-2 text-navy-700" aria-label="Bỏ ảnh đại diện video đã chọn" @click="clearPoster">
+                  <UIcon name="i-lucide-x" class="size-4" aria-hidden="true" /> Xóa
+                </UButton>
+              </div>
             </UFormField>
           </section>
 
