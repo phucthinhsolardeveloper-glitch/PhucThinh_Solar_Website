@@ -7,6 +7,7 @@ import { buildEditorialToc } from '#shared/editorial-toc'
 const props = defineProps<{ article: PublicNewsDetailPayload['article'] }>()
 const editorial = computed(() => buildEditorialToc(props.article.content))
 const tocContainerRef = ref<HTMLElement | null>(null)
+const { isHeaderHidden } = useSiteHeader()
 const { activeHeadingId, scrollToHeading } = useTocScrollspy({
   contentSelector: '#news-article-content',
   headingSelector: 'h2[id], h3[id]',
@@ -54,8 +55,35 @@ function formatDate(value: string): string {
       class="mb-8 block aspect-video w-full object-cover nav:mb-10"
     >
 
-    <div class="grid grid-cols-1 gap-8 nav:grid-cols-[minmax(0,2fr)_minmax(240px,1fr)] nav:gap-12">
-      <div class="order-2 min-w-0 nav:order-1">
+    <div class="grid grid-cols-1 gap-8 nav:grid-cols-[minmax(240px,1fr)_minmax(0,2fr)] nav:gap-12">
+      <aside class="order-1 min-w-0 nav:order-1">
+        <nav
+          v-if="article.content.html && editorial.toc.length"
+          ref="tocContainerRef"
+          class="nav:sticky transition-[top] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
+          :class="isHeaderHidden ? 'nav:top-6' : 'nav:top-[120px] min-[1681px]:top-[136px] min-[1800px]:top-[152px]'"
+          aria-label="Mục lục bài viết"
+        >
+          <h2 class="mb-3 flex items-center gap-2 text-sm font-bold text-navy-800">
+            <UIcon name="i-lucide-list" class="size-4 text-gold-600" aria-hidden="true" />
+            <span>Nội dung bài viết</span>
+          </h2>
+          <ol class="m-0 list-none space-y-1 border-l border-slate-200 p-0">
+            <li v-for="item in editorial.toc" :key="item.id" :class="item.level === 3 ? 'pl-4' : ''">
+              <a
+                :data-toc-id="item.id"
+                class="flex min-h-11 min-w-11 items-center border-l-2 px-3 text-sm leading-5 transition-colors"
+                :class="activeHeadingId === item.id ? 'border-gold-500 font-semibold text-navy-800' : 'border-transparent text-slate-600 hover:text-navy-800'"
+                :aria-current="activeHeadingId === item.id ? 'true' : undefined"
+                :href="`#${item.id}`"
+                @click.prevent="scrollToHeading(item.id)"
+              >{{ item.label }}</a>
+            </li>
+          </ol>
+        </nav>
+      </aside>
+
+      <div class="order-2 min-w-0">
         <!-- Sanitized rich text is rendered once; heading IDs support the TOC anchors. -->
         <div v-if="article.content.html" id="news-article-content">
           <EditorialRichText :content="editorial.content" variant="news" />
@@ -84,31 +112,6 @@ function formatDate(value: string): string {
         <EditorialShare v-if="article.content.html" class="mt-8" :title="article.title" :canonical-path="article.seo.canonical" />
       </div>
 
-      <aside class="order-1 min-w-0 nav:order-2">
-        <nav
-          v-if="article.content.html && editorial.toc.length"
-          ref="tocContainerRef"
-          class="nav:sticky nav:top-28"
-          aria-label="Mục lục bài viết"
-        >
-          <h2 class="mb-3 flex items-center gap-2 text-sm font-bold text-navy-800">
-            <UIcon name="i-lucide-list" class="size-4 text-gold-600" aria-hidden="true" />
-            <span>Nội dung bài viết</span>
-          </h2>
-          <ol class="m-0 list-none space-y-1 border-l border-slate-200 p-0">
-            <li v-for="item in editorial.toc" :key="item.id" :class="item.level === 3 ? 'pl-4' : ''">
-              <a
-                :data-toc-id="item.id"
-                class="flex min-h-11 min-w-11 items-center border-l-2 px-3 text-sm leading-5 transition-colors"
-                :class="activeHeadingId === item.id ? 'border-gold-500 font-semibold text-navy-800' : 'border-transparent text-slate-600 hover:text-navy-800'"
-                :aria-current="activeHeadingId === item.id ? 'true' : undefined"
-                :href="`#${item.id}`"
-                @click.prevent="scrollToHeading(item.id)"
-              >{{ item.label }}</a>
-            </li>
-          </ol>
-        </nav>
-      </aside>
     </div>
   </article>
 </template>
