@@ -5,6 +5,8 @@ defineProps<{ categories: PublicProjectCategory[]; selected: PublicProjectCatego
 // Preview filters use the DTO query endpoint; public filters use the PHP-owned category URL.
 const { active: isMigrationPreview } = useMigrationLinks()
 const filtersPath = computed(() => isMigrationPreview.value ? '/migration-projects-preview/' : '/du-an-da-thuc-hien/')
+const railRef = ref<HTMLElement | null>(null)
+useActiveHorizontalRail(railRef)
 
 function categoryHref(category: PublicProjectCategory): string {
   return isMigrationPreview.value
@@ -14,7 +16,7 @@ function categoryHref(category: PublicProjectCategory): string {
 </script>
 
 <template>
-  <nav class="flex gap-2 overflow-x-auto py-0.5 pb-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" :aria-label="filtersLabel">
+  <nav ref="railRef" class="flex gap-2 overflow-x-auto py-0.5 pb-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" :aria-label="filtersLabel">
     <NuxtLink
       class="public-filter-chip flex min-h-11 flex-none items-center gap-[7px] whitespace-nowrap px-[13px] no-underline"
       :class="!selected ? 'bg-navy-800 text-white' : 'text-navy-800'"

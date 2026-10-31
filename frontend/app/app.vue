@@ -3,6 +3,8 @@ import { MotionConfig } from 'motion-v'
 import StorefrontConsultationModal from '~/components/modal/StorefrontConsultationModal.vue'
 import StorefrontDealerModal from '~/components/modal/StorefrontDealerModal.vue'
 
+usePageScrollExperience()
+
 useHead({
   script: [
     {

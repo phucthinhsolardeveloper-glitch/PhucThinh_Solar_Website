@@ -36,6 +36,8 @@ const quickHotlineTel = computed(() => {
 const quickHotlineText = computed(() => props.data.campaignCta?.hotline?.text || (props.hotline ?? '').trim())
 
 const tocContainerRef = ref<HTMLElement | null>(null)
+const solutionRailRef = ref<HTMLElement | null>(null)
+useActiveHorizontalRail(solutionRailRef)
 const { activeHeadingId, scrollToHeading } = useTocScrollspy({
   contentSelector: '#solution-content',
   headingSelector: 'h2[id], h3[id]',
@@ -79,7 +81,7 @@ const { activeHeadingId, scrollToHeading } = useTocScrollspy({
       </div>
 
       <div class="pts-container py-2">
-        <nav class="flex w-full gap-2.5 overflow-x-auto py-1.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" aria-label="Các giải pháp khác">
+        <nav ref="solutionRailRef" class="flex w-full gap-2.5 overflow-x-auto py-1.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" aria-label="Các giải pháp khác">
           <a
             class="public-filter-chip inline-flex min-h-11 flex-none items-center whitespace-nowrap px-4 text-[13px] font-bold no-underline"
             :href="links.generic(data.navigation.allUrl)"
