@@ -18,28 +18,25 @@ function categoryHref(category: PublicNewsCategory): string {
 </script>
 
 <template>
-  <!--
-    Trạng thái đang chọn là NỀN NAVY ĐẶC + chữ trắng, không phải gold-light như
-    CSS preview cũ mô tả — đo pixel trên ảnh production xác nhận chip "Tất cả"
-    đang chọn màu navy-800, các chip còn lại nền slate-50 + chữ navy.
-  -->
   <nav class="flex w-full max-w-full min-w-0 gap-[7px] overflow-x-auto overscroll-x-contain px-0.5 pb-2 pt-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" :aria-label="filtersLabel">
-    <a
-      class="flex min-h-11 flex-none items-center gap-2 whitespace-nowrap rounded-chip px-[15px] text-[15px] font-bold no-underline"
-      :class="!selected ? 'bg-navy-800 text-white' : 'bg-slate-50 text-navy-800 hover:bg-gray-200'"
-      :href="`${filtersPath}${queryString}`"
+    <NuxtLink
+      class="public-filter-chip flex min-h-11 flex-none items-center gap-2 whitespace-nowrap px-[15px] text-[15px] font-bold no-underline"
+      :class="!selected ? 'bg-navy-800 text-white' : 'text-navy-800'"
+      :to="`${filtersPath}${queryString}`"
+      :aria-current="!selected ? 'page' : undefined"
     >
       {{ allLabel }}
-    </a>
-    <a
+    </NuxtLink>
+    <NuxtLink
       v-for="category in categories"
       :key="category.id"
-      class="flex min-h-11 flex-none items-center gap-2 whitespace-nowrap rounded-chip px-[15px] text-[15px] font-bold no-underline"
-      :class="selected?.id === category.id ? 'bg-navy-800 text-white' : 'bg-slate-50 text-navy-800 hover:bg-gray-200'"
-      :href="categoryHref(category)"
+      class="public-filter-chip flex min-h-11 flex-none items-center gap-2 whitespace-nowrap px-[15px] text-[15px] font-bold no-underline"
+      :class="selected?.id === category.id ? 'bg-navy-800 text-white' : 'text-navy-800'"
+      :to="categoryHref(category)"
+      :aria-current="selected?.id === category.id ? 'page' : undefined"
     >
       <img v-if="category.image" :src="category.image" alt="" class="h-[22px] w-[22px] object-contain" width="22" height="22">
       {{ category.name }}
-    </a>
+    </NuxtLink>
   </nav>
 </template>

@@ -15,14 +15,17 @@ const slug = computed(() => typeof route.params.slug === 'string' ? route.params
 const { data: siteData } = await useFetch<unknown>('/_migration/site', {
   default: (): PublicSitePayload => ({ schemaVersion: 1, brand: { name: 'Phúc Thịnh Solar', hotline: '' }, productCategories: [] }),
 })
-const { data, error } = await useAsyncData<unknown>(
+const { data, error, pending } = await useAsyncData<unknown>(
   () => `public-solution-category-${slug.value}`,
   () => $fetch('/_migration/solutions', { query: { category: slug.value } }),
   { watch: [slug] },
 )
 const site = computed(() => isPublicSitePayload(siteData.value) ? siteData.value : { schemaVersion: 1 as const, brand: { name: 'Phúc Thịnh Solar', hotline: '' }, productCategories: [] })
 const solutions = computed<PublicSolutionsPayload | null>(() => isPublicSolutionsPayload(data.value) ? data.value : null)
-const category = computed(() => solutions.value?.category?.slug === slug.value ? solutions.value.category : null)
+const matchingCategory = computed(() => solutions.value?.category?.slug === slug.value ? solutions.value.category : null)
+const lastResolvedCategory = shallowRef<NonNullable<typeof matchingCategory.value> | null>(null)
+watch(matchingCategory, (value) => { if (value) lastResolvedCategory.value = value }, { immediate: true })
+const category = computed(() => matchingCategory.value ?? (pending.value ? lastResolvedCategory.value : null))
 const errorStatus = (error.value as { statusCode?: unknown } | null)?.statusCode
 const responseStatus = editorialPublicResponseStatus(true, errorStatus, !category.value)
 if (import.meta.server && responseStatus) setResponseStatus(responseStatus, responseStatus === 404 ? 'Not Found' : 'Bad Gateway')
@@ -72,9 +75,9 @@ usePublicSocialMeta({
           <NuxtLink
             v-for="item in category.navigation"
             :key="item.id"
-            class="flex min-h-11 flex-none items-center whitespace-nowrap rounded-chip border px-4 text-[13px] font-bold no-underline transition-colors"
-            :class="item.active ? 'border-navy-800 bg-navy-800 text-gold-300 shadow-xs' : 'border-slate-200 bg-white text-navy-800 hover:border-gold-500 hover:text-gold-700'"
+            class="public-filter-chip flex min-h-11 flex-none items-center whitespace-nowrap px-4 text-[13px] font-bold no-underline"
             :to="links.generic(item.url)"
+            :class="item.active ? 'text-gold-300' : 'text-navy-800'"
             :aria-current="item.active ? 'page' : undefined"
           >{{ item.name }}</NuxtLink>
         </nav>

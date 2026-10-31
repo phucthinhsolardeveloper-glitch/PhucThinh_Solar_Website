@@ -21,7 +21,7 @@ function categoryLink(url: string) {
   -->
   <li class="[&+li]:mt-2">
     <NuxtLink
-      class="block py-1.5 text-navy-800 no-underline transition-colors
+      class="flex min-h-11 min-w-0 items-center truncate py-2 text-[15px] leading-5 text-navy-800 no-underline transition-colors nav:text-base
              hover:text-gold-700 hover:underline hover:underline-offset-[3px]
              focus-visible:text-gold-700 focus-visible:underline focus-visible:underline-offset-[3px]"
       :class="selected === node.url ? 'text-gold-700 underline underline-offset-[3px]' : ''"

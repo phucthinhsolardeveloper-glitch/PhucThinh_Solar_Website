@@ -271,7 +271,7 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
           <button
             ref="certificateCloseButton"
             type="button"
-            class="flex h-9 items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3.5 text-xs font-bold text-slate-700 shadow-2xs transition-all hover:bg-slate-100 hover:text-navy-950 active:scale-95 cursor-pointer"
+            class="public-neutral-button flex h-9 items-center gap-1.5 rounded-full px-3.5 text-xs font-bold text-slate-700 transition-all hover:text-navy-950 active:scale-95 cursor-pointer"
             aria-label="Đóng xem chứng nhận"
             @click="closeCertificateGallery"
           >
@@ -285,7 +285,7 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
           <!-- Phím chuyển ảnh nhanh trái/phải -->
           <button
             type="button"
-            class="absolute left-4 top-1/2 -translate-y-1/2 z-10 grid h-11 w-11 place-items-center rounded-full border border-slate-200/90 bg-white/95 text-navy-900 shadow-md backdrop-blur-xs transition-all hover:scale-105 active:scale-95 disabled:pointer-events-none disabled:opacity-0 max-ph:hidden cursor-pointer"
+            class="public-neutral-button absolute left-4 top-1/2 -translate-y-1/2 z-10 grid h-11 w-11 place-items-center rounded-full text-navy-900 backdrop-blur-xs transition-all hover:scale-105 active:scale-95 disabled:pointer-events-none disabled:opacity-0 max-ph:hidden cursor-pointer"
             aria-label="Chứng nhận trước"
             :disabled="activeCertificateIndex === 0"
             @click="previousCertificate"
@@ -306,7 +306,7 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
 
           <button
             type="button"
-            class="absolute right-4 top-1/2 -translate-y-1/2 z-10 grid h-11 w-11 place-items-center rounded-full border border-slate-200/90 bg-white/95 text-navy-900 shadow-md backdrop-blur-xs transition-all hover:scale-105 active:scale-95 disabled:pointer-events-none disabled:opacity-0 max-ph:hidden cursor-pointer"
+            class="public-neutral-button absolute right-4 top-1/2 -translate-y-1/2 z-10 grid h-11 w-11 place-items-center rounded-full text-navy-900 backdrop-blur-xs transition-all hover:scale-105 active:scale-95 disabled:pointer-events-none disabled:opacity-0 max-ph:hidden cursor-pointer"
             aria-label="Chứng nhận tiếp theo"
             :disabled="activeCertificateIndex === galleryCertificates.length - 1"
             @click="nextCertificate"
@@ -323,7 +323,7 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
           <div class="flex items-center justify-center gap-3 sm:gap-5">
             <button
               type="button"
-              class="flex min-h-10 items-center gap-1.5 rounded-full border border-slate-200 bg-white px-4 text-xs font-bold text-navy-950 shadow-2xs transition-all hover:bg-slate-50 hover:shadow-xs active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 cursor-pointer"
+              class="public-neutral-button flex min-h-10 items-center gap-1.5 rounded-full px-4 text-xs font-bold text-navy-950 transition-all active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 cursor-pointer"
               aria-label="Chứng nhận trước"
               :disabled="activeCertificateIndex === 0"
               @click="previousCertificate"
@@ -334,7 +334,7 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
             <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600" aria-hidden="true">{{ activeCertificateIndex + 1 }} / {{ galleryCertificates.length }}</span>
             <button
               type="button"
-              class="flex min-h-10 items-center gap-1.5 rounded-full border border-slate-200 bg-white px-4 text-xs font-bold text-navy-950 shadow-2xs transition-all hover:bg-slate-50 hover:shadow-xs active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 cursor-pointer"
+              class="public-neutral-button flex min-h-10 items-center gap-1.5 rounded-full px-4 text-xs font-bold text-navy-950 transition-all active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 cursor-pointer"
               aria-label="Chứng nhận tiếp theo"
               :disabled="activeCertificateIndex === galleryCertificates.length - 1"
               @click="nextCertificate"
@@ -347,6 +347,25 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
       </div>
     </dialog>
 
-    <section class="pb-16 max-[800px]:px-0 max-[800px]:pb-12" aria-labelledby="about-cta-title"><div class="pts-container"><div class="relative isolate grid grid-cols-[minmax(0,1fr)_auto] items-center gap-6 overflow-hidden rounded-btn border border-navy-700/60 bg-navy-800 px-8 py-7 shadow-md max-[800px]:grid-cols-1 max-[800px]:px-6"><div v-if="about.cta.image" class="absolute inset-0 z-0" aria-hidden="true"><img class="h-full w-full object-cover" :src="about.cta.image" alt="" loading="lazy"><span class="absolute inset-0 bg-[linear-gradient(90deg,rgba(6,27,70,.97),rgba(6,27,70,.82))]"></span></div><div class="relative z-10 grid grid-cols-[3.5rem_minmax(0,1fr)] items-center gap-4"><span class="flex h-[3.25rem] w-[3.25rem] items-center justify-center rounded-full border border-gold-300 text-xs font-extrabold text-gold-300" aria-hidden="true">PTS</span><div><h2 id="about-cta-title" class="text-[1.4rem] font-bold text-white">{{ about.cta.title }}</h2><p class="m-0 mt-[.3rem] text-[#d1daea]">{{ about.cta.description }}</p></div></div><div class="relative z-10 flex items-center gap-3 max-[800px]:grid"><a v-if="about.cta.hotline" class="inline-flex min-h-11 items-center rounded-btn bg-hdr-gold px-4 py-3 font-extrabold text-navy-950 no-underline shadow-xs transition-colors hover:bg-hdr-gold-hover max-[800px]:justify-center" :href="`tel:${about.cta.hotline.tel}`">{{ about.cta.hotline.text }}</a><a v-if="about.cta.zaloUrl" class="inline-flex min-h-11 items-center rounded-btn border border-white/20 bg-white px-4 py-3 font-extrabold text-[#0877c9] no-underline max-[800px]:justify-center" :href="about.cta.zaloUrl" target="_blank" rel="noopener noreferrer">Zalo</a><a class="inline-flex min-h-11 items-center rounded-btn bg-hdr-gold px-4 py-3 font-extrabold text-navy-950 no-underline shadow-xs transition-all hover:bg-hdr-gold-hover active:scale-[0.98] cursor-pointer max-[800px]:justify-center" :href="links.generic(about.cta.href || '/lien-he/#yeu-cau-tu-van')" @click.prevent="openConsultation('Giới thiệu: ' + about.cta.title)">{{ about.cta.buttonLabel }} →</a></div></div></div></section>
+    <section class="pb-16 max-[800px]:px-0 max-[800px]:pb-12">
+      <div class="pts-container">
+        <PublicCtaBanner variant="corporate" :image="about.cta.image" labelled-by="about-cta-title">
+          <div class="flex items-center gap-4">
+            <span class="hidden h-12 w-12 shrink-0 items-center justify-center rounded-full border border-gold-300 text-xs font-extrabold text-gold-300 min-[801px]:flex" aria-hidden="true">PTS</span>
+            <div>
+              <h2 id="about-cta-title" class="mb-1 text-[clamp(20px,2vw,26px)] font-extrabold leading-tight text-white">{{ about.cta.title }}</h2>
+              <p class="m-0 text-[#d1daea]">{{ about.cta.description }}</p>
+            </div>
+          </div>
+          <template #actions>
+            <div class="flex flex-wrap items-center gap-3 max-[760px]:grid max-[760px]:grid-cols-1">
+              <a v-if="about.cta.hotline" class="inline-flex min-h-11 items-center justify-center rounded-[4px] bg-hdr-gold px-4 py-3 font-extrabold text-navy-950 no-underline transition-colors hover:bg-hdr-gold-hover" :href="`tel:${about.cta.hotline.tel}`">{{ about.cta.hotline.text }}</a>
+              <a v-if="about.cta.zaloUrl" class="inline-flex min-h-11 items-center justify-center rounded-[4px] bg-white px-4 py-3 font-extrabold text-[#0877c9] no-underline" :href="about.cta.zaloUrl" target="_blank" rel="noopener noreferrer">Zalo</a>
+              <a class="inline-flex min-h-11 items-center justify-center gap-2 rounded-[4px] bg-hdr-gold px-4 py-3 font-extrabold text-navy-950 no-underline transition-colors hover:bg-hdr-gold-hover" :href="links.generic(about.cta.href || '/lien-he/#yeu-cau-tu-van')" @click.prevent="openConsultation('Giới thiệu: ' + about.cta.title)">{{ about.cta.buttonLabel }} <span aria-hidden="true">→</span></a>
+            </div>
+          </template>
+        </PublicCtaBanner>
+      </div>
+    </section>
   </div>
 </template>

@@ -18,16 +18,19 @@ const canonicalPath = computed(() => projects.value?.category?.canonicalPath || 
 const page = computed(() => projectCategoryPage(route.query.p))
 const fallbackSite: PublicSitePayload = { schemaVersion: 1, brand: { name: 'Phúc Thịnh Solar', hotline: '' }, productCategories: [] }
 const { data: siteData } = await useFetch<unknown>('/_migration/site', { default: () => fallbackSite })
-const { data, error } = await useAsyncData<unknown>(
+const { data, error, pending } = await useAsyncData<unknown>(
   () => `project-category-${slug.value}-${page.value}`,
   () => $fetch('/_migration/projects', { query: { category: slug.value, page: String(page.value) } }),
   { watch: [slug, page] },
 )
 const site = computed(() => isPublicSitePayload(siteData.value) ? siteData.value : fallbackSite)
-const projects = computed<PublicProjectsPayload | null>(() => {
+const matchingProjects = computed<PublicProjectsPayload | null>(() => {
   const payload = isPublicProjectsPayload(data.value) ? data.value : null
   return payload?.category?.slug === slug.value ? payload : null
 })
+const lastResolvedProjects = shallowRef<PublicProjectsPayload | null>(null)
+watch(matchingProjects, (payload) => { if (payload) lastResolvedProjects.value = payload }, { immediate: true })
+const projects = computed(() => matchingProjects.value ?? (pending.value ? lastResolvedProjects.value : null))
 const errorStatus = (error.value as { statusCode?: unknown } | null)?.statusCode
 const responseStatus = editorialPublicResponseStatus(true, errorStatus, !projects.value)
 if (import.meta.server && responseStatus) setResponseStatus(responseStatus, responseStatus === 404 ? 'Not Found' : 'Bad Gateway')
@@ -98,14 +101,14 @@ usePublicSocialMeta({
 
         <nav class="flex gap-2 overflow-x-auto py-0.5 pb-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" aria-label="Danh mục dự án">
           <NuxtLink
-            class="flex min-h-11 flex-none items-center whitespace-nowrap rounded-chip border border-gray-200 px-[13px] text-navy-800 no-underline hover:border-gold-700"
+            class="public-filter-chip flex min-h-11 flex-none items-center whitespace-nowrap px-[13px] text-navy-800 no-underline"
             :to="PROJECTS_PUBLIC_PATH"
           >{{ projects.labels.all }}</NuxtLink>
           <NuxtLink
             v-for="category in projects.categories"
             :key="category.id"
-            class="flex min-h-11 flex-none items-center gap-2 whitespace-nowrap rounded-chip px-[13px] no-underline"
-            :class="category.slug === slug ? 'bg-navy-800 text-white' : 'border border-gray-200 text-navy-800 hover:border-gold-700'"
+            class="public-filter-chip flex min-h-11 flex-none items-center gap-2 whitespace-nowrap px-[13px] no-underline"
+            :class="category.slug === slug ? 'text-white' : 'text-navy-800'"
             :to="category.url"
             :aria-current="category.slug === slug ? 'page' : undefined"
           >

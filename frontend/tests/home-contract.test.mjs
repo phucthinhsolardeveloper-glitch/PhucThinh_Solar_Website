@@ -99,6 +99,13 @@ test('homepage preview follows the PHP section order without inserting product g
   assert.match(homeCampaigns, /props\.campaignsConfigured \? \[\] : phpFallback/)
   assert.match(homePhpSource, /\$splistnb/)
 })
+
+test('homepage hero copy and calls to action stay centered across breakpoints', () => {
+  assert.match(homeHero, /relative z-\[4\][^\"]*items-start justify-start/)
+  assert.match(homeHero, /max-w-\[820px\] flex-col items-center text-center/)
+  assert.match(homeHero, /id="home-title"[^>]*text-center/)
+  assert.match(homeHero, /flex w-full max-w-\[820px\] flex-wrap justify-center/)
+})
 test('homepage lead form captures province and interest and passes both to the POST adapter', () => {
   assert.match(homeContact, /address: form\.address/)
   assert.match(homeContact, /subject: form\.subject/)

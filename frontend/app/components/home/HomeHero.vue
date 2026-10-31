@@ -169,23 +169,27 @@ onBeforeUnmount(() => {
       </div>
       <a v-if="current" :href="links.generic(current.href)" class="hidden" aria-hidden="true" />
     </div>
-    <div class="relative z-[4] mx-auto flex min-h-[inherit] w-[min(calc(100%-clamp(40px,5vw,96px)),1560px)] max-[860px]:w-[min(calc(100%-48px),1440px)] max-[640px]:w-[calc(100%-40px)] max-[360px]:w-[calc(100%-32px)] min-[1600px]:w-[min(calc(100%-clamp(96px,8vw,220px)),2200px)] max-w-[820px] flex-col items-start justify-center px-0 py-16 text-center [transform:translateY(calc(-88px_-_clamp(0px,calc(25vw_-_400px),240px)))] min-[861px]:-translate-x-[clamp(48px,7vw,140px)] min-[1800px]:[transform:translateY(calc(-28px_-_clamp(0px,calc(25vw_-_400px),240px)))] max-[640px]:min-h-[700px] max-[640px]:items-center max-[640px]:justify-start max-[640px]:pb-[150px] max-[640px]:pt-[58px] max-[640px]:[transform:translateY(-14px)]">
-      <p class="mb-[17px] w-full max-w-[850px] whitespace-nowrap text-center text-[clamp(22px,1.7vw,30px)] min-[1501px]:text-[clamp(22px,1.7vw,30px)] font-black uppercase tracking-[.02em] text-navy-950 [text-shadow:0_1px_9px_rgba(255,255,255,.52)] max-[640px]:mb-[11px] max-[640px]:text-[12px] max-[640px]:tracking-[.04em]">Phân phối thiết bị · Tư vấn · Thi công lắp đặt</p>
-      <h1 id="home-title" aria-label="Thiết bị và giải pháp năng lượng mặt trời" class="m-0 w-full max-w-[920px] text-center text-[clamp(46px,3.45vw,62.4px)] min-[1800px]:text-[clamp(59px,3.25vw,76px)] font-black uppercase leading-[1.08] tracking-[-.03em] text-navy-950 [text-shadow:0_2px_12px_rgba(255,255,255,.62)] max-[640px]:text-[clamp(38px,10.5vw,49px)] max-[640px]:leading-[1.12]">
-        <span class="block text-[.88em] max-[640px]:text-[clamp(24px,6.6vw,29px)] max-[640px]:tracking-[-.045em]">Thiết bị và giải pháp</span>
-        <span class="block text-[.78em] max-[640px]:text-[clamp(25px,7.2vw,31px)] max-[640px]:tracking-[-.045em]">năng lượng mặt trời</span>
-      </h1>
-      <p class="mx-0 mb-[34px] mt-[22px] w-full max-w-[820px] text-center text-[clamp(17px,1.1vw,19px)] font-medium leading-[1.68] text-navy-950 [text-shadow:0_1px_9px_rgba(255,255,255,.55)] max-[640px]:mb-[25px] max-[640px]:mt-[18px] max-[640px]:text-[17px]">Phúc Thịnh Solar cung cấp thiết bị chiếu sáng, điện mặt trời và lưu trữ năng lượng; tư vấn phương án phù hợp cho gia đình, doanh nghiệp và công trình.</p>
-      <div class="flex w-full max-w-[820px] flex-wrap justify-center gap-[16px]">
-        <UButton href="#danh-muc-thiet-bi" color="primary" size="xl" class="min-h-[52px] rounded-[4px] border border-hdr-gold bg-hdr-gold px-[30px] text-[15.5px] font-extrabold leading-[1.2] text-navy-950 no-underline shadow-xs transition-all duration-150 hover:bg-hdr-gold-hover hover:shadow-md active:scale-[0.98] cursor-pointer max-[640px]:min-h-[48px] max-[640px]:px-[20px] max-[640px]:text-sm">
-          Xem sản phẩm
-        </UButton>
-        <UButton href="#yeu-cau-tu-van" color="secondary" variant="outline" size="xl" class="min-h-[52px] rounded-[4px] border border-navy-950/40 bg-white/75 px-[30px] text-[15.5px] font-extrabold leading-[1.2] text-navy-950 no-underline backdrop-blur-xs shadow-xs transition-all duration-150 hover:bg-white hover:border-navy-950 hover:shadow-md active:scale-[0.98] cursor-pointer max-[640px]:min-h-[48px] max-[640px]:px-[20px] max-[640px]:text-sm">
-          Tư vấn lắp đặt
-        </UButton>
+    <div class="relative z-[4] mx-auto flex min-h-[inherit] w-[min(calc(100%-clamp(40px,5vw,96px)),1560px)] max-[860px]:w-[min(calc(100%-48px),1440px)] max-[640px]:w-[calc(100%-40px)] max-[360px]:w-[calc(100%-32px)] min-[1600px]:w-[min(calc(100%-clamp(96px,8vw,220px)),2200px)] flex-col items-start justify-start px-0 pb-0 pt-[clamp(76px,12vh,116px)] min-[1800px]:pt-[clamp(84px,13vh,128px)] max-[640px]:min-h-[700px] max-[640px]:items-center max-[640px]:justify-start max-[640px]:pb-[150px] max-[640px]:pt-[58px]">
+      <div class="flex w-full max-w-[820px] flex-col items-center text-center max-[1100px]:max-w-[760px]">
+        <p class="mb-[17px] w-full max-w-[850px] whitespace-nowrap text-center text-[clamp(22px,1.7vw,30px)] min-[1501px]:text-[clamp(22px,1.7vw,30px)] font-black uppercase tracking-[.02em] text-navy-950 [text-shadow:0_1px_9px_rgba(255,255,255,.52)] max-[640px]:mb-[11px] max-[640px]:text-[12px] max-[640px]:tracking-[.04em]">
+          Phân phối thiết bị · Tư vấn · Thi công lắp đặt
+        </p>
+        <h1 id="home-title" aria-label="Thiết bị và giải pháp năng lượng mặt trời" class="m-0 w-full max-w-[920px] text-center text-[clamp(46px,3.45vw,62.4px)] min-[1800px]:text-[clamp(59px,3.25vw,76px)] font-black uppercase leading-[1.08] tracking-[-.03em] text-navy-950 [text-shadow:0_2px_12px_rgba(255,255,255,.62)] max-[640px]:text-[clamp(38px,10.5vw,49px)] max-[640px]:leading-[1.12]">
+          <span class="block text-[.88em] max-[640px]:text-[clamp(24px,6.6vw,29px)] max-[640px]:tracking-[-.045em]">Thiết bị và giải pháp</span>
+          <span class="block text-[.78em] max-[640px]:text-[clamp(25px,7.2vw,31px)] max-[640px]:tracking-[-.045em]">năng lượng mặt trời</span>
+        </h1>
+        <p class="mx-0 mb-[34px] mt-[22px] w-full max-w-[820px] text-center text-[clamp(17px,1.1vw,19px)] font-medium leading-[1.68] text-navy-950 [text-shadow:0_1px_9px_rgba(255,255,255,.55)] max-[640px]:mb-[25px] max-[640px]:mt-[18px] max-[640px]:text-[17px]">Phúc Thịnh Solar cung cấp thiết bị chiếu sáng, điện mặt trời và lưu trữ năng lượng; tư vấn phương án phù hợp cho gia đình, doanh nghiệp và công trình.</p>
+        <div class="flex w-full max-w-[820px] flex-wrap justify-center gap-[16px]">
+          <UButton href="#danh-muc-thiet-bi" color="primary" size="xl" class="min-h-[52px] rounded-[4px] border border-hdr-gold bg-hdr-gold px-[30px] text-[15.5px] font-extrabold leading-[1.2] text-navy-950 no-underline shadow-xs transition-all duration-150 hover:bg-hdr-gold-hover hover:shadow-md active:scale-[0.98] cursor-pointer max-[640px]:min-h-[48px] max-[640px]:px-[20px] max-[640px]:text-sm">
+            Xem sản phẩm
+          </UButton>
+          <UButton href="#yeu-cau-tu-van" color="secondary" variant="outline" size="xl" class="home-hero-glass-button public-neutral-button min-h-[52px] rounded-[4px] px-[30px] text-[15.5px] font-extrabold leading-[1.2] text-navy-950 no-underline backdrop-blur-xs active:scale-[0.98] cursor-pointer max-[640px]:min-h-[48px] max-[640px]:px-[20px] max-[640px]:text-sm">
+            Tư vấn lắp đặt
+          </UButton>
+        </div>
       </div>
     </div>
-    <div v-if="hero.length > 1" class="absolute bottom-[38px] right-[max(24px,calc((100vw-1560px)/2))] z-[6] flex items-center gap-[4px] rounded-[6px] border border-white/20 bg-navy-950/40 p-[5px] text-white backdrop-blur-[12px] shadow-lg max-[640px]:bottom-[22px] max-[640px]:right-5">
+    <div v-if="hero.length > 1" class="absolute bottom-[32px] right-[clamp(24px,4vw,96px)] z-[6] flex items-center gap-[4px] rounded-[6px] border border-white/20 bg-navy-950/40 p-[5px] text-white backdrop-blur-[12px] shadow-lg min-[2300px]:right-[max(24px,calc((100vw-2200px)/2))] max-[640px]:bottom-[18px] max-[640px]:right-5">
       <button class="flex size-11 items-center justify-center rounded-[4px] border border-transparent bg-transparent text-white transition-all duration-150 motion-reduce:transition-none hover:bg-white/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white active:scale-90 motion-reduce:active:scale-100 cursor-pointer" type="button" aria-label="Banner trước" @click="move(-1)">
         <svg class="h-4.5 w-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg>
       </button>
@@ -194,7 +198,7 @@ onBeforeUnmount(() => {
         <svg class="h-4.5 w-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg>
       </button>
     </div>
-    <p class="absolute bottom-[102px] right-[max(24px,calc((100vw-1560px)/2))] z-[2] m-0 flex max-w-[min(500px,calc(100vw-48px))] flex-col gap-1 border-b border-white/20 bg-white/10 backdrop-blur-xs px-[18px] pb-[13px] pt-[14px] text-right text-navy-950 [text-shadow:0_2px_9px_rgba(255,255,255,.7)] transition-opacity duration-500 max-[640px]:bottom-[83px] max-[640px]:right-5 max-[640px]:max-w-[calc(100vw-40px)] max-[640px]:px-[14px] max-[640px]:py-[11px]">
+    <p class="absolute bottom-[clamp(124px,16vh,150px)] right-[clamp(24px,4vw,96px)] z-[2] m-0 flex max-w-[min(500px,calc(100vw-48px))] flex-col gap-1 border-b border-white/20 bg-white/10 backdrop-blur-xs px-[18px] pb-[13px] pt-[14px] text-right text-navy-950 [text-shadow:0_2px_9px_rgba(255,255,255,.7)] transition-opacity duration-500 min-[2300px]:right-[max(24px,calc((100vw-2200px)/2))] max-[640px]:bottom-[96px] max-[640px]:right-5 max-[640px]:max-w-[calc(100vw-40px)] max-[640px]:px-[14px] max-[640px]:py-[11px]">
       <strong class="text-[clamp(22px,1.7vw,30px)] font-bold leading-[1.18] max-[640px]:text-[clamp(16px,4.8vw,21px)] max-[640px]:leading-snug line-clamp-2">{{ current.name }}</strong>
       <span class="text-sm font-medium leading-[1.55] text-navy-950 max-[640px]:hidden">{{ current.description }}</span>
     </p>

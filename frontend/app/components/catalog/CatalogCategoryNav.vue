@@ -14,7 +14,7 @@ watch(() => props.selected, (selected) => {
   <nav v-if="categories.length" aria-label="Danh mục sản phẩm">
     <h2 class="mb-4 hidden text-lg font-extrabold text-navy-800 nav:block">Danh mục sản phẩm</h2>
     <button
-      class="flex min-h-11 w-full items-center justify-between rounded-chip border border-gray-200 px-3 py-2 text-left font-extrabold text-navy-800 nav:hidden"
+    class="public-neutral-button flex min-h-11 w-full items-center justify-between rounded-chip px-3 py-2 text-left font-extrabold text-navy-800 nav:hidden"
       type="button"
       :aria-expanded="expanded"
       aria-controls="catalog-category-list"

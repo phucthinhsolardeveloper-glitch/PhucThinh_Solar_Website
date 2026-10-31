@@ -74,10 +74,9 @@ const hotlineHref = computed(() => `tel:${props.project.cta?.hotline.replace(/[^
         </div>
       </section>
 
-      <section v-if="project.cta" class="project-detail-cta relative isolate mt-16 grid grid-cols-1 items-center gap-7 overflow-hidden rounded-btn bg-gradient-to-r from-navy-950 via-navy-900 to-navy-800 p-7 text-white nav:grid-cols-[minmax(0,.8fr)_minmax(0,1.2fr)] nav:p-10" aria-labelledby="project-detail-cta-title">
-        <img v-if="project.cta.image" :src="project.cta.image" alt="" class="absolute inset-0 z-0 h-full w-full object-cover opacity-50" loading="lazy" decoding="async">
-        <div class="relative z-10 max-w-[590px]">
-          <h2 id="project-detail-cta-title" class="mb-2 text-[clamp(22px,3vw,32px)] font-black leading-tight">{{ project.cta.title }}</h2>
+      <PublicCtaBanner v-if="project.cta" class="project-detail-cta mt-16" variant="editorial" :image="project.cta.image" labelled-by="project-detail-cta-title">
+        <div>
+          <h2 id="project-detail-cta-title" class="mb-2 text-[clamp(22px,3vw,30px)] font-black leading-tight text-white">{{ project.cta.title }}</h2>
           <p v-if="project.cta.description" class="mb-4 leading-relaxed text-blue-100/95">{{ project.cta.description }}</p>
           <ul v-if="project.cta.trust.length" class="mt-5 flex list-none flex-wrap gap-x-5 gap-y-3 p-0 text-sm text-blue-100">
             <li v-for="item in project.cta.trust" :key="item.label" class="flex items-center gap-2">
@@ -90,14 +89,16 @@ const hotlineHref = computed(() => `tel:${props.project.cta?.hotline.replace(/[^
             </li>
           </ul>
         </div>
-        <div class="relative z-10 flex w-full max-w-[330px] flex-col items-stretch gap-[10px] nav:w-auto nav:min-w-[270px] nav:justify-self-end">
+        <template #actions>
+        <div class="flex w-full flex-col items-stretch gap-[10px] min-[761px]:w-auto min-[761px]:min-w-[270px]">
           <a v-if="project.cta.hotline" class="flex min-h-12 items-center justify-center gap-3 text-white no-underline" :href="hotlineHref">
             <span class="grid size-12 shrink-0 place-items-center rounded-btn bg-hdr-gold text-navy-950" aria-hidden="true"><UIcon name="i-lucide-phone" class="size-5" /></span>
             <span class="min-w-0"><span class="block text-[11px] uppercase text-blue-100">Liên hệ ngay</span><strong class="block text-[22px] leading-tight">{{ project.cta.hotline }}</strong></span>
           </a>
           <a class="inline-flex min-h-12 items-center justify-center gap-3 rounded-btn bg-hdr-gold px-[22px] py-3 text-sm font-extrabold text-navy-950 no-underline transition-colors hover:bg-hdr-gold-hover" :href="links.generic('/lien-he/#yeu-cau-tu-van')">{{ project.cta.buttonLabel }} <span aria-hidden="true">→</span></a>
         </div>
-      </section>
+        </template>
+      </PublicCtaBanner>
     </div>
   </article>
 </template>

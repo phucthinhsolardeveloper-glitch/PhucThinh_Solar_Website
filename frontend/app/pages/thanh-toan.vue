@@ -2,11 +2,9 @@
 import { isPublicCartPayload, type PublicCartPayload } from '#shared/contracts/public-cart'
 import { isPublicCheckoutPayload, isPublicCheckoutWardsPayload, type PublicCheckoutPayload, type PublicCheckoutOption, type PublicCheckoutNoticeForm } from '#shared/contracts/public-checkout'
 import { CART_CHECKOUT_POST_PATH } from '#shared/public-route-gate'
-import checkoutPublicRoute from '~/middleware/checkout-public-route'
-
 definePageMeta({
   layout: false,
-  middleware: checkoutPublicRoute,
+  middleware: 'checkout-public-route',
 })
 
 const { site } = await usePublicSite()

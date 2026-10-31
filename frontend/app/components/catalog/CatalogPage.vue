@@ -47,6 +47,7 @@ const query = computed(() => ({
   ...(keyword.value ? { keyword: keyword.value } : {}),
   ...(need.value ? { need: need.value } : {}),
 }))
+const catalogDataKey = computed(() => `migration-catalog:${route.path}:${JSON.stringify(query.value)}`)
 
 /*
  * Doi filter/sort luon ve trang 1 - giu dung quy uoc pagination hien co
@@ -77,9 +78,8 @@ const { data: siteData, error: siteError } = await useAsyncData<PublicSitePayloa
   return payload
 })
 const { data: catalogData, error: catalogError, pending: catalogPending } = await useAsyncData<PublicCatalogPayload>(
-  () => `migration-catalog-${JSON.stringify(query.value)}`,
+  catalogDataKey,
   () => $fetch('/_migration/catalog', { query: query.value }),
-  { watch: [query] },
 )
 
 function findCategory(nodes: PublicProductCategoryNode[], chain: string): PublicProductCategoryNode | null {
@@ -302,8 +302,8 @@ function pageLink(nextPage: number) {
       <nav v-if="categoryNavItems.length" ref="categoryNavRef" class="col-span-full mt-0 flex gap-[10px] overflow-x-auto scroll-smooth overscroll-x-contain pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden max-[769px]:gap-[7px]" aria-label="Danh mục sản phẩm">
         <NuxtLink
           :to="categoryAllHref"
-          class="inline-flex min-h-[58px] min-w-[126px] flex-1 items-center justify-center gap-2 rounded-chip border px-3 py-2 text-center text-[13px] font-bold no-underline transition-colors max-[769px]:h-[50px] max-[769px]:min-h-0 max-[769px]:w-[145px] max-[769px]:min-w-0 max-[769px]:flex-none max-[769px]:overflow-hidden"
-          :class="!selectedCategory || selectedCategory.url === activeCategoryRoot?.url ? 'border-transparent bg-gold-500 text-navy-950' : 'border-slate-200 bg-white text-navy-800 hover:border-gold-600 hover:text-gold-700'"
+          class="catalog-category-chip inline-flex min-h-[58px] min-w-[126px] flex-1 items-center justify-center gap-2 rounded-chip border px-3 py-2 text-center text-[13px] font-bold no-underline transition-colors max-[769px]:h-[50px] max-[769px]:min-h-0 max-[769px]:w-[145px] max-[769px]:min-w-0 max-[769px]:flex-none max-[769px]:overflow-hidden"
+          :class="!selectedCategory || selectedCategory.url === activeCategoryRoot?.url ? 'border-transparent bg-gold-500 text-navy-950' : 'public-filter-chip public-navy-outline-button text-navy-800'"
           :aria-current="!selectedCategory || selectedCategory.url === activeCategoryRoot?.url ? 'page' : undefined"
         >
           <CatalogMenuIcon class="h-5 w-5 flex-none" name="light" />
@@ -313,8 +313,8 @@ function pageLink(nextPage: number) {
           v-for="item in categoryNavItems"
           :key="item.url"
           :to="links.generic(item.url)"
-          class="inline-flex min-h-[58px] min-w-[126px] flex-1 items-center justify-center gap-2 rounded-chip border px-3 py-2 text-center text-[13px] font-bold no-underline transition-colors max-[769px]:h-[50px] max-[769px]:min-h-0 max-[769px]:w-[145px] max-[769px]:min-w-0 max-[769px]:flex-none max-[769px]:overflow-hidden"
-          :class="item.url === selectedCategory?.url ? 'border-transparent bg-gold-500 text-navy-950' : 'border-slate-200 bg-white text-navy-800 hover:border-gold-600 hover:text-gold-700'"
+          class="catalog-category-chip inline-flex min-h-[58px] min-w-[126px] flex-1 items-center justify-center gap-2 rounded-chip border px-3 py-2 text-center text-[13px] font-bold no-underline transition-colors max-[769px]:h-[50px] max-[769px]:min-h-0 max-[769px]:w-[145px] max-[769px]:min-w-0 max-[769px]:flex-none max-[769px]:overflow-hidden"
+          :class="item.url === selectedCategory?.url ? 'border-transparent bg-gold-500 text-navy-950' : 'public-filter-chip public-navy-outline-button text-navy-800'"
           :aria-current="item.url === selectedCategory?.url ? 'page' : undefined"
         >
           <CatalogMenuIcon class="h-5 w-5 flex-none" :name="categoryIcon(item.slug)" />
@@ -339,8 +339,8 @@ function pageLink(nextPage: number) {
         />
       </div>
 
-      <section aria-label="Danh sách sản phẩm">
-        <div v-if="catalogPending" class="py-16" role="status" aria-live="polite">
+      <section aria-label="Danh sách sản phẩm" :aria-busy="catalogPending">
+        <div v-if="catalogPending && !catalogData" class="py-16" role="status" aria-live="polite">
           <p class="text-slate-500">Đang tải sản phẩm…</p>
         </div>
 
@@ -367,7 +367,7 @@ function pageLink(nextPage: number) {
                 color="secondary"
                 variant="outline"
                 size="md"
-                class="min-h-11 w-full gap-2 rounded-[4px] border border-slate-300 bg-white px-3 text-sm font-bold text-navy-800 hover:border-navy-800 min-[1002px]:hidden"
+                class="min-h-11 w-full gap-2 rounded-[4px] px-3 text-sm font-bold text-navy-800 public-neutral-button min-[1002px]:hidden"
                 type="button"
                 aria-haspopup="dialog"
                 aria-controls="catalog-filter-drawer"
@@ -399,14 +399,16 @@ function pageLink(nextPage: number) {
             <SitePaginationButton
               v-if="currentPage > 1"
               :to="pageLink(1)"
+              aria-label="Trang đầu"
             >
-              Đầu
+              <UIcon name="i-lucide-chevrons-left" class="size-4" aria-hidden="true" />
             </SitePaginationButton>
             <SitePaginationButton
               v-if="currentPage > 1"
               :to="pageLink(currentPage - 1)"
+              aria-label="Trang trước"
             >
-              Trước
+              <UIcon name="i-lucide-chevron-left" class="size-4" aria-hidden="true" />
             </SitePaginationButton>
             <template v-for="item in paginationItems" :key="item.key">
               <span
@@ -432,14 +434,16 @@ function pageLink(nextPage: number) {
             <SitePaginationButton
               v-if="currentPage < totalPages"
               :to="pageLink(currentPage + 1)"
+              aria-label="Trang sau"
             >
-              Sau
+              <UIcon name="i-lucide-chevron-right" class="size-4" aria-hidden="true" />
             </SitePaginationButton>
             <SitePaginationButton
               v-if="currentPage < totalPages"
               :to="pageLink(totalPages)"
+              aria-label="Trang cuối"
             >
-              Cuối
+              <UIcon name="i-lucide-chevrons-right" class="size-4" aria-hidden="true" />
             </SitePaginationButton>
           </nav>
         </template>
@@ -464,15 +468,13 @@ function pageLink(nextPage: number) {
         </details>
       </section>
 
-      <section v-if="catalogData?.support" class="relative isolate col-span-full mt-5 grid grid-cols-1 items-center gap-6 overflow-hidden bg-navy-950 px-6 py-8 text-white tb:grid-cols-[minmax(0,1fr)_auto] nav:px-10 nav:py-9" aria-labelledby="catalog-support-title">
-        <img v-if="catalogData.support.image" :src="catalogData.support.image" alt="" width="1600" height="500" sizes="100vw" class="absolute inset-0 -z-20 h-full w-full object-cover opacity-30" loading="lazy" decoding="async">
-        <div class="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-r from-navy-950/95 via-navy-900/90 to-navy-800/70" aria-hidden="true" />
-        <div>
-          <h2 id="catalog-support-title" class="mb-2 text-2xl font-black text-white">{{ catalogData.support.title }}</h2>
-          <p class="mb-0 max-w-[720px] leading-relaxed text-blue-100/95">{{ catalogData.support.description }}</p>
-        </div>
-        <NuxtLink :to="links.generic(catalogData.support.href || '/lien-he/')" class="inline-flex min-h-11 items-center justify-center rounded-btn bg-hdr-gold px-6 text-sm font-extrabold text-navy-950 no-underline transition-colors hover:bg-hdr-gold-hover">Nhận tư vấn →</NuxtLink>
-      </section>
+      <PublicCtaBanner v-if="catalogData?.support" class="col-span-full mt-5" variant="catalog" :image="catalogData.support.image" labelled-by="catalog-support-title">
+        <h2 id="catalog-support-title" class="mb-2 text-[clamp(20px,2vw,26px)] font-black leading-tight text-white">{{ catalogData.support.title }}</h2>
+        <p class="mb-0 max-w-[720px] leading-relaxed text-blue-100/95">{{ catalogData.support.description }}</p>
+        <template #actions>
+          <NuxtLink :to="links.generic(catalogData.support.href || '/lien-he/')" class="inline-flex min-h-11 items-center justify-center gap-2 whitespace-nowrap rounded-[4px] bg-hdr-gold px-6 text-sm font-extrabold text-navy-950 no-underline transition-colors hover:bg-hdr-gold-hover">Nhận tư vấn <span aria-hidden="true">→</span></NuxtLink>
+        </template>
+      </PublicCtaBanner>
     </main>
 
     <UDrawer
@@ -489,14 +491,14 @@ function pageLink(nextPage: number) {
       }"
     >
       <template #content>
-        <div id="catalog-filter-drawer" class="flex h-full min-h-0 flex-col" @click="closeFilterDrawerAfterNavigation">
+        <div id="catalog-filter-drawer" class="flex h-full min-h-0 w-full flex-col" @click="closeFilterDrawerAfterNavigation">
           <div class="sticky top-0 z-10 flex min-h-[62px] flex-none items-center justify-between border-b border-slate-200 bg-white px-4">
             <h2 class="m-0 text-base font-black text-navy-800">Bộ lọc sản phẩm</h2>
             <UButton
               type="button"
               color="neutral"
               variant="ghost"
-              class="inline-grid h-11 w-11 place-items-center rounded-btn border border-slate-200 bg-white p-0 text-navy-800 hover:bg-slate-100"
+              class="public-neutral-button inline-grid h-11 w-11 place-items-center rounded-btn p-0 text-navy-800"
               aria-label="Đóng bộ lọc"
               @click="closeFilterDrawer"
             >

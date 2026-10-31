@@ -13,9 +13,10 @@ const props = defineProps<{ slugOverride?: string }>()
 const route = useRoute()
 const config = useRuntimeConfig()
 const slug = computed(() => props.slugOverride || (typeof route.params.slug === 'string' ? route.params.slug : ''))
+const searchInput = ref(typeof route.query.q === 'string' ? route.query.q : '')
 const fallbackSite: PublicSitePayload = { schemaVersion: 1, brand: { name: 'Phúc Thịnh Solar', hotline: '' }, productCategories: [] }
 const { data: siteData } = await useFetch<unknown>('/_migration/site', { default: () => fallbackSite })
-const { data, error } = await useAsyncData<unknown>(
+const { data, error, pending } = await useAsyncData<unknown>(
   () => `public-news-category-${slug.value}-${String(route.query.p || '1')}-${String(route.query.q || '')}`,
   () => $fetch('/_migration/news', { query: {
     category: slug.value,
@@ -25,11 +26,23 @@ const { data, error } = await useAsyncData<unknown>(
   { watch: [slug, () => route.query.p, () => route.query.q] },
 )
 const site = computed(() => isPublicSitePayload(siteData.value) ? siteData.value : fallbackSite)
-const news = computed<PublicNewsPayload | null>(() => {
+const matchingNews = computed<PublicNewsPayload | null>(() => {
   const payload = isPublicNewsPayload(data.value) ? data.value : null
   return payload?.category?.slug === slug.value ? payload : null
 })
+const lastResolvedNews = shallowRef<PublicNewsPayload | null>(null)
+watch(matchingNews, (payload) => { if (payload) lastResolvedNews.value = payload }, { immediate: true })
+const news = computed(() => matchingNews.value ?? (pending.value ? lastResolvedNews.value : null))
 const category = computed(() => news.value?.category || null)
+watch(() => route.query.q, (value) => { searchInput.value = typeof value === 'string' ? value : '' })
+function submitSearch() {
+  const query = { ...route.query }
+  const keyword = searchInput.value.trim()
+  delete query.p
+  if (keyword) query.q = keyword
+  else delete query.q
+  return navigateTo({ path: route.path, query })
+}
 const errorStatus = (error.value as { statusCode?: unknown } | null)?.statusCode
 const responseStatus = editorialPublicResponseStatus(true, errorStatus, !news.value)
 if (import.meta.server && responseStatus) setResponseStatus(responseStatus, responseStatus === 404 ? 'Not Found' : 'Bad Gateway')
@@ -81,7 +94,7 @@ usePublicSocialMeta({
         <SiteBreadcrumb :items="[{ label: 'Kiến thức', to: '/tin-tuc/' }, { label: category?.name || 'Danh mục bài viết' }]" />
       </div>
     </div>
-    <main class="pts-container pb-16">
+    <main class="pts-container pb-16" :aria-busy="pending">
       <section v-if="error || !news || !category" class="min-h-[45vh] py-12" :role="responseStatus === 404 ? 'status' : 'alert'">
         <h1 class="mb-3 text-3xl font-black tracking-tight">{{ responseStatus === 404 ? 'Không tìm thấy danh mục bài viết' : 'Tạm thời không thể tải danh mục bài viết' }}</h1>
         <p class="text-slate-500">{{ responseStatus === 404 ? 'Danh mục này hiện không tồn tại hoặc đã ẩn.' : 'Nguồn nội dung hiện không khả dụng.' }}</p>
@@ -95,9 +108,9 @@ usePublicSocialMeta({
 
         <div class="mb-6 flex flex-col items-start justify-between gap-3.5 nav:flex-row nav:items-center">
           <NewsFilters :categories="news.categories" :selected="category" :all-label="news.labels.all" :filters-label="news.labels.results" />
-          <form class="flex h-11 w-full flex-none items-center rounded-chip border border-gray-200 bg-white nav:w-[250px]" method="get" :action="route.path" role="search">
+          <form class="flex h-11 w-full flex-none items-center rounded-chip border border-gray-200 bg-white nav:w-[250px]" role="search" @submit.prevent="submitSearch">
             <label class="sr-only" for="news-category-search">{{ news.labels.search }}</label>
-            <input id="news-category-search" name="q" type="search" class="w-full min-w-0 border-0 px-3 text-base text-navy-800 outline-none focus-visible:ring-2 focus-visible:ring-gold-500" :value="typeof route.query.q === 'string' ? route.query.q : ''" :placeholder="news.labels.search" maxlength="120">
+            <input id="news-category-search" v-model="searchInput" name="q" type="search" class="w-full min-w-0 border-0 px-3 text-base text-navy-800 outline-none focus-visible:ring-2 focus-visible:ring-gold-500" :placeholder="news.labels.search" maxlength="120">
             <button type="submit" class="h-11 w-11 flex-none border-0 bg-transparent text-navy-800" :aria-label="news.labels.search">⌕</button>
           </form>
         </div>

@@ -1,10 +1,8 @@
 <script setup lang="ts">
 import BrandDetailPage from '~/components/catalog/BrandDetailPage.vue'
-import brandDetailPublicRoute from '~/middleware/brand-detail-public-route'
-
 definePageMeta({
   layout: false,
-  middleware: brandDetailPublicRoute,
+  middleware: 'brand-detail-public-route',
 })
 
 const route = useRoute()

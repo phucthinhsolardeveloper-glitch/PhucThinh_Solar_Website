@@ -4,9 +4,15 @@ import EditorialRichText from '~/components/editorial/EditorialRichText.vue'
 
 defineProps<{ dealer: PublicDealerPayload }>()
 const links = useMigrationLinks()
+const oversizedSupportImages: Record<string, string> = {
+  '/upload/news/svgviewer-png-output-3-5470.png': '/assets/images/site-visuals/media-fallbacks/dealer-support-media.webp',
+  '/upload/news/svgviewer-png-output-2-4536.png': '/assets/images/site-visuals/media-fallbacks/dealer-support-training.webp',
+  '/upload/news/svgviewer-png-output-1-2932.png': '/assets/images/site-visuals/media-fallbacks/dealer-support-technical.webp',
+}
 
-// Dùng lại thumbnail PHP có sẵn cho ảnh CMS lớn; không nâng giới hạn 8 MiB của media proxy.
+// Dùng thumbnail cho ảnh CMS lớn; ba PNG vượt giới hạn proxy có WebP derivative đã kiểm tra.
 function cardImage(src: string): string {
+  if (oversizedSupportImages[src]) return oversizedSupportImages[src]
   return /^\/upload\/(?:news|photo)\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|gif|webp|avif)$/i.test(src)
     ? '/thumbs/480x300x1' + src
     : src
@@ -81,13 +87,43 @@ function cardImage(src: string): string {
   -->
   <section v-if="dealer.stats.length" class="bg-[linear-gradient(120deg,var(--color-navy-950),var(--color-navy-800))] py-12 text-center text-white nav:py-16" :aria-label="dealer.labels.stats">
     <div class="mx-auto w-[calc(100%-clamp(40px,5vw,96px))] max-w-[1560px]">
-      <p class="mb-8 text-xs font-bold uppercase tracking-[.08em] text-blue-200">{{ dealer.labels.stats }}</p>
-      <div class="grid grid-cols-1 gap-8 ph:grid-cols-3">
+      <p class="dealer-stats-eyebrow mb-9 text-sm font-extrabold uppercase tracking-[.12em]">{{ dealer.labels.stats }}</p>
+      <div class="grid grid-cols-1 gap-9 ph:grid-cols-3 ph:gap-5">
         <div v-for="stat in dealer.stats" :key="stat.label">
-          <strong class="block text-4xl font-black">{{ stat.value }}+</strong>
-          <span class="mt-1 block text-sm text-blue-200">{{ stat.label }}</span>
+          <strong class="dealer-stat-value">{{ stat.value }}+</strong>
+          <span class="dealer-stat-label">{{ stat.label }}</span>
         </div>
       </div>
     </div>
   </section>
 </template>
+
+<style scoped>
+.dealer-stats-eyebrow,
+.dealer-stat-value {
+  width: fit-content;
+  margin-inline: auto;
+  background-image: var(--pts-gold-gradient);
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+.dealer-stat-value {
+  display: block;
+  font-size: clamp(3.25rem, 5.2vw, 5.25rem);
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -.055em;
+  line-height: .98;
+}
+
+.dealer-stat-label {
+  display: block;
+  margin-top: .65rem;
+  color: rgb(226 232 240 / .92);
+  font-size: clamp(.9rem, 1.1vw, 1rem);
+  font-weight: 600;
+  line-height: 1.4;
+}
+</style>

@@ -12,6 +12,23 @@ $payload = ptsSolutionDetailPayload($row, array(array('photo'=>'/upload/news/gal
 solutionDetailAssert($payload['solution']['content']['format'] === 'sanitized-html' && $payload['solution']['content']['sanitizedBy'] === 'pts_public_richtext' && strpos($payload['solution']['content']['html'], '<script') === false && strpos($payload['solution']['content']['html'], 'alert(1)') === false, 'content da sanitize qua pts_public_richtext, loai bo script');
 solutionDetailAssert(strpos($payload['solution']['content']['html'], 'Đoạn một.') !== false && strpos($payload['solution']['content']['html'], 'Đoạn hai.') !== false, 'content giu lai van ban thuc giua cac doan');
 solutionDetailAssert($payload['solution']['extraContent']['format'] === 'sanitized-html' && strpos($payload['solution']['extraContent']['html'], 'Thông tin thêm.') !== false, 'extraContent sanitize tu content1vi');
+solutionDetailAssert($payload['editorial']['rendered'] === false && $payload['editorial']['reason'] === 'toc_derived_client_side_from_sanitized_html' && $payload['parity']['toc']['reason'] === 'toc_derived_client_side_from_sanitized_html', 'TOC source is accurately reported as sanitized HTML fragments rendered by Nuxt');
+$hostileHtml = '<p onclick="alert(1)" style="color:red">Nội dung an toàn</p><a href="javascript:alert(1)" onclick="x()">liên kết</a><svg onload="alert(1)"><text>không giữ</text></svg><img src="https://evil.test/a.jpg" onerror="x()">&lt;script&gt;alert(2)&lt;/script&gt;';
+$safeHtml = ptsPublicRichTextSanitize($hostileHtml);
+solutionDetailAssert(
+    strpos($safeHtml, '<p>Nội dung an toàn</p>') !== false
+    && strpos($safeHtml, '<a>liên kết</a>') !== false
+    && strpos($safeHtml, 'onclick') === false
+    && strpos($safeHtml, 'onload') === false
+    && strpos($safeHtml, 'onerror') === false
+    && strpos($safeHtml, 'style=') === false
+    && strpos($safeHtml, 'javascript:') === false
+    && strpos($safeHtml, '<svg') === false
+    && strpos($safeHtml, '<img') === false
+    && strpos($safeHtml, 'evil.test') === false
+    && strpos($safeHtml, 'alert(') === false,
+    'rich-text loại event handler, CSS, javascript URL, SVG, ảnh ngoài và script đã encode'
+);
 
 solutionDetailAssert($payload['solution']['gallery'] === array('/upload/news/gallery.jpg'), 'gallery giữ ảnh đã được allowlist');
 solutionDetailAssert(count($payload['navigation']['items']) === 1 && $payload['navigation']['items'][0]['active'] === true, 'navigation chỉ lấy solution published + solutionhub');

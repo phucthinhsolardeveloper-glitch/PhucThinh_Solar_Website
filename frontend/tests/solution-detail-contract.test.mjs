@@ -11,14 +11,20 @@ const good = {
   equipment: [{ name: 'Biến tần', description: '', url: '/danh-muc-san-pham/bien-tan/', image: '' }],
   cta: { label: 'Nhận tư vấn giải pháp', href: '/lien-he/#yeu-cau-tu-van' },
   campaignCta: { title: 'Cần tư vấn?', description: 'Mô tả từ Admin', buttonLabel: 'Nhận tư vấn', image: '/assets/images/site-visuals/catalog-street-lighting.jpg', links: { consult: { label: 'Nhận tư vấn', href: '#ptsContactModal' } }, hotline: { label: 'Gọi ngay hotline', text: '0901 234 567', tel: '0901234567' } },
-  editorial: { rendered: false, reason: 'toc_generation_not_implemented' },
-  parity: { toc: { included: false, reason: 'toc_generation_not_implemented' } },
+  editorial: { rendered: false, reason: 'toc_derived_client_side_from_sanitized_html' },
+  parity: { toc: { included: false, reason: 'toc_derived_client_side_from_sanitized_html' } },
 }
 const solutionPage = readFileSync(new URL('../app/components/solution-detail/SolutionDetailPage.vue', import.meta.url), 'utf8')
 const solutionHubPage = readFileSync(new URL('../app/pages/giai-phap.vue', import.meta.url), 'utf8')
 const solutionDetailRoute = readFileSync(new URL('../app/pages/migration-solution-detail-preview.vue', import.meta.url), 'utf8')
 
 test('accepts safe solution detail DTO', () => assert.equal(isPublicSolutionDetailPayload(good), true))
+test('solution detail derives its TOC from sanitized content and reports that PHP omits it', () => {
+  const phpHelper = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/libraries/pts_public_solution_detail_api.php', import.meta.url), 'utf8')
+  assert.match(solutionPage, /buildEditorialTocForFragments\([\s\S]*props\.data\.solution\.content, props\.data\.solution\.extraContent/)
+  assert.match(phpHelper, /toc_derived_client_side_from_sanitized_html/)
+  assert.doesNotMatch(phpHelper, /toc_generation_not_implemented/)
+})
 test('accepts an empty Admin category and rejects unsafe category markup', () => {
   assert.equal(isPublicSolutionDetailPayload({ ...good, solution: { ...good.solution, category: '' } }), true)
   assert.equal(isPublicSolutionDetailPayload({ ...good, solution: { ...good.solution, category: '<script>bad</script>' } }), false)

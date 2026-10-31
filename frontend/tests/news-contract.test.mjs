@@ -19,6 +19,13 @@ test('rejects wrong legacy page size and malformed visibility DTO', () => {
   assert.equal(isPublicNewsPayload({ ...good, articles: [{ ...article, readingMinutes: -1 }] }), false)
 })
 
+test('secondary news media stays within its grid column at intermediate widths', () => {
+  const card = readFileSync(new URL('../app/components/news/NewsCard.vue', import.meta.url), 'utf8')
+  assert.match(card, /grid grid-cols-\[minmax\(0,38%\)_minmax\(0,1fr\)\] gap-4/)
+  assert.match(card, /aspect-video h-auto min-h-0 w-full min-w-0 self-start rounded-chip/)
+  assert.doesNotMatch(card, /aspect-video h-full min-h-\[150px\]/)
+})
+
 test('accepts resolved multi-level category metadata only when its leaf slug matches', () => {
   const selected = { ...category, slug: 'ung-dung', url: '/ung-dung/', canonicalPath: '/ung-dung', type: 'tin-tuc', level: 'item', path: 'kien-thuc/dien-mat-troi/ung-dung' }
   assert.equal(isPublicNewsPayload({ ...good, category: selected }), true)

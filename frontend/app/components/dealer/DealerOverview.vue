@@ -53,10 +53,10 @@ function cardImage(src: string): string {
     <p v-else-if="dealer.overview.description" class="mb-8 max-w-[70ch] whitespace-pre-line leading-relaxed text-slate-600">{{ dealer.overview.description }}</p>
 
     <div v-if="dealer.overview.products.length > 1" class="mb-4 flex justify-end gap-2 min-[768px]:hidden" role="group" aria-label="Điều hướng sản phẩm phân phối">
-      <button type="button" class="grid size-11 place-items-center border border-slate-300 bg-white text-navy-800 transition-colors hover:border-gold-500 hover:text-gold-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-600 disabled:cursor-not-allowed disabled:opacity-40" aria-label="Sản phẩm trước" :disabled="!canScrollPrevious" @click="scrollProducts(-1)">
+      <button type="button" class="public-neutral-button grid size-11 place-items-center text-navy-800 disabled:cursor-not-allowed disabled:opacity-40" aria-label="Sản phẩm trước" :disabled="!canScrollPrevious" @click="scrollProducts(-1)">
         <UIcon name="i-lucide-chevron-left" class="size-5" aria-hidden="true" />
       </button>
-      <button type="button" class="grid size-11 place-items-center border border-slate-300 bg-white text-navy-800 transition-colors hover:border-gold-500 hover:text-gold-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-600 disabled:cursor-not-allowed disabled:opacity-40" aria-label="Sản phẩm tiếp theo" :disabled="!canScrollNext" @click="scrollProducts(1)">
+      <button type="button" class="public-neutral-button grid size-11 place-items-center text-navy-800 disabled:cursor-not-allowed disabled:opacity-40" aria-label="Sản phẩm tiếp theo" :disabled="!canScrollNext" @click="scrollProducts(1)">
         <UIcon name="i-lucide-chevron-right" class="size-5" aria-hidden="true" />
       </button>
     </div>

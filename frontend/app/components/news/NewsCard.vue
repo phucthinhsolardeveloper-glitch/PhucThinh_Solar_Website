@@ -45,7 +45,7 @@ function cardImageSrcSet(src: string): string | undefined {
       <div
         class="relative overflow-hidden bg-slate-50"
         :class="variant === 'secondary'
-          ? 'aspect-video h-full min-h-[150px] rounded-chip max-ph:aspect-video max-ph:h-auto max-ph:min-h-0'
+          ? 'aspect-video h-auto min-h-0 w-full min-w-0 self-start rounded-chip max-ph:aspect-video max-ph:h-auto max-ph:min-h-0'
           : 'aspect-video rounded-chip'"
       >
         <img

@@ -141,14 +141,14 @@ try
         $categoryDto = null;
         if($selectedCategory)
         {
-            // The legacy taxonomy SEO row is keyed by news/man_list/giai-phap;
-            // its OG image remains the validated taxonomy photo from #_news_list.
+            // The legacy taxonomy SEO row is keyed by news/man_list/giai-phap.
+            // ptsPublicSeoDto expects the raw filename and validates it against ROOT.
             $categorySeoRow = $d->rawQueryOne('select titlevi,descriptionvi,keywordsvi from #_seo where id_parent = ? and com = ? and act = ? and type = ? limit 1', array((int)$selectedCategory['id'], 'news', 'man_list', 'giai-phap'));
             $categorySeo = ptsPublicSeoDto(
                 is_array($categorySeoRow) ? $categorySeoRow : array(),
                 ROOT,
                 UPLOAD_NEWS_L,
-                $publicImage(isset($selectedCategory['photo']) ? $selectedCategory['photo'] : '', UPLOAD_NEWS_L)
+                isset($selectedCategory['photo']) ? $selectedCategory['photo'] : ''
             );
             $categoryDto = ptsPublicSolutionCategoryDto($selectedCategory, $categoryRows, $solutionRows, $categorySeo);
         }

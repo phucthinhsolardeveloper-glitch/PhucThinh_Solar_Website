@@ -44,6 +44,12 @@ terminal Nuxt để biết watcher/HMR có báo lỗi hay không. Ảnh CMS và 
 được proxy trong dev qua allowlist đường dẫn ảnh; production vẫn tắt proxy theo
 mặc định.
 
+Media proxy giữ giới hạn 8 MiB cho mỗi ảnh. Một số PNG upload cũ vượt giới hạn;
+không tăng giới hạn hoặc đưa bản gốc vào Git. Các ảnh đang dùng có WebP thu nhỏ
+trong `frontend/public/assets/images/site-visuals/media-fallbacks/`, được chọn
+theo đúng đường dẫn API tại component tương ứng. Khi CMS đổi ảnh, tạo thumbnail
+qua PHP hoặc cập nhật derivative theo ảnh mới trước khi bỏ ánh xạ hiện có.
+
 Các cờ `NUXT_PUBLIC_*_PUBLIC_ROUTE_ENABLED` chỉ mở URL public trong preview để
 owner xem giao diện. Mọi cờ `NUXT_PUBLIC_*_PUBLIC_ROUTE_INDEXABLE` trong `.env`
 local phải là `false`; chúng độc lập với cờ hiển thị route và giữ meta robots ở

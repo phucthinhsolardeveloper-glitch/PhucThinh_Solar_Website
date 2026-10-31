@@ -144,6 +144,22 @@ public route response; internal preview paths remain excluded. The targeted
 policy contract and typecheck passed after the source change. The retained 29/34
 type-set comparison above predates this change and has not been rerun.
 
+## Follow-up — current local JSON-LD route smoke — 2026-10-31
+
+A fresh GET of all 34 manifest public paths from Nuxt `127.0.0.1:3100` returned
+**34/34 HTTP 200**. Every `application/ld+json` block parsed successfully;
+`BreadcrumbList` appeared on **33/34** routes, with the homepage intentionally
+using its `Organization` + `WebSite` graph instead. The policy route now emits
+`BreadcrumbList`, `NewsArticle`, and `Organization`. Its displayed intermediate
+“Chính sách & Hỗ trợ” crumb has no verified public URL, so it is omitted from
+structured data while the current policy URL remains represented; no parent
+route was invented. `node --test tests/public-seo.test.mjs` passed **16/16**.
+
+This is current Nuxt structural/runtime evidence only. Exact JSON-LD parity
+against a current PHP-rendered page remains unverified because the local PHP
+HTML renderer is stopped; no production, CMS, database, or route configuration
+was changed.
+
 ## Follow-up — source-aligned social images and organization fields — 2026-10-31
 
 PHP `about.php`, `contact.php`, `daily.php` (dealer) and `video.php` set the
@@ -242,14 +258,13 @@ the logo fallback.
 
 Verification re-requested all **34 manifest public paths** from current Nuxt
 SSR and compared normalized asset paths with the retained PHP HTML snapshot:
-**34/34 HTTP 200**, **32/34 OG image paths match**. The two unresolved paths are
-`/doanh-nghiep` and `/ho-gia-dinh`: the retained PHP snapshot contains taxonomy
-photos, while the current local solutions API DTO has an empty category SEO
-image and Nuxt falls back to the logo. Current API source attempts to validate
-the published taxonomy photo for this field; without a fresh PHP renderer or
-matching current local photo data, do not hardcode the historical image paths.
-This does not close other OG description/type, JSON-LD, href-set,
-hidden-fixture, or visual approval gates.
+**34/34 HTTP 200**, **32/34 OG image paths match** at that checkpoint. The two
+paths were `/doanh-nghiep` and `/ho-gia-dinh`; their taxonomy photos were present
+in the local data/media source but the API passed an already-normalized path to
+a helper that expects a filename. The follow-up below corrects this contract and
+confirms both current DTO and SSR metadata use the real taxonomy photos. The
+remaining OG description/type, JSON-LD, href-set, hidden-fixture, and visual
+approval gates remain open.
 
 Focused catalog/news/projects/solution-detail/SEO contracts pass **50/50**;
 after the source-aligned metadata and assertion updates, the complete frontend
@@ -269,3 +284,30 @@ Local Nuxt SSR returned HTTP 200 and the DTO's legal company name for
 `/doanh-nghiep` and `/ho-gia-dinh`. This matches the PHP fallback rule but is
 not a fresh two-renderer comparison; the broader OG/JSON-LD and retained-snapshot
 gates remain open.
+
+## Follow-up — solution taxonomy social images — 2026-10-31
+
+The solutions API passed `$publicImage(...)` output (`/upload/news/<file>`) to
+`ptsPublicSeoDto()`, whose image argument is the raw taxonomy filename. The
+helper rejected the path as non-basename, causing both published solution
+categories to fall back to the logo. The API now passes the raw `photo` field;
+`ptsPublicSeoDto()` still validates filename, extension and file existence under
+the public upload root before returning a URL.
+
+PHP 8.1 isolated checks passed: endpoint lint and the solution-category helper
+slice (**8 PASS**). The Nuxt solution contract suite passed **9/9**. Read-only
+GETs through the current local API returned `/upload/news/solar-panels11-7366.png`
+for `/doanh-nghiep` and `/upload/news/house-2912.png` for `/ho-gia-dinh`; Nuxt
+SSR emitted the matching absolute `og:image` URLs for both routes. This closes
+the two known taxonomy-image data gaps against current local source and data,
+but is not a fresh 34-route PHP HTML comparison or production approval.
+
+## Follow-up — product detail Open Graph type — 2026-10-31
+
+The PHP router sets `og:type=article` for product detail requests. Nuxt product
+detail pages previously passed `product` to the shared helper, which emits
+`website` for that type. The public Nuxt PDP now uses `article` to match the PHP
+route contract. A read-only local SSR request for the published Oriana UFO
+product returned HTTP 200 and `<meta property="og:type" content="article">`;
+the focused SEO test passes **17/17**. This verifies one PDP fixture only and
+does not replace the open full-route PHP↔Nuxt metadata comparison.

@@ -30,7 +30,7 @@ test('migration checkout POST endpoint refuses to forward order mutations to PHP
 })
 
 test('active Nuxt checkout hands the browser form directly to the PHP cart route', () => {
-  assert.match(activeCheckoutPage, /middleware:\s*checkoutPublicRoute/)
+  assert.ok(activeCheckoutPage.includes("middleware: 'checkout-public-route'"))
   assert.match(activeCheckoutPage, /<form v-else method="post" :action="checkoutPostAction"/)
   assert.match(activeCheckoutPage, /const checkoutPostAction = CART_CHECKOUT_POST_PATH/)
   assert.doesNotMatch(activeCheckoutPage, /phpPublicRouteUrl|phpPublicOrigin/)

@@ -92,7 +92,7 @@ function openCheckout() {
       <div v-else-if="!payload" class="rounded-btn border border-red-200 bg-red-50 p-6 text-red-800" role="alert">
         <strong>Không thể tải session giỏ hàng.</strong>
         <p class="mb-0 mt-2">{{ error || 'PHP cart API local chưa khả dụng.' }}</p>
-        <button type="button" class="mt-4 rounded-chip border border-red-300 bg-white px-4 py-2 font-bold" @click="refresh()">Thử lại</button>
+        <button type="button" class="public-neutral-button mt-4 rounded-chip px-4 py-2 font-bold" @click="refresh()">Thử lại</button>
       </div>
 
       <template v-else>

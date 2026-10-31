@@ -47,17 +47,18 @@ usePublicSocialMeta({
 <template>
   <div class="min-h-screen bg-white text-navy-800">
     <SiteHeader :site="site" />
-    <main class="pts-container py-10 nav:py-14">
+    <main class="pts-container py-10 nav:py-14" :aria-busy="pending">
       <SiteBreadcrumb :items="[{ label: 'Thư viện ảnh' }]" />
       <header class="mb-8">
         <h1 class="text-[clamp(32px,5vw,52px)] font-black tracking-tight">{{ gallery?.title || 'Thư viện ảnh' }}</h1>
       </header>
 
-      <div v-if="pending" class="py-16 text-slate-500" role="status">Đang tải thư viện ảnh…</div>
-      <div v-else-if="error || !gallery" class="rounded-btn border border-red-200 bg-red-50 p-6 text-red-800" role="alert">
+      <div v-if="pending && !gallery" class="py-16 text-slate-500" role="status">Đang tải thư viện ảnh…</div>
+      <div v-else-if="!gallery" class="rounded-btn border border-red-200 bg-red-50 p-6 text-red-800" :role="error ? 'alert' : 'status'">
         Không thể tải dữ liệu thư viện ảnh từ CMS local.
       </div>
       <template v-else>
+        <p v-if="error" class="mb-5 rounded-btn bg-amber-50 px-4 py-3 text-sm text-amber-900" role="alert">Không thể cập nhật trang thư viện. Đang giữ kết quả vừa tải trước đó.</p>
         <div v-if="gallery.albums.length" class="grid grid-cols-1 gap-5 ph:grid-cols-2 tb:grid-cols-3 wd:grid-cols-4">
           <article v-for="album in gallery.albums" :key="album.id" class="group min-w-0">
             <NuxtLink :to="links.gallery(album.slug)" class="block no-underline">

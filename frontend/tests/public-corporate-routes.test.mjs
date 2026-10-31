@@ -45,7 +45,7 @@ test('public Home, Contact, and Dealer routes reuse their preview content and at
     const content = read(route.content)
     const middleware = read(route.middleware)
 
-    assert.match(publicPage, new RegExp(`middleware:\\s*${route.name}PublicRoute`), `${route.name} public route middleware`)
+    assert.match(publicPage, new RegExp(`middleware:\\s*['"]${route.name}-public-route['"]`), `${route.name} public route middleware`)
     assert.match(publicPage, new RegExp(`<${route.component}\\s*/>`), `${route.name} public content`)
     assert.match(previewPage, new RegExp(`<${route.component}\\s+preview\\s*/>`), `${route.name} preview content`)
     assert.match(content, /defineProps<\{\s*preview\?: boolean\s*\}>\(\)/, `${route.name} shared preview prop`)

@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import productRootAliasPublicRoute from '~/middleware/product-root-alias-public-route'
-
-definePageMeta({ layout: false, middleware: productRootAliasPublicRoute })
+definePageMeta({ layout: false, middleware: 'product-root-alias-public-route' })
 </script>
 
 <template><div /></template>

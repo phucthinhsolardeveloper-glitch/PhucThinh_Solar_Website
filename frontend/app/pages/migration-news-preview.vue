@@ -27,9 +27,19 @@ const requestQuery = computed(() => {
   for (const key of ['q', 'p', 'category']) if (typeof route.query[key] === 'string' && route.query[key]) query[key] = route.query[key] as string
   return query
 })
-const { data, error } = await useAsyncData<unknown>('migration-news', () => $fetch('/_migration/news', { query: requestQuery.value }), { watch: [requestQuery] })
+const searchInput = ref(requestQuery.value.q || '')
+watch(() => requestQuery.value.q, (value) => { searchInput.value = value || '' })
+const { data, error, pending } = await useAsyncData<unknown>('migration-news', () => $fetch('/_migration/news', { query: requestQuery.value }), { watch: [requestQuery] })
 const site = computed(() => isPublicSitePayload(siteData.value) ? siteData.value : fallbackSite)
 const news = computed(() => isPublicNewsPayload(data.value) ? data.value : null)
+function submitSearch() {
+  const query = { ...route.query }
+  const keyword = searchInput.value.trim()
+  delete query.p
+  if (keyword) query.q = keyword
+  else delete query.q
+  return navigateTo({ path: publicPath.value, query })
+}
 const errorStatus = (error.value as { statusCode?: unknown } | null)?.statusCode
 const responseStatus = editorialPublicHubResponseStatus(
   isPublicRoute.value,
@@ -80,13 +90,14 @@ usePublicSocialMeta({
       </div>
     </div>
 
-    <main class="pts-container pb-16">
-      <div v-if="error || !news" class="min-h-[45vh] py-12" role="status">
+    <main class="pts-container pb-16" :aria-busy="pending">
+      <div v-if="!news" class="min-h-[45vh] py-12" :role="error ? 'alert' : 'status'">
           <h1 class="mb-3 text-3xl font-black tracking-tight">{{ isPublicRoute ? 'Kiến thức' : 'Kiến thức — internal preview' }}</h1>
           <p class="text-slate-500">Không thể tải dữ liệu CMS trong môi trường hiện tại. {{ isPublicRoute ? 'Nội dung sẽ hiển thị khi CMS khả dụng.' : 'Preview không hiển thị bài viết giả.' }}</p>
         </div>
 
         <template v-else>
+          <p v-if="error" class="mb-5 rounded-btn bg-amber-50 px-4 py-3 text-sm text-amber-900" role="alert">Không thể cập nhật bài viết. Đang giữ kết quả vừa tải trước đó.</p>
           <!--
             PHÁT HIỆN: CSS preview cũ canh giữa (text-align:center) cho tiêu đề
             trang. Ảnh production canh TRÁI, không giới hạn max-width 760px —
@@ -102,9 +113,9 @@ usePublicSocialMeta({
           <div class="mb-6 flex flex-col items-start justify-between gap-3.5 nav:flex-row nav:items-center">
             <NewsFilters :categories="news.categories" :selected="news.category" :all-label="news.labels.all" :filters-label="news.labels.results" :query="requestQuery.q" />
 
-            <form class="flex h-11 w-full flex-none items-center rounded-chip border border-gray-200 bg-white nav:w-[250px]" method="get" :action="publicPath" role="search">
+            <form class="flex h-11 w-full flex-none items-center rounded-chip border border-gray-200 bg-white nav:w-[250px]" role="search" @submit.prevent="submitSearch">
               <label class="sr-only" for="news-search">{{ news.labels.search }}</label>
-              <input id="news-search" name="q" type="search" class="w-full min-w-0 border-0 px-3 text-base text-navy-800 outline-none focus-visible:ring-2 focus-visible:ring-gold-500" :value="requestQuery.q || ''" :placeholder="news.labels.search" maxlength="120">
+              <input id="news-search" v-model="searchInput" name="q" type="search" class="w-full min-w-0 border-0 px-3 text-base text-navy-800 outline-none focus-visible:ring-2 focus-visible:ring-gold-500" :placeholder="news.labels.search" maxlength="120">
               <button type="submit" class="h-11 w-11 flex-none border-0 bg-transparent text-navy-800" :aria-label="news.labels.search">⌕</button>
               <input v-if="requestQuery.category" type="hidden" name="category" :value="requestQuery.category">
             </form>

@@ -6,6 +6,13 @@ const links = useMigrationLinks()
 const isMigrationPreview = links.active
 const railRef = ref<HTMLElement | null>(null)
 const failedImages = ref<Set<number>>(new Set())
+const oversizedProductImages: Record<string, string> = {
+  '/upload/product/t-bat-tsys-d53-2-4295.png': '/assets/images/site-visuals/media-fallbacks/brand-tbat-tsys-d53.webp',
+}
+
+function productImage(src: string): string {
+  return oversizedProductImages[src] || src
+}
 
 function scrollRail(direction: -1 | 1) {
   const rail = railRef.value
@@ -22,6 +29,7 @@ function markImageFailed(productId: number) {
 // useMigrationCart `loading`/`error` state, which is a single global flag -
 // reusing it here would make every card show "Đang thêm…" at once).
 const { mutate } = useMigrationCart()
+const { openConsultation } = useStorefrontModal()
 const addingIds = ref<Set<number>>(new Set())
 const addedIds = ref<Set<number>>(new Set())
 const cartErrors = ref<Map<number, string>>(new Map())
@@ -101,7 +109,7 @@ function discountPercent(product: PublicCatalogProduct): number | null {
         square
         icon="i-lucide-chevron-left"
         aria-label="Sản phẩm trước"
-        class="size-11 justify-center rounded-[3px] border-slate-300 bg-white text-navy-800 transition-colors hover:border-gold-500 hover:text-gold-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-600"
+        class="public-neutral-button size-11 justify-center rounded-[3px] text-navy-800"
         @click="scrollRail(-1)"
       />
       <UButton
@@ -112,7 +120,7 @@ function discountPercent(product: PublicCatalogProduct): number | null {
         square
         icon="i-lucide-chevron-right"
         aria-label="Sản phẩm tiếp theo"
-        class="size-11 justify-center rounded-[3px] border-slate-300 bg-white text-navy-800 transition-colors hover:border-gold-500 hover:text-gold-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-600"
+        class="public-neutral-button size-11 justify-center rounded-[3px] text-navy-800"
         @click="scrollRail(1)"
       />
     </div>
@@ -141,7 +149,7 @@ function discountPercent(product: PublicCatalogProduct): number | null {
         </span>
         <img
           v-if="product.media[0] && !failedImages.has(product.id)"
-          :src="product.media[0]"
+          :src="productImage(product.media[0])"
           :alt="product.name"
           class="h-full w-full object-contain transition-transform duration-300 group-hover:scale-[1.03] motion-reduce:transform-none motion-reduce:transition-none"
           loading="lazy"
@@ -174,11 +182,23 @@ function discountPercent(product: PublicCatalogProduct): number | null {
           {{ formatMoney(product.pricing.salePrice ?? product.pricing.regularPrice ?? 0) }}
         </template>
       </p>
-      <p v-else class="m-0 text-[13px] font-medium text-slate-500">Liên hệ để nhận báo giá</p>
+      <p v-else-if="product.pricing?.mode !== 'quote'" class="m-0 text-[13px] font-medium text-slate-500">Liên hệ để nhận báo giá</p>
 
       <div class="mt-auto grid gap-2 pt-3 max-ph:gap-0">
         <UButton
-          v-if="product.pricing?.mode === 'price'"
+          v-if="product.pricing?.mode === 'quote'"
+          type="button"
+          color="primary"
+          size="md"
+          class="min-h-11 w-full justify-center whitespace-nowrap rounded-[4px] bg-hdr-gold px-3 text-[13px] font-extrabold text-navy-950 shadow-xs transition-all duration-150 hover:bg-hdr-gold-hover hover:shadow-sm active:scale-[0.98]"
+          :aria-label="`Liên hệ để nhận báo giá ${product.name}`"
+          @click="openConsultation(product.name)"
+        >
+          <span class="max-[640px]:hidden">Liên hệ để nhận báo giá</span>
+          <span class="hidden max-[640px]:inline">Liên hệ báo giá</span>
+        </UButton>
+        <UButton
+          v-else-if="product.pricing?.mode === 'price'"
           type="button"
           color="primary"
           size="md"
@@ -195,7 +215,7 @@ function discountPercent(product: PublicCatalogProduct): number | null {
           color="secondary"
           variant="outline"
           size="md"
-          class="min-h-11 w-full justify-center rounded-[4px] border border-navy-800/80 px-3 text-[13px] font-bold text-navy-800 no-underline shadow-xs transition-all duration-150 hover:border-navy-800 hover:bg-navy-800 hover:text-white active:scale-[0.98] max-ph:hidden"
+          class="public-neutral-button public-navy-outline-button min-h-11 w-full justify-center rounded-[4px] px-3 text-[13px] font-bold text-navy-800 no-underline transition-all duration-150 active:scale-[0.98] max-ph:hidden"
         >
           Xem chi tiết
         </UButton>

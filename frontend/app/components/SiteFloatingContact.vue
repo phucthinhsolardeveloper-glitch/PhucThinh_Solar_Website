@@ -7,8 +7,6 @@ const props = defineProps<{
 }>()
 
 const showBackToTop = ref(false)
-const footerInView = ref(false)
-const formInView = ref(false)
 const hotline = computed(() => props.site.brand.hotline.trim())
 const phoneHref = computed(() => publicPhoneHref(hotline.value))
 const zaloHref = computed(() => {
@@ -18,9 +16,6 @@ const zaloHref = computed(() => {
 })
 
 const hasContactChannels = computed(() => Boolean(zaloHref.value || phoneHref.value))
-let footerObserver: IntersectionObserver | undefined
-let formObserver: IntersectionObserver | undefined
-const visibleForms = new Set<Element>()
 
 function updateBackToTopVisibility() {
   showBackToTop.value = window.scrollY > 300
@@ -34,41 +29,16 @@ function scrollToTop() {
 onMounted(() => {
   updateBackToTopVisibility()
   window.addEventListener('scroll', updateBackToTopVisibility, { passive: true })
-
-  const footer = document.querySelector('footer')
-  if (footer && 'IntersectionObserver' in window) {
-    const footerBounds = footer.getBoundingClientRect()
-    footerInView.value = footerBounds.top < window.innerHeight && footerBounds.bottom > 0
-    footerObserver = new IntersectionObserver(([entry]) => {
-      footerInView.value = entry?.isIntersecting ?? false
-    })
-    footerObserver.observe(footer)
-  }
-
-  const forms = document.querySelectorAll('main form')
-  if (forms.length && 'IntersectionObserver' in window) {
-    formObserver = new IntersectionObserver((entries) => {
-      for (const entry of entries) {
-        if (entry.isIntersecting) visibleForms.add(entry.target)
-        else visibleForms.delete(entry.target)
-      }
-      formInView.value = visibleForms.size > 0
-    }, { threshold: 0.01 })
-    forms.forEach((form) => formObserver?.observe(form))
-  }
 })
 
 onUnmounted(() => {
   window.removeEventListener('scroll', updateBackToTopVisibility)
-  footerObserver?.disconnect()
-  formObserver?.disconnect()
-  visibleForms.clear()
 })
 </script>
 
 <template>
   <aside
-    v-if="(showBackToTop || hasContactChannels) && !footerInView && !formInView"
+    v-if="showBackToTop || hasContactChannels"
     class="fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] right-4 z-[900] flex flex-col items-center gap-3 print:hidden tb:bottom-6 tb:right-6 transform-gpu"
     aria-label="Liên hệ nhanh"
   >
@@ -84,7 +54,7 @@ onUnmounted(() => {
         type="button"
         title="Lên đầu trang"
         aria-label="Lên đầu trang"
-        class="flex h-11 w-11 items-center justify-center rounded-full border border-slate-200/80 bg-white/95 text-navy-950 shadow-[0_4px_14px_rgba(10,34,81,0.12)] backdrop-blur-sm transition-all duration-200 motion-reduce:transition-none motion-reduce:transform-none hover:scale-105 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 active:scale-95"
+        class="public-neutral-button flex h-11 w-11 items-center justify-center rounded-full text-navy-950 backdrop-blur-sm transition-all duration-200 motion-reduce:transition-none motion-reduce:transform-none hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500 active:scale-95"
         @click="scrollToTop"
       >
         <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">

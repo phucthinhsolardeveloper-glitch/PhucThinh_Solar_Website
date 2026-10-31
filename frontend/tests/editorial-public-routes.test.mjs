@@ -65,16 +65,16 @@ test('editorial detail slugs build only safe solution and policy paths', () => {
 
 test('static editorial wrappers reuse preview pages without runtime route flags or PHP fallback', () => {
   const routes = [
-    ['tin-tuc/index.vue', 'migration-news-preview.vue', 'news-public-route', 'newsPublicRoute', 'NEWS_PUBLIC_PATH'],
-    ['du-an-da-thuc-hien/index.vue', 'migration-projects-preview.vue', 'projects-public-route', 'projectsPublicRoute', 'PROJECTS_PUBLIC_PATH'],
-    ['thu-vien-anh/index.vue', 'migration-gallery-preview.vue', 'gallery-public-route', 'galleryPublicRoute', 'GALLERY_PUBLIC_PATH'],
-    ['video/index.vue', 'migration-video-preview.vue', 'video-public-route', 'videoPublicRoute', 'VIDEO_PUBLIC_PATH'],
+    ['tin-tuc/index.vue', 'migration-news-preview.vue', 'news-public-route', 'NEWS_PUBLIC_PATH'],
+    ['du-an-da-thuc-hien/index.vue', 'migration-projects-preview.vue', 'projects-public-route', 'PROJECTS_PUBLIC_PATH'],
+    ['thu-vien-anh/index.vue', 'migration-gallery-preview.vue', 'gallery-public-route', 'GALLERY_PUBLIC_PATH'],
+    ['video/index.vue', 'migration-video-preview.vue', 'video-public-route', 'VIDEO_PUBLIC_PATH'],
   ]
-  for (const [pagePath, previewPage, middlewareName, middlewareSymbol, pathConstant] of routes) {
+  for (const [pagePath, previewPage, middlewareName, pathConstant] of routes) {
     const page = read(`app/pages/${pagePath}`)
     const middleware = read(`app/middleware/${middlewareName}.ts`)
     assert.match(page, new RegExp(previewPage.replaceAll('.', '\\.')))
-    assert.match(page, new RegExp(`middleware: ${middlewareSymbol}`))
+    assert.match(page, new RegExp(`middleware:\\s*['"]${middlewareName}['"]`))
     assert.doesNotMatch(middleware, /PublicRouteEnabled|phpPublicRouteUrl/)
     assert.match(middleware, new RegExp(`\\b${pathConstant}\\b`))
     assert.match(middleware, /redirectCode: 301/)

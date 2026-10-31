@@ -14,13 +14,7 @@ export interface PublicSolutionDetailPayload {
   equipment: { name: string; description: string; url: string; image: string }[]
   cta: { label: string; href: '/lien-he/#yeu-cau-tu-van' }
   campaignCta: PublicSolutionDetailCampaignCta | null
-  /**
-   * Trước khi tích hợp sanitizer, `editorial` bao quát cả phần HTML lẫn mục
-   * lục (TOC). Sau tích hợp, `solution.content`/`extraContent` đã là HTML thật
-   * qua pts_public_richtext.php — `editorial` giờ CHỈ còn nói về mục lục tự
-   * sinh từ heading, vẫn chưa làm vì cần phân tích cấu trúc heading riêng,
-   * không chỉ sanitize phẳng.
-   */
+  /** PHP supplies sanitized fragments; Nuxt derives the TOC from their headings. */
   editorial: { rendered: false; reason: string }
   parity: Record<string, { included: false; reason: string }>
 }

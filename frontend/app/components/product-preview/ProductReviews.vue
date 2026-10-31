@@ -297,7 +297,7 @@ async function sendReview() {
     </div>
     <div v-if="currentReviews.hasMore || reviewPageError" class="mt-5 text-center">
       <p v-if="reviewPageError" class="text-sm text-red-700" role="alert">{{ reviewPageError }}</p>
-      <button type="button" class="min-h-10 rounded-chip border border-gray-300 px-4 font-bold" :disabled="loadingMoreReviews" @click="loadMoreReviews">
+      <button type="button" class="public-neutral-button min-h-10 rounded-chip px-4 font-bold" :disabled="loadingMoreReviews" @click="loadMoreReviews">
         {{ loadingMoreReviews ? 'Đang tải…' : 'Tải thêm nhận xét' }}
       </button>
     </div>
@@ -323,7 +323,7 @@ async function sendReview() {
                 <p class="mb-0 mt-1 text-sm leading-6 text-slate-600">Nhận xét giúp khách hàng khác chọn đúng sản phẩm.</p>
               </div>
             </div>
-            <UButton type="button" color="neutral" variant="outline" size="sm" class="min-h-10 rounded-btn border-slate-300 px-3 text-navy-800" @click="writing = false">
+                <UButton type="button" color="neutral" variant="outline" size="sm" class="public-neutral-button min-h-10 rounded-btn px-3 text-navy-800" @click="writing = false">
               Đóng
             </UButton>
           </div>
@@ -357,7 +357,7 @@ async function sendReview() {
             <UFormField label="Hình ảnh" hint="Tối đa 3 ảnh JPG/PNG, 30 MB mỗi ảnh" class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-sm font-semibold text-navy-800', hint: 'text-xs leading-5 font-normal text-slate-500' }">
               <input ref="photoInput" type="file" accept="image/jpeg,image/png,.jpg,.jpeg,.png" multiple tabindex="-1" aria-hidden="true" class="sr-only" @change="selectPhotos">
               <div class="flex min-w-0 flex-wrap items-center gap-2">
-                <UButton type="button" color="neutral" variant="outline" size="md" class="min-h-11 rounded-btn border-slate-300 px-3 font-semibold text-navy-800" @click="openPhotoPicker">
+                <UButton type="button" color="neutral" variant="outline" size="md" class="public-neutral-button min-h-11 rounded-btn px-3 font-semibold text-navy-800" @click="openPhotoPicker">
                   <UIcon name="i-lucide-image-plus" class="size-4" aria-hidden="true" /> Chọn ảnh
                 </UButton>
                 <span class="min-w-0 flex-1 text-sm text-slate-500" aria-live="polite">{{ photoFiles.length ? `Đã chọn ${photoFiles.length} ảnh` : 'Chưa chọn tệp' }}</span>
@@ -370,7 +370,7 @@ async function sendReview() {
             <UFormField label="Video" hint="MP4/MKV, tối đa 100 MB" class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-sm font-semibold text-navy-800', hint: 'text-xs leading-5 font-normal text-slate-500' }">
               <input ref="videoInput" type="file" accept="video/mp4,video/x-matroska,.mp4,.mkv" tabindex="-1" aria-hidden="true" class="sr-only" @change="selectVideo">
               <div class="flex min-w-0 flex-wrap items-center gap-2">
-                <UButton type="button" color="neutral" variant="outline" size="md" class="min-h-11 rounded-btn border-slate-300 px-3 font-semibold text-navy-800" @click="openVideoPicker">
+                <UButton type="button" color="neutral" variant="outline" size="md" class="public-neutral-button min-h-11 rounded-btn px-3 font-semibold text-navy-800" @click="openVideoPicker">
                   <UIcon name="i-lucide-video" class="size-4" aria-hidden="true" /> Chọn video
                 </UButton>
                 <span class="min-w-0 flex-1 truncate text-sm text-slate-500" :title="videoFile?.name || undefined" aria-live="polite">{{ videoFile?.name || 'Chưa chọn tệp' }}</span>
@@ -382,7 +382,7 @@ async function sendReview() {
             <UFormField label="Ảnh đại diện video" hint="JPG/PNG, tối đa 30 MB" class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-sm font-semibold text-navy-800', hint: 'text-xs leading-5 font-normal text-slate-500' }">
               <input ref="posterInput" type="file" accept="image/jpeg,image/png,.jpg,.jpeg,.png" tabindex="-1" aria-hidden="true" class="sr-only" @change="selectPoster">
               <div class="flex min-w-0 flex-wrap items-center gap-2">
-                <UButton type="button" color="neutral" variant="outline" size="md" class="min-h-11 rounded-btn border-slate-300 px-3 font-semibold text-navy-800" @click="openPosterPicker">
+                <UButton type="button" color="neutral" variant="outline" size="md" class="public-neutral-button min-h-11 rounded-btn px-3 font-semibold text-navy-800" @click="openPosterPicker">
                   <UIcon name="i-lucide-image" class="size-4" aria-hidden="true" /> Chọn ảnh bìa
                 </UButton>
                 <span class="min-w-0 flex-1 truncate text-sm text-slate-500" :title="videoPoster?.name || undefined" aria-live="polite">{{ videoPoster?.name || 'Chưa chọn tệp' }}</span>

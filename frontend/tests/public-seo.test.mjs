@@ -79,6 +79,18 @@ test('breadcrumb JSON-LD mirrors the rendered route labels and rejects unsafe de
   assert.ok(publicBreadcrumbStructuredData('https://phucthinhsolar.com', '/tin-moi-nhat', [{ label: '<script>' }]).includes('\\u003cscript>'))
 })
 
+test('breadcrumb JSON-LD omits an intermediate label when no public destination is known', () => {
+  const raw = publicBreadcrumbStructuredData('https://phucthinhsolar.com', '/ho-tro/policy/', [
+    { label: 'Chính sách & Hỗ trợ' },
+    { label: 'Chính sách bảo hành' },
+  ])
+  const data = JSON.parse(raw)
+  assert.deepEqual(data.itemListElement.map(({ name, item }) => [name, item]), [
+    ['Trang chủ', 'https://phucthinhsolar.com/'],
+    ['Chính sách bảo hành', 'https://phucthinhsolar.com/ho-tro/policy/'],
+  ])
+})
+
 test('Organization and homepage WebSite JSON-LD use only the canonical host and public CMS fields', () => {
   const site = {
     schemaVersion: 1,
@@ -131,8 +143,8 @@ test('legacy product aliases resolve to Nuxt canonical routes and do not duplica
   const rootAlias = read('app/pages/product/index.vue')
   const aliasMiddleware = read('app/middleware/product-legacy-alias-public-route.ts')
   const rootMiddleware = read('app/middleware/product-root-alias-public-route.ts')
-  assert.match(alias, /middleware:\s*productLegacyAliasPublicRoute/)
-  assert.match(rootAlias, /middleware:\s*productRootAliasPublicRoute/)
+  assert.match(alias, /middleware:\s*['"]product-legacy-alias-public-route['"]/)
+  assert.match(rootAlias, /middleware:\s*['"]product-root-alias-public-route['"]/)
   assert.match(aliasMiddleware, /_migration\/public-route-resolve/)
   assert.doesNotMatch(aliasMiddleware, /PublicRouteEnabled|legacyProductDetailPublicPath|phpPublicRouteUrl/)
   assert.match(aliasMiddleware, /_migration\/public-route-resolve/)
@@ -161,6 +173,10 @@ test('each renderable public content route wires the canonical and social metada
     'app/pages/migration-policy-preview.vue',
   ]
   for (const path of owners) assert.match(read(path), /usePublicSocialMeta\(/, `${path} needs public metadata`)
+})
+
+test('product detail Open Graph type matches the PHP router contract', () => {
+  assert.match(read('app/pages/san-pham/[slug].vue'), /usePublicSocialMeta\([\s\S]*type: 'article'/)
 })
 
 test('SEO image fallbacks use the Admin SEO photo before the shared logo fallback', () => {
