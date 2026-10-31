@@ -229,10 +229,15 @@ test('PDP image lightbox traps keyboard focus and restores it to its trigger', (
   assert.match(gallery, /\.pdp-zoom-image \{\s*transition-duration: 0ms/)
 })
 
-test('browser translation widget loads after Nuxt hydration to avoid rewriting SSR markup', () => {
+test('browser translation widget initializes and follows route-owned header remounts', () => {
+  const plugin = read('plugins/gtranslate.client.ts')
   const app = read('app.vue')
-  assert.match(app, /onMounted\(\(\) => \{[\s\S]*script\.src = 'https:\/\/cdn\.gtranslate\.net\/widgets\/latest\/popup\.js'/)
-  assert.match(app, /script\.dataset\.ptsGtranslate = 'true'/)
+  assert.match(plugin, /new MutationObserver\(mountWidget\)/)
+  assert.match(plugin, /observer\.observe\(document\.body, \{ childList: true, subtree: true \}\)/)
+  assert.match(plugin, /!wrapper\.querySelector\('\.gt_switcher-popup'\)/)
+  assert.match(plugin, /querySelectorAll\('style\.gtranslate_css'\)/)
+  assert.match(plugin, /script\.src = widgetUrl/)
+  assert.match(app, /wrapper_selector: '\.gtranslate_wrapper'/)
   assert.doesNotMatch(app, /key: 'pts-gtranslate-popup'/)
 })
 

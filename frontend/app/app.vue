@@ -19,14 +19,6 @@ useHead({
   ],
 })
 
-onMounted(() => {
-  if (document.querySelector('script[data-pts-gtranslate]')) return
-  const script = document.createElement('script')
-  script.dataset.ptsGtranslate = 'true'
-  script.src = 'https://cdn.gtranslate.net/widgets/latest/popup.js'
-  script.defer = true
-  document.head.append(script)
-})
 </script>
 
 <template>
