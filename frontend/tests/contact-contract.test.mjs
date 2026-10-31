@@ -10,10 +10,10 @@ test('accepts optional Admin keywords and social image, and rejects unsafe SEO m
   assert.equal(isPublicContactPayload({ ...good, seo: { ...seo, image: '/upload/seopage/../private.jpg' } }), false)
   assert.equal(isPublicContactPayload(good), true)
 })
-test('contact page prefers Admin metadata and SEO image while retaining visual fallback', () => {
+test('contact page uses the Admin SEO image and shared logo fallback', () => {
   const source = readFileSync(new URL('../app/components/contact/ContactPageContent.vue', import.meta.url), 'utf8')
   assert.match(source, /contact\.value\?\.seo\.keywords/)
-  assert.match(source, /contact\.value\?\.seo\.image\s*\|\|\s*contact\.value\?\.visual\?\.image/)
+  assert.match(source, /contact\.value\?\.seo\.image\s*\|\|\s*undefined/)
 })
 test('rejects unsafe media and map URLs', () => { assert.equal(isPublicContactPayload({ ...good, visual: { ...good.visual, image: '/upload/photo/../secret.jpg' } }), false); assert.equal(isPublicContactPayload({ ...good, locations: [{ ...good.locations[0], mapUrl: 'https://evil.example/maps' }] }), false) })
 test('allows empty CMS collections without inventing contact data', () => assert.equal(isPublicContactPayload({ ...good, visual: null, locations: [], contact: { company: '', hotline: '', email: '', address: '', workingHours: '' } }), true))

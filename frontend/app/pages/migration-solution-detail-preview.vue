@@ -53,7 +53,7 @@ usePublicSocialMeta({
   title: pageTitle,
   description: pageDescription,
   canonicalPath: computed(() => route.path),
-  image: computed(() => data.value?.seo?.image || data.value?.solution.image || undefined),
+  image: computed(() => data.value?.seo?.image || undefined),
 })
 </script>
 

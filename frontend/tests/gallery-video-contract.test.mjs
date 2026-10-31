@@ -57,7 +57,7 @@ test('uses Admin SEO image before gallery or video card media without changing c
   const galleryApi = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/api/pts_v1_gallery.php', import.meta.url), 'utf8')
   const videoApi = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/api/pts_v1_video.php', import.meta.url), 'utf8')
   assert.match(galleryPage, /image: computed\(\(\) => gallery\.value\?\.seo\.image \|\| gallery\.value\?\.albums\.find\(\(album\) => album\.image\)\?\.image\)/)
-  assert.match(videoPage, /image: computed\(\(\) => payload\.value\?\.seo\.image \|\| payload\.value\?\.videos\[0\]\?\.thumbnail\)/)
+  assert.match(videoPage, /image: computed\(\(\) => payload\.value\?\.seo\.image \|\| undefined\)/)
   assert.match(galleryPage, /:src="album\.image"/)
   assert.match(videoPage, /:src="item\.thumbnail"/)
   assert.match(galleryApi, /select titlevi,descriptionvi,keywordsvi,photo from #_seopage where type=\? limit 1[\s\S]*array\('thu-vien-anh'\)/)

@@ -66,7 +66,7 @@ usePublicSocialMeta({
   title: pageTitle,
   description: pageDescription,
   canonicalPath: NEWS_PUBLIC_PATH,
-  image: computed(() => news.value?.seo?.image || news.value?.featured[0]?.image || undefined),
+  image: computed(() => news.value?.seo?.image || undefined),
 })
 </script>
 

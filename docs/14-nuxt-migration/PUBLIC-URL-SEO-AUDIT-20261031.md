@@ -223,3 +223,36 @@ Focused pagination/catalog/brand/search checks pass **18/18**, and Nuxt
 typecheck passes. The exact same-data PHP query result comparison remains open
 because the PHP HTML renderer is disabled; this verifies compatibility with
 the active local Nuxt API data only.
+
+## Follow-up — source-aligned Open Graph images — 2026-10-31
+
+The retained 34-route comparison showed that the catalog banner was being used
+as the social image on `/thuong-hieu/`, while PHP uses the SEO-page image or
+shared logo there. At the same time, PHP deliberately uses the rendered
+`productCategoryHero` banner as `og:image` for `/san-pham/` and product-category
+pages when no SEO-page image is configured. Nuxt now preserves that banner
+fallback for catalog routes and excludes it only for the brand root.
+
+The projects and news hubs and solution-detail route were also using featured,
+article-card, or display-fallback images as social metadata when their SEO DTO
+had no image. Their PHP source uses the Admin SEO image (solution detail uses
+the validated record photo through its SEO DTO) and otherwise the shared logo.
+Nuxt now follows those source rules and lets the shared metadata helper provide
+the logo fallback.
+
+Verification re-requested all **34 manifest public paths** from current Nuxt
+SSR and compared normalized asset paths with the retained PHP HTML snapshot:
+**34/34 HTTP 200**, **32/34 OG image paths match**. The two unresolved paths are
+`/doanh-nghiep` and `/ho-gia-dinh`: the retained PHP snapshot contains taxonomy
+photos, while the current local solutions API DTO has an empty category SEO
+image and Nuxt falls back to the logo. Current API source attempts to validate
+the published taxonomy photo for this field; without a fresh PHP renderer or
+matching current local photo data, do not hardcode the historical image paths.
+This does not close other OG description/type, JSON-LD, href-set,
+hidden-fixture, or visual approval gates.
+
+Focused catalog/news/projects/solution-detail/SEO contracts pass **50/50**;
+after the source-aligned metadata and assertion updates, the complete frontend
+suite passes **459/459** and `npm run typecheck` passes. All runtime checks used
+local read-only Nuxt/API data; no production request or write, deployment, DB
+mutation, or route-ownership change was made.

@@ -35,7 +35,7 @@ test('news Admin SEO uses #_seopage at the hub and depth-specific #_seo at taxon
   assert.match(api, /#_seopage where type=\? limit 0,1', array\('tin-tuc'\)/)
   assert.match(api, /select titlevi,descriptionvi,keywordsvi,photo from #_seopage/)
   assert.match(page, /news\.value\?\.seo\?\.title \|\| news\.value\?\.title/)
-  assert.match(page, /news\.value\?\.seo\?\.image \|\| news\.value\?\.featured\[0\]\?\.image/)
+  assert.match(page, /news\.value\?\.seo\?\.image \|\| undefined/)
   assert.match(categoryPage, /category\.value\?\.seo\?\.title \|\| category\.value\?\.name/)
   assert.match(categoryPage, /category\.value\?\.seo\?\.image \|\| category\.value\?\.image/)
   assert.equal(isPublicNewsPayload({ ...good, seo: { title: 'Admin title', description: 'Admin description', keywords: 'solar', image: '/upload/seopage/news.webp' } }), true)

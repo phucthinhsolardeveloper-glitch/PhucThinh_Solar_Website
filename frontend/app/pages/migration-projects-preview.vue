@@ -71,7 +71,7 @@ usePublicSocialMeta({
   title: pageTitle,
   description: pageDescription,
   canonicalPath: '/du-an-da-thuc-hien/',
-  image: computed(() => projects.value?.seo?.image || projects.value?.featured?.image || undefined),
+  image: computed(() => projects.value?.seo?.image || undefined),
 })
 </script>
 

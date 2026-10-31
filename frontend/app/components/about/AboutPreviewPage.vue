@@ -105,7 +105,7 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
 </script>
 
 <template>
-  <div class="overflow-hidden text-navy-800">
+  <div class="overflow-x-clip text-navy-800">
     <section id="ve-phuc-thinh" class="scroll-mt-[160px] pts-container pt-4 pb-[54px] max-[800px]:scroll-mt-[116px] min-[1800px]:scroll-mt-[184px]" aria-labelledby="about-story-title">
       <div class="grid min-h-[470px] grid-cols-[minmax(410px,.88fr)_minmax(0,1.12fr)] gap-0 overflow-hidden rounded-btn border border-navy-800/15 bg-[linear-gradient(135deg,#061735,#10366a)] shadow-md max-[800px]:min-h-0 max-[800px]:grid-cols-1">
         <div class="flex flex-col justify-center p-[clamp(38px,4vw,64px)] max-[800px]:block max-[800px]:px-6 max-[800px]:pb-[38px] max-[800px]:pt-[34px] max-[600px]:px-5 max-[600px]:pb-[34px] max-[600px]:pt-[30px]">

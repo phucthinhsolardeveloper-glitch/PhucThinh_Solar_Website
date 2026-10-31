@@ -231,7 +231,7 @@ usePublicSocialMeta({
   title: metadataTitle,
   description: metadataDescription,
   canonicalPath: metadataCanonicalPath,
-  image: computed(() => catalogData.value?.seo.image || catalogData.value?.categoryHero?.image || undefined),
+  image: computed(() => catalogData.value?.seo.image || (route.path === '/thuong-hieu/' ? undefined : catalogData.value?.categoryHero?.image)),
 })
 const bannerDescription = computed(() => {
   const path = category.value

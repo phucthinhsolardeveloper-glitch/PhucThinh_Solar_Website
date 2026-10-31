@@ -90,7 +90,7 @@ test('About page prefers Admin SEO and uses its image for social metadata', asyn
   const source = await readFile(new URL('../app/pages/gioi-thieu.vue', import.meta.url), 'utf8')
   assert.match(source, /about\.value\?\.seo\?\.title\s*\|\|\s*about\.value\?\.title/)
   assert.match(source, /about\.value\?\.seo\?\.description\s*\|\|\s*about\.value\?\.story\.intro/)
-  assert.match(source, /about\.value\?\.seo\?\.image\s*\|\|\s*about\.value\?\.story\.image/)
+  assert.match(source, /about\.value\?\.seo\?\.image\s*\|\|\s*undefined/)
 })
 
 test('About page provides a keyboard-accessible full certificate gallery', async () => {
@@ -112,7 +112,7 @@ test('About public and preview pages expose one main landmark without nesting it
     readFile(new URL('../app/pages/gioi-thieu.vue', import.meta.url), 'utf8'),
     readFile(new URL('../app/pages/migration-about-preview.vue', import.meta.url), 'utf8'),
   ])
-  assert.match(component, /<div class="overflow-hidden text-navy-800">/)
+  assert.match(component, /<div class="overflow-x-clip text-navy-800">/)
   assert.equal((publicPage.match(/<main\b/g) ?? []).length, 1)
   assert.match(previewPage, /<main>[\s\S]*<AboutPreviewPage v-else/)
 })

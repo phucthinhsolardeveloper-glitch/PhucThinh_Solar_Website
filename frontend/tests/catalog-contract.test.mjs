@@ -77,7 +77,7 @@ test('catalog SSR metadata comes from the PHP SEO DTO while preserving the robot
   assert.match(catalogApi, /'product', \$seoAction, 'san-pham'/)
   assert.match(catalogApi, /#_seopage where type = \? limit 1', array\('san-pham'\)/)
   assert.match(catalogApi, /select titlevi,descriptionvi,keywordsvi,photo from #_seopage/)
-  assert.match(page, /catalogData\.value\?\.seo\.image \|\| catalogData\.value\?\.categoryHero\?\.image/)
+  assert.match(page, /catalogData\.value\?\.seo\.image \|\| \(route\.path === '\/thuong-hieu\/' \? undefined : catalogData\.value\?\.categoryHero\?\.image\)/)
 })
 
 test('category hero fallback matches PHP source for den-nlmt and respects a configured Admin hide toggle', () => {

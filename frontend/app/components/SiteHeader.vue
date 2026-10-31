@@ -1032,29 +1032,38 @@ onBeforeUnmount(() => {
         </form>
 
         <nav class="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-y-contain" aria-label="Điều hướng mobile">
-          <button
-            class="flex min-h-10 w-full items-center justify-between gap-4 border-0 border-b border-hdr-line
-                   bg-transparent py-2 text-left text-[16px] font-semibold text-hdr-ink"
-            type="button"
-            :aria-expanded="mobileCatalogOpen"
-            aria-controls="ptsMobileCatalog"
-            @click="mobileCatalogOpen = !mobileCatalogOpen"
-          >
-            <span>Danh mục sản phẩm</span>
-            <svg
-              class="h-4 w-4 transition-transform duration-150"
-              :class="{ 'rotate-180': mobileCatalogOpen }"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="1.8"
-              aria-hidden="true"
+          <div class="flex min-h-10 w-full items-center gap-2 border-b border-hdr-line">
+            <NuxtLink
+              :external="isExternalLink(shellHref('/san-pham/'))"
+              class="flex min-h-12 min-w-0 flex-1 items-center gap-4 py-2 text-left text-[16px] font-semibold text-hdr-ink no-underline transition-colors hover:text-gold-700"
+              :to="shellHref('/san-pham/')"
+              @click="closeMobileMenu(false)"
             >
-              <path d="m7 10 5 5 5-5" />
-            </svg>
-          </button>
+              Danh mục sản phẩm
+            </NuxtLink>
+            <button
+              class="inline-flex min-h-10 min-w-10 flex-none items-center justify-center rounded-chip text-hdr-ink transition-colors hover:bg-hdr-surface hover:text-gold-700"
+              type="button"
+              :aria-expanded="mobileCatalogOpen"
+              aria-controls="ptsMobileCatalog"
+              :aria-label="`${mobileCatalogOpen ? 'Thu gọn' : 'Mở'} danh mục sản phẩm`"
+              @click="mobileCatalogOpen = !mobileCatalogOpen"
+            >
+              <svg
+                class="h-4 w-4 transition-transform duration-150"
+                :class="{ 'rotate-180': mobileCatalogOpen }"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="1.8"
+                aria-hidden="true"
+              >
+                <path d="m7 10 5 5 5-5" />
+              </svg>
+            </button>
+          </div>
 
           <div v-if="mobileCatalogOpen" id="ptsMobileCatalog" class="grid gap-0 border-b border-hdr-line py-1" role="group" aria-label="Danh mục sản phẩm">
             <template v-if="mobileCategoryEntries.length">

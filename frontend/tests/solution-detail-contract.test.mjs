@@ -54,7 +54,7 @@ test('solution detail reads the legacy news SEO key and applies Admin metadata w
   assert.match(api, /id_parent = \? and com = \? and act = \? and type = \? limit 1', array\(\(int\)\$row\['id'\], 'news', 'man', 'giai-phap'\)/)
   assert.match(solutionDetailRoute, /data\.value\?\.seo\?\.title\s*\|\|\s*data\.value\?\.solution\.title/)
   assert.match(solutionDetailRoute, /data\.value\?\.seo\?\.description\s*\|\|\s*data\.value\?\.solution\.summary/)
-  assert.match(solutionDetailRoute, /data\.value\?\.seo\?\.image\s*\|\|\s*data\.value\?\.solution\.image/)
+  assert.match(solutionDetailRoute, /data\.value\?\.seo\?\.image\s*\|\|\s*undefined/)
 })
 test('solution hub parent renders nested public detail page and scopes hub status and metadata to the hub path', () => {
   assert.match(solutionHubPage, /<NuxtPage v-if="!isHubRoute" \/>/)

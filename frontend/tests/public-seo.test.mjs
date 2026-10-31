@@ -154,6 +154,10 @@ test('SEO image fallbacks use the Admin SEO photo before the shared logo fallbac
   assert.match(read('app/components/contact/ContactPageContent.vue'), /image: computed\(\(\) => contact\.value\?\.seo\.image \|\| undefined\)/)
   assert.match(read('app/components/dealer/DealerPageContent.vue'), /image: computed\(\(\) => dealer\.value\?\.seo\?\.image \|\| undefined\)/)
   assert.match(read('app/pages/migration-video-preview.vue'), /image: computed\(\(\) => payload\.value\?\.seo\.image \|\| undefined\)/)
+  assert.match(read('app/components/catalog/CatalogPage.vue'), /image: computed\(\(\) => catalogData\.value\?\.seo\.image \|\| \(route\.path === '\/thuong-hieu\/' \? undefined : catalogData\.value\?\.categoryHero\?\.image\)\)/)
+  assert.match(read('app/pages/migration-projects-preview.vue'), /image: computed\(\(\) => projects\.value\?\.seo\?\.image \|\| undefined\)/)
+  assert.match(read('app/pages/migration-news-preview.vue'), /image: computed\(\(\) => news\.value\?\.seo\?\.image \|\| undefined\)/)
+  assert.match(read('app/pages/migration-solution-detail-preview.vue'), /image: computed\(\(\) => data\.value\?\.seo\?\.image \|\| undefined\)/)
 })
 
 test('public editorial metadata hides filtered, empty, and failed pages from indexing', () => {

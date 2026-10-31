@@ -84,6 +84,25 @@
   SEO/href classification, missing hidden-record fixtures, and release/Caddy
   rehearsal remain open.
 
+## Follow-up checkpoint — OG image source alignment — 2026-10-31
+
+- Re-ran current Nuxt SSR over all 34 manifest public paths and compared
+  normalized OG image paths to the retained PHP HTML snapshot: **34/34 HTTP
+  200**, **32/34 image paths match**. Nuxt preserves the PHP banner-as-social
+  fallback for product catalog/category paths but not the brand root; projects
+  and news hubs and solution details use only their PHP-backed SEO image before
+  the shared logo fallback.
+- Two solution-category paths remain different: the PHP snapshot has category
+  photos, while the current local solutions DTO has no category SEO image and
+  renders the logo. No historical asset was hardcoded because current local
+  category media cannot be verified against a live PHP page render.
+- Focused metadata/API contract tests pass **50/50**; full frontend tests pass
+  **459/459**, and Nuxt typecheck passes. Other SEO differences, hidden-record
+  fixtures, complete visual review, same-data PHP-vs-Nuxt href parity, and
+  release/Caddy rehearsal remain open. Production remains PHP-owned; no
+  production request or mutation, deploy, push, DB write, or route cutover was
+  performed.
+
 Historical checkpoint notes below describe earlier worktrees and service states;
 use the dated checkpoint above for the current local integration state.
 

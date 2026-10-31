@@ -41,7 +41,7 @@ test('mobile catalog filter and sort controls use matching full-width grid cells
   assert.match(catalog, /max-\[769px\]:grid max-\[769px\]:w-full/)
   assert.match(catalog, /hasSidebar \? 'max-\[769px\]:grid-cols-2' : 'max-\[769px\]:grid-cols-1'/)
   assert.match(catalog, /class="min-h-11 w-full gap-2[\s\S]*min-\[1002px\]:hidden"/)
-  assert.match(catalog, /class="h-11 w-\[150px\] min-w-0[\s\S]*max-\[769px\]:w-full"/)
+  assert.match(catalog, /class="w-full min-w-0 min-\[770px\]:w-\[150px\]"[\s\S]*:ui="\{ base: 'h-11 w-full/)
 })
 
 test('catalog matches PHP list-search visibility and keeps the lighting need filter', () => {
@@ -129,8 +129,9 @@ test('PDP support, reviews, consultation and related items follow the PHP sectio
 
   assert.match(consultation, /bg-slate-50/)
   assert.doesNotMatch(consultation, /bg-navy-950|Tư vấn theo sản phẩm/)
-  assert.match(consultation, /type="radio" value="Người dùng cá nhân"/)
-  assert.match(consultation, /type="radio" value="Đại lý\/Nhà phân phối, bán lẻ\/Nhà thầu…"/)
+  assert.match(consultation, /<URadioGroup[\s\S]*:items="customerTypeOptions"/)
+  assert.match(consultation, /\{ label: 'Người dùng cá nhân', value: 'Người dùng cá nhân' \}/)
+  assert.match(consultation, /\{ label: 'Đại lý\/Nhà phân phối, bán lẻ\/Nhà thầu…', value: 'Đại lý\/Nhà phân phối, bán lẻ\/Nhà thầu…' \}/)
   assert.match(consultation, /submit\('product'/)
   assert.match(grid, /Danh sách sản phẩm liên quan, có thể cuộn ngang/)
   assert.match(grid, /scrollRail\(-1\)/)
