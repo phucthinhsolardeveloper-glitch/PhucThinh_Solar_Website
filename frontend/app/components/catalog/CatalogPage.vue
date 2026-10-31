@@ -201,8 +201,8 @@ const sortOptions = computed(() => {
 const heading = computed(() => catalogData.value?.category && !Array.isArray(catalogData.value.category) ? catalogData.value.category.name : 'Sản phẩm năng lượng mặt trời')
 const catalogBreadcrumbItems = computed(() => {
   const root = route.path.startsWith('/thuong-hieu/')
-    ? { label: 'Thương hiệu', href: '/thuong-hieu/' }
-    : { label: 'Sản phẩm', href: '/san-pham/' }
+    ? { label: 'Thương hiệu', to: '/thuong-hieu/' }
+    : { label: 'Sản phẩm', to: '/san-pham/' }
   return category.value ? [root, { label: heading.value }] : [root]
 })
 const metadataTitle = computed(() => catalogData.value?.seo.title || [heading.value, 'Phúc Thịnh Solar'].join(' — '))

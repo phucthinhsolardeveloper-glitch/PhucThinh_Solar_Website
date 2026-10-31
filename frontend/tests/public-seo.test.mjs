@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { test } from 'node:test'
-import { canonicalPublicOrigin, canonicalPublicUrl, isPublicSeoIndexable, publicSeoDescription, publicSeoRobots, publicSeoTitle, publicSiteStructuredData, publicSocialImageUrl } from '../shared/public-seo.ts'
+import { canonicalPublicOrigin, canonicalPublicUrl, isPublicSeoIndexable, publicBreadcrumbStructuredData, publicSeoDescription, publicSeoRobots, publicSeoTitle, publicSiteStructuredData, publicSocialImageUrl } from '../shared/public-seo.ts'
 import { editorialPublicResponseStatus, editorialPublicRouteRobots } from '../shared/editorial-public-route.ts'
 
 const frontendRoot = new URL('../', import.meta.url)
@@ -47,6 +47,22 @@ test('empty social descriptions use the PHP site-setting fallback instead of onl
   assert.equal(publicSeoDescription('', ' Tên doanh nghiệp '), 'Tên doanh nghiệp')
   assert.equal(publicSeoDescription('', ''), 'Phúc Thịnh Solar')
   assert.equal(publicSeoDescription(null, undefined), 'Phúc Thịnh Solar')
+})
+
+test('breadcrumb JSON-LD mirrors the rendered route labels and rejects unsafe destinations', () => {
+  const raw = publicBreadcrumbStructuredData('https://phucthinhsolar.com', '/tin-moi-nhat', [
+    { label: 'Kiến thức', path: '/tin-tuc/' },
+    { label: 'Tin mới nhất' },
+  ])
+  const data = JSON.parse(raw)
+  assert.equal(data['@type'], 'BreadcrumbList')
+  assert.deepEqual(data.itemListElement.map(({ name, item }) => [name, item]), [
+    ['Trang chủ', 'https://phucthinhsolar.com/'],
+    ['Kiến thức', 'https://phucthinhsolar.com/tin-tuc/'],
+    ['Tin mới nhất', 'https://phucthinhsolar.com/tin-moi-nhat'],
+  ])
+  assert.equal(publicBreadcrumbStructuredData('https://phucthinhsolar.com', '/tin-moi-nhat', [{ label: 'X', path: 'https://evil.example/' }]), null)
+  assert.ok(publicBreadcrumbStructuredData('https://phucthinhsolar.com', '/tin-moi-nhat', [{ label: '<script>' }]).includes('\\u003cscript>'))
 })
 
 test('Organization and homepage WebSite JSON-LD use only the canonical host and public CMS fields', () => {

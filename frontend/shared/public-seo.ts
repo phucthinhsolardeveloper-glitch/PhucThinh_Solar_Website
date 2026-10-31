@@ -51,6 +51,35 @@ export function canonicalPublicUrl(originValue: unknown, path: unknown): string 
   }
 }
 
+/** Build breadcrumb JSON-LD from the same CMS-backed labels shown in the UI. */
+export function publicBreadcrumbStructuredData(
+  originValue: unknown,
+  pathname: unknown,
+  items: Array<{ label: string; path?: string }>,
+): string | null {
+  const origin = canonicalPublicOrigin(originValue)
+  const currentUrl = canonicalPublicUrl(origin, pathname)
+  if (!origin || !currentUrl || !Array.isArray(items) || items.length === 0 || items.length > 10) return null
+
+  const entries = [{ label: 'Trang chủ', path: '/' }, ...items.map((item, index) => ({
+    label: typeof item?.label === 'string' ? item.label.trim() : '',
+    path: item?.path ?? (index === items.length - 1 ? pathname as string : ''),
+  }))]
+  if (entries.some((item) => !item.label || item.label.length > 200 || /[\u0000-\u001F\u007F]/.test(item.label))) return null
+
+  const listItems = entries.map((entry, index) => {
+    const itemUrl = canonicalPublicUrl(origin, entry.path)
+    return itemUrl ? { '@type': 'ListItem', position: index + 1, name: entry.label, item: itemUrl } : null
+  })
+  if (listItems.some((item) => item === null)) return null
+
+  return JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: listItems,
+  }).replace(/</g, '\\u003c')
+}
+
 export function publicSocialImageUrl(originValue: unknown, imageValue: unknown): string | null {
   const origin = canonicalPublicOrigin(originValue)
   if (!origin) return null

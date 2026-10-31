@@ -29,7 +29,7 @@ noindex of those URLs, but do not establish metadata parity on the public paths.
 | Open Graph description matches | 27/34 after the follow-up below | The initial 21/34 comparison is retained in the ignored route artifact; six empty-description fallbacks now match PHP's site-setting behavior. |
 | Open Graph image path matches | 7/34 | Many Nuxt pages use current Admin hero media while PHP falls back to a logo; classify each before changing. |
 | Open Graph type matches | 4/34 | PHP emits a legacy `object` value on many listing pages; do not copy it without deciding the valid public contract. |
-| JSON-LD type sets match | 2/34 | PHP remains the public structured-data authority until the per-family entity fields are reviewed. |
+| JSON-LD type sets match | 29/34 after the follow-up below | Current Nuxt SSR was compared with the earlier PHP route snapshot; five type-set differences are classified below. |
 | Routes with different internal href path sets | 34/34 | Route/query/link differences need manual classification; this is not itself proof of broken links. |
 
 The PHP sitemap crawl remains **457/457 reachable**. The prior local href
@@ -99,7 +99,7 @@ brand label on search, news category, and support-policy routes. The shared
 `publicSeoDescription()` helper and those three route owners now use the CMS
 SEO description first and the site setting as the empty-value fallback.
 
-Verification: the complete Node suite passes **451/451**, Nuxt typecheck and
+Verification: the complete Node suite passes **452/452**, Nuxt typecheck and
 production build pass, and direct GETs to all four news category routes, search,
 and the policy detail return HTTP 200 with `og:description` equal to
 `pts_v1_site.php`'s `brand.name`. This six-route check uses the previous
@@ -110,3 +110,24 @@ HTML preview is disabled (direct page requests through the API bridge return
 custom descriptions versus PHP's generic fallback, plus trailing whitespace
 in legacy contact/dealer metadata; review those separately rather than
 discarding more specific CMS text.
+
+## Follow-up — breadcrumb structured data — 2026-10-31
+
+`SiteBreadcrumb` now emits a validated `BreadcrumbList` from its displayed
+CMS-backed labels and public paths. It escapes JSON-LD text, accepts only
+canonical-host URLs, and skips internal preview routes and PDP routes that
+already emit a product breadcrumb schema. News/project category crumbs now link
+to the category URL already present in their validated DTOs. The catalog root
+breadcrumb used `href` although the component contract expects `to`; correcting
+that restores the actual link and lets the same verified path enter the schema.
+
+Verification compared current Nuxt SSR for the 34 manifest paths with the PHP
+type-set snapshot from the earlier two-renderer audit: **34/34 HTTP 200**, zero
+JSON-LD parse failures, **32/34** routes emit a breadcrumb list, and exact type
+sets match on **29/34** (up from 2/34). Remaining differences: product detail
+adds FAQPage/Question/Answer and has PHP-vs-Nuxt global address/image type
+differences; brand root emits a breadcrumb list absent from PHP; news detail
+has an extra PostalAddress type; policy detail still needs PHP-backed article
+and breadcrumb fields before claiming parity. The local PHP HTML renderer stays
+disabled, so this is a current-Nuxt check against a retained PHP snapshot, not a
+fresh two-renderer run.

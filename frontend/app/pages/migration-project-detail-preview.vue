@@ -50,7 +50,7 @@ const links = useMigrationLinks()
           <SiteBreadcrumb
             :items="[
               { label: 'Dự án đã thực hiện', to: links.generic('/du-an-da-thuc-hien/') },
-              ...(payload?.project.category ? [{ label: payload.project.category.name }] : []),
+              ...(payload?.project.category ? [{ label: payload.project.category.name, to: links.generic(payload.project.category.url) }] : []),
               ...(payload ? [{ label: payload.project.title }] : []),
             ]"
           />

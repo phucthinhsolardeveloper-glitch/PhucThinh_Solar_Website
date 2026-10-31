@@ -15,6 +15,7 @@ test('emits Admin SEO keywords on the public bare-slug page', () => {
   const page = readFileSync(new URL('../app/pages/migration-news-detail-preview.vue', import.meta.url), 'utf8')
   assert.match(page, /payload\.value\?\.article\.seo\.keywords/)
   assert.match(page, /useHead\(\{ meta: computed\(\(\) => pageKeywords\.value \? \[\{ name: 'keywords', content: pageKeywords\.value \}\] : \[\]\) \}\)/)
+  assert.match(page, /payload\.article\.category\.name, to: links\.generic\(payload\.article\.category\.url\)/)
 })
 test('accepts only sanitized optional legacy quote content', () => {
   const quote = { format: 'sanitized-html', html: '<p>Thông tin bổ sung</p>', sanitizedBy: 'pts_public_richtext', sanitizerVersion: 1 }

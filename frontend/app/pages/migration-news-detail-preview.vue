@@ -75,7 +75,7 @@ useHead({
 
     <div class="bg-slate-50/80">
       <div class="pts-container">
-        <SiteBreadcrumb :items="[{ label: 'Kiến thức', to: links.generic('/tin-tuc/') }, ...(payload?.article.category && 'name' in payload.article.category ? [{ label: payload.article.category.name }] : []), ...(payload ? [{ label: payload.article.title }] : [])]" />
+        <SiteBreadcrumb :items="[{ label: 'Kiến thức', to: links.generic('/tin-tuc/') }, ...(payload?.article.category && 'name' in payload.article.category ? [{ label: payload.article.category.name, to: links.generic(payload.article.category.url) }] : []), ...(payload ? [{ label: payload.article.title }] : [])]" />
       </div>
     </div>
 

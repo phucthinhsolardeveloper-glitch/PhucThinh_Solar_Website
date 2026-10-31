@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { publicBreadcrumbStructuredData } from '#shared/public-seo'
+
 export interface BreadcrumbItem {
   label: string
   to?: string
@@ -9,8 +11,24 @@ const props = defineProps<{
 }>()
 
 const { generic: migrationHref, external: isExternalLink } = useMigrationLinks()
+const route = useRoute()
+const config = useRuntimeConfig()
 const homeTo = computed(() => migrationHref('/'))
 const compactItems = computed(() => props.items.length > 2 ? props.items.slice(-2) : props.items)
+const breadcrumbStructuredData = computed(() => {
+  if (route.path.startsWith('/migration-') || route.path.startsWith('/_migration') || /^\/san-pham\/[^/]+$/.test(route.path)) return null
+  return publicBreadcrumbStructuredData(config.public.canonicalSiteOrigin, route.path, props.items.map((item) => ({
+    label: item.label,
+    ...(item.to ? { path: item.to } : {}),
+  })))
+})
+
+useHead({
+  script: computed(() => breadcrumbStructuredData.value ? [{
+    type: 'application/ld+json',
+    innerHTML: breadcrumbStructuredData.value,
+  }] : []),
+})
 </script>
 
 <template>

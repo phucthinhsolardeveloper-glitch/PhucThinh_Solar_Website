@@ -170,6 +170,8 @@ test('search and catalog root keep their PHP-backed route and category hero data
   assert.match(catalog, /'den-pha-nang-luong-mat-troi': 10/)
   assert.match(catalog, /'den-duong-nang-luong-mat-troi': 20/)
   assert.match(catalog, /function categoryNavLabel\([\s\S]*'Đèn Sân Vườn'/)
+  assert.match(catalog, /label: 'Sản phẩm', to: '\/san-pham\/'/)
+  assert.doesNotMatch(catalog, /label: 'Sản phẩm', href: '\/san-pham\/'/)
   assert.match(catalog, /max-\[769px\]:grid max-\[769px\]:w-full/)
   assert.match(catalog, /hasSidebar \? 'max-\[769px\]:grid-cols-2' : 'max-\[769px\]:grid-cols-1'/)
   assert.match(catalog, /max-\[769px\]:gap-y-4/)
