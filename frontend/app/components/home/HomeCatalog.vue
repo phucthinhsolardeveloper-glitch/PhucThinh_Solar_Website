@@ -66,7 +66,10 @@ const categories = computed<HomeCategorySlot[]>(() => slots.map((slot) => {
   return {
     ...slot,
     category,
-    image: category?.image || (slot.key === 'lighting' ? props.campaigns[0]?.image || slot.image : slot.image),
+    // The PHP homepage uses a curated, position-specific visual system for
+    // this showcase. CMS category media remains available on catalog pages,
+    // but must not override these landing assets and break visual parity.
+    image: slot.image,
   }
 }))
 
