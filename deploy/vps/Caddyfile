@@ -66,6 +66,15 @@ Disallow: /
 			}
 		}
 
+		@nuxt_curated_media {
+			expression `{env.PTS_NUXT_HYBRID_ENABLED} == "1"`
+			path /assets/images/site-visuals/*
+		}
+
+		handle @nuxt_curated_media {
+			reverse_proxy nuxt:3000
+		}
+
 		handle @nuxt_hybrid_cutover {
 			reverse_proxy nuxt:3000 {
 				health_uri /_migration/site
