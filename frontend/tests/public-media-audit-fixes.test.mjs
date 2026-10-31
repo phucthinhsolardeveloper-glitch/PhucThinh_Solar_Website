@@ -56,6 +56,18 @@ test('PHP-owned static images exist in Nuxt public at the API paths', () => {
   }
 })
 
+test('all PHP PDP use-case WebP assets are mirrored into Nuxt public', () => {
+  const profiles = text('../domains/phucthinhsolar.com/public_html/libraries/product_pdp_profiles.php')
+  const filenames = [...new Set([...profiles.matchAll(/\$asset\.'([A-Za-z0-9._-]+\.webp)'/g)].map(([, filename]) => filename))]
+
+  assert.ok(filenames.length > 0, 'PHP product profiles must define use-case images')
+  for (const filename of filenames) {
+    const asset = `assets/images/site-visuals/pdp-usecase-v2/${filename}`
+    assert.equal(existsSync(new URL(`public/${asset}`, root)), true, `${asset} must resolve in Nuxt public`)
+    assert.ok(read(`public/${asset}`).equals(read(`../domains/phucthinhsolar.com/public_html/${asset}`)), `${asset} must match the PHP source asset`)
+  }
+})
+
 test('oversized CMS images use optimized WebP derivatives without raising the preview proxy limit', () => {
   for (const item of optimizedMedia) {
     const component = text(item.component)
