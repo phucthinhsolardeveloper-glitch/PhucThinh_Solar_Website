@@ -29,6 +29,19 @@ test('falls back to the original upload when a PHP thumbnail has not been genera
   assert.equal(result?.body.byteLength, 3)
 })
 
+test('falls back to the original upload when the local bridge denies thumbnail routes', async () => {
+  const requested = []
+  const result = await fetchLegacyPreviewMedia('/thumbs/520x112x3/upload/photo/logo.png', config, async (url) => {
+    requested.push(url.pathname)
+    return url.pathname.startsWith('/thumbs/')
+      ? response('', { 'content-type': 'text/html' }, 403)
+      : response(new Uint8Array([7, 8, 9]), { 'content-type': 'image/png' })
+  })
+  assert.deepEqual(requested, ['/thumbs/520x112x3/upload/photo/logo.png', '/upload/photo/logo.png'])
+  assert.equal(result?.contentType, 'image/png')
+  assert.equal(result?.body.byteLength, 3)
+})
+
 test('does not retry a missing non-upload thumbnail as an unrelated media path', async () => {
   const requested = []
   const result = await fetchLegacyPreviewMedia('/thumbs/640x360x1/assets/images/news/story.jpg', config, async (url) => {

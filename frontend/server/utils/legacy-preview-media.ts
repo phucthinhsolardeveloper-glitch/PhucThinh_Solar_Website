@@ -69,7 +69,10 @@ export async function fetchLegacyPreviewMedia(
   } catch {
     return null
   }
-  if (response.status === 404 && validated.pathname.startsWith('/thumbs/')) {
+  // The local API bridge intentionally exposes /upload but denies /thumbs.
+  // Fall back only for dimensioned upload thumbnails; the original path is
+  // revalidated and still uses the same origin, byte limit, and MIME checks.
+  if ((response.status === 403 || response.status === 404) && validated.pathname.startsWith('/thumbs/')) {
     const match = /^\/thumbs\/\d{1,5}x\d{1,5}x\d+(\/upload\/.+)$/.exec(validated.pathname)
     const fallbackPath = match?.[1]
     const original = fallbackPath ? validateLegacyMediaPath(fallbackPath) : null
