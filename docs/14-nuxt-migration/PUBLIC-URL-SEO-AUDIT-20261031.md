@@ -256,3 +256,16 @@ after the source-aligned metadata and assertion updates, the complete frontend
 suite passes **459/459** and `npm run typecheck` passes. All runtime checks used
 local read-only Nuxt/API data; no production request or write, deployment, DB
 mutation, or route-ownership change was made.
+
+## Follow-up — empty Open Graph descriptions on taxonomy routes — 2026-10-31
+
+The PHP shared head falls back to the public site setting when a taxonomy SEO
+description is empty. Catalog, project-category and solution-category pages
+now apply that fallback to Open Graph descriptions from the current public site
+DTO, while preserving the existing on-page and standard description copy.
+
+Local Nuxt SSR returned HTTP 200 and the DTO's legal company name for
+`/danh-muc-san-pham/den-nlmt/`, `/du-an-ca-nhan`, `/du-an-doanh-nghiep`,
+`/doanh-nghiep` and `/ho-gia-dinh`. This matches the PHP fallback rule but is
+not a fresh two-renderer comparison; the broader OG/JSON-LD and retained-snapshot
+gates remain open.

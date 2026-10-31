@@ -11,7 +11,7 @@ import SiteBreadcrumb from '~/components/SiteBreadcrumb.vue'
 import SiteHeader from '~/components/SiteHeader.vue'
 import SiteFooter from '~/components/SiteFooter.vue'
 import { productCategorySegmentsFromPublicPath } from '#shared/public-route-gate'
-import { isPublicSeoIndexable, publicSeoRobots } from '#shared/public-seo'
+import { isPublicSeoIndexable, publicSeoDescription, publicSeoRobots } from '#shared/public-seo'
 import { publicPageQueryValue } from '#shared/public-pagination'
 
 /*
@@ -207,6 +207,7 @@ const catalogBreadcrumbItems = computed(() => {
 })
 const metadataTitle = computed(() => catalogData.value?.seo.title || [heading.value, 'Phúc Thịnh Solar'].join(' — '))
 const metadataDescription = computed(() => catalogData.value?.seo.description || 'Khám phá thiết bị chiếu sáng, tấm pin, biến tần và giải pháp năng lượng mặt trời tại Phúc Thịnh Solar.')
+const socialDescription = computed(() => publicSeoDescription(catalogData.value?.seo.description, siteData.value?.brand.name))
 const metadataKeywords = computed(() => catalogData.value?.seo.keywords ?? '')
 const metadataCanonicalPath = computed(() => route.path === '/thuong-hieu/' ? route.path : (catalogData.value?.canonical.url || route.path))
 const catalogFilterKeys = new Set(['category', 'page', 'p', 'per_page', 'brand', 'price', 'subcategory', 'sort', 'keyword', 'need'])
@@ -229,7 +230,7 @@ useHead({
 usePublicSocialMeta({
   enabled: computed(() => publicEnabled.value && !!catalogData.value && !catalogError.value && !siteError.value),
   title: metadataTitle,
-  description: metadataDescription,
+  description: socialDescription,
   canonicalPath: metadataCanonicalPath,
   image: computed(() => catalogData.value?.seo.image || (route.path === '/thuong-hieu/' ? undefined : catalogData.value?.categoryHero?.image)),
 })

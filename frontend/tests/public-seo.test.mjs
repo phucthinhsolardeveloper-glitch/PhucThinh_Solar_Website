@@ -49,6 +49,20 @@ test('empty social descriptions use the PHP site-setting fallback instead of onl
   assert.equal(publicSeoDescription(null, undefined), 'Phúc Thịnh Solar')
 })
 
+test('catalog and editorial category Open Graph descriptions use PHP empty-value fallback without changing page copy', () => {
+  const catalog = read('app/components/catalog/CatalogPage.vue')
+  const projects = read('app/components/projects/ProjectCategoryPage.vue')
+  const solutions = read('app/components/solutions/SolutionCategoryPage.vue')
+  for (const source of [catalog, projects, solutions]) {
+    assert.match(source, /import \{[^\n]*publicSeoDescription[^\n]*\} from '#shared\/public-seo'/)
+    assert.match(source, /const socialDescription = computed\(\(\) => publicSeoDescription\(/)
+    assert.match(source, /usePublicSocialMeta\(\{[\s\S]*description: socialDescription/)
+  }
+  assert.match(catalog, /useSeoMeta\(\{[\s\S]*description: metadataDescription/)
+  assert.match(projects, /useSeoMeta\(\{[\s\S]*description: pageDescription/)
+  assert.match(solutions, /useSeoMeta\(\{[\s\S]*description: pageDescription/)
+})
+
 test('breadcrumb JSON-LD mirrors the rendered route labels and rejects unsafe destinations', () => {
   const raw = publicBreadcrumbStructuredData('https://phucthinhsolar.com', '/tin-moi-nhat', [
     { label: 'Kiến thức', path: '/tin-tuc/' },

@@ -5,7 +5,7 @@ import type { PublicProjectsPayload } from '#shared/contracts/public-projects'
 import { isPublicProjectsPayload } from '#shared/contracts/public-projects'
 import { PROJECTS_PUBLIC_PATH } from '#shared/public-route-gate'
 import { editorialPublicResponseStatus, editorialPublicRouteRobots } from '#shared/editorial-public-route'
-import { publicSeoTitle } from '#shared/public-seo'
+import { publicSeoDescription, publicSeoTitle } from '#shared/public-seo'
 import { projectCategoryCanonicalPath, projectCategoryPage } from '#shared/project-category-route'
 import ProjectCard from '~/components/projects/ProjectCard.vue'
 import ProjectsCta from '~/components/projects/ProjectsCta.vue'
@@ -46,6 +46,7 @@ const pageTitle = computed(() => publicSeoTitle(
   'Danh mục dự án',
 ))
 const pageDescription = computed(() => projects.value?.category?.seo?.description || categoryDescription.value)
+const socialDescription = computed(() => publicSeoDescription(projects.value?.category?.seo?.description, site.value.brand.name))
 const pageKeywords = computed(() => projects.value?.category?.seo?.keywords || '')
 
 function pageLink(nextPage: number) {
@@ -69,7 +70,7 @@ useHead({ meta: computed(() => pageKeywords.value ? [{ name: 'keywords', content
 usePublicSocialMeta({
   enabled: computed(() => !!projects.value && !error.value),
   title: pageTitle,
-  description: pageDescription,
+  description: socialDescription,
   canonicalPath,
   image: computed(() => projects.value?.category?.seo?.image || projects.value?.category?.image || undefined),
 })

@@ -4,7 +4,7 @@ import { isPublicSolutionsPayload } from '#shared/contracts/public-solutions'
 import type { PublicSitePayload } from '#shared/contracts/public-site'
 import { isPublicSitePayload } from '#shared/contracts/public-site'
 import { editorialPublicResponseStatus, editorialPublicRouteRobots } from '#shared/editorial-public-route'
-import { publicSeoTitle } from '#shared/public-seo'
+import { publicSeoDescription, publicSeoTitle } from '#shared/public-seo'
 import SolutionCards from '~/components/solutions/SolutionCards.vue'
 import SolutionsCta from '~/components/solutions/SolutionsCta.vue'
 
@@ -29,6 +29,7 @@ if (import.meta.server && responseStatus) setResponseStatus(responseStatus, resp
 const hasFilters = computed(() => Object.keys(route.query).length > 0)
 const pageTitle = computed(() => publicSeoTitle(category.value?.seo?.title || category.value?.name, 'Giải pháp'))
 const pageDescription = computed(() => category.value?.seo?.description || category.value?.description || '')
+const socialDescription = computed(() => publicSeoDescription(category.value?.seo?.description, site.value.brand.name))
 const pageKeywords = computed(() => category.value?.seo?.keywords || '')
 const pageImage = computed(() => category.value?.seo?.image || undefined)
 
@@ -41,7 +42,7 @@ useHead({ meta: computed(() => pageKeywords.value ? [{ name: 'keywords', content
 usePublicSocialMeta({
   enabled: computed(() => !!category.value && !error.value),
   title: pageTitle,
-  description: pageDescription,
+  description: socialDescription,
   canonicalPath: computed(() => category.value?.canonicalPath || `/${slug.value}`),
   image: pageImage,
 })
