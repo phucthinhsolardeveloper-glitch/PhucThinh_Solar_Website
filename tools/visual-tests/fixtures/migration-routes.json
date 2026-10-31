@@ -71,9 +71,11 @@
     {
       "id": "negative-solution-hidden-record",
       "family": "solution",
-      "verification": "NEEDS VERIFICATION",
-      "reason": "Local DB has no hidden giai-phap article row, so no route slug was added.",
-      "databaseEvidence": { "source": "pts-mariadb-local; read-only SELECT", "table": "news", "type": "giai-phap", "total": 5, "visible": 5, "hiddenCount": 0 }
+      "verification": "verified-hidden",
+      "slug": "thiet-bi-den-nang-luong-mat-troi-quy-mo-ho-gia-dinh",
+      "legacyPath": "/giai-phap/thiet-bi-den-nang-luong-mat-troi-quy-mo-ho-gia-dinh/",
+      "expectedStatuses": [404, 410],
+      "databaseEvidence": { "source": "production backup 20261031T074334Z-full; read-only SELECT", "checkedAt": "2026-10-31", "table": "news", "type": "giai-phap", "id": 60, "status": "noibat", "hidden": true, "hiddenCount": 1 }
     }
   ],
   "interactions": []
