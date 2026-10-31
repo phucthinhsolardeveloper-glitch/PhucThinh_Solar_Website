@@ -29,7 +29,7 @@ noindex of those URLs, but do not establish metadata parity on the public paths.
 | Open Graph description matches | 27/34 after the follow-up below | The initial 21/34 comparison is retained in the ignored route artifact; six empty-description fallbacks now match PHP's site-setting behavior. |
 | Open Graph image path matches | 7/34 | Many Nuxt pages use current Admin hero media while PHP falls back to a logo; classify each before changing. |
 | Open Graph type matches | 4/34 | PHP emits a legacy `object` value on many listing pages; do not copy it without deciding the valid public contract. |
-| JSON-LD type sets match | 29/34 after the follow-up below | Current Nuxt SSR was compared with the earlier PHP route snapshot; five type-set differences are classified below. |
+| JSON-LD type sets match | 29/34 in the retained comparison | Current Nuxt SSR was compared with the earlier PHP route snapshot; the later policy-schema source change has not had a fresh full comparison. |
 | Routes with different internal href path sets | 34/34 | Route/query/link differences need manual classification; this is not itself proof of broken links. |
 
 The PHP sitemap crawl remains **457/457 reachable**. The prior local href
@@ -81,9 +81,11 @@ URL crawl and sitemap/href reachability details.
 2. Resolve OG description/image/type and JSON-LD differences from authoritative
    Admin/PHP behavior. Do not treat `HTTP 200` or a noindex preview as SEO
    cutover approval.
-3. Four hidden-record families still lack matching local DB fixtures; seven
-   detailed PHP integration cases still skip for missing published fixtures.
-   Do not create invented slugs or mutate data to fill this gap.
+3. Four hidden-record families still lack matching local DB fixtures. The seven
+   earlier public-detail skips were caused by stale runner field/envelope
+   mappings and were cleared in the read-only follow-up (69 HTTP PASS, 0 FAIL,
+   0 SKIP). Do not create invented slugs or mutate data to fill the hidden-record
+   gap.
 4. The owner still performs the visual inspection at `http://127.0.0.1:3100/`.
    The interrupted bulk screenshot run is not visual sign-off and will not be
    repeated unless requested.
@@ -124,10 +126,19 @@ that restores the actual link and lets the same verified path enter the schema.
 Verification compared current Nuxt SSR for the 34 manifest paths with the PHP
 type-set snapshot from the earlier two-renderer audit: **34/34 HTTP 200**, zero
 JSON-LD parse failures, **32/34** routes emit a breadcrumb list, and exact type
-sets match on **29/34** (up from 2/34). Remaining differences: product detail
-adds FAQPage/Question/Answer and has PHP-vs-Nuxt global address/image type
-differences; brand root emits a breadcrumb list absent from PHP; news detail
-has an extra PostalAddress type; policy detail still needs PHP-backed article
-and breadcrumb fields before claiming parity. The local PHP HTML renderer stays
-disabled, so this is a current-Nuxt check against a retained PHP snapshot, not a
-fresh two-renderer run.
+sets match on **29/34** (up from 2/34). Remaining differences in that snapshot:
+product detail adds FAQPage/Question/Answer and has PHP-vs-Nuxt global
+address/image type differences; news detail has an extra PostalAddress type.
+The later source change adds validated `NewsArticle` data from the policy DTO
+and policy canonical URL; it likely closes the policy route's missing article
+types, but this has not been confirmed by a fresh SSR comparison. The local PHP
+HTML renderer stays disabled, so this is not a fresh two-renderer run.
+
+## Follow-up — policy structured data source correction — 2026-10-31
+
+The public policy template now emits `NewsArticle` JSON-LD from validated
+policy DTO fields: canonical URL, title, author, publisher, optional cover,
+validated publication date and description. It emits only for a successful
+public route response; internal preview paths remain excluded. The targeted
+policy contract and typecheck passed after the source change. The retained 29/34
+type-set comparison above predates this change and has not been rerun.
