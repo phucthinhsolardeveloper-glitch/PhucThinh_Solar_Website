@@ -31,6 +31,7 @@ Options:
   --output <dir>          Artifact directory (default: frontend/.migration-artifacts/seo-audit)
   --timeout-ms <number>   Per GET timeout (default: 15000)
   --max-redirects <n>     Redirect hop limit (default: 10)
+  --public-paths          Audit public legacy paths on Nuxt instead of internal preview paths
   --allow-remote          Explicitly disable loopback-only protection
   --help                  Show this help
 
@@ -41,12 +42,13 @@ Example:
 }
 
 function parseArgs(argv) {
-  const args = { allowRemote: false }
+  const args = { allowRemote: false, publicPaths: false }
   const positionals = []
   for (let index = 0; index < argv.length; index += 1) {
     const value = argv[index]
     if (value === '--help' || value === '-h') return { help: true }
     if (value === '--allow-remote') { args.allowRemote = true; continue }
+    if (value === '--public-paths') { args.publicPaths = true; continue }
     if (['--manifest', '--output', '--timeout-ms', '--max-redirects'].includes(value)) {
       const next = argv[++index]
       if (!next) throw new Error(`${value} requires a value`)
@@ -732,7 +734,7 @@ async function run(args) {
   for (const route of manifest.routes) {
     const [legacy, preview] = await Promise.all([
       crawlSide(args.phpOrigin, route.legacyPath, settings),
-      crawlSide(args.nuxtOrigin, route.previewPath, settings),
+      crawlSide(args.nuxtOrigin, args.publicPaths ? route.legacyPath : route.previewPath, settings),
     ])
     const legacyPage = legacy.page || { hrefs: [] }
     const previewPage = preview.page || { hrefs: [] }

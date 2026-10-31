@@ -71,11 +71,9 @@
     {
       "id": "negative-solution-hidden-record",
       "family": "solution",
-      "verification": "verified-hidden",
-      "slug": "thiet-bi-den-nang-luong-mat-troi-quy-mo-ho-gia-dinh",
-      "legacyPath": "/giai-phap/thiet-bi-den-nang-luong-mat-troi-quy-mo-ho-gia-dinh/",
-      "expectedStatuses": [404, 410],
-      "databaseEvidence": { "source": "production backup 20261031T074334Z-full; read-only SELECT", "checkedAt": "2026-10-31", "table": "news", "type": "giai-phap", "id": 60, "status": "noibat", "hidden": true, "hiddenCount": 1 }
+      "verification": "NEEDS VERIFICATION",
+      "reason": "Local and production DB has no hidden giai-phap article row (all 5 rows are visible); /giai-phap/thiet-bi-den-nang-luong-mat-troi-quy-mo-ho-gia-dinh/ is a legacy 301 alias to /giai-phap/chieu-sang-nang-luong-mat-troi/.",
+      "databaseEvidence": { "source": "production backup 20261031T074334Z-full; read-only SELECT", "table": "news", "type": "giai-phap", "total": 5, "visible": 5, "hiddenCount": 0 }
     }
   ],
   "interactions": []

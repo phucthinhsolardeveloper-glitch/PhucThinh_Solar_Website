@@ -34,7 +34,7 @@ test('validates explicit route mapping and duplicate ids', () => {
 
 test('visual comparison covers every route in the migration manifest', () => {
   const manifest = loadManifest(migrationRoutes)
-  assert.equal(manifest.routes.length, 33)
+  assert.equal(manifest.routes.length, 34)
   assert.deepEqual(manifest.routes.filter(route => route.visual === false).map(route => route.id), [])
 })
 

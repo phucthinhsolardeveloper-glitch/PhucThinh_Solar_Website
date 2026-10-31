@@ -144,6 +144,7 @@ onBeforeUnmount(() => {
       <div
         v-for="(slide, index) in hero"
         :key="`${slide.key}-${index}`"
+        :data-home-hero-slide="index"
         class="absolute inset-0 transition-opacity duration-700 ease-in-out motion-reduce:transition-none"
         :class="index === active ? 'opacity-100 z-[1] pointer-events-auto' : 'opacity-0 z-0 pointer-events-none'"
         :aria-hidden="index !== active"

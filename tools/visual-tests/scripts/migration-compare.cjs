@@ -271,6 +271,9 @@ async function capturePage(browser, url, viewport, settings, fileStem, output) {
       try { headerBase64 = (await fs.readFile(headerPath)).toString('base64') } catch {}
     }
   }
+  const responseHeaders = response ? response.headers() : {}
+  const xRobots = responseHeaders['x-robots-tag'] || ''
+  if (xRobots && !metadata.robots) metadata.robots = xRobots
   const result = {
     url, status: response?.status() ?? null, ok: Boolean(response?.ok()), navigationError,
     durationMs: Date.now() - started, ...metadata, consoleMessages, consoleWarnings, pageErrors, failedRequests,
@@ -343,7 +346,8 @@ async function auditPreviewShell(browser, route, viewport, settings) {
   const page = await browser.newPage({ viewport, deviceScaleFactor: 1, locale: 'vi-VN', reducedMotion: settings.reducedMotion })
   const result = { route: route.id, viewport, status: 'FAIL', checks: {}, errors: [] }
   try {
-    const response = await page.goto(joinUrl(settings.previewUrl, route.previewPath, settings.allowRemote), { waitUntil: 'domcontentloaded', timeout: 30000 })
+    const targetPath = settings.publicRoutes ? route.legacyPath : route.previewPath
+    const response = await page.goto(joinUrl(settings.previewUrl, targetPath, settings.allowRemote), { waitUntil: 'domcontentloaded', timeout: 30000 })
     if (!response?.ok()) throw new Error(`preview HTTP ${response?.status() ?? 'ERR'}`)
     const searchTrigger = page.getByRole('button', { name: 'Mở tìm kiếm' }).first()
     await searchTrigger.click()
@@ -423,7 +427,8 @@ async function performInteraction(browser, route, interaction, viewport, setting
   const page = await browser.newPage({ viewport, deviceScaleFactor: 1, locale: 'vi-VN', reducedMotion: settings.reducedMotion })
   const result = { id: interaction.id, action: interaction.action, selector: interaction.selector, side, status: 'skipped' }
   try {
-    await page.goto(joinUrl(side === 'legacy' ? settings.legacyUrl : settings.previewUrl, side === 'legacy' ? route.legacyPath : route.previewPath, settings.allowRemote), { waitUntil: 'domcontentloaded', timeout: 30000 })
+    const targetPreviewPath = settings.publicRoutes ? route.legacyPath : route.previewPath
+    await page.goto(joinUrl(side === 'legacy' ? settings.legacyUrl : settings.previewUrl, side === 'legacy' ? route.legacyPath : targetPreviewPath, settings.allowRemote), { waitUntil: 'domcontentloaded', timeout: 30000 })
     const target = page.locator(interaction.selector).first()
     if (!await target.count()) { result.status = 'missing-selector'; return result }
     if (interaction.action === 'click') await target.click({ timeout: 5000 })
@@ -518,8 +523,9 @@ async function run(args) {
       const routeReport = { id: route.id, legacyPath: route.legacyPath, previewPath: route.previewPath, viewports: [] }
       for (const viewport of args.viewports) {
         const prefix = `${safeFilePart(route.id)}-${viewport.width}x${viewport.height}`
+        const targetPreviewPath = args.publicRoutes ? route.legacyPath : route.previewPath
         const legacy = await capturePage(browser, joinUrl(args.legacyUrl, route.legacyPath, args.allowRemote), viewport, args, `${prefix}-legacy`, args.output)
-        const preview = await capturePage(browser, joinUrl(args.previewUrl, route.previewPath, args.allowRemote), viewport, args, `${prefix}-preview`, args.output)
+        const preview = await capturePage(browser, joinUrl(args.previewUrl, targetPreviewPath, args.allowRemote), viewport, args, `${prefix}-preview`, args.output)
         const diff = args.fullPage
           ? { status: 'not-compared', reason: 'full-page-captured-for-manual-section-review' }
           : await compareScreenshots(browser, legacy.screenshotBase64, preview.screenshotBase64, path.join(args.output, `${prefix}-diff.png`))
