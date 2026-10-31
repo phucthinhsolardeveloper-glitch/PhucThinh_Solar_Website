@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "test": "PLAYWRIGHT_BROWSERS_PATH=.browsers playwright test",
+    "test:unit": "node --test tests/audit-nuxt-progress.test.cjs",
     "test:headed": "PLAYWRIGHT_BROWSERS_PATH=.browsers playwright test --headed",
     "report": "PLAYWRIGHT_BROWSERS_PATH=.browsers playwright show-report"
   },

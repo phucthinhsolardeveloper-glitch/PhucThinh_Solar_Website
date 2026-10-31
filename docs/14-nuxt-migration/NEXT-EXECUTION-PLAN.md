@@ -1,6 +1,6 @@
 # PTS Nuxt migration — next execution plan
 
-## Current checkpoint — 2026-10-30
+## Historical checkpoint — 2026-10-30
 
 - Nuxt public route ownership no longer uses per-route `*PublicRouteEnabled`
   gates. Implemented route wrappers render directly; CMS visibility toggles and
@@ -16,6 +16,29 @@
   [`ICON-INTERACTION-UI-AUDIT-20261030.md`](ICON-INTERACTION-UI-AUDIT-20261030.md).
   Full visual screenshot review, header touch submenu behavior, search modal
   background semantics, and 320px floating-action overlap remain open.
+
+## Branch integration and preview coverage — 2026-10-31
+
+- `origin/feature/pts-nuxt-integration-20261027` is already an ancestor of
+  `master`; it has no commits missing from the local integration branch.
+- Local `nuxt-progress-codex` contains two commits absent from `master`.
+  A full merge was not appropriate: its workflow commit weakens the repository
+  `AGENTS.md` process and removes UI parity requirements, while its second
+  commit installs an automatic Codex Stop hook that writes to a dmux event
+  file. Neither behavior is accepted in the current project contract.
+- The read-only preview coverage audit from that branch was selectively
+  integrated as `audit-nuxt-progress.cjs`; alias paths may share a preview page,
+  and filesystem scanning is limited to `frontend/app/pages`. Its seven unit
+  tests pass. Against the current root, all **34/34 manifest route entries**
+  map to an existing page file, with zero missing pages; 27 migration page
+  files exist and six are outside the public migration manifest.
+- Five unmanifested pages are internal runtime/shell/site/hub/UI-lab utilities
+  and declare noindex. `migration-gallery-detail-preview.vue` is a real detail
+  preview component, but no verified gallery slug is in the route manifest;
+  add one only when backed by a real PHP/DB fixture. Do not invent a slug.
+- This audit proves only route-manifest-to-page-file coverage. It does not prove
+  visual parity, public routing, SEO, API behavior, commerce, security or release
+  readiness. Production, DB, feature flags and routing were not touched.
 
 ## Commerce checkout handoff — 2026-10-29
 
