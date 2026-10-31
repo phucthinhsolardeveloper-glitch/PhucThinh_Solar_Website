@@ -23,12 +23,12 @@ watch(() => props.locations, (locations) => {
       <p v-if="locations.length" class="mb-0 mt-3 text-base leading-7 text-slate-600">Chọn địa điểm để xem địa chỉ và bản đồ từ hệ thống chi nhánh.</p>
     </div>
 
-    <div v-if="locations.length" class="grid min-w-0 gap-8 lg:grid-cols-[minmax(0,.8fr)_minmax(0,1.2fr)] lg:gap-10">
-      <ul class="m-0 grid list-none content-start gap-2 p-0">
+    <div v-if="locations.length" class="grid min-w-0 items-stretch gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-10">
+      <ul class="m-0 grid list-none content-start gap-2 p-0 lg:auto-rows-fr lg:content-stretch">
         <li v-for="location in locations" :key="location.id" class="min-w-0">
           <button
             type="button"
-            class="group flex min-h-24 w-full min-w-0 items-start gap-3 rounded-chip border-l-[3px] px-4 py-4 text-left transition-colors"
+            class="group flex min-h-24 w-full min-w-0 items-start gap-3 rounded-chip border-l-[3px] px-4 py-4 text-left transition-colors lg:h-full lg:items-center"
             :class="selected?.id === location.id
               ? 'border-gold-500 bg-navy-50 text-navy-800'
               : 'border-transparent text-navy-800 hover:bg-slate-50'"
@@ -62,7 +62,7 @@ watch(() => props.locations, (locations) => {
               variant="outline"
               size="md"
               trailing-icon="i-lucide-external-link"
-              class="min-h-11 rounded-chip border-navy-800 px-3 text-navy-800 no-underline hover:bg-navy-50"
+              class="public-neutral-button min-h-11 rounded-chip px-3 text-navy-800 no-underline"
             >Mở bản đồ</UButton>
           </div>
           <iframe

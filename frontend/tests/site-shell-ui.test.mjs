@@ -11,6 +11,7 @@ const links = read('composables/useMigrationLinks.ts')
 const mainCss = read('assets/css/main.css')
 const tokensCss = read('assets/css/tokens.css')
 const app = read('app.vue')
+const gtranslatePlugin = read('plugins/gtranslate.client.ts')
 const nuxtConfig = readFileSync(new URL('../nuxt.config.ts', import.meta.url), 'utf8')
 
 test('shared shell renders CMS assets and explicit navigation/taxonomy only', () => {
@@ -50,7 +51,9 @@ test('shared header keeps PHP production single-row composition without a duplic
   assert.match(header, /<ul class="flex items-center justify-center gap-1 nav:gap-0 min-\[1681px\]:gap-3"/)
   assert.match(header, /whitespace-nowrap px-3[^\"]*nav:px-2 min-\[1681px\]:px-2\.5/)
   assert.doesNotMatch(header, /ptsInlineSearchInput|quickCategories|wd:hidden/)
-  assert.match(app, /cdn\.gtranslate\.net\/widgets\/latest\/popup\.js/)
+  assert.match(gtranslatePlugin, /https:\/\/cdn\.gtranslate\.net\/widgets\/latest\/popup\.js/)
+  assert.match(gtranslatePlugin, /new MutationObserver\(mountWidget\)/)
+  assert.match(app, /wrapper_selector: '\.gtranslate_wrapper'/)
   assert.match(app, /'zh-CN', 'ko', 'ja'/)
   assert.doesNotMatch(mainCss, /\.gtranslate_wrapper\s*\{[^}]*display\s*:/)
 })
@@ -70,7 +73,7 @@ test('header overlays expose keyboard state, focus trap and scroll restoration h
     /role="dialog"[\s\S]*aria-modal="true"[\s\S]*aria-labelledby="ptsMobileTitle"/,
     /function trapFocus\(/,
     /event\.key === 'Escape'/,
-    /bodyOverflowBeforeLock/,
+    /setDocumentScrollLock\(overlayOpen\)/,
     /ref="searchTrigger"/,
     /ref="mobileTrigger"/,
     /aria-controls="ptsMobileCatalog"/,
@@ -79,9 +82,11 @@ test('header overlays expose keyboard state, focus trap and scroll restoration h
   assert.match(header, /navDropdownOpen\.value\) closeNavDropdown\(true\)/)
 })
 
-test('header hides on downward scroll and reveals on upward scroll while menu text stays readable', () => {
+test('header hides on downward scroll and stays hidden until returning to the top', () => {
   assert.match(header, /if \(accumulatedDelta > 12 && currentScrollY > 80\)\s*\{\s*isHeaderHidden\.value = true/)
-  assert.match(header, /else if \(accumulatedDelta < -12\)\s*\{\s*isHeaderHidden\.value = false/)
+  assert.match(header, /if \(deltaY < 0\)\s*\{\s*accumulatedDelta = 0\s*\}/)
+  assert.doesNotMatch(header, /accumulatedDelta < -12/)
+  assert.match(header, /anyOverlayOpen \|\| currentScrollY <= 80\)\s*\{\s*isHeaderHidden\.value = false/)
   assert.match(header, /transition-transform duration-300/)
   assert.match(header, /block min-h-11 rounded-chip px-3 py-3 text-\[15px\] font-medium leading-6/)
   assert.match(header, /flex min-h-12 min-w-0 flex-1 items-center gap-4 py-2 text-\[16px\] font-semibold/)
@@ -163,10 +168,13 @@ test('catalog benefit rail uses consistent stroke icons instead of platform-depe
 test('news and project CTA bands retain the PHP wide-banner hierarchy on desktop and mobile', () => {
   const newsCta = read('components/news/NewsCta.vue')
   const projectsCta = read('components/projects/ProjectsCta.vue')
-  assert.match(newsCta, /grid-cols-1[\s\S]*min-\[541px\]:grid-cols-\[minmax\(0,1fr\)_auto\][\s\S]*min-\[1101px\]:grid-cols-\[68px_minmax\(0,1fr\)_auto\]/)
-  assert.match(newsCta, /absolute inset-0 -z-10 h-full w-full object-cover opacity-50/)
+  const sharedCta = read('components/PublicCtaBanner.vue')
+  assert.match(newsCta, /<PublicCtaBanner[\s\S]*variant="editorial"[\s\S]*:image="backgroundImage"/)
+  assert.match(projectsCta, /<PublicCtaBanner variant="editorial" :image="backgroundImage"/)
+  assert.match(sharedCta, /\.public-cta-banner--editorial \{[^}]*grid-template-columns: minmax\(0, 1fr\) minmax\(250px, auto\)/)
+  assert.match(sharedCta, /@media \(max-width: 760px\)[\s\S]*\.public-cta-banner--editorial[\s\S]*grid-template-columns: minmax\(0, 1fr\)/)
+  assert.match(sharedCta, /\.public-cta-banner__image \{ object-fit: cover; \}/)
   assert.match(newsCta, /phoneLabel[\s\S]*cta\.hotline\.text[\s\S]*cta\.buttonLabel/)
-  assert.match(projectsCta, /absolute inset-0 z-10 h-full w-full object-cover opacity-50/)
   assert.match(projectsCta, /cta\.eyebrow[\s\S]*cta\.title[\s\S]*cta\.description[\s\S]*trustItems/)
   assert.match(projectsCta, /cta\.hotline\?\.tel[\s\S]*cta\.hotline\.text[\s\S]*cta\.buttonLabel/)
 })
@@ -184,6 +192,13 @@ test('footer and breadcrumb route CMS links through the migration resolver', () 
   assert.match(breadcrumb, /max-w-\[34vw\] truncate/)
   assert.match(breadcrumb, /Các mục trước/)
   assert.match(links, /function external\(href: string\)/)
+})
+
+test('footer logo falls back from a missing thumbnail to its original and then the text brand', () => {
+  assert.match(footer, /footerLogoThumbnailFailed = ref\(false\)/)
+  assert.match(footer, /if \(CMS_UPLOAD_PHOTO\.test\(src\) && !footerLogoThumbnailFailed\.value\) return `\/thumbs\/520x426x3\$\{src\}`/)
+  assert.match(footer, /function onFooterLogoError\(\)[\s\S]*footerLogoThumbnailFailed\.value = true[\s\S]*footerLogoUnavailable\.value = true/)
+  assert.match(footer, /v-if="footerLogo && !footerLogoUnavailable"[\s\S]*@error="onFooterLogoError"[\s\S]*<span v-else class="text-lg font-black text-white">\{\{ brandName \}\}<\/span>/)
 })
 
 test('shared shell keeps controls reachable at 44px and preserves the 320px layout', () => {

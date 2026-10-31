@@ -63,7 +63,7 @@ const searchTrigger = ref<HTMLButtonElement | null>(null)
 const searchPanel = ref<HTMLElement | null>(null)
 const searchOverlay = ref<HTMLElement | null>(null)
 const navDropdownTrigger = ref<HTMLElement | null>(null)
-let bodyOverflowBeforeLock: string | null = null
+const setDocumentScrollLock = useDocumentScrollLock()
 let catalogCloseTimer: ReturnType<typeof setTimeout> | null = null
 const inertBeforeModal = new Map<HTMLElement, boolean>()
 
@@ -85,12 +85,26 @@ const mobileNavItems = computed(() => [...navItems.value].sort((a, b) => mobileN
 
 function isActiveNavItem(item: PublicSiteLink): boolean {
   const path = route.path
-  if (item.href === '/gioi-thieu/') return path.startsWith('/gioi-thieu') || path.startsWith('/ve-chung-toi') || path.includes('about-preview') || path.startsWith('/lien-he') || path.includes('contact-preview')
-  if (item.href === '/giai-phap/') return path.startsWith('/giai-phap') || path.includes('solution')
-  if (item.href === '/du-an-da-thuc-hien/') return path.startsWith('/du-an') || path.startsWith('/danh-muc-du-an') || path.includes('project')
-  if (item.href === '/tin-tuc/') return path.startsWith('/tin-tuc') || path.includes('news')
-  if (item.href === '/dai-ly/') return path.startsWith('/dai-ly') || path.startsWith('/he-thong-dai-ly') || path.includes('dealer')
-  return path === item.href
+  if (item.href === '/gioi-thieu/' && (path.startsWith('/gioi-thieu') || path.startsWith('/ve-chung-toi') || path.includes('about-preview') || path.startsWith('/lien-he') || path.includes('contact-preview'))) return true
+  if (item.href === '/giai-phap/' && (path.startsWith('/giai-phap') || path.includes('solution'))) return true
+  if (item.href === '/du-an-da-thuc-hien/' && (path.startsWith('/du-an') || path.startsWith('/danh-muc-du-an') || path.includes('project'))) return true
+  if (item.href === '/tin-tuc/' && (path.startsWith('/tin-tuc') || path.includes('news'))) return true
+  if (item.href === '/dai-ly/' && (path.startsWith('/dai-ly') || path.startsWith('/he-thong-dai-ly') || path.includes('dealer'))) return true
+  if (path === item.href) return true
+
+  const currentPath = path.replace(/\/+$/, '') || '/'
+  const currentSegments = currentPath.split('/').filter(Boolean)
+  const currentLeaf = currentSegments.at(-1)
+  const matchesBranch = (links: PublicSiteLink[]): boolean => links.some((link) => {
+    let linkPath = link.href
+    try { linkPath = new URL(link.href, 'https://pts.local').pathname } catch { /* Keep a valid relative path as supplied. */ }
+    const normalizedLinkPath = linkPath.replace(/\/+$/, '') || '/'
+    const exactOrNested = currentPath === normalizedLinkPath || currentPath.startsWith(`${normalizedLinkPath}/`)
+    const bareSlugAlias = currentSegments.length === 1 && currentLeaf === normalizedLinkPath.split('/').filter(Boolean).at(-1)
+    return exactOrNested || bareSlugAlias || matchesBranch(link.children ?? [])
+  })
+
+  return matchesBranch(item.children ?? [])
 }
 
 type RenderedCatalogGroup = PublicCatalogGroup & { id: string }
@@ -223,15 +237,7 @@ function focusFirst(container: HTMLElement | null) {
 function syncBodyLock() {
   if (!import.meta.client) return
   const overlayOpen = searchOpen.value || mobileOpen.value || (catalogOpen.value && catalogMode.value === 'intent')
-  if (overlayOpen) {
-    if (bodyOverflowBeforeLock === null) bodyOverflowBeforeLock = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
-    return
-  }
-  if (bodyOverflowBeforeLock !== null) {
-    document.body.style.overflow = bodyOverflowBeforeLock
-    bodyOverflowBeforeLock = null
-  }
+  setDocumentScrollLock(overlayOpen)
 }
 
 function restoreModalBackground() {
@@ -499,15 +505,13 @@ function handleWindowScroll() {
     }
 
     const deltaY = currentScrollY - lastScrollY
-    if ((deltaY > 0 && accumulatedDelta < 0) || (deltaY < 0 && accumulatedDelta > 0)) {
+    if (deltaY < 0) {
       accumulatedDelta = 0
     }
-    accumulatedDelta += deltaY
+    else accumulatedDelta += deltaY
 
     if (accumulatedDelta > 12 && currentScrollY > 80) {
       isHeaderHidden.value = true
-    } else if (accumulatedDelta < -12) {
-      isHeaderHidden.value = false
     }
 
     lastScrollY = currentScrollY
@@ -528,7 +532,7 @@ onBeforeUnmount(() => {
   cancelCatalogClose()
   document.removeEventListener('keydown', handleKeydown)
   window.removeEventListener('scroll', handleWindowScroll)
-  if (import.meta.client && bodyOverflowBeforeLock !== null) document.body.style.overflow = bodyOverflowBeforeLock
+  setDocumentScrollLock(false)
   restoreModalBackground()
 })
 </script>
@@ -558,8 +562,7 @@ onBeforeUnmount(() => {
         <!-- Keep the drawer until the header has enough room for every desktop control. -->
         <button
           ref="mobileTrigger"
-          class="pts-mobile-nav-trigger order-first relative flex h-11 w-11 flex-none items-center justify-center rounded-chip border
-                 border-[#d8dee6] bg-white text-hdr-ink transition-colors hover:bg-hdr-surface min-[1681px]:hidden"
+          class="pts-mobile-nav-trigger public-neutral-button order-first relative flex h-11 w-11 flex-none items-center justify-center rounded-chip text-hdr-ink min-[1681px]:hidden"
           type="button"
           :aria-expanded="mobileOpen"
           aria-controls="ptsMobileMenu"
@@ -629,6 +632,7 @@ onBeforeUnmount(() => {
                 :class="isActiveNavItem(item)
                   ? 'text-navy-950 after:scale-x-100'
                   : ''"
+                :aria-current="isActiveNavItem(item) ? 'page' : undefined"
                 :to="shellHref(item.href)"
               >
                 {{ item.label }}

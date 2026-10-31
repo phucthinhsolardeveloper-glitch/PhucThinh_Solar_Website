@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import DealerPageContent from '~/components/dealer/DealerPageContent.vue'
-import dealerPublicRoute from '~/middleware/dealer-public-route'
-
-definePageMeta({ layout: false, middleware: dealerPublicRoute })
+definePageMeta({ layout: false, middleware: 'dealer-public-route' })
 </script>
 
 <template>

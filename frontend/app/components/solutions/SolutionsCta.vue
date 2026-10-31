@@ -15,18 +15,19 @@ const backgroundImage = computed(() => {
 </script>
 
 <template>
-  <section
+  <PublicCtaBanner
     id="ptsContactModal"
-    class="relative isolate mt-[18px] flex flex-col items-stretch justify-between gap-5 overflow-hidden rounded-[3px] bg-navy-800 px-[22px] py-[26px] text-white tb:mt-[22px] min-[901px]:flex-row min-[901px]:items-center min-[901px]:gap-8 min-[901px]:px-9 min-[901px]:py-8"
-    aria-labelledby="solutions-contact-title"
+    class="mt-[18px] tb:mt-[22px]"
+    variant="corporate"
+    :image="backgroundImage"
+    labelled-by="solutions-contact-title"
   >
-    <span class="pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgba(10,34,81,.96)_0,rgba(10,34,81,.86)_100%)] min-[901px]:bg-[linear-gradient(90deg,rgba(10,34,81,.97)_0,rgba(10,34,81,.9)_38%,rgba(10,34,81,.55)_68%,rgba(10,34,81,.3)_100%)]" aria-hidden="true" />
-    <img v-if="backgroundImage" class="absolute inset-0 -z-10 h-full w-full object-cover opacity-50" :src="backgroundImage" alt="" width="1600" height="500" sizes="100vw" loading="lazy" decoding="async">
-    <div class="max-w-[630px]">
+    <div>
       <h2 id="solutions-contact-title" class="m-0 mb-[9px] text-[24px] font-extrabold leading-[1.3] tracking-tight text-white max-[520px]:text-[23px]">{{ cta.title }}</h2>
       <p class="m-0 text-base leading-[1.65] text-blue-100/95 max-[520px]:tracking-[-0.01em]">{{ cta.description }}</p>
     </div>
-    <div class="flex w-full shrink-0 flex-col items-stretch gap-[18px] min-[901px]:w-auto min-[901px]:flex-row min-[901px]:items-center min-[901px]:gap-6">
+    <template #actions>
+    <div class="flex w-full flex-col items-stretch gap-3 min-[901px]:w-auto min-[901px]:flex-row min-[901px]:items-center min-[901px]:gap-6">
       <UButton
         :href="links.generic(cta.links.consult.href === '#ptsContactModal' ? '/lien-he/#yeu-cau-tu-van' : cta.links.consult.href)"
         color="primary"
@@ -46,5 +47,6 @@ const backgroundImage = computed(() => {
         <strong class="text-xl font-extrabold text-white">{{ cta.hotline.text }}</strong>
       </a>
     </div>
-  </section>
+    </template>
+  </PublicCtaBanner>
 </template>

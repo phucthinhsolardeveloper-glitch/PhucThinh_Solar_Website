@@ -81,7 +81,7 @@ const { activeHeadingId, scrollToHeading } = useTocScrollspy({
       <div class="pts-container py-2">
         <nav class="flex w-full gap-2.5 overflow-x-auto py-1.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" aria-label="Các giải pháp khác">
           <a
-            class="inline-flex min-h-11 flex-none items-center whitespace-nowrap rounded-chip border border-slate-200 bg-white px-4 text-[13px] font-bold text-navy-800 no-underline transition-colors hover:border-gold-500 hover:text-gold-700"
+            class="public-filter-chip inline-flex min-h-11 flex-none items-center whitespace-nowrap px-4 text-[13px] font-bold no-underline"
             :href="links.generic(data.navigation.allUrl)"
           >
             Tất cả giải pháp
@@ -89,8 +89,9 @@ const { activeHeadingId, scrollToHeading } = useTocScrollspy({
           <a
             v-for="item in data.navigation.items"
             :key="item.slug"
-            class="inline-flex min-h-11 flex-none items-center whitespace-nowrap rounded-chip border px-4 text-[13px] font-bold no-underline transition-colors"
-            :class="item.active ? 'border-navy-800 bg-navy-800 text-gold-300 shadow-xs' : 'border-slate-200 bg-white text-navy-800 hover:border-gold-500 hover:text-gold-700'"
+            class="public-filter-chip inline-flex min-h-11 flex-none items-center whitespace-nowrap px-4 text-[13px] font-bold no-underline"
+            :class="item.active ? 'text-gold-300' : 'text-navy-800'"
+            :aria-current="item.active ? 'page' : undefined"
             :href="links.generic(item.url)"
           >
             {{ item.title }}
@@ -138,7 +139,7 @@ const { activeHeadingId, scrollToHeading } = useTocScrollspy({
             </li>
           </ol>
 
-          <div class="mt-5 rounded-chip border border-white/12 bg-white/[.04] p-3.5 text-xs">
+          <div class="mt-5 rounded-btn border border-white/12 bg-white/[.04] p-3.5 text-xs">
             <p class="m-0 mb-1.5 font-extrabold text-white">{{ data.cta.label }}</p>
             <p v-if="data.campaignCta?.description" class="m-0 mb-3 line-clamp-2 leading-relaxed text-blue-100/80">{{ data.campaignCta.description }}</p>
             <UButton

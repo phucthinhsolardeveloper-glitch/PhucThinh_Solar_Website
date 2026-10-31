@@ -9,7 +9,7 @@ const phoneHref = computed(() => publicPhoneHref(props.contact.contact.hotline))
 </script>
 
 <template>
-  <section class="grid min-w-0 overflow-hidden rounded-chip bg-navy-950 lg:grid-cols-[minmax(0,1.15fr)_minmax(360px,.85fr)]" aria-labelledby="contact-hero-title">
+  <section class="grid min-w-0 overflow-hidden rounded-btn bg-navy-950 lg:grid-cols-[minmax(0,1.15fr)_minmax(360px,.85fr)]" aria-labelledby="contact-hero-title">
     <div v-if="contact.visual" class="relative min-w-0 overflow-hidden bg-navy-900">
       <img
         :src="contact.visual.image"
@@ -20,7 +20,7 @@ const phoneHref = computed(() => publicPhoneHref(props.contact.contact.hotline))
         fetchpriority="high"
       >
       <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-navy-950/55 via-transparent to-transparent" />
-      <a v-if="phoneHref" :href="phoneHref" class="absolute bottom-4 left-4 flex min-h-14 items-center gap-3 rounded-chip bg-white px-4 py-2.5 text-navy-800 shadow-lg no-underline hover:text-gold-700 lg:bottom-6 lg:left-6">
+      <a v-if="phoneHref" :href="phoneHref" class="public-neutral-button absolute bottom-4 left-4 flex min-h-14 items-center gap-3 px-4 py-2.5 text-navy-800 no-underline lg:bottom-6 lg:left-6">
         <span class="flex size-10 flex-none items-center justify-center rounded-full bg-gold-500 text-navy-950"><UIcon name="i-lucide-phone" class="size-5" aria-hidden="true" /></span>
         <span class="flex flex-col leading-tight"><small class="text-xs font-semibold text-slate-500">Hotline tư vấn</small><strong class="mt-1 text-base">{{ contact.contact.hotline }}</strong></span>
       </a>
@@ -56,7 +56,7 @@ const phoneHref = computed(() => publicPhoneHref(props.contact.contact.hotline))
         v-if="contact.visual?.href"
         color="primary"
         size="lg"
-        class="mt-8 inline-flex min-h-12 items-center justify-center gap-2 self-start rounded-chip bg-gold-500 px-5 py-3 font-bold text-navy-950 no-underline transition-colors hover:bg-gold-400"
+        class="mt-8 inline-flex min-h-12 items-center justify-center gap-2 self-start rounded-btn bg-gold-500 px-5 py-3 font-bold text-navy-950 no-underline transition-colors hover:bg-gold-400"
         :href="links.generic(contact.visual.href)"
       >
         Gửi yêu cầu tư vấn <UIcon name="i-lucide-arrow-down" class="size-4" aria-hidden="true" />

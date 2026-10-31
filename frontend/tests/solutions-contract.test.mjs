@@ -62,6 +62,8 @@ test('maps solution hub and taxonomy Admin metadata through PHP DTOs to Nuxt hea
   assert.match(api, /array\('giai-phap'\)/)
   assert.match(api, /#_seo where id_parent = \? and com = \? and act = \? and type = \? limit 1/)
   assert.match(api, /'news', 'man_list', 'giai-phap'/)
+  assert.match(api, /ptsPublicSeoDto\([\s\S]*?isset\(\$selectedCategory\['photo'\]\) \? \$selectedCategory\['photo'\] : ''\s*\)/)
+  assert.doesNotMatch(api, /ptsPublicSeoDto\([\s\S]*?\$publicImage\(isset\(\$selectedCategory\['photo'\]/)
   assert.match(dto, /'seo' => ptsPublicSolutionsSeoDto\(\$seo\)/)
   assert.match(hubPage, /data\.value\?\.seo\?\.title/)
   assert.match(hubPage, /name: 'keywords', content: pageKeywords\.value/)

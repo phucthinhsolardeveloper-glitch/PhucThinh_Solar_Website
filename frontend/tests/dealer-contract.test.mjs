@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { isPublicDealerPayload } from '../shared/contracts/public-dealer.ts'
 const dealerPage=readFileSync(new URL('../app/components/dealer/DealerPageContent.vue',import.meta.url),'utf8')
 const dealerSections=readFileSync(new URL('../app/components/dealer/DealerSections.vue',import.meta.url),'utf8')
@@ -14,5 +14,6 @@ test('requires sanitizer metadata for the CMS intro and distribution description
 test('preserves safe rich-text structure for dealer support and benefit descriptions',()=>{assert.equal(isPublicDealerPayload(good),true);assert.equal(isPublicDealerPayload({...good,support:{...good.support,descriptionContent:{...richText,html:'<script>unsafe</script>'}}}),false);assert.equal(isPublicDealerPayload({...good,support:{...good.support,items:[{...good.support.items[0],descriptionContent:{...richText,sanitizedBy:'unknown'}}]}}),false);assert.match(dealerSections,/dealer\.support\.descriptionContent\.html/);assert.match(dealerSections,/item\.descriptionContent\.html/)})
 test('dealer overview anchor wraps the intro and keeps the desktop form column',()=>{assert.equal((dealerPage.match(/id="nang-luc-phan-phoi"/g)||[]).length,1);assert.ok(dealerPage.indexOf('id="nang-luc-phan-phoi"')<dealerPage.indexOf('<EditorialRichText v-if="dealer.intro.html"'));assert.ok(dealerPage.indexOf('id="nang-luc-phan-phoi"')<dealerPage.indexOf('id="dang-ky-dai-ly"'));assert.match(dealerPage,/min-\[992px\]:grid-cols-\[minmax\(0,1fr\)_minmax\(360px,520px\)\]/)})
 test('dealer hero has a text-only background and registration panel styling',()=>{assert.match(dealerPage,/bg-\[linear-gradient\(115deg,#061735,#123c72\)\]/);assert.match(dealerPage,/shadow-\[0_14px_34px_rgba\(6,23,53,0\.14\)\]/);assert.match(dealerPage,/link\.icon === 'solar'/)})
+test('Nuxt serves the PHP dealer hero fallback media locally',()=>assert.equal(existsSync(new URL('../public/assets/images/site-visuals/catalog-equipment-system.jpg',import.meta.url)),true))
 test('dealer support heading and description use the PHP desktop two-column arrangement',()=>{assert.match(dealerSections,/grid gap-0 min-\[992px\]:grid-cols-\[minmax\(300px,\.8fr\)_minmax\(420px,1\.2fr\)\]/);assert.match(dealerSections,/dealer\.support\.title[\s\S]*dealer\.support\.description/);assert.match(dealerSections,/min-\[992px\]:mt-0\.5/);assert.match(dealerSections,/min-\[992px\]:mt-\[38px\]/)})
 test('dealer page uses Admin SEO media before the shared logo fallback',()=>{assert.match(dealerPage,/dealer\.value\?\.seo\?\.title\s*\|\|\s*dealer\.value\?\.title/);assert.match(dealerPage,/dealer\.value\?\.seo\?\.description/);assert.match(dealerPage,/usePublicSocialMeta\(\{[\s\S]*description: pageDescription/);assert.match(dealerPage,/dealer\.value\?\.seo\?\.image\s*\|\|\s*undefined/)})

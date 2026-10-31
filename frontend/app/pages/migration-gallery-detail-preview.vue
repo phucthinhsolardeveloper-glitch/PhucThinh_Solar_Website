@@ -14,6 +14,7 @@ const errorStatus = (error.value as { statusCode?: unknown } | null)?.statusCode
 const responseStatus = editorialPublicResponseStatus(isBarePublicRoute.value, errorStatus, !gallery.value)
 if (import.meta.server && responseStatus) setResponseStatus(responseStatus, responseStatus === 404 ? 'Not Found' : 'Bad Gateway')
 const selectedIndex = ref<number | null>(null)
+const setDocumentScrollLock = useDocumentScrollLock()
 const lightbox = computed(() => {
   const detail = gallery.value
   const index = selectedIndex.value
@@ -67,7 +68,7 @@ function onKeydown(event: KeyboardEvent) {
   else if (event.key === 'Tab') trapFocus(event, lightboxPanel.value)
 }
 watch(selectedIndex, (value, oldValue) => {
-  if (import.meta.client) document.body.style.overflow = value === null ? '' : 'hidden'
+  setDocumentScrollLock(value !== null)
   // Only steal focus on the closed -> open transition; ArrowLeft/ArrowRight
   // also change selectedIndex to move between images and must not re-trap
   // focus on every navigation, or keyboard users get yanked back each time.
@@ -76,7 +77,7 @@ watch(selectedIndex, (value, oldValue) => {
 onMounted(() => document.addEventListener('keydown', onKeydown))
 onBeforeUnmount(() => {
   document.removeEventListener('keydown', onKeydown)
-  document.body.style.overflow = ''
+  setDocumentScrollLock(false)
 })
 
 useSeoMeta({

@@ -12,7 +12,7 @@ const zoomOrigin = ref('50% 50%')
 const lightboxPanel = ref<HTMLElement | null>(null)
 const lastTrigger = ref<HTMLElement | null>(null)
 const displayedImage = ref<HTMLImageElement | null>(null)
-let bodyOverflowBeforeLock: string | null = null
+const setDocumentScrollLock = useDocumentScrollLock()
 
 watch(() => props.media, () => {
   selectedIndex.value = props.media.findIndex((image) => Boolean(image.trim()))
@@ -96,8 +96,7 @@ function closeLightbox() {
 }
 function finishLightboxClose() {
   if (lightboxOpen.value) return
-  if (bodyOverflowBeforeLock !== null) document.body.style.overflow = bodyOverflowBeforeLock
-  bodyOverflowBeforeLock = null
+  setDocumentScrollLock(false)
   lastTrigger.value?.focus()
 }
 function moveLightbox(direction: -1 | 1) {
@@ -144,8 +143,7 @@ function nextImage(event?: Event) {
 watch(lightboxOpen, (open) => {
   if (!import.meta.client) return
   if (open) {
-    if (bodyOverflowBeforeLock === null) bodyOverflowBeforeLock = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
+    setDocumentScrollLock(true)
     nextTick(() => focusFirst(lightboxPanel.value))
   }
 })
@@ -160,7 +158,7 @@ onMounted(async () => {
 })
 onBeforeUnmount(() => {
   document.removeEventListener('keydown', handleKey)
-  if (import.meta.client && bodyOverflowBeforeLock !== null) document.body.style.overflow = bodyOverflowBeforeLock
+  setDocumentScrollLock(false)
 })
 </script>
 
@@ -209,7 +207,7 @@ onBeforeUnmount(() => {
       <button
         v-if="availableIndexes.length > 1"
         type="button"
-        class="absolute left-3 top-1/2 -translate-y-1/2 z-10 flex h-10 w-10 items-center justify-center rounded-full border border-slate-200/90 bg-white/90 text-navy-900 opacity-0 shadow-md backdrop-blur-xs transition-all duration-200 hover:bg-white hover:scale-105 active:scale-95 group-hover:opacity-100 max-ph:opacity-90 max-ph:h-9 max-ph:w-9 cursor-pointer"
+        class="public-neutral-button absolute left-3 top-1/2 -translate-y-1/2 z-10 flex h-10 w-10 items-center justify-center rounded-full text-navy-900 opacity-0 backdrop-blur-xs transition-all duration-200 hover:scale-105 active:scale-95 group-hover:opacity-100 max-ph:opacity-90 max-ph:h-9 max-ph:w-9 cursor-pointer"
         aria-label="Ảnh trước"
         @click="prevImage"
       >
@@ -220,7 +218,7 @@ onBeforeUnmount(() => {
       <button
         v-if="availableIndexes.length > 1"
         type="button"
-        class="absolute right-3 top-1/2 -translate-y-1/2 z-10 flex h-10 w-10 items-center justify-center rounded-full border border-slate-200/90 bg-white/90 text-navy-900 opacity-0 shadow-md backdrop-blur-xs transition-all duration-200 hover:bg-white hover:scale-105 active:scale-95 group-hover:opacity-100 max-ph:opacity-90 max-ph:h-9 max-ph:w-9 cursor-pointer"
+        class="public-neutral-button absolute right-3 top-1/2 -translate-y-1/2 z-10 flex h-10 w-10 items-center justify-center rounded-full text-navy-900 opacity-0 backdrop-blur-xs transition-all duration-200 hover:scale-105 active:scale-95 group-hover:opacity-100 max-ph:opacity-90 max-ph:h-9 max-ph:w-9 cursor-pointer"
         aria-label="Ảnh tiếp theo"
         @click="nextImage"
       >
@@ -247,7 +245,7 @@ onBeforeUnmount(() => {
       <p v-if="configuredIndexes.length === 0" class="m-0 text-base text-slate-600">Sản phẩm chưa có hình ảnh trong dữ liệu.</p>
       <template v-else>
         <p class="m-0 text-base text-slate-600">Không tải được hình ảnh sản phẩm. Vui lòng kiểm tra kết nối rồi thử lại.</p>
-        <UButton type="button" size="sm" variant="outline" @click="retryMedia">Thử tải lại ảnh</UButton>
+        <UButton type="button" size="sm" variant="outline" class="public-neutral-button" @click="retryMedia">Thử tải lại ảnh</UButton>
       </template>
     </div>
 

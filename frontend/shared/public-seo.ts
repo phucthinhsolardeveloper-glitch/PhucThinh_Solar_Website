@@ -67,7 +67,7 @@ export function publicBreadcrumbStructuredData(
   const entries = [{ label: 'Trang chủ', path: '/' }, ...items.map((item, index) => ({
     label: typeof item?.label === 'string' ? item.label.trim() : '',
     path: item?.path ?? (index === items.length - 1 ? pathname as string : ''),
-  }))]
+  })).filter((item, index) => index === items.length - 1 || item.path)]
   if (entries.some((item) => !item.label || item.label.length > 200 || /[\u0000-\u001F\u007F]/.test(item.label))) return null
 
   const listItems = entries.map((entry, index) => {

@@ -5,6 +5,14 @@ defineProps<{ groups: PublicHomePayload['productGroups'] }>()
 
 const links = useMigrationLinks()
 const isMigrationPreview = links.active
+const oversizedProductImages: Record<string, string> = {
+  '/upload/product/x3-pro-30-2-9905.png': '/assets/images/site-visuals/media-fallbacks/product-x3-pro-30.webp',
+  '/upload/product/x3-pro-20-2-2061.png': '/assets/images/site-visuals/media-fallbacks/product-x3-pro-20.webp',
+}
+
+function productImage(src: string): string {
+  return oversizedProductImages[src] || src
+}
 </script>
 
 <template>
@@ -29,7 +37,7 @@ const isMigrationPreview = links.active
             >
               <div class="overflow-hidden rounded-[4px] bg-white transition-all duration-300 group-hover:shadow-[0_8px_20px_rgba(10,34,81,0.08)]">
                 <img
-                  :src="product.image"
+                  :src="productImage(product.image)"
                   :alt="product.name"
                   class="block aspect-square w-full object-contain transition-transform duration-300 ease-out group-hover:scale-105 motion-reduce:transform-none motion-reduce:transition-none"
                   width="640"

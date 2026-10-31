@@ -49,7 +49,7 @@ async function add(goToCart = false) {
         variant="outline"
         size="lg"
         :loading="loading && loadingAction === 'cart'"
-        class="min-h-12 w-full justify-center rounded-[4px] border border-navy-800 bg-white px-5 font-bold text-navy-800 transition-all duration-150 hover:bg-slate-50 active:scale-[0.98] disabled:cursor-wait disabled:opacity-60 cursor-pointer"
+        class="public-neutral-button public-navy-outline-button min-h-12 w-full justify-center rounded-[4px] px-5 font-bold text-navy-800 transition-all duration-150 active:scale-[0.98] disabled:cursor-wait disabled:opacity-60 cursor-pointer"
         :disabled="loading"
         @click="add(false)"
       >

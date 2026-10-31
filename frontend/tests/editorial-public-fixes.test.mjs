@@ -10,14 +10,14 @@ test('news category links use the canonical DTO URL publicly and retain query fi
 
   assert.match(filters, /if \(!isMigrationPreview\.value\) return `\$\{category\.canonicalPath\}\$\{queryString\.value\}`/)
   assert.match(filters, /params\.set\('category', category\.slug\)/)
-  assert.match(filters, /:href="categoryHref\(category\)"/)
+  assert.match(filters, /:to="categoryHref\(category\)"/)
 })
 
 test('project category links use the canonical DTO URL publicly and retain query filtering in preview', () => {
   const filters = read('../app/components/projects/ProjectFilters.vue')
 
   assert.match(filters, /\?category=\$\{encodeURIComponent\(category\.slug\)\}`\s*:\s*category\.url/)
-  assert.match(filters, /:href="categoryHref\(category\)"/)
+  assert.match(filters, /:to="categoryHref\(category\)"/)
 })
 
 test('solution detail orders the hero before its switcher and only links to existing main content', () => {
@@ -27,6 +27,20 @@ test('solution detail orders the hero before its switcher and only links to exis
 
   assert.ok(heroIndex >= 0 && switcherIndex > heroIndex)
   assert.match(page, /<UButton v-if="data\.solution\.content\.html"[^>]*href="#noi-dung-giai-phap"[^>]*>Tìm hiểu phương án<\/UButton>/)
+  assert.match(page, /class="public-filter-chip inline-flex min-h-11[\s\S]*:aria-current="item\.active \? 'page' : undefined"/)
+  const categoryPage = read('../app/components/solutions/SolutionCategoryPage.vue')
+  assert.match(categoryPage, /class="public-filter-chip flex min-h-11/)
+  for (const file of ['../app/components/news/NewsFilters.vue', '../app/components/projects/ProjectFilters.vue']) {
+    assert.match(read(file), /public-filter-chip/)
+  }
+  const publicStyles = read('../app/assets/css/main.css')
+  assert.match(publicStyles, /\.public-filter-chip,\s*\.public-neutral-button/)
+  assert.match(publicStyles, /\.public-filter-chip:not\(\[aria-current="page"\]\):hover/)
+  assert.match(publicStyles, /\.public-filter-chip\[aria-current="page"\]/)
+  assert.ok(publicStyles.indexOf('.public-filter-chip[aria-current="page"]') > publicStyles.indexOf('.public-neutral-button:hover'))
+  const catalog = read('../app/components/catalog/CatalogPage.vue')
+  assert.match(catalog, /border-transparent bg-gold-500 text-navy-950/)
+  assert.match(catalog, /public-filter-chip public-navy-outline-button text-navy-800/)
 })
 
 test('project dates match legacy d/m/Y output and reject invalid calendar dates', () => {

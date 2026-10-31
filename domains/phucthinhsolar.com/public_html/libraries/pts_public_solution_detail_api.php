@@ -149,14 +149,9 @@ function ptsSolutionDetailPayload(array $row, array $gallery, array $solutionRow
         'equipment' => $equipment,
         'cta' => array('label' => 'Nhận tư vấn giải pháp', 'href' => '/lien-he/#yeu-cau-tu-van'),
         'campaignCta' => ptsSolutionDetailCampaignCta($ctaRows, $hotline),
-        /*
-         * editorial giờ CHỈ còn nói về mục lục (TOC) tự sinh từ heading — HTML
-         * thật đã có ở solution.content/extraContent phía trên. Xây TOC cần
-         * phân tích cấu trúc heading (id, cấp, thứ tự) thành điều hướng riêng,
-         * không chỉ sanitize phẳng, nên vẫn để dành cho một task khác.
-         */
-        'editorial' => array('rendered' => false, 'reason' => 'toc_generation_not_implemented'),
-        'parity' => array('toc' => array('included' => false, 'reason' => 'toc_generation_not_implemented'))
+        /* PHP sends sanitized HTML fragments; Nuxt derives the TOC from them. */
+        'editorial' => array('rendered' => false, 'reason' => 'toc_derived_client_side_from_sanitized_html'),
+        'parity' => array('toc' => array('included' => false, 'reason' => 'toc_derived_client_side_from_sanitized_html'))
     );
 }
 

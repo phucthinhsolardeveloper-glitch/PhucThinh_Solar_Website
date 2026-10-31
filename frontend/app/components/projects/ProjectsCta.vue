@@ -19,12 +19,10 @@ const trustItems = computed(() => props.cta.trust?.length ? props.cta.trust : [
 
 <template>
   <section class="mt-[38px] min-[901px]:mt-[50px]">
-    <div class="relative isolate grid min-h-0 grid-cols-1 items-center gap-6 overflow-hidden bg-[linear-gradient(112deg,#061735_0%,#0b2b59_68%,#123c72_100%)] px-[22px] py-7 text-white min-[701px]:min-h-[214px] min-[701px]:px-6 min-[901px]:grid-cols-[minmax(0,1fr)_minmax(270px,auto)] min-[901px]:gap-[38px] min-[901px]:px-[42px] min-[901px]:py-[34px]">
-      <span class="absolute inset-0 z-0 bg-[linear-gradient(180deg,rgba(10,34,81,.96)_0,rgba(10,34,81,.86)_100%)] min-[901px]:bg-[linear-gradient(90deg,rgba(10,34,81,.97)_0,rgba(10,34,81,.9)_38%,rgba(10,34,81,.55)_68%,rgba(10,34,81,.3)_100%)]" aria-hidden="true" />
-      <img v-if="backgroundImage" :src="backgroundImage" alt="" class="absolute inset-0 z-10 h-full w-full object-cover opacity-50" loading="lazy" decoding="async">
-      <div class="relative z-20 min-w-0 min-[901px]:max-w-[590px]" style="font-family: 'Plus Jakarta Sans', Mulish, ui-sans-serif, sans-serif">
+    <PublicCtaBanner variant="editorial" :image="backgroundImage" labelled-by="projects-contact-title">
+      <div class="min-w-0">
         <p v-if="cta.eyebrow" class="mb-2 text-xs font-extrabold uppercase tracking-[.08em] text-gold-400">{{ cta.eyebrow }}</p>
-        <h2 class="mt-0 mb-2 text-[28px] font-black leading-[1.3] tracking-[-.025em]">{{ cta.title }}</h2>
+        <h2 id="projects-contact-title" class="mt-0 mb-2 text-[clamp(21px,2.2vw,28px)] font-black leading-[1.25] tracking-[-.025em] text-white">{{ cta.title }}</h2>
         <p v-if="cta.description" class="mb-0 max-w-[64ch] text-[15.5px] leading-[1.6] text-blue-100">{{ cta.description }}</p>
         <ul v-if="trustItems.length" class="mt-5 mb-0 flex list-none flex-wrap gap-x-7 gap-y-[14px] p-0 text-[13.5px] font-extrabold text-blue-100">
           <li v-for="item in trustItems" :key="item.label" class="flex items-center gap-[10px]">
@@ -38,9 +36,10 @@ const trustItems = computed(() => props.cta.trust?.length ? props.cta.trust : [
           </li>
         </ul>
       </div>
-      <div class="relative z-20 flex w-full max-w-[330px] flex-col gap-2.5 min-[901px]:min-w-[270px] min-[901px]:max-w-none">
+      <template #actions>
+      <div class="flex w-full flex-col gap-2.5 min-[901px]:min-w-[270px]">
         <a v-if="cta.hotline?.tel" class="flex items-center justify-center gap-3.5 text-white no-underline" :href="`tel:${cta.hotline.tel}`">
-          <span class="grid h-12 w-12 shrink-0 place-items-center rounded-[3px] bg-gold-500 text-navy-950" aria-hidden="true">
+          <span class="grid h-12 w-12 shrink-0 place-items-center rounded-[3px] bg-hdr-gold text-navy-950" aria-hidden="true">
             <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.33.56 3.57.56.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.61 21 3 13.39 3 4c0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.24.19 2.45.56 3.57a1 1 0 0 1-.25 1.02l-2.19 2.2Z" /></svg>
           </span>
           <span>
@@ -49,11 +48,12 @@ const trustItems = computed(() => props.cta.trust?.length ? props.cta.trust : [
           </span>
         </a>
         <a
-          class="inline-flex min-h-12 items-center justify-center rounded-[4px] bg-gold-500 px-[22px] py-3 text-sm font-extrabold text-navy-950 no-underline transition-colors duration-150 hover:bg-gold-400 cursor-pointer"
+          class="inline-flex min-h-12 items-center justify-center rounded-[4px] bg-hdr-gold px-[22px] py-3 text-sm font-extrabold text-navy-950 no-underline transition-colors duration-150 hover:bg-hdr-gold-hover cursor-pointer"
           :href="links.generic('/lien-he/#yeu-cau-tu-van')"
           @click.prevent="openConsultation('Dự án: ' + cta.title)"
         >{{ cta.buttonLabel || label }} <span class="ml-2" aria-hidden="true">→</span></a>
       </div>
-    </div>
+      </template>
+    </PublicCtaBanner>
   </section>
 </template>

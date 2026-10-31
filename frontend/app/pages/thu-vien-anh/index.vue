@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import MigrationGalleryPreviewPage from '~/pages/migration-gallery-preview.vue'
-import galleryPublicRoute from '~/middleware/gallery-public-route'
-
-definePageMeta({ layout: false, middleware: galleryPublicRoute })
+definePageMeta({ layout: false, middleware: 'gallery-public-route' })
 </script>
 
 <template><MigrationGalleryPreviewPage /></template>

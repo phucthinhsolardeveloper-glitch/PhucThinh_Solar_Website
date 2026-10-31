@@ -12,7 +12,7 @@
     "previewHealthPath": "/migration-about-preview",
     "methods": ["GET", "HEAD"],
     "readiness": "blocked",
-    "reason": "Nuxt currently exposes only /migration-about-preview with noindex; a public /gioi-thieu/ route and production Nuxt service do not exist yet."
+    "reason": "The Nuxt source route /gioi-thieu/ exists, but no production Nuxt service/origin or verified cutover and rollback rehearsal exists; keep the feature flag OFF."
   },
   "phpOwnedPrefixes": [
     "/account/",

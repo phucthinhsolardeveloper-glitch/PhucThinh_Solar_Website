@@ -1,10 +1,8 @@
 <script setup lang="ts">
 import OrderThanksPage from '~/components/order/OrderThanksPage.vue'
-import orderSuccessPublicRoute from '~/middleware/order-success-public-route'
-
 definePageMeta({
   layout: false,
-  middleware: orderSuccessPublicRoute,
+  middleware: 'order-success-public-route',
 })
 
 // A token-bound order confirmation must never be searchable or indexable.

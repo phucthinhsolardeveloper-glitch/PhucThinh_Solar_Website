@@ -1,10 +1,8 @@
 <script setup lang="ts">
 import CartPage from '~/components/cart/CartPage.vue'
-import cartPublicRoute from '~/middleware/cart-public-route'
-
 definePageMeta({
   layout: false,
-  middleware: cartPublicRoute,
+  middleware: 'cart-public-route',
 })
 
 // Cart contents depend on the PHP session and must never be indexed.

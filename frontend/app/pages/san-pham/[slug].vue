@@ -1,11 +1,9 @@
 <script setup lang="ts">
 import { isPublicSeoIndexable } from '#shared/public-seo'
 import ProductPreviewPage from '~/components/product-preview/ProductPreviewPage.vue'
-import productDetailPublicRoute from '~/middleware/product-detail-public-route'
-
 definePageMeta({
   layout: false,
-  middleware: productDetailPublicRoute,
+  middleware: 'product-detail-public-route',
 })
 
 const config = useRuntimeConfig()
@@ -39,21 +37,21 @@ usePublicSocialMeta({
   description: productDescription,
   canonicalPath: computed(() => payload.value?.canonical.url || route.path),
   image: computed(() => product.value?.media?.[0]),
-  type: 'product',
+  type: 'article',
 })
 </script>
 <template>
   <div class="text-navy-800">
     <SiteHeader :site="site" />
 
-    <main>
+    <main :aria-busy="pending">
       <div class="border-b border-slate-200/70 bg-slate-50/80">
         <div class="pts-container">
           <SiteBreadcrumb :items="breadcrumbItems" />
         </div>
       </div>
 
-      <div v-if="pending" class="pts-container min-h-[45vh] pt-12 pb-20" role="status" aria-live="polite">
+      <div v-if="pending && !product" class="pts-container min-h-[45vh] pt-12 pb-20" role="status" aria-live="polite">
         <h1 class="mb-3 text-3xl font-black tracking-tight">Đang tải sản phẩm…</h1>
         <p class="text-slate-500">Đang lấy dữ liệu sản phẩm từ CMS.</p>
       </div>
@@ -63,7 +61,7 @@ usePublicSocialMeta({
         <p class="text-slate-500">Không thể tải sản phẩm hoặc slug chưa hợp lệ.</p>
       </div>
 
-      <ProductPreviewPage v-else :product="product" :breadcrumbs="payload!.breadcrumbs ?? []" :pricing="payload!.pricing" :content="payload!.content" :applications="payload!.applications" :buying-guides="payload!.buyingGuides" :documents="payload!.documents" :extras="extras" />
+      <ProductPreviewPage v-else :key="product.id" :product="product" :breadcrumbs="payload!.breadcrumbs ?? []" :pricing="payload!.pricing" :content="payload!.content" :applications="payload!.applications" :buying-guides="payload!.buyingGuides" :documents="payload!.documents" :extras="extras" />
     </main>
 
     <SiteFooter :site="site" />

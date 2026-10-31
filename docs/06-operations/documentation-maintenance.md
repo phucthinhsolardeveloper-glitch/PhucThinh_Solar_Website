@@ -32,6 +32,49 @@ và liên kết về runbook đang có hiệu lực.
 
 ## Lịch sử rà soát
 
+### 2026-10-31 — Nuxt migration branch và resolver checkpoint
+
+- Đối chiếu refs sau `git fetch`: remote feature Nuxt đã nằm trong `master`, một
+  worktree còn lại; local `master` ahead `origin/master` 102 commit. Không push,
+  merge hay dọn WIP.
+- Cập nhật trạng thái hiện hành tại
+  `docs/audits/pts-nuxt/REMEDIATION-STATUS-20261031.md`: 27 preview routes có
+  noindex route rule và SSR headers; resolver news/project chạy trên local Nuxt
+  + PHP bridge, với PHP source lint/hash khớp checkout.
+- Đổi 23 page từ import tĩnh middleware sang tên middleware trong `definePageMeta`;
+  29 test route/SEO và toàn bộ frontend test (468/468), typecheck, production
+  build đều đạt. Cảnh báo `INEFFECTIVE_DYNAMIC_IMPORT` đã hết.
+- Nitro build được smoke qua Caddy QA harness tạm với public SSR, hai alias, hai
+  slug động, API, media thật, noindex và đường dẫn không tồn tại. Container/config
+  tạm đã dừng/xóa; harness không thay production Caddy/Compose.
+- Frontend full test đạt 468/468. Compose config không có env file báo thiếu biến
+  deploy; cùng lệnh dùng `deploy/vps/stack.env.example` parse thành công. File mẫu
+  chỉ xác minh interpolation/schema, không chứng minh runtime secrets hay image;
+  thư mục secrets checkout chỉ có README. Không điền secret giả hoặc khởi động
+  service.
+- Rerun local CMS path bằng PHP bridge thật: 7 category, catalog tổng 372 sản
+  phẩm, danh mục `den-nlmt` có 203; resolver và PDP JINDIAN 500W trả đúng
+  canonical, slug lạ 404. Category/PDP SSR đạt ở viewport 390/1440, locale vi,
+  không lỗi page hoặc tràn ngang. Đây là bằng chứng local, không đóng release
+  edge hoặc commerce gate.
+- Nâng lock Nuxt lên 4.6.3 để nhận bản vá dot-segment path bypass; test 468/468,
+  typecheck, Docker image build và local Caddy route/security smoke đều đạt. Ba
+  encoded dot-segment requests trả 404. `npm audit --omit=dev` còn 14 advisory
+  transitive; không dùng `--force` vì npm đề xuất downgrade Nuxt xuống 4.1.3.
+  Runtime image chỉ mang `.output`, manifest không khai báo các package build
+  chain bị báo; đây chưa phải image SBOM/vulnerability scan đầy đủ.
+  API-only PHP bridge chặn `/thumbs` và `/assets`; QA tiếp theo dùng PHP media
+  probe cùng image với webroot/upload/thumbs read-only, tmpfs cache/log và mạng
+  riêng không có DB. Caddy edge trả 200 đúng MIME cho thumbnail wordmark, site
+  visuals PNG/WebP, upload gốc và thông báo Bộ Công Thương. Còn một thumbnail
+  emblem footer `520x426x3` chưa có trong local volume; original 200 nhưng sinh
+  cache lần đầu cần DB, nên giữ gate đó mở. Không sửa DB/volume. Caddy/Nuxt/media
+  QA containers/network đã dừng; giữ rollback image cũ local, không đổi
+  production.
+- Giữ **NO-GO** cutover: chưa smoke bằng production Caddy/Compose trên release
+  image, chưa có release checksum, commerce fixtures/session flow hoặc rollback
+  rehearsal. Báo cáo Caddy cũ vẫn là bằng chứng lịch sử riêng.
+
 ### 2026-10-30 — Nuxt public routes và audit icon/tương tác
 
 - Cập nhật chuẩn icon trong `docs/02-development/public-ui-ux-design-system.md`:

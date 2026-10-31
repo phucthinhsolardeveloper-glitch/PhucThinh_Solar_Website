@@ -2,11 +2,15 @@
 
 ## Current integration checkpoint — 2026-10-31
 
-- Branch consolidation is recorded in
-  [`BRANCH-INTEGRATION-AND-LOCAL-QA-20261031.md`](BRANCH-INTEGRATION-AND-LOCAL-QA-20261031.md):
-  one local branch (`master`), one worktree. Before this follow-up checkpoint,
-  local `master` was 81 commits ahead of `origin/master`; the checkpoint changes
-  remain local and no push or production action was performed.
+- Latest ref inventory: local `master` and `updateUI` both point to
+  `57aef9d`; `updateUI` has no unique commits, and
+  `origin/feature/pts-nuxt-integration-20261027` is an ancestor of `master`, so
+  no remote Nuxt feature commits are missing. `master` is 102 commits ahead of
+  `origin/master`; nothing was pushed. The second worktree has clean source at
+  the same SHA but retains ignored `backup/`, `.nuxt/`, and `node_modules/` data.
+  A previous attempt to remove the duplicate local ref was followed by its
+  recreation; retain the current state rather than racing an external checkout.
+  The earlier “one worktree” inventory is superseded.
 - PHP read-only API integration is **PASS**: the corrected follow-up runner
   reports 69 HTTP checks and 22 contract slices pass, 0 fail, 0 skip; the
   26-table snapshot is unchanged. Four hidden-record negative fixture families
@@ -41,9 +45,34 @@
 |---|---|---|
 | P0-A route/page inventory | Implemented locally | 34 manifest entries map to Nuxt pages; public resolver/status evidence is documented in the SEO crawl artifact. |
 | P0-B PHP/API integration | PASS with fixture gaps | 69 HTTP + 22 slice PASS, 0 FAIL, 0 SKIP; DB snapshot unchanged. Four hidden-record fixture families remain unavailable. |
-| P0-C browser QA | INCOMPLETE | Owner chose direct visual inspection. Capture logged 34 routes × 3 viewports as HTTP 200 but ended before final report; no visual parity claim. |
-| P2-A SEO/canonical crawl | Partial PASS | Public URL status/canonical/title/redirect/noindex checks pass 34/34; sitemap 457/457 and href reachability 362/362. OG/JSON-LD/href-path differences and hidden DB rows remain open. |
+| P0-C browser QA | INCOMPLETE | A fresh Nuxt-only GET health probe passes 34/34 manifest routes for HTTP 200, expected canonical, one H1 and local noindex; report is `frontend/.migration-artifacts/current-nuxt-route-health-20261031.json`. This is not the required 3-viewport browser/PHP parity report or visual approval. |
+| P1-A shared site shell | INCOMPLETE | Source contracts cover CMS-driven navigation, keyboard Escape/focus trap and scroll lock. A fresh browser interaction probe did not complete, so responsive keyboard/focus behavior and visual PHP parity have no new runtime approval. |
+| P1-B solution rich-content gate | Partial PASS | PHP allowlist sanitizer and sanitized-envelope validation are covered by 23 Nuxt contract tests and the PHP 8.1 helper test; local Nuxt DTO/page returns 200, `noindex`, one H1 and generated TOC. CKEditor visual comparison against PHP remains open because the PHP public renderer is stopped and the full parity report is incomplete. |
+| P1-C catalog business parity | INCOMPLETE | Current route/query contracts and category/PDP samples exist; pricing authority and complete filter/sort/pagination parity against the same PHP data remain open. Cart/quote continue to hand off to PHP. |
+| P1-D content hub/detail parity | PARTIAL | Published news/project/solution/policy/brand samples and DTO mappings exist; same-data CMS visibility/category/media/related-content and full responsive parity are not closed. |
+| P2-A SEO/canonical crawl | Partial PASS | Public URL status/canonical/title/redirect/noindex checks pass 34/34; sitemap 457/457 and href reachability 362/362. Current local Nuxt SSR returns valid JSON-LD on all 34 routes and BreadcrumbList on the 33 non-home routes; exact PHP parity, broader OG/href-path differences and hidden DB rows remain open. |
+| P2-B hybrid route pilot | NOT STARTED | Local flags remain off and production Caddy still routes to PHP; edge allowlist and rollback rehearsal are not verified. |
+| P3 production cutover | NO-GO | Depends on all P0–P2 gates, release checksum, production-like health/rollback evidence and owner approval. No production change is authorized or performed. |
 | Preview indexing | PASS | Runtime probe returns `X-Robots-Tag: noindex, nofollow, noarchive` for all 27 `migration-*.vue` pages; focused test passes 1/1. This verifies indexing protection, not route data/render health. |
+
+## Follow-up — current dirty-source build and smoke — 2026-10-31
+
+- `npm run build` on the current Nuxt worktree passed with Nuxt 4.6.3/Nitro
+  node-server output (9.11 MB, 2.39 MB gzip). The only reported notice was
+  `PLUGIN_TIMINGS`; the build did not report ineffective dynamic imports.
+- `NITRO_PHP_ORIGIN=http://127.0.0.1:8088 NITRO_PHP_ORIGIN_ALLOWLIST=127.0.0.1:8088 npm run smoke`
+  passed: preview plus four hub/media routes returned 200/noindex and an unknown
+  route returned 404. The smoke used the existing local API bridge and stopped
+  its temporary built-server process on completion.
+- After the latest UI/SEO follow-ups, `npm test` passed **472/472** and
+  `npm run typecheck` passed. The built Nuxt SSR server also returned 200 for
+  the real homepage against the local PHP API bridge; its SSR hero retains the
+  left-anchored content group with centered copy and the translucent CTA class.
+  Focused browser measurement at 1064×482 confirmed the block is left of the
+  viewport center. `git diff --check` passed.
+- This does not rebuild the retained QA Docker image or exercise the Caddy/
+  production Compose edge, PHP-rendered parity, commerce mutations, or visual
+  signoff. Production remains untouched.
 
 ## Follow-up checkpoint — current checkout, 2026-10-31
 
@@ -127,13 +156,11 @@ use the dated checkpoint above for the current local integration state.
 
 - `origin/feature/pts-nuxt-integration-20261027` is already an ancestor of
   `master`; it has no commits missing from the local integration branch.
-- Local `nuxt-progress-codex` contains two commits absent from `master`.
-  A full merge was not appropriate: its workflow commit weakens the repository
-  `AGENTS.md` process and removes UI parity requirements, while its second
-  commit installs an automatic Codex Stop hook that writes to a dmux event
-  file. Neither behavior is accepted in the current project contract.
-- The read-only preview coverage audit from that branch was selectively
-  integrated as `audit-nuxt-progress.cjs`; alias paths may share a preview page,
+- The archived ref `archive/nuxt-progress-codex-20261031` has three commits
+  outside `master` (including its merge commit). Its remaining changes combine
+  dmux workflow/Stop-hook behavior with an earlier coverage-audit revision, so
+  the tag is not merged wholesale. The safe read-only audit is already present
+  as `audit-nuxt-progress.cjs` at `bdd4eb9`; alias paths may share a preview page,
   and filesystem scanning is limited to `frontend/app/pages`. Its seven unit
   tests pass. Against the current root, all **34/34 manifest route entries**
   map to an existing page file, with zero missing pages; 27 migration page
@@ -145,6 +172,29 @@ use the dated checkpoint above for the current local integration state.
 - This audit proves only route-manifest-to-page-file coverage. It does not prove
   visual parity, public routing, SEO, API behavior, commerce, security or release
   readiness. Production, DB, feature flags and routing were not touched.
+
+## Follow-up — archived refs and rich-text negative coverage — 2026-10-31
+
+- Rechecked refs and worktrees: only `master` and the known remote Nuxt feature
+  ref are branches; the feature ref and applicable backup tags are ancestors of
+  `master`. The only other commits on the archived progress tag are dmux
+  workflow/hook changes plus its merge; these remain excluded. The two unique
+  safety-tag commits are legacy PHP bulk-admin/UI work, not missing Nuxt code.
+- Stash snapshots were left unchanged. `stash@{5}` contains an older checkout
+  draft that collects order details and posts an order from the preview; it was
+  not applied because current Nuxt preview is intentionally read-only and its
+  checkout POST returns 410. This keeps the checkout safety invariant intact.
+- Expanded `scripts/test-pts-public-solution-detail-api.php` with a rich-text
+  attack fixture covering event handlers, inline CSS, `javascript:` links, SVG,
+  remote images and entity-encoded script markup. The PHP 8.1 image ran this
+  slice test in an isolated `--network none` container: **11 PASS, 0 FAIL**.
+  The sanitizer implementation was unchanged; this adds regression coverage.
+- Built local QA image `web_pts_php-nuxt-service:qa-current-wip-20261031-r4`
+  (`sha256:a5aaac65378c99dbeed8654c04485a1bda38ad53781803ec54796b2818abb02d`).
+  Isolated runtime smoke returned 200 for site data, home, a category resolved
+  from the API, PDP and noindex preview; unknown route returned 404. The QA
+  container/network were removed and the local API bridge was restored to its
+  original network. This is not full PHP-renderer parity or a production gate.
 
 ## Commerce checkout handoff — 2026-10-29
 
@@ -415,8 +465,9 @@ chuyển checkpoint thay vì bịa fixture.
    vì pixel ratio khi classification là data-only và nội dung còn khác contract.
 3. Chốt shell CMS/navigation trước khi triển khai từng page slice; đây là owner
    chung của mọi preview.
-4. Tách sanitizer rich-text thành một gate độc lập trước khi có bất kỳ claim
-   parity nội dung CKEditor nào.
+4. Giữ sanitizer rich-text và TOC là gate riêng đã có regression coverage; chỉ
+   xác nhận CKEditor parity sau khi có cùng dữ liệu và ảnh render PHP/Nuxt để so
+   sánh trực tiếp.
 5. P0/P2 dùng manifest và crawler read-only; chỉ sau khi P0 đạt mới ký SEO
    canonical/redirect hoặc giao hybrid route. Không trộn business migration vào
    công cụ QA.
@@ -453,3 +504,22 @@ route ownership.
   two-renderer SEO comparison.
 - Production remains PHP-owned. No database, PHP business logic, route flags,
   Caddy, deployment or production service was changed.
+
+## Follow-up — Nuxt route health and solution rich-text — 2026-10-31
+
+- Reused the 34-route public manifest against local Nuxt `:3100` with GET only.
+  All **34/34** routes returned HTTP 200, the manifest's expected canonical
+  path, exactly one H1 and local `noindex`. The metadata-only result is retained
+  at `frontend/.migration-artifacts/current-nuxt-route-health-20261031.json`.
+  PHP `:8088` is API-only, so this does not establish PHP HTML parity or close
+  the 3-viewport browser gate.
+- The direct PHP solution-detail DTO and Nuxt adapter both returned 200 for the
+  published family-solar fixture. PHP content uses the validated sanitized-HTML
+  envelope; Nuxt SSR contains one H1 and 27 generated TOC links. Focused Nuxt
+  contracts passed **23/23**, and the isolated PHP 8.1 solution-detail helper
+  test passed. Sanitizer/TOC behavior is covered; visual CKEditor parity remains
+  open pending a same-data PHP render.
+- Local branch inventory has two refs (`master`, `updateUI`) at the same SHA and
+  no missing remote Nuxt feature commits. The duplicate ref/worktree is retained
+  because another checkout recreated/uses it and contains ignored data. No
+  production state was changed.

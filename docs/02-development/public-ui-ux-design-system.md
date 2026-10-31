@@ -100,6 +100,20 @@ Nguồn code: `assets/css/design-tokens.css`.
 | Chip thường | `--pts-chip-bg` | `#eef2f7` | filter/tab chưa chọn |
 | Chip hover | `--pts-chip-bg-hover` | `#dfe6ef` | hover filter/tab |
 
+Public filter links use the shared `.public-filter-chip` treatment. Other
+white/gray action buttons use `.public-neutral-button`; both use a borderless,
+subtle white-to-gray gradient and a light raised shadow. Selected filters keep
+their established group color (navy or the approved gold gradient). Gold actions
+keep the approved gradient with a soft highlight and low shadow; avoid a hard
+raised edge or thick 3D bevel.
+Each location keeps its own size and spacing; do not apply the neutral treatment
+to gold actions or selected gold catalog controls.
+
+Product secondary actions, inactive catalog chips and pagination controls use
+a thin navy outline over the neutral gradient. Selected chips retain their
+approved active color. The desktop catalog filter column uses a light slate
+surface; its mobile drawer remains white.
+
 Header-v3 giữ token màu riêng để khớp PHP, nhưng mọi nút/nền tương tác dùng màu
 vàng (kể cả nút header) hiển thị cùng gradient thương hiệu; token header vẫn
 được giữ cho viền, chữ và các chi tiết không phải nền CTA.
@@ -170,7 +184,8 @@ Không tạo giá trị 17/19/27px mới nếu một token gần nhất giải q
 - Shadow chỉ dùng cho dropdown, modal, phần tử nổi/fixed hoặc overlay cần phân
   biệt mặt phẳng. Hover không làm card nhảy lên nếu không có ý nghĩa thao tác.
 - Border chỉ dùng cho form control, bảng, focus, trạng thái chọn hoặc ranh giới
-  thao tác. Breadcrumb không có border/gạch chân dưới.
+  thao tác. CTA nền ảnh dùng một viền sáng rất nhẹ để xác định mép khối; không
+  thêm viền trang trí cho card nội dung. Breadcrumb không có border/gạch chân dưới.
 
 Token semantic mục tiêu: `radius-none:0`, `radius-sm:3px`, `radius-control:4px`,
 `radius-round:999px` chỉ cho vai trò chức năng; `elevation-0:none`,
@@ -483,6 +498,31 @@ Nội dung marketing biến đổi phải đi theo chuỗi:
 Admin field + hướng dẫn ảnh/copy -> validation -> DB -> source -> template
 -> fallback khi trống -> test trạng thái có/không dữ liệu
 ```
+
+### CTA cuối trang
+
+CTA cuối nội dung dùng `PublicCtaBanner.vue` để thống nhất ảnh nền, lớp phủ navy,
+độ tương phản, khoảng cách và cách xếp lại trên mobile. Nội dung, ảnh, hotline,
+Zalo và URL vẫn lấy từ DTO/Admin hoặc fallback đã duyệt; không gộp nội dung
+nghiệp vụ của các trang thành một câu cố định.
+
+Ba biến thể được phân theo mục đích:
+
+| Biến thể | Dùng ở | Bố cục |
+|---|---|---|
+| `corporate` | Giới thiệu, trang thương hiệu/giải pháp cần hotline hoặc nhiều kênh liên hệ | Dải ảnh nền có phủ navy; thông điệp bên trái, liên hệ/CTA bên phải |
+| `editorial` | Kiến thức, danh sách dự án và trang chi tiết dự án | Dải ảnh nền rộng; tiêu đề/mô tả và điểm tin cậy bên trái, hotline/CTA gom bên phải |
+| `catalog` | Danh mục sản phẩm và thương hiệu | Dải ảnh nền thấp gọn; thông điệp ngắn và một CTA chính trên cùng hàng |
+
+Desktop dùng cùng khung chiều rộng nội dung và căn giữa theo trục; dưới 760px
+các biến thể chuyển thành một cột, giữ thứ tự nội dung rồi đến thao tác. Mỗi dải
+CTA luôn có ảnh nền: ưu tiên ảnh CMS phù hợp ngữ cảnh; nếu field ảnh trống hoặc
+ảnh CMS không tải được, `PublicCtaBanner.vue` dùng ảnh WebP dự phòng theo biến
+thể (`cta-corporate-bg.webp`, `cta-editorial-bg.webp` hoặc `cta-catalog-bg.webp`).
+Ảnh dự phòng chỉ tạo không khí thị giác, không dùng làm bằng chứng dự án, đội ngũ,
+chứng nhận hay năng lực thực tế. Nút hành động dùng gradient vàng chuẩn; đường dẫn
+gọi, Zalo và mở form giữ theo DTO. Cả ba biến thể dùng chung radius `4px` và viền
+trắng mảnh cùng độ tương phản thấp; không tạo ngoại lệ radius/border theo từng trang.
 
 ## 10. Anti-pattern bị cấm
 

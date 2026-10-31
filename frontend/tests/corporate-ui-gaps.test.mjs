@@ -94,14 +94,17 @@ test('contact form exposes security-load failure and a usable retry before enabl
   assert.match(form, /if \(loadingSecurity\.value \|\| !security\.value\)/)
 })
 
-test('About contact band renders the optional CMS background with the PHP legibility overlay', async () => {
-  const [page, php, css] = await Promise.all([
+test('About contact band uses the shared corporate CTA and retains its image contrast treatment', async () => {
+  const [page, php, css, banner] = await Promise.all([
     read('app/components/about/AboutPreviewPage.vue'),
     read('../domains/phucthinhsolar.com/public_html/templates/about/about_tpl.php'),
     read('../domains/phucthinhsolar.com/public_html/assets/css/about-v2.css'),
+    read('app/components/PublicCtaBanner.vue'),
   ])
-  assert.match(page, /v-if="about\.cta\.image"[\s\S]*<img class="h-full w-full object-cover" :src="about\.cta\.image"/)
-  assert.match(page, /rgba\(6,27,70,\.97\)[\s\S]*rgba\(6,27,70,\.82\)/)
+  assert.match(page, /<PublicCtaBanner variant="corporate" :image="about\.cta\.image"/)
+  assert.match(banner, /corporate: '\/assets\/images\/site-visuals\/cta-corporate-bg\.webp'/)
+  assert.match(banner, /public-cta-banner__image[\s\S]*object-fit: cover/)
+  assert.match(banner, /public-cta-banner__shade[\s\S]*linear-gradient/)
   assert.match(php, /--about-cta-image:url\(/)
   assert.match(css, /\.pts-about-contact-band\.has-image:before[\s\S]*background-size:cover/)
 })

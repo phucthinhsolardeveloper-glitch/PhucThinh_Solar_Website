@@ -13,6 +13,7 @@ const query = computed(() => page.value > 1 ? { p: String(page.value) } : {})
 const { data, error, pending } = await useFetch<unknown>('/_migration/video', { query })
 const payload = computed<PublicVideoPayload | null>(() => isPublicVideoPayload(data.value) ? data.value : null)
 const selected = ref<PublicVideoItem | null>(null)
+const setDocumentScrollLock = useDocumentScrollLock()
 const totalPages = computed(() => payload.value ? Math.max(1, Math.ceil(payload.value.pagination.total / payload.value.pagination.perPage)) : 1)
 const errorStatus = (error.value as { statusCode?: unknown } | null)?.statusCode
 const responseStatus = editorialPublicHubResponseStatus(
@@ -62,13 +63,13 @@ function onKeydown(event: KeyboardEvent) {
   else if (event.key === 'Tab') trapFocus(event, lightboxPanel.value)
 }
 watch(selected, (value) => {
-  if (import.meta.client) document.body.style.overflow = value ? 'hidden' : ''
+  setDocumentScrollLock(Boolean(value))
   if (value) nextTick(() => focusFirst(lightboxPanel.value))
 })
 onMounted(() => document.addEventListener('keydown', onKeydown))
 onBeforeUnmount(() => {
   document.removeEventListener('keydown', onKeydown)
-  document.body.style.overflow = ''
+  setDocumentScrollLock(false)
 })
 
 const pageTitle = computed(() => isPublicRoute.value
@@ -92,17 +93,18 @@ usePublicSocialMeta({
 <template>
   <div class="min-h-screen bg-white text-navy-800">
     <SiteHeader :site="site" />
-    <main class="pts-container py-10 nav:py-14">
+    <main class="pts-container py-10 nav:py-14" :aria-busy="pending">
       <SiteBreadcrumb :items="[{ label: 'Video' }]" />
       <header class="mb-8">
         <h1 class="text-[clamp(32px,5vw,52px)] font-black tracking-tight">{{ payload?.title || 'Video' }}</h1>
       </header>
 
-      <div v-if="pending" class="py-16 text-slate-500" role="status">Đang tải video…</div>
-      <div v-else-if="error || !payload" class="rounded-btn border border-red-200 bg-red-50 p-6 text-red-800" role="alert">
+      <div v-if="pending && !payload" class="py-16 text-slate-500" role="status">Đang tải video…</div>
+      <div v-else-if="!payload" class="rounded-btn border border-red-200 bg-red-50 p-6 text-red-800" :role="error ? 'alert' : 'status'">
         Không thể tải dữ liệu video từ CMS local.
       </div>
       <template v-else>
+        <p v-if="error" class="mb-5 rounded-btn bg-amber-50 px-4 py-3 text-sm text-amber-900" role="alert">Không thể cập nhật danh sách video. Đang giữ kết quả vừa tải trước đó.</p>
         <div v-if="payload.videos.length" class="grid grid-cols-1 gap-5 ph:grid-cols-2 tb:grid-cols-3 wd:grid-cols-4">
           <button
             v-for="item in payload.videos"

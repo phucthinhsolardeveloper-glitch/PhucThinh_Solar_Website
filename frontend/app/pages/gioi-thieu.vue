@@ -2,11 +2,9 @@
 import { isPublicAboutPayload } from '#shared/contracts/public-about'
 import { isPublicSeoIndexable } from '#shared/public-seo'
 import AboutPreviewPage from '~/components/about/AboutPreviewPage.vue'
-import aboutPublicRoute from '~/middleware/about-public-route'
-
 definePageMeta({
   layout: false,
-  middleware: aboutPublicRoute,
+  middleware: 'about-public-route',
 })
 
 const config = useRuntimeConfig()

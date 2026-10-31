@@ -16,3 +16,10 @@ test('contact map URLs continue to be validated against the Google Maps allowlis
   assert.match(contractTests, /rejects unsafe media and map URLs/)
   assert.match(contractTests, /https:\/\/evil\.example\/maps/)
 })
+
+test('contact branches and map use equal desktop column widths', () => {
+  assert.match(component, /items-stretch gap-8 lg:grid-cols-\[minmax\(0,1fr\)_minmax\(0,1fr\)\] lg:gap-10/)
+  assert.match(component, /lg:auto-rows-fr lg:content-stretch/)
+  assert.match(component, /lg:h-full lg:items-center/)
+  assert.doesNotMatch(component, /lg:grid-cols-\[minmax\(0,\.8fr\)_minmax\(0,1\.2fr\)\]/)
+})

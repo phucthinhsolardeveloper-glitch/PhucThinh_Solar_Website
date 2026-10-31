@@ -2,6 +2,7 @@
 const props = defineProps<{ images: string[]; title: string }>()
 
 const selectedIndex = ref<number | null>(null)
+const setDocumentScrollLock = useDocumentScrollLock()
 const selectedImage = computed(() => selectedIndex.value === null ? null : props.images[selectedIndex.value] ?? null)
 const dialog = ref<HTMLElement | null>(null)
 const lastTrigger = ref<HTMLElement | null>(null)
@@ -50,14 +51,14 @@ function onKeydown(event: KeyboardEvent) {
 }
 
 watch(selectedIndex, (value, oldValue) => {
-  if (import.meta.client) document.body.style.overflow = value === null ? '' : 'hidden'
+  setDocumentScrollLock(value !== null)
   if (value !== null && oldValue === null) nextTick(() => focusFirst(dialog.value))
 })
 
 onMounted(() => document.addEventListener('keydown', onKeydown))
 onBeforeUnmount(() => {
   document.removeEventListener('keydown', onKeydown)
-  document.body.style.overflow = ''
+  setDocumentScrollLock(false)
 })
 </script>
 

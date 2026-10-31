@@ -10,6 +10,7 @@ const hasVideo = computed(() => videoItems.value.length > 0)
 const activeTab = ref<'image' | 'video'>('image')
 const visibleItems = computed(() => activeTab.value === 'image' ? imageItems.value : videoItems.value)
 const selected = ref<PublicProjectGalleryItem | null>(null)
+const setDocumentScrollLock = useDocumentScrollLock()
 const selectedEmbedUrl = computed(() => selected.value?.type === 'video' ? projectVideoEmbedUrl(selected.value.href) : '')
 const imageTabButton = ref<HTMLButtonElement | null>(null)
 const videoTabButton = ref<HTMLButtonElement | null>(null)
@@ -75,13 +76,13 @@ function onKeydown(event: KeyboardEvent) {
 }
 
 watch(selected, (value, oldValue) => {
-  if (import.meta.client) document.body.style.overflow = value ? 'hidden' : ''
+  setDocumentScrollLock(Boolean(value))
   if (value && oldValue === null) nextTick(() => focusFirst(lightboxPanel.value))
 })
 onMounted(() => document.addEventListener('keydown', onKeydown))
 onBeforeUnmount(() => {
   document.removeEventListener('keydown', onKeydown)
-  document.body.style.overflow = ''
+  setDocumentScrollLock(false)
 })
 </script>
 

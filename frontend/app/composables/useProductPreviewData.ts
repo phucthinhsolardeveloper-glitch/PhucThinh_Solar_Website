@@ -27,12 +27,32 @@ export function useProductPreviewData(slug: Ref<string>) {
   const productFetch = useFetch<unknown>('/_migration/product-detail', { query: computed(() => ({ slug: slug.value })), default: () => null })
   const extrasFetch = useFetch<unknown>('/_migration/product-extras', { query: computed(() => ({ slug: slug.value })), default: () => null })
   const { data: siteData } = siteFetch
-  const { data: productData, error, pending } = productFetch
-  const { data: extrasData } = extrasFetch
+  const { data: productData, error, pending: productPending } = productFetch
+  const { data: extrasData, pending: extrasPending } = extrasFetch
   const site = computed(() => isPublicSitePayload(siteData.value) ? siteData.value : fallbackSite)
-  const payload = computed<PublicProductDetailPayload | null>(() => isPublicProductDetailPayload(productData.value) ? productData.value : null)
-  const extras = computed<PublicProductExtrasPayload | null>(() => isPublicProductExtrasPayload(extrasData.value) ? extrasData.value : null)
+  const fetchedPayload = computed<PublicProductDetailPayload | null>(() => isPublicProductDetailPayload(productData.value) ? productData.value : null)
+  const lastResolvedPayload = shallowRef<PublicProductDetailPayload | null>(null)
+  watch(fetchedPayload, (value) => {
+    if (value?.product.slug === slug.value) lastResolvedPayload.value = value
+  }, { immediate: true })
+  const payload = computed<PublicProductDetailPayload | null>(() => {
+    if (fetchedPayload.value?.product.slug === slug.value) return fetchedPayload.value
+    return productPending.value ? lastResolvedPayload.value : null
+  })
   const product = computed(() => payload.value?.product ?? null)
+  const fetchedExtras = computed<PublicProductExtrasPayload | null>(() => isPublicProductExtrasPayload(extrasData.value) ? extrasData.value : null)
+  const lastResolvedExtras = shallowRef<PublicProductExtrasPayload | null>(null)
+  watch([fetchedExtras, fetchedPayload], ([extra, productPayload]) => {
+    if (extra && productPayload?.product.slug === slug.value && extra.productId === productPayload.product.id) {
+      lastResolvedExtras.value = extra
+    }
+  }, { immediate: true })
+  const extras = computed<PublicProductExtrasPayload | null>(() => {
+    if (!product.value) return null
+    if (fetchedExtras.value?.productId === product.value.id) return fetchedExtras.value
+    return productPending.value && lastResolvedExtras.value?.productId === product.value.id ? lastResolvedExtras.value : null
+  })
+  const pending = computed(() => productPending.value || extrasPending.value)
 
   // Noindex preview page: structured data here is never surfaced to search results,
   // but staying schema-accurate now avoids re-deriving it at public cutover time.

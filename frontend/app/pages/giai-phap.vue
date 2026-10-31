@@ -8,12 +8,11 @@ import SolutionCards from '~/components/solutions/SolutionCards.vue'
 import SolutionsEquipment from '~/components/solutions/SolutionsEquipment.vue'
 import SolutionsCta from '~/components/solutions/SolutionsCta.vue'
 import EditorialRichText from '~/components/editorial/EditorialRichText.vue'
-import solutionsPublicRoute from '~/middleware/solutions-public-route'
 import { editorialPublicHubResponseStatus } from '#shared/editorial-public-route'
 
 definePageMeta({
   layout: false,
-  middleware: solutionsPublicRoute,
+  middleware: 'solutions-public-route',
 })
 
 const config = useRuntimeConfig()

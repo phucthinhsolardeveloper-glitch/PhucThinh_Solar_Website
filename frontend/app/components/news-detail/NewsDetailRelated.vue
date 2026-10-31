@@ -25,7 +25,7 @@ function scrollRelated(direction: -1 | 1): void {
       <div v-if="items.length > 1" role="group" class="flex shrink-0 gap-2" aria-label="Điều hướng tin liên quan">
         <button
           type="button"
-          class="grid size-11 place-items-center rounded-full border border-slate-300 bg-transparent text-navy-800 transition-colors hover:border-gold-500 hover:text-gold-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-600"
+          class="public-neutral-button grid size-11 place-items-center rounded-full text-navy-800"
           aria-label="Tin trước"
           @click="scrollRelated(-1)"
         >
@@ -35,7 +35,7 @@ function scrollRelated(direction: -1 | 1): void {
         </button>
         <button
           type="button"
-          class="grid size-11 place-items-center rounded-full border border-slate-300 bg-transparent text-navy-800 transition-colors hover:border-gold-500 hover:text-gold-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-600"
+          class="public-neutral-button grid size-11 place-items-center rounded-full text-navy-800"
           aria-label="Tin tiếp theo"
           @click="scrollRelated(1)"
         >

@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import CatalogPage from '~/components/catalog/CatalogPage.vue'
-import catalogCategoryPublicRoute from '~/middleware/catalog-category-public-route'
 import { productCategorySegmentsFromPublicPath } from '#shared/public-route-gate'
 
 definePageMeta({
   layout: false,
-  middleware: catalogCategoryPublicRoute,
+  middleware: 'catalog-category-public-route',
 })
 
 const route = useRoute()

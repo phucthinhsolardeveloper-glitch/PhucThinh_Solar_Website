@@ -11,10 +11,24 @@ const hotline = computed(() => props.site.brand.hotline.trim())
 const technicalHotline = computed(() => props.site.brand.technicalHotline?.trim() ?? '')
 const footerLogo = computed(() => props.site.brand.logoFooter || props.site.brand.logo || '')
 const CMS_UPLOAD_PHOTO = /^\/upload\/photo\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|gif|webp|avif)$/i
+const footerLogoThumbnailFailed = ref(false)
+const footerLogoUnavailable = ref(false)
 
 const footerLogoSrc = computed(() => {
   const src = footerLogo.value
-  return CMS_UPLOAD_PHOTO.test(src) ? `/thumbs/520x426x3${src}` : src
+  if (CMS_UPLOAD_PHOTO.test(src) && !footerLogoThumbnailFailed.value) return `/thumbs/520x426x3${src}`
+  return src
+})
+function onFooterLogoError() {
+  if (CMS_UPLOAD_PHOTO.test(footerLogo.value) && !footerLogoThumbnailFailed.value) {
+    footerLogoThumbnailFailed.value = true
+    return
+  }
+  footerLogoUnavailable.value = true
+}
+watch(footerLogo, () => {
+  footerLogoThumbnailFailed.value = false
+  footerLogoUnavailable.value = false
 })
 function trustBadgeSrc(src: string): string {
   return CMS_UPLOAD_PHOTO.test(src) ? `/thumbs/400x152x3${src}` : src
@@ -48,12 +62,13 @@ const telHref = computed(() => telHrefFor(hotline.value))
       <div class="flex flex-col items-center gap-4 tb:items-start">
         <a class="block w-full max-w-[300px]" :href="footerHref('/')" :aria-label="`${brandName} - Trang chủ`">
           <img
-            v-if="footerLogo"
+            v-if="footerLogo && !footerLogoUnavailable"
             :src="footerLogoSrc"
             :alt="brandName"
             width="520"
             height="426"
             class="block h-auto w-full object-contain tb:max-w-[280px] wd:max-w-[300px]"
+            @error="onFooterLogoError"
           >
           <span v-else class="text-lg font-black text-white">{{ brandName }}</span>
         </a>
@@ -107,7 +122,7 @@ const telHref = computed(() => telHrefFor(hotline.value))
         </div>
       </div>
 
-      <div class="grid min-w-0 grid-cols-1 gap-8 min-[768px]:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] tb:col-span-2 nav:col-span-1">
+      <div class="grid min-w-0 grid-cols-1 gap-8 min-[768px]:grid-cols-[minmax(350px,1fr)_minmax(0,1fr)] min-[768px]:gap-12 tb:col-span-2 nav:col-span-1">
         <!-- Chính sách nằm cùng cột nội dung liên hệ như footer PHP. -->
         <nav v-if="footer?.policies.length" aria-label="Chính sách và hỗ trợ khách hàng">
           <h2 class="mb-4 text-[14px] font-extrabold uppercase tracking-wider text-white">

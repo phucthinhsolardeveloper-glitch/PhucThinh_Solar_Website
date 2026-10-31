@@ -28,7 +28,7 @@ const searchQuery = computed(() => ({
 }))
 
 const { data, error, pending } = await useAsyncData<PublicSearchPayload>(
-  () => 'migration-search-' + JSON.stringify(searchQuery.value),
+  'migration-search',
   () => $fetch('/_migration/search', { query: searchQuery.value }),
   { watch: [searchQuery] },
 )
@@ -122,7 +122,7 @@ usePublicSocialMeta({
     <main class="pts-container pb-16">
       <div class="pt-6">
         <div v-if="!keyword" class="rounded-btn border border-gray-200 p-6 text-slate-500">Nhập từ khóa trong ô tìm kiếm ở header.</div>
-        <div v-else-if="pending" class="py-16 text-slate-500" role="status">Đang tìm sản phẩm…</div>
+        <div v-else-if="pending && !data" class="py-16 text-slate-500" role="status">Đang tìm sản phẩm…</div>
         <div v-else-if="error" class="rounded-btn border border-red-200 bg-red-50 p-6 text-red-800" role="alert">Không thể tải kết quả tìm kiếm từ CMS local.</div>
         <div v-else-if="data" :class="hasFilters ? 'grid gap-8 nav:grid-cols-[260px_minmax(0,1fr)]' : ''">
         <aside v-if="hasFilters && filters" class="hidden nav:block">
@@ -134,7 +134,7 @@ usePublicSocialMeta({
           />
         </aside>
 
-        <section class="min-w-0" aria-label="Kết quả tìm kiếm">
+        <section class="min-w-0" aria-label="Kết quả tìm kiếm" :aria-busy="pending">
           <div class="mb-5 flex flex-wrap items-center justify-between gap-4">
             <h2 class="m-0 text-[22px] font-extrabold text-navy-950">Danh sách sản phẩm</h2>
             <label class="flex items-center gap-2 text-sm text-slate-600">
@@ -146,7 +146,7 @@ usePublicSocialMeta({
           </div>
           <button
             v-if="hasFilters && filters"
-            class="mb-5 inline-flex min-h-11 items-center gap-2 rounded-chip border border-gray-200 px-4 font-bold nav:hidden"
+            class="public-neutral-button mb-5 inline-flex min-h-11 items-center gap-2 rounded-chip px-4 font-bold nav:hidden"
             type="button"
             aria-controls="search-filter-panel"
             :aria-expanded="mobileFiltersOpen"
@@ -171,9 +171,13 @@ usePublicSocialMeta({
           <p v-if="!data.products.length" class="rounded-btn border border-gray-200 p-8 text-center text-slate-500">Không tìm thấy sản phẩm phù hợp.</p>
 
           <nav v-if="totalPages > 1" class="mt-10 flex flex-wrap items-center justify-center gap-2" aria-label="Phân trang tìm kiếm">
-            <SitePaginationButton v-if="currentPage > 1" :to="pageHref(currentPage - 1)">Trước</SitePaginationButton>
+            <SitePaginationButton v-if="currentPage > 1" :to="pageHref(currentPage - 1)" aria-label="Trang trước">
+              <UIcon name="i-lucide-chevron-left" class="size-4" aria-hidden="true" />
+            </SitePaginationButton>
             <span class="px-2 text-sm text-slate-500">Trang {{ currentPage }} / {{ totalPages }}</span>
-            <SitePaginationButton v-if="currentPage < totalPages" :to="pageHref(currentPage + 1)">Sau</SitePaginationButton>
+            <SitePaginationButton v-if="currentPage < totalPages" :to="pageHref(currentPage + 1)" aria-label="Trang sau">
+              <UIcon name="i-lucide-chevron-right" class="size-4" aria-hidden="true" />
+            </SitePaginationButton>
           </nav>
         </section>
       </div>

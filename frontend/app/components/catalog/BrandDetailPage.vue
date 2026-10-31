@@ -52,7 +52,7 @@ const { data: siteData } = await useFetch<unknown>('/_migration/site', { default
 const site = computed(() => isPublicSitePayload(siteData.value) ? siteData.value : fallbackSite)
 
 const { data, error, pending } = await useAsyncData<PublicBrandDetailPayload>(
-  () => `migration-brand-detail-${JSON.stringify(query.value)}`,
+  () => `migration-brand-detail-${props.slug}`,
   () => $fetch('/_migration/brand-detail', { query: query.value }),
   { watch: [query] },
 )
@@ -147,17 +147,18 @@ usePublicSocialMeta({
       </div>
     </div>
 
-    <main>
-      <div v-if="pending" class="pts-container min-h-[45vh] py-12" role="status" aria-live="polite">
+    <main :aria-busy="pending">
+      <div v-if="pending && !data" class="pts-container min-h-[45vh] py-12" role="status" aria-live="polite">
         <p class="text-slate-500">Đang tải sản phẩm…</p>
       </div>
 
-      <div v-else-if="error || !data" class="pts-container min-h-[45vh] py-12" role="status">
+      <div v-else-if="!data" class="pts-container min-h-[45vh] py-12" :role="error ? 'alert' : 'status'">
         <h1 class="mb-3 text-3xl font-black tracking-tight">Thương hiệu</h1>
         <p class="text-slate-500">Không tìm thấy thương hiệu hoặc dữ liệu PHP local chưa khả dụng. Preview không hiển thị dữ liệu giả.</p>
       </div>
 
       <div v-else class="pts-container pt-8 pb-16 max-ph:pt-6 max-ph:pb-12">
+        <p v-if="error" class="mb-5 rounded-btn bg-amber-50 px-4 py-3 text-sm text-amber-900" role="alert">Không thể cập nhật kết quả. Đang giữ danh sách vừa tải trước đó.</p>
         <!-- H1 khớp PHP thật: trang brand KHÔNG đổi heading theo tên thương
              hiệu, giữ nguyên tiêu đề catalog chung (xem comment đầu file). -->
         <h1 class="mb-7 text-[clamp(28px,3.6vw,44px)] font-black leading-[1.15] tracking-tight">Sản phẩm năng lượng mặt trời</h1>
@@ -172,7 +173,7 @@ usePublicSocialMeta({
         <div class="grid grid-cols-1 items-start gap-8 nav:grid-cols-[240px_minmax(0,1fr)]">
           <button
             v-if="site.productCategories.length || data.filters?.brands.length || data.filters?.priceRanges.length"
-            class="flex min-h-11 items-center justify-between border-y border-gray-200 py-3 text-left font-bold text-navy-950 nav:hidden"
+            class="public-neutral-button flex min-h-11 items-center justify-between py-3 text-left font-bold text-navy-950 nav:hidden"
             type="button"
             :aria-expanded="mobileFiltersExpanded"
             aria-controls="brand-filter-sidebar"
@@ -222,7 +223,7 @@ usePublicSocialMeta({
             <NuxtLink v-if="(data.selected.priceKeys ?? []).length" :to="resetFilterLink()" class="text-sm text-[#20344b] underline underline-offset-2 hover:text-navy-950">Xóa bộ lọc</NuxtLink>
           </aside>
 
-          <section class="min-w-0" aria-label="Sản phẩm thương hiệu">
+          <section class="min-w-0" aria-label="Sản phẩm thương hiệu" :aria-busy="pending">
             <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
               <h2 class="m-0 text-lg font-black text-navy-800">{{ data.brand.name }}</h2>
               <label class="flex items-center gap-2 text-sm text-slate-500">
@@ -243,8 +244,9 @@ usePublicSocialMeta({
           <SitePaginationButton
             v-if="currentPage > 1"
             :to="pageLink(currentPage - 1)"
+            aria-label="Trang trước"
           >
-            Trước
+            <UIcon name="i-lucide-chevron-left" class="size-4" aria-hidden="true" />
           </SitePaginationButton>
           <template v-for="item in paginationItems" :key="item.key">
             <span
@@ -270,20 +272,21 @@ usePublicSocialMeta({
           <SitePaginationButton
             v-if="currentPage < totalPages"
             :to="pageLink(currentPage + 1)"
+            aria-label="Trang sau"
           >
-            Sau
+            <UIcon name="i-lucide-chevron-right" class="size-4" aria-hidden="true" />
           </SitePaginationButton>
             </nav>
           </section>
         </div>
 
-        <section class="relative isolate mt-10 grid grid-cols-1 items-center gap-6 overflow-hidden bg-navy-950 px-6 py-8 text-white tb:grid-cols-[minmax(0,1fr)_auto] nav:px-10 nav:py-9" aria-labelledby="brand-support-title">
-          <div>
-            <h2 id="brand-support-title" class="mb-2 text-2xl font-black text-white">Cần hỗ trợ chọn sản phẩm phù hợp?</h2>
-            <p class="mb-0 max-w-[720px] leading-relaxed text-blue-100/95">Chia sẻ nhu cầu để đội ngũ Phúc Thịnh Solar tư vấn cấu hình và báo giá phù hợp.</p>
-          </div>
-          <NuxtLink :to="migrationHref('/lien-he/')" class="inline-flex min-h-11 items-center justify-center rounded-btn bg-hdr-gold px-6 text-sm font-extrabold text-navy-950 no-underline transition-colors hover:bg-hdr-gold-hover">Nhận tư vấn →</NuxtLink>
-        </section>
+        <PublicCtaBanner class="mt-10" variant="catalog" labelled-by="brand-support-title">
+          <h2 id="brand-support-title" class="mb-2 text-[clamp(20px,2vw,26px)] font-black leading-tight text-white">Cần hỗ trợ chọn sản phẩm phù hợp?</h2>
+          <p class="mb-0 max-w-[720px] leading-relaxed text-blue-100/95">Chia sẻ nhu cầu để đội ngũ Phúc Thịnh Solar tư vấn cấu hình và báo giá phù hợp.</p>
+          <template #actions>
+            <NuxtLink :to="migrationHref('/lien-he/')" class="inline-flex min-h-11 items-center justify-center gap-2 whitespace-nowrap rounded-[4px] bg-hdr-gold px-6 text-sm font-extrabold text-navy-950 no-underline transition-colors hover:bg-hdr-gold-hover">Nhận tư vấn <span aria-hidden="true">→</span></NuxtLink>
+          </template>
+        </PublicCtaBanner>
       </div>
     </main>
 
