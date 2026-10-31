@@ -4,7 +4,7 @@ import EditorialRichText from '~/components/editorial/EditorialRichText.vue'
 import EditorialShare from '~/components/editorial/EditorialShare.vue'
 import { buildEditorialToc } from '#shared/editorial-toc'
 import { POLICY_PUBLIC_ROOT, editorialPublicResponseStatus, editorialPublicRouteRobots, isSafeEditorialSlug } from '#shared/editorial-public-route'
-import { publicSeoDescription, publicSeoTitle } from '#shared/public-seo'
+import { canonicalPublicOrigin, canonicalPublicUrl, publicSeoDescription, publicSeoTitle } from '#shared/public-seo'
 
 const { site } = await usePublicSite()
 const route = useRoute()
@@ -84,6 +84,36 @@ usePublicSocialMeta({
   canonicalPath: computed(() => route.path),
   image: computed(() => data.value?.cover || undefined),
   type: 'article',
+})
+const policyJsonLd = computed(() => {
+  const policy = data.value
+  if (!isPublicRoute.value || !policy || error.value) return null
+  const siteOrigin = canonicalPublicOrigin(config.public.canonicalSiteOrigin)
+  const url = canonicalPublicUrl(siteOrigin, policy.canonical)
+  if (!siteOrigin || !url || !policy.title.trim() || !policy.author.name.trim()) return null
+
+  const node: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': 'NewsArticle',
+    mainEntityOfPage: { '@type': 'WebPage', '@id': url },
+    headline: policy.title,
+    url,
+    author: { '@type': 'Person', name: policy.author.name },
+    publisher: { '@type': 'Organization', '@id': `${siteOrigin}/#organization`, name: 'Phúc Thịnh Solar' },
+  }
+  const image = policy.cover ? canonicalPublicUrl(siteOrigin, policy.cover) : null
+  if (image) node.image = [image]
+  const publishedDate = /^\d{4}-\d{2}-\d{2}$/.test(policy.date) ? new Date(`${policy.date}T00:00:00Z`) : null
+  if (publishedDate && !Number.isNaN(publishedDate.valueOf()) && publishedDate.toISOString().slice(0, 10) === policy.date) node.datePublished = policy.date
+  const description = policy.seo.description || policy.description
+  if (description) node.description = description
+  return node
+})
+useHead({
+  script: computed(() => policyJsonLd.value ? [{
+    type: 'application/ld+json',
+    innerHTML: JSON.stringify(policyJsonLd.value).replace(/</g, '\\u003c'),
+  }] : []),
 })
 </script>
 

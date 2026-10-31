@@ -28,9 +28,9 @@ test('canonical URL contains only a safe route path and never request-supplied o
   assert.equal(canonicalPublicUrl('https://evil.example', '/safe/'), null)
 })
 
-test('social image uses an approved site URL and defaults only to the shipped favicon', () => {
+test('social image uses an approved site URL and falls back to the PHP public logo', () => {
   assert.equal(publicSocialImageUrl('https://phucthinhsolar.com', '/upload/news/story.jpg'), 'https://phucthinhsolar.com/upload/news/story.jpg')
-  assert.equal(publicSocialImageUrl('https://phucthinhsolar.com', ''), 'https://phucthinhsolar.com/assets/images/favicon-pts-mobile.png')
+  assert.equal(publicSocialImageUrl('https://phucthinhsolar.com', ''), 'https://phucthinhsolar.com/upload/photo/logo-phucthinh-solar-wordmark-2026.png')
   assert.equal(publicSocialImageUrl('https://phucthinhsolar.com', 'https://evil.example/image.jpg'), null)
 })
 

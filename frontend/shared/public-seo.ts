@@ -1,7 +1,10 @@
 import type { PublicSitePayload } from './contracts/public-site.ts'
 
 export const PUBLIC_SEO_SITE_NAME = 'Phúc Thịnh Solar'
-export const PUBLIC_SEO_FALLBACK_IMAGE = '/assets/images/favicon-pts-mobile.png'
+// PHP's shared head falls back to the configured public logo when a route has
+// no social image. Keep this aligned with the current CMS logo asset rather
+// than using the small browser favicon as a social preview.
+export const PUBLIC_SEO_FALLBACK_IMAGE = '/upload/photo/logo-phucthinh-solar-wordmark-2026.png'
 
 const CANONICAL_HOST = 'phucthinhsolar.com'
 

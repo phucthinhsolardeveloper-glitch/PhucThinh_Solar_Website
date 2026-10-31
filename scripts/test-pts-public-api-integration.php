@@ -346,7 +346,7 @@ $dynamic = array(
     array('brand_detail','/api/pts_v1_brand_detail.php','brand','slug',array('schemaVersion','brand','products','pagination')),
     array('product_detail','/api/pts_v1_product_detail.php','product','slug',array('schemaVersion','product','pricing')),
     array('product_extras','/api/pts_v1_product_extras.php','product','slug',array('schemaVersion','productId','csrfToken','reviews','consultation')),
-    array('solution_detail','/api/pts_v1_solution_detail.php','solution','slug',array('schemaVersion','solution','content')),
+    array('solution_detail','/api/pts_v1_solution_detail.php','solution','slug',array('schemaVersion','solution','navigation','editorial')),
     array('project_detail','/api/pts_v1_project_detail.php','project','slug',array('schemaVersion','project','content')),
     array('news_detail','/api/pts_v1_news_detail.php','news','slug',array('article','related')),
     array('policy_detail','/api/pts_v1_policy_detail.php','policy','slug',array('schemaVersion','title','cover','content','seo'))
@@ -354,7 +354,10 @@ $dynamic = array(
 foreach($dynamic as $case)
 {
     list($name,$path,$fixtureKey,$param,$keys) = $case;
-    $value = isset($fixtures[$fixtureKey][$param]) ? trim((string)$fixtures[$fixtureKey][$param], '/') : '';
+    // The database projection uses the legacy slugvi field; map it to each
+    // endpoint's public `slug` query parameter instead of skipping every page.
+    $fixtureField = $param === 'slug' ? 'slugvi' : $param;
+    $value = isset($fixtures[$fixtureKey][$fixtureField]) ? trim((string)$fixtures[$fixtureKey][$fixtureField], '/') : '';
     if($value === '') { ptsIntegrationRecord('skip', $name, 'no published local fixture entity'); continue; }
     list($response,$decoded) = ptsIntegrationRequest($name, $path, 'GET', array($param=>$value));
     if($response['status'] !== 0) ptsIntegrationAssertHttp($name, $response, 200, $keys);

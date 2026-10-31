@@ -4,13 +4,14 @@
 
 - Branch consolidation is recorded in
   [`BRANCH-INTEGRATION-AND-LOCAL-QA-20261031.md`](BRANCH-INTEGRATION-AND-LOCAL-QA-20261031.md):
-  one local branch (`master`), one worktree, no uncommitted WIP. After this
-  checkpoint commit, local `master` is 78 commits ahead of `origin/master`; no
-  push or production action was performed.
-- PHP read-only API integration is **PASS**: 61 HTTP checks and 22 contract
-  slices pass, 0 fail, 7 entity checks skip for missing published local fixtures;
-  the 26-table snapshot is unchanged. See the ignored artifact report noted in
-  the checkpoint document.
+  one local branch (`master`), one worktree. Before this follow-up checkpoint,
+  local `master` was 81 commits ahead of `origin/master`; the checkpoint changes
+  remain local and no push or production action was performed.
+- PHP read-only API integration is **PASS**: the corrected follow-up runner
+  reports 69 HTTP checks and 22 contract slices pass, 0 fail, 0 skip; the
+  26-table snapshot is unchanged. Four hidden-record negative fixture families
+  remain unavailable locally. See the ignored artifact report noted in the
+  checkpoint document.
 - Direct public-path SEO check: **34/34** status, expected canonical, PHP↔Nuxt
   canonical, Nuxt noindex, title and redirect checks pass. PHP sitemap **457/457**
   and internal href reachability **362/362** pass. OG description/image/type,
@@ -18,10 +19,10 @@
   [`PUBLIC-URL-SEO-AUDIT-20261031.md`](PUBLIC-URL-SEO-AUDIT-20261031.md).
   Hidden-record verification remains incomplete. PHP retains production public
   ownership; local Nuxt route flags remain viewable while indexability stays off.
-- Latest Nuxt verification: `npm test` **449/449 PASS**, `npm run typecheck`,
-  `npm run build`, and `NITRO_SMOKE_MOCK_PHP=1 npm run smoke` PASS. Build warnings
-  remain `INEFFECTIVE_DYNAMIC_IMPORT` and
-  `PLUGIN_TIMINGS`.
+- Latest full Nuxt verification before the current targeted SEO/schema and
+  runner-test edits: `npm test` **452/452 PASS**, typecheck, build and smoke
+  passed. Targeted checks for the latest edits passed; no extra full suite was
+  run. Build warnings remain `INEFFECTIVE_DYNAMIC_IMPORT` and `PLUGIN_TIMINGS`.
 - The owner requested stopping the full 34-route × 3-viewport browser run to
   inspect the Nuxt site directly. All logged route/viewport pairs returned 200,
   but the harness ended before writing its final report; screenshots are
@@ -39,7 +40,7 @@
 | Gate | Status | Evidence / remaining condition |
 |---|---|---|
 | P0-A route/page inventory | Implemented locally | 34 manifest entries map to Nuxt pages; public resolver/status evidence is documented in the SEO crawl artifact. |
-| P0-B PHP/API integration | PASS with fixture gaps | 61 HTTP + 22 slice PASS, 0 FAIL, 7 SKIP; DB snapshot unchanged. |
+| P0-B PHP/API integration | PASS with fixture gaps | 69 HTTP + 22 slice PASS, 0 FAIL, 0 SKIP; DB snapshot unchanged. Four hidden-record fixture families remain unavailable. |
 | P0-C browser QA | INCOMPLETE | Owner chose direct visual inspection. Capture logged 34 routes × 3 viewports as HTTP 200 but ended before final report; no visual parity claim. |
 | P2-A SEO/canonical crawl | Partial PASS | Public URL status/canonical/title/redirect/noindex checks pass 34/34; sitemap 457/457 and href reachability 362/362. OG/JSON-LD/href-path differences and hidden DB rows remain open. |
 

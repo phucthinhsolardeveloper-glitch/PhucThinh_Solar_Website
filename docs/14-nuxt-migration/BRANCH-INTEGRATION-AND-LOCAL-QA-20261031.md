@@ -3,9 +3,10 @@
 ## Repository state
 
 - Integrated code is on local `master`; the UI/migration work is committed in
-  `d7cd955` and the detail canonical/title correction in `9cd3b65`. This
-  checkpoint adds one more local SEO/title/environment correction commit; after
-  it, `master` is 78 commits ahead of `origin/master`. No push was performed.
+  `d7cd955` and the detail canonical/title correction in `9cd3b65`. At the
+  start of this follow-up checkpoint, `master` was 81 commits ahead of
+  `origin/master`; the SEO/policy-schema and PHP test-runner corrections below
+  are local-only. No push was performed.
 - After `git fetch origin --prune`, local inventory contains only `master` and
   one worktree at `/home/admin01/src/Web_PTS_PHP`. The remote
   `feature/pts-nuxt-integration-20261027` is an ancestor of `master`; the remote
@@ -18,8 +19,9 @@
 - The initial inventory found 91 unstaged working-tree paths, including public
   UI work, tests and migration pages. They were reviewed and committed as
   `d7cd955`; follow-up detail SEO and current public-route audit fixes are in
-  later local commits. No WIP from another live worktree was staged. The
-  worktree is clean after the current checkpoint commit.
+  later local commits. No WIP from another live worktree was staged. This
+  checkpoint began with only the scoped SEO, schema, runner and report files
+  modified; it does not include unrelated user work.
 - Integration rollback point: `f9a453e`; the archived branch tag above preserves
   the omitted work independently.
 
@@ -30,12 +32,14 @@ PHP 8.1 preview container against `http://127.0.0.1`. The runner used GET,
 rejected-method and invalid-CSRF requests; it excluded tests that submit valid
 form/review mutations.
 
-- HTTP checks: **61 PASS, 0 FAIL, 7 SKIP**.
+- Initial HTTP checks: **61 PASS, 0 FAIL, 7 SKIP**. A follow-up run after
+  fixing the runner's `slugvi` fixture mapping and solution envelope expectation:
+  **69 PASS, 0 FAIL, 0 SKIP**.
 - PHP contract slices: **22 PASS, 0 FAIL**.
 - Snapshot across 26 read-model tables: **unchanged** before/after.
-- Seven detailed entity checks remain untestable because the local DB has no
-  published brand, product, product-extras, solution, project, news, or policy
-  fixture. The runner does not invent fixture slugs.
+- The seven skips were caused by stale test-runner mappings, not absent published
+  records. Four negative hidden-record fixture families still lack local DB rows;
+  they remain a separate open gate and were not fabricated.
 - Slice tests were aligned to current DTO contracts in
   `scripts/test-pts-public-product-detail-api.php`,
   `scripts/test-pts-public-projects-api.php`, and
@@ -114,17 +118,19 @@ service or data was touched.
 
 1. The owner will manually inspect the Nuxt UI at `:3100`; rerun browser
    comparison only if requested. The cancelled capture is not a visual sign-off.
-2. Source published entity fixtures for the seven skipped integration checks
-   and four missing hidden-record checks from the local DB, without creating or
-   mutating data.
+2. Source the four missing hidden-record fixture families from the local DB,
+   without creating or mutating data.
 3. Review the 362 href targets and JSON-LD/OG differences, then update the
    migration route matrix. Keep PHP public ownership and Nuxt noindex until the
    remaining gates have evidence and a separate cutover decision.
 
 ## Current verification and production state
 
-Current frontend evidence: `npm test` **449/449 PASS**, `npm run typecheck`,
-`npm run build`, and `NITRO_SMOKE_MOCK_PHP=1 npm run smoke` pass. The direct
+Current frontend evidence before the latest SEO/test-harness edits: `npm test`
+**452/452 PASS**, `npm run typecheck`, `npm run build`, and
+`NITRO_SMOKE_MOCK_PHP=1 npm run smoke` pass. Latest targeted checks passed for
+the changed SEO, policy schema, and PHP runner contracts; a new full-suite run
+was intentionally not started. The direct
 public-path GET audit passes status/canonical/noindex/title/redirect checks for
 34/34 routes. Detailed OG, JSON-LD, and href findings plus remaining gates are
 in [`PUBLIC-URL-SEO-AUDIT-20261031.md`](PUBLIC-URL-SEO-AUDIT-20261031.md).

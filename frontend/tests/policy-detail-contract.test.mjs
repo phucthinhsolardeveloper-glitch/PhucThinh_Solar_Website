@@ -44,6 +44,21 @@ test('policy metadata and related dates match the corresponding PHP formats', ()
   assert.match(page, /formatRelatedDate\(item\.date\)/)
 })
 
+test('public policy JSON-LD uses only validated DTO fields and a canonical public URL', () => {
+  const page = readFileSync(new URL('../app/pages/migration-policy-preview.vue', import.meta.url), 'utf8')
+  assert.match(page, /canonicalPublicOrigin, canonicalPublicUrl/)
+  assert.match(page, /const policyJsonLd = computed\(\(\) => \{[\s\S]*?if \(!isPublicRoute\.value \|\| !policy \|\| error\.value\) return null/)
+  assert.match(page, /const url = canonicalPublicUrl\(siteOrigin, policy\.canonical\)/)
+  assert.match(page, /'@type': 'NewsArticle'/)
+  assert.match(page, /mainEntityOfPage: \{ '@type': 'WebPage', '@id': url \}/)
+  assert.match(page, /author: \{ '@type': 'Person', name: policy\.author\.name \}/)
+  assert.match(page, /node\.datePublished = policy\.date/)
+  assert.match(page, /if \(image\) node\.image = \[image\]/)
+  assert.match(page, /JSON\.stringify\(policyJsonLd\.value\)\.replace\(/)
+  assert.doesNotMatch(page, /node\.dateModified\s*=|policy\.dateModified|new Date\(\).*dateModified/)
+  assert.doesNotMatch(page, /'@type': 'NewsArticle'[\s\S]{0,100}description: ['"]/)
+})
+
 test('policy related cards use a keyboard-accessible responsive carousel', () => {
   const page = readFileSync(new URL('../app/pages/migration-policy-preview.vue', import.meta.url), 'utf8')
   assert.match(page, /aria-label="Tin trước"[^>]*@click="scrollRelated\(-1\)"/)
