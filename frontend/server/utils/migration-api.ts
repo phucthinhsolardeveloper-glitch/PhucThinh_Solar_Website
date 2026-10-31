@@ -74,9 +74,11 @@ export function migrationPhpEndpoint(event: MigrationEvent, endpoint: string): s
 export async function fetchMigrationPayload<T>(event: MigrationEvent, options: MigrationFetchOptions<T>): Promise<T> {
   let payload: unknown
   try {
-    payload = await $fetch<unknown>(migrationPhpEndpoint(event, options.endpoint), {
+    const phpOrigin = new URL(migrationPhpEndpoint(event, options.endpoint))
+    payload = await $fetch<unknown>(phpOrigin.toString(), {
       method: 'GET',
       query: options.query,
+      headers: { host: phpOrigin.host },
       timeout: 5000,
       // Never let a PHP response redirect this server-side bridge to an
       // origin outside the exact allowlist checked above.
