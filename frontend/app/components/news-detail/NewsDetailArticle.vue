@@ -55,10 +55,9 @@ function formatDate(value: string): string {
       class="mb-8 block aspect-video w-full object-cover nav:mb-10"
     >
 
-    <div class="grid grid-cols-1 gap-8 nav:grid-cols-[minmax(240px,1fr)_minmax(0,2fr)] nav:gap-12">
-      <aside class="order-1 min-w-0 nav:order-1">
+    <div class="grid grid-cols-1 gap-8 nav:gap-12" :class="editorial.toc.length ? 'nav:grid-cols-[minmax(240px,1fr)_minmax(0,2fr)]' : ''">
+      <aside v-if="article.content.html && editorial.toc.length" class="order-1 min-w-0 nav:order-1">
         <nav
-          v-if="article.content.html && editorial.toc.length"
           ref="tocContainerRef"
           class="nav:sticky transition-[top] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
           :class="isHeaderHidden ? 'nav:top-6' : 'nav:top-[120px] min-[1681px]:top-[136px] min-[1800px]:top-[152px]'"
@@ -83,7 +82,7 @@ function formatDate(value: string): string {
         </nav>
       </aside>
 
-      <div class="order-2 min-w-0">
+      <div class="order-2 min-w-0" :class="editorial.toc.length ? '' : 'mx-auto w-full max-w-[920px]'">
         <!-- Sanitized rich text is rendered once; heading IDs support the TOC anchors. -->
         <div v-if="article.content.html" id="news-article-content">
           <EditorialRichText :content="editorial.content" variant="news" />

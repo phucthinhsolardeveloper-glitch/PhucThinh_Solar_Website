@@ -24,12 +24,14 @@ test('project detail gallery uses an accessible in-page media dialog', () => {
   assert.match(gallery, /Không tìm thấy kết quả/)
 })
 
-test('news detail presents the article in a responsive 8:4 editorial layout', () => {
+test('news detail centers single-column articles when no generated TOC is available', () => {
   const page = read('../app/pages/migration-news-detail-preview.vue')
   const article = read('../app/components/news-detail/NewsDetailArticle.vue')
   assert.match(page, /<NewsDetailArticle[^>]+\/>\s*<NewsDetailRelated/)
   assert.match(page, /<main class="pts-container py-8 nav:py-16">/)
   assert.match(article, /nav:grid-cols-\[minmax\(240px,1fr\)_minmax\(0,2fr\)\]/)
+  assert.match(article, /<aside v-if="article\.content\.html && editorial\.toc\.length"/)
+  assert.match(article, /editorial\.toc\.length \? '' : 'mx-auto w-full max-w-\[920px\]'/)
   assert.match(article, /class="nav:sticky[^"]*"[\s\S]*isHeaderHidden \? 'nav:top-6' : 'nav:top-\[120px\]/)
   assert.match(article, /<UBadge v-if="categoryName"/)
   assert.match(article, /<UIcon name="i-lucide-list"/)

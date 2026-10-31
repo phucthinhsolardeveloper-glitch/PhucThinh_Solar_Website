@@ -1,6 +1,6 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { isCatalogSlugChain, isPublicCatalogPayload } from '../shared/contracts/public-catalog.ts'
 
 const good = {
@@ -89,6 +89,18 @@ test('category hero fallback matches PHP source for den-nlmt and respects a conf
   for (const path of ['danh-muc-san-pham/den-nlmt', 'danh-muc-san-pham/den-nlmt/den-ufo']) {
     assert.ok(catalogLibrary.includes(`'${path}' => array(`), `Missing shared fallback for ${path}`)
     assert.ok(phpSource.includes(`'${path}' => array(`), `Missing PHP template fallback for ${path}`)
+  }
+})
+
+test('Nuxt bundles every curated catalog hero fallback referenced by the PHP API', () => {
+  const catalogLibrary = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/libraries/pts_public_catalog_api.php', import.meta.url), 'utf8')
+  const start = catalogLibrary.indexOf('$fallbacks = array(', catalogLibrary.indexOf('function ptsCatalogCategoryHeroFallback'))
+  const end = catalogLibrary.indexOf('\n    );', start)
+  assert.ok(start >= 0 && end > start)
+  const names = [...new Set([...catalogLibrary.slice(start, end).matchAll(/array\('([^']+\.(?:png|jpe?g|webp|avif))'/gi)].map((match) => match[1]))]
+  assert.ok(names.length > 0)
+  for (const name of names) {
+    assert.ok(existsSync(new URL(`../public/assets/images/site-visuals/${name}`, import.meta.url)), `Nuxt catalog hero asset missing: ${name}`)
   }
 })
 

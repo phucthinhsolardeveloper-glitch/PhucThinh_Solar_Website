@@ -433,3 +433,23 @@ canary thresholds và gate matrix được chốt tại
 [`PRODUCTION-CUTOVER-DRY-RUN.md`](PRODUCTION-CUTOVER-DRY-RUN.md). Checkpoint này
 không thêm Nuxt service production, không nối runtime flag và không đổi public
 route ownership.
+
+## Follow-up — catalog media and news article alignment — 2026-10-31
+
+- News detail now omits its empty TOC column. Articles without generated H2/H3
+  entries use one centered reading column (`max-width: 920px`); articles with a
+  TOC retain the existing two-column layout. Local SSR for a published article
+  with no headings confirmed no TOC and a centered 920px content area.
+- Current local PHP/API data exposes 27 published product-category paths.
+  Nuxt's API returned the matching canonical category path for all 27, and all
+  27 route and hero image requests returned HTTP 200 after packaging the 41
+  currently referenced curated site-visual assets in `frontend/public`.
+  Clicking the `Đèn Phá` category link also opened its matching path, heading,
+  selected state and hero image. The asset bundle adds about 68.8 MiB to the
+  frontend public tree; review image optimization separately before release.
+- Focused catalog/editorial/link tests pass **51/51** and Nuxt typecheck passes.
+  A focused social-metadata follow-up aligns five empty-description routes to
+  the PHP site-setting fallback; it does not replace the open 34-route
+  two-renderer SEO comparison.
+- Production remains PHP-owned. No database, PHP business logic, route flags,
+  Caddy, deployment or production service was changed.
