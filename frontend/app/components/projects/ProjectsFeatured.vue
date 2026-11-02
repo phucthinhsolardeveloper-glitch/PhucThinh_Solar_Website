@@ -13,8 +13,8 @@ const links = useMigrationLinks()
     mảng), không phải số thứ tự động từ dữ liệu.
   -->
   <article class="mb-12 mt-2.5 grid grid-cols-1 nav:grid-cols-[minmax(0,1.1fr)_minmax(280px,0.9fr)]">
-    <div class="relative aspect-[4/3] overflow-hidden bg-[#edf1f5] nav:aspect-auto" :class="{ 'grid place-items-center text-slate-500': !project.image }">
-      <img v-if="project.image" :src="project.image" :alt="project.title" class="h-full w-full object-cover" loading="lazy" decoding="async">
+    <div class="relative aspect-[4/3] overflow-hidden bg-[#edf1f5]" :class="{ 'grid place-items-center text-slate-500': !project.image }">
+      <img v-if="project.image" :src="project.image" :alt="project.title" class="h-full w-full object-cover transition-transform duration-700 ease-out hover:scale-[1.02] motion-reduce:transform-none" loading="eager" decoding="async">
       <span v-else aria-hidden="true">—</span>
 
       <span v-if="project.category" class="absolute left-3 top-3 flex items-center gap-1.5 rounded-chip bg-navy-800 px-2.5 py-1.5 text-[11px] font-bold text-white">

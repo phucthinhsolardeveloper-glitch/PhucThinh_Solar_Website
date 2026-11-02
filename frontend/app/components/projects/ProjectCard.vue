@@ -9,7 +9,7 @@ const links = useMigrationLinks()
   <article class="min-w-0">
     <a
       :href="links.project(project.slug)"
-      class="group flex h-full flex-col overflow-hidden text-navy-800 no-underline"
+      class="group flex h-full flex-col overflow-hidden text-navy-800 no-underline focus-visible:outline-none"
     >
       <div class="relative aspect-[4/3] overflow-hidden rounded-btn bg-[#edf1f5]" :class="{ 'grid place-items-center text-slate-500': !project.image }">
         <img
@@ -20,7 +20,7 @@ const links = useMigrationLinks()
           loading="lazy"
           decoding="async"
         >
-        <span v-else aria-hidden="true">—</span>
+        <span v-else class="text-sm font-semibold text-slate-500" aria-hidden="true">Chưa có hình ảnh</span>
         <span v-if="project.category" class="absolute left-3 top-3 flex items-center gap-1.5 rounded-btn bg-navy-800/90 px-2.5 py-1 text-[11px] font-bold text-white">
           <img v-if="project.category.image" :src="project.category.image" alt="" class="h-3.5 w-3.5 object-contain brightness-0 invert">
           <svg v-else class="h-3.5 w-3.5 text-gold-400" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3 3 10h2v9h5v-5h4v5h5v-9h2Z" /></svg>
