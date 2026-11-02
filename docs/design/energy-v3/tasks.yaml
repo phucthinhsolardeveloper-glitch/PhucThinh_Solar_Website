@@ -1,0 +1,151 @@
+schema: pts.design-task-plan.v1
+name: PTS Energy V3 Design System
+created: '2026-11-02'
+status: in_progress
+branch: feature/pts-energy-v3-design-system-20261102
+base_commit: 17242cfc
+worktree: /home/admin01/orca/workspaces/Web_PTS_PHP/pts-20261102-energy-v3-system
+safety:
+  production_edits: false
+  staging_deploy: false
+  api_db_changes: false
+  merge_push_automatic: false
+  target_scope:
+    - docs/design/energy-v3/
+    - frontend/app/pages/experience-energy-v3.vue
+    - frontend/app/components/experience-v3/
+  forbidden:
+    - deploy/vps/
+    - frontend/app/assets/css/main.css
+    - frontend/app/components/SiteHeader.vue
+    - frontend/app/components/SiteFooter.vue
+    - frontend/app/components/home/
+parallelism:
+  heavy_code_agents: 2
+  integration_owner: one
+  independent_worktrees_for_writers: true
+lanes:
+  - id: DESIGN
+    owner: Claude Frontend Design
+    purpose: art direction, critique, prototype
+  - id: UI_CORE
+    owner: Codex
+    purpose: component refactor after selection
+  - id: ENERGY
+    owner: Codex
+    purpose: energy domain/state and technical scene
+  - id: PAGE_PILOTS
+    owner: Codex-or-Claude
+    purpose: limited Home/Solutions/PDP variants
+  - id: QA
+    owner: independent
+    purpose: browser/performance/accessibility
+  - id: INTEGRATION
+    owner: Orca coordinator
+    purpose: dependency, cherry-pick, release gate
+tasks:
+  - id: DES-01
+    lane: DESIGN
+    priority: P0
+    state: in_progress
+    deps: []
+    title: V2 read-only visual/source critique and staging brand baseline
+    acceptance: critique markdown identifies actual CSS light-state gap and mobile/interaction issues
+  - id: DES-02
+    lane: DESIGN
+    priority: P0
+    state: proposed
+    deps: [DES-01]
+    title: Three art directions and mobile/desktop sketches
+    acceptance: genuinely different Precision Paper, Spatial Atelier and Living System; brand constant
+  - id: DES-03
+    lane: DESIGN
+    priority: P0
+    state: proposed
+    deps: [DES-02]
+    title: Build isolated Nuxt Energy V3 lighting and white-grid sample
+    acceptance: local SSR noindex scene with day/night/backup lighting changes, good mobile, no shared edits
+  - id: QA-01
+    lane: QA
+    priority: P0
+    state: proposed
+    deps: [DES-03]
+    title: Browser QA day night backup and selective grid
+    acceptance: screenshots 320 390 768 1440, keyboard/touch/reduced-motion, no horizontal overflow
+  - id: DES-04
+    lane: DESIGN
+    priority: P1
+    state: proposed
+    deps: [QA-01]
+    title: Visual critique and chosen V3 direction
+    acceptance: before-after screenshots, 100-point rubric, explicit accept/revise/reject
+  - id: ENG-01
+    lane: ENERGY
+    priority: P0
+    state: proposed
+    deps: [DES-03]
+    title: Engineering review of mode and graph semantics
+    acceptance: PV inverter battery grid load and backup conditions verified by SME before public claims
+  - id: CORE-01
+    lane: UI_CORE
+    priority: P1
+    state: proposed
+    deps: [DES-04]
+    title: Refactor approved GridSurface and SectionAxis
+    acceptance: light backgrounds selective, no global change, keyboard/mobile tests
+  - id: CORE-02
+    lane: UI_CORE
+    priority: P1
+    state: proposed
+    deps: [DES-04, ENG-01]
+    title: Extract EnergyStage and ModeSwitch and Inspector patterns
+    acceptance: state-driven scene, no invalid flow, accessible controls, clean unmount
+  - id: PILOT-01
+    lane: PAGE_PILOTS
+    priority: P0
+    state: proposed
+    deps: [CORE-02]
+    title: Pilot Energy V3 on one Solutions detail preview
+    acceptance: only one selected solution route, links and content sourced from CMS
+  - id: PILOT-02
+    lane: PAGE_PILOTS
+    priority: P1
+    state: proposed
+    deps: [CORE-01]
+    title: Homepage editorial white-grid and mini energy scene variant
+    acceptance: alternate preview only, existing homepage unchanged, mobile/desktop side-by-side
+  - id: PILOT-03
+    lane: PAGE_PILOTS
+    priority: P1
+    state: proposed
+    deps: [CORE-02]
+    title: Representative PDP technical system-context inset
+    acceptance: real specs only, no invented compatibility, no purchase flow regression
+  - id: PILOT-04
+    lane: PAGE_PILOTS
+    priority: P2
+    state: proposed
+    deps: [CORE-01]
+    title: Catalog and Projects editorial exploration
+    acceptance: retain real filter/gallery/source behaviors, visual test
+  - id: QA-02
+    lane: QA
+    priority: P1
+    state: proposed
+    deps: [PILOT-01, PILOT-02, PILOT-03]
+    title: Compare pilots vs staging
+    acceptance: perf, a11y, SEO, source correctness, error/empty, before-after visual evidence
+  - id: INT-01
+    lane: INTEGRATION
+    priority: P1
+    state: proposed
+    deps: [QA-02]
+    title: Update approved living design contract and component library
+    acceptance: old parity rules properly scoped, shared files single owner, rollback described
+  - id: INT-02
+    lane: INTEGRATION
+    priority: P2
+    state: proposed
+    deps: [INT-01]
+    title: Production release proposal only
+    acceptance: separately approved plan with no auto merge/push/deploy
