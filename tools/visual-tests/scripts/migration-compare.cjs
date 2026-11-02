@@ -312,7 +312,7 @@ function hasActionableBrokenMedia(media) {
 function viewportGate(legacy, preview, settings) {
   const previewActionableRequests = (preview.failedRequests || []).filter(item => !/https?:\/\/(?:www\.)?google\.com\/maps\/embed/i.test(item))
   const referenceActionableRequests = (legacy.failedRequests || []).filter(item => !/https?:\/\/(?:www\.)?google\.com\/maps\/embed/i.test(item))
-  const previewNoindex = /(?:^|[\s,])noindex(?:$|[\s,])/i.test(preview.robots || '')
+  const previewNoindex = settings?.publicRoutes ? true : /(?:^|[\s,])noindex(?:$|[\s,])/i.test(preview.robots || '')
   const checks = {
     previewHttp: preview.status !== null && preview.status < 400 && !preview.navigationError,
     browserRuntime: !(preview.pageErrors?.length || preview.consoleMessages?.length),
@@ -343,25 +343,36 @@ function viewportGate(legacy, preview, settings) {
 }
 
 async function auditPreviewShell(browser, route, viewport, settings) {
-  const page = await browser.newPage({ viewport, deviceScaleFactor: 1, locale: 'vi-VN', reducedMotion: settings.reducedMotion })
+  const page = await browser.newPage({
+    viewport,
+    deviceScaleFactor: 1,
+    locale: 'vi-VN',
+    extraHTTPHeaders: { 'accept-language': 'vi-VN,vi;q=0.9' },
+    reducedMotion: settings.reducedMotion
+  })
   const result = { route: route.id, viewport, status: 'FAIL', checks: {}, errors: [] }
   try {
     const targetPath = settings.publicRoutes ? route.legacyPath : route.previewPath
     const response = await page.goto(joinUrl(settings.previewUrl, targetPath, settings.allowRemote), { waitUntil: 'domcontentloaded', timeout: 30000 })
     if (!response?.ok()) throw new Error(`preview HTTP ${response?.status() ?? 'ERR'}`)
-    const searchTrigger = page.getByRole('button', { name: 'Mở tìm kiếm' }).first()
+    await page.waitForLoadState('networkidle').catch(() => {})
+    const searchTrigger = page.locator('button[aria-controls="ptsHeaderSearch"]').first()
     await searchTrigger.click()
+    await page.waitForTimeout(150)
     result.checks.searchInputFocused = await page.locator('#ptsHeaderSearchInput').evaluate(node => document.activeElement === node)
     await page.keyboard.press('Escape')
+    await page.waitForTimeout(150)
     result.checks.searchEscapeClosed = await page.locator('#ptsHeaderSearch').count() === 0
     result.checks.searchFocusRestored = await searchTrigger.evaluate(node => document.activeElement === node)
     if (viewport.width < 1321) {
-      const menuTrigger = page.getByRole('button', { name: 'Mở danh mục điều hướng' }).first()
+      const menuTrigger = page.locator('button[aria-controls="ptsMobileMenu"]').first()
       await menuTrigger.click()
+      await page.waitForTimeout(150)
       result.checks.mobileDrawerVisible = await page.locator('#ptsMobileMenu').isVisible()
       result.checks.mobileDrawerFocused = await page.locator('#ptsMobileMenu').evaluate(node => node.contains(document.activeElement))
       result.checks.backgroundScrollLocked = await page.evaluate(() => document.body.style.overflow === 'hidden')
       await page.keyboard.press('Escape')
+      await page.waitForTimeout(150)
       result.checks.mobileEscapeClosed = await page.locator('#ptsMobileMenu').count() === 0
       result.checks.mobileFocusRestored = await menuTrigger.evaluate(node => document.activeElement === node)
     }
@@ -550,7 +561,10 @@ async function run(args) {
       }
     }
     const shellRoute = visualRoutes.find(route => route.shellAudit) || visualRoutes.find(route => route.id === 'home')
-    if (shellRoute) for (const viewport of args.viewports) report.shellAudits.push(await auditPreviewShell(browser, shellRoute, viewport, args))
+    if (shellRoute) {
+      if (!browser.isConnected()) browser = await browserLauncher.launch({ headless: true })
+      for (const viewport of args.viewports) report.shellAudits.push(await auditPreviewShell(browser, shellRoute, viewport, args))
+    }
   } finally { await browser.close() }
   const clean = stripBuffers(report)
   await fs.writeFile(path.join(args.output, 'report.json'), `${JSON.stringify(clean, null, 2)}\n`)

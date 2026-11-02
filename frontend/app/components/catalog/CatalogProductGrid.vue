@@ -9,6 +9,7 @@ const failedImages = ref<Set<number>>(new Set())
 const failedThumbnailImages = ref<Set<number>>(new Set())
 const oversizedProductImages: Record<string, string> = {
   '/upload/product/t-bat-tsys-d53-2-4295.png': '/assets/images/site-visuals/media-fallbacks/brand-tbat-tsys-d53.webp',
+  '/upload/product/jd-v500-7208.webp': '/assets/images/noimage.png',
 }
 
 function productImage(src: string): string {
