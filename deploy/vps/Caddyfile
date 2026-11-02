@@ -6,7 +6,7 @@
 	}
 }
 
-{$SITE_DOMAIN}{$SITE_ALIASES} {
+{$CADDY_SITE_SCHEME:https}://{$SITE_DOMAIN}{$SITE_ALIASES} {
 	encode zstd gzip
 
 	log {

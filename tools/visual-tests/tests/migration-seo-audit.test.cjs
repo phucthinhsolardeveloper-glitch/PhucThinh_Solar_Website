@@ -14,6 +14,7 @@ const {
   evaluateNegativeFixture,
   auditSitemap,
   noindexValue,
+  hasNoindex,
 } = require('../scripts/migration-seo-audit.cjs')
 
 test('allows loopback origins only by default and rejects credentials', () => {
@@ -108,6 +109,12 @@ test('parses robots and sitemap visibility without fetching listed URLs', () => 
   })
   assert.equal(noindexValue('index,follow'), false)
   assert.equal(noindexValue('noindex, nofollow'), true)
+})
+
+test('treats an edge X-Robots-Tag noindex as effective when HTML meta is permissive', () => {
+  assert.equal(hasNoindex('index, follow', 'noindex, nofollow, noarchive'), true)
+  assert.equal(hasNoindex('noindex, nofollow', ''), true)
+  assert.equal(hasNoindex('index, follow', ''), false)
 })
 
 test('negative fixture gate rejects soft-200, redirects and synthetic canonicals', () => {

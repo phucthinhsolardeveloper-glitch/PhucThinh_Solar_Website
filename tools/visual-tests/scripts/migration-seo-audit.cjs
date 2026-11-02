@@ -374,8 +374,14 @@ function noindexValue(value) {
   return /(?:^|[\s,])noindex(?:$|[\s,])/i.test(String(value || '').replace(/\s+/g, ' '))
 }
 
-function ownership(side, page, route) {
-  const previewNoindex = side === 'preview' ? noindexValue(page.robots) : null
+function hasNoindex(metaRobots, headerRobots) {
+  // Staging is protected at the edge with X-Robots-Tag. A permissive HTML
+  // robots meta must not mask that stricter response-level directive.
+  return noindexValue(metaRobots) || noindexValue(headerRobots)
+}
+
+function ownership(side, page, route, headers = {}) {
+  const previewNoindex = side === 'preview' ? hasNoindex(page.robots, headers.robots) : null
   return {
     publicOwner: route.publicOwner,
     previewIndexing: route.previewIndexing,
@@ -399,7 +405,7 @@ function routeChecks(route, legacy, preview) {
     previewStatusObserved: preview.status,
     legacyCanonicalPresent: Boolean(legacyPage.canonical),
     legacyRobotsPresent: Boolean(legacyPage.robots || legacy.headers?.robots),
-    previewNoindex: noindexValue(previewPage.robots || preview.headers?.robots),
+    previewNoindex: hasNoindex(previewPage.robots, preview.headers?.robots),
     expectedRedirectStatus: route.expectedRedirectStatus,
     redirectStatusPass: route.expectedRedirectStatus === null || legacy.redirectChain[0]?.status === route.expectedRedirectStatus,
     expectedCanonicalPath: route.expectedCanonicalPath,
@@ -746,7 +752,7 @@ async function run(args) {
       expectedCanonicalPath: route.expectedCanonicalPath || null,
       legacy,
       preview,
-      ownership: { legacy: ownership('legacy', legacyPage, route), preview: ownership('preview', previewPage, route) },
+      ownership: { legacy: ownership('legacy', legacyPage, route), preview: ownership('preview', previewPage, route, preview.headers) },
       checks: routeChecks(route, legacy, preview),
       hrefMapping: hrefMapping(legacyPage, previewPage),
     })
@@ -799,5 +805,6 @@ module.exports = {
   evaluateNegativeFixture,
   auditSitemap,
   noindexValue,
+  hasNoindex,
   renderMarkdown,
 }

@@ -10,6 +10,7 @@
     { "id": "brand-detail", "kind": "brand-detail", "legacyPath": "/thuong-hieu/longi/", "previewPath": "/migration-brand-detail-preview?slug=longi", "expectedCanonicalPath": "/thuong-hieu/longi/" },
     { "id": "solutions", "legacyPath": "/giai-phap/", "previewPath": "/migration-solutions-preview", "expectedCanonicalPath": "/giai-phap/" },
     { "id": "solution-detail", "legacyPath": "/giai-phap/dien-mat-troi-ho-gia-dinh/", "previewPath": "/migration-solution-detail-preview?slug=dien-mat-troi-ho-gia-dinh", "expectedCanonicalPath": "/giai-phap/dien-mat-troi-ho-gia-dinh/" },
+    { "id": "solution-detail-legacy-alias", "kind": "alias", "legacyPath": "/giai-phap/thiet-bi-den-nang-luong-mat-troi-quy-mo-ho-gia-dinh/", "previewPath": "/giai-phap/thiet-bi-den-nang-luong-mat-troi-quy-mo-ho-gia-dinh/", "expectedRedirectStatus": 301, "expectedCanonicalPath": "/giai-phap/chieu-sang-nang-luong-mat-troi/", "note": "Verified from live PHP 301; hidden CMS slug is retained only as a legacy alias." },
     { "id": "projects", "legacyPath": "/du-an-da-thuc-hien/", "previewPath": "/migration-projects-preview", "expectedCanonicalPath": "/du-an-da-thuc-hien/" },
     { "id": "project-category-individual", "kind": "project-category", "legacyPath": "/danh-muc-du-an/du-an-ca-nhan/", "previewPath": "/migration-projects-preview?category=du-an-ca-nhan", "expectedCanonicalPath": "/du-an-ca-nhan", "note": "Visible news_list du-an row verified from pts_v1_projects.php; PHP canonical is bare slug without trailing slash." },
     { "id": "project-category-business", "kind": "project-category", "legacyPath": "/danh-muc-du-an/du-an-doanh-nghiep/", "previewPath": "/migration-projects-preview?category=du-an-doanh-nghiep", "expectedCanonicalPath": "/du-an-doanh-nghiep", "note": "Visible news_list du-an row verified from pts_v1_projects.php; PHP canonical is bare slug without trailing slash." },
@@ -42,8 +43,8 @@
       "id": "negative-catalog-hidden-taxonomy",
       "family": "catalog",
       "verification": "NEEDS VERIFICATION",
-      "reason": "Local DB has no hidden san-pham taxonomy row, so no route slug was added.",
-      "databaseEvidence": { "source": "pts-mariadb-local; read-only SELECT", "table": "product_list,product_cat,product_item,product_sub", "type": "san-pham", "hiddenCount": 0 }
+      "reason": "Staging DB read-only check found 37 san-pham taxonomy rows and none hidden, so no hidden route slug exists to probe.",
+      "databaseEvidence": { "source": "phucthinhsolar-staging-db-1; read-only SELECT", "checkedAt": "2026-11-02", "table": "product_list,product_cat,product_item,product_sub", "type": "san-pham", "total": 37, "hiddenCount": 0 }
     },
     {
       "id": "negative-pdp-hidden-product",
@@ -52,28 +53,28 @@
       "slug": "tru-den-co-dien-oriana-gl-0612-h2500",
       "legacyPath": "/san-pham/tru-den-co-dien-oriana-gl-0612-h2500",
       "expectedStatuses": [404, 410],
-      "databaseEvidence": { "source": "pts-mariadb-local; read-only SELECT", "checkedAt": "2026-10-29", "table": "product", "type": "san-pham", "status": "", "hidden": true, "hiddenCount": 27 }
+      "databaseEvidence": { "source": "phucthinhsolar-staging-db-1; read-only SELECT", "checkedAt": "2026-11-02", "table": "product", "type": "san-pham", "status": "", "hidden": true, "hiddenCount": 25 }
     },
     {
       "id": "negative-news-hidden-article",
       "family": "news",
       "verification": "NEEDS VERIFICATION",
-      "reason": "Local DB has no hidden tin-tuc article row, so no route slug was added.",
-      "databaseEvidence": { "source": "pts-mariadb-local; read-only SELECT", "table": "news", "type": "tin-tuc", "total": 12, "visible": 12, "hiddenCount": 0 }
+      "reason": "Staging DB read-only check found 12 tin-tuc rows and none hidden, so no hidden article slug exists to probe.",
+      "databaseEvidence": { "source": "phucthinhsolar-staging-db-1; read-only SELECT", "checkedAt": "2026-11-02", "table": "news", "type": "tin-tuc", "total": 12, "visible": 12, "hiddenCount": 0 }
     },
     {
       "id": "negative-project-hidden-record",
       "family": "project",
       "verification": "NEEDS VERIFICATION",
-      "reason": "Local DB has no hidden du-an article row, so no route slug was added.",
-      "databaseEvidence": { "source": "pts-mariadb-local; read-only SELECT", "table": "news", "type": "du-an", "total": 4, "visible": 4, "hiddenCount": 0 }
+      "reason": "Staging DB read-only check found 4 du-an rows and none hidden, so no hidden project slug exists to probe.",
+      "databaseEvidence": { "source": "phucthinhsolar-staging-db-1; read-only SELECT", "checkedAt": "2026-11-02", "table": "news", "type": "du-an", "total": 4, "visible": 4, "hiddenCount": 0 }
     },
     {
       "id": "negative-solution-hidden-record",
       "family": "solution",
       "verification": "NEEDS VERIFICATION",
-      "reason": "Local and production DB has no hidden giai-phap article row (all 5 rows are visible); /giai-phap/thiet-bi-den-nang-luong-mat-troi-quy-mo-ho-gia-dinh/ is a legacy 301 alias to /giai-phap/chieu-sang-nang-luong-mat-troi/.",
-      "databaseEvidence": { "source": "production backup 20261031T074334Z-full; read-only SELECT", "table": "news", "type": "giai-phap", "total": 5, "visible": 5, "hiddenCount": 0 }
+      "reason": "Staging has one hidden solution row, but its slug is the verified legacy 301 alias to the visible solution; direct PHP and Nuxt detail APIs return 404. Keep the public hidden-route fixture unresolved because there is no separate hidden solution slug to verify.",
+      "databaseEvidence": { "source": "phucthinhsolar-staging-db-1; read-only SELECT", "checkedAt": "2026-11-02", "table": "news", "type": "giai-phap", "total": 6, "visible": 5, "hiddenCount": 1 }
     }
   ],
   "interactions": []

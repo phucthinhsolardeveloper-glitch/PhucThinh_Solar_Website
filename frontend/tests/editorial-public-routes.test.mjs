@@ -8,6 +8,7 @@ import {
   editorialPublicResponseStatus,
   editorialPublicRouteRobots,
   isSafeEditorialSlug,
+  solutionLegacyRedirectPath,
 } from '../shared/editorial-public-route.ts'
 
 const root = new URL('../', import.meta.url)
@@ -61,6 +62,13 @@ test('editorial detail slugs build only safe solution and policy paths', () => {
   assert.equal(editorialDetailPublicPath('/giai-phap/', 'dien-mat-troi'), '/giai-phap/dien-mat-troi/')
   assert.equal(editorialDetailPublicPath(POLICY_PUBLIC_ROOT, 'bao-hanh'), '/ho-tro/bao-hanh/')
   assert.throws(() => editorialDetailPublicPath('/unknown/', 'slug'))
+})
+
+test('verified legacy solution alias redirects to the live canonical solution', () => {
+  assert.equal(solutionLegacyRedirectPath('thiet-bi-den-nang-luong-mat-troi-quy-mo-ho-gia-dinh'), '/giai-phap/chieu-sang-nang-luong-mat-troi/')
+  assert.equal(solutionLegacyRedirectPath('dien-mat-troi-doanh-nghiep'), undefined)
+  assert.equal(solutionLegacyRedirectPath('../chieu-sang'), undefined)
+  assert.match(read('app/middleware/solution-detail-public-route.ts'), /solutionLegacyRedirectPath\(slug\)[\s\S]*navigateTo\(legacyRedirect, \{ redirectCode: 301 \}\)/)
 })
 
 test('static editorial wrappers reuse preview pages without runtime route flags or PHP fallback', () => {

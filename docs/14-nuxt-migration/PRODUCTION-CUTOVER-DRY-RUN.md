@@ -1,5 +1,28 @@
 # Nuxt production cutover dry-run
 
+## Latest staging rehearsal — 2026-11-02
+
+Staging hybrid is deployed separately from production. Production remains on PHP.
+The staging Caddy service is behind the production TLS edge, so its internal
+listener must use HTTP while `SITE_DOMAIN` remains a plain hostname for the PHP
+container. The stack now passes `CADDY_SITE_SCHEME` to Caddy; set it to `http`
+only on the staging stack and leave the standalone production default as
+`https`. This avoids binding the staging proxy only to `:443` while the outer
+edge proxies to its `:80` service port.
+
+On 2026-11-02, the staging rollback script was executed with
+`PTS_STACK_ROOT=/srv/phucthinhsolar-staging`. It selected the recorded previous
+web/Nuxt images, set `PTS_NUXT_HYBRID_ENABLED=0`, and returned the homepage,
+catalog, and read-only PHP catalog API as HTTP 200. Web, Nuxt and DB healthchecks
+passed, and read-only product/news row counts were unchanged. The current image
+and hybrid flag were restored afterward. A first rehearsal exposed the Caddy
+listener mismatch; the staging-only scheme setting was corrected and the
+rehearsal then passed. Production configuration and traffic were not changed.
+
+Staging’s rollback rehearsal does not authorize production cutover. Production
+still requires its own backup/monitoring review, approved route allowlist and
+owner approval tied to the exact release.
+
 Checkpoint: 2026-10-27. Tài liệu và công cụ trong đợt này chỉ phục vụ local
 preflight. Không file nào được nối vào production Compose/Caddy; không deploy,
 SSH, DNS, restart hay đổi quyền sở hữu route.

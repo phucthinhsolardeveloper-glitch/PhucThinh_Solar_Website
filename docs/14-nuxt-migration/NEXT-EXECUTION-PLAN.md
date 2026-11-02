@@ -1,6 +1,32 @@
 # PTS Nuxt migration — next execution plan
 
-## Current integration checkpoint — 2026-10-31
+## Current integration checkpoint — 2026-11-02
+
+- Owner đã tự kiểm tra giao diện staging; không yêu cầu screenshot matrix làm điều kiện nghiệm thu. Kiểm tra giao diện thủ công được xem là xác nhận của owner, tách riêng khỏi route/API/SEO và release gates.
+- Checkout chính là `master`; `updateUI` worktree còn WIP ở `frontend/app/pages/migration-policy-preview.vue` và `frontend/tests/editorial-pages-ui.test.mjs`. Không stage, xóa hoặc ghi đè WIP. `release/nuxt-deploy-readiness-20261031` là snapshot cũ; không dùng làm nguồn deploy mới. Cập nhật ref đầy đủ trong checkpoint audit 2026-11-02 bên dưới.
+- Staging hybrid chạy độc lập trên MariaDB volume staging; production vẫn PHP và DB volume production riêng. Staging hiện dùng `CADDY_SITE_SCHEME=http` vì edge ngoài kết thúc TLS; `SITE_DOMAIN` vẫn là hostname thuần để PHP nhận cấu hình hợp lệ. Không sửa production.
+- Đối chiếu trực tiếp trên staging: PHP API và Nuxt adapter trả payload giống hệt cho catalog root, page 2, category, brand filter, price filter, đủ 7 sort key; payload news, project, solution hub và homepage cũng khớp. Catalog totals tại thời điểm kiểm tra: 374 sản phẩm; category mẫu 203; brand mẫu 31; price range mẫu 91. Đây là kiểm tra API read-only trên cùng staging DB, không phải checkout mutation.
+- Staging DB có 25 sản phẩm ẩn và 1 giải pháp ẩn; PDP fixture đã trả 404 qua public route. Giải pháp ẩn có slug trùng alias PHP 301 tới trang giải pháp đang xuất bản; PHP/Nuxt detail APIs trả 404 với record ẩn. Staging Nuxt đã bổ sung alias 301 chính xác. DB không có taxonomy sản phẩm ẩn, bài tin ẩn hoặc dự án ẩn (37 taxonomy, 12 tin, 4 dự án đều hiển thị); không tạo URL giả để ép negative fixture.
+- SEO crawl hiện tại gồm 35 mục (34 route cũ và alias giải pháp mới): sitemap 459/459 và href 269/269 đều đạt; tất cả response staging có `X-Robots-Tag: noindex`. Audit script đã sửa để header noindex không bị meta `index, follow` che mất. Còn các sai khác PHP live cần phân loại/duyệt: PHP brand detail và policy canonical hiện không trỏ về URL hiện tại; PHP `/product/` đang 404 trong khi Nuxt 301; JSON-LD có schema bổ sung trên PDP/news/policy.
+- Rollback staging đã được chạy thật: previous image `926e1c4f5a57`, hybrid OFF, homepage/catalog/PHP API đều 200, PHP/Nuxt/DB healthy, số dòng sản phẩm/tin không đổi. Sau rehearsal đã khôi phục image và hybrid flag ban đầu; Caddy proxy được cấu hình để nghe HTTP nội bộ, edge tiếp tục TLS. Production không bị đụng tới.
+- `npm test` **485/485 PASS**, `npm run typecheck` PASS; `node --test` cho SEO audit, migration comparison và editorial routes **44/44 PASS**. Nuxt dev server đang chạy `http://127.0.0.1:3100/` theo yêu cầu.
+
+### Gate status tại checkpoint 2026-11-02
+
+| Gate | Trạng thái | Việc còn lại |
+|---|---|---|
+| P0-A route inventory | PASS | 34 route chính; thêm regression route alias để kiểm tra 301. |
+| P0-B API/hidden data | PASS trên fixture có dữ liệu; chưa đủ fixture cho mọi họ | PDP ẩn 404; solution API ẩn 404 và alias 301. Không có record ẩn để thử taxonomy, news, project. |
+| P0-C browser QA | Owner đã kiểm tra giao diện | Không chặn theo screenshot theo chỉ đạo owner; route/API/SEO vẫn có gate riêng. |
+| P1-A header/footer | Source/interaction tests PASS trước đó | Keyboard/focus live chưa được chạy lại ở checkpoint này. |
+| P1-B rich content | Partial | CKEditor rich content cần đối chiếu trên bài thực tế nếu scope đổi lại; owner đã nghiệm thu giao diện tổng thể. |
+| P1-C catalog | PASS cho payload/API parity staging | Giữ PHP làm owner của pricing/cart/checkout; không chạy mutation trong audit. |
+| P1-D editorial | PASS cho payload public và trạng thái đã có fixture | Không thể xác minh negative route cho họ dữ liệu mà DB không có record ẩn; giữ công khai alias 301 đã xác nhận. |
+| P2-A SEO | Partial | Đã crawl sitemap/hrefs/robots; cần quyết định các khác biệt canonical/JSON-LD và PHP `/product/` 404 trước cutover. |
+| P2-B staging hybrid/rollback | PASS | Tiếp tục giữ rollback images và kiểm tra Caddy scheme khi deploy staging. |
+| P3 production cutover | NO-GO | Production PHP vẫn sở hữu website; cần duyệt các sai khác SEO, backup/monitoring và chỉ đạo cutover riêng. |
+
+## Historical integration checkpoint — 2026-10-31
 
 - Latest ref inventory: local `master` and `updateUI` both point to
   `57aef9d`; `updateUI` has no unique commits, and
