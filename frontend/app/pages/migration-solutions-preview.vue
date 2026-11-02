@@ -62,7 +62,7 @@ const { activeHeadingId, scrollToHeading } = useTocScrollspy({
             <nav
               v-if="data.editorial.toc.rendered"
               ref="tocContainerRef"
-              class="h-fit max-h-[220px] overflow-y-auto overscroll-contain rounded-[3px] bg-navy-800 p-5 shadow-sm min-[901px]:sticky min-[901px]:top-24 min-[901px]:max-h-[calc(100vh-116px)]"
+              class="h-fit max-h-[220px] overflow-y-auto overscroll-contain rounded-[3px] bg-navy-800 p-5 shadow-sm nav:sticky nav:top-24 nav:max-h-[calc(100vh-116px)]"
               aria-label="Mục lục nội dung giải pháp"
             >
               <strong class="mb-3 block border-b border-white/12 pb-2.5 text-[13px] font-extrabold uppercase tracking-wider text-gold-300">Trong trang này</strong>

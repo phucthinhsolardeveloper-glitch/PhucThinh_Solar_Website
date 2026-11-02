@@ -65,6 +65,16 @@ test('solution detail TOC stays stacked through tablet and becomes a sticky left
   assert.doesNotMatch(page, /class="hidden[^\"]*Mục lục nội dung/)
 })
 
+test('solution hub TOC stays compact until the two-column desktop layout is available', () => {
+  const hub = read('../app/pages/giai-phap.vue')
+  const preview = read('../app/pages/migration-solutions-preview.vue')
+  for (const page of [hub, preview]) {
+    assert.match(page, /max-h-\[220px\].*nav:sticky nav:top-24 nav:max-h-\[calc\(100vh-116px\)\]/)
+    assert.doesNotMatch(page, /min-\[901px\]:sticky|min-\[901px\]:max-h-/)
+    assert.match(page, /nav:grid-cols-\[270px_minmax\(0,1fr\)\]/)
+  }
+})
+
 test('solution detail gallery opens an accessible lightbox with keyboard navigation', () => {
   const page = read('../app/components/solution-detail/SolutionDetailPage.vue')
   const gallery = read('../app/components/solution-detail/SolutionDetailGallery.vue')
