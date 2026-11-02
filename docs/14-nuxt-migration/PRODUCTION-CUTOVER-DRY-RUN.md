@@ -48,12 +48,30 @@ again, but deploy availability remains open until a pre-activation/blue-green
 gate validates page, `/_nuxt/*`, and API paths before traffic switches.
 
 The global wheel interception was removed in `9ed23b4d84cc` and deployed to
-staging. A separate mobile scroll-up check confirmed the header can remain
-translated out of view after the visitor scrolls upward while still below the
-top-of-page threshold; fix this before closing the shared header UX gate. A
-catalog full-page lazy-load run downloaded 8.31 MB of images on both desktop and
-mobile viewports; the integration checkpoint records the asset inventory and
-GTranslate instrumentation.
+staging. Follow-up release `d0451124d0ca` fixed the independent header behavior:
+Chromium on staging at 390×844 confirmed it hides on downward wheel input and
+reappears on the first upward wheel input. The same browser loaded all five
+homepage catalog images from responsive thumbnail URLs with no image decode
+failures; the catalog listing used 320/480/640 product candidates and the first
+eight product images loaded successfully. The 960px street-lighting thumbnail
+was 496,857 bytes versus 2,508,792 bytes for the original PNG. Source images
+remain unchanged and PHP thumbnail responses use a 30-day immutable cache.
+
+The release was packaged from commit `d0451124d0ca`, checksum verified on the
+VPS, and deployed only with `PTS_STACK_ROOT=/srv/phucthinhsolar-staging`.
+Nuxt build, PHP 8.1/WebP runtime, PHP-to-MariaDB connection, and web/Nuxt/DB
+healthchecks passed. Fifteen representative public routes/APIs returned 200
+after redirects, and 30 sequential homepage probes at roughly one-second
+intervals all returned 200 during the replacement window. The database and
+production stack were not changed. The deploy remains in-place; this single
+successful probe window does not resolve the earlier 502/503 incidents or
+provide a blue-green availability guarantee. Keep the deployment gate open.
+
+`verify-stack.sh` itself could not start because it sources the staging `.env`
+as shell even though `CADDY_GLOBAL_OPTIONS=auto_https off` is a valid Compose
+value but not a shell assignment. Equivalent Compose, health, PHP runtime,
+database, and HTTPS checks were run directly and passed. Fix the verifier's
+environment parsing before relying on it for the next release.
 
 The solution alias `/giai-phap/thiet-bi-den-nang-luong-mat-troi-quy-mo-gia-dinh/`
 was also re-probed on 2026-11-02: production PHP and staging Nuxt both returned
