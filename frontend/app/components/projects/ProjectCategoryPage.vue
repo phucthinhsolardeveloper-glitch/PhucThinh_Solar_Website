@@ -38,6 +38,8 @@ if (import.meta.server && responseStatus) setResponseStatus(responseStatus, resp
 const currentPage = computed(() => projects.value?.pagination.page ?? page.value)
 const totalPages = computed(() => projects.value ? Math.max(1, Math.ceil(projects.value.pagination.total / projects.value.pagination.perPage)) : 1)
 const paginationItems = usePaginationItems(currentPage, totalPages)
+const projectCategoryRailRef = ref<HTMLElement | null>(null)
+useActiveHorizontalRail(projectCategoryRailRef)
 const categoryTitle = computed(() => {
   const title = projects.value?.category?.name || projects.value?.intro.title || ''
   if (!title) return 'Danh mục dự án'
@@ -99,7 +101,7 @@ usePublicSocialMeta({
           <p v-if="categoryDescription" class="m-0 text-lg leading-relaxed text-slate-600">{{ categoryDescription }}</p>
         </header>
 
-        <nav class="flex gap-2 overflow-x-auto py-0.5 pb-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" aria-label="Danh mục dự án">
+        <nav ref="projectCategoryRailRef" class="flex gap-2 overflow-x-auto py-0.5 pb-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" aria-label="Danh mục dự án">
           <NuxtLink
             class="public-filter-chip flex min-h-11 flex-none items-center whitespace-nowrap px-[13px] text-navy-800 no-underline"
             :to="PROJECTS_PUBLIC_PATH"

@@ -6,14 +6,22 @@ export function useActiveHorizontalRail(railRef: Ref<HTMLElement | null | undefi
   function alignActiveItem() {
     if (!import.meta.client || !railRef.value) return
     const rail = railRef.value
-    const active = rail.querySelector<HTMLElement>('[aria-current="page"]')
+    const active = rail.querySelector<HTMLElement>('[aria-current="page"], [aria-current="location"]')
     if (!active) return
 
     const maxScrollLeft = Math.max(0, rail.scrollWidth - rail.clientWidth)
-    const targetLeft = Math.min(
-      maxScrollLeft,
-      Math.max(0, active.offsetLeft - (rail.clientWidth - active.offsetWidth) / 2),
-    )
+    const railRect = rail.getBoundingClientRect()
+    const activeRect = active.getBoundingClientRect()
+    const visibleLeft = railRect.left + rail.clientLeft + 12
+    const visibleRight = railRect.left + rail.clientLeft + rail.clientWidth - 12
+    let targetLeft = rail.scrollLeft
+    if (activeRect.left < visibleLeft) targetLeft += activeRect.left - visibleLeft
+    else if (activeRect.right > visibleRight) targetLeft += activeRect.right - visibleRight
+    targetLeft = Math.min(maxScrollLeft, Math.max(0, targetLeft))
+    if (Math.abs(targetLeft - rail.scrollLeft) < 1) {
+      firstAlignment = false
+      return
+    }
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     rail.scrollTo({ left: targetLeft, behavior: firstAlignment || reducedMotion ? 'auto' : 'smooth' })
     firstAlignment = false
@@ -27,14 +35,22 @@ export function useActiveHorizontalRail(railRef: Ref<HTMLElement | null | undefi
     })
   }
 
+  const stopWatchingRail = watch(railRef, (rail) => {
+    if (!observer || !rail) return
+    observer.disconnect()
+    observer.observe(rail, { childList: true, subtree: true, attributes: true, attributeFilter: ['aria-current'] })
+    scheduleAlignment()
+  }, { flush: 'post' })
+
   onMounted(() => {
-    nextTick(alignActiveItem)
     observer = new MutationObserver(scheduleAlignment)
-    observer.observe(railRef.value ?? document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['aria-current'] })
+    if (railRef.value) observer.observe(railRef.value, { childList: true, subtree: true, attributes: true, attributeFilter: ['aria-current'] })
+    scheduleAlignment()
     window.addEventListener('resize', scheduleAlignment, { passive: true })
   })
 
   onBeforeUnmount(() => {
+    stopWatchingRail()
     observer?.disconnect()
     observer = null
     window.removeEventListener('resize', scheduleAlignment)

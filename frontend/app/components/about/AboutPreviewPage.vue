@@ -6,6 +6,7 @@ const links = useMigrationLinks()
 const { openConsultation } = useStorefrontModal()
 const { isHeaderHidden } = useSiteHeader()
 const aboutNavRef = ref<HTMLElement | null>(null)
+useActiveHorizontalRail(aboutNavRef)
 const activeAboutSection = ref('ve-phuc-thinh')
 let aboutSectionObserver: IntersectionObserver | null = null
 const galleryCertificates = computed(() => props.about.certificates.items)
@@ -50,13 +51,6 @@ function navigateAboutSection(id: string) {
   activeAboutSection.value = id
   window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}#${id}`)
   target.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'start' })
-  requestAnimationFrame(() => {
-    aboutNavRef.value?.querySelector<HTMLAnchorElement>(`a[data-about-section="${id}"]`)?.scrollIntoView({
-      behavior: reducedMotion ? 'auto' : 'smooth',
-      block: 'nearest',
-      inline: 'center',
-    })
-  })
 }
 
 onMounted(() => nextTick(setupAboutSectionObserver))

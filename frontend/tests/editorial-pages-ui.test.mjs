@@ -55,12 +55,12 @@ test('policy TOC uses the shared anchor-preserving builder', () => {
   assert.doesNotMatch(page, /policy-section-/)
 })
 
-test('solution detail TOC stays stacked on mobile and becomes a sticky left rail from 768px', () => {
+test('solution detail TOC stays stacked through tablet and becomes a sticky left rail from 901px', () => {
   const page = read('../app/components/solution-detail/SolutionDetailPage.vue')
-  assert.match(page, /min-\[768px\]:grid-cols-\[minmax\(220px,260px\)_minmax\(0,1fr\)\]/)
-  assert.match(page, /min-\[768px\]:sticky min-\[768px\]:max-h-\[calc\(100vh-116px\)\] min-\[768px\]:overflow-y-auto/)
-  assert.match(page, /min-\[768px\]:top-\[104px\]/)
   assert.match(page, /min-\[901px\]:grid-cols-\[minmax\(250px,300px\)_minmax\(0,1fr\)\]/)
+  assert.match(page, /min-\[901px\]:sticky min-\[901px\]:max-h-\[calc\(100vh-116px\)\] min-\[901px\]:overflow-y-auto/)
+  assert.match(page, /min-\[901px\]:top-\[104px\]/)
+  assert.doesNotMatch(page, /min-\[768px\]:sticky/)
   assert.match(page, /max-h-\[220px\].*overflow-y-auto/)
   assert.doesNotMatch(page, /class="hidden[^\"]*Mục lục nội dung/)
 })

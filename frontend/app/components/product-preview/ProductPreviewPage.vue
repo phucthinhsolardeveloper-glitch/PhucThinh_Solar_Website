@@ -35,6 +35,8 @@ const discountPercent = computed(() => {
 })
 const productCategories = computed(() => (props.breadcrumbs ?? []).filter((item) => item.url !== '/san-pham/').slice(0, 2))
 const { isHeaderHidden } = useSiteHeader()
+const productNavRef = ref<HTMLElement | null>(null)
+useActiveHorizontalRail(productNavRef)
 
 const navItems = computed(() => {
   const items: Array<{ id: string; label: string }> = []
@@ -135,6 +137,7 @@ onBeforeUnmount(() => observer?.disconnect())
 
     <nav
       v-if="navItems.length"
+      ref="productNavRef"
       class="sticky z-20 mb-2 overflow-x-auto overscroll-x-contain border-y border-slate-200 bg-white/95 backdrop-blur-md [scrollbar-width:none] [&::-webkit-scrollbar]:hidden transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
       :class="isHeaderHidden ? 'top-0 shadow-sm' : 'top-[65px] min-[821px]:top-[88px] min-[1321px]:top-[104px] min-[1501px]:top-[120px] min-[1800px]:top-[136px]'"
       aria-label="Mục nội dung sản phẩm"
@@ -144,6 +147,7 @@ onBeforeUnmount(() => observer?.disconnect())
           v-for="item in navItems"
           :key="item.id"
           :href="'#' + item.id"
+          :aria-current="activeSection === item.id ? 'location' : undefined"
           class="inline-flex min-h-11 items-center rounded-chip px-3.5 py-1.5 text-[13px] font-bold no-underline transition-all duration-150 active:scale-95 cursor-pointer"
           :class="activeSection === item.id ? 'bg-navy-800 text-gold-300 shadow-xs' : 'text-navy-800 hover:bg-slate-100 hover:text-gold-700'"
         >{{ item.label }}</a>
