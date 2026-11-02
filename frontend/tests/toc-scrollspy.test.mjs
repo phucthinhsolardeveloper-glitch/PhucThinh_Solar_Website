@@ -26,13 +26,10 @@ test('News and policy TOCs expose active state and use the shared scrollspy', ()
   }
 })
 
-test('page wheel enhancement scrolls farther and smoothly without hijacking inner scroll regions', () => {
-  const source = read('../app/composables/usePageScrollExperience.ts')
-  assert.match(source, /addEventListener\('wheel', onWheel, \{ passive: false \}\)/)
-  assert.match(source, /event\.preventDefault\(\)/)
-  assert.match(source, /window\.scrollBy\(\{ top: delta \* 1\.6, behavior: 'smooth' \}\)/)
-  assert.match(source, /hasScrollableParent\(event\.target, event\.deltaY\)/)
-  assert.doesNotMatch(source, /prefers-reduced-motion/)
+test('page wheel input stays native instead of being intercepted for scripted scrolling', () => {
+  const app = read('../app/app.vue')
+  assert.doesNotMatch(app, /usePageScrollExperience\(/)
+  assert.doesNotMatch(app, /addEventListener\(['"]wheel['"],/)
 })
 
 test('active horizontal rails keep the selected public filter visible', () => {
