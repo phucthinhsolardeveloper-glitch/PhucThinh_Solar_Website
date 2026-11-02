@@ -21,6 +21,12 @@ function productImageSrc(product: PublicCatalogProduct): string {
   return `/thumbs/640x640x1${original}`
 }
 
+function productImageSrcSet(product: PublicCatalogProduct): string | undefined {
+  const original = productImage(product.media[0] || '')
+  if (!original.startsWith('/upload/product/') || failedThumbnailImages.value.has(product.id)) return undefined
+  return [320, 480, 640].map((width) => `/thumbs/${width}x${width}x1${original} ${width}w`).join(', ')
+}
+
 function scrollRail(direction: -1 | 1) {
   const rail = railRef.value
   if (!rail) return
@@ -167,6 +173,7 @@ function discountPercent(product: PublicCatalogProduct): number | null {
         <img
           v-if="product.media[0] && !failedImages.has(product.id)"
           :src="productImageSrc(product)"
+          :srcset="productImageSrcSet(product)"
           :alt="product.name"
           class="h-full w-full object-contain transition-transform duration-300 group-hover:scale-[1.03] motion-reduce:transform-none motion-reduce:transition-none"
           :loading="productIndex < 4 ? 'eager' : 'lazy'"

@@ -73,6 +73,20 @@ const categories = computed<HomeCategorySlot[]>(() => slots.map((slot) => {
   }
 }))
 
+const phpResizableVisual = /^\/assets\/images\/site-visuals\/[A-Za-z0-9][A-Za-z0-9._/-]*\.(?:jpe?g|png)$/i
+
+function visualCandidate(src: string, width: number, height: number): string {
+  if (!phpResizableVisual.test(src)) return src
+  return `/thumbs/${width}x${height}x1${src}`
+}
+
+function visualSrcSet(src: string, kind: 'hero' | 'card'): string | undefined {
+  if (!phpResizableVisual.test(src)) return undefined
+  return kind === 'hero'
+    ? `${visualCandidate(src, 960, 280)} 960w, ${visualCandidate(src, 1440, 420)} 1440w, ${visualCandidate(src, 1920, 560)} 1920w`
+    : `${visualCandidate(src, 320, 250)} 320w, ${visualCandidate(src, 480, 375)} 480w, ${visualCandidate(src, 640, 500)} 640w`
+}
+
 const featured = computed(() => categories.value[0]!)
 const categoryRail = computed(() => categories.value.slice(1))
 const links = useMigrationLinks()
@@ -96,7 +110,9 @@ const links = useMigrationLinks()
       >
         <img
           class="absolute inset-0 z-0 h-full w-full object-cover object-[center_58%] transition-transform duration-300 group-hover:scale-[1.025] motion-reduce:transform-none motion-reduce:transition-none"
-          :src="featured.image"
+          :src="visualCandidate(featured.image, 960, 280)"
+          :srcset="visualSrcSet(featured.image, 'hero')"
+          sizes="100vw"
           :alt="featured.category?.name || featured.name"
           width="1440"
           height="420"
@@ -130,7 +146,9 @@ const links = useMigrationLinks()
         >
           <img
             class="absolute inset-0 z-0 h-full w-full object-cover object-center transition-transform duration-300 group-hover:scale-[1.025] motion-reduce:transform-none motion-reduce:transition-none"
-            :src="slot.image"
+            :src="visualCandidate(slot.image, 320, 250)"
+            :srcset="visualSrcSet(slot.image, 'card')"
+            sizes="(min-width: 861px) 25vw, 280px"
             :alt="slot.category?.name || slot.name"
             width="640"
             height="500"

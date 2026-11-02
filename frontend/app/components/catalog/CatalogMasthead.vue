@@ -7,6 +7,19 @@ defineProps<{
   description: string
   hero: PublicCatalogHero | null
 }>()
+
+const phpResizableCatalogImage = /^\/(?:upload\/(?:product|news|photo)|assets\/images\/site-visuals)\/[A-Za-z0-9][A-Za-z0-9._/-]*\.(?:jpe?g|png|webp)$/i
+
+function catalogHeroCandidate(src: string, width: 960 | 1800): string {
+  if (!phpResizableCatalogImage.test(src)) return src
+  const height = Math.round(width / 3)
+  return `/thumbs/${width}x${height}x1${src}`
+}
+
+function catalogHeroSrcSet(src: string): string | undefined {
+  if (!phpResizableCatalogImage.test(src)) return undefined
+  return `${catalogHeroCandidate(src, 960)} 960w, ${catalogHeroCandidate(src, 1800)} 1800w`
+}
 </script>
 
 <template>
@@ -15,7 +28,8 @@ defineProps<{
       <div class="relative flex h-full items-center">
         <img
           v-if="hero?.image"
-          :src="hero.image"
+          :src="catalogHeroCandidate(hero.image, 960)"
+          :srcset="catalogHeroSrcSet(hero.image)"
           alt=""
           width="1800"
           height="600"

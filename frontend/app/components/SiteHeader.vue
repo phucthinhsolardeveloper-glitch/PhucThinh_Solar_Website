@@ -506,6 +506,7 @@ function handleWindowScroll() {
 
     const deltaY = currentScrollY - lastScrollY
     if (deltaY < 0) {
+      isHeaderHidden.value = false
       accumulatedDelta = 0
     }
     else accumulatedDelta += deltaY

@@ -82,9 +82,9 @@ test('header overlays expose keyboard state, focus trap and scroll restoration h
   assert.match(header, /navDropdownOpen\.value\) closeNavDropdown\(true\)/)
 })
 
-test('header hides on downward scroll and stays hidden until returning to the top', () => {
+test('header hides on downward scroll and reappears as soon as the user scrolls up', () => {
   assert.match(header, /if \(accumulatedDelta > 12 && currentScrollY > 80\)\s*\{\s*isHeaderHidden\.value = true/)
-  assert.match(header, /if \(deltaY < 0\)\s*\{\s*accumulatedDelta = 0\s*\}/)
+  assert.match(header, /if \(deltaY < 0\)\s*\{\s*isHeaderHidden\.value = false\s*accumulatedDelta = 0\s*\}/)
   assert.doesNotMatch(header, /accumulatedDelta < -12/)
   assert.match(header, /anyOverlayOpen \|\| currentScrollY <= 80\)\s*\{\s*isHeaderHidden\.value = false/)
   assert.match(header, /transition-transform duration-300/)
