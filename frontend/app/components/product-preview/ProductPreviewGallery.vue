@@ -167,13 +167,13 @@ onBeforeUnmount(() => {
     <!-- Khung hiển thị ảnh sản phẩm chính với tính năng Zoom rê chuột & phím chuyển ảnh -->
     <div
       v-if="selectedMediaAvailable"
-      class="group relative grid aspect-square w-full place-items-center overflow-hidden rounded-chip bg-white"
+      class="group relative grid aspect-square w-full place-items-center overflow-hidden rounded-[4px] bg-slate-50"
       @mousemove="handleMouseMove"
       @mouseleave="handleMouseLeave"
     >
       <button
         type="button"
-        class="relative flex h-full w-full items-center justify-center overflow-hidden bg-white"
+        class="relative flex h-full w-full items-center justify-center overflow-hidden bg-slate-50"
         :class="isZoomed ? 'cursor-crosshair' : 'cursor-zoom-in'"
         :aria-label="'Phóng to ảnh ' + name"
         @click="openLightbox($event)"
@@ -256,7 +256,7 @@ onBeforeUnmount(() => {
         v-show="!failedMedia.has(image)"
         :key="`${image}-${retryVersion}`"
         type="button"
-        class="aspect-square flex-none basis-[72px] overflow-hidden rounded-chip border bg-white cursor-pointer transition-all duration-200 hover:opacity-100 active:scale-95"
+        class="aspect-square flex-none basis-[72px] overflow-hidden rounded-[4px] border bg-white cursor-pointer transition-all duration-200 hover:opacity-100 active:scale-95"
         :class="selectedIndex === index ? 'border-navy-800 ring-2 ring-gold-500/50 shadow-xs scale-[1.02]' : 'border-gray-200 hover:border-slate-300 opacity-70'"
         :aria-label="'Xem ảnh ' + (index + 1) + ' của ' + media.length"
         :aria-pressed="selectedIndex === index"
