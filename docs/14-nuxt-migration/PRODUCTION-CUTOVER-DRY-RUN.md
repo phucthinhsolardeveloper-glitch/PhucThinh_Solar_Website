@@ -19,6 +19,26 @@ and hybrid flag were restored afterward. A first rehearsal exposed the Caddy
 listener mismatch; the staging-only scheme setting was corrected and the
 rehearsal then passed. Production configuration and traffic were not changed.
 
+Follow-up on 2026-11-02 deployed commit `4306ed90311a` to staging and repeated
+rollback to `5e59384cf93a`, then restored `4306ed90311a` with hybrid enabled.
+The staging DB container image and start time did not change. The outer edge
+Caddy had returned transient Docker DNS errors when the inner staging proxy was
+recreated, so a 5-second retry window and active `/robots.txt` health check were
+loaded only on the outer route for `phucthinhsolar-staging-proxy-1:80`. The
+pre-change runtime config is backed up at
+`/srv/phucthinhsolar-staging/backups/edge-caddy-before-stage-retry-20261102.json`.
+Twenty post-restore homepage probes returned HTTP 200. This edge change currently
+exists in Admin API runtime state and is not yet represented in a declarative
+config file; persist it in a separately reviewed staging-only edge change before
+relying on it across an outer Caddy restart. Production route/config was not
+changed.
+
+The solution alias `/giai-phap/thiet-bi-den-nang-luong-mat-troi-quy-mo-gia-dinh/`
+was also re-probed on 2026-11-02: production PHP and staging Nuxt both returned
+404, while the proposed canonical destination returned 200 on both. This
+contradicts the older 301 evidence recorded in the route fixture; keep the alias
+gate open until the live PHP redirect source/data is checked again.
+
 Staging’s rollback rehearsal does not authorize production cutover. Production
 still requires its own backup/monitoring review, approved route allowlist and
 owner approval tied to the exact release.
