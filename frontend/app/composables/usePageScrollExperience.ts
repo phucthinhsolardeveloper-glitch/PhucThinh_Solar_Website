@@ -22,9 +22,8 @@ export function usePageScrollExperience() {
     if (event.deltaX !== 0 || Math.abs(event.deltaY) < 50 || hasScrollableParent(event.target, event.deltaY)) return
 
     event.preventDefault()
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     const delta = event.deltaMode === WheelEvent.DOM_DELTA_LINE ? event.deltaY * 16 : event.deltaY
-    window.scrollBy({ top: delta * 1.35, behavior: reducedMotion ? 'auto' : 'smooth' })
+    window.scrollBy({ top: delta * 1.6, behavior: 'smooth' })
   }
 
   onMounted(() => window.addEventListener('wheel', onWheel, { passive: false }))
