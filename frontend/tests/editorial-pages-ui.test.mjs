@@ -92,8 +92,9 @@ test('solution detail gallery opens an accessible lightbox with keyboard navigat
 
 test('policy article widths follow PHP reading measure and related media uses the approved 16:9 ratio', () => {
   const page = read('../app/pages/migration-policy-preview.vue')
-  assert.match(page, /<main class="mx-auto w-full max-w-\[1766px\]/)
-  assert.match(page, /<article v-else class="mx-auto max-w-\[1080px\]">/)
+  assert.match(page, /<main class="pts-container py-8 nav:py-16"/)
+  assert.match(page, /<div class="pts-container">[\s\S]*<SiteBreadcrumb/)
+  assert.match(page, /<article v-else class="mx-auto w-full max-w-\[1280px\]">/)
   assert.match(page, /max-w-\[960px\]/)
   assert.match(page, /aspect-video w-full object-cover/)
   assert.doesNotMatch(page, /aspect-\[3\/2\]/)
@@ -169,7 +170,7 @@ test('editorial text controls meet the 44px hit-area rule and project tabs suppo
 
   assert.match(news, /h-11 w-11 flex-none border-0/)
   assert.equal((news.match(/inline-flex min-h-11 items-center[^\n]*news\.labels\.reset/g) || []).length, 2)
-  assert.match(policy, /flex min-h-11 items-center px-2 py-2/)
+  assert.match(policy, /flex min-h-11 min-w-11 items-center border-l-2/)
   assert.match(solutionsHub, /flex min-h-11 items-center border-l-2/)
   assert.match(solutionsHub, /rounded-\[3px\] bg-navy-800/)
   assert.match(solutionsHub, /Trong trang này/)

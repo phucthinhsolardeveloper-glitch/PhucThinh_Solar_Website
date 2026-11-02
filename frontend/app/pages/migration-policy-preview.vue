@@ -120,29 +120,35 @@ useHead({
 <template>
   <div class="min-h-screen bg-white text-navy-800">
     <SiteHeader :site="site" />
-    <main class="mx-auto w-full max-w-[1766px] px-4 py-10 nav:py-14">
+    <div class="pts-container">
       <SiteBreadcrumb :items="[{ label: 'Chính sách & Hỗ trợ' }, ...(data ? [{ label: data.title }] : [])]" />
+    </div>
+
+    <main class="pts-container py-8 nav:py-16" :aria-busy="pending">
       <div v-if="pending" class="py-16 text-slate-500" role="status">Đang tải nội dung chính sách…</div>
       <div v-else-if="error || !data" class="rounded-btn border border-amber-200 bg-amber-50 p-8 text-amber-900">
         <h1 class="mb-2 text-2xl font-black">Không thể tải chính sách</h1>
         <p class="mb-0">Slug không hợp lệ hoặc CMS local chưa khả dụng.</p>
       </div>
-      <article v-else class="mx-auto max-w-[1080px]">
-        <header class="mb-8 max-w-[1080px]">
+      <article v-else class="mx-auto w-full max-w-[1280px]">
+        <header class="mb-7 max-w-[1000px] nav:mb-9">
           <h1 class="mb-3 text-[clamp(30px,5vw,48px)] font-black leading-tight tracking-tight">{{ data.title }}</h1>
           <p v-if="data.description" class="mb-3 max-w-[760px] text-lg leading-relaxed text-slate-500">{{ data.description }}</p>
           <p class="mb-0 text-sm text-slate-500">{{ formatMetadataDate(data.date) }} <span aria-hidden="true">·</span> {{ data.author.name }}</p>
         </header>
-        <section v-if="data.content.html" class="max-w-[1080px]" aria-label="Nội dung chính sách">
-          <div class="grid gap-8" :class="editorial.toc.length ? 'nav:grid-cols-[220px_minmax(0,1fr)]' : ''">
-            <nav v-if="editorial.toc.length" ref="tocContainerRef" class="h-fit rounded-btn border border-slate-200/90 bg-slate-50/50 p-4 nav:sticky nav:top-24" aria-label="Mục lục nội dung chính sách">
-              <strong class="mb-3 block text-sm text-navy-800">Nội dung bài viết</strong>
-              <ul class="m-0 list-none space-y-1 p-0">
+        <section v-if="data.content.html" aria-label="Nội dung chính sách">
+          <div class="grid grid-cols-1 gap-8 nav:grid-cols-[minmax(240px,1fr)_minmax(0,2fr)] nav:gap-12">
+            <nav v-if="editorial.toc.length" ref="tocContainerRef" class="h-fit nav:sticky nav:top-24" aria-label="Mục lục nội dung chính sách">
+              <strong class="mb-3 flex items-center gap-2 text-sm font-bold text-navy-800">
+                <UIcon name="i-lucide-list" class="size-4 text-gold-600" aria-hidden="true" />
+                <span>Nội dung bài viết</span>
+              </strong>
+              <ul class="m-0 list-none space-y-1 border-l border-slate-200 p-0">
                 <li v-for="item in editorial.toc" :key="item.id" :class="item.level === 3 ? 'pl-3' : ''">
                   <a
                     :data-toc-id="item.id"
-                    class="flex min-h-11 items-center px-2 py-2 text-sm leading-snug no-underline hover:text-gold-700"
-                    :class="activeHeadingId === item.id ? 'font-extrabold text-gold-700' : 'text-slate-600'"
+                    class="flex min-h-11 min-w-11 items-center border-l-2 px-3 text-sm leading-5 transition-colors no-underline"
+                    :class="activeHeadingId === item.id ? 'border-gold-500 font-semibold text-navy-800' : 'border-transparent text-slate-600 hover:text-navy-800'"
                     :aria-current="activeHeadingId === item.id ? 'true' : undefined"
                     :href="`#${item.id}`"
                     @click.prevent="scrollToHeading(item.id)"
@@ -150,7 +156,7 @@ useHead({
                 </li>
               </ul>
             </nav>
-            <div class="w-full max-w-[960px]">
+            <div class="min-w-0 w-full max-w-[960px]">
               <div id="policy-article-content"><EditorialRichText :content="editorial.content" /></div>
               <EditorialShare :title="data.title" :canonical-path="data.canonical" />
             </div>
@@ -159,7 +165,7 @@ useHead({
         <p v-else class="my-8 text-slate-600" role="status">Nội dung đang cập nhật</p>
       </article>
 
-      <section v-if="data && data.related.length" class="mx-auto mt-12 w-full" aria-labelledby="policy-related-title">
+      <section v-if="data && data.related.length" class="mx-auto mt-10 w-full nav:mt-14" aria-labelledby="policy-related-title">
           <div class="mb-5 flex items-center justify-between gap-4">
             <h2 id="policy-related-title" class="m-0 text-2xl font-black text-navy-800">Tin liên quan</h2>
             <div class="flex shrink-0 gap-3" role="group" aria-label="Điều hướng tin liên quan">
