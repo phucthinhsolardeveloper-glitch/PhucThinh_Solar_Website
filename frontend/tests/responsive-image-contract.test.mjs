@@ -27,6 +27,13 @@ test('catalog media reserves intrinsic space and chooses responsive product size
   assert.match(products, /productIndex < 4 \? 'high' : 'auto'/)
 })
 
+test('catalog keeps the valid JD-V500 product image and falls back only after an image error', () => {
+  const products = read('app/components/catalog/CatalogProductGrid.vue')
+  assert.doesNotMatch(products, /['"]\/upload\/product\/jd-v500-7208\.webp['"]\s*:/)
+  assert.match(products, /:src="productImageSrc\(product\)"/)
+  assert.match(products, /@error="markImageError\(product\)"/)
+})
+
 test('news cards use allowlisted PHP thumbnails and match the rendered 16:9 frame', () => {
   const news = read('app/components/news/NewsCard.vue')
   assert.match(news, /\^\\\/upload\\\/news\\\//)
