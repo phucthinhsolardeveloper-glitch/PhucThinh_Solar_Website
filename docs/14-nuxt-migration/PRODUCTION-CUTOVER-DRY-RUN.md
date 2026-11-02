@@ -33,6 +33,28 @@ config file; persist it in a separately reviewed staging-only edge change before
 relying on it across an outer Caddy restart. Production route/config was not
 changed.
 
+A fixed outer-edge log window from 01:50 to 02:15 UTC contained 26 HTTP 502
+responses and 8 HTTP 503 responses for staging, alongside 4,699 HTTP 200
+responses. Matching Caddy error-log records are diagnostics and must not be
+counted as additional HTTP responses. The 502 diagnostics identify intermittent
+Docker DNS lookup failures for the staging proxy. Five 503 responses at
+02:12:48–02:12:49 UTC coincided with the `9ed23b4d84cc` staging deployment;
+the inner Caddy logged `no upstreams available` while app containers were being
+replaced. The current deploy script builds both images first but activates them
+in place and checks health afterward. The outer Caddy's `/robots.txt` probe can
+stay healthy while the inner proxy has no ready page/API upstream, so the outer
+retry and that health check do not close the gap. Current staging is healthy
+again, but deploy availability remains open until a pre-activation/blue-green
+gate validates page, `/_nuxt/*`, and API paths before traffic switches.
+
+The global wheel interception was removed in `9ed23b4d84cc` and deployed to
+staging. A separate mobile scroll-up check confirmed the header can remain
+translated out of view after the visitor scrolls upward while still below the
+top-of-page threshold; fix this before closing the shared header UX gate. A
+catalog full-page lazy-load run downloaded 8.31 MB of images on both desktop and
+mobile viewports; the integration checkpoint records the asset inventory and
+GTranslate instrumentation.
+
 The solution alias `/giai-phap/thiet-bi-den-nang-luong-mat-troi-quy-mo-gia-dinh/`
 was also re-probed on 2026-11-02: production PHP and staging Nuxt both returned
 404, while the proposed canonical destination returned 200 on both. This
