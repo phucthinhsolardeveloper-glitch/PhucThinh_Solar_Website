@@ -47,28 +47,28 @@ tasks:
   - id: DES-01
     lane: DESIGN
     priority: P0
-    state: in_progress
+    state: done
     deps: []
     title: V2 read-only visual/source critique and staging brand baseline
     acceptance: critique markdown identifies actual CSS light-state gap and mobile/interaction issues
   - id: DES-02
     lane: DESIGN
     priority: P0
-    state: proposed
+    state: done
     deps: [DES-01]
     title: Three art directions and mobile/desktop sketches
     acceptance: genuinely different Precision Paper, Spatial Atelier and Living System; brand constant
   - id: DES-03
     lane: DESIGN
     priority: P0
-    state: proposed
+    state: done
     deps: [DES-02]
     title: Build isolated Nuxt Energy V3 lighting and white-grid sample
     acceptance: local SSR noindex scene with day/night/backup lighting changes, good mobile, no shared edits
   - id: QA-01
     lane: QA
     priority: P0
-    state: proposed
+    state: prototype_smoke_passed
     deps: [DES-03]
     title: Browser QA day night backup and selective grid
     acceptance: screenshots 320 390 768 1440, keyboard/touch/reduced-motion, no horizontal overflow
