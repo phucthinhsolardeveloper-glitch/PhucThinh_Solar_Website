@@ -7,23 +7,19 @@ const links = useMigrationLinks()
 
 <template>
   <!--
-    PHP (templates/news/service_list_tpl.php) chỉ dùng $solutionUi['choices']
-    làm aria-label trên <section>, không render heading chữ nào phía trên
-    lưới card khi có dữ liệu — mỗi card tự có <h2> riêng là tiêu đề của nó.
-    Chỉ hiện text này như tiêu đề thật khi danh sách rỗng (PHP lúc đó không
-    có section này để so, nên giữ emptyLabel hiển thị cho preview không trống
-    trơn).
+    Dữ liệu choicesLabel là nhãn CMS cho lối chọn giải pháp; render thành
+    heading thật để người dùng hiểu mục đích của dải card và hỗ trợ đọc màn hình.
   -->
-  <section id="cac-giai-phap" class="pt-[42px] pb-[54px] max-[520px]:pt-[26px] max-[520px]:pb-[26px]" :aria-label="cards.length ? choicesLabel : undefined" :aria-labelledby="cards.length ? undefined : 'solutions-choices-title'">
-    <h2 v-if="!cards.length" id="solutions-choices-title" class="m-0 mb-[22px] text-[28px] leading-[1.25] font-black text-navy-800">
-      {{ emptyLabel }}
+  <section id="cac-giai-phap" class="pt-[42px] pb-[54px] max-[520px]:pt-[26px] max-[520px]:pb-[26px]" aria-labelledby="solutions-choices-title">
+    <h2 id="solutions-choices-title" class="m-0 mb-[22px] text-[clamp(24px,2.5vw,32px)] leading-[1.2] font-black tracking-tight text-navy-950">
+      {{ cards.length ? choicesLabel : emptyLabel }}
     </h2>
 
     <div v-if="cards.length" class="flex gap-4 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden max-[520px]:-mr-4 max-[520px]:pr-4 max-[359px]:-mr-3 max-[359px]:pr-3 min-[1101px]:grid min-[1101px]:gap-5 min-[1101px]:overflow-visible" :class="cards.length === 1 ? 'min-[1101px]:grid-cols-1' : 'min-[1101px]:grid-cols-5'">
       <a
         v-for="card in cards"
         :key="card.slug"
-        class="group flex min-w-0 flex-none basis-[280px] flex-col overflow-hidden bg-transparent text-navy-800 no-underline min-[1101px]:basis-auto max-[520px]:basis-[min(78vw,286px)]"
+        class="group flex min-w-0 flex-none basis-[280px] flex-col overflow-hidden bg-transparent text-navy-800 no-underline outline-none min-[1101px]:basis-auto max-[520px]:basis-[min(78vw,286px)] focus-visible:ring-2 focus-visible:ring-gold-500 focus-visible:ring-offset-4"
         :class="cards.length === 1 ? 'min-[1101px]:w-full min-[1101px]:flex-row min-[1101px]:gap-6' : ''"
         :href="links.solution(card.slug)"
       >
