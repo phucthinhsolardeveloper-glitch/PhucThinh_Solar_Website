@@ -5,12 +5,55 @@ import EditorialShare from '~/components/editorial/EditorialShare.vue'
 import { buildEditorialToc } from '#shared/editorial-toc'
 
 const props = defineProps<{ article: PublicNewsDetailPayload['article'] }>()
-const editorial = computed(() => buildEditorialToc(props.article.content))
+const { openConsultation } = useStorefrontModal()
+
+function extractImageStem(url: string): string {
+  const filename = url.split('/').pop()?.split('?')[0] ?? ''
+  const withoutExt = filename.replace(/\.[a-z0-9]+$/i, '')
+  return withoutExt.replace(/(?:-\d+)+$/, '').toLowerCase()
+}
+
+const cleanedContent = computed(() => {
+  let html = props.article.content.html || ''
+  if (!html) return props.article.content
+
+  // Strip empty paragraphs and headings left over from legacy CMS paste
+  html = html.replace(/<(?:p|h[2-6])[^>]*>(?:\s|&nbsp;|\u00a0|<br\s*\/?>)*<\/(?:p|h[2-6])>/gi, '')
+
+  // Deduplicate inline image if it repeats the cover image already shown above
+  if (props.article.cover && props.article.showCover) {
+    const coverStem = extractImageStem(props.article.cover)
+    if (coverStem.length >= 4) {
+      html = html.replace(/<p[^>]*>\s*<img\b[^>]*\bsrc=["']([^"']+)["'][^>]*>\s*<\/p>/gi, (full, src: string) => {
+        return extractImageStem(src) === coverStem ? '' : full
+      })
+    }
+  }
+
+  // Normalize legacy h3/h4 hierarchy when no h2 exists so subheadings appear in the TOC
+  if (!/<h2\b/i.test(html) && /<h4\b/i.test(html)) {
+    html = html
+      .replace(/<(\/?)h3\b/gi, '<$1h2')
+      .replace(/<(\/?)h4\b/gi, '<$1h3')
+  }
+
+  return { ...props.article.content, html: html.trim() }
+})
+
+const editorial = computed(() => buildEditorialToc(cleanedContent.value))
+
+const readingMinutes = computed(() => {
+  const plain = cleanedContent.value.html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
+  if (!plain) return 1
+  const words = plain.split(' ').length
+  return Math.max(1, Math.round(words / 200))
+})
+
 const tocContainerRef = ref<HTMLElement | null>(null)
 const { isHeaderHidden } = useSiteHeader()
 const { activeHeadingId, scrollToHeading } = useTocScrollspy({
   contentSelector: '#news-article-content',
-  headingSelector: 'h2[id], h3[id]',
+  headingSelector: 'h2[id], h3[id], h4[id]',
   tocContainerRef,
   headerOffset: 100,
 })
@@ -42,6 +85,11 @@ function formatDate(value: string): string {
         <time v-if="article.date" :datetime="article.date">{{ formatDate(article.date) }}</time>
         <span v-if="article.date" aria-hidden="true" class="text-slate-300">·</span>
         <span>{{ article.author.name }}</span>
+        <span aria-hidden="true" class="text-slate-300">·</span>
+        <span class="inline-flex items-center gap-1.5 text-slate-500">
+          <UIcon name="i-lucide-clock" class="size-3.5 text-gold-600" aria-hidden="true" />
+          ~{{ readingMinutes }} phút đọc
+        </span>
       </div>
     </header>
 
@@ -79,6 +127,21 @@ function formatDate(value: string): string {
               >{{ item.label }}</a>
             </li>
           </ol>
+
+          <div class="mt-6 hidden rounded-[4px] border-l-[3px] border-gold-500 bg-navy-950 p-4 text-white nav:block">
+            <p class="m-0 text-sm font-bold text-white">Cần tư vấn kỹ thuật thực tế?</p>
+            <p class="m-0 mt-1 text-xs leading-relaxed text-white/75">
+              Đội ngũ kỹ sư Phúc Thịnh Solar hỗ trợ bóc tách cấu hình và báo giá theo nhu cầu thực tế.
+            </p>
+            <button
+              type="button"
+              class="mt-3 inline-flex min-h-9 w-full cursor-pointer items-center justify-center gap-1.5 rounded-[3px] bg-gold-500 px-3 py-1.5 text-xs font-extrabold text-navy-950 transition-colors hover:bg-gold-400"
+              @click="openConsultation('Bài viết: ' + article.title)"
+            >
+              <span>Nhận tư vấn miễn phí</span>
+              <span aria-hidden="true">→</span>
+            </button>
+          </div>
         </nav>
       </aside>
 
@@ -107,6 +170,21 @@ function formatDate(value: string): string {
             </a>
           </li>
         </ul>
+
+        <div v-if="article.content.html" class="mt-8 flex flex-col gap-3 rounded-[4px] border-l-[3px] border-gold-500 bg-slate-50 p-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p class="m-0 text-sm font-bold text-navy-900">Bạn đang tìm hiểu giải pháp hoặc chính sách hợp tác?</p>
+            <p class="m-0 mt-0.5 text-xs text-slate-600">Trao đổi trực tiếp cùng đội ngũ Phúc Thịnh Solar để nhận cấu hình và báo giá phù hợp.</p>
+          </div>
+          <button
+            type="button"
+            class="inline-flex min-h-10 shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-[3px] bg-navy-900 px-4 py-2 text-xs font-extrabold text-white transition-colors hover:bg-navy-800"
+            @click="openConsultation('Bài viết: ' + article.title)"
+          >
+            <span>Gửi yêu cầu tư vấn</span>
+            <span aria-hidden="true">→</span>
+          </button>
+        </div>
 
         <EditorialShare v-if="article.content.html" class="mt-8" :title="article.title" :canonical-path="article.seo.canonical" />
       </div>
