@@ -71,6 +71,46 @@ const mastheadBrands = computed(() => {
 function onSortChange(value: string) {
   navigateTo(filterLink({ sort: value === 'default' ? '' : value }))
 }
+
+const activeCatalogFilterChips = computed(() => {
+  const chips: Array<{ key: string; label: string; to: ReturnType<typeof filterLink> }> = []
+  const filters = catalogData.value?.filters
+  const selected = catalogData.value?.selected
+  if (!filters || !selected) return chips
+
+  for (const id of selected.subcategoryIds) {
+    const sub = filters.subcategories.find((item) => item.id === id)
+    if (sub) {
+      const remaining = selected.subcategoryIds.filter((item) => item !== id).join(',')
+      chips.push({ key: `sub-${id}`, label: sub.name, to: filterLink({ subcategory: remaining }) })
+    }
+  }
+  for (const id of selected.brandIds) {
+    const b = filters.brands.find((item) => item.id === id)
+    if (b) {
+      const remaining = selected.brandIds.filter((item) => item !== id).join(',')
+      chips.push({ key: `brand-${id}`, label: b.name, to: filterLink({ brand: remaining }) })
+    }
+  }
+  for (const key of selected.priceKeys) {
+    const p = filters.priceRanges.find((item) => item.key === key)
+    if (p) {
+      const remaining = selected.priceKeys.filter((item) => item !== key).join(',')
+      chips.push({ key: `price-${key}`, label: p.label, to: filterLink({ price: remaining }) })
+    }
+  }
+  for (const key of selected.needKeys ?? []) {
+    const n = filters.needs?.find((item) => item.key === key)
+    if (n) {
+      const remaining = (selected.needKeys ?? []).filter((item) => item !== key).join(',')
+      chips.push({ key: `need-${key}`, label: n.label, to: filterLink({ need: remaining }) })
+    }
+  }
+  if (keyword.value) {
+    chips.push({ key: 'kw', label: `Từ khóa: ${keyword.value}`, to: filterLink({ keyword: '' }) })
+  }
+  return chips
+})
 function openFilterDrawer() {
   filterDrawerOpen.value = true
 }
@@ -371,7 +411,12 @@ function pageLink(nextPage: number) {
             filterLink còn lại của trang đều là NuxtLink đổi URL.
           -->
           <div class="mb-5 flex flex-wrap items-center justify-between gap-3 max-[769px]:items-start max-[769px]:justify-start">
-            <h2 class="m-0 text-lg font-black text-navy-800">Danh sách sản phẩm</h2>
+            <div class="flex flex-wrap items-center gap-2.5">
+              <h2 class="m-0 text-lg font-black text-navy-800">Danh sách sản phẩm</h2>
+              <span v-if="catalogData.pagination.total" class="rounded-[3px] bg-navy-950 px-2.5 py-0.5 font-mono text-xs font-bold text-gold-300">
+                {{ catalogData.pagination.total.toLocaleString('vi-VN') }} sản phẩm
+              </span>
+            </div>
             <div
               class="flex items-center gap-2 max-[769px]:grid max-[769px]:w-full"
               :class="hasSidebar ? 'max-[769px]:grid-cols-2' : 'max-[769px]:grid-cols-1'"
@@ -405,6 +450,25 @@ function pageLink(nextPage: number) {
                 />
               </div>
             </div>
+          </div>
+
+          <div v-if="activeCatalogFilterChips.length" class="mb-4 flex flex-wrap items-center gap-2 rounded-[4px] bg-slate-50 px-3.5 py-2.5">
+            <span class="text-xs font-bold text-slate-500">Đang lọc:</span>
+            <NuxtLink
+              v-for="chip in activeCatalogFilterChips"
+              :key="chip.key"
+              :to="chip.to"
+              class="inline-flex items-center gap-1.5 rounded-[3px] bg-navy-950 px-2.5 py-1 text-xs font-bold text-gold-300 no-underline transition-colors hover:bg-navy-800"
+            >
+              <span>{{ chip.label }}</span>
+              <span aria-hidden="true" class="text-white/80">×</span>
+            </NuxtLink>
+            <NuxtLink
+              :to="{ path: selfPath }"
+              class="ml-auto text-xs font-bold text-navy-800 underline hover:text-gold-700"
+            >
+              Xóa tất cả bộ lọc
+            </NuxtLink>
           </div>
 
           <CatalogProductGrid :products="catalogData.products" />

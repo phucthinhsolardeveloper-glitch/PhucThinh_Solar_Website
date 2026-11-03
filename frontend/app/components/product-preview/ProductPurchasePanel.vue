@@ -56,7 +56,10 @@ async function add(goToCart = false) {
         {{ loading ? 'Đang thêm…' : 'Thêm vào giỏ' }}
       </UButton>
     </div>
-    <p v-if="added && !error" class="mb-0 mt-3 text-sm font-semibold text-emerald-700" role="status">Đã thêm sản phẩm vào giỏ hàng.</p>
+    <p v-if="added && !error" class="mb-0 mt-3 flex flex-wrap items-center gap-2 text-sm font-semibold text-emerald-700" role="status">
+      <span>Đã thêm sản phẩm vào giỏ hàng.</span>
+      <NuxtLink :to="links.generic('/gio-hang/')" class="font-bold text-navy-900 underline hover:text-gold-700">Xem giỏ hàng →</NuxtLink>
+    </p>
     <p v-if="error" class="mb-0 mt-3 text-sm font-semibold text-red-700" role="alert">{{ error }}</p>
     <UButton
       v-if="pricing.mode === 'quote' && consultationAvailable"

@@ -92,13 +92,30 @@ usePublicSocialMeta({
 
       <section v-if="error || !projects" class="min-h-[40vh] py-10" :role="responseStatus === 404 ? 'status' : 'alert'">
         <h1 class="mb-3 text-3xl font-black tracking-tight">{{ responseStatus === 404 ? 'Không tìm thấy danh mục dự án' : 'Tạm thời không thể tải danh mục dự án' }}</h1>
-        <p class="text-slate-600">{{ responseStatus === 404 ? 'Danh mục này hiện không tồn tại hoặc đã ẩn.' : 'Nguồn nội dung hiện không khả dụng.' }}</p>
+        <p class="mb-5 text-slate-600">{{ responseStatus === 404 ? 'Danh mục này hiện không tồn tại hoặc đã ẩn.' : 'Nguồn nội dung hiện không khả dụng.' }}</p>
+        <div class="flex flex-wrap gap-3">
+          <NuxtLink :to="PROJECTS_PUBLIC_PATH" class="inline-flex min-h-11 items-center rounded-[4px] bg-navy-900 px-5 py-2.5 text-sm font-bold text-white no-underline hover:bg-navy-800">Xem tất cả dự án</NuxtLink>
+          <button type="button" class="inline-flex min-h-11 cursor-pointer items-center rounded-[4px] bg-gold-500 px-5 py-2.5 text-sm font-extrabold text-navy-950 hover:bg-gold-400" @click="openConsultation('Tư vấn dự án điện mặt trời')">Nhận tư vấn công trình →</button>
+        </div>
       </section>
 
       <template v-else>
-        <header class="my-7 max-w-[980px]">
-          <h1 class="mb-3 text-[clamp(32px,5vw,56px)] font-black leading-tight tracking-tight text-navy-950">{{ categoryTitle }}</h1>
-          <p v-if="categoryDescription" class="m-0 text-lg leading-relaxed text-slate-600">{{ categoryDescription }}</p>
+        <header class="my-7 flex flex-wrap items-end justify-between gap-4">
+          <div class="max-w-[820px]">
+            <div class="mb-2 flex flex-wrap items-center gap-2.5">
+              <h1 class="m-0 text-[clamp(32px,5vw,56px)] font-black leading-tight tracking-tight text-navy-950">{{ categoryTitle }}</h1>
+              <span v-if="projects.pagination.total" class="rounded-[3px] bg-navy-950 px-2.5 py-1 font-mono text-xs font-bold text-gold-300">{{ projects.pagination.total }} công trình</span>
+            </div>
+            <p v-if="categoryDescription" class="m-0 text-lg leading-relaxed text-slate-600">{{ categoryDescription }}</p>
+          </div>
+          <button
+            type="button"
+            class="inline-flex min-h-11 shrink-0 cursor-pointer items-center gap-2 rounded-[4px] bg-gold-500 px-4 py-2 text-xs font-extrabold text-navy-950 transition-colors hover:bg-gold-400"
+            @click="openConsultation(`Dự án ${categoryTitle}`)"
+          >
+            <span>Tư vấn công trình tương tự</span>
+            <span aria-hidden="true">→</span>
+          </button>
         </header>
 
         <nav ref="projectCategoryRailRef" class="flex gap-2 overflow-x-auto py-0.5 pb-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" aria-label="Danh mục dự án">

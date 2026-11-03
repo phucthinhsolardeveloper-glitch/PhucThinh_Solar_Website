@@ -74,6 +74,16 @@ function setupObserver() {
 onMounted(() => nextTick(setupObserver))
 watch(navItems, () => nextTick(setupObserver), { deep: true })
 onBeforeUnmount(() => observer?.disconnect())
+
+function openReviewsSection() {
+  if (!import.meta.client) return
+  const details = document.getElementById('danh-gia-san-pham') as HTMLDetailsElement | null
+  if (details) {
+    details.open = true
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    details.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' })
+  }
+}
 </script>
 
 <template>
@@ -94,7 +104,7 @@ onBeforeUnmount(() => observer?.disconnect())
           <span v-if="product.brand">Thương hiệu: <strong class="font-bold text-navy-800">{{ product.brand }}</strong></span>
           <template v-if="extras?.reviews.total">
             <span class="text-slate-300" aria-hidden="true">·</span>
-            <a href="#danh-gia-san-pham" class="inline-flex items-center gap-1 font-bold text-gold-700 no-underline hover:underline">
+            <a href="#danh-gia-san-pham" class="inline-flex items-center gap-1 font-bold text-gold-700 no-underline hover:underline" @click.prevent="openReviewsSection">
               <span>★ {{ extras.reviews.average.toFixed(1) }}/5</span>
               <span class="font-normal text-slate-500">({{ extras.reviews.total }} nhận xét)</span>
             </a>

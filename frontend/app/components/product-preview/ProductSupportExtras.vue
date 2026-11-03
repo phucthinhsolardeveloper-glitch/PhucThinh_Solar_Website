@@ -4,6 +4,7 @@ import type { PublicProductDocument } from '#shared/contracts/public-product-det
 
 const props = defineProps<{ extras: PublicProductExtrasPayload | null; documents: PublicProductDocument[] }>()
 const links = useMigrationLinks()
+const { openConsultation } = useStorefrontModal()
 const hasMediaColumn = computed(() => Boolean(props.extras?.videoEmbedUrl) || props.documents.length > 0)
 
 function documentHref(document: PublicProductDocument): string {
@@ -69,12 +70,22 @@ function documentHref(document: PublicProductDocument): string {
             />
           </div>
         </template>
-        <div v-else class="flex items-center gap-3 rounded-[4px] bg-slate-50 px-4 py-3 text-slate-600" aria-label="Video đang được cập nhật">
-          <span class="inline-grid size-9 shrink-0 place-items-center rounded-full bg-white text-xs text-gold-700 shadow-xs" aria-hidden="true">▶</span>
-          <div>
-            <strong class="block text-sm font-bold text-navy-900">Video sản phẩm &amp; lắp đặt</strong>
-            <p class="m-0 text-xs text-slate-500">Video đang được cập nhật</p>
+        <div v-else class="flex flex-wrap items-center justify-between gap-3 rounded-[4px] border-l-[3px] border-gold-500 bg-slate-50 px-4 py-3.5 text-slate-600" aria-label="Video đang được cập nhật">
+          <div class="flex items-center gap-3">
+            <span class="inline-grid size-9 shrink-0 place-items-center rounded-full bg-white text-xs text-gold-700 shadow-xs" aria-hidden="true">▶</span>
+            <div>
+              <strong class="block text-sm font-bold text-navy-900">Video sản phẩm &amp; lắp đặt</strong>
+              <p class="m-0 text-xs text-slate-500">Video đang được cập nhật · Hỗ trợ gửi video thực tế và sơ đồ đấu nối qua Zalo</p>
+            </div>
           </div>
+          <button
+            type="button"
+            class="inline-flex min-h-9 shrink-0 cursor-pointer items-center gap-1.5 rounded-[3px] bg-navy-900 px-3 py-1.5 text-xs font-bold text-gold-300 transition-colors hover:bg-navy-800"
+            @click="openConsultation('Yêu cầu video thực tế & tài liệu kỹ thuật sản phẩm')"
+          >
+            <span>Nhận tài liệu & video</span>
+            <span aria-hidden="true">→</span>
+          </button>
         </div>
       </div>
 

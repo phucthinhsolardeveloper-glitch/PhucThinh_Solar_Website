@@ -34,9 +34,11 @@ const chapters = computed(() => {
       </div>
 
       <div class="project-story__intro flex min-w-0 flex-col justify-center px-5 py-8 tb:px-8 nav:px-[clamp(32px,5vw,76px)] nav:py-16">
-        <p class="mb-4 flex items-center gap-2 text-xs font-extrabold uppercase tracking-[0.16em] text-gold-300">
-          <span class="h-px w-8 bg-gold-400" aria-hidden="true" />{{ project.category?.name || 'Dự án' }}
-        </p>
+        <div v-if="project.category?.name" class="mb-4 flex flex-wrap items-center gap-2">
+          <span class="inline-flex items-center rounded-[3px] border border-gold-400/35 bg-white/10 px-3 py-1 text-xs font-bold text-gold-300">
+            {{ project.category.name }}
+          </span>
+        </div>
         <h1 class="m-0 text-[clamp(32px,4.5vw,58px)] font-black leading-[1.06] tracking-tight text-white">{{ project.title }}</h1>
 
         <dl class="mt-8 grid gap-x-6 gap-y-5 border-t border-white/20 pt-6 text-sm tb:grid-cols-2">

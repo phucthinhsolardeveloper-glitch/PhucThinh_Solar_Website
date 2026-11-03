@@ -42,6 +42,12 @@ const brandLogoSrc = computed(() => {
 
 const searchOpen = ref(false)
 const searchKeyword = ref('')
+const popularSearchTerms = ['Đèn đường', 'Blue Carbon', 'LONGi', 'SolaX', 'Pin lưu trữ', 'Jindian', 'Bơm nước']
+
+async function selectPopularSearch(term: string) {
+  searchKeyword.value = term
+  await submitSearch()
+}
 const catalogOpen = ref(false)
 const catalogMode = ref<MenuMode>(null)
 const catalogKeyword = ref('')
@@ -790,6 +796,18 @@ onBeforeUnmount(() => {
               @click="closeSearch()"
             >
               <UIcon name="i-lucide-x" class="size-5" aria-hidden="true" />
+            </button>
+          </div>
+          <div class="mt-2.5 flex flex-wrap items-center gap-1.5">
+            <span class="mr-1 text-xs font-semibold text-slate-500">Tra cứu nhanh:</span>
+            <button
+              v-for="term in popularSearchTerms"
+              :key="term"
+              type="button"
+              class="cursor-pointer rounded-[3px] border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-bold text-navy-800 transition-colors hover:border-gold-500 hover:bg-gold-500/15 hover:text-navy-950"
+              @click="selectPopularSearch(term)"
+            >
+              {{ term }}
             </button>
           </div>
         </div>

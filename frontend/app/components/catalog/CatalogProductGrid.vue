@@ -244,7 +244,11 @@ function discountPercent(product: PublicCatalogProduct): number | null {
           Xem chi tiết <UIcon name="i-lucide-arrow-right" class="size-4" aria-hidden="true" />
         </NuxtLink>
         <div class="min-h-5 pt-0.5">
-          <p v-if="addedIds.has(product.id) && !cartErrors.has(product.id)" class="m-0 flex items-center gap-1.5 text-sm font-semibold leading-5 text-emerald-700" role="status"><UIcon name="i-lucide-circle-check" class="size-4 flex-none" aria-hidden="true" />Đã thêm vào giỏ hàng.</p>
+          <p v-if="addedIds.has(product.id) && !cartErrors.has(product.id)" class="m-0 flex flex-wrap items-center gap-1.5 text-sm font-semibold leading-5 text-emerald-700" role="status">
+            <UIcon name="i-lucide-circle-check" class="size-4 flex-none" aria-hidden="true" />
+            <span>Đã thêm vào giỏ hàng.</span>
+            <NuxtLink :to="links.generic('/gio-hang/')" class="font-bold text-navy-900 underline hover:text-gold-700">Xem giỏ →</NuxtLink>
+          </p>
           <p v-if="cartErrors.has(product.id)" class="m-0 text-sm font-semibold leading-5 text-red-700" role="alert">{{ cartErrors.get(product.id) }}</p>
         </div>
       </div>
@@ -252,7 +256,20 @@ function discountPercent(product: PublicCatalogProduct): number | null {
     </div>
   </div>
 
-  <p v-else class="py-8 text-slate-500" role="status">Chưa có sản phẩm trong danh mục này.</p>
+  <div v-else class="flex flex-col items-start justify-between gap-4 rounded-[4px] border-l-[4px] border-gold-500 bg-slate-50 p-6 sm:flex-row sm:items-center" role="status">
+    <div>
+      <p class="m-0 font-bold text-navy-900">Chưa có sản phẩm trong danh mục này.</p>
+      <p class="m-0 mt-1 text-sm text-slate-600">Bạn có thể thử bỏ bớt tiêu chí lọc hoặc liên hệ kỹ thuật viên để được giới thiệu mã tương đương.</p>
+    </div>
+    <button
+      type="button"
+      class="inline-flex min-h-10 shrink-0 cursor-pointer items-center gap-1.5 rounded-[4px] bg-gold-500 px-4 py-2 text-xs font-extrabold text-navy-950 transition-colors hover:bg-gold-400"
+      @click="openConsultation('Tư vấn mã sản phẩm tương đương')"
+    >
+      <span>Nhận tư vấn mã tương đương</span>
+      <span aria-hidden="true">→</span>
+    </button>
+  </div>
 </template>
 
 <style scoped>

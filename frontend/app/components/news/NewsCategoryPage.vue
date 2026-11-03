@@ -12,6 +12,7 @@ import NewsFilters from '~/components/news/NewsFilters.vue'
 const props = defineProps<{ slugOverride?: string }>()
 const route = useRoute()
 const config = useRuntimeConfig()
+const { openConsultation } = useStorefrontModal()
 const slug = computed(() => props.slugOverride || (typeof route.params.slug === 'string' ? route.params.slug : ''))
 const searchInput = ref(typeof route.query.q === 'string' ? route.query.q : '')
 const fallbackSite: PublicSitePayload = { schemaVersion: 1, brand: { name: 'Phúc Thịnh Solar', hotline: '' }, productCategories: [] }
@@ -97,12 +98,19 @@ usePublicSocialMeta({
     <main class="pts-container pb-16" :aria-busy="pending">
       <section v-if="error || !news || !category" class="min-h-[45vh] py-12" :role="responseStatus === 404 ? 'status' : 'alert'">
         <h1 class="mb-3 text-3xl font-black tracking-tight">{{ responseStatus === 404 ? 'Không tìm thấy danh mục bài viết' : 'Tạm thời không thể tải danh mục bài viết' }}</h1>
-        <p class="text-slate-500">{{ responseStatus === 404 ? 'Danh mục này hiện không tồn tại hoặc đã ẩn.' : 'Nguồn nội dung hiện không khả dụng.' }}</p>
+        <p class="mb-5 text-slate-500">{{ responseStatus === 404 ? 'Danh mục này hiện không tồn tại hoặc đã ẩn.' : 'Nguồn nội dung hiện không khả dụng.' }}</p>
+        <div class="flex flex-wrap gap-3">
+          <NuxtLink to="/tin-tuc/" class="inline-flex min-h-11 items-center rounded-[4px] bg-navy-900 px-5 py-2.5 text-sm font-bold text-white no-underline hover:bg-navy-800">Về trang Kiến thức</NuxtLink>
+          <button type="button" class="inline-flex min-h-11 cursor-pointer items-center rounded-[4px] bg-gold-500 px-5 py-2.5 text-sm font-extrabold text-navy-950 hover:bg-gold-400" @click="openConsultation('Tư vấn kỹ thuật')">Nhận tư vấn kỹ thuật →</button>
+        </div>
       </section>
 
       <template v-else>
         <header class="pt-6 pb-7">
-          <h1 class="mb-2.5 text-[clamp(30px,4vw,44px)] font-black leading-[1.15] tracking-tight text-navy-800">{{ category.name }}</h1>
+          <div class="mb-2.5 flex flex-wrap items-center gap-2.5">
+            <h1 class="m-0 text-[clamp(30px,4vw,44px)] font-black leading-[1.15] tracking-tight text-navy-800">{{ category.name }}</h1>
+            <span v-if="news.pagination.total" class="rounded-[3px] bg-navy-950 px-2.5 py-1 font-mono text-xs font-bold text-gold-300">{{ news.pagination.total }} bài viết</span>
+          </div>
           <p v-if="category.description" class="m-0 leading-relaxed text-slate-500">{{ category.description }}</p>
         </header>
 
@@ -118,8 +126,15 @@ usePublicSocialMeta({
         <section v-if="news.articles.length" class="grid grid-cols-1 gap-x-5 gap-y-6 tb:grid-cols-2 nav:grid-cols-3" :aria-label="news.labels.results">
           <NewsCard v-for="article in news.articles" :key="article.id" :article="article" :read-label="news.labels.read" :read-more-label="news.labels.readMore" />
         </section>
-        <div v-else class="min-h-[260px] py-[52px] text-center text-slate-500" role="status">
-          <h2 class="mb-3 text-navy-800">{{ news.labels.empty }}</h2>
+        <div v-else class="rounded-[4px] border-l-[4px] border-gold-500 bg-slate-50 px-6 py-10 text-center text-slate-600" role="status">
+          <h2 class="mb-2 text-xl font-black text-navy-900">{{ news.labels.empty }}</h2>
+          <p class="mx-auto mb-5 max-w-lg text-sm leading-relaxed text-slate-600">
+            Bạn có thể xóa từ khóa tìm kiếm hiện tại hoặc xem toàn bộ chuyên mục Kiến thức điện mặt trời.
+          </p>
+          <div class="flex flex-wrap items-center justify-center gap-3">
+            <button v-if="route.query.q" type="button" class="inline-flex min-h-10 cursor-pointer items-center rounded-[4px] bg-navy-900 px-4 py-2 text-xs font-bold text-white hover:bg-navy-800" @click="searchInput = ''; submitSearch()">Xóa bộ lọc tìm kiếm</button>
+            <NuxtLink to="/tin-tuc/" class="inline-flex min-h-10 items-center rounded-[4px] border border-slate-300 bg-white px-4 py-2 text-xs font-bold text-navy-800 no-underline hover:border-gold-500">Xem tất cả bài viết</NuxtLink>
+          </div>
         </div>
 
         <nav v-if="news.pagination.total > news.pagination.perPage" class="mt-7 flex flex-wrap justify-center gap-2" :aria-label="news.labels.pages">

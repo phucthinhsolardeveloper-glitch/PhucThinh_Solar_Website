@@ -23,6 +23,19 @@ const reviewPageError = ref('')
 const loadingReplyIds = ref<Set<number>>(new Set())
 const replyErrors = ref<Record<number, string>>({})
 const starOptions = [5, 4, 3, 2, 1].map((value) => ({ label: `${value} sao`, value }))
+const quickReviewTags = [
+  'Thiết bị hoạt động ổn định, đúng công suất công bố',
+  'Đóng gói chắc chắn, giao hàng nhanh',
+  'Kỹ thuật viên hỗ trợ hướng dẫn lắp đặt nhiệt tình',
+  'Hàng chính hãng, hoàn thiện sắc nét',
+]
+
+function applyQuickReviewTag(tag: string) {
+  if (!form.title.trim()) form.title = tag
+  const current = form.content.trim()
+  if (current.includes(tag)) return
+  form.content = current ? `${current}\n${tag}.` : `${tag}.`
+}
 const reviewInputUi = {
   base: 'h-[52px] w-full rounded-btn border border-slate-300 bg-white px-3.5 text-base font-normal text-navy-950 placeholder:text-slate-400 focus-visible:border-gold-600 focus-visible:ring-2 focus-visible:ring-gold-500/25',
 }
@@ -336,6 +349,17 @@ async function sendReview() {
               <UInput v-model.trim="form.title" name="title" required maxlength="180" variant="none" class="w-full" :ui="reviewInputUi" />
             </UFormField>
             <UFormField label="Nội dung nhận xét" name="content" required class="grid min-w-0 content-start gap-2 tb:col-span-2" :ui="{ label: 'text-sm font-semibold text-navy-800' }">
+              <div class="mb-1.5 flex flex-wrap gap-1.5">
+                <button
+                  v-for="tag in quickReviewTags"
+                  :key="tag"
+                  type="button"
+                  class="cursor-pointer rounded-[3px] border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-navy-800 transition-colors hover:border-gold-500 hover:bg-gold-500/15"
+                  @click="applyQuickReviewTag(tag)"
+                >
+                  + {{ tag }}
+                </button>
+              </div>
               <UTextarea v-model.trim="form.content" name="content" required maxlength="5000" :rows="5" variant="none" class="w-full" :ui="reviewTextareaUi" />
             </UFormField>
             <UFormField label="Họ tên" name="fullname" required class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-sm font-semibold text-navy-800' }">
