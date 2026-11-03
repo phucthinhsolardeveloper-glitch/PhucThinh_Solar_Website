@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { PublicSolutionCard } from '../../../shared/contracts/public-solutions'
 
-defineProps<{ cards: PublicSolutionCard[]; choicesLabel: string; emptyLabel: string; consultLabel: string }>()
+withDefaults(defineProps<{ cards: PublicSolutionCard[]; choicesLabel: string; emptyLabel: string; consultLabel: string; highlight?: string[] }>(), { highlight: () => [] })
 const links = useMigrationLinks()
 </script>
 
@@ -22,7 +22,7 @@ const links = useMigrationLinks()
         v-for="(card, index) in cards"
         :key="card.slug"
         class="tile group"
-        :class="{ 'is-lead': index === 0 && cards.length > 2 }"
+        :class="{ 'is-lead': index === 0 && cards.length > 2, 'is-match': highlight.includes(card.slug), 'is-dimmed': highlight.length > 0 && !highlight.includes(card.slug) }"
         :href="links.solution(card.slug)"
       >
         <img
@@ -36,6 +36,7 @@ const links = useMigrationLinks()
           decoding="async"
         >
         <span class="tile-veil" aria-hidden="true" />
+        <span v-if="highlight.includes(card.slug)" class="tile-match">Phù hợp với bạn</span>
         <span class="tile-body">
           <h3 class="tile-title">{{ card.title }}</h3>
           <span v-if="card.description" class="tile-desc">{{ card.description }}</span>
@@ -155,6 +156,24 @@ const links = useMigrationLinks()
 .tile-arrow svg { width: 15px; height: 15px; }
 .tile:hover .tile-arrow { transform: translateX(4px); }
 
+.tile { transition: opacity 0.4s ease, filter 0.4s ease, box-shadow 0.4s ease; }
+.tile.is-dimmed { opacity: 0.55; filter: saturate(0.4); }
+.tile.is-dimmed:hover, .tile.is-dimmed:focus-visible { opacity: 1; filter: none; }
+.tile.is-match { box-shadow: 0 0 0 3px var(--color-gold-400), 0 24px 50px -24px rgb(6 21 55 / 55%); }
+.tile-match {
+  position: absolute;
+  left: clamp(14px, 1.6vw, 24px);
+  top: clamp(14px, 1.6vw, 24px);
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--color-gold-400);
+  color: var(--color-navy-950);
+  font-size: 13px;
+  font-weight: 800;
+  animation: match-pop 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes match-pop { from { opacity: 0; transform: translateY(-6px) scale(0.92); } to { opacity: 1; transform: none; } }
+
 @media (max-width: 1100px) {
   .mosaic { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: clamp(220px, 34vw, 300px); }
 }
@@ -165,7 +184,8 @@ const links = useMigrationLinks()
   .tile-desc { max-height: 5em; opacity: 1; -webkit-line-clamp: 2; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .tile-image, .tile-desc, .tile-arrow, .tile-veil { transition: none; }
+  .tile, .tile-image, .tile-desc, .tile-arrow, .tile-veil { transition: none; }
+  .tile-match { animation: none; }
   .tile:hover .tile-image { transform: none; }
 }
 </style>

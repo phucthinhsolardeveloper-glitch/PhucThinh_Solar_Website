@@ -4,7 +4,7 @@ import type { PublicSitePayload } from '#shared/contracts/public-site'
 import { isPublicSitePayload } from '#shared/contracts/public-site'
 import { SOLUTIONS_PUBLIC_PATH } from '#shared/public-route-gate'
 import SolutionCards from '~/components/solutions/SolutionCards.vue'
-import SolutionDeck from '~/components/solutions/SolutionDeck.vue'
+import SolutionFinder from '~/components/solutions/SolutionFinder.vue'
 import SolutionsEquipment from '~/components/solutions/SolutionsEquipment.vue'
 import SolutionsCta from '~/components/solutions/SolutionsCta.vue'
 import EditorialRichText from '~/components/editorial/EditorialRichText.vue'
@@ -56,6 +56,7 @@ usePublicSocialMeta({
   image: pageImage,
 })
 
+const recommendedSolutions = ref<string[]>([])
 const tocContainerRef = ref<HTMLElement | null>(null)
 const { activeHeadingId, scrollToHeading } = useTocScrollspy({
   contentSelector: '.cms-content',
@@ -95,12 +96,12 @@ const { activeHeadingId, scrollToHeading } = useTocScrollspy({
             <figure v-if="data.intro?.image" class="solution-energy-intro-image">
               <img :src="data.intro.image" :alt="data.intro.title" width="1200" height="750" fetchpriority="high">
             </figure>
-            <SolutionDeck v-else :cards="data.cards" />
+            <SolutionFinder v-else :cards="data.cards" @recommend="recommendedSolutions = $event" />
           </section>
         </GridSurface>
         <h1 v-else class="sr-only">{{ data.title }}</h1>
 
-        <SolutionCards :cards="data.cards" :choices-label="data.labels.choices" :empty-label="data.labels.empty" :consult-label="data.labels.consult" />
+        <SolutionCards :highlight="recommendedSolutions" :cards="data.cards" :choices-label="data.labels.choices" :empty-label="data.labels.empty" :consult-label="data.labels.consult" />
 
         <section v-if="data.editorial.content.html" class="pb-[54px]" aria-label="Nội dung tư vấn giải pháp">
           <div
@@ -113,13 +114,13 @@ const { activeHeadingId, scrollToHeading } = useTocScrollspy({
               class="h-fit max-h-[220px] overflow-y-auto overscroll-contain rounded-[3px] bg-navy-800 p-5 shadow-sm nav:sticky nav:top-24 nav:max-h-[calc(100vh-116px)]"
               aria-label="Mục lục nội dung giải pháp"
             >
-              <strong class="mb-3 block border-b border-white/12 pb-2.5 text-[13px] font-extrabold uppercase tracking-wider text-gold-300">Trong trang này</strong>
+              <strong class="mb-3 block border-b border-white/12 pb-2.5 text-[15px] font-extrabold text-gold-300">Trong trang này</strong>
               <ul class="m-0 list-none space-y-1 p-0">
                 <li v-for="item in data.editorial.toc.items" :key="item.id" :class="item.level === 3 ? 'pl-3' : ''">
                   <a
                     :data-toc-id="item.id"
                     :href="'#' + item.id"
-                    class="flex min-h-11 items-center border-l-2 py-1 pl-3 text-[13px] leading-[1.45] no-underline transition-all duration-200"
+                    class="flex min-h-11 items-center border-l-2 py-1 pl-3 text-[14.5px] leading-[1.45] no-underline transition-all duration-200"
                     :class="[
                       item.level === 2 ? 'font-bold' : 'font-semibold',
                       activeHeadingId === item.id
