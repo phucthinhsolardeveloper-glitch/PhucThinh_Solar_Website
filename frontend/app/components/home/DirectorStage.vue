@@ -106,7 +106,7 @@ onBeforeUnmount(stop)
 </template>
 
 <style scoped>
-.stage { min-height: clamp(360px, 38vw, 600px); isolation: isolate; }
+.stage { min-height: clamp(360px, 38vw, 600px); isolation: isolate; overflow: clip; }
 @media (max-width: 960px) {
   .stage { min-height: clamp(440px, 125vw, 560px); }
   .stage-desc { -webkit-line-clamp: 2; }

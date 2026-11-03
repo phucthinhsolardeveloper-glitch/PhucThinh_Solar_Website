@@ -68,6 +68,7 @@ const links = useMigrationLinks()
   display: flex;
   min-width: 0;
   overflow: hidden;
+  overflow: clip;
   border-radius: 4px;
   background: var(--color-navy-950);
   color: #fff;
