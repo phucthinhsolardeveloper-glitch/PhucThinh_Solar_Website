@@ -42,7 +42,7 @@ watch(() => props.locations, (locations) => {
       </span>
     </div>
 
-    <div v-if="locations.length" class="grid min-w-0 items-stretch gap-8 lg:grid-cols-[minmax(0,.92fr)_minmax(0,1.08fr)] lg:gap-10">
+    <div v-if="locations.length" class="grid min-w-0 items-stretch gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-10">
       <ul class="m-0 grid list-none content-start gap-2.5 p-0 lg:auto-rows-fr lg:content-stretch">
         <li v-for="(location, index) in locations" :key="location.id" class="min-w-0">
           <button

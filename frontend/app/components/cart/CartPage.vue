@@ -5,6 +5,7 @@ import { isPublicCheckoutNoticePayload, type PublicCheckoutNoticePayload, type P
 import { normalizeCommerceQuantity } from '#shared/commerce-quantity'
 
 const { site } = await usePublicSite()
+const { openConsultation } = useStorefrontModal()
 const { cart, loading, error, refresh, mutate } = useMigrationCart()
 const links = useMigrationLinks()
 const isMigrationPreview = links.active
@@ -107,10 +108,43 @@ function openCheckout() {
             <li v-for="(message, index) in checkoutNotice.messages" :key="index">{{ message }}</li>
           </ul>
         </div>
-        <div v-if="!payload.items.length" class="rounded-btn border border-gray-200 px-6 py-14 text-center">
-          <h2 class="mb-2 text-2xl font-black">Giỏ hàng đang trống</h2>
-          <p class="mb-6 text-slate-500">Chọn sản phẩm có giá công khai để thêm vào giỏ hàng.</p>
-          <NuxtLink :to="links.generic('/san-pham/')" class="inline-flex min-h-11 items-center rounded-chip bg-gold-500 px-6 font-extrabold text-navy-950 no-underline">Xem sản phẩm</NuxtLink>
+        <div v-if="!payload.items.length" class="rounded-btn border border-gray-200 px-6 py-12 text-center">
+          <div class="mx-auto mb-4 inline-flex size-14 items-center justify-center rounded-full bg-gold-500/15 text-gold-700">
+            <UIcon name="i-lucide-shopping-bag" class="size-7" aria-hidden="true" />
+          </div>
+          <h2 class="mb-2 text-2xl font-black text-navy-900">Giỏ hàng đang trống</h2>
+          <p class="mx-auto mb-6 max-w-[520px] text-slate-600">
+            Chọn sản phẩm có giá công khai để thêm vào giỏ hàng, hoặc gửi yêu cầu để đội ngũ Phúc Thịnh Solar bóc tách vật tư và báo giá trọn gói theo công trình.
+          </p>
+          <div class="flex flex-wrap items-center justify-center gap-3">
+            <NuxtLink :to="links.generic('/san-pham/')" class="inline-flex min-h-11 items-center gap-2 rounded-chip bg-gold-500 px-6 font-extrabold text-navy-950 no-underline transition-colors hover:bg-gold-400">
+              <span>Xem sản phẩm</span>
+              <span aria-hidden="true">→</span>
+            </NuxtLink>
+            <button
+              type="button"
+              class="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-chip border border-navy-800/20 bg-white px-5 font-bold text-navy-900 transition-colors hover:border-navy-800 hover:bg-slate-50"
+              @click="openConsultation('Giỏ hàng: Tư vấn báo giá vật tư')"
+            >
+              <UIcon name="i-lucide-headset" class="size-4 text-gold-600" aria-hidden="true" />
+              <span>Yêu cầu báo giá theo công trình</span>
+            </button>
+          </div>
+
+          <div v-if="site.productCategories.length" class="mx-auto mt-10 max-w-[880px] border-t border-slate-200/80 pt-7 text-left">
+            <p class="m-0 mb-3.5 text-center text-sm font-bold text-navy-800">Khám phá nhanh theo nhóm thiết bị chính hãng</p>
+            <div class="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
+              <NuxtLink
+                v-for="cat in site.productCategories.slice(0, 6)"
+                :key="cat.slug"
+                :to="links.generic(cat.url)"
+                class="group flex items-center justify-between gap-3 rounded-[4px] border-l-[3px] border-gold-500 bg-slate-50 px-4 py-3 text-sm font-bold text-navy-900 no-underline transition-colors hover:bg-gold-500/10"
+              >
+                <span class="truncate">{{ cat.name }}</span>
+                <UIcon name="i-lucide-arrow-right" class="size-4 shrink-0 text-slate-400 transition-transform group-hover:translate-x-0.5 group-hover:text-gold-700" aria-hidden="true" />
+              </NuxtLink>
+            </div>
+          </div>
         </div>
 
         <div v-else class="grid gap-8 nav:grid-cols-[minmax(0,1fr)_340px]">
