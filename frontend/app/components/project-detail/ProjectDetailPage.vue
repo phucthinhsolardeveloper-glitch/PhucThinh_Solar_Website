@@ -51,7 +51,7 @@ const chapters = [
 
     <nav v-if="chapters.length" class="project-story__chapters sticky top-0 z-20 overflow-x-auto border-b border-slate-200 bg-white/95 backdrop-blur-sm" aria-label="Các phần trong hồ sơ dự án">
       <div class="pts-container flex min-w-max gap-6 py-4 tb:gap-9">
-        <a v-for="chapter in chapters" :key="chapter.id" class="inline-flex min-h-7 items-center whitespace-nowrap text-sm font-bold text-navy-800 no-underline transition-colors hover:text-gold-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold-500" :href="`#${chapter.id}`">{{ chapter.label }}</a>
+        <a v-for="chapter in chapters" :key="chapter.id" class="inline-flex min-h-11 items-center whitespace-nowrap text-sm font-bold text-navy-800 no-underline transition-colors hover:text-gold-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold-500" :href="`#${chapter.id}`">{{ chapter.label }}</a>
       </div>
     </nav>
 

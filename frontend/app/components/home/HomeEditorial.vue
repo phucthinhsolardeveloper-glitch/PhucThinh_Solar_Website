@@ -20,6 +20,8 @@ const solutionItems = computed<DirectorStageItem[]>(() => props.data.solutions.m
   title: solution.name,
   description: solution.description,
   image: editorialImageCandidate(solution.image, 1200, 750),
+  imageSrcSet: editorialImageSrcSet(solution.image),
+  imageSizes: '(min-width: 961px) 60vw, 100vw',
   href: solution.href,
   linkLabel: 'Xem giải pháp',
 })))
@@ -30,6 +32,11 @@ const phpResizableEditorialImage = /^\/(?:upload\/news|assets\/images\/site-visu
 function editorialImageCandidate(src: string, width: 760 | 1200, height: 475 | 750): string {
   if (!phpResizableEditorialImage.test(src)) return src
   return `/thumbs/${width}x${height}x1${src}`
+}
+
+function editorialImageSrcSet(src: string): string | undefined {
+  if (!phpResizableEditorialImage.test(src)) return undefined
+  return `${editorialImageCandidate(src, 760, 475)} 760w, ${editorialImageCandidate(src, 1200, 750)} 1200w`
 }
 
 function chipHref(chip: string, currentSolution: PublicHomePayload['solutions'][number]) {

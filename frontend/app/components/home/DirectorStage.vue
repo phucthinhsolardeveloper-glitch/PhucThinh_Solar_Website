@@ -5,6 +5,8 @@ export type DirectorStageItem = {
   title: string
   description?: string
   image: string
+  imageSrcSet?: string
+  imageSizes?: string
   href: string
   linkLabel?: string
 }
@@ -62,6 +64,8 @@ onBeforeUnmount(stop)
         class="stage-layer"
         :class="{ 'is-active': index === active, 'is-previous': index === previous }"
         :src="item.image"
+        :srcset="item.imageSrcSet"
+        :sizes="item.imageSizes || '100vw'"
         alt=""
         width="1200"
         height="900"

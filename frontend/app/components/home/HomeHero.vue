@@ -49,7 +49,7 @@ function stopAutoplay() {
 
 function startAutoplay() {
   stopAutoplay()
-  if (props.hero.length > 1 && !document.hidden && !pointerInside && !focusInside && touchStartX === null) {
+  if (props.hero.length > 1 && !reducedMotion.value && !document.hidden && !pointerInside && !focusInside && touchStartX === null) {
     autoplayTimer = window.setInterval(() => showSlide(active.value + 1), 4200)
   }
 }

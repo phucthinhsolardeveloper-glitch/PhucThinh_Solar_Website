@@ -26,11 +26,14 @@ test('secondary news media stays within its grid column at intermediate widths',
   assert.doesNotMatch(card, /aspect-video h-full min-h-\[150px\]/)
 })
 
-test('featured news uses three equal desktop columns without a tall lead span', () => {
+test('featured news uses an editorial lead and stacked secondary rail', () => {
   const featured = readFileSync(new URL('../app/components/news/NewsFeatured.vue', import.meta.url), 'utf8')
-  assert.match(featured, /grid-cols-1 gap-5 tb:grid-cols-2 nav:grid-cols-3/)
+  assert.match(featured, /grid-template-columns: minmax\(0, 1\.55fr\) minmax\(0, 1fr\)/)
+  assert.match(featured, /\.featured-aside \{ display: flex;[^}]*flex-direction: column;/)
+  assert.match(featured, /@media \(max-width: 960px\)[\s\S]*grid-template-columns: minmax\(0, 1fr\)/)
   assert.doesNotMatch(featured, /row-span-2|grid-rows-2/)
-  assert.match(featured, /index === 0 \? 'lead' : 'grid'/)
+  assert.match(featured, /variant="lead"/)
+  assert.match(featured, /variant="secondary"/)
 })
 
 test('accepts resolved multi-level category metadata only when its leaf slug matches', () => {

@@ -54,9 +54,9 @@ const phoneHref = computed(() => publicPhoneHref(props.contact.contact.hotline))
         <img
           :src="contact.visual.image"
           :alt="contact.visual.name || ''"
-          class="block aspect-[4/5] w-full object-cover lg:aspect-[9/11]"
-          width="900"
-          height="1100"
+          class="block aspect-[8/5] w-full object-cover"
+          width="1200"
+          height="750"
           fetchpriority="high"
         >
         <a v-if="phoneHref" :href="phoneHref" class="absolute bottom-3 left-3 flex min-h-14 items-center gap-3 rounded-[4px] bg-white/95 px-4 py-2.5 text-navy-800 no-underline shadow-sm backdrop-blur-sm transition-colors hover:bg-white">

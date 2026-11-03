@@ -142,7 +142,6 @@ test('public category, dealer, gallery, video and policy titles mirror PHP brand
     'app/components/projects/ProjectCategoryPage.vue',
     'app/components/solutions/SolutionCategoryPage.vue',
     'app/components/dealer/DealerPageContent.vue',
-    'app/pages/dai-ly/index.vue',
     'app/pages/migration-gallery-preview.vue',
     'app/pages/migration-video-preview.vue',
     'app/pages/migration-policy-preview.vue',

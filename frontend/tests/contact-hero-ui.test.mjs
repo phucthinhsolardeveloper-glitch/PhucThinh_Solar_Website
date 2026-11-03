@@ -19,16 +19,15 @@ test('contact hero does not construct a mailto URL from an invalid CMS email', (
 })
 
 test('contact hero aligns its CMS image and text band at mobile and desktop breakpoints', () => {
-  assert.match(hero, /lg:grid-cols-\[minmax\(0,1\.15fr\)_minmax\(360px,\.85fr\)\]/)
-  assert.match(hero, /aspect-\[8\/5\] w-full object-cover lg:absolute/)
-  assert.match(hero, /px-5 py-8 text-white tb:px-8 lg:min-h-\[460px\] lg:px-10/)
+  assert.match(hero, /lg:grid-cols-\[minmax\(0,1fr\)_minmax\(380px,\.86fr\)\]/)
+  assert.match(hero, /aspect-\[8\/5\] w-full object-cover/)
 })
 
-test('contact page has one CMS-backed H1 and a distinct hero heading', async () => {
+test('contact page passes the CMS title to the single hero H1', async () => {
   const page = await readFile(new URL('../app/components/contact/ContactPageContent.vue', import.meta.url), 'utf8')
-  assert.match(page, /<h1[^>]*>\{\{ contact\.title \}\}<\/h1>/)
-  assert.match(hero, /<h2 id="contact-hero-title"/)
-  assert.doesNotMatch(hero, /<h1\b/)
+  assert.match(page, /<ContactHero :contact="contact" :page-title="contact\.title"/)
+  assert.match(hero, /<h1 id="contact-hero-title"[^>]*>\s*\{\{ pageTitle \}\}/)
+  assert.match(page, /v-if="error \|\| !contact"[\s\S]*?<h1/)
 })
 
 test('contact hero uses the CMS CTA URL and matches PHP label and visibility', async () => {

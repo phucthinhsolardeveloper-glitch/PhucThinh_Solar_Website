@@ -100,8 +100,8 @@ test('SiteHeader, SolutionsCta, NewsCta, ProjectsCta and ProductPurchasePanel tr
 })
 
 test('home dealer registration opens the dedicated dealer modal while policy CTA keeps the lead form path', () => {
-  const homeEditorial = read('components/home/HomeEditorial.vue')
-  assert.match(homeEditorial, /const \{ openDealer \} = useStorefrontModal\(\)/)
-  assert.match(homeEditorial, /<UButton[^>]*@click="openDealer\(\)"[^>]*>[\s\S]*?Đăng ký làm đại lý[\s\S]*?<\/UButton>/)
-  assert.match(homeEditorial, /href="#yeu-cau-tu-van" @click="requestConsultation\('Hợp tác đại lý'\)">\s*Tư vấn đại lý/)
+  const homeDealer = read('components/home/HomeDealer.vue')
+  assert.match(homeDealer, /const \{ openDealer \} = useStorefrontModal\(\)/)
+  assert.match(homeDealer, /<button[^>]*@click="openDealer\(\)"[^>]*>[\s\S]*?Đăng ký làm đại lý[\s\S]*?<\/button>/)
+  assert.match(homeDealer, /href="#yeu-cau-tu-van" @click="leadIntent = 'Hợp tác đại lý'">\s*Tư vấn chính sách đại lý/)
 })

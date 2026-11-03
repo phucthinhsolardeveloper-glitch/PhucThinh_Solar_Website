@@ -3,6 +3,7 @@ import type { PublicHomeAboutPoint, PublicHomePayload } from '#shared/contracts/
 
 const props = defineProps<{ about: PublicHomePayload['about'] }>()
 const links = useMigrationLinks()
+const phpResizablePointImage = /^\/upload\/news\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|webp)$/i
 
 const fallbackPoints: PublicHomeAboutPoint[] = [
   { label: 'Sản phẩm chính hãng', description: 'Thông tin thương hiệu, thông số kỹ thuật và chính sách bảo hành rõ ràng.', image: '' },
@@ -11,6 +12,10 @@ const fallbackPoints: PublicHomeAboutPoint[] = [
   { label: 'Hệ thống kho ba khu vực', description: 'Kho tại TP.HCM, Đà Nẵng và Gia Lai, hỗ trợ giao hàng toàn quốc.', image: '' },
 ]
 const points = computed(() => (props.about.points?.length ? props.about.points : fallbackPoints).filter((point) => point.label))
+
+function pointImage(src: string): string {
+  return phpResizablePointImage.test(src) ? `/thumbs/48x48x1${src}` : src
+}
 
 // Gentle parallax: the illustration drifts slower than the page while the band is on screen.
 const bandRef = ref<HTMLElement | null>(null)
@@ -71,8 +76,13 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onScroll))
 
       <ul class="m-0 grid list-none gap-x-[clamp(20px,2.4vw,40px)] gap-y-7 p-0 min-[641px]:grid-cols-2 min-[1101px]:grid-cols-4">
         <li v-for="point in points" :key="point.label" class="origin-point">
-          <strong class="block text-[clamp(16px,1.15vw,19px)] font-extrabold leading-[1.3]">{{ point.label }}</strong>
-          <span v-if="point.description" class="mt-2 block text-[14.5px] leading-[1.6] text-white/80">{{ point.description }}</span>
+          <div class="flex items-start gap-3">
+            <img v-if="point.image" :src="pointImage(point.image)" alt="" class="mt-0.5 size-9 flex-none object-contain" width="48" height="48" loading="lazy" decoding="async">
+            <div>
+              <strong class="block text-[clamp(16px,1.15vw,19px)] font-extrabold leading-[1.3]">{{ point.label }}</strong>
+              <span v-if="point.description" class="mt-2 block text-[14.5px] leading-[1.6] text-white/80">{{ point.description }}</span>
+            </div>
+          </div>
         </li>
       </ul>
     </div>
