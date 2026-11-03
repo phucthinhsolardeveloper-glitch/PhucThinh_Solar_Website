@@ -128,7 +128,7 @@ onBeforeUnmount(() => {
 <template>
   <section
     v-if="current"
-    class="relative isolate flex min-h-[clamp(580px,40vw,700px)] min-[1800px]:min-h-[max(700px,calc(100vh-174px-clamp(12px,1.2vw,24px)))] min-[1800px]:max-[2299px]:min-h-[max(700px,calc(100vh-clamp(148px,8vw,164px)-clamp(12px,1.2vw,24px)))] max-[640px]:min-h-[720px] overflow-hidden rounded-b-[6px] text-navy-950 mb-[clamp(16px,1.8vw,32px)] shadow-xs"
+    class="relative isolate z-0 -mt-16 flex min-h-[clamp(580px,40vw,700px)] min-[821px]:-mt-[88px] min-[1321px]:-mt-[104px] min-[1681px]:-mt-[120px] min-[1800px]:-mt-[136px] min-[1800px]:min-h-[max(700px,calc(100vh-174px-clamp(12px,1.2vw,24px)))] min-[1800px]:max-[2299px]:min-h-[max(700px,calc(100vh-clamp(148px,8vw,164px)-clamp(12px,1.2vw,24px)))] max-[640px]:-mt-16 max-[640px]:min-h-[720px] overflow-hidden rounded-b-[6px] text-navy-950 mb-[clamp(16px,1.8vw,32px)] shadow-xs"
     :class="heroImageUnavailable ? 'bg-slate-50' : 'bg-navy-950'"
     aria-labelledby="home-title"
     role="region"

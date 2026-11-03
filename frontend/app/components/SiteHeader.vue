@@ -484,6 +484,10 @@ function telHrefFor(value: string): string {
 }
 
 const { isHeaderHidden, isScrolled } = useSiteHeader()
+// Full-bleed hero crosses the header on the homepage only; everywhere else the
+// header stays solid. See docs/15-design-delivery/06-LAYOUT-LAB.md #principles.
+const isHomeRoute = computed(() => route.path === '/')
+const transparentAtTop = computed(() => isHomeRoute.value && !isScrolled.value)
 let lastScrollY = 0
 let scrollTicking = false
 let accumulatedDelta = 0
@@ -547,8 +551,10 @@ onBeforeUnmount(() => {
     @focusin="handleHeaderFocusin"
   >
     <header
-      class="relative z-[1000] border-b border-hdr-line bg-white/96 backdrop-blur-md transition-shadow duration-300"
-      :class="isScrolled ? 'shadow-[0_4px_20px_rgba(10,34,81,0.08)]' : 'shadow-[0_1px_4px_rgba(10,34,81,0.06)]'"
+      class="relative z-[1000] transition-[background-color,border-color,box-shadow,backdrop-filter] duration-300"
+      :class="transparentAtTop
+        ? 'border-b border-transparent bg-transparent shadow-none'
+        : ['border-b border-hdr-line bg-white/96 backdrop-blur-md', isScrolled ? 'shadow-[0_4px_20px_rgba(10,34,81,0.08)]' : 'shadow-[0_1px_4px_rgba(10,34,81,0.06)]']"
     >
       <div
       class="mx-auto flex min-h-16 w-full max-w-[max(1680px,var(--container-page))] items-center justify-between gap-3 px-4 py-2 max-[359px]:px-3

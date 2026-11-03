@@ -51,10 +51,7 @@ usePublicSocialMeta({
         </div>
 
         <template v-else>
-          <div class="pb-7 pt-2 nav:pb-9">
-            <h1 class="m-0 text-[clamp(30px,3vw,44px)] font-bold leading-tight tracking-tight text-navy-800">{{ contact.title }}</h1>
-          </div>
-          <ContactHero :contact="contact" />
+          <ContactHero :contact="contact" :page-title="contact.title" />
 
           <section class="py-12 nav:py-16">
             <ContactLeadForm />
