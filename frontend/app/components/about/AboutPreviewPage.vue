@@ -106,8 +106,8 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
       <div class="grid min-h-[470px] grid-cols-[minmax(410px,.88fr)_minmax(0,1.12fr)] gap-0 overflow-hidden rounded-btn border border-navy-800/15 bg-[linear-gradient(135deg,#061735,#10366a)] shadow-md max-[800px]:min-h-0 max-[800px]:grid-cols-1">
         <div class="flex flex-col justify-center p-[clamp(38px,4vw,64px)] max-[800px]:block max-[800px]:px-6 max-[800px]:pb-[38px] max-[800px]:pt-[34px] max-[600px]:px-5 max-[600px]:pb-[34px] max-[600px]:pt-[30px]">
           <h1 id="about-story-title" class="m-0 max-w-[620px] text-[clamp(36px,3.6vw,54px)] font-black leading-[1.12] tracking-[-.035em] text-white max-[800px]:text-[34px] max-[600px]:text-[31px]">{{ about.story.title }}</h1>
-          <p v-if="about.story.intro" class="mt-[17px] max-w-[690px] text-base leading-[1.72] text-[#e1ebf8] md:text-lg">{{ about.story.intro }}</p>
-          <p v-if="about.story.body" class="mt-4 border-t border-white/15 pt-4 text-base leading-[1.72] text-[#bfcfe3] md:text-lg">{{ about.story.body }}</p>
+          <p v-if="about.story.intro" class="mt-[17px] max-w-[690px] text-[clamp(17px,1.32vw,20px)] leading-[1.7] text-[#e1ebf8]">{{ about.story.intro }}</p>
+          <p v-if="about.story.body" class="mt-4 border-t border-white/15 pt-4 text-[clamp(17px,1.32vw,20px)] leading-[1.7] text-[#bfcfe3]">{{ about.story.body }}</p>
           <div class="mt-6 flex flex-wrap items-center gap-3">
             <button
               type="button"
@@ -161,8 +161,8 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
               <div>
                 <strong class="inline-flex items-center rounded-[3px] bg-gold-500/15 px-2.5 py-0.5 text-[1.2rem] font-black leading-[1.2] text-gold-800">{{ item.year }}</strong>
               </div>
-              <h3 v-if="item.title && about.history.items.length > 1" class="mt-2 text-[1.1rem] font-bold leading-[1.22] text-navy-800">{{ item.title }}</h3>
-              <p v-if="item.description" class="m-0 mt-1.5 text-base leading-[1.7] text-[#52627c] md:text-lg">{{ item.description }}</p>
+              <h3 v-if="item.title && about.history.items.length > 1" class="mt-2 text-[clamp(20px,1.6vw,24px)] font-extrabold leading-[1.25] text-navy-800">{{ item.title }}</h3>
+              <p v-if="item.description" class="m-0 mt-1.5 text-[clamp(17px,1.32vw,20px)] leading-[1.7] text-[#52627c]">{{ item.description }}</p>
             </li>
           </ol>
         </div>
@@ -181,8 +181,8 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
           </figure>
           <div>
             <h2 id="about-people-title" class="m-0 text-[clamp(29px,2.6vw,38px)] font-bold leading-[1.22]">{{ about.people.title }}</h2>
-            <p v-if="about.people.intro" class="mt-[1.1rem] text-base leading-[1.7] text-[#52627c] md:text-lg">{{ about.people.intro }}</p>
-            <p v-if="about.people.body" class="mt-[1.1rem] border-t border-slate-200 pt-4 text-base leading-[1.7] text-[#52627c] md:text-lg">{{ about.people.body }}</p>
+            <p v-if="about.people.intro" class="mt-[1.1rem] text-[clamp(17px,1.32vw,20px)] leading-[1.7] text-[#52627c]">{{ about.people.intro }}</p>
+            <p v-if="about.people.body" class="mt-[1.1rem] border-t border-slate-200 pt-4 text-[clamp(17px,1.32vw,20px)] leading-[1.7] text-[#52627c]">{{ about.people.body }}</p>
           </div>
         </div>
 
@@ -192,8 +192,8 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
             <header class="mb-3.5 flex items-center justify-end">
               <img v-if="item.image" class="size-9 object-contain" :src="item.image" alt="" width="56" height="56" loading="lazy">
             </header>
-            <h3 v-if="item.title" class="text-[1.1rem] font-bold leading-[1.28] text-navy-800">{{ item.title }}</h3>
-            <p v-if="item.description" class="m-0 mt-2 text-base leading-[1.7] text-[#52627c] md:text-lg">{{ item.description }}</p>
+            <h3 v-if="item.title" class="text-[clamp(20px,1.6vw,24px)] font-extrabold leading-[1.25] tracking-[-.01em] text-navy-800">{{ item.title }}</h3>
+            <p v-if="item.description" class="m-0 mt-2 text-[clamp(17px,1.32vw,20px)] leading-[1.7] text-[#52627c]">{{ item.description }}</p>
           </article>
         </div>
       </div>
@@ -212,8 +212,8 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
             <header class="mb-3.5 flex items-center justify-end">
               <img v-if="item.image" class="size-10 object-contain" :src="item.image" alt="" width="64" height="64" loading="lazy">
             </header>
-            <h3 v-if="item.title" class="text-[1.1rem] font-bold leading-[1.28] text-navy-800">{{ item.title }}</h3>
-            <p v-if="item.description" class="m-0 mt-2 text-base leading-[1.7] text-[#52627c] md:text-lg">{{ item.description }}</p>
+            <h3 v-if="item.title" class="text-[clamp(20px,1.6vw,24px)] font-extrabold leading-[1.25] tracking-[-.01em] text-navy-800">{{ item.title }}</h3>
+            <p v-if="item.description" class="m-0 mt-2 text-[clamp(17px,1.32vw,20px)] leading-[1.7] text-[#52627c]">{{ item.description }}</p>
           </article>
         </div>
       </div>
@@ -230,8 +230,8 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
             <header class="mb-3.5 flex items-center justify-end">
               <img v-if="item.image" class="size-9 object-contain filter invert opacity-90" :src="item.image" alt="" width="56" height="56" loading="lazy">
             </header>
-            <h3 v-if="item.title" class="text-[1.1rem] font-bold leading-[1.28] text-white">{{ item.title }}</h3>
-            <p v-if="item.description" class="m-0 mt-2 text-base leading-[1.7] text-[#d1daea] md:text-lg">{{ item.description }}</p>
+            <h3 v-if="item.title" class="text-[clamp(20px,1.6vw,24px)] font-extrabold leading-[1.25] tracking-[-.01em] text-white">{{ item.title }}</h3>
+            <p v-if="item.description" class="m-0 mt-2 text-[clamp(17px,1.32vw,20px)] leading-[1.7] text-[#d1daea]">{{ item.description }}</p>
           </article>
         </div>
       </div>
@@ -243,7 +243,7 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
         <header class="grid grid-cols-1 items-end gap-5 min-[801px]:grid-cols-[minmax(0,1fr)_auto]">
           <div>
             <h2 id="about-certificates-title" class="m-0 text-[clamp(29px,2.6vw,38px)] font-bold leading-[1.22]">{{ about.certificates.title }}</h2>
-            <p class="mt-3 max-w-[48rem] text-base leading-[1.7] text-[#52627c] md:text-lg">{{ about.certificates.intro }}</p>
+            <p class="mt-3 max-w-[48rem] text-[clamp(17px,1.32vw,20px)] leading-[1.7] text-[#52627c]">{{ about.certificates.intro }}</p>
           </div>
           <button
             v-if="galleryCertificates.length"
@@ -273,12 +273,12 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
                   <img class="block h-full w-full object-contain transition-transform duration-300 group-hover:scale-105" :src="item.image" :alt="item.name" width="260" height="360" loading="lazy">
                 </button>
               </div>
-              <span class="text-sm font-bold text-gold-700">{{ about.labels.certLabel }}</span>
-              <h3 class="mt-1.5 text-[1.1rem] font-bold leading-[1.28] text-navy-800">{{ item.name }}</h3>
-              <p v-if="item.description" class="m-0 mt-2 text-base leading-[1.7] text-[#52627c] md:text-lg">{{ item.description }}</p>
+              <span class="text-[15px] font-bold text-gold-700">{{ about.labels.certLabel }}</span>
+              <h3 class="mt-1.5 text-[clamp(20px,1.6vw,24px)] font-extrabold leading-[1.25] tracking-[-.01em] text-navy-800">{{ item.name }}</h3>
+              <p v-if="item.description" class="m-0 mt-2 text-[clamp(17px,1.32vw,20px)] leading-[1.7] text-[#52627c]">{{ item.description }}</p>
             </div>
             <div v-if="item.image" class="mt-4 pt-3 border-t border-slate-100">
-              <button type="button" class="inline-flex items-center gap-1.5 text-xs font-bold text-navy-800 hover:text-gold-700 transition-colors cursor-pointer" @click="openCertificate(item, $event)">
+              <button type="button" class="inline-flex items-center gap-1.5 text-[15px] font-bold text-navy-800 hover:text-gold-700 transition-colors cursor-pointer" @click="openCertificate(item, $event)">
                 {{ about.labels.certDetail }} <span aria-hidden="true">→</span>
               </button>
             </div>
