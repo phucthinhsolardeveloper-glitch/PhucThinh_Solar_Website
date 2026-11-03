@@ -49,3 +49,11 @@ W4-05 Projects: one selected Solar Cinema direction -> load images with actual s
 - Read [Layout Lab spec](06-LAYOUT-LAB.md) for component/interaction contracts, design eligibility and guidance to port a selected direction to Nuxt.
 - Review [Layout Lab QA](07-LAYOUT-LAB-QA.md) and the evidence/layout-*.jpg captures. This is design-only, not a production or owner-approved header change.
 - Current hero and header production contracts remain protected unless approved per route.
+
+
+## Design discovery and one-time skill installation
+- Open [Design Picker](design-picker.html) to select among 12 layout compositions and 16 effects, compare alternatives and export a Markdown brief before coding.
+- Read [Design Catalog](08-DESIGN-CATALOG.md) for the wider taxonomy and effect/runtime technology tiers.
+- Read [Toolkit Installation](09-TOOLKIT-INSTALL.md) for the six curated agent skills verified on WSL, a portable installer, and the optional project-local selector skill.
+- Run [Design Picker QA](qa-design-picker.cjs) with Node/Playwright to regenerate evidence/design-picker-*.jpg.
+- Do not confuse a layout/interaction demo with a real CMS-backed or approved production page.
