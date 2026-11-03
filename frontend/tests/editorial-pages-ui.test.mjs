@@ -27,7 +27,7 @@ test('project detail gallery uses an accessible in-page media dialog', () => {
 test('news detail centers single-column articles when no generated TOC is available', () => {
   const page = read('../app/pages/migration-news-detail-preview.vue')
   const article = read('../app/components/news-detail/NewsDetailArticle.vue')
-  assert.match(page, /<NewsDetailArticle[^>]+\/>\s*<NewsDetailRelated/)
+  assert.match(page, /<NewsDetailArticle[^>]+\/>[\s\S]*?<NewsDetailProducts[^>]+\/>[\s\S]*?<NewsDetailRelated/)
   assert.match(page, /<main class="pts-container py-8 nav:py-16">/)
   assert.match(article, /nav:grid-cols-\[minmax\(240px,1fr\)_minmax\(0,2fr\)\]/)
   assert.match(article, /<aside v-if="article\.content\.html && editorial\.toc\.length"/)

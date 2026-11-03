@@ -4,6 +4,8 @@ import type { PublicSitePayload } from '#shared/contracts/public-site'
 import { isPublicSitePayload } from '#shared/contracts/public-site'
 import { editorialPublicResponseStatus, editorialPublicRouteRobots } from '#shared/editorial-public-route'
 import NewsCta from '~/components/news/NewsCta.vue'
+import NewsDetailProducts from '~/components/news-detail/NewsDetailProducts.vue'
+import NewsReadingProgress from '~/components/news-detail/NewsReadingProgress.vue'
 import { canonicalPublicOrigin, canonicalPublicUrl } from '#shared/public-seo'
 
 const route = useRoute()
@@ -88,7 +90,9 @@ useHead({
       </div>
 
       <template v-else>
-        <NewsDetailArticle :article="payload.article" />
+        <NewsReadingProgress target="#news-article-body" />
+        <div id="news-article-body"><NewsDetailArticle :article="payload.article" /></div>
+        <div class="mx-auto w-full max-w-[1280px]"><NewsDetailProducts :article="payload.article" /></div>
         <NewsDetailRelated :items="payload.related" />
         <NewsCta v-if="payload.cta" :cta="payload.cta" :phone-label="payload.cta.hotline?.label || 'Gọi ngay hotline'" />
       </template>
