@@ -4,6 +4,7 @@ import type { PublicSitePayload } from '#shared/contracts/public-site'
 import { isPublicSitePayload } from '#shared/contracts/public-site'
 import { SOLUTIONS_PUBLIC_PATH } from '#shared/public-route-gate'
 import SolutionCards from '~/components/solutions/SolutionCards.vue'
+import SolutionDeck from '~/components/solutions/SolutionDeck.vue'
 import SolutionsEquipment from '~/components/solutions/SolutionsEquipment.vue'
 import SolutionsCta from '~/components/solutions/SolutionsCta.vue'
 import EditorialRichText from '~/components/editorial/EditorialRichText.vue'
@@ -94,6 +95,7 @@ const { activeHeadingId, scrollToHeading } = useTocScrollspy({
             <figure v-if="data.intro?.image" class="solution-energy-intro-image">
               <img :src="data.intro.image" :alt="data.intro.title" width="1200" height="750" fetchpriority="high">
             </figure>
+            <SolutionDeck v-else :cards="data.cards" />
           </section>
         </GridSurface>
         <h1 v-else class="sr-only">{{ data.title }}</h1>
