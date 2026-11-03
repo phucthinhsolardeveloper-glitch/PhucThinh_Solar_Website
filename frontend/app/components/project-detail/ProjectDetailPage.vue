@@ -8,14 +8,21 @@ import { formatProjectDate } from '#shared/project-date'
 
 const props = defineProps<{ project: PublicProjectDetail; content: PublicSanitizedRichText }>()
 const links = useMigrationLinks()
+const { openConsultation } = useStorefrontModal()
 const hotlineHref = computed(() => `tel:${props.project.cta?.hotline.replace(/[^+\d]/g, '') ?? ''}`)
 const summaryFallback = computed(() => props.content.html?.trim() ? '' : props.project.summary.trim())
 const hasOverview = computed(() => Boolean(props.content.html?.trim() || summaryFallback.value))
-const chapters = [
-  { id: 'project-overview', label: 'Tổng quan' },
-  { id: 'project-gallery', label: 'Tư liệu dự án' },
-  { id: 'project-equipment', label: 'Điểm nhấn kỹ thuật' },
-]
+const chapters = computed(() => {
+  const list = [
+    { id: 'project-overview', label: 'Tổng quan', badge: '' },
+    { id: 'project-gallery', label: 'Tư liệu dự án', badge: props.project.gallery.length ? String(props.project.gallery.length) : '' },
+    { id: 'project-equipment', label: 'Điểm nhấn kỹ thuật', badge: props.project.relatedEquipment.length ? String(props.project.relatedEquipment.length) : '' },
+  ]
+  if (props.project.relatedProjects.length) {
+    list.push({ id: 'related-projects-section', label: 'Công trình liên quan', badge: String(props.project.relatedProjects.length) })
+  }
+  return list
+})
 </script>
 
 <template>
@@ -45,13 +52,48 @@ const chapters = [
             <dt class="mb-1 text-xs font-bold uppercase tracking-wide text-blue-100/70">Thời gian thực hiện</dt>
             <dd class="m-0 break-words font-bold text-white">{{ project.startDate ? formatProjectDate(project.startDate) : '' }}<template v-if="project.startDate && project.endDate"> – </template>{{ project.endDate ? formatProjectDate(project.endDate) : '' }}</dd>
           </div>
+          <div v-if="project.gallery.length" class="min-w-0">
+            <dt class="mb-1 text-xs font-bold uppercase tracking-wide text-blue-100/70">Tư liệu thực tế</dt>
+            <dd class="m-0 font-bold text-gold-300">{{ project.gallery.length }} tư liệu hình ảnh &amp; video</dd>
+          </div>
         </dl>
+
+        <div class="mt-7 flex flex-wrap items-center gap-3">
+          <a
+            :href="links.generic('/lien-he/#yeu-cau-tu-van')"
+            class="inline-flex min-h-11 items-center gap-2 rounded-[4px] bg-hdr-gold px-5 py-2.5 text-sm font-extrabold text-navy-950 no-underline transition-colors hover:bg-hdr-gold-hover cursor-pointer"
+            @click.prevent="openConsultation('Dự án: ' + project.title)"
+          >
+            <span>Tư vấn công trình tương tự</span>
+            <span aria-hidden="true">→</span>
+          </a>
+          <a
+            v-if="project.gallery.length"
+            href="#project-gallery"
+            class="inline-flex min-h-11 items-center gap-2 rounded-[4px] border border-white/25 bg-white/[.05] px-4 py-2.5 text-sm font-bold text-white no-underline transition-colors hover:border-gold-400 hover:bg-white/10"
+          >
+            <span>Xem tư liệu thi công</span>
+          </a>
+        </div>
       </div>
     </header>
 
     <nav v-if="chapters.length" class="project-story__chapters sticky top-0 z-20 overflow-x-auto border-b border-slate-200 bg-white/95 backdrop-blur-sm" aria-label="Các phần trong hồ sơ dự án">
-      <div class="pts-container flex min-w-max gap-6 py-4 tb:gap-9">
-        <a v-for="chapter in chapters" :key="chapter.id" class="inline-flex min-h-11 items-center whitespace-nowrap text-sm font-bold text-navy-800 no-underline transition-colors hover:text-gold-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold-500" :href="`#${chapter.id}`">{{ chapter.label }}</a>
+      <div class="pts-container flex min-w-max items-center justify-between gap-6 py-3 tb:gap-9">
+        <div class="flex items-center gap-6 tb:gap-9">
+          <a v-for="chapter in chapters" :key="chapter.id" class="inline-flex min-h-11 items-center whitespace-nowrap gap-1.5 text-sm font-bold text-navy-800 no-underline transition-colors hover:text-gold-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold-500" :href="`#${chapter.id}`">
+            <span>{{ chapter.label }}</span>
+            <span v-if="chapter.badge" class="rounded-[3px] bg-slate-100 px-1.5 py-0.5 text-xs font-extrabold tabular-nums text-navy-700">{{ chapter.badge }}</span>
+          </a>
+        </div>
+        <a
+          :href="links.generic('/lien-he/#yeu-cau-tu-van')"
+          class="hidden min-h-10 items-center gap-1.5 rounded-[4px] bg-navy-900 px-3.5 py-1.5 text-xs font-extrabold text-gold-300 no-underline transition-colors hover:bg-navy-800 tb:inline-flex cursor-pointer"
+          @click.prevent="openConsultation('Dự án: ' + project.title)"
+        >
+          <span>Nhận báo giá cấu hình này</span>
+          <span aria-hidden="true">→</span>
+        </a>
       </div>
     </nav>
 
@@ -75,7 +117,7 @@ const chapters = [
 
       <ProjectDetailEquipment :items="project.relatedEquipment" />
 
-      <section v-if="project.relatedProjects.length" class="mt-16" aria-labelledby="related-projects-title">
+      <section v-if="project.relatedProjects.length" id="related-projects-section" class="mt-16 scroll-mt-20" aria-labelledby="related-projects-title">
         <header class="mb-7 flex flex-wrap items-end justify-between gap-4">
           <h2 id="related-projects-title" class="m-0 text-3xl font-black text-navy-950">Dự án khác</h2>
           <a class="font-bold text-navy-800 no-underline" :href="links.generic('/du-an-da-thuc-hien/')">Xem tất cả dự án →</a>
@@ -118,7 +160,7 @@ const chapters = [
             <span class="grid size-12 shrink-0 place-items-center rounded-btn bg-hdr-gold text-navy-950" aria-hidden="true"><UIcon name="i-lucide-phone" class="size-5" /></span>
             <span class="min-w-0"><span class="block text-[11px] uppercase text-blue-100">Liên hệ ngay</span><strong class="block text-[22px] leading-tight">{{ project.cta.hotline }}</strong></span>
           </a>
-          <a class="inline-flex min-h-12 items-center justify-center gap-3 rounded-btn bg-hdr-gold px-[22px] py-3 text-sm font-extrabold text-navy-950 no-underline transition-colors hover:bg-hdr-gold-hover" :href="links.generic('/lien-he/#yeu-cau-tu-van')">{{ project.cta.buttonLabel }} <span aria-hidden="true">→</span></a>
+          <a class="inline-flex min-h-12 items-center justify-center gap-3 rounded-btn bg-hdr-gold px-[22px] py-3 text-sm font-extrabold text-navy-950 no-underline transition-colors hover:bg-hdr-gold-hover cursor-pointer" :href="links.generic('/lien-he/#yeu-cau-tu-van')" @click.prevent="openConsultation('Dự án: ' + project.title)">{{ project.cta.buttonLabel }} <span aria-hidden="true">→</span></a>
         </div>
         </template>
       </PublicCtaBanner>

@@ -16,12 +16,12 @@ const links = useMigrationLinks()
           v-if="project.image"
           :src="project.image"
           :alt="project.title"
-          class="h-full w-full object-cover"
+          class="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105 motion-reduce:transform-none motion-reduce:transition-none"
           loading="lazy"
           decoding="async"
         >
         <span v-else class="text-sm font-semibold text-slate-500" aria-hidden="true">Chưa có hình ảnh</span>
-        <span v-if="project.category" class="absolute left-3 top-3 flex items-center gap-1.5 rounded-btn bg-navy-800/90 px-2.5 py-1 text-[11px] font-bold text-white">
+        <span v-if="project.category" class="absolute left-3 top-3 flex items-center gap-1.5 rounded-btn bg-navy-950/90 px-2.5 py-1 text-[11px] font-bold text-white backdrop-blur-xs">
           <img v-if="project.category.image" :src="project.category.image" alt="" class="h-3.5 w-3.5 object-contain brightness-0 invert">
           <svg v-else class="h-3.5 w-3.5 text-gold-400" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3 3 10h2v9h5v-5h4v5h5v-9h2Z" /></svg>
           {{ project.category.name }}
@@ -29,17 +29,17 @@ const links = useMigrationLinks()
       </div>
 
       <div class="flex flex-1 flex-col pt-4 pb-1">
-        <h2 class="m-0 text-base font-extrabold leading-snug text-navy-800 transition-colors group-hover:text-gold-700 group-focus-visible:text-gold-700 tb:text-lg">{{ project.title }}</h2>
-        <div v-if="project.address" class="my-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-500">
+        <h2 class="m-0 text-lg font-extrabold leading-snug text-navy-900 transition-colors group-hover:text-gold-700 group-focus-visible:text-gold-700 tb:text-[19px]">{{ project.title }}</h2>
+        <div v-if="project.address" class="my-2 flex flex-wrap gap-x-4 gap-y-1 text-sm font-medium text-slate-500">
           <span class="inline-flex items-center gap-1.5">
-            <svg class="h-3 w-3 flex-none text-gold-600" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5Z" /></svg>
+            <svg class="h-3.5 w-3.5 flex-none text-gold-600" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5Z" /></svg>
             {{ project.address }}
           </span>
         </div>
-        <p v-if="project.description" class="mb-0 mt-1 line-clamp-2 text-base leading-relaxed text-slate-500">
+        <p v-if="project.description" class="mb-0 mt-1 line-clamp-2 text-base leading-relaxed text-slate-600">
           {{ project.description }}
         </p>
-        <span class="mt-4 inline-flex items-center gap-1.5 text-[13px] font-extrabold text-gold-700">
+        <span class="mt-3.5 inline-flex items-center gap-1.5 text-sm font-extrabold text-navy-800 transition-colors group-hover:text-gold-700">
           <span>{{ viewLabel }}</span>
           <span class="inline-block transition-transform duration-300 group-hover:translate-x-1.5 motion-reduce:transform-none motion-reduce:transition-none" aria-hidden="true">→</span>
         </span>
