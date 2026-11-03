@@ -25,6 +25,8 @@ function start() {
   if (paused || deck.value.length < 2 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
   timer = window.setInterval(next, 3600)
 }
+function pause() { paused = true; stop() }
+function resume() { paused = false; start() }
 onMounted(start)
 onBeforeUnmount(stop)
 </script>
@@ -33,10 +35,10 @@ onBeforeUnmount(stop)
   <div
     v-if="deck.length"
     class="deck"
-    @mouseenter="paused = true; stop()"
-    @mouseleave="paused = false; start()"
-    @focusin="paused = true; stop()"
-    @focusout="paused = false; start()"
+    @mouseenter="pause"
+    @mouseleave="resume"
+    @focusin="pause"
+    @focusout="resume"
   >
     <a
       v-for="(card, index) in deck"
