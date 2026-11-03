@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { PublicHomeAboutPoint, PublicHomePayload } from '#shared/contracts/public-home'
 import { motion, useReducedMotion } from 'motion-v'
+import HomeProcess from '~/components/home/HomeProcess.vue'
 
 const props = defineProps<{ data: PublicHomePayload }>()
 const solutionChips = [
@@ -167,30 +168,7 @@ function selectSolution(value: string | number) {
     </div>
   </section>
 
-  <!-- 5-Step Precision Engineering Process -->
-  <section
-    v-if="data.process.length"
-    class="bg-hdr-surface py-[clamp(56px,5vw,84px)]"
-    aria-labelledby="home-process-title"
-  >
-    <div class="pts-container">
-      <header class="mb-8 max-w-[760px]">
-        <h2 id="home-process-title" class="m-0 text-[clamp(28px,2.4vw,40px)] font-black leading-[1.2] text-navy-950">
-          Đồng hành từ tư vấn đến vận hành
-        </h2>
-        <p class="mt-2.5 text-[clamp(15px,1.05vw,18px)] leading-[1.65] text-slate-500">
-          Phúc Thịnh Solar tư vấn giải pháp phù hợp, thi công chuyên nghiệp và tận tâm hỗ trợ sau bàn giao, giúp khách hàng an tâm sử dụng lâu dài.
-        </p>
-      </header>
-      <ol class="grid grid-cols-5 gap-[clamp(16px,2vw,28px)] max-[860px]:grid-cols-3 max-[640px]:grid-cols-2 max-[360px]:grid-cols-1">
-        <li v-for="step in data.process" :key="step.number" class="group min-w-0 rounded-[6px] border-t-2 border-slate-300 bg-white p-4 shadow-2xs transition-all duration-200 hover:border-gold-500 hover:shadow-sm">
-          <b class="font-mono text-sm font-black text-gold-600">{{ step.number }}</b>
-          <h3 class="mt-2 text-[15.5px] font-bold leading-[1.4] text-navy-950">{{ step.name }}</h3>
-          <p class="mt-1.5 text-[14px] leading-[1.6] text-slate-500">{{ step.description }}</p>
-        </li>
-      </ol>
-    </div>
-  </section>
+  <HomeProcess :steps="data.process" />
 
   <!-- Dealer Partnership Stage -->
   <section class="bg-navy-950 py-[clamp(52px,5vw,72px)] text-[#d8e1ea]" aria-labelledby="home-dealer-title">
