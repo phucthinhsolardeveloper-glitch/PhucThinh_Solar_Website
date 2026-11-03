@@ -22,39 +22,55 @@ const chapters = computed(() => {
   }
   return list
 })
+const heroRef = ref<HTMLElement | null>(null)
+const heroShift = ref(0)
+let heroTicking = false
+function measureHero() {
+  heroTicking = false
+  const el = heroRef.value
+  if (!el) return
+  const rect = el.getBoundingClientRect()
+  heroShift.value = Math.max(0, Math.min(1, -rect.top / Math.max(1, rect.height)))
+}
+function onHeroScroll() { if (!heroTicking) { heroTicking = true; requestAnimationFrame(measureHero) } }
+onMounted(() => {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+  window.addEventListener('scroll', onHeroScroll, { passive: true })
+})
+onBeforeUnmount(() => window.removeEventListener('scroll', onHeroScroll))
 </script>
 
 <template>
   <article class="project-story">
-    <header class="project-story__hero grid bg-navy-950 text-white nav:grid-cols-[minmax(0,1.2fr)_minmax(380px,0.8fr)]">
+    <header ref="heroRef" class="project-story__hero grid bg-navy-950 text-white" :style="{ '--shift': heroShift }">
       <div class="project-story__cover relative overflow-hidden bg-slate-200">
-        <img v-if="project.coverImage" :src="project.coverImage" :alt="project.title" class="block aspect-[4/3] w-full object-cover nav:h-full nav:aspect-auto" loading="eager" decoding="async">
+        <img v-if="project.coverImage" :src="project.coverImage" :alt="project.title" class="project-story__cover-img block aspect-[4/3] w-full object-cover" loading="eager" decoding="async">
         <div v-else class="grid aspect-[4/3] place-items-center px-6 text-center text-sm font-semibold text-slate-500 nav:h-full nav:aspect-auto">Chưa có hình ảnh đại diện cho dự án</div>
       </div>
 
-      <div class="project-story__intro flex min-w-0 flex-col justify-center px-5 py-8 tb:px-8 nav:px-[clamp(32px,5vw,76px)] nav:py-16">
+      <div class="project-story__intro pts-container flex min-w-0 flex-col justify-end">
         <div v-if="project.category?.name" class="mb-4 flex flex-wrap items-center gap-2">
           <span class="inline-flex items-center rounded-[3px] border border-gold-400/35 bg-white/10 px-3 py-1 text-xs font-bold text-gold-300">
             {{ project.category.name }}
           </span>
         </div>
-        <h1 class="m-0 text-[clamp(32px,4.5vw,58px)] font-black leading-[1.06] tracking-tight text-white">{{ project.title }}</h1>
+        <h1 class="m-0 max-w-[18ch] text-[clamp(34px,5.2vw,76px)] font-black leading-[1.02] tracking-[-.035em] text-white">{{ project.title }}</h1>
 
-        <dl class="mt-8 grid gap-x-6 gap-y-5 border-t border-white/20 pt-6 text-sm tb:grid-cols-2">
+        <dl class="mt-8 grid gap-x-10 gap-y-5 border-t border-white/25 pt-6 text-base tb:grid-cols-[repeat(auto-fit,minmax(180px,max-content))]">
           <div v-if="project.client" class="min-w-0">
-            <dt class="mb-1 text-xs font-bold uppercase tracking-wide text-blue-100/70">Khách hàng</dt>
+            <dt class="mb-1 text-sm font-semibold text-blue-100/75">Khách hàng</dt>
             <dd class="m-0 break-words font-bold text-white">{{ project.client }}</dd>
           </div>
           <div v-if="project.address" class="min-w-0">
-            <dt class="mb-1 text-xs font-bold uppercase tracking-wide text-blue-100/70">Địa điểm</dt>
+            <dt class="mb-1 text-sm font-semibold text-blue-100/75">Địa điểm</dt>
             <dd class="m-0 break-words font-bold text-white">{{ project.address }}</dd>
           </div>
-          <div v-if="project.startDate || project.endDate" class="min-w-0 tb:col-span-2">
-            <dt class="mb-1 text-xs font-bold uppercase tracking-wide text-blue-100/70">Thời gian thực hiện</dt>
+          <div v-if="project.startDate || project.endDate" class="min-w-0">
+            <dt class="mb-1 text-sm font-semibold text-blue-100/75">Thời gian thực hiện</dt>
             <dd class="m-0 break-words font-bold text-white">{{ project.startDate ? formatProjectDate(project.startDate) : '' }}<template v-if="project.startDate && project.endDate"> – </template>{{ project.endDate ? formatProjectDate(project.endDate) : '' }}</dd>
           </div>
           <div v-if="project.gallery.length" class="min-w-0">
-            <dt class="mb-1 text-xs font-bold uppercase tracking-wide text-blue-100/70">Tư liệu thực tế</dt>
+            <dt class="mb-1 text-sm font-semibold text-blue-100/75">Tư liệu thực tế</dt>
             <dd class="m-0 font-bold text-gold-300">{{ project.gallery.length }} tư liệu hình ảnh &amp; video</dd>
           </div>
         </dl>
@@ -101,8 +117,8 @@ const chapters = computed(() => {
     <div class="pts-container pb-10">
       <section id="project-overview" class="project-story__section scroll-mt-20 grid gap-6 py-12 tb:grid-cols-[minmax(160px,0.36fr)_minmax(0,1fr)] tb:gap-12 nav:py-16" aria-labelledby="project-summary-title">
         <h2 id="project-summary-title" class="m-0 text-[clamp(24px,3vw,36px)] font-black tracking-tight text-navy-950">Tổng quan công trình</h2>
-        <div class="min-w-0 max-w-[78ch]">
-          <p v-if="summaryFallback" class="m-0 text-lg leading-relaxed text-slate-700">{{ summaryFallback }}</p>
+        <div class="project-story__lede min-w-0 max-w-[68ch]">
+          <p v-if="summaryFallback" class="m-0 text-[clamp(19px,1.6vw,24px)] leading-[1.6] text-navy-900">{{ summaryFallback }}</p>
           <EditorialRichText v-else-if="hasOverview" :content="content" />
           <p v-else class="m-0 text-base leading-relaxed text-slate-500">Thông tin mô tả chi tiết chưa được công bố cho dự án này.</p>
         </div>
@@ -120,11 +136,11 @@ const chapters = computed(() => {
 
       <section v-if="project.relatedProjects.length" id="related-projects-section" class="mt-16 scroll-mt-20" aria-labelledby="related-projects-title">
         <header class="mb-7 flex flex-wrap items-end justify-between gap-4">
-          <h2 id="related-projects-title" class="m-0 text-3xl font-black text-navy-950">Dự án khác</h2>
+          <h2 id="related-projects-title" class="m-0 text-[clamp(28px,3vw,46px)] font-black tracking-[-.03em] text-navy-950">Dự án khác</h2>
           <a class="font-bold text-navy-800 no-underline" :href="links.generic('/du-an-da-thuc-hien/')">Xem tất cả dự án →</a>
         </header>
-        <div class="grid grid-cols-1 gap-7 tb:grid-cols-2 nav:grid-cols-3">
-          <a v-for="item in project.relatedProjects" :key="item.id" :href="links.project(item.slug)" class="group min-w-0 text-navy-800 no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold-600">
+        <div class="project-strip">
+          <a v-for="item in project.relatedProjects" :key="item.id" :href="links.project(item.slug)" class="project-strip__item group min-w-0 text-navy-800 no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold-600">
             <div class="overflow-hidden rounded-chip bg-slate-100">
               <img :src="item.image || '/assets/images/noimage.png'" :alt="item.title" class="aspect-[4/3] w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105 motion-reduce:transform-none motion-reduce:transition-none" loading="lazy" decoding="async">
             </div>
@@ -168,3 +184,49 @@ const chapters = computed(() => {
     </div>
   </article>
 </template>
+
+<style scoped>
+/* Cinematic hero: the cover fills the frame, copy sits on a navy wash at the bottom. */
+.project-story__hero {
+  position: relative;
+  isolation: isolate;
+  min-height: clamp(560px, 82vh, 860px);
+  overflow: clip;
+  grid-template-columns: minmax(0, 1fr);
+}
+.project-story__cover { position: absolute; inset: 0; z-index: -2; background: var(--color-navy-950); }
+.project-story__cover-img {
+  height: 112%;
+  aspect-ratio: auto;
+  transform: translate3d(0, calc(var(--shift, 0) * 10%), 0) scale(1.03);
+  will-change: transform;
+}
+.project-story__hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(180deg, rgb(6 21 55 / 15%) 0%, rgb(6 21 55 / 25%) 40%, rgb(6 21 55 / 94%) 100%),
+    linear-gradient(90deg, rgb(6 21 55 / 78%) 0%, rgb(6 21 55 / 45%) 45%, transparent 72%);
+}
+.project-story__intro { padding-top: clamp(120px, 20vh, 220px); padding-bottom: clamp(36px, 5vw, 64px); }
+
+.project-story__lede :deep(p:first-child) { font-size: clamp(19px, 1.6vw, 24px); line-height: 1.6; color: var(--color-navy-900); }
+.project-story__lede :deep(p) { font-size: 18px; line-height: 1.75; }
+
+/* Related projects: horizontal film strip, large frames, snap scrolling. */
+.project-strip {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(300px, 40%);
+  gap: clamp(16px, 2vw, 28px);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: thin;
+  padding-bottom: 12px;
+}
+.project-strip__item { scroll-snap-align: start; }
+@media (max-width: 760px) { .project-strip { grid-auto-columns: 82%; } }
+@media (prefers-reduced-motion: reduce) { .project-story__cover-img { transform: none; height: 100%; } }
+</style>

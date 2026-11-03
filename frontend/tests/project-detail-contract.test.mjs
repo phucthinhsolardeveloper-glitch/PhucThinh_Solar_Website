@@ -26,7 +26,7 @@ test('project detail SEO metadata comes from PHP projection and exposes an HTML 
 })
 test('project facts use flat definition-list metadata instead of decorative pills', () => {
   assert.match(projectDetailPage, /<dl class="mt-8 grid[^\"]*border-t/)
-  assert.match(projectDetailPage, /<dt class="mb-1 text-xs font-bold uppercase/)
+  assert.match(projectDetailPage, /<dt class="mb-1 text-sm font-semibold/)
   assert.doesNotMatch(projectDetailPage, /rounded-full bg-white px-4 py-2\.5/)
   assert.match(projectDetailPage, /project\.client[\s\S]*project\.address[\s\S]*project\.startDate/)
   assert.match(projectDetailPage, /<section id="project-overview"[^>]*aria-labelledby="project-summary-title"[\s\S]*?<EditorialRichText v-else-if="hasOverview" :content="content" \/>/)

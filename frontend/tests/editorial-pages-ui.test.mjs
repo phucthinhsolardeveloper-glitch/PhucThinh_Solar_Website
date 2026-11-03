@@ -194,7 +194,7 @@ test('editorial text controls meet the 44px hit-area rule and project tabs suppo
 test('project detail uses one content gutter and avoids eyebrow/decorative CTA text', () => {
   const projectDetail = read('../app/components/project-detail/ProjectDetailPage.vue')
   const featured = read('../app/components/projects/ProjectsFeatured.vue')
-  assert.match(projectDetail, /<header class="project-story__hero grid/)
+  assert.match(projectDetail, /<header[^>]*class="project-story__hero grid/)
   assert.match(projectDetail, /<div class="pts-container pb-10">/)
   assert.doesNotMatch(projectDetail, /project\.cta\.eyebrow|class="mb-3 font-bold text-gold-700"/)
   assert.doesNotMatch(featured, /aria-hidden="true">01</)
