@@ -13,7 +13,7 @@ const site = computed(() => isPublicSitePayload(data.value) ? data.value : fallb
 <template>
   <div class="min-h-screen bg-white text-navy-800">
     <SiteHeader :site="site" />
-    <main class="mx-auto grid min-h-[55vh] w-full max-w-[1180px] content-center px-4 py-16">
+    <main class="pts-container grid min-h-[55vh] content-center py-16">
       <p class="mb-2 text-sm font-bold uppercase tracking-wide text-gold-700">{{ error.statusCode || 500 }}</p>
       <h1 class="mb-3 text-[clamp(30px,5vw,46px)] font-black tracking-tight">{{ error.statusCode === 404 ? 'Không tìm thấy trang' : 'Trang chưa thể hiển thị' }}</h1>
       <p class="mb-6 max-w-[60ch] leading-relaxed text-slate-600">Đường dẫn có thể đã thay đổi hoặc nội dung không còn được công bố.</p>
