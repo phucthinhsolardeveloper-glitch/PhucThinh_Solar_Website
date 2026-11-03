@@ -6,169 +6,322 @@ const props = defineProps<{
   campaigns: PublicHomePayload['campaigns']
 }>()
 
+// Ordered along the real energy chain: collect → convert → store → use.
 const slots = [
   {
-    key: 'lighting',
-    needles: ['den-nlmt'],
-    name: 'Đèn năng lượng mặt trời',
-    description: 'Đèn đường, đèn pha và đèn sân vườn cho nhiều không gian sử dụng.',
-    action: 'Xem các dòng đèn',
-    image: '/assets/images/site-visuals/home-street-lighting-v2.png',
-    href: '/san-pham/',
-  },
-  {
     key: 'panel',
+    stage: 'Đón nắng',
     needles: ['tam-pin'],
     name: 'Tấm pin điện mặt trời',
     description: 'Thiết bị tạo điện từ ánh nắng, sử dụng trong hệ thống điện mặt trời.',
     action: 'Xem tấm pin',
     image: '/assets/images/site-visuals/category-panels-user-2026.jpg',
+    position: 'center top',
     href: '/san-pham/',
   },
   {
     key: 'inverter',
+    stage: 'Chuyển đổi',
     needles: ['bien-tan-inverter', 'inverter'],
     name: 'Biến tần (Inverter)',
     description: 'Thiết bị chuyển đổi và quản lý nguồn điện trong hệ thống điện mặt trời.',
     action: 'Xem biến tần',
     image: '/assets/images/site-visuals/category-inverter-user-2026.jpg',
+    position: 'center',
     href: '/san-pham/',
   },
   {
     key: 'storage',
+    stage: 'Lưu trữ',
     needles: ['pin-luu-tru', 'luu-tru'],
     name: 'Pin lưu trữ',
     description: 'Lưu trữ điện để sử dụng theo nhu cầu và cấu hình hệ thống.',
     action: 'Xem pin lưu trữ',
     image: '/assets/images/site-visuals/category-storage-user-2026.jpg',
+    position: 'center',
+    href: '/san-pham/',
+  },
+  {
+    key: 'lighting',
+    stage: 'Chiếu sáng',
+    needles: ['den-nlmt'],
+    name: 'Đèn năng lượng mặt trời',
+    description: 'Đèn đường, đèn pha và đèn sân vườn cho nhiều không gian sử dụng.',
+    action: 'Xem các dòng đèn',
+    image: '/assets/images/site-visuals/home-street-lighting-v2.png',
+    position: 'center 58%',
     href: '/san-pham/',
   },
   {
     key: 'pump',
+    stage: 'Bơm nước',
     needles: ['bien-tan-bom', 'bom-nang-luong', 'bom'],
     name: 'Bơm nước năng lượng mặt trời',
     description: 'Thiết bị bơm nước phục vụ tưới tiêu và cấp nước bằng năng lượng mặt trời.',
     action: 'Xem bơm nước',
     image: '/assets/images/site-visuals/category-pump-user-2026.jpg',
+    position: 'center',
     href: '/giai-phap/',
   },
 ] as const
 
-type HomeCategorySlot = Omit<typeof slots[number], 'image'> & {
-  category: PublicHomeCategory | undefined
-  image: string
-}
+type SlotKey = typeof slots[number]['key']
+type HomeCategorySlot = typeof slots[number] & { category: PublicHomeCategory | undefined }
 
-const categories = computed<HomeCategorySlot[]>(() => slots.map((slot) => {
-  const category = props.categories.find((item) =>
-    slot.needles.some((needle) => item.slug.toLowerCase().includes(needle)),
-  )
-  return {
-    ...slot,
-    category,
-    // The PHP homepage uses a curated, position-specific visual system for
-    // this showcase. CMS category media remains available on catalog pages,
-    // but must not override these landing assets and break visual parity.
-    image: slot.image,
-  }
-}))
+const chain = computed<HomeCategorySlot[]>(() => slots.map((slot) => ({
+  ...slot,
+  category: props.categories.find((item) => slot.needles.some((needle) => item.slug.toLowerCase().includes(needle))),
+})))
 
-const phpResizableVisual = /^\/assets\/images\/site-visuals\/[A-Za-z0-9][A-Za-z0-9._/-]*\.(?:jpe?g|png)$/i
+const activeKey = ref<SlotKey>('panel')
+const activeIndex = computed(() => chain.value.findIndex((slot) => slot.key === activeKey.value))
+// Must mirror .chain-link flex-grow (1 collapsed, 4.2 active) so wire nodes sit under each panel's centre.
+const ACTIVE_GROW = 4.2
+const nodeCenters = computed(() => {
+  const grows = chain.value.map((_, index) => (index === activeIndex.value ? ACTIVE_GROW : 1))
+  const total = grows.reduce((sum, grow) => sum + grow, 0)
+  let offset = 0
+  return grows.map((grow) => {
+    const center = ((offset + grow / 2) / total) * 100
+    offset += grow
+    return center
+  })
+})
 
-function visualCandidate(src: string, width: number, height: number): string {
-  if (!phpResizableVisual.test(src)) return src
-  return `/thumbs/${width}x${height}x1${src}`
-}
-
-function visualSrcSet(src: string, kind: 'hero' | 'card'): string | undefined {
-  if (!phpResizableVisual.test(src)) return undefined
-  return kind === 'hero'
-    ? `${visualCandidate(src, 960, 280)} 960w, ${visualCandidate(src, 1440, 420)} 1440w, ${visualCandidate(src, 1920, 560)} 1920w`
-    : `${visualCandidate(src, 320, 250)} 320w, ${visualCandidate(src, 480, 375)} 480w, ${visualCandidate(src, 640, 500)} 640w`
-}
-
-const featured = computed(() => categories.value[0]!)
-const categoryRail = computed(() => categories.value.slice(1))
 const links = useMigrationLinks()
 </script>
 
 <template>
-  <section id="danh-muc-thiet-bi" class="py-[clamp(56px,5vw,84px)]" aria-labelledby="home-catalog-title">
+  <section id="danh-muc-thiet-bi" class="energy-chain py-[clamp(56px,5vw,96px)]" aria-labelledby="home-catalog-title">
     <div class="pts-container">
-      <header class="mb-8 max-w-[760px]">
-        <h2 id="home-catalog-title" class="m-0 text-[clamp(28px,2.4vw,40px)] font-black leading-[1.2] tracking-[-.025em] text-navy-950">
-          Sản phẩm năng lượng mặt trời
+      <header class="mb-9 grid gap-4 min-[961px]:grid-cols-[minmax(0,1fr)_minmax(280px,420px)] min-[961px]:items-end">
+        <h2 id="home-catalog-title" class="m-0 max-w-[16ch] text-[clamp(30px,3.2vw,52px)] font-black leading-[1.06] tracking-[-.035em] text-navy-950">
+          Từ tia nắng đến nguồn điện trong nhà bạn
         </h2>
-        <p class="mt-2.5 max-w-[760px] text-[clamp(15px,1.05vw,18px)] leading-[1.65] text-slate-500">
-          Khám phá các nhóm thiết bị cho nhu cầu chiếu sáng, phát điện, lưu trữ và bơm nước.
+        <p class="m-0 text-[clamp(15px,1.05vw,18px)] leading-[1.65] text-slate-600">
+          Năm nhóm thiết bị nối với nhau thành một hệ thống. Chọn từng mắt xích để xem thiết bị phù hợp.
         </p>
       </header>
 
-      <!-- Featured Category Showcase -->
-      <a
-        class="group relative isolate flex min-h-[170px] items-center justify-between gap-[30px] overflow-hidden rounded-[6px] border border-navy-900/10 bg-navy-950 px-8 py-[28px] text-white no-underline shadow-xs transition-all duration-300 hover:shadow-lg min-[768px]:min-h-[240px] max-[640px]:min-h-[190px] max-[640px]:flex-col max-[640px]:items-start max-[640px]:justify-start max-[640px]:gap-3 max-[640px]:px-5 max-[640px]:py-5 min-[1800px]:min-h-[264px]"
-        :href="links.generic(featured.category?.url || featured.href)"
-      >
-        <img
-          class="absolute inset-0 z-0 h-full w-full object-cover object-[center_58%] transition-transform duration-500 group-hover:scale-[1.03] motion-reduce:transform-none motion-reduce:transition-none"
-          :src="visualCandidate(featured.image, 960, 280)"
-          :srcset="visualSrcSet(featured.image, 'hero')"
-          sizes="100vw"
-          :alt="featured.category?.name || featured.name"
-          width="1440"
-          height="420"
-          loading="lazy"
-        >
-        <div class="absolute inset-0 z-[1] bg-gradient-to-r from-navy-950/90 via-navy-950/60 to-transparent max-[640px]:bg-gradient-to-t max-[640px]:from-navy-950/95 max-[640px]:via-navy-950/70" />
-
-        <span class="relative z-10 grid w-full max-w-[850px] grid-cols-[56px_minmax(0,1fr)] items-center gap-5 border-l-2 border-gold-500 bg-navy-950/60 backdrop-blur-xs px-5 py-4 rounded-r-[4px] max-[640px]:w-full max-[640px]:grid-cols-[44px_minmax(0,1fr)] max-[640px]:gap-[14px] max-[640px]:px-3.5 max-[640px]:py-3">
-          <span class="flex h-14 w-14 items-center justify-center rounded-[4px] bg-navy-900/80 border border-gold-500/30 text-gold-400 max-[640px]:h-11 max-[640px]:w-11" aria-hidden="true">
-            <svg class="h-[22px] w-[22px] max-[640px]:h-[18px] max-[640px]:w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg>
-          </span>
-          <span class="flex min-w-0 flex-col gap-[4px]">
-            <strong class="text-[20px] font-bold leading-[1.3] text-white max-[640px]:text-[16px]">{{ featured.category?.name || featured.name }}</strong>
-            <small class="text-[14.5px] leading-[1.5] text-slate-200 max-[640px]:text-[13px] line-clamp-2">{{ featured.description }}</small>
-          </span>
-        </span>
-        <span class="relative z-10 inline-flex flex-none items-center gap-2 rounded-[4px] border border-gold-400/40 bg-navy-900/80 px-4 py-2.5 text-sm font-bold text-gold-300 backdrop-blur-xs transition-colors group-hover:bg-gold-500 group-hover:text-navy-950 max-[640px]:self-end">
-          {{ featured.action }} <span aria-hidden="true">→</span>
-        </span>
-      </a>
-
-      <!-- 4 Category Rail (Product Atelier) -->
-      <div
-        class="mt-5 grid grid-cols-4 gap-4 overflow-x-auto overscroll-x-contain py-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden max-[860px]:flex max-[860px]:overflow-x-auto"
-        tabindex="0"
-        aria-label="Bốn nhóm thiết bị nổi bật, có thể cuộn ngang"
-      >
-        <a
-          v-for="slot in categoryRail"
+      <!-- Desktop: expanding chain. Mobile: snap rail. -->
+      <ol class="chain-track m-0 list-none p-0" :style="{ '--active': activeIndex }">
+        <li
+          v-for="slot in chain"
           :key="slot.key"
-          class="group relative isolate flex min-h-[310px] min-w-0 flex-col justify-end overflow-hidden rounded-[6px] border border-slate-200/90 bg-white text-white no-underline shadow-2xs transition-all duration-300 hover:border-gold-500/70 hover:shadow-md hover:-translate-y-1 max-[860px]:min-h-[310px] max-[860px]:w-[280px] max-[860px]:flex-none max-[640px]:min-h-[270px] max-[640px]:w-[250px] min-[1800px]:min-h-[340px]"
-          :class="slot.key === 'panel' ? '[&>img]:object-top' : ''"
-          :href="links.generic(slot.category?.url || slot.href)"
+          class="chain-link"
+          :class="{ 'is-active': slot.key === activeKey }"
+          @mouseenter="activeKey = slot.key"
         >
-          <img
-            class="absolute inset-0 z-0 h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-[1.04] motion-reduce:transform-none motion-reduce:transition-none"
-            :src="visualCandidate(slot.image, 320, 250)"
-            :srcset="visualSrcSet(slot.image, 'card')"
-            sizes="(min-width: 861px) 25vw, 280px"
-            :alt="slot.category?.name || slot.name"
-            width="640"
-            height="500"
-            loading="lazy"
+          <a
+            class="chain-card group"
+            :href="links.generic(slot.category?.url || slot.href)"
+            :aria-label="`${slot.stage}: ${slot.category?.name || slot.name}`"
+            @focus="activeKey = slot.key"
           >
-          <div class="absolute inset-0 z-[1] bg-gradient-to-t from-navy-950/95 via-navy-950/45 to-transparent transition-opacity group-hover:from-navy-950" />
+            <img
+              class="chain-image"
+              :src="slot.image"
+              :style="{ objectPosition: slot.position }"
+              alt=""
+              width="960"
+              height="760"
+              loading="lazy"
+            >
+            <span class="chain-veil" aria-hidden="true" />
 
-          <span class="relative z-10 mt-auto flex flex-col gap-1.5 p-4 text-white">
-            <strong class="line-clamp-2 text-[17px] font-bold leading-[1.3] text-white group-hover:text-gold-300 transition-colors">{{ slot.category?.name || slot.name }}</strong>
-            <small class="line-clamp-2 min-h-[44px] text-[13px] leading-[1.5] text-slate-200">{{ slot.description }}</small>
-            <span class="mt-1 inline-flex items-center gap-1.5 text-[13px] font-bold text-gold-400 group-hover:translate-x-1 transition-transform">
-              {{ slot.action }} <span aria-hidden="true">→</span>
+            <span class="chain-step">
+              <span>{{ slot.stage }}</span>
             </span>
-          </span>
-        </a>
+
+            <span class="chain-body">
+              <strong class="chain-title">{{ slot.category?.name || slot.name }}</strong>
+              <span class="chain-desc">{{ slot.description }}</span>
+              <span class="chain-cta">{{ slot.action }} <span aria-hidden="true">→</span></span>
+            </span>
+          </a>
+        </li>
+      </ol>
+
+      <!-- The wire: one continuous gold conductor with a current pulse travelling to the active link. -->
+      <div class="chain-wire" aria-hidden="true">
+        <span class="chain-wire-pulse" :style="{ '--to': `${nodeCenters[activeIndex]}%` }" />
+        <span
+          v-for="(slot, index) in chain"
+          :key="`node-${slot.key}`"
+          class="chain-node"
+          :class="{ 'is-on': index <= activeIndex }"
+          :style="{ left: `${nodeCenters[index]}%` }"
+        />
       </div>
     </div>
   </section>
 </template>
+
+<style scoped>
+/* Mirrors .pts-container padding-inline so the mobile rail bleeds edge-to-edge but snaps on the grid. */
+.energy-chain { --chain-gutter: 1rem; }
+@media (max-width: 359px) { .energy-chain { --chain-gutter: 0.75rem; } }
+@media (min-width: 821px) { .energy-chain { --chain-gutter: 1.5rem; } }
+.chain-track {
+  display: flex;
+  gap: 10px;
+  height: clamp(420px, 34vw, 560px);
+}
+.chain-link {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  transition: flex-grow 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.chain-link.is-active { flex-grow: 4.2; }
+
+.chain-card {
+  position: relative;
+  isolation: isolate;
+  display: block;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 4px;
+  background: var(--color-navy-950);
+  color: #fff;
+  text-decoration: none;
+}
+.chain-card:focus-visible { outline: 3px solid var(--color-gold-500); outline-offset: 3px; }
+
+.chain-image {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.08);
+  filter: saturate(0.75) brightness(0.8);
+  transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1), filter 0.6s ease;
+}
+.is-active .chain-image { transform: scale(1); filter: saturate(1) brightness(1); }
+
+.chain-veil {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(180deg, rgb(6 21 55 / 10%) 0%, rgb(6 21 55 / 35%) 45%, rgb(6 21 55 / 94%) 100%);
+}
+
+/* Collapsed links read as a vertical spine: stage label rotated up the panel. */
+.chain-step {
+  position: absolute;
+  left: 18px;
+  bottom: 22px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transform-origin: left bottom;
+  transform: rotate(-90deg) translate(-2px, 100%);
+  white-space: nowrap;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease;
+}
+.is-active .chain-step {
+  top: 22px;
+  bottom: auto;
+  transform: none;
+}
+
+.chain-body {
+  position: absolute;
+  left: clamp(20px, 2.4vw, 36px);
+  right: clamp(20px, 2.4vw, 36px);
+  bottom: clamp(22px, 2.4vw, 36px);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 460px;
+  opacity: 0;
+  transform: translateY(16px);
+  pointer-events: none;
+  transition: opacity 0.35s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.is-active .chain-body {
+  opacity: 1;
+  transform: none;
+  transition-delay: 0.22s;
+}
+.chain-title { font-size: clamp(24px, 2.2vw, 36px); font-weight: 900; line-height: 1.08; letter-spacing: -0.03em; }
+.chain-desc { font-size: 15.5px; line-height: 1.6; color: rgb(226 232 240); }
+.chain-cta {
+  margin-top: 6px;
+  align-self: flex-start;
+  border-bottom: 2px solid var(--color-gold-500);
+  padding-bottom: 4px;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--color-gold-300);
+}
+.chain-card:hover .chain-cta { color: #fff; }
+
+/* Gold conductor under the chain */
+.chain-wire {
+  position: relative;
+  height: 28px;
+  margin-top: 14px;
+}
+.chain-wire::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 13px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--color-gold-500), rgb(201 150 46 / 25%));
+}
+.chain-wire-pulse {
+  position: absolute;
+  left: 0;
+  top: 12px;
+  width: var(--to);
+  height: 4px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, rgb(201 150 46 / 0%), var(--color-gold-400) 70%, #fff3d6);
+  box-shadow: 0 0 14px rgb(224 182 84 / 70%);
+  transition: width 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.chain-node {
+  position: absolute;
+  top: 8px;
+  width: 12px;
+  height: 12px;
+  margin-left: -6px;
+  border-radius: 50%;
+  border: 2px solid var(--color-gold-500);
+  background: #fff;
+  transition: left 0.6s cubic-bezier(0.22, 1, 0.36, 1), background 0.4s ease, box-shadow 0.4s ease;
+}
+.chain-node.is-on { background: var(--color-gold-400); box-shadow: 0 0 0 5px rgb(224 182 84 / 22%); }
+
+/* Tablet & mobile: horizontal snap rail, every link fully open */
+@media (max-width: 960px) {
+  .chain-track {
+    height: auto;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--chain-gutter);
+    scrollbar-width: none;
+    margin-inline: calc(var(--chain-gutter) * -1);
+    padding-inline: var(--chain-gutter);
+  }
+  .chain-track::-webkit-scrollbar { display: none; }
+  .chain-link, .chain-link.is-active { flex: 0 0 min(78vw, 340px); scroll-snap-align: start; }
+  .chain-card { height: clamp(380px, 110vw, 460px); }
+  .chain-image { transform: none; filter: none; }
+  .chain-step { top: 20px; bottom: auto; transform: none; }
+  .chain-body { opacity: 1; transform: none; pointer-events: auto; }
+  .chain-wire { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chain-link, .chain-image, .chain-step, .chain-body, .chain-wire-pulse, .chain-node { transition: none !important; }
+}
+</style>
