@@ -156,7 +156,7 @@ function discountPercent(product: PublicCatalogProduct): number | null {
       <article
       v-for="(product, productIndex) in products"
       :key="product.id"
-      class="group flex min-w-0 flex-col"
+      class="group flex h-full min-w-0 flex-col"
       :class="props.layout === 'rail' ? 'snap-start' : ''"
     >
       <NuxtLink
@@ -210,13 +210,13 @@ function discountPercent(product: PublicCatalogProduct): number | null {
       </p>
       <p v-else-if="product.pricing?.mode !== 'quote'" class="m-0 text-[13px] font-medium text-slate-500">Liên hệ để nhận báo giá</p>
 
-      <div class="mt-auto grid gap-2 pt-3 max-ph:gap-0">
+      <div class="mt-auto grid gap-1.5 pt-3">
         <UButton
           v-if="product.pricing?.mode === 'quote'"
           type="button"
           color="primary"
           size="md"
-          class="min-h-11 w-full justify-center whitespace-nowrap rounded-[4px] bg-hdr-gold px-3 text-[13px] font-extrabold text-navy-950 shadow-xs transition-all duration-150 hover:bg-hdr-gold-hover hover:shadow-sm active:scale-[0.98]"
+          class="min-h-11 w-full justify-center whitespace-nowrap rounded-[4px] bg-hdr-gold px-3 text-[13px] font-extrabold text-navy-950 shadow-xs transition-colors duration-150 hover:bg-hdr-gold-hover active:scale-[0.98]"
           :aria-label="`Liên hệ để nhận báo giá ${product.name}`"
           @click="openConsultation(product.name)"
         >
@@ -229,24 +229,24 @@ function discountPercent(product: PublicCatalogProduct): number | null {
           color="primary"
           size="md"
           :loading="addingIds.has(product.id)"
-          class="min-h-11 w-full justify-center rounded-[4px] bg-hdr-gold px-3 text-[13px] font-extrabold text-navy-950 shadow-xs transition-all duration-150 hover:bg-hdr-gold-hover hover:shadow-sm active:scale-[0.98]"
+          class="min-h-11 w-full justify-center gap-2 rounded-[4px] bg-hdr-gold px-3 text-[13px] font-extrabold text-navy-950 shadow-xs transition-colors duration-150 hover:bg-hdr-gold-hover active:scale-[0.98]"
           :disabled="addingIds.has(product.id)"
           @click="addToCart(product)"
         >
+          <UIcon v-if="!addingIds.has(product.id)" name="i-lucide-shopping-bag" class="size-4" aria-hidden="true" />
           {{ addingIds.has(product.id) ? 'Đang thêm…' : 'Thêm giỏ hàng' }}
         </UButton>
-        <UButton
+        <NuxtLink
           :external="!isMigrationPreview"
           :to="productHref(product)"
-          color="secondary"
-          variant="outline"
-          size="md"
-          class="public-neutral-button public-navy-outline-button min-h-11 w-full justify-center rounded-[4px] px-3 text-[13px] font-bold text-navy-800 no-underline transition-all duration-150 active:scale-[0.98] max-ph:hidden"
+          class="inline-flex min-h-9 items-center justify-center gap-1.5 text-sm font-bold text-navy-800 no-underline transition-colors hover:text-gold-700 focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-600"
         >
-          Xem chi tiết
-        </UButton>
-        <p v-if="addedIds.has(product.id) && !cartErrors.has(product.id)" class="m-0 text-xs font-semibold text-emerald-700" role="status">Đã thêm vào giỏ hàng.</p>
-        <p v-if="cartErrors.has(product.id)" class="m-0 text-xs font-semibold text-red-700" role="alert">{{ cartErrors.get(product.id) }}</p>
+          Xem chi tiết <UIcon name="i-lucide-arrow-right" class="size-4" aria-hidden="true" />
+        </NuxtLink>
+        <div class="min-h-5 pt-0.5">
+          <p v-if="addedIds.has(product.id) && !cartErrors.has(product.id)" class="m-0 flex items-center gap-1.5 text-sm font-semibold leading-5 text-emerald-700" role="status"><UIcon name="i-lucide-circle-check" class="size-4 flex-none" aria-hidden="true" />Đã thêm vào giỏ hàng.</p>
+          <p v-if="cartErrors.has(product.id)" class="m-0 text-sm font-semibold leading-5 text-red-700" role="alert">{{ cartErrors.get(product.id) }}</p>
+        </div>
       </div>
     </article>
     </div>
