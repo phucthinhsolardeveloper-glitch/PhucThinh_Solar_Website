@@ -75,6 +75,10 @@ usePublicSocialMeta({
 
         <nav v-if="category.navigation.length" ref="solutionRailRef" class="mb-7 flex gap-2.5 overflow-x-auto py-1 [scrollbar-width:none] [&amp;::-webkit-scrollbar]:hidden" aria-label="Danh mục giải pháp">
           <NuxtLink
+            class="public-filter-chip flex min-h-11 flex-none items-center whitespace-nowrap px-4 text-[13px] font-bold text-navy-800 no-underline"
+            :to="links.generic('/giai-phap/')"
+          >Tất cả giải pháp</NuxtLink>
+          <NuxtLink
             v-for="item in category.navigation"
             :key="item.id"
             class="public-filter-chip flex min-h-11 flex-none items-center whitespace-nowrap px-4 text-[13px] font-bold no-underline"

@@ -78,11 +78,14 @@ onBeforeUnmount(() => observer?.disconnect())
 
 <template>
   <div class="product-preview-page pts-container pb-16 pt-6 max-tb:pt-3">
-    <div class="grid grid-cols-1 items-start gap-10 pb-12 pt-6 max-tb:gap-8 max-tb:pb-8 max-tb:pt-4 nav:grid-cols-2">
+    <div class="grid grid-cols-1 items-start gap-12 pb-12 pt-6 max-tb:gap-8 max-tb:pb-8 max-tb:pt-4 nav:grid-cols-2 nav:gap-14">
       <ProductPreviewGallery :name="product.name" :media="product.media" />
 
       <div class="min-w-0">
-        <h1 class="mb-3 text-[clamp(28px,1.9vw,35px)] font-black leading-[1.1] tracking-tight max-tb:text-[32px]">
+        <p v-if="productCategories.length" class="mb-3 text-sm font-bold uppercase tracking-[0.12em] text-gold-700">
+          {{ productCategories.map((item) => item.label).join(' · ') }}
+        </p>
+        <h1 class="mb-3 text-[clamp(30px,2.4vw,44px)] font-black leading-[1.08] tracking-tight max-tb:text-[32px]">
           {{ product.name }}
         </h1>
 
@@ -90,9 +93,10 @@ onBeforeUnmount(() => observer?.disconnect())
         <p v-if="product.summary" class="leading-relaxed text-slate-500">{{ product.summary }}</p>
 
         <ProductPreviewDecisionMetrics :metrics="product.decisionMetrics ?? []" />
-        <p v-if="product.packageContents" class="mt-4 text-sm leading-6 text-slate-600">
-          <strong class="text-navy-800">Bộ sản phẩm gồm:</strong> {{ product.packageContents }}
-        </p>
+        <div v-if="product.packageContents" class="mt-5 border-l-2 border-gold-500 pl-4">
+          <p class="mb-1 text-xs font-bold uppercase tracking-[0.1em] text-slate-500">Bộ sản phẩm</p>
+          <p class="m-0 text-sm leading-6 text-navy-800">{{ product.packageContents }}</p>
+        </div>
 
         <div class="mt-6 border-y border-gray-200 py-4">
           <p class="mb-1 text-xs font-bold uppercase tracking-wide text-slate-500">Giá bán</p>

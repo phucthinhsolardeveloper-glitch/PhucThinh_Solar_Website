@@ -144,7 +144,10 @@ onBeforeUnmount(() => {
           </button>
         </figure>
       </div>
-      <p v-else class="leading-relaxed text-slate-500">Không tìm thấy kết quả</p>
+      <div v-else class="grid min-h-40 place-items-center bg-slate-50 px-6 py-10 text-center">
+        <p class="m-0 max-w-[42ch] leading-relaxed text-slate-500">Chưa có media được công bố cho dự án này. Nội dung sẽ hiển thị khi CMS bổ sung tư liệu đã xác minh.</p>
+        <span class="sr-only">Không tìm thấy kết quả</span>
+      </div>
     </div>
   </section>
 

@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import type { PublicProductSpecification } from '#shared/contracts/public-product-detail'
 
-defineProps<{ specifications: PublicProductSpecification[] }>()
+const props = defineProps<{ specifications: PublicProductSpecification[] }>()
+const visibleSpecifications = computed(() => props.specifications.filter((item) => item.value.trim() !== ''))
 </script>
 
 <template>
@@ -10,7 +11,7 @@ defineProps<{ specifications: PublicProductSpecification[] }>()
       Thông số kỹ thuật
     </h2>
 
-    <p v-if="!specifications.length" class="text-slate-500">CMS chưa cung cấp thông số được allowlist.</p>
+    <p v-if="!visibleSpecifications.length" class="text-slate-500">CMS chưa cung cấp thông số được allowlist.</p>
 
     <div v-else class="overflow-x-auto border border-[#dce3ea]">
       <table class="w-full table-fixed border-collapse">
@@ -22,7 +23,7 @@ defineProps<{ specifications: PublicProductSpecification[] }>()
         </thead>
         <tbody>
           <tr
-            v-for="(item, index) in specifications"
+            v-for="(item, index) in visibleSpecifications"
             :key="`${item.key}-${item.label}`"
             :class="index % 2 === 1 ? 'bg-[#fafbfc]' : 'bg-white'"
           >
@@ -30,7 +31,7 @@ defineProps<{ specifications: PublicProductSpecification[] }>()
               {{ item.label }}
             </th>
             <td class="w-1/2 px-[18px] py-3 text-left align-top text-navy-800 font-bold max-ph:w-[62%] max-ph:px-3 max-ph:py-[11px]">
-              {{ item.value || 'Đang cập nhật' }}
+              {{ item.value }}
             </td>
           </tr>
         </tbody>

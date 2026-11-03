@@ -16,7 +16,7 @@ const hotlineHref = computed(() => `tel:${props.project.cta?.hotline.replace(/[^
        rồi đến gallery; descvi không quyết định bố cục hoặc thay contentvi. -->
   <article>
     <header class="py-10 nav:py-12">
-      <div class="pts-container grid w-full grid-cols-1 items-start gap-8 nav:grid-cols-[0.86fr_1.14fr] nav:gap-12">
+      <div class="pts-container grid w-full grid-cols-1 items-start gap-8 nav:grid-cols-[0.86fr_1.14fr] nav:grid-cols-[minmax(0,0.82fr)_minmax(420px,1.18fr)] nav:gap-12">
         <div class="min-w-0">
           <p class="mb-2 text-xs font-extrabold uppercase tracking-[0.16em] text-gold-700">Dự án</p>
           <h1 class="m-0 mb-5 text-[clamp(34px,5vw,56px)] font-black leading-[1.05] tracking-tight text-navy-950">{{ project.title }}</h1>
@@ -39,6 +39,11 @@ const hotlineHref = computed(() => `tel:${props.project.cta?.hotline.replace(/[^
               <dd class="m-0 break-words font-bold text-navy-800">{{ project.startDate ? formatProjectDate(project.startDate) : 'Đang cập nhật' }}<template v-if="project.endDate"> – {{ formatProjectDate(project.endDate) }}</template></dd>
             </div>
           </dl>
+        </div>
+
+        <div class="order-first overflow-hidden rounded-chip bg-slate-200 nav:order-none">
+          <img v-if="project.coverImage" :src="project.coverImage" :alt="project.title" class="aspect-[4/3] w-full object-cover" loading="eager" decoding="async">
+          <div v-else class="grid aspect-[4/3] place-items-center px-6 text-center text-sm font-semibold text-slate-500">Chưa có hình ảnh đại diện cho dự án</div>
         </div>
 
         <section aria-labelledby="project-summary-title" class="min-w-0 border-l-[3px] border-gold-500 py-1 pl-6">

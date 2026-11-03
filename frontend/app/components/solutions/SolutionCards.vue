@@ -15,7 +15,7 @@ const links = useMigrationLinks()
     trơn).
   -->
   <section id="cac-giai-phap" class="pt-[42px] pb-[54px] max-[520px]:pt-[26px] max-[520px]:pb-[26px]" :aria-label="cards.length ? choicesLabel : undefined" :aria-labelledby="cards.length ? undefined : 'solutions-choices-title'">
-    <h2 v-if="!cards.length" id="solutions-choices-title" class="m-0 mb-[22px] text-[28px] leading-[1.25] font-black text-navy-800">
+    <h2 v-if="!cards.length" id="solutions-choices-title" class="m-0 mb-[22px] text-[clamp(24px,2.5vw,32px)] leading-[1.2] font-black tracking-tight text-navy-950">
       {{ emptyLabel }}
     </h2>
 
@@ -23,7 +23,7 @@ const links = useMigrationLinks()
       <a
         v-for="card in cards"
         :key="card.slug"
-        class="group flex min-w-0 flex-none basis-[280px] flex-col overflow-hidden bg-transparent text-navy-800 no-underline min-[1101px]:basis-auto max-[520px]:basis-[min(78vw,286px)]"
+        class="group flex min-w-0 flex-none basis-[280px] flex-col overflow-hidden bg-transparent text-navy-800 no-underline outline-none min-[1101px]:basis-auto max-[520px]:basis-[min(78vw,286px)] focus-visible:ring-2 focus-visible:ring-gold-500 focus-visible:ring-offset-4"
         :class="cards.length === 1 ? 'min-[1101px]:w-full min-[1101px]:flex-row min-[1101px]:gap-6' : ''"
         :href="links.solution(card.slug)"
       >

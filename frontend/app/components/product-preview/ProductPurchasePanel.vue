@@ -126,5 +126,25 @@ async function add(goToCart = false) {
         </div>
       </div>
     </div>
+
+    <div class="fixed inset-x-0 bottom-0 z-40 flex gap-2 border-t border-slate-200 bg-white/95 p-3 pb-[max(12px,env(safe-area-inset-bottom))] shadow-[0_-8px_24px_rgba(6,21,55,0.12)] backdrop-blur-md nav:hidden">
+      <UButton
+        v-if="pricing.mode === 'price'"
+        type="button"
+        color="secondary"
+        variant="outline"
+        class="public-neutral-button min-h-12 flex-1 rounded-[4px] px-3 font-bold text-navy-800"
+        :loading="loading && loadingAction === 'cart'"
+        :disabled="loading"
+        @click="add(false)"
+      >Thêm vào giỏ</UButton>
+      <UButton
+        type="button"
+        color="primary"
+        class="min-h-12 flex-1 rounded-[4px] bg-gold-500 px-3 font-extrabold text-navy-950"
+        :disabled="pricing.mode === 'price' ? loading : !consultationAvailable"
+        @click="pricing.mode === 'price' ? add(true) : openConsultation()"
+      >{{ pricing.mode === 'price' ? 'Mua ngay' : 'Nhận báo giá' }}</UButton>
+    </div>
   </section>
 </template>
