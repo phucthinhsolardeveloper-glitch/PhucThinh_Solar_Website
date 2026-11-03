@@ -23,7 +23,7 @@ export default defineNuxtConfig({
    * global nhỏ, không nằm trong layer, áp dụng sau Preflight của Tailwind.
    * Không còn shell.css hoặc stylesheet riêng cho migration preview.
    */
-  css: ['~/assets/css/main.css', '~/assets/css/tokens.css'],
+  css: ['~/assets/css/main.css', '~/assets/css/tokens.css', '~/assets/css/experience-design-system.css'],
 
   /*
    * @nuxt/fonts đi kèm @nuxt/ui và MẶC ĐỊNH tự đi tải mọi font-family nó thấy
@@ -148,6 +148,9 @@ export default defineNuxtConfig({
       headers: { 'X-Robots-Tag': 'noindex, nofollow, noarchive' },
     },
     '/migration-video-preview': {
+      headers: { 'X-Robots-Tag': 'noindex, nofollow, noarchive' },
+    },
+    '/experience-design-system': {
       headers: { 'X-Robots-Tag': 'noindex, nofollow, noarchive' },
     },
   },
