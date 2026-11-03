@@ -18,22 +18,34 @@ const phoneHref = computed(() => publicPhoneHref(props.contact.contact.hotline))
         {{ contact.visual?.description || 'Để lại thông tin hoặc liên hệ trực tiếp, đội ngũ Phúc Thịnh Solar sẽ tư vấn giải pháp phù hợp với nhu cầu của bạn.' }}
       </p>
 
-      <div v-if="contact.contact.company || contact.contact.hotline || contact.contact.email || contact.contact.workingHours" class="mt-7 border-t border-slate-200 pt-6">
-        <p v-if="contact.contact.company" class="m-0 text-sm font-semibold leading-6 text-navy-800">{{ contact.contact.company }}</p>
-        <ul class="mb-0 mt-4 grid list-none gap-3 p-0 text-sm leading-6 text-slate-600">
-          <li v-if="contact.contact.hotline" class="flex items-start gap-3">
-            <UIcon name="i-lucide-phone" class="mt-0.5 size-4 flex-none text-gold-700" aria-hidden="true" />
-            <a v-if="phoneHref" class="text-inherit underline-offset-2 hover:underline" :href="phoneHref">Hotline: <strong class="text-navy-800">{{ contact.contact.hotline }}</strong></a>
+      <div v-if="contact.contact.company || contact.contact.hotline || contact.contact.email || contact.contact.address || contact.contact.workingHours" class="mt-7 border-t border-slate-200 pt-6">
+        <p v-if="contact.contact.company" class="m-0 text-sm font-extrabold uppercase tracking-wide text-navy-900">{{ contact.contact.company }}</p>
+        <ul class="mb-0 mt-4 grid list-none gap-3.5 p-0 text-[15px] leading-6 text-slate-600">
+          <li v-if="contact.contact.hotline" class="flex items-center gap-3.5">
+            <span class="grid size-9 flex-none place-items-center rounded-[3px] bg-gold-500/15 text-gold-700" aria-hidden="true">
+              <UIcon name="i-lucide-phone" class="size-4" />
+            </span>
+            <a v-if="phoneHref" class="text-inherit underline-offset-2 hover:underline" :href="phoneHref">Hotline: <strong class="text-base font-extrabold tabular-nums text-navy-900">{{ contact.contact.hotline }}</strong></a>
             <span v-else>Hotline: <strong class="text-navy-800">{{ contact.contact.hotline }}</strong></span>
           </li>
-          <li v-if="contact.contact.email" class="flex min-w-0 items-start gap-3">
-            <UIcon name="i-lucide-mail" class="mt-0.5 size-4 flex-none text-gold-700" aria-hidden="true" />
-            <a v-if="emailHref" class="min-w-0 break-words text-inherit underline-offset-2 hover:underline" :href="emailHref">Email: <strong class="text-navy-800">{{ contact.contact.email }}</strong></a>
+          <li v-if="contact.contact.email" class="flex min-w-0 items-center gap-3.5">
+            <span class="grid size-9 flex-none place-items-center rounded-[3px] bg-gold-500/15 text-gold-700" aria-hidden="true">
+              <UIcon name="i-lucide-mail" class="size-4" />
+            </span>
+            <a v-if="emailHref" class="min-w-0 break-words text-inherit underline-offset-2 hover:underline" :href="emailHref">Email: <strong class="font-bold text-navy-900">{{ contact.contact.email }}</strong></a>
             <span v-else class="min-w-0 break-words">Email: <strong class="text-navy-800">{{ contact.contact.email }}</strong></span>
           </li>
-          <li v-if="contact.contact.workingHours" class="flex items-start gap-3">
-            <UIcon name="i-lucide-clock-3" class="mt-0.5 size-4 flex-none text-gold-700" aria-hidden="true" />
-            <span>Thời gian làm việc: <strong class="text-navy-800">{{ contact.contact.workingHours }}</strong></span>
+          <li v-if="contact.contact.address" class="flex items-start gap-3.5">
+            <span class="mt-0.5 grid size-9 flex-none place-items-center rounded-[3px] bg-gold-500/15 text-gold-700" aria-hidden="true">
+              <UIcon name="i-lucide-map-pin" class="size-4" />
+            </span>
+            <span>Trụ sở chính: <strong class="font-bold text-navy-900">{{ contact.contact.address }}</strong></span>
+          </li>
+          <li v-if="contact.contact.workingHours" class="flex items-center gap-3.5">
+            <span class="grid size-9 flex-none place-items-center rounded-[3px] bg-gold-500/15 text-gold-700" aria-hidden="true">
+              <UIcon name="i-lucide-clock-3" class="size-4" />
+            </span>
+            <span>Thời gian làm việc: <strong class="font-bold text-navy-900">{{ contact.contact.workingHours }}</strong></span>
           </li>
         </ul>
       </div>
@@ -42,15 +54,15 @@ const phoneHref = computed(() => publicPhoneHref(props.contact.contact.hotline))
         v-if="contact.visual?.href"
         color="primary"
         size="lg"
-        class="mt-8 inline-flex min-h-12 items-center justify-center gap-2 self-start rounded-[4px] bg-gold-500 px-5 py-3 font-bold text-navy-950 no-underline transition-colors hover:bg-gold-400"
+        class="mt-8 inline-flex min-h-12 items-center justify-center gap-2 self-start rounded-[4px] bg-gold-500 px-6 py-3 font-extrabold text-navy-950 no-underline transition-colors hover:bg-gold-400"
         :href="links.generic(contact.visual.href)"
       >
         Gửi yêu cầu tư vấn <UIcon name="i-lucide-arrow-down" class="size-4" aria-hidden="true" />
       </UButton>
     </div>
 
-    <figure v-if="contact.visual" class="relative m-0 min-w-0 overflow-hidden border border-slate-200 p-2.5 lg:p-3">
-      <div class="relative overflow-hidden">
+    <figure v-if="contact.visual" class="relative m-0 min-w-0 overflow-hidden">
+      <div class="relative overflow-hidden rounded-[4px] border-b-[3px] border-gold-500 bg-navy-950">
         <img
           :src="contact.visual.image"
           :alt="contact.visual.name || ''"
@@ -59,12 +71,12 @@ const phoneHref = computed(() => publicPhoneHref(props.contact.contact.hotline))
           height="750"
           fetchpriority="high"
         >
-        <a v-if="phoneHref" :href="phoneHref" class="absolute bottom-3 left-3 flex min-h-14 items-center gap-3 rounded-[4px] bg-white/95 px-4 py-2.5 text-navy-800 no-underline shadow-sm backdrop-blur-sm transition-colors hover:bg-white">
-          <span class="flex size-10 flex-none items-center justify-center rounded-full bg-gold-500 text-navy-950"><UIcon name="i-lucide-phone" class="size-5" aria-hidden="true" /></span>
-          <span class="flex flex-col leading-tight"><small class="text-xs font-semibold text-slate-500">Hotline tư vấn</small><strong class="mt-1 text-base">{{ contact.contact.hotline }}</strong></span>
+        <a v-if="phoneHref" :href="phoneHref" class="absolute bottom-3.5 left-3.5 flex min-h-14 items-center gap-3.5 rounded-[4px] bg-navy-950/92 px-4 py-2.5 text-white no-underline shadow-md backdrop-blur-sm transition-colors hover:bg-navy-900">
+          <span class="flex size-10 flex-none items-center justify-center rounded-full bg-gold-500 text-navy-950"><UIcon name="i-lucide-phone-call" class="size-5" aria-hidden="true" /></span>
+          <span class="flex flex-col leading-tight"><small class="text-xs font-semibold text-gold-300">Gọi tư vấn trực tiếp</small><strong class="mt-1 text-lg font-black tabular-nums">{{ contact.contact.hotline }}</strong></span>
         </a>
       </div>
-      <figcaption v-if="contact.visual.name" class="px-1 pb-0.5 pt-3 text-sm font-semibold text-navy-800">{{ contact.visual.name }}</figcaption>
+      <figcaption v-if="contact.visual.name" class="pt-3 text-sm font-bold text-navy-800">{{ contact.visual.name }}</figcaption>
     </figure>
   </section>
 </template>
