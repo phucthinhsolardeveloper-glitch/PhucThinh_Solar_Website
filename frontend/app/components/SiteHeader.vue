@@ -575,7 +575,7 @@ onBeforeUnmount(() => {
         <!-- Keep the drawer until the header has enough room for every desktop control. -->
         <button
           ref="mobileTrigger"
-          class="pts-mobile-nav-trigger public-neutral-button order-first relative flex h-11 w-11 flex-none items-center justify-center rounded-chip text-hdr-ink min-[1681px]:hidden"
+          class="pts-mobile-nav-trigger public-neutral-button order-first relative flex h-11 w-11 flex-none items-center justify-center rounded-chip text-hdr-ink min-[1321px]:hidden"
           type="button"
           :aria-expanded="mobileOpen"
           aria-controls="ptsMobileMenu"
@@ -609,7 +609,7 @@ onBeforeUnmount(() => {
         </a>
 
         <!-- Điều hướng chính desktop (Danh mục sản phẩm + đúng 5 nhóm IA chuẩn) -->
-        <nav class="pts-desktop-nav hidden min-w-0 min-[1681px]:flex-1 min-[1681px]:block" aria-label="Điều hướng chính">
+        <nav class="pts-desktop-nav hidden min-w-0 min-[1321px]:flex-1 min-[1321px]:block" aria-label="Điều hướng chính">
           <ul class="flex items-center justify-center gap-1 nav:gap-0 min-[1681px]:gap-3">
             <li class="mr-1.5 flex flex-none items-center" @mouseenter="openCatalog('hover')" @mouseleave="scheduleCatalogClose">
               <NuxtLink custom :to="shellHref('/san-pham/')" v-slot="{ href, navigate }">
@@ -710,7 +710,7 @@ onBeforeUnmount(() => {
             <span class="grid h-9 w-9 min-[1681px]:h-10 min-[1681px]:w-10 flex-none place-items-center rounded-full bg-hdr-surface text-hdr-gold-deep" aria-hidden="true">
               <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.79 19.79 0 0 1 11.19 18a19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.09 3.18 2 2 0 0 1 4.08 1h3a2 2 0 0 1 2 1.72c.12.96.36 1.9.7 2.8a2 2 0 0 1-.45 2.11L8.06 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.84.58 2.8.7A2 2 0 0 1 22 16.92Z" /></svg>
             </span>
-            <span class="hidden min-[821px]:flex min-[821px]:flex-col min-[821px]:gap-0.5 min-[821px]:whitespace-nowrap text-left">
+            <span class="hidden min-[1681px]:flex min-[1681px]:flex-col min-[1681px]:gap-0.5 min-[1681px]:whitespace-nowrap text-left">
               <small class="text-[11px] leading-none text-hdr-muted font-semibold uppercase tracking-wider">Tư vấn</small>
               <b class="text-sm min-[1681px]:text-[15px] leading-tight text-hdr-ink font-black">{{ hotline }}</b>
             </span>
@@ -1015,7 +1015,7 @@ onBeforeUnmount(() => {
       </Transition>
     </header>
 
-    <!-- Drawer điều hướng mobile/tablet, used through 1680px -->
+    <!-- Drawer điều hướng mobile/tablet, used through 1320px -->
     <Teleport to="body">
     <div v-if="mobileOpen" ref="mobileOverlay" class="fixed inset-0 z-[1100] overflow-hidden bg-[rgb(8_18_34_/_58%)]">
       <div

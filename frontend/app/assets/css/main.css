@@ -45,7 +45,7 @@
 }
 
 /* Touch-first wide screens need the same discoverable nav as compact layouts. */
-@media (min-width: 1681px) and (hover: none) {
+@media (min-width: 1321px) and (hover: none) {
   .pts-site-header .pts-desktop-nav { display: none; }
   .pts-site-header .pts-mobile-nav-trigger { display: flex; }
 }
@@ -192,7 +192,7 @@
      tb  821px  : trên tablet dọc
      nav 1321px : chuyển container/gutter desktop; header giữ hamburger khi còn chật
      wd  1501px : bộ điều hướng compact cho dải 1501-2299
-     header 1681px: bật nav ngang theo hợp đồng; dưới đó dùng drawer
+     header 1321px: nav ngang compact; từ 1681px mở rộng logo và hotline
      ul  2300px : màn rất rộng, logo và container header nới ra */
   --breakpoint-ph: 561px;
   --breakpoint-tb: 821px;

@@ -277,8 +277,8 @@ responsive ổn chỉ từ laptop 1366px.
   mobile. Tìm kiếm dùng route tìm sản phẩm hiện có; chân panel có lối tư vấn,
   không lặp bộ chọn ngôn ngữ của header.
 - Mobile menu có nút đóng/mở dễ hiểu, focus được và không che logo.
-- Ở dải 1321–1680px, tiếp tục dùng nút hamburger và drawer để dành đủ chiều
-  rộng cho logo cùng nhóm thao tác; chỉ bật điều hướng ngang năm nhóm từ 1681px.
+- Từ 1321px, hiển thị điều hướng ngang với logo compact và hotline dạng icon.
+  Từ 1681px mở rộng logo và hiện số hotline; màn hình cảm ứng vẫn dùng drawer.
   Header màn rất rộng được phép nới theo container trang. Hai chế độ phải loại
   trừ lẫn nhau tại breakpoint, không để menu tràn vào logo hoặc nhóm thao tác.
 - Mobile drawer có ô tìm sản phẩm gửi tới cùng chức năng tìm kiếm hiện có;
