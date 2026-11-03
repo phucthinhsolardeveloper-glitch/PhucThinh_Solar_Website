@@ -129,7 +129,7 @@ const { activeHeadingId, scrollToHeading } = useTocScrollspy({
           :class="isHeaderHidden ? 'min-[901px]:top-6' : 'min-[901px]:top-[104px] min-[1501px]:top-[124px] min-[1800px]:top-[140px]'"
           aria-label="Mục lục nội dung"
         >
-          <h2 class="m-0 mb-3 flex items-center gap-2 border-b border-white/12 pb-3 text-[13px] font-extrabold uppercase tracking-wider text-gold-300">
+          <h2 class="m-0 mb-3 flex items-center gap-2 border-b border-white/12 pb-3 text-[15px] font-extrabold text-gold-300">
             <svg class="h-4 w-4 flex-none text-gold-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
             </svg>

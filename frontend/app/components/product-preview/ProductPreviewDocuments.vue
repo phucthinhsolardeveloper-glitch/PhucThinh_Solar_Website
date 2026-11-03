@@ -33,7 +33,7 @@ function documentHref(document: PublicProductDocument): string {
         class="flex items-center justify-between gap-4 rounded-btn border border-gray-200 px-4 py-4 text-navy-800 transition hover:border-gold-500 hover:bg-slate-50"
       >
         <span class="min-w-0">
-          <small class="mb-1 block text-xs font-bold uppercase tracking-wide text-gold-700">{{ typeLabels[document.type] }}</small>
+          <small class="mb-1 block text-[13px] font-bold text-gold-700">{{ typeLabels[document.type] }}</small>
           <strong class="block truncate">{{ document.title }}</strong>
         </span>
         <span class="shrink-0 text-sm font-bold text-slate-500" aria-hidden="true">Tải xuống ↗</span>

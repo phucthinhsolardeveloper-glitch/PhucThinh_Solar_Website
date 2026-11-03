@@ -21,7 +21,7 @@ const trustItems = computed(() => props.cta.trust?.length ? props.cta.trust : [
   <section class="mt-[38px] min-[901px]:mt-[50px]">
     <PublicCtaBanner variant="editorial" :image="backgroundImage" labelled-by="projects-contact-title">
       <div class="min-w-0">
-        <p v-if="cta.eyebrow" class="mb-2 text-xs font-extrabold uppercase tracking-[.08em] text-gold-400">{{ cta.eyebrow }}</p>
+        <p v-if="cta.eyebrow" class="mb-2 text-[15px] font-bold text-gold-400">{{ cta.eyebrow }}</p>
         <h2 id="projects-contact-title" class="mt-0 mb-2 text-[clamp(21px,2.2vw,28px)] font-black leading-[1.25] tracking-[-.025em] text-white">{{ cta.title }}</h2>
         <p v-if="cta.description" class="mb-0 max-w-[64ch] text-[15.5px] leading-[1.6] text-blue-100">{{ cta.description }}</p>
         <ul v-if="trustItems.length" class="mt-5 mb-0 flex list-none flex-wrap gap-x-7 gap-y-[14px] p-0 text-[13.5px] font-extrabold text-blue-100">
@@ -43,7 +43,7 @@ const trustItems = computed(() => props.cta.trust?.length ? props.cta.trust : [
             <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.33.56 3.57.56.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.61 21 3 13.39 3 4c0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.24.19 2.45.56 3.57a1 1 0 0 1-.25 1.02l-2.19 2.2Z" /></svg>
           </span>
           <span>
-            <small class="mb-0.5 block text-[11px] uppercase text-blue-100">Liên hệ ngay</small>
+            <small class="mb-0.5 block text-[13px] text-blue-100">Liên hệ ngay</small>
             <strong class="block text-[22px] font-black leading-tight">{{ cta.hotline.text }}</strong>
           </span>
         </a>

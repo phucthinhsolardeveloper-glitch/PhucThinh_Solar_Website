@@ -78,7 +78,7 @@ const shareLinks = computed(() => {
 
 <template>
   <div class="mt-8 flex flex-wrap items-center gap-3 border-t border-slate-200/80 pt-6" aria-label="Chia sẻ bài viết">
-    <span class="mr-1 text-xs font-bold uppercase tracking-wider text-navy-800">Chia sẻ:</span>
+    <span class="mr-1 text-sm font-bold text-navy-800">Chia sẻ:</span>
     <nav class="flex flex-wrap items-center gap-2.5" aria-label="Mạng xã hội chia sẻ">
       <a
         v-for="item in shareLinks"

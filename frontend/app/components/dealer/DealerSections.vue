@@ -92,7 +92,7 @@ function cleanQuote(raw: string): string {
   -->
   <section v-if="dealer.stats.length" class="bg-[linear-gradient(120deg,var(--color-navy-950),var(--color-navy-800))] py-12 text-center text-white nav:py-16" :aria-label="dealer.labels.stats">
     <div class="mx-auto w-[calc(100%-clamp(40px,5vw,96px))] max-w-[1560px]">
-      <p class="dealer-stats-eyebrow mb-9 text-sm font-extrabold uppercase tracking-[.12em]">{{ dealer.labels.stats }}</p>
+      <p class="dealer-stats-eyebrow mb-9 text-base font-bold">{{ dealer.labels.stats }}</p>
       <div class="grid grid-cols-1 gap-9 ph:grid-cols-3 ph:gap-5">
         <div v-for="stat in dealer.stats" :key="stat.label">
           <strong class="dealer-stat-value">{{ stat.value }}+</strong>

@@ -38,7 +38,7 @@ const links = useMigrationLinks()
         </span>
       </div>
 
-      <div class="project-stage__content flex flex-col justify-between gap-6 p-6 tb:p-8 nav:p-10">
+      <div class="project-stage__content flex flex-col justify-center gap-8 p-6 tb:p-8 nav:p-12">
         <div class="flex flex-col gap-3.5">
           <span class="inline-flex w-fit items-center gap-2 text-sm font-bold text-gold-300">
             <span class="h-px w-7 bg-gold-400" aria-hidden="true" />{{ label }}
