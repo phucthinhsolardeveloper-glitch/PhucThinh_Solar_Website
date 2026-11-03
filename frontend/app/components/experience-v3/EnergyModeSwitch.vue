@@ -34,70 +34,61 @@ function select(id: EnergyMode) {
     >
       <UIcon :name="item.icon" aria-hidden="true" />
       <span class="mode-switch-label">{{ item.label }}</span>
-      <span class="mode-switch-note">{{ item.note }}</span>
     </button>
   </div>
 </template>
 
 <style scoped>
 .mode-switch {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 2px;
-  border: 1px solid rgba(10, 34, 81, 0.12);
-  border-radius: 4px;
-  overflow: hidden;
-  background: rgba(10, 34, 81, 0.03);
+  display: flex;
+  width: fit-content;
+  max-width: 100%;
+  align-items: center;
+  gap: 6px;
 }
 
 .mode-switch-button {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 2px;
-  min-height: 56px;
-  padding: 10px 14px;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 0 12px;
   border: 0;
-  background: #fff;
-  color: #0a2251;
+  border-radius: 4px;
+  background: transparent;
+  color: #c3cfde;
   font: inherit;
-  text-align: left;
+  text-align: center;
   cursor: pointer;
-  transition: background 0.18s ease, color 0.18s ease;
+  transition: background-color 0.18s ease, color 0.18s ease;
 }
 
 .mode-switch-button :deep(svg) {
-  width: 16px;
-  height: 16px;
-  margin-bottom: 4px;
-  color: #9c7420;
+  width: 18px;
+  height: 18px;
+  flex: none;
+  color: #d2b468;
 }
 
 .mode-switch-label {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
 }
 
-.mode-switch-note {
-  font-size: 10.5px;
-  color: #64748b;
-}
-
 .mode-switch-button:hover:not(:disabled) {
-  background: rgba(201, 150, 46, 0.08);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
 }
 
 .mode-switch-button.is-active {
-  background: linear-gradient(180deg, #123a7a 0%, #0a2251 100%);
-  color: #f4f0e4;
+  background: rgba(224, 182, 84, 0.16);
+  color: #ffe3a0;
 }
 
 .mode-switch-button.is-active :deep(svg) {
   color: #e0b654;
-}
-
-.mode-switch-button.is-active .mode-switch-note {
-  color: #c7d3e2;
 }
 
 .mode-switch-button:disabled {
@@ -106,17 +97,28 @@ function select(id: EnergyMode) {
 }
 
 .mode-switch-button:focus-visible {
-  outline: 3px solid #9c7420;
+  outline: 2px solid #f2d281;
   outline-offset: 2px;
 }
 
-@media (max-width: 480px) {
+@media (max-width: 520px) {
+  .mode-switch { width: 100%; gap: 3px; }
   .mode-switch-button {
-    padding: 8px 8px;
-    min-height: 60px;
+    flex: 1;
+    gap: 6px;
+    min-height: 40px;
+    padding: 0 6px;
   }
-  .mode-switch-note {
-    display: none;
-  }
+  .mode-switch-button :deep(svg) { width: 16px; height: 16px; }
+  .mode-switch-label { font-size: 11px; }
+}
+
+@media (max-width: 360px) {
+  .mode-switch-button { gap: 4px; padding: 0 3px; }
+  .mode-switch-label { font-size: 10.5px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mode-switch-button { transition: none; }
 }
 </style>

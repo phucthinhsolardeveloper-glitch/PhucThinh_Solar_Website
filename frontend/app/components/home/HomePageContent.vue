@@ -52,8 +52,8 @@ usePublicSocialMeta({
       </div>
       <template v-else>
         <HomeHero :hero="home.hero" />
-        <EnergyStageSection />
         <HomeCatalog :categories="home.categories" :campaigns="home.campaigns" />
+        <EnergyStageSection />
         <HomeCampaigns :campaigns="home.campaigns" :campaigns-configured="(home.summary.campaignsConfigured ?? 0) > 0" />
         <HomeEditorial :data="home" />
         <HomeContact :contact="home.contact" />

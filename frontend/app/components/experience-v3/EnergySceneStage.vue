@@ -37,13 +37,13 @@ function isActive(id: string) {
       <desc id="scene-desc">Sơ đồ nguyên lý hệ thống điện mặt trời: mái pin, inverter, pin lưu trữ, điện lưới và ngôi nhà.</desc>
       <defs>
         <linearGradient id="sky-day" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stop-color="#5b78a5" /><stop offset=".55" stop-color="#2f5490" /><stop offset="1" stop-color="#17345e" />
+          <stop offset="0" stop-color="#eaf2fb" /><stop offset=".6" stop-color="#f3ecd9" /><stop offset="1" stop-color="#f7e3b8" />
         </linearGradient>
         <linearGradient id="sky-night" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stop-color="#0d2550" /><stop offset=".6" stop-color="#0a1b38" /><stop offset="1" stop-color="#050f22" />
+          <stop offset="0" stop-color="#0c2144" /><stop offset=".6" stop-color="#0a1b38" /><stop offset="1" stop-color="#050f22" />
         </linearGradient>
         <linearGradient id="sky-backup" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stop-color="#081a3a" /><stop offset=".65" stop-color="#050f22" /><stop offset="1" stop-color="#030810" />
+          <stop offset="0" stop-color="#101a2b" /><stop offset=".65" stop-color="#0a1320" /><stop offset="1" stop-color="#030810" />
         </linearGradient>
         <radialGradient id="sun-glow"><stop stop-color="#f9d27e" stop-opacity=".55" /><stop offset="1" stop-color="#f9d27e" stop-opacity="0" /></radialGradient>
         <radialGradient id="moon-glow"><stop stop-color="#b9c9f2" stop-opacity=".35" /><stop offset="1" stop-color="#b9c9f2" stop-opacity="0" /></radialGradient>
@@ -163,20 +163,27 @@ function isActive(id: string) {
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  border-radius: 6px;
-  background: #050f22;
+  background: transparent;
 }
-.scene-stage svg { display: block; width: 100%; height: auto; }
+.scene-stage svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 3%, #000 97%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0%, #000 3%, #000 97%, transparent 100%);
+}
 
 /* --- Sky: three real environments cross-fading, fixing V2's static-sky gap --- */
 .sky { opacity: 0; transition: opacity 0.5s ease; }
 .is-day .sky-day { opacity: 1; }
-.is-night .sky-night { opacity: 1; }
-.is-backup .sky-backup { opacity: 1; }
+.is-night .sky-night { opacity: .04; }
+.is-backup .sky-backup { opacity: .04; }
 .vignette-backup { opacity: 0; transition: opacity 0.5s ease; }
 .is-backup .vignette-backup { opacity: 1; }
 
-.ground-plane { fill: #142745; }
+.ground-plane { fill: #102a4b; transition: fill 0.5s ease; }
+.is-night .ground-plane { fill: #07182f; }
+.is-backup .ground-plane { fill: #060d18; }
 .ground-tint { transition: fill 0.5s ease, opacity 0.5s ease; }
 .is-day .ground-tint { fill: #2f5490; opacity: .22; }
 .is-night .ground-tint { fill: #050f22; opacity: .5; }
@@ -292,7 +299,7 @@ function isActive(id: string) {
 
 @media (prefers-reduced-motion: reduce) {
   .flow-path { animation: none !important; }
-  .sky, .vignette-backup, .ground-tint, .sun-halo, .sun-disc, .moon-halo, .moon-disc,
+  .sky, .vignette-backup, .ground-plane, .ground-tint, .sun-halo, .sun-disc, .moon-halo, .moon-disc,
   .grid-object, .grid-disconnect, .pv-roof, .pv-panel, .window-priority {
     transition-duration: 0.01ms !important;
   }

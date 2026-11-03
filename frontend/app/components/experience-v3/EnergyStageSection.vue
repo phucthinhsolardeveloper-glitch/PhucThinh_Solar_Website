@@ -80,7 +80,7 @@ const deviceCopy = computed<Record<DeviceId, { role: string; note: string }>>(()
 </script>
 
 <template>
-  <section class="solution-energy-stage" aria-labelledby="energy-stage-title">
+  <section class="solution-energy-stage" :class="`is-${mode}`" aria-labelledby="energy-stage-title">
     <div class="solution-energy-stage-inner pts-container">
       <div class="solution-stage-heading">
         <div>
@@ -103,7 +103,14 @@ const deviceCopy = computed<Record<DeviceId, { role: string; note: string }>>(()
 </template>
 
 <style scoped>
-.solution-energy-stage { background: linear-gradient(155deg, #0a2251 0%, #061537 100%); color: #f4f0e4; }
+.solution-energy-stage {
+  background-color: #0e2b55;
+  color: #f4f0e4;
+  transition: background-color .55s ease;
+}
+.solution-energy-stage.is-day { background-color: #123365; }
+.solution-energy-stage.is-night { background-color: #091b38; }
+.solution-energy-stage.is-backup { background-color: #080f1c; }
 .solution-energy-stage-inner { padding-top: clamp(28px, 3.6vw, 44px); padding-bottom: clamp(32px, 4vw, 52px); }
 .solution-stage-heading { display: flex; align-items: end; justify-content: space-between; gap: 18px; margin-bottom: 18px; }
 .solution-stage-heading h2 { margin: 0; color: #f4f0e4; font-size: clamp(24px, 2.7vw, 34px); line-height: 1.15; letter-spacing: -.025em; }
@@ -115,8 +122,8 @@ const deviceCopy = computed<Record<DeviceId, { role: string; note: string }>>(()
 .solution-battery-toggle input:checked + .solution-toggle-track { border-color: #e0b654; background: #9c7420; }
 .solution-battery-toggle input:checked + .solution-toggle-track i { transform: translateX(14px); }
 .solution-battery-toggle input:focus-visible + .solution-toggle-track { outline: 2px solid #f2d281; outline-offset: 3px; }
-.solution-stage-layout { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(260px, .8fr); gap: 0 26px; margin-top: 16px; }
-.solution-stage-layout :deep(.scene-stage) { border-radius: 3px; }
+.solution-stage-layout { display: grid; grid-template-columns: minmax(0, 2.35fr) minmax(300px, .8fr); gap: 0 34px; margin-top: 16px; }
+.solution-stage-layout :deep(.scene-stage) { border-radius: 0; }
 .solution-stage-layout :deep(.inspector) { padding-top: 0; }
 
 @media (max-width: 860px) {
@@ -128,5 +135,9 @@ const deviceCopy = computed<Record<DeviceId, { role: string; note: string }>>(()
 @media (max-width: 520px) {
   .solution-energy-stage-inner { padding-top: 20px; padding-bottom: 24px; }
   .solution-stage-layout { gap: 14px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .solution-energy-stage { transition: none; }
 }
 </style>
