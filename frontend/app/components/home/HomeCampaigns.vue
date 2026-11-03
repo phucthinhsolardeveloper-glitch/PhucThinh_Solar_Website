@@ -13,26 +13,55 @@ const leadIntent = useState<string>('public-home-lead-intent', () => '')
 </script>
 
 <template>
-  <section v-if="items.length" class="bg-hdr-surface py-[clamp(64px,6vw,92px)]" aria-labelledby="home-campaign-title">
-    <div class="mx-auto w-[min(calc(100%-clamp(40px,5vw,96px)),1560px)] max-[860px]:w-[min(calc(100%-48px),1440px)] max-[640px]:w-[calc(100%-40px)] max-[360px]:w-[calc(100%-32px)] min-[1600px]:w-[min(calc(100%-clamp(96px,8vw,220px)),2200px)]">
-      <header class="mb-10 flex max-w-none items-end justify-between gap-7 max-[860px]:flex-col max-[860px]:items-start">
+  <section v-if="items.length" class="bg-hdr-surface py-[clamp(56px,5vw,84px)]" aria-labelledby="home-campaign-title">
+    <div class="pts-container">
+      <header class="mb-8 flex max-w-none items-end justify-between gap-6 max-[860px]:flex-col max-[860px]:items-start">
         <div>
-          <h2 id="home-campaign-title" class="m-0 text-[clamp(31px,2.2vw,42px)] font-bold leading-[1.2] tracking-[-.025em] text-navy-950">Chiếu sáng phù hợp từng không gian</h2>
-          <p class="mt-[13px] max-w-[760px] text-[clamp(16px,1.1vw,19px)] leading-[1.65] text-slate-500">Lựa chọn thiết bị theo khu vực sử dụng và điều kiện lắp đặt thực tế.</p>
+          <div class="mb-2 inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-gold-600">
+            <span class="inline-block size-1.5 rounded-full bg-gold-500" /> Không gian ứng dụng
+          </div>
+          <h2 id="home-campaign-title" class="m-0 text-[clamp(28px,2.4vw,40px)] font-black leading-[1.2] tracking-[-.025em] text-navy-950">
+            Chiếu sáng phù hợp từng không gian
+          </h2>
+          <p class="mt-2.5 max-w-[760px] text-[clamp(15px,1.05vw,18px)] leading-[1.65] text-slate-500">
+            Lựa chọn thiết bị theo khu vực sử dụng và điều kiện lắp đặt thực tế.
+          </p>
         </div>
-        <a class="mt-5 inline-flex min-h-[50px] items-center justify-center rounded-[4px] border border-hdr-gold bg-hdr-gold px-[25px] font-bold text-navy-950 no-underline" href="#yeu-cau-tu-van" @click="leadIntent = 'Đèn năng lượng mặt trời'">Tư vấn chọn đèn</a>
+        <a
+          class="mt-4 inline-flex min-h-[48px] items-center justify-center rounded-[4px] border border-gold-500 bg-gold-400 px-[24px] text-sm font-bold text-navy-950 no-underline shadow-2xs transition-all hover:bg-gold-500 hover:shadow-sm"
+          href="#yeu-cau-tu-van"
+          @click="leadIntent = 'Đèn năng lượng mặt trời'"
+        >
+          Tư vấn chọn đèn
+        </a>
       </header>
-      <div class="grid grid-cols-3 gap-[clamp(22px,2.5vw,36px)] max-[860px]:grid-cols-1">
-        <article v-for="campaign in items" :key="campaign.href + campaign.name" class="min-w-0 max-[860px]:grid max-[860px]:grid-cols-[minmax(260px,.8fr)_minmax(0,1.2fr)] max-[860px]:items-center max-[860px]:gap-6 max-[640px]:block">
+
+      <div class="grid grid-cols-3 gap-[clamp(20px,2.4vw,32px)] max-[860px]:grid-cols-1">
+        <article
+          v-for="campaign in items"
+          :key="campaign.href + campaign.name"
+          class="group flex flex-col overflow-hidden rounded-[6px] border border-slate-200/80 bg-white p-4 shadow-2xs transition-all duration-300 hover:border-gold-500/60 hover:shadow-md hover:-translate-y-1 max-[860px]:grid max-[860px]:grid-cols-[minmax(240px,.8fr)_minmax(0,1.2fr)] max-[860px]:items-center max-[860px]:gap-5 max-[640px]:block max-[640px]:p-3.5"
+        >
           <a class="block overflow-hidden rounded-[4px]" :href="links.generic(campaign.href)">
-            <img class="aspect-[8/5] h-full w-full object-cover" :src="campaign.image" :alt="campaign.name" width="760" height="500" loading="lazy">
+            <img
+              class="aspect-[8/5] h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+              :src="campaign.image"
+              :alt="campaign.name"
+              width="760"
+              height="500"
+              loading="lazy"
+            >
           </a>
-          <div class="max-[860px]:py-2 max-[640px]:py-0">
-            <h3 class="mt-[18px] text-[clamp(19px,1.35vw,23px)] font-bold leading-[1.3] text-navy-950 max-[860px]:mt-0">
-              <a class="no-underline" :href="links.generic(campaign.href)">{{ campaign.name }}</a>
-            </h3>
-            <p v-if="campaign.description" class="mt-2 leading-[1.65] text-slate-500">{{ campaign.description }}</p>
-            <a class="mt-3 inline-flex font-bold text-navy-950 no-underline" :href="links.generic(campaign.href)">Xem chi tiết →</a>
+          <div class="flex flex-1 flex-col justify-between pt-3 max-[860px]:py-1 max-[640px]:pt-3">
+            <div>
+              <h3 class="m-0 text-[clamp(17px,1.2vw,20px)] font-bold leading-[1.3] text-navy-950">
+                <a class="no-underline transition-colors hover:text-gold-700" :href="links.generic(campaign.href)">{{ campaign.name }}</a>
+              </h3>
+              <p v-if="campaign.description" class="mt-2 text-sm leading-[1.6] text-slate-500 line-clamp-2">{{ campaign.description }}</p>
+            </div>
+            <a class="mt-3.5 inline-flex items-center gap-1.5 text-[13.5px] font-bold text-gold-700 no-underline transition-colors hover:text-navy-950" :href="links.generic(campaign.href)">
+              Xem chi tiết <span aria-hidden="true">→</span>
+            </a>
           </div>
         </article>
       </div>

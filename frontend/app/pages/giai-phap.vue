@@ -152,7 +152,7 @@ const { activeHeadingId, scrollToHeading } = useTocScrollspy({
       <SiteBreadcrumb :items="[{ label: 'Giải pháp' }]" />
     </div>
 
-    <main class="pts-container solution-main pb-6">
+    <main class="pts-container solution-main pb-6 min-[561px]:px-5 min-[821px]:px-6 min-[1321px]:px-[34px]">
       <div v-if="error || !data" class="min-h-[45vh] py-12">
         <h1 class="mb-4 text-[clamp(28px,4vw,42px)] font-black tracking-tight">Giải pháp</h1>
         <p class="max-w-[62ch] leading-relaxed text-slate-500">Không thể tải dữ liệu PHP DTO trong môi trường hiện tại.</p>

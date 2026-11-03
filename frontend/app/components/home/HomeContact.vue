@@ -67,63 +67,75 @@ async function send() {
 <template>
   <section
     id="yeu-cau-tu-van"
-    class="bg-hdr-surface py-[clamp(64px,6vw,92px)] pb-[clamp(88px,7vw,108px)]"
+    class="bg-hdr-surface py-[clamp(56px,5vw,84px)] pb-[clamp(80px,7vw,104px)]"
     aria-labelledby="home-contact-title"
   >
-    <div class="mx-auto w-[min(calc(100%-clamp(40px,5vw,96px)),1560px)] max-[860px]:w-[min(calc(100%-48px),1440px)] max-[640px]:w-[calc(100%-40px)] max-[360px]:w-[calc(100%-32px)] min-[1600px]:w-[min(calc(100%-clamp(96px,8vw,220px)),2200px)]">
-      <header class="mb-10 max-w-[760px]">
-        <h2 id="home-contact-title" class="m-0 text-[clamp(31px,2.2vw,42px)] font-bold leading-[1.2] tracking-[-.025em] text-navy-950">
+    <div class="pts-container">
+      <header class="mb-8 max-w-[760px]">
+        <div class="mb-2 inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-gold-600">
+          <span class="inline-block size-1.5 rounded-full bg-gold-500" /> Kết nối chuyên gia
+        </div>
+        <h2 id="home-contact-title" class="m-0 text-[clamp(28px,2.4vw,40px)] font-black leading-[1.2] tracking-[-.025em] text-navy-950">
           Bạn đang cần giải pháp nào?
         </h2>
-        <p class="mt-[13px] text-[clamp(16px,1.1vw,19px)] leading-[1.65] text-slate-500">
+        <p class="mt-2.5 text-[clamp(15px,1.05vw,18px)] leading-[1.65] text-slate-500">
           Để lại thông tin và nhu cầu, Phúc Thịnh Solar sẽ liên hệ trao đổi với bạn.
         </p>
       </header>
 
-      <div class="grid grid-cols-[minmax(310px,.72fr)_minmax(0,1.28fr)] overflow-hidden rounded-[4px] bg-white max-[860px]:grid-cols-1">
-        <div class="bg-navy-950 p-[clamp(30px,3.2vw,48px)] text-[#d4dee8]">
-          <h3 class="m-0 text-2xl font-bold text-white">Thông tin liên hệ</h3>
-          <p class="mt-3 leading-[1.65] text-[#d4dee8]">Đội ngũ Phúc Thịnh Solar phản hồi trong giờ làm việc.</p>
+      <div class="grid grid-cols-[minmax(300px,.75fr)_minmax(0,1.25fr)] overflow-hidden rounded-[6px] border border-slate-200/90 bg-white shadow-2xs max-[860px]:grid-cols-1">
+        <!-- Contact Information Panel -->
+        <div class="bg-navy-950 p-[clamp(28px,3vw,44px)] text-[#d4dee8]">
+          <h3 class="m-0 text-xl font-bold text-white">Thông tin liên hệ</h3>
+          <p class="mt-2 text-sm leading-[1.6] text-slate-300">Đội ngũ Phúc Thịnh Solar phản hồi trong giờ làm việc.</p>
 
-          <div v-if="contact.hotline" class="my-[18px] flex flex-col gap-0.5 text-white">
-            <small class="text-xs text-[#9fb0c1]">Hotline</small>
-            <a v-if="phoneHref" class="font-bold text-white no-underline" :href="phoneHref">{{ contact.hotline }}</a>
-            <strong v-else>{{ contact.hotline }}</strong>
+          <div class="mt-6 space-y-4">
+            <div v-if="contact.hotline" class="flex flex-col gap-0.5 text-white">
+              <small class="text-xs uppercase tracking-wider text-gold-400 font-semibold">Hotline hỗ trợ</small>
+              <a v-if="phoneHref" class="text-lg font-bold text-white no-underline hover:text-gold-300 transition-colors" :href="phoneHref">{{ contact.hotline }}</a>
+              <strong v-else class="text-lg">{{ contact.hotline }}</strong>
+            </div>
+
+            <div v-if="contact.email" class="flex flex-col gap-0.5 text-white">
+              <small class="text-xs uppercase tracking-wider text-gold-400 font-semibold">Hòm thư điện tử</small>
+              <a v-if="emailHref" class="text-base font-semibold text-white no-underline hover:text-gold-300 transition-colors" :href="emailHref">{{ contact.email }}</a>
+              <strong v-else class="text-base">{{ contact.email }}</strong>
+            </div>
+
+            <div v-if="contact.address" class="flex flex-col gap-0.5 text-white">
+              <small class="text-xs uppercase tracking-wider text-gold-400 font-semibold">Địa chỉ trụ sở</small>
+              <span class="text-sm leading-[1.5] text-slate-200">{{ contact.address }}</span>
+            </div>
+
+            <div v-if="contact.workingHours" class="flex flex-col gap-0.5 text-white">
+              <small class="text-xs uppercase tracking-wider text-gold-400 font-semibold">Giờ làm việc</small>
+              <span class="text-sm text-slate-200">{{ contact.workingHours }}</span>
+            </div>
           </div>
-          <div v-if="contact.email" class="my-[18px] flex flex-col gap-0.5 text-white">
-            <small class="text-xs text-[#9fb0c1]">Email</small>
-            <a v-if="emailHref" class="font-bold text-white no-underline" :href="emailHref">{{ contact.email }}</a>
-            <strong v-else>{{ contact.email }}</strong>
-          </div>
-          <p v-if="contact.address" class="my-[18px] flex flex-col gap-0.5 text-white">
-            <small class="text-xs text-[#9fb0c1]">Địa chỉ</small><strong>{{ contact.address }}</strong>
-          </p>
-          <p v-if="contact.workingHours" class="my-[18px] flex flex-col gap-0.5 text-white">
-            <small class="text-xs text-[#9fb0c1]">Giờ làm việc</small><strong>{{ contact.workingHours }}</strong>
-          </p>
         </div>
 
-        <form class="p-[clamp(30px,3.2vw,48px)]" @submit.prevent="send">
+        <!-- Consultation Request Form -->
+        <form class="p-[clamp(28px,3vw,44px)]" @submit.prevent="send">
           <div class="grid gap-x-4 tb:grid-cols-2">
-            <UFormField label="Họ và tên" name="fullname" required class="mb-[17px] grid min-w-0 content-start gap-2" :ui="{ label: 'text-[14.5px] font-semibold text-navy-950' }">
+            <UFormField label="Họ và tên" name="fullname" required class="mb-4 grid min-w-0 content-start gap-1.5" :ui="{ label: 'text-sm font-bold text-navy-950' }">
               <UInput v-model.trim="form.fullname" name="fullname" type="text" maxlength="100" autocomplete="name" required variant="none" class="w-full" :ui="inputUi" />
             </UFormField>
-            <UFormField label="Số điện thoại" name="phone" required class="mb-[17px] grid min-w-0 content-start gap-2" :ui="{ label: 'text-[14.5px] font-semibold text-navy-950' }">
+            <UFormField label="Số điện thoại" name="phone" required class="mb-4 grid min-w-0 content-start gap-1.5" :ui="{ label: 'text-sm font-bold text-navy-950' }">
               <UInput v-model.trim="form.phone" name="phone" type="tel" maxlength="20" autocomplete="tel" inputmode="tel" required variant="none" class="w-full" :ui="inputUi" />
             </UFormField>
-            <UFormField label="Tỉnh/Thành phố" name="address" class="mb-[17px] grid min-w-0 content-start gap-2" :ui="{ label: 'text-[14.5px] font-semibold text-navy-950' }">
+            <UFormField label="Tỉnh/Thành phố" name="address" class="mb-4 grid min-w-0 content-start gap-1.5" :ui="{ label: 'text-sm font-bold text-navy-950' }">
               <UInput v-model.trim="form.address" name="address" type="text" maxlength="255" autocomplete="address-level1" placeholder="Ví dụ: Gia Lai" variant="none" class="w-full" :ui="inputUi" />
             </UFormField>
-            <UFormField label="Anh/chị quan tâm đến" name="subject" class="mb-[17px] grid min-w-0 content-start gap-2" :ui="{ label: 'text-[14.5px] font-semibold text-navy-950' }">
+            <UFormField label="Anh/chị quan tâm đến" name="subject" class="mb-4 grid min-w-0 content-start gap-1.5" :ui="{ label: 'text-sm font-bold text-navy-950' }">
               <USelect v-model="form.subject" name="subject" :items="subjectOptions" placeholder="-- Chọn nhu cầu --" color="neutral" variant="none" class="w-full" :ui="inputUi" />
             </UFormField>
           </div>
-          <UFormField label="Nội dung cần trao đổi" name="content" required class="mb-[17px] grid min-w-0 content-start gap-2" :ui="{ label: 'text-[14.5px] font-semibold text-navy-950' }">
-            <UTextarea v-model.trim="form.content" name="content" :rows="4" maxlength="5000" required placeholder="Mô tả ngắn nhu cầu của bạn" variant="none" class="w-full" :ui="textareaUi" />
+          <UFormField label="Nội dung cần trao đổi" name="content" required class="mb-4 grid min-w-0 content-start gap-1.5" :ui="{ label: 'text-sm font-bold text-navy-950' }">
+            <UTextarea v-model.trim="form.content" name="content" :rows="4" maxlength="5000" required placeholder="Mô tả ngắn nhu cầu của bạn..." variant="none" class="w-full" :ui="textareaUi" />
           </UFormField>
           <p v-if="success" class="mb-3 rounded-[3px] bg-emerald-50 p-3 text-sm font-semibold text-emerald-800" role="status">{{ success }}</p>
           <p v-if="error" class="mb-3 rounded-[3px] bg-red-50 p-3 text-sm font-semibold text-red-800" role="alert">{{ error }}</p>
-          <UButton :loading="submitting" :disabled="submitting" class="min-h-[50px] items-center justify-center rounded-[4px] bg-hdr-gold px-[25px] font-bold text-navy-950 shadow-xs transition-all hover:bg-hdr-gold-hover hover:shadow-md active:scale-[0.98] disabled:cursor-wait disabled:opacity-60" type="submit">
+          <UButton :loading="submitting" :disabled="submitting" class="min-h-[48px] items-center justify-center rounded-[4px] border border-gold-500 bg-gold-400 px-[26px] text-sm font-bold text-navy-950 shadow-2xs transition-all hover:bg-gold-500 hover:shadow-sm active:scale-[0.98] disabled:cursor-wait disabled:opacity-60 cursor-pointer" type="submit">
             {{ submitting ? 'Đang gửi…' : 'Gửi yêu cầu tư vấn' }}
           </UButton>
         </form>

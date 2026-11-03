@@ -167,7 +167,7 @@ onBeforeUnmount(() => {
     <!-- Khung hiển thị ảnh sản phẩm chính với tính năng Zoom rê chuột & phím chuyển ảnh -->
     <div
       v-if="selectedMediaAvailable"
-      class="group relative grid aspect-square w-full place-items-center overflow-hidden rounded-[4px] bg-slate-50"
+      class="group relative grid aspect-square w-full place-items-center overflow-hidden rounded-[4px] bg-white"
       @mousemove="handleMouseMove"
       @mouseleave="handleMouseLeave"
     >
