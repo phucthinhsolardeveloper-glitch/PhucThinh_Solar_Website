@@ -56,7 +56,7 @@ watch([payload, token], trackOrderConversion)
     <div class="pts-container">
       <SiteBreadcrumb :items="[{ label: 'Đặt hàng thành công' }]" />
     </div>
-    <main class="mx-auto w-full px-[15px] py-[60px] text-center">
+    <main class="pts-container py-[60px] text-center">
       <div v-if="pending" class="text-slate-500" role="status">Đang xác nhận đơn hàng…</div>
       <div v-else-if="error && errorStatus !== 404" class="mx-auto max-w-[760px]">
         <h1 class="mb-3 text-2xl font-black text-navy-800">Tạm thời không thể xác nhận đơn hàng</h1>

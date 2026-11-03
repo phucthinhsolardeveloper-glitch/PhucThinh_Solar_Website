@@ -27,7 +27,7 @@ useSeoMeta({ robots: 'noindex, nofollow, noarchive' })
 </script>
 
 <template>
-  <main class="mx-auto min-h-[45vh] max-w-4xl px-4 py-16 text-navy-800" :role="validSlug && error ? 'alert' : 'status'">
+  <main class="pts-container min-h-[45vh] py-16 text-navy-800" :role="validSlug && error ? 'alert' : 'status'">
     <h1 class="mb-3 text-3xl font-black">{{ validSlug && error && statusCode !== 404 ? 'Tạm thời không thể tải trang' : 'Không tìm thấy danh mục giải pháp' }}</h1>
     <p class="text-slate-600">{{ validSlug && error && statusCode !== 404 ? 'Nguồn nội dung hiện không khả dụng.' : 'Danh mục này hiện không tồn tại hoặc đã được chuyển tới địa chỉ khác.' }}</p>
   </main>

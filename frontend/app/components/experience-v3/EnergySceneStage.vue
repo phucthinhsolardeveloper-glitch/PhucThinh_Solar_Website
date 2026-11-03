@@ -34,7 +34,7 @@ function isActive(id: string) {
   <div class="scene-stage" :class="[`is-${mode}`, { 'is-no-battery': !withBattery }]">
     <svg viewBox="0 0 1000 560" role="img" aria-labelledby="scene-title scene-desc" preserveAspectRatio="xMidYMid meet">
       <title id="scene-title">Phối cảnh hệ thống điện mặt trời — {{ mode === 'day' ? 'ban ngày' : mode === 'night' ? 'ban đêm' : 'mất điện, tải ưu tiên' }}</title>
-      <desc id="scene-desc">Minh họa nguyên lý, không phải dữ liệu vận hành thực tế hoặc sơ đồ đấu nối đã thẩm định.</desc>
+      <desc id="scene-desc">Sơ đồ nguyên lý hệ thống điện mặt trời: mái pin, inverter, pin lưu trữ, điện lưới và ngôi nhà.</desc>
       <defs>
         <linearGradient id="sky-day" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stop-color="#5b78a5" /><stop offset=".55" stop-color="#2f5490" /><stop offset="1" stop-color="#17345e" />
@@ -127,7 +127,9 @@ function isActive(id: string) {
       </g>
       <g class="active-wires" fill="none" stroke-linecap="round" filter="url(#wire-glow)">
         <path v-if="isActive('solar')" class="flow-path flow-solid" d="M260 234 C350 262 420 280 486 298" marker-end="url(#arrow-gold)" />
+        <path v-if="isActive('solar')" class="flow-current" d="M260 234 C350 262 420 280 486 298" />
         <path v-if="isActive('home')" class="flow-path flow-solid" d="M520 292 C620 270 720 258 788 253" marker-end="url(#arrow-gold)" />
+        <path v-if="isActive('home')" class="flow-current" d="M520 292 C620 270 720 258 788 253" />
         <path v-if="isActive('charge')" class="flow-path flow-dotted" d="M500 330 C504 365 504 395 500 420" marker-end="url(#arrow-gold)" />
         <path v-if="isActive('discharge')" class="flow-path flow-dotted" d="M500 420 C504 395 504 365 500 330" marker-end="url(#arrow-gold)" />
         <path v-if="isActive('grid')" class="flow-path flow-dashed" d="M120 362 C220 398 332 378 480 308" marker-end="url(#arrow-gold)" />
@@ -234,12 +236,15 @@ function isActive(id: string) {
 .is-dimmed .battery-light { opacity: .25; }
 .is-dimmed .batt-face, .is-dimmed .batt-top, .is-dimmed .batt-side { opacity: .4; }
 
-.flow-path { stroke: #ffe0a0; stroke-width: 4; opacity: .95; animation: flow-dash 1s linear infinite; }
+.flow-path { stroke: #ffe0a0; stroke-width: 4; opacity: .95; }
 .flow-solid { stroke-dasharray: none; }
-.flow-dashed { stroke-dasharray: 10 7; }
-.flow-dotted { stroke-dasharray: 2 7; }
+.flow-dashed { stroke-dasharray: 10 7; animation: flow-dash 0.9s linear infinite; }
+.flow-dotted { stroke-dasharray: 2 7; animation: flow-dash 0.7s linear infinite; }
 
-@keyframes flow-dash { to { stroke-dashoffset: -34; } }
+/* Current pulses: a second layer riding the same path, visible even on a solid "pipe" line */
+.flow-current { stroke: #fff3d6; stroke-width: 2.4; stroke-dasharray: 3 15; opacity: .9; animation: flow-dash 0.8s linear infinite; mix-blend-mode: screen; }
+
+@keyframes flow-dash { to { stroke-dashoffset: -36; } }
 
 .scene-node-button {
   position: absolute;

@@ -63,11 +63,6 @@ const currentDevice = computed(() => props.devices.find(d => d.id === props.sele
       </div>
     </div>
 
-    <p class="inspector-disclaimer">
-      <UIcon name="i-lucide-info" aria-hidden="true" />
-      Minh họa nguyên lý giáo dục — không phải dữ liệu vận hành thực tế, không đại diện công suất,
-      mức sạc hay khả năng tương thích thiết bị cụ thể.
-    </p>
   </aside>
 </template>
 
