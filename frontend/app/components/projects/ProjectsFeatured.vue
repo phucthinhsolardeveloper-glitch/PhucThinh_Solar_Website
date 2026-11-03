@@ -29,7 +29,7 @@ const links = useMigrationLinks()
       </div>
 
       <div class="project-stage__content z-10 flex flex-col gap-4 p-6 nav:p-12">
-        <span class="inline-flex w-fit items-center gap-2 text-xs font-extrabold uppercase tracking-[0.16em] text-gold-300">
+        <span class="inline-flex w-fit items-center gap-2 text-sm font-bold text-gold-300">
           <span class="h-px w-8 bg-gold-400" aria-hidden="true" />{{ label }}
         </span>
         <h2 class="m-0 max-w-[18ch] text-[clamp(30px,4.2vw,58px)] font-black leading-[1.05] tracking-tight text-white">{{ project.title }}</h2>
