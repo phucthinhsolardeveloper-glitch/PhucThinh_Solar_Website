@@ -87,9 +87,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <section aria-labelledby="project-gallery-title">
-    <h2 id="project-gallery-title" class="mb-5 text-[clamp(24px,3vw,36px)] font-black tracking-tight text-navy-950">Hình ảnh và media</h2>
-
+  <section aria-label="Thư viện tư liệu dự án">
     <div v-if="hasVideo" class="mb-6 flex gap-6 border-b border-gray-200" role="tablist" aria-label="Loại media dự án">
       <button
         ref="imageTabButton"
@@ -128,17 +126,17 @@ onBeforeUnmount(() => {
     </div>
 
     <div id="project-gallery-panel" role="tabpanel" :aria-labelledby="activeTab === 'image' ? 'project-gallery-images-tab' : 'project-gallery-videos-tab'">
-      <div v-if="visibleItems.length" class="grid grid-cols-2 gap-5 tb:grid-cols-3">
-        <figure v-for="(item, index) in visibleItems" :key="`${item.type}-${item.src}-${index}`" class="m-0">
+      <div v-if="visibleItems.length" class="project-gallery__grid grid grid-cols-1 gap-4 tb:gap-5" :class="visibleItems.length > 2 ? 'tb:grid-cols-3' : 'tb:grid-cols-2'">
+        <figure v-for="(item, index) in visibleItems" :key="`${item.type}-${item.src}-${index}`" class="project-gallery__item m-0" :class="{ 'project-gallery__lead': visibleItems.length > 2 && index === 0, 'project-gallery__single': visibleItems.length === 1 }">
           <button
             type="button"
-            class="group block w-full border-0 bg-transparent p-0 text-left cursor-pointer"
+            class="group block w-full border-0 bg-transparent p-0 text-left cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold-600"
             :aria-label="item.type === 'video' ? 'Phát video ' + (item.caption || 'dự án') : 'Mở ảnh ' + (index + 1) + ' trong thư viện dự án'"
             @click="open(item, $event.currentTarget as HTMLElement)"
           >
-            <span class="relative block overflow-hidden rounded-chip bg-slate-100">
+            <span class="relative block overflow-hidden bg-slate-100">
               <img v-if="item.src" :src="item.src" :alt="item.caption || (item.type === 'video' ? 'Video dự án' : 'Hình ảnh dự án')" class="block aspect-[4/3] w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105 motion-reduce:transform-none motion-reduce:transition-none" loading="lazy" decoding="async">
-              <span v-if="item.type === 'video'" class="absolute left-1/2 top-1/2 grid h-12 w-12 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-navy-950/85 text-xl text-white shadow-lg transition-transform group-hover:scale-110" aria-hidden="true">▶</span>
+              <span v-if="item.type === 'video'" class="absolute left-1/2 top-1/2 grid h-12 w-12 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-navy-950/85 text-xl text-white shadow-lg transition-transform group-hover:scale-110 motion-reduce:group-hover:scale-100 motion-reduce:transition-none" aria-hidden="true">▶</span>
             </span>
             <span v-if="item.caption" class="mt-2 block text-sm leading-relaxed text-slate-600 transition-colors group-hover:text-gold-700">{{ item.caption }}</span>
           </button>
@@ -218,3 +216,21 @@ onBeforeUnmount(() => {
     </div>
   </Teleport>
 </template>
+
+<style scoped>
+.project-gallery__grid {
+  grid-auto-flow: dense;
+}
+
+.project-gallery__single {
+  grid-column: 1 / -1;
+  max-width: 860px;
+}
+
+@media (min-width: 761px) {
+  .project-gallery__lead {
+    grid-column: span 2;
+    grid-row: span 2;
+  }
+}
+</style>

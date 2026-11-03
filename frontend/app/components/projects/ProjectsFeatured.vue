@@ -1,56 +1,112 @@
 <script setup lang="ts">
 import type { PublicProject, PublicProjectBenefit } from '#shared/contracts/public-projects'
 
-defineProps<{ project: PublicProject; benefits: PublicProjectBenefit[]; label: string; viewLabel: string }>()
+defineProps<{
+  project: PublicProject
+  benefits: PublicProjectBenefit[]
+  label: string
+  viewLabel: string
+}>()
 const links = useMigrationLinks()
 </script>
 
 <template>
-  <!--
-    Panel phải nền navy-800 đặc (không phải navy-deep/950 như CSS preview cũ
-    khai — đo pixel bên trong panel cho giá trị gần đúng #0a2251). Số "01" góc
-    trên phải là trang trí tĩnh: DTO chỉ có một `featured` duy nhất (không phải
-    mảng), không phải số thứ tự động từ dữ liệu.
-  -->
-  <article class="mb-12 mt-2.5 grid grid-cols-1 nav:grid-cols-[minmax(0,1.1fr)_minmax(280px,0.9fr)]">
-    <div class="relative aspect-[4/3] overflow-hidden bg-[#edf1f5]" :class="{ 'grid place-items-center text-slate-500': !project.image }">
-      <img v-if="project.image" :src="project.image" :alt="project.title" class="h-full w-full object-cover transition-transform duration-700 ease-out hover:scale-[1.02] motion-reduce:transform-none" loading="eager" decoding="async">
-      <span v-else aria-hidden="true">—</span>
+  <article class="project-stage relative mb-12 overflow-hidden bg-navy-950 text-white">
+    <a class="project-stage__link group block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold-500" :href="links.project(project.slug)" :aria-label="`${viewLabel}: ${project.title}`">
+      <div class="project-stage__visual relative overflow-hidden bg-slate-200">
+        <img
+          v-if="project.image"
+          :src="project.image"
+          :alt="project.title"
+          class="project-stage__image block aspect-[4/3] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.025] motion-reduce:transform-none motion-reduce:transition-none"
+          loading="eager"
+          decoding="async"
+        >
+        <div v-else class="project-stage__image grid aspect-[4/3] place-items-center bg-slate-200 px-6 text-center text-navy-800">
+          Chưa có hình ảnh đại diện cho dự án
+        </div>
+        <div class="project-stage__veil absolute inset-0" aria-hidden="true" />
+      </div>
 
-      <span v-if="project.category" class="absolute left-3 top-3 flex items-center gap-1.5 rounded-chip bg-navy-800 px-2.5 py-1.5 text-[11px] font-bold text-white">
-        <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3 3 10h2v9h5v-5h4v5h5v-9h2Z" /></svg>
-        {{ project.category.name }}
-      </span>
-      <span class="absolute bottom-3 left-3 rounded-chip bg-gold-500 px-3 py-1.5 text-[11px] font-bold text-navy-950">
-        {{ label }}
-      </span>
-    </div>
-
-    <div class="relative bg-navy-800 p-6 text-white nav:p-[clamp(24px,5vw,72px)]">
-      <h2 class="mb-3 text-2xl font-black leading-tight">{{ project.title }}</h2>
-      <p v-if="project.address" class="mb-1 flex items-center gap-1.5 text-sm text-blue-100">
-        <svg class="h-3.5 w-3.5 flex-none" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5Z" /></svg>
-        {{ project.address }}
-      </p>
-      <p v-if="project.description" class="mb-4 mt-3 max-w-[60ch] leading-relaxed text-blue-100">
-        {{ project.description }}
-      </p>
-
-      <ul class="my-4 list-none space-y-2 p-0">
-        <li v-for="benefit in benefits" :key="benefit.label" class="flex items-start gap-2 text-sm text-blue-100">
-          <img v-if="benefit.image" :src="benefit.image" alt="" class="mt-0.5 h-[22px] w-[22px] flex-none object-contain" loading="lazy">
-          <svg v-else class="mt-0.5 h-3.5 w-3.5 flex-none text-gold-400" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.1 2 5.8 13h4.8l-.7 9L18.2 11h-4.8l-.3-9Z" /></svg>
-          {{ benefit.label }}
-        </li>
-      </ul>
-
-      <a
-        class="inline-flex items-center gap-2 rounded-chip bg-hdr-gold px-5 py-3 font-bold text-navy-950 no-underline
-               transition-colors hover:bg-hdr-gold-hover"
-        :href="links.project(project.slug)"
-      >
-        {{ viewLabel }} <span aria-hidden="true">→</span>
-      </a>
-    </div>
+      <div class="project-stage__content z-10 flex flex-col gap-4 p-6 nav:p-12">
+        <span class="inline-flex w-fit items-center gap-2 text-xs font-extrabold uppercase tracking-[0.16em] text-gold-300">
+          <span class="h-px w-8 bg-gold-400" aria-hidden="true" />{{ label }}
+        </span>
+        <h2 class="m-0 max-w-[18ch] text-[clamp(30px,4.2vw,58px)] font-black leading-[1.05] tracking-tight text-white">{{ project.title }}</h2>
+        <p v-if="project.address" class="m-0 flex items-center gap-2 text-sm font-semibold text-white/85">
+          <UIcon name="i-lucide-map-pin" class="size-4 flex-none text-gold-300" aria-hidden="true" />
+          {{ project.address }}
+        </p>
+        <p v-if="project.description" class="m-0 max-w-[56ch] text-base leading-relaxed text-white/85">{{ project.description }}</p>
+        <ul v-if="benefits.length" class="m-0 flex list-none flex-wrap gap-x-5 gap-y-2 p-0 text-sm text-white/85">
+          <li v-for="benefit in benefits" :key="benefit.label" class="flex items-center gap-2">
+            <img v-if="benefit.image" :src="benefit.image" alt="" class="size-4 object-contain" loading="lazy">
+            <UIcon v-else name="i-lucide-zap" class="size-3.5 flex-none text-gold-300" aria-hidden="true" />
+            {{ benefit.label }}
+          </li>
+        </ul>
+        <span class="mt-1 inline-flex w-fit items-center gap-3 border-b border-gold-400 pb-2 text-sm font-extrabold text-white transition-colors group-hover:text-gold-300">
+          {{ viewLabel }} <span aria-hidden="true" class="transition-transform group-hover:translate-x-1 motion-reduce:transform-none motion-reduce:transition-none">→</span>
+        </span>
+      </div>
+    </a>
   </article>
 </template>
+
+<style scoped>
+.project-stage {
+  aspect-ratio: 4 / 3;
+}
+
+.project-stage__visual {
+  position: absolute;
+  inset: 0;
+}
+
+.project-stage__image {
+  height: 100%;
+}
+
+.project-stage__veil {
+  background: linear-gradient(90deg, rgb(6 21 55 / 88%) 0%, rgb(6 21 55 / 54%) 48%, rgb(6 21 55 / 8%) 100%), linear-gradient(0deg, rgb(6 21 55 / 72%) 0%, transparent 62%);
+  pointer-events: none;
+}
+
+.project-stage__content {
+  position: absolute;
+  inset: auto 0 0;
+  max-width: 820px;
+}
+
+@media (max-width: 760px) {
+  .project-stage {
+    aspect-ratio: auto;
+  }
+
+  .project-stage__visual {
+    position: relative;
+    inset: auto;
+  }
+
+  .project-stage__image {
+    height: auto;
+  }
+
+  .project-stage__veil {
+    background: linear-gradient(0deg, rgb(6 21 55 / 92%) 0%, rgb(6 21 55 / 50%) 60%, rgb(6 21 55 / 4%) 100%);
+  }
+
+  .project-stage__content {
+    position: relative;
+    inset: auto;
+    max-width: none;
+    background: #061537;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .project-stage__image {
+    transition: none;
+  }
+}
+</style>
