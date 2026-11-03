@@ -33,9 +33,6 @@ const links = useMigrationLinks()
 const emptyRichText = { format: 'sanitized-html' as const, html: '', sanitizedBy: 'pts_public_richtext' as const, sanitizerVersion: 1 as const }
 const editorial = computed(() => buildEditorialToc(data.value?.content ?? emptyRichText))
 const tocContainerRef = ref<HTMLElement | null>(null)
-const relatedTrackRef = ref<HTMLElement | null>(null)
-const canScrollRelatedBack = ref(false)
-const canScrollRelatedForward = ref(true)
 const { activeHeadingId, scrollToHeading } = useTocScrollspy({
   contentSelector: '#policy-article-content',
   headingSelector: 'h2[id], h3[id]',
@@ -43,30 +40,29 @@ const { activeHeadingId, scrollToHeading } = useTocScrollspy({
   headerOffset: 100,
 })
 
-function syncRelatedControls(): void {
-  const track = relatedTrackRef.value
-  if (!track) return
-  canScrollRelatedBack.value = track.scrollLeft > 2
-  canScrollRelatedForward.value = track.scrollLeft + track.clientWidth < track.scrollWidth - 2
-}
-
-function scrollRelated(direction: -1 | 1): void {
-  const track = relatedTrackRef.value
-  if (!track) return
-  track.scrollBy({ left: direction * track.clientWidth, behavior: 'smooth' })
-}
-
-onMounted(syncRelatedControls)
-
 function formatMetadataDate(value: string): string {
   const date = new Date(`${value}T00:00:00Z`)
-  return Number.isNaN(date.valueOf()) ? value : new Intl.DateTimeFormat('en-US', { month: 'short', day: '2-digit', year: 'numeric', timeZone: 'UTC' }).format(date)
+  return Number.isNaN(date.valueOf()) ? value : new Intl.DateTimeFormat('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'UTC' }).format(date)
 }
 
-function formatRelatedDate(value: string): string {
-  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value)
-  return match ? `${match[3]}/${match[2]}/${match[1]}` : value
-}
+const policyIcons: Array<[RegExp, string]> = [
+  [/bảo mật|dữ liệu/i, 'i-lucide-shield-check'],
+  [/giao hàng|kiểm hàng/i, 'i-lucide-truck'],
+  [/đổi trả|hoàn tiền/i, 'i-lucide-rotate-ccw'],
+  [/đặt hàng|thanh toán/i, 'i-lucide-credit-card'],
+  [/bảo hành|bảo trì|kỹ thuật/i, 'i-lucide-wrench'],
+  [/khiếu nại/i, 'i-lucide-message-square-warning'],
+  [/điều kiện|giao dịch chung/i, 'i-lucide-file-text'],
+]
+function policyIcon(label: string) { return policyIcons.find(([re]) => re.test(label))?.[1] ?? 'i-lucide-file-text' }
+const policyRailRef = ref<HTMLElement | null>(null)
+onMounted(() => {
+  const rail = policyRailRef.value
+  const current = rail?.querySelector<HTMLElement>('[aria-current="page"]')
+  if (rail && current) rail.scrollLeft = current.offsetLeft - rail.offsetLeft - 16
+})
+const policies = computed(() => site.value.footer?.policies ?? [])
+function isCurrentPolicy(href: string) { return href.replace(/\/+$/, '').endsWith(`/${slug.value}`) }
 
 const pageTitle = computed(() => isPublicRoute.value
   ? publicSeoTitle(data.value?.seo.title || data.value?.title, 'Chính sách hỗ trợ')
@@ -125,18 +121,34 @@ useHead({
       <SiteBreadcrumb :items="[{ label: 'Chính sách & Hỗ trợ' }, ...(data ? [{ label: data.title }] : [])]" />
     </div>
 
-    <main class="pts-container py-8 nav:py-16" :aria-busy="pending">
+    <section v-if="data" class="policy-hub" aria-labelledby="policy-title">
+      <div class="pts-container">
+        <h1 id="policy-title" class="policy-hub__title">{{ data.title }}</h1>
+        <p v-if="data.description" class="policy-hub__lede">{{ data.description }}</p>
+        <p class="policy-hub__meta">Cập nhật {{ formatMetadataDate(data.date) }} · {{ data.author.name }}</p>
+        <nav v-if="policies.length" ref="policyRailRef" class="policy-rail" aria-label="Chính sách và hỗ trợ">
+          <NuxtLink
+            v-for="pol in policies"
+            :key="pol.href"
+            :to="links.generic(pol.href)"
+            class="policy-rail__item"
+            :class="{ 'is-current': isCurrentPolicy(pol.href) }"
+            :aria-current="isCurrentPolicy(pol.href) ? 'page' : undefined"
+          >
+            <UIcon :name="policyIcon(pol.label)" class="size-6 flex-none" aria-hidden="true" />
+            <span>{{ pol.label }}</span>
+          </NuxtLink>
+        </nav>
+      </div>
+    </section>
+
+    <main class="pts-container py-8 nav:py-14" :aria-busy="pending">
       <div v-if="pending" class="py-16 text-slate-500" role="status">Đang tải nội dung chính sách…</div>
       <div v-else-if="error || !data" class="rounded-btn border border-amber-200 bg-amber-50 p-8 text-amber-900">
         <h1 class="mb-2 text-2xl font-black">Không thể tải chính sách</h1>
         <p class="mb-0">Slug không hợp lệ hoặc CMS local chưa khả dụng.</p>
       </div>
       <article v-else class="mx-auto w-full max-w-[1280px]">
-        <header class="mb-7 max-w-[1000px] nav:mb-9">
-          <h1 class="mb-3 text-[clamp(30px,5vw,48px)] font-black leading-tight tracking-tight">{{ data.title }}</h1>
-          <p v-if="data.description" class="mb-3 max-w-[760px] text-lg leading-relaxed text-slate-500">{{ data.description }}</p>
-          <p class="mb-0 text-sm text-slate-500">{{ formatMetadataDate(data.date) }} <span aria-hidden="true">·</span> {{ data.author.name }}</p>
-        </header>
         <section v-if="data.content.html" aria-label="Nội dung chính sách">
           <div class="grid grid-cols-1 gap-8 nav:grid-cols-[minmax(240px,1fr)_minmax(0,2fr)] nav:gap-12">
             <nav v-if="editorial.toc.length" ref="tocContainerRef" class="h-fit nav:sticky nav:top-24" aria-label="Mục lục nội dung chính sách">
@@ -148,7 +160,7 @@ useHead({
                 <li v-for="item in editorial.toc" :key="item.id" :class="item.level === 3 ? 'pl-3' : ''">
                   <a
                     :data-toc-id="item.id"
-                    class="flex min-h-11 min-w-11 items-center border-l-2 px-3 text-sm leading-5 transition-colors no-underline"
+                    class="flex min-h-11 min-w-11 items-center border-l-2 px-3 text-[15px] leading-5 transition-colors no-underline"
                     :class="activeHeadingId === item.id ? 'border-gold-500 font-semibold text-navy-800' : 'border-transparent text-slate-600 hover:text-navy-800'"
                     :aria-current="activeHeadingId === item.id ? 'true' : undefined"
                     :href="`#${item.id}`"
@@ -157,43 +169,24 @@ useHead({
                 </li>
               </ul>
 
-              <div v-if="site.footer?.policies?.length" class="mt-6 border-t border-slate-200/80 pt-5">
-                <strong class="mb-2.5 flex items-center gap-2 text-sm font-bold text-navy-800">
-                  <UIcon name="i-lucide-shield-check" class="size-4 text-gold-600" aria-hidden="true" />
-                  <span>Chính sách & Hỗ trợ</span>
-                </strong>
-                <ul class="m-0 list-none space-y-1 p-0">
-                  <li v-for="pol in site.footer.policies" :key="pol.href">
-                    <NuxtLink
-                      :to="links.generic(pol.href)"
-                      class="flex items-center justify-between gap-2 rounded-[3px] px-2.5 py-2 text-xs leading-snug no-underline transition-colors"
-                      :class="pol.href.includes(slug) ? 'bg-navy-950 font-bold text-gold-300' : 'text-slate-600 hover:bg-slate-100 hover:text-navy-900'"
-                    >
-                      <span>{{ pol.label }}</span>
-                      <UIcon name="i-lucide-chevron-right" class="size-3.5 shrink-0 opacity-60" aria-hidden="true" />
-                    </NuxtLink>
-                  </li>
-                </ul>
-              </div>
-
-              <div class="mt-6 hidden rounded-[4px] border-l-[3px] border-gold-500 bg-navy-950 p-4 text-white nav:block">
-                <p class="m-0 text-sm font-bold text-white">Hỗ trợ bảo hành & kỹ thuật</p>
-                <p class="m-0 mt-1 text-xs leading-relaxed text-white/75">
+              <div class="mt-6 hidden rounded-[4px] bg-navy-950 p-5 text-white nav:block">
+                <p class="m-0 text-base font-extrabold text-white">Cần hỗ trợ ngay?</p>
+                <p class="m-0 mt-1.5 text-sm leading-relaxed text-white/75">
                   Liên hệ trực tiếp bộ phận kỹ thuật hoặc gửi mã đơn hàng để được kiểm tra nhanh.
                 </p>
-                <div class="mt-3 grid gap-1.5 text-xs">
-                  <a href="tel:0945536899" class="flex items-center justify-between rounded-[3px] bg-white/10 px-2.5 py-1.5 text-white no-underline hover:bg-white/15">
+                <div class="mt-4 grid gap-2 text-sm">
+                  <a href="tel:0945536899" class="flex min-h-11 items-center justify-between rounded-[3px] bg-white/10 px-3 text-white no-underline hover:bg-white/15">
                     <span class="text-white/75">Kỹ thuật:</span>
                     <strong class="tabular-nums text-gold-300">0945 536 899</strong>
                   </a>
-                  <a href="tel:0944555957" class="flex items-center justify-between rounded-[3px] bg-white/10 px-2.5 py-1.5 text-white no-underline hover:bg-white/15">
+                  <a href="tel:0944555957" class="flex min-h-11 items-center justify-between rounded-[3px] bg-white/10 px-3 text-white no-underline hover:bg-white/15">
                     <span class="text-white/75">Bán hàng:</span>
                     <strong class="tabular-nums text-gold-300">0944 555 957</strong>
                   </a>
                 </div>
                 <button
                   type="button"
-                  class="mt-3 inline-flex min-h-9 w-full cursor-pointer items-center justify-center gap-1.5 rounded-[3px] bg-gold-500 px-3 py-1.5 text-xs font-extrabold text-navy-950 transition-colors hover:bg-gold-400"
+                  class="mt-4 inline-flex min-h-11 w-full cursor-pointer items-center justify-center gap-1.5 rounded-[3px] bg-gold-500 px-3 text-sm font-extrabold text-navy-950 transition-colors hover:bg-gold-400"
                   @click="openConsultation('Chính sách & Hỗ trợ: ' + data.title)"
                 >
                   <span>Gửi yêu cầu hỗ trợ</span>
@@ -224,55 +217,24 @@ useHead({
         <p v-else class="my-8 text-slate-600" role="status">Nội dung đang cập nhật</p>
       </article>
 
-      <section v-if="data && data.related.length" class="mx-auto mt-10 w-full nav:mt-14" aria-labelledby="policy-related-title">
-          <div class="mb-5 flex items-center justify-between gap-4">
-            <h2 id="policy-related-title" class="m-0 text-2xl font-black text-navy-800">Tin liên quan</h2>
-            <div class="flex shrink-0 gap-3" role="group" aria-label="Điều hướng tin liên quan">
-              <button type="button" class="policy-related-arrow" aria-label="Tin trước" :disabled="!canScrollRelatedBack" @click="scrollRelated(-1)">
-                <span aria-hidden="true">‹</span>
-              </button>
-              <button type="button" class="policy-related-arrow" aria-label="Tin tiếp theo" :disabled="!canScrollRelatedForward" @click="scrollRelated(1)">
-                <span aria-hidden="true">›</span>
-              </button>
-            </div>
-          </div>
-          <ul ref="relatedTrackRef" tabindex="0" class="policy-related-track m-0 flex snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth p-0" aria-label="Các chính sách liên quan" @scroll.passive="syncRelatedControls">
-            <li v-for="item in data.related" :key="item.id" class="policy-related-card min-w-0 snap-start">
-              <a class="group block h-full text-navy-800 no-underline" :href="links.generic(`/ho-tro/${item.slug}/`)">
-                <img v-if="item.image" :src="item.image" :alt="item.title" class="mb-3 block aspect-video w-full object-cover" loading="lazy" decoding="async">
-                <div v-else class="mb-3 aspect-video bg-navy-50" aria-hidden="true" />
-                <p v-if="item.date" class="mb-2 text-sm text-slate-500">{{ formatRelatedDate(item.date) }}</p>
-                <h3 class="mb-2 text-lg font-bold leading-snug group-hover:text-gold-700">{{ item.title }}</h3>
-                <p v-if="item.description" class="mb-0 line-clamp-3 leading-relaxed text-slate-600">{{ item.description }}</p>
-              </a>
-            </li>
-          </ul>
-      </section>
     </main>
     <SiteFooter :site="site" />
   </div>
 </template>
 
 <style>
-.policy-related-track { scrollbar-width: none; }
-.policy-related-track::-webkit-scrollbar { display: none; }
-.policy-related-card { flex: 0 0 100%; }
-.policy-related-arrow {
-  display: grid;
-  width: 44px;
-  height: 44px;
-  place-items: center;
-  border: 1px solid #e2e8f0;
-  border-radius: 9999px;
-  color: #1e3a5f;
-  background: #fff;
-  font-size: 26px;
-  line-height: 1;
-}
-.policy-related-arrow:disabled { color: #94a3b8; cursor: not-allowed; opacity: .5; }
-.policy-related-arrow:not(:disabled):hover { border-color: #c9962e; color: #9a6a00; }
-@media (min-width: 455px) { .policy-related-card { flex-basis: calc(50% - 12px); } }
-@media (min-width: 768px) { .policy-related-card { flex-basis: calc(33.333333% - 16px); } }
-@media (min-width: 1024px) { .policy-related-card { flex-basis: calc(25% - 18px); } }
-@media (prefers-reduced-motion: reduce) { .policy-related-track { scroll-behavior: auto; } }
+.policy-hub { padding: clamp(36px, 5vw, 64px) 0 clamp(28px, 3vw, 40px); background: radial-gradient(120% 140% at 85% 0%, #17407a 0%, var(--color-navy-950) 60%); color: #fff; }
+.policy-hub__title { margin: 0; max-width: 22ch; font-size: clamp(32px, 4.4vw, 60px); font-weight: 900; line-height: 1.05; letter-spacing: -0.035em; }
+.policy-hub__lede { margin: 16px 0 0; max-width: 64ch; color: #cbd5e1; font-size: clamp(16px, 1.2vw, 19px); line-height: 1.65; }
+.policy-hub__meta { margin: 14px 0 0; color: #94a3b8; font-size: 14.5px; }
+.policy-rail { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(150px, 1fr); gap: 8px; margin-top: clamp(24px, 3vw, 36px); overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+.policy-rail::-webkit-scrollbar { display: none; }
+.policy-rail__item { display: flex; min-height: 92px; flex-direction: column; justify-content: space-between; gap: 10px; padding: 14px; border: 1px solid rgb(255 255 255 / 14%); border-radius: 4px; background: rgb(255 255 255 / 4%); color: #dbe4ef; font-size: 14px; font-weight: 700; line-height: 1.3; text-decoration: none; transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.25s ease; }
+.policy-rail__item :deep(svg), .policy-rail__item svg { color: var(--color-gold-400); }
+.policy-rail__item:hover { border-color: rgb(224 182 84 / 60%); transform: translateY(-2px); }
+.policy-rail__item.is-current { border-color: var(--color-gold-400); background: var(--color-gold-400); color: var(--color-navy-950); }
+.policy-rail__item.is-current svg { color: var(--color-navy-950); }
+.policy-rail__item:focus-visible { outline: 2px solid var(--color-gold-300); outline-offset: 2px; }
+@media (max-width: 760px) { .policy-rail { grid-auto-columns: 46%; } }
+@media (prefers-reduced-motion: reduce) { .policy-rail__item { transition: none; } .policy-rail__item:hover { transform: none; } }
 </style>

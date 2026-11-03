@@ -36,12 +36,10 @@ test('uses only the current policy cover for social metadata and validates its m
   assert.doesNotMatch(page, /image:\s*computed\(\(\)\s*=>\s*data\.value\?\.related/)
 })
 
-test('policy metadata and related dates match the corresponding PHP formats', () => {
+test('policy metadata date renders in Vietnamese day/month/year', () => {
   const page = readFileSync(new URL('../app/pages/migration-policy-preview.vue', import.meta.url), 'utf8')
-  assert.match(page, /function formatMetadataDate[\s\S]*new Intl\.DateTimeFormat\('en-US', \{ month: 'short', day: '2-digit', year: 'numeric', timeZone: 'UTC' \}\)/)
-  assert.match(page, /function formatRelatedDate[\s\S]*\$\{match\[3\]\}\/\$\{match\[2\]\}\/\$\{match\[1\]\}/)
+  assert.match(page, /function formatMetadataDate[\s\S]*new Intl\.DateTimeFormat\('vi-VN'/)
   assert.match(page, /formatMetadataDate\(data\.date\)/)
-  assert.match(page, /formatRelatedDate\(item\.date\)/)
 })
 
 test('public policy JSON-LD uses only validated DTO fields and a canonical public URL', () => {
@@ -59,19 +57,12 @@ test('public policy JSON-LD uses only validated DTO fields and a canonical publi
   assert.doesNotMatch(page, /'@type': 'NewsArticle'[\s\S]{0,100}description: ['"]/)
 })
 
-test('policy related cards use a keyboard-accessible responsive carousel', () => {
+// Owner decision 2026-11-03: the related-news carousel is replaced by a policy rail in the hero
+// that links every policy (current one marked with aria-current).
+test('policy pages link all policies through an accessible rail', () => {
   const page = readFileSync(new URL('../app/pages/migration-policy-preview.vue', import.meta.url), 'utf8')
-  assert.match(page, /aria-label="Tin trước"[^>]*@click="scrollRelated\(-1\)"/)
-  assert.match(page, /aria-label="Tin tiếp theo"[^>]*@click="scrollRelated\(1\)"/)
-  assert.match(page, /ref="relatedTrackRef" tabindex="0" class="policy-related-track[^\"]*overflow-x-auto/)
-  assert.match(page, /function scrollRelated\(direction: -1 \| 1\)/)
-  assert.match(page, /\.policy-related-arrow \{[\s\S]*?width: 44px;[\s\S]*?height: 44px;/)
-  assert.match(page, /@media \(min-width: 455px\) \{ \.policy-related-card \{ flex-basis: calc\(50% - 12px\); \} \}/)
-  assert.match(page, /@media \(min-width: 768px\) \{ \.policy-related-card \{ flex-basis: calc\(33\.333333% - 16px\); \} \}/)
-  assert.match(page, /@media \(min-width: 1024px\) \{ \.policy-related-card \{ flex-basis: calc\(25% - 18px\); \} \}/)
-  assert.match(page, /ref="relatedTrackRef" tabindex="0"/)
+  assert.match(page, /<nav v-if="policies\.length"[^>]*class="policy-rail" aria-label="Chính sách và hỗ trợ">/)
+  assert.match(page, /:aria-current="isCurrentPolicy\(pol\.href\) \? 'page' : undefined"/)
+  assert.match(page, /:to="links\.generic\(pol\.href\)"/)
   assert.doesNotMatch(page, /item\.author/)
-
-  const phpSlider = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/assets/wp-content/themes/local/js/main080f.js', import.meta.url), 'utf8')
-  assert.match(phpSlider, /#CRsingle_list_related\.active_slider'\)\.slick\(\{[\s\S]*?slidesToShow: 4[\s\S]*?breakpoint: 1024,[\s\S]*?slidesToShow: 3[\s\S]*?breakpoint: 767,[\s\S]*?slidesToShow: 2[\s\S]*?breakpoint: 454,[\s\S]*?slidesToShow: 1/)
 })

@@ -90,14 +90,12 @@ test('solution detail gallery opens an accessible lightbox with keyboard navigat
   assert.match(gallery, /object-contain/)
 })
 
-test('policy article widths follow PHP reading measure and related media uses the approved 16:9 ratio', () => {
+test('policy article keeps the PHP reading measure', () => {
   const page = read('../app/pages/migration-policy-preview.vue')
-  assert.match(page, /<main class="pts-container py-8 nav:py-16"/)
+  assert.match(page, /<main class="pts-container py-8 nav:py-14"/)
   assert.match(page, /<div class="pts-container">[\s\S]*<SiteBreadcrumb/)
   assert.match(page, /<article v-else class="mx-auto w-full max-w-\[1280px\]">/)
   assert.match(page, /max-w-\[960px\]/)
-  assert.match(page, /aspect-video w-full object-cover/)
-  assert.doesNotMatch(page, /aspect-\[3\/2\]/)
 })
 
 test('editorial cover and related images use the documented news aspect ratio and crop behavior', () => {
