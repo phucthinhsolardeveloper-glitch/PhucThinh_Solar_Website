@@ -7,12 +7,16 @@ const links = useMigrationLinks()
 
 <template>
   <!--
-    Dữ liệu choicesLabel là nhãn CMS cho lối chọn giải pháp; render thành
-    heading thật để người dùng hiểu mục đích của dải card và hỗ trợ đọc màn hình.
+    PHP (templates/news/service_list_tpl.php) chỉ dùng $solutionUi['choices']
+    làm aria-label trên <section>, không render heading chữ nào phía trên
+    lưới card khi có dữ liệu — mỗi card tự có <h2> riêng là tiêu đề của nó.
+    Chỉ hiện text này như tiêu đề thật khi danh sách rỗng (PHP lúc đó không
+    có section này để so, nên giữ emptyLabel hiển thị cho preview không trống
+    trơn).
   -->
-  <section id="cac-giai-phap" class="pt-[42px] pb-[54px] max-[520px]:pt-[26px] max-[520px]:pb-[26px]" aria-labelledby="solutions-choices-title">
-    <h2 id="solutions-choices-title" class="m-0 mb-[22px] text-[clamp(24px,2.5vw,32px)] leading-[1.2] font-black tracking-tight text-navy-950">
-      {{ cards.length ? choicesLabel : emptyLabel }}
+  <section id="cac-giai-phap" class="pt-[42px] pb-[54px] max-[520px]:pt-[26px] max-[520px]:pb-[26px]" :aria-label="cards.length ? choicesLabel : undefined" :aria-labelledby="cards.length ? undefined : 'solutions-choices-title'">
+    <h2 v-if="!cards.length" id="solutions-choices-title" class="m-0 mb-[22px] text-[clamp(24px,2.5vw,32px)] leading-[1.2] font-black tracking-tight text-navy-950">
+      {{ emptyLabel }}
     </h2>
 
     <div v-if="cards.length" class="flex gap-4 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden max-[520px]:-mr-4 max-[520px]:pr-4 max-[359px]:-mr-3 max-[359px]:pr-3 min-[1101px]:grid min-[1101px]:gap-5 min-[1101px]:overflow-visible" :class="cards.length === 1 ? 'min-[1101px]:grid-cols-1' : 'min-[1101px]:grid-cols-5'">
