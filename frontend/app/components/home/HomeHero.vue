@@ -128,7 +128,7 @@ onBeforeUnmount(() => {
 <template>
   <section
     v-if="current"
-    class="relative isolate z-0 -mt-16 flex min-h-[clamp(580px,40vw,700px)] min-[821px]:-mt-[88px] min-[1321px]:-mt-[104px] min-[1681px]:-mt-[120px] min-[1800px]:-mt-[136px] min-[1800px]:min-h-[max(700px,calc(100vh-174px-clamp(12px,1.2vw,24px)))] min-[1800px]:max-[2299px]:min-h-[max(700px,calc(100vh-clamp(148px,8vw,164px)-clamp(12px,1.2vw,24px)))] max-[640px]:-mt-16 max-[640px]:min-h-[720px] overflow-hidden text-navy-950"
+    class="relative isolate z-0 -mt-16 flex min-h-screen min-h-[100svh] min-[821px]:-mt-[88px] min-[1321px]:-mt-[104px] min-[1681px]:-mt-[120px] min-[1800px]:-mt-[136px] max-[640px]:-mt-16 overflow-hidden text-navy-950"
     :class="heroImageUnavailable ? 'bg-slate-50' : 'bg-navy-950'"
     aria-labelledby="home-title"
     role="region"
@@ -146,7 +146,7 @@ onBeforeUnmount(() => {
         v-for="(slide, index) in hero"
         :key="`${slide.key}-${index}`"
         :data-home-hero-slide="index"
-        class="absolute inset-0 transition-opacity duration-700 ease-in-out motion-reduce:transition-none"
+        class="absolute inset-0 transition-opacity duration-[900ms] ease-[cubic-bezier(0.4,0,0.2,1)] motion-reduce:transition-none"
         :class="index === active ? 'opacity-100 z-[1] pointer-events-auto' : 'opacity-0 z-0 pointer-events-none'"
         :aria-hidden="index !== active"
         :inert="index !== active"
@@ -154,8 +154,9 @@ onBeforeUnmount(() => {
         <a class="absolute inset-0 block focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-white" :href="links.generic(slide.href)" :tabindex="index === active ? 0 : -1">
           <img
             v-if="slide.image && !failedImages.has(slide.image.trim())"
-            class="absolute inset-0 h-full w-full object-cover max-[640px]:object-[62%_center] transition-transform duration-1000 ease-out"
-            :class="index === active ? 'scale-100' : 'scale-105'"
+            class="hero-slide-image absolute inset-0 h-full w-full object-cover max-[640px]:object-[62%_center] motion-reduce:!animate-none"
+            :class="index === active ? 'is-active' : ''"
+            :style="{ '--hero-pan-x': index % 2 === 0 ? '-1.4%' : '1.4%' }"
             :src="heroImageCandidate(slide.image, 1600)"
             :srcset="heroImageSrcSet(slide.image)"
             sizes="100vw"
@@ -178,21 +179,18 @@ onBeforeUnmount(() => {
       <a v-if="current" :href="links.generic(current.href)" class="hidden" aria-hidden="true" />
     </div>
 
-    <!-- Editorial Stage Content: asymmetric, left-anchored, no decorative badge -->
-    <div class="relative z-[4] pts-container mx-auto flex min-h-[inherit] flex-col justify-end px-0 pb-[clamp(48px,7vh,84px)] pt-[clamp(48px,7vh,84px)] max-[640px]:min-h-[720px] max-[640px]:justify-end max-[640px]:pb-[150px] max-[640px]:pt-[54px]">
-      <div class="flex w-full max-w-[720px] gap-[22px] max-[640px]:gap-[14px]">
-        <span class="mt-[.2em] h-[clamp(140px,22vw,260px)] w-[3px] flex-none bg-gold-500 max-[640px]:h-[88px]" aria-hidden="true" />
-        <div class="flex min-w-0 flex-col items-start text-left">
-          <h1 id="home-title" class="m-0 w-full text-left text-[clamp(38px,4.6vw,76px)] min-[1800px]:text-[clamp(50px,4.2vw,90px)] font-black uppercase leading-[.96] tracking-[-.035em] text-navy-950 [text-shadow:0_2px_14px_rgba(255,255,255,.7)] max-[640px]:text-[clamp(30px,9.4vw,40px)] max-[640px]:leading-[1.02]">
-            Thiết bị &amp; giải pháp<br>năng lượng mặt trời
-          </h1>
+    <!-- Centered editorial copy sits in the upper-left field of the image. -->
+    <div class="relative z-[4] pts-container mx-auto flex min-h-[inherit] flex-col items-start justify-start px-0 pb-0 pt-[clamp(132px,22vh,190px)] max-[640px]:items-center max-[640px]:px-4 max-[640px]:pt-[clamp(76px,12vh,108px)]">
+      <div class="ml-[clamp(64px,6.2vw,112px)] flex w-full max-w-[820px] flex-col items-center text-center max-[1100px]:max-w-[760px] max-[640px]:ml-0 max-[640px]:max-w-[min(100%,520px)]">
+        <h1 id="home-title" class="m-0 w-full text-center text-[clamp(42px,4.3vw,62px)] min-[1800px]:text-[clamp(56px,3.4vw,72px)] font-black uppercase leading-[1.1] tracking-[-.035em] text-navy-950 [text-shadow:0_2px_14px_rgba(255,255,255,.7)] max-[640px]:text-[clamp(29px,8.8vw,38px)] max-[640px]:leading-[1.08]">
+          Thiết bị và giải pháp<br>năng lượng mặt trời
+        </h1>
 
-          <p class="mx-0 mb-[28px] mt-[20px] w-full max-w-[520px] text-left text-[clamp(16px,1.12vw,19px)] font-medium leading-[1.68] text-navy-900 [text-shadow:0_1px_8px_rgba(255,255,255,.65)] max-[640px]:mb-[20px] max-[640px]:mt-[14px] max-[640px]:text-[15.5px]">
-            Phúc Thịnh Solar cung cấp thiết bị chiếu sáng, điện mặt trời và lưu trữ năng lượng; tư vấn phương án phù hợp cho gia đình, doanh nghiệp và công trình.
-          </p>
+        <p class="mx-auto mb-[28px] mt-[22px] w-full max-w-[760px] text-center text-[clamp(16px,1.3vw,19px)] font-medium leading-[1.65] text-navy-900 [text-shadow:0_1px_8px_rgba(255,255,255,.75)] max-[640px]:mb-[22px] max-[640px]:mt-[16px] max-[640px]:text-[15.5px]">
+          Phúc Thịnh Solar cung cấp thiết bị chiếu sáng, điện mặt trời và lưu trữ năng lượng; tư vấn phương án phù hợp cho gia đình, doanh nghiệp và công trình.
+        </p>
 
-          <!-- CTAs: asymmetric, lead action first -->
-          <div class="flex w-full max-w-[560px] flex-wrap items-center gap-[18px]">
+        <div class="flex w-full flex-wrap items-center justify-center gap-[16px]">
           <UButton
             href="#danh-muc-thiet-bi"
             color="primary"
@@ -203,32 +201,52 @@ onBeforeUnmount(() => {
           </UButton>
           <a
             href="#yeu-cau-tu-van"
-            class="inline-flex items-center gap-2 border-b-2 border-navy-950/70 pb-1 text-[15.5px] font-extrabold leading-[1.2] text-navy-950 no-underline transition-colors hover:border-gold-500 hover:text-gold-700 [text-shadow:0_1px_8px_rgba(255,255,255,.65)]"
+            class="inline-flex min-h-[52px] items-center justify-center gap-2 rounded-[4px] border border-slate-300/90 bg-white/90 px-[32px] text-[15.5px] font-extrabold leading-[1.2] text-navy-950 no-underline shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-white hover:shadow-md active:translate-y-0 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-500 max-[640px]:min-h-[48px] max-[640px]:px-[22px] max-[640px]:text-sm"
           >
             Tư vấn lắp đặt <span aria-hidden="true">→</span>
           </a>
-          </div>
         </div>
       </div>
     </div>
 
-    <!-- Solar Cinema Controller (Bottom-Right) -->
-    <div v-if="hero.length > 1" class="absolute bottom-[30px] right-[clamp(24px,4vw,96px)] z-[6] flex items-center gap-[4px] text-white [text-shadow:0_1px_6px_rgba(0,0,0,.45)] min-[2300px]:right-[max(24px,calc((100vw-2200px)/2))] max-[640px]:bottom-[16px] max-[640px]:right-4">
-      <button class="flex size-11 items-center justify-center rounded-full border border-transparent bg-transparent text-white transition-all duration-150 motion-reduce:transition-none hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white active:scale-90 motion-reduce:active:scale-100 cursor-pointer" type="button" aria-label="Banner trước" @click="move(-1)">
+    <div class="absolute bottom-[clamp(112px,14vh,132px)] right-[clamp(24px,4vw,96px)] z-[2] flex max-w-[min(500px,calc(100vw-48px))] flex-col gap-1 text-right text-navy-950 [text-shadow:0_1px_6px_rgba(255,255,255,.98),0_2px_16px_rgba(255,255,255,.86)] max-[640px]:bottom-[92px] max-[640px]:right-4 max-[640px]:max-w-[calc(100vw-32px)]">
+      <strong class="text-[clamp(19px,1.7vw,26px)] font-extrabold leading-[1.2] max-[640px]:text-[16px]">{{ current.name }}</strong>
+      <span class="text-[clamp(13px,1vw,15px)] font-semibold leading-[1.5] max-[640px]:text-[12px]">{{ current.description }}</span>
+    </div>
+
+    <!-- Solar Cinema Controller (Bottom-Left, clear of fixed contact actions) -->
+    <div v-if="hero.length > 1" class="absolute bottom-[30px] left-[clamp(24px,4vw,96px)] z-[6] flex items-center gap-[2px] rounded-full bg-navy-950/55 p-[3px] text-white max-[640px]:bottom-[16px] max-[640px]:left-4">
+      <button class="flex size-10 items-center justify-center rounded-full border border-transparent bg-transparent text-white transition-all duration-150 motion-reduce:transition-none hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white active:scale-90 motion-reduce:active:scale-100 cursor-pointer" type="button" aria-label="Banner trước" @click="move(-1)">
         <svg class="h-4.5 w-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg>
       </button>
-      <span class="flex h-11 min-w-[70px] items-center justify-center px-2.5 text-xs">
+      <span class="flex h-10 min-w-[64px] items-center justify-center px-2 text-xs">
         <b class="mr-[4px] text-[15px] font-black text-gold-400">{{ String(active + 1).padStart(2, '0') }}</b> / {{ String(hero.length).padStart(2, '0') }}
       </span>
-      <button class="flex size-11 items-center justify-center rounded-full border border-transparent bg-transparent text-white transition-all duration-150 motion-reduce:transition-none hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white active:scale-90 motion-reduce:active:scale-100 cursor-pointer" type="button" aria-label="Banner tiếp theo" @click="move(1)">
+      <button class="flex size-10 items-center justify-center rounded-full border border-transparent bg-transparent text-white transition-all duration-150 motion-reduce:transition-none hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white active:scale-90 motion-reduce:active:scale-100 cursor-pointer" type="button" aria-label="Banner tiếp theo" @click="move(1)">
         <svg class="h-4.5 w-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg>
       </button>
     </div>
 
-    <!-- Active Slide Title Card (Bottom-Right overlay) -->
-    <p class="absolute bottom-[clamp(120px,15vh,146px)] right-[clamp(24px,4vw,96px)] z-[2] m-0 flex max-w-[min(500px,calc(100vw-48px))] flex-col gap-1 px-[20px] pb-[14px] pt-[15px] text-right text-white [text-shadow:0_1px_10px_rgba(0,0,0,.55)] transition-opacity duration-500 min-[2300px]:right-[max(24px,calc((100vw-2200px)/2))] max-[640px]:bottom-[92px] max-[640px]:right-4 max-[640px]:max-w-[calc(100vw-36px)] max-[640px]:px-[14px] max-[640px]:py-[10px]">
-      <strong class="text-[clamp(20px,1.6vw,28px)] font-bold leading-[1.2] max-[640px]:text-[clamp(15px,4.5vw,20px)] max-[640px]:leading-snug line-clamp-2">{{ current.name }}</strong>
-      <span class="text-sm font-medium leading-[1.5] text-white/90 max-[640px]:hidden">{{ current.description }}</span>
-    </p>
   </section>
 </template>
+
+<style scoped>
+/* Slow continuous Ken Burns drift on the active slide: zoom + a gentle pan that
+   alternates direction per slide so the sequence doesn't feel mechanical. */
+.hero-slide-image {
+  transform: scale(1.06) translate3d(0, 0, 0);
+}
+.hero-slide-image.is-active {
+  animation: hero-ken-burns 4.6s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+}
+@keyframes hero-ken-burns {
+  from { transform: scale(1.06) translate3d(0, 0, 0); }
+  to { transform: scale(1.12) translate3d(var(--hero-pan-x, -1.4%), -1%, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-slide-image, .hero-slide-image.is-active {
+    animation: none;
+    transform: scale(1);
+  }
+}
+</style>
