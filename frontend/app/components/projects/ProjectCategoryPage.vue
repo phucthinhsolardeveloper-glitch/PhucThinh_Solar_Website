@@ -84,7 +84,7 @@ usePublicSocialMeta({
 <template>
   <div class="text-navy-800">
     <SiteHeader :site="site" />
-    <main class="mx-auto w-full max-w-[1766px] px-4 pb-12">
+    <main class="pts-container pb-12">
       <SiteBreadcrumb :items="[
         { label: 'Dự án đã thực hiện', to: PROJECTS_PUBLIC_PATH },
         { label: projects?.category?.name || 'Danh mục dự án' },
