@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { PublicProject } from '#shared/contracts/public-projects'
 
-defineProps<{ project: PublicProject; viewLabel: string }>()
+defineProps<{ project: PublicProject; viewLabel: string; chapterNumber?: number }>()
 const links = useMigrationLinks()
 </script>
 
@@ -9,7 +9,7 @@ const links = useMigrationLinks()
   <article class="min-w-0">
     <a
       :href="links.project(project.slug)"
-      class="group flex h-full flex-col overflow-hidden text-navy-800 no-underline focus-visible:outline-none"
+      class="group flex h-full flex-col overflow-hidden text-navy-800 no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold-600"
     >
       <div class="relative aspect-[4/3] overflow-hidden rounded-btn bg-[#edf1f5]" :class="{ 'grid place-items-center text-slate-500': !project.image }">
         <img
@@ -29,6 +29,7 @@ const links = useMigrationLinks()
       </div>
 
       <div class="flex flex-1 flex-col pt-4 pb-1">
+        <span v-if="chapterNumber" class="mb-2 text-[11px] font-extrabold uppercase tracking-[0.15em] text-gold-700">Hồ sơ {{ String(chapterNumber).padStart(2, '0') }}</span>
         <h2 class="m-0 text-base font-extrabold leading-snug text-navy-800 transition-colors group-hover:text-gold-700 group-focus-visible:text-gold-700 tb:text-lg">{{ project.title }}</h2>
         <div v-if="project.address" class="my-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-500">
           <span class="inline-flex items-center gap-1.5">
@@ -41,7 +42,7 @@ const links = useMigrationLinks()
         </p>
         <span class="mt-4 inline-flex items-center gap-1.5 text-[13px] font-extrabold text-gold-700">
           <span>{{ viewLabel }}</span>
-          <span class="inline-block transition-transform duration-300 group-hover:translate-x-1.5" aria-hidden="true">→</span>
+          <span class="inline-block transition-transform duration-300 group-hover:translate-x-1.5 motion-reduce:transform-none motion-reduce:transition-none" aria-hidden="true">→</span>
         </span>
       </div>
     </a>

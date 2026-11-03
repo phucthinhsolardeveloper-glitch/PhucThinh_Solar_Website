@@ -9,52 +9,76 @@ import { formatProjectDate } from '#shared/project-date'
 const props = defineProps<{ project: PublicProjectDetail; content: PublicSanitizedRichText }>()
 const links = useMigrationLinks()
 const hotlineHref = computed(() => `tel:${props.project.cta?.hotline.replace(/[^+\d]/g, '') ?? ''}`)
+const summaryFallback = computed(() => props.content.html?.trim() ? '' : props.project.summary.trim())
+const hasOverview = computed(() => Boolean(props.content.html?.trim() || summaryFallback.value))
+const chapters = [
+  { id: 'project-overview', label: 'Tổng quan' },
+  { id: 'project-gallery', label: 'Tư liệu dự án' },
+  { id: 'project-equipment', label: 'Điểm nhấn kỹ thuật' },
+]
+function chapterNumber(id: string) {
+  return String(chapters.findIndex((chapter) => chapter.id === id) + 1).padStart(2, '0')
+}
 </script>
 
 <template>
-  <!-- Giữ cùng cấu trúc PHP: tiêu đề và metadata ở trái, contentvi ở phải,
-       rồi đến gallery; descvi không quyết định bố cục hoặc thay contentvi. -->
-  <article>
-    <header class="py-10 nav:py-12">
-      <div class="pts-container grid w-full grid-cols-1 items-start gap-8 nav:grid-cols-[0.86fr_1.14fr] nav:grid-cols-[minmax(0,0.82fr)_minmax(420px,1.18fr)] nav:gap-12">
-        <div class="min-w-0">
-          <p class="mb-2 text-xs font-extrabold uppercase tracking-[0.16em] text-gold-700">Dự án</p>
-          <h1 class="m-0 mb-5 text-[clamp(34px,5vw,56px)] font-black leading-[1.05] tracking-tight text-navy-950">{{ project.title }}</h1>
+  <article class="project-story">
+    <header class="project-story__hero grid bg-navy-950 text-white nav:grid-cols-[minmax(0,1.2fr)_minmax(380px,0.8fr)]">
+      <div class="project-story__cover relative overflow-hidden bg-slate-200">
+        <img v-if="project.coverImage" :src="project.coverImage" :alt="project.title" class="block aspect-[4/3] w-full object-cover nav:h-full nav:aspect-auto" loading="eager" decoding="async">
+        <div v-else class="grid aspect-[4/3] place-items-center px-6 text-center text-sm font-semibold text-slate-500 nav:h-full nav:aspect-auto">Chưa có hình ảnh đại diện cho dự án</div>
+      </div>
 
-          <dl class="mt-6 flex flex-wrap gap-x-7 gap-y-3 text-sm">
-            <div v-if="project.category" class="flex max-w-full flex-wrap items-baseline gap-x-2">
-              <dt class="text-xs font-bold uppercase tracking-wide text-slate-500">Danh mục</dt>
-              <dd class="m-0 break-words font-bold text-navy-800">{{ project.category.name }}</dd>
-            </div>
-            <div v-if="project.client" class="flex max-w-full flex-wrap items-baseline gap-x-2">
-              <dt class="text-xs font-bold uppercase tracking-wide text-slate-500">Khách hàng</dt>
-              <dd class="m-0 break-words font-bold text-navy-800">{{ project.client }}</dd>
-            </div>
-            <div v-if="project.address" class="flex max-w-full flex-wrap items-baseline gap-x-2">
-              <dt class="text-xs font-bold uppercase tracking-wide text-slate-500">Địa chỉ</dt>
-              <dd class="m-0 break-words font-bold text-navy-800">{{ project.address }}</dd>
-            </div>
-            <div v-if="project.startDate || project.endDate" class="flex max-w-full flex-wrap items-baseline gap-x-2">
-              <dt class="text-xs font-bold uppercase tracking-wide text-slate-500">Thời gian thực hiện</dt>
-              <dd class="m-0 break-words font-bold text-navy-800">{{ project.startDate ? formatProjectDate(project.startDate) : 'Đang cập nhật' }}<template v-if="project.endDate"> – {{ formatProjectDate(project.endDate) }}</template></dd>
-            </div>
-          </dl>
-        </div>
+      <div class="project-story__intro flex min-w-0 flex-col justify-center px-5 py-8 tb:px-8 nav:px-[clamp(32px,5vw,76px)] nav:py-16">
+        <p class="mb-4 flex items-center gap-2 text-xs font-extrabold uppercase tracking-[0.16em] text-gold-300">
+          <span class="h-px w-8 bg-gold-400" aria-hidden="true" />{{ project.category?.name || 'Dự án' }}
+        </p>
+        <h1 class="m-0 text-[clamp(32px,4.5vw,58px)] font-black leading-[1.06] tracking-tight text-white">{{ project.title }}</h1>
 
-        <div class="order-first overflow-hidden rounded-chip bg-slate-200 nav:order-none">
-          <img v-if="project.coverImage" :src="project.coverImage" :alt="project.title" class="aspect-[4/3] w-full object-cover" loading="eager" decoding="async">
-          <div v-else class="grid aspect-[4/3] place-items-center px-6 text-center text-sm font-semibold text-slate-500">Chưa có hình ảnh đại diện cho dự án</div>
-        </div>
-
-        <section aria-labelledby="project-summary-title" class="min-w-0 border-l-[3px] border-gold-500 py-1 pl-6">
-          <h2 id="project-summary-title" class="mb-4 text-xs font-black uppercase tracking-[0.13em] text-gold-700">Tổng quan công trình</h2>
-          <EditorialRichText :content="content" />
-        </section>
+        <dl class="mt-8 grid gap-x-6 gap-y-5 border-t border-white/20 pt-6 text-sm tb:grid-cols-2">
+          <div v-if="project.client" class="min-w-0">
+            <dt class="mb-1 text-xs font-bold uppercase tracking-wide text-blue-100/70">Khách hàng</dt>
+            <dd class="m-0 break-words font-bold text-white">{{ project.client }}</dd>
+          </div>
+          <div v-if="project.address" class="min-w-0">
+            <dt class="mb-1 text-xs font-bold uppercase tracking-wide text-blue-100/70">Địa điểm</dt>
+            <dd class="m-0 break-words font-bold text-white">{{ project.address }}</dd>
+          </div>
+          <div v-if="project.startDate || project.endDate" class="min-w-0 tb:col-span-2">
+            <dt class="mb-1 text-xs font-bold uppercase tracking-wide text-blue-100/70">Thời gian thực hiện</dt>
+            <dd class="m-0 break-words font-bold text-white">{{ project.startDate ? formatProjectDate(project.startDate) : '' }}<template v-if="project.startDate && project.endDate"> – </template>{{ project.endDate ? formatProjectDate(project.endDate) : '' }}</dd>
+          </div>
+        </dl>
       </div>
     </header>
 
+    <nav v-if="chapters.length" class="project-story__chapters sticky top-0 z-20 overflow-x-auto border-b border-slate-200 bg-white/95 backdrop-blur-sm" aria-label="Các phần trong hồ sơ dự án">
+      <div class="pts-container flex min-w-max gap-6 py-4 tb:gap-9">
+        <a v-for="(chapter, index) in chapters" :key="chapter.id" class="inline-flex min-h-7 items-center gap-2 whitespace-nowrap text-sm font-bold text-navy-800 no-underline transition-colors hover:text-gold-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold-500" :href="`#${chapter.id}`">
+          <span class="font-mono text-xs text-gold-700">{{ String(index + 1).padStart(2, '0') }}</span>
+          {{ chapter.label }}
+        </a>
+      </div>
+    </nav>
+
     <div class="pts-container pb-10">
-      <ProjectDetailGallery :items="project.gallery" />
+      <section id="project-overview" class="project-story__section scroll-mt-20 grid gap-6 py-12 tb:grid-cols-[minmax(160px,0.36fr)_minmax(0,1fr)] tb:gap-12 nav:py-16" aria-labelledby="project-summary-title">
+        <h2 id="project-summary-title" class="m-0 text-[clamp(24px,3vw,36px)] font-black tracking-tight text-navy-950"><span class="mb-2 block font-mono text-xs text-gold-700">{{ chapterNumber('project-overview') }}</span>Tổng quan công trình</h2>
+        <div class="min-w-0 max-w-[78ch]">
+          <p v-if="summaryFallback" class="m-0 text-lg leading-relaxed text-slate-700">{{ summaryFallback }}</p>
+          <EditorialRichText v-else-if="hasOverview" :content="content" />
+          <p v-else class="m-0 text-base leading-relaxed text-slate-500">Thông tin mô tả chi tiết chưa được công bố cho dự án này.</p>
+        </div>
+      </section>
+
+      <section id="project-gallery" class="project-story__section scroll-mt-20 py-12 nav:py-16" aria-labelledby="project-gallery-heading">
+        <header class="mb-7 grid gap-4 tb:grid-cols-[minmax(200px,0.36fr)_minmax(0,1fr)] tb:gap-12">
+          <h2 id="project-gallery-heading" class="m-0 text-[clamp(24px,3vw,36px)] font-black tracking-tight text-navy-950"><span class="mb-2 block font-mono text-xs text-gold-700">{{ chapterNumber('project-gallery') }}</span>Tư liệu dự án</h2>
+          <p class="m-0 max-w-[60ch] self-end text-base leading-relaxed text-slate-600">Hình ảnh và video được công bố cho công trình này.</p>
+        </header>
+        <ProjectDetailGallery :items="project.gallery" />
+      </section>
+
       <ProjectDetailEquipment :items="project.relatedEquipment" />
 
       <section v-if="project.relatedProjects.length" class="mt-16" aria-labelledby="related-projects-title">
@@ -63,7 +87,7 @@ const hotlineHref = computed(() => `tel:${props.project.cta?.hotline.replace(/[^
           <a class="font-bold text-navy-800 no-underline" :href="links.generic('/du-an-da-thuc-hien/')">Xem tất cả dự án →</a>
         </header>
         <div class="grid grid-cols-1 gap-7 tb:grid-cols-2 nav:grid-cols-3">
-          <a v-for="item in project.relatedProjects" :key="item.id" :href="links.project(item.slug)" class="group min-w-0 text-navy-800 no-underline">
+          <a v-for="item in project.relatedProjects" :key="item.id" :href="links.project(item.slug)" class="group min-w-0 text-navy-800 no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold-600">
             <div class="overflow-hidden rounded-chip bg-slate-100">
               <img :src="item.image || '/assets/images/noimage.png'" :alt="item.title" class="aspect-[4/3] w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105 motion-reduce:transform-none motion-reduce:transition-none" loading="lazy" decoding="async">
             </div>
@@ -73,7 +97,7 @@ const hotlineHref = computed(() => `tel:${props.project.cta?.hotline.replace(/[^
                 <svg class="size-3.5 shrink-0 text-gold-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
                 <span>{{ item.address }}</span>
               </p>
-              <span class="mt-3 inline-flex items-center gap-1 font-bold text-navy-800 transition-transform duration-200 group-hover:translate-x-1 group-hover:text-gold-700">Xem dự án →</span>
+              <span class="mt-3 inline-flex items-center gap-1 font-bold text-navy-800 transition-transform duration-200 group-hover:translate-x-1 group-hover:text-gold-700 motion-reduce:transform-none motion-reduce:transition-none">Xem dự án →</span>
             </div>
           </a>
         </div>
