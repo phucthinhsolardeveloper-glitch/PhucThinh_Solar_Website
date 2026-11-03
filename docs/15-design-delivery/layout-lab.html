@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <meta name="color-scheme" content="light">
+  <title>PTS — Composition & Interaction Lab | Design reference only</title>
+  <meta name="description" content="Thư viện layout và tương tác dùng để duyệt hướng thiết kế PTS Solar. Không phải trang sản phẩm hoặc công trình thực tế.">
+  <link rel="stylesheet" href="layout-lab.css">
+  <script src="layout-lab.js" defer></script>
+</head>
+<body>
+<div class="lab-toolbar" role="region" aria-label="Bộ điều khiển thử nghiệm thiết kế">
+  <div class="lab-logo"><span class="lab-logo__square" aria-hidden="true">PTS</span> Layout & interaction lab</div>
+  <div class="lab-tabs" role="group" aria-label="Chọn cách trình bày hero">
+    <button type="button" data-layout="bleed" aria-pressed="true">Ảnh tràn qua header</button>
+    <button type="button" data-layout="editorial" aria-pressed="false">Editorial Split</button>
+    <button type="button" data-layout="frame" aria-pressed="false">Architectural Frame</button>
+  </div>
+  <div class="lab-extra">
+    <button type="button" id="header-toggle" aria-pressed="true" title="Chỉ áp dụng cho chế độ ảnh tràn">Header trong suốt</button>
+    <button type="button" id="motion-toggle" aria-pressed="true">Motion bật</button>
+  </div>
+</div>
+<div class="lab-subnote">Bản tham chiếu bố cục • Hình ảnh minh họa từ thư viện site-visuals • Không phải nội dung chứng minh năng lực hoặc dữ liệu sản phẩm</div>
+
+<div id="demo-site" class="site" data-layout="bleed" data-header="transparent" data-scrolled="false" data-motion="on">
+  <header id="site-header" class="site-header">
+    <div class="container site-header__inner">
+      <a class="brand" href="#top" aria-label="Phúc Thịnh Solar — về đầu trang tham chiếu"><span class="brand-badge" aria-hidden="true">PTS</span>Phúc Thịnh Solar</a>
+      <nav id="site-nav" class="site-nav" aria-label="Các khu vực của trang tham chiếu">
+        <a href="#gallery">Gallery</a>
+        <a href="#composition">Trình bày</a>
+        <a href="#principles">Nguyên tắc</a>
+      </nav>
+      <div class="site-header__actions">
+        <a class="site-cta" href="#gallery">Khám phá mẫu</a>
+        <button id="menu-toggle" type="button" class="menu-toggle" aria-expanded="false" aria-controls="site-nav">Menu</button>
+      </div>
+    </div>
+  </header>
+  <main id="top">
+    <section id="hero" class="hero" aria-labelledby="main-heading">
+      <img id="hero-photo" class="hero-photo" src="assets/hero-rooftop.webp" alt="Ảnh minh họa nhà có hệ tấm pin trên mái, sử dụng để thử nghiệm bố cục" fetchpriority="high">
+      <div class="hero__graphic" aria-hidden="true"></div><div class="hero__step" aria-hidden="true">SOLAR</div>
+      <div class="container hero__content">
+        <div class="hero__text">
+          <h1 id="main-heading">Từ ánh sáng trên mái nhà đến một hệ thống dễ hiểu.</h1>
+          <p>Thay vì chỉ trình bày sản phẩm, hãy dẫn người xem qua một hình ảnh có ý nghĩa, một giải thích rõ ràng và một hành động tiếp theo phù hợp.</p>
+          <div class="hero__actions">
+            <a class="primary" href="#gallery">Xem các ví dụ trình bày <span aria-hidden="true">↗</span></a>
+            <a class="text-link" href="#principles">Nguyên tắc thiết kế →</a>
+          </div>
+        </div>
+        <div class="hero__foot">
+          <div>
+            <strong id="layout-caption">Immersive / Full-bleed</strong>
+            <p id="layout-description">Ảnh chạy phía sau header trong suốt; lớp tối giữ nội dung đọc được khi ảnh có vùng sáng phức tạp.</p>
+          </div>
+          <span class="hero__mode">Preview · Not production</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="gallery" class="section" aria-labelledby="gallery-heading">
+      <div class="container">
+        <div class="section-head">
+          <h2 id="gallery-heading" class="section-title">Hình ảnh lớn chưa đủ. Cần một hành trình đọc rõ ràng.</h2>
+          <p class="section-sub">Bấm để đổi loại hình ảnh và bố cục câu chuyện; mở ảnh ở kích thước lớn khi cần. Ảnh trong phòng lab chỉ dùng để xem composition, không được tự ghi nhận là dự án thực tế.</p>
+        </div>
+        <div class="photo-story">
+          <div class="photo-story__media">
+            <img id="story-image" src="assets/hero-rooftop.webp" alt="Minh họa hệ thống năng lượng mặt trời dân dụng" loading="lazy">
+            <button id="open-lightbox" class="media-open" type="button" aria-label="Mở ảnh minh họa ở kích thước lớn">Xem ảnh lớn ↗</button>
+          </div>
+          <div class="photo-story__details">
+            <h3 id="story-heading">Một mái nhà, một câu chuyện về năng lượng.</h3>
+            <p id="story-copy">Hình ảnh định hướng trước, chi tiết về giải pháp theo sau. Khi là trang thực tế, mọi thông số và hình ảnh công trình phải liên kết nguồn CMS đã xác minh.</p>
+            <div class="story-switch" role="group" aria-label="Chọn loại nội dung minh họa">
+              <button data-story="home" type="button" aria-pressed="true">Không gian dân dụng</button>
+              <button data-story="farm" type="button" aria-pressed="false">Hệ điện quy mô rộng</button>
+              <button data-story="device" type="button" aria-pressed="false">Thiết bị và chi tiết</button>
+              <button data-story="lighting" type="button" aria-pressed="false">Chiếu sáng ứng dụng</button>
+            </div>
+          </div>
+        </div>
+        <p class="example-meta">Pattern: <strong>Editorial Media + Dynamic Inspector</strong>. Chỉ đổi nội dung trình diễn; không can thiệp vào dữ liệu CMS hoặc route thật.</p>
+      </div>
+    </section>
+
+    <section id="composition" class="section section--paper" aria-labelledby="composition-heading">
+      <div class="container">
+        <div class="section-head">
+          <h2 id="composition-heading" class="section-title">Có thể kể cùng một chủ đề bằng nhiều nhịp thị giác.</h2>
+          <p class="section-sub">Ảnh ghép lệch nhịp, dải thông tin kỹ thuật và nội dung văn bản dài được phân nhóm để tránh kiểu một trang chỉ toàn card giống nhau.</p>
+        </div>
+        <div class="composition-grid">
+          <div class="concept-stack" aria-label="Minh họa bố cục ảnh bất đối xứng">
+            <img class="photo-a" src="assets/hero-solar-farm.webp" alt="Ảnh minh họa một khu vực lắp đặt tấm pin, dùng trong thiết kế trang giải pháp" loading="lazy">
+            <div class="side">
+              <img src="assets/story-inverter.webp" alt="Ảnh minh họa thiết bị trong không gian lắp đặt" loading="lazy">
+              <div class="technical"><b>Hình ảnh để dẫn dắt.<br>Thông tin để quyết định.</b><span>Mẫu bố cục / không có thông số sản phẩm giả</span></div>
+            </div>
+          </div>
+          <div class="composition-note">
+            <h3>Architectural editorial, không phải một hàng thẻ card.</h3>
+            <p>Trang Giới thiệu và Dự án có thể thay đổi tỷ lệ ảnh, điểm neo typography và nhịp đọc mà vẫn giữ hệ thống khoảng cách, màu và phân cấp chung.</p>
+            <ul class="plain-list">
+              <li><strong>Ảnh có nhiệm vụ</strong>Cung cấp bối cảnh, không đóng vai trang trí lấp chỗ trống.</li>
+              <li><strong>Chữ có thứ tự ưu tiên</strong>Một H1, mục tiêu chính rõ, không sinh thêm nhãn uppercase vô nghĩa.</li>
+              <li><strong>Nội dung có điểm kết thúc</strong>Từ đọc/hiểu tới chọn sản phẩm hoặc yêu cầu tư vấn trong site thật.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="principles" class="section section--rail" aria-labelledby="principles-heading">
+      <div class="container">
+        <div class="rail-head">
+          <h2 id="principles-heading" class="section-title">Điểm đặc biệt phải có lý do xuất hiện.</h2>
+          <p class="section-sub">Hero phủ ảnh qua header là một lựa chọn cho section được duyệt. Nó không phải quy tắc áp dụng cho toàn bộ website, càng không phải lý do thay đổi header production một cách tự động.</p>
+        </div>
+        <div class="rail-grid">
+          <div class="rail-item"><h3>Full-bleed</h3><p>Ảnh và header giao nhau, chữ có overlay và safe-area, sticky header chuyển nền khi cuộn. Dùng ở nơi cần điểm nhấn cinematic.</p></div>
+          <div class="rail-item"><h3>Editorial Split</h3><p>Hình ảnh và chữ có trọng lượng riêng; phù hợp trang Giới thiệu, Giải pháp, câu chuyện thương hiệu.</p></div>
+          <div class="rail-item"><h3>Architectural Frame</h3><p>Ảnh được đóng khung như một trang hồ sơ kỹ thuật. Phù hợp bài công trình, case study và section giới thiệu hệ thống.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--paper" aria-labelledby="contrast-heading">
+      <div class="container">
+        <div class="section-head">
+          <h2 id="contrast-heading" class="section-title">Màu ảnh thay đổi, độ đọc vẫn phải được kiểm soát.</h2>
+          <p class="section-sub">Trong kiểu Full-bleed, có thể thử độ đậm của lớp phủ ảnh. Mức thấp là một phần thí nghiệm, không đồng nghĩa đã đáp ứng yêu cầu tương phản cho production.</p>
+        </div>
+        <div class="dial">
+          <label for="shade-range">Độ phủ tối trên ảnh</label>
+          <input id="shade-range" type="range" min="58" max="92" value="79" step="1" aria-describedby="shade-note">
+          <output id="shade-value" for="shade-range">79%</output>
+        </div>
+        <p class="compare-note" id="shade-note">Thay đổi lớp phủ ở hero phía trên khi đang chọn «Ảnh tràn qua header». Contrast production vẫn cần kiểm tra theo ảnh thực tế.</p>
+      </div>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <div class="container site-footer__inner">
+      <strong>Thiết kế để được thử, phản biện và chọn lọc.</strong>
+      <p>PTS Layout Lab · Bản mẫu ngoại tuyến, không phải website công ty. <a href="reference.html">Xem Design Reference v1</a>. Dữ liệu và ảnh đang hiển thị dùng cho thử nghiệm bố cục, không phải tuyên bố về dự án, khách hàng hay hiệu suất thiết bị.</p>
+    </div>
+  </footer>
+</div>
+
+<dialog class="dialog" id="lightbox" aria-label="Xem ảnh minh họa kích thước lớn">
+  <div class="dialog-inner">
+    <button type="button" class="dialog-close" id="close-lightbox" aria-label="Đóng ảnh lớn">Đóng ×</button>
+    <figure style="margin:0"><img id="lightbox-image" alt=""><figcaption id="lightbox-caption">Ảnh minh họa cho bố cục, không đại diện dự án đã xác minh.</figcaption></figure>
+  </div>
+</dialog>
+</body>
+</html>

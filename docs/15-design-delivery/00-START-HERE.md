@@ -43,3 +43,9 @@ This package lives under docs/15-design-delivery/. Do not silently edit AGENTS.m
 
 ## First pilot
 W4-05 Projects: one selected Solar Cinema direction -> load images with actual scrolling -> fix issues -> compare screenshots -> reviewer approval -> integrate to preview. Reuse this proof-of-delivery recipe before expanding to new pages.
+
+## Interactive layout exploration
+- Open [Layout & Interaction Lab](layout-lab.html) for three real browser-rendered compositions: photographic image behind the header (Full-bleed), Editorial Split and Architectural Frame.
+- Read [Layout Lab spec](06-LAYOUT-LAB.md) for component/interaction contracts, design eligibility and guidance to port a selected direction to Nuxt.
+- Review [Layout Lab QA](07-LAYOUT-LAB-QA.md) and the evidence/layout-*.jpg captures. This is design-only, not a production or owner-approved header change.
+- Current hero and header production contracts remain protected unless approved per route.
