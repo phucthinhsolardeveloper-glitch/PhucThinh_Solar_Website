@@ -60,6 +60,14 @@ function filterLink(overrides: { subcategory?: string; brand?: string; price?: s
   delete next.page
   return { path: selfPath.value, query: next }
 }
+// Masthead brand shortcuts toggle the same `brand` filter as the sidebar.
+const mastheadBrands = computed(() => {
+  const selectedIds = catalogData.value?.selected?.brandIds ?? []
+  return (catalogData.value?.filters?.brands ?? []).map((item) => {
+    const active = selectedIds.includes(item.id)
+    return { id: item.id, name: item.name, active, to: filterLink({ brand: active ? '' : String(item.id) }) }
+  })
+})
 function onSortChange(value: string) {
   navigateTo(filterLink({ sort: value === 'default' ? '' : value }))
 }
@@ -288,7 +296,14 @@ function pageLink(nextPage: number) {
       </div>
     </div>
 
-    <CatalogMasthead :heading="heading" :description="bannerDescription" :hero="catalogData?.categoryHero ?? null" />
+    <CatalogMasthead
+      :heading="heading"
+      :description="bannerDescription"
+      :hero="catalogData?.categoryHero ?? null"
+      :products="catalogData?.products ?? []"
+      :total="catalogData?.pagination.total ?? null"
+      :brands="mastheadBrands"
+    />
 
     <!--
       Khung trang dùng chung .pts-container (max-w 1680px, gutter đáp ứng theo
