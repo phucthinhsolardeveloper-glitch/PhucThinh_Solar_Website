@@ -34,6 +34,9 @@ const heroFailed = ref(false)
 function onHeroError() { heroFailed.value = true }
 watch(() => props.hero?.image, () => { heroFailed.value = false })
 
+const fallbackHeroImage = '/assets/images/site-visuals/catalog-grid-tie-solar-20261008.png'
+const activeHeroImage = computed(() => props.hero?.image || fallbackHeroImage)
+
 const brandCount = computed(() => props.brands.length)
 const visibleBrands = computed(() => props.brands.slice(0, 6))
 </script>
@@ -53,7 +56,18 @@ const visibleBrands = computed(() => props.brands.slice(0, 6))
         fetchpriority="high"
         @error="onHeroError"
       >
-      <span v-if="hero?.image && !heroFailed" class="masthead-shade" aria-hidden="true" />
+      <img
+        v-else-if="!heroFailed"
+        :src="activeHeroImage"
+        alt=""
+        width="1800"
+        height="600"
+        sizes="100vw"
+        class="masthead-photo"
+        fetchpriority="high"
+        @error="onHeroError"
+      >
+      <span v-if="!heroFailed" class="masthead-shade" aria-hidden="true" />
       <span v-else class="masthead-sun" aria-hidden="true" />
 
       <div class="pts-container masthead-inner">

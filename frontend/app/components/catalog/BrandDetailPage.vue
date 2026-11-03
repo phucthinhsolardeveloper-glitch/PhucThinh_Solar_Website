@@ -35,6 +35,7 @@ const props = defineProps<{ slug: string }>()
 const route = useRoute()
 const selfPath = computed(() => route.path)
 const { active: isMigrationPreview, generic: migrationHref } = useMigrationLinks()
+const { openConsultation } = useStorefrontModal()
 const config = useRuntimeConfig()
 const publicEnabled = computed(() => !isMigrationPreview.value)
 const page = computed(() => publicPageQueryValue(route.query.page, route.query.p))
@@ -182,32 +183,38 @@ usePublicSocialMeta({
             Bộ lọc sản phẩm
             <span aria-hidden="true">{{ mobileFiltersExpanded ? '−' : '+' }}</span>
           </button>
-          <aside v-if="site.productCategories.length || data.filters?.brands.length || data.filters?.priceRanges.length" id="brand-filter-sidebar" class="space-y-7" :class="mobileFiltersExpanded ? 'block' : 'hidden nav:block'" aria-label="Bộ lọc sản phẩm">
+          <aside v-if="site.productCategories.length || data.filters?.brands.length || data.filters?.priceRanges.length" id="brand-filter-sidebar" class="space-y-6 rounded-[4px] bg-slate-50 p-5" :class="mobileFiltersExpanded ? 'block' : 'hidden nav:block'" aria-label="Bộ lọc sản phẩm">
             <section v-if="site.productCategories.length" aria-labelledby="brand-category-filter-title">
-              <h2 id="brand-category-filter-title" class="mb-3 text-sm font-bold text-navy-950">Danh mục sản phẩm</h2>
-              <ul class="m-0 list-none space-y-2 p-0">
+              <h2 id="brand-category-filter-title" class="mb-3 text-sm font-extrabold text-navy-950">Danh mục sản phẩm</h2>
+              <ul class="m-0 list-none space-y-1.5 p-0">
                 <li v-for="category in site.productCategories" :key="category.id">
-                  <NuxtLink :to="migrationHref(category.url)" class="text-sm text-[#20344b] no-underline hover:text-navy-950">{{ category.name }}</NuxtLink>
+                  <NuxtLink :to="migrationHref(category.url)" class="flex items-center justify-between gap-2 rounded-[3px] py-1 text-sm text-[#20344b] no-underline transition-colors hover:text-gold-700">
+                    <span>{{ category.name }}</span>
+                    <UIcon name="i-lucide-chevron-right" class="size-3.5 shrink-0 text-slate-400" aria-hidden="true" />
+                  </NuxtLink>
                 </li>
               </ul>
             </section>
 
-            <section v-if="data.filters?.brands.length" aria-labelledby="brand-list-filter-title">
-              <h2 id="brand-list-filter-title" class="mb-3 text-sm font-bold text-navy-950">Thương hiệu</h2>
-              <ul class="m-0 list-none space-y-2 p-0">
+            <section v-if="data.filters?.brands.length" class="border-t border-slate-200/80 pt-5" aria-labelledby="brand-list-filter-title">
+              <h2 id="brand-list-filter-title" class="mb-3 text-sm font-extrabold text-navy-950">Thương hiệu</h2>
+              <ul class="m-0 list-none space-y-1 p-0">
                 <li v-for="brandOption in data.filters.brands" :key="brandOption.id">
                   <NuxtLink
                     :to="migrationHref(brandOption.url)"
-                    class="text-sm no-underline hover:text-navy-950"
-                    :class="brandOption.id === data.brand.id ? 'font-bold text-navy-950' : 'text-[#20344b]'"
+                    class="flex items-center justify-between rounded-[3px] px-2.5 py-1.5 text-sm no-underline transition-colors"
+                    :class="brandOption.id === data.brand.id ? 'bg-navy-950 font-bold text-gold-300' : 'text-[#20344b] hover:bg-white hover:text-navy-950'"
                     :aria-current="brandOption.id === data.brand.id ? 'page' : undefined"
-                  >{{ brandOption.name }}</NuxtLink>
+                  >
+                    <span>{{ brandOption.name }}</span>
+                    <span v-if="brandOption.id === data.brand.id" class="size-1.5 rounded-full bg-gold-400" aria-hidden="true" />
+                  </NuxtLink>
                 </li>
               </ul>
             </section>
 
-            <section v-if="data.filters?.priceRanges.length" aria-labelledby="brand-price-filter-title">
-              <h2 id="brand-price-filter-title" class="mb-3 text-sm font-bold text-navy-950">Mức giá</h2>
+            <section v-if="data.filters?.priceRanges.length" class="border-t border-slate-200/80 pt-5" aria-labelledby="brand-price-filter-title">
+              <h2 id="brand-price-filter-title" class="mb-3 text-sm font-extrabold text-navy-950">Mức giá</h2>
               <ul class="m-0 list-none space-y-2 p-0">
                 <li v-for="range in data.filters.priceRanges" :key="range.key">
                   <NuxtLink :to="priceLink(range.key)" class="flex items-center gap-2.5 text-sm text-[#20344b] no-underline hover:text-navy-950">
@@ -220,22 +227,42 @@ usePublicSocialMeta({
               </ul>
             </section>
 
-            <NuxtLink v-if="(data.selected.priceKeys ?? []).length" :to="resetFilterLink()" class="text-sm text-[#20344b] underline underline-offset-2 hover:text-navy-950">Xóa bộ lọc</NuxtLink>
+            <NuxtLink v-if="(data.selected.priceKeys ?? []).length" :to="resetFilterLink()" class="inline-block text-sm font-bold text-gold-700 underline underline-offset-2 hover:text-navy-950">Xóa bộ lọc</NuxtLink>
           </aside>
 
           <section class="min-w-0" aria-label="Sản phẩm thương hiệu" :aria-busy="pending">
-            <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
-              <h2 class="m-0 text-lg font-black text-navy-800">{{ data.brand.name }}</h2>
-              <label class="flex items-center gap-2 text-sm text-slate-500">
-                Sắp xếp
-                <select
-                  class="h-11 rounded-chip border border-gray-300 bg-white px-3 font-normal text-navy-800"
-                  :value="data.selected.sort"
-                  @change="onSortChange"
+            <div class="mb-6 flex flex-col justify-between gap-4 rounded-[4px] border-l-[4px] border-gold-500 bg-navy-950 p-5 text-white sm:flex-row sm:items-center">
+              <div class="min-w-0">
+                <div class="flex flex-wrap items-center gap-3">
+                  <h2 class="m-0 text-xl font-black tracking-tight text-white sm:text-2xl">{{ data.brand.name }}</h2>
+                  <span class="rounded-[3px] bg-gold-500/20 px-2.5 py-0.5 text-xs font-extrabold text-gold-300">
+                    {{ data.pagination.total }} sản phẩm chính hãng
+                  </span>
+                </div>
+                <p v-if="data.seo?.description" class="m-0 mt-1.5 max-w-2xl text-xs leading-relaxed text-white/75 sm:text-sm">
+                  {{ data.seo.description }}
+                </p>
+              </div>
+              <div class="flex flex-wrap items-center gap-3 sm:shrink-0">
+                <button
+                  type="button"
+                  class="inline-flex h-11 cursor-pointer items-center gap-1.5 rounded-[4px] bg-gold-500 px-4 text-xs font-extrabold text-navy-950 transition-colors hover:bg-gold-400"
+                  @click="openConsultation('Thương hiệu: ' + data.brand.name)"
                 >
-                  <option v-for="option in sortOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
-                </select>
-              </label>
+                  <UIcon name="i-lucide-headset" class="size-4" aria-hidden="true" />
+                  <span>Báo giá sỉ / dự án</span>
+                </button>
+                <label class="flex items-center gap-2 text-xs font-semibold text-white/80">
+                  <span>Sắp xếp</span>
+                  <select
+                    class="h-11 rounded-[4px] border border-white/20 bg-white px-3 text-sm font-semibold text-navy-900"
+                    :value="data.selected.sort"
+                    @change="onSortChange"
+                  >
+                    <option v-for="option in sortOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
+                  </select>
+                </label>
+              </div>
             </div>
 
             <CatalogProductGrid :products="data.products" />
