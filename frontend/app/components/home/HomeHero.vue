@@ -179,18 +179,20 @@ onBeforeUnmount(() => {
     </div>
 
     <!-- Editorial Stage Content: asymmetric, left-anchored, no decorative badge -->
-    <div class="relative z-[4] pts-container mx-auto flex min-h-[inherit] flex-col justify-end px-0 pb-[clamp(56px,8vh,96px)] pt-[clamp(76px,12vh,120px)] min-[1800px]:pt-[clamp(88px,13vh,136px)] max-[640px]:min-h-[720px] max-[640px]:justify-end max-[640px]:pb-[150px] max-[640px]:pt-[54px]">
-      <div class="flex w-full max-w-[760px] flex-col items-start text-left">
-        <h1 id="home-title" class="m-0 w-full text-left text-[clamp(40px,4.4vw,72px)] min-[1800px]:text-[clamp(52px,4vw,86px)] font-black uppercase leading-[.98] tracking-[-.035em] text-navy-950 [text-shadow:0_2px_14px_rgba(255,255,255,.7)] max-[640px]:text-[clamp(32px,10vw,42px)] max-[640px]:leading-[1.04]">
-          Thiết bị &amp; giải pháp năng lượng mặt trời
-        </h1>
+    <div class="relative z-[4] pts-container mx-auto flex min-h-[inherit] flex-col justify-end px-0 pb-[clamp(48px,7vh,84px)] pt-[clamp(48px,7vh,84px)] max-[640px]:min-h-[720px] max-[640px]:justify-end max-[640px]:pb-[150px] max-[640px]:pt-[54px]">
+      <div class="flex w-full max-w-[720px] gap-[22px] max-[640px]:gap-[14px]">
+        <span class="mt-[.2em] h-[clamp(140px,22vw,260px)] w-[3px] flex-none bg-gold-500 max-[640px]:h-[88px]" aria-hidden="true" />
+        <div class="flex min-w-0 flex-col items-start text-left">
+          <h1 id="home-title" class="m-0 w-full text-left text-[clamp(38px,4.6vw,76px)] min-[1800px]:text-[clamp(50px,4.2vw,90px)] font-black uppercase leading-[.96] tracking-[-.035em] text-navy-950 [text-shadow:0_2px_14px_rgba(255,255,255,.7)] max-[640px]:text-[clamp(30px,9.4vw,40px)] max-[640px]:leading-[1.02]">
+            Thiết bị &amp; giải pháp<br>năng lượng mặt trời
+          </h1>
 
-        <p class="mx-0 mb-[30px] mt-[22px] w-full max-w-[560px] text-left text-[clamp(16px,1.12vw,19px)] font-medium leading-[1.68] text-navy-900 [text-shadow:0_1px_8px_rgba(255,255,255,.65)] max-[640px]:mb-[22px] max-[640px]:mt-[14px] max-[640px]:text-[15.5px]">
-          Phúc Thịnh Solar cung cấp thiết bị chiếu sáng, điện mặt trời và lưu trữ năng lượng; tư vấn phương án phù hợp cho gia đình, doanh nghiệp và công trình.
-        </p>
+          <p class="mx-0 mb-[28px] mt-[20px] w-full max-w-[520px] text-left text-[clamp(16px,1.12vw,19px)] font-medium leading-[1.68] text-navy-900 [text-shadow:0_1px_8px_rgba(255,255,255,.65)] max-[640px]:mb-[20px] max-[640px]:mt-[14px] max-[640px]:text-[15.5px]">
+            Phúc Thịnh Solar cung cấp thiết bị chiếu sáng, điện mặt trời và lưu trữ năng lượng; tư vấn phương án phù hợp cho gia đình, doanh nghiệp và công trình.
+          </p>
 
-        <!-- CTAs: asymmetric, lead action first -->
-        <div class="flex w-full max-w-[560px] flex-wrap items-center gap-[18px]">
+          <!-- CTAs: asymmetric, lead action first -->
+          <div class="flex w-full max-w-[560px] flex-wrap items-center gap-[18px]">
           <UButton
             href="#danh-muc-thiet-bi"
             color="primary"
@@ -205,6 +207,7 @@ onBeforeUnmount(() => {
           >
             Tư vấn lắp đặt <span aria-hidden="true">→</span>
           </a>
+          </div>
         </div>
       </div>
     </div>
