@@ -8,6 +8,7 @@ import HomeCatalog from '~/components/home/HomeCatalog.vue'
 import HomeCampaigns from '~/components/home/HomeCampaigns.vue'
 import HomeEditorial from '~/components/home/HomeEditorial.vue'
 import HomeContact from '~/components/home/HomeContact.vue'
+import EnergyStageSection from '~/components/experience-v3/EnergyStageSection.vue'
 
 const props = withDefaults(defineProps<{ preview?: boolean }>(), { preview: false })
 const config = useRuntimeConfig()
@@ -51,6 +52,7 @@ usePublicSocialMeta({
       </div>
       <template v-else>
         <HomeHero :hero="home.hero" />
+        <EnergyStageSection />
         <HomeCatalog :categories="home.categories" :campaigns="home.campaigns" />
         <HomeCampaigns :campaigns="home.campaigns" :campaigns-configured="(home.summary.campaignsConfigured ?? 0) > 0" />
         <HomeEditorial :data="home" />

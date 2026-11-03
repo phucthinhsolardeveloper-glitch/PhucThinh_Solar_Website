@@ -139,14 +139,13 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
     <section v-if="about.history.items.length" id="lich-su-phat-trien" class="scroll-mt-[160px] bg-slate-50 py-16 max-[800px]:scroll-mt-[116px] max-[800px]:py-12 min-[1800px]:scroll-mt-[184px]" aria-labelledby="about-history-title">
       <div class="pts-container grid grid-cols-2 items-stretch gap-[clamp(30px,5.4vw,86px)] max-[800px]:grid-cols-1">
         <div>
-          <span class="mb-2.5 inline-flex items-center gap-1.5 font-mono text-xs font-bold uppercase tracking-wider text-gold-700">Lộ trình & Cột mốc</span>
           <h2 id="about-history-title" class="m-0 text-[clamp(29px,2.6vw,38px)] font-bold leading-[1.22]">{{ about.history.title }}</h2>
           <ol class="mt-7 grid list-none gap-5 p-0" :aria-label="about.labels.timeline">
             <li v-for="(item, index) in about.history.items" :key="`${item.year}-${index}`" class="grid grid-cols-[4.2rem_minmax(0,1fr)] gap-x-4 border-t border-slate-200/80 pt-4 first:border-t-0 first:pt-0">
               <span class="row-span-4 flex size-10 items-center justify-center rounded-sm bg-gold-50 text-xs font-mono font-bold text-gold-700" aria-hidden="true">{{ String(index + 1).padStart(2, '0') }}</span>
               <strong class="text-[1.3rem] leading-[1.2] text-gold-700 font-black">{{ item.year }}</strong>
               <h3 v-if="item.title && about.history.items.length > 1" class="mt-0.5 text-[1.1rem] font-bold leading-[1.22] text-navy-800">{{ item.title }}</h3>
-              <p v-if="item.description" class="m-0 mt-[.3rem] leading-[1.68] text-[#52627c] text-[14.5px]">{{ item.description }}</p>
+              <p v-if="item.description" class="m-0 mt-[.3rem] leading-[1.68] text-[#52627c] text-[15.5px]">{{ item.description }}</p>
             </li>
           </ol>
         </div>
@@ -164,7 +163,6 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
             <img class="block h-full w-full object-cover" :src="about.people.image" :alt="about.people.title" width="780" height="620" loading="lazy">
           </figure>
           <div>
-            <span class="mb-2.5 inline-flex items-center gap-1.5 font-mono text-xs font-bold uppercase tracking-wider text-gold-700">{{ about.people.eyebrow || 'Đội ngũ chuyên gia' }}</span>
             <h2 id="about-people-title" class="m-0 text-[clamp(29px,2.6vw,38px)] font-bold leading-[1.22]">{{ about.people.title }}</h2>
             <p v-if="about.people.intro" class="mt-[1.1rem] text-[1.06rem] leading-[1.68] text-[#52627c]">{{ about.people.intro }}</p>
             <p v-if="about.people.body" class="mt-[1.1rem] border-t border-slate-200 pt-4 leading-[1.68] text-[#52627c]">{{ about.people.body }}</p>
@@ -179,7 +177,7 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
               <img v-if="item.image" class="size-9 object-contain" :src="item.image" alt="" width="56" height="56" loading="lazy">
             </header>
             <h3 class="text-[1.1rem] font-bold leading-[1.28] text-navy-800">{{ item.title }}</h3>
-            <p v-if="item.description" class="m-0 mt-2 leading-[1.68] text-[#52627c] text-[14.5px]">{{ item.description }}</p>
+            <p v-if="item.description" class="m-0 mt-2 leading-[1.68] text-[#52627c] text-[15.5px]">{{ item.description }}</p>
           </article>
         </div>
       </div>
@@ -189,7 +187,6 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
     <section v-if="about.trust.items.length" id="vi-sao-chon-chung-toi" class="scroll-mt-[160px] bg-slate-50 py-16 max-[800px]:scroll-mt-[116px] max-[800px]:py-12 min-[1800px]:scroll-mt-[184px]" aria-labelledby="about-trust-title">
       <div class="pts-container grid grid-cols-[minmax(0,.7fr)_minmax(0,1.3fr)] items-start gap-16 max-[800px]:grid-cols-1 max-[800px]:gap-7">
         <div>
-          <span class="mb-2.5 inline-flex items-center gap-1.5 font-mono text-xs font-bold uppercase tracking-wider text-gold-700">Năng lực cốt lõi</span>
           <h2 id="about-trust-title" class="m-0 text-[clamp(29px,2.6vw,38px)] font-bold leading-[1.22]">{{ about.trust.title }}</h2>
         </div>
 
@@ -201,7 +198,7 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
               <img v-if="item.image" class="size-10 object-contain" :src="item.image" alt="" width="64" height="64" loading="lazy">
             </header>
             <h3 class="text-[1.1rem] font-bold leading-[1.28] text-navy-800">{{ item.title }}</h3>
-            <p v-if="item.description" class="m-0 mt-2 leading-[1.68] text-[#52627c] text-[14.5px]">{{ item.description }}</p>
+            <p v-if="item.description" class="m-0 mt-2 leading-[1.68] text-[#52627c] text-[15.5px]">{{ item.description }}</p>
           </article>
         </div>
       </div>
@@ -210,7 +207,6 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
     <!-- Chapter 5: Compass / Tầm nhìn - Sứ mệnh - Giá trị (Dark Stage Tone) -->
     <section v-if="about.compass.items.length" id="tam-nhin-su-menh" class="scroll-mt-[160px] bg-navy-950 py-16 max-[800px]:scroll-mt-[116px] max-[800px]:py-12 min-[1800px]:scroll-mt-[184px]" aria-labelledby="about-compass-title">
       <div class="pts-container">
-        <span class="mb-2.5 inline-flex items-center gap-1.5 font-mono text-xs font-bold uppercase tracking-wider text-gold-400">Định hướng chiến lược</span>
         <h2 id="about-compass-title" class="m-0 text-[clamp(29px,2.6vw,38px)] font-bold leading-[1.22] text-white">{{ about.compass.title }}</h2>
 
         <!-- Hợp nhất Card 3: Compass (Đồng bộ ngôn ngữ với Dark Tone) -->
@@ -221,7 +217,7 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
               <img v-if="item.image" class="size-9 object-contain filter invert opacity-90" :src="item.image" alt="" width="56" height="56" loading="lazy">
             </header>
             <h3 class="text-[1.1rem] font-bold leading-[1.28] text-white">{{ item.title }}</h3>
-            <p v-if="item.description" class="m-0 mt-2 leading-[1.68] text-[#d1daea] text-[14.5px]">{{ item.description }}</p>
+            <p v-if="item.description" class="m-0 mt-2 leading-[1.68] text-[#d1daea] text-[15.5px]">{{ item.description }}</p>
           </article>
         </div>
       </div>
@@ -232,7 +228,6 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
       <div class="pts-container">
         <header class="grid grid-cols-1 items-end gap-5 min-[801px]:grid-cols-[minmax(0,1fr)_auto]">
           <div>
-            <span class="mb-2.5 inline-flex items-center gap-1.5 font-mono text-xs font-bold uppercase tracking-wider text-gold-700">Hồ sơ năng lực</span>
             <h2 id="about-certificates-title" class="m-0 text-[clamp(29px,2.6vw,38px)] font-bold leading-[1.22]">{{ about.certificates.title }}</h2>
             <p class="mt-3 max-w-[48rem] leading-[1.68] text-[#52627c]">{{ about.certificates.intro }}</p>
           </div>
@@ -266,7 +261,7 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
               </div>
               <span class="font-mono text-xs font-bold uppercase tracking-wider text-gold-700">{{ about.labels.certLabel }}</span>
               <h3 class="mt-1.5 text-[1.1rem] font-bold leading-[1.28] text-navy-800">{{ item.name }}</h3>
-              <p v-if="item.description" class="m-0 mt-2 leading-[1.68] text-[#52627c] text-[14.5px]">{{ item.description }}</p>
+              <p v-if="item.description" class="m-0 mt-2 leading-[1.68] text-[#52627c] text-[15.5px]">{{ item.description }}</p>
             </div>
             <div v-if="item.image" class="mt-4 pt-3 border-t border-slate-100">
               <button type="button" class="inline-flex items-center gap-1.5 text-xs font-bold text-navy-800 hover:text-gold-700 transition-colors cursor-pointer" @click="openCertificate(item, $event)">

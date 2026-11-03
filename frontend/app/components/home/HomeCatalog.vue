@@ -96,9 +96,6 @@ const links = useMigrationLinks()
   <section id="danh-muc-thiet-bi" class="py-[clamp(56px,5vw,84px)]" aria-labelledby="home-catalog-title">
     <div class="pts-container">
       <header class="mb-8 max-w-[760px]">
-        <div class="mb-2 inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-gold-600">
-          <span class="inline-block size-1.5 rounded-full bg-gold-500" /> Danh mục sản phẩm
-        </div>
         <h2 id="home-catalog-title" class="m-0 text-[clamp(28px,2.4vw,40px)] font-black leading-[1.2] tracking-[-.025em] text-navy-950">
           Sản phẩm năng lượng mặt trời
         </h2>

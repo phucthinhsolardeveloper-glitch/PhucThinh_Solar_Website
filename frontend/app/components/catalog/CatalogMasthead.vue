@@ -39,13 +39,10 @@ function catalogHeroSrcSet(src: string): string | undefined {
         >
         <span class="absolute inset-0 -z-10 bg-gradient-to-r from-navy-950/95 via-navy-900/80 to-navy-950/40" aria-hidden="true" />
         <div class="mx-auto flex h-full w-full max-w-[1200px] flex-col items-start justify-center py-8 pb-12 max-[769px]:h-[154px] max-[769px]:w-[calc(100%_-_32px)] max-[769px]:max-w-none max-[769px]:px-4 max-[769px]:py-0 max-[769px]:pb-[10px]">
-          <div class="mb-1.5 inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-gold-400">
-            <span class="inline-block size-1.5 rounded-full bg-gold-400" /> Hệ thống phân phối chính hãng
-          </div>
-          <h1 id="catalog-page-heading" class="mb-2 w-[min(520px,48vw)] max-w-[520px] text-[clamp(27px,2.15vw,36px)] font-extrabold uppercase leading-[1.08] tracking-[-0.02em] text-gold-400 max-[769px]:mb-[7px] max-[769px]:w-[min(100%,300px)] max-[769px]:max-w-[min(100%,300px)] max-[769px]:text-[clamp(24px,7vw,27px)] max-[769px]:leading-[1.12]">
+          <h1 id="catalog-page-heading" class="mb-2 w-[min(560px,50vw)] max-w-[560px] text-[clamp(30px,2.6vw,40px)] font-extrabold uppercase leading-[1.08] tracking-[-0.02em] text-gold-400 max-[769px]:mb-[7px] max-[769px]:w-[min(100%,300px)] max-[769px]:max-w-[min(100%,300px)] max-[769px]:text-[clamp(24px,7vw,27px)] max-[769px]:leading-[1.12]">
             {{ heading }}
           </h1>
-          <p class="m-0 max-w-[560px] text-[14px] leading-[1.45] text-blue-50/95 max-[769px]:max-w-[300px] max-[769px]:text-[13px] max-[481px]:hidden">{{ description }}</p>
+          <p class="m-0 max-w-[580px] text-[15px] leading-[1.5] text-blue-50/95 max-[769px]:max-w-[300px] max-[769px]:text-[13px] max-[481px]:hidden">{{ description }}</p>
         </div>
       </div>
     </section>

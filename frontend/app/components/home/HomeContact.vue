@@ -72,9 +72,6 @@ async function send() {
   >
     <div class="pts-container">
       <header class="mb-8 max-w-[760px]">
-        <div class="mb-2 inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-gold-600">
-          <span class="inline-block size-1.5 rounded-full bg-gold-500" /> Kết nối chuyên gia
-        </div>
         <h2 id="home-contact-title" class="m-0 text-[clamp(28px,2.4vw,40px)] font-black leading-[1.2] tracking-[-.025em] text-navy-950">
           Bạn đang cần giải pháp nào?
         </h2>

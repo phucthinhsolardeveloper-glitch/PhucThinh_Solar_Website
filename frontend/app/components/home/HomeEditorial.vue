@@ -97,9 +97,6 @@ function selectSolution(value: string | number) {
   >
     <div class="pts-container">
       <header class="mb-8 max-w-[760px]">
-        <div class="mb-2 inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-gold-600">
-          <span class="inline-block size-1.5 rounded-full bg-gold-500" /> Hệ thống ứng dụng
-        </div>
         <h2 id="home-solutions-title" class="m-0 text-[clamp(28px,2.4vw,40px)] font-black leading-[1.2] text-navy-950">
           Giải pháp cho từng nhu cầu
         </h2>
@@ -178,9 +175,6 @@ function selectSolution(value: string | number) {
   >
     <div class="pts-container">
       <header class="mb-8 max-w-[760px]">
-        <div class="mb-2 inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-gold-600">
-          <span class="inline-block size-1.5 rounded-full bg-gold-500" /> Quy trình dịch vụ
-        </div>
         <h2 id="home-process-title" class="m-0 text-[clamp(28px,2.4vw,40px)] font-black leading-[1.2] text-navy-950">
           Đồng hành từ tư vấn đến vận hành
         </h2>
@@ -192,7 +186,7 @@ function selectSolution(value: string | number) {
         <li v-for="step in data.process" :key="step.number" class="group min-w-0 rounded-[6px] border-t-2 border-slate-300 bg-white p-4 shadow-2xs transition-all duration-200 hover:border-gold-500 hover:shadow-sm">
           <b class="font-mono text-sm font-black text-gold-600">{{ step.number }}</b>
           <h3 class="mt-2 text-[15.5px] font-bold leading-[1.4] text-navy-950">{{ step.name }}</h3>
-          <p class="mt-1.5 text-[13px] leading-[1.6] text-slate-500">{{ step.description }}</p>
+          <p class="mt-1.5 text-[14px] leading-[1.6] text-slate-500">{{ step.description }}</p>
         </li>
       </ol>
     </div>
@@ -202,9 +196,6 @@ function selectSolution(value: string | number) {
   <section class="bg-navy-950 py-[clamp(52px,5vw,72px)] text-[#d8e1ea]" aria-labelledby="home-dealer-title">
     <div class="pts-container grid grid-cols-[minmax(0,1fr)_minmax(420px,480px)] items-center gap-[clamp(28px,4vw,56px)] max-[860px]:grid-cols-1">
       <div>
-        <div class="mb-2 inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-gold-400">
-          <span class="inline-block size-1.5 rounded-full bg-gold-400" /> Hợp tác kinh doanh
-        </div>
         <h2 id="home-dealer-title" class="m-0 text-[clamp(28px,2.4vw,40px)] font-black leading-[1.2] text-white">
           {{ data.dealer.title }}
         </h2>
@@ -243,9 +234,6 @@ function selectSolution(value: string | number) {
   <section v-if="!data.about.configured || data.about.visible" class="py-[clamp(56px,5vw,84px)] pb-[clamp(44px,4vw,64px)]" aria-labelledby="home-about-title">
     <div class="pts-container grid grid-cols-[minmax(0,1.15fr)_minmax(360px,.85fr)] items-start gap-[clamp(40px,5vw,80px)] max-[860px]:grid-cols-1">
       <div>
-        <div class="mb-2 inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-gold-600">
-          <span class="inline-block size-1.5 rounded-full bg-gold-500" /> Về thương hiệu
-        </div>
         <h2 id="home-about-title" class="m-0 text-[clamp(28px,2.4vw,40px)] font-black leading-[1.2] text-navy-950">
           {{ data.about.title }}
         </h2>

@@ -17,9 +17,6 @@ const leadIntent = useState<string>('public-home-lead-intent', () => '')
     <div class="pts-container">
       <header class="mb-8 flex max-w-none items-end justify-between gap-6 max-[860px]:flex-col max-[860px]:items-start">
         <div>
-          <div class="mb-2 inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-gold-600">
-            <span class="inline-block size-1.5 rounded-full bg-gold-500" /> Không gian ứng dụng
-          </div>
           <h2 id="home-campaign-title" class="m-0 text-[clamp(28px,2.4vw,40px)] font-black leading-[1.2] tracking-[-.025em] text-navy-950">
             Chiếu sáng phù hợp từng không gian
           </h2>

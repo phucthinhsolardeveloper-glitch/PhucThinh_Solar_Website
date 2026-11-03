@@ -178,28 +178,19 @@ onBeforeUnmount(() => {
       <a v-if="current" :href="links.generic(current.href)" class="hidden" aria-hidden="true" />
     </div>
 
-    <!-- Centered Editorial Stage Content -->
-    <div class="relative z-[4] pts-container mx-auto flex min-h-[inherit] flex-col items-start justify-start px-0 pb-0 pt-[clamp(76px,12vh,120px)] min-[1800px]:pt-[clamp(88px,13vh,136px)] max-[640px]:min-h-[720px] max-[640px]:items-center max-[640px]:justify-start max-[640px]:pb-[150px] max-[640px]:pt-[54px]">
-      <div class="flex w-full max-w-[820px] flex-col items-center text-center max-[1100px]:max-w-[760px]">
-        <!-- Badge subtitle -->
-        <div class="mb-[18px] inline-flex items-center gap-2 rounded-full border border-navy-950/15 bg-white/60 px-4 py-1.5 backdrop-blur-xs shadow-2xs max-[640px]:mb-3 max-[640px]:px-3 max-[640px]:py-1">
-          <span class="inline-block size-2 rounded-full bg-gold-500 animate-pulse" aria-hidden="true" />
-          <p class="m-0 text-[clamp(12px,1.05vw,14px)] font-black uppercase tracking-[.06em] text-navy-950 max-[640px]:text-[11px] max-[640px]:tracking-[.04em]">
-            Phân phối thiết bị · Tư vấn · Thi công lắp đặt
-          </p>
-        </div>
-
-        <h1 id="home-title" aria-label="Thiết bị và giải pháp năng lượng mặt trời" class="m-0 w-full max-w-[920px] text-center text-[clamp(44px,3.5vw,64px)] min-[1800px]:text-[clamp(58px,3.3vw,78px)] font-black uppercase leading-[1.08] tracking-[-.03em] text-navy-950 [text-shadow:0_2px_14px_rgba(255,255,255,.7)] max-[640px]:text-[clamp(34px,9.8vw,46px)] max-[640px]:leading-[1.12]">
-          <span class="block text-[.9em] max-[640px]:text-[clamp(24px,6.8vw,30px)] max-[640px]:tracking-[-.04em]">Thiết bị và giải pháp</span>
-          <span class="block text-[.8em] bg-gradient-to-r from-navy-950 via-navy-900 to-navy-950 bg-clip-text text-transparent max-[640px]:text-[clamp(25px,7.4vw,32px)] max-[640px]:tracking-[-.04em]">năng lượng mặt trời</span>
+    <!-- Editorial Stage Content: asymmetric, left-anchored, no decorative badge -->
+    <div class="relative z-[4] pts-container mx-auto flex min-h-[inherit] flex-col justify-end px-0 pb-[clamp(56px,8vh,96px)] pt-[clamp(76px,12vh,120px)] min-[1800px]:pt-[clamp(88px,13vh,136px)] max-[640px]:min-h-[720px] max-[640px]:justify-end max-[640px]:pb-[150px] max-[640px]:pt-[54px]">
+      <div class="flex w-full max-w-[760px] flex-col items-start text-left">
+        <h1 id="home-title" class="m-0 w-full text-left text-[clamp(40px,4.4vw,72px)] min-[1800px]:text-[clamp(52px,4vw,86px)] font-black uppercase leading-[.98] tracking-[-.035em] text-navy-950 [text-shadow:0_2px_14px_rgba(255,255,255,.7)] max-[640px]:text-[clamp(32px,10vw,42px)] max-[640px]:leading-[1.04]">
+          Thiết bị &amp; giải pháp năng lượng mặt trời
         </h1>
 
-        <p class="mx-0 mb-[34px] mt-[20px] w-full max-w-[780px] text-center text-[clamp(16px,1.12vw,19px)] font-medium leading-[1.68] text-navy-900 [text-shadow:0_1px_8px_rgba(255,255,255,.65)] max-[640px]:mb-[26px] max-[640px]:mt-[16px] max-[640px]:text-[16px]">
+        <p class="mx-0 mb-[30px] mt-[22px] w-full max-w-[560px] text-left text-[clamp(16px,1.12vw,19px)] font-medium leading-[1.68] text-navy-900 [text-shadow:0_1px_8px_rgba(255,255,255,.65)] max-[640px]:mb-[22px] max-[640px]:mt-[14px] max-[640px]:text-[15.5px]">
           Phúc Thịnh Solar cung cấp thiết bị chiếu sáng, điện mặt trời và lưu trữ năng lượng; tư vấn phương án phù hợp cho gia đình, doanh nghiệp và công trình.
         </p>
 
-        <!-- CTAs -->
-        <div class="flex w-full max-w-[820px] flex-wrap justify-center gap-[14px]">
+        <!-- CTAs: asymmetric, lead action first -->
+        <div class="flex w-full max-w-[560px] flex-wrap items-center gap-[18px]">
           <UButton
             href="#danh-muc-thiet-bi"
             color="primary"
@@ -208,15 +199,12 @@ onBeforeUnmount(() => {
           >
             Xem sản phẩm
           </UButton>
-          <UButton
+          <a
             href="#yeu-cau-tu-van"
-            color="secondary"
-            variant="outline"
-            size="xl"
-            class="home-hero-glass-button public-neutral-button min-h-[52px] rounded-[4px] border border-navy-950/25 bg-white/70 px-[30px] text-[15.5px] font-extrabold leading-[1.2] text-navy-950 no-underline backdrop-blur-sm transition-all duration-200 hover:bg-white hover:border-navy-950/40 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] cursor-pointer max-[640px]:min-h-[48px] max-[640px]:px-[20px] max-[640px]:text-sm"
+            class="inline-flex items-center gap-2 border-b-2 border-navy-950/70 pb-1 text-[15.5px] font-extrabold leading-[1.2] text-navy-950 no-underline transition-colors hover:border-gold-500 hover:text-gold-700 [text-shadow:0_1px_8px_rgba(255,255,255,.65)]"
           >
-            Tư vấn lắp đặt
-          </UButton>
+            Tư vấn lắp đặt <span aria-hidden="true">→</span>
+          </a>
         </div>
       </div>
     </div>
