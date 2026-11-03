@@ -159,7 +159,7 @@ const { activeHeadingId, scrollToHeading } = useTocScrollspy({
       </div>
 
       <template v-else>
-        <GridSurface :size="32">
+        <GridSurface v-if="data.intro" :size="32">
           <section class="solution-energy-intro" aria-labelledby="solutions-title">
             <div class="solution-energy-intro-copy">
               <h1 id="solutions-title">{{ data.intro?.title || data.title }}</h1>
@@ -174,6 +174,7 @@ const { activeHeadingId, scrollToHeading } = useTocScrollspy({
             </figure>
           </section>
         </GridSurface>
+        <h1 v-else class="sr-only">{{ data.title }}</h1>
 
         <section class="solution-energy-stage" aria-labelledby="energy-stage-title">
           <div class="solution-stage-heading">

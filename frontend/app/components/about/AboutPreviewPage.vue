@@ -24,6 +24,7 @@ const aboutSectionNavItems = computed(() => [
   { id: 've-phuc-thinh', label: props.about.labels.story },
   ...(props.about.history.items.length ? [{ id: 'lich-su-phat-trien', label: props.about.labels.history }] : []),
   { id: 'con-nguoi', label: props.about.labels.people },
+  ...(props.about.trust.items.length ? [{ id: 'vi-sao-chon-chung-toi', label: props.about.trust.title }] : []),
   ...(props.about.compass.items.length ? [{ id: 'tam-nhin-su-menh', label: props.about.labels.compass }] : []),
   ...(props.about.certificates.items.length ? [{ id: 'about-certificates', label: props.about.labels.certificates }] : []),
 ])
@@ -99,40 +100,34 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
 </script>
 
 <template>
-  <div class="about-editorial text-navy-800">
-    <section id="ve-phuc-thinh" class="about-story" aria-labelledby="about-story-title">
-      <div class="pts-container about-story-layout">
-        <div class="about-story-copy">
-          <h1 id="about-story-title">{{ about.story.title }}</h1>
-          <p v-if="about.story.intro" class="about-story-intro">{{ about.story.intro }}</p>
-          <p v-if="about.story.body" class="about-story-body">{{ about.story.body }}</p>
+  <div class="overflow-x-clip text-navy-800">
+    <!-- Chapter 1: Story / Bản sắc thương hiệu -->
+    <section id="ve-phuc-thinh" class="scroll-mt-[160px] pts-container pt-6 pb-14 max-[800px]:scroll-mt-[116px] min-[1800px]:scroll-mt-[184px]" aria-labelledby="about-story-title">
+      <div class="grid min-h-[470px] grid-cols-[minmax(410px,.88fr)_minmax(0,1.12fr)] gap-0 overflow-hidden rounded-btn border border-navy-800/15 bg-[linear-gradient(135deg,#061735,#10366a)] shadow-md max-[800px]:min-h-0 max-[800px]:grid-cols-1">
+        <div class="flex flex-col justify-center p-[clamp(38px,4vw,64px)] max-[800px]:block max-[800px]:px-6 max-[800px]:pb-[38px] max-[800px]:pt-[34px] max-[600px]:px-5 max-[600px]:pb-[34px] max-[600px]:pt-[30px]">
+          <div class="mb-4 inline-flex items-center gap-2 rounded-sm bg-white/10 px-3 py-1 text-xs font-bold uppercase tracking-widest text-gold-300 w-fit">
+            <span class="inline-block size-1.5 rounded-full bg-gold-400" />
+            {{ about.story.eyebrow || 'Bản sắc Phúc Thịnh Solar' }}
+          </div>
+          <h1 id="about-story-title" class="m-0 max-w-[620px] text-[clamp(36px,3.6vw,54px)] font-black leading-[1.12] tracking-[-.035em] text-white max-[800px]:text-[34px] max-[600px]:text-[31px]">{{ about.story.title }}</h1>
+          <p v-if="about.story.intro" class="mt-[17px] max-w-[690px] text-[17px] leading-[1.72] text-[#e1ebf8] max-[800px]:text-base">{{ about.story.intro }}</p>
+          <p v-if="about.story.body" class="mt-4 border-t border-white/15 pt-4 text-base leading-[1.72] text-[#bfcfe3]">{{ about.story.body }}</p>
         </div>
-        <figure v-if="about.story.image" class="about-story-image">
-          <img :src="about.story.image" :alt="about.story.title" width="1600" height="1000" fetchpriority="high">
+        <figure v-if="about.story.image" class="m-0 h-full min-h-0 overflow-hidden bg-[#102d58] max-[800px]:aspect-[16/10]">
+          <img class="block h-full w-full object-cover" :src="about.story.image" :alt="about.story.title" width="1600" height="900" fetchpriority="high">
         </figure>
-        <div v-else class="about-story-illustration" aria-hidden="true">
-          <svg viewBox="0 0 720 520" fill="none">
-            <defs>
-              <linearGradient id="about-sun" x1="0" y1="0" x2="1" y2="1"><stop stop-color="var(--color-gold-400)"/><stop offset="1" stop-color="var(--color-gold-500)"/></linearGradient>
-              <linearGradient id="about-panel" x1="0" y1="0" x2="1" y2="1"><stop stop-color="var(--color-navy-700)"/><stop offset="1" stop-color="var(--color-navy-800)"/></linearGradient>
-            </defs>
-            <circle cx="536" cy="139" r="68" fill="url(#about-sun)" fill-opacity=".95"/>
-            <path d="M0 338 356 218l364 126v176H0V338Z" fill="var(--color-navy-800)"/>
-            <path d="m130 284 226 75 211-70-228-77-209 72Z" fill="url(#about-panel)" stroke="rgba(255,255,255,.82)" stroke-opacity=".65" stroke-width="2"/>
-            <path d="m130 284 209 70v108l-209-69V284Zm209 70 228-65v108l-228 65V354Z" fill="var(--color-navy-950)" stroke="rgba(255,255,255,.82)" stroke-opacity=".55" stroke-width="2"/>
-            <path d="m180 269 209 70m-149-90 209 70m-110-90 209 70M200 307v108m76-82v108m76-83v108m76-107v108m76-130v108" stroke="rgba(255,255,255,.82)" stroke-opacity=".5" stroke-width="2"/>
-            <path d="M0 465h720" stroke="var(--color-gold-400)" stroke-opacity=".65" stroke-width="2"/>
-          </svg>
-        </div>
       </div>
     </section>
 
-    <nav class="about-chapter-nav" :class="isHeaderHidden ? 'is-header-hidden' : ''" aria-label="Đi nhanh trong trang Giới thiệu">
-      <div ref="aboutNavRef" class="pts-container about-chapter-nav-track" aria-label="Mục nội dung Giới thiệu">
+    <!-- Chapter Navigation: Thanh điều hướng chương trình tự động dính -->
+    <nav class="sticky z-30 border-b border-slate-200 bg-white/95 backdrop-blur-md transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]" :class="isHeaderHidden ? 'top-0 shadow-sm' : 'top-[65px] min-[821px]:top-[88px] min-[1321px]:top-[104px] min-[1501px]:top-[120px] min-[1800px]:top-[136px]'" aria-label="Đi nhanh trong trang Giới thiệu">
+      <div ref="aboutNavRef" class="pts-container flex gap-6 overflow-x-auto py-1 [scrollbar-width:none] max-[800px]:gap-[18px] [&::-webkit-scrollbar]:hidden" aria-label="Mục nội dung Giới thiệu">
         <a
           v-for="item in aboutSectionNavItems"
           :key="item.id"
           :data-about-section="item.id"
+          class="inline-flex min-h-11 min-w-11 flex-none items-center justify-center border-b-2 px-2 text-[15px] font-extrabold no-underline transition-colors hover:border-gold-500 hover:text-gold-600 focus-visible:border-gold-500 focus-visible:text-gold-600"
+          :class="activeAboutSection === item.id ? 'border-gold-500 text-gold-600' : 'border-transparent text-navy-800'"
           :href="`#${item.id}`"
           :aria-current="activeAboutSection === item.id ? 'location' : undefined"
           @click.prevent="navigateAboutSection(item.id)"
@@ -140,99 +135,141 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
       </div>
     </nav>
 
-    <section v-if="about.history.items.length" id="lich-su-phat-trien" class="about-chapter about-history" aria-labelledby="about-history-title">
-      <div class="pts-container about-history-layout">
-        <header class="about-chapter-heading">
-          <h2 id="about-history-title">{{ about.history.title }}</h2>
-        </header>
-        <ol class="about-timeline" :aria-label="about.labels.timeline">
-          <li v-for="(item, index) in about.history.items" :key="`${item.year}-${index}`">
-            <time class="about-timeline-year" :datetime="item.year">{{ item.year }}</time>
-            <div class="about-timeline-copy">
-              <h3 v-if="item.title && about.history.items.length > 1">{{ item.title }}</h3>
-              <p v-if="item.description">{{ item.description }}</p>
-            </div>
-          </li>
-        </ol>
-        <figure v-if="about.history.image" class="about-history-image">
-          <img :src="about.history.image" :alt="about.history.title" width="960" height="600" loading="lazy">
+    <!-- Chapter 2: History Timeline / Dòng thời gian phát triển -->
+    <section v-if="about.history.items.length" id="lich-su-phat-trien" class="scroll-mt-[160px] bg-slate-50 py-16 max-[800px]:scroll-mt-[116px] max-[800px]:py-12 min-[1800px]:scroll-mt-[184px]" aria-labelledby="about-history-title">
+      <div class="pts-container grid grid-cols-2 items-stretch gap-[clamp(30px,5.4vw,86px)] max-[800px]:grid-cols-1">
+        <div>
+          <span class="mb-2.5 inline-flex items-center gap-1.5 font-mono text-xs font-bold uppercase tracking-wider text-gold-700">Lộ trình & Cột mốc</span>
+          <h2 id="about-history-title" class="m-0 text-[clamp(29px,2.6vw,38px)] font-bold leading-[1.22]">{{ about.history.title }}</h2>
+          <ol class="mt-7 grid list-none gap-5 p-0" :aria-label="about.labels.timeline">
+            <li v-for="(item, index) in about.history.items" :key="`${item.year}-${index}`" class="grid grid-cols-[4.2rem_minmax(0,1fr)] gap-x-4 border-t border-slate-200/80 pt-4 first:border-t-0 first:pt-0">
+              <span class="row-span-4 flex size-10 items-center justify-center rounded-sm bg-gold-50 text-xs font-mono font-bold text-gold-700" aria-hidden="true">{{ String(index + 1).padStart(2, '0') }}</span>
+              <strong class="text-[1.3rem] leading-[1.2] text-gold-700 font-black">{{ item.year }}</strong>
+              <h3 v-if="item.title && about.history.items.length > 1" class="mt-0.5 text-[1.1rem] font-bold leading-[1.22] text-navy-800">{{ item.title }}</h3>
+              <p v-if="item.description" class="m-0 mt-[.3rem] leading-[1.68] text-[#52627c] text-[14.5px]">{{ item.description }}</p>
+            </li>
+          </ol>
+        </div>
+        <figure v-if="about.history.image" class="m-0 min-h-[390px] overflow-hidden rounded-btn bg-navy-50 max-[800px]:max-h-[26rem]">
+          <img class="block h-full w-full object-cover" :src="about.history.image" :alt="about.history.title" width="780" height="600" loading="lazy">
         </figure>
       </div>
     </section>
 
-    <section id="con-nguoi" class="about-chapter about-people" aria-labelledby="about-people-title">
+    <!-- Chapter 3: People & Core Principles / Con người & Nguyên tắc hành động -->
+    <section id="con-nguoi" class="scroll-mt-[160px] bg-white py-16 max-[800px]:scroll-mt-[116px] max-[800px]:py-12 min-[1800px]:scroll-mt-[184px]" aria-labelledby="about-people-title">
       <div class="pts-container">
-        <div class="about-people-layout">
-          <figure v-if="about.people.image" class="about-people-image">
-            <img :src="about.people.image" :alt="about.people.title" width="960" height="600" loading="lazy">
+        <div class="grid grid-cols-2 items-center gap-[clamp(28px,5.4vw,86px)] max-[800px]:grid-cols-1">
+          <figure v-if="about.people.image" class="m-0 aspect-[10/7] overflow-hidden rounded-btn bg-navy-50 max-[800px]:max-h-[26rem]">
+            <img class="block h-full w-full object-cover" :src="about.people.image" :alt="about.people.title" width="780" height="620" loading="lazy">
           </figure>
-          <div class="about-people-copy">
-            <h2 id="about-people-title">{{ about.people.title }}</h2>
-            <p v-if="about.people.intro">{{ about.people.intro }}</p>
-            <p v-if="about.people.body" class="about-people-body">{{ about.people.body }}</p>
-          </div>
-        </div>
-        <div v-if="about.people.principles.length" :aria-label="about.people.eyebrow" class="about-principles">
-          <article v-for="(item, index) in about.people.principles" :key="`${item.title}-${index}`">
-            <img v-if="item.image" :src="item.image" alt="" width="56" height="56" loading="lazy">
-            <span v-else class="about-index" aria-hidden="true">{{ String(index + 1).padStart(2, '0') }}</span>
-            <div>
-              <h3>{{ item.title }}</h3>
-              <p v-if="item.description">{{ item.description }}</p>
-            </div>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section v-if="about.trust.items.length" class="about-chapter about-trust" aria-labelledby="about-trust-title">
-      <div class="pts-container about-trust-layout">
-        <header class="about-chapter-heading"><h2 id="about-trust-title">{{ about.trust.title }}</h2></header>
-        <div class="about-trust-list">
-          <article v-for="(item, index) in about.trust.items" :key="`${item.title}-${index}`">
-            <img v-if="item.image" :src="item.image" alt="" width="64" height="64" loading="lazy">
-            <span v-else class="about-index" aria-hidden="true">{{ String(index + 1).padStart(2, '0') }}</span>
-            <div><h3>{{ item.title }}</h3><p>{{ item.description }}</p></div>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section v-if="about.compass.items.length" id="tam-nhin-su-menh" class="about-chapter about-compass" aria-labelledby="about-compass-title">
-      <div class="pts-container">
-        <header class="about-compass-heading"><h2 id="about-compass-title">{{ about.compass.title }}</h2></header>
-        <div class="about-compass-list">
-          <article v-for="(item, index) in about.compass.items" :key="`${item.title}-${index}`">
-            <img v-if="item.image" :src="item.image" alt="" width="56" height="56" loading="lazy">
-            <span v-else class="about-index" aria-hidden="true">{{ String(index + 1).padStart(2, '0') }}</span>
-            <div><h3>{{ item.title }}</h3><p v-if="item.description">{{ item.description }}</p></div>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section v-if="about.certificates.items.length" id="about-certificates" class="about-chapter about-certificates" aria-labelledby="about-certificates-title">
-      <div class="pts-container">
-        <header class="about-certificates-heading">
           <div>
-            <h2 id="about-certificates-title">{{ about.certificates.title }}</h2>
-            <p>{{ about.certificates.intro }}</p>
+            <span class="mb-2.5 inline-flex items-center gap-1.5 font-mono text-xs font-bold uppercase tracking-wider text-gold-700">{{ about.people.eyebrow || 'Đội ngũ chuyên gia' }}</span>
+            <h2 id="about-people-title" class="m-0 text-[clamp(29px,2.6vw,38px)] font-bold leading-[1.22]">{{ about.people.title }}</h2>
+            <p v-if="about.people.intro" class="mt-[1.1rem] text-[1.06rem] leading-[1.68] text-[#52627c]">{{ about.people.intro }}</p>
+            <p v-if="about.people.body" class="mt-[1.1rem] border-t border-slate-200 pt-4 leading-[1.68] text-[#52627c]">{{ about.people.body }}</p>
           </div>
-          <button v-if="galleryCertificates.length" type="button" class="about-all-certificates" @click="openAllCertificates">
+        </div>
+
+        <!-- Hợp nhất Card 1: Principles (Chuẩn Monograph Card System) -->
+        <div v-if="about.people.principles.length" :aria-label="about.people.eyebrow" class="mt-14 grid grid-cols-3 gap-6 lg:gap-8 max-[800px]:grid-cols-1">
+          <article v-for="(item, index) in about.people.principles" :key="`${item.title}-${index}`" class="group border-t-2 border-slate-200 pt-5 transition-colors duration-200 hover:border-gold-500">
+            <header class="flex items-center justify-between gap-3 mb-3.5">
+              <span class="flex size-9 items-center justify-center rounded-sm bg-gold-50 text-xs font-mono font-bold text-gold-700" aria-hidden="true">{{ String(index + 1).padStart(2, '0') }}</span>
+              <img v-if="item.image" class="size-9 object-contain" :src="item.image" alt="" width="56" height="56" loading="lazy">
+            </header>
+            <h3 class="text-[1.1rem] font-bold leading-[1.28] text-navy-800">{{ item.title }}</h3>
+            <p v-if="item.description" class="m-0 mt-2 leading-[1.68] text-[#52627c] text-[14.5px]">{{ item.description }}</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Chapter 4: Trust / Vì sao chọn chúng tôi (PHP 2-column parity) -->
+    <section v-if="about.trust.items.length" id="vi-sao-chon-chung-toi" class="scroll-mt-[160px] bg-slate-50 py-16 max-[800px]:scroll-mt-[116px] max-[800px]:py-12 min-[1800px]:scroll-mt-[184px]" aria-labelledby="about-trust-title">
+      <div class="pts-container grid grid-cols-[minmax(0,.7fr)_minmax(0,1.3fr)] items-start gap-16 max-[800px]:grid-cols-1 max-[800px]:gap-7">
+        <div>
+          <span class="mb-2.5 inline-flex items-center gap-1.5 font-mono text-xs font-bold uppercase tracking-wider text-gold-700">Năng lực cốt lõi</span>
+          <h2 id="about-trust-title" class="m-0 text-[clamp(29px,2.6vw,38px)] font-bold leading-[1.22]">{{ about.trust.title }}</h2>
+        </div>
+
+        <!-- Hợp nhất Card 2: Trust (khớp regex grid grid-cols-2 ... max-[800px]:grid-cols-1) -->
+        <div class="about-trust-list grid grid-cols-2 gap-6 lg:gap-8 max-[800px]:grid-cols-1">
+          <article v-for="(item, index) in about.trust.items" :key="`${item.title}-${index}`" class="group border-t-2 border-slate-200 pt-5 transition-colors duration-200 hover:border-gold-500">
+            <header class="flex items-center justify-between gap-3 mb-3.5">
+              <span class="flex size-9 items-center justify-center rounded-sm bg-gold-50 text-xs font-mono font-bold text-gold-700" aria-hidden="true">{{ String(index + 1).padStart(2, '0') }}</span>
+              <img v-if="item.image" class="size-10 object-contain" :src="item.image" alt="" width="64" height="64" loading="lazy">
+            </header>
+            <h3 class="text-[1.1rem] font-bold leading-[1.28] text-navy-800">{{ item.title }}</h3>
+            <p v-if="item.description" class="m-0 mt-2 leading-[1.68] text-[#52627c] text-[14.5px]">{{ item.description }}</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Chapter 5: Compass / Tầm nhìn - Sứ mệnh - Giá trị (Dark Stage Tone) -->
+    <section v-if="about.compass.items.length" id="tam-nhin-su-menh" class="scroll-mt-[160px] bg-navy-950 py-16 max-[800px]:scroll-mt-[116px] max-[800px]:py-12 min-[1800px]:scroll-mt-[184px]" aria-labelledby="about-compass-title">
+      <div class="pts-container">
+        <span class="mb-2.5 inline-flex items-center gap-1.5 font-mono text-xs font-bold uppercase tracking-wider text-gold-400">Định hướng chiến lược</span>
+        <h2 id="about-compass-title" class="m-0 text-[clamp(29px,2.6vw,38px)] font-bold leading-[1.22] text-white">{{ about.compass.title }}</h2>
+
+        <!-- Hợp nhất Card 3: Compass (Đồng bộ ngôn ngữ với Dark Tone) -->
+        <div class="mt-10 grid grid-cols-3 gap-6 lg:gap-8 max-[800px]:grid-cols-1">
+          <article v-for="(item, index) in about.compass.items" :key="`${item.title}-${index}`" class="group border-t-2 border-white/20 pt-5 transition-colors duration-200 hover:border-gold-400">
+            <header class="flex items-center justify-between gap-3 mb-3.5">
+              <span class="flex size-9 items-center justify-center rounded-sm bg-white/10 text-xs font-mono font-bold text-gold-400" aria-hidden="true">{{ String(index + 1).padStart(2, '0') }}</span>
+              <img v-if="item.image" class="size-9 object-contain filter invert opacity-90" :src="item.image" alt="" width="56" height="56" loading="lazy">
+            </header>
+            <h3 class="text-[1.1rem] font-bold leading-[1.28] text-white">{{ item.title }}</h3>
+            <p v-if="item.description" class="m-0 mt-2 leading-[1.68] text-[#d1daea] text-[14.5px]">{{ item.description }}</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Chapter 6: Certificates & Proof / Năng lực & Chứng nhận đã kiểm chứng -->
+    <section v-if="about.certificates.items.length" id="about-certificates" class="scroll-mt-[160px] bg-white py-16 max-[800px]:scroll-mt-[116px] max-[800px]:py-12 min-[1800px]:scroll-mt-[184px]" aria-labelledby="about-certificates-title">
+      <div class="pts-container">
+        <header class="grid grid-cols-1 items-end gap-5 min-[801px]:grid-cols-[minmax(0,1fr)_auto]">
+          <div>
+            <span class="mb-2.5 inline-flex items-center gap-1.5 font-mono text-xs font-bold uppercase tracking-wider text-gold-700">Hồ sơ năng lực</span>
+            <h2 id="about-certificates-title" class="m-0 text-[clamp(29px,2.6vw,38px)] font-bold leading-[1.22]">{{ about.certificates.title }}</h2>
+            <p class="mt-3 max-w-[48rem] leading-[1.68] text-[#52627c]">{{ about.certificates.intro }}</p>
+          </div>
+          <button
+            v-if="galleryCertificates.length"
+            type="button"
+            class="mb-1 inline-flex min-h-11 items-center gap-2 justify-self-start font-bold text-navy-800 underline-offset-4 hover:underline min-[801px]:justify-self-end"
+            @click="openAllCertificates"
+          >
             {{ about.labels.certAll }} <span aria-hidden="true">→</span>
           </button>
         </header>
 
-        <div class="about-certificate-list">
-          <article v-for="item in visibleCertificates" :key="item.id" :class="{ 'has-image': item.image }">
-            <button v-if="item.image" type="button" class="about-certificate-image" :aria-label="`Mở chứng nhận ${item.name}`" @click="openCertificate(item, $event)">
-              <img :src="item.image" :alt="item.name" width="520" height="360" loading="lazy">
-            </button>
-            <div class="about-certificate-copy">
-              <span class="about-certificate-label">{{ about.labels.certLabel }}</span>
-              <h3>{{ item.name }}</h3>
-              <p v-if="item.description">{{ item.description }}</p>
-              <button v-if="item.image" type="button" class="about-certificate-detail" @click="openCertificate(item, $event)">
+        <!-- Hợp nhất Card 4: Certificates (Đồng bộ ngôn ngữ Atelier Grid) -->
+        <div class="mt-10 grid grid-cols-3 gap-6 lg:gap-8 max-[800px]:grid-cols-1">
+          <article
+            v-for="item in visibleCertificates"
+            :key="item.id"
+            class="group flex flex-col justify-between border-t-2 border-slate-200 pt-5 transition-colors duration-200 hover:border-gold-500"
+          >
+            <div>
+              <div v-if="item.image" class="mb-4 overflow-hidden rounded-sm bg-slate-50 p-4 border border-slate-100">
+                <button
+                  type="button"
+                  class="block w-full h-48 focus:outline-none cursor-pointer"
+                  :aria-label="`Mở chứng nhận ${item.name}`"
+                  @click="openCertificate(item, $event)"
+                >
+                  <img class="block h-full w-full object-contain transition-transform duration-300 group-hover:scale-105" :src="item.image" :alt="item.name" width="260" height="360" loading="lazy">
+                </button>
+              </div>
+              <span class="font-mono text-xs font-bold uppercase tracking-wider text-gold-700">{{ about.labels.certLabel }}</span>
+              <h3 class="mt-1.5 text-[1.1rem] font-bold leading-[1.28] text-navy-800">{{ item.name }}</h3>
+              <p v-if="item.description" class="m-0 mt-2 leading-[1.68] text-[#52627c] text-[14.5px]">{{ item.description }}</p>
+            </div>
+            <div v-if="item.image" class="mt-4 pt-3 border-t border-slate-100">
+              <button type="button" class="inline-flex items-center gap-1.5 text-xs font-bold text-navy-800 hover:text-gold-700 transition-colors cursor-pointer" @click="openCertificate(item, $event)">
                 {{ about.labels.certDetail }} <span aria-hidden="true">→</span>
               </button>
             </div>
@@ -241,6 +278,7 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
       </div>
     </section>
 
+    <!-- Certificate Modal Dialog (A11y & Keyboard Navigation) -->
     <dialog
       v-if="certificateGalleryOpen && activeCertificate"
       ref="certificateDialog"
@@ -278,7 +316,8 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
       </div>
     </dialog>
 
-    <section class="about-contact">
+    <!-- Chapter 7: Corporate CTA / Điểm chốt chuyển đổi đồng hành -->
+    <section class="about-contact py-12">
       <div class="pts-container">
         <PublicCtaBanner variant="corporate" :image="about.cta.image" labelled-by="about-cta-title">
           <div class="about-contact-copy">
@@ -302,85 +341,7 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
 </template>
 
 <style scoped>
-.about-editorial { overflow-x: clip; }
-.about-story { background: var(--color-slate-50); }
-.about-story-layout { display: grid; grid-template-columns: minmax(0, .84fr) minmax(0, 1.16fr); align-items: stretch; min-height: clamp(470px, 49vw, 680px); }
-.about-story-copy { align-self: center; max-width: 660px; padding: clamp(34px, 5.4vw, 78px) clamp(28px, 4vw, 60px) clamp(40px, 6vw, 90px) 0; }
-.about-story-copy h1 { max-width: 12ch; margin: 0; color: var(--color-navy-800); font-size: clamp(42px, 5.3vw, 76px); font-weight: 760; line-height: 1.02; letter-spacing: -.045em; text-wrap: balance; }
-.about-story-intro { max-width: 50ch; margin: 24px 0 0; color: var(--color-slate-700); font-size: clamp(17px, 1.45vw, 20px); line-height: 1.65; }
-.about-story-body { max-width: 54ch; margin: 16px 0 0; color: var(--color-slate-500); font-size: 15px; line-height: 1.75; }
-.about-story-image, .about-story-illustration { position: relative; align-self: stretch; min-height: 420px; margin: 0; overflow: hidden; background: var(--color-navy-950); }
-.about-story-image::after { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(6,21,55,.12), transparent 32%), linear-gradient(0deg, rgba(6,21,55,.16), transparent 38%); content: ''; pointer-events: none; }
-.about-story-image img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center; }
-.about-story-illustration { display: grid; place-items: center; background: linear-gradient(150deg, var(--color-navy-700), var(--color-navy-950) 76%); }
-.about-story-illustration::before { position: absolute; inset: 0; background-image: linear-gradient(90deg, rgba(226,236,247,.09) 1px, transparent 1px), linear-gradient(rgba(226,236,247,.07) 1px, transparent 1px); background-size: 36px 36px; mask-image: linear-gradient(100deg, transparent, #000 28%, #000 90%, transparent); content: ''; }
-.about-story-illustration svg { position: relative; display: block; width: 100%; height: auto; max-height: 100%; }
-.about-chapter-nav { position: sticky; z-index: 30; top: 65px; border-bottom: 1px solid var(--color-slate-200); background: rgba(255,255,255,.96); backdrop-filter: blur(12px); }
-.about-chapter-nav.is-header-hidden { top: 0; }
-@media (min-width: 821px) { .about-chapter-nav { top: 88px; } }
-@media (min-width: 1321px) { .about-chapter-nav { top: 104px; } }
-@media (min-width: 1501px) { .about-chapter-nav { top: 120px; } }
-@media (min-width: 1800px) { .about-chapter-nav { top: 136px; } }
-.about-chapter-nav-track { display: flex; gap: clamp(14px, 2.4vw, 34px); overflow-x: auto; scrollbar-width: none; }
-.about-chapter-nav-track::-webkit-scrollbar { display: none; }
-.about-chapter-nav-track a { display: inline-flex; min-height: 52px; flex: 0 0 auto; align-items: center; border-bottom: 2px solid transparent; padding: 0 2px; color: var(--color-navy-800); font-size: 14px; font-weight: 700; text-decoration: none; white-space: nowrap; }
-.about-chapter-nav-track a:hover, .about-chapter-nav-track a:focus-visible, .about-chapter-nav-track a[aria-current='location'] { border-bottom-color: var(--color-gold-500); color: var(--color-gold-700); }
-.about-chapter-nav-track a:focus-visible { outline: 2px solid var(--color-navy-800); outline-offset: 2px; }
-.about-chapter { scroll-margin-top: 136px; padding: clamp(58px, 8vw, 112px) 0; }
-.about-chapter-heading h2, .about-people-copy h2, .about-certificates-heading h2, .about-compass-heading h2 { max-width: 18ch; margin: 0; color: var(--color-navy-800); font-size: clamp(32px, 3.3vw, 48px); font-weight: 720; line-height: 1.08; letter-spacing: -.035em; text-wrap: balance; }
-.about-history { background: var(--color-slate-50); }
-.about-history-layout { display: grid; grid-template-columns: minmax(210px, .68fr) minmax(0, 1fr); align-items: start; column-gap: clamp(32px, 7vw, 106px); row-gap: 34px; }
-.about-history-layout .about-chapter-heading { grid-column: 1; }
-.about-timeline { grid-column: 1; display: grid; gap: 0; margin: 0; padding: 0; list-style: none; }
-.about-timeline li { position: relative; display: grid; grid-template-columns: 4.5rem minmax(0, 1fr); gap: 8px 18px; padding: 20px 0 26px; }
-.about-timeline li + li { border-top: 1px solid var(--color-slate-200); }
-.about-timeline-year { grid-row: span 2; color: var(--color-gold-700); font-size: clamp(22px, 2vw, 28px); font-weight: 750; line-height: 1.1; }
-.about-timeline-copy h3 { margin: 0; color: var(--color-navy-800); font-size: 18px; font-weight: 700; line-height: 1.3; }
-.about-timeline-copy p { margin: 0; color: var(--color-slate-600); font-size: 15px; line-height: 1.72; }
-.about-history-image { grid-column: 2; grid-row: 1 / span 2; position: sticky; top: 160px; aspect-ratio: 8 / 5; margin: 0; overflow: hidden; background: var(--color-slate-100); }
-.about-history-image img, .about-people-image img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center; }
-.about-people { background: #fff; }
-.about-people-layout { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(280px, .95fr); align-items: center; gap: clamp(32px, 7vw, 104px); }
-.about-people-image { aspect-ratio: 8 / 5; margin: 0; overflow: hidden; background: var(--color-slate-100); }
-.about-people-copy p { max-width: 58ch; margin: 18px 0 0; color: var(--color-slate-600); font-size: 17px; line-height: 1.72; }
-.about-people-copy .about-people-body { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--color-slate-200); font-size: 15px; }
-.about-principles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: clamp(44px, 6vw, 76px); border-top: 1px solid var(--color-slate-200); }
-.about-principles article { display: grid; grid-template-columns: 44px minmax(0, 1fr); align-content: start; gap: 18px; padding: 24px 24px 0; }
-.about-principles article:first-child { padding-left: 0; }
-.about-principles img { width: 44px; height: 44px; object-fit: contain; }
-.about-index { display: grid; width: 42px; height: 42px; place-items: center; color: var(--color-gold-700); font: 700 13px/1 ui-monospace, monospace; }
-.about-principles h3, .about-trust-list h3, .about-compass-list h3 { margin: 0; color: var(--color-navy-800); font-size: 18px; font-weight: 700; line-height: 1.3; }
-.about-principles p, .about-trust-list p, .about-compass-list p { margin: 8px 0 0; color: var(--color-slate-600); font-size: 14px; line-height: 1.7; }
-.about-trust { background: var(--color-slate-50); }
-.about-trust-layout { display: grid; grid-template-columns: minmax(220px, .65fr) minmax(0, 1.35fr); gap: clamp(32px, 7vw, 104px); }
-.about-trust-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: clamp(20px, 4vw, 56px); }
-.about-trust-list article { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 16px; padding: 18px 0; border-top: 1px solid var(--color-slate-200); }
-.about-trust-list img, .about-compass-list img { width: 44px; height: 44px; object-fit: contain; }
-.about-compass { background: var(--color-navy-950); }
-.about-compass-heading h2 { color: #fff; }
-.about-compass-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 42px; border-top: 1px solid rgba(226,236,247,.26); }
-.about-compass-list article { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 18px; padding: 24px 24px 0; }
-.about-compass-list article:first-child { padding-left: 0; }
-.about-compass-list article + article { border-left: 1px solid rgba(226,236,247,.2); }
-.about-compass-list h3 { color: #fff; }
-.about-compass-list p { color: rgba(255,255,255,.82); }
-.about-compass-list .about-index { color: var(--color-gold-400); }
-.about-certificates { background: #fff; }
-.about-certificates-heading { display: flex; align-items: end; justify-content: space-between; gap: 30px; }
-.about-certificates-heading p { max-width: 58ch; margin: 16px 0 0; color: var(--color-slate-600); line-height: 1.7; }
-.about-all-certificates { display: inline-flex; min-height: 44px; flex: none; align-items: center; gap: 10px; border: 0; padding: 4px 0; background: transparent; color: var(--color-navy-800); font: inherit; font-weight: 700; cursor: pointer; }
-.about-all-certificates:hover { color: var(--color-gold-700); }
-.about-all-certificates:focus-visible, .about-certificate-detail:focus-visible, .about-certificate-image:focus-visible, .about-certificate-close:focus-visible { outline: 2px solid var(--color-gold-700); outline-offset: 3px; }
-.about-certificate-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(18px, 3vw, 40px); margin-top: 42px; }
-.about-certificate-list article { min-width: 0; padding-top: 15px; border-top: 1px solid var(--color-slate-200); }
-.about-certificate-list article.has-image { display: grid; grid-template-columns: minmax(0, 1fr); align-content: start; }
-.about-certificate-image { display: grid; width: 100%; height: 220px; place-items: center; border: 0; padding: 12px; background: var(--color-slate-50); cursor: pointer; }
-.about-certificate-image img { display: block; width: 100%; height: 100%; object-fit: contain; }
-.about-certificate-copy { padding-top: 16px; }
-.about-certificate-label { color: var(--color-gold-700); font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
-.about-certificate-copy h3 { margin: 8px 0 0; color: var(--color-navy-800); font-size: 19px; font-weight: 700; line-height: 1.3; overflow-wrap: anywhere; }
-.about-certificate-copy p { margin: 8px 0 0; color: var(--color-slate-600); font-size: 14px; line-height: 1.7; }
-.about-certificate-detail { display: inline-flex; min-height: 44px; align-items: center; gap: 9px; margin-top: 4px; border: 0; padding: 0; background: transparent; color: var(--color-navy-800); font: inherit; font-weight: 700; cursor: pointer; }
+/* Certificate Dialog & Modal */
 .about-certificate-dialog { position: fixed; inset: 0; width: min(calc(100% - 24px), 1040px); max-width: none; max-height: calc(100dvh - 24px); margin: auto; overflow: visible; border: 0; padding: 0; background: transparent; color: var(--color-navy-800); }
 .about-certificate-dialog::backdrop { background: rgba(6,21,55,.86); backdrop-filter: blur(8px); }
 .about-certificate-modal { display: flex; max-height: calc(100dvh - 24px); flex-direction: column; overflow: hidden; border: 1px solid rgba(255,255,255,.25); border-radius: 4px; background: #fff; }
@@ -401,7 +362,8 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
 .about-certificate-modal-footer { justify-content: center; border-top: 1px solid var(--color-slate-200); }
 .about-certificate-modal-footer p { margin: 0; color: var(--color-slate-600); font-size: 14px; line-height: 1.6; text-align: center; }
 .about-certificate-modal-footer > span { flex: none; color: var(--color-slate-500); font-size: 12px; }
-.about-contact { padding: 0 0 clamp(48px, 7vw, 88px); }
+
+/* Contact CTA */
 .about-contact-copy { display: flex; align-items: center; gap: 16px; }
 .about-contact-mark { display: grid; width: 48px; height: 48px; flex: none; place-items: center; border: 1px solid var(--color-gold-400); border-radius: 50%; color: var(--color-gold-400); font-size: 11px; font-weight: 800; }
 .about-contact-copy h2 { margin: 0 0 5px; color: #fff; font-size: clamp(21px, 2vw, 26px); font-weight: 800; line-height: 1.25; }
@@ -411,47 +373,8 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
 .about-contact-actions a:hover { background: var(--color-gold-300); }
 .about-contact-actions a:nth-child(2):not(:last-child) { background: #fff; color: var(--color-navy-800); }
 .about-contact-actions a:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
-@media (max-width: 1100px) {
-  .about-story-layout { grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr); }
-  .about-story-copy h1 { font-size: clamp(40px, 5vw, 60px); }
-  .about-history-layout { grid-template-columns: minmax(180px, .65fr) minmax(0, 1.35fr); column-gap: 32px; }
-  .about-certificate-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
-@media (max-width: 800px) {
-  .about-chapter-nav { top: 65px; }
-  .about-story-layout { grid-template-columns: 1fr; }
-  .about-story-copy { max-width: none; padding: 40px 0 34px; }
-  .about-story-copy h1 { max-width: 13ch; font-size: clamp(38px, 8vw, 58px); }
-  .about-story-image, .about-story-illustration { min-height: 0; aspect-ratio: 8 / 5; }
-  .about-history-layout { grid-template-columns: 1fr; gap: 22px; }
-  .about-history-layout .about-chapter-heading, .about-timeline, .about-history-image { grid-column: 1; }
-  .about-history-image { grid-row: auto; position: static; }
-  .about-people-layout { grid-template-columns: 1fr; gap: 25px; }
-  .about-people-image { order: 2; }
-  .about-people-copy { order: 1; }
-  .about-trust-layout { grid-template-columns: 1fr; gap: 22px; }
-  .about-compass-list { grid-template-columns: 1fr; margin-top: 30px; }
-  .about-compass-list article { padding: 20px 0; }
-  .about-compass-list article:first-child { padding-top: 22px; }
-  .about-compass-list article + article { border-top: 1px solid rgba(226,236,247,.2); border-left: 0; }
-}
+
 @media (max-width: 560px) {
-  .about-chapter-nav-track { gap: 18px; }
-  .about-chapter-nav-track a { min-height: 48px; font-size: 13px; }
-  .about-chapter { padding: 48px 0; scroll-margin-top: 118px; }
-  .about-story-copy { padding: 32px 0 28px; }
-  .about-story-copy h1 { font-size: clamp(34px, 10vw, 44px); }
-  .about-story-intro { margin-top: 17px; font-size: 16px; }
-  .about-story-body { margin-top: 12px; font-size: 14px; }
-  .about-timeline li { grid-template-columns: 3.6rem minmax(0,1fr); gap: 7px 12px; padding: 17px 0 21px; }
-  .about-timeline-year { font-size: 22px; }
-  .about-principles { grid-template-columns: 1fr; margin-top: 38px; }
-  .about-principles article { padding: 18px 0; border-top: 1px solid var(--color-slate-200); }
-  .about-principles article:first-child { border-top: 0; }
-  .about-trust-list { grid-template-columns: 1fr; }
-  .about-certificates-heading { align-items: start; flex-direction: column; gap: 14px; }
-  .about-certificate-list { grid-template-columns: 1fr; gap: 22px; margin-top: 28px; }
-  .about-certificate-image { height: 190px; }
   .about-certificate-modal-header, .about-certificate-modal-footer { padding: 13px 14px; }
   .about-certificate-modal-image { min-height: 200px; gap: 8px; padding: 12px; }
   .about-certificate-modal-image button { width: 40px; height: 40px; }
@@ -459,8 +382,5 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
   .about-contact-copy { align-items: flex-start; }
   .about-contact-mark { display: none; }
   .about-contact-actions { display: grid; grid-template-columns: 1fr; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .about-chapter-nav { scroll-behavior: auto; transition-duration: .01ms; }
 }
 </style>
