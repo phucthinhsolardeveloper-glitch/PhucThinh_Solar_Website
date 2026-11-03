@@ -95,26 +95,28 @@ defineProps<{
 
 .cms-content--editorial-solution blockquote {
   margin: 30px 0;
-  padding: 24px 26px;
+  padding: 22px 26px;
   border: 0;
   border-radius: 3px;
-  background: #f2f5f9;
+  background: #f8fafc;
+  box-shadow: inset 4px 0 0 #e4a849;
   color: #071b46;
-  font-size: 18px;
+  font-size: 17.5px;
   font-weight: 700;
 }
 
 .cms-content--editorial-solution p > code:only-child {
   display: block;
   max-width: 100%;
-  margin: 6px 0;
-  padding: 12px 14px;
+  margin: 10px 0 16px;
+  padding: 14px 18px;
   border: 0;
-  border-radius: 3px;
-  background: #f2f5f9;
-  color: #071b46;
+  border-radius: 4px;
+  background: #071b46;
+  box-shadow: inset 4px 0 0 #e4a849;
+  color: #f8fafc;
   font-size: 15px;
-  font-weight: 400;
+  font-weight: 600;
   line-height: 1.7;
   overflow-wrap: anywhere;
   word-break: break-word;

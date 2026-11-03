@@ -8,6 +8,22 @@ import SolutionsCta from '~/components/solutions/SolutionsCta.vue'
 const props = defineProps<{ data: PublicSolutionDetailPayload; hotline?: string }>()
 const { isHeaderHidden } = useSiteHeader()
 const links = useMigrationLinks()
+const { openConsultation } = useStorefrontModal()
+
+function equipmentIcon(url: string, name: string): string {
+  const haystack = `${url} ${name}`.toLowerCase()
+  if (haystack.includes('pin-luu-tru') || haystack.includes('lưu trữ')) return 'i-lucide-battery-charging'
+  if (haystack.includes('bien-tan') || haystack.includes('inverter')) return 'i-lucide-cpu'
+  if (haystack.includes('den-') || haystack.includes('đèn')) return 'i-lucide-sun-dim'
+  return 'i-lucide-sun'
+}
+
+function handleConsultClick(event: MouseEvent, href: string) {
+  if (href === '#ptsContactModal' || href.includes('#yeu-cau-tu-van')) {
+    event.preventDefault()
+    openConsultation(`Giải pháp: ${props.data.solution.title}`)
+  }
+}
 const editorial = computed(() => buildEditorialTocForFragments(
   [props.data.solution.content, props.data.solution.extraContent] as const,
   { levels: [2, 3], idPrefix: 'solution-section' },
@@ -66,7 +82,7 @@ const { activeHeadingId, scrollToHeading } = useTocScrollspy({
               <p v-if="data.solution.summary" class="mb-6 text-[15px] leading-[1.72] text-blue-100/95 tb:text-base" :class="data.solution.image ? '' : 'nav:col-start-2 nav:row-start-1 nav:mb-0'">{{ data.solution.summary }}</p>
             </div>
             <div class="flex flex-col items-stretch gap-3.5 border-t border-white/15 pt-5 ph:flex-row ph:flex-wrap ph:items-center" :class="data.solution.image ? '' : 'nav:col-start-2 nav:row-start-2'">
-              <UButton :href="links.generic(data.cta.href)" color="primary" size="lg" class="min-h-11 justify-center gap-3 rounded-[4px] bg-hdr-gold px-6 text-sm font-extrabold tracking-wide text-navy-950 no-underline hover:bg-hdr-gold-hover">
+              <UButton :href="links.generic(data.cta.href)" color="primary" size="lg" class="min-h-11 justify-center gap-3 rounded-[4px] bg-hdr-gold px-6 text-sm font-extrabold tracking-wide text-navy-950 no-underline hover:bg-hdr-gold-hover cursor-pointer" @click="handleConsultClick($event, data.cta.href)">
                 <span>{{ data.cta.label }}</span>
                 <span aria-hidden="true">→</span>
               </UButton>
@@ -144,28 +160,29 @@ const { activeHeadingId, scrollToHeading } = useTocScrollspy({
           <div class="mt-5 rounded-btn border border-white/12 bg-white/[.04] p-3.5 text-xs">
             <p class="m-0 mb-1.5 font-extrabold text-white">{{ data.cta.label }}</p>
             <p v-if="data.campaignCta?.description" class="m-0 mb-3 line-clamp-2 leading-relaxed text-blue-100/80">{{ data.campaignCta.description }}</p>
-            <UButton
-              v-if="quickHotlineTel"
-              color="primary"
-              size="sm"
-              class="min-h-11 w-full justify-center gap-2 rounded-[4px] bg-hdr-gold px-3 py-2 text-center text-xs font-extrabold text-navy-950 no-underline hover:bg-hdr-gold-hover"
-              :href="`tel:${quickHotlineTel}`"
-            >
-              <svg class="h-3.5 w-3.5 flex-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92Z" />
-              </svg>
-              <span>{{ quickHotlineText }}</span>
-            </UButton>
-            <UButton
-              v-else
-              color="primary"
-              size="sm"
-              class="min-h-11 w-full justify-center gap-2 rounded-[4px] bg-hdr-gold px-3 py-2 text-center text-xs font-extrabold text-navy-950 no-underline hover:bg-hdr-gold-hover"
-              :href="links.generic(data.cta.href)"
-            >
-              <span>{{ data.cta.label }}</span>
-              <span aria-hidden="true">→</span>
-            </UButton>
+            <div class="grid gap-2">
+              <button
+                type="button"
+                class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-[4px] bg-hdr-gold px-3 py-2 text-center text-xs font-extrabold text-navy-950 transition-colors hover:bg-hdr-gold-hover cursor-pointer"
+                @click="openConsultation(`Giải pháp: ${data.solution.title}`)"
+              >
+                <span>Gửi yêu cầu khảo sát</span>
+                <span aria-hidden="true">→</span>
+              </button>
+              <UButton
+                v-if="quickHotlineTel"
+                color="neutral"
+                variant="outline"
+                size="sm"
+                class="min-h-10 w-full justify-center gap-2 rounded-[4px] border-white/20 bg-white/[.06] px-3 py-1.5 text-center text-xs font-extrabold text-white no-underline hover:border-gold-400 hover:bg-white/12"
+                :href="`tel:${quickHotlineTel}`"
+              >
+                <svg class="h-3.5 w-3.5 flex-none text-gold-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92Z" />
+                </svg>
+                <span>{{ quickHotlineText }}</span>
+              </UButton>
+            </div>
           </div>
         </aside>
 
@@ -182,7 +199,10 @@ const { activeHeadingId, scrollToHeading } = useTocScrollspy({
 
     <section v-if="data.equipment.length" class="pts-container py-6 nav:py-8" aria-labelledby="solution-equipment-title">
       <header class="mb-5 flex flex-col items-start gap-4 min-[801px]:flex-row min-[801px]:items-end min-[801px]:justify-between">
-        <h2 id="solution-equipment-title" class="m-0 text-[clamp(22px,2.2vw,28px)] font-black tracking-tight text-navy-800">Thiết bị cho một hệ thống hoàn chỉnh</h2>
+        <div>
+          <h2 id="solution-equipment-title" class="m-0 text-[clamp(22px,2.2vw,28px)] font-black tracking-tight text-navy-800">Thiết bị cho một hệ thống hoàn chỉnh</h2>
+          <p class="m-0 mt-1 text-sm text-slate-600">Chọn nhóm thiết bị để xem danh mục sản phẩm và thông số kỹ thuật chi tiết.</p>
+        </div>
         <UButton :href="links.generic('/san-pham/')" color="primary" variant="link" size="md" class="min-h-11 justify-start gap-1.5 rounded-none px-0 text-sm font-extrabold text-gold-700 no-underline hover:text-navy-800">
           <span>Xem tất cả sản phẩm</span>
           <span aria-hidden="true">→</span>
@@ -192,14 +212,18 @@ const { activeHeadingId, scrollToHeading } = useTocScrollspy({
         <a
           v-for="item in data.equipment"
           :key="item.url"
-          class="flex min-w-0 items-center gap-3 px-3.5 py-2.5 text-navy-800 no-underline transition-colors hover:text-gold-700"
+          class="group flex min-w-0 items-center gap-3 px-3.5 py-2.5 rounded-r-[4px] border-l-[3px] border-gold-500 bg-slate-50/90 text-navy-800 no-underline transition-colors hover:bg-slate-100 hover:text-gold-700"
           :href="links.generic(item.url)"
         >
-          <img v-if="item.image" :src="item.image" alt="" class="h-12 w-12 flex-none object-contain transition-transform duration-300 hover:scale-105" width="48" height="48" loading="lazy">
-          <span class="min-w-0">
-            <strong class="block text-sm font-bold leading-tight">{{ item.name }}</strong>
-            <small v-if="item.description" class="mt-0.5 block truncate text-xs text-slate-500">{{ item.description }}</small>
+          <img v-if="item.image" :src="item.image" alt="" class="h-12 w-12 flex-none object-contain transition-transform duration-300 group-hover:scale-105" width="48" height="48" loading="lazy">
+          <span v-else class="grid h-12 w-12 flex-none place-items-center rounded-[4px] bg-navy-950 text-gold-400 transition-colors group-hover:bg-gold-500 group-hover:text-navy-950" aria-hidden="true">
+            <UIcon :name="equipmentIcon(item.url, item.name)" class="size-5" />
           </span>
+          <span class="min-w-0 flex-1 py-1">
+            <strong class="block text-sm font-extrabold leading-snug text-navy-900 transition-colors group-hover:text-gold-700">{{ item.name }}</strong>
+            <small v-if="item.description" class="mt-1 block line-clamp-2 text-xs leading-relaxed text-slate-600">{{ item.description }}</small>
+          </span>
+          <span class="flex-none font-bold text-gold-700 transition-transform group-hover:translate-x-1 motion-reduce:transform-none" aria-hidden="true">→</span>
         </a>
       </div>
     </section>
