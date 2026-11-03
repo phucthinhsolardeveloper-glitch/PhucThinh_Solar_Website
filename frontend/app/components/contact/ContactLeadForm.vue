@@ -10,6 +10,15 @@ const subjectOptions = [
   'Hỗ trợ kỹ thuật / Bảo hành',
 ]
 
+const subjectIcons: Record<string, string> = {
+  'Đèn năng lượng mặt trời': 'i-lucide-lamp',
+  'Điện mặt trời gia đình': 'i-lucide-house',
+  'Điện mặt trời doanh nghiệp': 'i-lucide-factory',
+  'Thiết bị (inverter, tấm pin, pin lưu trữ...)': 'i-lucide-cpu',
+  'Hợp tác đại lý': 'i-lucide-handshake',
+  'Hỗ trợ kỹ thuật / Bảo hành': 'i-lucide-wrench',
+}
+
 const promptSuggestions = computed(() => {
   if (form.subject.includes('Đèn')) {
     return [
@@ -146,19 +155,20 @@ async function send() {
 
     <div class="grid min-w-0 content-start gap-5 tb:grid-cols-2">
       <div class="grid min-w-0 gap-2 tb:col-span-2">
-        <span class="text-sm font-semibold text-navy-800">Nhu cầu quan tâm <small class="ml-1 text-xs font-normal text-slate-500">(Chọn 1 chạm)</small></span>
-        <div class="flex flex-wrap gap-2" role="group" aria-label="Nhu cầu quan tâm">
+        <span class="text-[15px] font-extrabold text-navy-900">Anh/chị quan tâm đến</span>
+        <div class="grid grid-cols-2 gap-2 min-[1101px]:grid-cols-3" role="group" aria-label="Nhu cầu quan tâm">
           <button
             v-for="option in subjectOptions"
             :key="option"
             type="button"
-            class="min-h-10 rounded-[3px] border px-3 py-1.5 text-left text-xs font-bold transition-colors cursor-pointer"
+            class="flex min-h-[60px] items-center gap-2.5 rounded-[4px] border px-3 py-2 text-left text-sm font-bold leading-snug transition-colors cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-600"
             :class="form.subject === option
-              ? 'border-navy-900 bg-navy-900 text-gold-300'
-              : 'border-slate-300 bg-white text-navy-800 hover:border-gold-600 hover:text-navy-950'"
+              ? 'border-navy-950 bg-navy-950 text-white'
+              : 'border-slate-300 bg-white text-navy-900 hover:border-gold-500'"
             :aria-pressed="form.subject === option"
             @click="toggleSubject(option)"
           >
+            <UIcon :name="subjectIcons[option] || 'i-lucide-message-circle'" class="size-5 flex-none" :class="form.subject === option ? 'text-gold-400' : 'text-gold-700'" aria-hidden="true" />
             {{ option }}
           </button>
         </div>
@@ -179,7 +189,7 @@ async function send() {
             v-for="chip in promptSuggestions"
             :key="chip"
             type="button"
-            class="rounded-[3px] border border-slate-200 bg-white px-2.5 py-1 text-xs font-semibold text-slate-600 transition-colors hover:border-gold-500 hover:bg-gold-50/50 hover:text-navy-900 cursor-pointer"
+            class="min-h-[34px] rounded-full border border-dashed border-navy-900/30 bg-white px-3 text-[13.5px] font-semibold text-navy-800 transition-colors hover:border-gold-600 cursor-pointer"
             @click="appendPrompt(chip)"
           >
             + {{ chip }}

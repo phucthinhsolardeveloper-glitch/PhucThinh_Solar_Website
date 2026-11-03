@@ -37,9 +37,6 @@ watch(() => props.locations, (locations) => {
         </h2>
         <p v-if="locations.length" class="mb-0 mt-2.5 text-base leading-7 text-slate-600">Chọn điểm giao dịch hoặc kho khu vực để xem địa chỉ, sao chép nhanh và định vị trên bản đồ.</p>
       </div>
-      <span v-if="locations.length" class="rounded-[3px] bg-navy-900 px-3 py-1.5 text-xs font-extrabold text-gold-300">
-        {{ locations.length }} điểm giao dịch & kho vận
-      </span>
     </div>
 
     <div v-if="locations.length" class="grid min-w-0 items-stretch gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-10">
