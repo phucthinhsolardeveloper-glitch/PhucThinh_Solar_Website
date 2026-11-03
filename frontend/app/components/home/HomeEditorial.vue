@@ -2,6 +2,7 @@
 import type { PublicHomeAboutPoint, PublicHomePayload } from '#shared/contracts/public-home'
 import { motion, useReducedMotion } from 'motion-v'
 import HomeProcess from '~/components/home/HomeProcess.vue'
+import HomeDealer from '~/components/home/HomeDealer.vue'
 
 const props = defineProps<{ data: PublicHomePayload }>()
 const solutionChips = [
@@ -31,7 +32,6 @@ const solutionTabs = computed<SolutionTab[]>(() => props.data.solutions.map((sol
 const solutionPanelInteracted = ref(false)
 const links = useMigrationLinks()
 const leadIntent = useState<string>('public-home-lead-intent', () => '')
-const { openDealer } = useStorefrontModal()
 const phpResizableEditorialImage = /^\/(?:upload\/news|assets\/images\/site-visuals)\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png)$/i
 
 function editorialImageCandidate(src: string, width: 760 | 1200, height: 475 | 750): string {
@@ -170,43 +170,7 @@ function selectSolution(value: string | number) {
 
   <HomeProcess :steps="data.process" />
 
-  <!-- Dealer Partnership Stage -->
-  <section class="bg-navy-950 py-[clamp(52px,5vw,72px)] text-[#d8e1ea]" aria-labelledby="home-dealer-title">
-    <div class="pts-container grid grid-cols-[minmax(0,1fr)_minmax(420px,480px)] items-center gap-[clamp(28px,4vw,56px)] max-[860px]:grid-cols-1">
-      <div>
-        <h2 id="home-dealer-title" class="m-0 text-[clamp(28px,2.4vw,40px)] font-black leading-[1.2] text-white">
-          {{ data.dealer.title }}
-        </h2>
-        <p class="my-3.5 mb-5 max-w-[760px] text-[clamp(16px,1.1vw,19px)] leading-[1.65] text-slate-300">
-          {{ data.dealer.description }}
-        </p>
-        <ul class="m-0 grid list-none gap-2.5 p-0">
-          <li class="flex items-start gap-2.5 text-[15.5px] leading-[1.55]">
-            <svg class="mt-0.5 h-4 w-4 flex-none text-gold-400" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m2.5 8.5 3.4 3.4 7.6-7.8" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" /></svg>
-            Danh mục sản phẩm phù hợp nhu cầu thị trường.
-          </li>
-          <li class="flex items-start gap-2.5 text-[15.5px] leading-[1.55]">
-            <svg class="mt-0.5 h-4 w-4 flex-none text-gold-400" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m2.5 8.5 3.4 3.4 7.6-7.8" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" /></svg>
-            Hệ thống kho tại TP.HCM, Đà Nẵng và Gia Lai.
-          </li>
-          <li class="flex items-start gap-2.5 text-[15.5px] leading-[1.55]">
-            <svg class="mt-0.5 h-4 w-4 flex-none text-gold-400" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m2.5 8.5 3.4 3.4 7.6-7.8" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" /></svg>
-            Hỗ trợ tư vấn sản phẩm, kỹ thuật và bảo hành theo chính sách.
-          </li>
-        </ul>
-      </div>
-      <div class="grid w-full grid-cols-1 gap-3 min-[861px]:grid-cols-2 min-[861px]:gap-2.5 max-[860px]:max-w-[480px]">
-        <UButton type="button" color="primary" size="xl" class="min-h-[50px] w-full justify-center rounded-[4px] border border-gold-500 bg-gold-400 px-5 text-sm font-bold text-navy-950 no-underline hover:bg-gold-500 shadow-2xs" @click="openDealer()">
-          Đăng ký làm đại lý
-          <UIcon name="i-lucide-arrow-right" class="size-4" aria-hidden="true" />
-        </UButton>
-        <a class="inline-flex min-h-[50px] w-full items-center justify-center gap-2 rounded-[4px] border border-white/20 bg-white/5 px-5 text-sm font-bold text-white no-underline transition-colors hover:bg-white/10 hover:text-gold-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-400" href="#yeu-cau-tu-van" @click="requestConsultation('Hợp tác đại lý')">
-          Tư vấn đại lý
-          <UIcon name="i-lucide-arrow-right" class="size-4 text-gold-400" aria-hidden="true" />
-        </a>
-      </div>
-    </div>
-  </section>
+  <HomeDealer :dealer="data.dealer" />
 
   <!-- About Section (Architectural Monograph Style) -->
   <section v-if="!data.about.configured || data.about.visible" class="py-[clamp(56px,5vw,84px)] pb-[clamp(44px,4vw,64px)]" aria-labelledby="home-about-title">
