@@ -128,7 +128,7 @@ onBeforeUnmount(() => {
 <template>
   <section
     v-if="current"
-    class="relative isolate z-0 -mt-16 flex min-h-[clamp(580px,40vw,700px)] min-[821px]:-mt-[88px] min-[1321px]:-mt-[104px] min-[1681px]:-mt-[120px] min-[1800px]:-mt-[136px] min-[1800px]:min-h-[max(700px,calc(100vh-174px-clamp(12px,1.2vw,24px)))] min-[1800px]:max-[2299px]:min-h-[max(700px,calc(100vh-clamp(148px,8vw,164px)-clamp(12px,1.2vw,24px)))] max-[640px]:-mt-16 max-[640px]:min-h-[720px] overflow-hidden rounded-b-[6px] text-navy-950 mb-[clamp(16px,1.8vw,32px)] shadow-xs"
+    class="relative isolate z-0 -mt-16 flex min-h-[clamp(580px,40vw,700px)] min-[821px]:-mt-[88px] min-[1321px]:-mt-[104px] min-[1681px]:-mt-[120px] min-[1800px]:-mt-[136px] min-[1800px]:min-h-[max(700px,calc(100vh-174px-clamp(12px,1.2vw,24px)))] min-[1800px]:max-[2299px]:min-h-[max(700px,calc(100vh-clamp(148px,8vw,164px)-clamp(12px,1.2vw,24px)))] max-[640px]:-mt-16 max-[640px]:min-h-[720px] overflow-hidden text-navy-950"
     :class="heroImageUnavailable ? 'bg-slate-50' : 'bg-navy-950'"
     aria-labelledby="home-title"
     role="region"
@@ -213,22 +213,22 @@ onBeforeUnmount(() => {
     </div>
 
     <!-- Solar Cinema Controller (Bottom-Right) -->
-    <div v-if="hero.length > 1" class="absolute bottom-[30px] right-[clamp(24px,4vw,96px)] z-[6] flex items-center gap-[4px] rounded-[6px] border border-white/20 bg-navy-950/70 p-[5px] text-white backdrop-blur-[14px] shadow-xl min-[2300px]:right-[max(24px,calc((100vw-2200px)/2))] max-[640px]:bottom-[16px] max-[640px]:right-4">
-      <button class="flex size-11 items-center justify-center rounded-[4px] border border-transparent bg-transparent text-white transition-all duration-150 motion-reduce:transition-none hover:bg-white/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white active:scale-90 motion-reduce:active:scale-100 cursor-pointer" type="button" aria-label="Banner trước" @click="move(-1)">
+    <div v-if="hero.length > 1" class="absolute bottom-[30px] right-[clamp(24px,4vw,96px)] z-[6] flex items-center gap-[4px] text-white [text-shadow:0_1px_6px_rgba(0,0,0,.45)] min-[2300px]:right-[max(24px,calc((100vw-2200px)/2))] max-[640px]:bottom-[16px] max-[640px]:right-4">
+      <button class="flex size-11 items-center justify-center rounded-full border border-transparent bg-transparent text-white transition-all duration-150 motion-reduce:transition-none hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white active:scale-90 motion-reduce:active:scale-100 cursor-pointer" type="button" aria-label="Banner trước" @click="move(-1)">
         <svg class="h-4.5 w-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg>
       </button>
-      <span class="flex h-11 min-w-[70px] items-center justify-center border-x border-white/15 px-2.5 text-xs text-white/85">
+      <span class="flex h-11 min-w-[70px] items-center justify-center px-2.5 text-xs">
         <b class="mr-[4px] text-[15px] font-black text-gold-400">{{ String(active + 1).padStart(2, '0') }}</b> / {{ String(hero.length).padStart(2, '0') }}
       </span>
-      <button class="flex size-11 items-center justify-center rounded-[4px] border border-transparent bg-transparent text-white transition-all duration-150 motion-reduce:transition-none hover:bg-white/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white active:scale-90 motion-reduce:active:scale-100 cursor-pointer" type="button" aria-label="Banner tiếp theo" @click="move(1)">
+      <button class="flex size-11 items-center justify-center rounded-full border border-transparent bg-transparent text-white transition-all duration-150 motion-reduce:transition-none hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white active:scale-90 motion-reduce:active:scale-100 cursor-pointer" type="button" aria-label="Banner tiếp theo" @click="move(1)">
         <svg class="h-4.5 w-4.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg>
       </button>
     </div>
 
     <!-- Active Slide Title Card (Bottom-Right overlay) -->
-    <p class="absolute bottom-[clamp(120px,15vh,146px)] right-[clamp(24px,4vw,96px)] z-[2] m-0 flex max-w-[min(500px,calc(100vw-48px))] flex-col gap-1 rounded-[4px] border border-white/25 bg-white/30 backdrop-blur-md px-[20px] pb-[14px] pt-[15px] text-right text-navy-950 shadow-sm [text-shadow:0_1px_6px_rgba(255,255,255,.8)] transition-opacity duration-500 min-[2300px]:right-[max(24px,calc((100vw-2200px)/2))] max-[640px]:bottom-[92px] max-[640px]:right-4 max-[640px]:max-w-[calc(100vw-36px)] max-[640px]:px-[14px] max-[640px]:py-[10px]">
+    <p class="absolute bottom-[clamp(120px,15vh,146px)] right-[clamp(24px,4vw,96px)] z-[2] m-0 flex max-w-[min(500px,calc(100vw-48px))] flex-col gap-1 px-[20px] pb-[14px] pt-[15px] text-right text-white [text-shadow:0_1px_10px_rgba(0,0,0,.55)] transition-opacity duration-500 min-[2300px]:right-[max(24px,calc((100vw-2200px)/2))] max-[640px]:bottom-[92px] max-[640px]:right-4 max-[640px]:max-w-[calc(100vw-36px)] max-[640px]:px-[14px] max-[640px]:py-[10px]">
       <strong class="text-[clamp(20px,1.6vw,28px)] font-bold leading-[1.2] max-[640px]:text-[clamp(15px,4.5vw,20px)] max-[640px]:leading-snug line-clamp-2">{{ current.name }}</strong>
-      <span class="text-sm font-medium leading-[1.5] text-navy-950 max-[640px]:hidden">{{ current.description }}</span>
+      <span class="text-sm font-medium leading-[1.5] text-white/90 max-[640px]:hidden">{{ current.description }}</span>
     </p>
   </section>
 </template>
