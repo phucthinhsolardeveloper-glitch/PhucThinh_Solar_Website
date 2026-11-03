@@ -300,7 +300,6 @@ function pageLink(nextPage: number) {
       :heading="heading"
       :description="bannerDescription"
       :hero="catalogData?.categoryHero ?? null"
-      :products="catalogData?.products ?? []"
       :total="catalogData?.pagination.total ?? null"
       :brands="mastheadBrands"
     />
