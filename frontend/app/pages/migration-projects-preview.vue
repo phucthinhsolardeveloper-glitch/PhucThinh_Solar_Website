@@ -88,7 +88,7 @@ usePublicSocialMeta({
     <main class="pts-container pb-20 pt-4">
       <div v-if="error || !projects" class="min-h-[30vh] py-6" role="status">
           <h1 class="mb-3 text-3xl font-black tracking-tight">{{ isPublicRoute ? 'Dự án' : 'Dự án — internal preview' }}</h1>
-          <p class="text-slate-500">Không thể tải dữ liệu CMS trong môi trường hiện tại. {{ isPublicRoute ? 'Nội dung sẽ hiển thị khi CMS khả dụng.' : 'Preview không hiển thị dữ liệu dự án giả.' }}</p>
+          <p class="text-slate-500">{{ isPublicRoute ? 'Danh sách dự án tạm thời chưa tải được. Vui lòng thử lại sau ít phút.' : 'Không thể tải dữ liệu CMS trong môi trường hiện tại. Preview không hiển thị dữ liệu dự án giả.' }}</p>
         </div>
 
         <template v-else>

@@ -66,7 +66,7 @@ onBeforeUnmount(() => {
       </div>
     </div>
 
-    <p v-if="!visibleSpecifications.length" class="text-slate-500">CMS chưa cung cấp thông số được allowlist.</p>
+    <p v-if="!visibleSpecifications.length" class="text-slate-500">Thông số kỹ thuật chi tiết đang được cập nhật. Liên hệ để nhận bảng thông số đầy đủ.</p>
     <p v-else-if="!filteredSpecifications.length" class="py-4 text-slate-500">
       Không tìm thấy thông số khớp với “{{ filterQuery }}”.
       <button type="button" class="ml-1 font-bold text-gold-700 underline cursor-pointer" @click="filterQuery = ''">Xóa bộ lọc</button>

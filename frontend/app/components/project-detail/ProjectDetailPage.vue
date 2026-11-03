@@ -13,11 +13,10 @@ const hotlineHref = computed(() => `tel:${props.project.cta?.hotline.replace(/[^
 const summaryFallback = computed(() => props.content.html?.trim() ? '' : props.project.summary.trim())
 const hasOverview = computed(() => Boolean(props.content.html?.trim() || summaryFallback.value))
 const chapters = computed(() => {
-  const list = [
-    { id: 'project-overview', label: 'Tổng quan', badge: '' },
-    { id: 'project-gallery', label: 'Tư liệu dự án', badge: props.project.gallery.length ? String(props.project.gallery.length) : '' },
-    { id: 'project-equipment', label: 'Điểm nhấn kỹ thuật', badge: props.project.relatedEquipment.length ? String(props.project.relatedEquipment.length) : '' },
-  ]
+  // Only chapters that actually have published content; empty ones are not rendered either.
+  const list = [{ id: 'project-overview', label: 'Tổng quan', badge: '' }]
+  if (props.project.gallery.length) list.push({ id: 'project-gallery', label: 'Tư liệu dự án', badge: String(props.project.gallery.length) })
+  if (props.project.relatedEquipment.length) list.push({ id: 'project-equipment', label: 'Điểm nhấn kỹ thuật', badge: String(props.project.relatedEquipment.length) })
   if (props.project.relatedProjects.length) {
     list.push({ id: 'related-projects-section', label: 'Công trình liên quan', badge: String(props.project.relatedProjects.length) })
   }
@@ -109,7 +108,7 @@ const chapters = computed(() => {
         </div>
       </section>
 
-      <section id="project-gallery" class="project-story__section scroll-mt-20 py-12 nav:py-16" aria-labelledby="project-gallery-heading">
+      <section v-if="project.gallery.length" id="project-gallery" class="project-story__section scroll-mt-20 py-12 nav:py-16" aria-labelledby="project-gallery-heading">
         <header class="mb-7 grid gap-4 tb:grid-cols-[minmax(200px,0.36fr)_minmax(0,1fr)] tb:gap-12">
           <h2 id="project-gallery-heading" class="m-0 text-[clamp(24px,3vw,36px)] font-black tracking-tight text-navy-950">Tư liệu dự án</h2>
           <p class="m-0 max-w-[60ch] self-end text-base leading-relaxed text-slate-600">Hình ảnh và video được công bố cho công trình này.</p>

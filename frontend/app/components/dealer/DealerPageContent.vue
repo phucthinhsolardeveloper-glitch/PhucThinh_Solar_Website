@@ -89,7 +89,7 @@ usePublicSocialMeta({
 
       <div v-if="error || !dealer" class="pts-container min-h-[45vh] py-12" role="status">
         <h1 class="mb-3 text-3xl font-black tracking-tight">{{ pageTitle }}</h1>
-        <p class="text-slate-500">Không thể tải dữ liệu CMS hiện tại. Không hiển thị nội dung đại lý giả.</p>
+        <p class="text-slate-500">Nội dung chương trình đại lý tạm thời chưa tải được. Vui lòng thử lại sau ít phút.</p>
       </div>
 
       <template v-else>

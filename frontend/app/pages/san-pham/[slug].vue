@@ -53,7 +53,7 @@ usePublicSocialMeta({
 
       <div v-if="pending && !product" class="pts-container min-h-[45vh] pt-12 pb-20" role="status" aria-live="polite">
         <h1 class="mb-3 text-3xl font-black tracking-tight">Đang tải sản phẩm…</h1>
-        <p class="text-slate-500">Đang lấy dữ liệu sản phẩm từ CMS.</p>
+        <p class="text-slate-500">Đang tải thông tin sản phẩm…</p>
       </div>
 
       <div v-else-if="error || !product" class="pts-container min-h-[45vh] pt-12 pb-20" role="status">

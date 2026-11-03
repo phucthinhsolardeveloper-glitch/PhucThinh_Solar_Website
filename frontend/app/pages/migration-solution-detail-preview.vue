@@ -70,7 +70,7 @@ usePublicSocialMeta({
 
       <div v-if="error || !data" class="pts-container min-h-[45vh] py-12">
         <h1 class="mb-3 text-3xl font-black tracking-tight">{{ isPublicRoute ? 'Không tìm thấy giải pháp' : 'Giải pháp — internal preview' }}</h1>
-        <p class="text-slate-500">Không thể tải dữ liệu CMS trong môi trường hiện tại. {{ isPublicRoute ? 'Vui lòng kiểm tra lại liên kết.' : 'Preview không hiển thị nội dung giả.' }}</p>
+        <p class="text-slate-500">{{ isPublicRoute ? 'Nội dung giải pháp tạm thời chưa tải được. Vui lòng kiểm tra lại liên kết hoặc thử lại sau.' : 'Không thể tải dữ liệu CMS trong môi trường hiện tại. Preview không hiển thị nội dung giả.' }}</p>
       </div>
 
       <SolutionDetailPage v-else :data="data" :hotline="site.brand.hotline" />

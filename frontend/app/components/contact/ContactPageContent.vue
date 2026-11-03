@@ -47,7 +47,7 @@ usePublicSocialMeta({
       <div class="pts-container">
         <div v-if="error || !contact" class="min-h-[45vh] py-12" role="status">
           <h1 class="mb-3 text-3xl font-black tracking-tight">{{ pageTitle }}</h1>
-          <p class="text-slate-500">Không thể tải dữ liệu CMS trong môi trường hiện tại. Không hiển thị dữ liệu liên hệ giả.</p>
+          <p class="text-slate-500">Thông tin liên hệ tạm thời chưa tải được. Vui lòng thử lại sau ít phút.</p>
         </div>
 
         <template v-else>

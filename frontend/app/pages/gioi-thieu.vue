@@ -51,7 +51,7 @@ usePublicSocialMeta({
       </div>
       <div v-if="pending" class="pts-container min-h-[40vh] py-16 text-center" role="status" aria-live="polite">
         <h1 class="text-3xl font-bold text-navy-800">Giới thiệu</h1>
-        <p class="mt-3 leading-[1.68] text-[#52627c]">Đang tải dữ liệu CMS…</p>
+        <p class="mt-3 leading-[1.68] text-[#52627c]">Đang tải nội dung…</p>
       </div>
       <div v-else-if="error || !about" class="pts-container min-h-[40vh] py-16 text-center" role="status">
         <h1 class="text-3xl font-bold text-navy-800">Giới thiệu</h1>

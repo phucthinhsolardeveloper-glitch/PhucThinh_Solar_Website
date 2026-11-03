@@ -93,7 +93,7 @@ usePublicSocialMeta({
     <main class="pts-container pb-16" :aria-busy="pending">
       <div v-if="!news" class="min-h-[45vh] py-12" :role="error ? 'alert' : 'status'">
           <h1 class="mb-3 text-3xl font-black tracking-tight">{{ isPublicRoute ? 'Kiến thức' : 'Kiến thức — internal preview' }}</h1>
-          <p class="text-slate-500">Không thể tải dữ liệu CMS trong môi trường hiện tại. {{ isPublicRoute ? 'Nội dung sẽ hiển thị khi CMS khả dụng.' : 'Preview không hiển thị bài viết giả.' }}</p>
+          <p class="text-slate-500">{{ isPublicRoute ? 'Bài viết tạm thời chưa tải được. Vui lòng thử lại sau ít phút.' : 'Không thể tải dữ liệu CMS trong môi trường hiện tại. Preview không hiển thị bài viết giả.' }}</p>
         </div>
 
         <template v-else>

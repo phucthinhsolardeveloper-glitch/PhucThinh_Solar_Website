@@ -211,7 +211,7 @@ usePublicSocialMeta({
           </div>
         </div>
         <div v-else-if="pending && !data" class="py-16 text-slate-500" role="status">Đang tìm sản phẩm…</div>
-        <div v-else-if="error" class="rounded-btn border border-red-200 bg-red-50 p-6 text-red-800" role="alert">Không thể tải kết quả tìm kiếm từ CMS local.</div>
+        <div v-else-if="error" class="rounded-btn border border-red-200 bg-red-50 p-6 text-red-800" role="alert">Không thể tải kết quả tìm kiếm lúc này. Vui lòng thử lại.</div>
         <div v-else-if="data" :class="hasFilters ? 'grid gap-8 nav:grid-cols-[260px_minmax(0,1fr)]' : ''">
         <aside v-if="hasFilters && filters" class="hidden nav:block">
           <SearchFilterOptions
