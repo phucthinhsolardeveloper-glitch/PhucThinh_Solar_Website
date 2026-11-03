@@ -108,6 +108,25 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
           <h1 id="about-story-title" class="m-0 max-w-[620px] text-[clamp(36px,3.6vw,54px)] font-black leading-[1.12] tracking-[-.035em] text-white max-[800px]:text-[34px] max-[600px]:text-[31px]">{{ about.story.title }}</h1>
           <p v-if="about.story.intro" class="mt-[17px] max-w-[690px] text-base leading-[1.72] text-[#e1ebf8] md:text-lg">{{ about.story.intro }}</p>
           <p v-if="about.story.body" class="mt-4 border-t border-white/15 pt-4 text-base leading-[1.72] text-[#bfcfe3] md:text-lg">{{ about.story.body }}</p>
+          <div class="mt-6 flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              class="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-[4px] bg-gold-500 px-5 py-2.5 text-sm font-extrabold text-navy-950 transition-colors hover:bg-gold-400"
+              @click="openConsultation('Giới thiệu: ' + about.story.title)"
+            >
+              <span>Nhận tư vấn hợp tác</span>
+              <span aria-hidden="true">→</span>
+            </button>
+            <a
+              v-if="about.certificates.items.length"
+              href="#about-certificates"
+              class="inline-flex min-h-11 items-center gap-2 rounded-[4px] border border-white/25 bg-white/5 px-4 py-2.5 text-sm font-bold text-white no-underline transition-colors hover:border-gold-400 hover:text-gold-300"
+              @click.prevent="navigateAboutSection('about-certificates')"
+            >
+              <span>Xem chứng nhận năng lực</span>
+              <span aria-hidden="true">↓</span>
+            </a>
+          </div>
         </div>
         <figure v-if="about.story.image" class="m-0 h-full min-h-0 overflow-hidden bg-[#102d58] max-[800px]:aspect-[16/10]">
           <img class="block h-full w-full object-cover" :src="about.story.image" :alt="about.story.title" width="1600" height="900" fetchpriority="high">
@@ -135,17 +154,20 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
     <section v-if="about.history.items.length" id="lich-su-phat-trien" class="scroll-mt-[160px] bg-slate-50 py-16 max-[800px]:scroll-mt-[116px] max-[800px]:py-12 min-[1800px]:scroll-mt-[184px]" aria-labelledby="about-history-title">
       <div class="pts-container grid grid-cols-2 items-stretch gap-[clamp(30px,5.4vw,86px)] max-[800px]:grid-cols-1">
         <div>
-          <h2 id="about-history-title" class="m-0 text-[clamp(29px,2.6vw,38px)] font-bold leading-[1.22]">{{ about.history.title }}</h2>
-          <ol class="mt-7 grid list-none gap-5 p-0" :aria-label="about.labels.timeline">
-            <li v-for="(item, index) in about.history.items" :key="`${item.year}-${index}`" class="grid grid-cols-1 gap-x-4 border-t border-slate-200/80 pt-4 first:border-t-0 first:pt-0">
-              <strong class="text-[1.3rem] leading-[1.2] text-gold-700 font-black">{{ item.year }}</strong>
-              <h3 v-if="item.title && about.history.items.length > 1" class="mt-0.5 text-[1.1rem] font-bold leading-[1.22] text-navy-800">{{ item.title }}</h3>
-              <p v-if="item.description" class="m-0 mt-[.3rem] text-base leading-[1.7] text-[#52627c] md:text-lg">{{ item.description }}</p>
+          <h2 id="about-history-title" class="m-0 text-[clamp(29px,2.6vw,38px)] font-bold leading-[1.22]">{{ about.history.title || about.labels.history }}</h2>
+          <ol class="mt-7 grid list-none gap-6 border-l-2 border-gold-500/45 pl-6 p-0" :aria-label="about.labels.timeline">
+            <li v-for="(item, index) in about.history.items" :key="`${item.year}-${index}`" class="relative grid grid-cols-1 gap-x-4 border-t border-slate-200/80 pt-5 first:border-t-0 first:pt-0">
+              <span class=" absolute -left-[31px] top-1.5 first:top-1.5 size-3 rounded-full border-2 border-gold-500 bg-white" :class="index > 0 ? 'top-6' : 'top-1.5'" aria-hidden="true" />
+              <div>
+                <strong class="inline-flex items-center rounded-[3px] bg-gold-500/15 px-2.5 py-0.5 text-[1.2rem] font-black leading-[1.2] text-gold-800">{{ item.year }}</strong>
+              </div>
+              <h3 v-if="item.title && about.history.items.length > 1" class="mt-2 text-[1.1rem] font-bold leading-[1.22] text-navy-800">{{ item.title }}</h3>
+              <p v-if="item.description" class="m-0 mt-1.5 text-base leading-[1.7] text-[#52627c] md:text-lg">{{ item.description }}</p>
             </li>
           </ol>
         </div>
         <figure v-if="about.history.image" class="m-0 min-h-[390px] overflow-hidden rounded-btn bg-navy-50 max-[800px]:max-h-[26rem]">
-          <img class="block h-full w-full object-cover" :src="about.history.image" :alt="about.history.title" width="780" height="600" loading="lazy">
+          <img class="block h-full w-full object-cover" :src="about.history.image" :alt="about.history.title || about.labels.history" width="780" height="600" loading="lazy">
         </figure>
       </div>
     </section>
@@ -167,8 +189,9 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
         <!-- Hợp nhất Card 1: Principles (Chuẩn Monograph Card System) -->
         <div v-if="about.people.principles.length" class="mt-14 grid grid-cols-3 gap-6 lg:gap-8 max-[800px]:grid-cols-1">
           <article v-for="(item, index) in about.people.principles" :key="`${item.title}-${index}`" class="group border-t-2 border-slate-200 pt-5 transition-colors duration-200 hover:border-gold-500">
-            <header v-if="item.image" class="mb-3.5 flex justify-end">
-              <img class="size-9 object-contain" :src="item.image" alt="" width="56" height="56" loading="lazy">
+            <header class="mb-3.5 flex items-center justify-between">
+              <span class="font-mono text-xs font-extrabold text-gold-700">0{{ index + 1 }}</span>
+              <img v-if="item.image" class="size-9 object-contain" :src="item.image" alt="" width="56" height="56" loading="lazy">
             </header>
             <h3 v-if="item.title" class="text-[1.1rem] font-bold leading-[1.28] text-navy-800">{{ item.title }}</h3>
             <p v-if="item.description" class="m-0 mt-2 text-base leading-[1.7] text-[#52627c] md:text-lg">{{ item.description }}</p>
@@ -187,8 +210,9 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
         <!-- Hợp nhất Card 2: Trust (khớp regex grid grid-cols-2 ... max-[800px]:grid-cols-1) -->
         <div class="about-trust-list grid grid-cols-2 gap-6 lg:gap-8 max-[800px]:grid-cols-1">
           <article v-for="(item, index) in about.trust.items" :key="`${item.title}-${index}`" class="group border-t-2 border-slate-200 pt-5 transition-colors duration-200 hover:border-gold-500">
-            <header v-if="item.image" class="mb-3.5 flex justify-end">
-              <img class="size-10 object-contain" :src="item.image" alt="" width="64" height="64" loading="lazy">
+            <header class="mb-3.5 flex items-center justify-between">
+              <span class="font-mono text-xs font-extrabold text-gold-700">0{{ index + 1 }}</span>
+              <img v-if="item.image" class="size-10 object-contain" :src="item.image" alt="" width="64" height="64" loading="lazy">
             </header>
             <h3 v-if="item.title" class="text-[1.1rem] font-bold leading-[1.28] text-navy-800">{{ item.title }}</h3>
             <p v-if="item.description" class="m-0 mt-2 text-base leading-[1.7] text-[#52627c] md:text-lg">{{ item.description }}</p>
@@ -205,8 +229,9 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
         <!-- Hợp nhất Card 3: Compass (Đồng bộ ngôn ngữ với Dark Tone) -->
         <div class="mt-10 grid grid-cols-3 gap-6 lg:gap-8 max-[800px]:grid-cols-1">
           <article v-for="(item, index) in about.compass.items" :key="`${item.title}-${index}`" class="group border-t-2 border-white/20 pt-5 transition-colors duration-200 hover:border-gold-400">
-            <header v-if="item.image" class="mb-3.5 flex justify-end">
-              <img class="size-9 object-contain filter invert opacity-90" :src="item.image" alt="" width="56" height="56" loading="lazy">
+            <header class="mb-3.5 flex items-center justify-between">
+              <span class="font-mono text-xs font-extrabold text-gold-400">0{{ index + 1 }}</span>
+              <img v-if="item.image" class="size-9 object-contain filter invert opacity-90" :src="item.image" alt="" width="56" height="56" loading="lazy">
             </header>
             <h3 v-if="item.title" class="text-[1.1rem] font-bold leading-[1.28] text-white">{{ item.title }}</h3>
             <p v-if="item.description" class="m-0 mt-2 text-base leading-[1.7] text-[#d1daea] md:text-lg">{{ item.description }}</p>
