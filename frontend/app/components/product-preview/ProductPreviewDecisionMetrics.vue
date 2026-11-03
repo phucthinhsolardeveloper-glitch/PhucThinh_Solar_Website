@@ -11,7 +11,7 @@ function displayValue(metric: PublicProductDecisionMetric): string {
 </script>
 
 <template>
-  <div v-if="availableMetrics.length" class="pts-pdp-decision-metrics" aria-label="Thông số chính của sản phẩm">
+  <div v-if="availableMetrics.length" class="pts-pdp-decision-metrics" :data-count="availableMetrics.length" aria-label="Thông số chính của sản phẩm">
     <div v-for="metric in availableMetrics" :key="metric.key" class="pts-pdp-decision-metric">
       <span class="pts-pdp-decision-icon" aria-hidden="true">
         <img
@@ -73,6 +73,16 @@ function displayValue(metric: PublicProductDecisionMetric): string {
 }
 
 .pts-pdp-decision-metric:nth-child(n + 3) { border-top: 1px solid #dfe5ed; }
+/* Odd count: the last metric takes the full row instead of leaving a hole. */
+.pts-pdp-decision-metric:last-child:nth-child(odd) { grid-column: 1 / -1; }
+/* Exactly three: one row of three on wider screens. */
+@media (min-width: 641px) {
+  .pts-pdp-decision-metrics[data-count="3"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .pts-pdp-decision-metrics[data-count="3"] .pts-pdp-decision-metric { grid-column: auto; grid-template-columns: 40px minmax(0, 1fr); gap: 10px; border-top: 0; padding: 16px 12px; }
+  .pts-pdp-decision-metrics[data-count="3"] .pts-pdp-decision-metric:first-child { padding-left: 0; }
+  .pts-pdp-decision-metrics[data-count="3"] .pts-pdp-decision-metric + .pts-pdp-decision-metric { border-left: 1px solid #dfe5ed; }
+  .pts-pdp-decision-metrics[data-count="3"] .pts-pdp-decision-icon { width: 40px; height: 40px; }
+}
 .pts-pdp-decision-icon { display: flex; width: 48px; height: 48px; align-items: center; justify-content: center; border-radius: 4px; background: rgb(254 243 199 / 55%); }
 .pts-pdp-decision-icon img { display: block; width: 36px; height: 36px; object-fit: contain; }
 .pts-pdp-decision-icon svg { display: block; width: 28px; height: 28px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.75; }

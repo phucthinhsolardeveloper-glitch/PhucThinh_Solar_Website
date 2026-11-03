@@ -140,15 +140,9 @@ function openReviewsSection() {
 
         <ProductPurchasePanel :product-id="product.id" :pricing="pricing" :consultation-available="Boolean(extras)">
           <template #product-info>
-            <div v-if="productCategories.length || product.brand" class="mt-[18px] grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-6">
-              <div v-if="productCategories.length" class="min-w-0 text-[12.5px] leading-[1.5] text-slate-500">
-                <span class="mb-0.5 block font-semibold">Danh mục:</span>
-                <span class="font-bold text-navy-800">{{ productCategories.map((item) => item.label).join(', ') }}</span>
-              </div>
-              <div v-if="product.brand" class="min-w-0 text-[12.5px] leading-[1.5] text-slate-500">
-                <span class="mb-0.5 block font-semibold">Thương hiệu:</span>
-                <span class="font-bold text-navy-800">{{ product.brand }}</span>
-              </div>
+            <div v-if="productCategories.length" class="mt-[18px] min-w-0 text-[12.5px] leading-[1.5] text-slate-500">
+              <span class="mb-0.5 block font-semibold">Danh mục:</span>
+              <span class="font-bold text-navy-800">{{ productCategories.map((item) => item.label).join(', ') }}</span>
             </div>
           </template>
         </ProductPurchasePanel>
