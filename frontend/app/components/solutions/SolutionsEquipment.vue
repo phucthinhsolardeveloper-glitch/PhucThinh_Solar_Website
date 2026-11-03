@@ -1,43 +1,262 @@
 <script setup lang="ts">
 import type { PublicSolutionEquipment } from '../../../shared/contracts/public-solutions'
+import type { PublicCatalogPayload, PublicCatalogProduct } from '#shared/contracts/public-catalog'
 import { resolveEquipmentIcon } from '#shared/catalog-menu-presentation'
 
-defineProps<{ equipment: PublicSolutionEquipment[]; title: string; allProductsUrl: string; allProductsLabel: string }>()
+const props = defineProps<{ equipment: PublicSolutionEquipment[]; title: string; allProductsUrl: string; allProductsLabel: string }>()
 const links = useMigrationLinks()
+
+interface Showcase { total: number; products: PublicCatalogProduct[]; backdrop: string }
+
+// Showroom data is enrichment only: the section is fully usable (names,
+// descriptions, category links) before or without it.
+const showcases = ref<Record<string, Showcase>>({})
+const active = ref(0)
+const rootRef = ref<HTMLElement | null>(null)
+let observer: IntersectionObserver | undefined
+
+function categoryPath(url: string): string | null {
+  const match = url.match(/^\/danh-muc-san-pham\/([a-z0-9-]+(?:\/[a-z0-9-]+){0,3})\/$/)
+  return match ? match[1]! : null
+}
+
+// Same fallback as the catalog grid for a source image too large for the thumb service.
+const oversized: Record<string, string> = {
+  '/upload/product/t-bat-tsys-d53-2-4295.png': '/assets/images/site-visuals/media-fallbacks/brand-tbat-tsys-d53.webp',
+}
+const failed = ref<Set<number>>(new Set())
+function thumb(src: string, size = 480): string {
+  const source = oversized[src] || src
+  return source.startsWith('/upload/product/') ? `/thumbs/${size}x${size}x1${source}` : source
+}
+function hideBroken(id: number) { failed.value = new Set(failed.value).add(id) }
+function visible(products: PublicCatalogProduct[]) { return products.filter((product) => !failed.value.has(product.id)) }
+
+async function loadShowcases() {
+  const entries = await Promise.allSettled(props.equipment.map(async (item) => {
+    const path = categoryPath(item.url)
+    if (!path) return null
+    const payload = await $fetch<PublicCatalogPayload>('/_migration/catalog', { query: { category: path, per_page: 6 } })
+    const products = payload.products.filter((product) => product.media[0]).slice(0, 3)
+    return [item.url, { total: payload.pagination.total, products, backdrop: payload.categoryHero?.image || '' }] as const
+  }))
+  const next: Record<string, Showcase> = {}
+  for (const entry of entries) if (entry.status === 'fulfilled' && entry.value) next[entry.value[0]] = entry.value[1]
+  showcases.value = next
+}
+
+onMounted(() => {
+  if (!rootRef.value || !('IntersectionObserver' in window)) { void loadShowcases(); return }
+  observer = new IntersectionObserver((records) => {
+    if (!records.some((record) => record.isIntersecting)) return
+    observer?.disconnect()
+    void loadShowcases()
+  }, { rootMargin: '600px 0px' })
+  observer.observe(rootRef.value)
+})
+onBeforeUnmount(() => observer?.disconnect())
+
+const current = computed(() => props.equipment[active.value])
+const currentShowcase = computed(() => current.value ? showcases.value[current.value.url] : undefined)
+function countLabel(url: string): string {
+  const total = showcases.value[url]?.total
+  return total ? `${total} sản phẩm` : ''
+}
 </script>
 
 <template>
-  <section v-if="equipment.length" class="py-8" aria-labelledby="solutions-equipment-title">
-    <header class="mb-6 flex flex-col items-start gap-3 border-t border-slate-200/80 pt-7 tb:flex-row tb:items-end tb:justify-between tb:gap-6">
-      <h2 id="solutions-equipment-title" class="m-0 text-[clamp(22px,2.2vw,28px)] font-black leading-[1.25] tracking-tight text-navy-800">{{ title }}</h2>
-      <a class="inline-flex min-h-11 items-center gap-1.5 text-sm font-extrabold text-gold-700 no-underline transition-colors hover:text-navy-800" :href="links.generic(allProductsUrl)">{{ allProductsLabel }} <span aria-hidden="true">→</span></a>
-    </header>
+  <section v-if="equipment.length" ref="rootRef" class="showroom" aria-labelledby="solutions-equipment-title">
+    <div class="showroom-index">
+      <header class="showroom-head">
+        <h2 id="solutions-equipment-title">{{ title }}</h2>
+        <a class="showroom-all" :href="links.generic(allProductsUrl)">{{ allProductsLabel }} <span aria-hidden="true">→</span></a>
+      </header>
 
-    <div class="grid grid-cols-1 gap-4 ph:grid-cols-2 nav:grid-cols-4">
-      <a
-        v-for="item in equipment"
-        :key="item.url"
-        class="group flex min-w-0 flex-col justify-between p-4 text-navy-800 no-underline"
-        :href="links.generic(item.url)"
-      >
-        <div>
-          <div v-if="item.image" class="mb-3.5 flex aspect-square w-full items-center justify-center overflow-hidden rounded-chip bg-navy-800/[.03] p-4">
-            <img :src="item.image" alt="" class="h-full w-full object-contain" width="160" height="160" loading="lazy" decoding="async">
-          </div>
-          <div v-else class="mb-3.5 flex items-center justify-between">
-            <span class="grid h-11 w-11 place-items-center rounded-chip bg-navy-800/[.05] text-gold-700 transition-colors group-hover:bg-navy-800 group-hover:text-gold-300">
-              <CatalogMenuIcon class="h-5 w-5" :name="resolveEquipmentIcon(item.name, item.url)" />
+      <ol class="showroom-list">
+        <li
+          v-for="(item, index) in equipment"
+          :key="item.url"
+          class="showroom-row"
+          :data-active="index === active"
+          @mouseenter="active = index"
+        >
+          <a class="showroom-link" :href="links.generic(item.url)" @focus="active = index">
+            <span class="showroom-icon" aria-hidden="true">
+              <CatalogMenuIcon class="size-5" :name="resolveEquipmentIcon(item.name, item.url)" />
             </span>
-            <span class="text-base text-slate-400 transition-transform group-hover:translate-x-0.5 group-hover:text-gold-700" aria-hidden="true">→</span>
+            <span class="showroom-name">{{ item.name }}</span>
+            <span class="showroom-count">{{ countLabel(item.url) }}</span>
+            <span class="showroom-arrow" aria-hidden="true">→</span>
+          </a>
+
+          <!-- Small screens have no hover stage: every row carries its own strip. -->
+          <div class="showroom-mobile">
+            <p v-if="item.description">{{ item.description }}</p>
+            <ul v-if="showcases[item.url]?.products.length" class="showroom-strip">
+              <li v-for="product in visible(showcases[item.url]!.products)" :key="product.id">
+                <a :href="links.generic(product.url)">
+                  <img :src="thumb(product.media[0]!, 320)" :alt="product.name" width="160" height="160" loading="lazy" decoding="async" @error="hideBroken(product.id)">
+                </a>
+              </li>
+            </ul>
           </div>
-          <strong class="block text-[15px] font-extrabold leading-snug text-navy-800 transition-colors group-hover:text-gold-700">{{ item.name }}</strong>
-          <small v-if="item.description" class="mt-1.5 line-clamp-2 block text-[13px] leading-[1.58] text-slate-500">{{ item.description }}</small>
+        </li>
+      </ol>
+    </div>
+
+    <div class="showroom-stage" aria-live="polite">
+      <Transition name="stage-backdrop">
+        <img
+          v-if="currentShowcase?.backdrop"
+          :key="current!.url"
+          class="showroom-backdrop"
+          :src="currentShowcase.backdrop"
+          alt=""
+          loading="lazy"
+          decoding="async"
+        >
+      </Transition>
+
+      <Transition name="stage" mode="out-in">
+        <div :key="current?.url" class="showroom-stage-inner">
+          <ul v-if="currentShowcase?.products.length" class="showroom-products" :data-count="visible(currentShowcase.products).length">
+            <li v-for="(product, index) in visible(currentShowcase.products)" :key="product.id" :style="{ '--i': index }">
+              <a :href="links.generic(product.url)" class="showroom-product">
+                <span class="showroom-product-media">
+                  <img :src="thumb(product.media[0]!)" :alt="product.name" width="480" height="480" loading="lazy" decoding="async" @error="hideBroken(product.id)">
+                </span>
+                <span class="showroom-product-name">{{ product.name }}</span>
+              </a>
+            </li>
+          </ul>
+          <div v-else class="showroom-placeholder" aria-hidden="true">
+            <CatalogMenuIcon v-if="current" class="size-14" :name="resolveEquipmentIcon(current.name, current.url)" />
+          </div>
+
+          <div v-if="current" class="showroom-caption">
+            <p v-if="current.description">{{ current.description }}</p>
+            <a class="showroom-cta" :href="links.generic(current.url)">
+              {{ countLabel(current.url) ? `Xem ${countLabel(current.url)}` : 'Xem danh mục' }}
+              <span aria-hidden="true">→</span>
+            </a>
+          </div>
         </div>
-        <span v-if="item.image" class="mt-3 inline-flex items-center gap-1 text-xs font-extrabold text-gold-700">
-          <span>Xem danh mục</span>
-          <span aria-hidden="true">→</span>
-        </span>
-      </a>
+      </Transition>
     </div>
   </section>
 </template>
+
+<style scoped>
+.showroom {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: clamp(32px, 5vw, 80px);
+  align-items: stretch;
+  padding: clamp(48px, 6vw, 88px) 0 clamp(40px, 5vw, 72px);
+}
+.showroom-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 24px; margin-bottom: clamp(20px, 2.5vw, 32px); }
+.showroom-head h2 { margin: 0; color: var(--color-navy-800); font-size: clamp(28px, 3vw, 44px); font-weight: 800; line-height: 1.1; letter-spacing: -0.03em; }
+.showroom-all { display: inline-flex; min-height: 44px; align-items: center; gap: 6px; color: var(--color-gold-700); font-size: 15px; font-weight: 800; text-decoration: none; }
+.showroom-all:hover { color: var(--color-navy-800); }
+
+.showroom-list { margin: 0; padding: 0; list-style: none; }
+.showroom-link {
+  position: relative;
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) auto 24px;
+  align-items: center;
+  gap: 16px;
+  min-height: 76px;
+  padding: 12px 0;
+  color: var(--color-navy-800);
+  text-decoration: none;
+}
+/* Gold rule grows under the previewed row: shows which category the stage belongs to. */
+.showroom-link::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0;
+  height: 2px;
+  background: var(--pts-gold-gradient, linear-gradient(90deg, #e0b654, #c9962e));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.showroom-icon { display: grid; width: 44px; height: 44px; place-items: center; border-radius: 4px; background: rgb(10 34 81 / 5%); color: var(--color-gold-700); transition: background-color 0.3s ease, color 0.3s ease; }
+.showroom-name { font-size: clamp(19px, 1.7vw, 26px); font-weight: 800; line-height: 1.2; letter-spacing: -0.02em; color: #94a3b8; transition: color 0.3s ease; }
+.showroom-count { color: var(--pts-muted, #64748b); font-size: 15px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.showroom-arrow { color: #94a3b8; font-size: 18px; font-weight: 800; transition: transform 0.3s ease, color 0.3s ease; }
+.showroom-row[data-active="true"] .showroom-name { color: var(--color-navy-800); }
+.showroom-row[data-active="true"] .showroom-icon { background: var(--color-navy-800); color: var(--color-gold-300); }
+.showroom-row[data-active="true"] .showroom-arrow { color: var(--color-gold-700); transform: translateX(4px); }
+.showroom-row[data-active="true"] .showroom-link::after { transform: scaleX(1); }
+.showroom-link:focus-visible { outline: 3px solid var(--color-gold-500); outline-offset: 4px; border-radius: 4px; }
+.showroom-mobile { display: none; }
+
+.showroom-stage {
+  position: relative;
+  display: flex;
+  min-height: 520px;
+  overflow: clip;
+  border-radius: 4px;
+  background: radial-gradient(120% 90% at 50% 100%, #fff7e3 0%, #f8fafc 55%, #eef2f7 100%);
+  isolation: isolate;
+}
+.showroom-backdrop { position: absolute; inset: 0; z-index: -1; width: 100%; height: 100%; object-fit: cover; opacity: 0.12; filter: saturate(0.6); }
+.showroom-stage-inner { display: flex; width: 100%; flex-direction: column; justify-content: space-between; gap: 24px; padding: clamp(24px, 3vw, 44px); }
+
+.showroom-products { display: grid; flex: 1; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: end; gap: clamp(12px, 2vw, 28px); margin: 0; padding: 0; list-style: none; }
+.showroom-products[data-count="1"] { grid-template-columns: minmax(0, 1fr); justify-items: center; }
+.showroom-products[data-count="2"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.showroom-products > li { min-width: 0; animation: product-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both; animation-delay: calc(var(--i) * 90ms); }
+/* Middle product sits forward: a podium rhythm instead of a flat row. */
+.showroom-products[data-count="3"] > li:nth-child(2) { transform: translateY(-8%); }
+.showroom-product { display: flex; flex-direction: column; align-items: center; gap: 12px; color: var(--color-navy-800); text-decoration: none; }
+.showroom-product-media { display: block; width: 100%; max-width: 260px; aspect-ratio: 1; }
+.showroom-product-media img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 22px 22px rgb(6 21 55 / 18%)); transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1); }
+.showroom-product:hover .showroom-product-media img { transform: translateY(-6px) scale(1.03); }
+.showroom-product-name { display: -webkit-box; max-width: 26ch; overflow: hidden; color: #334155; font-size: 14px; font-weight: 600; line-height: 1.45; text-align: center; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.showroom-product:hover .showroom-product-name { color: var(--color-navy-800); }
+.showroom-product:focus-visible { outline: 3px solid var(--color-gold-500); outline-offset: 4px; border-radius: 4px; }
+.showroom-placeholder { display: grid; flex: 1; place-items: center; color: rgb(10 34 81 / 18%); }
+
+.showroom-caption { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px 32px; }
+.showroom-caption p { flex: 1 1 320px; max-width: 62ch; margin: 0; color: #475569; font-size: 16px; line-height: 1.65; }
+.showroom-cta { display: inline-flex; min-height: 44px; align-items: center; gap: 10px; padding: 10px 18px; border-radius: 4px; background: linear-gradient(180deg, var(--color-gold-400), var(--color-gold-500)); color: var(--color-navy-950); font-weight: 800; text-decoration: none; white-space: nowrap; }
+.showroom-cta:hover span { transform: translateX(3px); }
+.showroom-cta span { transition: transform 0.25s ease; }
+.showroom-cta:focus-visible { outline: 2px solid var(--color-navy-950); outline-offset: 3px; }
+
+.stage-enter-active, .stage-leave-active { transition: opacity 0.28s ease; }
+.stage-enter-from, .stage-leave-to { opacity: 0; }
+.stage-backdrop-enter-active, .stage-backdrop-leave-active { transition: opacity 0.6s ease; }
+.stage-backdrop-enter-from, .stage-backdrop-leave-to { opacity: 0; }
+@keyframes product-rise { from { opacity: 0; translate: 0 28px; scale: 0.94; } to { opacity: 1; translate: 0 0; scale: 1; } }
+
+@media (max-width: 1023px) {
+  .showroom { grid-template-columns: minmax(0, 1fr); }
+  .showroom-stage { display: none; }
+  .showroom-row { padding-bottom: 8px; }
+  .showroom-row .showroom-name { color: var(--color-navy-800); }
+  .showroom-row .showroom-icon { background: var(--color-navy-800); color: var(--color-gold-300); }
+  .showroom-row .showroom-arrow { color: var(--color-gold-700); transform: none; }
+  .showroom-link::after { display: none; }
+  .showroom-mobile { display: block; padding: 0 0 20px 60px; }
+  .showroom-mobile p { display: -webkit-box; margin: 0 0 14px; overflow: hidden; color: #475569; font-size: 16px; line-height: 1.6; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+  .showroom-strip { display: flex; gap: 12px; margin: 0; padding: 0; list-style: none; overflow-x: auto; scrollbar-width: none; }
+  .showroom-strip::-webkit-scrollbar { display: none; }
+  .showroom-strip li { flex: 0 0 auto; }
+  .showroom-strip a { display: block; width: 104px; aspect-ratio: 1; padding: 8px; border-radius: 4px; background: #f8fafc; }
+  .showroom-strip img { width: 100%; height: 100%; object-fit: contain; }
+}
+@media (max-width: 520px) {
+  .showroom-link { grid-template-columns: 44px minmax(0, 1fr) 20px; gap: 12px; }
+  .showroom-count { grid-column: 2; grid-row: 2; margin-top: -6px; font-size: 14px; }
+  .showroom-arrow { grid-column: 3; grid-row: 1 / span 2; }
+  .showroom-mobile { padding-left: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .showroom-products > li { animation: none; }
+  .showroom-link::after, .showroom-product-media img, .stage-enter-active, .stage-leave-active, .stage-backdrop-enter-active, .stage-backdrop-leave-active { transition: none; }
+}
+</style>
