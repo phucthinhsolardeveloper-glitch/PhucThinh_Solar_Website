@@ -105,13 +105,9 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
     <section id="ve-phuc-thinh" class="scroll-mt-[160px] pts-container pt-6 pb-14 max-[800px]:scroll-mt-[116px] min-[1800px]:scroll-mt-[184px]" aria-labelledby="about-story-title">
       <div class="grid min-h-[470px] grid-cols-[minmax(410px,.88fr)_minmax(0,1.12fr)] gap-0 overflow-hidden rounded-btn border border-navy-800/15 bg-[linear-gradient(135deg,#061735,#10366a)] shadow-md max-[800px]:min-h-0 max-[800px]:grid-cols-1">
         <div class="flex flex-col justify-center p-[clamp(38px,4vw,64px)] max-[800px]:block max-[800px]:px-6 max-[800px]:pb-[38px] max-[800px]:pt-[34px] max-[600px]:px-5 max-[600px]:pb-[34px] max-[600px]:pt-[30px]">
-          <div class="mb-4 inline-flex items-center gap-2 rounded-sm bg-white/10 px-3 py-1 text-xs font-bold uppercase tracking-widest text-gold-300 w-fit">
-            <span class="inline-block size-1.5 rounded-full bg-gold-400" />
-            {{ about.story.eyebrow || 'Bản sắc Phúc Thịnh Solar' }}
-          </div>
           <h1 id="about-story-title" class="m-0 max-w-[620px] text-[clamp(36px,3.6vw,54px)] font-black leading-[1.12] tracking-[-.035em] text-white max-[800px]:text-[34px] max-[600px]:text-[31px]">{{ about.story.title }}</h1>
-          <p v-if="about.story.intro" class="mt-[17px] max-w-[690px] text-[17px] leading-[1.72] text-[#e1ebf8] max-[800px]:text-base">{{ about.story.intro }}</p>
-          <p v-if="about.story.body" class="mt-4 border-t border-white/15 pt-4 text-base leading-[1.72] text-[#bfcfe3]">{{ about.story.body }}</p>
+          <p v-if="about.story.intro" class="mt-[17px] max-w-[690px] text-base leading-[1.72] text-[#e1ebf8] md:text-lg">{{ about.story.intro }}</p>
+          <p v-if="about.story.body" class="mt-4 border-t border-white/15 pt-4 text-base leading-[1.72] text-[#bfcfe3] md:text-lg">{{ about.story.body }}</p>
         </div>
         <figure v-if="about.story.image" class="m-0 h-full min-h-0 overflow-hidden bg-[#102d58] max-[800px]:aspect-[16/10]">
           <img class="block h-full w-full object-cover" :src="about.story.image" :alt="about.story.title" width="1600" height="900" fetchpriority="high">
@@ -141,11 +137,10 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
         <div>
           <h2 id="about-history-title" class="m-0 text-[clamp(29px,2.6vw,38px)] font-bold leading-[1.22]">{{ about.history.title }}</h2>
           <ol class="mt-7 grid list-none gap-5 p-0" :aria-label="about.labels.timeline">
-            <li v-for="(item, index) in about.history.items" :key="`${item.year}-${index}`" class="grid grid-cols-[4.2rem_minmax(0,1fr)] gap-x-4 border-t border-slate-200/80 pt-4 first:border-t-0 first:pt-0">
-              <span class="row-span-4 flex size-10 items-center justify-center rounded-sm bg-gold-50 text-xs font-mono font-bold text-gold-700" aria-hidden="true">{{ String(index + 1).padStart(2, '0') }}</span>
+            <li v-for="(item, index) in about.history.items" :key="`${item.year}-${index}`" class="grid grid-cols-1 gap-x-4 border-t border-slate-200/80 pt-4 first:border-t-0 first:pt-0">
               <strong class="text-[1.3rem] leading-[1.2] text-gold-700 font-black">{{ item.year }}</strong>
               <h3 v-if="item.title && about.history.items.length > 1" class="mt-0.5 text-[1.1rem] font-bold leading-[1.22] text-navy-800">{{ item.title }}</h3>
-              <p v-if="item.description" class="m-0 mt-[.3rem] leading-[1.68] text-[#52627c] text-[15.5px]">{{ item.description }}</p>
+              <p v-if="item.description" class="m-0 mt-[.3rem] text-base leading-[1.7] text-[#52627c] md:text-lg">{{ item.description }}</p>
             </li>
           </ol>
         </div>
@@ -164,20 +159,19 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
           </figure>
           <div>
             <h2 id="about-people-title" class="m-0 text-[clamp(29px,2.6vw,38px)] font-bold leading-[1.22]">{{ about.people.title }}</h2>
-            <p v-if="about.people.intro" class="mt-[1.1rem] text-[1.06rem] leading-[1.68] text-[#52627c]">{{ about.people.intro }}</p>
-            <p v-if="about.people.body" class="mt-[1.1rem] border-t border-slate-200 pt-4 leading-[1.68] text-[#52627c]">{{ about.people.body }}</p>
+            <p v-if="about.people.intro" class="mt-[1.1rem] text-base leading-[1.7] text-[#52627c] md:text-lg">{{ about.people.intro }}</p>
+            <p v-if="about.people.body" class="mt-[1.1rem] border-t border-slate-200 pt-4 text-base leading-[1.7] text-[#52627c] md:text-lg">{{ about.people.body }}</p>
           </div>
         </div>
 
         <!-- Hợp nhất Card 1: Principles (Chuẩn Monograph Card System) -->
-        <div v-if="about.people.principles.length" :aria-label="about.people.eyebrow" class="mt-14 grid grid-cols-3 gap-6 lg:gap-8 max-[800px]:grid-cols-1">
+        <div v-if="about.people.principles.length" class="mt-14 grid grid-cols-3 gap-6 lg:gap-8 max-[800px]:grid-cols-1">
           <article v-for="(item, index) in about.people.principles" :key="`${item.title}-${index}`" class="group border-t-2 border-slate-200 pt-5 transition-colors duration-200 hover:border-gold-500">
-            <header class="flex items-center justify-between gap-3 mb-3.5">
-              <span class="flex size-9 items-center justify-center rounded-sm bg-gold-50 text-xs font-mono font-bold text-gold-700" aria-hidden="true">{{ String(index + 1).padStart(2, '0') }}</span>
-              <img v-if="item.image" class="size-9 object-contain" :src="item.image" alt="" width="56" height="56" loading="lazy">
+            <header v-if="item.image" class="mb-3.5 flex justify-end">
+              <img class="size-9 object-contain" :src="item.image" alt="" width="56" height="56" loading="lazy">
             </header>
-            <h3 class="text-[1.1rem] font-bold leading-[1.28] text-navy-800">{{ item.title }}</h3>
-            <p v-if="item.description" class="m-0 mt-2 leading-[1.68] text-[#52627c] text-[15.5px]">{{ item.description }}</p>
+            <h3 v-if="item.title" class="text-[1.1rem] font-bold leading-[1.28] text-navy-800">{{ item.title }}</h3>
+            <p v-if="item.description" class="m-0 mt-2 text-base leading-[1.7] text-[#52627c] md:text-lg">{{ item.description }}</p>
           </article>
         </div>
       </div>
@@ -193,12 +187,11 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
         <!-- Hợp nhất Card 2: Trust (khớp regex grid grid-cols-2 ... max-[800px]:grid-cols-1) -->
         <div class="about-trust-list grid grid-cols-2 gap-6 lg:gap-8 max-[800px]:grid-cols-1">
           <article v-for="(item, index) in about.trust.items" :key="`${item.title}-${index}`" class="group border-t-2 border-slate-200 pt-5 transition-colors duration-200 hover:border-gold-500">
-            <header class="flex items-center justify-between gap-3 mb-3.5">
-              <span class="flex size-9 items-center justify-center rounded-sm bg-gold-50 text-xs font-mono font-bold text-gold-700" aria-hidden="true">{{ String(index + 1).padStart(2, '0') }}</span>
-              <img v-if="item.image" class="size-10 object-contain" :src="item.image" alt="" width="64" height="64" loading="lazy">
+            <header v-if="item.image" class="mb-3.5 flex justify-end">
+              <img class="size-10 object-contain" :src="item.image" alt="" width="64" height="64" loading="lazy">
             </header>
-            <h3 class="text-[1.1rem] font-bold leading-[1.28] text-navy-800">{{ item.title }}</h3>
-            <p v-if="item.description" class="m-0 mt-2 leading-[1.68] text-[#52627c] text-[15.5px]">{{ item.description }}</p>
+            <h3 v-if="item.title" class="text-[1.1rem] font-bold leading-[1.28] text-navy-800">{{ item.title }}</h3>
+            <p v-if="item.description" class="m-0 mt-2 text-base leading-[1.7] text-[#52627c] md:text-lg">{{ item.description }}</p>
           </article>
         </div>
       </div>
@@ -212,12 +205,11 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
         <!-- Hợp nhất Card 3: Compass (Đồng bộ ngôn ngữ với Dark Tone) -->
         <div class="mt-10 grid grid-cols-3 gap-6 lg:gap-8 max-[800px]:grid-cols-1">
           <article v-for="(item, index) in about.compass.items" :key="`${item.title}-${index}`" class="group border-t-2 border-white/20 pt-5 transition-colors duration-200 hover:border-gold-400">
-            <header class="flex items-center justify-between gap-3 mb-3.5">
-              <span class="flex size-9 items-center justify-center rounded-sm bg-white/10 text-xs font-mono font-bold text-gold-400" aria-hidden="true">{{ String(index + 1).padStart(2, '0') }}</span>
-              <img v-if="item.image" class="size-9 object-contain filter invert opacity-90" :src="item.image" alt="" width="56" height="56" loading="lazy">
+            <header v-if="item.image" class="mb-3.5 flex justify-end">
+              <img class="size-9 object-contain filter invert opacity-90" :src="item.image" alt="" width="56" height="56" loading="lazy">
             </header>
-            <h3 class="text-[1.1rem] font-bold leading-[1.28] text-white">{{ item.title }}</h3>
-            <p v-if="item.description" class="m-0 mt-2 leading-[1.68] text-[#d1daea] text-[15.5px]">{{ item.description }}</p>
+            <h3 v-if="item.title" class="text-[1.1rem] font-bold leading-[1.28] text-white">{{ item.title }}</h3>
+            <p v-if="item.description" class="m-0 mt-2 text-base leading-[1.7] text-[#d1daea] md:text-lg">{{ item.description }}</p>
           </article>
         </div>
       </div>
@@ -229,7 +221,7 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
         <header class="grid grid-cols-1 items-end gap-5 min-[801px]:grid-cols-[minmax(0,1fr)_auto]">
           <div>
             <h2 id="about-certificates-title" class="m-0 text-[clamp(29px,2.6vw,38px)] font-bold leading-[1.22]">{{ about.certificates.title }}</h2>
-            <p class="mt-3 max-w-[48rem] leading-[1.68] text-[#52627c]">{{ about.certificates.intro }}</p>
+            <p class="mt-3 max-w-[48rem] text-base leading-[1.7] text-[#52627c] md:text-lg">{{ about.certificates.intro }}</p>
           </div>
           <button
             v-if="galleryCertificates.length"
@@ -261,7 +253,7 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
               </div>
               <span class="font-mono text-xs font-bold uppercase tracking-wider text-gold-700">{{ about.labels.certLabel }}</span>
               <h3 class="mt-1.5 text-[1.1rem] font-bold leading-[1.28] text-navy-800">{{ item.name }}</h3>
-              <p v-if="item.description" class="m-0 mt-2 leading-[1.68] text-[#52627c] text-[15.5px]">{{ item.description }}</p>
+              <p v-if="item.description" class="m-0 mt-2 text-base leading-[1.7] text-[#52627c] md:text-lg">{{ item.description }}</p>
             </div>
             <div v-if="item.image" class="mt-4 pt-3 border-t border-slate-100">
               <button type="button" class="inline-flex items-center gap-1.5 text-xs font-bold text-navy-800 hover:text-gold-700 transition-colors cursor-pointer" @click="openCertificate(item, $event)">
@@ -339,30 +331,30 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
 /* Certificate Dialog & Modal */
 .about-certificate-dialog { position: fixed; inset: 0; width: min(calc(100% - 24px), 1040px); max-width: none; max-height: calc(100dvh - 24px); margin: auto; overflow: visible; border: 0; padding: 0; background: transparent; color: var(--color-navy-800); }
 .about-certificate-dialog::backdrop { background: rgba(6,21,55,.86); backdrop-filter: blur(8px); }
-.about-certificate-modal { display: flex; max-height: calc(100dvh - 24px); flex-direction: column; overflow: hidden; border: 1px solid rgba(255,255,255,.25); border-radius: 4px; background: #fff; }
+.about-certificate-modal { display: flex; max-height: calc(100dvh - 24px); flex-direction: column; overflow: hidden; border: 0; border-radius: 4px; background: transparent; }
 .about-certificate-modal-header, .about-certificate-modal-footer { display: flex; flex: none; align-items: center; justify-content: space-between; gap: 20px; padding: 16px 22px; }
-.about-certificate-modal-header { border-bottom: 1px solid var(--color-slate-200); background: var(--color-slate-50); }
+.about-certificate-modal-header { border-bottom: 0; background: transparent; color: #fff; }
 .about-certificate-modal-title { display: flex; min-width: 0; align-items: center; gap: 14px; }
-.about-certificate-modal-title h2 { overflow: hidden; margin: 0; color: var(--color-navy-950); font-size: 18px; font-weight: 800; text-overflow: ellipsis; white-space: nowrap; }
-.about-certificate-modal-title span:not(.about-modal-mark) { display: inline-block; margin-top: 5px; color: var(--color-slate-500); font-size: 12px; }
-.about-modal-mark { display: grid; width: 40px; height: 40px; flex: none; place-items: center; border: 1px solid var(--color-gold-400); color: var(--color-gold-700); font-size: 11px; font-weight: 800; }
-.about-certificate-close { display: inline-flex; min-height: 44px; flex: none; align-items: center; gap: 10px; border: 0; padding: 0 8px; background: transparent; color: var(--color-navy-800); font: inherit; font-weight: 700; cursor: pointer; }
-.about-certificate-close span { color: var(--color-gold-700); font-size: 23px; }
-.about-certificate-modal-image { position: relative; display: flex; min-height: 260px; flex: 1; align-items: center; justify-content: center; gap: 12px; overflow-y: auto; padding: clamp(16px, 4vw, 36px); background: var(--color-slate-100); }
+.about-certificate-modal-title h2 { overflow: hidden; margin: 0; color: #fff; font-size: 18px; font-weight: 800; text-overflow: ellipsis; white-space: nowrap; }
+.about-certificate-modal-title span:not(.about-modal-mark) { display: inline-block; margin-top: 5px; color: rgba(255,255,255,.72); font-size: 12px; }
+.about-modal-mark { display: grid; width: 40px; height: 40px; flex: none; place-items: center; border: 1px solid var(--color-gold-400); color: var(--color-gold-300); font-size: 11px; font-weight: 800; }
+.about-certificate-close { display: inline-flex; min-height: 44px; flex: none; align-items: center; gap: 10px; border: 0; padding: 0 8px; background: transparent; color: #fff; font: inherit; font-weight: 700; cursor: pointer; }
+.about-certificate-close span { color: var(--color-gold-300); font-size: 23px; }
+.about-certificate-modal-image { position: relative; display: flex; min-height: 260px; flex: 1; align-items: center; justify-content: center; gap: 12px; overflow-y: auto; padding: clamp(16px, 4vw, 36px); background: transparent; }
 .about-certificate-modal-image img { display: block; max-width: min(100%, 760px); max-height: min(66dvh, 680px); object-fit: contain; }
-.about-certificate-modal-image > div { display: grid; min-height: 180px; place-items: center; padding: 24px; color: var(--color-slate-500); text-align: center; }
-.about-certificate-modal-image button { display: grid; width: 44px; height: 44px; flex: none; place-items: center; border: 1px solid var(--color-slate-200); border-radius: 50%; background: #fff; color: var(--color-navy-800); font-size: 20px; cursor: pointer; }
+.about-certificate-modal-image > div { display: grid; min-height: 180px; place-items: center; padding: 24px; color: rgba(255,255,255,.9); text-align: center; }
+.about-certificate-modal-image button { display: grid; width: 44px; height: 44px; flex: none; place-items: center; border: 1px solid rgba(255,255,255,.35); border-radius: 50%; background: rgba(6,21,55,.7); color: #fff; font-size: 20px; cursor: pointer; }
 .about-certificate-modal-image button:disabled { cursor: not-allowed; opacity: .35; }
 .about-certificate-modal-image button:focus-visible { outline: 2px solid var(--color-gold-700); outline-offset: 2px; }
-.about-certificate-modal-footer { justify-content: center; border-top: 1px solid var(--color-slate-200); }
-.about-certificate-modal-footer p { margin: 0; color: var(--color-slate-600); font-size: 14px; line-height: 1.6; text-align: center; }
-.about-certificate-modal-footer > span { flex: none; color: var(--color-slate-500); font-size: 12px; }
+.about-certificate-modal-footer { justify-content: center; border-top: 0; }
+.about-certificate-modal-footer p { margin: 0; color: rgba(255,255,255,.9); font-size: 16px; line-height: 1.6; text-align: center; }
+.about-certificate-modal-footer > span { flex: none; color: rgba(255,255,255,.72); font-size: 12px; }
 
 /* Contact CTA */
 .about-contact-copy { display: flex; align-items: center; gap: 16px; }
 .about-contact-mark { display: grid; width: 48px; height: 48px; flex: none; place-items: center; border: 1px solid var(--color-gold-400); border-radius: 50%; color: var(--color-gold-400); font-size: 11px; font-weight: 800; }
 .about-contact-copy h2 { margin: 0 0 5px; color: #fff; font-size: clamp(21px, 2vw, 26px); font-weight: 800; line-height: 1.25; }
-.about-contact-copy p { margin: 0; color: rgba(255,255,255,.82); line-height: 1.65; }
+.about-contact-copy p { margin: 0; color: rgba(255,255,255,.82); font-size: 1rem; line-height: 1.65; }
 .about-contact-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
 .about-contact-actions a { display: inline-flex; min-height: 44px; align-items: center; justify-content: center; gap: 8px; border-radius: 4px; padding: 10px 16px; background: var(--color-gold-400); color: var(--color-navy-950); font-weight: 800; text-decoration: none; }
 .about-contact-actions a:hover { background: var(--color-gold-300); }
@@ -377,5 +369,9 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
   .about-contact-copy { align-items: flex-start; }
   .about-contact-mark { display: none; }
   .about-contact-actions { display: grid; grid-template-columns: 1fr; }
+}
+
+@media (min-width: 768px) {
+  .about-contact-copy p { font-size: 1.125rem; }
 }
 </style>
