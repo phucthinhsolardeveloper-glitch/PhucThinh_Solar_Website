@@ -28,11 +28,31 @@ const wardOptions = computed(() => [
   { label: loadingWards.value ? 'Đang tải…' : 'Chọn phường/xã', value: 0 },
   ...wards.value.map((ward) => ({ label: ward.name, value: ward.id })),
 ])
-const needOptions = computed(() => props.needs.map((need) => ({ label: need.label, value: need.code })))
 const customerTypeOptions = [
   { label: 'Người dùng cá nhân', value: 'Người dùng cá nhân' },
   { label: 'Đại lý/Nhà phân phối, bán lẻ/Nhà thầu…', value: 'Đại lý/Nhà phân phối, bán lẻ/Nhà thầu…' },
 ]
+
+const quickPrompts = computed(() => {
+  if (props.profileKey === 'lighting') {
+    return [
+      'Diện tích cần chiếu sáng: ~… m²',
+      'Chiều cao trụ / vị trí gắn: ~… m',
+      'Cần báo giá số lượng cho công trình',
+    ]
+  }
+  return [
+    'Tiền điện trung bình: ~… đ/tháng',
+    'Nguồn điện hiện tại: 1 pha / 3 pha',
+    'Cần tư vấn cấu hình đồng bộ & lắp đặt',
+  ]
+})
+
+function appendPrompt(prompt: string) {
+  if (form.details.includes(prompt)) return
+  form.details = form.details ? `${form.details}\n${prompt}` : prompt
+}
+
 const inputUi = {
   base: 'h-11 w-full min-w-0 rounded-[4px] border border-slate-300 bg-white px-3 text-base font-normal text-navy-950 placeholder:text-slate-400 focus-visible:border-gold-600 focus-visible:ring-2 focus-visible:ring-gold-500/25',
 }
@@ -107,14 +127,48 @@ async function send() {
 
 <template>
   <section id="pts-pdp-consultation" class="scroll-mt-24 border-t border-gray-200 py-12 tb:py-16" aria-labelledby="product-consultation-title">
-    <div class="grid min-w-0 gap-8 bg-slate-50 p-6 lg:grid-cols-[minmax(280px,.85fr)_minmax(0,1.35fr)] lg:gap-12 lg:p-8">
+    <div class="grid min-w-0 gap-8 bg-slate-50 p-6 lg:grid-cols-[minmax(280px,.85fr)_minmax(0,1.35fr)] lg:gap-12 lg:p-10">
       <div class="min-w-0">
-        <h2 id="product-consultation-title" class="mb-3 text-[clamp(24px,3vw,34px)] font-black tracking-tight text-navy-800">Nhận tư vấn cho sản phẩm này</h2>
-        <p class="leading-7 text-slate-600">Đội ngũ Phúc Thịnh Solar sẽ tư vấn giải pháp phù hợp với nhu cầu thực tế của bạn.</p>
-        <strong class="block text-sm text-gold-700">Sản phẩm đang chọn: <span class="text-navy-800">{{ productName }}</span></strong>
+        <h2 id="product-consultation-title" class="mb-3 text-[clamp(24px,3vw,34px)] font-black tracking-tight text-navy-900">Nhận tư vấn cho sản phẩm này</h2>
+        <p class="mb-5 text-[15.5px] leading-7 text-slate-600">Đội ngũ kỹ thuật Phúc Thịnh Solar đối chiếu đúng model, tính toán số lượng và gửi báo giá chi tiết theo khu vực lắp đặt của bạn.</p>
+
+        <div class="border-l-4 border-gold-500 bg-white p-4">
+          <span class="block text-xs font-bold text-slate-500">Sản phẩm đang chọn</span>
+          <strong class="mt-1 block text-base font-black leading-snug text-navy-900">{{ productName }}</strong>
+        </div>
+
+        <ul class="mt-5 space-y-2.5 pl-0 text-sm text-slate-600 [list-style:none]">
+          <li class="flex items-start gap-2.5">
+            <UIcon name="i-lucide-check" class="mt-0.5 size-4 shrink-0 text-gold-700" aria-hidden="true" />
+            <span>Kiểm tra độ tương thích và công suất thực tế trước khi đặt hàng</span>
+          </li>
+          <li class="flex items-start gap-2.5">
+            <UIcon name="i-lucide-check" class="mt-0.5 size-4 shrink-0 text-gold-700" aria-hidden="true" />
+            <span>Báo giá riêng cho đơn công trình, nhà thầu và đại lý</span>
+          </li>
+        </ul>
       </div>
 
       <form class="min-w-0" @submit.prevent="send">
+        <div v-if="needs.length" class="mb-5">
+          <span class="mb-2 block text-sm font-semibold text-navy-900">Nhu cầu cần tư vấn</span>
+          <div class="flex flex-wrap gap-2" role="group" aria-label="Nhu cầu cần tư vấn">
+            <button
+              v-for="need in needs"
+              :key="need.code"
+              type="button"
+              class="min-h-11 rounded-[4px] border px-3.5 py-2 text-sm font-bold transition-colors cursor-pointer"
+              :class="form.needCode === need.code
+                ? 'border-transparent bg-navy-900 text-gold-300'
+                : 'border-slate-300 bg-white text-navy-800 hover:border-gold-600'"
+              :aria-pressed="form.needCode === need.code"
+              @click="form.needCode = form.needCode === need.code ? '' : need.code"
+            >
+              {{ need.label }}
+            </button>
+          </div>
+        </div>
+
         <div class="grid gap-4 tb:grid-cols-2">
           <UFormField label="Họ và tên" name="fullname" required class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-sm font-semibold text-navy-900' }">
             <UInput v-model.trim="form.fullname" name="fullname" required maxlength="100" autocomplete="name" variant="none" class="w-full" :ui="inputUi" />
@@ -124,6 +178,9 @@ async function send() {
           </UFormField>
           <UFormField label="Email" name="email" class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-sm font-semibold text-navy-900' }">
             <UInput v-model.trim="form.email" name="email" type="email" maxlength="150" autocomplete="email" variant="none" class="w-full" :ui="inputUi" />
+          </UFormField>
+          <UFormField label="Số lượng dự kiến" name="quantity" class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-sm font-semibold text-navy-900' }">
+            <UInput v-model.trim="form.quantity" name="quantity" maxlength="255" placeholder="Ví dụ: 2 bộ" variant="none" class="w-full" :ui="inputUi" />
           </UFormField>
           <UFormField label="Tỉnh/Thành phố" name="city" class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-sm font-semibold text-navy-900' }">
             <USelect v-model.number="form.city" name="city" :items="cityOptions" color="neutral" variant="none" class="w-full" :ui="selectUi" />
@@ -141,21 +198,26 @@ async function send() {
             class="tb:col-span-2"
             :ui="{ legend: 'mb-1 w-full text-sm font-semibold text-navy-900', root: 'grid gap-1.5', item: 'flex min-h-10 items-center gap-2', label: 'text-sm font-normal text-navy-800' }"
           />
-          <UFormField label="Nhu cầu cần tư vấn" name="needCode" class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-sm font-semibold text-navy-900' }">
-            <USelect v-model="form.needCode" name="needCode" :items="needOptions" placeholder="Chọn nhu cầu" color="neutral" variant="none" class="w-full" :ui="selectUi" />
-          </UFormField>
-          <UFormField label="Số lượng dự kiến" name="quantity" class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-sm font-semibold text-navy-900' }">
-            <UInput v-model.trim="form.quantity" name="quantity" maxlength="255" placeholder="Ví dụ: 2 bộ" variant="none" class="w-full" :ui="inputUi" />
-          </UFormField>
           <UFormField label="Thông tin cần tư vấn thêm" name="details" class="grid min-w-0 content-start gap-2 tb:col-span-2" :ui="{ label: 'text-sm font-semibold text-navy-900' }">
+            <div class="mb-2 flex flex-wrap gap-1.5">
+              <button
+                v-for="prompt in quickPrompts"
+                :key="prompt"
+                type="button"
+                class="rounded-[3px] border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-600 transition-colors hover:border-gold-600 hover:text-navy-900 cursor-pointer"
+                @click="appendPrompt(prompt)"
+              >
+                + {{ prompt }}
+              </button>
+            </div>
             <UTextarea v-model.trim="form.details" name="details" maxlength="1000" :rows="4" placeholder="Mô tả vị trí lắp đặt, tải sử dụng hoặc yêu cầu của bạn" variant="none" class="w-full" :ui="textareaUi" />
           </UFormField>
         </div>
 
         <p v-if="success" class="mt-4 rounded-chip bg-emerald-50 p-3 text-sm font-semibold text-emerald-800" role="status">{{ success }}</p>
         <p v-if="error" class="mt-4 rounded-chip bg-red-50 p-3 text-sm font-semibold text-red-800" role="alert">{{ error }}</p>
-        <div class="mt-5 flex justify-center">
-          <UButton type="submit" :loading="submitting" :disabled="submitting" class="min-h-11 rounded-[4px] bg-gold-500 px-6 font-extrabold text-navy-950 disabled:cursor-wait disabled:opacity-60">
+        <div class="mt-5 flex justify-start">
+          <UButton type="submit" :loading="submitting" :disabled="submitting" class="min-h-11 rounded-[4px] bg-gold-500 px-6 font-extrabold text-navy-950 disabled:cursor-wait disabled:opacity-60 cursor-pointer">
             {{ submitting ? 'Đang gửi…' : 'Gửi yêu cầu tư vấn' }}
           </UButton>
         </div>

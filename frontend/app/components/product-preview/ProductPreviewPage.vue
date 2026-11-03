@@ -79,41 +79,52 @@ onBeforeUnmount(() => observer?.disconnect())
 <template>
   <div class="product-preview-page pts-container pb-16 pt-6 max-tb:pt-3">
     <div class="grid grid-cols-1 items-start gap-12 pb-12 pt-6 max-tb:gap-8 max-tb:pb-8 max-tb:pt-4 nav:grid-cols-2 nav:gap-14">
-      <ProductPreviewGallery :name="product.name" :media="product.media" />
+      <div class="min-w-0 nav:sticky nav:top-28">
+        <ProductPreviewGallery :name="product.name" :media="product.media" />
+      </div>
 
       <div class="min-w-0">
-        <p v-if="productCategories.length" class="mb-3 text-sm font-bold uppercase tracking-[0.12em] text-gold-700">
-          {{ productCategories.map((item) => item.label).join(' · ') }}
-        </p>
-        <h1 class="mb-3 text-[clamp(30px,2.4vw,44px)] font-black leading-[1.08] tracking-tight max-tb:text-[32px]">
+        <h1 class="mb-3 text-[clamp(30px,2.5vw,44px)] font-black leading-[1.08] tracking-tight text-navy-950 max-tb:text-[30px]">
           {{ product.name }}
         </h1>
 
-        <p v-if="product.code" class="leading-relaxed text-slate-500">Mã sản phẩm: {{ product.code }}</p>
-        <p v-if="product.summary" class="leading-relaxed text-slate-500">{{ product.summary }}</p>
+        <div v-if="product.code || product.brand || extras?.reviews.total" class="mb-4 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-slate-600">
+          <span v-if="product.code">Mã sản phẩm: <strong class="font-bold text-navy-800">{{ product.code }}</strong></span>
+          <span v-if="product.code && product.brand" class="text-slate-300" aria-hidden="true">·</span>
+          <span v-if="product.brand">Thương hiệu: <strong class="font-bold text-navy-800">{{ product.brand }}</strong></span>
+          <template v-if="extras?.reviews.total">
+            <span class="text-slate-300" aria-hidden="true">·</span>
+            <a href="#danh-gia-san-pham" class="inline-flex items-center gap-1 font-bold text-gold-700 no-underline hover:underline">
+              <span>★ {{ extras.reviews.average.toFixed(1) }}/5</span>
+              <span class="font-normal text-slate-500">({{ extras.reviews.total }} nhận xét)</span>
+            </a>
+          </template>
+        </div>
+
+        <p v-if="product.summary" class="mb-0 text-[16px] leading-[1.7] text-slate-600">{{ product.summary }}</p>
 
         <ProductPreviewDecisionMetrics :metrics="product.decisionMetrics ?? []" />
         <div v-if="product.packageContents" class="mt-5 border-l-2 border-gold-500 pl-4">
-          <p class="mb-1 text-xs font-bold uppercase tracking-[0.1em] text-slate-500">Bộ sản phẩm</p>
-          <p class="m-0 text-sm leading-6 text-navy-800">{{ product.packageContents }}</p>
+          <p class="mb-1 text-xs font-bold text-slate-500">Bộ sản phẩm tiêu chuẩn</p>
+          <p class="m-0 text-[15px] font-semibold leading-6 text-navy-800">{{ product.packageContents }}</p>
         </div>
 
         <div class="mt-6 border-y border-gray-200 py-4">
-          <p class="mb-1 text-xs font-bold uppercase tracking-wide text-slate-500">Giá bán</p>
+          <p class="mb-1.5 text-xs font-bold text-slate-500">Giá bán tham khảo</p>
           <div v-if="pricing.mode === 'quote'">
-            <p class="m-0 text-[clamp(27px,2vw,36px)] font-extrabold leading-none text-[#d52525]">Liên hệ</p>
-            <p class="mt-1.5 text-[12.5px] leading-relaxed text-slate-500">Nhận báo giá theo số lượng và nhu cầu sử dụng</p>
+            <p class="m-0 text-[clamp(28px,2.2vw,36px)] font-extrabold leading-none text-[#d52525]">Liên hệ báo giá</p>
+            <p class="mt-1.5 text-[13.5px] leading-relaxed text-slate-500">Nhận báo giá kỹ thuật theo số lượng, cấu hình và khu vực lắp đặt</p>
           </div>
           <div v-else class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-            <span class="text-[clamp(27px,2vw,36px)] font-extrabold leading-none text-[#d52525]">
+            <span class="text-[clamp(28px,2.2vw,38px)] font-black leading-none tracking-tight text-[#d52525] tabular-nums">
               {{ formatMoney(pricing.salePrice ?? pricing.regularPrice ?? 0) }}
             </span>
-            <span class="text-sm text-slate-500">/ bộ</span>
+            <span class="text-sm font-semibold text-slate-500">/ bộ</span>
             <template v-if="pricing.salePrice && pricing.regularPrice && pricing.regularPrice > pricing.salePrice">
-              <span class="text-sm text-slate-400 line-through">{{ formatMoney(pricing.regularPrice) }}</span>
-              <span v-if="discountPercent > 0" class="rounded-md bg-red-600 px-2 py-1 text-xs font-bold text-white">-{{ discountPercent }}%</span>
+              <span class="text-sm text-slate-400 line-through tabular-nums">{{ formatMoney(pricing.regularPrice) }}</span>
+              <span v-if="discountPercent > 0" class="rounded-[3px] bg-red-600 px-2 py-0.5 text-xs font-bold text-white">-{{ discountPercent }}%</span>
             </template>
-            <p class="mt-1 basis-full text-[12.5px] leading-relaxed text-slate-500">Giá đã gồm VAT; chi phí vận chuyển và lắp đặt báo riêng theo khu vực.</p>
+            <p class="mt-1.5 basis-full text-[13px] leading-relaxed text-slate-500">Giá đã gồm VAT; chi phí vận chuyển và lắp đặt báo riêng theo khu vực.</p>
           </div>
         </div>
 
@@ -131,11 +142,6 @@ onBeforeUnmount(() => observer?.disconnect())
             </div>
           </template>
         </ProductPurchasePanel>
-
-        <div v-if="extras?.reviews.total" class="mt-5 flex items-center gap-3 text-sm">
-          <span class="font-bold text-gold-700">★ {{ extras.reviews.average.toFixed(1) }}/5</span>
-          <a href="#danh-gia-san-pham" class="text-slate-500 underline-offset-4 hover:underline">{{ extras.reviews.total }} nhận xét</a>
-        </div>
       </div>
     </div>
 

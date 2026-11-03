@@ -173,11 +173,12 @@ onBeforeUnmount(() => {
     >
       <button
         type="button"
-        class="relative flex h-full w-full items-center justify-center overflow-hidden bg-slate-50"
+        class="pdp-studio-stage relative flex h-full w-full items-center justify-center overflow-hidden bg-slate-50"
         :class="isZoomed ? 'cursor-crosshair' : 'cursor-zoom-in'"
         :aria-label="'Phóng to ảnh ' + name"
         @click="openLightbox($event)"
       >
+        <span class="pdp-studio-halo" aria-hidden="true" />
         <Transition name="pdp-fade">
           <img
             ref="displayedImage"
@@ -331,6 +332,20 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
+.pdp-studio-stage {
+  background: radial-gradient(circle at 50% 42%, #ffffff 0%, #f8fafc 58%, #eef2f7 100%);
+}
+.pdp-studio-halo {
+  position: absolute;
+  width: 68%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgb(224 182 84 / 18%) 0%, rgb(224 182 84 / 0%) 70%);
+  pointer-events: none;
+}
+.pdp-zoom-image {
+  filter: drop-shadow(0 22px 26px rgb(6 21 55 / 14%));
+}
 .pdp-fade-enter-active,
 .pdp-fade-leave-active {
   transition: opacity 0.16s ease-out;

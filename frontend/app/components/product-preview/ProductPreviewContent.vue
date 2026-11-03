@@ -6,37 +6,43 @@ defineProps<{ content: PublicProductContent }>()
 
 <template>
   <section v-if="content.blocks.length || content.highlights?.length" id="tong-quan" class="scroll-mt-24 border-t border-gray-200 py-12 tb:py-16" aria-labelledby="product-content-title">
-    <h2 id="product-content-title" class="mb-7 text-[clamp(24px,3vw,34px)] font-black tracking-tight text-navy-800">
+    <h2 id="product-content-title" class="mb-6 text-[clamp(24px,3vw,34px)] font-black tracking-tight text-navy-800">
       Mô tả sản phẩm
     </h2>
 
-    <div v-if="content.highlights?.length" class="mb-6">
-      <h3 class="mb-4 text-lg font-black text-navy-800">Điểm nổi bật</h3>
-      <ul class="m-0 flex flex-wrap gap-2 p-0 [list-style:none]">
-        <li v-for="(highlight, index) in content.highlights" :key="`${index}-${highlight}`" class="bg-slate-100 px-3 py-2 text-sm font-semibold text-navy-800">{{ highlight }}</li>
+    <div v-if="content.highlights?.length" class="mb-7">
+      <h3 class="mb-3.5 text-base font-extrabold text-navy-800">Điểm nổi bật</h3>
+      <ul class="m-0 grid gap-3 p-0 [list-style:none] ph:grid-cols-2 nav:grid-cols-4">
+        <li
+          v-for="(highlight, index) in content.highlights"
+          :key="`${index}-${highlight}`"
+          class="border-l-2 border-gold-500 bg-slate-50 px-4 py-3 text-[15px] font-bold leading-snug text-navy-900"
+        >
+          {{ highlight }}
+        </li>
       </ul>
     </div>
 
-    <details v-if="content.blocks.length" class="border-y border-gray-200">
-      <summary class="flex min-h-12 cursor-pointer list-none items-center justify-between gap-4 py-3 font-bold text-navy-800 [&::-webkit-details-marker]:hidden">
-        Xem mô tả chi tiết
-        <span class="text-xl text-gold-700" aria-hidden="true">+</span>
+    <details v-if="content.blocks.length" open class="group border-y border-gray-200">
+      <summary class="flex min-h-12 cursor-pointer list-none items-center justify-between gap-4 py-3.5 text-base font-extrabold text-navy-800 select-none [&::-webkit-details-marker]:hidden">
+        <span>Xem mô tả chi tiết</span>
+        <span class="text-xl text-gold-700 transition-transform duration-200 group-open:rotate-45" aria-hidden="true">+</span>
       </summary>
-      <div class="space-y-6 py-4">
+      <div class="max-w-[78ch] space-y-5 pb-6 pt-2">
         <template v-for="(block, index) in content.blocks" :key="`${block.type}-${index}`">
-          <h3 v-if="block.type === 'heading'" class="m-0 pt-2 text-[clamp(20px,2vw,27px)] font-black leading-tight text-navy-800">
+          <h3 v-if="block.type === 'heading'" class="m-0 pt-3 text-[clamp(20px,2vw,26px)] font-black leading-tight text-navy-900">
             {{ block.text }}
           </h3>
 
-          <p v-else-if="block.type === 'text'" class="m-0 whitespace-pre-line text-base leading-7 text-slate-600">
+          <p v-else-if="block.type === 'text'" class="m-0 whitespace-pre-line text-[16.5px] leading-[1.75] text-slate-700">
             {{ block.text }}
           </p>
 
-          <ol v-else-if="block.type === 'list' && block.ordered" class="m-0 list-decimal space-y-2 pl-6 text-base leading-7 text-slate-600">
+          <ol v-else-if="block.type === 'list' && block.ordered" class="m-0 list-decimal space-y-2.5 pl-6 text-[16px] leading-[1.7] text-slate-700">
             <li v-for="(item, itemIndex) in block.items" :key="itemIndex">{{ item }}</li>
           </ol>
 
-          <ul v-else-if="block.type === 'list'" class="m-0 list-disc space-y-2 pl-6 text-base leading-7 text-slate-600">
+          <ul v-else-if="block.type === 'list'" class="m-0 list-disc space-y-2.5 pl-6 text-[16px] leading-[1.7] text-slate-700">
             <li v-for="(item, itemIndex) in block.items" :key="itemIndex">{{ item }}</li>
           </ul>
 
@@ -61,6 +67,5 @@ defineProps<{ content: PublicProductContent }>()
         </template>
       </div>
     </details>
-
   </section>
 </template>

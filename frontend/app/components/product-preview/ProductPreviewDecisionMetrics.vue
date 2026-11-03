@@ -41,8 +41,8 @@ function displayValue(metric: PublicProductDecisionMetric): string {
         </svg>
       </span>
       <div class="min-w-0">
-        <span class="block text-[10px] font-extrabold uppercase tracking-[0.055em] text-slate-500">{{ metric.label }}</span>
-        <strong class="mt-0.5 block break-words text-[15px] font-extrabold leading-[1.35] text-navy-800">{{ displayValue(metric) }}</strong>
+        <span class="block text-[12.5px] font-semibold text-slate-500">{{ metric.label }}</span>
+        <strong class="mt-0.5 block break-words text-[clamp(16px,1.35vw,19px)] font-black leading-[1.3] tracking-tight text-navy-900 tabular-nums">{{ displayValue(metric) }}</strong>
       </div>
     </div>
   </div>
@@ -52,15 +52,16 @@ function displayValue(metric: PublicProductDecisionMetric): string {
 .pts-pdp-decision-metrics {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  margin: 20px 0 0;
+  margin: 22px 0 0;
   border-top: 1px solid #dfe5ed;
   border-bottom: 1px solid #dfe5ed;
 }
 
 .pts-pdp-decision-metric {
   display: grid;
-  grid-template-columns: 44px minmax(0, 1fr);
-  gap: 12px;
+  grid-template-columns: 48px minmax(0, 1fr);
+  align-items: center;
+  gap: 14px;
   min-width: 0;
   padding: 16px 18px 16px 0;
 }
@@ -72,9 +73,9 @@ function displayValue(metric: PublicProductDecisionMetric): string {
 }
 
 .pts-pdp-decision-metric:nth-child(n + 3) { border-top: 1px solid #dfe5ed; }
-.pts-pdp-decision-icon { display: flex; width: 44px; height: 44px; align-items: center; justify-content: center; }
-.pts-pdp-decision-icon img { display: block; width: 44px; height: 44px; object-fit: contain; }
-.pts-pdp-decision-icon svg { display: block; width: 32px; height: 32px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.6; }
+.pts-pdp-decision-icon { display: flex; width: 48px; height: 48px; align-items: center; justify-content: center; border-radius: 4px; background: rgb(254 243 199 / 55%); }
+.pts-pdp-decision-icon img { display: block; width: 36px; height: 36px; object-fit: contain; }
+.pts-pdp-decision-icon svg { display: block; width: 28px; height: 28px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.75; }
 
 @media (max-width: 640px) {
   .pts-pdp-decision-metrics { margin-top: 16px; }
