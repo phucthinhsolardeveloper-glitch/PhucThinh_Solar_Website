@@ -2,12 +2,46 @@
 import type { PublicDealerPayload } from '#shared/contracts/public-dealer'
 import EditorialRichText from '~/components/editorial/EditorialRichText.vue'
 
-const props = defineProps<{ dealer: PublicDealerPayload }>()
+const props = defineProps<{ dealer: PublicDealerPayload; selectedProduct?: string }>()
+const emit = defineEmits<{ (e: 'selectProduct', title: string): void }>()
 const links = useMigrationLinks()
 const productTrack = ref<HTMLElement | null>(null)
 const canScrollPrevious = ref(false)
 const canScrollNext = ref(false)
 let productTrackObserver: ResizeObserver | null = null
+
+const activeIndex = ref<number | null>(null)
+const setDocumentScrollLock = useDocumentScrollLock()
+const activeProduct = computed(() => activeIndex.value === null ? null : props.dealer.overview.products[activeIndex.value] ?? null)
+
+function openProduct(index: number) {
+  if (!props.dealer.overview.products[index]) return
+  activeIndex.value = index
+}
+
+function closeProduct() {
+  activeIndex.value = null
+}
+
+function moveProduct(delta: number) {
+  const total = props.dealer.overview.products.length
+  if (activeIndex.value === null || total < 2) return
+  activeIndex.value = (activeIndex.value + delta + total) % total
+}
+
+function chooseProductLine(title: string) {
+  closeProduct()
+  emit('selectProduct', title)
+}
+
+function onKeydown(event: KeyboardEvent) {
+  if (activeIndex.value === null) return
+  if (event.key === 'Escape') closeProduct()
+  else if (event.key === 'ArrowLeft') moveProduct(-1)
+  else if (event.key === 'ArrowRight') moveProduct(1)
+}
+
+watch(activeIndex, (val) => setDocumentScrollLock(val !== null))
 
 function syncProductControls() {
   const track = productTrack.value
@@ -23,14 +57,21 @@ function scrollProducts(direction: -1 | 1) {
   track.scrollBy({ left: direction * Math.max(track.clientWidth * 0.82, 220), behavior: reducedMotion ? 'auto' : 'smooth' })
 }
 
-onMounted(() => nextTick(() => {
-  syncProductControls()
-  if (productTrack.value && typeof ResizeObserver !== 'undefined') {
-    productTrackObserver = new ResizeObserver(syncProductControls)
-    productTrackObserver.observe(productTrack.value)
-  }
-}))
-onBeforeUnmount(() => productTrackObserver?.disconnect())
+onMounted(() => {
+  document.addEventListener('keydown', onKeydown)
+  nextTick(() => {
+    syncProductControls()
+    if (productTrack.value && typeof ResizeObserver !== 'undefined') {
+      productTrackObserver = new ResizeObserver(syncProductControls)
+      productTrackObserver.observe(productTrack.value)
+    }
+  })
+})
+onBeforeUnmount(() => {
+  document.removeEventListener('keydown', onKeydown)
+  setDocumentScrollLock(false)
+  productTrackObserver?.disconnect()
+})
 watch(() => props.dealer.overview.products.length, () => nextTick(syncProductControls))
 
 function cardImage(src: string): string {
@@ -43,14 +84,14 @@ function cardImage(src: string): string {
 <template>
   <section
     v-if="dealer.overview.title || dealer.overview.descriptionContent.html || dealer.overview.description || dealer.overview.products.length"
-    class="mt-12 min-[992px]:mt-[clamp(42px,5vw,72px)]"
+    class="mt-10 min-[992px]:mt-[clamp(36px,4.2vw,56px)]"
   >
-    <h2 v-if="dealer.overview.title" class="mb-5 text-[clamp(26px,3vw,40px)] font-black leading-tight tracking-tight text-navy-800">
+    <h2 v-if="dealer.overview.title" class="mb-4 text-[clamp(26px,3vw,40px)] font-black leading-tight tracking-tight text-navy-800">
       {{ dealer.overview.title || dealer.labels.overview }}
     </h2>
 
-    <EditorialRichText v-if="dealer.overview.descriptionContent.html" :content="dealer.overview.descriptionContent" class="mb-8 max-w-[70ch]" />
-    <p v-else-if="dealer.overview.description" class="mb-8 max-w-[70ch] whitespace-pre-line leading-relaxed text-slate-600">{{ dealer.overview.description }}</p>
+    <EditorialRichText v-if="dealer.overview.descriptionContent.html" :content="dealer.overview.descriptionContent" class="dealer-overview-rich mb-7 max-w-[70ch]" />
+    <p v-else-if="dealer.overview.description" class="mb-7 max-w-[70ch] whitespace-pre-line leading-relaxed text-slate-600">{{ dealer.overview.description }}</p>
 
     <div v-if="dealer.overview.products.length > 1" class="mb-4 flex justify-end gap-2 min-[768px]:hidden" role="group" aria-label="Điều hướng sản phẩm phân phối">
       <button type="button" class="public-neutral-button grid size-11 place-items-center text-navy-800 disabled:cursor-not-allowed disabled:opacity-40" aria-label="Sản phẩm trước" :disabled="!canScrollPrevious" @click="scrollProducts(-1)">
@@ -60,6 +101,7 @@ function cardImage(src: string): string {
         <UIcon name="i-lucide-chevron-right" class="size-5" aria-hidden="true" />
       </button>
     </div>
+
     <div
       v-if="dealer.overview.products.length"
       ref="productTrack"
@@ -69,14 +111,18 @@ function cardImage(src: string): string {
       @scroll.passive="syncProductControls"
     >
       <a
-        v-for="product in dealer.overview.products"
+        v-for="(product, index) in dealer.overview.products"
         :key="product.title + product.image"
-        class="group w-[min(76vw,300px)] min-w-0 flex-none snap-start text-inherit no-underline min-[768px]:w-auto"
-        :href="product.href ? links.generic(product.href) : undefined"
-        :target="links.active ? undefined : '_blank'"
-        :rel="links.active ? undefined : 'noopener noreferrer'"
+        class="group w-[min(76vw,300px)] min-w-0 flex-none snap-start text-inherit no-underline cursor-pointer min-[768px]:w-auto"
+        :href="product.href ? links.generic(product.href) : `#dang-ky-dai-ly`"
+        :target="product.href && !links.active ? '_blank' : undefined"
+        :rel="product.href && !links.active ? 'noopener noreferrer' : undefined"
+        @click="product.href ? undefined : ($event.preventDefault(), openProduct(index))"
       >
-        <div class="mb-3 overflow-hidden rounded-chip bg-slate-100">
+        <div
+          class="relative mb-2.5 overflow-hidden rounded-chip bg-slate-100 transition-shadow"
+          :class="selectedProduct === product.title ? 'ring-2 ring-gold-500' : ''"
+        >
           <img
             v-if="product.image"
             :src="cardImage(product.image)"
@@ -84,16 +130,99 @@ function cardImage(src: string): string {
             class="block aspect-[8/5] w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105 motion-reduce:transform-none motion-reduce:transition-none"
             loading="lazy"
           >
+          <span
+            v-if="product.image && !product.href"
+            class="absolute bottom-2 right-2 inline-flex items-center gap-1 rounded-[3px] bg-navy-950/80 px-2 py-1 text-[11px] font-bold text-white opacity-90 backdrop-blur-xs transition-colors group-hover:bg-gold-500 group-hover:text-navy-950"
+          >
+            <UIcon name="i-lucide-zoom-in" class="size-3.5" aria-hidden="true" />
+            <span>Thông số</span>
+          </span>
         </div>
-        <span class="font-bold text-navy-800 transition-colors group-hover:text-gold-700">{{ product.title }}</span>
+        <div class="flex items-center justify-between gap-2">
+          <span class="min-w-0 truncate font-bold text-navy-800 transition-colors group-hover:text-gold-700">{{ product.title }}</span>
+          <button
+            type="button"
+            class="shrink-0 whitespace-nowrap rounded-[3px] px-2 py-1 text-xs font-extrabold transition-colors cursor-pointer"
+            :class="selectedProduct === product.title
+              ? 'bg-gold-500 text-navy-950'
+              : 'bg-slate-100 text-navy-800 hover:bg-gold-500 hover:text-navy-950'"
+            @click.stop.prevent="chooseProductLine(product.title)"
+          >
+            {{ selectedProduct === product.title ? 'Đã chọn' : '+ Chọn dòng' }}
+          </button>
+        </div>
       </a>
     </div>
+
+    <Teleport to="body">
+      <div
+        v-if="activeProduct"
+        class="fixed inset-0 z-[100] grid place-items-center bg-navy-950/92 p-4 backdrop-blur-md"
+        role="dialog"
+        aria-modal="true"
+        :aria-label="`Thông số dòng sản phẩm ${activeProduct.title}`"
+        @click.self="closeProduct"
+      >
+        <button
+          type="button"
+          class="absolute right-4 top-4 flex size-11 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20 cursor-pointer"
+          aria-label="Đóng bảng thông số"
+          @click="closeProduct"
+        >
+          <UIcon name="i-lucide-x" class="size-6" aria-hidden="true" />
+        </button>
+
+        <button
+          v-if="dealer.overview.products.length > 1"
+          type="button"
+          class="absolute left-4 top-1/2 flex size-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/25 cursor-pointer"
+          aria-label="Dòng sản phẩm trước"
+          @click="moveProduct(-1)"
+        >
+          <UIcon name="i-lucide-chevron-left" class="size-6" aria-hidden="true" />
+        </button>
+
+        <div class="flex max-h-[90vh] w-[min(980px,92vw)] flex-col items-center gap-4">
+          <img
+            :src="activeProduct.image"
+            :alt="activeProduct.title"
+            class="max-h-[74vh] max-w-full rounded-[4px] bg-white object-contain shadow-2xl"
+          >
+          <div class="flex w-full max-w-[760px] flex-wrap items-center justify-between gap-3 rounded-[4px] bg-navy-900/95 px-4 py-3 text-white">
+            <div>
+              <span class="text-xs font-bold text-gold-400">Dòng sản phẩm ({{ Number(activeIndex) + 1 }} / {{ dealer.overview.products.length }})</span>
+              <strong class="block text-lg font-black">{{ activeProduct.title }}</strong>
+            </div>
+            <button
+              type="button"
+              class="inline-flex min-h-11 items-center gap-2 rounded-[4px] bg-gold-500 px-4 py-2 text-sm font-extrabold text-navy-950 transition-colors hover:bg-gold-400 cursor-pointer"
+              @click="chooseProductLine(activeProduct.title)"
+            >
+              <span>Đăng ký phân phối {{ activeProduct.title }}</span>
+              <span aria-hidden="true">→</span>
+            </button>
+          </div>
+        </div>
+
+        <button
+          v-if="dealer.overview.products.length > 1"
+          type="button"
+          class="absolute right-4 top-1/2 flex size-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/25 cursor-pointer"
+          aria-label="Dòng sản phẩm tiếp theo"
+          @click="moveProduct(1)"
+        >
+          <UIcon name="i-lucide-chevron-right" class="size-6" aria-hidden="true" />
+        </button>
+      </div>
+    </Teleport>
   </section>
 </template>
 
 <style scoped>
 .dealer-products-track { scrollbar-width: none; }
 .dealer-products-track::-webkit-scrollbar { display: none; }
+.dealer-overview-rich :deep(p:empty) { display: none; }
+.dealer-overview-rich :deep(p) { margin-block: 0.45rem; }
 @media (prefers-reduced-motion: reduce) {
   .dealer-products-track { scroll-behavior: auto; }
 }

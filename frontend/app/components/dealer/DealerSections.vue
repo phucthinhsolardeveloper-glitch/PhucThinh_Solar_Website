@@ -18,6 +18,9 @@ function cardImage(src: string): string {
     : src
 }
 
+function cleanQuote(raw: string): string {
+  return raw.trim().replace(/^[“"']+|[”"']+$/g, '').trim()
+}
 </script>
 
 <template>
@@ -39,11 +42,14 @@ function cardImage(src: string): string {
       </div>
 
       <div class="mt-0 grid grid-cols-1 gap-5 ph:grid-cols-2 nav:grid-cols-4 min-[992px]:mt-[38px]">
-        <article v-for="item in dealer.support.items" :key="item.title" class="rounded-btn border border-white/10 bg-white/5 p-5">
-          <span v-if="item.image" class="mb-4 flex h-12 w-12 items-center justify-center rounded-chip bg-gold-300 p-2">
-            <img :src="cardImage(item.image)" :alt="item.title" class="h-full w-full object-contain" loading="lazy">
-          </span>
-          <h3 class="mb-2 font-bold text-white">{{ item.title }}</h3>
+        <article v-for="(item, index) in dealer.support.items" :key="item.title" class="relative rounded-btn border border-white/10 border-t-[3px] border-t-gold-500 bg-white/[.06] p-6 transition-colors hover:bg-white/[.09]">
+          <div class="mb-4 flex items-center justify-between gap-3">
+            <span v-if="item.image" class="flex h-12 w-12 items-center justify-center rounded-chip bg-gold-300 p-2">
+              <img :src="cardImage(item.image)" :alt="item.title" class="h-full w-full object-contain" loading="lazy">
+            </span>
+            <span class="font-mono text-xs font-extrabold tracking-widest text-gold-400/70">0{{ index + 1 }}</span>
+          </div>
+          <h3 class="mb-2.5 text-lg font-extrabold text-white">{{ item.title }}</h3>
           <EditorialRichText v-if="item.descriptionContent.html" :content="item.descriptionContent" class="cms-content-on-dark text-sm leading-relaxed" />
           <p v-else class="m-0 text-sm leading-relaxed text-blue-100">{{ item.description }}</p>
         </article>
@@ -59,20 +65,20 @@ function cardImage(src: string): string {
         tabindex="0"
         :aria-label="dealer.labels.testimonials"
       >
-        <article v-for="item in dealer.testimonials" :key="item.title" class="relative flex w-[min(86vw,340px)] flex-none snap-start flex-col justify-between gap-5 rounded-[3px] bg-slate-50 p-[28px_26px] min-[768px]:w-auto">
+        <article v-for="item in dealer.testimonials" :key="item.title" class="relative flex w-[min(86vw,340px)] flex-none snap-start flex-col justify-between gap-5 rounded-[3px] border-t-[3px] border-gold-500 bg-slate-50 p-[28px_26px] min-[768px]:w-auto">
           <div class="relative">
-            <span class="select-none font-serif text-4xl font-black leading-none text-gold-400/50" aria-hidden="true">“</span>
-            <p class="mb-4 mt-1 leading-relaxed text-slate-700">“{{ item.quote || item.description }}”</p>
+            <span class="select-none font-serif text-5xl font-black leading-none text-gold-500" aria-hidden="true">“</span>
+            <p class="mb-4 mt-2 text-[15.5px] leading-[1.72] text-slate-700">{{ cleanQuote(item.quote || item.description) }}</p>
           </div>
-          <div class="flex items-center gap-3 border-t border-slate-100 pt-4">
+          <div class="flex items-center gap-3.5 border-t border-slate-200/80 pt-4">
             <!-- Render the CMS portrait when it exists; the DTO allows an empty image. -->
             <img v-if="item.image" :src="cardImage(item.image)" :alt="item.title" class="h-12 w-12 flex-none rounded-full object-cover shadow-xs" loading="lazy">
             <div v-else class="flex h-12 w-12 flex-none items-center justify-center rounded-full bg-gold-50 font-bold text-gold-700 shadow-xs">
               {{ item.title.slice(0, 1) }}
             </div>
-            <div>
-              <strong class="block font-bold text-navy-950">{{ item.title }}</strong>
-              <small v-if="item.description" class="block text-xs text-slate-500">{{ item.description }}</small>
+            <div class="min-w-0">
+              <strong class="block font-extrabold text-navy-950">{{ item.title }}</strong>
+              <small v-if="item.description" class="mt-0.5 block text-xs font-semibold text-slate-500">{{ item.description }}</small>
             </div>
           </div>
         </article>
