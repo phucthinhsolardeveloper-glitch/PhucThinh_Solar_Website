@@ -16,9 +16,6 @@ const chapters = [
   { id: 'project-gallery', label: 'Tư liệu dự án' },
   { id: 'project-equipment', label: 'Điểm nhấn kỹ thuật' },
 ]
-function chapterNumber(id: string) {
-  return String(chapters.findIndex((chapter) => chapter.id === id) + 1).padStart(2, '0')
-}
 </script>
 
 <template>
@@ -54,16 +51,13 @@ function chapterNumber(id: string) {
 
     <nav v-if="chapters.length" class="project-story__chapters sticky top-0 z-20 overflow-x-auto border-b border-slate-200 bg-white/95 backdrop-blur-sm" aria-label="Các phần trong hồ sơ dự án">
       <div class="pts-container flex min-w-max gap-6 py-4 tb:gap-9">
-        <a v-for="(chapter, index) in chapters" :key="chapter.id" class="inline-flex min-h-7 items-center gap-2 whitespace-nowrap text-sm font-bold text-navy-800 no-underline transition-colors hover:text-gold-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold-500" :href="`#${chapter.id}`">
-          <span class="font-mono text-xs text-gold-700">{{ String(index + 1).padStart(2, '0') }}</span>
-          {{ chapter.label }}
-        </a>
+        <a v-for="chapter in chapters" :key="chapter.id" class="inline-flex min-h-7 items-center whitespace-nowrap text-sm font-bold text-navy-800 no-underline transition-colors hover:text-gold-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold-500" :href="`#${chapter.id}`">{{ chapter.label }}</a>
       </div>
     </nav>
 
     <div class="pts-container pb-10">
       <section id="project-overview" class="project-story__section scroll-mt-20 grid gap-6 py-12 tb:grid-cols-[minmax(160px,0.36fr)_minmax(0,1fr)] tb:gap-12 nav:py-16" aria-labelledby="project-summary-title">
-        <h2 id="project-summary-title" class="m-0 text-[clamp(24px,3vw,36px)] font-black tracking-tight text-navy-950"><span class="mb-2 block font-mono text-xs text-gold-700">{{ chapterNumber('project-overview') }}</span>Tổng quan công trình</h2>
+        <h2 id="project-summary-title" class="m-0 text-[clamp(24px,3vw,36px)] font-black tracking-tight text-navy-950">Tổng quan công trình</h2>
         <div class="min-w-0 max-w-[78ch]">
           <p v-if="summaryFallback" class="m-0 text-lg leading-relaxed text-slate-700">{{ summaryFallback }}</p>
           <EditorialRichText v-else-if="hasOverview" :content="content" />
@@ -73,7 +67,7 @@ function chapterNumber(id: string) {
 
       <section id="project-gallery" class="project-story__section scroll-mt-20 py-12 nav:py-16" aria-labelledby="project-gallery-heading">
         <header class="mb-7 grid gap-4 tb:grid-cols-[minmax(200px,0.36fr)_minmax(0,1fr)] tb:gap-12">
-          <h2 id="project-gallery-heading" class="m-0 text-[clamp(24px,3vw,36px)] font-black tracking-tight text-navy-950"><span class="mb-2 block font-mono text-xs text-gold-700">{{ chapterNumber('project-gallery') }}</span>Tư liệu dự án</h2>
+          <h2 id="project-gallery-heading" class="m-0 text-[clamp(24px,3vw,36px)] font-black tracking-tight text-navy-950">Tư liệu dự án</h2>
           <p class="m-0 max-w-[60ch] self-end text-base leading-relaxed text-slate-600">Hình ảnh và video được công bố cho công trình này.</p>
         </header>
         <ProjectDetailGallery :items="project.gallery" />

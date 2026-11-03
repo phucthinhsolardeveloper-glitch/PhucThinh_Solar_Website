@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { PublicProject } from '#shared/contracts/public-projects'
 
-defineProps<{ project: PublicProject; viewLabel: string; chapterNumber?: number }>()
+defineProps<{ project: PublicProject; viewLabel: string }>()
 const links = useMigrationLinks()
 </script>
 
@@ -29,7 +29,6 @@ const links = useMigrationLinks()
       </div>
 
       <div class="flex flex-1 flex-col pt-4 pb-1">
-        <span v-if="chapterNumber" class="mb-2 text-[11px] font-extrabold uppercase tracking-[0.15em] text-gold-700">Hồ sơ {{ String(chapterNumber).padStart(2, '0') }}</span>
         <h2 class="m-0 text-base font-extrabold leading-snug text-navy-800 transition-colors group-hover:text-gold-700 group-focus-visible:text-gold-700 tb:text-lg">{{ project.title }}</h2>
         <div v-if="project.address" class="my-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-500">
           <span class="inline-flex items-center gap-1.5">

@@ -103,7 +103,7 @@ usePublicSocialMeta({
           <ProjectsFeatured v-if="projects.featured" :project="projects.featured" :benefits="projects.featuredBenefits" :label="projects.labels.featured" :view-label="projects.labels.view" />
 
           <section class="project-reel grid grid-cols-1 gap-x-8 gap-y-10 tb:grid-cols-2 nav:grid-cols-3" :aria-label="projects.title">
-            <ProjectCard v-for="(project, index) in projects.projects" :key="project.id" :project="project" :view-label="projects.labels.view" :chapter-number="index + 2" />
+            <ProjectCard v-for="project in projects.projects" :key="project.id" :project="project" :view-label="projects.labels.view" />
           </section>
 
           <nav v-if="totalPages > 1" class="mt-10 flex flex-wrap justify-center gap-2" aria-label="Phân trang dự án">
