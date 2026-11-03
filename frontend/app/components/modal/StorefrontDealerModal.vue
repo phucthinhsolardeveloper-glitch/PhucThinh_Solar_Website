@@ -20,6 +20,19 @@ const success = ref('')
 const error = ref('')
 const securityError = ref('')
 const cityOptions = computed(() => (security.value?.cities ?? []).map((city) => ({ label: city.name, value: String(city.id) })))
+const partnerProfiles = [
+  'Đại lý thiết bị điện',
+  'Nhà thầu cơ điện / XD',
+  'Cửa hàng chiếu sáng',
+  'Quan tâm đèn Blue Carbon',
+  'Quan tâm tấm pin & biến tần',
+]
+
+function appendDealerNote(chip: string) {
+  const current = form.notes.trim()
+  if (current.includes(chip)) return
+  form.notes = current ? `${current}; ${chip}` : chip
+}
 const inputUi = {
   base: 'h-14 w-full rounded-btn border border-slate-300 bg-white px-4 text-base font-normal text-navy-950 placeholder:text-slate-400 focus-visible:border-gold-600 focus-visible:ring-2 focus-visible:ring-gold-500/25',
 }
@@ -138,7 +151,26 @@ async function send() {
         </div>
       </div>
 
-      <form v-else class="grid gap-7" @submit.prevent="send">
+      <form v-else class="grid gap-6" @submit.prevent="send">
+        <div class="grid grid-cols-2 gap-2 rounded-[4px] bg-navy-950 p-3.5 text-xs text-white sm:grid-cols-4">
+          <div class="border-l-2 border-gold-500 pl-2.5">
+            <strong class="block text-gold-300">Chiết khấu gốc</strong>
+            <span class="text-white/75">Nhập khẩu trực tiếp</span>
+          </div>
+          <div class="border-l-2 border-gold-500 pl-2.5">
+            <strong class="block text-gold-300">Đủ CO/CQ & VAT</strong>
+            <span class="text-white/75">Hồ sơ minh bạch</span>
+          </div>
+          <div class="border-l-2 border-gold-500 pl-2.5">
+            <strong class="block text-gold-300">Hỗ trợ trưng bày</strong>
+            <span class="text-white/75">Catalogue & bảng hiệu</span>
+          </div>
+          <div class="border-l-2 border-gold-500 pl-2.5">
+            <strong class="block text-gold-300">Kho sẵn 3 miền</strong>
+            <span class="text-white/75">Gia Lai · Đà Nẵng · HCM</span>
+          </div>
+        </div>
+
         <div class="grid min-w-0 gap-x-6 gap-y-5 sm:grid-cols-2">
           <UFormField label="Họ và tên" name="fullname" required class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-[15px] font-bold text-navy-800' }">
             <UInput v-model.trim="form.fullname" name="fullname" required maxlength="100" autocomplete="name" placeholder="Nguyễn Văn A" variant="none" class="w-full" :ui="inputUi" />
@@ -159,7 +191,18 @@ async function send() {
         </UFormField>
 
         <UFormField label="Ghi chú thêm" hint="Không bắt buộc" name="notes" class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-[15px] font-bold text-navy-800', hint: 'text-sm font-normal text-slate-500' }">
-          <UTextarea v-model.trim="form.notes" name="notes" :rows="4" maxlength="1000" placeholder="Năng lực hiện tại, sản phẩm chính quan tâm (đèn mặt trời, điện mặt trời, inverter...)" variant="none" class="w-full" :ui="textareaUi" />
+          <div class="mb-1.5 flex flex-wrap gap-1.5" aria-label="Mô hình đối tác gợi ý">
+            <button
+              v-for="chip in partnerProfiles"
+              :key="chip"
+              type="button"
+              class="cursor-pointer rounded-[3px] border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-semibold text-slate-600 transition-colors hover:border-gold-500 hover:bg-gold-50/50 hover:text-navy-900"
+              @click="appendDealerNote(chip)"
+            >
+              + {{ chip }}
+            </button>
+          </div>
+          <UTextarea v-model.trim="form.notes" name="notes" :rows="3" maxlength="1000" placeholder="Năng lực hiện tại, sản phẩm chính quan tâm (đèn mặt trời, điện mặt trời, inverter...)" variant="none" class="w-full" :ui="textareaUi" />
         </UFormField>
 
         <p v-if="error" class="rounded-[4px] bg-red-50 p-2.5 text-xs font-semibold text-red-700" role="alert">
@@ -173,10 +216,15 @@ async function send() {
           </button>
         </div>
 
-        <UButton type="submit" color="primary" size="xl" :loading="submitting" :disabled="submitting || securityLoading || !cityOptions.length" class="min-h-14 w-full justify-center rounded-btn bg-gold-500 px-6 text-base font-extrabold text-navy-950">
-          {{ submitting ? 'Đang gửi đăng ký…' : 'Đăng ký ngay' }}
-          <UIcon v-if="!submitting" name="i-lucide-arrow-right" class="size-5" aria-hidden="true" />
-        </UButton>
+        <div class="grid gap-3">
+          <UButton type="submit" color="primary" size="xl" :loading="submitting" :disabled="submitting || securityLoading || !cityOptions.length" class="min-h-14 w-full justify-center rounded-btn bg-gold-500 px-6 text-base font-extrabold text-navy-950">
+            {{ submitting ? 'Đang gửi đăng ký…' : 'Đăng ký ngay' }}
+            <UIcon v-if="!submitting" name="i-lucide-arrow-right" class="size-5" aria-hidden="true" />
+          </UButton>
+          <p class="m-0 text-center text-xs text-slate-500">
+            Bộ phận phát triển đại lý: <a href="tel:0944555957" class="font-bold text-navy-900 no-underline hover:text-gold-700">0944 555 957</a>
+          </p>
+        </div>
       </form>
     </template>
   </UModal>

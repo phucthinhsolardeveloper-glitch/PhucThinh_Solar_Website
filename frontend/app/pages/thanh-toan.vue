@@ -8,7 +8,20 @@ definePageMeta({
 })
 
 const { site } = await usePublicSite()
+const { openConsultation } = useStorefrontModal()
 const checkoutPostAction = CART_CHECKOUT_POST_PATH
+const quickRequirementTags = [
+  'Cần xuất hóa đơn VAT',
+  'Giao trong giờ hành chính',
+  'Gọi trước khi giao 30 phút',
+  'Cần kỹ thuật hướng dẫn đấu nối',
+]
+
+function appendRequirement(tag: string) {
+  const current = form.requirements.trim()
+  if (current.includes(tag)) return
+  form.requirements = current ? `${current}; ${tag}` : tag
+}
 const { data: cartData } = await useFetch<unknown>('/_migration/cart', { key: 'migration-checkout-cart', default: () => null })
 const { data: checkoutData, error: checkoutLoadError } = await useFetch<unknown>('/_migration/checkout', { key: 'migration-checkout-meta', default: () => null })
 const cart = computed<PublicCartPayload | null>(() => isPublicCartPayload(cartData.value) ? cartData.value : null)
@@ -171,10 +184,52 @@ useSeoMeta({ title: 'Thanh toán — Phúc Thịnh Solar', robots: 'noindex, nof
       <div v-if="checkoutLoadError || !checkout || !cart" class="rounded-btn border border-red-200 bg-red-50 p-6 text-red-800" role="alert">
         Không thể tải dữ liệu checkout từ PHP local.
       </div>
-      <div v-else-if="!checkout.cartReady || !cart.canCheckout" class="rounded-btn border border-amber-200 bg-amber-50 p-6 text-amber-900">
-        <h2 class="mb-2 text-xl font-black">Giỏ hàng chưa thể thanh toán</h2>
-        <p class="mb-4">Giỏ đang trống hoặc có sản phẩm cần liên hệ báo giá.</p>
-        <NuxtLink to="/gio-hang/" class="font-bold underline">Quay lại giỏ hàng</NuxtLink>
+      <div v-else-if="!checkout.cartReady || !cart.canCheckout" class="rounded-[4px] border-l-[4px] border-gold-500 bg-slate-50 p-6 sm:p-8">
+        <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+          <div>
+            <h2 class="mb-2 text-xl font-black text-navy-950">Giỏ hàng chưa thể thanh toán</h2>
+            <p class="mb-0 text-sm leading-relaxed text-slate-600 sm:text-base">
+              Giỏ đang trống hoặc có sản phẩm cần liên hệ báo giá. Vui lòng kiểm tra lại giỏ hàng hoặc gửi yêu cầu để bộ phận kinh doanh báo giá trực tiếp.
+            </p>
+          </div>
+          <div class="flex flex-wrap items-center gap-3">
+            <NuxtLink to="/gio-hang/" class="inline-flex min-h-11 items-center justify-center rounded-[4px] bg-navy-900 px-5 py-2.5 text-sm font-bold text-white no-underline transition-colors hover:bg-navy-800">
+              Quay lại giỏ hàng
+            </NuxtLink>
+            <button
+              type="button"
+              class="inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-[4px] bg-gold-500 px-5 py-2.5 text-sm font-extrabold text-navy-950 transition-colors hover:bg-gold-400"
+              @click="openConsultation('Thanh toán: Yêu cầu báo giá đơn hàng')"
+            >
+              <span>Nhận báo giá nhanh</span>
+              <span aria-hidden="true">→</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="mt-6 grid grid-cols-1 gap-4 border-t border-slate-200/80 pt-6 sm:grid-cols-3">
+          <div class="rounded-[4px] bg-navy-950 p-4 text-white">
+            <span class="font-mono text-xs font-extrabold text-gold-400">01</span>
+            <strong class="mt-1 block text-sm font-bold text-white">Đơn hàng có sản phẩm báo giá</strong>
+            <p class="m-0 mt-1 text-xs leading-relaxed text-white/75">
+              Các thiết bị công suất lớn hoặc cấu hình BESS sẽ được kỹ sư kiểm tra tương thích và báo giá chiết khấu theo số lượng.
+            </p>
+          </div>
+          <div class="rounded-[4px] bg-navy-950 p-4 text-white">
+            <span class="font-mono text-xs font-extrabold text-gold-400">02</span>
+            <strong class="mt-1 block text-sm font-bold text-white">Xuất hóa đơn VAT & CO/CQ</strong>
+            <p class="m-0 mt-1 text-xs leading-relaxed text-white/75">
+              Hỗ trợ đầy đủ hợp đồng, hóa đơn GTGT và chứng từ xuất xứ/chất lượng cho doanh nghiệp, nhà thầu.
+            </p>
+          </div>
+          <div class="rounded-[4px] bg-navy-950 p-4 text-white">
+            <span class="font-mono text-xs font-extrabold text-gold-400">03</span>
+            <strong class="mt-1 block text-sm font-bold text-white">Hotline hỗ trợ đặt hàng</strong>
+            <p class="m-0 mt-1 text-xs leading-relaxed text-white/75">
+              Liên hệ trực tiếp <a href="tel:0944555957" class="font-mono font-bold text-gold-300 no-underline hover:underline">0944 555 957</a> hoặc <a href="tel:0945536899" class="font-mono font-bold text-gold-300 no-underline hover:underline">0945 536 899</a>.
+            </p>
+          </div>
+        </div>
       </div>
 
       <form v-else method="post" :action="checkoutPostAction" class="grid gap-8 nav:grid-cols-[minmax(0,1fr)_380px]">
@@ -214,9 +269,21 @@ useSeoMeta({ title: 'Thanh toán — Phúc Thịnh Solar', robots: 'noindex, nof
               <label class="grid gap-1.5 text-sm font-bold tb:col-span-2">Địa chỉ chi tiết
                 <input v-model.trim="form.address" name="dataOrder[address]" autocomplete="street-address" maxlength="255" required class="h-11 rounded-chip border border-gray-300 px-3 font-normal outline-none focus:border-gold-600">
               </label>
-              <label class="grid gap-1.5 text-sm font-bold tb:col-span-2">Yêu cầu khác
-                <textarea v-model.trim="form.requirements" name="dataOrder[requirements]" maxlength="1000" rows="4" class="rounded-chip border border-gray-300 px-3 py-2 font-normal outline-none focus:border-gold-600" />
-              </label>
+              <div class="grid gap-1.5 text-sm font-bold tb:col-span-2">
+                <label for="checkout-requirements">Yêu cầu khác</label>
+                <div class="mb-1 flex flex-wrap gap-1.5">
+                  <button
+                    v-for="tag in quickRequirementTags"
+                    :key="tag"
+                    type="button"
+                    class="cursor-pointer rounded-[3px] bg-slate-100 px-2.5 py-1 text-xs font-medium text-navy-800 transition-colors hover:bg-gold-500/20 hover:text-navy-950"
+                    @click="appendRequirement(tag)"
+                  >
+                    + {{ tag }}
+                  </button>
+                </div>
+                <textarea id="checkout-requirements" v-model.trim="form.requirements" name="dataOrder[requirements]" maxlength="1000" rows="4" class="rounded-chip border border-gray-300 px-3 py-2 font-normal outline-none focus:border-gold-600" />
+              </div>
             </div>
           </div>
 
@@ -255,6 +322,13 @@ useSeoMeta({ title: 'Thanh toán — Phúc Thịnh Solar', robots: 'noindex, nof
           <button type="submit" name="thanhtoan" value="1" class="mt-5 min-h-12 w-full rounded-chip bg-gold-500 px-5 font-extrabold text-navy-950 hover:bg-gold-600">
             Đặt hàng
           </button>
+
+          <div class="mt-4 rounded-[4px] border-l-[3px] border-gold-500 bg-navy-950 p-3.5 text-xs text-white/80">
+            <strong class="block font-bold text-white">Cam kết từ Phúc Thịnh Solar</strong>
+            <p class="m-0 mt-1 leading-relaxed">
+              Thiết bị chính hãng đầy đủ CO/CQ · Kiểm định kỹ thuật trước khi xuất kho · Hỗ trợ kỹ thuật: <a href="tel:0945536899" class="font-mono font-bold text-gold-300 no-underline hover:underline">0945 536 899</a>
+            </p>
+          </div>
         </aside>
       </form>
     </main>
