@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { PublicHomeAboutPoint, PublicHomePayload } from '#shared/contracts/public-home'
-import { motion, useReducedMotion } from 'motion-v'
+import DirectorStage, { type DirectorStageItem } from '~/components/home/DirectorStage.vue'
 import HomeProcess from '~/components/home/HomeProcess.vue'
 import HomeDealer from '~/components/home/HomeDealer.vue'
 
@@ -12,24 +12,16 @@ const solutionChips = [
   ['Bơm nước năng lượng mặt trời', 'Tấm pin điện mặt trời'],
 ]
 
-type SolutionTab = {
-  label: string
-  value: number
-  slot: 'solution'
-  solution: PublicHomePayload['solutions'][number]
-  chips: string[]
-}
-
-const selected = ref<string | number>(0)
-const reducedMotion = useReducedMotion()
-const solutionTabs = computed<SolutionTab[]>(() => props.data.solutions.map((solution, index) => ({
+const activeSolution = ref(0)
+const solutionItems = computed<DirectorStageItem[]>(() => props.data.solutions.map((solution) => ({
+  key: solution.label + solution.href,
   label: solution.label,
-  value: index,
-  slot: 'solution',
-  solution,
-  chips: solutionChips[index] || [],
+  title: solution.name,
+  description: solution.description,
+  image: editorialImageCandidate(solution.image, 1200, 750),
+  href: solution.href,
+  linkLabel: 'Xem giải pháp',
 })))
-const solutionPanelInteracted = ref(false)
 const links = useMigrationLinks()
 const leadIntent = useState<string>('public-home-lead-intent', () => '')
 const phpResizableEditorialImage = /^\/(?:upload\/news|assets\/images\/site-visuals)\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png)$/i
@@ -37,11 +29,6 @@ const phpResizableEditorialImage = /^\/(?:upload\/news|assets\/images\/site-visu
 function editorialImageCandidate(src: string, width: 760 | 1200, height: 475 | 750): string {
   if (!phpResizableEditorialImage.test(src)) return src
   return `/thumbs/${width}x${height}x1${src}`
-}
-
-function editorialImageSrcSet(src: string): string | undefined {
-  if (!phpResizableEditorialImage.test(src)) return undefined
-  return `${editorialImageCandidate(src, 760, 475)} 760w, ${editorialImageCandidate(src, 1200, 750)} 1200w`
 }
 
 function aboutPointImage(src: string): string {
@@ -81,90 +68,45 @@ function chipHref(chip: string, currentSolution: PublicHomePayload['solutions'][
 function requestConsultation(subject: string) {
   leadIntent.value = subject
 }
-
-function selectSolution(value: string | number) {
-  if (value === selected.value) return
-  solutionPanelInteracted.value = true
-  selected.value = value
-}
 </script>
 
 <template>
   <section
     v-if="data.solutions.length"
     id="giai-phap"
-    class="py-[clamp(56px,5vw,84px)]"
+    class="py-[clamp(64px,7vw,112px)]"
     aria-labelledby="home-solutions-title"
   >
     <div class="pts-container">
-      <header class="mb-8 max-w-[760px]">
-        <h2 id="home-solutions-title" class="m-0 text-[clamp(28px,2.4vw,40px)] font-black leading-[1.2] text-navy-950">
-          Giải pháp cho từng nhu cầu
-        </h2>
-        <p class="mt-2.5 text-[clamp(15px,1.05vw,18px)] leading-[1.65] text-slate-500">
-          Chọn lĩnh vực sử dụng để tìm hiểu phương án phù hợp.
-        </p>
-      </header>
-
-      <div role="group" aria-label="Giải pháp theo nhu cầu">
-        <UTabs
-          :model-value="selected"
-          :items="solutionTabs"
-          color="primary"
-          variant="link"
-          size="xl"
-          :ui="{
-            root: 'w-full',
-            list: 'mb-8 flex gap-6 overflow-x-auto border-b border-slate-200 px-1 py-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
-            indicator: '-bottom-px h-[3px] rounded-none bg-gold-500',
-            trigger: 'min-h-[46px] flex-none justify-start rounded-none px-1 font-bold whitespace-nowrap text-slate-600 transition-colors data-[state=active]:text-navy-950 data-[state=active]:font-extrabold',
-            content: 'rounded-none outline-offset-4',
-          }"
-          @update:model-value="selectSolution"
-        >
-          <template #solution="{ item }">
-            <motion.article
-              v-if="item.solution"
-              :initial="solutionPanelInteracted && !reducedMotion ? { opacity: 0.72 } : false"
-              :animate="{ opacity: 1 }"
-              :transition="{ duration: 0.16, ease: 'easeOut' }"
-              class="grid grid-cols-[minmax(0,.9fr)_minmax(0,1.1fr)] items-center gap-[clamp(28px,3vw,48px)] max-md:grid-cols-1"
-            >
-              <div>
-                <h3 class="m-0 text-[clamp(26px,2.2vw,38px)] font-black leading-[1.25] text-navy-950">
-                  {{ item.solution.name }}
-                </h3>
-                <p class="my-3.5 mb-5 max-w-[650px] text-[clamp(16px,1.1vw,19px)] leading-[1.68] text-slate-600">
-                  {{ item.solution.description }}
-                </p>
-                <div v-if="item.chips.length" class="-mt-1 mb-6 flex flex-wrap gap-2" aria-label="Thiết bị liên quan">
-                  <a
-                    v-for="chip in item.chips"
-                    :key="chip"
-                    class="inline-flex min-h-[36px] items-center rounded-[3px] border border-slate-200 bg-white px-3 py-1.5 text-[13.5px] font-semibold text-navy-900 no-underline shadow-2xs transition-all hover:border-gold-500 hover:bg-gold-50 hover:text-navy-950"
-                    :href="links.generic(chipHref(chip, item.solution))"
-                  >
-                    {{ chip }}
-                  </a>
-                </div>
-                <div class="flex flex-wrap items-center gap-[14px]">
-                  <UButton :href="links.generic(item.solution.href)" color="primary" size="xl" class="min-h-[48px] rounded-[4px] border border-gold-500 bg-gold-400 px-[24px] font-bold text-navy-950 no-underline shadow-2xs hover:bg-gold-500">
-                    Xem giải pháp
-                  </UButton>
-                  <UButton href="#yeu-cau-tu-van" color="secondary" variant="link" class="min-h-11 rounded-none px-2 font-bold text-navy-950 no-underline hover:text-gold-700" @click="requestConsultation(item.solution.name)">
-                    Nhận tư vấn <span aria-hidden="true">→</span>
-                  </UButton>
-                </div>
-              </div>
-
-              <div class="relative flex aspect-[8/5] items-end overflow-hidden rounded-[6px] border border-slate-200/80 bg-navy-950 text-white shadow-2xs">
-                <img class="absolute inset-0 h-full w-full object-cover" :src="editorialImageCandidate(item.solution.image, 1200, 750)" :srcset="editorialImageSrcSet(item.solution.image)" sizes="(min-width: 1024px) 45vw, 100vw" :alt="item.solution.name" width="1200" height="750" loading="lazy" decoding="async">
-                <span class="relative z-10 w-full bg-gradient-to-t from-navy-950/90 to-transparent p-4 pt-16 text-sm font-bold text-white">{{ item.solution.label }}</span>
-              </div>
-            </motion.article>
-          </template>
-        </UTabs>
-      </div>
+      <DirectorStage v-model:active="activeSolution" :items="solutionItems" list-label="Giải pháp theo nhu cầu" reverse :interval="7000">
+        <template #head>
+          <h2 id="home-solutions-title" class="m-0 max-w-[14ch] text-[clamp(30px,3vw,50px)] font-black leading-[1.06] tracking-[-.035em] text-navy-950">
+            Giải pháp cho từng nhu cầu
+          </h2>
+          <p class="mt-4 max-w-[40ch] text-[clamp(15px,1.05vw,18px)] leading-[1.65] text-slate-600">
+            Chọn lĩnh vực sử dụng để xem phương án và thiết bị đi kèm.
+          </p>
+        </template>
+        <template #caption="{ index }">
+          <span v-if="solutionChips[index]?.length" class="mt-1 flex flex-wrap gap-2" aria-label="Thiết bị liên quan">
+            <a
+              v-for="chip in solutionChips[index]"
+              :key="chip"
+              class="inline-flex min-h-[34px] items-center rounded-[3px] border border-white/30 bg-white/10 px-3 text-[13px] font-semibold text-white no-underline transition-colors hover:border-gold-400 hover:bg-gold-400 hover:text-navy-950"
+              :href="links.generic(chipHref(chip, data.solutions[index]!))"
+            >{{ chip }}</a>
+          </span>
+        </template>
+        <template #foot="{ item }">
+          <a
+            class="inline-flex min-h-[52px] items-center justify-center gap-2 rounded-[4px] bg-navy-950 px-6 text-[15px] font-extrabold text-white no-underline transition-colors hover:bg-gold-500 hover:text-navy-950"
+            href="#yeu-cau-tu-van"
+            @click="requestConsultation(item.title)"
+          >
+            Nhận tư vấn giải pháp này <span aria-hidden="true">→</span>
+          </a>
+        </template>
+      </DirectorStage>
     </div>
   </section>
 
