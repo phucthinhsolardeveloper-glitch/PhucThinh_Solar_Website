@@ -340,7 +340,6 @@ function pageLink(nextPage: number) {
       :heading="heading"
       :description="bannerDescription"
       :hero="catalogData?.categoryHero ?? null"
-      :total="catalogData?.pagination.total ?? null"
       :brands="mastheadBrands"
     />
 
@@ -413,9 +412,6 @@ function pageLink(nextPage: number) {
           <div class="mb-5 flex flex-wrap items-center justify-between gap-3 max-[769px]:items-start max-[769px]:justify-start">
             <div class="flex flex-wrap items-center gap-2.5">
               <h2 class="m-0 text-lg font-black text-navy-800">Danh sách sản phẩm</h2>
-              <span v-if="catalogData.pagination.total" class="rounded-[3px] bg-navy-950 px-2.5 py-0.5 font-mono text-xs font-bold text-gold-300">
-                {{ catalogData.pagination.total.toLocaleString('vi-VN') }} sản phẩm
-              </span>
             </div>
             <div
               class="flex items-center gap-2 max-[769px]:grid max-[769px]:w-full"

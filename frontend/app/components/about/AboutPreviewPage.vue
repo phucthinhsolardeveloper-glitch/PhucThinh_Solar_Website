@@ -189,8 +189,7 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
         <!-- Hợp nhất Card 1: Principles (Chuẩn Monograph Card System) -->
         <div v-if="about.people.principles.length" class="mt-14 grid grid-cols-3 gap-6 lg:gap-8 max-[800px]:grid-cols-1">
           <article v-for="(item, index) in about.people.principles" :key="`${item.title}-${index}`" class="group border-t-2 border-slate-200 pt-5 transition-colors duration-200 hover:border-gold-500">
-            <header class="mb-3.5 flex items-center justify-between">
-              <span class="font-mono text-xs font-extrabold text-gold-700">0{{ index + 1 }}</span>
+            <header class="mb-3.5 flex items-center justify-end">
               <img v-if="item.image" class="size-9 object-contain" :src="item.image" alt="" width="56" height="56" loading="lazy">
             </header>
             <h3 v-if="item.title" class="text-[1.1rem] font-bold leading-[1.28] text-navy-800">{{ item.title }}</h3>
@@ -210,8 +209,7 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
         <!-- Hợp nhất Card 2: Trust (khớp regex grid grid-cols-2 ... max-[800px]:grid-cols-1) -->
         <div class="about-trust-list grid grid-cols-2 gap-6 lg:gap-8 max-[800px]:grid-cols-1">
           <article v-for="(item, index) in about.trust.items" :key="`${item.title}-${index}`" class="group border-t-2 border-slate-200 pt-5 transition-colors duration-200 hover:border-gold-500">
-            <header class="mb-3.5 flex items-center justify-between">
-              <span class="font-mono text-xs font-extrabold text-gold-700">0{{ index + 1 }}</span>
+            <header class="mb-3.5 flex items-center justify-end">
               <img v-if="item.image" class="size-10 object-contain" :src="item.image" alt="" width="64" height="64" loading="lazy">
             </header>
             <h3 v-if="item.title" class="text-[1.1rem] font-bold leading-[1.28] text-navy-800">{{ item.title }}</h3>
@@ -229,8 +227,7 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
         <!-- Hợp nhất Card 3: Compass (Đồng bộ ngôn ngữ với Dark Tone) -->
         <div class="mt-10 grid grid-cols-3 gap-6 lg:gap-8 max-[800px]:grid-cols-1">
           <article v-for="(item, index) in about.compass.items" :key="`${item.title}-${index}`" class="group border-t-2 border-white/20 pt-5 transition-colors duration-200 hover:border-gold-400">
-            <header class="mb-3.5 flex items-center justify-between">
-              <span class="font-mono text-xs font-extrabold text-gold-400">0{{ index + 1 }}</span>
+            <header class="mb-3.5 flex items-center justify-end">
               <img v-if="item.image" class="size-9 object-contain filter invert opacity-90" :src="item.image" alt="" width="56" height="56" loading="lazy">
             </header>
             <h3 v-if="item.title" class="text-[1.1rem] font-bold leading-[1.28] text-white">{{ item.title }}</h3>
@@ -276,7 +273,7 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
                   <img class="block h-full w-full object-contain transition-transform duration-300 group-hover:scale-105" :src="item.image" :alt="item.name" width="260" height="360" loading="lazy">
                 </button>
               </div>
-              <span class="font-mono text-xs font-bold uppercase tracking-wider text-gold-700">{{ about.labels.certLabel }}</span>
+              <span class="text-sm font-bold text-gold-700">{{ about.labels.certLabel }}</span>
               <h3 class="mt-1.5 text-[1.1rem] font-bold leading-[1.28] text-navy-800">{{ item.name }}</h3>
               <p v-if="item.description" class="m-0 mt-2 text-base leading-[1.7] text-[#52627c] md:text-lg">{{ item.description }}</p>
             </div>

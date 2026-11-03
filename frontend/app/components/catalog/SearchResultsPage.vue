@@ -141,7 +141,6 @@ usePublicSocialMeta({
       :heading="keyword ? `Kết quả tìm kiếm: “${keyword}”` : 'Sản phẩm năng lượng mặt trời'"
       description="Giải pháp năng lượng phù hợp cho gia đình, doanh nghiệp và công trình"
       :hero="null"
-      :total="data?.pagination?.total ?? null"
     />
     <main class="pts-container pb-16">
       <div class="pt-6">

@@ -47,7 +47,6 @@ function cleanQuote(raw: string): string {
             <span v-if="item.image" class="flex h-12 w-12 items-center justify-center rounded-chip bg-gold-300 p-2">
               <img :src="cardImage(item.image)" :alt="item.title" class="h-full w-full object-contain" loading="lazy">
             </span>
-            <span class="font-mono text-xs font-extrabold tracking-widest text-gold-400/70">0{{ index + 1 }}</span>
           </div>
           <h3 class="mb-2.5 text-lg font-extrabold text-white">{{ item.title }}</h3>
           <EditorialRichText v-if="item.descriptionContent.html" :content="item.descriptionContent" class="cms-content-on-dark text-sm leading-relaxed" />

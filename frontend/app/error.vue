@@ -25,7 +25,7 @@ function submitErrorSearch(term?: string) {
     <main class="pts-container py-12 nav:py-16">
       <div class="rounded-[4px] border-l-[4px] border-gold-500 bg-slate-50 p-6 sm:p-10">
         <div class="flex flex-wrap items-center gap-3">
-          <span class="rounded-[3px] bg-navy-950 px-2.5 py-1 font-mono text-xs font-extrabold text-gold-400">
+          <span class="rounded-[3px] bg-navy-950 px-2.5 py-1 tabular-nums text-xs font-extrabold text-gold-400">
             Mã lỗi {{ error.statusCode || 500 }}
           </span>
           <span class="text-xs font-semibold text-slate-500">Điều hướng nhanh Phúc Thịnh Solar</span>
@@ -91,22 +91,18 @@ function submitErrorSearch(term?: string) {
 
         <div class="mt-8 grid grid-cols-1 gap-4 border-t border-slate-200/80 pt-6 sm:grid-cols-2 lg:grid-cols-4">
           <NuxtLink to="/san-pham/" class="group block rounded-[4px] bg-navy-950 p-5 text-white no-underline transition-colors hover:bg-navy-900">
-            <span class="font-mono text-xs font-extrabold text-gold-400">01</span>
             <strong class="mt-1.5 block text-base font-bold text-white group-hover:text-gold-300">Danh mục thiết bị</strong>
             <p class="m-0 mt-1 text-xs leading-relaxed text-white/75">Đèn năng lượng mặt trời, tấm pin, biến tần, pin lưu trữ BESS và bơm mặt trời.</p>
           </NuxtLink>
           <NuxtLink to="/giai-phap/" class="group block rounded-[4px] bg-navy-950 p-5 text-white no-underline transition-colors hover:bg-navy-900">
-            <span class="font-mono text-xs font-extrabold text-gold-400">02</span>
             <strong class="mt-1.5 block text-base font-bold text-white group-hover:text-gold-300">Giải pháp năng lượng</strong>
             <p class="m-0 mt-1 text-xs leading-relaxed text-white/75">Cấu hình điện mặt trời hộ gia đình, nhà xưởng doanh nghiệp và chiếu sáng công trình.</p>
           </NuxtLink>
           <NuxtLink to="/du-an-da-thuc-hien/" class="group block rounded-[4px] bg-navy-950 p-5 text-white no-underline transition-colors hover:bg-navy-900">
-            <span class="font-mono text-xs font-extrabold text-gold-400">03</span>
             <strong class="mt-1.5 block text-base font-bold text-white group-hover:text-gold-300">Dự án đã thực hiện</strong>
             <p class="m-0 mt-1 text-xs leading-relaxed text-white/75">Hồ sơ năng lực thi công và các công trình thực tế đã bàn giao trên toàn quốc.</p>
           </NuxtLink>
           <NuxtLink to="/tin-tuc/" class="group block rounded-[4px] bg-navy-950 p-5 text-white no-underline transition-colors hover:bg-navy-900">
-            <span class="font-mono text-xs font-extrabold text-gold-400">04</span>
             <strong class="mt-1.5 block text-base font-bold text-white group-hover:text-gold-300">Kiến thức & Chính sách</strong>
             <p class="m-0 mt-1 text-xs leading-relaxed text-white/75">Cẩm nang kỹ thuật điện mặt trời, hướng dẫn lắp đặt và chính sách bảo hành chính hãng.</p>
           </NuxtLink>

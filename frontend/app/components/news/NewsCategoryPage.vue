@@ -109,7 +109,7 @@ usePublicSocialMeta({
         <header class="pt-6 pb-7">
           <div class="mb-2.5 flex flex-wrap items-center gap-2.5">
             <h1 class="m-0 text-[clamp(30px,4vw,44px)] font-black leading-[1.15] tracking-tight text-navy-800">{{ category.name }}</h1>
-            <span v-if="news.pagination.total" class="rounded-[3px] bg-navy-950 px-2.5 py-1 font-mono text-xs font-bold text-gold-300">{{ news.pagination.total }} bài viết</span>
+            <span v-if="news.pagination.total" class="text-base font-semibold text-slate-500">{{ news.pagination.total }} bài viết</span>
           </div>
           <p v-if="category.description" class="m-0 leading-relaxed text-slate-500">{{ category.description }}</p>
         </header>

@@ -89,21 +89,21 @@ watch([payload, token], trackOrderConversion)
 
         <div class="mt-12 grid grid-cols-1 gap-4 border-t border-slate-200/80 pt-10 text-left sm:grid-cols-3">
           <div class="rounded-[4px] border-t-2 border-gold-500 bg-slate-50 p-5">
-            <span class="font-mono text-xs font-extrabold text-gold-700">01</span>
+            <span class="tabular-nums text-xs font-extrabold text-gold-700">01</span>
             <h2 class="m-0 mt-1.5 text-base font-bold text-navy-900">Xác nhận đơn hàng</h2>
             <p class="m-0 mt-1.5 text-sm leading-relaxed text-slate-600">
               Bộ phận điều phối Phúc Thịnh Solar liên hệ xác nhận thông tin người nhận, địa chỉ và phương thức vận chuyển.
             </p>
           </div>
           <div class="rounded-[4px] border-t-2 border-gold-500 bg-slate-50 p-5">
-            <span class="font-mono text-xs font-extrabold text-gold-700">02</span>
+            <span class="tabular-nums text-xs font-extrabold text-gold-700">02</span>
             <h2 class="m-0 mt-1.5 text-base font-bold text-navy-900">Kiểm định & Xuất kho</h2>
             <p class="m-0 mt-1.5 text-sm leading-relaxed text-slate-600">
               Thiết bị được kiểm tra thông số kỹ thuật, tem bảo hành chính hãng và đóng gói từ kho gần nhất (Gia Lai, Đà Nẵng, TP.HCM).
             </p>
           </div>
           <div class="rounded-[4px] border-t-2 border-gold-500 bg-slate-50 p-5">
-            <span class="font-mono text-xs font-extrabold text-gold-700">03</span>
+            <span class="tabular-nums text-xs font-extrabold text-gold-700">03</span>
             <h2 class="m-0 mt-1.5 text-base font-bold text-navy-900">Giao hàng & Hỗ trợ kỹ thuật</h2>
             <p class="m-0 mt-1.5 text-sm leading-relaxed text-slate-600">
               Đồng kiểm khi nhận hàng; đội ngũ kỹ sư hỗ trợ hướng dẫn đấu nối, vận hành và bảo hành dài hạn.

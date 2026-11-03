@@ -209,24 +209,24 @@ useSeoMeta({ title: 'Thanh toán — Phúc Thịnh Solar', robots: 'noindex, nof
 
         <div class="mt-6 grid grid-cols-1 gap-4 border-t border-slate-200/80 pt-6 sm:grid-cols-3">
           <div class="rounded-[4px] bg-navy-950 p-4 text-white">
-            <span class="font-mono text-xs font-extrabold text-gold-400">01</span>
+            <span class="tabular-nums text-xs font-extrabold text-gold-400">01</span>
             <strong class="mt-1 block text-sm font-bold text-white">Đơn hàng có sản phẩm báo giá</strong>
             <p class="m-0 mt-1 text-xs leading-relaxed text-white/75">
               Các thiết bị công suất lớn hoặc cấu hình BESS sẽ được kỹ sư kiểm tra tương thích và báo giá chiết khấu theo số lượng.
             </p>
           </div>
           <div class="rounded-[4px] bg-navy-950 p-4 text-white">
-            <span class="font-mono text-xs font-extrabold text-gold-400">02</span>
+            <span class="tabular-nums text-xs font-extrabold text-gold-400">02</span>
             <strong class="mt-1 block text-sm font-bold text-white">Xuất hóa đơn VAT & CO/CQ</strong>
             <p class="m-0 mt-1 text-xs leading-relaxed text-white/75">
               Hỗ trợ đầy đủ hợp đồng, hóa đơn GTGT và chứng từ xuất xứ/chất lượng cho doanh nghiệp, nhà thầu.
             </p>
           </div>
           <div class="rounded-[4px] bg-navy-950 p-4 text-white">
-            <span class="font-mono text-xs font-extrabold text-gold-400">03</span>
+            <span class="tabular-nums text-xs font-extrabold text-gold-400">03</span>
             <strong class="mt-1 block text-sm font-bold text-white">Hotline hỗ trợ đặt hàng</strong>
             <p class="m-0 mt-1 text-xs leading-relaxed text-white/75">
-              Liên hệ trực tiếp <a href="tel:0944555957" class="font-mono font-bold text-gold-300 no-underline hover:underline">0944 555 957</a> hoặc <a href="tel:0945536899" class="font-mono font-bold text-gold-300 no-underline hover:underline">0945 536 899</a>.
+              Liên hệ trực tiếp <a href="tel:0944555957" class="tabular-nums font-bold text-gold-300 no-underline hover:underline">0944 555 957</a> hoặc <a href="tel:0945536899" class="tabular-nums font-bold text-gold-300 no-underline hover:underline">0945 536 899</a>.
             </p>
           </div>
         </div>
@@ -326,7 +326,7 @@ useSeoMeta({ title: 'Thanh toán — Phúc Thịnh Solar', robots: 'noindex, nof
           <div class="mt-4 rounded-[4px] border-l-[3px] border-gold-500 bg-navy-950 p-3.5 text-xs text-white/80">
             <strong class="block font-bold text-white">Cam kết từ Phúc Thịnh Solar</strong>
             <p class="m-0 mt-1 leading-relaxed">
-              Thiết bị chính hãng đầy đủ CO/CQ · Kiểm định kỹ thuật trước khi xuất kho · Hỗ trợ kỹ thuật: <a href="tel:0945536899" class="font-mono font-bold text-gold-300 no-underline hover:underline">0945 536 899</a>
+              Thiết bị chính hãng đầy đủ CO/CQ · Kiểm định kỹ thuật trước khi xuất kho · Hỗ trợ kỹ thuật: <a href="tel:0945536899" class="tabular-nums font-bold text-gold-300 no-underline hover:underline">0945 536 899</a>
             </p>
           </div>
         </aside>

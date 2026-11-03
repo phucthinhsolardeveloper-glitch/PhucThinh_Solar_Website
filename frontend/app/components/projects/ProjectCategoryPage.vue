@@ -104,7 +104,7 @@ usePublicSocialMeta({
           <div class="max-w-[820px]">
             <div class="mb-2 flex flex-wrap items-center gap-2.5">
               <h1 class="m-0 text-[clamp(32px,5vw,56px)] font-black leading-tight tracking-tight text-navy-950">{{ categoryTitle }}</h1>
-              <span v-if="projects.pagination.total" class="rounded-[3px] bg-navy-950 px-2.5 py-1 font-mono text-xs font-bold text-gold-300">{{ projects.pagination.total }} công trình</span>
+              <span v-if="projects.pagination.total" class="text-base font-semibold text-slate-500">{{ projects.pagination.total }} công trình</span>
             </div>
             <p v-if="categoryDescription" class="m-0 text-lg leading-relaxed text-slate-600">{{ categoryDescription }}</p>
           </div>

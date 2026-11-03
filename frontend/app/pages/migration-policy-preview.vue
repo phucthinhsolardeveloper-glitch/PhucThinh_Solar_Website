@@ -184,11 +184,11 @@ useHead({
                 <div class="mt-3 grid gap-1.5 text-xs">
                   <a href="tel:0945536899" class="flex items-center justify-between rounded-[3px] bg-white/10 px-2.5 py-1.5 text-white no-underline hover:bg-white/15">
                     <span class="text-white/75">Kỹ thuật:</span>
-                    <strong class="font-mono text-gold-300">0945 536 899</strong>
+                    <strong class="tabular-nums text-gold-300">0945 536 899</strong>
                   </a>
                   <a href="tel:0944555957" class="flex items-center justify-between rounded-[3px] bg-white/10 px-2.5 py-1.5 text-white no-underline hover:bg-white/15">
                     <span class="text-white/75">Bán hàng:</span>
-                    <strong class="font-mono text-gold-300">0944 555 957</strong>
+                    <strong class="tabular-nums text-gold-300">0944 555 957</strong>
                   </a>
                 </div>
                 <button

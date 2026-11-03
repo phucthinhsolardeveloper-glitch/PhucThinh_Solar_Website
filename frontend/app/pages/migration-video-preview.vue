@@ -143,21 +143,18 @@ usePublicSocialMeta({
 
           <div class="mt-6 grid grid-cols-1 gap-4 border-t border-slate-200/80 pt-6 sm:grid-cols-3">
             <NuxtLink :to="links.generic('/du-an-da-thuc-hien/')" class="group block rounded-[4px] bg-navy-950 p-5 text-white no-underline transition-colors hover:bg-navy-900">
-              <span class="font-mono text-xs font-extrabold text-gold-400">01</span>
               <h2 class="m-0 mt-1.5 text-base font-bold text-white group-hover:text-gold-300">Dự án đã thực hiện</h2>
               <p class="m-0 mt-1.5 text-xs leading-relaxed text-white/75">
                 Tổng hợp các công trình điện mặt trời và chiếu sáng đã lắp đặt vận hành trên toàn quốc.
               </p>
             </NuxtLink>
             <NuxtLink :to="links.generic('/giai-phap/')" class="group block rounded-[4px] bg-navy-950 p-5 text-white no-underline transition-colors hover:bg-navy-900">
-              <span class="font-mono text-xs font-extrabold text-gold-400">02</span>
               <h2 class="m-0 mt-1.5 text-base font-bold text-white group-hover:text-gold-300">Giải pháp năng lượng</h2>
               <p class="m-0 mt-1.5 text-xs leading-relaxed text-white/75">
                 Phân tích cấu hình hệ thống hòa lưới, hybrid lưu trữ và chiếu sáng công trình.
               </p>
             </NuxtLink>
             <NuxtLink :to="links.generic('/san-pham/')" class="group block rounded-[4px] bg-navy-950 p-5 text-white no-underline transition-colors hover:bg-navy-900">
-              <span class="font-mono text-xs font-extrabold text-gold-400">03</span>
               <h2 class="m-0 mt-1.5 text-base font-bold text-white group-hover:text-gold-300">Danh mục thiết bị</h2>
               <p class="m-0 mt-1.5 text-xs leading-relaxed text-white/75">
                 Tra cứu thông số kỹ thuật tấm pin, biến tần, pin lưu trữ Lithium và đèn năng lượng mặt trời.

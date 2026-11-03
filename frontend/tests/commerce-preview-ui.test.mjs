@@ -184,7 +184,8 @@ test('search and catalog root keep their PHP-backed route and category hero data
   assert.match(catalog, /hasSidebar \? 'max-\[769px\]:grid-cols-2' : 'max-\[769px\]:grid-cols-1'/)
   assert.match(catalog, /max-\[769px\]:gap-y-4/)
   assert.match(masthead, /masthead-inner[\s\S]*masthead-copy/)
-  assert.match(masthead, /masthead-facts/)
+  // Owner decision 2026-11-03: no product/brand counters on catalog mastheads.
+  assert.doesNotMatch(masthead, /masthead-facts/)
   assert.match(masthead, /hero\?\.image/)
   assert.match(catalog, /mastheadBrands/)
   assert.match(catalog, /productCategoryTree/)

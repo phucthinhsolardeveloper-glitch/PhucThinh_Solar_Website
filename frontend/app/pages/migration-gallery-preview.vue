@@ -94,21 +94,18 @@ usePublicSocialMeta({
 
           <div class="mt-6 grid grid-cols-1 gap-4 border-t border-slate-200/80 pt-6 sm:grid-cols-3">
             <NuxtLink :to="links.generic('/du-an-da-thuc-hien/')" class="group block rounded-[4px] bg-navy-950 p-5 text-white no-underline transition-colors hover:bg-navy-900">
-              <span class="font-mono text-xs font-extrabold text-gold-400">01</span>
               <h2 class="m-0 mt-1.5 text-base font-bold text-white group-hover:text-gold-300">Dự án đã thực hiện</h2>
               <p class="m-0 mt-1.5 text-xs leading-relaxed text-white/75">
                 Hồ sơ công trình điện mặt trời hộ gia đình, nhà xưởng doanh nghiệp và chiếu sáng công cộng.
               </p>
             </NuxtLink>
             <NuxtLink :to="links.generic('/giai-phap/')" class="group block rounded-[4px] bg-navy-950 p-5 text-white no-underline transition-colors hover:bg-navy-900">
-              <span class="font-mono text-xs font-extrabold text-gold-400">02</span>
               <h2 class="m-0 mt-1.5 text-base font-bold text-white group-hover:text-gold-300">Giải pháp năng lượng</h2>
               <p class="m-0 mt-1.5 text-xs leading-relaxed text-white/75">
                 Phương án kỹ thuật tối ưu cho từng nhu cầu tiêu thụ điện, lưu trữ BESS và bơm mặt trời.
               </p>
             </NuxtLink>
             <NuxtLink :to="links.generic('/san-pham/')" class="group block rounded-[4px] bg-navy-950 p-5 text-white no-underline transition-colors hover:bg-navy-900">
-              <span class="font-mono text-xs font-extrabold text-gold-400">03</span>
               <h2 class="m-0 mt-1.5 text-base font-bold text-white group-hover:text-gold-300">Danh mục thiết bị</h2>
               <p class="m-0 mt-1.5 text-xs leading-relaxed text-white/75">
                 Tấm pin LONGi, Canadian Solar, biến tần SolaX, pin lưu trữ và đèn năng lượng Blue Carbon.

@@ -44,7 +44,7 @@ watch(() => props.locations, (locations) => {
 
     <div v-if="locations.length" class="grid min-w-0 items-stretch gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-10">
       <ul class="m-0 grid list-none content-start gap-2.5 p-0 lg:auto-rows-fr lg:content-stretch">
-        <li v-for="(location, index) in locations" :key="location.id" class="min-w-0">
+        <li v-for="location in locations" :key="location.id" class="min-w-0">
           <button
             type="button"
             class="group flex min-h-24 w-full min-w-0 items-start gap-3.5 rounded-chip border-l-[4px] px-4 py-4 text-left transition-colors cursor-pointer lg:h-full lg:items-center"
@@ -55,10 +55,11 @@ watch(() => props.locations, (locations) => {
             @click="selectedId = location.id"
           >
             <span
-              class="mt-0.5 grid size-8 flex-none place-items-center rounded-[3px] font-mono text-xs font-extrabold lg:mt-0"
+              class="mt-0.5 grid size-8 flex-none place-items-center rounded-[3px] lg:mt-0"
               :class="selected?.id === location.id ? 'bg-gold-500 text-navy-950' : 'bg-white text-gold-700'"
+              aria-hidden="true"
             >
-              0{{ index + 1 }}
+              <UIcon name="i-lucide-map-pin" class="size-4" />
             </span>
             <span class="min-w-0 flex-1">
               <strong class="block text-base font-extrabold leading-6">{{ location.name }}</strong>

@@ -9,9 +9,8 @@ const props = withDefaults(defineProps<{
   heading: string
   description: string
   hero: PublicCatalogHero | null
-  total?: number | null
   brands?: CatalogMastheadBrand[]
-}>(), { total: null, brands: () => [] })
+}>(), { brands: () => [] })
 
 const phpResizableCatalogImage = /^\/upload\/(?:product|news|photo)\/[A-Za-z0-9][A-Za-z0-9._/-]*\.(?:jpe?g|png|webp)$/i
 const heroVisualOverrides: Record<string, string> = {
@@ -37,7 +36,6 @@ watch(() => props.hero?.image, () => { heroFailed.value = false })
 const fallbackHeroImage = '/assets/images/site-visuals/catalog-grid-tie-solar-20261008.png'
 const activeHeroImage = computed(() => props.hero?.image || fallbackHeroImage)
 
-const brandCount = computed(() => props.brands.length)
 const visibleBrands = computed(() => props.brands.slice(0, 6))
 </script>
 
@@ -74,17 +72,6 @@ const visibleBrands = computed(() => props.brands.slice(0, 6))
         <div class="masthead-copy">
           <h1 id="catalog-page-heading">{{ heading }}</h1>
           <p>{{ description }}</p>
-
-          <dl v-if="total || brandCount" class="masthead-facts">
-            <div v-if="total">
-              <dt>Sản phẩm</dt>
-              <dd>{{ total.toLocaleString('vi-VN') }}</dd>
-            </div>
-            <div v-if="brandCount">
-              <dt>Thương hiệu</dt>
-              <dd>{{ brandCount }}</dd>
-            </div>
-          </dl>
 
           <nav v-if="visibleBrands.length" class="masthead-brands" aria-label="Lọc nhanh theo thương hiệu">
             <NuxtLink
@@ -190,11 +177,6 @@ const visibleBrands = computed(() => props.brands.slice(0, 6))
 }
 .masthead-copy > p { max-width: 54ch; margin: 14px 0 0; color: rgb(226 232 240 / 92%); font-size: 17px; line-height: 1.6; }
 
-.masthead-facts { display: flex; gap: clamp(24px, 3vw, 48px); margin: 22px 0 0; }
-.masthead-facts div { display: flex; flex-direction: column-reverse; }
-.masthead-facts dt { color: rgb(203 213 225 / 85%); font-size: 14px; }
-.masthead-facts dd { margin: 0; color: var(--color-gold-400); font-size: clamp(28px, 2.6vw, 38px); font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
-
 .masthead-brands { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
 .masthead-brands a {
   display: inline-flex;
@@ -227,7 +209,6 @@ const visibleBrands = computed(() => props.brands.slice(0, 6))
   .masthead-inner { padding-block: 24px 20px; }
   .masthead-copy h1 { font-size: clamp(28px, 8vw, 34px); }
   .masthead-copy > p { margin-top: 8px; font-size: 16px; }
-  .masthead-facts { margin-top: 16px; }
   .masthead-brands { flex-wrap: nowrap; margin-top: 16px; margin-inline: -16px; padding-inline: 16px; overflow-x: auto; scrollbar-width: none; }
   .masthead-brands::-webkit-scrollbar { display: none; }
   .masthead-brands a { flex: 0 0 auto; min-height: 44px; }

@@ -100,21 +100,21 @@ async function send() {
 
         <ol class="m-0 mt-7 grid list-none gap-4 border-t border-slate-200/90 pt-6 p-0">
           <li class="flex items-start gap-3">
-            <span class="grid size-7 flex-none place-items-center rounded-[3px] bg-navy-900 font-mono text-xs font-extrabold text-gold-400">01</span>
+            <span class="grid size-7 flex-none place-items-center rounded-[3px] bg-navy-900 tabular-nums text-xs font-extrabold text-gold-400">01</span>
             <div class="min-w-0 text-sm">
               <strong class="block font-extrabold text-navy-900">Tiếp nhận & phân tích tải tiêu thụ</strong>
               <span class="text-slate-600">Phản hồi nhanh trong giờ hành chính theo đúng khu vực.</span>
             </div>
           </li>
           <li class="flex items-start gap-3">
-            <span class="grid size-7 flex-none place-items-center rounded-[3px] bg-navy-900 font-mono text-xs font-extrabold text-gold-400">02</span>
+            <span class="grid size-7 flex-none place-items-center rounded-[3px] bg-navy-900 tabular-nums text-xs font-extrabold text-gold-400">02</span>
             <div class="min-w-0 text-sm">
               <strong class="block font-extrabold text-navy-900">Đề xuất cấu hình & thiết bị chính hãng</strong>
               <span class="text-slate-600">So sánh rõ công suất, thời gian hoàn vốn và phương án thi công.</span>
             </div>
           </li>
           <li class="flex items-start gap-3">
-            <span class="grid size-7 flex-none place-items-center rounded-[3px] bg-navy-900 font-mono text-xs font-extrabold text-gold-400">03</span>
+            <span class="grid size-7 flex-none place-items-center rounded-[3px] bg-navy-900 tabular-nums text-xs font-extrabold text-gold-400">03</span>
             <div class="min-w-0 text-sm">
               <strong class="block font-extrabold text-navy-900">Báo giá minh bạch & bảo hành dài hạn</strong>
               <span class="text-slate-600">Hỗ trợ kỹ thuật xuyên suốt từ kho Gia Lai, Đà Nẵng, TP.HCM.</span>
