@@ -7,6 +7,7 @@ import { POLICY_PUBLIC_ROOT, editorialPublicResponseStatus, editorialPublicRoute
 import { canonicalPublicOrigin, canonicalPublicUrl, publicSeoDescription, publicSeoTitle } from '#shared/public-seo'
 
 const { site } = await usePublicSite()
+const { openConsultation } = useStorefrontModal()
 const route = useRoute()
 const config = useRuntimeConfig()
 const slug = computed(() => typeof route.params.slug === 'string' ? route.params.slug : (typeof route.query.slug === 'string' ? route.query.slug : ''))
@@ -155,9 +156,67 @@ useHead({
                   >{{ item.label }}</a>
                 </li>
               </ul>
+
+              <div v-if="site.footer?.policies?.length" class="mt-6 border-t border-slate-200/80 pt-5">
+                <strong class="mb-2.5 flex items-center gap-2 text-sm font-bold text-navy-800">
+                  <UIcon name="i-lucide-shield-check" class="size-4 text-gold-600" aria-hidden="true" />
+                  <span>Chính sách & Hỗ trợ</span>
+                </strong>
+                <ul class="m-0 list-none space-y-1 p-0">
+                  <li v-for="pol in site.footer.policies" :key="pol.href">
+                    <NuxtLink
+                      :to="links.generic(pol.href)"
+                      class="flex items-center justify-between gap-2 rounded-[3px] px-2.5 py-2 text-xs leading-snug no-underline transition-colors"
+                      :class="pol.href.includes(slug) ? 'bg-navy-950 font-bold text-gold-300' : 'text-slate-600 hover:bg-slate-100 hover:text-navy-900'"
+                    >
+                      <span>{{ pol.label }}</span>
+                      <UIcon name="i-lucide-chevron-right" class="size-3.5 shrink-0 opacity-60" aria-hidden="true" />
+                    </NuxtLink>
+                  </li>
+                </ul>
+              </div>
+
+              <div class="mt-6 hidden rounded-[4px] border-l-[3px] border-gold-500 bg-navy-950 p-4 text-white nav:block">
+                <p class="m-0 text-sm font-bold text-white">Hỗ trợ bảo hành & kỹ thuật</p>
+                <p class="m-0 mt-1 text-xs leading-relaxed text-white/75">
+                  Liên hệ trực tiếp bộ phận kỹ thuật hoặc gửi mã đơn hàng để được kiểm tra nhanh.
+                </p>
+                <div class="mt-3 grid gap-1.5 text-xs">
+                  <a href="tel:0945536899" class="flex items-center justify-between rounded-[3px] bg-white/10 px-2.5 py-1.5 text-white no-underline hover:bg-white/15">
+                    <span class="text-white/75">Kỹ thuật:</span>
+                    <strong class="font-mono text-gold-300">0945 536 899</strong>
+                  </a>
+                  <a href="tel:0944555957" class="flex items-center justify-between rounded-[3px] bg-white/10 px-2.5 py-1.5 text-white no-underline hover:bg-white/15">
+                    <span class="text-white/75">Bán hàng:</span>
+                    <strong class="font-mono text-gold-300">0944 555 957</strong>
+                  </a>
+                </div>
+                <button
+                  type="button"
+                  class="mt-3 inline-flex min-h-9 w-full cursor-pointer items-center justify-center gap-1.5 rounded-[3px] bg-gold-500 px-3 py-1.5 text-xs font-extrabold text-navy-950 transition-colors hover:bg-gold-400"
+                  @click="openConsultation('Chính sách & Hỗ trợ: ' + data.title)"
+                >
+                  <span>Gửi yêu cầu hỗ trợ</span>
+                  <span aria-hidden="true">→</span>
+                </button>
+              </div>
             </nav>
             <div class="min-w-0 w-full max-w-[960px]">
-              <div id="policy-article-content"><EditorialRichText :content="editorial.content" /></div>
+              <div id="policy-article-content"><EditorialRichText :content="editorial.content" variant="news" /></div>
+              <div class="my-7 flex flex-col gap-3 rounded-[4px] border-l-[3px] border-gold-500 bg-slate-50 p-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p class="m-0 text-sm font-bold text-navy-900">Cần giải đáp thêm về {{ data.title.toLowerCase() }}?</p>
+                  <p class="m-0 mt-0.5 text-xs text-slate-600">Đội ngũ chăm sóc khách hàng và kỹ thuật viên Phúc Thịnh Solar luôn sẵn sàng hỗ trợ.</p>
+                </div>
+                <button
+                  type="button"
+                  class="inline-flex min-h-10 shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-[3px] bg-navy-900 px-4 py-2 text-xs font-extrabold text-white transition-colors hover:bg-navy-800"
+                  @click="openConsultation('Chính sách & Hỗ trợ: ' + data.title)"
+                >
+                  <span>Liên hệ hỗ trợ ngay</span>
+                  <span aria-hidden="true">→</span>
+                </button>
+              </div>
               <EditorialShare :title="data.title" :canonical-path="data.canonical" />
             </div>
           </div>

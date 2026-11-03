@@ -5,6 +5,7 @@ import { editorialPublicHubResponseStatus, editorialPublicRouteRobots } from '#s
 import { publicSeoTitle } from '#shared/public-seo'
 
 const { site } = await usePublicSite()
+const { openConsultation } = useStorefrontModal()
 const route = useRoute()
 const config = useRuntimeConfig()
 const links = useMigrationLinks()
@@ -73,8 +74,47 @@ usePublicSocialMeta({
             </NuxtLink>
           </article>
         </div>
-        <div v-else class="rounded-btn border border-amber-300 bg-amber-50 px-4 py-3 text-amber-900" role="status">
-          <strong>Không tìm thấy kết quả</strong>
+        <div v-else class="rounded-[4px] border-l-[4px] border-gold-500 bg-slate-50 p-6 sm:p-8" role="status">
+          <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+            <div>
+              <strong class="block text-xl font-black text-navy-900">Không tìm thấy kết quả</strong>
+              <p class="m-0 mt-1.5 max-w-2xl text-sm leading-relaxed text-slate-600 sm:text-base">
+                Các bộ sưu tập chuyên đề đang được cập nhật. Bạn có thể xem ngay hồ sơ công trình đã bàn giao, giải pháp hệ thống hoặc danh mục thiết bị chính hãng bên dưới:
+              </p>
+            </div>
+            <button
+              type="button"
+              class="inline-flex min-h-11 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-[4px] bg-gold-500 px-5 py-2.5 text-sm font-extrabold text-navy-950 transition-colors hover:bg-gold-400"
+              @click="openConsultation('Thư viện: Yêu cầu tư vấn công trình')"
+            >
+              <span>Nhận tư vấn công trình</span>
+              <span aria-hidden="true">→</span>
+            </button>
+          </div>
+
+          <div class="mt-6 grid grid-cols-1 gap-4 border-t border-slate-200/80 pt-6 sm:grid-cols-3">
+            <NuxtLink :to="links.generic('/du-an-da-thuc-hien/')" class="group block rounded-[4px] bg-navy-950 p-5 text-white no-underline transition-colors hover:bg-navy-900">
+              <span class="font-mono text-xs font-extrabold text-gold-400">01</span>
+              <h2 class="m-0 mt-1.5 text-base font-bold text-white group-hover:text-gold-300">Dự án đã thực hiện</h2>
+              <p class="m-0 mt-1.5 text-xs leading-relaxed text-white/75">
+                Hồ sơ công trình điện mặt trời hộ gia đình, nhà xưởng doanh nghiệp và chiếu sáng công cộng.
+              </p>
+            </NuxtLink>
+            <NuxtLink :to="links.generic('/giai-phap/')" class="group block rounded-[4px] bg-navy-950 p-5 text-white no-underline transition-colors hover:bg-navy-900">
+              <span class="font-mono text-xs font-extrabold text-gold-400">02</span>
+              <h2 class="m-0 mt-1.5 text-base font-bold text-white group-hover:text-gold-300">Giải pháp năng lượng</h2>
+              <p class="m-0 mt-1.5 text-xs leading-relaxed text-white/75">
+                Phương án kỹ thuật tối ưu cho từng nhu cầu tiêu thụ điện, lưu trữ BESS và bơm mặt trời.
+              </p>
+            </NuxtLink>
+            <NuxtLink :to="links.generic('/san-pham/')" class="group block rounded-[4px] bg-navy-950 p-5 text-white no-underline transition-colors hover:bg-navy-900">
+              <span class="font-mono text-xs font-extrabold text-gold-400">03</span>
+              <h2 class="m-0 mt-1.5 text-base font-bold text-white group-hover:text-gold-300">Danh mục thiết bị</h2>
+              <p class="m-0 mt-1.5 text-xs leading-relaxed text-white/75">
+                Tấm pin LONGi, Canadian Solar, biến tần SolaX, pin lưu trữ và đèn năng lượng Blue Carbon.
+              </p>
+            </NuxtLink>
+          </div>
         </div>
 
         <nav v-if="totalPages > 1" class="mt-10 flex flex-wrap items-center justify-center gap-2" aria-label="Phân trang thư viện ảnh">

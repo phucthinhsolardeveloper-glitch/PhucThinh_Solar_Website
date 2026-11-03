@@ -5,6 +5,8 @@ import { editorialPublicHubResponseStatus, editorialPublicRouteRobots } from '#s
 import { publicSeoTitle } from '#shared/public-seo'
 
 const { site } = await usePublicSite()
+const { openConsultation } = useStorefrontModal()
+const links = useMigrationLinks()
 const route = useRoute()
 const config = useRuntimeConfig()
 const isPublicRoute = computed(() => route.path === VIDEO_PUBLIC_PATH)
@@ -121,8 +123,47 @@ usePublicSocialMeta({
             <h2 class="m-0 pt-3 text-lg font-black leading-snug text-navy-800 group-hover:text-gold-700">{{ item.title }}</h2>
           </button>
         </div>
-        <div v-else class="rounded-btn border border-amber-300 bg-amber-50 px-4 py-3 text-amber-900" role="status">
-          <strong>Không tìm thấy kết quả</strong>
+        <div v-else class="rounded-[4px] border-l-[4px] border-gold-500 bg-slate-50 p-6 sm:p-8" role="status">
+          <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+            <div>
+              <strong class="block text-xl font-black text-navy-900">Không tìm thấy kết quả</strong>
+              <p class="m-0 mt-1.5 max-w-2xl text-sm leading-relaxed text-slate-600 sm:text-base">
+                Chuyên mục video hướng dẫn kỹ thuật và giới thiệu công trình đang được cập nhật. Bạn có thể tham khảo ngay hồ sơ dự án, giải pháp hoặc danh mục thiết bị bên dưới:
+              </p>
+            </div>
+            <button
+              type="button"
+              class="inline-flex min-h-11 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-[4px] bg-gold-500 px-5 py-2.5 text-sm font-extrabold text-navy-950 transition-colors hover:bg-gold-400"
+              @click="openConsultation('Video: Yêu cầu tư vấn kỹ thuật')"
+            >
+              <span>Nhận tư vấn kỹ thuật</span>
+              <span aria-hidden="true">→</span>
+            </button>
+          </div>
+
+          <div class="mt-6 grid grid-cols-1 gap-4 border-t border-slate-200/80 pt-6 sm:grid-cols-3">
+            <NuxtLink :to="links.generic('/du-an-da-thuc-hien/')" class="group block rounded-[4px] bg-navy-950 p-5 text-white no-underline transition-colors hover:bg-navy-900">
+              <span class="font-mono text-xs font-extrabold text-gold-400">01</span>
+              <h2 class="m-0 mt-1.5 text-base font-bold text-white group-hover:text-gold-300">Dự án đã thực hiện</h2>
+              <p class="m-0 mt-1.5 text-xs leading-relaxed text-white/75">
+                Tổng hợp các công trình điện mặt trời và chiếu sáng đã lắp đặt vận hành trên toàn quốc.
+              </p>
+            </NuxtLink>
+            <NuxtLink :to="links.generic('/giai-phap/')" class="group block rounded-[4px] bg-navy-950 p-5 text-white no-underline transition-colors hover:bg-navy-900">
+              <span class="font-mono text-xs font-extrabold text-gold-400">02</span>
+              <h2 class="m-0 mt-1.5 text-base font-bold text-white group-hover:text-gold-300">Giải pháp năng lượng</h2>
+              <p class="m-0 mt-1.5 text-xs leading-relaxed text-white/75">
+                Phân tích cấu hình hệ thống hòa lưới, hybrid lưu trữ và chiếu sáng công trình.
+              </p>
+            </NuxtLink>
+            <NuxtLink :to="links.generic('/san-pham/')" class="group block rounded-[4px] bg-navy-950 p-5 text-white no-underline transition-colors hover:bg-navy-900">
+              <span class="font-mono text-xs font-extrabold text-gold-400">03</span>
+              <h2 class="m-0 mt-1.5 text-base font-bold text-white group-hover:text-gold-300">Danh mục thiết bị</h2>
+              <p class="m-0 mt-1.5 text-xs leading-relaxed text-white/75">
+                Tra cứu thông số kỹ thuật tấm pin, biến tần, pin lưu trữ Lithium và đèn năng lượng mặt trời.
+              </p>
+            </NuxtLink>
+          </div>
         </div>
 
         <nav v-if="totalPages > 1" class="mt-10 flex flex-wrap items-center justify-center gap-2" aria-label="Phân trang video">
