@@ -753,6 +753,7 @@ onBeforeUnmount(() => {
             :to="shellHref('/gio-hang/')"
             :aria-label="cartCountAvailable && migrationCart ? `Giỏ hàng có ${migrationCart.count} sản phẩm` : 'Giỏ hàng'"
             title="Giỏ hàng"
+            data-cart-target
           >
             <span
               v-if="cartCountAvailable && migrationCart?.count"

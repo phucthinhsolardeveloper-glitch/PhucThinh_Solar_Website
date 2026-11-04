@@ -183,6 +183,7 @@ onBeforeUnmount(() => {
           <img
             ref="displayedImage"
             :key="`${selectedMedia}-${retryVersion}`"
+            data-cart-source
             :src="selectedMedia"
             :alt="name"
             class="pdp-zoom-image absolute inset-0 h-full w-full object-contain p-0 transition-transform duration-200 ease-out"

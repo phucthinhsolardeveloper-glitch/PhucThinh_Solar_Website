@@ -35,7 +35,18 @@ export function useMigrationCart() {
       let current = cart.value
       if (!current) current = await refresh()
       if (!current) throw new Error('Không thể khởi tạo phiên giỏ hàng.')
-      await $fetch('/_migration/cart', { method: 'POST', body: { ...body, csrfToken: current.csrfToken } })
+      try {
+        await $fetch('/_migration/cart', { method: 'POST', body: { ...body, csrfToken: current.csrfToken } })
+      } catch (reason) {
+        // On a first visit, parallel PHP responses can each start a session and the last
+        // cookie wins, leaving the cached token on another session (419). Re-read the
+        // token for the cookie the browser now holds and retry once.
+        if ((reason as { statusCode?: number })?.statusCode !== 419) throw reason
+        current = await refresh()
+        loading.value = true
+        if (!current) throw reason
+        await $fetch('/_migration/cart', { method: 'POST', body: { ...body, csrfToken: current.csrfToken } })
+      }
     } catch (reason) {
       error.value = migrationCartErrorMessage(reason)
       throw reason

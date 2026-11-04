@@ -138,7 +138,7 @@ function openReviewsSection() {
           </div>
         </div>
 
-        <ProductPurchasePanel :product-id="product.id" :pricing="pricing" :consultation-available="Boolean(extras)">
+        <ProductPurchasePanel :product-id="product.id" :pricing="pricing" :consultation-available="Boolean(extras)" :product-name="product.name" :product-image="product.media[0]">
           <template #product-info>
             <div v-if="productCategories.length" class="mt-[18px] min-w-0 text-[12.5px] leading-[1.5] text-slate-500">
               <span class="mb-0.5 block font-semibold">Danh mục:</span>

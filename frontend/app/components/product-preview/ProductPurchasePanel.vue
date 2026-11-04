@@ -3,16 +3,15 @@ import type { PublicCatalogPricing } from '#shared/contracts/public-catalog'
 import { normalizeCommerceQuantity } from '#shared/commerce-quantity'
 import QuantityStepper from '~/components/commerce/QuantityStepper.vue'
 
-const props = defineProps<{ productId: number; pricing: PublicCatalogPricing; consultationAvailable: boolean }>()
+const props = defineProps<{ productId: number; pricing: PublicCatalogPricing; consultationAvailable: boolean; productName?: string; productImage?: string }>()
+const { celebrate } = useCartFeedback()
 const quantity = ref(1)
-const added = ref(false)
 const loadingAction = ref<'buy' | 'cart' | null>(null)
 const { loading, error, mutate } = useMigrationCart()
 const links = useMigrationLinks()
 const { openDealer, openConsultation } = useStorefrontModal()
 
 async function add(goToCart = false) {
-  added.value = false
   quantity.value = normalizeCommerceQuantity(quantity.value)
   loadingAction.value = goToCart ? 'buy' : 'cart'
   try {
@@ -22,8 +21,8 @@ async function add(goToCart = false) {
   } finally {
     loadingAction.value = null
   }
-  added.value = true
   if (goToCart) { await navigateTo(links.generic('/gio-hang/')); return }
+  celebrate({ name: props.productName || 'Sản phẩm', image: props.productImage, quantity: quantity.value, from: import.meta.client ? document.querySelector('[data-cart-source]') : null })
   justAdded.value = true
   clearTimeout(justAddedTimer)
   justAddedTimer = setTimeout(() => { justAdded.value = false }, 2000)
@@ -61,18 +60,14 @@ onBeforeUnmount(() => clearTimeout(justAddedTimer))
         @click="add(false)"
       >
         <template v-if="loadingAction === 'cart'">Đang thêm…</template>
-        <template v-else-if="justAdded"><UIcon name="i-lucide-check" class="size-5" aria-hidden="true" /> Đã thêm vào giỏ</template>
+        <span v-else-if="justAdded" class="added-label"><UIcon name="i-lucide-check" class="size-5" aria-hidden="true" /> Đã thêm vào giỏ</span>
         <template v-else>Thêm vào giỏ</template>
       </UButton>
     </div>
-    <!-- Reserved slot: confirmation/error fade in without pushing the rest of the panel. -->
+    <!-- Confirmation plays as the flight + card (CartFeedback); only errors stay inline, in a reserved slot. -->
     <div v-if="pricing.mode === 'price'" class="purchase-status mt-3 min-h-6" aria-live="polite">
       <Transition name="purchase-status" mode="out-in">
         <p v-if="error" key="error" class="m-0 text-sm font-semibold text-red-700" role="alert">{{ error }}</p>
-        <p v-else-if="added" key="added" class="m-0 flex flex-wrap items-center gap-2 text-sm font-semibold text-emerald-700" role="status">
-          <span>Đã thêm sản phẩm vào giỏ hàng.</span>
-          <NuxtLink :to="links.generic('/gio-hang/')" class="font-bold text-navy-900 underline hover:text-gold-700">Xem giỏ hàng →</NuxtLink>
-        </p>
       </Transition>
     </div>
     <UButton
@@ -167,7 +162,12 @@ onBeforeUnmount(() => clearTimeout(justAddedTimer))
 </template>
 
 <style scoped>
+.added-label { display: inline-flex; align-items: center; gap: 8px; color: #15803d; animation: added-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
+@keyframes added-in { from { opacity: 0; transform: translateY(6px) scale(0.96); } }
 .purchase-status-enter-active, .purchase-status-leave-active { transition: opacity 0.2s ease, transform 0.2s ease; }
 .purchase-status-enter-from, .purchase-status-leave-to { opacity: 0; transform: translateY(-3px); }
-@media (prefers-reduced-motion: reduce) { .purchase-status-enter-active, .purchase-status-leave-active { transition: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .added-label { animation: none; }
+  .purchase-status-enter-active, .purchase-status-leave-active { transition: none; }
+}
 </style>
