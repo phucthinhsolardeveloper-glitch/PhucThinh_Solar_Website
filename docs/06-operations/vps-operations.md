@@ -1,6 +1,6 @@
 # Vận hành VPS hằng ngày và xử lý sự cố
 
-Cập nhật: 2026-10-28. Dùng cho VPS **đã dựng xong**. Lần dựng đầu và chuyển nhà
+Cập nhật: 2026-11-04. Dùng cho VPS **đã dựng xong**. Lần dựng đầu và chuyển nhà
 xem [vps-cloudfly-runbook.md](vps-cloudfly-runbook.md).
 Luồng end-to-end dành cho chủ website xem
 [owner-system-handbook.md](owner-system-handbook.md).
@@ -25,9 +25,17 @@ production, xác nhận `docker compose ps`, image tags và HTTP qua `verify-sta
 | `.env` | `SITE_DOMAIN=phucthinhsolar.com`, `SITE_ALIASES=", www.phucthinhsolar.com"` |
 | Certificate | Let's Encrypt cho domain chính và `www`, hạn 16/12/2026 |
 
-**VPS này giờ là production.** `www` được 301 về non-www ở tầng Caddy.
-Hostname `staging.phucthinhsolar.com` đã được gỡ khỏi Caddy ngày 2026-09-17;
-còn phải xóa bản ghi DNS staging ở P.A để kết thúc hẳn.
+**Stack `/srv/phucthinhsolar` là production.** `www` được 301 về non-www ở tầng Caddy.
+Tại thời điểm kiểm tra 2026-11-04, `staging.phucthinhsolar.com` lại đang hoạt động
+qua vhost edge Caddy và trỏ tới stack riêng `/srv/phucthinhsolar-staging`. Stack
+staging có Compose, DB, PHP, Nuxt, shared data, releases và state riêng; phản hồi
+HTTPS có `X-Robots-Tag: noindex, nofollow, noarchive`. Các đoạn lịch sử bên dưới
+về việc gỡ staging năm 2026-09-17 không còn phản ánh trạng thái hiện tại.
+
+Khi deploy staging, truyền `PTS_STACK_ROOT=/srv/phucthinhsolar-staging` cho
+`backup.sh`, `deploy-release.sh` và `verify-stack.sh`; script mặc định trỏ vào
+production. Kiểm tra image hiện tại, backup staging có checksum và rollback point
+trước khi chuyển release. Không dùng `scripts/deploy-production.sh` cho staging.
 
 Host cũ (`103.82.21.26`) đã được rút phần website ngày 2026-09-17: `public_html`
 đã rỗng (đã xóa 28.213 file, 2.713 thư mục) và database `phucthinhs_data` đã
@@ -345,8 +353,8 @@ hết hỗ trợ; khả năng build lại từ Internet trong vài năm tới kh
 - [ ] Tạo `/usr/local/sbin/pts-backup-offsite` nếu cần thêm một bản copy độc lập
       ngoài CloudFly; đây là lớp bổ sung, không phải điều kiện để coi hệ thống
       hiện đã có backup.
-- [ ] Xóa bản ghi DNS `staging.phucthinhsolar.com` tại P.A; Caddy đã ngừng phục
-      vụ hostname này.
+- [x] Xác minh `staging.phucthinhsolar.com` trỏ tới stack staging riêng và
+      không được lập chỉ mục (2026-11-04).
 - [x] Chạy `export-runtime-images.sh` trên VPS.
 - [ ] Mang bundle runtime image sang kho lưu trữ độc lập nếu muốn thêm lớp bảo vệ
       ngoài CloudFly; không đồng nhất mục này với backup/snapshot CloudFly.
