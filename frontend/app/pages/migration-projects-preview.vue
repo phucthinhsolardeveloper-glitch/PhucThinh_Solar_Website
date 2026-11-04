@@ -108,7 +108,7 @@ usePublicSocialMeta({
           <p class="mt-2 mb-0 text-slate-500">Trang {{ currentPage }}</p>
         </header>
 
-        <div class="pts-container pt-8 nav:pt-12">
+        <div data-results class="pts-container pt-8 nav:pt-12">
           <ProjectFilters :categories="projects.categories" :selected="projects.category" :all-label="projects.labels.all" :filters-label="projects.labels.filters" />
 
           <ProjectWall :projects="projects.projects" :view-label="projects.labels.view" :label="projects.title" />

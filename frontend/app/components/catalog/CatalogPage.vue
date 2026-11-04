@@ -392,7 +392,7 @@ function pageLink(nextPage: number) {
         />
       </div>
 
-      <section aria-label="Danh sách sản phẩm" :aria-busy="catalogPending">
+      <section data-results aria-label="Danh sách sản phẩm" :aria-busy="catalogPending">
         <div v-if="catalogPending && !catalogData" class="py-16" role="status" aria-live="polite">
           <p class="text-slate-500">Đang tải sản phẩm…</p>
         </div>

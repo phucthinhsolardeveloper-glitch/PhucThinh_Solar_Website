@@ -110,7 +110,7 @@ usePublicSocialMeta({
             :description="news.description"
           />
 
-          <div class="pt-6 mb-[clamp(24px,2.6vw,36px)] nav:pt-8">
+          <div data-results class="pt-6 mb-[clamp(24px,2.6vw,36px)] nav:pt-8">
             <NewsFilters :categories="news.categories" :selected="news.category" :all-label="news.labels.all" :filters-label="news.labels.results" :query="requestQuery.q" />
           </div>
 

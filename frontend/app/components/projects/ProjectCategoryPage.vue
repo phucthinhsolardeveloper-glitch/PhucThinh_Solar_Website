@@ -117,7 +117,7 @@ usePublicSocialMeta({
           </button>
         </header>
 
-        <nav ref="projectCategoryRailRef" class="flex gap-2 overflow-x-auto py-0.5 pb-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" aria-label="Danh mục dự án">
+        <nav ref="projectCategoryRailRef" data-results class="flex gap-2 overflow-x-auto py-0.5 pb-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" aria-label="Danh mục dự án">
           <NuxtLink
             class="public-filter-chip flex min-h-11 flex-none items-center whitespace-nowrap px-[13px] text-navy-800 no-underline"
             :to="PROJECTS_PUBLIC_PATH"

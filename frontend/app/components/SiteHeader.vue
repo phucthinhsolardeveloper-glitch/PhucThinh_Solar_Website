@@ -780,7 +780,7 @@ onBeforeUnmount(() => {
         class="contents"
       >
         <div
-          class="absolute inset-x-0 top-full z-[24] h-[calc(100dvh-100%)] bg-navy-950/40 backdrop-blur-xs transition-opacity duration-200 motion-reduce:transition-none cursor-pointer"
+          class="pts-search-scrim absolute inset-x-0 top-full z-[24] h-[calc(100dvh-100%)] bg-navy-950/12 cursor-pointer"
           aria-hidden="true"
           @click="closeSearch()"
         />
@@ -789,43 +789,41 @@ onBeforeUnmount(() => {
         <div
           id="ptsHeaderSearch"
           ref="searchPanel"
-          class="absolute inset-x-0 top-full z-[25] w-full border-t border-hdr-line-soft border-b border-b-hdr-line
-                 bg-white px-4 pt-4 pb-4 shadow-[0_14px_28px_rgba(16,36,58,.1)] max-[359px]:px-3 max-ph:py-3"
+          class="pts-search-panel absolute inset-x-0 top-full z-[25] w-full border-t border-hdr-line-soft
+                 bg-white/97 py-3.5 shadow-[0_18px_40px_-24px_rgba(16,36,58,.35)] backdrop-blur-md"
           role="dialog"
           aria-modal="true"
           aria-labelledby="ptsHeaderSearchTitle"
         >
-        <div class="mx-auto w-full max-w-[1680px]">
+        <div class="mx-auto w-full max-w-[max(1680px,var(--container-page))] px-4 max-[359px]:px-3 tb:px-6 nav:px-(--spacing-gutter)">
           <div class="flex flex-wrap items-center gap-x-6 gap-y-3 max-[1099px]:pr-12 min-[1100px]:flex-nowrap">
             <h2 id="ptsHeaderSearchTitle" class="sr-only">Tìm kiếm</h2>
-            <form class="flex w-full min-w-0 items-center gap-2.5 min-[1100px]:order-2 min-[1100px]:w-[min(560px,40vw)] min-[1100px]:flex-none" role="search" @submit.prevent="submitSearch">
+            <form class="pts-search-field flex w-full min-w-0 items-center min-[1100px]:order-2 min-[1100px]:w-[min(520px,36vw)] min-[1100px]:flex-none" role="search" @submit.prevent="submitSearch">
               <label class="sr-only" for="ptsHeaderSearchInput">Tìm kiếm sản phẩm hoặc giải pháp</label>
+              <UIcon name="i-lucide-search" class="ml-4 size-[18px] flex-none text-slate-400" aria-hidden="true" />
               <input
                 id="ptsHeaderSearchInput"
                 ref="searchInput"
                 v-model="searchKeyword"
-                class="min-h-[46px] w-full rounded-btn border border-hdr-line px-4 text-[14.5px]
-                       text-hdr-ink outline-none placeholder:text-hdr-muted focus:border-hdr-gold"
+                class="h-12 w-full min-w-0 border-0 bg-transparent px-3 text-[15px] text-hdr-ink outline-none placeholder:text-hdr-muted"
                 type="search"
                 placeholder="Bạn cần tìm sản phẩm hoặc giải pháp nào?"
                 autocomplete="off"
               >
               <button
-                class="inline-flex min-h-[46px] flex-none items-center justify-center rounded-btn bg-hdr-gold px-5
-                       font-bold text-hdr-ink transition-colors hover:bg-hdr-gold-deep"
+                class="mr-1 inline-flex h-10 flex-none items-center justify-center rounded-full bg-hdr-gold px-4 text-sm font-bold text-hdr-ink transition-colors hover:bg-hdr-gold-deep"
                 type="submit"
-                aria-label="Tìm kiếm"
               >
-                <UIcon name="i-lucide-search" class="size-[18px]" aria-hidden="true" />
+                Tìm kiếm
               </button>
             </form>
             <div class="flex min-w-0 flex-1 flex-wrap items-center gap-1.5 min-[1100px]:order-1">
-              <span class="mr-1 text-xs font-semibold text-slate-500">Tra cứu nhanh:</span>
+              <span class="mr-1.5 text-[13px] font-semibold text-slate-500">Tra cứu nhanh</span>
               <button
                 v-for="term in popularSearchTerms"
                 :key="term"
                 type="button"
-                class="cursor-pointer rounded-[3px] border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-bold text-navy-800 transition-colors hover:border-gold-500 hover:bg-gold-500/15 hover:text-navy-950"
+                class="min-h-9 cursor-pointer rounded-full border border-slate-200 bg-white px-3.5 text-[13px] font-semibold text-navy-800 transition-colors hover:border-gold-500 hover:bg-gold-50 hover:text-navy-950"
                 @click="selectPopularSearch(term)"
               >
                 {{ term }}
@@ -1226,6 +1224,13 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
+.pts-search-field { border: 1px solid rgb(10 34 81 / 16%); border-radius: 999px; background: #fff; transition: border-color 0.2s ease, box-shadow 0.2s ease; }
+.pts-search-field:focus-within { border-color: var(--color-gold-500); box-shadow: 0 0 0 4px rgb(228 168 73 / 18%); }
+.pts-search-panel { animation: pts-search-in 0.22s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.pts-search-scrim { animation: pts-fade-in 0.2s ease both; }
+@keyframes pts-search-in { from { opacity: 0; transform: translateY(-6px); } }
+@keyframes pts-fade-in { from { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .pts-search-panel, .pts-search-scrim { animation: none; } }
 /* Flyouts fade in place instead of popping with display toggles. */
 .catalog-flyout { visibility: hidden; opacity: 0; transform: translateX(-6px); pointer-events: none; transition: opacity 0.1s ease, transform 0.1s ease, visibility 0s linear 0.1s; }
 .is-flyout-open > .catalog-flyout, li:focus-within > .catalog-flyout { visibility: visible; opacity: 1; transform: none; pointer-events: auto; transition: opacity 0.16s ease, transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s; }
