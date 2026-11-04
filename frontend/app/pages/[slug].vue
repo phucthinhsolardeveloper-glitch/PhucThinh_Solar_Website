@@ -11,6 +11,7 @@ import MigrationGalleryDetailPage from '~/pages/migration-gallery-detail-preview
 import ProjectCategoryPage from '~/components/projects/ProjectCategoryPage.vue'
 import NewsCategoryPage from '~/components/news/NewsCategoryPage.vue'
 import SolutionCategoryPage from '~/components/solutions/SolutionCategoryPage.vue'
+import NotFoundExperience from '~/components/NotFoundExperience.vue'
 
 // Every bare slug resolves to a different page type, so each path needs a fresh instance.
 definePageMeta({ layout: false, key: (route) => route.path })
@@ -100,16 +101,11 @@ const detailPage = computed(() => {
 
 <template>
   <component :is="detailPage" v-if="detailPage" />
-  <div v-else class="min-h-screen bg-white text-navy-800">
+  <div v-else class="min-h-screen bg-[#f6f8fb] text-navy-800">
     <SiteHeader :site="site" />
-    <main class="pts-container min-h-[45vh] py-16" :aria-busy="pageState === 'redirecting'">
-      <div v-if="pageState === 'unavailable'" role="alert">
-        <h1 class="mb-3 text-3xl font-black">Tạm thời không thể tải trang</h1>
-        <p class="text-slate-600">Nguồn nội dung hiện không khả dụng.</p>
-      </div>
-      <div v-else-if="pageState === 'not-found'" role="status">
-        <h1 class="mb-3 text-3xl font-black">Không tìm thấy trang</h1>
-      </div>
+    <main :aria-busy="pageState === 'redirecting'">
+      <NotFoundExperience v-if="pageState === 'unavailable'" :status-code="502" :hotline="site.brand.hotline" />
+      <NotFoundExperience v-else-if="pageState === 'not-found'" :status-code="404" :hotline="site.brand.hotline" />
     </main>
     <SiteFooter :site="site" />
   </div>
