@@ -62,11 +62,11 @@ onBeforeUnmount(() => { window.removeEventListener('scroll', onScroll); cancelAn
 </template>
 
 <style scoped>
-.projects-hero { --ease: cubic-bezier(0.22, 1, 0.36, 1); position: relative; isolation: isolate; display: flex; min-height: clamp(580px, 78vh, 800px); align-items: flex-end; overflow: hidden; background: #061537; color: #fff; }
+.projects-hero { --ease: cubic-bezier(0.22, 1, 0.36, 1); position: relative; isolation: isolate; display: flex; min-height: clamp(480px, 62vh, 640px); align-items: flex-end; overflow: hidden; background: #061537; color: #fff; }
 .projects-hero__image { position: absolute; inset: -8% 0 0; z-index: -2; width: 100%; height: 108%; object-fit: cover; transform: translate3d(0, var(--shift, 0), 0) scale(1.03); animation: projects-in 1.2s var(--ease) both; }
-.projects-hero__shade { position: absolute; inset: 0; z-index: -1; background: linear-gradient(0deg, #061537 2%, rgb(6 21 55 / 55%) 45%, rgb(6 21 55 / 15%) 100%), linear-gradient(90deg, rgb(6 21 55 / 70%), transparent 60%); }
+.projects-hero__shade { position: absolute; inset: 0; z-index: -1; background: linear-gradient(0deg, rgb(6 21 55 / 92%) 0%, rgb(6 21 55 / 40%) 50%, rgb(6 21 55 / 10%) 100%), linear-gradient(90deg, rgb(6 21 55 / 60%), transparent 60%); }
 .projects-hero__inner { display: grid; width: 100%; grid-template-columns: minmax(0, 1fr) minmax(320px, 440px); align-items: end; gap: clamp(28px, 5vw, 80px); padding-block: 56px clamp(40px, 5vw, 72px); }
-.projects-hero__copy h1 { margin: 0; color: #fff; font-size: clamp(40px, 6vw, 96px); font-weight: 850; line-height: 1.02; letter-spacing: -0.045em; text-wrap: balance; }
+.projects-hero__copy h1 { margin: 0; color: #fff; font-size: clamp(38px, 5vw, 76px); font-weight: 850; line-height: 1.02; letter-spacing: -0.045em; text-wrap: balance; }
 .projects-hero__copy p { max-width: 54ch; margin: 22px 0 0; color: #d3dcea; font-size: clamp(17px, 1.35vw, 20px); line-height: 1.65; }
 .projects-hero__feature a { display: flex; flex-direction: column; gap: 14px; padding: clamp(22px, 2.2vw, 32px); border: 1px solid rgb(255 255 255 / 16%); border-radius: 10px; background: rgb(6 21 55 / 55%); color: #fff; text-decoration: none; backdrop-filter: blur(14px); transition: border-color 0.35s ease, transform 0.45s var(--ease); }
 .projects-hero__feature a:hover { transform: translateY(-4px); border-color: rgb(228 168 73 / 60%); }

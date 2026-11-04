@@ -5,12 +5,14 @@ import ProjectDetailEquipment from './ProjectDetailEquipment.vue'
 import ProjectDetailGallery from './ProjectDetailGallery.vue'
 import EditorialRichText from '~/components/editorial/EditorialRichText.vue'
 import { formatProjectDate } from '#shared/project-date'
+import { restructureLineBreaks } from '~/utils/lineBreakLists'
 
 const props = defineProps<{ project: PublicProjectDetail; content: PublicSanitizedRichText }>()
 const links = useMigrationLinks()
 const { openConsultation } = useStorefrontModal()
 const faIcons: Record<string, string> = { 'fa-check': 'i-lucide-check', 'fa-headset': 'i-lucide-headset', 'fa-cogs': 'i-lucide-settings-2', 'fa-shield-alt': 'i-lucide-shield-check' }
 const ctaTrust = computed(() => (props.project.cta?.trust ?? []).map((item) => ({ label: item.label, image: item.icon, icon: faIcons[item.faIcon] })))
+const overviewContent = computed(() => ({ ...props.content, html: restructureLineBreaks(props.content.html || '') }))
 const summaryFallback = computed(() => props.content.html?.trim() ? '' : props.project.summary.trim())
 const hasOverview = computed(() => Boolean(props.content.html?.trim() || summaryFallback.value))
 const chapters = computed(() => {
@@ -109,7 +111,7 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onHeroScroll))
         <h2 id="project-summary-title" class="m-0 text-[clamp(24px,3vw,36px)] font-black tracking-tight text-navy-950">Tổng quan công trình</h2>
         <div class="project-story__lede min-w-0 max-w-[68ch]">
           <p v-if="summaryFallback" class="m-0 text-[clamp(19px,1.6vw,24px)] leading-[1.6] text-navy-900">{{ summaryFallback }}</p>
-          <EditorialRichText v-else-if="hasOverview" :content="content" />
+          <EditorialRichText v-else-if="hasOverview" :content="overviewContent" />
           <p v-else class="m-0 text-base leading-relaxed text-slate-500">Thông tin mô tả chi tiết chưa được công bố cho dự án này.</p>
         </div>
       </section>
@@ -131,13 +133,10 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onHeroScroll))
         </header>
         <div class="project-strip">
           <a v-for="item in project.relatedProjects" :key="item.id" :href="links.project(item.slug)" class="project-strip__item group">
-            <img :src="item.image || '/assets/images/noimage.png'" :alt="item.title" loading="lazy" decoding="async">
-            <span class="project-strip__veil" aria-hidden="true" />
-            <span class="project-strip__body">
-              <h3>{{ item.title }}</h3>
-              <span v-if="item.address" class="project-strip__place"><UIcon name="i-lucide-map-pin" class="size-4 flex-none text-gold-400" aria-hidden="true" />{{ item.address }}</span>
-              <span class="project-strip__go">Xem dự án <span aria-hidden="true">→</span></span>
-            </span>
+            <span class="project-strip__media"><img :src="item.image || '/assets/images/noimage.png'" :alt="item.title" loading="lazy" decoding="async"></span>
+            <h3>{{ item.title }}</h3>
+            <span v-if="item.address" class="project-strip__place"><UIcon name="i-lucide-map-pin" class="size-4 flex-none text-gold-600" aria-hidden="true" />{{ item.address }}</span>
+            <span class="project-strip__go">Xem dự án <span aria-hidden="true">→</span></span>
           </a>
         </div>
       </section>
@@ -187,7 +186,11 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onHeroScroll))
 .project-story__intro { padding-top: clamp(120px, 20vh, 220px); padding-bottom: clamp(36px, 5vw, 64px); }
 
 .project-story__lede :deep(p:first-child) { font-size: clamp(19px, 1.6vw, 24px); line-height: 1.6; color: var(--color-navy-900); }
-.project-story__lede :deep(p) { font-size: 18px; line-height: 1.75; }
+.project-story__lede :deep(p) { margin: 0 0 14px; font-size: 18px; line-height: 1.75; color: #3d4d66; }
+.project-story__lede :deep(ul) { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 24px; margin: 24px 0 0; padding: 22px 0 0; border-top: 1px solid rgb(10 34 81 / 12%); list-style: none; }
+.project-story__lede :deep(li) { position: relative; padding-left: 30px; color: var(--color-navy-900); font-size: 16.5px; font-weight: 600; line-height: 1.5; }
+.project-story__lede :deep(li)::before { content: ''; position: absolute; top: 3px; left: 0; width: 20px; height: 20px; border-radius: 50%; background: var(--color-navy-950) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f0c76e' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center / 12px no-repeat; }
+@media (max-width: 640px) { .project-story__lede :deep(ul) { grid-template-columns: 1fr; } }
 
 /* Related projects: horizontal film strip, large frames, snap scrolling. */
 .project-strip {
@@ -200,17 +203,17 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onHeroScroll))
   scrollbar-width: thin;
   padding-bottom: 12px;
 }
-.project-strip__item { --ease: cubic-bezier(0.22, 1, 0.36, 1); position: relative; isolation: isolate; display: flex; aspect-ratio: 4 / 3; overflow: hidden; border-radius: 8px; background: var(--color-navy-950); color: #fff; text-decoration: none; scroll-snap-align: start; }
-.project-strip__item > img { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; transition: transform 1s var(--ease); }
-.project-strip__item:hover > img { transform: scale(1.06); }
-.project-strip__item:focus-visible { outline: 3px solid var(--color-gold-500); outline-offset: 4px; }
-.project-strip__veil { position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, transparent 40%, rgb(6 21 55 / 92%)); }
-.project-strip__body { display: flex; flex-direction: column; gap: 8px; margin-top: auto; padding: clamp(18px, 2vw, 28px); }
-.project-strip__body h3 { margin: 0; color: #fff; font-size: clamp(19px, 1.5vw, 23px); font-weight: 850; line-height: 1.25; }
-.project-strip__place { display: inline-flex; align-items: center; gap: 6px; color: #d3dcea; font-size: 14.5px; font-weight: 600; }
-.project-strip__go { color: var(--color-gold-300); font-size: 14.5px; font-weight: 800; }
-.project-strip__go > span { display: inline-block; transition: transform 0.35s var(--ease); }
-.project-strip__item:hover .project-strip__go > span { transform: translateX(6px); }
+.project-strip__item { display: flex; flex-direction: column; gap: 6px; color: var(--color-navy-900); text-decoration: none; scroll-snap-align: start; }
+.project-strip__item:focus-visible { outline: 3px solid var(--color-gold-500); outline-offset: 4px; border-radius: 6px; }
+.project-strip__media { display: block; margin-bottom: 10px; overflow: hidden; border-radius: 6px; background: #edf1f5; aspect-ratio: 4 / 3; }
+.project-strip__media img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1); }
+.project-strip__item:hover .project-strip__media img { transform: scale(1.04); }
+.project-strip__item h3 { margin: 0; color: var(--color-navy-950); font-size: clamp(18px, 1.35vw, 21px); font-weight: 800; line-height: 1.32; transition: color 0.2s ease; }
+.project-strip__item:hover h3 { color: var(--color-gold-700); }
+.project-strip__place { display: inline-flex; align-items: center; gap: 6px; color: #64748b; font-size: 14.5px; }
+.project-strip__go { color: var(--color-navy-800); font-size: 14.5px; font-weight: 800; }
+.project-strip__go > span { display: inline-block; transition: transform 0.3s ease; }
+.project-strip__item:hover .project-strip__go > span { transform: translateX(5px); }
 
 .project-story__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 28px; margin-top: 28px; }
 .project-story__primary { display: inline-flex; min-height: 58px; align-items: center; gap: 16px; padding: 0 10px 0 24px; border-radius: 6px; background: var(--color-gold-400); color: var(--color-navy-950); font-size: 16.5px; font-weight: 850; text-decoration: none; transition: background-color 0.25s ease; }
@@ -227,7 +230,7 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onHeroScroll))
 @media (max-width: 760px) { .project-strip { grid-auto-columns: 82%; } }
 @media (prefers-reduced-motion: reduce) {
   .project-story__cover-img { transform: none; height: 100%; }
-  .project-strip__item > img, .project-strip__go > span, .project-story__primary > span { transition: none; }
-  .project-strip__item:hover > img { transform: none; }
+  .project-strip__media img, .project-strip__go > span, .project-story__primary > span { transition: none; }
+  .project-strip__item:hover .project-strip__media img { transform: none; }
 }
 </style>

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { PublicDealerPayload } from '#shared/contracts/public-dealer'
 import EditorialRichText from '~/components/editorial/EditorialRichText.vue'
+import { sentenceCase } from '~/utils/sentenceCase'
 
 const props = defineProps<{ dealer: PublicDealerPayload }>()
 const oversizedSupportImages: Record<string, string> = {
@@ -15,13 +16,6 @@ function cardImage(src: string): string {
   return /^\/upload\/(?:news|photo)\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|gif|webp|avif)$/i.test(src)
     ? '/thumbs/480x300x1' + src
     : src
-}
-
-function sentence(text: string): string {
-  const value = text.trim()
-  if (value !== value.toLocaleUpperCase('vi') || value === value.toLocaleLowerCase('vi')) return value
-  const lower = value.toLocaleLowerCase('vi')
-  return lower.charAt(0).toLocaleUpperCase('vi') + lower.slice(1)
 }
 
 function cleanQuote(raw: string): string {
@@ -54,7 +48,7 @@ const current = computed(() => props.dealer.testimonials[active.value])
     <span class="dealer-support__glow" aria-hidden="true" />
     <div class="pts-container dealer-support__grid">
       <header class="dealer-support__head">
-        <h2 v-if="dealer.support.title">{{ sentence(dealer.support.title || dealer.labels.support) }}</h2>
+        <h2 v-if="dealer.support.title">{{ sentenceCase(dealer.support.title || dealer.labels.support) }}</h2>
         <EditorialRichText v-if="dealer.support.descriptionContent.html" :content="dealer.support.descriptionContent" class="cms-content-on-dark dealer-support__desc" />
         <p v-else-if="dealer.support.description" class="dealer-support__desc">{{ dealer.support.description }}</p>
         <a class="dealer-support__cta" href="#dang-ky-dai-ly">{{ dealer.form.title }} <span aria-hidden="true">→</span></a>

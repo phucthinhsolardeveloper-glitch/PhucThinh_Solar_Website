@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { publicPhoneHref } from '#shared/contact-links'
+import { sentenceCase } from '~/utils/sentenceCase'
 
 export interface CtaTrustItem { label: string; image?: string; icon?: string }
 
@@ -45,15 +46,8 @@ function handleImageError() {
   imageFailed.value = true
 }
 
-// Admin often types CTA copy in capitals; the band reads it in sentence case.
-function sentence(text: string): string {
-  const value = text.trim()
-  if (!value || value !== value.toLocaleUpperCase('vi') || value === value.toLocaleLowerCase('vi')) return value
-  const lower = value.toLocaleLowerCase('vi').replace(/phúc thịnh solar/g, 'Phúc Thịnh Solar')
-  return lower.charAt(0).toLocaleUpperCase('vi') + lower.slice(1)
-}
-const heading = computed(() => sentence(props.title))
-const action = computed(() => sentence(props.buttonLabel) || 'Nhận tư vấn')
+const heading = computed(() => sentenceCase(props.title))
+const action = computed(() => sentenceCase(props.buttonLabel) || 'Nhận tư vấn')
 const phoneHref = computed(() => props.hotline ? publicPhoneHref(props.hotline) : '')
 </script>
 

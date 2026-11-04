@@ -93,6 +93,7 @@ usePublicSocialMeta({
 
       <template v-else>
         <ProjectsFeatured
+          v-if="currentPage === 1"
           :title="projects.intro.visible ? projects.intro.title : projects.title"
           :description="projects.intro.visible ? projects.intro.description : ''"
           :project="projects.featured"
@@ -101,6 +102,11 @@ usePublicSocialMeta({
           :view-label="projects.labels.view"
           :backdrop="projects.projects[0]?.image"
         />
+
+        <header v-else class="pts-container pt-8">
+          <h1 class="m-0 text-[clamp(30px,3.6vw,48px)] font-black tracking-tight text-navy-950">{{ projects.intro.visible ? projects.intro.title : projects.title }}</h1>
+          <p class="mt-2 mb-0 text-slate-500">Trang {{ currentPage }}</p>
+        </header>
 
         <div class="pts-container pt-8 nav:pt-12">
           <ProjectFilters :categories="projects.categories" :selected="projects.category" :all-label="projects.labels.all" :filters-label="projects.labels.filters" />

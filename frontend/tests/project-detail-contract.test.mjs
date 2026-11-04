@@ -29,7 +29,7 @@ test('project facts use flat definition-list metadata instead of decorative pill
   assert.match(projectDetailPage, /<dt class="mb-1 text-sm font-semibold/)
   assert.doesNotMatch(projectDetailPage, /rounded-full bg-white px-4 py-2\.5/)
   assert.match(projectDetailPage, /project\.client[\s\S]*project\.address[\s\S]*project\.startDate/)
-  assert.match(projectDetailPage, /<section id="project-overview"[^>]*aria-labelledby="project-summary-title"[\s\S]*?<EditorialRichText v-else-if="hasOverview" :content="content" \/>/)
+  assert.match(projectDetailPage, /<section id="project-overview"[^>]*aria-labelledby="project-summary-title"[\s\S]*?<EditorialRichText v-else-if="hasOverview" :content="overviewContent" \/>/)
 })
 test('rejects hidden/wrong type/traversal and malformed media', () => { assert.equal(isProjectSlug('../secret'), false); assert.equal(isProjectSlug('Du An'), false); assert.equal(isPublicProjectDetailPayload({ ...good, project: { ...good.project, coverImage: '/upload/news/../secret.jpg' } }), false); assert.equal(isPublicProjectDetailPayload({ ...good, project: { ...good.project, relatedEquipment: [{ ...good.project.relatedEquipment[0], url: '/secret/' }] } }), false) })
 test('project CTA carries Admin trust items and rejects unsafe icon paths', () => {

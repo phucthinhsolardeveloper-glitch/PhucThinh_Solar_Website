@@ -61,11 +61,18 @@ function close() {
   if (import.meta.client) nextTick(() => lastTrigger.value?.focus())
 }
 
+// Match by source, not identity: props are reactive proxies, so indexOf() misses.
+const selectedImageIndex = computed(() => selected.value?.type === 'image' ? imageItems.value.findIndex((item) => item.src === selected.value?.src) : -1)
 function moveImage(delta: number) {
   if (selected.value?.type !== 'image' || imageItems.value.length < 2) return
-  const current = imageItems.value.indexOf(selected.value)
+  const current = Math.max(0, selectedImageIndex.value)
   selected.value = imageItems.value[(current + delta + imageItems.value.length) % imageItems.value.length] ?? null
 }
+const thumbStrip = ref<HTMLElement | null>(null)
+watch(selectedImageIndex, (index) => {
+  if (index < 0) return
+  nextTick(() => thumbStrip.value?.children[index]?.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' }))
+})
 
 function onKeydown(event: KeyboardEvent) {
   if (!selected.value) return
@@ -104,7 +111,6 @@ onBeforeUnmount(() => {
       >
         <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
         <span>Hình ảnh</span>
-        <span class="rounded-[3px] px-1.5 py-0.5 text-xs font-extrabold tabular-nums" :class="activeTab === 'image' ? 'bg-navy-900 text-gold-300' : 'bg-slate-100 text-slate-600'">{{ imageItems.length }}</span>
         <span v-if="activeTab === 'image'" class="absolute inset-x-0 -bottom-px h-[3px] bg-gold-500" aria-hidden="true" />
       </button>
       <button
@@ -122,7 +128,6 @@ onBeforeUnmount(() => {
       >
         <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
         <span>Video</span>
-        <span class="rounded-[3px] px-1.5 py-0.5 text-xs font-extrabold tabular-nums" :class="activeTab === 'video' ? 'bg-navy-900 text-gold-300' : 'bg-slate-100 text-slate-600'">{{ videoItems.length }}</span>
         <span v-if="activeTab === 'video'" class="absolute inset-x-0 -bottom-px h-[3px] bg-gold-500" aria-hidden="true" />
       </button>
     </div>
@@ -153,11 +158,10 @@ onBeforeUnmount(() => {
               <span v-if="item.type === 'video'" class="absolute left-1/2 top-1/2 grid h-12 w-12 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-navy-950/85 text-xl text-white shadow-lg transition-transform group-hover:scale-110 motion-reduce:group-hover:scale-100 motion-reduce:transition-none" aria-hidden="true">▶</span>
               <span
                 v-else
-                class="absolute bottom-2.5 right-2.5 inline-flex items-center gap-1.5 rounded-[3px] bg-navy-950/80 px-2.5 py-1 text-xs font-bold tabular-nums text-white backdrop-blur-xs transition-colors group-hover:bg-gold-500 group-hover:text-navy-950"
+                class="absolute bottom-2.5 right-2.5 grid size-9 place-items-center rounded-full bg-black/45 text-white opacity-0 backdrop-blur-xs transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100"
                 aria-hidden="true"
               >
-                <UIcon name="i-lucide-maximize-2" class="size-3.5" />
-                <span>{{ String(index + 1).padStart(2, '0') }} / {{ String(visibleItems.length).padStart(2, '0') }}</span>
+                <UIcon name="i-lucide-maximize-2" class="size-4" />
               </span>
             </span>
             <span v-if="item.caption" class="mt-2 block text-sm leading-relaxed text-slate-600 transition-colors group-hover:text-gold-700">{{ item.caption }}</span>
@@ -175,7 +179,7 @@ onBeforeUnmount(() => {
     <div
       v-if="selected"
       ref="lightboxPanel"
-      class="fixed inset-0 z-[100] grid place-items-center bg-navy-950/90 backdrop-blur-md p-4 transition-opacity duration-200"
+      class="fixed inset-0 z-[100] grid place-items-center bg-[rgb(10_11_14/0.96)] p-4 pb-28 transition-opacity duration-200"
       role="dialog"
       aria-modal="true"
       :aria-label="selected.type === 'video' ? 'Phát video dự án' : 'Xem ảnh dự án'"
@@ -201,7 +205,7 @@ onBeforeUnmount(() => {
       </button>
 
       <figure v-if="selected.type === 'image'" class="m-0 max-h-[90vh] max-w-[min(1100px,90vw)] text-center">
-        <img :src="selected.src" :alt="selected.caption || 'Hình ảnh dự án'" class="max-h-[82vh] max-w-full object-contain drop-shadow-2xl rounded-chip">
+        <img :src="selected.src" :alt="selected.caption || 'Hình ảnh dự án'" class="max-h-[74vh] max-w-full object-contain rounded-[4px]">
         <figcaption v-if="selected.caption" class="mt-3 text-sm text-white/90">{{ selected.caption }}</figcaption>
       </figure>
       <div v-else class="w-[min(1100px,94vw)] overflow-hidden rounded-chip bg-black shadow-2xl">
@@ -232,14 +236,31 @@ onBeforeUnmount(() => {
         <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
       </button>
 
-      <div v-if="selected.type === 'image' && imageItems.length > 1" class="absolute bottom-5 left-1/2 -translate-x-1/2 rounded-full bg-white/10 px-4 py-1.5 text-xs font-bold text-white backdrop-blur-xs">
-        {{ imageItems.indexOf(selected) + 1 }} / {{ imageItems.length }}
+      <div v-if="selected.type === 'image' && imageItems.length > 1" ref="thumbStrip" class="lightbox-strip" aria-label="Chọn ảnh">
+        <button
+          v-for="(item, index) in imageItems"
+          :key="`thumb-${item.src}-${index}`"
+          type="button"
+          class="lightbox-strip__thumb"
+          :aria-current="index === selectedImageIndex ? 'true' : undefined"
+          :aria-label="'Xem ảnh ' + (index + 1)"
+          @click="selected = item"
+        >
+          <img :src="item.src" alt="" loading="lazy" decoding="async">
+        </button>
       </div>
     </div>
   </Teleport>
 </template>
 
 <style scoped>
+.lightbox-strip { position: absolute; right: 0; bottom: 16px; left: 0; display: flex; justify-content: safe center; gap: 8px; overflow-x: auto; padding: 4px 16px; scrollbar-width: none; }
+.lightbox-strip::-webkit-scrollbar { display: none; }
+.lightbox-strip__thumb { width: 72px; height: 54px; flex: none; overflow: hidden; padding: 0; border: 2px solid transparent; border-radius: 4px; background: #1c1f26; opacity: 0.5; cursor: pointer; transition: opacity 0.2s ease, border-color 0.2s ease; }
+.lightbox-strip__thumb img { width: 100%; height: 100%; object-fit: cover; }
+.lightbox-strip__thumb:hover { opacity: 0.85; }
+.lightbox-strip__thumb[aria-current] { border-color: var(--color-gold-400); opacity: 1; }
+.lightbox-strip__thumb:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 .project-gallery__grid {
   grid-auto-flow: dense;
 }

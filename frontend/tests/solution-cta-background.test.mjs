@@ -41,5 +41,5 @@ test('solution CTA retains CMS copy, hotline and consultation action', () => {
   assert.match(component, /:title="cta\.title"[\s\S]*:description="cta\.description"[\s\S]*:button-label="cta\.buttonLabel"[\s\S]*:hotline="cta\.hotline\?\.text"/)
   assert.match(component, /:fallback-href="cta\.links\.consult\.href === '#ptsContactModal'/)
   assert.match(sharedCta, /@click\.prevent="openConsultation\(subject \|\| heading\)"/)
-  assert.match(sharedCta, /function sentence\(text: string\)/)
+  assert.match(sharedCta, /const heading = computed\(\(\) => sentenceCase\(props\.title\)\)/)
 })

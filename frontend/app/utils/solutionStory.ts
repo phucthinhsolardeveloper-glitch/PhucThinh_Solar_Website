@@ -1,3 +1,5 @@
+import { sentenceCase } from './sentenceCase.ts'
+
 // Turns sanitized solution CMS HTML into chapters so each one can get its own layout.
 // Any shape it does not recognise stays as raw HTML ('prose'); no h2 at all -> [] (caller falls back).
 
@@ -18,14 +20,6 @@ export interface StoryChapter {
 const entities: Record<string, string> = { '&amp;': '&', '&quot;': '"', '&#39;': "'", '&lt;': '<', '&gt;': '>', '&nbsp;': ' ' }
 export function decodeText(html: string): string {
   return html.replace(/<[^>]+>/g, '').replace(/&(?:amp|quot|#39|lt|gt|nbsp);/g, (m) => entities[m] ?? m).replace(/\s+/g, ' ').trim()
-}
-
-// CMS editors sometimes type a whole heading in capitals; show it in sentence case.
-export function sentenceCase(text: string): string {
-  if (text !== text.toLocaleUpperCase('vi') || text === text.toLocaleLowerCase('vi')) return text
-  if (/^[A-Z]{2,5}$/.test(text)) return text
-  const lower = text.toLocaleLowerCase('vi').replace(/phúc thịnh solar/g, 'Phúc Thịnh Solar')
-  return lower.charAt(0).toLocaleUpperCase('vi') + lower.slice(1)
 }
 
 function heading(chunk: string, tag: 'h2' | 'h3') {
