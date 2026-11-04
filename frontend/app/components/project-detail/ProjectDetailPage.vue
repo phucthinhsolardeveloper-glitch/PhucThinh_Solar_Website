@@ -204,8 +204,8 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onHeroScroll))
   padding-bottom: 12px;
 }
 .project-strip__item { display: flex; flex-direction: column; gap: 6px; color: var(--color-navy-900); text-decoration: none; scroll-snap-align: start; }
-.project-strip__item:focus-visible { outline: 3px solid var(--color-gold-500); outline-offset: 4px; border-radius: 6px; }
-.project-strip__media { display: block; margin-bottom: 10px; overflow: hidden; border-radius: 6px; background: #edf1f5; aspect-ratio: 4 / 3; }
+.project-strip__item:focus-visible { outline: 3px solid var(--color-gold-500); outline-offset: 4px; border-radius: var(--radius-sm); }
+.project-strip__media { display: block; margin-bottom: 10px; overflow: hidden; border-radius: var(--radius-sm); background: #edf1f5; aspect-ratio: 4 / 3; }
 .project-strip__media img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1); }
 .project-strip__item:hover .project-strip__media img { transform: scale(1.04); }
 .project-strip__item h3 { margin: 0; color: var(--color-navy-950); font-size: clamp(18px, 1.35vw, 21px); font-weight: 800; line-height: 1.32; transition: color 0.2s ease; }
@@ -216,7 +216,7 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onHeroScroll))
 .project-strip__item:hover .project-strip__go > span { transform: translateX(5px); }
 
 .project-story__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 28px; margin-top: 28px; }
-.project-story__primary { display: inline-flex; min-height: 58px; align-items: center; gap: 16px; padding: 0 10px 0 24px; border-radius: 6px; background: var(--pts-gold-gradient); color: var(--color-navy-950); font-size: 16.5px; font-weight: 850; text-decoration: none; transition: filter 0.25s ease; }
+.project-story__primary { display: inline-flex; min-height: 58px; align-items: center; gap: 16px; padding: 0 10px 0 24px; border-radius: var(--radius-sm); background: var(--pts-gold-gradient); color: var(--color-navy-950); font-size: 16.5px; font-weight: 850; text-decoration: none; transition: filter 0.25s ease; }
 .project-story__primary > span { display: grid; width: 40px; height: 40px; place-items: center; border-radius: 4px; background: var(--color-navy-950); color: var(--color-gold-300); transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
 .project-story__primary:hover { filter: brightness(1.06); }
 .project-story__primary:hover > span { transform: translateX(4px); }

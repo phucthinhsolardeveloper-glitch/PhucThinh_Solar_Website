@@ -84,15 +84,15 @@ function reload() { if (import.meta.client) window.location.reload() }
 .nf-chips button { min-height: 36px; padding: 0 14px; border: 1px solid rgb(255 255 255 / 16%); border-radius: 999px; background: transparent; color: #dbe4f0; font: inherit; font-size: 13.5px; font-weight: 600; cursor: pointer; transition: border-color 0.2s ease, color 0.2s ease; }
 .nf-chips button:hover { border-color: var(--color-gold-400); color: #fff; }
 .nf-actions { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 16px 28px; margin-top: 28px; }
-.nf-primary { min-height: 54px; padding: 0 28px; border: 0; border-radius: 6px; background: var(--pts-gold-gradient); color: var(--color-navy-950); font: inherit; font-weight: 850; cursor: pointer; }
+.nf-primary { min-height: 54px; padding: 0 28px; border: 0; border-radius: var(--radius-sm); background: var(--pts-gold-gradient); color: var(--color-navy-950); font: inherit; font-weight: 850; cursor: pointer; }
 .nf-call { display: inline-flex; align-items: center; gap: 10px; color: #fff; font-size: 20px; font-weight: 850; text-decoration: none; }
 .nf-sky :is(a, button):focus-visible { outline: 3px solid var(--color-gold-300); outline-offset: 3px; }
 
 .nf-paths { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-top: calc(-1 * clamp(70px, 8vw, 110px)); padding-bottom: clamp(56px, 7vw, 96px); }
-.nf-path { position: relative; display: flex; flex-direction: column; gap: 8px; padding: 24px 24px 56px; border: 1px solid rgb(10 34 81 / 8%); border-radius: 14px; background: #fff; box-shadow: 0 24px 48px -32px rgb(6 21 55 / 55%); color: var(--color-navy-900); text-decoration: none; transition: transform 0.4s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)), border-color 0.3s ease; }
+.nf-path { position: relative; display: flex; flex-direction: column; gap: 8px; padding: 24px 24px 56px; border: 1px solid rgb(10 34 81 / 8%); border-radius: var(--radius-lg); background: #fff; box-shadow: 0 24px 48px -32px rgb(6 21 55 / 55%); color: var(--color-navy-900); text-decoration: none; transition: transform 0.4s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)), border-color 0.3s ease; }
 .nf-path:hover { transform: translateY(-6px); border-color: rgb(201 150 46 / 60%); }
 .nf-path:focus-visible { outline: 3px solid var(--color-gold-500); outline-offset: 3px; }
-.nf-path__icon { display: grid; width: 52px; height: 52px; margin-bottom: 6px; place-items: center; border-radius: 12px; background: var(--color-navy-950); color: var(--color-gold-300); }
+.nf-path__icon { display: grid; width: 52px; height: 52px; margin-bottom: 6px; place-items: center; border-radius: var(--radius-md); background: var(--color-navy-950); color: var(--color-gold-300); }
 .nf-path strong { color: var(--color-navy-950); font-size: 18px; font-weight: 850; }
 .nf-path > span:not(.nf-path__icon) { color: #52627a; font-size: 14.5px; line-height: 1.6; }
 .nf-path__go { position: absolute; bottom: 22px; left: 24px; color: var(--color-gold-600); transition: transform 0.35s ease; }
@@ -109,7 +109,7 @@ function reload() { if (import.meta.client) window.location.reload() }
 @media (max-width: 560px) {
   .nf-paths { grid-template-columns: 1fr; }
   .nf-search button { padding: 0 16px; }
-  .nf-help { justify-self: stretch; justify-content: flex-start; padding: 12px 16px; border-radius: 12px; text-align: left; }
+  .nf-help { justify-self: stretch; justify-content: flex-start; padding: 12px 16px; border-radius: var(--radius-md); text-align: left; }
 }
 @media (prefers-reduced-motion: reduce) {
   .nf-sun, .nf-sun__rays, .nf-stars { animation: none; }

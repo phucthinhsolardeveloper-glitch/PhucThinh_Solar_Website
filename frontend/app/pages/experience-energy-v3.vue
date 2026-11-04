@@ -245,7 +245,7 @@ const deviceCopy = computed<Record<DeviceId, { role: string; note: string }>>(()
   width: 100%;
   max-width: 260px;
   aspect-ratio: 4 / 5;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   background: linear-gradient(160deg, #0a2251 0%, #061537 100%);
   position: relative;
   overflow: hidden;
@@ -292,7 +292,7 @@ const deviceCopy = computed<Record<DeviceId, { role: string; note: string }>>(()
   grid-template-columns: minmax(0, 1.75fr) minmax(300px, 0.78fr);
   gap: 0 28px;
   padding: 24px;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   background: linear-gradient(180deg, #0a2251 0%, #061537 100%);
 }
 

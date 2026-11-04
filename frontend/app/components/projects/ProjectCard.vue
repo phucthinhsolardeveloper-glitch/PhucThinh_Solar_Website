@@ -26,8 +26,8 @@ const links = useMigrationLinks()
 
 <style scoped>
 .project-card__link { display: flex; height: 100%; flex-direction: column; color: var(--color-navy-900); text-decoration: none; }
-.project-card__link:focus-visible { outline: 3px solid var(--color-gold-500); outline-offset: 4px; border-radius: 6px; }
-.project-card__media { display: grid; overflow: hidden; place-items: center; border-radius: 6px; background: #edf1f5; color: #64748b; font-size: 14px; font-weight: 600; }
+.project-card__link:focus-visible { outline: 3px solid var(--color-gold-500); outline-offset: 4px; border-radius: var(--radius-sm); }
+.project-card__media { display: grid; overflow: hidden; place-items: center; border-radius: var(--radius-sm); background: #edf1f5; color: #64748b; font-size: 14px; font-weight: 600; }
 .project-card__media img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1); }
 .project-card__link:hover .project-card__media img { transform: scale(1.04); }
 .project-card__body { display: flex; flex: 1; flex-direction: column; gap: 6px; padding-top: 16px; }
