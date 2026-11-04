@@ -101,11 +101,67 @@ Bóng luôn ánh navy (không đen thuần), mềm, trải rộng.
 - Không hiển thị con số đếm (số sản phẩm, số ảnh, số kết quả…).
 - Trạng thái trống phải nói đúng lý do (chưa có nội dung / không khớp tìm kiếm / đang tuyển…) và luôn có lối đi tiếp.
 
-## 12. Thành phần dùng chung (ưu tiên tái sử dụng)
+## 12. Định hướng sáng tạo
+
+### 12.1 Mô-típ thương hiệu (dùng lại để tạo “chữ ký” riêng)
+
+- **Mặt trời & đường chân trời**: vòng cung vàng mọc/lặn, tia sáng xoay chậm, quầng vàng ở góc khối navy (đã dùng: 404, băng CTA).
+- **Năng lượng chảy**: đường nối gradient vàng → navy giữa các bước, dòng sáng chạy dọc tuyến (timeline quy trình, thanh bước mua hàng).
+- **Lưới kỹ thuật**: giấy trắng kẻ 32px như bản vẽ kỹ sư — nền cho nội dung kỹ thuật, so sánh, thông số.
+- **Ngày ↔ đêm**: navy đêm cho hành động/cam kết, trắng ngày cho thông tin/đọc.
+- **Tấm pin**: nhịp lưới ô vuông, phản chiếu ánh sáng chéo khi hover ảnh sản phẩm/dự án.
+
+### 12.2 Thư viện bố cục (chọn theo nội dung, không lặp một kiểu cho mọi trang)
+
+| Bố cục | Khi nào dùng | Đã có |
+|---|---|---|
+| Hero điện ảnh tràn khung + parallax | Trang chi tiết có ảnh thật | Giải pháp, dự án, đại lý |
+| Bảng ghép đôi “nhu cầu → giải pháp” | Nội dung so khớp | Chương giải pháp |
+| Timeline nối liền | Quy trình nhiều bước | Quy trình triển khai |
+| Thẻ phương án so sánh | 2–4 lựa chọn | Hòa lưới / lưu trữ |
+| Sân khấu trích dẫn + chân dung chọn | Phản hồi khách hàng | Hợp tác |
+| Panorama / accordion mở rộng | Bộ sưu tập ít mục, ảnh đẹp | (gợi ý) |
+| Tường ảnh / lưới đều | Danh sách nhiều trang | Dự án |
+| Tạp chí (1 lớn + 3 cột phụ) | Tin tức | Kiến thức |
+| Khối navy + khối trắng xen kẽ | Trang dài nhiều chương | Giải pháp |
+| Sticky cột trái + nội dung cuộn | Tiêu đề chương + chi tiết | Quyền lợi đại lý, nhu cầu |
+
+### 12.3 Thư viện hiệu ứng
+
+- **Lỏng**: pill kéo giãn khi đổi tab/lựa chọn; thẻ bật nhẹ (`cubic-bezier(0.34,1.56,0.64,1)`) khi xác nhận.
+- **Bay**: ảnh sản phẩm bay theo đường cong vào giỏ; phản hồi tại đích (giỏ nảy, huy hiệu bật số).
+- **Chạy số**: số tiền/chỉ số đếm tới giá trị thật (không bịa số).
+- **Hé lộ khi cuộn**: phần tử trượt 16–24px + mờ dần khi vào khung nhìn (một lần, không lặp).
+- **Kính lỏng**: thẻ kính trên ảnh hero, quầng sáng đi theo con trỏ trên thẻ lớn (desktop).
+- **Ánh sáng**: tia/viền gradient vàng chạy chậm quanh nút chính khi trang rảnh (tối đa 1 phần tử/trang).
+- **Chuyển trang**: view transition; với chuỗi trang cùng loại (giải pháp) dùng chuyển cảnh trượt theo hướng.
+
+Quy tắc: tối đa **một hiệu ứng “chủ đạo”** mỗi màn hình; còn lại là vi chuyển động phục vụ thao tác.
+
+### 12.4 Định hướng theo loại trang
+
+- **Trang chủ**: sân khấu năng lượng — hero điện ảnh, câu chuyện ngày/đêm, lối vào nhanh tới thiết bị/giải pháp.
+- **Danh mục/sản phẩm**: rõ ràng, nhanh — ảnh nền sáng, thông số dạng bảng lưới kỹ thuật, thêm giỏ có phản hồi bay.
+- **Giải pháp**: hành trình — chọn nhu cầu → hiểu cấu hình → thiết bị → tư vấn.
+- **Dự án**: bằng chứng thật — ảnh lớn, địa điểm, tư liệu thi công, xem ảnh nền đen trung tính.
+- **Kiến thức**: tạp chí — đọc thoải mái, mục lục, sản phẩm liên quan theo chủ đề.
+- **Hợp tác/Giới thiệu**: niềm tin — chỉ số thật, quyền lợi, phản hồi đối tác, quy trình.
+- **Giỏ hàng/Thanh toán**: yên tâm — bước rõ, tổng tiền nổi bật, kiểm tra hợp lệ tại chỗ, không xô layout.
+- **Trang lỗi/trống**: có cá tính thương hiệu nhưng luôn dẫn lối đi tiếp.
+
+### 12.5 Ý tưởng nên thử tiếp
+
+- Mô phỏng dòng điện ngày/đêm cho trang giải pháp (tấm pin → inverter → pin → tải) bằng SVG động, đúng nguyên lý kỹ thuật.
+- So sánh trước/sau trên ảnh dự án (thanh kéo).
+- Bộ cấu hình nhanh: chọn nhu cầu → gợi ý nhóm thiết bị thật trong danh mục.
+- Thẻ sản phẩm có ánh sáng chéo “tấm pin” khi hover; xem nhanh thông số không rời trang.
+- Bản đồ điểm giao dịch dạng danh sách tương tác (không vẽ bản đồ Việt Nam).
+
+## 13. Thành phần dùng chung (ưu tiên tái sử dụng)
 
 `PublicCtaBanner` (băng CTA), `NotFoundExperience` (404/502), `CommerceSteps`, `AnimatedMoney`, `CartFeedback` + `useCartFeedback`, `SolutionsStory` (chia chương nội dung CMS), `ProjectWall`/`ProjectCard`, `MediaEmptyState`, `CatalogMenuIcon`, `.pts-note`, `.pts-glass`, `.pts-grid-paper`.
 
-## 13. Checklist trước khi giao
+## 14. Checklist trước khi giao
 
 - [ ] Màu, chữ, bo góc, bóng, chất liệu đều lấy từ token ở trên (không số lẻ).
 - [ ] Không chữ hoa giãn chữ, không đánh số trang trí, không con số đếm.
