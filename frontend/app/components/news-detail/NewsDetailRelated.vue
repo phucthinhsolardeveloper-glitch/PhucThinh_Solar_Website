@@ -10,6 +10,24 @@ function formatDate(value: string): string {
   return Number.isNaN(date.valueOf()) ? value : new Intl.DateTimeFormat('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'UTC' }).format(date)
 }
 
+// Arrows only when the cards actually overflow; a short list sits centred instead.
+const canScroll = ref(false)
+function measure() {
+  const element = track.value
+  canScroll.value = !!element && element.scrollWidth > element.clientWidth + 2
+}
+let observer: ResizeObserver | undefined
+onMounted(() => {
+  measure()
+  if ('ResizeObserver' in window && track.value) {
+    observer = new ResizeObserver(measure)
+    observer.observe(track.value)
+    // Card widths settle after styles load without resizing the track itself.
+    for (const item of track.value.children) observer.observe(item)
+  }
+})
+onBeforeUnmount(() => observer?.disconnect())
+
 function scrollRelated(direction: -1 | 1): void {
   const element = track.value
   if (!element) return
@@ -22,7 +40,7 @@ function scrollRelated(direction: -1 | 1): void {
   <aside v-if="items.length" class="pt-8" aria-labelledby="related-news-title">
     <div class="mb-5 flex items-center justify-between gap-4">
       <h2 id="related-news-title" class="m-0 text-2xl font-black text-navy-800">Tin liên quan</h2>
-      <div v-if="items.length > 1" role="group" class="flex shrink-0 gap-2" aria-label="Điều hướng tin liên quan">
+      <div v-if="canScroll" role="group" class="flex shrink-0 gap-2" aria-label="Điều hướng tin liên quan">
         <button
           type="button"
           class="public-neutral-button grid size-11 place-items-center rounded-full text-navy-800"
@@ -80,6 +98,6 @@ function scrollRelated(direction: -1 | 1): void {
 </template>
 
 <style scoped>
-.related-track { scrollbar-width: none; }
+.related-track { justify-content: safe center; scrollbar-width: none; }
 .related-track::-webkit-scrollbar { display: none; }
 </style>

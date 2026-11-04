@@ -12,7 +12,8 @@ import ProjectCategoryPage from '~/components/projects/ProjectCategoryPage.vue'
 import NewsCategoryPage from '~/components/news/NewsCategoryPage.vue'
 import SolutionCategoryPage from '~/components/solutions/SolutionCategoryPage.vue'
 
-definePageMeta({ layout: false })
+// Every bare slug resolves to a different page type, so each path needs a fresh instance.
+definePageMeta({ layout: false, key: (route) => route.path })
 
 const route = useRoute()
 const config = useRuntimeConfig()
@@ -73,7 +74,9 @@ if (aliasTarget) {
   } else if (disposition.mode === 'canonical') {
     pageState.value = 'redirecting'
     await navigateTo(disposition.path, { redirectCode: disposition.statusCode })
-  } else if (['project-category', 'news-category', 'solution-category'].includes(disposition.kind) && route.path !== resolutionData.value.canonicalPath) {
+  } else if (['project-category', 'news-category', 'solution-category'].includes(disposition.kind) && route.path !== resolutionData.value.canonicalPath
+    // In-app links may carry a trailing slash; a client redirect from inside setup stalls, so only the server enforces it.
+    && !(import.meta.client && route.path.replace(/\/$/, '') === resolutionData.value.canonicalPath.replace(/\/$/, ''))) {
     pageState.value = 'redirecting'
     await navigateTo(resolutionData.value.canonicalPath, { redirectCode: 301 })
   } else {
