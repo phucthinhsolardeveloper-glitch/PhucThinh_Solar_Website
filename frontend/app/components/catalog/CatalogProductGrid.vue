@@ -52,12 +52,17 @@ function markImageError(product: PublicCatalogProduct) {
 // useMigrationCart `loading`/`error` state, which is a single global flag -
 // reusing it here would make every card show "Đang thêm…" at once).
 const { mutate } = useMigrationCart()
+const { celebrate } = useCartFeedback()
 const { openConsultation } = useStorefrontModal()
 const addingIds = ref<Set<number>>(new Set())
 const addedIds = ref<Set<number>>(new Set())
 const cartErrors = ref<Map<number, string>>(new Map())
 
-async function addToCart(product: PublicCatalogProduct) {
+const addedTimers = new Map<number, ReturnType<typeof setTimeout>>()
+onBeforeUnmount(() => { for (const timer of addedTimers.values()) clearTimeout(timer) })
+
+async function addToCart(product: PublicCatalogProduct, trigger?: EventTarget | null) {
+  const card = trigger instanceof HTMLElement ? trigger.closest('article') : null
   addingIds.value = new Set(addingIds.value).add(product.id)
   const nextErrors = new Map(cartErrors.value)
   nextErrors.delete(product.id)
@@ -65,6 +70,14 @@ async function addToCart(product: PublicCatalogProduct) {
   try {
     await mutate({ action: 'add', productId: product.id, quantity: 1 })
     addedIds.value = new Set(addedIds.value).add(product.id)
+    celebrate({ name: product.name, image: productImageSrc(product), quantity: 1, from: card?.querySelector('img') })
+    // The button confirms for 2s, then returns to its normal label.
+    clearTimeout(addedTimers.get(product.id))
+    addedTimers.set(product.id, setTimeout(() => {
+      const next = new Set(addedIds.value)
+      next.delete(product.id)
+      addedIds.value = next
+    }, 2000))
   } catch (reason) {
     const message = reason instanceof Error ? reason.message : 'Không thể thêm vào giỏ hàng.'
     const errors = new Map(cartErrors.value)
@@ -231,10 +244,11 @@ function discountPercent(product: PublicCatalogProduct): number | null {
           :loading="addingIds.has(product.id)"
           class="min-h-11 w-full justify-center gap-2 rounded-[4px] bg-hdr-gold px-3 text-[13px] font-extrabold text-navy-950 shadow-xs transition-colors duration-150 hover:bg-hdr-gold-hover active:scale-[0.98]"
           :disabled="addingIds.has(product.id)"
-          @click="addToCart(product)"
+          @click="addToCart(product, $event.currentTarget)"
         >
-          <UIcon v-if="!addingIds.has(product.id)" name="i-lucide-shopping-bag" class="size-4" aria-hidden="true" />
-          {{ addingIds.has(product.id) ? 'Đang thêm…' : 'Thêm giỏ hàng' }}
+          <template v-if="addingIds.has(product.id)">Đang thêm…</template>
+          <span v-else-if="addedIds.has(product.id)" class="grid-added"><UIcon name="i-lucide-check" class="size-4" aria-hidden="true" />Đã thêm</span>
+          <template v-else><UIcon name="i-lucide-shopping-bag" class="size-4" aria-hidden="true" />Thêm giỏ hàng</template>
         </UButton>
         <NuxtLink
           :external="!isMigrationPreview"
@@ -244,11 +258,6 @@ function discountPercent(product: PublicCatalogProduct): number | null {
           Xem chi tiết <UIcon name="i-lucide-arrow-right" class="size-4" aria-hidden="true" />
         </NuxtLink>
         <div class="min-h-5 pt-0.5">
-          <p v-if="addedIds.has(product.id) && !cartErrors.has(product.id)" class="m-0 flex flex-wrap items-center gap-1.5 text-sm font-semibold leading-5 text-emerald-700" role="status">
-            <UIcon name="i-lucide-circle-check" class="size-4 flex-none" aria-hidden="true" />
-            <span>Đã thêm vào giỏ hàng.</span>
-            <NuxtLink :to="links.generic('/gio-hang/')" class="font-bold text-navy-900 underline hover:text-gold-700">Xem giỏ →</NuxtLink>
-          </p>
           <p v-if="cartErrors.has(product.id)" class="m-0 text-sm font-semibold leading-5 text-red-700" role="alert">{{ cartErrors.get(product.id) }}</p>
         </div>
       </div>
@@ -273,6 +282,9 @@ function discountPercent(product: PublicCatalogProduct): number | null {
 </template>
 
 <style scoped>
+.grid-added { display: inline-flex; align-items: center; gap: 6px; animation: grid-added-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
+@keyframes grid-added-in { from { opacity: 0; transform: translateY(5px) scale(0.95); } }
+@media (prefers-reduced-motion: reduce) { .grid-added { animation: none; } }
 .catalog-product-grid-rail {
   display: grid;
   grid-auto-columns: calc((100% - 16px) / 2);
