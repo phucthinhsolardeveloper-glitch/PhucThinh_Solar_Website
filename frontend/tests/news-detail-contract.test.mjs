@@ -115,7 +115,7 @@ test('news detail page renders CTA after related articles and uses PHP canonical
   assert.match(page, /publisher: \{ '@type': 'Organization', '@id': `\$\{siteOrigin\}\/\#organization`/)
   assert.match(page, /article\.datePublished/)
   assert.match(page, /article\.dateModified/)
-  assert.match(page, /payload \? \[\{ label: payload\.article\.title \}\]/)
+  assert.match(page, /payload \? \[\{ label: sentenceCase\(payload\.article\.title\) \}\]/)
   assert.match(component, /Nội dung đang cập nhật/)
   assert.match(component, /formatDate\(article\.date\)/)
 })

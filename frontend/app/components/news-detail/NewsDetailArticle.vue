@@ -79,7 +79,7 @@ function formatDate(value: string): string {
         {{ categoryName }}
       </UBadge>
       <h1 class="max-w-[1000px] text-[clamp(30px,4vw,52px)] font-bold leading-[1.12] tracking-[-0.035em] text-navy-800">
-        {{ article.title }}
+        {{ sentenceCase(article.title) }}
       </h1>
       <div class="mt-5 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-slate-500">
         <time v-if="article.date" :datetime="article.date">{{ formatDate(article.date) }}</time>
@@ -96,7 +96,7 @@ function formatDate(value: string): string {
     <img
       v-if="article.cover && article.showCover"
       :src="article.cover"
-      :alt="article.title"
+      :alt="sentenceCase(article.title)"
       width="1000"
       height="560"
       sizes="(min-width: 1024px) 66vw, 100vw"
@@ -170,21 +170,6 @@ function formatDate(value: string): string {
             </a>
           </li>
         </ul>
-
-        <div v-if="article.content.html" class="mt-8 flex flex-col gap-3 rounded-[4px] border-l-[3px] border-gold-500 bg-slate-50 p-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p class="m-0 text-sm font-bold text-navy-900">Bạn đang tìm hiểu giải pháp hoặc chính sách hợp tác?</p>
-            <p class="m-0 mt-0.5 text-xs text-slate-600">Trao đổi trực tiếp cùng đội ngũ Phúc Thịnh Solar để nhận cấu hình và báo giá phù hợp.</p>
-          </div>
-          <button
-            type="button"
-            class="inline-flex min-h-10 shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-[3px] bg-navy-900 px-4 py-2 text-xs font-extrabold text-white transition-colors hover:bg-navy-800"
-            @click="openConsultation('Bài viết: ' + article.title)"
-          >
-            <span>Gửi yêu cầu tư vấn</span>
-            <span aria-hidden="true">→</span>
-          </button>
-        </div>
 
         <EditorialShare v-if="article.content.html" class="mt-8" :title="article.title" :canonical-path="article.seo.canonical" />
       </div>

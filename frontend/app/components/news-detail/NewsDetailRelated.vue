@@ -56,21 +56,21 @@ function scrollRelated(direction: -1 | 1): void {
               v-if="item.image"
               :src="item.image"
               :alt="item.title"
-              class="block aspect-video w-full object-cover"
+              class="block aspect-video w-full object-cover rounded-[6px]"
               loading="lazy"
               decoding="async"
               width="640"
               height="360"
               sizes="(min-width: 1100px) 25vw, (min-width: 768px) 50vw, 100vw"
             >
-            <div v-else class="aspect-video w-full bg-navy-50" aria-hidden="true" />
+            <div v-else class="aspect-video w-full rounded-[6px] bg-navy-50" aria-hidden="true" />
           </div>
           <div class="flex flex-1 flex-col py-4">
             <p v-if="item.date || item.author" class="mb-2 flex flex-wrap items-center gap-3 text-xs text-slate-500">
               <time v-if="item.date" :datetime="item.date">{{ formatDate(item.date) }}</time>
               <span v-if="item.author">{{ item.author }}</span>
             </p>
-            <h3 class="mb-2 line-clamp-2 text-base font-bold leading-snug transition-colors group-hover:text-gold-700">{{ item.title }}</h3>
+            <h3 class="mb-2 line-clamp-2 text-base font-bold leading-snug transition-colors group-hover:text-gold-700">{{ sentenceCase(item.title) }}</h3>
             <p v-if="item.description" class="mb-0 line-clamp-2 text-base leading-relaxed text-slate-600">{{ item.description }}</p>
           </div>
         </a>
