@@ -2,6 +2,8 @@
 import { isPublicCartPayload, type PublicCartPayload } from '#shared/contracts/public-cart'
 import { isPublicCheckoutPayload, isPublicCheckoutWardsPayload, type PublicCheckoutPayload, type PublicCheckoutOption, type PublicCheckoutNoticeForm } from '#shared/contracts/public-checkout'
 import { CART_CHECKOUT_POST_PATH } from '#shared/public-route-gate'
+import CommerceSteps from '~/components/commerce/CommerceSteps.vue'
+import AnimatedMoney from '~/components/commerce/AnimatedMoney.vue'
 definePageMeta({
   layout: false,
   middleware: 'checkout-public-route',
@@ -172,19 +174,57 @@ const orderTotal = computed(() => {
 })
 
 useSeoMeta({ title: 'Thanh toán — Phúc Thịnh Solar', robots: 'noindex, nofollow, noarchive' })
+
+// Inline validation once a field has been left, so errors never shout before typing.
+const touched = reactive<Record<string, boolean>>({})
+const fieldState = computed(() => ({
+  fullname: form.fullname.length >= 2,
+  phone: /^(?:\+?84|0)(?:\d[\s.-]?){8,10}$/.test(form.phone),
+  email: /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(form.email),
+  address: form.address.length >= 5,
+}))
+function stateOf(field: keyof typeof fieldState.value) {
+  if (!touched[field]) return ''
+  return fieldState.value[field] ? 'is-valid' : 'is-invalid'
+}
+const fieldHints: Record<string, string> = {
+  fullname: 'Vui lòng nhập họ tên người nhận.',
+  phone: 'Số điện thoại chưa đúng (ví dụ 0944 555 957).',
+  email: 'Email chưa đúng định dạng.',
+  address: 'Vui lòng nhập số nhà, tên đường.',
+}
+
+function paymentIcon(name: string): string {
+  if (/chuyển khoản|ngân hàng/i.test(name)) return 'i-lucide-landmark'
+  if (/giao hàng|nhận hàng|cod/i.test(name)) return 'i-lucide-hand-coins'
+  if (/công ty|văn phòng/i.test(name)) return 'i-lucide-building-2'
+  return 'i-lucide-credit-card'
+}
+
+// Native POST keeps the PHP contract; this only blocks a second click while the browser navigates.
+const submitting = ref(false)
+function onSubmit(event: Event) {
+  if (submitting.value) { event.preventDefault(); return }
+  for (const key of Object.keys(fieldState.value)) touched[key] = true
+  submitting.value = true
+}
+onMounted(() => { window.addEventListener('pageshow', () => { submitting.value = false }) })
 </script>
 
 <template>
-  <div class="min-h-screen bg-white text-navy-800">
+  <div class="min-h-screen bg-[#f6f8fb] text-navy-800">
     <SiteHeader :site="site" />
-    <main class="pts-container py-10 max-ph:py-7">
+    <main class="pts-container py-8 max-ph:py-6 checkout-main">
       <SiteBreadcrumb :items="[{ label: 'Giỏ hàng', to: '/gio-hang/' }, { label: 'Thanh toán' }]" />
-      <h1 class="mb-8 text-[clamp(30px,5vw,48px)] font-black tracking-tight">Thông tin thanh toán</h1>
+      <header class="checkout-head">
+        <h1 class="m-0 text-[clamp(30px,4vw,46px)] font-black tracking-tight text-navy-950">Thông tin thanh toán</h1>
+        <CommerceSteps current="checkout" />
+      </header>
 
       <div v-if="checkoutLoadError || !checkout || !cart" class="rounded-btn border border-red-200 bg-red-50 p-6 text-red-800" role="alert">
         Không thể tải dữ liệu checkout từ PHP local.
       </div>
-      <div v-else-if="!checkout.cartReady || !cart.canCheckout" class="rounded-[4px] border-l-[4px] border-gold-500 bg-slate-50 p-6 sm:p-8">
+      <div v-else-if="!checkout.cartReady || !cart.canCheckout" class="checkout-card p-6 sm:p-8">
         <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
           <div>
             <h2 class="mb-2 text-xl font-black text-navy-950">Giỏ hàng chưa thể thanh toán</h2>
@@ -193,12 +233,12 @@ useSeoMeta({ title: 'Thanh toán — Phúc Thịnh Solar', robots: 'noindex, nof
             </p>
           </div>
           <div class="flex flex-wrap items-center gap-3">
-            <NuxtLink to="/gio-hang/" class="inline-flex min-h-11 items-center justify-center rounded-[4px] bg-navy-900 px-5 py-2.5 text-sm font-bold text-white no-underline transition-colors hover:bg-navy-800">
+            <NuxtLink to="/gio-hang/" class="inline-flex min-h-11 items-center justify-center rounded-[8px] bg-navy-900 px-5 py-2.5 text-sm font-bold text-white no-underline transition-colors hover:bg-navy-800">
               Quay lại giỏ hàng
             </NuxtLink>
             <button
               type="button"
-              class="inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-[4px] bg-gold-500 px-5 py-2.5 text-sm font-extrabold text-navy-950 transition-colors hover:bg-gold-400"
+              class="inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-[8px] bg-gold-500 px-5 py-2.5 text-sm font-extrabold text-navy-950 transition-colors hover:bg-gold-400"
               @click="openConsultation('Thanh toán: Yêu cầu báo giá đơn hàng')"
             >
               <span>Nhận báo giá nhanh</span>
@@ -207,131 +247,271 @@ useSeoMeta({ title: 'Thanh toán — Phúc Thịnh Solar', robots: 'noindex, nof
           </div>
         </div>
 
-        <div class="mt-6 grid grid-cols-1 gap-4 border-t border-slate-200/80 pt-6 sm:grid-cols-3">
-          <div class="rounded-[4px] bg-navy-950 p-4 text-white">
-            <span class="tabular-nums text-xs font-extrabold text-gold-400">01</span>
-            <strong class="mt-1 block text-sm font-bold text-white">Đơn hàng có sản phẩm báo giá</strong>
-            <p class="m-0 mt-1 text-xs leading-relaxed text-white/75">
-              Các thiết bị công suất lớn hoặc cấu hình BESS sẽ được kỹ sư kiểm tra tương thích và báo giá chiết khấu theo số lượng.
-            </p>
-          </div>
-          <div class="rounded-[4px] bg-navy-950 p-4 text-white">
-            <span class="tabular-nums text-xs font-extrabold text-gold-400">02</span>
-            <strong class="mt-1 block text-sm font-bold text-white">Xuất hóa đơn VAT & CO/CQ</strong>
-            <p class="m-0 mt-1 text-xs leading-relaxed text-white/75">
-              Hỗ trợ đầy đủ hợp đồng, hóa đơn GTGT và chứng từ xuất xứ/chất lượng cho doanh nghiệp, nhà thầu.
-            </p>
-          </div>
-          <div class="rounded-[4px] bg-navy-950 p-4 text-white">
-            <span class="tabular-nums text-xs font-extrabold text-gold-400">03</span>
-            <strong class="mt-1 block text-sm font-bold text-white">Hotline hỗ trợ đặt hàng</strong>
-            <p class="m-0 mt-1 text-xs leading-relaxed text-white/75">
-              Liên hệ trực tiếp <a href="tel:0944555957" class="tabular-nums font-bold text-gold-300 no-underline hover:underline">0944 555 957</a> hoặc <a href="tel:0945536899" class="tabular-nums font-bold text-gold-300 no-underline hover:underline">0945 536 899</a>.
-            </p>
-          </div>
-        </div>
+        <ul class="checkout-assure">
+          <li>
+            <UIcon name="i-lucide-scan-search" class="size-6" aria-hidden="true" />
+            <strong>Đơn hàng có sản phẩm báo giá</strong>
+            <p>Các thiết bị công suất lớn hoặc cấu hình BESS sẽ được kỹ sư kiểm tra tương thích và báo giá chiết khấu theo số lượng.</p>
+          </li>
+          <li>
+            <UIcon name="i-lucide-file-check" class="size-6" aria-hidden="true" />
+            <strong>Xuất hóa đơn VAT &amp; CO/CQ</strong>
+            <p>Hỗ trợ đầy đủ hợp đồng, hóa đơn GTGT và chứng từ xuất xứ/chất lượng cho doanh nghiệp, nhà thầu.</p>
+          </li>
+          <li>
+            <UIcon name="i-lucide-phone-call" class="size-6" aria-hidden="true" />
+            <strong>Hotline hỗ trợ đặt hàng</strong>
+            <p>Liên hệ trực tiếp <a href="tel:0944555957">0944 555 957</a> hoặc <a href="tel:0945536899">0945 536 899</a>.</p>
+          </li>
+        </ul>
       </div>
 
-      <form v-else method="post" :action="checkoutPostAction" class="grid gap-8 nav:grid-cols-[minmax(0,1fr)_380px]">
+      <form v-else method="post" :action="checkoutPostAction" class="grid items-start gap-6 nav:grid-cols-[minmax(0,1fr)_400px] nav:gap-8" @submit="onSubmit">
         <input type="hidden" name="form_csrf" :value="checkout.csrfToken">
         <input type="hidden" name="checkout_token" :value="checkout.checkoutToken">
-        <section class="space-y-6">
-          <div class="rounded-btn border border-gray-200 p-5">
-            <h2 class="mb-5 text-xl font-black">Thông tin giao hàng</h2>
+        <section class="space-y-5">
+          <div class="checkout-card">
+            <h2 class="checkout-card__title"><UIcon name="i-lucide-user-round" class="size-5" aria-hidden="true" />Người nhận</h2>
             <div class="grid gap-4 tb:grid-cols-2">
-              <label class="grid gap-1.5 text-sm font-bold">Họ và tên
-                <input v-model.trim="form.fullname" name="dataOrder[fullname]" autocomplete="name" maxlength="150" required class="h-11 rounded-chip border border-gray-300 px-3 font-normal outline-none focus:border-gold-600">
+              <label class="checkout-field" :class="stateOf('fullname')">
+                <span>Họ và tên</span>
+                <span class="checkout-field__control">
+                  <input v-model.trim="form.fullname" name="dataOrder[fullname]" autocomplete="name" maxlength="150" required placeholder="Nguyễn Văn A" @blur="touched.fullname = true">
+                  <UIcon name="i-lucide-circle-check" class="checkout-field__ok size-5" aria-hidden="true" />
+                </span>
+                <small v-if="stateOf('fullname') === 'is-invalid'" role="alert">{{ fieldHints.fullname }}</small>
               </label>
-              <label class="grid gap-1.5 text-sm font-bold">Số điện thoại
-                <input v-model.trim="form.phone" name="dataOrder[phone]" autocomplete="tel" inputmode="tel" maxlength="30" required class="h-11 rounded-chip border border-gray-300 px-3 font-normal outline-none focus:border-gold-600">
+              <label class="checkout-field" :class="stateOf('phone')">
+                <span>Số điện thoại</span>
+                <span class="checkout-field__control">
+                  <input v-model.trim="form.phone" name="dataOrder[phone]" autocomplete="tel" inputmode="tel" maxlength="30" required placeholder="0944 555 957" @blur="touched.phone = true">
+                  <UIcon name="i-lucide-circle-check" class="checkout-field__ok size-5" aria-hidden="true" />
+                </span>
+                <small v-if="stateOf('phone') === 'is-invalid'" role="alert">{{ fieldHints.phone }}</small>
               </label>
-              <label class="grid gap-1.5 text-sm font-bold tb:col-span-2">Email
-                <input v-model.trim="form.email" type="email" name="dataOrder[email]" autocomplete="email" maxlength="190" required class="h-11 rounded-chip border border-gray-300 px-3 font-normal outline-none focus:border-gold-600">
+              <label class="checkout-field tb:col-span-2" :class="stateOf('email')">
+                <span>Email nhận xác nhận đơn</span>
+                <span class="checkout-field__control">
+                  <input v-model.trim="form.email" type="email" name="dataOrder[email]" autocomplete="email" maxlength="190" required placeholder="ban@email.com" @blur="touched.email = true">
+                  <UIcon name="i-lucide-circle-check" class="checkout-field__ok size-5" aria-hidden="true" />
+                </span>
+                <small v-if="stateOf('email') === 'is-invalid'" role="alert">{{ fieldHints.email }}</small>
               </label>
-              <label class="grid gap-1.5 text-sm font-bold">Tỉnh/Thành phố
-                <select v-model.number="form.city" name="dataOrder[city]" required class="h-11 rounded-chip border border-gray-300 bg-white px-3 font-normal outline-none focus:border-gold-600">
-                  <option :value="0">Chọn tỉnh/thành</option>
-                  <option v-for="city in checkout.cities" :key="city.id" :value="city.id">{{ city.name }}</option>
-                </select>
+            </div>
+          </div>
+
+          <div class="checkout-card">
+            <h2 class="checkout-card__title"><UIcon name="i-lucide-map-pin" class="size-5" aria-hidden="true" />Địa chỉ giao hàng</h2>
+            <div class="grid gap-4 tb:grid-cols-2">
+              <label class="checkout-field">
+                <span>Tỉnh/Thành phố</span>
+                <span class="checkout-field__control">
+                  <select v-model.number="form.city" name="dataOrder[city]" required>
+                    <option :value="0">Chọn tỉnh/thành</option>
+                    <option v-for="city in checkout.cities" :key="city.id" :value="city.id">{{ city.name }}</option>
+                  </select>
+                </span>
               </label>
-              <div class="grid content-start gap-1.5 text-sm font-bold">
+              <div class="checkout-field">
                 <label for="checkout-ward">Phường/Xã</label>
-                <select id="checkout-ward" v-model.number="form.ward" name="dataOrder[ward]" :disabled="!form.city || wardsLoading || Boolean(wardsError)" required class="h-11 rounded-chip border border-gray-300 bg-white px-3 font-normal outline-none focus:border-gold-600 disabled:bg-slate-50">
-                  <option :value="0">Chọn phường/xã</option>
-                  <option v-for="ward in wards" :key="ward.id" :value="ward.id">{{ ward.name }}</option>
-                </select>
-                <span v-if="wardsLoading" class="font-normal text-slate-500" role="status">Đang tải danh sách phường/xã…</span>
-                <span v-else-if="wardsError" class="font-normal text-red-700" role="alert">
+                <span class="checkout-field__control">
+                  <select id="checkout-ward" v-model.number="form.ward" name="dataOrder[ward]" :disabled="!form.city || wardsLoading || Boolean(wardsError)" required>
+                    <option :value="0">{{ wardsLoading ? 'Đang tải…' : 'Chọn phường/xã' }}</option>
+                    <option v-for="ward in wards" :key="ward.id" :value="ward.id">{{ ward.name }}</option>
+                  </select>
+                </span>
+                <small v-if="wardsLoading" class="is-muted" role="status">Đang tải danh sách phường/xã…</small>
+                <small v-else-if="wardsError" role="alert">
                   {{ wardsError }}
                   <button type="button" class="font-bold underline" @click="void loadWards()">Tải lại</button>
-                </span>
+                </small>
               </div>
-              <label class="grid gap-1.5 text-sm font-bold tb:col-span-2">Địa chỉ chi tiết
-                <input v-model.trim="form.address" name="dataOrder[address]" autocomplete="street-address" maxlength="255" required class="h-11 rounded-chip border border-gray-300 px-3 font-normal outline-none focus:border-gold-600">
+              <label class="checkout-field tb:col-span-2" :class="stateOf('address')">
+                <span>Địa chỉ chi tiết</span>
+                <span class="checkout-field__control">
+                  <input v-model.trim="form.address" name="dataOrder[address]" autocomplete="street-address" maxlength="255" required placeholder="Số nhà, tên đường" @blur="touched.address = true">
+                  <UIcon name="i-lucide-circle-check" class="checkout-field__ok size-5" aria-hidden="true" />
+                </span>
+                <small v-if="stateOf('address') === 'is-invalid'" role="alert">{{ fieldHints.address }}</small>
               </label>
-              <div class="grid gap-1.5 text-sm font-bold tb:col-span-2">
-                <label for="checkout-requirements">Yêu cầu khác</label>
-                <div class="mb-1 flex flex-wrap gap-1.5">
+              <div class="checkout-field tb:col-span-2">
+                <label for="checkout-requirements">Yêu cầu khác <em class="font-normal not-italic text-slate-400">(không bắt buộc)</em></label>
+                <div class="checkout-tags">
                   <button
                     v-for="tag in quickRequirementTags"
                     :key="tag"
                     type="button"
-                    class="cursor-pointer rounded-[3px] bg-slate-100 px-2.5 py-1 text-xs font-medium text-navy-800 transition-colors hover:bg-gold-500/20 hover:text-navy-950"
+                    :class="{ 'is-on': form.requirements.includes(tag) }"
                     @click="appendRequirement(tag)"
                   >
-                    + {{ tag }}
+                    <UIcon :name="form.requirements.includes(tag) ? 'i-lucide-check' : 'i-lucide-plus'" class="size-3.5" aria-hidden="true" />{{ tag }}
                   </button>
                 </div>
-                <textarea id="checkout-requirements" v-model.trim="form.requirements" name="dataOrder[requirements]" maxlength="1000" rows="4" class="rounded-chip border border-gray-300 px-3 py-2 font-normal outline-none focus:border-gold-600" />
+                <span class="checkout-field__control">
+                  <textarea id="checkout-requirements" v-model.trim="form.requirements" name="dataOrder[requirements]" maxlength="1000" rows="3" placeholder="Ví dụ: giao buổi sáng, cần hướng dẫn lắp đặt…" />
+                </span>
               </div>
             </div>
           </div>
 
-          <div class="rounded-btn border border-gray-200 p-5">
-            <h2 class="mb-5 text-xl font-black">Hình thức thanh toán</h2>
-            <div class="space-y-3">
-              <label v-for="payment in checkout.payments" :key="payment.id" class="flex cursor-pointer items-start gap-3 rounded-chip border border-gray-200 p-4 has-[:checked]:border-gold-600 has-[:checked]:bg-amber-50/40">
-                <input v-model.number="form.payment" type="radio" name="dataOrder[payments]" :value="payment.id" required class="mt-1">
-                <span>
+          <div class="checkout-card">
+            <h2 class="checkout-card__title"><UIcon name="i-lucide-wallet" class="size-5" aria-hidden="true" />Hình thức thanh toán</h2>
+            <div class="checkout-pay">
+              <label v-for="payment in checkout.payments" :key="payment.id" class="checkout-pay__option">
+                <input v-model.number="form.payment" type="radio" name="dataOrder[payments]" :value="payment.id" required class="sr-only">
+                <span class="checkout-pay__icon" aria-hidden="true"><UIcon :name="paymentIcon(payment.name)" class="size-6" /></span>
+                <span class="min-w-0 flex-1">
                   <strong class="block">{{ payment.name }}</strong>
                   <small v-if="payment.description" class="mt-1 block whitespace-pre-line leading-relaxed text-slate-500">{{ payment.description }}</small>
                 </span>
+                <span class="checkout-pay__radio" aria-hidden="true" />
               </label>
             </div>
           </div>
         </section>
 
-        <aside class="h-fit rounded-btn border border-gray-200 p-5 nav:sticky nav:top-5">
-          <h2 class="mb-5 text-xl font-black">Đơn hàng</h2>
-          <div class="max-h-[340px] divide-y divide-gray-100 overflow-auto">
-            <div v-for="item in cart.items" :key="item.code" class="flex justify-between gap-3 py-3 first:pt-0">
-              <span class="min-w-0 text-sm leading-snug"><strong>{{ item.quantity }}×</strong> {{ item.name }}</span>
-              <strong class="shrink-0 text-sm text-red-600">{{ formatMoney(item.lineTotal) }}</strong>
+        <aside class="checkout-summary nav:sticky nav:top-28">
+          <h2 class="m-0 text-lg font-extrabold text-white">Đơn hàng của bạn</h2>
+          <ul class="checkout-summary__items">
+            <li v-for="item in cart.items" :key="item.code">
+              <span class="checkout-summary__thumb">
+                <img v-if="item.image" :src="item.image" :alt="item.name" loading="lazy">
+                <b>{{ item.quantity }}</b>
+              </span>
+              <span class="min-w-0 flex-1 text-sm leading-snug text-blue-50">{{ item.name }}</span>
+              <strong class="shrink-0 text-sm">{{ formatMoney(item.lineTotal) }}</strong>
+            </li>
+          </ul>
+          <dl class="checkout-summary__rows">
+            <div><dt>Tạm tính</dt><dd>{{ formatMoney(cart.subtotal) }}</dd></div>
+            <div v-if="checkout.shippingEnabled">
+              <dt>Vận chuyển</dt>
+              <dd :class="{ 'is-pending': shippingLoading || shippingPending || shippingAmount === null }">
+                <span v-if="shippingLoading" class="checkout-dots" aria-label="Đang tính"><i /><i /><i /></span>
+                <template v-else-if="shippingPending">Sẽ xác nhận sau</template>
+                <template v-else-if="shippingAmount === null">Chọn địa chỉ để tính</template>
+                <AnimatedMoney v-else :value="shippingAmount" />
+              </dd>
             </div>
-          </div>
-          <div class="mt-4 space-y-3 border-t border-gray-200 pt-4">
-            <div class="flex justify-between"><span class="text-slate-500">Tạm tính</span><strong>{{ formatMoney(cart.subtotal) }}</strong></div>
-            <div v-if="checkout.shippingEnabled" class="flex justify-between gap-4">
-              <span class="text-slate-500">Vận chuyển</span>
-              <strong class="text-right">{{ shippingLoading ? 'Đang tính…' : shippingPending ? 'Sẽ xác nhận sau' : formatMoney(shippingAmount) }}</strong>
-            </div>
-            <p v-if="shippingError" class="m-0 text-sm text-amber-800" role="status">{{ shippingError }}</p>
-            <div class="flex justify-between border-t border-gray-200 pt-3 text-lg"><strong>Tổng dự kiến</strong><strong class="text-red-600">{{ formatMoney(orderTotal) }}</strong></div>
+          </dl>
+          <p v-if="shippingError" class="m-0 mt-2 text-sm text-amber-200" role="status">{{ shippingError }}</p>
+          <div class="checkout-summary__total">
+            <span>Tổng dự kiến</span>
+            <strong><AnimatedMoney :value="orderTotal" empty="Chờ xác nhận" /></strong>
           </div>
 
-          <button type="submit" name="thanhtoan" value="1" class="mt-5 min-h-12 w-full rounded-chip bg-gold-500 px-5 font-extrabold text-navy-950 hover:bg-gold-600">
-            Đặt hàng
+          <button type="submit" name="thanhtoan" value="1" class="checkout-summary__cta" :disabled="submitting">
+            <template v-if="submitting"><span class="checkout-spinner" aria-hidden="true" />Đang đặt hàng…</template>
+            <template v-else>Đặt hàng<span aria-hidden="true"><UIcon name="i-lucide-arrow-right" class="size-5" /></span></template>
           </button>
 
-          <div class="mt-4 rounded-[4px] border-l-[3px] border-gold-500 bg-navy-950 p-3.5 text-xs text-white/80">
-            <strong class="block font-bold text-white">Cam kết từ Phúc Thịnh Solar</strong>
-            <p class="m-0 mt-1 leading-relaxed">
-              Thiết bị chính hãng đầy đủ CO/CQ · Kiểm định kỹ thuật trước khi xuất kho · Hỗ trợ kỹ thuật: <a href="tel:0945536899" class="tabular-nums font-bold text-gold-300 no-underline hover:underline">0945 536 899</a>
+          <div class="checkout-summary__assure">
+            <UIcon name="i-lucide-shield-check" class="size-5 flex-none" aria-hidden="true" />
+            <p>
+              Thiết bị chính hãng đầy đủ CO/CQ · Kiểm định kỹ thuật trước khi xuất kho · Hỗ trợ kỹ thuật: <a href="tel:0945536899">0945 536 899</a>
             </p>
           </div>
         </aside>
+
+        <!-- Phones: the total and the order action stay within reach while filling the form. -->
+        <div class="checkout-bar" aria-hidden="true">
+          <span><small>Tổng dự kiến</small><strong><AnimatedMoney :value="orderTotal" empty="Chờ xác nhận" /></strong></span>
+          <button type="submit" name="thanhtoan" value="1" tabindex="-1" :disabled="submitting">{{ submitting ? 'Đang đặt…' : 'Đặt hàng' }}</button>
+        </div>
       </form>
     </main>
     <SiteFooter :site="site" />
   </div>
 </template>
+
+<style scoped>
+.checkout-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(320px, 520px); align-items: center; gap: 24px 48px; margin: 8px 0 clamp(24px, 3vw, 40px); }
+.checkout-card { padding: clamp(18px, 2vw, 28px); border: 1px solid rgb(10 34 81 / 7%); border-radius: 16px; background: #fff; }
+.checkout-card__title { display: flex; align-items: center; gap: 10px; margin: 0 0 18px; color: var(--color-navy-950); font-size: 19px; font-weight: 850; }
+.checkout-card__title :deep(.iconify), .checkout-card__title > :first-child { color: var(--color-gold-600); }
+.checkout-field { display: grid; align-content: start; gap: 7px; color: var(--color-navy-900); font-size: 14px; font-weight: 700; }
+.checkout-field__control { position: relative; display: flex; align-items: center; }
+.checkout-field input, .checkout-field select, .checkout-field textarea { width: 100%; min-height: 50px; padding: 0 44px 0 14px; border: 1px solid rgb(10 34 81 / 16%); border-radius: 10px; background: #fff; color: var(--color-navy-950); font: inherit; font-size: 15.5px; font-weight: 500; outline: none; transition: border-color 0.2s ease, box-shadow 0.2s ease; }
+.checkout-field textarea { padding: 12px 14px; resize: vertical; }
+.checkout-field select { padding-right: 14px; }
+.checkout-field input:focus, .checkout-field select:focus, .checkout-field textarea:focus { border-color: var(--color-gold-500); box-shadow: 0 0 0 4px rgb(228 168 73 / 18%); }
+.checkout-field input::placeholder, .checkout-field textarea::placeholder { color: #a0aec0; font-weight: 400; }
+.checkout-field select:disabled { background: #f6f8fb; color: #94a3b8; }
+.checkout-field__ok { position: absolute; right: 14px; color: #16a34a; opacity: 0; transform: scale(0.6); transition: opacity 0.2s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); pointer-events: none; }
+.checkout-field.is-valid .checkout-field__ok { opacity: 1; transform: none; }
+.checkout-field.is-invalid input { border-color: #dc2626; }
+.checkout-field.is-invalid input:focus { box-shadow: 0 0 0 4px rgb(220 38 38 / 14%); }
+.checkout-field small { color: #b91c1c; font-size: 13px; font-weight: 600; }
+.checkout-field small.is-muted { color: #64748b; }
+.checkout-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.checkout-tags button { display: inline-flex; min-height: 34px; align-items: center; gap: 6px; padding: 0 12px; border: 1px solid rgb(10 34 81 / 12%); border-radius: 999px; background: #fff; color: var(--color-navy-800); font-size: 13px; font-weight: 600; cursor: pointer; transition: border-color 0.2s ease, background-color 0.2s ease; }
+.checkout-tags button:hover { border-color: var(--color-gold-500); }
+.checkout-tags button.is-on { border-color: var(--color-gold-500); background: var(--color-gold-50); color: var(--color-navy-950); }
+.checkout-pay { display: grid; gap: 10px; }
+.checkout-pay__option { display: flex; align-items: center; gap: 14px; padding: 16px; border: 1.5px solid rgb(10 34 81 / 10%); border-radius: 12px; background: #fff; cursor: pointer; transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease; }
+.checkout-pay__option:hover { border-color: rgb(201 150 46 / 55%); }
+.checkout-pay__option:has(input:checked) { border-color: var(--color-gold-500); background: #fffbf2; box-shadow: 0 12px 28px -22px rgb(201 150 46 / 80%); }
+.checkout-pay__option:has(input:focus-visible) { outline: 3px solid var(--color-gold-500); outline-offset: 2px; }
+.checkout-pay__icon { display: grid; width: 48px; height: 48px; flex: none; place-items: center; border-radius: 12px; background: #f1f5f9; color: var(--color-navy-800); transition: background-color 0.2s ease, color 0.2s ease; }
+.checkout-pay__option:has(input:checked) .checkout-pay__icon { background: var(--color-navy-950); color: var(--color-gold-300); }
+.checkout-pay__radio { position: relative; width: 22px; height: 22px; flex: none; border: 2px solid #cbd5e1; border-radius: 50%; transition: border-color 0.2s ease; }
+.checkout-pay__radio::after { content: ''; position: absolute; inset: 3px; border-radius: 50%; background: var(--color-gold-500); transform: scale(0); transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.checkout-pay__option:has(input:checked) .checkout-pay__radio { border-color: var(--color-gold-500); }
+.checkout-pay__option:has(input:checked) .checkout-pay__radio::after { transform: scale(1); }
+
+.checkout-summary { overflow: hidden; padding: clamp(22px, 2vw, 30px); border-radius: 16px; background: radial-gradient(120% 80% at 100% 0%, rgb(228 168 73 / 18%), transparent 55%), var(--color-navy-950); color: #fff; box-shadow: 0 30px 60px -36px rgb(6 21 55 / 70%); }
+.checkout-summary__items { display: grid; gap: 12px; max-height: 300px; margin: 18px 0 0; padding: 0 4px 16px 0; overflow-y: auto; border-bottom: 1px solid rgb(255 255 255 / 12%); list-style: none; scrollbar-width: thin; }
+.checkout-summary__items li { display: flex; align-items: center; gap: 12px; }
+.checkout-summary__thumb { position: relative; display: grid; width: 52px; height: 52px; flex: none; place-items: center; border-radius: 10px; background: #fff; }
+.checkout-summary__thumb img { width: 88%; height: 88%; object-fit: contain; }
+.checkout-summary__thumb b { position: absolute; top: -6px; right: -6px; display: grid; min-width: 22px; height: 22px; place-items: center; padding: 0 5px; border-radius: 999px; background: var(--pts-gold-gradient); color: var(--color-navy-950); font-size: 12px; }
+.checkout-summary__rows { display: grid; gap: 10px; margin: 16px 0 0; }
+.checkout-summary__rows > div { display: flex; justify-content: space-between; gap: 12px; font-size: 15px; }
+.checkout-summary__rows dt { color: #b9c6d6; }
+.checkout-summary__rows dd { margin: 0; font-weight: 700; text-align: right; }
+.checkout-summary__rows dd.is-pending { color: #b9c6d6; font-weight: 600; }
+.checkout-summary__total { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-top: 16px; padding-top: 16px; border-top: 1px solid rgb(255 255 255 / 12%); }
+.checkout-summary__total span { color: #d3dcea; font-weight: 700; }
+.checkout-summary__total strong { background-image: var(--pts-gold-gradient); background-clip: text; color: transparent; -webkit-text-fill-color: transparent; font-size: clamp(26px, 2.2vw, 32px); font-weight: 900; letter-spacing: -0.02em; }
+.checkout-summary__cta { display: flex; width: 100%; min-height: 60px; align-items: center; justify-content: space-between; gap: 12px; margin-top: 20px; padding: 0 10px 0 22px; border: 0; border-radius: 4px; background: var(--pts-gold-gradient); color: var(--color-navy-950); font: inherit; font-size: 17px; font-weight: 850; cursor: pointer; transition: filter 0.25s ease; }
+.checkout-summary__cta > span { display: grid; width: 42px; height: 42px; place-items: center; border-radius: 8px; background: var(--color-navy-950); color: var(--color-gold-300); transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
+.checkout-summary__cta:hover:not(:disabled) { filter: brightness(1.06); }
+.checkout-summary__cta:hover:not(:disabled) > span { transform: translateX(4px); }
+.checkout-summary__cta:disabled { justify-content: center; cursor: wait; opacity: 0.85; }
+.checkout-summary__cta:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+.checkout-summary__assure { display: flex; gap: 10px; margin-top: 18px; padding-top: 16px; border-top: 1px solid rgb(255 255 255 / 12%); color: #c3cfdf; font-size: 13px; line-height: 1.6; }
+.checkout-summary__assure :deep(.iconify), .checkout-summary__assure > :first-child { color: var(--color-gold-300); }
+.checkout-summary__assure p { margin: 0; }
+.checkout-summary__assure a { color: var(--color-gold-300); font-weight: 800; text-decoration: none; }
+.checkout-spinner { width: 18px; height: 18px; margin-right: 10px; border: 2.5px solid rgb(6 21 55 / 25%); border-top-color: var(--color-navy-950); border-radius: 50%; animation: spin 0.8s linear infinite; }
+.checkout-dots { display: inline-flex; gap: 4px; }
+.checkout-dots i { width: 6px; height: 6px; border-radius: 50%; background: var(--color-gold-300); animation: dot 1s ease-in-out infinite; }
+.checkout-dots i:nth-child(2) { animation-delay: 0.15s; }
+.checkout-dots i:nth-child(3) { animation-delay: 0.3s; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes dot { 0%, 80%, 100% { opacity: 0.3; transform: translateY(0); } 40% { opacity: 1; transform: translateY(-3px); } }
+
+.checkout-assure { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 24px 0 0; padding: 24px 0 0; border-top: 1px solid rgb(10 34 81 / 8%); list-style: none; }
+.checkout-assure li { padding: 18px; border-radius: 12px; background: var(--color-navy-950); color: #c3cfdf; font-size: 13.5px; }
+.checkout-assure li :deep(.iconify), .checkout-assure li > :first-child { color: var(--color-gold-300); }
+.checkout-assure strong { display: block; margin-top: 10px; color: #fff; font-size: 15px; }
+.checkout-assure p { margin: 6px 0 0; line-height: 1.6; }
+.checkout-assure a { color: var(--color-gold-300); font-weight: 800; text-decoration: none; }
+
+.checkout-bar { display: none; }
+@media (max-width: 1320px) {
+  .checkout-main { padding-bottom: 96px; }
+  .checkout-bar { position: fixed; right: 0; bottom: 0; left: 0; z-index: 900; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); border-top: 1px solid rgb(10 34 81 / 10%); background: rgb(255 255 255 / 96%); box-shadow: 0 -12px 30px -18px rgb(6 21 55 / 40%); backdrop-filter: blur(10px); }
+  .checkout-bar small { display: block; color: #64748b; font-size: 12px; font-weight: 600; }
+  .checkout-bar strong { color: var(--color-navy-950); font-size: 19px; font-weight: 900; }
+  .checkout-bar button { min-height: 50px; padding: 0 26px; border: 0; border-radius: 4px; background: var(--pts-gold-gradient); color: var(--color-navy-950); font: inherit; font-weight: 850; cursor: pointer; }
+}
+@media (max-width: 900px) {
+  .checkout-head { grid-template-columns: 1fr; }
+  .checkout-assure { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .checkout-field__ok, .checkout-pay__radio::after { transition: none; }
+  .checkout-spinner, .checkout-dots i { animation: none; }
+}
+</style>

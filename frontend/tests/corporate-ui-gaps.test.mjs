@@ -61,7 +61,8 @@ test('about section navigation sticks below the header and tracks smooth section
 
 test('dealer support CMS icons preserve the PHP gold surface and contain fit', async () => {
   const sections = await read('app/components/dealer/DealerSections.vue')
-  assert.match(sections, /bg-gold-300 p-2[\s\S]*object-contain/)
+  // Owner decision 2026-11-04: gold surfaces use the shared gradient (bg-gold-400 maps to it).
+  assert.match(sections, /bg-gold-400 p-2[\s\S]*object-contain/)
 })
 
 test('dealer hero title keeps the source-measured width so tablet copy does not wrap to an extra line', async () => {
