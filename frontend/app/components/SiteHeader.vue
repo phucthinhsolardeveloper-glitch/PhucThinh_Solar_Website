@@ -304,7 +304,26 @@ function openCatalog(mode: Exclude<MenuMode, null> = 'intent') {
   }
 }
 
+// Sub-category flyouts: a short grace period stops a diagonal move toward an open
+// flyout from switching it to the item the pointer crosses on the way.
+const flyoutKey = ref('')
+let flyoutTimer: ReturnType<typeof setTimeout> | null = null
+function clearFlyoutTimer() { if (flyoutTimer) clearTimeout(flyoutTimer); flyoutTimer = null }
+function hoverFlyout(key: string, hasChildren: boolean) {
+  clearFlyoutTimer()
+  const next = hasChildren ? key : ''
+  if (flyoutKey.value === next) return
+  if (!flyoutKey.value) { flyoutKey.value = next; return }
+  flyoutTimer = setTimeout(() => { flyoutKey.value = next }, 160)
+}
+function leaveFlyout() {
+  clearFlyoutTimer()
+  flyoutTimer = setTimeout(() => { flyoutKey.value = '' }, 240)
+}
+
 function closeCatalog(restoreFocus = true) {
+  clearFlyoutTimer()
+  flyoutKey.value = ''
   cancelCatalogClose()
   const shouldRestore = restoreFocus && catalogOpen.value
   catalogOpen.value = false
@@ -832,7 +851,7 @@ onBeforeUnmount(() => {
           id="ptsCatalogMenu"
           ref="catalogPanel"
           class="relative z-[1] mx-auto my-3 max-h-[calc(100dvh-88px)] w-[calc(100vw-24px)]
-                 overflow-auto rounded-btn border border-[#e5e7eb] bg-white px-[18px] pt-5 text-navy-800
+                 overflow-auto [scrollbar-gutter:stable] rounded-btn border border-[#e5e7eb] bg-white px-[18px] pt-5 text-navy-800
                  shadow-[0_18px_48px_rgba(6,21,55,.22)]
                  min-[1200px]:my-5 min-[1200px]:max-h-[calc(100dvh-64px)] min-[1200px]:w-[min(1220px,calc(100vw-64px))] min-[1200px]:px-8 min-[1200px]:pt-7"
           role="dialog"
@@ -921,13 +940,16 @@ onBeforeUnmount(() => {
                   v-for="item in group.visibleItems"
                   :key="item.href + item.label"
                   class="group/item relative border-b border-[#edf0f3] last:border-b-0 hover:z-[2] focus-within:z-[2]"
+                  :class="{ 'is-flyout-open': flyoutKey === item.href + item.label }"
                   :data-search="item.searchText"
+                  @mouseenter="hoverFlyout(item.href + item.label, item.children.length > 0)"
+                  @mouseleave="leaveFlyout"
                 >
                   <NuxtLink
                     :external="isExternalLink(shellHref(item.href))"
                   class="flex min-h-12 items-center gap-3 px-2 py-1 text-[15px] font-medium leading-6 text-[#10243a]
                            no-underline transition-colors duration-150 hover:bg-[#fff8e9] hover:text-navy-800
-                           focus-visible:bg-[#fff8e9] group-focus-within/item:bg-[#fff8e9]"
+                           focus-visible:bg-[#fff8e9] group-focus-within/item:bg-[#fff8e9] group-[.is-flyout-open]/item:bg-[#fff8e9]"
                     :to="shellHref(item.href)"
                     @click="closeCatalog(false)"
                   >
@@ -949,9 +971,8 @@ onBeforeUnmount(() => {
                   </NuxtLink>
                   <ul
                     v-if="item.children.length"
-                    class="absolute top-0 z-[3] hidden max-h-80 w-[260px] list-none overflow-y-auto rounded-btn
-                           border border-[#e5e7eb] bg-white p-1.5 shadow-[0_12px_30px_rgba(6,21,55,.16)]
-                           group-hover/item:block group-focus-within/item:block left-full
+                    class="catalog-flyout absolute top-0 z-[3] max-h-80 w-[260px] list-none overflow-y-auto rounded-btn
+                           border border-[#e5e7eb] bg-white p-1.5 shadow-[0_12px_30px_rgba(6,21,55,.16)] left-full
                            [.catalog-group-last_&]:right-full [.catalog-group-last_&]:left-auto"
                     :aria-label="`Danh mục con: ${item.label}`"
                   >
@@ -1193,6 +1214,11 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
+/* Flyouts fade in place instead of popping with display toggles. */
+.catalog-flyout { visibility: hidden; opacity: 0; transform: translateX(-6px); pointer-events: none; transition: opacity 0.16s ease, transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s linear 0.2s; }
+.is-flyout-open > .catalog-flyout, li:focus-within > .catalog-flyout { visibility: visible; opacity: 1; transform: none; pointer-events: auto; transition-delay: 0s; }
+@media (prefers-reduced-motion: reduce) { .catalog-flyout { transition: none; transform: none; } }
+
 .pts-catalog-menu-enter-active,
 .pts-catalog-menu-leave-active {
   transition: opacity 180ms cubic-bezier(0.22, 0.61, 0.36, 1);
