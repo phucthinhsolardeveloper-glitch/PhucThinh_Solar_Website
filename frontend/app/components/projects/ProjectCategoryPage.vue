@@ -84,12 +84,15 @@ usePublicSocialMeta({
 <template>
   <div class="text-navy-800">
     <SiteHeader :site="site" />
-    <main class="pts-container pb-12">
-      <SiteBreadcrumb :items="[
+    <div class="border-b border-slate-200/70 bg-slate-50/80">
+      <div class="pts-container">
+        <SiteBreadcrumb :items="[
         { label: 'Dự án đã thực hiện', to: PROJECTS_PUBLIC_PATH },
         { label: projects?.category?.name || 'Danh mục dự án' },
       ]" />
-
+      </div>
+    </div>
+    <main class="pts-container pb-12">
       <section v-if="error || !projects" class="min-h-[40vh] py-10" :role="responseStatus === 404 ? 'status' : 'alert'">
         <h1 class="mb-3 text-3xl font-black tracking-tight">{{ responseStatus === 404 ? 'Không tìm thấy danh mục dự án' : 'Tạm thời không thể tải danh mục dự án' }}</h1>
         <p class="mb-5 text-slate-600">{{ responseStatus === 404 ? 'Danh mục này hiện không tồn tại hoặc đã ẩn.' : 'Nguồn nội dung hiện không khả dụng.' }}</p>

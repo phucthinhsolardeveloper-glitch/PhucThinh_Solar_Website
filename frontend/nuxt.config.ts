@@ -44,6 +44,9 @@ export default defineNuxtConfig({
 
   typescript: { strict: true },
 
+  // Native cross-document-style fade between routes; the header is named so it stays put.
+  // Nuxt skips it under prefers-reduced-motion and in browsers without the API.
+  experimental: { viewTransition: true },
   app: {
     head: {
       htmlAttrs: { lang: 'vi' },

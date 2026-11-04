@@ -38,7 +38,7 @@ const index = computed(() => steps.findIndex((step) => step.id === props.current
 .is-current .commerce-steps__item { color: var(--color-navy-950); }
 .is-current .commerce-steps__dot { border-color: var(--color-navy-950); background: var(--color-navy-950); color: var(--color-gold-300); box-shadow: 0 0 0 6px rgb(10 34 81 / 8%); }
 a.commerce-steps__item:hover { color: var(--color-gold-700); }
-a.commerce-steps__item:focus-visible { outline: 3px solid var(--color-gold-500); outline-offset: 4px; border-radius: 6px; }
+a.commerce-steps__item:focus-visible { outline: 3px solid var(--color-gold-500); outline-offset: 4px; border-radius: var(--radius-card); }
 @keyframes steps-grow { from { transform: scaleX(0); } }
 @media (max-width: 520px) { .commerce-steps__item { font-size: 12.5px; } }
 @media (prefers-reduced-motion: reduce) { .commerce-steps ol::after { animation: none; } }

@@ -46,7 +46,7 @@ onBeforeUnmount(() => observer?.disconnect())
 
     <template v-for="chapter in chapters" :key="chapter.id">
       <!-- Need -> recommended solution, read as a pairing table. -->
-      <section v-if="chapter.kind === 'match'" class="chapter chapter-match" :aria-labelledby="chapter.id">
+      <section v-if="chapter.kind === 'match'" class="chapter chapter-match pts-grid-paper" :aria-labelledby="chapter.id">
         <div class="pts-container match-grid">
           <header class="match-head">
             <h2 :id="chapter.id">{{ chapter.title }}</h2>
@@ -97,7 +97,7 @@ onBeforeUnmount(() => observer?.disconnect())
       </section>
 
       <!-- Survey factors: the checklist next to the one sentence that explains why. -->
-      <section v-else-if="chapter.kind === 'checklist'" class="chapter chapter-check" :aria-labelledby="chapter.id">
+      <section v-else-if="chapter.kind === 'checklist'" class="chapter chapter-check pts-grid-paper" :aria-labelledby="chapter.id">
         <div class="pts-container check-grid">
           <header class="check-head">
             <h2 :id="chapter.id">{{ chapter.title }}</h2>
@@ -113,7 +113,7 @@ onBeforeUnmount(() => observer?.disconnect())
       </section>
 
       <!-- Working process as a connected route (from numbered h3s or an ordered list). -->
-      <section v-else-if="chapter.kind === 'process'" class="chapter chapter-process" :aria-labelledby="chapter.id">
+      <section v-else-if="chapter.kind === 'process'" class="chapter chapter-process pts-grid-paper" :aria-labelledby="chapter.id">
         <div class="pts-container">
           <header class="process-head">
             <h2 :id="chapter.id">{{ chapter.title }}</h2>
@@ -135,7 +135,7 @@ onBeforeUnmount(() => observer?.disconnect())
       </section>
 
       <!-- A few alternatives side by side, each with its "suits when" list. -->
-      <section v-else-if="chapter.kind === 'options'" class="chapter chapter-options" :aria-labelledby="chapter.id">
+      <section v-else-if="chapter.kind === 'options'" class="chapter chapter-options pts-grid-paper" :aria-labelledby="chapter.id">
         <div class="pts-container">
           <header class="pillars-head">
             <h2 :id="chapter.id">{{ chapter.title }}</h2>
@@ -159,7 +159,7 @@ onBeforeUnmount(() => observer?.disconnect())
         </div>
       </section>
 
-      <section v-else-if="chapter.kind === 'pillars'" class="chapter chapter-pillars" :aria-labelledby="chapter.id">
+      <section v-else-if="chapter.kind === 'pillars'" class="chapter chapter-pillars pts-grid-paper" :aria-labelledby="chapter.id">
         <div class="pts-container">
           <header class="pillars-head">
             <h2 :id="chapter.id">{{ chapter.title }}</h2>
@@ -253,11 +253,11 @@ onBeforeUnmount(() => observer?.disconnect())
 .eco-head { position: relative; max-width: 760px; }
 .chapter-eco .chapter-lead :deep(p) { color: #b9c6d6; }
 .eco-grid { position: relative; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 14px; margin: clamp(36px, 4vw, 56px) 0 0; padding: 0; list-style: none; }
-.eco-card { grid-column: span 2; display: flex; flex-direction: column; gap: 12px; padding: clamp(22px, 2vw, 32px); border: 1px solid rgb(255 255 255 / 10%); border-radius: 6px; background: linear-gradient(160deg, rgb(255 255 255 / 7%), rgb(255 255 255 / 2%)); transition: transform 0.45s var(--ease), border-color 0.35s ease, background-color 0.35s ease; }
+.eco-card { grid-column: span 2; display: flex; flex-direction: column; gap: 12px; padding: clamp(22px, 2vw, 32px); border: 1px solid rgb(255 255 255 / 10%); border-radius: var(--radius-card); background: linear-gradient(160deg, rgb(255 255 255 / 7%), rgb(255 255 255 / 2%)); transition: transform 0.45s var(--ease), border-color 0.35s ease, background-color 0.35s ease; }
 .eco-grid[data-count="5"] .eco-card:nth-child(-n + 2) { grid-column: span 3; }
 .eco-grid[data-count="4"] .eco-card { grid-column: span 3; }
 .eco-card:hover { transform: translateY(-6px); border-color: rgb(228 168 73 / 55%); }
-.eco-icon { display: grid; width: 56px; height: 56px; place-items: center; border-radius: 14px; background: rgb(228 168 73 / 16%); color: var(--color-gold-300); }
+.eco-icon { display: grid; width: 56px; height: 56px; place-items: center; border-radius: var(--radius-card); background: rgb(228 168 73 / 16%); color: var(--color-gold-300); }
 .eco-card h3 { font-size: clamp(20px, 1.6vw, 25px); font-weight: 800; line-height: 1.25; }
 .eco-text :deep(p) { margin: 0; color: #c3cfdf; font-size: 16px; line-height: 1.65; }
 .eco-fit { margin-top: auto; padding-top: 8px; }
@@ -269,7 +269,7 @@ onBeforeUnmount(() => observer?.disconnect())
 .check-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(32px, 6vw, 96px); align-items: start; }
 .check-quote { position: relative; margin: clamp(28px, 3vw, 44px) 0 0; padding: 0 0 0 28px; border-left: 4px solid var(--color-gold-500); color: var(--color-navy-950); font-size: clamp(22px, 2vw, 30px); font-weight: 800; line-height: 1.35; letter-spacing: -0.02em; }
 .check-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 0; padding: 0; list-style: none; }
-.check-list li { display: flex; align-items: flex-start; gap: 12px; padding: 16px 18px; border-radius: 6px; background: #fff; box-shadow: 0 1px 0 rgb(10 34 81 / 6%), 0 10px 24px -20px rgb(10 34 81 / 40%); color: var(--color-navy-900); font-size: 16px; font-weight: 650; line-height: 1.45; transition: transform 0.35s var(--ease), box-shadow 0.35s ease; }
+.check-list li { display: flex; align-items: flex-start; gap: 12px; padding: 16px 18px; border-radius: var(--radius-card); background: #fff; box-shadow: 0 1px 0 rgb(10 34 81 / 6%), 0 10px 24px -20px rgb(10 34 81 / 40%); color: var(--color-navy-900); font-size: 16px; font-weight: 650; line-height: 1.45; transition: transform 0.35s var(--ease), box-shadow 0.35s ease; }
 .check-list li:hover { transform: translateY(-2px); box-shadow: 0 1px 0 rgb(10 34 81 / 6%), 0 18px 30px -20px rgb(10 34 81 / 45%); }
 .check-mark { display: grid; width: 24px; height: 24px; flex: none; margin-top: -1px; place-items: center; border-radius: 50%; background: var(--color-navy-900); color: var(--color-gold-300); }
 
@@ -302,9 +302,9 @@ onBeforeUnmount(() => observer?.disconnect())
 .options-grid { display: grid; grid-template-columns: repeat(var(--cols, 3), minmax(0, 1fr)); gap: 16px; margin: clamp(36px, 4vw, 56px) 0 0; padding: 0; list-style: none; }
 .options-grid[data-count="2"] { --cols: 2; }
 .options-grid[data-count="1"] { --cols: 1; }
-.option-card { display: flex; flex-direction: column; gap: 14px; padding: clamp(24px, 2.4vw, 36px); border: 1px solid rgb(10 34 81 / 10%); border-radius: 8px; background: #fff; box-shadow: 0 24px 48px -36px rgb(10 34 81 / 45%); transition: transform 0.45s var(--ease), border-color 0.35s ease; }
-.option-card:hover { transform: translateY(-6px); border-color: rgb(201 150 46 / 60%); }
-.option-icon { display: grid; width: 56px; height: 56px; place-items: center; border-radius: 14px; background: var(--color-navy-950); color: var(--color-gold-300); }
+.option-card { display: flex; flex-direction: column; gap: 14px; padding: clamp(24px, 2.4vw, 36px); border: 1px solid rgb(10 34 81 / 10%); border-radius: var(--radius-card); background: #fff; transition: transform 0.45s var(--ease), border-color 0.35s ease; }
+.option-card:hover { transform: translateY(-6px); border-color: rgb(201 150 46 / 60%); box-shadow: var(--pts-shadow-lift); }
+.option-icon { display: grid; width: 56px; height: 56px; place-items: center; border-radius: var(--radius-card); background: var(--color-navy-950); color: var(--color-gold-300); }
 .option-card h3 { font-size: clamp(20px, 1.6vw, 24px); font-weight: 850; line-height: 1.25; }
 .option-text :deep(p) { margin: 0; color: #52627a; font-size: 16px; line-height: 1.65; }
 .option-fit { margin-top: auto; padding-top: 16px; border-top: 1px dashed rgb(10 34 81 / 18%); }
@@ -322,7 +322,7 @@ onBeforeUnmount(() => observer?.disconnect())
 .story-rich :deep(strong) { color: var(--color-navy-950); }
 .story-rich :deep(table) { width: 100%; margin-top: 16px; border-collapse: collapse; font-size: 15px; }
 .story-rich :deep(th), .story-rich :deep(td) { padding: 10px 12px; border: 1px solid rgb(10 34 81 / 12%); text-align: left; }
-.story-rich :deep(img) { max-width: 100%; height: auto; border-radius: 6px; }
+.story-rich :deep(img) { max-width: 100%; height: auto; border-radius: var(--radius-card); }
 .process-label { margin: 8px 0 0; color: var(--color-navy-950); font-size: 16.5px; font-weight: 750; line-height: 1.45; }
 .process-route[data-many] { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); row-gap: 36px; }
 .process-route[data-many]::before { display: none; }

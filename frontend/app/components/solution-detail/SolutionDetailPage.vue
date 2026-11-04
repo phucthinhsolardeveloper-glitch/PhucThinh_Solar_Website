@@ -209,7 +209,7 @@ onBeforeUnmount(() => {
 .solution-hero h1 { max-width: 16ch; margin: 0; color: #fff; font-size: clamp(36px, 4vw, 66px); font-weight: 850; line-height: 1.1; letter-spacing: -0.04em; text-wrap: balance; }
 .solution-hero__summary { display: -webkit-box; max-width: 62ch; margin: 22px 0 0; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 4; color: #d3dcea; font-size: clamp(17px, 1.25vw, 19px); line-height: 1.68; }
 .solution-hero__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 28px; margin-top: 32px; }
-.solution-hero__primary { display: inline-flex; min-height: 58px; align-items: center; gap: 16px; padding: 0 10px 0 24px; border-radius: 6px; background: var(--pts-gold-gradient); color: var(--color-navy-950); font-size: 16.5px; font-weight: 850; text-decoration: none; transition: filter 0.25s ease; }
+.solution-hero__primary { display: inline-flex; min-height: 58px; align-items: center; gap: 16px; padding: 0 10px 0 24px; border-radius: var(--radius-card); background: var(--pts-gold-gradient); color: var(--color-navy-950); font-size: 16.5px; font-weight: 850; text-decoration: none; transition: filter 0.25s ease; }
 .solution-hero__primary > span { display: grid; width: 40px; height: 40px; place-items: center; border-radius: 4px; background: var(--color-navy-950); color: var(--color-gold-300); transition: transform 0.35s var(--ease); }
 .solution-hero__primary:hover { filter: brightness(1.06); }
 .solution-hero__primary:hover > span { transform: translateX(4px); }

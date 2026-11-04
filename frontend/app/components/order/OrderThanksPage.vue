@@ -54,8 +54,10 @@ watch([payload, token], trackOrderConversion)
 <template>
   <div class="min-h-screen bg-white text-navy-800">
     <SiteHeader :site="site" />
-    <div class="pts-container">
-      <SiteBreadcrumb :items="[{ label: 'Đặt hàng thành công' }]" />
+    <div class="border-b border-slate-200/70 bg-slate-50/80">
+      <div class="pts-container">
+        <SiteBreadcrumb :items="[{ label: 'Đặt hàng thành công' }]" />
+      </div>
     </div>
     <main class="pts-container py-[60px] text-center">
       <div v-if="pending" class="text-slate-500" role="status">Đang xác nhận đơn hàng…</div>

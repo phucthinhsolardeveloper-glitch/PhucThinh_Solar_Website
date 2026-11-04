@@ -208,12 +208,22 @@
      nó, nên đặt một lần ở đây là cả UButton/UModal/UInput theo cùng hệ. */
   --radius-chip: 3px;
   --radius-btn: 4px;
+  /* Cards, panels, media frames: the ceiling of the flat system. */
+  --radius-card: 5px;
 }
 
 :root {
   /* Nuxt UI v4 suy ra bán kính của mọi component từ biến này. */
   --ui-radius: 4px;
   --pts-gold-gradient: linear-gradient(110deg, var(--color-gold-400) 0%, var(--color-gold-500) 100%);
+  /* Elevation: surfaces are flat by default; only floating layers and hover lifts cast shadow. */
+  --pts-shadow-float: 0 24px 48px -28px rgb(6 21 55 / 45%), 0 2px 8px -4px rgb(6 21 55 / 12%);
+  --pts-shadow-lift: 0 18px 36px -26px rgb(6 21 55 / 42%);
+  /* Motion: one easing and three durations for every transition on the site. */
+  --pts-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --pts-dur-fast: 0.2s;
+  --pts-dur: 0.35s;
+  --pts-dur-slow: 0.6s;
 }
 
 /* Match the approved shared page width on large displays (1600px+). */
@@ -306,6 +316,23 @@
 }
 
 @layer components {
+  /* Precision paper: 32px engineering grid, edge-faded, for light feature sections only
+     (never behind dense text or forms). Same spec as GridSurface, usable as a class. */
+  .pts-grid-paper { position: relative; isolation: isolate; }
+  .pts-grid-paper::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image:
+      linear-gradient(90deg, rgba(10, 34, 81, 0.055) 1px, transparent 1px),
+      linear-gradient(0deg, rgba(10, 34, 81, 0.035) 1px, transparent 1px);
+    background-size: 32px 32px;
+    mask-image: radial-gradient(ellipse 85% 80% at 50% 38%, black 42%, transparent 92%);
+    -webkit-mask-image: radial-gradient(ellipse 85% 80% at 50% 38%, black 42%, transparent 92%);
+  }
+
   .bg-primary,
   .bg-gold-400,
   .bg-gold-500,
@@ -678,4 +705,16 @@
       transition-duration: 0.01ms;
     }
   }
+}
+
+/* Route changes: content cross-fades with a slight rise; the sticky header and floating
+   contact keep their own layers so they never flash between pages. */
+.pts-site-header { view-transition-name: site-header; }
+::view-transition-old(root) { animation: pts-vt-out 160ms ease both; }
+::view-transition-new(root) { animation: pts-vt-in 260ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+::view-transition-group(site-header) { animation: none; }
+@keyframes pts-vt-out { to { opacity: 0; } }
+@keyframes pts-vt-in { from { opacity: 0; transform: translateY(8px); } }
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
 }

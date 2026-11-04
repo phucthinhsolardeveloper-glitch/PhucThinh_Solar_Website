@@ -97,8 +97,12 @@ usePublicSocialMeta({
 <template>
   <div class="min-h-screen bg-white text-navy-800">
     <SiteHeader :site="site" />
+    <div class="border-b border-slate-200/70 bg-slate-50/80">
+      <div class="pts-container">
+        <SiteBreadcrumb :items="[{ label: 'Thư viện ảnh', to: links.generic('/thu-vien-anh/') }, ...(gallery ? [{ label: gallery.album.title }] : [])]" />
+      </div>
+    </div>
     <main class="pts-container py-10 nav:py-14">
-      <SiteBreadcrumb :items="[{ label: 'Thư viện ảnh', to: links.generic('/thu-vien-anh/') }, ...(gallery ? [{ label: gallery.album.title }] : [])]" />
       <div v-if="pending" class="py-16 text-slate-500" role="status">Đang tải album…</div>
       <div v-else-if="error || !gallery" class="rounded-btn border border-amber-200 bg-amber-50 p-8 text-amber-900">
         <h1 class="mb-2 text-2xl font-black">{{ isBarePublicRoute && responseStatus === 404 ? 'Không tìm thấy album' : 'Không thể tải album' }}</h1>

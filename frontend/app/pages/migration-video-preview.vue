@@ -96,8 +96,12 @@ usePublicSocialMeta({
 <template>
   <div class="min-h-screen bg-white text-navy-800">
     <SiteHeader :site="site" />
+    <div class="border-b border-slate-200/70 bg-slate-50/80">
+      <div class="pts-container">
+        <SiteBreadcrumb :items="[{ label: 'Video' }]" />
+      </div>
+    </div>
     <main class="pts-container py-10 nav:py-14" :aria-busy="pending">
-      <SiteBreadcrumb :items="[{ label: 'Video' }]" />
       <header class="mb-8">
         <h1 class="text-[clamp(32px,5vw,52px)] font-black tracking-tight">{{ payload?.title || 'Video' }}</h1>
       </header>

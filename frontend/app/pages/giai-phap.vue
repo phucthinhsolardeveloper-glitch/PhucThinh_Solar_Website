@@ -65,8 +65,10 @@ const recommendedSolutions = ref<string[]>([])
   <div v-else class="solutions-energy-page text-navy-800">
     <SiteHeader :site="site" />
 
-    <div class="pts-container">
-      <SiteBreadcrumb :items="[{ label: 'Giải pháp' }]" />
+    <div class="border-b border-slate-200/70 bg-slate-50/80">
+      <div class="pts-container">
+        <SiteBreadcrumb :items="[{ label: 'Giải pháp' }]" />
+      </div>
     </div>
 
     <main class="pts-container solution-main pb-6 min-[561px]:px-5 min-[821px]:px-6 min-[1321px]:px-[34px]">

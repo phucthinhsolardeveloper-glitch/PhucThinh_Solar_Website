@@ -40,8 +40,10 @@ usePublicSocialMeta({
     <SiteHeader :site="site" />
 
     <main>
-      <div class="pts-container">
-        <SiteBreadcrumb :items="[{ label: 'Liên hệ' }]" />
+      <div class="border-b border-slate-200/70 bg-slate-50/80">
+        <div class="pts-container">
+          <SiteBreadcrumb :items="[{ label: 'Liên hệ' }]" />
+        </div>
       </div>
 
       <div class="pts-container">

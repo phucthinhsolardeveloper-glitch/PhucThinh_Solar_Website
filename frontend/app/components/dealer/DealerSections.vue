@@ -66,7 +66,7 @@ const current = computed(() => props.dealer.testimonials[active.value])
     </div>
   </section>
 
-  <section v-if="dealer.testimonials.length && current" class="dealer-voices" aria-labelledby="dealer-testimonials-heading" @mouseenter="paused = true" @mouseleave="paused = false" @focusin="paused = true" @focusout="paused = false">
+  <section v-if="dealer.testimonials.length && current" class="dealer-voices pts-grid-paper" aria-labelledby="dealer-testimonials-heading" @mouseenter="paused = true" @mouseleave="paused = false" @focusin="paused = true" @focusout="paused = false">
     <div class="pts-container">
       <h2 id="dealer-testimonials-heading">{{ dealer.labels.testimonials }}</h2>
       <div class="dealer-voices__stage">
@@ -108,7 +108,7 @@ const current = computed(() => props.dealer.testimonials[active.value])
 .dealer-support__cta:hover { filter: brightness(1.06); }
 .dealer-support__cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
 .dealer-support__cards[data-count="1"], .dealer-support__cards[data-count="3"] .dealer-benefit:last-child { grid-column: 1 / -1; }
-.dealer-benefit { display: flex; flex-direction: column; gap: 14px; padding: clamp(24px, 2.4vw, 36px); border: 1px solid rgb(255 255 255 / 10%); border-radius: 8px; background: linear-gradient(160deg, rgb(255 255 255 / 8%), rgb(255 255 255 / 2%)); transition: transform 0.45s var(--ease), border-color 0.35s ease; }
+.dealer-benefit { display: flex; flex-direction: column; gap: 14px; padding: clamp(24px, 2.4vw, 36px); border: 1px solid rgb(255 255 255 / 10%); border-radius: var(--radius-card); background: linear-gradient(160deg, rgb(255 255 255 / 8%), rgb(255 255 255 / 2%)); transition: transform 0.45s var(--ease), border-color 0.35s ease; }
 .dealer-benefit:hover { transform: translateY(-6px); border-color: rgb(228 168 73 / 55%); }
 .dealer-benefit h3 { margin: 0; color: #fff; font-size: clamp(20px, 1.6vw, 24px); font-weight: 800; }
 .dealer-benefit__text { margin: 0; color: #c3cfdf; font-size: 15.5px; line-height: 1.7; }
@@ -124,7 +124,7 @@ const current = computed(() => props.dealer.testimonials[active.value])
 .dealer-voices__quote figcaption strong { color: var(--color-navy-950); font-size: 18px; font-weight: 850; }
 .dealer-voices__quote figcaption span { color: #52627a; font-size: 15px; font-weight: 600; }
 .dealer-voices__people { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
-.dealer-voices__person { position: relative; display: flex; width: 100%; min-height: 80px; align-items: center; gap: 14px; overflow: hidden; padding: 12px 16px; border: 1px solid rgb(10 34 81 / 10%); border-radius: 8px; background: #fff; color: var(--color-navy-900); text-align: left; cursor: pointer; transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.35s var(--ease); }
+.dealer-voices__person { position: relative; display: flex; width: 100%; min-height: 80px; align-items: center; gap: 14px; overflow: hidden; padding: 12px 16px; border: 1px solid rgb(10 34 81 / 10%); border-radius: var(--radius-card); background: #fff; color: var(--color-navy-900); text-align: left; cursor: pointer; transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.35s var(--ease); }
 .dealer-voices__person strong { display: block; font-size: 15.5px; font-weight: 800; }
 .dealer-voices__person small { display: block; color: #64748b; font-size: 13.5px; }
 .dealer-voices__person:hover { transform: translateX(-4px); }

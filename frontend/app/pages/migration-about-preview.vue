@@ -13,7 +13,7 @@ useSeoMeta({ title: 'Giới thiệu — internal preview' })
 
 <template>
   <main>
-    <div class="border-b border-slate-200/80 bg-slate-50/80">
+    <div class="border-b border-slate-200/70 bg-slate-50/80">
       <div class="pts-container">
         <SiteBreadcrumb :items="[{ label: 'Giới thiệu' }]" />
       </div>

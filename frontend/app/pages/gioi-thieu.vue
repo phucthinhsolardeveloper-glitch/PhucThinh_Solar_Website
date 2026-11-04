@@ -44,7 +44,7 @@ usePublicSocialMeta({
       <div class="mx-auto w-full max-w-[1766px] px-4"><p class="py-2.5 text-sm leading-relaxed">{{ siteErrorMessage }}</p></div>
     </div>
     <main class="min-w-0 flex-1">
-      <div class="border-b border-slate-200/80 bg-slate-50/80">
+      <div class="border-b border-slate-200/70 bg-slate-50/80">
         <div class="pts-container">
           <SiteBreadcrumb :items="[{ label: 'Giới thiệu' }]" />
         </div>
