@@ -56,6 +56,25 @@ const quickLinks = computed(() => {
 })
 const links = useMigrationLinks()
 
+// CMS stats count up once on load; SSR and reduced motion keep the final value.
+const statShown = ref<string[]>([])
+onMounted(() => {
+  const stats = dealer.value?.stats ?? []
+  const targets = stats.map((stat) => Number(stat.value.replace(/\D/g, '')))
+  if (!targets.length || targets.some((n) => !Number.isFinite(n) || n <= 0)) return
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+  const start = performance.now()
+  const duration = 1400
+  const step = (now: number) => {
+    const t = Math.min(1, (now - start) / duration)
+    const eased = 1 - Math.pow(1 - t, 3)
+    statShown.value = targets.map((n) => new Intl.NumberFormat('vi-VN').format(Math.round(n * eased)))
+    if (t < 1) requestAnimationFrame(step)
+    else statShown.value = []
+  }
+  requestAnimationFrame(step)
+})
+
 const pageTitle = computed(() => props.preview
   ? 'Đại lý — internal preview'
   : publicSeoTitle(dealer.value?.seo?.title || dealer.value?.title, 'Đại lý'))
@@ -93,18 +112,28 @@ usePublicSocialMeta({
       </div>
 
       <template v-else>
-        <!-- Hero full-bleed with CMS media and the source page's legibility overlay. -->
-        <section class="relative flex min-h-[210px] items-center overflow-hidden bg-[linear-gradient(115deg,#061735,#123c72)] min-[768px]:min-h-[230px] min-[992px]:min-h-[270px] min-[1800px]:min-h-[300px]">
-          <img v-if="dealer.hero" :src="dealer.hero.image" :alt="dealer.hero.title" class="absolute inset-0 h-full w-full object-cover">
-          <div
-            v-if="dealer.hero"
-            class="absolute inset-0 bg-[linear-gradient(90deg,rgba(4,17,46,0.86)_0%,rgba(4,17,46,0.68)_38%,rgba(4,17,46,0.18)_72%,rgba(4,17,46,0.02)_100%)] max-[767px]:bg-[linear-gradient(90deg,rgba(4,17,46,0.94),rgba(4,17,46,0.62))]"
-            aria-hidden="true"
-          />
-          <div class="relative z-[1] pts-container">
-            <h1 class="max-w-[680px] py-8 text-[clamp(34px,3.4vw,52px)] font-black leading-[1.13] text-white min-[1800px]:max-w-[760px] min-[1800px]:text-[48px]">
-              {{ dealer.title }}
-            </h1>
+        <!-- Hero full-bleed with CMS media; the CMS stats ride along its lower edge. -->
+        <section class="dealer-hero" aria-labelledby="dealer-title">
+          <img v-if="dealer.hero" :src="dealer.hero.image" :alt="dealer.hero.title" class="dealer-hero__image" fetchpriority="high">
+          <span class="dealer-hero__shade" aria-hidden="true" />
+          <div class="pts-container dealer-hero__inner">
+            <h1 id="dealer-title" class="max-w-[680px] min-[1800px]:max-w-[760px]">{{ dealer.title }}</h1>
+            <p v-if="dealer.hero?.title" class="dealer-hero__lede">{{ dealer.hero.title }}</p>
+            <div class="dealer-hero__actions">
+              <a class="dealer-hero__primary" href="#dang-ky-dai-ly">{{ dealer.form.title }} <span aria-hidden="true"><UIcon name="i-lucide-arrow-down" class="size-5" /></span></a>
+              <a v-if="dealer.hotline" class="dealer-hero__call" :href="`tel:${dealer.hotline.tel}`">
+                <UIcon name="i-lucide-phone-call" class="size-5 text-gold-300" aria-hidden="true" />
+                <span><small>Hotline đại lý</small>{{ dealer.hotline.text }}</span>
+              </a>
+            </div>
+          </div>
+          <div v-if="dealer.stats.length" class="dealer-hero__stats">
+            <dl class="pts-container" :aria-label="dealer.labels.stats">
+              <div v-for="(stat, index) in dealer.stats" :key="stat.label">
+                <dt>{{ stat.label }}</dt>
+                <dd>{{ statShown[index] ?? stat.value }}+</dd>
+              </div>
+            </dl>
           </div>
         </section>
 
@@ -151,6 +180,39 @@ usePublicSocialMeta({
 </template>
 
 <style scoped>
+.dealer-hero { --ease: cubic-bezier(0.22, 1, 0.36, 1); position: relative; isolation: isolate; display: flex; min-height: clamp(560px, 76vh, 760px); flex-direction: column; justify-content: flex-end; overflow: hidden; background: linear-gradient(115deg, #061735, #123c72); color: #fff; }
+.dealer-hero__image { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; animation: dealer-in 1.2s var(--ease) both; }
+.dealer-hero__shade { position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, rgb(4 17 46 / 92%) 0%, rgb(4 17 46 / 72%) 42%, rgb(4 17 46 / 18%) 100%), linear-gradient(0deg, rgb(4 17 46 / 90%) 0%, transparent 40%); }
+.dealer-hero__inner { width: 100%; padding-block: 48px 40px; }
+.dealer-hero__lede { max-width: 56ch; margin: 18px 0 0; color: #d3dcea; font-size: clamp(17px, 1.3vw, 20px); line-height: 1.6; }
+.dealer-hero h1 { margin: 0; color: #fff; font-size: clamp(36px, 4.2vw, 68px); font-weight: 850; line-height: 1.08; letter-spacing: -0.035em; text-wrap: balance; }
+.dealer-hero__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 28px; margin-top: 32px; }
+.dealer-hero__primary { display: inline-flex; min-height: 58px; align-items: center; gap: 16px; padding: 0 10px 0 24px; border-radius: 6px; background: var(--color-gold-400); color: var(--color-navy-950); font-size: 16.5px; font-weight: 850; text-decoration: none; transition: background-color 0.25s ease; }
+.dealer-hero__primary > span { display: grid; width: 40px; height: 40px; place-items: center; border-radius: 4px; background: var(--color-navy-950); color: var(--color-gold-300); transition: transform 0.35s var(--ease); }
+.dealer-hero__primary:hover { background: var(--color-gold-300); }
+.dealer-hero__primary:hover > span { transform: translateY(3px); }
+.dealer-hero__call { display: inline-flex; min-height: 52px; align-items: center; gap: 12px; color: #fff; font-size: 20px; font-weight: 850; text-decoration: none; font-variant-numeric: tabular-nums; }
+.dealer-hero__call small { display: block; color: #9fb0c8; font-size: 13px; font-weight: 600; }
+.dealer-hero a:focus-visible { outline: 3px solid var(--color-gold-300); outline-offset: 3px; }
+.dealer-hero__stats { border-top: 1px solid rgb(255 255 255 / 14%); background: rgb(4 17 46 / 55%); backdrop-filter: blur(10px); }
+.dealer-hero__stats dl { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 0; }
+.dealer-hero__stats dl > div { display: flex; flex-direction: column-reverse; gap: 4px; padding: clamp(18px, 2.2vw, 28px) clamp(12px, 2vw, 32px); }
+.dealer-hero__stats dl > div:first-child { padding-left: 0; }
+.dealer-hero__stats dl > div + div { border-left: 1px solid rgb(255 255 255 / 12%); }
+.dealer-hero__stats dt { color: #c3cfdf; font-size: clamp(14px, 1.05vw, 16px); font-weight: 600; }
+.dealer-hero__stats dd { margin: 0; background-image: var(--pts-gold-gradient); background-clip: text; color: transparent; -webkit-text-fill-color: transparent; font-size: clamp(34px, 3.6vw, 58px); font-weight: 900; font-variant-numeric: tabular-nums; letter-spacing: -0.04em; line-height: 1; }
+@keyframes dealer-in { from { opacity: 0; transform: scale(1.08); } }
+@media (max-width: 640px) {
+  .dealer-hero { min-height: 620px; }
+  .dealer-hero__actions { align-items: stretch; flex-direction: column; }
+  .dealer-hero__primary { justify-content: space-between; }
+  .dealer-hero__stats dl > div { padding-inline: 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dealer-hero__image { animation: none; }
+  .dealer-hero__primary > span { transition: none; }
+}
+
 .dealer-intro-rich :deep(p:first-child) {
   font-size: clamp(1.08rem, 1.3vw, 1.22rem);
   line-height: 1.65;
