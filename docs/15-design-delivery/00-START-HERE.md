@@ -9,6 +9,9 @@ Stop producing branches, reports and beautiful descriptions without a finished s
 2. PTS Visual Language (02): brand-specific only for Phuc Thinh Solar public website.
 The same delivery rules work for apps, backend APIs, documentation and other projects; do NOT copy PTS navy/gold into unrelated apps.
 
+## Current design language (2026-11)
+For PTS public UI, [12-PTS-DESIGN-LANGUAGE-2026-11.md](12-PTS-DESIGN-LANGUAGE-2026-11.md) is the active owner-approved language. It supersedes the surface rules (radius, glass, shadow) of 02-PTS-VISUAL-LANGUAGE.md; data/SEO/accessibility rules there still apply.
+
 ## Read order for every AI task
 A. Project-specific AGENTS.md, existing ADR and business/data/security contracts
 B. This index and 01-UNIVERSAL-DELIVERY.md
