@@ -265,7 +265,7 @@ function discountPercent(product: PublicCatalogProduct): number | null {
     </div>
   </div>
 
-  <div v-else class="flex flex-col items-start justify-between gap-4 rounded-[4px] border-l-[4px] border-gold-500 bg-slate-50 p-6 sm:flex-row sm:items-center" role="status">
+  <div v-else class="flex flex-col items-start justify-between gap-4 pts-note p-6 sm:flex-row sm:items-center" role="status">
     <div>
       <p class="m-0 font-bold text-navy-900">Chưa có sản phẩm trong danh mục này.</p>
       <p class="m-0 mt-1 text-sm text-slate-600">Bạn có thể thử bỏ bớt tiêu chí lọc hoặc liên hệ kỹ thuật viên để được giới thiệu mã tương đương.</p>

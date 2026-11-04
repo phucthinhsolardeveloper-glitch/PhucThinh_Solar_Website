@@ -35,7 +35,7 @@ function onChange(event: Event) {
 
 <template>
   <div :class="inlineLabel ? 'flex items-center gap-3' : 'grid gap-1.5'">
-    <span v-if="label" :class="inlineLabel ? 'text-xs font-bold uppercase tracking-wide text-slate-500' : 'text-sm font-bold text-navy-800'">
+    <span v-if="label" :class="inlineLabel ? 'text-[13px] font-bold text-slate-500' : 'text-sm font-bold text-navy-800'">
       {{ inlineLabel ? `${label}:` : label }}
     </span>
     <div role="group" :aria-label="label" class="inline-flex w-fit items-stretch overflow-hidden rounded-chip border border-gray-300">

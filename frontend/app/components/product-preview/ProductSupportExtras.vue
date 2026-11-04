@@ -70,7 +70,7 @@ function documentHref(document: PublicProductDocument): string {
             />
           </div>
         </template>
-        <div v-else class="flex flex-wrap items-center justify-between gap-3 rounded-[4px] border-l-[3px] border-gold-500 bg-slate-50 px-4 py-3.5 text-slate-600" aria-label="Video đang được cập nhật">
+        <div v-else class="flex flex-wrap items-center justify-between gap-3 pts-note px-4 py-3.5 text-slate-600" aria-label="Video đang được cập nhật">
           <div class="flex items-center gap-3">
             <span class="inline-grid size-9 shrink-0 place-items-center rounded-full bg-white text-xs text-gold-700 shadow-xs" aria-hidden="true">▶</span>
             <div>

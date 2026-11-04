@@ -741,7 +741,7 @@ onBeforeUnmount(() => {
               <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.79 19.79 0 0 1 11.19 18a19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.09 3.18 2 2 0 0 1 4.08 1h3a2 2 0 0 1 2 1.72c.12.96.36 1.9.7 2.8a2 2 0 0 1-.45 2.11L8.06 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.84.58 2.8.7A2 2 0 0 1 22 16.92Z" /></svg>
             </span>
             <span class="hidden min-[1681px]:flex min-[1681px]:flex-col min-[1681px]:gap-0.5 min-[1681px]:whitespace-nowrap text-left">
-              <small class="text-[11px] leading-none text-hdr-muted font-semibold uppercase tracking-wider">Tư vấn</small>
+              <small class="text-[12px] leading-none text-hdr-muted font-semibold">Tư vấn</small>
               <b class="text-sm min-[1681px]:text-[15px] leading-tight text-hdr-ink font-black">{{ hotline }}</b>
             </span>
           </a>
@@ -1065,7 +1065,7 @@ onBeforeUnmount(() => {
         aria-labelledby="ptsMobileTitle"
       >
         <div class="mb-[18px] flex items-center justify-between gap-4">
-          <h2 id="ptsMobileTitle" class="m-0 text-[17px] font-extrabold uppercase tracking-wide text-gold-700">Phúc Thịnh Solar</h2>
+          <h2 id="ptsMobileTitle" class="m-0 text-[17px] font-extrabold text-gold-700">Phúc Thịnh Solar</h2>
           <button
             class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-chip text-hdr-ink transition-colors hover:bg-hdr-surface hover:text-gold-700"
             type="button"

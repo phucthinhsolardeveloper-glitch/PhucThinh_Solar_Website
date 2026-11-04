@@ -318,6 +318,13 @@
 @layer components {
   /* Precision paper: 32px engineering grid, edge-faded, for light feature sections only
      (never behind dense text or forms). Same spec as GridSurface, usable as a class. */
+  /* Callouts: one light and one navy note surface for the whole site
+     (replaces the legacy gold left-rule boxes). */
+  .pts-note { border: 1px solid rgb(10 34 81 / 10%); border-radius: var(--radius-card); background: #fff; }
+  .pts-note-dark { border-radius: var(--radius-card); background: radial-gradient(120% 140% at 100% 0%, rgb(228 168 73 / 16%), transparent 55%), var(--color-navy-950); color: #fff; }
+  a.pts-note { transition: border-color var(--pts-dur-fast) ease, box-shadow var(--pts-dur) var(--pts-ease); }
+  a.pts-note:hover { border-color: rgb(201 150 46 / 55%); box-shadow: var(--pts-shadow-lift); }
+
   .pts-grid-paper { position: relative; isolation: isolate; }
   .pts-grid-paper::before {
     content: "";

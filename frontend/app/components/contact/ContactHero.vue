@@ -19,7 +19,7 @@ const phoneHref = computed(() => publicPhoneHref(props.contact.contact.hotline))
       </p>
 
       <div v-if="contact.contact.company || contact.contact.hotline || contact.contact.email || contact.contact.address || contact.contact.workingHours" class="mt-7 border-t border-slate-200 pt-6">
-        <p v-if="contact.contact.company" class="m-0 text-sm font-extrabold uppercase tracking-wide text-navy-900">{{ contact.contact.company }}</p>
+        <p v-if="contact.contact.company" class="m-0 text-[15px] font-extrabold text-navy-900">{{ contact.contact.company }}</p>
         <ul class="mb-0 mt-4 grid list-none gap-3.5 p-0 text-[15px] leading-6 text-slate-600">
           <li v-if="contact.contact.hotline" class="flex items-center gap-3.5">
             <span class="grid size-9 flex-none place-items-center rounded-[3px] bg-gold-500/15 text-gold-700" aria-hidden="true">

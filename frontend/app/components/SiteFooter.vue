@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { sentenceCase } from '~/utils/sentenceCase'
 import type { PublicSitePayload } from '#shared/contracts/public-site'
 import SiteFloatingContact from '~/components/SiteFloatingContact.vue'
 
@@ -85,8 +86,8 @@ const telHref = computed(() => telHrefFor(hotline.value))
 
       <!-- Cột 2: Pháp nhân doanh nghiệp và 2 đường dây nóng -->
       <div>
-        <h2 class="mb-4 text-[15px] font-extrabold uppercase tracking-[.02em] text-gold-400">
-          {{ footer?.companyName || 'Thông tin doanh nghiệp' }}
+        <h2 class="mb-4 text-[16px] font-extrabold text-gold-400">
+          {{ sentenceCase(footer?.companyName || 'Thông tin doanh nghiệp') }}
         </h2>
         <span aria-hidden="true" class="-mt-2 mb-4 block h-0.5 w-9 bg-gold-500" />
 
@@ -125,7 +126,7 @@ const telHref = computed(() => telHrefFor(hotline.value))
       <div class="grid min-w-0 grid-cols-1 gap-8 min-[768px]:grid-cols-[minmax(350px,1fr)_minmax(0,1fr)] min-[768px]:gap-12 tb:col-span-2 nav:col-span-1">
         <!-- Chính sách nằm cùng cột nội dung liên hệ như footer PHP. -->
         <nav v-if="footer?.policies.length" aria-label="Chính sách và hỗ trợ khách hàng">
-          <h2 class="mb-4 text-[14px] font-extrabold uppercase tracking-wider text-white">
+          <h2 class="mb-4 text-[16px] font-extrabold text-white">
             Chính sách &amp; Hỗ trợ khách hàng
           </h2>
           <span aria-hidden="true" class="-mt-2 mb-4 block h-0.5 w-9 bg-gold-500" />
@@ -144,7 +145,7 @@ const telHref = computed(() => telHrefFor(hotline.value))
 
         <!-- Địa điểm hiển thị thành danh sách phẳng, như .content_cn của PHP. -->
         <div v-if="footer?.locations.length">
-          <h2 class="mb-4 text-[14px] font-extrabold uppercase tracking-wider text-white">
+          <h2 class="mb-4 text-[16px] font-extrabold text-white">
             Hệ thống kho &amp; điểm giao dịch
           </h2>
           <span aria-hidden="true" class="-mt-2 mb-4 block h-0.5 w-9 bg-gold-500" />

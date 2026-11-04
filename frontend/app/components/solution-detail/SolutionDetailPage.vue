@@ -175,7 +175,7 @@ onBeforeUnmount(() => {
         <a
           v-for="item in data.equipment"
           :key="item.url"
-          class="group flex min-w-0 items-center gap-3 px-3.5 py-2.5 rounded-r-[4px] border-l-[3px] border-gold-500 bg-slate-50/90 text-navy-800 no-underline transition-colors hover:bg-slate-100 hover:text-gold-700"
+          class="group flex min-w-0 items-center gap-3 px-3.5 py-2.5 pts-note text-navy-800 no-underline transition-colors hover:bg-slate-100 hover:text-gold-700"
           :href="links.generic(item.url)"
         >
           <img v-if="item.image" :src="item.image" alt="" class="h-12 w-12 flex-none object-contain transition-transform duration-300 group-hover:scale-105" width="48" height="48" loading="lazy">

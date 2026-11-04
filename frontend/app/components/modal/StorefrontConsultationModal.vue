@@ -147,7 +147,7 @@ async function send() {
       </div>
 
       <form v-else class="grid gap-6" @submit.prevent="send">
-        <div v-if="consultationSubject" class="flex items-center justify-between gap-3 rounded-[4px] border-l-[4px] border-gold-500 bg-navy-950 px-4 py-3 text-white">
+        <div v-if="consultationSubject" class="flex items-center justify-between gap-3 pts-note-dark px-4 py-3 text-white">
           <div class="min-w-0">
             <span class="block text-xs text-white/70">Nội dung đang quan tâm</span>
             <strong class="block truncate text-sm font-extrabold text-gold-300">{{ consultationSubject }}</strong>

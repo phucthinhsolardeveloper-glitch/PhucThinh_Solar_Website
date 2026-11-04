@@ -236,7 +236,7 @@ test('global keyboard focus has at least 3:1 contrast on the shell light and dar
 })
 
 test('footer renders its CMS heading once and uses the validated rich-text component for contact content', () => {
-  assert.match(footer, /<h2[^>]*>\s*\{\{ footer\?\.companyName \|\| 'Thông tin doanh nghiệp' \}\}\s*<\/h2>/)
+  assert.match(footer, /<h2[^>]*>\s*\{\{ sentenceCase\(footer\?\.companyName \|\| 'Thông tin doanh nghiệp'\) \}\}\s*<\/h2>/)
   assert.match(footer, /<EditorialRichText v-if="footer\?\.contactText\?\.html" :content="footer\.contactText" class="cms-content-on-dark/)
   assert.doesNotMatch(footer, /<p v-if="footer\?\.companyName/)
   assert.doesNotMatch(footer, /contactLines/)

@@ -145,7 +145,7 @@ usePublicSocialMeta({
     <main class="pts-container pb-16">
       <div class="pt-6">
         <!-- Thanh tìm kiếm trực tiếp và từ khóa gợi ý 1 chạm -->
-        <div class="mb-7 rounded-[4px] border-l-[4px] border-gold-500 bg-slate-50 p-4 sm:p-5">
+        <div class="mb-7 pts-note p-4 sm:p-5">
           <form class="flex flex-col gap-3 sm:flex-row sm:items-center" role="search" @submit.prevent="submitKeyword()">
             <div class="relative flex-1">
               <UIcon name="i-lucide-search" class="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-slate-400" aria-hidden="true" />
@@ -202,7 +202,7 @@ usePublicSocialMeta({
               v-for="cat in site.productCategories"
               :key="cat.slug"
               :to="links.generic(cat.url)"
-              class="group flex items-center justify-between gap-3 rounded-[4px] border-l-[3px] border-gold-500 bg-slate-50 px-4 py-3 text-sm font-bold text-navy-900 no-underline transition-colors hover:bg-gold-500/10"
+              class="group flex items-center justify-between gap-3 pts-note px-4 py-3 text-sm font-bold text-navy-900 no-underline transition-colors hover:bg-gold-500/10"
             >
               <span class="truncate">{{ cat.name }}</span>
               <UIcon name="i-lucide-arrow-right" class="size-4 shrink-0 text-slate-400 transition-transform group-hover:translate-x-0.5 group-hover:text-gold-700" aria-hidden="true" />

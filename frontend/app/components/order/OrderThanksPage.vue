@@ -113,7 +113,7 @@ watch([payload, token], trackOrderConversion)
           </div>
         </div>
 
-        <div class="mt-6 flex flex-col items-start justify-between gap-4 rounded-[4px] border-l-[4px] border-gold-500 bg-navy-950 p-5 text-left text-white sm:flex-row sm:items-center">
+        <div class="mt-6 flex flex-col items-start justify-between gap-4 pts-note-dark p-5 text-left text-white sm:flex-row sm:items-center">
           <div>
             <p class="m-0 text-base font-bold text-white">Cần hỗ trợ hoặc bổ sung thông tin giao hàng?</p>
             <p class="m-0 mt-1 text-xs text-white/75 sm:text-sm">Liên hệ trực tiếp tổng đài Phúc Thịnh Solar trong giờ hành chính (T2 – T7):</p>

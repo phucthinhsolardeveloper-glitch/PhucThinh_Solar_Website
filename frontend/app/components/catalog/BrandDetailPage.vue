@@ -231,7 +231,7 @@ usePublicSocialMeta({
           </aside>
 
           <section class="min-w-0" aria-label="Sản phẩm thương hiệu" :aria-busy="pending">
-            <div class="mb-6 flex flex-col justify-between gap-4 rounded-[4px] border-l-[4px] border-gold-500 bg-navy-950 p-5 text-white sm:flex-row sm:items-center">
+            <div class="mb-6 flex flex-col justify-between gap-4 pts-note-dark p-5 text-white sm:flex-row sm:items-center">
               <div class="min-w-0">
                 <div class="flex flex-wrap items-center gap-3">
                   <h2 class="m-0 text-xl font-black tracking-tight text-white sm:text-2xl">{{ data.brand.name }}</h2>
