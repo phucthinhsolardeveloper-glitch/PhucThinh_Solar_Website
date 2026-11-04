@@ -36,7 +36,7 @@ function clearFilters() {
 
 <template>
   <aside class="rounded-chip bg-slate-100 p-5" aria-label="Bộ lọc kết quả tìm kiếm">
-    <h2 class="m-0 mb-4 text-xl font-black text-navy-950">BỘ LỌC</h2>
+    <h2 class="m-0 mb-4 text-xl font-black text-navy-950">Bộ lọc</h2>
 
     <fieldset v-if="filters.brands.length" class="m-0 border-0 p-0">
       <legend class="mb-3 text-sm font-bold text-navy-950">Thương hiệu</legend>

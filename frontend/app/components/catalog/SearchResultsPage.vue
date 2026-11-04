@@ -225,9 +225,6 @@ usePublicSocialMeta({
           <div class="mb-5 flex flex-wrap items-center justify-between gap-4">
             <div class="flex flex-wrap items-center gap-3">
               <h2 class="m-0 text-[22px] font-extrabold text-navy-950">Danh sách sản phẩm</h2>
-              <span class="rounded-[3px] bg-navy-900 px-2.5 py-1 text-xs font-extrabold text-gold-300">
-                {{ data.pagination.total }} kết quả
-              </span>
             </div>
             <label class="flex items-center gap-2 text-sm text-slate-600">
               Sắp xếp
