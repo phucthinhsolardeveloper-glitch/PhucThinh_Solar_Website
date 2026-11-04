@@ -10,10 +10,9 @@ test('nullable solutions intro fallback does not reserve a viewport-sized blank 
   assert.doesNotMatch(page, /<h1 v-else class="[^\"]*min-h-\[45vh\]/)
 })
 
-test('news search uses the mobile body text size', () => {
+test('news masthead has no duplicate search; the header search covers it', () => {
   const page = read('../app/components/news/NewsMasthead.vue')
-  assert.match(page, /:id="inputId"[^>]*class="[^\"]*text-base/)
-  assert.doesNotMatch(page, /:id="inputId"[^>]*text-\[13px\]/)
+  assert.doesNotMatch(page, /type="search"/)
 })
 
 test('news category filters remain horizontally scrollable without a visible scrollbar', () => {

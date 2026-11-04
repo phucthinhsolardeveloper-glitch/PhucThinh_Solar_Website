@@ -108,12 +108,8 @@ usePublicSocialMeta({
 
       <template v-else>
         <NewsMasthead
-          v-model="searchInput"
           :title="category.name"
           :description="category.description"
-          :search-label="news.labels.search"
-          input-id="news-category-search"
-          @submit="submitSearch"
         />
 
         <div class="mt-[18px] mb-[clamp(28px,3vw,44px)]">

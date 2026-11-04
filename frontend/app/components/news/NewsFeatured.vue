@@ -12,7 +12,7 @@ defineProps<{ articles: PublicNewsArticle[]; label: string; readLabel: string; r
       <NewsCard :article="articles[0]!" :read-label="readLabel" :read-more-label="readMoreLabel" variant="lead" />
     </div>
     <div v-if="articles.length > 1" class="featured-aside">
-      <div v-for="article in articles.slice(1, 3)" :key="article.id" class="featured-side">
+      <div v-for="article in articles.slice(1, 4)" :key="article.id" class="featured-side">
         <NewsCard :article="article" :read-label="readLabel" :read-more-label="readMoreLabel" variant="secondary" />
       </div>
     </div>

@@ -28,19 +28,9 @@ const requestQuery = computed(() => {
   for (const key of ['q', 'p', 'category']) if (typeof route.query[key] === 'string' && route.query[key]) query[key] = route.query[key] as string
   return query
 })
-const searchInput = ref(requestQuery.value.q || '')
-watch(() => requestQuery.value.q, (value) => { searchInput.value = value || '' })
 const { data, error, pending } = await useAsyncData<unknown>('migration-news', () => $fetch('/_migration/news', { query: requestQuery.value }), { watch: [requestQuery] })
 const site = computed(() => isPublicSitePayload(siteData.value) ? siteData.value : fallbackSite)
 const news = computed(() => isPublicNewsPayload(data.value) ? data.value : null)
-function submitSearch() {
-  const query = { ...route.query }
-  const keyword = searchInput.value.trim()
-  delete query.p
-  if (keyword) query.q = keyword
-  else delete query.q
-  return navigateTo({ path: publicPath.value, query })
-}
 const errorStatus = (error.value as { statusCode?: unknown } | null)?.statusCode
 const responseStatus = editorialPublicHubResponseStatus(
   isPublicRoute.value,
@@ -53,6 +43,17 @@ const pageUrl = (page: number) => {
   if (page <= 1) query.delete('p'); else query.set('p', String(page))
   return `${publicPath.value}${query.toString() ? `?${query}` : ''}`
 }
+// The magazine block holds a lead + three side stories; topped up from the latest list, never repeated below.
+const featuredBlock = computed(() => {
+  if (!news.value?.featured.length) return []
+  const ids = new Set(news.value.featured.map((article) => article.id))
+  const fill = news.value.articles.filter((article) => !ids.has(article.id))
+  return [...news.value.featured, ...fill.slice(0, Math.max(0, 4 - news.value.featured.length))]
+})
+const gridArticles = computed(() => {
+  const used = new Set(featuredBlock.value.map((article) => article.id))
+  return (news.value?.articles ?? []).filter((article) => !used.has(article.id))
+})
 const pageNumbers = computed(() => {
   if (!news.value) return []
   const total = Math.ceil(news.value.pagination.total / news.value.pagination.perPage)
@@ -105,30 +106,25 @@ usePublicSocialMeta({
             tiêu đề kéo dài theo chiều rộng container như mọi trang khác.
           -->
           <NewsMasthead
-            v-model="searchInput"
             :title="news.title"
             :description="news.description"
-            :search-label="news.labels.search"
-            input-id="news-search"
-            :category="requestQuery.category"
-            @submit="submitSearch"
           />
 
           <div class="mt-[18px] mb-[clamp(28px,3vw,44px)]">
             <NewsFilters :categories="news.categories" :selected="news.category" :all-label="news.labels.all" :filters-label="news.labels.results" :query="requestQuery.q" />
           </div>
 
-          <NewsFeatured :articles="news.featured" :label="news.labels.featured" :read-label="news.labels.read" :read-more-label="news.labels.readMore" />
+          <NewsFeatured :articles="featuredBlock" :label="news.labels.featured" :read-label="news.labels.read" :read-more-label="news.labels.readMore" />
 
           <p v-if="requestQuery.q" class="-mt-2 mb-[22px] text-slate-500">
             {{ news.labels.results }}: <strong>{{ news.pagination.total }}</strong> — "{{ requestQuery.q }}"
             <a class="inline-flex min-h-11 items-center text-gold-700" :href="publicPath">× {{ news.labels.reset }}</a>
           </p>
 
-          <section v-if="news.articles.length" class="grid grid-cols-1 gap-x-5 gap-y-6 tb:grid-cols-2 nav:grid-cols-3" :aria-label="news.labels.results">
-            <NewsCard v-for="article in news.articles" :key="article.id" :article="article" :read-label="news.labels.read" :read-more-label="news.labels.readMore" />
+          <section v-if="gridArticles.length" class="grid grid-cols-1 gap-x-5 gap-y-6 tb:grid-cols-2 nav:grid-cols-3" :aria-label="news.labels.results">
+            <NewsCard v-for="article in gridArticles" :key="article.id" :article="article" :read-label="news.labels.read" :read-more-label="news.labels.readMore" />
           </section>
-          <div v-else class="min-h-[260px] py-[52px] text-center text-slate-500" role="status">
+          <div v-else-if="!featuredBlock.length" class="min-h-[260px] py-[52px] text-center text-slate-500" role="status">
             <h2 class="mb-3 text-navy-800">{{ news.labels.empty }}</h2>
             <a class="inline-flex min-h-11 items-center font-bold text-gold-700" :href="publicPath">{{ news.labels.reset }} →</a>
           </div>

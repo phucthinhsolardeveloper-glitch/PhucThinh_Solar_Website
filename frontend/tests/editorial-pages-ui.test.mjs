@@ -120,7 +120,6 @@ test('news and project touch targets meet 44px and editorial images keep their r
   const projectCard = read('../app/components/projects/ProjectCard.vue')
   assert.match(newsFilters, /min-h-11/)
   assert.match(projectFilters, /min-h-11/)
-  assert.match(read('../app/components/news/NewsMasthead.vue'), /h-11 w-11/)
   assert.match(projectCard, /aspect-\[4\/3\]/)
   assert.doesNotMatch(projectCard, /border-b border-gray-200/)
 })
@@ -164,7 +163,6 @@ test('editorial text controls meet the 44px hit-area rule and project tabs suppo
   const equipment = read('../app/components/solutions/SolutionsEquipment.vue')
   const projectGallery = read('../app/components/project-detail/ProjectDetailGallery.vue')
 
-  assert.match(read('../app/components/news/NewsMasthead.vue'), /h-11 w-11 flex-none border-0/)
   assert.equal((news.match(/inline-flex min-h-11 items-center[^\n]*news\.labels\.reset/g) || []).length, 2)
   assert.match(policy, /flex min-h-11 min-w-11 items-center border-l-2/)
   // Owner decision 2026-11-04: the hub editorial is restaged as chapters; the preview route keeps the TOC.
