@@ -74,14 +74,14 @@ function scrollRelated(direction: -1 | 1): void {
               v-if="item.image"
               :src="item.image"
               :alt="item.title"
-              class="block aspect-video w-full object-cover rounded-card"
+              class="block aspect-video w-full object-cover rounded-[6px]"
               loading="lazy"
               decoding="async"
               width="640"
               height="360"
               sizes="(min-width: 1100px) 25vw, (min-width: 768px) 50vw, 100vw"
             >
-            <div v-else class="aspect-video w-full rounded-card bg-navy-50" aria-hidden="true" />
+            <div v-else class="aspect-video w-full rounded-[6px] bg-navy-50" aria-hidden="true" />
           </div>
           <div class="flex flex-1 flex-col py-4">
             <p v-if="item.date || item.author" class="mb-2 flex flex-wrap items-center gap-3 text-xs text-slate-500">

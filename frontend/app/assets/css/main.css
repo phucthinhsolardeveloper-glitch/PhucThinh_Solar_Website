@@ -208,17 +208,23 @@
      nó, nên đặt một lần ở đây là cả UButton/UModal/UInput theo cùng hệ. */
   --radius-chip: 3px;
   --radius-btn: 4px;
-  /* Cards, panels, media frames: the ceiling of the flat system. */
-  --radius-card: 5px;
+  /* Expressive scale (2026-11 visual language): pick by role, not one size for all. */
+  --radius-sm: 6px;    /* inputs, small chips, thumbnails */
+  --radius-md: 10px;   /* cards, media frames, notes */
+  --radius-lg: 16px;   /* feature panels, summaries, popovers */
+  --radius-xl: 24px;   /* hero cards and showcase stages */
+  --radius-card: var(--radius-md);
 }
 
 :root {
   /* Nuxt UI v4 suy ra bán kính của mọi component từ biến này. */
   --ui-radius: 4px;
   --pts-gold-gradient: linear-gradient(110deg, var(--color-gold-400) 0%, var(--color-gold-500) 100%);
-  /* Elevation: surfaces are flat by default; only floating layers and hover lifts cast shadow. */
-  --pts-shadow-float: 0 24px 48px -28px rgb(6 21 55 / 45%), 0 2px 8px -4px rgb(6 21 55 / 12%);
-  --pts-shadow-lift: 0 18px 36px -26px rgb(6 21 55 / 42%);
+  /* Elevation: soft navy-tinted shadows; float for popovers/panels, lift for hover, glow for gold actions. */
+  --pts-shadow-soft: 0 1px 2px rgb(6 21 55 / 6%), 0 8px 24px -16px rgb(6 21 55 / 22%);
+  --pts-shadow-float: 0 30px 60px -30px rgb(6 21 55 / 50%), 0 8px 20px -12px rgb(6 21 55 / 18%);
+  --pts-shadow-lift: 0 22px 44px -26px rgb(6 21 55 / 45%);
+  --pts-shadow-glow: 0 12px 30px -12px rgb(201 150 46 / 55%);
   /* Motion: one easing and three durations for every transition on the site. */
   --pts-ease: cubic-bezier(0.22, 1, 0.36, 1);
   --pts-dur-fast: 0.2s;
@@ -324,6 +330,22 @@
   .pts-note-dark { border-radius: var(--radius-card); background: radial-gradient(120% 140% at 100% 0%, rgb(228 168 73 / 16%), transparent 55%), var(--color-navy-950); color: #fff; }
   a.pts-note { transition: border-color var(--pts-dur-fast) ease, box-shadow var(--pts-dur) var(--pts-ease); }
   a.pts-note:hover { border-color: rgb(201 150 46 / 55%); box-shadow: var(--pts-shadow-lift); }
+
+  /* Liquid glass: one material for every translucent layer (navy over imagery, light over grids). */
+  .pts-glass {
+    border: 1px solid rgb(255 255 255 / 14%);
+    background: linear-gradient(160deg, rgb(255 255 255 / 10%), rgb(255 255 255 / 3%)), rgb(6 21 55 / 52%);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 14%), var(--pts-shadow-float);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    backdrop-filter: blur(16px) saturate(140%);
+  }
+  .pts-glass-light {
+    border: 1px solid rgb(255 255 255 / 70%);
+    background: linear-gradient(160deg, rgb(255 255 255 / 86%), rgb(255 255 255 / 64%));
+    box-shadow: inset 0 1px 0 #fff, var(--pts-shadow-soft);
+    -webkit-backdrop-filter: blur(14px) saturate(150%);
+    backdrop-filter: blur(14px) saturate(150%);
+  }
 
   .pts-grid-paper { position: relative; isolation: isolate; }
   .pts-grid-paper::before {

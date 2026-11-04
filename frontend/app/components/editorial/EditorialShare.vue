@@ -145,7 +145,7 @@ const shareLinks = computed(() => {
         <span
           v-if="copied"
           role="status"
-          class="pointer-events-none absolute bottom-full left-1/2 mb-2 -translate-x-1/2 whitespace-nowrap rounded-card bg-navy-950 px-2.5 py-1 text-xs font-medium text-white shadow-md transition-all"
+          class="pointer-events-none absolute bottom-full left-1/2 mb-2 -translate-x-1/2 whitespace-nowrap rounded-md bg-navy-950 px-2.5 py-1 text-xs font-medium text-white shadow-md transition-all"
         >
           Đã sao chép!
         </span>

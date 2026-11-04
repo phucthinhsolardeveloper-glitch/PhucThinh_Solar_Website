@@ -96,7 +96,7 @@ const summary = computed(() => [places.find((p) => p.id === place.value)?.label,
   max-width: 560px;
   justify-self: end;
   padding: clamp(22px, 2.6vw, 36px);
-  border-radius: var(--radius-card);
+  border-radius: 6px;
   background: linear-gradient(160deg, #0f2f5e 0%, var(--color-navy-950) 70%);
   color: #fff;
   box-shadow: 0 30px 70px -32px rgb(6 21 55 / 60%);

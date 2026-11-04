@@ -187,14 +187,14 @@ usePublicSocialMeta({
 .dealer-hero__lede { max-width: 56ch; margin: 18px 0 0; color: #d3dcea; font-size: clamp(17px, 1.3vw, 20px); line-height: 1.6; }
 .dealer-hero h1 { margin: 0; color: #fff; font-size: clamp(36px, 4.2vw, 68px); font-weight: 850; line-height: 1.08; letter-spacing: -0.035em; text-wrap: balance; }
 .dealer-hero__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 28px; margin-top: 32px; }
-.dealer-hero__primary { display: inline-flex; min-height: 58px; align-items: center; gap: 16px; padding: 0 10px 0 24px; border-radius: var(--radius-btn); background: var(--pts-gold-gradient); color: var(--color-navy-950); font-size: 16.5px; font-weight: 850; text-decoration: none; transition: filter 0.25s ease; }
+.dealer-hero__primary { display: inline-flex; min-height: 58px; align-items: center; gap: 16px; padding: 0 10px 0 24px; border-radius: 6px; background: var(--pts-gold-gradient); color: var(--color-navy-950); font-size: 16.5px; font-weight: 850; text-decoration: none; transition: filter 0.25s ease; }
 .dealer-hero__primary > span { display: grid; width: 40px; height: 40px; place-items: center; border-radius: 4px; background: var(--color-navy-950); color: var(--color-gold-300); transition: transform 0.35s var(--ease); }
 .dealer-hero__primary:hover { filter: brightness(1.06); }
 .dealer-hero__primary:hover > span { transform: translateY(3px); }
 .dealer-hero__call { display: inline-flex; min-height: 52px; align-items: center; gap: 12px; color: #fff; font-size: 20px; font-weight: 850; text-decoration: none; font-variant-numeric: tabular-nums; }
 .dealer-hero__call small { display: block; color: #9fb0c8; font-size: 13px; font-weight: 600; }
 .dealer-hero a:focus-visible { outline: 3px solid var(--color-gold-300); outline-offset: 3px; }
-.dealer-hero__stats { border-top: 1px solid rgb(255 255 255 / 14%); background: rgb(4 17 46 / 82%); }
+.dealer-hero__stats { border-top: 1px solid rgb(255 255 255 / 14%); background: rgb(4 17 46 / 55%); backdrop-filter: blur(10px); }
 .dealer-hero__stats dl { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 0; }
 .dealer-hero__stats dl > div { display: flex; flex-direction: column-reverse; gap: 4px; padding: clamp(18px, 2.2vw, 28px) clamp(12px, 2vw, 32px); }
 .dealer-hero__stats dl > div:first-child { padding-left: 0; }

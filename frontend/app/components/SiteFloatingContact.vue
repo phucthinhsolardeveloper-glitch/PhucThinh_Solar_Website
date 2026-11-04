@@ -48,7 +48,7 @@ onUnmounted(() => {
     <!-- Nút 3: Lên đầu trang (cuộn > 300px) -->
     <div v-if="showBackToTop" class="group relative flex items-center">
       <span
-        class="pointer-events-none absolute right-[calc(100%+10px)] hidden whitespace-nowrap rounded-card bg-navy-950/85 px-2.5 py-1 text-xs font-medium text-white shadow-md backdrop-blur-md transition-all duration-200 group-hover:block group-focus-within:block"
+        class="pointer-events-none absolute right-[calc(100%+10px)] hidden whitespace-nowrap rounded-md bg-navy-950/85 px-2.5 py-1 text-xs font-medium text-white shadow-md backdrop-blur-md transition-all duration-200 group-hover:block group-focus-within:block"
         role="tooltip"
       >
         Lên đầu trang
@@ -69,7 +69,7 @@ onUnmounted(() => {
     <!-- Nút 1: Zalo (tròn, #0068ff, mở thẳng zalo 1 chạm) -->
     <div v-if="zaloHref" class="group relative flex items-center">
       <span
-        class="pointer-events-none absolute right-[calc(100%+10px)] hidden whitespace-nowrap rounded-card bg-navy-950/85 px-2.5 py-1 text-xs font-medium text-white shadow-md backdrop-blur-md transition-all duration-200 group-hover:block group-focus-within:block"
+        class="pointer-events-none absolute right-[calc(100%+10px)] hidden whitespace-nowrap rounded-md bg-navy-950/85 px-2.5 py-1 text-xs font-medium text-white shadow-md backdrop-blur-md transition-all duration-200 group-hover:block group-focus-within:block"
         role="tooltip"
       >
         Chat Zalo
@@ -89,7 +89,7 @@ onUnmounted(() => {
     <!-- Nút hotline dùng cùng nền gold gradient và giữ hiệu ứng pulse nhẹ. -->
     <div v-if="phoneHref" class="group relative flex items-center">
       <span
-        class="pointer-events-none absolute right-[calc(100%+10px)] hidden whitespace-nowrap rounded-card bg-navy-950/85 px-2.5 py-1 text-xs font-medium text-white shadow-md backdrop-blur-md transition-all duration-200 group-hover:block group-focus-within:block"
+        class="pointer-events-none absolute right-[calc(100%+10px)] hidden whitespace-nowrap rounded-md bg-navy-950/85 px-2.5 py-1 text-xs font-medium text-white shadow-md backdrop-blur-md transition-all duration-200 group-hover:block group-focus-within:block"
         role="tooltip"
       >
         Gọi ngay: {{ hotline }}

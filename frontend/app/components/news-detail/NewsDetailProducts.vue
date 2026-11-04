@@ -87,7 +87,7 @@ function price(product: PublicCatalogProduct) {
 </template>
 
 <style scoped>
-.article-products { margin: clamp(40px, 5vw, 64px) 0 0; padding: clamp(22px, 3vw, 40px); border-radius: var(--radius-card); background: linear-gradient(160deg, #0f2f5e, var(--color-navy-950) 75%); color: #fff; }
+.article-products { margin: clamp(40px, 5vw, 64px) 0 0; padding: clamp(22px, 3vw, 40px); border-radius: 6px; background: linear-gradient(160deg, #0f2f5e, var(--color-navy-950) 75%); color: #fff; }
 .article-products-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 24px; margin-bottom: 22px; }
 .article-products-head h2 { margin: 0; font-size: clamp(22px, 2vw, 30px); font-weight: 900; letter-spacing: -0.02em; }
 .article-products-head p { margin: 6px 0 0; color: #b9c6d6; font-size: 15.5px; }
