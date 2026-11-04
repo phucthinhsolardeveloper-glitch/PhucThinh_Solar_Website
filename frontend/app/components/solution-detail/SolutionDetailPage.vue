@@ -133,9 +133,6 @@ onBeforeUnmount(() => {
       <nav class="solution-rail" aria-label="Các giải pháp khác">
         <div ref="solutionRailRef" class="pts-container solution-rail__track">
           <span ref="pillRef" class="solution-rail__pill" aria-hidden="true" />
-          <NuxtLink class="solution-rail__item" :to="links.generic(data.navigation.allUrl)">
-            <UIcon name="i-lucide-layout-grid" class="size-4" aria-hidden="true" />Tất cả giải pháp
-          </NuxtLink>
           <NuxtLink
             v-for="(item, index) in data.navigation.items"
             :key="item.slug"
@@ -201,16 +198,16 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
-.solution-hero { --ease: cubic-bezier(0.22, 1, 0.36, 1); position: relative; isolation: isolate; display: flex; min-height: clamp(520px, 74vh, 800px); align-items: flex-end; overflow: hidden; background: #061537; color: #fff; }
-.solution-hero:not(.has-image) { min-height: clamp(380px, 52vh, 560px); }
+/* One fixed hero height for every solution so switching never resizes the page. */
+.solution-hero { --ease: cubic-bezier(0.22, 1, 0.36, 1); position: relative; isolation: isolate; display: flex; height: clamp(560px, 72vh, 700px); align-items: flex-end; overflow: hidden; background: #061537; color: #fff; }
 .solution-hero__image { position: absolute; inset: -8% 0 0; z-index: -2; width: 100%; height: 108%; object-fit: cover; transform: translate3d(0, var(--shift, 0), 0) scale(1.04); animation: hero-in 1.1s var(--ease) both; }
 .solution-hero__shade { position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, rgb(6 21 55 / 92%) 0%, rgb(6 21 55 / 70%) 42%, rgb(6 21 55 / 20%) 100%), linear-gradient(0deg, #061537 0%, rgb(6 21 55 / 0%) 45%); }
 .solution-hero:not(.has-image) .solution-hero__shade { background: radial-gradient(60% 90% at 85% 10%, rgb(228 168 73 / 20%), transparent 70%); }
-.solution-hero__inner { width: 100%; padding-block: clamp(56px, 8vw, 120px) clamp(40px, 5vw, 72px); }
+.solution-hero__inner { width: 100%; padding-block: 32px clamp(36px, 4.5vw, 64px); }
 .solution-hero__category { display: inline-flex; min-height: 36px; align-items: center; margin-bottom: 18px; padding: 0 14px; border: 1px solid rgb(228 168 73 / 45%); border-radius: 999px; color: var(--color-gold-200); font-size: 14px; font-weight: 700; text-decoration: none; }
 .solution-hero__category:hover { background: rgb(228 168 73 / 14%); }
-.solution-hero h1 { max-width: 15ch; margin: 0; color: #fff; font-size: clamp(38px, 5.6vw, 84px); font-weight: 850; line-height: 1.02; letter-spacing: -0.04em; text-wrap: balance; }
-.solution-hero__summary { max-width: 62ch; margin: 22px 0 0; color: #d3dcea; font-size: clamp(17px, 1.3vw, 20px); line-height: 1.68; }
+.solution-hero h1 { max-width: 16ch; margin: 0; color: #fff; font-size: clamp(36px, 4vw, 66px); font-weight: 850; line-height: 1.1; letter-spacing: -0.04em; text-wrap: balance; }
+.solution-hero__summary { display: -webkit-box; max-width: 62ch; margin: 22px 0 0; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 4; color: #d3dcea; font-size: clamp(17px, 1.25vw, 19px); line-height: 1.68; }
 .solution-hero__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 28px; margin-top: 32px; }
 .solution-hero__primary { display: inline-flex; min-height: 58px; align-items: center; gap: 16px; padding: 0 10px 0 24px; border-radius: 6px; background: var(--color-gold-400); color: var(--color-navy-950); font-size: 16.5px; font-weight: 850; text-decoration: none; transition: background-color 0.25s ease; }
 .solution-hero__primary > span { display: grid; width: 40px; height: 40px; place-items: center; border-radius: 4px; background: var(--color-navy-950); color: var(--color-gold-300); transition: transform 0.35s var(--ease); }
@@ -246,7 +243,9 @@ onBeforeUnmount(() => {
 .story-swap-leave-to { opacity: 0; }
 .story-swap-enter-from { opacity: 0; transform: translateY(24px); }
 @media (max-width: 640px) {
-  .solution-hero { min-height: 560px; }
+  .solution-hero { height: 660px; }
+  .solution-hero h1 { font-size: 34px; }
+  .solution-hero__summary { -webkit-line-clamp: 5; }
   .solution-hero__shade { background: linear-gradient(0deg, #061537 8%, rgb(6 21 55 / 78%) 55%, rgb(6 21 55 / 40%) 100%); }
   .solution-hero__actions { align-items: stretch; flex-direction: column; }
   .solution-hero__primary { justify-content: space-between; }
