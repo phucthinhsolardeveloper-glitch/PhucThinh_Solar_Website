@@ -6,7 +6,7 @@ import { resolveEquipmentIcon } from '#shared/catalog-menu-presentation'
 const props = defineProps<{ equipment: PublicSolutionEquipment[]; title: string; allProductsUrl: string; allProductsLabel: string }>()
 const links = useMigrationLinks()
 
-interface Showcase { total: number; products: PublicCatalogProduct[]; backdrop: string }
+interface Showcase { products: PublicCatalogProduct[]; backdrop: string }
 
 // Showroom data is enrichment only: the section is fully usable (names,
 // descriptions, category links) before or without it.
@@ -38,7 +38,7 @@ async function loadShowcases() {
     if (!path) return null
     const payload = await $fetch<PublicCatalogPayload>('/_migration/catalog', { query: { category: path, per_page: 6 } })
     const products = payload.products.filter((product) => product.media[0]).slice(0, 3)
-    return [item.url, { total: payload.pagination.total, products, backdrop: payload.categoryHero?.image || '' }] as const
+    return [item.url, { products, backdrop: payload.categoryHero?.image || '' }] as const
   }))
   const next: Record<string, Showcase> = {}
   for (const entry of entries) if (entry.status === 'fulfilled' && entry.value) next[entry.value[0]] = entry.value[1]
@@ -58,10 +58,6 @@ onBeforeUnmount(() => observer?.disconnect())
 
 const current = computed(() => props.equipment[active.value])
 const currentShowcase = computed(() => current.value ? showcases.value[current.value.url] : undefined)
-function countLabel(url: string): string {
-  const total = showcases.value[url]?.total
-  return total ? `${total} sản phẩm` : ''
-}
 </script>
 
 <template>
@@ -85,7 +81,6 @@ function countLabel(url: string): string {
               <CatalogMenuIcon class="size-5" :name="resolveEquipmentIcon(item.name, item.url)" />
             </span>
             <span class="showroom-name">{{ item.name }}</span>
-            <span class="showroom-count">{{ countLabel(item.url) }}</span>
             <span class="showroom-arrow" aria-hidden="true">→</span>
           </a>
 
@@ -136,7 +131,7 @@ function countLabel(url: string): string {
           <div v-if="current" class="showroom-caption">
             <p v-if="current.description">{{ current.description }}</p>
             <a class="showroom-cta" :href="links.generic(current.url)">
-              {{ countLabel(current.url) ? `Xem ${countLabel(current.url)}` : 'Xem danh mục' }}
+              Xem danh mục
               <span aria-hidden="true">→</span>
             </a>
           </div>
@@ -163,7 +158,7 @@ function countLabel(url: string): string {
 .showroom-link {
   position: relative;
   display: grid;
-  grid-template-columns: 44px minmax(0, 1fr) auto 24px;
+  grid-template-columns: 44px minmax(0, 1fr) 24px;
   align-items: center;
   gap: 16px;
   min-height: 76px;
@@ -184,7 +179,6 @@ function countLabel(url: string): string {
 }
 .showroom-icon { display: grid; width: 44px; height: 44px; place-items: center; border-radius: 4px; background: rgb(10 34 81 / 5%); color: var(--color-gold-700); transition: background-color 0.3s ease, color 0.3s ease; }
 .showroom-name { font-size: clamp(19px, 1.7vw, 26px); font-weight: 800; line-height: 1.2; letter-spacing: -0.02em; color: #94a3b8; transition: color 0.3s ease; }
-.showroom-count { color: var(--pts-muted, #64748b); font-size: 15px; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .showroom-arrow { color: #94a3b8; font-size: 18px; font-weight: 800; transition: transform 0.3s ease, color 0.3s ease; }
 .showroom-row[data-active="true"] .showroom-name { color: var(--color-navy-800); }
 .showroom-row[data-active="true"] .showroom-icon { background: var(--color-navy-800); color: var(--color-gold-300); }
@@ -251,7 +245,6 @@ function countLabel(url: string): string {
 }
 @media (max-width: 520px) {
   .showroom-link { grid-template-columns: 44px minmax(0, 1fr) 20px; gap: 12px; }
-  .showroom-count { grid-column: 2; grid-row: 2; margin-top: -6px; font-size: 14px; }
   .showroom-arrow { grid-column: 3; grid-row: 1 / span 2; }
   .showroom-mobile { padding-left: 0; }
 }

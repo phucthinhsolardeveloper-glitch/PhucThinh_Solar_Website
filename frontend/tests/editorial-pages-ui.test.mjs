@@ -66,9 +66,8 @@ test('solution detail TOC stays stacked through tablet and becomes a sticky left
 })
 
 test('solution hub TOC stays compact until the two-column desktop layout is available', () => {
-  const hub = read('../app/pages/giai-phap.vue')
   const preview = read('../app/pages/migration-solutions-preview.vue')
-  for (const page of [hub, preview]) {
+  for (const page of [preview]) {
     assert.match(page, /max-h-\[220px\].*nav:sticky nav:top-24 nav:max-h-\[calc\(100vh-116px\)\]/)
     assert.doesNotMatch(page, /min-\[901px\]:sticky|min-\[901px\]:max-h-/)
     assert.match(page, /nav:grid-cols-\[270px_minmax\(0,1fr\)\]/)
@@ -171,10 +170,11 @@ test('editorial text controls meet the 44px hit-area rule and project tabs suppo
   assert.match(news, /h-11 w-11 flex-none border-0/)
   assert.equal((news.match(/inline-flex min-h-11 items-center[^\n]*news\.labels\.reset/g) || []).length, 2)
   assert.match(policy, /flex min-h-11 min-w-11 items-center border-l-2/)
-  assert.match(solutionsHub, /flex min-h-11 items-center border-l-2/)
-  assert.match(solutionsHub, /rounded-\[3px\] bg-navy-800/)
-  assert.match(solutionsHub, /Trong trang này/)
-  assert.match(solutionsHub, /<EditorialRichText :content="data\.editorial\.content" variant="solution" \/>/)
+  // Owner decision 2026-11-04: the hub editorial is restaged as chapters; the preview route keeps the TOC.
+  const story = read('../app/components/solutions/SolutionsStory.vue')
+  assert.match(solutionsHub, /<SolutionsStory v-if="data && !error && data\.editorial\.content\.html" :content="data\.editorial\.content" \/>/)
+  assert.match(story, /<EditorialRichText v-if="!chapters\.length" :content="content" variant="solution" \/>/)
+  assert.match(story, /\.story-index a \{[^}]*min-height: 72px/)
   assert.match(solutionsPreview, /<EditorialRichText :content="data\.editorial\.content" variant="solution" \/>/)
   assert.match(richText, /cms-content--editorial-solution h2[\s\S]*?border: 0;/)
   assert.match(phpSolutionHub, /aria-label="Mục lục trang Giải pháp"/)
