@@ -1,5 +1,5 @@
 # PTS DESIGN & DELIVERY STANDARD — v1.0
-Status: WORKING STANDARD / owner review before changing approved site-wide ADR
+Status: ACTIVE DELIVERY STANDARD / owner-directed visual language alignment 2026-11-04
 Created: 2026-11-03
 Maintainer: PTS owner; execution-neutral (Codex / Claude / GitHub / Orca optional)
 
@@ -10,22 +10,27 @@ Stop producing branches, reports and beautiful descriptions without a finished s
 The same delivery rules work for apps, backend APIs, documentation and other projects; do NOT copy PTS navy/gold into unrelated apps.
 
 ## Current design language (2026-11)
-For PTS public UI, [12-PTS-DESIGN-LANGUAGE-2026-11.md](12-PTS-DESIGN-LANGUAGE-2026-11.md) is the active owner-approved language. It supersedes the surface rules (radius, glass, shadow) of 02-PTS-VISUAL-LANGUAGE.md; data/SEO/accessibility rules there still apply.
+For PTS public UI, [12-PTS-DESIGN-LANGUAGE-2026-11.md](12-PTS-DESIGN-LANGUAGE-2026-11.md) is the current visual authority. It supersedes older prescriptions about surface flatness, radius, glass, shadow, breadcrumb treatment and motion. `docs/02-development/public-ui-ux-design-system.md` remains binding for business/IA, CMS data, URL/SEO, media provenance, responsive behavior, accessibility and technical interaction contracts; where its older visual wording conflicts with document 12, document 12 governs the visual decision.
 
 ## Read order for every AI task
-A. Project-specific AGENTS.md, existing ADR and business/data/security contracts
-B. This index and 01-UNIVERSAL-DELIVERY.md
-C. For PTS public UI only: 02-PTS-VISUAL-LANGUAGE.md and existing docs/02-development/public-ui-ux-design-system.md
-D. For visible design: 03-VISUAL-ACCEPTANCE.md and reference.html
-E. Use templates/ISSUE.md and templates/PR.md for handoff
+A. Project-specific `AGENTS.md`, current owner direction and business/data/security contracts
+B. This index and `01-UNIVERSAL-DELIVERY.md`
+C. For PTS public UI: `12-PTS-DESIGN-LANGUAGE-2026-11.md` (visual authority), then `docs/02-development/public-ui-ux-design-system.md` (durable UX/data/accessibility contract)
+D. For visible design: `03-VISUAL-ACCEPTANCE.md` and `reference.html`
+E. Use `templates/ISSUE.md` and `templates/PR.md` for handoff
 
 ## Decision hierarchy
-- Latest explicit owner-approved decision and safety/business constraints prevail.
-- Existing technical/data/SEO/accessibility contracts remain binding.
-- This standard adds PROCESS and creative composition, not authority to overwrite old source.
+- Latest explicit owner instruction and safety/business constraints prevail.
+- Current public visual authority: [12-PTS-DESIGN-LANGUAGE-2026-11.md](12-PTS-DESIGN-LANGUAGE-2026-11.md).
+- Existing technical/data/SEO/accessibility contracts remain binding; older presentation prescriptions do not override the current visual authority.
+- Use document 12 for current visual decisions and the public UI contract for
+  durable product/behavior rules; older audits and ADR text do not regain visual
+  authority merely because they predate this standard.
 - Migration/parity task: match production baseline.
-- Explicit creative-redesign task: keep FUNCTIONAL / DATA / SEO parity, but deliberate visual deviation is allowed ONLY after a selected direction and before/after review.
-- Homepage, header, footer: protected scope; changes only when issue explicitly permits and owner approves.
+- Creative-redesign task: keep FUNCTIONAL / DATA / URL/SEO/accessibility parity while deliberately changing presentation to match the selected direction; review with before/after evidence.
+- Homepage, header and footer business paths/content are protected from accidental
+  removal; presentation changes are in scope when the task or owner direction
+  explicitly includes them.
 - A mock design is never evidence that a company, project, customer, statistic or device compatibility exists.
 - Visual prototype != shipping-ready product.
 
@@ -41,8 +46,8 @@ For each representative page/feature, receive ONE concise decision packet:
 - PR/diff link or exact commit, status of integration
 - clear call: APPROVE / REVISE / REJECT
 
-## Adoption without conflict
-This package lives under docs/15-design-delivery/. Do not silently edit AGENTS.md or existing ADR while other workers have uncommitted changes. An integration owner should reconcile the conflicting 'full visual parity' rule by an owner-approved ADR, then add a pointer to this package in agent entrypoints. Do not replace existing policy wholesale.
+## Adoption and conflict handling
+The owner has directed the project to use the current visual language and align older guidance with it. Root and frontend `AGENTS.md`, the public UI/UX contract and affected ADRs must point to this document and state their remaining scope. Historical audit evidence stays historical; it must not be presented as a current visual requirement. Preserve valid CMS/data, URL/SEO, security, accessibility and commerce rules when replacing outdated presentation rules. Future changes to shared visual authority still require explicit owner direction and a recorded decision.
 
 ## First pilot
 W4-05 Projects: one selected Solar Cinema direction -> load images with actual scrolling -> fix issues -> compare screenshots -> reviewer approval -> integrate to preview. Reuse this proof-of-delivery recipe before expanding to new pages.

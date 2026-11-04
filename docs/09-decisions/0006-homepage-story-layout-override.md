@@ -3,8 +3,9 @@
 - Ngày: 2026-09-21
 - Owner: Chủ project
 - Trạng thái: Superseded về Hero và bố cục homepage từ 2026-10-28 bởi ADR 0008
-- Thay thế: Các quyết định về thứ tự/nội dung trang chủ tại ADR 0001; các quy
-  tắc nhận diện, URL, dữ liệu và bề mặt phẳng còn lại vẫn áp dụng.
+- Thay thế: Các quyết định về thứ tự/nội dung trang chủ tại ADR 0001. Các quy
+  tắc bề mặt phẳng còn lại đã được supersede bởi ADR 0010; nhận diện, URL và dữ
+  liệu tiếp tục theo owner direction hiện hành.
 
 ## Bối cảnh
 

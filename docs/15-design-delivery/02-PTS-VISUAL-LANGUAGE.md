@@ -1,5 +1,5 @@
-# PTS SOLAR VISUAL LANGUAGE — design decisions for implementation
-Status: reference art direction for explicitly scoped redesign. Existing public UI/UX contract governs shared tokens, production behavior and accessibility.
+# PTS SOLAR VISUAL LANGUAGE — composition reference
+Status: composition and page-family reference. For current tokens, materials, radius, shadows and motion, use [12-PTS-DESIGN-LANGUAGE-2026-11.md](12-PTS-DESIGN-LANGUAGE-2026-11.md). Durable production behavior and accessibility contracts remain in `docs/02-development/public-ui-ux-design-system.md`.
 
 ## 1. Personality and design thesis
 Identity: PRECISION ENERGY / EDITORIAL ENGINEERING.
@@ -15,7 +15,7 @@ Typeface: Be Vietnam Pro. Preserve existing font and typography-system.css; no p
 - Header uses its approved token exceptions. Do not normalize header by force.
 - Text contrast >= 4.5:1, large text >= 3:1; control boundaries and focus >= 3:1.
 - No purple neon. Avoid generic centered headline + 3 cloned cards + gradient background.
-- Corner radius mostly 0–5px, pills only when function requires. No global card shadow.
+- Select radius, surfaces and elevation from the current role-based token scale in document 12; do not force a flat-only treatment or invent one-off radii.
 
 ## 3. Layout grammar
 CANVAS A / PRECISION PAPER: white/off-white, clear section hierarchy, very subtle 32px engineering grid only inside relevant background sections; never beneath dense text/forms.
@@ -24,7 +24,7 @@ CANVAS C / SOLAR CINEMA: immersive REAL project/photo or product media, with cle
 CANVAS D / PRODUCT ATELIER: product image contain 1:1, detailed specifications and filter/CTA near task.
 CANVAS E / FIELD JOURNAL: verified article/project information with captions, chapter rail, diagrams and calm reading rhythm.
 CANVAS F / CONNECTED JOURNEY: progressive path from need -> system -> product/quote; not an automatic generic stepper.
-A page combines 2–3 relevant canvases, NOT all six. Use different rhythms across adjacent sections: wide visual -> narrow explanatory -> asymmetrical detail -> focused action.
+A page combines 2–3 relevant canvases, NOT all six. Use different rhythms across adjacent sections: wide visual -> narrow explanatory -> asymmetrical detail -> focused action. The canvases are options, not a fixed template; use current shared materials and tokens.
 
 ## 4. Reference component grammar
 PAGE INTRO: exactly one H1, concrete supporting text and optional relevant action, no fake eyebrow. Heading directly names the content.
@@ -65,7 +65,7 @@ Each state updates scene lighting, paths AND explanatory inspector; show 'Minh h
 Do not invent power, energy, savings, production or hardware compatibility. Include reduced-motion/static diagram fallback and low-end mobile fallback.
 
 ## 8. Anti-AI-slop quality floor
-Never add decorative ALL CAPS eyebrow/kicker, arbitrary 01/02 numbering, meaningless tiny diagrams, fake KPI, 3 identical gradient cards, massive empty whitespace, unrelated stock imagery, shiny glassmorphism or purple neon.
+Never add decorative ALL CAPS eyebrow/kicker, arbitrary 01/02 numbering, meaningless tiny diagrams, fake KPI, 3 identical gradient cards, massive empty whitespace, unrelated stock imagery, stacked/generic glass effects or purple neon. The branded `.pts-glass` materials in document 12 are allowed when they support a real composition.
 Only number a true ordered sequence or real project chapter.
 Never let a CMS data gap be masked with fake media. A design should remain intentional with 0, 1 or many records.
 At least one original visual decision per representative page that is specific to the solar subject (media angle, energy topology, material story, filter path), NOT just changing background colors.
@@ -76,5 +76,5 @@ Before coding: produce 2–3 distinct compositions only when direction is not ye
 After coding: compare first fold, mid content, end CTA, and mobile journey against baseline; check typography rhythm, alignment, imagery, negative space, information density, contrast and interaction.
 A reviewer must be able to name what is BETTER, what is WORSE and what to change next with a screenshot reference.
 
-## 10. Avoid contradictory governance
-This is a creative implementation SPEC, not an automatic supersession of ADR 0009. For migration tasks: retain visual parity. For a scoped creative redesign: ask owner to approve direction and record a new ADR or issue decision before visual deviation reaches a shared target.
+## 10. Scope and governance
+This file is a composition reference, not a separate token or surface authority. For migration/parity tasks, retain the production visual baseline. For a scoped creative redesign, follow the selected direction and current design language while keeping business, data, URL/SEO and accessibility behavior intact. Record material shared-system changes through the owner decision process described in document 12 and the delivery standard.

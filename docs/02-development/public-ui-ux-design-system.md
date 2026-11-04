@@ -1,23 +1,28 @@
-# Hệ thống UI/UX public — nguồn chuẩn duy nhất
+# Hợp đồng UX, dữ liệu và accessibility cho public UI
 
-Cập nhật: 2026-10-31. Phạm vi: toàn bộ website public Phúc Thịnh Solar trên
+Cập nhật: 2026-11-04. Phạm vi: toàn bộ website public Phúc Thịnh Solar trên
 desktop, iMac/2K, tablet và mobile.
 
-Tài liệu này trả lời câu hỏi **giao diện phải như thế nào**. Cách đặt CSS vào
-đúng lớp cascade nằm ở [frontend-guide.md](frontend-guide.md). Các quyết định
-kiến trúc đã chốt và lý do nằm ở [ADR](../09-decisions/README.md).
+Tài liệu này giữ hợp đồng sản phẩm/UX, dữ liệu, URL/SEO, media, responsive,
+accessibility và behavior. **Ngôn ngữ thị giác hiện hành** — token, vật liệu,
+composition, radius, shadow và motion — nằm trong
+[`docs/15-design-delivery/12-PTS-DESIGN-LANGUAGE-2026-11.md`](../15-design-delivery/12-PTS-DESIGN-LANGUAGE-2026-11.md).
+Cách đặt CSS vào đúng lớp cascade nằm ở [frontend-guide.md](frontend-guide.md);
+các quyết định lịch sử và phạm vi còn hiệu lực nằm ở [ADR](../09-decisions/README.md).
 
 ## 1. Thẩm quyền và cách đọc trạng thái
 
-Đây là nguồn chuẩn duy nhất cho UI/UX dùng chung. Không lấy giao diện hiện tại
-của một trang làm chuẩn nếu nó mâu thuẫn với tài liệu này.
+Đây là nguồn chuẩn cho các hợp đồng UX và kỹ thuật được nêu trong tài liệu này;
+không còn là nguồn thẩm mỹ duy nhất. Không lấy implementation legacy làm luật
+nếu nó mâu thuẫn với owner direction hoặc design language hiện hành.
 
 Thứ tự ưu tiên khi có xung đột:
 
-1. quyết định mới nhất đã được chủ project duyệt và ADR tương ứng;
-2. tài liệu này;
-3. `AGENTS.md` và hướng dẫn triển khai frontend;
-4. implementation hiện tại.
+1. chỉ đạo mới nhất, rõ ràng của chủ project và rào chắn an toàn/nghiệp vụ;
+2. design language hiện hành cho quyết định thị giác;
+3. tài liệu này cho dữ liệu, IA/behavior, URL/SEO, media, responsive và accessibility;
+4. ADR trong phạm vi được ghi rõ; hướng dẫn triển khai frontend;
+5. implementation hiện tại.
 
 Ba nhãn được dùng trong tài liệu:
 
@@ -25,10 +30,12 @@ Ba nhãn được dùng trong tài liệu:
 - **ĐANG ÁP DỤNG**: đã có token/component hoặc test dùng chung.
 - **MỤC TIÊU**: chuẩn cần hội tụ dần; chưa được giả định toàn bộ legacy đã đạt.
 
-ADR 0006 thay thế phần thứ tự/nội dung trang chủ của ADR 0001. Các nguyên tắc
-chung trong ADR 0001 về product-first, mật độ và hạn chế trang trí vẫn còn hiệu
-lực. Ngoại lệ mới phải được chủ project duyệt và ghi ADR; không tạo ngoại lệ
-bằng một selector `!important` cục bộ.
+ADR 0009 hiện điều chỉnh cấu trúc/nội dung trang chủ và yêu cầu visual parity
+trong các task migration/parity. Visual parity không phải giới hạn cho task
+creative redesign được giao rõ. Các ADR bề mặt phẳng/radius cũ đã được
+supersede cho quyết định trình bày bởi design language hiện hành; xem ADR
+0002/0007/0009 để biết phạm vi lịch sử và ngoại lệ. Không tạo thay đổi token
+shared ngầm bằng selector `!important` cục bộ.
 
 ### 1.1 Nền tảng component và motion — ĐÃ DUYỆT
 
@@ -39,13 +46,12 @@ bằng một selector `!important` cục bộ.
 - Không dựng lại component Nuxt UI bằng HTML thô chỉ để tránh cấu hình style.
   HTML native vẫn phù hợp với phần tử chuyên dụng không có bản tương đương,
   như file input, nội dung biên tập hoặc cấu trúc semantic đơn giản.
-- Motion-v là chuẩn cho chuyển động giao diện có chủ đích. Chỉ dùng để làm rõ
-  mở/đóng, chuyển trạng thái hoặc quan hệ giữa các phần tử; không thêm animation
-  trang trí, không làm thao tác chậm, không dịch layout ngoài ý muốn. Dùng
-  `MotionConfig` toàn app và tôn trọng `prefers-reduced-motion`.
-- Component mới/được nâng cấp áp dụng Nuxt UI + Motion trước, sau đó tùy biến
-  bằng utility Tailwind theo token. CSS dùng chung chỉ nhận primitive và ngoại
-  lệ có lý do, tránh biến từng trang thành một design system riêng.
+- Motion-V và native View Transitions đều có thể dùng theo hướng thiết kế đã
+  chọn. Motion phải có mục đích, không làm thao tác chậm, không gây layout shift,
+  tôn trọng `prefers-reduced-motion` và có trạng thái fallback phù hợp.
+- Component mới/được nâng cấp ưu tiên Nuxt UI + primitive shared theo vai trò;
+  CSS riêng được phép khi phục vụ composition của route và vẫn dùng token/thương
+  hiệu hiện hành. Không ép mọi trang vào một visual template.
 - Khi cải tiến legacy, hội tụ theo từng component/flow và giữ API, validation,
   CSRF, trạng thái lỗi/thành công hiện có; không cần chuyển HTML thuần hàng loạt
   nếu chưa thuộc phạm vi trải nghiệm đang sửa.
@@ -58,10 +64,11 @@ bằng một selector `!important` cục bộ.
   để trình diễn. Sản phẩm, danh mục, ứng dụng và hành động liên hệ phải dễ tìm.
 - Mỗi section có một mục tiêu và một tiêu đề chính rõ ràng. Không lặp cùng thông
   điệp ở nhiều section.
-- Không thêm eyebrow, gạch chân, nhãn nhỏ, họa tiết, card, border hoặc shadow
-  chỉ để lấp khoảng trống.
-- Tạo phân cấp bằng lưới, khoảng trắng, chữ và ảnh có mục đích. Bề mặt phẳng
-  không đồng nghĩa với trang trắng trống trải.
+- Không thêm eyebrow, gạch chân, số liệu, nhãn hay họa tiết vô nghĩa để lấp
+  khoảng trống. Nhãn/kicker có trong CMS hoặc cần thiết cho hiểu nội dung được
+  phép khi hợp hướng thiết kế.
+- Dùng lưới, khoảng trắng, typography, media, surface và motion theo composition
+  được chọn; flat surface là một lựa chọn, không phải yêu cầu cho mọi section.
 - Ảnh và nội dung thật được ưu tiên. Không dùng ảnh AI/stock làm bằng chứng cho
   khách hàng, dự án, chứng nhận hoặc năng lực đã thực hiện.
 - Nội dung marketing có thể thay đổi phải thuộc Admin, có trạng thái hiển thị
@@ -176,20 +183,15 @@ Không tạo giá trị 17/19/27px mới nếu một token gần nhất giải q
 
 ### 3.4 Bề mặt, border, radius và shadow — ĐÃ DUYỆT
 
-- Card nội dung/sản phẩm/danh mục/bài viết hòa vào nền section: mặc định không
-  nền gần giống nền trang, không border, không shadow và không shell lồng nhau.
-- Radius mục tiêu: `0` cho shell/bề mặt nội dung; `2–5px` cho ảnh, input, CTA
-  chữ và boundary có nghĩa. Hình tròn/pill chỉ dùng cho icon button, avatar,
-  trạng thái hoặc chip có lý do chức năng.
-- Shadow chỉ dùng cho dropdown, modal, phần tử nổi/fixed hoặc overlay cần phân
-  biệt mặt phẳng. Hover không làm card nhảy lên nếu không có ý nghĩa thao tác.
-- Border chỉ dùng cho form control, bảng, focus, trạng thái chọn hoặc ranh giới
-  thao tác. CTA nền ảnh dùng một viền sáng rất nhẹ để xác định mép khối; không
-  thêm viền trang trí cho card nội dung. Breadcrumb không có border/gạch chân dưới.
-
-Token semantic mục tiêu: `radius-none:0`, `radius-sm:3px`, `radius-control:4px`,
-`radius-round:999px` chỉ cho vai trò chức năng; `elevation-0:none`,
-`elevation-popover` và `elevation-modal`. Không có `card-shadow` mặc định.
+- Các quy tắc bề mặt phẳng và radius 0–5px trong phiên bản trước đã được
+  supersede. Dùng token theo vai trò trong design language hiện hành:
+  `--radius-btn` 4px, `--radius-sm` 6px, `--radius-md`/`--radius-card` 10px,
+  `--radius-lg` 16px, `--radius-xl` 24px; pill chỉ cho vai trò phù hợp.
+- Card, border, shadow, glass và grid-paper là công cụ composition, không lệnh
+  phải dùng hoặc phải tránh. Chọn theo nội dung và canvas của route; tránh shell
+  lồng nhau, surface lặp và hiệu ứng trang trí không giúp hiểu/hoàn thành việc.
+- Dùng shadow theo token `--pts-shadow-*`; border cần giữ contrast và không làm
+  mất ranh giới control/focus. Breadcrumb theo treatment hiện hành ở document 12.
 
 ## 4. Hợp đồng layout và responsive
 
@@ -239,11 +241,15 @@ Kiểm tra tối thiểu tại `320, 360, 390, 414, 768, 1024, 1366, 1440, 1600,
 1920, 2560px`. 1920 và 2560 đại diện PC Full HD và iMac/2K; không kết luận
 responsive ổn chỉ từ laptop 1366px.
 
-### 4.4 Trang chủ Full Visual Parity — ĐÃ DUYỆT THEO CHỈ ĐẠO TRỰC TIẾP (ADR 0009)
+### 4.4 Bảo toàn nội dung trang chủ — ADR 0009
 
-- Trang chủ hiển thị đầy đủ Hero banner slider theo chuẩn giao diện PHP production (ảnh banner nhóm thiết bị nổi bật, slide controls, chỉ số slide, tiêu đề, kicker và nút xem sản phẩm/tư vấn lắp đặt).
-- Trang chủ hiển thị đầy đủ các section nghiệp vụ: Danh mục sản phẩm, Sản phẩm theo nhóm, Chiếu sáng/ứng dụng, Giải pháp theo từng nhu cầu (tabs), Quy trình 5 bước, Đăng ký đại lý, Về chúng tôi, và Form tư vấn liên hệ.
-- Mọi dữ liệu hình ảnh/nội dung lấy từ API backend PHP DTO hoặc fallback an toàn theo đúng thiết kế gốc.
+- Giữ các section nghiệp vụ và lối vào bán hàng đã duyệt: Hero/banner, Danh mục,
+  Sản phẩm theo nhóm, Chiếu sáng/ứng dụng, Giải pháp theo nhu cầu, Quy trình,
+  Đăng ký đại lý, Giới thiệu và Form tư vấn.
+- Exact PHP visual parity áp dụng khi task là migration/parity. Redesign được giao
+  rõ có thể thay đổi layout/art direction, nhưng không tự ý xóa các section,
+  business path hoặc dữ liệu thật. Hình ảnh/nội dung lấy từ API/CMS hoặc fallback
+  an toàn; không bịa media, claim hoặc số liệu.
 
 ## 5. Hợp đồng component dùng chung
 
@@ -290,17 +296,18 @@ responsive ổn chỉ từ laptop 1366px.
 
 ### 5.2 Breadcrumb
 
-- Một hàng ngắn trước nội dung chính; không border, nền card, shadow hay khoảng
-  trắng lớn phía dưới.
-- Cùng mép container với section kế tiếp. Item cuối là vị trí hiện tại, không
-  giả làm link nếu không cần.
+- Dùng shared component, cùng mép content container và semantics rõ; item cuối là
+  vị trí hiện tại, không giả làm link.
+- Dùng dải breadcrumb hiện hành từ design language; không ép route theo kiểu
+  trần/phẳng hoặc thêm shell/card tùy tiện.
 
 ### 5.3 Button, link và icon button
 
 - Primary: nền gradient gold chung, chữ/icon navy; secondary: nền trong
   suốt/trắng, border navy; text-link: chữ + icon hướng, không bọc thành pill
   tùy ý.
-- Cùng vai trò phải cùng màu, radius, chiều cao và hover trên mọi trang.
+- Cùng vai trò dùng chung semantic token và trạng thái; kích thước/composition có
+  thể khác khi nhiệm vụ của route khác nhau.
 - Trạng thái bắt buộc: default, hover, `:focus-visible`, active/selected,
   disabled và loading. Disabled không chỉ đổi màu mà phải ngăn thao tác.
 - Hit target tối thiểu 44×44px. Nút chỉ có icon phải có `aria-label`/tooltip phù
@@ -327,7 +334,8 @@ responsive ổn chỉ từ laptop 1366px.
 
 ### 5.5 Chip, tab, badge và pagination
 
-- Chip/filter thường: nền xám-xanh, radius 3px; active: navy + chữ trắng.
+- Chip/filter chọn treatment theo current token và trạng thái; không mặc định
+  một radius hay nền cho mọi rail/tab.
 - Tab phải cho biết trạng thái bằng màu và semantics, dùng keyboard được.
 - Badge là metadata ngắn, không phải CTA. Không tạo badge chỉ để trang trí.
 - Pagination có vùng bấm tối thiểu 44px, current state rõ, không pill quá mức.
@@ -346,8 +354,8 @@ responsive ổn chỉ từ laptop 1366px.
 
 - Label luôn hiện; placeholder chỉ là ví dụ, không thay label. Field bắt buộc có
   dấu và thông báo lỗi gắn với field.
-- Input/select/textarea cùng chiều cao, radius 2–5px, border và focus ring thống
-  nhất. Không dùng shadow/radius lớn để biến form thành một thiết kế khác site.
+- Input/select/textarea giữ hit area, label, error/focus behavior và contrast nhất
+  quán. Radius/surface lấy từ token hiện hành, không phải giới hạn cũ 2–5px.
 - Validation server-side là bắt buộc; mutation giữ session/quyền và CSRF theo
   `AGENTS.md`. Không xóa dữ liệu người dùng sau lỗi có thể sửa.
 - Form dài chia nhóm theo ý nghĩa, không theo nhu cầu lấp cột. Submit có loading,
@@ -417,7 +425,9 @@ fallback trung tính đúng loại; không dùng một placeholder cho mọi ng�
 
 ### Trang chủ
 
-- Full Visual Parity theo chuẩn PHP Production (ADR 0009). Hiển thị đầy đủ Hero banner slider và các section: Danh mục, Sản phẩm theo nhóm, Chiếu sáng/ứng dụng, Giải pháp (tabs), Quy trình 5 bước, Đăng ký đại lý, Về chúng tôi, Form tư vấn liên hệ.
+- Giữ đầy đủ các section nghiệp vụ theo ADR 0009; chọn visual composition theo
+  current design language. Task migration/parity giữ baseline PHP; task redesign
+  có thể khác presentation theo phạm vi và hướng được chọn.
 
 ### Danh mục và chi tiết sản phẩm
 
@@ -440,7 +450,9 @@ fallback trung tính đúng loại; không dùng một placeholder cho mọi ng�
 
 ### Giới thiệu, Giải pháp, Dự án và Kiến thức
 
-- Một H1, một mục tiêu/section, không eyebrow/line trang trí.
+- Một H1 và mục tiêu section rõ. Không bịa nhãn/số liệu; có thể dùng kicker,
+  chapter label, line hoặc motif khi thuộc nội dung/hướng thiết kế và không gây
+  nhiễu cho thứ bậc thông tin.
 - Giải pháp và bài kiến thức dài dùng CKEditor H2/H3/list/table/image; hero,
   navigation, related items và CTA/form thuộc template/Admin field chuyên trách.
 - Dự án/chứng nhận/năng lực chỉ dùng bằng chứng xác minh được.
@@ -479,18 +491,19 @@ fallback trung tính đúng loại; không dùng một placeholder cho mọi ng�
 
 | Trách nhiệm | Chủ sở hữu |
 |---|---|
-| Màu, chip, vai trò shared | `design-tokens.css` |
+| Màu, radius, elevation, motion, surface primitives | `frontend/app/assets/css/main.css` và design language 2026-11 |
 | Thang chữ public | `typography-system.css` |
 | Tỷ lệ/fit ảnh | `media-system.css` |
 | Container/gutter/breakpoint cấu trúc | `responsive-architecture.css` |
-| Bề mặt phẳng | `flat-surface-system.css` |
+| Shared route shell | component owner tương ứng; Nuxt không có global flat-surface override |
 | Header/footer | `header-v3.css`, `footer-v3.css` |
 | Commerce/PDP/cart/checkout | `commerce-experience.css`, `product-detail-v2.css` |
 | Biến thể chỉ một route | CSS trang, nạp trước các lớp shared |
 
-CSS trang không được định nghĩa lại token, container chung, body typography,
-shared button/chip/card/header/footer. Nếu component dùng ở từ hai nơi trở lên,
-di chuyển về lớp shared hoặc tạo component mới có hợp đồng và test.
+CSS trang không tạo token navy/gold tùy tiện hoặc thay container/semantic chung
+không có lý do. Page composition, surface và local component được phép tạo theo
+route khi dùng palette/token hiện hành và có owner rõ. Nếu component dùng từ hai
+nơi trở lên, chuyển về shared layer hoặc component có API/test phù hợp.
 
 Nội dung marketing biến đổi phải đi theo chuỗi:
 
@@ -501,8 +514,8 @@ Admin field + hướng dẫn ảnh/copy -> validation -> DB -> source -> templat
 
 ### CTA cuối trang
 
-CTA cuối nội dung dùng `PublicCtaBanner.vue` để thống nhất ảnh nền, lớp phủ navy,
-độ tương phản, khoảng cách và cách xếp lại trên mobile. Nội dung, ảnh, hotline,
+CTA cuối nội dung có thể dùng `PublicCtaBanner.vue` như một lựa chọn shared để
+giữ ảnh nền, lớp phủ navy, độ tương phản và responsive. Nội dung, ảnh, hotline,
 Zalo và URL vẫn lấy từ DTO/Admin hoặc fallback đã duyệt; không gộp nội dung
 nghiệp vụ của các trang thành một câu cố định.
 
@@ -514,15 +527,15 @@ Ba biến thể được phân theo mục đích:
 | `editorial` | Kiến thức, danh sách dự án và trang chi tiết dự án | Dải ảnh nền rộng; tiêu đề/mô tả và điểm tin cậy bên trái, hotline/CTA gom bên phải |
 | `catalog` | Danh mục sản phẩm và thương hiệu | Dải ảnh nền thấp gọn; thông điệp ngắn và một CTA chính trên cùng hàng |
 
-Desktop dùng cùng khung chiều rộng nội dung và căn giữa theo trục; dưới 760px
-các biến thể chuyển thành một cột, giữ thứ tự nội dung rồi đến thao tác. Mỗi dải
-CTA luôn có ảnh nền: ưu tiên ảnh CMS phù hợp ngữ cảnh; nếu field ảnh trống hoặc
+Desktop dùng khung chiều rộng phù hợp composition; dưới 760px các biến thể chuyển
+thành một cột, giữ thứ tự nội dung rồi đến thao tác. Khi chọn dạng ảnh nền, ưu
+tiên ảnh CMS phù hợp ngữ cảnh; nếu field ảnh trống hoặc
 ảnh CMS không tải được, `PublicCtaBanner.vue` dùng ảnh WebP dự phòng theo biến
 thể (`cta-corporate-bg.webp`, `cta-editorial-bg.webp` hoặc `cta-catalog-bg.webp`).
 Ảnh dự phòng chỉ tạo không khí thị giác, không dùng làm bằng chứng dự án, đội ngũ,
 chứng nhận hay năng lực thực tế. Nút hành động dùng gradient vàng chuẩn; đường dẫn
-gọi, Zalo và mở form giữ theo DTO. Cả ba biến thể dùng chung radius `4px` và viền
-trắng mảnh cùng độ tương phản thấp; không tạo ngoại lệ radius/border theo từng trang.
+gọi, Zalo và mở form giữ theo DTO. CTA dùng radius button token hiện hành;
+treatment surface/viền theo ngữ cảnh và không được làm giảm contrast.
 
 ## 10. Anti-pattern bị cấm
 
@@ -530,7 +543,8 @@ trắng mảnh cùng độ tương phản thấp; không tạo ngoại lệ radi
 - Có nhiều `max-width` cho cùng cấp container hoặc gutter owner lồng nhau.
 - Dùng `min-height`/spacer rỗng để cột trái cao bằng form cột phải.
 - Thu font, crop ảnh sai tỷ lệ hoặc chèn `<br>` cứng để chữa overflow.
-- Bo 12–24px, pill, gradient và shadow trên card/control không có lý do.
+- Dùng token radius/elevation theo vai trò sai mục đích; xếp nhiều lớp card,
+  glass hoặc shadow mà không giúp định hướng, đọc hoặc thao tác.
 - Hardcode màu gần giống token; trộn icon; dùng emoji làm icon giao diện.
 - `!important` mới mà không ghi cascade owner và lý do.
 - Chép nội dung marketing có thể thay đổi vào PHP/CSS/ảnh.
@@ -541,7 +555,7 @@ trắng mảnh cùng độ tương phản thấp; không tạo ngoại lệ radi
 Một thay đổi chỉ hoàn tất khi:
 
 1. xác định route/source/template, component owner và dữ liệu Admin liên quan;
-2. đối chiếu tài liệu này và ADR, không tạo ngôn ngữ riêng theo trang;
+2. đối chiếu current design language và các hợp đồng trong tài liệu này; composition riêng theo route được khuyến khích khi phục vụ user task;
 3. có trạng thái default/hover/focus/disabled/loading/error khi liên quan;
 4. không overflow ở 320px và không lệch container ở 1920/2560px;
 5. kiểm tra keyboard, focus, contrast, label/alt và touch target;
@@ -555,16 +569,18 @@ Test tối thiểu nên gồm homepage, category, PDP, about, solution, project,
 dealer và contact. Với thay đổi container/shared component, phải đo cùng selector
 ở toàn bộ route thay vì chỉ screenshot một trang.
 
-## 12. Khoảng cách giữa chuẩn và implementation hiện tại
+## 12. Snapshot lịch sử về implementation (2026-10-31)
 
-Không sửa tất cả bằng một đợt refactor lớn. Bảng này ngăn người sau hiểu nhầm
-legacy là quyết định thiết kế:
+Các dòng dưới đây ghi lại nhận định tại ngày lập tài liệu, không phải chuẩn thị
+giác hiện tại và không được dùng để yêu cầu redesign mới quay lại bề mặt phẳng,
+radius 2–5px hoặc bỏ motion. Dùng chúng làm evidence lịch sử khi rà soát đúng
+thời điểm; trước thay đổi hiện tại hãy kiểm tra source/QA mới.
 
 | Drift đã biết | Chuẩn | Hướng xử lý |
 |---|---|---|
-| `theme-v2.css` còn radius 10–20px, pill và shadow | 0 hoặc 2–5px, phẳng | thay dần theo component + visual regression |
-| Token cũ `--pts-radius:12px` còn được dùng | radius theo vai trò | tách token semantic rồi migrate consumer |
-| Breadcrumb legacy còn border ở vài selector | không border | gom về component breadcrumb shared |
+| `theme-v2.css` có radius/pill/shadow nhiều mức | kiểm tra so với token theo vai trò hiện hành | chỉ sửa khi còn lệch visual language/QA mới |
+| Token cũ `--pts-radius:12px` còn được dùng | đối chiếu semantics với token hiện hành | migrate khi có consumer drift thực tế |
+| Breadcrumb legacy có nhiều cách render | shared breadcrumb semantics và treatment hiện hành | gom khi có lỗi/đợt đồng bộ component phù hợp |
 | Project card đang dùng 8:5 trong media CSS | dự án 4:3 | xác minh dữ liệu/crop rồi đổi cùng test |
 | Một số hub hardcode màu gần token | chỉ token shared | audit và thay theo component owner |
 | Cascade còn nhiều `!important` | owner rõ, specificity thấp | giảm dần, không cleanup ngoài task |
@@ -572,22 +588,21 @@ legacy là quyết định thiết kế:
 
 ### Lộ trình hội tụ an toàn
 
-1. **Khóa chuẩn:** dùng tài liệu này, ADR và test container/media hiện có.
+1. **Chốt hướng:** dùng owner brief và current design language; giữ các data/SEO/accessibility contract của tài liệu này.
 2. **Inventory:** lập danh sách component/selector theo route và trạng thái.
-3. **Token semantic:** bổ sung spacing/radius/control/elevation token, không đổi
-   hàng loạt consumer trong cùng commit.
-4. **Shared component:** ưu tiên breadcrumb, button/form, card/media, icon rồi
-   mới đến page composition.
+3. **Token semantic:** dùng radius/elevation/motion token hiện hành; chỉ thêm token khi role mới không biểu diễn được.
+4. **Shared component:** ưu tiên semantics/API và ổn định behavior; page composition vẫn được thiết kế theo từng route.
 5. **Migrate theo lát dọc:** mỗi đợt gồm component + các route dùng nó + test.
 6. **Xóa legacy cuối cùng:** chỉ khi chứng minh không còn consumer bằng search,
    runtime và visual regression.
 
 ## 13. Quy trình thay đổi chuẩn
 
-- Sửa lỗi implementation để khớp chuẩn: cập nhật code/test, không cần ADR mới.
-- Thay đổi hướng thiết kế, IA, tỷ lệ ảnh, container, component shared hoặc Admin
-  ownership: cần chủ project duyệt, ADR và cập nhật tài liệu này trước/cùng code.
-- Ngoại lệ tạm thời phải ghi route/component, lý do, owner, ngày hết hạn và test
-  ngăn lan sang trang khác.
+- Sửa implementation để khớp owner direction/current design language và các hợp
+  đồng data/SEO/accessibility: cập nhật code/test, không cần ADR mới.
+- Thay đổi hướng thiết kế shared, IA, media contract, container, component shared
+  hoặc Admin ownership: cần owner decision và cập nhật ADR/tài liệu liên quan.
+- Kicker, motif, surface, radius hay motion không phải “ngoại lệ” chỉ vì khác
+  implementation cũ; phải hợp token, task, content và accessibility.
 - Rollback UI thường là bỏ stylesheet/rule/component mới và khôi phục test tương
   ứng; không xóa asset/data Admin khi rollback presentation.

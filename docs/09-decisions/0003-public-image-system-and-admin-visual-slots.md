@@ -50,7 +50,8 @@ bản quá lớn, logo có nguy cơ bị crop và một số trang quan trọng 
 
 ## Hệ quả
 
-- Website có nhịp hình ảnh rõ hơn mà vẫn giữ bề mặt phẳng theo ADR 0002.
+- Website có nhịp hình ảnh rõ hơn. Surface theo composition hiện hành; ADR 0002
+  chỉ còn là lịch sử sau khi được ADR 0010 supersede.
 - Admin phải chuẩn bị ảnh đúng tỷ lệ; ảnh cũ vẫn hiển thị an toàn nhưng các nguồn
   nhỏ cần được thay dần theo danh sách ưu tiên trong audit ngày 2026-09-15.
 - Nhóm quyền đã quản lý quảng cáo được cấp thêm quyền cho ba type mới qua

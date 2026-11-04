@@ -1,7 +1,7 @@
 # ADR 0007: Một hợp đồng UI/UX dùng chung cho toàn bộ public site
 
 - Ngày: 2026-09-22
-- Trạng thái: Accepted
+- Trạng thái: Accepted for durable UX/implementation contracts; visual-authority clause superseded 2026-11-04 by ADR 0010
 - Owner: Chủ project Phúc Thịnh Solar
 
 ## Context
@@ -14,20 +14,24 @@ trang và thường tái xuất hiện ở viewport Full HD/iMac.
 ## Evidence
 
 - Nhiều thế hệ CSS và specificity/`!important` chồng lớp.
-- `theme-v2.css` vẫn chứa radius 10–20px trong khi quy tắc đã duyệt là 2–5px.
+- Historical evidence: `theme-v2.css` contained radii that differed from the then-current 2–5px rule. That comparison is not a current design requirement.
 - Breadcrumb, media project và container từng có implementation khác hợp đồng.
 - Cùng vai trò màu từng có nhiều navy/gold gần nhau ở các hub.
 - Tài liệu frontend cũ mô tả sai một phần thứ tự file CSS đang nạp.
 
 ## Decision
 
-1. `docs/02-development/public-ui-ux-design-system.md` là nguồn chuẩn duy nhất
-   về UI/UX public.
-2. `frontend-guide.md` chỉ sở hữu cách triển khai/cascade, không tự định nghĩa
-   lại hướng thiết kế.
-3. Component dùng ở từ hai nơi trở lên phải có owner shared và test theo route.
-4. Thay đổi hướng thiết kế/shared contract cần ADR; CSS cục bộ không được tạo
-   ngoại lệ ngầm.
+1. Tài liệu `docs/02-development/public-ui-ux-design-system.md` sở hữu các hợp
+   đồng UX, dữ liệu, URL/SEO, media, responsive, accessibility và behavior.
+   Ngôn ngữ thị giác hiện hành do
+   `docs/15-design-delivery/12-PTS-DESIGN-LANGUAGE-2026-11.md` sở hữu.
+2. `frontend-guide.md` sở hữu cách triển khai/cascade, không tự định nghĩa lại
+   hướng thiết kế.
+3. Component dùng ở từ hai nơi trở lên cần owner shared và kiểm tra trên các
+   route sử dụng.
+4. Thay đổi token/hợp đồng thị giác dùng chung cần owner direction và được ghi
+   nhận; composition riêng của một route nằm trong phạm vi redesign được giao
+   không phải ngoại lệ token ngầm.
 5. Legacy được migrate theo component/lát dọc, không refactor big-bang.
 
 ## Alternatives
@@ -39,7 +43,8 @@ trang và thường tái xuất hiện ở viewport Full HD/iMac.
 
 ## Consequences
 
-- Người và AI có điểm vào thống nhất trước khi sửa giao diện.
+- Người và AI có điểm vào thống nhất cho từng loại quyết định: design language
+  cho thị giác, public UI contract cho nghiệp vụ và behavior.
 - Review có tiêu chí cụ thể cho container, component, responsive và accessibility.
 - Cần audit/migrate dần các rule legacy; việc chấp nhận ADR không có nghĩa code
   hiện tại đã tự động tuân thủ toàn bộ.

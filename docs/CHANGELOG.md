@@ -1,5 +1,17 @@
 # Documentation changelog
 
+## 2026-11-04
+
+- Đồng bộ chỉ dẫn thiết kế theo ngôn ngữ PTS hiện hành: design language 2026-11
+  là authority cho thị giác; public UI/UX contract tiếp tục giữ quy tắc về dữ
+  liệu, CMS, IA, URL/SEO, media, responsive, accessibility và behavior.
+- Phân biệt rõ PHP visual parity cho migration/parity với creative redesign;
+  đánh dấu các điều khoản flat-only, radius 2–5px và snapshot audit cũ là lịch
+  sử thay vì ràng buộc cho thiết kế mới.
+- Thêm ADR 0010 và cập nhật entrypoint/changelog để không làm mất các yêu cầu
+  trang chủ, commerce, dữ liệu thật hoặc bảo vệ URL khi đổi presentation.
+- Chỉ thay đổi tài liệu; không đổi runtime, production, database hoặc deploy.
+
 ## 2026-10-30
 
 - Tích hợp nâng cấp giao diện Nuxt từ checkpoint `feature/ui-layout-upgrade-20261029`:

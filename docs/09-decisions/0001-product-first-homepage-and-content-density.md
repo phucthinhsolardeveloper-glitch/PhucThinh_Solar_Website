@@ -4,6 +4,11 @@
 - Owner: Chủ project
 - Trạng thái: Đã duyệt
 
+> Phạm vi: các quyết định homepage tại mục 1–2 đã được ADR 0006/0009 điều chỉnh;
+> quy tắc radius ở mục 8 được ADR 0010 supersede. Mục 3–7 chỉ còn giá trị khi
+> phù hợp với cấu trúc, dữ liệu và owner direction hiện hành. Đây là quyết định
+> lịch sử, không phải bản thiết kế bắt buộc cho trang chủ hiện nay.
+
 ## Bối cảnh
 
 Trang chủ cũ đưa nhiều nội dung giới thiệu doanh nghiệp, giải pháp, quy trình và dự án vào cùng một luồng. Tiêu đề section còn dùng eyebrow nhỏ và gạch trang trí, làm tăng khoảng trống nhưng không hỗ trợ người dùng tìm sản phẩm. Chủ project yêu cầu bám nhịp bán hàng của Kitawa, trong khi vẫn giữ nhận diện và dữ liệu thật của Phúc Thịnh Solar.
@@ -17,7 +22,7 @@ Trang chủ cũ đưa nhiều nội dung giới thiệu doanh nghiệp, giải p
 5. Badge như `HOT`, ngày bài viết, thông số, giá/báo giá và CTA được giữ vì có giá trị chức năng.
 6. Banner chiến dịch, danh mục, sản phẩm, chứng nhận, logo đối tác và tin tức phải lấy từ Admin. Nếu chưa có banner chiến dịch, dùng danh mục nổi bật làm fallback.
 7. Header không hiển thị mục Trang chủ; logo đảm nhiệm điều hướng về `/`. Nhãn menu `/ve-chung-toi/` là “Giới thiệu”, URL không đổi.
-8. Card/khung/nút chữ chỉ bo nhẹ 2–5px. Bo tròn hoàn toàn chỉ dành cho icon, badge hoặc điều khiển có ý nghĩa chức năng.
+8. (Đã supersede) Bản ghi ban đầu giới hạn card/khung/nút chữ ở radius 2–5px.
 
 ## Hệ quả
 

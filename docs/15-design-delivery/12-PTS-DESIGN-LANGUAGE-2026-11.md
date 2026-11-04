@@ -1,14 +1,29 @@
 # Ngôn ngữ thiết kế PTS — bản 2026-11
 
-Trạng thái: **ĐANG ÁP DỤNG** — quyết định của chủ dự án ngày 2026-11-04.
+Trạng thái: **ĐANG ÁP DỤNG** — quyết định của chủ dự án ngày 2026-11-04; được đồng bộ qua ADR 0010.
 Phạm vi: toàn bộ website công khai Phúc Thịnh Solar (Nuxt, `frontend/`).
-Thay thế: các quy định về **bề mặt** (bo góc 0–5px, cấm kính mờ, cấm đổ bóng) trong `02-PTS-VISUAL-LANGUAGE.md`. Các quy định về dữ liệu thật, SEO, khả năng truy cập và nội dung kỹ thuật trong file đó vẫn giữ nguyên.
+Thay thế: các quy định thị giác cũ về flat-only surfaces, radius 0–5px, cấm glass/shadow, breadcrumb không viền và giới hạn motion trong `AGENTS.md`, `docs/02-development/public-ui-ux-design-system.md`, ADR 0001/0002/0003/0006/0007 và `02-PTS-VISUAL-LANGUAGE.md`. Các hợp đồng về dữ liệu thật, URL/SEO, bảo mật, khả năng truy cập, commerce và tỷ lệ media vẫn giữ nguyên nếu tài liệu này không sửa rõ.
 
 ## 1. Tinh thần
 
-- Sáng tạo tự do, không giới hạn layout, motion, hiệu ứng; mỗi trang được có bố cục và chuyển động riêng.
+- **Không giới hạn sáng tạo**: không có quy tắc nào khóa layout, motion, hiệu
+  ứng, chất liệu hay cách kể chuyện; mỗi trang được có bố cục và chuyển động
+  riêng, được phá cách so với giao diện cũ. Các mục bên dưới là **từ vựng chung**
+  để mọi trang nói cùng một giọng thương hiệu, không phải hàng rào. Thứ duy nhất
+  không được hy sinh: trang phải chạy mượt, đọc được, dùng được và nội dung là thật.
 - **Đồng bộ nằm ở hệ thống, không phải ở việc làm mọi thứ giống nhau**: cùng màu, cùng thang bo góc, cùng chất liệu, cùng đường cong chuyển động, cùng cách viết chữ. Nhìn trang nào cũng phải nhận ra cùng một thương hiệu.
 - Cảm giác mục tiêu: hiện đại, cao cấp, chuyên nghiệp, mượt, không giật.
+
+## 1b. Cách nhận việc và làm việc (áp dụng cho mọi phiên AI: Claude, Codex, …)
+
+Chủ dự án giao việc bằng định hướng ngắn ("bứt phá đi", "sáng tạo lên", "làm cho mượt"). Phiên nhận việc phải:
+
+1. **Tự chủ đến cùng**: tự khảo sát code/dữ liệu thật, tự chọn hướng thiết kế táo bạo, tự triển khai, không hỏi lại những lựa chọn thiết kế — chọn phương án tốt nhất rồi làm.
+2. **Đọc ý, không đọc chữ**: "đồng bộ" là cùng một ngôn ngữ, không phải làm mọi thứ giống nhau; "bỏ quy tắc cũ" là được phá cách, không phải bám tài liệu cũ.
+3. **Kiểm chứng như người dùng thật**: chạy trên trình duyệt (desktop 1440 / tablet 820 / mobile 390), đo nhảy layout trên bản build, thử đúng thao tác (bấm, lọc, thêm giỏ, chuyển trang); sửa lỗi phát hiện được kể cả lỗi có sẵn.
+4. **Phản hồi nhanh theo góp ý**: chủ dự án gửi ảnh chụp + một câu → sửa ngay đúng chỗ, rồi mở rộng sang chỗ tương tự trên toàn site.
+5. **Giữ an toàn**: `npm test` + `npm run typecheck` đạt trước mỗi commit; commit nhỏ, mô tả lý do; không đẩy staging khi chưa được xác nhận; không ghi đè việc dở của phiên khác (kiểm tra `git status`/`git log` trước).
+6. **Báo cáo bằng tiếng Việt, ngắn gọn**: đã làm gì, thấy lỗi gì, còn gì treo.
 
 ## 2. Màu
 
@@ -20,7 +35,9 @@ Thay thế: các quy định về **bề mặt** (bo góc 0–5px, cấm kính m
 | Nền trang sáng | `#fff` và `#f6f8fb` | Section xen kẽ trắng / xám rất nhạt |
 | Chữ phụ | `#52627a` (sáng), `#c3cfdf` (trên navy) | |
 
-Không dùng tím, neon, màu ngoài bảng.
+Tránh màu accent ngoài nhận diện như tím/neon. Màu chức năng (thành công, cảnh
+báo, lỗi), media và trạng thái dữ liệu có thể dùng màu semantic phù hợp, giữ
+đủ tương phản và không cạnh tranh với navy/gold.
 
 ## 3. Chữ
 
@@ -73,19 +90,26 @@ Bóng luôn ánh navy (không đen thuần), mềm, trải rộng.
 ## 8. Bố cục chung
 
 - Khung nội dung: `.pts-container` (gutter 12/16/24px… theo breakpoint).
-- **Breadcrumb**: luôn là dải `border-b border-slate-200/70 bg-slate-50/80` + `.pts-container`, đặt ngoài `<main>`, ngay dưới header.
+- **Breadcrumb**: dùng component và treatment phù hợp với composition hiện hành;
+  đặt đúng thứ bậc điều hướng, không bắt buộc một dải nền/viền toàn cục.
 - Nhịp section: `padding: clamp(64px, 8vw, 120px) 0`.
-- Hero chi tiết (giải pháp, dự án, đại lý): tràn khung, **chiều cao cố định theo loại trang** để chuyển trang không co giãn.
+- Hero có thể tràn khung hoặc nằm trong lưới theo art direction; chọn chiều cao
+  theo media, nội dung và viewport. Khai báo tỷ lệ/kích thước để tránh layout
+  shift, không khóa một chiều cao toàn cục chỉ để làm các route giống nhau.
 - Danh sách nhiều trang (dự án, tin, sản phẩm): lưới đều, chạy ổn định khi có nhiều trang.
 - Mỗi trang được tự do chọn layout (bảng ghép đôi, timeline, sân khấu trích dẫn, tường ảnh…) miễn dùng đúng màu/chữ/bo góc/chất liệu ở trên.
 
 ## 9. Chuyển động
 
 - Đường cong duy nhất: `--pts-ease` = `cubic-bezier(0.22, 1, 0.36, 1)`; thời lượng `--pts-dur-fast` 0.2s, `--pts-dur` 0.35s, `--pts-dur-slow` 0.6s.
-- Chuyển trang: View Transitions (header đứng yên, nội dung mờ chuyển). Trang có hiệu ứng riêng (chuyển giải pháp) tắt bằng `viewTransition: false`.
+- Chuyển trang: native View Transitions hoặc giải pháp tương đương khi có lợi
+  cho định hướng; giữ trạng thái focus/scroll phù hợp và không làm header hoặc
+  nội dung nhảy ngoài ý muốn. Route có hiệu ứng riêng cần tránh chạy chồng hai
+  transition.
 - Hiệu ứng “lỏng”: pill kéo giãn khi đổi lựa chọn, ảnh bay vào giỏ, số tiền chạy, thẻ nảy nhẹ — luôn ngắn, có mục đích.
 - Bắt buộc tôn trọng `prefers-reduced-motion` (tắt hoặc chỉ giữ fade).
-- Chỉ animate `transform` và `opacity`. Không animate kích thước gây xô layout.
+- Ưu tiên `transform` và `opacity`; hiệu ứng khác chỉ dùng khi đã kiểm tra chi
+  phí render và không gây layout shift.
 
 ## 10. Ổn định & hiệu năng (bắt buộc)
 
@@ -93,12 +117,14 @@ Bóng luôn ánh navy (không đen thuần), mềm, trải rộng.
 - Ảnh hero có kích thước cố định; nội dung động có chỗ chừa sẵn.
 - Danh sách dài cuộn trong khung riêng khi đặt cạnh khối tóm tắt dính.
 - Phân trang cuộn mượt về đầu danh sách (`data-results`); đổi bộ lọc giữ nguyên vị trí.
-- Không flash: không bật/tắt `display` cho menu — dùng opacity/transform + độ trễ ý định hover.
+- Menu và nội dung tương tác phải có trạng thái mở/đóng ổn định, hoạt động bằng
+  bàn phím/chạm; tránh nhấp nháy hoặc phụ thuộc riêng vào hover.
 
 ## 11. Nội dung
 
 - Không bịa số liệu, chứng chỉ, dự án, đánh giá.
-- Không hiển thị con số đếm (số sản phẩm, số ảnh, số kết quả…).
+- Không thêm số đếm trang trí hoặc số liệu không có nguồn. Count có thật (ví dụ
+  kết quả tìm kiếm) được hiển thị khi giúp người dùng hiểu trạng thái/tác vụ.
 - Trạng thái trống phải nói đúng lý do (chưa có nội dung / không khớp tìm kiếm / đang tuyển…) và luôn có lối đi tiếp.
 
 ## 12. Định hướng sáng tạo
@@ -165,7 +191,7 @@ Quy tắc: tối đa **một hiệu ứng “chủ đạo”** mỗi màn hình;
 
 - [ ] Màu, chữ, bo góc, bóng, chất liệu đều lấy từ token ở trên (không số lẻ).
 - [ ] Không chữ hoa giãn chữ, không đánh số trang trí, không con số đếm.
-- [ ] Breadcrumb đúng dải chuẩn; header/footer không bị đè.
+- [ ] Breadcrumb đúng thứ bậc và treatment của composition; header/footer không bị đè.
 - [ ] Desktop 1440 + tablet 820 + mobile 390: không tràn ngang, không lòi lề.
 - [ ] CLS ≈ 0 trên bản build; thao tác không làm nhấp nháy phần khác.
 - [ ] `prefers-reduced-motion` đã xử lý.

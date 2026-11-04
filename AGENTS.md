@@ -93,24 +93,38 @@ Project được kế thừa. Không mặc định hành vi hiện có là chủ
 
 ## Quy tắc UX/UI đã duyệt
 
-Trước mọi thay đổi giao diện public, đọc
-`docs/02-development/public-ui-ux-design-system.md`. Đây là nguồn chuẩn đầy đủ
-cho token, component, media, responsive, accessibility và Definition of Done;
-các gạch đầu dòng dưới đây là bản tóm tắt bắt buộc, không phải một hệ riêng.
+Trước mọi thay đổi public, đọc `docs/15-design-delivery/00-START-HERE.md` và
+`docs/15-design-delivery/12-PTS-DESIGN-LANGUAGE-2026-11.md` để biết ngôn ngữ thị
+giác hiện hành. `docs/02-development/public-ui-ux-design-system.md` tiếp tục là
+hợp đồng cho dữ liệu, IA, responsive, media, accessibility và hành vi; các quy
+tắc thẩm mỹ cũ trong đó đã được cập nhật theo ngôn ngữ thiết kế hiện hành.
 
-- Giao diện Nuxt (Vue 3 + Tailwind CSS + Nuxt UI) phải đảm bảo Full Visual Parity, tái hiện đầy đủ và đồng nhất với giao diện thực tế của website production (PHP render) theo đúng bộ ảnh tham khảo thực tế.
-- Trang chủ hiển thị đầy đủ Hero banner slider (ảnh, slide indicators, điều hướng, nút xem sản phẩm/tư vấn) và đầy đủ các section nghiệp vụ: Danh mục sản phẩm, Sản phẩm theo nhóm, Chiếu sáng/ứng dụng, Giải pháp theo từng nhu cầu (tabs), Quy trình 5 bước, Đăng ký đại lý, Về chúng tôi, và Form tư vấn liên hệ.
-- Các trang con (Sản phẩm, Chi tiết sản phẩm PDP, Giải pháp, Dự án, Tin tức, Giới thiệu, Đại lý, Liên hệ) phải tuân thủ bố cục, banner, tabs, bộ lọc và khối nội dung tương ứng như bản production PHP.
+- Chọn composition theo mục tiêu thật của từng trang. Các canvas, token, vật
+  liệu và motion dùng chung của PTS lấy từ design language hiện hành; không áp
+  một layout/card template cho mọi trang.
+- Full Visual Parity với PHP áp dụng cho task migration/parity được giao rõ.
+  Với redesign sáng tạo được giao hoặc đã duyệt, giữ đường đi nghiệp vụ, dữ liệu,
+  URL/SEO, semantics và accessibility; được phép thay đổi cách trình bày theo
+  hướng thiết kế đã chọn và bằng chứng preview.
+- Trang chủ giữ các section nghiệp vụ và lối vào bán hàng đã duyệt. Bố cục/hero
+  hiện hành chỉ là baseline cho task parity; redesign trang chủ/header/footer vẫn
+  cần có phạm vi rõ, không tự ý xóa luồng hoặc nội dung nghiệp vụ.
+- Giao diện Nuxt dùng Vue 3, Tailwind CSS và Nuxt UI theo semantics/accessibility
+  phù hợp. Chọn token thị giác theo vai trò trong design language hiện hành.
+- Motion có thể tạo cá tính cho từng trải nghiệm; phải phục vụ nội dung/thao tác,
+  không chặn scroll tự nhiên, không làm layout giật và phải tôn trọng
+  `prefers-reduced-motion`.
 - Header không có mục Trang chủ; logo là đường dẫn về trang chủ. Nhãn public của `/ve-chung-toi/` là “Giới thiệu”, không đổi URL.
 - Điều hướng chính desktop giữ nút Danh mục sản phẩm và đúng 5 nhóm: Giới thiệu, Giải pháp, Dự án, Kiến thức, Hợp tác. Không đưa Tin tức, Đại lý hoặc Liên hệ trở lại thành mục top-level; chúng là nội dung con của Kiến thức/Hợp tác/Giới thiệu. Giữ các URL public cũ hoạt động để bảo toàn SEO và link đã chia sẻ.
-- Hạn chế bo góc lớn. Card, khung ảnh, ô tìm kiếm và CTA dạng chữ chỉ bo nhẹ khoảng 2–5px; chỉ dùng hình tròn/pill cho icon hoặc trạng thái có lý do chức năng.
-- Ưu tiên bề mặt phẳng trên toàn website: card nội dung, card sản phẩm, danh mục, bài viết và khối thông tin phải hòa vào nền section, không bọc thêm nền gần giống nền trang, border, gạch phân cách, bo góc hoặc shadow chỉ để trang trí. Tạo phân cấp bằng khoảng trắng, lưới, typography và ảnh; chỉ giữ border cho form control, bảng dữ liệu, focus, trạng thái chọn hoặc ranh giới có ý nghĩa thao tác.
-- Breadcrumb không có border/gạch chân dưới. Các hub/trang con cũng tuân thủ quy tắc một tiêu đề chính, không eyebrow, đường kẻ hay dấu trang trí thừa như trang chủ.
-- CẤM tuyệt đối eyebrow/kicker tự bịa: không được tự chèn một dòng nhãn nhỏ (`text-xs`/`text-[11-13px]` + `uppercase` + `tracking-wide`, thường kèm chấm tròn trang trí) phía trên H1/H2 để "làm đẹp" khi nội dung đó không có trong DTO/CMS — ví dụ các cụm tự bịa như "Hệ thống ứng dụng", "Lộ trình & Cột mốc", "Hợp tác kinh doanh". Đây là khuôn mẫu AI-slop điển hình, không phải phong cách thiết kế của site. Heading đi thẳng vào H1/H2 thật; nếu cần ngữ cảnh phụ thì dùng mô tả văn xuôi ngay dưới heading, không dùng nhãn viết hoa rời rạc. Vi phạm bị coi là lỗi cần sửa lại ngay, không phải lựa chọn thẩm mỹ được châm chước.
+- Không áp một giới hạn radius hoặc quy tắc bề mặt phẳng cho toàn website. Chọn token radius, surface, border, shadow và glass theo vai trò trong `12-PTS-DESIGN-LANGUAGE-2026-11.md`; tránh shell lồng nhau và hiệu ứng không giúp đọc, định hướng hoặc thao tác.
+- Breadcrumb dùng component và visual treatment hiện hành; không buộc mọi route
+  theo kiểu breadcrumb phẳng cũ. Heading phải rõ cấp bậc; không tạo nhãn, số liệu
+  hay claim giả chỉ để trang trí.
+- Tránh eyebrow/kicker viết hoa giãn chữ hoặc số trang trí nếu chúng chỉ làm đẹp. Nhãn chương/loại nội dung chỉ dùng khi truyền đạt ngữ cảnh thật và phù hợp design direction; không bịa số liệu, claim hay tên chương để lấp khoảng trống. Heading vẫn phải rõ cấp bậc và có nội dung chính xác.
 - Không lặp lại cùng một thông điệp ở nhiều section. Mỗi khối phải phục vụ một mục tiêu cụ thể: tìm danh mục, xem sản phẩm, xác nhận thương hiệu, đọc tin hoặc chuyển đổi.
 - Nội dung marketing có khả năng thay đổi phải lấy từ dữ liệu đang quản lý trong Admin; cần fallback an toàn khi chưa nhập dữ liệu.
 - Khi tham chiếu website khác, học nhịp nội dung và khả năng bán hàng nhưng giữ nhận diện, dữ liệu thật và hành vi của Phúc Thịnh Solar; không sao chép máy móc.
-- Giao diện phẳng không đồng nghĩa với trang trắng tối giản và thiếu điểm nhấn. Trang dài phải có ảnh sản phẩm, ảnh ứng dụng hoặc banner chiến dịch có mục đích để tạo nhịp; mọi vị trí marketing phải quản lý được từ Admin và có công tắc Hiển thị, không dùng viền/card rỗng để bù cho thiếu nội dung.
+- Mỗi section cần phục vụ một mục tiêu. Trang dài có thể phối media, nền, surface và khoảng trắng để tạo nhịp; nội dung marketing biến đổi phải lấy từ Admin hoặc nguồn đã duyệt, có fallback/visibility phù hợp. Không dùng card rỗng hay claim giả để bù chỗ trống.
 - Ảnh sản phẩm dùng khung vuông 1:1 và `object-fit: contain`; logo/chứng nhận cũng dùng `contain`, không crop. Ảnh tin tức 16:9, dự án 4:3, ảnh nội dung/đại lý/liên hệ 8:5 hoặc tỷ lệ được ghi rõ tại field Admin; ảnh campaign catalog dùng 16:5. Không kéo giãn, không phóng ảnh nhỏ vượt kích thước tự nhiên, không chèn chữ trực tiếp vào ảnh khi frontend đã render chữ.
 - Ảnh cover phải giữ chủ thể trong vùng an toàn trung tâm 70–75% để crop responsive không che/cắt chi tiết quan trọng. Không dùng ảnh AI/stock làm bằng chứng khách hàng, dự án, chứng nhận hoặc năng lực thực tế; các vị trí đó chỉ dùng dữ liệu có thể xác minh.
 - Trang Giải pháp và bài Kiến thức dùng CKEditor cho nội dung biên tập dài với H2/H3, đoạn văn, danh sách, bảng và ảnh; không tái sử dụng composer khối dành cho mô tả sản phẩm. Hero, điều hướng, sản phẩm/dự án liên quan, CTA/form và dữ liệu có quan hệ phải do template/Admin field chuyên trách render, không chép cứng vào CKEditor.

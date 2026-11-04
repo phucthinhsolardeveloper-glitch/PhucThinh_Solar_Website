@@ -4,11 +4,11 @@ Phạm vi W4-03: bộ token và composition primitive dùng cho các experience 
 giai đoạn 3–4. Creative direction lấy từ
 `docs/design/experience-research/PTS-CREATIVE-ATLAS-V3.md`; các giá trị nhận diện
 tiếp tục dùng token đã duyệt trong `frontend/app/assets/css/main.css` và
-`docs/02-development/public-ui-ux-design-system.md`.
+`docs/15-design-delivery/12-PTS-DESIGN-LANGUAGE-2026-11.md`.
 
 ## Nguyên tắc
 
-- Dùng chung navy/gold, Be Vietnam Pro, container và radius 2–5px hiện có.
+- Dùng chung navy/gold, Be Vietnam Pro, container và radius/material/motion tokens theo vai trò trong design language hiện hành.
 - Mỗi composition thay đổi nhịp nội dung theo nhu cầu trang; không tạo theme hoặc
   component library tách rời.
 - Dữ liệu sản phẩm, dự án, thông số, giá, media và claim lấy từ Admin/API. Thiếu

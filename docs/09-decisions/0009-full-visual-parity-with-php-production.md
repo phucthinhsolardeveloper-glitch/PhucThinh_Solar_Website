@@ -5,12 +5,22 @@
 - Owner: Chủ project Phúc Thịnh Solar
 - Thay thế: ADR 0008 (hủy bỏ quy định tắt Hero trang chủ và cắt gọt section)
 
+> **Phạm vi hiện hành (2026-11-04):** ADR này giữ nguyên yêu cầu về các section
+> nghiệp vụ của trang chủ và đặt PHP làm baseline cho task migration/parity.
+> “Full Visual Parity” không khóa các task creative redesign được giao rõ; ở đó
+> có thể thay đổi presentation theo design language hiện hành trong khi giữ nội
+> dung, dữ liệu, URL/SEO, luồng nghiệp vụ và accessibility. Xem ADR 0010.
+
 ## Bối cảnh
 
 Theo chỉ đạo trực tiếp ngày 29-10-2026 từ chủ project: việc tự ý loại bỏ Hero banner slider và các section (giải pháp, quy trình, đại lý, giới thiệu) trên trang chủ là không đúng yêu cầu.
 Yêu cầu cốt lõi của quá trình chuyển đổi Nuxt là:
 - **Cấu trúc công nghệ**: Chuyển đổi sang kiến trúc hiện đại Nuxt 4 (Vue 3 + Tailwind CSS + Nuxt UI).
-- **Giao diện người dùng (UI/UX)**: Phải giống toàn bộ giao diện sản phẩm thực tế đang chạy trên PHP production theo bộ ảnh chụp chuẩn (13 ảnh tham khảo tại `/mnt/c/Users/ADMIN/Downloads/screencapture-phucthinhsolar-*.png`).
+- **Giao diện người dùng (UI/UX) tại thời điểm ghi ADR**: task migration phải
+  đối chiếu giao diện PHP production theo bộ ảnh tham khảo (13 ảnh tại
+  `/mnt/c/Users/ADMIN/Downloads/screencapture-phucthinhsolar-*.png`). Đây là
+  baseline migration/parity, không phải khóa thị giác cho redesign được giao
+  sau này.
 
 ## Quyết định
 

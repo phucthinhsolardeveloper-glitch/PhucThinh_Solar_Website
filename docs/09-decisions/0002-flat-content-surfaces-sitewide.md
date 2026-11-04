@@ -2,7 +2,12 @@
 
 - Ngày: 2026-09-15
 - Owner: Chủ project
-- Trạng thái: Đã duyệt
+- Trạng thái: Đã duyệt trước đây; **superseded về quy tắc trình bày thị giác từ 2026-11-04** bởi ADR 0010 và design language 2026-11.
+
+> Phạm vi còn lại: quyết định này ghi lại lịch sử flat-surface của tháng 9/2026.
+> Không dùng các điểm 1–4 làm ràng buộc mặc định cho thiết kế hiện tại. Flat
+> surface vẫn là một lựa chọn khi phù hợp; dữ liệu, semantics, accessibility và
+> các ranh giới control có ý nghĩa tiếp tục được bảo vệ.
 
 ## Bối cảnh
 

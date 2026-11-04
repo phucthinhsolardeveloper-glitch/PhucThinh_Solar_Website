@@ -9,5 +9,6 @@
 - [ADR 0007: Một hợp đồng UI/UX dùng chung cho toàn bộ public site](0007-public-ui-ux-design-system-contract.md)
 - [ADR 0008: Trang chủ product-first không render Hero (ĐÃ BỊ THAY THẾ BỞI ADR 0009)](0008-product-first-homepage-without-hero.md)
 - [ADR 0009: Khôi phục Full Visual Parity giao diện Nuxt theo chuẩn PHP Production](0009-full-visual-parity-with-php-production.md)
+- [ADR 0010: Ngôn ngữ thiết kế PTS và phạm vi các quy tắc thị giác cũ](0010-pts-design-language-and-visual-guidance-scope.md)
 
 Khi có quyết định mới, tạo `NNNN-title.md` gồm context, evidence, decision, alternatives, consequences, rollback và ngày/owner. Không ghi quyết định suy đoán cho legacy behavior.
