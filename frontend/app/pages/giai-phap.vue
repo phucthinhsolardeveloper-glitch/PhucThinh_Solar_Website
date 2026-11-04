@@ -118,8 +118,8 @@ const recommendedSolutions = ref<string[]>([])
 .solution-energy-intro-copy > p { max-width: 60ch; margin: 20px 0 0; color: #52627a; font-size: clamp(16px, 1.35vw, 18px); line-height: 1.75; }
 .solution-intro-links { display: flex; flex-wrap: wrap; align-items: center; gap: 18px 24px; margin-top: 24px; }
 .solution-primary-link, .solution-secondary-link { display: inline-flex; min-height: 44px; align-items: center; gap: 12px; font-weight: 750; text-decoration: none; }
-.solution-primary-link { padding: 10px 18px; border-radius: 4px; background: #c9962e; color: #071b46; }
-.solution-primary-link:hover { background: #ddb553; }
+.solution-primary-link { padding: 10px 18px; border-radius: 4px; background: var(--pts-gold-gradient); color: var(--color-navy-950); transition: filter .2s ease; }
+.solution-primary-link:hover { filter: brightness(1.08); }
 .solution-secondary-link { color: #0a2251; }
 .solution-energy-intro-image { justify-self: end; width: 100%; max-width: 440px; aspect-ratio: 8 / 5; margin: 0; overflow: hidden; border-radius: 3px; }
 .solution-energy-intro-image img { display: block; width: 100%; height: 100%; object-fit: cover; }

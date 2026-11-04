@@ -119,7 +119,7 @@ const deviceCopy = computed<Record<DeviceId, { role: string; note: string }>>(()
 .solution-battery-toggle input { position: absolute; width: 1px; height: 1px; opacity: 0; }
 .solution-toggle-track { position: relative; width: 34px; height: 19px; border: 1px solid #8190a2; border-radius: 99px; background: #46566b; transition: background .18s ease; }
 .solution-toggle-track i { position: absolute; top: 3px; left: 3px; width: 11px; height: 11px; border-radius: 50%; background: #e8edf4; transition: transform .18s ease; }
-.solution-battery-toggle input:checked + .solution-toggle-track { border-color: #e0b654; background: #9c7420; }
+.solution-battery-toggle input:checked + .solution-toggle-track { border-color: var(--color-gold-400); background: var(--pts-gold-gradient); }
 .solution-battery-toggle input:checked + .solution-toggle-track i { transform: translateX(14px); }
 .solution-battery-toggle input:focus-visible + .solution-toggle-track { outline: 2px solid #f2d281; outline-offset: 3px; }
 .solution-stage-layout { display: grid; grid-template-columns: minmax(0, 2.35fr) minmax(300px, .8fr); gap: 0 34px; margin-top: 16px; }

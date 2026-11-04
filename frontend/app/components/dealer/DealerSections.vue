@@ -55,7 +55,7 @@ const current = computed(() => props.dealer.testimonials[active.value])
       </header>
       <div class="dealer-support__cards" :data-count="dealer.support.items.length">
         <article v-for="item in dealer.support.items" :key="item.title" class="dealer-benefit">
-          <span v-if="item.image" class="dealer-benefit__icon flex h-14 w-14 items-center justify-center rounded-chip bg-gold-300 p-2">
+          <span v-if="item.image" class="dealer-benefit__icon flex h-14 w-14 items-center justify-center rounded-chip bg-gold-400 p-2">
             <img :src="cardImage(item.image)" :alt="item.title" class="h-full w-full object-contain" loading="lazy">
           </span>
           <h3>{{ item.title }}</h3>
