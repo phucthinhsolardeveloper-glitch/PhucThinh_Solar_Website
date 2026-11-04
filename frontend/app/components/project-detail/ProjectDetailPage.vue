@@ -15,12 +15,10 @@ const summaryFallback = computed(() => props.content.html?.trim() ? '' : props.p
 const hasOverview = computed(() => Boolean(props.content.html?.trim() || summaryFallback.value))
 const chapters = computed(() => {
   // Only chapters that actually have published content; empty ones are not rendered either.
-  const list = [{ id: 'project-overview', label: 'Tổng quan', badge: '' }]
-  if (props.project.gallery.length) list.push({ id: 'project-gallery', label: 'Tư liệu dự án', badge: String(props.project.gallery.length) })
-  if (props.project.relatedEquipment.length) list.push({ id: 'project-equipment', label: 'Điểm nhấn kỹ thuật', badge: String(props.project.relatedEquipment.length) })
-  if (props.project.relatedProjects.length) {
-    list.push({ id: 'related-projects-section', label: 'Công trình liên quan', badge: String(props.project.relatedProjects.length) })
-  }
+  const list = [{ id: 'project-overview', label: 'Tổng quan' }]
+  if (props.project.gallery.length) list.push({ id: 'project-gallery', label: 'Tư liệu dự án' })
+  if (props.project.relatedEquipment.length) list.push({ id: 'project-equipment', label: 'Điểm nhấn kỹ thuật' })
+  if (props.project.relatedProjects.length) list.push({ id: 'related-projects-section', label: 'Công trình liên quan' })
   return list
 })
 const heroRef = ref<HTMLElement | null>(null)
@@ -70,38 +68,29 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onHeroScroll))
             <dt class="mb-1 text-sm font-semibold text-blue-100/75">Thời gian thực hiện</dt>
             <dd class="m-0 break-words font-bold text-white">{{ project.startDate ? formatProjectDate(project.startDate) : '' }}<template v-if="project.startDate && project.endDate"> – </template>{{ project.endDate ? formatProjectDate(project.endDate) : '' }}</dd>
           </div>
-          <div v-if="project.gallery.length" class="min-w-0">
-            <dt class="mb-1 text-sm font-semibold text-blue-100/75">Tư liệu thực tế</dt>
-            <dd class="m-0 font-bold text-gold-300">{{ project.gallery.length }} tư liệu hình ảnh &amp; video</dd>
-          </div>
         </dl>
 
-        <div class="mt-7 flex flex-wrap items-center gap-3">
+        <div class="project-story__actions">
           <a
             :href="links.generic('/lien-he/#yeu-cau-tu-van')"
-            class="inline-flex min-h-11 items-center gap-2 rounded-[4px] bg-hdr-gold px-5 py-2.5 text-sm font-extrabold text-navy-950 no-underline transition-colors hover:bg-hdr-gold-hover cursor-pointer"
+            class="project-story__primary"
             @click.prevent="openConsultation('Dự án: ' + project.title)"
           >
-            <span>Tư vấn công trình tương tự</span>
-            <span aria-hidden="true">→</span>
+            Tư vấn công trình tương tự
+            <span aria-hidden="true"><UIcon name="i-lucide-arrow-right" class="size-5" /></span>
           </a>
-          <a
-            v-if="project.gallery.length"
-            href="#project-gallery"
-            class="inline-flex min-h-11 items-center gap-2 rounded-[4px] border border-white/25 bg-white/[.05] px-4 py-2.5 text-sm font-bold text-white no-underline transition-colors hover:border-gold-400 hover:bg-white/10"
-          >
-            <span>Xem tư liệu thi công</span>
+          <a v-if="project.gallery.length" href="#project-gallery" class="project-story__more">
+            Xem tư liệu thi công <UIcon name="i-lucide-arrow-down" class="size-4" aria-hidden="true" />
           </a>
         </div>
       </div>
     </header>
 
-    <nav v-if="chapters.length" class="project-story__chapters sticky top-0 z-20 overflow-x-auto border-b border-slate-200 bg-white/95 backdrop-blur-sm" aria-label="Các phần trong hồ sơ dự án">
+    <nav v-if="chapters.length" class="project-story__chapters overflow-x-auto border-b border-slate-200 bg-white" aria-label="Các phần trong hồ sơ dự án">
       <div class="pts-container flex min-w-max items-center justify-between gap-6 py-3 tb:gap-9">
         <div class="flex items-center gap-6 tb:gap-9">
           <a v-for="chapter in chapters" :key="chapter.id" class="inline-flex min-h-11 items-center whitespace-nowrap gap-1.5 text-sm font-bold text-navy-800 no-underline transition-colors hover:text-gold-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold-500" :href="`#${chapter.id}`">
             <span>{{ chapter.label }}</span>
-            <span v-if="chapter.badge" class="rounded-[3px] bg-slate-100 px-1.5 py-0.5 text-xs font-extrabold tabular-nums text-navy-700">{{ chapter.badge }}</span>
           </a>
         </div>
         <a
@@ -141,18 +130,14 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onHeroScroll))
           <a class="font-bold text-navy-800 no-underline" :href="links.generic('/du-an-da-thuc-hien/')">Xem tất cả dự án →</a>
         </header>
         <div class="project-strip">
-          <a v-for="item in project.relatedProjects" :key="item.id" :href="links.project(item.slug)" class="project-strip__item group min-w-0 text-navy-800 no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold-600">
-            <div class="overflow-hidden rounded-chip bg-slate-100">
-              <img :src="item.image || '/assets/images/noimage.png'" :alt="item.title" class="aspect-[4/3] w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105 motion-reduce:transform-none motion-reduce:transition-none" loading="lazy" decoding="async">
-            </div>
-            <div class="pt-4">
-              <h3 class="m-0 text-xl font-extrabold leading-snug text-navy-950 transition-colors duration-200 group-hover:text-gold-700">{{ item.title }}</h3>
-              <p v-if="item.address" class="mb-0 mt-2 flex items-center gap-1.5 text-sm text-slate-500">
-                <svg class="size-3.5 shrink-0 text-gold-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-                <span>{{ item.address }}</span>
-              </p>
-              <span class="mt-3 inline-flex items-center gap-1 font-bold text-navy-800 transition-transform duration-200 group-hover:translate-x-1 group-hover:text-gold-700 motion-reduce:transform-none motion-reduce:transition-none">Xem dự án →</span>
-            </div>
+          <a v-for="item in project.relatedProjects" :key="item.id" :href="links.project(item.slug)" class="project-strip__item group">
+            <img :src="item.image || '/assets/images/noimage.png'" :alt="item.title" loading="lazy" decoding="async">
+            <span class="project-strip__veil" aria-hidden="true" />
+            <span class="project-strip__body">
+              <h3>{{ item.title }}</h3>
+              <span v-if="item.address" class="project-strip__place"><UIcon name="i-lucide-map-pin" class="size-4 flex-none text-gold-400" aria-hidden="true" />{{ item.address }}</span>
+              <span class="project-strip__go">Xem dự án <span aria-hidden="true">→</span></span>
+            </span>
           </a>
         </div>
       </section>
@@ -215,7 +200,34 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onHeroScroll))
   scrollbar-width: thin;
   padding-bottom: 12px;
 }
-.project-strip__item { scroll-snap-align: start; }
+.project-strip__item { --ease: cubic-bezier(0.22, 1, 0.36, 1); position: relative; isolation: isolate; display: flex; aspect-ratio: 4 / 3; overflow: hidden; border-radius: 8px; background: var(--color-navy-950); color: #fff; text-decoration: none; scroll-snap-align: start; }
+.project-strip__item > img { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; transition: transform 1s var(--ease); }
+.project-strip__item:hover > img { transform: scale(1.06); }
+.project-strip__item:focus-visible { outline: 3px solid var(--color-gold-500); outline-offset: 4px; }
+.project-strip__veil { position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, transparent 40%, rgb(6 21 55 / 92%)); }
+.project-strip__body { display: flex; flex-direction: column; gap: 8px; margin-top: auto; padding: clamp(18px, 2vw, 28px); }
+.project-strip__body h3 { margin: 0; color: #fff; font-size: clamp(19px, 1.5vw, 23px); font-weight: 850; line-height: 1.25; }
+.project-strip__place { display: inline-flex; align-items: center; gap: 6px; color: #d3dcea; font-size: 14.5px; font-weight: 600; }
+.project-strip__go { color: var(--color-gold-300); font-size: 14.5px; font-weight: 800; }
+.project-strip__go > span { display: inline-block; transition: transform 0.35s var(--ease); }
+.project-strip__item:hover .project-strip__go > span { transform: translateX(6px); }
+
+.project-story__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 28px; margin-top: 28px; }
+.project-story__primary { display: inline-flex; min-height: 58px; align-items: center; gap: 16px; padding: 0 10px 0 24px; border-radius: 6px; background: var(--color-gold-400); color: var(--color-navy-950); font-size: 16.5px; font-weight: 850; text-decoration: none; transition: background-color 0.25s ease; }
+.project-story__primary > span { display: grid; width: 40px; height: 40px; place-items: center; border-radius: 4px; background: var(--color-navy-950); color: var(--color-gold-300); transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
+.project-story__primary:hover { background: var(--color-gold-300); }
+.project-story__primary:hover > span { transform: translateX(4px); }
+.project-story__more { display: inline-flex; min-height: 44px; align-items: center; gap: 8px; color: #d3dcea; font-size: 15.5px; font-weight: 700; text-decoration: none; }
+.project-story__more:hover { color: var(--color-gold-300); }
+.project-story__actions a:focus-visible { outline: 3px solid var(--color-gold-300); outline-offset: 3px; }
+@media (max-width: 640px) {
+  .project-story__actions { align-items: stretch; flex-direction: column; }
+  .project-story__primary { justify-content: space-between; }
+}
 @media (max-width: 760px) { .project-strip { grid-auto-columns: 82%; } }
-@media (prefers-reduced-motion: reduce) { .project-story__cover-img { transform: none; height: 100%; } }
+@media (prefers-reduced-motion: reduce) {
+  .project-story__cover-img { transform: none; height: 100%; }
+  .project-strip__item > img, .project-strip__go > span, .project-story__primary > span { transition: none; }
+  .project-strip__item:hover > img { transform: none; }
+}
 </style>
