@@ -6,6 +6,8 @@ const props = defineProps<{
   site: PublicSitePayload
 }>()
 
+const route = useRoute()
+const isCheckout = computed(() => /^\/thanh-toan\/?$/.test(route.path))
 const showBackToTop = ref(false)
 const hotline = computed(() => props.site.brand.hotline.trim())
 const phoneHref = computed(() => publicPhoneHref(hotline.value))
@@ -40,6 +42,7 @@ onUnmounted(() => {
   <aside
     v-if="showBackToTop || hasContactChannels"
     class="fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] right-4 z-[900] flex flex-col items-center gap-3 print:hidden tb:bottom-6 tb:right-6 transform-gpu"
+    :class="{ 'contact-above-checkout': isCheckout }"
     aria-label="Liên hệ nhanh"
   >
     <!-- Nút 3: Lên đầu trang (cuộn > 300px) -->
@@ -108,3 +111,9 @@ onUnmounted(() => {
     </div>
   </aside>
 </template>
+
+<style scoped>
+@media (max-width: 1320px) {
+  .contact-above-checkout { bottom: calc(6.5rem + env(safe-area-inset-bottom)); }
+}
+</style>

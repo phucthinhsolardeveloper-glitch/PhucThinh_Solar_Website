@@ -36,6 +36,9 @@ Khi deploy staging, truyền `PTS_STACK_ROOT=/srv/phucthinhsolar-staging` cho
 `backup.sh`, `deploy-release.sh` và `verify-stack.sh`; script mặc định trỏ vào
 production. Kiểm tra image hiện tại, backup staging có checksum và rollback point
 trước khi chuyển release. Không dùng `scripts/deploy-production.sh` cho staging.
+Ngay sau khi container Nuxt/PHP chuyển sang healthy, Caddy có thể cần thêm một
+chu kỳ active health probe trước khi public `/` hết 503; kiểm tra log upstream
+và thử lại verify sau khi probe báo `host is up`.
 
 Host cũ (`103.82.21.26`) đã được rút phần website ngày 2026-09-17: `public_html`
 đã rỗng (đã xóa 28.213 file, 2.713 thư mục) và database `phucthinhs_data` đã

@@ -414,9 +414,9 @@ onMounted(() => { window.addEventListener('pageshow', () => { submitting.value =
         </aside>
 
         <!-- Phones: the total and the order action stay within reach while filling the form. -->
-        <div class="checkout-bar" aria-hidden="true">
+        <div class="checkout-bar">
           <span><small>Tổng dự kiến</small><strong><AnimatedMoney :value="orderTotal" empty="Chờ xác nhận" /></strong></span>
-          <button type="submit" name="thanhtoan" value="1" tabindex="-1" :disabled="submitting">{{ submitting ? 'Đang đặt…' : 'Đặt hàng' }}</button>
+          <button type="submit" name="thanhtoan" value="1" :disabled="submitting">{{ submitting ? 'Đang đặt…' : 'Đặt hàng' }}</button>
         </div>
       </form>
     </main>
@@ -501,6 +501,7 @@ onMounted(() => { window.addEventListener('pageshow', () => { submitting.value =
 .checkout-bar { display: none; }
 @media (max-width: 1320px) {
   .checkout-main { padding-bottom: 96px; }
+  .checkout-summary__cta { display: none; }
   .checkout-bar { position: fixed; right: 0; bottom: 0; left: 0; z-index: 900; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); border-top: 1px solid rgb(10 34 81 / 10%); background: rgb(255 255 255 / 96%); box-shadow: 0 -12px 30px -18px rgb(6 21 55 / 40%); backdrop-filter: blur(10px); }
   .checkout-bar small { display: block; color: #64748b; font-size: 12px; font-weight: 600; }
   .checkout-bar strong { color: var(--color-navy-950); font-size: 19px; font-weight: 900; }
