@@ -1225,6 +1225,9 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .pts-search-field { border: 1px solid rgb(10 34 81 / 16%); border-radius: 999px; background: #fff; transition: border-color 0.2s ease, box-shadow 0.2s ease; }
+/* The pill itself shows focus; the global 3px outline on the inner input would draw a box inside it. */
+.pts-search-field input:focus, .pts-search-field input:focus-visible { outline: none; }
+.pts-search-field input::-webkit-search-cancel-button { display: none; }
 .pts-search-field:focus-within { border-color: var(--color-gold-500); box-shadow: 0 0 0 4px rgb(228 168 73 / 18%); }
 .pts-search-panel { animation: pts-search-in 0.22s cubic-bezier(0.22, 1, 0.36, 1) both; }
 .pts-search-scrim { animation: pts-fade-in 0.2s ease both; }
