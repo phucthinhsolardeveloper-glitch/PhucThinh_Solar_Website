@@ -108,7 +108,7 @@ const summary = computed(() => [places.find((p) => p.id === place.value)?.label,
 
 .finder-step { margin: 0 0 18px; padding: 0; border: 0; }
 .finder-step legend { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 15px; font-weight: 700; color: #dbe4ef; }
-.finder-step legend b { display: grid; width: 24px; height: 24px; place-items: center; border-radius: 50%; background: var(--color-gold-400); color: var(--color-navy-950); font-size: 13px; }
+.finder-step legend b { display: grid; width: 24px; height: 24px; place-items: center; border-radius: 50%; background: var(--pts-gold-gradient); color: var(--color-navy-950); font-size: 13px; }
 .finder-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 .finder-option {
   display: flex;
@@ -130,7 +130,7 @@ const summary = computed(() => [places.find((p) => p.id === place.value)?.label,
 }
 .finder-option :deep(svg) { color: var(--color-gold-400); }
 .finder-option:hover { border-color: rgb(224 182 84 / 70%); }
-.finder-option[aria-pressed="true"] { border-color: var(--color-gold-400); background: var(--color-gold-400); color: var(--color-navy-950); }
+.finder-option[aria-pressed="true"] { border-color: var(--color-gold-400); background: var(--pts-gold-gradient); color: var(--color-navy-950); }
 .finder-option[aria-pressed="true"] :deep(svg) { color: var(--color-navy-950); }
 .finder-option:focus-visible, .finder-cta:focus-visible, .finder-pick:focus-visible { outline: 2px solid var(--color-gold-300); outline-offset: 2px; }
 
@@ -145,8 +145,8 @@ const summary = computed(() => [places.find((p) => p.id === place.value)?.label,
 .finder-pick span { display: flex; flex-direction: column; gap: 2px; }
 .finder-pick strong { font-size: 17px; font-weight: 900; }
 .finder-pick small { color: var(--color-gold-700); font-size: 13.5px; font-weight: 800; }
-.finder-cta { margin-top: 4px; min-height: 48px; border: 0; border-radius: 4px; background: var(--color-gold-400); color: var(--color-navy-950); font: inherit; font-size: 15px; font-weight: 800; cursor: pointer; }
-.finder-cta:hover { background: var(--color-gold-500); }
+.finder-cta { margin-top: 4px; min-height: 48px; border: 0; border-radius: 4px; background: var(--pts-gold-gradient); color: var(--color-navy-950); font: inherit; font-size: 15px; font-weight: 800; cursor: pointer; }
+.finder-cta:hover { filter: brightness(1.06); }
 
 .finder-reveal-enter-active, .finder-reveal-leave-active { transition: opacity 0.3s ease, transform 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
 .finder-reveal-enter-from, .finder-reveal-leave-to { opacity: 0; transform: translateY(8px); }

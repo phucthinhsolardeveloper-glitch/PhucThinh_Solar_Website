@@ -300,7 +300,7 @@ const links = useMigrationLinks()
   background: #fff;
   transition: left 0.6s cubic-bezier(0.22, 1, 0.36, 1), background 0.4s ease, box-shadow 0.4s ease;
 }
-.chain-node.is-on { background: var(--color-gold-400); box-shadow: 0 0 0 5px rgb(224 182 84 / 22%); }
+.chain-node.is-on { background: var(--pts-gold-gradient); box-shadow: 0 0 0 5px rgb(224 182 84 / 22%); }
 
 /* Tablet & mobile: horizontal snap rail, every link fully open */
 @media (max-width: 960px) {

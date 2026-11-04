@@ -119,8 +119,8 @@ const phoneHref = computed(() => props.hotline ? publicPhoneHref(props.hotline) 
 .cta-band__trust img { width: 20px; height: 20px; object-fit: contain; }
 
 .cta-band__actions { display: flex; flex-direction: column; gap: 12px; padding: 14px; border: 1px solid rgb(255 255 255 / 14%); border-radius: 8px; background: rgb(6 21 55 / 55%); backdrop-filter: blur(10px); }
-.cta-band__primary { display: flex; min-height: 60px; align-items: center; justify-content: space-between; gap: 14px; padding: 0 10px 0 22px; border-radius: 6px; background: var(--color-gold-400); color: var(--color-navy-950); font-size: 16.5px; font-weight: 850; text-decoration: none; transition: background-color 0.25s ease; }
-.cta-band__primary:hover { background: var(--color-gold-300); }
+.cta-band__primary { display: flex; min-height: 60px; align-items: center; justify-content: space-between; gap: 14px; padding: 0 10px 0 22px; border-radius: 6px; background: var(--pts-gold-gradient); color: var(--color-navy-950); font-size: 16.5px; font-weight: 850; text-decoration: none; transition: filter 0.25s ease; }
+.cta-band__primary:hover { filter: brightness(1.06); }
 .cta-band__primary-arrow { display: grid; width: 40px; height: 40px; flex: none; place-items: center; border-radius: 4px; background: var(--color-navy-950); color: var(--color-gold-300); transition: transform 0.35s var(--ease); }
 .cta-band__primary:hover .cta-band__primary-arrow { transform: translateX(4px); }
 .cta-band__channels { display: grid; gap: 4px; }

@@ -149,7 +149,7 @@ const links = useMigrationLinks()
   flex: none;
   place-items: center;
   border-radius: 50%;
-  background: var(--color-gold-500);
+  background: var(--pts-gold-gradient);
   color: var(--color-navy-950);
   transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -166,7 +166,7 @@ const links = useMigrationLinks()
   top: clamp(14px, 1.6vw, 24px);
   padding: 6px 12px;
   border-radius: 999px;
-  background: var(--color-gold-400);
+  background: var(--pts-gold-gradient);
   color: var(--color-navy-950);
   font-size: 13px;
   font-weight: 800;

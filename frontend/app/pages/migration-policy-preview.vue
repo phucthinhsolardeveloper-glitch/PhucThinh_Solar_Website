@@ -232,7 +232,7 @@ useHead({
 .policy-rail__item { display: flex; min-height: 92px; flex-direction: column; justify-content: space-between; gap: 10px; padding: 14px; border: 1px solid rgb(255 255 255 / 14%); border-radius: 4px; background: rgb(255 255 255 / 4%); color: #dbe4ef; font-size: 14px; font-weight: 700; line-height: 1.3; text-decoration: none; transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.25s ease; }
 .policy-rail__item :deep(svg), .policy-rail__item svg { color: var(--color-gold-400); }
 .policy-rail__item:hover { border-color: rgb(224 182 84 / 60%); transform: translateY(-2px); }
-.policy-rail__item.is-current { border-color: var(--color-gold-400); background: var(--color-gold-400); color: var(--color-navy-950); }
+.policy-rail__item.is-current { border-color: var(--color-gold-400); background: var(--pts-gold-gradient); color: var(--color-navy-950); }
 .policy-rail__item.is-current svg { color: var(--color-navy-950); }
 .policy-rail__item:focus-visible { outline: 2px solid var(--color-gold-300); outline-offset: 2px; }
 @media (max-width: 760px) { .policy-rail { grid-auto-columns: 46%; } }

@@ -29,6 +29,6 @@ test('news CTA keeps its contact actions and follows the shared responsive edito
   assert.match(nuxtCta, /:hotline="cta\.hotline\?\.text"[\s\S]*:hotline-label="phoneLabel"[\s\S]*:button-label="cta\.buttonLabel/)
   assert.match(nuxtCta, /:subject="'Kiến thức: ' \+ cta\.title"/)
   assert.match(sharedCta, /openConsultation\(subject \|\| heading\)/)
-  assert.match(sharedCta, /\.cta-band__primary \{[^}]*background: var\(--color-gold-400\)/)
+  assert.match(sharedCta, /\.cta-band__primary \{[^}]*background: var\(--pts-gold-gradient\)/)
   assert.match(sharedCta, /@media \(max-width: 900px\) \{[\s\S]*\.cta-band \{ grid-template-columns: minmax\(0, 1fr\); \}/)
 })

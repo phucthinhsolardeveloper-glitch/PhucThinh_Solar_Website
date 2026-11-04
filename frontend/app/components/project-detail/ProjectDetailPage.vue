@@ -216,9 +216,9 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onHeroScroll))
 .project-strip__item:hover .project-strip__go > span { transform: translateX(5px); }
 
 .project-story__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 28px; margin-top: 28px; }
-.project-story__primary { display: inline-flex; min-height: 58px; align-items: center; gap: 16px; padding: 0 10px 0 24px; border-radius: 6px; background: var(--color-gold-400); color: var(--color-navy-950); font-size: 16.5px; font-weight: 850; text-decoration: none; transition: background-color 0.25s ease; }
+.project-story__primary { display: inline-flex; min-height: 58px; align-items: center; gap: 16px; padding: 0 10px 0 24px; border-radius: 6px; background: var(--pts-gold-gradient); color: var(--color-navy-950); font-size: 16.5px; font-weight: 850; text-decoration: none; transition: filter 0.25s ease; }
 .project-story__primary > span { display: grid; width: 40px; height: 40px; place-items: center; border-radius: 4px; background: var(--color-navy-950); color: var(--color-gold-300); transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
-.project-story__primary:hover { background: var(--color-gold-300); }
+.project-story__primary:hover { filter: brightness(1.06); }
 .project-story__primary:hover > span { transform: translateX(4px); }
 .project-story__more { display: inline-flex; min-height: 44px; align-items: center; gap: 8px; color: #d3dcea; font-size: 15.5px; font-weight: 700; text-decoration: none; }
 .project-story__more:hover { color: var(--color-gold-300); }

@@ -245,7 +245,7 @@ onBeforeUnmount(() => observer?.disconnect())
 .match-arrow { display: grid; width: 44px; height: 44px; place-items: center; border-radius: 50%; color: var(--color-gold-600); border: 1px solid rgb(201 150 46 / 45%); transition: transform 0.4s var(--ease), background-color 0.35s ease, color 0.35s ease; }
 .match-answer { margin: 0; padding: 16px 18px; border-left: 3px solid var(--color-gold-500); background: linear-gradient(90deg, rgb(201 150 46 / 12%), rgb(201 150 46 / 0%)); color: var(--color-navy-950); font-size: 16.5px; font-weight: 750; line-height: 1.5; }
 .match-row:hover .match-icon { background: var(--color-navy-900); color: var(--color-gold-300); }
-.match-row:hover .match-arrow { transform: translateX(6px); background: var(--color-gold-500); color: var(--color-navy-950); }
+.match-row:hover .match-arrow { transform: translateX(6px); background: var(--pts-gold-gradient); color: var(--color-navy-950); }
 
 /* Ecosystem */
 .chapter-eco { overflow: hidden; background: var(--color-navy-950); color: #fff; }
