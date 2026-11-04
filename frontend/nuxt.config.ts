@@ -55,6 +55,9 @@ export default defineNuxtConfig({
         { rel: 'preload', href: '/fonts/be-vietnam-pro/be-vietnam-pro-400-latin.woff2', as: 'font', type: 'font/woff2', crossorigin: 'anonymous' },
         { rel: 'preload', href: '/fonts/be-vietnam-pro/be-vietnam-pro-700-vi.woff2', as: 'font', type: 'font/woff2', crossorigin: 'anonymous' },
         { rel: 'preload', href: '/fonts/be-vietnam-pro/be-vietnam-pro-700-latin.woff2', as: 'font', type: 'font/woff2', crossorigin: 'anonymous' },
+        // Headings render at 800+; without it the largest text swaps late and shifts the page.
+        { rel: 'preload', href: '/fonts/be-vietnam-pro/be-vietnam-pro-800-vi.woff2', as: 'font', type: 'font/woff2', crossorigin: 'anonymous' },
+        { rel: 'preload', href: '/fonts/be-vietnam-pro/be-vietnam-pro-800-latin.woff2', as: 'font', type: 'font/woff2', crossorigin: 'anonymous' },
       ],
     },
   },
