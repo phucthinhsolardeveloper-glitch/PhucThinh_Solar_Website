@@ -101,10 +101,10 @@ test('About contact band uses the shared corporate CTA and retains its image con
     read('../domains/phucthinhsolar.com/public_html/assets/css/about-v2.css'),
     read('app/components/PublicCtaBanner.vue'),
   ])
-  assert.match(page, /<PublicCtaBanner variant="corporate" :image="about\.cta\.image"/)
+  assert.match(page, /<PublicCtaBanner\s+variant="corporate"\s+:image="about\.cta\.image"/)
   assert.match(banner, /corporate: '\/assets\/images\/site-visuals\/cta-corporate-bg\.webp'/)
-  assert.match(banner, /public-cta-banner__image[\s\S]*object-fit: cover/)
-  assert.match(banner, /public-cta-banner__shade[\s\S]*linear-gradient/)
+  assert.match(banner, /\.cta-band__image \{[^}]*object-fit: cover/)
+  assert.match(banner, /\.cta-band__shade \{[^}]*linear-gradient/)
   assert.match(php, /--about-cta-image:url\(/)
   assert.match(css, /\.pts-about-contact-band\.has-image:before[\s\S]*background-size:cover/)
 })

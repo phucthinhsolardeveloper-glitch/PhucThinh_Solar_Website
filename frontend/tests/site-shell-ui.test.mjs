@@ -166,17 +166,16 @@ test('catalog benefit rail uses consistent stroke icons instead of platform-depe
 })
 
 test('news and project CTA bands retain the PHP wide-banner hierarchy on desktop and mobile', () => {
+  // Owner decision 2026-11-04: shared CTA band redesign (copy left, action panel right, stacked below 900px).
   const newsCta = read('components/news/NewsCta.vue')
   const projectsCta = read('components/projects/ProjectsCta.vue')
   const sharedCta = read('components/PublicCtaBanner.vue')
   assert.match(newsCta, /<PublicCtaBanner[\s\S]*variant="editorial"[\s\S]*:image="backgroundImage"/)
-  assert.match(projectsCta, /<PublicCtaBanner variant="editorial" :image="backgroundImage"/)
-  assert.match(sharedCta, /\.public-cta-banner--editorial \{[^}]*grid-template-columns: minmax\(0, 1fr\) minmax\(250px, auto\)/)
-  assert.match(sharedCta, /@media \(max-width: 760px\)[\s\S]*\.public-cta-banner--editorial[\s\S]*grid-template-columns: minmax\(0, 1fr\)/)
-  assert.match(sharedCta, /\.public-cta-banner__image \{ object-fit: cover; \}/)
-  assert.match(newsCta, /phoneLabel[\s\S]*cta\.hotline\.text[\s\S]*cta\.buttonLabel/)
-  assert.match(projectsCta, /cta\.eyebrow[\s\S]*cta\.title[\s\S]*cta\.description[\s\S]*trustItems/)
-  assert.match(projectsCta, /cta\.hotline\?\.tel[\s\S]*cta\.hotline\.text[\s\S]*cta\.buttonLabel/)
+  assert.match(projectsCta, /<PublicCtaBanner\s+variant="editorial"\s+:image="backgroundImage"/)
+  assert.match(sharedCta, /\.cta-band \{[^}]*grid-template-columns: minmax\(0, 1fr\) minmax\(280px, 360px\)/)
+  assert.match(sharedCta, /@media \(max-width: 900px\) \{[\s\S]*\.cta-band \{ grid-template-columns: minmax\(0, 1fr\); \}/)
+  assert.match(newsCta, /:hotline="cta\.hotline\?\.text"[\s\S]*:hotline-label="phoneLabel"[\s\S]*:button-label="cta\.buttonLabel/)
+  assert.match(projectsCta, /:title="cta\.title"[\s\S]*:description="cta\.description"[\s\S]*:trust="trustItems"/)
 })
 
 test('footer and breadcrumb route CMS links through the migration resolver', () => {

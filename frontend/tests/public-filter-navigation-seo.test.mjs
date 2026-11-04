@@ -60,7 +60,8 @@ test('catalog links stay in Nuxt preview while category pages are being migrated
   assert.match(source, /links\.generic\(activeCategoryRoot\.value\?\.url \?\? '\/san-pham\/'\)/)
   assert.match(source, /:to="links\.generic\(item\.url\)"/)
   assert.match(source, /item\.href \? links\.generic\(item\.href\) : undefined/)
-  assert.match(source, /:to="links\.generic\(catalogData\.support\.href \|\| '\/lien-he\/'\)"/)
+  assert.match(source, /:fallback-href="catalogData\.support\.href \|\| '\/lien-he\/'"/)
+  assert.match(read('../app/components/PublicCtaBanner.vue'), /:href="links\.generic\(fallbackHref\)"/)
 })
 
 test('related project links use the Nuxt detail preview route', () => {

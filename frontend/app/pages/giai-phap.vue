@@ -98,7 +98,7 @@ const recommendedSolutions = ref<string[]>([])
       </template>
     </main>
 
-    <SolutionsStory v-if="data && !error && data.editorial.content.html" :content="data.editorial.content" />
+    <SolutionsStory v-if="data && !error && data.editorial.content.html" :contents="[data.editorial.content]" index-label="Các phần trong trang Giải pháp" />
 
     <div v-if="data && !error" class="pts-container pb-6 min-[561px]:px-5 min-[821px]:px-6 min-[1321px]:px-[34px]">
       <SolutionsEquipment :equipment="data.equipment" :title="data.labels.equipment" :all-products-url="data.allProductsUrl" :all-products-label="data.labels.allProducts" />

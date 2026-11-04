@@ -68,10 +68,13 @@ test('About CTA resolves a null CMS modal link to the contact form and keeps hot
   const source = await readFile(new URL('../app/components/about/AboutPreviewPage.vue', import.meta.url), 'utf8')
   const cta = source.split('id="about-cta-title"')[1]?.split('</section>')[0] ?? ''
   assert.equal(good.cta.href, null)
-  assert.match(cta, /:href="links\.generic\(about\.cta\.href \|\| '\/lien-he\/#yeu-cau-tu-van'\)"/)
-  assert.doesNotMatch(cta, /<span v-else/)
-  assert.match(cta, /v-if="about\.cta\.hotline"[\s\S]*href="`tel:/)
-  assert.match(cta, /v-if="about\.cta\.zaloUrl"[\s\S]*:href="about\.cta\.zaloUrl"[\s\S]*target="_blank"[\s\S]*rel="noopener noreferrer"/)
+  // Owner decision 2026-11-04: CTA actions are rendered by the shared PublicCtaBanner.
+  const banner = await readFile(new URL('../app/components/PublicCtaBanner.vue', import.meta.url), 'utf8')
+  assert.match(cta, /:fallback-href="about\.cta\.href \|\| '\/lien-he\/#yeu-cau-tu-van'"/)
+  assert.match(cta, /:hotline="about\.cta\.hotline\?\.text"/)
+  assert.match(cta, /:zalo="about\.cta\.zaloUrl/)
+  assert.match(banner, /v-if="phoneHref"[\s\S]*:href="phoneHref"/)
+  assert.match(banner, /v-if="zalo"[\s\S]*:href="zalo"[\s\S]*target="_blank"[\s\S]*rel="noopener noreferrer"/)
 })
 
 test('About PHP projection carries CMS Zalo and does not truncate published certificates', async () => {
@@ -103,7 +106,7 @@ test('About page provides a keyboard-accessible full certificate gallery', async
   assert.match(source, /aria-label="Chứng nhận tiếp theo"/)
   assert.match(source, /aria-label="Đóng xem chứng nhận"/)
   assert.match(source, /const galleryCertificates = computed\(\(\) => props\.about\.certificates\.items\)/)
-  assert.match(source, /about\.cta\.zaloUrl[\s\S]*target="_blank"[\s\S]*rel="noopener noreferrer"/)
+  assert.match(source, /:zalo="about\.cta\.zaloUrl/)
 })
 
 test('About public and preview pages expose one main landmark without nesting it in the content component', async () => {

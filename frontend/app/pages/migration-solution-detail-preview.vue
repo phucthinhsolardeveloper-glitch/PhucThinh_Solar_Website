@@ -12,7 +12,7 @@ const links = useMigrationLinks()
 const slug = computed(() => typeof route.params.slug === 'string' ? route.params.slug : (typeof route.query.slug === 'string' ? route.query.slug : ''))
 if (!isSafeEditorialSlug(slug.value)) throw createError({ statusCode: 404, statusMessage: 'Solution not found' })
 const isPublicRoute = computed(() => route.path.startsWith(SOLUTIONS_PUBLIC_PATH) && route.path !== SOLUTIONS_PUBLIC_PATH)
-const { data, error } = await useAsyncData<PublicSolutionDetailPayload>(
+const { data: fetched, error } = await useAsyncData<PublicSolutionDetailPayload>(
   () => `migration-solution-detail-${slug.value}`,
   () => {
     if (!isSafeEditorialSlug(slug.value)) throw createError({ statusCode: 404, statusMessage: 'Solution not found' })
@@ -20,6 +20,9 @@ const { data, error } = await useAsyncData<PublicSolutionDetailPayload>(
   },
   { watch: [slug] },
 )
+// Keep the previous solution on screen while the next one loads (client-side switching).
+const data = shallowRef(fetched.value)
+watch(fetched, (value) => { if (value) data.value = value })
 const responseStatus = editorialPublicResponseStatus(
   isPublicRoute.value,
   (error.value as { statusCode?: unknown } | null)?.statusCode,

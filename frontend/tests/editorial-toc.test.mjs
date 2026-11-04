@@ -59,8 +59,9 @@ test('builds matching SSR markup and TOC IDs across both solution content fragme
 test('solution detail renders the shared processed fragments and TOC without waiting for hydration', () => {
   const page = readFileSync(new URL('../app/components/solution-detail/SolutionDetailPage.vue', import.meta.url), 'utf8')
   assert.match(page, /const editorial = computed\(\(\) => buildEditorialTocForFragments\(/)
-  assert.match(page, /<EditorialRichText :content="solutionContent" variant="solution" \/>/)
-  assert.match(page, /<EditorialRichText class="mt-8" :content="solutionExtraContent" variant="solution" \/>/)
-  assert.match(page, /:href="`#\$\{item\.id\}`"/)
-  assert.doesNotMatch(page, /onMounted\(/)
+  // Owner decision 2026-11-04: processed fragments (with heading ids) feed the SSR-rendered chapter story.
+  const story = readFileSync(new URL('../app/components/solutions/SolutionsStory.vue', import.meta.url), 'utf8')
+  assert.match(page, /:contents="\[solutionContent, solutionExtraContent\]"/)
+  assert.match(story, /:href="`#\$\{chapter\.id\}`"/)
+  assert.match(story, /const chapters = computed\(\(\) => parseSolutionStory\(/)
 })

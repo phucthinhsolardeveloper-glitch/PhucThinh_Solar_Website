@@ -22,12 +22,14 @@ test('project category links use the canonical DTO URL publicly and retain query
 
 test('solution detail orders the hero before its switcher and only links to existing main content', () => {
   const page = read('../app/components/solution-detail/SolutionDetailPage.vue')
-  const heroIndex = page.indexOf('<header class="mx-auto grid')
+  const heroIndex = page.indexOf('<header ref="heroRef" :key="data.solution.slug" class="solution-hero"')
   const switcherIndex = page.indexOf('aria-label="Các giải pháp khác"')
 
   assert.ok(heroIndex >= 0 && switcherIndex > heroIndex)
-  assert.match(page, /<UButton v-if="data\.solution\.content\.html"[^>]*href="#noi-dung-giai-phap"[^>]*>Tìm hiểu phương án<\/UButton>/)
-  assert.match(page, /class="public-filter-chip inline-flex min-h-11[\s\S]*:aria-current="item\.active \? 'page' : undefined"/)
+  // Owner decision 2026-11-04: hero + pill rail redesign; the content link still targets the main content.
+  assert.match(page, /<a v-if="hasContent" class="solution-hero__more" href="#noi-dung-giai-phap">Tìm hiểu phương án/)
+  assert.match(page, /id="noi-dung-giai-phap"/)
+  assert.match(page, /class="solution-rail__item"[\s\S]*:aria-current="item\.active \? 'page' : undefined"/)
   const categoryPage = read('../app/components/solutions/SolutionCategoryPage.vue')
   assert.match(categoryPage, /class="public-filter-chip flex min-h-11/)
   for (const file of ['../app/components/news/NewsFilters.vue', '../app/components/projects/ProjectFilters.vue']) {

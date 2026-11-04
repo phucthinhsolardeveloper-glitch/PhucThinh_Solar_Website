@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import type { PublicSolutionDetailPayload } from '../../../shared/contracts/public-solution-detail'
 import { buildEditorialTocForFragments } from '#shared/editorial-toc'
-import EditorialRichText from '~/components/editorial/EditorialRichText.vue'
 import SolutionDetailGallery from './SolutionDetailGallery.vue'
 import SolutionsCta from '~/components/solutions/SolutionsCta.vue'
+import SolutionsStory from '~/components/solutions/SolutionsStory.vue'
+import { publicPhoneHref } from '#shared/contact-links'
 
 const props = defineProps<{ data: PublicSolutionDetailPayload; hotline?: string }>()
-const { isHeaderHidden } = useSiteHeader()
 const links = useMigrationLinks()
 const { openConsultation } = useStorefrontModal()
 
@@ -28,173 +28,139 @@ const editorial = computed(() => buildEditorialTocForFragments(
   [props.data.solution.content, props.data.solution.extraContent] as const,
   { levels: [2, 3], idPrefix: 'solution-section' },
 ))
-const tocItems = computed(() => {
-  let h2Order = 0
-  return editorial.value.toc.map((item) => {
-    const level = item.level === 3 ? 3 as const : 2 as const
-    if (level === 2) h2Order += 1
-    return {
-      id: item.id,
-      title: item.label,
-      level,
-      order: level === 2 ? h2Order : null,
-    }
-  })
-})
 const solutionContent = computed(() => editorial.value.contents[0] ?? props.data.solution.content)
 const solutionExtraContent = computed(() => editorial.value.contents[1] ?? props.data.solution.extraContent)
 
-const quickHotlineTel = computed(() => {
-  if (props.data.campaignCta?.hotline?.tel) return props.data.campaignCta.hotline.tel
-  const digits = (props.hotline ?? '').replace(/[^\d+]/g, '')
-  return digits
-})
-const quickHotlineText = computed(() => props.data.campaignCta?.hotline?.text || (props.hotline ?? '').trim())
+const hotlineText = computed(() => props.data.campaignCta?.hotline?.text || (props.hotline ?? '').trim())
+const hotlineHref = computed(() => publicPhoneHref(props.data.campaignCta?.hotline?.tel || hotlineText.value))
+const hasContent = computed(() => Boolean(props.data.solution.content.html || props.data.solution.extraContent.html))
 
-const tocContainerRef = ref<HTMLElement | null>(null)
+const heroRef = ref<HTMLElement | null>(null)
 const solutionRailRef = ref<HTMLElement | null>(null)
 useActiveHorizontalRail(solutionRailRef)
-const { activeHeadingId, scrollToHeading } = useTocScrollspy({
-  contentSelector: '#solution-content',
-  headingSelector: 'h2[id], h3[id]',
-  tocContainerRef,
-  headerOffset: 100,
+let frame = 0
+function onScroll() {
+  cancelAnimationFrame(frame)
+  frame = requestAnimationFrame(() => {
+    const el = heroRef.value
+    if (!el) return
+    const y = Math.min(Math.max(window.scrollY, 0), el.offsetHeight)
+    el.style.setProperty('--shift', `${Math.round(y * 0.25)}px`)
+  })
+}
+
+// Switcher: the navy pill flows to the chosen item (stretching across, then settling) before the page swaps.
+const pillRef = ref<HTMLElement | null>(null)
+const pending = ref('')
+const direction = ref<'next' | 'prev'>('next')
+const activeIndex = computed(() => props.data.navigation.items.findIndex((item) => item.active))
+const currentSlug = computed(() => pending.value || props.data.solution.slug)
+let reducedMotion = false
+
+function placePill(animate: boolean) {
+  const rail = solutionRailRef.value
+  const pill = pillRef.value
+  const target = rail?.querySelector<HTMLElement>(`[data-slug="${currentSlug.value}"]`)
+  if (!rail || !pill || !target) { if (pill) pill.style.opacity = '0'; return }
+  const from = { left: pill.offsetLeft, width: pill.offsetWidth }
+  const to = { left: target.offsetLeft, width: target.offsetWidth }
+  pill.style.opacity = '1'
+  pill.style.left = `${to.left}px`
+  pill.style.width = `${to.width}px`
+  if (!animate || reducedMotion || !from.width || from.left === to.left) return
+  const spanLeft = Math.min(from.left, to.left)
+  const spanWidth = Math.max(from.left + from.width, to.left + to.width) - spanLeft
+  pill.animate([
+    { left: `${from.left}px`, width: `${from.width}px`, transform: 'scaleY(1)' },
+    { left: `${spanLeft}px`, width: `${spanWidth}px`, transform: 'scaleY(0.78)', offset: 0.45 },
+    { left: `${to.left}px`, width: `${to.width}px`, transform: 'scaleY(1.06)', offset: 0.82 },
+    { left: `${to.left}px`, width: `${to.width}px`, transform: 'scaleY(1)' },
+  ], { duration: 620, easing: 'cubic-bezier(0.65, 0, 0.35, 1)' })
+}
+
+function choose(slug: string, index: number) {
+  if (slug === props.data.solution.slug) return
+  direction.value = index >= activeIndex.value ? 'next' : 'prev'
+  pending.value = slug
+  nextTick(() => placePill(true))
+}
+
+watch(() => props.data.solution.slug, () => {
+  pending.value = ''
+  nextTick(() => placePill(false))
+})
+
+function onResize() { placePill(false) }
+onMounted(() => {
+  reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  placePill(false)
+  window.addEventListener('resize', onResize, { passive: true })
+  if (!reducedMotion) window.addEventListener('scroll', onScroll, { passive: true })
+})
+onBeforeUnmount(() => {
+  window.removeEventListener('scroll', onScroll)
+  window.removeEventListener('resize', onResize)
+  cancelAnimationFrame(frame)
 })
 </script>
 
 <template>
   <div>
-    <!--
-      Đo trên ảnh production (/giai-phap/dien-mat-troi-doanh-nghiep/, 1920px):
-      chip điều hướng ĐANG CHỌN là nền navy đặc + chữ sáng, các chip còn lại
-      nền sáng có viền mảnh — giữ nhận diện navy/gold của website kết hợp bố cục
-      split hero và sticky sidebar TOC rõ cấp bậc.
-    -->
     <article>
-      <div class="pts-container pt-5 pb-2">
-        <header class="mx-auto grid w-full grid-cols-1 overflow-hidden rounded-btn border border-navy-800/15 shadow-md" :class="data.solution.image ? 'nav:grid-cols-2' : 'nav:grid-cols-1'">
-          <div class="flex flex-col justify-between bg-gradient-to-br from-navy-950 via-navy-800 to-navy-900 p-7 text-white tb:p-10 nav:p-12" :class="data.solution.image ? '' : 'nav:grid nav:grid-cols-[minmax(0,1.05fr)_minmax(0,.95fr)] nav:items-center nav:gap-[72px]'">
-            <div :class="data.solution.image ? '' : 'contents'">
-              <p v-if="data.solution.category" class="mb-3 inline-flex min-h-8 w-fit items-center rounded-full bg-gold-300/15 px-3 py-1 text-xs font-extrabold tracking-wide text-gold-200 nav:row-start-1 nav:mb-4">
-                {{ data.solution.category }}
-              </p>
-              <h1 class="m-0 mb-4 text-[clamp(28px,3.2vw,42px)] font-black leading-[1.16] tracking-tight text-white" :class="data.solution.image ? '' : 'nav:row-span-2 nav:mb-0 nav:max-w-[600px]'">{{ data.solution.title }}</h1>
-              <p v-if="data.solution.summary" class="mb-6 text-[15px] leading-[1.72] text-blue-100/95 tb:text-base" :class="data.solution.image ? '' : 'nav:col-start-2 nav:row-start-1 nav:mb-0'">{{ data.solution.summary }}</p>
-            </div>
-            <div class="flex flex-col items-stretch gap-3.5 border-t border-white/15 pt-5 ph:flex-row ph:flex-wrap ph:items-center" :class="data.solution.image ? '' : 'nav:col-start-2 nav:row-start-2'">
-              <UButton :href="links.generic(data.cta.href)" color="primary" size="lg" class="min-h-11 justify-center gap-3 rounded-[4px] bg-hdr-gold px-6 text-sm font-extrabold tracking-wide text-navy-950 no-underline hover:bg-hdr-gold-hover cursor-pointer" @click="handleConsultClick($event, data.cta.href)">
-                <span>{{ data.cta.label }}</span>
-                <span aria-hidden="true">→</span>
-              </UButton>
-              <UButton v-if="data.solution.content.html" href="#noi-dung-giai-phap" color="neutral" variant="outline" size="lg" class="min-h-11 justify-center rounded-[4px] border-white/30 bg-white/[.04] px-5 text-center text-sm font-bold text-white no-underline hover:border-gold-400 hover:bg-white/10 hover:text-white ph:justify-start ph:text-left">Tìm hiểu phương án</UButton>
-            </div>
+      <Transition :name="`swap-${direction}`" mode="out-in">
+      <header ref="heroRef" :key="data.solution.slug" class="solution-hero" :class="{ 'has-image': data.solution.image }">
+        <img v-if="data.solution.image" :src="data.solution.image" :alt="data.solution.title" class="solution-hero__image" width="1600" height="1000" fetchpriority="high">
+        <span class="solution-hero__shade" aria-hidden="true" />
+        <div class="pts-container solution-hero__inner">
+          <a v-if="data.solution.category" class="solution-hero__category" :href="links.generic(data.navigation.allUrl)">{{ data.solution.category }}</a>
+          <h1>{{ data.solution.title }}</h1>
+          <p v-if="data.solution.summary" class="solution-hero__summary">{{ data.solution.summary }}</p>
+          <div class="solution-hero__actions">
+            <a class="solution-hero__primary" :href="links.generic(data.cta.href)" @click="handleConsultClick($event, data.cta.href)">
+              {{ data.cta.label }}
+              <span aria-hidden="true"><UIcon name="i-lucide-arrow-right" class="size-5" /></span>
+            </a>
+            <a v-if="hotlineHref" class="solution-hero__call" :href="hotlineHref">
+              <UIcon name="i-lucide-phone-call" class="size-5 text-gold-300" aria-hidden="true" />
+              <span><small>Gọi hotline</small>{{ hotlineText }}</span>
+            </a>
+            <a v-if="hasContent" class="solution-hero__more" href="#noi-dung-giai-phap">Tìm hiểu phương án <UIcon name="i-lucide-arrow-down" class="size-4" aria-hidden="true" /></a>
           </div>
-          <figure v-if="data.solution.image" class="relative m-0 aspect-[8/5] min-w-0 overflow-hidden bg-navy-950 nav:aspect-auto nav:min-h-[360px]">
-            <img :src="data.solution.image" :alt="data.solution.title" class="h-full w-full object-cover" width="1600" height="1000" fetchpriority="high">
-            <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-navy-950/35 via-transparent to-transparent" aria-hidden="true" />
-          </figure>
-        </header>
-      </div>
+        </div>
+      </header>
+      </Transition>
 
-      <div class="pts-container py-2">
-        <nav ref="solutionRailRef" class="sticky top-[65px] z-20 flex w-full gap-2.5 overflow-x-auto border-y border-slate-200 bg-white/95 py-1.5 backdrop-blur-md [scrollbar-width:none] [&::-webkit-scrollbar]:hidden min-[768px]:static min-[768px]:border-0 min-[768px]:bg-transparent min-[768px]:backdrop-blur-none" aria-label="Các giải pháp khác">
-          <a
-            class="public-filter-chip inline-flex min-h-11 flex-none items-center whitespace-nowrap px-4 text-[13px] font-bold no-underline"
-            :href="links.generic(data.navigation.allUrl)"
-          >
-            Tất cả giải pháp
-          </a>
-          <a
-            v-for="item in data.navigation.items"
+      <nav class="solution-rail" aria-label="Các giải pháp khác">
+        <div ref="solutionRailRef" class="pts-container solution-rail__track">
+          <span ref="pillRef" class="solution-rail__pill" aria-hidden="true" />
+          <NuxtLink class="solution-rail__item" :to="links.generic(data.navigation.allUrl)">
+            <UIcon name="i-lucide-layout-grid" class="size-4" aria-hidden="true" />Tất cả giải pháp
+          </NuxtLink>
+          <NuxtLink
+            v-for="(item, index) in data.navigation.items"
             :key="item.slug"
-            class="public-filter-chip inline-flex min-h-11 flex-none items-center whitespace-nowrap px-4 text-[13px] font-bold no-underline"
-            :class="item.active ? 'text-gold-300' : 'text-navy-800'"
+            class="solution-rail__item"
+            :data-slug="item.slug"
+            :class="{ 'is-on': currentSlug === item.slug }"
             :aria-current="item.active ? 'page' : undefined"
-            :href="links.generic(item.url)"
-          >
-            {{ item.title }}
-          </a>
-        </nav>
-      </div>
+            :to="links.generic(item.url)"
+            @click="choose(item.slug, index)"
+          >{{ item.title }}</NuxtLink>
+        </div>
+      </nav>
 
       <!--
-        Tích hợp sanitizer: content/extraContent giờ là HTML thật qua
-        pts_public_richtext.php, không còn mảng paragraph tách theo dòng.
+        Tích hợp sanitizer: content/extraContent là HTML thật qua
+        pts_public_richtext.php; SolutionsStory chỉ dựng lại bố cục theo h2/h3.
       -->
-      <div id="noi-dung-giai-phap" class="pts-container grid grid-cols-1 gap-8 py-8 min-[901px]:grid-cols-[minmax(250px,300px)_minmax(0,1fr)] min-[901px]:gap-[clamp(32px,3.6vw,64px)] nav:py-11">
-        <aside
-          v-if="tocItems.length"
-          ref="tocContainerRef"
-          class="self-start rounded-btn border border-navy-700/70 bg-gradient-to-b from-navy-800 to-navy-950 p-5 shadow-sm min-[901px]:sticky min-[901px]:max-h-[calc(100vh-116px)] min-[901px]:overflow-y-auto transition-[top] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
-          :class="isHeaderHidden ? 'min-[901px]:top-6' : 'min-[901px]:top-[104px] min-[1501px]:top-[124px] min-[1800px]:top-[140px]'"
-          aria-label="Mục lục nội dung"
-        >
-          <h2 class="m-0 mb-3 flex items-center gap-2 border-b border-white/12 pb-3 text-[15px] font-extrabold text-gold-300">
-            <svg class="h-4 w-4 flex-none text-gold-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
-            </svg>
-            <span>Nội dung chính</span>
-          </h2>
-          <ol class="m-0 max-h-[220px] list-none space-y-1 overflow-y-auto p-0 overscroll-contain min-[901px]:max-h-none min-[901px]:overflow-visible">
-            <li v-for="item in tocItems" :key="item.id" :class="item.level === 3 ? 'ml-3.5' : ''">
-              <a
-                :data-toc-id="item.id"
-                class="flex min-h-11 items-center border-l-2 py-1.5 pl-3 pr-2 text-[13px] leading-[1.45] no-underline transition-all duration-200"
-                :class="[
-                  item.level === 2 ? 'font-bold' : 'font-medium',
-                  activeHeadingId === item.id
-                    ? 'border-[#e4a849] bg-white/10 text-white font-extrabold rounded-r'
-                    : 'border-transparent text-[#c9d5e6] hover:border-gold-400 hover:text-white hover:bg-white/5',
-                ]"
-                :href="`#${item.id}`"
-                :aria-current="activeHeadingId === item.id ? 'true' : undefined"
-                @click.prevent="scrollToHeading(item.id)"
-              >
-                <span v-if="item.order" class="mr-2 flex-none text-xs font-extrabold text-gold-400">{{ item.order }}.</span>
-                <span v-else class="mr-2 flex-none text-gold-400" aria-hidden="true">•</span>
-                <span>{{ item.title }}</span>
-              </a>
-            </li>
-          </ol>
-
-          <div class="mt-5 rounded-btn border border-white/12 bg-white/[.04] p-3.5 text-xs">
-            <p class="m-0 mb-1.5 font-extrabold text-white">{{ data.cta.label }}</p>
-            <p v-if="data.campaignCta?.description" class="m-0 mb-3 line-clamp-2 leading-relaxed text-blue-100/80">{{ data.campaignCta.description }}</p>
-            <div class="grid gap-2">
-              <button
-                type="button"
-                class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-[4px] bg-hdr-gold px-3 py-2 text-center text-xs font-extrabold text-navy-950 transition-colors hover:bg-hdr-gold-hover cursor-pointer"
-                @click="openConsultation(`Giải pháp: ${data.solution.title}`)"
-              >
-                <span>Gửi yêu cầu khảo sát</span>
-                <span aria-hidden="true">→</span>
-              </button>
-              <UButton
-                v-if="quickHotlineTel"
-                color="neutral"
-                variant="outline"
-                size="sm"
-                class="min-h-10 w-full justify-center gap-2 rounded-[4px] border-white/20 bg-white/[.06] px-3 py-1.5 text-center text-xs font-extrabold text-white no-underline hover:border-gold-400 hover:bg-white/12"
-                :href="`tel:${quickHotlineTel}`"
-              >
-                <svg class="h-3.5 w-3.5 flex-none text-gold-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92Z" />
-                </svg>
-                <span>{{ quickHotlineText }}</span>
-              </UButton>
-            </div>
-          </div>
-        </aside>
-
-        <article id="solution-content" class="min-w-0">
-          <EditorialRichText :content="solutionContent" variant="solution" />
-          <EditorialRichText class="mt-8" :content="solutionExtraContent" variant="solution" />
-          <p v-if="!data.solution.content.html && !data.solution.extraContent.html" class="text-slate-500">Nội dung chi tiết đang được cập nhật.</p>
-        </article>
-      </div>
+      <Transition name="story-swap" mode="out-in">
+        <div id="noi-dung-giai-phap" :key="data.solution.slug" class="solution-story">
+          <SolutionsStory v-if="hasContent" :contents="[solutionContent, solutionExtraContent]" index-label="Nội dung chính" />
+          <p v-else class="pts-container py-12 text-slate-500">Nội dung chi tiết đang được cập nhật.</p>
+        </div>
+      </Transition>
 
       <SolutionDetailGallery :images="data.solution.gallery" :title="data.solution.title" />
-
     </article>
 
     <section v-if="data.equipment.length" class="pts-container py-6 nav:py-8" aria-labelledby="solution-equipment-title">
@@ -229,7 +195,66 @@ const { activeHeadingId, scrollToHeading } = useTocScrollspy({
     </section>
 
     <div class="pts-container pb-12">
-      <SolutionsCta v-if="data.campaignCta" :cta="data.campaignCta" />
+      <SolutionsCta v-if="data.campaignCta" :cta="data.campaignCta" :subject="`Giải pháp: ${data.solution.title}`" />
     </div>
   </div>
 </template>
+
+<style scoped>
+.solution-hero { --ease: cubic-bezier(0.22, 1, 0.36, 1); position: relative; isolation: isolate; display: flex; min-height: clamp(520px, 74vh, 800px); align-items: flex-end; overflow: hidden; background: #061537; color: #fff; }
+.solution-hero:not(.has-image) { min-height: clamp(380px, 52vh, 560px); }
+.solution-hero__image { position: absolute; inset: -8% 0 0; z-index: -2; width: 100%; height: 108%; object-fit: cover; transform: translate3d(0, var(--shift, 0), 0) scale(1.04); animation: hero-in 1.1s var(--ease) both; }
+.solution-hero__shade { position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, rgb(6 21 55 / 92%) 0%, rgb(6 21 55 / 70%) 42%, rgb(6 21 55 / 20%) 100%), linear-gradient(0deg, #061537 0%, rgb(6 21 55 / 0%) 45%); }
+.solution-hero:not(.has-image) .solution-hero__shade { background: radial-gradient(60% 90% at 85% 10%, rgb(228 168 73 / 20%), transparent 70%); }
+.solution-hero__inner { width: 100%; padding-block: clamp(56px, 8vw, 120px) clamp(40px, 5vw, 72px); }
+.solution-hero__category { display: inline-flex; min-height: 36px; align-items: center; margin-bottom: 18px; padding: 0 14px; border: 1px solid rgb(228 168 73 / 45%); border-radius: 999px; color: var(--color-gold-200); font-size: 14px; font-weight: 700; text-decoration: none; }
+.solution-hero__category:hover { background: rgb(228 168 73 / 14%); }
+.solution-hero h1 { max-width: 15ch; margin: 0; color: #fff; font-size: clamp(38px, 5.6vw, 84px); font-weight: 850; line-height: 1.02; letter-spacing: -0.04em; text-wrap: balance; }
+.solution-hero__summary { max-width: 62ch; margin: 22px 0 0; color: #d3dcea; font-size: clamp(17px, 1.3vw, 20px); line-height: 1.68; }
+.solution-hero__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 28px; margin-top: 32px; }
+.solution-hero__primary { display: inline-flex; min-height: 58px; align-items: center; gap: 16px; padding: 0 10px 0 24px; border-radius: 6px; background: var(--color-gold-400); color: var(--color-navy-950); font-size: 16.5px; font-weight: 850; text-decoration: none; transition: background-color 0.25s ease; }
+.solution-hero__primary > span { display: grid; width: 40px; height: 40px; place-items: center; border-radius: 4px; background: var(--color-navy-950); color: var(--color-gold-300); transition: transform 0.35s var(--ease); }
+.solution-hero__primary:hover { background: var(--color-gold-300); }
+.solution-hero__primary:hover > span { transform: translateX(4px); }
+.solution-hero__call { display: inline-flex; min-height: 52px; align-items: center; gap: 12px; color: #fff; font-size: 20px; font-weight: 850; text-decoration: none; font-variant-numeric: tabular-nums; }
+.solution-hero__call small { display: block; color: #9fb0c8; font-size: 13px; font-weight: 600; }
+.solution-hero__more { display: inline-flex; min-height: 44px; align-items: center; gap: 8px; color: #d3dcea; font-size: 15.5px; font-weight: 700; text-decoration: none; }
+.solution-hero__more:hover { color: var(--color-gold-300); }
+.solution-hero a:focus-visible { outline: 3px solid var(--color-gold-300); outline-offset: 3px; }
+
+.solution-rail { position: relative; z-index: 2; border-bottom: 1px solid rgb(10 34 81 / 10%); background: #fff; }
+.solution-rail__track { position: relative; display: flex; gap: 6px; overflow-x: auto; padding-block: 10px; scrollbar-width: none; }
+.solution-rail__pill { position: absolute; top: 10px; left: 0; z-index: 0; width: 0; height: 44px; border-radius: 999px; background: var(--color-navy-950); box-shadow: 0 10px 24px -14px rgb(6 21 55 / 70%); opacity: 0; pointer-events: none; transform-origin: center; }
+.solution-rail__track::-webkit-scrollbar { display: none; }
+.solution-rail__item { position: relative; z-index: 1; display: inline-flex; min-height: 44px; flex: none; align-items: center; gap: 8px; padding: 0 16px; border-radius: 999px; color: var(--color-navy-800); font-size: 15px; font-weight: 700; white-space: nowrap; text-decoration: none; transition: background-color 0.25s ease, color 0.25s ease; }
+.solution-rail__item:not(.is-on):hover { background: #eef2f8; }
+.solution-rail__item.is-on { color: var(--color-gold-300); transition-delay: 0.18s; }
+.solution-rail__item:focus-visible { outline: 3px solid var(--color-gold-500); outline-offset: 2px; }
+.solution-story :deep(.story-index) { margin-top: 0; }
+
+@keyframes hero-in { from { opacity: 0; transform: scale(1.08); } }
+
+/* Page swap: content slides out toward where it came from and the next solution flows in. */
+.swap-next-leave-active, .swap-prev-leave-active { transition: opacity 0.26s ease, transform 0.26s cubic-bezier(0.55, 0, 1, 0.45), filter 0.26s ease; }
+.swap-next-enter-active, .swap-prev-enter-active { transition: opacity 0.5s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), filter 0.5s ease; }
+.swap-next-leave-to { opacity: 0; transform: translateX(-4%); filter: blur(6px); }
+.swap-next-enter-from { opacity: 0; transform: translateX(5%); filter: blur(8px); }
+.swap-prev-leave-to { opacity: 0; transform: translateX(4%); filter: blur(6px); }
+.swap-prev-enter-from { opacity: 0; transform: translateX(-5%); filter: blur(8px); }
+.story-swap-leave-active { transition: opacity 0.2s ease; }
+.story-swap-enter-active { transition: opacity 0.5s ease 0.1s, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.1s; }
+.story-swap-leave-to { opacity: 0; }
+.story-swap-enter-from { opacity: 0; transform: translateY(24px); }
+@media (max-width: 640px) {
+  .solution-hero { min-height: 560px; }
+  .solution-hero__shade { background: linear-gradient(0deg, #061537 8%, rgb(6 21 55 / 78%) 55%, rgb(6 21 55 / 40%) 100%); }
+  .solution-hero__actions { align-items: stretch; flex-direction: column; }
+  .solution-hero__primary { justify-content: space-between; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .solution-hero__image { animation: none; transform: none; }
+  .swap-next-enter-active, .swap-prev-enter-active, .swap-next-leave-active, .swap-prev-leave-active, .story-swap-enter-active, .story-swap-leave-active { transition: opacity 0.2s ease; }
+  .swap-next-enter-from, .swap-prev-enter-from, .swap-next-leave-to, .swap-prev-leave-to, .story-swap-enter-from { transform: none; filter: none; }
+  .solution-hero__primary > span { transition: none; }
+}
+</style>

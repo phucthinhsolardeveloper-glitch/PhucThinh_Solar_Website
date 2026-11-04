@@ -1,10 +1,13 @@
 <script setup lang="ts">
-import type { PublicSolutionsPayload } from '#shared/contracts/public-solutions'
+import type { PublicSanitizedRichText } from '#shared/contracts/editorial-rich-text'
 import EditorialRichText from '~/components/editorial/EditorialRichText.vue'
 import { parseSolutionStory, storyIcon, stripStepNumber } from '~/utils/solutionStory'
 
-const props = defineProps<{ content: PublicSolutionsPayload['editorial']['content'] }>()
-const chapters = computed(() => parseSolutionStory(props.content.html || ''))
+const props = withDefaults(defineProps<{ contents: PublicSanitizedRichText[]; indexLabel?: string }>(), { indexLabel: 'Các phần trong trang' })
+const chapters = computed(() => parseSolutionStory(props.contents.map((content) => content.html || '').join('')))
+// Long chapter lists (detail pages) would overflow the index; it lists the first eight.
+const indexChapters = computed(() => chapters.value.filter((chapter) => chapter.kind !== 'faq').slice(0, 8))
+const faqChapter = computed(() => chapters.value.find((chapter) => chapter.kind === 'faq'))
 
 function splitFit(text: string) { return text.split(/,\s*/).map((part) => part.replace(/\.$/, '')).filter(Boolean) }
 
@@ -24,13 +27,15 @@ onBeforeUnmount(() => observer?.disconnect())
 </script>
 
 <template>
-  <EditorialRichText v-if="!chapters.length" :content="content" variant="solution" />
+  <div v-if="!chapters.length" class="story-fallback">
+    <EditorialRichText v-for="(content, index) in contents" :key="index" :content="content" variant="solution" />
+  </div>
 
   <div v-else class="story">
-    <nav v-if="chapters.length > 1" class="story-index" aria-label="Các phần trong trang Giải pháp">
+    <nav v-if="indexChapters.length > 1" class="story-index" :aria-label="indexLabel">
       <div class="pts-container">
         <ul>
-          <li v-for="chapter in chapters" :key="chapter.id">
+          <li v-for="chapter in indexChapters" :key="chapter.id">
             <a :href="`#${chapter.id}`" :aria-current="activeId === chapter.id ? 'true' : undefined">
               <UIcon :name="storyIcon(chapter.title)" class="size-5 flex-none" aria-hidden="true" />
               <span>{{ chapter.title }}</span>
@@ -84,7 +89,7 @@ onBeforeUnmount(() => observer?.disconnect())
               <div v-if="item.fit" class="eco-fit">
                 <span class="sr-only">{{ item.fit.label }}:</span>
                 <ul :aria-label="item.fit.label">
-                  <li v-for="tag in splitFit(item.fit.text)" :key="tag">{{ tag }}</li>
+                  <li v-for="tag in item.fit.list.length ? item.fit.list : splitFit(item.fit.text)" :key="tag">{{ tag }}</li>
                 </ul>
               </div>
             </li>
@@ -108,20 +113,50 @@ onBeforeUnmount(() => observer?.disconnect())
         </div>
       </section>
 
-      <!-- Working process as a connected route. -->
+      <!-- Working process as a connected route (from numbered h3s or an ordered list). -->
       <section v-else-if="chapter.kind === 'process'" class="chapter chapter-process" :aria-labelledby="chapter.id">
         <div class="pts-container">
           <header class="process-head">
             <h2 :id="chapter.id">{{ chapter.title }}</h2>
             <div v-if="chapter.lead" class="chapter-lead" v-html="chapter.lead" />
           </header>
-          <ol class="process-route" :style="{ '--steps': chapter.items.length }">
+          <ol class="process-route" :data-many="(chapter.items.length || chapter.list.length) > 6 ? '' : undefined" :style="{ '--steps': chapter.items.length || chapter.list.length }">
             <li v-for="item in chapter.items" :key="item.id" class="process-step">
               <span class="process-node" aria-hidden="true"><UIcon :name="storyIcon(item.title)" class="size-5" /></span>
               <h3 :id="item.id">{{ stripStepNumber(item.title) }}</h3>
               <div class="process-text" v-html="item.html" />
             </li>
+            <li v-for="step in chapter.list" :key="step" class="process-step">
+              <span class="process-node" aria-hidden="true"><UIcon :name="storyIcon(step)" class="size-5" /></span>
+              <p class="process-label">{{ step }}</p>
+            </li>
           </ol>
+          <blockquote v-if="chapter.quote" class="story-quote">{{ chapter.quote }}</blockquote>
+        </div>
+      </section>
+
+      <!-- A few alternatives side by side, each with its "suits when" list. -->
+      <section v-else-if="chapter.kind === 'options'" class="chapter chapter-options" :aria-labelledby="chapter.id">
+        <div class="pts-container">
+          <header class="pillars-head">
+            <h2 :id="chapter.id">{{ chapter.title }}</h2>
+            <div v-if="chapter.lead" class="chapter-lead" v-html="chapter.lead" />
+          </header>
+          <ul class="options-grid" :data-count="chapter.items.length">
+            <li v-for="item in chapter.items" :key="item.id" class="option-card">
+              <span class="option-icon" aria-hidden="true"><UIcon :name="storyIcon(item.title)" class="size-7" /></span>
+              <h3 :id="item.id">{{ stripStepNumber(item.title) }}</h3>
+              <div class="option-text story-rich" v-html="item.html" />
+              <div v-if="item.fit" class="option-fit">
+                <strong>{{ item.fit.label }}</strong>
+                <p v-if="item.fit.text">{{ item.fit.text }}</p>
+                <ul v-if="item.fit.list.length">
+                  <li v-for="entry in item.fit.list" :key="entry"><UIcon name="i-lucide-check" class="size-4 flex-none" aria-hidden="true" />{{ entry }}</li>
+                </ul>
+              </div>
+            </li>
+          </ul>
+          <blockquote v-if="chapter.quote" class="story-quote">{{ chapter.quote }}</blockquote>
         </div>
       </section>
 
@@ -129,29 +164,52 @@ onBeforeUnmount(() => observer?.disconnect())
         <div class="pts-container">
           <header class="pillars-head">
             <h2 :id="chapter.id">{{ chapter.title }}</h2>
-            <div v-if="chapter.lead" class="chapter-lead" v-html="chapter.lead" />
+            <div v-if="chapter.lead" class="chapter-lead story-rich" v-html="chapter.lead" />
           </header>
-          <ul class="pillars-grid">
+          <ul class="pillars-grid" :data-count="chapter.items.length">
             <li v-for="item in chapter.items" :key="item.id">
               <UIcon :name="storyIcon(item.title)" class="pillar-icon size-8" aria-hidden="true" />
               <h3 :id="item.id">{{ item.title }}</h3>
-              <div class="pillar-text" v-html="item.html" />
+              <div class="pillar-text story-rich" v-html="item.html" />
             </li>
           </ul>
+          <blockquote v-if="chapter.quote" class="story-quote">{{ chapter.quote }}</blockquote>
         </div>
       </section>
+
+      <!-- FAQ is rendered once, at the end, as an accordion. -->
+      <template v-else-if="chapter.kind === 'faq'" />
 
       <section v-else class="chapter chapter-prose" :aria-labelledby="chapter.id">
         <div class="pts-container prose-wrap">
           <h2 :id="chapter.id">{{ chapter.title }}</h2>
-          <div class="chapter-lead" v-html="chapter.lead" />
+          <div v-if="chapter.lead" class="chapter-lead story-rich" v-html="chapter.lead" />
+          <ul v-if="chapter.list.length" class="check-list prose-list">
+            <li v-for="entry in chapter.list" :key="entry"><span class="check-mark" aria-hidden="true"><UIcon name="i-lucide-check" class="size-4" /></span>{{ entry }}</li>
+          </ul>
           <template v-for="item in chapter.items" :key="item.id">
             <h3 :id="item.id">{{ item.title }}</h3>
-            <div class="chapter-lead" v-html="item.html" />
+            <div class="chapter-lead story-rich" v-html="item.html" />
           </template>
+          <blockquote v-if="chapter.quote" class="story-quote">{{ chapter.quote }}</blockquote>
         </div>
       </section>
     </template>
+
+    <section v-if="faqChapter" class="chapter chapter-faq" :aria-labelledby="faqChapter.id">
+      <div class="pts-container faq-grid">
+        <header>
+          <h2 :id="faqChapter.id">Câu hỏi thường gặp</h2>
+          <div v-if="faqChapter.lead" class="chapter-lead" v-html="faqChapter.lead" />
+        </header>
+        <div class="faq-list">
+          <details v-for="(item, index) in faqChapter.items" :key="item.id" class="faq-item" :open="index === 0">
+            <summary><h3 :id="item.id">{{ item.title }}</h3><span class="faq-toggle" aria-hidden="true" /></summary>
+            <div class="faq-answer story-rich" v-html="item.html" />
+          </details>
+        </div>
+      </div>
+    </section>
   </div>
 </template>
 
@@ -230,13 +288,68 @@ onBeforeUnmount(() => observer?.disconnect())
 
 /* Pillars */
 .chapter-pillars { background: #f5f7fb; }
+.chapter-pillars + .chapter-pillars { background: #fff; }
 .pillars-head { max-width: 760px; }
-.pillars-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; margin: clamp(36px, 4vw, 56px) 0 0; padding: 0; list-style: none; border-top: 2px solid var(--color-navy-950); }
-.pillars-grid > li { display: flex; flex-direction: column; gap: 12px; padding: 28px clamp(16px, 2vw, 32px) 8px 0; }
-.pillars-grid > li + li { padding-left: clamp(16px, 2vw, 32px); border-left: 1px solid rgb(10 34 81 / 12%); }
+.pillars-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(20px, 2.4vw, 36px) clamp(20px, 3vw, 48px); margin: clamp(36px, 4vw, 56px) 0 0; padding: 0; list-style: none; }
+.pillars-grid[data-count="2"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.pillars-grid[data-count="4"] { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.pillars-grid > li { display: flex; flex-direction: column; gap: 12px; padding-top: 24px; border-top: 2px solid var(--color-navy-950); transition: border-color 0.35s ease; }
+.pillars-grid > li:hover { border-color: var(--color-gold-500); }
 .pillar-icon { color: var(--color-gold-600); }
 .pillars-grid h3 { font-size: clamp(19px, 1.45vw, 22px); font-weight: 800; line-height: 1.3; }
 .pillar-text :deep(p) { margin: 0; color: #52627a; font-size: 16px; line-height: 1.65; }
+
+/* Options */
+.chapter-options { background: linear-gradient(180deg, #fff, #f5f7fb); }
+.options-grid { display: grid; grid-template-columns: repeat(var(--cols, 3), minmax(0, 1fr)); gap: 16px; margin: clamp(36px, 4vw, 56px) 0 0; padding: 0; list-style: none; }
+.options-grid[data-count="2"] { --cols: 2; }
+.options-grid[data-count="1"] { --cols: 1; }
+.option-card { display: flex; flex-direction: column; gap: 14px; padding: clamp(24px, 2.4vw, 36px); border: 1px solid rgb(10 34 81 / 10%); border-radius: 8px; background: #fff; box-shadow: 0 24px 48px -36px rgb(10 34 81 / 45%); transition: transform 0.45s var(--ease), border-color 0.35s ease; }
+.option-card:hover { transform: translateY(-6px); border-color: rgb(201 150 46 / 60%); }
+.option-icon { display: grid; width: 56px; height: 56px; place-items: center; border-radius: 14px; background: var(--color-navy-950); color: var(--color-gold-300); }
+.option-card h3 { font-size: clamp(20px, 1.6vw, 24px); font-weight: 850; line-height: 1.25; }
+.option-text :deep(p) { margin: 0; color: #52627a; font-size: 16px; line-height: 1.65; }
+.option-fit { margin-top: auto; padding-top: 16px; border-top: 1px dashed rgb(10 34 81 / 18%); }
+.option-fit strong { display: block; margin-bottom: 10px; color: var(--color-gold-700); font-size: 15px; font-weight: 800; }
+.option-fit p { margin: 0; color: var(--color-navy-900); font-size: 15.5px; line-height: 1.55; }
+.option-fit ul { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.option-fit li { display: flex; gap: 10px; color: var(--color-navy-900); font-size: 15.5px; font-weight: 600; line-height: 1.5; }
+.option-fit li :deep(.iconify), .option-fit li > :first-child { margin-top: 3px; color: var(--color-gold-600); }
+
+/* Shared */
+.story-quote { max-width: 900px; margin: clamp(36px, 4vw, 56px) 0 0; padding: 4px 0 4px 28px; border-left: 4px solid var(--color-gold-500); color: var(--color-navy-950); font-size: clamp(20px, 1.8vw, 27px); font-weight: 800; line-height: 1.4; letter-spacing: -0.015em; }
+.story-rich :deep(ul), .story-rich :deep(ol) { display: grid; gap: 8px; margin: 12px 0 0; padding: 0 0 0 1.2em; color: #3d4d66; font-size: 16px; line-height: 1.6; }
+.story-rich :deep(li::marker) { color: var(--color-gold-600); font-weight: 800; }
+.story-rich :deep(p + p) { margin-top: 10px; }
+.story-rich :deep(strong) { color: var(--color-navy-950); }
+.story-rich :deep(table) { width: 100%; margin-top: 16px; border-collapse: collapse; font-size: 15px; }
+.story-rich :deep(th), .story-rich :deep(td) { padding: 10px 12px; border: 1px solid rgb(10 34 81 / 12%); text-align: left; }
+.story-rich :deep(img) { max-width: 100%; height: auto; border-radius: 6px; }
+.process-label { margin: 8px 0 0; color: var(--color-navy-950); font-size: 16.5px; font-weight: 750; line-height: 1.45; }
+.process-route[data-many] { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); row-gap: 36px; }
+.process-route[data-many]::before { display: none; }
+.prose-list { margin-top: 24px; }
+
+/* FAQ */
+.chapter-faq { background: var(--color-navy-950); color: #fff; }
+.faq-grid { display: grid; grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr); gap: clamp(32px, 6vw, 96px); align-items: start; }
+.chapter-faq h2 { color: #fff; }
+.faq-list { border-top: 1px solid rgb(255 255 255 / 14%); }
+.faq-item { border-bottom: 1px solid rgb(255 255 255 / 14%); }
+.faq-item summary { display: flex; min-height: 72px; align-items: center; justify-content: space-between; gap: 20px; padding: 18px 0; cursor: pointer; list-style: none; }
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary h3 { color: #fff; font-size: clamp(17px, 1.35vw, 20px); font-weight: 750; line-height: 1.4; }
+.faq-item summary:hover h3 { color: var(--color-gold-300); }
+.faq-item summary:focus-visible { outline: 3px solid var(--color-gold-400); outline-offset: 2px; }
+.faq-toggle { position: relative; width: 36px; height: 36px; flex: none; border: 1px solid rgb(228 168 73 / 55%); border-radius: 50%; }
+.faq-toggle::before, .faq-toggle::after { content: ''; position: absolute; top: 50%; left: 50%; width: 14px; height: 2px; background: var(--color-gold-300); transform: translate(-50%, -50%); transition: transform 0.35s var(--ease); }
+.faq-toggle::after { transform: translate(-50%, -50%) rotate(90deg); }
+.faq-item[open] .faq-toggle::after { transform: translate(-50%, -50%) rotate(0deg); }
+.faq-answer { padding: 0 56px 24px 0; }
+.faq-answer :deep(p) { margin: 0; color: #c3cfdf; font-size: 16.5px; line-height: 1.7; }
+.faq-answer :deep(p + p) { margin-top: 10px; }
+.faq-answer :deep(strong) { color: #fff; }
+.faq-answer :deep(ul), .faq-answer :deep(ol) { color: #c3cfdf; }
 
 .prose-wrap { max-width: 860px; }
 .prose-wrap h3 { margin-top: 28px; font-size: 21px; font-weight: 800; }
@@ -244,11 +357,11 @@ onBeforeUnmount(() => observer?.disconnect())
 @media (max-width: 1100px) {
   .process-route { grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 40px; }
   .process-route::before { display: none; }
-  .pillars-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .pillars-grid > li:nth-child(3) { padding-left: 0; border-left: 0; }
+  .pillars-grid, .pillars-grid[data-count="4"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .options-grid { --cols: 1; }
 }
 @media (max-width: 900px) {
-  .match-grid, .check-grid { grid-template-columns: 1fr; }
+  .match-grid, .check-grid, .faq-grid { grid-template-columns: 1fr; }
   .match-head { position: static; }
   .eco-grid { grid-template-columns: 1fr 1fr; }
   .eco-card, .eco-grid[data-count] .eco-card:nth-child(-n + 2), .eco-grid[data-count="4"] .eco-card { grid-column: auto; }
@@ -267,12 +380,11 @@ onBeforeUnmount(() => observer?.disconnect())
   .process-step { display: grid; grid-template-columns: 56px minmax(0, 1fr); column-gap: 18px; padding-bottom: 28px; }
   .process-node { grid-row: span 2; }
   .process-step h3 { margin-top: 14px; }
-  .pillars-grid { grid-template-columns: 1fr; }
-  .pillars-grid > li, .pillars-grid > li + li { padding: 24px 0 8px; border-left: 0; border-top: 1px solid rgb(10 34 81 / 12%); }
-  .pillars-grid > li:first-child { border-top: 0; }
+  .pillars-grid, .pillars-grid[data-count] { grid-template-columns: 1fr; }
+  .faq-answer { padding-right: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
   .story *, .story *::after { transition: none !important; }
-  .eco-card:hover, .check-list li:hover, .process-step:hover .process-node, .match-row:hover .match-arrow { transform: none; }
+  .eco-card:hover, .option-card:hover, .check-list li:hover, .process-step:hover .process-node, .match-row:hover .match-arrow { transform: none; }
 }
 </style>

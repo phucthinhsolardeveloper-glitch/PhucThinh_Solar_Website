@@ -307,13 +307,16 @@ usePublicSocialMeta({
           </section>
         </div>
 
-        <PublicCtaBanner class="mt-10" variant="catalog" labelled-by="brand-support-title">
-          <h2 id="brand-support-title" class="mb-2 text-[clamp(20px,2vw,26px)] font-black leading-tight text-white">Cần hỗ trợ chọn sản phẩm phù hợp?</h2>
-          <p class="mb-0 max-w-[720px] leading-relaxed text-blue-100/95">Chia sẻ nhu cầu để đội ngũ Phúc Thịnh Solar tư vấn cấu hình và báo giá phù hợp.</p>
-          <template #actions>
-            <NuxtLink :to="migrationHref('/lien-he/')" class="inline-flex min-h-11 items-center justify-center gap-2 whitespace-nowrap rounded-[4px] bg-hdr-gold px-6 text-sm font-extrabold text-navy-950 no-underline transition-colors hover:bg-hdr-gold-hover">Nhận tư vấn <span aria-hidden="true">→</span></NuxtLink>
-          </template>
-        </PublicCtaBanner>
+        <PublicCtaBanner
+          class="mt-10"
+          variant="catalog"
+          title-id="brand-support-title"
+          title="Cần hỗ trợ chọn sản phẩm phù hợp?"
+          description="Chia sẻ nhu cầu để đội ngũ Phúc Thịnh Solar tư vấn cấu hình và báo giá phù hợp."
+          :hotline="site.brand.hotline"
+          :zalo="site.brand.zaloHref"
+          :subject="'Thương hiệu: ' + (data?.brand?.name || '')"
+        />
       </div>
     </main>
 

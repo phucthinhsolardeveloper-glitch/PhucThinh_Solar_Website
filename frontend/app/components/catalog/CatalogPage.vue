@@ -542,13 +542,19 @@ function pageLink(nextPage: number) {
         </details>
       </section>
 
-      <PublicCtaBanner v-if="catalogData?.support" class="col-span-full mt-5" variant="catalog" :image="catalogData.support.image" labelled-by="catalog-support-title">
-        <h2 id="catalog-support-title" class="mb-2 text-[clamp(20px,2vw,26px)] font-black leading-tight text-white">{{ catalogData.support.title }}</h2>
-        <p class="mb-0 max-w-[720px] leading-relaxed text-blue-100/95">{{ catalogData.support.description }}</p>
-        <template #actions>
-          <NuxtLink :to="links.generic(catalogData.support.href || '/lien-he/')" class="inline-flex min-h-11 items-center justify-center gap-2 whitespace-nowrap rounded-[4px] bg-hdr-gold px-6 text-sm font-extrabold text-navy-950 no-underline transition-colors hover:bg-hdr-gold-hover">Nhận tư vấn <span aria-hidden="true">→</span></NuxtLink>
-        </template>
-      </PublicCtaBanner>
+      <PublicCtaBanner
+        v-if="catalogData?.support"
+        class="col-span-full mt-5"
+        variant="catalog"
+        :image="catalogData.support.image"
+        title-id="catalog-support-title"
+        :title="catalogData.support.title"
+        :description="catalogData.support.description"
+        :hotline="siteData?.brand.hotline"
+        :zalo="siteData?.brand.zaloHref"
+        :subject="'Sản phẩm: ' + catalogData.support.title"
+        :fallback-href="catalogData.support.href || '/lien-he/'"
+      />
     </main>
 
     <UDrawer

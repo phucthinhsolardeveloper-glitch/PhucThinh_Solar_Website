@@ -9,7 +9,8 @@ import { formatProjectDate } from '#shared/project-date'
 const props = defineProps<{ project: PublicProjectDetail; content: PublicSanitizedRichText }>()
 const links = useMigrationLinks()
 const { openConsultation } = useStorefrontModal()
-const hotlineHref = computed(() => `tel:${props.project.cta?.hotline.replace(/[^+\d]/g, '') ?? ''}`)
+const faIcons: Record<string, string> = { 'fa-check': 'i-lucide-check', 'fa-headset': 'i-lucide-headset', 'fa-cogs': 'i-lucide-settings-2', 'fa-shield-alt': 'i-lucide-shield-check' }
+const ctaTrust = computed(() => (props.project.cta?.trust ?? []).map((item) => ({ label: item.label, image: item.icon, icon: faIcons[item.faIcon] })))
 const summaryFallback = computed(() => props.content.html?.trim() ? '' : props.project.summary.trim())
 const hasOverview = computed(() => Boolean(props.content.html?.trim() || summaryFallback.value))
 const chapters = computed(() => {
@@ -156,31 +157,19 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onHeroScroll))
         </div>
       </section>
 
-      <PublicCtaBanner v-if="project.cta" class="project-detail-cta mt-16" variant="editorial" :image="project.cta.image" labelled-by="project-detail-cta-title">
-        <div>
-          <h2 id="project-detail-cta-title" class="mb-2 text-[clamp(22px,3vw,30px)] font-black leading-tight text-white">{{ project.cta.title }}</h2>
-          <p v-if="project.cta.description" class="mb-4 leading-relaxed text-blue-100/95">{{ project.cta.description }}</p>
-          <ul v-if="project.cta.trust.length" class="mt-5 flex list-none flex-wrap gap-x-5 gap-y-3 p-0 text-sm text-blue-100">
-            <li v-for="item in project.cta.trust" :key="item.label" class="flex items-center gap-2">
-              <img v-if="item.icon" :src="item.icon" alt="" class="h-[18px] w-[18px] object-contain" loading="lazy">
-              <UIcon v-else-if="item.faIcon === 'fa-check'" name="i-lucide-check" class="h-[18px] w-[18px] flex-none text-gold-400" aria-hidden="true" />
-              <UIcon v-else-if="item.faIcon === 'fa-headset'" name="i-lucide-headset" class="h-[18px] w-[18px] flex-none text-gold-400" aria-hidden="true" />
-              <UIcon v-else-if="item.faIcon === 'fa-cogs'" name="i-lucide-settings" class="h-[18px] w-[18px] flex-none text-gold-400" aria-hidden="true" />
-              <UIcon v-else name="i-lucide-shield-check" class="h-[18px] w-[18px] flex-none text-gold-400" aria-hidden="true" />
-              <span>{{ item.label }}</span>
-            </li>
-          </ul>
-        </div>
-        <template #actions>
-        <div class="flex w-full flex-col items-stretch gap-[10px] min-[761px]:w-auto min-[761px]:min-w-[270px]">
-          <a v-if="project.cta.hotline" class="flex min-h-12 items-center justify-center gap-3 text-white no-underline" :href="hotlineHref">
-            <span class="grid size-12 shrink-0 place-items-center rounded-btn bg-hdr-gold text-navy-950" aria-hidden="true"><UIcon name="i-lucide-phone" class="size-5" /></span>
-            <span class="min-w-0"><span class="block text-[11px] uppercase text-blue-100">Liên hệ ngay</span><strong class="block text-[22px] leading-tight">{{ project.cta.hotline }}</strong></span>
-          </a>
-          <a class="inline-flex min-h-12 items-center justify-center gap-3 rounded-btn bg-hdr-gold px-[22px] py-3 text-sm font-extrabold text-navy-950 no-underline transition-colors hover:bg-hdr-gold-hover cursor-pointer" :href="links.generic('/lien-he/#yeu-cau-tu-van')" @click.prevent="openConsultation('Dự án: ' + project.title)">{{ project.cta.buttonLabel }} <span aria-hidden="true">→</span></a>
-        </div>
-        </template>
-      </PublicCtaBanner>
+      <PublicCtaBanner
+        v-if="project.cta"
+        class="project-detail-cta mt-16"
+        variant="editorial"
+        :image="project.cta.image"
+        title-id="project-detail-cta-title"
+        :title="project.cta.title"
+        :description="project.cta.description"
+        :trust="ctaTrust"
+        :hotline="project.cta.hotline"
+        :button-label="project.cta.buttonLabel"
+        :subject="'Dự án: ' + project.title"
+      />
     </div>
   </article>
 </template>

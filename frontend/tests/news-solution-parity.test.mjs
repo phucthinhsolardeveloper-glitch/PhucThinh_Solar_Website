@@ -21,7 +21,7 @@ test('solution detail uses the PHP editorial style and equipment heading', () =>
   const phpTemplate = read('../../domains/phucthinhsolar.com/public_html/templates/news/service_detail_tpl.php')
   const phpCss = read('../../domains/phucthinhsolar.com/public_html/assets/css/flat-surface-system.css')
 
-  assert.equal((page.match(/<EditorialRichText[^>]+variant="solution"/g) || []).length, 2)
+  assert.match(page, /<SolutionsStory v-if="hasContent"/)
   assert.match(phpTemplate, /class="pts-solution-editorial content-main w-clear"/)
   assert.match(page, /Thiết bị cho một hệ thống hoàn chỉnh/)
   assert.match(phpTemplate, /Thiết bị cho một hệ thống hoàn chỉnh/)

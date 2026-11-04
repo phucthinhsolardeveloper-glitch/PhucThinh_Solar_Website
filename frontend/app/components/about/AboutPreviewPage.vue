@@ -328,22 +328,18 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
     <!-- Chapter 7: Corporate CTA / Điểm chốt chuyển đổi đồng hành -->
     <section class="about-contact py-12">
       <div class="pts-container">
-        <PublicCtaBanner variant="corporate" :image="about.cta.image" labelled-by="about-cta-title">
-          <div class="about-contact-copy">
-            <span class="about-contact-mark" aria-hidden="true">PTS</span>
-            <div>
-              <h2 id="about-cta-title">{{ about.cta.title }}</h2>
-              <p>{{ about.cta.description }}</p>
-            </div>
-          </div>
-          <template #actions>
-            <div class="about-contact-actions">
-              <a v-if="about.cta.hotline" :href="`tel:${about.cta.hotline.tel}`">{{ about.cta.hotline.text }}</a>
-              <a v-if="about.cta.zaloUrl" :href="about.cta.zaloUrl" target="_blank" rel="noopener noreferrer">Zalo</a>
-              <a :href="links.generic(about.cta.href || '/lien-he/#yeu-cau-tu-van')" @click.prevent="openConsultation('Giới thiệu: ' + about.cta.title)">{{ about.cta.buttonLabel }} <span aria-hidden="true">→</span></a>
-            </div>
-          </template>
-        </PublicCtaBanner>
+        <PublicCtaBanner
+          variant="corporate"
+          :image="about.cta.image"
+          title-id="about-cta-title"
+          :title="about.cta.title"
+          :description="about.cta.description"
+          :hotline="about.cta.hotline?.text"
+          :zalo="about.cta.zaloUrl || undefined"
+          :button-label="about.cta.buttonLabel"
+          :subject="'Giới thiệu: ' + about.cta.title"
+          :fallback-href="about.cta.href || '/lien-he/#yeu-cau-tu-van'"
+        />
       </div>
     </section>
   </div>
@@ -372,28 +368,10 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
 .about-certificate-modal-footer p { margin: 0; color: rgba(255,255,255,.9); font-size: 16px; line-height: 1.6; text-align: center; }
 .about-certificate-modal-footer > span { flex: none; color: rgba(255,255,255,.72); font-size: 12px; }
 
-/* Contact CTA */
-.about-contact-copy { display: flex; align-items: center; gap: 16px; }
-.about-contact-mark { display: grid; width: 48px; height: 48px; flex: none; place-items: center; border: 1px solid var(--color-gold-400); border-radius: 50%; color: var(--color-gold-400); font-size: 11px; font-weight: 800; }
-.about-contact-copy h2 { margin: 0 0 5px; color: #fff; font-size: clamp(21px, 2vw, 26px); font-weight: 800; line-height: 1.25; }
-.about-contact-copy p { margin: 0; color: rgba(255,255,255,.82); font-size: 1rem; line-height: 1.65; }
-.about-contact-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
-.about-contact-actions a { display: inline-flex; min-height: 44px; align-items: center; justify-content: center; gap: 8px; border-radius: 4px; padding: 10px 16px; background: var(--color-gold-400); color: var(--color-navy-950); font-weight: 800; text-decoration: none; }
-.about-contact-actions a:hover { background: var(--color-gold-300); }
-.about-contact-actions a:nth-child(2):not(:last-child) { background: #fff; color: var(--color-navy-800); }
-.about-contact-actions a:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
-
 @media (max-width: 560px) {
   .about-certificate-modal-header, .about-certificate-modal-footer { padding: 13px 14px; }
   .about-certificate-modal-image { min-height: 200px; gap: 8px; padding: 12px; }
   .about-certificate-modal-image button { width: 40px; height: 40px; }
   .about-certificate-modal-footer { align-items: flex-start; flex-direction: column; gap: 8px; }
-  .about-contact-copy { align-items: flex-start; }
-  .about-contact-mark { display: none; }
-  .about-contact-actions { display: grid; grid-template-columns: 1fr; }
-}
-
-@media (min-width: 768px) {
-  .about-contact-copy p { font-size: 1.125rem; }
 }
 </style>

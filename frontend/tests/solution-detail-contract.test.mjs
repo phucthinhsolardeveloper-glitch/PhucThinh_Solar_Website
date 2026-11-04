@@ -50,7 +50,7 @@ test('rejects wrong sanitizer metadata on either content field', () => {
   assert.equal(isPublicSolutionDetailPayload({ ...good, solution: { ...good.solution, extraContent: { ...sanitized, sanitizerVersion: 2 } } }), false)
 })
 test('solution detail renders its Admin controlled campaign CTA after related equipment', () => {
-  assert.match(solutionPage, /<SolutionsCta v-if="data\.campaignCta" :cta="data\.campaignCta" \/>/)
+  assert.match(solutionPage, /<SolutionsCta v-if="data\.campaignCta" :cta="data\.campaignCta" :subject="`Giải pháp: \$\{data\.solution\.title\}`" \/>/)
   assert.match(solutionPage, /v-if="data\.solution\.category"[\s\S]*\{\{ data\.solution\.category \}\}/)
   assert.match(readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/api/pts_v1_solution_detail.php', import.meta.url), 'utf8'), /#_news_list where id = \? and type = \? and find_in_set\('hienthi',status\)/)
   assert.match(readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/api/pts_v1_solution_detail.php', import.meta.url), 'utf8'), /type=\? order by numb,id desc', array\('solution-cta'\)/)

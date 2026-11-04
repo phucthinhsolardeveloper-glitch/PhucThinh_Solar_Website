@@ -89,12 +89,11 @@ test('SiteHeader, SolutionsCta, NewsCta, ProjectsCta and ProductPurchasePanel tr
 
   assert.match(header, /useStorefrontModal\(\)/)
   assert.match(header, /openConsultation/)
-  assert.match(solutionsCta, /useStorefrontModal\(\)/)
-  assert.match(solutionsCta, /openConsultation/)
-  assert.match(newsCta, /useStorefrontModal\(\)/)
-  assert.match(newsCta, /openConsultation/)
-  assert.match(projectsCta, /useStorefrontModal\(\)/)
-  assert.match(projectsCta, /openConsultation/)
+  // Owner decision 2026-11-04: the shared CTA band owns the consultation trigger.
+  const banner = read('components/PublicCtaBanner.vue')
+  assert.match(banner, /useStorefrontModal\(\)/)
+  assert.match(banner, /openConsultation\(subject \|\| heading\)/)
+  for (const cta of [solutionsCta, newsCta, projectsCta]) assert.match(cta, /<PublicCtaBanner/)
   assert.match(purchasePanel, /useStorefrontModal\(\)/)
   assert.match(purchasePanel, /openDealer\(\)/)
 })

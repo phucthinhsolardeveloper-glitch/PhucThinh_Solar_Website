@@ -142,7 +142,7 @@ test('shared catalog and shell links resolve CMS internal URLs and keep exactly 
   assert.doesNotMatch(branch, /migration-catalog-preview/)
   assert.match(grid, /links\.product\(product\.slug\)/)
   assert.match(catalog, /links\.generic\(item\.url\)/)
-  assert.match(catalog, /links\.generic\(catalogData\.support\.href \|\| '\/lien-he\/'\)/)
+  assert.match(catalog, /:fallback-href="catalogData\.support\.href \|\| '\/lien-he\/'"/)
   assert.match(homeCatalog, /links\.generic\(slot\.category\?\.url \|\| slot\.href\)/)
   assert.match(homeProductGroups, /links\.generic\(group\.categoryUrl\)/)
   assert.match(homeProductGroups, /links\.product\(product\.slug\)/)

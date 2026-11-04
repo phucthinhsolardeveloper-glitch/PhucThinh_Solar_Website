@@ -30,5 +30,5 @@ test('CTA image is present without a CMS image and broken CMS images fall back o
   assert.match(component, /imageSource\.value\s*=\s*fallbackImage\.value/)
   assert.match(component, /imageFailed\.value\s*=\s*true/)
   assert.match(component, /:src="imageSource"/)
-  assert.match(component, /class="public-cta-banner__image"[^>]*alt=""[^>]*loading="lazy"/)
+  assert.match(component, /class="cta-band__image"[^>]*alt=""[^>]*loading="lazy"/)
 })
