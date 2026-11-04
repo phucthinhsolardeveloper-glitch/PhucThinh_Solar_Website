@@ -251,17 +251,17 @@ onMounted(() => { window.addEventListener('pageshow', () => { submitting.value =
           <li>
             <UIcon name="i-lucide-scan-search" class="size-6" aria-hidden="true" />
             <strong>Đơn hàng có sản phẩm báo giá</strong>
-            <p>Các thiết bị công suất lớn hoặc cấu hình BESS sẽ được kỹ sư kiểm tra tương thích và báo giá chiết khấu theo số lượng.</p>
+            <p>Sản phẩm cần báo giá chưa thể đặt trực tuyến. Liên hệ để xác nhận cấu hình và giá trước khi đặt hàng.</p>
           </li>
           <li>
             <UIcon name="i-lucide-file-check" class="size-6" aria-hidden="true" />
-            <strong>Xuất hóa đơn VAT &amp; CO/CQ</strong>
-            <p>Hỗ trợ đầy đủ hợp đồng, hóa đơn GTGT và chứng từ xuất xứ/chất lượng cho doanh nghiệp, nhà thầu.</p>
+            <strong>Thông tin hóa đơn và chứng từ</strong>
+            <p>Trao đổi nhu cầu hóa đơn và chứng từ với tư vấn viên để được xác nhận theo từng đơn hàng.</p>
           </li>
-          <li>
+          <li v-if="site.brand.hotline">
             <UIcon name="i-lucide-phone-call" class="size-6" aria-hidden="true" />
             <strong>Hotline hỗ trợ đặt hàng</strong>
-            <p>Liên hệ trực tiếp <a href="tel:0944555957">0944 555 957</a> hoặc <a href="tel:0945536899">0945 536 899</a>.</p>
+            <p>Liên hệ trực tiếp <a :href="`tel:${site.brand.hotline.replace(/\D/g, '')}`">{{ site.brand.hotline }}</a>.</p>
           </li>
         </ul>
       </div>
@@ -408,7 +408,7 @@ onMounted(() => { window.addEventListener('pageshow', () => { submitting.value =
           <div class="checkout-summary__assure">
             <UIcon name="i-lucide-shield-check" class="size-5 flex-none" aria-hidden="true" />
             <p>
-              Thiết bị chính hãng đầy đủ CO/CQ · Kiểm định kỹ thuật trước khi xuất kho · Hỗ trợ kỹ thuật: <a href="tel:0945536899">0945 536 899</a>
+              Kiểm tra sản phẩm, địa chỉ và phương thức thanh toán trước khi đặt hàng.<template v-if="site.brand.hotline"> Hỗ trợ đặt hàng: <a :href="`tel:${site.brand.hotline.replace(/\D/g, '')}`">{{ site.brand.hotline }}</a></template>
             </p>
           </div>
         </aside>

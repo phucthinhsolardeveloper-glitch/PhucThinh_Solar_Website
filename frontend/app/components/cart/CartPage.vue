@@ -175,7 +175,7 @@ function openCheckout() {
           </div>
 
           <div v-if="site.productCategories.length" class="mx-auto mt-10 max-w-[880px] border-t border-slate-200/80 pt-7 text-left">
-            <p class="m-0 mb-3.5 text-center text-sm font-bold text-navy-800">Khám phá nhanh theo nhóm thiết bị chính hãng</p>
+            <p class="m-0 mb-3.5 text-center text-sm font-bold text-navy-800">Khám phá nhanh theo nhóm thiết bị</p>
             <div class="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
               <NuxtLink
                 v-for="cat in site.productCategories.slice(0, 6)"
@@ -272,8 +272,8 @@ function openCheckout() {
               <span aria-hidden="true"><UIcon name="i-lucide-arrow-right" class="size-5" /></span>
             </button>
             <ul class="cart-summary__trust">
-              <li><UIcon name="i-lucide-badge-check" class="size-4 flex-none" aria-hidden="true" />Thiết bị chính hãng đầy đủ CO/CQ</li>
-              <li><UIcon name="i-lucide-shield-check" class="size-4 flex-none" aria-hidden="true" />Kiểm định kỹ thuật trước khi xuất kho</li>
+              <li><UIcon name="i-lucide-badge-check" class="size-4 flex-none" aria-hidden="true" />Kiểm tra sản phẩm và số lượng trước khi đặt hàng</li>
+              <li><UIcon name="i-lucide-shield-check" class="size-4 flex-none" aria-hidden="true" />Phí vận chuyển được xác nhận ở bước thanh toán</li>
               <li v-if="site.brand.hotline"><UIcon name="i-lucide-phone-call" class="size-4 flex-none" aria-hidden="true" />Hỗ trợ đặt hàng: <a :href="`tel:${site.brand.hotline.replace(/\D/g, '')}`">{{ site.brand.hotline }}</a></li>
             </ul>
           </aside>
