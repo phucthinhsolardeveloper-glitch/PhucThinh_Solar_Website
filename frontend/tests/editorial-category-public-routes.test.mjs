@@ -12,7 +12,7 @@ test('news category page uses the read-only category DTO, exact canonical, and n
   assert.doesNotMatch(page, /PublicRouteEnabled/)
   assert.match(page, /editorialPublicResponseStatus\(true,/)
   assert.match(page, /config\.public\.newsPublicRouteIndexable/)
-  assert.match(page, /<h1[^>]*>{{ category\.name }}<\/h1>/)
+  assert.match(page, /<NewsMasthead[\s\S]*:title="category\.name"/)
 })
 
 test('solution category page uses the read-only filtered GET DTO as an always-on Nuxt route', () => {

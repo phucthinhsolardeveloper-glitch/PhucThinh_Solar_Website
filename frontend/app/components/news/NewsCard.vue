@@ -53,7 +53,7 @@ function cardImageSrcSet(src: string): string | undefined {
           :src="cardImage(article.image, variant === 'lead' ? 900 : 600, variant === 'lead' ? 506 : 338)"
           :srcset="cardImageSrcSet(article.image)"
           :sizes="variant === 'lead' ? '(min-width: 1024px) 50vw, 100vw' : variant === 'secondary' ? '(min-width: 1024px) 19vw, 100vw' : '(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw'"
-          :alt="article.title"
+          :alt="sentenceCase(article.title)"
           class="block h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-[1.025] motion-reduce:transition-none motion-reduce:transform-none"
           :loading="variant === 'lead' ? 'eager' : 'lazy'"
           :fetchpriority="variant === 'lead' ? 'high' : 'low'"
@@ -64,7 +64,7 @@ function cardImageSrcSet(src: string): string | undefined {
         <span v-else class="grid h-full place-items-center text-[42px] text-gold-700" aria-hidden="true">✦</span>
         <span
           v-if="article.category"
-          class="absolute left-3 top-3 rounded-chip bg-navy-800 px-2.5 py-1.5 text-[11px] font-bold text-white"
+          class="absolute left-3 top-3 rounded-full bg-navy-950/85 px-3 py-1.5 text-xs font-bold text-white backdrop-blur-xs"
         >
           {{ article.category.name }}
         </span>
@@ -82,10 +82,10 @@ function cardImageSrcSet(src: string): string | undefined {
           </span>
         </p>
         <h2
-          class="mb-2 line-clamp-2 leading-[1.35] text-navy-800 transition-colors group-hover:text-gold-700 group-focus-visible:text-gold-700"
+          class="mb-2 line-clamp-2 font-extrabold leading-[1.3] tracking-[-0.01em] text-navy-950 transition-colors group-hover:text-gold-700 group-focus-visible:text-gold-700"
           :class="variant === 'lead' ? 'text-2xl' : 'text-xl'"
         >
-          {{ article.title }}
+          {{ sentenceCase(article.title) }}
         </h2>
         <p v-if="article.description" class="m-0 line-clamp-3 pr-0 leading-relaxed text-slate-500 nav:pr-[46px]">
           {{ article.description }}

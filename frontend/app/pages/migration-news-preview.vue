@@ -8,6 +8,7 @@ import { editorialPublicHubResponseStatus, editorialPublicRouteRobots } from '#s
 import NewsCard from '~/components/news/NewsCard.vue'
 import NewsCta from '~/components/news/NewsCta.vue'
 import NewsFeatured from '~/components/news/NewsFeatured.vue'
+import NewsMasthead from '~/components/news/NewsMasthead.vue'
 import NewsFilters from '~/components/news/NewsFilters.vue'
 
 const route = useRoute()
@@ -103,23 +104,21 @@ usePublicSocialMeta({
             trang. Ảnh production canh TRÁI, không giới hạn max-width 760px —
             tiêu đề kéo dài theo chiều rộng container như mọi trang khác.
           -->
-          <header class="pt-6 pb-7">
-            <h1 class="mb-2.5 text-[clamp(30px,4vw,44px)] font-black leading-[1.15] tracking-tight text-navy-800">{{ news.title }}</h1>
-            <p v-if="news.description" class="m-0 leading-relaxed text-slate-500">{{ news.description }}</p>
-          </header>
+          <NewsMasthead
+            v-model="searchInput"
+            :title="news.title"
+            :description="news.description"
+            :search-label="news.labels.search"
+            input-id="news-search"
+            :category="requestQuery.category"
+            @submit="submitSearch"
+          />
+
+          <div class="mt-[18px] mb-[clamp(28px,3vw,44px)]">
+            <NewsFilters :categories="news.categories" :selected="news.category" :all-label="news.labels.all" :filters-label="news.labels.results" :query="requestQuery.q" />
+          </div>
 
           <NewsFeatured :articles="news.featured" :label="news.labels.featured" :read-label="news.labels.read" :read-more-label="news.labels.readMore" />
-
-          <div class="mb-6 flex flex-col items-start justify-between gap-3.5 nav:flex-row nav:items-center">
-            <NewsFilters :categories="news.categories" :selected="news.category" :all-label="news.labels.all" :filters-label="news.labels.results" :query="requestQuery.q" />
-
-            <form class="flex h-11 w-full flex-none items-center rounded-chip border border-gray-200 bg-white nav:w-[250px]" role="search" @submit.prevent="submitSearch">
-              <label class="sr-only" for="news-search">{{ news.labels.search }}</label>
-              <input id="news-search" v-model="searchInput" name="q" type="search" class="w-full min-w-0 border-0 px-3 text-base text-navy-800 outline-none focus-visible:ring-2 focus-visible:ring-gold-500" :placeholder="news.labels.search" maxlength="120">
-              <button type="submit" class="h-11 w-11 flex-none border-0 bg-transparent text-navy-800" :aria-label="news.labels.search">⌕</button>
-              <input v-if="requestQuery.category" type="hidden" name="category" :value="requestQuery.category">
-            </form>
-          </div>
 
           <p v-if="requestQuery.q" class="-mt-2 mb-[22px] text-slate-500">
             {{ news.labels.results }}: <strong>{{ news.pagination.total }}</strong> — "{{ requestQuery.q }}"
@@ -157,3 +156,4 @@ usePublicSocialMeta({
     <SiteFooter :site="site" />
   </div>
 </template>
+

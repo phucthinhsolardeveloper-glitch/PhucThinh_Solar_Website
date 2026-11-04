@@ -7,6 +7,7 @@ import { editorialPublicResponseStatus, editorialPublicRouteRobots } from '#shar
 import { publicSeoDescription, publicSeoTitle } from '#shared/public-seo'
 import NewsCard from '~/components/news/NewsCard.vue'
 import NewsCta from '~/components/news/NewsCta.vue'
+import NewsMasthead from '~/components/news/NewsMasthead.vue'
 import NewsFilters from '~/components/news/NewsFilters.vue'
 
 const props = defineProps<{ slugOverride?: string }>()
@@ -106,21 +107,17 @@ usePublicSocialMeta({
       </section>
 
       <template v-else>
-        <header class="pt-6 pb-7">
-          <div class="mb-2.5 flex flex-wrap items-center gap-2.5">
-            <h1 class="m-0 text-[clamp(30px,4vw,44px)] font-black leading-[1.15] tracking-tight text-navy-800">{{ category.name }}</h1>
-            <span v-if="news.pagination.total" class="text-base font-semibold text-slate-500">{{ news.pagination.total }} bài viết</span>
-          </div>
-          <p v-if="category.description" class="m-0 leading-relaxed text-slate-500">{{ category.description }}</p>
-        </header>
+        <NewsMasthead
+          v-model="searchInput"
+          :title="category.name"
+          :description="category.description"
+          :search-label="news.labels.search"
+          input-id="news-category-search"
+          @submit="submitSearch"
+        />
 
-        <div class="mb-6 flex flex-col items-start justify-between gap-3.5 nav:flex-row nav:items-center">
+        <div class="mt-[18px] mb-[clamp(28px,3vw,44px)]">
           <NewsFilters :categories="news.categories" :selected="category" :all-label="news.labels.all" :filters-label="news.labels.results" />
-          <form class="flex h-11 w-full flex-none items-center rounded-chip border border-gray-200 bg-white nav:w-[250px]" role="search" @submit.prevent="submitSearch">
-            <label class="sr-only" for="news-category-search">{{ news.labels.search }}</label>
-            <input id="news-category-search" v-model="searchInput" name="q" type="search" class="w-full min-w-0 border-0 px-3 text-base text-navy-800 outline-none focus-visible:ring-2 focus-visible:ring-gold-500" :placeholder="news.labels.search" maxlength="120">
-            <button type="submit" class="h-11 w-11 flex-none border-0 bg-transparent text-navy-800" :aria-label="news.labels.search">⌕</button>
-          </form>
         </div>
 
         <section v-if="news.articles.length" class="grid grid-cols-1 gap-x-5 gap-y-6 tb:grid-cols-2 nav:grid-cols-3" :aria-label="news.labels.results">

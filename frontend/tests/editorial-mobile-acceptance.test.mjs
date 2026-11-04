@@ -11,9 +11,9 @@ test('nullable solutions intro fallback does not reserve a viewport-sized blank 
 })
 
 test('news search uses the mobile body text size', () => {
-  const page = read('../app/pages/migration-news-preview.vue')
-  assert.match(page, /id="news-search"[^>]*class="[^\"]*text-base/)
-  assert.doesNotMatch(page, /id="news-search"[^>]*text-\[13px\]/)
+  const page = read('../app/components/news/NewsMasthead.vue')
+  assert.match(page, /:id="inputId"[^>]*class="[^\"]*text-base/)
+  assert.doesNotMatch(page, /:id="inputId"[^>]*text-\[13px\]/)
 })
 
 test('news category filters remain horizontally scrollable without a visible scrollbar', () => {

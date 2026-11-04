@@ -7,11 +7,14 @@ const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8')
 test('news search submits through Nuxt navigation and resets pagination', () => {
   for (const path of ['../app/components/news/NewsCategoryPage.vue', '../app/pages/migration-news-preview.vue']) {
     const source = read(path)
-    assert.match(source, /@submit\.prevent="submitSearch"/)
+    assert.match(source, /@submit="submitSearch"/)
     assert.match(source, /navigateTo\(\{ path: (?:route\.path|publicPath\.value), query \}\)/)
     assert.match(source, /delete query\.p/)
     assert.doesNotMatch(source, /<form[^>]*method="get"/)
   }
+  const masthead = read('../app/components/news/NewsMasthead.vue')
+  assert.match(masthead, /@submit\.prevent="emit\('submit'\)"/)
+  assert.doesNotMatch(masthead, /<form[^>]*method="get"/)
 })
 
 test('brand sort and filters keep the current result layout while refreshing', () => {
