@@ -309,16 +309,25 @@ function openCatalog(mode: Exclude<MenuMode, null> = 'intent') {
 const flyoutKey = ref('')
 let flyoutTimer: ReturnType<typeof setTimeout> | null = null
 function clearFlyoutTimer() { if (flyoutTimer) clearTimeout(flyoutTimer); flyoutTimer = null }
+// Only a mostly-horizontal move (heading for the open flyout) gets the grace period;
+// running up and down the list switches instantly.
+let pointerLast = { x: 0, y: 0 }
+let pointerDelta = { x: 0, y: 0 }
+function trackPointer(event: MouseEvent) {
+  pointerDelta = { x: event.clientX - pointerLast.x, y: event.clientY - pointerLast.y }
+  pointerLast = { x: event.clientX, y: event.clientY }
+}
 function hoverFlyout(key: string, hasChildren: boolean) {
   clearFlyoutTimer()
   const next = hasChildren ? key : ''
   if (flyoutKey.value === next) return
-  if (!flyoutKey.value) { flyoutKey.value = next; return }
-  flyoutTimer = setTimeout(() => { flyoutKey.value = next }, 160)
+  const aimingAtFlyout = Math.abs(pointerDelta.x) > Math.abs(pointerDelta.y) * 1.2
+  if (!flyoutKey.value || !aimingAtFlyout) { flyoutKey.value = next; return }
+  flyoutTimer = setTimeout(() => { flyoutKey.value = next }, 110)
 }
 function leaveFlyout() {
   clearFlyoutTimer()
-  flyoutTimer = setTimeout(() => { flyoutKey.value = '' }, 240)
+  flyoutTimer = setTimeout(() => { flyoutKey.value = '' }, 180)
 }
 
 function closeCatalog(restoreFocus = true) {
@@ -512,7 +521,8 @@ const { isHeaderHidden, isScrolled } = useSiteHeader()
 // Full-bleed hero crosses the header on the homepage only; everywhere else the
 // header stays solid. See docs/15-design-delivery/06-LAYOUT-LAB.md #principles.
 const isHomeRoute = computed(() => route.path === '/')
-const transparentAtTop = computed(() => isHomeRoute.value && !isScrolled.value)
+// Any open overlay needs a solid bar: hero imagery behind it makes the controls unreadable.
+const transparentAtTop = computed(() => isHomeRoute.value && !isScrolled.value && !searchOpen.value && !catalogOpen.value && !mobileOpen.value && navDropdownOpen.value === null)
 let lastScrollY = 0
 let scrollTicking = false
 let accumulatedDelta = 0
@@ -722,6 +732,7 @@ onBeforeUnmount(() => {
           <a
             v-if="hotline"
             class="hidden min-h-11 items-center justify-center gap-2 rounded-chip px-2 text-hdr-ink no-underline transition-colors hover:bg-hdr-surface hover:text-hdr-gold-deep min-[821px]:inline-flex"
+            :class="transparentAtTop ? 'bg-white/80 backdrop-blur-sm' : ''"
             :href="telHrefFor(hotline)"
             :aria-label="`Gọi tư vấn: ${hotline}`"
             :title="hotline"
@@ -785,22 +796,22 @@ onBeforeUnmount(() => {
           aria-labelledby="ptsHeaderSearchTitle"
         >
         <div class="mx-auto w-full max-w-[1680px]">
-          <div class="flex items-center justify-between gap-3">
+          <div class="flex flex-wrap items-center gap-x-6 gap-y-3 max-[1099px]:pr-12 min-[1100px]:flex-nowrap">
             <h2 id="ptsHeaderSearchTitle" class="sr-only">Tìm kiếm</h2>
-            <form class="flex min-w-0 flex-1 items-center gap-3" role="search" @submit.prevent="submitSearch">
+            <form class="flex w-full min-w-0 items-center gap-2.5 min-[1100px]:order-2 min-[1100px]:w-[min(560px,40vw)] min-[1100px]:flex-none" role="search" @submit.prevent="submitSearch">
               <label class="sr-only" for="ptsHeaderSearchInput">Tìm kiếm sản phẩm hoặc giải pháp</label>
               <input
                 id="ptsHeaderSearchInput"
                 ref="searchInput"
                 v-model="searchKeyword"
-                class="min-h-[46px] w-full max-w-[720px] rounded-btn border border-hdr-line px-4 text-[14.5px]
+                class="min-h-[46px] w-full rounded-btn border border-hdr-line px-4 text-[14.5px]
                        text-hdr-ink outline-none placeholder:text-hdr-muted focus:border-hdr-gold"
                 type="search"
                 placeholder="Bạn cần tìm sản phẩm hoặc giải pháp nào?"
                 autocomplete="off"
               >
               <button
-                class="inline-flex min-h-[46px] items-center justify-center rounded-btn bg-hdr-gold px-5
+                class="inline-flex min-h-[46px] flex-none items-center justify-center rounded-btn bg-hdr-gold px-5
                        font-bold text-hdr-ink transition-colors hover:bg-hdr-gold-deep"
                 type="submit"
                 aria-label="Tìm kiếm"
@@ -808,25 +819,25 @@ onBeforeUnmount(() => {
                 <UIcon name="i-lucide-search" class="size-[18px]" aria-hidden="true" />
               </button>
             </form>
+            <div class="flex min-w-0 flex-1 flex-wrap items-center gap-1.5 min-[1100px]:order-1">
+              <span class="mr-1 text-xs font-semibold text-slate-500">Tra cứu nhanh:</span>
+              <button
+                v-for="term in popularSearchTerms"
+                :key="term"
+                type="button"
+                class="cursor-pointer rounded-[3px] border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-bold text-navy-800 transition-colors hover:border-gold-500 hover:bg-gold-500/15 hover:text-navy-950"
+                @click="selectPopularSearch(term)"
+              >
+                {{ term }}
+              </button>
+            </div>
             <button
-              class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-chip text-hdr-ink transition-colors hover:bg-hdr-surface hover:text-gold-700"
+              class="inline-flex min-h-11 min-w-11 flex-none items-center justify-center rounded-chip text-hdr-ink transition-colors hover:bg-hdr-surface hover:text-gold-700 min-[1100px]:order-3 max-[1099px]:absolute max-[1099px]:right-3 max-[1099px]:top-3"
               type="button"
               aria-label="Đóng tìm kiếm"
               @click="closeSearch()"
             >
               <UIcon name="i-lucide-x" class="size-5" aria-hidden="true" />
-            </button>
-          </div>
-          <div class="mt-2.5 flex flex-wrap items-center gap-1.5">
-            <span class="mr-1 text-xs font-semibold text-slate-500">Tra cứu nhanh:</span>
-            <button
-              v-for="term in popularSearchTerms"
-              :key="term"
-              type="button"
-              class="cursor-pointer rounded-[3px] border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-bold text-navy-800 transition-colors hover:border-gold-500 hover:bg-gold-500/15 hover:text-navy-950"
-              @click="selectPopularSearch(term)"
-            >
-              {{ term }}
             </button>
           </div>
         </div>
@@ -859,6 +870,7 @@ onBeforeUnmount(() => {
           aria-labelledby="ptsCatalogTitle"
           @mouseenter="cancelCatalogClose"
           @mouseleave="scheduleCatalogClose"
+          @mousemove.passive="trackPointer"
         >
           <div
             class="grid grid-cols-[minmax(0,1fr)_40px] items-center gap-[13px] pb-[17px]
@@ -1215,8 +1227,8 @@ onBeforeUnmount(() => {
 
 <style scoped>
 /* Flyouts fade in place instead of popping with display toggles. */
-.catalog-flyout { visibility: hidden; opacity: 0; transform: translateX(-6px); pointer-events: none; transition: opacity 0.16s ease, transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s linear 0.2s; }
-.is-flyout-open > .catalog-flyout, li:focus-within > .catalog-flyout { visibility: visible; opacity: 1; transform: none; pointer-events: auto; transition-delay: 0s; }
+.catalog-flyout { visibility: hidden; opacity: 0; transform: translateX(-6px); pointer-events: none; transition: opacity 0.1s ease, transform 0.1s ease, visibility 0s linear 0.1s; }
+.is-flyout-open > .catalog-flyout, li:focus-within > .catalog-flyout { visibility: visible; opacity: 1; transform: none; pointer-events: auto; transition: opacity 0.16s ease, transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s; }
 @media (prefers-reduced-motion: reduce) { .catalog-flyout { transition: none; transform: none; } }
 
 .pts-catalog-menu-enter-active,
