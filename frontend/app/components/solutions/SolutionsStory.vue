@@ -97,7 +97,7 @@ onBeforeUnmount(() => observer?.disconnect())
       </section>
 
       <!-- Survey factors: the checklist next to the one sentence that explains why. -->
-      <section v-else-if="chapter.kind === 'checklist'" class="chapter chapter-check pts-grid-paper" :aria-labelledby="chapter.id">
+      <section v-else-if="chapter.kind === 'checklist'" class="chapter chapter-check" :aria-labelledby="chapter.id">
         <div class="pts-container check-grid">
           <header class="check-head">
             <h2 :id="chapter.id">{{ chapter.title }}</h2>
@@ -113,7 +113,7 @@ onBeforeUnmount(() => observer?.disconnect())
       </section>
 
       <!-- Working process as a connected route (from numbered h3s or an ordered list). -->
-      <section v-else-if="chapter.kind === 'process'" class="chapter chapter-process pts-grid-paper" :aria-labelledby="chapter.id">
+      <section v-else-if="chapter.kind === 'process'" class="chapter chapter-process" :aria-labelledby="chapter.id">
         <div class="pts-container">
           <header class="process-head">
             <h2 :id="chapter.id">{{ chapter.title }}</h2>
@@ -135,7 +135,7 @@ onBeforeUnmount(() => observer?.disconnect())
       </section>
 
       <!-- A few alternatives side by side, each with its "suits when" list. -->
-      <section v-else-if="chapter.kind === 'options'" class="chapter chapter-options pts-grid-paper" :aria-labelledby="chapter.id">
+      <section v-else-if="chapter.kind === 'options'" class="chapter chapter-options" :aria-labelledby="chapter.id">
         <div class="pts-container">
           <header class="pillars-head">
             <h2 :id="chapter.id">{{ chapter.title }}</h2>
@@ -159,7 +159,7 @@ onBeforeUnmount(() => observer?.disconnect())
         </div>
       </section>
 
-      <section v-else-if="chapter.kind === 'pillars'" class="chapter chapter-pillars pts-grid-paper" :aria-labelledby="chapter.id">
+      <section v-else-if="chapter.kind === 'pillars'" class="chapter chapter-pillars" :aria-labelledby="chapter.id">
         <div class="pts-container">
           <header class="pillars-head">
             <h2 :id="chapter.id">{{ chapter.title }}</h2>

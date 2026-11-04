@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import type { PublicAboutPayload } from '#shared/contracts/public-about'
+import { isPublicCatalogPayload, type PublicCatalogPayload } from '#shared/contracts/public-catalog'
 
 const props = defineProps<{ about: PublicAboutPayload }>()
+const { data: brandCatalogData } = await useAsyncData<PublicCatalogPayload | null>('about-brand-catalog-options', async () => {
+  const payload: unknown = await $fetch('/_migration/catalog', { query: { per_page: '1' } })
+  return isPublicCatalogPayload(payload) ? payload : null
+}, { default: () => null })
 const links = useMigrationLinks()
 const { openConsultation } = useStorefrontModal()
 const { isHeaderHidden } = useSiteHeader()
@@ -20,11 +25,35 @@ const certificateTrigger = ref<HTMLElement | null>(null)
 const certificateGalleryOpen = ref(false)
 const activeCertificateIndex = ref(0)
 const activeCertificate = computed(() => galleryCertificates.value[activeCertificateIndex.value] ?? null)
+const partnerBrands = [
+  { name: 'AESOLAR', logo: 'aesolar.png' },
+  { name: 'Blue Carbon', logo: 'bluecarbon.png' },
+  { name: 'Canadian Solar', logo: 'canadiansolar.png' },
+  { name: 'EPSIVO', logo: 'epsivo.png' },
+  { name: 'Hober', logo: 'hober.png' },
+  { name: 'Huawei', logo: 'huawei.png' },
+  { name: 'Jindian', logo: 'jdjindian.png' },
+  { name: 'LONGi', logo: 'longi.png' },
+  { name: 'Oriana', logo: 'oriana.png' },
+  { name: 'Sharp', logo: 'sharp.png' },
+  { name: 'SolaX', logo: 'solax.png' },
+  { name: 'Sungrow', logo: 'sungrow.png' },
+]
+function normalizeBrandName(value: string): string {
+  return value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '')
+}
+const partnerBrandsWithProducts = computed(() => partnerBrands.map((brand) => {
+  const name = normalizeBrandName(brand.name)
+  const aliases = brand.name === 'Jindian' ? [name, 'jdjindian'] : [name]
+  const match = (brandCatalogData.value?.filters?.brands ?? []).find((option) => aliases.includes(normalizeBrandName(option.name)))
+  return { ...brand, href: match ? `/san-pham/?brand=${match.id}` : null }
+}))
 const aboutSectionNavItems = computed(() => [
   { id: 've-phuc-thinh', label: props.about.labels.story },
   ...(props.about.history.items.length ? [{ id: 'lich-su-phat-trien', label: props.about.labels.history }] : []),
   { id: 'con-nguoi', label: props.about.labels.people },
   ...(props.about.trust.items.length ? [{ id: 'vi-sao-chon-chung-toi', label: props.about.trust.title }] : []),
+  { id: 'thuong-hieu-dong-hanh', label: 'Thương hiệu đồng hành' },
   ...(props.about.compass.items.length ? [{ id: 'tam-nhin-su-menh', label: props.about.labels.compass }] : []),
   ...(props.about.certificates.items.length ? [{ id: 'about-certificates', label: props.about.labels.certificates }] : []),
 ])
@@ -129,7 +158,7 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
           </div>
         </div>
         <figure v-if="about.story.image" class="m-0 h-full min-h-0 overflow-hidden bg-[#102d58] max-[800px]:aspect-[16/10]">
-          <img class="block h-full w-full object-cover" :src="about.story.image" :alt="about.story.title" width="1600" height="900" fetchpriority="high">
+          <img class="block h-full w-full object-cover" :src="'/assets/images/site-visuals/about-storefront-retouched-20261104.png'" :alt="about.story.title" width="1600" height="900" fetchpriority="high">
         </figure>
       </div>
     </section>
@@ -166,8 +195,8 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
             </li>
           </ol>
         </div>
-        <figure v-if="about.history.image" class="m-0 min-h-[390px] overflow-hidden rounded-btn bg-navy-50 max-[800px]:max-h-[26rem]">
-          <img class="block h-full w-full object-cover" :src="about.history.image" :alt="about.history.title || about.labels.history" width="780" height="600" loading="lazy">
+        <figure class="m-0 min-h-[390px] overflow-hidden rounded-btn bg-navy-50 max-[800px]:max-h-[26rem]">
+          <img class="block h-full w-full object-cover" :src="'/assets/images/site-visuals/about-showroom-solar-equipment-20261104.png'" :alt="`${about.history.title || about.labels.history} — không gian trưng bày thiết bị năng lượng mặt trời`" width="780" height="600" loading="lazy">
         </figure>
       </div>
     </section>
@@ -215,6 +244,26 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
             <h3 v-if="item.title" class="text-[clamp(20px,1.6vw,24px)] font-extrabold leading-[1.25] tracking-[-.01em] text-navy-800">{{ item.title }}</h3>
             <p v-if="item.description" class="m-0 mt-2 text-[clamp(17px,1.32vw,20px)] leading-[1.7] text-[#52627c]">{{ item.description }}</p>
           </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="thuong-hieu-dong-hanh" class="about-brand-section scroll-mt-[160px] max-[800px]:scroll-mt-[116px]" aria-labelledby="about-brands-title">
+      <div class="pts-container about-brand-layout">
+        <div class="about-brand-copy">
+          <h2 id="about-brands-title">Thương hiệu đồng hành</h2>
+          <p>Từ thiết bị năng lượng đến chiếu sáng, những thương hiệu đã đồng hành cùng Phúc Thịnh Solar.</p>
+        </div>
+        <div class="about-brand-board" aria-label="Các thương hiệu thiết bị">
+          <span class="about-brand-circuit" aria-hidden="true" />
+          <ul class="about-brand-grid">
+            <li v-for="brand in partnerBrandsWithProducts" :key="brand.name" class="about-brand-cell" :class="{ 'about-brand-cell-link': brand.href }">
+              <NuxtLink v-if="brand.href" :to="brand.href" :aria-label="`Xem sản phẩm ${brand.name}`">
+                <img :src="`/assets/images/brand-logos/${brand.logo}`" :alt="brand.name" width="2172" height="724" loading="lazy" decoding="async">
+              </NuxtLink>
+              <img v-else :src="`/assets/images/brand-logos/${brand.logo}`" :alt="brand.name" width="2172" height="724" loading="lazy" decoding="async">
+            </li>
+          </ul>
         </div>
       </div>
     </section>
@@ -346,6 +395,113 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
 </template>
 
 <style scoped>
+.about-brand-section {
+  position: relative;
+  overflow: clip;
+  padding-block: clamp(64px, 8vw, 112px);
+  background:
+    radial-gradient(ellipse at 82% 50%, rgb(24 65 119 / 36%), transparent 48%),
+    linear-gradient(112deg, #061537 0%, #081b3d 56%, #0b2450 100%);
+  color: #fff;
+}
+.about-brand-layout {
+  display: grid;
+  grid-template-columns: minmax(220px, .62fr) minmax(0, 1.38fr);
+  align-items: center;
+  gap: clamp(32px, 6vw, 92px);
+}
+.about-brand-copy h2 {
+  max-width: 10ch;
+  margin: 0;
+  font-size: clamp(34px, 4.3vw, 60px);
+  font-weight: 850;
+  line-height: 1.02;
+  letter-spacing: -.04em;
+  text-wrap: balance;
+}
+.about-brand-copy p {
+  max-width: 34ch;
+  margin: 20px 0 0;
+  color: #c3cfdf;
+  font-size: clamp(16px, 1.2vw, 18px);
+  line-height: 1.7;
+}
+.about-brand-board {
+  position: relative;
+  isolation: isolate;
+  padding: 1px;
+  border: 1px solid rgb(231 190 103 / 42%);
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgb(237 190 94 / 62%), rgb(255 255 255 / 12%) 40%, rgb(237 190 94 / 24%));
+  box-shadow: 0 28px 80px rgb(1 10 30 / 34%), inset 0 1px 0 rgb(255 255 255 / 34%);
+  transform: perspective(1400px) rotateY(-3deg) rotateX(1deg);
+  transition: transform .55s cubic-bezier(.22, 1, .36, 1), box-shadow .55s cubic-bezier(.22, 1, .36, 1);
+}
+.about-brand-board:hover { transform: perspective(1400px) rotateY(0) rotateX(0) translateY(-3px); box-shadow: 0 34px 88px rgb(1 10 30 / 40%), inset 0 1px 0 rgb(255 255 255 / 34%); }
+.about-brand-circuit {
+  position: absolute;
+  top: -14px;
+  left: 12%;
+  z-index: -1;
+  width: 42%;
+  height: 14px;
+  border-top: 1px solid rgb(235 187 91 / 72%);
+  border-right: 1px solid rgb(235 187 91 / 72%);
+  border-radius: 0 10px 0 0;
+}
+.about-brand-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  overflow: hidden;
+  margin: 0;
+  padding: 1px;
+  border-radius: 11px;
+  background: linear-gradient(135deg, rgb(7 25 58 / 96%), rgb(15 39 76 / 96%));
+  list-style: none;
+}
+.about-brand-cell {
+  position: relative;
+  display: grid;
+  min-width: 0;
+  min-height: clamp(76px, 8.2vw, 118px);
+  place-items: center;
+  overflow: hidden;
+  padding: 16px clamp(10px, 1.5vw, 24px);
+  background: linear-gradient(145deg, rgb(239 244 250 / 96%), rgb(218 228 239 / 95%));
+  transition: background .3s ease, transform .3s ease;
+}
+.about-brand-cell::after {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 120%, rgb(224 176 79 / 27%), transparent 64%);
+  content: '';
+  opacity: 0;
+  transition: opacity .3s ease;
+}
+.about-brand-cell > a { position: relative; z-index: 1; display: grid; width: 100%; min-height: inherit; place-items: center; outline-offset: -4px; }
+.about-brand-cell > a:focus-visible { outline: 2px solid var(--color-gold-600); }
+.about-brand-cell img { position: relative; z-index: 1; display: block; width: min(100%, 150px); max-height: 42px; object-fit: contain; transition: transform .35s cubic-bezier(.22, 1, .36, 1), filter .35s ease; }
+.about-brand-cell:hover { z-index: 2; background: #fff; }
+.about-brand-cell:focus-within { z-index: 2; background: #fff; }
+.about-brand-cell:hover::after { opacity: 1; }
+.about-brand-cell:focus-within::after { opacity: 1; }
+.about-brand-cell:hover img { transform: scale(1.08); filter: drop-shadow(0 5px 8px rgb(6 21 55 / 14%)); }
+@media (max-width: 800px) {
+  .about-brand-layout { grid-template-columns: 1fr; gap: 30px; }
+  .about-brand-copy h2 { max-width: 14ch; }
+  .about-brand-board { transform: none; }
+  .about-brand-board:hover { transform: translateY(-2px); }
+  .about-brand-cell { min-height: 82px; }
+  .about-brand-cell img { max-width: 138px; }
+}
+@media (max-width: 520px) {
+  .about-brand-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .about-brand-cell { min-height: 78px; padding-inline: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .about-brand-board, .about-brand-cell, .about-brand-cell::after, .about-brand-cell img { transition: none; }
+}
 /* Certificate Dialog & Modal */
 .about-certificate-dialog { position: fixed; inset: 0; width: min(calc(100% - 24px), 1040px); max-width: none; max-height: calc(100dvh - 24px); margin: auto; overflow: visible; border: 0; padding: 0; background: transparent; color: var(--color-navy-800); }
 .about-certificate-dialog::backdrop { background: rgba(6,21,55,.86); backdrop-filter: blur(8px); }

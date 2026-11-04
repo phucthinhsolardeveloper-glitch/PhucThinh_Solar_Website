@@ -36,7 +36,25 @@ watch(() => props.hero?.image, () => { heroFailed.value = false })
 const fallbackHeroImage = '/assets/images/site-visuals/catalog-grid-tie-solar-20261008.png'
 const activeHeroImage = computed(() => props.hero?.image || fallbackHeroImage)
 
-const visibleBrands = computed(() => props.brands.slice(0, 6))
+const brandLogoByName: Record<string, string> = {
+  aesolar: '/assets/images/brand-logos/aesolar.png',
+  bluecarbon: '/assets/images/brand-logos/bluecarbon.png',
+  canadiansolar: '/assets/images/brand-logos/canadiansolar.png',
+  epsivo: '/assets/images/brand-logos/epsivo.png',
+  hober: '/assets/images/brand-logos/hober.png',
+  huawei: '/assets/images/brand-logos/huawei.png',
+  jdjindian: '/assets/images/brand-logos/jdjindian.png',
+  jindian: '/assets/images/brand-logos/jdjindian.png',
+  longi: '/assets/images/brand-logos/longi.png',
+  oriana: '/assets/images/brand-logos/oriana.png',
+  sharp: '/assets/images/brand-logos/sharp.png',
+  solax: '/assets/images/brand-logos/solax.png',
+  sungrow: '/assets/images/brand-logos/sungrow.png',
+}
+
+function brandLogo(name: string): string {
+  return brandLogoByName[name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '')] || ''
+}
 </script>
 
 <template>
@@ -73,14 +91,18 @@ const visibleBrands = computed(() => props.brands.slice(0, 6))
           <h1 id="catalog-page-heading">{{ heading }}</h1>
           <p>{{ description }}</p>
 
-          <nav v-if="visibleBrands.length" class="masthead-brands" aria-label="Lọc nhanh theo thương hiệu">
+          <nav v-if="brands.length" class="masthead-brands" aria-label="Lọc nhanh theo thương hiệu">
             <NuxtLink
-              v-for="brand in visibleBrands"
+              v-for="brand in brands"
               :key="brand.id"
               :to="brand.to"
+              :aria-label="`Xem thương hiệu ${brand.name}`"
               :aria-current="brand.active ? 'true' : undefined"
               :data-active="brand.active"
-            >{{ brand.name }}</NuxtLink>
+            >
+              <img v-if="brandLogo(brand.name)" :src="brandLogo(brand.name)" :alt="brand.name" width="120" height="40" loading="lazy" decoding="async">
+              <span v-else>{{ brand.name }}</span>
+            </NuxtLink>
           </nav>
         </div>
       </div>
@@ -163,7 +185,7 @@ const visibleBrands = computed(() => props.brands.slice(0, 6))
   padding-block: 36px;
 }
 .masthead-copy {
-  max-width: 640px;
+  width: 100%;
 }
 .masthead-copy h1 {
   max-width: 18ch;
@@ -180,21 +202,26 @@ const visibleBrands = computed(() => props.brands.slice(0, 6))
 .masthead-brands { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
 .masthead-brands a {
   display: inline-flex;
+  min-width: 104px;
   min-height: 40px;
   align-items: center;
+  justify-content: center;
   padding: 0 14px;
-  border: 1px solid rgb(255 255 255 / 22%);
-  border-radius: 4px;
-  background: rgb(6 21 55 / 35%);
-  backdrop-filter: blur(4px);
+  border: 1px solid rgb(219 231 249 / 16%);
+  border-radius: 6px;
+  background: linear-gradient(135deg, rgb(20 45 83 / 46%), rgb(6 21 55 / 38%));
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 8%), 0 6px 20px rgb(3 12 31 / 12%);
+  backdrop-filter: blur(12px) saturate(125%);
+  -webkit-backdrop-filter: blur(12px) saturate(125%);
   color: #fff;
   font-size: 14px;
   font-weight: 700;
   text-decoration: none;
-  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
 }
-.masthead-brands a:hover { border-color: var(--color-gold-400); color: var(--color-gold-300); }
-.masthead-brands a[data-active="true"] { border-color: transparent; background: linear-gradient(180deg, var(--color-gold-400), var(--color-gold-500)); color: var(--color-navy-950); }
+.masthead-brands a img { display: block; width: auto; max-width: 118px; height: 28px; object-fit: contain; }
+.masthead-brands a:hover { border-color: rgb(219 231 249 / 30%); background: linear-gradient(135deg, rgb(30 58 97 / 58%), rgb(9 28 64 / 52%)); transform: translateY(-2px); }
+.masthead-brands a[data-active="true"] { border-color: var(--color-gold-400); background: linear-gradient(180deg, var(--color-gold-400), var(--color-gold-500)); }
 .masthead-brands a:focus-visible { outline: 2px solid var(--color-gold-400); outline-offset: 2px; }
 
 @keyframes photo-settle { from { opacity: 0; transform: scale(1.06); } to { opacity: 1; transform: scale(1); } }
