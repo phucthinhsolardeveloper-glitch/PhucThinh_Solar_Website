@@ -7,7 +7,7 @@ import { PROJECTS_PUBLIC_PATH } from '#shared/public-route-gate'
 import { editorialPublicResponseStatus, editorialPublicRouteRobots } from '#shared/editorial-public-route'
 import { publicSeoDescription, publicSeoTitle } from '#shared/public-seo'
 import { projectCategoryCanonicalPath, projectCategoryPage } from '#shared/project-category-route'
-import ProjectCard from '~/components/projects/ProjectCard.vue'
+import ProjectWall from '~/components/projects/ProjectWall.vue'
 import ProjectsCta from '~/components/projects/ProjectsCta.vue'
 
 const route = useRoute()
@@ -104,7 +104,6 @@ usePublicSocialMeta({
           <div class="max-w-[820px]">
             <div class="mb-2 flex flex-wrap items-center gap-2.5">
               <h1 class="m-0 text-[clamp(32px,5vw,56px)] font-black leading-tight tracking-tight text-navy-950">{{ categoryTitle }}</h1>
-              <span v-if="projects.pagination.total" class="text-base font-semibold text-slate-500">{{ projects.pagination.total }} công trình</span>
             </div>
             <p v-if="categoryDescription" class="m-0 text-lg leading-relaxed text-slate-600">{{ categoryDescription }}</p>
           </div>
@@ -136,9 +135,7 @@ usePublicSocialMeta({
           </NuxtLink>
         </nav>
 
-        <section class="grid grid-cols-1 gap-x-6 gap-y-8 tb:grid-cols-2 nav:grid-cols-3" :aria-label="categoryTitle">
-          <ProjectCard v-for="project in projects.projects" :key="project.id" :project="project" :view-label="projects.labels.view" />
-        </section>
+        <ProjectWall :projects="projects.projects" :view-label="projects.labels.view" :label="categoryTitle" />
         <div v-if="!projects.projects.length" class="flex min-h-[230px] flex-col items-center justify-center px-5 py-9 text-center text-slate-600" role="status">
           <UIcon name="i-lucide-images" class="mb-3 size-8 text-gold-600" aria-hidden="true" />
           <p class="mb-3 text-base">{{ projects.labels.empty }}</p>

@@ -6,44 +6,50 @@ const links = useMigrationLinks()
 </script>
 
 <template>
-  <article class="min-w-0">
-    <a
-      :href="links.project(project.slug)"
-      class="group flex h-full flex-col overflow-hidden text-navy-800 no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold-600"
-    >
-      <div class="relative aspect-[4/3] overflow-hidden rounded-btn bg-[#edf1f5]" :class="{ 'grid place-items-center text-slate-500': !project.image }">
-        <img
-          v-if="project.image"
-          :src="project.image"
-          :alt="project.title"
-          class="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105 motion-reduce:transform-none motion-reduce:transition-none"
-          loading="lazy"
-          decoding="async"
-        >
-        <span v-else class="text-sm font-semibold text-slate-500" aria-hidden="true">Chưa có hình ảnh</span>
-        <span v-if="project.category" class="absolute left-3 top-3 flex items-center gap-1.5 rounded-btn bg-navy-950/90 px-2.5 py-1 text-[11px] font-bold text-white backdrop-blur-xs">
-          <img v-if="project.category.image" :src="project.category.image" alt="" class="h-3.5 w-3.5 object-contain brightness-0 invert">
-          <svg v-else class="h-3.5 w-3.5 text-gold-400" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3 3 10h2v9h5v-5h4v5h5v-9h2Z" /></svg>
-          {{ project.category.name }}
+  <article class="project-tile min-w-0">
+    <a :href="links.project(project.slug)" class="project-tile__link group">
+      <span class="project-tile__media aspect-[4/3]" :class="{ 'is-empty': !project.image }">
+        <img v-if="project.image" :src="project.image" :alt="project.title" loading="lazy" decoding="async">
+        <span v-else aria-hidden="true">Chưa có hình ảnh</span>
+      </span>
+      <span class="project-tile__veil" aria-hidden="true" />
+      <span v-if="project.category" class="project-tile__category">
+        <img v-if="project.category.image" :src="project.category.image" alt="" class="h-3.5 w-3.5 object-contain brightness-0 invert">
+        {{ project.category.name }}
+      </span>
+      <span class="project-tile__body">
+        <h2>{{ project.title }}</h2>
+        <span v-if="project.address" class="project-tile__place">
+          <UIcon name="i-lucide-map-pin" class="size-4 flex-none text-gold-400" aria-hidden="true" />{{ project.address }}
         </span>
-      </div>
-
-      <div class="flex flex-1 flex-col pt-4 pb-1">
-        <h2 class="m-0 text-lg font-extrabold leading-snug text-navy-900 transition-colors group-hover:text-gold-700 group-focus-visible:text-gold-700 tb:text-[19px]">{{ project.title }}</h2>
-        <div v-if="project.address" class="my-2 flex flex-wrap gap-x-4 gap-y-1 text-sm font-medium text-slate-500">
-          <span class="inline-flex items-center gap-1.5">
-            <svg class="h-3.5 w-3.5 flex-none text-gold-600" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5Z" /></svg>
-            {{ project.address }}
-          </span>
-        </div>
-        <p v-if="project.description" class="mb-0 mt-1 line-clamp-2 text-base leading-relaxed text-slate-600">
-          {{ project.description }}
-        </p>
-        <span class="mt-3.5 inline-flex items-center gap-1.5 text-sm font-extrabold text-navy-800 transition-colors group-hover:text-gold-700">
-          <span>{{ viewLabel }}</span>
-          <span class="inline-block transition-transform duration-300 group-hover:translate-x-1.5 motion-reduce:transform-none motion-reduce:transition-none" aria-hidden="true">→</span>
-        </span>
-      </div>
+        <span v-if="project.description" class="project-tile__desc">{{ project.description }}</span>
+        <span class="project-tile__go">{{ viewLabel }} <span aria-hidden="true">→</span></span>
+      </span>
     </a>
   </article>
 </template>
+
+<style scoped>
+.project-tile { --ease: cubic-bezier(0.22, 1, 0.36, 1); }
+.project-tile__link { position: relative; isolation: isolate; display: flex; height: 100%; min-height: 320px; overflow: hidden; border-radius: 8px; background: var(--color-navy-950); color: #fff; text-decoration: none; }
+.project-tile__link:focus-visible { outline: 3px solid var(--color-gold-500); outline-offset: 4px; }
+.project-tile__media { position: absolute; inset: 0; z-index: -2; display: grid; width: 100%; height: 100%; aspect-ratio: auto; place-items: center; background: #1a2f55; color: #9fb0c8; font-size: 14px; font-weight: 600; }
+.project-tile__media img { width: 100%; height: 100%; object-fit: cover; transition: transform 1s var(--ease); }
+.project-tile__link:hover .project-tile__media img, .project-tile__link:focus-visible .project-tile__media img { transform: scale(1.06); }
+.project-tile__veil { position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgb(6 21 55 / 0%) 35%, rgb(6 21 55 / 92%) 100%); transition: background-color 0.4s ease; }
+.project-tile__link:hover .project-tile__veil { background-color: rgb(6 21 55 / 20%); }
+.project-tile__category { position: absolute; top: 16px; left: 16px; display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; background: rgb(6 21 55 / 75%); color: #fff; font-size: 13px; font-weight: 700; backdrop-filter: blur(6px); }
+.project-tile__body { display: flex; width: 100%; flex-direction: column; gap: 8px; margin-top: auto; padding: clamp(20px, 2vw, 32px); }
+.project-tile__body h2 { margin: 0; color: #fff; font-size: clamp(19px, 1.5vw, 23px); font-weight: 850; line-height: 1.25; letter-spacing: -0.015em; }
+.project-tile__place { display: inline-flex; align-items: center; gap: 6px; color: #d3dcea; font-size: 14.5px; font-weight: 600; }
+.project-tile__desc { display: -webkit-box; max-height: 0; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 2; color: #c3cfdf; font-size: 15px; line-height: 1.6; opacity: 0; transition: max-height 0.5s var(--ease), opacity 0.35s ease; }
+.project-tile__link:hover .project-tile__desc, .project-tile__link:focus-visible .project-tile__desc { max-height: 3.4em; opacity: 1; }
+.project-tile__go { display: inline-flex; align-items: center; gap: 8px; margin-top: 4px; color: var(--color-gold-300); font-size: 14.5px; font-weight: 800; }
+.project-tile__go > span { transition: transform 0.35s var(--ease); }
+.project-tile__link:hover .project-tile__go > span { transform: translateX(6px); }
+@media (hover: none) { .project-tile__desc { max-height: 3.4em; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .project-tile__media img, .project-tile__desc, .project-tile__go > span { transition: none; }
+  .project-tile__link:hover .project-tile__media img { transform: none; }
+}
+</style>

@@ -5,7 +5,7 @@ import type { PublicSitePayload } from '#shared/contracts/public-site'
 import { isPublicSitePayload } from '#shared/contracts/public-site'
 import { PROJECTS_PUBLIC_PATH } from '#shared/public-route-gate'
 import { editorialPublicHubResponseStatus, editorialPublicRouteRobots } from '#shared/editorial-public-route'
-import ProjectCard from '~/components/projects/ProjectCard.vue'
+import ProjectWall from '~/components/projects/ProjectWall.vue'
 import ProjectFilters from '~/components/projects/ProjectFilters.vue'
 import ProjectsFeatured from '~/components/projects/ProjectsFeatured.vue'
 import ProjectsCta from '~/components/projects/ProjectsCta.vue'
@@ -85,26 +85,27 @@ usePublicSocialMeta({
       </div>
     </div>
 
-    <main class="pts-container pb-20 pt-4">
-      <div v-if="error || !projects" class="min-h-[30vh] py-6" role="status">
-          <h1 class="mb-3 text-3xl font-black tracking-tight">{{ isPublicRoute ? 'Dự án' : 'Dự án — internal preview' }}</h1>
-          <p class="text-slate-500">{{ isPublicRoute ? 'Danh sách dự án tạm thời chưa tải được. Vui lòng thử lại sau ít phút.' : 'Không thể tải dữ liệu CMS trong môi trường hiện tại. Preview không hiển thị dữ liệu dự án giả.' }}</p>
-        </div>
+    <main class="pb-20">
+      <div v-if="error || !projects" class="pts-container min-h-[30vh] py-6" role="status">
+        <h1 class="mb-3 text-3xl font-black tracking-tight">{{ isPublicRoute ? 'Dự án' : 'Dự án — internal preview' }}</h1>
+        <p class="text-slate-500">{{ isPublicRoute ? 'Danh sách dự án tạm thời chưa tải được. Vui lòng thử lại sau ít phút.' : 'Không thể tải dữ liệu CMS trong môi trường hiện tại. Preview không hiển thị dữ liệu dự án giả.' }}</p>
+      </div>
 
-        <template v-else>
-          <header v-if="projects.intro.visible" class="my-7 max-w-[980px]">
-            <h1 class="mb-3 text-[clamp(32px,5vw,56px)] font-black leading-tight tracking-tight text-navy-950">{{ projects.intro.title }}</h1>
-            <p v-if="projects.intro.description" class="m-0 text-lg leading-relaxed text-slate-600">{{ projects.intro.description }}</p>
-          </header>
-          <h1 v-else class="sr-only">{{ projects.title }}</h1>
+      <template v-else>
+        <ProjectsFeatured
+          :title="projects.intro.visible ? projects.intro.title : projects.title"
+          :description="projects.intro.visible ? projects.intro.description : ''"
+          :project="projects.featured"
+          :benefits="projects.featuredBenefits"
+          :label="projects.labels.featured"
+          :view-label="projects.labels.view"
+          :backdrop="projects.projects[0]?.image"
+        />
 
+        <div class="pts-container pt-8 nav:pt-12">
           <ProjectFilters :categories="projects.categories" :selected="projects.category" :all-label="projects.labels.all" :filters-label="projects.labels.filters" />
 
-          <ProjectsFeatured v-if="projects.featured" :project="projects.featured" :benefits="projects.featuredBenefits" :label="projects.labels.featured" :view-label="projects.labels.view" />
-
-          <section class="project-reel grid grid-cols-1 gap-x-8 gap-y-10 tb:grid-cols-2 nav:grid-cols-3" :aria-label="projects.title">
-            <ProjectCard v-for="project in projects.projects" :key="project.id" :project="project" :view-label="projects.labels.view" />
-          </section>
+          <ProjectWall :projects="projects.projects" :view-label="projects.labels.view" :label="projects.title" />
 
           <nav v-if="totalPages > 1" class="mt-10 flex flex-wrap justify-center gap-2" aria-label="Phân trang dự án">
             <SitePaginationButton
@@ -135,9 +136,11 @@ usePublicSocialMeta({
           <p v-if="!projects.featured && !projects.projects.length" class="py-6 text-slate-500">{{ projects.labels.empty }}</p>
 
           <ProjectsCta v-if="projects.cta" :cta="projects.cta" :label="projects.labels.cta" />
-        </template>
+        </div>
+      </template>
     </main>
 
     <SiteFooter :site="site" />
   </div>
 </template>
+
