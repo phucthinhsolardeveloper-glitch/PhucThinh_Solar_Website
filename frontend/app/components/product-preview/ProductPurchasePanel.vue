@@ -23,8 +23,15 @@ async function add(goToCart = false) {
     loadingAction.value = null
   }
   added.value = true
-  if (goToCart) await navigateTo(links.generic('/gio-hang/'))
+  if (goToCart) { await navigateTo(links.generic('/gio-hang/')); return }
+  justAdded.value = true
+  clearTimeout(justAddedTimer)
+  justAddedTimer = setTimeout(() => { justAdded.value = false }, 2000)
 }
+// Brief confirmation on the button itself; the status line below has a reserved slot.
+const justAdded = ref(false)
+let justAddedTimer: ReturnType<typeof setTimeout> | undefined
+onBeforeUnmount(() => clearTimeout(justAddedTimer))
 </script>
 
 <template>
@@ -53,14 +60,21 @@ async function add(goToCart = false) {
         :disabled="loading"
         @click="add(false)"
       >
-        {{ loading ? 'Đang thêm…' : 'Thêm vào giỏ' }}
+        <template v-if="loadingAction === 'cart'">Đang thêm…</template>
+        <template v-else-if="justAdded"><UIcon name="i-lucide-check" class="size-5" aria-hidden="true" /> Đã thêm vào giỏ</template>
+        <template v-else>Thêm vào giỏ</template>
       </UButton>
     </div>
-    <p v-if="added && !error" class="mb-0 mt-3 flex flex-wrap items-center gap-2 text-sm font-semibold text-emerald-700" role="status">
-      <span>Đã thêm sản phẩm vào giỏ hàng.</span>
-      <NuxtLink :to="links.generic('/gio-hang/')" class="font-bold text-navy-900 underline hover:text-gold-700">Xem giỏ hàng →</NuxtLink>
-    </p>
-    <p v-if="error" class="mb-0 mt-3 text-sm font-semibold text-red-700" role="alert">{{ error }}</p>
+    <!-- Reserved slot: confirmation/error fade in without pushing the rest of the panel. -->
+    <div v-if="pricing.mode === 'price'" class="purchase-status mt-3 min-h-6" aria-live="polite">
+      <Transition name="purchase-status" mode="out-in">
+        <p v-if="error" key="error" class="m-0 text-sm font-semibold text-red-700" role="alert">{{ error }}</p>
+        <p v-else-if="added" key="added" class="m-0 flex flex-wrap items-center gap-2 text-sm font-semibold text-emerald-700" role="status">
+          <span>Đã thêm sản phẩm vào giỏ hàng.</span>
+          <NuxtLink :to="links.generic('/gio-hang/')" class="font-bold text-navy-900 underline hover:text-gold-700">Xem giỏ hàng →</NuxtLink>
+        </p>
+      </Transition>
+    </div>
     <UButton
       v-if="pricing.mode === 'quote' && consultationAvailable"
       href="#pts-pdp-consultation"
@@ -151,3 +165,9 @@ async function add(goToCart = false) {
     </div>
   </section>
 </template>
+
+<style scoped>
+.purchase-status-enter-active, .purchase-status-leave-active { transition: opacity 0.2s ease, transform 0.2s ease; }
+.purchase-status-enter-from, .purchase-status-leave-to { opacity: 0; transform: translateY(-3px); }
+@media (prefers-reduced-motion: reduce) { .purchase-status-enter-active, .purchase-status-leave-active { transition: none; } }
+</style>
