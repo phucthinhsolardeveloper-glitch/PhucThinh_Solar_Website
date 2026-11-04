@@ -76,7 +76,7 @@ if (aliasTarget) {
     await navigateTo(disposition.path, { redirectCode: disposition.statusCode })
   } else if (['project-category', 'news-category', 'solution-category'].includes(disposition.kind) && route.path !== resolutionData.value.canonicalPath
     // In-app links may carry a trailing slash; a client redirect from inside setup stalls, so only the server enforces it.
-    && !(import.meta.client && route.path.replace(/\/$/, '') === resolutionData.value.canonicalPath.replace(/\/$/, ''))) {
+    && !(import.meta.client && route.path.replace(/\/$/, '') === (resolutionData.value.canonicalPath ?? '').replace(/\/$/, ''))) {
     pageState.value = 'redirecting'
     await navigateTo(resolutionData.value.canonicalPath, { redirectCode: 301 })
   } else {
