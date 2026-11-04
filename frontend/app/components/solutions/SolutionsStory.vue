@@ -3,7 +3,7 @@ import type { PublicSanitizedRichText } from '#shared/contracts/editorial-rich-t
 import EditorialRichText from '~/components/editorial/EditorialRichText.vue'
 import { parseSolutionStory, storyIcon, stripStepNumber } from '~/utils/solutionStory'
 
-const props = withDefaults(defineProps<{ contents: PublicSanitizedRichText[]; indexLabel?: string }>(), { indexLabel: 'Các phần trong trang' })
+const props = withDefaults(defineProps<{ contents: PublicSanitizedRichText[]; indexLabel?: string; showIndex?: boolean }>(), { indexLabel: 'Các phần trong trang', showIndex: true })
 const chapters = computed(() => parseSolutionStory(props.contents.map((content) => content.html || '').join('')))
 // Long chapter lists (detail pages) would overflow the index; it lists the first eight.
 const indexChapters = computed(() => chapters.value.filter((chapter) => chapter.kind !== 'faq').slice(0, 8))
@@ -32,12 +32,11 @@ onBeforeUnmount(() => observer?.disconnect())
   </div>
 
   <div v-else class="story">
-    <nav v-if="indexChapters.length > 1" class="story-index" :aria-label="indexLabel">
+    <nav v-if="showIndex && indexChapters.length > 1" class="story-index" :aria-label="indexLabel">
       <div class="pts-container">
         <ul>
           <li v-for="chapter in indexChapters" :key="chapter.id">
             <a :href="`#${chapter.id}`" :aria-current="activeId === chapter.id ? 'true' : undefined">
-              <UIcon :name="storyIcon(chapter.title)" class="size-5 flex-none" aria-hidden="true" />
               <span>{{ chapter.title }}</span>
             </a>
           </li>
@@ -223,15 +222,14 @@ onBeforeUnmount(() => observer?.disconnect())
 
 /* Chapter index */
 .story-index { position: relative; z-index: 2; margin-top: clamp(8px, 2vw, 24px); border-block: 1px solid rgb(10 34 81 / 10%); background: #fff; }
-.story-index ul { display: flex; margin: 0; padding: 0; overflow-x: auto; list-style: none; scrollbar-width: none; }
+.story-index ul { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin: 0; padding: 0; list-style: none; }
 .story-index ul::-webkit-scrollbar { display: none; }
-.story-index li { flex: 1 0 auto; }
+.story-index li { min-width: 0; }
 .story-index a { position: relative; display: flex; min-height: 72px; align-items: center; gap: 12px; padding: 14px 22px; color: #4a5a72; font-size: 15.5px; font-weight: 700; line-height: 1.3; text-decoration: none; transition: color 0.3s ease, background-color 0.3s ease; }
 .story-index li + li a { border-left: 1px solid rgb(10 34 81 / 8%); }
 .story-index a::after { content: ''; position: absolute; inset: auto 0 -1px; height: 3px; background: var(--color-gold-500); transform: scaleX(0); transform-origin: left; transition: transform 0.45s var(--ease); }
 .story-index a:hover, .story-index a[aria-current] { color: var(--color-navy-950); background: #f6f8fb; }
 .story-index a:hover::after, .story-index a[aria-current]::after { transform: scaleX(1); }
-.story-index a :deep(.iconify), .story-index a > :first-child { color: var(--color-gold-600); }
 .story-index a:focus-visible { outline: 3px solid var(--color-gold-500); outline-offset: -3px; }
 
 /* Match */
@@ -368,7 +366,9 @@ onBeforeUnmount(() => observer?.disconnect())
   .eco-grid[data-count="5"] .eco-card:first-child { grid-column: span 2; }
 }
 @media (max-width: 640px) {
-  .story-index a { min-height: 60px; padding: 12px 16px; font-size: 14.5px; }
+  .story-index ul { display: flex; overflow-x: auto; scrollbar-width: none; }
+  .story-index li { flex: none; }
+  .story-index a { min-height: 56px; padding: 12px 16px; font-size: 14.5px; white-space: nowrap; }
   .match-row { grid-template-columns: 1fr; gap: 12px; padding: 22px 0; }
   .match-arrow { display: none; }
   .match-answer { margin-left: 64px; }

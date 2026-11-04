@@ -58,7 +58,7 @@ test('policy TOC uses the shared anchor-preserving builder', () => {
 test('solution detail restages its content as chapters with a hero and switcher rail', () => {
   // Owner decision 2026-11-04: the sticky TOC rail is replaced by the chapter story used on the hub.
   const page = read('../app/components/solution-detail/SolutionDetailPage.vue')
-  assert.match(page, /<SolutionsStory v-if="hasContent" :contents="\[solutionContent, solutionExtraContent\]" index-label="Nội dung chính" \/>/)
+  assert.match(page, /<SolutionsStory v-if="hasContent" :contents="\[solutionContent, solutionExtraContent\]" :show-index="false" \/>/)
   assert.match(page, /\.solution-rail__item \{[^}]*min-height: 44px/)
   assert.match(page, /prefers-reduced-motion: reduce/)
 })

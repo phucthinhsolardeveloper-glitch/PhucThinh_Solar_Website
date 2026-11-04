@@ -152,7 +152,7 @@ onBeforeUnmount(() => {
       -->
       <Transition name="story-swap" mode="out-in">
         <div id="noi-dung-giai-phap" :key="data.solution.slug" class="solution-story">
-          <SolutionsStory v-if="hasContent" :contents="[solutionContent, solutionExtraContent]" index-label="Nội dung chính" />
+          <SolutionsStory v-if="hasContent" :contents="[solutionContent, solutionExtraContent]" :show-index="false" />
           <p v-else class="pts-container py-12 text-slate-500">Nội dung chi tiết đang được cập nhật.</p>
         </div>
       </Transition>
