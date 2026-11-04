@@ -165,7 +165,7 @@ usePublicSocialMeta({
 .news-empty h2 { margin: 0; color: var(--color-navy-950); font-size: clamp(22px, 2vw, 28px); font-weight: 850; }
 .news-empty p { max-width: 56ch; margin: 10px auto 0; color: #52627a; font-size: 16px; line-height: 1.7; }
 .news-empty__actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 24px; }
-.news-empty__primary, .news-empty__ghost { display: inline-flex; min-height: 48px; align-items: center; padding: 0 22px; border-radius: var(--radius-card); font: inherit; font-weight: 800; text-decoration: none; cursor: pointer; }
+.news-empty__primary, .news-empty__ghost { display: inline-flex; min-height: 48px; align-items: center; padding: 0 22px; border-radius: var(--radius-btn); font: inherit; font-weight: 800; text-decoration: none; cursor: pointer; }
 .news-empty__primary { border: 0; background: var(--pts-gold-gradient); color: var(--color-navy-950); }
 .news-empty__ghost { border: 1px solid rgb(10 34 81 / 16%); background: #fff; color: var(--color-navy-900); }
 .news-empty__ghost:hover { border-color: var(--color-gold-500); }

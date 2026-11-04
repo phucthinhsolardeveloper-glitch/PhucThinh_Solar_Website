@@ -84,7 +84,7 @@ function reload() { if (import.meta.client) window.location.reload() }
 .nf-chips button { min-height: 36px; padding: 0 14px; border: 1px solid rgb(255 255 255 / 16%); border-radius: 999px; background: transparent; color: #dbe4f0; font: inherit; font-size: 13.5px; font-weight: 600; cursor: pointer; transition: border-color 0.2s ease, color 0.2s ease; }
 .nf-chips button:hover { border-color: var(--color-gold-400); color: #fff; }
 .nf-actions { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 16px 28px; margin-top: 28px; }
-.nf-primary { min-height: 54px; padding: 0 28px; border: 0; border-radius: var(--radius-card); background: var(--pts-gold-gradient); color: var(--color-navy-950); font: inherit; font-weight: 850; cursor: pointer; }
+.nf-primary { min-height: 54px; padding: 0 28px; border: 0; border-radius: var(--radius-btn); background: var(--pts-gold-gradient); color: var(--color-navy-950); font: inherit; font-weight: 850; cursor: pointer; }
 .nf-call { display: inline-flex; align-items: center; gap: 10px; color: #fff; font-size: 20px; font-weight: 850; text-decoration: none; }
 .nf-sky :is(a, button):focus-visible { outline: 3px solid var(--color-gold-300); outline-offset: 3px; }
 
