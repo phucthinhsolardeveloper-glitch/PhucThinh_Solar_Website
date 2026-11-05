@@ -135,7 +135,10 @@ try
     $hotline = is_array($optsetting) && isset($optsetting['hotline']) ? $optsetting['hotline'] : '';
     $zaloValue = is_array($optsetting) && isset($optsetting['zalo']) && is_scalar($optsetting['zalo']) ? $optsetting['zalo'] : '';
     $zalo = $func->parsePhone($zaloValue);
-    echo json_encode(ptsAboutPayload($sections, $labels, $hotline, $zalo, $seo), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
+    $aboutPayload = ptsAboutPayload($sections, $labels, $hotline, $zalo, $seo);
+    $showroom = $d->rawQueryOne("select photo from #_photo where type=? and act=? and find_in_set('hienthi',status) limit 0,1", array('about-showroom','photo_static'));
+    $aboutPayload['showroomImage'] = ptsAboutImage(is_array($showroom) ? ($showroom['photo'] ?? '') : '', ROOT, UPLOAD_PHOTO_L, 'upload/photo/');
+    echo json_encode($aboutPayload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
 }
 catch(Throwable $e)
 {

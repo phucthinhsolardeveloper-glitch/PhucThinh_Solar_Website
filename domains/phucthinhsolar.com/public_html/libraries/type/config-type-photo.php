@@ -114,6 +114,16 @@
     // $config['photo']['photo_static'][$nametype]['show_stt'] = true;
     // $config['photo']['photo_static'][$nametype]['video_type'] = 'mp4';
 
+    /* Ảnh showroom trong khối Lịch sử trang Giới thiệu. */
+    $nametype = "about-showroom";
+    $config['photo']['photo_static'][$nametype]['title_main'] = "Giới thiệu - Ảnh showroom";
+    $config['photo']['photo_static'][$nametype]['check'] = array("hienthi" => "Hiển thị");
+    $config['photo']['photo_static'][$nametype]['images'] = true;
+    $config['photo']['photo_static'][$nametype]['width'] = 1448;
+    $config['photo']['photo_static'][$nametype]['height'] = 1086;
+    $config['photo']['photo_static'][$nametype]['thumb'] = '362x272x1';
+    $config['photo']['photo_static'][$nametype]['img_type'] = '.jpg|.jpeg|.png|.webp';
+
     /* Popup */
     $nametype = "popup";
     $config['photo']['photo_static'][$nametype]['title_main'] = "Popup quảng cáo (hiện khi vào trang chủ)";

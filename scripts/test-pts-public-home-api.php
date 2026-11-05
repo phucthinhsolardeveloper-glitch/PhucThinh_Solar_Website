@@ -18,4 +18,7 @@ $edited = ptsPublicHomePopup(array('date_updated'=>101) + $popupRow);
 @unlink($popupRoot.'/upload/photo/campaign.png'); @rmdir($popupRoot.'/upload/photo'); @rmdir($popupRoot.'/upload'); @rmdir($popupRoot);
 if(!is_array($popup) || $popup['image'] !== '/upload/photo/campaign.png' || $popup['title'] !== 'Khuyến mãi' || $popup['href'] !== '' || !preg_match('/^[a-f0-9]{20}$/', $popup['key'])) { fwrite(STDERR, "popup DTO shape/sanitising failed\n"); exit(1); }
 if($edited['key'] === $popup['key']) { fwrite(STDERR, "editing the popup must issue a new campaign key\n"); exit(1); }
+$chain = ptsPublicHomeEnergyChain(array_fill(0, 6, array('namevi'=>'<b>Tấm pin</b>','title_indexvi'=>'','descvi'=>'','solieu'=>'','photo'=>'../x.png')));
+if(count($chain) !== 5 || $chain[0]['name'] !== 'Tấm pin' || $chain[0]['stage'] !== '' || $chain[0]['image'] !== '') { fwrite(STDERR, "energy chain must cap at 5, strip tags, keep blanks blank and drop unsafe images\n"); exit(1); }
+if(ptsHomeWordCut('Thu nhận ánh nắng mặt trời buổi sáng sớm', 24) !== 'Thu nhận ánh nắng mặt…' || ptsHomeWordCut('Ngắn', 24) !== 'Ngắn') { fwrite(STDERR, "Admin text must be cut on a word boundary\n"); exit(1); }
 echo "pts public home helper OK\n";

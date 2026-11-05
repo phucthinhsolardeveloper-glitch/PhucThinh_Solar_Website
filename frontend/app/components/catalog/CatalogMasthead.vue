@@ -10,7 +10,21 @@ const props = withDefaults(defineProps<{
   description: string
   hero: PublicCatalogHero | null
   brands?: CatalogMastheadBrand[]
-}>(), { brands: () => [] })
+  benefits?: Array<{ title: string; description: string }>
+}>(), { brands: () => [], benefits: () => [] })
+
+// Admin "Danh mục - Dải lợi ích" overrides cell N; icons stay tied to the position.
+const defaultBenefits = [
+  { icon: 'light', title: 'Tư vấn lựa chọn', description: 'Đúng nhu cầu, hiệu quả' },
+  { icon: 'cog', title: 'Hỗ trợ kỹ thuật', description: 'Trong suốt quá trình sử dụng' },
+  { icon: 'shield', title: 'Chính sách rõ ràng', description: 'Minh bạch, dễ hiểu' },
+  { icon: 'truck', title: 'Giao hàng toàn quốc', description: 'Nhanh chóng, an toàn' },
+] as const
+const benefitCells = computed(() => defaultBenefits.map((cell, index) => ({
+  icon: cell.icon,
+  title: props.benefits[index]?.title || cell.title,
+  description: props.benefits[index]?.description || cell.description,
+})))
 
 const phpResizableCatalogImage = /^\/upload\/(?:product|news|photo)\/[A-Za-z0-9][A-Za-z0-9._/-]*\.(?:jpe?g|png|webp)$/i
 const heroVisualOverrides: Record<string, string> = {
@@ -111,29 +125,11 @@ function brandLogo(name: string): string {
     <!-- 4 Value Props Bar -->
     <div class="bg-white border-b border-slate-100" aria-label="Lợi ích khi chọn sản phẩm">
       <div class="pts-container grid grid-cols-2 gap-x-6 gap-y-0 py-3.5 max-[769px]:gap-x-3 max-[769px]:py-2 min-[769px]:grid-cols-4">
-        <div class="flex min-h-[56px] items-center justify-center gap-3 max-[769px]:min-h-11 max-[769px]:justify-start max-[769px]:gap-2 max-[769px]:py-1">
+        <div v-for="cell in benefitCells" :key="cell.icon" class="flex min-h-[56px] min-w-0 items-center justify-center gap-3 max-[769px]:min-h-11 max-[769px]:justify-start max-[769px]:gap-2 max-[769px]:py-1">
           <span class="flex h-9 w-9 flex-none items-center justify-center rounded-[4px] bg-gold-50 text-gold-700 max-[769px]:h-6 max-[769px]:w-6">
-            <CatalogMenuIcon class="h-6 w-6 max-[769px]:h-4 max-[769px]:w-4" name="light" />
+            <CatalogMenuIcon class="h-6 w-6 max-[769px]:h-4 max-[769px]:w-4" :name="cell.icon" />
           </span>
-          <span><strong class="block text-[13.5px] font-bold text-navy-950 max-[769px]:text-[12px]">Tư vấn lựa chọn</strong><small class="block text-[12px] text-slate-500 max-[769px]:hidden">Đúng nhu cầu, hiệu quả</small></span>
-        </div>
-        <div class="flex min-h-[56px] items-center justify-center gap-3 max-[769px]:min-h-11 max-[769px]:justify-start max-[769px]:gap-2 max-[769px]:py-1">
-          <span class="flex h-9 w-9 flex-none items-center justify-center rounded-[4px] bg-gold-50 text-gold-700 max-[769px]:h-6 max-[769px]:w-6">
-            <CatalogMenuIcon class="h-6 w-6 max-[769px]:h-4 max-[769px]:w-4" name="cog" />
-          </span>
-          <span><strong class="block text-[13.5px] font-bold text-navy-950 max-[769px]:text-[12px]">Hỗ trợ kỹ thuật</strong><small class="block text-[12px] text-slate-500 max-[769px]:hidden">Trong suốt quá trình sử dụng</small></span>
-        </div>
-        <div class="flex min-h-[56px] items-center justify-center gap-3 max-[769px]:min-h-11 max-[769px]:justify-start max-[769px]:gap-2 max-[769px]:py-1">
-          <span class="flex h-9 w-9 flex-none items-center justify-center rounded-[4px] bg-gold-50 text-gold-700 max-[769px]:h-6 max-[769px]:w-6">
-            <CatalogMenuIcon class="h-6 w-6 max-[769px]:h-4 max-[769px]:w-4" name="shield" />
-          </span>
-          <span><strong class="block text-[13.5px] font-bold text-navy-950 max-[769px]:text-[12px]">Chính sách rõ ràng</strong><small class="block text-[12px] text-slate-500 max-[769px]:hidden">Minh bạch, dễ hiểu</small></span>
-        </div>
-        <div class="flex min-h-[56px] items-center justify-center gap-3 max-[769px]:min-h-11 max-[769px]:justify-start max-[769px]:gap-2 max-[769px]:py-1">
-          <span class="flex h-9 w-9 flex-none items-center justify-center rounded-[4px] bg-gold-50 text-gold-700 max-[769px]:h-6 max-[769px]:w-6">
-            <CatalogMenuIcon class="h-6 w-6 max-[769px]:h-4 max-[769px]:w-4" name="truck" />
-          </span>
-          <span><strong class="block text-[13.5px] font-bold text-navy-950 max-[769px]:text-[12px]">Giao hàng toàn quốc</strong><small class="block text-[12px] text-slate-500 max-[769px]:hidden">Nhanh chóng, an toàn</small></span>
+          <span class="min-w-0"><strong class="block truncate text-[13.5px] font-bold text-navy-950 max-[769px]:text-[12px]">{{ cell.title }}</strong><small class="block truncate text-[12px] text-slate-500 max-[769px]:hidden">{{ cell.description }}</small></span>
         </div>
       </div>
     </div>

@@ -19,6 +19,8 @@ export interface PublicSitePayload {
   catalog?: Record<string, PublicCatalogGroup>
   productCategories: PublicProductCategory[]
   productCategoryTree?: PublicProductCategoryNode[]
+  catalogBenefits?: Array<{ title: string; description: string }>
+  quickSearches?: string[]
   footer?: { companyName: string; contactText: PublicSanitizedRichText; policies: PublicFooterPolicy[]; locations: PublicFooterLocation[]; socialLinks: PublicSocialLink[]; trustBadge?: PublicTrustBadge }
 }
 
@@ -54,6 +56,8 @@ export function isPublicSitePayload(value: unknown): value is PublicSitePayload 
   if (value.brand.logo !== undefined && !isSafeUrl(value.brand.logo)) return false
   if (value.brand.logoFooter !== undefined && !isSafeUrl(value.brand.logoFooter)) return false
   if (value.brand.favicon !== undefined && !isSafeUrl(value.brand.favicon)) return false
+  if (value.catalogBenefits !== undefined && (!Array.isArray(value.catalogBenefits) || value.catalogBenefits.length > 4 || !value.catalogBenefits.every((item) => isRecord(item) && isText(item.title, true) && isText(item.description, true)))) return false
+  if (value.quickSearches !== undefined && (!Array.isArray(value.quickSearches) || value.quickSearches.length > 7 || !value.quickSearches.every((term) => isText(term)))) return false
   if (value.brand.technicalHotline !== undefined && !isText(value.brand.technicalHotline)) return false
   if (value.brand.zaloHref !== undefined && (typeof value.brand.zaloHref !== 'string' || !/^https:\/\/zalo\.me\/\d{8,15}$/.test(value.brand.zaloHref))) return false
   if (value.navigationSchemaVersion !== undefined && value.navigationSchemaVersion !== 1) return false

@@ -302,6 +302,7 @@ function pageLink(nextPage: number) {
       :description="bannerDescription"
       :hero="catalogData?.categoryHero ?? null"
       :brands="mastheadBrands"
+      :benefits="siteData?.catalogBenefits ?? []"
     />
 
     <!--

@@ -146,6 +146,12 @@ function onCertificateDialogClose() {
 function onCertificateDialogBackdrop(event: MouseEvent) {
   if (event.target === event.currentTarget) closeCertificateGallery()
 }
+// Admin "Giới thiệu - Ảnh showroom" replaces the default showroom photo.
+const showroomImage = computed(() => {
+  const src = props.about.showroomImage || ''
+  if (/^\/upload\/photo\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|webp)$/i.test(src)) return `/thumbs/780x600x1${src}`
+  return src || '/assets/images/site-visuals/about-showroom-solar-equipment-20261104.png'
+})
 </script>
 
 <template>
@@ -219,7 +225,7 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
           </ol>
         </div>
         <figure class="m-0 min-h-[390px] overflow-hidden rounded-btn bg-navy-50 max-[800px]:max-h-[26rem]">
-          <img class="block h-full w-full object-cover" :src="'/assets/images/site-visuals/about-showroom-solar-equipment-20261104.png'" :alt="`${about.history.title || about.labels.history} — không gian trưng bày thiết bị năng lượng mặt trời`" width="780" height="600" loading="lazy">
+          <img class="block h-full w-full object-cover" :src="showroomImage" :alt="`${about.history.title || about.labels.history} — không gian trưng bày thiết bị năng lượng mặt trời`" width="780" height="600" loading="lazy">
         </figure>
       </div>
     </section>

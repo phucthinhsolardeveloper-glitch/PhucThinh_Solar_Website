@@ -73,3 +73,10 @@ test('Admin favicon is optional and must be a safe URL', () => {
   assert.equal(isPublicSitePayload({ ...good, brand: { ...good.brand, favicon: '/upload/photo/icon.png' } }), true)
   assert.equal(isPublicSitePayload({ ...good, brand: { ...good.brand, favicon: 'javascript:alert(1)' } }), false)
 })
+
+test('Admin catalog benefits and quick searches are bounded so they cannot break the layout', () => {
+  assert.equal(isPublicSitePayload({ ...good, catalogBenefits: [{ title: 'Tư vấn', description: '' }], quickSearches: ['Đèn đường'] }), true)
+  assert.equal(isPublicSitePayload({ ...good, catalogBenefits: Array(5).fill({ title: 'A', description: '' }) }), false)
+  assert.equal(isPublicSitePayload({ ...good, quickSearches: Array(8).fill('Pin') }), false)
+  assert.equal(isPublicSitePayload({ ...good, quickSearches: [''] }), false)
+})

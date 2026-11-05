@@ -141,6 +141,7 @@ usePublicSocialMeta({
       :heading="keyword ? `Kết quả tìm kiếm: “${keyword}”` : 'Tìm kiếm sản phẩm'"
       :description="keyword ? 'Giải pháp năng lượng phù hợp cho gia đình, doanh nghiệp và công trình' : 'Tìm theo tên thiết bị, công suất, mã sản phẩm hoặc thương hiệu.'"
       :hero="null"
+      :benefits="site.catalogBenefits ?? []"
     />
     <main class="pts-container pb-16">
       <div class="pt-6">

@@ -641,6 +641,60 @@
     $config['news'][$nametype]['thumb'] = '100x100x2';
     $config['news'][$nametype]['img_type'] = '.jpg|.gif|.png|.jpeg|.gif';
 
+    /* Năm thẻ "chuỗi năng lượng" ở trang chủ (Tấm pin, Biến tần, Pin lưu trữ,
+       Đèn, Bơm nước). Record thứ N theo STT ghi đè thẻ thứ N; trường để trống
+       giữ nội dung mặc định nên layout không đổi. Liên kết tự trỏ danh mục. */
+    $nametype = "home-energy-chain";
+    $config['news'][$nametype]['title_main'] = "Trang chủ - Chuỗi năng lượng";
+    $config['news'][$nametype]['admin_note'] = "5 thẻ theo thứ tự STT: 1 Tấm pin, 2 Biến tần, 3 Pin lưu trữ, 4 Đèn, 5 Bơm nước. Tên là tiêu đề thẻ (ngắn, tối đa ~40 ký tự); Nhãn bước ví dụ \"Đón nắng\"; Mô tả 1-2 câu (tối đa ~120 ký tự); Chữ trên nút ví dụ \"Xem tấm pin\". Ảnh ngang 1448x1086, chủ thể ở giữa. Trường để trống sẽ dùng nội dung mặc định. Link tự trỏ về danh mục tương ứng.";
+    $config['news'][$nametype]['check'] = array("hienthi" => "Hiển thị");
+    $config['news'][$nametype]['view'] = false;
+    $config['news'][$nametype]['slug'] = false;
+    $config['news'][$nametype]['copy'] = false;
+    $config['news'][$nametype]['title_index'] = true;
+    $config['news'][$nametype]['title_index_label'] = "Nhãn bước";
+    $config['news'][$nametype]['solieu'] = true;
+    $config['news'][$nametype]['solieu_label'] = "Chữ trên nút";
+    $config['news'][$nametype]['solieu_placeholder'] = "Ví dụ: Xem tấm pin";
+    $config['news'][$nametype]['images'] = true;
+    $config['news'][$nametype]['show_images'] = true;
+    $config['news'][$nametype]['desc'] = true;
+    $config['news'][$nametype]['desc_cke'] = false;
+    $config['news'][$nametype]['content'] = false;
+    $config['news'][$nametype]['seo'] = false;
+    $config['news'][$nametype]['width'] = 1448;
+    $config['news'][$nametype]['height'] = 1086;
+    $config['news'][$nametype]['thumb'] = '160x120x1';
+    $config['news'][$nametype]['img_type'] = '.jpg|.jpeg|.png|.webp';
+
+    /* Dải 4 lợi ích dưới đầu trang Danh mục sản phẩm và Tìm kiếm. Record thứ N
+       theo STT ghi đè ô thứ N; icon giữ theo vị trí. */
+    $nametype = "catalog-benefit";
+    $config['news'][$nametype]['title_main'] = "Danh mục - Dải lợi ích";
+    $config['news'][$nametype]['admin_note'] = "Tối đa 4 record đang Hiển thị, theo STT ứng với 4 ô (icon: tư vấn, kỹ thuật, chính sách, giao hàng). Tên là dòng đậm (tối đa ~24 ký tự); Mô tả là dòng phụ ngắn (tối đa ~32 ký tự, ẩn trên mobile). Ô không có record dùng nội dung mặc định.";
+    $config['news'][$nametype]['check'] = array("hienthi" => "Hiển thị");
+    $config['news'][$nametype]['view'] = false;
+    $config['news'][$nametype]['slug'] = false;
+    $config['news'][$nametype]['copy'] = false;
+    $config['news'][$nametype]['images'] = false;
+    $config['news'][$nametype]['desc'] = true;
+    $config['news'][$nametype]['desc_cke'] = false;
+    $config['news'][$nametype]['content'] = false;
+    $config['news'][$nametype]['seo'] = false;
+
+    /* Chip "tìm nhanh" trong ô tìm kiếm ở header. */
+    $nametype = "quick-search";
+    $config['news'][$nametype]['title_main'] = "Tìm kiếm - Từ khóa nhanh";
+    $config['news'][$nametype]['admin_note'] = "Tối đa 7 từ khóa đang Hiển thị, theo STT, hiện thành chip trong ô tìm kiếm ở header. Tên là từ khóa (tối đa ~24 ký tự), bấm vào sẽ tìm đúng từ đó. Chưa có record nào thì dùng danh sách mặc định.";
+    $config['news'][$nametype]['check'] = array("hienthi" => "Hiển thị");
+    $config['news'][$nametype]['view'] = false;
+    $config['news'][$nametype]['slug'] = false;
+    $config['news'][$nametype]['copy'] = false;
+    $config['news'][$nametype]['images'] = false;
+    $config['news'][$nametype]['desc'] = false;
+    $config['news'][$nametype]['content'] = false;
+    $config['news'][$nametype]['seo'] = false;
+
     /* Lịch sử */
     $nametype = "lich-su";
     $config['news'][$nametype]['title_main'] = "Lịch sử";

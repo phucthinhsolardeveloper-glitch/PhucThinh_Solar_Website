@@ -171,3 +171,15 @@ test('Admin popup is optional, validated and shown on the homepage only once per
   assert.match(component, /prefers-reduced-motion: reduce/)
   assert.match(homePhpApi, /type=\? and act=\? and find_in_set\(\\'hienthi\\',status\)[^;]*'popup','photo_static'/)
 })
+
+test('Admin energy-chain cards override per field and keep the default layout', () => {
+  const card = { name: 'Tấm pin', stage: 'Đón nắng', description: '', action: '', image: '' }
+  assert.equal(isPublicHomePayload({ ...good, energyChain: [card] }), true)
+  assert.equal(isPublicHomePayload({ ...good, energyChain: Array(6).fill(card) }), false)
+  assert.equal(isPublicHomePayload({ ...good, energyChain: [{ ...card, image: 'https://outside.test/a.jpg' }] }), false)
+  assert.match(homeCatalog, /title: admin\?\.name \|\| category\?\.name \|\| slot\.name/)
+  assert.match(homeCatalog, /description: admin\?\.description \|\| slot\.description/)
+  assert.match(homeCatalog, /\.chain-title \{[^}]*-webkit-line-clamp: 2/)
+  assert.match(homeCatalog, /\.chain-desc \{[^}]*-webkit-line-clamp: 3/)
+  assert.match(homePreview, /:energy-chain="home\.energyChain"/)
+})

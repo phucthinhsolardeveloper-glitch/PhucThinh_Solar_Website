@@ -161,7 +161,8 @@ test('clicking a hover-open catalog menu pins it instead of immediately closing 
 
 test('catalog benefit rail uses consistent stroke icons instead of platform-dependent glyphs', () => {
   const masthead = read('components/catalog/CatalogMasthead.vue')
-  assert.equal((masthead.match(/<CatalogMenuIcon/g) || []).length, 4)
+  assert.match(masthead, /<CatalogMenuIcon[^>]*:name="cell\.icon"/)
+  assert.deepEqual([...masthead.matchAll(/\{ icon: '([a-z]+)'/g)].map((match) => match[1]), ['light', 'cog', 'shield', 'truck'])
   assert.doesNotMatch(masthead, /aria-hidden="true">[✦⚙✓↗]</)
 })
 

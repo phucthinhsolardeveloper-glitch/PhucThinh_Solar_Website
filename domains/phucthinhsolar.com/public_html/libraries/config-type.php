@@ -6,7 +6,7 @@
             "photo" => array("catalog-campaign", "product-category-hero"),
             // "tags" => array("san-pham"),
             // "static" => array("su-menh","gioi-thieu","tom-tat-gioi-thieu"),
-            "news" => array("cam-ket"),
+            "news" => array("cam-ket", "catalog-benefit", "quick-search"),
             // "photo" => array("chungnhan")
         ),
         "Chiến dịch hiển thị" => array(
@@ -33,7 +33,7 @@
                khối khác của trang chủ (danh mục sản phẩm, quy trình, dự án,
                thương hiệu) đều dùng lại Admin sẵn có ở nhóm khác, không lặp
                shortcut ở đây. */
-            "news" => array("home-about", "home-about-point"),
+            "news" => array("home-about", "home-about-point", "home-energy-chain"),
             "photo" => array("hero-carousel", "home-campaign"),
             "shortcut" => array(
                 array(
@@ -48,6 +48,7 @@
                Static su-menh cũ không dùng vì chứa dữ liệu demo legacy. */
             "news" => array("lich-su","about-team","about-principle","ly-do-chon-chung-toi","su-menh"),
             "photo" => array("chungnhan","about-cta"),
+            "photo_static" => array("about-showroom"),
             "shortcut" => array(
                 array(
                     "title" => "Xem trang Giới thiệu",

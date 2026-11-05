@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import type { PublicHomePayload, PublicHomeCategory } from '#shared/contracts/public-home'
+import type { PublicHomePayload, PublicHomeCategory, PublicHomeEnergyCard } from '#shared/contracts/public-home'
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   categories: PublicHomePayload['categories']
   campaigns: PublicHomePayload['campaigns']
-}>()
+  energyChain?: PublicHomeEnergyCard[]
+}>(), { energyChain: () => [] })
 
 // Ordered along the real energy chain: collect → convert → store → use.
 const slots = [
@@ -66,12 +67,32 @@ const slots = [
 ] as const
 
 type SlotKey = typeof slots[number]['key']
-type HomeCategorySlot = typeof slots[number] & { category: PublicHomeCategory | undefined }
+type HomeCategorySlot = Omit<typeof slots[number], 'stage' | 'name' | 'description' | 'action' | 'image' | 'position'> & {
+  category: PublicHomeCategory | undefined
+  title: string
+  stage: string
+  description: string
+  action: string
+  image: string
+  position: string
+}
 
-const chain = computed<HomeCategorySlot[]>(() => slots.map((slot) => ({
-  ...slot,
-  category: props.categories.find((item) => slot.needles.some((needle) => item.slug.toLowerCase().includes(needle))),
-})))
+// Admin "Trang chủ - Chuỗi năng lượng" overrides card N field by field; blanks keep the defaults.
+const adminImage = (src: string) => /^\/upload\/news\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|webp)$/i.test(src) ? `/thumbs/1200x900x1${src}` : src
+const chain = computed<HomeCategorySlot[]>(() => slots.map((slot, index) => {
+  const admin = props.energyChain[index]
+  const category = props.categories.find((item) => slot.needles.some((needle) => item.slug.toLowerCase().includes(needle)))
+  return {
+    ...slot,
+    category,
+    title: admin?.name || category?.name || slot.name,
+    stage: admin?.stage || slot.stage,
+    description: admin?.description || slot.description,
+    action: admin?.action || slot.action,
+    image: admin?.image ? adminImage(admin.image) : slot.image,
+    position: admin?.image ? 'center' : slot.position,
+  }
+}))
 
 const activeKey = ref<SlotKey>('panel')
 const activeIndex = computed(() => chain.value.findIndex((slot) => slot.key === activeKey.value))
@@ -115,7 +136,7 @@ const links = useMigrationLinks()
           <a
             class="chain-card group"
             :href="links.generic(slot.category?.url || slot.href)"
-            :aria-label="`${slot.stage}: ${slot.category?.name || slot.name}`"
+            :aria-label="`${slot.stage}: ${slot.title}`"
             @focus="activeKey = slot.key"
           >
             <img
@@ -134,7 +155,7 @@ const links = useMigrationLinks()
             </span>
 
             <span class="chain-body">
-              <strong class="chain-title">{{ slot.category?.name || slot.name }}</strong>
+              <strong class="chain-title">{{ slot.title }}</strong>
               <span class="chain-desc">{{ slot.description }}</span>
               <span class="chain-cta">{{ slot.action }} <span aria-hidden="true">→</span></span>
             </span>
@@ -250,11 +271,15 @@ const links = useMigrationLinks()
   transform: none;
   transition-delay: 0.22s;
 }
-.chain-title { font-size: clamp(24px, 2.2vw, 36px); font-weight: 900; line-height: 1.08; letter-spacing: -0.03em; }
-.chain-desc { font-size: 15.5px; line-height: 1.6; color: rgb(226 232 240); }
+.chain-title { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 2; font-size: clamp(24px, 2.2vw, 36px); font-weight: 900; line-height: 1.08; letter-spacing: -0.03em; }
+.chain-desc { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 3; font-size: 15.5px; line-height: 1.6; color: rgb(226 232 240); }
 .chain-cta {
   margin-top: 6px;
   align-self: flex-start;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   border-bottom: 2px solid var(--color-gold-500);
   padding-bottom: 4px;
   font-size: 15px;

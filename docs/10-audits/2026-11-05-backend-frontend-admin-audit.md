@@ -61,18 +61,30 @@ thanh toán (`hinh-thuc-thanh-toan`), SEO từng trang.
 **Mới nối trong đợt này:** popup quảng cáo trang chủ và favicon (trước đó Admin
 bật nhưng Nuxt bỏ qua; popup đang bật ở bản clone production).
 
-### Còn viết cứng trong Nuxt — đề xuất
+### Đã chuyển sang Admin (giữ nguyên layout)
 
-| Vị trí | Nội dung | Đề xuất |
+Nguyên tắc: ô để trống dùng nội dung mặc định cũ; server cắt chữ theo ranh giới
+từ, frontend giới hạn dòng/`truncate`; ảnh giữ đúng khung. Đo chiều cao trước/
+sau ở 320/390/768/1440 khớp từng pixel, kể cả khi nhập chữ dài quá khuyến nghị.
+
+| Admin | Điều khiển | Quyền |
 |---|---|---|
-| Trang chủ `HomeCatalog` | 5 mắt xích năng lượng: tên, mô tả, ảnh | Lấy tên/ảnh từ danh mục sản phẩm Admin (ghép qua slug sẵn có), giữ text hiện tại làm fallback |
-| Trang chủ `EnergyStageSection` | Minh họa dòng năng lượng | Giữ cứng (minh họa thiết kế, không phải nội dung marketing) |
-| `CatalogMasthead` | 4 cam kết (Tư vấn, Hỗ trợ kỹ thuật, Chính sách, Giao hàng toàn quốc) | Đưa vào loại `cam-ket` có sẵn trong Admin |
-| `SiteHeader` | Chip tìm nhanh | Lấy từ từ khóa Admin hoặc danh mục nổi bật |
-| `SolutionFinder` | Lựa chọn "nơi dùng/mục tiêu" và ánh xạ sang thẻ giải pháp | Thêm trường phân loại cho bài giải pháp trong Admin |
-| `HomeContact`, modal tư vấn | Danh sách chủ đề và gợi ý | Giữ cứng (microcopy form) hoặc gom vào cấu hình chung |
-| Trang Giới thiệu | Ảnh showroom, tiêu đề "Thương hiệu đồng hành" | Chuyển ảnh showroom sang loại ảnh Admin |
-| Admin `banner-top`, watermark tin tức | Nuxt chưa đọc | Chỉ làm khi chủ project muốn dùng lại (bản clone không có banner-top đang bật; watermark đang tắt) |
+| Trang chủ › Trang chủ - Chuỗi năng lượng (`home-energy-chain`) | 5 thẻ theo STT: tiêu đề, nhãn bước, mô tả, chữ trên nút, ảnh 1448x1086 | migration 075 |
+| Sản phẩm › Danh mục - Dải lợi ích (`catalog-benefit`) | 4 ô dưới đầu trang Danh mục và Tìm kiếm (icon theo vị trí) | migration 075 |
+| Sản phẩm › Tìm kiếm - Từ khóa nhanh (`quick-search`) | Tối đa 7 chip trong ô tìm kiếm header | migration 075 |
+| Trang Giới thiệu › Giới thiệu - Ảnh showroom (`about-showroom`) | Ảnh showroom khối Lịch sử | migration 075 |
+
+Sau khi deploy: chạy `php migrations/075_grant_nuxt_admin_content_permissions.php`
+(xem trước) rồi `--apply`; người đang đăng nhập Admin cần đăng nhập lại.
+
+### Còn viết cứng — có chủ đích
+
+| Vị trí | Lý do |
+|---|---|
+| Tiêu đề/đoạn mở đầu khối chuỗi năng lượng, `EnergyStageSection` | Thành phần art direction của trang chủ đã duyệt |
+| `SolutionFinder` (lựa chọn nơi dùng/mục tiêu và ánh xạ sang giải pháp) | Là logic gợi ý; cần thiết kế trường phân loại cho bài giải pháp trước khi đưa vào Admin |
+| Chủ đề form tư vấn, gợi ý nhập | Microcopy của form |
+| Admin `banner-top`, watermark tin tức | Nuxt chưa đọc; bản clone production không bật banner-top, watermark đang tắt |
 
 Microcopy giao diện (nhãn form, nút, thông báo lỗi, aria-label) không cần đưa
 vào Admin.

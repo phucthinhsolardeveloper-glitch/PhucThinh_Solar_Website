@@ -13,6 +13,7 @@ export interface PublicAboutPayload {
   compass: { title: string; items: PublicAboutTextItem[] }
   certificates: { title: string; intro: string; items: Array<{ id: number; name: string; description: string; image: string; href: string | null; featured: boolean }> }
   cta: { title: string; description: string; image: string; href: string | null; buttonLabel: string; hotline: { label: string; text: string; tel: string } | null; zaloUrl: string | null }
+  showroomImage?: string
   labels: { story: string; history: string; people: string; compass: string; certificates: string; timeline: string; certLabel: string; certAll: string; certDetail: string }
 }
 
@@ -38,6 +39,7 @@ export function isPublicAboutPayload(value: unknown): value is PublicAboutPayloa
   if (!isRecord(value) || value.schemaVersion !== 2 || value.locale !== 'vi' || value.path !== '/gioi-thieu/' || !isText(value.title, false)) return false
   if (value.seo !== undefined && !isPublicSeoMetadata(value.seo, ['/upload/seopage/'])) return false
   const story = value.story; if (!isRecord(story) || !['eyebrow', 'title', 'intro', 'body'].every((key) => isText(story[key])) || !isImage(story.image)) return false
+  if (value.showroomImage !== undefined && value.showroomImage !== '' && !isImage(value.showroomImage)) return false
   const history = value.history; if (!isRecord(history) || !isText(history.title) || !isImage(history.image) || !Array.isArray(history.items) || !history.items.every(isTimelineItem)) return false
   const people = value.people; if (!isRecord(people) || !['eyebrow', 'title', 'intro', 'body'].every((key) => isText(people[key])) || !isImage(people.image) || !Array.isArray(people.principles) || !people.principles.every(isTextItem)) return false
   for (const key of ['trust', 'compass']) { const section = value[key]; if (!isRecord(section) || !isText(section.title) || !Array.isArray(section.items) || !section.items.every(isTextItem)) return false }

@@ -48,6 +48,8 @@ try
     $favicon = $loadOne("select photo from #_photo where type=? and act=? and find_in_set('hienthi',status) limit 0,1", array('favicon','photo_static'));
     $logoFooter = $loadOne("select photo from #_photo where type=? and act=? limit 0,1", array('logo-footer','photo_static'));
     $trustBadge = $loadOne("select photo,link from #_photo where type=? and act=? and find_in_set('hienthi',status) limit 0,1", array('bct','photo_static'));
+    $benefitRows = $loadRows("select namevi,descvi from #_news where type=? and find_in_set('hienthi',status) order by numb,id desc limit 0,4", array('catalog-benefit'));
+    $quickRows = $loadRows("select namevi from #_news where type=? and find_in_set('hienthi',status) order by numb,id desc limit 0,7", array('quick-search'));
     if(function_exists('closeSessionWrite')) closeSessionWrite();
 
     $data = ptsPublicSitePayload(is_array($setting) ? $setting : array(), is_array($optsetting) ? $optsetting : array(), $productLists);
@@ -65,6 +67,18 @@ try
         'productLists' => $productLists, 'productCats' => $productCats, 'productItems' => $productItems, 'productSubs' => $productSubs,
         'solutionRows' => $solutionRows, 'newsLists' => $newsLists, 'newsCats' => $newsCats, 'newsItems' => $newsItems, 'newsSubs' => $newsSubs
     )));
+    $plain = static function($value, $limit) {
+        $value = trim(preg_replace('/\s+/u', ' ', strip_tags(html_entity_decode((string)$value, ENT_QUOTES, 'UTF-8'))));
+        if(mb_strlen($value, 'UTF-8') <= $limit) return $value;
+        $cut = mb_substr($value, 0, $limit, 'UTF-8');
+        $space = strrpos($cut, ' ');
+        if($space !== false && $space > strlen($cut) / 2) $cut = substr($cut, 0, $space);
+        return rtrim($cut, " ,.;:-").'…';
+    };
+    $data['catalogBenefits'] = array();
+    foreach($benefitRows as $row) $data['catalogBenefits'][] = array('title' => $plain($row['namevi'] ?? '', 60), 'description' => $plain($row['descvi'] ?? '', 90));
+    $data['quickSearches'] = array();
+    foreach($quickRows as $row) { $term = $plain($row['namevi'] ?? '', 48); if($term !== '') $data['quickSearches'][] = $term; }
     $faviconUrl = ptsPublicNavAsset(isset($favicon['photo']) ? $favicon['photo'] : '', UPLOAD_PHOTO_L, ROOT);
     if($faviconUrl !== '' && isset($data['brand']) && is_array($data['brand'])) $data['brand']['favicon'] = $faviconUrl;
     echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);

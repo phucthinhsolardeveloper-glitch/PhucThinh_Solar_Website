@@ -44,7 +44,9 @@ const brandLogoSrc = computed(() => {
 
 const searchOpen = ref(false)
 const searchKeyword = ref('')
-const popularSearchTerms = ['Đèn đường', 'Blue Carbon', 'LONGi', 'SolaX', 'Pin lưu trữ', 'Jindian', 'Bơm nước']
+const defaultSearchTerms = ['Đèn đường', 'Blue Carbon', 'LONGi', 'SolaX', 'Pin lưu trữ', 'Jindian', 'Bơm nước']
+// Admin "Tìm kiếm - Từ khóa nhanh" replaces the defaults when it has visible terms.
+const popularSearchTerms = computed(() => props.site.quickSearches?.length ? props.site.quickSearches : defaultSearchTerms)
 
 async function selectPopularSearch(term: string) {
   searchKeyword.value = term
@@ -826,7 +828,7 @@ onBeforeUnmount(() => {
                 v-for="term in popularSearchTerms"
                 :key="term"
                 type="button"
-                class="min-h-9 cursor-pointer rounded-full border border-slate-200 bg-white px-3.5 text-[13px] font-semibold text-navy-800 transition-colors hover:border-gold-500 hover:bg-gold-50 hover:text-navy-950"
+                class="min-h-9 max-w-[220px] cursor-pointer truncate rounded-full border border-slate-200 bg-white px-3.5 text-[13px] font-semibold text-navy-800 transition-colors hover:border-gold-500 hover:bg-gold-50 hover:text-navy-950"
                 @click="selectPopularSearch(term)"
               >
                 {{ term }}

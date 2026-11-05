@@ -53,6 +53,38 @@ function ptsPublicHomePopup($row)
     );
 }
 
+/* Safety cap for Admin text: cuts on a word boundary and marks the cut; the
+   frontend still clamps visually so long copy cannot move the layout. */
+function ptsHomeWordCut($value, $limit)
+{
+    $value = (string)$value;
+    $length = function_exists('mb_strlen') ? mb_strlen($value, 'UTF-8') : strlen($value);
+    if($length <= $limit) return $value;
+    $cut = function_exists('mb_substr') ? mb_substr($value, 0, $limit, 'UTF-8') : substr($value, 0, $limit);
+    $space = strrpos($cut, ' ');
+    if($space !== false && $space > strlen($cut) / 2) $cut = substr($cut, 0, $space);
+    return rtrim($cut, " ,.;:-").'…';
+}
+
+/* Admin "Trang chủ - Chuỗi năng lượng": position N overrides card N; empty
+   fields stay empty so the frontend keeps its default copy for them. */
+function ptsPublicHomeEnergyChain($rows)
+{
+    $chain = array();
+    $cut = static function($value, $limit) { return ptsHomeWordCut(ptsHomeText($value), $limit); };
+    foreach((array)$rows as $row) {
+        if(!is_array($row) || count($chain) >= 5) continue;
+        $chain[] = array(
+            'name' => $cut($row['namevi'] ?? '', 80),
+            'stage' => $cut($row['title_indexvi'] ?? '', 28),
+            'description' => $cut($row['descvi'] ?? '', 220),
+            'action' => $cut($row['solieu'] ?? '', 40),
+            'image' => ptsHomePath($row['photo'] ?? '', defined('UPLOAD_NEWS_L') ? UPLOAD_NEWS_L : 'upload/news/')
+        );
+    }
+    return $chain;
+}
+
 function ptsPublicHomePayload(array $input)
 {
     return array(
@@ -75,6 +107,7 @@ function ptsPublicHomePayload(array $input)
         'contact' => $input['contact'],
         'productGroups' => $input['productGroups'],
         'popup' => ptsPublicHomePopup($input['popup'] ?? null),
+        'energyChain' => ptsPublicHomeEnergyChain($input['energyChain'] ?? array()),
         'summary' => array(
             'hero' => count($input['hero']),
             'categories' => count($input['categories']),
