@@ -2273,12 +2273,17 @@
 			if(function_exists('closeSessionWrite')) closeSessionWrite();
 
 			$webp = false;
+			$nativeWebp = false;
 			$t = 3600*24*30;
 
-			if(strpos($src, ".webp") !== false)
+			/* "ten.jpg.webp" asks for a WebP rendition of ten.jpg; "ten.webp" is a
+			   WebP original and must keep its extension. */
+			if(substr($src, -5) === '.webp')
 			{
 				$webp = true;
-				$src = str_replace(".webp", "", $src);
+				$withoutSuffix = substr($src, 0, -5);
+				if(file_exists(str_replace("%20", " ", $withoutSuffix))) $src = $withoutSuffix;
+				else $nativeWebp = true;
 			}
 
 			$this->cleanupGeneratedImagesIfDue(UPLOAD_TEMP_L, 3600, 300);
@@ -2361,6 +2366,13 @@
 					$image = @imagecreatefromgif($image_url);
 					$func='imagegif';
 					$mime_type = 'png';
+					break;
+
+				case 'image/webp':
+					if(!function_exists('imagecreatefromwebp')) die("UNKNOWN IMAGE TYPE: $image_url");
+					$image = @imagecreatefromwebp($image_url);
+					$func='imagewebp';
+					$mime_type = 'webp';
 					break;
 
 				default: die("UNKNOWN IMAGE TYPE: $image_url");
@@ -2672,7 +2684,7 @@
 			{
 				if(!isset($_GET['preview']))
 				{
-					$generatedPath = $upload_dir.$image_name.($serveWebp ? '.webp' : '');
+					$generatedPath = $upload_dir.$image_name.($serveWebp && !$nativeWebp ? '.webp' : '');
 					$tempGeneratedPath = $generatedPath.'.tmp-'.getmypid().'-'.uniqid('', true);
 					if($serveWebp) $written = @imagewebp($canvas, $tempGeneratedPath, $webpQuality);
 					elseif($func == 'imagejpeg') $written = @$func($canvas, $tempGeneratedPath, 100);
