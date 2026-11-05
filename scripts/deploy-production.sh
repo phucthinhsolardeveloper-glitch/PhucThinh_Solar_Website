@@ -93,6 +93,7 @@ step "Kiểm tra Git và phạm vi release"
 [ -z "$(git status --porcelain --untracked-files=normal)" ] || fail "working tree chưa sạch; commit hoặc cất thay đổi trước."
 branch="$(git branch --show-current)"
 [ -n "$branch" ] || fail "đang ở detached HEAD."
+[ "$branch" = "master" ] || fail "production chỉ deploy từ master; hãy hợp nhất nhánh đã duyệt, push master rồi chạy lại."
 upstream="$(git rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>/dev/null || true)"
 [ -n "$upstream" ] || fail "nhánh $branch chưa có upstream; push nhánh trước khi deploy."
 commit="$(git rev-parse HEAD)"
@@ -236,9 +237,9 @@ for path in / /san-pham/ /san-pham/den-pha-nang-luong-mat-troi-jindian-jd-t300-3
     echo "PASS: $site_url$path"
 done
 
-step "Playwright production: mobile commerce, ngôn ngữ và typography"
+step "Playwright production: Nuxt public routes, media and Product JSON-LD"
 (cd tools/visual-tests && PTS_VISUAL_BASE_URL="$site_url" npx playwright test \
-    tests/mobile-commerce-experience.spec.js tests/typography-system.spec.js --workers=1)
+    tests/public-pages.spec.js --workers=1)
 
 step "Quét lỗi mới trong log và xác nhận image/health PHP + Nuxt"
 remote "cd $stack_root && web_bad=\$(docker compose logs --since=$deploy_started_at web 2>&1 | grep -Eci 'PHP (Fatal|Warning)|Uncaught|AH[0-9]+:error|HTTP/[0-9.]+ 5[0-9][0-9]' || true); nuxt_bad=\$(docker compose logs --since=$deploy_started_at nuxt 2>&1 | grep -Eci 'ERROR|FATAL|Unhandled|HTTP/[0-9.]+ 5[0-9][0-9]' || true); proxy_bad=\$(docker compose logs --since=$deploy_started_at proxy 2>&1 | grep -Eci 'level=(error|fatal)|status.:5[0-9][0-9]' || true); web_container=\$(docker compose ps -q web); nuxt_container=\$(docker compose ps -q nuxt); web_status=\$(docker inspect --format '{{if .State.Health}}{{.State.Health.Status}}{{else}}{{.State.Status}}{{end}}' \$web_container); nuxt_status=\$(docker inspect --format '{{if .State.Health}}{{.State.Health.Status}}{{else}}{{.State.Status}}{{end}}' \$nuxt_container); echo ERROR_SCAN_web=\$web_bad ERROR_SCAN_nuxt=\$nuxt_bad ERROR_SCAN_proxy=\$proxy_bad PHP_HEALTH=\$web_status NUXT_HEALTH=\$nuxt_status; test \$web_bad -eq 0; test \$nuxt_bad -eq 0; test \$proxy_bad -eq 0; test \"\$web_status\" = healthy; test \"\$nuxt_status\" = healthy; test \"\$(cat state/current-image)\" = \"phucthinhsolar-web:$release_id\"; test \"\$(cat state/current-nuxt-image)\" = \"phucthinhsolar-nuxt:$release_id\""

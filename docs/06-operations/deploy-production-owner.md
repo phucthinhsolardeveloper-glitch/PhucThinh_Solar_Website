@@ -50,10 +50,16 @@ thay đổi, truyền `PTS_DEPLOY_HOST`, `PTS_DEPLOY_SSH_KEY`, `PTS_STACK_ROOT` 
 
 ## Deploy một lệnh
 
-Trước hết commit và push thay đổi. Script cố ý từ chối working tree bẩn hoặc
-commit chưa có trên remote để release luôn truy ngược được. Phạm vi SAFE/FAST
-được tính từ image đang active trên VPS tới `HEAD`, nên chuỗi nhiều commit không
-làm bỏ sót file chưa deploy.
+Production luôn phát hành từ `master`. Trước hết hợp nhất nhánh đã duyệt vào
+`master`, chạy kiểm tra trên commit đó, rồi commit và push. Script cố ý từ chối
+nhánh khác, working tree bẩn hoặc commit chưa có trên remote để release luôn
+truy ngược được. Phạm vi SAFE/FAST được tính từ image đang active trên VPS tới
+`HEAD`, nên chuỗi nhiều commit không làm bỏ sót file chưa deploy.
+
+Không hợp nhất pilot còn chờ duyệt vào `master` chỉ để dọn nhánh. Giữ pilot ở
+nhánh riêng hoặc môi trường preview cho tới khi owner chọn rõ vị trí tích hợp
+production; các route `/migration-*` bị Caddy chặn khỏi Nuxt public theo thiết
+kế.
 
 Một số hotfix giao diện cũ có thể dùng image tag content-hash thay vì Git SHA
 (ví dụ `028bcc280b0f`). Script sẽ đọc `parent_commit` từ `RELEASE.txt` còn lưu
