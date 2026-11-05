@@ -170,6 +170,9 @@ export default defineNuxtConfig({
     '/migration-video-preview': {
       headers: { 'X-Robots-Tag': 'noindex, nofollow, noarchive' },
     },
+    '/migration-solar-cinema-preview': {
+      headers: { 'X-Robots-Tag': 'noindex, nofollow, noarchive' },
+    },
     '/experience-design-system': {
       headers: { 'X-Robots-Tag': 'noindex, nofollow, noarchive' },
     },
