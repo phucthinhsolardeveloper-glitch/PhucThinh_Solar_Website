@@ -73,6 +73,13 @@ export default defineNuxtConfig({
    * public route tương lai có tiền tố trùng tên.
    */
   routeRules: {
+    // Short shared cache for public read-only PHP DTOs (no cookies forwarded, bounded cache keys).
+    // Session/token routes (cart, checkout, lead-form, order-thanks) and free-text queries
+    // (search, catalog, news, route resolve) are deliberately excluded.
+    ...Object.fromEntries([
+      'site', 'home', 'about', 'dealer', 'contact', 'solutions', 'projects', 'gallery', 'video',
+      'policy-detail', 'product-detail', 'solution-detail', 'project-detail', 'news-detail', 'gallery-detail',
+    ].map((name) => [`/_migration/${name}`, { cache: { maxAge: 60, swr: true } }])),
     '/migration-preview': {
       headers: { 'X-Robots-Tag': 'noindex, nofollow, noarchive' },
     },
