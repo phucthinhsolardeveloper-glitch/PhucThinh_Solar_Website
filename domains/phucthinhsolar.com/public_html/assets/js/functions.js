@@ -151,46 +151,6 @@ window.addEventListener('popstate', function() {
     updateProductFilterResetVisibility();
     doSearch(options, true);
 });
-function doSearchProduct(options) {
-
-    if(!options) options = {};
-
-    var url = '';
-    var sortby = options['sortby'];
-    $.each(options, function(k, v) {
-
-        url += '?'+k+'='+v;
-
-    });
-
-    // url = url.substr(1);
-
-    $.ajax({
-
-        url: 'api/search_product.php',
-
-        type: 'GET',
-
-        dataType: 'json',
-        data: {sortby: sortby},
-
-        success: function(data){
-
-            $('#search-body').html(data.res);
-
-            $('#search-page').addClass('show-ajax');
-
-            //$('#search-page').html(data.page);
-
-            GA_FRAMEWORK.Lazys();
-
-        }
-
-    });
-
-    
-
-}
 function getLen(str)
 {
     return (/^\s*$/.test(str)) ? 0 : str.length;
@@ -541,43 +501,6 @@ function deleteCart(obj)
         error: function(xhr){
             var message = (xhr.responseJSON && xhr.responseJSON.error) ? xhr.responseJSON.error : 'Không thể xóa sản phẩm. Vui lòng thử lại.';
             showNotify(message, 'Thông báo', 'error');
-            holdonClose();
-        }
-    });
-}
-
-function loadDistrict(id=0)
-{
-    $.ajax({
-        type: 'post',
-        url: 'api/district.php',
-        data: {
-            id_city: id
-        },
-        beforeSend: function(){
-            holdonOpen();
-        },
-        success: function(result){
-            $(".select-district").html(result);
-            $(".select-ward").html('<option value="">'+LANG['ward']+'</option>');
-            holdonClose();
-        }
-    });
-}
-
-function loadWard(id=0)
-{
-    $.ajax({
-        type: 'post',
-        url: 'api/ward.php',
-        data: {
-            id_district: id
-        },
-        beforeSend: function(){
-            holdonOpen();
-        },
-        success: function(result){
-            $(".select-ward").html(result);
             holdonClose();
         }
     });

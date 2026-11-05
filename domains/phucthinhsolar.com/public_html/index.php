@@ -36,7 +36,6 @@
     $statistic = new Statistic($d, $cache);
     $cart = new Cart($d);
     $detect = new MobileDetect();
-    $addons = new AddonsOnline();
     $css = new CssMinify($config['website']['debug-css'], $func);
     $js = new JsMinify($config['website']['debug-js'], $func);
 

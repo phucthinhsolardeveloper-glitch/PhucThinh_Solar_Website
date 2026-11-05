@@ -5,12 +5,18 @@ Các endpoint là PHP file, không phải REST API versioned và không có Open
 - `api/cart.php`: POST command add/update/delete/ship/popup; session cart; JSON hoặc HTML fragment.
 - `api/comment.php`: `GET limitLists`, `GET limitReplies`, `POST add` qua `Comments`.
 - `api/fillter_service.php`: GET filter/sort/pagination, trả HTML fragment; dynamic brand/origin list cần hardening.
-- `api/product.php`, `product2.php`, `product3.php`, `search_product.php`: product fragments/search.
-- `api/color.php`, `video.php`: product media fragments.
+- `api/product3.php`: fragment sản phẩm theo danh mục cho `.paging-prolist` trên storefront PHP.
 - `api/ward-city.php`: danh sách phường/xã theo tỉnh/TP cho checkout hai cấp.
-  `api/district.php` và `ward.php` vẫn giữ để tương thích màn hình legacy chưa
-  chuyển dữ liệu.
-- `api/addons.php`: lazy-loaded blocks.
+- `api/payment_vnpay.php`: return/IPN của VNPay (cấu hình tại Admin > Tích hợp).
+- `api/shipping_quote.php`: báo phí vận chuyển cho checkout PHP và Nuxt.
+- `api/pts_v1_*.php`: DTO JSON công khai cho Nuxt (qua Nitro `/_migration/*`, riêng
+  đánh giá sản phẩm gọi thẳng `api/pts_v1_review.php`).
+- Đã gỡ ngày 2026-11-05 vì không còn DOM/caller nào trên storefront PHP, Admin hay
+  Nuxt: `api/product.php`, `product2.php`, `search_product.php`, `color.php`,
+  `video.php`, `district.php`, `ward.php`, `addons.php` cùng class `AddonsOnline`
+  và các handler JS tương ứng (`loadDistrict`, `loadWard`, `doSearchProduct`,
+  `GA_FRAMEWORK.loadTab`, khối video/màu/phân trang chết). Bằng chứng và rollback
+  ở `docs/10-audits/2026-11-05-backend-frontend-admin-audit.md`.
 - `administrator/api/*`: login, upload, status/order/category/component/sort/delete helpers; dựa vào CMS session/bootstrap theo từng file.
 
 Response thành công vẫn có chủ ý gồm JSON hoặc HTML fragment theo consumer legacy. Toàn bộ lỗi Admin API đã chuẩn hóa dần về envelope tương thích ngược `ok/message/code/data`; lỗi hết phiên, CSRF/quyền, validation, endpoint legacy bị khóa và exception ngoài dự kiến đều có HTTP status + mã lỗi rõ ràng. Integration test dùng một assertion schema chung trên các nhóm lỗi đại diện. Trước khi tạo React/static frontend, cần quyết định giữ HTML-fragment AJAX hay xây JSON API có version/auth/validation thống nhất.

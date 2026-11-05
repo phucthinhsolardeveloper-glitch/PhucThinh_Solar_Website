@@ -14,6 +14,8 @@ class ProjectHubFixtureDb {
     public $rows = array();
     public function rawQuery($sql, $params) { return isset($this->rows[$params[0]]) ? $this->rows[$params[0]] : array(); }
 }
+class ProjectHubFixtureFunc { public function getThumbUrl($size, $path) { return 'thumbs/'.$size.'/'.$path; } }
+$func = new ProjectHubFixtureFunc();
 $d = new ProjectHubFixtureDb(); $lang = 'vi'; $sluglang = 'slugvi'; $optsetting = array(); $paging = '';
 foreach(array(0, 4) as $count) {
     $d->rows = array(

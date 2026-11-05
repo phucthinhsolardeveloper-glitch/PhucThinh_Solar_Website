@@ -38,7 +38,7 @@ Các file lớn đã thấy gồm MP4 khoảng 8–16 MB, PNG nội dung khoản
 
 - Sản phẩm: `product.video_url` nhận YouTube và render trong chi tiết sản phẩm.
 - Bài viết/Giải pháp/Dự án: gallery `kind=man`, `val=video`, mở qua Fancybox/Photobox tùy template.
-- Thư viện Video legacy: `sources/video.php`, `templates/video/video_tpl.php`, `api/video.php` và addon fotorama đọc `photo.link_video`; menu/config hiện có phần bị tắt nhưng endpoint/source còn tồn tại.
+- Thư viện Video legacy: `sources/video.php`, `templates/video/video_tpl.php`, đọc `photo.link_video` (`api/video.php` và addon fotorama đã gỡ 2026-11-05); menu/config hiện có phần bị tắt nhưng endpoint/source còn tồn tại.
 - MP4 upload: `photo.video` và video feedback/comment dùng file trong upload; cần retest MIME, size, quyền ghi và playback trên staging trước khi archive hoặc bật lại UI.
 - Slider/core-value có cột `video`; nguồn trang chủ/allpage vẫn select field này, vì vậy không được kết luận không dùng chỉ vì một template không có thẻ `<video>`.
 

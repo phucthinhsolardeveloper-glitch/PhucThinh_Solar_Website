@@ -428,32 +428,6 @@ GA_FRAMEWORK.Wows = function(){
 
 /* Pagings */
 GA_FRAMEWORK.Pagings = function(){
-    /* Products */
-    if(isExist($(".paging-product")))
-    {
-        loadPaging("api/product.php?perpage=12",'.paging-product');
-    }
-
-    /* Categories */
-    if(isExist($(".paging-product-category")))
-    {
-        $(".paging-product-category").each(function(){
-            var list = $(this).data("list");
-            loadPaging("api/product2.php?perpage=16&idList="+list,'.paging-product-category');
-        })
-        /* Rail chỉ có một vùng kết quả AJAX nên không cần UIkit switcher.
-           Quản lý active state trực tiếp, tránh stopImmediatePropagation của
-           UIkit làm tab đổi màu nhưng nội dung vẫn thuộc danh mục trước. */
-        $(".get-product-category").on('click.ptsProductCategory', function(event) {
-            event.preventDefault();
-            var trigger = $(this);
-            var list = trigger.data("list");
-            trigger.attr('aria-pressed', 'true').closest('li').addClass('uk-active')
-                .siblings().removeClass('uk-active').find('.get-product-category').attr('aria-pressed', 'false');
-            loadPaging("api/product2.php?perpage=16&idList="+list,'.paging-product-category');
-        });
-    }
-
     if(isExist($(".paging-prolist")))
     {
         $(".paging-prolist").each(function(){
@@ -999,34 +973,6 @@ GA_FRAMEWORK.OwlPage = function(){
 
 /* Dom Change */
 GA_FRAMEWORK.DomChange = function(){
-    /* Video Fotorama */
-    $('#video-fotorama').one('DOMSubtreeModified', function(){
-        $("#fotorama-videos").fotorama();
-    });
-
-    /* Video Select */
-    $('#video-select').one('DOMSubtreeModified', function(){
-        $('.listvideos').change(function() 
-        {
-            var id = $(this).val();
-            $.ajax({
-                url:'api/video.php',
-                type: "POST",
-                dataType: 'html',
-                data: {
-                    id: id
-                },
-                beforeSend: function(){
-                    holdonOpen();
-                },
-                success: function(result){
-                    $('.video-main').html(result);
-                    holdonClose();
-                }
-            });
-        });
-    });
-
     /* Chat Facebook */
     $('#messages-facebook').one('DOMSubtreeModified', function(){
         $(".js-facebook-messenger-box").on("click", function(){
@@ -1176,45 +1122,6 @@ GA_FRAMEWORK.Cart = function(){
         });
     }
 
-    /* Colors */
-    if(isExist($(".color-pro-detail")))
-    {
-        $(".color-pro-detail input").click(function(){
-            $this = $(this).parents("label.color-pro-detail");
-            $parents = $this.parents(".attr-pro-detail");
-            $parents_detail = $this.parents(".grid-pro-detail");
-            $parents.find(".color-block-pro-detail").find(".color-pro-detail").removeClass("active");
-            $parents.find(".color-block-pro-detail").find(".color-pro-detail input").prop("checked",false);
-            $this.addClass("active");
-            $this.find("input").prop("checked",true);
-            var id_color = $parents.find(".color-block-pro-detail").find(".color-pro-detail input:checked").val();
-            var id_pro = $this.data('idproduct');
-
-            $.ajax({
-                url:'api/color.php',
-                type: "POST",
-                dataType: 'html',
-                data: {
-                    id_color: id_color,
-                    id_pro: id_pro
-                },
-                beforeSend: function(){
-                    holdonOpen();
-                },
-                success: function(result){
-                    if(result)
-                    {
-                        $parents_detail.find('.left-pro-detail').html(result);
-                        MagicZoom.refresh("Zoom-1");
-                        GA_FRAMEWORK.OwlData($('.owl-pro-detail'));
-                        GA_FRAMEWORK.Lazys();
-                    }
-                    holdonClose();
-                }
-            });
-        });
-    }
-
     /* Sizes */
     if(isExist($(".size-pro-detail")))
     {
@@ -1250,20 +1157,6 @@ GA_FRAMEWORK.Cart = function(){
         });
     }
 };
-GA_FRAMEWORK.loadTab = function () {
-    /* Categories */
-    if (isExist($("#load-product-tab"))) {
-        $("#load-product-tab").each(function () {
-            loadPaging("api/product.php?perpage=25", '#load-product-tab');
-        })
-    }
-    $(document).on('click', '#loadmore', function(event) {
-        var count = $(this).data("count");
-        var perpage = count+10;
-        loadPaging("api/product.php?perpage="+perpage, '#load-product-tab')
-    });
-};
-
 GA_FRAMEWORK.Toc = function(){
     if (isExist($(".toc-list")))
     {
@@ -1523,7 +1416,6 @@ GA_FRAMEWORK.ProductSubcategoryRail = function(){
 /* Ready */
 $(document).ready(function(){
     GA_FRAMEWORK.Lazys();
-    GA_FRAMEWORK.loadTab();
     GA_FRAMEWORK.Tools();
     GA_FRAMEWORK.Popup();
     // GA_FRAMEWORK.Wows();
