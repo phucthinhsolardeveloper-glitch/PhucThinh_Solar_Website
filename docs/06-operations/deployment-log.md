@@ -4,6 +4,24 @@ Mỗi lần thay đổi production phải thêm một mục mới, không ghi cr
 PII hoặc nội dung bí mật. Nếu deploy chỉ thay docs không rebuild image thì ghi rõ
 `docs-only` và lý do không cần runtime deploy.
 
+## 2026-11-05 — cân lại giỏ hàng, checkout và tải ảnh PDP
+
+- Release production: PHP/Nuxt `263faa84286e`. Cột tóm tắt commerce rộng
+  480px ở desktop; card dùng radius 10px; checkout ba cột trường thông tin ở
+  viewport rất rộng; giá sản phẩm nằm dưới tên để dễ đọc. Ảnh chính PDP dùng
+  rendition 960px, preload sớm và xử lý lỗi theo URL thumbnail thực tế.
+- Trước deploy: 509/509 test, typecheck, build và smoke PASS. Browser local
+  với sản phẩm CMS thật tại 390/1440/2048 không tràn ngang hay page error;
+  ảnh PDP mẫu 960px là 29 KB so với bản 1600px 63 KB.
+- Backup DB `20261105T135137Z-db`; xóa 115 page cache và 2 asset cache tái
+  sinh, không migration, không chạm upload/DB volume. Rollback image PHP/Nuxt
+  `b8c86f162ed4` qua `/srv/phucthinhsolar/scripts/rollback-release.sh`.
+- Deploy script dừng ở verify đầu do Caddy tạm báo 503 khi upstream Nuxt đổi
+  IP. Sau khi upstream phục hồi, verify-stack và schema preflight READY; browser
+  production tại 390/2048 xác nhận PDP, cart, checkout không lỗi JavaScript,
+  không tràn ngang. Log 1 phút sau ổn định không có lỗi mới. Cần xử lý khoảng
+  503 ngắn trong quy trình đổi image ở đợt hạ tầng riêng.
+
 ## 2026-11-05 — video CTA Giải pháp và hợp nhất release
 
 - Release production: PHP/Nuxt `b8c86f162ed4`. Gộp commit video CTA của nhánh
