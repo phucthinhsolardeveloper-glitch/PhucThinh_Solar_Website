@@ -50,14 +50,7 @@ function markMediaFailed(image: string) {
 function markDisplayedMediaFailed(element: HTMLImageElement | null) {
   if (!element || !import.meta.client) return
   const source = element.currentSrc || element.src
-  const image = props.media.find((candidate) => {
-    try {
-      return new URL(candidate, document.baseURI).href === source
-    } catch {
-      return false
-    }
-  })
-  if (image) markMediaFailed(image)
+  if (source === new URL(optimizedImage(selectedMedia.value, 960, 960), document.baseURI).href) markMediaFailed(selectedMedia.value)
 }
 function handleDisplayedMediaError(event: Event) {
   markDisplayedMediaFailed(event.currentTarget as HTMLImageElement)
@@ -184,8 +177,11 @@ onBeforeUnmount(() => {
             ref="displayedImage"
             :key="`${selectedMedia}-${retryVersion}`"
             data-cart-source
-            :src="optimizedImage(selectedMedia, 1600, 1600)"
+            :src="optimizedImage(selectedMedia, 960, 960)"
             :alt="name"
+            loading="eager"
+            fetchpriority="high"
+            decoding="async"
             class="pdp-zoom-image absolute inset-0 h-full w-full object-contain p-0 transition-transform duration-200 ease-out"
             :style="{
               transform: isZoomed ? 'scale(2.2)' : 'scale(1)',

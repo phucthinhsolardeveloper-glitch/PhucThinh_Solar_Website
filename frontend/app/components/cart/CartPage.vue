@@ -190,7 +190,7 @@ function openCheckout() {
           </div>
         </div>
 
-        <div v-else class="grid items-start gap-6 nav:grid-cols-[minmax(0,1fr)_380px] nav:gap-8">
+        <div v-else class="grid items-start gap-6 nav:grid-cols-[minmax(0,1fr)_minmax(420px,480px)] nav:gap-8">
           <div class="min-w-0">
             <Transition name="cart-undo">
               <div v-if="removed" class="cart-undo" role="status">
@@ -287,10 +287,10 @@ function openCheckout() {
 
 <style scoped>
 .cart-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(320px, 520px); align-items: center; gap: 24px 48px; margin-bottom: clamp(24px, 3vw, 40px); }
-.cart-panel { border-radius: 14px; background: #fff; }
+.cart-panel { border-radius: var(--radius-md); background: #fff; }
 .cart-list { display: grid; align-content: start; gap: 12px; max-height: min(70svh, 740px); overflow-y: auto; padding-right: 6px; scrollbar-color: var(--color-gold-500) transparent; scrollbar-width: thin; }
 .cart-list:focus-visible { outline: 3px solid var(--color-gold-700); outline-offset: -3px; }
-.cart-row { padding: clamp(14px, 1.6vw, 20px); border: 1px solid rgb(10 34 81 / 7%); border-radius: 14px; background: #fff; box-shadow: 0 1px 0 rgb(10 34 81 / 3%); transition: box-shadow 0.3s ease; }
+.cart-row { padding: clamp(14px, 1.6vw, 20px); border: 1px solid rgb(10 34 81 / 7%); border-radius: var(--radius-md); background: #fff; box-shadow: 0 1px 0 rgb(10 34 81 / 3%); transition: box-shadow 0.3s ease; }
 .cart-row:hover { box-shadow: 0 18px 36px -28px rgb(10 34 81 / 45%); }
 .cart-row__media { display: grid; aspect-ratio: 1; place-items: center; overflow: hidden; border-radius: 10px; background: #f6f8fb; }
 .cart-row__name { display: block; color: var(--color-navy-950); font-size: 16.5px; font-weight: 800; line-height: 1.35; text-decoration: none; }
@@ -310,14 +310,14 @@ function openCheckout() {
 .cart-undo-enter-active, .cart-undo-leave-active { transition: opacity 0.25s ease, transform 0.3s cubic-bezier(0.22, 1, 0.36, 1); }
 .cart-undo-enter-from, .cart-undo-leave-to { opacity: 0; transform: translateY(-8px); }
 
-.cart-summary { overflow: hidden; padding: clamp(22px, 2vw, 30px); border-radius: 16px; background: radial-gradient(120% 80% at 100% 0%, rgb(228 168 73 / 18%), transparent 55%), var(--color-navy-950); color: #fff; box-shadow: 0 30px 60px -36px rgb(6 21 55 / 70%); }
+.cart-summary { overflow: hidden; padding: clamp(22px, 2vw, 30px); border-radius: var(--radius-md); background: radial-gradient(120% 80% at 100% 0%, rgb(228 168 73 / 18%), transparent 55%), var(--color-navy-950); color: #fff; box-shadow: 0 30px 60px -36px rgb(6 21 55 / 70%); }
 .cart-summary__rows { display: grid; gap: 12px; margin: 20px 0 0; padding: 0 0 18px; border-bottom: 1px solid rgb(255 255 255 / 12%); }
 .cart-summary__rows > div { display: flex; justify-content: space-between; gap: 12px; font-size: 15px; }
 .cart-summary__rows dt { color: #b9c6d6; }
 .cart-summary__rows dd { margin: 0; font-weight: 700; text-align: right; }
-.cart-summary__total { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding-top: 18px; }
+.cart-summary__total { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; padding-top: 18px; white-space: nowrap; }
 .cart-summary__total span { color: #d3dcea; font-weight: 700; }
-.cart-summary__total strong { background-image: var(--pts-gold-gradient); background-clip: text; color: transparent; -webkit-text-fill-color: transparent; font-size: clamp(26px, 2.2vw, 32px); font-weight: 900; letter-spacing: -0.02em; }
+.cart-summary__total strong { background-image: var(--pts-gold-gradient); background-clip: text; color: transparent; -webkit-text-fill-color: transparent; font-size: clamp(22px, 2vw, 30px); font-weight: 900; letter-spacing: -0.02em; }
 .cart-summary__note { margin: 16px 0 0; padding: 12px 14px; border-radius: 10px; background: rgb(255 255 255 / 8%); color: #e2e8f0; font-size: 14px; line-height: 1.55; }
 .cart-summary__cta { display: flex; width: 100%; min-height: 58px; align-items: center; justify-content: space-between; margin-top: 20px; padding: 0 10px 0 22px; border: 0; border-radius: 4px; background: var(--pts-gold-gradient); color: var(--color-navy-950); font-size: 16.5px; font-weight: 850; text-decoration: none; cursor: pointer; transition: filter 0.25s ease; }
 .cart-summary__cta > span { display: grid; width: 40px; height: 40px; place-items: center; border-radius: 8px; background: var(--color-navy-950); color: var(--color-gold-300); transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
@@ -329,7 +329,7 @@ function openCheckout() {
 .cart-summary__trust li :deep(.iconify), .cart-summary__trust li > :first-child { color: var(--color-gold-300); }
 .cart-summary__trust a { color: var(--color-gold-300); font-weight: 800; text-decoration: none; }
 
-.cart-empty { padding: clamp(36px, 5vw, 64px) 24px; border-radius: 16px; background: #fff; text-align: center; }
+.cart-empty { padding: clamp(36px, 5vw, 64px) 24px; border-radius: var(--radius-md); background: #fff; text-align: center; }
 .cart-empty__art { position: relative; display: grid; width: 96px; height: 96px; margin: 0 auto 20px; place-items: center; border-radius: 50%; background: rgb(228 168 73 / 14%); color: var(--color-gold-700); }
 .cart-empty__ring { position: absolute; inset: -10px; border: 1px dashed rgb(201 150 46 / 45%); border-radius: 50%; animation: empty-spin 18s linear infinite; }
 @keyframes empty-spin { to { transform: rotate(360deg); } }

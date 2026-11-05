@@ -235,7 +235,7 @@ test('PDP image lightbox traps keyboard focus and restores it to its trigger', (
   assert.match(gallery, /setDocumentScrollLock\(true\)/)
   assert.match(gallery, /setDocumentScrollLock\(false\)/)
   assert.match(gallery, /<AnimatePresence :initial="false">/)
-  assert.match(gallery, /new URL\(candidate, document\.baseURI\)\.href === source/)
+  assert.match(gallery, /source === new URL\(optimizedImage\(selectedMedia\.value, 960, 960\), document\.baseURI\)\.href/)
   assert.match(gallery, /:transition="\{ duration: reducedMotion \? 0 : 0\.16/)
   assert.match(gallery, /@media \(prefers-reduced-motion: reduce\)/)
   assert.match(gallery, /\.pdp-zoom-image \{\s*transition-duration: 0ms/)

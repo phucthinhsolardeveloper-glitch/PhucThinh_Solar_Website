@@ -30,6 +30,7 @@ useSeoMeta({
 })
 useHead({
   meta: computed(() => productKeywords.value ? [{ name: 'keywords', content: productKeywords.value }] : []),
+  link: computed(() => product.value?.media?.[0] ? [{ rel: 'preload', as: 'image', href: optimizedImage(product.value.media[0], 960, 960), fetchpriority: 'high' }] : []),
 })
 usePublicSocialMeta({
   enabled: computed(() => !!product.value && !error.value),

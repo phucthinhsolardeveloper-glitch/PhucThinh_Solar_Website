@@ -270,14 +270,14 @@ onMounted(() => { window.addEventListener('pageshow', () => { submitting.value =
         </ul>
       </div>
 
-      <form v-else method="post" :action="checkoutPostAction" class="grid items-start gap-6 nav:grid-cols-[minmax(0,1fr)_400px] nav:gap-8" @submit="onSubmit">
+      <form v-else method="post" :action="checkoutPostAction" class="grid items-start gap-6 nav:grid-cols-[minmax(0,1fr)_minmax(420px,480px)] nav:gap-8" @submit="onSubmit">
         <input type="hidden" name="form_csrf" :value="checkout.csrfToken">
         <input type="hidden" name="checkout_token" :value="checkout.checkoutToken">
         <section class="space-y-5">
           <div class="checkout-card">
             <h2 class="checkout-card__title"><UIcon name="i-lucide-user-round" class="size-5" aria-hidden="true" />Người nhận</h2>
             <p class="checkout-required-note">Các trường có dấu <span class="checkout-required">*</span> là bắt buộc.</p>
-            <div class="grid gap-4 tb:grid-cols-2">
+            <div class="grid gap-4 tb:grid-cols-2 min-[1700px]:grid-cols-3">
               <label class="checkout-field" :class="stateOf('fullname')">
                 <span>Họ và tên <span class="checkout-required" aria-hidden="true">*</span></span>
                 <span class="checkout-field__control">
@@ -294,7 +294,7 @@ onMounted(() => { window.addEventListener('pageshow', () => { submitting.value =
                 </span>
                 <small v-if="stateOf('phone') === 'is-invalid'" role="alert">{{ fieldHints.phone }}</small>
               </label>
-              <label class="checkout-field tb:col-span-2" :class="stateOf('email')">
+              <label class="checkout-field tb:col-span-2 min-[1700px]:col-span-1" :class="stateOf('email')">
                 <span>Email nhận xác nhận đơn <span class="checkout-required" aria-hidden="true">*</span></span>
                 <span class="checkout-field__control">
                   <input v-model.trim="form.email" type="email" name="dataOrder[email]" autocomplete="email" maxlength="190" required placeholder="ban@email.com" @blur="touched.email = true">
@@ -307,7 +307,7 @@ onMounted(() => { window.addEventListener('pageshow', () => { submitting.value =
 
           <div class="checkout-card">
             <h2 class="checkout-card__title"><UIcon name="i-lucide-map-pin" class="size-5" aria-hidden="true" />Địa chỉ giao hàng</h2>
-            <div class="grid gap-4 tb:grid-cols-2">
+            <div class="grid gap-4 tb:grid-cols-2 min-[1700px]:grid-cols-3">
               <label class="checkout-field">
                 <span>Tỉnh/Thành phố <span class="checkout-required" aria-hidden="true">*</span></span>
                 <span class="checkout-field__control">
@@ -331,7 +331,7 @@ onMounted(() => { window.addEventListener('pageshow', () => { submitting.value =
                   <button type="button" class="font-bold underline" @click="void loadWards()">Tải lại</button>
                 </small>
               </div>
-              <label class="checkout-field tb:col-span-2" :class="stateOf('address')">
+              <label class="checkout-field tb:col-span-2 min-[1700px]:col-span-1" :class="stateOf('address')">
                 <span>Địa chỉ chi tiết <span class="checkout-required" aria-hidden="true">*</span></span>
                 <span class="checkout-field__control">
                   <input v-model.trim="form.address" name="dataOrder[address]" autocomplete="street-address" maxlength="255" required placeholder="Số nhà, tên đường" @blur="touched.address = true">
@@ -383,8 +383,10 @@ onMounted(() => { window.addEventListener('pageshow', () => { submitting.value =
                 <img v-if="item.image" :src="item.image" :alt="item.name" loading="lazy">
                 <b>{{ item.quantity }}</b>
               </span>
-              <span class="min-w-0 flex-1 text-sm leading-snug text-blue-50">{{ item.name }}</span>
-              <strong class="shrink-0 text-sm">{{ formatMoney(item.lineTotal) }}</strong>
+              <span class="checkout-summary__item-copy">
+                <span class="block text-sm leading-snug text-blue-50">{{ item.name }}</span>
+                <strong class="mt-1 block text-sm">{{ formatMoney(item.lineTotal) }}</strong>
+              </span>
             </li>
           </ul>
           <dl class="checkout-summary__rows">
@@ -431,7 +433,7 @@ onMounted(() => { window.addEventListener('pageshow', () => { submitting.value =
 
 <style scoped>
 .checkout-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(320px, 520px); align-items: center; gap: 24px 48px; margin: 8px 0 clamp(24px, 3vw, 40px); }
-.checkout-card { padding: clamp(18px, 2vw, 28px); border: 1px solid rgb(10 34 81 / 7%); border-radius: var(--radius-lg); background: #fff; }
+.checkout-card { padding: clamp(18px, 2vw, 28px); border: 1px solid rgb(10 34 81 / 7%); border-radius: var(--radius-md); background: #fff; }
 .checkout-card__title { display: flex; align-items: center; gap: 10px; margin: 0 0 18px; color: var(--color-navy-950); font-size: 19px; font-weight: 850; }
 .checkout-card__title :deep(.iconify), .checkout-card__title > :first-child { color: var(--color-gold-600); }
 .checkout-required { color: #b91c1c; }
@@ -466,9 +468,10 @@ onMounted(() => { window.addEventListener('pageshow', () => { submitting.value =
 .checkout-pay__option:has(input:checked) .checkout-pay__radio { border-color: var(--color-gold-500); }
 .checkout-pay__option:has(input:checked) .checkout-pay__radio::after { transform: scale(1); }
 
-.checkout-summary { overflow: hidden; padding: clamp(22px, 2vw, 30px); border-radius: var(--radius-lg); background: radial-gradient(120% 80% at 100% 0%, rgb(228 168 73 / 18%), transparent 55%), var(--color-navy-950); color: #fff; box-shadow: 0 30px 60px -36px rgb(6 21 55 / 70%); }
+.checkout-summary { overflow: hidden; padding: clamp(22px, 2vw, 30px); border-radius: var(--radius-md); background: radial-gradient(120% 80% at 100% 0%, rgb(228 168 73 / 18%), transparent 55%), var(--color-navy-950); color: #fff; box-shadow: 0 30px 60px -36px rgb(6 21 55 / 70%); }
 .checkout-summary__items { display: grid; gap: 12px; max-height: 300px; margin: 18px 0 0; padding: 0 4px 16px 0; overflow-y: auto; border-bottom: 1px solid rgb(255 255 255 / 12%); list-style: none; scrollbar-width: thin; }
 .checkout-summary__items li { display: flex; align-items: center; gap: 12px; }
+.checkout-summary__item-copy { min-width: 0; flex: 1; }
 .checkout-summary__thumb { position: relative; display: grid; width: 52px; height: 52px; flex: none; place-items: center; border-radius: var(--radius-md); background: #fff; }
 .checkout-summary__thumb img { width: 88%; height: 88%; object-fit: contain; }
 .checkout-summary__thumb b { position: absolute; top: -6px; right: -6px; display: grid; min-width: 22px; height: 22px; place-items: center; padding: 0 5px; border-radius: 999px; background: var(--pts-gold-gradient); color: var(--color-navy-950); font-size: 12px; }
@@ -477,9 +480,9 @@ onMounted(() => { window.addEventListener('pageshow', () => { submitting.value =
 .checkout-summary__rows dt { color: #b9c6d6; }
 .checkout-summary__rows dd { margin: 0; font-weight: 700; text-align: right; }
 .checkout-summary__rows dd.is-pending { color: #b9c6d6; font-weight: 600; }
-.checkout-summary__total { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-top: 16px; padding-top: 16px; border-top: 1px solid rgb(255 255 255 / 12%); }
+.checkout-summary__total { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-top: 16px; padding-top: 16px; border-top: 1px solid rgb(255 255 255 / 12%); white-space: nowrap; }
 .checkout-summary__total span { color: #d3dcea; font-weight: 700; }
-.checkout-summary__total strong { background-image: var(--pts-gold-gradient); background-clip: text; color: transparent; -webkit-text-fill-color: transparent; font-size: clamp(26px, 2.2vw, 32px); font-weight: 900; letter-spacing: -0.02em; }
+.checkout-summary__total strong { background-image: var(--pts-gold-gradient); background-clip: text; color: transparent; -webkit-text-fill-color: transparent; font-size: clamp(22px, 2vw, 30px); font-weight: 900; letter-spacing: -0.02em; }
 .checkout-summary__cta { display: flex; width: 100%; min-height: 60px; align-items: center; justify-content: space-between; gap: 12px; margin-top: 20px; padding: 0 10px 0 22px; border: 0; border-radius: 4px; background: var(--pts-gold-gradient); color: var(--color-navy-950); font: inherit; font-size: 17px; font-weight: 850; cursor: pointer; transition: filter 0.25s ease; }
 .checkout-summary__cta > span { display: grid; width: 42px; height: 42px; place-items: center; border-radius: var(--radius-md); background: var(--color-navy-950); color: var(--color-gold-300); transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
 .checkout-summary__cta:hover:not(:disabled) { filter: brightness(1.06); }
