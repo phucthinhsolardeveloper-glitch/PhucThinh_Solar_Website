@@ -316,9 +316,9 @@ if (!empty($newsFields['admin_csrf']))
         $newsDetailNuxtPath = '/_migration/news-detail?slug='.rawurlencode($newsSlug);
         $phpNewsDetailCreated = publicJson($phpPublicBase, $newsDetailPhpPath);
         $nuxtNewsDetailCreated = publicJson($nuxtBase, $newsDetailNuxtPath);
-        ok($phpNewsDetailCreated['status'] === 200 && ($phpNewsDetailCreated['payload']['article']['seo']['title'] ?? '') === $newsSeoTitle,
+        ok($phpNewsDetailCreated['status'] === 200 && ($phpNewsDetailCreated['payload']['article']['seo']['title'] ?? '') === $newsSeoTitle.' | Phúc Thịnh Solar',
            'News detail PHP API đọc SEO title vừa tạo trong Admin');
-        ok($nuxtNewsDetailCreated['status'] === 200 && ($nuxtNewsDetailCreated['payload']['article']['seo']['title'] ?? '') === $newsSeoTitle,
+        ok($nuxtNewsDetailCreated['status'] === 200 && ($nuxtNewsDetailCreated['payload']['article']['seo']['title'] ?? '') === $newsSeoTitle.' | Phúc Thịnh Solar',
            'Nuxt news detail đọc SEO title vừa tạo qua adapter');
 
         $newsEditForm = request($base.'index.php?com=news&act=edit&type=tin-tuc&id='.$newsId, $cookie);
@@ -345,9 +345,9 @@ if (!empty($newsFields['admin_csrf']))
 
         $phpNewsDetailUpdated = publicJson($phpPublicBase, $newsDetailPhpPath);
         $nuxtNewsDetailUpdated = publicJson($nuxtBase, $newsDetailNuxtPath);
-        ok($phpNewsDetailUpdated['status'] === 200 && ($phpNewsDetailUpdated['payload']['article']['seo']['title'] ?? '') === $newsEditedSeoTitle,
+        ok($phpNewsDetailUpdated['status'] === 200 && ($phpNewsDetailUpdated['payload']['article']['seo']['title'] ?? '') === $newsEditedSeoTitle.' | Phúc Thịnh Solar',
            'News detail PHP API phản ánh SEO title vừa sửa');
-        ok($nuxtNewsDetailUpdated['status'] === 200 && ($nuxtNewsDetailUpdated['payload']['article']['seo']['title'] ?? '') === $newsEditedSeoTitle,
+        ok($nuxtNewsDetailUpdated['status'] === 200 && ($nuxtNewsDetailUpdated['payload']['article']['seo']['title'] ?? '') === $newsEditedSeoTitle.' | Phúc Thịnh Solar',
            'Nuxt news detail phản ánh SEO title vừa sửa');
 
         $newsDelete = request($base.'index.php?com=news&act=delete&type=tin-tuc&id='.$newsId, $cookie,

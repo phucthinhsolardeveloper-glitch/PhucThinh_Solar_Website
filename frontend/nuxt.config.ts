@@ -85,7 +85,7 @@ export default defineNuxtConfig({
     // (search, catalog, news, route resolve) are deliberately excluded.
     ...Object.fromEntries([
       'site', 'home', 'about', 'dealer', 'contact', 'solutions', 'projects', 'gallery', 'video',
-      'policy-detail', 'product-detail', 'solution-detail', 'project-detail', 'news-detail', 'gallery-detail',
+      'policy-detail', 'product-detail', 'solution-detail', 'project-detail', 'gallery-detail',
     ].map((name) => [`/_migration/${name}`, { cache: { maxAge: 60, swr: true } }])),
     '/migration-preview': {
       headers: { 'X-Robots-Tag': 'noindex, nofollow, noarchive' },
