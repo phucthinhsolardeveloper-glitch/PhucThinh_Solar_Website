@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { publicPhoneHref } from '#shared/contact-links'
 import { sentenceCase } from '~/utils/sentenceCase'
 
 export interface CtaTrustItem { label: string; image?: string; icon?: string }
+export interface CtaVideo { src: string; poster: string; posterSmall?: string }
 
 const props = withDefaults(defineProps<{
   variant: 'corporate' | 'editorial' | 'catalog'
@@ -18,7 +19,8 @@ const props = withDefaults(defineProps<{
   buttonLabel?: string
   subject?: string
   fallbackHref?: string
-}>(), { description: '', image: '', trust: () => [], hotline: '', hotlineLabel: 'Gọi hotline', zalo: '', buttonLabel: 'Nhận tư vấn', subject: '', fallbackHref: '/lien-he/#yeu-cau-tu-van' })
+  video?: CtaVideo | null
+}>(), { video: null, description: '', image: '', trust: () => [], hotline: '', hotlineLabel: 'Gọi hotline', zalo: '', buttonLabel: 'Nhận tư vấn', subject: '', fallbackHref: '/lien-he/#yeu-cau-tu-van' })
 
 const links = useMigrationLinks()
 const { openConsultation } = useStorefrontModal()
@@ -46,6 +48,61 @@ function handleImageError() {
   imageFailed.value = true
 }
 
+// Ambient footage only plays on wide screens with motion allowed and data saving off;
+// everywhere else the poster (the clip's first frame) stands in.
+const videoEl = ref<HTMLVideoElement | null>(null)
+const playVideo = ref(false)
+const videoFading = ref(false)
+let observer: IntersectionObserver | null = null
+let wideQuery: MediaQueryList | null = null
+let motionQuery: MediaQueryList | null = null
+
+function videoAllowed() {
+  const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData
+  return !!props.video && !!wideQuery?.matches && !motionQuery?.matches && !saveData
+}
+function syncVideo() {
+  playVideo.value = videoAllowed()
+  if (!playVideo.value) videoEl.value?.pause()
+}
+function handleVisibility([entry]: IntersectionObserverEntry[]) {
+  const el = videoEl.value
+  if (!el || !playVideo.value) return
+  if (entry?.isIntersecting) el.play().catch(() => { playVideo.value = false })
+  else el.pause()
+}
+function handleTimeUpdate() {
+  const el = videoEl.value
+  if (el && el.duration && el.duration - el.currentTime < 0.9) videoFading.value = true
+}
+function handleEnded() {
+  const el = videoEl.value
+  if (!el) return
+  el.currentTime = 0
+  el.play().catch(() => {})
+  videoFading.value = false
+}
+function attachObserver(el: HTMLVideoElement | null) {
+  observer?.disconnect()
+  if (!el) return
+  observer = new IntersectionObserver(handleVisibility, { rootMargin: '200px 0px' })
+  observer.observe(el)
+}
+watch(videoEl, attachObserver)
+onMounted(() => {
+  if (!props.video) return
+  wideQuery = window.matchMedia('(min-width: 901px)')
+  motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+  wideQuery.addEventListener('change', syncVideo)
+  motionQuery.addEventListener('change', syncVideo)
+  syncVideo()
+})
+onBeforeUnmount(() => {
+  observer?.disconnect()
+  wideQuery?.removeEventListener('change', syncVideo)
+  motionQuery?.removeEventListener('change', syncVideo)
+})
+
 const heading = computed(() => sentenceCase(props.title))
 const action = computed(() => sentenceCase(props.buttonLabel) || 'Nhận tư vấn')
 const phoneHref = computed(() => props.hotline ? publicPhoneHref(props.hotline) : '')
@@ -53,7 +110,29 @@ const phoneHref = computed(() => props.hotline ? publicPhoneHref(props.hotline) 
 
 <template>
   <section class="cta-band" :class="`cta-band--${variant}`" :aria-labelledby="titleId">
-    <img v-if="!imageFailed" class="cta-band__image" :src="imageSource" alt="" loading="lazy" decoding="async" @error="handleImageError">
+    <template v-if="video">
+      <picture>
+        <source v-if="video.posterSmall" media="(max-width: 900px)" :srcset="video.posterSmall">
+        <img class="cta-band__image" :src="video.poster" alt="" loading="lazy" decoding="async">
+      </picture>
+      <video
+        v-if="playVideo"
+        ref="videoEl"
+        class="cta-band__image cta-band__video"
+        :class="{ 'is-fading': videoFading }"
+        :src="video.src"
+        muted
+        playsinline
+        preload="none"
+        disablepictureinpicture
+        disableremoteplayback
+        aria-hidden="true"
+        tabindex="-1"
+        @timeupdate="handleTimeUpdate"
+        @ended="handleEnded"
+      />
+    </template>
+    <img v-else-if="!imageFailed" class="cta-band__image" :src="imageSource" alt="" loading="lazy" decoding="async" @error="handleImageError">
     <span class="cta-band__shade" aria-hidden="true" />
     <span class="cta-band__sun" aria-hidden="true" />
 
@@ -106,6 +185,9 @@ const phoneHref = computed(() => props.hotline ? publicPhoneHref(props.hotline) 
 .cta-band__image, .cta-band__shade { position: absolute; z-index: -3; }
 .cta-band__image { inset: 0 0 0 auto; width: 62%; height: 100%; object-fit: cover; -webkit-mask-image: linear-gradient(90deg, transparent, #000 40%); mask-image: linear-gradient(90deg, transparent, #000 40%); transition: transform 1.4s var(--ease); }
 .cta-band:hover .cta-band__image { transform: scale(1.04); }
+.cta-band picture { position: absolute; inset: 0; z-index: -3; }
+.cta-band__video { object-position: 60% 55%; transition: transform 1.4s var(--ease), opacity 0.85s var(--ease); }
+.cta-band__video.is-fading { opacity: 0; }
 .cta-band__shade { inset: 0; z-index: -2; background: linear-gradient(90deg, #061537 34%, rgb(6 21 55 / 82%) 52%, rgb(6 21 55 / 45%) 78%, rgb(6 21 55 / 62%) 100%); }
 /* Solar arc: the brand's sun rising out of the band's lower edge. */
 .cta-band__sun { position: absolute; z-index: -1; left: -8%; bottom: -62%; width: clamp(320px, 42vw, 620px); aspect-ratio: 1; border: 1px solid rgb(228 168 73 / 35%); border-radius: 50%; background: radial-gradient(closest-side, rgb(228 168 73 / 26%), rgb(228 168 73 / 6%) 60%, transparent 72%); box-shadow: 0 0 0 28px rgb(228 168 73 / 4%), 0 0 0 64px rgb(228 168 73 / 3%); pointer-events: none; }
@@ -140,6 +222,7 @@ const phoneHref = computed(() => props.hotline ? publicPhoneHref(props.hotline) 
 
 @media (max-width: 900px) {
   .cta-band { grid-template-columns: minmax(0, 1fr); }
+  .cta-band__video { display: none; }
   .cta-band__image { width: 100%; opacity: 0.5; -webkit-mask-image: none; mask-image: none; }
   .cta-band__shade { background: linear-gradient(180deg, rgb(6 21 55 / 88%), rgb(6 21 55 / 72%) 60%, #061537); }
   .cta-band__sun { left: auto; right: -40%; bottom: auto; top: -30%; }
@@ -150,6 +233,7 @@ const phoneHref = computed(() => props.hotline ? publicPhoneHref(props.hotline) 
 }
 @media (prefers-reduced-motion: reduce) {
   .cta-band__image, .cta-band__primary-arrow { transition: none; }
+  .cta-band__video { display: none; }
   .cta-band:hover .cta-band__image { transform: none; }
   .cta-band__channel-icon.is-phone::after { animation: none; }
 }
