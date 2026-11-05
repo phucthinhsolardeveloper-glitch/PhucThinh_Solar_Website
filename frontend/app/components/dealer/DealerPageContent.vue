@@ -114,7 +114,7 @@ usePublicSocialMeta({
       <template v-else>
         <!-- Hero full-bleed with CMS media; the CMS stats ride along its lower edge. -->
         <section class="dealer-hero" aria-labelledby="dealer-title">
-          <img v-if="dealer.hero" :src="dealer.hero.image" :alt="dealer.hero.title" class="dealer-hero__image" fetchpriority="high">
+          <img v-if="dealer.hero" :src="optimizedImage(dealer.hero.image, 1800, 1200)" :alt="dealer.hero.title" class="dealer-hero__image" fetchpriority="high">
           <span class="dealer-hero__shade" aria-hidden="true" />
           <div class="pts-container dealer-hero__inner">
             <h1 id="dealer-title" class="max-w-[680px] min-[1800px]:max-w-[760px]">{{ dealer.title }}</h1>

@@ -159,7 +159,7 @@ function formatDate(value: string): string {
         </div>
 
         <div v-if="article.media.gallery.length" class="mt-8 grid grid-cols-1 gap-4 tb:grid-cols-2">
-          <img v-for="media in article.media.gallery" :key="media.image" :src="media.image" :alt="media.alt || article.title" class="block h-auto w-full object-contain">
+          <img v-for="media in article.media.gallery" :key="media.image" :src="optimizedImage(media.image, 1200, 900)" :alt="media.alt || article.title" class="block h-auto w-full object-contain">
         </div>
 
         <ul v-if="article.media.videos.length" class="m-0 mt-6 list-none space-y-2 p-0">

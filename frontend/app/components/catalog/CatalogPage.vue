@@ -470,7 +470,7 @@ function pageLink(nextPage: number) {
         <h2 id="catalog-applications-title" class="mb-6 text-center text-[22px] font-black leading-[1.25] text-navy-950">{{ catalogData.categoryContent.title || 'Ứng dụng phù hợp' }}</h2>
         <div class="grid auto-cols-[min(82vw,320px)] grid-flow-col gap-4 overflow-x-auto pr-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden max-[767px]:snap-x max-[767px]:snap-proximity min-[768px]:grid-flow-row min-[768px]:grid-cols-2 min-[768px]:gap-7 min-[768px]:overflow-visible min-[768px]:pr-0 min-[1200px]:grid-cols-3">
           <a v-for="item in catalogData.categoryContent.applications" :key="item.title" :href="item.href ? links.generic(item.href) : undefined" class="min-w-0 text-navy-800 no-underline max-[767px]:snap-start">
-            <img v-if="item.image" :src="item.image" :alt="item.title" width="760" height="475" sizes="(min-width: 1200px) 33vw, (min-width: 768px) 50vw, 82vw" class="aspect-[8/5] w-full object-cover" loading="lazy" decoding="async">
+            <img v-if="item.image" :src="optimizedImage(item.image, 1200, 750)" :alt="item.title" width="760" height="475" sizes="(min-width: 1200px) 33vw, (min-width: 768px) 50vw, 82vw" class="aspect-[8/5] w-full object-cover" loading="lazy" decoding="async">
             <h3 class="mb-0 mt-3 text-lg font-extrabold text-navy-950">{{ item.title }}</h3>
             <p v-if="item.description" class="mb-0 mt-1 text-base leading-relaxed text-slate-600">{{ item.description }}</p>
           </a>

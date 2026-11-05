@@ -206,7 +206,7 @@ test('project detail preserves PHP section order, project media ratio, and missi
   assert.ok(galleryIndex >= 0 && galleryIndex < equipmentIndex && equipmentIndex < relatedIndex && relatedIndex < ctaIndex)
   assert.match(phpDetail, /getImage\(\['class' => '', 'sizes' => '640x400x1'/)
   assert.match(phpImageHelper, /'image-error' => 'noimage\.png'/)
-  assert.match(projectDetail, /item\.image \|\| '\/assets\/images\/noimage\.png'/)
+  assert.match(projectDetail, /optimizedImage\(item\.image, 800, 600\) \|\| '\/assets\/images\/noimage\.png'/)
   assert.match(projectDetail, /aspect-\[4\/3\]/)
   assert.ok(placeholder.length > 0)
 })

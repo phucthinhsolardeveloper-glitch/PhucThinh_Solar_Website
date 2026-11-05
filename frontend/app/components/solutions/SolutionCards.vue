@@ -27,7 +27,7 @@ const links = useMigrationLinks()
       >
         <img
           v-if="card.image"
-          :src="card.image"
+          :src="optimizedImage(card.image, 900, 675)"
           alt=""
           class="tile-image"
           width="900"

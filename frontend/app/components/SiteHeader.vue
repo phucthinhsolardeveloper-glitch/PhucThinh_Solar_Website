@@ -39,7 +39,7 @@ const hotline = computed(() => props.site.brand.hotline.trim())
 const brandLogo = computed(() => props.site.brand.logo || '')
 const brandLogoSrc = computed(() => {
   const src = brandLogo.value
-  return /^\/upload\/photo\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|gif|webp|avif)$/i.test(src) ? `/thumbs/520x112x3${src}` : src
+  return /^\/upload\/photo\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|gif|webp|avif)$/i.test(src) ? phpThumb(src, 520, 112, 3) : src
 })
 
 const searchOpen = ref(false)

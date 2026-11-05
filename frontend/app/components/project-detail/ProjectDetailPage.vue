@@ -45,7 +45,7 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onHeroScroll))
   <article class="project-story">
     <header ref="heroRef" class="project-story__hero grid bg-navy-950 text-white" :style="{ '--shift': heroShift }">
       <div class="project-story__cover relative overflow-hidden bg-slate-200">
-        <img v-if="project.coverImage" :src="project.coverImage" :alt="project.title" class="project-story__cover-img block aspect-[4/3] w-full object-cover" loading="eager" decoding="async">
+        <img v-if="project.coverImage" :src="optimizedImage(project.coverImage, 1600, 1200)" :alt="project.title" class="project-story__cover-img block aspect-[4/3] w-full object-cover" loading="eager" decoding="async">
         <div v-else class="grid aspect-[4/3] place-items-center px-6 text-center text-sm font-semibold text-slate-500 nav:h-full nav:aspect-auto">Chưa có hình ảnh đại diện cho dự án</div>
       </div>
 
@@ -133,7 +133,7 @@ onBeforeUnmount(() => window.removeEventListener('scroll', onHeroScroll))
         </header>
         <div class="project-strip">
           <a v-for="item in project.relatedProjects" :key="item.id" :href="links.project(item.slug)" class="project-strip__item group">
-            <span class="project-strip__media"><img :src="item.image || '/assets/images/noimage.png'" :alt="item.title" loading="lazy" decoding="async"></span>
+            <span class="project-strip__media"><img :src="optimizedImage(item.image, 800, 600) || '/assets/images/noimage.png'" :alt="item.title" loading="lazy" decoding="async"></span>
             <h3>{{ item.title }}</h3>
             <span v-if="item.address" class="project-strip__place"><UIcon name="i-lucide-map-pin" class="size-4 flex-none text-gold-600" aria-hidden="true" />{{ item.address }}</span>
             <span class="project-strip__go">Xem dự án <span aria-hidden="true">→</span></span>

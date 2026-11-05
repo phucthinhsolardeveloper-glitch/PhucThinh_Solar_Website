@@ -27,11 +27,11 @@ const solutionItems = computed<DirectorStageItem[]>(() => props.data.solutions.m
 })))
 const links = useMigrationLinks()
 const leadIntent = useState<string>('public-home-lead-intent', () => '')
-const phpResizableEditorialImage = /^\/(?:upload\/news|assets\/images\/site-visuals)\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png)$/i
+const phpResizableEditorialImage = /^\/(?:upload\/news\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|webp)|assets\/images\/site-visuals\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png))$/i
 
 function editorialImageCandidate(src: string, width: 760 | 1200, height: 475 | 750): string {
   if (!phpResizableEditorialImage.test(src)) return src
-  return `/thumbs/${width}x${height}x1${src}`
+  return phpThumb(src, width, height)
 }
 
 function editorialImageSrcSet(src: string): string | undefined {

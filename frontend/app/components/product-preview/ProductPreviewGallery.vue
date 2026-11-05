@@ -184,7 +184,7 @@ onBeforeUnmount(() => {
             ref="displayedImage"
             :key="`${selectedMedia}-${retryVersion}`"
             data-cart-source
-            :src="selectedMedia"
+            :src="optimizedImage(selectedMedia, 1600, 1600)"
             :alt="name"
             class="pdp-zoom-image absolute inset-0 h-full w-full object-contain p-0 transition-transform duration-200 ease-out"
             :style="{
@@ -265,7 +265,7 @@ onBeforeUnmount(() => {
         @mouseenter="selectMedia(index)"
         @click="selectMedia(index)"
       >
-        <img :src="image" :alt="name + ' — ảnh ' + (index + 1)" class="h-full w-full object-contain" width="112" height="112" loading="lazy" @error="markMediaFailed(image)">
+        <img :src="optimizedImage(image, 224, 224)" :alt="name + ' — ảnh ' + (index + 1)" class="h-full w-full object-contain" width="112" height="112" loading="lazy" @error="markMediaFailed(image)">
       </button>
     </div>
 

@@ -14,7 +14,7 @@ const links = useMigrationLinks()
     </div>
     <div class="grid grid-cols-2 gap-6 tb:grid-cols-4">
       <a v-for="item in items" :key="item.id" class="group text-inherit no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold-600" :href="links.generic(item.url)">
-        <img v-if="item.image" :src="item.image" :alt="item.name" class="block aspect-square w-full rounded-chip bg-slate-50 p-2 object-contain transition-transform duration-300 group-hover:scale-105 motion-reduce:transform-none" loading="lazy" decoding="async">
+        <img v-if="item.image" :src="optimizedImage(item.image, 480, 480)" :alt="item.name" class="block aspect-square w-full rounded-chip bg-slate-50 p-2 object-contain transition-transform duration-300 group-hover:scale-105 motion-reduce:transform-none" loading="lazy" decoding="async">
         <span class="mt-3 grid gap-1">
           <strong class="font-bold text-navy-800 transition-colors group-hover:text-gold-700">{{ item.name }}</strong>
           <small v-if="item.code" class="text-slate-500">Mã: {{ item.code }}</small>

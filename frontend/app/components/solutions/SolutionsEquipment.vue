@@ -27,7 +27,7 @@ const oversized: Record<string, string> = {
 const failed = ref<Set<number>>(new Set())
 function thumb(src: string, size = 480): string {
   const source = oversized[src] || src
-  return source.startsWith('/upload/product/') ? `/thumbs/${size}x${size}x1${source}` : source
+  return source.startsWith('/upload/product/') ? phpThumb(source, size, size) : source
 }
 function hideBroken(id: number) { failed.value = new Set(failed.value).add(id) }
 function visible(products: PublicCatalogProduct[]) { return products.filter((product) => !failed.value.has(product.id)) }
@@ -105,7 +105,7 @@ const currentShowcase = computed(() => current.value ? showcases.value[current.v
           v-if="currentShowcase?.backdrop"
           :key="current!.url"
           class="showroom-backdrop"
-          :src="currentShowcase.backdrop"
+          :src="optimizedImage(currentShowcase.backdrop, 1800, 1200)"
           alt=""
           loading="lazy"
           decoding="async"

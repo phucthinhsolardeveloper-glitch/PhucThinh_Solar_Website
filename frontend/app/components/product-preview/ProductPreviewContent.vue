@@ -47,7 +47,7 @@ defineProps<{ content: PublicProductContent }>()
           </ul>
 
           <figure v-else-if="block.type === 'image'" class="m-0 overflow-hidden rounded-btn bg-slate-50">
-            <img :src="block.image" :alt="block.caption || ''" class="mx-auto max-h-[680px] w-full object-contain" loading="lazy" decoding="async">
+            <img :src="optimizedImage(block.image, 1400, 1400)" :alt="block.caption || ''" class="mx-auto max-h-[680px] w-full object-contain" loading="lazy" decoding="async">
             <figcaption v-if="block.caption" class="px-4 py-3 text-center text-sm leading-relaxed text-slate-500">{{ block.caption }}</figcaption>
           </figure>
 
@@ -57,7 +57,7 @@ defineProps<{ content: PublicProductContent }>()
             :class="[block.side === 'center' ? 'nav:grid-cols-1' : 'nav:grid-cols-2', { 'nav:[&>figure]:order-2': block.side === 'right' }]"
           >
             <figure v-if="block.image" class="m-0 overflow-hidden rounded-btn">
-              <img :src="block.image" :alt="block.title || ''" class="mx-auto max-h-[620px] w-full object-contain" loading="lazy" decoding="async">
+              <img :src="optimizedImage(block.image, 1400, 1400)" :alt="block.title || ''" class="mx-auto max-h-[620px] w-full object-contain" loading="lazy" decoding="async">
             </figure>
             <div :class="{ 'mx-auto max-w-[780px] text-center': block.side === 'center' }">
               <strong v-if="block.title" class="mb-3 block text-xl font-black text-navy-800">{{ block.title }}</strong>

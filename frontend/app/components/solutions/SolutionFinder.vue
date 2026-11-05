@@ -77,7 +77,7 @@ const summary = computed(() => [places.find((p) => p.id === place.value)?.label,
         <div v-if="picks.length" :key="picks.map((card) => card.slug).join()" class="finder-picks">
           <p class="finder-summary">Phù hợp với: <strong>{{ summary }}</strong></p>
           <a v-for="card in picks" :key="card.slug" class="finder-pick" :href="links.solution(card.slug)">
-            <img v-if="card.image" :src="card.image" alt="" width="120" height="90" loading="lazy" decoding="async">
+            <img v-if="card.image" :src="optimizedImage(card.image, 240, 180)" alt="" width="120" height="90" loading="lazy" decoding="async">
             <span><strong>{{ card.title }}</strong><small>Xem giải pháp →</small></span>
           </a>
           <button type="button" class="finder-cta" @click="openConsultation(`Giải pháp: ${picks.map((card) => card.title).join(' + ')} (${summary})`)">

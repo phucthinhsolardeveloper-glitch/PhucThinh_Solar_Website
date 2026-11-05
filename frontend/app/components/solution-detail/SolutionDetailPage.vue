@@ -109,7 +109,7 @@ onBeforeUnmount(() => {
     <article>
       <Transition :name="`swap-${direction}`" mode="out-in">
       <header ref="heroRef" :key="data.solution.slug" class="solution-hero" :class="{ 'has-image': data.solution.image }">
-        <img v-if="data.solution.image" :src="data.solution.image" :alt="data.solution.title" class="solution-hero__image" width="1600" height="1000" fetchpriority="high">
+        <img v-if="data.solution.image" :src="optimizedImage(data.solution.image, 1800, 1200)" :alt="data.solution.title" class="solution-hero__image" width="1600" height="1000" fetchpriority="high">
         <span class="solution-hero__shade" aria-hidden="true" />
         <div class="pts-container solution-hero__inner">
           <a v-if="data.solution.category" class="solution-hero__category" :href="links.generic(data.navigation.allUrl)">{{ data.solution.category }}</a>

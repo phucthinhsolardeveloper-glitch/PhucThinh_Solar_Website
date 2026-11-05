@@ -43,7 +43,7 @@ const leadIntent = useState<string>('public-home-lead-intent', () => '')
           <span class="block overflow-hidden rounded-[4px] bg-navy-950">
             <img
               class="block aspect-[4/3] w-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.05] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
-              :src="campaign.image"
+              :src="optimizedImage(campaign.image, 1200, 900)"
               :alt="campaign.name"
               width="760"
               height="570"

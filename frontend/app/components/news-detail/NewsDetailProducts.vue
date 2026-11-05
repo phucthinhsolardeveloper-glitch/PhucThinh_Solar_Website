@@ -51,7 +51,7 @@ onMounted(() => {
 })
 onBeforeUnmount(() => observer?.disconnect())
 
-function thumb(src: string) { return src.startsWith('/upload/product/') ? `/thumbs/480x480x1${src}` : src }
+function thumb(src: string) { return src.startsWith('/upload/product/') ? phpThumb(src, 480, 480) : src }
 function price(product: PublicCatalogProduct) {
   const p = product.pricing
   if (!p || p.mode !== 'price') return 'Liên hệ báo giá'

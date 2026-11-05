@@ -54,7 +54,7 @@ test('does not render an empty certificate image frame when CMS media is absent'
   const source = await readFile(new URL('../app/components/about/AboutPreviewPage.vue', import.meta.url), 'utf8')
   const certificates = source.split('id="about-certificates"')[1]?.split('</section>')[0] ?? ''
   assert.match(certificates, /<button[\s\S]*?v-if="item\.image"/)
-  assert.match(certificates, /:src="item\.image"/)
+  assert.match(certificates, /:src="optimizedImage\(item\.image, 600, 800\)"/)
 })
 
 test('validates only canonical Zalo URLs and permits every published certificate item in the DTO', () => {

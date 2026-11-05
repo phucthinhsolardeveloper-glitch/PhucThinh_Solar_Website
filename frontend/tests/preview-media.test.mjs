@@ -69,3 +69,19 @@ test('is disabled unless the explicit local preview flag is enabled', async () =
   const result = await fetchLegacyPreviewMedia('/upload/photo/logo.png', { ...config, previewMediaProxy: false }, async () => response(new Uint8Array([1])))
   assert.equal(result, null)
 })
+
+test('WebP rendition thumbnails fall back to their JPG/PNG original, WebP originals stay intact', async () => {
+  const requested = []
+  const fetcher = async (url) => {
+    requested.push(url.pathname)
+    return url.pathname.startsWith('/thumbs/')
+      ? response('', { 'content-type': 'text/html' }, 403)
+      : response(new Uint8Array([1]), { 'content-type': 'image/png' })
+  }
+  await fetchLegacyPreviewMedia('/thumbs/320x320x1/upload/product/panel.png.webp', config, fetcher)
+  await fetchLegacyPreviewMedia('/thumbs/960x432x1/upload/photo/hero.webp', config, fetcher)
+  assert.deepEqual(requested, [
+    '/thumbs/320x320x1/upload/product/panel.png.webp', '/upload/product/panel.png',
+    '/thumbs/960x432x1/upload/photo/hero.webp', '/upload/photo/hero.webp',
+  ])
+})

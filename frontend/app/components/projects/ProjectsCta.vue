@@ -5,7 +5,7 @@ const props = defineProps<{ cta: PublicProjectsCta; label: string }>()
 const backgroundImage = computed(() => {
   const src = props.cta.image
   return /^\/upload\/news\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|gif|webp|avif)$/i.test(src)
-    ? `/thumbs/1600x500x1${src}`
+    ? phpThumb(src, 1600, 500)
     : ''
 })
 const trustIcons = { headset: 'i-lucide-headset', cogs: 'i-lucide-settings-2', shield: 'i-lucide-shield-check' } as const

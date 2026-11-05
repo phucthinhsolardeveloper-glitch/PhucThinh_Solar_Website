@@ -14,7 +14,7 @@ const fallbackPoints: PublicHomeAboutPoint[] = [
 const points = computed(() => (props.about.points?.length ? props.about.points : fallbackPoints).filter((point) => point.label))
 
 function pointImage(src: string): string {
-  return phpResizablePointImage.test(src) ? `/thumbs/48x48x1${src}` : src
+  return phpResizablePointImage.test(src) ? phpThumb(src, 48, 48) : src
 }
 
 // Gentle parallax: the illustration drifts slower than the page while the band is on screen.

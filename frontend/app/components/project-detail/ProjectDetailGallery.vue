@@ -154,7 +154,7 @@ onBeforeUnmount(() => {
             @click="open(item, $event.currentTarget as HTMLElement)"
           >
             <span class="relative block overflow-hidden rounded-[4px] bg-slate-100">
-              <img v-if="item.src" :src="item.src" :alt="item.caption || (item.type === 'video' ? 'Video dự án' : 'Hình ảnh dự án')" class="block aspect-[4/3] w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105 motion-reduce:transform-none motion-reduce:transition-none" loading="lazy" decoding="async">
+              <img v-if="item.src" :src="optimizedImage(item.src, 900, 675)" :alt="item.caption || (item.type === 'video' ? 'Video dự án' : 'Hình ảnh dự án')" class="block aspect-[4/3] w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105 motion-reduce:transform-none motion-reduce:transition-none" loading="lazy" decoding="async">
               <span v-if="item.type === 'video'" class="absolute left-1/2 top-1/2 grid h-12 w-12 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-navy-950/85 text-xl text-white shadow-lg transition-transform group-hover:scale-110 motion-reduce:group-hover:scale-100 motion-reduce:transition-none" aria-hidden="true">▶</span>
               <span
                 v-else
@@ -246,7 +246,7 @@ onBeforeUnmount(() => {
           :aria-label="'Xem ảnh ' + (index + 1)"
           @click="selected = item"
         >
-          <img :src="item.src" alt="" loading="lazy" decoding="async">
+          <img :src="optimizedImage(item.src, 240, 180)" alt="" loading="lazy" decoding="async">
         </button>
       </div>
     </div>

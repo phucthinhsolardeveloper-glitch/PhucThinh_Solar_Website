@@ -17,12 +17,12 @@ let pointerInside = false
 let focusInside = false
 let motionPreference: MediaQueryList | undefined
 
-const phpResizableHeroImage = /^\/(?:upload\/photo|assets\/images\/site-visuals)\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png)$/i
+const phpResizableHeroImage = /^\/(?:upload\/photo\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|webp)|assets\/images\/site-visuals\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png))$/i
 
 function heroImageCandidate(src: string, width: 960 | 1600): string {
   if (!phpResizableHeroImage.test(src)) return src
   const height = Math.round(width * 720 / 1600)
-  return `/thumbs/${width}x${height}x1${src}`
+  return phpThumb(src, width, height)
 }
 
 function heroImageSrcSet(src: string): string | undefined {

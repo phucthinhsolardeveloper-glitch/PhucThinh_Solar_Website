@@ -28,18 +28,18 @@ const certificateGalleryOpen = ref(false)
 const activeCertificateIndex = ref(0)
 const activeCertificate = computed(() => galleryCertificates.value[activeCertificateIndex.value] ?? null)
 const partnerBrands = [
-  { name: 'AESOLAR', logo: 'aesolar.png' },
-  { name: 'Blue Carbon', logo: 'bluecarbon.png' },
-  { name: 'Canadian Solar', logo: 'canadiansolar.png' },
-  { name: 'EPSIVO', logo: 'epsivo.png' },
-  { name: 'Hober', logo: 'hober.png' },
-  { name: 'Huawei', logo: 'huawei.png' },
-  { name: 'Jindian', logo: 'jdjindian.png' },
-  { name: 'LONGi', logo: 'longi.png' },
-  { name: 'Oriana', logo: 'oriana.png' },
-  { name: 'Sharp', logo: 'sharp.png' },
-  { name: 'SolaX', logo: 'solax.png' },
-  { name: 'Sungrow', logo: 'sungrow.png' },
+  { name: 'AESOLAR', logo: 'aesolar.webp' },
+  { name: 'Blue Carbon', logo: 'bluecarbon.webp' },
+  { name: 'Canadian Solar', logo: 'canadiansolar.webp' },
+  { name: 'EPSIVO', logo: 'epsivo.webp' },
+  { name: 'Hober', logo: 'hober.webp' },
+  { name: 'Huawei', logo: 'huawei.webp' },
+  { name: 'Jindian', logo: 'jdjindian.webp' },
+  { name: 'LONGi', logo: 'longi.webp' },
+  { name: 'Oriana', logo: 'oriana.webp' },
+  { name: 'Sharp', logo: 'sharp.webp' },
+  { name: 'SolaX', logo: 'solax.webp' },
+  { name: 'Sungrow', logo: 'sungrow.webp' },
 ]
 function normalizeBrandName(value: string): string {
   return value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '')
@@ -149,8 +149,8 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
 // Admin "Giới thiệu - Ảnh showroom" replaces the default showroom photo.
 const showroomImage = computed(() => {
   const src = props.about.showroomImage || ''
-  if (/^\/upload\/photo\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|webp)$/i.test(src)) return `/thumbs/780x600x1${src}`
-  return src || '/assets/images/site-visuals/about-showroom-solar-equipment-20261104.png'
+  if (/^\/upload\/photo\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|webp)$/i.test(src)) return phpThumb(src, 780, 600)
+  return src || '/assets/images/site-visuals/about-showroom-solar-equipment-20261104.webp'
 })
 </script>
 
@@ -184,7 +184,7 @@ const showroomImage = computed(() => {
           </div>
         </div>
         <figure v-if="about.story.image" class="m-0 h-full min-h-0 overflow-hidden bg-[#102d58] max-[800px]:aspect-[16/10]">
-          <img class="block h-full w-full object-cover" :src="'/assets/images/site-visuals/about-storefront-retouched-20261104.png'" :alt="about.story.title" width="1600" height="900" fetchpriority="high">
+          <img class="block h-full w-full object-cover" :src="'/assets/images/site-visuals/about-storefront-retouched-20261104.webp'" :alt="about.story.title" width="1600" height="900" fetchpriority="high">
         </figure>
       </div>
     </section>
@@ -235,7 +235,7 @@ const showroomImage = computed(() => {
       <div class="pts-container">
         <div class="grid grid-cols-2 items-center gap-[clamp(28px,5.4vw,86px)] max-[800px]:grid-cols-1">
           <figure v-if="about.people.image" class="m-0 aspect-[10/7] overflow-hidden rounded-btn bg-navy-50 max-[800px]:max-h-[26rem]">
-            <img class="block h-full w-full object-cover" :src="about.people.image" :alt="about.people.title" width="780" height="620" loading="lazy">
+            <img class="block h-full w-full object-cover" :src="optimizedImage(about.people.image, 1200, 900)" :alt="about.people.title" width="780" height="620" loading="lazy">
           </figure>
           <div>
             <h2 id="about-people-title" class="m-0 text-[clamp(29px,2.6vw,38px)] font-bold leading-[1.22]">{{ about.people.title }}</h2>
@@ -288,9 +288,9 @@ const showroomImage = computed(() => {
           <ul class="about-brand-grid">
             <li v-for="brand in partnerBrandsWithProducts" :key="brand.name" class="about-brand-cell" :class="{ 'about-brand-cell-link': brand.href }">
               <NuxtLink v-if="brand.href" :to="brand.href" :aria-label="`Xem sản phẩm ${brand.name}`">
-                <img :src="`/assets/images/brand-logos/${brand.logo}`" :alt="brand.name" width="2172" height="724" loading="lazy" decoding="async">
+                <img :src="`/assets/images/brand-logos/${brand.logo}`" :alt="brand.name" width="480" height="160" loading="lazy" decoding="async">
               </NuxtLink>
-              <img v-else :src="`/assets/images/brand-logos/${brand.logo}`" :alt="brand.name" width="2172" height="724" loading="lazy" decoding="async">
+              <img v-else :src="`/assets/images/brand-logos/${brand.logo}`" :alt="brand.name" width="480" height="160" loading="lazy" decoding="async">
             </li>
           </ul>
         </div>
@@ -348,7 +348,7 @@ const showroomImage = computed(() => {
                   :aria-label="`Mở chứng nhận ${item.name}`"
                   @click="openCertificate(item, $event)"
                 >
-                  <img class="block h-full w-full object-contain transition-transform duration-300 group-hover:scale-105" :src="item.image" :alt="item.name" width="260" height="360" loading="lazy">
+                  <img class="block h-full w-full object-contain transition-transform duration-300 group-hover:scale-105" :src="optimizedImage(item.image, 600, 800)" :alt="item.name" width="260" height="360" loading="lazy">
                 </button>
               </div>
               <span class="text-[15px] font-bold text-gold-700">{{ about.labels.certLabel }}</span>

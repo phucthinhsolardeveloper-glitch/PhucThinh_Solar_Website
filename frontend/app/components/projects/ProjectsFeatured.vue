@@ -31,7 +31,7 @@ onBeforeUnmount(() => { window.removeEventListener('scroll', onScroll); cancelAn
 
 <template>
   <section ref="heroRef" class="projects-hero" aria-labelledby="projects-title">
-    <img v-if="image" :src="image" alt="" class="projects-hero__image" fetchpriority="high" decoding="async">
+    <img v-if="image" :src="optimizedImage(image, 1800, 1200)" alt="" class="projects-hero__image" fetchpriority="high" decoding="async">
     <span class="projects-hero__shade" aria-hidden="true" />
     <div class="pts-container projects-hero__inner">
       <div class="projects-hero__copy">

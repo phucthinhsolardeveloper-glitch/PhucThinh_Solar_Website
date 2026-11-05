@@ -26,44 +26,49 @@ const benefitCells = computed(() => defaultBenefits.map((cell, index) => ({
   description: props.benefits[index]?.description || cell.description,
 })))
 
-const phpResizableCatalogImage = /^\/upload\/(?:product|news|photo)\/[A-Za-z0-9][A-Za-z0-9._/-]*\.(?:jpe?g|png|webp)$/i
+const phpResizableCatalogImage = /^\/(?:upload\/(?:product|news|photo)\/[A-Za-z0-9][A-Za-z0-9._/-]*\.(?:jpe?g|png|webp)|assets\/images\/site-visuals\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png))$/i
 const heroVisualOverrides: Record<string, string> = {
   '/assets/images/site-visuals/catalog-products-hero-20261007-v2.png': '/assets/images/site-visuals/catalog-grid-tie-solar-20261008.png',
 }
 
+// A failed PHP thumbnail falls back to the original file once before the photo is hidden.
+const heroThumbFailed = ref(false)
 function catalogHeroCandidate(src: string, width: 960 | 1800): string {
   const resolved = heroVisualOverrides[src] || src
-  if (!phpResizableCatalogImage.test(resolved)) return resolved
+  if (heroThumbFailed.value || !phpResizableCatalogImage.test(resolved)) return resolved
   const height = Math.round(width / 3)
-  return `/thumbs/${width}x${height}x1${resolved}`
+  return phpThumb(resolved, width, height)
 }
 
 function catalogHeroSrcSet(src: string): string | undefined {
-  if (!phpResizableCatalogImage.test(src)) return undefined
+  if (heroThumbFailed.value || !phpResizableCatalogImage.test(heroVisualOverrides[src] || src)) return undefined
   return `${catalogHeroCandidate(src, 960)} 960w, ${catalogHeroCandidate(src, 1800)} 1800w`
 }
 
 const heroFailed = ref(false)
-function onHeroError() { heroFailed.value = true }
-watch(() => props.hero?.image, () => { heroFailed.value = false })
+function onHeroError() {
+  if (!heroThumbFailed.value) heroThumbFailed.value = true
+  else heroFailed.value = true
+}
+watch(() => props.hero?.image, () => { heroFailed.value = false; heroThumbFailed.value = false })
 
 const fallbackHeroImage = '/assets/images/site-visuals/catalog-grid-tie-solar-20261008.png'
 const activeHeroImage = computed(() => props.hero?.image || fallbackHeroImage)
 
 const brandLogoByName: Record<string, string> = {
-  aesolar: '/assets/images/brand-logos/aesolar.png',
-  bluecarbon: '/assets/images/brand-logos/bluecarbon.png',
-  canadiansolar: '/assets/images/brand-logos/canadiansolar.png',
-  epsivo: '/assets/images/brand-logos/epsivo.png',
-  hober: '/assets/images/brand-logos/hober.png',
-  huawei: '/assets/images/brand-logos/huawei.png',
-  jdjindian: '/assets/images/brand-logos/jdjindian.png',
-  jindian: '/assets/images/brand-logos/jdjindian.png',
-  longi: '/assets/images/brand-logos/longi.png',
-  oriana: '/assets/images/brand-logos/oriana.png',
-  sharp: '/assets/images/brand-logos/sharp.png',
-  solax: '/assets/images/brand-logos/solax.png',
-  sungrow: '/assets/images/brand-logos/sungrow.png',
+  aesolar: '/assets/images/brand-logos/aesolar.webp',
+  bluecarbon: '/assets/images/brand-logos/bluecarbon.webp',
+  canadiansolar: '/assets/images/brand-logos/canadiansolar.webp',
+  epsivo: '/assets/images/brand-logos/epsivo.webp',
+  hober: '/assets/images/brand-logos/hober.webp',
+  huawei: '/assets/images/brand-logos/huawei.webp',
+  jdjindian: '/assets/images/brand-logos/jdjindian.webp',
+  jindian: '/assets/images/brand-logos/jdjindian.webp',
+  longi: '/assets/images/brand-logos/longi.webp',
+  oriana: '/assets/images/brand-logos/oriana.webp',
+  sharp: '/assets/images/brand-logos/sharp.webp',
+  solax: '/assets/images/brand-logos/solax.webp',
+  sungrow: '/assets/images/brand-logos/sungrow.webp',
 }
 
 function brandLogo(name: string): string {
@@ -88,7 +93,8 @@ function brandLogo(name: string): string {
       >
       <img
         v-else-if="!heroFailed"
-        :src="activeHeroImage"
+        :src="catalogHeroCandidate(activeHeroImage, 960)"
+        :srcset="catalogHeroSrcSet(activeHeroImage)"
         alt=""
         width="1800"
         height="600"

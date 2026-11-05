@@ -77,8 +77,16 @@ type HomeCategorySlot = Omit<typeof slots[number], 'stage' | 'name' | 'descripti
   position: string
 }
 
+// Default card art lives in both trees, so PHP can serve a resized WebP; on error the original is used.
+const thumbFailed = ref(new Set<string>())
+const siteVisual = (src: string) => thumbFailed.value.has(src) ? src : phpThumb(src, 1200, 900, 3)
+function onCardImageError(slot: { key: string; image: string }) {
+  const original = slots.find((item) => item.key === slot.key)?.image
+  if (original && !thumbFailed.value.has(original)) thumbFailed.value = new Set([...thumbFailed.value, original])
+}
+
 // Admin "Trang chủ - Chuỗi năng lượng" overrides card N field by field; blanks keep the defaults.
-const adminImage = (src: string) => /^\/upload\/news\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|webp)$/i.test(src) ? `/thumbs/1200x900x1${src}` : src
+const adminImage = (src: string) => /^\/upload\/news\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|webp)$/i.test(src) ? phpThumb(src, 1200, 900) : src
 const chain = computed<HomeCategorySlot[]>(() => slots.map((slot, index) => {
   const admin = props.energyChain[index]
   const category = props.categories.find((item) => slot.needles.some((needle) => item.slug.toLowerCase().includes(needle)))
@@ -89,7 +97,7 @@ const chain = computed<HomeCategorySlot[]>(() => slots.map((slot, index) => {
     stage: admin?.stage || slot.stage,
     description: admin?.description || slot.description,
     action: admin?.action || slot.action,
-    image: admin?.image ? adminImage(admin.image) : slot.image,
+    image: admin?.image ? adminImage(admin.image) : siteVisual(slot.image),
     position: admin?.image ? 'center' : slot.position,
   }
 }))
@@ -147,6 +155,7 @@ const links = useMigrationLinks()
               width="960"
               height="760"
               loading="lazy"
+              @error="onCardImageError(slot)"
             >
             <span class="chain-veil" aria-hidden="true" />
 
