@@ -1,5 +1,12 @@
 # Documentation changelog
 
+## 2026-11-05
+
+- Audit backend/API/Admin cho staging Nuxt: gỡ 8 endpoint AJAX legacy và class
+  `AddonsOnline` không còn caller, sửa thumbnail ảnh WebP gốc, nối popup quảng
+  cáo và favicon từ Admin sang Nuxt. Chi tiết, bằng chứng và đề xuất tùy biến
+  Admin: `10-audits/2026-11-05-backend-frontend-admin-audit.md`.
+
 ## 2026-11-04
 
 - Đồng bộ chỉ dẫn thiết kế theo ngôn ngữ PTS hiện hành: design language 2026-11
