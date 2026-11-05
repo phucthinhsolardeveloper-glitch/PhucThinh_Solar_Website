@@ -44,9 +44,9 @@ const editorial = computed(() => buildEditorialToc(cleanedContent.value))
 
 const readingMinutes = computed(() => {
   const plain = cleanedContent.value.html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
-  if (!plain) return 1
+  if (!plain) return 0
   const words = plain.split(' ').length
-  return Math.max(1, Math.round(words / 200))
+  return Math.max(1, Math.ceil(words / 220))
 })
 
 const tocContainerRef = ref<HTMLElement | null>(null)
@@ -85,8 +85,8 @@ function formatDate(value: string): string {
         <time v-if="article.date" :datetime="article.date">{{ formatDate(article.date) }}</time>
         <span v-if="article.date" aria-hidden="true" class="text-slate-300">·</span>
         <span>{{ article.author.name }}</span>
-        <span aria-hidden="true" class="text-slate-300">·</span>
-        <span class="inline-flex items-center gap-1.5 text-slate-500">
+        <span v-if="readingMinutes > 0" aria-hidden="true" class="text-slate-300">·</span>
+        <span v-if="readingMinutes > 0" class="inline-flex items-center gap-1.5 text-slate-500">
           <UIcon name="i-lucide-clock" class="size-3.5 text-gold-600" aria-hidden="true" />
           ~{{ readingMinutes }} phút đọc
         </span>
