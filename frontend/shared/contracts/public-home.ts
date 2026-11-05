@@ -6,6 +6,7 @@ export interface PublicHomeProcess { number: string; name: string; description: 
 export interface PublicHomeAboutPoint { label: string; description: string; image: string }
 export interface PublicHomeProduct { id: number; name: string; slug: string; href: string; image: string }
 export interface PublicHomeProductGroup { categoryId: number; categoryName: string; categoryUrl: string; products: PublicHomeProduct[] }
+export interface PublicHomePopup { key: string; image: string; title: string; href: string }
 export interface PublicHomePayload {
   schemaVersion: 1
   locale: 'vi'
@@ -20,6 +21,7 @@ export interface PublicHomePayload {
   about: { configured: boolean; visible: boolean; title: string; description: string; href: string; action: string; points?: PublicHomeAboutPoint[] }
   contact: { hotline: string; email: string; address: string; workingHours: string }
   productGroups: PublicHomeProductGroup[]
+  popup?: PublicHomePopup | null
   summary: Record<string, number>
 }
 
@@ -51,5 +53,6 @@ export function isPublicHomePayload(value: unknown): value is PublicHomePayload 
   if (value.about.points !== undefined && (!Array.isArray(value.about.points) || value.about.points.length > 4 || !value.about.points.every(isAboutPoint))) return false
   if (!record(value.contact) || !text(value.contact.hotline, true) || !text(value.contact.email, true) || !text(value.contact.address, true) || !text(value.contact.workingHours, true)) return false
   if (!Array.isArray(value.productGroups) || !value.productGroups.every((group) => record(group) && typeof group.categoryId === 'number' && Number.isSafeInteger(group.categoryId) && group.categoryId > 0 && text(group.categoryName) && url(group.categoryUrl) && Array.isArray(group.products) && group.products.every((product) => record(product) && typeof product.id === 'number' && Number.isSafeInteger(product.id) && product.id > 0 && text(product.name) && text(product.slug) && url(product.href) && image(product.image)))) return false
+  if (value.popup !== undefined && value.popup !== null && !(record(value.popup) && /^[a-f0-9]{8,64}$/.test(String(value.popup.key)) && image(value.popup.image) && text(value.popup.title, true) && url(value.popup.href, true))) return false
   return record(value.summary) && Object.values(value.summary).every((count) => typeof count === 'number' && Number.isSafeInteger(count) && count >= 0)
 }

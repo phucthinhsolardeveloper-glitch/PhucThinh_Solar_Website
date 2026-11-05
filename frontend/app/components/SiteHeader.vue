@@ -22,7 +22,9 @@ const { cart: migrationCart, refresh: refreshMigrationCart } = useMigrationCart(
 const { openConsultation } = useStorefrontModal()
 const config = useRuntimeConfig()
 const siteStructuredData = computed(() => publicSiteStructuredData(config.public.canonicalSiteOrigin, route.path, props.site))
+const adminFavicon = computed(() => props.site.brand.favicon || '')
 useHead({
+  link: computed(() => adminFavicon.value ? [{ key: 'favicon', rel: 'icon', href: adminFavicon.value }] : []),
   script: computed(() => siteStructuredData.value ? [{
     key: 'pts-public-organization-schema',
     type: 'application/ld+json',

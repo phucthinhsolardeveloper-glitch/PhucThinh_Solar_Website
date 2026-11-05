@@ -38,6 +38,21 @@ function ptsHomeLink($label, $href)
     return array('label' => ptsHomeText($label), 'href' => ptsHomeUrl($href, '/'));
 }
 
+/* Admin "Popup quảng cáo": the key changes whenever the record, its photo or
+   its update time changes, so an edited campaign shows again once per session. */
+function ptsPublicHomePopup($row)
+{
+    if(!is_array($row) || !$row) return null;
+    $image = ptsHomePath($row['photo'] ?? '', defined('UPLOAD_PHOTO_L') ? UPLOAD_PHOTO_L : 'upload/photo/');
+    if($image === '') return null;
+    return array(
+        'key' => substr(hash('sha256', ($row['id'] ?? '').'|'.($row['date_updated'] ?? '').'|'.($row['photo'] ?? '')), 0, 20),
+        'image' => $image,
+        'title' => ptsHomeText($row['namevi'] ?? ''),
+        'href' => ptsHomeUrl($row['link'] ?? '')
+    );
+}
+
 function ptsPublicHomePayload(array $input)
 {
     return array(
@@ -59,6 +74,7 @@ function ptsPublicHomePayload(array $input)
         'about' => $input['about'],
         'contact' => $input['contact'],
         'productGroups' => $input['productGroups'],
+        'popup' => ptsPublicHomePopup($input['popup'] ?? null),
         'summary' => array(
             'hero' => count($input['hero']),
             'categories' => count($input['categories']),

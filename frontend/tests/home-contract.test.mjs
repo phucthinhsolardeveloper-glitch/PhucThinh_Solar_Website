@@ -154,3 +154,20 @@ test('homepage Admin SEO fields use the legacy setting row and logo for OG image
   assert.match(homePreview, /home\.value\?\.seo\.image \|\| undefined/)
   assert.ok(homePreview.includes("name: 'keywords', content: pageKeywords.value"))
 })
+
+test('Admin popup is optional, validated and shown on the homepage only once per campaign', () => {
+  const popup = { key: '796f6a1d3caa064c9ddb', image: '/upload/photo/campaign.png', title: 'Khuyến mãi', href: '/san-pham/' }
+  assert.equal(isPublicHomePayload({ ...good, popup }), true)
+  assert.equal(isPublicHomePayload({ ...good, popup: null }), true)
+  assert.equal(isPublicHomePayload({ ...good, popup: { ...popup, href: 'javascript:alert(1)' } }), false)
+  assert.equal(isPublicHomePayload({ ...good, popup: { ...popup, image: 'https://outside.test/a.png' } }), false)
+  assert.equal(isPublicHomePayload({ ...good, popup: { ...popup, key: '<x>' } }), false)
+  const component = readFileSync(new URL('../app/components/home/HomePromoPopup.vue', import.meta.url), 'utf8')
+  assert.match(homePreview, /<HomePromoPopup v-if="home\.popup && !preview"/)
+  assert.match(component, /const STORAGE_KEY = 'pts-popup-campaign'/)
+  assert.match(component, /role="dialog" aria-modal="true"/)
+  assert.match(component, /event\.key === 'Escape'/)
+  assert.match(component, /@click\.self="close"/)
+  assert.match(component, /prefers-reduced-motion: reduce/)
+  assert.match(homePhpApi, /type=\? and act=\? and find_in_set\(\\'hienthi\\',status\)[^;]*'popup','photo_static'/)
+})

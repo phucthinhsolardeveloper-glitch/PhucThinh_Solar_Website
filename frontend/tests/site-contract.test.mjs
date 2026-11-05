@@ -68,3 +68,8 @@ test('rejects malformed optional structures instead of partially rendering them'
   assert.equal(isPublicSitePayload({ ...good, navigationSchemaVersion: 2 }), false)
   assert.equal(isPublicSitePayload({ ...good, catalog: { lighting: { label: 'Chiếu sáng', href: '', items: [{ label: 'X', href: '/x/', children: 'bad' }] } } }), false)
 })
+
+test('Admin favicon is optional and must be a safe URL', () => {
+  assert.equal(isPublicSitePayload({ ...good, brand: { ...good.brand, favicon: '/upload/photo/icon.png' } }), true)
+  assert.equal(isPublicSitePayload({ ...good, brand: { ...good.brand, favicon: 'javascript:alert(1)' } }), false)
+})

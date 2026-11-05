@@ -8,6 +8,7 @@ import HomeCatalog from '~/components/home/HomeCatalog.vue'
 import HomeCampaigns from '~/components/home/HomeCampaigns.vue'
 import HomeEditorial from '~/components/home/HomeEditorial.vue'
 import HomeContact from '~/components/home/HomeContact.vue'
+import HomePromoPopup from '~/components/home/HomePromoPopup.vue'
 import EnergyStageSection from '~/components/experience-v3/EnergyStageSection.vue'
 
 const props = withDefaults(defineProps<{ preview?: boolean }>(), { preview: false })
@@ -57,6 +58,7 @@ usePublicSocialMeta({
         <HomeCampaigns :campaigns="home.campaigns" :campaigns-configured="(home.summary.campaignsConfigured ?? 0) > 0" />
         <HomeEditorial :data="home" />
         <HomeContact :contact="home.contact" />
+        <HomePromoPopup v-if="home.popup && !preview" :popup="home.popup" />
       </template>
     </main>
     <SiteFooter :site="site" />

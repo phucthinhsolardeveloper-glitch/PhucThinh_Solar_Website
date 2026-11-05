@@ -52,7 +52,7 @@ export default defineNuxtConfig({
       htmlAttrs: { lang: 'vi' },
       meta: [{ name: 'theme-color', content: '#0a2251' }],
       link: [
-        { rel: 'icon', type: 'image/png', href: '/assets/images/favicon-pts-mobile.png?v=20261008', sizes: '512x512' },
+        { key: 'favicon', rel: 'icon', type: 'image/png', href: '/assets/images/favicon-pts-mobile.png?v=20261008', sizes: '512x512' },
         // Reserve the exact Vietnamese body/heading font metrics before first paint.
         { rel: 'preload', href: '/fonts/be-vietnam-pro/be-vietnam-pro-400-vi.woff2', as: 'font', type: 'font/woff2', crossorigin: 'anonymous' },
         { rel: 'preload', href: '/fonts/be-vietnam-pro/be-vietnam-pro-400-latin.woff2', as: 'font', type: 'font/woff2', crossorigin: 'anonymous' },

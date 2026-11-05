@@ -45,6 +45,7 @@ try
     $locations = $loadRows("select namevi,address,id,ggmap from #_news where type=? and find_in_set('hienthi',status) order by case when namevi like 'Trụ sở%' then 0 when namevi like 'Kho Gia Lai%' then 1 else 2 end,numb,id desc", array('he-thong-cua-hang'));
     $footer = $loadOne("select namevi,contentvi from #_static where type=? and find_in_set('hienthi',status) limit 0,1", array('footer'));
     $logo = $loadOne("select photo from #_photo where type=? and act=? limit 0,1", array('logo','photo_static'));
+    $favicon = $loadOne("select photo from #_photo where type=? and act=? and find_in_set('hienthi',status) limit 0,1", array('favicon','photo_static'));
     $logoFooter = $loadOne("select photo from #_photo where type=? and act=? limit 0,1", array('logo-footer','photo_static'));
     $trustBadge = $loadOne("select photo,link from #_photo where type=? and act=? and find_in_set('hienthi',status) limit 0,1", array('bct','photo_static'));
     if(function_exists('closeSessionWrite')) closeSessionWrite();
@@ -64,6 +65,8 @@ try
         'productLists' => $productLists, 'productCats' => $productCats, 'productItems' => $productItems, 'productSubs' => $productSubs,
         'solutionRows' => $solutionRows, 'newsLists' => $newsLists, 'newsCats' => $newsCats, 'newsItems' => $newsItems, 'newsSubs' => $newsSubs
     )));
+    $faviconUrl = ptsPublicNavAsset(isset($favicon['photo']) ? $favicon['photo'] : '', UPLOAD_PHOTO_L, ROOT);
+    if($faviconUrl !== '' && isset($data['brand']) && is_array($data['brand'])) $data['brand']['favicon'] = $faviconUrl;
     echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
 }
 catch(Throwable $e)
