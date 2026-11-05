@@ -4,6 +4,40 @@ Mỗi lần thay đổi production phải thêm một mục mới, không ghi cr
 PII hoặc nội dung bí mật. Nếu deploy chỉ thay docs không rebuild image thì ghi rõ
 `docs-only` và lý do không cần runtime deploy.
 
+## 2026-11-05 — đồng bộ production theo master sau khi gom nhánh
+
+- Release PHP/Nuxt: `c62ba98b1de8` (`master`, commit
+  `c62ba98b1de886c90cd9094c7217c6714554be8c`). Production trước đó là
+  `263faa84286e`; nhánh Codex và nhánh film-pilot đã được hợp nhất vào master
+  trước release. Phạm vi runtime mới gồm radius chip bộ lọc dự án và bundle
+  preview Solar Cinema; không có migration.
+- Backup SAFE trước deploy: `20261105T144623Z-full`, checksum đạt; chứa database
+  và `shared/upload`. Backup chỉ nằm trên VPS do chưa có hook off-site. Không
+  xóa upload, volume database hoặc backup cũ. Cache tái sinh đã xóa: 72 page +
+  2 asset.
+- Local predeploy PASS; full Playwright: 248 pass, 42 skip, 0 fail. PHP/Nuxt
+  build và healthcheck PASS. Schema preflight `READY`, không chạy SQL migration.
+- HTTP smoke 5 route trả 200; browser QA production bổ sung kiểm tra 8 route
+  chính trên desktop và mobile: 16/16 pass, không lỗi JavaScript, ảnh hỏng hoặc
+  tràn ngang. PDP mẫu trả 200, ảnh 960px tải đủ và Product JSON-LD có dữ liệu
+  sản phẩm hợp lệ. `/migration-solar-cinema-preview/` vẫn trả 404 có chủ ý:
+  Caddy loại `/migration-*` khỏi proxy Nuxt để các preview không thành trang
+  public; pilot chưa được tích hợp vào section CMS.
+- **Cổng Playwright production của wrapper chưa đạt:** wrapper thoát mã 1 sau
+  khi image đã active vì `mobile-commerce-experience.spec.js` và
+  `typography-system.spec.js` tìm selector PHP cũ (`.right-pro-detail`,
+  `.pts-content-cards`, `.pts-home-category-copy`). Chạy `public-pages.spec.js`
+  riêng cho 16 kiểm tra trang desktop/mobile đều đạt; hai lần chạy JSON-LD
+  legacy cũng không tìm được selector PHP `.product-card .product-item`, nhưng
+  schema được xác minh thủ công trên DOM Nuxt. Cần thay production gate bằng
+  selector/flow Nuxt trước release tiếp theo; không coi exit 1 của wrapper là
+  một lượt deploy có toàn bộ cổng tự động PASS.
+- Không có Caddy 503 trong đợt này. PHP/Nuxt hiện healthy; image rollback được
+  lưu ở `state/previous-image` và `state/previous-nuxt-image` là
+  `263faa84286e`; rollback code bằng
+  `/srv/phucthinhsolar/scripts/rollback-release.sh`. Sau full backup, disk VPS
+  còn khoảng 4.8 GB (96% đã dùng); không prune image/cache trong lần release.
+
 ## 2026-11-05 — cân lại giỏ hàng, checkout và tải ảnh PDP
 
 - Release production: PHP/Nuxt `263faa84286e`. Cột tóm tắt commerce rộng
