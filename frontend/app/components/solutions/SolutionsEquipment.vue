@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import type { PublicSolutionEquipment } from '../../../shared/contracts/public-solutions'
+import type { PublicProductCategoryNode } from '../../../shared/contracts/public-site'
 import type { PublicCatalogPayload, PublicCatalogProduct } from '#shared/contracts/public-catalog'
 import { resolveEquipmentIcon } from '#shared/catalog-menu-presentation'
 
-const props = defineProps<{ equipment: PublicSolutionEquipment[]; title: string; allProductsUrl: string; allProductsLabel: string }>()
+const props = defineProps<{ equipment: PublicSolutionEquipment[]; categoryTree?: PublicProductCategoryNode[]; title: string; allProductsUrl: string; allProductsLabel: string }>()
 const links = useMigrationLinks()
 
 interface Showcase { products: PublicCatalogProduct[] }
@@ -18,6 +19,24 @@ let observer: IntersectionObserver | undefined
 function categoryPath(url: string): string | null {
   const match = url.match(/^\/danh-muc-san-pham\/([a-z0-9-]+(?:\/[a-z0-9-]+){0,3})\/$/)
   return match ? match[1]! : null
+}
+
+function canonicalCategoryUrl(nodes: PublicProductCategoryNode[], slug: string, name: string): string | undefined {
+  const normalizedName = name.trim().toLocaleLowerCase('vi-VN')
+  for (const node of nodes) {
+    if (node.slug === slug && node.name.trim().toLocaleLowerCase('vi-VN') === normalizedName) return node.url
+    const child = canonicalCategoryUrl(node.children, slug, name)
+    if (child) return child
+  }
+  return undefined
+}
+
+function equipmentCategoryPath(item: PublicSolutionEquipment): string | null {
+  const requestedPath = categoryPath(item.url)
+  const slug = requestedPath?.split('/').at(-1)
+  if (!requestedPath || !slug) return null
+  const canonicalUrl = canonicalCategoryUrl(props.categoryTree ?? [], slug, item.name)
+  return categoryPath(canonicalUrl || item.url) || requestedPath
 }
 
 // Same fallback as the catalog grid for a source image too large for the thumb service.
@@ -39,7 +58,7 @@ function cutouts(products: PublicCatalogProduct[]) {
 
 async function loadShowcases() {
   const entries = await Promise.allSettled(props.equipment.map(async (item) => {
-    const path = categoryPath(item.url)
+    const path = equipmentCategoryPath(item)
     if (!path) return null
     const payload = await $fetch<PublicCatalogPayload>('/_migration/catalog', { query: { category: path, per_page: 6 } })
     const products = payload.products.filter((product) => product.media[0]).slice(0, 3)

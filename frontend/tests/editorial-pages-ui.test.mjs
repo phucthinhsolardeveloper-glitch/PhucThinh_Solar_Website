@@ -128,6 +128,7 @@ test('solution imagery stays 8:5, empty CTA follows shared links, and equipment 
   const intro = read('../app/components/solutions/SolutionsIntro.vue')
   const cards = read('../app/components/solutions/SolutionCards.vue')
   const equipment = read('../app/components/solutions/SolutionsEquipment.vue')
+  const solutionsHub = read('../app/pages/giai-phap.vue')
   const detail = read('../app/components/solution-detail/SolutionDetailPage.vue')
   const gallery = read('../app/components/solution-detail/SolutionDetailGallery.vue')
   assert.match(intro, /aspect-\[8\/5\]/)
@@ -150,6 +151,9 @@ test('solution imagery stays 8:5, empty CTA follows shared links, and equipment 
   assert.doesNotMatch(equipment, /bg-slate-50|border border-gray-200|rounded-btn/)
   assert.ok(equipment.includes('/\\.(?:png|webp|avif)(?:[?#]|$)/i'))
   assert.doesNotMatch(equipment, /showroom-backdrop|payload\.categoryHero\?\.image/)
+  assert.match(equipment, /function equipmentCategoryPath\(item: PublicSolutionEquipment\)/)
+  assert.match(equipment, /canonicalCategoryUrl\(props\.categoryTree \?\? \[\], slug, item\.name\)/)
+  assert.match(solutionsHub, /:category-tree="site\.productCategoryTree \?\? \[\]"/)
 })
 
 test('editorial text controls meet the 44px hit-area rule and project tabs support arrow-key navigation', () => {

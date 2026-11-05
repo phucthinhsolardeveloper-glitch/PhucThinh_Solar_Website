@@ -90,7 +90,7 @@ const { activeHeadingId, scrollToHeading } = useTocScrollspy({
           </div>
         </section>
 
-        <SolutionsEquipment :equipment="data.equipment" :title="data.labels.equipment" :all-products-url="data.allProductsUrl" :all-products-label="data.labels.allProducts" />
+        <SolutionsEquipment :equipment="data.equipment" :category-tree="site.productCategoryTree ?? []" :title="data.labels.equipment" :all-products-url="data.allProductsUrl" :all-products-label="data.labels.allProducts" />
         <SolutionsCta v-if="data.cta" :cta="data.cta" />
       </template>
     </main>

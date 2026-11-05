@@ -41,7 +41,7 @@ useSeoMeta({ title: 'Site preview — Phúc Thịnh Solar', robots: 'noindex, no
           <section v-if="solutions.editorial.content.html" class="pb-[54px]" aria-label="Nội dung tư vấn giải pháp">
             <EditorialRichText :content="solutions.editorial.content" />
           </section>
-          <SolutionsEquipment :equipment="solutions.equipment" :title="solutions.labels.equipment" :all-products-url="solutions.allProductsUrl" :all-products-label="solutions.labels.allProducts" />
+          <SolutionsEquipment :equipment="solutions.equipment" :category-tree="site.productCategoryTree ?? []" :title="solutions.labels.equipment" :all-products-url="solutions.allProductsUrl" :all-products-label="solutions.labels.allProducts" />
           <SolutionsCta v-if="solutions.cta" :cta="solutions.cta" />
         </div>
       </template>
