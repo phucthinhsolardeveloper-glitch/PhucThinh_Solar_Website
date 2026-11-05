@@ -4,6 +4,28 @@ Mỗi lần thay đổi production phải thêm một mục mới, không ghi cr
 PII hoặc nội dung bí mật. Nếu deploy chỉ thay docs không rebuild image thì ghi rõ
 `docs-only` và lý do không cần runtime deploy.
 
+## 2026-11-05 — video CTA Giải pháp và hợp nhất release
+
+- Release production: PHP/Nuxt `b8c86f162ed4`. Gộp commit video CTA của nhánh
+  Claude vào nhánh hotfix đã chạy production; các nhánh audit và visual tương
+  đương đã được dọn sau khi kiểm tra quan hệ commit/patch. Giữ nhánh film pilot
+  riêng vì đó là trang thử nghiệm chưa thuộc release.
+- Trước deploy: 509/509 unit test, typecheck, build và smoke PASS. Backup FAST
+  database: `20261105T130611Z-db`; không migration, không đổi DNS, không xóa
+  upload/DB volume. Cache tái sinh đã xóa: 91 page và 2 asset.
+- Script deploy dừng tại bước verify đầu vì Caddy tạm báo `no upstreams
+  available` khi container Nuxt đổi IP. Sau khi active health checker báo
+  `host is up`, verify-stack và schema preflight chỉ đọc PASS. Sáu route chính
+  trả 200; video MP4 trả 206 và đúng byte range. Browser production ở 390/1440
+  không lỗi JavaScript hoặc tràn ngang; mobile dùng poster, desktop có video.
+  PHP/Nuxt healthy và log 2 phút sau ổn định không có lỗi mới.
+- Rollback code: `state/previous-image` và `state/previous-nuxt-image` trỏ về
+  `5c4fc0728392`; dùng `/srv/phucthinhsolar/scripts/rollback-release.sh`.
+  Backup hiện nằm trên VPS; hook off-site riêng chưa được cài.
+- Ghi nhận: script cần đợi Caddy active health chuyển upstream sang `up` trước
+  HTTP verify để tránh báo fail tạm thời. Bộ Playwright production cũ vẫn dùng
+  selector template PHP, cần chuyển sang Nuxt ở đợt bảo trì test riêng.
+
 ## 2026-11-05 — Nuxt storefront fixes và cutout sân khấu Giải pháp
 
 - Hai release liên tiếp: `4f241fed92f9` rồi follow-up `5c4fc0728392`; trạng
