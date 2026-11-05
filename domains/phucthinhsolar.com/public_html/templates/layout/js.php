@@ -222,9 +222,11 @@ $('.view_maps').click(function() {
     <!-- Js Structdata -->
     <?php include TEMPLATE . LAYOUT . "strucdata.php"; ?>
 
-    <!-- Js Addons -->
-    <?= $addons->set('script-main', 'script-main', 2); ?>
-    <?= $addons->get(); ?>
+    <?php if (isset($addons) && is_object($addons)) { ?>
+        <!-- Js Addons -->
+        <?= $addons->set('script-main', 'script-main', 2); ?>
+        <?= $addons->get(); ?>
+    <?php } ?>
 
     <!-- Js Body -->
     <?= htmlspecialchars_decode($setting['bodyjs']) ?>
