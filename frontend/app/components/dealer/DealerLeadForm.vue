@@ -88,7 +88,7 @@ async function send() {
   <form class="grid min-w-0 grid-cols-1 gap-x-5 gap-y-5 min-[640px]:grid-cols-2" @submit.prevent="send">
     <div v-if="selectedProduct" class="flex items-center justify-between gap-2 rounded-[4px] border border-gold-400/50 bg-gold-500/15 px-3.5 py-2.5 text-xs font-bold text-gold-200 min-[640px]:col-span-2">
       <span class="flex items-center gap-2">
-        <UIcon name="i-lucide-check-circle-2" class="size-4 flex-none text-gold-400" aria-hidden="true" />
+        <UIcon name="i-lucide-circle-check" class="size-4 flex-none text-gold-400" aria-hidden="true" />
         <span>Dòng sản phẩm quan tâm: <strong class="text-white">{{ selectedProduct }}</strong></span>
       </span>
       <button type="button" class="text-xs font-extrabold text-gold-300 underline hover:text-white cursor-pointer" @click="emit('clearProduct')">Bỏ chọn</button>

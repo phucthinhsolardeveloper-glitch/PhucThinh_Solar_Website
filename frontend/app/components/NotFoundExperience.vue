@@ -57,7 +57,7 @@ function reload() { if (import.meta.client) window.location.reload() }
       <UIcon name="i-lucide-arrow-right" class="nf-path__go size-5" aria-hidden="true" />
     </NuxtLink>
     <button type="button" class="nf-help" @click="openConsultation('Hỗ trợ tìm kiếm sản phẩm / nội dung')">
-      <UIcon name="i-lucide-message-circle-question" class="size-5 flex-none" aria-hidden="true" />
+      <UIcon name="i-lucide-message-circle-question-mark" class="size-5 flex-none" aria-hidden="true" />
       Không thấy thứ bạn cần? <strong>Nhận tư vấn kỹ thuật</strong>
     </button>
   </section>
