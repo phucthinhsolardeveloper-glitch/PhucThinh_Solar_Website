@@ -4,6 +4,39 @@ Mỗi lần thay đổi production phải thêm một mục mới, không ghi cr
 PII hoặc nội dung bí mật. Nếu deploy chỉ thay docs không rebuild image thì ghi rõ
 `docs-only` và lý do không cần runtime deploy.
 
+## 2026-11-05 — Nuxt storefront fixes và cutout sân khấu Giải pháp
+
+- Hai release liên tiếp: `4f241fed92f9` rồi follow-up `5c4fc0728392`; trạng
+  thái production cuối cùng là PHP/Nuxt `5c4fc0728392`.
+- Phạm vi: đồng bộ icon registry, ổn định phản hồi số lượng giỏ, sửa cache bài
+  tin và PHP layout hook tùy chọn; bỏ ảnh bối cảnh khỏi stage thiết bị. Follow-up
+  resolve URL alias Giải pháp qua `productCategoryTree`, để danh mục “Đèn sân
+  vườn” lấy đúng ba sản phẩm CMS có PNG alpha; “Trụ đèn” không có sản phẩm nên
+  giữ placeholder.
+- Backup full trước release: `20261105T120925Z-full` và
+  `20261105T124008Z-full`; không migration, không đổi DNS.
+- Kiểm tra local ở follow-up `5c4fc0728392`: `npm test` 505/505, typecheck,
+  build và `NITRO_SMOKE_MOCK_PHP=1 npm run smoke` đều PASS. Full browser suite
+  trên release `4f241fed92f9`: 248 pass, 42 skip, 0 fail; follow-up được kiểm
+  tra bằng browser production theo luồng riêng bên dưới.
+- Kiểm tra production: PHP/Nuxt healthy; schema preflight read-only READY; các
+  route `/`, `/san-pham/`, PDP, `/gio-hang/`, `/tin-tuc/` và `/giai-phap/` HTTP
+  200; log web/Nuxt/proxy không có lỗi mới. Browser QA riêng `/giai-phap/` tại
+  320/390/768/1440: không tràn ngang, không page error, không ảnh nền phong cảnh;
+  chọn “Đèn sân vườn” đổi sang V600 ORIANA, T600 ORIANA và WL-0412, ảnh tải đủ và
+  kiểm tra mẫu alpha cho thấy nền trong suốt.
+- Production subset `mobile-commerce-experience.spec.js` và
+  `typography-system.spec.js` còn selector của template PHP cũ nên không dùng
+  làm gate Nuxt: các section/catalog/heading hiện có nhưng class legacy không
+  tồn tại. Cần cập nhật selector trong lượt test-maintenance riêng; kết quả này
+  không thay thế browser QA production nêu trên.
+- Cache tái sinh đã xóa theo deploy script: release đầu 93 page + 11 asset;
+  follow-up 104 page + 2 asset. Không chạm upload/DB volume.
+- Rollback code hiện qua `/srv/phucthinhsolar/scripts/rollback-release.sh`;
+  image trước đó được ghi trong `state/previous-image` và
+  `state/previous-nuxt-image`. Backup hiện chỉ lưu trên VPS; script cảnh báo
+  chưa có hook off-site riêng.
+
 ## 2026-10-09 — khôi phục nội dung tư vấn toàn bộ catalog
 
 - Commit/image: `42db406ce85f` / `phucthinhsolar-web:42db406ce85f`; deploy `SAFE`.
