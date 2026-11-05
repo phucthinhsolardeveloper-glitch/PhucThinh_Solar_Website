@@ -175,13 +175,18 @@ Quy tắc: tối đa **một hiệu ứng “chủ đạo”** mỗi màn hình;
 - **Giỏ hàng/Thanh toán**: yên tâm — bước rõ, tổng tiền nổi bật, kiểm tra hợp lệ tại chỗ, không xô layout.
 - **Trang lỗi/trống**: có cá tính thương hiệu nhưng luôn dẫn lối đi tiếp.
 
-### 12.5 Ý tưởng nên thử tiếp
+### 12.5 Ý tưởng — trạng thái
 
-- Mô phỏng dòng điện ngày/đêm cho trang giải pháp (tấm pin → inverter → pin → tải) bằng SVG động, đúng nguyên lý kỹ thuật.
-- So sánh trước/sau trên ảnh dự án (thanh kéo).
-- Bộ cấu hình nhanh: chọn nhu cầu → gợi ý nhóm thiết bị thật trong danh mục.
-- Thẻ sản phẩm có ánh sáng chéo “tấm pin” khi hover; xem nhanh thông số không rời trang.
-- Bản đồ điểm giao dịch dạng danh sách tương tác (không vẽ bản đồ Việt Nam).
+- Đã có: mô phỏng dòng điện ngày/đêm/mất lưới (`EnergyStageSection`, trang chủ).
+- Đã có: điểm giao dịch dạng danh sách tương tác kèm bản đồ nhúng (`ContactLocations`).
+- Đã có: ánh sáng chéo "tấm pin" khi hover — class dùng chung `.pts-panel-sheen`
+  (thẻ sản phẩm, thẻ dự án, ô danh mục trang Tìm kiếm); tắt khi giảm chuyển động
+  hoặc thiết bị không hover.
+- Đã có: thông số nhanh trên thẻ sản phẩm (`quickSpecs`).
+- Chờ dữ liệu thật: so sánh trước/sau trên ảnh dự án (cần cặp ảnh trước/sau
+  chụp thật, không dựng ảnh).
+- Nên làm tiếp: bộ cấu hình nhanh gợi ý nhóm thiết bị thật từ danh mục (mở rộng
+  `SolutionFinder` khi bài giải pháp có trường phân loại trong Admin).
 
 ## 13. Thành phần dùng chung (ưu tiên tái sử dụng)
 

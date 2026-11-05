@@ -8,7 +8,7 @@ const links = useMigrationLinks()
 <template>
   <article class="project-card min-w-0">
     <a :href="links.project(project.slug)" class="project-card__link group">
-      <span class="project-card__media aspect-[4/3]" :class="{ 'is-empty': !project.image }">
+      <span class="project-card__media pts-panel-sheen aspect-[4/3]" :class="{ 'is-empty': !project.image }">
         <img v-if="project.image" :src="optimizedImage(project.image, 800, 600)" :alt="project.title" loading="lazy" decoding="async">
         <span v-else aria-hidden="true">Chưa có hình ảnh</span>
       </span>

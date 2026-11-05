@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { resolveEquipmentIcon } from '#shared/catalog-menu-presentation'
+import CatalogMenuIcon from '~/components/CatalogMenuIcon.vue'
 import type { PublicSearchPayload } from '#shared/contracts/public-search'
 import CatalogProductGrid from '~/components/catalog/CatalogProductGrid.vue'
 import CatalogMasthead from '~/components/catalog/CatalogMasthead.vue'
@@ -198,17 +200,17 @@ usePublicSocialMeta({
         <div v-if="!keyword" class="rounded-btn border border-gray-200 p-6 text-slate-600 sm:p-8">
           <h2 class="m-0 text-xl font-extrabold text-navy-900">{{ site.productCategories.length ? 'Khám phá theo danh mục' : 'Tìm sản phẩm phù hợp' }}</h2>
           <p class="m-0 mt-1 text-sm text-slate-500">{{ site.productCategories.length ? 'Chọn nhóm thiết bị để xem các sản phẩm đang được công bố.' : 'Chọn một từ khóa gợi ý phía trên để bắt đầu tra cứu.' }}</p>
-          <div v-if="site.productCategories.length" class="mt-5 grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
-            <NuxtLink
-              v-for="cat in site.productCategories"
-              :key="cat.slug"
-              :to="links.generic(cat.url)"
-              class="group flex items-center justify-between gap-3 pts-note px-4 py-3 text-sm font-bold text-navy-900 no-underline transition-colors hover:bg-gold-500/10"
-            >
-              <span class="truncate">{{ cat.name }}</span>
-              <UIcon name="i-lucide-arrow-right" class="size-4 shrink-0 text-slate-400 transition-transform group-hover:translate-x-0.5 group-hover:text-gold-700" aria-hidden="true" />
-            </NuxtLink>
-          </div>
+          <ul v-if="site.productCategories.length" class="search-category-grid">
+            <li v-for="cat in site.productCategories" :key="cat.slug">
+              <NuxtLink :to="links.generic(cat.url)" class="search-category group pts-panel-sheen">
+                <span class="search-category__icon" aria-hidden="true">
+                  <CatalogMenuIcon class="size-6" :name="resolveEquipmentIcon(cat.name, cat.url)" />
+                </span>
+                <span class="search-category__name">{{ cat.name }}</span>
+                <UIcon name="i-lucide-arrow-up-right" class="search-category__go size-5" aria-hidden="true" />
+              </NuxtLink>
+            </li>
+          </ul>
         </div>
         <div v-else-if="pending && !data" class="py-16 text-slate-500" role="status">Đang tìm sản phẩm…</div>
         <div v-else-if="error" class="rounded-btn border border-red-200 bg-red-50 p-6 text-red-800" role="alert">Không thể tải kết quả tìm kiếm lúc này. Vui lòng thử lại.</div>
@@ -292,3 +294,17 @@ usePublicSocialMeta({
     <SiteFooter :site="site" />
   </div>
 </template>
+
+<style scoped>
+.search-category-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr)); gap: 12px; margin: 22px 0 0; padding: 0; list-style: none; }
+.search-category-grid > li { display: flex; }
+.search-category { display: flex; flex: 1; min-height: 76px; align-items: center; gap: 14px; overflow: hidden; padding: 14px 16px; border: 1px solid rgb(10 34 81 / 10%); border-radius: var(--radius-md); background: #fff; color: var(--color-navy-950); font-weight: 800; text-decoration: none; transition: border-color var(--pts-dur-fast) var(--pts-ease), box-shadow var(--pts-dur) var(--pts-ease), transform var(--pts-dur) var(--pts-ease); }
+.search-category:hover { border-color: rgb(228 168 73 / 55%); box-shadow: var(--pts-shadow-lift); transform: translateY(-2px); }
+.search-category:focus-visible { outline: 3px solid var(--color-gold-500); outline-offset: 3px; }
+.search-category__icon { display: grid; width: 46px; height: 46px; flex: none; place-items: center; border-radius: var(--radius-sm); background: rgb(228 168 73 / 14%); color: var(--color-gold-700); transition: background-color var(--pts-dur) var(--pts-ease), color var(--pts-dur) var(--pts-ease); }
+.search-category:hover .search-category__icon { background: var(--pts-gold-gradient); color: var(--color-navy-950); }
+.search-category__name { min-width: 0; flex: 1; font-size: 15px; line-height: 1.35; }
+.search-category__go { flex: none; color: #94a3b8; transition: transform var(--pts-dur) var(--pts-ease), color var(--pts-dur-fast) ease; }
+.search-category:hover .search-category__go { color: var(--color-gold-700); transform: translate(2px, -2px); }
+@media (prefers-reduced-motion: reduce) { .search-category, .search-category__go { transition: none; } .search-category:hover, .search-category:hover .search-category__go { transform: none; } }
+</style>

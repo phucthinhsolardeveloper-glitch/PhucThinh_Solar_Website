@@ -175,7 +175,7 @@ function discountPercent(product: PublicCatalogProduct): number | null {
       <NuxtLink
         :external="!isMigrationPreview"
         :to="productHref(product)"
-        class="relative grid aspect-square place-items-center overflow-hidden rounded-chip bg-slate-50/80 no-underline"
+        class="pts-panel-sheen relative grid aspect-square place-items-center overflow-hidden rounded-chip bg-slate-50/80 no-underline"
       >
         <span
           v-if="discountPercent(product)"

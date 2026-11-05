@@ -347,6 +347,20 @@
     backdrop-filter: blur(14px) saturate(150%);
   }
 
+  /* Brand motif: a diagonal light sweep, like sun glancing off a solar panel.
+     Put on an overflow-hidden media frame; it plays when the frame or its .group is hovered. */
+  .pts-panel-sheen { position: relative; isolation: isolate; }
+  .pts-panel-sheen::after {
+    content: ''; position: absolute; z-index: 2; inset: -25% -60%; pointer-events: none;
+    background: linear-gradient(112deg, transparent 38%, rgb(255 255 255 / 0%) 42%, rgb(255 255 255 / 58%) 49%, rgb(255 214 140 / 30%) 53%, transparent 60%);
+    transform: translateX(-75%); opacity: 0;
+    transition: transform 0.9s cubic-bezier(0.45, 0, 0.25, 1), opacity var(--pts-dur-fast) ease;
+  }
+  .pts-panel-sheen:hover::after, .group:hover .pts-panel-sheen::after, .group:focus-visible .pts-panel-sheen::after { transform: translateX(75%); opacity: 1; }
+  @media (prefers-reduced-motion: reduce), (hover: none) {
+    .pts-panel-sheen::after { display: none; }
+  }
+
   .pts-grid-paper { position: relative; isolation: isolate; }
   .pts-grid-paper::before {
     content: "";
