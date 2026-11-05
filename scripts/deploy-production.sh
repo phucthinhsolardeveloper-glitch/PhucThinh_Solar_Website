@@ -222,7 +222,7 @@ step "Build, chuyển image và chờ healthcheck"
 # Chạy đúng deploy script đã đi cùng archive và được checksum. Không dùng
 # bản copy cố định trên VPS: bản đó có thể cũ hơn release và lấy nhầm runtime
 # Dockerfile của stack phải giữ cùng major runtime PHP 8.1 với local và production.
-remote "tar -xzf $remote_release/deployment-tools-${release_id}.tar.gz -C $remote_release deploy/vps && bash $remote_release/deploy/vps/scripts/deploy-release.sh $remote_release"
+remote "tar -xzf $remote_release/deployment-tools-${release_id}.tar.gz -C $remote_release deploy/vps && PTS_STACK_ROOT=$stack_root bash $remote_release/deploy/vps/scripts/deploy-release.sh $remote_release"
 activated=1
 
 step "Xóa cache sinh lại được"
