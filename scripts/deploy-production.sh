@@ -23,6 +23,7 @@ Optional environment:
   PTS_DEPLOY_SSH_KEY   Private key (default: /home/admin01/.ssh/id_ed25519)
   PTS_STACK_ROOT       VPS stack root (default: /srv/phucthinhsolar)
   PTS_SITE_URL         Public origin (default: https://phucthinhsolar.com)
+  PTS_DEPLOY_PREDEPLOY_REPO  Checkout for SAFE local PHP predeploy; defaults to this release checkout.
 EOF
 }
 
@@ -66,6 +67,7 @@ done
 
 ssh_args=(-i "$ssh_key" -o BatchMode=yes -o ConnectTimeout=15)
 scp_args=(-i "$ssh_key" -o BatchMode=yes -o ConnectTimeout=15)
+predeploy_repo="${PTS_DEPLOY_PREDEPLOY_REPO:-$repo_dir}"
 remote() {
     ssh "${ssh_args[@]}" "$deploy_host" "$1"
 }
@@ -135,6 +137,18 @@ printf '%s\n' "$changed_paths" | grep -Eq '^(domains/phucthinhsolar\.com/public_
 git diff --check "$deployed_commit" "$commit"
 bash -n scripts/package-hosting-release.sh scripts/predeploy-local.sh scripts/deploy-production.sh
 
+if [ "$predeploy_repo" != "$repo_dir" ]; then
+    [ -x "$predeploy_repo/scripts/predeploy-local.sh" ] || fail "PTS_DEPLOY_PREDEPLOY_REPO thiếu scripts/predeploy-local.sh."
+    predeploy_commit="$(git -C "$predeploy_repo" rev-parse HEAD 2>/dev/null || true)"
+    [ -n "$predeploy_commit" ] || fail "PTS_DEPLOY_PREDEPLOY_REPO không phải checkout cùng Git repository."
+    git cat-file -e "${predeploy_commit}^{commit}" 2>/dev/null || fail "commit predeploy không tồn tại trong repository release."
+    git merge-base --is-ancestor "$predeploy_commit" "$commit" || fail "checkout predeploy không phải ancestor của commit release."
+    predeploy_runtime_changes="$(git diff --name-only "$predeploy_commit" "$commit" -- domains/ docker/ docker-compose.local.yml migrations/ scripts/ deploy/ | grep -Ev '^scripts/deploy-production\.sh$' || true)"
+    [ -z "$predeploy_runtime_changes" ] || fail "checkout predeploy khác release ở source/runtime cần kiểm thử: $(printf '%s' "$predeploy_runtime_changes" | tr '\n' ' ')"
+    predeploy_dirty_runtime="$(git -C "$predeploy_repo" status --porcelain --untracked-files=normal -- domains/ docker/ docker-compose.local.yml migrations/ scripts/ deploy/)"
+    [ -z "$predeploy_dirty_runtime" ] || fail "checkout predeploy có thay đổi chưa commit trong source/runtime."
+fi
+
 if [ "$mode" = "auto" ]; then
     if printf '%s\n' "$changed_paths" | grep -Eq '^(migrations/|deploy/|docker/|docker-compose[^/]*|scripts/|domains/phucthinhsolar\.com/public_html/(api/|administrator/|libraries/|sources/|templates/.*\.php$|.*\.php$))'; then
         mode="safe"
@@ -168,7 +182,7 @@ if [ "$mode" = "fast" ]; then
     fi
 else
     step "SAFE: chạy full predeploy local"
-    LOCAL_ENFORCE_RBAC=1 ./scripts/predeploy-local.sh
+    (cd "$predeploy_repo" && LOCAL_ENFORCE_RBAC=1 ./scripts/predeploy-local.sh)
     step "SAFE: chạy toàn bộ Playwright một worker"
     (cd tools/visual-tests && npx playwright test --workers=1)
 fi

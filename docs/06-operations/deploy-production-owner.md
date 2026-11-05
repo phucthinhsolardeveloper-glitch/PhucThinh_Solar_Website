@@ -16,6 +16,13 @@ bỏ** checksum, image healthcheck, cache clear, schema preflight, HTTP smoke,
 Playwright production hoặc log scan. Deploy code không tự chạy migration và
 không ghi vào upload.
 
+Khi phát hành từ một worktree riêng thiếu cấu hình local hoặc runtime bị Git
+ignore, có thể đặt `PTS_DEPLOY_PREDEPLOY_REPO` trỏ tới checkout cùng repository
+đã có Docker local và dữ liệu cấu hình. Script chỉ chấp nhận checkout ancestor
+của release, sạch ở các đường dẫn source/runtime, và không khác release tại
+PHP, Docker, migration hay scripts kiểm thử (ngoại trừ chính script deploy).
+Mặc định, SAFE vẫn kiểm tra ngay trong checkout release.
+
 Nếu không chắc, chọn `SAFE`. Script sẽ từ chối `FAST` khi commit đụng commerce,
 global layout, API, Admin, library, source, migration, Docker hoặc công cụ vận
 hành.
