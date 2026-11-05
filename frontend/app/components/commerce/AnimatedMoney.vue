@@ -1,12 +1,12 @@
 <script setup lang="ts">
 // Money that counts to its new value instead of snapping; SSR and reduced motion show the value directly.
-const props = withDefaults(defineProps<{ value: number | null; empty?: string }>(), { empty: 'Liên hệ' })
+const props = withDefaults(defineProps<{ value: number | null; empty?: string; animate?: boolean }>(), { empty: 'Liên hệ', animate: true })
 const shown = ref(props.value ?? 0)
 let frame = 0
 
 watch(() => props.value, (next, prev) => {
   cancelAnimationFrame(frame)
-  if (next === null || prev === null || prev === undefined || !import.meta.client || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  if (!props.animate || next === null || prev === null || prev === undefined || !import.meta.client || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     shown.value = next ?? 0
     return
   }

@@ -194,7 +194,7 @@ function openCheckout() {
           <div class="min-w-0">
             <Transition name="cart-undo">
               <div v-if="removed" class="cart-undo" role="status">
-                <UIcon name="i-lucide-trash-2" class="size-4 flex-none text-slate-400" aria-hidden="true" />
+                <UIcon name="i-lucide-trash" class="size-4 flex-none text-slate-400" aria-hidden="true" />
                 <span class="min-w-0 flex-1 truncate">Đã xóa <strong>{{ removed.name }}</strong></span>
                 <button v-if="removed.canUndo" type="button" class="cart-undo__btn" :disabled="loading" @click="undoRemove">Hoàn tác</button>
               </div>
@@ -217,11 +217,11 @@ function openCheckout() {
                     class="cart-row__remove"
                     :disabled="removingCode === item.code || busyCode === item.code"
                     @click="removeItem(item.code)"
-                  ><UIcon name="i-lucide-trash-2" class="size-4" aria-hidden="true" />Xóa</button>
+                  ><UIcon name="i-lucide-trash" class="size-4" aria-hidden="true" />Xóa</button>
                 </div>
 
                 <div class="col-start-2 row-start-2 text-sm tb:col-start-3 tb:row-auto tb:text-right">
-                  <strong class="block text-[17px] text-red-600"><AnimatedMoney :value="item.lineTotal" /></strong>
+                  <strong class="block text-[17px] text-red-600"><AnimatedMoney :value="item.lineTotal" :animate="false" /></strong>
                   <small class="text-slate-400">{{ formatMoney(item.unitPrice) }} / sản phẩm</small>
                 </div>
 
@@ -229,6 +229,7 @@ function openCheckout() {
                   <QuantityStepper
                     :model-value="quantityDraft[item.code] ?? item.quantity"
                     label="Số lượng"
+                    :busy="loading"
                     :disabled="busyCode === item.code || (loading && !busyCode)"
                     @update:model-value="quantityDraft[item.code] = $event"
                     @change="updateItem(item.code, item.productId, $event)"
@@ -245,12 +246,12 @@ function openCheckout() {
           <aside class="cart-summary nav:sticky nav:top-28">
             <h2 class="m-0 text-lg font-extrabold text-white">Tóm tắt đơn hàng</h2>
             <dl class="cart-summary__rows">
-              <div><dt>Tạm tính ({{ payload.quantityCount }} sản phẩm)</dt><dd><AnimatedMoney :value="payload.subtotal" /></dd></div>
+              <div><dt>Tạm tính ({{ payload.quantityCount }} sản phẩm)</dt><dd><AnimatedMoney :value="payload.subtotal" :animate="false" /></dd></div>
               <div><dt>Vận chuyển</dt><dd class="text-blue-100/80">Tính ở bước tiếp theo</dd></div>
             </dl>
             <div class="cart-summary__total">
               <span>Tổng tạm tính</span>
-              <strong><AnimatedMoney :value="payload.subtotal" /></strong>
+              <strong><AnimatedMoney :value="payload.subtotal" :animate="false" /></strong>
             </div>
             <p v-if="!payload.canCheckout" class="cart-summary__note">
               Giỏ có sản phẩm cần báo giá; hãy liên hệ tư vấn trước khi đặt hàng.

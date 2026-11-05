@@ -148,6 +148,8 @@ test('solution imagery stays 8:5, empty CTA follows shared links, and equipment 
   assert.match(detail, /\.solution-hero__image \{[^}]*object-fit: cover/)
   assert.match(gallery, /aspect-\[8\/5\]/)
   assert.doesNotMatch(equipment, /bg-slate-50|border border-gray-200|rounded-btn/)
+  assert.ok(equipment.includes('/\\.(?:png|webp|avif)(?:[?#]|$)/i'))
+  assert.doesNotMatch(equipment, /showroom-backdrop|payload\.categoryHero\?\.image/)
 })
 
 test('editorial text controls meet the 44px hit-area rule and project tabs support arrow-key navigation', () => {

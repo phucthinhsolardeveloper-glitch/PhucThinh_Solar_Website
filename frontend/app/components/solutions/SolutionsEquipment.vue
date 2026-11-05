@@ -6,7 +6,7 @@ import { resolveEquipmentIcon } from '#shared/catalog-menu-presentation'
 const props = defineProps<{ equipment: PublicSolutionEquipment[]; title: string; allProductsUrl: string; allProductsLabel: string }>()
 const links = useMigrationLinks()
 
-interface Showcase { products: PublicCatalogProduct[]; backdrop: string }
+interface Showcase { products: PublicCatalogProduct[] }
 
 // Showroom data is enrichment only: the section is fully usable (names,
 // descriptions, category links) before or without it.
@@ -31,6 +31,11 @@ function thumb(src: string, size = 480): string {
 }
 function hideBroken(id: number) { failed.value = new Set(failed.value).add(id) }
 function visible(products: PublicCatalogProduct[]) { return products.filter((product) => !failed.value.has(product.id)) }
+// The desktop stage presents isolated product cutouts. Opaque JPEGs stay in
+// the mobile product tiles, where their photo background is an intentional surface.
+function cutouts(products: PublicCatalogProduct[]) {
+  return visible(products.filter((product) => product.media[0] && /\.(?:png|webp|avif)(?:[?#]|$)/i.test(product.media[0]!)))
+}
 
 async function loadShowcases() {
   const entries = await Promise.allSettled(props.equipment.map(async (item) => {
@@ -38,7 +43,7 @@ async function loadShowcases() {
     if (!path) return null
     const payload = await $fetch<PublicCatalogPayload>('/_migration/catalog', { query: { category: path, per_page: 6 } })
     const products = payload.products.filter((product) => product.media[0]).slice(0, 3)
-    return [item.url, { products, backdrop: payload.categoryHero?.image || '' }] as const
+    return [item.url, { products }] as const
   }))
   const next: Record<string, Showcase> = {}
   for (const entry of entries) if (entry.status === 'fulfilled' && entry.value) next[entry.value[0]] = entry.value[1]
@@ -58,6 +63,7 @@ onBeforeUnmount(() => observer?.disconnect())
 
 const current = computed(() => props.equipment[active.value])
 const currentShowcase = computed(() => current.value ? showcases.value[current.value.url] : undefined)
+const currentCutouts = computed(() => currentShowcase.value ? cutouts(currentShowcase.value.products) : [])
 </script>
 
 <template>
@@ -100,22 +106,10 @@ const currentShowcase = computed(() => current.value ? showcases.value[current.v
     </div>
 
     <div class="showroom-stage" aria-live="polite">
-      <Transition name="stage-backdrop">
-        <img
-          v-if="currentShowcase?.backdrop"
-          :key="current!.url"
-          class="showroom-backdrop"
-          :src="optimizedImage(currentShowcase.backdrop, 1800, 1200)"
-          alt=""
-          loading="lazy"
-          decoding="async"
-        >
-      </Transition>
-
       <Transition name="stage" mode="out-in">
         <div :key="current?.url" class="showroom-stage-inner">
-          <ul v-if="currentShowcase?.products.length" class="showroom-products" :data-count="visible(currentShowcase.products).length">
-            <li v-for="(product, index) in visible(currentShowcase.products)" :key="product.id" :style="{ '--i': index }">
+          <ul v-if="currentCutouts.length" class="showroom-products" :data-count="currentCutouts.length">
+            <li v-for="(product, index) in currentCutouts" :key="product.id" :style="{ '--i': index }">
               <a :href="links.generic(product.url)" class="showroom-product">
                 <span class="showroom-product-media">
                   <img :src="thumb(product.media[0]!)" :alt="product.name" width="480" height="480" loading="lazy" decoding="async" @error="hideBroken(product.id)">
@@ -196,7 +190,6 @@ const currentShowcase = computed(() => current.value ? showcases.value[current.v
   background: radial-gradient(120% 90% at 50% 100%, #fff7e3 0%, #f8fafc 55%, #eef2f7 100%);
   isolation: isolate;
 }
-.showroom-backdrop { position: absolute; inset: 0; z-index: -1; width: 100%; height: 100%; object-fit: cover; opacity: 0.12; filter: saturate(0.6); }
 .showroom-stage-inner { display: flex; width: 100%; flex-direction: column; justify-content: space-between; gap: 24px; padding: clamp(24px, 3vw, 44px); }
 
 .showroom-products { display: grid; flex: 1; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: end; gap: clamp(12px, 2vw, 28px); margin: 0; padding: 0; list-style: none; }
@@ -223,8 +216,6 @@ const currentShowcase = computed(() => current.value ? showcases.value[current.v
 
 .stage-enter-active, .stage-leave-active { transition: opacity 0.28s ease; }
 .stage-enter-from, .stage-leave-to { opacity: 0; }
-.stage-backdrop-enter-active, .stage-backdrop-leave-active { transition: opacity 0.6s ease; }
-.stage-backdrop-enter-from, .stage-backdrop-leave-to { opacity: 0; }
 @keyframes product-rise { from { opacity: 0; translate: 0 28px; scale: 0.94; } to { opacity: 1; translate: 0 0; scale: 1; } }
 
 @media (max-width: 1023px) {
@@ -250,6 +241,6 @@ const currentShowcase = computed(() => current.value ? showcases.value[current.v
 }
 @media (prefers-reduced-motion: reduce) {
   .showroom-products > li { animation: none; }
-  .showroom-link::after, .showroom-product-media img, .stage-enter-active, .stage-leave-active, .stage-backdrop-enter-active, .stage-backdrop-leave-active { transition: none; }
+  .showroom-link::after, .showroom-product-media img, .stage-enter-active, .stage-leave-active { transition: none; }
 }
 </style>

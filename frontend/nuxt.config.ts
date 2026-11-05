@@ -8,6 +8,13 @@ export default defineNuxtConfig({
   // (module v6 dành cho Tailwind v3) và cũng không tự khai plugin
   // @tailwindcss/vite — làm vậy sẽ chạy hai pipeline CSS cạnh tranh nhau.
   modules: ['@nuxt/ui'],
+  icon: {
+    // Runtime-selected icons from TS helpers must be available in the deployed
+    // client bundle without depending on the icon API route.
+    clientBundle: {
+      scan: { globInclude: ['**/*.{vue,ts,jsx,tsx,md,mdc,mdx,yml,yaml}'] },
+    },
+  },
 
   colorMode: {
     preference: 'light',

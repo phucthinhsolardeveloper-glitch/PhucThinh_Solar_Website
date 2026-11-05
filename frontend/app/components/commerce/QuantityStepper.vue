@@ -5,10 +5,12 @@ const props = withDefaults(defineProps<{
   modelValue: number
   label?: string
   disabled?: boolean
+  busy?: boolean
   inlineLabel?: boolean
 }>(), {
   label: 'Số lượng',
   disabled: false,
+  busy: false,
   inlineLabel: false,
 })
 
@@ -38,7 +40,7 @@ function onChange(event: Event) {
     <span v-if="label" :class="inlineLabel ? 'text-[13px] font-bold text-slate-500' : 'text-sm font-bold text-navy-800'">
       {{ inlineLabel ? `${label}:` : label }}
     </span>
-    <div role="group" :aria-label="label" class="inline-flex w-fit items-stretch overflow-hidden rounded-chip border border-gray-300">
+    <div role="group" :aria-label="label" :aria-busy="busy ? 'true' : undefined" class="quantity-stepper inline-flex w-fit items-stretch overflow-hidden rounded-chip border border-gray-300" :class="{ 'is-busy': busy }">
       <button
         type="button"
         class="grid h-11 w-11 flex-none place-items-center text-xl font-semibold text-navy-800 hover:bg-slate-50 focus-visible:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-gold-600 disabled:cursor-not-allowed disabled:text-slate-300"
@@ -69,3 +71,18 @@ function onChange(event: Event) {
     </div>
   </div>
 </template>
+
+<style scoped>
+.quantity-stepper.is-busy button:disabled {
+  background: transparent;
+  color: var(--color-navy-800);
+  opacity: 1;
+}
+
+.quantity-stepper.is-busy input:disabled {
+  background: #fff;
+  color: var(--color-navy-800);
+  opacity: 1;
+  -webkit-text-fill-color: var(--color-navy-800);
+}
+</style>
