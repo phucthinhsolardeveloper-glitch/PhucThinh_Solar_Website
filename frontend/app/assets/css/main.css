@@ -658,6 +658,10 @@
     transition: background 180ms ease, box-shadow 180ms ease, transform 180ms ease;
   }
 
+  .public-filter-chip {
+    border-radius: var(--radius-sm);
+  }
+
   .home-hero-glass-button.public-neutral-button {
     background: linear-gradient(180deg, rgba(255, 255, 255, 0.86) 0%, rgba(241, 243, 246, 0.78) 100%);
   }
