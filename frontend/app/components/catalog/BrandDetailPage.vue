@@ -8,27 +8,9 @@ import { publicPageQueryValue } from '#shared/public-pagination'
 import CatalogProductGrid from '~/components/catalog/CatalogProductGrid.vue'
 
 /*
- * Tách từ migration-brand-detail-preview.vue (xem đó + pages/thuong-hieu/
- * [slug].vue) để dùng chung đúng một logic cho cả preview noindex và route
- * public thật - không nhân bản. Nhận `slug` qua prop vì 2 trang lấy slug từ
- * 2 nguồn khác nhau (preview: ?slug=, public: /thuong-hieu/{slug}/ param).
- *
- * Verify thật trên PHP local (curl http://127.0.0.1:8080/thuong-hieu/longi/,
- * 2026-10-28) sau khi Lane 1 visual audit báo lệch: trang dùng CHUNG template
- * "product/product" với catalog, và KHÔNG đổi H1 theo brand - H1 thật vẫn là
- * "Sản phẩm năng lượng mặt trời" (class catalog-heading), breadcrumb chỉ 2
- * cấp "Trang chủ / {Tên thương hiệu}" (không có "Sản phẩm" ở giữa), có dải
- * benefit tĩnh 4 mục (class .filter_product, text "Tư vấn lựa chọn / Hỗ trợ
- * kỹ thuật / Chính sách rõ ràng / Giao hàng toàn quốc" - giống hệt text tĩnh
- * đã dùng ở CatalogPage.vue) và khối CTA cuối trang .pts-catalog-support với
- * text fallback mặc định "Cần hỗ trợ chọn sản phẩm phù hợp?" (PHP:
- * sources/product.php - không đổi theo brand khi Admin chưa tự soạn ảnh
- * loại "catalog-campaign" cho brand, nên không coi là dữ liệu bịa khi hardcode
- * tĩnh ở đây).
- *
- * Sidebar filter dùng taxonomy và brand rows thật từ các read-only DTO; mức
- * giá chỉ xuất hiện khi public pricing đang bật và được áp dụng trong brand
- * hiện tại ở pts_v1_brand_detail.php.
+ * Shared by the public brand route and the noindex preview route. The wrapper
+ * supplies `slug`; product totals, taxonomy filters and prices stay bound to
+ * the validated CMS DTO.
  */
 const props = defineProps<{ slug: string }>()
 
@@ -160,9 +142,7 @@ usePublicSocialMeta({
 
       <div v-else class="pts-container pt-8 pb-16 max-ph:pt-6 max-ph:pb-12">
         <p v-if="error" class="mb-5 rounded-btn bg-amber-50 px-4 py-3 text-sm text-amber-900" role="alert">Không thể cập nhật kết quả. Đang giữ danh sách vừa tải trước đó.</p>
-        <!-- H1 khớp PHP thật: trang brand KHÔNG đổi heading theo tên thương
-             hiệu, giữ nguyên tiêu đề catalog chung (xem comment đầu file). -->
-        <h1 class="mb-7 text-[clamp(28px,3.6vw,44px)] font-black leading-[1.15] tracking-tight">Sản phẩm năng lượng mặt trời</h1>
+        <h1 class="mb-7 text-[clamp(28px,3.6vw,44px)] font-black leading-[1.15] tracking-tight">Sản phẩm {{ data.brand.name }}</h1>
 
         <div class="mb-7 grid grid-cols-2 gap-4 border-b border-slate-200/80 pb-5 tb:grid-cols-4" aria-label="Lợi ích khi chọn sản phẩm">
           <div class="flex items-center gap-2.5"><span class="grid h-9 w-9 flex-none place-items-center rounded-chip bg-navy-800/[.05] text-gold-700"><CatalogMenuIcon class="h-5 w-5" name="light" /></span><span><strong class="block text-[13.5px] text-navy-950">Tư vấn lựa chọn</strong><small class="text-xs text-slate-500">Đúng nhu cầu, hiệu quả</small></span></div>
@@ -234,16 +214,16 @@ usePublicSocialMeta({
             <div class="mb-6 flex flex-col justify-between gap-4 pts-note-dark p-5 text-white sm:flex-row sm:items-center">
               <div class="min-w-0">
                 <div class="flex flex-wrap items-center gap-3">
-                  <h2 class="m-0 text-xl font-black tracking-tight text-white sm:text-2xl">{{ data.brand.name }}</h2>
+                  <h2 class="m-0 text-xl font-black tracking-tight text-white sm:text-2xl">Danh sách sản phẩm</h2>
                   <span class="rounded-[3px] bg-gold-500/20 px-2.5 py-0.5 text-xs font-extrabold text-gold-300">
-                    {{ data.pagination.total }} sản phẩm chính hãng
+                    {{ data.pagination.total }} sản phẩm
                   </span>
                 </div>
                 <p v-if="data.seo?.description" class="m-0 mt-1.5 max-w-2xl text-xs leading-relaxed text-white/75 sm:text-sm">
                   {{ data.seo.description }}
                 </p>
               </div>
-              <div class="flex flex-wrap items-center gap-3 sm:shrink-0">
+              <div class="flex min-w-0 flex-wrap items-center gap-3 sm:shrink-0">
                 <button
                   type="button"
                   class="inline-flex h-11 cursor-pointer items-center gap-1.5 rounded-[4px] bg-gold-500 px-4 text-xs font-extrabold text-navy-950 transition-colors hover:bg-gold-400"
@@ -252,10 +232,10 @@ usePublicSocialMeta({
                   <UIcon name="i-lucide-headset" class="size-4" aria-hidden="true" />
                   <span>Báo giá sỉ / dự án</span>
                 </button>
-                <label class="flex items-center gap-2 text-xs font-semibold text-white/80">
+                <label class="flex min-w-0 items-center gap-2 text-xs font-semibold text-white/80 max-[639px]:w-full">
                   <span>Sắp xếp</span>
                   <select
-                    class="h-11 rounded-[4px] border border-white/20 bg-white px-3 text-sm font-semibold text-navy-900"
+                    class="h-11 min-w-0 flex-1 rounded-[4px] border border-white/20 bg-white px-3 text-sm font-semibold text-navy-900 sm:flex-none"
                     :value="data.selected.sort"
                     @change="onSortChange"
                   >

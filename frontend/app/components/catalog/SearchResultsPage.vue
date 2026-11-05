@@ -138,8 +138,8 @@ usePublicSocialMeta({
       </div>
     </div>
     <CatalogMasthead
-      :heading="keyword ? `Kết quả tìm kiếm: “${keyword}”` : 'Sản phẩm năng lượng mặt trời'"
-      description="Giải pháp năng lượng phù hợp cho gia đình, doanh nghiệp và công trình"
+      :heading="keyword ? `Kết quả tìm kiếm: “${keyword}”` : 'Tìm kiếm sản phẩm'"
+      :description="keyword ? 'Giải pháp năng lượng phù hợp cho gia đình, doanh nghiệp và công trình' : 'Tìm theo tên thiết bị, công suất, mã sản phẩm hoặc thương hiệu.'"
       :hero="null"
     />
     <main class="pts-container pb-16">
@@ -195,8 +195,8 @@ usePublicSocialMeta({
         </div>
 
         <div v-if="!keyword" class="rounded-btn border border-gray-200 p-6 text-slate-600 sm:p-8">
-          <p class="m-0 text-base font-semibold text-navy-900">Nhập từ khóa trong ô tìm kiếm ở header hoặc thanh công cụ phía trên để tra cứu sản phẩm.</p>
-          <p class="m-0 mt-1 text-sm text-slate-500">Bạn cũng có thể chọn thẳng nhóm thiết bị chính hãng bên dưới:</p>
+          <h2 class="m-0 text-xl font-extrabold text-navy-900">{{ site.productCategories.length ? 'Khám phá theo danh mục' : 'Tìm sản phẩm phù hợp' }}</h2>
+          <p class="m-0 mt-1 text-sm text-slate-500">{{ site.productCategories.length ? 'Chọn nhóm thiết bị để xem các sản phẩm đang được công bố.' : 'Chọn một từ khóa gợi ý phía trên để bắt đầu tra cứu.' }}</p>
           <div v-if="site.productCategories.length" class="mt-5 grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
             <NuxtLink
               v-for="cat in site.productCategories"

@@ -276,9 +276,10 @@ onMounted(() => { window.addEventListener('pageshow', () => { submitting.value =
         <section class="space-y-5">
           <div class="checkout-card">
             <h2 class="checkout-card__title"><UIcon name="i-lucide-user-round" class="size-5" aria-hidden="true" />Người nhận</h2>
+            <p class="checkout-required-note">Các trường có dấu <span class="checkout-required">*</span> là bắt buộc.</p>
             <div class="grid gap-4 tb:grid-cols-2">
               <label class="checkout-field" :class="stateOf('fullname')">
-                <span>Họ và tên</span>
+                <span>Họ và tên <span class="checkout-required" aria-hidden="true">*</span></span>
                 <span class="checkout-field__control">
                   <input v-model.trim="form.fullname" name="dataOrder[fullname]" autocomplete="name" maxlength="150" required placeholder="Nguyễn Văn A" @blur="touched.fullname = true">
                   <UIcon name="i-lucide-circle-check" class="checkout-field__ok size-5" aria-hidden="true" />
@@ -286,7 +287,7 @@ onMounted(() => { window.addEventListener('pageshow', () => { submitting.value =
                 <small v-if="stateOf('fullname') === 'is-invalid'" role="alert">{{ fieldHints.fullname }}</small>
               </label>
               <label class="checkout-field" :class="stateOf('phone')">
-                <span>Số điện thoại</span>
+                <span>Số điện thoại <span class="checkout-required" aria-hidden="true">*</span></span>
                 <span class="checkout-field__control">
                   <input v-model.trim="form.phone" name="dataOrder[phone]" autocomplete="tel" inputmode="tel" maxlength="30" required placeholder="0944 555 957" @blur="touched.phone = true">
                   <UIcon name="i-lucide-circle-check" class="checkout-field__ok size-5" aria-hidden="true" />
@@ -294,7 +295,7 @@ onMounted(() => { window.addEventListener('pageshow', () => { submitting.value =
                 <small v-if="stateOf('phone') === 'is-invalid'" role="alert">{{ fieldHints.phone }}</small>
               </label>
               <label class="checkout-field tb:col-span-2" :class="stateOf('email')">
-                <span>Email nhận xác nhận đơn</span>
+                <span>Email nhận xác nhận đơn <span class="checkout-required" aria-hidden="true">*</span></span>
                 <span class="checkout-field__control">
                   <input v-model.trim="form.email" type="email" name="dataOrder[email]" autocomplete="email" maxlength="190" required placeholder="ban@email.com" @blur="touched.email = true">
                   <UIcon name="i-lucide-circle-check" class="checkout-field__ok size-5" aria-hidden="true" />
@@ -308,7 +309,7 @@ onMounted(() => { window.addEventListener('pageshow', () => { submitting.value =
             <h2 class="checkout-card__title"><UIcon name="i-lucide-map-pin" class="size-5" aria-hidden="true" />Địa chỉ giao hàng</h2>
             <div class="grid gap-4 tb:grid-cols-2">
               <label class="checkout-field">
-                <span>Tỉnh/Thành phố</span>
+                <span>Tỉnh/Thành phố <span class="checkout-required" aria-hidden="true">*</span></span>
                 <span class="checkout-field__control">
                   <select v-model.number="form.city" name="dataOrder[city]" required>
                     <option :value="0">Chọn tỉnh/thành</option>
@@ -317,7 +318,7 @@ onMounted(() => { window.addEventListener('pageshow', () => { submitting.value =
                 </span>
               </label>
               <div class="checkout-field">
-                <label for="checkout-ward">Phường/Xã</label>
+                <label for="checkout-ward">Phường/Xã <span class="checkout-required" aria-hidden="true">*</span></label>
                 <span class="checkout-field__control">
                   <select id="checkout-ward" v-model.number="form.ward" name="dataOrder[ward]" :disabled="!form.city || wardsLoading || Boolean(wardsError)" required>
                     <option :value="0">{{ wardsLoading ? 'Đang tải…' : 'Chọn phường/xã' }}</option>
@@ -331,7 +332,7 @@ onMounted(() => { window.addEventListener('pageshow', () => { submitting.value =
                 </small>
               </div>
               <label class="checkout-field tb:col-span-2" :class="stateOf('address')">
-                <span>Địa chỉ chi tiết</span>
+                <span>Địa chỉ chi tiết <span class="checkout-required" aria-hidden="true">*</span></span>
                 <span class="checkout-field__control">
                   <input v-model.trim="form.address" name="dataOrder[address]" autocomplete="street-address" maxlength="255" required placeholder="Số nhà, tên đường" @blur="touched.address = true">
                   <UIcon name="i-lucide-circle-check" class="checkout-field__ok size-5" aria-hidden="true" />
@@ -359,8 +360,8 @@ onMounted(() => { window.addEventListener('pageshow', () => { submitting.value =
           </div>
 
           <div class="checkout-card">
-            <h2 class="checkout-card__title"><UIcon name="i-lucide-wallet" class="size-5" aria-hidden="true" />Hình thức thanh toán</h2>
-            <div class="checkout-pay">
+            <h2 id="checkout-payment-title" class="checkout-card__title"><UIcon name="i-lucide-wallet" class="size-5" aria-hidden="true" /><span>Hình thức thanh toán <span class="checkout-required" aria-hidden="true">*</span></span></h2>
+            <div class="checkout-pay" role="radiogroup" aria-labelledby="checkout-payment-title" aria-required="true">
               <label v-for="payment in checkout.payments" :key="payment.id" class="checkout-pay__option">
                 <input v-model.number="form.payment" type="radio" name="dataOrder[payments]" :value="payment.id" required class="sr-only">
                 <span class="checkout-pay__icon" aria-hidden="true"><UIcon :name="paymentIcon(payment.name)" class="size-6" /></span>
@@ -433,6 +434,8 @@ onMounted(() => { window.addEventListener('pageshow', () => { submitting.value =
 .checkout-card { padding: clamp(18px, 2vw, 28px); border: 1px solid rgb(10 34 81 / 7%); border-radius: var(--radius-lg); background: #fff; }
 .checkout-card__title { display: flex; align-items: center; gap: 10px; margin: 0 0 18px; color: var(--color-navy-950); font-size: 19px; font-weight: 850; }
 .checkout-card__title :deep(.iconify), .checkout-card__title > :first-child { color: var(--color-gold-600); }
+.checkout-required { color: #b91c1c; }
+.checkout-required-note { margin: -8px 0 18px; color: #52627a; font-size: 13px; line-height: 1.6; }
 .checkout-field { display: grid; align-content: start; gap: 7px; color: var(--color-navy-900); font-size: 14px; font-weight: 700; }
 .checkout-field__control { position: relative; display: flex; align-items: center; }
 .checkout-field input, .checkout-field select, .checkout-field textarea { width: 100%; min-height: 50px; padding: 0 44px 0 14px; border: 1px solid rgb(10 34 81 / 16%); border-radius: var(--radius-md); background: #fff; color: var(--color-navy-950); font: inherit; font-size: 15.5px; font-weight: 500; outline: none; transition: border-color 0.2s ease, box-shadow 0.2s ease; }

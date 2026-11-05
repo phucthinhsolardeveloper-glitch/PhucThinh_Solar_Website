@@ -11,6 +11,8 @@ const links = useMigrationLinks()
 const { openConsultation } = useStorefrontModal()
 const { isHeaderHidden } = useSiteHeader()
 const aboutNavRef = ref<HTMLElement | null>(null)
+const aboutNavCanScrollNext = ref(false)
+let aboutNavResizeObserver: ResizeObserver | null = null
 useActiveHorizontalRail(aboutNavRef)
 const activeAboutSection = ref('ve-phuc-thinh')
 let aboutSectionObserver: IntersectionObserver | null = null
@@ -83,9 +85,27 @@ function navigateAboutSection(id: string) {
   target.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'start' })
 }
 
-onMounted(() => nextTick(setupAboutSectionObserver))
-watch(aboutSectionNavItems, () => nextTick(setupAboutSectionObserver), { deep: true })
-onBeforeUnmount(() => aboutSectionObserver?.disconnect())
+function syncAboutNavControls() {
+  const nav = aboutNavRef.value
+  aboutNavCanScrollNext.value = Boolean(nav && nav.scrollLeft + nav.clientWidth < nav.scrollWidth - 2)
+}
+
+onMounted(() => nextTick(() => {
+  setupAboutSectionObserver()
+  syncAboutNavControls()
+  if (aboutNavRef.value && typeof ResizeObserver !== 'undefined') {
+    aboutNavResizeObserver = new ResizeObserver(syncAboutNavControls)
+    aboutNavResizeObserver.observe(aboutNavRef.value)
+  }
+}))
+watch(aboutSectionNavItems, () => nextTick(() => {
+  setupAboutSectionObserver()
+  syncAboutNavControls()
+}), { deep: true })
+onBeforeUnmount(() => {
+  aboutSectionObserver?.disconnect()
+  aboutNavResizeObserver?.disconnect()
+})
 
 async function openCertificate(item: PublicAboutPayload['certificates']['items'][number], event: MouseEvent) {
   const index = galleryCertificates.value.findIndex((candidate) => candidate.id === item.id)
@@ -165,7 +185,8 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
 
     <!-- Chapter Navigation: Thanh điều hướng chương trình tự động dính -->
     <nav class="sticky z-30 border-b border-slate-200 bg-white/95 backdrop-blur-md transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]" :class="isHeaderHidden ? 'top-0 shadow-sm' : 'top-[65px] min-[821px]:top-[88px] min-[1321px]:top-[104px] min-[1501px]:top-[120px] min-[1800px]:top-[136px]'" aria-label="Đi nhanh trong trang Giới thiệu">
-      <div ref="aboutNavRef" class="pts-container flex gap-6 overflow-x-auto py-1 [scrollbar-width:none] max-[800px]:gap-[18px] [&::-webkit-scrollbar]:hidden" aria-label="Mục nội dung Giới thiệu">
+      <div class="relative">
+        <div ref="aboutNavRef" class="pts-container flex gap-6 overflow-x-auto py-1 [scrollbar-width:none] max-[800px]:gap-[18px] [&::-webkit-scrollbar]:hidden" aria-label="Mục nội dung Giới thiệu" @scroll.passive="syncAboutNavControls">
         <a
           v-for="item in aboutSectionNavItems"
           :key="item.id"
@@ -176,6 +197,8 @@ function onCertificateDialogBackdrop(event: MouseEvent) {
           :aria-current="activeAboutSection === item.id ? 'location' : undefined"
           @click.prevent="navigateAboutSection(item.id)"
         >{{ item.label }}</a>
+        </div>
+        <span v-if="aboutNavCanScrollNext" class="pointer-events-none absolute inset-y-0 right-0 z-10 w-9 bg-gradient-to-l from-white via-white/85 to-transparent" aria-hidden="true" />
       </div>
     </nav>
 

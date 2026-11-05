@@ -107,7 +107,7 @@ function cardImage(src: string): string {
       ref="productTrack"
       tabindex="0"
       aria-label="Sản phẩm Phúc Thịnh Solar phân phối, có thể cuộn ngang"
-      class="dealer-products-track -mr-4 flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain pb-3 pr-4 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold-500 min-[768px]:mr-0 min-[768px]:grid min-[768px]:grid-cols-2 min-[768px]:gap-5 min-[768px]:overflow-visible min-[768px]:snap-none min-[768px]:pb-0 min-[768px]:pr-0 min-[992px]:grid-cols-3"
+      class="dealer-products-track flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain pb-3 pr-4 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold-500 min-[768px]:mr-0 min-[768px]:grid min-[768px]:grid-cols-2 min-[768px]:gap-5 min-[768px]:overflow-visible min-[768px]:snap-none min-[768px]:pb-0 min-[768px]:pr-0 min-[992px]:grid-cols-3"
       @scroll.passive="syncProductControls"
     >
       <a
