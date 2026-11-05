@@ -216,7 +216,7 @@ const currentShowcase = computed(() => current.value ? showcases.value[current.v
 
 .showroom-caption { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px 32px; }
 .showroom-caption p { flex: 1 1 320px; max-width: 62ch; margin: 0; color: #475569; font-size: 16px; line-height: 1.65; }
-.showroom-cta { display: inline-flex; min-height: 44px; align-items: center; gap: 10px; padding: 10px 18px; border-radius: 4px; background: linear-gradient(180deg, var(--color-gold-400), var(--color-gold-500)); color: var(--color-navy-950); font-weight: 800; text-decoration: none; white-space: nowrap; }
+.showroom-cta { display: inline-flex; min-height: 44px; align-items: center; gap: 10px; padding: 10px 18px; border-radius: 4px; background: var(--pts-gold-gradient); color: var(--color-navy-950); font-weight: 800; text-decoration: none; white-space: nowrap; }
 .showroom-cta:hover span { transform: translateX(3px); }
 .showroom-cta span { transition: transform 0.25s ease; }
 .showroom-cta:focus-visible { outline: 2px solid var(--color-navy-950); outline-offset: 3px; }

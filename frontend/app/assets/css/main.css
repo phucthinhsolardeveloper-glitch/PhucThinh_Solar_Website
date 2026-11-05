@@ -373,6 +373,16 @@
     color: var(--color-navy-950);
   }
 
+  :is(button, a, [role="button"]).hover\:bg-gold-400:hover,
+  :is(button, a, [role="button"]).hover\:bg-gold-500:hover,
+  :is(button, a, [role="button"]).hover\:bg-gold-600:hover,
+  .group:hover .group-hover\:bg-gold-400,
+  .group:hover .group-hover\:bg-gold-500,
+  .group:hover .group-hover\:bg-gold-600 {
+    background-image: var(--pts-gold-gradient);
+    color: var(--color-navy-950);
+  }
+
   :is(button, a, [role="button"]).bg-primary,
   span[aria-current="page"].bg-primary,
   :is(button, a, [role="button"]).bg-gold-400,

@@ -221,7 +221,7 @@ function brandLogo(name: string): string {
 }
 .masthead-brands a img { display: block; width: auto; max-width: 118px; height: 28px; object-fit: contain; }
 .masthead-brands a:hover { border-color: rgb(219 231 249 / 30%); background: linear-gradient(135deg, rgb(30 58 97 / 58%), rgb(9 28 64 / 52%)); transform: translateY(-2px); }
-.masthead-brands a[data-active="true"] { border-color: var(--color-gold-400); background: linear-gradient(180deg, var(--color-gold-400), var(--color-gold-500)); }
+.masthead-brands a[data-active="true"] { border-color: var(--color-gold-400); background: var(--pts-gold-gradient); }
 .masthead-brands a:focus-visible { outline: 2px solid var(--color-gold-400); outline-offset: 2px; }
 
 @keyframes photo-settle { from { opacity: 0; transform: scale(1.06); } to { opacity: 1; transform: scale(1); } }
