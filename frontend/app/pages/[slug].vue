@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { isPublicRouteResolveResult, isPublicRouteResolveSlug } from '#shared/contracts/public-route-resolve'
 import { bareSlugPublicPath, phpPublicRouteUrl } from '#shared/public-route-gate'
-import { editorialPublicResponseStatus } from '#shared/editorial-public-route'
+import { editorialPublicResponseStatus, solutionLegacyRedirectPath } from '#shared/editorial-public-route'
 import { publicBareSlugDisposition } from '#shared/public-bare-slug-route'
 import type { PublicSitePayload } from '#shared/contracts/public-site'
 import { isPublicSitePayload } from '#shared/contracts/public-site'
@@ -27,7 +27,7 @@ const legacyAliases: Record<string, string> = {
   'he-thong-dai-ly': '/lien-he/',
   product: '/san-pham/',
 }
-const aliasTarget = legacyAliases[slug]
+const aliasTarget = legacyAliases[slug] ?? solutionLegacyRedirectPath(slug)
 const reservedRouteRoots = new Set(['ho-tro'])
 const canonicalBarePath = (() => {
   if (!isPublicRouteResolveSlug(slug) || reservedRouteRoots.has(slug)) return false

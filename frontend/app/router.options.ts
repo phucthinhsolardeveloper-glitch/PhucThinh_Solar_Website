@@ -16,6 +16,8 @@ function pageParam(query: Record<string, unknown>): string {
 export default <RouterConfig>{
   scrollBehavior(to, from, savedPosition) {
     if (savedPosition) return savedPosition
+    // First load: the browser already placed the page, and the reader may have started scrolling.
+    if (!from.matched.length) return to.hash ? { el: to.hash, top: HEADER_OFFSET } : false
     if (to.hash && to.path === from.path) {
       return { el: to.hash, top: HEADER_OFFSET, behavior: prefersReducedMotion() ? 'auto' : 'smooth' }
     }

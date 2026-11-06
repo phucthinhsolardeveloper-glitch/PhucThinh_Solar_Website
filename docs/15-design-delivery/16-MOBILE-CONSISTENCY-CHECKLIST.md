@@ -53,6 +53,8 @@ Ngoại lệ giữ tròn: thanh dock, Zalo, nút icon tròn có sẵn.
 
 ## Luồng phải tự thử sau mỗi thay đổi lớn
 
+Tự động: `cd tools/visual-tests && npm run test:nuxt`, chạy trên preview cổng 3100. Bộ test không gửi form hay đặt hàng, và từ chối chạy trên địa chỉ không phải máy local.
+
 - [ ] Không tràn ngang ở 360, 390, 768px
 - [ ] Không còn ảnh hỏng, không lỗi hydration
 - [ ] Mở và đóng: menu, tìm kiếm, bộ lọc, thông báo giỏ hàng, form tư vấn, form đại lý
