@@ -289,7 +289,7 @@ function isActive(id: string) {
   gap: 7px;
   margin: 0;
   padding: 5px 10px;
-  border-radius: 3px;
+  border-radius: var(--radius-chip);
   background: rgba(5, 15, 34, 0.55);
   color: #e3e9ed;
   font-size: 11px;

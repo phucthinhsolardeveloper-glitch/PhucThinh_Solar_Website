@@ -56,7 +56,7 @@ function select(id: EnergyMode) {
   min-height: 42px;
   padding: 0 12px;
   border: 0;
-  border-radius: 4px;
+  border-radius: var(--radius-btn);
   background: transparent;
   color: #c3cfde;
   font: inherit;

@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#f5f7f6" />
+  <meta name="description" content="PTS Solar Energy Lab — trải nghiệm mô hình 3D hệ thống năng lượng mặt trời tương tác." />
+  <title>Living Energy Architecture V0.5 — Phúc Thịnh Solar</title>
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+  <link rel="stylesheet" href="./src/styles.css?v=20261106-22" />
+  <script type="importmap">{"imports":{"three":"./vendor/three.module.js","three/addons/":"./vendor/addons/"}}</script>
+<script>if(new URLSearchParams(location.search).get("embed")==="1"){document.documentElement.classList.add("pts-embed","notranslate");document.documentElement.setAttribute("translate","no");}</script>
+</head>
+<body>
+<div class="site-shell">
+  <header class="masthead" aria-label="Thanh tiêu đề">
+    <div class="wordmark">
+      <div class="mark" aria-hidden="true">
+        <svg viewBox="0 0 36 36" fill="none"><path d="M7 23.5 18 5l11 18.5H7Z" stroke="currentColor" stroke-width="1.55" stroke-linejoin="round"/><path d="M11 20h14m-11-5h8M5 30h26" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="18" cy="27" r="1.5" fill="currentColor"/></svg>
+      </div>
+      <div class="brand-lines"><strong>PHÚC THỊNH SOLAR</strong><small>ENERGY EXPERIENCE LAB</small></div>
+    </div>
+    <div class="masthead-right"><span class="lab-tag"><i class="status-dot" aria-hidden="true"></i> 3D EXPERIENCE 05</span><span class="masthead-sep"></span><span class="stage-version">BLENDER × THREE.JS</span></div>
+  </header>
+
+  <section class="intro" aria-labelledby="hero-heading">
+    <div class="intro-copy">
+      <div class="eyebrow"><span class="tiny-square"></span> KHÁM PHÁ NĂNG LƯỢNG / TƯƠNG TÁC 3D</div>
+      <h1 id="hero-heading">Ánh nắng thành dòng điện.<br/><span>Từ mái nhà đến từng phụ tải.</span></h1>
+      <p>Mô hình 3D với ánh nắng có hướng, công tơ, bộ chuyển nguồn, tủ điện và tải ưu tiên. Khám phá cả luồng DC, AC và cách ly điện lưới trong chế độ dự phòng.</p>
+      <div class="hero-actions">
+        <button id="journeyLaunch" type="button" class="journey-launch" aria-controls="journeyOverlay" aria-pressed="false" aria-label="Bắt đầu hành trình năng lượng">
+          <span class="journey-launch-play" aria-hidden="true">▶</span>
+          <span class="journey-launch-copy"><strong>Trải nghiệm hành trình năng lượng</strong><small>4 chương · Mô hình 3D tương tác</small></span>
+          <span class="journey-launch-arrow" aria-hidden="true">↗</span>
+        </button>
+        <span class="hero-notice">Từ ánh nắng đến nguồn điện trong nhà — minh họa nguyên lý, không phải số liệu thực tế.</span>
+      </div>
+    </div>
+    <div class="intro-stamp"><span>V05 — SOURCE-ALIGNED DIGITAL TWIN</span><strong>THIẾT KẾ THEO NGUỒN PTS</strong><small>Minh họa nguyên lý · Không phải dữ liệu vận hành</small></div>
+  </section>
+
+  <section id="cycleStrip" class="cycle-strip" aria-label="Mô phỏng chu kỳ năng lượng 24 giờ">
+    <div class="cycle-intro">
+      <span class="cycle-emblem" aria-hidden="true">◒</span>
+      <span><small>24H · SOLAR STORY</small><strong>Ánh sáng thay đổi. Năng lượng chuyển mình.</strong></span>
+    </div>
+    <div class="cycle-control">
+      <div class="cycle-track-head"><output id="timelineReadout" for="timelineSlider">12:00</output><span id="timelineStatus">Ban ngày · Quang điện</span></div>
+      <input id="timelineSlider" type="range" min="0" max="23.75" step=".25" value="12" aria-label="Thời điểm minh họa trong ngày" aria-valuetext="12:00"/>
+      <div class="cycle-ticks" aria-hidden="true"><span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>24:00</span></div>
+    </div>
+    <button id="timelinePlay" class="cycle-play" type="button" aria-label="Tua chu kỳ 24 giờ" aria-pressed="false">
+      <span id="timelinePlayIcon" aria-hidden="true">▶</span><span id="timelinePlayText">Chạy chu kỳ</span>
+    </button>
+  </section>
+
+  <section id="livingShell" class="living-shell" aria-label="Ngôi nhà năng lượng tương tác">
+  <main class="workspace">
+    <aside class="control-panel" id="controlPanel" aria-label="Bộ điều khiển mô phỏng">
+      <button id="livingDrawerClose" class="living-drawer-close" type="button" aria-label="Đóng bảng điều khiển">Đóng điều khiển <span aria-hidden="true">×</span></button>
+      <button id="mobileControlsToggle" class="mobile-controls-toggle" type="button" aria-expanded="false">
+        <span class="mobile-controls-icon" aria-hidden="true">☷</span>
+        <span class="mobile-controls-copy"><strong>Khám phá &amp; điều khiển hệ thống</strong><small>4 kịch bản · Thiết bị · Luồng điện · X-Ray</small></span>
+        <span class="mobile-controls-chevron" aria-hidden="true">⌄</span>
+      </button>
+      <div class="panel-heading"><span>BẢNG ĐIỀU KHIỂN</span><span class="number-label">01 / 03</span></div>
+      <div class="panel-section panel-time">
+  <div class="section-title"><span>Chế độ hệ thống</span><span id="clockLabel" class="clock-label">Ban ngày</span></div>
+  <div class="mode-choices pts-v04-modes" role="group" aria-label="Chọn tình huống năng lượng">
+    <button type="button" class="mode-btn is-active" data-scenario="day" aria-pressed="true"><span class="scenario-glyph">☀</span><span>Ban ngày</span></button>
+    <button type="button" class="mode-btn" data-scenario="night_storage" aria-pressed="false"><span class="scenario-glyph">◐</span><span>Đêm có pin</span></button>
+    <button type="button" class="mode-btn" data-scenario="night_grid" aria-pressed="false"><span class="scenario-glyph">⌁</span><span>Đêm dùng lưới</span></button>
+    <button type="button" class="mode-btn" data-scenario="backup" aria-pressed="false"><span class="scenario-glyph">◇</span><span>Mất điện</span></button>
+  </div>
+  <label class="v04-battery-option"><span><strong>Có pin lưu trữ</strong><small>Tắt để mô phỏng hệ không có pin</small></span><input type="checkbox" id="batteryToggle" checked aria-label="Có pin lưu trữ"/><span class="switch" aria-hidden="true"></span></label>
+  <div class="flow-status" aria-live="polite"><span class="flow-signal"><span class="signal-core"></span></span><span><strong id="currentState">Tấm pin đang tạo điện</strong><small id="currentSubState">PV → Inverter → Phụ tải</small></span></div>
+  <p id="scenarioCopy" class="v04-scenario-copy">Điện mặt trời qua inverter cấp cho phụ tải. Đây là mô hình minh họa.</p>
+</div>
+      <section class="grid-source-guide" aria-label="Đường điện lưới đi vào nhà">
+         <div class="grid-source-heading">
+           <span class="grid-source-kicker">NGUỒN LƯỚI NGOÀI CÔNG TRÌNH</span>
+           <span id="gridImportStatus" class="grid-source-status" role="status">Lưới kết nối · Đang dùng điện mặt trời</span>
+         </div>
+         <div class="grid-source-steps" role="group" aria-label="Quan sát các thành phần đường điện lưới">
+           <button type="button" data-grid-step="grid"><b>01</b><span>Cột điện</span></button>
+           <span class="grid-step-arrow" aria-hidden="true">→</span>
+           <button type="button" data-grid-step="meter"><b>02</b><span>Dây cấp · Công tơ</span></button>
+           <span class="grid-step-arrow" aria-hidden="true">→</span>
+           <button type="button" data-grid-step="gateway"><b>03</b><span>Đóng cắt</span></button>
+           <span class="grid-step-arrow" aria-hidden="true">→</span>
+           <button type="button" data-grid-step="main"><b>04</b><span>Phân phối</span></button>
+         </div>
+         <small class="grid-source-disclaimer">Sơ đồ nguyên lý tổng quát; đấu nối inverter và bảo vệ phụ thuộc cấu hình được thiết kế.</small>
+       </section>
+       <div class="panel-section devices-section">
+        <div class="section-title"><span>Khám phá hệ thống</span><span class="caption-count">06 + 04 KỸ THUẬT</span></div>
+        <div class="device-menu">
+          <button type="button" class="device-item is-selected" data-focus="all"><span class="dev-index">00</span><span class="dev-name">Toàn bộ hệ thống</span><span class="dev-arrow">↗</span></button>
+          <button type="button" class="device-item" data-focus="pv"><span class="dev-index">01</span><span class="dev-name">Tấm pin năng lượng</span><span class="dev-arrow">↗</span></button>
+          <button type="button" class="device-item" data-focus="inverter"><span class="dev-index">02</span><span class="dev-name">Inverter hybrid</span><span class="dev-arrow">↗</span></button>
+          <button type="button" class="device-item" data-focus="battery"><span class="dev-index">03</span><span class="dev-name">Pin lưu trữ</span><span class="dev-arrow">↗</span></button>
+          <button type="button" class="device-item" data-focus="house"><span class="dev-index">04</span><span class="dev-name">Phụ tải trong nhà</span><span class="dev-arrow">↗</span></button>
+          <button type="button" class="device-item" data-focus="grid"><span class="dev-index">05</span><span class="dev-name">Điểm đấu nối lưới</span><span class="dev-arrow">↗</span></button>
+          <button type="button" class="device-item" data-focus="priority"><span class="dev-index">06</span><span class="dev-name">Tải ưu tiên (backup)</span><span class="dev-arrow">↗</span></button>
+<div id="technicalDeviceList" class="v05-technical-devices" hidden>
+  <button type="button" class="device-item" data-focus="meter"><span class="dev-index">07</span><span class="dev-name">Công tơ điện lực</span><span class="dev-arrow">↗</span></button>
+  <button type="button" class="device-item" data-focus="gateway"><span class="dev-index">08</span><span class="dev-name">Bộ chuyển nguồn / ATS</span><span class="dev-arrow">↗</span></button>
+  <button type="button" class="device-item" data-focus="main"><span class="dev-index">09</span><span class="dev-name">Tủ điện chính</span><span class="dev-arrow">↗</span></button>
+  <button type="button" class="device-item" data-focus="prioritypanel"><span class="dev-index">10</span><span class="dev-name">Tủ tải ưu tiên</span><span class="dev-arrow">↗</span></button>
+</div>
+        </div>
+      </div>
+      <div class="panel-section panel-toggles">
+        <label class="toggle-row"><span><strong>Hiệu ứng dòng điện</strong><small>Minh họa hướng truyền năng lượng</small></span><input type="checkbox" id="flowToggle" checked/><span class="switch" aria-hidden="true"></span></label>
+        <label class="toggle-row"><span><strong>Chú thích 3D</strong><small>Nhận diện từng thiết bị</small></span><input type="checkbox" id="labelsToggle" checked/><span class="switch" aria-hidden="true"></span></label>
+        <label class="toggle-row"><span><strong>Chế độ hiệu năng</strong><small>Giảm hiệu ứng khi máy yếu</small></span><input type="checkbox" id="ecoToggle"/><span class="switch" aria-hidden="true"></span></label>
+      </div>
+      <div class="panel-section v05-explorer-control">
+  <label id="backupTimeRow" class="toggle-row v05-backup-daylight-row" hidden>
+    <span><strong>Mất điện ban ngày</strong><small>Mô phỏng mất lưới khi vẫn có nắng trên mái</small></span>
+    <input type="checkbox" id="backupDaylightToggle" checked/>
+    <span class="switch" aria-hidden="true"></span>
+  </label>
+  <label id="houseLightsRow" class="toggle-row v05-house-light-row" hidden>
+    <span><strong>Đèn trong nhà</strong><small id="houseLightsHint">Bật/tắt tải chiếu sáng trong cảnh ban đêm</small></span>
+    <input type="checkbox" id="houseLightsToggle" checked aria-label="Bật hoặc tắt đèn trong nhà"/>
+    <span class="switch" aria-hidden="true"></span>
+  </label>
+  <label class="toggle-row"><span><strong>Ánh nắng lên mái</strong><small>Chỉ minh họa bức xạ mặt trời ban ngày</small></span><input type="checkbox" id="sunToggle" checked/><span class="switch" aria-hidden="true"></span></label>
+  <label class="toggle-row"><span><strong>Chế độ kỹ thuật</strong><small>Xem công tơ, ATS, các tủ điện và loại dòng điện</small></span><input type="checkbox" id="technicalToggle"/><span class="switch" aria-hidden="true"></span></label>
+  <label class="toggle-row"><span><strong>X-Ray · Lớp cấu trúc</strong><small>Nhìn xuyên mái và vỏ nhà để khám phá hệ năng lượng</small></span><input type="checkbox" id="xrayToggle"/><span class="switch" aria-hidden="true"></span></label>
+</div>
+<div class="living-orientation panel-section" id="livingNorthRow">
+  <div class="living-orientation-heading"><strong>Hướng Bắc của mô hình</strong><output id="livingNorthReadout" for="livingNorthOffset">0°</output></div>
+  <input id="livingNorthOffset" type="range" min="-180" max="180" step="5" value="0" aria-label="Hiệu chỉnh hướng Bắc mô phỏng, chưa xác minh theo công trình"/>
+  <small>0° = hướng Bắc giả định trong scene. Chỉ hiệu chỉnh ánh sáng, không thay đổi vị trí hay góc mái thật.</small>
+</div>
+<div class="panel-bottom"><span class="panel-accent-line"></span><p>Mô hình phục vụ trình diễn ý tưởng. Sản lượng, công suất và kết cấu thực tế phải được tính toán riêng.</p></div>
+    </aside>
+
+    <section class="scene-panel" id="scenePanel" aria-label="Mô hình solar 3D tương tác">
+      <div class="scene-panel-head">
+        <div><span class="stage-overline">PTS ENERGY STAGE</span><strong id="sceneHeading">PTS Technical Energy · Ban ngày</strong></div>
+        <span class="scene-chip" id="sceneChip"><span class="chip-dot"></span> DAYLIGHT / PV MODE</span>
+      </div>
+      <div id="livingHero" class="living-hero" aria-label="Trải nghiệm mô hình nhà năng lượng">
+        <div class="living-hero-content">
+          <span class="living-kicker"><i></i> PHÚC THỊNH SOLAR / 3D LIVING EXPERIENCE</span>
+          <h1>Ngôi nhà đón nắng.<br/><em>Năng lượng thành cuộc sống.</em></h1>
+          <p>Quan sát một hệ thống điện mặt trời hoạt động theo nguyên lý. Kéo xoay nhà, chạm vào thiết bị hoặc cuộn để khám phá.</p>
+          <div class="living-hero-actions"><button id="livingJourneyStart" type="button">Khám phá hành trình <span aria-hidden="true">↗</span></button><button id="livingFreeExplore" type="button">Tự do khám phá</button></div>
+        </div>
+      </div>
+      <div class="living-chapter-status" id="livingChapterStatus" aria-live="polite"><span id="livingChapterCounter">01 / 03 · ENERGY STORY</span><strong id="livingChapterName">Khám phá mái năng lượng</strong><div class="living-chapter-ticks" aria-hidden="true"><i class="is-current"></i><i></i><i></i></div></div>
+      <div class="living-clock" id="livingClock" aria-label="Thời gian và ánh sáng">
+        <div class="living-clock-info"><span id="livingClockState" class="living-live-indicator">LIVE SUN</span><strong id="livingClockTime">--:--</strong><small id="livingClockLocation">Pleiku · Gia Lai</small></div>
+        <div class="living-clock-modes" role="group" aria-label="Chế độ thời gian"><button id="livingUseLive" aria-pressed="true" type="button">Giờ thực</button><button id="livingUseSimulation" aria-pressed="false" type="button">Tua giờ</button></div>
+        <div class="living-clock-scrubber" id="livingClockScrubber" hidden><label for="livingTimeSlider">Thời điểm mô phỏng</label><input type="range" id="livingTimeSlider" min="0" max="23.75" step=".25" value="12" aria-label="Tua thời gian mô phỏng trong ngày"/><small id="livingSunInfo">Góc nắng chỉ mang tính minh họa nếu chưa hiệu chuẩn hướng Bắc của mô hình</small></div>
+      </div>
+      <div class="living-stage-modes" id="livingStageModes" role="group" aria-label="Chọn kịch bản điện mô phỏng">
+        <button type="button" data-living-mode="day">☀ <span>PV ban ngày</span></button>
+        <button type="button" data-living-mode="night_storage">◐ <span>Dùng pin</span></button>
+        <button type="button" data-living-mode="night_grid">⌁ <span>Dùng lưới</span></button>
+        <button type="button" data-living-mode="backup">◇ <span>Mất lưới</span></button>
+        <button type="button" id="livingOpenControls" aria-expanded="false" aria-controls="controlPanel"><span aria-hidden="true">⚙</span> <span>Điều khiển</span></button>
+      </div>
+      <button id="embedExplore" class="embed-explore" type="button" aria-label="Mở điều khiển mô hình 3D" aria-controls="livingStageModes" aria-expanded="false"><span aria-hidden="true">✥</span></button>
+      <div id="livingSceneCaption" class="living-scene-caption" aria-live="polite"><strong>Năng lượng đang chuyển mình</strong><span>Các trạng thái điện là mô phỏng, không phải số liệu đo được.</span></div>
+      <img id="ptsPoster" class="v04-poster" src="./assets/pts-v05-day.webp" alt="Phối cảnh hệ thống điện mặt trời" /><div id="solarAtmosphere" class="v05-solar-atmosphere" aria-label="Nguồn ánh sáng mặt trời minh họa"><span class="v05-sun-icon">☀</span><div><strong>ÁNH NẮNG MẶT TRỜI</strong><small>Chiếu xuống bề mặt tấm pin PV</small></div><span class="v05-sun-guide">↘</span></div>
+<div id="gridFlowBanner" class="grid-flow-banner" role="status" hidden>
+  <span class="grid-flow-signal" aria-hidden="true"></span>
+  <div><strong id="gridFlowBannerTitle">LƯỚI ĐANG CẤP TẢI</strong><small id="gridFlowBannerPath">Cột điện → cáp cấp → công tơ → hệ điện nhà</small></div>
+</div>
+<button id="utilityQuickFocus" class="utility-quickfocus" type="button" aria-pressed="false" aria-label="Phóng to cột điện và đường dây cấp nguồn lưới"><strong>Cột điện · Nguồn lưới</strong><span>Xem gần đường điện vào nhà ↗</span></button>
+<div id="technicalLegend" class="v05-legend" hidden><span class="v05-legend-title">SƠ ĐỒ NGUYÊN LÝ MINH HỌA</span><div><b class="v05-legend-dot dc"></b> DC — điện một chiều <b class="v05-legend-dot ac"></b> AC — điện xoay chiều</div><small id="v05TopologyText">PV → inverter → phụ tải</small></div>
+<canvas id="energyCanvas" aria-label="Mô hình 3D tương tác có thể xoay và phóng to"></canvas>
+      <div id="hotspotLayer" class="hotspot-layer" aria-label="Các điểm chú thích trên mô hình"></div>
+      <div id="xrayBadge" class="xray-badge" hidden><span class="xray-pulse" aria-hidden="true"></span><div><strong>Nhìn xuyên cấu trúc</strong><small>Lớp vỏ trong suốt · chỉ minh họa nguyên lý</small></div></div>
+      <div id="loadingOverlay" class="loading-overlay"><div class="loading-spinner"></div><strong>Đang tải mô hình 3D</strong><small id="loadingMessage">Chuẩn bị trải nghiệm...</small></div>
+      <div id="roofLayerBadge" class="roof-layer-badge" role="status" hidden>
+        <span class="roof-layer-symbol" aria-hidden="true">▱</span>
+        <div><strong>Tách lớp tấm pin</strong><small><span>12 tấm pin nâng lên · ray và kẹp giữ nguyên</span><span class="roof-layer-caveat">Minh họa cấu tạo, không phải bản vẽ lắp đặt</span></small></div>
+      </div>
+      <div id="journeyOverlay" class="journey-overlay" role="region" aria-label="Hành trình năng lượng" hidden>
+        <div class="journey-topline"><span id="journeyIndex">01 / 04</span><span class="journey-status"><i aria-hidden="true"></i> ENERGY STORY</span></div>
+        <strong id="journeyTitle">Nắng chạm mái nhà</strong>
+        <p id="journeyCopy"></p>
+        <div class="journey-progress" aria-hidden="true"><span id="journeyProgress"></span></div>
+        <div class="journey-footer">
+          <div class="journey-chapters" id="journeyChapters" aria-label="Chọn chương hành trình"></div>
+          <div class="journey-buttons">
+            <button type="button" id="journeyPrev" aria-label="Chương trước" title="Chương trước">‹</button>
+            <button type="button" id="journeyPause" aria-label="Tạm dừng" title="Tạm dừng">Ⅱ</button>
+            <button type="button" id="journeyNext" aria-label="Chương tiếp" title="Chương tiếp">›</button>
+            <button type="button" id="journeyExit" aria-label="Thoát hành trình" title="Thoát hành trình">×</button>
+          </div>
+        </div>
+      </div>
+      <div class="stage-side-ruler" aria-hidden="true"><span>03</span><i></i><span>02</span><i></i><span>01</span></div>
+      <div class="stage-bottom">
+        <div class="stage-hint"><span class="cursor-icon" aria-hidden="true">✥</span><span>Kéo để xoay · Cuộn để thu phóng · Chạm vào thiết bị để tìm hiểu</span></div>
+        <div class="stage-actions">
+          <button type="button" id="embedJourneyStart" title="Xem hành trình năng lượng bốn bước" aria-label="Xem hành trình năng lượng bốn bước"><span aria-hidden="true">▶</span></button>
+          <button type="button" id="roofLayerToggle" title="Tách lớp 12 tấm pin để quan sát kết cấu" aria-label="Tách lớp mái pin" aria-pressed="false">
+            <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.7" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5 9-5Z M3 12l9 5 9-5 M3 16l9 5 9-5"/></svg>
+          </button>
+          <button type="button" id="presentationToggle" title="Tập trung vào mô hình · ẩn bảng điều khiển" aria-label="Bật chế độ trình diễn 3D" aria-pressed="false">
+            <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.7" aria-hidden="true"><path d="M4 8V4h4m8 0h4v4m0 8v4h-4m-8 0H4v-4"/><path d="m9 9 6 6m0-6-6 6" opacity=".45"/></svg>
+          </button>
+          <button type="button" id="resetViewBtn" title="Trở lại góc nhìn ban đầu" aria-label="Đặt lại góc nhìn">
+            <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.7"><path d="M3 12a9 9 0 1 0 2.5-6.2M3 4v5h5"/></svg>
+          </button>
+          <button type="button" id="autoRotateBtn" title="Tự xoay mô hình" aria-label="Bật chế độ tự xoay" aria-pressed="false">
+            <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.7"><path d="m9 18 6-6-6-6M4 12a8 8 0 0 1 14-5m2 5a8 8 0 0 1-14 5"/></svg>
+          </button>
+          <button type="button" id="fullscreenBtn" title="Toàn màn hình" aria-label="Toàn màn hình">
+            <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.7"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="object-popover" id="objectPopover" hidden><div class="popover-top"><span id="popoverTag">THÀNH PHẦN 01</span><button id="popoverClose" type="button" aria-label="Đóng">×</button></div><strong id="popoverTitle">Tấm pin năng lượng</strong><p id="popoverDesc"></p></div>
+    </section>
+  </main>
+    <div id="livingScroll" class="living-scroll" aria-label="Hành trình khám phá khi cuộn">
+      <article class="living-scroll-step" data-living-step="pv" data-living-scene="day"><span>01 / SOLAR ROOF</span><h2>Bắt đầu từ mái nhà.</h2><p>Từng tấm pin đón ánh nắng. Dòng DC được biến đổi qua inverter để cung cấp điện cho các phụ tải.</p><button type="button" data-living-focus="pv">Quan sát mái PV ↗</button></article>
+      <article class="living-scroll-step" data-living-step="inverter" data-living-scene="day"><span>02 / ENERGY CORE</span><h2>Năng lượng có đường đi.</h2><p>Tìm hiểu inverter, hệ pin lưu trữ và tủ điện. Chọn thiết bị để quan sát trực tiếp trên ngôi nhà.</p><button type="button" data-living-focus="inverter">Khám phá inverter ↗</button></article>
+      <article class="living-scroll-step" data-living-step="grid" data-living-scene="night_grid"><span>03 / GRID & BACKUP</span><h2>Khi lưới điện thay đổi.</h2><p>Điện lưới đến từ cột điện, đi qua công tơ và bảo vệ. Khi mất điện, chỉ nhánh backup đủ điều kiện mới cấp tải ưu tiên.</p><button type="button" data-living-focus="grid">Quan sát nguồn lưới ↗</button></article>
+      <div class="living-scroll-end"><button id="livingReturnOverview" type="button">Trở lại toàn cảnh 3D ↑</button></div>
+    </div>
+  </section>
+
+  <section class="power-map" id="powerMap" data-scenario="day" data-active-lane="pv" aria-labelledby="powerMapTitle">
+    <header class="power-map-head">
+      <div><span class="power-map-eyebrow">02 / POWER PATH EXPLAINER · MÔ HÌNH NGUYÊN LÝ</span>
+        <h2 id="powerMapTitle">Dòng điện đi từ đâu, qua đâu, đến đâu?</h2>
+        <p>Sơ đồ khối luồng điện <strong>AC/DC mang tính khái niệm</strong>, đối chiếu với mô hình 3D phía trên. Chọn thiết bị để phóng đến vị trí tương ứng.</p>
+      </div>
+      <span class="power-map-status" id="powerMapStatus" role="status">BAN NGÀY · PV CẤP TẢI</span>
+    </header>
+    <p class="power-map-copy" id="powerMapCopy">DC từ mái PV được inverter chuyển sang AC cấp phụ tải. Lưới kết nối nhưng không mô phỏng nhập điện.</p>
+    <div class="power-map-lanes">
+      <div class="power-lane is-flowing" data-power-lane="pv" aria-current="true">
+        <div class="power-lane-caption"><span class="lane-code">01 · SOLAR</span><strong>Điện mặt trời</strong><small id="pvLaneState">PV cấp điện cho phụ tải qua inverter.</small></div>
+        <div class="power-route" role="group" aria-label="PV DC chuyển đổi thành AC cấp tải">
+          <button type="button" data-power-focus="pv">Mái PV <small>Nguồn DC</small></button>
+          <span class="power-link dc">DC <b aria-hidden="true">→</b></span>
+          <button type="button" data-power-focus="inverter">Inverter hybrid <small>Chuyển đổi DC / AC</small></button>
+          <span class="power-link ac">AC <b aria-hidden="true">→</b></span>
+          <button type="button" data-power-focus="main">Tủ phân phối <small>Nhánh AC</small></button>
+          <span class="power-link ac">AC <b aria-hidden="true">→</b></span>
+          <button type="button" data-power-focus="house">Tải trong nhà <small>Phụ tải thường</small></button>
+        </div>
+      </div>
+      <div class="power-lane" data-power-lane="grid" aria-current="false">
+        <div class="power-lane-caption"><span class="lane-code">02 · UTILITY</span><strong>Nguồn điện lưới</strong><small id="gridLaneState">KẾT NỐI · KHÔNG NHẬP ĐIỆN</small></div>
+        <div class="power-route" role="group" aria-label="Điện lưới AC tới công tơ và phân phối">
+          <button type="button" data-power-focus="grid">Cột điện <small>Nguồn AC ngoài nhà</small></button>
+          <span class="power-link ac">AC <b aria-hidden="true">→</b></span>
+          <button type="button" data-power-focus="meter">Dây cấp / công tơ <small>Điểm giao nhận</small></button>
+          <span class="power-link ac">AC <b aria-hidden="true">→</b></span>
+          <button type="button" data-power-focus="gateway">Đóng cắt / cách ly <small>Theo cấu hình</small></button>
+          <span class="power-link ac">AC <b aria-hidden="true">→</b></span>
+          <button type="button" data-power-focus="main">Tủ phân phối <small>Nhánh AC</small></button>
+          <span class="power-link ac">AC <b aria-hidden="true">→</b></span>
+          <button type="button" data-power-focus="house">Tải trong nhà <small>Phụ tải thường</small></button>
+        </div>
+      </div>
+      <div class="power-lane" data-power-lane="battery" data-unavailable="false" aria-current="false">
+        <div class="power-lane-caption"><span class="lane-code">03 · STORAGE</span><strong>Pin lưu trữ / Backup</strong><small id="batteryLaneState">DỰ PHÒNG / CÓ THỂ SẠC THEO CẤU HÌNH</small></div>
+        <div class="power-route" role="group" aria-label="Pin lưu trữ DC qua inverter để cấp tải">
+          <button type="button" data-power-focus="battery">Pin lưu trữ <small>DC · lưu trữ</small></button>
+          <span class="power-link dc">DC <b aria-hidden="true">→</b></span>
+          <button type="button" data-power-focus="inverter">Inverter hybrid <small>Điều phối năng lượng</small></button>
+          <span id="storageLink" class="power-link ac">AC <b aria-hidden="true">→</b></span>
+          <button type="button" id="storageTransfer" data-power-focus="prioritypanel">Ngõ ra AC</button>
+          <span class="power-link ac"><b aria-hidden="true">→</b></span>
+          <button type="button" id="storageDestination" data-power-focus="house">Tải trong nhà</button>
+        </div>
+      </div>
+    </div>
+    <footer class="power-map-foot"><span><i class="power-key dc"></i> DC · điện một chiều <i class="power-key ac"></i> AC · điện xoay chiều <i class="power-key inactive"></i> Không mô phỏng cấp điện</span>
+      <p>Đây là sơ đồ nguyên lý trực quan, <strong>không phải bản vẽ đấu dây để thi công</strong>. Điểm đấu nối, chống phát ngược, nối đất, bảo vệ AC/DC, ATS và ngõ backup phải được đối chiếu thiết bị thật và bản vẽ kỹ thuật.</p>
+    </footer>
+  </section>
+
+  <section class="bottom-belt">
+    <div class="belt-index">02 — CẤU TRÚC HỆ THỐNG</div>
+    <div class="belt-item"><span class="belt-icon" aria-hidden="true">◈</span><div><strong>12</strong><small>Tấm pin mô phỏng</small></div></div>
+    <div class="belt-item"><span class="belt-icon" aria-hidden="true">∿</span><div><strong>08</strong><small>Tuyến năng lượng</small></div></div>
+    <div class="belt-item"><span class="belt-icon" aria-hidden="true">◐</span><div><strong>04</strong><small>Chế độ hệ thống</small></div></div>
+    <div class="belt-note">Thông số trên là cấu trúc mô hình, không phải năng lực phát điện thực tế.</div>
+  </section>
+
+  <footer class="footer"><span>© PHÚC THỊNH SOLAR — 3D EXPERIENCE PROTOTYPE</span><span>MÔ HÌNH MINH HỌA · KHÔNG PHẢI CÔNG TRÌNH THỰC TẾ</span></footer>
+</div>
+<script type="module" src="./src/main.js?v=20261106-22"></script>
+</body>
+</html>
