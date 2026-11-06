@@ -168,7 +168,7 @@
     $homeAboutConfigured = !empty($homeAboutAllRows);
     $homeAbout = !empty($homeAboutRows) ? $homeAboutRows[0] : array();
     $homeAboutEyebrow = !empty($homeAbout['title_index'.$lang]) ? $homeAbout['title_index'.$lang] : 'VỀ PHÚC THỊNH SOLAR';
-    $homeAboutTitle = !empty($homeAbout['name'.$lang]) ? $homeAbout['name'.$lang] : 'Cung cấp thiết bị và thi công năng lượng mặt trời';
+    $homeAboutTitle = !empty($homeAbout['name'.$lang]) ? $homeAbout['name'.$lang] : 'Về Phúc Thịnh Solar';
     $homeAboutDesc = !empty($homeAbout['desc'.$lang]) ? $homeAbout['desc'.$lang] : 'Phúc Thịnh Solar cung cấp đèn năng lượng mặt trời, tấm pin, biến tần, pin lưu trữ và thiết bị bơm nước. Chúng tôi tư vấn lựa chọn thiết bị, thiết kế và thi công hệ thống phù hợp với nhu cầu sử dụng và ngân sách của khách hàng.';
     $homeAboutButton = !empty($homeAbout['content1'.$lang]) ? $homeAbout['content1'.$lang] : 'Tìm hiểu về Phúc Thịnh Solar';
     $homeAboutImage = !empty($homeAbout['photo']) ? $homeAbout['photo'] : '';

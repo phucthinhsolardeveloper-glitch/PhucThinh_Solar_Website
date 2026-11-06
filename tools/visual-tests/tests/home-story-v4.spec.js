@@ -83,7 +83,7 @@ test('homepage v4 giữ đủ mạch nội dung và hero là một slider bốn 
   /* 2026-09-22: tiêu đề rút gọn "TRỞ THÀNH ĐẠI LÝ PHÚC THỊNH SOLAR" -> "ĐĂNG KÝ
      ĐẠI LÝ" và bỏ span .pts-home-dealer-brand theo bản chỉnh copy mới nhất -
      nội dung, không phải lỗi; cập nhật assertion theo copy đã duyệt. */
-  await expect(dealer.locator('h2')).toHaveText('ĐĂNG KÝ ĐẠI LÝ');
+  await expect(dealer.locator('h2')).toHaveText('Đăng ký đại lý');
   await expect(dealer.locator('p')).toHaveText('Cùng phát triển kinh doanh thiết bị năng lượng mặt trời với nguồn hàng đa dạng, chính sách hợp tác rõ ràng và sự đồng hành của đội ngũ Phúc Thịnh Solar.');
   await expect(dealer.locator('li')).toHaveCount(3);
   await expect(dealer.locator('.pts-home-btn-primary')).toHaveAttribute('href', '#yeu-cau-tu-van');

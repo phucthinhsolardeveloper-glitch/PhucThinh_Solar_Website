@@ -59,7 +59,7 @@ try
         $fallback = ptsContactAsset('contact-consultation.jpg', 'assets/images/site-visuals', ROOT);
         if($fallback !== '') $visual = array(
             'name' => 'Tư vấn đúng thiết bị, đúng nhu cầu sử dụng',
-            'description' => 'Trao đổi cùng đội ngũ Phúc Thịnh Solar để chọn cấu hình phù hợp cho gia đình, cửa hàng hoặc công trình.',
+            'description' => 'Trao đổi để chọn cấu hình phù hợp cho gia đình, cửa hàng hoặc công trình.',
             'href' => '#yeu-cau-tu-van',
             'image' => $fallback
         );

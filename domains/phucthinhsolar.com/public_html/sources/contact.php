@@ -57,7 +57,7 @@
 	{
 		$contactVisual = array(
 			'name' => 'Tư vấn đúng thiết bị, đúng nhu cầu sử dụng',
-			'desc' => 'Trao đổi cùng đội ngũ Phúc Thịnh Solar để chọn cấu hình phù hợp cho gia đình, cửa hàng hoặc công trình.',
+			'desc' => 'Trao đổi để chọn cấu hình phù hợp cho gia đình, cửa hàng hoặc công trình.',
 			'link' => '#yeu-cau-tu-van',
 			'photo' => 'contact-consultation.jpg',
 			'upload' => 'assets/images/site-visuals/'

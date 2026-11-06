@@ -1,6 +1,8 @@
 # Bản nháp rút gọn nội dung CMS
 
-Trạng thái: chờ chủ website duyệt. Chưa ghi vào CMS. Chỉ cắt câu chữ từ nội dung hiện có, không thêm dữ kiện.
+Trạng thái: chủ website đã duyệt ngày 2026-11-06. Đã áp ở local, chưa áp production. Chỉ cắt câu chữ từ nội dung hiện có, không thêm dữ kiện.
+
+Áp dữ liệu: `scripts/content/shorten-public-copy-20261106.sql`. Hoàn tác: `shorten-public-copy-20261106.revert.sql`. Production cần phê duyệt riêng và backup database trước. Phần tiêu đề trang chủ và câu trang Liên hệ nằm trong code PHP nên đi theo bản release.
 
 ## Trang Giải pháp
 
@@ -25,7 +27,7 @@ Hiện tại: Từ điện mặt trời mái nhà, hệ thống lưu trữ năng
 
 **Mốc lịch sử đầu tiên (77 từ → 33 từ)**
 
-Đề xuất: Thành lập tại Gia Lai, Phúc Thịnh Solar phân phối thiết bị chính hãng từ Huawei, Sharp, Sungrow, Blue Carbon, Jindian…, rồi từng bước mở rộng mạng lưới khách hàng và đội ngũ thi công.
+Đề xuất: Thành lập tại Gia Lai, Phúc Thịnh Solar phân phối thiết bị chính hãng từ Huawei, Sharp, Sungrow, Blue Carbon, Jindian… Những năm sau đó, công ty mở rộng mạng lưới khách hàng và đội ngũ thi công.
 
 ## Trang Liên hệ
 
