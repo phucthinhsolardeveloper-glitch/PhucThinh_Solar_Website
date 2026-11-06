@@ -175,7 +175,7 @@ test('editorial text controls meet the 44px hit-area rule and project tabs suppo
   const story = read('../app/components/solutions/SolutionsStory.vue')
   assert.match(solutionsHub, /<SolutionsStory v-if="data && !error && data\.editorial\.content\.html" :contents="\[data\.editorial\.content\]"/)
   assert.match(story, /<EditorialRichText v-for="\(content, index\) in contents" :key="index" :content="content" variant="solution" \/>/)
-  assert.match(story, /\.story-index a \{[^}]*min-height: 72px/)
+  assert.match(story, /\.story-index a \{[^}]*min-height: 56px/)
   assert.match(solutionsPreview, /<EditorialRichText :content="data\.editorial\.content" variant="solution" \/>/)
   assert.match(richText, /cms-content--editorial-solution h2[\s\S]*?border: 0;/)
   assert.match(phpSolutionHub, /aria-label="Mục lục trang Giải pháp"/)

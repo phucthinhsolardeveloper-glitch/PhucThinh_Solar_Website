@@ -51,10 +51,10 @@ báo, lỗi), media và trạng thái dữ liệu có thể dùng màu semantic 
 
 | Token | Giá trị | Dùng cho |
 |---|---|---|
-| `--radius-btn` | 4px | Nút bấm chữ nhật |
-| `--radius-sm` (`rounded-sm`) | 6px | Ô nhập, chip nhỏ, ảnh thu nhỏ |
-| `--radius-md` / `--radius-card` (`rounded-md`) | 10px | Thẻ, khung ảnh, hộp ghi chú |
-| `--radius-lg` (`rounded-lg`) | 16px | Khối nổi bật, khối tóm tắt, popover |
+| `--radius-btn` | 10px | Nút bấm chữ nhật |
+| `--radius-sm` (`rounded-sm`) | 10px | Ô nhập, chip nhỏ, ảnh thu nhỏ |
+| `--radius-md` / `--radius-card` (`rounded-md`) | 14px | Thẻ, khung ảnh, hộp ghi chú |
+| `--radius-lg` (`rounded-lg`) | 18px | Khối nổi bật, khối tóm tắt, popover |
 | `--radius-xl` (`rounded-xl`) | 24px | Thẻ hero, sân khấu trưng bày |
 | `999px` | viên tròn | Thanh tìm kiếm, chip lọc, avatar, nút tròn |
 

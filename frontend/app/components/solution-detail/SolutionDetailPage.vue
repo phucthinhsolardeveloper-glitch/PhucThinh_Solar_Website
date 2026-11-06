@@ -114,7 +114,7 @@ onBeforeUnmount(() => {
         <div class="pts-container solution-hero__inner">
           <a v-if="data.solution.category" class="solution-hero__category m-lg" :href="links.generic(data.navigation.allUrl)">{{ data.solution.category }}</a>
           <h1>{{ data.solution.title }}</h1>
-          <p v-if="data.solution.summary" class="solution-hero__summary">{{ data.solution.summary }}</p>
+          <p v-if="data.solution.summary" class="solution-hero__summary"><ChunkedText :text="data.solution.summary" /></p>
           <div class="solution-hero__actions">
             <a class="solution-hero__primary" :href="links.generic(data.cta.href)" @click="handleConsultClick($event, data.cta.href)">
               {{ data.cta.label }}
@@ -221,12 +221,12 @@ onBeforeUnmount(() => {
 
 .solution-rail { position: relative; z-index: 2; border-bottom: 1px solid rgb(10 34 81 / 10%); background: #fff; }
 .solution-rail__track { position: relative; display: flex; gap: 6px; overflow-x: auto; padding-block: 10px; scrollbar-width: none; }
-.solution-rail__pill { position: absolute; top: 10px; left: 0; z-index: 0; width: 0; height: 44px; border-radius: 999px; background: var(--color-navy-950); box-shadow: 0 10px 24px -14px rgb(6 21 55 / 70%); opacity: 0; pointer-events: none; transform-origin: center; }
+.solution-rail__pill { position: absolute; top: 10px; left: 0; z-index: 0; width: 0; height: 44px; border-radius: 16px; background: var(--color-navy-950); box-shadow: 0 10px 24px -14px rgb(6 21 55 / 70%); opacity: 0; pointer-events: none; transform-origin: center; }
 .solution-rail__track::-webkit-scrollbar { display: none; }
-.solution-rail__item { position: relative; z-index: 1; display: inline-flex; min-height: 44px; flex: none; align-items: center; gap: 8px; padding: 0 16px; border-radius: 999px; color: var(--color-navy-800); font-size: 15px; font-weight: 700; white-space: nowrap; text-decoration: none; transition: background-color 0.25s ease, color 0.25s ease; }
+.solution-rail__item { position: relative; z-index: 1; display: inline-flex; min-height: 44px; flex: none; align-items: center; gap: 8px; padding: 0 16px; border-radius: 16px; color: var(--color-navy-800); font-size: 15px; font-weight: 700; white-space: nowrap; text-decoration: none; transition: background-color 0.25s ease, color 0.25s ease; }
 .solution-rail__item:not(.is-on):hover { background: #eef2f8; }
 .solution-rail__item.is-on { color: var(--color-gold-300); transition-delay: 0.18s; }
-.solution-rail__item:focus-visible { outline: 3px solid var(--color-gold-500); outline-offset: 2px; }
+.solution-rail__item:focus-visible { outline: 2px solid var(--color-gold-400); outline-offset: -4px; }
 .solution-story :deep(.story-index) { margin-top: 0; }
 
 @keyframes hero-in { from { opacity: 0; transform: scale(1.08); } }

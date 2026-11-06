@@ -37,7 +37,7 @@ function documentHref(document: PublicProductDocument): string {
       </div>
       <div v-if="extras.warranty.override" class="max-w-[72ch]">
         <h3 class="mb-2 text-base font-extrabold text-navy-900">Chính sách riêng của sản phẩm</h3>
-        <p class="mb-0 whitespace-pre-line text-[15.5px] leading-7 text-slate-600">{{ extras.warranty.override }}</p>
+        <p class="mb-0 whitespace-pre-line text-[15.5px] leading-7 text-slate-600"><ChunkedText :text="extras.warranty.override" /></p>
       </div>
       <div v-else-if="extras.warranty.policies.length">
         <p class="mb-3 text-slate-500">Áp dụng chính sách bảo hành hiện hành của Phúc Thịnh Solar:</p>

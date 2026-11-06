@@ -19,6 +19,18 @@ onBeforeUnmount(() => { actionBarActive.value = false })
 const mounted = ref(false)
 onMounted(() => { mounted.value = true })
 
+// Desktop: the same island appears once the reader has scrolled past the main buttons, so buying stays one click away.
+const buySentinel = ref<HTMLElement | null>(null)
+const buttonsOffScreen = ref(false)
+let buyObserver: IntersectionObserver | undefined
+onMounted(() => {
+  if (!buySentinel.value || !('IntersectionObserver' in window)) return
+  // The huge bottom margin counts everything below the fold as "not yet passed", so a long jump still flips the state.
+  buyObserver = new IntersectionObserver(([entry]) => { buttonsOffScreen.value = entry?.isIntersecting === false }, { rootMargin: '-88px 0px 100000px 0px' })
+  buyObserver.observe(buySentinel.value)
+})
+onBeforeUnmount(() => buyObserver?.disconnect())
+
 async function add(goToCart = false) {
   quantity.value = normalizeCommerceQuantity(quantity.value)
   loadingAction.value = goToCart ? 'buy' : 'cart'
@@ -72,6 +84,7 @@ onBeforeUnmount(() => clearTimeout(justAddedTimer))
         <template v-else>Thêm vào giỏ</template>
       </UButton>
     </div>
+    <div ref="buySentinel" aria-hidden="true" />
     <!-- Confirmation plays as the flight + card (CartFeedback); only errors stay inline, in a reserved slot. -->
     <div v-if="pricing.mode === 'price'" class="purchase-status mt-3 min-h-6 max-tb:hidden" aria-live="polite">
       <Transition name="purchase-status" mode="out-in">
@@ -147,9 +160,10 @@ onBeforeUnmount(() => clearTimeout(justAddedTimer))
       </div>
     </div>
 
-    <!-- Phone: the buying island replaces the navigation island on this page. -->
-    <div class="buy-island m-glass print:hidden">
+    <!-- Phone: the buying island replaces the navigation island on this page. Desktop: it follows once the buttons scroll away. -->
+    <div class="buy-island m-glass print:hidden" :class="{ 'is-on': buttonsOffScreen }">
       <p v-if="error" class="buy-island__error" role="alert">{{ error }}</p>
+      <strong v-if="productName" class="buy-island__name">{{ productName }}</strong>
       <a v-if="mounted && phoneHref" :href="phoneHref" :aria-label="`Gọi hotline ${hotline}`" class="buy-island__icon">
         <UIcon name="i-lucide-phone" class="size-[21px]" aria-hidden="true" />
       </a>
@@ -181,7 +195,14 @@ onBeforeUnmount(() => clearTimeout(justAddedTimer))
 
 <style scoped>
 .buy-island { position: fixed; left: 12px; right: 72px; bottom: calc(12px + env(safe-area-inset-bottom)); z-index: 40; display: flex; align-items: center; gap: 2px; height: 60px; padding: 6px; border-radius: 30px; }
-@media (min-width: 821px) { .buy-island { display: none; } }
+.buy-island__name { display: none; }
+@media (min-width: 821px) {
+  .buy-island { right: auto; bottom: 20px; left: 50%; width: min(640px, calc(100vw - 200px)); padding-left: 22px; visibility: hidden; opacity: 0; transform: translate(-50%, 14px); transition: opacity .22s ease, transform .22s ease, visibility .22s; }
+  .buy-island.is-on { visibility: visible; opacity: 1; transform: translate(-50%, 0); }
+  .buy-island__name { display: block; min-width: 0; flex: 1; overflow: hidden; color: #fff; font-size: 14px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+  .buy-island__main { flex: none; min-width: 170px; padding-inline: 20px; }
+}
+@media (min-width: 821px) and (prefers-reduced-motion: reduce) { .buy-island { transition: none; } }
 .buy-island__error { position: absolute; left: 0; right: 0; bottom: calc(100% + 8px); margin: 0; padding: 8px 14px; border-radius: var(--radius-md); background: #fef2f2; color: #b91c1c; font-size: 13px; font-weight: 600; }
 .buy-island__icon { display: grid; flex: none; width: 44px; height: 46px; place-items: center; color: #dbe4f0; text-decoration: none; }
 .buy-island__icon:disabled, .buy-island__main:disabled { opacity: .55; }

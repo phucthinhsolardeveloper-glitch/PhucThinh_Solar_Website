@@ -346,7 +346,7 @@ function pageLink(nextPage: number) {
       Danh mục và các bộ lọc nghiệp vụ dùng chung một panel để không lặp lại
       cùng một lựa chọn ở sidebar và phía trên lưới sản phẩm.
       -->
-      <div v-if="hasSidebar" class="hidden flex-col gap-6 min-[1002px]:flex">
+      <div v-if="hasSidebar" class="catalog-sidebar-sticky hidden flex-col gap-6 min-[1002px]:flex">
         <CatalogFilterSidebar
           id-prefix="catalog-filter-sidebar"
           :categories="sidebarCategories"
@@ -572,5 +572,9 @@ function pageLink(nextPage: number) {
 }
 @media (max-width: 359px) {
   .catalog-chip-rail { margin-inline: -12px; padding-inline: 12px; scroll-padding-inline: 12px; }
+}
+/* Filters stay beside the results down a long list, the way the phone toolbar does. */
+@media (min-width: 1002px) {
+  .catalog-sidebar-sticky { position: sticky; top: 88px; max-height: calc(100dvh - 104px); align-self: start; overflow-y: auto; scrollbar-width: thin; }
 }
 </style>

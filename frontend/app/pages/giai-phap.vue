@@ -81,7 +81,7 @@ const recommendedSolutions = ref<string[]>([])
           <section class="solution-energy-intro" aria-labelledby="solutions-title">
             <div class="solution-energy-intro-copy">
               <h1 id="solutions-title">{{ data.intro?.title || data.title }}</h1>
-              <p v-if="data.intro?.description">{{ data.intro.description }}</p>
+              <p v-if="data.intro?.description"><ChunkedText :text="data.intro.description" /></p>
               <div class="solution-intro-links">
                 <a v-if="data.intro" class="solution-primary-link" :href="links.generic(data.intro.links.consult.href === '#ptsContactModal' ? '/lien-he/#yeu-cau-tu-van' : data.intro.links.consult.href)">{{ data.intro.links.consult.label }} <span aria-hidden="true">→</span></a>
                 <a v-if="data.intro" class="solution-secondary-link" :href="links.generic(data.intro.links.explore.href)">{{ data.intro.links.explore.label }} <span aria-hidden="true">↓</span></a>

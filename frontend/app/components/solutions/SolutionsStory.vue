@@ -11,6 +11,16 @@ const faqChapter = computed(() => chapters.value.find((chapter) => chapter.kind 
 
 function splitFit(text: string) { return text.split(/,\s*/).map((part) => part.replace(/\.$/, '')).filter(Boolean) }
 
+// The chapter bar carries a short label, because the full title is the heading right under it.
+const SHORT_CHAPTER_LABELS: Record<string, string> = {
+  'Xác định nhu cầu sử dụng năng lượng': 'Nhu cầu',
+  'Một hệ sinh thái — nhiều nhu cầu năng lượng': 'Hệ sinh thái',
+  'Phúc Thịnh Solar khảo sát cách khách hàng sử dụng điện': 'Khảo sát',
+  'Từ nhu cầu đến hệ thống vận hành thực tế': 'Quy trình',
+  'Từ thiết bị đến giải pháp hoàn chỉnh': 'Giải pháp hoàn chỉnh',
+}
+function shortChapterLabel(title: string) { return SHORT_CHAPTER_LABELS[title.trim()] ?? '' }
+
 const activeId = ref('')
 let observer: IntersectionObserver | undefined
 onMounted(() => {
@@ -53,7 +63,8 @@ watch(activeId, async () => {
         <ul ref="indexList">
           <li v-for="chapter in indexChapters" :key="chapter.id">
             <a :href="`#${chapter.id}`" :aria-current="activeId === chapter.id ? 'true' : undefined">
-              <span>{{ chapter.title }}</span>
+              <span :class="shortChapterLabel(chapter.title) ? 'sr-only' : ''">{{ chapter.title }}</span>
+              <span v-if="shortChapterLabel(chapter.title)" aria-hidden="true">{{ shortChapterLabel(chapter.title) }}</span>
             </a>
           </li>
         </ul>
@@ -82,7 +93,7 @@ watch(activeId, async () => {
                 </div>
               </div>
               <span class="match-arrow" aria-hidden="true"><UIcon name="i-lucide-arrow-right" class="size-5" /></span>
-              <p class="match-answer"><span class="sr-only">{{ item.fit!.label }}: </span>{{ item.fit!.text }}</p>
+              <p class="match-answer"><span class="sr-only">{{ item.fit!.label }}: </span><ChunkedText :text="item.fit!.text" /></p>
             </li>
           </ol>
         </div>
@@ -164,7 +175,7 @@ watch(activeId, async () => {
               <div class="option-text story-rich" v-html="item.html" />
               <div v-if="item.fit" class="option-fit">
                 <strong>{{ item.fit.label }}</strong>
-                <p v-if="item.fit.text">{{ item.fit.text }}</p>
+                <p v-if="item.fit.text"><ChunkedText :text="item.fit.text" /></p>
                 <ul v-if="item.fit.list.length">
                   <li v-for="entry in item.fit.list" :key="entry"><UIcon name="i-lucide-check" class="size-4 flex-none" aria-hidden="true" />{{ entry }}</li>
                 </ul>
@@ -241,7 +252,7 @@ watch(activeId, async () => {
 .story-index ul { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin: 0; padding: 0; list-style: none; }
 .story-index ul::-webkit-scrollbar { display: none; }
 .story-index li { min-width: 0; }
-.story-index a { position: relative; display: flex; min-height: 72px; align-items: center; gap: 12px; padding: 14px 22px; color: #4a5a72; font-size: 15.5px; font-weight: 700; line-height: 1.3; text-decoration: none; transition: color 0.3s ease, background-color 0.3s ease; }
+.story-index a { position: relative; display: flex; min-height: 56px; justify-content: center; align-items: center; gap: 12px; padding: 14px 22px; color: #4a5a72; font-size: 15.5px; font-weight: 700; line-height: 1.3; text-decoration: none; transition: color 0.3s ease, background-color 0.3s ease; }
 .story-index li + li a { border-left: 1px solid rgb(10 34 81 / 8%); }
 .story-index a::after { content: ''; position: absolute; inset: auto 0 -1px; height: 3px; background: var(--color-gold-500); transform: scaleX(0); transform-origin: left; transition: transform 0.45s var(--ease); }
 .story-index a:hover, .story-index a[aria-current] { color: var(--color-navy-950); background: #f6f8fb; }

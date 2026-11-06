@@ -67,7 +67,7 @@ onBeforeUnmount(() => {
           <span class="journey-num" aria-hidden="true">{{ step.number }}</span>
           <div class="min-w-0">
             <h3 class="journey-title">{{ step.name }}</h3>
-            <p class="journey-desc">{{ step.description }}</p>
+            <p class="journey-desc"><ChunkedText :text="step.description" /></p>
           </div>
         </li>
       </ol>

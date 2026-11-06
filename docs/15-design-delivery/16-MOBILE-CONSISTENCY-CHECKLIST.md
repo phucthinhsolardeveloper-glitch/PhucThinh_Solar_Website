@@ -35,9 +35,11 @@ Ngoại lệ giữ tròn: thanh dock, Zalo, nút icon tròn có sẵn.
 
 ## Chữ và nút
 
-- [ ] H1 28 đến 31px (hero trang chủ 34, tên sản phẩm 22)
-- [ ] H2 của mục 26px, trong khung hoặc form 20px
-- [ ] H3 và tiêu đề thẻ 17px (thẻ sản phẩm 14, thẻ tin 15)
+- [ ] H1 26px (hero trang chủ 30, tên sản phẩm 22)
+- [ ] H2 của mục 22px, trong khung hoặc form 18px
+- [ ] H3 và tiêu đề thẻ 16px (thẻ sản phẩm 14, thẻ tin 15)
+- [ ] Đoạn từ 35 từ trở lên chia thành ý ngắn trên điện thoại (`ChunkedText`), không đổi chữ
+- [ ] Tiêu đề không lặp với câu ngay dưới hoặc thanh điều hướng ngay trên
 - [ ] Chỉ nút kết thúc form hoặc kết thúc trang mới cao 52px. Nút trong bố cục giữ kích thước của bố cục đó
 - [ ] Nút nhỏ vẫn nhỏ: mở rộng vùng bấm bằng lớp vô hình, không phóng to phần nhìn thấy
 - [ ] Icon tròn giữ tròn, không ép theo bo góc chung

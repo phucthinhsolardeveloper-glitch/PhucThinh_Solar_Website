@@ -161,8 +161,8 @@ const showroomImage = computed(() => {
       <div class="about-story__card grid min-h-[470px] grid-cols-[minmax(410px,.88fr)_minmax(0,1.12fr)] gap-0 overflow-hidden rounded-btn border border-navy-800/15 bg-[linear-gradient(135deg,#061735,#10366a)] shadow-md max-[800px]:min-h-0 max-[800px]:grid-cols-1">
         <div class="about-story__copy flex flex-col justify-center p-[clamp(38px,4vw,64px)] max-[800px]:block max-[800px]:px-6 max-[800px]:pb-[38px] max-[800px]:pt-[34px] max-[600px]:px-5 max-[600px]:pb-[34px] max-[600px]:pt-[30px]">
           <h1 id="about-story-title" class="m-0 max-w-[620px] text-[clamp(36px,3.6vw,54px)] font-black leading-[1.12] tracking-[-.035em] text-white max-[800px]:text-[34px] max-[600px]:text-[31px]">{{ about.story.title }}</h1>
-          <p v-if="about.story.intro" class="mt-[17px] max-w-[690px] text-[clamp(17px,1.32vw,20px)] leading-[1.7] text-[#e1ebf8]">{{ about.story.intro }}</p>
-          <p v-if="about.story.body" class="mt-4 border-t border-white/15 pt-4 text-[clamp(17px,1.32vw,20px)] leading-[1.7] text-[#bfcfe3]">{{ about.story.body }}</p>
+          <p v-if="about.story.intro" class="mt-[17px] max-w-[690px] text-[clamp(17px,1.32vw,20px)] leading-[1.7] text-[#e1ebf8]"><ChunkedText :text="about.story.intro" /></p>
+          <p v-if="about.story.body" class="mt-4 border-t border-white/15 pt-4 text-[clamp(17px,1.32vw,20px)] leading-[1.7] text-[#bfcfe3]"><ChunkedText :text="about.story.body" /></p>
           <div class="about-story__actions mt-6 flex flex-wrap items-center gap-3">
             <button
               type="button"
@@ -220,7 +220,7 @@ const showroomImage = computed(() => {
                 <strong class="inline-flex items-center rounded-chip bg-gold-500/15 px-2.5 py-0.5 text-[1.2rem] font-black leading-[1.2] text-gold-800">{{ item.year }}</strong>
               </div>
               <h3 v-if="item.title && about.history.items.length > 1" class="mt-2 text-[clamp(20px,1.6vw,24px)] font-extrabold leading-[1.25] text-navy-800">{{ item.title }}</h3>
-              <p v-if="item.description" class="m-0 mt-1.5 text-[clamp(17px,1.32vw,20px)] leading-[1.7] text-[#52627c]">{{ item.description }}</p>
+              <p v-if="item.description" class="m-0 mt-1.5 text-[clamp(17px,1.32vw,20px)] leading-[1.7] text-[#52627c]"><ChunkedText :text="item.description" /></p>
             </li>
           </ol>
         </div>

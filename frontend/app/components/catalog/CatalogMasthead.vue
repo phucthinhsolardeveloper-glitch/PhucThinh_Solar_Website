@@ -211,19 +211,18 @@ function brandLogo(name: string): string {
   padding: 0 14px;
   border: 1px solid rgb(219 231 249 / 16%);
   border-radius: var(--radius-sm);
-  background: linear-gradient(135deg, rgb(20 45 83 / 46%), rgb(6 21 55 / 38%));
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 8%), 0 6px 20px rgb(3 12 31 / 12%);
-  backdrop-filter: blur(12px) saturate(125%);
-  -webkit-backdrop-filter: blur(12px) saturate(125%);
-  color: #fff;
+  /* Brand logos are dark or colored marks, so they always sit on a white plate. */
+  background: rgb(255 255 255 / 94%);
+  box-shadow: 0 6px 20px rgb(3 12 31 / 16%);
+  color: var(--color-navy-950);
   font-size: 14px;
   font-weight: 700;
   text-decoration: none;
   transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
 }
 .masthead-brands a img { display: block; width: auto; max-width: 118px; height: 28px; object-fit: contain; }
-.masthead-brands a:hover { border-color: rgb(219 231 249 / 30%); background: linear-gradient(135deg, rgb(30 58 97 / 58%), rgb(9 28 64 / 52%)); transform: translateY(-2px); }
-.masthead-brands a[data-active="true"] { border-color: var(--color-gold-400); background: var(--pts-gold-gradient); }
+.masthead-brands a:hover { background: #fff; transform: translateY(-2px); }
+.masthead-brands a[data-active="true"] { border-color: var(--color-gold-500); background: #fff; box-shadow: 0 0 0 2px var(--color-gold-400); }
 .masthead-brands a:focus-visible { outline: 2px solid var(--color-gold-400); outline-offset: 2px; }
 
 @keyframes photo-settle { from { opacity: 0; transform: scale(1.06); } to { opacity: 1; transform: scale(1); } }
@@ -257,7 +256,6 @@ function brandLogo(name: string): string {
   .masthead-brands a { flex: 0 0 auto; min-width: 92px; min-height: 44px; padding: 0 12px; border-color: rgb(255 255 255 / 70%); border-radius: var(--radius-md); background: rgb(255 255 255 / 94%); box-shadow: 0 4px 12px rgb(3 12 31 / 18%); -webkit-backdrop-filter: none; backdrop-filter: none; color: var(--color-navy-950); font-size: 13px; }
   .masthead-brands a:hover { background: #fff; transform: none; }
   .masthead-brands a img { max-width: 84px; height: 24px; }
-  .masthead-brands a[data-active="true"] { border-color: var(--color-gold-400); background: var(--pts-gold-gradient); }
 }
 @media (max-width: 769px) {
   .catalog-benefits { row-gap: 2px; padding-block: 6px; }

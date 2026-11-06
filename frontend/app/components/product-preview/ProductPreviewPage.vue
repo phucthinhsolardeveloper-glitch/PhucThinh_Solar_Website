@@ -85,6 +85,13 @@ function openReviewsSection() {
   }
 }
 const summaryOpen = ref(false)
+// The title sits right above the summary, so a summary opening with the product name skips the repeat.
+const summaryText = computed(() => {
+  const { summary, name } = props.product
+  if (!summary.startsWith(name)) return summary
+  const rest = summary.slice(name.length).trim()
+  return /^(phù hợp|thích hợp)\s/i.test(rest) ? rest.charAt(0).toUpperCase() + rest.slice(1) : summary
+})
 const descriptionOpen = ref(false)
 const descriptionRef = ref<HTMLElement | null>(null)
 function toggleDescription() {
@@ -124,8 +131,8 @@ function toggleDescription() {
         </div>
 
         <div v-if="product.summary" class="max-tb:order-4">
-          <p class="mb-0 text-[16px] leading-[1.7] text-slate-600 max-tb:text-[15px] max-tb:leading-[1.6]" :class="summaryOpen ? '' : 'max-tb:line-clamp-3'">{{ product.summary }}</p>
-          <button v-if="product.summary.length > 110" type="button" class="min-h-9 text-sm font-bold text-navy-800 tb:hidden" :aria-expanded="summaryOpen" @click="summaryOpen = !summaryOpen">{{ summaryOpen ? 'Thu gọn' : 'Xem thêm' }}</button>
+          <p class="mb-0 text-[16px] leading-[1.7] text-slate-600 max-tb:text-[15px] max-tb:leading-[1.6]" :class="summaryOpen ? '' : 'max-tb:line-clamp-3'">{{ summaryText }}</p>
+          <button v-if="summaryText.length > 110" type="button" class="min-h-9 text-sm font-bold text-navy-800 tb:hidden" :aria-expanded="summaryOpen" @click="summaryOpen = !summaryOpen">{{ summaryOpen ? 'Thu gọn' : 'Xem thêm' }}</button>
         </div>
 
         <div class="max-tb:order-5">
