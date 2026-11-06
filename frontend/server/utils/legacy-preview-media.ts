@@ -1,3 +1,5 @@
+import { isAllowedPhpOrigin } from './migration-api.ts'
+
 const MEDIA_PREFIXES = ['/upload/', '/assets/', '/thumbs/'] as const
 const MEDIA_EXTENSIONS = new Map([
   ['.jpg', 'image/jpeg'],
@@ -12,6 +14,8 @@ export const LEGACY_MEDIA_MAX_BYTES = 8 * 1024 * 1024
 
 export interface LegacyMediaConfig {
   phpOrigin: string
+  previewMediaOrigin?: string
+  phpOriginAllowlist?: unknown
   previewMediaProxy: boolean | string | number
 }
 
@@ -59,9 +63,13 @@ export async function fetchLegacyPreviewMedia(
 ): Promise<{ body: ArrayBuffer; contentType: string } | null> {
   if (!isEnabled(config.previewMediaProxy)) return null
   const validated = validateLegacyMediaPath(pathname)
-  const origin = legacyOrigin(config.phpOrigin)
-  if (!validated || !origin) return null
+  const apiOrigin = legacyOrigin(config.phpOrigin)
+  const origin = legacyOrigin(config.previewMediaOrigin ?? config.phpOrigin)
+  if (!validated || !apiOrigin || !origin) return null
+  // Only use a separate media origin when it is explicitly allowlisted.
+  if (origin.origin !== apiOrigin.origin && !isAllowedPhpOrigin(origin, config.phpOriginAllowlist)) return null
 
+  let expectedContentType = validated.contentType
   const upstream = new URL(validated.pathname, origin)
   let response: Response
   try {
@@ -80,6 +88,7 @@ export async function fetchLegacyPreviewMedia(
     if (original) {
       try {
         response = await fetcher(new URL(original.pathname, origin), { method: 'GET', redirect: 'manual' })
+        expectedContentType = original.contentType
       } catch {
         return null
       }
@@ -111,6 +120,6 @@ export async function fetchLegacyPreviewMedia(
   }
 
   const upstreamType = response.headers.get('content-type')?.split(';', 1)[0]?.trim().toLowerCase() ?? ''
-  if (upstreamType !== validated.contentType) return null
-  return { body: bytes.buffer, contentType: validated.contentType }
+  if (upstreamType !== expectedContentType) return null
+  return { body: bytes.buffer, contentType: expectedContentType }
 }

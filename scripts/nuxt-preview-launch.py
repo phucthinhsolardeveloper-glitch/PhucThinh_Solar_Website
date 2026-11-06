@@ -17,6 +17,8 @@ env = {
     **os.environ,
     "NUXT_PHP_ORIGIN": "http://127.0.0.1:8088",
     "NUXT_PREVIEW_MEDIA_PROXY": "1",
+    "NUXT_PREVIEW_MEDIA_ORIGIN": "http://127.0.0.1:8080",
+    "NUXT_PHP_ORIGIN_ALLOWLIST": "127.0.0.1:8080,127.0.0.1:8088",
     "NITRO_HOST": "127.0.0.1",
     "NITRO_PORT": "3100",
 }

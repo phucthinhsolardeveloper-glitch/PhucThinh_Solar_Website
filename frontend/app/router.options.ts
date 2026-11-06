@@ -26,6 +26,9 @@ export default <RouterConfig>{
       }
       return false
     }
+    if (to.path.startsWith('/ho-tro/') && from.path.startsWith('/ho-tro/')) {
+      return { top: 0, behavior: prefersReducedMotion() ? 'auto' : 'smooth' }
+    }
     if (to.hash) return { el: to.hash, top: HEADER_OFFSET }
     return { top: 0 }
   },

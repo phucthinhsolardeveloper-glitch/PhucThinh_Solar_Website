@@ -18,9 +18,22 @@ export default defineNuxtPlugin(() => {
     document.head.append(script)
   }
 
-  const observer = new MutationObserver(mountWidget)
+  // This observer sees every DOM change on the site, so it only ever queues one idle check.
+  let queued = false
+  function queueMount() {
+    if (queued) return
+    queued = true
+    const run = () => {
+      queued = false
+      mountWidget()
+    }
+    if ('requestIdleCallback' in window) window.requestIdleCallback(run, { timeout: 2000 })
+    else setTimeout(run, 300)
+  }
+
+  const observer = new MutationObserver(queueMount)
   onNuxtReady(() => {
     observer.observe(document.body, { childList: true, subtree: true })
-    mountWidget()
+    queueMount()
   })
 })

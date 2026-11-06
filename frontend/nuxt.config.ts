@@ -51,12 +51,19 @@ export default defineNuxtConfig({
 
   typescript: { strict: true },
 
-  // Native cross-document-style fade between routes; the header is named so it stays put.
-  // Nuxt skips it under prefers-reduced-motion and in browsers without the API.
-  experimental: { viewTransition: true },
+  // No viewTransition: the API freezes painting from click until the next page has
+  // its data (measured 366-1405 ms on a 4x-throttled CPU), which reads as a hang then a flash.
+  // Links fetch their page chunk on hover/focus instead of every visible link on load.
+  experimental: {
+    defaults: { nuxtLink: { prefetchOn: { visibility: false, interaction: true } } },
+  },
   app: {
+    // No page transition: Suspense keeps the old page until the new one is ready, then swaps in one
+    // frame. A fade here exposes the white background between pages, which reads as a flash.
     head: {
       htmlAttrs: { lang: 'vi' },
+      // Without JavaScript nothing can unfold, so nothing folds.
+      noscript: [{ innerHTML: '<style>[data-fold]{max-height:none!important}</style>' }],
       meta: [{ name: 'theme-color', content: '#0a2251' }],
       link: [
         { key: 'favicon', rel: 'icon', type: 'image/png', href: '/assets/images/favicon-pts-mobile.png?v=20261008', sizes: '512x512' },
@@ -79,6 +86,9 @@ export default defineNuxtConfig({
    * Liệt kê rõ từng path (không dùng wildcard) để không vô tình khớp một
    * public route tương lai có tiền tố trùng tên.
    */
+  // Pre-compress static JS/CSS/JSON so every page does not ship them raw.
+  nitro: { compressPublicAssets: { gzip: true, brotli: true } },
+
   routeRules: {
     // Short shared cache for public read-only PHP DTOs (no cookies forwarded, bounded cache keys).
     // Session/token routes (cart, checkout, lead-form, order-thanks) and free-text queries
@@ -181,6 +191,9 @@ export default defineNuxtConfig({
   runtimeConfig: {
     // Override through NUXT_PHP_ORIGIN; never expose this in public runtimeConfig.
     phpOrigin: 'http://127.0.0.1:8080',
+    // Media thumbnails may use the PHP app directly while DTOs use a local API bridge.
+    // This stays server-only; previewMediaProxy is disabled for normal production runs.
+    previewMediaOrigin: 'http://127.0.0.1:8080',
     // Comma-separated exact host[:port] entries. Never use a wildcard: this
     // allowlist protects the server-side PHP bridge from SSRF.
     phpOriginAllowlist: '127.0.0.1:8080,127.0.0.1:8088,localhost:8080,localhost:8088',
