@@ -30,6 +30,8 @@ let timer: ReturnType<typeof setInterval> | undefined
 function select(index: number) { active.value = index }
 onMounted(() => {
   if (props.dealer.testimonials.length < 2 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+  // Quotes differ in length: auto-advancing on a phone would shift the page under the reader's thumb.
+  if (window.matchMedia('(max-width: 820px)').matches) return
   timer = setInterval(() => {
     if (!paused.value) active.value = (active.value + 1) % props.dealer.testimonials.length
   }, 8000)
@@ -53,7 +55,7 @@ const current = computed(() => props.dealer.testimonials[active.value])
         <p v-else-if="dealer.support.description" class="dealer-support__desc">{{ dealer.support.description }}</p>
         <a class="dealer-support__cta" href="#dang-ky-dai-ly">{{ dealer.form.title }} <span aria-hidden="true">→</span></a>
       </header>
-      <div class="dealer-support__cards" :data-count="dealer.support.items.length">
+      <div class="dealer-support__cards m-rail" :data-count="dealer.support.items.length">
         <article v-for="item in dealer.support.items" :key="item.title" class="dealer-benefit">
           <span v-if="item.image" class="dealer-benefit__icon flex h-14 w-14 items-center justify-center rounded-chip bg-gold-400 p-2">
             <img :src="cardImage(item.image)" :alt="item.title" class="h-full w-full object-contain" loading="lazy">
@@ -82,7 +84,7 @@ const current = computed(() => props.dealer.testimonials[active.value])
             </figure>
           </Transition>
         </div>
-        <ul v-if="dealer.testimonials.length > 1" class="dealer-voices__people" aria-label="Chọn phản hồi">
+        <ul v-if="dealer.testimonials.length > 1" class="dealer-voices__people m-rail" aria-label="Chọn phản hồi">
           <li v-for="(item, index) in dealer.testimonials" :key="item.title">
             <button type="button" class="dealer-voices__person" :aria-pressed="index === active" @click="select(index)">
               <img v-if="item.image" :src="cardImage(item.image)" :alt="item.title" class="h-14 w-14 flex-none rounded-full object-cover" loading="lazy">
@@ -104,12 +106,12 @@ const current = computed(() => props.dealer.testimonials[active.value])
 .dealer-support__head { position: sticky; top: 120px; }
 .dealer-support__head h2 { margin: 0; font-size: clamp(30px, 3vw, 48px); font-weight: 850; line-height: 1.12; letter-spacing: -0.03em; text-wrap: balance; }
 .dealer-support__desc { margin-top: 18px; color: #c3cfdf; font-size: 17px; line-height: 1.75; }
-.dealer-support__cta { display: inline-flex; min-height: 54px; align-items: center; gap: 12px; margin-top: 28px; padding: 0 22px; border-radius: 4px; background: var(--pts-gold-gradient); color: var(--color-navy-950); font-weight: 850; text-decoration: none; transition: filter 0.25s ease; }
+.dealer-support__cta { display: inline-flex; min-height: 54px; align-items: center; gap: 12px; margin-top: 28px; padding: 0 22px; border-radius: var(--radius-btn); background: var(--pts-gold-gradient); color: var(--color-navy-950); font-weight: 850; text-decoration: none; transition: filter 0.25s ease; }
 .dealer-support__cta:hover { filter: brightness(1.06); }
 .dealer-support__cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
 .dealer-support__cards[data-count="1"], .dealer-support__cards[data-count="3"] .dealer-benefit:last-child { grid-column: 1 / -1; }
 .dealer-benefit { display: flex; flex-direction: column; gap: 14px; padding: clamp(24px, 2.4vw, 36px); border: 1px solid rgb(255 255 255 / 10%); border-radius: var(--radius-md); background: linear-gradient(160deg, rgb(255 255 255 / 8%), rgb(255 255 255 / 2%)); transition: transform 0.45s var(--ease), border-color 0.35s ease; }
-.dealer-benefit:hover { transform: translateY(-6px); border-color: rgb(228 168 73 / 55%); }
+.dealer-benefit:hover { border-color: rgb(228 168 73 / 55%); }
 .dealer-benefit h3 { margin: 0; color: #fff; font-size: clamp(20px, 1.6vw, 24px); font-weight: 800; }
 .dealer-benefit__text { margin: 0; color: #c3cfdf; font-size: 15.5px; line-height: 1.7; }
 
@@ -153,5 +155,43 @@ const current = computed(() => props.dealer.testimonials[active.value])
   .dealer-benefit, .dealer-voices__person, .voice-enter-active, .voice-leave-active { transition: none; }
   .dealer-benefit:hover, .dealer-voices__person:hover { transform: none; }
   .dealer-voices__person[aria-pressed="true"] .dealer-voices__progress { animation: none; }
+}
+
+/* Phones (<=820px). Desktop rules above stay untouched. */
+@media (max-width: 820px) {
+  .dealer-support { padding: 40px 0 44px; scroll-margin-top: 124px; }
+  .dealer-support__grid { grid-template-columns: minmax(0, 1fr); gap: 22px; }
+  .dealer-support__head { position: static; }
+  .dealer-support__head h2 { font-size: 26px; font-weight: 800; line-height: 1.18; letter-spacing: -0.02em; }
+  .dealer-support__desc { margin-top: 12px; font-size: 16px; line-height: 1.6; }
+  .dealer-support__cta { display: flex; justify-content: space-between; min-height: 52px; margin-top: 18px; padding: 8px 16px; line-height: 1.25; }
+  /* Benefits swipe sideways on a .m-rail; cards keep equal height from the flex row. */
+  .dealer-support__cards > .dealer-benefit { flex-basis: min(82%, 320px); gap: 10px; padding: 16px; }
+  .dealer-benefit__icon { width: 44px; height: 44px; }
+  .dealer-benefit h3 { font-size: 18px; }
+  .dealer-benefit__text, .dealer-benefit__text :deep(p) { font-size: 15px; line-height: 1.55; }
+  .dealer-benefit__text :deep(p) { margin-block: 0.3rem; }
+
+  .dealer-voices { padding: 40px 0 44px; }
+  .dealer-voices h2 { margin-bottom: 14px; font-size: 26px; font-weight: 800; line-height: 1.18; letter-spacing: -0.02em; text-wrap: balance; }
+  .dealer-voices__stage { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  /* People act as tabs above the quote they select. */
+  .dealer-voices__people { order: -1; margin-inline: -16px; padding-inline: 16px; }
+  .dealer-voices__people > li { flex-basis: min(78%, 300px); }
+  .dealer-voices__person { height: 100%; min-height: 64px; gap: 10px; padding: 8px 12px; }
+  .dealer-voices__person img, .dealer-voices__initial { width: 44px; height: 44px; }
+  .dealer-voices__person strong { font-size: 15px; }
+  .dealer-voices__person small { font-size: 13px; line-height: 1.3; }
+  .dealer-voices__person:hover { transform: none; }
+  .dealer-voices__person[aria-pressed="true"] .dealer-voices__progress { transform: scaleX(1); animation: none; }
+  .dealer-voices__quote { min-height: 0; overflow: hidden; padding: 18px 16px; border: 1px solid rgb(10 34 81 / 10%); border-radius: var(--radius-lg); background: #fff; box-shadow: var(--pts-shadow-soft); }
+  .dealer-voices__mark { top: -8px; right: 8px; left: auto; font-size: 92px; opacity: 0.28; }
+  .dealer-voices__quote blockquote { font-size: 17px; font-weight: 600; line-height: 1.55; letter-spacing: 0; }
+  .dealer-voices__quote figcaption { margin-top: 14px; padding-left: 12px; }
+  .dealer-voices__quote figcaption strong { font-size: 16px; }
+  .dealer-voices__quote figcaption span { font-size: 14px; }
+}
+@media (max-width: 359px) {
+  .dealer-support__cards, .dealer-voices__people { margin-inline: -12px; padding-inline: 12px; }
 }
 </style>

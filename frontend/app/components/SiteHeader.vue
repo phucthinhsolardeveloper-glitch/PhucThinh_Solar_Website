@@ -32,6 +32,9 @@ useHead({
   }] : []),
 })
 const cartCountAvailable = computed(() => true)
+// The cart page fills this state after the header has rendered on the server, so the count is client-only.
+const cartBadgeReady = ref(false)
+onMounted(() => { cartBadgeReady.value = true })
 const reducedMotion = useReducedMotion()
 
 const brandName = computed(() => props.site.brand.name.trim() || 'Phúc Thịnh Solar')
@@ -548,10 +551,8 @@ function handleWindowScroll() {
     }
 
     const deltaY = currentScrollY - lastScrollY
-    if (deltaY < 0) {
-      isHeaderHidden.value = false
-      accumulatedDelta = 0
-    }
+    // Owner decision: scrolling up does not bring the header back; it returns near the top of the page.
+    if (deltaY < 0) accumulatedDelta = 0
     else accumulatedDelta += deltaY
 
     if (accumulatedDelta > 12 && currentScrollY > 80) {
@@ -562,6 +563,18 @@ function handleWindowScroll() {
     scrollTicking = false
   })
 }
+
+// The header now outlives page changes, so it has to reset itself on navigation.
+watch(() => route.path, () => {
+  searchOpen.value = false
+  catalogOpen.value = false
+  navDropdownOpen.value = null
+  if (mobileOpen.value) closeMobileMenu(false)
+  isHeaderHidden.value = false
+  isScrolled.value = false
+  lastScrollY = 0
+  accumulatedDelta = 0
+})
 
 function handleHeaderFocusin() {
   isHeaderHidden.value = false
@@ -590,10 +603,10 @@ onBeforeUnmount(() => {
     @focusin="handleHeaderFocusin"
   >
     <header
-      class="relative z-[1000] transition-[background-color,border-color,box-shadow,backdrop-filter] duration-300"
+      class="pts-header-capsule relative z-[1000] transition-[background-color,border-color,box-shadow,backdrop-filter] duration-300"
       :class="transparentAtTop
         ? 'border-b border-transparent bg-transparent shadow-none'
-        : ['border-b border-hdr-line bg-white/96 backdrop-blur-md', isScrolled ? 'shadow-[0_4px_20px_rgba(10,34,81,0.08)]' : 'shadow-[0_1px_4px_rgba(10,34,81,0.06)]']"
+        : ['pts-header-glass border-b border-hdr-line bg-white/96 backdrop-blur-md', isScrolled ? 'shadow-[0_4px_20px_rgba(10,34,81,0.08)]' : 'shadow-[0_1px_4px_rgba(10,34,81,0.06)]']"
     >
       <div
       class="mx-auto flex min-h-16 w-full max-w-[max(1680px,var(--container-page))] items-center justify-between gap-3 px-4 py-2 max-[359px]:px-3
@@ -755,14 +768,16 @@ onBeforeUnmount(() => {
             class="relative inline-flex h-11 w-11 items-center justify-center rounded-chip text-hdr-ink
                    transition-colors hover:bg-hdr-surface hover:text-hdr-gold-deep"
             :to="shellHref('/gio-hang/')"
-            :aria-label="cartCountAvailable && migrationCart ? `Giỏ hàng có ${migrationCart.count} sản phẩm` : 'Giỏ hàng'"
+            :aria-label="cartBadgeReady && cartCountAvailable && migrationCart ? `Giỏ hàng có ${migrationCart.count} sản phẩm` : 'Giỏ hàng'"
             title="Giỏ hàng"
             data-cart-target
           >
+            <ClientOnly>
             <span
               v-if="cartCountAvailable && migrationCart?.count"
               class="absolute right-0.5 top-0.5 grid min-h-4 min-w-4 place-items-center rounded-full bg-gold-500 px-1 text-[10px] font-black leading-4 text-navy-950"
             >{{ migrationCart.count }}</span>
+            </ClientOnly>
             <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 4h2l1 12h11l1.6-8H7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" /><circle cx="9" cy="20" r="1.5" fill="currentColor" /><circle cx="16" cy="20" r="1.5" fill="currentColor" /></svg>
           </NuxtLink>
 
@@ -794,7 +809,7 @@ onBeforeUnmount(() => {
         <div
           id="ptsHeaderSearch"
           ref="searchPanel"
-          class="pts-search-panel absolute inset-x-0 top-full z-[25] w-full border-t border-hdr-line-soft
+          class="pts-search-panel m-sheet-glass absolute inset-x-0 top-full z-[25] w-full border-t border-hdr-line-soft
                  bg-white/97 py-3.5 shadow-[0_18px_40px_-24px_rgba(16,36,58,.35)] backdrop-blur-md"
           role="dialog"
           aria-modal="true"
@@ -812,14 +827,14 @@ onBeforeUnmount(() => {
                 v-model="searchKeyword"
                 class="h-12 w-full min-w-0 border-0 bg-transparent px-3 text-[15px] text-hdr-ink outline-none placeholder:text-hdr-muted"
                 type="search"
-                placeholder="Bạn cần tìm sản phẩm hoặc giải pháp nào?"
+                placeholder="Bạn cần tìm gì?"
                 autocomplete="off"
               >
               <button
                 class="mr-1 inline-flex h-10 flex-none items-center justify-center rounded-full bg-hdr-gold px-4 text-sm font-bold text-hdr-ink transition-colors hover:bg-hdr-gold-deep"
                 type="submit"
               >
-                Tìm kiếm
+                <span class="max-tb:hidden">Tìm kiếm</span><span class="tb:hidden">Tìm</span>
               </button>
             </form>
             <div class="flex min-w-0 flex-1 flex-wrap items-center gap-1.5 min-[1100px]:order-1">
@@ -1053,7 +1068,8 @@ onBeforeUnmount(() => {
 
     <!-- Drawer điều hướng mobile/tablet, used through 1320px -->
     <Teleport to="body">
-    <div v-if="mobileOpen" ref="mobileOverlay" class="fixed inset-0 z-[1100] overflow-hidden bg-[rgb(8_18_34_/_58%)]">
+    <Transition name="pts-drawer" :duration="{ enter: 380, leave: 260 }">
+    <div v-if="mobileOpen" ref="mobileOverlay" class="pts-drawer fixed inset-0 z-[1100] overflow-hidden">
       <div
         class="fixed inset-0 h-full cursor-default bg-transparent"
         aria-hidden="true"
@@ -1062,21 +1078,17 @@ onBeforeUnmount(() => {
       <aside
         id="ptsMobileMenu"
         ref="mobilePanel"
-        class="relative z-[1] flex h-dvh max-h-dvh w-[min(326px,calc(100vw-24px))] flex-col overflow-hidden overscroll-y-contain bg-white p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]
+        class="relative z-[1] flex h-dvh max-h-dvh pts-drawer__panel w-[min(326px,calc(100vw-24px))] flex-col overflow-hidden overscroll-y-contain p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]
                shadow-[16px_0_36px_rgb(6_21_55_/_20%)] min-[761px]:w-[360px] min-[1501px]:w-[min(420px,calc(100vw-32px))]"
         role="dialog"
         aria-modal="true"
         aria-labelledby="ptsMobileTitle"
       >
-        <div class="mb-[18px] flex items-center justify-between gap-4">
-          <h2 id="ptsMobileTitle" class="m-0 text-[17px] font-extrabold text-gold-700">Phúc Thịnh Solar</h2>
-          <button
-            class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-chip text-hdr-ink transition-colors hover:bg-hdr-surface hover:text-gold-700"
-            type="button"
-            aria-label="Đóng danh mục điều hướng"
-            @click="closeMobileMenu()"
-          >
-            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>
+        <div class="pts-drawer__head mb-[18px] flex items-center justify-between gap-3">
+          <h2 id="ptsMobileTitle" class="sr-only">{{ brandName }}</h2>
+          <img v-if="brandLogo" :src="brandLogoSrc" alt="" width="520" height="73" class="pts-drawer__logo">
+          <button class="pts-morph m-lg-dark" type="button" aria-label="Đóng danh mục điều hướng" @click="closeMobileMenu()">
+            <span aria-hidden="true" /><span aria-hidden="true" /><span aria-hidden="true" />
           </button>
         </div>
 
@@ -1224,11 +1236,53 @@ onBeforeUnmount(() => {
         </button>
       </aside>
     </div>
+    </Transition>
     </Teleport>
   </div>
 </template>
 
 <style scoped>
+/* Mobile menu: navy liquid glass; the panel slides while the menu icon morphs in place. */
+.pts-drawer { background: rgb(6 21 55 / 42%); }
+.pts-drawer__panel {
+  --color-hdr-ink: #fff;
+  --color-hdr-sub: #c9d5e5;
+  --color-hdr-line: rgb(255 255 255 / 13%);
+  --color-hdr-surface: rgb(255 255 255 / 9%);
+  color: #fff;
+  background: var(--m-glass-bg);
+  -webkit-backdrop-filter: var(--m-glass-filter);
+  backdrop-filter: var(--m-glass-filter);
+  border-right: 1px solid var(--m-glass-rim);
+  box-shadow: var(--m-glass-shadow);
+}
+.pts-drawer__head { margin-top: -6px; margin-right: -4px; }
+.pts-drawer__logo { width: auto; max-width: 190px; height: 28px; object-fit: contain; object-position: left; }
+.pts-drawer__panel :deep(.text-navy-800), .pts-drawer__panel :deep(.text-navy-950) { color: #fff; }
+.pts-drawer__panel form[role="search"] { border-color: rgb(255 255 255 / 20%); border-radius: 22px; background: rgb(255 255 255 / 10%); box-shadow: inset 0 1px 0 rgb(255 255 255 / 14%); }
+.pts-drawer__panel form[role="search"] input { color: #fff; }
+.pts-drawer__panel form[role="search"] input::placeholder { color: #c9d5e5; }
+.pts-drawer__panel form[role="search"] button { margin: 3px; min-height: 36px; border-radius: 18px; background: var(--pts-gold-gradient); color: var(--color-navy-950); }
+.pts-morph { position: relative; flex: none; width: 44px; height: 44px; border-radius: 50%; color: #fff; cursor: pointer; }
+.pts-morph span { position: absolute; top: 21px; left: 12px; width: 20px; height: 2px; border-radius: 2px; background: currentColor; }
+.pts-morph span:nth-child(1) { transform: rotate(45deg); }
+.pts-morph span:nth-child(2) { opacity: 0; }
+.pts-morph span:nth-child(3) { transform: rotate(-45deg); }
+.pts-drawer-enter-active, .pts-drawer-leave-active { transition: background-color .26s ease; }
+.pts-drawer-enter-from, .pts-drawer-leave-to { background-color: rgb(6 21 55 / 0%); }
+.pts-drawer-enter-active .pts-drawer__panel { transition: transform .38s cubic-bezier(.22, 1, .36, 1); }
+.pts-drawer-leave-active .pts-drawer__panel { transition: transform .26s cubic-bezier(.4, 0, 1, 1); }
+.pts-drawer-enter-from .pts-drawer__panel, .pts-drawer-leave-to .pts-drawer__panel { transform: translateX(-100%); }
+.pts-drawer-enter-active .pts-morph span { transition: transform .34s cubic-bezier(.3, 1.4, .5, 1), opacity .16s; }
+.pts-drawer-leave-active .pts-morph span { transition: transform .24s ease-in, opacity .16s; }
+.pts-drawer-enter-from .pts-morph span:nth-child(1), .pts-drawer-leave-to .pts-morph span:nth-child(1) { transform: translateY(-6px); }
+.pts-drawer-enter-from .pts-morph span:nth-child(2), .pts-drawer-leave-to .pts-morph span:nth-child(2) { opacity: 1; }
+.pts-drawer-enter-from .pts-morph span:nth-child(3), .pts-drawer-leave-to .pts-morph span:nth-child(3) { transform: translateY(6px); }
+.pts-mobile-nav-trigger { transition: opacity .12s; }
+@media (prefers-reduced-motion: reduce) {
+  .pts-drawer-enter-active .pts-drawer__panel, .pts-drawer-leave-active .pts-drawer__panel, .pts-drawer-enter-active .pts-morph span, .pts-drawer-leave-active .pts-morph span { transition: none; }
+}
+@media (prefers-reduced-transparency: reduce) { .pts-drawer__panel { background: var(--color-navy-950); -webkit-backdrop-filter: none; backdrop-filter: none; } }
 .pts-search-field { border: 1px solid rgb(10 34 81 / 16%); border-radius: 999px; background: #fff; transition: border-color 0.2s ease, box-shadow 0.2s ease; }
 /* The pill itself shows focus; the global 3px outline on the inner input would draw a box inside it. */
 .pts-search-field input:focus, .pts-search-field input:focus-visible { outline: none; }

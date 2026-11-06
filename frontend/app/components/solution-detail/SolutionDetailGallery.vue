@@ -64,8 +64,8 @@ onBeforeUnmount(() => {
 
 <template>
   <section v-if="images.length" class="pts-container pb-10" aria-labelledby="solution-gallery-title">
-    <h2 id="solution-gallery-title" class="mb-5 text-[clamp(22px,2.2vw,28px)] font-black tracking-tight text-navy-800">Hình ảnh giải pháp</h2>
-    <div class="grid grid-cols-1 gap-4 min-[521px]:grid-cols-2">
+    <h2 id="solution-gallery-title" class="mb-5 text-[clamp(22px,2.2vw,28px)] font-black tracking-tight text-navy-800 max-tb:mb-3">Hình ảnh giải pháp</h2>
+    <div class="grid grid-cols-1 gap-4 min-[521px]:grid-cols-2 max-tb:grid-cols-2 max-tb:gap-2">
       <button
         v-for="(image, index) in images"
         :key="image"

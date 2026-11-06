@@ -73,7 +73,6 @@ useHead({
 
 <template>
   <div class="text-navy-800">
-    <SiteHeader :site="site" />
 
     <div class="bg-slate-50/80">
       <div class="pts-container">
@@ -98,6 +97,5 @@ useHead({
       </template>
     </main>
 
-    <SiteFooter :site="site" />
   </div>
 </template>

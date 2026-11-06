@@ -19,7 +19,7 @@ function commitmentIcon(name: string): string {
     <CatalogProductGrid :products="extras.related" layout="rail" />
   </section>
 
-  <section v-if="extras.commitments.length" id="ly-do-chon-phuc-thinh-solar" class="scroll-mt-24 border-t border-gray-200 py-12 tb:py-16">
+  <section data-fold="300" v-if="extras.commitments.length" id="ly-do-chon-phuc-thinh-solar" class="scroll-mt-24 border-t border-gray-200 py-12 tb:py-16">
     <h2 class="mb-6 text-[clamp(24px,3vw,34px)] font-black tracking-tight">Lý do chọn Phúc Thịnh Solar</h2>
     <div class="grid grid-cols-1 gap-x-8 gap-y-5 ph:grid-cols-2 nav:grid-cols-3">
       <article v-for="item in extras.commitments" :key="item.name" class="flex min-w-0 items-center gap-4">

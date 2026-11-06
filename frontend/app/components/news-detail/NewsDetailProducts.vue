@@ -94,7 +94,7 @@ function price(product: PublicCatalogProduct) {
 .article-products-head a { color: var(--color-gold-300); font-size: 15px; font-weight: 800; text-decoration: none; }
 .article-products-head a:hover { color: #fff; }
 .article-products ul { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin: 0; padding: 0; list-style: none; }
-.article-product { display: flex; height: 100%; flex-direction: column; gap: 8px; padding: 12px; border-radius: 4px; background: #fff; color: var(--color-navy-950); text-decoration: none; transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease; }
+.article-product { display: flex; height: 100%; flex-direction: column; gap: 8px; padding: 12px; border-radius: var(--radius-btn); background: #fff; color: var(--color-navy-950); text-decoration: none; transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease; }
 .article-product:hover { transform: translateY(-4px); box-shadow: 0 18px 30px -18px rgb(0 0 0 / 55%); }
 .article-product:focus-visible { outline: 3px solid var(--color-gold-400); outline-offset: 3px; }
 .article-product-media { display: block; aspect-ratio: 1; }
@@ -102,7 +102,7 @@ function price(product: PublicCatalogProduct) {
 .article-product strong { display: -webkit-box; overflow: hidden; font-size: 14.5px; font-weight: 700; line-height: 1.4; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
 .article-product-price { margin-top: auto; color: #d52525; font-size: 16px; font-weight: 900; }
 .article-product-price.is-quote { color: var(--color-gold-700); font-size: 14.5px; font-weight: 800; }
-.article-products-cta { margin-top: 18px; min-height: 50px; padding: 0 22px; border: 0; border-radius: 4px; background: var(--pts-gold-gradient); color: var(--color-navy-950); font: inherit; font-size: 15px; font-weight: 800; cursor: pointer; }
+.article-products-cta { margin-top: 18px; min-height: 50px; padding: 0 22px; border: 0; border-radius: var(--radius-btn); background: var(--pts-gold-gradient); color: var(--color-navy-950); font: inherit; font-size: 15px; font-weight: 800; cursor: pointer; }
 .article-products-cta:hover { filter: brightness(1.06); }
 .article-products-cta:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
 @media (max-width: 860px) { .article-products ul { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

@@ -83,7 +83,7 @@ function displayValue(metric: PublicProductDecisionMetric): string {
   .pts-pdp-decision-metrics[data-count="3"] .pts-pdp-decision-metric + .pts-pdp-decision-metric { border-left: 1px solid #dfe5ed; }
   .pts-pdp-decision-metrics[data-count="3"] .pts-pdp-decision-icon { width: 40px; height: 40px; }
 }
-.pts-pdp-decision-icon { display: flex; width: 48px; height: 48px; align-items: center; justify-content: center; border-radius: 4px; background: rgb(254 243 199 / 55%); }
+.pts-pdp-decision-icon { display: flex; width: 48px; height: 48px; align-items: center; justify-content: center; border-radius: var(--radius-btn); background: rgb(254 243 199 / 55%); }
 .pts-pdp-decision-icon img { display: block; width: 36px; height: 36px; object-fit: contain; }
 .pts-pdp-decision-icon svg { display: block; width: 28px; height: 28px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.75; }
 

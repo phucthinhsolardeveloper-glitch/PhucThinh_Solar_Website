@@ -244,7 +244,9 @@ test('PDP image lightbox traps keyboard focus and restores it to its trigger', (
 test('browser translation widget initializes and follows route-owned header remounts', () => {
   const plugin = read('plugins/gtranslate.client.ts')
   const app = read('app.vue')
-  assert.match(plugin, /new MutationObserver\(mountWidget\)/)
+  assert.match(plugin, /new MutationObserver\(queueMount\)/)
+  assert.match(plugin, /requestIdleCallback\(run/)
+  assert.match(plugin, /mountWidget\(\)/)
   assert.match(plugin, /observer\.observe\(document\.body, \{ childList: true, subtree: true \}\)/)
   assert.match(plugin, /!wrapper\.querySelector\('\.gt_switcher-popup'\)/)
   assert.match(plugin, /querySelectorAll\('style\.gtranslate_css'\)/)

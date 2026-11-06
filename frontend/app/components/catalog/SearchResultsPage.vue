@@ -133,7 +133,6 @@ usePublicSocialMeta({
 
 <template>
   <div class="min-h-screen bg-white text-navy-800">
-    <SiteHeader :site="site" />
     <div class="border-b border-slate-200/70 bg-slate-50/80">
       <div class="pts-container">
         <SiteBreadcrumb :items="[{ label: 'Tìm kiếm' }]" />
@@ -159,7 +158,7 @@ usePublicSocialMeta({
                 maxlength="120"
                 placeholder="Nhập tên thiết bị, công suất (VD: 500W, 6kW), mã sản phẩm hoặc thương hiệu..."
                 aria-label="Từ khóa tìm kiếm sản phẩm"
-                class="h-12 w-full rounded-[4px] border border-slate-300 bg-white pl-10 pr-10 text-base text-navy-900 placeholder:text-slate-400 focus:border-gold-600 focus:outline-none"
+                class="h-12 w-full rounded-btn border border-slate-300 bg-white pl-10 pr-10 text-base text-navy-900 placeholder:text-slate-400 focus:border-gold-600 focus:outline-none"
               >
               <button
                 v-if="keywordDraft"
@@ -173,7 +172,7 @@ usePublicSocialMeta({
             </div>
             <button
               type="submit"
-              class="inline-flex h-12 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-[4px] bg-gold-500 px-6 text-sm font-extrabold text-navy-950 transition-colors hover:bg-gold-400"
+              class="inline-flex h-12 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-btn bg-gold-500 px-6 text-sm font-extrabold text-navy-950 transition-colors hover:bg-gold-400"
             >
               <UIcon name="i-lucide-search" class="size-4" aria-hidden="true" />
               <span>Tìm sản phẩm</span>
@@ -186,7 +185,7 @@ usePublicSocialMeta({
               v-for="term in popularKeywords"
               :key="term"
               type="button"
-              class="inline-flex min-h-8 cursor-pointer items-center rounded-[3px] border px-2.5 py-1 text-xs font-bold transition-colors"
+              class="inline-flex min-h-8 cursor-pointer items-center rounded-chip border px-2.5 py-1 text-xs font-bold transition-colors"
               :class="keyword.toLowerCase() === term.toLowerCase()
                 ? 'border-navy-900 bg-navy-900 text-gold-300'
                 : 'border-slate-200 bg-white text-navy-800 hover:border-gold-500 hover:text-gold-700'"
@@ -225,27 +224,27 @@ usePublicSocialMeta({
         </aside>
 
         <section class="min-w-0" aria-label="Kết quả tìm kiếm" :aria-busy="pending">
-          <div class="mb-5 flex flex-wrap items-center justify-between gap-4">
-            <div class="flex flex-wrap items-center gap-3">
-              <h2 class="m-0 text-[22px] font-extrabold text-navy-950">Danh sách sản phẩm</h2>
+          <div class="catalog-toolbar-host mb-5 flex flex-wrap items-center justify-between gap-4 max-tb:gap-2">
+            <div class="flex flex-wrap items-center gap-3 max-tb:w-full">
+              <h2 class="m-h-panel m-0 text-[22px] font-extrabold text-navy-950">Danh sách sản phẩm</h2>
             </div>
-            <label class="flex items-center gap-2 text-sm text-slate-600">
-              Sắp xếp
-              <select :value="selectedSort" class="h-10 rounded-[3px] border border-gray-300 bg-white px-3 text-navy-800" @change="onSortChange">
+            <label class="flex items-center gap-2 text-sm text-slate-600 max-tb:order-2 max-tb:min-w-0 max-tb:flex-1">
+              <span class="max-tb:sr-only">Sắp xếp</span>
+              <select :value="selectedSort" class="m-lg h-10 max-tb:h-11 max-tb:w-full rounded-chip border border-gray-300 bg-white px-3 text-navy-800" @change="onSortChange">
                 <option v-for="option in sortOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
               </select>
             </label>
+            <button
+              v-if="hasFilters && filters"
+              class="public-neutral-button m-lg inline-flex min-h-11 items-center justify-center gap-2 rounded-chip px-4 text-sm font-bold max-tb:order-1 max-tb:flex-1 nav:hidden"
+              type="button"
+              aria-controls="search-filter-panel"
+              :aria-expanded="mobileFiltersOpen"
+              @click="mobileFiltersOpen = !mobileFiltersOpen"
+            >
+              Bộ lọc
+            </button>
           </div>
-          <button
-            v-if="hasFilters && filters"
-            class="public-neutral-button mb-5 inline-flex min-h-11 items-center gap-2 rounded-chip px-4 font-bold nav:hidden"
-            type="button"
-            aria-controls="search-filter-panel"
-            :aria-expanded="mobileFiltersOpen"
-            @click="mobileFiltersOpen = !mobileFiltersOpen"
-          >
-            Bộ lọc
-          </button>
           <div
             v-if="hasFilters && filters"
             id="search-filter-panel"
@@ -266,13 +265,13 @@ usePublicSocialMeta({
             <div class="mt-4 flex flex-wrap justify-center gap-3">
               <button
                 type="button"
-                class="inline-flex min-h-10 cursor-pointer items-center gap-1.5 rounded-[4px] bg-gold-500 px-4 py-2 text-xs font-extrabold text-navy-950 hover:bg-gold-400"
+                class="inline-flex min-h-10 cursor-pointer items-center gap-1.5 rounded-btn bg-gold-500 px-4 py-2 text-xs font-extrabold text-navy-950 hover:bg-gold-400"
                 @click="openConsultation('Tìm kiếm sản phẩm: ' + keyword)"
               >
                 <span>Nhận tư vấn mã tương đương</span>
                 <span aria-hidden="true">→</span>
               </button>
-              <NuxtLink :to="links.generic('/san-pham/')" class="inline-flex min-h-10 items-center rounded-[4px] border border-slate-300 bg-white px-4 py-2 text-xs font-bold text-navy-800 no-underline hover:border-navy-800">
+              <NuxtLink :to="links.generic('/san-pham/')" class="inline-flex min-h-10 items-center rounded-btn border border-slate-300 bg-white px-4 py-2 text-xs font-bold text-navy-800 no-underline hover:border-navy-800">
                 Xem toàn bộ danh mục
               </NuxtLink>
             </div>
@@ -291,7 +290,6 @@ usePublicSocialMeta({
       </div>
       </div>
     </main>
-    <SiteFooter :site="site" />
   </div>
 </template>
 

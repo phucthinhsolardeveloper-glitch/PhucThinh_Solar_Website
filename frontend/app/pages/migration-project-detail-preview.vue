@@ -42,7 +42,6 @@ const links = useMigrationLinks()
 
 <template>
   <div class="text-navy-800">
-    <SiteHeader :site="site" />
 
     <main>
       <div class="border-b border-slate-200/70 bg-slate-50/80">
@@ -65,6 +64,5 @@ const links = useMigrationLinks()
       <ProjectDetailPage v-else :project="payload.project" :content="payload.content" />
     </main>
 
-    <SiteFooter :site="site" />
   </div>
 </template>

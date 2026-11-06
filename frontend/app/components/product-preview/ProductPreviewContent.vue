@@ -16,7 +16,7 @@ defineProps<{ content: PublicProductContent }>()
         <li
           v-for="(highlight, index) in content.highlights"
           :key="`${index}-${highlight}`"
-          class="border-l-2 border-gold-500 bg-slate-50 px-4 py-3 text-[15px] font-bold leading-snug text-navy-900"
+          class="border-l-2 border-gold-500 bg-slate-50 px-4 py-3 max-tb:rounded-md max-tb:border-l-0 text-[15px] font-bold leading-snug text-navy-900"
         >
           {{ highlight }}
         </li>

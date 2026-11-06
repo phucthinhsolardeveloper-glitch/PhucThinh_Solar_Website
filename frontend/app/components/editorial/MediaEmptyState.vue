@@ -56,7 +56,7 @@ const paths = [
 .media-empty__copy h2 { margin: 0; color: #fff; font-size: clamp(24px, 2.4vw, 34px); font-weight: 850; line-height: 1.2; }
 .media-empty__copy p { max-width: 56ch; margin: 12px 0 0; color: #c3cfdf; font-size: 16px; line-height: 1.7; }
 .media-empty__cta { display: inline-flex; min-height: 54px; align-items: center; gap: 14px; margin-top: 22px; padding: 0 8px 0 20px; border: 0; border-radius: var(--radius-sm); background: var(--pts-gold-gradient); color: var(--color-navy-950); font: inherit; font-weight: 850; cursor: pointer; }
-.media-empty__cta > span { display: grid; width: 38px; height: 38px; place-items: center; border-radius: 4px; background: var(--color-navy-950); color: var(--color-gold-300); }
+.media-empty__cta > span { display: grid; width: 38px; height: 38px; place-items: center; border-radius: var(--radius-btn); background: var(--color-navy-950); color: var(--color-gold-300); }
 .media-empty__cta:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
 .media-empty__paths { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 0; padding: 0; list-style: none; }
 .media-empty__paths li + li { border-left: 1px solid rgb(10 34 81 / 8%); }

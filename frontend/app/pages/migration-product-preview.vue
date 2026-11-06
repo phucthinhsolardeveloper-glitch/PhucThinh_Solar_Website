@@ -13,7 +13,6 @@ useSeoMeta({ title: computed(() => product.value ? `${product.value.name} — pr
 </script>
 <template>
   <div class="text-navy-800">
-    <SiteHeader :site="site" />
 
     <!--
       Breadcrumb dùng chung khung với nội dung bên dưới (76..1842 ở 1920px) để
@@ -40,6 +39,5 @@ useSeoMeta({ title: computed(() => product.value ? `${product.value.name} — pr
       <ProductPreviewPage v-else :key="product.id" :product="product" :breadcrumbs="payload!.breadcrumbs ?? []" :pricing="payload!.pricing" :content="payload!.content" :applications="payload!.applications" :buying-guides="payload!.buyingGuides" :documents="payload!.documents" :extras="extras" />
     </main>
 
-    <SiteFooter :site="site" />
   </div>
 </template>

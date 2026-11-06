@@ -7,6 +7,7 @@ const phoneHref = computed(() => publicPhoneHref(props.contact.hotline))
 const emailHref = computed(() => publicEmailHref(props.contact.email))
 const { ensureSecurity, submit } = useLeadForm()
 const form = reactive({ fullname: '', phone: '', address: '', subject: '', content: '' })
+const detailsOpen = ref(false)
 
 const needs = [
   { value: 'Điện mặt trời gia đình', icon: 'i-lucide-house', keys: ['gia đình', 'hộ', 'nhà ở', 'mái nhà'] },
@@ -21,10 +22,10 @@ const needs = [
 const hints = ['Tiền điện mỗi tháng khoảng: ', 'Diện tích mái: ', 'Cần dùng điện cả ban đêm: ', 'Thời gian muốn lắp đặt: ']
 
 const inputUi = {
-  base: 'h-12 w-full rounded-[3px] border border-slate-300 bg-white px-3.5 text-base font-normal text-navy-950 placeholder:text-slate-400 focus-visible:border-gold-600 focus-visible:ring-2 focus-visible:ring-gold-500/25',
+  base: 'h-12 w-full rounded-chip border border-slate-300 bg-white px-3.5 text-base font-normal text-navy-950 placeholder:text-slate-400 focus-visible:border-gold-600 focus-visible:ring-2 focus-visible:ring-gold-500/25',
 }
 const textareaUi = {
-  base: 'min-h-[136px] w-full rounded-[3px] border border-slate-300 bg-white px-3.5 py-3 text-base font-normal text-navy-950 placeholder:text-slate-400 focus-visible:border-gold-600 focus-visible:ring-2 focus-visible:ring-gold-500/25',
+  base: 'min-h-[136px] w-full rounded-chip border border-slate-300 bg-white px-3.5 py-3 text-base font-normal text-navy-950 placeholder:text-slate-400 focus-visible:border-gold-600 focus-visible:ring-2 focus-visible:ring-gold-500/25',
 }
 const leadIntent = useState<string>('public-home-lead-intent', () => '')
 const prefilledFrom = ref('')
@@ -70,13 +71,14 @@ async function send() {
       email: '',
       address: form.address,
       subject: form.subject,
-      content: form.content,
+      // The phone form asks only for need, name and number; staff still receive a readable request.
+      content: form.content.trim() || `Khách để lại số điện thoại, cần tư vấn: ${form.subject || 'chưa chọn nhu cầu'}.`,
     })
     success.value = result.message
     Object.assign(form, { fullname: '', phone: '', address: '', subject: '', content: '' })
     prefilledFrom.value = ''
   } catch (reason: any) {
-    error.value = reason?.data?.statusMessage || reason?.statusMessage || reason?.message || 'Không thể gửi yêu cầu tư vấn.'
+    error.value = reason?.data?.statusMessage || 'Chưa gửi được yêu cầu. Vui lòng thử lại hoặc gọi hotline để được hỗ trợ ngay.'
   } finally {
     submitting.value = false
   }
@@ -86,23 +88,23 @@ async function send() {
 <template>
   <section
     id="yeu-cau-tu-van"
-    class="bg-hdr-surface py-[clamp(64px,7vw,112px)]"
+    class="bg-hdr-surface py-[clamp(64px,7vw,112px)] max-tb:py-8"
     aria-labelledby="home-contact-title"
   >
-    <div class="pts-container grid gap-[clamp(32px,4vw,72px)] min-[1101px]:grid-cols-[minmax(0,.78fr)_minmax(0,1.22fr)]">
+    <div class="hc pts-container grid grid-cols-[minmax(0,1fr)] gap-[clamp(32px,4vw,72px)] max-tb:gap-4 min-[1101px]:grid-cols-[minmax(0,.78fr)_minmax(0,1.22fr)]">
       <!-- Left: promise + direct channels -->
-      <div class="flex flex-col">
+      <div class="hc-aside flex flex-col">
         <h2 id="home-contact-title" class="m-0 max-w-[13ch] text-[clamp(32px,3.4vw,56px)] font-black leading-[1.04] tracking-[-.035em] text-navy-950">
           Bạn đang cần giải pháp nào?
         </h2>
-        <p class="mt-5 max-w-[44ch] text-[clamp(15px,1.05vw,18px)] leading-[1.7] text-slate-600">
+        <p class="mt-5 max-w-[44ch] text-[clamp(15px,1.05vw,18px)] leading-[1.7] text-slate-600 max-tb:mt-2">
           Chọn nhu cầu và để lại số điện thoại. Đội ngũ Phúc Thịnh Solar sẽ gọi lại để trao đổi cụ thể.
         </p>
 
         <a
           v-if="phoneHref"
           :href="phoneHref"
-          class="group mt-8 flex max-w-[420px] items-center gap-4 rounded-[4px] bg-navy-950 p-4 pr-6 text-white no-underline transition-colors hover:bg-navy-900"
+          class="hc-call group mt-8 flex max-tb:mt-4 max-w-[420px] items-center gap-4 rounded-btn bg-navy-950 p-4 pr-6 text-white no-underline transition-colors hover:bg-navy-900"
         >
           <span class="grid size-12 flex-none place-items-center rounded-full bg-gold-400 text-navy-950 transition-transform group-hover:scale-105">
             <UIcon name="i-lucide-phone-call" class="size-5" aria-hidden="true" />
@@ -113,7 +115,7 @@ async function send() {
           </span>
         </a>
 
-        <ul class="m-0 mt-8 grid list-none gap-4 p-0 text-[15px] leading-[1.55] text-slate-600">
+        <ul class="hc-list m-0 mt-8 grid max-tb:mt-4 list-none gap-4 p-0 text-[15px] leading-[1.55] text-slate-600">
           <li v-if="contact.email" class="flex gap-3">
             <UIcon name="i-lucide-mail" class="mt-0.5 size-5 flex-none text-gold-700" aria-hidden="true" />
             <span><a v-if="emailHref" class="font-semibold text-navy-950 no-underline hover:text-gold-700" :href="emailHref">{{ contact.email }}</a><span v-else>{{ contact.email }}</span></span>
@@ -130,8 +132,8 @@ async function send() {
       </div>
 
       <!-- Right: form -->
-      <div class="rounded-[4px] bg-white p-[clamp(22px,3vw,44px)] shadow-[0_24px_60px_-28px_rgba(6,21,55,.28)]">
-        <div v-if="success" class="flex min-h-[420px] flex-col items-start justify-center" role="status">
+      <div class="hc-card rounded-btn bg-white p-[clamp(22px,3vw,44px)] shadow-[0_24px_60px_-28px_rgba(6,21,55,.28)]">
+        <div v-if="success" class="hc-success flex min-h-[420px] flex-col items-start justify-center" role="status">
           <span class="grid size-14 place-items-center rounded-full bg-emerald-50 text-emerald-700">
             <UIcon name="i-lucide-check" class="size-7" aria-hidden="true" />
           </span>
@@ -141,7 +143,7 @@ async function send() {
         </div>
 
         <form v-else @submit.prevent="send">
-          <fieldset class="m-0 border-0 p-0">
+          <fieldset class="m-0 min-w-0 border-0 p-0">
             <legend class="mb-3 text-[15px] font-extrabold text-navy-950">Anh/chị quan tâm đến</legend>
             <p v-if="prefilledFrom" class="-mt-1 mb-3 text-sm text-slate-600" role="status">
               Đã chọn theo mục bạn vừa xem: <strong class="text-navy-950">{{ prefilledFrom }}</strong>
@@ -155,28 +157,29 @@ async function send() {
             </div>
           </fieldset>
 
-          <div class="mt-6 grid gap-x-4 tb:grid-cols-3">
+          <div class="hc-fields mt-6 grid gap-x-4 max-tb:mt-4 max-tb:grid-cols-2 tb:grid-cols-3">
             <UFormField label="Họ và tên" name="fullname" required class="mb-4 grid min-w-0 content-start gap-1.5" :ui="{ label: 'text-sm font-bold text-navy-950' }">
               <UInput v-model.trim="form.fullname" name="fullname" type="text" maxlength="100" autocomplete="name" required variant="none" class="w-full" :ui="inputUi" />
             </UFormField>
             <UFormField label="Số điện thoại" name="phone" required class="mb-4 grid min-w-0 content-start gap-1.5" :ui="{ label: 'text-sm font-bold text-navy-950' }">
-              <UInput v-model.trim="form.phone" name="phone" type="tel" maxlength="20" autocomplete="tel" inputmode="tel" required variant="none" class="w-full" :ui="inputUi" />
+              <UInput v-model.trim="form.phone" name="phone" type="tel" maxlength="20" autocomplete="tel" inputmode="tel" pattern="(\+?84|0)[0-9 .\-]{8,12}" title="Nhập số điện thoại Việt Nam, ví dụ 0944 555 957" required variant="none" class="w-full" :ui="inputUi" />
             </UFormField>
-            <UFormField label="Tỉnh/Thành phố" name="address" class="mb-4 grid min-w-0 content-start gap-1.5" :ui="{ label: 'text-sm font-bold text-navy-950' }">
+            <UFormField label="Tỉnh/Thành phố" name="address" :class="detailsOpen ? '' : 'max-tb:hidden'" class="hc-province mb-4 grid min-w-0 content-start gap-1.5" :ui="{ label: 'text-sm font-bold text-navy-950' }">
               <UInput v-model.trim="form.address" name="address" type="text" maxlength="255" autocomplete="address-level1" placeholder="Ví dụ: Gia Lai" variant="none" class="w-full" :ui="inputUi" />
             </UFormField>
           </div>
 
-          <UFormField label="Nội dung cần trao đổi" name="content" required class="grid min-w-0 content-start gap-1.5" :ui="{ label: 'text-sm font-bold text-navy-950' }">
-            <UTextarea ref="contentRef" v-model="form.content" name="content" :rows="4" maxlength="5000" required placeholder="Mô tả ngắn nhu cầu của bạn..." variant="none" class="w-full" :ui="textareaUi" />
+          <button v-if="!detailsOpen" type="button" class="hc-more -mt-1 mb-1 min-h-11 text-sm font-bold text-navy-800 underline tb:hidden" @click="detailsOpen = true"><UIcon name="i-lucide-plus" class="size-4 flex-none" aria-hidden="true" />Thêm chi tiết (không bắt buộc)</button>
+          <UFormField label="Nội dung cần trao đổi" name="content" :class="detailsOpen ? '' : 'max-tb:hidden'" class="grid min-w-0 content-start gap-1.5" :ui="{ label: 'text-sm font-bold text-navy-950' }">
+            <UTextarea ref="contentRef" v-model="form.content" name="content" :rows="4" maxlength="5000" placeholder="Mô tả ngắn nhu cầu của bạn..." variant="none" class="w-full" :ui="textareaUi" />
           </UFormField>
-          <div class="mt-2.5 flex flex-wrap gap-2" aria-label="Gợi ý thông tin nên có">
+          <div class="mt-2.5 flex flex-wrap gap-2" :class="detailsOpen ? '' : 'max-tb:hidden'" aria-label="Gợi ý thông tin nên có">
             <button v-for="hint in hints" :key="hint" type="button" class="hint" @click="addHint(hint)">+ {{ hint.replace(/: $/, '') }}</button>
           </div>
 
-          <p v-if="error" class="mt-4 rounded-[3px] bg-red-50 p-3 text-sm font-semibold text-red-800" role="alert">{{ error }}</p>
-          <div class="mt-6 flex flex-wrap items-center gap-x-5 gap-y-3">
-            <UButton :loading="submitting" :disabled="submitting" class="min-h-[52px] items-center justify-center rounded-[4px] border border-gold-500 bg-gold-400 px-7 text-[15px] font-extrabold text-navy-950 transition-colors hover:bg-gold-500 disabled:cursor-wait disabled:opacity-60 cursor-pointer" type="submit">
+          <p v-if="error" class="mt-4 rounded-chip bg-red-50 p-3 text-sm font-semibold text-red-800" role="alert">{{ error }}</p>
+          <div class="hc-submit mt-6 flex flex-wrap items-center gap-x-5 gap-y-3">
+            <UButton :loading="submitting" :disabled="submitting" class="max-tb:w-full min-h-[52px] items-center justify-center rounded-btn border border-gold-500 bg-gold-400 px-7 text-[15px] font-extrabold text-navy-950 transition-colors hover:bg-gold-500 disabled:cursor-wait disabled:opacity-60 cursor-pointer" type="submit">
               {{ submitting ? 'Đang gửi…' : 'Gửi yêu cầu tư vấn' }}
             </UButton>
             <span class="text-sm text-slate-500">Thông tin chỉ dùng để liên hệ tư vấn.</span>
@@ -200,7 +203,7 @@ async function send() {
   gap: 10px;
   padding: 10px 12px;
   border: 1px solid rgb(10 34 81 / 14%);
-  border-radius: 4px;
+  border-radius: var(--radius-btn);
   background: #fff;
   color: var(--color-navy-900);
   font-size: 14px;
@@ -232,4 +235,32 @@ async function send() {
 
 @media (max-width: 1100px) { .need-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (prefers-reduced-motion: reduce) { .need { transition: none; } }
+
+/* Phones: heading, then the form at once; the hotline and addresses follow it. */
+@media (max-width: 820px) {
+  .hc { gap: 14px; }
+  .hc-aside { display: contents; }
+  .hc-aside > h2 { max-width: none; font-size: 28px; line-height: 1.12; }
+  .hc-aside > p { max-width: none; margin-top: -6px; font-size: 15px; line-height: 1.55; }
+  .hc-card { order: 1; min-width: 0; padding: 16px; border-radius: var(--radius-md); }
+  .hc-call { order: 2; max-width: none; margin-top: 0; padding: 10px 16px 10px 10px; border-radius: var(--radius-md); }
+  .hc-list { order: 3; margin-top: 0; gap: 6px; font-size: 14.5px; }
+  .hc-list li { min-height: 28px; gap: 10px; }
+  .hc-list a { display: inline-flex; align-items: center; min-height: 44px; margin-block: -10px; }
+  .hc-success { min-height: 240px; }
+  .hc-success button { min-height: 44px; }
+
+  .need-grid { gap: 8px; }
+  .need { position: relative; min-height: 52px; gap: 8px; padding: 6px 10px; border-radius: var(--radius-sm); font-size: 13.5px; line-height: 1.25; }
+  .hc-card legend { margin-bottom: 8px; }
+  .hc-card :deep(input:not(.sr-only)), .hc-card :deep(textarea) { border-radius: var(--radius-sm); }
+  .hc-card :deep(textarea) { min-height: 112px; }
+  .hc-fields { column-gap: 10px; margin-top: 14px; }
+  .hc-fields > :deep(*) { margin-bottom: 14px; }
+  .hc-fields > :deep(.hc-province) { grid-column: 1 / -1; }
+  .hc-more { display: flex; width: 100%; align-items: center; justify-content: center; gap: 6px; margin: 0; border: 1px dashed rgb(10 34 81 / 28%); border-radius: var(--radius-sm); text-decoration: none; }
+  .hint { min-height: 44px; }
+  .hc-submit { margin-top: 14px; row-gap: 8px; }
+  .hc-submit > span { width: 100%; font-size: 13px; text-align: center; }
+}
 </style>

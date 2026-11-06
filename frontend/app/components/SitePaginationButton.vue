@@ -23,7 +23,7 @@ withDefaults(defineProps<{
     color="primary"
     :variant="active ? 'solid' : 'outline'"
     :prefetch="false"
-    class="public-pagination-button min-h-11 min-w-11 justify-center rounded-[4px] px-3 py-2 text-sm font-semibold leading-5"
+    class="public-pagination-button min-h-11 min-w-11 justify-center rounded-btn px-3 py-2 text-sm font-semibold leading-5"
     :class="active ? '' : 'public-neutral-button public-navy-outline-button'"
     :ui="active ? { base: '!text-navy-950' } : undefined"
   >

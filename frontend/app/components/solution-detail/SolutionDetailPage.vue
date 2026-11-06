@@ -112,7 +112,7 @@ onBeforeUnmount(() => {
         <img v-if="data.solution.image" :src="optimizedImage(data.solution.image, 1800, 1200)" :alt="data.solution.title" class="solution-hero__image" width="1600" height="1000" fetchpriority="high">
         <span class="solution-hero__shade" aria-hidden="true" />
         <div class="pts-container solution-hero__inner">
-          <a v-if="data.solution.category" class="solution-hero__category" :href="links.generic(data.navigation.allUrl)">{{ data.solution.category }}</a>
+          <a v-if="data.solution.category" class="solution-hero__category m-lg" :href="links.generic(data.navigation.allUrl)">{{ data.solution.category }}</a>
           <h1>{{ data.solution.title }}</h1>
           <p v-if="data.solution.summary" class="solution-hero__summary">{{ data.solution.summary }}</p>
           <div class="solution-hero__actions">
@@ -161,7 +161,7 @@ onBeforeUnmount(() => {
     </article>
 
     <section v-if="data.equipment.length" class="pts-container py-6 nav:py-8" aria-labelledby="solution-equipment-title">
-      <header class="mb-5 flex flex-col items-start gap-4 min-[801px]:flex-row min-[801px]:items-end min-[801px]:justify-between">
+      <header class="mb-5 flex flex-col items-start gap-4 min-[801px]:flex-row min-[801px]:items-end min-[801px]:justify-between max-tb:mb-2 max-tb:gap-1">
         <div>
           <h2 id="solution-equipment-title" class="m-0 text-[clamp(22px,2.2vw,28px)] font-black tracking-tight text-navy-800">Thiết bị cho một hệ thống hoàn chỉnh</h2>
           <p class="m-0 mt-1 text-sm text-slate-600">Chọn nhóm thiết bị để xem danh mục sản phẩm và thông số kỹ thuật chi tiết.</p>
@@ -171,7 +171,7 @@ onBeforeUnmount(() => {
           <span aria-hidden="true">→</span>
         </UButton>
       </header>
-      <div class="grid grid-cols-1 gap-2 min-[521px]:grid-cols-2 min-[1101px]:grid-cols-4">
+      <div class="grid grid-cols-1 gap-2 min-[521px]:grid-cols-2 min-[1101px]:grid-cols-4 solution-equip-rail">
         <a
           v-for="item in data.equipment"
           :key="item.url"
@@ -179,10 +179,10 @@ onBeforeUnmount(() => {
           :href="links.generic(item.url)"
         >
           <img v-if="item.image" :src="item.image" alt="" class="h-12 w-12 flex-none object-contain transition-transform duration-300 group-hover:scale-105" width="48" height="48" loading="lazy">
-          <span v-else class="grid h-12 w-12 flex-none place-items-center rounded-[4px] bg-navy-950 text-gold-400 transition-colors group-hover:bg-gold-500 group-hover:text-navy-950" aria-hidden="true">
+          <span v-else class="grid h-12 w-12 flex-none place-items-center rounded-btn bg-navy-950 text-gold-400 transition-colors group-hover:bg-gold-500 group-hover:text-navy-950" aria-hidden="true">
             <UIcon :name="equipmentIcon(item.url, item.name)" class="size-5" />
           </span>
-          <span class="min-w-0 flex-1 py-1">
+          <span class="solution-equip-text min-w-0 flex-1 py-1">
             <strong class="block text-sm font-extrabold leading-snug text-navy-900 transition-colors group-hover:text-gold-700">{{ item.name }}</strong>
             <small v-if="item.description" class="mt-1 block line-clamp-2 text-xs leading-relaxed text-slate-600">{{ item.description }}</small>
           </span>
@@ -210,7 +210,7 @@ onBeforeUnmount(() => {
 .solution-hero__summary { display: -webkit-box; max-width: 62ch; margin: 22px 0 0; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 4; color: #d3dcea; font-size: clamp(17px, 1.25vw, 19px); line-height: 1.68; }
 .solution-hero__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 28px; margin-top: 32px; }
 .solution-hero__primary { display: inline-flex; min-height: 58px; align-items: center; gap: 16px; padding: 0 10px 0 24px; border-radius: var(--radius-sm); background: var(--pts-gold-gradient); color: var(--color-navy-950); font-size: 16.5px; font-weight: 850; text-decoration: none; transition: filter 0.25s ease; }
-.solution-hero__primary > span { display: grid; width: 40px; height: 40px; place-items: center; border-radius: 4px; background: var(--color-navy-950); color: var(--color-gold-300); transition: transform 0.35s var(--ease); }
+.solution-hero__primary > span { display: grid; width: 40px; height: 40px; place-items: center; border-radius: var(--radius-btn); background: var(--color-navy-950); color: var(--color-gold-300); transition: transform 0.35s var(--ease); }
 .solution-hero__primary:hover { filter: brightness(1.06); }
 .solution-hero__primary:hover > span { transform: translateX(4px); }
 .solution-hero__call { display: inline-flex; min-height: 52px; align-items: center; gap: 12px; color: #fff; font-size: 20px; font-weight: 850; text-decoration: none; font-variant-numeric: tabular-nums; }
@@ -232,16 +232,7 @@ onBeforeUnmount(() => {
 @keyframes hero-in { from { opacity: 0; transform: scale(1.08); } }
 
 /* Page swap: content slides out toward where it came from and the next solution flows in. */
-.swap-next-leave-active, .swap-prev-leave-active { transition: opacity 0.26s ease, transform 0.26s cubic-bezier(0.55, 0, 1, 0.45), filter 0.26s ease; }
-.swap-next-enter-active, .swap-prev-enter-active { transition: opacity 0.5s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), filter 0.5s ease; }
-.swap-next-leave-to { opacity: 0; transform: translateX(-4%); filter: blur(6px); }
-.swap-next-enter-from { opacity: 0; transform: translateX(5%); filter: blur(8px); }
-.swap-prev-leave-to { opacity: 0; transform: translateX(4%); filter: blur(6px); }
-.swap-prev-enter-from { opacity: 0; transform: translateX(-5%); filter: blur(8px); }
-.story-swap-leave-active { transition: opacity 0.2s ease; }
-.story-swap-enter-active { transition: opacity 0.5s ease 0.1s, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.1s; }
-.story-swap-leave-to { opacity: 0; }
-.story-swap-enter-from { opacity: 0; transform: translateY(24px); }
+/* Solution swaps are instant: an out-in fade left an empty hero between two dark photos. */
 @media (max-width: 640px) {
   .solution-hero { height: 660px; }
   .solution-hero h1 { font-size: 34px; }
@@ -255,5 +246,41 @@ onBeforeUnmount(() => {
   .swap-next-enter-active, .swap-prev-enter-active, .swap-next-leave-active, .swap-prev-leave-active, .story-swap-enter-active, .story-swap-leave-active { transition: opacity 0.2s ease; }
   .swap-next-enter-from, .swap-prev-enter-from, .swap-next-leave-to, .swap-prev-leave-to, .story-swap-enter-from { transform: none; filter: none; }
   .solution-hero__primary > span { transition: none; }
+}
+/* Phones: a photo header with the title landing on navy, then the full summary, so the hero
+   sizes to its text. Equipment becomes a swipe rail of cards that show their whole description. */
+@media (max-width: 820px) {
+  .solution-hero { display: block; height: auto; }
+  .solution-hero__image { inset: 0 0 auto; height: 240px; transform: none; }
+  .solution-hero__shade, .solution-hero:not(.has-image) .solution-hero__shade { inset: 0 0 auto; height: 240px; }
+  .solution-hero__shade { background: linear-gradient(180deg, rgb(6 21 55 / 25%) 0%, rgb(6 21 55 / 35%) 45%, #061537 100%); }
+  .solution-hero__inner { padding-block: 12px 20px; }
+  .solution-hero__category { min-height: 44px; margin-bottom: 92px; padding: 0 16px; color: var(--color-navy-950); }
+  .solution-hero:not(.has-image) .solution-hero__category { margin-bottom: 14px; }
+  .solution-hero h1 { max-width: none; font-size: clamp(28px, 7.6vw, 31px); font-weight: 800; line-height: 1.15; letter-spacing: -0.02em; }
+  .solution-hero__summary { display: block; margin-top: 10px; overflow: visible; font-size: 15.5px; line-height: 1.55; -webkit-line-clamp: unset; }
+  .solution-hero__actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: center; gap: 6px 12px; margin-top: 16px; }
+  .solution-hero__primary { grid-column: 1 / -1; min-height: 52px; justify-content: space-between; font-size: 16px; }
+  .solution-hero__primary > span { width: 36px; height: 36px; }
+  .solution-hero__call { min-width: 0; min-height: 48px; gap: 8px; font-size: 16px; }
+  .solution-hero__call small { font-size: 12.5px; }
+  .solution-hero__more { justify-content: flex-end; font-size: 14px; text-align: right; }
+
+  .solution-equip-rail {
+    display: flex;
+    gap: 12px;
+    margin-inline: calc(50% - 50vw);
+    padding: 4px calc(50vw - 50%) 8px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+  .solution-equip-rail::-webkit-scrollbar { display: none; }
+  .solution-equip-rail > a { display: grid; flex: 0 0 min(84%, 330px); grid-template-columns: 44px minmax(0, 1fr) 16px; align-items: center; gap: 8px 10px; padding: 12px; scroll-snap-align: center; }
+  .solution-equip-rail > a > img, .solution-equip-rail > a > span:first-child { width: 44px; height: 44px; }
+  .solution-equip-text { display: contents; }
+  .solution-equip-text > strong { grid-column: 2; font-size: 15px; }
+  .solution-equip-text > small { display: block; grid-column: 1 / -1; grid-row: 2; margin-top: 0; align-self: start; font-size: 13.5px; line-height: 1.5; -webkit-line-clamp: unset; overflow: visible; }
 }
 </style>

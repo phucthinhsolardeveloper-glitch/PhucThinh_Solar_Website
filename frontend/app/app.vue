@@ -4,6 +4,12 @@ import StorefrontConsultationModal from '~/components/modal/StorefrontConsultati
 import CartFeedback from '~/components/commerce/CartFeedback.vue'
 import StorefrontDealerModal from '~/components/modal/StorefrontDealerModal.vue'
 
+// One shell for the whole site. Header, footer and the phone dock stay mounted across
+// navigation, so a route change only swaps the page instead of rebuilding everything.
+const route = useRoute()
+const { site } = await usePublicSite()
+const showShell = computed(() => route.meta.layout !== 'migration')
+
 useHead({
   script: [
     {
@@ -35,9 +41,13 @@ useHead({
   -->
   <MotionConfig reducedMotion="user">
     <UApp>
+      <!-- Immediate click feedback; the throttle keeps fast navigations from flashing it. -->
+      <NuxtLoadingIndicator color="#d49b39" :height="2" :throttle="150" />
+      <SiteHeader v-if="showShell" :site="site" />
       <NuxtLayout>
         <NuxtPage />
       </NuxtLayout>
+      <SiteFooter v-if="showShell" :site="site" />
       <StorefrontConsultationModal />
       <StorefrontDealerModal />
       <CartFeedback />

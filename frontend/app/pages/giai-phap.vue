@@ -63,7 +63,6 @@ const recommendedSolutions = ref<string[]>([])
   <NuxtPage v-if="!isHubRoute" />
 
   <div v-else class="solutions-energy-page text-navy-800">
-    <SiteHeader :site="site" />
 
     <div class="border-b border-slate-200/70 bg-slate-50/80">
       <div class="pts-container">
@@ -107,7 +106,6 @@ const recommendedSolutions = ref<string[]>([])
       <SolutionsCta v-if="data.cta" :cta="data.cta" />
     </div>
 
-    <SiteFooter :site="site" />
   </div>
 </template>
 
@@ -120,10 +118,10 @@ const recommendedSolutions = ref<string[]>([])
 .solution-energy-intro-copy > p { max-width: 60ch; margin: 20px 0 0; color: #52627a; font-size: clamp(16px, 1.35vw, 18px); line-height: 1.75; }
 .solution-intro-links { display: flex; flex-wrap: wrap; align-items: center; gap: 18px 24px; margin-top: 24px; }
 .solution-primary-link, .solution-secondary-link { display: inline-flex; min-height: 44px; align-items: center; gap: 12px; font-weight: 750; text-decoration: none; }
-.solution-primary-link { padding: 10px 18px; border-radius: 4px; background: var(--pts-gold-gradient); color: var(--color-navy-950); transition: filter .2s ease; }
+.solution-primary-link { padding: 10px 18px; border-radius: var(--radius-btn); background: var(--pts-gold-gradient); color: var(--color-navy-950); transition: filter .2s ease; }
 .solution-primary-link:hover { filter: brightness(1.08); }
 .solution-secondary-link { color: #0a2251; }
-.solution-energy-intro-image { justify-self: end; width: 100%; max-width: 440px; aspect-ratio: 8 / 5; margin: 0; overflow: hidden; border-radius: 3px; }
+.solution-energy-intro-image { justify-self: end; width: 100%; max-width: 440px; aspect-ratio: 8 / 5; margin: 0; overflow: hidden; border-radius: var(--radius-chip); }
 .solution-energy-intro-image img { display: block; width: 100%; height: 100%; object-fit: cover; }
 @media (max-width: 900px) {
   .solution-energy-intro { grid-template-columns: 1fr; gap: 24px; }
@@ -135,5 +133,14 @@ const recommendedSolutions = ref<string[]>([])
   .solution-energy-intro h1 { font-size: clamp(33px, 10vw, 42px); }
   .solution-intro-links { align-items: stretch; flex-direction: column; gap: 6px; }
   .solution-primary-link, .solution-secondary-link { justify-content: center; }
+}
+/* Phones: the intro is one tight block, with both actions on one line where they fit. */
+@media (max-width: 820px) {
+  .solution-main { padding-top: 0; }
+  .solution-energy-intro { grid-template-columns: minmax(0, 1fr); gap: 16px; padding: 16px 0; }
+  .solution-energy-intro-copy > p { margin-top: 10px; font-size: 16px; line-height: 1.6; }
+  .solution-intro-links { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 4px 12px; margin-top: 14px; }
+  .solution-primary-link { min-height: 48px; gap: 8px; padding-inline: 14px; font-size: 14.5px; }
+  .solution-secondary-link { gap: 6px; font-size: 14px; }
 }
 </style>

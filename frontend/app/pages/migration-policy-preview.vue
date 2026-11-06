@@ -13,7 +13,7 @@ const config = useRuntimeConfig()
 const slug = computed(() => typeof route.params.slug === 'string' ? route.params.slug : (typeof route.query.slug === 'string' ? route.query.slug : ''))
 if (!isSafeEditorialSlug(slug.value)) throw createError({ statusCode: 404, statusMessage: 'Policy not found' })
 const isPublicRoute = computed(() => route.path.startsWith(POLICY_PUBLIC_ROOT))
-const { data, error, pending } = await useAsyncData<PublicPolicyDetail>(
+const { data: fetched, error, pending } = await useAsyncData<PublicPolicyDetail>(
   () => 'migration-policy-' + slug.value,
   async () => {
     if (!isSafeEditorialSlug(slug.value)) throw createError({ statusCode: 404, statusMessage: 'Policy not found' })
@@ -23,6 +23,21 @@ const { data, error, pending } = await useAsyncData<PublicPolicyDetail>(
   },
   { watch: [slug] },
 )
+// The async key changes with the slug, which empties the result until the new policy arrives.
+// Keep showing the current policy until then, so the page never blanks.
+const data = shallowRef(fetched.value)
+watch(fetched, (value) => { if (value) data.value = value })
+// Moving between policies is the main action on this page, so have them ready.
+onMounted(() => {
+  const warm = () => {
+    for (const policy of site.value.footer?.policies ?? []) {
+      const next = policy.href.replace(/\/+$/, '').split('/').pop()
+      if (next && isSafeEditorialSlug(next)) void $fetch('/_migration/policy-detail', { query: { slug: next } }).catch(() => {})
+    }
+  }
+  if ('requestIdleCallback' in window) window.requestIdleCallback(warm)
+  else setTimeout(warm, 800)
+})
 const responseStatus = editorialPublicResponseStatus(
   isPublicRoute.value,
   (error.value as { statusCode?: unknown } | null)?.statusCode,
@@ -56,11 +71,17 @@ const policyIcons: Array<[RegExp, string]> = [
 ]
 function policyIcon(label: string) { return policyIcons.find(([re]) => re.test(label))?.[1] ?? 'i-lucide-file-text' }
 const policyRailRef = ref<HTMLElement | null>(null)
-onMounted(() => {
+watch(slug, async () => {
+  if (!import.meta.client) return
+  await nextTick()
   const rail = policyRailRef.value
   const current = rail?.querySelector<HTMLElement>('[aria-current="page"]')
-  if (rail && current) rail.scrollLeft = current.offsetLeft - rail.offsetLeft - 16
-})
+  if (!rail || !current) return
+  const target = current.offsetLeft - rail.offsetLeft - (rail.clientWidth - current.clientWidth) / 2
+  const left = Math.max(0, Math.min(target, rail.scrollWidth - rail.clientWidth))
+  const behavior: ScrollBehavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
+  rail.scrollTo({ left, behavior })
+}, { immediate: true, flush: 'post' })
 const policies = computed(() => site.value.footer?.policies ?? [])
 function isCurrentPolicy(href: string) { return href.replace(/\/+$/, '').endsWith(`/${slug.value}`) }
 
@@ -116,7 +137,6 @@ useHead({
 
 <template>
   <div class="min-h-screen bg-white text-navy-800">
-    <SiteHeader :site="site" />
     <div class="pts-container">
       <SiteBreadcrumb :items="[{ label: 'Chính sách & Hỗ trợ' }, ...(data ? [{ label: data.title }] : [])]" />
     </div>
@@ -143,10 +163,11 @@ useHead({
     </section>
 
     <main class="pts-container py-8 nav:py-14" :aria-busy="pending">
-      <div v-if="pending" class="py-16 text-slate-500" role="status">Đang tải nội dung chính sách…</div>
-      <div v-else-if="error || !data" class="rounded-btn border border-amber-200 bg-amber-50 p-8 text-amber-900">
-        <h1 class="mb-2 text-2xl font-black">Không thể tải chính sách</h1>
-        <p class="mb-0">Slug không hợp lệ hoặc CMS local chưa khả dụng.</p>
+      <div v-if="pending && !data" class="py-16 text-slate-500" role="status">Đang tải nội dung chính sách…</div>
+      <div v-else-if="error || !data" class="rounded-btn border border-slate-200 bg-slate-50 p-8 text-navy-900">
+        <h1 class="mb-2 text-2xl font-black">Chưa tìm thấy chính sách này</h1>
+        <p class="mb-5 text-slate-600">Trang có thể đã đổi địa chỉ. Bạn xem các chính sách khác hoặc liên hệ để được hỗ trợ.</p>
+        <NuxtLink to="/lien-he/" class="inline-flex min-h-11 items-center gap-2 font-bold text-navy-900 underline underline-offset-4">Liên hệ Phúc Thịnh Solar</NuxtLink>
       </div>
       <article v-else class="mx-auto w-full max-w-[1280px]">
         <section v-if="data.content.html" aria-label="Nội dung chính sách">
@@ -169,24 +190,24 @@ useHead({
                 </li>
               </ul>
 
-              <div class="mt-6 hidden rounded-[4px] bg-navy-950 p-5 text-white nav:block">
+              <div class="mt-6 hidden rounded-btn bg-navy-950 p-5 text-white nav:block">
                 <p class="m-0 text-base font-extrabold text-white">Cần hỗ trợ ngay?</p>
                 <p class="m-0 mt-1.5 text-sm leading-relaxed text-white/75">
                   Liên hệ trực tiếp bộ phận kỹ thuật hoặc gửi mã đơn hàng để được kiểm tra nhanh.
                 </p>
                 <div class="mt-4 grid gap-2 text-sm">
-                  <a href="tel:0945536899" class="flex min-h-11 items-center justify-between rounded-[3px] bg-white/10 px-3 text-white no-underline hover:bg-white/15">
+                  <a href="tel:0945536899" class="flex min-h-11 items-center justify-between rounded-chip bg-white/10 px-3 text-white no-underline hover:bg-white/15">
                     <span class="text-white/75">Kỹ thuật:</span>
                     <strong class="tabular-nums text-gold-300">0945 536 899</strong>
                   </a>
-                  <a href="tel:0944555957" class="flex min-h-11 items-center justify-between rounded-[3px] bg-white/10 px-3 text-white no-underline hover:bg-white/15">
+                  <a href="tel:0944555957" class="flex min-h-11 items-center justify-between rounded-chip bg-white/10 px-3 text-white no-underline hover:bg-white/15">
                     <span class="text-white/75">Bán hàng:</span>
                     <strong class="tabular-nums text-gold-300">0944 555 957</strong>
                   </a>
                 </div>
                 <button
                   type="button"
-                  class="mt-4 inline-flex min-h-11 w-full cursor-pointer items-center justify-center gap-1.5 rounded-[3px] bg-gold-500 px-3 text-sm font-extrabold text-navy-950 transition-colors hover:bg-gold-400"
+                  class="mt-4 inline-flex min-h-11 w-full cursor-pointer items-center justify-center gap-1.5 rounded-chip bg-gold-500 px-3 text-sm font-extrabold text-navy-950 transition-colors hover:bg-gold-400"
                   @click="openConsultation('Chính sách & Hỗ trợ: ' + data.title)"
                 >
                   <span>Gửi yêu cầu hỗ trợ</span>
@@ -196,14 +217,14 @@ useHead({
             </nav>
             <div class="min-w-0 w-full max-w-[960px]">
               <div id="policy-article-content"><EditorialRichText :content="editorial.content" variant="news" /></div>
-              <div class="my-7 flex flex-col gap-3 rounded-[4px] border-l-[3px] border-gold-500 bg-slate-50 p-4 sm:flex-row sm:items-center sm:justify-between">
+              <div class="my-7 flex flex-col gap-3 rounded-btn border-l-[3px] border-gold-500 bg-slate-50 p-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <p class="m-0 text-sm font-bold text-navy-900">Cần giải đáp thêm về {{ data.title.toLowerCase() }}?</p>
                   <p class="m-0 mt-0.5 text-xs text-slate-600">Đội ngũ chăm sóc khách hàng và kỹ thuật viên Phúc Thịnh Solar luôn sẵn sàng hỗ trợ.</p>
                 </div>
                 <button
                   type="button"
-                  class="inline-flex min-h-10 shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-[3px] bg-navy-900 px-4 py-2 text-xs font-extrabold text-white transition-colors hover:bg-navy-800"
+                  class="inline-flex min-h-10 shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-chip bg-navy-900 px-4 py-2 text-xs font-extrabold text-white transition-colors hover:bg-navy-800"
                   @click="openConsultation('Chính sách & Hỗ trợ: ' + data.title)"
                 >
                   <span>Liên hệ hỗ trợ ngay</span>
@@ -218,7 +239,6 @@ useHead({
       </article>
 
     </main>
-    <SiteFooter :site="site" />
   </div>
 </template>
 
@@ -229,12 +249,12 @@ useHead({
 .policy-hub__meta { margin: 14px 0 0; color: #94a3b8; font-size: 14.5px; }
 .policy-rail { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(150px, 1fr); gap: 8px; margin-top: clamp(24px, 3vw, 36px); overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
 .policy-rail::-webkit-scrollbar { display: none; }
-.policy-rail__item { display: flex; min-height: 92px; flex-direction: column; justify-content: space-between; gap: 10px; padding: 14px; border: 1px solid rgb(255 255 255 / 14%); border-radius: 4px; background: rgb(255 255 255 / 4%); color: #dbe4ef; font-size: 14px; font-weight: 700; line-height: 1.3; text-decoration: none; transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.25s ease; }
-.policy-rail__item :deep(svg), .policy-rail__item svg { color: var(--color-gold-400); }
+.policy-rail__item { display: flex; min-height: 92px; flex-direction: column; justify-content: space-between; gap: 10px; padding: 14px; border: 1px solid rgb(255 255 255 / 14%); border-radius: var(--radius-btn); background: rgb(255 255 255 / 4%); color: #dbe4ef; font-size: 14px; font-weight: 700; line-height: 1.3; text-decoration: none; transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.25s ease; }
+.policy-rail__item svg { color: var(--color-gold-400); }
 .policy-rail__item:hover { border-color: rgb(224 182 84 / 60%); transform: translateY(-2px); }
 .policy-rail__item.is-current { border-color: var(--color-gold-400); background: var(--pts-gold-gradient); color: var(--color-navy-950); }
 .policy-rail__item.is-current svg { color: var(--color-navy-950); }
 .policy-rail__item:focus-visible { outline: 2px solid var(--color-gold-300); outline-offset: 2px; }
 @media (max-width: 760px) { .policy-rail { grid-auto-columns: 46%; } }
-@media (prefers-reduced-motion: reduce) { .policy-rail__item { transition: none; } .policy-rail__item:hover { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .policy-rail__item { transition: none; } .policy-rail__item:hover { transform: none; } .policy-route-enter-active, .policy-route-leave-active { transition: none; } }
 </style>

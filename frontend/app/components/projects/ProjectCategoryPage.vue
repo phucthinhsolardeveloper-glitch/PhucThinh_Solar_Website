@@ -83,7 +83,6 @@ usePublicSocialMeta({
 
 <template>
   <div class="text-navy-800">
-    <SiteHeader :site="site" />
     <div class="border-b border-slate-200/70 bg-slate-50/80">
       <div class="pts-container">
         <SiteBreadcrumb :items="[
@@ -97,8 +96,8 @@ usePublicSocialMeta({
         <h1 class="mb-3 text-3xl font-black tracking-tight">{{ responseStatus === 404 ? 'Không tìm thấy danh mục dự án' : 'Tạm thời không thể tải danh mục dự án' }}</h1>
         <p class="mb-5 text-slate-600">{{ responseStatus === 404 ? 'Danh mục này hiện không tồn tại hoặc đã ẩn.' : 'Nguồn nội dung hiện không khả dụng.' }}</p>
         <div class="flex flex-wrap gap-3">
-          <NuxtLink :to="PROJECTS_PUBLIC_PATH" class="inline-flex min-h-11 items-center rounded-[4px] bg-navy-900 px-5 py-2.5 text-sm font-bold text-white no-underline hover:bg-navy-800">Xem tất cả dự án</NuxtLink>
-          <button type="button" class="inline-flex min-h-11 cursor-pointer items-center rounded-[4px] bg-gold-500 px-5 py-2.5 text-sm font-extrabold text-navy-950 hover:bg-gold-400" @click="openConsultation('Tư vấn dự án điện mặt trời')">Nhận tư vấn công trình →</button>
+          <NuxtLink :to="PROJECTS_PUBLIC_PATH" class="inline-flex min-h-11 items-center rounded-btn bg-navy-900 px-5 py-2.5 text-sm font-bold text-white no-underline hover:bg-navy-800">Xem tất cả dự án</NuxtLink>
+          <button type="button" class="inline-flex min-h-11 cursor-pointer items-center rounded-btn bg-gold-500 px-5 py-2.5 text-sm font-extrabold text-navy-950 hover:bg-gold-400" @click="openConsultation('Tư vấn dự án điện mặt trời')">Nhận tư vấn công trình →</button>
         </div>
       </section>
 
@@ -112,7 +111,7 @@ usePublicSocialMeta({
           </div>
           <button
             type="button"
-            class="inline-flex min-h-11 shrink-0 cursor-pointer items-center gap-2 rounded-[4px] bg-gold-500 px-4 py-2 text-xs font-extrabold text-navy-950 transition-colors hover:bg-gold-400"
+            class="inline-flex min-h-11 shrink-0 cursor-pointer items-center gap-2 rounded-btn bg-gold-500 px-4 py-2 text-xs font-extrabold text-navy-950 transition-colors hover:bg-gold-400"
             @click="openConsultation(`Dự án ${categoryTitle}`)"
           >
             <span>Tư vấn công trình tương tự</span>
@@ -168,6 +167,5 @@ usePublicSocialMeta({
         <ProjectsCta v-if="projects.cta" :cta="projects.cta" :label="projects.labels.cta" />
       </template>
     </main>
-    <SiteFooter :site="site" />
   </div>
 </template>

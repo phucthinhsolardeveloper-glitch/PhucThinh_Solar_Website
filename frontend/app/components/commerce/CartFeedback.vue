@@ -107,7 +107,7 @@ onBeforeUnmount(() => { window.removeEventListener('keydown', onKey); clearTimeo
         <aside
           v-if="card"
           :key="card.id"
-          class="cart-card"
+          class="m-sheet-glass cart-card"
           :class="{ 'is-paused': paused }"
           :style="{ top: `${position.top}px`, right: `${position.right}px`, '--show': `${SHOW_MS}ms`, '--arrow': `${position.arrow}px` }"
           aria-label="Đã thêm vào giỏ hàng"
@@ -169,7 +169,7 @@ onBeforeUnmount(() => { window.removeEventListener('keydown', onKey); clearTimeo
 .cart-card__secondary { min-height: 44px; padding: 0 14px; border: 1px solid rgb(10 34 81 / 14%); border-radius: var(--radius-md); background: #fff; color: var(--color-navy-900); font-size: 14px; font-weight: 700; cursor: pointer; }
 .cart-card__secondary:hover { border-color: var(--color-gold-500); }
 .cart-card a:focus-visible, .cart-card button:focus-visible { outline: 3px solid var(--color-gold-500); outline-offset: 2px; }
-.cart-card__timer { position: absolute; right: 16px; bottom: 7px; left: 16px; height: 3px; border-radius: 3px; background: linear-gradient(90deg, var(--color-gold-500), var(--color-gold-300)); transform-origin: left; animation: cart-timer var(--show) linear forwards; }
+.cart-card__timer { position: absolute; right: 16px; bottom: 7px; left: 16px; height: 3px; border-radius: var(--radius-chip); background: linear-gradient(90deg, var(--color-gold-500), var(--color-gold-300)); transform-origin: left; animation: cart-timer var(--show) linear forwards; }
 .cart-card.is-paused .cart-card__timer { animation-play-state: paused; }
 @keyframes cart-timer { from { transform: scaleX(1); } to { transform: scaleX(0); } }
 @keyframes tick-pop { from { transform: scale(0); } }

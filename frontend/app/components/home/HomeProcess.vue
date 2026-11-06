@@ -42,7 +42,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <section v-if="steps.length" class="journey bg-hdr-surface py-[clamp(64px,7vw,120px)]" aria-labelledby="home-process-title">
+  <section v-if="steps.length" class="journey bg-hdr-surface py-[clamp(64px,7vw,120px)] max-tb:py-8" aria-labelledby="home-process-title">
     <div class="pts-container grid gap-12 min-[961px]:grid-cols-[minmax(0,.82fr)_minmax(0,1.18fr)] min-[961px]:gap-[clamp(48px,6vw,120px)]">
       <header class="min-[961px]:sticky min-[961px]:top-[clamp(120px,14vh,180px)] min-[961px]:self-start">
         <h2 id="home-process-title" class="m-0 max-w-[13ch] text-[clamp(32px,3.4vw,56px)] font-black leading-[1.04] tracking-[-.035em] text-navy-950">
@@ -51,7 +51,7 @@ onBeforeUnmount(() => {
         <p class="mt-5 max-w-[42ch] text-[clamp(15px,1.05vw,18px)] leading-[1.7] text-slate-600">
           Phúc Thịnh Solar tư vấn giải pháp phù hợp, thi công chuyên nghiệp và tận tâm hỗ trợ sau bàn giao, giúp khách hàng an tâm sử dụng lâu dài.
         </p>
-        <a href="#yeu-cau-tu-van" class="mt-8 inline-flex min-h-[52px] items-center gap-2 rounded-[4px] bg-navy-950 px-6 text-[15px] font-extrabold text-white no-underline transition-colors hover:bg-gold-500 hover:text-navy-950">
+        <a href="#yeu-cau-tu-van" class="mt-8 inline-flex min-h-[52px] items-center gap-2 rounded-btn bg-navy-950 px-6 text-[15px] font-extrabold text-white no-underline transition-colors hover:bg-gold-500 hover:text-navy-950">
           Bắt đầu với bước tư vấn <span aria-hidden="true">→</span>
         </a>
       </header>
@@ -153,5 +153,26 @@ onBeforeUnmount(() => {
 
 @media (prefers-reduced-motion: reduce) {
   .journey-num, .journey-title, .journey-desc { transition: none; }
+}
+
+/* Phones: the five steps sit side by side and swipe, instead of a screen and a half of list. */
+@media (max-width: 820px) {
+  .journey > div { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+  .journey > div > * { min-width: 0; }
+  .journey-list { display: flex; gap: 12px; margin-inline: -16px; padding-inline: 16px; overflow-x: auto; scrollbar-width: none; scroll-snap-type: x mandatory; }
+  .journey-list::before, .journey-list::after { display: none; }
+  .journey-num { top: 12px; right: 12px; left: auto; width: auto; font-size: 24px; }
+  .journey-step { position: relative; flex: 0 0 78%; padding: 16px 52px 16px 16px; border: 1px solid rgb(10 34 81 / 12%); border-radius: var(--radius-md); background: #fff; opacity: 1 !important; scroll-snap-align: center; }
+}
+
+@media (max-width: 820px) {
+  .journey > div { gap: 14px; }
+  .journey header h2 { max-width: none; font-size: 28px; line-height: 1.12; }
+  .journey header p { max-width: none; margin-top: 8px; font-size: 15px; line-height: 1.55; }
+  .journey header a { display: flex; justify-content: center; width: 100%; margin-top: 12px; }
+  /* The numeral's base background masks the desktop rail; on a white card it shows as a grey square. */
+  .journey-num { background: transparent; }
+  .journey-title { font-size: 17px; }
+  .journey-desc { margin-top: 6px; font-size: 14.5px; line-height: 1.5; }
 }
 </style>

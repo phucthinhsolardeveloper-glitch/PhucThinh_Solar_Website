@@ -102,11 +102,9 @@ const detailPage = computed(() => {
 <template>
   <component :is="detailPage" v-if="detailPage" />
   <div v-else class="min-h-screen bg-[#f6f8fb] text-navy-800">
-    <SiteHeader :site="site" />
     <main :aria-busy="pageState === 'redirecting'">
       <NotFoundExperience v-if="pageState === 'unavailable'" :status-code="502" :hotline="site.brand.hotline" />
       <NotFoundExperience v-else-if="pageState === 'not-found'" :status-code="404" :hotline="site.brand.hotline" />
     </main>
-    <SiteFooter :site="site" />
   </div>
 </template>

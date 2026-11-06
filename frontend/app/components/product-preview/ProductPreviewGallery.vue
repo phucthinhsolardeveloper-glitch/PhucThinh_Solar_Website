@@ -37,8 +37,17 @@ function retryMedia() {
   lightboxOpen.value = false
 }
 
+// Swap only once the next photo is decoded, so the frame never shows an empty stage.
+let showToken = 0
 function selectMedia(index: number) {
-  selectedIndex.value = index
+  const image = props.media[index]
+  if (!image) return
+  const token = ++showToken
+  const probe = new Image()
+  probe.src = optimizedImage(image, 960, 960)
+  probe.decode().catch(() => {}).finally(() => {
+    if (token === showToken) selectedIndex.value = index
+  })
 }
 function markMediaFailed(image: string) {
   failedMedia.value = new Set(failedMedia.value).add(image)
@@ -97,7 +106,7 @@ function moveLightbox(direction: -1 | 1) {
   if (indexes.length < 2) return
   const current = indexes.indexOf(selectedIndex.value)
   const next = (current + direction + indexes.length) % indexes.length
-  selectedIndex.value = indexes[next] ?? selectedIndex.value
+  if (indexes[next] !== undefined) selectMedia(indexes[next])
 }
 function handleKey(event: KeyboardEvent) {
   if (!lightboxOpen.value) return
@@ -149,10 +158,41 @@ onMounted(async () => {
   await nextTick()
   reconcileDisplayedImage()
 })
+onMounted(() => {
+  // Fetch the other photos ahead of the first swipe.
+  const preload = () => props.media.forEach((image) => { if (image.trim()) new Image().src = optimizedImage(image, 960, 960) })
+  if ('requestIdleCallback' in window) window.requestIdleCallback(preload)
+  else setTimeout(preload, 800)
+})
 onBeforeUnmount(() => {
   document.removeEventListener('keydown', handleKey)
   setDocumentScrollLock(false)
 })
+
+// Phones swipe between photos; a swipe must not also open the zoom view.
+let swipeStartX: number | null = null
+let swiped = false
+function onSwipeStart(event: TouchEvent) {
+  swipeStartX = event.touches[0]?.clientX ?? null
+  swiped = false
+}
+function onSwipeEnd(event: TouchEvent) {
+  const endX = event.changedTouches[0]?.clientX
+  if (swipeStartX === null || endX === undefined) return
+  const distance = endX - swipeStartX
+  swipeStartX = null
+  if (Math.abs(distance) < 40) return
+  swiped = true
+  if (distance < 0) nextImage()
+  else prevImage()
+}
+function onStageClick(event: MouseEvent) {
+  if (swiped) {
+    swiped = false
+    return
+  }
+  openLightbox(event)
+}
 </script>
 
 <template>
@@ -160,7 +200,7 @@ onBeforeUnmount(() => {
     <!-- Khung hiển thị ảnh sản phẩm chính với tính năng Zoom rê chuột & phím chuyển ảnh -->
     <div
       v-if="selectedMediaAvailable"
-      class="group relative grid aspect-square w-full place-items-center overflow-hidden rounded-[4px] bg-white"
+      class="group relative grid aspect-square w-full place-items-center overflow-hidden rounded-btn bg-white"
       @mousemove="handleMouseMove"
       @mouseleave="handleMouseLeave"
     >
@@ -169,7 +209,9 @@ onBeforeUnmount(() => {
         class="pdp-studio-stage relative flex h-full w-full items-center justify-center overflow-hidden bg-slate-50"
         :class="isZoomed ? 'cursor-crosshair' : 'cursor-zoom-in'"
         :aria-label="'Phóng to ảnh ' + name"
-        @click="openLightbox($event)"
+        @click="onStageClick($event)"
+        @touchstart.passive="onSwipeStart"
+        @touchend.passive="onSwipeEnd"
       >
         <span class="pdp-studio-halo" aria-hidden="true" />
         <Transition name="pdp-fade">
@@ -205,7 +247,7 @@ onBeforeUnmount(() => {
       <button
         v-if="availableIndexes.length > 1"
         type="button"
-        class="public-neutral-button absolute left-3 top-1/2 -translate-y-1/2 z-10 flex h-10 w-10 items-center justify-center rounded-full text-navy-900 opacity-0 backdrop-blur-xs transition-all duration-200 hover:scale-105 active:scale-95 group-hover:opacity-100 max-ph:opacity-90 max-ph:h-9 max-ph:w-9 cursor-pointer"
+        class="max-tb:hidden public-neutral-button absolute left-3 top-1/2 -translate-y-1/2 z-10 flex h-10 w-10 items-center justify-center rounded-full text-navy-900 opacity-0 backdrop-blur-xs transition-all duration-200 hover:scale-105 active:scale-95 group-hover:opacity-100 max-ph:opacity-90 max-ph:h-9 max-ph:w-9 cursor-pointer"
         aria-label="Ảnh trước"
         @click="prevImage"
       >
@@ -216,7 +258,7 @@ onBeforeUnmount(() => {
       <button
         v-if="availableIndexes.length > 1"
         type="button"
-        class="public-neutral-button absolute right-3 top-1/2 -translate-y-1/2 z-10 flex h-10 w-10 items-center justify-center rounded-full text-navy-900 opacity-0 backdrop-blur-xs transition-all duration-200 hover:scale-105 active:scale-95 group-hover:opacity-100 max-ph:opacity-90 max-ph:h-9 max-ph:w-9 cursor-pointer"
+        class="max-tb:hidden public-neutral-button absolute right-3 top-1/2 -translate-y-1/2 z-10 flex h-10 w-10 items-center justify-center rounded-full text-navy-900 opacity-0 backdrop-blur-xs transition-all duration-200 hover:scale-105 active:scale-95 group-hover:opacity-100 max-ph:opacity-90 max-ph:h-9 max-ph:w-9 cursor-pointer"
         aria-label="Ảnh tiếp theo"
         @click="nextImage"
       >
@@ -225,7 +267,7 @@ onBeforeUnmount(() => {
 
       <!-- Huy hiệu hướng dẫn zoom -->
       <div
-        class="pointer-events-none absolute bottom-3 left-3 z-10 flex items-center gap-1.5 rounded-full bg-navy-950/70 px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur-xs transition-opacity duration-200"
+        class="max-tb:hidden pointer-events-none absolute bottom-3 left-3 z-10 flex items-center gap-1.5 rounded-full bg-navy-950/70 px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur-xs transition-opacity duration-200"
         :class="isZoomed ? 'opacity-0' : 'opacity-85 group-hover:opacity-100'"
       >
         <svg class="h-3.5 w-3.5 text-gold-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -235,7 +277,7 @@ onBeforeUnmount(() => {
       </div>
 
       <!-- Số thứ tự ảnh -->
-      <div v-if="availableIndexes.length > 1" class="pointer-events-none absolute bottom-3 right-3 z-10 rounded-full bg-navy-950/70 px-2.5 py-1 text-xs font-bold text-white backdrop-blur-xs">
+      <div v-if="availableIndexes.length > 1" class="pointer-events-none absolute bottom-3 right-3 z-10 max-tb:bottom-8 rounded-full bg-navy-950/70 px-2.5 py-1 text-xs font-bold text-white backdrop-blur-xs">
         {{ displayedMediaNumber }} / {{ availableIndexes.length }}
       </div>
     </div>
@@ -248,13 +290,13 @@ onBeforeUnmount(() => {
     </div>
 
     <!-- Dải thumbnail nhỏ có chuyển ảnh mượt -->
-    <div v-if="media.length > 1" class="flex gap-2 overflow-x-auto pt-3 scroll-smooth [scrollbar-width:none]" aria-label="Thư viện ảnh sản phẩm">
+    <div v-if="media.length > 1" class="flex gap-2 overflow-x-auto pt-3 max-tb:hidden scroll-smooth [scrollbar-width:none]" aria-label="Thư viện ảnh sản phẩm">
       <button
         v-for="(image, index) in media"
         v-show="!failedMedia.has(image)"
         :key="`${image}-${retryVersion}`"
         type="button"
-        class="aspect-square flex-none basis-[72px] overflow-hidden rounded-[4px] border bg-white cursor-pointer transition-all duration-200 hover:opacity-100 active:scale-95"
+        class="aspect-square flex-none basis-[72px] overflow-hidden rounded-btn border bg-white cursor-pointer transition-all duration-200 hover:opacity-100 active:scale-95"
         :class="selectedIndex === index ? 'border-navy-800 ring-2 ring-gold-500/50 shadow-xs scale-[1.02]' : 'border-gray-200 hover:border-slate-300 opacity-70'"
         :aria-label="'Xem ảnh ' + (index + 1) + ' của ' + media.length"
         :aria-pressed="selectedIndex === index"
@@ -343,16 +385,11 @@ onBeforeUnmount(() => {
 .pdp-zoom-image {
   filter: drop-shadow(0 22px 26px rgb(6 21 55 / 14%));
 }
-.pdp-fade-enter-active,
-.pdp-fade-leave-active {
-  transition: opacity 0.16s ease-out;
-}
-.pdp-fade-enter-from {
-  opacity: 0;
-}
-.pdp-fade-leave-to {
-  opacity: 0;
-}
+/* The old photo stays fully visible under the new one, so the background never shows through. */
+.pdp-fade-enter-active { z-index: 1; transition: opacity 0.14s ease-out; }
+.pdp-fade-enter-from { opacity: 0; }
+.pdp-fade-leave-active { transition: opacity 0s linear 0.14s; }
+.pdp-fade-leave-to { opacity: 0; }
 .pdp-lightbox-enter-active,
 .pdp-lightbox-leave-active {
   transition: opacity 0.16s ease-out;

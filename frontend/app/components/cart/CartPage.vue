@@ -103,6 +103,12 @@ onBeforeUnmount(() => clearTimeout(removedTimer))
 
 const payload = computed<PublicCartPayload | null>(() => cart.value)
 
+// With items in the cart the phone dock gives way to the island that carries the next step.
+const actionBarActive = useMobileActionBar()
+const hasCartItems = computed(() => (payload.value?.quantityCount ?? 0) > 0)
+watch(hasCartItems, (value) => { actionBarActive.value = value }, { immediate: true })
+onBeforeUnmount(() => { actionBarActive.value = false })
+
 onMounted(async () => {
   try {
     const notice = await $fetch<unknown>('/_migration/checkout-notice')
@@ -119,8 +125,7 @@ function openCheckout() {
 
 <template>
   <div class="min-h-screen bg-[#f6f8fb] text-navy-800">
-    <SiteHeader :site="site" />
-    <div class="border-b border-slate-200/80 bg-white">
+    <div class="border-b border-slate-200/70 bg-slate-50/80">
       <div class="pts-container">
         <SiteBreadcrumb :items="[{ label: 'Giỏ hàng' }]" />
       </div>
@@ -181,7 +186,7 @@ function openCheckout() {
                 v-for="cat in site.productCategories.slice(0, 6)"
                 :key="cat.slug"
                 :to="links.generic(cat.url)"
-                class="group flex items-center justify-between gap-3 rounded-[8px] border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-navy-900 no-underline transition-colors hover:border-gold-500"
+                class="group flex items-center justify-between gap-3 rounded-md border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-navy-900 no-underline transition-colors hover:border-gold-500"
               >
                 <span class="truncate">{{ cat.name }}</span>
                 <UIcon name="i-lucide-arrow-right" class="size-4 shrink-0 text-slate-400 transition-transform group-hover:translate-x-0.5 group-hover:text-gold-700" aria-hidden="true" />
@@ -281,7 +286,11 @@ function openCheckout() {
         </div>
       </template>
     </main>
-    <SiteFooter :site="site" />
+    <div v-if="payload && hasCartItems && !isMigrationPreview" class="m-island print:hidden">
+      <span><small>Tổng tạm tính</small><strong><AnimatedMoney :value="payload.subtotal" :animate="false" /></strong></span>
+      <NuxtLink v-if="payload.canCheckout" to="/thanh-toan/" @click="openCheckout">Thanh toán</NuxtLink>
+      <button v-else type="button" @click="openConsultation('Giỏ hàng: Yêu cầu báo giá')">Nhận báo giá</button>
+    </div>
   </div>
 </template>
 
@@ -292,7 +301,7 @@ function openCheckout() {
 .cart-list:focus-visible { outline: 3px solid var(--color-gold-700); outline-offset: -3px; }
 .cart-row { padding: clamp(14px, 1.6vw, 20px); border: 1px solid rgb(10 34 81 / 7%); border-radius: var(--radius-md); background: #fff; box-shadow: 0 1px 0 rgb(10 34 81 / 3%); transition: box-shadow 0.3s ease; }
 .cart-row:hover { box-shadow: 0 18px 36px -28px rgb(10 34 81 / 45%); }
-.cart-row__media { display: grid; aspect-ratio: 1; place-items: center; overflow: hidden; border-radius: 10px; background: #f6f8fb; }
+.cart-row__media { display: grid; aspect-ratio: 1; place-items: center; overflow: hidden; border-radius: var(--radius-md); background: #f6f8fb; }
 .cart-row__name { display: block; color: var(--color-navy-950); font-size: 16.5px; font-weight: 800; line-height: 1.35; text-decoration: none; }
 .cart-row__name:hover { color: var(--color-gold-700); }
 .cart-row__remove { display: inline-flex; min-height: 36px; align-items: center; gap: 6px; margin-top: 4px; padding: 0; border: 0; background: none; color: #94a3b8; font-size: 13.5px; font-weight: 700; cursor: pointer; transition: color 0.2s ease; }
@@ -306,7 +315,7 @@ function openCheckout() {
 .cart-list { position: relative; }
 .cart-undo { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; padding: 10px 10px 10px 16px; border-radius: 12px; background: var(--color-navy-950); color: #e2e8f0; font-size: 14.5px; }
 .cart-undo strong { color: #fff; }
-.cart-undo__btn { min-height: 44px; padding: 0 16px; border: 0; border-radius: 4px; background: var(--pts-gold-gradient); color: var(--color-navy-950); font-weight: 800; cursor: pointer; }
+.cart-undo__btn { min-height: 44px; padding: 0 16px; border: 0; border-radius: var(--radius-btn); background: var(--pts-gold-gradient); color: var(--color-navy-950); font-weight: 800; cursor: pointer; }
 .cart-undo-enter-active, .cart-undo-leave-active { transition: opacity 0.25s ease, transform 0.3s cubic-bezier(0.22, 1, 0.36, 1); }
 .cart-undo-enter-from, .cart-undo-leave-to { opacity: 0; transform: translateY(-8px); }
 
@@ -318,8 +327,8 @@ function openCheckout() {
 .cart-summary__total { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; padding-top: 18px; white-space: nowrap; }
 .cart-summary__total span { color: #d3dcea; font-weight: 700; }
 .cart-summary__total strong { background-image: var(--pts-gold-gradient); background-clip: text; color: transparent; -webkit-text-fill-color: transparent; font-size: clamp(22px, 2vw, 30px); font-weight: 900; letter-spacing: -0.02em; }
-.cart-summary__note { margin: 16px 0 0; padding: 12px 14px; border-radius: 10px; background: rgb(255 255 255 / 8%); color: #e2e8f0; font-size: 14px; line-height: 1.55; }
-.cart-summary__cta { display: flex; width: 100%; min-height: 58px; align-items: center; justify-content: space-between; margin-top: 20px; padding: 0 10px 0 22px; border: 0; border-radius: 4px; background: var(--pts-gold-gradient); color: var(--color-navy-950); font-size: 16.5px; font-weight: 850; text-decoration: none; cursor: pointer; transition: filter 0.25s ease; }
+.cart-summary__note { margin: 16px 0 0; padding: 12px 14px; border-radius: var(--radius-md); background: rgb(255 255 255 / 8%); color: #e2e8f0; font-size: 14px; line-height: 1.55; }
+.cart-summary__cta { display: flex; width: 100%; min-height: 58px; align-items: center; justify-content: space-between; margin-top: 20px; padding: 0 10px 0 22px; border: 0; border-radius: var(--radius-btn); background: var(--pts-gold-gradient); color: var(--color-navy-950); font-size: 16.5px; font-weight: 850; text-decoration: none; cursor: pointer; transition: filter 0.25s ease; }
 .cart-summary__cta > span { display: grid; width: 40px; height: 40px; place-items: center; border-radius: 8px; background: var(--color-navy-950); color: var(--color-gold-300); transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
 .cart-summary__cta:hover { filter: brightness(1.06); }
 .cart-summary__cta:hover > span { transform: translateX(4px); }
@@ -333,7 +342,7 @@ function openCheckout() {
 .cart-empty__art { position: relative; display: grid; width: 96px; height: 96px; margin: 0 auto 20px; place-items: center; border-radius: 50%; background: rgb(228 168 73 / 14%); color: var(--color-gold-700); }
 .cart-empty__ring { position: absolute; inset: -10px; border: 1px dashed rgb(201 150 46 / 45%); border-radius: 50%; animation: empty-spin 18s linear infinite; }
 @keyframes empty-spin { to { transform: rotate(360deg); } }
-.cart-btn { display: inline-flex; min-height: 48px; align-items: center; gap: 8px; padding: 0 22px; border-radius: 10px; font-weight: 800; text-decoration: none; cursor: pointer; transition: background-color 0.2s ease, border-color 0.2s ease; }
+.cart-btn { display: inline-flex; min-height: 48px; align-items: center; gap: 8px; padding: 0 22px; border-radius: var(--radius-md); font-weight: 800; text-decoration: none; cursor: pointer; transition: background-color 0.2s ease, border-color 0.2s ease; }
 .cart-btn--gold { background: var(--pts-gold-gradient); color: var(--color-navy-950); }
 .cart-btn--gold:hover { filter: brightness(1.06); }
 .cart-btn--ghost { border: 1px solid rgb(10 34 81 / 18%); background: #fff; color: var(--color-navy-900); }

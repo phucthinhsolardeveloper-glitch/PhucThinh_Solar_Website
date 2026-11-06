@@ -146,7 +146,7 @@ async function send() {
         </UButton>
       </div>
 
-      <form v-else class="grid gap-6" @submit.prevent="send">
+      <form v-else class="grid grid-cols-[minmax(0,1fr)] gap-6 max-tb:gap-4" @submit.prevent="send">
         <div v-if="consultationSubject" class="flex items-center justify-between gap-3 pts-note-dark px-4 py-3 text-white">
           <div class="min-w-0">
             <span class="block text-xs text-white/70">Nội dung đang quan tâm</span>
@@ -156,25 +156,25 @@ async function send() {
         </div>
 
         <div class="grid min-w-0 gap-x-6 gap-y-5 sm:grid-cols-2">
-          <UFormField label="Họ và tên" name="fullname" required class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-[15px] font-bold text-navy-800' }">
+          <UFormField label="Họ và tên" name="fullname" required class="grid min-w-0 grid-cols-[minmax(0,1fr)] content-start gap-2" :ui="{ label: 'text-[15px] font-bold text-navy-800' }">
             <UInput v-model.trim="form.fullname" name="fullname" required maxlength="100" autocomplete="name" placeholder="Nguyễn Văn A" variant="none" class="w-full" :ui="inputUi" />
           </UFormField>
-          <UFormField label="Số điện thoại" name="phone" required class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-[15px] font-bold text-navy-800' }">
+          <UFormField label="Số điện thoại" name="phone" required class="grid min-w-0 grid-cols-[minmax(0,1fr)] content-start gap-2" :ui="{ label: 'text-[15px] font-bold text-navy-800' }">
             <UInput v-model.trim="form.phone" name="phone" type="tel" required maxlength="20" autocomplete="tel" inputmode="tel" placeholder="090xxxxxxx" variant="none" class="w-full" :ui="inputUi" />
           </UFormField>
-          <UFormField label="Email" hint="Không bắt buộc" name="email" class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-[15px] font-bold text-navy-800', hint: 'text-sm font-normal text-slate-500' }">
+          <UFormField label="Email" hint="Không bắt buộc" name="email" class="grid min-w-0 grid-cols-[minmax(0,1fr)] content-start gap-2" :ui="{ label: 'text-[15px] font-bold text-navy-800', hint: 'text-sm font-normal text-slate-500' }">
             <UInput v-model.trim="form.email" name="email" type="email" maxlength="150" autocomplete="email" placeholder="email@example.com" variant="none" class="w-full" :ui="inputUi" />
           </UFormField>
-          <UFormField label="Nhu cầu tư vấn" name="subject" class="grid min-w-0 content-start gap-2" :ui="{ label: 'text-[15px] font-bold text-navy-800' }">
+          <UFormField label="Nhu cầu tư vấn" name="subject" class="grid min-w-0 grid-cols-[minmax(0,1fr)] content-start gap-2" :ui="{ label: 'text-[15px] font-bold text-navy-800' }">
             <USelect v-model="form.subject" name="subject" aria-label="Nhu cầu tư vấn" :items="subjectItems" color="neutral" variant="none" class="w-full" :ui="selectUi" />
           </UFormField>
-          <UFormField label="Ghi chú thêm" hint="Không bắt buộc" name="notes" class="grid min-w-0 content-start gap-2 sm:col-span-2" :ui="{ label: 'text-[15px] font-bold text-navy-800', hint: 'text-sm font-normal text-slate-500' }">
+          <UFormField label="Ghi chú thêm" hint="Không bắt buộc" name="notes" class="grid min-w-0 grid-cols-[minmax(0,1fr)] content-start gap-2 sm:col-span-2" :ui="{ label: 'text-[15px] font-bold text-navy-800', hint: 'text-sm font-normal text-slate-500' }">
             <div class="mb-1.5 flex flex-wrap gap-1.5" aria-label="Gợi ý điền nhanh">
               <button
                 v-for="chip in quickNoteChips"
                 :key="chip"
                 type="button"
-                class="cursor-pointer rounded-[3px] border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-semibold text-slate-600 transition-colors hover:border-gold-500 hover:bg-gold-50/50 hover:text-navy-900"
+                class="cursor-pointer rounded-chip border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-semibold text-slate-600 transition-colors hover:border-gold-500 hover:bg-gold-50/50 hover:text-navy-900"
                 @click="appendNote(chip)"
               >
                 + {{ chip }}
@@ -184,11 +184,11 @@ async function send() {
           </UFormField>
         </div>
 
-        <p v-if="error" class="rounded-[4px] bg-red-50 p-2.5 text-xs font-semibold text-red-700" role="alert">
+        <p v-if="error" class="rounded-btn bg-red-50 p-2.5 text-xs font-semibold text-red-700" role="alert">
           {{ error }}
         </p>
 
-        <div v-if="securityError" class="rounded-[4px] bg-red-50 p-3 text-sm font-semibold text-red-700" role="alert">
+        <div v-if="securityError" class="rounded-btn bg-red-50 p-3 text-sm font-semibold text-red-700" role="alert">
           <span>{{ securityError }}</span>
           <button v-if="!loadingSecurity" type="button" class="ml-2 font-bold underline" @click="loadSecurity(true)">
             Thử tải lại

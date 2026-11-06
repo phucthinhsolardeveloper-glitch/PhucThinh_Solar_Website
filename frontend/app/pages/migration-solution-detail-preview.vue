@@ -62,7 +62,6 @@ usePublicSocialMeta({
 
 <template>
   <div class="text-navy-800">
-    <SiteHeader :site="site" />
 
     <main>
       <div class="border-b border-slate-200/70 bg-slate-50/80">
@@ -79,6 +78,5 @@ usePublicSocialMeta({
       <SolutionDetailPage v-else :data="data" :hotline="site.brand.hotline" />
     </main>
 
-    <SiteFooter :site="site" />
   </div>
 </template>

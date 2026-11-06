@@ -213,7 +213,6 @@ onMounted(() => { window.addEventListener('pageshow', () => { submitting.value =
 
 <template>
   <div class="min-h-screen bg-[#f6f8fb] text-navy-800">
-    <SiteHeader :site="site" />
     <div class="border-b border-slate-200/70 bg-slate-50/80">
       <div class="pts-container">
         <SiteBreadcrumb :items="[{ label: 'Giỏ hàng', to: '/gio-hang/' }, { label: 'Thanh toán' }]" />
@@ -427,7 +426,6 @@ onMounted(() => { window.addEventListener('pageshow', () => { submitting.value =
         </div>
       </form>
     </main>
-    <SiteFooter :site="site" />
   </div>
 </template>
 
@@ -483,7 +481,7 @@ onMounted(() => { window.addEventListener('pageshow', () => { submitting.value =
 .checkout-summary__total { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-top: 16px; padding-top: 16px; border-top: 1px solid rgb(255 255 255 / 12%); white-space: nowrap; }
 .checkout-summary__total span { color: #d3dcea; font-weight: 700; }
 .checkout-summary__total strong { background-image: var(--pts-gold-gradient); background-clip: text; color: transparent; -webkit-text-fill-color: transparent; font-size: clamp(22px, 2vw, 30px); font-weight: 900; letter-spacing: -0.02em; }
-.checkout-summary__cta { display: flex; width: 100%; min-height: 60px; align-items: center; justify-content: space-between; gap: 12px; margin-top: 20px; padding: 0 10px 0 22px; border: 0; border-radius: 4px; background: var(--pts-gold-gradient); color: var(--color-navy-950); font: inherit; font-size: 17px; font-weight: 850; cursor: pointer; transition: filter 0.25s ease; }
+.checkout-summary__cta { display: flex; width: 100%; min-height: 60px; align-items: center; justify-content: space-between; gap: 12px; margin-top: 20px; padding: 0 10px 0 22px; border: 0; border-radius: var(--radius-btn); background: var(--pts-gold-gradient); color: var(--color-navy-950); font: inherit; font-size: 17px; font-weight: 850; cursor: pointer; transition: filter 0.25s ease; }
 .checkout-summary__cta > span { display: grid; width: 42px; height: 42px; place-items: center; border-radius: var(--radius-md); background: var(--color-navy-950); color: var(--color-gold-300); transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
 .checkout-summary__cta:hover:not(:disabled) { filter: brightness(1.06); }
 .checkout-summary__cta:hover:not(:disabled) > span { transform: translateX(4px); }
@@ -515,7 +513,7 @@ onMounted(() => { window.addEventListener('pageshow', () => { submitting.value =
   .checkout-bar { position: fixed; right: 0; bottom: 0; left: 0; z-index: 900; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); border-top: 1px solid rgb(10 34 81 / 10%); background: rgb(255 255 255 / 96%); box-shadow: 0 -12px 30px -18px rgb(6 21 55 / 40%); backdrop-filter: blur(10px); }
   .checkout-bar small { display: block; color: #64748b; font-size: 12px; font-weight: 600; }
   .checkout-bar strong { color: var(--color-navy-950); font-size: 19px; font-weight: 900; }
-  .checkout-bar button { min-height: 50px; padding: 0 26px; border: 0; border-radius: 4px; background: var(--pts-gold-gradient); color: var(--color-navy-950); font: inherit; font-weight: 850; cursor: pointer; }
+  .checkout-bar button { min-height: 50px; padding: 0 26px; border: 0; border-radius: var(--radius-btn); background: var(--pts-gold-gradient); color: var(--color-navy-950); font: inherit; font-weight: 850; cursor: pointer; }
 }
 @media (max-width: 900px) {
   .checkout-head { grid-template-columns: 1fr; }

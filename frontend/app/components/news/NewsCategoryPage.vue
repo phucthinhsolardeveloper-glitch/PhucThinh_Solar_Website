@@ -91,7 +91,6 @@ usePublicSocialMeta({
 
 <template>
   <div class="text-navy-800">
-    <SiteHeader :site="site" />
     <div class="border-b border-slate-200/70 bg-slate-50/80">
       <div class="pts-container">
         <SiteBreadcrumb :items="[{ label: 'Kiến thức', to: '/tin-tuc/' }, { label: category?.name || 'Danh mục bài viết' }]" />
@@ -102,8 +101,8 @@ usePublicSocialMeta({
         <h1 class="mb-3 text-3xl font-black tracking-tight">{{ responseStatus === 404 ? 'Không tìm thấy danh mục bài viết' : 'Tạm thời không thể tải danh mục bài viết' }}</h1>
         <p class="mb-5 text-slate-500">{{ responseStatus === 404 ? 'Danh mục này hiện không tồn tại hoặc đã ẩn.' : 'Nguồn nội dung hiện không khả dụng.' }}</p>
         <div class="flex flex-wrap gap-3">
-          <NuxtLink to="/tin-tuc/" class="inline-flex min-h-11 items-center rounded-[4px] bg-navy-900 px-5 py-2.5 text-sm font-bold text-white no-underline hover:bg-navy-800">Về trang Kiến thức</NuxtLink>
-          <button type="button" class="inline-flex min-h-11 cursor-pointer items-center rounded-[4px] bg-gold-500 px-5 py-2.5 text-sm font-extrabold text-navy-950 hover:bg-gold-400" @click="openConsultation('Tư vấn kỹ thuật')">Nhận tư vấn kỹ thuật →</button>
+          <NuxtLink to="/tin-tuc/" class="inline-flex min-h-11 items-center rounded-btn bg-navy-900 px-5 py-2.5 text-sm font-bold text-white no-underline hover:bg-navy-800">Về trang Kiến thức</NuxtLink>
+          <button type="button" class="inline-flex min-h-11 cursor-pointer items-center rounded-btn bg-gold-500 px-5 py-2.5 text-sm font-extrabold text-navy-950 hover:bg-gold-400" @click="openConsultation('Tư vấn kỹ thuật')">Nhận tư vấn kỹ thuật →</button>
         </div>
       </section>
 
@@ -155,7 +154,6 @@ usePublicSocialMeta({
         <NewsCta v-if="news.cta" :cta="news.cta" :phone-label="news.labels.ctaPhone" />
       </template>
     </main>
-    <SiteFooter :site="site" />
   </div>
 </template>
 

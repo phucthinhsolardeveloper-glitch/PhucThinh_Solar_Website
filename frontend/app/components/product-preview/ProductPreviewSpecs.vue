@@ -49,15 +49,16 @@ onBeforeUnmount(() => {
         <div v-if="visibleSpecifications.length > 6" class="relative min-w-[220px] flex-1 ph:flex-initial">
           <input
             v-model="filterQuery"
+            style="font-size: 16px"
             type="search"
             placeholder="Tìm nhanh thông số…"
             aria-label="Tìm nhanh thông số kỹ thuật"
-            class="h-11 w-full rounded-[4px] border border-slate-300 bg-white px-3.5 text-sm text-navy-900 placeholder:text-slate-400 focus-visible:border-gold-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500/25"
+            class="h-11 w-full rounded-btn border border-slate-300 bg-white px-3.5 text-sm text-navy-900 placeholder:text-slate-400 focus-visible:border-gold-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-500/25"
           >
         </div>
         <button
           type="button"
-          class="public-neutral-button public-navy-outline-button inline-flex min-h-11 items-center gap-2 rounded-[4px] px-3.5 text-sm font-bold text-navy-800 cursor-pointer"
+          class="public-neutral-button public-navy-outline-button inline-flex min-h-11 items-center gap-2 rounded-btn px-3.5 text-sm font-bold text-navy-800 cursor-pointer"
           @click="copySpecs"
         >
           <UIcon :name="copied ? 'i-lucide-check' : 'i-lucide-copy'" class="size-4 text-gold-700" aria-hidden="true" />
@@ -72,7 +73,7 @@ onBeforeUnmount(() => {
       <button type="button" class="ml-1 font-bold text-gold-700 underline cursor-pointer" @click="filterQuery = ''">Xóa bộ lọc</button>
     </p>
 
-    <div v-else class="overflow-x-auto border border-[#dce3ea]">
+    <div v-else class="overflow-x-auto border border-[#dce3ea] max-tb:rounded-md">
       <table class="w-full table-fixed border-collapse">
         <thead>
           <tr class="bg-navy-900 text-white">

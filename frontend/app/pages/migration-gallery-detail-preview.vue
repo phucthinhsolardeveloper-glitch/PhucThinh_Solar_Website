@@ -96,7 +96,6 @@ usePublicSocialMeta({
 
 <template>
   <div class="min-h-screen bg-white text-navy-800">
-    <SiteHeader :site="site" />
     <div class="border-b border-slate-200/70 bg-slate-50/80">
       <div class="pts-container">
         <SiteBreadcrumb :items="[{ label: 'Thư viện ảnh', to: links.generic('/thu-vien-anh/') }, ...(gallery ? [{ label: gallery.album.title }] : [])]" />
@@ -133,7 +132,6 @@ usePublicSocialMeta({
         </div>
       </article>
     </main>
-    <SiteFooter :site="site" />
 
     <Teleport to="body">
       <div

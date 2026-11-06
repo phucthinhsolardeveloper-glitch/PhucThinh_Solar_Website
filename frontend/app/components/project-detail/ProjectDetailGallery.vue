@@ -153,7 +153,7 @@ onBeforeUnmount(() => {
             :aria-label="item.type === 'video' ? 'Phát video ' + (item.caption || 'dự án') : 'Mở ảnh ' + (index + 1) + ' trong thư viện dự án'"
             @click="open(item, $event.currentTarget as HTMLElement)"
           >
-            <span class="relative block overflow-hidden rounded-[4px] bg-slate-100">
+            <span class="relative block overflow-hidden rounded-btn bg-slate-100">
               <img v-if="item.src" :src="optimizedImage(item.src, 900, 675)" :alt="item.caption || (item.type === 'video' ? 'Video dự án' : 'Hình ảnh dự án')" class="block aspect-[4/3] w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105 motion-reduce:transform-none motion-reduce:transition-none" loading="lazy" decoding="async">
               <span v-if="item.type === 'video'" class="absolute left-1/2 top-1/2 grid h-12 w-12 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-navy-950/85 text-xl text-white shadow-lg transition-transform group-hover:scale-110 motion-reduce:group-hover:scale-100 motion-reduce:transition-none" aria-hidden="true">▶</span>
               <span
@@ -205,7 +205,7 @@ onBeforeUnmount(() => {
       </button>
 
       <figure v-if="selected.type === 'image'" class="m-0 max-h-[90vh] max-w-[min(1100px,90vw)] text-center">
-        <img :src="selected.src" :alt="selected.caption || 'Hình ảnh dự án'" class="max-h-[74vh] max-w-full object-contain rounded-[4px]">
+        <img :src="selected.src" :alt="selected.caption || 'Hình ảnh dự án'" class="max-h-[74vh] max-w-full object-contain rounded-btn">
         <figcaption v-if="selected.caption" class="mt-3 text-sm text-white/90">{{ selected.caption }}</figcaption>
       </figure>
       <div v-else class="w-[min(1100px,94vw)] overflow-hidden rounded-chip bg-black shadow-2xl">
@@ -256,7 +256,7 @@ onBeforeUnmount(() => {
 <style scoped>
 .lightbox-strip { position: absolute; right: 0; bottom: 16px; left: 0; display: flex; justify-content: safe center; gap: 8px; overflow-x: auto; padding: 4px 16px; scrollbar-width: none; }
 .lightbox-strip::-webkit-scrollbar { display: none; }
-.lightbox-strip__thumb { width: 72px; height: 54px; flex: none; overflow: hidden; padding: 0; border: 2px solid transparent; border-radius: 4px; background: #1c1f26; opacity: 0.5; cursor: pointer; transition: opacity 0.2s ease, border-color 0.2s ease; }
+.lightbox-strip__thumb { width: 72px; height: 54px; flex: none; overflow: hidden; padding: 0; border: 2px solid transparent; border-radius: var(--radius-btn); background: #1c1f26; opacity: 0.5; cursor: pointer; transition: opacity 0.2s ease, border-color 0.2s ease; }
 .lightbox-strip__thumb img { width: 100%; height: 100%; object-fit: cover; }
 .lightbox-strip__thumb:hover { opacity: 0.85; }
 .lightbox-strip__thumb[aria-current] { border-color: var(--color-gold-400); opacity: 1; }

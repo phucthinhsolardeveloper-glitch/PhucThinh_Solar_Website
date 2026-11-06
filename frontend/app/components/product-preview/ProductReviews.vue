@@ -354,7 +354,7 @@ async function sendReview() {
                   v-for="tag in quickReviewTags"
                   :key="tag"
                   type="button"
-                  class="cursor-pointer rounded-[3px] border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-navy-800 transition-colors hover:border-gold-500 hover:bg-gold-500/15"
+                  class="cursor-pointer rounded-chip border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-navy-800 transition-colors hover:border-gold-500 hover:bg-gold-500/15"
                   @click="applyQuickReviewTag(tag)"
                 >
                   + {{ tag }}

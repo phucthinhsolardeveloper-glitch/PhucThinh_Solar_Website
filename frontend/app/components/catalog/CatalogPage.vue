@@ -8,8 +8,6 @@ import CatalogProductGrid from '~/components/catalog/CatalogProductGrid.vue'
 import CatalogMasthead from '~/components/catalog/CatalogMasthead.vue'
 import CatalogMenuIcon from '~/components/CatalogMenuIcon.vue'
 import SiteBreadcrumb from '~/components/SiteBreadcrumb.vue'
-import SiteHeader from '~/components/SiteHeader.vue'
-import SiteFooter from '~/components/SiteFooter.vue'
 import { productCategorySegmentsFromPublicPath } from '#shared/public-route-gate'
 import { isPublicSeoIndexable, publicSeoDescription, publicSeoRobots } from '#shared/public-seo'
 import { publicPageQueryValue } from '#shared/public-pagination'
@@ -25,6 +23,9 @@ const route = useRoute()
 const config = useRuntimeConfig()
 const links = useMigrationLinks()
 const filterDrawerOpen = ref(false)
+// The drawer library forces a layout when it mounts, so it only mounts on first use.
+const filterDrawerMounted = ref(false)
+watch(filterDrawerOpen, (open) => { if (open) filterDrawerMounted.value = true })
 const categoryNavRef = ref<HTMLElement | null>(null)
 const selfPath = computed(() => route.path)
 const category = computed(() => props.categoryPath ?? (productCategorySegmentsFromPublicPath(route.path).join('/') || (typeof route.query.category === 'string' ? route.query.category : '')))
@@ -257,6 +258,11 @@ const bannerDescription = computed(() => {
   if (path.includes('bien-tan')) return 'Chuyển đổi điện năng hiệu quả, vận hành ổn định và bền bỉ'
   return 'Giải pháp năng lượng phù hợp cho gia đình, doanh nghiệp và công trình'
 })
+const activeFilterCount = computed(() => {
+  const selected = catalogData.value?.selected
+  if (!selected) return 0
+  return selected.subcategoryIds.length + selected.brandIds.length + (selected.needKeys?.length ?? 0) + selected.priceKeys.length
+})
 const totalPages = computed(() => catalogData.value ? Math.max(1, Math.ceil(catalogData.value.pagination.total / catalogData.value.pagination.perPage)) : 1)
 const currentPage = computed(() => catalogData.value?.pagination.page ?? 1)
 const paginationItems = computed(() => {
@@ -289,7 +295,6 @@ function pageLink(nextPage: number) {
 
 <template>
   <div class="text-navy-800">
-    <SiteHeader v-if="siteData" :site="siteData" />
 
     <div class="border-b border-slate-200/70 bg-slate-50/80">
       <div class="pts-container">
@@ -311,13 +316,13 @@ function pageLink(nextPage: number) {
       trên màn hình 320px.
     -->
     <main
-      class="pts-container grid grid-cols-1 gap-x-[30px] gap-y-6 pt-6 pb-16 max-[1199px]:gap-x-6 max-[769px]:gap-y-4 max-[769px]:pt-5 max-ph:pb-12"
+      class="pts-container grid grid-cols-1 gap-x-[30px] gap-y-6 pt-6 pb-16 max-[1199px]:gap-x-6 max-[769px]:gap-y-4 max-[769px]:pt-5 max-ph:pb-12 catalog-main"
       :class="hasSidebar ? 'min-[1002px]:grid-cols-[240px_minmax(0,1fr)] min-[1200px]:grid-cols-[280px_minmax(0,1fr)]' : ''"
     >
-      <nav v-if="categoryNavItems.length" ref="categoryNavRef" class="col-span-full mt-0 flex gap-[10px] overflow-x-auto scroll-smooth overscroll-x-contain pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden max-[769px]:gap-[7px]" aria-label="Danh mục sản phẩm">
+      <nav v-if="categoryNavItems.length" ref="categoryNavRef" class="col-span-full mt-0 flex gap-[10px] overflow-x-auto scroll-smooth overscroll-x-contain pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden max-[769px]:gap-[7px] catalog-chip-rail" aria-label="Danh mục sản phẩm">
         <NuxtLink
           :to="categoryAllHref"
-          class="catalog-category-chip inline-flex min-h-[58px] min-w-[126px] flex-1 items-center justify-center gap-2 rounded-chip border px-3 py-2 text-center text-[13px] font-bold no-underline transition-colors max-[769px]:h-[50px] max-[769px]:min-h-0 max-[769px]:w-[145px] max-[769px]:min-w-0 max-[769px]:flex-none max-[769px]:overflow-hidden"
+          class="catalog-category-chip inline-flex min-h-[58px] min-w-[126px] flex-1 items-center justify-center gap-2 rounded-chip border px-3 py-2 text-center text-[13px] font-bold no-underline transition-colors max-[769px]:h-[50px] max-[769px]:min-h-0 max-[769px]:w-[145px] max-[769px]:min-w-0 max-[769px]:flex-none max-[769px]:overflow-hidden m-lg"
           :class="!selectedCategory || selectedCategory.url === activeCategoryRoot?.url ? 'border-transparent bg-gold-500 text-navy-950' : 'public-filter-chip public-navy-outline-button text-navy-800'"
           :aria-current="!selectedCategory || selectedCategory.url === activeCategoryRoot?.url ? 'page' : undefined"
         >
@@ -328,7 +333,7 @@ function pageLink(nextPage: number) {
           v-for="item in categoryNavItems"
           :key="item.url"
           :to="links.generic(item.url)"
-          class="catalog-category-chip inline-flex min-h-[58px] min-w-[126px] flex-1 items-center justify-center gap-2 rounded-chip border px-3 py-2 text-center text-[13px] font-bold no-underline transition-colors max-[769px]:h-[50px] max-[769px]:min-h-0 max-[769px]:w-[145px] max-[769px]:min-w-0 max-[769px]:flex-none max-[769px]:overflow-hidden"
+          class="catalog-category-chip inline-flex min-h-[58px] min-w-[126px] flex-1 items-center justify-center gap-2 rounded-chip border px-3 py-2 text-center text-[13px] font-bold no-underline transition-colors max-[769px]:h-[50px] max-[769px]:min-h-0 max-[769px]:w-[145px] max-[769px]:min-w-0 max-[769px]:flex-none max-[769px]:overflow-hidden m-lg"
           :class="item.url === selectedCategory?.url ? 'border-transparent bg-gold-500 text-navy-950' : 'public-filter-chip public-navy-outline-button text-navy-800'"
           :aria-current="item.url === selectedCategory?.url ? 'page' : undefined"
         >
@@ -371,12 +376,12 @@ function pageLink(nextPage: number) {
             tiếp (đổi query 'sort'), không phải form - khớp cách pageLink/
             filterLink còn lại của trang đều là NuxtLink đổi URL.
           -->
-          <div class="mb-5 flex flex-wrap items-center justify-between gap-3 max-[769px]:items-start max-[769px]:justify-start">
+          <div class="mb-5 flex flex-wrap items-center justify-between gap-3 max-[769px]:items-start max-[769px]:justify-start catalog-toolbar">
             <div class="flex flex-wrap items-center gap-2.5">
-              <h2 class="m-0 text-lg font-black text-navy-800">Danh sách sản phẩm</h2>
+              <h2 class="m-h-panel m-0 text-lg font-black text-navy-800">Danh sách sản phẩm</h2>
             </div>
             <div
-              class="flex items-center gap-2 max-[769px]:grid max-[769px]:w-full"
+              class="m-sticky-tools flex items-center gap-2 max-[769px]:grid max-[769px]:w-full"
               :class="hasSidebar ? 'max-[769px]:grid-cols-2' : 'max-[769px]:grid-cols-1'"
             >
               <UButton
@@ -384,7 +389,7 @@ function pageLink(nextPage: number) {
                 color="secondary"
                 variant="outline"
                 size="md"
-                class="min-h-11 w-full gap-2 rounded-[4px] px-3 text-sm font-bold text-navy-800 public-neutral-button min-[1002px]:hidden"
+                class="min-h-11 w-full gap-2 rounded-btn px-3 text-sm font-bold text-navy-800 public-neutral-button m-lg max-tb:rounded-full min-[1002px]:hidden"
                 type="button"
                 aria-haspopup="dialog"
                 aria-controls="catalog-filter-drawer"
@@ -393,6 +398,7 @@ function pageLink(nextPage: number) {
               >
                 <UIcon name="i-lucide-sliders-horizontal" class="size-4" aria-hidden="true" />
                 Bộ lọc
+                <span v-if="activeFilterCount" class="filter-count" :aria-label="`${activeFilterCount} bộ lọc đang chọn`">{{ activeFilterCount }}</span>
               </UButton>
               <div v-if="catalogData.selected" class="flex min-w-0 items-center gap-2 text-sm text-slate-500 max-[769px]:w-full">
                 <span class="hidden tb:inline">Sắp xếp</span>
@@ -403,7 +409,7 @@ function pageLink(nextPage: number) {
                   color="neutral"
                   variant="none"
                   class="w-full min-w-0 min-[770px]:w-[150px]"
-                  :ui="{ base: 'h-11 w-full min-w-0 rounded-[4px] border border-slate-300 bg-white px-3 text-sm font-normal text-navy-800 focus-visible:border-gold-600 focus-visible:ring-2 focus-visible:ring-gold-500/25' }"
+                  :ui="{ base: 'h-11 w-full min-w-0 rounded-btn border border-slate-300 bg-white px-3 text-sm font-normal text-navy-800 focus-visible:border-gold-600 focus-visible:ring-2 focus-visible:ring-gold-500/25 m-lg max-tb:rounded-full' }"
                   @update:model-value="onSortChange"
                 />
               </div>
@@ -501,7 +507,7 @@ function pageLink(nextPage: number) {
     </main>
 
     <UDrawer
-      v-if="hasSidebar"
+      v-if="hasSidebar && filterDrawerMounted"
       v-model:open="filterDrawerOpen"
       direction="left"
       title="Bộ lọc sản phẩm"
@@ -510,7 +516,7 @@ function pageLink(nextPage: number) {
       :close="false"
       :ui="{
         overlay: 'bg-slate-950/60',
-        content: '!h-dvh !max-h-none !w-[min(340px,92vw)] !max-w-none !rounded-none overflow-hidden border-0 bg-white p-0 text-navy-800 shadow-2xl ring-0',
+        content: '!h-dvh !max-h-none !w-[min(340px,92vw)] !max-w-none !rounded-none overflow-hidden border-0 bg-white p-0 text-navy-800 shadow-2xl ring-0 m-sheet-glass',
       }"
     >
       <template #content>
@@ -528,7 +534,7 @@ function pageLink(nextPage: number) {
               <UIcon name="i-lucide-x" class="size-5" aria-hidden="true" />
             </UButton>
           </div>
-          <div class="min-h-0 flex-1 overflow-y-auto">
+          <div class="min-h-0 flex-1 overflow-y-auto" data-lenis-prevent>
             <CatalogFilterSidebar
               id-prefix="catalog-filter-drawer"
               :categories="sidebarCategories"
@@ -542,10 +548,29 @@ function pageLink(nextPage: number) {
               drawer
             />
           </div>
+          <!-- Filters apply as soon as they are tapped, so this only returns to the results. -->
+          <div class="flex-none border-t border-slate-200 p-3 tb:hidden">
+            <button type="button" class="m-gold-cta min-h-12 w-full rounded-full bg-[image:var(--pts-gold-gradient)] text-[15px] font-extrabold text-navy-950" @click="closeFilterDrawer">Xem sản phẩm</button>
+          </div>
         </div>
       </template>
     </UDrawer>
 
-    <SiteFooter v-if="siteData" :site="siteData" />
   </div>
 </template>
+
+<style scoped>
+/* Phones: category chips are one tidy pill rail running edge to edge, with products right below. */
+@media (max-width: 820px) {
+  .catalog-main { row-gap: 10px; padding-top: 10px; }
+  .catalog-chip-rail { gap: 8px; margin-inline: -16px; padding: 4px 16px 10px; scroll-padding-inline: 16px; }
+  .catalog-category-chip { flex: 0 0 auto; width: auto; height: 44px; min-width: 0; min-height: 44px; overflow: visible; padding: 0 14px 0 12px; gap: 6px; border-radius: 999px; font-size: 13.5px; }
+  .catalog-category-chip > span { display: inline; overflow: visible; white-space: nowrap; -webkit-line-clamp: unset; }
+  .catalog-category-chip[aria-current="page"] { border-color: transparent !important; background: var(--pts-gold-gradient) !important; box-shadow: inset 0 1px 0 rgb(255 255 255 / 45%), 0 6px 14px rgb(201 150 46 / 28%) !important; -webkit-backdrop-filter: none; backdrop-filter: none; color: var(--color-navy-950); }
+  .catalog-toolbar { row-gap: 8px; margin-bottom: 12px; }
+  .catalog-toolbar h2 { font-size: 17px; font-weight: 800; line-height: 24px; }
+}
+@media (max-width: 359px) {
+  .catalog-chip-rail { margin-inline: -12px; padding-inline: 12px; scroll-padding-inline: 12px; }
+}
+</style>

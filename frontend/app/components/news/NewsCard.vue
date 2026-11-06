@@ -38,12 +38,12 @@ function cardImageSrcSet(src: string): string | undefined {
     <a
       :href="links.news(article.slug)"
       class="group flex h-full flex-col text-navy-800 no-underline"
-      :class="variant === 'secondary'
-        ? 'grid grid-cols-[minmax(0,38%)_minmax(0,1fr)] gap-4 max-ph:flex max-ph:flex-col'
-        : ''"
+      :class="[variant === 'secondary'
+        ? 'grid grid-cols-[minmax(0,38%)_minmax(0,1fr)] gap-4'
+        : '', variant === 'lead' ? '' : 'news-row']"
     >
       <div
-        class="relative overflow-hidden bg-slate-50"
+        class="news-thumb relative overflow-hidden bg-slate-50"
         :class="variant === 'secondary'
           ? 'aspect-video h-auto min-h-0 w-full min-w-0 self-start rounded-chip max-ph:aspect-video max-ph:h-auto max-ph:min-h-0'
           : 'aspect-video rounded-chip'"
@@ -64,13 +64,13 @@ function cardImageSrcSet(src: string): string | undefined {
         <span v-else class="grid h-full place-items-center text-[42px] text-gold-700" aria-hidden="true">✦</span>
         <span
           v-if="article.category"
-          class="absolute left-3 top-3 rounded-full bg-navy-950/85 px-3 py-1.5 text-xs font-bold text-white backdrop-blur-xs"
+          class="news-badge absolute left-3 top-3 rounded-full bg-navy-950/85 px-3 py-1.5 text-xs font-bold text-white backdrop-blur-xs"
         >
           {{ article.category.name }}
         </span>
       </div>
 
-      <div class="flex-1 py-[15px] pb-5" :class="variant === 'secondary' ? 'pt-2' : (variant === 'grid' ? 'p-4' : '')">
+      <div class="news-body flex-1 py-[15px] pb-5" :class="variant === 'secondary' ? 'pt-2' : (variant === 'grid' ? 'p-4' : '')">
         <p v-if="article.date || article.readingMinutes" class="mb-2 flex flex-wrap items-center gap-3.5 text-xs text-slate-500">
           <time v-if="article.date" :datetime="article.date" class="inline-flex items-center gap-1.5">
             <svg class="h-3.5 w-3.5 text-gold-600 flex-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
@@ -82,16 +82,16 @@ function cardImageSrcSet(src: string): string | undefined {
           </span>
         </p>
         <h2
-          class="mb-2 line-clamp-2 font-extrabold leading-[1.3] tracking-[-0.01em] text-navy-950 transition-colors group-hover:text-gold-700 group-focus-visible:text-gold-700"
+          class="news-title mb-2 line-clamp-2 font-extrabold leading-[1.3] tracking-[-0.01em] text-navy-950 transition-colors group-hover:text-gold-700 group-focus-visible:text-gold-700"
           :class="variant === 'lead' ? 'text-2xl' : 'text-xl'"
         >
           {{ sentenceCase(article.title) }}
         </h2>
-        <p v-if="article.description" class="m-0 line-clamp-3 pr-0 leading-relaxed text-slate-500 nav:pr-[46px]">
+        <p v-if="article.description" class="news-excerpt m-0 line-clamp-3 pr-0 leading-relaxed text-slate-500 nav:pr-[46px]">
           {{ article.description }}
         </p>
         <span
-          class="inline-flex items-center gap-1.5 text-[13px] font-bold text-gold-700"
+          class="news-more inline-flex items-center gap-1.5 text-[13px] font-bold text-gold-700"
           :class="variant === 'secondary' ? 'mt-2.5' : 'mt-[13px]'"
         >
           <span>{{ readMoreLabel }}</span>
@@ -101,3 +101,13 @@ function cardImageSrcSet(src: string): string | undefined {
     </a>
   </article>
 </template>
+
+<style scoped>
+@media (max-width: 820px) {
+  .news-row { display: grid !important; grid-template-columns: 116px minmax(0, 1fr); gap: 12px; align-items: start; }
+  .news-row .news-thumb { aspect-ratio: 1 !important; width: 100%; border-radius: var(--radius-md); }
+  .news-row .news-body { padding: 0 !important; }
+  .news-row .news-title { margin-bottom: 0; font-size: 15px !important; line-height: 1.35; -webkit-line-clamp: 3; }
+  .news-row .news-excerpt, .news-row .news-more, .news-row .news-badge { display: none !important; }
+}
+</style>

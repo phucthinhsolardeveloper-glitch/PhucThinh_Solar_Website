@@ -117,7 +117,7 @@ const summary = computed(() => [places.find((p) => p.id === place.value)?.label,
   gap: 10px;
   padding: 10px 12px;
   border: 1px solid rgb(255 255 255 / 18%);
-  border-radius: 4px;
+  border-radius: var(--radius-btn);
   background: rgb(255 255 255 / 4%);
   color: #e2e8f0;
   font: inherit;
@@ -139,13 +139,13 @@ const summary = computed(() => [places.find((p) => p.id === place.value)?.label,
 .finder-summary { margin: 0 0 10px; color: #a9b8ca; font-size: 14px; }
 .finder-summary strong { color: #fff; }
 .finder-picks { display: grid; gap: 10px; }
-.finder-pick { display: flex; align-items: center; gap: 14px; padding: 8px; border-radius: 4px; background: #fff; color: var(--color-navy-950); text-decoration: none; transition: transform 0.25s ease; }
+.finder-pick { display: flex; align-items: center; gap: 14px; padding: 8px; border-radius: var(--radius-btn); background: #fff; color: var(--color-navy-950); text-decoration: none; transition: transform 0.25s ease; }
 .finder-pick:hover { transform: translateX(4px); }
-.finder-pick img { width: 84px; height: 63px; flex: none; border-radius: 3px; object-fit: cover; }
+.finder-pick img { width: 84px; height: 63px; flex: none; border-radius: var(--radius-chip); object-fit: cover; }
 .finder-pick span { display: flex; flex-direction: column; gap: 2px; }
 .finder-pick strong { font-size: 17px; font-weight: 900; }
 .finder-pick small { color: var(--color-gold-700); font-size: 13.5px; font-weight: 800; }
-.finder-cta { margin-top: 4px; min-height: 48px; border: 0; border-radius: 4px; background: var(--pts-gold-gradient); color: var(--color-navy-950); font: inherit; font-size: 15px; font-weight: 800; cursor: pointer; }
+.finder-cta { margin-top: 4px; min-height: 48px; border: 0; border-radius: var(--radius-btn); background: var(--pts-gold-gradient); color: var(--color-navy-950); font: inherit; font-size: 15px; font-weight: 800; cursor: pointer; }
 .finder-cta:hover { filter: brightness(1.06); }
 
 .finder-reveal-enter-active, .finder-reveal-leave-active { transition: opacity 0.3s ease, transform 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
@@ -155,5 +155,16 @@ const summary = computed(() => [places.find((p) => p.id === place.value)?.label,
 @media (max-width: 359px) { .finder-options { grid-template-columns: 1fr; } }
 @media (prefers-reduced-motion: reduce) {
   .finder-reveal-enter-active, .finder-reveal-leave-active, .finder-option, .finder-pick { transition: none; }
+}
+@media (max-width: 820px) {
+  .finder { padding: 16px; border-radius: var(--radius-md); }
+  .finder-head { align-items: center; min-height: 44px; margin-bottom: 6px; }
+  .finder-head h2 { font-size: 19px; font-weight: 800; }
+  .finder-reset { min-height: 44px; padding-inline: 4px; }
+  .finder-step { margin-bottom: 12px; }
+  .finder-step legend { margin-bottom: 8px; font-size: 14.5px; }
+  .finder-option { min-height: 52px; gap: 8px; padding: 8px 10px; font-size: 14px; }
+  .finder-result { min-height: 0; padding-top: 12px; }
+  .finder-hint { font-size: 14px; line-height: 1.5; }
 }
 </style>

@@ -130,9 +130,9 @@ function brandLogo(name: string): string {
 
     <!-- 4 Value Props Bar -->
     <div class="bg-white border-b border-slate-100" aria-label="Lợi ích khi chọn sản phẩm">
-      <div class="pts-container grid grid-cols-2 gap-x-6 gap-y-0 py-3.5 max-[769px]:gap-x-3 max-[769px]:py-2 min-[769px]:grid-cols-4">
-        <div v-for="cell in benefitCells" :key="cell.icon" class="flex min-h-[56px] min-w-0 items-center justify-center gap-3 max-[769px]:min-h-11 max-[769px]:justify-start max-[769px]:gap-2 max-[769px]:py-1">
-          <span class="flex h-9 w-9 flex-none items-center justify-center rounded-[4px] bg-gold-50 text-gold-700 max-[769px]:h-6 max-[769px]:w-6">
+      <div class="pts-container grid grid-cols-2 gap-x-6 gap-y-0 py-3.5 max-[769px]:gap-x-3 max-[769px]:py-2 min-[769px]:grid-cols-4 catalog-benefits">
+        <div v-for="cell in benefitCells" :key="cell.icon" class="flex min-h-[56px] min-w-0 items-center justify-center gap-3 max-[769px]:min-h-11 max-[769px]:justify-start max-[769px]:gap-2 max-[769px]:py-1 catalog-benefit">
+          <span class="flex h-9 w-9 flex-none items-center justify-center rounded-btn bg-gold-50 text-gold-700 max-[769px]:h-6 max-[769px]:w-6">
             <CatalogMenuIcon class="h-6 w-6 max-[769px]:h-4 max-[769px]:w-4" :name="cell.icon" />
           </span>
           <span class="min-w-0"><strong class="block truncate text-[13.5px] font-bold text-navy-950 max-[769px]:text-[12px]">{{ cell.title }}</strong><small class="block truncate text-[12px] text-slate-500 max-[769px]:hidden">{{ cell.description }}</small></span>
@@ -210,7 +210,7 @@ function brandLogo(name: string): string {
   justify-content: center;
   padding: 0 14px;
   border: 1px solid rgb(219 231 249 / 16%);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   background: linear-gradient(135deg, rgb(20 45 83 / 46%), rgb(6 21 55 / 38%));
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 8%), 0 6px 20px rgb(3 12 31 / 12%);
   backdrop-filter: blur(12px) saturate(125%);
@@ -244,5 +244,26 @@ function brandLogo(name: string): string {
 }
 @media (prefers-reduced-motion: reduce) {
   .masthead-sun, .masthead-photo { animation: none; }
+}
+/* Phones: the top of the page stays short so products appear soon. Nothing is removed. */
+@media (max-width: 820px) {
+  .masthead-inner { padding-block: 14px 12px; }
+  .masthead-copy { min-width: 0; }
+  .masthead-copy h1 { max-width: none; }
+  .masthead-copy > p { margin-top: 4px; font-size: 14px; line-height: 1.45; }
+  /* Logos are dark or blue, so they sit on a near-white plate. Solid on purpose: a dozen blurred chips would cost GPU for no visible gain. */
+  .masthead-brands { flex-wrap: nowrap; gap: 8px; margin-top: 12px; margin-inline: -16px; padding-inline: 16px; overflow-x: auto; overscroll-behavior-x: contain; scroll-padding-inline: 16px; scrollbar-width: none; }
+  .masthead-brands::-webkit-scrollbar { display: none; }
+  .masthead-brands a { flex: 0 0 auto; min-width: 92px; min-height: 44px; padding: 0 12px; border-color: rgb(255 255 255 / 70%); border-radius: var(--radius-md); background: rgb(255 255 255 / 94%); box-shadow: 0 4px 12px rgb(3 12 31 / 18%); -webkit-backdrop-filter: none; backdrop-filter: none; color: var(--color-navy-950); font-size: 13px; }
+  .masthead-brands a:hover { background: #fff; transform: none; }
+  .masthead-brands a img { max-width: 84px; height: 24px; }
+  .masthead-brands a[data-active="true"] { border-color: var(--color-gold-400); background: var(--pts-gold-gradient); }
+}
+@media (max-width: 769px) {
+  .catalog-benefits { row-gap: 2px; padding-block: 6px; }
+  .catalog-benefit { min-height: 30px; padding-block: 2px; }
+}
+@media (max-width: 359px) {
+  .masthead-brands { margin-inline: -12px; padding-inline: 12px; scroll-padding-inline: 12px; }
 }
 </style>

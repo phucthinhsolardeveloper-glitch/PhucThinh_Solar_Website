@@ -75,7 +75,7 @@ const clearFiltersTo = computed(() => props.filterLink({ subcategory: '', brand:
   >
     <div v-if="!hideTitle" class="mb-5 flex items-center justify-between gap-3">
       <div class="flex min-w-0 items-center gap-2.5">
-        <span class="grid size-9 flex-none place-items-center rounded-[4px] bg-gold-50 text-navy-800" aria-hidden="true">
+        <span class="grid size-9 flex-none place-items-center rounded-btn bg-gold-50 text-navy-800" aria-hidden="true">
           <UIcon name="i-lucide-sliders-horizontal" class="size-[18px]" />
         </span>
         <h2 class="m-0 text-lg font-extrabold text-navy-950">Bộ lọc</h2>
@@ -86,7 +86,7 @@ const clearFiltersTo = computed(() => props.filterLink({ subcategory: '', brand:
         color="neutral"
         variant="ghost"
         size="xs"
-        class="min-h-9 flex-none rounded-[4px] px-2 text-xs font-bold text-navy-700 hover:bg-slate-100 hover:text-navy-950"
+        class="min-h-9 flex-none rounded-btn px-2 text-xs font-bold text-navy-700 hover:bg-slate-100 hover:text-navy-950"
       >
         Xóa tất cả
       </UButton>
@@ -95,7 +95,7 @@ const clearFiltersTo = computed(() => props.filterLink({ subcategory: '', brand:
     <section v-if="hasActiveFilter" class="mb-5 border-b border-slate-200 pb-5" aria-label="Bộ lọc đang áp dụng">
       <div class="mb-2.5 flex items-center gap-2">
         <h3 class="m-0 text-sm font-bold text-navy-950">Đang áp dụng</h3>
-        <span class="inline-flex min-h-5 min-w-5 items-center justify-center rounded-[3px] bg-gold-400 px-1.5 text-[11px] font-extrabold leading-none text-navy-950">{{ selectedCount }}</span>
+        <span class="inline-flex min-h-5 min-w-5 items-center justify-center rounded-chip bg-gold-400 px-1.5 text-[11px] font-extrabold leading-none text-navy-950">{{ selectedCount }}</span>
       </div>
       <AnimatePresence mode="popLayout">
         <motion.div
@@ -109,7 +109,7 @@ const clearFiltersTo = computed(() => props.filterLink({ subcategory: '', brand:
         >
           <NuxtLink
             :to="filter.to"
-            class="group inline-flex min-h-9 max-w-full items-center gap-2 rounded-[4px] border border-gold-300 bg-gold-50 px-2.5 py-1 text-xs font-semibold leading-snug text-navy-900 no-underline transition-colors hover:border-gold-500 hover:bg-gold-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-700"
+            class="group inline-flex min-h-9 max-w-full items-center gap-2 rounded-btn border border-gold-300 bg-gold-50 px-2.5 py-1 text-xs font-semibold leading-snug text-navy-900 no-underline transition-colors hover:border-gold-500 hover:bg-gold-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold-700"
             :aria-label="`Bỏ bộ lọc ${filter.label}`"
           >
             <span class="min-w-0 truncate">{{ filter.label }}</span>
@@ -125,7 +125,7 @@ const clearFiltersTo = computed(() => props.filterLink({ subcategory: '', brand:
         <h3 :id="categoryTitleId" class="m-0 text-sm font-bold text-navy-950">Danh mục sản phẩm</h3>
       </div>
       <UButton
-        class="public-neutral-button min-h-11 w-full justify-between rounded-[4px] px-3 text-left text-sm font-bold text-navy-800 nav:hidden"
+        class="public-neutral-button min-h-11 w-full justify-between rounded-btn px-3 text-left text-sm font-bold text-navy-800 nav:hidden"
         color="neutral"
         variant="outline"
         type="button"
@@ -158,7 +158,7 @@ const clearFiltersTo = computed(() => props.filterLink({ subcategory: '', brand:
       <ul class="m-0 list-none p-0">
         <li class="mb-1">
           <NuxtLink
-            class="flex min-h-10 items-center justify-between gap-3 rounded-[4px] px-2.5 text-sm no-underline transition-colors hover:bg-slate-50"
+            class="flex min-h-10 items-center justify-between gap-3 rounded-btn px-2.5 text-sm no-underline transition-colors hover:bg-slate-50"
             :class="selected.subcategoryIds.length === 0 ? 'font-bold text-navy-950' : 'text-slate-700'"
             :to="filterLink({ subcategory: '' })"
             :aria-current="selected.subcategoryIds.length === 0 ? 'true' : undefined"
@@ -169,12 +169,12 @@ const clearFiltersTo = computed(() => props.filterLink({ subcategory: '', brand:
         </li>
         <li v-for="item in filters.subcategories" :key="item.id" class="mb-1 last:mb-0">
           <NuxtLink
-            class="group flex min-h-10 items-center gap-2.5 rounded-[4px] px-2.5 text-sm no-underline transition-colors hover:bg-gold-50 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-gold-700"
+            class="group flex min-h-10 items-center gap-2.5 rounded-btn px-2.5 text-sm no-underline transition-colors hover:bg-gold-50 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-gold-700"
             :class="selected.subcategoryIds.includes(item.id) ? 'bg-gold-50 font-semibold text-navy-950' : 'text-slate-700'"
             :to="filterLink({ subcategory: toggledIds(selected.subcategoryIds, item.id) })"
             :aria-current="selected.subcategoryIds.includes(item.id) ? 'true' : undefined"
           >
-            <span class="grid size-[18px] flex-none place-items-center rounded-[3px] border border-slate-400 bg-white transition-colors group-hover:border-gold-600" :class="selected.subcategoryIds.includes(item.id) ? 'border-transparent bg-gold-400' : ''" aria-hidden="true">
+            <span class="grid size-[18px] flex-none place-items-center rounded-chip border border-slate-400 bg-white transition-colors group-hover:border-gold-600" :class="selected.subcategoryIds.includes(item.id) ? 'border-transparent bg-gold-400' : ''" aria-hidden="true">
               <UIcon v-if="selected.subcategoryIds.includes(item.id)" name="i-lucide-check" class="size-3 text-navy-950" />
             </span>
             <span class="min-w-0 flex-1">{{ item.name }}</span>
@@ -191,12 +191,12 @@ const clearFiltersTo = computed(() => props.filterLink({ subcategory: '', brand:
       <ul class="m-0 list-none p-0">
         <li v-for="item in filters.needs" :key="item.key" class="mb-1 last:mb-0">
           <NuxtLink
-            class="group flex min-h-10 items-center gap-2.5 rounded-[4px] px-2.5 text-sm no-underline transition-colors hover:bg-gold-50 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-gold-700"
+            class="group flex min-h-10 items-center gap-2.5 rounded-btn px-2.5 text-sm no-underline transition-colors hover:bg-gold-50 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-gold-700"
             :class="(selected.needKeys ?? []).includes(item.key) ? 'bg-gold-50 font-semibold text-navy-950' : 'text-slate-700'"
             :to="filterLink({ need: toggledKeys(selected.needKeys ?? [], item.key) })"
             :aria-current="(selected.needKeys ?? []).includes(item.key) ? 'true' : undefined"
           >
-            <span class="grid size-[18px] flex-none place-items-center rounded-[3px] border border-slate-400 bg-white transition-colors group-hover:border-gold-600" :class="(selected.needKeys ?? []).includes(item.key) ? 'border-transparent bg-gold-400' : ''" aria-hidden="true">
+            <span class="grid size-[18px] flex-none place-items-center rounded-chip border border-slate-400 bg-white transition-colors group-hover:border-gold-600" :class="(selected.needKeys ?? []).includes(item.key) ? 'border-transparent bg-gold-400' : ''" aria-hidden="true">
               <UIcon v-if="(selected.needKeys ?? []).includes(item.key)" name="i-lucide-check" class="size-3 text-navy-950" />
             </span>
             <span class="min-w-0 flex-1">{{ item.label }}</span>
@@ -213,12 +213,12 @@ const clearFiltersTo = computed(() => props.filterLink({ subcategory: '', brand:
       <ul class="m-0 list-none p-0">
         <li v-for="brand in filters.brands" :key="brand.id" class="mb-1 last:mb-0">
           <NuxtLink
-            class="group flex min-h-10 items-center gap-2.5 rounded-[4px] px-2.5 text-sm no-underline transition-colors hover:bg-gold-50 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-gold-700"
+            class="group flex min-h-10 items-center gap-2.5 rounded-btn px-2.5 text-sm no-underline transition-colors hover:bg-gold-50 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-gold-700"
             :class="selected.brandIds.includes(brand.id) ? 'bg-gold-50 font-semibold text-navy-950' : 'text-slate-700'"
             :to="filterLink({ brand: toggledIds(selected.brandIds, brand.id) })"
             :aria-current="selected.brandIds.includes(brand.id) ? 'true' : undefined"
           >
-            <span class="grid size-[18px] flex-none place-items-center rounded-[3px] border border-slate-400 bg-white transition-colors group-hover:border-gold-600" :class="selected.brandIds.includes(brand.id) ? 'border-transparent bg-gold-400' : ''" aria-hidden="true">
+            <span class="grid size-[18px] flex-none place-items-center rounded-chip border border-slate-400 bg-white transition-colors group-hover:border-gold-600" :class="selected.brandIds.includes(brand.id) ? 'border-transparent bg-gold-400' : ''" aria-hidden="true">
               <UIcon v-if="selected.brandIds.includes(brand.id)" name="i-lucide-check" class="size-3 text-navy-950" />
             </span>
             <span class="min-w-0 flex-1">{{ brand.name }}</span>
@@ -235,12 +235,12 @@ const clearFiltersTo = computed(() => props.filterLink({ subcategory: '', brand:
       <ul class="m-0 list-none p-0">
         <li v-for="range in filters.priceRanges" :key="range.key" class="mb-1 last:mb-0">
           <NuxtLink
-            class="group flex min-h-10 items-center gap-2.5 rounded-[4px] px-2.5 text-sm no-underline transition-colors hover:bg-gold-50 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-gold-700"
+            class="group flex min-h-10 items-center gap-2.5 rounded-btn px-2.5 text-sm no-underline transition-colors hover:bg-gold-50 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-gold-700"
             :class="selected.priceKeys.includes(range.key) ? 'bg-gold-50 font-semibold text-navy-950' : 'text-slate-700'"
             :to="filterLink({ price: toggledKeys(selected.priceKeys, range.key) })"
             :aria-current="selected.priceKeys.includes(range.key) ? 'true' : undefined"
           >
-            <span class="grid size-[18px] flex-none place-items-center rounded-[3px] border border-slate-400 bg-white transition-colors group-hover:border-gold-600" :class="selected.priceKeys.includes(range.key) ? 'border-transparent bg-gold-400' : ''" aria-hidden="true">
+            <span class="grid size-[18px] flex-none place-items-center rounded-chip border border-slate-400 bg-white transition-colors group-hover:border-gold-600" :class="selected.priceKeys.includes(range.key) ? 'border-transparent bg-gold-400' : ''" aria-hidden="true">
               <UIcon v-if="selected.priceKeys.includes(range.key)" name="i-lucide-check" class="size-3 text-navy-950" />
             </span>
             <span class="min-w-0 flex-1">{{ range.label }}</span>

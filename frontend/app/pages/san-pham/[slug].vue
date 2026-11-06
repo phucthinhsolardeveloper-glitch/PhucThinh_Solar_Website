@@ -43,7 +43,6 @@ usePublicSocialMeta({
 </script>
 <template>
   <div class="text-navy-800">
-    <SiteHeader :site="site" />
 
     <main :aria-busy="pending">
       <div class="border-b border-slate-200/70 bg-slate-50/80">
@@ -65,6 +64,5 @@ usePublicSocialMeta({
       <ProductPreviewPage v-else :key="product.id" :product="product" :breadcrumbs="payload!.breadcrumbs ?? []" :pricing="payload!.pricing" :content="payload!.content" :applications="payload!.applications" :buying-guides="payload!.buyingGuides" :documents="payload!.documents" :extras="extras" />
     </main>
 
-    <SiteFooter :site="site" />
   </div>
 </template>
