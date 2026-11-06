@@ -413,12 +413,13 @@ watch(activeId, async () => {
   .chapter-lead :deep(p) { margin-top: 8px; font-size: 16px; line-height: 1.6; }
 
   /* Sticky chapter index: a glass capsule floating over the content it navigates. */
-  .story-index { position: sticky; top: 73px; z-index: 30; margin: 8px 12px 0; overflow: hidden; border-radius: 999px; transition: transform var(--pts-dur, 0.35s) var(--ease); }
+  .story-index { position: sticky; top: 73px; z-index: 30; margin: 8px 8px 0; overflow: hidden; border-radius: 22px; transition: transform var(--pts-dur, 0.35s) var(--ease); }
   .story-index[data-header-hidden] { transform: translateY(-65px); }
   .story-index .pts-container { max-width: none; padding: 0; }
   .story-index ul { display: flex; gap: 4px; padding: 5px; overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none; }
   .story-index li { flex: none; }
-  .story-index a, .story-index li + li a { min-height: 44px; max-width: 216px; padding: 6px 14px; border-left: 0; border-radius: 999px; color: var(--color-navy-950); font-size: 13px; line-height: 1.2; white-space: normal; }
+  /* One line always: a chapter title never makes the sticky bar taller. The current one scrolls into view. */
+  .story-index a, .story-index li + li a { display: block; min-height: 44px; max-width: 70vw; overflow: hidden; padding: 0 14px; border-left: 0; color: var(--color-navy-950); font-size: 13px; line-height: 44px; text-overflow: ellipsis; white-space: nowrap; }
   .story-index a::after { content: none; }
   .story-index a:hover { background: transparent; }
   .story-index a[aria-current] { background: var(--color-navy-950); color: var(--color-gold-300); }

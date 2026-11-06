@@ -224,7 +224,7 @@ usePublicSocialMeta({
         </aside>
 
         <section class="min-w-0" aria-label="Kết quả tìm kiếm" :aria-busy="pending">
-          <div class="catalog-toolbar-host mb-5 flex flex-wrap items-center justify-between gap-4 max-tb:gap-2">
+          <div v-if="data.products.length" class="catalog-toolbar-host mb-5 flex flex-wrap items-center justify-between gap-4 max-tb:gap-2">
             <div class="flex flex-wrap items-center gap-3 max-tb:w-full">
               <h2 class="m-h-panel m-0 text-[22px] font-extrabold text-navy-950">Danh sách sản phẩm</h2>
             </div>
@@ -258,7 +258,7 @@ usePublicSocialMeta({
             />
           </div>
 
-          <CatalogProductGrid :products="data.products" />
+          <CatalogProductGrid v-if="data.products.length" :products="data.products" />
           <div v-if="!data.products.length" class="rounded-btn border border-gray-200 p-8 text-center text-slate-600">
             <p class="m-0 text-base font-bold text-navy-900">Không tìm thấy sản phẩm phù hợp.</p>
             <p class="m-0 mt-1 text-sm text-slate-500">Thử chọn từ khóa ngắn gọn hơn hoặc gửi yêu cầu để kỹ sư Phúc Thịnh Solar tra cứu mã tương đương trong kho.</p>

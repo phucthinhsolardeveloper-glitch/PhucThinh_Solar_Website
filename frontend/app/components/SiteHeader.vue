@@ -1282,7 +1282,6 @@ onBeforeUnmount(() => {
 @media (prefers-reduced-motion: reduce) {
   .pts-drawer-enter-active .pts-drawer__panel, .pts-drawer-leave-active .pts-drawer__panel, .pts-drawer-enter-active .pts-morph span, .pts-drawer-leave-active .pts-morph span { transition: none; }
 }
-@media (prefers-reduced-transparency: reduce) { .pts-drawer__panel { background: var(--color-navy-950); -webkit-backdrop-filter: none; backdrop-filter: none; } }
 .pts-search-field { border: 1px solid rgb(10 34 81 / 16%); border-radius: 999px; background: #fff; transition: border-color 0.2s ease, box-shadow 0.2s ease; }
 /* The pill itself shows focus; the global 3px outline on the inner input would draw a box inside it. */
 .pts-search-field input:focus, .pts-search-field input:focus-visible { outline: none; }

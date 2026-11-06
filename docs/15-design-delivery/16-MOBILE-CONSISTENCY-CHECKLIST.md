@@ -30,6 +30,7 @@ Ngoại lệ giữ tròn: thanh dock, Zalo, nút icon tròn có sẵn.
 | Thấu kính | `--m-glass-lens*` | Nút nằm trên nền kính navy |
 
 - [ ] Không tự viết `backdrop-filter` hay nền kính mới trong component
+- [ ] Khi máy tắt hiệu ứng trong suốt (Windows: Transparency effects), mọi lớp kính vẫn cùng một tông, chỉ là nền đặc
 - [ ] Nội dung và thẻ sản phẩm giữ nền đặc, kính chỉ dành cho lớp nổi
 
 ## Chữ và nút

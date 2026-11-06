@@ -36,7 +36,7 @@ function reload() { if (import.meta.client) window.location.reload() }
       <form v-if="isMissing" class="nf-search" role="search" @submit.prevent="submitSearch()">
         <label class="sr-only" for="nf-search">Tìm kiếm sản phẩm</label>
         <UIcon name="i-lucide-search" class="ml-5 size-5 flex-none text-gold-300" aria-hidden="true" />
-        <input id="nf-search" v-model="searchDraft" type="search" placeholder="Tên thiết bị, công suất hoặc thương hiệu…" autocomplete="off">
+        <input id="nf-search" v-model="searchDraft" type="search" placeholder="Bạn cần tìm gì?" autocomplete="off">
         <button type="submit">Tìm kiếm</button>
       </form>
       <div v-if="isMissing" class="nf-chips">

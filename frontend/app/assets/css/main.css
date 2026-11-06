@@ -805,8 +805,14 @@
   border: 1px solid var(--m-glass-rim);
   box-shadow: var(--m-glass-shadow);
 }
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) { .m-glass { background: var(--color-navy-950); } }
-@media (prefers-reduced-transparency: reduce) { .m-glass { background: var(--color-navy-950); -webkit-backdrop-filter: none; backdrop-filter: none; } }
+/* Without transparency every surface keeps the same tint, opaque, so the dock, sidebar and island still match.
+   Windows reports this whenever "Transparency effects" is off. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  :root { --m-glass-bg: linear-gradient(180deg, rgb(27 58 122), rgb(10 30 74)); --m-glass-light-bg: linear-gradient(180deg, #f7f9fd, #e6ecf6); }
+}
+@media (prefers-reduced-transparency: reduce) {
+  :root { --m-glass-bg: linear-gradient(180deg, rgb(27 58 122), rgb(10 30 74)); --m-glass-light-bg: linear-gradient(180deg, #f7f9fd, #e6ecf6); --m-glass-filter: none; }
+}
 
 /* Light liquid glass for layers floating over page content, phones only.
    Rule: glass marks what floats above content. Content itself and product cards stay solid. */
@@ -953,8 +959,19 @@
   :is(a, button):is([class*="min-h-9"], [class*="min-h-8"], [class*="h-8"], [class*="h-9"], [class*="text-xs"], [class*="text-[11px"], [class*="text-[12px"], .public-pagination-button) { border-radius: 10px !important; }
   input:not([type="checkbox"], [type="radio"], .rounded-none), select, textarea, button[role="combobox"] { border-radius: 16px !important; }
   /* Floating dialogs only: a sheet that fills the screen edge keeps square corners. */
-  [role="dialog"]:not([data-vaul-drawer], .pts-drawer__panel) { border-radius: 22px !important; }
+  [role="dialog"]:not([data-vaul-drawer], .pts-drawer__panel, [class*="inset-0"], .promo-popup, dialog) { border-radius: 22px !important; }
   input[type="checkbox"], [role="checkbox"] { border-radius: 6px !important; }
+  /* A link marked by a side rule keeps a straight edge; a corner would bend the rule. */
+  nav a[class*="border-l-"] { border-radius: 0 !important; }
+  /* Every native picker shows the same chevron as the Nuxt UI selects beside it. */
+  select:not(.appearance-none) {
+    -webkit-appearance: none;
+    appearance: none;
+    padding-right: 36px !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' viewBox='0 0 24 24'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 12px center !important;
+  }
 
   .app-card { border-radius: 16px !important; overflow: hidden; }
   /* Three levels only: 22px sheet, 16px button and card, 8px for a tag sitting inside a card. */
