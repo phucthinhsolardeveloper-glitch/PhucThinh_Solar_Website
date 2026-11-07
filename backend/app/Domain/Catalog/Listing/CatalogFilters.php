@@ -2,6 +2,8 @@
 
 namespace App\Domain\Catalog\Listing;
 
+use App\Legacy\Support\LegacyText;
+
 /** SQL fragments for the catalog filters and orderings, kept parameterised (product_price_filter.php, product_need_filter.php, product_sort.php). */
 final class CatalogFilters
 {
@@ -113,30 +115,6 @@ final class CatalogFilters
     /** Search slug of a keyword, as the PHP $func->changeTitle() builds it. */
     public static function keywordSlug(string $text): string
     {
-        if ($text === '') {
-            return '';
-        }
-        $map = [
-            'a' => 'á|à|ả|ã|ạ|ă|ắ|ặ|ằ|ẳ|ẵ|â|ấ|ầ|ẩ|ẫ|ậ|Á|À|Ả|Ã|Ạ|Ă|Ắ|Ặ|Ằ|Ẳ|Ẵ|Â|Ấ|Ầ|Ẩ|Ẫ|Ậ',
-            'd' => 'đ|Đ',
-            'e' => 'é|è|ẻ|ẽ|ẹ|ê|ế|ề|ể|ễ|ệ|É|È|Ẻ|Ẽ|Ẹ|Ê|Ế|Ề|Ể|Ễ|Ệ',
-            'i' => 'í|ì|ỉ|ĩ|ị|Í|Ì|Ỉ|Ĩ|Ị',
-            'o' => 'ó|ò|ỏ|õ|ọ|ô|ố|ồ|ổ|ỗ|ộ|ơ|ớ|ờ|ở|ỡ|ợ|Ó|Ò|Ỏ|Õ|Ọ|Ô|Ố|Ồ|Ổ|Ỗ|Ộ|Ơ|Ớ|Ờ|Ở|Ỡ|Ợ',
-            'u' => 'ú|ù|ủ|ũ|ụ|ư|ứ|ừ|ử|ữ|ự|Ú|Ù|Ủ|Ũ|Ụ|Ư|Ứ|Ừ|Ử|Ữ|Ự',
-            'y' => 'ý|ỳ|ỷ|ỹ|ỵ|Ý|Ỳ|Ỷ|Ỹ|Ỵ',
-            '' => '`|\~|\!|\@|\#|\||\$|\%|\^|\&|\*|\(|\)|\+|\=|\,|\.|\/|\?|\>|\<|\'|\"|\“|\”|\:|\;|_',
-        ];
-        foreach ($map as $ascii => $pattern) {
-            $text = (string) preg_replace("/({$pattern})/i", (string) $ascii, $text);
-        }
-        $text = strtolower($text);
-        $text = (string) preg_replace('/[^a-z0-9-\s]/', '', $text);
-        $text = (string) preg_replace('/([\s]+)/', '-', $text);
-        $text = str_replace(['%20', ' '], '-', $text);
-        foreach (['/\-\-\-\-\-/', '/\-\-\-\-/', '/\-\-\-/', '/\-\-/'] as $dashes) {
-            $text = (string) preg_replace($dashes, '-', $text);
-        }
-
-        return (string) preg_replace('/\@\-|\-\@|\@/', '', '@'.$text.'@');
+        return LegacyText::changeTitle($text);
     }
 }
