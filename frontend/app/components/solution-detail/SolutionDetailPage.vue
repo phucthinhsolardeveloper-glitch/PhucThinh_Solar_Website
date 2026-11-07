@@ -36,6 +36,8 @@ const hotlineHref = computed(() => publicPhoneHref(props.data.campaignCta?.hotli
 const hasContent = computed(() => Boolean(props.data.solution.content.html || props.data.solution.extraContent.html))
 
 const heroRef = ref<HTMLElement | null>(null)
+const summaryOpen = ref(false)
+watch(() => props.data.solution.slug, () => { summaryOpen.value = false })
 const solutionRailRef = ref<HTMLElement | null>(null)
 useActiveHorizontalRail(solutionRailRef)
 useSlidingPill(solutionRailRef, 'solutions')
@@ -88,7 +90,9 @@ onBeforeUnmount(() => {
         <div class="pts-container solution-hero__inner">
           <a v-if="data.solution.category" class="solution-hero__category m-lg" :href="links.generic(data.navigation.allUrl)">{{ data.solution.category }}</a>
           <h1>{{ data.solution.title }}</h1>
-          <p v-if="data.solution.summary" class="solution-hero__summary"><ChunkedText :text="data.solution.summary" /></p>
+          <p v-if="data.solution.summary" class="solution-hero__summary" :class="{ 'is-open': summaryOpen }"><ChunkedText :text="data.solution.summary" /></p>
+          <!-- Phones: a long summary folds to four lines so the solution switcher stays on the first screen. -->
+          <button v-if="data.solution.summary.length > 160" type="button" class="solution-hero__more-text m-more-button" :aria-expanded="summaryOpen" @click="summaryOpen = !summaryOpen"><span>{{ summaryOpen ? 'Thu gọn' : 'Xem thêm' }}</span></button>
           <div class="solution-hero__actions">
             <a class="solution-hero__primary" :href="links.generic(data.cta.href)" @click="handleConsultClick($event, data.cta.href)">
               {{ data.cta.label }}
@@ -183,6 +187,7 @@ onBeforeUnmount(() => {
 .solution-hero__category { display: inline-flex; min-height: 36px; align-items: center; margin-bottom: 18px; padding: 0 14px; border: 1px solid rgb(228 168 73 / 45%); border-radius: 999px; color: var(--color-gold-200); font-size: 14px; font-weight: 700; text-decoration: none; }
 .solution-hero__category:hover { background: rgb(228 168 73 / 14%); }
 .solution-hero h1 { max-width: 16ch; margin: 0; color: #fff; font-size: clamp(36px, 4vw, 66px); font-weight: 850; line-height: 1.1; letter-spacing: -0.04em; text-wrap: balance; }
+.solution-hero__more-text { display: none; }
 .solution-hero__summary { display: -webkit-box; max-width: 62ch; margin: 22px 0 0; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 4; color: #d3dcea; font-size: clamp(17px, 1.25vw, 19px); line-height: 1.68; }
 .solution-hero__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 28px; margin-top: 32px; }
 .solution-hero__primary { display: inline-flex; min-height: 58px; align-items: center; gap: 16px; padding: 0 10px 0 24px; border-radius: var(--radius-sm); background: var(--pts-gold-gradient); color: var(--color-navy-950); font-size: 16.5px; font-weight: 850; text-decoration: none; transition: filter 0.25s ease; }
@@ -222,7 +227,8 @@ onBeforeUnmount(() => {
    sizes to its text. Equipment becomes a swipe rail of cards that show their whole description. */
 @media (max-width: 820px) {
   /* Every solution shares one frame, so the switcher below stays put between pages. A shorter text gives its space to the photo. */
-  .solution-hero { display: grid; height: auto; min-height: var(--solution-hero-height); grid-template-rows: minmax(148px, 1fr) auto; align-items: stretch; --solution-hero-height: clamp(561px, calc(561px + (412px - 100vw) * 1.5), 690px); }
+  /* Never taller than the screen leaves room for: header, the switcher below and the bottom dock. */
+  .solution-hero { display: grid; height: auto; min-height: min(var(--solution-hero-height), calc(100svh - 262px)); grid-template-rows: minmax(104px, 1fr) auto; align-items: stretch; --solution-hero-height: clamp(561px, calc(561px + (412px - 100vw) * 1.5), 690px); }
   .solution-hero__image, .solution-hero__shade, .solution-hero:not(.has-image) .solution-hero__shade { position: absolute; inset: 0 0 auto; width: 100%; height: calc(100% + 92px); transform: none; }
   .solution-hero__photo { position: relative; display: block; grid-row: 1; grid-column: 1; min-height: 0; }
   .solution-hero__inner { position: static; grid-row: 2; grid-column: 1; }
@@ -230,7 +236,12 @@ onBeforeUnmount(() => {
   .solution-hero__inner { padding-block: 0 20px; }
   .solution-hero__category { position: absolute; top: 12px; left: 16px; min-height: 44px; margin-bottom: 0; padding: 0 16px; color: var(--color-navy-950); }
   .solution-hero h1 { max-width: none; font-size: clamp(28px, 7.6vw, 31px); font-weight: 800; line-height: 1.15; letter-spacing: -0.02em; }
-  .solution-hero__summary { display: block; margin-top: 10px; overflow: visible; font-size: 15.5px; line-height: 1.55; -webkit-line-clamp: unset; }
+  .solution-hero__summary { display: block; max-height: calc(1.55em * 4); margin-top: 10px; overflow: hidden; font-size: 15.5px; line-height: 1.55; -webkit-line-clamp: unset; -webkit-mask-image: linear-gradient(180deg, #000 70%, transparent); mask-image: linear-gradient(180deg, #000 70%, transparent); }
+  .solution-hero__summary.is-open { max-height: none; -webkit-mask-image: none; mask-image: none; }
+  .solution-hero__more-text { display: flex; min-height: 40px; margin-top: 2px; }
+  .solution-hero__more-text span { border-color: rgb(255 255 255 / 30%); background: rgb(255 255 255 / 10%); color: #fff; }
+  /* The dark wash runs a few pixels past the photo so the photo's bottom edge never shows as a line across the text. */
+  .solution-hero__shade { height: calc(100% + 100px) !important; }
   .solution-hero__actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: center; gap: 6px 12px; margin-top: 16px; }
   .solution-hero__primary { grid-column: 1 / -1; min-height: 52px; justify-content: space-between; font-size: 16px; }
   .solution-hero__primary > span { width: 36px; height: 36px; }

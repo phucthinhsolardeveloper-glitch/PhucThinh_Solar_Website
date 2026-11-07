@@ -49,3 +49,4 @@ Chạy từ `tools/visual-tests` với `PLAYWRIGHT_BROWSERS_PATH=$PWD/.browsers`
 | `page-speed.cjs` | Tác vụ dài khi tải trang, mở menu, cuộn, với CPU chậm 4 lần |
 | `word-scan.cjs "từ" ...` | Tìm chữ trên tối đa 80 trang, kể cả chữ ẩn trong dữ liệu trang, dùng khi gỡ một dữ kiện cũ |
 - `catalog-brands-filter.cjs [thư mục]`: đếm logo thương hiệu ở đầu trang Sản phẩm và trang danh mục, rồi chọn 2 thương hiệu trong bộ lọc trên điện thoại để kiểm tra bộ lọc không tự đóng.
+- `solution-first-screen.cjs [thư mục]`: trên điện thoại ngắn và dài, thanh chuyển giải pháp có nằm trong màn đầu không, và lớp tối có che mép dưới ảnh banner không.
