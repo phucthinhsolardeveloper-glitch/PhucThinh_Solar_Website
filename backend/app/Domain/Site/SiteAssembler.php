@@ -292,7 +292,7 @@ class SiteAssembler
             }
         }
         $locations = [];
-        foreach ($this->rows("select name as namevi, address, id, map_url as ggmap from store_locations where is_visible=1"
+        foreach ($this->rows('select name as namevi, address, id, map_url as ggmap from store_locations where is_visible=1'
             ." order by case when name like 'Trụ sở%' then 0 when name like 'Kho Gia Lai%' then 1 else 2 end,sort_order,id desc") as $row) {
             $name = LegacyText::flat($row['namevi']);
             $address = LegacyText::flat($row['address']);

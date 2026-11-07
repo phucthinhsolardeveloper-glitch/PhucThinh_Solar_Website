@@ -12,7 +12,7 @@ class FormMetadata extends PageSupport
     public function cities(): array
     {
         $cities = [];
-        foreach ($this->rows("select id,name from provinces where is_visible=1 order by sort_order asc,id asc") as $row) {
+        foreach ($this->rows('select id,name from provinces where is_visible=1 order by sort_order asc,id asc') as $row) {
             $name = is_scalar($row['name']) ? trim(strip_tags((string) $row['name'])) : '';
             if ((int) $row['id'] > 0 && $name !== '') {
                 $cities[] = ['id' => (int) $row['id'], 'name' => $name];
@@ -41,11 +41,11 @@ class FormMetadata extends PageSupport
         if ($city <= 0 || count($get) !== 1) {
             return [400, ['error' => ['code' => 'BAD_QUERY']]];
         }
-        if (! $this->row("select id from provinces where id=? and is_visible=1 limit 1", [$city])) {
+        if (! $this->row('select id from provinces where id=? and is_visible=1 limit 1', [$city])) {
             return [404, ['error' => ['code' => 'NOT_FOUND']]];
         }
         $wards = [];
-        foreach ($this->rows("select id,name from wards where province_id=? and is_visible=1 order by sort_order asc,id asc", [$city]) as $row) {
+        foreach ($this->rows('select id,name from wards where province_id=? and is_visible=1 order by sort_order asc,id asc', [$city]) as $row) {
             $name = is_scalar($row['name']) ? trim(strip_tags((string) $row['name'])) : '';
             if ((int) $row['id'] > 0 && $name !== '') {
                 $wards[] = ['id' => (int) $row['id'], 'name' => $name];

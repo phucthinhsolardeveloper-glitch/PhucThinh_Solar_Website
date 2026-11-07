@@ -3,7 +3,6 @@
 namespace App\Domain\Catalog\Listing;
 
 use App\Domain\Catalog\CategoryTree;
-
 use App\Legacy\Support\LegacyText;
 
 /** SQL fragments for the catalog filters and orderings, kept parameterised (product_price_filter.php, product_need_filter.php, product_sort.php). */

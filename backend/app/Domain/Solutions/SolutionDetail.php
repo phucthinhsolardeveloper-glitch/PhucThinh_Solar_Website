@@ -3,10 +3,10 @@
 namespace App\Domain\Solutions;
 
 use App\Domain\Pages\PageSupport;
-use App\Models\Post;
 use App\Legacy\Content\RichText;
 use App\Legacy\Content\SolutionHub;
 use App\Legacy\Support\LegacyText;
+use App\Models\Post;
 
 /** One solution page (api/pts_v1_solution_detail.php): body, gallery, sibling solutions, equipment, CTA. */
 class SolutionDetail extends PageSupport

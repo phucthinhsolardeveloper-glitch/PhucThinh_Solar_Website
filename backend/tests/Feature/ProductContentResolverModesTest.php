@@ -1,6 +1,6 @@
 <?php
 
-use App\Legacy\Catalog\ProductContentResolver;
+use App\Domain\Catalog\ProductDetail\ProductContentResolver;
 use Illuminate\Support\Facades\DB;
 
 // The modes real data does not use yet (hide, both, stack, brand, list, missing and hidden sources).

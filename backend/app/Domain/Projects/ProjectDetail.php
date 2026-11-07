@@ -3,10 +3,10 @@
 namespace App\Domain\Projects;
 
 use App\Domain\Pages\PageSupport;
-use App\Models\Post;
 use App\Legacy\Content\RichText;
 use App\Legacy\Content\SolutionHub;
 use App\Legacy\Support\LegacyText;
+use App\Models\Post;
 
 /** One completed project (api/pts_v1_project_detail.php): story, gallery, equipment used, nearby projects. */
 class ProjectDetail extends PageSupport
@@ -40,7 +40,7 @@ class ProjectDetail extends PageSupport
 
         $gallery = [];
         foreach ($this->rows("select coalesce(path,'') as photo, coalesce(caption,'') as namevi, coalesce(video_url,'') as link_video, 'man' as kind, if(kind='video','video','du-an') as val, 'hienthi' as status"
-            ." from post_media where post_id = ? and is_visible = 1 order by sort_order,id desc", [$id]) as $item) {
+            .' from post_media where post_id = ? and is_visible = 1 order by sort_order,id desc', [$id]) as $item) {
             if (! self::visible($item) || $item['kind'] !== 'man') {
                 continue;
             }
@@ -54,7 +54,7 @@ class ProjectDetail extends PageSupport
         }
         $equipment = [];
         foreach ($this->rows("select p.id, p.name as namevi, p.slug as slugvi, coalesce(p.image,'') as photo, coalesce(p.code,'') as code, 'hienthi' as status from post_products pp inner join products p on p.id = pp.product_id"
-            ." where pp.post_id = ? and pp.is_visible = 1 and p.is_visible = 1 order by pp.sort_order,pp.id", [$id]) as $product) {
+            .' where pp.post_id = ? and pp.is_visible = 1 and p.is_visible = 1 order by pp.sort_order,pp.id', [$id]) as $product) {
             $name = LegacyText::cms($product['namevi']);
             $productSlug = LegacyText::slug($product['slugvi']);
             if (self::visible($product) && (int) $product['id'] > 0 && $name !== '' && $productSlug !== '') {

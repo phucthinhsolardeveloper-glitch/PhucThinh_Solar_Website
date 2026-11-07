@@ -7,8 +7,8 @@ use App\Domain\Catalog\Listing\ProductCard;
 use App\Domain\Catalog\PricingPolicy;
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
 use App\Domain\Pages\PageSupport;
-use App\Models\Brand;
 use App\Legacy\Support\LegacyText;
+use App\Models\Brand;
 use App\Support\SiteSettings;
 
 /** Products of one brand (api/pts_v1_brand_detail.php, /thuong-hieu/<slug>/), with sort, price filter and paging. */

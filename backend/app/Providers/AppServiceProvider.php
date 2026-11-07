@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Domain\Catalog\CategoryTree;
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
 use App\Legacy\Auth\LegacyAdminUserProvider;
 use App\Legacy\Auth\LegacyPasswordVerifier;
@@ -18,8 +19,8 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         // One copy per request: the tree is read once and shared by every API part.
-        $this->app->scoped(\App\Domain\Catalog\CategoryTree::class);
-        $this->app->scoped(\App\Support\SiteSettings::class);
+        $this->app->scoped(CategoryTree::class);
+        $this->app->scoped(SiteSettings::class);
         $this->app->singleton(LegacyPasswordVerifier::class, fn () => new LegacyPasswordVerifier(
             (string) config('legacy.admin_password.secret'),
             (string) config('legacy.admin_password.salt'),

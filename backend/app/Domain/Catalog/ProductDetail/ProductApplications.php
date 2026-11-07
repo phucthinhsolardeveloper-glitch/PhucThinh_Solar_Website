@@ -95,7 +95,7 @@ class ProductApplications
     }
 
     /**
-     * @param  iterable<array<string, mixed>>  $rows  table_product_document rows (document_type, title, file_path)
+     * @param  iterable<array<string, mixed>>  $rows  product documents (document_type, title, file_path)
      * @return list<array{type: string, title: string, url: string}>
      */
     public function documents(iterable $rows): array

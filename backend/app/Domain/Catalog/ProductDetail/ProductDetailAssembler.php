@@ -2,10 +2,11 @@
 
 namespace App\Domain\Catalog\ProductDetail;
 
+use App\Domain\Catalog\CategoryTree;
 use App\Domain\Catalog\PricingPolicy;
-use App\Legacy\Catalog\ProductContentResolver;
 use App\Legacy\Support\LegacyText;
 use App\Legacy\Support\StatusFlags;
+use App\Models\Product;
 use App\Support\SiteSettings;
 use Illuminate\Support\Facades\DB;
 
@@ -26,18 +27,18 @@ class ProductDetailAssembler
         private readonly SiteSettings $settings,
         private readonly ProductSpecs $specs,
         private readonly ProductApplications $applications,
+        private readonly CategoryTree $tree,
     ) {}
 
     /** @return array<string, mixed>|null null when no visible product has this slug */
     public function forSlug(string $slug): ?array
     {
-        $db = DB::connection('legacy');
-        $row = $db->table('table_product')->where('slugvi', $slug)->where('type', 'san-pham')
-            ->whereRaw("find_in_set('hienthi', status)")->first();
-        if (! $row) {
+        $db = DB::connection();
+        $product = $db->table('products')->where('slug', $slug)->where('is_visible', true)->first();
+        if (! $product) {
             return null;
         }
-        $row = (array) $row;
+        $row = ProductRecord::from((array) $product, $this->tree);
         $id = (int) $row['id'];
         $name = LegacyText::plain($row['namevi'] ?? '');
         $slug = LegacyText::slug($row['slugvi'] ?? '');
@@ -45,12 +46,10 @@ class ProductDetailAssembler
             return null;
         }
 
-        $list = (array) ($db->table('table_product_list')->where('id', (int) $row['id_list'])->where('type', 'san-pham')
-            ->whereRaw("find_in_set('hienthi', status)")->first(['id', 'slugvi', 'pdp_profile']) ?? []);
-        $brand = (int) $row['id_brand'] > 0 ? $db->table('table_product_brand')->where('id', (int) $row['id_brand'])
-            ->where('type', 'san-pham')->whereRaw("find_in_set('hienthi', status)")->value('namevi') : '';
-        $seo = (array) ($db->table('table_seo')->where('id_parent', $id)->where('com', 'product')->where('act', 'man')
-            ->where('type', $row['type'])->first(['titlevi', 'descriptionvi', 'keywordsvi']) ?? []);
+        $root = $row['id_list'] ? $this->tree->get($row['id_list']) : null;
+        $list = $root && $root['is_visible'] ? ['id' => $root['id'], 'slugvi' => $root['slug'], 'pdp_profile' => $root['pdp_profile'] ?? ''] : [];
+        $brand = $row['id_brand'] > 0 ? $db->table('brands')->where('id', $row['id_brand'])->where('is_visible', true)->value('name') : '';
+        $seo = (array) ($db->table('seo_metas')->where('owner_type', Product::class)->where('owner_id', $id)->first(['title as titlevi', 'description as descriptionvi', 'keywords as keywordsvi']) ?? []);
 
         $profile = $this->specs->profileKey($row, $list);
         $sections = $this->contentResolver->resolve($row);
@@ -80,9 +79,9 @@ class ProductDetailAssembler
             'content' => $content,
             'applications' => $applications,
             'buyingGuides' => $this->applications->buyingGuides($row, $profile),
-            'documents' => $this->applications->documents($db->table('table_product_document')->where('id_product', $id)
-                ->whereRaw("find_in_set('hienthi', status)")->where('file_path', '<>', '')->orderBy('numb')->orderBy('id')
-                ->get(['document_type', 'titlevi as title', 'file_path'])->map(fn ($r) => (array) $r)),
+            'documents' => $this->applications->documents($db->table('product_documents')->where('product_id', $id)
+                ->where('is_visible', true)->where('path', '<>', '')->orderBy('sort_order')->orderBy('id')
+                ->get(['kind as document_type', 'title', 'path as file_path'])->map(fn ($r) => (array) $r)),
             'canonical' => ['url' => '/san-pham/'.$slug, 'sources' => [
                 'product' => 'publicProductEntityPath(product)',
                 'routeResolver' => 'public_route_resolver.php',
@@ -105,9 +104,8 @@ class ProductDetailAssembler
         foreach ([$row['photo'] ?? '', $row['photo2'] ?? ''] as $photo) {
             $media[] = $this->urls->product($photo);
         }
-        $gallery = DB::connection('legacy')->table('table_gallery')->where('id_parent', (int) $row['id'])
-            ->where('com', 'product')->where('kind', 'man')->where('val', 'san-pham')
-            ->whereRaw("find_in_set('hienthi', status)")->orderBy('numb')->orderByDesc('id')->pluck('photo');
+        $gallery = DB::table('product_images')->where('product_id', (int) $row['id'])->where('is_visible', true)
+            ->orderBy('sort_order')->orderByDesc('id')->pluck('path');
         foreach ($gallery as $photo) {
             $media[] = $this->urls->product($photo);
         }
@@ -115,56 +113,18 @@ class ProductDetailAssembler
         return array_values(array_unique(array_filter($media)));
     }
 
-    /** @return list<array{label: string, url: string}> */
+    /** @return list<array{label: string, url: string}> visible categories from the top down to the product's own */
     private function breadcrumbs(array $row): array
     {
         $crumbs = [['label' => 'Sản phẩm', 'url' => '/san-pham/']];
-        $db = DB::connection('legacy');
-        $levels = ['id_list' => 'list', 'id_cat' => 'cat', 'id_item' => 'item', 'id_sub' => 'sub'];
-        foreach ($levels as $column => $level) {
-            $id = (int) ($row[$column] ?? 0);
-            if ($id <= 0) {
-                continue;
-            }
-            $label = $db->table('table_product_'.$level)->where('id', $id)->where('type', 'san-pham')
-                ->whereRaw("find_in_set('hienthi', status)")->value('namevi');
-            if ($label === null) {
-                continue;
-            }
-            $path = $this->categoryPath($level, $id);
-            $label = LegacyText::plain($label);
-            if ($label !== '' && $path !== '') {
-                $crumbs[] = ['label' => $label, 'url' => '/'.$path.'/'];
+        foreach ($row['category_id'] ? $this->tree->chain($row['category_id']) : [] as $node) {
+            $label = LegacyText::plain($node['name']);
+            if ($node['is_visible'] && $label !== '') {
+                $crumbs[] = ['label' => $label, 'url' => '/'.$this->tree->path((int) $node['id'])];
             }
         }
 
         return $crumbs;
-    }
-
-    /** danh-muc-san-pham/<list>/<cat>/... for a category level, as publicProductEntityPath() builds it. */
-    private function categoryPath(string $level, int $id): string
-    {
-        $chain = ['list' => [], 'cat' => ['list'], 'item' => ['list', 'cat'], 'sub' => ['list', 'cat', 'item']][$level];
-        $db = DB::connection('legacy');
-        $record = $db->table('table_product_'.$level)->where('id', $id)->where('type', 'san-pham')->first();
-        if (! $record) {
-            return '';
-        }
-        $parts = ['danh-muc-san-pham'];
-        foreach ($chain as $parent) {
-            $parentSlug = $db->table('table_product_'.$parent)->where('id', (int) ($record->{'id_'.$parent} ?? 0))->value('slugvi');
-            if ($parentSlug === null) {
-                return '';
-            }
-            if ($parentSlug !== '') {
-                $parts[] = trim($parentSlug, '/');
-            }
-        }
-        if (! empty($record->slugvi)) {
-            $parts[] = trim($record->slugvi, '/');
-        }
-
-        return implode('/', $parts);
     }
 
     /** @return array{title: string, description: string, keywords: string} */

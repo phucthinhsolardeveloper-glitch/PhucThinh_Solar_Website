@@ -3,8 +3,8 @@
 namespace App\Domain\Media;
 
 use App\Domain\Pages\PageSupport;
-use App\Models\Album;
 use App\Legacy\Support\LegacyText;
+use App\Models\Album;
 
 /**
  * Photo albums and videos (api/pts_v1_gallery.php, pts_v1_gallery_detail.php, pts_v1_video.php).

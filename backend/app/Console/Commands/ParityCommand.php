@@ -25,6 +25,9 @@ class ParityCommand extends Command
      */
     private const ACCEPTED = [
         'news-detail' => ['.body.article.showCover' => 'PHP looked for the cover picture in HTML-escaped text and never found it; the cover is now hidden when the article repeats it'],
+        'product-detail' => [
+            '.body.content.highlights[*]@{"slug":"den-duong-jindian-jd-l200new"}' => 'PHP showed the escaped "&gt;" in the chip text; the chip now shows ">"',
+        ],
         'search' => [
             '.body.pagination.total@{"keyword":"50%"}' => 'PHP also searched the picture file metadata (names, sizes); "50" matched picture names, not product text',
         ],

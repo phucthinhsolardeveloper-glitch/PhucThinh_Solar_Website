@@ -4,8 +4,8 @@ namespace App\Domain\News;
 
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
 use App\Domain\Pages\PageSupport;
-use App\Models\PostCategory;
 use App\Legacy\Support\LegacyText;
+use App\Models\PostCategory;
 use App\Support\SiteSettings;
 
 /**
@@ -173,7 +173,7 @@ class NewsListing extends PageSupport
 
         // Articles of this category and of every category below it.
         $ids = [$parentId];
-        for ($level = [$parentId]; $level; ) {
+        for ($level = [$parentId]; $level;) {
             $level = array_map('intval', array_column($this->rows('select id from post_categories where parent_id in ('.implode(',', $level).')'), 'id'));
             array_push($ids, ...$level);
         }

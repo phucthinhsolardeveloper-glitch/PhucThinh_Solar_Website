@@ -2,7 +2,7 @@
 
 namespace App\Domain\Catalog\Health;
 
-use App\Legacy\Catalog\ProductContentResolver;
+use App\Domain\Catalog\ProductDetail\ProductContentResolver;
 use App\Legacy\Catalog\ProductImageResolver;
 use App\Legacy\Support\StatusFlags;
 use Illuminate\Support\Facades\DB;

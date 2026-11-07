@@ -4,10 +4,10 @@ namespace App\Domain\Solutions;
 
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
 use App\Domain\Pages\PageSupport;
-use App\Models\PostCategory;
 use App\Legacy\Content\RichText;
 use App\Legacy\Content\SolutionHub;
 use App\Legacy\Support\LegacyText;
+use App\Models\PostCategory;
 use App\Support\SiteSettings;
 
 /**

@@ -2,6 +2,7 @@
 
 namespace App\Domain\Catalog\ProductDetail;
 
+use App\Domain\Catalog\CategoryTree;
 use App\Domain\Catalog\Listing\CatalogFilters;
 use App\Domain\Catalog\Listing\ProductCard;
 use App\Domain\Catalog\PricingPolicy;
@@ -21,7 +22,7 @@ class ProductExtras extends PageSupport
 
     private const VIDEO_EXTENSIONS = ['mp4', 'mkv'];
 
-    public function __construct(ProductMediaUrls $urls, private readonly SiteSettings $settings, private readonly ProductSpecs $specs, private readonly ProductCard $cards)
+    public function __construct(ProductMediaUrls $urls, private readonly SiteSettings $settings, private readonly ProductSpecs $specs, private readonly ProductCard $cards, private readonly CategoryTree $tree)
     {
         parent::__construct($urls);
     }
@@ -55,20 +56,23 @@ class ProductExtras extends PageSupport
             $replyOffset = (int) $get['replyOffset'];
         }
 
-        $row = $this->row("select id,namevi,slugvi,id_list,pdp_profile,video_url,warranty,chinhsachmuahangvi,status,type from table_product where slugvi=? and type='san-pham' and find_in_set('hienthi',status) limit 1", [$slug]);
-        if (! $row) {
+        $product = $this->row('select * from products where slug=? and is_visible=1 limit 1', [$slug]);
+        if (! $product) {
             return [404, ['error' => ['code' => 'PRODUCT_NOT_FOUND']]];
         }
+        $row = ProductRecord::from($product, $this->tree);
         $id = (int) $row['id'];
-        $list = $this->row("select id,slugvi,pdp_profile from table_product_list where id=? and type='san-pham' limit 1", [(int) $row['id_list']]);
+        $root = $row['id_list'] ? $this->tree->get($row['id_list']) : null;
+        $list = $root ? ['id' => $root['id'], 'slugvi' => $root['slug'], 'pdp_profile' => $root['pdp_profile'] ?? ''] : [];
         $profileKey = $this->specs->profileKey($row, $list);
         $profile = $this->specs->profile($profileKey);
         $pricesVisible = $this->settings->productPricesVisible();
 
         $pricing = new PricingPolicy($pricesVisible);
         $related = [];
-        foreach ($this->rows("select p.id,p.namevi,p.slugvi,p.photo,p.photo2,p.status,p.regular_price,p.sale_price,p.cong_suat from table_product p where p.id<>? and p.id_list=? and p.type='san-pham' and find_in_set('hienthi',p.status)"
-            .' order by '.CatalogFilters::defaultOrder(false).' limit 8', [$id, (int) $row['id_list']]) as $product) {
+        $siblings = $row['id_list'] ? $this->tree->descendantIds($row['id_list']) : [0];
+        foreach ($this->rows('select '.CatalogFilters::CARD_BASE.' from products p where p.id<>? and p.is_visible=1 and p.category_id in ('.implode(',', array_fill(0, count($siblings), '?')).')'
+            .' order by '.CatalogFilters::defaultOrder().' limit 8', [$id, ...$siblings]) as $product) {
             if ($dto = $this->cards->dto($product, $pricing)) {
                 $related[] = $dto;
             }
@@ -77,7 +81,7 @@ class ProductExtras extends PageSupport
         $override = LegacyText::plain($row['chinhsachmuahangvi'] ?? '');
         $policies = [];
         if ($override === '') {
-            foreach ($this->rows("select namevi,slugvi,status from table_news where type='chinh-sach' and find_in_set('hienthi',status) order by numb,id desc") as $policy) {
+            foreach ($this->rows("select title as namevi, slug as slugvi, 'hienthi' as status from posts where kind='policy' and is_visible=1 order by sort_order,id desc") as $policy) {
                 $name = LegacyText::plain($policy['namevi']);
                 $policySlug = preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', (string) $policy['slugvi']) ? $policy['slugvi'] : '';
                 if ($name !== '' && $policySlug !== '' && mb_stripos($name, 'bảo hành') !== false) {
@@ -86,20 +90,20 @@ class ProductExtras extends PageSupport
             }
         }
 
-        $visibleReview = "id_variant=? and type='san-pham' and find_in_set('hienthi',status)";
-        $totals = $this->row("select count(id) total,coalesce(sum(star),0) total_star from table_comment where id_parent=0 and {$visibleReview}", [$id]);
+        $visibleReview = "product_id=? and status='approved'";
+        $totals = $this->row("select count(id) total,coalesce(sum(stars),0) total_star from reviews where parent_id is null and {$visibleReview}", [$id]);
         $reviewTotal = (int) ($totals['total'] ?? 0);
         $counts = [1 => 0, 2 => 0, 3 => 0, 4 => 0, 5 => 0];
-        foreach ($this->rows("select star,count(id) num from table_comment where id_parent=0 and {$visibleReview} group by star", [$id]) as $starRow) {
+        foreach ($this->rows("select stars as star,count(id) num from reviews where parent_id is null and {$visibleReview} group by stars", [$id]) as $starRow) {
             if ((int) $starRow['star'] >= 1 && (int) $starRow['star'] <= 5) {
                 $counts[(int) $starRow['star']] = (int) $starRow['num'];
             }
         }
         $reviews = [];
-        foreach ($this->rows("select id,title,content,fullname,star,status,date_posted from table_comment where id_parent=0 and {$visibleReview} order by date_posted desc limit {$reviewOffset},10", [$id]) as $review) {
+        foreach ($this->rows("select id, coalesce(title,'') as title, content, name as fullname, stars as star, if(verified_purchase,'hienthi,verified-purchase','hienthi') as status, created_at as date_posted from reviews where parent_id is null and {$visibleReview} order by created_at desc, id desc limit {$reviewOffset},10", [$id]) as $review) {
             $reviewId = (int) $review['id'];
             $photos = [];
-            foreach ($this->rows('select photo from table_comment_photo where id_parent=? limit 3', [$reviewId]) as $photo) {
+            foreach ($this->rows("select path as photo from review_media where review_id=? and kind='photo' order by id limit 3", [$reviewId]) as $photo) {
                 if (($url = $this->photo($photo['photo'])) !== '') {
                     $photos[] = $url;
                 }
@@ -111,26 +115,26 @@ class ProductExtras extends PageSupport
                 'name' => LegacyText::plain($review['fullname']),
                 'star' => max(1, min(5, (int) $review['star'])),
                 'verified' => str_contains(','.$review['status'].',', ',verified-purchase,'),
-                'date' => (int) $review['date_posted'],
+                'date' => (int) strtotime((string) $review['date_posted']),
                 'photos' => $photos,
-                'video' => $this->reviewVideo($this->row('select photo,video from table_comment_video where id_parent=? limit 1', [$reviewId])),
+                'video' => $this->reviewVideo($this->row("select coalesce(poster,'') as photo, path as video from review_media where review_id=? and kind='video' order by id limit 1", [$reviewId])),
                 'replies' => $this->replies($reviewId, $id, 0),
-                'repliesTotal' => (int) ($this->row("select count(id) total from table_comment where id_parent=? and {$visibleReview}", [$reviewId, $id])['total'] ?? 0),
+                'repliesTotal' => (int) ($this->row("select count(id) total from reviews where parent_id=? and {$visibleReview}", [$reviewId, $id])['total'] ?? 0),
             ];
         }
 
         $replyPage = null;
         if ($replyParent > 0) {
-            if (! $this->row("select id from table_comment where id=? and id_parent=0 and {$visibleReview} limit 1", [$replyParent, $id])) {
+            if (! $this->row("select id from reviews where id=? and parent_id is null and {$visibleReview} limit 1", [$replyParent, $id])) {
                 return [404, ['error' => ['code' => 'REVIEW_NOT_FOUND']]];
             }
-            $replyTotal = (int) ($this->row("select count(id) total from table_comment where id_parent=? and {$visibleReview}", [$replyParent, $id])['total'] ?? 0);
+            $replyTotal = (int) ($this->row("select count(id) total from reviews where parent_id=? and {$visibleReview}", [$replyParent, $id])['total'] ?? 0);
             $items = $this->replies($replyParent, $id, $replyOffset);
             $replyPage = ['parentId' => $replyParent, 'offset' => $replyOffset, 'total' => $replyTotal, 'hasMore' => $replyOffset + count($items) < $replyTotal, 'items' => $items];
         }
 
         $commitments = [];
-        foreach ($this->rows("select namevi,photo,status from table_news where type='cam-ket' and find_in_set('hienthi',status) order by numb,id desc limit 8") as $commitment) {
+        foreach ($this->items('product.commitments', 8, true) as $commitment) {
             $name = LegacyText::plain($commitment['namevi']);
             if ($name !== '') {
                 $commitments[] = ['name' => $name, 'image' => $this->photo($commitment['photo'])];
@@ -175,10 +179,10 @@ class ProductExtras extends PageSupport
     private function replies(int $parent, int $productId, int $offset): array
     {
         $items = [];
-        foreach ($this->rows("select fullname,content,poster,date_posted from table_comment where id_parent=? and id_variant=? and type='san-pham' and find_in_set('hienthi',status) order by date_posted desc limit {$offset},5", [$parent, $productId]) as $reply) {
+        foreach ($this->rows("select name as fullname, content, if(by_staff,'admin','') as poster, created_at as date_posted from reviews where parent_id=? and product_id=? and status='approved' order by created_at desc, id desc limit {$offset},5", [$parent, $productId]) as $reply) {
             $content = LegacyText::plain($reply['content']);
             if ($content !== '') {
-                $items[] = ['name' => LegacyText::plain($reply['fullname']), 'content' => $content, 'isAdmin' => $reply['poster'] === 'admin', 'date' => (int) $reply['date_posted']];
+                $items[] = ['name' => LegacyText::plain($reply['fullname']), 'content' => $content, 'isAdmin' => $reply['poster'] === 'admin', 'date' => (int) strtotime((string) $reply['date_posted'])];
             }
         }
 

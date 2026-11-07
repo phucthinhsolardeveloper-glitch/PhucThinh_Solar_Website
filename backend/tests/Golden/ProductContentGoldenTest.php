@@ -1,6 +1,6 @@
 <?php
 
-use App\Legacy\Catalog\ProductContentResolver;
+use App\Domain\Catalog\ProductDetail\ProductContentResolver;
 use Illuminate\Support\Facades\DB;
 
 // Every product must resolve to the same blocks and source as the PHP admin. The fixture holds only

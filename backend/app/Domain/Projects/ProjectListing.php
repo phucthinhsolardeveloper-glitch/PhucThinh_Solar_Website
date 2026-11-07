@@ -5,8 +5,8 @@ namespace App\Domain\Projects;
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
 use App\Domain\News\NewsListing;
 use App\Domain\Pages\PageSupport;
-use App\Models\PostCategory;
 use App\Legacy\Support\LegacyText;
+use App\Models\PostCategory;
 use App\Support\SiteSettings;
 
 /**
