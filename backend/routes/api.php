@@ -27,5 +27,6 @@ Route::prefix('v1')->group(function () {
     Route::get('solution-detail', [PagesController::class, 'solutionDetail']);
     Route::get('solutions', [PagesController::class, 'solutions']);
     Route::get('video', [PagesController::class, 'video']);
+    Route::get('search', [PagesController::class, 'search']);
     Route::get('site', SiteController::class);
 });

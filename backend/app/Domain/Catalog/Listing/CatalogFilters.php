@@ -98,8 +98,12 @@ final class CatalogFilters
     }
 
     /** Owner-chosen lighting order (flood, street, garden, UFO, ceiling), then products with a picture, then manual order. */
-    public static function defaultOrder(): string
+    public static function defaultOrder(bool $lightingFirst = true): string
     {
+        $hasPhoto = "(p.photo is not null and trim(p.photo) <> '') or exists (select 1 from table_gallery g where g.id_parent = p.id and g.com = 'product' and g.kind = 'man' and g.val = p.type and find_in_set('hienthi', g.status))";
+        if (! $lightingFirst) {
+            return "case when {$hasPhoto} then 0 else 1 end, p.numb,p.id desc";
+        }
         $lighting = "(select id from table_product_list where type = 'san-pham' and slugvi = 'den-nlmt' limit 1)";
         $garden = "(select id from table_product_list where type = 'san-pham' and slugvi = 'den-san-vuon' limit 1)";
         $clauses = [];
@@ -107,7 +111,6 @@ final class CatalogFilters
             $clauses[] = "when p.id_list = {$lighting} and p.id_cat = (select id from table_product_cat where type = 'san-pham' and id_list = {$lighting} and slugvi = '{$slug}' limit 1) then {$rank}";
         }
         $clauses[] = "when p.id_list = {$garden} then 30";
-        $hasPhoto = "(p.photo is not null and trim(p.photo) <> '') or exists (select 1 from table_gallery g where g.id_parent = p.id and g.com = 'product' and g.kind = 'man' and g.val = p.type and find_in_set('hienthi', g.status))";
 
         return 'case '.implode(' ', $clauses)." else 1000 end, case when {$hasPhoto} then 0 else 1 end, p.numb,p.id desc";
     }
