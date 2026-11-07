@@ -70,7 +70,7 @@ const clearFiltersTo = computed(() => props.filterLink({ subcategory: '', brand:
   <aside
     v-if="hasAnyOption || hasCategories"
     class="min-w-0"
-    :class="drawer ? 'bg-white px-4 pb-6 pt-4' : 'bg-slate-50 p-4'"
+    :class="drawer ? 'bg-white px-4 pb-6 pt-4' : 'rounded-md bg-slate-50 p-4'"
     aria-label="Bộ lọc sản phẩm"
   >
     <div v-if="!hideTitle" class="mb-5 flex items-center justify-between gap-3">

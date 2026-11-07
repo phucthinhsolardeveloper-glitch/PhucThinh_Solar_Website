@@ -15,3 +15,11 @@ export function optimizedImage(src: string | null | undefined, width: number, he
   const value = src || ''
   return PHP_RESIZABLE.test(value) ? phpThumb(value, width, height, 3) : value
 }
+
+// Full-screen photos use a large rendition rather than the upload: originals reach 15 MB and look the
+// same at this size. A phone or a 1080p screen stays at 1600px; sharper, larger screens get 2000px.
+export function viewerImage(src: string | null | undefined): string {
+  const pixels = import.meta.client ? Math.min(window.innerWidth, window.innerHeight) * (window.devicePixelRatio || 1) : 0
+  const size = pixels > 1400 ? 2000 : 1600
+  return optimizedImage(src, size, size)
+}

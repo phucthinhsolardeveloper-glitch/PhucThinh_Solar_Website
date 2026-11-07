@@ -1,0 +1,7 @@
+const {chromium}=require('playwright');
+(async()=>{const b=await chromium.launch({headless:true,args:['--no-sandbox']});const c=await b.newContext({viewport:{width:390,height:844},locale:'vi-VN',isMobile:true,hasTouch:true});const p=await c.newPage();await p.route('**/pts-living-energy/index.html*',x=>x.abort());const B='http://127.0.0.1:3100';
+await p.goto(B+'/san-pham/',{waitUntil:'load'});const pdp=await p.locator('article a[href*="/san-pham/"]').first().getAttribute('href');
+for(const u of ['/',pdp,'/giai-phap/','/gioi-thieu/']){await p.goto(B+u,{waitUntil:'load'});await p.waitForTimeout(500);const r=await p.evaluate(()=>[...document.querySelectorAll('main p,main li,main dd')].filter(e=>!e.querySelector('p,li')&&e.getBoundingClientRect().width>1).map(e=>({w:e.innerText.trim().split(/\s+/).length,t:e.innerText.trim().replace(/\n/g,' ⏎ '),c:e.closest('[data-v-app]')?'':'',k:(e.className||'').toString().slice(0,50),par:(e.parentElement.className||'').toString().slice(0,40)})).filter(x=>x.w>=35));console.log('##',u.slice(0,25));for(const x of r)console.log(x.w+'w .'+x.k+' <'+x.par+'>\n   '+x.t);
+if(u==='/giai-phap/'){console.log('H',JSON.stringify(await p.evaluate(()=>[...document.querySelectorAll('main h1,main h2')].map(h=>h.innerText.replace(/\s+/g,' ')))))}
+if(u==='/')console.log('H',JSON.stringify(await p.evaluate(()=>[...document.querySelectorAll('main h1,main h2')].map(h=>h.innerText.replace(/\s+/g,' ')))))}
+await b.close()})().catch(e=>{console.error('ERR',e.message.slice(0,200));process.exit(1)});

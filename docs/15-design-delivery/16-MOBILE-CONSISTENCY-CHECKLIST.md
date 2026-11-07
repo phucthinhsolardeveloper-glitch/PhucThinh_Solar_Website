@@ -61,8 +61,21 @@ Tự động: `cd tools/visual-tests && npm run test:nuxt`, chạy trên preview
 - [ ] Đang gõ form thì dock, thanh mua và Zalo ẩn
 - [ ] Kiểm tra trên máy thật, đặc biệt iPhone Safari (mô phỏng Chromium không thay được)
 
+## Quy tắc chốt ngày 2026-11-07
+
+- Lớp nền sau khung xem ảnh, form tư vấn, form đại lý, popup khuyến mãi và ngăn bộ lọc dùng kính sáng trong (`.photo-viewer`, `.glass-overlay`), không dùng nền mờ navy. Trang video giữ nền tối.
+- Mỗi lúc chỉ mở một lớp phủ: tìm kiếm, menu hoặc bảng Hỗ trợ.
+- Thanh nổi ở giỏ hàng chỉ hiện khi nút thanh toán chính còn ở dưới màn hình. Thanh ở trang thanh toán luôn hiện vì là nút đặt hàng duy nhất.
+- Nút lọc ở mọi trang dùng chung `public-filter-chip`, chữ 15px đậm, icon trắng khi được chọn.
+- Nút lọc có khối navy trượt mềm tới nút được chọn (`useSlidingPill`), chạy bằng transform để không giật khi trang đang đổi.
+- Số liệu đại lý, đánh giá và chứng nhận do chủ website đưa vào, không cần xác nhận lại.
+- Điện thoại vào giỏ hàng từ dock. Trang sản phẩm và thanh toán không có dock nên giữ icon giỏ trên header.
+- Chữ dài căn đều hai bên, trừ đoạn có khe quá rộng, chữ ngắn, tiêu đề và đoạn cố ý căn giữa. Chủ website chốt ngày 2026-11-07.
+- Xem ảnh toàn màn hình dùng bản 1600px hoặc 2000px, không tải ảnh gốc.
+- Tìm kiếm dùng chung bộ lọc của trang sản phẩm (`CatalogFilterSidebar`) và gợi ý trực tiếp (`SearchSuggestions`) ở cả header lẫn trang kết quả.
+- Thanh mục theo trang tính mục đang đọc theo vị trí thật (`useSectionSpy`), không dùng sự kiện lọt vùng nhìn.
+
 ## Cần chủ website xác nhận
 
-- [ ] Số liệu đại lý 5+, 50+, 5000+, các đánh giá và chứng nhận có đúng thực tế không
 - [ ] Tiêu đề CMS viết hoa toàn bộ ("ĐĂNG KÝ ĐẠI LÝ", tên công ty ở trang liên hệ) có đổi sang chữ thường không
 - [ ] Thử gửi form thật một lần khi được phép

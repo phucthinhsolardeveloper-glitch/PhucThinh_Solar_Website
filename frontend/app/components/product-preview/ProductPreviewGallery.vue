@@ -91,6 +91,7 @@ function trapFocus(event: KeyboardEvent) {
 function openLightbox(event: MouseEvent) {
   if (!selectedMediaAvailable.value) return
   lastTrigger.value = event.currentTarget instanceof HTMLElement ? event.currentTarget : null
+  isZoomed.value = false
   lightboxOpen.value = true
 }
 function closeLightbox() {
@@ -118,7 +119,10 @@ function handleKey(event: KeyboardEvent) {
   else if (event.key === 'Tab') trapFocus(event)
 }
 
-function handleMouseMove(event: MouseEvent) {
+// Hover zoom is for a real mouse only. A touch sends no "leave", so the zoom would stay stuck, and on iOS a page
+// change during its compatibility mouse move also cancels the tap, so the viewer would never open.
+function handleMouseMove(event: PointerEvent) {
+  if (event.pointerType !== 'mouse') return
   const target = event.currentTarget as HTMLElement
   if (!target) return
   const rect = target.getBoundingClientRect()
@@ -142,6 +146,19 @@ function nextImage(event?: Event) {
   moveLightbox(1)
 }
 
+// The viewer opens on the photo already on screen and sharpens once the larger one has decoded.
+const viewerSrc = ref('')
+let viewerToken = 0
+watch([lightboxOpen, selectedMedia], ([open, image]) => {
+  if (!open || !image) return
+  const token = ++viewerToken
+  viewerSrc.value = optimizedImage(image, 960, 960)
+  const full = viewerImage(image)
+  const probe = new Image()
+  probe.src = full
+  probe.decode().then(() => { if (token === viewerToken) viewerSrc.value = full }).catch(() => {})
+})
+
 watch(lightboxOpen, (open) => {
   if (!import.meta.client) return
   if (open) {
@@ -160,7 +177,12 @@ onMounted(async () => {
 })
 onMounted(() => {
   // Fetch the other photos ahead of the first swipe.
-  const preload = () => props.media.forEach((image) => { if (image.trim()) new Image().src = optimizedImage(image, 960, 960) })
+  const preload = () => props.media.forEach((image) => {
+    if (!image.trim()) return
+    const probe = new Image()
+    probe.onerror = () => markMediaFailed(image)
+    probe.src = optimizedImage(image, 960, 960)
+  })
   if ('requestIdleCallback' in window) window.requestIdleCallback(preload)
   else setTimeout(preload, 800)
 })
@@ -201,8 +223,8 @@ function onStageClick(event: MouseEvent) {
     <div
       v-if="selectedMediaAvailable"
       class="group relative grid aspect-square w-full place-items-center overflow-hidden rounded-btn bg-white"
-      @mousemove="handleMouseMove"
-      @mouseleave="handleMouseLeave"
+      @pointermove="handleMouseMove"
+      @pointerleave="handleMouseLeave"
     >
       <button
         type="button"
@@ -313,7 +335,7 @@ function onStageClick(event: MouseEvent) {
         <div
           v-if="lightboxOpen && selectedMediaAvailable"
           ref="lightboxPanel"
-          class="fixed inset-0 z-[200] flex items-center justify-center bg-navy-950/90 backdrop-blur-md p-4"
+          class="fixed inset-0 z-[200] flex items-center justify-center photo-viewer p-4"
           role="dialog"
           aria-modal="true"
           :aria-label="'Ảnh phóng to ' + name"
@@ -321,7 +343,7 @@ function onStageClick(event: MouseEvent) {
         >
           <button
             type="button"
-            class="absolute right-4 top-4 flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white transition-all hover:bg-white/20 active:scale-95 cursor-pointer"
+            class="absolute right-4 top-4 flex h-11 w-11 items-center justify-center rounded-full photo-viewer__btn cursor-pointer"
             aria-label="Đóng ảnh phóng to"
             @click="closeLightbox"
           >
@@ -331,7 +353,7 @@ function onStageClick(event: MouseEvent) {
           <button
             v-if="availableIndexes.length > 1"
             type="button"
-            class="absolute left-4 top-1/2 -translate-y-1/2 flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white transition-all hover:bg-white/25 active:scale-95 cursor-pointer backdrop-blur-xs"
+            class="photo-viewer__arrow absolute left-4 top-1/2 -translate-y-1/2 flex h-12 w-12 items-center justify-center rounded-full photo-viewer__btn cursor-pointer"
             aria-label="Ảnh trước"
             @click="moveLightbox(-1)"
           >
@@ -347,21 +369,21 @@ function onStageClick(event: MouseEvent) {
               :transition="{ duration: reducedMotion ? 0 : 0.16, ease: 'easeOut' }"
               class="pointer-events-none absolute inset-0 flex items-center justify-center p-4"
             >
-              <img :src="selectedMedia" :alt="name + ' — ảnh phóng to'" class="pointer-events-auto max-h-[85vh] max-w-[88vw] object-contain drop-shadow-2xl rounded-chip" @error="handleDisplayedMediaError">
+              <img :src="viewerSrc" :alt="name + ' — ảnh phóng to'" class="photo-viewer__media pointer-events-auto max-h-[85vh] max-w-[88vw] object-contain" @error="handleDisplayedMediaError">
             </motion.div>
           </AnimatePresence>
 
           <button
             v-if="availableIndexes.length > 1"
             type="button"
-            class="absolute right-4 top-1/2 -translate-y-1/2 flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white transition-all hover:bg-white/25 active:scale-95 cursor-pointer backdrop-blur-xs"
+            class="photo-viewer__arrow absolute right-4 top-1/2 -translate-y-1/2 flex h-12 w-12 items-center justify-center rounded-full photo-viewer__btn cursor-pointer"
             aria-label="Ảnh tiếp theo"
             @click="moveLightbox(1)"
           >
             <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
           </button>
 
-          <div class="absolute bottom-5 left-1/2 -translate-x-1/2 rounded-full bg-white/10 px-4 py-1.5 text-xs font-bold text-white backdrop-blur-xs">
+          <div class="absolute bottom-5 left-1/2 -translate-x-1/2 photo-viewer__label px-4 py-1.5 text-xs font-bold">
             {{ displayedMediaNumber }} / {{ availableIndexes.length }}
           </div>
         </div>

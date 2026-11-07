@@ -14,8 +14,12 @@ const aboutNavRef = ref<HTMLElement | null>(null)
 const aboutNavCanScrollNext = ref(false)
 let aboutNavResizeObserver: ResizeObserver | null = null
 useActiveHorizontalRail(aboutNavRef)
+useSlidingPill(aboutNavRef, 'about-sections', { chip: '.about-chapter-link' })
 const activeAboutSection = ref('ve-phuc-thinh')
-let aboutSectionObserver: IntersectionObserver | null = null
+// The CMS leaves these item titles empty; the section title already names them in order.
+function compassLabel(title: string, index: number) {
+  return title || props.about.compass.title.split(/\s[–-]\s/)[index]?.trim() || ''
+}
 const galleryCertificates = computed(() => props.about.certificates.items)
 const visibleCertificates = computed(() => {
   const featured = props.about.certificates.items.filter((item) => item.featured)
@@ -60,27 +64,13 @@ const aboutSectionNavItems = computed(() => [
   ...(props.about.certificates.items.length ? [{ id: 'about-certificates', label: props.about.labels.certificates }] : []),
 ])
 
-function setupAboutSectionObserver() {
-  aboutSectionObserver?.disconnect()
-  if (!import.meta.client) return
-  const sections = aboutSectionNavItems.value
-    .map((item) => document.getElementById(item.id))
-    .filter((section): section is HTMLElement => Boolean(section))
-  if (!sections.length) return
-  aboutSectionObserver = new IntersectionObserver((entries) => {
-    const current = entries
-      .filter((entry) => entry.isIntersecting)
-      .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0]?.target as HTMLElement | undefined
-    if (current?.id) activeAboutSection.value = current.id
-  }, { rootMargin: '-150px 0px -58% 0px', threshold: [0, 0.01] })
-  sections.forEach((section) => aboutSectionObserver?.observe(section))
-}
+const aboutSpy = useSectionSpy(() => aboutSectionNavItems.value.map((item) => item.id), activeAboutSection, aboutNavRef)
 
 function navigateAboutSection(id: string) {
   const target = document.getElementById(id)
   if (!target) return
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  activeAboutSection.value = id
+  aboutSpy.lockTo(id)
   window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}#${id}`)
   target.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'start' })
 }
@@ -91,7 +81,6 @@ function syncAboutNavControls() {
 }
 
 onMounted(() => nextTick(() => {
-  setupAboutSectionObserver()
   syncAboutNavControls()
   if (aboutNavRef.value && typeof ResizeObserver !== 'undefined') {
     aboutNavResizeObserver = new ResizeObserver(syncAboutNavControls)
@@ -99,11 +88,10 @@ onMounted(() => nextTick(() => {
   }
 }))
 watch(aboutSectionNavItems, () => nextTick(() => {
-  setupAboutSectionObserver()
+  aboutSpy.refresh()
   syncAboutNavControls()
 }), { deep: true })
 onBeforeUnmount(() => {
-  aboutSectionObserver?.disconnect()
   aboutNavResizeObserver?.disconnect()
 })
 
@@ -192,13 +180,13 @@ const showroomImage = computed(() => {
     <!-- Chapter Navigation: Thanh điều hướng chương trình tự động dính -->
     <nav class="m-glass-light sticky z-30 border-b border-slate-200 bg-white/95 backdrop-blur-md transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]" :class="isHeaderHidden ? 'top-0 shadow-sm' : 'top-[65px] min-[821px]:top-[88px] min-[1321px]:top-[104px] min-[1501px]:top-[120px] min-[1800px]:top-[136px]'" aria-label="Đi nhanh trong trang Giới thiệu">
       <div class="relative">
-        <div ref="aboutNavRef" class="about-chapter-rail pts-container flex gap-6 overflow-x-auto py-1 [scrollbar-width:none] max-[800px]:gap-[18px] [&::-webkit-scrollbar]:hidden" aria-label="Mục nội dung Giới thiệu" @scroll.passive="syncAboutNavControls">
+        <div ref="aboutNavRef" class="about-chapter-rail pts-container flex gap-1.5 overflow-x-auto py-1.5 [scrollbar-width:none] max-[800px]:gap-1 [&::-webkit-scrollbar]:hidden" aria-label="Mục nội dung Giới thiệu" @scroll.passive="syncAboutNavControls">
         <a
           v-for="item in aboutSectionNavItems"
           :key="item.id"
           :data-about-section="item.id"
-          class="about-chapter-link inline-flex min-h-11 min-w-11 flex-none items-center justify-center border-b-2 px-2 text-[15px] font-extrabold no-underline transition-colors hover:border-gold-500 hover:text-gold-600 focus-visible:border-gold-500 focus-visible:text-gold-600"
-          :class="activeAboutSection === item.id ? 'border-gold-500 text-gold-600' : 'border-transparent text-navy-800'"
+          class="about-chapter-link inline-flex min-h-11 min-w-11 flex-none items-center justify-center rounded-chip px-3.5 text-[15px] font-extrabold no-underline transition-colors hover:text-gold-600 focus-visible:border-gold-500 focus-visible:text-gold-600"
+          :class="activeAboutSection === item.id ? 'text-white' : 'text-navy-800'"
           :href="`#${item.id}`"
           :aria-current="activeAboutSection === item.id ? 'location' : undefined"
           @click.prevent="navigateAboutSection(item.id)"
@@ -305,10 +293,10 @@ const showroomImage = computed(() => {
         <!-- Hợp nhất Card 3: Compass (Đồng bộ ngôn ngữ với Dark Tone) -->
         <div class="about-compass-rail m-rail mt-10 grid grid-cols-3 gap-6 lg:gap-8 max-[800px]:grid-cols-1">
           <article v-for="(item, index) in about.compass.items" :key="`${item.title}-${index}`" class="group border-t-2 border-white/20 pt-5 transition-colors duration-200 hover:border-gold-400">
-            <header class="mb-3.5 flex items-center justify-end">
-              <img v-if="item.image" class="size-9 object-contain filter invert opacity-90" :src="item.image" alt="" width="56" height="56" loading="lazy">
+            <header class="mb-3.5 flex items-center justify-between gap-4">
+              <h3 v-if="compassLabel(item.title, index)" class="m-0 text-[clamp(20px,1.6vw,24px)] font-extrabold leading-[1.25] tracking-[-.01em] text-gold-300">{{ compassLabel(item.title, index) }}</h3>
+              <img v-if="item.image" class="about-compass-icon size-9 flex-none object-contain" :src="item.image" alt="" width="56" height="56" loading="lazy">
             </header>
-            <h3 v-if="item.title" class="text-[clamp(20px,1.6vw,24px)] font-extrabold leading-[1.25] tracking-[-.01em] text-white">{{ item.title }}</h3>
             <p v-if="item.description" class="m-0 mt-2 text-[clamp(17px,1.32vw,20px)] leading-[1.7] text-[#d1daea]">{{ item.description }}</p>
           </article>
         </div>
@@ -391,10 +379,10 @@ const showroomImage = computed(() => {
           <button ref="certificateCloseButton" type="button" class="about-certificate-close" aria-label="Đóng xem chứng nhận" @click="closeCertificateGallery">Đóng <span aria-hidden="true">×</span></button>
         </header>
         <div class="about-certificate-modal-image">
-          <button type="button" class="m-lg-dark" aria-label="Chứng nhận trước" :disabled="activeCertificateIndex === 0" @click="previousCertificate">←</button>
+          <button type="button" aria-label="Chứng nhận trước" :disabled="activeCertificateIndex === 0" @click="previousCertificate">←</button>
           <img v-if="activeCertificate.image" :key="activeCertificate.id" :src="activeCertificate.image" :alt="activeCertificate.name">
           <div v-else role="status">Ảnh chứng nhận này chưa được cập nhật.</div>
-          <button type="button" class="m-lg-dark" aria-label="Chứng nhận tiếp theo" :disabled="activeCertificateIndex === galleryCertificates.length - 1" @click="nextCertificate">→</button>
+          <button type="button" aria-label="Chứng nhận tiếp theo" :disabled="activeCertificateIndex === galleryCertificates.length - 1" @click="nextCertificate">→</button>
         </div>
         <footer class="about-certificate-modal-footer">
           <p v-if="activeCertificate.description">{{ activeCertificate.description }}</p>
@@ -424,6 +412,7 @@ const showroomImage = computed(() => {
 </template>
 
 <style scoped>
+.about-compass-icon { filter: brightness(0) saturate(100%) invert(79%) sepia(38%) saturate(620%) hue-rotate(358deg) brightness(101%) contrast(92%); }
 .about-brand-section {
   position: relative;
   overflow: clip;
@@ -533,25 +522,25 @@ const showroomImage = computed(() => {
 }
 /* Certificate Dialog & Modal */
 .about-certificate-dialog { position: fixed; inset: 0; width: min(calc(100% - 24px), 1040px); max-width: none; max-height: calc(100dvh - 24px); margin: auto; overflow: visible; border: 0; padding: 0; background: transparent; color: var(--color-navy-800); }
-.about-certificate-dialog::backdrop { background: rgba(6,21,55,.86); backdrop-filter: blur(8px); }
+.about-certificate-dialog::backdrop { background: rgb(240 245 252 / 58%); -webkit-backdrop-filter: blur(22px) saturate(150%); backdrop-filter: blur(22px) saturate(150%); }
 .about-certificate-modal { display: flex; max-height: calc(100dvh - 24px); flex-direction: column; overflow: hidden; border: 0; border-radius: var(--radius-btn); background: transparent; }
 .about-certificate-modal-header, .about-certificate-modal-footer { display: flex; flex: none; align-items: center; justify-content: space-between; gap: 20px; padding: 16px 22px; }
-.about-certificate-modal-header { border-bottom: 0; background: transparent; color: #fff; }
+.about-certificate-modal-header { border-bottom: 0; background: transparent; color: var(--color-navy-950); }
 .about-certificate-modal-title { display: flex; min-width: 0; align-items: center; gap: 14px; }
-.about-certificate-modal-title h2 { overflow: hidden; margin: 0; color: #fff; font-size: 18px; font-weight: 800; text-overflow: ellipsis; white-space: nowrap; }
-.about-certificate-modal-title span:not(.about-modal-mark) { display: inline-block; margin-top: 5px; color: rgba(255,255,255,.72); font-size: 12px; }
-.about-modal-mark { display: grid; width: 40px; height: 40px; flex: none; place-items: center; border: 1px solid var(--color-gold-400); color: var(--color-gold-300); font-size: 11px; font-weight: 800; }
-.about-certificate-close { display: inline-flex; min-height: 44px; flex: none; align-items: center; gap: 10px; border: 0; padding: 0 8px; background: transparent; color: #fff; font: inherit; font-weight: 700; cursor: pointer; }
-.about-certificate-close span { color: var(--color-gold-300); font-size: 23px; }
+.about-certificate-modal-title h2 { overflow: hidden; margin: 0; color: var(--color-navy-950); font-size: 18px; font-weight: 800; text-overflow: ellipsis; white-space: nowrap; }
+.about-certificate-modal-title span:not(.about-modal-mark) { display: inline-block; margin-top: 5px; color: #475569; font-size: 12px; }
+.about-modal-mark { display: grid; width: 40px; height: 40px; flex: none; place-items: center; border: 1px solid var(--color-gold-500); border-radius: var(--radius-btn); background: rgb(255 255 255 / 80%); color: var(--color-gold-700); font-size: 11px; font-weight: 800; }
+.about-certificate-close { display: inline-flex; min-height: 44px; flex: none; align-items: center; gap: 10px; border: 1px solid rgb(255 255 255 / 90%); border-radius: var(--radius-btn); padding: 0 14px; background: rgb(255 255 255 / 92%); box-shadow: 0 6px 18px rgb(6 21 55 / 16%); color: var(--color-navy-950); font: inherit; font-weight: 700; cursor: pointer; }
+.about-certificate-close span { color: var(--color-gold-700); font-size: 23px; line-height: 1; }
 .about-certificate-modal-image { position: relative; display: flex; min-height: 260px; flex: 1; align-items: center; justify-content: center; gap: 12px; overflow-y: auto; padding: clamp(16px, 4vw, 36px); background: transparent; }
-.about-certificate-modal-image img { display: block; max-width: min(100%, 760px); max-height: min(66dvh, 680px); object-fit: contain; }
-.about-certificate-modal-image > div { display: grid; min-height: 180px; place-items: center; padding: 24px; color: rgba(255,255,255,.9); text-align: center; }
-.about-certificate-modal-image button { display: grid; width: 44px; height: 44px; flex: none; place-items: center; border: 1px solid rgba(255,255,255,.35); border-radius: 50%; background: rgba(6,21,55,.7); color: #fff; font-size: 20px; cursor: pointer; }
+.about-certificate-modal-image img { display: block; max-width: min(100%, 760px); max-height: min(66dvh, 680px); object-fit: contain; filter: drop-shadow(0 16px 26px rgb(6 21 55 / 26%)); }
+.about-certificate-modal-image > div { display: grid; min-height: 180px; place-items: center; padding: 24px; color: var(--color-navy-800); text-align: center; }
+.about-certificate-modal-image button { display: grid; width: 44px; height: 44px; flex: none; place-items: center; border: 1px solid rgb(255 255 255 / 90%); border-radius: 50%; background: rgb(255 255 255 / 92%); box-shadow: 0 6px 18px rgb(6 21 55 / 16%); color: var(--color-navy-950); font-size: 20px; cursor: pointer; }
 .about-certificate-modal-image button:disabled { cursor: not-allowed; opacity: .35; }
 .about-certificate-modal-image button:focus-visible { outline: 2px solid var(--color-gold-700); outline-offset: 2px; }
 .about-certificate-modal-footer { justify-content: center; border-top: 0; }
-.about-certificate-modal-footer p { margin: 0; color: rgba(255,255,255,.9); font-size: 16px; line-height: 1.6; text-align: center; }
-.about-certificate-modal-footer > span { flex: none; color: rgba(255,255,255,.72); font-size: 12px; }
+.about-certificate-modal-footer p { margin: 0; color: var(--color-navy-800); font-size: 16px; line-height: 1.6; text-align: center; }
+.about-certificate-modal-footer > span { flex: none; padding: 4px 12px; border-radius: var(--radius-btn); background: rgb(255 255 255 / 92%); color: var(--color-navy-950); font-size: 12px; font-weight: 700; }
 
 @media (max-width: 560px) {
   .about-certificate-modal-header, .about-certificate-modal-footer { padding: 13px 14px; }

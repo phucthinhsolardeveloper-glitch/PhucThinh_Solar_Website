@@ -1,0 +1,10 @@
+const {chromium}=require('playwright');const S=process.argv[2];
+const groups={
+ solutions:['/giai-phap/dien-mat-troi-ho-gia-dinh/','/giai-phap/dien-mat-troi-doanh-nghiep/','/giai-phap/he-thong-luu-tru-bess/','/giai-phap/chieu-sang-nang-luong-mat-troi/','/giai-phap/bom-nuoc-nang-luong-mat-troi/'],
+ projects:['/du-an-da-thuc-hien/','/danh-muc-du-an/du-an-ca-nhan/','/danh-muc-du-an/du-an-doanh-nghiep/'],
+ news:['/tin-tuc/','/tin-moi-nhat','/tin-truyen-thong','/kien-thuc-san-pham'],
+ catalog:['/san-pham/','/danh-muc-san-pham/den-nlmt/'],
+ solcat:['/danh-muc-giai-phap/giai-phap-dien-mat-troi/'],
+};
+(async()=>{const b=await chromium.launch();for(const [t,o] of [['phone',{viewport:{width:412,height:924},isMobile:true,hasTouch:true}],['desktop',{viewport:{width:1440,height:900}}]]){const c=await b.newContext(o);const p=await c.newPage();await p.route('https://cdn.gtranslate.net/**',r=>r.abort());await p.route('**/pts-living-energy/index.html*',r=>r.abort());await p.addInitScript(()=>{try{sessionStorage.setItem('pts-popup-campaign','current')}catch{}});
+for(const [g,us] of Object.entries(groups)){for(const u of us){const r=await p.goto('http://localhost:3100'+u,{waitUntil:'load'}).catch(e=>null);await p.waitForTimeout(900);const m=await p.evaluate(()=>{const rail=document.querySelector('[data-pill-rail]')||document.querySelector('nav:has(.public-filter-chip)');const hero=document.querySelector('.solution-hero,.projects-hero,main header, .catalog-masthead');const h1=document.querySelector('h1');const a=rail&&rail.querySelector('[aria-current="page"]');const rr=rail&&rail.getBoundingClientRect();const ar=a&&a.getBoundingClientRect();return {h1:h1?Math.round(h1.getBoundingClientRect().top):null,h1fs:h1?getComputedStyle(h1).fontSize:null,hero:hero?Math.round(hero.getBoundingClientRect().height):null,railY:rr?Math.round(rr.top):null,activeL:ar?Math.round(ar.left-rr.left):null,activeR:ar?Math.round(rr.right-ar.right):null,doc:document.documentElement.scrollHeight}});console.log(t,g,u.slice(-28).padEnd(28),r?r.status():'x',JSON.stringify(m))}}await c.close()}await b.close()})()

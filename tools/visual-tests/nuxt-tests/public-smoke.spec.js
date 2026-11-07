@@ -23,7 +23,7 @@ const firstProductPath = async (page) => {
 
 async function addFirstProductToCart(page) {
   await page.goto('/san-pham/', { waitUntil: 'load' });
-  const button = page.locator('article button:not(:disabled)', { hasText: /Thêm giỏ hàng|^$/ }).first();
+  const button = page.locator('article button:not(:disabled)', { hasText: /Thêm\s+giỏ\s+hàng|^$/ }).first();
   await button.click();
   await expect(page.locator('.cart-card')).toBeVisible({ timeout: 10000 });
 }
@@ -69,6 +69,57 @@ test('header search finds products and an empty search shows one message', async
   await page.goto('/tim-kiem/?keyword=zzzzzz', { waitUntil: 'load' });
   await expect(page.getByText('Không tìm thấy sản phẩm phù hợp.')).toHaveCount(1);
   await expect(page.getByText('Chưa có sản phẩm trong danh mục này.')).toHaveCount(0);
+});
+
+test('search uses the catalog filter panel and an empty filtered result offers a way back', async ({ page, isMobile }) => {
+  await page.goto('/tim-kiem/?keyword=Blue+Carbon&brand=50,51,52', { waitUntil: 'load' });
+  await expect(page.getByRole('heading', { name: 'Không tìm thấy sản phẩm phù hợp.' })).toBeVisible();
+  if (isMobile) {
+    await page.getByRole('button', { name: 'Bộ lọc' }).click();
+    await expect(page.locator('#search-filter-drawer')).toBeVisible();
+    await page.getByRole('button', { name: 'Đóng bộ lọc' }).click();
+  } else {
+    await expect(page.getByRole('heading', { name: 'Đang áp dụng' })).toBeVisible();
+  }
+  await page.getByRole('link', { name: 'Bỏ bộ lọc', exact: true }).click();
+  await page.waitForURL((url) => !url.search.includes('brand='));
+  await expect(page.locator('article').first()).toBeVisible();
+});
+
+test('search suggests products while typing, works by keyboard and remembers the term', async ({ page }) => {
+  await page.goto('/san-pham/', { waitUntil: 'load' });
+  await page.locator('header button[aria-label="Mở tìm kiếm"]').first().click();
+  const input = page.locator('#ptsHeaderSearchInput');
+  await input.pressSequentially('den pha', { delay: 30 });
+  const list = page.locator('#pts-header-suggest-list');
+  await expect(list.locator('.sug-row').first()).toBeVisible();
+  await expect(list.locator('.search-mark').first()).toBeVisible();
+  await expect(list.locator('.sug-all')).toContainText('Xem tất cả');
+
+  await input.press('ArrowDown');
+  await expect(input).toHaveAttribute('aria-activedescendant', /pts-header-suggest-/);
+  await input.press('Enter');
+  await page.waitForURL((url) => !url.pathname.startsWith('/san-pham/') || url.pathname.length > '/san-pham/'.length);
+  await page.waitForTimeout(400);
+
+  await page.goto('/tim-kiem/?keyword=zzzzzz', { waitUntil: 'load' });
+  await page.locator('input[name="keyword"]').click();
+  await page.locator('input[name="keyword"]').fill('');
+  await expect(page.locator('.sug-start')).toBeVisible();
+});
+
+test('two-syllable words and last words are kept together on a line', async ({ page }) => {
+  await page.goto('/giai-phap/he-thong-luu-tru-bess/', { waitUntil: 'load' });
+  await page.waitForTimeout(600);
+  const result = await page.evaluate(() => {
+    const text = document.querySelector('main, article').innerText;
+    const blocks = [...document.querySelectorAll('main p, article p')].filter((el) => el.innerText.trim().split(/\s+/).length > 3 && el.getClientRects().length);
+    return { kept: /gi[aả]i\u00A0pháp|năng\u00A0lượng/i.test(document.body.textContent), plain: text.length > 0, count: blocks.length };
+  });
+  expect(result.kept).toBe(true);
+  expect(result.count).toBeGreaterThan(0);
+  const source = await page.request.get('/giai-phap/he-thong-luu-tru-bess/').then((response) => response.text());
+  expect(source).not.toContain('năng\u00A0lượng');
 });
 
 test('catalog pagination stays on one line', async ({ page }) => {

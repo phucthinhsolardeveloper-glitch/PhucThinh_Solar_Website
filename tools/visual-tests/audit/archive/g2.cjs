@@ -1,0 +1,5 @@
+const {chromium}=require('playwright');const S=process.argv[2];
+(async()=>{const b=await chromium.launch();const c=await b.newContext({viewport:{width:1620,height:800},locale:'vi-VN'});const p=await c.newPage();await p.route('https://cdn.gtranslate.net/**',r=>r.abort());await p.addInitScript(()=>{try{sessionStorage.setItem('pts-popup-campaign','current')}catch{}});await p.goto('http://localhost:3100/san-pham/',{waitUntil:'load'});await p.waitForTimeout(1500);
+const bb=await p.locator('.masthead-brands').boundingBox();const clip={x:0,y:Math.max(0,bb.y-14),width:1620,height:bb.height+28};
+for(const a of [94,78,62,48]){await p.addStyleTag({content:`.masthead-brands a{background:rgb(255 255 255 / ${a}%) !important;-webkit-backdrop-filter:blur(10px) saturate(140%);backdrop-filter:blur(10px) saturate(140%);border-color:rgb(255 255 255 / 65%) !important;box-shadow:inset 0 1px 0 rgb(255 255 255 / 70%),0 6px 18px rgb(3 12 31 / 18%) !important}`});await p.waitForTimeout(250);await p.screenshot({path:`${S}/b${a}.png`,clip})}
+await b.close()})()

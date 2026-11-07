@@ -39,6 +39,10 @@ watch(lensIndex, () => {
 })
 
 watch(() => route.fullPath, () => { sheetOpen.value = false })
+// Only one overlay at a time, shared with the header's search and menu.
+const activeOverlay = useState<string | null>('active-overlay', () => null)
+watch(sheetOpen, (open) => { activeOverlay.value = open ? 'support' : null })
+watch(activeOverlay, (overlay) => { if (overlay && overlay !== 'support') sheetOpen.value = false })
 function onKey(event: KeyboardEvent) {
   if (event.key === 'Escape') sheetOpen.value = false
 }
@@ -94,6 +98,7 @@ onBeforeUnmount(() => document.removeEventListener('keydown', onKey))
         :aria-current="item.active ? 'page' : undefined"
         class="dock-item"
         :class="{ 'is-active': item.active && !sheetOpen }"
+        :data-cart-target="item.key === 'cart' ? '' : undefined"
         @pointerdown="$warmRoute(item.path)"
       >
         <span class="dock-icon">

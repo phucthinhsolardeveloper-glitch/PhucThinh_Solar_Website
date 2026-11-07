@@ -125,8 +125,8 @@ async function send() {
     :title="'Đăng ký nhận tư vấn giải pháp'"
     :description="'Để lại thông tin, kỹ sư Phúc Thịnh Solar sẽ liên hệ tư vấn trong vòng 15 phút.'"
     :ui="{
-      overlay: 'bg-navy-950/70 backdrop-blur-md',
-      content: 'w-[min(880px,calc(100vw-32px))] max-w-none max-h-[calc(100dvh-24px)] overflow-y-auto rounded-btn border border-slate-200 bg-white shadow-2xl divide-y-0 text-navy-950',
+      overlay: 'glass-overlay',
+      content: 'shadow-[0_28px_70px_-24px_rgb(6_21_55/45%)] w-[min(880px,calc(100vw-32px))] max-w-none max-h-[calc(100dvh-24px)] overflow-y-auto rounded-btn border border-slate-200 bg-white shadow-2xl divide-y-0 text-navy-950',
       header: 'px-6 pt-7 pb-3 border-b-0 relative sm:px-10 sm:pt-10',
       title: 'text-[clamp(24px,3vw,32px)] font-black tracking-tight text-navy-950',
       description: 'mt-2 max-w-3xl text-[16px] leading-7 text-slate-600',

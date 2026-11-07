@@ -1,0 +1,3 @@
+const {chromium}=require('playwright');
+(async()=>{const b=await chromium.launch({args:['--no-sandbox']});const p=await (await b.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true})).newPage();await p.goto('http://127.0.0.1:3100/giai-phap/',{waitUntil:'load'});await p.waitForTimeout(500);
+console.log(JSON.stringify(await p.evaluate(()=>[...document.querySelectorAll('main p,main li')].filter(e=>!e.querySelector('p,li,.m-chunk')&&e.getBoundingClientRect().width>1&&e.innerText.trim().split(/\s+/).length>=35).map(e=>e.innerText.trim().slice(0,30)+' <'+e.tagName+'.'+String(e.className).slice(0,20)+' in '+String(e.parentElement.className).slice(0,26)+' sent='+e.innerText.split(/[.!?]\s/).length)),null,0));await b.close()})();

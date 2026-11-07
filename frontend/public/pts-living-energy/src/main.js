@@ -42,7 +42,7 @@ if(embeddedMode){
   if(event.data?.type!=='pts-living-energy:visibility'||typeof event.data.visible!=='boolean')return;
   hostVisible=event.data.visible;
   if(hostVisible)startAnimation();
-  else stopAnimation();
+  else if(readyPosted)stopAnimation();
  });
  // Yield the shared main thread while the host page scrolls.
  window.addEventListener('message',event=>{
@@ -1052,6 +1052,10 @@ let interactiveUntil=0;
 // Embed render-on-demand: the scene is static unless something below says otherwise, so an
 // idle frame costs nothing and the canvas simply keeps showing its last image.
 let sceneDirty=true,lastRenderedStamp='',shadersReady=!embeddedMode,readyPosted=false;
+// The first frame is prepared ahead of the visitor, so reaching the section never pays for it.
+const hostAllowsDrawing=()=>!embeddedMode||((hostVisible||!readyPosted)&&!hostScrolling);
+// Each heavy loading step waits for the host page to stop scrolling and then gets its own task.
+const hostIdle=()=>new Promise(resolve=>{const check=()=>hostScrolling?setTimeout(check,120):setTimeout(resolve,0);check();});
 // Interaction-only resolution drop, learned from real frame pacing and restored at rest.
 // The still image is drawn once, so it can afford real sharpness; capped for very large screens.
 function restRenderScale(){
@@ -1142,7 +1146,7 @@ if(embeddedMode){
 }
 function animate(){
  animationFrameId=0;
- if(document.hidden||(embeddedMode&&(!hostVisible||hostScrolling)))return;
+ if(document.hidden||!hostAllowsDrawing())return;
  const frameNow=performance.now();
  if(embeddedMode&&state.ready&&shadersReady&&!sceneDirty&&!sceneActive()){
   refreshSolar();
@@ -1158,7 +1162,7 @@ function animate(){
  // The frame that ends an interaction lands exactly on target: nothing keeps drawing to converge.
  const settle=embeddedMode&&!sceneActive();
  const ease=factor=>settle?1:factor;
- if(livingMode&&!livingStageVisible&&!journey.active){refreshSolar();scheduleNextFrame();return;}
+ if(livingMode&&!livingStageVisible&&!journey.active&&(!embeddedMode||readyPosted)){refreshSolar();scheduleNextFrame();return;}
  tickJourney(dt);
  timeMachine.tick(dt);
  if(mixer && !reducedMotion.matches && (!state.eco||ambientFlow))mixer.update(dt);
@@ -1253,7 +1257,7 @@ function stopAnimation(){
  if(animationTimerId){clearTimeout(animationTimerId);animationTimerId=0;}
 }
 function scheduleNextFrame(){
- if(document.hidden||(embeddedMode&&(!hostVisible||hostScrolling)))return;
+ if(document.hidden||!hostAllowsDrawing())return;
  const active=!embeddedMode||!state.eco||sceneActive();
  if(active&&!state.eco){animationFrameId=requestAnimationFrame(animate);return;}
  // Anything moving stays on the display's frame clock; a still scene only checks once a second.
@@ -1262,7 +1266,7 @@ function scheduleNextFrame(){
 }
 function startAnimation(){
  if(animationTimerId){clearTimeout(animationTimerId);animationTimerId=0;}
- if(!animationFrameId&&!document.hidden&&(!embeddedMode||(hostVisible&&!hostScrolling)))animationFrameId=requestAnimationFrame(animate);
+ if(!animationFrameId&&!document.hidden&&hostAllowsDrawing())animationFrameId=requestAnimationFrame(animate);
 }
 function finishLoading(gltf){
  model=gltf.scene;
@@ -1478,12 +1482,22 @@ async function load(){
   const response=await fetch(new URL('../assets/PTS_V05_Scene_Contract.json',import.meta.url));
   if(!response.ok)throw Error('Scenario contract not found: '+response.status);
   state.contract=await response.json();
-  const gltf=await loader.loadAsync(new URL('../assets/pts-technical-v05.glb',import.meta.url).href);
+  const modelResponse=await fetch(new URL('../assets/pts-technical-v05.glb',import.meta.url));
+  if(!modelResponse.ok)throw Error('Model not found: '+modelResponse.status);
+  const modelData=await modelResponse.arrayBuffer();
+  await hostIdle();
+  const gltf=await loader.parseAsync(modelData,'');
+  await hostIdle();
   finishLoading(gltf);
   if(!shadersReady){
+   await hostIdle();
    // Compile off the main thread where the driver allows it, so the first frame does not stall the page.
-   await renderer.compileAsync(scene,camera).catch(()=>{});
-   await staticLayer?.compile(scene,camera);
+   // Some drivers never report completion while the frame is off screen, so waiting is capped.
+   const capped=work=>Promise.race([Promise.resolve(work).catch(()=>{}),new Promise(resolve=>setTimeout(resolve,4000))]);
+   await capped(renderer.compileAsync(scene,camera));
+   await hostIdle();
+   await capped(staticLayer?.compile(scene,camera));
+   await hostIdle();
    shadersReady=true;sceneDirty=true;
    startAnimation();
   }

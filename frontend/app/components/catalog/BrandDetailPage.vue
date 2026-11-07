@@ -70,8 +70,8 @@ function sortLink(value: string) {
   else next.sort = value
   return { path: selfPath.value, query: next }
 }
-function onSortChange(event: Event) {
-  navigateTo(sortLink((event.target as HTMLSelectElement).value))
+function onSortChange(value: string) {
+  navigateTo(sortLink(value))
 }
 function priceLink(key: string) {
   const selected = new Set(data.value?.selected.priceKeys ?? [])
@@ -233,13 +233,16 @@ usePublicSocialMeta({
                 </button>
                 <label class="flex min-w-0 items-center gap-2 text-xs font-semibold text-white/80 max-[639px]:w-full">
                   <span>Sắp xếp</span>
-                  <select
-                    class="h-11 min-w-0 flex-1 rounded-btn border border-white/20 bg-white px-3 text-sm font-semibold text-navy-900 sm:flex-none"
-                    :value="data.selected.sort"
-                    @change="onSortChange"
-                  >
-                    <option v-for="option in sortOptions" :key="option.value" :value="option.value">{{ option.label }}</option>
-                  </select>
+                  <USelect
+                    :model-value="data.selected.sort"
+                    :items="sortOptions"
+                    aria-label="Sắp xếp sản phẩm"
+                    color="neutral"
+                    variant="none"
+                    class="min-w-0 flex-1 sm:w-[170px] sm:flex-none"
+                    :ui="{ base: 'h-11 w-full min-w-0 rounded-btn border border-slate-300 bg-white px-3 text-sm font-normal text-navy-800 focus-visible:border-gold-600 focus-visible:ring-2 focus-visible:ring-gold-500/25 m-lg max-tb:rounded-full' }"
+                    @update:model-value="onSortChange"
+                  />
                 </label>
               </div>
             </div>

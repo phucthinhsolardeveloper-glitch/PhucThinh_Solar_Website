@@ -121,6 +121,20 @@ onMounted(async () => {
 function openCheckout() {
   checkoutDraft.value = checkoutNotice.value?.form ?? null
 }
+
+// The island only carries the next step while the summary's own button is still below the screen.
+// The bottom margin leaves room for the island itself, and the huge top margin keeps it away past that button.
+const checkoutActionEnd = ref<HTMLElement | null>(null)
+const checkoutActionReached = ref(false)
+let checkoutActionObserver: IntersectionObserver | undefined
+watch(checkoutActionEnd, (element) => {
+  checkoutActionObserver?.disconnect()
+  checkoutActionReached.value = false
+  if (!element || !('IntersectionObserver' in window)) return
+  checkoutActionObserver = new IntersectionObserver(([entry]) => { checkoutActionReached.value = entry?.isIntersecting === true }, { rootMargin: '100000px 0px -96px 0px' })
+  checkoutActionObserver.observe(element)
+}, { flush: 'post' })
+onBeforeUnmount(() => checkoutActionObserver?.disconnect())
 </script>
 
 <template>
@@ -166,7 +180,7 @@ function openCheckout() {
           </div>
           <h2 class="mb-2 text-2xl font-black text-navy-950">Giỏ hàng đang trống</h2>
           <p class="mx-auto mb-6 max-w-[520px] text-slate-600">
-            Chọn sản phẩm có giá công khai để thêm vào giỏ hàng, hoặc gửi yêu cầu để đội ngũ Phúc Thịnh Solar bóc tách vật tư và báo giá trọn gói theo công trình.
+            Chọn sản phẩm có giá để thêm vào giỏ, hoặc gửi yêu cầu để nhận báo giá trọn gói theo công trình.
           </p>
           <div class="flex flex-wrap items-center justify-center gap-3">
             <NuxtLink :to="links.generic('/san-pham/')" class="cart-btn cart-btn--gold">
@@ -175,20 +189,20 @@ function openCheckout() {
             </NuxtLink>
             <button type="button" class="cart-btn cart-btn--ghost" @click="openConsultation('Giỏ hàng: Tư vấn báo giá vật tư')">
               <UIcon name="i-lucide-headset" class="size-4 text-gold-600" aria-hidden="true" />
-              <span>Yêu cầu báo giá theo công trình</span>
+              <span>Yêu cầu báo giá</span>
             </button>
           </div>
 
           <div v-if="site.productCategories.length" class="mx-auto mt-10 max-w-[880px] border-t border-slate-200/80 pt-7 text-left">
-            <p class="m-0 mb-3.5 text-center text-sm font-bold text-navy-800">Khám phá nhanh theo nhóm thiết bị</p>
-            <div class="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
+            <p class="m-0 mb-3.5 text-center text-sm font-bold text-navy-800">Xem theo nhóm thiết bị</p>
+            <div class="grid grid-cols-2 gap-2.5 lg:grid-cols-3">
               <NuxtLink
                 v-for="cat in site.productCategories.slice(0, 6)"
                 :key="cat.slug"
                 :to="links.generic(cat.url)"
                 class="group flex items-center justify-between gap-3 rounded-md border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-navy-900 no-underline transition-colors hover:border-gold-500"
               >
-                <span class="truncate">{{ cat.name }}</span>
+                <span class="min-w-0">{{ cat.name }}</span>
                 <UIcon name="i-lucide-arrow-right" class="size-4 shrink-0 text-slate-400 transition-transform group-hover:translate-x-0.5 group-hover:text-gold-700" aria-hidden="true" />
               </NuxtLink>
             </div>
@@ -277,6 +291,7 @@ function openCheckout() {
               Nhận báo giá
               <span aria-hidden="true"><UIcon name="i-lucide-arrow-right" class="size-5" /></span>
             </button>
+            <div ref="checkoutActionEnd" aria-hidden="true" />
             <ul class="cart-summary__trust">
               <li><UIcon name="i-lucide-badge-check" class="size-4 flex-none" aria-hidden="true" />Kiểm tra sản phẩm và số lượng trước khi đặt hàng</li>
               <li><UIcon name="i-lucide-shield-check" class="size-4 flex-none" aria-hidden="true" />Phí vận chuyển được xác nhận ở bước thanh toán</li>
@@ -286,7 +301,7 @@ function openCheckout() {
         </div>
       </template>
     </main>
-    <div v-if="payload && hasCartItems && !isMigrationPreview" class="m-island print:hidden">
+    <div v-if="payload && hasCartItems && !isMigrationPreview" class="m-island print:hidden" :class="{ 'is-away': checkoutActionReached }">
       <span><small>Tổng tạm tính</small><strong><AnimatedMoney :value="payload.subtotal" :animate="false" /></strong></span>
       <NuxtLink v-if="payload.canCheckout" to="/thanh-toan/" @click="openCheckout">Thanh toán</NuxtLink>
       <button v-else type="button" @click="openConsultation('Giỏ hàng: Yêu cầu báo giá')">Nhận báo giá</button>
@@ -295,6 +310,9 @@ function openCheckout() {
 </template>
 
 <style scoped>
+.m-island { transition: opacity .2s ease, transform .2s ease, visibility .2s; }
+.m-island.is-away { visibility: hidden; opacity: 0; pointer-events: none; transform: translateY(14px); }
+@media (prefers-reduced-motion: reduce) { .m-island { transition: none; } }
 .cart-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(320px, 520px); align-items: center; gap: 24px 48px; margin-bottom: clamp(24px, 3vw, 40px); }
 .cart-panel { border-radius: var(--radius-md); background: #fff; }
 .cart-list { display: grid; align-content: start; gap: 12px; max-height: min(70svh, 740px); overflow-y: auto; padding-right: 6px; scrollbar-color: var(--color-gold-500) transparent; scrollbar-width: thin; }

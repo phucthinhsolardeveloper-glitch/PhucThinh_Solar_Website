@@ -8,6 +8,8 @@ import { editorialPublicResponseStatus, editorialPublicRouteRobots } from '#shar
 import { publicSeoDescription, publicSeoTitle } from '#shared/public-seo'
 import { projectCategoryCanonicalPath, projectCategoryPage } from '#shared/project-category-route'
 import ProjectWall from '~/components/projects/ProjectWall.vue'
+import ProjectFilters from '~/components/projects/ProjectFilters.vue'
+import ProjectsFeatured from '~/components/projects/ProjectsFeatured.vue'
 import ProjectsCta from '~/components/projects/ProjectsCta.vue'
 
 const route = useRoute()
@@ -38,8 +40,15 @@ if (import.meta.server && responseStatus) setResponseStatus(responseStatus, resp
 const currentPage = computed(() => projects.value?.pagination.page ?? page.value)
 const totalPages = computed(() => projects.value ? Math.max(1, Math.ceil(projects.value.pagination.total / projects.value.pagination.perPage)) : 1)
 const paginationItems = usePaginationItems(currentPage, totalPages)
-const projectCategoryRailRef = ref<HTMLElement | null>(null)
-useActiveHorizontalRail(projectCategoryRailRef)
+// The first project leads the hero, as on the main projects page, so the wall does not repeat it.
+// A group without projects borrows the main page's lead photo, so its hero looks the same.
+const { data: allProjects } = await useAsyncData<unknown>('project-category-backdrop', () => $fetch('/_migration/projects'), { lazy: true })
+const heroBackdrop = computed(() => {
+  const payload = isPublicProjectsPayload(allProjects.value) ? allProjects.value : null
+  return payload?.featured?.image || payload?.projects[0]?.image || undefined
+})
+const heroProject = computed(() => currentPage.value === 1 ? projects.value?.projects[0] ?? null : null)
+const wallProjects = computed(() => heroProject.value ? projects.value?.projects.slice(1) ?? [] : projects.value?.projects ?? [])
 const categoryTitle = computed(() => {
   const title = projects.value?.category?.name || projects.value?.intro.title || ''
   if (!title) return 'Danh mục dự án'
@@ -91,8 +100,8 @@ usePublicSocialMeta({
       ]" />
       </div>
     </div>
-    <main class="pts-container pb-12">
-      <section v-if="error || !projects" class="min-h-[40vh] py-10" :role="responseStatus === 404 ? 'status' : 'alert'">
+    <main class="pb-12">
+      <section v-if="error || !projects" class="pts-container min-h-[40vh] py-10" :role="responseStatus === 404 ? 'status' : 'alert'">
         <h1 class="mb-3 text-3xl font-black tracking-tight">{{ responseStatus === 404 ? 'Không tìm thấy danh mục dự án' : 'Tạm thời không thể tải danh mục dự án' }}</h1>
         <p class="mb-5 text-slate-600">{{ responseStatus === 404 ? 'Danh mục này hiện không tồn tại hoặc đã ẩn.' : 'Nguồn nội dung hiện không khả dụng.' }}</p>
         <div class="flex flex-wrap gap-3">
@@ -102,42 +111,28 @@ usePublicSocialMeta({
       </section>
 
       <template v-else>
-        <header class="my-7 flex flex-wrap items-end justify-between gap-4">
-          <div class="max-w-[820px]">
-            <div class="mb-2 flex flex-wrap items-center gap-2.5">
-              <h1 class="m-0 text-[clamp(32px,5vw,56px)] font-black leading-tight tracking-tight text-navy-950">{{ categoryTitle }}</h1>
-            </div>
-            <p v-if="categoryDescription" class="m-0 text-lg leading-relaxed text-slate-600">{{ categoryDescription }}</p>
-          </div>
-          <button
-            type="button"
-            class="inline-flex min-h-11 shrink-0 cursor-pointer items-center gap-2 rounded-btn bg-gold-500 px-4 py-2 text-xs font-extrabold text-navy-950 transition-colors hover:bg-gold-400"
-            @click="openConsultation(`Dự án ${categoryTitle}`)"
-          >
-            <span>Tư vấn công trình tương tự</span>
-            <span aria-hidden="true">→</span>
-          </button>
+        <ProjectsFeatured
+          v-if="currentPage === 1"
+          :title="categoryTitle"
+          :description="categoryDescription"
+          :project="heroProject"
+          :benefits="projects.featuredBenefits"
+          :label="projects.labels.featured"
+          :view-label="projects.labels.view"
+          :backdrop="heroBackdrop"
+          :empty-label="projects.labels.empty"
+          :cta-label="projects.labels.cta"
+          @cta="openConsultation(`Dự án ${categoryTitle}`)"
+        />
+        <header v-else class="pts-container pt-8">
+          <h1 class="m-0 text-[clamp(30px,3.6vw,48px)] font-black tracking-tight text-navy-950">{{ categoryTitle }}</h1>
+          <p class="mt-2 mb-0 text-slate-500">Trang {{ currentPage }}</p>
         </header>
 
-        <nav ref="projectCategoryRailRef" data-results class="flex gap-2 overflow-x-auto py-0.5 pb-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" aria-label="Danh mục dự án">
-          <NuxtLink
-            class="public-filter-chip flex min-h-11 flex-none items-center whitespace-nowrap px-[13px] text-navy-800 no-underline"
-            :to="PROJECTS_PUBLIC_PATH"
-          >{{ projects.labels.all }}</NuxtLink>
-          <NuxtLink
-            v-for="category in projects.categories"
-            :key="category.id"
-            class="public-filter-chip flex min-h-11 flex-none items-center gap-2 whitespace-nowrap px-[13px] no-underline"
-            :class="category.slug === slug ? 'text-white' : 'text-navy-800'"
-            :to="category.url"
-            :aria-current="category.slug === slug ? 'page' : undefined"
-          >
-            <img v-if="category.image" :src="category.image" alt="" class="h-6 w-6 object-contain" width="24" height="24">
-            {{ category.name }}
-          </NuxtLink>
-        </nav>
+        <div data-results class="pts-container pt-8 nav:pt-12">
+          <ProjectFilters :categories="projects.categories" :selected="projects.category" :all-label="projects.labels.all" :filters-label="projects.labels.filters" />
 
-        <ProjectWall :projects="projects.projects" :view-label="projects.labels.view" :label="categoryTitle" />
+        <ProjectWall :projects="wallProjects" :view-label="projects.labels.view" :label="categoryTitle" />
         <div v-if="!projects.projects.length" class="flex min-h-[230px] flex-col items-center justify-center px-5 py-9 text-center text-slate-600" role="status">
           <UIcon name="i-lucide-images" class="mb-3 size-8 text-gold-600" aria-hidden="true" />
           <p class="mb-3 text-base">{{ projects.labels.empty }}</p>
@@ -165,6 +160,7 @@ usePublicSocialMeta({
         </nav>
 
         <ProjectsCta v-if="projects.cta" :cta="projects.cta" :label="projects.labels.cta" />
+        </div>
       </template>
     </main>
   </div>

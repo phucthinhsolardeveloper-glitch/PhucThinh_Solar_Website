@@ -27,6 +27,7 @@ const filterDrawerOpen = ref(false)
 const filterDrawerMounted = ref(false)
 watch(filterDrawerOpen, (open) => { if (open) filterDrawerMounted.value = true })
 const categoryNavRef = ref<HTMLElement | null>(null)
+useSlidingPill(categoryNavRef, 'catalog', { chip: '.catalog-category-chip', tone: 'gold' })
 const selfPath = computed(() => route.path)
 const category = computed(() => props.categoryPath ?? (productCategorySegmentsFromPublicPath(route.path).join('/') || (typeof route.query.category === 'string' ? route.query.category : '')))
 const page = computed(() => publicPageQueryValue(route.query.page, route.query.p))
@@ -159,23 +160,8 @@ function categoryNavLabel(category: PublicProductCategoryNode): string {
   return category.slug === 'den-san-vuon' ? 'Đèn Sân Vườn' : category.name
 }
 
-function revealActiveCategory() {
-  const nav = categoryNavRef.value
-  const activeItem = nav?.querySelector<HTMLElement>('[aria-current="page"]')
-  if (!nav || !activeItem || typeof window === 'undefined') return
-
-  const navRect = nav.getBoundingClientRect()
-  const itemRect = activeItem.getBoundingClientRect()
-  const left = nav.scrollLeft + itemRect.left - navRect.left - (nav.clientWidth - itemRect.width) / 2
-  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  nav.scrollTo({ left: Math.max(0, left), behavior: reducedMotion ? 'auto' : 'smooth' })
-}
-
-onMounted(() => revealActiveCategory())
-watch(() => selectedCategory.value?.url, async () => {
-  await nextTick()
-  requestAnimationFrame(revealActiveCategory)
-}, { flush: 'post' })
+const sidebarColumn = ref<HTMLElement | null>(null)
+useStickyColumn(sidebarColumn)
 
 /**
  * Nếu lưới vẫn giữ nguyên hai cột khi không có danh mục/bộ lọc thì nội dung
@@ -346,17 +332,19 @@ function pageLink(nextPage: number) {
       Danh mục và các bộ lọc nghiệp vụ dùng chung một panel để không lặp lại
       cùng một lựa chọn ở sidebar và phía trên lưới sản phẩm.
       -->
-      <div v-if="hasSidebar" class="catalog-sidebar-sticky hidden flex-col gap-6 min-[1002px]:flex">
-        <CatalogFilterSidebar
-          id-prefix="catalog-filter-sidebar"
-          :categories="sidebarCategories"
-          :selected-category="selectedCategory?.url ?? ''"
-          :filters="catalogData?.filters ?? emptyFilters"
-          :selected="catalogData?.selected ?? emptySelected"
-          :keyword="keyword"
-          :subcategory-title="subcategoryTitle"
-          :filter-link="filterLink"
-        />
+      <div v-if="hasSidebar" class="hidden min-[1002px]:block">
+        <div ref="sidebarColumn" class="catalog-sidebar-sticky">
+          <CatalogFilterSidebar
+            id-prefix="catalog-filter-sidebar"
+            :categories="sidebarCategories"
+            :selected-category="selectedCategory?.url ?? ''"
+            :filters="catalogData?.filters ?? emptyFilters"
+            :selected="catalogData?.selected ?? emptySelected"
+            :keyword="keyword"
+            :subcategory-title="subcategoryTitle"
+            :filter-link="filterLink"
+          />
+        </div>
       </div>
 
       <section data-results aria-label="Danh sách sản phẩm" :aria-busy="catalogPending">
@@ -515,7 +503,7 @@ function pageLink(nextPage: number) {
       :handle="false"
       :close="false"
       :ui="{
-        overlay: 'bg-slate-950/60',
+        overlay: 'glass-overlay',
         content: '!h-dvh !max-h-none !w-[min(340px,92vw)] !max-w-none !rounded-none overflow-hidden border-0 bg-white p-0 text-navy-800 shadow-2xl ring-0 m-sheet-glass',
       }"
     >
@@ -566,7 +554,7 @@ function pageLink(nextPage: number) {
   .catalog-chip-rail { gap: 8px; margin-inline: -16px; padding: 4px 16px 10px; scroll-padding-inline: 16px; }
   .catalog-category-chip { flex: 0 0 auto; width: auto; height: 44px; min-width: 0; min-height: 44px; overflow: visible; padding: 0 14px 0 12px; gap: 6px; border-radius: 999px; font-size: 13.5px; }
   .catalog-category-chip > span { display: inline; overflow: visible; white-space: nowrap; -webkit-line-clamp: unset; }
-  .catalog-category-chip[aria-current="page"] { border-color: transparent !important; background: var(--pts-gold-gradient) !important; box-shadow: inset 0 1px 0 rgb(255 255 255 / 45%), 0 6px 14px rgb(201 150 46 / 28%) !important; -webkit-backdrop-filter: none; backdrop-filter: none; color: var(--color-navy-950); }
+  nav:not([data-pill-rail]) .catalog-category-chip[aria-current="page"] { border-color: transparent !important; background: var(--pts-gold-gradient) !important; box-shadow: inset 0 1px 0 rgb(255 255 255 / 45%), 0 6px 14px rgb(201 150 46 / 28%) !important; -webkit-backdrop-filter: none; backdrop-filter: none; color: var(--color-navy-950); }
   .catalog-toolbar { row-gap: 8px; margin-bottom: 12px; }
   .catalog-toolbar h2 { font-size: 17px; font-weight: 800; line-height: 24px; }
 }
@@ -575,6 +563,6 @@ function pageLink(nextPage: number) {
 }
 /* Filters stay beside the results down a long list, the way the phone toolbar does. */
 @media (min-width: 1002px) {
-  .catalog-sidebar-sticky { position: sticky; top: 88px; max-height: calc(100dvh - 104px); align-self: start; overflow-y: auto; scrollbar-width: thin; }
+  .catalog-sidebar-sticky { position: sticky; top: 20px; }
 }
 </style>

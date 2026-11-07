@@ -205,7 +205,7 @@ test('shared shell keeps controls reachable at 44px and preserves the 320px layo
   assert.match(header, /h-11 w-11/)
   assert.doesNotMatch(header, /max-ph:h-\[38px\]|max-ph:w-\[38px\]|class="[^"]*\bp-2\.5/)
   assert.match(header, /max-\[359px\]:px-3/)
-  assert.match(header, /max-w-\[min\(198px,100%\)\]/)
+  assert.match(header, /max-w-\[min\(240px,100%\)\]/)
   assert.match(header, /mobileOpen \? 'rotate-45'/)
   assert.match(header, /mobileOpen \? 'opacity-0'/)
   assert.match(header, /min-h-11 min-w-11/)

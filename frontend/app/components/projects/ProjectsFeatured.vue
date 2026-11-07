@@ -9,7 +9,10 @@ const props = defineProps<{
   label: string
   viewLabel: string
   backdrop?: string
+  emptyLabel?: string
+  ctaLabel?: string
 }>()
+const emit = defineEmits<{ cta: [] }>()
 const links = useMigrationLinks()
 const image = computed(() => props.project?.image || props.backdrop || '')
 
@@ -57,6 +60,20 @@ onBeforeUnmount(() => { window.removeEventListener('scroll', onScroll); cancelAn
           <span class="projects-hero__go">{{ viewLabel }} <span aria-hidden="true"><UIcon name="i-lucide-arrow-right" class="size-5" /></span></span>
         </a>
       </article>
+      <!-- A group with no project yet keeps the same frame and offers the next step instead. -->
+      <article v-else-if="emptyLabel" class="projects-hero__feature">
+        <button type="button" class="group" @click="emit('cta')">
+          <h2>{{ emptyLabel }}</h2>
+          <ul v-if="benefits.length">
+            <li v-for="benefit in benefits" :key="benefit.label">
+              <img v-if="benefit.image" :src="benefit.image" alt="" class="size-4 object-contain" loading="lazy">
+              <UIcon v-else name="i-lucide-check" class="size-4 flex-none text-gold-300" aria-hidden="true" />
+              {{ benefit.label }}
+            </li>
+          </ul>
+          <span class="projects-hero__go">{{ ctaLabel }} <span aria-hidden="true"><UIcon name="i-lucide-arrow-right" class="size-5" /></span></span>
+        </button>
+      </article>
     </div>
   </section>
 </template>
@@ -68,9 +85,9 @@ onBeforeUnmount(() => { window.removeEventListener('scroll', onScroll); cancelAn
 .projects-hero__inner { display: grid; width: 100%; grid-template-columns: minmax(0, 1fr) minmax(320px, 440px); align-items: end; gap: clamp(28px, 5vw, 80px); padding-block: 56px clamp(40px, 5vw, 72px); }
 .projects-hero__copy h1 { margin: 0; color: #fff; font-size: clamp(38px, 5vw, 76px); font-weight: 850; line-height: 1.02; letter-spacing: -0.045em; text-wrap: balance; }
 .projects-hero__copy p { max-width: 54ch; margin: 22px 0 0; color: #d3dcea; font-size: clamp(17px, 1.35vw, 20px); line-height: 1.65; }
-.projects-hero__feature a { display: flex; flex-direction: column; gap: 14px; padding: clamp(22px, 2.2vw, 32px); border: 1px solid rgb(255 255 255 / 16%); border-radius: var(--radius-md); background: rgb(6 21 55 / 55%); color: #fff; text-decoration: none; backdrop-filter: blur(14px); transition: border-color 0.35s ease, transform 0.45s var(--ease); }
-.projects-hero__feature a:hover { transform: translateY(-4px); border-color: rgb(228 168 73 / 60%); }
-.projects-hero__feature a:focus-visible { outline: 3px solid var(--color-gold-300); outline-offset: 3px; }
+.projects-hero__feature :is(a, button) { width: 100%; text-align: left; cursor: pointer; display: flex; flex-direction: column; gap: 14px; padding: clamp(22px, 2.2vw, 32px); border: 1px solid rgb(255 255 255 / 16%); border-radius: var(--radius-md); background: rgb(6 21 55 / 55%); color: #fff; text-decoration: none; backdrop-filter: blur(14px); transition: border-color 0.35s ease, transform 0.45s var(--ease); }
+.projects-hero__feature :is(a, button):hover { transform: translateY(-4px); border-color: rgb(228 168 73 / 60%); }
+.projects-hero__feature :is(a, button):focus-visible { outline: 3px solid var(--color-gold-300); outline-offset: 3px; }
 .projects-hero__label { color: var(--color-gold-300); font-size: 14px; font-weight: 800; }
 .projects-hero__feature h2 { margin: 0; color: #fff; font-size: clamp(22px, 1.9vw, 28px); font-weight: 850; line-height: 1.2; letter-spacing: -0.02em; }
 .projects-hero__place { display: flex; align-items: center; gap: 8px; margin: 0; color: #c3cfdf; font-size: 14.5px; }
@@ -79,16 +96,21 @@ onBeforeUnmount(() => { window.removeEventListener('scroll', onScroll); cancelAn
 .projects-hero__feature li { display: flex; align-items: center; gap: 10px; color: #dbe4f0; font-size: 14.5px; }
 .projects-hero__go { display: flex; min-height: 52px; align-items: center; justify-content: space-between; margin-top: 4px; padding: 0 8px 0 18px; border-radius: var(--radius-sm); background: var(--pts-gold-gradient); color: var(--color-navy-950); font-weight: 850; transition: filter 0.25s ease; }
 .projects-hero__go > span { display: grid; width: 38px; height: 38px; place-items: center; border-radius: var(--radius-btn); background: var(--color-navy-950); color: var(--color-gold-300); transition: transform 0.35s var(--ease); }
-.projects-hero__feature a:hover .projects-hero__go { filter: brightness(1.06); }
-.projects-hero__feature a:hover .projects-hero__go > span { transform: translateX(4px); }
+.projects-hero__feature :is(a, button):hover .projects-hero__go { filter: brightness(1.06); }
+.projects-hero__feature :is(a, button):hover .projects-hero__go > span { transform: translateX(4px); }
 @keyframes projects-in { from { opacity: 0; transform: scale(1.1); } }
 @media (max-width: 900px) {
-  .projects-hero { min-height: 0; }
+  .projects-hero { min-height: clamp(744px, calc(744px + (412px - 100vw) * 2.2), 860px); }
+}
+@media (min-width: 600px) and (max-width: 900px) {
+  .projects-hero { min-height: 790px; }
+}
+@media (max-width: 900px) {
   .projects-hero__inner { grid-template-columns: 1fr; padding-top: clamp(200px, 40vw, 280px); }
 }
 @media (prefers-reduced-motion: reduce) {
   .projects-hero__image { animation: none; transform: none; }
-  .projects-hero__feature a, .projects-hero__go > span { transition: none; }
-  .projects-hero__feature a:hover { transform: none; }
+  .projects-hero__feature :is(a, button), .projects-hero__go > span { transition: none; }
+  .projects-hero__feature :is(a, button):hover { transform: none; }
 }
 </style>

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import SearchSuggestions from '~/components/search/SearchSuggestions.vue'
 import type { PublicCatalogGroup, PublicProductCategoryNode, PublicSiteLink, PublicSitePayload } from '#shared/contracts/public-site'
 import { AnimatePresence, motion, useReducedMotion } from 'motion-v'
 import {
@@ -40,6 +41,8 @@ const reducedMotion = useReducedMotion()
 const brandName = computed(() => props.site.brand.name.trim() || 'Phúc Thịnh Solar')
 const hotline = computed(() => props.site.brand.hotline.trim())
 const brandLogo = computed(() => props.site.brand.logo || '')
+// Phones reach the cart from the dock. Product and checkout pages replace the dock, so they keep the header icon.
+const dockShowsCart = computed(() => !/^\/san-pham\/[^/]+\/?$/.test(route.path) && !/^\/thanh-toan\/?$/.test(route.path))
 const brandLogoSrc = computed(() => {
   const src = brandLogo.value
   return /^\/upload\/photo\/[A-Za-z0-9][A-Za-z0-9._-]*\.(?:jpe?g|png|gif|webp|avif)$/i.test(src) ? phpThumb(src, 520, 112, 3) : src
@@ -47,6 +50,7 @@ const brandLogoSrc = computed(() => {
 
 const searchOpen = ref(false)
 const searchKeyword = ref('')
+const headerSuggest = ref<InstanceType<typeof SearchSuggestions> | null>(null)
 const defaultSearchTerms = ['Đèn đường', 'Blue Carbon', 'LONGi', 'SolaX', 'Pin lưu trữ', 'Jindian', 'Bơm nước']
 // Admin "Tìm kiếm - Từ khóa nhanh" replaces the defaults when it has visible terms.
 const popularSearchTerms = computed(() => props.site.quickSearches?.length ? props.site.quickSearches : defaultSearchTerms)
@@ -311,9 +315,22 @@ function openCatalog(mode: Exclude<MenuMode, null> = 'intent') {
   }
 }
 
+// A flyout near the bottom of the panel moves up, so all of its items stay in view.
+function fitOpenFlyout() {
+  const flyout = document.querySelector<HTMLElement>('.is-flyout-open > .catalog-flyout')
+  const panel = document.getElementById('ptsCatalogMenu')
+  if (!flyout || !panel) return
+  flyout.style.top = ''
+  const panelBox = panel.getBoundingClientRect()
+  const box = flyout.getBoundingClientRect()
+  const limit = Math.min(panelBox.bottom, window.innerHeight) - 12
+  const overflow = box.bottom - limit
+  if (overflow > 0) flyout.style.top = `${-Math.min(overflow, Math.max(0, box.top - panelBox.top - 8))}px`
+}
 // Sub-category flyouts: a short grace period stops a diagonal move toward an open
 // flyout from switching it to the item the pointer crosses on the way.
 const flyoutKey = ref('')
+watch(flyoutKey, () => nextTick(fitOpenFlyout))
 let flyoutTimer: ReturnType<typeof setTimeout> | null = null
 function clearFlyoutTimer() { if (flyoutTimer) clearTimeout(flyoutTimer); flyoutTimer = null }
 // Only a mostly-horizontal move (heading for the open flyout) gets the grace period;
@@ -438,6 +455,7 @@ function toggleSearch() {
 async function submitSearch() {
   const keyword = searchKeyword.value.trim()
   if (!keyword) return
+  headerSuggest.value?.remember(keyword)
   closeSearch(false)
   closeMobileMenu(false)
   await navigateTo({ path: shellHref('/tim-kiem/'), query: { keyword } })
@@ -525,6 +543,17 @@ function telHrefFor(value: string): string {
 }
 
 const { isHeaderHidden, isScrolled } = useSiteHeader()
+// Only one overlay at a time: the header's panels give way to the dock's support sheet, and the other way round.
+const activeOverlay = useState<string | null>('active-overlay', () => null)
+watch(activeOverlay, (overlay) => {
+  if (overlay !== 'support') return
+  if (searchOpen.value) closeSearch(false)
+  if (mobileOpen.value) closeMobileMenu(false)
+  if (catalogOpen.value) closeCatalog(false)
+})
+watch([searchOpen, mobileOpen, catalogOpen], (open) => {
+  if (open.some(Boolean)) activeOverlay.value = 'header'
+})
 // Full-bleed hero crosses the header on the homepage only; everywhere else the
 // header stays solid. See docs/15-design-delivery/06-LAYOUT-LAB.md #principles.
 const isHomeRoute = computed(() => route.path === '/')
@@ -641,15 +670,15 @@ onBeforeUnmount(() => {
             :alt="brandName"
             width="520"
             height="73"
-            class="block h-auto w-auto object-contain max-w-[min(198px,100%)] max-h-[46px]
-                   min-[561px]:max-w-[min(235px,100%)] min-[561px]:max-h-[52px]
+            class="block h-auto w-auto object-contain max-w-[min(240px,100%)] max-h-[46px]
+                   min-[561px]:max-w-[min(270px,100%)] min-[561px]:max-h-[52px]
                    min-[821px]:max-w-[min(265px,100%)] min-[821px]:max-h-[66px]
                    min-[1321px]:max-w-[min(300px,100%)] min-[1321px]:max-h-[80px]
                    min-[1681px]:max-w-[min(clamp(320px,20vw,420px),100%)] min-[1681px]:max-h-[96px]
                    min-[1800px]:max-h-[108px]
                    min-[2300px]:max-w-[460px] min-[2300px]:max-h-[120px]
-                   max-[380px]:max-w-[min(180px,100%)] max-[380px]:max-h-[42px]
-                   max-[340px]:max-w-[min(110px,100%)] max-[340px]:max-h-[34px]"
+                   max-[380px]:max-w-[min(214px,100%)] max-[380px]:max-h-[42px]
+                   max-[340px]:max-w-[min(170px,100%)] max-[340px]:max-h-[34px]"
           >
           <span v-else class="truncate text-xl font-black tracking-tight text-hdr-ink">{{ brandName }}</span>
         </a>
@@ -748,25 +777,25 @@ onBeforeUnmount(() => {
 
           <a
             v-if="hotline"
-            class="hidden min-h-11 items-center justify-center gap-2 rounded-chip px-2 text-hdr-ink no-underline transition-colors hover:bg-hdr-surface hover:text-hdr-gold-deep min-[821px]:inline-flex"
-            :class="transparentAtTop ? 'bg-white/80 backdrop-blur-sm' : ''"
+            class="pts-header-call hidden min-h-11 items-center justify-center gap-2.5 text-hdr-ink no-underline min-[821px]:inline-flex"
             :href="telHrefFor(hotline)"
-            :aria-label="`Gọi tư vấn: ${hotline}`"
+            :aria-label="`Gọi ngay: ${hotline}`"
             :title="hotline"
           >
-            <span class="grid h-9 w-9 min-[1681px]:h-10 min-[1681px]:w-10 flex-none place-items-center rounded-full bg-hdr-surface text-hdr-gold-deep" aria-hidden="true">
+            <span class="pts-header-call__icon grid size-9 flex-none place-items-center" aria-hidden="true">
               <svg class="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.79 19.79 0 0 1 11.19 18a19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.09 3.18 2 2 0 0 1 4.08 1h3a2 2 0 0 1 2 1.72c.12.96.36 1.9.7 2.8a2 2 0 0 1-.45 2.11L8.06 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.84.58 2.8.7A2 2 0 0 1 22 16.92Z" /></svg>
             </span>
             <span class="hidden min-[1681px]:flex min-[1681px]:flex-col min-[1681px]:gap-0.5 min-[1681px]:whitespace-nowrap text-left">
-              <small class="text-[12px] leading-none text-hdr-muted font-semibold">Tư vấn</small>
-              <b class="text-sm min-[1681px]:text-[15px] leading-tight text-hdr-ink font-black">{{ hotline }}</b>
+              <small class="pts-header-call__label text-[11.5px] leading-none font-semibold">Gọi ngay</small>
+              <b class="pts-header-call__number text-[15px] leading-tight font-extrabold">{{ hotline }}</b>
             </span>
           </a>
 
           <NuxtLink
             :external="isExternalLink(shellHref('/gio-hang/'))"
-            class="relative inline-flex h-11 w-11 items-center justify-center rounded-chip text-hdr-ink
-                   transition-colors hover:bg-hdr-surface hover:text-hdr-gold-deep"
+            class="relative h-11 w-11 items-center justify-center rounded-chip text-hdr-ink
+                   transition-colors hover:bg-hdr-surface hover:text-hdr-gold-deep min-[821px]:inline-flex"
+            :class="dockShowsCart ? 'hidden' : 'inline-flex'"
             :to="shellHref('/gio-hang/')"
             :aria-label="cartBadgeReady && cartCountAvailable && migrationCart ? `Giỏ hàng có ${migrationCart.count} sản phẩm` : 'Giỏ hàng'"
             title="Giỏ hàng"
@@ -827,8 +856,14 @@ onBeforeUnmount(() => {
                 v-model="searchKeyword"
                 class="h-12 w-full min-w-0 border-0 bg-transparent px-3 text-[15px] text-hdr-ink outline-none placeholder:text-hdr-muted"
                 type="search"
-                placeholder="Bạn cần tìm gì?"
+                placeholder="Tên, công suất, thương hiệu"
                 autocomplete="off"
+                role="combobox"
+                aria-autocomplete="list"
+                aria-expanded="true"
+                :aria-controls="headerSuggest?.listId"
+                :aria-activedescendant="headerSuggest?.activeOptionId"
+                @keydown="headerSuggest?.handleKey($event)"
               >
               <button
                 class="mr-1 inline-flex h-10 flex-none items-center justify-center rounded-full bg-hdr-gold px-4 text-sm font-bold text-hdr-ink transition-colors hover:bg-hdr-gold-deep"
@@ -837,7 +872,7 @@ onBeforeUnmount(() => {
                 <span class="max-tb:hidden">Tìm kiếm</span><span class="tb:hidden">Tìm</span>
               </button>
             </form>
-            <div class="flex min-w-0 flex-1 flex-wrap items-center gap-1.5 min-[1100px]:order-1">
+            <div class="flex min-w-0 flex-1 flex-wrap items-center gap-1.5 min-[1100px]:order-1" :class="{ 'max-tb:hidden': searchKeyword.trim().length >= 2 }">
               <span class="mr-1.5 text-[13px] font-semibold text-slate-500">Tra cứu nhanh</span>
               <button
                 v-for="term in popularSearchTerms"
@@ -858,6 +893,16 @@ onBeforeUnmount(() => {
               <UIcon name="i-lucide-x" class="size-5" aria-hidden="true" />
             </button>
           </div>
+          <SearchSuggestions
+            ref="headerSuggest"
+            class="mt-3"
+            :keyword="searchKeyword"
+            :site="site"
+            :search-path="shellHref('/tim-kiem/')"
+            id-prefix="pts-header-suggest"
+            @leave="closeSearch(false)"
+            @pick-term="selectPopularSearch"
+          />
         </div>
         </div>
       </div>
@@ -867,7 +912,7 @@ onBeforeUnmount(() => {
       <div
         v-if="catalogOpen"
         ref="catalogOverlay"
-        class="absolute inset-x-0 top-full z-[100] h-[calc(100dvh-100%)] min-h-[calc(100vh-80px)] overflow-hidden bg-[rgb(8_18_34_/_58%)]"
+        class="absolute inset-x-0 top-full z-[100] h-[calc(100dvh-100%)] min-h-[calc(100vh-80px)] overflow-hidden glass-overlay"
         aria-hidden="false"
       >
         <button
@@ -1001,7 +1046,7 @@ onBeforeUnmount(() => {
                   </NuxtLink>
                   <ul
                     v-if="item.children.length"
-                    class="catalog-flyout absolute top-0 z-[3] max-h-80 w-[260px] list-none overflow-y-auto rounded-btn
+                    class="catalog-flyout absolute top-0 z-[3] max-h-[min(400px,calc(100dvh-160px))] w-[260px] list-none overflow-y-auto rounded-btn
                            border border-[#e5e7eb] bg-white p-1.5 shadow-[0_12px_30px_rgba(6,21,55,.16)] left-full
                            [.catalog-group-last_&]:right-full [.catalog-group-last_&]:left-auto"
                     :aria-label="`Danh mục con: ${item.label}`"
@@ -1272,6 +1317,18 @@ onBeforeUnmount(() => {
 .pts-drawer-enter-from, .pts-drawer-leave-to { background-color: rgb(6 21 55 / 0%); }
 .pts-drawer-enter-active .pts-drawer__panel { transition: transform .38s cubic-bezier(.22, 1, .36, 1); }
 .pts-drawer-leave-active .pts-drawer__panel { transition: transform .26s cubic-bezier(.4, 0, 1, 1); }
+.pts-header-call { color: var(--color-navy-950); transition: transform .18s ease; }
+.pts-header-call__icon { border-radius: var(--radius-btn); background: var(--pts-gold-gradient); box-shadow: 0 2px 6px rgb(6 21 55 / 18%), inset 0 1px 0 rgb(255 255 255 / 35%); color: var(--color-navy-950); transition: filter .18s ease; }
+.pts-header-call__number { color: var(--color-navy-950); font-variant-numeric: tabular-nums; }
+.pts-header-call__label { color: var(--color-slate-600, #475569); }
+.pts-header-call:hover { transform: translateY(-1px); }
+.pts-header-call:hover .pts-header-call__icon { filter: brightness(1.05); }
+.pts-header-call:focus-visible { outline: 2px solid var(--color-gold-500); outline-offset: 2px; border-radius: var(--radius-md); }
+@media (min-width: 1681px) {
+  .pts-header-call { padding: 3px 14px 3px 3px; border: 1px solid rgb(10 34 81 / 12%); border-radius: var(--radius-md); background: rgb(255 255 255 / 88%); box-shadow: 0 1px 2px rgb(6 21 55 / 8%), inset 0 1px 0 #fff; transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease; }
+  .pts-header-call:hover { border-color: var(--color-gold-400); box-shadow: 0 4px 12px rgb(6 21 55 / 12%), inset 0 1px 0 #fff; }
+}
+@media (prefers-reduced-motion: reduce) { .pts-header-call, .pts-header-call:hover { transform: none; transition: none; } }
 .pts-drawer-enter-from .pts-drawer__panel, .pts-drawer-leave-to .pts-drawer__panel { transform: translateX(-100%); }
 .pts-drawer-enter-active .pts-morph span { transition: transform .34s cubic-bezier(.3, 1.4, .5, 1), opacity .16s; }
 .pts-drawer-leave-active .pts-morph span { transition: transform .24s ease-in, opacity .16s; }

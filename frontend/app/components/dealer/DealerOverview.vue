@@ -157,7 +157,7 @@ function cardImage(src: string): string {
     <Teleport to="body">
       <div
         v-if="activeProduct"
-        class="fixed inset-0 z-[100] grid place-items-center bg-navy-950/92 p-4 backdrop-blur-md"
+        class="fixed inset-0 z-[100] grid place-items-center photo-viewer p-4"
         role="dialog"
         aria-modal="true"
         :aria-label="`Thông số dòng sản phẩm ${activeProduct.title}`"
@@ -165,7 +165,7 @@ function cardImage(src: string): string {
       >
         <button
           type="button"
-          class="m-lg-dark absolute right-4 top-4 flex size-11 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20 cursor-pointer"
+          class="absolute right-4 top-4 flex size-11 items-center justify-center rounded-full photo-viewer__btn cursor-pointer"
           aria-label="Đóng bảng thông số"
           @click="closeProduct"
         >
@@ -175,7 +175,7 @@ function cardImage(src: string): string {
         <button
           v-if="dealer.overview.products.length > 1"
           type="button"
-          class="dealer-modal-arrow m-lg-dark absolute left-4 top-1/2 flex size-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/25 cursor-pointer"
+          class="dealer-modal-arrow absolute left-4 top-1/2 flex size-12 -translate-y-1/2 items-center justify-center rounded-full photo-viewer__btn cursor-pointer"
           aria-label="Dòng sản phẩm trước"
           @click="moveProduct(-1)"
         >
@@ -183,14 +183,19 @@ function cardImage(src: string): string {
         </button>
 
         <div class="flex max-h-[90vh] w-[min(980px,92vw)] flex-col items-center gap-4">
-          <img
-            :src="activeProduct.image"
-            :alt="activeProduct.title"
-            class="max-h-[74vh] max-w-full rounded-btn bg-white object-contain shadow-2xl"
-          >
-          <div class="flex w-full max-w-[760px] flex-wrap items-center justify-between gap-3 rounded-btn bg-navy-900/95 px-4 py-3 text-white">
+          <!-- The frame holds its size and shows the card's photo until the large one has loaded. -->
+          <div class="photo-viewer__media dealer-viewer-frame" :style="{ backgroundImage: `url(${cardImage(activeProduct.image)})` }">
+            <img
+              :key="activeProduct.image"
+              :src="viewerImage(activeProduct.image)"
+              :alt="activeProduct.title"
+              class="dealer-viewer-frame__image"
+              @load="($event.target as HTMLElement).classList.add('is-loaded')"
+            >
+          </div>
+          <div class="flex w-full max-w-[760px] flex-wrap items-center justify-between gap-3 photo-viewer__label px-4 py-3">
             <div>
-              <span class="text-xs font-bold text-gold-400">Dòng sản phẩm ({{ Number(activeIndex) + 1 }} / {{ dealer.overview.products.length }})</span>
+              <span class="text-xs font-bold text-slate-600">Dòng sản phẩm ({{ Number(activeIndex) + 1 }} / {{ dealer.overview.products.length }})</span>
               <strong class="block text-lg font-black">{{ activeProduct.title }}</strong>
             </div>
             <button
@@ -207,7 +212,7 @@ function cardImage(src: string): string {
         <button
           v-if="dealer.overview.products.length > 1"
           type="button"
-          class="dealer-modal-arrow m-lg-dark absolute right-4 top-1/2 flex size-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/25 cursor-pointer"
+          class="dealer-modal-arrow absolute right-4 top-1/2 flex size-12 -translate-y-1/2 items-center justify-center rounded-full photo-viewer__btn cursor-pointer"
           aria-label="Dòng sản phẩm tiếp theo"
           @click="moveProduct(1)"
         >
@@ -219,6 +224,10 @@ function cardImage(src: string): string {
 </template>
 
 <style scoped>
+.dealer-viewer-frame { position: relative; width: min(74vh, 92vw, 760px); aspect-ratio: 1; overflow: hidden; background-color: #eef2f8; background-position: center; background-size: cover; }
+.dealer-viewer-frame__image { position: absolute; inset: 0; width: 100%; height: 100%; background: #fff; object-fit: contain; opacity: 0; transition: opacity .25s ease; }
+.dealer-viewer-frame__image.is-loaded { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .dealer-viewer-frame__image { transition: none; } }
 .dealer-products-track { scrollbar-width: none; }
 .dealer-products-track::-webkit-scrollbar { display: none; }
 .dealer-overview-rich :deep(p:empty) { display: none; }

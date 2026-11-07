@@ -37,7 +37,7 @@ test('catalog keeps category navigation and business filters in one panel', () =
   assert.match(catalog, /title="Bộ lọc sản phẩm"[\s\S]*:handle="false"/)
   assert.match(catalog, /closeFilterDrawerAfterNavigation/)
   assert.match(catalog, /min-\[1002px\]:grid-cols-\[240px_minmax\(0,1fr\)\][\s\S]*min-\[1200px\]:grid-cols-\[280px_minmax\(0,1fr\)\]/)
-  assert.match(catalog, /hidden flex-col gap-6 min-\[1002px\]:flex/)
+  assert.match(catalog, /hidden min-\[1002px\]:block/)
   assert.match(sidebar, /subcategoryTitle \|\| 'Loại sản phẩm'/)
   assert.match(icon, /class="block"/)
   assert.doesNotMatch(icon, /h-full w-full/)

@@ -1,0 +1,14 @@
+const {chromium}=require('playwright');
+const run=async(label,url,railSel,idx,opt)=>{const b=await chromium.launch();const c=await b.newContext(opt);const p=await c.newPage();await p.route('https://cdn.gtranslate.net/**',r=>r.abort());await p.route('**/pts-living-energy/index.html*',r=>r.abort());await p.addInitScript(()=>{try{sessionStorage.setItem('pts-popup-campaign','current')}catch{}});
+await p.goto('http://localhost:3100'+url,{waitUntil:'load'});await p.waitForTimeout(1500);
+await p.evaluate(s=>{window.__t=[];window.__rail0=document.querySelector(s);const t0=performance.now();window.__t0=t0;(function f(){const r=document.querySelector(s);const pill=r&&r.querySelector('.rail-pill');const cur=r&&r.querySelector('[aria-current="page"]');let x=null,w=null;if(pill){const b=pill.getBoundingClientRect();const rr=r.getBoundingClientRect();x=Math.round(b.left-rr.left);w=Math.round(b.width)}window.__t.push([Math.round(performance.now()-t0),x,w,r?Math.round(r.scrollLeft):null,r===window.__rail0?'same':'NEW',pill?pill.getAnimations().length:'-',cur?cur.innerText.trim().slice(0,10):'-',Math.round(scrollY)]);if(performance.now()-t0<2200)requestAnimationFrame(f)})()},railSel);
+const chip=p.locator(railSel+' a').nth(idx);if(opt.hasTouch)await chip.tap();else await chip.click();await p.waitForTimeout(2500);
+const t=await p.evaluate(()=>window.__t);let last='';const out=[];for(const r of t){const k=r.slice(1).join();if(k!==last){out.push(r);last=k}}console.log('==',label,p.url().slice(21),'changes',out.length);
+const sc=out.map(r=>r[3]).filter(v=>v!==null);let back=0;for(let i=1;i<sc.length;i++)if(sc[i]<sc[i-1]-2)back++;const px=out.map(r=>r[1]).filter(v=>v!==null);let rev=0,dir=0;for(let i=1;i<px.length;i++){const d=Math.sign(px[i]-px[i-1]);if(Math.abs(px[i]-px[i-1])>6&&d&&dir&&d!==dir)rev++;if(Math.abs(px[i]-px[i-1])>6&&d)dir=d}console.log(' remount',out.some(r=>r[4]==='NEW'),'scroll',sc[0],'->',sc[sc.length-1],'backwards',back,'pillX',px[0],'->',px[px.length-1],'reversals',rev,'pageY',out[out.length-1][7]);await b.close()};
+(async()=>{const m={viewport:{width:412,height:924},isMobile:true,hasTouch:true};const d={viewport:{width:1440,height:900}};
+await run('solution phone','/giai-phap/dien-mat-troi-doanh-nghiep/','.solution-rail [data-pill-rail]',2,m);
+await run('projects phone','/du-an-da-thuc-hien/','nav:has(.public-filter-chip)',2,m);
+await run('news phone','/tin-tuc/','nav:has(.public-filter-chip)',3,m);
+await run('catalog desktop','/danh-muc-san-pham/den-nlmt/','.catalog-chip-rail',3,d);
+await run('solution desktop','/giai-phap/dien-mat-troi-doanh-nghiep/','.solution-rail [data-pill-rail]',3,d);
+})()

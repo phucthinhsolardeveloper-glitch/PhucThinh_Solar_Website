@@ -1,45 +1,26 @@
-# Bản nháp rút gọn nội dung CMS
+# Quyết định về rút gọn nội dung CMS
 
-Trạng thái: chủ website đã duyệt ngày 2026-11-06. Đã áp ở local, chưa áp production. Chỉ cắt câu chữ từ nội dung hiện có, không thêm dữ kiện.
+Trạng thái: **đã hủy phần rút gọn nội dung** theo quyết định của chủ website ngày 2026-11-07. Bản rút gọn đã được hoàn tác ở local và chưa từng áp lên production. Không chạy lại.
 
-Áp dữ liệu: `scripts/content/shorten-public-copy-20261106.sql`. Hoàn tác: `shorten-public-copy-20261106.revert.sql`. Production cần phê duyệt riêng và backup database trước. Phần tiêu đề trang chủ và câu trang Liên hệ nằm trong code PHP nên đi theo bản release.
+## Nguyên tắc
 
-## Trang Giải pháp
+Đầy đủ, rõ ràng và minh bạch được ưu tiên hơn việc ít chữ. Giao diện không được đánh đổi thông tin mà khách cần để quyết định.
 
-**Đoạn mở đầu (98 từ → 39 từ)**
+- Không cắt khỏi nội dung: thời hạn và cách đối chiếu bảo hành, điều kiện giao nhận, giá và tồn kho, hóa đơn chứng từ, phạm vi dịch vụ, cam kết của công ty.
+- Khi trang dài, ưu tiên trình bày dễ đọc: tách đoạn trên điện thoại (`ChunkedText`) và mở rộng theo nút (`data-fold`). Hai cách này giữ nguyên từng chữ và người đọc vẫn mở được.
+- Chỉ bỏ phần lặp đúng nguyên văn hoặc đúng ý trên cùng màn hình. Chính sách và cam kết luôn cần chủ website duyệt, kể cả khi chỉ sửa câu chữ.
+- Script sửa nội dung phải được kiểm tra trên dữ liệu production bằng truy vấn chỉ đọc trước khi trình duyệt. Dữ liệu local không đại diện cho production.
 
-Hiện tại: Từ điện mặt trời mái nhà, hệ thống lưu trữ năng lượng đến chiếu sáng và bơm nước năng lượng mặt trời, Phúc Thịnh Solar xây dựng giải pháp dựa trên nhu cầu sử dụng thực tế, đặc điểm công trình và mục tiêu đầu tư của từng khách hàng. Không có một cấu hình phù hợp cho tất cả. Một hệ thống hiệu quả cần được tính toán từ mức sử dụng điện theo từng thời điểm, thời gian sử dụng, diện tích lắp đặt, điều kiện vận hành đến khả năng mở rộng trong tương lai.
+## Vì sao hủy
 
-Đề xuất: Từ điện mặt trời mái nhà, lưu trữ năng lượng đến chiếu sáng và bơm nước, Phúc Thịnh Solar xây dựng giải pháp theo nhu cầu thực tế, đặc điểm công trình và mục tiêu đầu tư của từng khách hàng. Không có một cấu hình phù hợp cho tất cả.
+- Bản rút gọn bỏ thời hạn bảo hành, điều kiện giao nhận và cam kết tư vấn, lắp đặt, hậu mãi.
+- Script khớp 292 sản phẩm ở local nhưng chỉ 2 trên 109 sản phẩm có chính sách riêng ở production. Nếu chạy, chính sách sẽ không đồng nhất.
 
-## Trang chủ
+## Vẫn giữ trong code
 
-| Vị trí | Hiện tại | Đề xuất |
+| Vị trí | Thay đổi | Lý do |
 |---|---|---|
-| H2 khối giới thiệu (trùng ý H1) | Cung cấp thiết bị và thi công năng lượng mặt trời | Về Phúc Thịnh Solar |
-| H2 khối đại lý | ĐĂNG KÝ ĐẠI LÝ | Đăng ký đại lý |
+| Trang chủ, tiêu đề dự phòng của khối giới thiệu | "Về Phúc Thịnh Solar" | Chỉ dùng khi CMS trống, phần mô tả bên dưới vẫn nêu đủ lĩnh vực |
+| Trang chủ, khối đại lý | "Đăng ký đại lý" | Chỉ đổi kiểu chữ hoa |
 
-## Trang Giới thiệu
-
-**Đoạn giới thiệu (74 từ → 38 từ)**
-
-Đề xuất: Phúc Thịnh Solar nhập khẩu, phân phối thiết bị năng lượng mặt trời chính hãng và thi công điện mặt trời cho hộ gia đình, doanh nghiệp trên toàn quốc. Sứ mệnh của chúng tôi: "Mang lại sự phồn thịnh cho khách hàng".
-
-**Mốc lịch sử đầu tiên (77 từ → 33 từ)**
-
-Đề xuất: Thành lập tại Gia Lai, Phúc Thịnh Solar phân phối thiết bị chính hãng từ Huawei, Sharp, Sungrow, Blue Carbon, Jindian… Những năm sau đó, công ty mở rộng mạng lưới khách hàng và đội ngũ thi công.
-
-## Trang Liên hệ
-
-Hiện tại: Trao đổi cùng đội ngũ Phúc Thịnh Solar để chọn cấu hình phù hợp cho gia đình, cửa hàng hoặc công trình.
-
-Đề xuất: Trao đổi để chọn cấu hình phù hợp cho gia đình, cửa hàng hoặc công trình.
-
-## Chính sách riêng trên trang sản phẩm (86 từ → 46 từ)
-
-Đề xuất:
-
-- Giá, tồn kho và thời gian giao hàng được xác nhận khi đặt hàng.
-- Hỗ trợ tư vấn model, lắp đặt và kỹ thuật theo nhu cầu công trình.
-- Bảo hành theo chính sách của từng sản phẩm hoặc nhà sản xuất.
-- Hóa đơn và chứng từ cung cấp theo đơn hàng.
+Câu trên trang Liên hệ đã trả về bản đầy đủ: "Trao đổi cùng đội ngũ Phúc Thịnh Solar để chọn cấu hình phù hợp cho gia đình, cửa hàng hoặc công trình."

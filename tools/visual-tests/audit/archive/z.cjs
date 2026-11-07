@@ -1,0 +1,7 @@
+const {chromium}=require('playwright');
+(async()=>{const b=await chromium.launch();const c=await b.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,locale:'vi-VN'});
+const checks=[['/gioi-thieu/','là đơn vị chuyên nhập khẩu'],['/gioi-thieu/','hậu mãi tận tâm'],['/gioi-thieu/','dịch vụ lắp đặt chuyên nghiệp'],['/giai-phap/','khả năng mở rộng trong tương lai'],['/lien-he/','Trao đổi cùng đội ngũ']];
+for(const [u,t] of checks){const p=await c.newPage();await p.goto('http://localhost:3100'+u,{waitUntil:'networkidle'}).catch(()=>{});await p.waitForTimeout(800);console.log(u,JSON.stringify(t),await p.evaluate(t=>document.body.innerText.includes(t),t));await p.close()}
+const p=await c.newPage();await p.goto('http://localhost:3100/san-pham/',{waitUntil:'domcontentloaded'});await p.waitForTimeout(1200);const h=await p.evaluate(()=>[...document.querySelectorAll('main a[href]')].map(a=>a.getAttribute('href')).find(h=>/^\/san-pham\/[^/?]+/.test(h)||/^\/[a-z0-9-]{15,}/.test(h)));console.log('pdp',h);await p.goto('http://localhost:3100'+h,{waitUntil:'domcontentloaded'});await p.waitForTimeout(1500);for(let i=0;i<14;i++){await p.evaluate(()=>scrollBy(0,innerHeight));await p.waitForTimeout(80)}
+for(const t of ['thời hạn cụ thể đối chiếu','điều kiện giao nhận','xử lý kỹ thuật']){console.log('pdp',JSON.stringify(t),await p.evaluate(t=>document.documentElement.textContent.includes(t),t))}
+await b.close()})()

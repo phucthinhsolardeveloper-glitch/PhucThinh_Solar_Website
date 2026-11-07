@@ -22,34 +22,11 @@ const SHORT_CHAPTER_LABELS: Record<string, string> = {
 function shortChapterLabel(title: string) { return SHORT_CHAPTER_LABELS[title.trim()] ?? '' }
 
 const activeId = ref('')
-let observer: IntersectionObserver | undefined
-onMounted(() => {
-  if (!('IntersectionObserver' in window)) return
-  observer = new IntersectionObserver((records) => {
-    for (const record of records) if (record.isIntersecting) activeId.value = record.target.id
-  // Phones: a tapped chapter lands just under the floating index, so the band has to reach up there.
-  }, { rootMargin: window.matchMedia('(max-width: 820px)').matches ? '-8% 0px -70% 0px' : '-35% 0px -55% 0px' })
-  for (const chapter of chapters.value) {
-    const el = chapter.id ? document.getElementById(chapter.id) : null
-    if (el) observer.observe(el)
-  }
-})
-onBeforeUnmount(() => observer?.disconnect())
-
 // Phones: the chapter index sits under the header while it shows, and at the top once it hides.
 const { isHeaderHidden } = useSiteHeader()
 const indexList = ref<HTMLElement | null>(null)
-// Keep the current chapter's pill in view. Moves only the rail, never the page; no-op when the index fits.
-watch(activeId, async () => {
-  await nextTick()
-  const list = indexList.value
-  const link = list?.querySelector<HTMLElement>('[aria-current]')
-  if (!list || !link || list.scrollWidth <= list.clientWidth) return
-  const listRect = list.getBoundingClientRect()
-  const linkRect = link.getBoundingClientRect()
-  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  list.scrollTo({ left: list.scrollLeft + linkRect.left - listRect.left - (list.clientWidth - linkRect.width) / 2, behavior: reduced ? 'auto' : 'smooth' })
-})
+useSlidingPill(indexList, 'story-chapters', { chip: 'a' })
+const chapterSpy = useSectionSpy(() => chapters.value.flatMap((chapter) => chapter.id ? [chapter.id] : []), activeId, indexList)
 </script>
 
 <template>
@@ -62,7 +39,7 @@ watch(activeId, async () => {
       <div class="pts-container">
         <ul ref="indexList">
           <li v-for="chapter in indexChapters" :key="chapter.id">
-            <a :href="`#${chapter.id}`" :aria-current="activeId === chapter.id ? 'true' : undefined">
+            <a :href="`#${chapter.id}`" :aria-current="activeId === chapter.id ? 'true' : undefined" @click="chapterSpy.lockTo(chapter.id)">
               <span :class="shortChapterLabel(chapter.title) ? 'sr-only' : ''">{{ chapter.title }}</span>
               <span v-if="shortChapterLabel(chapter.title)" aria-hidden="true">{{ shortChapterLabel(chapter.title) }}</span>
             </a>
@@ -248,7 +225,7 @@ watch(activeId, async () => {
 .chapter-lead :deep(p) { margin: 14px 0 0; max-width: 62ch; color: #4a5a72; font-size: clamp(17px, 1.25vw, 19px); line-height: 1.72; }
 
 /* Chapter index */
-.story-index { position: relative; z-index: 2; margin-top: clamp(8px, 2vw, 24px); border-block: 1px solid rgb(10 34 81 / 10%); background: #fff; }
+.story-index { position: relative; z-index: 2; margin-top: 0; border-block: 1px solid rgb(10 34 81 / 10%); background: #fff; }
 .story-index ul { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin: 0; padding: 0; list-style: none; }
 .story-index ul::-webkit-scrollbar { display: none; }
 .story-index li { min-width: 0; }
@@ -257,6 +234,13 @@ watch(activeId, async () => {
 .story-index a::after { content: ''; position: absolute; inset: auto 0 -1px; height: 3px; background: var(--color-gold-500); transform: scaleX(0); transform-origin: left; transition: transform 0.45s var(--ease); }
 .story-index a:hover, .story-index a[aria-current] { color: var(--color-navy-950); background: #f6f8fb; }
 .story-index a:hover::after, .story-index a[aria-current]::after { transform: scaleX(1); }
+[data-pill-rail] > li + li > a { border-left: 0; }
+.story-index [data-pill-rail] { gap: 6px; padding-block: 8px; }
+.story-index [data-pill-rail] a { min-height: 48px; padding-block: 8px; border-radius: var(--radius-btn); }
+.story-index [data-pill-rail] a:hover:not([data-pill-on]) { background: #f1f4f9; }
+.story-index [data-pill-rail] a[data-pill-on] { background: none; color: #fff; }
+.story-index [data-pill-rail] a::after { display: none; }
+.story-index [data-pill-rail] a[aria-current]:not([data-pill-on]) { background: none; }
 .story-index a:focus-visible { outline: 3px solid var(--color-gold-500); outline-offset: -3px; }
 
 /* Match */

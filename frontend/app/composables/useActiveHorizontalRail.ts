@@ -6,17 +6,16 @@ export function useActiveHorizontalRail(railRef: Ref<HTMLElement | null | undefi
   function alignActiveItem() {
     if (!import.meta.client || !railRef.value) return
     const rail = railRef.value
+    // A rail with a sliding pill moves itself, on the pill's own clock.
+    if (rail.hasAttribute('data-pill-rail')) return
     const active = rail.querySelector<HTMLElement>('[aria-current="page"], [aria-current="location"]')
     if (!active) return
 
     const maxScrollLeft = Math.max(0, rail.scrollWidth - rail.clientWidth)
     const railRect = rail.getBoundingClientRect()
     const activeRect = active.getBoundingClientRect()
-    const visibleLeft = railRect.left + rail.clientLeft + 12
-    const visibleRight = railRect.left + rail.clientLeft + rail.clientWidth - 12
-    let targetLeft = rail.scrollLeft
-    if (activeRect.left < visibleLeft) targetLeft += activeRect.left - visibleLeft
-    else if (activeRect.right > visibleRight) targetLeft += activeRect.right - visibleRight
+    // Centred, so the chips on both sides stay in view and the next one is always within reach.
+    let targetLeft = rail.scrollLeft + (activeRect.left + activeRect.width / 2) - (railRect.left + rail.clientLeft + rail.clientWidth / 2)
     targetLeft = Math.min(maxScrollLeft, Math.max(0, targetLeft))
     if (Math.abs(targetLeft - rail.scrollLeft) < 1) {
       firstAlignment = false

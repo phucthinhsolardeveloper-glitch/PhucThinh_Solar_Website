@@ -7,6 +7,7 @@ const { active: isMigrationPreview } = useMigrationLinks()
 const filtersPath = computed(() => isMigrationPreview.value ? '/migration-projects-preview/' : '/du-an-da-thuc-hien/')
 const railRef = ref<HTMLElement | null>(null)
 useActiveHorizontalRail(railRef)
+useSlidingPill(railRef, 'projects')
 
 function categoryHref(category: PublicProjectCategory): string {
   return isMigrationPreview.value
@@ -18,7 +19,7 @@ function categoryHref(category: PublicProjectCategory): string {
 <template>
   <nav ref="railRef" class="flex gap-2 overflow-x-auto py-0.5 pb-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" :aria-label="filtersLabel">
     <NuxtLink
-      class="public-filter-chip flex min-h-11 flex-none items-center gap-[7px] whitespace-nowrap px-[13px] no-underline"
+      class="public-filter-chip flex min-h-11 flex-none items-center gap-2 whitespace-nowrap px-[15px] text-[15px] font-bold no-underline"
       :class="!selected ? 'bg-navy-800 text-white' : 'text-navy-800'"
       :to="filtersPath"
       :aria-current="!selected ? 'page' : undefined"
@@ -28,12 +29,12 @@ function categoryHref(category: PublicProjectCategory): string {
     <NuxtLink
       v-for="category in categories"
       :key="category.id"
-      class="public-filter-chip flex min-h-11 flex-none items-center gap-[7px] whitespace-nowrap px-[13px] no-underline"
+      class="public-filter-chip flex min-h-11 flex-none items-center gap-2 whitespace-nowrap px-[15px] text-[15px] font-bold no-underline"
       :class="selected?.id === category.id ? 'bg-navy-800 text-white' : 'text-navy-800'"
       :to="categoryHref(category)"
       :aria-current="selected?.id === category.id ? 'page' : undefined"
     >
-      <img v-if="category.image" :src="category.image" alt="" class="h-6 w-6 object-contain" width="24" height="24">
+      <img v-if="category.image" :src="category.image" alt="" class="h-[22px] w-[22px] object-contain" width="22" height="22">
       {{ category.name }}
     </NuxtLink>
   </nav>

@@ -94,7 +94,7 @@ test('homepage v4 giữ đủ mạch nội dung và hero là một slider bốn 
   expect(await page.locator('.pts-home-category-rail .pts-home-category-copy').first().evaluate(copy => getComputedStyle(copy).backgroundImage)).toContain('linear-gradient');
   const about = page.locator('.pts-home-about');
   await expect(about).toBeVisible();
-  await expect(about.locator('h2')).toHaveText('Cung cấp thiết bị và thi công năng lượng mặt trời');
+  await expect(about.locator('h2')).toHaveText('Về Phúc Thịnh Solar');
   await expect(about.locator('p')).toHaveText('Phúc Thịnh Solar cung cấp đèn năng lượng mặt trời, tấm pin, biến tần, pin lưu trữ và thiết bị bơm nước. Chúng tôi tư vấn lựa chọn thiết bị, thiết kế và thi công hệ thống phù hợp với nhu cầu sử dụng và ngân sách của khách hàng.');
   await expect(about.locator('.pts-home-text-link')).toContainText('Tìm hiểu về Phúc Thịnh Solar');
   await expect(about.locator('.pts-home-about-points li')).toHaveCount(4);

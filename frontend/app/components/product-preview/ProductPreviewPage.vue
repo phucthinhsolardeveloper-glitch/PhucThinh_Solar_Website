@@ -52,28 +52,8 @@ const navItems = computed(() => {
   return items
 })
 const activeSection = ref('')
-let observer: IntersectionObserver | null = null
-
-function setupObserver() {
-  observer?.disconnect()
-  if (!import.meta.client) return
-  const nodes = navItems.value
-    .map((item) => document.getElementById(item.id))
-    .filter((node): node is HTMLElement => Boolean(node))
-  if (!nodes.length) return
-  if (!activeSection.value) activeSection.value = nodes[0]?.id ?? ''
-  observer = new IntersectionObserver((entries) => {
-    const visible = entries
-      .filter((entry) => entry.isIntersecting)
-      .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)
-    const first = visible[0]?.target as HTMLElement | undefined
-    if (first?.id) activeSection.value = first.id
-  }, { rootMargin: '-120px 0px -60% 0px', threshold: [0, 0.01] })
-  nodes.forEach((node) => observer?.observe(node))
-}
-onMounted(() => nextTick(setupObserver))
-watch(navItems, () => nextTick(setupObserver), { deep: true })
-onBeforeUnmount(() => observer?.disconnect())
+useSlidingPill(productNavRef, 'product-sections', { chip: 'a' })
+const sectionSpy = useSectionSpy(() => navItems.value.map((item) => item.id), activeSection, productNavRef)
 
 function openReviewsSection() {
   if (!import.meta.client) return
@@ -188,7 +168,8 @@ function toggleDescription() {
           :href="'#' + item.id"
           :aria-current="activeSection === item.id ? 'location' : undefined"
           class="inline-flex min-h-11 items-center rounded-chip px-3.5 py-1.5 text-[13px] font-bold no-underline transition-all duration-150 active:scale-95 cursor-pointer"
-          :class="activeSection === item.id ? 'bg-navy-800 text-gold-300 shadow-xs' : 'text-navy-800 hover:bg-slate-100 hover:text-gold-700'"
+          :class="activeSection === item.id ? 'text-white' : 'text-navy-800 hover:text-gold-700'"
+          @click="sectionSpy.lockTo(item.id)"
         >{{ item.label }}</a>
       </div>
     </nav>

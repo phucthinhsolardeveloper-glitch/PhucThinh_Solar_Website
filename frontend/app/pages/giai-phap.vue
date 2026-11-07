@@ -110,6 +110,8 @@ const recommendedSolutions = ref<string[]>([])
 </template>
 
 <style scoped>
+/* The chapter bar follows the solution tiles directly. */
+.solution-main :deep(#cac-giai-phap) { padding-bottom: 8px; }
 .solutions-energy-page { overflow: clip; }
 .solution-main { padding-top: 4px; }
 .solution-energy-intro { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(280px, .9fr); align-items: center; gap: clamp(24px, 5vw, 72px); padding: clamp(32px, 5vw, 68px) 0 clamp(30px, 4vw, 54px); }

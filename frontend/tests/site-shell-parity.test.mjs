@@ -29,11 +29,10 @@ test('Nuxt footer follows PHP column ownership and keeps location rows flat', ()
 })
 
 test('catalog category rail centers the selected item after navigation', () => {
-  const catalog = read('../app/components/catalog/CatalogPage.vue')
-  assert.match(catalog, /ref="categoryNavRef"/)
-  assert.match(catalog, /querySelector<HTMLElement>\('\[aria-current="page"\]'\)/)
-  assert.match(catalog, /nav\.scrollTo\(\{ left: Math\.max\(0, left\), behavior: reducedMotion \? 'auto' : 'smooth' \}\)/)
-  assert.match(catalog, /watch\(\(\) => selectedCategory\.value\?\.url/)
+  const catalog = readFileSync(new URL('../app/components/catalog/CatalogPage.vue', import.meta.url), 'utf8')
+  const pill = readFileSync(new URL('../app/composables/useSlidingPill.ts', import.meta.url), 'utf8')
+  assert.match(catalog, /useSlidingPill\(categoryNavRef, 'catalog'/)
+  assert.match(pill, /chip\.offsetLeft \+ chip\.offsetWidth \/ 2 - rail\.clientWidth \/ 2/)
 })
 
 test('footer rich text overrides editorial body color on dark surfaces', () => {

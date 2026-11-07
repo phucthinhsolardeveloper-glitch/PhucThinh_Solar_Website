@@ -12,17 +12,22 @@ let remaining = 0
 let startedAt = 0
 const SHOW_MS = 4500
 
+// The cart lives in the header on desktop and in the dock on phones, so aim at whichever is on screen.
+function visibleCartIcon() {
+  return [...document.querySelectorAll<HTMLElement>('[data-cart-target]')].find((el) => el.getClientRects().length > 0) ?? null
+}
+
 function cartTarget(): { rect: DOMRect; lift: number } | null {
-  const el = document.querySelector<HTMLElement>('[data-cart-target]')
+  const el = visibleCartIcon()
   if (!el) return null
   // A hidden sticky header is translated up; aim where the icon will be once it slides back.
-  const shell = document.querySelector<HTMLElement>('.pts-site-header')
+  const shell = el.closest<HTMLElement>('.pts-site-header')
   const ty = shell ? new DOMMatrixReadOnly(getComputedStyle(shell).transform).m42 : 0
   return { rect: el.getBoundingClientRect(), lift: ty < 0 ? -ty : 0 }
 }
 
 function bumpCart() {
-  const el = document.querySelector<HTMLElement>('[data-cart-target]')
+  const el = visibleCartIcon()
   if (!el) return
   el.classList.remove('cart-bump')
   void el.offsetWidth

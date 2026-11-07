@@ -8,6 +8,7 @@ const { active: isMigrationPreview } = useMigrationLinks()
 const filtersPath = computed(() => isMigrationPreview.value ? '/migration-news-preview/' : '/tin-tuc/')
 const railRef = ref<HTMLElement | null>(null)
 useActiveHorizontalRail(railRef)
+useSlidingPill(railRef, 'news')
 
 function categoryHref(category: PublicNewsCategory): string {
   if (!isMigrationPreview.value) return `${category.canonicalPath}${queryString.value}`

@@ -38,6 +38,7 @@ const hasContent = computed(() => Boolean(props.data.solution.content.html || pr
 const heroRef = ref<HTMLElement | null>(null)
 const solutionRailRef = ref<HTMLElement | null>(null)
 useActiveHorizontalRail(solutionRailRef)
+useSlidingPill(solutionRailRef, 'solutions')
 let frame = 0
 function onScroll() {
   cancelAnimationFrame(frame)
@@ -49,57 +50,28 @@ function onScroll() {
   })
 }
 
-// Switcher: the navy pill flows to the chosen item (stretching across, then settling) before the page swaps.
-const pillRef = ref<HTMLElement | null>(null)
+// The chosen chip lights up at the tap, before the next page arrives.
 const pending = ref('')
 const direction = ref<'next' | 'prev'>('next')
-const activeIndex = computed(() => props.data.navigation.items.findIndex((item) => item.active))
 const currentSlug = computed(() => pending.value || props.data.solution.slug)
 let reducedMotion = false
-
-function placePill(animate: boolean) {
-  const rail = solutionRailRef.value
-  const pill = pillRef.value
-  const target = rail?.querySelector<HTMLElement>(`[data-slug="${currentSlug.value}"]`)
-  if (!rail || !pill || !target) { if (pill) pill.style.opacity = '0'; return }
-  const from = { left: pill.offsetLeft, width: pill.offsetWidth }
-  const to = { left: target.offsetLeft, width: target.offsetWidth }
-  pill.style.opacity = '1'
-  pill.style.left = `${to.left}px`
-  pill.style.width = `${to.width}px`
-  if (!animate || reducedMotion || !from.width || from.left === to.left) return
-  const spanLeft = Math.min(from.left, to.left)
-  const spanWidth = Math.max(from.left + from.width, to.left + to.width) - spanLeft
-  pill.animate([
-    { left: `${from.left}px`, width: `${from.width}px`, transform: 'scaleY(1)' },
-    { left: `${spanLeft}px`, width: `${spanWidth}px`, transform: 'scaleY(0.78)', offset: 0.45 },
-    { left: `${to.left}px`, width: `${to.width}px`, transform: 'scaleY(1.06)', offset: 0.82 },
-    { left: `${to.left}px`, width: `${to.width}px`, transform: 'scaleY(1)' },
-  ], { duration: 620, easing: 'cubic-bezier(0.65, 0, 0.35, 1)' })
+// Starts the next page's data at touch-down, a beat before the tap completes.
+function warmSolution(slug: string) {
+  if (slug !== props.data.solution.slug) void window.fetch(`/_migration/solution-detail?slug=${encodeURIComponent(slug)}`).catch(() => {})
 }
-
 function choose(slug: string, index: number) {
   if (slug === props.data.solution.slug) return
-  direction.value = index >= activeIndex.value ? 'next' : 'prev'
+  direction.value = index >= props.data.navigation.items.findIndex((item) => item.active) ? 'next' : 'prev'
   pending.value = slug
-  nextTick(() => placePill(true))
 }
+watch(() => props.data.solution.slug, () => { pending.value = '' })
 
-watch(() => props.data.solution.slug, () => {
-  pending.value = ''
-  nextTick(() => placePill(false))
-})
-
-function onResize() { placePill(false) }
 onMounted(() => {
   reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  placePill(false)
-  window.addEventListener('resize', onResize, { passive: true })
   if (!reducedMotion) window.addEventListener('scroll', onScroll, { passive: true })
 })
 onBeforeUnmount(() => {
   window.removeEventListener('scroll', onScroll)
-  window.removeEventListener('resize', onResize)
   cancelAnimationFrame(frame)
 })
 </script>
@@ -109,8 +81,10 @@ onBeforeUnmount(() => {
     <article>
       <Transition :name="`swap-${direction}`" mode="out-in">
       <header ref="heroRef" :key="data.solution.slug" class="solution-hero" :class="{ 'has-image': data.solution.image }">
-        <img v-if="data.solution.image" :src="optimizedImage(data.solution.image, 1800, 1200)" :alt="data.solution.title" class="solution-hero__image" width="1600" height="1000" fetchpriority="high">
-        <span class="solution-hero__shade" aria-hidden="true" />
+        <div class="solution-hero__photo">
+          <img v-if="data.solution.image" :src="optimizedImage(data.solution.image, 1800, 1200)" :alt="data.solution.title" class="solution-hero__image" width="1600" height="1000" fetchpriority="high">
+          <span class="solution-hero__shade" aria-hidden="true" />
+        </div>
         <div class="pts-container solution-hero__inner">
           <a v-if="data.solution.category" class="solution-hero__category m-lg" :href="links.generic(data.navigation.allUrl)">{{ data.solution.category }}</a>
           <h1>{{ data.solution.title }}</h1>
@@ -132,15 +106,14 @@ onBeforeUnmount(() => {
 
       <nav class="solution-rail" aria-label="Các giải pháp khác">
         <div ref="solutionRailRef" class="pts-container solution-rail__track">
-          <span ref="pillRef" class="solution-rail__pill" aria-hidden="true" />
           <NuxtLink
             v-for="(item, index) in data.navigation.items"
             :key="item.slug"
-            class="solution-rail__item"
-            :data-slug="item.slug"
-            :class="{ 'is-on': currentSlug === item.slug }"
-            :aria-current="item.active ? 'page' : undefined"
+            class="public-filter-chip flex min-h-11 flex-none items-center whitespace-nowrap px-[15px] text-[15px] font-bold no-underline"
+            :class="currentSlug === item.slug ? 'text-white' : 'text-navy-800'"
+            :aria-current="currentSlug === item.slug ? 'page' : undefined"
             :to="links.generic(item.url)"
+            @pointerdown="warmSolution(item.slug)"
             @click="choose(item.slug, index)"
           >{{ item.title }}</NuxtLink>
         </div>
@@ -200,6 +173,7 @@ onBeforeUnmount(() => {
 <style scoped>
 /* One fixed hero height for every solution so switching never resizes the page. */
 .solution-hero { --ease: cubic-bezier(0.22, 1, 0.36, 1); position: relative; isolation: isolate; display: flex; height: clamp(560px, 72vh, 700px); align-items: flex-end; overflow: hidden; background: #061537; color: #fff; }
+.solution-hero__photo { display: contents; }
 .solution-hero__image { position: absolute; inset: -8% 0 0; z-index: -2; width: 100%; height: 108%; object-fit: cover; transform: translate3d(0, var(--shift, 0), 0) scale(1.04); animation: hero-in 1.1s var(--ease) both; }
 .solution-hero__shade { position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, rgb(6 21 55 / 92%) 0%, rgb(6 21 55 / 70%) 42%, rgb(6 21 55 / 20%) 100%), linear-gradient(0deg, #061537 0%, rgb(6 21 55 / 0%) 45%); }
 .solution-hero:not(.has-image) .solution-hero__shade { background: radial-gradient(60% 90% at 85% 10%, rgb(228 168 73 / 20%), transparent 70%); }
@@ -221,12 +195,7 @@ onBeforeUnmount(() => {
 
 .solution-rail { position: relative; z-index: 2; border-bottom: 1px solid rgb(10 34 81 / 10%); background: #fff; }
 .solution-rail__track { position: relative; display: flex; gap: 6px; overflow-x: auto; padding-block: 10px; scrollbar-width: none; }
-.solution-rail__pill { position: absolute; top: 10px; left: 0; z-index: 0; width: 0; height: 44px; border-radius: 16px; background: var(--color-navy-950); box-shadow: 0 10px 24px -14px rgb(6 21 55 / 70%); opacity: 0; pointer-events: none; transform-origin: center; }
 .solution-rail__track::-webkit-scrollbar { display: none; }
-.solution-rail__item { position: relative; z-index: 1; display: inline-flex; min-height: 44px; flex: none; align-items: center; gap: 8px; padding: 0 16px; border-radius: 16px; color: var(--color-navy-800); font-size: 15px; font-weight: 700; white-space: nowrap; text-decoration: none; transition: background-color 0.25s ease, color 0.25s ease; }
-.solution-rail__item:not(.is-on):hover { background: #eef2f8; }
-.solution-rail__item.is-on { color: var(--color-gold-300); transition-delay: 0.18s; }
-.solution-rail__item:focus-visible { outline: 2px solid var(--color-gold-400); outline-offset: -4px; }
 .solution-story :deep(.story-index) { margin-top: 0; }
 
 @keyframes hero-in { from { opacity: 0; transform: scale(1.08); } }
@@ -250,13 +219,14 @@ onBeforeUnmount(() => {
 /* Phones: a photo header with the title landing on navy, then the full summary, so the hero
    sizes to its text. Equipment becomes a swipe rail of cards that show their whole description. */
 @media (max-width: 820px) {
-  .solution-hero { display: block; height: auto; }
-  .solution-hero__image { inset: 0 0 auto; height: 240px; transform: none; }
-  .solution-hero__shade, .solution-hero:not(.has-image) .solution-hero__shade { inset: 0 0 auto; height: 240px; }
+  /* Every solution shares one frame, so the switcher below stays put between pages. A shorter text gives its space to the photo. */
+  .solution-hero { display: grid; height: auto; min-height: var(--solution-hero-height); grid-template-rows: minmax(148px, 1fr) auto; align-items: stretch; --solution-hero-height: clamp(561px, calc(561px + (412px - 100vw) * 1.5), 690px); }
+  .solution-hero__image, .solution-hero__shade, .solution-hero:not(.has-image) .solution-hero__shade { position: absolute; inset: 0 0 auto; width: 100%; height: calc(100% + 92px); transform: none; }
+  .solution-hero__photo { position: relative; display: block; grid-row: 1; grid-column: 1; min-height: 0; }
+  .solution-hero__inner { position: static; grid-row: 2; grid-column: 1; }
   .solution-hero__shade { background: linear-gradient(180deg, rgb(6 21 55 / 25%) 0%, rgb(6 21 55 / 35%) 45%, #061537 100%); }
-  .solution-hero__inner { padding-block: 12px 20px; }
-  .solution-hero__category { min-height: 44px; margin-bottom: 92px; padding: 0 16px; color: var(--color-navy-950); }
-  .solution-hero:not(.has-image) .solution-hero__category { margin-bottom: 14px; }
+  .solution-hero__inner { padding-block: 0 20px; }
+  .solution-hero__category { position: absolute; top: 12px; left: 16px; min-height: 44px; margin-bottom: 0; padding: 0 16px; color: var(--color-navy-950); }
   .solution-hero h1 { max-width: none; font-size: clamp(28px, 7.6vw, 31px); font-weight: 800; line-height: 1.15; letter-spacing: -0.02em; }
   .solution-hero__summary { display: block; margin-top: 10px; overflow: visible; font-size: 15.5px; line-height: 1.55; -webkit-line-clamp: unset; }
   .solution-hero__actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: center; gap: 6px 12px; margin-top: 16px; }

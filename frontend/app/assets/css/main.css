@@ -682,6 +682,11 @@
     box-shadow: 0 2px 5px rgba(6, 21, 55, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
   }
 
+  /* CMS icons are dark line art, so the selected chip turns them white. */
+  .public-filter-chip[aria-current="page"] img {
+    filter: brightness(0) invert(1);
+  }
+
   .public-filter-chip:active,
   .public-neutral-button:active:not(:disabled) {
     transform: translateY(0);
@@ -1077,3 +1082,122 @@
   h1:not(.sr-only):not(#home-title):not(.pdp-title) { font-size: 26px !important; font-weight: 800 !important; line-height: 1.15 !important; letter-spacing: -.02em; }
 }
 
+/* Clicking a photo opens it on clear glass over the page: the same light direction as the header, on every viewer. */
+.photo-viewer, .glass-overlay {
+  background: rgb(240 245 252 / 58%);
+  color: var(--color-navy-950);
+  -webkit-backdrop-filter: blur(22px) saturate(150%);
+  backdrop-filter: blur(22px) saturate(150%);
+}
+@supports not (backdrop-filter: blur(1px)) {
+  .photo-viewer, .glass-overlay { background: rgb(240 245 252 / 96%); }
+}
+.photo-viewer__media { border-radius: var(--radius-btn); filter: drop-shadow(0 16px 26px rgb(6 21 55 / 26%)); }
+.photo-viewer__btn {
+  border: 1px solid rgb(255 255 255 / 90%);
+  background: rgb(255 255 255 / 92%);
+  box-shadow: 0 6px 18px rgb(6 21 55 / 16%);
+  color: var(--color-navy-950);
+  transition: background-color .2s ease, transform .2s ease;
+}
+.photo-viewer__btn { z-index: 2; }
+.photo-viewer__btn:hover { background: #fff; }
+.photo-viewer__btn:active { transform: scale(.95); }
+.photo-viewer__btn:focus-visible { outline: 2px solid var(--color-gold-500); outline-offset: 2px; }
+.photo-viewer__label {
+  border-radius: var(--radius-btn);
+  background: rgb(255 255 255 / 92%);
+  box-shadow: 0 6px 18px rgb(6 21 55 / 12%);
+  color: var(--color-navy-950);
+}
+/* Phones: the arrows leave the photo and sit beside the counter, in reach of the thumb. */
+@media (max-width: 820px) {
+  .photo-viewer__media { max-height: 76dvh; }
+  .photo-viewer__arrow { top: auto; bottom: calc(14px + env(safe-area-inset-bottom)); translate: none; }
+}
+
+/* Chip rails with a gliding pill: each chip's surface moves to a layer under the pill, its label stays above. */
+[data-pill-rail] { isolation: isolate; }
+[data-pill-rail]:not(.sticky) { position: relative; }
+.rail-pill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(180deg, #123a7a 0%, #0a2251 100%);
+  box-shadow: 0 2px 5px rgb(6 21 55 / 20%), inset 0 1px 0 rgb(255 255 255 / 10%);
+  opacity: 0;
+  pointer-events: none;
+  transform-origin: left center;
+  will-change: transform;
+}
+[data-pill-rail] .public-filter-chip {
+  position: relative;
+  background: none;
+  box-shadow: none;
+  color: var(--color-navy-800);
+  transition: color .28s ease, transform 180ms ease;
+}
+[data-pill-rail] .public-filter-chip::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgb(255 255 255 / 98%) 0%, rgb(241 243 246 / 94%) 100%);
+  box-shadow: 0 1px 2px rgb(6 21 55 / 10%), inset 0 1px 0 rgb(255 255 255 / 95%);
+  transition: opacity .2s ease;
+}
+[data-pill-rail] .public-filter-chip:not([data-pill-on]):hover { background: none; box-shadow: none; }
+[data-pill-rail] .public-filter-chip[data-pill-on] { color: #fff; }
+[data-pill-rail] .public-filter-chip[data-pill-on]::before { opacity: 0; }
+[data-pill-rail] .public-filter-chip img { transition: filter .28s ease; }
+[data-pill-rail] .public-filter-chip:not([data-pill-on]) img { filter: none; }
+[data-pill-rail] .public-filter-chip[data-pill-on] img { filter: brightness(0) invert(1); }
+
+/* Product category rail: the same glide in the page's gold, with each chip keeping its outline. */
+.rail-pill[data-tone="gold"] { background: var(--pts-gold-gradient); box-shadow: inset 0 1px 0 rgb(255 255 255 / 30%), 0 2px 6px rgb(6 21 55 / 16%); }
+[data-pill-rail] .catalog-category-chip {
+  position: relative;
+  border-color: transparent !important;
+  background: none !important;
+  box-shadow: none !important;
+  color: var(--color-navy-800);
+  transition: transform 180ms ease;
+}
+[data-pill-rail] .catalog-category-chip::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: -1px;
+  border: 1px solid #d6dce5;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgb(255 255 255 / 98%) 0%, rgb(241 243 246 / 94%) 100%);
+  box-shadow: 0 1px 2px rgb(6 21 55 / 10%), inset 0 1px 0 rgb(255 255 255 / 95%);
+  transition: opacity .2s ease, border-color .18s ease;
+}
+[data-pill-rail] .catalog-category-chip:not([data-pill-on]):hover::before { border-color: rgb(10 34 81 / 58%); }
+[data-pill-rail] .catalog-category-chip[data-pill-on] { color: var(--color-navy-950); }
+[data-pill-rail] .catalog-category-chip[data-pill-on]::before { opacity: 0; }
+
+/* Section rails on product, about and solution pages: text chips with the same gliding pill. */
+[data-pill-rail] > a, [data-pill-rail] > div > a, [data-pill-rail] > li > a { position: relative; }
+[data-pill-rail] a[data-pill-on] { color: #fff; }
+[data-pill-rail] a[data-pill-on]:hover { background: none; color: #fff; }
+
+/* Search fields carry their own clear button, and the panel above the page stays fully readable. */
+form[role="search"] input[type="search"]::-webkit-search-cancel-button { display: none; }
+@media (min-width: 821px) { .pts-search-panel { background: #fff !important; } }
+
+/* Lines end sensibly: headings balance, body text avoids a lone last word (see plugins/vi-line-breaks.client.ts). */
+h1, h2, h3, h4 { text-wrap: balance; }
+p, li, figcaption, dd, blockquote { text-wrap: pretty; }
+
+/* Dropdown options show the current item by their background, not the page's focus outline. */
+[role="option"]:focus-visible, [role="option"][data-highlighted] { outline: none !important; box-shadow: none; }
+[role="option"][data-highlighted] { background: #f1f4f9; }
+
+/* Long text: straight edges on both sides, with the last line left as it falls. */
+.text-justified { text-align: justify; text-align-last: left; text-justify: inter-word; text-wrap: wrap; }
+.text-justified .m-chunk { text-align: inherit; text-align-last: left; }

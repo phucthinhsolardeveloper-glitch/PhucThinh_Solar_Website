@@ -108,6 +108,7 @@ function cardImageSrcSet(src: string): string | undefined {
   .news-row .news-thumb { aspect-ratio: 1 !important; width: 100%; border-radius: var(--radius-md); }
   .news-row .news-body { padding: 0 !important; }
   .news-row .news-title { margin-bottom: 0; font-size: 15px !important; line-height: 1.35; -webkit-line-clamp: 3; }
-  .news-row .news-excerpt, .news-row .news-more, .news-row .news-badge { display: none !important; }
+  .news-row .news-more, .news-row .news-badge { display: none !important; }
+  .news-row .news-excerpt { margin-top: 4px; font-size: 13.5px; line-height: 1.45; -webkit-line-clamp: 2; }
 }
 </style>

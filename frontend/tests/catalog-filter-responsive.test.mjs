@@ -25,5 +25,5 @@ test('catalog query filters expose their active state to assistive technology', 
 
 test('desktop catalog filters use a light gray surface while the mobile drawer stays white', () => {
   const sidebar = read('../app/components/catalog/CatalogFilterSidebar.vue')
-  assert.match(sidebar, /drawer \? 'bg-white px-4 pb-6 pt-4' : 'bg-slate-50 p-4'/)
+  assert.match(sidebar, /drawer \? 'bg-white px-4 pb-6 pt-4' : 'rounded-md bg-slate-50 p-4'/)
 })

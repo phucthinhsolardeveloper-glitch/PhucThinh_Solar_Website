@@ -38,6 +38,7 @@ const pageKeywords = computed(() => category.value?.seo?.keywords || '')
 const pageImage = computed(() => category.value?.seo?.image || undefined)
 const solutionRailRef = ref<HTMLElement | null>(null)
 useActiveHorizontalRail(solutionRailRef)
+useSlidingPill(solutionRailRef, 'solutions')
 
 useSeoMeta({
   title: pageTitle,
@@ -92,15 +93,15 @@ usePublicSocialMeta({
 
         <nav v-if="category.navigation.length" ref="solutionRailRef" class="mb-7 flex gap-2.5 overflow-x-auto py-1 max-tb:mb-1 [scrollbar-width:none] [&amp;::-webkit-scrollbar]:hidden" aria-label="Danh mục giải pháp">
           <NuxtLink
-            class="public-filter-chip flex min-h-11 flex-none items-center whitespace-nowrap px-4 text-[13px] font-bold text-navy-800 no-underline"
+            class="public-filter-chip flex min-h-11 flex-none items-center whitespace-nowrap px-[15px] text-[15px] font-bold text-navy-800 no-underline"
             :to="links.generic('/giai-phap/')"
           >Tất cả giải pháp</NuxtLink>
           <NuxtLink
             v-for="item in category.navigation"
             :key="item.id"
-            class="public-filter-chip flex min-h-11 flex-none items-center whitespace-nowrap px-4 text-[13px] font-bold no-underline"
+            class="public-filter-chip flex min-h-11 flex-none items-center whitespace-nowrap px-[15px] text-[15px] font-bold no-underline"
             :to="links.generic(item.url)"
-            :class="item.active ? 'text-gold-300' : 'text-navy-800'"
+            :class="item.active ? 'text-white' : 'text-navy-800'"
             :aria-current="item.active ? 'page' : undefined"
           >{{ item.name }}</NuxtLink>
         </nav>

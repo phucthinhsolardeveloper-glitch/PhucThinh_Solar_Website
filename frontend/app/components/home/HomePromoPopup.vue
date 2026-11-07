@@ -82,7 +82,7 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
-.promo-popup { position: fixed; z-index: 90; inset: 0; display: grid; place-items: center; padding: 20px; background: rgb(6 21 55 / 62%); backdrop-filter: blur(6px); }
+.promo-popup { position: fixed; z-index: 90; inset: 0; display: grid; place-items: center; padding: 20px; background: rgb(240 245 252 / 58%); -webkit-backdrop-filter: blur(22px) saturate(150%); backdrop-filter: blur(22px) saturate(150%); }
 .promo-popup__card { position: relative; width: min(800px, 100%); }
 .promo-popup__media { display: block; overflow: hidden; border-radius: var(--radius-lg); background: var(--color-navy-950); box-shadow: var(--pts-shadow-float); }
 .promo-popup__media img { display: block; width: 100%; height: auto; aspect-ratio: 800 / 530; object-fit: cover; }
