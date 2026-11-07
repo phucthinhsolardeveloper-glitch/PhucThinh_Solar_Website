@@ -4,6 +4,7 @@ namespace App\Domain\News;
 
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
 use App\Domain\Pages\PageSupport;
+use App\Models\Post;
 use App\Legacy\Content\RichText;
 use App\Legacy\Support\LegacyText;
 use App\Support\SiteSettings;
@@ -32,7 +33,7 @@ class NewsDetail extends PageSupport
             return [400, ['error' => ['code' => 'BAD_QUERY']]];
         }
         $notFound = [404, ['error' => ['code' => 'ARTICLE_NOT_FOUND']]];
-        $row = $this->row("select id,id_list,id_user,namevi,slugvi,photo,descvi,contentvi,content1vi,date_created,date_updated,status,type from table_news where slugvi=? and type='tin-tuc' and find_in_set('hienthi',status) limit 1", [$slug]);
+        $row = $this->row("select id, category_id as id_list, author_id as id_user, title as namevi, slug as slugvi, coalesce(image,'') as photo, coalesce(summary,'') as descvi, coalesce(body,'') as contentvi, coalesce(extra_body,'') as content1vi, published_at as date_created, updated_at, 'hienthi' as status, 'tin-tuc' as type from posts where slug=? and kind='article' and is_visible=1 limit 1", [$slug]);
         if (! $row) {
             return $notFound;
         }
@@ -44,25 +45,25 @@ class NewsDetail extends PageSupport
         }
         $category = [];
         if ((int) $row['id_list'] > 0) {
-            $list = $this->row("select id,namevi,descvi,slugvi,status from table_news_list where id=? and type='tin-tuc' and find_in_set('hienthi',status) limit 1", [(int) $row['id_list']]);
+            $list = $this->row("select id, name as namevi, coalesce(summary,'') as descvi, slug as slugvi, 'hienthi' as status from post_categories where id=? and kind='article' and is_visible=1 limit 1", [(int) $row['id_list']]);
             if ($list && ($listSlug = LegacyText::slug($list['slugvi'])) !== '') {
                 $category = ['id' => (int) $list['id'], 'name' => self::text($list['namevi']), 'slug' => $listSlug, 'url' => '/'.$listSlug.'/'];
             }
         }
         $media = ['gallery' => [], 'videos' => []];
-        foreach ($this->rows("select photo,namevi from table_gallery where id_parent=? and com='news' and type='tin-tuc' and kind='man' and val='tin-tuc' and find_in_set('hienthi',status) order by numb,id desc", [$id]) as $photo) {
+        foreach ($this->rows("select coalesce(path,'') as photo, coalesce(caption,'') as namevi from post_media where post_id=? and kind='image' and is_visible=1 order by sort_order,id desc", [$id]) as $photo) {
             if (($image = NewsListing::media($photo['photo'])) !== '') {
                 $media['gallery'][] = ['image' => $image, 'alt' => self::text($photo['namevi'])];
             }
         }
-        foreach ($this->rows("select namevi,link_video from table_gallery where id_parent=? and com='news' and type='tin-tuc' and kind='man' and val='video' and find_in_set('hienthi',status) order by numb,id desc", [$id]) as $video) {
+        foreach ($this->rows("select coalesce(caption,'') as namevi, coalesce(video_url,'') as link_video from post_media where post_id=? and kind='video' and is_visible=1 order by sort_order,id desc", [$id]) as $video) {
             if (($url = self::videoUrl($video['link_video'])) !== '') {
                 $media['videos'][] = ['url' => $url, 'title' => self::text($video['namevi'])];
             }
         }
-        $related = $this->rows('select n.id,n.namevi,n.slugvi,n.photo,n.descvi,n.date_created,n.status,u.fullname as author from table_news n left join table_user u on u.id=n.id_user'
-            ." where n.id<>? and n.id_list=? and n.type='tin-tuc' and find_in_set('hienthi',n.status) and n.slugvi<>'' order by n.numb,n.id desc limit 12", [$id, (int) $row['id_list']]);
-        $seo = $this->row("select titlevi,descriptionvi,keywordsvi from table_seo where id_parent=? and com='news' and act='man' and type='tin-tuc' limit 1", [$id]);
+        $related = $this->rows("select n.id, n.title as namevi, n.slug as slugvi, coalesce(n.image,'') as photo, coalesce(n.summary,'') as descvi, n.published_at as date_created, 'hienthi' as status, u.name as author"
+            ." from posts n left join users u on u.id=n.author_id where n.id<>? and n.category_id <=> ? and n.kind='article' and n.is_visible=1 and n.slug<>'' order by n.sort_order,n.id desc limit 12", [$id, $row['id_list']]);
+        $seo = $this->seoOf($id);
         $seoTitle = self::text($seo['titlevi'] ?? '') ?: $title;
         if (stripos($seoTitle, 'phúc thịnh s') === false) {
             $seoTitle .= ' | Phúc Thịnh Solar';
@@ -82,7 +83,7 @@ class NewsDetail extends PageSupport
                 'canonical' => '/'.$articleSlug.'/',
                 'date' => $published,
                 'datePublished' => $published,
-                'dateModified' => self::date((int) $row['date_updated'] > 0 ? $row['date_updated'] : $row['date_created']),
+                'dateModified' => self::date(strtotime((string) $row['updated_at']) ?: $row['date_created']),
                 'author' => ['name' => $this->author($row['id_user'])],
                 'description' => $description,
                 'cover' => $cover,
@@ -108,15 +109,15 @@ class NewsDetail extends PageSupport
             return [400, ['error' => ['code' => 'BAD_QUERY']]];
         }
         $notFound = [404, ['error' => ['code' => 'POLICY_NOT_FOUND']]];
-        $row = $this->row("select id,id_list,id_user,namevi,slugvi,photo,descvi,contentvi,date_created,status from table_news where slugvi=? and type='chinh-sach' and find_in_set('hienthi',status) limit 1", [$slug]);
+        $row = $this->row("select id, category_id as id_list, author_id as id_user, title as namevi, slug as slugvi, coalesce(image,'') as photo, coalesce(summary,'') as descvi, coalesce(body,'') as contentvi, published_at as date_created, 'hienthi' as status from posts where slug=? and kind='policy' and is_visible=1 limit 1", [$slug]);
         $plain = fn ($v) => trim((string) preg_replace('/\s+/u', ' ', strip_tags(html_entity_decode(is_scalar($v) ? (string) $v : '', ENT_QUOTES, 'UTF-8'))));
         if (! $row || ($title = $plain($row['namevi'])) === '') {
             return $notFound;
         }
         $description = $plain($row['descvi'] ?? '');
-        $related = $this->rows("select id,namevi,slugvi,photo,descvi,date_created,status from table_news where id<>? and id_list=? and type='chinh-sach' and find_in_set('hienthi',status) and slugvi<>'' order by numb,id desc limit 12",
-            [(int) $row['id'], (int) $row['id_list']]);
-        $seo = $this->row("select titlevi,descriptionvi,keywordsvi from table_seo where id_parent=? and com='news' and act='man' and type='chinh-sach' limit 1", [(int) $row['id']]);
+        $related = $this->rows("select id, title as namevi, slug as slugvi, coalesce(image,'') as photo, coalesce(summary,'') as descvi, published_at as date_created, 'hienthi' as status from posts"
+            ." where id<>? and category_id <=> ? and kind='policy' and is_visible=1 and slug<>'' order by sort_order,id desc limit 12", [(int) $row['id'], $row['id_list']]);
+        $seo = $this->seoOf((int) $row['id']);
 
         return [200, [
             'schemaVersion' => 1,
@@ -160,7 +161,7 @@ class NewsDetail extends PageSupport
     /** Admin "news-cta": hidden on purpose returns null; never configured falls back to the standard invitation. */
     private function cta(): ?array
     {
-        $rows = $this->rows("select namevi,descvi,content1vi,photo,status from table_news where type='news-cta' order by numb,id desc");
+        $rows = $this->items('news.cta');
         $cta = [];
         foreach ($rows as $row) {
             if (self::visible($row)) {
@@ -183,9 +184,15 @@ class NewsDetail extends PageSupport
         ];
     }
 
+    /** @return array<string, string> SEO fields of a post */
+    private function seoOf(int $postId): array
+    {
+        return $this->row("select coalesce(title,'') as titlevi, coalesce(description,'') as descriptionvi, coalesce(keywords,'') as keywordsvi from seo_metas where owner_type=? and owner_id=? limit 1", [Post::class, $postId]);
+    }
+
     private function author(mixed $userId): string
     {
-        $name = (int) $userId > 0 ? ($this->row('select fullname from table_user where id=? limit 1', [(int) $userId])['fullname'] ?? '') : '';
+        $name = (int) $userId > 0 ? ($this->row('select name as fullname from users where id=? limit 1', [(int) $userId])['fullname'] ?? '') : '';
 
         return self::authorName($name);
     }

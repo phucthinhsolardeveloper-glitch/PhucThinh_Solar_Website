@@ -19,6 +19,14 @@ class ParityCommand extends Command
 
     protected $description = 'Compare a Laravel v1 endpoint with its PHP original, case by case.';
 
+    /**
+     * Differences from the PHP answers that are fixes, accepted when comparing with snapshots.
+     * Each needs a reason a reader can check.
+     */
+    private const ACCEPTED = [
+        'news-detail' => ['.body.article.showCover' => 'PHP looked for the cover picture in HTML-escaped text and never found it; the cover is now hidden when the article repeats it'],
+    ];
+
     /** Fields that differ on every request by design (form tokens), left out of the comparison. */
     private const VOLATILE = ['product-extras' => ['csrfToken'], 'lead-form' => ['csrfToken'], 'cart' => ['csrfToken'], 'checkout' => ['csrfToken', 'checkoutToken']];
 
@@ -69,6 +77,9 @@ class ParityCommand extends Command
             }
             $diffs = [];
             $this->diff($left, $right, '', $diffs);
+            if ($snapshot !== null) {
+                $diffs = array_values(array_diff($diffs, array_keys(self::ACCEPTED[$endpoint] ?? [])));
+            }
             if (! $diffs) {
                 $identical++;
             }

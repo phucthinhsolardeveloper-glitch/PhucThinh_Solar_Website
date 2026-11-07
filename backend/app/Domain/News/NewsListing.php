@@ -4,6 +4,7 @@ namespace App\Domain\News;
 
 use App\Domain\Catalog\ProductDetail\ProductMediaUrls;
 use App\Domain\Pages\PageSupport;
+use App\Models\PostCategory;
 use App\Legacy\Support\LegacyText;
 use App\Support\SiteSettings;
 
@@ -18,7 +19,7 @@ class NewsListing extends PageSupport
 
     private const SLUG = '/^[a-z0-9]+(?:-[a-z0-9]+)*$/';
 
-    private const FIELDS = 'id,id_list,namevi,slugvi,photo,descvi,contentvi,date_created,status';
+    private const FIELDS = "id, category_id as id_list, title as namevi, slug as slugvi, coalesce(image,'') as photo, coalesce(summary,'') as descvi, coalesce(body,'') as contentvi, published_at as date_created, concat_ws(',', if(is_visible,'hienthi',null), if(in_hub,'newshub',null)) as status";
 
     public function __construct(ProductMediaUrls $urls, private readonly SiteSettings $settings)
     {
@@ -63,8 +64,8 @@ class NewsListing extends PageSupport
         }
 
         $categories = [];
-        foreach ($this->rows("select id,namevi,descvi,slugvi,photo,status from table_news_list where type='tin-tuc' and find_in_set('hienthi',status)"
-            ." and exists(select 1 from table_news n where n.id_list=table_news_list.id and n.type='tin-tuc' and find_in_set('hienthi',n.status) and n.slugvi<>'') order by numb,id desc") as $row) {
+        foreach ($this->rows("select c.id, c.name as namevi, coalesce(c.summary,'') as descvi, c.slug as slugvi, coalesce(c.image,'') as photo, 'hienthi' as status from post_categories c"
+            ." where c.kind='article' and c.depth=1 and c.is_visible=1 and exists(select 1 from posts p where p.category_id=c.id and p.kind='article' and p.is_visible=1 and p.slug<>'') order by c.sort_order,c.id desc") as $row) {
             $row['_photo'] = $this->newsPhotoExists($row['photo']) ? $row['photo'] : '';
             $categories[] = $row;
         }
@@ -76,8 +77,7 @@ class NewsListing extends PageSupport
                 return [404, ['error' => ['code' => 'CATEGORY_NOT_FOUND']]];
             }
             [$selected, $field] = $resolved;
-            $action = ['list' => 'man_list', 'cat' => 'man_cat', 'item' => 'man_item', 'sub' => 'man_sub'][$type];
-            $seoRow = $this->row('select titlevi,descriptionvi,keywordsvi from table_seo where id_parent = ? and com = ? and act = ? and type = ? limit 1', [(int) $selected['id'], 'news', $action, 'tin-tuc']);
+            $seoRow = $this->row("select coalesce(title,'') as titlevi, coalesce(description,'') as descriptionvi, coalesce(keywords,'') as keywordsvi from seo_metas where owner_type=? and owner_id=? limit 1", [PostCategory::class, (int) $selected['id']]);
             $selected['_meta'] = ['type' => 'tin-tuc', 'level' => $type, 'path' => implode('/', $segments), 'seo' => [
                 'title' => LegacyText::flat($seoRow['titlevi'] ?? ''),
                 'description' => LegacyText::flat($seoRow['descriptionvi'] ?? ''),
@@ -86,9 +86,9 @@ class NewsListing extends PageSupport
             ]];
         }
 
-        $where = "type=? and find_in_set('hienthi',status) and slugvi<>''";
-        $params = ['tin-tuc'];
-        $introRows = $this->rows("select namevi,descvi,status from table_news where type='news-intro' order by numb,id desc");
+        $where = "kind=? and is_visible=1 and slug<>''";
+        $params = ['article'];
+        $introRows = $this->items('news.intro');
         $intro = [];
         foreach ($introRows as $row) {
             if (self::visible($row)) {
@@ -99,26 +99,26 @@ class NewsListing extends PageSupport
         $heroEnabled = ! $introRows || self::flag($intro['status'] ?? '', 'hero');
         $featuredRows = [];
         if ($slug === '' && $query === '' && $heroEnabled) {
-            $hub = (int) ($this->row("select count(*) as num from table_news where type='tin-tuc' and find_in_set('newshub',status)")['num'] ?? 0) > 0;
-            $featuredRows = $this->rows('select '.self::FIELDS.' from table_news where '.$where.($hub ? " and find_in_set('newshub',status)" : '').' order by numb,date_created desc,id desc limit 3', $params);
+            $hub = (int) ($this->row("select count(*) as num from posts where kind='article' and in_hub=1")['num'] ?? 0) > 0;
+            $featuredRows = $this->rows('select '.self::FIELDS.' from posts where '.$where.($hub ? ' and in_hub=1' : '').' order by sort_order,published_at desc,id desc limit 3', $params);
             if ($featuredRows) {
                 $where .= ' and id not in ('.implode(',', array_fill(0, count($featuredRows), '?')).')';
                 array_push($params, ...array_map(fn ($row) => (int) $row['id'], $featuredRows));
             }
         }
         if ($selected) {
-            $where .= " and {$field}=?";
-            $params[] = (int) $selected['id'];
+            $where .= ' and category_id in ('.implode(',', array_fill(0, count($field), '?')).')';
+            array_push($params, ...$field);
         }
         if ($query !== '') {
             $pattern = '%'.strtr($query, ['!' => '!!', '%' => '!%', '_' => '!_']).'%';
-            $where .= " and (namevi like ? escape '!' or descvi like ? escape '!' or contentvi like ? escape '!')";
+            $where .= " and (title like ? escape '!' or summary like ? escape '!' or body like ? escape '!')";
             array_push($params, $pattern, $pattern, $pattern);
         }
-        $total = (int) ($this->row('select count(*) as num from table_news where '.$where, $params)['num'] ?? 0);
+        $total = (int) ($this->row('select count(*) as num from posts where '.$where, $params)['num'] ?? 0);
         $page = min($page, max(1, (int) ceil($total / self::PER_PAGE)));
-        $rows = $this->rows('select '.self::FIELDS.' from table_news where '.$where.' order by date_created desc,id desc limit '.(($page - 1) * self::PER_PAGE).','.self::PER_PAGE, $params);
-        $ctaRows = $this->rows("select namevi,descvi,content1vi,photo,status from table_news where type='news-cta' order by numb,id desc");
+        $rows = $this->rows('select '.self::FIELDS.' from posts where '.$where.' order by published_at desc,id desc limit '.(($page - 1) * self::PER_PAGE).','.self::PER_PAGE, $params);
+        $ctaRows = $this->items('news.cta');
 
         $categoryMap = [];
         $categoryDtos = [];
@@ -160,20 +160,25 @@ class NewsListing extends PageSupport
         if (count($segments) !== $depth) {
             return null;
         }
-        $tables = ['table_news_list', 'table_news_cat', 'table_news_item', 'table_news_sub'];
-        $parents = [null, 'id_list', 'id_cat', 'id_item'];
         $row = [];
         $parentId = 0;
         foreach ($segments as $i => $segment) {
-            $row = $this->row("select id,namevi,descvi,slugvi,photo,status from {$tables[$i]} where slugvi=?".($parents[$i] ? " and {$parents[$i]}=?" : '')
-                ." and type='tin-tuc' and find_in_set('hienthi',status) limit 1", $parents[$i] ? [$segment, $parentId] : [$segment]);
+            $row = $this->row("select id, name as namevi, coalesce(summary,'') as descvi, slug as slugvi, coalesce(image,'') as photo, 'hienthi' as status from post_categories"
+                ." where kind='article' and slug=? and depth=? and ".($i ? 'parent_id=?' : 'parent_id is null').' and is_visible=1 limit 1', $i ? [$segment, $i + 1, $parentId] : [$segment, 1]);
             if (! $row || (int) $row['id'] <= 0 || ! self::visible($row) || LegacyText::slug($row['slugvi']) !== $segment) {
                 return null;
             }
             $parentId = (int) $row['id'];
         }
 
-        return [$row, ['list' => 'id_list', 'cat' => 'id_cat', 'item' => 'id_item', 'sub' => 'id_sub'][$type]];
+        // Articles of this category and of every category below it.
+        $ids = [$parentId];
+        for ($level = [$parentId]; $level; ) {
+            $level = array_map('intval', array_column($this->rows('select id from post_categories where parent_id in ('.implode(',', $level).')'), 'id'));
+            array_push($ids, ...$level);
+        }
+
+        return [$row, $ids];
     }
 
     private function categoryDto(array $row, array $meta = []): ?array

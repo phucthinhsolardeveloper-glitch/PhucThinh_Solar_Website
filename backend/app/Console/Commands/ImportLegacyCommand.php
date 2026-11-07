@@ -57,12 +57,13 @@ class ImportLegacyCommand extends Command
         $this->new = DB::connection();
         if ($this->option('fresh')) {
             Schema::disableForeignKeyConstraints();
-            foreach (self::NEW_TABLES as $table) {
+            foreach (array_merge(self::NEW_TABLES, ['users']) as $table) {
                 $this->new->table($table)->truncate();
             }
             Schema::enableForeignKeyConstraints();
         }
         $this->new->transaction(function () {
+            $this->users();
             $this->settings();
             $this->catalog();
             $this->content();
@@ -79,6 +80,23 @@ class ImportLegacyCommand extends Command
         }
 
         return self::SUCCESS;
+    }
+
+    /**
+     * Admin accounts keep their old password hash; App\\Auth\\AdminPasswords accepts it once and
+     * replaces it with a bcrypt hash on the first sign-in.
+     */
+    private function users(): void
+    {
+        $permissions = [];
+        foreach ($this->old->select('select id_permission_group as id_permission, permission from table_permission') as $row) {
+            $permissions[(int) $row->id_permission][] = (string) $row->permission;
+        }
+        foreach ($this->old->table('table_user')->orderBy('id')->get() as $row) {
+            $this->new->table('users')->updateOrInsert(['id' => $row->id], ['name' => self::text($row->fullname) ?: $row->username, 'username' => $row->username,
+                'email' => self::nullable($row->email), 'phone' => self::nullable($row->phone), 'password' => $row->password, 'role' => (int) $row->role === 3 ? 'owner' : 'editor',
+                'permissions' => json_encode($permissions[(int) $row->id_permission] ?? []), 'is_active' => self::visible($row->status), 'created_at' => now(), 'updated_at' => now()]);
+        }
     }
 
     private function settings(): void
