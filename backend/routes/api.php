@@ -16,6 +16,8 @@ Route::prefix('v1')->group(function () {
     Route::get('dealer', [PagesController::class, 'dealer']);
     Route::get('home', HomeController::class);
     Route::get('news', [PagesController::class, 'news']);
+    Route::get('news-detail', [PagesController::class, 'newsDetail']);
+    Route::get('policy-detail', [PagesController::class, 'policyDetail']);
     Route::get('product-detail', ProductDetailController::class);
     Route::get('site', SiteController::class);
 });

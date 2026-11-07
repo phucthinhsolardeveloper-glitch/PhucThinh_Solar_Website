@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Domain\News\NewsDetail;
 use App\Domain\News\NewsListing;
 use App\Domain\Pages\ContactAssembler;
 use App\Domain\Pages\DealerAssembler;
@@ -25,6 +26,16 @@ class PagesController extends Controller
     public function news(Request $request, NewsListing $listing): JsonResponse
     {
         return self::result($listing->handle($request->query()));
+    }
+
+    public function newsDetail(Request $request, NewsDetail $detail): JsonResponse
+    {
+        return self::result($detail->article($request->query()));
+    }
+
+    public function policyDetail(Request $request, NewsDetail $detail): JsonResponse
+    {
+        return self::result($detail->policy($request->query()));
     }
 
     /** @param array{0: int, 1: array<string, mixed>} $result */

@@ -27,6 +27,8 @@ class ParityCommand extends Command
             'site', 'home', 'about' => [[]],
             'contact', 'dealer' => [[], ['x' => '1']],
             'news' => $this->newsCases(),
+            'news-detail' => $this->slugCases('tin-tuc'),
+            'policy-detail' => $this->slugCases('chinh-sach'),
             default => null,
         };
         if ($cases === null) {
@@ -114,6 +116,19 @@ class ParityCommand extends Command
         }
 
         return $cases;
+    }
+
+    /**
+     * Every row of a news type by slug (hidden ones included, they must 404), plus malformed queries.
+     *
+     * @return list<array<string, string>>
+     */
+    private function slugCases(string $type): array
+    {
+        $cases = DB::connection('legacy')->table('table_news')->where('type', $type)->where('slugvi', '<>', '')->orderBy('id')
+            ->pluck('slugvi')->map(fn ($slug) => ['slug' => (string) $slug])->all();
+
+        return array_merge($cases, [['slug' => 'khong-ton-tai'], ['slug' => 'Bad Slug'], ['slug' => ''], [], ['slug' => 'a', 'x' => '1'], ['slug' => '/a/']]);
     }
 
     /** @return list<array<string, string>> */
