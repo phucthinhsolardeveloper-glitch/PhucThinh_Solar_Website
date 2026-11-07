@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use App\Legacy\Auth\LegacyAdminUserProvider;
 use App\Legacy\Auth\LegacyPasswordVerifier;
+use App\Legacy\Catalog\ProductImageResolver;
+use App\Legacy\Settings\LegacySettings;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ServiceProvider;
 
@@ -17,6 +19,10 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(LegacyPasswordVerifier::class, fn () => new LegacyPasswordVerifier(
             (string) config('legacy.admin_password.secret'),
             (string) config('legacy.admin_password.salt'),
+        ));
+        $this->app->singleton(LegacySettings::class);
+        $this->app->bind(ProductImageResolver::class, fn () => new ProductImageResolver(
+            rtrim((string) config('legacy.upload_path'), '/').'/product',
         ));
     }
 

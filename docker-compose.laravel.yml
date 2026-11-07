@@ -11,6 +11,8 @@ services:
     working_dir: /app
     volumes:
       - ./backend:/app
+      # The legacy PHP container's upload volume, read-only, so image resolution sees the same files as PHP.
+      - legacy_upload:/legacy/upload:ro
     ports:
       - "127.0.0.1:8090:8000"
     networks:
@@ -18,3 +20,7 @@ services:
 networks:
   web_pts_php_default:
     external: true
+volumes:
+  legacy_upload:
+    external: true
+    name: web_pts_php_pts_web_upload

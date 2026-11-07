@@ -24,6 +24,7 @@ có xung đột và không ép push.
 | 1b — Đăng nhập Admin mới bằng tài khoản cũ | Xong, 2026-11-07 | Mục "Đăng nhập" bên dưới |
 | 2 — Lớp tương thích | Đang làm: xong khối nội dung sản phẩm | Mục "Phase 2" bên dưới |
 | Phản biện đặc tả | Có hiệu lực | [spec-review.md](spec-review.md) |
+| Kiến trúc đích (dựng theo Nuxt, tùy biến sâu) | Có hiệu lực | [target-architecture.md](target-architecture.md), [phase-0/usage-map.md](phase-0/usage-map.md) |
 
 ## Gate Phase 0
 
@@ -75,6 +76,8 @@ nội dung), Laravel tính lại trên bản sao cùng dữ liệu và phải ra
 | Phần | Code Laravel | Golden master | Ghi chú |
 |---|---|---|---|
 | Chọn khối mô tả sản phẩm (riêng, kế thừa hãng/danh mục, ẩn, cộng dồn) | `App\Legacy\Catalog\ProductContentResolver` | 399/399 sản phẩm khớp | Dữ liệu thật chỉ dùng "riêng" (393) và "kế thừa danh mục" (6); 8 chế độ còn lại có test riêng |
+| Giá và chế độ báo giá (gộp 3 cách tính của PHP làm một) | `App\\Domain\\Catalog\\PricingPolicy`, `Money` | 399/399 khớp cả trang sản phẩm, danh mục và `public_pricing.php` | 394 có giá, 5 báo giá |
+| Chọn ảnh sản phẩm (ảnh chính, rồi thư viện ảnh) | `App\\Legacy\\Catalog\\ProductImageResolver` | 399/399 khớp | Đọc volume ảnh của PHP ở chế độ chỉ đọc; 76 sản phẩm local không có ảnh nào |
 | Cột `status` dạng "hienthi,noibat" | `App\Legacy\Support\StatusFlags` | | |
 | Khối JSON lưu dạng HTML-escape | `App\Legacy\Support\ContentBlocks` | | |
 
