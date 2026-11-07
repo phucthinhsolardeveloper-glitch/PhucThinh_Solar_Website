@@ -21,5 +21,6 @@ Route::prefix('v1')->group(function () {
     Route::get('project-detail', [PagesController::class, 'projectDetail']);
     Route::get('projects', [PagesController::class, 'projects']);
     Route::get('product-detail', ProductDetailController::class);
+    Route::get('solutions', [PagesController::class, 'solutions']);
     Route::get('site', SiteController::class);
 });
