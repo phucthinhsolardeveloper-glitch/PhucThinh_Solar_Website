@@ -58,6 +58,14 @@ const activeHeroImage = computed(() => props.hero?.image || fallbackHeroImage)
 
 const brandLogoByName: Record<string, string> = {
   aesolar: '/assets/images/brand-logos/aesolar.webp',
+  ankersolix: '/assets/images/brand-logos/ankersolix.webp',
+  astronergy: '/assets/images/brand-logos/astronergy.webp',
+  deye: '/assets/images/brand-logos/deye.webp',
+  goodwe: '/assets/images/brand-logos/goodwe.webp',
+  growatt: '/assets/images/brand-logos/growatt.webp',
+  sigenergy: '/assets/images/brand-logos/sigenergy.webp',
+  sofar: '/assets/images/brand-logos/sofar.webp',
+  tclsolar: '/assets/images/brand-logos/tclsolar.webp',
   bluecarbon: '/assets/images/brand-logos/bluecarbon.webp',
   canadiansolar: '/assets/images/brand-logos/canadiansolar.webp',
   epsivo: '/assets/images/brand-logos/epsivo.webp',
