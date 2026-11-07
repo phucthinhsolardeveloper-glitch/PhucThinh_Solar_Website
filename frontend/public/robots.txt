@@ -1,0 +1,9 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /api/
+Disallow: /_api/
+Disallow: /gio-hang/
+Disallow: /thanh-toan/
+Disallow: /cam-on/
+
+Sitemap: https://phucthinhsolar.com/sitemap.xml
