@@ -6,7 +6,7 @@ function isPage(value: unknown): value is string {
   return Number.isSafeInteger(page) && page <= 10_000
 }
 
-/** Accept the current `page` query and the legacy PHP `p` alias. */
+/** Accept the `page` query and the older `p` alias still found in links. */
 export function publicPageQueryValue(page: unknown, legacyPage: unknown): string {
   if (isPage(page)) return page
   if (isPage(legacyPage)) return legacyPage

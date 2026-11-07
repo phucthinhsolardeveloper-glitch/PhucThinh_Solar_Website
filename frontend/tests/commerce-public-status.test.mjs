@@ -18,7 +18,6 @@ test('public cart API failure cannot render as a successful HTTP response', () =
 test('public order confirmation matches PHP generic success without exposing session details', () => {
   const middleware = read('app/middleware/order-success-public-route.ts')
   const page = read('app/components/order/OrderThanksPage.vue')
-  const phpPage = read('../domains/phucthinhsolar.com/public_html/templates/order/thanks_tpl.php')
   assert.doesNotMatch(middleware, /PublicRouteEnabled|phpPublicRouteUrl/)
   assert.match(middleware, /redirectCode: 301/)
   assert.doesNotMatch(middleware, /throw createError\(\{ statusCode: 404/)
@@ -31,9 +30,6 @@ test('public order confirmation matches PHP generic success without exposing ses
   assert.match(page, /<SiteBreadcrumb :items="\[\{ label: 'Đặt hàng thành công' \}\]" \/>/)
   assert.match(page, /Mã đơn hàng:/)
   assert.match(page, /Tiếp tục mua sắm/)
-  assert.match(phpPage, /Đặt hàng thành công!/)
-  assert.match(phpPage, /Cảm ơn .* đã đặt hàng\. Chúng tôi sẽ liên hệ xác nhận đơn hàng trong thời gian sớm nhất\./)
-  assert.match(phpPage, /if\(!empty\(\$orderThanks\)\)/)
   assert.match(page, /conversionPending/)
   assert.match(page, /event: 'order_success'/)
   assert.match(page, /trackedConversions\.has\(currentToken\)/)

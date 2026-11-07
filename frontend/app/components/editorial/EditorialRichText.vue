@@ -10,14 +10,14 @@ defineProps<{
 <template>
   <!--
     Dùng chung .cms-content + .cms-content--editorial (main.css) cho nội dung CKEditor;
-    biến thể solution chỉ phục hồi nhịp phẳng của trang hub PHP. Các class đó phủ
-    đúng toàn bộ tập thẻ allowlist của pts_public_richtext.php
+    biến thể solution chỉ phục hồi nhịp phẳng của trang hub. Các class đó phủ
+    đúng toàn bộ tập thẻ allowlist của RichText (Laravel)
     (h2-h6, p, ul/ol/li, blockquote, pre/code, table, figure/figcaption, img, a), viết
     một lần cho mọi nơi hiển thị nội dung CKEditor đã sanitize thay vì mỗi
     component tự định nghĩa lại.
 
     v-html CHỈ nhận content.html — field này chỉ tồn tại sau khi qua
-    pts_public_richtext.php (PHP, allowlist DOM) và được xác nhận lại bởi
+    App\Support\RichText (Laravel, allowlist DOM) và được xác nhận lại bởi
     isPublicSanitizedRichText() (Nuxt, kiểm metadata + marker nguy hiểm) ở lớp
     contract gọi component này. Không bao giờ nhận raw contentvi/content1vi.
   -->

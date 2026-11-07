@@ -182,7 +182,7 @@ async function sendReview() {
   try {
     let result: any
     if (photoFiles.value.length || videoFile.value || videoPoster.value) {
-      // Multipart uploads go directly to the PHP review adapter so its existing
+      // Multipart uploads go directly to the Laravel review endpoint so its
       // Comments::add validation, upload handling, session and IP rate limit stay authoritative.
       const body = new FormData()
       body.set('csrfToken', props.csrfToken)

@@ -25,7 +25,7 @@ test('brand sort and filters keep the current result layout while refreshing', (
 })
 
 test('product, gallery and video refreshes retain their previous content during route query changes', () => {
-  const productData = read('../app/composables/useProductPreviewData.ts')
+  const productData = read('../app/composables/useProductDetailData.ts')
   const productPage = read('../app/pages/san-pham/[slug].vue')
   const gallery = read('../app/components/views/GalleryView.vue')
   const video = read('../app/components/views/VideoView.vue')
@@ -45,7 +45,7 @@ test('all overlays share a reference-counted scroll lock with scrollbar compensa
   assert.match(lock, /originalStyle\.value\?\.paddingRight/)
   for (const path of [
     '../app/components/SiteHeader.vue',
-    '../app/components/product-preview/ProductPreviewGallery.vue',
+    '../app/components/product-detail/ProductDetailGallery.vue',
     '../app/components/project-detail/ProjectDetailGallery.vue',
     '../app/components/solution-detail/SolutionDetailGallery.vue',
     '../app/components/views/GalleryDetailView.vue',

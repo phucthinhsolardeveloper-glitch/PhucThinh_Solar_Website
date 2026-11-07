@@ -34,24 +34,18 @@ test('rejects invented routes, unsafe media and non-year timeline values', () =>
 })
 
 test('accepts escaped plain text because the adapter never renders CMS HTML', () => {
-  assert.equal(isPublicAboutPayload({ ...good, story: { ...good.story, intro: '<b>escaped by PHP adapter</b>' } }), true)
+  assert.equal(isPublicAboutPayload({ ...good, story: { ...good.story, intro: '<b>escaped by the API</b>' } }), true)
 })
 
-test('About trust features use the PHP two-column desktop grid', async () => {
-  const [source, phpTemplate, phpCss] = await Promise.all([
-    readFile(new URL('../app/components/about/AboutPreviewPage.vue', import.meta.url), 'utf8'),
-    readFile(new URL('../../domains/phucthinhsolar.com/public_html/templates/about/about_tpl.php', import.meta.url), 'utf8'),
-    readFile(new URL('../../domains/phucthinhsolar.com/public_html/assets/css/about-v2.css', import.meta.url), 'utf8'),
-  ])
+test('About trust features use a two-column desktop grid', async () => {
+  const source = await readFile(new URL('../app/components/about/AboutPage.vue', import.meta.url), 'utf8')
   const section = source.split('id="about-trust-title"')[1]?.split('</section>')[0] ?? ''
-  assert.match(phpTemplate, /class="pts-about-trust-grid"/)
-  assert.match(phpCss, /\.pts-about-trust-grid\{display:grid;grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/)
   assert.match(section, /grid grid-cols-2[^\"]*max-\[800px\]:grid-cols-1/)
   assert.doesNotMatch(section, /border-t border-\[#dce4ef\]|border-b border-\[#dce4ef\]/)
 })
 
 test('does not render an empty certificate image frame when CMS media is absent', async () => {
-  const source = await readFile(new URL('../app/components/about/AboutPreviewPage.vue', import.meta.url), 'utf8')
+  const source = await readFile(new URL('../app/components/about/AboutPage.vue', import.meta.url), 'utf8')
   const certificates = source.split('id="about-certificates"')[1]?.split('</section>')[0] ?? ''
   assert.match(certificates, /<button[\s\S]*?v-if="item\.image"/)
   assert.match(certificates, /:src="optimizedImage\(item\.image, 600, 800\)"/)
@@ -65,7 +59,7 @@ test('validates only canonical Zalo URLs and permits every published certificate
 })
 
 test('About CTA resolves a null CMS modal link to the contact form and keeps hotline/Zalo actions', async () => {
-  const source = await readFile(new URL('../app/components/about/AboutPreviewPage.vue', import.meta.url), 'utf8')
+  const source = await readFile(new URL('../app/components/about/AboutPage.vue', import.meta.url), 'utf8')
   const cta = source.split('id="about-cta-title"')[1]?.split('</section>')[0] ?? ''
   assert.equal(good.cta.href, null)
   // Owner decision 2026-11-04: CTA actions are rendered by the shared PublicCtaBanner.
@@ -77,18 +71,6 @@ test('About CTA resolves a null CMS modal link to the contact form and keeps hot
   assert.match(banner, /v-if="zalo"[\s\S]*:href="zalo"[\s\S]*target="_blank"[\s\S]*rel="noopener noreferrer"/)
 })
 
-test('About PHP projection carries CMS Zalo and does not truncate published certificates', async () => {
-  const api = await readFile(new URL('../../domains/phucthinhsolar.com/public_html/api/pts_v1_about.php', import.meta.url), 'utf8')
-  const helper = await readFile(new URL('../../domains/phucthinhsolar.com/public_html/libraries/pts_public_about_api.php', import.meta.url), 'utf8')
-  assert.match(api, /\$certificates\s*=\s*\$loadRows\([\s\S]*find_in_set\('hienthi',status\)/)
-  assert.match(api, /foreach\(\$allCertificates as \$row\)/)
-  assert.match(api, /\$certificateCards\s*=\s*array_slice\(\$featuredCertificates\s*\?:\s*\$certificates,\s*0,\s*3\)/)
-  assert.match(api, /\$func->parsePhone\(\$zaloValue\)/)
-  assert.match(api, /#_seopage where type=\? limit 0,1', array\('gioi-thieu'\)/)
-  assert.match(helper, /'seo'\s*=>\s*array\(/)
-  assert.match(helper, /'schemaVersion'\s*=>\s*2/)
-})
-
 test('About page prefers Admin SEO and uses its image for social metadata', async () => {
   const source = await readFile(new URL('../app/pages/gioi-thieu.vue', import.meta.url), 'utf8')
   assert.match(source, /about\.value\?\.seo\?\.title\s*\|\|\s*about\.value\?\.title/)
@@ -97,7 +79,7 @@ test('About page prefers Admin SEO and uses its image for social metadata', asyn
 })
 
 test('About page provides a keyboard-accessible full certificate gallery', async () => {
-  const source = await readFile(new URL('../app/components/about/AboutPreviewPage.vue', import.meta.url), 'utf8')
+  const source = await readFile(new URL('../app/components/about/AboutPage.vue', import.meta.url), 'utf8')
   assert.match(source, /about\.labels\.certAll/)
   assert.match(source, /@click="openAllCertificates"/)
   assert.match(source, /<dialog[\s\S]*aria-modal="true"[\s\S]*aria-labelledby="about-certificate-dialog-title"/)
@@ -111,7 +93,7 @@ test('About page provides a keyboard-accessible full certificate gallery', async
 
 test('About page exposes one main landmark without nesting it in the content component', async () => {
   const [component, publicPage] = await Promise.all([
-    readFile(new URL('../app/components/about/AboutPreviewPage.vue', import.meta.url), 'utf8'),
+    readFile(new URL('../app/components/about/AboutPage.vue', import.meta.url), 'utf8'),
     readFile(new URL('../app/pages/gioi-thieu.vue', import.meta.url), 'utf8'),
   ])
   assert.match(component, /<div ref="aboutRoot" class="overflow-x-clip text-navy-800">/)

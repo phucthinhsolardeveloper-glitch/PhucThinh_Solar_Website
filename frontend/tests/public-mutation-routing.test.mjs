@@ -5,7 +5,7 @@ import { cartErrorMessage } from '../app/composables/cartError.ts'
 
 const source = (path) => readFileSync(new URL(path, import.meta.url), 'utf8')
 const leadComposable = source('../app/composables/useLeadForm.ts')
-const reviewComponent = source('../app/components/product-preview/ProductReviews.vue')
+const reviewComponent = source('../app/components/product-detail/ProductReviews.vue')
 const leadApi = source('../../backend/app/Domain/Leads/LeadSubmission.php')
 const reviewApi = source('../../backend/app/Domain/Reviews/ReviewSubmission.php')
 const cartComposable = source('../app/composables/useShopCart.ts')

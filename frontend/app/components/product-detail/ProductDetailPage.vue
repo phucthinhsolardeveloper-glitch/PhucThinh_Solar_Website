@@ -2,12 +2,12 @@
 import type { PublicProductApplications, PublicProductBreadcrumb, PublicProductBuyingGuide, PublicProductContent, PublicProductDetail, PublicProductDocument } from '#shared/contracts/public-product-detail'
 import type { PublicCatalogPricing } from '#shared/contracts/public-catalog'
 import type { PublicProductExtrasPayload } from '#shared/contracts/public-product-extras'
-import ProductPreviewGallery from './ProductPreviewGallery.vue'
-import ProductPreviewSpecs from './ProductPreviewSpecs.vue'
-import ProductPreviewContent from './ProductPreviewContent.vue'
-import ProductPreviewDecisionMetrics from './ProductPreviewDecisionMetrics.vue'
-import ProductPreviewApplications from './ProductPreviewApplications.vue'
-import ProductPreviewBuyingGuide from './ProductPreviewBuyingGuide.vue'
+import ProductDetailGallery from './ProductDetailGallery.vue'
+import ProductDetailSpecs from './ProductDetailSpecs.vue'
+import ProductDetailContent from './ProductDetailContent.vue'
+import ProductDetailDecisionMetrics from './ProductDetailDecisionMetrics.vue'
+import ProductDetailApplications from './ProductDetailApplications.vue'
+import ProductDetailBuyingGuide from './ProductDetailBuyingGuide.vue'
 import ProductPurchasePanel from './ProductPurchasePanel.vue'
 import ProductSupportExtras from './ProductSupportExtras.vue'
 import ProductReviews from './ProductReviews.vue'
@@ -88,7 +88,7 @@ function toggleDescription() {
   <div class="product-preview-page pts-container pb-16 pt-6 max-tb:pt-0">
     <div class="grid grid-cols-1 items-start gap-12 pb-12 pt-6 max-tb:gap-0 max-tb:pb-6 max-tb:pt-0 nav:grid-cols-2 nav:gap-14">
       <div class="pdp-photo min-w-0 nav:sticky nav:top-28">
-        <ProductPreviewGallery :name="product.name" :media="product.media" />
+        <ProductDetailGallery :name="product.name" :media="product.media" />
       </div>
 
       <!-- Phone reading order: name, price, then details. -->
@@ -116,7 +116,7 @@ function toggleDescription() {
         </div>
 
         <div class="max-tb:order-5">
-          <ProductPreviewDecisionMetrics :metrics="product.decisionMetrics ?? []" />
+          <ProductDetailDecisionMetrics :metrics="product.decisionMetrics ?? []" />
         </div>
         <div v-if="product.packageContents" class="mt-5 border-l-2 border-gold-500 pl-4 max-tb:order-6">
           <p class="mb-1 text-xs font-bold text-slate-500">Bộ sản phẩm tiêu chuẩn</p>
@@ -176,12 +176,12 @@ function toggleDescription() {
 
     <!-- Phone: long description stays one tap away instead of pushing specs and reviews down. -->
     <div ref="descriptionRef" class="pdp-description" :class="{ 'is-open': descriptionOpen }">
-      <ProductPreviewContent :content="content" />
+      <ProductDetailContent :content="content" />
     </div>
     <button type="button" class="m-more-button mb-1 tb:hidden" :aria-expanded="descriptionOpen" @click="toggleDescription"><span>{{ descriptionOpen ? 'Thu gọn mô tả' : 'Xem toàn bộ mô tả' }}</span></button>
-    <ProductPreviewApplications v-if="applications?.items.length" :applications="applications" />
-    <ProductPreviewBuyingGuide v-if="buyingGuides?.length" :guides="buyingGuides" />
-    <ProductPreviewSpecs :specifications="product.specifications" />
+    <ProductDetailApplications v-if="applications?.items.length" :applications="applications" />
+    <ProductDetailBuyingGuide v-if="buyingGuides?.length" :guides="buyingGuides" />
+    <ProductDetailSpecs :specifications="product.specifications" />
     <ProductSupportExtras :extras="extras" :documents="documents" />
 
     <section v-if="content.faqs.length" id="cau-hoi-thuong-gap" class="scroll-mt-24 border-t border-gray-200 py-12 tb:py-16" aria-labelledby="product-faq-title">

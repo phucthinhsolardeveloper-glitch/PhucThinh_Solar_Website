@@ -1,10 +1,10 @@
 import { isPublicHomePayload } from '../../../shared/contracts/public-home'
 import { normalizePublicHomeHero } from '../../../shared/contracts/home-hero'
-import { fetchMigrationPayload, requireMigrationGet } from '../../utils/backend-api'
+import { fetchBackendPayload, requireGet } from '../../utils/backend-api'
 
 export default defineEventHandler(async (event) => {
-  requireMigrationGet(event)
-  const payload = await fetchMigrationPayload(event, {
+  requireGet(event)
+  const payload = await fetchBackendPayload(event, {
     endpoint: '/api/v1/home',
     validate: isPublicHomePayload,
     invalidMessage: 'Invalid home data contract',

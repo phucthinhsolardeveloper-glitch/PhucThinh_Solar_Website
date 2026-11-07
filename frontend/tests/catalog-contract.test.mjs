@@ -14,7 +14,6 @@ const good = {
   pagination: { page: 1, perPage: 20, total: 1 },
   pricesVisible: true,
 }
-const catalogApi = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/api/pts_v1_catalog.php', import.meta.url), 'utf8')
 
 test('accepts the exact Phase A catalog DTO', () => assert.equal(isPublicCatalogPayload(good), true))
 test('accepts products without prices when public pricing is off', () => {
@@ -40,8 +39,6 @@ test('catalog card specs are safe, bounded and projected from PHP product fields
   assert.equal(isPublicCatalogPayload({ ...good, products: [{ ...good.products[0], quickSpecs: ['200W', 'IP65', '> 12 tiếng, chiếu sáng 3 ngày mưa'] }] }), true)
   assert.equal(isPublicCatalogPayload({ ...good, products: [{ ...good.products[0], quickSpecs: ['x'.repeat(101)] }] }), false)
   assert.match(readFileSync(new URL('../app/components/catalog/CatalogProductGrid.vue', import.meta.url), 'utf8'), /\{\{ quickSpecText\(product\) \}\}/)
-  assert.match(catalogApi, /p\.cong_suat,p\.waterproof_rating,p\.lighting_time/)
-  assert.match(readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/libraries/pts_public_catalog_api.php', import.meta.url), 'utf8'), /'quickSpecs' => ptsCatalogQuickSpecsDto\(\$row\)/)
 })
 test('accepts category chain only at the supported 0..4 slug boundaries', () => {
   assert.equal(isCatalogSlugChain(''), true)
@@ -69,41 +66,16 @@ test('catalog SSR metadata comes from the PHP SEO DTO while preserving the robot
   assert.ok(page.includes("name: 'keywords', content: metadataKeywords.value"))
   assert.match(page, /canonicalPath: metadataCanonicalPath/)
   assert.ok(page.includes('robots: computed(() => publicSeoRobots(catalogIndexable.value'))
-  assert.match(catalogApi, /#_seo where id_parent = \? and com = \? and act = \? and type = \? limit 1/)
-  assert.match(catalogApi, /'product', \$seoAction, 'san-pham'/)
-  assert.match(catalogApi, /#_seopage where type = \? limit 1', array\('san-pham'\)/)
-  assert.match(catalogApi, /select titlevi,descriptionvi,keywordsvi,photo from #_seopage/)
   assert.match(page, /catalogData\.value\?\.seo\.image \|\| \(route\.path === '\/thuong-hieu\/' \? undefined : catalogData\.value\?\.categoryHero\?\.image\)/)
 })
 
-test('category hero fallback matches PHP source for den-nlmt and respects a configured Admin hide toggle', () => {
-  const catalogLibrary = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/libraries/pts_public_catalog_api.php', import.meta.url), 'utf8')
-  const phpSource = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/sources/product.php', import.meta.url), 'utf8')
-  assert.match(catalogApi, /\$heroConfigured = false;/)
-  assert.match(catalogApi, /\$heroConfigured = true;/)
-  assert.match(catalogApi, /!\$heroConfigured\)\s*\{\s*\$extras\['hero'\] = ptsCatalogCategoryHeroFallback\(\$currentPath, ROOT\);/)
-  for (const path of ['danh-muc-san-pham/den-nlmt', 'danh-muc-san-pham/den-nlmt/den-ufo']) {
-    assert.ok(catalogLibrary.includes(`'${path}' => array(`), `Missing shared fallback for ${path}`)
-    assert.ok(phpSource.includes(`'${path}' => array(`), `Missing PHP template fallback for ${path}`)
-  }
-})
-
-test('Nuxt bundles every curated catalog hero fallback referenced by the PHP API', () => {
-  const catalogLibrary = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/libraries/pts_public_catalog_api.php', import.meta.url), 'utf8')
-  const start = catalogLibrary.indexOf('$fallbacks = array(', catalogLibrary.indexOf('function ptsCatalogCategoryHeroFallback'))
-  const end = catalogLibrary.indexOf('\n    );', start)
-  assert.ok(start >= 0 && end > start)
-  const names = [...new Set([...catalogLibrary.slice(start, end).matchAll(/array\('([^']+\.(?:png|jpe?g|webp|avif))'/gi)].map((match) => match[1]))]
+test('Nuxt bundles every curated catalog hero fallback the Laravel catalog refers to', () => {
+  const landing = readFileSync(new URL('../../backend/app/Domain/Catalog/Listing/CatalogLanding.php', import.meta.url), 'utf8')
+  const names = [...new Set([...landing.matchAll(/'((?:catalog|category)-[a-z0-9-]+\.(?:png|jpe?g|webp|avif))'/gi)].map((match) => match[1]))]
   assert.ok(names.length > 0)
   for (const name of names) {
     assert.ok(existsSync(new URL(`../public/assets/images/site-visuals/${name}`, import.meta.url)), `Nuxt catalog hero asset missing: ${name}`)
   }
-})
-
-test('catalog DTO default product order uses the same highlighted category ranking as PHP catalog', () => {
-  const phpSource = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/sources/product.php', import.meta.url), 'utf8')
-  assert.match(phpSource, /publicProductDefaultOrder\('',\s*publicProductBossCategoryOrder\('',\s*\$type\)\)/)
-  assert.match(catalogApi, /publicProductDefaultOrder\('p',\s*publicProductBossCategoryOrder\('p'\)\)/)
 })
 
 const extended = {

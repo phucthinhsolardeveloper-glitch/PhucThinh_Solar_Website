@@ -1,5 +1,5 @@
 import { isPublicProjectsPayload } from '../../../shared/contracts/public-projects'
-import { fetchMigrationPayload, requireMigrationGet } from '../../utils/backend-api'
+import { fetchBackendPayload, requireGet } from '../../utils/backend-api'
 
 function oneQueryValue(value: unknown): string | undefined {
   return typeof value === 'string' ? value : undefined
@@ -13,7 +13,7 @@ function positiveQuery(value: unknown, fallback: number, maximum: number): numbe
 }
 
 export default defineEventHandler(async (event) => {
-  requireMigrationGet(event)
+  requireGet(event)
   const query = getQuery(event)
   // The projects endpoint deliberately has a smaller contract than the
   // news taxonomy endpoint: category is a single published list slug.
@@ -32,7 +32,7 @@ export default defineEventHandler(async (event) => {
   if (category !== undefined) params.set('category', category)
   if (pageInput !== undefined) params.set('page', String(page))
   if (perPageInput !== undefined) params.set('per_page', String(perPage))
-  const payload = await fetchMigrationPayload(event, {
+  const payload = await fetchBackendPayload(event, {
     endpoint: '/api/v1/projects',
     query: Object.fromEntries(params.entries()),
     validate: isPublicProjectsPayload,

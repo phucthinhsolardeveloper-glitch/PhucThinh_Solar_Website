@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { isPublicSeoIndexable } from '#shared/public-seo'
-import ProductPreviewPage from '~/components/product-preview/ProductPreviewPage.vue'
+import ProductDetailPage from '~/components/product-detail/ProductDetailPage.vue'
 definePageMeta({
   layout: false,
   middleware: 'product-detail-public-route',
@@ -10,7 +10,7 @@ const config = useRuntimeConfig()
 const indexable = computed(() => isPublicSeoIndexable(config.public.productDetailPublicRouteIndexable, true))
 const route = useRoute()
 const slug = computed(() => typeof route.params.slug === 'string' ? route.params.slug : '')
-const { site, payload, extras, product, error, pending, ready } = useProductPreviewData(slug)
+const { site, payload, extras, product, error, pending, ready } = useProductDetailData(slug)
 await ready
 const productErrorStatus = (error.value as { statusCode?: unknown } | null)?.statusCode
 if (import.meta.server && productErrorStatus === 404) setResponseStatus(404, 'Not Found')
@@ -61,7 +61,7 @@ usePublicSocialMeta({
         <p class="text-slate-500">Không thể tải sản phẩm hoặc slug chưa hợp lệ.</p>
       </div>
 
-      <ProductPreviewPage v-else :key="product.id" :product="product" :breadcrumbs="payload!.breadcrumbs ?? []" :pricing="payload!.pricing" :content="payload!.content" :applications="payload!.applications" :buying-guides="payload!.buyingGuides" :documents="payload!.documents" :extras="extras" />
+      <ProductDetailPage v-else :key="product.id" :product="product" :breadcrumbs="payload!.breadcrumbs ?? []" :pricing="payload!.pricing" :content="payload!.content" :applications="payload!.applications" :buying-guides="payload!.buyingGuides" :documents="payload!.documents" :extras="extras" />
     </main>
 
   </div>

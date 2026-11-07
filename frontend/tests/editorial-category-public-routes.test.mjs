@@ -18,7 +18,6 @@ test('news category page uses the read-only category DTO, exact canonical, and n
 test('solution category page uses the read-only filtered GET DTO as an always-on Nuxt route', () => {
   const page = read('../app/components/solutions/SolutionCategoryPage.vue')
   const adapter = read('../server/routes/_api/solutions.get.ts')
-  const api = read('../../domains/phucthinhsolar.com/public_html/api/pts_v1_solutions.php')
   assert.match(page, /\$fetch\('\/_api\/solutions', \{ query: \{ category: slug\.value \} \}\)/)
   assert.match(page, /category\.value\?\.canonicalPath/)
   assert.doesNotMatch(page, /PublicRouteEnabled/)
@@ -27,8 +26,6 @@ test('solution category page uses the read-only filtered GET DTO as an always-on
   assert.match(page, /:to="links\.generic\(item\.url\)"/)
   assert.match(adapter, /query: category === undefined \? \{\} : \{ category \}/)
   assert.match(adapter, /passThroughStatuses: \[400, 404\]/)
-  assert.match(api, /CATEGORY_NOT_FOUND/)
-  assert.match(api, /ptsPublicSolutionCategoryDto/)
 })
 
 test('editorial bare-slug routes include the verified empty recruitment category as an API-backed noindex page', () => {

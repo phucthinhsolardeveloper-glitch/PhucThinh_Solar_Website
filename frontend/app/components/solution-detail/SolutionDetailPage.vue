@@ -125,7 +125,7 @@ onBeforeUnmount(() => {
 
       <!--
         Tích hợp sanitizer: content/extraContent là HTML thật qua
-        pts_public_richtext.php; SolutionsStory chỉ dựng lại bố cục theo h2/h3.
+        RichText của Laravel; SolutionsStory chỉ dựng lại bố cục theo h2/h3.
       -->
       <Transition name="story-swap" mode="out-in">
         <div id="noi-dung-giai-phap" :key="data.solution.slug" class="solution-story">

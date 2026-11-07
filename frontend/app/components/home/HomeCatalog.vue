@@ -77,7 +77,7 @@ type HomeCategorySlot = Omit<typeof slots[number], 'stage' | 'name' | 'descripti
   position: string
 }
 
-// Default card art lives in both trees, so PHP can serve a resized WebP; on error the original is used.
+// Default card art can be resized by /thumbs; on error the original is used.
 const thumbFailed = ref(new Set<string>())
 const siteVisual = (src: string) => thumbFailed.value.has(src) ? src : thumbUrl(src, 1200, 900, 3)
 function onCardImageError(slot: { key: string; image: string }) {

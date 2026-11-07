@@ -233,7 +233,7 @@ const showroomImage = computed(() => {
       </div>
     </section>
 
-    <!-- Chapter 4: Trust / Vì sao chọn chúng tôi (PHP 2-column parity) -->
+    <!-- Chapter 4: Trust / Vì sao chọn chúng tôi (2 cột trên desktop) -->
     <section v-if="about.trust.items.length" id="vi-sao-chon-chung-toi" class="about-chapter scroll-mt-[160px] bg-slate-50 py-16 max-[800px]:scroll-mt-[116px] max-[800px]:py-12 min-[1800px]:scroll-mt-[184px]" aria-labelledby="about-trust-title">
       <div class="about-trust-grid pts-container grid grid-cols-[minmax(0,.7fr)_minmax(0,1.3fr)] items-start gap-16 max-[800px]:grid-cols-1 max-[800px]:gap-7">
         <div>

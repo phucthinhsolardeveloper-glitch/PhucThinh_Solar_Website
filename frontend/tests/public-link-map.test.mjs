@@ -50,9 +50,9 @@ test('link builders return the canonical public paths', () => {
 })
 
 test('PDP cart and document links use public paths', () => {
-  const purchase = readApp('components/product-preview/ProductPurchasePanel.vue')
-  const documents = readApp('components/product-preview/ProductPreviewDocuments.vue')
-  const page = readApp('components/product-preview/ProductPreviewPage.vue')
+  const purchase = readApp('components/product-detail/ProductPurchasePanel.vue')
+  const documents = readApp('components/product-detail/ProductDetailDocuments.vue')
+  const page = readApp('components/product-detail/ProductDetailPage.vue')
 
   assert.match(purchase, /usePublicLinks\(\)/)
   assert.match(purchase, /navigateTo\(links\.generic\('\/gio-hang\/'\)\)/)
@@ -76,7 +76,7 @@ test('shared catalog and shell links resolve CMS internal URLs and keep exactly 
   const homeDealer = readApp('components/home/HomeDealer.vue')
   const directorStage = readApp('components/home/DirectorStage.vue')
   const homeContact = readApp('components/home/HomeContact.vue')
-  const supportExtras = readApp('components/product-preview/ProductSupportExtras.vue')
+  const supportExtras = readApp('components/product-detail/ProductSupportExtras.vue')
   const navBlock = header.match(/const fallbackNav: PublicSiteLink\[\] = \[([\s\S]*?)\n\]/)?.[1]
   assert.ok(navBlock)
   const navItems = [...navBlock.matchAll(/\{ label: '([^']+)', href: '([^']+)' \}/g)].map((match) => [match[1], match[2]])
@@ -113,10 +113,4 @@ test('shared catalog and shell links resolve CMS internal URLs and keep exactly 
   assert.match(homeDealer, /href="#yeu-cau-tu-van"/)
   assert.match(supportExtras, /links\.generic\(policy\.href\)/)
 
-  const phpProjection = readFileSync(new URL('domains/phucthinhsolar.com/public_html/libraries/pts_public_navigation_api.php', repo), 'utf8')
-  assert.match(phpProjection, /'label'=>'Giới thiệu','href'=>'\/gioi-thieu\//)
-  assert.match(phpProjection, /'label'=>'Giải pháp','href'=>'\/giai-phap\//)
-  assert.match(phpProjection, /'label'=>'Dự án','href'=>'\/du-an-da-thuc-hien\//)
-  assert.match(phpProjection, /'label'=>'Kiến thức','href'=>'\/tin-tuc\//)
-  assert.match(phpProjection, /'label'=>'Hợp tác','href'=>'\/dai-ly\//)
 })

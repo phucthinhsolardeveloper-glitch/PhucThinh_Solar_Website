@@ -141,9 +141,9 @@ test('filtered and empty public route states cannot be indexable', () => {
 test('legacy product aliases resolve to Nuxt canonical routes and do not duplicate page content', () => {
   const alias = read('app/pages/product/[slug].vue')
   const rootAlias = read('app/pages/product/index.vue')
-  const aliasMiddleware = read('app/middleware/product-legacy-alias-public-route.ts')
+  const aliasMiddleware = read('app/middleware/product-old-path-redirect.ts')
   const rootMiddleware = read('app/middleware/product-root-alias-public-route.ts')
-  assert.match(alias, /middleware:\s*['"]product-legacy-alias-public-route['"]/)
+  assert.match(alias, /middleware:\s*['"]product-old-path-redirect['"]/)
   assert.match(rootAlias, /middleware:\s*['"]product-root-alias-public-route['"]/)
   assert.match(aliasMiddleware, /_api\/public-route-resolve/)
   assert.doesNotMatch(aliasMiddleware, /PublicRouteEnabled|legacyProductDetailPublicPath|phpPublicRouteUrl/)

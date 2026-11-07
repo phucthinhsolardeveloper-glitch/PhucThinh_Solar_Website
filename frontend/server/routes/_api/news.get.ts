@@ -1,9 +1,9 @@
 import { isPublicNewsPayload } from '../../../shared/contracts/public-news'
-import { fetchMigrationPayload, requireMigrationGet } from '../../utils/backend-api'
+import { fetchBackendPayload, requireGet } from '../../utils/backend-api'
 
 /** Fixed server-only bridge; no request cookies or user-supplied upstream URL are forwarded. */
 export default defineEventHandler(async (event) => {
-  requireMigrationGet(event)
+  requireGet(event)
   const query = getQuery(event)
   const allowed = new Set(['q', 'p', 'category', 'category_type', 'category_path'])
   if (Object.keys(query).some((key) => !allowed.has(key))) throw createError({ statusCode: 400, statusMessage: 'Bad Query' })
@@ -23,7 +23,7 @@ export default defineEventHandler(async (event) => {
     if (!params.has('category_type') || segments.length < 1 || segments.length > 4 || segments.some((segment) => !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(segment))) throw createError({ statusCode: 400, statusMessage: 'Bad Query' })
     if (params.has('category') && segments.at(-1) !== params.get('category')) throw createError({ statusCode: 400, statusMessage: 'Bad Query' })
   } else if (params.has('category_type') && !params.has('category')) throw createError({ statusCode: 400, statusMessage: 'Bad Query' })
-  const payload = await fetchMigrationPayload(event, {
+  const payload = await fetchBackendPayload(event, {
     endpoint: '/api/v1/news',
     query: Object.fromEntries(params.entries()),
     validate: isPublicNewsPayload,

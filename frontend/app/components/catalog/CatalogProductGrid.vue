@@ -90,7 +90,7 @@ async function addToCart(product: PublicCatalogProduct, trigger?: EventTarget | 
 }
 
 /**
- * Định dạng tiền khớp đúng PHP: libraries/class/class.Functions.php::formatMoney()
+ * Định dạng tiền kiểu Việt Nam: 1.234.000đ
  * dùng number_format($price, 0, ',', '.') + hậu tố "đ" — dấu CHẤM phân cách
  * nghìn, không có phần thập phân. 'vi-VN' của Intl cho đúng kết quả đó vì
  * locale này dùng dấu chấm làm thousands separator.
@@ -99,7 +99,7 @@ function formatMoney(value: number): string {
   return `${new Intl.NumberFormat('vi-VN').format(value)}đ`
 }
 
-/** PHP hiển thị công suất dạng "650W" — bỏ số 0 thừa, không phần thập phân khi là số nguyên. */
+/** Công suất hiển thị dạng "650W" — bỏ số 0 thừa, không phần thập phân khi là số nguyên. */
 function formatPower(watts: number): string {
   return `${Number.isInteger(watts) ? watts : watts.toFixed(1)}W`
 }
@@ -128,9 +128,9 @@ function discountPercent(product: PublicCatalogProduct): number | null {
     đúng 337px, mép trái 447/800/1153/1506 -> khoảng cách ngang 16px, tổng lưới
     1396px. Nút trong thẻ cao 40px.
 
-    DTO đã mở rộng (merge feature/pts-nuxt-php-dto-20261026): powerWatts +
+    DTO có powerWatts +
     pricing giờ có thật, lấy từ publicProductPricesVisible() và status
-    'baogia' — cùng logic site PHP đang dùng ở PDP. Khi pricing.mode = 'quote'
+    'baogia' — cùng logic trang chi tiết sản phẩm. Khi pricing.mode = 'quote'
     (tắt hiển thị giá công khai, hoặc sản phẩm cố ý ẩn giá) thì hiện "Liên hệ
     để nhận báo giá" như trước — không suy luận hay bịa giá.
   -->

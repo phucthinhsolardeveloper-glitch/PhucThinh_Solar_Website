@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { isPublicRouteResolveResult, isPublicRouteResolveSlug } from '#shared/contracts/public-route-resolve'
 import { bareSlugPublicPath } from '#shared/public-route-gate'
-import { editorialPublicResponseStatus, solutionLegacyRedirectPath } from '#shared/editorial-public-route'
+import { editorialPublicResponseStatus, solutionOldPathRedirect } from '#shared/editorial-public-route'
 import { publicBareSlugDisposition } from '#shared/public-bare-slug-route'
 import type { PublicSitePayload } from '#shared/contracts/public-site'
 import { isPublicSitePayload } from '#shared/contracts/public-site'
-import MigrationNewsDetailPage from '~/components/views/NewsDetailView.vue'
-import MigrationProjectDetailPage from '~/components/views/ProjectDetailView.vue'
-import MigrationGalleryDetailPage from '~/components/views/GalleryDetailView.vue'
+import NewsDetailPage from '~/components/views/NewsDetailView.vue'
+import ProjectDetailPage from '~/components/views/ProjectDetailView.vue'
+import GalleryDetailPage from '~/components/views/GalleryDetailView.vue'
 import ProjectCategoryPage from '~/components/projects/ProjectCategoryPage.vue'
 import NewsCategoryPage from '~/components/news/NewsCategoryPage.vue'
 import SolutionCategoryPage from '~/components/solutions/SolutionCategoryPage.vue'
@@ -26,7 +26,7 @@ const legacyAliases: Record<string, string> = {
   'he-thong-dai-ly': '/lien-he/',
   product: '/san-pham/',
 }
-const aliasTarget = legacyAliases[slug] ?? solutionLegacyRedirectPath(slug)
+const aliasTarget = legacyAliases[slug] ?? solutionOldPathRedirect(slug)
 const reservedRouteRoots = new Set(['ho-tro'])
 const canonicalBarePath = (() => {
   if (!isPublicRouteResolveSlug(slug) || reservedRouteRoots.has(slug)) return false
@@ -85,12 +85,12 @@ if (aliasTarget) {
 if (!activeDetail.value) useSeoMeta({ robots: 'noindex, nofollow, noarchive' })
 
 const detailPage = computed(() => {
-  if (activeDetail.value === 'news') return MigrationNewsDetailPage
+  if (activeDetail.value === 'news') return NewsDetailPage
   if (activeDetail.value === 'news-category') return NewsCategoryPage
   if (activeDetail.value === 'solution-category') return SolutionCategoryPage
-  if (activeDetail.value === 'project') return MigrationProjectDetailPage
+  if (activeDetail.value === 'project') return ProjectDetailPage
   if (activeDetail.value === 'project-category') return ProjectCategoryPage
-  if (activeDetail.value === 'gallery') return MigrationGalleryDetailPage
+  if (activeDetail.value === 'gallery') return GalleryDetailPage
   return null
 })
 </script>

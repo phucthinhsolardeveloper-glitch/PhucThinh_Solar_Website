@@ -26,7 +26,7 @@ usePublicSocialMeta({
   image: computed(() => site.value.brand.logo),
 })
 if (import.meta.server && isPublicRoute) {
-  // PHP renders a generic thank-you page without an order session. A 404 from
+  // Without an order session the page shows a generic thank-you. A 404 from
   // the read-only detail API also means “no session details”, not no page.
   if (errorStatus && errorStatus !== 404) setResponseStatus(502, 'Bad Gateway')
 }

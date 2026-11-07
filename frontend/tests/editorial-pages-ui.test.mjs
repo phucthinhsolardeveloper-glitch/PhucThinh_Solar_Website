@@ -66,9 +66,7 @@ test('solution detail restages its content as chapters with a hero and switcher 
 test('solution detail gallery opens an accessible lightbox with keyboard navigation', () => {
   const page = read('../app/components/solution-detail/SolutionDetailPage.vue')
   const gallery = read('../app/components/solution-detail/SolutionDetailGallery.vue')
-  const source = read('../../domains/phucthinhsolar.com/public_html/templates/news/service_detail_tpl.php')
   assert.match(page, /<SolutionDetailGallery :images="data\.solution\.gallery"/)
-  assert.match(source, /data-fancybox="solution-gallery"/)
   assert.match(gallery, /role="dialog"\s+aria-modal="true"/)
   assert.match(gallery, /event\.key === 'Escape'/)
   assert.match(gallery, /event\.key === 'ArrowLeft'/)
@@ -96,8 +94,6 @@ test('editorial cover and related images use the documented news aspect ratio an
 
 test('gallery keeps the PHP album thumb ratio while removing decorative card surfaces', () => {
   const gallery = read('../app/components/views/GalleryView.vue')
-  const phpAlbum = read('../../domains/phucthinhsolar.com/public_html/templates/album/album_tpl.php')
-  assert.match(phpAlbum, /sizes'\s*=>\s*'480x360x1'/)
   assert.match(gallery, /aspect-\[4\/3\]/)
   assert.doesNotMatch(gallery, /border border-gray-200 bg-white/)
   const video = read('../app/components/views/VideoView.vue')
@@ -152,8 +148,6 @@ test('editorial text controls meet the 44px hit-area rule and project tabs suppo
   const policy = read('../app/components/views/PolicyView.vue')
   const solutionsHub = read('../app/pages/giai-phap.vue')
   const richText = read('../app/components/editorial/EditorialRichText.vue')
-  const phpSolutionHub = read('../../domains/phucthinhsolar.com/public_html/templates/news/service_list_tpl.php')
-  const phpSolutionStyles = read('../../domains/phucthinhsolar.com/public_html/assets/css/solution-hub.css')
   const solutionDetail = read('../app/components/solution-detail/SolutionDetailPage.vue')
   const solutionIntro = read('../app/components/solutions/SolutionsIntro.vue')
   const equipment = read('../app/components/solutions/SolutionsEquipment.vue')
@@ -167,8 +161,6 @@ test('editorial text controls meet the 44px hit-area rule and project tabs suppo
   assert.match(story, /<EditorialRichText v-for="\(content, index\) in contents" :key="index" :content="content" variant="solution" \/>/)
   assert.match(story, /\.story-index a \{[^}]*min-height: 56px/)
   assert.match(richText, /cms-content--editorial-solution h2[\s\S]*?border: 0;/)
-  assert.match(phpSolutionHub, /aria-label="Mục lục trang Giải pháp"/)
-  assert.match(phpSolutionStyles, /\.pts-sh-editorial-grid>\.pts-sd-toc\{max-height:calc\(100vh - 150px\);[^}]*background:var\(--sh-navy\)!important/)
   assert.match(solutionDetail, /\.solution-hero__primary \{[^}]*min-height: 58px/)
   assert.match(solutionIntro, /inline-flex min-h-11 items-center[^\n]*intro\.links\.explore/)
   assert.match(equipment, /\.showroom-all \{ display: inline-flex; min-height: 44px; align-items: center;/)
@@ -191,16 +183,12 @@ test('project detail uses one content gutter and avoids eyebrow/decorative CTA t
 
 test('project detail preserves PHP section order, project media ratio, and missing-image fallback', () => {
   const projectDetail = read('../app/components/project-detail/ProjectDetailPage.vue')
-  const phpDetail = read('../../domains/phucthinhsolar.com/public_html/templates/news/project_detail_tpl.php')
   const placeholder = read('../public/assets/images/noimage.png')
   const galleryIndex = projectDetail.indexOf('<ProjectDetailGallery')
   const equipmentIndex = projectDetail.indexOf('<ProjectDetailEquipment')
   const relatedIndex = projectDetail.indexOf('Dự án khác')
   const ctaIndex = projectDetail.indexOf('<PublicCtaBanner\n        v-if="project.cta"')
-  const phpImageHelper = read('../../domains/phucthinhsolar.com/public_html/libraries/class/class.Functions.php')
   assert.ok(galleryIndex >= 0 && galleryIndex < equipmentIndex && equipmentIndex < relatedIndex && relatedIndex < ctaIndex)
-  assert.match(phpDetail, /getImage\(\['class' => '', 'sizes' => '640x400x1'/)
-  assert.match(phpImageHelper, /'image-error' => 'noimage\.png'/)
   assert.match(projectDetail, /optimizedImage\(item\.image, 800, 600\) \|\| '\/assets\/images\/noimage\.png'/)
   assert.match(projectDetail, /aspect-\[4\/3\]/)
   assert.ok(placeholder.length > 0)

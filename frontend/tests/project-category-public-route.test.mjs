@@ -24,10 +24,7 @@ test('project category route is Nuxt-owned, uses category API, and preserves CMS
   const middleware = read('../app/middleware/project-category-public-route.ts')
   const page = read('../app/components/projects/ProjectCategoryPage.vue')
   const routePage = read('../app/pages/danh-muc-du-an/[slug].vue')
-  const projectsApi = read('../../domains/phucthinhsolar.com/public_html/api/pts_v1_projects.php')
-  const projectsDto = read('../../domains/phucthinhsolar.com/public_html/libraries/pts_public_projects_api.php')
   const projectsAdapter = read('../server/routes/_api/projects.get.ts')
-  const legacyRouter = read('../../domains/phucthinhsolar.com/public_html/libraries/router.php')
   const manifest = JSON.parse(read('../../tools/visual-tests/fixtures/migration-routes.json'))
   assert.doesNotMatch(middleware, /PublicRouteEnabled|phpPublicRouteUrl/)
   assert.match(middleware, /to\.path !== canonicalPath/)
@@ -42,10 +39,7 @@ test('project category route is Nuxt-owned, uses category API, and preserves CMS
   assert.match(page, /category\?\.seo\?\.image \|\| projects\.value\?\.category\?\.image/)
   assert.match(page, /editorialPublicResponseStatus\(true, errorStatus, !projects\.value\)/)
   assert.match(routePage, /ProjectCategoryPage/)
-  assert.match(projectsApi, /ptsProjectsError\(404, 'CATEGORY_NOT_FOUND'\)/)
-  assert.match(projectsDto, /'canonicalPath' => '\/'\.\$slug/)
   assert.match(projectsAdapter, /passThroughStatuses:\s*\[400, 404\]/)
-  assert.match(legacyRouter, /array\("tbl" => "news_list", "field" => "idl", "source" => "news", "com" => "du-an", "type" => "du-an"\)/)
 
   const categoryFixtures = manifest.routes.filter((route) => route.kind === 'project-category')
   assert.deepEqual(categoryFixtures.map(({ legacyPath, expectedCanonicalPath }) => [legacyPath, expectedCanonicalPath]), [

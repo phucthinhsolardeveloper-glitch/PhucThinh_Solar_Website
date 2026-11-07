@@ -18,10 +18,7 @@ const solutionDetailRoute = readFileSync(new URL('../app/components/views/Soluti
 
 test('accepts safe solution detail DTO', () => assert.equal(isPublicSolutionDetailPayload(good), true))
 test('solution detail derives its TOC from sanitized content and reports that PHP omits it', () => {
-  const phpHelper = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/libraries/pts_public_solution_detail_api.php', import.meta.url), 'utf8')
   assert.match(solutionPage, /buildEditorialTocForFragments\([\s\S]*props\.data\.solution\.content, props\.data\.solution\.extraContent/)
-  assert.match(phpHelper, /toc_derived_client_side_from_sanitized_html/)
-  assert.doesNotMatch(phpHelper, /toc_generation_not_implemented/)
 })
 test('accepts an empty Admin category and rejects unsafe category markup', () => {
   assert.equal(isPublicSolutionDetailPayload({ ...good, solution: { ...good.solution, category: '' } }), true)
@@ -50,12 +47,8 @@ test('rejects wrong sanitizer metadata on either content field', () => {
 test('solution detail renders its Admin controlled campaign CTA after related equipment', () => {
   assert.match(solutionPage, /<SolutionsCta v-if="data\.campaignCta" :cta="data\.campaignCta" :subject="`Giải pháp: \$\{data\.solution\.title\}`" \/>/)
   assert.match(solutionPage, /v-if="data\.solution\.category"[\s\S]*\{\{ data\.solution\.category \}\}/)
-  assert.match(readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/api/pts_v1_solution_detail.php', import.meta.url), 'utf8'), /#_news_list where id = \? and type = \? and find_in_set\('hienthi',status\)/)
-  assert.match(readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/api/pts_v1_solution_detail.php', import.meta.url), 'utf8'), /type=\? order by numb,id desc', array\('solution-cta'\)/)
 })
 test('solution detail reads the legacy news SEO key and applies Admin metadata with content fallbacks', () => {
-  const api = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/api/pts_v1_solution_detail.php', import.meta.url), 'utf8')
-  assert.match(api, /id_parent = \? and com = \? and act = \? and type = \? limit 1', array\(\(int\)\$row\['id'\], 'news', 'man', 'giai-phap'\)/)
   assert.match(solutionDetailRoute, /data\.value\?\.seo\?\.title\s*\|\|\s*data\.value\?\.solution\.title/)
   assert.match(solutionDetailRoute, /data\.value\?\.seo\?\.description\s*\|\|\s*data\.value\?\.solution\.summary/)
   assert.match(solutionDetailRoute, /data\.value\?\.seo\?\.image\s*\|\|\s*undefined/)

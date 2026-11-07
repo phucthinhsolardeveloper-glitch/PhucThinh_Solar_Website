@@ -34,7 +34,7 @@ test('rejects unsafe video, policy, media and inconsistent review totals', () =>
 })
 
 test('review dates use a deterministic Vietnam timezone for SSR and browser hydration', () => {
-  const reviews = readFileSync(new URL('../app/components/product-preview/ProductReviews.vue', import.meta.url), 'utf8')
+  const reviews = readFileSync(new URL('../app/components/product-detail/ProductReviews.vue', import.meta.url), 'utf8')
   assert.match(reviews, /dateStyle: 'medium', timeZone: 'Asia\/Ho_Chi_Minh'/)
 })
 
@@ -44,15 +44,7 @@ test('review media and paged parent/reply contracts stay bounded and same-origin
   assert.equal(isPublicProductExtrasPayload({ ...good, reviews: { ...good.reviews, items: [{ ...mediaReview, video: { url: 'https://evil.test/review.mp4', poster: '' } }] } }), false)
   assert.equal(isPublicProductExtrasPayload({ ...good, replyPage: { parentId: 1, offset: 1, total: 2, hasMore: false, items: [{ name: 'Admin', content: 'Tiếp theo', isAdmin: true, date: 3 }] } }), true)
 
-  const extrasApi = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/api/pts_v1_product_extras.php', import.meta.url), 'utf8')
-  const reviewApi = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/api/pts_v1_review.php', import.meta.url), 'utf8')
-  const reviewUi = readFileSync(new URL('../app/components/product-preview/ProductReviews.vue', import.meta.url), 'utf8')
-  assert.match(extrasApi, /reviewOffset/)
-  assert.match(extrasApi, /replyParent/)
-  assert.match(extrasApi, /ptsPdpExtrasReviewVideo/)
-  assert.match(extrasApi, /requireOrderCode/)
-  assert.match(reviewApi, /multipart\/form-data/)
-  assert.match(reviewApi, /Comments\(\$d,\$func\)/)
+  const reviewUi = readFileSync(new URL('../app/components/product-detail/ProductReviews.vue', import.meta.url), 'utf8')
   assert.match(reviewUi, /review-file-photo\[\]/)
   assert.match(reviewUi, /review-file-video/)
   assert.match(reviewUi, /credentials: 'same-origin'/)

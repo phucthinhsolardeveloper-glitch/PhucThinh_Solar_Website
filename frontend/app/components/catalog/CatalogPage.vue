@@ -94,7 +94,7 @@ function closeFilterDrawerAfterNavigation(event: MouseEvent) {
 }
 const { data: siteData, error: siteError } = await useAsyncData<PublicSitePayload>('catalog-site', async () => {
   const payload = await $fetch<unknown>('/_api/site')
-  if (!isPublicSitePayload(payload)) throw createError({ statusCode: 502, statusMessage: 'Invalid PHP site data contract' })
+  if (!isPublicSitePayload(payload)) throw createError({ statusCode: 502, statusMessage: 'Invalid site data contract' })
   return payload
 })
 const { data: catalogData, error: catalogError, pending: catalogPending } = await useAsyncData<PublicCatalogPayload>(
@@ -142,7 +142,7 @@ const categoryNavItems = computed(() => {
     ? activeCategoryRoot.value?.children ?? []
     : (siteData.value?.productCategoryTree ?? []).filter((node) => node.slug !== 'den-san-vuon')
 
-  // The PHP catalog applies this explicit lighting rail order after the Admin taxonomy query.
+  // The catalog applies this explicit lighting rail order after the Admin taxonomy query.
   if (activeCategoryRoot.value?.slug !== 'den-nlmt') return items
   return [...items].sort((a, b) => (lightingRailOrder[a.slug] ?? 1000) - (lightingRailOrder[b.slug] ?? 1000))
 })
@@ -185,7 +185,7 @@ const hasSidebar = computed(() => (siteData.value?.productCategoryTree?.length ?
 const emptyFilters: NonNullable<PublicCatalogPayload['filters']> = { brands: [], priceRanges: [], subcategories: [], needs: [] }
 const emptySelected: NonNullable<PublicCatalogPayload['selected']> = { brandIds: [], priceKeys: [], subcategoryIds: [], sort: 'default', needKeys: [] }
 /*
- * Ẩn hai lựa chọn sắp xếp theo giá khi public_product_prices đang tắt - PHP
+ * Ẩn hai lựa chọn sắp xếp theo giá khi public_product_prices đang tắt -
  * (ptsCatalogSortOrderBy) cũng im lặng bỏ qua yêu cầu sort theo giá ẩn,
  * nhưng vẫn hiện lựa chọn trong dropdown sẽ gây hiểu nhầm là sắp xếp có tác
  * dụng trong khi thực tế không đổi thứ tự.
@@ -363,7 +363,7 @@ function pageLink(nextPage: number) {
 
         <div v-else-if="catalogError" class="py-16" role="status">
           <h2 class="mb-2 text-xl font-extrabold">Không thể tải danh mục</h2>
-          <p class="text-slate-500">Dữ liệu PHP local chưa khả dụng hoặc không khớp contract. Preview không hiển thị dữ liệu giả.</p>
+          <p class="text-slate-500">Danh mục tạm thời chưa tải được. Vui lòng thử lại sau ít phút hoặc gọi hotline để được tư vấn.</p>
         </div>
 
         <template v-else-if="catalogData">

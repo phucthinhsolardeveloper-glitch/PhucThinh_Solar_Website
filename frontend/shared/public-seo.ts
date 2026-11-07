@@ -1,14 +1,14 @@
 import type { PublicSitePayload } from './contracts/public-site.ts'
 
 export const PUBLIC_SEO_SITE_NAME = 'Phúc Thịnh Solar'
-// PHP's shared head falls back to the configured public logo when a route has
+// The shared head falls back to the configured public logo when a route has
 // no social image. Keep this aligned with the current CMS logo asset rather
 // than using the small browser favicon as a social preview.
 export const PUBLIC_SEO_FALLBACK_IMAGE = '/upload/photo/logo-phucthinh-solar-wordmark-2026.png'
 
 const CANONICAL_HOST = 'phucthinhsolar.com'
 
-/** Mirror the PHP head's empty-OG-description fallback from the site setting. */
+/** Empty OG descriptions fall back to the site setting. */
 export function publicSeoDescription(value: unknown, fallback = PUBLIC_SEO_SITE_NAME): string {
   const description = typeof value === 'string' ? value.trim() : ''
   if (description) return description
@@ -16,7 +16,7 @@ export function publicSeoDescription(value: unknown, fallback = PUBLIC_SEO_SITE_
   return siteDescription || PUBLIC_SEO_SITE_NAME
 }
 
-/** Mirror class.Seo::set(): append the brand once to PHP-owned page titles. */
+/** Append the brand once to page titles. */
 export function publicSeoTitle(value: unknown, fallback = PUBLIC_SEO_SITE_NAME): string {
   const title = typeof value === 'string' ? value.trim() : ''
   const resolved = title || fallback
@@ -122,7 +122,7 @@ function publicSocialUrls(site: PublicSitePayload): string[] {
   return [...urls]
 }
 
-/** Build the PHP-backed Organization graph without inventing missing CMS fields. */
+/** Build the Organization graph without inventing missing CMS fields. */
 export function publicSiteStructuredData(originValue: unknown, pathname: unknown, site: PublicSitePayload): string | null {
   const origin = canonicalPublicOrigin(originValue)
   if (!origin) return null

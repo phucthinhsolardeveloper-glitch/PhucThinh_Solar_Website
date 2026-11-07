@@ -106,7 +106,7 @@ onBeforeUnmount(() => clearTimeout(justAddedTimer))
       Thông tin tư vấn sản phẩm hiện chưa tải được.
     </p>
 
-    <!-- Link đại lý: mở popup modal đại lý theo chuẩn web PHP cũ -->
+    <!-- Link đại lý: mở popup modal đại lý của hệ thống đại lý -->
     <div class="mt-4 flex items-center justify-between border-t border-slate-100 pt-3 text-xs">
       <button
         type="button"
@@ -118,7 +118,7 @@ onBeforeUnmount(() => clearTimeout(justAddedTimer))
       </button>
     </div>
 
-    <!-- Keep product trust copy aligned with the PHP catalog's published promises. -->
+    <!-- Keep product trust copy aligned with the catalog's published promises. -->
     <div class="mt-4 grid grid-cols-2 gap-3 border-t border-slate-100 pt-4" aria-label="Cam kết dịch vụ">
       <div class="flex items-center gap-2.5">
         <span class="grid h-8 w-8 flex-none place-items-center rounded-full bg-amber-50 text-gold-700" aria-hidden="true">

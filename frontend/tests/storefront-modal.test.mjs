@@ -59,15 +59,6 @@ test('StorefrontDealerModal renders dealer fields, city selection, gold submit a
   assert.match(dealerModal, /UModal/)
 })
 
-test('dealer lead API validates province IDs against active CMS cities and retains a validated name fallback', () => {
-  const leadApi = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/api/pts_v1_lead_form.php', import.meta.url), 'utf8')
-  assert.match(leadApi, /'city_id'=>\(int\)ptsLeadValue\(\$dataInput,'city_id',12\)/)
-  assert.match(leadApi, /select id,name from #_city where id=\? and find_in_set\('hienthi',status\)/)
-  assert.match(leadApi, /select id,name from #_city where name=\? and find_in_set\('hienthi',status\)/)
-  assert.match(leadApi, /if\(!\$city \|\| !isset\(\$city\['name'\]\)/)
-  assert.match(leadApi, /'address'=>htmlspecialchars\(\$cityName\)/)
-})
-
 test('app.vue mounts both storefront modals inside UApp provider', () => {
   const app = read('app.vue')
   assert.match(app, /StorefrontConsultationModal/)
@@ -85,7 +76,7 @@ test('SiteHeader, SolutionsCta, NewsCta, ProjectsCta and ProductPurchasePanel tr
   const solutionsCta = read('components/solutions/SolutionsCta.vue')
   const newsCta = read('components/news/NewsCta.vue')
   const projectsCta = read('components/projects/ProjectsCta.vue')
-  const purchasePanel = read('components/product-preview/ProductPurchasePanel.vue')
+  const purchasePanel = read('components/product-detail/ProductPurchasePanel.vue')
 
   assert.match(header, /useStorefrontModal\(\)/)
   assert.match(header, /openConsultation/)

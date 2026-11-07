@@ -39,10 +39,10 @@ export default defineNuxtConfig({
    *
    * Nguy hiểm hơn cho parity: hai nguồn cùng tên "Be Vietnam Pro" không bảo đảm
    * cùng phiên bản, mà metric chữ lệch một chút là lệch chiều rộng nút và điểm
-   * xuống dòng so với bản PHP.
+   * xuống dòng so với thiết kế.
    *
    * provider 'none' = tự quản. @font-face thật nằm trong app/assets/css/main.css,
-   * trỏ vào frontend/public/fonts/ — chính các file woff2 mà site PHP đang phục vụ.
+   * trỏ vào frontend/public/fonts/ — các file woff2 tự host.
    */
   fonts: {
     families: [{ name: 'Be Vietnam Pro', provider: 'none' }],
@@ -82,6 +82,15 @@ export default defineNuxtConfig({
   nitro: { compressPublicAssets: { gzip: true, brotli: true } },
 
   routeRules: {
+    // Same protection headers the old site set for every response.
+    '/**': {
+      headers: {
+        'X-Content-Type-Options': 'nosniff',
+        'X-Frame-Options': 'SAMEORIGIN',
+        'Referrer-Policy': 'strict-origin-when-cross-origin',
+        'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+      },
+    },
     // Short shared cache for public read-only API DTOs (no cookies forwarded, bounded cache keys).
     // Session/token routes (cart, checkout, lead-form, order-thanks) and free-text queries
     // (search, catalog, news, route resolve) are deliberately excluded.
@@ -103,7 +112,7 @@ export default defineNuxtConfig({
     // allowlist protects the server-side API bridge from SSRF.
     apiOriginAllowlist: '127.0.0.1:8090,localhost:8090,pts-laravel13-local:8000',
     public: {
-      // Source of truth: config.php arrayDomainSSL and the production sitemap.
+      // The public site address; the sitemap uses the same origin.
       // The shared SEO helper still validates this exact origin before output.
       canonicalSiteOrigin: 'https://phucthinhsolar.com',
       homePublicRouteIndexable: true,

@@ -135,7 +135,7 @@ usePublicSocialMeta({
 
       <div v-else-if="!data" class="pts-container min-h-[45vh] py-12" :role="error ? 'alert' : 'status'">
         <h1 class="mb-3 text-3xl font-black tracking-tight">Thương hiệu</h1>
-        <p class="text-slate-500">Không tìm thấy thương hiệu hoặc dữ liệu PHP local chưa khả dụng. Preview không hiển thị dữ liệu giả.</p>
+        <p class="text-slate-500">Không tìm thấy thương hiệu hoặc dữ liệu tạm thời chưa tải được. Vui lòng thử lại sau ít phút.</p>
       </div>
 
       <div v-else class="pts-container pt-8 pb-16 max-ph:pt-6 max-ph:pb-12">

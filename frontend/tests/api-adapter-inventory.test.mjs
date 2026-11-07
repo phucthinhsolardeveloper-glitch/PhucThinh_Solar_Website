@@ -18,7 +18,7 @@ test('every Nuxt GET data adapter targets an existing Laravel v1 route', () => {
     assert.match(endpoint[1], /^\/api\/v1\/[a-z-]+$/, name)
     const route = endpoint[1].slice('/api/v1/'.length)
     assert.match(laravelRoutes, new RegExp(`Route::get\\('${route}'`), `${name}: no Laravel route for ${route}`)
-    assert.match(source, /requireMigrationGet\(event\)/, `${name}: GET guard missing`)
+    assert.match(source, /requireGet\(event\)/, `${name}: GET guard missing`)
     assert.match(source, /Cache-Control', 'private, no-store'/, `${name}: cache policy missing`)
   }
   assert.ok(mapped >= 16, `Unexpected loss of API-backed adapters: ${mapped}`)

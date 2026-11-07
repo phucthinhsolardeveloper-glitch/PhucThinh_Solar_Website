@@ -1,2 +1,2 @@
-/** The Nuxt checkout form posts to the existing PHP business endpoint. */
+/** The checkout form posts straight to the Laravel checkout endpoint. */
 export default defineNuxtRouteMiddleware(() => undefined)

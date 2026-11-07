@@ -5,7 +5,7 @@ definePageMeta({
   middleware: 'cart-public-route',
 })
 
-// Cart contents depend on the PHP session and must never be indexed.
+// Cart contents depend on the session and must never be indexed.
 useSeoMeta({
   title: 'Giỏ hàng | Phúc Thịnh Solar',
   robots: 'noindex, nofollow, noarchive',

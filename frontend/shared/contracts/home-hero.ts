@@ -7,7 +7,7 @@ const heroSlots = [
   { key: 'storage', needles: ['pin lưu trữ', 'pin luu tru', 'battery', 'lưu trữ'] },
 ] as const
 
-/** Recreates the PHP homepage's stable hero slot mapping from the API's ordered CMS rows. */
+/** Keeps the homepage's stable hero slot mapping from the API's ordered CMS rows. */
 export function normalizePublicHomeHero(rows: PublicHomeSlide[]): PublicHomeSlide[] {
   return heroSlots.flatMap((slot, index) => {
     let selected = rows[index]

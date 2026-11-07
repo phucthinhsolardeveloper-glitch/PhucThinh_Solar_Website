@@ -14,14 +14,14 @@ const fallbackSite: PublicSitePayload = { schemaVersion: 1, brand: { name: 'Phú
  */
 // Not `async`: callers must `await result.ready` themselves from their own
 // <script setup> top level. If this function is declared `async` and the
-// page does `await useProductPreviewData(slug)`, every composable call
+// page does `await useProductDetailData(slug)`, every composable call
 // inside it (useFetch, useRequestURL, useHead, ...) crashes SSR with an
 // opaque NUXT_E1001 - the compiler's withAsyncContext transform only
 // preserves the active Nuxt/component instance across a *literal* top-level
 // `await` in the SFC, not across a call into a separately exported async
 // function. Keeping this function synchronous and awaiting its `ready`
 // promise directly in the page sidesteps that entirely.
-export function useProductPreviewData(slug: Ref<string>) {
+export function useProductDetailData(slug: Ref<string>) {
   const siteFetch = useFetch<unknown>('/_api/site', { default: () => fallbackSite })
   const productFetch = useFetch<unknown>('/_api/product-detail', { query: computed(() => ({ slug: slug.value })), default: () => null })
   const extrasFetch = useFetch<unknown>('/_api/product-extras', { query: computed(() => ({ slug: slug.value })), default: () => null })

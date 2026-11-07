@@ -46,7 +46,7 @@ test('route classifier contract rejects malformed, mismatched, private, or guess
 
 test('Nitro adapter is GET-only, validates one slug, delegates to the fixed API endpoint, and disables caching', () => {
   const route = read('server/routes/_api/public-route-resolve.get.ts')
-  assert.match(route, /requireMigrationGet\(event\)/)
+  assert.match(route, /requireGet\(event\)/)
   assert.match(route, /Object\.keys\(query\)\.some\(\(key\) => key !== 'slug'\)/)
   assert.match(route, /isPublicRouteResolveSlug\(query\.slug\)/)
   assert.match(route, /endpoint: '\/api\/v1\/public-route-resolve'/)

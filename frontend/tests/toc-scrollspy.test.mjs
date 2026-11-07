@@ -34,8 +34,8 @@ test('page wheel input stays native instead of being intercepted for scripted sc
 
 test('active horizontal rails keep the selected public filter visible', () => {
   const source = read('../app/composables/useActiveHorizontalRail.ts')
-  const about = read('../app/components/about/AboutPreviewPage.vue')
-  const product = read('../app/components/product-preview/ProductPreviewPage.vue')
+  const about = read('../app/components/about/AboutPage.vue')
+  const product = read('../app/components/product-detail/ProductDetailPage.vue')
   const project = read('../app/components/projects/ProjectCategoryPage.vue')
   assert.match(source, /querySelector<HTMLElement>\('\[aria-current="page"\], \[aria-current="location"\]'\)/)
   assert.match(source, /activeRect\.left \+ activeRect\.width \/ 2/)

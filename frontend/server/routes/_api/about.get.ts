@@ -1,9 +1,9 @@
 import { isPublicAboutPayload } from '../../../shared/contracts/public-about'
-import { fetchMigrationPayload, requireMigrationGet } from '../../utils/backend-api'
+import { fetchBackendPayload, requireGet } from '../../utils/backend-api'
 
 export default defineEventHandler(async (event) => {
-  requireMigrationGet(event)
-  const payload = await fetchMigrationPayload(event, {
+  requireGet(event)
+  const payload = await fetchBackendPayload(event, {
     endpoint: '/api/v1/about',
     validate: isPublicAboutPayload,
     invalidMessage: 'Invalid About data contract',

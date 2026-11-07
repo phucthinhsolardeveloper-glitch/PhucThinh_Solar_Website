@@ -125,7 +125,7 @@ const telHref = computed(() => telHrefFor(hotline.value))
       </div>
 
       <div class="grid min-w-0 max-tb:gap-0 grid-cols-1 gap-8 min-[768px]:grid-cols-[minmax(350px,1fr)_minmax(0,1fr)] min-[768px]:gap-12 tb:col-span-2 nav:col-span-1">
-        <!-- Chính sách nằm cùng cột nội dung liên hệ như footer PHP. -->
+        <!-- Chính sách nằm cùng cột nội dung liên hệ như thiết kế footer. -->
         <nav v-if="footer?.policies.length" aria-label="Chính sách và hỗ trợ khách hàng">
           <h2 class="foot-head mb-4 text-[16px] font-extrabold text-white">
             <button type="button" class="foot-toggle" :aria-expanded="footOpen.policies" @click="footOpen.policies = !footOpen.policies">Chính sách &amp; Hỗ trợ khách hàng</button>
@@ -144,7 +144,7 @@ const telHref = computed(() => telHrefFor(hotline.value))
           </ul>
         </nav>
 
-        <!-- Địa điểm hiển thị thành danh sách phẳng, như .content_cn của PHP. -->
+        <!-- Địa điểm hiển thị thành danh sách phẳng, mỗi chi nhánh một dòng. -->
         <div v-if="footer?.locations.length">
           <h2 class="foot-head mb-4 text-[16px] font-extrabold text-white">
             <button type="button" class="foot-toggle" :aria-expanded="footOpen.locations" @click="footOpen.locations = !footOpen.locations">Hệ thống kho &amp; điểm giao dịch</button>

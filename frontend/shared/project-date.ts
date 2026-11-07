@@ -1,4 +1,4 @@
-/** Formats PHP's Y-m-d project date value using the legacy public d/m/Y display. */
+/** Formats a Y-m-d project date as d/m/Y. */
 export function formatProjectDate(value: string): string {
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value)
   if (!match) return value

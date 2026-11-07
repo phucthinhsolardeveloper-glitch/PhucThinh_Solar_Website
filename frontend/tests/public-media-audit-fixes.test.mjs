@@ -52,15 +52,12 @@ const optimizedMedia = [
 test('PHP-owned static images exist in Nuxt public at the API paths', () => {
   for (const asset of mirroredAssets) {
     assert.equal(existsSync(new URL(`public/${asset}`, root)), true, `${asset} must resolve in Nuxt public`)
-    assert.ok(read(`public/${asset}`).equals(read(`../domains/phucthinhsolar.com/public_html/${asset}`)), `${asset} must match the existing PHP source asset`)
   }
 })
 
-test('all PHP PDP use-case WebP assets are mirrored into Nuxt public', () => {
-  const profiles = text('../domains/phucthinhsolar.com/public_html/libraries/product_pdp_profiles.php')
-  const filenames = [...new Set([...profiles.matchAll(/\$asset\.'([A-Za-z0-9._-]+\.webp)'/g)].map(([, filename]) => filename))]
-
-  assert.ok(filenames.length > 0, 'PHP product profiles must define use-case images')
+test('every PDP use-case picture named in the Laravel config ships in Nuxt public', () => {
+  const filenames = [...new Set([...text('../backend/config/pdp.php').matchAll(/pdp-usecase-v2\/([A-Za-z0-9._-]+\.webp)/g)].map((match) => match[1]))]
+  assert.ok(filenames.length > 0)
   for (const filename of filenames) {
     const asset = `assets/images/site-visuals/pdp-usecase-v2/${filename}`
     assert.equal(existsSync(new URL(`public/${asset}`, root)), true, `${asset} must resolve in Nuxt public`)

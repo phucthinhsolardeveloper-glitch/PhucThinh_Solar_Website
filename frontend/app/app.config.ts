@@ -31,7 +31,7 @@ export default defineAppConfig({
        *
        * Đây là đối chiếu chứ không phải thẩm mỹ: --pts-muted #64748b ĐÚNG BẰNG
        * slate-500 và --pts-surface #f8fafc ĐÚNG BẰNG slate-50. Chọn gray sẽ
-       * lệch nhẹ khỏi hai token đã dùng khắp bản PHP — đúng loại lệch 2-5% mà
+       * lệch nhẹ khỏi hai token gốc của thương hiệu — đúng loại lệch 2-5% mà
        * design-tokens.css đã phải dọn một lần.
        */
       neutral: 'slate',

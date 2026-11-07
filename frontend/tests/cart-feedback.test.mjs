@@ -21,7 +21,7 @@ test('cart reads are ordered against concurrent refreshes and mutations', async 
 })
 
 test('add to cart plays the flight to the header cart and a dismissible confirmation card', () => {
-  const panel = read('../app/components/product-preview/ProductPurchasePanel.vue')
+  const panel = read('../app/components/product-detail/ProductPurchasePanel.vue')
   const feedback = read('../app/components/commerce/CartFeedback.vue')
   const header = read('../app/components/SiteHeader.vue')
   const app = read('../app/app.vue')

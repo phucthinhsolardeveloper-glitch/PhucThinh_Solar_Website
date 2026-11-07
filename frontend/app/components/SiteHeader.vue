@@ -624,7 +624,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <!-- The PHP header keeps navigation, phone, search, cart and CTA on one row. -->
+  <!-- The header keeps navigation, phone, search, cart and CTA on one row. -->
   <div
     class="pts-site-header sticky top-0 z-[1000]"
     :class="['transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform transform-gpu', isHeaderHidden ? '-translate-y-full' : 'translate-y-0']"

@@ -14,8 +14,6 @@ const good = {
   cta: { eyebrow: 'Đồng hành', title: 'Liên hệ', description: 'Tư vấn', buttonLabel: 'Liên hệ ngay', image: '', trust: [{ label: 'Tư vấn', image: '', icon: 'headset' }], hotline: null },
   labels: { all: 'Tất cả', filters: 'Lọc dự án', featured: 'Dự án nổi bật', view: 'Xem dự án', empty: 'Trống', cta: 'Liên hệ' },
 }
-const projectsApi = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/api/pts_v1_projects.php', import.meta.url), 'utf8')
-const projectsProjection = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/libraries/pts_public_projects_api.php', import.meta.url), 'utf8')
 
 test('accepts the projects DTO and nullable CMS CTA', () => {
   assert.equal(isPublicProjectsPayload(good), true)
@@ -25,21 +23,12 @@ test('accepts the projects DTO and nullable CMS CTA', () => {
 })
 
 test('projects CTA keeps the PHP eyebrow and trust row in the public DTO', () => {
-  assert.match(projectsApi, /title_indexvi,namevi,descvi,content1vi,photo,status/)
-  assert.match(projectsApi, /project-trust/)
-  assert.match(projectsProjection, /'eyebrow' => ptsProjectsPlainText/)
-  assert.match(projectsProjection, /'trust' => ptsProjectsTrustDto\(\$trustRows\)/)
   assert.equal(isPublicProjectsPayload({ ...good, cta: { ...good.cta, trust: [{ label: 'x', image: '', icon: 'script' }] } }), false)
 })
 
 test('projects SEO follows the active Admin keys and overrides only metadata with safe images', () => {
   const page = readFileSync(new URL('../app/components/views/ProjectsView.vue', import.meta.url), 'utf8')
   const categoryPage = readFileSync(new URL('../app/components/projects/ProjectCategoryPage.vue', import.meta.url), 'utf8')
-  assert.match(projectsApi, /#_seo where id_parent = \? and com = \? and act = \? and type = \? limit 1', array\(\(int\)\$selectedCategory\['id'\], 'news', 'man_list', 'du-an'\)/)
-  assert.match(projectsApi, /#_seopage where type = \? limit 1', array\('du-an'\)/)
-  assert.match(projectsApi, /select titlevi,descriptionvi,keywordsvi,photo from #_seopage/)
-  assert.match(projectsApi, /ptsPublicSeoDto\(is_array\(\$seoRow\).*UPLOAD_NEWS_L, \$selectedCategory\['photo'\]/)
-  assert.match(projectsProjection, /'seo' => array\(/)
   assert.match(page, /projects\.value\?\.seo\?\.title \|\| projects\.value\?\.title/)
   assert.match(page, /projects\.value\?\.seo\?\.image \|\| undefined/)
   assert.match(categoryPage, /publicSeoTitle\([\s\S]*category\?\.seo\?\.title \|\| projects\.value\?\.category\?\.name/)

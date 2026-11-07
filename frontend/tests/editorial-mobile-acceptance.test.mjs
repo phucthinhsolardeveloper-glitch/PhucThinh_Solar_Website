@@ -34,7 +34,7 @@ test('news TOC links meet the minimum touch target in both dimensions', () => {
 })
 
 test('About quick links meet the touch target and intro copy stays at least 16px on mobile', () => {
-  const page = read('../app/components/about/AboutPreviewPage.vue')
+  const page = read('../app/components/about/AboutPage.vue')
   const quickNav = page.split('aria-label="Đi nhanh trong trang Giới thiệu"')[1]?.split('</nav>')[0] ?? ''
   assert.equal((quickNav.match(/inline-flex min-h-11 min-w-11/g) ?? []).length, 1)
   assert.match(page, /text-\[15px\] font-extrabold/)

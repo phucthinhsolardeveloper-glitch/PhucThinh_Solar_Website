@@ -8,7 +8,7 @@ import {
   editorialPublicResponseStatus,
   editorialPublicRouteRobots,
   isSafeEditorialSlug,
-  solutionLegacyRedirectPath,
+  solutionOldPathRedirect,
 } from '../shared/editorial-public-route.ts'
 
 const root = new URL('../', import.meta.url)
@@ -65,10 +65,10 @@ test('editorial detail slugs build only safe solution and policy paths', () => {
 })
 
 test('verified legacy solution alias redirects to the live canonical solution', () => {
-  assert.equal(solutionLegacyRedirectPath('thiet-bi-den-nang-luong-mat-troi-quy-mo-ho-gia-dinh'), '/giai-phap/chieu-sang-nang-luong-mat-troi/')
-  assert.equal(solutionLegacyRedirectPath('dien-mat-troi-doanh-nghiep'), undefined)
-  assert.equal(solutionLegacyRedirectPath('../chieu-sang'), undefined)
-  assert.match(read('app/middleware/solution-detail-public-route.ts'), /solutionLegacyRedirectPath\(slug\)[\s\S]*navigateTo\(legacyRedirect, \{ redirectCode: 301 \}\)/)
+  assert.equal(solutionOldPathRedirect('thiet-bi-den-nang-luong-mat-troi-quy-mo-ho-gia-dinh'), '/giai-phap/chieu-sang-nang-luong-mat-troi/')
+  assert.equal(solutionOldPathRedirect('dien-mat-troi-doanh-nghiep'), undefined)
+  assert.equal(solutionOldPathRedirect('../chieu-sang'), undefined)
+  assert.match(read('app/middleware/solution-detail-public-route.ts'), /solutionOldPathRedirect\(slug\)[\s\S]*navigateTo\(legacyRedirect, \{ redirectCode: 301 \}\)/)
 })
 
 test('static editorial pages render their view component and redirect old paths', () => {

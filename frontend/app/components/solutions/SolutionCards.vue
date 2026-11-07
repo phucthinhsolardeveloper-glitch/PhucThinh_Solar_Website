@@ -20,7 +20,7 @@ watch(() => props.highlight, async (slugs) => {
 
 <template>
   <!--
-    PHP (templates/news/service_list_tpl.php) chỉ dùng $solutionUi['choices']
+    Trang giải pháp chỉ dùng $solutionUi['choices']
     làm aria-label trên <section>, không render heading chữ nào phía trên
     lưới card khi có dữ liệu — mỗi card tự có heading riêng là tiêu đề của nó.
     Chỉ hiện text này như tiêu đề thật khi danh sách rỗng.

@@ -1,5 +1,5 @@
 import { isBrandSlug, isPublicBrandDetailPayload } from '../../../shared/contracts/public-brand-detail'
-import { fetchMigrationPayload, requireMigrationGet } from '../../utils/backend-api'
+import { fetchBackendPayload, requireGet } from '../../utils/backend-api'
 
 function oneQueryValue(value: unknown): string | undefined {
   return typeof value === 'string' ? value : undefined
@@ -14,7 +14,7 @@ const sortPattern = /^[a-z-]+$/
 
 /** Fixed GET-only adapter for the brand detail API (/thuong-hieu/{slug}/). */
 export default defineEventHandler(async (event) => {
-  requireMigrationGet(event)
+  requireGet(event)
   const query = getQuery(event)
   const allowed = new Set(['slug', 'page', 'per_page', 'sort', 'price'])
   if (Object.keys(query).some((key) => !allowed.has(key))) throw createError({ statusCode: 400, statusMessage: 'BAD_QUERY' })
@@ -33,7 +33,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'BAD_QUERY' })
   }
 
-  const payload = await fetchMigrationPayload(event, {
+  const payload = await fetchBackendPayload(event, {
     endpoint: '/api/v1/brand-detail',
     query: {
       slug,

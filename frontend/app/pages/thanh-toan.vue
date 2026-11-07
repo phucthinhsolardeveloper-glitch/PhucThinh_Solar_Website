@@ -205,7 +205,7 @@ function paymentIcon(name: string): string {
   return 'i-lucide-credit-card'
 }
 
-// Native POST keeps the PHP contract; this only blocks a second click while the browser navigates.
+// Native POST to the checkout API; this only blocks a second click while the browser navigates.
 const submitting = ref(false)
 function onSubmit(event: Event) {
   if (submitting.value) { event.preventDefault(); return }
@@ -229,7 +229,7 @@ onMounted(() => { window.addEventListener('pageshow', () => { submitting.value =
       </header>
 
       <div v-if="checkoutLoadError || !checkout || !cart" class="rounded-btn border border-red-200 bg-red-50 p-6 text-red-800" role="alert">
-        Không thể tải dữ liệu checkout từ PHP local.
+        Chưa tải được thông tin thanh toán. Vui lòng tải lại trang hoặc gọi hotline để đặt hàng.
       </div>
       <div v-else-if="!checkout.cartReady || !cart.canCheckout" class="checkout-card p-6 sm:p-8">
         <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">

@@ -1,8 +1,8 @@
 import { isPublicGalleryDetailPayload } from '../../../shared/contracts/public-gallery'
-import { fetchMigrationPayload, requireMigrationGet } from '../../utils/backend-api'
+import { fetchBackendPayload, requireGet } from '../../utils/backend-api'
 
 export default defineEventHandler(async (event) => {
-  requireMigrationGet(event)
+  requireGet(event)
   const query = getQuery(event)
   if (Object.keys(query).some((key) => key !== 'slug')) {
     throw createError({ statusCode: 400, statusMessage: 'Invalid gallery detail query' })
@@ -11,7 +11,7 @@ export default defineEventHandler(async (event) => {
   if (typeof slug !== 'string' || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
     throw createError({ statusCode: 400, statusMessage: 'Invalid gallery slug' })
   }
-  const payload = await fetchMigrationPayload(event, {
+  const payload = await fetchBackendPayload(event, {
     endpoint: '/api/v1/gallery-detail',
     query: { slug },
     validate: isPublicGalleryDetailPayload,

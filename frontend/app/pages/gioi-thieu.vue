@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { isPublicAboutPayload } from '#shared/contracts/public-about'
 import { isPublicSeoIndexable } from '#shared/public-seo'
-import AboutPreviewPage from '~/components/about/AboutPreviewPage.vue'
+import AboutPage from '~/components/about/AboutPage.vue'
 definePageMeta({
   layout: false,
   middleware: 'about-public-route',
@@ -56,7 +56,7 @@ usePublicSocialMeta({
         <h1 class="text-3xl font-bold text-navy-800">Giới thiệu</h1>
         <p class="mt-3 leading-[1.68] text-[#52627c]">Không thể tải dữ liệu giới thiệu trong môi trường hiện tại.</p>
       </div>
-      <AboutPreviewPage v-else :about="about" />
+      <AboutPage v-else :about="about" />
     </main>
   </div>
 </template>

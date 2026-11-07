@@ -3,7 +3,7 @@ import { isPublicCartPayload } from '#shared/contracts/public-cart'
 import { isCurrentCartRead } from '#shared/cart-refresh-guard'
 import { cartErrorMessage } from './cartError'
 
-export type MigrationCartMutation =
+export type CartMutation =
   | { action: 'add'; productId: number; quantity: number; color?: number; size?: number }
   | { action: 'update'; productId: number; code: string; quantity: number }
   | { action: 'delete'; code: string }
@@ -50,7 +50,7 @@ export function useShopCart() {
     }
   }
 
-  async function mutate(body: MigrationCartMutation) {
+  async function mutate(body: CartMutation) {
     // Discard reads started before a mutation so an old response cannot roll
     // shared cart state back after a newer value has arrived.
     cartRevision.value += 1
@@ -63,7 +63,7 @@ export function useShopCart() {
       try {
         await $fetch('/_api/cart', { method: 'POST', body: { ...body, csrfToken: current.csrfToken } })
       } catch (reason) {
-        // On a first visit, parallel PHP responses can each start a session and the last
+        // On a first visit, parallel API responses can each start a session and the last
         // cookie wins, leaving the cached token on another session (419). Re-read the
         // token for the cookie the browser now holds and retry once.
         if ((reason as { statusCode?: number })?.statusCode !== 419) throw reason

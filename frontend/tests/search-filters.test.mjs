@@ -5,17 +5,8 @@ import { test } from 'node:test'
 const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8')
 
 test('search GET projection allowlists brand and public-price filters with parameterized product conditions', () => {
-  const php = read('../../domains/phucthinhsolar.com/public_html/api/pts_v1_search.php')
   const nitro = read('../server/routes/_api/search.get.ts')
   const contract = read('../shared/contracts/public-search.ts')
-
-  assert.match(php, /\$allowed = array\('keyword','page','per_page','brand','price','sort'\)/)
-  assert.match(php, /array_fill\(0, count\(\$brandIds\), '\?'\)/)
-  assert.match(php, /productPriceFilterSql\(implode\(',', \$priceKeys\)\)/)
-  assert.match(php, /ptsCatalogBrandDto\(\$brandRow\)/)
-  assert.match(php, /'filters'=>array\('brands'=>\$brands,'priceRanges'=>\$priceRanges\)/)
-  assert.match(php, /'selected'=>array\('brandIds'=>\$brandIds,'priceKeys'=>\$priceKeys,'sort'=>\$sortKey\)/)
-  assert.match(php, /publicProductDefaultOrder\('p'\)/)
 
   assert.match(nitro, /\['keyword', 'page', 'per_page', 'brand', 'price', 'sort'\]/)
   assert.match(nitro, /query: \{ keyword, page, per_page: perPage, brand, price, sort \}/)

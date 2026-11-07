@@ -38,7 +38,7 @@ export function editorialDetailPublicPath(root: string, slug: unknown): string {
   return `${root}${slug}/`
 }
 
-export function solutionLegacyRedirectPath(slug: unknown): string | undefined {
+export function solutionOldPathRedirect(slug: unknown): string | undefined {
   if (!isSafeEditorialSlug(slug)) return undefined
   return LEGACY_SOLUTION_REDIRECTS[slug]
 }

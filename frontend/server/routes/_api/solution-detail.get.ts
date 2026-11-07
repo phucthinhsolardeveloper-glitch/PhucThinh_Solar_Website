@@ -1,11 +1,11 @@
 import { isPublicSolutionDetailPayload, isSolutionSlug } from '../../../shared/contracts/public-solution-detail'
-import { fetchMigrationPayload, requireMigrationGet } from '../../utils/backend-api'
+import { fetchBackendPayload, requireGet } from '../../utils/backend-api'
 
 export default defineEventHandler(async (event) => {
-  requireMigrationGet(event)
+  requireGet(event)
   const query = getQuery(event)
   if (Object.keys(query).some((key) => key !== 'slug') || typeof query.slug !== 'string' || !isSolutionSlug(query.slug)) throw createError({ statusCode: 400, statusMessage: 'Invalid solution slug' })
-  const payload = await fetchMigrationPayload(event, {
+  const payload = await fetchBackendPayload(event, {
     endpoint: '/api/v1/solution-detail',
     query: { slug: query.slug },
     validate: isPublicSolutionDetailPayload,

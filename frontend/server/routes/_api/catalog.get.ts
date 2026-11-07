@@ -1,5 +1,5 @@
 import { isCatalogSlugChain, isPublicCatalogPayload } from '../../../shared/contracts/public-catalog'
-import { fetchMigrationPayload, requireMigrationGet } from '../../utils/backend-api'
+import { fetchBackendPayload, requireGet } from '../../utils/backend-api'
 
 function oneQueryValue(value: unknown): string | undefined {
   return typeof value === 'string' ? value : undefined
@@ -22,7 +22,7 @@ function listQueryValue(value: unknown, pattern: RegExp): string | undefined {
 }
 
 export default defineEventHandler(async (event) => {
-  requireMigrationGet(event)
+  requireGet(event)
   const query = getQuery(event)
   const allowed = new Set(['category', 'page', 'per_page', 'brand', 'price', 'subcategory', 'sort', 'keyword', 'need'])
   if (Object.keys(query).some((key) => !allowed.has(key))) throw createError({ statusCode: 400, statusMessage: 'BAD_QUERY' })
@@ -49,7 +49,7 @@ export default defineEventHandler(async (event) => {
   const need = listQueryValue(query.need, /^(?:du-an-cong-trinh|chieu-sang-gia-dinh|san-vuon-canh-quan)(?:,(?:du-an-cong-trinh|chieu-sang-gia-dinh|san-vuon-canh-quan))*$/)
   if (query.need !== undefined && need === undefined) throw createError({ statusCode: 400, statusMessage: 'BAD_QUERY' })
 
-  const payload = await fetchMigrationPayload(event, {
+  const payload = await fetchBackendPayload(event, {
     endpoint: '/api/v1/catalog',
     query: {
       category,

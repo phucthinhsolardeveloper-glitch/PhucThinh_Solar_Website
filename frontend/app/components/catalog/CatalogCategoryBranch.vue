@@ -30,7 +30,7 @@ function categoryLink(url: string) {
     >
       {{ node.name }}
     </NuxtLink>
-    <!-- border-gray-200 = #e5e7eb, đúng bằng token --pts-line của bản PHP. -->
+    <!-- border-gray-200 = #e5e7eb, đúng bằng token --pts-line. -->
     <ul v-if="node.children.length" class="mt-2 mb-3 ml-3 list-none border-l border-gray-200 pl-3">
       <CatalogCategoryBranch
         v-for="child in node.children"

@@ -1,8 +1,8 @@
 import { isPublicGalleryPayload } from '../../../shared/contracts/public-gallery'
-import { fetchMigrationPayload, requireMigrationGet } from '../../utils/backend-api'
+import { fetchBackendPayload, requireGet } from '../../utils/backend-api'
 
 export default defineEventHandler(async (event) => {
-  requireMigrationGet(event)
+  requireGet(event)
   const query = getQuery(event)
   if (Object.keys(query).some((key) => key !== 'p')) {
     throw createError({ statusCode: 400, statusMessage: 'Invalid gallery query' })
@@ -11,7 +11,7 @@ export default defineEventHandler(async (event) => {
   if (page !== undefined && (typeof page !== 'string' || !/^[1-9][0-9]*$/.test(page))) {
     throw createError({ statusCode: 400, statusMessage: 'Invalid gallery page' })
   }
-  const payload = await fetchMigrationPayload(event, {
+  const payload = await fetchBackendPayload(event, {
     endpoint: '/api/v1/gallery',
     query: { p: typeof page === 'string' ? page : undefined },
     validate: isPublicGalleryPayload,

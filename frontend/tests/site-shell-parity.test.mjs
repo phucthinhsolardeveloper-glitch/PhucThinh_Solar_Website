@@ -6,7 +6,6 @@ const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8')
 
 test('Nuxt footer follows PHP column ownership and keeps location rows flat', () => {
   const footer = read('../app/components/SiteFooter.vue')
-  const php = read('../../domains/phucthinhsolar.com/public_html/templates/layout/footer.php')
 
   assert.match(footer, /nav:grid-cols-\[290px_minmax\(280px,1fr\)_minmax\(460px,1\.3fr\)\]/)
   assert.match(footer, /grid-cols-1 gap-8 min-\[768px\]:grid-cols-\[minmax\(350px,1fr\)_minmax\(0,1fr\)\] min-\[768px\]:gap-12/)
@@ -24,8 +23,6 @@ test('Nuxt footer follows PHP column ownership and keeps location rows flat', ()
   assert.ok(logoColumn >= 0 && trustBadge > logoColumn && trustBadge < policyStart)
   assert.ok(policyStart >= 0 && policyEnd > policyStart)
   assert.match(footer, /max-w-\[300px\][\s\S]*object-contain tb:max-w-\[280px\]/)
-  assert.match(php, /class="footer-bct-badge"/)
-  assert.match(php, /class="item_cn"/)
 })
 
 test('catalog category rail centers the selected item after navigation', () => {
@@ -43,9 +40,6 @@ test('footer rich text overrides editorial body color on dark surfaces', () => {
 
 test('floating contact exposes accessible back-to-top only after scrolling', () => {
   const floating = read('../app/components/SiteFloatingContact.vue')
-  const phpFooter = read('../../domains/phucthinhsolar.com/public_html/templates/layout/footer.php')
-  const phpScroll = read('../../domains/phucthinhsolar.com/public_html/templates/layout/js.php')
-  const phpProjection = read('../../domains/phucthinhsolar.com/public_html/libraries/pts_public_navigation_api.php')
 
   assert.match(floating, /window\.scrollY > 300/)
   assert.match(floating, /prefers-reduced-motion: reduce/)
@@ -59,11 +53,4 @@ test('floating contact exposes accessible back-to-top only after scrolling', () 
   assert.match(floating, /#0068ff/)
   assert.match(floating, /bg-gold-500/)
   assert.match(floating, /phoneHref/)
-  assert.match(phpFooter, /class="pts-contact-dock-toggle"/)
-  assert.match(phpFooter, /id="fanpage-vr"/)
-  assert.match(phpFooter, /id="zalo-vr"/)
-  assert.match(phpFooter, /class="pts-contact-dock-phone"/)
-  assert.match(phpProjection, /\$zaloDigits\s*=\s*preg_replace\('\/\[\^0-9\]\/\',\s*\'\',\s*ptsPublicNavScalar\(isset\(\$options\['zalo'\]\)/)
-  assert.match(phpProjection, /\$brand\['zaloHref'\]\s*=\s*'https:\/\/zalo\.me\/'\.\$zaloDigits/)
-  assert.match(phpScroll, /class="progress-wrap cursor-pointer active-progress"/)
 })

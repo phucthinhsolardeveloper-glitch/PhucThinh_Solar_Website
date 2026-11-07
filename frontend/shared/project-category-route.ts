@@ -6,7 +6,7 @@ export function projectCategoryPage(value: unknown): number {
   return Number.isSafeInteger(page) && page <= MAX_PUBLIC_PAGE ? page : 1
 }
 
-/** PHP canonicalizes project list categories to a bare slug without a slash. */
+/** Project list categories are canonical as a bare slug without a slash. */
 export function projectCategoryCanonicalPath(slug: string): string {
   if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) throw new Error('Invalid project category slug')
   return `/${slug}`

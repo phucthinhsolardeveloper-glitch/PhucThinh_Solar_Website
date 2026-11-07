@@ -86,7 +86,7 @@ test('requires sanitized Admin SEO fields and a product-matching canonical path'
 })
 test('PDP SSR emits PHP SEO metadata and canonical while retaining its indexability gate', () => {
   const page = readFileSync(new URL('../app/pages/san-pham/[slug].vue', import.meta.url), 'utf8')
-  const composable = readFileSync(new URL('../app/composables/useProductPreviewData.ts', import.meta.url), 'utf8')
+  const composable = readFileSync(new URL('../app/composables/useProductDetailData.ts', import.meta.url), 'utf8')
   assert.ok(page.includes('payload.value?.seo.title'))
   assert.match(page, /description: productDescription/)
   assert.ok(page.includes("name: 'keywords', content: productKeywords.value"))
@@ -146,12 +146,7 @@ test('accepts structured PDP blocks and rejects unsafe or category-only block sh
 })
 
 test('PDP mirrors PHP highlights and collapsed long description', () => {
-  const api = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/api/pts_v1_product_detail.php', import.meta.url), 'utf8')
-  const phpTemplate = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/templates/product/product_detail_tpl.php', import.meta.url), 'utf8')
-  const content = readFileSync(new URL('../app/components/product-preview/ProductPreviewContent.vue', import.meta.url), 'utf8')
-  assert.match(api, /\$content\['highlights'\]\s*=\s*productAutoHighlights\(/)
-  assert.match(phpTemplate, /pts-pdp-highlights/)
-  assert.match(phpTemplate, /<details class="pts-pdp-more-description"><summary>Xem mô tả chi tiết/)
+  const content = readFileSync(new URL('../app/components/product-detail/ProductDetailContent.vue', import.meta.url), 'utf8')
   assert.match(content, /content\.highlights\?\.length[\s\S]*Điểm nổi bật/)
   assert.match(content, /<details v-if="content\.blocks\.length"[\s\S]*Xem mô tả chi tiết/)
 })
@@ -185,7 +180,7 @@ test('accepts public product documents and rejects unsafe document paths', () =>
 
 test('related PDP products use Nuxt UI arrow controls and hide the horizontal scrollbar', () => {
   const grid = readFileSync(new URL('../app/components/catalog/CatalogProductGrid.vue', import.meta.url), 'utf8')
-  const page = readFileSync(new URL('../app/components/product-preview/ProductPreviewPage.vue', import.meta.url), 'utf8')
+  const page = readFileSync(new URL('../app/components/product-detail/ProductDetailPage.vue', import.meta.url), 'utf8')
   assert.match(grid, /layout === 'rail' && products\.length > 2[\s\S]*<UButton[\s\S]*aria-label="Sản phẩm trước"[\s\S]*<UButton[\s\S]*aria-label="Sản phẩm tiếp theo"/)
   assert.match(grid, /scrollBy\(\{ left: direction \* Math\.max\(rail\.clientWidth \* 0\.82, 240\), behavior: reducedMotion \? 'auto' : 'smooth' \}\)/)
   assert.match(grid, /scrollbar-width: none;/)

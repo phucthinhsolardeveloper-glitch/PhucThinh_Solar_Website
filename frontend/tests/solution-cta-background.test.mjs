@@ -3,21 +3,11 @@ import { readFileSync } from 'node:fs'
 import { test } from 'node:test'
 
 const frontendRoot = new URL('../', import.meta.url)
-const phpRoot = new URL('../../domains/phucthinhsolar.com/public_html/', import.meta.url)
 const readFrontend = (path) => readFileSync(new URL(path, frontendRoot), 'utf8')
-const readPhp = (path) => readFileSync(new URL(path, phpRoot), 'utf8')
 
 test('solution detail CTA keeps the PHP campaign fallback and 1600x500 media contract', () => {
-  const source = readPhp('sources/solution_hub.php')
-  const template = readPhp('templates/news/service_detail_tpl.php')
-  const api = readPhp('api/pts_v1_solution_detail.php')
-  const dto = readPhp('libraries/pts_public_solution_detail_api.php')
   const component = readFrontend('app/components/solutions/SolutionsCta.vue')
 
-  assert.match(source, /if\(\$solutionCtaImage === ''\) \$solutionCtaImage = 'assets\/images\/site-visuals\/catalog-street-lighting\.jpg'/)
-  assert.match(template, /getThumbUrl\('1600x500x1',\s*\$solutionCtaImage\)/)
-  assert.match(api, /ptsSolutionDetailPayload\([\s\S]*?\$ctaRows[\s\S]*?\$hotline/)
-  assert.match(dto, /'campaignCta'\s*=>\s*ptsSolutionDetailCampaignCta\(\$ctaRows,\s*\$hotline\)/)
   assert.match(component, /thumbUrl\(src, 1600, 500\)/)
   assert.match(component, /catalog-street-lighting\\\.jpg/)
   assert.match(component, /return \/\^\\\/assets\\\/images\\\/site-visuals\\\/catalog-street-lighting/)

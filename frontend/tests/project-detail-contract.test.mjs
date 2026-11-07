@@ -10,12 +10,7 @@ test('requires PHP bare-slug canonical metadata while retaining the slash route 
   assert.equal(good.project.url, '/du-an-that/')
 })
 test('project detail SEO metadata comes from PHP projection and exposes an HTML description meta', () => {
-  const endpoint = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/api/pts_v1_project_detail.php', import.meta.url), 'utf8')
-  const dto = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/libraries/pts_public_project_detail_api.php', import.meta.url), 'utf8')
   const page = readFileSync(new URL('../app/components/views/ProjectDetailView.vue', import.meta.url), 'utf8')
-  assert.match(endpoint, /select titlevi,descriptionvi,keywordsvi from #_seo where id_parent = \? and com = \? and act = \? and type = \? limit 0,1/)
-  assert.match(endpoint, /'news', 'man', 'du-an'/)
-  assert.match(dto, /'seo' => ptsProjectDetailSeoDto\(\$title, \$seoRow\)/)
   assert.match(page, /description:\s*computed\(\(\) => payload\.value\?\.seo\.description \?\? ''\)/)
   assert.match(page, /title: computed\(\(\) => payload\.value \? payload\.value\.seo\.title/)
   assert.match(page, /payload\.value\?\.seo\.keywords/)
@@ -41,9 +36,6 @@ test('project CTA carries Admin trust items and rejects unsafe icon paths', () =
   assert.match(projectDetailPage, /'fa-check': 'i-lucide-check', 'fa-headset': 'i-lucide-headset', 'fa-cogs': 'i-lucide-settings-2', 'fa-shield-alt': 'i-lucide-shield-check'/)
   assert.match(projectDetailPage, /image: item\.icon, icon: faIcons\[item\.faIcon\]/)
   assert.match(readFileSync(new URL('../nuxt.config.ts', import.meta.url), 'utf8'), /modules: \['@nuxt\/ui'\]/)
-  const endpoint = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/api/pts_v1_project_detail.php', import.meta.url), 'utf8')
-  assert.match(endpoint, /project-trust/)
-  assert.match(endpoint, /'trust' => ptsProjectDetailTrustDto\(\(array\)\$trustRows, ROOT\)/)
 })
 test('does not allow unsanitized editor HTML, wrong sanitizer metadata or external image paths', () => {
   assert.equal(isPublicProjectDetailPayload({ ...good, content: { ...good.content, html: '<script>alert(1)</script>' } }), false)

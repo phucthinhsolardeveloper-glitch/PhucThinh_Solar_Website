@@ -5,12 +5,10 @@ import { test } from 'node:test'
 const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8')
 
 test('news CTA keeps CMS content and uses the shared editorial image band', () => {
-  const phpTemplate = read('../../domains/phucthinhsolar.com/public_html/templates/news/news_cta_tpl.php')
   const nuxtTheme = read('../app/assets/css/main.css')
   const nuxtCta = read('../app/components/news/NewsCta.vue')
   const sharedCta = read('../app/components/PublicCtaBanner.vue')
 
-  assert.match(phpTemplate, /if\(\$nhCtaImage\)[\s\S]*class="nh-cta-bg"/)
   assert.match(nuxtTheme, /--pts-gold-gradient:\s*linear-gradient/)
   assert.match(nuxtCta, /variant="editorial"/)
   assert.match(nuxtCta, /:image="backgroundImage"/)

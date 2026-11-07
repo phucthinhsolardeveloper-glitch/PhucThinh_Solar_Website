@@ -54,8 +54,6 @@ test('mobile catalog filter and sort controls use matching full-width grid cells
 test('catalog matches PHP list-search visibility and keeps the lighting need filter', () => {
   const catalog = read('components/catalog/CatalogPage.vue')
   const sidebar = read('components/catalog/CatalogFilterSidebar.vue')
-  const phpCatalogCss = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/assets/css/product-category-v3.css', import.meta.url), 'utf8')
-  assert.match(phpCatalogCss, /\.product-category-page \.pts-lighting-category-v2 \.lv-search,[\s\S]*?\.lv-active-filters\{display:none!important;\}/)
   assert.doesNotMatch(catalog, /role="search"|Tìm tên hoặc mã sản phẩm|onKeywordSearch/)
   assert.match(catalog, /keyword\.value \? \{ keyword: keyword\.value \} : \{\}/)
   assert.match(catalog, /filters\.needs\?\.length/)
@@ -64,11 +62,11 @@ test('catalog matches PHP list-search visibility and keeps the lighting need fil
 })
 
 test('PDP renders allow-listed decision metrics and package contents; brand can select supported sorting', () => {
-  const productPage = read('components/product-preview/ProductPreviewPage.vue')
+  const productPage = read('components/product-detail/ProductDetailPage.vue')
   const publicProductRoute = read('pages/san-pham/[slug].vue')
-  const metrics = read('components/product-preview/ProductPreviewDecisionMetrics.vue')
+  const metrics = read('components/product-detail/ProductDetailDecisionMetrics.vue')
   const brand = read('components/catalog/BrandDetailPage.vue')
-  assert.match(productPage, /ProductPreviewDecisionMetrics/)
+  assert.match(productPage, /ProductDetailDecisionMetrics/)
   assert.match(productPage, /product\.packageContents/)
   assert.match(publicProductRoute, /payload\.value\?\.breadcrumbs/)
   assert.match(publicProductRoute, /<SiteBreadcrumb :items="breadcrumbItems"/)
@@ -85,14 +83,13 @@ test('PDP renders allow-listed decision metrics and package contents; brand can 
 })
 
 test('PDP keeps the source section order, PHP navigation labels, and FAQ placement', () => {
-  const productPage = read('components/product-preview/ProductPreviewPage.vue')
-  const productContent = read('components/product-preview/ProductPreviewContent.vue')
-  const source = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/templates/product/product_detail_tpl.php', import.meta.url), 'utf8')
+  const productPage = read('components/product-detail/ProductDetailPage.vue')
+  const productContent = read('components/product-detail/ProductDetailContent.vue')
   const pageOrder = [
-    productPage.indexOf('<ProductPreviewContent'),
-    productPage.indexOf('<ProductPreviewApplications'),
-    productPage.indexOf('<ProductPreviewBuyingGuide'),
-    productPage.indexOf('<ProductPreviewSpecs'),
+    productPage.indexOf('<ProductDetailContent'),
+    productPage.indexOf('<ProductDetailApplications'),
+    productPage.indexOf('<ProductDetailBuyingGuide'),
+    productPage.indexOf('<ProductDetailSpecs'),
     productPage.indexOf('<ProductSupportExtras'),
     productPage.indexOf('id="cau-hoi-thuong-gap"'),
     productPage.indexOf('<ProductReviews'),
@@ -107,29 +104,25 @@ test('PDP keeps the source section order, PHP navigation labels, and FAQ placeme
   assert.match(productPage, /label: 'Yêu cầu tư vấn'/)
   assert.match(productContent, /Mô tả sản phẩm/)
   assert.doesNotMatch(productContent, /content\.faqs|Câu hỏi thường gặp/)
-  assert.ok(source.indexOf('id="cau-hoi-thuong-gap"') < source.indexOf('pts-pdp-reviews'))
 })
 
 test('PDP support, reviews, consultation and related items follow the PHP section behavior', () => {
-  const productPage = read('components/product-preview/ProductPreviewPage.vue')
-  const support = read('components/product-preview/ProductSupportExtras.vue')
-  const reviews = read('components/product-preview/ProductReviews.vue')
-  const consultation = read('components/product-preview/ProductConsultationForm.vue')
-  const related = read('components/product-preview/ProductTrustRelated.vue')
+  const productPage = read('components/product-detail/ProductDetailPage.vue')
+  const support = read('components/product-detail/ProductSupportExtras.vue')
+  const reviews = read('components/product-detail/ProductReviews.vue')
+  const consultation = read('components/product-detail/ProductConsultationForm.vue')
+  const related = read('components/product-detail/ProductTrustRelated.vue')
   const grid = read('components/catalog/CatalogProductGrid.vue')
-  const source = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/templates/product/product_detail_tpl.php', import.meta.url), 'utf8')
 
   assert.match(productPage, /<ProductSupportExtras :extras="extras" :documents="documents" \/>/)
-  assert.doesNotMatch(productPage, /<ProductPreviewDocuments/)
+  assert.doesNotMatch(productPage, /<ProductDetailDocuments/)
   assert.match(support, /id="video-san-pham"/)
   assert.match(support, /Video đang được cập nhật/)
   assert.match(support, /id="tai-lieu-san-pham"/)
   assert.match(support, /id="chinh-sach-bao-hanh"/)
-  assert.ok(source.indexOf('pts-pdp-support-grid') < source.indexOf('id="cau-hoi-thuong-gap"'))
 
   assert.match(reviews, /<details id="danh-gia-san-pham"/)
   assert.doesNotMatch(reviews, /<details[^>]*\bopen\b/)
-  assert.match(source, /<details class="pts-pdp-review-disclosure">/)
 
   assert.match(consultation, /bg-slate-50/)
   assert.doesNotMatch(consultation, /bg-navy-950|Tư vấn theo sản phẩm/)
@@ -191,7 +184,7 @@ test('search and catalog root keep their PHP-backed route and category hero data
 
 test('commerce media failures render explicit fallbacks instead of blank frames', () => {
   const grid = read('components/catalog/CatalogProductGrid.vue')
-  const gallery = read('components/product-preview/ProductPreviewGallery.vue')
+  const gallery = read('components/product-detail/ProductDetailGallery.vue')
   assert.match(grid, /markImageFailed\(product\.id\)/)
   assert.match(grid, /Chưa có hình ảnh/)
   assert.match(grid, /<div class="mt-auto grid gap-1\.5 pt-3[\s\S]*?v-if="product\.pricing\?\.mode === 'quote'"[\s\S]*?Liên hệ để nhận báo giá[\s\S]*?@click="openConsultation\(product\.name\)"[\s\S]*?v-else-if="product\.pricing\?\.mode === 'price'"/)
@@ -211,19 +204,17 @@ test('commerce media failures render explicit fallbacks instead of blank frames'
 })
 
 test('PDP gallery uses the PHP white image surface and purchase actions preserve PHP order', () => {
-  const gallery = read('components/product-preview/ProductPreviewGallery.vue')
-  const purchase = read('components/product-preview/ProductPurchasePanel.vue')
-  const source = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/templates/product/product_detail_tpl.php', import.meta.url), 'utf8')
+  const gallery = read('components/product-detail/ProductDetailGallery.vue')
+  const purchase = read('components/product-detail/ProductPurchasePanel.vue')
   assert.match(gallery, /place-items-center[^\n]*bg-white/)
   assert.match(gallery, /object-contain p-0/)
   assert.doesNotMatch(gallery, /border-slate-200\/80|transition-shadow duration-300 hover:shadow-md/)
   assert.ok(purchase.indexOf('Mua ngay') < purchase.indexOf('Thêm vào giỏ'))
   assert.match(purchase, /public-navy-outline-button/)
-  assert.ok(source.indexOf('title="Mua ngay"') < source.indexOf('title="Thêm vào giỏ hàng"'))
 })
 
 test('PDP image lightbox traps keyboard focus and restores it to its trigger', () => {
-  const gallery = read('components/product-preview/ProductPreviewGallery.vue')
+  const gallery = read('components/product-detail/ProductDetailGallery.vue')
   assert.match(gallery, /const lightboxPanel = ref/)
   assert.match(gallery, /lastTrigger\.value = event\.currentTarget/)
   assert.match(gallery, /else if \(event\.key === 'Tab'\) trapFocus\(event\)/)
@@ -232,7 +223,6 @@ test('PDP image lightbox traps keyboard focus and restores it to its trigger', (
   assert.match(gallery, /setDocumentScrollLock\(true\)/)
   assert.match(gallery, /setDocumentScrollLock\(false\)/)
   assert.match(gallery, /<AnimatePresence :initial="false">/)
-  assert.match(gallery, /source === new URL\(optimizedImage\(selectedMedia\.value, 960, 960\), document\.baseURI\)\.href/)
   assert.match(gallery, /:transition="\{ duration: reducedMotion \? 0 : 0\.16/)
   assert.match(gallery, /@media \(prefers-reduced-motion: reduce\)/)
   assert.match(gallery, /\.pdp-zoom-image \{\s*transition-duration: 0ms/)

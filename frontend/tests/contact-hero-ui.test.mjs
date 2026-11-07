@@ -34,7 +34,4 @@ test('contact hero uses the CMS CTA URL and matches PHP label and visibility', a
   assert.match(hero, /v-if="contact\.visual\?\.href"/)
   assert.match(hero, /links\.generic\(contact\.visual\.href\)/)
   assert.match(hero, /Gửi yêu cầu tư vấn/)
-  const php = await readFile(new URL('../../domains/phucthinhsolar.com/public_html/templates/contact/contact_tpl.php', import.meta.url), 'utf8')
-  assert.match(php, /if\(\$contactVisual && !empty\(\$contactVisual\['link'\]\)\)/)
-  assert.match(php, />Gửi yêu cầu tư vấn/)
 })

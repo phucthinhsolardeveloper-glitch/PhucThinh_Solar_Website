@@ -10,15 +10,9 @@ const homeCampaigns = readFileSync(new URL('../app/components/home/HomeCampaigns
 const homeEditorial = readFileSync(new URL('../app/components/home/HomeEditorial.vue', import.meta.url), 'utf8')
 const homeAbout = readFileSync(new URL('../app/components/home/HomeAbout.vue', import.meta.url), 'utf8')
 const homeContact = readFileSync(new URL('../app/components/home/HomeContact.vue', import.meta.url), 'utf8')
-const homePhpSource = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/sources/index.php', import.meta.url), 'utf8')
-const homePhpApi = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/api/pts_v1_home.php', import.meta.url), 'utf8')
 const good = { schemaVersion: 1, locale: 'vi', path: '/', seo: { title: '', description: '' }, hero: [{ key: 'x', name: 'Hero', description: '', image: '/assets/images/site-visuals/a.webp', href: '/san-pham/' }], categories: [{ id: 1, name: 'Đèn', slug: 'den', url: '/danh-muc-san-pham/den/', major: true, image: '' }], campaigns: [{ name: 'Campaign', description: '', image: '/assets/images/site-visuals/a.webp', href: '/san-pham/' }], solutions: [{ label: 'Gia đình', name: 'Solar', description: 'Mô tả', image: '/assets/images/site-visuals/a.webp', href: '/giai-phap/' }], process: [{ number: '01', name: 'Tư vấn', description: 'Mô tả' }], dealer: { title: 'Đại lý', description: 'Mô tả', href: '/dai-ly/' }, about: { configured: false, visible: false, title: 'About', description: 'Mô tả', href: '/gioi-thieu/', action: 'Xem' }, contact: { hotline: '', email: '', address: '', workingHours: '' }, productGroups: [{ categoryId: 1, categoryName: 'Đèn', categoryUrl: '/danh-muc-san-pham/den/', products: [{ id: 2, name: 'Sản phẩm', slug: 'san-pham', href: '/san-pham/san-pham/', image: '/upload/product/a.webp' }] }], summary: { hero: 1, categories: 1, campaigns: 1, solutions: 1, process: 1, productGroups: 1 } }
 test('accepts the homepage PHP DTO without price fields', () => assert.equal(isPublicHomePayload(good), true))
 test('homepage hero slots follow the PHP semantic title mapping when CMS rows are reordered', () => {
-  for (const sourceNeedle of ['array(\'đèn đường\', \'den duong\', \'street light\')', 'array(\'biến tần\', \'bien tan\', \'inverter\')', 'array(\'tấm pin\', \'tam pin\', \'solar panel\')', 'array(\'pin lưu trữ\', \'pin luu tru\', \'battery\', \'lưu trữ\')']) {
-    assert.ok(homePhpSource.includes(sourceNeedle), `PHP hero semantic mapping changed: ${sourceNeedle}`)
-  }
-  assert.match(homePhpApi, /\$row = \$heroEnabled\[\$i\] \?\? array\(\)/)
   const rows = [
     { key: 'street-light', name: 'Pin lưu trữ lithium', description: 'storage', image: '/upload/photo/storage.jpg', href: '/pin-luu-tru/' },
     { key: 'inverter', name: 'Tấm pin năng lượng mặt trời', description: 'panel', image: '/upload/photo/panel.jpg', href: '/tam-pin/' },
@@ -100,7 +94,6 @@ test('homepage preview follows the PHP section order without inserting product g
   assert.match(homeHero, /@error="markImageFailed"/)
   assert.match(homeHero, /heroImageUnavailable \? 'bg-slate-50' : 'bg-navy-950'/)
   assert.match(homeCampaigns, /props\.campaignsConfigured \? \[\] : phpFallback/)
-  assert.match(homePhpSource, /\$splistnb/)
 })
 
 test('homepage hero copy and calls to action stay centered across breakpoints', () => {
@@ -129,27 +122,14 @@ test('HomeCampaigns fallback copy is the PHP fallback used only when no campaign
     'Thiết bị đồng bộ cho đường nội bộ, khuôn viên và hạ tầng thương mại.',
     'Hệ điện mặt trời và lưu trữ',
     'Chiếu sáng sân vườn và lối đi',
-  ]) assert.ok(homePhpSource.includes(copy), `PHP campaign fallback missing: ${copy}`)
-  assert.match(homePhpSource, /if\(!\$homeCampaignRows\)/)
+  ]) assert.ok(homeCampaigns.includes(copy), `Campaign fallback missing: ${copy}`)
   assert.match(homeCampaigns, /props\.campaignsConfigured \? \[\] : phpFallback/)
-})
-test('homepage read-only API follows the PHP major-category order and exposes CMS about points', () => {
-  assert.match(homePhpApi, /majorCategories/)
-  assert.match(homePhpApi, /home-about-point/)
-  assert.match(homePhpApi, /'points'=>\$aboutPoints/)
-  assert.match(homePhpApi, /'configured'=>\$aboutConfigured,'visible'=>\$aboutVisible/)
-  assert.match(homePhpApi, /'needles'=>array\('gia đình','gia dinh','hộ gia đình','ho gia dinh'\)/)
-  assert.doesNotMatch(homePhpApi, /\$row = \$solutionRows\[\$i\]/)
-  assert.match(homePhpSource, /Hệ thống kho ba khu vực/)
 })
 test('homepage Admin SEO fields use the legacy setting row and logo for OG image', () => {
   const withAdminSeo = { ...good, seo: { title: 'Admin title', description: 'Admin description', keywords: 'solar', image: '/upload/photo/logo.webp' } }
   assert.equal(isPublicHomePayload(withAdminSeo), true)
   assert.equal(isPublicHomePayload({ ...withAdminSeo, seo: { ...withAdminSeo.seo, image: '/upload/photo/logo.avif' } }), true)
   assert.equal(isPublicHomePayload({ ...withAdminSeo, seo: { ...withAdminSeo.seo, image: '/upload/photo/../secret.jpg' } }), false)
-  assert.match(homePhpApi, /#_seo where com=\? and act=\? and type=\? limit 1', array\('setting','update','setting'\)/)
-  assert.match(homePhpApi, /#_photo where type=\? and act=\? limit 0,1', array\('logo','photo_static'\)/)
-  assert.match(homePhpApi, /ptsPublicSeoDto/)
   assert.match(homePreview, /home\.value\?\.seo\.title \|\| fallbackTitle\.value/)
   assert.match(homePreview, /home\.value\?\.seo\.image \|\| undefined/)
   assert.ok(homePreview.includes("name: 'keywords', content: pageKeywords.value"))
@@ -169,7 +149,6 @@ test('Admin popup is optional, validated and shown on the homepage only once per
   assert.match(component, /event\.key === 'Escape'/)
   assert.match(component, /@click\.self="close"/)
   assert.match(component, /prefers-reduced-motion: reduce/)
-  assert.match(homePhpApi, /type=\? and act=\? and find_in_set\(\\'hienthi\\',status\)[^;]*'popup','photo_static'/)
 })
 
 test('Admin energy-chain cards override per field and keep the default layout', () => {

@@ -81,7 +81,7 @@ async function removeItem(code: string) {
     }
   } catch {
     // The composable retains the error for the alert below; avoid an unhandled
-    // event-handler rejection when the PHP adapter refuses the mutation.
+    // event-handler rejection when the API refuses the change.
   } finally {
     removingCode.value = null
   }
@@ -155,7 +155,7 @@ onBeforeUnmount(() => checkoutActionObserver?.disconnect())
       <div v-if="!payload && loading" class="cart-panel p-8 text-slate-500" role="status">Đang tải giỏ hàng…</div>
       <div v-else-if="!payload" class="rounded-btn border border-red-200 bg-red-50 p-6 text-red-800" role="alert">
         <strong>Không thể tải session giỏ hàng.</strong>
-        <p class="mb-0 mt-2">{{ error || 'PHP cart API local chưa khả dụng.' }}</p>
+        <p class="mb-0 mt-2">{{ error || 'Chưa tải được giỏ hàng. Vui lòng tải lại trang.' }}</p>
         <button type="button" class="public-neutral-button mt-4 rounded-chip px-4 py-2 font-bold" @click="refresh()">Thử lại</button>
       </div>
 

@@ -6,19 +6,14 @@ import { publicEmailHref, publicPhoneHref } from '../shared/contact-links.ts'
 const root = new URL('../', import.meta.url)
 const read = (path) => readFile(new URL(path, root), 'utf8')
 
-test('contact CTA follows the validated CMS target and PHP visibility rule', async () => {
-  const [hero, php] = await Promise.all([
-    read('app/components/contact/ContactHero.vue'),
-    read('../domains/phucthinhsolar.com/public_html/templates/contact/contact_tpl.php'),
-  ])
+test('contact CTA follows the validated CMS target and shows only with a published visual', async () => {
+  const hero = await read('app/components/contact/ContactHero.vue')
   assert.match(hero, /v-if="contact\.visual\?\.href"/)
   assert.match(hero, /links\.generic\(contact\.visual\.href\)/)
   assert.match(hero, /Gửi yêu cầu tư vấn/)
-  assert.match(php, /if\(\$contactVisual && !empty\(\$contactVisual\['link'\]\)\)/)
-  assert.match(php, />Gửi yêu cầu tư vấn/)
 })
 
-test('contact CTA hides when PHP has no published visual and does not invent a route', async () => {
+test('contact CTA hides without a published visual and does not invent a route', async () => {
   const hero = await read('app/components/contact/ContactHero.vue')
   assert.doesNotMatch(hero, /links\.generic\('\/lien-he\/#yeu-cau-tu-van'\)/)
   assert.match(hero, /v-if="contact\.visual\?\.href"/)
@@ -48,7 +43,7 @@ test('dealer distribution products become an arrow-controlled touch rail on mobi
 })
 
 test('about section navigation sticks below the header and tracks smooth section jumps', async () => {
-  const about = await read('app/components/about/AboutPreviewPage.vue')
+  const about = await read('app/components/about/AboutPage.vue')
   assert.match(about, /sticky z-30[\s\S]*isHeaderHidden \? 'top-0 shadow-sm'/)
   assert.match(about, /<div ref="aboutRoot" class="overflow-x-clip text-navy-800">/)
   assert.doesNotMatch(about, /<div class="overflow-hidden text-navy-800">/)
@@ -67,9 +62,7 @@ test('dealer support CMS icons preserve the PHP gold surface and contain fit', a
 
 test('dealer hero title keeps the source-measured width so tablet copy does not wrap to an extra line', async () => {
   const page = await read('app/components/dealer/DealerPageContent.vue')
-  const phpCss = await read('../domains/phucthinhsolar.com/public_html/assets/css/dealer-v2.css')
   assert.match(page, /max-w-\[680px\][^\n]*min-\[1800px\]:max-w-\[760px\]/)
-  assert.match(phpCss, /\.pts-dl-hero-banner-copy\{display:flex;max-width:680px/)
 })
 
 test('dealer form shows recovery when session security or the city list is unavailable', async () => {
@@ -96,18 +89,14 @@ test('contact form exposes security-load failure and a usable retry before enabl
 })
 
 test('About contact band uses the shared corporate CTA and retains its image contrast treatment', async () => {
-  const [page, php, css, banner] = await Promise.all([
-    read('app/components/about/AboutPreviewPage.vue'),
-    read('../domains/phucthinhsolar.com/public_html/templates/about/about_tpl.php'),
-    read('../domains/phucthinhsolar.com/public_html/assets/css/about-v2.css'),
+  const [page, banner] = await Promise.all([
+    read('app/components/about/AboutPage.vue'),
     read('app/components/PublicCtaBanner.vue'),
   ])
   assert.match(page, /<PublicCtaBanner\s+variant="corporate"\s+:image="about\.cta\.image"/)
   assert.match(banner, /corporate: '\/assets\/images\/site-visuals\/cta-corporate-bg\.webp'/)
   assert.match(banner, /\.cta-band__image \{[^}]*object-fit: cover/)
   assert.match(banner, /\.cta-band__shade \{[^}]*linear-gradient/)
-  assert.match(php, /--about-cta-image:url\(/)
-  assert.match(css, /\.pts-about-contact-band\.has-image:before[\s\S]*background-size:cover/)
 })
 
 test('contact methods remain readable when CMS contact details cannot form safe actions', async () => {

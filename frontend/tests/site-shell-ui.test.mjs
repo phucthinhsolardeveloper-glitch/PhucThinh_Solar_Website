@@ -34,13 +34,10 @@ test('shared shell renders CMS assets and explicit navigation/taxonomy only', ()
 })
 
 test('shared header keeps PHP production single-row composition without a duplicate utility strip', () => {
-  const phpHeader = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/templates/layout/header.php', import.meta.url), 'utf8')
-  assert.match(phpHeader, /<div class="header-bottom pts-header-primary">/)
   assert.match(header, /class="pts-site-header sticky top-0 z-\[1000\]"/)
   assert.doesNotMatch(header, /Tầng 1: Thanh tiện ích/)
   assert.doesNotMatch(header, /Yêu cầu khảo sát/)
   assert.match(header, /Nhận tư vấn/)
-  assert.match(phpHeader, /class="hdr-call"/)
   assert.match(header, /v-if="hotline"[\s\S]*telHrefFor\(hotline\)/)
   assert.match(header, /min-\[1681px\]:flex min-\[1681px\]:flex-col/)
   assert.match(header, /shellHref\('\/gio-hang\/'\)/)
@@ -242,7 +239,6 @@ test('footer renders its CMS heading once and uses the validated rich-text compo
   assert.doesNotMatch(footer, /<p v-if="footer\?\.companyName/)
   assert.doesNotMatch(footer, /contactLines/)
 })
-
 
 test('mobile drawer uses the real category tree with accessible collapsed branches and pinned consultation CTA', () => {
   assert.match(header, /function flattenProductCategories\([\s\S]*nodes: PublicProductCategoryNode\[\]/)

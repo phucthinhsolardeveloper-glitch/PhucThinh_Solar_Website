@@ -1,13 +1,13 @@
 import type { H3Event } from 'h3'
 
-type MigrationEvent = H3Event
+type BackendEvent = H3Event
 
 type OriginAllowlistEntry = {
   hostname: string
   port: string | null
 }
 
-type MigrationFetchOptions<T> = {
+type BackendFetchOptions<T> = {
   endpoint: string
   query?: Record<string, string | undefined>
   validate: (payload: unknown) => payload is T
@@ -49,14 +49,14 @@ export function isAllowedApiOrigin(origin: URL, rawAllowlist: unknown): boolean 
     && (entry.port === null ? originPort === defaultPort(origin.protocol) : entry.port === originPort))
 }
 
-export function requireMigrationGet(event: MigrationEvent): void {
+export function requireGet(event: BackendEvent): void {
   if (getMethod(event) !== 'GET') {
     setHeader(event, 'Allow', 'GET')
     throw createError({ statusCode: 405, statusMessage: 'Method Not Allowed' })
   }
 }
 
-export function apiEndpoint(event: MigrationEvent, endpoint: string): string {
+export function apiEndpoint(event: BackendEvent, endpoint: string): string {
   if (!endpoint.startsWith('/') || endpoint.startsWith('//') || endpoint.includes('\\')) {
     throw createError({ statusCode: 500, statusMessage: 'Invalid API endpoint' })
   }
@@ -71,7 +71,7 @@ export function apiEndpoint(event: MigrationEvent, endpoint: string): string {
   return origin.origin + endpoint
 }
 
-export async function fetchMigrationPayload<T>(event: MigrationEvent, options: MigrationFetchOptions<T>): Promise<T> {
+export async function fetchBackendPayload<T>(event: BackendEvent, options: BackendFetchOptions<T>): Promise<T> {
   let payload: unknown
   try {
     const apiUrl = new URL(apiEndpoint(event, options.endpoint))
@@ -91,7 +91,7 @@ export async function fetchMigrationPayload<T>(event: MigrationEvent, options: M
       // expected pass-through status (eg. a resolver 404 for an unknown
       // slug) is a normal outcome, not a crash, but Nitro's request logger
       // treats any error object that wasn't built via createError() as
-      // "[unhandled]" and prints the internal PHP fetch URL/stack with it -
+      // "[unhandled]" and prints the internal API fetch URL/stack with it -
       // noisy for every mistyped URL and a minor internal-endpoint leak.
       throw createError({ statusCode: status, statusMessage: options.unavailableMessage, fatal: false })
     }

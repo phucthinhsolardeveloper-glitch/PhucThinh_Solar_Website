@@ -15,7 +15,7 @@ const config = useRuntimeConfig()
 const fallbackSite: PublicSitePayload = { schemaVersion: 1, brand: { name: 'Phúc Thịnh Solar', hotline: '' }, productCategories: [] }
 const { data: siteData } = await useFetch<unknown>('/_api/site', { default: () => fallbackSite })
 const category = computed(() => typeof route.query.category === 'string' ? route.query.category : undefined)
-// PHP uses `p` on the public URL; the read-only DTO endpoint names it `page`.
+// The public URL uses `p`; the API names it `page`.
 const page = computed(() => {
   const value = route.query.p
   if (typeof value !== 'string' || !/^[1-9][0-9]*$/.test(value)) return 1

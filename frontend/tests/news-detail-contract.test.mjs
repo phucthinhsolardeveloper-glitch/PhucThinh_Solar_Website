@@ -51,11 +51,7 @@ test('requires the PHP related-news author metadata', () => {
 
 test('related-news rail keeps the PHP author query, four-card desktop page, and working scroll controls', async () => {
   const { readFileSync } = await import('node:fs')
-  const phpApi = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/api/pts_v1_news_detail.php', import.meta.url), 'utf8')
-  const phpDto = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/libraries/pts_public_news_detail_api.php', import.meta.url), 'utf8')
   const related = readFileSync(new URL('../app/components/news-detail/NewsDetailRelated.vue', import.meta.url), 'utf8')
-  assert.match(phpApi, /left join #_user u on u\.id=n\.id_user/)
-  assert.match(phpDto, /'author'\s*=>\s*ptsNewsDetailAuthor\(/)
   assert.match(related, /nav:w-\[calc\(\(100%_-_4\.5rem\)\/4\)\]/)
   assert.match(related, /tb:w-\[calc\(\(100%_-_1\.5rem\)\/2\)\]/)
   assert.match(related, /scrollBy\(\{ left: direction \* element\.clientWidth/)
@@ -79,23 +75,14 @@ test('related-news cards use the approved flat article surface and readable copy
 
 test('related news renders the same image, date, author, title, and description fields as PHP', async () => {
   const { readFileSync } = await import('node:fs')
-  const phpTemplate = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/templates/news/news_detail_tpl.php', import.meta.url), 'utf8')
   const related = readFileSync(new URL('../app/components/news-detail/NewsDetailRelated.vue', import.meta.url), 'utf8')
-  assert.match(phpTemplate, /id="CRsingle_blog_related"/)
-  assert.match(phpTemplate, /getImage\(\['class' => 'lazy w-100','size-error' => '300x200x1'/)
-  assert.match(phpTemplate, /date\('d\/m\/Y', \$v\['date_created'\]\)/)
-  assert.match(phpTemplate, /newsAuthorName\(\$d, isset\(\$v\['id_user'\]\)/)
-  assert.match(phpTemplate, /<h3><\?=\$v\['name'\.\$lang\]\?><\/h3>/)
-  assert.match(phpTemplate, /<div class="des"><\?=\$v\['desc'\.\$lang\]\?><\/div>/)
   for (const field of ['item.image', 'item.date', 'item.author', 'item.title', 'item.description']) assert.ok(related.includes(field), `Nuxt related card renders ${field}`)
 })
 
 test('news detail share offers each social destination present in the PHP template', async () => {
   const { readFileSync } = await import('node:fs')
-  const phpTemplate = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/templates/news/news_detail_tpl.php', import.meta.url), 'utf8')
   const share = readFileSync(new URL('../app/components/editorial/EditorialShare.vue', import.meta.url), 'utf8')
   for (const platform of ['twitter', 'facebook', 'linkedin', 'email', 'pinterest']) {
-    assert.match(phpTemplate, new RegExp(`data-sharer="${platform}"`))
     assert.match(share, new RegExp(`type: '${platform === 'twitter' ? 'x' : platform}'`))
   }
   assert.match(share, /pinterest\.com\/pin\/create\/button\//)

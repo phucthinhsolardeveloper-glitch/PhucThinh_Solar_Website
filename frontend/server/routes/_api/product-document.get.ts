@@ -1,8 +1,8 @@
 import { fetchDocument } from '../../utils/media-document'
-import { requireMigrationGet } from '../../utils/backend-api'
+import { requireGet } from '../../utils/backend-api'
 
 export default defineEventHandler(async (event) => {
-  requireMigrationGet(event)
+  requireGet(event)
   const query = getQuery(event)
   if (Object.keys(query).some((key) => key !== 'path')) throw createError({ statusCode: 400, statusMessage: 'Invalid document query' })
   const path = query.path

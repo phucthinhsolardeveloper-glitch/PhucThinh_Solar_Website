@@ -34,7 +34,7 @@ const heroVisualOverrides: Record<string, string> = {
   '/assets/images/site-visuals/catalog-products-hero-20261007-v2.png': '/assets/images/site-visuals/catalog-grid-tie-solar-20261008.png',
 }
 
-// A failed PHP thumbnail falls back to the original file once before the photo is hidden.
+// A failed thumbnail falls back to the original file once before the photo is hidden.
 const heroThumbFailed = ref(false)
 function catalogHeroCandidate(src: string, width: 960 | 1800): string {
   const resolved = heroVisualOverrides[src] || src

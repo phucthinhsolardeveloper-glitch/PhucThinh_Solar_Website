@@ -28,7 +28,7 @@ test('commerce quantity normalization enforces integer range 1–999', () => {
 
 test('PDP and cart use the shared accessible quantity stepper and commit cart changes only after input commits', () => {
   const stepper = read('app/components/commerce/QuantityStepper.vue')
-  const purchase = read('app/components/product-preview/ProductPurchasePanel.vue')
+  const purchase = read('app/components/product-detail/ProductPurchasePanel.vue')
   const cart = read('app/components/cart/CartPage.vue')
   assert.match(stepper, /h-11 w-11/)
   assert.match(stepper, /min="1"[\s\S]*max="999"/)

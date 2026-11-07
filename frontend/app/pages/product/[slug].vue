@@ -1,6 +1,6 @@
 <script setup lang="ts">
-// Reuse the canonical PDP redirect for PHP's historical /product/{slug} alias.
-definePageMeta({ layout: false, middleware: 'product-legacy-alias-public-route' })
+// Old /product/{slug} links redirect to the canonical product page.
+definePageMeta({ layout: false, middleware: 'product-old-path-redirect' })
 </script>
 
 <template><div /></template>

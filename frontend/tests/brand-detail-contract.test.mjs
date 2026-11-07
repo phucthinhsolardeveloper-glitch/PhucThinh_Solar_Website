@@ -3,8 +3,6 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { isBrandSlug, isPublicBrandDetailPayload } from '../shared/contracts/public-brand-detail.ts'
 
-const brandApi = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/api/pts_v1_brand_detail.php', import.meta.url), 'utf8')
-const catalogDto = readFileSync(new URL('../../domains/phucthinhsolar.com/public_html/libraries/pts_public_catalog_api.php', import.meta.url), 'utf8')
 const brandPage = readFileSync(new URL('../app/components/catalog/BrandDetailPage.vue', import.meta.url), 'utf8')
 
 const good = {
@@ -69,18 +67,7 @@ test('requires a boolean pricesVisible flag', () => {
   assert.equal(isPublicBrandDetailPayload({ ...good, pricesVisible: false }), true)
 })
 
-test('brand GET includes only published, existing Admin gallery media using parameterized product ids', () => {
-  assert.match(brandApi, /select id_parent,photo,status from #_gallery where id_parent in \(\{\$idPlaceholders\}\) and com = \? and kind = \? and val = \? and find_in_set\('hienthi',status\)/)
-  assert.match(brandApi, /array_merge\(\$productIds, array\('product', 'man', 'san-pham'\)\)/)
-  assert.match(brandApi, /ptsCatalogPublicMedia\(\$filename\) === '' \|\| !is_file\(ROOT\.UPLOAD_PRODUCT_L\.\$filename\)/)
-  assert.match(catalogDto, /_pts_public_gallery/)
-})
-
 test('brand GET maps Admin SEO and brand photo through parameterized queries; page uses metadata with PHP-compatible fallbacks', () => {
-  assert.match(brandApi, /select id,namevi,slugvi,status,photo from #_product_brand where slugvi = \? and type = \? and find_in_set\('hienthi',status\)/)
-  assert.match(brandApi, /select titlevi,descriptionvi,keywordsvi from #_seo where id_parent = \? and com = \? and act = \? and type = \? limit 1/)
-  assert.match(brandApi, /array\(\(int\)\$row\['id'\], 'product', 'man_brand', 'san-pham'\)/)
-  assert.match(brandApi, /ptsPublicSeoImage\(\$row\['photo'\] \?\? '', ROOT, UPLOAD_PRODUCT_L\)/)
   assert.match(brandPage, /data\.value\?\.seo\?\.title \|\| \(data\.value \? \`\$\{data\.value\.brand\.name\} \| Phúc Thịnh Solar\`/)
   assert.match(brandPage, /brandSocialDescription = computed\(\(\) => brandDescription\.value \|\| site\.value\.brand\.name/)
   assert.match(brandPage, /description: brandSocialDescription/)

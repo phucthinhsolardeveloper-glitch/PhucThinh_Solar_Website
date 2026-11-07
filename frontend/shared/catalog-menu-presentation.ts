@@ -1,6 +1,6 @@
 /**
  * Presentation metadata for the desktop catalog mega-menu.
- * Mirrors domains/.../templates/layout/menu.php (icons, subtitles, slot order).
+ * Catalog menu presentation: icons, subtitles, slot order.
  * Content (labels/hrefs/children) still comes from the public site catalog API.
  */
 

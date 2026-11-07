@@ -1,8 +1,8 @@
 import { isPublicSearchPayload } from '../../../shared/contracts/public-search'
-import { fetchMigrationPayload, requireMigrationGet } from '../../utils/backend-api'
+import { fetchBackendPayload, requireGet } from '../../utils/backend-api'
 
 export default defineEventHandler(async (event) => {
-  requireMigrationGet(event)
+  requireGet(event)
   const query = getQuery(event)
   if (Object.keys(query).some((key) => !['keyword', 'page', 'per_page', 'brand', 'price', 'sort'].includes(key))) throw createError({ statusCode: 400, statusMessage: 'Invalid search query' })
   const keyword = typeof query.keyword === 'string' ? query.keyword.trim() : ''
@@ -16,7 +16,7 @@ export default defineEventHandler(async (event) => {
   if ((query.brand !== undefined && (brand === undefined || !/^[1-9][0-9]*(?:,[1-9][0-9]*)*$/.test(brand))) || (query.price !== undefined && (price === undefined || !/^[123](?:,[123])*$/.test(price)))) throw createError({ statusCode: 400, statusMessage: 'Invalid search filters' })
   if (query.sort !== undefined && (sort === undefined || !['default', 'abc', 'abc-desc', 'price', 'price-desc', 'new', 'new-desc'].includes(sort))) throw createError({ statusCode: 400, statusMessage: 'Invalid search sort' })
 
-  const payload = await fetchMigrationPayload(event, {
+  const payload = await fetchBackendPayload(event, {
     endpoint: '/api/v1/search',
     query: { keyword, page, per_page: perPage, brand, price, sort },
     validate: isPublicSearchPayload,
